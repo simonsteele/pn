@@ -13,6 +13,7 @@
 #include "project.h"
 #include "projectprops.h"
 #include "projpropsview.h"
+#include "pndialogs.h"
 
 using namespace ProjPropsInternal;
 
@@ -126,6 +127,37 @@ LRESULT CProjPropsView::OnTreeSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 		if(pGroup != NULL)
 		{
 			selectGroup(pGroup);
+		}
+	}
+
+	return 0;
+}
+
+LRESULT CProjPropsView::OnBrowse(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	NMPROPERTYITEM* pH = (NMPROPERTYITEM*)pnmh;
+	
+	CPropertyFileNameItem* pItem = static_cast<CPropertyFileNameItem*>(	pH->prop );
+	Projects::ProjectProp* pProp = reinterpret_cast<Projects::ProjectProp*>( pItem->GetItemData() );
+	
+	if(pItem->IsDirectory())
+	{
+		CFolderDialog fd(m_hWnd, pProp->GetDescription());
+		if(fd.DoModal() == IDOK)
+		{
+			CComVariant v = fd.GetFolderPath();
+			pItem->SetValue( v );
+		}
+	}
+	else
+	{
+		CPNOpenDialog dlgOpen(_T("All Files (*.*)|*.*|"));
+		dlgOpen.SetTitle(pProp->GetDescription());
+
+		if(dlgOpen.DoModal() == IDOK)
+		{
+			CComVariant v = dlgOpen.GetSingleFileName();
+			pItem->SetValue( v );
 		}
 	}
 
@@ -259,7 +291,7 @@ HPROPERTY CProjPropsView::createPropertyItem(
 	case Projects::propFolder:
 		{
 			LPCTSTR szVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
-			ret = PropCreateFileName(prop->GetDescription(), szVal != NULL ? szVal : _T(""));
+			ret = PropCreatePathName(prop->GetDescription(), szVal != NULL ? szVal : _T(""));
 		}
 		break;
 	}

@@ -11,6 +11,7 @@
 #include "stdafx.h"
 #include "resource.h"
 #include "project.h"
+#include "projectprops.h"
 #include "projectview.h"
 #include "pndialogs.h"
 #include "include/shellicons.h"
@@ -18,7 +19,6 @@
 #include "include/atlmsgboxcheck.h"
 #include "MagicFolderWiz.h"
 
-#include "projectprops.h"
 #include "projpropsview.h"
 
 using namespace Projects;
@@ -182,6 +182,14 @@ void CProjectTreeCtrl::OnProjectItemChange(PROJECT_CHANGE_TYPE changeType, Proje
 			PNASSERT(hProjectNode != NULL);
 
 			SetItemText(hProjectNode, changeContainer->GetName());
+
+			// Now we also store the current ViewState back into the project
+			// for saving.
+			Project* pProject = static_cast<Project*>(changeContainer);
+			
+			ProjectViewState* viewState = pProject->GetViewState();
+			viewState->Clear();
+			storeViewState(viewState, hProjectNode);
 		}
 		break;
 	}
@@ -237,7 +245,10 @@ void CProjectTreeCtrl::buildTree()
 
 HTREEITEM CProjectTreeCtrl::buildProject(HTREEITEM hParentNode, Projects::Project* pj, HTREEITEM hInsertAfter)
 {
-	HTREEITEM hProject = InsertItem( pj->GetName(), projectIcon, projectIcon, hParentNode, hInsertAfter );
+	tstring projname = pj->GetName();
+	if(pj->IsDirty())
+		projname += _T(" *");
+	HTREEITEM hProject = InsertItem( projname.c_str(), projectIcon, projectIcon, hParentNode, hInsertAfter );
 	ProjectType* pPT = static_cast<ProjectType*>(pj);
 	SetItemData(hProject, reinterpret_cast<DWORD_PTR>( pPT ));
 
@@ -245,11 +256,11 @@ HTREEITEM CProjectTreeCtrl::buildProject(HTREEITEM hParentNode, Projects::Projec
 	{
 		HTREEITEM hLastChild = NULL;
 
-		ProjectViewState state;
+		ProjectViewState* state = pj->GetViewState();
 
 		const FOLDER_LIST& folders = pj->GetFolders();
 		if( folders.size() > 0 )
-			hLastChild = buildFolders(hProject, folders, state);
+			hLastChild = buildFolders(hProject, folders, *state);
 
 		buildFiles(hProject, hLastChild, pj->GetFiles());
 
@@ -301,6 +312,16 @@ HTREEITEM CProjectTreeCtrl::buildFiles(HTREEITEM hParentNode, HTREEITEM hInsertA
 	}
 
 	return hFile;
+}
+
+void CProjectTreeCtrl::clearNode(HTREEITEM hItem)
+{
+	HTREEITEM hN = GetChildItem(hItem);
+	while(hN)
+	{
+		DeleteItem(hN);
+		hN = GetChildItem(hItem);
+	}	
 }
 
 void CProjectTreeCtrl::clearTree()
@@ -421,7 +442,7 @@ void CProjectTreeCtrl::doContextMenu(LPPOINT pt)
 
 HTREEITEM CProjectTreeCtrl::findItem(Projects::ProjectType* item, HTREEITEM startat)
 {
-	HTREEITEM hN = startat;
+	HTREEITEM hN = startat != NULL ? startat : GetRootItem();
 	while(hN)
 	{
 		if(GetItemData(hN) == reinterpret_cast<DWORD_PTR>(item))
@@ -466,6 +487,32 @@ HTREEITEM CProjectTreeCtrl::getLastFolderItem(HTREEITEM hParentNode)
 	}
 
 	return hLast;
+}
+
+void CProjectTreeCtrl::getMagicFolderProps(Projects::UserData& ud, Projects::MagicFolder* mf, Projects::PropGroupList& groups)
+{
+	Projects::PropGroup* extrasGroup = new PropGroup("Folder", "Magic Folder");
+
+	// Set up the ud object with MagicFolder options.
+	ud.Set(_T(""), _T("Folder"), _T("Folder"), _T("Name"), mf->GetName());
+	ud.Set(_T(""), _T("Folder"), _T("Folder"), _T("Path"), mf->GetFullPath());
+	ud.Set(_T(""), _T("Folder"), _T("Filters"), _T("IncludeFiles"), mf->GetFilter());
+	ud.Set(_T(""), _T("Folder"), _T("Filters"), _T("ExcludeFolders"), mf->GetFolderFilter());
+	
+	PropCategory* cat = new PropCategory(_T("Folder"), _T("Magic Folders"));
+	ProjectProp* prop = new ProjectProp(_T("Name"), _T("Display Name"), propString);
+	cat->Add(prop);
+	prop = new ProjectProp(_T("Path"), _T("Folder Path"), propFolder);
+	cat->Add(prop);
+	extrasGroup->Add(cat);
+	cat = new PropCategory(_T("Filters"), _T("Filters"));
+	prop = new ProjectProp(_T("IncludeFiles"), _T("Include Files"), propString);
+	cat->Add(prop);
+	prop = new ProjectProp(_T("ExcludeFolders"), _T("Exclude Folders"), propString);
+	cat->Add(prop);
+	extrasGroup->Add(cat);
+
+	groups.insert(groups.end(), extrasGroup);	
 }
 
 void CProjectTreeCtrl::handleRemove()
@@ -588,6 +635,50 @@ void CProjectTreeCtrl::handleRightClick(LPPOINT pt)
 	doContextMenu(pt);
 }
 
+void CProjectTreeCtrl::setMagicFolderProps(Projects::UserData& ud, Projects::MagicFolder* folder)
+{
+	HTREEITEM hFolder = findItem(folder, NULL);
+	PNASSERT(hFolder != NULL);
+
+	// Set the Name and Filters
+	folder->SetName( ud.Lookup(_T(""), _T("Folder"), _T("Folder"), _T("Name"), _T("error")) );
+	SetItemText(hFolder, folder->GetName());
+	folder->SetFilter( ud.Lookup(_T(""), _T("Folder"), _T("Filters"), _T("IncludeFiles"), _T("")) );
+	folder->SetFolderFilter( ud.Lookup(_T(""), _T("Folder"), _T("Filters"), _T("ExcludeFolders"), _T("")) );
+
+	// Now see if we've changed path...
+	tstring path = ud.Lookup(_T(""), _T("Folder"), _T("Folder"), _T("Path"), _T(""));
+	if(path.length() > 0 && DirExists(path.c_str()))
+	{
+		CPathName pn(path.c_str());
+		if(pn.c_str() != folder->GetFullPath())
+		{
+			// Path may have changed...
+			folder->SetFullPath(path.c_str());
+
+			clearNode(hFolder);
+
+			// Use for expansion state etc.
+			ProjectViewState state;
+
+			processNotifications = false;
+
+			HTREEITEM hLastChild;
+
+			const FOLDER_LIST& folders2 = folder->GetFolders();
+			if( folders2.size() > 0 )
+				hLastChild = buildFolders(hFolder, folders2, state);
+
+			const FILE_LIST& files = folder->GetFiles();
+			hLastChild = buildFiles(hFolder, hLastChild, files);
+
+			sort(hFolder);
+
+			processNotifications = true;
+		}
+	}
+}
+
 void CProjectTreeCtrl::setStatus(Projects::ProjectType* selection)
 {
 	switch( selection->GetType() )
@@ -642,6 +733,28 @@ void CProjectTreeCtrl::sort(HTREEITEM hFolderNode, bool bSortFolders, bool bRecu
 	sortcb.lParam = caseSensitive;
 
 	SortChildrenCB(&sortcb, bRecurse);
+}
+
+void CProjectTreeCtrl::storeViewState(Projects::ProjectViewState* vs, HTREEITEM hTreeItem)
+{
+	HTREEITEM hN = hTreeItem;
+	while( hN )
+	{
+		ProjectType* pt = reinterpret_cast<ProjectType*>( GetItemData(hN) );
+		if(ItemHasChildren( hN ))
+		{
+			DWORD dwState = GetItemState(hN, TVIS_EXPANDED);
+			bool bExpanded = (dwState & TVIS_EXPANDED) != 0;
+			vs->SetExpand(static_cast<Projects::Folder*>( pt ), bExpanded);
+
+            HTREEITEM hChild = GetChildItem( hN );
+			if(hChild && bExpanded)
+			{
+				storeViewState(vs, hChild);
+			}
+		}
+		hN = GetNextSiblingItem( hN );
+	}
 }
 
 LRESULT CProjectTreeCtrl::OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
@@ -1138,51 +1251,56 @@ LRESULT	CProjectTreeCtrl::OnProjectProperties(WORD /*wNotifyCode*/, WORD /*wID*/
 	
 	PropGroupList groups;
 	UserData ud;
-	PropGroup extrasGroup(_T("Folder"), _T("Magic Folder"));
+	bool bTopLevelMagic = false;
 
+	// Build up any custom properties that we want to display on
+	// top of the basic project ones.
 	if(lastItem->GetType() == ptMagicFolder)
 	{
-		// Set up the ud object with MagicFolder options.
-		Projects::MagicFolder* mf = static_cast<Projects::MagicFolder*>(lastItem);
-		ud.Set(_T(""), _T("Folder"), _T("Folder"), _T("Path"), mf->GetFullPath());
-		ud.Set(_T(""), _T("Folder"), _T("Filters"), _T("IncludeFiles"), mf->GetFilter());
-		ud.Set(_T(""), _T("Folder"), _T("Filters"), _T("ExcludeFolders"), mf->GetFolderFilter());
-		
-		PropCategory* cat = new PropCategory(_T("Folder"), _T("Magic Folders"));
-		ProjectProp* prop = new ProjectProp(_T("Path"), _T("Folder Path"), propFolder);
-		cat->Add(prop);
-		extrasGroup.Add(cat);
-		cat = new PropCategory(_T("Filters"), _T("Filters"));
-		prop = new ProjectProp(_T("IncludeFiles"), _T("Include Files"), propString);
-		cat->Add(prop);
-		prop = new ProjectProp(_T("ExcludeFolders"), _T("Exclude Folders"), propString);
-		cat->Add(prop);
-		extrasGroup.Add(cat);
-
-		groups.insert(groups.end(), &extrasGroup);
+		MagicFolder* mf = static_cast<MagicFolder*>(lastItem);
+		if(mf->GetParent() != NULL && mf->GetParent()->GetType() != ptMagicFolder)
+		{
+			// We only have magic folder properties for the top-level one.
+			bTopLevelMagic = true;
+			getMagicFolderProps(ud, mf, groups);
+		}
 	}
 
+	// Get the template from the project.
 	ProjectTemplate* pTheTemplate = project->GetTemplate();
 	
-	if(pTheTemplate != NULL || extrasGroup.GetCategories().size() > 0)
+	// If we got a template or we've got extra settings to display.
+	if(pTheTemplate != NULL || groups.size() > 0)
 	{
+		// Set up those extra properties
 		PropViewSet extraSet(&ud);
 		extraSet.PropertyGroups = &groups;
 		extraSet.PropNamespace = "";
 
 		view.SetExtraSet(&extraSet);
 
+		// The template properties
 		PropViewSet projectSet(pTheTemplate, lastItem);
 		
-		
+		// Display 'em.
 		if(view.DisplayFor(&projectSet))
 		{
 			lastItem->SetDirty();
+
+			if(lastItem->GetType() == ptMagicFolder && bTopLevelMagic)
+			{
+				setMagicFolderProps(ud, static_cast<MagicFolder*>(lastItem));
+			}
 		}
 	}
 	else
 	{
 		AtlMessageBoxCheckNet(m_hWnd, IDS_PROJECTNOPROPS, IDR_MAINFRAME);
+	}
+
+	for(PropGroupList::const_iterator i = groups.begin(); i != groups.end(); ++i)
+	{
+		delete (*i);
 	}
 
 	return 0;

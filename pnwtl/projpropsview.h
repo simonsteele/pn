@@ -62,7 +62,7 @@ public:
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		COMMAND_ID_HANDLER(IDOK, OnOK)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
-		//NOTIFY_HANDLER(IDC_LIST1, PIN_BROWSE, OnBrowse)
+		NOTIFY_HANDLER(IDC_LISTPROPS, PIN_BROWSE, OnBrowse)
 		NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnTreeSelChanged)
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
@@ -76,6 +76,7 @@ protected:
 	LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnTreeSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT OnBrowse(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	void displayGroups(PropViewSet* viewSet, HTREEITEM hParent = NULL);
 	void displayGroups(Projects::PropGroupList& groups, PropViewSet* viewSet, HTREEITEM hParent = NULL);

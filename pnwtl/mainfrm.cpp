@@ -27,6 +27,7 @@
 #include "pndialogs.h"		// Misc Dialogs.
 #include "textclipsview.h"	// Text-Clips Docker...
 #include "project.h"		// Projects
+#include "projectprops.h"	// Project Properties
 #include "projectview.h"	// Projects Docker...
 #include "findex.h"			// Find Dialog
 #include "findinfiles.h"	// Find in Files

@@ -555,8 +555,43 @@ public:
       if( !GetDisplayValue(szPath, (sizeof(szPath) / sizeof(TCHAR)) - 1) ) return 0;
       return ::lstrlen(szPath);
    }
+
+   virtual bool IsDirectory() const
+   {
+	   return false;
+   }
 };
 
+//////////////////////////////////////////////////////////////////////////////
+// FilePath Property
+
+class CPropertyPathNameItem : public CPropertyFileNameItem
+{
+public:
+   CPropertyPathNameItem(LPCTSTR pstrName, LPARAM lParam) : CPropertyFileNameItem(pstrName, lParam)
+   {
+   }
+   BOOL GetDisplayValue(LPTSTR pstr, UINT cchMax) const
+   {
+      ATLASSERT(!::IsBadStringPtr(pstr, cchMax));
+      *pstr = _T('\0');
+      if( m_val.bstrVal == NULL ) return TRUE;
+	  USES_CONVERSION;
+      ::lstrcpyn(pstr, OLE2CT(m_val.bstrVal), cchMax);
+
+      return TRUE;
+   }
+   UINT GetDisplayValueLength() const
+   {
+      TCHAR szPath[MAX_PATH] = { 0 };
+      if( !GetDisplayValue(szPath, (sizeof(szPath) / sizeof(TCHAR)) - 1) ) return 0;
+      return ::lstrlen(szPath);
+   }
+   virtual bool IsDirectory() const
+   {
+	   return true;
+   }
+};
 
 /////////////////////////////////////////////////////////////////////////////
 // DropDown List property
@@ -828,6 +863,18 @@ inline HPROPERTY PropCreateFileName(LPCTSTR pstrName, LPCTSTR pstrFileName, LPAR
    CComVariant vValue = pstrFileName;
    prop->SetValue(vValue);
    return prop;
+}
+
+inline HPROPERTY PropCreatePathName(LPCTSTR pstrName, LPCTSTR pstrPathName, LPARAM lParam = 0)
+{
+	ATLASSERT(!::IsBadStringPtr(pstrPathName,-1));
+	CPropertyPathNameItem* prop = NULL;
+	ATLTRY( prop = new CPropertyPathNameItem(pstrName, lParam) );
+	ATLASSERT(prop);
+	if( prop == NULL ) return NULL;
+	CComVariant vValue = pstrPathName;
+	prop->SetValue(vValue);
+	return prop;
 }
 
 inline HPROPERTY PropCreateDate(LPCTSTR pstrName, const SYSTEMTIME stValue, LPARAM lParam = 0)

@@ -568,6 +568,7 @@ Project::Project()
 	bExists = true;
 	
 	m_template = NULL;
+	m_viewState = NULL;
 }
 
 Project::Project(LPCTSTR projectFile) : Folder()
@@ -582,6 +583,7 @@ Project::Project(LPCTSTR projectFile) : Folder()
 	basePath = CFileName(projectFile).GetPath();
 
 	m_template = NULL;
+	m_viewState = NULL;
 
 	if(bExists)
 	{
@@ -626,9 +628,13 @@ void Project::Save()
 	fclose(hFile);
 
 	genxDispose(writer.w);
-	
+
 	bDirty = false;
 	Folder::notify(pcClean);
+
+	// Do this after the notify, it gives the view a chance to store state.
+	if(m_viewState != NULL)
+		SaveViewState();
 }
 
 void Project::SetFileName(LPCTSTR filename)
@@ -946,6 +952,33 @@ ProjectTemplate* Project::GetTemplate() const
 	return m_template;
 }
 
+ProjectViewState* Project::GetViewState()
+{
+	if(m_viewState == NULL)
+	{
+		ProjectViewState* vs = new ProjectViewState();
+		CFileName fn(GetFileName());
+		fn.ChangeExtensionTo(".pnps");
+	
+		vs->Load(fn.c_str());
+		
+		m_viewState = vs;
+	}
+
+	return m_viewState;
+}
+
+void Project::SaveViewState()
+{
+	if(m_viewState != NULL)
+	{
+		CFileName fn(GetFileName());
+		fn.ChangeExtensionTo(".pnps");
+
+		m_viewState->Save(fn.c_str());
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // Workspace
 //////////////////////////////////////////////////////////////////////////////
@@ -1246,7 +1279,11 @@ void Workspace::parse()
 	}
 	catch (XMLParserException& ex)
 	{
-		::OutputDebugString(ex.GetMessage());
+		CString err;
+		err.Format(_T("Error Parsing Project XML: %s\n (file: %s, line: %d, column %d)"), 
+			XML_ErrorString(ex.GetErrorCode()), ex.GetFileName(), ex.GetLine(), ex.GetColumn());
+
+		g_Context.m_frame->SetStatusText(err);
 	}
 
 	bDirty = false;
@@ -1307,7 +1344,67 @@ tstring ProjectViewState::GetFolderPath(Folder* folder)
 	return path;
 }
 
-void ProjectViewState::getFolderPath(Folder* folder, tstring path)
+void ProjectViewState::Load(LPCTSTR filename)
+{
+	if(!FileExists(filename))
+		return;
+
+	XMLParser parser;
+	parser.SetParseState(this);
+	parseState = 0;
+	
+	try
+	{
+		parser.LoadFile(filename);
+	}
+	catch(XMLParserException& ex)
+	{
+		CString err;
+		err.Format(_T("Error Parsing ProjectViewState XML: %s\n (file: %s, line: %d, column %d)"), 
+			XML_ErrorString(ex.GetErrorCode()), ex.GetFileName(), ex.GetLine(), ex.GetColumn());
+
+		g_Context.m_frame->SetStatusText(err);
+	}
+}
+
+void ProjectViewState::Save(LPCTSTR filename)
+{
+	FILE* hFile = _tfopen(filename, _T("wb"));
+
+	if(hFile == NULL)
+	{
+		UNEXPECTED(_T("Could not open the project data file for writing"));
+		return;
+	}
+
+	genxWriter w = genxNew(NULL, NULL, NULL);
+
+	genxStartDocFile(w, hFile);
+	genxStartElementLiteral(w, NULL, u("pd"));
+	genxStartElementLiteral(w, NULL, u("ViewState"));
+
+	for(ExpandCache::iterator i = cache->begin(); i != cache->end(); ++i)
+	{
+		genxStartElementLiteral(w, NULL, u("e"));
+		Windows1252_Utf8 path((*i).first.c_str());
+		genxAddAttributeLiteral(w, NULL, u("p"), u(path));
+		genxAddAttributeLiteral(w, NULL, u("x"), (*i).second ? u("true") : u("false"));
+		genxEndElement(w);
+	}
+
+	genxEndElement(w);
+	genxEndElement(w);
+	genxDispose(w);
+
+	fclose(hFile);
+}
+
+void ProjectViewState::Clear()
+{
+	cache->clear();
+}
+
+void ProjectViewState::getFolderPath(Folder* folder, tstring& path)
 {
 	Folder* parent = folder->GetParent();
 	if(parent != NULL)
@@ -1319,6 +1416,48 @@ void ProjectViewState::getFolderPath(Folder* folder, tstring path)
 	else
 	{
 		path = folder->GetName();
+	}
+}
+
+#define PNPS_START 0
+#define PNPS_VIEWSTATE 1
+
+void ProjectViewState::startElement(LPCTSTR name, XMLAttributes& atts)
+{
+	if ( IN_STATE(PNPS_START) )
+	{
+		if ( MATCH(_T("ViewState")) )
+		{
+			STATE(PNPS_VIEWSTATE);
+		}
+	}
+	else if( IN_STATE(PNPS_VIEWSTATE) )
+	{
+		if( MATCH(_T("e")) )
+		{
+			LPCTSTR e = atts.getValue(_T("p"));
+			if(e != NULL)
+			{
+				Utf8_Windows1252 path(e);
+				LPCTSTR x = atts.getValue(_T("x"));
+				if(x != NULL && *x != NULL)
+				{
+					if(x[0] == _T('t'))
+						SetExpand((const char*)path, true);
+					else
+						SetExpand((const char*)path, false);
+				}
+			}
+		}
+	}
+}
+
+void ProjectViewState::endElement(LPCTSTR name)
+{
+	if( IN_STATE(PNPS_VIEWSTATE) )
+	{
+		if( MATCH(_T("ViewState")) )
+			STATE(PNPS_START);
 	}
 }
 

@@ -82,16 +82,21 @@ protected:
 	HTREEITEM	buildProject(HTREEITEM hParentNode, Projects::Project* pj, HTREEITEM hInsertAfter = NULL);
 	HTREEITEM	buildFolders(HTREEITEM hParentNode, const Projects::FOLDER_LIST& folders, Projects::ProjectViewState& viewState);
 	HTREEITEM	buildFiles(HTREEITEM hParentNode, HTREEITEM hInsertAfter, const Projects::FILE_LIST& files);
+	void		clearNode(HTREEITEM hItem);
 	void		clearTree();
 	void		doContextMenu(LPPOINT pt);
 	HTREEITEM	findItem(Projects::ProjectType* item, HTREEITEM startat);
 	HTREEITEM	findFolder(Projects::Folder* folder);
 	HTREEITEM	getLastFolderItem(HTREEITEM hParentNode);
+	void		getMagicFolderProps(Projects::UserData& ud, Projects::MagicFolder* folder, Projects::PropGroupList& groups);
 	void		handleRemove();
 	void		handleRightClick(LPPOINT pt);
 	void		openAll(Projects::Folder* folder);
+	void		setMagicFolderProps(Projects::UserData& ud, Projects::MagicFolder* folder);
 	void		setStatus(Projects::ProjectType* selection);
 	void		sort(HTREEITEM hFolderNode, bool bSortFolders = false, bool bRecurse = false);
+	void		storeViewState(Projects::ProjectViewState* vs, HTREEITEM hTreeItem);
+	
 
 	// IDropTarget Drop
 	void		handleDrop(HDROP hDrop, HTREEITEM hDropItem, Projects::Folder* pFolder);

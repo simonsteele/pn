@@ -2,7 +2,7 @@
  * @file magicfolder.cpp
  * @brief Magic Folders in Projects
  * @author Simon Steele
- * @note Copyright (c) 2004 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2004-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -108,6 +108,8 @@ const FILE_LIST& MagicFolder::GetFiles()
 
 void MagicFolder::Refresh()
 {
+	Clear();
+
 	MagicFolderAdder mfa;
 	
 	//TODO: remove parameter duplication here...
@@ -169,6 +171,12 @@ tstring MagicFolder::GetFolderCachePath()
 LPCTSTR MagicFolder::GetFullPath() const
 {
 	return basePath.c_str();
+}
+
+void MagicFolder::SetFullPath(LPCTSTR newPath)
+{
+	basePath = newPath;
+	read = false;
 }
 
 LPCTSTR MagicFolder::GetFilter() const

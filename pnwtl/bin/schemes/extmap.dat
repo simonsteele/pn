@@ -13,6 +13,7 @@
 .cpp=cpp
 .cs=csharp
 .css=css
+.csproj=xml
 .cxx=cpp
 .def=modula2
 .dfm=pascal
@@ -46,6 +47,7 @@
 .rng=xml
 .scheme=xml
 .schemedef=xml
+.sln=xml
 .sql=sql
 .tcl=tcl
 .vb=vb

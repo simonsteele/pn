@@ -22,6 +22,7 @@ namespace Projects
 
 typedef struct tagProjectWriter* ProjectWriter;
 
+class ProjectViewState;
 class Project;
 class Folder;
 class File;
@@ -193,6 +194,7 @@ class MagicFolder : public Folder
 		void Refresh();
 
 		LPCTSTR GetFullPath() const;
+		void SetFullPath(LPCTSTR newPath);
 
 		LPCTSTR GetFilter() const;
 		void SetFilter(LPCTSTR filter);
@@ -292,6 +294,9 @@ class Project : public Folder, XMLParseState
 		virtual void SetDirty();
 
 		ProjectTemplate* GetTemplate() const;
+		ProjectViewState* GetViewState();
+
+		void SaveViewState();
 
 	//Implement XMLParseState
 	protected:
@@ -325,6 +330,7 @@ class Project : public Folder, XMLParseState
 		XmlNode*			lastNode;
 		Workspace*			parentWorkspace;
 		ProjectTemplate*	m_template;
+		ProjectViewState*	m_viewState;
 		tstring				fileName;
 		tstring				udText;
 		tstring				typeID;
@@ -403,7 +409,7 @@ class Workspace : public ProjectType, XMLParseState
 		IProjectWatcher*	watcher;
 };
 
-class ProjectViewState
+class ProjectViewState : XMLParseState
 {
 	public:
 		ProjectViewState();
@@ -416,13 +422,24 @@ class ProjectViewState
 
 		tstring GetFolderPath(Folder* folder);
 
+		void Load(LPCTSTR filename);
+		void Save(LPCTSTR filename);
+
+		void Clear();
+
 	protected:
-		void getFolderPath(Folder* folder, tstring path);
+		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
+		virtual void endElement(LPCTSTR name);
+		virtual void characterData(LPCTSTR data, int len){};
+
+	protected:
+		void getFolderPath(Folder* folder, tstring& path);
 
 	protected:
 		class ExpandCache;
 
 		ExpandCache*	cache;
+		int				parseState;
 };
 
 }
