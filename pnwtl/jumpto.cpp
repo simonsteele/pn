@@ -60,12 +60,12 @@ tstring JumpToPlugin::GetSchemesSupported()
 	return tstring(CW2T(buffer));
 }
 
-bool JumpToPlugin::GetMethods(const wchar_t* filename, HWND editorWnd, FP_CALLBACK callback)
+bool JumpToPlugin::GetMethods(const wchar_t* filename, HWND editorWnd, FP_CALLBACK callback, int mask)
 {
 	if(!Valid())
 		return false;
 
-	return pfnGetMethods(filename, editorWnd, callback);
+	return pfnGetMethods(filename, editorWnd, callback, mask);
 }
 
 //////////////////////////////////////////////////////////////////////////////

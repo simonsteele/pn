@@ -16,24 +16,9 @@ class CJumpToDialog : public CDialogImpl<CJumpToDialog>, IJumpToFindSink
 
 		CJumpToDialog(CChildFrame* pChild);
 
-		LRESULT OnTextKeyPress(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-		{
-			CWindowText wt(GetDlgItem(IDC_JUMPTOTEXT));
+		LRESULT OnTextKeyPress(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-			if((LPCTSTR)wt != NULL)
-			{
-				filter(wt);
-			}
-
-			return 0;
-		}
-
-		LRESULT OnOk(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-		{
-			EndDialog(wID);
-
-			return 0;
-		}
+		LRESULT OnOk(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 		LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 		{
@@ -44,16 +29,18 @@ class CJumpToDialog : public CDialogImpl<CJumpToDialog>, IJumpToFindSink
 
 		virtual void OnFound(int count, LPMETHODINFO methodInfo);
 
+		int GetLine();
+
 	protected:
 
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
-		void filter(LPCTSTR text)
-		{
+		void filter(LPCTSTR text);
 
-		}
-
-		CChildFrame* m_pChild;
+		CChildFrame*	m_pChild;
+		CListViewCtrl	list;
+		TCHAR			itoabuf[20];
+		int				line;
 };
 
 #endif // #ifndef jumptodialog_h__included

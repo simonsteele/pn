@@ -11,15 +11,7 @@
 #ifndef jumpto_h__included
 #define jumpto_h__included
 
-typedef struct tagMethodInfo
-{
-	int			type;			// i.e. PNMETHOD_FUNCTION, PNMETHOD_PROCEDURE, PNMETHOD_CLASS etc.
-	const char* methodName;		// i.e. Tag
-	const char* parentName;		// i.e. class name, package name etc.
-	long		lineNumber;		// line number of method in file.
-	short		image;			// i.e. PNMETHODIMAGE_FUNCTION, PNMETHODIMAGE_...
-} METHODINFO, * LPMETHODINFO;
-
+#include "jumptointerface.h"
 #include "include/plugin.h"
 #include <map>
 
@@ -42,10 +34,10 @@ class JumpToPlugin : Plugin
 		virtual bool Valid();
 
 		tstring GetSchemesSupported();
-		bool GetMethods(const wchar_t* filename, HWND editorWnd, FP_CALLBACK callback);
+		bool GetMethods(const wchar_t* filename, HWND editorWnd, FP_CALLBACK callback, int mask = TAGM_ALL);
 
 	protected:
-		typedef bool (__stdcall *LPFnGetMethods)(const wchar_t* filename, HWND editorWnd, FP_CALLBACK callback);
+		typedef bool (__stdcall *LPFnGetMethods)(const wchar_t* filename, HWND editorWnd, FP_CALLBACK callback, int mask);
 		typedef void (__stdcall *LPFnGetSchemesSupported)(wchar_t* schemesBuffer, int cchBuffer);
 		typedef int (__stdcall *LPFnGetCapabilities)();
 

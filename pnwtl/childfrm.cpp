@@ -742,7 +742,10 @@ LRESULT CChildFrame::OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 LRESULT CChildFrame::OnJumpTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CJumpToDialog dlg(this);
-	dlg.DoModal();
+	if(dlg.DoModal() == IDOK)
+	{
+		m_view.GotoLine(dlg.GetLine()-1);
+	}
 
 	return 0;
 }
