@@ -64,6 +64,7 @@ class COptionsManager
 		COLORREF RightGuideColour;
 		EPNSaveFormat LineEndings;
 		EAlreadyOpenAction AlreadyOpenAction;
+		ECodePage DefaultCodePage;
 
 		void Set(LPCTSTR subkey, LPCTSTR value, bool bVal);
 		void Set(LPCTSTR subkey, LPCTSTR value, int iVal);

@@ -463,6 +463,8 @@ void CScheme::SetupScintilla(CScintilla& sc)
 		c = (COLORREF)options.Get(PNSK_EDITOR, _T("SelectionBack"), (int)::GetSysColor(COLOR_HIGHLIGHT));
 		sc.SPerform(SCI_SETSELBACK, 1, c);
 	}
+
+	sc.SPerform(SCI_SETCODEPAGE, (long)options.DefaultCodePage);
 }
 
 bool CScheme::operator < (const CScheme& compare) const 

@@ -43,14 +43,15 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		
-		BOOL m_bUseTabs;
-		BOOL m_bLineNos;
-		BOOL m_bMaximise;
-		BOOL m_bFullPath;
-		BOOL m_bMultiInstanceOk;
-		UINT m_iTabWidth;
-		UINT m_iMRUSize;
-		EPNSaveFormat m_SaveFormat;
+		BOOL			m_bUseTabs;
+		BOOL			m_bLineNos;
+		BOOL			m_bMaximise;
+		BOOL			m_bFullPath;
+		BOOL			m_bMultiInstanceOk;
+		UINT			m_iTabWidth;
+		UINT			m_iMRUSize;
+		EPNSaveFormat	m_SaveFormat;
+		ECodePage		m_CodePage;
 };
 
 class COptionsPageVisual : public COptionsPageImpl<COptionsPageVisual>,

@@ -32,6 +32,9 @@ void COptionsPageGeneral::OnOK()
 	CComboBox cb(GetDlgItem(IDC_OPT_LECOMBO));
 	m_SaveFormat = (EPNSaveFormat)cb.GetItemData(cb.GetCurSel());
 
+	cb.Attach(GetDlgItem(IDC_OPT_CPCOMBO));
+	m_CodePage = (ECodePage)cb.GetItemData(cb.GetCurSel());
+
 	COptionsManager& options = COptionsManager::GetInstanceRef();
 	options.UseTabs = m_bUseTabs != FALSE;
 	options.TabWidth = m_iTabWidth;
@@ -39,6 +42,7 @@ void COptionsPageGeneral::OnOK()
 	options.LineEndings = m_SaveFormat;
 	options.MaximiseNew = m_bMaximise != FALSE;
 	options.ShowFullPath = m_bFullPath != FALSE;
+	options.DefaultCodePage = m_CodePage;
 	// Ensure MRU size <= 50 && >= 1
 	m_iMRUSize = ( m_iMRUSize > 50 ? 50 : ( m_iMRUSize < 1 ? 1 : m_iMRUSize ) );
 	options.Set(PNSK_INTERFACE, _T("MRUSize"), (int)m_iMRUSize);
@@ -56,11 +60,23 @@ void COptionsPageGeneral::OnInitialise()
 	m_bFullPath = options.ShowFullPath;
 	m_iMRUSize = options.Get(PNSK_INTERFACE, _T("MRUSize"), 4);
 	m_bMultiInstanceOk = options.Get(PNSK_INTERFACE, _T("AllowMultiInstance"), false);
+	m_CodePage = options.DefaultCodePage;
 
 	CComboBox cb(GetDlgItem(IDC_OPT_LECOMBO));
 	for(int i = 0; i < cb.GetCount(); i++)
 	{
 		if(cb.GetItemData(i) == m_SaveFormat)
+		{
+			cb.SetCurSel(i);
+			break;
+		}
+	}
+
+	cb.Detach();
+	cb.Attach(GetDlgItem(IDC_OPT_CPCOMBO));
+	for(int i = 0; i < cb.GetCount(); i++)
+	{
+		if(cb.GetItemData(i) == m_CodePage)
 		{
 			cb.SetCurSel(i);
 			break;
@@ -81,6 +97,15 @@ LRESULT COptionsPageGeneral::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 	cb.SetItemData(idx, PNSF_Unix);
 	idx = cb.InsertString(2, _T("Macintosh (CR)"));
 	cb.SetItemData(idx, PNSF_Mac);
+
+	cb.Detach();
+	cb.Attach(GetDlgItem(IDC_OPT_CPCOMBO));
+	idx = cb.InsertString(0, _T("Default"));
+	cb.SetItemData(idx, PNCP_Default);
+	idx = cb.InsertString(1, _T("Unicode (UTF-8)"));
+	cb.SetItemData(idx, PNCP_Unicode);
+	idx = cb.InsertString(2, _T("Shift-JIS"));
+	cb.SetItemData(idx, PNCP_ShiftJIS);
 
 	return 0;
 }

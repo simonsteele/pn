@@ -54,6 +54,7 @@ void COptionsManager::Load()
 	RightGuide = reg.ReadInt(_T("RightGuide"), 0);
 	RightColumn = reg.ReadInt(_T("RightColumn"), 76);
 	RightGuideColour = reg.ReadInt(_T("RightGuideColour"), RGB(215, 215, 215));
+	DefaultCodePage = (ECodePage)reg.ReadInt(_T("DefaultCodePage"), PNCP_Default);
 	
 	// Interface Settings -------------------
 	cs = root + PNSK_INTERFACE;
@@ -106,6 +107,7 @@ void COptionsManager::Save()
 	reg.WriteInt(_T("RightGuide"), RightGuide);
 	reg.WriteInt(_T("RightColumn"), RightColumn);
 	reg.WriteInt(_T("RightGuideColour"), RightGuideColour);
+	reg.WriteInt(_T("DefaultCodePage"), DefaultCodePage);
 	
 	// Interface Settings -------------------
 	cs = root + PNSK_INTERFACE;

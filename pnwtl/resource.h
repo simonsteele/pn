@@ -233,6 +233,8 @@
 #define IDC_TE_OUTPUTCOMBO              1053
 #define IDC_MULTIINSTANCECHECK          1053
 #define IDC_OPT_LECOMBO                 1054
+#define IDC_OPT_LECOMBO2                1055
+#define IDC_OPT_CPCOMBO                 1055
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_OPT_MAXCHECK                1056
 #define IDC_PNSAVE_TYPECOMBO            1057

@@ -1038,30 +1038,33 @@ IDD_PAGE_GENERAL DIALOGEX 0, 0, 299, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "Show Line Numbers",IDC_OPT_LINENOSCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,18,109,138,12
-    CONTROL         "Use the tab character for indentation",
-                    IDC_OPT_USETABSCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,18,150,168,12
-    LTEXT           "Tab Width:",IDC_STATIC,18,168,48,12
-    EDITTEXT        IDC_OPT_TABWIDTHEDIT,66,168,30,14,ES_AUTOHSCROLL
-    LTEXT           "Line Endings:",IDC_STATIC,18,126,48,12
-    COMBOBOX        IDC_OPT_LECOMBO,66,126,102,66,CBS_DROPDOWNLIST | 
-                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Maximise new document windows",IDC_OPT_MAXCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,6,24,150,12
-    LTEXT           "Defaults:",IDC_STATIC,6,96,66,12
-    LTEXT           "",IDC_STATIC,42,101,252,2,SS_SUNKEN
-    CONTROL         "Show full file path in document windows",
-                    IDC_OPT_FULLPATHCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,6,43,156,12
-    LTEXT           "Files in the most recently used list:",IDC_STATIC,6,66,
-                    120,12
-    EDITTEXT        IDC_OPT_MRUCOUNT,126,66,30,12,ES_AUTOHSCROLL
-    LTEXT           "(1 to 50)",IDC_STATIC,162,66,42,12
     CONTROL         "Allow multiple instances of Programmers Notepad to start",
                     IDC_MULTIINSTANCECHECK,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,6,6,228,12
+    CONTROL         "Maximise new document windows",IDC_OPT_MAXCHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,6,24,150,12
+    CONTROL         "Show full file path in document windows",
+                    IDC_OPT_FULLPATHCHECK,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,6,42,156,12
+    EDITTEXT        IDC_OPT_MRUCOUNT,126,60,30,12,ES_AUTOHSCROLL
+    CONTROL         "Show Line Numbers",IDC_OPT_LINENOSCHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,18,102,138,12
+    COMBOBOX        IDC_OPT_LECOMBO,66,120,102,66,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_OPT_CPCOMBO,66,144,102,66,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Use the tab character for indentation",
+                    IDC_OPT_USETABSCHECK,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,18,162,168,12
+    EDITTEXT        IDC_OPT_TABWIDTHEDIT,66,180,30,14,ES_AUTOHSCROLL
+    LTEXT           "Tab Width:",IDC_STATIC,18,180,48,12
+    LTEXT           "Line Endings:",IDC_STATIC,18,120,42,12
+    LTEXT           "Defaults:",IDC_STATIC,6,84,66,12
+    LTEXT           "",IDC_STATIC,42,89,252,2,SS_SUNKEN
+    LTEXT           "Files in the most recently used list:",IDC_STATIC,6,60,
+                    120,12
+    LTEXT           "(1 to 50)",IDC_STATIC,162,60,42,12
+    RTEXT           "Code Page:",IDC_STATIC,12,144,48,12
 END
 
 IDD_PAGE_NEWFILES DIALOGEX 0, 0, 299, 200

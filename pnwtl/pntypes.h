@@ -138,4 +138,10 @@ typedef enum {
 	eSwitch
 } EAlreadyOpenAction;
 
+typedef enum {
+	PNCP_Default = 0,
+	PNCP_Unicode = SC_CP_UTF8,
+	PNCP_ShiftJIS = 932
+} ECodePage;
+
 #endif
