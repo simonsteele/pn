@@ -112,6 +112,11 @@ class SchemeConfig : public CustomKeywordHolder, public CustomStyleHolder
 typedef list<SchemeConfig*>	LIST_SCHEMECONFIGS;
 typedef LIST_SCHEMECONFIGS::iterator SCF_IT;
 
+namespace Schemes
+{
+	class Writer;
+}
+
 /**
  * @brief Sub-Class of the Scheme file parser, specifically for configuration...
  */
@@ -139,7 +144,7 @@ class SchemeConfigParser : public SchemeParser
 	protected:
 		void Sort();
 		void Save(LPCTSTR filename);
-		void WriteStyle(CFile& file, StyleDetails& style, bool bIsClass = false);
+		void WriteStyle(Schemes::Writer& writer, StyleDetails& style, bool bIsClass = false);
 
 		inline void AddBoolParam(CString& buf, LPCTSTR name, bool bVal);
 		inline void AddColourParam(CString& buf, LPCTSTR name, COLORREF colour);

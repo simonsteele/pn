@@ -48,6 +48,26 @@ namespace Schemes
 	class Writer : public GenxXMLWriter
 	{
 		public:
+			void beginDoc()
+			{
+				genxStartElementLiteral(m_writer, NULL, u("UserSettings"));
+			}
+
+			void endDoc()
+			{
+				pop();
+			}
+
+			void beginSchemes()
+			{
+				genxStartElementLiteral(m_writer, NULL, u("Schemes"));
+			}
+
+			void endSchemes()
+			{
+				pop();
+			}
+
 			void beginScheme(LPCTSTR name, int foldflags, int oldfoldflags)
 			{
 				genxStartElement(m_eScheme);
@@ -55,6 +75,36 @@ namespace Schemes
 			}
 
 			void endScheme()
+			{
+				pop();
+			}
+
+			void beginOverrideStyles()
+			{
+				genxStartElement(m_eOvStyles);
+			}
+
+			void endOverrideStyles()
+			{
+				pop();
+			}
+
+			void beginOverrideKeywords()
+			{
+				genxStartElement(m_eOvKeywords);
+			}
+
+			void endOverrideKeywords()
+			{
+				pop();
+			}
+
+			void beginOverrideClasses()
+			{
+				genxStartElement(m_eOvClasses);
+			}
+
+			void endOverrideClasses()
 			{
 				pop();
 			}
@@ -69,6 +119,68 @@ namespace Schemes
 			{
 				genxStartElement(m_eStyleClass);
 				genxAddAttribute(m_aName, u(name));
+			}
+
+			void writeKeywords(int key, LPCTSTR keywords)
+			{
+				genxStartElement(m_eKeywords);
+				genxAddAttribute(m_aKey, u(IntToTString(key).c_str()));
+				Windows1252_Utf8 kwconv(keywords);
+				genxAddText(m_writer, u(kwconv));
+				pop();
+			}
+
+			void writeEditorColours(EditorColours* colours)
+			{
+				if(!colours->HasColours())
+					return;
+	
+				genxStartElement(m_eColours);
+				COLORREF colour;
+				if(colours->GetColour(EditorColours::ecSelFore, colour))
+					addColourAtt(m_aSelFore, colour);
+				if(colours->GetColour(EditorColours::ecSelBack, colour))
+					addColourAtt(m_aSelBack, colour);
+				if(colours->GetColour(EditorColours::ecCaret, colour))
+					addColourAtt(m_aCaret, colour);
+				if(colours->GetColour(EditorColours::ecIndentG, colour))
+					addColourAtt(m_aIndentGuides, colour);
+				pop();
+			}
+
+			void addColourAtt(genxAttribute att, COLORREF colour)
+			{
+				if(colour == CLR_NONE)
+				{
+					genxAddAttribute(att, u("-1"));
+				}
+				else
+				{
+					TCHAR colbuf[12];
+					colbuf[11] = NULL;
+					_sntprintf(colbuf, 11, _T("%.2x%.2x%.2x"), GetRValue(colour), GetGValue(colour), GetBValue(colour));
+					genxAddAttribute(att, u(colbuf));
+				}
+			}
+
+			void setFont(LPCTSTR name)
+			{
+				genxAddAttribute(m_aFont, u(name));
+			}
+
+			void setSize(int size)
+			{
+				genxAddAttribute(m_aSize, u(IntToTString(size).c_str()));
+			}
+
+			void setFore(COLORREF fore)
+			{
+				addColourAtt(m_aFore, fore);
+			}
+
+			void setBack(COLORREF back)
+			{
+				addColourAtt(m_aBack, back);
 			}
 
 			void setBold(bool on)
@@ -119,6 +231,11 @@ namespace Schemes
 				}
 			}
 
+			void setClass(LPCTSTR theClass)
+			{
+				genxAddAttribute(m_aClass, u(theClass));
+			}
+
 			void endStyle()
 			{
 				pop();
@@ -141,6 +258,7 @@ namespace Schemes
 				m_eOvStyles = genxDeclareElement(m_writer, NULL, u("override-styles"), &s);
 				m_eOvKeywords = genxDeclareElement(m_writer, NULL, u("override-styles"), &s);
 				m_eOvClasses = genxDeclareElement(m_writer, NULL, u("override-styles"), &s);
+				m_eColours = genxDeclareElement(m_writer, NULL, u("colours"), &s);
 
 				PREDECLARE_ATTRIBUTES()
 					ATT("key", m_aKey);
@@ -154,6 +272,10 @@ namespace Schemes
 					ATT("eolfilled", m_aEolFilled);
 					ATT("class", m_aClass);
 					ATT("name", m_aName);
+					ATT("selFore", m_aSelFore);
+					ATT("selBack", m_aSelBack);
+					ATT("caret", m_aCaret);
+					ATT("indentGuides", m_aIndentGuides);
 				END_ATTRIBUTES();
 			}
 
@@ -165,6 +287,7 @@ namespace Schemes
 			genxElement m_eOvStyles;
 			genxElement m_eOvKeywords;
 			genxElement m_eOvClasses;
+			genxElement m_eColours;
 			
 			genxAttribute m_aKey;
 			genxAttribute m_aFont;
@@ -177,6 +300,10 @@ namespace Schemes
 			genxAttribute m_aEolFilled;
 			genxAttribute m_aClass;
 			genxAttribute m_aName;
+			genxAttribute m_aSelFore;
+			genxAttribute m_aSelBack;
+			genxAttribute m_aCaret;
+			genxAttribute m_aIndentGuides;
 	};
 }
 
@@ -501,7 +628,7 @@ void SchemeConfigParser::AddColourParam(CString& buf, LPCTSTR name, COLORREF col
 	buf += colbuf;
 }
 
-void SchemeConfigParser::WriteStyle(CFile& file, StyleDetails& style, bool bIsClass)
+void SchemeConfigParser::WriteStyle(Schemes::Writer& writer, StyleDetails& style, bool bIsClass)
 {
 	USES_CONVERSION;
 
@@ -509,15 +636,40 @@ void SchemeConfigParser::WriteStyle(CFile& file, StyleDetails& style, bool bIsCl
 	CString tempstr;
 
 	if(bIsClass)
+		writer.beginStyleClass(style.name.c_str());
+	else
+		writer.beginStyle(style.Key);
+
+	/*if(bIsClass)
 	{
 		stylestr.Format(USERSETTINGS_CLASS_START, A2CT(style.name.c_str()));
 	}
 	else
 	{
 		stylestr.Format(USERSETTINGS_STYLE_START, style.Key);
-	}
+	}*/
 	
 	if(style.values & edvFontName)
+		writer.setFont(style.FontName.c_str());
+	if(style.values & edvFontSize)
+		writer.setSize(style.FontSize);
+	if(style.values & edvForeColor)
+		writer.setFore(style.ForeColor);
+	if(style.values & edvBackColor)
+		writer.setBack(style.BackColor);
+	if(style.values & edvBold)
+		writer.setBold(style.Bold);
+	if(style.values & edvItalic)
+		writer.setItalic(style.Italic);
+	if(style.values & edvUnderline)
+		writer.setUnderline(style.Underline);
+	if(style.values & edvEOLFilled)
+		writer.setEolFilled(style.EOLFilled);
+	// @todo
+	if(style.values & edvClass && !bIsClass)
+		writer.setClass(style.classname.c_str());
+
+	/*if(style.values & edvFontName)
 	{
 		tempstr.Format(USERSETTINGS_STYLE_FN, A2CT(style.FontName.c_str()));
 		stylestr += tempstr;
@@ -526,8 +678,9 @@ void SchemeConfigParser::WriteStyle(CFile& file, StyleDetails& style, bool bIsCl
 	{
 		tempstr.Format(USERSETTINGS_STYLE_FS, style.FontSize);
 		stylestr += tempstr;
-	}
-	if(style.values & edvForeColor)
+	}*/
+	
+	/*if(style.values & edvForeColor)
 		AddColourParam(stylestr, USERSETTINGS_STYLE_FC, style.ForeColor);
 
 	if(style.values & edvBackColor)
@@ -544,9 +697,16 @@ void SchemeConfigParser::WriteStyle(CFile& file, StyleDetails& style, bool bIsCl
 
 	if(style.values & edvEOLFilled)
 		AddBoolParam(stylestr, USERSETTINGS_STYLE_SE, style.EOLFilled);
-
-	// @todo
+	
 	if(style.values & edvClass && !bIsClass)
+	{
+		tempstr.Format(USERSETTINGS_STYLE_CL, A2CT(style.classname.c_str()));
+		stylestr += tempstr;
+	}
+	*/
+
+	
+	/*if(style.values & edvClass && !bIsClass)
 	{
 		tempstr.Format(USERSETTINGS_STYLE_CL, A2CT(style.classname.c_str()));
 		stylestr += tempstr;
@@ -554,27 +714,38 @@ void SchemeConfigParser::WriteStyle(CFile& file, StyleDetails& style, bool bIsCl
 
 	stylestr += _T("/>\n");
 	const char* pSS = T2CA((LPCTSTR)stylestr);
-	file.Write((void*)pSS, strlen(pSS));
+	file.Write((void*)pSS, strlen(pSS));*/
+
+	if(bIsClass)
+		writer.endStyleClass();
+	else
+		writer.endStyle();
 }
 
 void SchemeConfigParser::Save(LPCTSTR filename)
 {
+	Schemes::Writer writer;
+
 	USES_CONVERSION;
 
-	CFile file;
+	//CFile file;
 	CString s;
 	StyleDetails* pStyle = NULL;
 	StyleDetails* pOrig = NULL;
 	
-	file.Open(filename, CFile::modeWrite | CFile::modeBinary);
+	//file.Open(filename, CFile::modeWrite | CFile::modeBinary);
+
+	writer.Start(filename);
+	writer.beginDoc();
 
 	// Write file header, and begin Schemes section.
-	file.Write(USERSETTINGS_START, strlen(USERSETTINGS_START));
+	//file.Write(USERSETTINGS_START, strlen(USERSETTINGS_START));
 
 	// Style Classes
 	if(GetCustomClasses().GetCount() != 0)
 	{
-        file.Write(USERSETTINGS_CLASSES_START, strlen(USERSETTINGS_CLASSES_START));
+		writer.beginOverrideClasses();
+        //file.Write(USERSETTINGS_CLASSES_START, strlen(USERSETTINGS_CLASSES_START));
 
 		tstring name;
 		STYLEDETAILS_NAMEMAP& map = GetCustomClasses().GetMap();
@@ -592,16 +763,18 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 					(*j).second->values = ~ 0;
 			}
 
-			WriteStyle(file, * (*j).second, true);
+			WriteStyle(writer, * (*j).second, true);
 		}
 
-		file.Write(USERSETTINGS_CLASSES_END, strlen(USERSETTINGS_CLASSES_END));
+		//file.Write(USERSETTINGS_CLASSES_END, strlen(USERSETTINGS_CLASSES_END));
+		writer.endOverrideClasses();
 	}
 
 	// Schemes
 	if(m_Schemes.size() != 0)
 	{
-		file.Write(USERSETTINGS_SCHEMES_START, strlen(USERSETTINGS_SCHEMES_START));
+		//file.Write(USERSETTINGS_SCHEMES_START, strlen(USERSETTINGS_SCHEMES_START));
+		writer.beginSchemes();
 
 		for(SCF_IT i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
 		{
@@ -614,35 +787,41 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 				continue;
 
 			// Write out scheme block...
-			s.Format(USERSETTINGS_SCHEME_START, (LPCTSTR)(*i)->m_Name);
-			const char* pS = T2CA((LPCTSTR)s);
-			file.Write((void*)pS, strlen(pS));
+			//s.Format(USERSETTINGS_SCHEME_START, (LPCTSTR)(*i)->m_Name);
+			//const char* pS = T2CA((LPCTSTR)s);
+			//file.Write((void*)pS, strlen(pS));
+			writer.beginScheme( (*i)->m_Name, (*i)->m_foldflags, (*i)->m_origfoldflags );
 
-			if( (*i)->m_editorColours.HasColours() )
-			{
-				tstring colourXml = (*i)->m_editorColours.ToXml();
-				const char* pS = T2CA(colourXml.c_str());
-				file.Write((void*)pS, strlen(pS));
-			}
+			writer.writeEditorColours( &((*i)->m_editorColours) );
+			//if( (*i)->m_editorColours.HasColours() )
+			//{
+			//	tstring colourXml = (*i)->m_editorColours.ToXml();
+			//	const char* pS = T2CA(colourXml.c_str());
+			//	file.Write((void*)pS, strlen(pS));
+			//}
 
 			if(pKeywordSet != NULL)
 			{
 				// Keywords
-				file.Write(USERSETTINGS_KEYWORDS_START, strlen(USERSETTINGS_KEYWORDS_START));
+				//file.Write(USERSETTINGS_KEYWORDS_START, strlen(USERSETTINGS_KEYWORDS_START));
+				writer.beginOverrideKeywords();
 				while(pKeywordSet)
 				{
-					s.Format(USERSETTINGS_KEYWORDS_NODE, pKeywordSet->key, pKeywordSet->pWords);
-					const char* pS = T2CA((LPCTSTR)s);
-					file.Write((void*)pS, strlen(pS));
-					pKeywordSet = pKeywordSet->pNext;
+					//s.Format(USERSETTINGS_KEYWORDS_NODE, pKeywordSet->key, pKeywordSet->pWords);
+					//const char* pS = T2CA((LPCTSTR)s);
+					//file.Write((void*)pS, strlen(pS));
+					//pKeywordSet = pKeywordSet->pNext;
+					writer.writeKeywords(pKeywordSet->key, pKeywordSet->pWords);
 				}
-				file.Write(USERSETTINGS_KEYWORDS_END, strlen(USERSETTINGS_KEYWORDS_END));
+				//file.Write(USERSETTINGS_KEYWORDS_END, strlen(USERSETTINGS_KEYWORDS_END));
+				writer.endOverrideKeywords();
 			}
 
 			if((*i)->m_customs.StylesCount() != 0)
 			{
 				// Styles
-				file.Write(USERSETTINGS_STYLES_START, strlen(USERSETTINGS_STYLES_START));
+				writer.beginOverrideStyles();
+				//file.Write(USERSETTINGS_STYLES_START, strlen(USERSETTINGS_STYLES_START));
 				for(SL_CIT j = (*i)->m_customs.StylesBegin();
 					j != (*i)->m_customs.StylesEnd();
 					++j)
@@ -651,27 +830,32 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 					if(pOriginal)
 					{
 						(*j)->compareTo(*pOriginal);
-						WriteStyle(file, *(*j));
+						WriteStyle(writer, *(*j));
 					}
 					else
 					{
 						ATLTRACE(_T("PN2 Warning: Custom style with no original...\n"));
 					}
 				}
-				file.Write(USERSETTINGS_STYLES_END, strlen(USERSETTINGS_STYLES_END));
+				//file.Write(USERSETTINGS_STYLES_END, strlen(USERSETTINGS_STYLES_END));
+				writer.endOverrideStyles();
 			}
 
 			// End of Scheme
-			file.Write(USERSETTINGS_SCHEME_END, strlen(USERSETTINGS_SCHEME_END));
+			//file.Write(USERSETTINGS_SCHEME_END, strlen(USERSETTINGS_SCHEME_END));
+			writer.endScheme();
 		}
 
 		// End of Schemes...
-		file.Write(USERSETTINGS_SCHEMES_END, strlen(USERSETTINGS_SCHEMES_END));
+		//file.Write(USERSETTINGS_SCHEMES_END, strlen(USERSETTINGS_SCHEMES_END));
+		writer.endSchemes();
 	}
 	
 	// End of file.
-	file.Write(USERSETTINGS_END, strlen(USERSETTINGS_END));
-	file.Close();
+	//file.Write(USERSETTINGS_END, strlen(USERSETTINGS_END));
+	writer.endDoc();
+	//file.Close();
+	writer.Close();
 }
 
 void SchemeConfigParser::onLexer(LPCTSTR name, int styleBits)
