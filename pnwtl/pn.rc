@@ -664,7 +664,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Open All Files",             ID_PROJECT_OPENALLFILES
         MENUITEM SEPARATOR
-        MENUITEM "&Remove Project",             ID_PROJECT_REMOVEPROJECT
+        MENUITEM "&Remove Project",             286
         MENUITEM "&Delete Project",             ID_PROJECT_DELETEPROJECT
         , GRAYED
     END

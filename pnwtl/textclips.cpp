@@ -87,6 +87,12 @@ void TextClipSet::startElement(LPCTSTR name, XMLAttributes& atts)
 		{
 			// get name attribute...
 			SET_STATE(TCPS_CLIPS);
+
+			LPCTSTR szName = atts.getValue(_T("name"));
+			if(szName != NULL)
+				this->name = szName;
+			else
+				this->name = _T("(unknown)");
 		}
 	}
 	else if( IN_STATE(TCPS_CLIPS) )

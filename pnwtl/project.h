@@ -79,6 +79,9 @@ class Folder : public ProjectType
 		const FOLDER_LIST&	GetFolders();
 		const FILE_LIST&	GetFiles();
 
+		void RemoveChild(Folder* folder);
+		void RemoveFile(File* file);
+
 		void SetParent(Folder* folder);
 		Folder* GetParent();
 
@@ -139,6 +142,8 @@ class Workspace : public ProjectType
 		~Workspace();
 
 		void AddProject(Project* project);
+
+		void RemoveProject(Project* project);
 
 		void SetName(LPCTSTR name_);
 

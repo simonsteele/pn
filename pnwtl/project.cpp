@@ -159,6 +159,18 @@ File* Folder::AddFile(LPCTSTR file)
 	return pFile;
 }
 
+void Folder::RemoveFile(File* file)
+{
+	files.remove(file);
+	delete file;
+}
+
+void Folder::RemoveChild(Folder* folder)
+{
+	children.remove(folder);
+	delete folder;
+}
+
 void Folder::Clear()
 {
 	for(FL_IT i = children.begin(); i != children.end(); ++i)
@@ -349,6 +361,12 @@ Workspace::~Workspace()
 void Workspace::AddProject(Project* project)
 {
 	projects.insert(projects.begin(), project);
+}
+
+void Workspace::RemoveProject(Project* project)
+{
+	projects.remove(project);
+	delete project;
 }
 
 const PROJECT_LIST Workspace::GetProjects()

@@ -71,7 +71,10 @@ LRESULT CClipsDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	}
 
 	if( sets.size() > 0 )
+	{
+		m_combo.SetCurSel(0);
 		LoadSet(*sets.begin());
+	}
 
 	return 0;
 }

@@ -710,6 +710,8 @@ LRESULT CMainFrame::OnFileOpenProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 {
 	CPNOpenDialog dlgOpen(_T("Projects and Workspaces (*.pnproj, *.pnwsp)|*.pnproj;*.pnwsp|"));
 	
+	dlgOpen.m_ofn.lpstrTitle = _T("Open Project/Workspace");
+
 	if(dlgOpen.DoModal() == IDOK)
 	{
 		CFileName fn(dlgOpen.GetSingleFileName());

@@ -414,6 +414,46 @@ LRESULT CProjectTreeCtrl::OnOpenAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	return 0;
 }
 
+LRESULT CProjectTreeCtrl::OnRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(lastItem == NULL)
+		return 0;
+
+	switch(lastItem->GetType())
+	{
+		case ptFile:
+		{
+			// Remove a file from a folder.
+			File* pF = static_cast<File*>(lastItem);
+			Projects::Folder* pFolder = pF->GetFolder();
+			pFolder->RemoveFile(pF);
+			DeleteItem(hLastItem);
+		}
+		break;
+
+		case ptFolder:
+		{
+			// Remove a folder from a folder (or a project).
+			Projects::Folder* pFolder = static_cast<Projects::Folder*>( lastItem );
+			Projects::Folder* pParent = pFolder->GetParent();
+			pParent->RemoveChild(pFolder);
+			DeleteItem(hLastItem);
+		}
+		break;
+
+		case ptProject:
+		{
+			// All projects belong to single workspace (at the moment).
+			Project* pProject = static_cast<Projects::Project*>( lastItem );
+			workspace->RemoveProject(pProject);
+			DeleteItem(hLastItem);
+		}
+		break;
+	}
+
+	return 0;
+}
+
 HTREEITEM CProjectTreeCtrl::AddFileNode(File* file, HTREEITEM hParent, HTREEITEM hInsertAfter)
 {
 	HTREEITEM hFile = InsertItem( file->GetDisplayName(), 0, 0, hParent, hInsertAfter );
