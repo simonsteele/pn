@@ -655,3 +655,13 @@ LRESULT CProjectDocker::OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandle
 
 	return 0;
 }
+
+/**
+ * For some reason the WM_CTLCOLOR* messages do not get to the child
+ * controls with the docking windows (todo with reflection). This returns
+ * the proper result.
+ */
+LRESULT CProjectDocker::OnCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	return (LRESULT)::GetSysColorBrush( COLOR_WINDOW );
+}
