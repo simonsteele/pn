@@ -108,14 +108,14 @@ CChildFrame* CMainFrame::NewEditor()
 	return pChild;
 }
 
-bool CMainFrame::OpenFile(LPCTSTR pathname, CScheme* pScheme)
+bool CMainFrame::OpenFile(LPCTSTR pathname, CScheme* pScheme, EPNEncoding encoding)
 {
 	bool bRet = false;
 
 	CChildFrame* pChild = NewEditor();
 	if(pathname)
 	{
-		bRet = pChild->PNOpenFile(pathname, pScheme);
+		bRet = pChild->PNOpenFile(pathname, pScheme, encoding);
 	}
 
 	return bRet;
@@ -906,17 +906,75 @@ LRESULT CMainFrame::OnEscapePressed(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	bool bHaveLine = false;
+	bool bHaveCol = false;
+	bool bHaveScheme = false;
+	int iLine = 0, iCol = 0;
+	CScheme* pScheme = NULL;
+
+	int lastArg = __argc - 1;
+
 	// Process cmdline params... __argv and __argc in VC++
 	for(int i = 1; i < __argc; i++)
 	{
-		if(__argv[i][0] == _T('/') || __argv[i][0] == _T('-'))
+		LPCTSTR parm = __argv[i];
+		if(parm[0] == _T('/') || parm[0] == _T('-'))
 		{
-			// special params, none yet...
+			// special params, check there's another parameter for these ones...
+			if(i < lastArg)
+			{
+				LPCTSTR nextArg = __argv[i+1];
+
+				if(_tcsicmp(&parm[1], _T("l")) == 0 || _tcsicmp(&parm[1], _T("-line")) == 0)
+				{
+					iLine = _ttol(nextArg);
+					bHaveLine = true;
+				}
+				else if(_tcsicmp(&parm[1], _T("c")) == 0 || _tcsicmp(&parm[1], _T("-col")) == 0)
+				{
+					iCol = _ttol(nextArg);
+					bHaveCol = true;
+				}
+				else if(_tcsicmp(&parm[1], _T("s")) == 0 || _tcsicmp(&parm[1], _T("-scheme")) == 0)
+				{
+					CSchemeManager* pSM = CSchemeManager::GetInstance();
+					pScheme = pSM->SchemeByName(nextArg);
+					if(pScheme != NULL && pScheme != pSM->GetDefaultScheme())
+					{
+						bHaveScheme = true;
+					}
+					else
+						pScheme = NULL;
+				}
+
+				i++;
+				continue;
+			}
 		}
 		else
 		{
 			openFileCheckType(__argv[i]);
+			CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
+			if(pChild)
+			{
+				CTextView* pTV = pChild->GetTextView();
+				if(bHaveLine)
+				{
+					pTV->GotoLine(iLine-1);
+				}
+				if(bHaveCol)
+				{
+					long pos = pTV->GetCurrentPos();
+					pTV->GotoPos(pos + iCol);
+				}
+				if(bHaveScheme && pScheme)
+				{
+					pChild->SetScheme( pScheme );
+				}
+			}
 		}
+
+		bHaveCol = bHaveLine = bHaveScheme = false;
 	}
 
 	HWND hWndEditor = GetCurrentEditor();
@@ -1140,7 +1198,7 @@ LRESULT CMainFrame::OnFileNewWorkspace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 
 LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CPNOpenDialog dlgOpen(_T("All Files (*.*)|*.*|"));
+	CPNOpenDialogEx dlgOpen(_T("All Files (*.*)|*.*|"));
 	dlgOpen.m_ofn.Flags |= OFN_ALLOWMULTISELECT;
 
 	tstring path;
@@ -1180,7 +1238,7 @@ LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 			if( !CheckAlreadyOpen((*i).c_str(), action) )
 			{
-				if(OpenFile((*i).c_str()))
+				if(OpenFile((*i).c_str(), NULL, dlgOpen.GetEncoding()))
 				{
 					AddMRUEntry((*i).c_str());
 				}

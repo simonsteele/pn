@@ -242,7 +242,7 @@ public:
 	
 	void CheckAge();
 	void Revert();
-	bool PNOpenFile(LPCTSTR pathname, CScheme* pScheme = NULL);
+	bool PNOpenFile(LPCTSTR pathname, CScheme* pScheme = NULL, EPNEncoding encoding = eUnknown);
 	void SaveFile(LPCTSTR pathname, bool bStoreFilename = true, bool bUpdateMRU = true);
 	bool CanSave();
 	bool SaveAs();

@@ -163,6 +163,65 @@ class CPNSaveDialog : public CPNFileDialogImpl<CPNSaveDialog>
 	END_MSG_MAP()
 };
 
+template<class T>
+class CCustomDialogImpl
+{
+protected:
+	void RepositionPlacesBar(CWindow &bottomwnd)
+	{
+		T* pT = static_cast<T*>(this);
+
+		CRect rc, rc2;
+		CWindow wndParent = pT->GetParent();
+		CWindow wndPB = wndParent.GetDlgItem( ctl1 );
+		if( wndPB.IsWindow() )
+		{
+			wndPB.GetWindowRect( &rc );
+			bottomwnd.GetWindowRect( &rc2 );
+			wndParent.ScreenToClient( &rc );
+			pT->ScreenToClient( &rc2 );
+			rc.bottom = rc2.bottom;
+			wndPB.SetWindowPos( NULL, &rc, SWP_NOACTIVATE | SWP_NOZORDER );
+		}
+	}
+
+	/**
+	* @brief Reposition a control
+	* @param wnd Control to be reposition
+	* @param nID ID of the control used for positioning
+	* @param fSize If true, adjust the width of the control
+	*/
+	void RepositionControl(CWindow &wnd, UINT nID, bool fSize)
+	{
+		T* pT = static_cast<T*>(this);
+
+		// Get the window rect in the client area of the 
+		// control we are interested in.
+		CWindow wndParent = pT->GetParent();
+		CWindow wndAnchor = wndParent.GetDlgItem( nID );
+		CRect rectAnchor;
+		wndAnchor.GetWindowRect( &rectAnchor );
+		wndParent.ScreenToClient( &rectAnchor );
+
+		//
+		// Reposition the control
+		//
+
+		DWORD dwSWFlags = SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE;
+		CRect rectCtrl;
+		wnd.GetWindowRect( &rectCtrl );
+		pT->ScreenToClient( &rectCtrl );
+		rectCtrl.OffsetRect( rectAnchor.left - rectCtrl.left, 0 );
+		if( fSize )
+		{
+			rectCtrl.right = rectCtrl.left + rectAnchor.Width();
+			dwSWFlags &= ~SWP_NOSIZE;
+		}
+		wnd.SetWindowPos( NULL, rectCtrl.left, rectCtrl.top,
+			rectCtrl.Width(), rectCtrl.Height(), dwSWFlags );
+	}
+};
+
 /**
  * @class CPNSaveDialog
  * @brief Save dialog with added controls for save type (e.g. LF, CRLF, etc.)
@@ -171,7 +230,8 @@ class CPNSaveDialog : public CPNFileDialogImpl<CPNSaveDialog>
  * how to do this without tearing my hair out.
  * link: http://www.codeproject.com/useritems/uoth.asp
  */
-class CPNSaveDialogEx : public CPNFileDialogImpl<CPNSaveDialogEx>
+class CPNSaveDialogEx : public CPNFileDialogImpl<CPNSaveDialogEx>, 
+	public CCustomDialogImpl<CPNSaveDialogEx>
 {
 	typedef CPNFileDialogImpl<CPNSaveDialogEx> baseClass;
 	public:
@@ -200,6 +260,35 @@ class CPNSaveDialogEx : public CPNFileDialogImpl<CPNSaveDialogEx>
 		CComboBox		m_SaveTypeCombo;
 		CStatic			m_SaveTypeLabel;
 		EPNSaveFormat	m_Format;
+};
+
+class CPNOpenDialogEx : public CPNOpenDialog,
+	public CCustomDialogImpl<CPNOpenDialogEx>
+{
+	public:
+		CPNOpenDialogEx(LPCTSTR szFilter, LPCTSTR szPath = NULL);
+
+		BEGIN_MSG_MAP(CPNOpenDialogEx)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			MESSAGE_HANDLER(WM_SIZE, OnSize)
+
+			COMMAND_HANDLER(IDC_PNOPEN_ENCODINGCOMBO, CBN_SELCHANGE, OnComboSelChange) 
+
+			CHAIN_MSG_MAP(CPNOpenDialog)
+		END_MSG_MAP()
+
+		EPNEncoding GetEncoding();
+
+	protected:
+		LRESULT OnComboSelChange(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnSize (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL &bHandled);
+		LRESULT OnInitDialog (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL &bHandled);
+
+		void RepositionControls();
+
+		CComboBox		m_EncodingCombo;
+		CStatic			m_EncodingLabel;
+		EPNEncoding		m_Encoding;
 };
 
 class CPNFolderDialog : public CFolderDialogImpl<CPNFolderDialog>

@@ -48,7 +48,7 @@ public:
 	void SetScheme(CScheme* pScheme);
 	CScheme* GetCurrentScheme();
 
-	bool Load(LPCTSTR filename, CScheme* pScheme = NULL);
+	bool Load(LPCTSTR filename, CScheme* pScheme = NULL, EPNEncoding encoding = eUnknown);
 	bool Save(LPCTSTR filename, bool bSetScheme = true);
 
 	void Revert(LPCTSTR filename);
@@ -67,7 +67,7 @@ public:
 	////////////////////////////////////////////////////////////////
 	// Overrides from CScintillaImpl / CScintillaWindowImpl
 	
-	virtual bool OpenFile(LPCTSTR filename);
+	virtual bool OpenFile(LPCTSTR filename, EPNEncoding encoding);
 	virtual bool SaveFile(LPCTSTR filename);
 
 	void DoContextMenu(CPoint* point);

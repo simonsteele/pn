@@ -385,6 +385,84 @@ void CPNSaveDialogEx::RepositionControl(CWindow &wnd, UINT nID, bool fSize)
 // CPNFolderDialog
 //////////////////////////////////////////////////////////////////////////////
 
+CPNOpenDialogEx::CPNOpenDialogEx(LPCTSTR szFilter, LPCTSTR szPath) : CPNOpenDialog(szFilter, szPath)
+{
+	m_Encoding = eUnknown;
+	m_ofn.Flags |= OFN_ENABLETEMPLATE;
+	m_ofn.lpTemplateName = MAKEINTRESOURCE (IDD_PNOPEN);
+}
+
+LRESULT CPNOpenDialogEx::OnInitDialog (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL &bHandled)
+{
+	m_EncodingCombo = GetDlgItem(IDC_PNOPEN_ENCODINGCOMBO);
+	m_EncodingLabel = GetDlgItem(IDC_PNOPEN_ENCODINGSTATIC);
+
+	CRect rectDlg;
+	GetWindowRect( &rectDlg );
+
+	CRect rectParent;
+	::GetClientRect( GetParent(), &rectParent );
+	rectDlg.right = rectDlg.left + rectParent.Width();
+
+	// Make sure there is enough room at the bottom for resize
+	CRect rectCombo;
+	m_EncodingCombo.GetWindowRect( &rectCombo );
+	ScreenToClient( &rectCombo );
+	int cySize = ::GetSystemMetrics( /*SM_CYSIZE*/ SM_CYSIZEFRAME );
+	if (rectDlg.Height() - rectCombo.bottom < cySize)
+		rectDlg.bottom = rectDlg.top + rectCombo.bottom + cySize;
+
+	// Reposition
+	SetWindowPos( NULL, 0, 0, rectDlg.Width(), rectDlg.Height(),
+		SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER );
+
+	int index = m_EncodingCombo.AddString(_T("Automatic"));
+	m_EncodingCombo.SetItemData(index, eUnknown);
+	index = m_EncodingCombo.AddString(_T("UTF-8"));
+	m_EncodingCombo.SetItemData(index, eUtf8);
+	index = m_EncodingCombo.AddString(_T("UTF-16 Big Endian"));
+	m_EncodingCombo.SetItemData(index, eUtf16BigEndian);
+	index = m_EncodingCombo.AddString(_T("UTF-16 Little Endian"));
+	m_EncodingCombo.SetItemData(index, eUtf16LittleEndian);
+
+	m_EncodingCombo.SetCurSel(0);
+	
+	RepositionControls();
+	return TRUE;
+}
+
+LRESULT CPNOpenDialogEx::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL &bHandled)
+{
+	RepositionControls();
+	bHandled = FALSE;
+	return FALSE;
+}
+
+LRESULT CPNOpenDialogEx::OnComboSelChange(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	// Store the new selection in here...
+	m_Encoding = (EPNEncoding)m_EncodingCombo.GetItemData( m_EncodingCombo.GetCurSel() );
+
+	return TRUE;
+}
+
+EPNEncoding CPNOpenDialogEx::GetEncoding()
+{
+	return m_Encoding;
+}
+
+void CPNOpenDialogEx::RepositionControls()
+{
+	RepositionControl( m_EncodingCombo, cmb1, true );
+	RepositionControl( m_EncodingLabel, stc2, false );
+
+	RepositionPlacesBar( m_EncodingCombo );
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// CPNFolderDialog
+//////////////////////////////////////////////////////////////////////////////
+
 CPNFolderDialog::CPNFolderDialog(HWND hWndParent, LPCTSTR lpstrInitial, 
 								 LPCTSTR lpstrTitle, UINT uFlags)
 	: CFolderDialogImpl<CPNFolderDialog>(hWndParent, lpstrTitle, uFlags)

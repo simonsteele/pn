@@ -240,7 +240,7 @@ public:
 
 	LRESULT OnToolbarDropDown(WPARAM /*wParam*/, LPNMHDR /*lParam*/, BOOL& /*bHandled*/);
 
-	bool OpenFile(LPCTSTR pathname, CScheme* pScheme = NULL);
+	bool OpenFile(LPCTSTR pathname, CScheme* pScheme = NULL, EPNEncoding encoding = eUnknown);
 	
 	void UpdateStatusBar();
 

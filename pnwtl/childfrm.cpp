@@ -173,6 +173,11 @@ void CChildFrame::SetupToolbar()
 
 	toolbar.AddButtons(1, &button);
 
+	button.iBitmap = 3;
+	button.idCommand = ID_EDITOR_WHITESPACE;
+
+	toolbar.AddButtons(1, &button);
+
 	m_hWndToolBar = toolbar.Detach();
 }
 
@@ -1058,11 +1063,11 @@ void CChildFrame::Revert()
 	}
 }
 
-bool CChildFrame::PNOpenFile(LPCTSTR pathname, CScheme* pScheme)
+bool CChildFrame::PNOpenFile(LPCTSTR pathname, CScheme* pScheme, EPNEncoding encoding)
 {
 	bool bRet = false;
 
-	if(m_view.Load(pathname, pScheme))
+	if(m_view.Load(pathname, pScheme, encoding))
 	{
 		m_FileAge = FileAge(pathname);
 		m_FileName = pathname;
@@ -1420,7 +1425,7 @@ CChildFrame::_PoorMansUIEntry* CChildFrame::GetDefaultUIMap()
 		{ID_EDITOR_WORDWRAP, PMUI_MINIBAR | PMUI_MENU},
 		{ID_EDITOR_COLOURISE, PMUI_MINIBAR | PMUI_MENU},
 		{ID_EDITOR_LINENOS, PMUI_MINIBAR | PMUI_MENU},
-		{ID_EDITOR_WHITESPACE, PMUI_MENU},
+		{ID_EDITOR_WHITESPACE, PMUI_MINIBAR | PMUI_MENU},
 		{ID_EDITOR_EOLCHARS, PMUI_MENU},
 		{ID_VIEW_INDIVIDUALOUTPUT, PMUI_MENU},
 		{ID_TOOLS_LECONVERT, PMUI_MENU},

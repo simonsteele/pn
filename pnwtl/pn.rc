@@ -275,6 +275,16 @@ BEGIN
                     WS_VSCROLL | WS_TABSTOP
 END
 
+IDD_PNOPEN DIALOGEX 0, 0, 230, 14
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CLIPSIBLINGS | 
+    WS_SYSMENU
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    LTEXT           "Encoding:",IDC_PNOPEN_ENCODINGSTATIC,8,2,32,8
+    COMBOBOX        IDC_PNOPEN_ENCODINGCOMBO,70,0,90,122,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -293,6 +303,12 @@ BEGIN
     END
 
     IDD_PNSAVE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 61
+    END
+
+    IDD_PNOPEN, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 61

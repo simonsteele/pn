@@ -158,7 +158,7 @@ EPNSaveFormat determineLineEndings(char* pBuf, int nLen)
 	return (EPNSaveFormat)OPTIONS->GetCached(Options::OLineEndings);
 }
 
-bool CTextView::OpenFile(LPCTSTR filename)
+bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 {
 	// We don't want smart start if we're opening a file...
 	m_bSmartStart = false;
@@ -198,8 +198,12 @@ bool CTextView::OpenFile(LPCTSTR filename)
 
 		EPNSaveFormat endings = determineLineEndings(data, lenFile);
 
-		///@todo otherwise set user's code page... (int bomLength =)
-        determineEncoding(reinterpret_cast<unsigned char*>(data), lenFile, m_encType);
+		///See if there's an encoding specified or not...
+        if(encoding == eUnknown)
+			determineEncoding(reinterpret_cast<unsigned char*>(data), lenFile, m_encType);
+		else
+			m_encType = encoding;
+
 		if(m_encType != eUnknown)
 		{
 			// We do a Unicode-friendly read for unicode files...
@@ -254,9 +258,9 @@ bool CTextView::OpenFile(LPCTSTR filename)
 		return false;
 }
 
-bool CTextView::Load(LPCTSTR filename, CScheme* pScheme)
+bool CTextView::Load(LPCTSTR filename, CScheme* pScheme, EPNEncoding encoding)
 {
-	if( OpenFile(filename) )
+	if( OpenFile(filename, encoding) )
 	{
 		if(NULL == pScheme)
 		{
@@ -287,7 +291,7 @@ void CTextView::Revert(LPCTSTR filename)
 	int lastPos = GetCurrentPos();
 	int scrollPos = DocLineFromVisible( GetFirstVisibleLine() );
 
-	if( OpenFile(filename) )
+	if( OpenFile(filename, m_encType) )
 	{
 		if( GetLength() >= lastPos )
 		{

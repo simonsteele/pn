@@ -1,4 +1,79 @@
 ========================================
+Release Name: 2.0.5.6
+Build: 2.0.5.34, Version Label: 
+========================================
+
+What's new?
+-----------
+
+1) Document Properties Window (hit alt-enter).
+2) Editor Defaults options page.
+3) Default word-wrap option.
+4) Most Recently Used Projects menu.
+5) HTML export now names the styles by scheme, allowing you to easily 
+   combine exported code.
+6) Look in projects for relative file names in the output window.
+7) Look in the current directory for relative file names in the output window.
+8) Added current project path to the tool variables.
+9) New (fairly empty) confirmations options page.
+10) Drag files from explorer onto the projects window.
+11) Upgraded to Scintilla 1.60
+12) Project files now written using Genx.
+13) Project files keep most unknown XML elements between load and save.
+14) Added Duplicate, Copy, Cut and Transpose Line commands.
+15) Added Uppercase/Lowercase
+16) Bjoern Graf tidied the Options dialog plus some others.
+17) Keyboard works in the projects tree (inc. "del" to remove project files).
+18) Added error parsing for microsoft error messages.
+19) Middle-click mouse on the document tab to close a document.
+20) Allow specification of default character set (includes Shift-JIS and UTF-8).
+21) Optimised file loading - significantly reduces load time for large files.
+22) Drag and drop in the projects window.
+23) Folders in project window now remain above files.
+24) Drag to re-arrange tabs.
+25) Optional new, empty file on startup.
+26) Magic Folders in projects - folders that reflect real directory contents.
+27) Now open the "open file" dialog in the same directory as the current file.
+28) Now shows tool keyboard shortcuts on the tools menu.
+19) File association editor.
+
+Bug Fixes:
+----------
+
+1)  Empty search on google causes crash (SF Bug #870649).
+2)  Change line endings in Save-As dialog doesn't work (SF Bug #885586).
+3)  Tools run without capture don't show (SF Bug #896269).
+4)  Conflict in shortcut assignment (SF Bug #891208).
+5)  Crash if mouse over 'Recent Files'->(empty) (SF Bug #900929).
+6)  PN doesn't become active after clicking Output window (SF Bug #760362).
+7)  HTML export doubles the '&' (SF Bug #899079).
+8)  HTML export leaves open the last span tag (SF Bug #904149).
+9)  Fixed HTML export to use full style range (previously stopped at 31).
+10) Dropped files always open new windows (SF Bug #873386).
+11) Deal with all URL encoded chars in output window, not just %20.
+12) Projects window renames too readily.
+13) Auto-indent empty line (SF Bug #879950).
+14) Can't export a file that isn't saved to disk (SF Bug #911381).
+15) Can't bring up project context menus with the keyboard.
+16) Changing full path option doesn't affect open files (SF Bug #871628).
+17) Update status bar when last file closed (SF Bug #514527).
+18) Highlight colors in scheme wrong when choosing defaults (SF Bug #909343).
+19) PN loses focus on closing search dialogs (SF Bug #939917).
+20) Duplicate brace match colour settings (SF Bug #951146).
+21) Esc doesn't close the refresh dialog (SF Bug #939931).
+22) Pseudo misspelt in CSS scheme (SF Bug #969586).
+23) Regular Expression replace (SF Bug #957788).
+24) Global keyboard shortcuts don't work (SF Bug #960000).
+25) Fixed file associations case comparison.
+26) Text clips line endings (SF Bug #995845).
+27) Crash after options dialog (SF Bug #995786).
+28) Crash when search string is empty (SF Bug #995783).
+29) Fixed infinite loop when working with magic folders containing ".files".
+30) Fixed word-wrap default preference.
+31) Fixed a problem with checking for updated files with a captured cursor.
+32) Fixed a magic folder problem with relative paths.
+
+========================================
 Release Name: 2.0.5.0
 Build: 2.0.5.18, Version Label: mingus
 ========================================
