@@ -188,6 +188,10 @@ SOURCE=.\pndialogs.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\pntabs.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\pntypes.h
 # End Source File
 # Begin Source File

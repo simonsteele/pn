@@ -21,8 +21,6 @@
 #include "schemes.h"
 #include "pntypes.h"
 
-#define PN_NOTIFY (WM_USER+37)
-
 class CTextView : public CScintillaWindow< CScintillaImpl >
 {
 public:

@@ -231,6 +231,9 @@
 				RelativePath=".\pndialogs.h">
 			</File>
 			<File
+				RelativePath="pntabs.h">
+			</File>
+			<File
 				RelativePath=".\pntypes.h">
 			</File>
 			<File

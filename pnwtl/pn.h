@@ -12,6 +12,8 @@
 #include "schemes.h"
 #include "optionsmanager.h"
 
+#define PN_NOTIFY (WM_USER+37)
+
 class CPNAppState
 {
 	public:

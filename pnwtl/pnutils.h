@@ -29,6 +29,7 @@ class MRUManager
 
 	public:
 		MRUManager(UINT baseCmd, int size = 10);
+		~MRUManager();
 
 		void SetSize(int size);
 
@@ -43,6 +44,7 @@ class MRUManager
 		CSimpleArray<_entry>	m_entries;
 		int						m_iMaxSize;
 		UINT					m_iBase;
+		TCHAR*					m_szEmpty;
 };
 
 

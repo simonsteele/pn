@@ -146,7 +146,7 @@ class CSMenuT
 			}
 			
 			if (_tcslen(Caption) == 0)
-				::AppendMenu(GetHandle(), MF_SEPARATOR, 0, "");
+				::AppendMenu(GetHandle(), MF_SEPARATOR, 0, _T(""));
 			else 
 			{
 				int iFlags = MF_STRING | mfchecked[bChecked] | mfdefault[bDefault] | mfenabled[bEnabled];
@@ -158,12 +158,22 @@ class CSMenuT
 
 		void AddSeparator()
 		{
-			::AppendMenu(GetHandle(), MF_SEPARATOR, 0, NULL);
+			AddItem(_T(""));
 		}
 
 		void CheckMenuItem(int uIDCheckItem, bool bChecked)
 		{
 			::CheckMenuItem(GetHandle(), uIDCheckItem, mfchecked[bChecked]);
+		}
+
+		int GetCount()
+		{
+			return ::GetMenuItemCount(GetHandle());
+		}
+
+		BOOL GetItemInfo(int item, LPMENUITEMINFO pItemInfo, BOOL byPosition = TRUE)
+		{
+			return ::GetMenuItemInfo(GetHandle(), item, byPosition, pItemInfo);
 		}
 
 		virtual HMENU GetHandle()

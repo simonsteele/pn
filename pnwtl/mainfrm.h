@@ -19,53 +19,6 @@
 
 #include "pnutils.h"
 
-/**
- * @class CPNMDIClient
- * @brief Add extra MDI plumbing to the TabbedMDIClient Framework.
- *
- * In order to maintain other lists of windows such as one in the
- * windows list control, what better way than to use the framework
- * provided in tabbed MDI code.
- */
-class CPNMDIClient : public CTabbedMDIClient< CDotNetTabCtrl<CTabViewTabItem> >
-{
-	typedef CTabbedMDIClient< CDotNetTabCtrl<CTabViewTabItem> > baseClass;
-
-public:
-	BEGIN_MSG_MAP(CPNMDIClient)
-		MESSAGE_HANDLER(UWM_MDICHILDACTIVATIONCHANGE, OnChildActivationChange)
-		MESSAGE_HANDLER(UWM_MDICHILDTABTEXTCHANGE, OnChildTabTextChange)
-		MESSAGE_HANDLER(WM_MDIDESTROY, OnMDIDestroy)
-		CHAIN_MSG_MAP(baseClass)
-	END_MSG_MAP()
-
-	LRESULT OnMDIDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-	{
-		bHandled = FALSE;
-
-		return 0;
-	}
-
-	LRESULT OnChildActivationChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-	{
-		SendMessage(GetParent(), PN_NOTIFY, 0, SCN_UPDATEUI);
-
-		bHandled = FALSE;
-		
-		return 0;
-	}
-
-	LRESULT OnChildTabTextChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-	{
-		SendMessage(GetParent(), PN_NOTIFY, 0, SCN_UPDATEUI);
-
-		bHandled = FALSE;
-
-		return 0;
-	}
-
-};
-
 BOOL CALLBACK CloseChildEnumProc(HWND hWnd, LPARAM lParam);
 
 /**
@@ -80,12 +33,14 @@ public:
 
 	typedef CTabbedMDIFrameWindowImpl<CMainFrame, CPNMDIClient> myClass;
 
-	CMainFrame() : m_wndMDIClient(this, 2)
+	CMainFrame()
 	{
 		m_FindDialog = NULL;
 		m_ReplaceDialog = NULL;
 		hFindWnd = NULL;
 		hReplWnd = NULL;
+
+		m_CmdBar.SetCallback(this, OnMDISetMenu);
 	}
 
 	~CMainFrame()
@@ -94,7 +49,7 @@ public:
 		CloseAndFreeDlg(m_ReplaceDialog);
 	}
 
-    CTabbedMDICommandBarCtrl m_CmdBar;
+    CPNTabbedMDICommandBarCtrl<CMainFrame> m_CmdBar;
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
 	{
@@ -144,8 +99,6 @@ public:
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
 		CHAIN_MSG_MAP(myClass)
-	ALT_MSG_MAP(2)
-		MESSAGE_HANDLER(WM_MDISETMENU, OnMDIClientMDISetMenu)
 	END_MSG_MAP()
 
 	BEGIN_UPDATE_UI_MAP(CMainFrame)
@@ -201,7 +154,6 @@ public:
 		DragAcceptFiles(TRUE);
 
 		CreateMDIClient();
-		m_wndMDIClient.SubclassWindow(m_hWndMDIClient);
 		m_CmdBar.SetMDIClient(m_hWndMDIClient);
 
 		UIAddToolBar(hWndToolBar);
@@ -254,14 +206,44 @@ public:
 	}
 
 	/**
-	 * Here we can update any dynamically generated parts of the menus 
-	 * used by the MDI children. Thanks to Nenad Stefanovic for the
-	 * hint he posted in the WTL User Group (Yahoo Group: WTL).
+	 * We now update any menus which are placed in the menus of MDI children
+	 * (i.e. the MRU and Scheme menus...). This is called back from 
+	 * CPNTabbedMDICommandBarCtrl.
 	 */
-	LRESULT OnMDIClientMDISetMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	void OnMDISetMenu(HMENU hOld, HMENU hNew)
 	{
-		bHandled = FALSE;
-		return 1;
+		CSMenuHandle r(hOld);
+		CSMenuHandle a(hNew);
+
+		CSMenuHandle file( r.GetSubMenu(0) );
+		int state;
+		int lastSep = -1;
+		for(int i = 0; i < file.GetCount(); i++)
+		{
+			state = ::GetMenuState(file, i, MF_BYPOSITION);
+			if(state & MF_SEPARATOR)
+				lastSep = i;
+			else if(state & MF_POPUP)
+			{
+				MENUITEMINFO mii;
+				memset(&mii, 0, sizeof(mii));
+				mii.cbSize = sizeof(MENUITEMINFO);
+				mii.fMask = MIIM_SUBMENU;
+				file.GetItemInfo(i, &mii);
+				
+				if(mii.hSubMenu == (HMENU)m_RecentFiles)
+				{
+					// Recent Files Item found...
+					if(::RemoveMenu(file, i, MF_BYPOSITION))
+					{
+						// We should be able to remove the separator for the MRU too...
+						::RemoveMenu(file, i, MF_BYPOSITION);
+						AddMRUMenu(a);
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -511,29 +493,22 @@ public:
 			sm.Detach();
 		}
 
+		void AddMRUMenu(CSMenuHandle& menu)
+		{
+			CSMenuHandle file(menu.GetSubMenu(0));
+			::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_BYCOMMAND | MF_POPUP, (UINT)m_RecentFiles.GetHandle(), _T("&Recent Files"));
+			::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_BYCOMMAND | MF_SEPARATOR, 0, NULL);
+		}
+
 		void ConfigureMRUMenus()
 		{
-			/*MRUManager m(ID_MRUFILE_BASE, 4);
-			m.AddFile("c:\\test.dat");
-			m.AddFile("c:\\simon\\desktop\\projects\\echo\\programmers notepad\\cheese.bmp");
-			m.AddFile("c:\\source\\pnwtl\\mainfrm.h");
-			m.AddFile("c:\\source\\pnwtl\\banana.cpp");
-			m.AddFile("c:\\source\\pnwtl\\cheese.h");
+			MRUManager m(ID_MRUFILE_BASE, 4);
+			//m.ReadFromRegistry();
+			m.UpdateMenu(m_RecentFiles.GetHandle());
 
-			CSMenuHandle cs(m_hMenu);
-
-			CSMenuHandle file = cs.GetSubMenu(0);
-			
-			CSPopupMenu sm;
-			m.UpdateMenu(sm.GetHandle());
-			::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_BYCOMMAND | MF_POPUP, (UINT)sm.GetHandle(), _T("&Recent Files"));
-			::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_SEPARATOR, 0, NULL);
-
-			sm.Detach();
+			AddMRUMenu(CSMenuHandle(m_hMenu));
 		
-			cs.Detach();
-			*/
-			
+			//cs.Detach();			
 		}
 
 	protected:
@@ -541,10 +516,9 @@ public:
 		CReplaceDlg*			m_ReplaceDialog;
 		CScintilla				m_Dummy;			///< Scintilla often doesn't like unloading and reloading.
 
+		CSPopupMenu				m_RecentFiles;//sm
+
 		CMultiPaneStatusBarCtrl	m_StatusBar;
-		
-		// We must subclass the MDI client area to pick up WM_MDISETMENU messages.
-		CContainedWindow		m_wndMDIClient;
 
 		HWND					hFindWnd;
 		HWND					hReplWnd;
