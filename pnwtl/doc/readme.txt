@@ -13,7 +13,8 @@ What's new?
 Bug Fixes:
 ----------
 
-1)
+1) Empty search on google causes crash (SF Bug #870649).
+2) Change line endings in Save-As dialog doesn't work (SF Bug #885586).
 
 If you find a bug:
 ------------------
@@ -24,7 +25,7 @@ us with a copy of the file(s):
 e.g.
 C:\Documents and Settings\Simon\Application Data\Echo Software\PN2\User*.xml
 
-E-mail: ss@pnotepad.org with your reports, or use the handy 
+E-mail: ss at pnotepad dot org with your reports, or use the handy 
 "Report a Bug" option on the Help menu to add it straight to the
 sourceforge bug tracker.
 

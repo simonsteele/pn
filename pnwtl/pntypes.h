@@ -122,7 +122,7 @@ public:
 	virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL) = 0;
 };
 
-typedef enum { PNSF_Windows = SC_EOL_CRLF, PNSF_Unix = SC_EOL_LF, PNSF_Mac = SC_EOL_CR, PNSF_NoChange} EPNSaveFormat;
+typedef enum { PNSF_Windows = SC_EOL_CRLF, PNSF_Mac = SC_EOL_CR, PNSF_Unix = SC_EOL_LF, PNSF_NoChange} EPNSaveFormat;
 
 typedef enum {
 	eUnknown,

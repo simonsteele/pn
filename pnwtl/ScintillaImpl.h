@@ -37,6 +37,8 @@ public:
 
 	typedef enum {fnNotFound, fnFound, fnReachedStart} FindNextResults;
 
+	int GetWordCount();
+
 protected:
 	struct tagLastFindDetails
 	{

@@ -4,27 +4,19 @@ PN is attempting to keep to a minimum of one release every two months.
 The planned feature-implementation schedule can be seen below. This will
 be modified as and when I see fit - so don't bet money on it or anything.
 
-last updated: 07/12/2003
+Active CVS development branches are denoted with {branch-name}.
+Work completed or in-progress is shown with [proportion-developer] or [complete-developer],
+where no developer name is given it's Simon.
 
-0.5 Mingus
-==========
-
-Start help file.
-[Implemented] Pre-defined tools support.
-[Implemented] Menu to choose file encoding type (currently PN just preserves the original type).
-[Implemented] Header switch as a generic feature.
-[Implemented] Basic Project Management - file grouping etc.
-[Implemented] Better printing - margins, header and footer.
-[Implemented] Combo-box toolbar for scheme selection.
-[Implemented - Bjoern Graf] Find & Replace actual combo-box entries (not just auto-complete).
-[Implemented - Bjoern Graf] HTML Export.
+last updated: 08/02/2004
 
 0.6 Ella
 ========
 
+Start help file.
 Preview for scheme configurator.
 Tab order management.
-Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
+[10%] Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
 Basic Build Management - see http://www.pnotepad.org/articles/pn2projects.html
 PCRE Based Search.
 Filetype filters - e.g. allow loading of .dfm files.
@@ -35,7 +27,7 @@ HTML Export configuration, inline HTML export.
 
 Unicode build.
 File browser window.
-HTML preview window (ie+moz).
+HTML preview window (ie+moz) {feature_browser_2-0-5}.
 
 0.8 Ellington
 =============

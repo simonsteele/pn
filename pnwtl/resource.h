@@ -274,7 +274,6 @@
 #define IDC_FILEPROP_LINES              1085
 #define IDC_FILEPROP_CHARS              1086
 #define IDC_FILEPROP_WORDS              1087
-#define IDC_FILEPROP_SUBTITLE           1088
 #define IDC_FILEPROP_FILENAME           1088
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
@@ -350,7 +349,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        321
-#define _APS_NEXT_COMMAND_VALUE         32904
+#define _APS_NEXT_COMMAND_VALUE         32905
 #define _APS_NEXT_CONTROL_VALUE         1089
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

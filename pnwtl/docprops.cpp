@@ -107,7 +107,8 @@ LRESULT DocumentPropSheet::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	::SetWindowText(GetDlgItem(IDC_FILEPROP_CHARS), buf);
 
 	// Get word count...
-	::SetWindowText(GetDlgItem(IDC_FILEPROP_WORDS), _T("<not yet implemented>"));
+	_sntprintf(buf, 15, _T("%d"), pView->GetWordCount());
+	::SetWindowText(GetDlgItem(IDC_FILEPROP_WORDS), buf);
 
 	_sntprintf(buf, 15, _T("%d"), pView->GetTabWidth());
 	::SetWindowText(GetDlgItem(IDC_FILEPROP_TABWIDTH), buf);

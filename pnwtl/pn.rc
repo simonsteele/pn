@@ -144,6 +144,8 @@ BEGIN
             MENUITEM "As HTML...",                  ID_EXPORT_HTML
         END
         MENUITEM SEPARATOR
+        MENUITEM "Proper&ties...\tAlt+Enter",   ID_VIEW_FILEPROPERTIES
+        MENUITEM SEPARATOR
         MENUITEM "&Close\tCtrl+F4",             ID_FILE_CLOSE
         MENUITEM "Close Proje&ct(s)",           301
         MENUITEM SEPARATOR
@@ -161,7 +163,7 @@ BEGIN
         MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
         MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
         MENUITEM "Copy as RTF",                 ID_EDIT_COPYRTF
-        MENUITEM "Clipboard &Swap\tCtrl+Shift+C", ID_EDIT_CLIPBOARDSWAP
+        MENUITEM "Clipboard S&wap\tCtrl+Shift+C", ID_EDIT_CLIPBOARDSWAP
         MENUITEM SEPARATOR
         MENUITEM "&Select All\tCtrl+A",         ID_EDIT_SELECTALL
         MENUITEM SEPARATOR

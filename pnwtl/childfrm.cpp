@@ -820,6 +820,8 @@ LRESULT CChildFrame::OnViewFileProps(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 {
 	tstring fn = GetFileName(FN_FILE).c_str();
 	CPropertySheet sheet( fn.c_str(), 0, m_hWnd );
+	sheet.m_psh.dwFlags |= (PSH_NOAPPLYNOW | PSH_PROPTITLE | PSH_USEICONID);
+	sheet.m_psh.pszIcon = MAKEINTRESOURCE(IDR_MDICHILD);
 	DocumentPropSheet docPropPage(this, _T("Properties"));
 
 	sheet.AddPage(docPropPage);

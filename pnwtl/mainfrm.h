@@ -308,6 +308,8 @@ protected:
 	bool CloseWorkspaceFiles(Projects::Workspace* pWorkspace);
 	bool EnumWorkspaceWindows(SWorkspaceWindowsStruct* pWWS);
 
+	void launchExternalSearch(LPCTSTR searchString);
+
 protected:
 	enum {
 		SCHEME_COMBO_SIZE = 24, /* characters */

@@ -1265,42 +1265,40 @@ LRESULT CMainFrame::OnWebSFRFE(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	return 0;
 }
 
-LRESULT CMainFrame::OnSearchGoogle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+void CMainFrame::launchExternalSearch(LPCTSTR searchString)
 {
-	tstring s = _T("http://www.google.com/search?q=");
-
 	CWindowText wt(m_FindCombo.m_hWnd);
 
-	LPTSTR searchstr = new TCHAR[_tcslen((LPCTSTR)wt)+1];
-	_tcscpy(searchstr, (LPCTSTR)wt);
-	for(size_t i = 0; i < _tcslen(searchstr); i++)
+	tstring s(searchString);
+
+	// avoid empty search strings...
+	if( ((LPCTSTR)wt) != NULL )
 	{
-		if(searchstr[i] == _T(' '))
-			searchstr[i] = _T('+');
+		LPTSTR searchstr = new TCHAR[_tcslen((LPCTSTR)wt)+1];
+		_tcscpy(searchstr, (LPCTSTR)wt);
+		for(size_t i = 0; i < _tcslen(searchstr); i++)
+		{
+			if(searchstr[i] == _T(' '))
+				searchstr[i] = _T('+');
+		}
+
+		s += (LPCTSTR)searchstr;
+		delete [] searchstr;
 	}
 
-	s += (LPCTSTR)searchstr;
 	::ShellExecute(m_hWnd, _T("open"), s.c_str(), NULL, NULL, SW_SHOW);
+}
+
+LRESULT CMainFrame::OnSearchGoogle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	launchExternalSearch(_T("http://www.google.com/search?q="));
 
 	return 0;
 }
 
 LRESULT CMainFrame::OnSearchGoogleGroups(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	tstring s = _T("http://groups.google.com/groups?q=");
-
-	CWindowText wt(m_FindCombo.m_hWnd);
-
-	LPTSTR searchstr = new TCHAR[_tcslen((LPCTSTR)wt)+1];
-	_tcscpy(searchstr, (LPCTSTR)wt);
-	for(size_t i = 0; i < _tcslen(searchstr); i++)
-	{
-		if(searchstr[i] == _T(' '))
-			searchstr[i] = _T('+');
-	}
-
-	s += (LPCTSTR)searchstr;
-	::ShellExecute(m_hWnd, _T("open"), s.c_str(), NULL, NULL, SW_SHOW);
+	launchExternalSearch(_T("http://groups.google.com/groups?q="));
 
 	return 0;
 }

@@ -181,6 +181,62 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 }
 
 ////////////////////////////////////////////////////////////
+// Word Count
+
+#include "include/wordcounter.h"
+
+template <int TBlockSize = 131072>
+class ScintillaWordCounter : public WordCounter<ScintillaWordCounter>
+{
+	friend class WordCounter<ScintillaWordCounter>;
+
+	public:
+		ScintillaWordCounter(CScintilla* sc)
+		{
+			pScintilla = sc;
+			length = pScintilla->GetLength();
+			pos = 0;
+			actualPos = 0;
+		}
+		
+	protected:
+		char getNextChar()
+		{
+			if(pos == 0)
+			{
+				int grabSize = length - actualPos;
+				if (grabSize > TBlockSize)
+					grabSize = TBlockSize;
+				TextRange tr;
+				tr.chrg.cpMin = actualPos;
+				tr.chrg.cpMax = actualPos + grabSize;
+				tr.lpstrText = buffer;
+				pScintilla->GetTextRange(&tr);
+			}
+			int oldpos = pos;
+			pos = (pos+1) % TBlockSize;
+			return buffer[oldpos];
+		}
+
+		int getLength()
+		{
+			return length;
+		}
+
+		int length;
+		int pos;
+		int actualPos;
+		CScintilla* pScintilla;
+		char buffer[TBlockSize+1];
+};
+
+int CScintillaImpl::GetWordCount()
+{
+	ScintillaWordCounter<> counter(this);
+	return counter.count();
+}
+
+////////////////////////////////////////////////////////////
 // Folding Code...
 ////////////////////////////////////////////////////////////
 

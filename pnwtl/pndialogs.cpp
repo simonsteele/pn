@@ -287,10 +287,14 @@ LRESULT CPNSaveDialogEx::OnInitDialog (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	SetWindowPos( NULL, 0, 0, rectDlg.Width(), rectDlg.Height(),
 		SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER );
 
-	m_SaveTypeCombo.AddString(_T("No change to the file format."));
-	m_SaveTypeCombo.AddString(_T("Ensure Windows Format (CR+LF)"));
-	m_SaveTypeCombo.AddString(_T("Ensure Unix Format (LF)"));
-	m_SaveTypeCombo.AddString(_T("Ensure Macintosh Format (CR)"));
+	int index = m_SaveTypeCombo.AddString(_T("No change to the file format."));
+	m_SaveTypeCombo.SetItemData(index, PNSF_NoChange);
+	index = m_SaveTypeCombo.AddString(_T("Ensure Windows Format (CR+LF)"));
+	m_SaveTypeCombo.SetItemData(index, PNSF_Windows);
+	index = m_SaveTypeCombo.AddString(_T("Ensure Unix Format (LF)"));
+	m_SaveTypeCombo.SetItemData(index, PNSF_Unix);
+	index = m_SaveTypeCombo.AddString(_T("Ensure Macintosh Format (CR)"));
+	m_SaveTypeCombo.SetItemData(index, PNSF_Mac);
 
 	m_SaveTypeCombo.SetCurSel(0);
 	
@@ -308,7 +312,7 @@ LRESULT CPNSaveDialogEx::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 LRESULT CPNSaveDialogEx::OnComboSelChange(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	// Store the new selection in here...
-	m_Format = (EPNSaveFormat)m_SaveTypeCombo.GetCurSel();
+	m_Format = (EPNSaveFormat)m_SaveTypeCombo.GetItemData( m_SaveTypeCombo.GetCurSel() );
 
 	return TRUE;
 }

@@ -152,8 +152,8 @@
 				<style name="Start" key="40" fore="7f7f00"/>
 				<style name="Default" key="41" fore="000000" bold="true" eolfilled="true"/>
 				<style name="Comment" key="42" fore="colour.commentbox" eolfilled="true"/>
-				<style name="Line Comment" key="43" fore="colour.commentline"/>
-				<style name="Doc comment" key="44" fore="colour.commentdoc" bold="true" eolfilled="true"/>
+				<style name="Line Comment" key="43" fore="colour.comment"/>
+				<style name="Doc comment" key="44" fore="colour.comment" eolfilled="true"/>
 				<style name="Number" key="45" fore="colour.number" />
 				<style name="Word" key="46" fore="000000"/>
 				<style name="Keyword" key="47" fore="colour.keyword" bold="true"/>
