@@ -16,6 +16,7 @@ Global
 		Debug = Debug
 		DebugUnicode = DebugUnicode
 		Release = Release
+		ReleaseDebug = ReleaseDebug
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{09E60CEB-F210-4524-89CC-D73EBCA224A1}.Debug.ActiveCfg = Debug|Win32
@@ -24,18 +25,24 @@ Global
 		{09E60CEB-F210-4524-89CC-D73EBCA224A1}.DebugUnicode.Build.0 = DebugUnicode|Win32
 		{09E60CEB-F210-4524-89CC-D73EBCA224A1}.Release.ActiveCfg = Release|Win32
 		{09E60CEB-F210-4524-89CC-D73EBCA224A1}.Release.Build.0 = Release|Win32
+		{09E60CEB-F210-4524-89CC-D73EBCA224A1}.ReleaseDebug.ActiveCfg = ReleaseDebug|Win32
+		{09E60CEB-F210-4524-89CC-D73EBCA224A1}.ReleaseDebug.Build.0 = ReleaseDebug|Win32
 		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.Debug.ActiveCfg = Debug|Win32
 		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.Debug.Build.0 = Debug|Win32
 		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.DebugUnicode.ActiveCfg = DebugUnicode|Win32
 		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.DebugUnicode.Build.0 = DebugUnicode|Win32
 		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.Release.ActiveCfg = Release|Win32
 		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.Release.Build.0 = Release|Win32
+		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.ReleaseDebug.ActiveCfg = ReleaseDebug|Win32
+		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.ReleaseDebug.Build.0 = ReleaseDebug|Win32
 		{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}.Debug.ActiveCfg = Debug|Win32
 		{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}.Debug.Build.0 = Debug|Win32
 		{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}.DebugUnicode.ActiveCfg = Debug|Win32
 		{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}.DebugUnicode.Build.0 = Debug|Win32
 		{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}.Release.ActiveCfg = Release|Win32
 		{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}.Release.Build.0 = Release|Win32
+		{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}.ReleaseDebug.ActiveCfg = ReleaseDebug|Win32
+		{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}.ReleaseDebug.Build.0 = ReleaseDebug|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

@@ -1,1 +1,1 @@
-#define PN_VERSION	_T("2.0.5.28-devel")
+#define PN_VERSION	_T("2.0.5.29-devel")

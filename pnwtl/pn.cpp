@@ -16,6 +16,10 @@
 
 #include "MainFrm.h"
 
+//#ifdef _DEBUG
+	#include "include/mdump.h"
+//#endif
+
 CAppModule _Module;
 
 /*__declspec( thread )*/ _Context g_Context = {0};
@@ -67,6 +71,10 @@ void Shutdown()
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
+//#ifdef _DEBUG
+	MiniDumper dumper(_T("PN2"));
+//#endif
+	
 	ZeroMemory(&g_Context.OSVersion, sizeof(OSVERSIONINFO));
 	g_Context.OSVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	::GetVersionEx(&g_Context.OSVersion);

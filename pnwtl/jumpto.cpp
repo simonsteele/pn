@@ -145,20 +145,22 @@ void JumpToHandler::DoJumpTo(CChildFrame* pChildFrame, IJumpToFindSink* pNotifyS
 		return;
 
 	tstring fn;
-	const wchar_t* pFN = NULL;
+	//const wchar_t* pFN = NULL;
 	TempFileName* tfn = NULL;
+
+	std::wstring fnstr;
 
 	if(pChildFrame->GetModified() || !pChildFrame->CanSave())
 	{
 		if(pChildFrame->CanSave())
 		{
 			tfn = new TempFileName(pChildFrame->GetFileName().c_str(), NULL, true, true);
-			pFN = tfn->w_str();
+			fnstr = tfn->w_str();
 		}
 		else
 		{
 			tfn = new TempFileName(NULL, _T(".tmp"), true);
-			pFN = tfn->w_str();
+			fnstr = tfn->w_str();
 		}
 
 		pChildFrame->GetTextView()->SaveFile(tfn->t_str());
@@ -166,14 +168,14 @@ void JumpToHandler::DoJumpTo(CChildFrame* pChildFrame, IJumpToFindSink* pNotifyS
 	else
 	{
 		fn = pChildFrame->GetFileName();
-		pFN = CT2CW(fn.c_str());
+		fnstr = CT2CW(fn.c_str());
 	}
 
 	const wchar_t* pSN = CT2CW(pChildFrame->GetTextView()->GetCurrentScheme()->GetName());
 
 	sink = pNotifySink;
 	
-	if(!pPlugin->GetMethods(pFN, pChildFrame->m_hWnd, &JumpToHandler::callback, TAGM_ALL, pSN, (LPVOID)this))
+	if(!pPlugin->GetMethods(fnstr.c_str(), pChildFrame->m_hWnd, &JumpToHandler::callback, TAGM_ALL, pSN, (LPVOID)this))
 	{
 		g_Context.m_frame->SetStatusText(_T("Failed to run tagger."));
 	}

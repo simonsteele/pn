@@ -164,6 +164,60 @@
 			<Tool
 				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
+		<Configuration
+			Name="ReleaseDebug|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="2"
+				InlineFunctionExpansion="1"
+				OmitFramePointers="TRUE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;CUSTOMSCHEME_EXPORTS"
+				StringPooling="TRUE"
+				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="TRUE"
+				UsePrecompiledHeader="3"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="3"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				OutputFile="$(OutDir)/customscheme.lexer"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="../lib"
+				ModuleDefinitionFile="customscheme.def"
+				GenerateDebugInformation="TRUE"
+				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="$(OutDir)/customscheme.lib"
+				TargetMachine="1"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
 	</Configurations>
 	<References>
 	</References>
@@ -196,6 +250,12 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="DebugUnicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="1"/>
@@ -248,6 +308,12 @@
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="0"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="scintilla\PropSet.cxx">
@@ -265,6 +331,12 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="DebugUnicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="0"/>
@@ -290,6 +362,12 @@
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="0"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="scintilla\StyleContext.h">
@@ -310,6 +388,12 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="DebugUnicode|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebug|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						UsePrecompiledHeader="0"/>
