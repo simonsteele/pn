@@ -62,14 +62,7 @@ public:
 
 	ToolDefinition(const ToolDefinition& copy)
 	{
-		Name = copy.Name;
-		Command = copy.Command;
-		Folder = copy.Folder;
-		Params = copy.Params;
-		Shortcut = copy.Shortcut;
-		CommandID = copy.CommandID;
-		CustomParsePattern = copy.CustomParsePattern;
-		iFlags = copy.iFlags;
+		_copy(copy);
 	}
 
 	tstring	Name;
@@ -86,6 +79,20 @@ public:
 	bool SaveAll() const { return (iFlags & TOOL_SAVEALL) != 0; }
 	bool GlobalOutput() const { return (iFlags & TOOL_GLOBALOUTPUT) != 0; }
 	bool UseCustomParser() const { return (iFlags & TOOL_CUSTOMPARSER) != 0; }
+
+protected:
+	void _copy(const ToolDefinition& copy)
+	{
+		Name = copy.Name;
+		Command = copy.Command;
+		Folder = copy.Folder;
+		Params = copy.Params;
+		Shortcut = copy.Shortcut;
+		CommandID = copy.CommandID;
+		CustomParsePattern = copy.CustomParsePattern;
+		iFlags = copy.iFlags;
+	}
+
 };
 
 /**

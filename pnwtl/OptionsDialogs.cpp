@@ -132,6 +132,7 @@ CToolEditorDialog::CToolEditorDialog() :
 	m_csFolder = _T("");
 	m_csParams = _T("");
 	m_csShortcut = _T("");
+	m_csCustomPattern = _T("");
 
 	m_bCapture = true;
 
@@ -266,6 +267,7 @@ void CToolEditorDialog::SetValues(ToolDefinition* pDefinition)
 	m_bSaveAll		= pDefinition->SaveAll();
 	m_bGlobal		= pDefinition->GlobalOutput();
 	m_iBuiltIn		= pDefinition->UseCustomParser() ? 1 : 0;
+	m_csCustomPattern = pDefinition->CustomParsePattern.c_str();
 }
 
 void CToolEditorDialog::SetTitle(LPCTSTR title)

@@ -445,32 +445,33 @@ void SchemeToolsManager::endElement(LPCTSTR name)
 // ToolRunner
 //////////////////////////////////////////////////////////////////////////////
 
-ToolRunner::ToolRunner(CChildFrame* pActiveChild, ToolDefinition* pDef, IToolOutputSink* pOutputSink)
+ToolRunner::ToolRunner(ToolWrapper* pWrapper)
 {
-	m_pTool = pDef;
-	m_pChild = pActiveChild;
-	m_pOutputter = pOutputSink;
-	m_pCopyDef = NULL;
+	m_pWrapper = pWrapper;
+	
 	m_pNext = NULL;
+
+	//m_pTool = pWrapper->pToolDefinition;
+	//m_pChild = pActiveChild;
+	//m_pWrapper = pOutputSink;
 }
 
 ToolRunner::~ToolRunner()
 {
-	if(m_pCopyDef)
-		delete m_pCopyDef;
+
 }
 
 /// Only works if m_pCopyDef has been created.
-const ToolDefinition* ToolRunner::GetToolDef()
-{
-	return m_pCopyDef;
-}
+//const ToolDefinition* ToolRunner::GetToolDef()
+//{
+	//return m_pCopyDef;
+//}
 
 bool ToolRunner::GetThreadedExecution()
 {
-	if(m_pTool)
+	if(m_pWrapper)
 	{
-		return m_pTool->CaptureOutput();
+		return m_pWrapper->CaptureOutput();
 	}
 
 	return false;
@@ -486,8 +487,10 @@ int ToolRunner::GetExitCode()
  */
 void ToolRunner::Run()
 {
-	m_RetCode = Run_CreateProcess(m_pCopyDef->Command.c_str(), m_pCopyDef->Params.c_str(), m_pCopyDef->Folder.c_str());
-	::PostMessage(m_pChild->m_hWnd, PN_TOOLFINISHED, 0, reinterpret_cast<LPARAM>(this));
+	m_RetCode = Run_CreateProcess(m_pWrapper->Command.c_str(), m_pWrapper->Params.c_str(), m_pWrapper->Folder.c_str());
+	m_pWrapper->OnFinished();
+	ToolOwner::GetInstance()->MarkToolForDeletion(this);
+	//::PostMessage(m_pChild->m_hWnd, PN_TOOLFINISHED, 0, reinterpret_cast<LPARAM>(this));
 }
 
 void ToolRunner::OnException()
@@ -531,8 +534,8 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
     if( ! ::CreatePipe(&hReadPipe, &hWritePipe, &sa, 0) )
 	{
 		CLastErrorInfo lei;
-		m_pOutputter->_AddToolOutput("\n>Failed to create StdOut and StdErr Pipe: ");
-		m_pOutputter->_AddToolOutput((LPCTSTR)lei);
+		m_pWrapper->_AddToolOutput("\n>Failed to create StdOut and StdErr Pipe: ");
+		m_pWrapper->_AddToolOutput((LPCTSTR)lei);
 
 		return lei.GetErrorCode();
 	}
@@ -543,8 +546,8 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	{
 		CLastErrorInfo lei;
 
-		m_pOutputter->_AddToolOutput("\n>Failed to create StdIn Pipe: ");
-		m_pOutputter->_AddToolOutput((LPCTSTR)lei);
+		m_pWrapper->_AddToolOutput("\n>Failed to create StdIn Pipe: ");
+		m_pWrapper->_AddToolOutput((LPCTSTR)lei);
 
 		return lei.GetErrorCode();
 	}
@@ -586,8 +589,8 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 		::CloseHandle(hStdInWrite);
 
 		CLastErrorInfo lei;
-		m_pOutputter->_AddToolOutput("\n>Failed to create process: ");
-		m_pOutputter->_AddToolOutput((LPCTSTR)lei);
+		m_pWrapper->_AddToolOutput("\n>Failed to create process: ");
+		m_pWrapper->_AddToolOutput((LPCTSTR)lei);
 
 		return lei.GetErrorCode();
 	}
@@ -614,7 +617,7 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 
 			if(bRead && dwBytesRead)
 			{
-				m_pOutputter->_AddToolOutput(buffer, dwBytesRead);
+				m_pWrapper->_AddToolOutput(buffer, dwBytesRead);
 			}
 			else
 			{
@@ -667,7 +670,7 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 				// don't answer to a normal termination command.
 				// This function is dangerous: dependant DLLs don't know the process
 				// is terminated, and memory isn't released.
-				m_pOutputter->_AddToolOutput("\n> Forcefully terminating process...\n");
+				m_pWrapper->_AddToolOutput("\n> Forcefully terminating process...\n");
 				::TerminateProcess(pi.hProcess, 1);
 			}
 			bCompleted = true;
@@ -676,7 +679,7 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 
 	if (WAIT_OBJECT_0 != ::WaitForSingleObject(pi.hProcess, 1000)) 
 	{
-		m_pOutputter->_AddToolOutput("\n>Process failed to respond; forcing abrupt termination...");
+		m_pWrapper->_AddToolOutput("\n>Process failed to respond; forcing abrupt termination...");
 		::TerminateProcess(pi.hProcess, 2);
 	}
 
@@ -747,7 +750,7 @@ int ToolRunner::Run_ShellExecute(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 			errmsg << _T("Unknown error code (") << result << _T(").");
 		}
 
-		::MessageBox(m_pChild->m_hWnd, errmsg.str().c_str(), _T("Programmers Notepad"), MB_ICONWARNING | MB_OK);
+		::MessageBox(m_pWrapper->GetActiveChild()->m_hWnd, errmsg.str().c_str(), _T("Programmers Notepad"), MB_ICONWARNING | MB_OK);
 	}
 
 	return result;
@@ -756,24 +759,228 @@ int ToolRunner::Run_ShellExecute(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 int ToolRunner::Execute()
 {
 	CToolCommandString builder;
-	builder.pChild = m_pChild;
+	builder.pChild = m_pWrapper->GetActiveChild();
 	
-	m_pCopyDef = new ToolDefinition(*m_pTool);
+	m_pWrapper->Command = builder.Build(m_pWrapper->Command.c_str());
+	m_pWrapper->Params = builder.Build(m_pWrapper->Params.c_str());
+	m_pWrapper->Folder = builder.Build(m_pWrapper->Folder.c_str());
 
-	// Expand the strings...
-	m_pCopyDef->Command = builder.Build(m_pTool->Command.c_str());
-	m_pCopyDef->Params = builder.Build(m_pTool->Params.c_str());
-	m_pCopyDef->Folder = builder.Build(m_pTool->Folder.c_str());
-
-	if(!m_pTool->CaptureOutput())
+	if(!m_pWrapper->CaptureOutput())
 	{
-		Run_ShellExecute(m_pCopyDef->Command.c_str(), m_pCopyDef->Params.c_str(), m_pCopyDef->Folder.c_str());
+		Run_ShellExecute(m_pWrapper->Command.c_str(), m_pWrapper->Params.c_str(), m_pWrapper->Folder.c_str());
 	}
 	else
 	{
+		m_pWrapper->SetToolParser( !m_pWrapper->UseCustomParser(), m_pWrapper->CustomParsePattern.c_str() );
+		m_pWrapper->SetToolBasePath( m_pWrapper->Folder.c_str() );
 		// Launch the thread which will run the CreateProcess stuff...
 		Start();
 	}
 
 	return 0;
+}
+
+void ToolRunner::PostRun()
+{
+	if( m_pWrapper->CaptureOutput() )
+	{
+		///@todo
+		/*
+		IToolOutputSink* pSink = t->GlobalOutput() ? 
+			GetGlobalOutputSink() : pT;
+		*/
+
+		tstring exitcode(_T("\n> Process Exit Code: "));
+		exitcode += IntToTString(GetExitCode());
+		exitcode += _T("\n");
+
+		m_pWrapper->_AddToolOutput(exitcode.c_str());
+	}
+
+	if( m_pWrapper->IsFilter() )
+		m_pWrapper->Revert();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// ToolOwner
+//////////////////////////////////////////////////////////////////////////////
+
+ToolOwner* ToolOwner::s_pTheInstance = NULL;
+
+ToolOwner::ToolOwner()
+{
+	::InitializeCriticalSection(&m_crRunningTools);
+}
+
+ToolOwner::~ToolOwner()
+{
+	::DeleteCriticalSection(&m_crRunningTools);
+}
+
+/**
+ * @param pTool ToolWrapper instance to be orphaned to ToolOwner.
+ * @param OwnerID Unique Identifier for the owning object - use "this".
+ */
+void ToolOwner::RunTool(ToolWrapper* pTool, ToolOwnerID OwnerID)
+{
+	_ToolWrapper _wrapper = {0};
+	_wrapper.OwnerID = OwnerID;
+	_wrapper.pWrapper = pTool;
+	_wrapper.pRunner = new ToolRunner( pTool );
+
+	bool bThreaded = _wrapper.pRunner->GetThreadedExecution();
+	
+	if( bThreaded )
+	{
+		CSSCritLock lock(&m_crRunningTools);
+
+		m_RunningTools.push_back(_wrapper);	 // Add this tool to our list to mind.
+	}
+
+	if( pTool->SaveAll() )
+		g_Context.m_frame->SaveAll();
+
+	_wrapper.pRunner->Execute();
+
+	if( !bThreaded )
+	{
+		delete _wrapper.pRunner;
+		delete _wrapper.pWrapper;
+	}
+
+	///@todo
+	//pT->UpdateRunningTools();
+}
+
+/**
+ * @brief ToolRunner calls this after finishing running. 
+ * This avoids deadlock because we do lazy deletion.
+ */
+void ToolOwner::MarkToolForDeletion(ToolRunner* pRunningTool)
+{
+	CSSCritLock lock(&m_crRunningTools);
+
+	for(RTOOLS_LIST::iterator i = m_RunningTools.begin();
+		i != m_RunningTools.end();
+		++i)
+	{
+		_ToolWrapper& tool = (*i);
+		if(tool.pRunner == pRunningTool)
+		{
+			tool.bDelete = true;
+			break;
+		}
+
+		//pT->UpdateRunningTools();
+	}
+}
+
+/**
+ * @return true if the owner has any tools still running.
+ */
+bool ToolOwner::HaveRunningTools(ToolOwnerID OwnerID)
+{
+	CSSCritLock lock(&m_crRunningTools);
+
+	// Get rid of any that are hanging around.
+	cleanup();
+
+	for(RTOOLS_LIST::const_iterator i = m_RunningTools.begin();
+		i != m_RunningTools.end();
+		++i)
+	{
+		if(OwnerID == 0 || (*i).OwnerID == OwnerID)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * cleanup performs lazy deletion on the tool wrappers that we know 
+ * about. Anything marked as deletable in here is finished running
+ * and can be deleted.
+ */
+void ToolOwner::cleanup()
+{
+	CSSCritLock lock(&m_crRunningTools);
+
+	RTOOLS_LIST::iterator i = m_RunningTools.begin();
+	while( i != m_RunningTools.end() )
+	{
+		_ToolWrapper& tool = (*i);
+		if(tool.bDelete)
+		{
+			delete tool.pRunner;
+			delete tool.pWrapper;
+			RTOOLS_LIST::iterator del = i;
+			++i;
+			m_RunningTools.erase(del);
+		}
+		else
+			++i;
+	}
+}
+
+void ToolOwner::KillTools(bool bWaitForKill, ToolOwnerID OwnerID)
+{
+	int iLoopCount = 0;
+
+	// Signal to all tools to exit, scope to enter and exit critical section
+	{
+		CSSCritLock lock(&m_crRunningTools);
+
+		for(RTOOLS_LIST::iterator i = m_RunningTools.begin();
+			i != m_RunningTools.end();
+			++i)
+		{
+			_ToolWrapper& tool = (*i);
+			if(OwnerID == 0 || tool.OwnerID == OwnerID)
+				tool.pRunner->SetCanRun(false);
+		}
+	}
+
+	while(bWaitForKill)
+	{
+		// Normally, we give all the tools a chance to exit before continuing...
+		Sleep(100);
+		iLoopCount++;
+
+		// Don't tolerate more than 5 seconds of waiting...
+		if(iLoopCount > 50)
+		{
+			::OutputDebugString(_T("PN2: Gave up waiting for tools to finish."));
+			break;
+		}
+
+		{
+			CSSCritLock lock(&m_crRunningTools);
+
+			// Delete any items that have been marked as finished.
+			cleanup();
+
+			bool bFound = false;
+		
+			for(RTOOLS_LIST::iterator j = m_RunningTools.begin();
+				j != m_RunningTools.end();
+				++j)
+			{
+				// See if there are any tools matching the OwnerID still running.
+				if(OwnerID == 0 || (*j).OwnerID == OwnerID)
+				{
+					bFound = true;
+					break;
+				}
+			}
+
+			// If we didn't find any running tools then we're home and dry.
+			if( !bFound )
+				break;
+		}
+	}
+
+	// Run a last cleanup for good measure.
+	cleanup();
 }

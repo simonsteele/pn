@@ -156,24 +156,63 @@ class CLastErrorInfo
 		int		m_nRetCode;
 };
 
+class ToolWrapper : public ToolDefinition
+{
+	public:
+		ToolWrapper(CChildFrame* pActiveChild, const ToolDefinition& definition)
+		{
+			m_hNotifyWnd = NULL;
+			m_pActiveChild = pActiveChild;
+			ToolDefinition::_copy(definition);
+		}
+
+		virtual ~ToolWrapper(){}
+
+		CChildFrame* GetActiveChild()
+		{
+			return m_pActiveChild;
+		}
+
+		void SetNotifyWindow(HWND hWnd)
+		{
+			m_hNotifyWnd = hWnd;
+		}
+
+		virtual void OnFinished()
+		{
+			if(m_hNotifyWnd)
+			{
+				::PostMessage(m_hNotifyWnd, PN_TOOLFINISHED, 0, 0);
+			}
+		}
+		
+		virtual void Revert() = 0;
+		virtual void ShowOutputWindow() = 0;
+		virtual void _AddToolOutput(LPCTSTR output, int nLength = -1) = 0;
+		virtual void SetToolBasePath(LPCTSTR path) = 0;
+		virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL) = 0;
+
+	protected:
+		CChildFrame*	m_pActiveChild;
+		HWND			m_hNotifyWnd;
+};
+
 /**
  * Class to run external tools.
  */
 class ToolRunner : public CSSThread
 {
 public:
-	ToolRunner(CChildFrame* pChild, ToolDefinition* pDef, IToolOutputSink* pOutputSink);
+	ToolRunner(ToolWrapper* pWrapper);
 	~ToolRunner();
 	
 	int Execute();
 
 	bool GetThreadedExecution();
 
-	const ToolDefinition* GetToolDef();
+	//const ToolDefinition* GetToolDef();
 
 	ToolRunner* m_pNext;
-
-	int GetExitCode();
 
 protected:
 	int Run_ShellExecute(LPCTSTR command, LPCTSTR params, LPCTSTR dir);
@@ -182,183 +221,96 @@ protected:
 	virtual void Run();
 	virtual void OnException();
 
+	int GetExitCode();
+	void PostRun();
+
 protected:
-	CChildFrame*		m_pChild;
-	ToolDefinition*		m_pTool;
+	ToolWrapper*		m_pWrapper;
 	int					m_RetCode;
-	ToolDefinition*		m_pCopyDef;
+	//ToolDefinition*		m_pCopyDef;
 	IToolOutputSink*	m_pOutputter;
 };
 
-/**
- * @param t_bDoc True if the implementing class is a document, and thus has a Revert() method.
- */
-template <class T, bool t_bDoc = true>
-class ToolOwner : public IToolOutputSink
+template <class TWindowOwner, class TOutputSink>
+class ToolWrapperT : public ToolWrapper
 {
+	public:
+		ToolWrapperT(TWindowOwner* pWindowOwner, TOutputSink* pOutputSink, CChildFrame* pActiveChild, const ToolDefinition& definition)
+			:ToolWrapper(pActiveChild, definition)
+		{
+			m_pWindowOwner = pWindowOwner;
+			m_pOutputSink = pOutputSink;
+		}
+
+		virtual ~ToolWrapperT(){}
+
+		virtual void Revert() 
+		{
+			if( m_pActiveChild != NULL )
+				m_pActiveChild->Revert();
+		}
+
+		virtual void ShowOutputWindow()
+		{
+			m_pWindowOwner->ToggleOutputWindow(true, true);
+		}
+
+		virtual void _AddToolOutput(LPCTSTR output, int nLength = -1)
+		{
+			ShowOutputWindow();
+			m_pOutputSink->AddToolOutput(output, nLength);
+		}
+
+		virtual void SetToolBasePath(LPCTSTR path)
+		{
+			m_pOutputSink->SetToolBasePath(path);
+		}
+
+		virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL)
+		{
+			m_pOutputSink->SetToolParser(bBuiltIn, customExpression);
+		}
+
 	protected:
-		void OnRunTool(LPVOID pVoid)
+		TWindowOwner*	m_pWindowOwner;
+		TOutputSink*	m_pOutputSink;
+};
+
+typedef void* ToolOwnerID;
+
+/**
+ * To run a tool, the caller must orphan a ToolWrapper instance to the
+ * ToolOwner class. This class is then used to provide access to the 
+ * methods necessary for a tool to be run with output capturing etc.
+ */
+class ToolOwner : public Singleton<ToolOwner, SINGLETON_AUTO_DELETE>
+{
+	friend class Singleton<ToolOwner, SINGLETON_AUTO_DELETE>;
+
+	public:
+		void RunTool(ToolWrapper* pTool, ToolOwnerID OwnerID);
+
+		void KillTools(bool bWaitForKill, ToolOwnerID OwnerID = 0);
+
+		void MarkToolForDeletion(ToolRunner* pRunningTool);
+
+		bool HaveRunningTools(ToolOwnerID OwnerID = 0);
+
+	protected:
+		ToolOwner();
+		~ToolOwner();
+
+		struct _ToolWrapper
 		{
-			T* pT = static_cast<T*>(this);
-			ToolDefinition* pTool = reinterpret_cast<ToolDefinition*>(pVoid);
-			ToolRunner *r = new ToolRunner(pT, pTool, pTool->GlobalOutput() ? GetGlobalOutputSink() : this );
-			
-			bool bThreaded = r->GetThreadedExecution();
-			if(bThreaded)
-				AddRunningTool(r);
-			
-			if(pTool->SaveAll())
-				g_Context.m_frame->SaveAll();
+			ToolOwnerID		OwnerID;
+			ToolWrapper*	pWrapper;
+			ToolRunner*		pRunner;
+			bool			bDelete;
+		};
 
-			r->Execute();
-			
-			if(!bThreaded)
-			{
-				PostRun(r, pTool);
+		typedef std::list<_ToolWrapper>	RTOOLS_LIST;
 
-				delete r;
-			}
-		}
-
-		LRESULT OnToggleOutputWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
-		{
-			T* pT = static_cast<T*>(this);
-			pT->ToggleOutputWindow(wParam != 0, lParam != 0);
-
-			return 0;
-		}
-
-		virtual void _AddToolOutput(LPCSTR outputstring, int nLength = -1)
-		{
-			T* pT = static_cast<T*>(this);
-			
-			// We do a sendmessage so that the windows are created in the 
-			// window thread, and not in any calling thread.
-			pT->SendMessage(PN_TOGGLEOUTPUT, 1, 1);
-
-			pT->AddToolOutput(outputstring, nLength);
-		}
-
-		// Default implementation while the framework evolves.
-		virtual void SetToolBasePath(LPCTSTR path){};
-		virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL){};
-
-		void AddRunningTool(ToolRunner* pRunner)
-		{
-			T* pT = static_cast<T*>(this);
-
-			CSSCritLock lock(&m_crRunningTools);
-
-			if(m_pFirstTool)
-				pRunner->m_pNext = m_pFirstTool;
-
-			m_pFirstTool = pRunner;
-
-			pT->UpdateRunningTools();
-		}
-
-		void ToolFinished(ToolRunner* pRunner)
-		{
-			T* pT = static_cast<T*>(this);
-
-			CSSCritLock lock(&m_crRunningTools);
-
-			if(m_pFirstTool)
-			{
-				ToolRunner* pTool = m_pFirstTool;
-				ToolRunner* pP = NULL;
-
-				while(pTool != NULL && pTool != pRunner)
-				{
-					pP = pTool;
-					pTool = pTool->m_pNext;
-				}
-
-				if(pTool)
-				{
-					if(pP)
-						pP->m_pNext = pTool->m_pNext;
-
-					if(m_pFirstTool == pTool)
-						m_pFirstTool = pTool->m_pNext;
-				}
-
-				do{
-				}
-				while(!pRunner->GetStopped(20));
-
-				if(pRunner->GetToolDef())
-				{
-					PostRun(pRunner, pRunner->GetToolDef());
-				}
-
-				delete pRunner;
-
-				pT->UpdateRunningTools();
-			}
-		}
-
-		void PostRun(ToolRunner* r, const ToolDefinition* t)
-		{
-			T* pT = static_cast<T*>(this);
-
-			if( t->CaptureOutput() )
-			{
-				tstring exitcode(_T("\n> Process Exit Code: "));
-				exitcode += IntToTString(r->GetExitCode());
-				exitcode += _T("\n");
-				
-				IToolOutputSink* pSink = t->GlobalOutput() ? 
-					GetGlobalOutputSink() : pT;
-				
-				pSink->_AddToolOutput(exitcode.c_str());
-			}
-
-			if(t_bDoc)
-			{
-				if( t->IsFilter() )
-					pT->Revert();
-			}
-		}
-
-		void KillTools(bool bWaitForKill)
-		{
-			int iLoopCount = 0;
-
-			// Signal to all tools to exit, scope to enter and exit critical section
-			{
-				CSSCritLock lock(&m_crRunningTools);
-
-				ToolRunner* pTool = m_pFirstTool;
-				while(pTool)
-				{
-					pTool->SetCanRun(false);
-					pTool = pTool->m_pNext;
-				}
-			}
-
-			while(bWaitForKill)
-			{
-				// Normally, we give all the tools a chance to exit before continuing...
-				Sleep(100);
-				iLoopCount++;
-
-				// Don't tolerate more than 5 seconds of waiting...
-				if(iLoopCount > 50)
-					break;
-
-				{
-					CSSCritLock lock(&m_crRunningTools);
-					if(!m_pFirstTool)
-						break;
-				}
-			}
-		}
-
-		IToolOutputSink* GetGlobalOutputSink()
-		{
-			return g_Context.m_frame->GetGlobalOutputSink();
-		}
+		void cleanup();
 
 		//void UpdateTools(CScheme* pScheme);
 
@@ -368,6 +320,7 @@ class ToolOwner : public IToolOutputSink
 
 	protected:
 		CRITICAL_SECTION	m_crRunningTools;
+		RTOOLS_LIST			m_RunningTools;
 		ToolRunner*			m_pFirstTool;
 };
 

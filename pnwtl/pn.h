@@ -26,10 +26,12 @@
 
 #include "pntypes.h"
 
+class ToolWrapper;
+
 struct IMainFrame
 {
 	virtual CWindow* GetWindow() = 0;
-	virtual IToolOutputSink* GetGlobalOutputSink() = 0;
+	virtual ToolWrapper* MakeGlobalOutputWrapper(ToolDefinition* pDefinition) = 0;
 	virtual void AddMRUEntry(LPCTSTR lpszFile) = 0;
 	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme) = 0;
 	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL) = 0;

@@ -24,13 +24,10 @@ bool CChildFrame::s_bFirstChild = true;
 
 CChildFrame::CChildFrame()
 {
-	::InitializeCriticalSection(&m_crRunningTools);
-
 	m_hWndOutput = NULL;
 	m_hImgList = NULL;
 	m_pSplitter = NULL;
 	m_pOutputView = NULL;
-	m_pFirstTool = NULL;
 	
 	m_FileAge = -1;
 	
@@ -48,10 +45,12 @@ CChildFrame::CChildFrame()
 
 CChildFrame::~CChildFrame()
 {
-	if(m_pFirstTool)
-		KillTools(false); // Can't afford to wait, no "completed" events will get through...
-
-	::DeleteCriticalSection(&m_crRunningTools);
+	if( ToolOwner::HasInstance() )
+	{
+		// Can't afford to wait, no "completed" events will get through...
+		// That isn't actually true any more, but we'll leave it as no wait for now.
+		ToolOwner::GetInstance()->KillTools(false, this);
+	}
 
 	if(m_hImgList)
 		::ImageList_Destroy(m_hImgList);
@@ -168,6 +167,32 @@ void CChildFrame::SetupToolbar()
 	m_hWndToolBar = toolbar.Detach();
 }
 
+void CChildFrame::EnsureOutputWindow()
+{
+	if(!m_pSplitter)
+	{
+		m_pSplitter = new CCFSplitter(this);
+		
+		m_pSplitter->SetHorizontal( COptionsManager::GetInstance()->Get(PNSK_EDITOR, _T("OutputSplitHorizontal"), true) );
+
+		CRect rc;
+		GetClientRect(rc);
+		UpdateBarsPosition(rc, FALSE);
+
+		CRect rc2(rc);
+		rc2.top += (rc.Height() / 4) * 3;
+
+		m_pOutputView = new COutputView;
+		m_pOutputView->Create(m_hWnd, rc2, _T("Output"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
+		m_hWndOutput = m_pOutputView->m_hWnd;
+
+		m_pSplitter->Create(m_hWnd, rc, _T("Splitter"), 0, 0);
+		m_pSplitter->SetPanes((HWND)m_view, m_pOutputView->m_hWnd);
+		m_pSplitter->ProportionSplit();
+		m_pSplitter->SetSinglePaneMode(SPLITTER_TOP);
+	}
+}
+
 void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 {
 	bool bShow;
@@ -177,33 +202,11 @@ void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 	else
 		bShow = !bVisible;
 
+	EnsureOutputWindow();
+
 	if(bShow && !bVisible)
 	{
-		if(!m_pSplitter)
-		{
-			m_pSplitter = new CCFSplitter(this);
-			
-			m_pSplitter->SetHorizontal( COptionsManager::GetInstance()->Get(PNSK_EDITOR, _T("OutputSplitHorizontal"), true) );
-
-			CRect rc;
-			GetClientRect(rc);
-			UpdateBarsPosition(rc, FALSE);
-
-			CRect rc2(rc);
-			rc2.top += (rc.Height() / 4) * 3;
-
-			m_pOutputView = new COutputView;
-			m_pOutputView->Create(m_hWnd, rc2, _T("Output"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
-			m_hWndOutput = m_pOutputView->m_hWnd;
-
-			m_pSplitter->Create(m_hWnd, rc, _T("Splitter"), 0, 0);
-			m_pSplitter->SetPanes((HWND)m_view, m_pOutputView->m_hWnd);
-			m_pSplitter->ProportionSplit();
-		}
-		else 
-		{
-			m_pSplitter->DisableSinglePaneMode();
-		}
+		m_pSplitter->DisableSinglePaneMode();
 	}
 	else if(!bShow && bVisible)
 	{
@@ -374,7 +377,10 @@ LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	
 	if(!CanClose())
 	{
-		KillTools(true);
+		if( ToolOwner::HasInstance() )
+		{
+			ToolOwner::GetInstance()->KillTools(true, this);
+		}
 
 		bHandled = TRUE;
 	}
@@ -467,7 +473,8 @@ LRESULT CChildFrame::OnToggleOutput(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 
 LRESULT CChildFrame::OnToolFinished(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	ToolFinished(reinterpret_cast<ToolRunner*>(lParam));
+	UpdateMenu();
+
 	return 0;
 }
 
@@ -695,7 +702,7 @@ LRESULT CChildFrame::OnLineEndingsConvert(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 LRESULT CChildFrame::OnStopTools(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	// Don't need to wait, we'll assume the user is still using the document.
-	KillTools(false); 
+	ToolOwner::GetInstance()->KillTools(false, this); 
 
 	return 0;
 }
@@ -772,6 +779,36 @@ LRESULT CChildFrame::OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	}
 	else
 		bHandled = FALSE;
+
+	return 0;
+}
+
+class ChildOutputWrapper : public ToolWrapperT<CChildFrame, COutputView>
+{
+typedef ToolWrapperT<CChildFrame, COutputView> baseClass;
+public:
+	ChildOutputWrapper(CChildFrame* pOwner, COutputView* pView, CChildFrame* pActiveChild, const ToolDefinition& definition)
+		: baseClass(pOwner, pView, pActiveChild, definition)
+	{}
+};
+
+LRESULT CChildFrame::OnRunTool(LPVOID pTool)
+{
+	ToolDefinition* pToolDef = static_cast<ToolDefinition*>(pTool);
+	ToolWrapper* pWrapper = NULL;
+	if(	pToolDef->GlobalOutput() )
+	{
+		pWrapper = g_Context.m_frame->MakeGlobalOutputWrapper(pToolDef);
+	}
+	else
+	{
+		EnsureOutputWindow();
+		pWrapper = new ChildOutputWrapper(this, m_pOutputView, this, *pToolDef);
+	}
+
+	pWrapper->SetNotifyWindow(m_hWnd);
+
+	ToolOwner::GetInstance()->RunTool(pWrapper, this);
 
 	return 0;
 }
@@ -1025,15 +1062,16 @@ void CChildFrame::UpdateMenu()
 	menu.CheckMenuItem(ID_TOOLS_LELF, f == PNSF_Unix);
 	menu.CheckMenuItem(ID_TOOLS_USETABS, m_view.GetUseTabs());
 	
-	{
-		// Scope to restrict lock scope.
-		CSSCritLock lock(&m_crRunningTools);
-		menu.EnableMenuItem(ID_TOOLS_STOPTOOLS, m_pFirstTool != NULL);
-	}
+	bool bToolsRunning = false;
+	if( ToolOwner::HasInstance() )
+		bToolsRunning = ToolOwner::GetInstance()->HaveRunningTools(this);
+
+	menu.EnableMenuItem(ID_TOOLS_STOPTOOLS, bToolsRunning);
 
 	g_Context.m_frame->SetActiveScheme(m_hWnd, m_view.GetCurrentScheme());
 }
 
+/*
 void CChildFrame::UpdateRunningTools()
 {
 	UpdateMenu();
@@ -1049,6 +1087,7 @@ IToolOutputSink* CChildFrame::GetOutputSink()
 	ToggleOutputWindow(true, true);
 	return m_pOutputView;
 }
+*/
 
 bool CChildFrame::IsOutputVisible()
 {

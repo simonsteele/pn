@@ -38,8 +38,7 @@ class COutputView;
 		::SendMessage(m_hWndOutput, uMsg, wParam, lParam);
 
 class CChildFrame : public CTabbedMDIChildWindowImpl<CChildFrame>, 
-	public CFromHandle<CChildFrame>, public CSMenuEventHandler,
-	public ToolOwner<CChildFrame>
+	public CFromHandle<CChildFrame>, public CSMenuEventHandler
 {
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MDICHILD)
@@ -103,7 +102,6 @@ public:
 		NOTIFY_CODE_HANDLER(TBN_GETINFOTIP, OnGetInfoTip)
 
 		IMPLEMENT_FROMHANDLE()
-		IMPLEMENT_TOOLOWNER()
 
 		LOCAL_MENUCOMMAND(MENUMESSAGE_CHANGESCHEME)
 		LOCAL_MENUCOMMAND(TOOLS_RUNTOOL)
@@ -206,6 +204,8 @@ public:
 	LRESULT OnUseTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
+	LRESULT OnRunTool(LPVOID pTool);
+
 	////////////////////////////////////////////////////
 	// Notify Handlers
 
@@ -242,10 +242,11 @@ public:
 	////////////////////////////////////////////////////
 	// ToolOwner needed methods.
 
-	void UpdateRunningTools();
+	void EnsureOutputWindow();
 	void ToggleOutputWindow(bool bSetValue = false, bool bSetShowing = true);
-	void AddToolOutput(LPCSTR outputstring, int nLength = -1);
-	IToolOutputSink* GetOutputSink();
+	//void UpdateRunningTools();
+	//void AddToolOutput(LPCSTR outputstring, int nLength = -1);
+	//IToolOutputSink* GetOutputSink();
 
 protected:
 

@@ -25,8 +25,7 @@ namespace PCRE {
 /**
  * Scintilla window with special output handling.
  */
-class COutputView : public CScintillaWindowImpl< COutputView, CScintillaImpl >, 
-	public IToolOutputSink
+class COutputView : public CScintillaWindowImpl< COutputView, CScintillaImpl >
 {
 typedef CScintillaWindowImpl< COutputView, CScintillaImpl > baseClass;
 
@@ -48,7 +47,7 @@ public:
 
 // Implement IToolOutputSink
 public:
-	virtual void _AddToolOutput(LPCTSTR output, int nLength = -1);
+	virtual void AddToolOutput(LPCTSTR output, int nLength = -1);
 	virtual void SetToolBasePath(LPCTSTR path);
 	virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL);
 

@@ -47,7 +47,7 @@ typedef struct tagIsOpenStruct : public tagEnumChildrenStruct
  * @brief PN (WTL Edition) Main MDI Frame
  */
 class CMainFrame : public CPNDockingTabbedMDIFrameWindow<CMainFrame>, public IMainFrame, public CUpdateUI<CMainFrame>,
-		public CMessageFilter, public CIdleHandler, public CSMenuEventHandler, public ToolOwner<CMainFrame, false>
+		public CMessageFilter, public CIdleHandler, public CSMenuEventHandler
 {
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
@@ -97,7 +97,6 @@ public:
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SB, OnWebSFBug)
 		COMMAND_RANGE_HANDLER(ID_MRUFILE_BASE, (ID_MRUFILE_BASE+15), OnMRUSelected)
 		ROUTE_MENUCOMMANDS()
-		IMPLEMENT_TOOLOWNER()
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
 		CHAIN_MSG_MAP(baseClass)
@@ -175,7 +174,8 @@ public:
 
 public:
 	virtual CWindow* GetWindow();
-	virtual IToolOutputSink* GetGlobalOutputSink();
+	//virtual IToolOutputSink* GetGlobalOutputSink();
+	virtual ToolWrapper* MakeGlobalOutputWrapper(ToolDefinition* pDefinition);
 	virtual void AddMRUEntry(LPCTSTR lpszFile);
 	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme);
 	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL);

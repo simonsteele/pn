@@ -634,6 +634,11 @@ class Singleton : public DelObject
 	public:
 		virtual ~Singleton(){}
 
+		static bool HasInstance()
+		{
+			return s_pTheInstance != NULL;
+		}
+
 		static T* GetInstance()
 		{
 			if(!s_pTheInstance)

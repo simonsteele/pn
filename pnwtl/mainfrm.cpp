@@ -906,9 +906,19 @@ CWindow* CMainFrame::GetWindow()
 	return static_cast<CWindow*>(this);
 }
 
-IToolOutputSink* CMainFrame::GetGlobalOutputSink()
+class GlobalOutputWrapper : public ToolWrapperT<CMainFrame, COutputView>
 {
-	return m_pOutputWnd->GetView();
+typedef ToolWrapperT<CMainFrame, COutputView> baseClass;
+public:
+	GlobalOutputWrapper(CMainFrame* pOwner, COutputView* pView, CChildFrame* pActiveChild, const ToolDefinition& definition)
+		: baseClass(pOwner, pView, pActiveChild, definition)
+	{}
+};
+
+ToolWrapper* CMainFrame::MakeGlobalOutputWrapper(ToolDefinition* pDefinition)
+{
+	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
+	return new GlobalOutputWrapper(this, m_pOutputWnd->GetView(), pChild, *pDefinition);
 }
 
 void CMainFrame::AddMRUEntry(LPCTSTR lpszFile)

@@ -283,7 +283,7 @@ void COutputView::SafeAppendText(LPCSTR s, int len)
 	SendMessage(SCI_GOTOLINE, line);
 }
 
-void COutputView::_AddToolOutput(LPCTSTR output, int nLength)
+void COutputView::AddToolOutput(LPCTSTR output, int nLength)
 {
 	SafeAppendText(output, nLength);
 }
