@@ -811,6 +811,12 @@
 				RelativePath=".\projectprops.h">
 			</File>
 			<File
+				RelativePath=".\projectregistry.cpp">
+			</File>
+			<File
+				RelativePath=".\projectregistry.h">
+			</File>
+			<File
 				RelativePath="projectview.cpp">
 			</File>
 			<File

@@ -2,7 +2,7 @@
  * @file projectview.cpp
  * @brief View to display project trees.
  * @author Simon Steele
- * @note Copyright (c) 2002-2004 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -15,6 +15,7 @@
 #include "pndialogs.h"
 #include "include/shellicons.h"
 #include "include/filefinder.h"
+#include "include/atlmsgboxcheck.h"
 #include "MagicFolderWiz.h"
 
 #include "projectprops.h"
@@ -1012,18 +1013,81 @@ LRESULT	CProjectTreeCtrl::OnProjectProperties(WORD /*wNotifyCode*/, WORD /*wID*/
 {
 	CProjPropsView view;
 
-	TemplateLoader l;
-	tstring path;
-	OPTIONS->GetPNPath(path, PNPATH_PROJECTTEMPLATES);
-	path += "test.pnpt";
-	ProjectTemplate* pt = l.FromFile(path.c_str());
+	if(lastItem == NULL)
+		return 0;
 
-	if(view.DisplayFor(lastItem, pt))
+	Project* project;
+
+	switch(lastItem->GetType())
 	{
-		lastItem->SetDirty();
+		case ptProject:
+			project = static_cast<Project*>(lastItem);
+			break;
+		case ptMagicFolder:
+		case ptFolder:
+			project = static_cast<Projects::Folder*>(lastItem)->GetProject();
+			break;
+		case ptFile:
+			{
+				Projects::Folder* pFolder = static_cast<Projects::File*>(lastItem)->GetFolder();
+				project = pFolder->GetProject();
+			}
+			break;
+		default:
+			throw "Whoops, forgot one!";
 	}
 
-	delete pt;
+	if(project == NULL)
+		return 0;
+	
+	PropGroupList groups;
+	UserData ud;
+	PropGroup extrasGroup(_T("Folder"), _T("Magic Folder"));
+
+	if(lastItem->GetType() == ptMagicFolder)
+	{
+		// Set up the ud object with MagicFolder options.
+		Projects::MagicFolder* mf = static_cast<Projects::MagicFolder*>(lastItem);
+		ud.Set(_T(""), _T("Folder"), _T("Folder"), _T("Path"), mf->GetFullPath());
+		ud.Set(_T(""), _T("Folder"), _T("Filters"), _T("IncludeFiles"), mf->GetFilter());
+		ud.Set(_T(""), _T("Folder"), _T("Filters"), _T("ExcludeFolders"), mf->GetFolderFilter());
+		
+		PropCategory* cat = new PropCategory(_T("Folder"), _T("Magic Folders"));
+		ProjectProp* prop = new ProjectProp(_T("Path"), _T("Folder Path"), propFolder);
+		cat->Add(prop);
+		extrasGroup.Add(cat);
+		cat = new PropCategory(_T("Filters"), _T("Filters"));
+		prop = new ProjectProp(_T("IncludeFiles"), _T("Include Files"), propString);
+		cat->Add(prop);
+		prop = new ProjectProp(_T("ExcludeFolders"), _T("Exclude Folders"), propString);
+		cat->Add(prop);
+		extrasGroup.Add(cat);
+
+		groups.insert(groups.end(), &extrasGroup);
+	}
+
+	ProjectTemplate* pTheTemplate = project->GetTemplate();
+	
+	if(pTheTemplate != NULL || extrasGroup.GetCategories().size() > 0)
+	{
+		PropViewSet extraSet(&ud);
+		extraSet.PropertyGroups = &groups;
+		extraSet.PropNamespace = "";
+
+		view.SetExtraSet(&extraSet);
+
+		PropViewSet projectSet(pTheTemplate, lastItem);
+		
+		
+		if(view.DisplayFor(&projectSet))
+		{
+			lastItem->SetDirty();
+		}
+	}
+	else
+	{
+		AtlMessageBoxCheckNet(m_hWnd, IDS_PROJECTNOPROPS, IDR_MAINFRAME);
+	}
 
 	return 0;
 }

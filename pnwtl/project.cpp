@@ -19,6 +19,7 @@
 #include "include/filematcher.h"
 #include "include/encoding.h"
 #include "folderadder.h"
+#include "projectregistry.h"
 
 #if defined (_DEBUG)
 #define new DEBUG_NEW
@@ -402,6 +403,22 @@ Folder* Folder::GetParent()
 	return parent;
 }
 
+Project* Folder::GetProject()
+{
+	Folder* pParent = parent;
+	while(pParent != NULL && pParent->GetType() != ptProject)
+	{
+		pParent = pParent->parent;
+	}
+
+	if(pParent)
+	{
+		return static_cast<Projects::Project*>(pParent);
+	}
+	else
+		return NULL;
+}
+
 void Folder::WriteDefinition(SProjectWriter* definition)
 {
 	genxStartElementLiteral(definition->w, NULL, u("Folder"));
@@ -515,6 +532,8 @@ Project::Project()
 
 	bDirty = true;
 	bExists = true;
+	
+	m_template = NULL;
 }
 
 Project::Project(LPCTSTR projectFile) : Folder()
@@ -525,6 +544,8 @@ Project::Project(LPCTSTR projectFile) : Folder()
 	bExists = FileExists(projectFile);
 		
 	basePath = CFileName(projectFile).GetPath();
+
+	m_template = NULL;
 
 	if(bExists)
 	{
@@ -541,9 +562,6 @@ bool Project::Exists()
 
 void Project::Save()
 {
-	//ofstream str;
-	//str.open(fileName.c_str(), ios_base::out);
-
 	SProjectWriter writer;
 
 	writer.w = genxNew(NULL, NULL, NULL);
@@ -741,6 +759,11 @@ void Project::writeDefinition(SProjectWriter* definition)
 			UNEXPECTED(_T("Could not encode project name for writing."));
 	}
 
+	if(typeID.length() != 0)
+	{
+		genxAddAttributeLiteral(definition->w, NULL, u("typeId"), u(typeID.c_str()));
+	}
+
 	writeContents(definition);
 
 	genxEndElement(definition->w);
@@ -756,6 +779,23 @@ void Project::processProject(XMLAttributes& atts)
 	{
 		// TODO - not valid...
 		name = _T("error");
+	}
+
+	if(atts.getValue(_T("typeId")) != NULL)
+	{
+		typeID = Utf8_Windows1252( ATTVAL(_T("typeId")) );
+		if(typeID.length() > 0)
+		{
+			ProjectTemplate* pTemplate = Registry::GetInstance()->FromID(typeID.c_str());
+			if(pTemplate != NULL)
+			{
+				m_template = pTemplate;
+			}
+			else
+			{
+				// Log could not find template
+			}
+		}
 	}
 }
 
@@ -845,6 +885,11 @@ void Project::processUserData(LPCTSTR name, XMLAttributes& atts)
 void Project::SetDirty()
 {
 	bDirty = true;
+}
+
+ProjectTemplate* Project::GetTemplate() const
+{
+	return m_template;
 }
 
 //////////////////////////////////////////////////////////////////////////////

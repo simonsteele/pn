@@ -14,6 +14,63 @@
 #include "projectprops.h"
 #include "projpropsview.h"
 
+using namespace ProjPropsInternal;
+
+PropViewSet::PropViewSet(Projects::UserData* userData)
+{
+	m_userData = *userData;
+	m_realUserData = userData;
+}
+
+PropViewSet::PropViewSet(Projects::ProjectTemplate* theTemplate, Projects::ProjectType* lastItem)
+{
+	m_userData = lastItem->GetUserData();
+	m_realUserData = &lastItem->GetUserData();
+	if(theTemplate)
+	{
+		PropNamespace = theTemplate->GetNamespace();
+		Projects::PropSet* ps = theTemplate->GetProperties(lastItem->GetType());
+		if(ps)
+			PropertyGroups = &ps->GetGroups();
+		else
+			PropertyGroups = NULL;
+	}
+	else
+	{
+		PropNamespace = _T("");
+		PropertyGroups = NULL;
+	}
+}
+
+Projects::UserData* PropViewSet::GetUserData()
+{
+	return &m_userData;
+}
+
+bool PropViewSet::IsValid()
+{
+	return (PropertyGroups != NULL && m_realUserData != NULL && PropertyGroups->size() > 0);
+}
+
+void PropViewSet::TransferSettings()
+{
+	*m_realUserData = m_userData;
+}
+
+CProjPropsView::CProjPropsView()
+{
+	m_pExtraSet = NULL;
+}
+
+CProjPropsView::~CProjPropsView()
+{
+	for(DG_LIST::const_iterator i = m_dglist.begin(); i != m_dglist.end(); ++i)
+	{
+		delete (*i);
+	}
+	m_dglist.clear();
+}
+
 LRESULT CProjPropsView::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	m_props.SubclassWindow(GetDlgItem(IDC_LISTPROPS));
@@ -22,7 +79,11 @@ LRESULT CProjPropsView::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	// Categorized properties TODO: make this optional.
 	m_props.SetExtendedListStyle(PLS_EX_CATEGORIZED | PLS_EX_XPLOOK);
 
-	displayGroups(m_pPropSet->GetGroups());
+	if(m_pExtraSet->IsValid())
+		displayGroups(m_pExtraSet);
+
+	if(m_pMainSet->IsValid())
+		displayGroups(m_pMainSet);
 	
 	m_tree.SelectItem( m_tree.GetRootItem() );
 
@@ -39,7 +100,12 @@ LRESULT CProjPropsView::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, B
 {
 	// Make sure we get all of the modified options (if any);
 	transferOptions();
-	m_pCurItem->GetUserData() = m_nodeData;
+	
+	if(m_pMainSet->IsValid())
+		m_pMainSet->TransferSettings();
+
+	if(m_pExtraSet->IsValid())
+		m_pExtraSet->TransferSettings();
 
 	EndDialog(wID);
 	return 0;
@@ -56,7 +122,7 @@ LRESULT CProjPropsView::OnTreeSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 	LPNMTREEVIEW pN = reinterpret_cast<LPNMTREEVIEW>(pnmh);
 	if(pnmh->code == TVN_SELCHANGED)
 	{
-		Projects::PropGroup* pGroup = reinterpret_cast<Projects::PropGroup*>( m_tree.GetItemData( pN->itemNew.hItem ) );
+		DisplayGroup* pGroup = reinterpret_cast<DisplayGroup*>( m_tree.GetItemData( pN->itemNew.hItem ) );
 		if(pGroup != NULL)
 		{
 			selectGroup(pGroup);
@@ -66,31 +132,40 @@ LRESULT CProjPropsView::OnTreeSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 	return 0;
 }
 
-bool CProjPropsView::DisplayFor(Projects::ProjectType* pItem, Projects::ProjectTemplate* pTemplate)
+void CProjPropsView::SetExtraSet(PropViewSet* viewSet)
 {
-	PNASSERT(pItem != NULL);
-	PNASSERT(pTemplate != NULL);
+	m_pExtraSet = viewSet;
+}
 
-	m_pCurItem = pItem;
-	m_pPropSet = pTemplate->GetProperties(pItem->GetType());
-	m_namespace = pTemplate->GetNamespace();
-	m_nodeData = pItem->GetUserData();
+bool CProjPropsView::DisplayFor(PropViewSet* viewSet)
+{
+	PNASSERT(viewSet != NULL);
+
+	m_pMainSet = viewSet;
 
 	return DoModal() == IDOK;
 }
 
-void CProjPropsView::displayGroups(Projects::PropGroupList& groups, HTREEITEM hParent)
+void CProjPropsView::displayGroups(PropViewSet* viewSet, HTREEITEM hParent)
+{
+	Projects::PropGroupList& groups = *viewSet->PropertyGroups;
+	displayGroups(groups, viewSet, hParent);
+}
+
+void CProjPropsView::displayGroups(Projects::PropGroupList& groups, PropViewSet* viewSet, HTREEITEM hParent)
 {
 	HTREEITEM hItem = NULL;
-
 	for(Projects::PropGroupList::const_iterator i = groups.begin();
 		i != groups.end();
 		++i)
 	{
-		hItem = m_tree.InsertItem((*i)->GetName(), hParent, hItem);
-		m_tree.SetItemData(hItem, reinterpret_cast<DWORD_PTR>( (*i) ));
+		hItem = m_tree.InsertItem((*i)->GetDescription(), hParent, hItem);
+		
+		DisplayGroup* dg = new DisplayGroup(viewSet, (*i));
+		m_dglist.insert(m_dglist.end(), dg);
+        m_tree.SetItemData(hItem, reinterpret_cast<DWORD_PTR>( dg ));
 
-		displayGroups((*i)->GetSubGroups(), hItem);
+		displayGroups((*i)->GetSubGroups(), viewSet, hItem);
 	}
 }
 
@@ -119,14 +194,14 @@ HPROPERTY CProjPropsView::createPropertyItem(
 	case Projects::propBool:
 		{
 			//ret = m_props.AddItem( PropCreateSimple(prop->GetDescription(), false) );
-			bool bVal = m_nodeData.Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), false);
+			bool bVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), false);
 			ret = PropCreateCheckButton(prop->GetDescription(), bVal);
 		}
 		break;
 
 	case Projects::propInt:
 		{
-			int iVal = m_nodeData.Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), 0);
+			int iVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), 0);
 			ret = PropCreateSimple(prop->GetDescription(), iVal);
 		}
 		break;
@@ -135,7 +210,7 @@ HPROPERTY CProjPropsView::createPropertyItem(
 		{
 			CPropertyListItem* pListItem = new CPropertyListItem(prop->GetDescription(), 0);
 
-			LPCTSTR szVal = m_nodeData.Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
+			LPCTSTR szVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
 			LPCTSTR szSetVal = NULL; //TODO: Need to do the default here.
 
 			const Projects::ValueList& values = static_cast<Projects::ListProp*>(prop)->GetValues();
@@ -162,28 +237,28 @@ HPROPERTY CProjPropsView::createPropertyItem(
 
 	case Projects::propString:
 		{
-			LPCTSTR szVal = m_nodeData.Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
+			LPCTSTR szVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
 			ret = PropCreateSimple(prop->GetDescription(), szVal != NULL ? szVal : _T(""));
 		}
 		break;
 
 	case Projects::propLongString:
 		{
-			LPCTSTR szVal = m_nodeData.Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
+			LPCTSTR szVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
 			ret = PropCreateSimple(prop->GetDescription(), szVal != NULL ? szVal : _T(""));
 		}
 		break;
 
 	case Projects::propFile:
 		{
-			LPCTSTR szVal = m_nodeData.Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
+			LPCTSTR szVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
 			ret = PropCreateFileName(prop->GetDescription(), szVal != NULL ? szVal : _T(""));
 		}
 		break;
 
 	case Projects::propFolder:
 		{
-			LPCTSTR szVal = m_nodeData.Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
+			LPCTSTR szVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
 			ret = PropCreateFileName(prop->GetDescription(), szVal != NULL ? szVal : _T(""));
 		}
 		break;
@@ -209,15 +284,19 @@ void CProjPropsView::clear()
 	m_props.ResetContent();
 }
 
-void CProjPropsView::selectGroup(Projects::PropGroup* group)
+void CProjPropsView::selectGroup(ProjPropsInternal::DisplayGroup* group)
 {
 	if(m_props.GetCount() > 0)
 	{
 		transferOptions();
 		clear();
 	}
-	displayCategories(group->GetName(), group->GetCategories());
-	m_pCurGroup = group;
+
+	m_pNodeData = group->ViewSet->GetUserData();
+	m_namespace = group->ViewSet->PropNamespace;
+
+	displayCategories(group->Group->GetName(), group->Group->GetCategories());
+	m_pCurGroup = group->Group;
 }
 
 void CProjPropsView::transferOptions()
@@ -251,13 +330,13 @@ void CProjPropsView::transferOptions()
 		{
 			case Projects::propBool:
 			{
-				m_nodeData.Set(m_namespace.c_str(), groupName, catName, prop->GetName(), var.boolVal != FALSE);
+				m_pNodeData->Set(m_namespace.c_str(), groupName, catName, prop->GetName(), var.boolVal != FALSE);
 			}
 			break;
 
 			case Projects::propInt:
 			{
-				m_nodeData.Set(m_namespace.c_str(), groupName, catName, prop->GetName(), var.intVal);
+				m_pNodeData->Set(m_namespace.c_str(), groupName, catName, prop->GetName(), var.intVal);
 			}
 			break;
 
@@ -272,7 +351,7 @@ void CProjPropsView::transferOptions()
 				for(int i = 0; i < selIndex; i++)
 					j++;
 
-				m_nodeData.Set(m_namespace.c_str(), groupName, catName, prop->GetName(), (*j)->Value.c_str());
+				m_pNodeData->Set(m_namespace.c_str(), groupName, catName, prop->GetName(), (*j)->Value.c_str());
 			}
 			break;
 
@@ -283,7 +362,7 @@ void CProjPropsView::transferOptions()
 			{
 				CString str;
 				str = var;
-				m_nodeData.Set(m_namespace.c_str(), groupName, catName, prop->GetName(), str);
+				m_pNodeData->Set(m_namespace.c_str(), groupName, catName, prop->GetName(), str);
 			}
 			break;
 		}

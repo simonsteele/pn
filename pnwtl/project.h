@@ -22,8 +22,10 @@ namespace Projects
 
 typedef struct tagProjectWriter* ProjectWriter;
 
+class Project;
 class Folder;
 class File;
+class ProjectTemplate;
 
 typedef std::list<Folder*>		FOLDER_LIST;
 typedef FOLDER_LIST::iterator	FL_IT;
@@ -147,6 +149,7 @@ class Folder : public ProjectType
 
 		void SetParent(Folder* folder);
 		Folder* GetParent();
+		Project* GetProject();
 
 		virtual void WriteDefinition(ProjectWriter definition);
 
@@ -285,6 +288,8 @@ class Project : public Folder, XMLParseState
 
 		virtual void SetDirty();
 
+		ProjectTemplate* GetTemplate() const;
+
 	//Implement XMLParseState
 	protected:
 		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
@@ -304,18 +309,21 @@ class Project : public Folder, XMLParseState
 		
 		void parse();
 
-		XMLParser*	theParser;
-		Folder*		currentFolder;
-		File*		lastParsedFile;
-		XmlNode*	lastNode;
-		tstring		fileName;
-		tstring		udText;
-		bool		bExists;
-		bool		bDirty;
-		int			parseState;
-		int			nestingLevel;
-		int			udNestingLevel;
-		int			udBase;
+	protected:
+		XMLParser*			theParser;
+		Folder*				currentFolder;
+		File*				lastParsedFile;
+		XmlNode*			lastNode;
+		ProjectTemplate*	m_template;
+		tstring				fileName;
+		tstring				udText;
+		tstring				typeID;
+		bool				bExists;
+		bool				bDirty;
+		int					parseState;
+		int					nestingLevel;
+		int					udNestingLevel;
+		int					udBase;
 };
 
 typedef std::list<Project*>		PROJECT_LIST;

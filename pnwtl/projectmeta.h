@@ -1,3 +1,13 @@
+/**
+ * @file projectmeta.h
+ * @brief Project MetaData
+ * @author Simon Steele
+ * @note Copyright (c) 2004-2005 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #ifndef projectmeta_h__included_49A5C619_DF7C_44c3_B139_7F26780C832E
 #define projectmeta_h__included_49A5C619_DF7C_44c3_B139_7F26780C832E
 
@@ -70,7 +80,25 @@ class XmlAttribute
 		tstring		sValue;
 };
 
-class UserData
+///**
+// * Interface class for things that want to provide meta data.
+// */
+//class IMetaDataProvider
+//{
+//public:
+//	virtual bool Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, bool defval) = 0;
+//	virtual int Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, int defval) = 0;
+//	virtual LPCTSTR Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, LPCTSTR defval) = 0;
+//
+//	virtual void Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, bool val) = 0;
+//	virtual void Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, int val) = 0;
+//	virtual void Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, LPCTSTR val) = 0;
+//};
+
+/**
+ * IMetaDataProvider implementation for XML nodes under project data types.
+ */
+class UserData /*: public IMetaDataProvider*/
 {
 	public:
 		~UserData();
@@ -85,13 +113,13 @@ class UserData
 
 		void Write(ProjectWriter writer);
 
-		bool Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, bool defval);
-		int Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, int defval);
-		LPCTSTR Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, LPCTSTR defval);
+		virtual bool Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, bool defval);
+		virtual int Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, int defval);
+		virtual LPCTSTR Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, LPCTSTR defval);
 
-		void Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, bool val);
-		void Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, int val);
-		void Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, LPCTSTR val);
+		virtual void Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, bool val);
+		virtual void Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, int val);
+		virtual void Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, LPCTSTR val);
 
 		XmlNode* GetCategoryNode(LPCTSTR ns, LPCTSTR group, LPCTSTR category);
 		XmlNode* GetGroupNode(LPCTSTR ns, LPCTSTR group);

@@ -37,6 +37,7 @@
 #define ID_EDITOR_OUTPUTWND             133
 #define IDS_ABOUTVERSIONSTRING          133
 #define IDS_TOOLFORMATSTRINGS           134
+#define IDS_PROJECTNOPROPS              134
 #define IDS_PATTERNFORMATSTRINGS        135
 #define ID_FILE_NEW_PROJECT             136
 #define ID_FILE_NEW_WORKSPACE           137

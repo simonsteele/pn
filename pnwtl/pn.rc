@@ -1552,6 +1552,7 @@ BEGIN
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
     ID_EDITOR_LINENOS       "Toggle line numbers display"
     IDS_ABOUTVERSIONSTRING  "Version: v%s\nCopyright: Copyright © 2002-2004 Simon Steele\n\nProgrammers Notepad uses Scintilla, WTL, GenX, Expat, and PCRE. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmers Notepad."
+    IDS_PROJECTNOPROPS      "This project has no properties."
     IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c: Column"
     ID_FILE_NEW_PROJECT     "Create a new project."
     ID_FILE_NEW_WORKSPACE   "Create a new workspace."

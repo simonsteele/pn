@@ -13,9 +13,49 @@
 
 #include "include/proplist/propertylist.h"
 
+/**
+ * This class represents a meta data item and a set of properties that
+ * that meta data item represents.
+ */
+class PropViewSet
+{
+public:
+	PropViewSet(Projects::UserData* UserData);
+	PropViewSet(Projects::ProjectTemplate* theTemplate, Projects::ProjectType* item);
+	Projects::UserData* GetUserData();
+	
+	bool IsValid();
+	void TransferSettings();
+
+	Projects::PropGroupList* PropertyGroups;
+	tstring PropNamespace;
+
+protected:
+	Projects::UserData m_userData;
+	Projects::UserData* m_realUserData;
+};
+
+namespace ProjPropsInternal
+{
+	class DisplayGroup
+	{
+	public:
+		DisplayGroup(PropViewSet* viewSet, Projects::PropGroup* propGroup) :
+		ViewSet(viewSet), Group(propGroup){}
+		
+		PropViewSet* ViewSet;
+		Projects::PropGroup* Group;
+	};
+
+	typedef std::list<DisplayGroup*> DG_LIST;
+}
+
 class CProjPropsView : public CDialogImpl<CProjPropsView>
 {
 public:
+	CProjPropsView();
+	~CProjPropsView();
+
 	enum { IDD = IDD_PROJPROPS };
 
 	BEGIN_MSG_MAP(CProjPropsView)
@@ -27,7 +67,8 @@ public:
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
 
-	bool DisplayFor(Projects::ProjectType* pItem, Projects::ProjectTemplate* pTemplate);
+	void SetExtraSet(PropViewSet* viewSet);
+	bool DisplayFor(PropViewSet* viewSet);
 
 protected:
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -36,24 +77,29 @@ protected:
 
 	LRESULT OnTreeSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
-	void displayGroups(Projects::PropGroupList& groups, HTREEITEM hParent = NULL);
+	void displayGroups(PropViewSet* viewSet, HTREEITEM hParent = NULL);
+	void displayGroups(Projects::PropGroupList& groups, PropViewSet* viewSet, HTREEITEM hParent = NULL);
 	void displayCategories(LPCTSTR groupName, Projects::PropCatList& categories);
 	void displayProperties(LPCTSTR groupName, LPCTSTR catName, Projects::PropList& properties);
 
 	HPROPERTY createPropertyItem(Projects::ProjectProp* prop, LPCTSTR groupName, LPCTSTR catName);
 
 	void clear();
-	void selectGroup(Projects::PropGroup* group);
+	void selectGroup(ProjPropsInternal::DisplayGroup* group);
 	void transferOptions();
 
 protected:
 	CPropertyListCtrl		m_props;
 	CTreeViewCtrl			m_tree;
-	Projects::PropSet*		m_pPropSet;
+	
+	PropViewSet*			m_pExtraSet;
+	PropViewSet*			m_pMainSet;
+	
 	Projects::PropGroup*	m_pCurGroup;
-	Projects::ProjectType*	m_pCurItem;
-	Projects::UserData		m_nodeData;
+	Projects::UserData*		m_pNodeData;
 	tstring					m_namespace;
+
+	ProjPropsInternal::DG_LIST	m_dglist;
 };
 
 #endif // #ifndef projpropsview_h__included

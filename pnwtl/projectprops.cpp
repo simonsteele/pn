@@ -436,6 +436,8 @@ ProjectTemplate* TemplateLoader::FromFile(LPCTSTR path)
 		err.Format(_T("Error Parsing Project Template XML: %s\n (file: %s, line: %d, column %d)"), 
 			XML_ErrorString(E.GetErrorCode()), E.GetFileName(), E.GetLine(), E.GetColumn());
 		::MessageBox(g_Context.m_frame->GetWindow()->m_hWnd, err, _T("XML Parse Error"), MB_OK | MB_ICONWARNING);
+
+		return NULL;
 	}
 
 	return m_pTemplate;
