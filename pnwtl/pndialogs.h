@@ -761,7 +761,7 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 
 			
 			CRect rcPH;
-			GetDlgItem(IDC_PS_PLACEHOLDER).GetWindowRect(rcPH);
+			::GetWindowRect(GetDlgItem(IDC_PS_PLACEHOLDER), rcPH);
 			ScreenToClient(rcPH);
 			m_stylestab.SetTitle(_T("Styles"));
 			m_keywordstab.SetTitle(_T("Keywords"));

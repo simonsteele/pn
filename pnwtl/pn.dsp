@@ -271,5 +271,13 @@ SOURCE=.\res\toolbar.bmp
 SOURCE=.\res\toolbar1.bmp
 # End Source File
 # End Group
+# Begin Group "include"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\include\ColorButton.cpp
+# End Source File
+# End Group
 # End Target
 # End Project
