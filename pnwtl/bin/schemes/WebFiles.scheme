@@ -225,7 +225,7 @@
 			<keyword key="5" class="dtd"/>
 		</use-keywords>
 		<use-styles>
-			<style name="Default" key="0" fore="000000"/>
+			<style name="Default" key="32" class="default"/>
 			<style name="Tags" key="1" fore="000080"/>
 			<style name="Unknown Tags" key="2" fore="000080"/>
 			<style name="Attributes" key="3" fore="008080"/>
