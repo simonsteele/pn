@@ -584,14 +584,25 @@ public:
 	{
 		if(TFitToContents)
 		{
-			RECT rc;
-			HWND hWnd = dlg->GetDlgItem(IDMESSAGETEXT);
-			::GetWindowRect(hWnd, &rc);
-			int len = ::GetWindowTextLength(hWnd);
-			TCHAR* pszText = new TCHAR[len];
-			::GetWindowText(hWnd, pszText, len);
+			CRect rc;
+			HWND hWndIcon = dlg->GetDlgItem(IDICONCONTROL);
 
-			RECT rcText = { 0, 0, MB_MAX_WIDTH, THeight };
+			int maxTextWidth = MB_MAX_WIDTH - (2 * MB_SPACING);
+			if(hWndIcon)
+				maxTextWidth -= (21 + MB_SPACING);
+
+			// Get the size of the static text display control.
+			CRect rcStatic;
+			HWND hWnd = dlg->GetDlgItem(IDMESSAGETEXT);
+			::GetWindowRect(hWnd, &rcStatic);
+			
+			// Get the text to be displayed.
+			int len = ::GetWindowTextLength(hWnd);
+			TCHAR* pszText = new TCHAR[len+1];
+			::GetWindowText(hWnd, pszText, len+1);
+
+			// Now measure the text display area, with maximums as defined by MB_MAX_WIDTH x THeight
+			RECT rcText = { 0, 0, maxTextWidth, THeight };
 			CClientDC dc(dlg->m_hWnd);
 			HFONT hFont = (HFONT)dlg->SendMessage(WM_GETFONT);
 			HFONT hOldFont = dc.SelectFont(hFont);
@@ -600,10 +611,15 @@ public:
 			dc.SelectFont(hOldFont);
 			delete [] pszText;
 
-			int dx = rcText.right - (rc.right - rc.left);
-			int dy = rcText.bottom - (rc.bottom - rc.top);
+			// rcText now contains the size needed to render the text within that box.
+			// rcStatic is the current size of the text control.
 
-			HWND hWndIcon = dlg->GetDlgItem(IDICONCONTROL);
+			int widthText = rcText.right;
+			int heightText = rcText.bottom;
+
+			int dx = rcStatic.Width() - widthText;
+			int dy = rcStatic.Height() - heightText;
+
 			if(dy < 0 && hWndIcon != NULL)
 			{
 				RECT rcIcon;
@@ -611,8 +627,8 @@ public:
 				dlg->ScreenToClient(&rcIcon);
 
 				dy = ((rcIcon.bottom - rcIcon.top) - rcText.bottom) / 2;
-				dlg->ScreenToClient(&rc);
-				::SetWindowPos(hWnd, NULL, rc.left, rc.top + dy, rcText.right, rcText.bottom, SWP_NOZORDER | SWP_SHOWWINDOW);
+				dlg->ScreenToClient(&rcStatic);
+				::SetWindowPos(hWnd, NULL, rcStatic.left, rcStatic.top + dy, rcText.right, rcText.bottom, SWP_NOZORDER | SWP_SHOWWINDOW);
 				dy = 0;
 			}
 			else
@@ -621,13 +637,16 @@ public:
 			RECT rcMax = { MB_MAX_WIDTH, m_pDlgTemplate->cx, 0, m_pDlgTemplate->cy };
 			dlg->MapDialogRect(&rcMax);
 			dlg->GetWindowRect(&rc);
-			//if(rcMax.left < rc.right - rc.left + dx)
-			if(rcMax.top > rc.right - rc.left + dx)
+			
+			dx = -dx;
+			dy = -dy;
+
+			if(rcMax.left < rc.Width() + dx)
 				dx = 0;
-			if(rcMax.bottom > rc.bottom - rc.top + dy)
+			if(rcMax.bottom < rc.Height() + dy)
 				dy = 0;
 
-			dlg->SetWindowPos(NULL, 0, 0, rc.right - rc.left + dx, rc.bottom - rc.top + dy, SWP_NOZORDER | SWP_NOMOVE | SWP_SHOWWINDOW);
+			dlg->SetWindowPos(NULL, 0, 0, rc.Width() + dx, rc.Height() + dy, SWP_NOZORDER | SWP_NOMOVE | SWP_SHOWWINDOW);
 
 			hWnd = dlg->GetDlgItem(IDCHECKBOX);
 			::GetWindowRect(hWnd, &rc);
