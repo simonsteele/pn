@@ -1,0 +1,365 @@
+/**
+ * @file magicfolder.cpp
+ * @brief Magic Folders in Projects
+ * @author Simon Steele
+ * @note Copyright (c) 2004 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
+#include "stdafx.h"
+#include "project.h"
+
+#include "include/genx/genx.h"
+#include "projectwriter.h"
+
+#include "include/filefinder.h"
+#include "folderadder.h"
+
+#include <algorithm>
+
+#define u(x) (utf8)x
+
+#if defined (_DEBUG)
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
+#if (_MSC_VER >= 1300)
+	#pragma warning( push )
+	#pragma warning(disable: 4996) // see MSDN on hash_map
+	#include <hash_map>
+#else
+	#include <map>
+#endif
+
+namespace Projects
+{
+
+#define MATCH(ename) \
+	(_tcscmp(name, ename) == 0)
+
+#define IN_STATE(state) \
+	(parseState == state)
+
+#define STATE(state) \
+	parseState = state
+
+#define ATTVAL(attname) \
+	atts.getValue(attname)
+
+#define PS_FOLDER	0
+#define PS_FILE		1
+#define PS_USERDATA	2
+
+//////////////////////////////////////////////////////////////////////////////
+// MagicFolder
+//////////////////////////////////////////////////////////////////////////////
+
+MagicFolder::MagicFolder(LPCTSTR name_, LPCTSTR path_, LPCTSTR base_)
+{
+	type = ptMagicFolder;
+
+	parent = NULL;
+	name = name_;
+	
+	// Using CPathName ensures we get trailing slashes...
+	CPathName pathname(path_);
+	CPathName basepath(base_);
+	
+	basePath = basepath.c_str();
+	path = pathname.c_str();
+	
+	read = false;
+	
+	cache = NULL;
+}
+
+MagicFolder::~MagicFolder()
+{
+	if(cache != NULL)
+		delete cache;
+}
+
+void MagicFolder::HandleReadCache(XMLParser* parser, XMLParseState* parent)
+{
+	cache = new MagicFolderCache(name.c_str(), parser, parent);
+}
+
+const FOLDER_LIST& MagicFolder::GetFolders()
+{
+	if(!read)
+		Refresh();
+
+	return children;
+}
+
+const FILE_LIST& MagicFolder::GetFiles()
+{
+	if(!read)
+		Refresh();
+
+	return files;
+}
+
+void MagicFolder::Refresh()
+{
+	MagicFolderAdder mfa;
+	mfa.BuildFolder(this, path.c_str(), _T("*.*"), basePath.c_str(), true);
+
+	read = true;
+}
+
+void MagicFolder::WriteDefinition(SProjectWriter* definition)
+{
+	genxStartElementLiteral(definition->w, NULL, u("MagicFolder"));
+	genxAddAttributeLiteral(definition->w, NULL, u("name"), u(name.c_str()));
+	
+	// We write a relative path to the file if possible
+	CPathName p(path);
+	tstring relPath = p.GetRelativePath(basePath.c_str());
+
+	genxAddAttributeLiteral(definition->w, NULL, u("path"), u(relPath.c_str()));
+	
+	writeContents(definition);
+
+	genxEndElement(definition->w);
+}
+
+void MagicFolder::SetGotContents(bool bGotContents)
+{
+	read = bGotContents;
+}
+
+tstring getMagicFolderPath(MagicFolder* last)
+{
+	if(last->GetParent()->GetType() != ptMagicFolder)
+	{
+		// at the bottom of the magic folder...
+		return tstring("\\");
+	}
+	else
+	{
+		MagicFolder* pParent = reinterpret_cast<MagicFolder*>( last->GetParent() );
+		tstring s = getMagicFolderPath(pParent);
+		s += '\\';
+		s += last->GetName();
+		return s;
+	}
+}
+
+tstring MagicFolder::GetFolderCachePath()
+{
+	tstring path = getMagicFolderPath(this);
+
+	std::transform (path.begin(), path.end(),    // source
+               path.begin(),					// destination
+               tolower);
+
+	return path;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// MagicFolderCache::FolderMap
+//////////////////////////////////////////////////////////////////////////////
+
+class MagicFolderCache::FolderMap : public hash_map<tstring, Folder*>
+{
+	public:
+		typedef MagicFolderCache::FolderMap thisClass;
+		
+		~FolderMap()
+		{
+			for(thisClass::const_iterator i = begin(); i != end(); ++i)
+			{
+				delete (*i).second;
+			}
+
+			clear();
+		}
+};
+
+//////////////////////////////////////////////////////////////////////////////
+// MagicFolderCache Helper Functions
+//////////////////////////////////////////////////////////////////////////////
+
+/**
+ * This function helps to build a stack of folder paths which is used as
+ * we go up and down the folder tree to store the paths of the folders.
+ */
+SStringStack* newStringStackItem(SStringStack* last, LPCTSTR newPathElement)
+{
+	SStringStack* item = new SStringStack;
+	
+	if(last)
+	{
+		item->previous = last;
+		item->val = last->val;
+		item->val += newPathElement;
+		item->val += _T('\\');
+
+		std::transform (item->val.begin(), item->val.end(),    // source
+               item->val.begin(),					// destination
+               tolower);
+	}
+	else
+	{
+		item->val = _T('\\');
+		item->previous = NULL;
+	}
+
+	return item;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// MagicFolderCache
+//////////////////////////////////////////////////////////////////////////////
+
+MagicFolderCache::MagicFolderCache(LPCTSTR name, XMLParser* parser, XMLParseState* parent)
+{
+	_depth = 0;
+	_parent = parent;
+	_parser = parser;
+	_pathStack = newStringStackItem(NULL, NULL);
+	_map = new FolderMap;
+	
+	// Set up the root folder...
+	_current = new Folder(name, _T(""));
+	_map->insert(MagicFolderCache::FolderMap::value_type(_pathStack->val, _current));
+
+	STATE( PS_FOLDER );
+	_parser->SetParseState(this);
+}
+
+MagicFolderCache::~MagicFolderCache()
+{
+	delete _map;
+}
+
+Folder* MagicFolderCache::GetCachedFolder(MagicFolder* actual)
+{
+	tstring path = actual->GetFolderCachePath();
+	MagicFolderCache::FolderMap::const_iterator i = _map->find(path);
+	if(i != _map->end())
+	{
+		return (*i).second;
+	}
+	else
+		return NULL;
+}
+
+void MagicFolderCache::startElement(LPCTSTR name, XMLAttributes& atts)
+{
+	if( IN_STATE( PS_FOLDER ) )
+	{
+		if( MATCH(_T("MagicFolder")) )
+		{
+			_depth++;
+			
+			// Push this folder path onto the path stack...
+			_pathStack = newStringStackItem(_pathStack, atts.getValue(_T("name")));
+			
+			// Store a folder object which will hold configuration etc.
+			_current = new Folder(_pathStack->val.c_str(), _T(""));
+			_map->insert(MagicFolderCache::FolderMap::value_type(_pathStack->val, _current));
+		}
+		else if( MATCH(_T("File")) )
+		{
+			STATE(PS_FILE);
+			processFile(atts);
+		}
+		else
+		{
+			processUserData(name, atts);
+		}
+	}
+	else if( IN_STATE( PS_FILE ) || IN_STATE( PS_USERDATA ) )
+	{
+		processUserData(name, atts);
+	}
+}
+
+void MagicFolderCache::endElement(LPCTSTR name)
+{
+	if( IN_STATE(PS_FOLDER) )
+	{
+		if( MATCH(_T("MagicFolder")) )
+		{
+			if(_depth == 0)
+			{
+				_parser->SetParseState(_parent);
+				
+				// Get rid of the last path stack element.
+				PNASSERT(_pathStack->previous == NULL);
+				delete _pathStack;
+				_pathStack = NULL;
+			}
+			else
+			{
+				SStringStack* stackOld = _pathStack;
+				
+				// Update the path stack...
+				_pathStack = _pathStack->previous;
+				delete stackOld;
+				_depth--;
+			}
+		}
+	}
+	else if( IN_STATE(PS_FILE) )
+	{
+		STATE(PS_FOLDER);
+	}
+	else if( IN_STATE(PS_USERDATA) )
+	{
+		if(lastNode)
+			lastNode = lastNode->GetParent();
+		udNestingLevel--;
+		if(udNestingLevel == 0)
+			STATE(udBase);
+	}
+}
+
+void MagicFolderCache::characterData(LPCTSTR data, int len)
+{
+	
+}
+
+void MagicFolderCache::processFile(XMLAttributes& atts)
+{
+	_currentFile = _current->AddFile(ATTVAL(_T("path")));
+}
+
+void MagicFolderCache::processUserData(LPCTSTR name, XMLAttributes& atts)
+{
+	if(parseState != PS_USERDATA)
+		udBase = parseState;
+	STATE(PS_USERDATA);
+	udNestingLevel++;
+	
+	XmlNode* pNode = new XmlNode(name);
+	pNode->AddAttributes(atts);
+
+	if(lastNode)
+	{
+		lastNode->AddChild(pNode);
+	}
+	else
+	{
+		switch(udBase)
+		{
+			case PS_FOLDER:
+				_current->GetUserData().Add(pNode);
+			break;
+
+			case PS_FILE:
+				_currentFile->GetUserData().Add(pNode);
+			break;
+		}
+	}
+
+	lastNode = pNode;
+}
+
+} // namespace Projects

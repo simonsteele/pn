@@ -314,6 +314,9 @@
 				RelativePath=".\JumpToDialog.cpp">
 			</File>
 			<File
+				RelativePath=".\magicfolder.cpp">
+			</File>
+			<File
 				RelativePath="mainfrm.cpp">
 			</File>
 			<File
@@ -450,6 +453,9 @@
 				RelativePath=".\finddlg.h">
 			</File>
 			<File
+				RelativePath=".\folderadder.h">
+			</File>
+			<File
 				RelativePath="include\fontcombo.h">
 			</File>
 			<File
@@ -505,6 +511,9 @@
 			</File>
 			<File
 				RelativePath=".\project.h">
+			</File>
+			<File
+				RelativePath=".\projectwriter.h">
 			</File>
 			<File
 				RelativePath=".\resource.h">

@@ -137,11 +137,14 @@ void XMLParser::Reset()
 	
 	XML_SetElementHandler(m_parser, XMLParserStartElement, XMLParserEndElement);
 	XML_SetCharacterDataHandler(m_parser, XMLParserCharacterData);
+
+	SetParseState(m_pState);
 }
 
 void XMLParser::SetParseState(XMLParseState* pState)
 {
 	m_pState = pState;
+	XML_SetUserData(m_parser, m_pState);
 }
 
 bool XMLParser::LoadFile(LPCTSTR filename)
@@ -154,8 +157,6 @@ bool XMLParser::LoadFile(LPCTSTR filename)
 		delete [] m_szFilename;
 	m_szFilename = new TCHAR[_tcslen(filename)+1];
 	_tcscpy(m_szFilename, filename);
-
-	XML_SetUserData(m_parser, m_pState);
 
 	CFile file;
 	file.Open(m_szFilename, 0);

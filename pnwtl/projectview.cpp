@@ -748,6 +748,34 @@ LRESULT CProjectTreeCtrl::OnAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	return 0;
 }
 
+LRESULT CProjectTreeCtrl::OnAddMagicFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(lastItem == NULL)
+		return 0;
+
+	if(lastItem->GetType() == ptProject)
+	{
+		CFolderDialog fd;
+		if(fd.DoModal() == IDOK)
+		{
+			Projects::Folder* folder = static_cast<Projects::Folder*>(lastItem);
+			Projects::MagicFolder* newFolder = new Projects::MagicFolder(fd.GetFolderDisplayName(), fd.GetFolderPath(), folder->GetBasePath());
+			
+			folder->AddChild(newFolder);
+			
+			HTREEITEM hInsertAfter = getLastFolderItem(hLastItem);
+			FOLDER_LIST fl;
+			fl.insert(fl.end(), newFolder);
+			ProjectViewState viewState;
+			buildFolders(hLastItem, fl, viewState);
+
+			Expand(hLastItem);
+		}
+	}
+
+	return 0;
+}
+
 LRESULT CProjectTreeCtrl::OnOpenAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(lastItem == NULL || lastItem->GetType() == ptFile)

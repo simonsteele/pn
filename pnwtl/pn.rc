@@ -609,6 +609,7 @@ BEGIN
     BEGIN
         MENUITEM "&Add Files",                  288
         MENUITEM "&Add New Folder",             293
+        MENUITEM "Add Magic Folder...",         ID_PROJECT_ADDMAGICFOLDER
         MENUITEM SEPARATOR
         MENUITEM "&Open All Files",             ID_PROJECT_OPENALLFILES
         MENUITEM SEPARATOR

@@ -2,7 +2,7 @@
  * @file project.cpp
  * @brief Projects
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2003-2004 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -10,10 +10,12 @@
 
 #include "stdafx.h"
 #include "project.h"
-#include "include/filefinder.h"
-#include "include/genx/genx.h"
 
-#define u(x) (utf8)x
+#include "include/genx/genx.h"
+#include "projectwriter.h"
+
+#include "include/filefinder.h"
+#include "folderadder.h"
 
 #if defined (_DEBUG)
 #define new DEBUG_NEW
@@ -21,7 +23,7 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-#if (_ATL_VER >= 0x0700)
+#if (_MSC_VER >= 1300)
 	#pragma warning( push )
 	#pragma warning(disable: 4996) // see MSDN on hash_map
 	#include <hash_map>
@@ -36,10 +38,11 @@ namespace Projects
 // Parsing Gubbins...
 //////////////////////////////////////////////////////////////////////////////
 
-#define FILENODE	_T("File")
-#define FOLDERNODE	_T("Folder")
-#define PROJECTNODE	_T("Project")
+#define FILENODE		_T("File")
+#define FOLDERNODE		_T("Folder")
+#define PROJECTNODE		_T("Project")
 #define WORKSPACENODE	_T("Workspace")
+#define MAGICFOLDERNODE	_T("MagicFolder")
 
 #define PS_START		0x1
 #define PS_PROJECT		0x2
@@ -68,13 +71,6 @@ namespace Projects
 		else \
 			str = "error"; \
 	}
-
-typedef struct tagProjectWriter
-{
-	genxElement eFile;
-	genxAttribute aFilePath;
-	genxWriter w;
-} SProjectWriter;
 
 //////////////////////////////////////////////////////////////////////////////
 // Xml Data Storage
@@ -219,6 +215,11 @@ void UserData::Add(XmlNode* node)
 const LIST_NODES& UserData::GetNodes()
 {
 	return nodes;
+}
+
+const int UserData::GetCount()
+{
+	return nodes.size();
 }
 
 void UserData::Write(ProjectWriter writer)
@@ -518,67 +519,6 @@ void Folder::AddFile(File* file)
 	file->SetFolder(this);
 }
 
-class FolderAdder : FileFinderImpl<FolderAdder, FolderAdder>
-{
-	typedef FileFinderImpl<FolderAdder, FolderAdder> base;
-	friend base;
-
-public:
-	FolderAdder() : base(this, &FolderAdder::onFind)
-	{
-		pFolder = NULL;
-		pCursor = NULL;
-		setDirChangeCallback(&FolderAdder::onEnterDir);
-		setFinishedDirCallback(&FolderAdder::onLeaveDir);
-	}
-
-	Folder* GetFolder(LPCTSTR path, LPCTSTR filter, LPCTSTR basePath, bool recurse)
-	{
-		lpszBasePath = basePath;
-
-		pFolder = newFolder(path);
-		pCursor = pFolder;
-
-		// make sure the path has a trailing slash, CPathName will do that.
-		CPathName pn(path);
-
-		Find(pn.c_str(), filter, recurse);
-
-		return pFolder;
-	}
-
-protected:
-	Folder* pFolder;
-	Folder* pCursor;
-	LPCTSTR lpszBasePath;
-
-	void onFind(LPCTSTR path, LPCTSTR filename)
-	{
-		tstring fullpath(path);
-		fullpath += filename;
-		pCursor->AddFile(fullpath.c_str());
-	}
-
-	void onEnterDir(LPCTSTR path)
-	{
-		Folder* pFolder = newFolder(path);
-		pCursor->AddChild(pFolder);
-		pCursor = pFolder;
-	}
-
-	void onLeaveDir(LPCTSTR path)
-	{
-		pCursor = pCursor->GetParent();
-	}
-
-	Folder* newFolder(LPCTSTR path)
-	{
-		CPathName fn(path);
-		tstring dirName = fn.GetDirectoryName();
-		return new Folder(dirName.c_str(), lpszBasePath);
-	}
-};
-
 Folder* Folder::AddFolder(LPCTSTR path, LPCTSTR filter, bool recursive)
 {
 	FolderAdder fa;
@@ -708,6 +648,26 @@ bool Folder::MoveChild(Folder* folder, Folder* into)
 	return true;
 }
 
+bool Folder::hasUserData()
+{
+	if(userData.GetCount() != 0)
+		return true;
+
+	for(FILE_IT i = files.begin(); i != files.end(); ++i)
+	{
+		if( (*i)->GetUserData().GetCount() != 0 )
+			return true;
+	}
+
+	for(FL_IT j = children.begin(); j != children.end(); ++j)
+	{
+		if( (*j)->hasUserData() )
+			return true;
+	}
+
+	return false;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // Project
 //////////////////////////////////////////////////////////////////////////////
@@ -808,6 +768,7 @@ void Project::parse()
 	
 	// create a namespace aware parser...
 	XMLParser parser(true);
+	theParser = &parser;
 	parser.SetParseState(this);
 	try
 	{
@@ -817,6 +778,7 @@ void Project::parse()
 	{
 		::OutputDebugString(ex.GetMessage());
 	}
+	theParser = NULL;
 }
 
 void Project::startElement(LPCTSTR name, XMLAttributes& atts)
@@ -843,6 +805,10 @@ void Project::startElement(LPCTSTR name, XMLAttributes& atts)
 			processFile(atts);
 			STATE(PS_FILE);
 		}
+		else if( MATCH( MAGICFOLDERNODE ) )
+		{
+			processMagicFolder(atts);
+		}
 		else
 		{
 			processUserData(name, atts);
@@ -859,6 +825,14 @@ void Project::startElement(LPCTSTR name, XMLAttributes& atts)
 		{
 			nestingLevel++;
 			processFolder(atts);
+		}
+		else if( MATCH( MAGICFOLDERNODE ) )
+		{
+			processMagicFolder(atts);
+		}
+		else
+		{
+			processUserData(name, atts);
 		}
 	}
 	else if( IN_STATE(PS_FILE) )
@@ -934,6 +908,17 @@ void Project::processFolder(XMLAttributes& atts)
 void Project::processFile(XMLAttributes& atts)
 {
 	lastParsedFile = currentFolder->AddFile(ATTVAL(_T("path")));
+}
+
+void Project::processMagicFolder(XMLAttributes& atts)
+{
+	MagicFolder* mf = new MagicFolder(ATTVAL(_T("name")), ATTVAL(_T("path")), basePath.c_str());
+	currentFolder->AddChild(mf);
+	
+	// This will pass over the XML Parsing to the MagicFolder
+	// until the MagicFolder element finishes, when it will
+	// set the handling back to us for the next element.
+	mf->HandleReadCache(theParser, this);
 }
 
 void Project::processUserData(LPCTSTR name, XMLAttributes& atts)
@@ -1321,6 +1306,6 @@ void ProjectViewState::getFolderPath(Folder* folder, tstring path)
 
 } // namespace Projects
 
-#if (_ATL_VER >= 0x0700)
+#if (_MSC_VER >= 1300)
 	#pragma warning( pop ) // 4996 - deprecated hash_map.
 #endif

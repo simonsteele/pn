@@ -31,10 +31,13 @@ typedef FOLDER_LIST::iterator	FL_IT;
 typedef std::list<File*>		FILE_LIST;
 typedef FILE_LIST::iterator		FILE_IT;
 
-typedef enum {ptFile, ptFolder, ptProject, ptWorkspace} PROJECT_TYPE;
+typedef enum {ptFile, ptMagicFile, ptFolder, ptMagicFolder, ptProject, ptWorkspace} PROJECT_TYPE;
 
 class XmlNode;
 class XmlAttribute;
+class FolderAdder;
+class MagicFolderAdder;
+class MagicFolderCache;
 
 typedef std::list<XmlNode*>			LIST_NODES;
 typedef std::list<XmlAttribute*>	LIST_ATTRS;
@@ -91,6 +94,8 @@ class UserData
 		//void AddAttributes(XMLAttributes& atts);
 
 		const LIST_NODES& GetNodes();
+
+		const int GetCount();
 
 		void Write(ProjectWriter writer);
 
@@ -163,7 +168,7 @@ class Folder : public ProjectType
 	public:
 		Folder();
 		Folder(LPCTSTR name_, LPCTSTR basepath);
-		~Folder();
+		virtual ~Folder();
 
 		void SetName(LPCTSTR name_);
 		LPCTSTR GetName();
@@ -176,8 +181,8 @@ class Folder : public ProjectType
 		void AddFile(File* file);
 		Folder* AddFolder(LPCTSTR path, LPCTSTR filter, bool recursive);
 
-		const FOLDER_LIST&	GetFolders();
-		const FILE_LIST&	GetFiles();
+		virtual const FOLDER_LIST&	GetFolders();
+		virtual const FILE_LIST&	GetFiles();
 
 		File* FindFile(LPCTSTR filename);
 		File* FindRelativeFile(LPCTSTR filename);
@@ -191,7 +196,7 @@ class Folder : public ProjectType
 		void SetParent(Folder* folder);
 		Folder* GetParent();
 
-		void WriteDefinition(ProjectWriter definition);
+		virtual void WriteDefinition(ProjectWriter definition);
 
 		UserData& GetUserData();
 
@@ -200,6 +205,7 @@ class Folder : public ProjectType
 
 	protected:
 		void Clear();
+		bool hasUserData();
 		void writeContents(ProjectWriter definition);
 
 		virtual void setDirty();
@@ -212,6 +218,86 @@ class Folder : public ProjectType
 		Folder*		parent;
 
 		UserData	userData;
+};
+
+class MagicFolder : public Folder
+{
+	friend class MagicFolderCache;
+	friend class Project;
+
+	public:
+		MagicFolder(LPCTSTR name_, LPCTSTR path, LPCTSTR basePath);
+		virtual ~MagicFolder();
+
+		virtual const FOLDER_LIST&	GetFolders();
+		virtual const FILE_LIST&	GetFiles();
+
+		virtual void WriteDefinition(ProjectWriter definition);
+
+		void SetGotContents(bool bGotContents);
+
+		void Refresh();
+
+	protected:
+		tstring GetFolderCachePath();
+		void HandleReadCache(XMLParser* parser, XMLParseState* parent);
+
+	protected:
+		tstring				path;
+		bool				read;
+		MagicFolderCache*	cache;
+};
+
+typedef struct tagTStringStack
+{
+	tstring				val;
+	tagTStringStack*	previous;
+} SStringStack;
+
+/**
+ * The MagicFolderCache class holds user data for files and folders that
+ * were configured inside of MagicFolder folders. Because we re-read the
+ * entire tree each time, this class helps us to match up the user-data
+ * for each folder and file, while leaving the data intact for saved projects
+ * so that external tools can use it.
+ *
+ * Each folder is stored in a map with a path like: \src\com\banana\, the parent
+ * of which would be \src\com\. The very top folder is \.
+ */
+class MagicFolderCache : XMLParseState
+{
+	public:
+		MagicFolderCache(LPCTSTR name, XMLParser* parser, XMLParseState* parent);
+		~MagicFolderCache();
+
+		Folder* GetCachedFolder(MagicFolder* actual);
+
+		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
+		virtual void endElement(LPCTSTR name);
+		virtual void characterData(LPCTSTR data, int len);
+
+	protected:
+		void processUserData(LPCTSTR name, XMLAttributes& atts);
+		void processFile(XMLAttributes& atts);
+
+	protected:
+		class FolderMap;
+
+		XMLParser*		_parser;
+		XMLParseState*	_parent;
+		SStringStack*	_pathStack;
+		Folder*			_current;
+		File*			_currentFile;
+		FolderMap*		_map;
+		int				_depth;
+
+		// Like Project
+		Folder*			currentFolder;
+		
+		XmlNode*		lastNode;
+		int				parseState;
+		int				udNestingLevel;
+		int				udBase;
 };
 
 /**
@@ -248,12 +334,14 @@ class Project : public Folder, XMLParseState
 		void processProject(XMLAttributes& atts);
 		void processFolder(XMLAttributes& atts);
 		void processFile(XMLAttributes& atts);
+		void processMagicFolder(XMLAttributes& atts);
 		void processUserData(LPCTSTR name, XMLAttributes& atts);
 
 		virtual void setDirty();
 		
 		void parse();
 
+		XMLParser*	theParser;
 		Folder*		currentFolder;
 		File*		lastParsedFile;
 		XmlNode*	lastNode;
