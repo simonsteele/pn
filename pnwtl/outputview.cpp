@@ -115,9 +115,10 @@ bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 
 		//First check if the file exists as is, if it does then we go with that,
 		//else we try to resolve it.
-		if(! FileExists(filename.c_str()) )
+		CFileName fn(filename.c_str());
+
+		if(! FileExists(fn.c_str()) )
 		{
-			CFileName fn(filename.c_str());
 			if( fn.IsRelativePath() && m_basepath.length() != 0 )
 			{
 				fn.Root( m_basepath.c_str() );
@@ -130,12 +131,22 @@ bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 #endif
 			}
 		}
+		else
+		{
+			// Still need to ensure that the filename is fully qualified.
+			// If the file is found straight away, and is a relative path 
+			// then it must be in the current directory.
+			if( fn.IsRelativePath() )
+			{
+				fn.Root( CFileName::GetCurrentDirectory().c_str() );
+			}
+		}
 
-		if(FileExists(filename.c_str()))
+		if(FileExists(fn.c_str()))
 		{
 			// If the file's already open, just switch to it, otherwise open it.
-			if( !g_Context.m_frame->CheckAlreadyOpen(filename.c_str(), eSwitch) )
-				g_Context.m_frame->OpenFile(filename.c_str());
+			if( !g_Context.m_frame->CheckAlreadyOpen(fn.c_str(), eSwitch) )
+				g_Context.m_frame->OpenFile(fn.c_str());
 
 			if( bLine )
 			{

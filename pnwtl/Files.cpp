@@ -396,7 +396,7 @@ void CFileName::Root(LPCTSTR rootPath)
 		bForwards = true;
 
 	// Make sure there's a trailing slash.
-	if( root[root.length()-1] != _T('\\') || root[root.length()-1] != _T('/') )
+	if( root[root.length()-1] != _T('\\') && root[root.length()-1] != _T('/') )
 		root += (bForwards ? _T('/') : _T('\\'));
 
 	root += m_FileName;
@@ -497,4 +497,11 @@ const tstring& CFileName::ToLower()
                tolower);
 
 	return m_FileName;
+}
+
+tstring CFileName::GetCurrentDirectory()
+{
+	TCHAR buf[MAX_PATH+1];
+	::GetCurrentDirectory(MAX_PATH, buf);
+	return tstring(buf);
 }

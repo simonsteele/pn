@@ -129,6 +129,8 @@ public:
 
 	operator tstring() {return m_FileName;}
 
+	static tstring GetCurrentDirectory();
+
 protected:
 	tstring	m_FileName;
 

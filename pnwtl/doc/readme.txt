@@ -10,7 +10,8 @@ Bug Fixes:
 2) Tool editor dialog output window selector combo fixed (SF Bug #752826).
 3) Line Number display related corruption fixed (SF Bugs #752847 and #753457).
 4) Minor UI bug in tool editor (SF Bug #760347).
-5) Tools order up button doesn't work correctly (SF Bug #752831).
+5) Tools order up button doesn't work correctly (SF Bugs #752831 and #752834).
+6) click error in output window and PN2 always opens file (SF Bug #760351).
 
 What's new?
 -----------
@@ -57,7 +58,7 @@ So what is good?
 7) Support for C++, HTML, XML and Object Pascal. More schemes coming soon.
 8) Highly configurable XML backend for scheme configuration.
 9) The minibar from pn1 is here (see at the bottom of the edit windows).
-10) Scoping / Folding / Outlining (Open a C++ or Pascal file to see this, it's lovely).
+10) Scoping / Folding / Outlining (Open a C++, Pascal or Java file to see this, it's lovely).
 11) Word-wrap.
 12) Schemes configuration.
 13) Tools with output capturing, running in a separate thread. Much better than PN1.
