@@ -28,12 +28,11 @@ public:
 	END_MSG_MAP()
 
 protected:
-	int DoRegExpInsert(LPCTSTR insert, CString& str, int offset)
+	int DoRegExpInsert(CComboBoxEx* pCB, LPCTSTR insert, CString& str, int offset)
 	{
-		///@todo Make the GetLastSel combo for WTL
-		CHARRANGE/*&*/ lastsel /*= m_FindTextCombo.GetLastSel()*/;
-		lastsel.cpMax = 0;
-		lastsel.cpMin = 0;
+		CHARRANGE lastsel;
+		CEdit cbedit = pCB->GetEditCtrl();
+		::SendMessage((HWND)cbedit, EM_GETSEL, (WPARAM)&lastsel.cpMin, (LPARAM)&lastsel.cpMax);
 
 		int strl = str.GetLength();
 		bool sel = (lastsel.cpMin != lastsel.cpMax);
@@ -111,9 +110,18 @@ protected:
 		return offset;
 	}
 
-	void DoREHelperMenu(LPRECT rc)
+	void DoREHelperMenu(LPRECT rc, bool bDoMatches = false)
 	{
-		HMENU hRegExpMenu = ::LoadMenu(_Module.m_hInst, MAKEINTRESOURCE(IDR_POPUP_REGEXP));
+		HMENU hRegExpMenu;
+		if(bDoMatches)
+		{
+			hRegExpMenu = ::LoadMenu(_Module.m_hInst, MAKEINTRESOURCE(IDR_POPUP_REGEXPM));
+		}
+		else
+		{
+			hRegExpMenu = ::LoadMenu(_Module.m_hInst, MAKEINTRESOURCE(IDR_POPUP_REGEXP));
+		}
+
 		HMENU hPopup = ::GetSubMenu(hRegExpMenu, 0);
 
 		::TrackPopupMenu(hPopup, 0, rc->right, rc->top, 0, m_hWnd, NULL);
@@ -146,6 +154,7 @@ public:
 		COMMAND_ID_HANDLER(IDC_REHELPER_BUTTON, OnReHelperClicked)
 		COMMAND_RANGE_HANDLER(ID_REGEXP_ANYCHARACTER, ID_REGEXP_GROUP, OnReInsertClicked)
 		MESSAGE_HANDLER(WM_SHOWWINDOW, OnShowWindow)
+		REFLECT_NOTIFICATIONS ()
 	END_MSG_MAP()
 
 	BEGIN_DDX_MAP(CFindDlg)
@@ -170,7 +179,7 @@ public:
 		m_FindTextCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), CBS_DROPDOWN | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO);
 		::SetWindowPos(m_FindTextCombo, GetDlgItem(IDC_FINDTEXT_DUMMY), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
-		m_ReHelperBtn.Attach(GetDlgItem(IDC_REHELPER_BUTTON));
+		m_ReHelperBtn.SubclassWindow(GetDlgItem(IDC_REHELPER_BUTTON));
 		
 		m_fAC = new CCustomAutoComplete( HKEY_CURRENT_USER, _T("Software\\Echo Software\\PN2\\AutoComplete\\Find")  );
 
@@ -231,6 +240,8 @@ public:
 
 		SFindOptions* pOptions = COptionsManager::GetInstanceRef().GetFindOptions();
 
+		pOptions->Found				= false;
+
 		pOptions->FindText			= m_FindText;
 		pOptions->Direction			= (m_Direction == 1);
 		pOptions->MatchCase			= (m_bMatchCase == TRUE);
@@ -274,7 +285,7 @@ public:
 		CString str;
 		DoDataExchange(TRUE);
 		str = m_FindText;
-		int pos = DoRegExpInsert(Text, str, offset);
+		int pos = DoRegExpInsert(&m_FindTextCombo, Text, str, offset);
 		m_FindTextCombo.SetWindowText(str);
 		m_FindTextCombo.SetFocus();
 		m_FindTextCombo.SetEditSel(pos, pos);
@@ -284,7 +295,7 @@ public:
 
 protected:
 	CComboBoxEx						m_FindTextCombo;
-	CContainedWindowT<CButton>		m_ReHelperBtn;
+	CDropDownButton					m_ReHelperBtn;
 
 	CCustomAutoComplete*			m_fAC;
 
@@ -309,12 +320,14 @@ public:
 		COMMAND_HANDLER(IDC_REHELPER_BUTTON, BN_CLICKED, OnReHelperClicked)
 		COMMAND_HANDLER(IDC_RHELPER_BUTTON, BN_CLICKED, OnReHelper2Clicked)
 		COMMAND_RANGE_HANDLER(ID_REGEXP_ANYCHARACTER, ID_REGEXP_GROUP, OnReHelperMenuItemClicked)
+		COMMAND_RANGE_HANDLER(ID_REGEXP_TAGGEDEXPRESSION1, ID_REGEXP_TAGGEDEXPRESSION9, OnReMatchesMenuItemClicked)
 		MESSAGE_HANDLER(WM_SHOWWINDOW, OnShowWindow)
 		MESSAGE_HANDLER(WM_CLOSE, OnCloseWindow)
 		COMMAND_HANDLER(IDC_FINDNEXT_BUTTON, BN_CLICKED, OnFindNextClicked)
 		COMMAND_HANDLER(IDC_REPLACE_BUTTON, BN_CLICKED, OnReplaceClicked)
 		COMMAND_HANDLER(IDC_REPLACEALL_BUTTON, BN_CLICKED, OnReplaceAllClicked)
 		COMMAND_HANDLER(IDC_REPLACEINSEL_BUTTON, BN_CLICKED, OnReplaceInSelectionClicked)
+		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
 
 	
@@ -334,6 +347,8 @@ public:
 		DoDataExchange(TRUE);
 
 		SReplaceOptions* pOptions = COptionsManager::GetInstanceRef().GetReplaceOptions();
+
+		pOptions->Found = false;
 
 		pOptions->FindText			= m_FindText;
 		pOptions->ReplaceText		= m_ReplaceText;
@@ -355,8 +370,8 @@ public:
 	{
 		m_Direction = 1;
 		
-		m_ReHelperBtn.Attach(GetDlgItem(IDC_REHELPER_BUTTON));
-		m_ReHelperBtn2.Attach(GetDlgItem(IDC_RHELPER_BUTTON));
+		m_ReHelperBtn.SubclassWindow(GetDlgItem(IDC_REHELPER_BUTTON));
+		m_ReHelperBtn2.SubclassWindow(GetDlgItem(IDC_RHELPER_BUTTON));
 
 		CRect rc;
 
@@ -397,6 +412,9 @@ public:
 	
 	LRESULT OnReHelper2Clicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
+		CRect rc;
+		m_ReHelperBtn2.GetWindowRect(&rc);
+		DoREHelperMenu(rc, true);
 		return 0;
 	}
 	
@@ -408,11 +426,28 @@ public:
 		CString str;
 		DoDataExchange(TRUE);
 		str = m_FindText;
-		int pos = DoRegExpInsert(Text, str, offset);
+		int pos = DoRegExpInsert(&m_FindTextCombo, Text, str, offset);
 		m_FindTextCombo.SetWindowText(str);
 		m_FindTextCombo.SetFocus();
 		m_FindTextCombo.SetEditSel(pos, pos);
 		
+		return 0;
+	}
+
+	LRESULT OnReMatchesMenuItemClicked(WORD /*wNotifyCode*/, WORD nID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		int matchno = (nID - ID_REGEXP_TAGGEDEXPRESSION1) + 1;
+		CString Text;
+		Text.Format(_T("\\%d"), matchno);
+
+		CString str;
+		DoDataExchange(TRUE);
+		str = m_ReplaceText;
+		int pos = DoRegExpInsert(&m_ReplaceTextCombo, Text, str, 0);
+		m_ReplaceTextCombo.SetWindowText(str);
+		m_ReplaceTextCombo.SetFocus();
+		m_ReplaceTextCombo.SetEditSel(pos, pos);
+
 		return 0;
 	}
 
@@ -508,13 +543,13 @@ public:
 	}
 
 protected:
-	CComboBoxEx					m_FindTextCombo;
-	CComboBoxEx					m_ReplaceTextCombo;
-	CContainedWindowT<CButton>	m_ReHelperBtn;
-	CContainedWindowT<CButton>	m_ReHelperBtn2;
+	CComboBoxEx				m_FindTextCombo;
+	CComboBoxEx				m_ReplaceTextCombo;
+	CDropDownButton			m_ReHelperBtn;
+	CDropDownButton			m_ReHelperBtn2;
 
-	CCustomAutoComplete*		m_pFAC;
-	CCustomAutoComplete*		m_pRAC;
+	CCustomAutoComplete*	m_pFAC;
+	CCustomAutoComplete*	m_pRAC;
 
 	CString	m_FindText;
 	CString m_ReplaceText;

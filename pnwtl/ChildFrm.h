@@ -612,7 +612,16 @@ public:
 
 	bool Replace(SReplaceOptions* options)
 	{
-		return m_view.ReplaceOnce(options);
+		if(options->Found)
+			return m_view.ReplaceOnce(options);
+		else
+		{
+			m_view.FindNext(options);
+			if(options->Found)
+				return m_view.ReplaceOnce(options);
+			else
+				return false;
+		}
 	}
 
 	void ReplaceAll(SReplaceOptions* options)

@@ -29,6 +29,8 @@
 #include "ChildFrm.h"
 #include "aboutdlg.h"
 
+#include "pnutils.h"
+
 #include "finddlg.h"
 
 #include "MainFrm.h"

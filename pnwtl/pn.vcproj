@@ -268,6 +268,9 @@
 			Name="Resource Files"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
 			<File
+				RelativePath="res\dropdown.bmp">
+			</File>
+			<File
 				RelativePath=".\res\editor.bmp">
 			</File>
 			<File
@@ -286,6 +289,9 @@
 				RelativePath=".\res\toolbar1.bmp">
 			</File>
 		</Filter>
+		<File
+			RelativePath="pn.exe.manifest">
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

@@ -313,68 +313,73 @@ void CScintillaImpl::ManageBraceMatch()
 
 bool CScintillaImpl::FindNext(SFindOptions* pOptions)
 {
-	TextToFind		ft;
 	CharacterRange	cr;
+	int				startPosition, endPosition;
 	bool			bRet = false;
 
-	// Init TextToFind struct
-	memset(&ft, 0, sizeof(TextToFind));
-	
-	GetSel(cr);
-
-	if(!pOptions->Direction)
+	int lenFind = UnSlashAsNeeded(pOptions->FindText, pOptions->UseSlashes, pOptions->UseRegExp);
+	if(lenFind > 0)
 	{
-		ft.chrg.cpMin = cr.cpMin - 1;
-		ft.chrg.cpMax = 0;
-	}
-	else
-	{
-		ft.chrg.cpMin = cr.cpMax;
-		ft.chrg.cpMax = GetLength();
-	}
 
-	///@todo what to do about unicode here?
-	char* lpszTextBuffer = new char[pOptions->FindText.GetLength()+1];
-	ft.lpstrText = lpszTextBuffer;
-	strcpy(lpszTextBuffer, pOptions->FindText);
+		GetSel(cr);
 
-	ft.chrgText.cpMin = 0;
-	ft.chrgText.cpMax = 0;
+		LPTSTR ft = pOptions->FindText.LockBuffer();
+		USES_CONVERSION;
+		const char* findtext = T2A(ft);
 
-	int flags = (pOptions->MatchWholeWord ? SCFIND_WHOLEWORD : 0) |
-				(pOptions->MatchCase ? SCFIND_MATCHCASE : 0) |
-				(pOptions->UseRegExp ? SCFIND_REGEXP : 0);
-
-	///@todo SCFIND_WORDSTART
-
-	int posFind = FindText(flags, &ft);
-
-	if(posFind == -1 && pOptions->Loop)
-	{
 		if(!pOptions->Direction)
 		{
-			ft.chrg.cpMin = GetLength();
-			ft.chrg.cpMax = 0;
+			startPosition = cr.cpMin - 1;
+			endPosition = 0;
 		}
 		else
 		{
-			ft.chrg.cpMin = 0;
-			ft.chrg.cpMax = GetLength();
+			startPosition = cr.cpMax;
+			endPosition = GetLength();
 		}
 
-		posFind = FindText(flags, &ft);
-	}
+		///@todo SCFIND_WORDSTART
+		int flags = (pOptions->MatchWholeWord ? SCFIND_WHOLEWORD : 0) |
+					(pOptions->MatchCase ? SCFIND_MATCHCASE : 0) |
+					(pOptions->UseRegExp ? SCFIND_REGEXP : 0);
 
-	if(posFind != -1)
-	{
-		//GetTargetStart(), GetTargetEnd()
-		EnsureRangeVisible(ft.chrgText.cpMin, ft.chrgText.cpMax);
-		SetSel(ft.chrgText.cpMin, ft.chrgText.cpMax);
-		pOptions->Found = true;
-		bRet = true;
+		SetTargetStart(startPosition);
+		SetTargetEnd(endPosition);
+		SetSearchFlags(flags);
+		
+		int posFind = SearchInTarget(lenFind, findtext);
+
+		if(posFind == -1 && pOptions->Loop)
+		{
+			if(!pOptions->Direction)
+			{
+				startPosition = GetLength();
+				endPosition = 0;
+			}
+			else
+			{
+				startPosition = 0;
+				endPosition = GetLength();
+			}
+
+			SetTargetStart(startPosition);
+			SetTargetEnd(endPosition);
+			posFind = SearchInTarget(lenFind, findtext);
+		}
+
+		if(posFind != -1)
+		{
+			int start = GetTargetStart();
+			int end = GetTargetEnd();
+			EnsureRangeVisible(start, end);
+			SetSel(start, end);
+			pOptions->Found = true;
+			bRet = true;
+		}
+
+		// Must un-lock that string before we return...
+		pOptions->FindText.UnlockBuffer();
 	}
-	
-	delete [] lpszTextBuffer;
 
 	return bRet;
 }

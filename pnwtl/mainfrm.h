@@ -19,7 +19,6 @@
 #endif
 
 #include "files.h"
-#include "pnutils.h"
 
 BOOL CALLBACK CloseChildEnumProc(HWND hWnd, LPARAM lParam);
 
@@ -92,6 +91,7 @@ public:
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
 		COMMAND_ID_HANDLER(ID_FILE_OPEN, OnFileOpen)
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
+		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR_EDIT, OnViewEditBar)
 		COMMAND_ID_HANDLER(ID_VIEW_STATUS_BAR, OnViewStatusBar)
 		COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
 		COMMAND_ID_HANDLER(ID_WINDOW_CASCADE, OnWindowCascade)
@@ -109,6 +109,7 @@ public:
 	BEGIN_UPDATE_UI_MAP(CMainFrame)
 		UPDATE_ELEMENT(ID_VIEW_TOOLBAR, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_STATUS_BAR, UPDUI_MENUPOPUP)
+		UPDATE_ELEMENT(ID_VIEW_TOOLBAR_EDIT, UPDUI_MENUPOPUP)
 		//UPDATE_ELEMENT(ID_FILE_CLOSE, UPDUI_MENUPOPUP)
 	END_UPDATE_UI_MAP()
 
@@ -157,6 +158,7 @@ public:
 		AddSimpleReBarBand(hWndCmdBar);
 		AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
 		AddSimpleReBarBand(hWndEdtToolBar, NULL, FALSE);
+		SizeSimpleReBarBands();
 		
 		CreateSimpleStatusBar(_T(""));
 
@@ -181,9 +183,11 @@ public:
 		m_CmdBar.SetMDIClient(m_hWndMDIClient);
 
 		UIAddToolBar(hWndToolBar);
+		UIAddToolBar(hWndEdtToolBar);
 		UISetCheck(ID_VIEW_TOOLBAR, 1);
+		UISetCheck(ID_VIEW_TOOLBAR_EDIT, 1);
 		UISetCheck(ID_VIEW_STATUS_BAR, 1);
-
+		
 		// register object for message filtering and idle updates
 		CMessageLoop* pLoop = _Module.GetMessageLoop();
 		ATLASSERT(pLoop != NULL);
@@ -404,6 +408,18 @@ public:
 		int nBandIndex = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 1);	// toolbar is 2nd added band
 		rebar.ShowBand(nBandIndex, bVisible);
 		UISetCheck(ID_VIEW_TOOLBAR, bVisible);
+		UpdateLayout();
+		return 0;
+	}
+
+	LRESULT OnViewEditBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		static BOOL bVisible = TRUE; // initially visible
+		bVisible = !bVisible;
+		CReBarCtrl rebar = m_hWndToolBar;
+		int index = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 2);
+		rebar.ShowBand(index, bVisible);
+		UISetCheck(ID_VIEW_TOOLBAR_EDIT, bVisible);
 		UpdateLayout();
 		return 0;
 	}
