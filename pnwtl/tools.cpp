@@ -807,7 +807,7 @@ void SchemeToolsManager::Save()
 				(*j).second->WriteDefinition(writer, (*i));
 			}
 
-			for(SCHEMETOOLS_MAP::const_iterator k = m_projectTools.begin(); k != m_toolSets.end(); ++k)
+			for(SCHEMETOOLS_MAP::const_iterator k = m_projectTools.begin(); k != m_projectTools.end(); ++k)
 			{
 				(*k).second->WriteDefinition(writer, (*i));
 			}
@@ -835,7 +835,7 @@ void SchemeToolsManager::processProject(XMLAttributes& atts)
 	LPCTSTR projectid = atts.getValue(_T("projectid"));
 	if(projectid)
 	{
-		// Only ever one SchemeTools object per named scheme, independent of source files.
+		// Only ever one SchemeTools object per project type id, independent of source files.
 		ProjectTools* old = GetToolsForProject(projectid);
 		PNASSERT(old != NULL);
 		m_pCur = old;

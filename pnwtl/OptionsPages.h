@@ -16,6 +16,11 @@
 #include "SchemeConfig.h"
 #include "tools.h"
 
+namespace Projects
+{
+	class ProjectTemplate;
+}
+
 class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 							public CWinDataExchange<COptionsPageGeneral>
 {
@@ -425,7 +430,7 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 	public:
 		enum {IDD = IDD_PAGE_TOOLS};
 
-		COptionsPageTools(SchemeConfigParser* pSchemes);
+		COptionsPageTools(SchemeConfigParser* pSchemes, SchemeToolsManager* pToolManager);
 		~COptionsPageTools();
 
 		BEGIN_MSG_MAP(COptionsPageTools)
@@ -447,15 +452,20 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 		virtual LPCTSTR GetTreePosition();
 
 	protected:
+		COptionsPageTools(SchemeToolsManager* pToolManager);
+
 		void AddDefinition(ToolDefinition* pDef);
 
 		void EnableButtons();
 		void Update();
 		void SetItem();
 
-		SchemeTools* GetTools();
+		virtual SchemeTools* GetTools();
 
 		bool doToolEditDlg(ToolDefinition* in, ToolDefinition* out);
+
+		virtual CComboBox* getCombo();
+		virtual void updateFromSel(int iSel);
 	
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -480,10 +490,39 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 		SchemeConfig*		m_pScheme;
 		SchemeTools*		m_pCurrent;
 
-		SchemeToolsManager	m_toolstore;
+		SchemeToolsManager*	m_toolstore;
 
 		CArrowButton		m_btnMoveUp;
 		CArrowButton		m_btnMoveDown;
+};
+
+class COptionsPageProjectTools : public COptionsPageTools
+{
+	public:
+		COptionsPageProjectTools(SchemeToolsManager* pToolManager);
+		~COptionsPageProjectTools();
+
+		BEGIN_MSG_MAP(COptionsPageProjectTools)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			CHAIN_MSG_MAP(COptionsPageTools)
+		END_MSG_MAP()
+
+		virtual void OnInitialise();
+		virtual void OnOK();
+		virtual LPCTSTR GetTreePosition();
+
+	protected:
+		virtual SchemeTools* GetTools();
+
+		virtual CComboBox* getCombo();
+		virtual void updateFromSel(int iSel);
+
+	protected:
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+	protected:
+		CComboBox	m_combo;
+		Projects::ProjectTemplate* m_pTemplate;
 };
 
 class COptionsPageNewFiles : public COptionsPageImpl<COptionsPageNewFiles>

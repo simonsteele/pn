@@ -1581,6 +1581,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	}
 
 	SchemeConfigParser		schemeconfig(currentScheme);
+	SchemeToolsManager		toolsmanager;
 	
 	COptionsPageGeneral			general;
 	COptionsPageEditDefaults	editDefs;
@@ -1591,7 +1592,8 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsPageStyle			pageStyle(&schemeconfig);
 	COptionsPageSchemes			pageSchemes(&schemeconfig);
 	COptionsPageNewFiles		pageNewFiles(&schemeconfig);
-	COptionsPageTools			pageTools(&schemeconfig);
+	COptionsPageTools			pageTools(&schemeconfig, &toolsmanager);
+	COptionsPageProjectTools	pageProjectTools(&toolsmanager);
 
 	COptionsPageAFiles			pageAFiles;
 	COptionsPageFileAssoc		pageFileAssoc;
@@ -1609,6 +1611,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	options.AddPage(&pageNewFiles);
 	options.AddPage(&pageFileAssoc);
 	options.AddPage(&pageTools);
+	options.AddPage(&pageProjectTools);
 	options.AddPage(&pageAFiles);
 
 	if( wID != ID_TOOLS_DUMMY )
@@ -1618,11 +1621,14 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 
 	if( options.DoModal() == IDOK )
 	{
-		SchemeToolsManager* pSTM = SchemeToolsManager::GetInstance();
-		///@todo more dirty checking...
+		// Save the modified tool sets...
+		toolsmanager.Save();
 
-		// pass in true to cache menu resources.
-		pSTM->ReLoad(true);
+		// and then re-load them into the main manager...
+		SchemeToolsManager* pSTM = SchemeToolsManager::GetInstance();
+		pSTM->ReLoad(true); // pass in true to cache menu resources.
+
+		///@todo more dirty checking...
 
 		if( pageStyle.IsDirty() || pageSchemes.IsDirty() )
             CSchemeManager::GetInstance()->Compile();

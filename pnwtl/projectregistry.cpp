@@ -91,4 +91,9 @@ void Registry::_onFoundFile(LPCTSTR path, LPCTSTR filename)
 	}
 }
 
+const TEMPLATE_MAP& Registry::GetTemplates() const
+{
+	return m_templates;
+}
+
 }

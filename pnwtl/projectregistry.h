@@ -34,6 +34,8 @@ public:
 	/// Get a Template for the passed ID. Returns NULL if not found.
 	ProjectTemplate* FromID(LPCTSTR id) const;
 
+	const TEMPLATE_MAP& GetTemplates() const;
+
 protected:
 	Registry();
 

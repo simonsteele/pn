@@ -524,11 +524,20 @@ void COptionsPageSchemes::Update()
 // COptionsPageTools
 //////////////////////////////////////////////////////////////////////////////
 
-COptionsPageTools::COptionsPageTools(SchemeConfigParser* pSchemes)
+COptionsPageTools::COptionsPageTools(SchemeConfigParser* pSchemes, SchemeToolsManager* pToolManager)
 {
 	m_pSchemes = pSchemes;
 	m_pScheme = NULL;
 	m_pCurrent = NULL;
+	m_toolstore = pToolManager;
+}
+
+COptionsPageTools::COptionsPageTools(SchemeToolsManager* pToolManager) /*protected*/
+{
+	m_pSchemes = NULL;
+	m_pScheme = NULL;
+	m_pCurrent = NULL;
+	m_toolstore = pToolManager;
 }
 
 COptionsPageTools::~COptionsPageTools()
@@ -591,7 +600,7 @@ void COptionsPageTools::OnInitialise()
 
 void COptionsPageTools::OnOK()
 {
-	m_toolstore.Save();
+	//m_toolstore.Save();
 }
 
 void COptionsPageTools::Update()
@@ -615,22 +624,8 @@ void COptionsPageTools::Update()
 	m_pCurrent = NULL;
 	m_list.DeleteAllItems();
 
-	int iSel = m_combo.GetCurSel();
-	if (iSel != -1)
-	{
-		if(iSel != 0)
-		{
-			m_pScheme = m_combo.GetItemScheme(iSel);
-		}
-		else
-		{
-			// Global Tools
-			m_pScheme = NULL;
-			m_pCurrent = m_toolstore.GetGlobalTools();
-		}
-	}
-	else
-		m_pScheme = NULL;
+	int iSel = getCombo()->GetCurSel();
+	updateFromSel(iSel);
 
 	SchemeTools* pTools = GetTools();
 	if(pTools)
@@ -647,11 +642,35 @@ void COptionsPageTools::Update()
 	EnableButtons();
 }
 
+CComboBox* COptionsPageTools::getCombo()
+{
+	return &m_combo;
+}
+
+void COptionsPageTools::updateFromSel(int iSel)
+{
+	if (iSel != -1)
+	{
+		if(iSel != 0)
+		{
+			m_pScheme = m_combo.GetItemScheme(iSel);
+		}
+		else
+		{
+			// Global Tools
+			m_pScheme = NULL;
+			m_pCurrent = m_toolstore->GetGlobalTools();
+		}
+	}
+	else
+		m_pScheme = NULL;
+}
+
 SchemeTools* COptionsPageTools::GetTools()
 {
 	if(!m_pCurrent)
 	{
-		m_pCurrent = m_toolstore.GetToolsFor(m_pScheme->m_Name);
+		m_pCurrent = m_toolstore->GetToolsFor(m_pScheme->m_Name);
 	}
 		
 	return m_pCurrent;
@@ -691,7 +710,7 @@ void COptionsPageTools::EnableButtons()
 	if(m_bChanging)
 		return;
 
-	bool bEnable = (m_pScheme != NULL || m_combo.GetCurSel() == 0);
+	bool bEnable = (m_pScheme != NULL || getCombo()->GetCurSel() == 0);
 	int iSelIndex = m_list.GetSelectedIndex();
 
 	::EnableWindow(GetDlgItem(IDC_TOOLS_ADDBUTTON), bEnable);
@@ -731,7 +750,7 @@ void COptionsPageTools::AddDefinition(ToolDefinition* pDef)
 
 LRESULT COptionsPageTools::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	SourcedToolDefinition* pDef = new SourcedToolDefinition(m_toolstore.GetDefaultToolStore());
+	SourcedToolDefinition* pDef = new SourcedToolDefinition(m_toolstore->GetDefaultToolStore());
 
 	if (doToolEditDlg(NULL, pDef))
 	{
@@ -872,6 +891,131 @@ LRESULT COptionsPageTools::OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& 
 	BOOL bHandled;
 	OnEditClicked(0, 0, 0, bHandled);
 	return 0;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// COptionsPageProjectTools
+//////////////////////////////////////////////////////////////////////////////
+
+#include "project.h"
+#include "projectprops.h"
+#include "projectregistry.h"
+
+COptionsPageProjectTools::COptionsPageProjectTools(SchemeToolsManager* pToolManager) : COptionsPageTools(pToolManager)
+{
+	
+}
+
+COptionsPageProjectTools::~COptionsPageProjectTools()
+{
+	
+}
+
+void COptionsPageProjectTools::OnInitialise()
+{
+	if(m_combo.GetCount() > 0)
+	{
+		Update();
+	}
+}
+
+void COptionsPageProjectTools::OnOK()
+{
+	//m_toolstore.Save();
+}
+
+LPCTSTR COptionsPageProjectTools::GetTreePosition()
+{
+	return _T("Tools\\Project Tools");
+}
+
+
+LRESULT COptionsPageProjectTools::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	CWindow label;
+	CSize s;
+	CRect rc;
+
+	label.Attach(GetDlgItem(IDC_SCHEMELABEL));
+	
+	CDC dc(label.GetDC());
+	label.SetWindowText("Project Template:");
+	dc.GetTextExtent(_T("Project Template:"), 17, &s);
+	
+	label.GetWindowRect(rc);
+	ScreenToClient(rc);
+	rc.right = rc.left + s.cx;
+	label.SetWindowPos(HWND_TOP, &rc, 0);
+
+	CRect rcCombo;
+
+	m_combo.Attach(GetDlgItem(IDC_SCHEMECOMBO));
+	m_combo.GetWindowRect(rcCombo);
+
+	const Projects::TEMPLATE_MAP& templates = Projects::Registry::GetInstance()->GetTemplates();
+	for(Projects::TEMPLATE_MAP::const_iterator i = templates.begin();
+		i != templates.end(); 
+		++i)
+	{
+		int index = m_combo.AddString((*i).second->GetName());
+		m_combo.SetItemDataPtr(index, (*i).second);
+	}
+
+	ScreenToClient(rcCombo);
+	rcCombo.left = rc.right + 5;
+	//m_combo.SetWindowPos(HWND_TOP, &rcCombo, 0);
+
+	m_list.Attach(GetDlgItem(IDC_LIST));
+	m_list.SetExtendedListViewStyle( m_list.GetExtendedListViewStyle() | LVS_EX_FULLROWSELECT );
+	m_list.GetClientRect(rc);
+	m_list.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 130, 0);
+	m_list.InsertColumn(1, _T("Command"), LVCFMT_LEFT, rc.Width() - 130 - 100 - 20, 0);
+	m_list.InsertColumn(2, _T("Params"), LVCFMT_LEFT, 100, 0);
+
+	m_btnMoveUp.SetDirection(CArrowButton::abdUp);
+	m_btnMoveUp.SubclassWindow(GetDlgItem(IDC_TOOLS_MOVEUPBUTTON));
+	m_btnMoveDown.SubclassWindow(GetDlgItem(IDC_TOOLS_MOVEDOWNBUTTON));
+
+	EnableButtons();
+
+	return 0;
+}
+
+SchemeTools* COptionsPageProjectTools::GetTools()
+{
+	if(!m_pCurrent)
+	{
+		if(m_pTemplate)
+			m_pCurrent = m_toolstore->GetToolsForProject(m_pTemplate->GetID());
+	}
+		
+	return m_pCurrent;
+}
+
+CComboBox* COptionsPageProjectTools::getCombo()
+{
+	return &m_combo;
+}
+
+void COptionsPageProjectTools::updateFromSel(int iSel)
+{
+	if (iSel != -1)
+	{
+		m_pTemplate = reinterpret_cast<Projects::ProjectTemplate*>(m_combo.GetItemData(iSel));
+		
+		/*if(iSel != 0)
+		{	
+
+		}
+		else
+		{
+			// Global Tools
+			m_pTemplate = NULL;
+			m_pCurrent = m_toolstore.GetGlobalTools();
+		}*/
+	}
+	else
+		m_pTemplate = NULL;
 }
 
 //////////////////////////////////////////////////////////////////////////////

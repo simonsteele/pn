@@ -104,6 +104,26 @@ SOURCE=.\Files.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\findinfiles.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\findinfilesview.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\jumpto.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\JumpToDialog.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\MagicFolderWiz.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\mainfrm.cpp
 # End Source File
 # Begin Source File
@@ -116,11 +136,23 @@ SOURCE=.\OptionsDialogs.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\OptionsIni.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\OptionsManager.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\OptionsPages.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\OptionsRegistry.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\outputscintilla.cpp
 # End Source File
 # Begin Source File
 
@@ -148,7 +180,19 @@ SOURCE=.\project.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\projectmeta.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\projectprops.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\projectview.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\projpropsview.cpp
 # End Source File
 # Begin Source File
 
@@ -190,6 +234,14 @@ SOURCE=.\ssreg.cpp
 
 SOURCE=.\stdafx.cpp
 # ADD CPP /Yc"stdafx.h"
+# End Source File
+# Begin Source File
+
+SOURCE=.\StyleTabPages.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\textclipsview.cpp
 # End Source File
 # Begin Source File
 
