@@ -12,6 +12,7 @@
 
 #include "stdafx.h"
 #include "SchemeCompiler.h"
+#include "files.h"
 #include "ssreg.h"
 
 using namespace ssreg;

@@ -1,5 +1,5 @@
 /**
- * @file Schemes.h
+ * @file Schemes.cpp
  * @brief Implement CScheme and CSchemeManager.
  * @author Simon Steele
  * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
@@ -10,6 +10,7 @@
 #include "stdafx.h"
 
 #include "Schemes.h"
+#include "optionsmanager.h"
 #include "files.h"
 
 #include "ssreg.h"

@@ -10,6 +10,8 @@
 
 #include "stdafx.h"
 #include "OptionsManager.h"
+#include "ssreg.h"
+using namespace ssreg;
 
 COptionsManager* COptionsManager::s_pInstance = NULL;
 
@@ -25,7 +27,7 @@ COptionsManager::~COptionsManager()
 
 void COptionsManager::Load()
 {
-	ssreg::CSRegistry reg;
+	CSRegistry reg;
 	ctcString root(pnregroot);
 	ctcString cs(root);
 	
@@ -68,24 +70,34 @@ void COptionsManager::Save()
 	//reg.OpenKey(cs, true);
 }
 
-void COptionsManager::SetInterface(LPCTSTR key, bool val)
+void COptionsManager::SetInterface(LPCTSTR value, bool val)
 {
-	ssreg::CSRegistry reg;
+	CSRegistry reg;
 	ctcString root(pnregroot);
 	root += _T("Interface Settings");
 
 	reg.OpenKey(root.c_str());
-	reg.WriteBool(key, val);
+	reg.WriteBool(value, val);
 }
 
-bool COptionsManager::GetInterface(LPCTSTR key, bool defval)
+bool COptionsManager::GetInterface(LPCTSTR value, bool defval)
 {
-	ssreg::CSRegistry reg;
+	CSRegistry reg;
 	ctcString root(pnregroot);
 	root += _T("Interface Settings");
 
 	reg.OpenKey(root.c_str());
-	return reg.ReadBool(key, defval);
+	return reg.ReadBool(value, defval);
+}
+
+int COptionsManager::GetInterface(LPCTSTR value, int defval)
+{
+	CSRegistry reg;
+	ctcString root(pnregroot);
+	root += _T("Interface Settings");
+
+	reg.OpenKey(root.c_str());
+	return reg.ReadInt(value, defval);
 }
 
 COptionsManager* COptionsManager::GetInstance()

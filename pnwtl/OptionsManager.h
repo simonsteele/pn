@@ -11,9 +11,8 @@
 #ifndef optionsmanager_h__included
 #define optionsmanager_h__included
 
-#include "ssreg.h"
-
 static const TCHAR* pnregroot = _T("Software\\Echo Software\\PN2\\");
+static const TCHAR* pnmrukey = _T("MRU");
 
 typedef enum {leCRLF, leCR, leLF} ELineEndings;
 
@@ -45,8 +44,11 @@ class COptionsManager
 		bool ShowIndentGuides;
 		ELineEndings LineEndings;
 
-		void SetInterface(LPCTSTR key, bool val);		
-		bool GetInterface(LPCTSTR key, bool defval);
+		void SetInterface(LPCTSTR value, bool val);
+		void SetInterface(LPCTSTR value, int val);
+
+		bool GetInterface(LPCTSTR value, bool defval);
+		int	 GetInterface(LPCTSTR value, int defval);
 		
 		void GetSchemesPaths(ctcString& path, ctcString& compiledPath);
 		

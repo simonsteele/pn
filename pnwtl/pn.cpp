@@ -1,5 +1,5 @@
 /**
- * @file pn.h
+ * @file pn.cpp
  * @brief Main Source File for Programmers Notepad 2
  * @author Simon Steele
  * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
@@ -15,18 +15,23 @@
 #include <atlctrlw.h>
 #include <atlctrlx.h>
 
+// Tabbed MDI Framework
 #include "pntabs.h"
 
 // Utility Classes and Definitions:
-#include "pntypes.h"
+#include "ssmenus.h"
+#include "optionsmanager.h"
 #include "callback.h"
 
 #include "pndialogs.h"
 
 #include "ScintillaWTL.h"
+
+#include "schemes.h"
+
 #include "textview.h"
-#include "aboutdlg.h"
 #include "ChildFrm.h"
+#include "aboutdlg.h"
 
 #include "finddlg.h"
 

@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "pnutils.h"
 
+#include "ssreg.h"
+using namespace ssreg;
+
 ///////////////////////////////////////////////////////////////
 // CMRUList
 ///////////////////////////////////////////////////////////////
@@ -8,6 +11,14 @@
 CMRUList::CMRUList(int size)
 {
 	SetSize(size);
+}
+
+CMRUList::~CMRUList()
+{
+	if(m_regkey.GetLength() > 0)
+	{
+		SaveToRegistry();
+	}
 }
 
 void CMRUList::SetSize(int size)
@@ -35,6 +46,12 @@ void CMRUList::AddEntry(LPCTSTR data)
 	BOOL bRet = m_entries.Add(e);
 }
 
+LPCTSTR CMRUList::GetEntry(int index)
+{
+	ATLASSERT(index >= 0 && index < m_iMaxSize);
+	return m_entries[index].pszData;
+}
+
 void CMRUList::Resize()
 {
 	if(m_iMaxSize > m_entries.GetSize())
@@ -43,6 +60,56 @@ void CMRUList::Resize()
 		for(int i = 0; i < nTooMany; i++)
 		{
 			m_entries.RemoveAt(0);
+		}
+	}
+}
+
+void CMRUList::SetRegistryKey(LPCTSTR key, bool load)
+{
+	m_regkey = key;
+	if(load)
+		LoadFromRegistry();
+}
+
+void CMRUList::SaveToRegistry()
+{
+	ATLASSERT(m_regkey.GetLength() != 0);
+
+	if(m_regkey.GetLength() > 0)
+	{
+		CSRegistry	reg;
+		TCHAR		buf[3];
+		int size = m_entries.GetSize();
+		
+		reg.OpenKey(m_regkey);
+		reg.WriteInt(_T("Number"), size);
+
+		for(int i = 0; i < size; i++)
+		{
+			_itoa(i, buf, 10);
+			reg.WriteString(buf, m_entries[i].pszData);
+		}
+	}
+}
+
+void CMRUList::LoadFromRegistry()
+{
+	ATLASSERT(m_regkey.GetLength() != 0);
+
+	if(m_regkey.GetLength() > 0)
+	{
+		CSRegistry	reg;
+		TCHAR		buf[3];
+		ctcString	valbuf;
+
+		reg.OpenKey(m_regkey);
+
+		int size = reg.ReadInt(_T("Number"));
+		for(int i = 0; i < size; i++)
+		{
+			_itoa(i, buf, 10);
+			reg.ReadString(buf, valbuf);
+			AddEntry(valbuf.c_str());
 		}
 	}
 }

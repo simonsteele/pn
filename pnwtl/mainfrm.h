@@ -15,11 +15,10 @@
 #define MAINFRM_H__INCLUDED
 
 #if _MSC_VER >= 1000
-#pragma once
-#endif // _MSC_VER >= 1000
+	#pragma once
+#endif
 
 #include "files.h"
-
 #include "pnutils.h"
 
 BOOL CALLBACK CloseChildEnumProc(HWND hWnd, LPARAM lParam);
@@ -99,6 +98,7 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
 		COMMAND_ID_HANDLER(ID_EDIT_FIND, OnFind)
 		COMMAND_ID_HANDLER(ID_EDIT_REPLACE, OnReplace)
+		COMMAND_RANGE_HANDLER(ID_MRUFILE_BASE, (ID_MRUFILE_BASE+15), OnMRUSelected)
 		ROUTE_MENUCOMMANDS()
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
@@ -173,6 +173,12 @@ public:
 		// Initialise our popup menus.
 		m_Switcher.Reset(MENUMESSAGE_CHANGESCHEME);
 		CSchemeManager::GetInstance()->BuildMenu((HMENU)m_NewMenu, this);
+		
+		CString mrukey;
+		mrukey = pnregroot;
+		mrukey += pnmrukey;
+		m_RecentFiles.SetSize(COptionsManager::GetInstance()->GetInterface(_T("MRUSize"), 4));
+		m_RecentFiles.SetRegistryKey(mrukey);
 		m_RecentFiles.UpdateMenu();
 		
 		AddMRUMenu(CSMenuHandle(m_hMenu));
@@ -362,6 +368,14 @@ public:
 		return 0;
 	}
 
+	LRESULT OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		LPCTSTR filename = m_RecentFiles.GetEntry(wID - ID_MRUFILE_BASE);
+		PNOpenFile(filename);
+
+		return 0;
+	}
+
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		static BOOL bVisible = TRUE;	// initially visible
@@ -472,11 +486,11 @@ public:
 		m_RecentFiles.UpdateMenu();
 	}
 
-	virtual void SetActiveScheme(HWND notifier, CScheme* pScheme)
+	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme)
 	{
 		if(notifier == MDIGetActive())
 		{
-			m_Switcher.SetActiveScheme(pScheme);
+			m_Switcher.SetActiveScheme(static_cast<CScheme*>(pScheme));
 		}
 	}
 

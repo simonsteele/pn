@@ -11,6 +11,8 @@
 #ifndef scintillaimpl_h__included
 #define scintillaimpl_h__included
 
+#include "scintillaif.h"
+
 /**
  * @class CScintillaImpl
  * @brief Implement useful Scintilla functionality...

@@ -531,7 +531,7 @@ public:
 	void SetScheme(CScheme* pScheme)
 	{
 		m_view.SetScheme(pScheme);
-		g_Context.m_frame->SetActiveScheme(m_hWnd, pScheme);
+		g_Context.m_frame->SetActiveScheme(m_hWnd, static_cast<LPVOID>(pScheme));
 	}
 
 	void UpdateMenu()

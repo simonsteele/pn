@@ -1,6 +1,6 @@
 /**
  * @file pn.h
- * @brief Main Header File for Programmers Notepad 2, defines the application object.
+ * @brief Main Header File for Programmers Notepad 2, defines the application level services.
  * @author Simon Steele
  * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
  *
@@ -11,8 +11,6 @@
  */
 
 #include "pntypes.h"
-#include "schemes.h"
-#include "optionsmanager.h"
 
 #define PN_NOTIFY (WM_USER+37)
 
@@ -20,7 +18,7 @@ struct IMainFrame
 {
 	virtual CWindow* GetWindow() = 0;
 	virtual void AddMRUEntry(LPCTSTR lpszFile) = 0;
-	virtual void SetActiveScheme(HWND notifier, CScheme* pScheme) = 0;
+	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme) = 0;
 };
 
 struct _Context 

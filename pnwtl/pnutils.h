@@ -1,6 +1,8 @@
 #ifndef pnutils_h__included
 #define pnutils_h__included
 
+#include "ssmenus.h"
+
 /**
  * @class CMRUList
  * Some inspiration taken from CRecentDocumentList <atlmisc.h>
@@ -11,6 +13,23 @@ class CMRUList
 		struct _entry
 		{
 			TCHAR* pszData;
+
+			_entry()
+			{
+				pszData = NULL;
+			}
+
+			_entry(const _entry& e)
+			{
+				pszData = NULL;
+				*this = e;
+			}
+
+			~_entry()
+			{
+				if(pszData)
+					delete [] pszData;
+			}
 
 			bool operator==(const _entry& e) const
 			{ return (lstrcmpi(pszData, e.pszData) == 0); }
@@ -27,15 +46,24 @@ class CMRUList
 
 	public:
 		CMRUList(int size = 10);
+		~CMRUList();
 
 		void SetSize(int size);
 
 		void AddEntry(LPCTSTR data);
 
+		LPCTSTR GetEntry(int index);
+
+		void SetRegistryKey(LPCTSTR key, bool load = true);
+
+		void SaveToRegistry();
+		void LoadFromRegistry();
+
 	protected:		
 		void Resize();
 
 		CSimpleArray<_entry>	m_entries;
+		CString					m_regkey;
 		int						m_iMaxSize;
 		UINT					m_iBase;
 };
