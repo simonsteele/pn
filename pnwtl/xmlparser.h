@@ -157,12 +157,12 @@ class XMLParserException
 	public:
 		XMLParserException(XMLParser* pParser, LPCTSTR msg = NULL)
 		{
-			m_errcode = 0;
+			m_errcode = XML_ERROR_NONE;
 			m_filename = NULL;
 			set(pParser, msg);
 		}
 
-		XMLParserException(XMLParser* pParser, int ErrorCode = 0, LPCTSTR msg = NULL)
+		XMLParserException(XMLParser* pParser, XML_Error ErrorCode = XML_ERROR_NONE, LPCTSTR msg = NULL)
 		{
 			m_errcode = ErrorCode;
 			m_filename = NULL;
@@ -187,7 +187,7 @@ class XMLParserException
 		LPCTSTR	GetMessage() { return m_msg; }
 		int		GetLine() { return m_line; }
 		int		GetColumn()	{ return m_column; }
-		int		GetErrorCode() { return m_errcode; }
+		XML_Error GetErrorCode() { return m_errcode; }
 
 	protected:
 		void set(XMLParser* pParser, LPCTSTR msg)
@@ -209,7 +209,7 @@ class XMLParserException
 		LPCTSTR			m_msg;
 		int				m_line;
 		int				m_column;
-		int				m_errcode;
+		XML_Error		m_errcode;
 		TCHAR*			m_filename;
 };
 

@@ -127,7 +127,7 @@ class CSchemeParserException : public XMLParserException
 		CSchemeParserException(XMLParser* pParser, LPCTSTR msg = NULL)
 			: XMLParserException(pParser, msg) {}
 		
-		CSchemeParserException(XMLParser* pParser, int ErrorCode = 0, LPCTSTR msg = NULL)
+		CSchemeParserException(XMLParser* pParser, XML_Error ErrorCode = XML_ERROR_NONE, LPCTSTR msg = NULL)
 			: XMLParserException(pParser, ErrorCode, msg) {}
 };
 
