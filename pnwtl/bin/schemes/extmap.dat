@@ -1,10 +1,13 @@
 .asp=Web
+.bas=vb
 .bat=batch
 .build=xml
 .c=cpp
 .cgi=perl
 .cf=Properties
+.cls=vb
 .cmd=batch
+.ctl=vb
 .conf=Properties
 .config=xml
 .cpp=cpp
@@ -13,7 +16,12 @@
 .cxx=cpp
 .def=modula2
 .dfm=pascal
+.dob=vb
+.dpr=pascal
+.dsm=vbscript
+.dsr=vb
 .diff=diff
+.frm=vb
 .h=cpp
 .hpp=cpp
 .html=Web
@@ -23,6 +31,7 @@
 .java=java
 .js=javascript
 .mod=modula2
+.pag=vb
 .pas=pascal
 .patch=diff
 .php=Web
@@ -35,6 +44,8 @@
 .scheme=xml
 .schemedef=xml
 .tcl=tcl
+.vb=vb
+.vbs=vbscript
 .xhtml=Web
 .xml=xml
 .xsl=xml

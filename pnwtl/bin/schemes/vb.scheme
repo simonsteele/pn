@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="vb">
+			and begin case call continue do each else elseif end erase
+			error event exit false for function get gosub goto if implement in load loop lset
+			me mid new next not nothing on or property raiseevent rem resume return rset
+			select set stop sub then to true unload until wend while with withevents
+			attribute alias as boolean byref byte byval const compare currency date declare dim double
+			enum explicit friend global integer let lib long module object option optional
+			preserve private property public redim single static string type variant
+		</keyword-class>
+		<keyword-class name="vbnet">
+			addhandler addressof andalso alias and ansi as assembly auto boolean
+			byref byte byval call case catch cbool cbyte cchar cdate cdec cdbl char cint class
+			clng cobj const cshort csng cstr ctype date decimal declare default delegate dim do double
+			each else elseif end enum erase error event exit false finally for friend function get
+			gettype goto  handles if implements imports in inherits integer interface is let lib like long
+			loop me mod module mustinherit mustoverride mybase myclass namespace new
+			next not nothing notinheritable notoverridable object on option optional or
+			orelse overloads overridable overrides paramarray preserve private property protected public
+			raiseevent readonly redim rem removehandler resume return select set shadows
+			shared short single static step stop string structure sub synclock then throw to true try
+			typeof unicode until variant when while with withevents writeonly xor
+		</keyword-class>
+	</keyword-classes>
+	
+	<base-language name="vbbase">
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="Whitespace" key="0" />
+			<style name="Comment" key="1" class="comment" />
+			<style name="Number" key="2" class="number" />
+			<style name="Keyword" key="3" class="keyword" />
+			<style name="String" key="4" class="string" />
+			<style name="Preprocessor" key="5" class="preprocessor" />
+			<style name="Operator" key="6" class="operator" />
+			<style name="Identifier" key="7" />
+			<style name="Date" key="8" class="number" />
+		</use-styles>
+	</base-language>
+	
+	<language base="vbbase" name="vb" title="Visual Basic" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true" >
+		<lexer name="vb" />
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="vbnet"/>
+		</use-keywords>
+	</language>
+	
+	<language base="vbbase" name="vbscript" title="VBScript" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true" >
+		<lexer name="vbscript" />
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="vb"/>
+		</use-keywords>
+	</language>
+</Scheme>
