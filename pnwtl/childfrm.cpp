@@ -773,14 +773,23 @@ void CChildFrame::CheckAge()
 		long age = FileAge(m_FileName);
 		if(age != m_FileAge)
 		{
-			CString msg;
-			msg.Format(_T("%s\n\nThe above file has been modified outside of Programmers Notepad, do\nyou want to refresh and lose changes?"), (LPCTSTR)m_FileName);
-			if ( MessageBox((LPCTSTR)msg, _T("File Changed"), MB_YESNO) == IDYES )
+			if(FileExists(m_FileName))
 			{
-				Revert();
+				CString msg;
+				msg.Format(_T("%s\n\nThe above file has been modified outside of Programmers Notepad, do\nyou want to refresh and lose changes?"), (LPCTSTR)m_FileName);
+				if ( MessageBox((LPCTSTR)msg, _T("File Changed"), MB_YESNO) == IDYES )
+				{
+					Revert();
+				}
+				else
+					m_FileAge = age;
 			}
 			else
-				m_FileAge = age;
+			{
+				CString msg;
+				msg.Format(_T("Warning: the file %s does not exist any more."), (LPCTSTR)m_FileName);
+				g_Context.m_frame->SetStatusText((LPCTSTR)msg);
+			}
 		}
 	}
 }
