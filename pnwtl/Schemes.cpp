@@ -252,9 +252,13 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 
 			if(hdr.Folding & fldCompact == fldCompact)
 				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.compact"), (LPARAM)_T("1"));
+			else
+				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.compact"), (LPARAM)_T("0"));
 
 			if(hdr.Folding & fldComments == fldComments)
-				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.comments"), (LPARAM)_T("1"));
+				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.comment"), (LPARAM)_T("1"));
+
+			//sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.preprocessor"), (LPARAM)_T("1"));
 		}
 
 		while (cfile.GetPosition() < cfile.GetLength())
