@@ -520,8 +520,11 @@ class CustomFormatStringBuilder
 	public:
 		const tstring& Build(LPCTSTR str)
 		{
+			TCHAR next;
 			T* pT = static_cast<T*>(this);
-			int len = _tcslen(formatstr);
+			int len = _tcslen(str);
+
+			m_string = _T("");
 
 			for(int i = 0; i < len; i++)
 			{
@@ -531,9 +534,9 @@ class CustomFormatStringBuilder
 				}
 				else
 				{
-					TCHAR next = SafeGetNextChar(str, i, len);
+					next = SafeGetNextChar(str, i, len);
 					
-					if(i == NULL)
+					if(next == NULL)
 					{
 						m_string += str[i];
 					}
@@ -562,15 +565,28 @@ class CustomFormatStringBuilder
 		TCHAR SafeGetNextChar(LPCTSTR str, int i, int len)
 		{
 			PNASSERT(i < len);
-			PNASSERT(i > 0);
+			PNASSERT(i >= 0);
 
-			if(i = (len-1))
+			if(i == (len-1))
 				return NULL;
             
 			return str[i+1];
 		}
 
 		tstring	m_string;
+};
+
+///@todo could this be faster at all?
+void XMLSafeString(tstring& str);
+
+struct FormatXML {
+   tstring str_;
+   explicit FormatXML(const tstring& str) : str_(str) { XMLSafeString(str_); }
+   friend std::ostream& operator<<(std::ostream& s, const FormatXML& x)
+   {
+		s << x.str_;
+		return s;
+   }
 };
 
 template <class T>

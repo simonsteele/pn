@@ -196,3 +196,39 @@ CMRUMenu::operator HMENU()
 {
 	return (HMENU)m_Menu;
 }
+
+void XMLSafeString(tstring& str)
+{
+	// make an attempt at reducing re-allocs...
+	int len = str.size();
+	TCHAR * buffer = new TCHAR[len+1];
+	_tcscpy(buffer, str.c_str());
+	str.reserve(len + 20);
+	str = _T("");
+
+	for(int i = 0; i < len; i++)
+	{
+		switch(buffer[i])
+		{
+			case _T('"'):
+				str += "&quot;";
+				break;
+			case _T('<'):
+				str += "&lt;";
+				break;
+			case _T('>'):
+				str += "&gt;";
+				break;
+			case _T('&'):
+				str += "&amp;";
+				break;
+			case _T('\''):
+				str += "&apos;";
+				break;
+			default:
+				str += buffer[i];
+		}
+	}
+
+	delete [] buffer;
+}

@@ -85,6 +85,7 @@ public:
 		IMPLEMENT_FROMHANDLE()
 
 		LOCAL_MENUCOMMAND(MENUMESSAGE_CHANGESCHEME)
+		LOCAL_MENUCOMMAND(TOOLS_RUNTOOL)
 		//ROUTE_MENUCOMMANDS()
 		
 		// Chaining
@@ -95,6 +96,7 @@ public:
 
 	BEGIN_MENU_HANDLER_MAP()
 		HANDLE_MENU_COMMAND(MENUMESSAGE_CHANGESCHEME, OnSchemeChange)
+		HANDLE_MENU_COMMAND(TOOLS_RUNTOOL, OnRunTool)
 	END_MENU_HANDLER_MAP()
 
 	////////////////////////////////////////////////////
@@ -198,6 +200,8 @@ public:
 	void OnSchemeChange(LPVOID pVoid);
 	void SetScheme(CScheme* pScheme);
 	void UpdateMenu();
+
+	void OnRunTool(LPVOID pVoid);
 
 	CallbackBase2<bool, CChildFrame*>* m_onClose;
 

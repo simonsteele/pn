@@ -17,3 +17,7 @@
 .xml=xml
 .py=python
 .css=css
+.bat=batch
+.cmd=batch
+.patch=diff
+.diff=diff

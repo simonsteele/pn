@@ -10,8 +10,6 @@
 #ifndef tools_h__included
 #define tools_h__included
 
-#define TOOLS_RUNTOOL	0x2
-
 typedef std::list<SToolDefinition*> TOOLDEFS_LIST;
 
 /**
@@ -74,5 +72,44 @@ class SchemeToolsManager : public Singleton<SchemeToolsManager>, public XMLParse
 		SchemeTools*	m_pCur;
 		SCHEMETOOLS_MAP m_toolSets;
 };
+
+class CToolCommandString : public CustomFormatStringBuilder<CToolCommandString>
+{
+	public:
+		void OnFormatChar(TCHAR thechar)
+		{
+			switch(thechar)
+			{
+				case _T('f'):
+					m_string += pChild->GetFileName(FN_FILE);
+					break;
+
+				case _T('d'):
+					m_string += pChild->GetFileName(FN_PATH);
+					break;
+
+				case _T('n'):
+					m_string += pChild->GetFileName(FN_FILEPART);
+					break;
+
+				case _T('l'):
+					_itoa(pChild->GetPosition(EP_LINE), itosbuf, 10);
+					m_string += itosbuf;
+					break;
+
+				case _T('c'):
+					_itoa(pChild->GetPosition(EP_COL), itosbuf, 10);
+					m_string += itosbuf;
+					break;
+			}		
+		}
+
+		CChildFrame* pChild;
+
+	protected:
+		TCHAR itosbuf[100];
+};
+
+void ExecuteTool(CChildFrame* pActiveChild, SToolDefinition* pDef);
 
 #endif

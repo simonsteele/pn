@@ -12,6 +12,8 @@
 
 #define PN_NOTIFY (WM_USER+37)
 
+#define TOOLS_RUNTOOL	0x2
+
 #include "resource.h"
 
 struct IMainFrame

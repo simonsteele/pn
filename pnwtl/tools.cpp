@@ -103,11 +103,11 @@ void SchemeTools::WriteDefinition(ofstream& stream)
 		
 		for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
 		{
-			stream << "\t\t<tool name=\"" << (*i)->Name << "\" ";
-			stream << "command=\"" << (*i)->Command << "\" ";
-			stream << "folder=\"" << (*i)->Folder << "\" ";
-			stream << "params=\"" << (*i)->Params << "\" ";
-			stream << "shortcut=\"" << (*i)->Shortcut << "\" ";
+			stream << "\t\t<tool name=\"" << FormatXML((*i)->Name) << "\" ";
+			stream << "command=\"" << FormatXML((*i)->Command) << "\" ";
+			stream << "folder=\"" << FormatXML((*i)->Folder) << "\" ";
+			stream << "params=\"" << FormatXML((*i)->Params) << "\" ";
+			stream << "shortcut=\"" << FormatXML((*i)->Shortcut) << "\" ";
 			stream << "/>\n";
 		}
 
@@ -280,4 +280,21 @@ void SchemeToolsManager::endElement(LPCTSTR name)
 {
 	if(_tcscmp(name, _T("scheme")) == 0)
 		m_pCur = NULL;
+}
+
+void ExecuteTool(CChildFrame* pActiveChild, SToolDefinition* pDef)
+{
+	CToolCommandString builder;
+	builder.pChild = pActiveChild;
+	
+	tstring command;
+	command = builder.Build(pDef->Command.c_str());
+    
+	tstring params;
+	params = builder.Build(pDef->Params.c_str());
+
+	tstring workingdir;
+	workingdir = builder.Build(pDef->Folder.c_str());
+
+	::ShellExecute(NULL, _T("open"), command.c_str(), params.c_str(), workingdir.c_str(), SW_SHOW);
 }

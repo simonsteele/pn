@@ -747,6 +747,11 @@ void CChildFrame::UpdateMenu()
 	g_Context.m_frame->SetActiveScheme(m_hWnd, m_view.GetCurrentScheme());
 }
 
+void CChildFrame::OnRunTool(LPVOID pVoid)
+{
+	ExecuteTool(this, reinterpret_cast<SToolDefinition*>(pVoid));
+}
+
 void CChildFrame::PrintSetup()
 {
 	PAGESETUPDLG pdlg = {
