@@ -9,14 +9,14 @@ last updated: 13/10/2003
 0.5 Mingus
 ==========
 
+Menu to choose file encoding type (currently PN just preserves the original type).
+Better printing - margins, header and footer.
+Header switch as a generic feature.
+Start help file.
 [99% Implemented] Basic Project Management - file grouping etc.
 [Implemented - Bjoern Graf] Find & Replace actual combo-box entries (not just auto-complete).
 [Implemented] Combo-box toolbar for scheme selection.
-Menu to choose file encoding type (currently PN just preserves the original type).
-Better printing - margins, header and footer.
-HTML Export.
-Header switch as a generic feature.
-Start help file.
+[Implemented - Bjoern Graf] HTML Export.
 
 0.6 Ella
 ========

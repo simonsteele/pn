@@ -71,7 +71,7 @@ class BaseExporter
 class ExporterFactory
 {
 	public:
-		typedef enum { RTF } EExporterType;
+		typedef enum { RTF, HTML } EExporterType;
 
 		static BaseExporter* GetExporter(EExporterType type, 
 			IOutput* pOutput, StylesList* pStyles, CScintilla* pScintilla);
@@ -139,6 +139,21 @@ class RTFExporter : public BaseExporter
 		static int GetHexChar(char ch);
 		static int GetHexByte(const char *hexbyte);
 		void GetRTFStyleChange(char *delta, char *last, const char *current);
+};
+
+/**
+ * This class implements (X)HTML/CSS exporting.
+ */
+class HTMLExporter : public BaseExporter
+{
+public:
+	HTMLExporter(IOutput* pOutput, StylesList* pStyles, CScintilla* pScintilla);
+
+	virtual LPCTSTR GetDefaultExtension();
+	virtual LPCTSTR GetFileMask();
+
+protected:
+	virtual void InternalExport(int start, int end);
 };
 
 #ifdef TESTCODE

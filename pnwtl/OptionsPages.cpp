@@ -486,7 +486,7 @@ LRESULT CTabPageStyles::OnSizeChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 {
 	if(m_pStyle)
 	{
-		int i = m_SizeCombo.GetSelection();
+		int i = GetDlgItemInt(IDC_STYLE_SIZECOMBO);
 		m_sd.SetSize(i);
 		m_Style.FontSize = i;
 	}
@@ -850,7 +850,7 @@ void COptionsPageStyle::OnOK()
 		m_FontCombo.GetLBText(i, str);
 
 		pS->FontName = str;
-		pS->FontSize = m_SizeCombo.GetSelection();
+		pS->FontSize = pS->FontSize = GetDlgItemInt(IDC_FONTSIZE_COMBO);
 		pS->ForeColor = m_fore.SafeGetColor();
 		pS->BackColor = m_back.SafeGetColor();
 		pS->Bold = (m_bold.GetCheck() == BST_CHECKED);

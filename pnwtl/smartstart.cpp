@@ -14,7 +14,7 @@
 #include "xmlparser.h"
 #include "smartstart.h"
 
-SmartStart* SmartStart::s_pTheInstance = NULL;
+SmartStart* Singleton<SmartStart, SINGLETON_AUTO_DELETE>::s_pTheInstance = NULL;
 
 /// protected singleton constructor...
 SmartStart::SmartStart()

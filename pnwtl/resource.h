@@ -87,7 +87,6 @@
 #define ID_COLLAPSEALLFOLDS_TOGGLEFOLD  271
 #define ID_VIEW_TOGGLEFOLD              272
 #define ID_EDIT_SELECTALL               273
-#define ID_FOLDING_COLLAPSEALLFOLDS     274
 #define ID_HELP_WEB_SR                  275
 #define IDR_TBR_SCHEME                  276
 #define IDR_TOOLBAR1                    278
@@ -285,6 +284,7 @@
 #define ID_EDIT_FINDINFILES             32874
 #define ID_PLACEHOLDER_FINDCOMBO        32875
 #define ID_FINDTYPE_BUTTON              32876
+#define ID_EXPORT_HTML                  32878
 #define IDC_FINDTEXT_LABEL              65535
 
 // Next default values for new objects
@@ -292,7 +292,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        313
-#define _APS_NEXT_COMMAND_VALUE         32877
+#define _APS_NEXT_COMMAND_VALUE         32879
 #define _APS_NEXT_CONTROL_VALUE         1073
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

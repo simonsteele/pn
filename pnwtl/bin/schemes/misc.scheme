@@ -41,6 +41,7 @@
 	<language name="diff" title="Diff">
 		<lexer name="diff" />
 		<use-styles>
+			<style name="Default" key="32" />
 			<style name="Whitespace" key="0" />
 			<style name="Comment" key="1" fore="007f00" />
 			<style name="Command" key="2" fore="7f7f00" />

@@ -134,6 +134,7 @@ BEGIN
         POPUP "&Export"
         BEGIN
             MENUITEM "As &RTF...",                  ID_EXPORT_RTF
+            MENUITEM "As HTML...",                  ID_EXPORT_HTML
         END
         MENUITEM SEPARATOR
         MENUITEM "&Close\tCtrl+F4",             ID_FILE_CLOSE
@@ -190,8 +191,7 @@ BEGIN
         BEGIN
             MENUITEM "Toggle Fold\tCtrl+*",         ID_VIEW_TOGGLEFOLD
             MENUITEM "Collapse All Folds\tCtrl+Alt+-", 
-                                                    ID_FOLDING_COLLAPSEALLFOLDS
-
+                                                    ID_VIEW_COLLAPSEALLFOLDS
             MENUITEM "Expand All Folds\tCtrl+Alt++", ID_VIEW_EXPANDALLFOLDS
         END
         MENUITEM SEPARATOR

@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding = "Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.00"
+	Version="7.10"
 	Name="pn"
 	SccProjectName=""
 	SccLocalPath="">
@@ -70,7 +70,13 @@
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
 				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -133,7 +139,13 @@
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
 				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="DebugUnicode|Win32"
@@ -194,15 +206,35 @@
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
 				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
+	<References>
+	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
+				RelativePath="childfrm.cpp">
+			</File>
+			<File
+				RelativePath="exporters.cpp">
+			</File>
+			<File
 				RelativePath=".\Files.cpp">
+			</File>
+			<File
+				RelativePath="mainfrm.cpp">
+			</File>
+			<File
+				RelativePath="optionscontrols.cpp">
 			</File>
 			<File
 				RelativePath="OptionsDialogs.cpp">
@@ -212,30 +244,6 @@
 			</File>
 			<File
 				RelativePath="OptionsPages.cpp">
-			</File>
-			<File
-				RelativePath=".\SchemeCompiler.cpp">
-			</File>
-			<File
-				RelativePath="SchemeConfig.cpp">
-			</File>
-			<File
-				RelativePath=".\Schemes.cpp">
-			</File>
-			<File
-				RelativePath=".\ScintillaImpl.cpp">
-			</File>
-			<File
-				RelativePath="childfrm.cpp">
-			</File>
-			<File
-				RelativePath="exporters.cpp">
-			</File>
-			<File
-				RelativePath="mainfrm.cpp">
-			</File>
-			<File
-				RelativePath="optionscontrols.cpp">
 			</File>
 			<File
 				RelativePath="outputview.cpp">
@@ -262,7 +270,19 @@
 				RelativePath="scaccessor.cpp">
 			</File>
 			<File
+				RelativePath=".\SchemeCompiler.cpp">
+			</File>
+			<File
+				RelativePath="SchemeConfig.cpp">
+			</File>
+			<File
+				RelativePath=".\Schemes.cpp">
+			</File>
+			<File
 				RelativePath=".\scintillaif.cpp">
+			</File>
+			<File
+				RelativePath=".\ScintillaImpl.cpp">
 			</File>
 			<File
 				RelativePath="smartstart.cpp">
@@ -314,37 +334,13 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl">
 			<File
+				RelativePath=".\aboutdlg.h">
+			</File>
+			<File
 				RelativePath=".\ChildFrm.h">
 			</File>
 			<File
 				RelativePath=".\CustomAutoComplete.h">
-			</File>
-			<File
-				RelativePath="OptionsDialogs.h">
-			</File>
-			<File
-				RelativePath="OptionsManager.h">
-			</File>
-			<File
-				RelativePath="OptionsPages.h">
-			</File>
-			<File
-				RelativePath=".\SchemeCompiler.h">
-			</File>
-			<File
-				RelativePath="SchemeConfig.h">
-			</File>
-			<File
-				RelativePath=".\Schemes.h">
-			</File>
-			<File
-				RelativePath=".\Scintilla.h">
-			</File>
-			<File
-				RelativePath=".\ScintillaWTL.h">
-			</File>
-			<File
-				RelativePath=".\aboutdlg.h">
 			</File>
 			<File
 				RelativePath="exporters.h">
@@ -360,6 +356,15 @@
 			</File>
 			<File
 				RelativePath=".\mainfrm.h">
+			</File>
+			<File
+				RelativePath="OptionsDialogs.h">
+			</File>
+			<File
+				RelativePath="OptionsManager.h">
+			</File>
+			<File
+				RelativePath="OptionsPages.h">
 			</File>
 			<File
 				RelativePath="outputview.h">
@@ -383,10 +388,25 @@
 				RelativePath=".\resource.h">
 			</File>
 			<File
+				RelativePath=".\SchemeCompiler.h">
+			</File>
+			<File
+				RelativePath="SchemeConfig.h">
+			</File>
+			<File
+				RelativePath=".\Schemes.h">
+			</File>
+			<File
+				RelativePath=".\Scintilla.h">
+			</File>
+			<File
 				RelativePath=".\scintillaif.h">
 			</File>
 			<File
 				RelativePath=".\scintillaimpl.h">
+			</File>
+			<File
+				RelativePath=".\ScintillaWTL.h">
 			</File>
 			<File
 				RelativePath="smartstart.h">
@@ -484,10 +504,10 @@
 				RelativePath="include\OptionsDialog.h">
 			</File>
 			<File
-				RelativePath="include\Utf8_16.cpp">
+				RelativePath="include\pcreplus.cpp">
 			</File>
 			<File
-				RelativePath="include\pcreplus.cpp">
+				RelativePath="include\Utf8_16.cpp">
 			</File>
 			<File
 				RelativePath="include\wtltreeex.h">

@@ -89,6 +89,7 @@ public:
 		COMMAND_ID_HANDLER(ID_FILE_PRINT_SETUP, OnPrintSetup)
 
 		COMMAND_ID_HANDLER(ID_EXPORT_RTF, OnExportRTF)
+		COMMAND_ID_HANDLER(ID_EXPORT_HTML, OnExportHTML)
 
 		COMMAND_ID_HANDLER(ID_TOOLS_LECRLF, OnLineEndingsToggle)
 		COMMAND_ID_HANDLER(ID_TOOLS_LELF, OnLineEndingsToggle)
@@ -178,6 +179,7 @@ public:
 	LRESULT OnPrint(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnPrintSetup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnExportRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnExportHTML(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnRedo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
