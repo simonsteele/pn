@@ -445,10 +445,12 @@ LRESULT CAFileEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 LRESULT CAFileEditorDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CWindowText wtFrom( GetDlgItem( IDC_AFILE_STARTTEXT ) );
-	setFrom = (LPCTSTR)wtFrom;
+	if((LPCTSTR)wtFrom != NULL)
+		setFrom = (LPCTSTR)wtFrom;
 
 	CWindowText wtTo( GetDlgItem( IDC_AFILE_OTHERTEXT ) );
-	setTo = (LPCTSTR)wtTo;
+	if((LPCTSTR)wtTo != NULL)
+		setTo = (LPCTSTR)wtTo;
 
 	EndDialog(wID);
 

@@ -1931,11 +1931,14 @@ LRESULT COptionsPageAFiles::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 		tstring set1;
 		tstring set2;
 		dlg.GetValues(set1, set2);
-		AlternateFileSet* pSet = new AlternateFileSet(set1.c_str(), set2.c_str());
-		sets->push_back(pSet);
+		
+		if(set1 != _T("") && set2 != _T(""))
+		{
+			AlternateFileSet* pSet = new AlternateFileSet(set1.c_str(), set2.c_str());
+			sets->push_back(pSet);
 
-		addItem(set1.c_str(), set2.c_str(), pSet);
-
+			addItem(set1.c_str(), set2.c_str(), pSet);
+		}
 		m_bDirty = true;
 	}
 
