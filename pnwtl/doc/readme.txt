@@ -48,6 +48,7 @@ Bug Fixes:
 17) Tool Modifies File w/o Capture Output. (SF Bug #799763)
 18) Tool Modifies File causes refresh oddness. (SF Bug #800331)
 19) Regular Expression loop. (SF Bug #793002)
+20) Close when minimized bug. (SF Bug #849572)
 
 If you find a bug:
 ------------------

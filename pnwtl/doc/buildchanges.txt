@@ -12,6 +12,9 @@ Save All now saves the current project group and projects if changed.
 Added %p and %g to tool parameters. %p for project file, %g for project group file.
 Added Active Project concept. Right-click on a project to set active - or first project added is active.
 Removing a modified project from a project group causes a "do you want to save".
+Closing PN while it's minimised no longer results in the next load placing PN offscreen.
+Trying to open a non-existent project asks if the user wishes to create it.
+Build with newly released WTL 7.1 instead of 7.0.
 
 Since 07/12/03:
 

@@ -298,6 +298,7 @@ protected:
 
 	void _setWindowText(LPCTSTR newText);
 
+	void NewProject(LPCTSTR project);
 	void OpenProject(LPCTSTR project);
 	void OpenWorkspace(LPCTSTR workspace);
 	bool SaveProjects(Projects::Workspace* pWorkspace);

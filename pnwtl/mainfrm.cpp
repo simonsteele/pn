@@ -905,36 +905,13 @@ LRESULT CMainFrame::OnFileNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	if(m_pProjectsWnd == NULL)
 		RETURN_UNEXPECTED(_T("No Projects Window."), 0); // bail.
 
-	Projects::Workspace* workspace = m_pProjectsWnd->GetWorkspace();
-
 	CPNSaveDialog dlg(_T("Project Files (*.pnproj)|*.pnproj|"), NULL, _T("pnproj"));
 	dlg.SetTitle(_T("Project Location"));
 	
 	if( !(dlg.DoModal() == IDOK) )
 		return 0; // bail.
 
-	CFileName fn(dlg.GetSingleFileName());
-	tstring projname = fn.GetFileName_NoExt();
-
-	if( !Projects::Project::CreateEmptyProject(projname.c_str(), dlg.GetSingleFileName()) )
-		RETURN_UNEXPECTED(_T("Failed to create project template file."), 0); // bail.
-
-	Projects::Project* project = new Projects::Project(dlg.GetSingleFileName());	
-
-	if( workspace == NULL )
-	{
-		// No workspace currently open, create a blank one to store the project in.
-		workspace = new Projects::Workspace;
-		workspace->SetName(_T("New Project Group"));
-		workspace->AddProject(project);
-		m_pProjectsWnd->SetWorkspace(workspace);
-		workspace->ClearDirty();
-	}
-	else
-	{
-		// Add this project to the current workspace. Yes this should be an option.
-		m_pProjectsWnd->AddProject(project);
-	}
+	NewProject(dlg.GetSingleFileName());
 
 	return 0;
 }
@@ -1819,6 +1796,49 @@ void CMainFrame::ToggleOutputWindow(bool bSetValue, bool bShowing)
 		m_pOutputWnd->Toggle();
 }
 
+void CMainFrame::NewProject(LPCTSTR szProjectFile)
+{
+	if(!m_pProjectsWnd)
+	{
+		UNEXPECTED(_T("No projects window!"));
+		return;
+	}
+	else
+	{
+		if(!m_pProjectsWnd->IsWindowVisible())
+			m_pProjectsWnd->Toggle();
+	}
+
+	Projects::Workspace* workspace = m_pProjectsWnd->GetWorkspace();
+
+	CFileName fn(szProjectFile);
+	tstring projname = fn.GetFileName_NoExt();
+
+	if( !Projects::Project::CreateEmptyProject(projname.c_str(), szProjectFile) )
+	{
+		UNEXPECTED(_T("Failed to create project template file.")); 
+		return; // bail.
+	}
+
+	Projects::Project* project = new Projects::Project(szProjectFile);
+
+	if( workspace == NULL )
+	{
+		// No workspace currently open, create a blank one to store the project in.
+		workspace = new Projects::Workspace;
+		workspace->SetName(_T("New Project Group"));
+		workspace->AddProject(project);
+		m_pProjectsWnd->SetWorkspace(workspace);
+		workspace->ClearDirty();
+	}
+	else
+	{
+		// Add this project to the current workspace. Yes this should be an option.
+		m_pProjectsWnd->AddProject(project);
+	}
+
+}
+
 void CMainFrame::OpenProject(LPCTSTR projectPath)
 {
 	if(!m_pProjectsWnd)
@@ -1827,6 +1847,16 @@ void CMainFrame::OpenProject(LPCTSTR projectPath)
 	{
 		if(!m_pProjectsWnd->IsWindowVisible())
 			m_pProjectsWnd->Toggle();
+	}
+
+	if(!FileExists(projectPath))
+	{
+		DWORD dwRes = ::MessageBox(m_hWnd, _T("The specified project does not exist,\n would you like to create it?"), _T("Project Not Found"), MB_YESNO);
+		if(dwRes == IDYES)
+		{
+			NewProject(projectPath);
+		}
+		return;
 	}
 
 	Projects::Workspace* workspace = new Projects::Workspace;

@@ -338,9 +338,7 @@ protected:
             bool bRes=false;
             if (::GetWindowPlacement(m_hWnd,&wp))
             {
-                wp.flags = 0;
-                if (::IsZoomed(m_hWnd))
-                        wp.flags |= WPF_RESTORETOMAXIMIZED;
+                wp.flags &= WPF_RESTORETOMAXIMIZED;
                 bRes=(::RegSetValueEx(key,ctxtPlacement,NULL,REG_BINARY,
 										reinterpret_cast<CONST BYTE *>(&wp),
 										sizeof(WINDOWPLACEMENT))==ERROR_SUCCESS);
@@ -359,14 +357,20 @@ protected:
 											&&(dwType==REG_BINARY); 
             if(bRes)
 			{
-				UINT nCmdShow=wp.showCmd; 
+				UINT nCmdShow;
+				if((wp.flags & WPF_RESTORETOMAXIMIZED) != 0)
+					wp.showCmd = nCmdShow = SW_MAXIMIZE;
+				else if(wp.showCmd == SW_SHOWMINIMIZED)
+					nCmdShow = SW_NORMAL;
+				else
+					nCmdShow = wp.showCmd; 
 //				LockWindowUpdate(m_hWnd);
-				if(wp.showCmd==SW_MAXIMIZE)
+				if(wp.showCmd == SW_MAXIMIZE)
 					::ShowWindow(m_hWnd,nCmdShow);
 				wp.showCmd=SW_HIDE;
                 ::SetWindowPlacement(m_hWnd,&wp);
 				bRes=baseClass::Restore(pMState,key);				
-				::ShowWindow(m_hWnd,nCmdShow);
+				::ShowWindow(m_hWnd, /*nCmdShow*/SW_SHOW);
 //				LockWindowUpdate(NULL);
 			}
 			else
