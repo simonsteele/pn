@@ -14,10 +14,10 @@
 #include "xmlparser.h"
 
 #ifdef XML_UNICODE
-	#pragma comment(lib,"lib/libexpatw.lib") 
+	#pragma comment(lib,"libexpatw.lib") 
 	#pragma message("Automatically linking with libexpatw.lib")
 #else
-	#pragma comment(lib,"lib/libexpat.lib") 
+	#pragma comment(lib,"libexpat.lib") 
 	#pragma message("Automatically linking with libexpat.lib")
 #endif
 
