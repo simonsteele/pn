@@ -21,7 +21,10 @@ int Scintilla_LinkLexers();
 // Here should be placed typedefs for uptr_t, an unsigned integer type large enough to
 // hold a pointer and sptr_t, a signed integer large enough to hold a pointer.
 // May need to be changed for 64 bit platforms.
-#ifdef __int3264
+#if _MSC_VER >= 1300
+#include <BaseTsd.h>
+#endif
+#ifdef MAXULONG_PTR
 typedef ULONG_PTR uptr_t;
 typedef LONG_PTR sptr_t;
 #else
@@ -106,6 +109,9 @@ typedef sptr_t (*SciFnDirect)(sptr_t ptr, unsigned int iMessage, uptr_t wParam, 
 #define SC_MARK_CIRCLEMINUS 20
 #define SC_MARK_CIRCLEMINUSCONNECTED 21
 #define SC_MARK_BACKGROUND 22
+#define SC_MARK_DOTDOTDOT 23
+#define SC_MARK_ARROWS 24
+#define SC_MARK_PIXMAP 25
 #define SC_MARK_CHARACTER 10000
 #define SC_MARKNUM_FOLDEREND 25
 #define SC_MARKNUM_FOLDEROPENMID 26
@@ -124,6 +130,7 @@ typedef sptr_t (*SciFnDirect)(sptr_t ptr, unsigned int iMessage, uptr_t wParam, 
 #define SCI_MARKERGET 2046
 #define SCI_MARKERNEXT 2047
 #define SCI_MARKERPREVIOUS 2048
+#define SCI_MARKERDEFINEPIXMAP 2049
 #define SC_MARGIN_SYMBOL 0
 #define SC_MARGIN_NUMBER 1
 #define SCI_SETMARGINTYPEN 2240
@@ -203,6 +210,8 @@ typedef sptr_t (*SciFnDirect)(sptr_t ptr, unsigned int iMessage, uptr_t wParam, 
 #define SCI_INDICGETSTYLE 2081
 #define SCI_INDICSETFORE 2082
 #define SCI_INDICGETFORE 2083
+#define SCI_SETWHITESPACEFORE 2084
+#define SCI_SETWHITESPACEBACK 2085
 #define SCI_SETSTYLEBITS 2090
 #define SCI_GETSTYLEBITS 2091
 #define SCI_SETLINESTATE 2092
@@ -234,6 +243,7 @@ typedef sptr_t (*SciFnDirect)(sptr_t ptr, unsigned int iMessage, uptr_t wParam, 
 #define SCI_AUTOCGETAUTOHIDE 2119
 #define SCI_AUTOCSETDROPRESTOFWORD 2270
 #define SCI_AUTOCGETDROPRESTOFWORD 2271
+#define SCI_REGISTERIMAGE 2405
 #define SCI_SETINDENT 2122
 #define SCI_GETINDENT 2123
 #define SCI_SETUSETABS 2124
@@ -331,6 +341,10 @@ typedef sptr_t (*SciFnDirect)(sptr_t ptr, unsigned int iMessage, uptr_t wParam, 
 #define SC_FOLDLEVELBASE 0x400
 #define SC_FOLDLEVELWHITEFLAG 0x1000
 #define SC_FOLDLEVELHEADERFLAG 0x2000
+#define SC_FOLDLEVELBOXHEADERFLAG 0x4000
+#define SC_FOLDLEVELBOXFOOTERFLAG 0x8000
+#define SC_FOLDLEVELCONTRACTED 0x10000
+#define SC_FOLDLEVELUNINDENT 0x20000
 #define SC_FOLDLEVELNUMBERMASK 0x0FFF
 #define SCI_SETFOLDLEVEL 2222
 #define SCI_GETFOLDLEVEL 2223
@@ -343,6 +357,12 @@ typedef sptr_t (*SciFnDirect)(sptr_t ptr, unsigned int iMessage, uptr_t wParam, 
 #define SCI_GETFOLDEXPANDED 2230
 #define SCI_TOGGLEFOLD 2231
 #define SCI_ENSUREVISIBLE 2232
+#define SC_FOLDFLAG_LINEBEFORE_EXPANDED 0x0002
+#define SC_FOLDFLAG_LINEBEFORE_CONTRACTED 0x0004
+#define SC_FOLDFLAG_LINEAFTER_EXPANDED 0x0008
+#define SC_FOLDFLAG_LINEAFTER_CONTRACTED 0x0010
+#define SC_FOLDFLAG_LEVELNUMBERS 0x0040
+#define SC_FOLDFLAG_BOX 0x0001
 #define SCI_SETFOLDFLAGS 2233
 #define SCI_ENSUREVISIBLEENFORCEPOLICY 2234
 #define SCI_SETTABINDENTS 2260
@@ -369,6 +389,10 @@ typedef sptr_t (*SciFnDirect)(sptr_t ptr, unsigned int iMessage, uptr_t wParam, 
 #define SCI_TEXTWIDTH 2276
 #define SCI_SETENDATLASTLINE 2277
 #define SCI_GETENDATLASTLINE 2278
+#define SCI_TEXTHEIGHT 2279
+#define SCI_SETVSCROLLBAR 2280
+#define SCI_GETVSCROLLBAR 2281
+#define SCI_APPENDTEXT 2282
 #define SCI_LINEDOWN 2300
 #define SCI_LINEDOWNEXTEND 2301
 #define SCI_LINEUP 2302
@@ -409,11 +433,16 @@ typedef sptr_t (*SciFnDirect)(sptr_t ptr, unsigned int iMessage, uptr_t wParam, 
 #define SCI_LINECUT 2337
 #define SCI_LINEDELETE 2338
 #define SCI_LINETRANSPOSE 2339
+#define SCI_LINEDUPLICATE 2404
 #define SCI_LOWERCASE 2340
 #define SCI_UPPERCASE 2341
 #define SCI_LINESCROLLDOWN 2342
 #define SCI_LINESCROLLUP 2343
 #define SCI_DELETEBACKNOTLINE 2344
+#define SCI_HOMEDISPLAY 2345
+#define SCI_HOMEDISPLAYEXTEND 2346
+#define SCI_LINEENDDISPLAY 2347
+#define SCI_LINEENDDISPLAYEXTEND 2348
 #define SCI_MOVECARETINSIDEVIEW 2401
 #define SCI_LINELENGTH 2350
 #define SCI_BRACEHIGHLIGHT 2351
@@ -436,12 +465,6 @@ typedef sptr_t (*SciFnDirect)(sptr_t ptr, unsigned int iMessage, uptr_t wParam, 
 #define SCI_SEARCHANCHOR 2366
 #define SCI_SEARCHNEXT 2367
 #define SCI_SEARCHPREV 2368
-#define CARET_SLOP 0x01
-#define CARET_CENTER 0x02
-#define CARET_STRICT 0x04
-#define CARET_XEVEN 0x08
-#define CARET_XJUMPS 0x10
-#define SCI_SETCARETPOLICY 2369
 #define SCI_LINESONSCREEN 2370
 #define SCI_USEPOPUP 2371
 #define SCI_SELECTIONISRECTANGLE 2372
@@ -458,7 +481,7 @@ typedef sptr_t (*SciFnDirect)(sptr_t ptr, unsigned int iMessage, uptr_t wParam, 
 #define SCI_SETMOUSEDOWNCAPTURES 2384
 #define SCI_GETMOUSEDOWNCAPTURES 2385
 #define SC_CURSORNORMAL -1
-#define SC_CURSORWAIT 3
+#define SC_CURSORWAIT 4
 #define SCI_SETCURSOR 2386
 #define SCI_GETCURSOR 2387
 #define SCI_SETCONTROLCHARSYMBOL 2388
@@ -474,7 +497,14 @@ typedef sptr_t (*SciFnDirect)(sptr_t ptr, unsigned int iMessage, uptr_t wParam, 
 #define SCI_DELLINERIGHT 2396
 #define SCI_SETXOFFSET 2397
 #define SCI_GETXOFFSET 2398
+#define SCI_CHOOSECARETX 2399
 #define SCI_GRABFOCUS 2400
+#define CARET_SLOP 0x01
+#define CARET_STRICT 0x04
+#define CARET_JUMPS 0x10
+#define CARET_EVEN 0x08
+#define SCI_SETXCARETPOLICY 2402
+#define SCI_SETYCARETPOLICY 2403
 #define SCI_STARTRECORD 3001
 #define SCI_STOPRECORD 3002
 #define SCI_SETLEXER 4001
@@ -515,11 +545,9 @@ typedef sptr_t (*SciFnDirect)(sptr_t ptr, unsigned int iMessage, uptr_t wParam, 
 #define SCK_ADD 310
 #define SCK_SUBTRACT 311
 #define SCK_DIVIDE 312
-#define KeyMod SCMOD_
 #define SCMOD_SHIFT 1
 #define SCMOD_CTRL 2
 #define SCMOD_ALT 4
-#define Lexer SCLEX_
 #define SCN_STYLENEEDED 2000
 #define SCN_CHARADDED 2001
 #define SCN_SAVEPOINTREACHED 2002
@@ -610,6 +638,11 @@ struct SCNotification {
 // To enable these features define INCLUDE_DEPRECATED_FEATURES
 
 #ifdef INCLUDE_DEPRECATED_FEATURES
+
+#define SCI_SETCARETPOLICY 2369
+#define CARET_CENTER 0x02
+#define CARET_XEVEN 0x08
+#define CARET_XJUMPS 0x10
 
 #define SCN_POSCHANGED 2012
 #define SCN_CHECKBRACE 2007
