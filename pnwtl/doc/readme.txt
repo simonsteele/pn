@@ -47,6 +47,7 @@ Bug Fixes:
 9) "More Options" in schemes not saving changes (SF Bug #1028974).
 10) Option to choose whether Open should start in current file's directory (SF Bug #1055115).
 11) Option to choose whether to close Find dialog on Find Next (SF Bug #945135).
+12) CreateDirectoryRecursive with UNC paths (SF Bug #1000488).
 
 If you find a bug:
 ------------------

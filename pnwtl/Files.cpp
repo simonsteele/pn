@@ -73,6 +73,7 @@ bool IsDirectory(LPCTSTR szDir)
  * link: http://www.codeguru.com/mfc/comments/39715.shtml
  *
  * 13/10/2004: Security and code safety fixes thanks to Joerg Hoh.
+ * 24/01/2005: Updated to work with UNC paths (hopefully)
  */
 bool CreateDirectoryRecursive(LPCTSTR pszDirectory, LPSECURITY_ATTRIBUTES lpSA) 
 {
@@ -83,7 +84,20 @@ bool CreateDirectoryRecursive(LPCTSTR pszDirectory, LPSECURITY_ATTRIBUTES lpSA)
 	TCHAR *p, *pNext;
 	_tcscpy(szDir, pszDirectory);
 
-	pNext = strchr(szDir, '\\');
+	pNext = NULL;
+
+	// See if we have a UNC path and if so skip past the first section.
+	if(_tcslen(pszDirectory) >= 3)
+	{
+		if(szDir[0] == _T('\\') && szDir[1] == _T('\\'))
+		{
+			pNext = strchr(&szDir[2], _T('\\'));
+		}
+	}
+
+	if(!pNext)
+		pNext = strchr(szDir, '\\');
+
 	if (pNext)
 	{
 		pNext++;

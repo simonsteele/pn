@@ -5,6 +5,7 @@ Since 0.5.46:
 
 Added Set and Next bookmark menu items.
 Fixed SF Bug #1087242 - Command line params don't work once PN is open.
+Fixed SF Bug #1000488 - CreateDirectoryRecursive with UNC paths
 
 Since 0.5.45:
 
