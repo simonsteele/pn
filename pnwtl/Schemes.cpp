@@ -414,7 +414,6 @@ void CScheme::SetupScintilla(CScintilla& sc)
 	//sc.SPerform(SCI_SETEOLMODE, options.LineEndings);
 
 	// Line Indentation...
-	///@todo Specify indentation guides colours?
 	sc.SPerform(SCI_SETINDENTATIONGUIDES, (options.ShowIndentGuides ? 1 : 0));
 	sc.SPerform(SCI_SETUSETABS, options.UseTabs ? 1 : 0);
 	sc.SPerform(SCI_SETTABWIDTH, options.TabWidth);

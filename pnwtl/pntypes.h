@@ -37,9 +37,17 @@ typedef struct tagReplaceOptions : tagFindOptions
 
 typedef struct tagPrintOptions
 {
+	// Cached object references...
 	HGLOBAL hDevMode;
 	HGLOBAL hDevNames;
+	
+	// Print margins...
 	RECT	rcMargins;
+
+	// Header and Footer text...
+	CString Header;
+	CString Footer;
+
 } SPrintOptions;
 
 #define TOOL_CAPTURE		0x01

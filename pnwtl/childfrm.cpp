@@ -15,6 +15,7 @@
 #include "outputview.h"
 #include "exporters.h"
 #include "pndialogs.h"
+#include "include/pagesetupdialog.h"
 
 #if defined (_DEBUG)
 #define new DEBUG_NEW
@@ -1218,43 +1219,51 @@ void CChildFrame::SetModifiedOverride(bool bVal)
 	g_Context.m_frame->GetWindow()->SendMessage(PN_NOTIFY, 0, SCN_UPDATEUI);
 }
 
+static UINT CALLBACK PaintHookProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	return 0;
+}
+
+static UINT_PTR APIENTRY HookProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
 void CChildFrame::PrintSetup()
 {
-	PAGESETUPDLG pdlg = {
-	                sizeof(PAGESETUPDLG), 
-					0, 0, 0, 0, 
-					{0, 0}, 
-					{0, 0, 0, 0}, 
-					{0, 0, 0, 0}, 
-					0, 0, 0, 0, 0, 0
-	                };
+	SS::CPageSetupDialog psd(PSD_INWININIINTLMEASURE|PSD_ENABLEPAGESETUPTEMPLATE,
+		m_hWnd);
 
-	pdlg.hwndOwner = m_hWnd/*MainHWND()*/;
-	pdlg.hInstance = ::GetModuleHandle(NULL);
+	PAGESETUPDLG& pdlg = psd.m_psd;
 
+	// Set margins if valid.
 	if (m_po.rcMargins.left != 0 || m_po.rcMargins.right != 0 ||
-			m_po.rcMargins.top != 0 || m_po.rcMargins.bottom != 0) {
-		pdlg.Flags = PSD_MARGINS;
-
-		pdlg.rtMargin.left = m_po.rcMargins.left;
-		pdlg.rtMargin.top = m_po.rcMargins.top;
-		pdlg.rtMargin.right = m_po.rcMargins.right;
-		pdlg.rtMargin.bottom = m_po.rcMargins.bottom;
+			m_po.rcMargins.top != 0 || m_po.rcMargins.bottom != 0) 
+	{
+		psd.SetMargins(&m_po.rcMargins);
 	}
 
+	// retrieve cached options from other uses (can't be persisted between sessions)
 	pdlg.hDevMode = m_po.hDevMode;
 	pdlg.hDevNames = m_po.hDevNames;
 
-	if (!PageSetupDlg(&pdlg))
+	psd.SetHeaderText(m_po.Header);
+	psd.SetFooterText(m_po.Footer);
+
+	if ( psd.DoModal() != IDOK )
+	{
 		return;
+	}
 
-	m_po.rcMargins.left = pdlg.rtMargin.left;
-	m_po.rcMargins.top = pdlg.rtMargin.top;
-	m_po.rcMargins.right = pdlg.rtMargin.right;
-	m_po.rcMargins.bottom = pdlg.rtMargin.bottom;
+	// retrieve margins.
+	psd.GetMargins(&m_po.rcMargins, NULL);
 
+	// cache device mode options.
 	m_po.hDevMode = pdlg.hDevMode;
 	m_po.hDevNames = pdlg.hDevNames;
+
+	m_po.Header = psd.GetHeaderText();
+	m_po.Footer = psd.GetFooterText();
 
 	COptionsManager::GetInstance()->SavePrintSettings(&m_po);
 }

@@ -6,6 +6,9 @@
 #define IDR_TBR_EDIT                    5
 #define IDC_REPLACEALL_BUTTON           6
 #define IDC_REPLACEINSEL_BUTTON         7
+#define IDD_PAGESETUP                   12
+#define IDC_HEADERTEXT                  30
+#define IDC_FOOTERTEXT                  31
 #define ID_MRUFILE_BASE                 50
 #define IDD_ABOUTBOX                    100
 #define IDC_FINDTEXT_COMBO              102
@@ -297,7 +300,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        313
+#define _APS_NEXT_RESOURCE_VALUE        314
 #define _APS_NEXT_COMMAND_VALUE         32879
 #define _APS_NEXT_CONTROL_VALUE         1075
 #define _APS_NEXT_SYMED_VALUE           104

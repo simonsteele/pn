@@ -500,6 +500,10 @@ void COutputView::SetOutputLexer()
 	if(pScheme && ::IsWindow(m_hWnd))
 	{
 		pScheme->Load( *(static_cast<CScintilla*>(this)) );
+		
+		// Override some nastiness inherited from the default schemes...
+		SPerform(SCI_SETCARETLINEVISIBLE, false);
+		SPerform(SCI_SETEDGEMODE, EDGE_NONE);
 	}
 }
 

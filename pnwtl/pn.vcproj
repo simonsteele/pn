@@ -504,6 +504,9 @@
 				RelativePath="include\OptionsDialog.h">
 			</File>
 			<File
+				RelativePath=".\include\pagesetupdialog.h">
+			</File>
+			<File
 				RelativePath="include\pcreplus.cpp">
 			</File>
 			<File

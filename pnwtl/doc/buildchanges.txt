@@ -1,6 +1,13 @@
 | Working towards 0.5 :: Mingus
 ---------------------------------------
 
+Since 10/11/03:
+
+Output window no longer inherits line length helper styles.
+New build of scintilla fixes wrapping problems.
+Print setup dialog changes.
+Single-instance restrictions.
+
 Since 04/11/03:
 
 Italic font customisations not picked up. (SF Bug #834967)

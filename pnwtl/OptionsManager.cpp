@@ -209,6 +209,9 @@ void COptionsManager::SavePrintSettings(SPrintOptions* pSettings)
 		reg.WriteInt(_T("TopMargin"), pSettings->rcMargins.top);
 		reg.WriteInt(_T("RightMargin"), pSettings->rcMargins.right);
 		reg.WriteInt(_T("BottomMargin"), pSettings->rcMargins.bottom);
+
+		reg.WriteString(_T("Header"), pSettings->Header);
+		reg.WriteString(_T("Footer"), pSettings->Footer);
 	}
 }
 
@@ -224,6 +227,14 @@ void COptionsManager::LoadPrintSettings(SPrintOptions* pSettings)
 		pSettings->rcMargins.top = reg.ReadInt(_T("TopMargin"), 10);
 		pSettings->rcMargins.right = reg.ReadInt(_T("RightMargin"), 10);
 		pSettings->rcMargins.bottom = reg.ReadInt(_T("BottomMargin"), 10);
+
+		tstring val;
+		val = _T("Programmers Notepad - %f");
+		if( reg.ReadString(_T("Header"), val) )
+			pSettings->Header = val.c_str();
+		val = _T("");
+		if( reg.ReadString(_T("Footer"), val) )
+            pSettings->Footer = val.c_str();
 	}
 }
 
