@@ -349,6 +349,9 @@
 				RelativePath="res\edittbr.bmp">
 			</File>
 			<File
+				RelativePath="res\findbarbmps.bmp">
+			</File>
+			<File
 				RelativePath="res\font_tru.bmp">
 			</File>
 			<File

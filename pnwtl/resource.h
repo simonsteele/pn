@@ -90,6 +90,8 @@
 #define IDR_TOOLBAR1                    278
 #define IDR_TBR_FINDCOMBO               278
 #define IDR_TBR_FIND                    278
+#define IDB_BITMAP1                     280
+#define IDB_FINDTOOLBAR                 280
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -191,7 +193,7 @@
 #define IDC_REHELPER_BUTTON             21204
 #define IDC_RHELPER_BUTTON              21205
 #define IDC_DIRECTION_GROUP             21207
-#define IDC_FINDCOMBO					21208
+#define IDC_FINDCOMBO                   21208
 #define ID_EDIT_FINDNEXT                32773
 #define ID_EDIT_GOTO                    32774
 #define ID_TOOLS_LECRLF                 32777
@@ -231,16 +233,17 @@
 #define ID_EDIT_HEADERSWITCH            32866
 #define ID_EDIT_COPYRTF                 32871
 #define ID_PLACEHOLDER_SCHEMECOMBO      32873
-#define ID_FINDTYPE_BUTTON              32874
+#define ID_EDIT_FINDINFILES             32874
 #define ID_PLACEHOLDER_FINDCOMBO        32875
+#define ID_FINDTYPE_BUTTON              32876
 #define IDC_FINDTEXT_LABEL              65535
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        280
-#define _APS_NEXT_COMMAND_VALUE         32876
+#define _APS_NEXT_RESOURCE_VALUE        281
+#define _APS_NEXT_COMMAND_VALUE         32877
 #define _APS_NEXT_CONTROL_VALUE         1065
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

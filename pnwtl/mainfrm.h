@@ -263,6 +263,7 @@ protected:
 	CPNStateManager			m_GUIState;
 	CComboBox				m_SchemeCombo;
 	BXT::CComboBoxAC		m_FindCombo;
+	CImageList				m_FindImages;
 
 	HWND					hFindWnd;
 	HWND					hReplWnd;

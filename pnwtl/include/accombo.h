@@ -191,7 +191,23 @@ public:
 
 	LRESULT OnSetText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 	{
-		CString text((LPCTSTR)lParam);
+		AddString((LPCTSTR)lParam);
+
+		bHandled = FALSE;
+		return 0;
+	}
+
+	LRESULT OnEnterPressed(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+	{
+		::SendMessage(m_hWndOwner, WM_COMMAND, MAKELONG(GetWindowLong(GWL_ID), BXTN_ENTER), (LPARAM)m_hWnd);
+		return 0;
+	}
+
+// Implementation
+
+	void AddString(LPCTSTR string)
+	{
+		CString text((LPCTSTR)string);
 		if(text.GetLength() > 0)
 		{
 			int i = FindStringExact(-1, text);
@@ -206,18 +222,8 @@ public:
 			SetCurSel(0);
 			m_pAC->AddItem(text);
 		}
-
-		bHandled = FALSE;
-		return 0;
 	}
 
-	LRESULT OnEnterPressed(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-	{
-		::SendMessage(m_hWndOwner, WM_COMMAND, MAKELONG(GetWindowLong(GWL_ID), BXTN_ENTER), (LPARAM)m_hWnd);
-		return 0;
-	}
-
-// Implementation
 	bool Init(LPCTSTR szSubKey)
 	{
 		SetFont((HFONT)::SendMessage(GetParent(), WM_GETFONT, 0, 0));

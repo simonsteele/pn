@@ -326,6 +326,16 @@ HWND CMainFrame::CreateFindToolbar()
 	fToolbar.GetItemRect(1, &rc);
 
 	rc.bottom = TOOLBAR_COMBO_DROPLINES * sizeChar.cy;
+	rc.left += 1; // slight offset from previous and next buttons.
+	rc.right -= 1;
+
+	//m_FindImages.Create(MAKEINTRESOURCE(IDB_FINDTOOLBAR), 16, 1, RGB(255,0,255));
+	m_FindImages.Create(16, 16, ILC_COLOR32 | ILC_MASK, 3, 1);
+	CBitmap bmp;
+	bmp.LoadBitmap(IDB_FINDTOOLBAR);
+	m_FindImages.Add(bmp, RGB(255, 0, 255));
+
+	fToolbar.SetImageList(m_FindImages.m_hImageList);
 
 	HWND hWndCombo = m_FindCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), 
 		CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
@@ -866,7 +876,20 @@ LRESULT CMainFrame::OnSchemeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 
 LRESULT CMainFrame::OnFindComboEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	//CWindowText wt(m_FindCombo.m_hWnd); //Get find text...
+	CWindowText wt(m_FindCombo.m_hWnd); //Get find text...
+
+	CChildFrame* pEditor = CChildFrame::FromHandle( GetCurrentEditor() );
+	if( pEditor != NULL )
+	{
+		SFindOptions* pFindOptions = COptionsManager::GetInstance()->GetFindOptions();
+		if(pFindOptions->FindText != (LPCTSTR)wt)
+		{
+			pFindOptions->Found = false;
+			pFindOptions->FindText = (LPCTSTR)wt;
+			m_FindCombo.AddString((LPCTSTR)wt);
+		}
+		pEditor->FindNext(pFindOptions);
+	}
 	
 	return 0;
 }
