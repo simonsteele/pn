@@ -166,8 +166,10 @@ public:
 		else
 		{
 			SetLexer(0);
+			EnsureRangeVisible(0, GetLength());
 			ClearDocumentStyle();
 			Colourise(0, -1);
+			SPerform(SCI_STYLECLEARALL, 0, 0);
 		}
 	}
 

@@ -20,9 +20,14 @@
 #define MENUMESSAGE_CHANGESCHEME 0xa
 #define PN_CHECKAGE WM_USER+32
 
+#define PMUI_MINIBAR	0x0001
+#define PMUI_MENU		0x0002
+#define PMUI_CHECKED	0x0004
+
 #include "fromhandle.h"
 
-class CChildFrame : public CTabbedMDIChildWindowImpl<CChildFrame>, public CFromHandle<CChildFrame>, public CSMenuEventHandler
+class CChildFrame : public CTabbedMDIChildWindowImpl<CChildFrame>, 
+	public CFromHandle<CChildFrame>, public CSMenuEventHandler
 {
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MDICHILD)
@@ -91,10 +96,117 @@ public:
 		HANDLE_MENU_COMMAND(MENUMESSAGE_CHANGESCHEME, OnSchemeChange)
 	END_MENU_HANDLER_MAP()
 
+	struct _PoorMansUIEntry
+	{
+		UINT nID;
+		WORD wState;
+	};
+
+	static _PoorMansUIEntry* GetDefaultUIMap()
+	{
+		static _PoorMansUIEntry theMap[] =
+		{
+			{ID_EDITOR_WORDWRAP, PMUI_MINIBAR | PMUI_MENU},
+			{ID_EDITOR_COLOURISE, PMUI_MINIBAR | PMUI_MENU},
+			{ID_EDITOR_LINENOS, PMUI_MINIBAR | PMUI_MENU},
+			// note: This one must be at the end.
+			{-1, 0}
+		};
+		return theMap;
+	}
+
+	_PoorMansUIEntry* GetPoorMansUIMap()
+	{
+		return m_pUIData;
+	}
+
+	void UISetChecked(UINT uID, bool bChecked, bool bUpdate = true)
+	{
+		_PoorMansUIEntry* pMap = GetPoorMansUIMap();
+		while(pMap->nID != -1)
+		{
+			if(pMap->nID == uID)
+			{
+				if(bChecked)
+					pMap->wState |= PMUI_CHECKED;
+				else
+					pMap->wState &= ~PMUI_CHECKED;
+
+				if(bUpdate)
+				{
+					if((pMap->wState & PMUI_MENU) != 0)
+						::CheckMenuItem(m_hMenu, uID, MF_BYCOMMAND | mfchecked[bChecked]);
+					if((pMap->wState & PMUI_MINIBAR) != 0)
+						CToolBarCtrl(m_hWndToolBar).CheckButton(uID, bChecked);
+				}
+				
+				break;
+			}
+
+			pMap++;
+		}
+	}
+
+	bool UIGetChecked(UINT uID)
+	{
+		_PoorMansUIEntry* pMap = GetPoorMansUIMap();
+		while(pMap->nID != -1)
+		{
+			if(pMap->nID == uID)
+			{
+				return (pMap->wState & PMUI_CHECKED) != 0;
+			}
+			pMap++;
+		}
+
+		return false;
+	}
+
+	bool UIInvertCheck(UINT uID)
+	{
+		_PoorMansUIEntry* pMap = GetPoorMansUIMap();
+		while(pMap->nID != -1)
+		{
+			if(pMap->nID == uID)
+			{
+				bool bChecked = (pMap->wState & PMUI_CHECKED) != 0;
+				bChecked = !bChecked;
+
+				if(bChecked)
+					pMap->wState |= PMUI_CHECKED;
+				else
+					pMap->wState &= ~PMUI_CHECKED;
+
+				if((pMap->wState & PMUI_MENU) != 0)
+					::CheckMenuItem(m_hMenu, uID, MF_BYCOMMAND | mfchecked[bChecked]);
+				if((pMap->wState & PMUI_MINIBAR) != 0)
+					CToolBarCtrl(m_hWndToolBar).CheckButton(uID, bChecked);
+
+				return bChecked;
+				
+				break;
+			}
+			
+			pMap++;
+		}
+		
+		return false;
+	}
+
+	void InitUpdateUI()
+	{
+		_PoorMansUIEntry* pMap = GetDefaultUIMap();
+		int so = sizeof(pMap);
+		m_pUIData = new _PoorMansUIEntry[so];
+		memcpy(m_pUIData, pMap, sizeof(_PoorMansUIEntry)*so);
+	}
+
 	CChildFrame()
 	{
 		m_hImgList = NULL;
 		m_FileAge = -1;
+
+		InitUpdateUI();
 	}
 
 	~CChildFrame()
@@ -103,6 +215,8 @@ public:
 		{
 			::ImageList_Destroy(m_hImgList);
 		}
+
+		delete [] m_pUIData;
 	}
 
 	/**
@@ -233,6 +347,10 @@ public:
 		SetTitle(_T("<new>"));
 
 		SetupToolbar();
+
+		UISetChecked(ID_EDITOR_COLOURISE, true);
+		UISetChecked(ID_EDITOR_WORDWRAP, false);
+		UISetChecked(ID_EDITOR_LINENOS, false);
 
 		UpdateMenu();
 
@@ -417,23 +535,21 @@ public:
 
 	LRESULT OnWordWrapToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		CToolBarCtrl toolbar(m_hWndToolBar);
-		m_view.SetWrapMode( toolbar.IsButtonChecked(wID) ? SC_WRAP_WORD : SC_WRAP_NONE );
+		m_view.SetWrapMode( UIInvertCheck(wID) ? SC_WRAP_WORD : SC_WRAP_NONE );
+
 		return 0;
 	}
 
-	LRESULT OnColouriseToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	LRESULT OnColouriseToggle(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/)
 	{
-		CToolBarCtrl toolbar(m_hWndToolBar);
-		m_view.EnableHighlighting(toolbar.IsButtonChecked(wID) != 0);
+		m_view.EnableHighlighting(UIInvertCheck(wID));
 		
 		return 0;
 	}
 
-	LRESULT OnLineNoToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	LRESULT OnLineNoToggle(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/)
 	{
-		CToolBarCtrl toolbar(m_hWndToolBar);
-		m_view.ShowLineNumbers(toolbar.IsButtonChecked(wID) != 0);
+		m_view.ShowLineNumbers(UIInvertCheck(wID));
 
 		return 0;
 	}
@@ -664,6 +780,8 @@ protected:
 	CString m_Title;
 	CString m_FileName;
 	long m_FileAge;
+
+	_PoorMansUIEntry* m_pUIData;
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -47,6 +47,9 @@
 #define ID_VIEW_TOOLBARS                236
 #define ID_TOOLBARS_TOOLBAR             237
 #define ID_VIEW_TOOLBAR_EDIT            238
+#define ID_VIEW_LINENUMBERS             240
+#define ID_VIEW_SYNTAXHIGHLIGHTING      241
+#define ID_VIEW_WORDWRAP                242
 #define IDD_PNSAVE                      423
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
@@ -92,7 +95,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        240
+#define _APS_NEXT_RESOURCE_VALUE        243
 #define _APS_NEXT_COMMAND_VALUE         32783
 #define _APS_NEXT_CONTROL_VALUE         1006
 #define _APS_NEXT_SYMED_VALUE           104

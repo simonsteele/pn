@@ -139,6 +139,10 @@ BEGIN
         END
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM SEPARATOR
+        MENUITEM "Line Numbers",                ID_EDITOR_LINENOS
+        MENUITEM "Syntax Highlighting",         131
+        MENUITEM "Word Wrap",                   130
+        MENUITEM SEPARATOR
         MENUITEM "Schemes",                     ID_VIEW_CHANGESCHEME
     END
     POPUP "&Tools"
@@ -647,8 +651,13 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
-CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST "pn.exe.manifest"
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// RT_MANIFEST
+//
+
+1                       RT_MANIFEST             "pn.exe.manifest"
 #endif    // English (U.K.) resources
 /////////////////////////////////////////////////////////////////////////////
 
