@@ -1,12 +1,24 @@
-This file is meant to be a place to record ideas as they come to PN2 developers - so that they don't get lost. Every now and then, people can take a look through it, and see if there are any ideas they'd like to implement.
+Code-Idealog:
+=============
+
+This file is meant to be a place to record ideas as they come to PN2 developers - so that they don't get lost. Every now and then, people can take a look through it, and see if there are any ideas they'd like to implement. Sometimes ideas in this file will be fleshed out with a design document which can be found at http://pnotepad.org/words.html
 
 Scheme Disabling:
+-----------------
 
 Probably need a way to disable the schemes one-by-one - some people 
 don't want certain schemes and want an easy checkbox way to
 disable them.
 
+Modes:
+------
+
+Emacs has major modes, vim has scary scripts and PN2 has a few inbuilt hacks at the moment (header switch for c++ for example). What PN2 needs is some form of extension mechanism allowing a DLL (or potentially a script) to listen for scintilla events, and then to affect the document in some way. It is quite possible that this would be simply a case of providing a scintilla wrapper providing all the available methods then the interface would simply be a sendmessage style one. Extension DLLs would then be associated with particular schemes (there could even be multiple chained extensions per scheme). 
+
+This mechanism could be used to provide for Python scripts to be used (and/or other languages) to provide extensions by means of a wrapper service. This would mean that a DLL should be able to contain multiple extenders and should be queried at startup for which extensions are available.
+
 Ideas for optimisation:
+=======================
 	
 After compiling schemes, write out a table of schemes linking scheme files to scheme names / titles. 
 This saves examining all .cscheme files each time. It also gives
