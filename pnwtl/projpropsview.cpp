@@ -2,7 +2,7 @@
  * @file projpropsview.cpp
  * @brief Project Properties
  * @author Simon Steele
- * @note Copyright (c) 2004 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2004-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -37,6 +37,10 @@ LRESULT CProjPropsView::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 
 LRESULT CProjPropsView::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	// Make sure we get all of the modified options (if any);
+	transferOptions();
+	m_pCurItem->GetUserData() = m_nodeData;
+
 	EndDialog(wID);
 	return 0;
 }
@@ -62,15 +66,17 @@ LRESULT CProjPropsView::OnTreeSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 	return 0;
 }
 
-void CProjPropsView::DisplayFor(Projects::ProjectType* pItem, Projects::ProjectTemplate* pTemplate)
+bool CProjPropsView::DisplayFor(Projects::ProjectType* pItem, Projects::ProjectTemplate* pTemplate)
 {
 	PNASSERT(pItem != NULL);
 	PNASSERT(pTemplate != NULL);
 
 	m_pCurItem = pItem;
 	m_pPropSet = pTemplate->GetProperties(pItem->GetType());
+	m_namespace = pTemplate->GetNamespace();
+	m_nodeData = pItem->GetUserData();
 
-	DoModal();	
+	return DoModal() == IDOK;
 }
 
 void CProjPropsView::displayGroups(Projects::PropGroupList& groups, HTREEITEM hParent)
@@ -88,73 +94,198 @@ void CProjPropsView::displayGroups(Projects::PropGroupList& groups, HTREEITEM hP
 	}
 }
 
-void CProjPropsView::displayCategories(Projects::PropCatList& categories)
+void CProjPropsView::displayCategories(LPCTSTR groupName, Projects::PropCatList& categories)
 {
 	for(Projects::PropCatList::const_iterator j = categories.begin();
 			j != categories.end();
 			++j)
 	{
-        m_props.AddItem( PropCreateCategory((*j)->GetDescription()) );
-		displayProperties( (*j)->GetProperties() );
+        HPROPERTY hProp = m_props.AddItem( PropCreateCategory((*j)->GetDescription()) );
+		hProp->SetItemData( reinterpret_cast<LPARAM>( (*j) ) );
+		displayProperties( groupName, (*j)->GetName(), (*j)->GetProperties() );
 	}
 }
 
-void CProjPropsView::displayProperties(Projects::PropList& properties)
+HPROPERTY CProjPropsView::createPropertyItem(
+		Projects::ProjectProp* prop, 
+		LPCTSTR groupName,
+		LPCTSTR catName
+		)
+{
+	HPROPERTY ret = NULL;
+	switch(prop->GetType())
+	{
+
+	case Projects::propBool:
+		{
+			//ret = m_props.AddItem( PropCreateSimple(prop->GetDescription(), false) );
+			bool bVal = m_nodeData.Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), false);
+			ret = PropCreateCheckButton(prop->GetDescription(), bVal);
+		}
+		break;
+
+	case Projects::propInt:
+		{
+			int iVal = m_nodeData.Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), 0);
+			ret = PropCreateSimple(prop->GetDescription(), iVal);
+		}
+		break;
+
+	case Projects::propChoice:
+		{
+			CPropertyListItem* pListItem = new CPropertyListItem(prop->GetDescription(), 0);
+
+			LPCTSTR szVal = m_nodeData.Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
+			LPCTSTR szSetVal = NULL; //TODO: Need to do the default here.
+
+			const Projects::ValueList& values = static_cast<Projects::ListProp*>(prop)->GetValues();
+			
+			for(Projects::ValueList::const_iterator j = values.begin();
+				j != values.end();
+				++j)
+			{
+				if((*j)->Value == szVal)
+					szSetVal = (*j)->Description.c_str();
+
+				pListItem->AddListItem( (*j)->Description.c_str() );
+			}
+
+			if(szSetVal != NULL)
+			{
+				CComVariant v = szSetVal;
+				pListItem->SetValue(v);
+			}
+
+			ret = pListItem;
+		}
+		break;
+
+	case Projects::propString:
+		{
+			LPCTSTR szVal = m_nodeData.Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
+			ret = PropCreateSimple(prop->GetDescription(), szVal != NULL ? szVal : _T(""));
+		}
+		break;
+
+	case Projects::propLongString:
+		{
+			LPCTSTR szVal = m_nodeData.Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
+			ret = PropCreateSimple(prop->GetDescription(), szVal != NULL ? szVal : _T(""));
+		}
+		break;
+
+	case Projects::propFile:
+		{
+			LPCTSTR szVal = m_nodeData.Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
+			ret = PropCreateFileName(prop->GetDescription(), szVal != NULL ? szVal : _T(""));
+		}
+		break;
+
+	case Projects::propFolder:
+		{
+			LPCTSTR szVal = m_nodeData.Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
+			ret = PropCreateFileName(prop->GetDescription(), szVal != NULL ? szVal : _T(""));
+		}
+		break;
+	}
+
+	return m_props.AddItem(ret);
+}
+
+void CProjPropsView::displayProperties(LPCTSTR groupName, LPCTSTR catName, Projects::PropList& properties)
 {
 	for(Projects::PropList::const_iterator i = properties.begin();
 		i != properties.end();
 		++i)
 	{
-		switch((*i)->GetType())
-		{
-
-		case Projects::propBool:
-			//m_props.AddItem( PropCreateSimple((*i)->GetDescription(), false) );
-			m_props.AddItem( PropCreateCheckButton((*i)->GetDescription(), false));
-			break;
-
-		case Projects::propInt:
-			m_props.AddItem( PropCreateSimple((*i)->GetDescription(), 0) );
-			break;
-
-		case Projects::propChoice:
-			{
-				CPropertyListItem* pListItem = new CPropertyListItem((*i)->GetDescription(), 0);
-
-				const Projects::ValueList& values = static_cast<Projects::ListProp*>((*i))->GetValues();
-				
-				for(Projects::ValueList::const_iterator j = values.begin();
-					j != values.end();
-					++j)
-				{
-					pListItem->AddListItem( (*j)->Description.c_str() );
-				}
-
-				m_props.AddItem(pListItem);
-			}
-			break;
-
-		case Projects::propString:
-			m_props.AddItem( PropCreateSimple((*i)->GetDescription(), _T("")) );
-			break;
-
-		case Projects::propLongString:
-			m_props.AddItem( PropCreateSimple((*i)->GetDescription(), _T("")) );
-			break;
-
-		case Projects::propFile:
-			m_props.AddItem( PropCreateFileName((*i)->GetDescription(), _T("")) );
-			break;
-
-		case Projects::propFolder:
-			m_props.AddItem( PropCreateFileName((*i)->GetDescription(), _T("")) );
-			break;
-		}
+		// Create the correct type of property::
+		HPROPERTY hProp = createPropertyItem((*i), groupName, catName);
+		hProp->SetItemData( reinterpret_cast<LPARAM>( (*i) ) );
 	}
+}
+
+void CProjPropsView::clear()
+{
+	m_props.ResetContent();
 }
 
 void CProjPropsView::selectGroup(Projects::PropGroup* group)
 {
-	displayCategories(group->GetCategories());
+	if(m_props.GetCount() > 0)
+	{
+		transferOptions();
+		clear();
+	}
+	displayCategories(group->GetName(), group->GetCategories());
 	m_pCurGroup = group;
+}
+
+void CProjPropsView::transferOptions()
+{
+	int propCount = m_props.GetCount();
+	tstring currentCat;
+	for(int i = 0; i < propCount; i++)
+	{
+		HPROPERTY hDispProp = m_props.GetProperty(i);
+		PNASSERT(hDispProp != NULL);
+
+		// If it's a category, we extract the name of the category for lookups.
+		if(hDispProp->GetKind() == PROPKIND_CATEGORY)
+		{
+			Projects::PropCategory* pCat = (Projects::PropCategory*)hDispProp->GetItemData();
+			currentCat = pCat->GetName();
+			continue;
+		}
+		
+		// Otherwise it's a property so we transfer the selected value.
+		Projects::ProjectProp* prop = reinterpret_cast<Projects::ProjectProp*>( hDispProp->GetItemData() );
+		PNASSERT(prop != NULL);
+
+		CComVariant var;
+		hDispProp->GetValue(&var);
+		
+		LPCTSTR catName = currentCat.c_str();
+		LPCTSTR groupName = m_pCurGroup->GetName();
+
+		switch(prop->GetType())
+		{
+			case Projects::propBool:
+			{
+				m_nodeData.Set(m_namespace.c_str(), groupName, catName, prop->GetName(), var.boolVal != FALSE);
+			}
+			break;
+
+			case Projects::propInt:
+			{
+				m_nodeData.Set(m_namespace.c_str(), groupName, catName, prop->GetName(), var.intVal);
+			}
+			break;
+
+			case Projects::propChoice:
+			{
+				Projects::ListProp* pListProp = reinterpret_cast<Projects::ListProp*>( prop );
+				const Projects::ValueList& values = pListProp->GetValues();
+
+				// Find the selected value by its index.
+				int selIndex = var.intVal;
+				Projects::ValueList::const_iterator j = values.begin();
+				for(int i = 0; i < selIndex; i++)
+					j++;
+
+				m_nodeData.Set(m_namespace.c_str(), groupName, catName, prop->GetName(), (*j)->Value.c_str());
+			}
+			break;
+
+			case Projects::propString:
+			case Projects::propLongString:
+			case Projects::propFile:
+			case Projects::propFolder:
+			{
+				CString str;
+				str = var;
+				m_nodeData.Set(m_namespace.c_str(), groupName, catName, prop->GetName(), str);
+			}
+			break;
+		}
+	}
 }

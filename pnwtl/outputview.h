@@ -2,7 +2,7 @@
  * @file OutputView.h
  * @brief View to display output from tool calls.
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -11,23 +11,15 @@
 #ifndef outputview_h__included
 #define outputview_h__included
 
-#include "ScintillaImpl.h"
+#include "outputscintilla.h"
 #include "ScintillaWTL.h"
-
-#define SCE_CUSTOM_ERROR	20
-
-class ScintillaAccessor;
-
-namespace PCRE {
-	class RegExp;
-}
 
 /**
  * Scintilla window with special output handling.
  */
-class COutputView : public CScintillaWindowImpl< COutputView, CScintillaImpl >
+class COutputView : public CScintillaWindowImpl< COutputView, REScintilla >
 {
-typedef CScintillaWindowImpl< COutputView, CScintillaImpl > baseClass;
+typedef CScintillaWindowImpl< COutputView, REScintilla > baseClass;
 
 public:
 	COutputView();
@@ -58,8 +50,6 @@ public:
 protected:
 	LRESULT OnHotSpotClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
-	void ExtendStyleRange(int startPos, int style, TextRange* tr);
-	
 	// Built-in error handlers...
 	void HandleGCCError(int style, int position);
 	void HandleBorlandCPPError(int style, int position);
@@ -74,11 +64,6 @@ protected:
 
 	bool HandleREError(PCRE::RegExp& re, int style, int position);
 	bool BuildAndHandleREError(int style, int position, const char* reDef);
-
-	void CustomColouriseLine(ScintillaAccessor& styler, char *lineBuffer, int length, int endLine);
-	void HandleStyleNeeded(ScintillaAccessor& styler, int startPos, int length);
-
-	
 
 	LRESULT OnClear(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -95,15 +80,6 @@ protected:
 	tstring			m_basepath;
 	tstring			m_customre;
 	PCRE::RegExp*	m_pRE;
-};
-
-/**
- * @brief Build regular expressions for tool output matching.
- */
-class CToolREBuilder : public CustomFormatStringBuilder<CToolREBuilder>
-{
-	public:
-		void OnFormatChar(TCHAR thechar);
 };
 
 #endif

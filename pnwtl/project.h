@@ -52,7 +52,10 @@ class XmlNode
 	public:
 		XmlNode(LPCTSTR qualifiedName);
 		XmlNode(LPCTSTR lpszNamespace, LPCTSTR lpszName);
+		XmlNode(const XmlNode& copy);
 		~XmlNode();
+
+		XmlNode& operator = (const XmlNode& copy);
 		
 		void Write(ProjectWriter writer);
 
@@ -66,6 +69,9 @@ class XmlNode
 		void SetText(LPCTSTR text);
 
 		bool Matches(LPCTSTR ns, LPCTSTR name);
+
+	protected:
+		void clear();
 
 	protected:
 		tstring		sNamespace;
@@ -82,6 +88,9 @@ class XmlAttribute
 {
 	public:
 		XmlAttribute(LPCTSTR lpszNamespace, LPCTSTR lpszName, LPCTSTR lpszValue);
+		XmlAttribute(const XmlAttribute& copy);
+
+		XmlAttribute& operator = (const XmlAttribute& copy);
 
 		void Write(ProjectWriter writer);
 
@@ -96,6 +105,8 @@ class UserData
 	public:
 		~UserData();
 		
+		UserData& operator = (const UserData& copy);
+
 		void Add(XmlNode* node);
 
 		const LIST_NODES& GetNodes();
@@ -108,6 +119,10 @@ class UserData
 		int Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, int defval);
 		LPCTSTR Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, LPCTSTR defval);
 
+		void Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, bool val);
+		void Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, int val);
+		void Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, LPCTSTR val);
+
 		XmlNode* GetCategoryNode(LPCTSTR ns, LPCTSTR group, LPCTSTR category);
 		XmlNode* GetGroupNode(LPCTSTR ns, LPCTSTR group);
 
@@ -115,7 +130,9 @@ class UserData
 		XN_CIT	end();
 
 	protected:
+		void clear();
 		XmlNode* lookUp(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value);
+		XmlNode* lookUpOrCreate(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value);
 
 	protected:
 		LIST_NODES nodes;
@@ -142,6 +159,8 @@ public:
 
 	UserData& GetUserData();
 
+	virtual void SetDirty() = 0;
+
 protected:
 	UserData	 userData;
 	PROJECT_TYPE type;
@@ -159,13 +178,13 @@ class File : public ProjectType
 
 		Folder* GetFolder();
 
-		bool Rename(LPCTSTR newFilePart);
+		virtual void SetDirty();
+
+		bool Rename(LPCTSTR newFilePart);		
 
 		void WriteDefinition(ProjectWriter definition);
 
 	protected:
-		void setDirty();
-
 		void SetFolder(Folder* folder);
 
 	protected:
@@ -218,12 +237,12 @@ class Folder : public ProjectType
 		static bool MoveFile(File* file, Projects::Folder* into);
 		static bool MoveChild(Projects::Folder* folder, Projects::Folder* into);
 
+		virtual void SetDirty();
+
 	protected:
 		void Clear();
 		bool hasUserData();
 		void writeContents(ProjectWriter definition);
-
-		virtual void setDirty();
 
 	protected:
 		tstring		name;
@@ -348,6 +367,8 @@ class Project : public Folder, XMLParseState
 
 		static bool CreateEmptyProject(LPCTSTR projectname, LPCTSTR filename);
 
+		virtual void SetDirty();
+
 	//Implement XMLParseState
 	protected:
 		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
@@ -364,8 +385,6 @@ class Project : public Folder, XMLParseState
 		void processFile(XMLAttributes& atts);
 		void processMagicFolder(XMLAttributes& atts);
 		void processUserData(LPCTSTR name, XMLAttributes& atts);
-
-		virtual void setDirty();
 		
 		void parse();
 
@@ -418,6 +437,7 @@ class Workspace : public ProjectType, XMLParseState
 
 		void ClearDirty();
 		bool IsDirty(bool bRecurse = true);
+		virtual void SetDirty();
 
 		File* FindFile(LPCTSTR filename);
 

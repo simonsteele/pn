@@ -166,10 +166,12 @@ typedef std::list<PropSet*> PropSetList;
 class ProjectTemplate
 {
 public:
-	ProjectTemplate(LPCTSTR name);
+	ProjectTemplate(LPCTSTR id, LPCTSTR name, LPCTSTR nameSpace);
 	~ProjectTemplate();
 
+	LPCTSTR GetID() const;
 	LPCTSTR GetName() const;
+	LPCTSTR GetNamespace() const;
 
 	PropSet* GetProperties(PROJECT_TYPE type) const;
 
@@ -177,7 +179,9 @@ public:
 
 protected:
 	PropSetList	m_propsets;
+	tstring		m_id;
 	tstring		m_name;
+	tstring		m_namespace;
 };
 
 class TemplateLoader : XMLParseState
@@ -204,6 +208,8 @@ protected:
 	void onCategory(XMLAttributes& atts);
 	void onEndCategory();
 	void onOption(XMLAttributes& atts);
+	void onInt(XMLAttributes& atts);
+	void onFilePath(XMLAttributes& atts);
 	void onFolderPath(XMLAttributes& atts);
 	void onOptionList(XMLAttributes& atts);
 	void onOptionListValue(XMLAttributes& atts);

@@ -268,9 +268,11 @@ void PropSet::clear()
 // ProjectTemplate
 //////////////////////////////////////////////////////////////////////////////
 
-ProjectTemplate::ProjectTemplate(LPCTSTR name)
+ProjectTemplate::ProjectTemplate(LPCTSTR id, LPCTSTR name, LPCTSTR ns)
 {
+	m_id = id;
 	m_name = name;
+	m_namespace = ns;
 }
 
 ProjectTemplate::~ProjectTemplate()
@@ -282,9 +284,19 @@ ProjectTemplate::~ProjectTemplate()
 	m_propsets.clear();
 }
 
+LPCTSTR ProjectTemplate::GetID() const
+{
+	return m_id.c_str();
+}
+
 LPCTSTR ProjectTemplate::GetName() const
 {
 	return m_name.c_str();
+}
+
+LPCTSTR ProjectTemplate::GetNamespace() const
+{
+	return m_namespace.c_str();
 }
 
 PropSet* ProjectTemplate::GetProperties(PROJECT_TYPE type) const
@@ -413,7 +425,18 @@ ProjectTemplate* TemplateLoader::FromFile(LPCTSTR path)
 	XMLParser parser;
 	parser.SetParseState(this);
 	m_parseState = 0;
-	parser.LoadFile(path);
+
+	try
+	{
+		parser.LoadFile(path);
+	}
+	catch( XMLParserException& E )
+	{
+		CString err;
+		err.Format(_T("Error Parsing Project Template XML: %s\n (file: %s, line: %d, column %d)"), 
+			XML_ErrorString(E.GetErrorCode()), E.GetFileName(), E.GetLine(), E.GetColumn());
+		::MessageBox(g_Context.m_frame->GetWindow()->m_hWnd, err, _T("XML Parse Error"), MB_OK | MB_ICONWARNING);
+	}
 
 	return m_pTemplate;
 }
@@ -437,6 +460,8 @@ void TemplateLoader::startElement(LPCTSTR name, XMLAttributes& atts)
 		BEGIN_STATE(PTL_CAT)
 			HANDLE(_T("option"), onOption)
 			HANDLE(_T("folderPath"), onFolderPath)
+			HANDLE(_T("filePath"), onFilePath)
+			HANDLE(_T("int"), onInt)
 			HANDLE_NEWSTATE(_T("optionlist"), onOptionList, PTL_OPTLIST)
 			HANDLE(_T("text"), onText)
 		END_STATE()
@@ -477,7 +502,13 @@ void TemplateLoader::onProjectConfig(XMLAttributes& atts)
 	LPCTSTR name = ATTVAL(_T("name"));
 	if(name == NULL)
 		name = _T("unknown");
-	m_pTemplate = new ProjectTemplate(name);
+	LPCTSTR ns = ATTVAL(_T("ns"));
+	if(ns == NULL)
+		ns = _T("http://example.com/error");
+	LPCTSTR id = ATTVAL(_T("id"));
+	if(id == NULL)
+		id = _T("error");
+	m_pTemplate = new ProjectTemplate(id, name, ns);
 }
 
 void TemplateLoader::onSet(XMLAttributes& atts)
@@ -583,6 +614,16 @@ void TemplateLoader::onEndCategory()
 void TemplateLoader::onOption(XMLAttributes& atts)
 {
 	makeProp(atts, propBool);
+}
+
+void TemplateLoader::onInt(XMLAttributes& atts)
+{
+	makeProp(atts, propInt);
+}
+
+void TemplateLoader::onFilePath(XMLAttributes& atts)
+{
+	makeProp(atts, propFile);
 }
 
 void TemplateLoader::onFolderPath(XMLAttributes& atts)

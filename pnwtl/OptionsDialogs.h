@@ -13,30 +13,12 @@
 
 #include "optionscontrols.h"
 
-class CInfoLabel : public CWindowImpl<CInfoLabel>
-{
-	public:
-		CInfoLabel(LPCTSTR title, DWORD StringID);
-		~CInfoLabel();
-
-		BEGIN_MSG_MAP(CInfoLabel)
-			MESSAGE_HANDLER(WM_PAINT, OnPaint);
-		END_MSG_MAP()
-
-	protected:
-		void MakeFonts(HDC hDC);
-		LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-
-		CFont*	m_pTitleFont;
-		TCHAR	strbuf[200];
-		tstring m_title;
-};
-
 class CToolSettingsPage : public CPropertyPageImpl<CToolSettingsPage>,
 							public CWinDataExchange<CToolSettingsPage>
 {
-	friend class CPropertyPageImpl<CToolSettingsPage>;
-
+	typedef CPropertyPageImpl<CToolSettingsPage> baseClass;
+	friend class baseClass;
+	
 	public:
 		CToolSettingsPage(LPCTSTR title);
         
@@ -48,6 +30,7 @@ class CToolSettingsPage : public CPropertyPageImpl<CToolSettingsPage>,
 			COMMAND_ID_HANDLER(IDC_TE_DIRBUTTON, OnBrowseDir)
 			COMMAND_ID_HANDLER(IDC_TE_CLEARBUTTON, OnClearShortcut)
 			COMMAND_ID_HANDLER(IDC_OPTHELPER_BUTTON, OnParamHelper)
+			CHAIN_MSG_MAP(baseClass)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 
@@ -97,7 +80,8 @@ class CToolSettingsPage : public CPropertyPageImpl<CToolSettingsPage>,
 class CToolConsoleIOPage : public CPropertyPageImpl<CToolConsoleIOPage>,
 							public CWinDataExchange<CToolConsoleIOPage>
 {
-	friend class CPropertyPageImpl<CToolConsoleIOPage>;
+	typedef CPropertyPageImpl<CToolConsoleIOPage> baseClass;
+	friend class baseClass;
 
 	public:
 		enum {IDD = IDD_TOOLCONSOLEIOPAGE};
@@ -109,10 +93,13 @@ class CToolConsoleIOPage : public CPropertyPageImpl<CToolConsoleIOPage>,
 
 		BEGIN_MSG_MAP(CToolConsoleIOPage)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			MESSAGE_HANDLER(PN_HANDLEHSCLICK, OnHandleHSClick)
 			COMMAND_ID_HANDLER(IDC_TE_CAPTURECHECK, OnCaptureChanged)
 			COMMAND_ID_HANDLER(IDC_TE_ABOUTBUILTIN, OnAboutBuiltin)
 			COMMAND_ID_HANDLER(IDC_TE_BUILTIN, OnWindowStateChanged)
 			COMMAND_ID_HANDLER(IDC_TE_CUSTOMPARSE, OnWindowStateChanged)
+			COMMAND_HANDLER(IDC_TE_CUSTOMTEXT, EN_CHANGE, OnTextChange)
+			CHAIN_MSG_MAP(baseClass)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 
@@ -129,9 +116,11 @@ class CToolConsoleIOPage : public CPropertyPageImpl<CToolConsoleIOPage>,
 
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		LRESULT OnHandleHSClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnCaptureChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnAboutBuiltin(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnWindowStateChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnTextChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 		void enableButtons();
 
@@ -145,7 +134,7 @@ class CToolConsoleIOPage : public CPropertyPageImpl<CToolConsoleIOPage>,
 		BOOL		m_bClear;
 		bool		m_bGlobal;
 		
-		CScintillaDialogWnd	m_scintilla;
+		CScintillaREDialogWnd	m_scintilla;
 };
 
 // pre-declare SchemeConfig.

@@ -355,7 +355,6 @@
 #define IDC_VAR_LIST                    1118
 #define IDC_TE_CLICKRESULTSSTATIC       1120
 #define IDC_TE_OUTPUTGROUP              1121
-#define IDC_OPT_LINEENDINGS_CHECK       1122
 #define IDC_OPT_LINEENDINGSCHECK        1122
 #define IDC_OPT_WHITESPACECHECK         1123
 #define IDC_MARKALL_BUTTON              21199
@@ -456,7 +455,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        335
-#define _APS_NEXT_COMMAND_VALUE         32933
+#define _APS_NEXT_COMMAND_VALUE         32936
 #define _APS_NEXT_CONTROL_VALUE         1124
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

@@ -1,65 +1,16 @@
 | Working towards 0.6 :: Ella
 ---------------------------------------
 
-Since 02/07/2004:
-
-Fixes:
-Project contained file nodes not sorted.
-Fixed global output window clicking.
-Changed tool editor default to global output window.
-Fixed a bug in the long-line calculation code.
-Fixed the jump to dialog resizing.
-Fixed command-prompt project opening.
-Fixed magic folder writing.
-Temporarily disabled "Add Folder" on magic folders for release build.
-
-Since 27/04/2004:
+Since 15/12/2004:
 
 Changes:
-Presing up/down from the jump to edit box now moves the list selection.
-Upgraded the tabbing framework to Daniel's latest code.
-You can now drag to re-arrange tabs.
-Docking windows reworked a bit - few visible changes, but a bit cleaner in the code.
-Added new file on startup option.
-Switched to scintilla 1.60
-Duplicate brace match colour settings (SF Bug #951146).
-New dialog to show the changed files/projects on exit.
-Pseudo misspelt in CSS scheme (SF Bug #969586).
-Regular Expression replace (SF Bug #957788).
-Added error parsing for microsoft error messages (hopefully).
-[Projects] Folder position on adding folders corrected.
-[Projects] Adding folders from explorer no longer breaks sorting.
-[Projects] Fixed crash when almost dragging an item.
-[Projects] Magic Folders in projects - folders that reflect real directory contents.
-
-Since 25/04/2004:
-
-Fixes:
-Crash in Jump To.
-
-Since 09/04/2004:
-
-Changes:
-Updated scintilla build, fixes an occasional crash.
-All project folders not expanded by default any more.
-More options controlling the appearance of the projects window
-	(will be surfaced in the UI soon).
-Options can now be saved to a .ini file instead of the registry 
-	(in the code, no user option for this yet).
-
-Added:
-Middle-click mouse on the document tab to close a document.
-Drag and drop in the projects window.
-Folders in project window now remain above files.
-
-Fixes:
-Can't bring up project context menus with the keyboard.
-Highlight colors in scheme wrong when choosing defaults (SF Bug #909343).
-Update status bar when last file closed (SF Bug #514527).
-Changing full path option doesn't affect open files (SF Bug #871628).
-Word-count won't crash with unicode files.
-PN loses focus on closing search dialogs (SF Bug #939917).
-
-Since 0.5:
-
-See readme.txt
+Updated Tool configuration dialog.
+Close All and Close All Other on tab context menu.
+Close All Other Windows in Window menu.
+New items on the status bar: Encoding, Line Endings and Insert/Overwrite
+Line Endings view toggle on the minibar.
+Line Endings and WhiteSpace added to Defaults pane in options.
+Project Options: now available on all project node types (file|folder|project)
+Project Options: persisted between sessions
+Project Options: Fixed folderPath and filePath option types (note capital P)
+Project Options: Added int option type1

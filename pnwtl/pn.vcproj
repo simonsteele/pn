@@ -356,6 +356,9 @@
 				RelativePath=".\OptionsRegistry.cpp">
 			</File>
 			<File
+				RelativePath=".\outputscintilla.cpp">
+			</File>
+			<File
 				RelativePath="outputview.cpp">
 			</File>
 			<File
@@ -535,6 +538,9 @@
 			</File>
 			<File
 				RelativePath=".\OptionsRegistry.h">
+			</File>
+			<File
+				RelativePath=".\outputscintilla.h">
 			</File>
 			<File
 				RelativePath="outputview.h">

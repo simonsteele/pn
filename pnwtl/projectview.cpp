@@ -1010,31 +1010,17 @@ LRESULT CProjectTreeCtrl::OnSortFolders(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 LRESULT	CProjectTreeCtrl::OnProjectProperties(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CProjPropsView view;
-	//view.DoModal();
 
 	TemplateLoader l;
 	tstring path;
 	OPTIONS->GetPNPath(path, PNPATH_PROJECTTEMPLATES);
 	path += "test.pnpt";
 	ProjectTemplate* pt = l.FromFile(path.c_str());
-	
-	/*ProjectTemplate t(_T("test"));
-	
-	PropGroupList groups;
-	PropGroup* pPropGroup = new PropGroup(_T("Test"), _T("Test Group"));
-	PropCategory* pPropCat = new PropCategory(_T("Cat"), _T("Test Category"));
-	pPropGroup->Add(pPropCat);
-	pPropCat->Add(new ProjectProp(_T("str"), _T("A String"), ptString));
-	pPropCat->Add(new ProjectProp(_T("longstr"), _T("Another String"), ptLongString));
-	pPropCat->Add(new ProjectProp(_T("int"), _T("An Integer"), ptInt));
-	pPropCat->Add(new ProjectProp(_T("bool"), _T("A Boolean"), ptBool));
-	pPropCat->Add(new ProjectProp(_T("choice"), _T("A Choice"), ptChoice));
 
-	groups.insert(groups.end(), pPropGroup);
-
-	t.AddProperties(ptProject, NULL, groups);*/
-
-	view.DisplayFor(lastItem, pt);
+	if(view.DisplayFor(lastItem, pt))
+	{
+		lastItem->SetDirty();
+	}
 
 	delete pt;
 

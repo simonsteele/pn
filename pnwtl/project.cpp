@@ -2,7 +2,7 @@
  * @file project.cpp
  * @brief Projects
  * @author Simon Steele
- * @note Copyright (c) 2003-2004 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2003-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -108,19 +108,39 @@ XmlNode::XmlNode(LPCTSTR qualifiedName)
 	pParent = NULL;
 }
 
+XmlNode::XmlNode(const XmlNode& copy)
+{
+	pParent = NULL;
+	*this = copy;
+}
+
 XmlNode::~XmlNode()
 {
-	for(XA_IT i = attributes.begin(); i != attributes.end(); ++i)
-	{
-		delete (*i);
-	}
-	attributes.clear();
+	clear();
+}
 
-	for(XN_IT j = children.begin(); j != children.end(); ++j)
+XmlNode& XmlNode::operator = (const XmlNode& copy)
+{
+	sNamespace = copy.sNamespace;
+	sName = copy.sName;
+	sText = copy.sText;
+
+	// Don't copy: pParent;
+	clear();
+	
+	for(XA_IT i = copy.attributes.begin(); i != copy.attributes.end(); ++i)
 	{
-		delete (*j);
+		XmlAttribute* newAtt = new XmlAttribute( *(*i) );
+		attributes.insert(attributes.end(), newAtt);
 	}
-	children.clear();
+
+	for(XN_CIT j = copy.children.begin(); j != copy.children.end(); ++j)
+	{
+		XmlNode* newNode = new XmlNode( *(*j) );
+		AddChild(newNode);
+	}
+
+	return *this;
 }
 
 void XmlNode::AddAttributes(XMLAttributes& atts)
@@ -183,6 +203,12 @@ void XmlNode::Write(ProjectWriter writer)
 	{
 		(*j)->Write(writer);
 	}
+
+	if(sText.length() > 0)
+	{
+		Windows1252_Utf8 ustr(sText.c_str());
+		genxAddText(writer->w, ustr);
+	}
 	
 	genxEndElement(writer->w);
 }
@@ -202,6 +228,21 @@ bool XmlNode::Matches(LPCTSTR ns, LPCTSTR name)
 	return (_tcscmp(ns, sNamespace.c_str()) == 0 && _tcscmp(name, sName.c_str()) == 0);
 }
 
+void XmlNode::clear()
+{
+	for(XA_IT i = attributes.begin(); i != attributes.end(); ++i)
+	{
+		delete (*i);
+	}
+	attributes.clear();
+
+	for(XN_IT j = children.begin(); j != children.end(); ++j)
+	{
+		delete (*j);
+	}
+	children.clear();
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // XmlAttribute
 //////////////////////////////////////////////////////////////////////////////
@@ -211,6 +252,20 @@ XmlAttribute::XmlAttribute(LPCTSTR lpszNamespace, LPCTSTR lpszName, LPCTSTR lpsz
 	sNamespace = lpszNamespace != NULL ? lpszNamespace : _T("");
 	sName = lpszName;
 	sValue = lpszValue;
+}
+
+XmlAttribute::XmlAttribute(const XmlAttribute& copy)
+{
+	*this = copy;
+}
+
+XmlAttribute& XmlAttribute::operator = (const XmlAttribute& copy)
+{
+	sNamespace = copy.sNamespace;
+	sName = copy.sName;
+	sValue = copy.sValue;
+
+	return *this;
 }
 
 void XmlAttribute::Write(ProjectWriter writer)
@@ -227,11 +282,20 @@ void XmlAttribute::Write(ProjectWriter writer)
 
 UserData::~UserData()
 {
-	for(XN_CIT i = nodes.begin(); i != nodes.end(); ++i)
+	clear();
+}
+
+UserData& UserData::operator = (const UserData& copy)
+{
+	clear();
+
+	for(XN_CIT i = copy.nodes.begin(); i != copy.nodes.end(); ++i)
 	{
-		delete (*i);
+		XmlNode* pNewNode = new XmlNode( *(*i) );
+		Add(pNewNode);
 	}
-	nodes.clear();
+
+	return *this;
 }
 		
 void UserData::Add(XmlNode* node)
@@ -296,6 +360,40 @@ LPCTSTR UserData::Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR va
 	return defval;
 }
 
+void UserData::Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, bool val)
+{
+	XmlNode* pNode = lookUpOrCreate(ns, group, category, value);
+	if(pNode != NULL)
+	{
+		pNode->SetText( val ? _T("true") : _T("false") );
+	}
+	else
+		UNEXPECTED(_T("Could not lookUpOrCreate Node"));
+}
+
+void UserData::Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, int val)
+{
+	XmlNode* pNode = lookUpOrCreate(ns, group, category, value);
+	if(pNode != NULL)
+	{
+		tstring sVal = IntToTString(val);
+		pNode->SetText( sVal.c_str() );
+	}
+	else
+		UNEXPECTED(_T("Could not lookUpOrCreate Node"));
+}
+
+void UserData::Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, LPCTSTR val)
+{
+	XmlNode* pNode = lookUpOrCreate(ns, group, category, value);
+	if(pNode != NULL)
+	{
+		pNode->SetText( val );
+	}
+	else
+		UNEXPECTED(_T("Could not lookUpOrCreate Node"));
+}
+
 XmlNode* UserData::GetCategoryNode(LPCTSTR ns, LPCTSTR group, LPCTSTR category)
 {
 	XmlNode* pGroupNode = GetGroupNode(ns, group);
@@ -329,6 +427,15 @@ XmlNode* UserData::GetGroupNode(LPCTSTR ns, LPCTSTR group)
 	return NULL;
 }
 
+void UserData::clear()
+{
+	for(XN_CIT i = nodes.begin(); i != nodes.end(); ++i)
+	{
+		delete (*i);
+	}
+	nodes.clear();
+}
+
 XmlNode* UserData::lookUp(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value)
 {
 	XmlNode* pCatNode = GetCategoryNode(ns, group, category);
@@ -345,6 +452,36 @@ XmlNode* UserData::lookUp(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR v
 	}
 
 	return NULL;
+}
+
+XmlNode* UserData::lookUpOrCreate(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value)
+{
+	XmlNode* pNode = NULL;
+	pNode = lookUp(ns, group, category, value);
+	
+	// If we didn't find it, then we create it - making sure 
+	// we have the group and category as well...
+	if(pNode == NULL)
+	{
+		XmlNode* pGroupNode = GetGroupNode(ns, group);
+		if(pGroupNode == NULL)
+		{
+			pGroupNode = new XmlNode(ns, group);
+			Add(pGroupNode);
+		}
+		
+		XmlNode* pCatNode = GetCategoryNode(ns, group, category);
+		if(pCatNode == NULL)
+		{
+			pCatNode = new XmlNode(ns, category);
+			pGroupNode->AddChild(pCatNode);
+		}
+
+		pNode = new XmlNode(ns, value);
+		pCatNode->AddChild(pNode);
+	}
+	
+	return pNode;
 }
 
 XN_CIT UserData::begin()
@@ -460,7 +597,7 @@ bool File::Rename(LPCTSTR newFilePart)
 				relPath = fullPath;
 			}
 
-			setDirty();
+			SetDirty();
 
 			return true;
 		}
@@ -494,9 +631,9 @@ void File::WriteDefinition(SProjectWriter* definition)
 	genxEndElement(definition->w);
 }
 
-void File::setDirty()
+void File::SetDirty()
 {
-	parentFolder->setDirty();
+	parentFolder->SetDirty();
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -606,33 +743,14 @@ void Folder::AddChild(Folder* folder)
 {
 	folder->SetParent(this);
 	children.insert(children.end(), folder);
-	setDirty();
+	SetDirty();
 }
-
-/*void Folder::AddChild(Folder* folder, Folder* insertBelow)
-{
-	FOLDER_LIST::iterator i;
-	FOLDER_LIST::iterator iAfter = children.end();
-	for(i = children.begin(); i != children.end(); ++i)
-	{
-		if( (*i) == insertBelow )
-		{
-			iAfter = i;
-			++iAfter;
-			break;
-		}
-	}
-
-	folder->SetParent(this);
-	children.insert(iAfter, folder);
-	setDirty();
-}*/
 
 File* Folder::AddFile(LPCTSTR file)
 {
 	File* pFile = new File(basePath.c_str(), file, this);
 	files.insert(files.end(), pFile);
-	setDirty();
+	SetDirty();
 	return pFile;
 }
 
@@ -640,7 +758,7 @@ void Folder::AddFile(File* file)
 {
 	//TODO: file->SetBasePath(basePath.c_str());
 	files.insert(files.end(), file);
-	setDirty();
+	SetDirty();
 	file->SetFolder(this);
 }
 
@@ -649,7 +767,7 @@ Folder* Folder::AddFolder(LPCTSTR path, LPCTSTR filter, bool recursive)
 	FolderAdder fa;
 	Folder* folder = fa.GetFolder(path, filter, basePath.c_str(), recursive);
 	AddChild(folder);
-	setDirty();
+	SetDirty();
 	return folder;
 }
 
@@ -668,13 +786,13 @@ void Folder::RemoveFile(File* file)
 void Folder::DetachChild(Folder* folder)
 {
 	children.remove(folder);
-	setDirty();
+	SetDirty();
 }
 
 void Folder::DetachFile(File* file)
 {
 	files.remove(file);
-	setDirty();
+	SetDirty();
 }
 
 void Folder::Clear()
@@ -744,10 +862,10 @@ void Folder::writeContents(SProjectWriter* definition)
 	}
 }
 
-void Folder::setDirty()
+void Folder::SetDirty()
 {
 	if(parent)
-		parent->setDirty();
+		parent->SetDirty();
 }
 
 bool Folder::MoveFile(File* file, Folder* into)
@@ -1144,7 +1262,7 @@ void Project::processUserData(LPCTSTR name, XMLAttributes& atts)
 	udText = _T("");
 }
 
-void Project::setDirty()
+void Project::SetDirty()
 {
 	bDirty = true;
 }
@@ -1339,6 +1457,11 @@ bool Workspace::IsDirty(bool bRecurse)
 	}
 
 	return false;
+}
+
+void Workspace::SetDirty()
+{
+	bDirty = true;
 }
 
 File* Workspace::FindFile(LPCTSTR filename)

@@ -670,7 +670,7 @@ bool COptionsPageTools::doToolEditDlg(ToolDefinition* in, ToolDefinition* out)
 	if(in)
 	{
 		toolPage.SetValues(in);
-		consolePage.SetValues(out);
+		consolePage.SetValues(in);
 	}
 
 	sheet.AddPage(toolPage);
@@ -759,8 +759,6 @@ LRESULT COptionsPageTools::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 		{
 			if(doToolEditDlg(pDef, pDef))
 			{
-				//dlg.GetValues(pDef);
-
 				LVITEM lvi;
 				lvi.mask = LVIF_TEXT;
 				lvi.iItem = iSelIndex;

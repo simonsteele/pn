@@ -2,7 +2,7 @@
  * @file OutputView.cpp
  * @brief View to display output from tool calls.
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -34,43 +34,6 @@ COutputView::~COutputView()
 	{
 		delete m_pRE;
 	}
-}
-
-/**
- * Finds the full extent of the text which is styled with "style" and
- * contains the position startPos. This tries to avoid going before the
- * start of the line and after the end of the line because we only do
- * line matches anyway at the moment.
- */
-void COutputView::ExtendStyleRange(int startPos, int style, TextRange* tr)
-{
-	// Find the extent of this styled text...
-	int docLength = GetLength();
-	int startRange = startPos - 1;
-	int endRange = startPos + 1;
-	
-	while( startRange >= 0 )
-	{
-		int c = GetCharAt(startRange);
-		if(GetStyleAt(startRange) != style || c == '\n' || c == '\r')
-			break;
-		startRange--;
-	}
-	
-	while( endRange < docLength )
-	{
-		if(GetStyleAt(endRange) != style)
-			break;
-		
-		endRange++;
-		
-		int c = GetCharAt(endRange-1);
-		if( c == '\n' || c == '\r' )
-			break;
-	}
-
-	tr->chrg.cpMin = startRange + 1;
-	tr->chrg.cpMax = endRange /* - 1*/;
 }
 
 /**
@@ -425,60 +388,6 @@ LRESULT COutputView::OnHotSpotClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 }
 
 /**
- * @brief Syntax highlighter using regexs.
- */
-void COutputView::CustomColouriseLine(ScintillaAccessor& styler, char *lineBuffer, int length, int endLine)
-{
-	// Check a regex has been constructed...
-	if(m_pRE)
-	{
-		// If the last character is a line end, then we don't continue the styling up to it.
-		// This stops the hotspot from line-wrapping.
-		bool bHaveLineEnd = (styler[endLine] == '\n' || styler[endLine] == '\r');
-		if(bHaveLineEnd)
-			endLine--;
-		
-		if( m_pRE->Match(lineBuffer, length, 0) )
-		{
-			styler.ColourTo(endLine, SCE_CUSTOM_ERROR);
-		}
-		else
-		{
-			styler.ColourTo(endLine, SCE_ERR_DEFAULT);
-		}
-
-		if(bHaveLineEnd)
-			styler.ColourTo(endLine+1, SCE_ERR_DEFAULT);
-	}
-}
-
-/**
- * @brief Implement container based lexing for custom errors.
- */
-void COutputView::HandleStyleNeeded(ScintillaAccessor& styler, int startPos, int length)
-{
-    char lineBuffer[2048]; // hopefully error lines won't be longer than this!
-	styler.StartAt(startPos);
-	styler.StartSegment(startPos);
-	unsigned int linePos = 0;
-	for (unsigned int i = startPos; i < (unsigned int)(startPos + length); i++)
-	{
-		lineBuffer[linePos++] = styler[i];
-		if (styler.AtEOL(i) || (linePos >= sizeof(lineBuffer) - 1))
-		{
-			// End of line (or of line buffer) met, colourise it
-			lineBuffer[linePos] = '\0';
-			CustomColouriseLine(styler, lineBuffer, linePos, i);
-			linePos = 0;
-		}
-	}
-	if (linePos > 0)
-	{	// Last line does not have ending characters
-		CustomColouriseLine(styler, lineBuffer, length, startPos + length - 1);
-	}
-}
-
-/**
  * In this function we look for a hotspot clicked notification, and if we get
  * one then we post a message to ourselves with the details required to handle
  * it. The reason we don't just do it here is that the notify will come in the
@@ -495,30 +404,6 @@ int COutputView::HandleNotify(LPARAM lParam)
 
 		int style = GetStyleAt(scn->position);
 		PostMessage(PN_HANDLEHSCLICK, style, scn->position);
-		return 0;
-	}
-	else if( scn->nmhdr.code == SCN_STYLENEEDED )
-	{
-		// Get the length of the entire document
-		int lengthDoc = GetLength();
-		
-		// Get the staring position for styling, and then move it to the start of the line.
-		int start = GetEndStyled();
-		int lineEndStyled = LineFromPosition(start);
-		start = PositionFromLine(lineEndStyled);
-
-		int end = scn->position; // the last character to style.
-
-		if (end == -1)
-			end = lengthDoc;
-		int length = end - start;
-
-		// The Accessor takes care of managing the lex state for us.
-		ScintillaAccessor styler(this);
-		styler.SetCodePage(GetCodePage());
-		HandleStyleNeeded(styler, start, length);
-		styler.Flush();
-
 		return 0;
 	}
 	else
@@ -560,20 +445,7 @@ void COutputView::SetToolParser(bool bBuiltIn, LPCTSTR customExpression)
 {
 	if(!bBuiltIn && customExpression != NULL)
 	{
-		// First of all build up the regular expression to use.
-		CToolREBuilder builder;
-		m_customre = builder.Build(customExpression);
-		
-		if(m_pRE)
-		{
-			delete m_pRE;
-		}
-		
-		m_pRE = new PCRE::RegExp(m_customre.c_str());
-		m_pRE->Study();
-
-		// Now turn Scintilla into custom lex mode.
-		m_bCustom = true;
+		SetRE(customExpression, false);
 		SetCustomLexer();
 	}
 	else
@@ -645,30 +517,5 @@ void COutputView::SetCustomLexer()
 
 		// Switch to container-based lexing...
 		SetLexer(SCLEX_CONTAINER);
-	}
-}
-
-//////////////////////////////////////////////////////////////////////////////
-// CToolREBuilder
-//////////////////////////////////////////////////////////////////////////////
-
-/**
- * Replace special symbols in a regex with their regex constructs.
- */
-void CToolREBuilder::OnFormatChar(TCHAR thechar)
-{
-	switch(thechar)
-	{
-		case _T('f'):
-			m_string += _T("(?P<f>.+)");
-		break;
-
-		case _T('l'):
-			m_string += _T("(?P<l>[0-9]+)");
-		break;
-
-		case _T('c'):
-			m_string += _T("(?P<c>[0-9]+)");
-		break;
 	}
 }

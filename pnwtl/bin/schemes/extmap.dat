@@ -38,6 +38,7 @@
 .php=Web
 .pl=perl
 .pm=perl
+.pnpt=xml
 .pnproj=xml
 .pod=perl
 .properties=Properties

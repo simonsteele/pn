@@ -2,7 +2,7 @@
  * @file optionscontrols.h
  * @brief Controls for options dialogs (and the like).
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -12,6 +12,7 @@
 
 #include "include/fontcombo.h"
 #include "include/ColorButton.h"
+#include "outputscintilla.h"
 #include "ScintillaWTL.h"
 
 class SchemeConfig;
@@ -77,22 +78,23 @@ public:
 	}
 };
 
-class CCustomREScintilla : public CScintillaDialogWnd
+class CScintillaREDialogWnd : public CScintillaWindowImpl< CScintillaREDialogWnd, REScintilla >
 {
-public:
-	CCustomREScintilla();
-	~CCustomREScintilla();
+	typedef CScintillaWindowImpl< CScintillaREDialogWnd, REScintilla > baseClass;
 
-	typedef CScintillaDialogWnd baseClass;
-	BEGIN_MSG_MAP(CCustomREScintilla)
-			CHAIN_MSG_MAP(baseClass)
+public:
+	BEGIN_MSG_MAP(CScintillaREDialogWnd)
+		MESSAGE_HANDLER(WM_GETDLGCODE, OnGetDlgCode)
+		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
-	void SetRE(LPCTSTR regex);
+	virtual int HandleNotify(LPARAM lParam);
 
 protected:
-	tstring			m_customre;
-	PCRE::RegExp*	m_pRE;
+	LRESULT OnGetDlgCode(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+	{
+		return DLGC_HASSETSEL | DLGC_WANTARROWS | DLGC_WANTCHARS;
+	}
 };
 
 /**

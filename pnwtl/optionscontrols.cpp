@@ -142,49 +142,22 @@ void CStyleDisplay::UpdateFont()
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// CCustomREScintilla
+// CScintillaREDialogWnd
 //////////////////////////////////////////////////////////////////////////////
 
-CCustomREScintilla::CCustomREScintilla()
+int CScintillaREDialogWnd::HandleNotify(LPARAM lParam)
 {
-	m_pRE = NULL;
-}
-
-CCustomREScintilla::~CCustomREScintilla()
-{
-	if(m_pRE)
-	{
-		delete m_pRE;
-	}
-}
-
-void CCustomREScintilla::SetRE(LPCTSTR regex)
-{
-	// First of all build up the regular expression to use.
-	CToolREBuilder builder;
-	m_customre = builder.Build(regex);
+	SCNotification *scn = (SCNotification*)lParam;
 	
-	if(m_pRE)
+	if( scn->nmhdr.code == SCN_HOTSPOTCLICK )
 	{
-		delete m_pRE;
-	}
-	
-	m_pRE = new PCRE::RegExp(m_customre.c_str());
-	m_pRE->Study();
+		int style = GetStyleAt(scn->position);
+		GetParent().PostMessage(PN_HANDLEHSCLICK, style, scn->position);
 
-	// Now turn Scintilla into custom lex mode, first get styles from the output scheme.
-	CScheme* pScheme = CSchemeManager::GetInstance()->SchemeByName("output");
-	if(pScheme && ::IsWindow(m_hWnd))
-	{
-		pScheme->Load( *(static_cast<CScintilla*>(this)) );
-		
-		// Override some nastiness inherited from the default schemes...
-		SPerform(SCI_SETCARETLINEVISIBLE, false);
-		SPerform(SCI_SETEDGEMODE, EDGE_NONE);
+		return 0;
 	}
-
-	// Switch to container-based lexing...
-	SetLexer(SCLEX_CONTAINER);
+	else
+		return baseClass::HandleNotify(lParam);
 }
 
 //////////////////////////////////////////////////////////////////////////////

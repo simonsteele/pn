@@ -2,7 +2,7 @@
  * @file OptionsDialogs.cpp
  * @brief Dialogs used to edit settings from the Options dialog.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -13,129 +13,11 @@
 #include "OptionsDialogs.h"
 #include "SchemeConfig.h"
 #include "pndialogs.h"
-//#include "tools.h"
-//#include "childfrm.h"
+#include "include/pcreplus.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // CToolEditorDialog
 //////////////////////////////////////////////////////////////////////////////
-
-CInfoLabel::CInfoLabel(LPCTSTR title, DWORD StringID)
-{
-	m_pTitleFont = /*m_pBodyFont =*/ NULL;
-	m_title = title;
-
-	memset(strbuf, 0, sizeof(strbuf));
-	LoadString(NULL, StringID, strbuf, 200);
-}
-
-CInfoLabel::~CInfoLabel()
-{
-	if(m_pTitleFont)
-	{
-		delete m_pTitleFont;
-		//delete m_pBodyFont;
-	}
-}
-
-void CInfoLabel::MakeFonts(HDC hDC)
-{
-	if(!m_pTitleFont)
-	{
-		LOGFONT lf;
-		memset(&lf, 0, sizeof(LOGFONT));
-
-		HFONT hDefFont = static_cast<HFONT>( GetStockObject(DEFAULT_GUI_FONT) );
-		GetObject(hDefFont, sizeof(LOGFONT), &lf);
-		
-		lf.lfWeight = FW_BOLD;
-
-		m_pTitleFont = new CFont;
-		m_pTitleFont->CreateFontIndirect(&lf);
-	}
-	
-	//lf.lfWeight = FW_NORMAL;
-	//m_pBodyFont->CreateFontIndirect(&lf);
-}
-
-LRESULT CInfoLabel::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	PAINTSTRUCT ps;
-	::BeginPaint(m_hWnd, &ps);
-
-	CDCHandle dc(ps.hdc);
-
-	MakeFonts(dc);
-
-	CRect rc;
-
-	GetClientRect(rc);
-	
-	CRect framerc(rc);
-
-	CBrush brush;
-	brush.CreateSysColorBrush(COLOR_INFOBK);
-
-	dc.FillRect(rc, brush);
-
-	rc.DeflateRect(3, 3, 2, 2);
-
-	// Draw Text...
-	if(m_pTitleFont)
-	{
-		HFONT hOldFont = dc.SelectFont(m_pTitleFont->m_hFont);
-		
-		dc.SetBkColor(GetSysColor(COLOR_INFOBK));
-		dc.SetTextColor(GetSysColor(COLOR_INFOTEXT));
-
-		int height = dc.DrawText(m_title.c_str(), m_title.length(), rc, DT_TOP | DT_LEFT);
-		rc.top += height + 2;
-		rc.left += 25;
-
-		dc.SelectStockFont(DEFAULT_GUI_FONT);
-
-		/* We draw n columns of text to display the % special chars. 
-		This should be modified to draw as many as necessary. 
-		Use a while pPipe instead of if...*/
-
-		TCHAR* pStr = strbuf;
-		TCHAR* pPipe = _tcschr(pStr, _T('|'));
-
-		while(pPipe)
-		{
-			CRect rcCol(rc);
-			
-			*pPipe = '\0';
-			
-			// Calculate the rect for this column.
-			dc.DrawText(pStr, _tcslen(pStr), rcCol, DT_TOP | DT_LEFT | DT_WORDBREAK | DT_CALCRECT);	
-
-			// Actually draw the text.
-			dc.DrawText(pStr, _tcslen(pStr), rc, DT_TOP | DT_LEFT | DT_WORDBREAK);
-
-			// Find the next column start.
-			rc.left += rcCol.Width() + 20;
-
-			// Replace the pipe, and skip pStr past it.
-			*pPipe++ = _T('|');
-			pStr = pPipe;
-
-			// Are there any more?
-			pPipe = _tcschr(pStr, _T('|'));
-		}
-
-		// Draw the remaining text.
-		dc.DrawText(pStr, _tcslen(pStr), rc, DT_TOP | DT_LEFT | DT_WORDBREAK);
-
-		dc.SelectFont(hOldFont);
-	}
-
-	HBRUSH light = ::GetSysColorBrush(COLOR_3DSHADOW);
-	dc.FrameRect(framerc, light);
-
-	::EndPaint(m_hWnd, &ps);
-	return 0;
-}
 
 CToolSettingsPage::CToolSettingsPage(LPCTSTR title) : 
 	CPropertyPageImpl<CToolSettingsPage>(title)
@@ -374,7 +256,66 @@ LRESULT CToolConsoleIOPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 
 	DoDataExchange();
 
+	BOOL b;
+	OnTextChange(0, 0, NULL, b);
+
 	enableButtons();
+
+	return 0;
+}
+
+LRESULT CToolConsoleIOPage::OnHandleHSClick(UINT /*uMsg*/, WPARAM style, LPARAM position, BOOL& /*bHandled*/)
+{
+	TextRange tr;
+				
+	m_scintilla.ExtendStyleRange(position, style, &tr);
+	char* buf = new char[tr.chrg.cpMax - tr.chrg.cpMin + 1];
+	tr.lpstrText = buf;
+
+	m_scintilla.GetTextRange(&tr);
+
+	PCRE::RegExp* pRE = m_scintilla.GetRE();
+
+	if( pRE && pRE->Match(tr.lpstrText) )
+	{
+		tstring filename;
+		tstring linestr;
+		tstring colstr;
+        
+		// Extract the named matches from the RE, noting if there was a line or column.
+		bool bFile = pRE->GetNamedMatch("f", filename);
+		bool bLine = pRE->GetNamedMatch("l", linestr);
+		bool bCol = pRE->GetNamedMatch("c", colstr);
+
+		tstring display = "";
+		if(bFile)
+		{
+			display += "f: ";
+			display += filename;
+		}
+		if(bLine)
+		{
+			if(display.length())
+				display += ", ";
+			display += "l: ";
+			display += linestr;
+		}
+		if(bCol)
+		{
+			if(display.length())
+				display += ", ";
+			display += "c: ";
+			display += colstr;
+		}
+
+		GetDlgItem(IDC_TE_CLICKRESULTSSTATIC).SetWindowText(display.c_str());
+	}
+	else
+	{
+		GetDlgItem(IDC_TE_CLICKRESULTSSTATIC).SetWindowText("Error: no match");
+	}
+
+	delete [] buf;
 
 	return 0;
 }
@@ -401,6 +342,16 @@ LRESULT CToolConsoleIOPage::OnWindowStateChanged(WORD /*wNotifyCode*/, WORD /*wI
 	enableButtons();
 
 	return 0;
+}
+
+LRESULT CToolConsoleIOPage::OnTextChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CString cs;
+	GetDlgItem(IDC_TE_CUSTOMTEXT).GetWindowText(cs);
+	
+	m_scintilla.SetRE(cs);
+	
+	return 0;	
 }
 
 void CToolConsoleIOPage::enableButtons()

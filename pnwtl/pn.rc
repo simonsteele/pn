@@ -486,6 +486,8 @@ BEGIN
         MENUITEM "&Add Files...",               ID_PROJECT_ADDFILES
         MENUITEM "&Remove",                     ID_PROJECT_REMOVE
         MENUITEM "&Delete",                     258
+        MENUITEM SEPARATOR
+        MENUITEM "&Properties",                 ID_PROJECT_PROPERTIES
     END
 END
 
@@ -500,6 +502,8 @@ BEGIN
         MENUITEM "&Sort Folders",               ID_PROJECT_SORTFOLDERS
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     286
+        MENUITEM SEPARATOR
+        MENUITEM "&Properties",                 ID_PROJECT_PROPERTIES
     END
 END
 
@@ -571,6 +575,8 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     ID_PROJECT_REMOVE
         MENUITEM "&Delete",                     ID_PROJECT_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "&Properties",                 ID_PROJECT_PROPERTIES
     END
 END
 
@@ -1121,8 +1127,8 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION |
 CAPTION "w"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,267,157,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,211,157,50,14
+    DEFPUSHBUTTON   "OK",IDOK,211,157,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,267,157,50,14
     LISTBOX         IDC_LISTPROPS,104,7,213,146,LBS_OWNERDRAWVARIABLE | 
                     LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | 
@@ -1232,12 +1238,12 @@ BEGIN
                     BS_AUTORADIOBUTTON | WS_DISABLED,8,103,114,10
     EDITTEXT        IDC_TE_CUSTOMTEXT,51,128,114,14,ES_AUTOHSCROLL | 
                     WS_DISABLED
+    LTEXT           "Static",IDC_PLACEHOLDER,14,169,214,32,SS_SUNKEN | NOT 
+                    WS_VISIBLE
+    PUSHBUTTON      "?",IDC_TE_ABOUTBUILTIN,132,90,12,12,WS_DISABLED
     LTEXT           "%f: Filename, %l: Line Number, %c: Column",
                     IDC_TE_CUSTOMINFO,52,146,148,9
     LTEXT           "example: %f:%l: ",IDC_STATIC,169,129,63,12
-    PUSHBUTTON      "?",IDC_TE_ABOUTBUILTIN,132,90,12,12,WS_DISABLED
-    LTEXT           "Static",IDC_PLACEHOLDER,14,169,214,32,SS_SUNKEN | NOT 
-                    WS_VISIBLE
     LTEXT           "(enter text and click above to test)",
                     IDC_TE_CLICKRESULTSSTATIC,14,202,214,9
     LTEXT           "Testing:",IDC_STATIC,14,159,27,8
