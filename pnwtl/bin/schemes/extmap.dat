@@ -26,4 +26,6 @@
 .diff=diff
 .cs=csharp
 .js=javascript
+.pl=perl
+.pm=perl
 makefile=makefile

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="perl">
+			NULL __FILE__ __LINE__ __PACKAGE__ __DATA__ __END__ AUTOLOAD
+			BEGIN CORE DESTROY END EQ GE GT INIT LE LT NE CHECK abs accept
+			alarm and atan2 bind binmode bless caller chdir chmod chomp chop
+			chown chr chroot close closedir cmp connect continue cos crypt
+			dbmclose dbmopen defined delete die do dump each else elsif endgrent
+			endhostent endnetent endprotoent endpwent endservent eof eq eval
+			exec exists exit exp fcntl fileno flock for foreach fork format
+			formline ge getc getgrent getgrgid getgrnam gethostbyaddr gethostbyname
+			gethostent getlogin getnetbyaddr getnetbyname getnetent getpeername
+			getpgrp getppid getpriority getprotobyname getprotobynumber getprotoent
+			getpwent getpwnam getpwuid getservbyname getservbyport getservent
+			getsockname getsockopt glob gmtime goto grep gt hex if index
+			int ioctl join keys kill last lc lcfirst le length link listen
+			local localtime lock log lstat lt m map mkdir msgctl msgget msgrcv
+			msgsnd my ne next no not oct open opendir or ord our pack package
+			pipe pop pos print printf prototype push q qq qr quotemeta qu
+			qw qx rand read readdir readline readlink readpipe recv redo
+			ref rename require reset return reverse rewinddir rindex rmdir
+			s scalar seek seekdir select semctl semget semop send setgrent
+			sethostent setnetent setpgrp setpriority setprotoent setpwent
+			setservent setsockopt shift shmctl shmget shmread shmwrite shutdown
+			sin sleep socket socketpair sort splice split sprintf sqrt srand
+			stat study sub substr symlink syscall sysopen sysread sysseek
+			system syswrite tell telldir tie tied time times tr truncate
+			uc ucfirst umask undef unless unlink unpack unshift untie until
+			use utime values vec wait waitpid wantarray warn while write
+			x xor y
+		</keyword-class>
+		<keyword-class name="bash">
+			alias
+			ar asa awk banner basename bash bc bdiff break
+			bunzip2 bzip2 cal calendar case cat cc cd chmod cksum
+			clear cmp col comm compress continue cp cpio crypt
+			csplit ctags cut date dc dd declare deroff dev df diff diff3
+			dircmp dirname do done du echo ed egrep elif else env
+			esac eval ex exec exit expand export expr false fc
+			fgrep fi file find fmt fold for function functions
+			getconf getopt getopts grep gres hash head help
+			history iconv id if in integer jobs join kill local lc
+			let line ln logname look ls m4 mail mailx make
+			man mkdir more mt mv newgrp nl nm nohup ntps od
+			pack paste patch pathchk pax pcat perl pg pr print
+			printf ps pwd read readonly red return rev rm rmdir
+			sed select set sh shift size sleep sort spell
+			split start stop strings strip stty sum suspend
+			sync tail tar tee test then time times touch tr
+			trap true tsort tty type typeset ulimit umask unalias
+			uname uncompress unexpand uniq unpack unset until
+			uudecode uuencode vi vim vpax wait wc whence which
+			while who wpaste wstart xargs zcat
+		</keyword-class>
+	</keyword-classes>
+	<style-classes>
+		<style-class name="heredoc" fore="7f007f" back="ddd0dd" eolfilled="true" />
+	</style-classes>
+	<language name="perl" title="Perl" folding="false" >
+		<lexer name="perl" />
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="perl"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="Whitespace" key="0" fore="808080" />
+			<style name="Error" key="1" fore="ffffff" />
+			<style name="Comment" key="2" class="comment" />
+			<style name="POD" key="3" fore="004000" back="e0ffe0" eolfilled="true" />
+			<style name="Number" key="4" class="number" />
+			<style name="Keyword" key="5" class="keyword" />
+			<style name="Double Quoted String" key="6" class="string" />
+			<style name="Single Quoted String" key="7" class="string" />
+			<!-- not currently used:
+			<style name="Symbols / Punctuation" key="8" fore="ff0000" bold="true" />
+			<style name="Pre-processor" key="9" fore="ff0000" bold="true" />-->
+			<style name="Operator" key="10" />
+			<style name="Identifier" key="11" />
+			<style name="Scalar: $var" key="12" fore="4b0082" />
+			<style name="Array: @var" key="13" fore="00005e" />
+			<style name="Hash: %var" key="14" fore="00008b" />
+			<style name="Symbol Table: *var" key="15" back="e0e0e0" />
+			<style name="Regex: /re/ or m{re}" key="17" back="a0ffa0" />
+			<style name="Substitution: s/re/ore/" key="18" back="f0e080" />
+			<!-- obsolete:
+			<style name="Long Quote: qq, qr, qw, qx" key="19" fore="ffff00" back="8080a0" /> -->
+			<style name="Back Ticks" key="20" fore="ffff00" back="a08080" />
+			<style name="Data Section" key="21" fore="600000" back="fff0d8" eolfilled="true" />
+			<group name="heredoc" description="Here-doc" class="heredoc">
+				<style name="Delimiter" key="22" fore="000000" />
+				<style name="Single Quoted (q)" key="23" />
+				<style name="Double Quoted (qq)" key="24" bold="true" />
+				<style name="Back Ticks (qx)" key="25" italic="true" />
+			</group>
+			<style name="Generic Single Quoted String" key="26" fore="7f007f" />
+			<style name="qq = Double Quoted String" key="27" class="string" />
+			<style name="qx = Back Ticks" key="28" fore="ffff00" back="a08080" />
+			<style name="qr = Regex" key="29" back="a0ffa0" />
+			<style name="qw = Array" key="30" fore="00005e" />
+			
+			<style name="Brace Match" key="34" bold="true" fore="0000ff" />
+			<style name="Brace MisMatch" key="35" bold="true" fore="ff0000" />
+		</use-styles>
+	</language>
+</Scheme>

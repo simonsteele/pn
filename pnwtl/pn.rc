@@ -113,7 +113,7 @@ BEGIN
     BEGIN
         MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
         MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
-        MENUITEM "&Revert",                     ID_FILE_REVERT
+        MENUITEM "Re&vert",                     ID_FILE_REVERT
         MENUITEM SEPARATOR
         MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
         MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
