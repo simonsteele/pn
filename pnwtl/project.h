@@ -60,9 +60,12 @@ class XmlNode
 		void AddChild(XmlNode* pChild);
 
 		XmlNode* GetParent();
+		LIST_NODES& GetChildren();
 
 		LPCTSTR GetText();
 		void SetText(LPCTSTR text);
+
+		bool Matches(LPCTSTR ns, LPCTSTR name);
 
 	protected:
 		tstring		sNamespace;
@@ -101,11 +104,18 @@ class UserData
 
 		void Write(ProjectWriter writer);
 
-		//void Lookup(LPCTSTR group, LPCTSTR category, LPCTSTR value, int defval);
-		//void Lookup(LPCTSTR group, LPCTSTR category, LPCTSTR value, LPCTSTR defval);
+		bool Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, bool defval);
+		int Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, int defval);
+		LPCTSTR Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, LPCTSTR defval);
+
+		XmlNode* GetCategoryNode(LPCTSTR ns, LPCTSTR group, LPCTSTR category);
+		XmlNode* GetGroupNode(LPCTSTR ns, LPCTSTR group);
 
 		XN_CIT	begin();
 		XN_CIT	end();
+
+	protected:
+		XmlNode* lookUp(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value);
 
 	protected:
 		LIST_NODES nodes;

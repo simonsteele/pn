@@ -156,6 +156,7 @@ BEGIN
         MENUITEM "&Find\tCtrl+F",               ID_EDIT_FIND
         MENUITEM "Find &Next\tF3",              ID_EDIT_FINDNEXT
         MENUITEM "R&eplace\tCtrl+R",            ID_EDIT_REPLACE
+        MENUITEM "F&ind in Files\tCtrl+Shift+F", ID_EDIT_FINDINFILES
         MENUITEM SEPARATOR
         MENUITEM "&Goto\tCtrl+G",               ID_EDIT_GOTO
         MENUITEM "&Jump To...\tAlt+G",          ID_EDIT_JUMPTO
@@ -352,6 +353,8 @@ BEGIN
     "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
     VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
     VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
+    "K",            ID_TOOLS_STOPTOOLS,     VIRTKEY, SHIFT, CONTROL, 
+                                                    NOINVERT
     VK_SUBTRACT,    ID_VIEW_COLLAPSEALLFOLDS, VIRTKEY, CONTROL, ALT, 
                                                     NOINVERT
     VK_ADD,         ID_VIEW_EXPANDALLFOLDS, VIRTKEY, CONTROL, ALT, NOINVERT
@@ -359,7 +362,7 @@ BEGIN
     VK_F8,          ID_VIEW_INDIVIDUALOUTPUT, VIRTKEY, SHIFT, NOINVERT
     VK_F8,          ID_VIEW_OUTPUT,         VIRTKEY, NOINVERT
     VK_MULTIPLY,    ID_VIEW_TOGGLEFOLD,     VIRTKEY, CONTROL, NOINVERT
-    "K",            ID_TOOLS_STOPTOOLS,     VIRTKEY, SHIFT, CONTROL, 
+    "F",            ID_EDIT_FINDINFILES,    VIRTKEY, SHIFT, CONTROL, 
                                                     NOINVERT
 END
 

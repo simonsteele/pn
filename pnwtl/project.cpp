@@ -163,6 +163,11 @@ XmlNode* XmlNode::GetParent()
 	return pParent;
 }
 
+LIST_NODES& XmlNode::GetChildren()
+{
+	return children;
+}
+
 void XmlNode::Write(ProjectWriter writer)
 {
 	genxStartElementLiteral(writer->w, 
@@ -190,6 +195,11 @@ LPCTSTR XmlNode::GetText()
 void XmlNode::SetText(LPCTSTR text)
 {
 	sText = text;
+}
+
+bool XmlNode::Matches(LPCTSTR ns, LPCTSTR name)
+{
+	return (_tcscmp(ns, sNamespace.c_str()) == 0 && _tcscmp(name, sName.c_str()) == 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -247,6 +257,96 @@ void UserData::Write(ProjectWriter writer)
 	}
 }
 
+bool UserData::Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, bool defval)
+{
+	XmlNode* pNode = lookUp(ns, group, category, value);
+	if(pNode != NULL)
+	{
+		LPCTSTR text = pNode->GetText();
+		if(text != NULL && _tcslen(text) > 0)
+			return _tcsicmp(text, _T("true")) == 0;
+	}
+	
+	return defval;
+}
+
+int UserData::Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, int defval)
+{
+	XmlNode* pNode = lookUp(ns, group, category, value);
+	if(pNode != NULL)
+	{
+		LPCTSTR text = pNode->GetText();
+		if(text != NULL && _tcslen(text) > 0)
+			return _ttoi(text);
+	}
+	
+	return defval;
+}
+
+LPCTSTR UserData::Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, LPCTSTR defval)
+{
+	XmlNode* pNode = lookUp(ns, group, category, value);
+	if(pNode != NULL)
+	{
+		LPCTSTR text = pNode->GetText();
+		if(text != NULL)
+			return text;
+	}
+	
+	return defval;
+}
+
+XmlNode* UserData::GetCategoryNode(LPCTSTR ns, LPCTSTR group, LPCTSTR category)
+{
+	XmlNode* pGroupNode = GetGroupNode(ns, group);
+
+	if(!pGroupNode)
+		return NULL;
+
+	for(LIST_NODES::const_iterator j = pGroupNode->GetChildren().begin();
+		j != pGroupNode->GetChildren().end();
+		++j)
+	{
+		if( (*j)->Matches(ns, category) )
+		{
+			return *j;
+		}
+	}
+
+	return NULL;
+}
+
+XmlNode* UserData::GetGroupNode(LPCTSTR ns, LPCTSTR group)
+{
+	for(LIST_NODES::const_iterator i = nodes.begin(); i != nodes.end(); ++i)
+	{
+		if( (*i)->Matches(ns, group) )
+		{
+			return *i;
+		}
+	}
+
+	return NULL;
+}
+
+XmlNode* UserData::lookUp(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value)
+{
+	
+	XmlNode* pCatNode = GetCategoryNode(ns, group, category);
+
+	if(!pCatNode)
+		return NULL;
+
+	for(LIST_NODES::const_iterator k = pCatNode->GetChildren().begin();
+		k != pCatNode->GetChildren().end();
+		++k)
+	{
+		if( (*k)->Matches(ns, value) )
+			return (*k);
+	}
+
+	return NULL;
+}
 
 XN_CIT UserData::begin()
 {
