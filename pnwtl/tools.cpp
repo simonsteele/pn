@@ -853,7 +853,17 @@ void ToolOwner::RunTool(ToolWrapper* pTool, ToolOwnerID OwnerID)
 	}
 
 	if( pTool->SaveAll() )
+	{
 		g_Context.m_frame->SaveAll();
+	}
+	else if( pTool->SaveOne() )
+	{
+		CChildFrame* pChild = pTool->GetActiveChild();
+		if(pChild)
+		{
+			pChild->Save();
+		}
+	}
 
 	_wrapper.pRunner->Execute();
 

@@ -41,7 +41,7 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 			DDX_TEXT(IDC_TE_CUSTOMTEXT,		m_csCustomPattern)
 			DDX_CHECK(IDC_TE_CAPTURECHECK,	m_bCapture)
 			DDX_CHECK(IDC_TE_FILTERCHECK,	m_bFilter)
-			DDX_CHECK(IDC_TE_SAVEALLCHECK,	m_bSaveAll)
+			//DDX_CHECK(IDC_TE_SAVEALLCHECK,	m_bSaveAll)
 			DDX_RADIO(IDC_TE_BUILTIN,		m_iBuiltIn)
 			DDX_CHECK(IDC_TE_CLEARCHECK,	m_bClear)
 		END_DDX_MAP()
@@ -95,7 +95,8 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 
 		BOOL	m_bCapture;
 		BOOL	m_bFilter;
-		BOOL	m_bSaveAll;
+		int		m_iSaveStyle;
+		//BOOL	m_bSaveAll;
 		BOOL	m_bClear;
 
 		int		m_iBuiltIn;
@@ -105,6 +106,7 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 		CInfoLabel	m_infolabel;
 		CInfoLabel	m_infolabel2;
 		CComboBox	m_outputcombo;
+		CComboBox	m_saveCombo;
 };
 
 // pre-declare SchemeConfig.

@@ -833,11 +833,9 @@ BEGIN
     EDITTEXT        IDC_TE_SHORTCUTEDIT,60,90,138,12,ES_AUTOHSCROLL | 
                     WS_DISABLED
     PUSHBUTTON      "c",IDC_TE_CLEARBUTTON,204,90,13,12,WS_DISABLED
-    CONTROL         "Save all before running this tool?",IDC_TE_SAVEALLCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,108,126,12
     CONTROL         "This tool will modify the current file.",
                     IDC_TE_FILTERCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    12,126,150,12
+                    12,132,150,12
     CONTROL         "Capture output?",IDC_TE_CAPTURECHECK,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,234,18,84,12
     COMBOBOX        IDC_TE_OUTPUTCOMBO,234,36,144,37,CBS_DROPDOWNLIST | 
@@ -859,11 +857,14 @@ BEGIN
     RTEXT           "Folder:",IDC_STATIC,12,54,42,12
     RTEXT           "Parameters:",IDC_STATIC,12,72,42,8
     RTEXT           "Shortcut:",IDC_STATIC,12,90,42,12
-    LTEXT           "Static",IDC_TE_INFOLABEL,12,144,204,54
-    GROUPBOX        "Tool:",IDC_STATIC,6,6,216,198
+    LTEXT           "Static",IDC_TE_INFOLABEL,12,150,204,54
+    GROUPBOX        "Tool:",IDC_STATIC,6,6,216,204
     GROUPBOX        "Output:",IDC_STATIC,228,6,156,186
     LTEXT           "",IDC_TE_CUSTOMINFO,246,144,132,42
     LTEXT           "example: %f:%l: ",IDC_STATIC,252,126,126,12
+    RTEXT           "Save:",IDC_STATIC,12,114,42,12
+    COMBOBOX        IDC_TE_SAVECOMBO,60,114,132,42,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
 END
 
 IDD_PAGE_GENERAL DIALOGEX 0, 0, 299, 168

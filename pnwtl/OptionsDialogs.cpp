@@ -146,6 +146,9 @@ CToolEditorDialog::CToolEditorDialog() :
 
 	m_bCapture = true;
 	m_bClear = true;
+	m_bGlobal = false;
+
+	m_iSaveStyle = 0;
 
 	m_iBuiltIn = 0;
 
@@ -169,6 +172,18 @@ LRESULT CToolEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 	m_outputcombo.EnableWindow(m_bCapture);
 
+	m_saveCombo.Attach(GetDlgItem(IDC_TE_SAVECOMBO));
+	m_saveCombo.AddString(_T("None"));
+	m_saveCombo.AddString(_T("Current File"));
+	m_saveCombo.AddString(_T("All Files"));
+
+	if(m_iSaveStyle == TOOL_SAVEALL)
+		m_saveCombo.SetCurSel(2);
+	else if(m_iSaveStyle == TOOL_SAVEONE)
+		m_saveCombo.SetCurSel(1);
+	else
+		m_saveCombo.SetCurSel(0);
+
 	DoDataExchange();
 
 	EnableButtons();
@@ -181,6 +196,9 @@ LRESULT CToolEditorDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/
 	DoDataExchange(TRUE);
 	
 	m_bGlobal = (m_outputcombo.GetCurSel() == 0);
+
+	int saveSel = m_saveCombo.GetCurSel();
+	m_iSaveStyle = (saveSel == 2 ? TOOL_SAVEALL : (saveSel == 1 ? TOOL_SAVEONE : 0));
 
 	EndDialog(wID);
 
@@ -259,10 +277,10 @@ void CToolEditorDialog::GetValues(ToolDefinition* pDefinition)
 	pDefinition->iFlags = 
 		(m_bCapture	? TOOL_CAPTURE	: 0) |
 		(m_bFilter	? TOOL_ISFILTER : 0) |
-		(m_bSaveAll	? TOOL_SAVEALL	: 0) | 
 		(m_bGlobal	? TOOL_GLOBALOUTPUT : 0) |
 		(m_bClear	? TOOL_CLEAROUTPUT : 0) |
-		(m_iBuiltIn * TOOL_CUSTOMPARSER);
+		(m_iBuiltIn * TOOL_CUSTOMPARSER) | 
+		m_iSaveStyle;
 
 	if(m_iBuiltIn)
 	{
@@ -279,11 +297,12 @@ void CToolEditorDialog::SetValues(ToolDefinition* pDefinition)
 	m_csShortcut	= pDefinition->Shortcut.c_str();
 	m_bCapture		= pDefinition->CaptureOutput();
 	m_bFilter		= pDefinition->IsFilter();
-	m_bSaveAll		= pDefinition->SaveAll();
 	m_bGlobal		= pDefinition->GlobalOutput();
 	m_bClear		= pDefinition->ShouldClearOutput();
 	m_iBuiltIn		= pDefinition->UseCustomParser() ? 1 : 0;
 	m_csCustomPattern = pDefinition->CustomParsePattern.c_str();
+
+	m_iSaveStyle = pDefinition->iFlags & (TOOL_SAVEALL | TOOL_SAVEONE);
 }
 
 void CToolEditorDialog::SetTitle(LPCTSTR title)
