@@ -34,18 +34,30 @@ public:
 		m_pLastScheme = NULL;
 	}
 
-	void Load(LPCTSTR filename)
+	void SetScheme(CScheme* pScheme)
+	{
+		pScheme->Load(*this);
+		m_pLastScheme = pScheme;
+	}
+
+	void Load(LPCTSTR filename, CScheme* pScheme = NULL)
 	{
 		CScintilla::OpenFile(filename);
 
 		CFileName cfn(filename);
 		
-		ctcString ext;
-		ext = cfn.GetExtension();
+		if(NULL == pScheme)
+		{
+			ctcString ext;
+			ext = cfn.GetExtension();
 
-		CScheme* sch = theApp.GetSchemes().SchemeForExt(ext.c_str());
-		sch->Load(*this);
-		m_pLastScheme = sch;
+			CScheme* sch = theApp.GetSchemes().SchemeForExt(ext.c_str());
+			SetScheme(sch);
+		}
+		else
+		{
+			SetScheme(pScheme);
+		}
 	}
 
 	void Save(LPCTSTR filename, bool bSetScheme = true)
