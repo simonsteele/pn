@@ -101,6 +101,8 @@ class SchemeConfig : public CustomKeywordHolder, public CustomStyleHolder
 		CustomStyleCollection	m_customs;
 		CustomKeywordHolder		m_cKeywords;
 
+		EditorColours			m_editorColours;
+
 	protected:
 		SchemeConfigParser*		m_pOwner;
 };
@@ -157,7 +159,8 @@ class SchemeConfigParser : public SchemeParser
 		virtual void onStyleClass(StyleDetails* pClass, StyleDetails* pCustom);
 		virtual void onProperty(LPCTSTR name, LPCTSTR value){}
 		virtual void onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom);
-		virtual void onFile(LPCTSTR filename);	
+		virtual void onFile(LPCTSTR filename);
+		virtual void onColours(const EditorColours* colours);
 };
 
 

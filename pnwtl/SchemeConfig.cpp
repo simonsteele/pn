@@ -577,9 +577,14 @@ void SchemeConfigParser::onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPC
 	}
 }
 
-void SchemeConfigParser::onFile(LPCTSTR filename)
+void SchemeConfigParser::onFile(LPCTSTR /*filename*/)
 {
 
+}
+
+void SchemeConfigParser::onColours(const EditorColours* colours)
+{
+	m_pCurrent->m_editorColours = *colours;
 }
 
 bool SortSchemes(SchemeConfig* p1, SchemeConfig* p2)

@@ -10,6 +10,7 @@
 .cs=csharp
 .css=css
 .cxx=cpp
+.def=modula2
 .dfm=pascal
 .diff=diff
 .h=cpp
@@ -20,6 +21,7 @@
 .ini=Properties
 .java=java
 .js=javascript
+.mod=modula2
 .pas=pascal
 .patch=diff
 .php=Web

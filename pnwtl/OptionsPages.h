@@ -238,6 +238,38 @@ class CTabPageStyles : public CPropertyPageImpl<CTabPageStyles>
 		bool			m_bChanging;
 };
 
+class CTabPageMisc : public CPropertyPageImpl<CTabPageMisc>
+{
+	public:	
+		enum {IDD = IDD_TAB_MISC};
+
+		CTabPageMisc();
+
+		BEGIN_MSG_MAP(CTabPageMisc)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			CHAIN_MSG_MAP(CPropertyPageImpl<CTabPageMisc>)
+			REFLECT_NOTIFICATIONS()
+		END_MSG_MAP()
+
+		void SetScheme(SchemeConfig* pScheme);
+		void Finalise();
+
+	protected:
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		
+		void SetValues();
+
+	protected:
+		SchemeConfig*	m_pScheme;
+		
+		CPNColorButton	m_selFore;
+		CPNColorButton	m_selBack;
+		CPNColorButton	m_cursorCol;
+		CPNColorButton	m_igCol;
+
+		bool			m_bChanging;
+};
+
 class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 {
 	public:
@@ -268,6 +300,7 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 		SchemeConfigParser* m_pSchemes;
 		CTabPageStyles		m_stylestab;
 		CTabPageKeywords	m_keywordstab;
+		CTabPageMisc		m_misctab;
 		bool				m_bDirty;
 };
 

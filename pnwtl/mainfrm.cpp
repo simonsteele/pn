@@ -793,7 +793,7 @@ LRESULT CMainFrame::OnFileNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	{
 		// No workspace currently open, create a blank one to store the project in.
 		workspace = new Projects::Workspace;
-		workspace->SetName(_T("New Workspace"));
+		workspace->SetName(_T("New Project Group"));
 		workspace->AddProject(project);
 		m_pProjectsWnd->SetWorkspace(workspace);
 		workspace->ClearDirty();
@@ -816,7 +816,7 @@ LRESULT CMainFrame::OnFileNewWorkspace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 		return 0;
 
 	Projects::Workspace* workspace = new Projects::Workspace;
-	workspace->SetName(_T("New Workspace"));
+	workspace->SetName(_T("New Project Group"));
 	m_pProjectsWnd->SetWorkspace(workspace);
 	workspace->ClearDirty();
 
@@ -891,9 +891,9 @@ LRESULT CMainFrame::OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 
 LRESULT CMainFrame::OnFileOpenProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CPNOpenDialog dlgOpen(_T("Projects and Workspaces (*.pnproj, *.pnwsp)|*.pnproj;*.pnwsp|"));
+	CPNOpenDialog dlgOpen(_T("Projects and Project Groups (*.pnproj, *.ppg)|*.pnproj;*.ppg|"));
 	
-	dlgOpen.m_ofn.lpstrTitle = _T("Open Project/Workspace");
+	dlgOpen.m_ofn.lpstrTitle = _T("Open Project/Project Group");
 
 	if(dlgOpen.DoModal() == IDOK)
 	{
@@ -903,7 +903,7 @@ LRESULT CMainFrame::OnFileOpenProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 		{
 			OpenProject(fn.c_str());
 		}
-		else if( fn.GetExtension() == _T(".pnwsp") )
+		else if( fn.GetExtension() == _T(".ppg") )
 		{
 			OpenWorkspace(fn.c_str());
 		}
@@ -1660,7 +1660,7 @@ void CMainFrame::OpenProject(LPCTSTR projectPath)
 	}
 
 	Projects::Workspace* workspace = new Projects::Workspace;
-	workspace->SetName(_T("New Workspace"));
+	workspace->SetName(_T("New Project Group"));
 	
 	Projects::Project* project = new Projects::Project(projectPath);
 
@@ -1686,8 +1686,8 @@ bool CMainFrame::SaveWorkspaceAs(Projects::Workspace* pWorkspace)
 	if(projects.size() > 0)
 		path = (*projects.begin())->GetBasePath();
 	
-	CPNSaveDialog save(_T("Workspace Files (*.pnwsp)|*.pnwsp|"), path);
-	save.m_ofn.lpstrTitle = _T("Save Workspace");
+	CPNSaveDialog save(_T("Project Group Files (*.ppg)|*.ppg|"), path);
+	save.m_ofn.lpstrTitle = _T("Save Project Group");
 
 	if(save.DoModal() == IDOK)
 	{
@@ -1702,7 +1702,7 @@ DWORD CMainFrame::SaveWorkspace(Projects::Workspace* pWorkspace, bool bAsk)
 {
 	if(bAsk)
 	{
-		DWORD dwRes = ::MessageBox(m_hWnd, _T("Do you want to save your changes to the workspace?"), _T("Programmers Notepad"), MB_YESNOCANCEL | MB_ICONQUESTION);
+		DWORD dwRes = ::MessageBox(m_hWnd, _T("Do you want to save your changes to the project group?"), _T("Programmers Notepad"), MB_YESNOCANCEL | MB_ICONQUESTION);
 		if ( dwRes == IDCANCEL || dwRes == IDNO )
 		{
 			return dwRes;
@@ -1831,7 +1831,7 @@ bool CMainFrame::CloseWorkspace(bool bAllowCloseFiles)
 		wws.pWorkspace = workspace;
 		if(EnumWorkspaceWindows(&wws))
 		{
-			DWORD dwRes = ::MessageBox(m_hWnd, _T("Close all files in the workspace?"), _T("Programmers Notepad"), MB_YESNOCANCEL | MB_ICONQUESTION);
+			DWORD dwRes = ::MessageBox(m_hWnd, _T("Close all project files?"), _T("Programmers Notepad"), MB_YESNOCANCEL | MB_ICONQUESTION);
 
 			if( dwRes == IDCANCEL )
 				return false;

@@ -853,7 +853,7 @@ void CSchemeManager::BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCo
 	{
 		m.AddItem(_T("&Default\tCtrl+N"), ID_FILE_NEW);
 		m.AddItem(_T("&Project"), ID_FILE_NEW_PROJECT);
-		m.AddItem(_T("&Workspace"), ID_FILE_NEW_WORKSPACE);
+		m.AddItem(_T("&Project Group"), ID_FILE_NEW_WORKSPACE);
 		m.AddItem(_T(""));
 	}
 	

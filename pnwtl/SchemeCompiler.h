@@ -116,6 +116,8 @@ class CSchemeLoaderState
 		StyleDetails*			m_pGroupClass;
 		BaseScheme*				m_pBase;
 
+		EditorColours			m_editorColours;
+
 		CUSTOMISED_NAMEMAP		m_BaseSchemes;
 
 		XMLParser*				m_pParser;
@@ -216,7 +218,7 @@ class SchemeParser
 		void specifyImportSet(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void specifyImportFile(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processBaseStyle(CSchemeLoaderState* pState, XMLAttributes& atts);
-		void processBaseColour(CSchemeLoaderState* pState, XMLAttributes& atts);
+		//void processBaseColour(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processLanguageElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts);
 		void processLanguageKeywords(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processLanguageStyle(CSchemeLoaderState* pState, XMLAttributes& atts);
@@ -242,6 +244,7 @@ class SchemeParser
 		virtual void onProperty(LPCTSTR name, LPCTSTR value) = 0;
 		virtual void onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom) = 0;
 		virtual void onFile(LPCTSTR filename) = 0;
+		virtual void onColours(const EditorColours* colours) = 0;
 };
 
 /**
@@ -268,6 +271,7 @@ class SchemeCompiler : public SchemeParser
 		virtual void onFile(LPCTSTR filename);
 		virtual void onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom);
 		virtual void onLexer(LPCTSTR name, int styleBits);
+		virtual void onColours(const EditorColours* colours);
 };
 
 #endif //#ifndef schemecompiler_h__included

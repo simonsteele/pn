@@ -568,7 +568,7 @@ void CTabPageStyles::UpdateSel()
 				else
 					m_sd.SetStyle(m_Style.FontName.c_str(), m_Style.FontSize, m_Style.ForeColor, m_Style.BackColor, m_Style.name.c_str(), m_Style.Bold, m_Style.Italic, m_Style.Underline);
 
-				if(!pS->ColourOnly)
+				/*if(!pS->ColourOnly)*/
 				{
 					m_bold.SetCheck(m_Style.Bold ? BST_CHECKED : BST_UNCHECKED);
 					m_italic.SetCheck(m_Style.Italic ? BST_CHECKED : BST_UNCHECKED);
@@ -584,12 +584,12 @@ void CTabPageStyles::UpdateSel()
 
 					EnableButtons(true);
 				}
-				else
+				/*else
 				{
 					m_fore.SetColor(m_Style.ForeColor);
 					::SetWindowText(GetDlgItem(IDC_STATIC_TC), _T("Colour: "));
 					DisableNonColourItems();
-				}
+				}*/
 			}
 			else
 				EnableButtons(false);
@@ -782,6 +782,62 @@ LRESULT CTabPageStyles::OnResetAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 }
 
 //////////////////////////////////////////////////////////////////////////////
+// CTabPageMisc
+//////////////////////////////////////////////////////////////////////////////
+
+CTabPageMisc::CTabPageMisc()
+{
+	m_bChanging = false;
+	m_pScheme = NULL;
+}
+
+void CTabPageMisc::SetScheme(SchemeConfig* pScheme)
+{
+	m_bChanging = true;
+
+	SetValues();
+	
+	m_pScheme = pScheme;
+
+
+
+	m_bChanging = false;
+}
+
+void CTabPageMisc::SetValues()
+{
+	if(m_pScheme != NULL)
+	{
+
+	}
+}
+
+void CTabPageMisc::Finalise()
+{
+	SetValues();
+}
+
+LRESULT CTabPageMisc::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	m_selFore.SubclassWindow(GetDlgItem(IDC_STYLE_SELFOREBUTTON));
+	m_selBack.SubclassWindow(GetDlgItem(IDC_STYLE_SELBACKBUTTON));
+	m_cursorCol.SubclassWindow(GetDlgItem(IDC_STYLE_CURCOLBUTTON));
+	m_igCol.SubclassWindow(GetDlgItem(IDC_STYLE_IGCOLBUTTON));
+
+	m_selFore.SetDefaultColor(::GetSysColor(COLOR_HIGHLIGHTTEXT));
+	m_selBack.SetDefaultColor(::GetSysColor(COLOR_HIGHLIGHT));
+	m_cursorCol.SetDefaultColor(::GetSysColor(COLOR_WINDOWTEXT));
+	m_igCol.SetDefaultColor(RGB(0,0,0));
+
+	return 0;
+}
+
+/*void CTabPageMisc::UpdateSel()
+{
+
+}*/
+
+//////////////////////////////////////////////////////////////////////////////
 // COptionsPageStyle
 //////////////////////////////////////////////////////////////////////////////
 
@@ -966,8 +1022,10 @@ LRESULT COptionsPageSchemes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 	ScreenToClient(rcPH);
 	m_stylestab.SetTitle(_T("Styles"));
 	m_keywordstab.SetTitle(_T("Keywords"));
+	m_misctab.SetTitle(_T("More Options"));
 	m_props.AddPage(m_stylestab);
 	m_props.AddPage(m_keywordstab);
+	m_props.AddPage(m_misctab);
 	
 	// Store focus or the property sheet eats it.
 	HWND hCurFocus = ::GetFocus();
@@ -990,6 +1048,7 @@ void COptionsPageSchemes::OnOK()
 {
 	m_stylestab.Finalise();
 	m_keywordstab.Finalise();
+	m_misctab.Finalise();
 	m_pSchemes->SaveConfig();
 }
 
@@ -1010,6 +1069,7 @@ void COptionsPageSchemes::Update()
 	SchemeConfig* pScheme = m_combo.GetItemScheme(i);
 	m_stylestab.SetScheme(pScheme);
 	m_keywordstab.SetScheme(pScheme);
+	m_misctab.SetScheme(pScheme);
 }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -19,6 +19,202 @@ using std::string;
 using std::list;
 using std::map;
 
+class EditorColours
+{
+public:
+	typedef enum {
+		ecSelFore	= 0x01,
+		ecSelBack	= 0x02,
+		ecCaret		= 0x04,
+		ecIndentG	= 0x08,
+	} Colours;
+
+	EditorColours()
+	{
+		values = 0;
+	}
+
+	const EditorColours& operator = (const EditorColours& copy)
+	{
+		values = copy.values;
+		crSelFore = copy.crSelFore;
+		crSelBack = copy.crSelBack;
+		crCaret = copy.crCaret;
+		crIG = copy.crIG;
+
+		return *this;
+	}
+
+	void SetColour(Colours colour, COLORREF setColour)
+	{
+		switch(colour)
+		{
+		case ecSelFore:
+			crSelFore = setColour;
+			break;
+		case ecSelBack:
+			crSelBack = setColour;
+			break;
+		case ecCaret:
+			crCaret = setColour;
+			break;
+		case ecIndentG:
+			crIG = setColour;
+			break;
+		}
+
+		values |= colour;
+	}
+
+	bool HasColour(Colours colour) const
+	{
+		return (values & colour) != 0;
+	}
+
+	COLORREF GetColour(Colours colour) const
+	{
+		if( (values & colour) == 0)
+			return (DWORD)-1;
+		
+		switch(colour)
+		{
+			case ecSelFore:
+				return crSelFore;
+				break;
+			case ecSelBack:
+				return crSelBack;
+				break;
+			case ecCaret:
+				return crCaret;
+				break;
+			case ecIndentG:
+				return crIG;
+				break;
+		}
+			
+		return (DWORD) -1;
+	}
+
+	tstring ToXml() const
+	{
+		if(values == 0)
+			return tstring(_T(""));
+		
+		tstring buf = _T("<colours ");
+		if((values & ecSelFore) != 0)
+			AddColourParam(buf, _T("selFore"), crSelFore);
+		if((values & ecSelBack) != 0)
+			AddColourParam(buf, _T("selBack"), crSelBack);
+		if((values & ecCaret) != 0)
+			AddColourParam(buf, _T("caret"), crCaret);
+		if((values & ecIndentG) != 0)
+			AddColourParam(buf, _T("indentGuides"), crIG);
+		buf += _T("/>");
+		
+		return buf;
+	}
+
+	void SetFromXml(XMLAttributes& atts)
+	{
+		LPCTSTR szKey, szValue;
+		int val;
+		for(int i = 0; i < atts.getCount(); i++)
+		{
+			szKey = atts.getName(i);
+			szValue = atts.getValue(i);
+			val = _ttoi(szValue);
+
+			if(_tcscmp(szKey, _T("selFore")) == 0)
+			{
+				SetColour(ecSelFore, (DWORD)val);
+			}
+			else if(_tcscmp(szKey, _T("selBack")) == 0)
+			{
+				SetColour(ecSelBack, (DWORD)val);
+			}
+			else if(_tcscmp(szKey, _T("caret")) == 0)
+			{
+				SetColour(ecCaret, (DWORD)val);
+			}
+			else if(_tcscmp(szKey, _T("indentGuides")) == 0)
+			{
+				SetColour(ecIndentG, (DWORD)val);
+			}
+		}
+	}
+
+	void SendColours(CScintilla* pSc) const
+	{
+		if((values & ecSelFore) != 0)
+		{
+			if((int)crSelFore == -1)
+				pSc->SPerform(SCI_SETSELFORE, false, 0);
+			else
+				pSc->SPerform(SCI_SETSELFORE, true, crSelFore);
+		}
+		
+		if((values & ecSelBack) != 0)
+			pSc->SPerform(SCI_SETSELBACK, true, crSelBack);
+		
+		if((values & ecCaret) != 0)
+			pSc->SPerform(SCI_SETCARETFORE, crCaret);
+		
+		if((values & ecIndentG) != 0)
+			pSc->SPerform(SCI_STYLESETFORE, STYLE_INDENTGUIDE, crIG);
+	}
+
+	static void SendColours(XMLAttributes& atts, CScintilla* pSc)
+	{
+		LPCTSTR szKey, szValue;
+		int val;
+		for(int i = 0; i < atts.getCount(); i++)
+		{
+			szKey = atts.getName(i);
+			szValue = atts.getValue(i);
+			val = _ttoi(szValue);
+
+			if(_tcscmp(szKey, _T("selFore")) == 0)
+			{
+				if(val == -1)
+					pSc->SPerform(SCI_SETSELFORE, false, 0);
+				else
+					pSc->SPerform(SCI_SETSELFORE, true, (DWORD)val);
+			}
+			else if(_tcscmp(szKey, _T("selBack")) == 0)
+			{
+				pSc->SPerform(SCI_SETSELBACK, true, (DWORD)val);
+			}
+			else if(_tcscmp(szKey, _T("caret")) == 0)
+			{
+				pSc->SPerform(SCI_SETCARETFORE, (DWORD)val);
+			}
+			else if(_tcscmp(szKey, _T("indentGuides")) == 0)
+			{
+				pSc->SPerform(SCI_STYLESETFORE, STYLE_INDENTGUIDE, (DWORD)val);
+			}
+		}
+	}
+
+protected:
+	void AddColourParam(tstring& buf, LPCTSTR name, COLORREF colour) const
+	{
+		buf += name;
+		buf += _T("=\"");
+		
+		TCHAR colbuf[12];
+		colbuf[11] = NULL;
+		_sntprintf(colbuf, 11, _T("%.2x%.2x%.2x\" "), GetRValue(colour), GetGValue(colour), GetBValue(colour));
+		buf += colbuf;
+	}
+
+protected:
+	COLORREF	crSelFore;
+	COLORREF	crSelBack;
+	COLORREF	crCaret;
+	COLORREF	crIG;
+	SHORT		values;
+};
+
 /* The edvGroupStart value is a misappropriation of the values field. It allows
  * a StyleDetails object to be stored in a list as a marker for the start of
  * a group. The value should never be used by anything but the schemeparser.
@@ -45,7 +241,7 @@ class StyleDetails
 			Underline = false;
 			EOLFilled = false;
 			Hotspot = false;
-			ColourOnly = false;
+			//ColourOnly = false;
 			KeyIsMessage = false;
 			values = 0;
 		}
@@ -67,7 +263,7 @@ class StyleDetails
 			Underline = copy.Underline;
 			EOLFilled = copy.EOLFilled;
 			Hotspot = copy.Hotspot;
-			ColourOnly = copy.ColourOnly;
+			//ColourOnly = copy.ColourOnly;
 			KeyIsMessage = copy.KeyIsMessage;
 
 			values = copy.values;
@@ -176,7 +372,7 @@ class StyleDetails
 		bool Hotspot;
 
 		///ColourOnly == true means that this style is only a colour setting.
-		bool ColourOnly;
+		//bool ColourOnly;
 		
 		///KeyIsMessage == true means that the key is a scintilla message number.
 		bool KeyIsMessage;

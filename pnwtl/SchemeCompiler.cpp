@@ -364,6 +364,10 @@ void UserSettingsParser::startElement(void *userData, LPCTSTR name, XMLAttribute
 	{
 		pState->m_State = US_CLASSES;
 	}
+	else if(_tcscmp(name, _T("colours")) == 0)
+	{
+		pState->m_editorColours.SetFromXml(atts);
+	}
 }
 
 void UserSettingsParser::endElement(void *userData, LPCTSTR name)
@@ -544,7 +548,7 @@ void SchemeCompiler::onStyle(StyleDetails* pStyle, StyleDetails* pCustom)
 		m_Recorder.SetDefStyle(&m_LoadState.m_Default);
 	}
 
-	if(pStyle->ColourOnly)
+	/*if(pStyle->ColourOnly)
 	{
 		if((pStyle->values && edvForeColor) == 0)
 			return;
@@ -566,7 +570,7 @@ void SchemeCompiler::onStyle(StyleDetails* pStyle, StyleDetails* pCustom)
 			m_Recorder.StyleSetFore(pStyle->Key, pStyle->ForeColor);
 		}
 	}
-	else
+	else*/
 	{
 		sendStyle(pStyle, &m_Recorder);
 	}
@@ -632,6 +636,11 @@ void SchemeCompiler::onLexer(LPCTSTR name, int styleBits)
 		m_Recorder.SetLexerLanguage(T2A((LPTSTR)name));
 	}
 	m_Recorder.SetStyleBits(styleBits);
+}
+
+void SchemeCompiler::onColours(const EditorColours* colours)
+{
+	colours->SendColours(&m_Recorder);
 }
 
 ////////////////////////////////////////////////////////////
@@ -708,7 +717,7 @@ void SchemeParser::processBaseStyle(CSchemeLoaderState* pState, XMLAttributes& a
  * A base colour is a colour that affects every scheme - things like
  * cursor colour and selection colours.
  */
-void SchemeParser::processBaseColour(CSchemeLoaderState* pState, XMLAttributes& atts)
+/*void SchemeParser::processBaseColour(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
 	StyleDetails* pS = new StyleDetails();
 
@@ -716,7 +725,7 @@ void SchemeParser::processBaseColour(CSchemeLoaderState* pState, XMLAttributes& 
 	pS->ColourOnly = true;
 	
 	pState->m_BaseStyles.AddStyle(pS);
-}
+}*/
 
 void SchemeParser::processGlobal(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
@@ -1187,6 +1196,8 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 				onLanguage(scheme, title, flags);
 
 				sendBaseStyles(pState);
+				
+				onColours(&pState->m_editorColours);
 
 				if( pBase )
 				{
@@ -1515,10 +1526,10 @@ void SchemeParser::startElement(void *userData, LPCTSTR name, XMLAttributes& att
 			specifyImportFile(pState, atts);
 		}
 	}
-	else if(state == DOING_BASE_OPTIONS && _tcscmp(name, _T("colour")) == 0)
+	/*else if(state == DOING_BASE_OPTIONS && _tcscmp(name, _T("colour")) == 0)
 	{
 		processBaseColour(pState, atts);
-	}
+	}*/
 	else if(state == DOING_BASE_OPTIONS && _tcscmp(name, _T("style")) == 0)
 	{
 		processBaseStyle(pState, atts);
