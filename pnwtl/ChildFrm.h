@@ -265,6 +265,7 @@ protected:
 	bool IsOutputVisible();
 	BOOL OnEscapePressed();
 	void Export(int type);
+	void SetModifiedOverride(bool bVal);
 
 	// Modes Stuff
 protected:
@@ -279,6 +280,7 @@ protected:
 	CString				m_Title;
 	CString				m_FileName;
 	long				m_FileAge;
+	bool				m_bModifiedOverride;
 	
 	int					m_iFirstToolCmd;
 

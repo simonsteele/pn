@@ -43,6 +43,7 @@ CChildFrame::CChildFrame()
 	m_iFirstToolCmd = ID_TOOLS_DUMMY;
 
 	m_bHeaderSwitch = false;
+	m_bModifiedOverride = false;
 }
 
 CChildFrame::~CChildFrame()
@@ -306,7 +307,7 @@ LPCTSTR CChildFrame::GetTitle()
 
 bool CChildFrame::GetModified()
 {
-	return m_view.GetModified();
+	return m_view.GetModified() || m_bModifiedOverride;
 }
 
 bool CChildFrame::CanClose()
@@ -475,13 +476,9 @@ LRESULT CChildFrame::OnCheckAge(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 LRESULT CChildFrame::OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	if(lParam == SCN_SAVEPOINTREACHED)
+	if(lParam == SCN_SAVEPOINTREACHED || lParam == SCN_SAVEPOINTLEFT)
 	{
-		SetTitle();
-	}
-	else if(lParam == SCN_SAVEPOINTLEFT)
-	{
-		SetTitle(true);
+		SetTitle(GetModified());
 	}
 	else
 	{
@@ -908,13 +905,17 @@ void CChildFrame::CheckAge()
 					Revert();
 				}
 				else
+				{
 					m_FileAge = age;
+					SetModifiedOverride(true);
+				}
 			}
 			else
 			{
 				CString msg;
 				msg.Format(_T("Warning: the file %s does not exist any more."), (LPCTSTR)m_FileName);
 				g_Context.m_frame->SetStatusText((LPCTSTR)msg);
+				SetModifiedOverride(true);
 			}
 		}
 	}
@@ -927,6 +928,7 @@ void CChildFrame::Revert()
 	{
 		m_view.Revert((LPCTSTR)m_FileName);
 		m_FileAge = FileAge(m_FileName);
+		SetModifiedOverride(false);
 	}
 }
 
@@ -956,6 +958,7 @@ void CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 		if(bStoreFilename)
 		{
 			m_FileAge = FileAge(pathname);
+			SetModifiedOverride(false);
 			m_FileName = pathname;
 
 			SetTitle();			
@@ -1026,6 +1029,7 @@ void CChildFrame::Save()
 	{
 		SaveFile(m_FileName, false);
 		m_FileAge = FileAge(m_FileName);
+		SetModifiedOverride(false);
 	}
 	else
 		SaveAs();
@@ -1193,6 +1197,13 @@ void CChildFrame::Export(int type)
 	}
 
 	delete pStyles;
+}
+
+void CChildFrame::SetModifiedOverride(bool bVal)
+{
+	m_bModifiedOverride = bVal;
+	SetTitle(GetModified());
+	g_Context.m_frame->GetWindow()->SendMessage(PN_NOTIFY, 0, SCN_UPDATEUI);
 }
 
 void CChildFrame::PrintSetup()

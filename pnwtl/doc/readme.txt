@@ -13,19 +13,21 @@ What's new?
 5) Show path of file to be executed (SF Feature #765270).
 6) Visual Help options (highlight current line, long line help).
 7) Sanitise file names from output window to better find files.
+8) Text clips browser.
 
 Bug Fixes:
 ----------
 
 1) Show Full Path turns off after a revert. (SF Bug #773608)
 2) Stop Tools doesn't work. (SF Bug #773294)
+3) If you don't update a file when it's changed on disk it is marked as changed.
 
 If you find a bug:
 ------------------
 There are quite possibly bugs with these features (or others), 
 please let us know if you find any. You can help by providing 
 us with a copy of the file(s):
-%usersettings%\Echo Software\PN2\User*.xml
+%appdata%\Echo Software\PN2\User*.xml
 
 E-mail: ss@pnotepad.org with your reports, or use the handy 
 "Report a Bug" option on the Help menu to add it straight to the
