@@ -18,7 +18,7 @@ class CallbackBase
 {
 	public:
 		virtual void operator() () const { };
-		virtual ~CallbackBase() = 0;
+		virtual ~CallbackBase(){}
 };
 
 template<typename T>
