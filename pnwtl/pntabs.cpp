@@ -6,6 +6,20 @@ CPNMDIClient::CPNMDIClient()
 	m_bMoving = false;
 }
 
+/**
+ * Ask for double-clicks in the class style
+ */
+BOOL CPNMDIClient::SubclassWindow(HWND hWnd)
+{
+	BOOL bSuccess = baseClass::SubclassWindow(hWnd);
+	
+	if(bSuccess)
+		SetClassLong(m_hWnd, GCL_STYLE,
+			GetClassLong(m_hWnd, GCL_STYLE) | CS_DBLCLKS);	
+
+	return bSuccess;
+}
+
 LRESULT CPNMDIClient::OnMDINext(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
 	if(!OPTIONS->GetCached(Options::OManageTabOrder) || m_children.size() < 2)
@@ -37,7 +51,10 @@ LRESULT CPNMDIClient::OnMDINext(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	}
 
 	// Activate our chosen window
+	LockWindowUpdate(TRUE);
 	SendMessage(WM_MDIACTIVATE, (WPARAM)(*m_moveIt), 0);
+	LockWindowUpdate(FALSE);
+	
 	
 	bHandled = TRUE;
 
@@ -93,5 +110,23 @@ LRESULT CPNMDIClient::OnMDIDestroy(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam
 	SendMessage(GetParent(), PN_NOTIFY, 0, PN_MDIDESTROY);
 	bHandled = FALSE;
 
+	return 0;
+}
+
+LRESULT CPNMDIClient::OnChildTabTextChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	//ss - causing a crash when updates are requested in the middle of a scintilla op.
+	//also doesn't seem to have actually served a purpose.
+	//SendMessage(GetParent(), PN_NOTIFY, 0, SCN_UPDATEUI);
+
+	bHandled = FALSE;
+
+	return 0;
+}
+
+LRESULT CPNMDIClient::OnDblClick(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	// Forward the message
+	SendMessage(GetParent(), WM_LBUTTONDBLCLK, wParam, lParam);
 	return 0;
 }

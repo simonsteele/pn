@@ -357,6 +357,7 @@ protected:
 	
 	bool getProjectsModified(ITabbedMDIChildModifiedList* pModifiedList);
 
+	void launchFind(EFindDialogType findType);
 	void launchExternalSearch(LPCTSTR searchString);
 
 	void loadImages(USHORT id, HIMAGELIST* images, USHORT disId = 0, HIMAGELIST* disImages = NULL);

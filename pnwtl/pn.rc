@@ -1168,30 +1168,29 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     LTEXT           "Static",IDC_FINDTEXT_DUMMY,56,26,145,12,NOT WS_VISIBLE
     CONTROL         "",IDC_REHELPER_BUTTON,"Button",BS_OWNERDRAW | 
-                    WS_TABSTOP,207,27,9,11,0,HIDC_REHELPER_BUTTON
+                    WS_TABSTOP,207,26,9,11,0,0x81b452d4
     LTEXT           "Static",IDC_REPLACETEXT_DUMMY,56,43,145,12,NOT 
                     WS_VISIBLE
-    PUSHBUTTON      "",IDC_RHELPER_BUTTON,207,44,9,11,0,0,
-                    HIDC_RHELPER_BUTTON
+    PUSHBUTTON      "",IDC_RHELPER_BUTTON,207,43,9,11,0,0,0x81b452d5
     LTEXT           "Static",IDC_FINDWHERE_DUMMY,56,60,145,12,NOT WS_VISIBLE
     LTEXT           "Static",IDC_FINDTYPE_DUMMY,56,77,145,12,NOT WS_VISIBLE
     CONTROL         "Match &whole word only",IDC_MATCHWHOLE_CHECK,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,101,103,10,0,
-                    HIDC_MATCHWHOLE_CHECK
+                    0x81b40068
     CONTROL         "Match &case",IDC_MATCHCASE_CHECK,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,113,65,10,0,
-                    HIDC_MATCHCASE_CHECK
+                    0x81b40069
     CONTROL         "Regular &expression",IDC_REGEXP_CHECK,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,125,98,10,0,
-                    HIDC_REGEXP_CHECK
+                    0x81b4006b
     CONTROL         "Allow backslash expressions",IDC_BACKSLASHES_CHECK,
                     "Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,137,
-                    109,11,0,HIDC_BACKSLASHES_CHECK
+                    109,11,0,0x81b40415
     CONTROL         "Search &up",IDC_SEARCHUP_CHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_GROUP | WS_TABSTOP,7,149,51,11,0,HIDC_SEARCHUP_CHECK
+                    WS_GROUP | WS_TABSTOP,7,149,51,11,0,0x81b40417
     CONTROL         "Search &subdirectories",IDC_SUBDIRS_CHECK,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,161,109,11,0,
-                    HIDC_SUBDIRS_CHECK
+                    0x81b40416
     CONTROL         "Current document",IDC_CURRENTDOC_RADIO,"Button",
                     BS_AUTORADIOBUTTON | WS_GROUP,124,114,91,10,
                     WS_EX_TRANSPARENT
@@ -1205,9 +1204,9 @@ BEGIN
                     BS_AUTORADIOBUTTON | WS_DISABLED,124,150,91,10,
                     WS_EX_TRANSPARENT
     DEFPUSHBUTTON   "&Find Next",IDC_FINDNEXT_BUTTON,228,26,53,14,WS_GROUP,0,
-                    HIDC_FINDNEXT_BUTTON
+                    0x81b40067
     PUSHBUTTON      "&Mark All",IDC_MARKALL_BUTTON,228,43,53,14,WS_DISABLED | 
-                    WS_GROUP,0,HIDC_MARKALL_BUTTON
+                    WS_GROUP,0,0x81b452cf
     PUSHBUTTON      "&Replace",IDC_REPLACE_BUTTON,228,60,53,14,WS_GROUP
     PUSHBUTTON      "Replace &All",IDC_REPLACEALL_BUTTON,228,77,53,14,
                     WS_GROUP
@@ -1215,16 +1214,17 @@ BEGIN
     LTEXT           "Tabs go here.",IDC_FINDEXTABS_PLACEHOLDER,7,2,274,12,
                     NOT WS_VISIBLE,WS_EX_TRANSPARENT
     RTEXT           "Fi&nd what:",IDC_FINDTEXT_LABEL,12,28,40,10,0,0,
-                    HIDC_FINDTEXT_LABEL
+                    0x81b40456
     CONTROL         "",IDC_FINDEX_LINE,"Static",SS_ETCHEDHORZ,1,16,287,1
     LTEXT           "Replace with:",IDC_REPLACETEXT_LABEL,7,46,45,10,0,0,
-                    HIDC_REPLACETEXT_LABEL
+                    0x81b40412
     RTEXT           "File types:",IDC_FINDTYPE_LABEL,7,80,45,10,0,0,
-                    HIDC_FINDTYPE_LABEL
+                    0x81b40413
     RTEXT           "Find where:",IDC_FINDWHERE_LABEL,7,63,45,10,0,0,
-                    HIDC_FINDWHERE_LABEL
+                    0x81b40414
     GROUPBOX        "Search",IDC_SEARCHIN_GROUP,117,101,106,67,0,
                     WS_EX_TRANSPARENT
+    PUSHBUTTON      "...",IDC_BROWSE_BUTTON,207,43,12,12,0,0,0x81b452d6
 END
 
 IDD_PAGE_DIALOGS DIALOGEX 0, 0, 300, 200
@@ -1699,6 +1699,24 @@ BEGIN
     IDS_PROJECTDOESNOTEXIST "The specified project does not exist,\n would you like to create it?"
     IDS_PROJSAVECHANGES     "Do you want to save changes to the project: %s?"
     IDS_PROJCLOSEFILES      "Close all project files?"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_BROWSEFINDROOT      "Select the root folder for the search:"
+    IDS_GLOBALOUTPUT        "Use the main output window."
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_INDIVIDUALOUTPUT    "Use an individual output window."
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_OUTPUTSUPPORT       "Programmers Notepad 2 provides built-in support\nfor parsing output from the following tools:\n\nBorland C++\nMicrosoft Compilers\nGCC\nlcc-win32\nPython\nPerl\nand other similar tools."
+    IDS_TOOLS_VARSTRINGS    "%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectPath),Path of Project,c:\\source\\pn2\\,$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\"
+    IDS_TOOLS_SELWORKINGFOLDER "Select the working folder for the tool:"
 END
 
 #endif    // English (U.K.) resources

@@ -29,21 +29,6 @@ typedef struct tagFindOptions
 	bool UseSlashes;
 } SFindOptions;
 
-/*typedef struct tagReplaceOptions : tagFindOptions
-{
-	CString ReplaceText;
-	bool	InSelection;
-} SReplaceOptions;
-
-typedef struct tagFindInFilesOptions
-{
-	CString FindText;
-	CString	FileExts;
-	CString Path;
-	bool MatchCase;
-	bool Recurse;
-} SFindInFilesOptions;*/
-
 typedef struct tagSearchOptions : tagFindOptions
 {
 	// Replace
@@ -53,7 +38,6 @@ typedef struct tagSearchOptions : tagFindOptions
 	// Find In Files
 	CString	FileExts;
 	CString Path;
-	//bool MatchCase;
 	bool Recurse;
 } SearchOptions;
 
@@ -174,5 +158,7 @@ typedef enum {
 	PNCP_Unicode = SC_CP_UTF8,
 	PNCP_ShiftJIS = 932
 } ECodePage;
+
+typedef enum { eftFind, eftReplace, eftFindInFiles, eftInvalid } EFindDialogType;
 
 #endif

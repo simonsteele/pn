@@ -14,8 +14,6 @@
 class CChildFrame;
 class CTextView;
 
-typedef enum { eftFind, eftReplace, eftFindInFiles, eftInvalid } EFindDialogType;
-
 typedef BOOL (__stdcall *PFNSetLayeredWindowAttributes)(HWND hwnd, COLORREF crKey, BYTE bAlpha, DWORD dwFlags);
 
 class CFindExDialog : public CDialogImpl<CFindExDialog, CWindow>,
@@ -45,6 +43,7 @@ protected:
 		COMMAND_ID_HANDLER(IDC_FINDNEXT_BUTTON, OnFindNext)
 		COMMAND_HANDLER(IDC_REPLACE_BUTTON, BN_CLICKED, OnReplaceClicked)
 		COMMAND_HANDLER(IDC_REPLACEALL_BUTTON, BN_CLICKED, OnReplaceAllClicked)
+		COMMAND_HANDLER(IDC_BROWSE_BUTTON, BN_CLICKED, OnBrowseClicked)
 
 		// Regex helper stuff...
 		COMMAND_ID_HANDLER(IDC_REHELPER_BUTTON, OnReHelperClicked)
@@ -108,6 +107,7 @@ protected:
 	LRESULT OnReMatchesMenuItemClicked(WORD /*wNotifyCode*/, WORD nID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnReplaceClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnReplaceAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnBrowseClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnUseRegExpClicked(WORD /*wNotifyCode*/, WORD /*nID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnRadioClicked(WORD /*wNotifyCode*/, WORD /*nID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
@@ -147,6 +147,7 @@ protected:
 	CArrowButton			m_ReHelperBtn;
 	CArrowButton			m_ReHelperBtn2;
 	CChildFrame*			m_pLastEditor;
+	bool					m_bInitialising;
 
 	// Positional information
 	int		m_group2Top;
@@ -157,7 +158,7 @@ protected:
 	int		m_lastVisibleCB;
 	int		m_checkDist;
 	int		m_bottom;
-
+	
 	// Find/Replace Information
 	CString		m_FindText;
 	CString		m_ReplaceText;

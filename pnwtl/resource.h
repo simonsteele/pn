@@ -47,6 +47,8 @@
 #define IDS_FINDNOTFOUND                141
 #define IDS_NREPLACEMENTS               142
 #define IDS_FINDLOOPED                  143
+#define IDS_BROWSEFINDROOT              144
+#define IDS_GLOBALOUTPUT                145
 #define IDI_TEXTCLIPS                   167
 #define IDR_POPUP_REGEXP                170
 #define IDR_POPUP_EDITOR                173
@@ -158,6 +160,10 @@
 #define IDD_PROJPROPS                   332
 #define IDD_DIALOG1                     333
 #define IDD_TOOLCONSOLEIOPAGE           333
+#define IDS_INDIVIDUALOUTPUT            335
+#define IDS_OUTPUTSUPPORT               336
+#define IDS_TOOLS_VARSTRINGS            337
+#define IDS_TOOLS_SELWORKINGFOLDER      338
 #define ID_MRUPROJECT_MAX               340
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
@@ -368,6 +374,7 @@
 #define IDC_REHELPER_BUTTON             21204
 #define IDC_RHELPER_BUTTON              21205
 #define IDC_PSHELPER2_BUTTON            21205
+#define IDC_BROWSE_BUTTON               21206
 #define IDC_DIRECTION_GROUP             21207
 #define IDC_FINDCOMBO                   21208
 #define IDI_INFOICON                    32516
@@ -463,7 +470,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        335
+#define _APS_NEXT_RESOURCE_VALUE        336
 #define _APS_NEXT_COMMAND_VALUE         32944
 #define _APS_NEXT_CONTROL_VALUE         1128
 #define _APS_NEXT_SYMED_VALUE           104

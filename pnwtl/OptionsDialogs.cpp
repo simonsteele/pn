@@ -34,8 +34,6 @@ CToolSettingsPage::CToolSettingsPage(LPCTSTR title) :
 	m_csDisplayTitle = _T("New Tool");
 }
 
-const LPCTSTR toolvarstrs = _T("%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectPath),Path of Project,c:\\source\\pn2\\,$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\");
-
 LRESULT CToolSettingsPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	CenterWindow(GetParent());
@@ -64,8 +62,11 @@ LRESULT CToolSettingsPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	m_VarList.InsertColumn(1, _T("Meaning"), LVCFMT_LEFT, 115, -1);
 	m_VarList.InsertColumn(2, _T("Example"), LVCFMT_LEFT, 100, -1);
 
+	CString str;
+	str.LoadString(IDS_TOOLS_VARSTRINGS);
+
 	tstring delimiters = _T(",");
-	tstring varstr = toolvarstrs;
+	tstring varstr = str;
 	std::vector<tstring> toks;
 
 	StringTokenise(varstr, toks, delimiters);
@@ -113,8 +114,11 @@ LRESULT CToolSettingsPage::OnBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 {	
 	DoDataExchange(TRUE);
 
+	CString str;
+	str.LoadString(IDS_TOOLS_SELWORKINGFOLDER);
+
 	LPCTSTR pInit = ( (m_csFolder.Find(_T('%')) == -1) ? (LPCTSTR)m_csFolder : NULL );
-	CPNFolderDialog dlg(NULL, pInit, _T("Select the working folder for the tool:"));
+	CPNFolderDialog dlg(NULL, pInit, str);
 	
 	if( dlg.DoModal() == IDOK )
 	{
@@ -187,8 +191,7 @@ void CToolSettingsPage::SetTitle(LPCTSTR title)
 //////////////////////////////////////////////////////////////////////////////
 
 CToolConsoleIOPage::CToolConsoleIOPage(LPCTSTR title) : 
-	CPropertyPageImpl<CToolConsoleIOPage>(title)//,
-	//m_infolabel2(_T("Pattern Symbols:"), IDS_PATTERNFORMATSTRINGS)
+	CPropertyPageImpl<CToolConsoleIOPage>(title)
 {
 	m_csCustomPattern = _T("");
 
@@ -231,11 +234,12 @@ void CToolConsoleIOPage::SetValues(ToolDefinition* pDefinition)
 
 LRESULT CToolConsoleIOPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	//m_infolabel2.SubclassWindow(GetDlgItem(IDC_TE_CUSTOMINFO));
-
 	m_outputcombo.Attach(GetDlgItem(IDC_TE_OUTPUTCOMBO));
-	m_outputcombo.AddString(_T("Use the main output window."));
-	m_outputcombo.AddString(_T("Use an individual output window."));
+	CString str;
+	str.LoadString(IDS_GLOBALOUTPUT);
+	m_outputcombo.AddString(str);
+	str.LoadString(IDS_INDIVIDUALOUTPUT);
+	m_outputcombo.AddString(str);
 
 	m_outputcombo.SetCurSel(m_bGlobal ? 0 : 1);
 
@@ -329,10 +333,9 @@ LRESULT CToolConsoleIOPage::OnCaptureChanged(WORD /*wNotifyCode*/, WORD /*wID*/,
 
 LRESULT CToolConsoleIOPage::OnAboutBuiltin(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	MessageBox(
-		_T("Programmers Notepad 2 provides built-in support\nfor parsing output from the following tools:\n\nBorland C++\nMicrosoft Compilers\nGCC\nlcc-win32\nPython\nPerl\nand other similar tools."), 
-		_T("Information"),
-		MB_OK | MB_ICONINFORMATION);
+	CString str;
+	str.LoadString(IDS_OUTPUTSUPPORT);
+	MessageBox(	str, _T("Information"),MB_OK | MB_ICONINFORMATION);
 
 	return 0;
 }

@@ -647,7 +647,7 @@ void CMainFrame::CreateDockingWindows()
 {
 	// Create docking windows...
 	CRect rcLeft(0,0,200,400);
-	CRect rcBottom(0,0,400,200);
+	CRect rcBottom(0,0,400,100);
 	
 	CString s;
 	s.LoadString(_Module.m_hInst, ID_VIEW_OUTPUT);
@@ -1586,51 +1586,21 @@ LRESULT CMainFrame::OnWindowCloseAllOther(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT CMainFrame::OnFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	if(m_pFindEx == NULL)
-	{
-		m_pFindEx = new CFindExDialog();
-		hFindWnd = m_pFindEx->Create(m_hWnd);
-	}
-
-	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
-	if(pChild)
-		m_pFindEx->Show(eftFind, pChild->GetTextView()->GetCurrentWord().c_str());
-	else
-		m_pFindEx->Show();
+	launchFind(eftFind);
 
 	return 0;
 }
 
 LRESULT CMainFrame::OnReplace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	if(m_pFindEx == NULL)
-	{
-		m_pFindEx = new CFindExDialog();
-		hFindWnd = m_pFindEx->Create(m_hWnd);
-	}
-
-	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
-	if(pChild)
-		m_pFindEx->Show(eftReplace, pChild->GetTextView()->GetCurrentWord().c_str());
-	else
-		m_pFindEx->Show(eftReplace);
+	launchFind(eftReplace);
 
 	return 0;
 }
 
 LRESULT CMainFrame::OnFindInFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	if(m_pFindEx == NULL)
-	{
-		m_pFindEx = new CFindExDialog();
-		hFindWnd = m_pFindEx->Create(m_hWnd);
-	}
-
-	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
-	if(pChild)
-		m_pFindEx->Show(eftFindInFiles, pChild->GetTextView()->GetCurrentWord().c_str());
-	else
-		m_pFindEx->Show(eftFindInFiles);
+	launchFind(eftFindInFiles);
 	
 	return 0;
 }
@@ -1752,6 +1722,26 @@ LRESULT CMainFrame::OnWebSFRFE(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	::ShellExecute(m_hWnd, _T("open"), _T("http://sourceforge.net/tracker/?func=add&group_id=45545&atid=443222"), NULL, NULL, SW_SHOW);
 
 	return 0;
+}
+
+void CMainFrame::launchFind(EFindDialogType findType)
+{
+	HWND hWndCur = GetCurrentEditor();
+
+	if(findType != eftFindInFiles && !hWndCur)
+		return;
+
+	if(m_pFindEx == NULL)
+	{
+		m_pFindEx = new CFindExDialog();
+		hFindWnd = m_pFindEx->Create(m_hWnd);
+	}
+
+	CChildFrame* pChild = hWndCur ? CChildFrame::FromHandle(hWndCur) : NULL;
+	if(pChild)
+		m_pFindEx->Show(findType, pChild->GetTextView()->GetCurrentWord().c_str());
+	else
+		m_pFindEx->Show(findType);
 }
 
 void CMainFrame::launchExternalSearch(LPCTSTR searchString)

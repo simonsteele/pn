@@ -15,6 +15,8 @@ What's new?
 7) Project tools.
 8) Tab usage option per scheme (SF RFE #1050938).
 9) Stack Based Ctrl-Tab Ordering (SF RFE #995790).
+10) Browse for folder in find in files dialog.
+11) Support for vbc compiler output (SF Bug #1168477).
 
 Bug Fixes:
 ----------
@@ -23,6 +25,8 @@ Bug Fixes:
 2) Find in selection fixed.
 3) Find Next and Replace One no longer supported in "in selection" mode.
 4) Find Next replaces selection in find text box when text not found.
+5) Switching tabs causes "re-maximization" (SF Bug #1169434).
+6) Launch Search Dialog With No Document (SF Bug #1168100).
 
 If you find a bug:
 ------------------

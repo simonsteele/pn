@@ -287,7 +287,7 @@ void COutputView::HandleGCCError(int style, int position)
  */
 void COutputView::HandleMSError(int style, int position)
 {
-	BuildAndHandleREError(style, position, "\\s*(?P<f>.+)\\((?P<l>[0-9]+),(?P<c>[0-9]+)\\): ");
+	BuildAndHandleREError(style, position, "\\s*(?P<f>.+)\\((?P<l>[0-9]+)(,(?P<c>[0-9]+))?\\)\\s*: ");
 }
 
 /**

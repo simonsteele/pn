@@ -14,6 +14,7 @@
 #include "include/accombo.h"
 #include "findex.h"
 #include "childfrm.h"
+#include "pndialogs.h"
 
 #define SWP_SIMPLEMOVE (SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE)
 
@@ -91,6 +92,8 @@ CFindExDialog::CFindExDialog()
 	m_bottom = -1;
 
 	m_pFnSLWA = NULL;
+
+	m_bInitialising = false;
 
 	if(g_Context.OSVersion.dwMajorVersion >= 5)
 	{
@@ -253,10 +256,14 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	m_group2Bottom = rcCombo.bottom;
 	m_group1Bottom = m_group2Bottom - m_comboDistance;
 
+	m_bInitialising = true;
+
 	// Add tabs
 	addTab(_T("Find"), 2);
 	addTab(_T("Replace"), 3);
 	addTab(_T("Find in Files"), 0);
+
+	m_bInitialising = false;
 
 	updateLayout();
 
@@ -417,7 +424,28 @@ LRESULT CFindExDialog::OnReplaceAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 		int count = pEditor->ReplaceAll(pOptions);
 		CString s;
 		s.Format(IDS_NREPLACEMENTS, count);
-		MessageBox((LPCTSTR)s, _T("Programmers Notepad"), MB_OK | MB_ICONINFORMATION);
+		CString sTitle;
+		sTitle.LoadString(IDR_MAINFRAME);
+		MessageBox((LPCTSTR)s, sTitle, MB_OK | MB_ICONINFORMATION);
+	}
+
+	return 0;
+}
+
+LRESULT CFindExDialog::OnBrowseClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CString str;
+	m_FindWhereCombo.GetWindowText(str);
+	if(!DirExists(str))
+		str = _T("");
+
+	CString strTitle;
+	strTitle.LoadString(IDS_BROWSEFINDROOT);
+
+	CPNFolderDialog fd(m_hWnd, (LPCTSTR)str, strTitle);
+	if(fd.DoModal())
+	{
+		m_FindWhereCombo.SetWindowText( fd.GetFolderPath() );
 	}
 
 	return 0;
@@ -446,9 +474,25 @@ LRESULT CFindExDialog::OnUseRegExpClicked(WORD /*wNotifyCode*/, WORD /*nID*/, HW
 
 LRESULT CFindExDialog::OnSelChange(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHandled)
 {
+	if(m_bInitialising)
+		return 0;
+
+	HWND hWndCur = GetCurrentEditor();
+
 	int nNewTab = m_tabControl.GetCurSel();
-	m_type = (EFindDialogType)nNewTab;
+
+	if(!hWndCur && nNewTab != eftFindInFiles)
+	{
+		m_type = eftFindInFiles;
+		m_tabControl.SetCurSel((int)m_type);
+	}
+	else
+	{
+		m_type = (EFindDialogType)nNewTab;
+	}
+	
 	updateLayout();
+
 	return 0;
 }
 
@@ -820,6 +864,7 @@ void CFindExDialog::updateLayout()
 
 			CButton(GetDlgItem(IDC_REPLACE_BUTTON)).ShowWindow(SW_HIDE);
 			CButton(GetDlgItem(IDC_REPLACEALL_BUTTON)).ShowWindow(SW_HIDE);
+			CButton(GetDlgItem(IDC_BROWSE_BUTTON)).ShowWindow(SW_HIDE);
 
 			CButton(GetDlgItem(IDC_MARKALL_BUTTON)).ShowWindow(SW_SHOW);
 
@@ -851,6 +896,7 @@ void CFindExDialog::updateLayout()
 
 			CButton(GetDlgItem(IDC_REPLACE_BUTTON)).ShowWindow(SW_SHOW);
 			CButton(GetDlgItem(IDC_REPLACEALL_BUTTON)).ShowWindow(SW_SHOW);
+			CButton(GetDlgItem(IDC_BROWSE_BUTTON)).ShowWindow(SW_HIDE);
 
 			CButton(GetDlgItem(IDC_CURRENTDOC_RADIO)).EnableWindow(TRUE);
 			CButton(GetDlgItem(IDC_INSELECTION_RADIO)).EnableWindow(TRUE);
@@ -876,6 +922,7 @@ void CFindExDialog::updateLayout()
 			CButton(GetDlgItem(IDC_MARKALL_BUTTON)).ShowWindow(SW_HIDE);
 			CButton(GetDlgItem(IDC_REPLACE_BUTTON)).ShowWindow(SW_HIDE);
 			CButton(GetDlgItem(IDC_REPLACEALL_BUTTON)).ShowWindow(SW_HIDE);
+			CButton(GetDlgItem(IDC_BROWSE_BUTTON)).ShowWindow(SW_SHOW);
 
 			CStatic(GetDlgItem(IDC_FINDWHERE_LABEL)).ShowWindow(SW_SHOW);
 			m_FindWhereCombo.ShowWindow(SW_SHOW);

@@ -1,25 +1,6 @@
 // Microsoft Visual C++ generated Help ID include file.
 // Used by pn.rc
 //
-#define HIDC_BACKSLASHES_CHECK          0x81b40415    // IDD_FINDEX
-#define HIDC_BACKSLASH_CHECK            0x80ab0413    // IDD_REPLACE
-#define HIDC_DIRECTION_GROUP            0x80a852d7    // IDD_FIND
-#define HIDC_DOWN_RADIO                 0x80a80072    // IDD_FIND
-#define HIDC_FINDNEXT_BUTTON            0x80a80067    // IDD_FIND
-#define HIDC_FINDTEXT_LABEL             0x80a8ffff    // IDD_FIND
-#define HIDC_FINDTYPE_LABEL             0x81b40413    // IDD_FINDEX
-#define HIDC_FINDWHERE_LABEL            0x81b40414    // IDD_FINDEX
-#define HIDC_MARKALL_BUTTON             0x80a852cf    // IDD_FIND
-#define HIDC_MATCHCASE_CHECK            0x80a80069    // IDD_FIND
-#define HIDC_MATCHWHOLE_CHECK           0x80a80068    // IDD_FIND
 #define HIDC_OPTHELPER_BUTTON           0x80ff0444    // IDD_TOOLEDITOR
 #define HIDC_PSHELPER2_BUTTON           0x800c52d5    // IDD_PAGESETUP
 #define HIDC_PSHELPER_BUTTON            0x800c0434    // IDD_PAGESETUP
-#define HIDC_REGEXP_CHECK               0x80a8006b    // IDD_FIND
-#define HIDC_REHELPER_BUTTON            0x80a852d4    // IDD_FIND
-#define HIDC_REPLACETEXT_LABEL          0x81b40412    // IDD_FINDEX
-#define HIDC_RHELPER_BUTTON             0x81b452d5    // IDD_FINDEX
-#define HIDC_SEARCHALL_CHECK            0x80a852d0    // IDD_FIND
-#define HIDC_SEARCHUP_CHECK             0x81b40417    // IDD_FINDEX
-#define HIDC_SUBDIRS_CHECK              0x81b40416    // IDD_FINDEX
-#define HIDC_UP_RADIO                   0x80a80071    // IDD_FIND

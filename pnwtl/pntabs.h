@@ -24,6 +24,7 @@ public:
 	BEGIN_MSG_MAP(CPNMDITabOwner)
 		NOTIFY_CODE_HANDLER(CTCN_MCLICK, OnMClick)
 		NOTIFY_CODE_HANDLER(NM_DBLCLK, OnMClick)
+		NOTIFY_CODE_HANDLER(NM_CLICK, OnClick)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -36,6 +37,14 @@ public:
 		SendMessage(WM_NOTIFY, nmh.hdr.idFrom, (LPARAM)&nmh);
 
 		return 0;
+	}
+
+	LRESULT OnClick(WPARAM wParam, LPNMHDR lParam, BOOL& bHandled)
+	{
+		::LockWindowUpdate(m_hWndMDIClient);
+		LRESULT ret = baseClass::OnClick(wParam, lParam, bHandled);
+		::LockWindowUpdate(NULL);
+		return ret;
 	}
 };
 
@@ -68,43 +77,17 @@ public:
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
-	LRESULT OnMDINext(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	BOOL SubclassWindow(HWND hWnd);
 
 	void ControlUp();
 
-	BOOL SubclassWindow(HWND hWnd)
-	{
-		BOOL bSuccess = baseClass::SubclassWindow(hWnd);
-		
-		if(bSuccess)
-			SetClassLong(m_hWnd, GCL_STYLE,
-				GetClassLong(m_hWnd, GCL_STYLE) | CS_DBLCLKS);	
-
-		return bSuccess;
-	}
-
-	LRESULT OnDblClick(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
-	{
-		// Forward the message
-		SendMessage(GetParent(), WM_LBUTTONDBLCLK, wParam, lParam);
-		return 0;
-	}
-
+	LRESULT OnMDINext(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnMDIDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
-
 	LRESULT OnChildActivationChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT OnChildTabTextChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
-	LRESULT OnChildTabTextChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-	{
-		//ss - causing a crash when updates are requested in the middle of a scintilla op.
-		//also doesn't seem to have actually served a purpose.
-		//SendMessage(GetParent(), PN_NOTIFY, 0, SCN_UPDATEUI);
-
-		bHandled = FALSE;
-
-		return 0;
-	}
+	LRESULT OnDblClick(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
 protected:
 	typedef std::list<HWND> CHILD_STACK;
