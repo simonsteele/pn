@@ -21,6 +21,9 @@ extern CAppModule _Module;
 #include <atlwin.h>
 #include <atlmisc.h>
 #include <atlddx.h>
+
+#include <atlctrls.h>
+#include <atldlgs.h>
 //#include <atlcrack.h>
 
 #include <string>
