@@ -22,7 +22,6 @@
 #include "mainfrm.h"		// This Window
 #include "outputview.h"		// Output window
 #include "childfrm.h"		// MDI Child
-#include "finddlg.h"		// Find Dialogs
 #include "OptionsPages.h"	// Options Pages
 #include "aboutdlg.h"		// About Dialog
 #include "pndialogs.h"		// Misc Dialogs.
@@ -59,55 +58,14 @@ const DWORD ToolbarIds[4] = {
 	ATL_IDW_BAND_FIRST + 1,
 };
 
-/*class CFindInFilesSink : public FIFSink
-{
-public:
-	CFindInFilesSink(CMainFrame* pMainFrame, CFindInFilesView* pOutputView)
-	{
-		PNASSERT(pOutputView != NULL);
-		PNASSERT(pMainFrame != NULL);
-		
-		m_pOutputView = pOutputView;
-		m_pMainFrame = pMainFrame;
-	}
-
-	virtual void OnBeginSearch(LPCTSTR stringLookingFor, bool bIsRegex)
-	{
-		m_pMainFrame->ToggleDockingWindow(CMainFrame::DW_FINDRESULTS, true, true);
-		dwStartTicks = GetTickCount();
-		m_pOutputView->Clear();
-	}
-
-	virtual void OnEndSearch(int nFound, int nFiles)
-	{
-		DWORD dwTicksTaken = GetTickCount() - dwStartTicks;
-		TCHAR buf[4096];
-		_sntprintf(buf, 4096, _T("Search complete: %d occurrences found in %d files, taking %d milliseconds.\n"), nFound, nFiles, dwTicksTaken);
-		m_pMainFrame->SetStatusText(buf);
-	}
-
-	virtual void OnFoundString(LPCTSTR stringFound, LPCTSTR szFilename, int line, LPCTSTR buf)
-	{
-		m_pOutputView->AddResult(szFilename, line, buf);
-	}
-
-protected:
-	CMainFrame*			m_pMainFrame;
-	CFindInFilesView*	m_pOutputView;
-	DWORD				dwStartTicks;
-};*/
-
 CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(ID_MRUPROJECT_BASE, 4)
 {
-	m_FindDialog = NULL;
-	m_ReplaceDialog = NULL;
 	m_pFindEx = NULL;
 	m_pOutputWnd = NULL;
 	m_pFindResultsWnd = NULL;
 	m_pClipsWnd = NULL;
 	m_pProjectsWnd = NULL;
 	hFindWnd = NULL;
-	hReplWnd = NULL;
 
 	m_statusResetCounter = 0;
 
@@ -121,8 +79,6 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(I
 	SchemeTools* pSchemeTools = SchemeToolsManager::GetInstance()->GetGlobalTools();
 	pSchemeTools->AllocateMenuResources();
 	m_hGlobalToolAccel = pSchemeTools->GetAcceleratorTable();
-
-	//m_pFIFSink = NULL;
 }
 
 CMainFrame::~CMainFrame()
@@ -138,9 +94,6 @@ CMainFrame::~CMainFrame()
 
 	if(m_pProjectsWnd)
 		delete m_pProjectsWnd;
-
-	//if(m_pFIFSink)
-	//	delete m_pFIFSink;
 }
 
 /**
@@ -447,13 +400,9 @@ LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		::ImageList_Destroy( m_hILMainD );
 		::ImageList_Destroy( m_hILEdit );
 
-		CloseAndFreeDlg(m_FindDialog);
-		CloseAndFreeDlg(m_ReplaceDialog);
 		CloseAndFreeDlg(m_pFindEx);
-		m_FindDialog = NULL;
-		m_ReplaceDialog = NULL;
 		m_pFindEx = NULL;
-	}		
+	}
 
 	return 0;
 }

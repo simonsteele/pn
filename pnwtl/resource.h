@@ -44,10 +44,8 @@
 #define IDS_NREPLACEMENTS               142
 #define IDS_FINDLOOPED                  143
 #define IDI_TEXTCLIPS                   167
-#define IDD_FIND                        168
 #define IDR_TABS_POPUP                  169
 #define IDR_POPUP_REGEXP                170
-#define IDD_REPLACE                     171
 #define IDR_POPUP_EDITOR                173
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204

@@ -489,9 +489,6 @@
 				RelativePath=".\Files.h">
 			</File>
 			<File
-				RelativePath=".\finddlg.h">
-			</File>
-			<File
 				RelativePath=".\findex.h">
 			</File>
 			<File

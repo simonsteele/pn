@@ -16,8 +16,8 @@
 // Pre-declarations...
 class CMainFrame;
 class CChildFrame;
-class CFindDlg;
-class CReplaceDlg;
+//class CFindDlg;
+//class CReplaceDlg;
 class CFindExDialog;
 class COutputView;
 class CClipsDocker;
@@ -370,8 +370,8 @@ protected:
 	};
 
 protected:
-	CFindDlg*				m_FindDialog;
-	CReplaceDlg*			m_ReplaceDialog;
+	//CFindDlg*				m_FindDialog;
+	//CReplaceDlg*			m_ReplaceDialog;
 	//CDockingOutputWindow*	m_pOutputWnd;
 	COutputView*			m_pOutputWnd;
 	//COutputView*			m_pFindResultsWnd;
@@ -397,7 +397,7 @@ protected:
 	CImageList				m_FindImages;
 
 	HWND					hFindWnd;
-	HWND					hReplWnd;
+	//HWND					hReplWnd;
 
 	UINT					m_uiMIMessageID;
 

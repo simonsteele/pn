@@ -2,7 +2,7 @@
  * @file ChildFrm.cpp
  * @brief Implementation of CChildFrame, the MDI Child window.
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2004 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -334,7 +334,7 @@ bool CChildFrame::CanClose()
 			{
 				if( CanSave() )
 				{
-					Save();
+					return Save();
 				}
 				else
 				{
@@ -1086,7 +1086,7 @@ bool CChildFrame::PNOpenFile(LPCTSTR pathname, CScheme* pScheme, EPNEncoding enc
 	return bRet;
 }
 
-void CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMRU)
+bool CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMRU)
 {
 	bool bSuccess = false;
 
@@ -1099,7 +1099,7 @@ void CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 		switch(HandleFailedFileOp(pathname, false))
 		{
 		case PNID_SAVEAS:
-			SaveAs();
+			bSuccess = SaveAs();
 			break;
 		case PNID_OVERWRITE:
 			if(attemptOverwrite(pathname))
@@ -1110,11 +1110,20 @@ void CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 				}
 				else
 				{
+					// If we thought we'd done the overwrite, but then failed to save again...
 					CString s;
 					s.Format(IDS_SAVEREADONLYFAIL, pathname);
 					if(AtlMessageBoxCheckNet(m_hWnd, (LPCTSTR)s, IDR_MAINFRAME, MB_YESNOCANCEL | MB_ICONWARNING) == IDYES)
-						SaveAs();
+						bSuccess = SaveAs();
 				}
+			}
+			else
+			{
+				// If the attempt to overwrite failed.
+				CString s;
+				s.Format(IDS_SAVEREADONLYFAIL, pathname);
+				if(AtlMessageBoxCheckNet(m_hWnd, (LPCTSTR)s, IDR_MAINFRAME, MB_YESNOCANCEL | MB_ICONWARNING) == IDYES)
+					bSuccess = SaveAs();
 			}
 			break;
 		}
@@ -1136,6 +1145,8 @@ void CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 			g_Context.m_frame->AddMRUEntry(m_FileName);
 		}
 	}
+
+	return bSuccess;
 }
 
 bool CChildFrame::attemptOverwrite(LPCTSTR filename)
@@ -1283,16 +1294,19 @@ void CChildFrame::ChangeFormat(EPNSaveFormat format)
 	UpdateMenu();
 }
 
-void CChildFrame::Save()
+bool CChildFrame::Save()
 {
 	if(CanSave())
 	{
-		SaveFile(m_FileName, false);
+		bool bResult = SaveFile(m_FileName, false);
+		
 		m_FileAge = FileAge(m_FileName);
 		SetModifiedOverride(false);
+
+		return bResult;
 	}
 	else
-		SaveAs();
+		return SaveAs();
 }
 
 ////////////////////////////////////////////////////
