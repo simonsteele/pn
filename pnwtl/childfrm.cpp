@@ -411,7 +411,7 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 LRESULT CChildFrame::OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	UpdateMenu();
-	CheckAge();
+	::PostMessage(m_hWnd, PN_CHECKAGE, 0, 0);
 	bHandled = FALSE;
 	return 0;
 }

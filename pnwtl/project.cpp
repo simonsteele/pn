@@ -748,6 +748,12 @@ void Project::Save()
 
 	FILE* hFile = _tfopen(fileName.c_str(), "wb");
 
+	if(hFile == NULL)
+	{
+		UNEXPECTED(_T("Could not open the project file for writing"));
+		return;
+	}
+
 	genxStartDocFile(writer.w, hFile);
 	
 	writeDefinition(&writer);
@@ -1136,6 +1142,12 @@ void Workspace::Save()
 		return;
 
 	FILE* hFile = _tfopen(fileName.c_str(), _T("wb"));
+
+	if(hFile == NULL)
+	{
+		UNEXPECTED(_T("Could not open the project file for writing"));
+		return;
+	}
 
 	genxWriter w = genxNew(NULL, NULL, NULL);
 

@@ -33,6 +33,10 @@ bool SchemeRecorder::StartRecording(LPCTSTR scheme, LPCTSTR title, LPCTSTR outfi
 
 	m_out = _tfopen(outfile, _T("wb"));
 
+	// Fail if we can't open the file...
+	if(m_out == NULL)
+		return false;
+
 	// Write File Header...
 	CompiledHdrRec hdr;
 	hdr.Version = CompileVersion;

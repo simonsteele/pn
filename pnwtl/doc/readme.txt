@@ -69,6 +69,7 @@ Bug Fixes:
 28) Crash when search string is empty (SF Bug #995783).
 29) Fixed infinite loop when working with magic folders containing ".files".
 30) Fixed word-wrap default preference.
+31) Fixed a problem with checking for updated files with a captured cursor.
 
 If you find a bug:
 ------------------

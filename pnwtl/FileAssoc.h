@@ -11,6 +11,7 @@ protected:
 		VerbNone = -1,
 		VerbOpen,
 		VerbEdit,
+		VerbEditWith,
 		VerbMax
 	};
 
@@ -22,6 +23,7 @@ public:
 
 	bool IsValid() const;
 	bool HasConflict() const;
+	bool IsAssociated() const;
 
 	static LPCTSTR GetInvalidChars();
 
@@ -29,7 +31,7 @@ public:
 	const CString& GetCurrentTypeName() const;
 	const CString& GetExtension() const;
 	Verb GetVerb() const;
-	LPCTSTR GetVerbName() const;
+	LPCTSTR GetVerbName(bool forDisplay = false) const;
 
 	void SetExtensionAndVerb(const CString& ext, const CString& verb);
 	void SetVerb(const Verb& verb);
@@ -43,7 +45,7 @@ protected:
 	void CheckExtension();
 
 	Verb StringToVerb(const CString& verbName) const;
-	LPCTSTR VerbToString(Verb verb) const;
+	LPCTSTR VerbToString(Verb verb, bool forDisplay = false) const;
 
 	void GetVerbCommand(const CString& assoc, Verb verb);
 	void GetTypeName();
@@ -96,6 +98,7 @@ public:
 
 private:
 	bool RegisterOpenWith();
+	bool RegisterOpenWithForPerceivedType();
 
 private:
 	FileAssocs m_associate;

@@ -262,7 +262,7 @@ LRESULT CToolEditorDialog::OnCaptureChanged(WORD /*wNotifyCode*/, WORD /*wID*/, 
 LRESULT CToolEditorDialog::OnAboutBuiltin(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	MessageBox(
-		_T("Programmers Notepad 2 provides built-in support\nfor parsing output from the following tools:\n\nBorland C++\nGCC\nlcc-win32\nPython\nand Perl"), 
+		_T("Programmers Notepad 2 provides built-in support\nfor parsing output from the following tools:\n\nBorland C++\nMicrosoft Compilers\nGCC\nlcc-win32\nPython\nPerl\nand other similar tools."), 
 		_T("Information"),
 		MB_OK | MB_ICONINFORMATION);
 

@@ -11,6 +11,9 @@
 
 #define INVALID_CHARACTERS _T("\\/:?\"<>|.*")
 
+#define EDIT_WITH_VERB      _T("edit.PN2")
+#define EDIT_WITH_MENU_TEXT _T("Edit with PN2")
+
 /**
 Helper function to get the current module file name.
 */
@@ -99,6 +102,11 @@ bool FileAssoc::HasConflict() const
 	return m_fConflict;
 }
 
+bool FileAssoc::IsAssociated() const
+{
+	return m_isAssociated;
+}
+
 LPCTSTR FileAssoc::GetInvalidChars()
 {
 	return INVALID_CHARACTERS;
@@ -124,9 +132,9 @@ FileAssoc::Verb FileAssoc::GetVerb() const
 	return m_verb;
 }
 
-LPCTSTR FileAssoc::GetVerbName() const
+LPCTSTR FileAssoc::GetVerbName(bool forDisplay/* = false*/) const
 {
-	return VerbToString(m_verb);
+	return VerbToString(m_verb, forDisplay);
 }
 
 void FileAssoc::SetExtensionAndVerb(const CString& ext, const CString& verb)
@@ -145,7 +153,9 @@ void FileAssoc::SetExtensionAndVerb(const CString& ext, const CString& verb)
 		m_extension.Remove(invalidChars[i]);
 	}
 
+	//HACK: COptionsPageFileAssoc passes in EDIT_WITH_MENU_TEXT and returns VerbEditWith for verb != "open" and verb != "edit"
 	m_verb = StringToVerb(verb);
+
 	m_fConflict = false;
 
 	CheckExtension();
@@ -158,8 +168,9 @@ void FileAssoc::SetVerb(const Verb& verb)
 
 void FileAssoc::Associate()
 {
-	if(m_fConflict && IsValid())//m_verbCmd.Find(m_appPath) == -1)
+	if((m_fConflict || m_isAssociated == false) && IsValid())
 	{
+		//TODO: set the icon in case of m_isAssociated (requires a document icon)
 		AssociateExtention();
 	}
 }
@@ -180,7 +191,7 @@ void FileAssoc::Disassociate()
 	CString keyName;
 	keyName.Format(_T(".%s"), m_extension);
 	CRegKey reg;
-	res = reg.Open(regClasses, keyName);
+	res = reg.Open(HKEY_CLASSES_ROOT, keyName);
 	if(res == ERROR_SUCCESS)
 	{
 		ULONG size = 0;
@@ -219,10 +230,12 @@ void FileAssoc::Disassociate()
 		}
 		else
 		{
-			keyName.Format(_T("%s\\shell\\%s"), progId);
+			keyName.Format(_T("%s\\shell\\%s"), progId, VerbToString(m_verb));
 			regClasses.RecurseDeleteKey(keyName);
 		}
 	}
+
+	//TODO: remove HKCU\Classes\SystemFileAssociations\<.ext> and related keys
 }
 
 void FileAssoc::Reset()
@@ -265,20 +278,24 @@ void FileAssoc::CheckExtension()
 FileAssoc::Verb FileAssoc::StringToVerb(const CString& verbName) const
 {
 	Verb verb;
-	if(verbName == _T("Open"))
+	if(verbName.CompareNoCase(_T("open")) == 0)
 		verb = VerbOpen;
-	else
+	else if(verbName.CompareNoCase(_T("edit")) == 0)
 		verb = VerbEdit;
+	else
+		verb = VerbEditWith;
 	return verb;
 }
 
-LPCTSTR FileAssoc::VerbToString(Verb verb) const
+LPCTSTR FileAssoc::VerbToString(Verb verb, bool forDisplay /*= false*/) const
 {
 	LPCTSTR verbName;
 	if(verb == VerbOpen)
-		verbName = _T("Open");
+		verbName = _T("open");
+	else if(verb == VerbEdit)
+		verbName = _T("edit");
 	else
-		verbName = _T("Edit");
+		verbName = forDisplay ? EDIT_WITH_MENU_TEXT : EDIT_WITH_VERB;
 	return verbName;
 }
 
@@ -302,6 +319,8 @@ void FileAssoc::GetVerbCommand(const CString& assoc, Verb verb)
 		if(SUCCEEDED(hr))
 			m_verbCmd = assocString;
 	}
+	else
+		m_isAssociated = false;
 
 	// Convert both paths to lowercase for comparison purposes...
 	CString lcRegCmd(m_verbCmd);
@@ -353,6 +372,64 @@ bool FileAssoc::AssociateExtention(LPCTSTR pDescription /*= NULL*/, LPCTSTR pIco
 	if(res == ERROR_SUCCESS)
 	{
 		reg.SetStringValue(NULL, progId);
+
+		// This requires the keys set in FileAssocManager::RegisterOpenWith()
+		CRegKey regOpenWith;
+		regOpenWith.Create(reg, _T("OpenWithList\\pn.exe"));
+		regOpenWith.Close();
+
+		// XP and later only
+		bool isXPOrLater =
+			(g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
+			( (g_Context.OSVersion.dwMajorVersion > 4) && (g_Context.OSVersion.dwMinorVersion > 0) );
+		if(isXPOrLater)
+		{
+			TCHAR val[256];
+			ULONG size = 256;
+			res = reg.QueryStringValue(_T("PerceivedType"), val, &size);
+			if(res != ERROR_SUCCESS || ::lstrlen(val) == 0)
+			{
+				//HACK: assumed type is text
+				reg.SetStringValue(_T("PerceivedType"), _T("text"));
+			}
+#if 0
+			//TODO: check why this does not work as expected, why does this add ".ext" to the context menu?
+			CRegKey sfaKey;
+			CString sfaKeyName;
+			sfaKeyName.Format(_T("SystemFileAssociations\\%s"), keyName);
+			res = sfaKey.Open(regClasses, sfaKeyName);
+			if(res != ERROR_SUCCESS)
+			{
+				res = sfaKey.Create(regClasses, sfaKeyName);
+
+				// Register the verb command only for unused verbs
+				sfaKeyName.Format(_T("shell\\%s\\command"),
+					keyName, VerbToString(m_verb));
+				res = regOpenWith.Create(sfaKey, sfaKeyName);
+				if(res == ERROR_SUCCESS)
+				{
+					ATLASSERT(m_appPath.GetLength() > 0);
+
+					CString cmd;
+					cmd.Format(_T("%s \"%%1\""), m_appPath);
+
+					regOpenWith.SetStringValue(NULL, cmd);
+					regOpenWith.Close();
+				}
+			}
+
+			// Add pn.exe to the OpenWithList for this extension
+			sfaKeyName.Format(_T("OpenWithList\\pn.exe"), keyName);
+			res = regOpenWith.Create(sfaKey, sfaKeyName);
+			if(res == ERROR_SUCCESS)
+			{
+				regOpenWith.Close();
+			}
+
+			sfaKey.Close();
+#endif
+		}
+
 		reg.Close();
 	}
 
@@ -394,6 +471,17 @@ bool FileAssoc::AssociateExtention(LPCTSTR pDescription /*= NULL*/, LPCTSTR pIco
 
 		reg.SetStringValue(NULL, cmd);
 		reg.Close();
+	}
+
+	if(m_verb == VerbEditWith)
+	{
+		keyName.Format(_T("%s\\shell\\%s"), progId, VerbToString(m_verb));
+		res = reg.Open(regClasses, keyName);
+		if(res == ERROR_SUCCESS)
+		{
+			reg.SetStringValue(NULL, EDIT_WITH_MENU_TEXT);
+			reg.Close();
+		}
 	}
 
 	if(pIconFile != NULL)
@@ -465,6 +553,8 @@ bool FileAssocManager::FileAssocHelper::Load(const CString& section, const CStri
 
 		AtlGetPrivateProfileString(section, _T("PreviousCommand"), file, m_previousCmd);
 
+		m_isAssociated = true;
+
 		CString assoc(_T("."));
 		assoc += m_extension;
 		GetVerbCommand(assoc, m_verb);
@@ -494,6 +584,15 @@ FileAssocManager::FileAssocManager()
 	, m_disassociate()
 {
 	Load();
+
+	bool isXPOrLater =
+		(g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
+		( (g_Context.OSVersion.dwMajorVersion > 4) && (g_Context.OSVersion.dwMinorVersion > 0) );
+
+	if(isXPOrLater)
+		RegisterOpenWithForPerceivedType();
+	else
+		RegisterOpenWith();
 }
 
 bool FileAssocManager::CheckAssociations()
@@ -505,7 +604,7 @@ bool FileAssocManager::CheckAssociations()
 	CString msg;
 	for(int i = 0; i < m_associate.GetSize(); i++)
 	{
-		if(m_associate[i].HasConflict())
+		if(!m_associate[i].IsAssociated() || m_associate[i].HasConflict())
 		{
 			fai.m_unassociated.Add(m_associate[i]);
 		}
@@ -572,7 +671,7 @@ void FileAssocManager::Load()
 		if(fa.IsValid())
 		{
 			m_associate.Add(fa);
-			FileAssocHelper fa2(m_associate[m_associate.GetSize() - 1]);
+			//FileAssocHelper fa2(m_associate[m_associate.GetSize() - 1]);
 		}
 	}
 }
@@ -633,7 +732,93 @@ const FileAssocManager::FileAssocs& FileAssocManager::GetAssociations() const
 */
 bool FileAssocManager::RegisterOpenWith()
 {
-	// HKEY_CURRENT_USER\Software\Classes\Applications\pn.exe\shell\open\command
-	//TODO: Set the above registry key def value to "path\to\pn.exe" "%1"
-	return false;
+	bool result = false;
+
+	CString appCmd;
+	DWORD len = AtlGetModuleFileName(appCmd, true);
+	ATLASSERT(len != 0);
+	appCmd += _T(" \"%1\"");
+
+	CRegKey key;
+	LONG res = key.Create(HKEY_CURRENT_USER, _T("Software\\Classes\\Applications\\pn.exe\\shell\\open\\command"));
+	ATLASSERT(res == ERROR_SUCCESS);
+	if(res == ERROR_SUCCESS)
+	{
+		res = key.SetStringValue(NULL, appCmd);
+		result = (res == ERROR_SUCCESS);
+	}
+
+	res = key.Create(HKEY_CURRENT_USER, _T("Software\\Classes\\Applications\\pn.exe\\shell\\edit\\command"));
+	ATLASSERT(res == ERROR_SUCCESS);
+	if(res == ERROR_SUCCESS)
+	{
+		res = key.SetStringValue(NULL, appCmd);
+		result = result && (res == ERROR_SUCCESS);
+	}
+
+	return result;
+}
+
+bool FileAssocManager::RegisterOpenWithForPerceivedType()
+{
+	bool result = false;
+	if(RegisterOpenWith())
+	{
+		CString keyName(_T("Software\\Classes\\SystemFileAssociations\\text"));
+		CRegKey textRegKey;
+		LONG res = textRegKey.Create(HKEY_CURRENT_USER, keyName);
+
+		CRegKey key;
+		res = key.Create(textRegKey, _T("OpenWithList\\pn.exe"));
+		result = (res == ERROR_SUCCESS);
+
+		//TODO: Should this be an option?
+		// Add PN to the Open with menu of all PerceivedType=text extensions
+
+		CString appCmd;
+		DWORD len = AtlGetModuleFileName(appCmd, true);
+		ATLASSERT(len != 0);
+		appCmd += _T(" \"%1\"");
+
+		keyName = _T("shell");
+		CRegKey shellKey;
+		res = shellKey.Open(textRegKey, keyName);
+		if(res != ERROR_SUCCESS)
+		{
+			res = shellKey.Create(textRegKey, keyName);
+#if 0
+			// Should pn be the default editor for text files?
+			res = key.Create(shellKey, _T("open\\command"));
+			if(res == ERROR_SUCCESS)
+			{
+				res = key.SetStringValue(NULL, appCmd);
+				result = (res == ERROR_SUCCESS);
+			}
+
+			res = key.Create(shellKey, _T("edit\\command"));
+			if(res == ERROR_SUCCESS)
+			{
+				res = key.SetStringValue(NULL, appCmd);
+				result = result && (res == ERROR_SUCCESS);
+			}
+#endif
+		}
+
+		//TODO: should this be an option?
+		// Each extension with a PerceivedType=text will have an "Edit with PN2"
+		// menu item now.
+		res = key.Create(shellKey, EDIT_WITH_VERB);
+		if(res == ERROR_SUCCESS)
+		{
+			key.SetStringValue(NULL, EDIT_WITH_MENU_TEXT);
+
+			res = key.Create(key, _T("command"));
+			if(res == ERROR_SUCCESS)
+			{
+				res = key.SetStringValue(NULL, appCmd);
+			}
+		}
+	}
+
+	return result;
 }

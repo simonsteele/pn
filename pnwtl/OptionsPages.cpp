@@ -2072,7 +2072,7 @@ void COptionsPageFileAssoc::OnInitialise()
 		const FileAssoc& fa = fas[i];
 		m_list.AddItem(i, ColConflict, _T(""));
 		m_list.SetItemText(i, ColExtension, fa.GetExtension());
-		m_list.SetItemText(i, ColMethod, fa.GetVerbName());
+		m_list.SetItemText(i, ColMethod, fa.GetVerbName(true));
 		m_list.SetItemText(i, ColTypeName, fa.GetCurrentTypeName());
 	}
 }
@@ -2086,6 +2086,7 @@ LRESULT COptionsPageFileAssoc::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 	m_combo.Attach(GetDlgItem(IDC_FILEASSO_METHOD));
 	m_combo.AddString(_T("Open"));
 	m_combo.AddString(_T("Edit"));
+	m_combo.AddString(_T("Edit with PN2"));
 	m_combo.SetCurSel(0);
 
 	m_buttonAddEdit.Attach(GetDlgItem(IDC_ADD));
