@@ -39,10 +39,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib comctl32.lib"
+				AdditionalDependencies="delayimp.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
+				DelayLoadDLLs="uxtheme.dll"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\bin/pn.pdb"
 				SubSystem="2"/>
@@ -100,10 +101,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="odbc32.lib odbccp32.lib comctl32.lib"
+				AdditionalDependencies="delayimp.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
+				DelayLoadDLLs="uxtheme.dll"
 				ProgramDatabaseFile=".\bin/pn.pdb"
 				SubSystem="2"/>
 			<Tool
