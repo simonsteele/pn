@@ -2260,7 +2260,7 @@ bool CMainFrame::CheckSaveWorkspace()
 				return false;
 		}
 
-		return response == IDYES;
+		return response != IDCANCEL;
 	}
 
 	return true;

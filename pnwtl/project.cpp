@@ -956,12 +956,19 @@ void Project::processFile(XMLAttributes& atts)
 
 void Project::processMagicFolder(XMLAttributes& atts)
 {
-	// TODO: Combine basePath with ATTVAL(_T("path")) to get the new basePath
-
 	Utf8_Windows1252 path( ATTVAL(_T("path")) );
 	Utf8_Windows1252 name( ATTVAL(_T("name")) );
 
-	MagicFolder* mf = new MagicFolder(name, path/*, basePath.c_str()*/);
+	if(!path.IsValid() || !name.IsValid())
+		return;
+
+	CPathName mfPath((const char*)path);
+	if(mfPath.IsRelativePath())
+	{
+		mfPath.Root( basePath.c_str() );
+	}
+
+	MagicFolder* mf = new MagicFolder(name, mfPath.c_str());
 	currentFolder->AddChild(mf);
 	
 	// This will pass over the XML Parsing to the MagicFolder

@@ -1,6 +1,6 @@
 ========================================
 Release Name: 2.0.5.6
-Build: 2.0.5.33, Version Label: 
+Build: 2.0.5.34, Version Label: 
 ========================================
 
 What's new?
@@ -71,6 +71,7 @@ Bug Fixes:
 29) Fixed infinite loop when working with magic folders containing ".files".
 30) Fixed word-wrap default preference.
 31) Fixed a problem with checking for updated files with a captured cursor.
+32) Fixed a magic folder problem with relative paths.
 
 If you find a bug:
 ------------------
