@@ -144,6 +144,7 @@ int CScintilla::HandleNotify(LPARAM lParam)
 		case SCN_SAVEPOINTREACHED :
 			m_Modified = false;
 			break;
+
 		case SCN_SAVEPOINTLEFT :
 			m_Modified = true;
 			break;

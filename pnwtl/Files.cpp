@@ -46,7 +46,26 @@ CFile::~CFile()
 
 bool CFile::Open(LPCTSTR filename, UINT flags)
 {
-	m_file = fopen(filename, "rb");
+	CString mode;
+
+	if(flags != 0)
+	{
+		if(modeWrite & flags)
+			mode = _T("w");
+		else if(modeReadWrite & flags)
+			mode = _T("r+");
+		else mode = _T("r");
+
+		if(modeText & flags)
+			mode += _T("t");
+		else
+			mode += _T("b");
+	}
+	else
+		mode = _T("rb");
+		
+
+	m_file = fopen(filename, mode);
 	return (m_file != NULL);
 }
 
@@ -86,6 +105,56 @@ long CFile::GetLength()
 	}
 	else
 		return -1;
+}
+
+///////////////////////////////////////////////////////////////////////////
+// CTextFile - text file operations...
+///////////////////////////////////////////////////////////////////////////
+
+// basically taken from MFC's CStdioString...
+bool CTextFile::ReadLine(CString& line)
+{
+	line = _T("");
+	const int nMaxSize = 128;
+	LPTSTR lpsz = line.GetBuffer(nMaxSize);
+	LPTSTR lpszResult;
+	int nLen = 0;
+	
+	for (;;)
+	{
+		lpszResult = _fgetts(lpsz, nMaxSize+1, m_file);
+		line.ReleaseBuffer();
+
+		// handle error/eof case
+		if (lpszResult == NULL && !feof(m_file))
+		{
+			clearerr(m_file);
+			// could throw exception here...
+		}
+
+		// if string is read completely or EOF
+		if (lpszResult == NULL ||
+			(nLen = lstrlen(lpsz)) < nMaxSize ||
+			lpsz[nLen-1] == '\n')
+			break;
+
+		nLen = line.GetLength();
+		lpsz = line.GetBuffer(nMaxSize + nLen) + nLen;
+	}
+
+	// remove '\n' from end of string if present
+	lpsz = line.GetBuffer(0);
+	nLen = line.GetLength();
+	if (nLen != 0 && lpsz[nLen-1] == '\n')
+		line.GetBufferSetLength(nLen-1);
+
+	return lpszResult != NULL;
+}
+
+bool CTextFile::WriteLine(LPCTSTR line)
+{
+	int ret = _fputts(line, m_file);
+	return (ret != _TEOF);
 }
 
 ///////////////////////////////////////////////////////////////////////////

@@ -280,7 +280,7 @@ void CScheme::EnsureCompiled()
 {
 	if(!IsCompiled())
 	{
-		Compile();
+		//Compile();
 	}
 }
 
@@ -435,37 +435,42 @@ void CSchemeManager::Load(LPCTSTR fromfolder)
 		FindClose(hFind);
 	}
 
-	///@todo Obviously these should be loaded from a file or something...
 	LoadExtMap(path);
-
 }
 
+/**
+ * Now we load the extension to filetype mappings from a flat
+ * properties style key=value file. The file must be formatted:
+ * .extension=schemename\r\n
+ */
 void CSchemeManager::LoadExtMap(LPCTSTR folder)
 {
-	ctcString fn(folder);
-	fn += _T("extmap.ini");
-	CIniFile ini(fn.c_str());
+	CString fn(folder);
+	fn += _T("extmap.dat");
+	
+	CTextFile file;
+	file.Open(fn, CFile::modeText);
 
-	int count = ini.ReadInteger(_T("ExtMap"), _T("Count"), 0);
+	CString buf;
+	
+	// The strings currently used for the rest of the scheme management
+	// system are std::strings typedef'd to ctcString.
+	ctcString ext;
+	ctcString scheme;
+	
+	CScheme* sch;
+	int pos;
 
-	TCHAR valbuf[15];
-	CScheme* sch = NULL;
-
-	for(int i = 0; i < count; i++)
+	while(file.ReadLine(buf))
 	{
-		ctcString ext;
-		ctcString scheme;
-
-		_stprintf(&valbuf[0], _T("Scheme%d"), i);
-		scheme = ini.ReadString(_T("ExtMap"), &valbuf[0], _T("Default"));
-
-		_stprintf(&valbuf[0], _T("Ext%d"), i);
-		ext = ini.ReadString(_T("ExtMap"), &valbuf[0], _T(".txt"));
+		pos = buf.Find(_T('='));
+		ext = buf.Left(pos);
+		scheme = buf.Mid(pos+1);
 
 		sch = SchemeByName(scheme.c_str());
-
 		m_SchemeExtMap.insert(m_SchemeExtMap.end(), SCMITEM(ext, sch));
 	}
+	file.Close();
 }
 
 /**

@@ -32,7 +32,9 @@ public:
 	BEGIN_MSG_MAP(CChildFrame)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
-		MESSAGE_HANDLER(WM_CLOSE, OnClose)	
+		MESSAGE_HANDLER(WM_CLOSE, OnClose)
+
+		MESSAGE_HANDLER(PN_NOTIFY, OnViewNotify)
 
 		// Global Cut, Copy, Paste and Undo handling....
 		COMMAND_ID_HANDLER(ID_EDIT_CUT, OnCut)
@@ -148,11 +150,17 @@ public:
 	////////////////////////////////////////////////////
 	// Document Entries
 
-	void SetTitle(LPCTSTR sFileName)
+	void SetTitle(LPCTSTR sFileName, bool bModified = false)
 	{
+		CString buf = sFileName;
+		
+		if(bModified)
+			buf += " *";
+		
+		this->SetWindowText(buf);
+		SetTabText(buf);
+		
 		m_Title = sFileName;
-		this->SetWindowText(sFileName);
-		SetTabText(sFileName);
 	}
 
 	LPCTSTR GetTitle()
@@ -201,6 +209,20 @@ public:
 		}
 
 		return 0;
+	}
+
+	LRESULT OnViewNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+		if(lParam == SCN_SAVEPOINTREACHED)
+		{
+			SetTitle(m_Title, false);
+		}
+		else if(lParam == SCN_SAVEPOINTLEFT)
+		{
+			SetTitle(m_Title, true);
+		}
+
+		return TRUE;
 	}
 
 	LRESULT OnCut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

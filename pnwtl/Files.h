@@ -24,10 +24,19 @@
 class CFile
 {
 	public:
+
+		enum OpenFlags {
+			modeRead			= 0x0000,
+			modeBinary			= 0x0000,
+			modeWrite			= 0x0001,
+			modeReadWrite		= 0x0002,
+			modeText			= 0x0008
+		};
+
 		CFile();
-		~CFile();
+		virtual ~CFile();
 		
-		bool Open(LPCTSTR filename, UINT flags);
+		bool Open(LPCTSTR filename, UINT flags = 0);
 		int Read(void* lpBuf, UINT nCount);
 		void Close();
 
@@ -36,6 +45,16 @@ class CFile
 
 	protected:
 		FILE* m_file;
+};
+
+class CTextFile : public CFile
+{
+	public:
+		CTextFile() : CFile() {}
+		virtual ~CTextFile() {}
+
+		bool ReadLine(CString& line);
+		bool WriteLine(LPCTSTR line);
 };
 
 /**

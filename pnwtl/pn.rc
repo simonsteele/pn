@@ -475,9 +475,6 @@ FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "Fi&nd what:",IDC_FINDTEXT_LABEL,7,9,40,10,0,0,
                     HIDC_FINDTEXT_LABEL
-    COMBOBOX        IDC_FINDTEXT_COMBO,48,7,145,80,CBS_DROPDOWN | 
-                    CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP,0,
-                    HIDC_FINDTEXT_COMBO
     PUSHBUTTON      "",IDC_REHELPER_BUTTON,197,8,9,11,0,0,
                     HIDC_REHELPER_BUTTON
     CONTROL         "Match &whole word only",IDC_MATCHWHOLE_CHECK,"Button",
@@ -503,6 +500,7 @@ BEGIN
     PUSHBUTTON      "&Mark All",IDC_MARKALL_BUTTON,213,26,50,14,WS_GROUP,0,
                     HIDC_MARKALL_BUTTON
     PUSHBUTTON      "Cancel",IDCANCEL,213,45,50,14,WS_GROUP
+    LTEXT           "Static",IDC_FINDTEXT_DUMMY,48,7,145,12,NOT WS_VISIBLE
 END
 
 IDD_REPLACE DIALOGEX 0, 0, 300, 97
@@ -512,16 +510,10 @@ FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "Fi&nd what:",IDC_FINDTEXT_LABEL,7,9,40,10,0,0,
                     HIDC_FINDTEXT_LABEL
-    COMBOBOX        IDC_FINDTEXT_COMBO,56,7,119,80,CBS_DROPDOWN | 
-                    CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP,0,
-                    HIDC_FINDTEXT_COMBO
     PUSHBUTTON      "",IDC_REHELPER_BUTTON,179,8,9,11,0,0,
                     HIDC_REHELPER_BUTTON
     LTEXT           "Replace with:",IDC_REPLACETEXT_LABEL,7,27,45,10,0,0,
                     HIDC_REPLACETEXT_LABEL
-    COMBOBOX        IDC_REPLACETEXT_COMBO,56,24,119,80,CBS_DROPDOWN | 
-                    CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP,0,
-                    HIDC_REPLACETEXT_COMBO
     PUSHBUTTON      "",IDC_RHELPER_BUTTON,179,25,9,11,0,0,
                     HIDC_RHELPER_BUTTON
     CONTROL         "Match &whole word only",IDC_MATCHWHOLE_CHECK,"Button",
@@ -550,6 +542,9 @@ BEGIN
     PUSHBUTTON      "Replace in &Selection",IDC_REPLACEINSEL_BUTTON,212,55,
                     81,14,WS_GROUP
     PUSHBUTTON      "Close",IDCANCEL,212,71,81,14,WS_GROUP
+    LTEXT           "Static",IDC_FINDTEXT_DUMMY,56,7,119,12,NOT WS_VISIBLE
+    LTEXT           "Static",IDC_REPLACETEXT_DUMMY,56,24,119,12,NOT 
+                    WS_VISIBLE
 END
 
 

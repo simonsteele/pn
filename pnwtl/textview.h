@@ -17,6 +17,8 @@
 #include "schemes.h"
 #include "pntypes.h"
 
+#define PN_NOTIFY (WM_USER+37)
+
 class CTextView : public CScintillaWindow< CScintillaImpl >
 {
 public:
@@ -75,6 +77,29 @@ public:
 
 		ClearDocumentStyle();
 		Colourise(0, -1);
+	}
+
+	virtual int HandleNotify(LPARAM lParam)
+	{
+		SCNotification *scn = (SCNotification*)lParam;
+		switch (scn->nmhdr.code)
+		{
+			case SCN_SAVEPOINTREACHED :
+				SendMessage(GetParent(), PN_NOTIFY, 0, SCN_SAVEPOINTREACHED);
+				m_Modified = false;
+				break;
+
+			case SCN_SAVEPOINTLEFT :
+				SendMessage(GetParent(), PN_NOTIFY, 0, SCN_SAVEPOINTLEFT);
+				m_Modified = true;
+				break;
+
+			default:
+				return CScintilla::HandleNotify(lParam);
+		}
+			
+
+		return scn->nmhdr.code;
 	}
 
 protected:

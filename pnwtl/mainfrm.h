@@ -331,7 +331,7 @@ public:
 
 	LRESULT OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		CFileDialog dlgOpen(TRUE, NULL, NULL, OFN_HIDEREADONLY, "All Files (*.*)|*.*", m_hWndClient);
+		CSSFileDialog dlgOpen(TRUE, NULL, NULL, OFN_HIDEREADONLY, "All Files (*.*)|*.*", m_hWndClient);
 		if (dlgOpen.DoModal() == IDOK)
 		{
 			PNOpenFile(dlgOpen.m_ofn.lpstrFile, dlgOpen.m_ofn.lpstrFileTitle);
@@ -416,6 +416,7 @@ public:
 	protected:
 		CFindDlg*		m_FindDialog;
 		CReplaceDlg*	m_ReplaceDialog;
+		CScintilla		m_Dummy;			///< Scintilla often doesn't like unloading and reloading.
 
 		HWND			hFindWnd;
 		HWND			hReplWnd;

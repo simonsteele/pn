@@ -14,6 +14,8 @@
 #ifndef finddlg_h__included
 #define finddlg_h__included
 
+#include "CustomAutoComplete.h"
+
 /**
  * @class CSearchDlg
  * @brief template class providing basic functionality for the search and replace dialogs.
@@ -163,17 +165,38 @@ public:
 		m_pParent = pParent;
 	}
 
-	//DDX_CONTROL(IDC_FINDTEXT_COMBO, m_FindTextCombo)
-
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		m_Direction = 1;
 
+		DoDataExchange(FALSE);
+
+		CRect rc;
+		::GetWindowRect(GetDlgItem(IDC_FINDTEXT_DUMMY), rc);
+		ScreenToClient(rc);
+
+		m_FindTextCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), CBS_DROPDOWN | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO);
+
 		m_ReHelperBtn.Attach(GetDlgItem(IDC_REHELPER_BUTTON));
-		m_FindTextCombo.Attach(GetDlgItem(IDC_FINDTEXT_COMBO));
+		
+		m_fAC = new CCustomAutoComplete();
+
+		m_fAC->Bind(m_FindTextCombo.GetEditCtrl(), ACO_UPDOWNKEYDROPSLIST | ACO_AUTOSUGGEST | ACO_AUTOAPPEND);
+		m_fAC->AddItem(_T("Test String 1"));
+		m_fAC->AddItem(_T("FindText"));
+		m_fAC->AddItem(_T("Find Test"));
+		m_fAC->AddItem(_T("Funky"));
 
 		CenterWindow(GetParent());
 		return TRUE;
+	}
+
+	void CloseDialog(int nVal)
+	{
+		m_fAC->Unbind();
+
+		DestroyWindow();
+		::PostQuitMessage(nVal);
 	}
 
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -244,6 +267,8 @@ public:
 			
 			// Do the funky DDX thang...
 			DoDataExchange(FALSE);
+
+			m_FindTextCombo.SetFocus();
 		}
 		return 0;
 	}
@@ -265,8 +290,11 @@ public:
 	}
 
 protected:
-	CContainedWindowT<CComboBox>m_FindTextCombo;
-	CContainedWindowT<CButton>	m_ReHelperBtn;
+	CComboBoxEx						m_FindTextCombo;
+	CContainedWindowT<CButton>		m_ReHelperBtn;
+
+	CCustomAutoComplete*			m_fAC;
+
 	CString	m_FindText;
 	int		m_Direction;
 	BOOL	m_bMatchCase;
@@ -340,8 +368,21 @@ public:
 		
 		m_ReHelperBtn.Attach(GetDlgItem(IDC_REHELPER_BUTTON));
 		m_ReHelperBtn2.Attach(GetDlgItem(IDC_RHELPER_BUTTON));
-		m_FindTextCombo.Attach(GetDlgItem(IDC_FINDTEXT_COMBO));
-		m_ReplaceTextCombo.Attach(GetDlgItem(IDC_REPLACETEXT_COMBO));
+
+		
+		CRect rc;
+
+		::GetWindowRect(GetDlgItem(IDC_FINDTEXT_DUMMY), rc);
+		ScreenToClient(rc);
+		m_FindTextCombo.Create(m_hWnd, rc, _T("RFINDTEXTCOMBO"), CBS_DROPDOWN | WS_CHILD | WS_VISIBLE);
+		m_pFAC = new CCustomAutoComplete;
+		m_pFAC->Bind(m_FindTextCombo.GetEditCtrl(), ACO_UPDOWNKEYDROPSLIST | ACO_AUTOSUGGEST | ACO_AUTOAPPEND);
+		
+		::GetWindowRect(GetDlgItem(IDC_REPLACETEXT_DUMMY), rc);
+		ScreenToClient(rc);
+		m_ReplaceTextCombo.Create(m_hWnd, rc, _T("REPLACETEXTCOMBO"), CBS_DROPDOWN | WS_CHILD | WS_VISIBLE);
+		m_pRAC = new CCustomAutoComplete;
+		m_pRAC->Bind(m_ReplaceTextCombo.GetEditCtrl(), ACO_UPDOWNKEYDROPSLIST | ACO_AUTOSUGGEST | ACO_AUTOAPPEND);		
 
 		CenterWindow(GetParent());
 		return TRUE;
@@ -399,6 +440,8 @@ public:
 			//m_bSearchAll = pOptions->SearchAll;
 
 			DoDataExchange(FALSE);
+
+			m_FindTextCombo.SetFocus();
 		}
 
 		return 0;
@@ -447,10 +490,13 @@ public:
 	}
 
 protected:
-	CContainedWindowT<CComboBox> m_FindTextCombo;
-	CContainedWindowT<CComboBox> m_ReplaceTextCombo;
-	CContainedWindowT<CButton> m_ReHelperBtn;
-	CContainedWindowT<CButton> m_ReHelperBtn2;
+	CComboBoxEx					m_FindTextCombo;
+	CComboBoxEx					m_ReplaceTextCombo;
+	CContainedWindowT<CButton>	m_ReHelperBtn;
+	CContainedWindowT<CButton>	m_ReHelperBtn2;
+
+	CCustomAutoComplete*		m_pFAC;
+	CCustomAutoComplete*		m_pRAC;
 
 	CString	m_FindText;
 	CString m_ReplaceText;

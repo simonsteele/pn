@@ -25,6 +25,8 @@
 #define IDR_POPUP_EDITOR                173
 #define IDR_IMAGES                      201
 #define IDB_EDITOR                      203
+#define IDC_FINDTEXT_DUMMY              1001
+#define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_REPLACETEXT_LABEL           1042
 #define IDC_BACKSLASH_CHECK             1043
 #define IDC_MARKALL_BUTTON              21199
@@ -58,7 +60,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        204
 #define _APS_NEXT_COMMAND_VALUE         32773
-#define _APS_NEXT_CONTROL_VALUE         1001
+#define _APS_NEXT_CONTROL_VALUE         1004
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -58,7 +58,7 @@ class CScintilla
 		 * HandleNotify currently only updates the Modified flag
 		 * of CScintilla.
 		 */
-		int HandleNotify(LPARAM lParam);
+		virtual int HandleNotify(LPARAM lParam);
 		
 		//! Returns whether the text in the control has been modified since the last save.
 		bool GetModified();
