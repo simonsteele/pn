@@ -446,14 +446,17 @@ void SchemeConfigParser::onStyleGroupEnd()
 	m_pCurrent->EndGroup();
 }
 
-void SchemeConfigParser::onKeywords(int key, LPCTSTR keywords)
+void SchemeConfigParser::onKeywords(int key, LPCTSTR keywords, LPCTSTR name)
 {
 	PNASSERT(m_pCurrent != NULL);
 
 	CustomKeywordSet* pSet = new CustomKeywordSet;
+	pSet->bChanged = false;
 	pSet->key = key;
 	pSet->pWords = new TCHAR[_tcslen(keywords)+1];
 	_tcscpy(pSet->pWords, keywords);
+	pSet->pName = new TCHAR[_tcslen(name)+1];
+	_tcscpy(pSet->pName, name);
 	m_pCurrent->AddKeywordSet(pSet);
 }
 

@@ -13,6 +13,13 @@
 
 #include "scintillaif.h"
 
+typedef struct tagPrintOptions
+{
+	HGLOBAL hDevMode;
+	HGLOBAL hDevNames;
+	RECT	rcMargins;
+} SPrintOptions;
+
 /**
  * @class CScintillaImpl
  * @brief Implement useful Scintilla functionality...
@@ -25,6 +32,8 @@ public:
 	int ReplaceAll(SReplaceOptions* pOptions);
 	void HighlightAll(SFindOptions* pOptions);
 
+	void PrintDocument(SPrintOptions* pOptions, bool showDialog = true);
+
 	virtual int HandleNotify(LPARAM lParam);
 
 protected:
@@ -35,6 +44,8 @@ protected:
 
 	bool FindMatchingBraces(int& CaretBrace, int& OtherBrace);
 	void ManageBraceMatch();
+
+	virtual LPCTSTR GetDocTitle(){return _T("");}
 };
 
 #endif // scintillaimpl_h__included

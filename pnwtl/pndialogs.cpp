@@ -299,16 +299,143 @@ void CStyleDisplay::UpdateFont()
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// CStylesTabPage
+// CTabPageKeywords
 //////////////////////////////////////////////////////////////////////////////
 
-CStylesTabPage::CStylesTabPage()
+CTabPageKeywords::CTabPageKeywords()
+{
+	m_pSet = NULL;
+	m_bChanging = false;
+}
+
+void CTabPageKeywords::SetScheme(SchemeConfig* pScheme)
+{
+	m_bChanging = true;
+	m_pSet = NULL;
+	m_pScheme = pScheme;
+
+	// Set Keywords
+	if( ::IsWindow(m_hWnd) )
+	{
+		DoSetScheme();
+	}
+	
+	m_bChanging = false;
+}
+
+void CTabPageKeywords::DoSetScheme()
+{
+	CustomKeywordSet* pSet = m_pScheme->GetFirstKeywordSet();
+	
+	int iPos = 0;
+
+	while(pSet)
+	{
+		if(pSet->pName)
+		{
+			int iItem = m_list.AddItem(iPos++, 0, pSet->pName);
+			m_list.SetItemData(iItem, reinterpret_cast<DWORD>(pSet));
+		}
+		
+		pSet = pSet->pNext;
+	}
+
+}
+
+void CTabPageKeywords::Finalise()
+{
+	// Ensure everything is saved that should be...
+}
+
+void CTabPageKeywords::UpdateSel()
+{
+	if(!m_bChanging)
+	{
+		int iSelected = m_list.GetSelectedIndex();
+		if(iSelected != -1)
+		{
+			CustomKeywordSet* pSet = reinterpret_cast<CustomKeywordSet*>( m_list.GetItemData(iSelected) );
+
+			if(pSet)
+			{
+				m_pSet = pSet;
+
+				if(pSet->pWords)
+				{
+					m_scintilla.SetText(pSet->pWords);
+					EnableControls();
+				}
+			}
+			else
+				EnableControls(FALSE);
+		}
+		else
+		{
+			EnableControls(FALSE);
+		}
+	}
+}
+
+void CTabPageKeywords::EnableControls(BOOL bEnable)
+{
+	//m_Text.EnableWindow(bEnable);
+	m_ResetBtn.EnableWindow(bEnable);
+}
+
+LRESULT CTabPageKeywords::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	//m_Text.Attach(GetDlgItem(IDC_KEYWORDS_KEYWORDTEXT));
+	m_ResetBtn.Attach(GetDlgItem(IDC_KEYWORDS_RESETBUTTON));
+	m_list.Attach(GetDlgItem(IDC_KEYWORDS_LIST));
+
+	CRect rcScintilla;
+	::GetWindowRect(GetDlgItem(IDC_PLACEHOLDER), rcScintilla);
+	ScreenToClient(rcScintilla);
+	m_scintilla.Create(m_hWnd, rcScintilla, "Keywords", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS);
+	m_scintilla.SetWrapMode(SC_WRAP_WORD);
+
+	CRect rc;
+	m_list.GetClientRect(&rc);
+	int wCol = rc.right - rc.left - 20;
+	m_list.InsertColumn(0, _T(""), LVCFMT_LEFT, wCol, 0);
+	
+	EnableControls(FALSE);
+
+	if(m_pScheme)
+	{
+		m_bChanging = true;
+		DoSetScheme();
+		m_bChanging = false;
+	}
+
+	m_list.Invalidate(TRUE);
+
+	return 0;
+}
+
+LRESULT CTabPageKeywords::OnResetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	return 0;
+}
+
+LRESULT CTabPageKeywords::OnListSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	UpdateSel();
+
+	return 0;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// CTabPageStyles
+//////////////////////////////////////////////////////////////////////////////
+
+CTabPageStyles::CTabPageStyles()
 {
 	m_pStyle = NULL;
 	m_bChanging = false;
 }
 
-void CStylesTabPage::SetScheme(SchemeConfig* pScheme)
+void CTabPageStyles::SetScheme(SchemeConfig* pScheme)
 {
 	m_bChanging = true;
 	m_pStyle = NULL;
@@ -342,12 +469,12 @@ void CStylesTabPage::SetScheme(SchemeConfig* pScheme)
 	m_bChanging = false;
 }
 
-void CStylesTabPage::Finalise()
+void CTabPageStyles::Finalise()
 {
 	SetItem();
 }
 
-LRESULT CStylesTabPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CTabPageStyles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	CRect rc;
 	
@@ -363,6 +490,9 @@ LRESULT CStylesTabPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 
 	m_fore.SubclassWindow(GetDlgItem(IDC_STYLE_FOREBUTTON));
 	m_back.SubclassWindow(GetDlgItem(IDC_STYLE_BACKBUTTON));
+
+	m_fore.SetDefaultColor(RGB(0,0,0));
+	m_back.SetDefaultColor(RGB(255,255,255));
 	
 	m_SizeCombo.Add(6);
 	m_SizeCombo.Add(8);
@@ -380,23 +510,25 @@ LRESULT CStylesTabPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	return 0;
 }
 
-LRESULT CStylesTabPage::OnForeChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+LRESULT CTabPageStyles::OnForeChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 	NMCOLORBUTTON* pN = reinterpret_cast<NMCOLORBUTTON*>(pnmh);
-	m_sd.SetFore(pN->clr);
-	m_Style.ForeColor = pN->clr;
+	COLORREF col = (pN->clr == CLR_DEFAULT ? m_fore.GetDefaultColor() : pN->clr);
+	m_sd.SetFore(col);
+	m_Style.ForeColor = col;
 	return 0;
 }
 
-LRESULT CStylesTabPage::OnBackChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+LRESULT CTabPageStyles::OnBackChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 	NMCOLORBUTTON* pN = reinterpret_cast<NMCOLORBUTTON*>(pnmh);
-	m_sd.SetBack(pN->clr);
-	m_Style.BackColor = pN->clr;
+	COLORREF col = (pN->clr == CLR_DEFAULT ? m_fore.GetDefaultColor() : pN->clr);
+	m_sd.SetBack(col);
+	m_Style.BackColor = col;
 	return 0;
 }
 
-LRESULT CStylesTabPage::OnFontChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CTabPageStyles::OnFontChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {			
 	if(m_pStyle)
 	{
@@ -409,7 +541,7 @@ LRESULT CStylesTabPage::OnFontChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	return 0;
 }
 
-LRESULT CStylesTabPage::OnSizeChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CTabPageStyles::OnSizeChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(m_pStyle)
 	{
@@ -420,14 +552,14 @@ LRESULT CStylesTabPage::OnSizeChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	return 0;
 }
 
-LRESULT CStylesTabPage::OnTreeSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+LRESULT CTabPageStyles::OnTreeSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 	UpdateSel();
 
 	return 0;
 }
 
-void CStylesTabPage::UpdateSel()
+void CTabPageStyles::UpdateSel()
 {
 	// If we're not in the middle of changing scheme...
 	if(!m_bChanging)
@@ -472,7 +604,7 @@ void CStylesTabPage::UpdateSel()
 	}
 }
 
-LRESULT CStylesTabPage::OnBoldClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CTabPageStyles::OnBoldClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(m_pStyle)
 	{
@@ -484,7 +616,7 @@ LRESULT CStylesTabPage::OnBoldClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	return 0;
 }
 
-LRESULT CStylesTabPage::OnItalicClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CTabPageStyles::OnItalicClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(m_pStyle)
 	{
@@ -495,7 +627,7 @@ LRESULT CStylesTabPage::OnItalicClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	return 0;
 }
 
-LRESULT CStylesTabPage::OnUnderlineClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CTabPageStyles::OnUnderlineClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(m_pStyle)
 	{
@@ -506,7 +638,7 @@ LRESULT CStylesTabPage::OnUnderlineClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	return 0;
 }
 
-LRESULT CStylesTabPage::OnEOLFilledClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CTabPageStyles::OnEOLFilledClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(m_pStyle)
 	{
@@ -517,7 +649,7 @@ LRESULT CStylesTabPage::OnEOLFilledClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	return 0;
 }
 
-void CStylesTabPage::SetItem()
+void CTabPageStyles::SetItem()
 {
 	if(m_pStyle)
 	{
@@ -549,7 +681,7 @@ void CStylesTabPage::SetItem()
 	}
 }
 
-LRESULT CStylesTabPage::OnResetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CTabPageStyles::OnResetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(m_pScheme)
 	{
@@ -565,7 +697,7 @@ LRESULT CStylesTabPage::OnResetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	return 0;
 }
 
-LRESULT CStylesTabPage::OnResetAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CTabPageStyles::OnResetAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(m_pScheme)
 	{
@@ -640,8 +772,8 @@ void COptionsPageStyle::OnOK()
 
 		pS->FontName = str;
 		pS->FontSize = m_SizeCombo.GetSelection();
-		pS->ForeColor = m_fore.GetColor();
-		pS->BackColor = m_back.GetColor();
+		pS->ForeColor = m_fore.SafeGetColor();
+		pS->BackColor = m_back.SafeGetColor();
 		pS->Bold = (m_bold.GetCheck() == BST_CHECKED);
 		pS->Italic = (m_italic.GetCheck() == BST_CHECKED);
 		pS->Underline = (m_underline.GetCheck() == BST_CHECKED);
@@ -772,6 +904,7 @@ void COptionsPageSchemes::OnInitialise()
 void COptionsPageSchemes::OnOK()
 {
 	m_stylestab.Finalise();
+	m_keywordstab.Finalise();
 	m_pSchemes->SaveConfig();
 }
 
@@ -791,4 +924,5 @@ void COptionsPageSchemes::Update()
 	int i = m_combo.GetCurSel();
 	SchemeConfig* pScheme = static_cast<SchemeConfig*>(m_combo.GetItemDataPtr(i));
 	m_stylestab.SetScheme(pScheme);
+	m_keywordstab.SetScheme(pScheme);
 }

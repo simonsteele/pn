@@ -34,6 +34,25 @@ typedef enum {efsVSNet, efsVSNetR, efsPlus, efsArrow} EFoldStyle;
  * many methods is derived from / taken from code found in Scite.
  */
 
+#ifndef min
+	#define min(a, b)  (((a) < (b)) ? (a) : (b))
+#endif
+
+#ifndef max
+	#define max(a, b)  (((a) > (b)) ? (a) : (b))
+#endif
+
+struct RangeToFormat 
+{
+	//SurfaceID hdc;
+	//SurfaceID hdcTarget;
+	HDC hdc;
+	HDC hdcTarget;
+	CRect rc;
+	CRect rcPage;
+	CharacterRange chrg;
+};
+
 class CScintilla
 {
 	public:

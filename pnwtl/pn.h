@@ -10,10 +10,9 @@
  * Thanks to the author of kPad for the g_Context here!
  */
 
-#include "pntypes.h"
-#include "xmlparser.h"
-
 #define PN_NOTIFY (WM_USER+37)
+
+#include "resource.h"
 
 struct IMainFrame
 {
@@ -32,3 +31,20 @@ struct _Context
 extern __declspec( thread ) _Context g_Context;
 
 HWND GetCurrentEditor();
+
+// Utility Classes and Definitions:
+#include "pntypes.h"
+#include "pntabs.h"
+#include "xmlparser.h"
+#include "ssmenus.h"
+
+#include "optionsmanager.h"
+
+#include "ScintillaWTL.h"
+
+#include "schemes.h"
+
+#include "pndialogs.h"
+#include "textview.h"
+#include "ChildFrm.h"
+#include "finddlg.h"

@@ -148,6 +148,18 @@ class CGotoDialog : public CDialogImpl<CGotoDialog>
 #include "SchemeConfig.h"
 #include "pnutils.h"
 
+class CPNColorButton : public CColorButton
+{
+	public:
+		COLORREF SafeGetColor (void) const
+		{
+			if(m_clrCurrent != CLR_DEFAULT)
+				return m_clrCurrent;
+			else
+				return GetDefaultColor();
+		}
+};
+
 class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 {
 	public:
@@ -172,8 +184,8 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 		CFontCombo		m_FontCombo;
 		CNumberCombo	m_SizeCombo;
 
-		CColorButton	m_fore;
-		CColorButton	m_back;
+		CPNColorButton	m_fore;
+		CPNColorButton	m_back;
 		
 		CButton			m_bold;
 		CButton			m_italic;
@@ -215,25 +227,54 @@ class CStyleDisplay : public CWindowImpl<CStyleDisplay>
 		void UpdateFont();
 };
 
-class CKeywordsTabPage : public CPropertyPageImpl<CKeywordsTabPage>
+#include "ScintillaWTL.h"
+
+typedef CScintillaWindow<CScintilla>	CScintillaWnd;
+
+class CTabPageKeywords : public CPropertyPageImpl<CTabPageKeywords>
 {
 	public:
 		enum {IDD = IDD_TAB_KEYWORDS};
 
-		BEGIN_MSG_MAP(CKeywordsTabPage)
-			CHAIN_MSG_MAP(CPropertyPageImpl<CKeywordsTabPage>)
+		BEGIN_MSG_MAP(CTabPageKeywords)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			COMMAND_HANDLER(IDC_KEYWORDS_RESETBUTTON, BN_CLICKED, OnResetClicked)
+			NOTIFY_HANDLER(IDC_KEYWORDS_LIST, LVN_KEYDOWN, OnListSelChanged)
+			NOTIFY_HANDLER(IDC_KEYWORDS_LIST, NM_CLICK, OnListSelChanged)
 			REFLECT_NOTIFICATIONS()
+			CHAIN_MSG_MAP(CPropertyPageImpl<CTabPageKeywords>)
 		END_MSG_MAP()
+
+	void SetScheme(SchemeConfig* pScheme);
+	void Finalise();
+
+	protected:
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		LRESULT OnResetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnListSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+
+		void UpdateSel();
+		void EnableControls(BOOL bEnable = TRUE);
+		void DoSetScheme();
+
+	protected:
+		CEdit				m_Text;
+		CButton				m_ResetBtn;
+		bool				m_bChanging;
+		SchemeConfig*		m_pScheme;
+		CustomKeywordSet*	m_pSet;
+		CListViewCtrl		m_list;
+		CScintillaWnd		m_scintilla;
 };
 
-class CStylesTabPage : public CPropertyPageImpl<CStylesTabPage>
+class CTabPageStyles : public CPropertyPageImpl<CTabPageStyles>
 {
 	public:	
 		enum {IDD = IDD_TAB_STYLES};
 
-		CStylesTabPage();
+		CTabPageStyles();
 
-		BEGIN_MSG_MAP(CStylesTabPage)
+		BEGIN_MSG_MAP(CTabPageStyles)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			COMMAND_HANDLER(IDC_STYLE_BOLDCHECK, BN_CLICKED, OnBoldClicked)
 			COMMAND_HANDLER(IDC_STYLE_ITALICCHECK, BN_CLICKED, OnItalicClicked)
@@ -245,7 +286,7 @@ class CStylesTabPage : public CPropertyPageImpl<CStylesTabPage>
 			NOTIFY_HANDLER(IDC_STYLE_FOREBUTTON, CPN_SELCHANGE, OnForeChanged)
 			NOTIFY_HANDLER(IDC_STYLE_BACKBUTTON, CPN_SELCHANGE, OnBackChanged)
 			NOTIFY_HANDLER(IDC_STYLES_TREE, TVN_SELCHANGED, OnTreeSelChanged)
-			CHAIN_MSG_MAP(CPropertyPageImpl<CStylesTabPage>)
+			CHAIN_MSG_MAP(CPropertyPageImpl<CTabPageStyles>)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 
@@ -280,8 +321,8 @@ class CStylesTabPage : public CPropertyPageImpl<CStylesTabPage>
 		CFontCombo		m_FontCombo;
 		CNumberCombo	m_SizeCombo;
 
-		CColorButton	m_fore;
-		CColorButton	m_back;
+		CPNColorButton	m_fore;
+		CPNColorButton	m_back;
 
 		CButton			m_bold;
 		CButton			m_italic;
@@ -317,8 +358,8 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 		CComboBox			m_combo;
 		CContainedPropSheet	m_props;
 		SchemeConfigParser* m_pSchemes;
-		CStylesTabPage		m_stylestab;
-		CKeywordsTabPage	m_keywordstab;
+		CTabPageStyles		m_stylestab;
+		CTabPageKeywords	m_keywordstab;
 };
 
 #endif

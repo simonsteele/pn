@@ -25,8 +25,8 @@
 	<language name="cpp" title="C++" folding="true" foldcomments="true" foldcompact="true">
 		<lexer name="cpp" />
 		<use-keywords>
-			<keyword key="0" class="cpp"/>
-			<keyword key="2" class="doxygen"/>
+			<keyword key="0" name="Keywords" class="cpp"/>
+			<keyword key="2" name="Doxygen Keywords" class="doxygen"/>
 		</use-keywords>
 		<use-styles>
 			<style name="Default" key="32" />

@@ -57,7 +57,11 @@ extern CAppModule _Module;
 
 #define PNASSERT ATLASSERT
 
-#define _NO_COPY(x) private: x(x&){;} x& operator = (x& copy){;}
+#ifdef _DEBUG
+	#define _NO_COPY(x) private: x(x&){;} x& operator = (x& copy){;}
+#else
+	#define _NO_COPY(x) ;
+#endif
 
 #include "pn.h"
 

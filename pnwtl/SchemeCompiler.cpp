@@ -365,6 +365,7 @@ void UserSettingsParser::endElement(void *userData, LPCTSTR name)
 		{
 			CustomKeywordSet* pSet = new CustomKeywordSet;
 			pSet->key = m_idval;
+			pSet->pName = NULL;
 			pSet->pWords = new TCHAR[pState->m_csCData.GetLength()+1];
 			_tcscpy(pSet->pWords, (LPCTSTR)pState->m_csCData);
 			pScheme->AddKeywordSet(pSet);
@@ -611,7 +612,7 @@ void SchemeCompiler::onFile(LPCTSTR filename)
 	reg.WriteInt(filepart.c_str(), FileAge(filename));
 }
 
-void SchemeCompiler::onKeywords(int key, LPCSTR keywords)
+void SchemeCompiler::onKeywords(int key, LPCSTR keywords, LPCTSTR name)
 {
 	USES_CONVERSION;
 	m_Recorder.SetKeyWords(key, T2CA((LPCTSTR)keywords));
@@ -903,6 +904,7 @@ void SchemeParser::processLanguageKeywords(CSchemeLoaderState* pState, XMLAttrib
 	CString name = _T("");
 	CString val = _T("");
 	CString kw = _T("");
+	CString namestr = _T("");
 	int key = -1;
 
 	for(int i = 0; i < x; i++)
@@ -923,11 +925,15 @@ void SchemeParser::processLanguageKeywords(CSchemeLoaderState* pState, XMLAttrib
 				kw = (*z).second;
 			}
 		}
+		else if(name == _T("name"))
+		{
+			namestr = val;
+		}
 	}
 
 	if(kw != _T("") && key != -1)
 	{
-		onKeywords(key, kw);
+		onKeywords(key, kw, namestr);
 	}
 }
 

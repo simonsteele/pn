@@ -54,6 +54,9 @@ public:
 
 		MESSAGE_HANDLER(PN_CHECKAGE, OnCheckAge)
 
+		COMMAND_ID_HANDLER(ID_FILE_PRINT, OnPrint)
+		COMMAND_ID_HANDLER(ID_FILE_PRINT_SETUP, OnPrintSetup)
+
 		// Global Cut, Copy, Paste and Undo handling....
 		COMMAND_ID_HANDLER(ID_EDIT_CUT, OnCut)
 		COMMAND_ID_HANDLER(ID_EDIT_COPY, OnCopy)
@@ -206,6 +209,10 @@ public:
 		m_hImgList = NULL;
 		m_FileAge = -1;
 		m_onClose = NULL;
+
+		m_po.hDevMode = 0;
+		m_po.hDevNames = 0;
+		memset(&m_po.rcMargins, 0, sizeof(RECT));
 
 		InitUpdateUI();
 	}
@@ -441,6 +448,20 @@ public:
 		{
 			SendMessage(GetMDIFrame(), PN_NOTIFY, wParam, lParam);
 		}
+
+		return TRUE;
+	}
+
+	LRESULT OnPrint(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		m_view.PrintDocument(&m_po, true);
+
+		return TRUE;
+	}
+
+	LRESULT OnPrintSetup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		PrintSetup();
 
 		return TRUE;
 	}
@@ -781,12 +802,54 @@ public:
 		g_Context.m_frame->SetActiveScheme(m_hWnd, m_view.GetCurrentScheme());
 	}
 
+	protected:
+		void PrintSetup()
+		{
+			PAGESETUPDLG pdlg = {
+	                        sizeof(PAGESETUPDLG), 
+							0, 0, 0, 0, 
+							{0, 0}, 
+							{0, 0, 0, 0}, 
+							{0, 0, 0, 0}, 
+							0, 0, 0, 0, 0, 0
+	                     };
+
+			pdlg.hwndOwner = m_hWnd/*MainHWND()*/;
+			pdlg.hInstance = ::GetModuleHandle(NULL);
+
+			if (m_po.rcMargins.left != 0 || m_po.rcMargins.right != 0 ||
+					m_po.rcMargins.top != 0 || m_po.rcMargins.bottom != 0) {
+				pdlg.Flags = PSD_MARGINS;
+
+				pdlg.rtMargin.left = m_po.rcMargins.left;
+				pdlg.rtMargin.top = m_po.rcMargins.top;
+				pdlg.rtMargin.right = m_po.rcMargins.right;
+				pdlg.rtMargin.bottom = m_po.rcMargins.bottom;
+			}
+
+			pdlg.hDevMode = m_po.hDevMode;
+			pdlg.hDevNames = m_po.hDevNames;
+
+			if (!PageSetupDlg(&pdlg))
+				return;
+
+			m_po.rcMargins.left = pdlg.rtMargin.left;
+			m_po.rcMargins.top = pdlg.rtMargin.top;
+			m_po.rcMargins.right = pdlg.rtMargin.right;
+			m_po.rcMargins.bottom = pdlg.rtMargin.bottom;
+
+			m_po.hDevMode = pdlg.hDevMode;
+			m_po.hDevNames = pdlg.hDevNames;
+		}
+
 protected:
 	HIMAGELIST m_hImgList;
 	CTextView m_view;
 	CString m_Title;
 	CString m_FileName;
 	long m_FileAge;
+
+	SPrintOptions	m_po;
 
 	_PoorMansUIEntry* m_pUIData;
 };

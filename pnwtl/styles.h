@@ -128,7 +128,9 @@ typedef STYLES_LIST::iterator SL_IT;
 struct CustomKeywordSet
 {
 	int		key;
+	bool	bChanged;
 	TCHAR*	pWords;
+	TCHAR*	pName;
 	CustomKeywordSet* pNext;
 };
 
@@ -151,6 +153,8 @@ class CustomKeywordHolder
 				pSet = pSet->pNext;
 				if(pDel->pWords)
 					delete [] pDel->pWords;
+				if(pDel->pName)
+					delete [] pDel->pName;
 				delete pDel;
 			}
 
@@ -181,6 +185,11 @@ class CustomKeywordHolder
 				pSet = pSet->pNext;
 			}
 			return pSet;
+		}
+
+		CustomKeywordSet* GetFirstKeywordSet()
+		{
+			return pKeywordSets;
 		}
 
 	protected:

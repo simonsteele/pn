@@ -11,7 +11,7 @@
 #include "ScintillaImpl.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// Search and Replace Support Code (please move this)
+// Search and Replace Support Code (please move this)  ///@todo
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -588,4 +588,346 @@ int CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 	}
 
 	return repCount;
+}
+
+////////////////////////////////////////////////////////////
+// Printing Code...
+////////////////////////////////////////////////////////////
+
+/**
+ * PrintDocument
+ * note: This code originally copied from SciTE.
+ * @param pOptions - pointer to a struct containing print setup info (inc margins).
+ * @param showDialog - Should we show the print dialog?
+ */
+void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///< false if must print silently (using default settings).
+{	
+	PRINTDLG pdlg = {
+	                    sizeof(PRINTDLG), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+	                };
+	pdlg.hwndOwner = /*MainHWND()*/ this->m_scihWnd;
+	pdlg.hInstance = /*hInstance*/GetModuleHandle(NULL);
+	pdlg.Flags = PD_USEDEVMODECOPIES | PD_ALLPAGES | PD_RETURNDC;
+	
+	// We do not know how many pages in the document until the 
+	// printer is selected and the paper size is known.
+	pdlg.nFromPage = 1;
+	pdlg.nToPage = 1;
+	pdlg.nMinPage = 1;
+	pdlg.nMaxPage = 0xffffU; 
+	
+	pdlg.nCopies = 1;
+	pdlg.hDC = 0;
+	pdlg.hDevMode = pOptions->hDevMode;
+	pdlg.hDevNames = pOptions->hDevNames;
+
+	// See if a range has been selected
+	CharacterRange crange;
+	GetSel(crange);
+	int startPos = crange.cpMin;
+	int endPos = crange.cpMax;
+
+	if (startPos == endPos) {
+		pdlg.Flags |= PD_NOSELECTION;
+	} else {
+		pdlg.Flags |= PD_SELECTION;
+	}
+	if (!showDialog) {
+		// Don't display dialog box, just use the default printer and options
+		pdlg.Flags |= PD_RETURNDEFAULT;
+	}
+	if (!::PrintDlg(&pdlg)) {
+		return;
+	}
+
+	pOptions->hDevMode = pdlg.hDevMode;
+	pOptions->hDevNames = pdlg.hDevNames;
+
+	HDC hdc = pdlg.hDC;
+
+	CRect rectMargins, rectPhysMargins;
+	CPoint ptPage;
+	CPoint ptDpi;
+
+	// Get printer resolution
+	ptDpi.x = GetDeviceCaps(hdc, LOGPIXELSX);    // dpi in X direction
+	ptDpi.y = GetDeviceCaps(hdc, LOGPIXELSY);    // dpi in Y direction
+
+	// Start by getting the physical page size (in device units).
+	ptPage.x = GetDeviceCaps(hdc, PHYSICALWIDTH);   // device units
+	ptPage.y = GetDeviceCaps(hdc, PHYSICALHEIGHT);  // device units
+
+	// Get the dimensions of the unprintable
+	// part of the page (in device units).
+	rectPhysMargins.left = GetDeviceCaps(hdc, PHYSICALOFFSETX);
+	rectPhysMargins.top = GetDeviceCaps(hdc, PHYSICALOFFSETY);
+
+	// To get the right and lower unprintable area,
+	// we take the entire width and height of the paper and
+	// subtract everything else.
+	rectPhysMargins.right = ptPage.x						// total paper width
+	                        - GetDeviceCaps(hdc, HORZRES) // printable width
+	                        - rectPhysMargins.left;				// left unprintable margin
+
+	rectPhysMargins.bottom = ptPage.y						// total paper height
+	                         - GetDeviceCaps(hdc, VERTRES)	// printable height
+	                         - rectPhysMargins.top;				// right unprintable margin
+
+	// At this point, rectPhysMargins contains the widths of the
+	// unprintable regions on all four sides of the page in device units.
+
+	// Take in account the page setup given by the user (if one value is not null)
+	if (pOptions->rcMargins.left != 0 || pOptions->rcMargins.right != 0 ||
+		pOptions->rcMargins.top != 0 || pOptions->rcMargins.bottom != 0) 
+	{
+		CRect rectSetup;
+
+		// Convert the hundredths of millimeters (HiMetric) or
+		// thousandths of inches (HiEnglish) margin values
+		// from the Page Setup dialog to device units.
+		// (There are 2540 hundredths of a mm in an inch.)
+
+		char localeInfo[3];
+		GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_IMEASURE, localeInfo, 3);
+
+		if (localeInfo[0] == '0')
+		{	// Metric system. '1' is US System
+			rectSetup.left		= MulDiv (pOptions->rcMargins.left, ptDpi.x, 2540);
+			rectSetup.top		= MulDiv (pOptions->rcMargins.top, ptDpi.y, 2540);
+			rectSetup.right		= MulDiv(pOptions->rcMargins.right, ptDpi.x, 2540);
+			rectSetup.bottom	= MulDiv(pOptions->rcMargins.bottom, ptDpi.y, 2540);
+		} 
+		else 
+		{
+			rectSetup.left		= MulDiv(pOptions->rcMargins.left, ptDpi.x, 1000);
+			rectSetup.top		= MulDiv(pOptions->rcMargins.top, ptDpi.y, 1000);
+			rectSetup.right		= MulDiv(pOptions->rcMargins.right, ptDpi.x, 1000);
+			rectSetup.bottom	= MulDiv(pOptions->rcMargins.bottom, ptDpi.y, 1000);
+		}
+
+		// Dont reduce margins below the minimum printable area
+		rectMargins.left	= max(rectPhysMargins.left, rectSetup.left);
+		rectMargins.top		= max(rectPhysMargins.top, rectSetup.top);
+		rectMargins.right	= max(rectPhysMargins.right, rectSetup.right);
+		rectMargins.bottom	= max(rectPhysMargins.bottom, rectSetup.bottom);
+	} 
+	else 
+	{
+		rectMargins.left	= rectPhysMargins.left;
+		rectMargins.top		= rectPhysMargins.top;
+		rectMargins.right	= rectPhysMargins.right;
+		rectMargins.bottom	= rectPhysMargins.bottom;
+	}
+
+	// rectMargins now contains the values used to shrink the printable
+	// area of the page.
+
+	// Convert device coordinates into logical coordinates
+	DPtoLP(hdc, (LPPOINT) &rectMargins, 2);
+	DPtoLP(hdc, (LPPOINT)&rectPhysMargins, 2);
+
+	// Convert page size to logical units and we're done!
+	DPtoLP(hdc, (LPPOINT) &ptPage, 1);
+
+	///@todo...
+	//SString headerFormat = props.Get("print.header.format");
+	//SString footerFormat = props.Get("print.footer.format");
+	//SString headerOrFooter;	// Usually the path, date and page number
+
+	TEXTMETRIC tm;
+	
+	//SString headerStyle = props.Get("print.header.style");
+	//StyleDefinition sdHeader(headerStyle.c_str());
+
+	//int headerLineHeight = ::MulDiv(
+	//                           (sdHeader.specified & StyleDefinition::sdSize) ? sdHeader.size : 9,
+	//                           ptDpi.y, 72);
+
+	int headerLineHeight = ::MulDiv(9, ptDpi.y, 72);
+
+	HFONT fontHeader = ::CreateFont(headerLineHeight,
+	                                0, 0, 0,
+	                                //sdHeader.bold ? FW_BOLD : FW_NORMAL
+									FW_NORMAL,
+	                                FALSE /*sdHeader.italics*/,
+	                                FALSE /*sdHeader.underlined*/,
+	                                0, 0, 0,
+	                                0, 0, 0,
+	                                /*(sdHeader.specified & StyleDefinition::sdFont) ? sdHeader.font.c_str() :*/ "Arial");
+	
+	::SelectObject(hdc, fontHeader);
+	::GetTextMetrics(hdc, &tm);
+	headerLineHeight = tm.tmHeight + tm.tmExternalLeading;
+
+	//SString footerStyle = props.Get("print.footer.style");
+	//StyleDefinition sdFooter(footerStyle.c_str());
+
+	//int footerLineHeight = ::MulDiv(
+	//                           (sdFooter.specified & StyleDefinition::sdSize) ? sdFooter.size : 9,
+	//                           ptDpi.y, 72);
+	int footerLineHeight = ::MulDiv(8, ptDpi.y, 72);
+	HFONT fontFooter = ::CreateFont(footerLineHeight,
+	                                0, 0, 0,
+	                                /*sdFooter.bold ? FW_BOLD : FW_NORMAL*/FW_NORMAL,
+	                                /*sdFooter.italics*/FALSE,
+	                                /*sdFooter.underlined*/FALSE,
+	                                0, 0, 0,
+	                                0, 0, 0,
+	                                /*(sdFooter.specified & StyleDefinition::sdFont) ? sdFooter.font.c_str() :*/ "Arial");
+	
+	::SelectObject(hdc, fontFooter);
+	::GetTextMetrics(hdc, &tm);
+	footerLineHeight = tm.tmHeight + tm.tmExternalLeading;
+
+	DOCINFO di = {sizeof(DOCINFO), 0, 0, 0, 0};
+	di.lpszDocName = GetDocTitle() /*windowName.c_str()*/;
+	di.lpszOutput = 0;
+	di.lpszDatatype = 0;
+	di.fwType = 0;
+	if (::StartDoc(hdc, &di) < 0) {
+		//SString msg = LocaliseMessage("Can not start printer document.");
+		//MessageBox(MainHWND(), msg.c_str(), 0, MB_OK);
+		return;
+	}
+
+	LONG lengthDoc = SPerform(SCI_GETLENGTH);
+	LONG lengthDocMax = lengthDoc;
+	LONG lengthPrinted = 0;
+
+	// Requested to print selection
+	if (pdlg.Flags & PD_SELECTION) {
+		if (startPos > endPos) {
+			lengthPrinted = endPos;
+			lengthDoc = startPos;
+		} else {
+			lengthPrinted = startPos;
+			lengthDoc = endPos;
+		}
+
+		if (lengthPrinted < 0)
+			lengthPrinted = 0;
+		if (lengthDoc > lengthDocMax)
+			lengthDoc = lengthDocMax;
+	}
+
+	// We must substract the physical margins from the printable area
+	RangeToFormat frPrint;
+	frPrint.hdc = hdc;
+	frPrint.hdcTarget = hdc;
+	frPrint.rc.left = rectMargins.left - rectPhysMargins.left;
+	frPrint.rc.top = rectMargins.top - rectPhysMargins.top;
+	frPrint.rc.right = ptPage.x - rectMargins.right - rectPhysMargins.left;
+	frPrint.rc.bottom = ptPage.y - rectMargins.bottom - rectPhysMargins.top;
+	frPrint.rcPage.left = 0;
+	frPrint.rcPage.top = 0;
+	frPrint.rcPage.right = ptPage.x - rectPhysMargins.left - rectPhysMargins.right - 1;
+	frPrint.rcPage.bottom = ptPage.y - rectPhysMargins.top - rectPhysMargins.bottom - 1;
+	
+	///@todo header format...
+	if (/*headerFormat.size()*/0) {
+		frPrint.rc.top += headerLineHeight + headerLineHeight / 2;
+	}
+	if (/*footerFormat.size()*/0) {
+		frPrint.rc.bottom -= footerLineHeight + footerLineHeight / 2;
+	}
+
+	// Print each page
+	int pageNum = 1;
+	bool printPage;
+	
+	///@todo setup scintilla for printing...
+	//PropSet propsPrint;
+	//propsPrint.superPS = &props;
+	//SetFileProperties(propsPrint);
+
+	while (lengthPrinted < lengthDoc) 
+	{
+		printPage = (!(pdlg.Flags & PD_PAGENUMS) ||
+		             (pageNum >= pdlg.nFromPage) && (pageNum <= pdlg.nToPage));
+
+		char pageString[32];
+		sprintf(pageString, "%0d", pageNum);
+		
+		//propsPrint.Set("CurrentPage", pageString);
+
+		if (printPage) 
+		{
+			::StartPage(hdc);
+
+			///@todo headerFormat
+			if (/*headerFormat.size()*/0) 
+			{
+				//SString sHeader = propsPrint.GetExpanded("print.header.format");
+				string sHeader = _T("Header");
+				::SetTextColor(hdc, /*sdHeader.fore.AsLong()*/0);
+				::SetBkColor(hdc, /*sdHeader.back.AsLong()*/RGB(255,255,255));
+				::SelectObject(hdc, fontHeader);
+				UINT ta = ::SetTextAlign(hdc, TA_BOTTOM);
+				RECT rcw = {frPrint.rc.left, frPrint.rc.top - headerLineHeight - headerLineHeight / 2,
+				            frPrint.rc.right, frPrint.rc.top - headerLineHeight / 2};
+				rcw.bottom = rcw.top + headerLineHeight;
+				::ExtTextOut(hdc, frPrint.rc.left + 5, frPrint.rc.top - headerLineHeight / 2,
+				             ETO_OPAQUE, &rcw, sHeader.c_str(),
+				             static_cast<int>(sHeader.length()), NULL);
+				::SetTextAlign(hdc, ta);
+				HPEN pen = ::CreatePen(0, 1, /*sdHeader.fore.AsLong()*/0);
+				HPEN penOld = static_cast<HPEN>(::SelectObject(hdc, pen));
+				::MoveToEx(hdc, frPrint.rc.left, frPrint.rc.top - headerLineHeight / 4, NULL);
+				::LineTo(hdc, frPrint.rc.right, frPrint.rc.top - headerLineHeight / 4);
+				::SelectObject(hdc, penOld);
+				::DeleteObject(pen);
+			}
+		}
+
+		frPrint.chrg.cpMin = lengthPrinted;
+		frPrint.chrg.cpMax = lengthDoc;
+
+		lengthPrinted = SPerform(SCI_FORMATRANGE,
+		                         printPage,
+		                         reinterpret_cast<LPARAM>(&frPrint));
+
+		if (printPage) 
+		{
+			///@todo footerFormat
+			if (/*footerFormat.size()*/0) 
+			{
+				//SString sFooter = propsPrint.GetExpanded("print.footer.format");
+				string sFooter = _T("Footer");
+				::SetTextColor(hdc, /*sdFooter.fore.AsLong()*/0);
+				::SetBkColor(hdc, /*sdFooter.back.AsLong()*/RGB(255,255,255));
+				::SelectObject(hdc, fontFooter);
+				UINT ta = ::SetTextAlign(hdc, TA_TOP);
+				RECT rcw = {frPrint.rc.left, frPrint.rc.bottom + footerLineHeight / 2,
+				            frPrint.rc.right, frPrint.rc.bottom + footerLineHeight + footerLineHeight / 2};
+				::ExtTextOut(hdc, frPrint.rc.left + 5, frPrint.rc.bottom + footerLineHeight / 2,
+				             ETO_OPAQUE, &rcw, sFooter.c_str(),
+				             static_cast<int>(sFooter.length()), NULL);
+				::SetTextAlign(hdc, ta);
+				HPEN pen = ::CreatePen(0, 1, /*sdFooter.fore.AsLong()*/0);
+				HPEN penOld = static_cast<HPEN>(::SelectObject(hdc, pen));
+				::SetBkColor(hdc, /*sdFooter.fore.AsLong()*/0);
+				::MoveToEx(hdc, frPrint.rc.left, frPrint.rc.bottom + footerLineHeight / 4, NULL);
+				::LineTo(hdc, frPrint.rc.right, frPrint.rc.bottom + footerLineHeight / 4);
+				::SelectObject(hdc, penOld);
+				::DeleteObject(pen);
+			}
+
+			::EndPage(hdc);
+		}
+		pageNum++;
+
+		if ((pdlg.Flags & PD_PAGENUMS) && (pageNum > pdlg.nToPage))
+			break;
+	}
+
+	SPerform(SCI_FORMATRANGE, FALSE, 0);
+
+	::EndDoc(hdc);
+	::DeleteDC(hdc);
+	if (fontHeader) {
+		::DeleteObject(fontHeader);
+	}
+	if (fontFooter) {
+		::DeleteObject(fontFooter);
+	}
 }

@@ -307,9 +307,6 @@ void CScintilla::GetSel(CharacterRange& cr)
 	cr.cpMax = GetSelectionEnd();
 }
 
-#define min(a, b)  (((a) < (b)) ? (a) : (b))
-#define max(a, b)  (((a) > (b)) ? (a) : (b))
-
 void CScintilla::EnsureRangeVisible(int begin, int end)
 {
 	int lineStart = LineFromPosition(min(begin, end));

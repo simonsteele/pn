@@ -9,29 +9,10 @@
  */
 
 #include "stdafx.h"
-#include "resource.h"
 
-// Tabbed MDI Framework
-#include "pntabs.h"
-
-// Utility Classes and Definitions:
-#include "ssmenus.h"
-#include "optionsmanager.h"
 #include "callback.h"
 
-#include "pndialogs.h"
-
-#include "ScintillaWTL.h"
-
-#include "schemes.h"
-
-#include "textview.h"
-#include "ChildFrm.h"
-#include "aboutdlg.h"
-
 #include "pnutils.h"
-
-#include "finddlg.h"
 
 #include "MainFrm.h"
 
