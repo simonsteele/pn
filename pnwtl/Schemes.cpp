@@ -250,15 +250,13 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 			sc.SPerform(SCI_SETFOLDFLAGS, 16, 0);
 			sc.SetFoldingMargins(efsVSNet);
 
-			if(hdr.Folding & fldCompact == fldCompact)
-				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.compact"), (LPARAM)_T("1"));
-			else
-				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.compact"), (LPARAM)_T("0"));
-
-			if(hdr.Folding & fldComments == fldComments)
+			sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.compact"), (LPARAM)((hdr.Folding & fldCompact != 0) ? _T("1") : _T("0")));
+			
+			if(hdr.Folding & fldComments != 0)
 				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.comment"), (LPARAM)_T("1"));
 
-			//sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.preprocessor"), (LPARAM)_T("1"));
+			if(hdr.Folding & fldPreProc != 0)
+				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.preprocessor"), (LPARAM)_T("1"));
 		}
 
 		while (cfile.GetPosition() < cfile.GetLength())

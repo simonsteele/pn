@@ -528,7 +528,7 @@ void SchemeCompiler::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR 
 			t = atts.getValue(_T("folding"));
 			if(t != NULL && PNStringToBool(t))
 			{
-				//fldEnabled = 1, fldCompact = 2, fldComments = 4
+				//fldEnabled = 1, fldCompact = 2, fldComments = 4, fldPreProc = 8
 				foldflags = fldEnabled;
 				
 				t = atts.getValue(_T("foldcompact"));
@@ -538,6 +538,10 @@ void SchemeCompiler::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR 
 				t = atts.getValue(_T("foldcomments"));
 				if(t != NULL && PNStringToBool(t))
 					foldflags |= fldComments;
+
+				t = atts.getValue(_T("foldpreproc"));
+				if(t != NULL && PNStringToBool(t))
+					foldflags |= fldPreProc;
 			}
 
 			m_Recorder.StartRecording(scheme, title, filename, foldflags);

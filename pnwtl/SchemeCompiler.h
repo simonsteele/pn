@@ -64,7 +64,7 @@ typedef struct
 
 typedef enum {ttFontName, ttKeywords, ttLexerLanguage} eTextType;
 typedef enum {nrMsgRec, nrTextRec} eNextRec;
-typedef enum {fldEnabled = 1, fldCompact = 2, fldComments = 4} eFoldFlags;
+typedef enum {fldEnabled = 1, fldCompact = 2, fldComments = 4, fldPreProc = 8} eFoldFlags;
 //typedef enum {ovrTabWidth = 1, ovrIndentGuides = 2} eOverrideFlags;
 
 // Parser State Defines
