@@ -71,18 +71,23 @@ bool IsDirectory(LPCTSTR szDir)
  * Credit to Eugen@Fastfertig.com who posted almost exactly this code
  * to CodeGuru. Saved me writing it!
  * link: http://www.codeguru.com/mfc/comments/39715.shtml
+ *
+ * 13/10/2004: Security and code safety fixes thanks to Joerg Hoh.
  */
 bool CreateDirectoryRecursive(LPCTSTR pszDirectory, LPSECURITY_ATTRIBUTES lpSA) 
 {
-	char szDir[MAX_PATH];
-	char *p, *pNext;
-	strcpy(szDir, pszDirectory);
+	if(_tcslen(pszDirectory) >= MAX_PATH)
+		return false;
+
+	TCHAR szDir[MAX_PATH];
+	TCHAR *p, *pNext;
+	_tcscpy(szDir, pszDirectory);
 
 	pNext = strchr(szDir, '\\');
 	if (pNext)
 	{
 		pNext++;
-		while ( ( p = strchr(pNext, '\\') ) != 0 )
+		while ( *pNext && ( p = strchr(pNext, '\\') ) != 0 )
 		{
 			*p = NULL;
 			if (GetFileAttributes(szDir) == -1)
