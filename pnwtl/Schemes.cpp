@@ -466,8 +466,6 @@ void CScheme::SetupScintilla(CScintilla& sc)
 		sc.SPerform(SCI_SETSELBACK, 1, c);
 	}
 
-	sc.SPerform(SCI_SETCODEPAGE, (long)options.GetCached(Options::ODefaultCodePage));
-
 	options.EndGroupOperation();
 }
 

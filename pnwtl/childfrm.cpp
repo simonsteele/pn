@@ -1134,11 +1134,6 @@ int CChildFrame::ReplaceAll(SReplaceOptions* options)
 	return m_view.ReplaceAll(options);
 }
 
-/*void CChildFrame::HighlightAll(SFindOptions* options)
-{
-	m_view.HighlightAll(options);
-}*/
-
 int CChildFrame::GetPosition(EGPType type)
 {
 	if(type == EP_LINE)

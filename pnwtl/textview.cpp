@@ -146,7 +146,9 @@ bool CTextView::OpenFile(LPCTSTR filename)
 	// We don't want smart start if we're opening a file...
 	m_bSmartStart = false;
 
+#ifdef _DEBUG
 	DWORD timeIn = GetTickCount();
+#endif
 
 	CFile file;
 	if ( file.Open(filename, CFile::modeRead | CFile::modeBinary) ) 
@@ -160,13 +162,22 @@ bool CTextView::OpenFile(LPCTSTR filename)
 		int length = file.GetLength();
 		SPerform(SCI_ALLOCATE, length + 1024);
 		
+		int useBlockSize = blockSize;
+
 		if(length >= 10485760)
+		{
+			// Optimise for large files. Disable the line layout cache,
+			// and read the file in larger chunks...
 			SPerform(SCI_SETLAYOUTCACHE, SC_CACHE_NONE);
+			useBlockSize = 1048576;
+		}
 		else
+		{
 			SPerform(SCI_SETLAYOUTCACHE, OPTIONS->GetCached(Options::ODefaultScintillaCache));
+		}
 		
-		char data[blockSize];
-		int lenFile = file.Read(data, sizeof(data));
+		char* data = new char[useBlockSize];
+		int lenFile = file.Read(data, useBlockSize);
 
 		EPNSaveFormat endings = determineLineEndings(data, lenFile);
 
@@ -175,25 +186,28 @@ bool CTextView::OpenFile(LPCTSTR filename)
 		if(m_encType != eUnknown)
 		{
 			// We do a Unicode-friendly read for unicode files...
-			SetCodePage(SC_CP_UTF8);
+			SPerform(SCI_SETCODEPAGE, SC_CP_UTF8);
 			Utf8_16_Read converter;
 
 			while (lenFile > 0)
 			{
 				lenFile = converter.convert(data, lenFile);
 				SPerform(SCI_ADDTEXT, lenFile, (long)converter.getNewBuf());
-				lenFile = file.Read(data, sizeof(data));
+				lenFile = file.Read(data, useBlockSize);
 			}
 		}
 		else
 		{
+			SPerform(SCI_SETCODEPAGE, (long)OPTIONS->GetCached(Options::ODefaultCodePage));
+
 			// Otherwise we do a simple read.
 			while (lenFile > 0) 
 			{
 				SPerform(SCI_ADDTEXT, lenFile, (long)data);
-				lenFile = file.Read(data, sizeof(data));
+				lenFile = file.Read(data, useBlockSize);
 			}
 		}
+		delete [] data;
 		file.Close();
 		SPerform(SCI_SETSEL, 0, 0);
 		
@@ -205,10 +219,12 @@ bool CTextView::OpenFile(LPCTSTR filename)
 
 		SetLineNumberChars();
 
+#ifdef _DEBUG
 		DWORD timeTotal = GetTickCount() - timeIn;
 		TCHAR outstr[300];
-		_stprintf(outstr, _T("Load file takes %d\n"), timeTotal);
+		_stprintf(outstr, _T("File load takes %d milliseconds\n"), timeTotal);
 		::OutputDebugString(outstr);
+#endif
 
 		return true;
 	}
