@@ -1,8 +1,19 @@
+/**
+ * @file findex.cpp
+ * @brief Find and Replace dialogs for PN 2
+ * @author Simon Steele
+ * @note Copyright (c) 2004 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #include "stdafx.h"
 #include "resource.h"
 #include "CustomAutoComplete.h"
 #include "include/accombo.h"
 #include "findex.h"
+#include "childfrm.h"
 
 #define SWP_SIMPLEMOVE (SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE)
 
@@ -79,46 +90,40 @@ CFindExDialog::CFindExDialog()
 	m_bottom = -1;
 }
 
-// A derived class might not need to override this although they can.
-// (but they will probably need to specialize SetTabAreaHeight)
-int CFindExDialog::calcTabAreaHeight(void)
+BOOL CFindExDialog::PreTranslateMessage(MSG* pMsg)
 {
-	// Dynamically figure out a reasonable tab area height
-	// based on the tab's font metrics
-
-	const int nNominalHeight = 28;
-	const int nNominalFontLogicalUnits = 11;	// 8 point Tahoma with 96 DPI
-
-	// Initialize nFontLogicalUnits to the typical case
-	// appropriate for CDotNetTabCtrl
-	LOGFONT lfIcon = { 0 };
-	::SystemParametersInfo(SPI_GETICONTITLELOGFONT, sizeof(lfIcon), &lfIcon, 0);
-	int nFontLogicalUnits = -lfIcon.lfHeight;
-
-	// Use the actual font of the tab control
-	if(m_tabControl.IsWindow())
-	{
-		HFONT hFont = m_tabControl.GetFont();
-		if(hFont != NULL)
-		{
-			CDC dc = m_tabControl.GetDC();
-			CFontHandle hFontOld = dc.SelectFont(hFont);
-			TEXTMETRIC tm = {0};
-			dc.GetTextMetrics(&tm);
-			nFontLogicalUnits = tm.tmAscent;
-			dc.SelectFont(hFontOld);
-		}
-	}
-
-	int nNewTabAreaHeight = nNominalHeight + ( ::MulDiv(nNominalHeight, nFontLogicalUnits, nNominalFontLogicalUnits) - nNominalHeight ) / 2;
-	return nNewTabAreaHeight;
+	return IsDialogMessage(pMsg);
 }
 
-void CFindExDialog::moveUp(int offset, CWindow& ctrl)
+void CFindExDialog::Show(EFindDialogType type, LPCTSTR findText)
 {
-	ClientRect rc(ctrl, *this);
-	rc.top -= offset;
-	ctrl.SetWindowPos(HWND_TOP, rc, SWP_SIMPLEMOVE);
+	m_type = type;
+	updateLayout();
+
+	m_FindText = findText;
+	DoDataExchange(FALSE);
+
+	// Place the dialog so it doesn't hide the text under the caret
+	CChildFrame* editor = getCurrentEditorWnd();
+	if(editor)
+	{
+		// Get the position on screen of the caret.
+		CTextView* textView = editor->GetTextView();
+		long pos = textView->GetCurrentPos();
+		POINT pt = {
+			textView->PointXFromPosition(pos),
+			textView->PointYFromPosition(pos)
+		};
+		int lineHeight = textView->TextHeight(0);
+		editor->ClientToScreen(&pt);
+		
+		// Place the window away from the caret.
+		placeWindow(pt, lineHeight);
+	}
+
+	ShowWindow(SW_SHOW);
+	
+	m_FindTextCombo.SetFocus();
 }
 
 LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -154,7 +159,7 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	s.SetWindowPos(HWND_TOP, rc, SWP_SIMPLEMOVE);
 
 	// Sort out the combo boxes.
-	CSize size = GetGUIFontSize();
+	CSize size = getGUIFontSize();
 	
 	rc.set(GetDlgItem(IDC_FINDTEXT_DUMMY), *this);
 	rc.bottom = rc.top + (size.cy * 10);
@@ -228,15 +233,18 @@ LRESULT CFindExDialog::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 {
 	if((BOOL)wParam)
 	{
-		SFindOptions* pOptions = OPTIONS->GetFindOptions();
+		SReplaceOptions* pOptions = OPTIONS->GetReplaceOptions();
 		//SetFindText(m_FindText);
 		if(m_FindText.GetLength() == 0 && pOptions->FindText.GetLength())
 			m_FindText = pOptions->FindText;
-		m_bSearchUp = pOptions->Direction;
+		m_ReplaceText = pOptions->ReplaceText;
 		m_bMatchCase = pOptions->MatchCase;
 		m_bMatchWhole = pOptions->MatchWholeWord;
-		//m_bSearchAll = pOptions->SearchAll;
+		m_bSearchUp = !pOptions->Direction;
 		m_bRegExp = pOptions->UseRegExp;
+		m_bUseSlashes = pOptions->UseSlashes;
+
+		//m_bSearchAll = pOptions->SearchAll;
 		
 		// Do the funky DDX thang...
 		DoDataExchange(FALSE);
@@ -244,9 +252,17 @@ LRESULT CFindExDialog::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 		m_FindTextCombo.SetFocus();
 
 		UIEnable(IDC_REHELPER_BUTTON, m_bRegExp);
+		UIEnable(IDC_RHELPER_BUTTON, m_bRegExp);
 		UIUpdateChildWindows();
 	}
 
+	return 0;
+}
+
+LRESULT CFindExDialog::OnCloseWindow(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	GetWindow(GW_OWNER).SetFocus();
+	ShowWindow(SW_HIDE);
 	return 0;
 }
 
@@ -255,12 +271,109 @@ LRESULT CFindExDialog::OnCloseCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	/*CChildFrame* pChild = GetCurrentEditorWnd();
 	if(pChild != NULL)
 		pChild->SetFocus();
-	else
-		GetWindow(GW_OWNER).SetFocus();*/
+	else*/
+	GetWindow(GW_OWNER).SetFocus();
 
 	ShowWindow(SW_HIDE);
 	
 	return 0;
+}
+
+LRESULT CFindExDialog::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(findNext())
+	{
+		if(m_type != eftReplace && !OPTIONS->Get(PNSK_INTERFACE, _T("FindStaysOpen"), false))
+			// Default Visual C++, old PN and others behaviour:
+			ShowWindow(SW_HIDE);
+	}
+	else
+	{
+		CString strTextToFind = m_FindText;
+		CString strMsg;
+
+		if (strTextToFind.IsEmpty())
+			strTextToFind = _T("(empty)");
+
+		strMsg.Format(IDS_FINDNOTFOUND, strTextToFind);
+		MessageBox((LPCTSTR)strMsg, _T("Programmers Notepad"), MB_OK | MB_ICONINFORMATION);
+	}
+
+	return TRUE;
+
+	findNext();
+}
+
+LRESULT CFindExDialog::OnReHelperClicked(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CRect rc;
+	GetDlgItem(wID).GetWindowRect(&rc);
+	doRegExpHelperMenu(rc, wID == IDC_RHELPER_BUTTON);
+
+	return TRUE;
+}
+
+LRESULT CFindExDialog::OnReInsertClicked(WORD /*wNotifyCode*/, WORD nID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CString Text;
+	int offset = getRegExpString(nID, Text);
+
+	DoDataExchange(TRUE);
+	doRegExpInsert(&m_FindTextCombo, Text, m_FindText, offset);
+
+	return TRUE;
+}
+
+LRESULT CFindExDialog::OnReplaceClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	// Call this before GetCurrentEditorWnd - it will check if the editor
+	// has changed and if so set Found to false.
+	SReplaceOptions* pOptions = getOptions();
+
+	CChildFrame* pEditor = getCurrentEditorWnd();		
+		
+	if(pEditor)
+		pEditor->Replace(pOptions);
+
+	return 0;
+}
+
+LRESULT CFindExDialog::OnReplaceAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	SReplaceOptions* pOptions = getOptions();
+
+	CChildFrame* pEditor = getCurrentEditorWnd();
+		
+	if(pEditor)
+	{
+		int count = pEditor->ReplaceAll(pOptions);
+		CString s;
+		s.Format(IDS_NREPLACEMENTS, count);
+		MessageBox((LPCTSTR)s, _T("Programmers Notepad"), MB_OK | MB_ICONINFORMATION);
+	}
+
+	return 0;
+}
+
+LRESULT CFindExDialog::OnReMatchesMenuItemClicked(WORD /*wNotifyCode*/, WORD nID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int matchno = (nID - ID_REGEXP_TAGGEDEXPRESSION1) + 1;
+	CString Text;
+	Text.Format(_T("\\%d"), matchno);
+
+	DoDataExchange(TRUE);
+	doRegExpInsert(&m_ReplaceTextCombo, Text, m_ReplaceText, 0);
+
+	return 0;
+}
+
+LRESULT CFindExDialog::OnUseRegExpClicked(WORD /*wNotifyCode*/, WORD /*nID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	m_bRegExp = !m_bRegExp;
+	UIEnable(IDC_REHELPER_BUTTON, m_bRegExp);
+	UIEnable(IDC_RHELPER_BUTTON, m_bRegExp);
+	UIUpdateChildWindows();
+	return TRUE;
 }
 
 LRESULT CFindExDialog::OnSelChange(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHandled)
@@ -284,6 +397,254 @@ int CFindExDialog::addTab(LPCTSTR name, int iconIndex)
 	}
 
 	return -1;
+}
+
+// A derived class might not need to override this although they can.
+// (but they will probably need to specialize SetTabAreaHeight)
+int CFindExDialog::calcTabAreaHeight(void)
+{
+	// Dynamically figure out a reasonable tab area height
+	// based on the tab's font metrics
+
+	const int nNominalHeight = 28;
+	const int nNominalFontLogicalUnits = 11;	// 8 point Tahoma with 96 DPI
+
+	// Initialize nFontLogicalUnits to the typical case
+	// appropriate for CDotNetTabCtrl
+	LOGFONT lfIcon = { 0 };
+	::SystemParametersInfo(SPI_GETICONTITLELOGFONT, sizeof(lfIcon), &lfIcon, 0);
+	int nFontLogicalUnits = -lfIcon.lfHeight;
+
+	// Use the actual font of the tab control
+	if(m_tabControl.IsWindow())
+	{
+		HFONT hFont = m_tabControl.GetFont();
+		if(hFont != NULL)
+		{
+			CDC dc = m_tabControl.GetDC();
+			CFontHandle hFontOld = dc.SelectFont(hFont);
+			TEXTMETRIC tm = {0};
+			dc.GetTextMetrics(&tm);
+			nFontLogicalUnits = tm.tmAscent;
+			dc.SelectFont(hFontOld);
+		}
+	}
+
+	int nNewTabAreaHeight = nNominalHeight + ( ::MulDiv(nNominalHeight, nFontLogicalUnits, nNominalFontLogicalUnits) - nNominalHeight ) / 2;
+	return nNewTabAreaHeight;
+}
+
+void CFindExDialog::doRegExpHelperMenu(LPRECT rc, bool bDoMatches)
+{
+	HMENU hRegExpMenu;
+	if(bDoMatches)
+	{
+		hRegExpMenu = ::LoadMenu(_Module.m_hInst, MAKEINTRESOURCE(IDR_POPUP_REGEXPM));
+	}
+	else
+	{
+		hRegExpMenu = ::LoadMenu(_Module.m_hInst, MAKEINTRESOURCE(IDR_POPUP_REGEXP));
+	}
+
+	HMENU hPopup = ::GetSubMenu(hRegExpMenu, 0);
+
+	::TrackPopupMenu(hPopup, 0, rc->right, rc->top, 0, m_hWnd, NULL);
+
+	::DestroyMenu(hRegExpMenu);
+}
+
+int CFindExDialog::doRegExpInsert(BXT::CComboBoxAC* pCB, LPCTSTR insert, CString& str, int offset)
+{
+	CEdit cbedit(pCB->m_edit);
+	DWORD dwSel = cbedit.GetSel();
+	cbedit.ReplaceSel(insert);
+
+	int pos = LOWORD(dwSel);
+	if(offset != 0)
+		pos += offset;
+	else
+		pos += _tcslen(insert);
+	cbedit.SetFocus();
+	cbedit.SetSel(pos, pos);
+
+	return pos;
+}
+
+bool CFindExDialog::editorChanged()
+{
+	return m_pLastEditor != getCurrentEditorWnd();// CChildFrame::FromHandle(GetCurrentEditor());
+}
+
+bool CFindExDialog::findNext()
+{
+	int found = 0;
+
+	CChildFrame* editor = getCurrentEditorWnd();
+
+	if(editor != NULL)
+	{
+		SFindOptions* pOptions = getOptions();
+		found = editor->FindNext(pOptions);			
+	}
+	
+	return found != 0;
+}
+
+int CFindExDialog::getRegExpString(int nID, CString& Text)
+{
+	int offset = 0;
+
+	switch(nID)
+	{
+		case ID_REGEXP_ANYCHARACTER:
+			Text = _T(".");
+			break;
+		case ID_REGEXP_CHARACTERINRANGE:
+			Text = _T("[]");
+			offset = 1;
+			break;
+		case ID_REGEXP_CHARACTERNOTINRANGE:
+			Text = _T("[^]");
+			offset = 2;
+			break;
+		case ID_REGEXP_BEGINNINGOFLINE:
+			Text = _T("^");
+			break;
+		case ID_REGEXP_ENDOFLINE:
+			Text = _T("$");
+			break;
+		case ID_REGEXP_TAGGEDEXPRESSSION:
+			Text = _T("\\(\\)");
+			offset = 2;
+			break;
+		case ID_REGEXP_NOT:
+			Text = _T("~");
+			break;
+		case ID_REGEXP_OR:
+			Text = _T("\\!");
+			break;
+		case ID_REGEXP_0ORMOREMATCHES:
+			Text = _T("*");
+			break;
+		case ID_REGEXP_1ORMOREMATCHES:
+			Text = _T("+");
+			break;
+		case ID_REGEXP_GROUP:
+			Text = _T("\\{\\}");
+			offset = 2;
+			break;
+	};
+
+	return offset;
+}
+
+CChildFrame* CFindExDialog::getCurrentEditorWnd()
+{
+	m_pLastEditor = CChildFrame::FromHandle(GetCurrentEditor());
+	return m_pLastEditor;
+}
+
+CSize CFindExDialog::getGUIFontSize()
+{
+	CClientDC dc(m_hWnd);
+	dc.SelectFont((HFONT) GetStockObject( DEFAULT_GUI_FONT ));		
+	TEXTMETRIC tm;
+	dc.GetTextMetrics( &tm );
+
+	return CSize( tm.tmAveCharWidth, tm.tmHeight + tm.tmExternalLeading);
+}
+
+SReplaceOptions* CFindExDialog::getOptions()
+{
+	DoDataExchange(TRUE);
+
+	//SFindOptions* pOptions = OPTIONS->GetFindOptions();
+	SReplaceOptions* pOptions = OPTIONS->GetReplaceOptions();
+
+	// If the user has changed to a differnent scintilla window
+	// then Found is no longer necessarily true.
+	if(editorChanged())
+		pOptions->Found = false;
+
+	ELookWhere where = (ELookWhere)m_SearchWhere;
+
+	pOptions->FindText			= m_FindText;
+	pOptions->ReplaceText		= m_ReplaceText;
+	pOptions->Direction			= (m_bSearchUp == FALSE);
+	pOptions->MatchCase			= (m_bMatchCase == TRUE);
+	pOptions->MatchWholeWord	= (m_bMatchWhole == TRUE);
+	pOptions->UseRegExp			= (m_bRegExp == TRUE);
+	pOptions->UseSlashes		= (m_bUseSlashes == TRUE);
+	pOptions->InSelection		= (where == elwSelection);
+	pOptions->SearchAll			= (where == elwAllDocs);
+	
+	///@todo Add a user interface counterpart for the loop search option.
+	pOptions->Loop				= true;
+
+	return pOptions;
+}
+
+void CFindExDialog::moveUp(int offset, CWindow& ctrl)
+{
+	ClientRect rc(ctrl, *this);
+	rc.top -= offset;
+	ctrl.SetWindowPos(HWND_TOP, rc, SWP_SIMPLEMOVE);
+}
+
+/**
+ * @brief Places the window so that it does not cover the cursor.
+ * @param pt constant reference to the point that should not be covered by the dialog
+ * @param lineHeight line height as specified by Scintilla.
+ */
+void CFindExDialog::placeWindow(const POINT& pt, int lineHeight)
+{
+	// Get current pos and size
+	RECT rc;
+	GetWindowRect(&rc);
+	POINT winPos = { rc.left, rc.top };
+	SIZE winSize = { rc.right - rc.left, rc.bottom - rc.top };
+
+	// Default to place the dialog above the line
+	POINT pos = winPos;
+	if(rc.bottom >= pt.y && rc.top <= pt.y)
+		pos.y = pt.y - winSize.cy - lineHeight;
+	if(pos.y < 0)
+		pos.y = max(0, pt.y + lineHeight);
+
+	::GetWindowRect(GetWindow(GW_OWNER), &rc);
+	// TODO: 
+	pos.x = rc.right - winSize.cx - ::GetSystemMetrics(SM_CXVSCROLL);
+
+	// Ensure that the dialog is inside the work area
+	RECT rcWa;
+	
+	if(g_Context.OSVersion.dwMajorVersion >= 5) // support multiple monitors on 2k+
+	{
+		rcWa.top = 0;
+		rcWa.left = 0;
+		rcWa.right = ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
+		rcWa.bottom = ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
+	}
+	else
+	{
+		// On older systems we rely on GetWorkArea which doesn't support 
+		// multiple monitors.
+		::SystemParametersInfo(SPI_GETWORKAREA, NULL, &rcWa, NULL);
+	}
+
+	if(pos.x + winSize.cx > rcWa.right - rcWa.left)
+		pos.x = rcWa.right - rcWa.left - winSize.cx;
+	if(pos.x < rcWa.left)
+		pos.x = rcWa.left;
+	if(pos.y + winSize.cy > rcWa.bottom - rcWa.top)
+		pos.y = rcWa.bottom - rcWa.top - winSize.cy;
+	if(pos.y < rcWa.top)
+		pos.y = rcWa.top;
+
+	// Move when the pos changed only
+	if(winPos.x != pos.x || winPos.y != pos.y)
+		// note no SWP_SHOWWINDOW - this causes OnShowWindow not to be called on creation.
+		SetWindowPos(NULL, pos.x, pos.y, 0, 0, SWP_NOSIZE | SWP_NOZORDER /*| SWP_SHOWWINDOW*/);
 }
 
 int CFindExDialog::positionChecks(int top, const UINT* checkboxIDs, int nCheckboxIDs)
@@ -360,6 +721,9 @@ void CFindExDialog::updateLayout()
 			CButton(GetDlgItem(IDC_REPLACEALL_BUTTON)).ShowWindow(SW_HIDE);
 
 			CButton(GetDlgItem(IDC_MARKALL_BUTTON)).ShowWindow(SW_SHOW);
+
+			CButton(GetDlgItem(IDC_CURRENTDOC_RADIO)).EnableWindow(TRUE);
+			CButton(GetDlgItem(IDC_INSELECTION_RADIO)).EnableWindow(FALSE);
 			
 			restTop = m_group1Bottom + 12;
 		}
@@ -384,6 +748,9 @@ void CFindExDialog::updateLayout()
 			CButton(GetDlgItem(IDC_REPLACE_BUTTON)).ShowWindow(SW_SHOW);
 			CButton(GetDlgItem(IDC_REPLACEALL_BUTTON)).ShowWindow(SW_SHOW);
 
+			CButton(GetDlgItem(IDC_CURRENTDOC_RADIO)).EnableWindow(TRUE);
+			CButton(GetDlgItem(IDC_INSELECTION_RADIO)).EnableWindow(TRUE);
+
 			restTop = m_group2Bottom + 12;
 		}
 		break;
@@ -407,6 +774,9 @@ void CFindExDialog::updateLayout()
 			m_FindWhereCombo.ShowWindow(SW_SHOW);
 			CStatic(GetDlgItem(IDC_FINDTYPE_LABEL)).ShowWindow(SW_SHOW);
 			m_FindTypeCombo.ShowWindow(SW_SHOW);
+
+			CButton(GetDlgItem(IDC_CURRENTDOC_RADIO)).EnableWindow(FALSE);
+			CButton(GetDlgItem(IDC_INSELECTION_RADIO)).EnableWindow(FALSE);
 
 			restTop = m_group3Bottom + 12;
 		}

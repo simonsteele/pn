@@ -630,13 +630,13 @@ LRESULT CChildFrame::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 
 LRESULT CChildFrame::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	SFindOptions* pOptions = OPTIONS->GetFindOptions();
+	SFindOptions* pOptions = OPTIONS->GetReplaceOptions();
 	if( pOptions->FindText != _T("") )
 	{
 		if( !/*m_view.*/FindNext(pOptions) )
 		{
 			CString cs;
-			cs.Format(_T("Could not find %s."), pOptions->FindText);
+			cs.Format(IDS_FINDNOTFOUND, pOptions->FindText);
 			MessageBox(cs, _T("Programmers Notepad"), MB_OK);
 		}
 	}
@@ -1302,8 +1302,11 @@ int CChildFrame::FindNext(SFindOptions* options)
 {
 	int result = m_view.FindNext(options);
 	if( result == CScintillaImpl::FindNextResults::fnReachedStart )
-		MessageBox(_T("Find reached the starting point of the search."),
-							_T("Programmers Notepad"), MB_OK | MB_ICONINFORMATION);
+	{
+		CString msg;
+		msg.LoadString(IDS_FINDLOOPED);
+		MessageBox(msg,	_T("Programmers Notepad"), MB_OK | MB_ICONINFORMATION);
+	}
 	return result;
 }
 

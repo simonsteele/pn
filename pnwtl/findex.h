@@ -1,5 +1,19 @@
+/**
+ * @file findex.h
+ * @brief Find and Replace dialogs for PN 2
+ * @author Simon Steele
+ * @note Copyright (c) 2004 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #ifndef findex_h__included_8B16FC2D_D4A3_4d2c_ACA1_4A80DE51B836
 #define findex_h__included_8B16FC2D_D4A3_4d2c_ACA1_4A80DE51B836
+
+class CChildFrame;
+
+typedef enum { eftFind, eftReplace, eftFindInFiles } EFindDialogType;
 
 class CFindExDialog : public CDialogImpl<CFindExDialog, CWindow>,
 						public CWinDataExchange<CFindExDialog>,
@@ -10,15 +24,29 @@ public:
 	CFindExDialog();
 	enum {IDD = IDD_FINDEX};
 
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+
+	void Show(EFindDialogType type = eftFind, LPCTSTR findText = NULL);
+
 protected:
 
 	BEGIN_MSG_MAP(CFindExDialog)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		MESSAGE_HANDLER(WM_SHOWWINDOW, OnShowWindow)
+		MESSAGE_HANDLER(WM_CLOSE, OnCloseWindow)
 
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
-        ///...
+		COMMAND_ID_HANDLER(IDC_FINDNEXT_BUTTON, OnFindNext)
+		COMMAND_HANDLER(IDC_REPLACE_BUTTON, BN_CLICKED, OnReplaceClicked)
+		COMMAND_HANDLER(IDC_REPLACEALL_BUTTON, BN_CLICKED, OnReplaceAllClicked)
+
+		// Regex helper stuff...
+		COMMAND_ID_HANDLER(IDC_REHELPER_BUTTON, OnReHelperClicked)
+		COMMAND_ID_HANDLER(IDC_RHELPER_BUTTON, OnReHelperClicked)
+		COMMAND_RANGE_HANDLER(ID_REGEXP_ANYCHARACTER, ID_REGEXP_GROUP, OnReInsertClicked)
+		COMMAND_RANGE_HANDLER(ID_REGEXP_TAGGEDEXPRESSION1, ID_REGEXP_TAGGEDEXPRESSION9, OnReMatchesMenuItemClicked)
+		COMMAND_ID_HANDLER(IDC_REGEXP_CHECK, OnUseRegExpClicked)
 
 		NOTIFY_CODE_HANDLER(CTCN_SELCHANGE, OnSelChange)
 
@@ -34,6 +62,8 @@ protected:
 	BEGIN_DDX_MAP(CFindExDialog)
 		DDX_TEXT(IDC_FINDTEXT_COMBO, m_FindText)
 		DDX_TEXT(IDC_REPLACETEXT_COMBO, m_ReplaceText)
+		DDX_TEXT(IDC_FINDWHERE_COMBO, m_FindWhereText)
+		DDX_TEXT(IDC_FINDTYPE_COMBO, m_FindTypeText)
 		DDX_CHECK(IDC_MATCHCASE_CHECK, m_bMatchCase)
 		DDX_CHECK(IDC_MATCHWHOLE_CHECK, m_bMatchWhole)
 		DDX_CHECK(IDC_REGEXP_CHECK, m_bRegExp)
@@ -43,18 +73,6 @@ protected:
 		DDX_CHECK(IDC_SEARCHUP_CHECK, m_bSearchUp)
 		//DDX_CHECK(IDC_SEARCHALL_CHECK, m_bSearchAll)
 	END_DDX_MAP()
-
-	/*    DLGRESIZE_CONTROL(ControlID, Flags)
-
-ControlID is the ID of the dialog control. The possible flags and their meanings are:
-
-    * DLSZ_SIZE_X: Resize the width of the control as the dialog resizes horizontally.
-    * DLSZ_SIZE_Y: Resize the height of the control as the dialog resizes vertically.
-    * DLSZ_MOVE_X: Move the control horizontally as the dialog resizes horizontally.
-    * DLSZ_MOVE_Y: Move the control vertically as the dialog resizes vertically.
-    * DLSZ_REPAINT: Invalidate the control after every move/resize so it repaints every time.
-
-	*/
 
     BEGIN_DLGRESIZE_MAP(CFindExDialog)
 		DLGRESIZE_CONTROL(IDC_FINDTEXT_COMBO, DLSZ_SIZE_X)
@@ -68,40 +86,43 @@ ControlID is the ID of the dialog control. The possible flags and their meanings
 		DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X)
     END_DLGRESIZE_MAP()
 
-
+	// Messages
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnShowWindow(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnCloseWindow(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	
+	// Commands
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnReHelperClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnReHelper2Clicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnReInsertClicked(WORD /*wNotifyCode*/, WORD nID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnReMatchesMenuItemClicked(WORD /*wNotifyCode*/, WORD nID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnReplaceClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnReplaceAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnUseRegExpClicked(WORD /*wNotifyCode*/, WORD /*nID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
+	// Notifications
 	LRESULT OnSelChange(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHandled);
 
-	
-
 protected:
-	CSize GetGUIFontSize()
-	{
-		CClientDC dc(m_hWnd);
-		dc.SelectFont((HFONT) GetStockObject( DEFAULT_GUI_FONT ));		
-		TEXTMETRIC tm;
-		dc.GetTextMetrics( &tm );
-		//int cxChar = tm.tmAveCharWidth;
-		//int cyChar = tm.tmHeight + tm.tmExternalLeading;
-
-		return CSize( tm.tmAveCharWidth, tm.tmHeight + tm.tmExternalLeading);
-	}
-
-	//void resizeControls();
-
-	void moveUp(int offset, CWindow& ctrl);
-	int calcTabAreaHeight();
 	int addTab(LPCTSTR name, int iconIndex);
-
+	int calcTabAreaHeight();
+	void doRegExpHelperMenu(LPRECT rc, bool bDoMatches = false);
+	int doRegExpInsert(BXT::CComboBoxAC* pCB, LPCTSTR insert, CString& str, int offset);
+	bool editorChanged();
+	bool findNext();
+	CChildFrame* getCurrentEditorWnd();
+	CSize getGUIFontSize();
+	SReplaceOptions* getOptions();
+	int getRegExpString(int nID, CString& Text);
+	void moveUp(int offset, CWindow& ctrl);
+	void placeWindow(const POINT& pt, int lineHeight = 10);
 	int positionChecks(int top, const UINT* checkboxIDs, int nCheckboxIDs);
 	void updateLayout();
 
 protected:
-	typedef enum { eftFind, eftReplace, eftFindInFiles } EFindDialogType;
+	typedef enum { elwCurrentDoc, elwAllDocs, elwCurrentProj, elwSelection } ELookWhere;
 	EFindDialogType			m_type;
 	CDotNetButtonTabCtrl<>	m_tabControl;
 	CImageList				m_imageList;
@@ -111,7 +132,9 @@ protected:
 	CComboBox				m_FindTypeCombo;
 	CArrowButton			m_ReHelperBtn;
 	CArrowButton			m_ReHelperBtn2;
+	CChildFrame*			m_pLastEditor;
 
+	// Positional information
 	int		m_group2Top;
 	int		m_group1Bottom;
 	int		m_group2Bottom;
@@ -121,15 +144,18 @@ protected:
 	int		m_checkDist;
 	int		m_bottom;
 
-	CString	m_FindText;
-	CString m_ReplaceText;
-	int		m_SearchWhere;
-	BOOL	m_bMatchCase;
-	BOOL	m_bMatchWhole;
-	BOOL	m_bRegExp;
-	BOOL	m_bUseSlashes;
-	BOOL	m_bSearchSubdirs;
-	BOOL	m_bSearchUp;
+	// Find/Replace Information
+	CString		m_FindText;
+	CString		m_ReplaceText;
+	CString		m_FindWhereText;
+	CString		m_FindTypeText;
+	int			m_SearchWhere;
+	BOOL		m_bMatchCase;
+	BOOL		m_bMatchWhole;
+	BOOL		m_bRegExp;
+	BOOL		m_bUseSlashes;
+	BOOL		m_bSearchSubdirs;
+	BOOL		m_bSearchUp;
 };
 
 #endif //#ifndef findex_h__included_8B16FC2D_D4A3_4d2c_ACA1_4A80DE51B836

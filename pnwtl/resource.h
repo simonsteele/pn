@@ -19,8 +19,8 @@
 #define IDC_MATCHCASE_CHECK             105
 #define IDC_REPLACETEXT_COMBO           106
 #define IDC_REGEXP_CHECK                107
-#define IDC_FINDWHERE_COMBO				108
-#define IDC_FINDTYPE_COMBO				109
+#define IDC_FINDWHERE_COMBO             108
+#define IDC_FINDTYPE_COMBO              109
 #define IDC_UP_RADIO                    113
 #define IDC_DOWN_RADIO                  114
 #define ID_POS_PANE                     115
@@ -40,6 +40,9 @@
 #define IDS_SAVEREADONLY                138
 #define IDS_SAVEREADONLYFAIL            139
 #define IDS_PROPSTITLE                  140
+#define IDS_FINDNOTFOUND                141
+#define IDS_NREPLACEMENTS               142
+#define IDS_FINDLOOPED                  143
 #define IDI_TEXTCLIPS                   167
 #define IDD_FIND                        168
 #define IDR_TABS_POPUP                  169

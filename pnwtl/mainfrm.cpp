@@ -60,6 +60,7 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(I
 {
 	m_FindDialog = NULL;
 	m_ReplaceDialog = NULL;
+	m_pFindEx = NULL;
 	m_pOutputWnd = NULL;
 	m_pClipsWnd = NULL;
 	m_pProjectsWnd = NULL;
@@ -403,8 +404,10 @@ LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 		CloseAndFreeDlg(m_FindDialog);
 		CloseAndFreeDlg(m_ReplaceDialog);
+		CloseAndFreeDlg(m_pFindEx);
 		m_FindDialog = NULL;
 		m_ReplaceDialog = NULL;
+		m_pFindEx = NULL;
 	}		
 
 	return 0;
@@ -1429,7 +1432,7 @@ LRESULT CMainFrame::OnWindowArrangeIcons(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 
 LRESULT CMainFrame::OnFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	if(m_FindDialog == NULL)
+	/*if(m_FindDialog == NULL)
 	{
 		m_FindDialog = new CFindDlg;
 		hFindWnd = m_FindDialog->Create(m_hWnd);
@@ -1439,7 +1442,7 @@ LRESULT CMainFrame::OnFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	if(pChild)
 		m_FindDialog->Show(pChild->GetTextView()->GetCurrentWord().c_str());
 	else
-		m_FindDialog->Show(NULL);
+		m_FindDialog->Show(NULL);*/
 	
 	//CPNDockingWindow* temp[1];
 
@@ -1447,8 +1450,18 @@ LRESULT CMainFrame::OnFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	//	temp, 0,
 	//	true, dockwins::CDockingSide::sTop);
 
-	//m_pFindEx = new CFindExDialog();
-	//hFindWnd = m_pFindEx->Create(m_hWnd);
+	if(m_pFindEx == NULL)
+	{
+		m_pFindEx = new CFindExDialog();
+		hFindWnd = m_pFindEx->Create(m_hWnd);
+	}
+
+	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
+	if(pChild)
+		m_pFindEx->Show(eftFind, pChild->GetTextView()->GetCurrentWord().c_str());
+	else
+		m_pFindEx->Show();
+
 	//m_pFindEx->ShowWindow(SW_SHOW);
 
 	return 0;
@@ -1456,7 +1469,7 @@ LRESULT CMainFrame::OnFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 
 LRESULT CMainFrame::OnReplace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	if(m_ReplaceDialog == NULL)
+	/*if(m_ReplaceDialog == NULL)
 	{
 		m_ReplaceDialog = new CReplaceDlg;
 		hReplWnd = m_ReplaceDialog->Create(m_hWnd);
@@ -1466,7 +1479,19 @@ LRESULT CMainFrame::OnReplace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	if(pChild)
 		m_ReplaceDialog->Show(pChild->GetTextView()->GetCurrentWord().c_str());
 	else
-		m_ReplaceDialog->Show(NULL);
+		m_ReplaceDialog->Show(NULL);*/
+
+	if(m_pFindEx == NULL)
+	{
+		m_pFindEx = new CFindExDialog();
+		hFindWnd = m_pFindEx->Create(m_hWnd);
+	}
+
+	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
+	if(pChild)
+		m_pFindEx->Show(eftReplace, pChild->GetTextView()->GetCurrentWord().c_str());
+	else
+		m_pFindEx->Show(eftReplace);
 
 	return 0;
 }

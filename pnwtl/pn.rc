@@ -1251,11 +1251,14 @@ BEGIN
                     BS_AUTORADIOBUTTON | WS_GROUP,124,114,91,10,
                     WS_EX_TRANSPARENT
     CONTROL         "All open documents",IDC_ALLOPEN_RADIO,"Button",
-                    BS_AUTORADIOBUTTON,124,126,91,10,WS_EX_TRANSPARENT
+                    BS_AUTORADIOBUTTON | WS_DISABLED,124,126,91,10,
+                    WS_EX_TRANSPARENT
     CONTROL         "Current project",IDC_CURRENTPROJ_RADIO,"Button",
-                    BS_AUTORADIOBUTTON,124,138,91,10,WS_EX_TRANSPARENT
+                    BS_AUTORADIOBUTTON | WS_DISABLED,124,138,91,10,
+                    WS_EX_TRANSPARENT
     CONTROL         "In selection",IDC_INSELECTION_RADIO,"Button",
-                    BS_AUTORADIOBUTTON,124,150,91,10,WS_EX_TRANSPARENT
+                    BS_AUTORADIOBUTTON | WS_DISABLED,124,150,91,10,
+                    WS_EX_TRANSPARENT
     DEFPUSHBUTTON   "&Find Next",IDC_FINDNEXT_BUTTON,228,26,53,14,WS_GROUP,0,
                     HIDC_FINDNEXT_BUTTON
     PUSHBUTTON      "&Mark All",IDC_MARKALL_BUTTON,228,43,53,14,WS_DISABLED | 
@@ -1578,6 +1581,9 @@ BEGIN
     IDS_SAVEREADONLY        "The file ""%s"" could not be saved because it is write-protected.\n\nYou can either save in a different location or PN can attempt to remove the protection and overwrite the file in its current location."
     IDS_SAVEREADONLYFAIL    "PN could not remove the write-protection from ""%s"".\n\n Would you like to save with a different name?"
     IDS_PROPSTITLE          "%s Properties"
+    IDS_FINDNOTFOUND        "The specified text '%s' was not found."
+    IDS_NREPLACEMENTS       "%d occurrance(s) replaced."
+    IDS_FINDLOOPED          "Find reached the starting point of the search."
 END
 
 STRINGTABLE 
