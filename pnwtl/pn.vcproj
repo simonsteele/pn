@@ -44,6 +44,7 @@
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="lib"
 				DelayLoadDLLs="uxtheme.dll"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\bin/pn.pdb"
@@ -107,6 +108,7 @@
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="lib"
 				DelayLoadDLLs="uxtheme.dll"
 				ProgramDatabaseFile=".\bin/pn.pdb"
 				SubSystem="2"/>

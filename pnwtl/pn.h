@@ -36,7 +36,7 @@ struct IMainFrame
 	virtual void AddMRUEntry(LPCTSTR lpszFile) = 0;
 	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme) = 0;
 	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL, HWND hWndCaller = NULL) = 0;
-	virtual void SetStatusText(LPCTSTR text) = 0;
+	virtual void SetStatusText(LPCTSTR text, bool bLongLife = true) = 0;
 	virtual void SaveAll() = 0;
 	virtual void OpenFile(LPCTSTR lpszFilename) = 0;
 	virtual bool CheckAlreadyOpen(LPCTSTR lpszFilename, EAlreadyOpenAction action) = 0;
