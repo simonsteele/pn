@@ -238,6 +238,257 @@ void SchemeRecorder::SetDefStyle(StyleDetails* defaults)
 }
 
 ////////////////////////////////////////////////////////////
+// CSchemeLoaderState Implementation
+////////////////////////////////////////////////////////////
+
+CSchemeLoaderState::~CSchemeLoaderState()
+{
+	for(SDNM_IT i = m_StyleClasses.begin(); i != m_StyleClasses.end(); ++i)
+	{
+		delete (*i).second;
+	}
+
+	for(CNM_IT i = m_CustomSchemes.begin(); i != m_CustomSchemes.end(); ++i)
+	{
+		delete (*i).second;
+	}
+}
+
+////////////////////////////////////////////////////////////
+// UserSettingsParser Implementation
+////////////////////////////////////////////////////////////
+
+UserSettingsParser::UserSettingsParser()
+{
+	pScheme = NULL;
+}
+
+void UserSettingsParser::Parse(LPCTSTR path, CSchemeLoaderState*	pState)
+{
+	XMLParserCallback<UserSettingsParser> callback(*this, startElement, endElement, characterData);
+
+	XMLParser parser;
+	parser.SetParseState(&callback);
+	
+	callback.SetUserData((void*)pState);
+
+	pState->m_pParser = &parser;
+
+	pState->m_State = 0;
+
+	CSRegistry reg;
+	reg.OpenKey(_T("Software\\Echo Software\\PN2\\SchemeDates"), true);
+	reg.WriteInt(_T("UserSettings"),  FileAge(path));
+
+	try
+	{
+		parser.LoadFile(path);
+	}
+	catch (CSchemeCompilerException& E)
+	{
+		CString err;
+		err.Format(_T("Error Parsing Scheme XML: %s\n (file: %s, line: %d, column %d)"), 
+			E.GetMessage(), E.GetFileName(), E.GetLine(), E.GetColumn());
+		
+		OutputDebugString(err);
+	}
+}
+
+void UserSettingsParser::characterData(void* userData, LPCTSTR data, int len)
+{
+	CSchemeLoaderState* pState = static_cast<CSchemeLoaderState*>(userData);
+
+	if(pState->m_State == US_KEYWORDS)
+	{
+		CString cdata;
+		TCHAR* buf = cdata.GetBuffer(len+1);
+		_tcsncpy(buf, data, len);
+		buf[len] = 0;
+		cdata.ReleaseBuffer();
+
+		pState->m_csCData += cdata;
+	}
+}
+
+void UserSettingsParser::startElement(void *userData, LPCTSTR name, XMLAttributes& atts)
+{
+	CSchemeLoaderState* pState = static_cast<CSchemeLoaderState*>(userData);
+	int state = pState->m_State;
+
+	if(state == US_SCHEMES && (_tcscmp(name, _T("scheme")) == 0))
+	{
+		processScheme(pState, atts);
+	}
+	else if(state == US_SCHEME || state == US_KEYWORD_OVERRIDES || state == US_STYLE_OVERRIDES)
+	{
+		processSchemeElement(pState, name, atts);
+	}
+	else if(_tcscmp(name, _T("schemes")) == 0)
+	{
+		pState->m_State = US_SCHEMES;
+	}
+}
+
+void UserSettingsParser::endElement(void *userData, LPCTSTR name)
+{
+	CSchemeLoaderState* pState = static_cast<CSchemeLoaderState*>(userData);
+	int state = pState->m_State;
+
+	if(state == US_KEYWORDS && (_tcscmp(name, _T("set")) == 0))
+	{
+		pState->m_csCData.Replace(_T("\r"), _T(""));
+		pState->m_csCData.Replace(_T("\n"), _T(" "));
+		pState->m_csCData.Replace(_T("\t"), _T(" "));
+		while (pState->m_csCData.Replace(_T("  "), _T(" ")));
+		pState->m_csCData.TrimLeft(_T(' '));
+		pState->m_csCData.TrimRight(_T(' '));
+
+		if(pState->m_csCData.GetLength() > 0)
+		{
+			CustomKeywordSet* pSet = new CustomKeywordSet;
+			pSet->key = m_idval;
+			pSet->pWords = new TCHAR[pState->m_csCData.GetLength()+1];
+			_tcscpy(pSet->pWords, (LPCTSTR)pState->m_csCData);
+			pScheme->AddKeywordSet(pSet);
+		}
+
+		pState->m_State = US_KEYWORD_OVERRIDES;
+	}
+	else if(state == US_SCHEME && (_tcscmp(name, _T("scheme")) == 0))
+	{
+		pState->m_CustomSchemes.insert(pState->m_CustomSchemes.begin(), CUSTOMISED_NAMEMAP::value_type(m_SchemeName, pScheme));
+		pScheme = NULL;
+
+		pState->m_State = US_SCHEMES;
+	}
+	else if(state == US_SCHEMES && (_tcscmp(name, _T("schemes")) == 0))
+	{
+		pState->m_State = 0;
+	}
+	else if(state == US_KEYWORD_OVERRIDES && (_tcscmp(name, _T("override-keywords")) == 0))
+	{
+		pState->m_State = US_SCHEME;
+	}
+	else if(state == US_STYLE_OVERRIDES && (_tcscmp(name, _T("override-styles")) == 0))
+	{
+		pState->m_State = US_SCHEME;
+	}
+
+	pState->m_csCData = _T("");
+}
+
+
+void UserSettingsParser::processSchemeElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts)
+{
+	if(pState->m_State == US_STYLE_OVERRIDES)
+	{
+		if(_tcscmp(name, _T("style")) == 0)
+		{
+			StyleDetails* pStyle = new StyleDetails;
+			int c = atts.getCount();
+			
+			for(int i = 0; i < c; i++)
+			{
+				LPCTSTR aname = atts.getName(i);
+			
+				if(_tcscmp(aname, _T("key")) == 0)
+				{
+					pStyle->Key = _ttoi(atts.getValue(i));
+				}
+				if(_tcscmp(aname, _T("font")) == 0)
+				{
+					pStyle->FontName = atts.getValue(i);
+					pStyle->values |= edvFontName;
+				}
+				else if(_tcscmp(aname, _T("size")) == 0)
+				{
+					pStyle->FontSize = _ttoi(atts.getValue(i));
+					pStyle->values |= edvFontSize;
+				}
+				else if(_tcscmp(aname, _T("fore")) == 0)
+				{
+					pStyle->ForeColor = PNStringToColor(atts.getValue(i));
+					pStyle->values |= edvForeColor;
+				}
+				else if(_tcscmp(aname, _T("back")) == 0)
+				{
+					pStyle->BackColor = PNStringToColor(atts.getValue(i));
+					pStyle->values |= edvBackColor;
+				}
+				else if(_tcscmp(aname, _T("bold")) == 0)
+				{
+					pStyle->Bold = PNStringToBool(atts.getValue(i));
+					pStyle->values |= edvBold;
+				}
+				else if(_tcscmp(aname, _T("italic")) == 0)
+				{
+					pStyle->Italic = PNStringToBool(atts.getValue(i));
+					pStyle->values |= edvItalic;
+				}
+				else if(_tcscmp(aname, _T("underline")) == 0)
+				{
+					pStyle->Underline = PNStringToBool(atts.getValue(i));
+					pStyle->values |= edvUnderline;
+				}
+				else if(_tcscmp(aname, _T("eolfilled")) == 0)
+				{
+					pStyle->EOLFilled = PNStringToBool(atts.getValue(i));
+					pStyle->values |= edvEOLFilled;
+				}
+				else if(_tcscmp(aname, _T("class")) == 0)
+				{
+					pStyle->classname = atts.getValue(i);
+					pStyle->values |= edvClass;
+				}
+			}
+
+			pScheme->m_Styles.push_back(pStyle);
+		}
+	}
+	else if (pState->m_State == US_KEYWORD_OVERRIDES)
+	{
+		if(_tcscmp(name, _T("set")) == 0)
+		{
+			LPCTSTR key = atts.getValue(_T("id"));
+			m_idval = _ttoi(key);
+
+			pState->m_csCData = _T("");
+
+			pState->m_State = US_KEYWORDS;
+		}
+	}
+	else if(pState->m_State == US_SCHEME)
+	{
+		if(_tcscmp(name, _T("override-keywords")) == 0)
+		{
+			pState->m_State = US_KEYWORD_OVERRIDES;
+		}
+		else if(_tcscmp(name, _T("override-styles")) == 0)
+		{
+			pState->m_State = US_STYLE_OVERRIDES;
+		}
+	}
+}
+
+void UserSettingsParser::processScheme(CSchemeLoaderState* pState, XMLAttributes& atts)
+{
+	LPCTSTR pName =  atts.getValue(_T("name"));
+
+	if(pName && ((int)_tcslen(pName) > 0))
+	{
+		pScheme = new CustomisedScheme;
+		m_SchemeName = pName;
+		pState->m_State = US_SCHEME;
+	}
+#ifdef _DEBUG
+	else
+	{
+		::OutputDebugStr(_T("UserSettingsParser::processScheme(): Scheme section without name attribute.\n"));
+	}
+#endif
+}
+
+////////////////////////////////////////////////////////////
 // SchemeCompiler Implementation
 ////////////////////////////////////////////////////////////
 
@@ -245,6 +496,14 @@ void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 {
 	XMLParserCallback<SchemeCompiler> callback(*this, startElement, endElement, characterData);
 	
+	UserSettingsParser p;
+	CString UserSettingsFile = outpath;
+	UserSettingsFile += _T("UserSettings.xml");
+	//if(FileExists((LPCTSTR)UserSettingsFile))
+	//{
+		//p.Parse(UserSettingsFile, &m_LoadState);
+	//}
+
 	XMLParser parser;
 	parser.SetParseState(&callback);
 	
@@ -392,6 +651,33 @@ void SchemeCompiler::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts,
 	}
 }
 
+void SchemeCompiler::customiseStyle(StyleDetails* style, StyleDetails* custom)
+{
+	if(custom->values & edvFontName)
+		style->FontName = custom->FontName;
+	
+	if(custom->values & edvFontSize)
+		style->FontSize = custom->FontSize;
+
+	if(custom->values & edvForeColor)
+		style->ForeColor = custom->ForeColor;
+
+	if(custom->values & edvBackColor)
+		style->BackColor = custom->BackColor;
+
+	if(custom->values & edvBold)
+		style->Bold = custom->Bold;
+
+	if(custom->values & edvItalic)
+		style->Italic = custom->Italic;
+
+	if(custom->values & edvUnderline)
+		style->Underline = custom->Underline;
+
+	if(custom->values & edvEOLFilled)
+		style->EOLFilled = custom->EOLFilled;
+}
+
 void SchemeCompiler::sendStyle(StyleDetails* s, SchemeRecorder* compiler)
 {
 	compiler->StyleSetFont(s->Key, s->FontName.c_str());
@@ -449,10 +735,29 @@ void SchemeCompiler::processStyleClass(CSchemeLoaderState* pState, XMLAttributes
 
 void SchemeCompiler::processLanguageStyle(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
-	CString classname = atts.getValue(_T("class"));
+	CString classname;
+	StyleDetails* pCustom = NULL;
 	StyleDetails* pBase = &pState->m_Default;
 
-	if(classname != _T("default"))
+	LPCTSTR skey = atts.getValue(_T("key"));
+	int key = _ttoi(skey);
+
+	if(pState->m_pCustom)
+	{
+		pCustom = pState->m_pCustom->FindStyle(key);
+		if(pCustom)
+		{
+			if(pCustom->values |= edvClass)
+				classname = pCustom->classname.c_str();
+		}
+	}
+
+	if(classname.GetLength() == 0)
+	{
+		classname = atts.getValue(_T("class"));
+	}
+
+	if((classname.GetLength() > 0) && (classname != _T("default")))
 	{
 		SDNM_IT i = pState->m_StyleClasses.find(classname);
 		if(i != pState->m_StyleClasses.end())
@@ -463,13 +768,15 @@ void SchemeCompiler::processLanguageStyle(CSchemeLoaderState* pState, XMLAttribu
 
 	parseStyle(pState, atts, &Style);
 
-	LPCTSTR key = atts.getValue(_T("key"));
-	Style.Key = _ttoi(key);
+	Style.Key = key;
 
 	if(Style.Key == STYLE_DEFAULT)
 	{
 		m_Recorder.SetDefStyle(&pState->m_Default);
 	}
+
+	if(pCustom)
+		customiseStyle(&Style, pCustom);
 
 	sendStyle(&Style, &m_Recorder);	
 }
@@ -520,6 +827,17 @@ void SchemeCompiler::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR 
 		LPCTSTR title = atts.getValue(_T("title"));
 		if(scheme != NULL)
 		{
+			pState->m_csLangName = scheme;
+			CNM_IT custom = pState->m_CustomSchemes.find(pState->m_csLangName);
+			if(custom != pState->m_CustomSchemes.end())
+			{
+				pState->m_pCustom = (*custom).second;
+			}
+			else
+			{
+				pState->m_pCustom = NULL;
+			}
+
 			CString filename(pState->m_csOutPath);
 			filename += scheme;
 			filename += ".cscheme";
@@ -715,28 +1033,28 @@ void SchemeCompiler::startElement(void *userData, LPCTSTR name, XMLAttributes& a
 	}
 	else if(_tcscmp(name, _T("globals")) == 0)
 	{		
-		stattext.Format(_T("Processing Globals\r\n"));
+		stattext = _T("Processing Globals\r\n");
 		pState->m_State = DOING_GLOBALS;
 	}
 	else if(_tcscmp(name, _T("keyword-classes")) == 0)
 	{
-		stattext.Format(_T("Processing Keyword Classes\r\n"));
+		stattext = _T("Processing Keyword Classes\r\n");
 		pState->m_State = DOING_KEYWORDC;
 	}
 	else if(_tcscmp(name, _T("style-classes")) == 0)
 	{
-		stattext.Format(_T("Processing Style Classes\r\n"));
+		stattext = _T("Processing Style Classes\r\n");
 		pState->m_State = DOING_STYLECS;
 	}
 	else if(_tcscmp(name, _T("language")) == 0)
 	{
-		stattext.Format(_T("Processing Language\r\n"));
+		stattext = _T("Processing Language\r\n");
 		pState->m_State = DOING_LANGUAGE;
 		processLanguageElement(pState, name, atts);
 	}
 	else if(_tcscmp(name, _T("imports")) == 0)
 	{
-		stattext.Format(_T("Processing Import Specs\r\n"));
+		stattext = _T("Processing Import Specs\r\n");
 		pState->m_State = DOING_IMPORTS;
 	}
 	else

@@ -13,6 +13,14 @@
 #define _WIN32_IE	0x0400
 #define _RICHEDIT_VER	0x0100
 
+#ifdef _DEBUG
+
+#define CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
+#endif
+
 #include <atlbase.h>
 #include <atlapp.h>
 

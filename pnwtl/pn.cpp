@@ -61,6 +61,7 @@ void Shutdown()
 {
 	CSchemeManager::DeleteInstance();
 	COptionsManager::DeleteInstance();
+	CSMenuManager::ReleaseInstance();
 }
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
@@ -83,7 +84,10 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 	int nRet = theLoop.Run();
 
+	Shutdown();
+
 	_Module.RemoveMessageLoop();
+
 	return nRet;
 }
 
@@ -113,6 +117,10 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 	_Module.Term();
 	::CoUninitialize();
+
+#ifdef _DEBUG
+	_CrtDumpMemoryLeaks();
+#endif
 
 	return nRet;
 }

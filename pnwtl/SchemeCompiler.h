@@ -20,7 +20,8 @@
 #include <list>
 #include <map>
 
-using namespace std;
+using std::list;
+using std::map;
 
 typedef map<CString, CString> CSTRING_MAP;
 typedef list<CString> CSTRING_LIST;
@@ -66,6 +67,10 @@ typedef enum {nrMsgRec, nrTextRec} eNextRec;
 typedef enum {fldEnabled = 1, fldCompact = 2, fldComments = 4, fldPreProc = 8} eFoldFlags;
 //typedef enum {ovrTabWidth = 1, ovrIndentGuides = 2} eOverrideFlags;
 
+typedef enum {edvFontName = 0x0001,	edvFontSize = 0x0002, edvForeColor = 0x0004, edvBackColor = 0x0008,
+				edvBold = 0x0010, edvItalic = 0x0020, edvUnderline = 0x0040, edvEOLFilled = 0x0080, 
+				edvClass = 0x0100} EValuesSet;
+
 // Parser State Defines
 #define DOING_GLOBALS			1
 #define DOING_GLOBAL			2
@@ -79,6 +84,12 @@ typedef enum {fldEnabled = 1, fldCompact = 2, fldComments = 4, fldPreProc = 8} e
 #define DOING_LANGUAGE_STYLES	10
 #define	DOING_IMPORTS			11
 #define DOING_KEYWORDCOMBINE	12
+
+#define US_SCHEMES				1
+#define US_SCHEME				2
+#define US_KEYWORD_OVERRIDES	3
+#define US_STYLE_OVERRIDES		4
+#define US_KEYWORDS				5
 
 // File Content Defines
 #define CompileVersion 0x03
@@ -129,18 +140,110 @@ class StyleDetails
 		bool Italic;
 		bool Underline;
 		bool EOLFilled;
+
+		std::string classname;
+		int values;
 };
 
+typedef list<StyleDetails*>	STYLES_LIST;
+typedef STYLES_LIST::iterator SL_IT;
+
+struct CustomKeywordSet
+{
+	int		key;
+	TCHAR*	pWords;
+	CustomKeywordSet* pNext;
+};
+
+class CustomisedScheme
+{
+public:
+	CustomisedScheme()
+	{
+		pKeywordSets = NULL;
+		pLast = NULL;
+	}
+
+	~CustomisedScheme()
+	{
+		CustomKeywordSet* pSet = pKeywordSets;
+		CustomKeywordSet* pDel;
+		while(pSet)
+		{
+			pDel = pSet;
+			pSet = pSet->pNext;
+			if(pDel->pWords)
+				delete [] pDel->pWords;
+			delete pDel;
+		}
+
+		pKeywordSets = NULL;
+
+		for(SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
+		{
+			delete (*i);
+		}
+	}
+
+	void AddKeywordSet(CustomKeywordSet* pSet)
+	{
+		if(pLast)
+		{
+			pLast->pNext = pSet;
+			pLast = pSet;
+		}
+		else
+		{
+			pKeywordSets = pLast = pSet;
+		}
+		pLast->pNext = NULL;
+	}
+
+	CustomKeywordSet* FindKeywordSet(int key)
+	{
+		CustomKeywordSet* pSet = pKeywordSets;
+		while(pSet)
+		{
+			if(pSet->key == key)
+				break;
+			pSet = pSet->pNext;
+		}
+		return pSet;
+	}
+
+	StyleDetails* FindStyle(int key)
+	{
+		for(SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
+		{
+			if((*i)->Key == key)
+				return *i;
+		}
+		return NULL;
+	}
+
+	STYLES_LIST	m_Styles;
+
+protected:
+	CustomKeywordSet* pKeywordSets;
+	CustomKeywordSet* pLast;
+};
+
+typedef map<CString, CustomisedScheme*> CUSTOMISED_NAMEMAP;
+typedef CUSTOMISED_NAMEMAP::iterator CNM_IT;
 typedef map<CString, StyleDetails*> STYLEDETAILS_NAMEMAP;
 typedef STYLEDETAILS_NAMEMAP::iterator SDNM_IT;
 
 class CSchemeLoaderState
 {
 	public:
+		~CSchemeLoaderState();
 		CSTRING_MAP				m_Globals;
 		CSTRING_MAP				m_Keywords;
 		STYLEDETAILS_NAMEMAP	m_StyleClasses;
 		StyleDetails			m_Default;
+
+		CUSTOMISED_NAMEMAP		m_CustomSchemes;
+		CustomisedScheme*		m_pCustom;
 
 		XMLParser*				m_pParser;
 
@@ -194,6 +297,26 @@ class SchemeRecorder : public CScintilla
 		eTextType		m_tType;
 };
 
+class UserSettingsParser
+{
+	public:
+		UserSettingsParser();
+		void Parse(LPCTSTR path, CSchemeLoaderState*	pState);
+
+	protected:
+		CustomisedScheme*	pScheme;
+		CString				m_SchemeName;
+		int					m_idval;
+
+	protected:
+		void characterData(void* userData, LPCTSTR data, int len);
+		void endElement(void *userData, LPCTSTR name);
+		void startElement(void *userData, LPCTSTR name, XMLAttributes& atts);
+
+		void processScheme(CSchemeLoaderState* pState, XMLAttributes& atts);
+		void processSchemeElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts);
+};
+
 /**
  * XML Scheme Compiler
  * Uses James Clark's XML parser expat.
@@ -222,6 +345,7 @@ class SchemeCompiler
 		void parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, StyleDetails* pStyle);
 		void processKeywordClass(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processGlobal(CSchemeLoaderState* pState, XMLAttributes& atts);
+		void customiseStyle(StyleDetails* style, StyleDetails* custom);
 };
 
 #endif //#ifndef schemecompiler_h__included
