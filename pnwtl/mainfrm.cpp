@@ -53,12 +53,7 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4)
 
 	m_CmdBar.SetCallback(this, OnMDISetMenu);
 
-	ACCEL a;
-	a.cmd = ID_FILE_NEW_WORKSPACE;
-	a.fVirt = FVIRTKEY | FCONTROL;
-	a.key = (WORD)'Q';
-
-	m_hToolAccel = ::CreateAcceleratorTable(&a, 1);
+	m_hToolAccel = NULL;
 }
 
 CMainFrame::~CMainFrame()
@@ -208,6 +203,16 @@ void CMainFrame::OnMDISetMenu(HMENU hOld, HMENU hNew)
 	MoveMRU(r, a);
 	MoveLanguage(r, a);
 	MoveNewMenu(r, a);
+
+	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
+	if(pChild)
+	{
+		m_hToolAccel = pChild->GetToolAccelerators();
+	}
+	else
+	{
+		m_hToolAccel = NULL;
+	}
 }
 
 /* Notes: This function could be completely removed by doing the following:

@@ -1252,6 +1252,12 @@ CTextView* CChildFrame::GetTextView()
 	return &m_view;
 }
 
+HACCEL CChildFrame::GetToolAccelerators()
+{
+	SchemeTools* pTools = SchemeToolsManager::GetInstance()->GetToolsFor( m_view.GetCurrentScheme()->GetName() );
+	return pTools->GetAcceleratorTable();
+}
+
 ////////////////////////////////////////////////////
 // CChildFrame::CCFSplitter
 

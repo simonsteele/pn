@@ -107,11 +107,11 @@ void AccelFromCode(ACCEL& accel, WORD wCmd, DWORD hotkey)
 	ATLASSERT(wCmd != 0);
 	ATLASSERT(hotkey != 0);
 	accel.cmd = wCmd;
-	accel.key = LOWORD(hotkey);
+	accel.key = LOBYTE(hotkey);
 	accel.fVirt = FVIRTKEY | FNOINVERT;
-	if( HIWORD(hotkey) & HOTKEYF_ALT ) accel.fVirt |= FALT;
-	if( HIWORD(hotkey) & HOTKEYF_CONTROL ) accel.fVirt |= FCONTROL;
-	if( HIWORD(hotkey) & HOTKEYF_SHIFT ) accel.fVirt |= FSHIFT;      
+	if( HIBYTE(hotkey) & HOTKEYF_ALT ) accel.fVirt |= FALT;
+	if( HIBYTE(hotkey) & HOTKEYF_CONTROL ) accel.fVirt |= FCONTROL;
+	if( HIBYTE(hotkey) & HOTKEYF_SHIFT ) accel.fVirt |= FSHIFT;      
 }
 
 HACCEL SchemeTools::GetAcceleratorTable()
@@ -141,6 +141,9 @@ HACCEL SchemeTools::GetAcceleratorTable()
 
 	if(accelCount > 0)
 		m_hAccel = ::CreateAcceleratorTable(accels, accelCount);
+
+	delete [] accels;
+
 	return m_hAccel;
 }
 

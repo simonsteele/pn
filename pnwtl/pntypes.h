@@ -72,7 +72,7 @@ public:
 	tstring Command;
 	tstring	Folder;
 	tstring	Params;
-	DWORD	Shortcut;
+	WORD	Shortcut;
 	tstring CustomParsePattern;
 	int		CommandID;
 	int		iFlags;

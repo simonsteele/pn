@@ -236,6 +236,8 @@ public:
 
 	CTextView* GetTextView();
 
+	HACCEL GetToolAccelerators();
+
 	////////////////////////////////////////////////////
 	// ToolOwner needed methods.
 
