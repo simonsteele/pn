@@ -996,13 +996,14 @@ BOOL CMainFrame::TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPAR
 	return bRet;
 }
 
-void CMainFrame::SetStatusText(LPCTSTR text)
+void CMainFrame::SetStatusText(LPCTSTR text, bool bLongLife)
 {
 	if(text)
 	{
 		m_StatusBar.SetPaneText(ID_DEFAULT_PANE, text, (m_bIsXPOrLater ? SBT_NOBORDERS : 0));
 		m_bShowingDefaultStatus = false;
-		m_statusResetCounter = 2;
+		if(bLongLife)
+			m_statusResetCounter = 2;
 	}
 	else
 		if(!m_bShowingDefaultStatus)

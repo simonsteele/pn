@@ -193,7 +193,7 @@ public:
 	virtual void AddMRUEntry(LPCTSTR lpszFile);
 	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme);
 	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL, HWND hWndCaller = NULL);
-	virtual void SetStatusText(LPCTSTR text);
+	virtual void SetStatusText(LPCTSTR text, bool bLongLife = true);
 	virtual void SaveAll();
 	virtual void OpenFile(LPCTSTR pathname);
 	virtual bool CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction = COptionsManager::GetInstance()->AlreadyOpenAction);
