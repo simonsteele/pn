@@ -49,9 +49,6 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4)
 
 CMainFrame::~CMainFrame()
 {
-	CloseAndFreeDlg(m_FindDialog);
-	CloseAndFreeDlg(m_ReplaceDialog);
-
 	if(m_pOutputWnd)
 		delete m_pOutputWnd;
 }
@@ -265,8 +262,13 @@ LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		bHandled = FALSE;
 
 		SaveGUIState();
+
+		CloseAndFreeDlg(m_FindDialog);
+		CloseAndFreeDlg(m_ReplaceDialog);
+		m_FindDialog = NULL;
+		m_ReplaceDialog = NULL;
 	}
-	
+
 	return 0;
 }
 
@@ -619,8 +621,13 @@ LRESULT CMainFrame::OnFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 		m_FindDialog = new CFindDlg;
 		hFindWnd = m_FindDialog->Create(m_hWnd);
 	}
+
+	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
+	if(pChild)
+		m_FindDialog->Show(pChild->GetTextView()->GetCurrentWord().c_str());
+	else
+		m_FindDialog->Show(NULL);
 	
-	m_FindDialog->ShowWindow(SW_SHOW);
 
 	return 0;
 }
@@ -633,7 +640,11 @@ LRESULT CMainFrame::OnReplace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 		hReplWnd = m_ReplaceDialog->Create(m_hWnd);
 	}
 
-	m_ReplaceDialog->ShowWindow(SW_SHOW);
+	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
+	if(pChild)
+		m_ReplaceDialog->Show(pChild->GetTextView()->GetCurrentWord().c_str());
+	else
+		m_ReplaceDialog->Show(NULL);
 
 	return 0;
 }

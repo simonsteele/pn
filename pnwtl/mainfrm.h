@@ -253,8 +253,7 @@ protected:
 		if(pD)
 		{
 			if(::IsWindow(pD->m_hWnd))
-				if(pD->IsWindowVisible())
-					pD->PostMessage(WM_CLOSE);
+				pD->DestroyWindow();
 			delete pD;
 		}
 	}

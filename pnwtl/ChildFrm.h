@@ -223,7 +223,7 @@ public:
 	////////////////////////////////////////////////////
 	// Editor Window Methods
 
-	bool FindNext(SFindOptions* options);
+	int FindNext(SFindOptions* options);
 	bool Replace(SReplaceOptions* options);
 	int ReplaceAll(SReplaceOptions* options);
 	void HighlightAll(SFindOptions* options);

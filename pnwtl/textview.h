@@ -57,6 +57,8 @@ public:
 	void ShowLineNumbers(bool bShow);
 
 	void SetPosStatus(CMultiPaneStatusBarCtrl& stat);
+
+	tstring GetCurrentWord();
 	
 	////////////////////////////////////////////////////////////////
 	// Overrides from CScintillaImpl / CScintillaWindowImpl

@@ -6,15 +6,13 @@
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
- * 
- * Note that the dialogs multiply inherit from CWinDataExchange,
- * this adds WTL DDX support.
  */
 
 #ifndef finddlg_h__included
 #define finddlg_h__included
 
 #include "CustomAutoComplete.h"
+#include "include/accombo.h"
 
 /**
  * @class CSearchDlg
@@ -24,42 +22,118 @@ template <class T, class TBase = CWindow>
 class ATL_NO_VTABLE CSearchDlg : public CDialogImpl<T, TBase>
 {
 public:
+	void Show(LPCTSTR findText = NULL)
+	{
+		T* pThis = static_cast<T*>(this);
+		SetFindText(findText);
+		pThis->DoDataExchange(FALSE);
+
+		// Place the dialog so it doesn't hide the text under the caret
+		CChildFrame* editor = GetCurrentEditorWnd();
+		if(editor)
+		{
+			// Get the position on screen of the caret.
+			CTextView* textView = editor->GetTextView();
+			long pos = textView->GetCurrentPos();
+			POINT pt = {
+				textView->PointXFromPosition(pos),
+				textView->PointYFromPosition(pos)
+			};
+			int lineHeight = textView->TextHeight(0);
+			editor->ClientToScreen(&pt);
+			
+			// Place the window away from the caret.
+			pThis->PlaceWindow(pt, lineHeight);
+		}
+
+		ShowWindow(SW_SHOW);
+		
+		pThis->m_FindTextCombo.SetFocus();
+	}
+
+	/**
+	 * @brief Places the window so that it does not cover the cursor.
+	 * @param pt constant reference to the point that should not be covered by the dialog
+	 * @param lineHeight line height as specified by Scintilla.
+	 */
+	void PlaceWindow(const POINT& pt, int lineHeight = 10)
+	{
+		T* pThis = static_cast<T*>(this);
+
+		// Get current pos and size
+		RECT rc;
+		pThis->GetWindowRect(&rc);
+		POINT winPos = { rc.left, rc.top };
+		SIZE winSize = { rc.right - rc.left, rc.bottom - rc.top };
+
+		// Default to place the dialog above the line
+		POINT pos = winPos;
+		if(rc.bottom >= pt.y && rc.top <= pt.y)
+			pos.y = pt.y - winSize.cy - lineHeight;
+		if(pos.y < 0)
+			pos.y = max(0, pt.y + lineHeight);
+
+		::GetWindowRect(pThis->GetWindow(GW_OWNER), &rc);
+		// TODO: 
+		pos.x = rc.right - winSize.cx - ::GetSystemMetrics(SM_CXVSCROLL);
+
+		// Ensure that the dialog is inside the work area
+		RECT rcWa;
+		::SystemParametersInfo(SPI_GETWORKAREA, 0, &rcWa, FALSE);
+		if(pos.x + winSize.cx > rcWa.right - rcWa.left)
+			pos.x = rcWa.right - rcWa.left - winSize.cx;
+		if(pos.x < rcWa.left)
+			pos.x = rcWa.left;
+		if(pos.y + winSize.cy > rcWa.bottom - rcWa.top)
+			pos.y = rcWa.bottom - rcWa.top - winSize.cy;
+		if(pos.y < rcWa.top)
+			pos.y = rcWa.top;
+
+		// Move when the pos changed only
+		if(winPos.x != pos.x || winPos.y != pos.y)
+			// note no SWP_SHOWWINDOW - this causes OnShowWindow not to be called on creation.
+			pThis->SetWindowPos(NULL, pos.x, pos.y, 0, 0, SWP_NOSIZE | SWP_NOZORDER /*| SWP_SHOWWINDOW*/);
+	}
+
+	bool FindNext()
+	{
+		int found = 0;
+
+		CChildFrame* editor = GetCurrentEditorWnd();
+
+		if(editor != NULL)
+		{
+			T* pThis = static_cast<T*>(this);
+			SFindOptions* pOptions = pThis->GetOptions();
+			found = editor->FindNext(pOptions);			
+		}
+		
+		return found != 0;
+	}
+
 	BEGIN_MSG_MAP(CSearchDlg)
 	END_MSG_MAP()
 
 protected:
-	int DoRegExpInsert(CComboBoxEx* pCB, LPCTSTR insert, CString& str, int offset)
+	int DoRegExpInsert(BXT::CComboBoxAC* pCB, LPCTSTR insert, CString& str, int offset)
 	{
-		CHARRANGE lastsel;
-		CEdit cbedit = pCB->GetEditCtrl();
-		::SendMessage((HWND)cbedit, EM_GETSEL, (WPARAM)&lastsel.cpMin, (LPARAM)&lastsel.cpMax);
+		CEdit cbedit(pCB->m_edit);
+		DWORD dwSel = cbedit.GetSel();
+		cbedit.ReplaceSel(insert);
 
-		int strl = str.GetLength();
-		bool sel = (lastsel.cpMin != lastsel.cpMax);
-		
-		if(!sel && strl == lastsel.cpMin)
-		{
-			// We are just adding to the end.
-			str += insert;
-		}
-		else
-		{
-			if(sel)
-			{
-				str.Delete(lastsel.cpMin, lastsel.cpMax-lastsel.cpMin);
-			}
-			str.Insert(lastsel.cpMin, insert);
-		}
-
-		int ret = lastsel.cpMin;
+		int pos = LOWORD(dwSel);
 		if(offset != 0)
-		{
-			ret += offset;
-		}
+			pos += offset;
 		else
-			ret += _tcslen(insert);
+			pos += _tcslen(insert);
+		cbedit.SetFocus();
+		cbedit.SetSel(pos, pos);
 
-		return ret;
+		// DoDataExchange() seems to take care of it.
+//		cbedit.GetWindowText(str);
+//		GetFindStartPos();
+
+		return pos;
 	}
 
 	int GetRegExpString(int nID, CString& Text)
@@ -133,10 +207,17 @@ protected:
 	{
 		return CChildFrame::FromHandle(GetCurrentEditor());
 	}
+
+	void SetFindText(LPCTSTR findText)
+	{
+		T* pT = static_cast<T*>(this);
+		pT->m_FindText = findText;
+	}
 };
 
 class CFindDlg : public CSearchDlg<CFindDlg>,
-					public CWinDataExchange<CFindDlg>
+					public CWinDataExchange<CFindDlg>,
+					public CUpdateUI<CFindDlg>
 {
 public:
 	enum { IDD = IDD_FIND };
@@ -146,14 +227,18 @@ public:
 		return IsDialogMessage(pMsg);
 	}
 
+	BEGIN_UPDATE_UI_MAP(CFindDlg)
+		UPDATE_ELEMENT(IDC_REHELPER_BUTTON, UPDUI_CHILDWINDOW)
+	END_UPDATE_UI_MAP()
+
 	BEGIN_MSG_MAP(CFindDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDC_FINDNEXT_BUTTON, OnFindNextClicked)
 		COMMAND_ID_HANDLER(IDC_REHELPER_BUTTON, OnReHelperClicked)
 		COMMAND_RANGE_HANDLER(ID_REGEXP_ANYCHARACTER, ID_REGEXP_GROUP, OnReInsertClicked)
+		COMMAND_ID_HANDLER(IDC_REGEXP_CHECK, OnUseRegExpClicked)
 		MESSAGE_HANDLER(WM_SHOWWINDOW, OnShowWindow)
 		REFLECT_NOTIFICATIONS ()
 	END_MSG_MAP()
@@ -175,32 +260,19 @@ public:
 		::GetWindowRect(GetDlgItem(IDC_FINDTEXT_DUMMY), rc);
 		ScreenToClient(rc);
 
-		m_FindTextCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO);
-		::SetWindowPos(m_FindTextCombo, GetDlgItem(IDC_FINDTEXT_DUMMY), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+		m_FindTextCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO,
+			_T("Software\\Echo Software\\PN2\\AutoComplete\\Find"), IDC_FINDTEXT_DUMMY);
 
 		m_ReHelperBtn.SubclassWindow(GetDlgItem(IDC_REHELPER_BUTTON));
-		
-		m_fAC = new CCustomAutoComplete( HKEY_CURRENT_USER, _T("Software\\Echo Software\\PN2\\AutoComplete\\Find")  );
 
-		m_fAC->Bind(m_FindTextCombo.GetEditCtrl(), ACO_UPDOWNKEYDROPSLIST | ACO_AUTOSUGGEST | ACO_AUTOAPPEND);
+		UIAddChildWindowContainer(m_hWnd);
 
 		CenterWindow(GetParent());
+
 		return TRUE;
 	}
 
-	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-	{
-		m_fAC->Unbind();
-		return 0;
-	}
-
-	void CloseDialog(int nVal)
-	{
-		DestroyWindow();
-		::PostQuitMessage(nVal);
-	}
-
-	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		//DoDataExchange(TRUE);
 		//EndDialog(wID);
@@ -208,27 +280,18 @@ public:
 		return 0;
 	}
 
-	LRESULT OnFindNextClicked(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	LRESULT OnFindNextClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		CChildFrame* editor = GetCurrentEditorWnd();
-	
-		if(editor != NULL)
+		if(FindNext())
 		{
-			SFindOptions* pOptions = GetFindOptions();
-			
-			m_fAC->AddItem( pOptions->FindText );
-
-			if( editor->FindNext(pOptions) )
-			{
-				// Default Visual C++, old PN and others behaviour:
-				///@todo implement window stays open behaviour as well...
-				ShowWindow(SW_HIDE);
-			}
+			// Default Visual C++, old PN and others behaviour:
+			///@todo implement window stays open behaviour as well...
+			ShowWindow(SW_HIDE);
 		}
 		return TRUE;
 	}
 
-	LRESULT OnReHelperClicked(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	LRESULT OnReHelperClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		CRect rc;
 		m_ReHelperBtn.GetWindowRect(&rc);
@@ -237,13 +300,14 @@ public:
 		return TRUE;
 	}
 
-	SFindOptions* GetFindOptions()
+	SFindOptions* GetOptions()
 	{
 		DoDataExchange(TRUE);
 
 		SFindOptions* pOptions = COptionsManager::GetInstanceRef().GetFindOptions();
 
-		pOptions->Found				= false;
+		//Found might often be true!
+		//pOptions->Found				= false;
 
 		pOptions->FindText			= m_FindText;
 		pOptions->Direction			= (m_Direction == 1);
@@ -260,12 +324,12 @@ public:
 
 	LRESULT OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
-		
 		if((BOOL)wParam)
 		{
 			SFindOptions* pOptions = COptionsManager::GetInstanceRef().GetFindOptions();
-			
-			m_FindText = pOptions->FindText;
+			SetFindText(m_FindText);
+			if(m_FindText.GetLength() == 0 && pOptions->FindText.GetLength())
+				m_FindText = pOptions->FindText;
 			m_Direction = pOptions->Direction;
 			m_bMatchCase = pOptions->MatchCase;
 			m_bMatchWhole = pOptions->MatchWholeWord;
@@ -276,6 +340,9 @@ public:
 			DoDataExchange(FALSE);
 
 			m_FindTextCombo.SetFocus();
+
+			UIEnable(IDC_REHELPER_BUTTON, m_bRegExp);
+			UIUpdateChildWindows();
 		}
 		return 0;
 	}
@@ -285,22 +352,26 @@ public:
 		CString Text;
 		int offset = GetRegExpString(nID, Text);
 
-		CString str;
 		DoDataExchange(TRUE);
-		str = m_FindText;
-		int pos = DoRegExpInsert(&m_FindTextCombo, Text, str, offset);
-		m_FindTextCombo.SetWindowText(str);
-		m_FindTextCombo.SetFocus();
-		m_FindTextCombo.SetEditSel(pos, pos);
-		
+		DoRegExpInsert(&m_FindTextCombo, Text, m_FindText, offset);
+
 		return TRUE;
 	}
 
-protected:
-	CComboBoxEx						m_FindTextCombo;
-	CArrowButton					m_ReHelperBtn;
+	LRESULT OnUseRegExpClicked(WORD /*wNotifyCode*/, WORD /*nID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		m_bRegExp = !m_bRegExp;
+		UIEnable(IDC_REHELPER_BUTTON, m_bRegExp);
+		UIUpdateChildWindows();
+		return TRUE;
+	}
 
-	CCustomAutoComplete*			m_fAC;
+	// Shared properties should be defined in CSearchDlg
+	friend CSearchDlg<CFindDlg>;
+
+protected:
+	BXT::CComboBoxAC				m_FindTextCombo;
+	CArrowButton					m_ReHelperBtn;
 
 	CString	m_FindText;
 	int		m_Direction;
@@ -311,14 +382,19 @@ protected:
 };
 
 class CReplaceDlg : public CSearchDlg<CReplaceDlg>,
-					public CWinDataExchange<CFindDlg>
+					public CWinDataExchange<CReplaceDlg>,
+					public CUpdateUI<CReplaceDlg>
 {
 public:
 	enum { IDD = IDD_REPLACE };
 
+	BEGIN_UPDATE_UI_MAP(CReplaceDlg)
+		UPDATE_ELEMENT(IDC_REHELPER_BUTTON, UPDUI_CHILDWINDOW)
+		UPDATE_ELEMENT(IDC_RHELPER_BUTTON, UPDUI_CHILDWINDOW)
+	END_UPDATE_UI_MAP()
+
 	BEGIN_MSG_MAP(CReplaceDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 		COMMAND_HANDLER(IDC_REHELPER_BUTTON, BN_CLICKED, OnReHelperClicked)
@@ -331,6 +407,7 @@ public:
 		COMMAND_HANDLER(IDC_REPLACE_BUTTON, BN_CLICKED, OnReplaceClicked)
 		COMMAND_HANDLER(IDC_REPLACEALL_BUTTON, BN_CLICKED, OnReplaceAllClicked)
 		COMMAND_HANDLER(IDC_REPLACEINSEL_BUTTON, BN_CLICKED, OnReplaceInSelectionClicked)
+		COMMAND_ID_HANDLER(IDC_REGEXP_CHECK, OnUseRegExpClicked)
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
 
@@ -352,7 +429,7 @@ public:
 
 		SReplaceOptions* pOptions = COptionsManager::GetInstanceRef().GetReplaceOptions();
 
-		pOptions->Found = false;
+		//pOptions->Found = false;	// found might be true!!
 
 		pOptions->FindText			= m_FindText;
 		pOptions->ReplaceText		= m_ReplaceText;
@@ -381,33 +458,21 @@ public:
 
 		::GetWindowRect(GetDlgItem(IDC_FINDTEXT_DUMMY), rc);
 		ScreenToClient(rc);
-		m_FindTextCombo.Create(m_hWnd, rc, _T("RFINDTEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO);
-		m_FindTextCombo.SetWindowPos(GetDlgItem(IDC_FINDTEXT_DUMMY), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-
-		m_pFAC = new CCustomAutoComplete(HKEY_CURRENT_USER, _T("Software\\Echo Software\\PN2\\AutoComplete\\Find"));;
-		m_pFAC->Bind(m_FindTextCombo.GetEditCtrl(), ACO_UPDOWNKEYDROPSLIST | ACO_AUTOSUGGEST | ACO_AUTOAPPEND);
+		m_FindTextCombo.Create(m_hWnd, rc, _T("RFINDTEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO,
+			_T("Software\\Echo Software\\PN2\\AutoComplete\\Find"), IDC_FINDTEXT_DUMMY);
 		
 		::GetWindowRect(GetDlgItem(IDC_REPLACETEXT_DUMMY), rc);
 		ScreenToClient(rc);
-		m_ReplaceTextCombo.Create(m_hWnd, rc, _T("REPLACETEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_REPLACETEXT_COMBO);
-		m_ReplaceTextCombo.SetWindowPos(GetDlgItem(IDC_REPLACETEXT_DUMMY), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+		m_ReplaceTextCombo.Create(m_hWnd, rc, _T("REPLACETEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_REPLACETEXT_COMBO,
+			_T("Software\\Echo Software\\PN2\\AutoComplete\\Replace"), IDC_REPLACETEXT_DUMMY);
 		
-		m_pRAC = new CCustomAutoComplete( HKEY_CURRENT_USER, _T("Software\\Echo Software\\PN2\\AutoComplete\\Replace"));
-		m_pRAC->Bind(m_ReplaceTextCombo.GetEditCtrl(), ACO_UPDOWNKEYDROPSLIST | ACO_AUTOSUGGEST | ACO_AUTOAPPEND);		
+		UIAddChildWindowContainer(m_hWnd);
 
 		CenterWindow(GetParent());
 		return TRUE;
 	}
 
-	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-	{
-		m_pFAC->Unbind();
-		m_pRAC->Unbind();
-		
-		return 0;
-	}
-
-	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		ShowWindow(SW_HIDE);
 		return 0;
@@ -435,13 +500,8 @@ public:
 		CString Text;
 		int offset = GetRegExpString(nID, Text);
 
-		CString str;
 		DoDataExchange(TRUE);
-		str = m_FindText;
-		int pos = DoRegExpInsert(&m_FindTextCombo, Text, str, offset);
-		m_FindTextCombo.SetWindowText(str);
-		m_FindTextCombo.SetFocus();
-		m_FindTextCombo.SetEditSel(pos, pos);
+		DoRegExpInsert(&m_FindTextCombo, Text, m_FindText, offset);
 		
 		return 0;
 	}
@@ -452,24 +512,29 @@ public:
 		CString Text;
 		Text.Format(_T("\\%d"), matchno);
 
-		CString str;
 		DoDataExchange(TRUE);
-		str = m_ReplaceText;
-		int pos = DoRegExpInsert(&m_ReplaceTextCombo, Text, str, 0);
-		m_ReplaceTextCombo.SetWindowText(str);
-		m_ReplaceTextCombo.SetFocus();
-		m_ReplaceTextCombo.SetEditSel(pos, pos);
+		DoRegExpInsert(&m_ReplaceTextCombo, Text, m_ReplaceText, 0);
 
 		return 0;
+	}
+
+	LRESULT OnUseRegExpClicked(WORD /*wNotifyCode*/, WORD /*nID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		m_bRegExp = !m_bRegExp;
+		UIEnable(IDC_REHELPER_BUTTON, m_bRegExp);
+		UIEnable(IDC_RHELPER_BUTTON, m_bRegExp);
+		UIUpdateChildWindows();
+		return TRUE;
 	}
 
 	LRESULT OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		if((BOOL) wParam)
 		{
-			SReplaceOptions* pOptions = COptionsManager::GetInstanceRef().GetReplaceOptions();
+ 			SReplaceOptions* pOptions = COptionsManager::GetInstanceRef().GetReplaceOptions();
 			
-			m_FindText = pOptions->FindText;
+			if(m_FindText.GetLength() == 0 && pOptions->FindText.GetLength())
+				m_FindText = pOptions->FindText;
 			m_ReplaceText = pOptions->ReplaceText;
 			m_Direction = pOptions->Direction;
 			m_bMatchCase = pOptions->MatchCase;
@@ -481,6 +546,10 @@ public:
 			DoDataExchange(FALSE);
 
 			m_FindTextCombo.SetFocus();
+
+			UIEnable(IDC_REHELPER_BUTTON, m_bRegExp);
+			UIEnable(IDC_RHELPER_BUTTON, m_bRegExp);
+			UIUpdateChildWindows();
 		}
 
 		return 0;
@@ -488,57 +557,45 @@ public:
 
 	LRESULT OnCloseWindow(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
-		//bHandled = FALSE;
 		ShowWindow(SW_HIDE);
 		return 0;
 	}
 
 	LRESULT OnFindNextClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		CChildFrame* pEditor = GetCurrentEditorWnd();
-
-		SReplaceOptions* pOptions = GetOptions();
-			
-		m_pFAC->AddItem( pOptions->FindText );
-
-		if(pEditor)
-			pEditor->FindNext(pOptions);
-
+		FindNext();
 		return 0;
 	}
+
 	LRESULT OnReplaceClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		CChildFrame* pEditor = GetCurrentEditorWnd();
 		
 		SReplaceOptions* pOptions = GetOptions();
 			
-		m_pFAC->AddItem( pOptions->FindText );
-		m_pRAC->AddItem( pOptions->ReplaceText );
-
 		if(pEditor)
 			pEditor->Replace(pOptions);
 
 		return 0;
 	}
+	
 	LRESULT OnReplaceAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		CChildFrame* pEditor = GetCurrentEditorWnd();
 
 		SReplaceOptions* pOptions = GetOptions();
 			
-		m_pFAC->AddItem( pOptions->FindText );
-		m_pRAC->AddItem( pOptions->ReplaceText );
-		
 		if(pEditor)
 		{
 			int count = pEditor->ReplaceAll(pOptions);
 			CString s;
 			s.Format(_T("%d occurrance(s) replaced."), count);
-			MessageBox((LPCTSTR)s, "Programmers Notepad", MB_OK | MB_ICONINFORMATION);
+			MessageBox((LPCTSTR)s, _T("Programmers Notepad"), MB_OK | MB_ICONINFORMATION);
 		}
 
 		return 0;
 	}
+	
 	LRESULT OnReplaceInSelectionClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		CChildFrame* pEditor = GetCurrentEditorWnd();
@@ -548,23 +605,20 @@ public:
 			SReplaceOptions* pOptions = GetOptions();
 			pOptions->InSelection = true;
 
-			m_pFAC->AddItem( pOptions->FindText );
-			m_pRAC->AddItem( pOptions->ReplaceText );
-
 			pEditor->ReplaceAll(pOptions);
 		}
 
 		return 0;
 	}
 
+	// Shared properties should be defined in CSearchDlg
+	friend CSearchDlg<CReplaceDlg>;
+
 protected:
-	CComboBoxEx				m_FindTextCombo;
-	CComboBoxEx				m_ReplaceTextCombo;
+	BXT::CComboBoxAC		m_FindTextCombo;
+	BXT::CComboBoxAC		m_ReplaceTextCombo;
 	CArrowButton			m_ReHelperBtn;
 	CArrowButton			m_ReHelperBtn2;
-
-	CCustomAutoComplete*	m_pFAC;
-	CCustomAutoComplete*	m_pRAC;
 
 	CString	m_FindText;
 	CString m_ReplaceText;

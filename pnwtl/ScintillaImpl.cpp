@@ -10,6 +10,12 @@
 #include "stdafx.h"
 #include "ScintillaImpl.h"
 
+CScintillaImpl::CScintillaImpl()
+{
+	lastFindDetails.findPhrase = _T("");
+	lastFindDetails.startPos = 0;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Search and Replace Support Code (please move this)  ///@todo
 ////////////////////////////////////////////////////////////////////////////////
@@ -362,15 +368,27 @@ void CScintillaImpl::ManageBraceMatch()
 // Search and Replace code
 ////////////////////////////////////////////////////////////
 
-bool CScintillaImpl::FindNext(SFindOptions* pOptions)
+int CScintillaImpl::FindNext(SFindOptions* pOptions)
 {
 	CharacterRange	cr;
 	int				startPosition, endPosition;
-	bool			bRet = false;
+	int				bRet = fnNotFound;
+	bool			checkFoundPos = true;
 
 	int lenFind = UnSlashAsNeeded(pOptions->FindText, pOptions->UseSlashes, pOptions->UseRegExp);
 	if(lenFind > 0)
 	{
+		pOptions->Found = false;
+
+		///@todo set find pos on selchange/edit update
+		if( pOptions->FindText.Compare( lastFindDetails.findPhrase.c_str() ) != 0 )
+		{
+			// Find text has changed, set the startPos value, 
+			// and don't check to see if we wrapped this time.
+			//lastFindDetails.startPos = GetCurrentPos();
+			lastFindDetails.findPhrase = pOptions->FindText;
+			checkFoundPos = false;
+		}
 
 		GetSel(cr);
 
@@ -425,11 +443,25 @@ bool CScintillaImpl::FindNext(SFindOptions* pOptions)
 			EnsureRangeVisible(start, end);
 			SetSel(start, end);
 			pOptions->Found = true;
-			bRet = true;
+			bRet = fnFound;
 		}
 
 		// Must un-lock that string before we return...
 		pOptions->FindText.UnlockBuffer();
+
+		if( checkFoundPos && bRet )
+		{
+			GetSel(cr);
+
+			if( lastFindDetails.startPos == cr.cpMin )
+				bRet = fnReachedStart;
+		}
+		else
+		{
+			CharacterRange cr;
+			GetSel(cr);
+			lastFindDetails.startPos = cr.cpMin;
+		}
 	}
 
 	return bRet;
@@ -529,7 +561,7 @@ bool CScintillaImpl::ReplaceOnce(SReplaceOptions* pOptions)
 		pOptions->Found = false;
 	}
 
-	return FindNext(pOptions);
+	return FindNext(pOptions) != 0;
 }
 
 int CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions) 

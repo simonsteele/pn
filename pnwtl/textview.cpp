@@ -396,6 +396,42 @@ void CTextView::SetPosStatus(CMultiPaneStatusBarCtrl& stat)
 		g_Context.m_frame->SetStatusText(NULL);
 }
 
+tstring CTextView::GetCurrentWord()
+{
+	// VS.NET style find text:
+	// 1. check if there is a selection
+	// 2. check if the caret is inside a word
+	// 3. if neither 1 nor 2 are true, use the previous search text
+
+	CharacterRange cr;
+	GetSel(cr);
+	int len = cr.cpMax - cr.cpMin;
+
+	CString sel;
+	if(len > 0)
+	{
+		GetSelText(sel.GetBuffer(len + 2));
+		sel.ReleaseBuffer();
+	}
+	else
+	{
+		TextRange tr;
+		long pos = GetCurrentPos();
+		tr.chrg.cpMin = WordStartPosition(pos, true);
+		tr.chrg.cpMax = WordEndPosition(pos, true);
+		len = tr.chrg.cpMax - tr.chrg.cpMin;
+		if(len > 0)
+		{
+			tr.lpstrText = sel.GetBuffer(len + 2);
+			sel.ReleaseBuffer();
+			if(GetTextRange(&tr) > 0)
+				sel = tr.lpstrText;
+		}
+	}
+
+	return tstring( sel );
+}
+
 CScheme* CTextView::GetCurrentScheme()
 {
 	return m_pLastScheme;

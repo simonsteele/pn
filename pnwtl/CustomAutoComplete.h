@@ -111,6 +111,11 @@ public:
 
 	}
 
+	const CSimpleArray<CString>& GetList()
+	{
+		return m_asList;
+	}
+
 	BOOL SetStorageSubkey(LPCTSTR p_lpszSubKey, HKEY p_hRootKey = HKEY_CURRENT_USER)
 	{
 

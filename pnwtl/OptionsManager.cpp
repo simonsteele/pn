@@ -18,6 +18,14 @@ COptionsManager* COptionsManager::s_pInstance = NULL;
 
 COptionsManager::COptionsManager()
 {
+	// Initialisation
+	m_FindOptions.Found = false;
+	m_ReplaceOptions.Found = false;
+	m_ReplaceOptions.FindText = _T("");
+	m_ReplaceOptions.ReplaceText = _T("");
+	m_FindOptions.FindText = _T("");
+
+	// Load settings
 	Load();
 }
 
@@ -52,12 +60,9 @@ void COptionsManager::Load()
 
 	m_FindOptions.Direction = true;
 	m_FindOptions.Loop = true;
-	m_FindOptions.FindText = _T("");
 	
 	m_ReplaceOptions.Direction = true;
 	m_ReplaceOptions.Loop = true;
-	m_ReplaceOptions.FindText = _T("");
-	m_ReplaceOptions.ReplaceText = _T("");
 }
 
 void COptionsManager::Save()

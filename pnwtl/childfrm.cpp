@@ -1023,9 +1023,13 @@ void CChildFrame::Save()
 ////////////////////////////////////////////////////
 // Editor Window Methods	
 
-bool CChildFrame::FindNext(SFindOptions* options)
+int CChildFrame::FindNext(SFindOptions* options)
 {
-	return m_view.FindNext(options);
+	int result = m_view.FindNext(options);
+	if( result == CScintillaImpl::FindNextResults::fnReachedStart )
+		MessageBox(_T("Find reached the starting point of the search."),
+							_T("Programmers Notepad"), MB_OK | MB_ICONINFORMATION);
+	return result;
 }
 
 bool CChildFrame::Replace(SReplaceOptions* options)

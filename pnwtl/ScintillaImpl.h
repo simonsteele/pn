@@ -20,7 +20,9 @@
 class CScintillaImpl : public CScintilla
 {
 public:
-	bool FindNext(SFindOptions* pOptions);
+	CScintillaImpl();
+
+	int FindNext(SFindOptions* pOptions);
 	bool ReplaceOnce(SReplaceOptions* pOptions);
 	int ReplaceAll(SReplaceOptions* pOptions);
 	void HighlightAll(SFindOptions* pOptions);
@@ -33,7 +35,15 @@ public:
 
 	virtual int HandleNotify(LPARAM lParam);
 
+	typedef enum {fnNotFound, fnFound, fnReachedStart} FindNextResults;
+
 protected:
+	struct tagLastFindDetails
+	{
+		tstring findPhrase;
+		long	startPos;
+	} lastFindDetails;
+
 	void IndentLine(int line, int indent);
 	int GetIndentLevel(int line);
 	

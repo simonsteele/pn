@@ -326,8 +326,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,4,18
- PRODUCTVERSION 2,0,4,1
+ FILEVERSION 2,0,5,2
+ PRODUCTVERSION 2,0,5,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -344,12 +344,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele (Echo Software)"
             VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.4.18"
+            VALUE "FileVersion", "2.0.5.2"
             VALUE "InternalName", "PNWTL"
             VALUE "LegalCopyright", "Copyright © 2002-2003 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"
             VALUE "ProductName", "Programmers Notepad"
-            VALUE "ProductVersion", "2.0.4.2"
+            VALUE "ProductVersion", "2.0.5.0-devel"
         END
     END
     BLOCK "VarFileInfo"
@@ -634,8 +634,8 @@ BEGIN
                     WS_GROUP,124,44,43,10,0,HIDC_UP_RADIO
     CONTROL         "&Down",IDC_DOWN_RADIO,"Button",BS_AUTORADIOBUTTON,124,
                     55,43,10,0,HIDC_DOWN_RADIO
-    PUSHBUTTON      "&Mark All",IDC_MARKALL_BUTTON,213,26,50,14,WS_GROUP,0,
-                    HIDC_MARKALL_BUTTON
+    PUSHBUTTON      "&Mark All",IDC_MARKALL_BUTTON,213,26,50,14,WS_DISABLED | 
+                    WS_GROUP,0,HIDC_MARKALL_BUTTON
     PUSHBUTTON      "Cancel",IDCANCEL,213,45,50,14,WS_GROUP
     LTEXT           "Fi&nd what:",IDC_FINDTEXT_LABEL,7,9,40,10,0,0,
                     HIDC_FINDTEXT_LABEL
