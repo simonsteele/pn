@@ -17,8 +17,8 @@
 	<language name="pascal" title="Pascal" folding="true" foldcomments="true" foldcompact="false">
 		<lexer name="pascal" />
 		<use-keywords>
-			<keyword key="0" class="pascal"/>
-			<keyword key="1" class="pascal_inclass"/>
+			<keyword key="0" name="Keywords" class="pascal"/>
+			<keyword key="1" name="Property Keywords" class="pascal_inclass"/>
 		</use-keywords>
 		<use-styles>
 			<style name="DEFAULT" key="32" />
