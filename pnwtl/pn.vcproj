@@ -178,6 +178,9 @@
 				RelativePath=".\scintillaif.cpp">
 			</File>
 			<File
+				RelativePath="smartstart.cpp">
+			</File>
+			<File
 				RelativePath=".\ssmenus.cpp">
 			</File>
 			<File

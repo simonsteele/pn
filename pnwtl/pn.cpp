@@ -45,7 +45,8 @@ void Shutdown()
 	CSchemeManager::DeleteInstance();
 	COptionsManager::DeleteInstance();
 	CSMenuManager::ReleaseInstance();
-	SchemeToolsManager::ReleaseInstance();
+
+	DeletionManager::DeleteAll();
 }
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)

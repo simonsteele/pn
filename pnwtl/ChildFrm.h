@@ -255,6 +255,7 @@ protected:
 	};
 
 protected:
+	void LoadExternalLexers();
 	void PrintSetup();
 	void SchemeChanged(CScheme* pScheme);
 	void AddRunningTool(ToolRunner* pRunner);
@@ -270,6 +271,7 @@ protected:
 	bool				m_bHeaderSwitch;
 
 protected:
+	static bool			s_bFirstChild;
 	HWND				m_hWndOutput;
 	HIMAGELIST			m_hImgList;
 	CTextView			m_view;

@@ -58,11 +58,13 @@ class GlobalTools : public SchemeTools
 /**
  * @brief Class can be used both standalone and as a singleton.
  */
-class SchemeToolsManager : public Singleton<SchemeToolsManager>, public XMLParseState
+class SchemeToolsManager : 
+	public Singleton<SchemeToolsManager, SINGLETON_AUTO_DELETE>, 
+	public XMLParseState
 {
 	public:
 		SchemeToolsManager();
-		~SchemeToolsManager();
+		virtual ~SchemeToolsManager();
 
 		SchemeTools* GetGlobalTools();
 

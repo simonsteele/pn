@@ -192,6 +192,7 @@ protected:
 
 	bool					m_bShowingDefaultStatus;
 	bool					m_bIsXPOrLater;
+	short					m_statusResetCounter;
 
 	/* Can't free dialogs via the base class or destructors don't get
 	called. Use a template function to free any dialog class */

@@ -599,16 +599,59 @@ struct FormatXML {
    }
 };
 
-template <class T>
-class Singleton
+/**
+ * Class to provide a base class with a virtual destructor that can be added
+ * to a simple list of objects to delete. Used for singleton and orphan patterns.
+ */
+class DelObject
+{
+public:
+	DelObject() : m_pNextToDelete(NULL){}
+	virtual ~DelObject(){}
+	DelObject* m_pNextToDelete;
+};
+
+/**
+ * Class to provide managed singleton/orphan deletion.
+ */
+class DeletionManager
+{
+public:
+	static void Register(DelObject* pObject);
+	static void UnRegister(DelObject* pObject);
+	static void DeleteAll();
+	static DelObject* s_pFirst;
+	static DelObject* s_pLast;
+};
+
+/**
+ * Class to provide simple singleton functionality.
+ */
+template <class T, bool t_bAutoRegister = false>
+class Singleton : public DelObject
 {
 	public:
+		virtual ~Singleton(){}
+
 		static T* GetInstance()
 		{
 			if(!s_pTheInstance)
-				s_pTheInstance = new T;
+			{
+				s_pTheInstance = T::CreateTheInstance();
+			}
 
 			return s_pTheInstance;
+		}
+
+		/// Subclasses can override this to create their single instance...
+		static T* CreateTheInstance()
+		{
+			T* pT = new T;
+			if(t_bAutoRegister)
+			{
+				DeletionManager::Register(pT);
+			}
+			return pT;
 		}
 
 		static T& GetInstanceRef()
@@ -628,5 +671,7 @@ class Singleton
 	protected:
 		static T* s_pTheInstance;
 };
+
+#define SINGLETON_AUTO_DELETE true
 
 #endif //#ifndef pnutils_h__included

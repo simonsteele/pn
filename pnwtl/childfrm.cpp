@@ -19,6 +19,8 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+bool CChildFrame::s_bFirstChild = true;
+
 CChildFrame::CChildFrame()
 {
 	::InitializeCriticalSection(&m_crRunningTools);
@@ -295,12 +297,48 @@ bool CChildFrame::CanClose()
 	return bRet;
 }
 
+void CChildFrame::LoadExternalLexers()
+{
+	HANDLE hFind;
+	WIN32_FIND_DATA FindFileData;
+
+	tstring sPath;
+	COptionsManager::GetInstance()->GetPNPath(sPath, PNPATH_SCHEMES);
+
+	tstring sPattern(sPath);
+	sPattern += "*.lexer";
+
+	hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
+	if (hFind != INVALID_HANDLE_VALUE) {
+		//Found the first file...
+		BOOL found = TRUE;
+		tstring to_open;
+
+		while (found) {
+			to_open = sPath;
+			to_open += FindFileData.cFileName;
+			m_view.SPerform(SCI_LOADLEXERLIBRARY, 0, reinterpret_cast<LPARAM>( to_open.c_str()));
+			found = FindNextFile(hFind, &FindFileData);
+		}
+
+		FindClose(hFind);
+
+	}
+}
+
+
 ////////////////////////////////////////////////////
 // Message Handlers
 
 LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	m_hWndClient = m_view.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
+
+	if(s_bFirstChild)
+	{
+		LoadExternalLexers();
+		s_bFirstChild = false;
+	}
 
 	SetTitle(_T("<new>"));
 

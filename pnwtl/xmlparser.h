@@ -171,7 +171,21 @@ class XMLParserException
 
 		XMLParserException(const XMLParserException& copy)
 		{
-			throw "Can't copy me, use a reference!";
+			m_errcode = copy.m_errcode;
+			if(copy.m_filename)
+			{
+				m_filename = new TCHAR[_tcslen(copy.m_filename)+1];
+				_tcscpy(m_filename, copy.m_filename);
+			}
+			else 
+			{
+				if(m_filename)
+					delete [] m_filename;
+				m_filename = NULL;
+			}
+			m_msg = copy.m_msg;
+			m_line = copy.m_line;
+			m_column = copy.m_column;			
 		}
 		
 		virtual ~XMLParserException()

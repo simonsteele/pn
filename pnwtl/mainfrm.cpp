@@ -33,6 +33,8 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4)
 	hFindWnd = NULL;
 	hReplWnd = NULL;
 
+	m_statusResetCounter = 0;
+
 	m_CmdBar.SetCallback(this, OnMDISetMenu);
 }
 
@@ -713,12 +715,18 @@ void CMainFrame::SetStatusText(LPCTSTR text)
 	{
 		m_StatusBar.SetPaneText(ID_DEFAULT_PANE, text, (m_bIsXPOrLater ? SBT_NOBORDERS : 0));
 		m_bShowingDefaultStatus = false;
+		m_statusResetCounter = 2;
 	}
 	else
 		if(!m_bShowingDefaultStatus)
 		{
-			m_StatusBar.SetPaneText(ID_DEFAULT_PANE, _T("Ready"), (m_bIsXPOrLater ? SBT_NOBORDERS : 0));
-			m_bShowingDefaultStatus = true;
+			if(m_statusResetCounter != 0)
+				m_statusResetCounter--;
+			else
+			{
+				m_StatusBar.SetPaneText(ID_DEFAULT_PANE, _T("Ready"), (m_bIsXPOrLater ? SBT_NOBORDERS : 0));
+				m_bShowingDefaultStatus = true;
+			}
 		}
 }
 
