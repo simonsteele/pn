@@ -30,6 +30,7 @@
 #include "project.h"		// Projects
 #include "projectview.h"	// Projects Docker...
 #include "findinfiles.h"	// Find in Files
+#include "findinfilesview.h"// Find in Files view...
 
 // Other stuff
 #include "SchemeConfig.h"	// Scheme Configuration
@@ -72,20 +73,35 @@ public:
 	virtual void OnBeginSearch(LPCTSTR stringLookingFor, bool bIsRegex)
 	{
 		m_pMainFrame->ToggleDockingWindow(CMainFrame::DW_FINDRESULTS, true, true);
+		dwStartTicks = GetTickCount();
 	}
 
 
 	virtual void OnEndSearch(int nFound, int nFiles)
 	{
-		_sntprintf(m_fBuf, MAX_PATH+4096+40, _T("Search complete: %d occurrences found in %d files.\n"), nFound, nFiles);
+		DWORD dwTicksTaken = GetTickCount() - dwStartTicks;
+		_sntprintf(m_fBuf, MAX_PATH+4096+40, _T("Search complete: %d occurrences found in %d files, taking %d milliseconds.\n"), nFound, nFiles, dwTicksTaken);
 		m_pOutputView->AddToolOutput(m_fBuf);
+		m_pMainFrame->SetStatusText(m_fBuf);
 	}
 
 	virtual void OnFoundString(LPCTSTR stringFound, LPCTSTR szFilename, int line, LPCTSTR buf)
 	{
 		// Quicker to printf than to add lots...
+#ifdef OLD
 		_sntprintf(m_fBuf, MAX_PATH+4096+40, _T("%s:%d: %s\n"), szFilename, line, buf);
-		m_pOutputView->AddToolOutput(m_fBuf);
+		m_pOutputView->SafeAppendText(m_fBuf, -1, false);
+#endif
+
+		m_fBuf[0] = '\0';
+		_tcscat(m_fBuf, szFilename);
+		_tcscat(m_fBuf, _T(":"));
+		_itoa(line, m_lnBuf, 10);
+		_tcscat(m_fBuf, m_lnBuf);
+		_tcscat(m_fBuf, _T(": "));
+		_tcscat(m_fBuf, buf);
+		_tcscat(m_fBuf, _T("\n"));
+		//m_pOutputView->SafeAppendText(m_fBuf, -1, false);
 		
 #ifdef OLD
 		m_pOutputView->AddToolOutput(szFilename);
@@ -103,6 +119,7 @@ protected:
 	COutputView*	m_pOutputView;
 	TCHAR			m_lnBuf[34];
 	TCHAR			m_fBuf[MAX_PATH+4096+40];
+	DWORD			dwStartTicks;
 };
 
 CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(ID_MRUPROJECT_BASE, 4)
@@ -629,7 +646,7 @@ void CMainFrame::CreateDockingWindows()
 		m_dockingWindows, ID_VIEW_OUTPUT - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sBottom);
 
-	m_pFindResultsWnd = CreateDocker<COutputView>(_T("Find Results"), rcBottom, this,
+	m_pFindResultsWnd = CreateDocker<CFindInFilesView>(_T("Find Results"), rcBottom, this,
 		m_dockingWindows, ID_VIEW_WINDOWS_FINDRESULTS - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sBottom);
 
@@ -907,7 +924,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	CreateDockingWindows();
 	InitGUIState();
 
-	m_pFIFSink = new CFindInFilesSink(this, m_pFindResultsWnd);
+	m_pFIFSink = new CFindInFilesSink(this, m_pOutputWnd);//m_pFindResultsWnd);
 
 	PostMessage(PN_INITIALISEFRAME);
 

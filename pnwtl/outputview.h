@@ -44,7 +44,7 @@ public:
 
 	void DoContextMenu(CPoint* point);
 
-	void SafeAppendText(LPCSTR s, int len = -1);
+	void SafeAppendText(LPCSTR s, int len = -1, bool bScrollToView = true);
 
 	virtual int HandleNotify(LPARAM lParam);
 

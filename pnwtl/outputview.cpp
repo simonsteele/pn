@@ -531,16 +531,19 @@ void COutputView::DoContextMenu(CPoint* point)
 	g_Context.m_frame->TrackPopupMenu(popup, 0, point->x, point->y, NULL, m_hWnd);
 }
 
-void COutputView::SafeAppendText(LPCSTR s, int len)
+void COutputView::SafeAppendText(LPCSTR s, int len, bool bScrollToView)
 {
 	if(len == -1)
 		len = strlen(s);
 	SendMessage(SCI_APPENDTEXT, len, reinterpret_cast<LPARAM>(s));
 
-	int line = SendMessage(SCI_GETLENGTH, 0, 0);
-	line = SendMessage(SCI_LINEFROMPOSITION, line, 0);
-	SendMessage(SCI_ENSUREVISIBLEENFORCEPOLICY, line);
-	SendMessage(SCI_GOTOLINE, line);
+	if(bScrollToView)
+	{
+		int line = SendMessage(SCI_GETLENGTH, 0, 0);
+		line = SendMessage(SCI_LINEFROMPOSITION, line, 0);
+		SendMessage(SCI_ENSUREVISIBLEENFORCEPOLICY, line);
+		SendMessage(SCI_GOTOLINE, line);
+	}
 }
 
 void COutputView::AddToolOutput(LPCTSTR output, int nLength)

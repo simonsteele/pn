@@ -320,6 +320,9 @@
 				RelativePath=".\findinfiles.cpp">
 			</File>
 			<File
+				RelativePath=".\findinfilesview.cpp">
+			</File>
+			<File
 				RelativePath=".\jumpto.cpp">
 			</File>
 			<File
@@ -490,6 +493,9 @@
 			</File>
 			<File
 				RelativePath=".\findinfiles.h">
+			</File>
+			<File
+				RelativePath=".\findinfilesview.h">
 			</File>
 			<File
 				RelativePath=".\folderadder.h">

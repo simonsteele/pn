@@ -23,6 +23,7 @@ class COutputView;
 class CClipsDocker;
 class CProjectDocker;
 class CFindInFilesSink;
+class CFindInFilesView;
 
 namespace Projects
 {
@@ -365,7 +366,8 @@ protected:
 	CReplaceDlg*			m_ReplaceDialog;
 	//CDockingOutputWindow*	m_pOutputWnd;
 	COutputView*			m_pOutputWnd;
-	COutputView*			m_pFindResultsWnd;
+	//COutputView*			m_pFindResultsWnd;
+	CFindInFilesView*		m_pFindResultsWnd;
 	CClipsDocker*			m_pClipsWnd;
 	CProjectDocker*			m_pProjectsWnd;
 	CFindExDialog*			m_pFindEx;
