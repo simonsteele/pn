@@ -134,6 +134,10 @@ SOURCE=.\ssreg.cpp
 SOURCE=.\stdafx.cpp
 # ADD CPP /Yc"stdafx.h"
 # End Source File
+# Begin Source File
+
+SOURCE=.\xmlparser.cpp
+# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -184,6 +188,14 @@ SOURCE=.\resource.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\SchemeCompiler.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\Schemes.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\Scintilla.h
 # End Source File
 # Begin Source File
@@ -201,6 +213,10 @@ SOURCE=.\ScintillaWTL.h
 # Begin Source File
 
 SOURCE=.\ssfiledialog.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ssreg.h
 # End Source File
 # Begin Source File
 
