@@ -730,7 +730,9 @@ LRESULT CChildFrame::OnHideOutput(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 LRESULT CChildFrame::OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CGotoDialog g;
+	CString caption;
+	caption.Format(_T("&Line Number (1 - %d):"), m_view.GetLineCount());
+	CGotoDialog g(caption);
 	if(g.DoModal() == IDOK)
 	{
 		m_view.GotoLine(g.GetLineNo()-1);

@@ -860,18 +860,18 @@ BEGIN
     PUSHBUTTON      "Close",IDCANCEL,212,71,81,14,WS_GROUP
 END
 
-IDD_INPUTBOX DIALOGEX 0, 0, 272, 46
+IDD_INPUTBOX DIALOGEX 0, 0, 164, 55
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Go To"
+CAPTION "Go To Line"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    EDITTEXT        IDC_THEEDIT,59,7,151,13,ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "OK",IDOK,215,7,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,215,24,50,14
-    LTEXT           "Go To:",IDC_TEXTTITLE,7,7,44,12,0,WS_EX_RIGHT
+    EDITTEXT        IDC_THEEDIT,7,17,150,13,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,53,34,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,107,34,50,14
+    LTEXT           "&Line Number (1 - %d):",IDC_TEXTTITLE,7,7,138,9
 END
 
-IDD_OPTIONS DIALOGEX 0, 0, 406, 233
+IDD_OPTIONS DIALOGEX 0, 0, 409, 239
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Options"
@@ -879,265 +879,269 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | 
                     TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_NOSCROLL | 
-                    WS_BORDER | WS_TABSTOP,6,6,90,198
-    LTEXT           "Static",IDC_PLACEHOLDER,102,6,300,198,NOT WS_VISIBLE
-    DEFPUSHBUTTON   "OK",IDOK,294,210,50,18
-    PUSHBUTTON      "Cancel",IDCANCEL,348,210,50,18
-    PUSHBUTTON      "&Help",IDC_HELPBTN,6,210,54,18,WS_DISABLED
+                    WS_BORDER | WS_TABSTOP,7,7,88,206
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,102,212,302,1
+    DEFPUSHBUTTON   "OK",IDOK,239,219,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,294,219,50,14
+    PUSHBUTTON      "&Help",IDC_HELPBTN,348,219,54,14,WS_DISABLED
+    LTEXT           "Static",IDC_PLACEHOLDER,102,7,300,200,NOT WS_VISIBLE
 END
 
-IDD_PAGE_STYLE DIALOGEX 0, 0, 299, 168
+IDD_PAGE_STYLE DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    COMBOBOX        IDC_FONT_COMBO,54,6,132,120,CBS_DROPDOWNLIST | 
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,4,300,1
+    LTEXT           "Base Style Settings",IDC_STATIC,0,0,62,8
+    LTEXT           "&Font:",IDC_STATIC,10,12,48,8
+    COMBOBOX        IDC_FONT_COMBO,10,22,140,120,CBS_DROPDOWNLIST | 
                     CBS_OWNERDRAWFIXED | CBS_SORT | CBS_HASSTRINGS | 
                     CBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_FONTSIZE_COMBO,54,24,60,66,CBS_DROPDOWN | 
+    LTEXT           "&Size:",IDC_STATIC,160,12,42,8
+    COMBOBOX        IDC_FONTSIZE_COMBO,160,22,60,66,CBS_DROPDOWN | 
                     CBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Button1",IDC_STYLE_FOREBUTTON,54,42,60,12
-    PUSHBUTTON      "Button2",IDC_STYLE_BACKBUTTON,54,60,60,12
-    CONTROL         "Bold",IDC_STYLE_BOLDCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,12,90,60,12,WS_EX_TRANSPARENT
-    CONTROL         "Italic",IDC_STYLE_ITALICCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,78,90,48,12,WS_EX_TRANSPARENT
-    CONTROL         "Underline",IDC_STYLE_UNDERLINECHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,12,102,60,12,
+    LTEXT           "&Text Colour:",IDC_STATIC,10,40,48,8
+    PUSHBUTTON      "Button1",IDC_STYLE_FOREBUTTON,10,50,60,14
+    LTEXT           "Bac&kground:",IDC_STATIC,90,40,42,8
+    PUSHBUTTON      "Button2",IDC_STYLE_BACKBUTTON,90,50,60,14
+    CONTROL         "&Bold",IDC_STYLE_BOLDCHECK,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,17,81,60,10,WS_EX_TRANSPARENT
+    CONTROL         "&Italic",IDC_STYLE_ITALICCHECK,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,90,81,48,10,WS_EX_TRANSPARENT
+    CONTROL         "&Underline",IDC_STYLE_UNDERLINECHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,17,93,60,10,
                     WS_EX_TRANSPARENT
-    LTEXT           "Basic Font:",IDC_STATIC,6,6,48,12
-    LTEXT           "Text Size:",IDC_STATIC,6,24,42,12
-    LTEXT           "Text Colour:",IDC_STATIC,6,42,48,12
-    LTEXT           "Background:",IDC_STATIC,6,60,42,12
-    GROUPBOX        "Style:",IDC_STATIC,6,78,144,42
+    GROUPBOX        "Font Style",IDC_STATIC,10,70,140,38
 END
 
-IDD_PAGE_SCHEMES DIALOGEX 0, 0, 299, 200
+IDD_PAGE_SCHEMES DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    COMBOBOX        IDC_SCHEMECOMBO,110,2,185,64,CBS_DROPDOWNLIST | CBS_SORT | 
+    COMBOBOX        IDC_SCHEMECOMBO,0,10,185,64,CBS_DROPDOWNLIST | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Static",IDC_PS_PLACEHOLDER,1,20,298,180,NOT WS_VISIBLE
-    LTEXT           "Scheme:",IDC_SCHEMELABEL,2,1,46,12
+    LTEXT           "Scheme:",IDC_SCHEMELABEL,0,0,46,8
+    CONTROL         "",IDC_PS_PLACEHOLDER,"Static",SS_BLACKFRAME,0,24,299,
+                    175
 END
 
-IDD_TAB_STYLES DIALOGEX 0, 0, 290, 161
+IDD_TAB_STYLES DIALOGEX 0, 0, 295, 157
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "",IDC_STYLES_TREE,"SysTreeView32",TVS_HASBUTTONS | 
                     TVS_HASLINES | TVS_SHOWSELALWAYS | WS_BORDER | 
-                    WS_TABSTOP,2,4,100,155
-    COMBOBOX        IDC_STYLE_FONTCOMBO,162,6,126,84,CBS_DROPDOWNLIST | 
+                    WS_TABSTOP,4,4,96,149
+    LTEXT           "&Font:",IDC_STATIC,107,4,48,8
+    COMBOBOX        IDC_STYLE_FONTCOMBO,107,14,128,84,CBS_DROPDOWNLIST | 
                     CBS_OWNERDRAWFIXED | CBS_SORT | CBS_HASSTRINGS | 
                     WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_STYLE_SIZECOMBO,162,24,48,60,CBS_DROPDOWN | CBS_SORT | 
+    LTEXT           "&Size:",IDC_STATIC,240,4,22,8
+    COMBOBOX        IDC_STYLE_SIZECOMBO,240,14,44,60,CBS_DROPDOWN | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Button1",IDC_STYLE_FOREBUTTON,162,42,71,12
-    PUSHBUTTON      "Button2",IDC_STYLE_BACKBUTTON,162,59,71,12
-    CONTROL         "Bold",IDC_STYLE_BOLDCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,114,89,52,12,WS_EX_TRANSPARENT
-    CONTROL         "Italic",IDC_STYLE_ITALICCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,198,89,80,12,WS_EX_TRANSPARENT
-    CONTROL         "Underline",IDC_STYLE_UNDERLINECHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,114,101,50,12,
+    LTEXT           "Text &Colour:",IDC_STATIC_TC,107,32,54,8
+    PUSHBUTTON      "Button1",IDC_STYLE_FOREBUTTON,107,42,50,14
+    LTEXT           "Bac&kground:",IDC_STATIC,185,32,44,8
+    PUSHBUTTON      "Button2",IDC_STYLE_BACKBUTTON,185,42,50,14
+    CONTROL         "Fill to &end of line",IDC_STYLE_EOLFILLEDCHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,185,60,66,10,
                     WS_EX_TRANSPARENT
-    CONTROL         "Fill to end of line?",IDC_STYLE_EOLFILLEDCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,198,101,83,12,
+    CONTROL         "&Bold",IDC_STYLE_BOLDCHECK,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,114,85,36,10,WS_EX_TRANSPARENT
+    CONTROL         "&Italic",IDC_STYLE_ITALICCHECK,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,185,85,34,10,WS_EX_TRANSPARENT
+    CONTROL         "&Underline",IDC_STYLE_UNDERLINECHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,114,97,50,10,
                     WS_EX_TRANSPARENT
-    PUSHBUTTON      "&Reset",IDC_STYLE_RESETBTN,107,141,54,18
-    PUSHBUTTON      "Reset &All",IDC_STYLE_RESETALLBTN,168,141,54,18
-    LTEXT           "Static",IDC_STYLE_EXAMPLE,108,122,179,18,NOT WS_VISIBLE
-    GROUPBOX        "Style:",IDC_STATIC,108,77,180,42
-    LTEXT           "Text Colour:",IDC_STATIC_TC,108,42,54,12
-    LTEXT           "Background:",IDC_STATIC,108,60,54,12
-    LTEXT           "Font:",IDC_STATIC,108,6,48,12
-    LTEXT           "Text Size:",IDC_STATIC,108,24,48,12
+    LTEXT           "Static",IDC_STYLE_EXAMPLE,107,117,184,18,SS_SUNKEN | 
+                    NOT WS_VISIBLE
+    PUSHBUTTON      "&Reset",IDC_STYLE_RESETBTN,187,139,50,14
+    PUSHBUTTON      "Reset &All",IDC_STYLE_RESETALLBTN,241,139,50,14
+    GROUPBOX        "Font Style",IDC_STATIC,107,74,184,38
 END
 
-IDD_TAB_KEYWORDS DIALOGEX 0, 0, 290, 161
+IDD_TAB_KEYWORDS DIALOGEX 0, 0, 295, 157
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "",IDC_KEYWORDS_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
-                    LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,2,4,73,155
-    LTEXT           "Static",IDC_PLACEHOLDER,79,4,208,132,NOT WS_VISIBLE
-    PUSHBUTTON      "&Reset",IDC_KEYWORDS_RESETBUTTON,79,141,54,18
-    PUSHBUTTON      "&Sort",IDC_KEYWORDS_SORTBUTTON,138,141,54,18
+                    LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,4,4,96,149
+    LTEXT           "Static",IDC_PLACEHOLDER,107,4,184,130,SS_SUNKEN | NOT 
+                    WS_VISIBLE
+    PUSHBUTTON      "&Reset",IDC_KEYWORDS_RESETBUTTON,241,139,50,14
+    PUSHBUTTON      "&Sort",IDC_KEYWORDS_SORTBUTTON,187,139,50,14
 END
 
-IDD_PAGE_TOOLS DIALOGEX 0, 0, 299, 200
+IDD_PAGE_TOOLS DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    COMBOBOX        IDC_SCHEMECOMBO,108,36,185,64,CBS_DROPDOWNLIST | 
-                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_SCHEMECOMBO,0,10,142,64,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | 
                     LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | 
-                    WS_BORDER | WS_TABSTOP,0,54,276,96
-    PUSHBUTTON      "&Add",IDC_TOOLS_ADDBUTTON,108,156,48,18
-    PUSHBUTTON      "&Edit",IDC_TOOLS_EDITBUTTON,162,156,48,18
-    PUSHBUTTON      "&Remove",IDC_TOOLS_REMOVEBUTTON,228,156,48,18
-    PUSHBUTTON      "",IDC_TOOLS_MOVEUPBUTTON,282,54,12,12
-    PUSHBUTTON      "",IDC_TOOLS_MOVEDOWNBUTTON,282,138,12,12
-    LTEXT           "Scheme:",IDC_SCHEMELABEL,6,36,46,12
-    LTEXT           "In many cases it may be useful to set up external tools such as compilers or syntax checkers. You can set these tools up here.",
-                    IDC_STATIC,36,6,258,24
-    LTEXT           "note: The first item in any list will be the default tool.",
-                    IDC_STATIC,0,189,252,8
-    ICON            IDR_MDICHILD,IDC_STATIC,6,6,20,20
+                    WS_BORDER | WS_TABSTOP,0,26,245,162
+    PUSHBUTTON      "&Add",IDC_TOOLS_ADDBUTTON,249,26,50,14
+    PUSHBUTTON      "&Edit",IDC_TOOLS_EDITBUTTON,249,44,50,14
+    PUSHBUTTON      "&Remove",IDC_TOOLS_REMOVEBUTTON,249,62,50,14
+    PUSHBUTTON      "Move &Up",IDC_TOOLS_MOVEUPBUTTON,250,156,50,14
+    PUSHBUTTON      "Move &Down",IDC_TOOLS_MOVEDOWNBUTTON,250,174,50,14
+    LTEXT           "&Scheme:",IDC_SCHEMELABEL,0,0,46,8
+    LTEXT           "Note: The first item in any list will be the default tool.",
+                    IDC_STATIC,0,190,252,8
 END
 
-IDD_TOOLEDITOR DIALOGEX 0, 0, 388, 228
+IDD_TOOLEDITOR DIALOGEX 0, 0, 388, 223
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Tool Editor"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_TE_NAMEEDIT,60,18,138,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_TE_CMDEDIT,60,36,138,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_TE_COMMANDBUTTON,204,36,13,12
-    EDITTEXT        IDC_TE_FOLDEREDIT,60,54,138,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_TE_DIRBUTTON,204,54,13,12
-    EDITTEXT        IDC_TE_PARAMSEDIT,60,72,138,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "c",IDC_TE_CLEARBUTTON,144,90,13,12
+    EDITTEXT        IDC_TE_NAMEEDIT,60,16,138,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_TE_CMDEDIT,60,34,138,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_TE_COMMANDBUTTON,204,34,13,14
+    EDITTEXT        IDC_TE_FOLDEREDIT,60,52,138,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_TE_DIRBUTTON,204,52,13,14
+    EDITTEXT        IDC_TE_PARAMSEDIT,60,70,138,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "c",IDC_TE_CLEARBUTTON,144,88,13,14
     CONTROL         "This tool will modify the current file.",
                     IDC_TE_FILTERCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    12,132,150,12
+                    12,125,150,10
     CONTROL         "Capture output?",IDC_TE_CAPTURECHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,234,18,84,12
-    COMBOBOX        IDC_TE_OUTPUTCOMBO,234,36,144,37,CBS_DROPDOWNLIST | 
+                    BS_AUTOCHECKBOX | WS_TABSTOP,234,18,84,10
+    COMBOBOX        IDC_TE_OUTPUTCOMBO,234,32,141,37,CBS_DROPDOWNLIST | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Clear output before running?",IDC_TE_CLEARCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,234,54,144,12
+                    BS_AUTOCHECKBOX | WS_TABSTOP,234,52,144,10
     CONTROL         "Use the built-in error parser.",IDC_TE_BUILTIN,"Button",
-                    BS_AUTORADIOBUTTON | WS_DISABLED | WS_GROUP,234,72,102,
-                    12
-    PUSHBUTTON      "?",IDC_TE_ABOUTBUILTIN,348,72,12,12,WS_DISABLED
+                    BS_AUTORADIOBUTTON | WS_DISABLED | WS_GROUP,234,64,102,
+                    10
+    PUSHBUTTON      "?",IDC_TE_ABOUTBUILTIN,363,64,12,12,WS_DISABLED
     CONTROL         "Look for a custom pattern:",IDC_TE_CUSTOMPARSE,"Button",
-                    BS_AUTORADIOBUTTON | WS_DISABLED,234,90,114,12
-    EDITTEXT        IDC_TE_CUSTOMTEXT,246,108,132,12,ES_AUTOHSCROLL | 
+                    BS_AUTORADIOBUTTON | WS_DISABLED,234,76,114,10
+    EDITTEXT        IDC_TE_CUSTOMTEXT,244,93,129,14,ES_AUTOHSCROLL | 
                     WS_DISABLED
-    DEFPUSHBUTTON   "OK",IDOK,282,210,48,14
-    PUSHBUTTON      "Cancel",IDCANCEL,336,210,48,14
-    RTEXT           "Name:",IDC_STATIC,12,18,42,12
-    RTEXT           "Command:",IDC_STATIC,12,36,42,12
-    RTEXT           "Folder:",IDC_STATIC,12,54,42,12
+    DEFPUSHBUTTON   "OK",IDOK,280,202,48,14
+    PUSHBUTTON      "Cancel",IDCANCEL,333,202,48,14
+    RTEXT           "Name:",IDC_STATIC,12,18,42,8
+    RTEXT           "Command:",IDC_STATIC,12,36,42,8
+    RTEXT           "Folder:",IDC_STATIC,12,54,42,8
     RTEXT           "Parameters:",IDC_STATIC,12,72,42,8
-    RTEXT           "Shortcut:",IDC_STATIC,12,90,42,12
-    LTEXT           "Static",IDC_TE_INFOLABEL,12,150,204,60
-    GROUPBOX        "Tool:",IDC_STATIC,6,6,216,210
-    GROUPBOX        "Output:",IDC_STATIC,228,6,156,186
-    LTEXT           "",IDC_TE_CUSTOMINFO,246,144,132,42
-    LTEXT           "example: %f:%l: ",IDC_STATIC,252,126,126,12
-    RTEXT           "Save:",IDC_STATIC,12,114,42,12
-    COMBOBOX        IDC_TE_SAVECOMBO,60,114,132,42,CBS_DROPDOWNLIST | 
+    RTEXT           "Shortcut:",IDC_STATIC,12,90,42,8
+    LTEXT           "Static",IDC_TE_INFOLABEL,12,141,204,69
+    GROUPBOX        "Tool",IDC_STATIC,6,6,216,210
+    GROUPBOX        "Output",IDC_STATIC,228,6,153,186
+    LTEXT           "",IDC_TE_CUSTOMINFO,234,144,140,42
+    LTEXT           "example: %f:%l: ",IDC_STATIC,244,112,129,19
+    RTEXT           "Save:",IDC_STATIC,12,109,42,8
+    COMBOBOX        IDC_TE_SAVECOMBO,60,107,132,42,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_TE_HOTKEY,"msctls_hotkey32",WS_BORDER | 
-                    WS_TABSTOP,60,90,78,12
+                    WS_TABSTOP,60,88,78,14
     CONTROL         "",IDC_OPTHELPER_BUTTON,"Button",BS_OWNERDRAW | 
-                    WS_TABSTOP,204,72,9,11,0,HIDC_OPTHELPER_BUTTON
+                    WS_TABSTOP,204,70,13,14,0,HIDC_OPTHELPER_BUTTON
 END
 
-IDD_PAGE_GENERAL DIALOGEX 0, 0, 299, 200
+IDD_PAGE_GENERAL DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "Allow multiple instances of Programmers Notepad to start",
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,4,299,1
+    LTEXT           "Settings",IDC_STATIC,0,0,27,8
+    CONTROL         "&Allow multiple instances of Programmers Notepad to start",
                     IDC_MULTIINSTANCECHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,6,6,228,12
-    CONTROL         "Maximise new document windows",IDC_OPT_MAXCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,6,24,150,12
-    CONTROL         "Show full file path in document windows",
+                    WS_TABSTOP,10,12,228,10
+    CONTROL         "&Maximise new document windows",IDC_OPT_MAXCHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,24,150,10
+    CONTROL         "&Show full file path in document windows",
                     IDC_OPT_FULLPATHCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,6,42,156,12
-    EDITTEXT        IDC_OPT_MRUCOUNT,126,60,30,12,ES_AUTOHSCROLL
-    LTEXT           "Files in the most recently used list:",IDC_STATIC,6,60,
-                    120,12
-    LTEXT           "(1 to 50)",IDC_STATIC,162,60,42,12
+                    WS_TABSTOP,10,36,156,10
+    LTEXT           "&Display",IDC_STATIC,10,58,28,8
+    EDITTEXT        IDC_OPT_MRUCOUNT,42,56,30,14,ES_AUTOHSCROLL
+    LTEXT           "(1 to 50) items in the most recently used list.",
+                    IDC_STATIC,75,58,168,8
 END
 
-IDD_PAGE_NEWFILES DIALOGEX 0, 0, 299, 200
+IDD_PAGE_NEWFILES DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    COMBOBOX        IDC_NEW_SCHEMECOMBO,72,36,144,84,CBS_DROPDOWNLIST | 
+    LTEXT           "Scheme:",IDC_STATIC,11,12,30,8
+    COMBOBOX        IDC_NEW_SCHEMECOMBO,10,22,140,84,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Enable SmartStart",IDC_SMARTSTART_ENABLECHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,56,72,10
+    PUSHBUTTON      "&Add",IDC_SMARTSTART_ADDBUTTON,250,70,50,14
+    PUSHBUTTON      "&Remove",IDC_SMARTSTART_REMOVEBUTTON,250,88,50,14
+    PUSHBUTTON      "&Edit",IDC_SMARTSTART_EDITBUTTON,250,106,50,14
     CONTROL         "",IDC_SMARTSTART_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
-                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,0,90,294,84
-    PUSHBUTTON      "&Add",IDC_SMARTSTART_ADDBUTTON,126,180,48,18
-    PUSHBUTTON      "&Edit",IDC_SMARTSTART_EDITBUTTON,180,180,48,18
-    PUSHBUTTON      "&Remove",IDC_SMARTSTART_REMOVEBUTTON,246,180,48,18
-    CONTROL         "Enable SmartStart",IDC_SMARTSTART_ENABLECHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,0,180,120,12
-    LTEXT           "SmartStart attempts to automatically select a scheme for a new file when you start typing. It does this by matching the first few characters you type to a set of start phrases. Edit the start phrases here:",
-                    IDC_STATIC,1,60,294,24
-    RTEXT           "New File Scheme:",IDC_STATIC,0,36,66,12
-    LTEXT           "When you press the new button, PN can automatically select a default scheme for you. Choose this scheme here:",
-                    IDC_STATIC,24,6,270,18
-    ICON            IDR_MDICHILD,IDC_STATIC,0,6,20,20
+                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,10,70,236,128
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,4,300,1
+    LTEXT           "New File",IDC_STATIC,0,0,28,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,48,300,1
+    LTEXT           "SmartStart",IDC_STATIC,0,44,36,8
 END
 
-IDD_SMARTSTARTEDITOR DIALOGEX 0, 0, 260, 49
+IDD_SMARTSTARTEDITOR DIALOGEX 0, 0, 200, 86
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Edit SmartStart Phrase"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_PHRASEEDIT,66,7,126,12,ES_AUTOHSCROLL
-    COMBOBOX        IDC_SCHEMECOMBO,66,30,126,61,CBS_DROPDOWNLIST | 
+    EDITTEXT        IDC_PHRASEEDIT,6,17,186,14,ES_AUTOHSCROLL
+    COMBOBOX        IDC_SCHEMECOMBO,7,45,186,61,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    DEFPUSHBUTTON   "OK",IDOK,203,7,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,203,24,50,14
-    RTEXT           "Start Phrase:",IDC_STATIC,6,6,54,12
-    RTEXT           "Scheme:",IDC_STATIC,6,30,54,12
+    DEFPUSHBUTTON   "OK",IDOK,89,65,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,143,65,50,14
+    LTEXT           "Start Phrase:",IDC_STATIC,7,7,54,8
+    LTEXT           "Scheme:",IDC_STATIC,7,35,54,8
 END
 
-IDD_PAGE_VISUALHELP DIALOGEX 0, 0, 299, 200
+IDD_PAGE_VISUALHELP DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,1,4,298,1
+    LTEXT           "Settings",IDC_STATIC,0,0,27,8
     CONTROL         "Show Indentation Guides",IDC_OPT_INDENTGUIDESCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,6,168,12
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,12,168,10
     CONTROL         "Highlight current editor line",IDC_OPT_LINELIGHTCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,24,114,12
-    PUSHBUTTON      "Button1",IDC_OPT_LINELIGHTBUTTON,126,24,60,12
-    GROUPBOX        "Long Line Helpers",IDC_STATIC,6,48,192,72
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,24,114,10
+    PUSHBUTTON      "Button1",IDC_OPT_LINELIGHTBUTTON,22,36,60,14
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,64,299,1
+    LTEXT           "Long Line Helpers",IDC_STATIC,0,60,57,8
     CONTROL         "No long line help",IDC_OPT_NOLLHELPRADIO,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP,12,60,120,12
+                    BS_AUTORADIOBUTTON | WS_GROUP,10,72,120,10
     CONTROL         "Show a line at the edge column",IDC_OPT_LLLINERADIO,
-                    "Button",BS_AUTORADIOBUTTON,12,72,126,12
+                    "Button",BS_AUTORADIOBUTTON,10,84,126,10
     CONTROL         "Highlight text beyond the edge column",
-                    IDC_OPT_LLHIGHLIGHTRADIO,"Button",BS_AUTORADIOBUTTON,12,
-                    84,150,12
-    EDITTEXT        IDC_OPT_LLCOLUMNEDIT,84,102,48,12,ES_AUTOHSCROLL
-    LTEXT           "Rightmost Column:",IDC_STATIC,12,102,66,12
-    PUSHBUTTON      "Button2",IDC_OPT_LLCOLORBUTTON,138,102,54,12
+                    IDC_OPT_LLHIGHLIGHTRADIO,"Button",BS_AUTORADIOBUTTON,10,
+                    96,150,10
+    LTEXT           "Rightmost Column:",IDC_STATIC,22,110,66,10
+    EDITTEXT        IDC_OPT_LLCOLUMNEDIT,87,108,48,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Button2",IDC_OPT_LLCOLORBUTTON,140,108,54,14
 END
 
-IDD_TAB_MISC DIALOGEX 0, 0, 290, 161
+IDD_TAB_MISC DIALOGEX 0, 0, 294, 157
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    PUSHBUTTON      "Button1",IDC_STYLE_CURCOLBUTTON,90,5,71,12
-    PUSHBUTTON      "Button1",IDC_STYLE_SELFOREBUTTON,90,24,71,12
-    PUSHBUTTON      "Button1",IDC_STYLE_SELBACKBUTTON,90,42,71,12
-    PUSHBUTTON      "Button1",IDC_STYLE_IGCOLBUTTON,90,59,71,12
-    LTEXT           "Selection Foreground:",IDC_STATIC,0,24,84,12,0,
-                    WS_EX_RIGHT
-    LTEXT           "Cursor Colour:",IDC_STATIC,0,5,84,12,0,WS_EX_RIGHT
-    LTEXT           "Selection Background:",IDC_STATIC,0,42,84,12,0,
-                    WS_EX_RIGHT
-    LTEXT           "Indentation Guides:",IDC_STATIC,0,59,84,12,0,
-                    WS_EX_RIGHT
+    PUSHBUTTON      "Button1",IDC_STYLE_CURCOLBUTTON,4,14,50,14
+    PUSHBUTTON      "Button1",IDC_STYLE_SELFOREBUTTON,4,44,50,14
+    PUSHBUTTON      "Button1",IDC_STYLE_SELBACKBUTTON,4,74,50,14
+    PUSHBUTTON      "Button1",IDC_STYLE_IGCOLBUTTON,4,104,50,14
+    LTEXT           "Selection Foreground:",IDC_STATIC,4,34,84,8
+    LTEXT           "Cursor Colour:",IDC_STATIC,4,4,84,8
+    LTEXT           "Selection Background:",IDC_STATIC,4,64,84,8
+    LTEXT           "Indentation Guides:",IDC_STATIC,4,94,84,8
     CONTROL         "Don't change the foreground.",IDC_STYLE_SELUSEFORE,
-                    "Button",BS_AUTOCHECKBOX | BS_NOTIFY | WS_TABSTOP,168,24,
-                    108,12
+                    "Button",BS_AUTOCHECKBOX | BS_NOTIFY | WS_TABSTOP,58,46,
+                    108,10
 END
 
 IDD_PAGESETUP DIALOGEX 0, 0, 356, 196
@@ -1184,60 +1188,58 @@ BEGIN
                     WS_TABSTOP,219,153,9,11,0,HIDC_PSHELPER2_BUTTON
 END
 
-IDD_PAGE_AFILES DIALOGEX 0, 0, 299, 200
+IDD_PAGE_AFILES DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,4,300,1
+    LTEXT           "Alternate File Pairs",IDC_STATIC,0,0,61,8
     CONTROL         "",IDC_AFILES_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
-                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,0,49,294,84
-    PUSHBUTTON      "&Add",IDC_AFILES_ADDBUTTON,126,138,48,18
-    PUSHBUTTON      "&Edit",IDC_AFILES_EDITBUTTON,180,138,48,18
-    PUSHBUTTON      "&Remove",IDC_AFILES_REMOVEBUTTON,246,138,48,18
-    LTEXT           "In many languages one file has an alternate counterpart file - like .cpp and .h. Configure file pairs using this options page so that you can jump between them with a single command.",
-                    IDC_STATIC,24,6,270,26
-    ICON            IDR_MDICHILD,IDC_STATIC,0,6,20,20
-    LTEXT           "Alternate File Pairs:",IDC_STATIC,0,38,74,9
+                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,10,12,236,187
+    PUSHBUTTON      "&Add",IDC_AFILES_ADDBUTTON,250,12,50,14
+    PUSHBUTTON      "&Edit",IDC_AFILES_EDITBUTTON,250,30,50,14
+    PUSHBUTTON      "&Remove",IDC_AFILES_REMOVEBUTTON,250,48,50,14
 END
 
-IDD_AFILEEDITOR DIALOGEX 0, 0, 266, 114
+IDD_AFILEEDITOR DIALOGEX 0, 0, 248, 129
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Edit Alternate File Pair"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,209,7,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,209,24,50,14
-    RTEXT           "Start Extensions:",IDC_STATIC,7,7,72,12
-    EDITTEXT        IDC_AFILE_STARTTEXT,83,7,118,14,ES_AUTOHSCROLL
-    RTEXT           "Alternate Extensions:",IDC_STATIC,1,26,78,12
-    EDITTEXT        IDC_AFILE_OTHERTEXT,83,26,118,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,137,108,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,191,108,50,14
+    LTEXT           "Start Extensions:",IDC_STATIC,7,7,72,12
+    EDITTEXT        IDC_AFILE_STARTTEXT,7,17,234,14,ES_AUTOHSCROLL
+    LTEXT           "Alternate Extensions:",IDC_STATIC,7,35,78,8
+    EDITTEXT        IDC_AFILE_OTHERTEXT,7,45,234,14,ES_AUTOHSCROLL
     LTEXT           "File extensions should be entered including the '.' dot character, separated by semi-colons, in order of precedence. e.g. \n\nStart: .cpp;.cxx;.c;.cc\nAlternate: .h;.hpp",
-                    IDC_STATIC,36,52,223,45
-    ICON            IDI_INFOICON,IDC_STATIC,7,53,21,20
+                    IDC_STATIC,36,64,205,41
+    ICON            IDI_INFOICON,IDC_STATIC,7,64,21,20
 END
 
-IDD_PAGE_EDITDEFS DIALOGEX 0, 0, 299, 200
+IDD_PAGE_EDITDEFS DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "Show Line Numbers",IDC_OPT_LINENOSCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,6,18,138,12
-    COMBOBOX        IDC_OPT_LECOMBO,54,103,102,66,CBS_DROPDOWNLIST | 
-                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_OPT_CPCOMBO,54,127,102,66,CBS_DROPDOWNLIST | 
-                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Use the tab character for indentation",
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,4,299,1
+    LTEXT           "Defaults",IDC_STATIC,0,0,30,8
+    CONTROL         "&Show Line Numbers",IDC_OPT_LINENOSCHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,12,138,10
+    CONTROL         "&Word-Wrap",IDC_OPT_WORDWRAPCHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,24,138,10
+    CONTROL         "&Use the tab character for indentation",
                     IDC_OPT_USETABSCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,6,54,168,12
-    EDITTEXT        IDC_OPT_TABWIDTHEDIT,54,78,30,14,ES_AUTOHSCROLL
-    LTEXT           "Tab Width:",-1,6,78,48,12
-    LTEXT           "Line Endings:",-1,6,102,42,12
-    LTEXT           "Defaults:",-1,0,0,38,12
-    LTEXT           "",-1,36,5,252,2,SS_SUNKEN
-    RTEXT           "Code Page:",-1,0,126,48,12
-    CONTROL         "Word-Wrap",IDC_OPT_WORDWRAPCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,6,36,138,12
+                    WS_TABSTOP,10,36,168,10
+    LTEXT           "&Tab Width:",IDC_STATIC,10,52,48,8
+    EDITTEXT        IDC_OPT_TABWIDTHEDIT,60,50,30,14,ES_AUTOHSCROLL
+    LTEXT           "&Line Endings:",IDC_STATIC,10,68,42,8
+    COMBOBOX        IDC_OPT_LECOMBO,10,78,102,66,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Code Page:",IDC_STATIC,10,96,48,8
+    COMBOBOX        IDC_OPT_CPCOMBO,10,106,102,66,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
 END
 
 IDD_FILEPROPERTIES DIALOGEX 0, 0, 194, 204
@@ -1255,7 +1257,7 @@ BEGIN
     RTEXT           "Lines:",IDC_STATIC,30,24,30,8
     RTEXT           "Characters:",IDC_STATIC,6,42,54,8
     RTEXT           "Words:",IDC_STATIC,6,60,54,8
-    LTEXT           "",IDC_STATIC,6,84,186,2,SS_SUNKEN
+    LTEXT           "",IDC_STATIC,6,84,181,2,SS_SUNKEN
     RTEXT           "Scheme:",IDC_STATIC,6,96,54,8
     RTEXT           "Line Endings:",IDC_STATIC,6,120,54,8
     RTEXT           "Encoding:",IDC_STATIC,6,144,54,8
@@ -1268,28 +1270,30 @@ BEGIN
                     ES_READONLY | NOT WS_BORDER,WS_EX_TRANSPARENT
 END
 
-IDD_PAGE_CONF DIALOGEX 0, 0, 299, 200
+IDD_PAGE_CONF DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,4,299,1
+    LTEXT           "Settings",IDC_STATIC,0,0,27,8
+    LTEXT           "When attempting to re-open a file:",IDC_STATIC,10,12,
+                    120,8
     CONTROL         "Re-Open",IDC_REOPEN_DOIT,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,126,6,42,12
-    CONTROL         "Ask Me",IDC_REOPEN_ASKME,"Button",BS_AUTORADIOBUTTON,
-                    180,6,42,12
+                    WS_GROUP,24,24,42,10
+    CONTROL         "Ask Me",IDC_REOPEN_ASKME,"Button",BS_AUTORADIOBUTTON,78,
+                    24,42,10
     CONTROL         "Switch",IDC_REOPEN_SWITCH,"Button",BS_AUTORADIOBUTTON,
-                    228,6,42,12
+                    132,24,42,10
+    LTEXT           "When an open file is dropped:",IDC_STATIC,10,38,108,8
     CONTROL         "Re-Open",IDC_REDROP_DOIT,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,126,24,42,12
-    CONTROL         "Ask Me",IDC_REDROP_ASKME,"Button",BS_AUTORADIOBUTTON,
-                    180,24,42,12
+                    WS_GROUP,24,50,42,10
+    CONTROL         "Ask Me",IDC_REDROP_ASKME,"Button",BS_AUTORADIOBUTTON,78,
+                    50,42,10
     CONTROL         "Switch",IDC_REDROP_SWITCH,"Button",BS_AUTORADIOBUTTON,
-                    228,24,42,12
-    LTEXT           "When attempting to re-open a file:",IDC_STATIC,6,6,120,
-                    12
-    LTEXT           "When an open file is dropped:",IDC_STATIC,6,24,108,12
+                    132,50,42,10
 END
 
-IDD_JUMPTO DIALOGEX 0, 0, 286, 161
+IDD_JUMPTO DIALOGEX 0, 0, 229, 183
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_THICKFRAME
 CAPTION "Jump To..."
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -1297,11 +1301,11 @@ BEGIN
     EDITTEXT        IDC_JUMPTOTEXT,48,6,174,12,ES_AUTOHSCROLL
     CONTROL         "",IDC_JUMPTOLIST,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
-                    LVS_NOSORTHEADER | WS_TABSTOP,6,24,216,132,
+                    LVS_NOSORTHEADER | WS_TABSTOP,6,24,216,135,
                     WS_EX_CLIENTEDGE
-    DEFPUSHBUTTON   "OK",IDOK,229,6,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,229,24,50,14
-    RTEXT           "Jump to:",IDC_STATIC,6,6,36,12
+    DEFPUSHBUTTON   "OK",IDOK,117,162,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,172,162,50,14
+    RTEXT           "Jump to:",IDC_STATIC,6,8,36,8
 END
 
 
@@ -1332,47 +1336,51 @@ BEGIN
     IDD_INPUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 265
+        RIGHTMARGIN, 157
         TOPMARGIN, 7
-        BOTTOMMARGIN, 39
+        BOTTOMMARGIN, 48
     END
 
     IDD_OPTIONS, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 399
+        RIGHTMARGIN, 402
         TOPMARGIN, 7
-        BOTTOMMARGIN, 226
+        BOTTOMMARGIN, 232
     END
 
     IDD_PAGE_STYLE, DIALOG
     BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 296
-        TOPMARGIN, 3
-        BOTTOMMARGIN, 166
+        VERTGUIDE, 10
     END
 
     IDD_PAGE_SCHEMES, DIALOG
     BEGIN
-        LEFTMARGIN, 2
-        BOTTOMMARGIN, 170
+        RIGHTMARGIN, 299
     END
 
     IDD_TAB_STYLES, DIALOG
     BEGIN
-        BOTTOMMARGIN, 151
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 291
+        VERTGUIDE, 100
+        VERTGUIDE, 107
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 153
     END
 
     IDD_TAB_KEYWORDS, DIALOG
     BEGIN
-        BOTTOMMARGIN, 131
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 291
+        VERTGUIDE, 100
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 153
     END
 
     IDD_PAGE_TOOLS, DIALOG
     BEGIN
-        LEFTMARGIN, 2
-        BOTTOMMARGIN, 170
+        RIGHTMARGIN, 299
     END
 
     IDD_TOOLEDITOR, DIALOG
@@ -1380,63 +1388,61 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 381
         TOPMARGIN, 7
-        BOTTOMMARGIN, 221
+        BOTTOMMARGIN, 216
     END
 
     IDD_PAGE_GENERAL, DIALOG
     BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 296
-        TOPMARGIN, 3
-        BOTTOMMARGIN, 198
+        RIGHTMARGIN, 299
+        VERTGUIDE, 10
     END
 
     IDD_PAGE_NEWFILES, DIALOG
     BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 296
-        TOPMARGIN, 3
-        BOTTOMMARGIN, 198
+        VERTGUIDE, 10
+        HORZGUIDE, 56
     END
 
     IDD_SMARTSTARTEDITOR, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 253
+        RIGHTMARGIN, 193
         TOPMARGIN, 7
-        BOTTOMMARGIN, 42
+        BOTTOMMARGIN, 79
     END
 
     IDD_PAGE_VISUALHELP, DIALOG
     BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 296
-        TOPMARGIN, 3
-        BOTTOMMARGIN, 198
+        RIGHTMARGIN, 299
+        VERTGUIDE, 10
+    END
+
+    IDD_TAB_MISC, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 290
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 153
     END
 
     IDD_PAGE_AFILES, DIALOG
     BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 296
-        TOPMARGIN, 3
-        BOTTOMMARGIN, 198
+        VERTGUIDE, 10
+        HORZGUIDE, 12
     END
 
     IDD_AFILEEDITOR, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 259
+        RIGHTMARGIN, 241
         TOPMARGIN, 7
-        BOTTOMMARGIN, 107
+        BOTTOMMARGIN, 122
     END
 
     IDD_PAGE_EDITDEFS, DIALOG
     BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 296
-        TOPMARGIN, 3
-        BOTTOMMARGIN, 198
+        RIGHTMARGIN, 299
+        VERTGUIDE, 10
     END
 
     IDD_FILEPROPERTIES, DIALOG
@@ -1449,18 +1455,17 @@ BEGIN
 
     IDD_PAGE_CONF, DIALOG
     BEGIN
-        LEFTMARGIN, 2
-        RIGHTMARGIN, 296
-        TOPMARGIN, 3
-        BOTTOMMARGIN, 198
+        RIGHTMARGIN, 299
+        VERTGUIDE, 10
+        VERTGUIDE, 24
     END
 
     IDD_JUMPTO, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 279
+        RIGHTMARGIN, 222
         TOPMARGIN, 7
-        BOTTOMMARGIN, 154
+        BOTTOMMARGIN, 176
     END
 END
 #endif    // APSTUDIO_INVOKED

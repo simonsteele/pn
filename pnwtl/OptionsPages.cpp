@@ -190,7 +190,9 @@ LRESULT COptionsPageVisual::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 	m_btnLineCol.SetDefaultColor(RGB(255, 255, 224));
 	m_btnLLCol.SubclassWindow(GetDlgItem(IDC_OPT_LLCOLORBUTTON));
 	m_btnLLCol.SetDefaultColor(RGB(215,215,215));
-	
+
+	//TODO: Enable/disable IDC_OPT_LLCOLUMNEDIT, IDC_OPT_LLCOLORBUTTON and the associated static text based on the radio selection
+	//TODO: Enable/disable IDC_OPT_LINELIGHTBUTTON based on the checkbox selection
 	return 0;
 }
 
@@ -1182,7 +1184,6 @@ LRESULT COptionsPageSchemes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 	label.GetWindowRect(rc);
 	ScreenToClient(rc);
 	rc.right = rc.left + s.cx;
-	label.SetWindowPos(HWND_TOP, &rc, 0);
 
 	CRect rcCombo;
 
@@ -1191,7 +1192,6 @@ LRESULT COptionsPageSchemes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 	m_combo.GetWindowRect(rcCombo);
 	ScreenToClient(rcCombo);
 	rcCombo.left = rc.right + 5;
-	m_combo.SetWindowPos(HWND_TOP, &rcCombo, 0);
 
 	
 	CRect rcPH;
@@ -1203,7 +1203,7 @@ LRESULT COptionsPageSchemes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 	m_props.AddPage(m_stylestab);
 	m_props.AddPage(m_keywordstab);
 	m_props.AddPage(m_misctab);
-	
+
 	// Store focus or the property sheet eats it.
 	HWND hCurFocus = ::GetFocus();
 	m_props.Create(m_hWnd, 0, rcPH);
@@ -1288,7 +1288,7 @@ LRESULT COptionsPageTools::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	m_combo.GetWindowRect(rcCombo);
 	ScreenToClient(rcCombo);
 	rcCombo.left = rc.right + 5;
-	m_combo.SetWindowPos(HWND_TOP, &rcCombo, 0);
+	//m_combo.SetWindowPos(HWND_TOP, &rcCombo, 0);
 
 	m_list.Attach(GetDlgItem(IDC_LIST));
 	m_list.SetExtendedListViewStyle( m_list.GetExtendedListViewStyle() | LVS_EX_FULLROWSELECT );
@@ -1913,6 +1913,7 @@ LRESULT COptionsPageAFiles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 	m_list.InsertColumn(0, _T("Extensions"), LVCFMT_LEFT, (rc.Width() / 2) - 10, 0);
 	m_list.InsertColumn(1, _T("Alternate Extensions"), LVCFMT_LEFT, (rc.Width() / 2) - 10, 0);
 
+	//TODO: Enable/disable the add, remove and edit buttons based on the selection
 	return 0;
 }
 

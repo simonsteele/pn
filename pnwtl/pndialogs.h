@@ -301,7 +301,7 @@ class CInputDialog : public CInputDialogImpl<CInputDialog>
 class CGotoDialog : public CInputDialogImpl<CGotoDialog>
 {
 	public:
-		CGotoDialog() : CInputDialogImpl<CGotoDialog>(_T("Go To"), _T("Go To:")) {}
+		CGotoDialog(LPCTSTR caption) : CInputDialogImpl<CGotoDialog>(_T("Go To Line"), caption) {}
 		LRESULT OK(WORD wID);
 
 		int GetLineNo();

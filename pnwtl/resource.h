@@ -289,6 +289,7 @@
 #define IDC_OPTHELPER_BUTTON            1092
 #define IDC_REDROP_DOIT                 1093
 #define IDC_REDROP_ASKME                1094
+#define IDC_TAB1                        1096
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -365,7 +366,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        323
 #define _APS_NEXT_COMMAND_VALUE         32908
-#define _APS_NEXT_CONTROL_VALUE         1093
+#define _APS_NEXT_CONTROL_VALUE         1097
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

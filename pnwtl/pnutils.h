@@ -101,10 +101,10 @@ public:
 			}
 
 			int nAdjX = GetSystemMetrics(SM_CXDLGFRAME) * 2;
-			int nAdjY = GetSystemMetrics(SM_CYDLGFRAME) * 2;
-					
-			SetWindowPos(NULL, rc.left - nAdjX, rc.top - nAdjY, rc.Width(), rc.Height(), 
-							SWP_NOZORDER|SWP_NOACTIVATE);	
+			int nAdjY = GetSystemMetrics(SM_CYDLGFRAME) * 1;
+
+			SetWindowPos(NULL, rc.left - nAdjX, rc.top - nAdjY, rc.Width() + nAdjX, rc.Height() + nAdjY,
+							SWP_NOZORDER|SWP_NOACTIVATE);
 		}
 
 		SetActivePage(nStartPage);
