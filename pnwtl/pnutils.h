@@ -6,12 +6,108 @@
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
+ *
+ * Classes in this file:
+ *		CContainedPropSheet	- Create a propsheet as a child window.
+ *		CMRUList			- "Most Recently Used" list container
+ *		CMRUMenu			- "Most Recently Used" menu.
+ *		CDropDownButton		- XP Themes friendly drop-down arrow button
  */
 
 #ifndef pnutils_h__included
 #define pnutils_h__included
 
 #include "ssmenus.h"
+
+/**
+ * @class CContainedPropSheet
+ * @brief Create a propsheet as a child window.
+ * 
+ * This class is basically a version of the code in the Code Project article by
+ * Jay Giganti called "Owner Drawn WTL Controls". I removed his application specific
+ * code and created this generic class. All credit goes to Jay <JGiganti@hotmail.com>
+ * link: http://www.codeproject.com/wtl/ownerdrawn.asp
+ */
+class CContainedPropSheet : public CPropertySheetImpl<CContainedPropSheet>
+{
+	BEGIN_MSG_MAP(CContainedPropSheet)
+		NOTIFY_CODE_HANDLER(TCN_SELCHANGE, OnSelChange)
+		CHAIN_MSG_MAP(CPropertySheetImpl<CContainedPropSheet>)
+		REFLECT_NOTIFICATIONS()
+	END_MSG_MAP()
+
+	HWND Create(const HWND hWndParent, const int nStartPage, const CRect & rc)
+	{
+		ATLASSERT(m_hWnd == NULL);
+
+		m_psh.dwFlags	    = PSH_NOAPPLYNOW | PSH_MODELESS | PSH_USECALLBACK;
+		m_psh.hwndParent	= hWndParent;
+		m_psh.phpage		= (HPROPSHEETPAGE*)m_arrPages.GetData();
+		m_psh.nPages		= m_arrPages.GetSize();
+		m_psh.pfnCallback	= CContainedPropSheet::PropSheetCallback;
+			
+		_Module.AddCreateWndData(&m_thunk.cd, this);
+
+		HWND hWnd = (HWND)::PropertySheet(&m_psh);
+		_CleanUpPages();
+
+		if (m_hWnd)
+		{		
+			HWND hWndBtn = GetDlgItem(IDCANCEL);
+			if (hWndBtn)
+			{
+				::ShowWindow(hWndBtn, SW_HIDE);
+			}
+
+			hWndBtn = GetDlgItem(IDOK);
+			if (hWndBtn)
+			{
+				::ShowWindow(hWndBtn, SW_HIDE);
+			}
+
+			int nAdjX = GetSystemMetrics(SM_CXDLGFRAME) * 2;
+			int nAdjY = GetSystemMetrics(SM_CYDLGFRAME) * 2;
+					
+			SetWindowPos(NULL, rc.left - nAdjX, rc.top - nAdjY, rc.Width(), rc.Height(), 
+							SWP_NOZORDER|SWP_NOACTIVATE);	
+		}
+
+		SetActivePage(nStartPage);
+		return hWnd;
+	}
+
+	LRESULT OnSelChange(WPARAM wParam, LPNMHDR pnmHdr, BOOL & bHandled)
+	{
+		return  DefWindowProc(WM_NOTIFY, wParam, (LPARAM)pnmHdr);
+	}
+	
+	static int CALLBACK PropSheetCallback(HWND hWnd, UINT uMsg, LPARAM lParam)
+	{
+		int nRetVal = 0;
+
+		if (uMsg == PSCB_INITIALIZED)
+		{		
+			ATLASSERT(hWnd != NULL);
+			CContainedPropSheet* pT = (CContainedPropSheet*)_Module.ExtractCreateWndData();		
+			pT->SubclassWindow(hWnd);	// subclass the sheet window		
+			pT->_CleanUpPages();		// remove page handles array
+		}
+		else if (uMsg == PSCB_PRECREATE)
+		{
+			LPDLGTEMPLATE pTemplate = (LPDLGTEMPLATE)lParam;
+			ATLASSERT(pTemplate);
+			
+			DWORD dwRemove	= WS_POPUP|WS_SYSMENU|WS_CAPTION|DS_MODALFRAME;
+			DWORD dwAdd		= WS_CHILD|WS_VISIBLE|WS_TABSTOP|DS_CONTEXTHELP|DS_3DLOOK;//|DS_CONTROL;
+
+			pTemplate->style			 = (pTemplate->style & ~dwRemove) | dwAdd;
+			pTemplate->dwExtendedStyle	|= WS_EX_CONTROLPARENT;		
+			nRetVal = 1;
+		}
+			
+		return nRetVal;
+	}
+};
 
 /**
  * @class CMRUList
@@ -296,6 +392,5 @@ class CDropDownButton : public CWindowImpl <CDropDownButton>,  public CThemeImpl
 			return;
 		}
 };
-
 
 #endif //#ifndef pnutils_h__included
