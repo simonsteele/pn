@@ -2,6 +2,7 @@
 // Microsoft Visual C++ generated include file.
 // Used by pn.rc
 //
+#define IDOK2                           3
 #define IDC_REPLACE_BUTTON              4
 #define IDR_TBR_EDIT                    5
 #define IDC_REPLACEALL_BUTTON           6
@@ -141,6 +142,7 @@
 #define ID_MRUPROJECT_BASE              321
 #define IDD_JUMPTO                      321
 #define IDB_TAGTYPES                    322
+#define IDD_CHECKSAVE                   323
 #define ID_MRUPROJECT_MAX               340
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
@@ -373,7 +375,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        323
+#define _APS_NEXT_RESOURCE_VALUE        324
 #define _APS_NEXT_COMMAND_VALUE         32918
 #define _APS_NEXT_CONTROL_VALUE         1097
 #define _APS_NEXT_SYMED_VALUE           104

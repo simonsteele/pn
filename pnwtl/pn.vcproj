@@ -93,7 +93,7 @@
 				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="TabbingFramework, DockingFramework"
+				AdditionalIncludeDirectories="TabbingFramework, DockingFramework, ."
 				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,STRICT"
 				StringPooling="TRUE"
 				RuntimeLibrary="0"

@@ -33,6 +33,8 @@
 #include "SchemeConfig.h"	// Scheme Configuration
 #include <dbstate.h>		// Docking window state stuff...
 
+#include <TabbedMDISave.cpp>
+
 #if defined (_DEBUG)
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -374,13 +376,14 @@ LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	}
 
 	// Check that all of the child windows are ready to close...
-	SCloseStruct s;
+	/*SCloseStruct s;
 	s.pFunction = ChildCloseNotify; 
 	s.bCanClose = true;
 
 	PerformChildEnum(&s);
 	
-	if(s.bCanClose)
+	if(s.bCanClose)*/
+	if(m_tabbedClient.SaveAllModified(true, true))
 	{
 		// We're going to exit.
 		bHandled = FALSE;

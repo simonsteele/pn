@@ -4,9 +4,9 @@
 //   a "CustomTabCtrl" (such as CDotNetTabCtrl)
 //
 // Written by Daniel Bowen (dbowen@es.com)
-// Copyright (c) 2002 Daniel Bowen.
+// Copyright (c) 2002-2004 Daniel Bowen.
 //
-// Depends on CustomTabCtrl.h written by Bjarke Viksoe (bjarke@viksoe.dk),
+// Depends on CustomTabCtrl.h originally by Bjarke Viksoe (bjarke@viksoe.dk)
 //  with the modifications by Daniel Bowen
 //
 // CCustomTabOwnerImpl -
@@ -43,6 +43,26 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2004/04/29: Daniel Bowen
+// - Use LongToHandle with GetClassLong when getting HICON
+// - CTabbedFrameImpl -
+//   * Only forward focus to the active view if
+//     the tab isn't currently capturing the mouse.
+//   * Respond to NM_CLICK, CTCN_ACCEPTITEMDRAG and CTCN_CANCELITEMDRAG
+//     from the tab control, and set focus to the tab item's view
+//  
+// 2004/02/03: Daniel Bowen
+// - CTabbedFrameImpl -
+//   * Add new Set/GetForwardNotifications in case you want the parent of the tab
+//     window to forward notifications on to its parent.  A good example where
+//     you might want to use this would be with CTabbedChildWindow.
+//
+// 2004/01/19: Daniel Bowen
+// - CTabbedFrameImpl -
+//   * Have new "CHAIN_ACTIVETABVIEW_CHILD_COMMANDS" and "CHAIN_ACTIVETABVIEW_CHILD_COMMANDS2"
+//     macro that is used to forward WM_COMMAND messages to the active view of a tab window
+//     from outside the implementation of that tab window (such as in the Main Frame).
+//     
 // 2003/06/27: Daniel Bowen
 // - CCustomTabOwnerImpl -
 //   * Remove WTL:: scope off of CImageList member.
@@ -148,7 +168,7 @@
 #endif
 
 #ifndef __CUSTOMTABCTRL_H__
-	#error TabbedFrame.h requires CustomTabCtrl.h to be included first
+#include "CustomTabCtrl.h"
 #endif
 
 
@@ -456,7 +476,7 @@ public:
 							}
 							if(hIcon == NULL)
 							{
-								hIcon = (HICON) ::GetClassLong(hWnd, GCL_HICONSM);
+								hIcon = (HICON) LongToHandle(::GetClassLong(hWnd, GCL_HICONSM));
 							}
 							if(hIcon == NULL)
 							{
@@ -464,7 +484,7 @@ public:
 							}
 							if(hIcon == NULL)
 							{
-								hIcon = (HICON) ::GetClassLong(hWnd, GCL_HICON);
+								hIcon = (HICON) LongToHandle(::GetClassLong(hWnd, GCL_HICON));
 							}
 						}
 
@@ -634,6 +654,23 @@ public:
 	if(uMsg == WM_COMMAND && m_hWndActive != NULL) \
 		::SendMessage(m_hWndActive, uMsg, wParam, lParam);
 
+#define CHAIN_ACTIVETABVIEW_CHILD_COMMANDS(tabClass) \
+	if(uMsg == WM_COMMAND) \
+	{ \
+		HWND hWndChild = tabClass.GetActiveView(); \
+		if(hWndChild != NULL) \
+			::SendMessage(hWndChild, uMsg, wParam, lParam); \
+	}
+
+// Use this if forwarding to an ActiveX control.
+#define CHAIN_ACTIVETABVIEW_CHILD_COMMANDS2(tabClass) \
+	if(uMsg == WM_COMMAND) \
+	{ \
+		HWND hWndChild = tabClass.GetActiveView(); \
+		if(hWndChild != NULL) \
+			::SendMessage(hWndChild, uMsg, wParam, 0); \
+	}
+
 template <
 	class T,
 	class TTabCtrl = CDotNetTabCtrl<CTabViewTabItem>,
@@ -649,14 +686,15 @@ protected:
 
 // Member variables
 protected:
-	bool m_bReflectNotifications;
+	bool m_bReflectNotifications, m_bForwardNotifications;
 	DWORD m_nTabStyles;
 	HWND m_hWndActive;
 
 // Constructors
 public:
-	CTabbedFrameImpl(bool bReflectNotifications = false) :
+	CTabbedFrameImpl(bool bReflectNotifications = false, bool bForwardNotifications = false) :
 		m_bReflectNotifications(bReflectNotifications),
+		m_bForwardNotifications(bForwardNotifications),
 		m_nTabStyles(CTCS_BOTTOM | CTCS_TOOLTIPS),
 		m_hWndActive(NULL)
 	{
@@ -672,6 +710,16 @@ public:
 	bool GetReflectNotifications(void) const
 	{
 		return m_bReflectNotifications;
+	}
+
+	void SetForwardNotifications(bool bForwardNotifications = true)
+	{
+		m_bForwardNotifications = bForwardNotifications;
+	}
+
+	bool GetForwardNotifications(void) const
+	{
+		return m_bForwardNotifications;
 	}
 
 	void SetTabStyles(DWORD nTabStyles)
@@ -712,6 +760,9 @@ public:
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 
+		NOTIFY_CODE_HANDLER(NM_CLICK, OnClick)
+		NOTIFY_CODE_HANDLER(CTCN_ACCEPTITEMDRAG, OnAcceptItemDrag)
+		NOTIFY_CODE_HANDLER(CTCN_CANCELITEMDRAG, OnCancelItemDrag)
 		NOTIFY_CODE_HANDLER(CTCN_DELETEITEM, OnDeleteItem)
 		NOTIFY_CODE_HANDLER(CTCN_SELCHANGING, OnSelChanging)
 		NOTIFY_CODE_HANDLER(CTCN_SELCHANGE, OnSelChange)
@@ -734,6 +785,10 @@ public:
 		if(m_bReflectNotifications)
 		{
 			REFLECT_NOTIFICATIONS()
+		}
+		if(m_bForwardNotifications)
+		{
+			FORWARD_NOTIFICATIONS()
 		}
 	END_MSG_MAP()
 
@@ -804,7 +859,12 @@ public:
 		//  the frame is maximized.  So just use "IsWindow" instead.
 		if(m_hWndActive != NULL && ::IsWindow(m_hWndActive))
 		{
-			::SetFocus(m_hWndActive);
+			// Also - only forward the focus on to the active view
+			// if the tab isn't currently capturing the mouse
+			if(m_TabCtrl != ::GetCapture())
+			{
+				::SetFocus(m_hWndActive);
+			}
 		}
 
 		bHandled = FALSE;
@@ -821,6 +881,57 @@ public:
 		//return m_view.PreTranslateMessage(pMsg);
 
 		return ::SendMessage(m_hWndActive, WM_FORWARDMSG, 0, lParam);
+	}
+
+	LRESULT OnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
+	{
+		// If they left click on an item, set focus on the tab view.
+		NMCTCITEM* item = (NMCTCITEM*)pnmh;
+		if(item && (item->iItem >= 0))
+		{
+			TTabCtrl::TItem* pItem = m_TabCtrl.GetItem(item->iItem);
+			if(pItem->UsingTabView())
+			{
+				::SetFocus(pItem->GetTabView());
+			}
+		}
+
+		bHandled = FALSE;
+		return 0;
+	}
+
+	LRESULT OnAcceptItemDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
+	{
+		// If finished dragging, set focus on the tab view.
+		NMCTC2ITEMS* item = (NMCTC2ITEMS*)pnmh;
+		if(item && (item->iItem2 >= 0))
+		{
+			TTabCtrl::TItem* pItem = m_TabCtrl.GetItem(item->iItem2);
+			if(pItem->UsingTabView())
+			{
+				::SetFocus(pItem->GetTabView());
+			}
+		}
+
+		bHandled = FALSE;
+		return 0;
+	}
+
+	LRESULT OnCancelItemDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
+	{
+		// If finished dragging, set focus on the tab view.
+		NMCTCITEM* item = (NMCTCITEM*)pnmh;
+		if(item && (item->iItem >= 0))
+		{
+			TTabCtrl::TItem* pItem = m_TabCtrl.GetItem(item->iItem);
+			if(pItem->UsingTabView())
+			{
+				::SetFocus(pItem->GetTabView());
+			}
+		}
+
+		bHandled = FALSE;
+		return 0;
 	}
 
 	LRESULT OnDeleteItem(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHandled)

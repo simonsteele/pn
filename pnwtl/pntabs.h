@@ -5,10 +5,13 @@
 	#include <atlcoll.h>
 #endif
 
+#define WTL_TABBED_MDI_SAVE_IMPLEMENTATION
+
 #include <atlgdix.h>
 #include <CustomTabCtrl.h>
 #include <DotNetTabCtrl.h>
 #include <TabbedFrame.h>
+#include <TabbedMDISave.h>
 #include <TabbedMDI.h>
 
 template< class TTabCtrl >

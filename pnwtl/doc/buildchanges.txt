@@ -7,6 +7,8 @@ Since 27/04/2004:
 
 Changes:
 Presing up/down from the jump to edit box now moves the list selection.
+Upgraded the tabbing framework to Daniel's latest code.
+You can now drag to re-arrange tabs.
 [Projects] Folder position on adding folders corrected.
 [Projects] Adding folders from explorer no longer breaks sorting.
 [Projects] Fixed crash when almost dragging an item.

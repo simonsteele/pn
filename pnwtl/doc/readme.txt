@@ -30,6 +30,7 @@ What's new?
 21) Optimised file loading - significantly reduces load time for large files.
 22) Drag and drop in the projects window.
 23) Folders in project window now remain above files.
+24) Drag to re-arrange tabs.
 
 Bug Fixes:
 ----------

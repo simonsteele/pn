@@ -13,6 +13,9 @@
 #if !defined(__WTL_DW__EXTDOCKINGWINDOW_H__) && !defined(AFX_EXTDOCKINGWINDOW_H__0CD64AFC_8687_4B20_8B8F_EE149C8C0E94__INCLUDED_)
 	#error TabbedDockingWindow.h requires ExtDockingWindow.h to be included first
 #endif
+#if !defined(__WTL_DW__DOCKMISC_H__) && !defined(AFX_DOCKMISC_H__2A1A3052_6F61_4F89_A2C4_AAAC46D67AF1__INCLUDED_)
+	#error TabbedDockingWindow.h requires DockMisc.h to be included first
+#endif
 #ifndef __WTL_TABBED_FRAME_H__
 	#error TabbedDockingWindow.h requires TabbedFrame.h to be included first
 #endif
@@ -115,6 +118,48 @@ public:
 
 // Public Methods
 public:
+	bool AutoHide(bool bAutoHideOwnerTabBoxAsGroup = true)
+	{
+		bool returnValue = false;
+		if(this->IsWindow() && this->IsDocking() && !this->IsPinned())
+		{
+			// NOTE: "IsPinned" really should be renamed to "IsAutoHidden" or something
+			// TODO: The way IsPinned works seems backwards.
+			//  Its true if the window is being auto-hidden.
+
+			HWND hWndDockingBox = this->GetOwnerDockingBar();
+			if(bAutoHideOwnerTabBoxAsGroup && dockwins::CDockingBox::IsWindowBox(hWndDockingBox))
+			{
+				// The pane window is docked, not auto-hidden already, and in a tab box.
+				// Auto-hide the whole box at once (this will auto-hide all other
+				// pane windows in this tab box as well).
+
+				dockwins::DFPINBTNPRESS btnPress = {0};
+				btnPress.hdr.hWnd = m_hWnd;
+				btnPress.hdr.hBar = hWndDockingBox;
+				btnPress.hdr.code = DC_PINBTNPRESS;
+				btnPress.bVisualize = FALSE;
+				returnValue = ::SendMessage(hWndDockingBox, WMDF_DOCK, 0, (WPARAM)&btnPress) ? true : false;
+
+				//returnValue = ownerTabBox->PinBtnPress(false);
+			}
+			else //if(dockwins::CDockingBox::IsWindowBox(m_hWnd))
+			{
+				// The pane window is docked, not auto-hidden already and *not* in a tab box.
+				// Auto-hide just the pane window.
+
+				//dockwins::DFPINBTNPRESS btnPress = {0};
+				//btnPress.hdr.hWnd = m_hWnd;
+				//btnPress.hdr.hBar = hWndDockingBox;
+				//btnPress.hdr.code = DC_PINBTNPRESS;
+				//btnPress.bVisualize = FALSE;
+				//::SendMessage(m_hWnd, WMDF_DOCK, 0, (WPARAM)&btnPress);
+				returnValue = this->PinBtnPress(false);
+			}
+		}
+		return returnValue;
+	}
+
 	void SetClient(HWND hWndClient)
 	{
 		m_hWndClient = hWndClient;
@@ -237,10 +282,6 @@ public:
 		MESSAGE_HANDLER(WM_SIZE, OnSize)		
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
-
-		// TEMPORARY:
-		ATLASSERT(dockwins::CDockingFocusHandler::This());
-		CHAIN_MSG_MAP_ALT_MEMBER((*dockwins::CDockingFocusHandler::This()),0)
 
 		CHAIN_MSG_MAP(baseClass)
 		if(m_bReflectNotifications)

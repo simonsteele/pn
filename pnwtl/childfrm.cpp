@@ -20,6 +20,8 @@
 #include "jumpto.h"
 #include "jumptodialog.h"
 
+#include "tabbingframework/TabbedMDISave.h"
+
 #if defined (_DEBUG)
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -526,6 +528,40 @@ LRESULT CChildFrame::OnSchemeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 {
 	SchemeChanged(reinterpret_cast<CScheme*>(lParam));
 	return 0;
+}
+
+LRESULT CChildFrame::OnChildIsModified(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	if( GetModified() )
+	{
+		ITabbedMDIChildModifiedItem* pMI = (ITabbedMDIChildModifiedItem*)lParam;
+		
+		USES_CONVERSION;
+		
+		wstring wstr = T2CW(GetFileName(FN_FILE).c_str());
+		pMI->put_DisplayName( wstr.c_str() );
+		
+		if( CanSave() )
+		{
+			wstr = T2CW( GetFileName().c_str() );
+			pMI->put_Description( wstr.c_str() );
+		}
+		else
+		{
+			wstr = L"New File: ";
+			wstr += T2CW( (LPCTSTR)m_view.GetCurrentScheme()->GetTitle() );
+			pMI->put_Description( wstr.c_str() );
+		}
+
+		pMI->put_Window( m_hWnd );
+
+		HICON icon = ::LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDR_MDICHILD));
+		pMI->put_Icon( icon );
+
+		return TRUE;
+	}
+	else
+		return FALSE;
 }
 
 ////////////////////////////////////////////////////
