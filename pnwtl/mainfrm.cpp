@@ -1393,9 +1393,16 @@ LRESULT CMainFrame::OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	return 0;
 }
 
-LRESULT CMainFrame::OnHideOutput(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainFrame::OnHideOutput(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-	getDocker(DW_OUTPUT)->Hide();
+	if(hWndCtl == m_pOutputWnd->m_hWnd)
+	{
+		getDocker(DW_OUTPUT)->Hide();
+	}
+	else
+	{
+		::SendMessage(::GetParent(hWndCtl), WM_COMMAND, ID_OUTPUT_HIDE, (LPARAM)hWndCtl);
+	}
 	return 0;
 }
 

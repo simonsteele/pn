@@ -563,7 +563,7 @@ LRESULT COutputView::OnClear(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 LRESULT COutputView::OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	::SendMessage(GetTopLevelParent(), WM_COMMAND, ID_OUTPUT_HIDE, NULL);
+	::SendMessage(GetTopLevelParent(), WM_COMMAND, ID_OUTPUT_HIDE, (LPARAM)m_hWnd);
 	return 0;
 }
 
