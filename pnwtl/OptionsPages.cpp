@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "OptionsPages.h"
+#include "OptionsDialogs.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // CStyleDisplay
@@ -1314,226 +1315,6 @@ LRESULT COptionsPageTools::OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& 
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// CToolEditorDialog
-//////////////////////////////////////////////////////////////////////////////
-
-CToolEditorDialog::CInfoLabel::CInfoLabel()
-{
-	m_pTitleFont = /*m_pBodyFont =*/ NULL;
-
-	memset(strbuf, 0, sizeof(strbuf));
-	LoadString(NULL, IDS_TOOLFORMATSTRINGS, strbuf, 200);
-}
-
-CToolEditorDialog::CInfoLabel::~CInfoLabel()
-{
-	if(m_pTitleFont)
-	{
-		delete m_pTitleFont;
-		//delete m_pBodyFont;
-	}
-}
-
-void CToolEditorDialog::CInfoLabel::MakeFonts(HDC hDC)
-{
-	if(!m_pTitleFont)
-	{
-		LOGFONT lf;
-		memset(&lf, 0, sizeof(LOGFONT));
-
-		HFONT hDefFont = static_cast<HFONT>( GetStockObject(DEFAULT_GUI_FONT) );
-		GetObject(hDefFont, sizeof(LOGFONT), &lf);
-		
-		lf.lfWeight = FW_BOLD;
-
-		m_pTitleFont = new CFont;
-		m_pTitleFont->CreateFontIndirect(&lf);
-	}
-	
-	//lf.lfWeight = FW_NORMAL;
-	//m_pBodyFont->CreateFontIndirect(&lf);
-}
-
-LRESULT CToolEditorDialog::CInfoLabel::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	PAINTSTRUCT ps;
-	::BeginPaint(m_hWnd, &ps);
-
-	CDCHandle dc(ps.hdc);
-
-	MakeFonts(dc);
-
-	CRect rc;
-
-	GetClientRect(rc);
-	
-	CRect framerc(rc);
-
-	CBrush brush;
-	brush.CreateSysColorBrush(COLOR_INFOBK);
-
-	dc.FillRect(rc, brush);
-
-	rc.DeflateRect(3, 3, 2, 2);
-
-	// Draw Text...
-	if(m_pTitleFont)
-	{
-		HFONT hOldFont = dc.SelectFont(m_pTitleFont->m_hFont);
-		
-		dc.SetBkColor(GetSysColor(COLOR_INFOBK));
-		dc.SetTextColor(GetSysColor(COLOR_INFOTEXT));
-
-		int height = dc.DrawText(_T("Special Symbols:"), 16, rc, DT_TOP | DT_LEFT);
-		rc.top += height + 2;
-		rc.left += 25;
-
-		dc.SelectStockFont(DEFAULT_GUI_FONT);
-
-		/* We draw n columns of text to display the % special chars. 
-		This should be modified to draw as many as necessary. 
-		Use a while pPipe instead of if...*/
-
-		TCHAR* pStr = strbuf;
-		TCHAR* pPipe = _tcschr(pStr, _T('|'));
-
-		while(pPipe)
-		{
-			CRect rcCol(rc);
-			
-			*pPipe = '\0';
-			
-			// Calculate the rect for this column.
-			dc.DrawText(pStr, _tcslen(pStr), rcCol, DT_TOP | DT_LEFT | DT_WORDBREAK | DT_CALCRECT);	
-
-			// Actually draw the text.
-			dc.DrawText(pStr, _tcslen(pStr), rc, DT_TOP | DT_LEFT | DT_WORDBREAK);
-
-			// Find the next column start.
-			rc.left += rcCol.Width() + 20;
-
-			// Replace the pipe, and skip pStr past it.
-			*pPipe++ = _T('|');
-			pStr = pPipe;
-
-			// Are there any more?
-			pPipe = _tcschr(pStr, _T('|'));
-		}
-
-		// Draw the remaining text.
-		dc.DrawText(pStr, _tcslen(pStr), rc, DT_TOP | DT_LEFT | DT_WORDBREAK);
-
-		dc.SelectFont(hOldFont);
-	}
-
-	HBRUSH light = ::GetSysColorBrush(COLOR_3DSHADOW);
-	dc.FrameRect(framerc, light);
-
-	::EndPaint(m_hWnd, &ps);
-	return 0;
-}
-
-CToolEditorDialog::CToolEditorDialog()
-{
-	m_csName = _T("");
-	m_csCommand = _T("");
-	m_csFolder = _T("");
-	m_csParams = _T("");
-	m_csShortcut = _T("");
-
-	m_bCapture = true;
-
-	m_csDisplayTitle = _T("New Tool");
-}
-
-LRESULT CToolEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	CenterWindow(GetParent());
-
-	SetWindowText(m_csDisplayTitle);
-
-	m_infolabel.SubclassWindow(GetDlgItem(IDC_TE_INFOLABEL));
-
-	DoDataExchange();
-
-	return 0;
-}
-
-LRESULT CToolEditorDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	DoDataExchange(TRUE);
-	EndDialog(wID);
-
-	return 0;
-}
-
-LRESULT CToolEditorDialog::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	EndDialog(wID);
-
-	return 0;
-}
-
-LRESULT CToolEditorDialog::OnBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{	
-	DoDataExchange(TRUE);
-
-	LPCTSTR pInit = ( (m_csFolder.Find(_T('%')) == -1) ? (LPCTSTR)m_csFolder : NULL );
-	CPNFolderDialog dlg(NULL, pInit, _T("Select the working folder for the tool:"));
-	
-	if( dlg.DoModal() == IDOK )
-	{
-		m_csFolder = dlg.GetFolderPath();
-		DoDataExchange();
-	}
-
-	return 0;
-}
-
-LRESULT CToolEditorDialog::OnBrowseCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	DoDataExchange(TRUE);
-
-	LPCTSTR pFN = ( (m_csCommand.Find(_T('%')) == -1) ? (LPCTSTR)m_csCommand : NULL );
-	CFileDialog fd(true, _T("exe"), pFN, OFN_HIDEREADONLY, _T("Executable Files (exe, com, bat, vbs...)\0*.exe;*.com;*.bat;*.vbs;*.cmd\0All Files (*.*)\0*.*\0"), NULL);
-	if( fd.DoModal() )
-	{
-		m_csCommand = fd.m_ofn.lpstrFile;
-		DoDataExchange();
-	}
-	return 0;
-}
-
-void CToolEditorDialog::GetValues(SToolDefinition* pDefinition)
-{
-	pDefinition->Name			= m_csName;
-	pDefinition->Command		= m_csCommand;
-	pDefinition->Folder			= m_csFolder;
-	pDefinition->Params			= m_csParams;
-	pDefinition->Shortcut		= m_csShortcut;
-	pDefinition->bCaptureOutput = m_bCapture != 0;
-	pDefinition->bIsFilter		= m_bFilter != 0;
-	pDefinition->bSaveAll		= m_bSaveAll != 0;
-}
-
-void CToolEditorDialog::SetValues(SToolDefinition* pDefinition)
-{
-	m_csName		= pDefinition->Name.c_str();
-	m_csCommand		= pDefinition->Command.c_str();
-	m_csFolder		= pDefinition->Folder.c_str();
-	m_csParams		= pDefinition->Params.c_str();
-	m_csShortcut	= pDefinition->Shortcut.c_str();
-	m_bCapture		= pDefinition->bCaptureOutput;
-	m_bFilter		= pDefinition->bIsFilter;
-	m_bSaveAll		= pDefinition->bSaveAll;
-}
-
-void CToolEditorDialog::SetTitle(LPCTSTR title)
-{
-	m_csDisplayTitle = title;
-}
-
-//////////////////////////////////////////////////////////////////////////////
 // COptionsPageNewFiles
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1542,27 +1323,56 @@ void CToolEditorDialog::SetTitle(LPCTSTR title)
 COptionsPageNewFiles::COptionsPageNewFiles(SchemeConfigParser* pSchemes)
 {
 	m_pSchemes = pSchemes;
+	m_bDirty = false;
 }
 
-void COptionsPageNewFiles::AddItem(LPCTSTR key, LPCTSTR schemetitle)
+void COptionsPageNewFiles::AddItem(LPCTSTR key, LPCTSTR schemename)
 {
 	LVITEM lvi;
 
-	lvi.mask = LVIF_IMAGE | LVIF_TEXT | LVIF_PARAM;
-	lvi.iItem = m_list.GetItemCount();
-	lvi.iSubItem = 0;
-	lvi.pszText = const_cast<LPTSTR>( key );
-	lvi.iImage = 0;
-	//lvi.lParam = reinterpret_cast<LPARAM>(pDef);
+	CScheme* pScheme = CSchemeManager::GetInstance()->SchemeByName(schemename);
+	if(pScheme)
+	{
 
-	int iItem = m_list.InsertItem(&lvi);
+		TCHAR* nameStore = new TCHAR[_tcslen(schemename)+1];
+		_tcscpy(nameStore, schemename);
 
-	lvi.mask = LVIF_TEXT;
-	lvi.iItem = iItem;
-	lvi.iSubItem = 1;
-	lvi.pszText = const_cast<LPTSTR>( schemetitle );
+		lvi.mask = LVIF_IMAGE | LVIF_TEXT | LVIF_PARAM;
+		lvi.iItem = m_list.GetItemCount();
+		lvi.iSubItem = 0;
+		lvi.pszText = const_cast<LPTSTR>( key );
+		lvi.iImage = 0;
+		lvi.lParam = reinterpret_cast<LPARAM>(nameStore);
 
-	m_list.SetItem(&lvi);
+		int iItem = m_list.InsertItem(&lvi);
+
+		lvi.mask = LVIF_TEXT;
+		lvi.iItem = iItem;
+		lvi.iSubItem = 1;
+		lvi.pszText = const_cast<LPTSTR>( pScheme->GetTitle() );
+		lvi.lParam = 0;
+
+		m_list.SetItem(&lvi);
+	}
+}
+
+void COptionsPageNewFiles::EnableButtons()
+{
+	int iSI = m_list.GetSelectedIndex();
+	::EnableWindow(GetDlgItem(IDC_SMARTSTART_EDITBUTTON), iSI != -1);
+	::EnableWindow(GetDlgItem(IDC_SMARTSTART_REMOVEBUTTON), iSI != -1);
+}
+
+void COptionsPageNewFiles::FreeResources()
+{
+	int count = m_list.GetItemCount();
+	for(int i = 0; i < count; i++)
+	{
+		TCHAR* pNameStored = reinterpret_cast<TCHAR*>( m_list.GetItemData(i) );
+		if(pNameStored)
+			delete [] pNameStored;
+		m_list.SetItemData(i, NULL);
+	}
 }
 
 void COptionsPageNewFiles::OnInitialise()
@@ -1586,17 +1396,41 @@ void COptionsPageNewFiles::OnInitialise()
 	
 	for(SM_IT i = smap.begin(); i != smap.end(); ++i)
 	{
-		CScheme* pScheme = CSchemeManager::GetInstance()->SchemeByName((*i).second.c_str());
-		if(pScheme)
-		{
-			AddItem((*i).first.c_str(), pScheme->GetTitle());
-		}
+		AddItem((*i).first.c_str(), (*i).second.c_str());
 	}
+	
+	EnableButtons();
 }
 
 void COptionsPageNewFiles::OnOK()
 {
+	// Copy all items into smartstart manager...
+	if(m_bDirty && m_bCreated)
+	{
+		SmartStart* pSS = SmartStart::GetInstance();
+		STRING_MAP& smap = pSS->GetMap();
+		smap.clear();
 
+		CString strBuf;
+		TCHAR* pStoredName;
+
+		int count = m_list.GetItemCount();
+		for(int i = 0; i < count; i++)
+		{
+			m_list.GetItemText(i, 0, strBuf);
+			pStoredName = reinterpret_cast<TCHAR*>( m_list.GetItemData(i) );
+			smap.insert(SM_VT(tstring(strBuf), tstring(pStoredName)));
+		}
+
+		pSS->Save();
+	}
+
+	FreeResources();
+}
+
+void COptionsPageNewFiles::OnCancel()
+{
+	FreeResources();
 }
 
 LPCTSTR COptionsPageNewFiles::GetTreePosition()
@@ -1608,6 +1442,7 @@ LRESULT COptionsPageNewFiles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 {
 	m_list.Attach(GetDlgItem(IDC_SMARTSTART_LIST));
 	CRect rc;
+	m_list.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 	m_list.GetClientRect(rc);
 	m_list.InsertColumn(0, _T("Starting Phrase"), LVCFMT_LEFT, (rc.Width() / 3) * 2, 0);
 	m_list.InsertColumn(1, _T("Scheme"), LVCFMT_LEFT, (rc.Width() / 3) - 20, 0);
@@ -1619,36 +1454,86 @@ LRESULT COptionsPageNewFiles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 
 LRESULT COptionsPageNewFiles::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	CSmartStartEditorDialog edit(m_pSchemes);
+	
+	edit.SetValues(_T(""), _T(""));
+
+	if(edit.DoModal() == IDOK)
+	{
+		tstring startPhrase, schemeName;
+		edit.GetValues(startPhrase, schemeName);
+		AddItem(startPhrase.c_str(), schemeName.c_str());
+		m_bDirty = true;
+	}
 
 	return 0;
 }
 
 LRESULT COptionsPageNewFiles::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	int iSelIndex = m_list.GetSelectedIndex();
+	if(iSelIndex != -1)
+	{
+		CString strBuf;
+		m_list.GetItemText(iSelIndex, 0, strBuf);
+		TCHAR* pStoredData = reinterpret_cast<TCHAR*>( m_list.GetItemData(iSelIndex) );
+		if(pStoredData && strBuf.GetLength() > 0)
+		{
+			CSmartStartEditorDialog edit(m_pSchemes);
 
+			edit.SetValues(strBuf, pStoredData);
+
+			if(edit.DoModal() == IDOK)
+			{
+				tstring startPhrase, schemeName;
+				edit.GetValues(startPhrase, schemeName);
+				m_list.SetItemText(iSelIndex, 0, startPhrase.c_str());
+				
+				delete [] pStoredData;
+				pStoredData = new TCHAR[schemeName.length()+1];
+				_tcscpy(pStoredData, schemeName.c_str());
+				m_list.SetItemData(iSelIndex, reinterpret_cast<DWORD_PTR>( pStoredData ));
+				m_bDirty = true;
+			}
+		}
+	}
 	return 0;
 }
 
 LRESULT COptionsPageNewFiles::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-
+	int iSelIndex = m_list.GetSelectedIndex();
+	if(iSelIndex != -1)
+	{
+		TCHAR* pStoredName = reinterpret_cast<TCHAR*>( m_list.GetItemData(iSelIndex) );
+		if(pStoredName)
+		{
+			delete [] pStoredName;
+			m_list.DeleteItem(iSelIndex);
+		}
+		m_bDirty = true;
+	}
 	return 0;
 }
 
 LRESULT COptionsPageNewFiles::OnListKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
+	EnableButtons();
 
 	return 0;
 }
 
 LRESULT COptionsPageNewFiles::OnListClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
+	EnableButtons();
 
 	return 0;
 }
 
 LRESULT COptionsPageNewFiles::OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
+	BOOL b;
+	OnEditClicked(0, 0, 0, b);
 
 	return 0;
 }

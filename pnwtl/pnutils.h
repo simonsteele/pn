@@ -587,6 +587,7 @@ class CustomFormatStringBuilder
 };
 
 ///@todo could this be faster at all?
+void XMLSafeString(LPCTSTR from, tstring& to);
 void XMLSafeString(tstring& str);
 
 struct FormatXML {

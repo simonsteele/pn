@@ -55,6 +55,41 @@ SmartStart::~SmartStart()
 	delete [] m_buffer;
 }
 
+void SmartStart::Save()
+{
+	tstring path;
+	COptionsManager::GetInstance()->GetPNPath(path, PNPATH_USERSETTINGS);
+	path += _T("UserSmartStart.xml");
+
+	CFile f;
+	if( f.Open(path.c_str(), CFile::modeWrite | CFile::modeBinary) )
+	{
+		// <?xml version="1.0"?>
+		// <SmartStart>
+		// <ssv from="using " to="csharp" />
+		// </SmartStart>
+		
+		f.Write(_T("<?xml version=\"1.0\"?>\r\n<SmartStart>\r\n"), 37 * sizeof(TCHAR));
+
+		tstring sout;
+		for(SM_IT i = m_Map.begin(); i != m_Map.end(); ++i)
+		{
+			sout = _T("<ssv from=\"");
+			XMLSafeString((*i).first.c_str(), sout);
+			//sout += (*i).first;
+			sout += _T("\" to=\"");
+			XMLSafeString((*i).second.c_str(), sout);
+			//sout += (*i).second;
+			sout += _T("\" />\r\n");
+			f.Write((void*)sout.c_str(), sout.length() * sizeof(TCHAR));
+		}
+
+		f.Write(_T("</SmartStart>"), 13 * sizeof(TCHAR));
+
+		f.Close();
+	}
+}
+
 /// Called by CTextView on character addition until it returns !eContinue
 SmartStart::EContinueState SmartStart::OnChar(CTextView* pView)
 {

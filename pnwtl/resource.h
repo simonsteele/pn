@@ -71,6 +71,7 @@
 #define ID_OUTPUT_CLEAR                 259
 #define ID_OUTPUT_HIDE                  260
 #define ID_TOOLS_USETABS                261
+#define IDD_SMARTSTARTEDITOR            262
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -99,6 +100,7 @@
 #define IDC_TOOLS_EDITBUTTON            1011
 #define IDC_TE_NAMEEDIT                 1011
 #define IDC_OPT_TABWIDTHEDIT            1011
+#define IDC_PHRASEEDIT                  1011
 #define IDC_FONT_COMBO                  1012
 #define IDC_TOOLS_REMOVEBUTTON          1012
 #define IDC_TE_BROWSEBUTTON             1012
@@ -150,6 +152,7 @@
 #define IDC_COMBO1                      1053
 #define IDC_NEW_SCHEMECOMBO             1053
 #define IDC_OPT_LECOMBO                 1054
+#define IDC_SCHEME_COMBO                1055
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_PNSAVE_TYPECOMBO            1057
 #define IDC_MARKALL_BUTTON              21199
@@ -200,9 +203,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        262
+#define _APS_NEXT_RESOURCE_VALUE        263
 #define _APS_NEXT_COMMAND_VALUE         32868
-#define _APS_NEXT_CONTROL_VALUE         1055
+#define _APS_NEXT_CONTROL_VALUE         1056
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

@@ -197,6 +197,35 @@ CMRUMenu::operator HMENU()
 	return (HMENU)m_Menu;
 }
 
+void XMLSafeString(LPCTSTR from, tstring& to)
+{
+	int len = _tcslen(from);
+
+	for(int i = 0; i < len; i++)
+	{
+		switch(from[i])
+		{
+			case _T('"'):
+				to += "&quot;";
+				break;
+			case _T('<'):
+				to += "&lt;";
+				break;
+			case _T('>'):
+				to += "&gt;";
+				break;
+			case _T('&'):
+				to += "&amp;";
+				break;
+			case _T('\''):
+				to += "&apos;";
+				break;
+			default:
+				to += from[i];
+		}
+	}
+}
+
 void XMLSafeString(tstring& str)
 {
 	// make an attempt at reducing re-allocs...
@@ -205,30 +234,8 @@ void XMLSafeString(tstring& str)
 	_tcscpy(buffer, str.c_str());
 	str.reserve(len + 20);
 	str = _T("");
-
-	for(int i = 0; i < len; i++)
-	{
-		switch(buffer[i])
-		{
-			case _T('"'):
-				str += "&quot;";
-				break;
-			case _T('<'):
-				str += "&lt;";
-				break;
-			case _T('>'):
-				str += "&gt;";
-				break;
-			case _T('&'):
-				str += "&amp;";
-				break;
-			case _T('\''):
-				str += "&apos;";
-				break;
-			default:
-				str += buffer[i];
-		}
-	}
+	
+	XMLSafeString(buffer, str);
 
 	delete [] buffer;
 }

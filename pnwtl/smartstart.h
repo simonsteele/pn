@@ -16,6 +16,8 @@ public:
 	EContinueState	OnChar(CTextView* pView);
 	STRING_MAP&		GetMap();
 
+	void			Save();
+
 //XMLParseState
 public:
 	virtual void startElement(LPCTSTR name, XMLAttributes& atts);

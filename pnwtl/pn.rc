@@ -840,22 +840,34 @@ BEGIN
     LTEXT           "SmartStart attempts to automatically select a scheme for a new file when you start typing. It does this by matching the first few characters you type to a set of start phrases. Edit the start phrases here:",
                     IDC_STATIC,1,60,294,24
     CONTROL         "",IDC_SMARTSTART_LIST,"SysListView32",LVS_REPORT | 
-                    LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | 
-                    WS_BORDER | WS_TABSTOP,0,90,294,84
-    PUSHBUTTON      "&Remove",IDC_SMARTSTART_REMOVEBUTTON,246,180,48,18,
-                    WS_DISABLED
-    PUSHBUTTON      "&Edit",IDC_SMARTSTART_EDITBUTTON,180,180,48,18,
-                    WS_DISABLED
-    PUSHBUTTON      "&Add",IDC_SMARTSTART_ADDBUTTON,126,180,48,18,
-                    WS_DISABLED
-    COMBOBOX        IDC_NEW_SCHEMECOMBO,72,30,144,12,CBS_DROPDOWN | CBS_SORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
+                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,0,90,294,84
+    PUSHBUTTON      "&Remove",IDC_SMARTSTART_REMOVEBUTTON,246,180,48,18
+    PUSHBUTTON      "&Edit",IDC_SMARTSTART_EDITBUTTON,180,180,48,18
+    PUSHBUTTON      "&Add",IDC_SMARTSTART_ADDBUTTON,126,180,48,18
+    COMBOBOX        IDC_NEW_SCHEMECOMBO,72,36,144,84,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    RTEXT           "New File Scheme:",IDC_STATIC,0,30,66,12
+    RTEXT           "New File Scheme:",IDC_STATIC,0,36,66,12
     LTEXT           "When you press the new button, PN can automatically select a default scheme for you. Choose this scheme here:",
-                    IDC_STATIC,36,6,258,18
-    ICON            IDR_MDICHILD,IDC_STATIC,6,6,20,20
+                    IDC_STATIC,24,6,270,18
+    ICON            IDR_MDICHILD,IDC_STATIC,0,6,20,20
     CONTROL         "Enable SmartStart",IDC_SMARTSTART_ENABLECHECK,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,0,180,120,12
+END
+
+IDD_SMARTSTARTEDITOR DIALOGEX 0, 0, 260, 49
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Edit SmartStart Phrase"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_PHRASEEDIT,66,7,126,12,ES_AUTOHSCROLL
+    COMBOBOX        IDC_SCHEMECOMBO,66,30,126,12,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,203,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,203,24,50,14
+    RTEXT           "Start Phrase:",IDC_STATIC,6,6,54,12
+    RTEXT           "Scheme:",IDC_STATIC,6,30,54,12
 END
 
 
@@ -951,6 +963,14 @@ BEGIN
         RIGHTMARGIN, 296
         TOPMARGIN, 3
         BOTTOMMARGIN, 198
+    END
+
+    IDD_SMARTSTARTEDITOR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 253
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 42
     END
 END
 #endif    // APSTUDIO_INVOKED

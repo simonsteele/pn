@@ -139,6 +139,9 @@
 				RelativePath=".\Files.cpp">
 			</File>
 			<File
+				RelativePath="OptionsDialogs.cpp">
+			</File>
+			<File
 				RelativePath=".\OptionsManager.cpp">
 			</File>
 			<File
@@ -219,6 +222,9 @@
 			</File>
 			<File
 				RelativePath=".\CustomAutoComplete.h">
+			</File>
+			<File
+				RelativePath="OptionsDialogs.h">
 			</File>
 			<File
 				RelativePath="OptionsManager.h">
