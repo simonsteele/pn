@@ -167,7 +167,7 @@ CAPTION "About"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,130,81,50,14
-    CTEXT           "Programmers Notepad\nv2.0wtl\n\nCopyright (c) 2002 Simon Steele",
+    CTEXT           "Programmers Notepad 2\nv0.0.1 poptart\n\nCopyright (c) 2002 Simon Steele",
                     IDC_STATIC,13,57,103,32
     ICON            IDR_MAINFRAME,IDC_STATIC,55,26,20,20
     GROUPBOX        "",IDC_STATIC,7,7,115,88
@@ -275,7 +275,7 @@ END
 
 STRINGTABLE PRELOAD DISCARDABLE 
 BEGIN
-    IDR_MAINFRAME           "Programmers Notepad (wtl edition)"
+    IDR_MAINFRAME           "Programmers Notepad 2"
     IDR_MDICHILD            "Document"
     ID_EDITOR_WORDWRAP      "Toggle word wrap"
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
