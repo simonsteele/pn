@@ -28,6 +28,24 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2002/11/13: Daniel Bowen
+// - CDotNetTabCtrl:
+//   * Tweaks so that CDotNetTabCtrl matches just a little more
+//     closely to the tabs in VS.NET (when tabs are on top).
+//   * Override new "CalcSize_NonClient" method as part of the
+//     tweaks for CDotNetTabCtrl.  Currently, only the left
+//     and right sides of the client area are adjusted for
+//     non-client areas (since the drawing code already considers
+//     non-client areas above and below in its drawing).
+//     In the future, non-client areas could be accounted for
+//     in CalcSize_NonClient, and the drawing code could
+//     be updated appropriately.
+//   * New CTCS_FLATEDGE style.  CDotNetTabCtrl asks about this
+//     style when drawing the outline around the tab.  A good
+//     use for this style is if you are using the tab control
+//     for the MDI tabs, and you have your MDIClient drawn flat
+//     (like VS.NET)
+//
 // 2002/07/16: Daniel Bowen
 // - Fix problem that would cause applications using CDotNetTabCtrl
 //   with CTCS_CLOSEBUTTON and/or CTCS_SCROLL to not exit "cleanly".
@@ -342,12 +360,17 @@ public:
 				dc.LineTo(rc.left, rc.top);
 				dc.LineTo(rc.right-1, rc.top);
 						
-				dc.SelectPen(penHilight);
+				if(0 == (dwStyle & CTCS_FLATEDGE))
+				{
+					dc.SelectPen(penHilight);
+				}
 				dc.LineTo(rc.right-1, rc.bottom);
 
 				dc.SelectPen(pen3D);
-				dc.MoveTo(rc.right-2, rc.top+1);
-				dc.LineTo(rc.right-2, rc.bottom-2);
+				dc.MoveTo(rc.right-2, rc.bottom-3);
+				dc.LineTo(rc.right-2, rc.top);
+				dc.MoveTo(rc.left+1, rc.bottom-3);
+				dc.LineTo(rc.left+1, rc.top);
 
 				dc.SelectPen(penOld);
 			}
@@ -687,6 +710,44 @@ public:
 // Overrides from CCustomTabCtrl
 public:
 
+	void CalcSize_NonClient(LPRECT prcTabItemArea)
+	{
+		// account for "non-client" areas
+		// TODO: For the short term, we will use this
+		//  for the non-client areas on the left and right.
+		//  The drawing code for the tabs already accounts
+		//  for the "non-client" areas on the top and bottom, and
+		//  would need to be updated if we account for it here.
+		//  Tab item rect methods also would need to be
+		//  updated to account for the non-client areas
+		//  on top and bottom (and effected drawing code
+		//  would need to be updated).
+		DWORD dwStyle = this->GetStyle();
+
+		if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
+		{
+			// TODO: Update to actually specify the
+			//  non-client areas, and adjust all of the
+			//  effected drawing code, as well as
+			//  tab item rect related things
+			//prcTabItemArea->top += 3;
+		}
+		else
+		{
+			prcTabItemArea->left += 2;
+			prcTabItemArea->right -= 2;
+
+			// TODO: Update to actually specify the top and bottom
+			//  non-client areas, and adjust all of the
+			//  effected drawing code, as well as
+			//  tab item rect related things
+			//prcTabItemArea->top += 1;
+			//// We would have bottom as 3, but we want the
+			//// selected tab to actually paint over highlight part
+			//prcTabItemArea->bottom -= 2;
+		}
+	}
+
 	void CalcSize_CloseButton(LPRECT prcTabItemArea)
 	{
 		//int nButtonSizeX = ::GetSystemMetrics(SM_CXSMSIZE);
@@ -715,7 +776,7 @@ public:
 		{
 			m_rcCloseButton.top += 1;
 			m_rcCloseButton.bottom -= 2;
-			m_rcCloseButton.right -= 5;
+			m_rcCloseButton.right -= 2;
 		}
 		m_rcCloseButton.top = (m_rcCloseButton.bottom + m_rcCloseButton.top - nButtonSizeY) / 2;
 		m_rcCloseButton.bottom = m_rcCloseButton.top + nButtonSizeY;
@@ -765,7 +826,7 @@ public:
 			rcScroll.bottom -= 2;
 			if(0 == (dwStyle & CTCS_CLOSEBUTTON))
 			{
-				rcScroll.right -= 5;
+				rcScroll.right -= 2;
 			}
 		}
 		rcScroll.top = (rcScroll.bottom + rcScroll.top - nButtonSizeY) / 2;

@@ -65,7 +65,22 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
-// 2002/09/19: Daniel Bowen
+// 2002/11/21: Daniel Bowen
+// - CMDITabOwner - 
+//   * ModifyTabStyles for use before CMDITabOwner is created as a window
+// - CTabbedMDIClient -
+//   * Expose SetDrawFlat and GetDrawFlat
+//   * Updates so that drawing flat draws correctly
+// - CTabbedMDIChildWindowImpl - 
+//   * Handle WM_MOUSEACTIVATE, and call MDIActivate if
+//     MDI child is not already active.  This solves the problem
+//     where you have a dialog window as the view of the MDI child,
+//     and clicking on a child control (edit box, etc.) doesn't
+//     give focus or activate the MDI child (or activate the app
+//     if its not active).  This code will ideally make its
+//     way into future versions of WTL.
+//
+// 2002/09/25: Daniel Bowen
 // - CTabbedMDICommandBarCtrl -
 //   * Break out CTabbedMDICommandBarCtrl into CTabbedMDICommandBarCtrlImpl
 //     and CTabbedMDICommandBarCtrl (just like CMDICommandBarCtrlImpl
@@ -78,21 +93,35 @@
 //   * Expose "SetTabStyles" and "GetTabStyles" so that you can change
 //     the tab related styles to something different than the default
 // - UWM_MDI... messages -
-//   * These messages use RegisteredWindowMessage to guarantee their
-//     uniqueness.  The variables are static variables in this header
-//     file.  However, in release mode, these static variables aren't
-//     getting initialized in VC6.  We now guarantee they get registered
-//     by doing it in the constructor of each class that references them.
-//     If you have a class that does not derive from one of these classes
-//     and wants to reference one of these variables, it's safest to
-//     register them yourself using ENSURE_TABBEDMDI_REGISTERED_MESSAGES()
-//     Visual  C++ 7 *does* initialize the static variables appropropriately
-//     for both debug and release.
-//     The biggest drawback to having them defined in this header file
-//     is that in reality we get multiple versions of these static
-//     variables.  A better thing would be to "extern" them here in
-//     this header, and have a .cpp that you include in stdafx.cpp
-//     that actually defines the values.
+//   * The TabbedMDI related classes use a handful of custom window
+//     messages.  These messages are guaranteed to be unique across
+//     all windows for a particular windows session by using
+//     RegisterWindowMessage
+//
+//     Initially, these message IDs were declared as static variables
+//     and initialized here in the header.
+//     However, that gave them "internal linkeage".  Essentially,
+//     this meant that there were multiple copies of these variables.
+//     In Visual C++ 6, there was also a bug that caused the variables
+//     not to be initialized properly in release mode. So the class
+//     CTabbedMDIChildWindowImpl ensured their initialization in its
+//     constructor.  The problem was, only the version of the variables
+//     in the same translation unit got initialized by doing it this way.
+//
+//     These variables are now declared using __declspec(selectany)
+//     so that there will not be multiple copies.  RegisterWindowMessage
+//     for each message ID is now called in the constructor of the
+//     struct "RegisterTabbedMDIMessages". If you are using _ATL_MIN_CRT
+//     or define _TABBEDMDI_MESSAGES_EXTERN_REGISTER, then you must
+//     have an instance of the "RegisterTabbedMDIMessages" struct in
+//     one .cpp file.  Otherwise, a global instance of the struct will
+//     be declared in this header file (whose constructor will be called
+//     by the CRT at load time).  If you are not referencing
+//     TabbedMDI.h in stdafx.h, and have multiple translation units
+//     including it, then you'll need to do it the 
+//     _TABBEDMDI_MESSAGES_EXTERN_REGISTER way.  Also, if you do
+//     use _ATL_MIN_CRT, you will get a warning unless you define
+//     _TABBEDMDI_MESSAGES_NO_WARN_ATL_MIN_CRT
 //
 // 2002/08/26: Daniel Bowen
 // - CTabbedMDIClient -
@@ -136,6 +165,10 @@
 	#error TabbedFrame.h requires atlframe.h to be included first
 #endif
 
+#ifndef __ATLCTRLW_H__
+	#error TabbedFrame.h requires atlctrlw.h to be included first
+#endif
+
 #ifndef __CUSTOMTABCTRL_H__
 	#error TabbedMDI.h requires CustomTabCtrl.h to be included first
 #endif
@@ -148,59 +181,57 @@
 	#error TabbedMDI.h requires WTL 7.0 or higher
 #endif
 
-#define UWM_MDICHILDTABTEXTCHANGE_MSG _T("UWM_MDICHILDTABTEXTCHANGE_MSG-5DAD28E1-C961-11d5-8BDA-00500477589F")
-#define UWM_MDICHILDTABTOOLTIPCHANGE_MSG _T("UWM_MDICHILDTABTOOLTIPCHANGE_MSG-5DAD28E3-C961-11d5-8BDA-00500477589F")
-#define UWM_MDICHILDACTIVATIONCHANGE_MSG _T("UWM_MDICHILDACTIVATIONCHANGE_MSG-5DAD28E5-C961-11d5-8BDA-00500477589F")
-#define UWM_MDICHILDMAXIMIZED_MSG _T("UWM_MDICHILDMAXIMIZED_MSG-5DAD28E7-C961-11d5-8BDA-00500477589F")
-#define UWM_MDICHILDUNMAXIMIZED_MSG _T("UWM_MDICHILDUNMAXIMIZED_MSG-5DAD28E9-C961-11d5-8BDA-00500477589F")
+#define UWM_MDICHILDTABTEXTCHANGE_MSG      _T("UWM_MDICHILDTABTEXTCHANGE_MSG-5DAD28E1-C961-11d5-8BDA-00500477589F")
+#define UWM_MDICHILDTABTOOLTIPCHANGE_MSG   _T("UWM_MDICHILDTABTOOLTIPCHANGE_MSG-5DAD28E3-C961-11d5-8BDA-00500477589F")
+#define UWM_MDICHILDACTIVATIONCHANGE_MSG   _T("UWM_MDICHILDACTIVATIONCHANGE_MSG-5DAD28E5-C961-11d5-8BDA-00500477589F")
+#define UWM_MDICHILDMAXIMIZED_MSG          _T("UWM_MDICHILDMAXIMIZED_MSG-5DAD28E7-C961-11d5-8BDA-00500477589F")
+#define UWM_MDICHILDUNMAXIMIZED_MSG        _T("UWM_MDICHILDUNMAXIMIZED_MSG-5DAD28E9-C961-11d5-8BDA-00500477589F")
 #define UWM_MDICHILDSHOWTABCONTEXTMENU_MSG _T("UWM_MDICHILDSHOWTABCONTEXTMENU_MSG-5DAD28EB-C961-11d5-8BDA-00500477589F")
 
-static UINT UWM_MDICHILDTABTEXTCHANGE = ::RegisterWindowMessage(UWM_MDICHILDTABTEXTCHANGE_MSG);
-static UINT UWM_MDICHILDTABTOOLTIPCHANGE = ::RegisterWindowMessage(UWM_MDICHILDTABTOOLTIPCHANGE_MSG);
-static UINT UWM_MDICHILDACTIVATIONCHANGE = ::RegisterWindowMessage(UWM_MDICHILDACTIVATIONCHANGE_MSG);
-static UINT UWM_MDICHILDMAXIMIZED = ::RegisterWindowMessage(UWM_MDICHILDMAXIMIZED_MSG);
-static UINT UWM_MDICHILDUNMAXIMIZED = ::RegisterWindowMessage(UWM_MDICHILDUNMAXIMIZED_MSG);
-static UINT UWM_MDICHILDSHOWTABCONTEXTMENU = ::RegisterWindowMessage(UWM_MDICHILDSHOWTABCONTEXTMENU_MSG);
+__declspec(selectany) UINT UWM_MDICHILDTABTEXTCHANGE = 0;
+__declspec(selectany) UINT UWM_MDICHILDTABTOOLTIPCHANGE = 0;
+__declspec(selectany) UINT UWM_MDICHILDACTIVATIONCHANGE = 0;
+__declspec(selectany) UINT UWM_MDICHILDMAXIMIZED = 0;
+__declspec(selectany) UINT UWM_MDICHILDUNMAXIMIZED = 0;
+__declspec(selectany) UINT UWM_MDICHILDSHOWTABCONTEXTMENU = 0;
 
-// NOTE: In release mode, these static variables aren't
-//  getting initialized by the above in VC6.  We'll guarantee
-//  they get registered by doing it in the constructor of
-//  of each class that references them if this initialization
-//  doesn't work (at least in release mode it initializes it to 0)
-// Visual  C++ 7 (which happens to be version 13 of Microsoft's C/C++ compiler)
-//  *does* initialize the static variables appropropriately
-//  for both debug and release
-#if (_MSC_VER >= 1300)
-	// Visual C++ 7 or later will properly deal with initializing
-	// these static variables in both debug and release builds
-	#define ENSURE_TABBEDMDI_REGISTERED_MESSAGES()
+struct RegisterTabbedMDIMessages
+{
+	RegisterTabbedMDIMessages()
+	{
+		UWM_MDICHILDTABTEXTCHANGE =      ::RegisterWindowMessage(UWM_MDICHILDTABTEXTCHANGE_MSG);
+		UWM_MDICHILDTABTOOLTIPCHANGE =   ::RegisterWindowMessage(UWM_MDICHILDTABTOOLTIPCHANGE_MSG);
+		UWM_MDICHILDACTIVATIONCHANGE =   ::RegisterWindowMessage(UWM_MDICHILDACTIVATIONCHANGE_MSG);
+		UWM_MDICHILDMAXIMIZED =          ::RegisterWindowMessage(UWM_MDICHILDMAXIMIZED_MSG);
+		UWM_MDICHILDUNMAXIMIZED =        ::RegisterWindowMessage(UWM_MDICHILDUNMAXIMIZED_MSG);
+		UWM_MDICHILDSHOWTABCONTEXTMENU = ::RegisterWindowMessage(UWM_MDICHILDSHOWTABCONTEXTMENU_MSG);
+	}
+};
+
+#if defined(_ATL_MIN_CRT) || defined(_TABBEDMDI_MESSAGES_EXTERN_REGISTER)
+	// With _ATL_MIN_CRT, we don't get global constructors and destructors,
+	// which is the out-of-the-box way we register the tabbed MDI window messages,
+	// so the client needs to register these messages.
+	// _TABBEDMDI_MESSAGES_EXTERN_REGISTER also skips declaring a global
+	// right here - see the note below.
+
+	#if defined(_ATL_MIN_CRT) && !defined(_TABBEDMDI_MESSAGES_NO_WARN_ATL_MIN_CRT)
+		#pragma message("By defining _ATL_MIN_CRT, you are responsible for registering the custom TabbedMDI window messages")
+		#pragma message(" (Define _TABBEDMDI_MESSAGES_NO_WARN_ATL_MIN_CRT to not see this message again)")
+	#endif
 #else
-	#define ENSURE_TABBEDMDI_REGISTERED_MESSAGES() \
-		if(UWM_MDICHILDTABTEXTCHANGE == 0) \
-		{ \
-			UWM_MDICHILDTABTEXTCHANGE = ::RegisterWindowMessage(UWM_MDICHILDTABTEXTCHANGE_MSG); \
-		} \
-		if(UWM_MDICHILDTABTOOLTIPCHANGE == 0) \
-		{ \
-			UWM_MDICHILDTABTOOLTIPCHANGE = ::RegisterWindowMessage(UWM_MDICHILDTABTOOLTIPCHANGE_MSG); \
-		} \
-		if(UWM_MDICHILDACTIVATIONCHANGE == 0) \
-		{ \
-			UWM_MDICHILDACTIVATIONCHANGE = ::RegisterWindowMessage(UWM_MDICHILDACTIVATIONCHANGE_MSG); \
-		} \
-		if(UWM_MDICHILDMAXIMIZED == 0) \
-		{ \
-			UWM_MDICHILDMAXIMIZED = ::RegisterWindowMessage(UWM_MDICHILDMAXIMIZED_MSG); \
-		} \
-		if(UWM_MDICHILDUNMAXIMIZED == 0) \
-		{ \
-			UWM_MDICHILDUNMAXIMIZED = ::RegisterWindowMessage(UWM_MDICHILDUNMAXIMIZED_MSG); \
-		} \
-		if(UWM_MDICHILDSHOWTABCONTEXTMENU == 0) \
-		{ \
-			UWM_MDICHILDSHOWTABCONTEXTMENU = ::RegisterWindowMessage(UWM_MDICHILDSHOWTABCONTEXTMENU_MSG); \
-		} 
+	// Global struct, whose constructor will get called when the executable image gets loaded
+	// (the CRT makes sure global objects get constructed and destructed)
+
+	// If you are getting "already defined" errors because of including TabbedMDI.h
+	// in multiple translation units, you can either change it so that you
+	// reference this file only from stdafx.h, or you can declare
+	// "_TABBEDMDI_MESSAGES_EXTERN_REGISTER" before including TabbedMDI.h
+	// and then have an instance of the "RegisterTabbedMDIMessages"
+	// structure in a translation unit that has reference to this file.
+	RegisterTabbedMDIMessages g_RegisterTabbedMDIMessages;
 #endif
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -278,7 +309,7 @@ public:
 	CTabbedMDIChildWindowImpl() :
 		m_bMaximized(false)
 	{
-		ENSURE_TABBEDMDI_REGISTERED_MESSAGES()
+		ATLASSERT(UWM_MDICHILDACTIVATIONCHANGE != 0 && "The TabbedMDI Messages didn't get registered properly");
 	}
 
 // Overrides ofCMDIChildWindowImpl
@@ -362,6 +393,7 @@ public:
 		MESSAGE_HANDLER(WM_SETTEXT, OnSetText)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
+		MESSAGE_HANDLER(WM_MOUSEACTIVATE, OnMouseActivate)
 		MESSAGE_HANDLER(UWM_MDICHILDSHOWTABCONTEXTMENU, OnShowTabContextMenu)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
@@ -403,6 +435,17 @@ public:
 
 		bHandled = FALSE;
 		return 0;
+	}
+
+	LRESULT OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		HWND hWndActive = this->MDIGetActive();
+		if(m_hWnd != hWndActive)
+		{
+			this->MDIActivate(m_hWnd);
+		}
+
+		return MA_ACTIVATE;
 	}
 
 	LRESULT OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -482,7 +525,7 @@ public:
 		m_hWndMDIClient(NULL),
 		m_nTabStyles(CTCS_TOOLTIPS | CTCS_BOLDSELECTEDTAB | CTCS_SCROLL | CTCS_CLOSEBUTTON)
 	{
-		ENSURE_TABBEDMDI_REGISTERED_MESSAGES()
+		ATLASSERT(UWM_MDICHILDACTIVATIONCHANGE != 0 && "The TabbedMDI Messages didn't get registered properly");
 	}
 
 // Methods
@@ -500,6 +543,15 @@ public:
 	bool GetTabStyles(void) const
 	{
 		return m_nTabStyles;
+	}
+
+	void ModifyTabStyles(DWORD dwRemove, DWORD dwAdd)
+	{
+		DWORD dwNewStyle = (m_nTabStyles & ~dwRemove) | dwAdd;
+		if(m_nTabStyles != dwNewStyle)
+		{
+			m_nTabStyles = dwNewStyle;
+		}
 	}
 
 // Message Handling
@@ -844,7 +896,11 @@ public:
 		m_bSubclassed(false),
 		m_bDrawFlat(false)
 	{
-		ENSURE_TABBEDMDI_REGISTERED_MESSAGES()
+		ATLASSERT(UWM_MDICHILDACTIVATIONCHANGE != 0 && "The TabbedMDI Messages didn't get registered properly");
+		if(m_bDrawFlat)
+		{
+			m_MdiTabOwner.ModifyTabStyles(0,CTCS_FLATEDGE);
+		}
 	}
 
 	virtual ~CTabbedMDIClient()
@@ -875,6 +931,28 @@ public:
 	void UseMDIChildIcon(BOOL bUseMDIChildIcon = TRUE)
 	{
 		m_bUseMDIChildIcon = bUseMDIChildIcon;
+	}
+
+	void SetDrawFlat(bool bDrawFlat = true)
+	{
+		if(m_bDrawFlat!=bDrawFlat)
+		{
+			//ATLASSERT((m_hWnd==NULL) && "Please call SetDrawFlat before CreateWindow or SubclassWindow");
+			m_bDrawFlat = bDrawFlat;
+			if(m_bDrawFlat)
+			{
+				m_MdiTabOwner.ModifyTabStyles(0,CTCS_FLATEDGE);
+			}
+			else
+			{
+				m_MdiTabOwner.ModifyTabStyles(CTCS_FLATEDGE,0);
+			}
+		}
+	}
+
+	bool GetDrawFlat(void) const
+	{
+		return m_bDrawFlat;
 	}
 
 	BOOL SubclassWindow(HWND hWnd)
@@ -929,7 +1007,6 @@ public:
 		MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
 		MESSAGE_HANDLER(WM_WINDOWPOSCHANGING, OnWindowPosChanging)
 		MESSAGE_HANDLER(WM_NCPAINT, OnNcPaint)
-		MESSAGE_HANDLER(WM_STYLECHANGING, OnStyleChanging)
 		//MESSAGE_HANDLER(WM_MDICREATE, OnMDICreate)
 		MESSAGE_HANDLER(WM_MDIDESTROY, OnMDIDestroy)
 		MESSAGE_HANDLER(UWM_MDICHILDACTIVATIONCHANGE, OnChildActivationChange)
@@ -1027,13 +1104,13 @@ public:
 	LRESULT OnNcPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 
-		if(m_bDrawFlat)
+		if(m_bDrawFlat &&
+			WS_EX_CLIENTEDGE == (this->GetExStyle() & WS_EX_CLIENTEDGE))
 		{
-			// The MDI Client is going to continually set the Ex Style
-			//  WS_EX_CLIENTEDGE
-			// which we don't want.  Instead of constantly resetting this
-			// (in WM_SIZE or WM_WINDOWPOSCHANGING), we'll just handle
-			// WM_NCPAINT ourself and draw the flat frame we want.
+			// When we have WS_EX_CLIENTEDGE and drawing "flat",
+			// we'll paint the non-client edges ourself with a more flat look.
+			// NOTE: If WS_EX_CLIENTEDGE ever takes up more than 2 pixels
+			// on each edge, update the drawing code.
 
 			CDC dc(this->GetWindowDC());
 			if(dc)
@@ -1041,29 +1118,24 @@ public:
 				RECT rcWindow;
 				this->GetWindowRect(&rcWindow);
 				::OffsetRect(&rcWindow, -rcWindow.left, -rcWindow.top);
-				dc.FrameRect(&rcWindow, GetSysColorBrush(COLOR_BTNSHADOW));
-				::InflateRect(&rcWindow, -1, -1);
-				dc.FrameRect(&rcWindow, GetSysColorBrush(COLOR_BTNFACE));
+				dc.DrawEdge(&rcWindow, EDGE_ETCHED, BF_FLAT|BF_RECT);
 			}
 
 			/*
-			CRgn rgn(reinterpret_cast<HRGN>(wParam));
-
 			// Note: The documentation says the flags should be
 			// DCX_WINDOW|DCX_INTERSECTRGN
 			// but that wasn't working.
 			// On http://freespace.virgin.net/james.brown7/tutorials/tips.htm
 			// they mention you also need to OR in the flag "0x10000".
-
-			CDC dc(this->GetDCEx(rgn, DCX_WINDOW|DCX_INTERSECTRGN | 0x10000));
+			CDC dc(this->GetDCEx((HRGN)wParam, DCX_WINDOW|DCX_INTERSECTRGN | 0x10000));
 			if(dc)
 			{
-				RECT rc;
-				rgn.GetRgnBox(&rc);
-				dc.FillSolidRect(&rc, RGB(255,0,0));//GetSysColor(COLOR_BTNFACE));
+				RECT rcWindow;
+				this->GetWindowRect(&rcWindow);
+				::OffsetRect(&rcWindow, -rcWindow.left, -rcWindow.top);
+				dc.DrawEdge(&rcWindow, EDGE_ETCHED, BF_FLAT|BF_RECT);
 			}
 			*/
-
 			bHandled = TRUE;
 		}
 		else
@@ -1071,33 +1143,6 @@ public:
 			bHandled = FALSE;
 		}
 
-		return 0;
-	}
-
-	LRESULT OnStyleChanging(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-	{
-		if(m_bDrawFlat)
-		{
-			LPSTYLESTRUCT ss = reinterpret_cast<LPSTYLESTRUCT>(lParam);
-			if(ss)
-			{
-				switch(wParam)
-				{
-				case GWL_EXSTYLE:
-					if( (ss->styleOld & WS_EX_CLIENTEDGE) == 0 &&
-						(ss->styleNew & WS_EX_CLIENTEDGE) == WS_EX_CLIENTEDGE )
-					{
-						//ATLTRACE(_T("Resisting ExStyle change to WS_EX_CLIENTEDGE\n"));
-						ss->styleNew &= ~(WS_EX_CLIENTEDGE);
-					}
-					break;
-				case GWL_STYLE:
-					break;
-				}
-			}
-		}
-
-		bHandled = FALSE;
 		return 0;
 	}
 
@@ -1208,7 +1253,6 @@ public:
 	CTabbedMDICommandBarCtrlImpl() :
 		m_bUseMaxChildDocIconAndFrameCaptionButtons(true)
 	{
-		ENSURE_TABBEDMDI_REGISTERED_MESSAGES()
 	}
 
 // Public methods

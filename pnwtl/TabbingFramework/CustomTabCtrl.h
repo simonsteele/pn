@@ -25,9 +25,33 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
-// 2002/09/19: Daniel Bowen
+// 2002/11/13: Daniel Bowen
+// - New CTCS_FLATEDGE style.  Tab controls derived from
+//   CCustomTabCtrl can use this style to determine whether
+//   to draw the outline of the control with a flat look.
+// - New CalcSize_NonClient.  UpdateLayout will now call
+//   this overrideable method before calling any other
+//   CalcSize_* methods, so that you can adjust the client
+//   RECT to account for non-client areas.
+//
+// 2002/10/21: Daniel Bowen
+// - NMCTCITEM and NMCTC2ITEMS actually have "pt" in client
+//   coordinates, not screen coordinates.  Change the comment.
+// - Notifications using NMCTCITEM and NMCTC2ITEMS
+//   (NM_CLICK, et. al) were incorrectly initialing "pt".
 // - Remove some some unnecessary ATLASSERT(::IsWindow(m_hWnd))
 //   (if the method doesn't depend on a valid m_hWnd)
+// - Add some additional casting when dealing with current selection
+// - DeleteItem - after sending CTCN_DELETEITEM, re-get
+//   the count of items in case its changed
+// - Change a couple of ASSERTs and parameter checks that deal
+//   with size_t variables to not needlessly check for < 0
+// - Change SetCurSel to take an int instead of a size_t.
+//   Passing an int < 0 will clear the current selection
+// - CCustomTabCtrl::SetImageList - Should be
+//    CImageList imageListOld = m_imageList;
+//     instead of
+//    CImageList& imageListOld = m_imageList;
 //
 // 2002/07/16: Daniel Bowen
 // - Ensure that any place doing anything with m_tooltip
@@ -131,7 +155,7 @@
 #define CTCS_HOTTRACK            0x0040   // TCS_HOTTRACK
 //#define CTCS_VERTICAL            0x0080   // TCS_VERTICAL
 //#define CTCS_TABS                0x0000   // TCS_TABS
-//#define CTCS_BUTTONS             0x0100   // TCS_BUTTONS
+#define CTCS_FLATEDGE            0x0100   // TCS_BUTTONS
 //#define CTCS_SINGLELINE          0x0000   // TCS_SINGLELINE
 //#define CTCS_MULTILINE           0x0200   // TCS_MULTILINE
 //#define CTCS_RIGHTJUSTIFY        0x0000   // TCS_RIGHTJUSTIFY
@@ -178,7 +202,7 @@ typedef struct tagNMCTCITEM
 {
 	NMHDR   hdr;
 	int     iItem;  // Item Index
-	POINT   pt;     // Screen Coordinates
+	POINT   pt;     // Client Coordinates
 } NMCTCITEM, *LPNMCTCITEM;
 
 typedef struct tagNMCTC2ITEMS
@@ -186,7 +210,7 @@ typedef struct tagNMCTC2ITEMS
 	NMHDR   hdr;
 	int     iItem1;  // First Item Index
 	int     iItem2;  // Second Item Index
-	POINT   pt;      // Screen Coordinates
+	POINT   pt;      // Client Coordinates
 } NMCTC2ITEMS, *LPNMCTC2ITEMS;
 
 typedef struct tagCTCHITTESTINFO
@@ -1262,7 +1286,7 @@ public:
 			tchti.pt = ptMouse;
 			int nIndex = pT->HitTest(&tchti);
 
-			NMCTCITEM nmh = {{ m_hWnd, m_idDlgCtrl, NM_CLICK }, nIndex, lParam};
+			NMCTCITEM nmh = {{ m_hWnd, m_idDlgCtrl, NM_CLICK }, nIndex, {ptMouse.x, ptMouse.y} };
 			if(FALSE == ::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM)&nmh))
 			{
 				// returning FALSE let's us do our default handling
@@ -1281,6 +1305,8 @@ public:
 	{
 		if(m_hWnd == ::GetCapture())
 		{
+			POINT ptMouse = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+
 			// Before we release the capture, remember what the state was
 			// (in WM_CAPTURECHANGED we ClearCurrentMouseDownTracking)
 			DWORD dwState = m_dwState;
@@ -1291,7 +1317,7 @@ public:
 				ectcMouseOver_CloseButton == (dwState & ectcMouseOver))
 			{
 				// Close Button
-				NMCTCITEM nmh = {{ m_hWnd, m_idDlgCtrl, CTCN_CLOSE }, this->GetCurSel(), lParam};
+				NMCTCITEM nmh = {{ m_hWnd, m_idDlgCtrl, CTCN_CLOSE }, this->GetCurSel(), {ptMouse.x, ptMouse.y}};
 				::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM)&nmh);
 			}
 
@@ -1304,15 +1330,16 @@ public:
 
 	LRESULT OnLButtonDoubleClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 	{
+		POINT ptMouse = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+
 		// Search for a tab
 		T* pT = static_cast<T*>(this);
 		CTCHITTESTINFO tchti = { 0 };
-		tchti.pt.x = GET_X_LPARAM(lParam);
-		tchti.pt.y = GET_Y_LPARAM(lParam);
+		tchti.pt = ptMouse;
 		int nIndex = pT->HitTest(&tchti);
 
 		// returning TRUE tells us not to do our default handling
-		NMCTCITEM nmh = {{ m_hWnd, m_idDlgCtrl, NM_DBLCLK }, nIndex, lParam};
+		NMCTCITEM nmh = {{ m_hWnd, m_idDlgCtrl, NM_DBLCLK }, nIndex, {ptMouse.x, ptMouse.y}};
 		if(FALSE == ::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM)&nmh))
 		{
 			// returning FALSE let's us do our default handling
@@ -1328,15 +1355,16 @@ public:
 
 	LRESULT OnRButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 	{
+		POINT ptMouse = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+
 		// Search for a tab
 		T* pT = static_cast<T*>(this);
 		CTCHITTESTINFO tchti = { 0 };
-		tchti.pt.x = GET_X_LPARAM(lParam);
-		tchti.pt.y = GET_Y_LPARAM(lParam);
+		tchti.pt = ptMouse;
 		int nIndex = pT->HitTest(&tchti);
 
 		// returning TRUE tells us not to do our default handling
-		NMCTCITEM nmh = {{ m_hWnd, m_idDlgCtrl, NM_RCLICK }, nIndex, lParam};
+		NMCTCITEM nmh = {{ m_hWnd, m_idDlgCtrl, NM_RCLICK }, nIndex, {ptMouse.x, ptMouse.y}};
 		if(FALSE == ::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM)&nmh))
 		{
 			// returning FALSE let's us do our default handling
@@ -1358,15 +1386,16 @@ public:
 
 	LRESULT OnRButtonDoubleClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 	{
+		POINT ptMouse = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+
 		// Search for a tab
 		T* pT = static_cast<T*>(this);
 		CTCHITTESTINFO tchti = { 0 };
-		tchti.pt.x = GET_X_LPARAM(lParam);
-		tchti.pt.y = GET_Y_LPARAM(lParam);
+		tchti.pt = ptMouse;
 		int nIndex = pT->HitTest(&tchti);
 
 		// returning TRUE tells us not to do our default handling
-		NMCTCITEM nmh = {{ m_hWnd, m_idDlgCtrl, NM_RDBLCLK }, nIndex, lParam};
+		NMCTCITEM nmh = {{ m_hWnd, m_idDlgCtrl, NM_RDBLCLK }, nIndex, {ptMouse.x, ptMouse.y}};
 		if(FALSE == ::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM)&nmh))
 		{
 			// returning FALSE let's us do our default handling
@@ -1712,6 +1741,8 @@ public:
 
 		DWORD dwStyle = this->GetStyle();
 
+		pT->CalcSize_NonClient(&m_rcTabItemArea);
+
 		if(CTCS_CLOSEBUTTON == (dwStyle & CTCS_CLOSEBUTTON))
 		{
 			pT->CalcSize_CloseButton(&m_rcTabItemArea);
@@ -1729,6 +1760,10 @@ public:
 		}
 
 		pT->UpdateTabItemTooltipRects();
+	}
+
+	void CalcSize_NonClient(LPRECT prcTabItemArea)
+	{
 	}
 
 	void CalcSize_CloseButton(LPRECT prcTabItemArea)
@@ -2089,7 +2124,7 @@ public:
 
 	CImageList SetImageList(HIMAGELIST hImageList)
 	{
-		CImageList& imageListOld = m_imageList;
+		CImageList imageListOld = m_imageList;
 		m_imageList = hImageList;
 		return imageListOld;
 	}
@@ -2301,6 +2336,16 @@ public:
 				// Cancel the attempt
 				return FALSE;
 			}
+			else
+			{
+				// Just in case handler of the notification
+				// changed the count somehow, get it again
+				nOldCount = m_Items.GetCount();
+				if( nItem >= nOldCount )
+				{
+					return FALSE;
+				}
+			}
 		}
 
 		int nPostDeleteSelection = -1;
@@ -2472,8 +2517,8 @@ public:
 
 	TItem* GetItem(size_t nItem) const
 	{
-		ATLASSERT(nItem>=0 && nItem<(int)m_Items.GetCount());
-		if( nItem < 0 || nItem >= (int)m_Items.GetCount() )
+		ATLASSERT(nItem<(int)m_Items.GetCount());
+		if( nItem >= (int)m_Items.GetCount() )
 		{
 			return NULL;
 		}
@@ -2481,7 +2526,7 @@ public:
 		return m_Items[nItem];
 	}
 
-	int SetCurSel(size_t nItem, bool bNotify = true)
+	int SetCurSel(int nItem, bool bNotify = true)
 	{
 		T* pT = static_cast<T*>(this);
 		ATLASSERT(::IsWindow(m_hWnd));
@@ -2499,7 +2544,7 @@ public:
 		// // Selecting same tab?  If so, we won't go through all the notifications
 		// if( (int)nItem==m_iCurSel ) return m_iCurSel;
 
-		if( nItem >= m_Items.GetCount() )
+		if( nItem >= (int)m_Items.GetCount() )
 		{
 			nItem = m_iCurSel;
 		}
@@ -2519,7 +2564,10 @@ public:
 		// Change tab
 		m_iCurSel = nItem;
 
-		pT->EnsureVisible(m_iCurSel);
+		if(m_iCurSel >= 0)
+		{
+			pT->EnsureVisible(m_iCurSel);
+		}
 
 		// Recalc new layout and redraw
 		pT->UpdateLayout();
@@ -2651,8 +2699,8 @@ public:
 	DWORD SetItemSize(size_t nItem, int cx, int cy)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		ATLASSERT(nItem>=0 && nItem<(int)m_Items.GetCount());
-		if( nItem < 0 || nItem >= (int)m_Items.GetCount() )
+		ATLASSERT(nItem<(int)m_Items.GetCount());
+		if( nItem >= (int)m_Items.GetCount() )
 		{
 			return 0;
 		}

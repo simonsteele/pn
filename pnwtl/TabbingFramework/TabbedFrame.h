@@ -43,7 +43,7 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
-// 2002/09/19: Daniel Bowen
+// 2002/09/25: Daniel Bowen
 // - CTabbedFrameImpl -
 //   * Expose "SetTabStyles" and "GetTabStyles" so that you can change
 //     the tab related styles to something different than the default

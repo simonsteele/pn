@@ -1,8 +1,6 @@
 #ifndef __ATLGDIX_H__
 #define __ATLGDIX_H__
 
-#pragma once
-
 /////////////////////////////////////////////////////////////////////////////
 // Additional GDI/USER wrappers
 //
@@ -21,6 +19,8 @@
 //
 // Beware of bugs.
 //
+
+#pragma once
 
 #ifndef __cplusplus
    #error ATL requires C++ compilation (use a .cpp suffix)
@@ -199,6 +199,7 @@ public:
       return ::GetIconInfo(m_hIcon, pIconInfo);
    }
 };
+
 typedef CIconT<true> CIcon;
 typedef CIconT<false> CIconHandle;
 
@@ -206,7 +207,7 @@ typedef CIconT<false> CIconHandle;
 /////////////////////////////////////////////////////////////////////////////
 // CCursor
 
-// Protect templates against silly macro
+// Protect template against silly macro
 #ifdef CopyCursor
 #undef CopyCursor
 #endif
@@ -323,6 +324,7 @@ public:
    }
 #endif
 };
+
 typedef CCursorT<true> CCursor;
 typedef CCursorT<false> CCursorHandle;
 
@@ -352,25 +354,33 @@ public:
    }
    void SetBold() 
    { 
-      lfWeight=FW_BOLD; 
+      lfWeight = FW_BOLD; 
    }
    BOOL IsBold() const 
    { 
-      return lfWeight>=FW_BOLD; 
+      return lfWeight >= FW_BOLD; 
    }
-   void SetHeight(long PointSize, HDC hDC=NULL) 
+   void MakeBolder(int iScale = 1)
+   {
+      lfWeight += FW_BOLD * iScale;
+   }
+   void MakeLarger(int iScale)
+   {
+      if( lfHeight > 0 ) lfHeight += iScale; else lfHeight -= iScale;
+   }
+   void SetHeight(long PointSize, HDC hDC = NULL) 
    { 
       // For MM_TEXT mapping mode...
       // MulDiv() gives correct rounding.
       lfHeight = -MulDiv(PointSize, ::GetDeviceCaps(hDC, LOGPIXELSY), 72); 
    }
-   long GetHeight(HDC hDC=NULL) const
+   long GetHeight(HDC hDC = NULL) const
    {
       // For MM_TEXT mapping mode...
       // MulDiv() gives correct rounding.
       return ::MulDiv(-lfHeight, 72, ::GetDeviceCaps(hDC, LOGPIXELSY));
    }
-   long GetDeciPointHeight(HDC hDC=NULL)
+   long GetDeciPointHeight(HDC hDC = NULL)
    {
       POINT ptOrg = { 0, 0 };
       ::DPtoLP(hDC, &ptOrg, 1);
@@ -379,7 +389,7 @@ public:
       ::LPtoDP(hDC,&pt,1);
       return MulDiv(pt.y, 720, ::GetDeviceCaps(hDC,LOGPIXELSY)); // 72 points/inch, 10 decipoints/point
    }
-   void SetHeightFromDeciPoint(long DeciPtHeight, HDC hDC=NULL)
+   void SetHeightFromDeciPoint(long DeciPtHeight, HDC hDC = NULL)
    {
       POINT pt;
       pt.y = MulDiv(::GetDeviceCaps(hDC, LOGPIXELSY), DeciPtHeight, 720); // 72 points/inch, 10 decipoints/point
@@ -495,7 +505,7 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // COffscreenDraw
 
-// To use it, derive from it and chain it in the message map...
+// To use it, derive from it and chain it in the message map.
 template< class T >
 class COffscreenDraw
 {
@@ -511,7 +521,7 @@ public:
       T* pT = static_cast<T*>(this);
       if( wParam != NULL )
       {
-         CMemDC memdc((HDC)wParam, NULL);
+         CMemDC memdc( (HDC) wParam, NULL );
          pT->DoPaint(memdc.m_hDC);
       }
       else
@@ -534,7 +544,7 @@ public:
    }
 };
 
-// To use it, derive from it and chain it in the message map...
+// To use it, derive from it and chain it in the message map.
 template< class T >
 class COffscreenDrawRect
 {
@@ -550,7 +560,7 @@ public:
       T* pT = static_cast<T*>(this);
       if( wParam != NULL )
       {
-         CMemDC memdc((HDC)wParam, NULL);
+         CMemDC memdc( (HDC) wParam, NULL );
          pT->DoPaint(memdc.m_hDC, memdc.m_rc);
       }
       else
@@ -611,7 +621,7 @@ class CHandle
 public:
    HANDLE m_h;
 
-   CHandle(HANDLE hSrc=INVALID_HANDLE_VALUE)
+   CHandle(HANDLE hSrc = INVALID_HANDLE_VALUE)
    {
       m_h = hSrc;
    }
@@ -689,14 +699,14 @@ public:
 #define WM_MOUSEENTER WM_USER+253
 #endif // WM_MOUSEENTER
 
-// To use it, derive from it and chain it in the message map...
+// To use it, derive from it and chain it in the message map.
 // Make sure to set bHandled to FALSE when handling WM_MOUSEMOVE or
-// the WM_MOUSELEAVE message!!
+// the WM_MOUSELEAVE message!
 template< class T >
 class CMouseHover
 {
 public:
-   // Internal states
+   // Internal mouse-over state
    bool m_fMouseOver;
 
    CMouseHover() : 
@@ -742,9 +752,18 @@ public:
       tme.hwndTrack = hWnd;
       return _TrackMouseEvent(&tme);
    }
+   BOOL _CancelTrackMouseLeave(HWND hWnd) const
+   {
+      TRACKMOUSEEVENT tme = { 0 };
+      tme.cbSize = sizeof(tme);
+      tme.dwFlags = TME_LEAVE | TME_CANCEL;
+      tme.hwndTrack = hWnd;
+      return _TrackMouseEvent(&tme);
+   }
 };
 
 #endif // NOTRACKMOUSEEVENT
+
 
 }; // namespace WTL
 
