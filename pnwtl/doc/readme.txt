@@ -16,6 +16,7 @@ What's new?
 7) Look in the current directory for relative file names in the output window.
 8) Added current project path to the tool variables.
 9) New (fairly empty) confirmations options page.
+10) Drag files from explorer onto the projects window.
 
 Bug Fixes:
 ----------
@@ -31,6 +32,7 @@ Bug Fixes:
 9)  Fixed HTML export to use full style range (previously stopped at 31).
 10) Dropped files always open new windows. (SF Bug #873386).
 11) Deal with all URL encoded chars in output window, not just %20.
+12) Projects window renames too readily.
 
 If you find a bug:
 ------------------

@@ -370,7 +370,7 @@ Projects::Project* CToolCommandString::GetActiveProject()
 // SchemeToolsManager
 //////////////////////////////////////////////////////////////////////////////
 
-SchemeToolsManager* Singleton<SchemeToolsManager, SINGLETON_AUTO_DELETE>::s_pTheInstance = NULL;
+//SchemeToolsManager* SchemeToolsManager::s_pTheInstance = NULL;
 
 SchemeToolsManager::SchemeToolsManager()
 {
@@ -1059,7 +1059,7 @@ void ToolRunner::PostRun()
 // ToolOwner
 //////////////////////////////////////////////////////////////////////////////
 
-ToolOwner* Singleton<ToolOwner, SINGLETON_AUTO_DELETE>::s_pTheInstance = NULL;
+//ToolOwner* ToolOwner::s_pTheInstance = NULL;
 
 ToolOwner::ToolOwner()
 {

@@ -830,7 +830,7 @@ HRESULT CProjectTreeCtrl::OnDrop(LPDATAOBJECT pDataObject, DWORD /*dwKeyState*/,
 	if(hti.flags != TVHT_NOWHERE && hti.hItem != NULL)
 	{
 		ProjectType* ptype = reinterpret_cast<ProjectType*>( GetItemData(hti.hItem) );
-		if(ptype != NULL && ptype->GetType() == ptFolder)
+		if(ptype != NULL && (ptype->GetType() == ptFolder || ptype->GetType() == ptProject))
 		{
 			FORMATETC fmtetc;
 			fmtetc.cfFormat = CF_HDROP;

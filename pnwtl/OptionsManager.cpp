@@ -301,7 +301,8 @@ void COptionsManager::GetPNPath(tstring& path, int pathtype)
 	TCHAR buf[MAX_PATH +1];
 	memset(buf, 0, sizeof(buf));
 
-	if(pathtype == PNPATH_PN || pathtype == PNPATH_SCHEMES || pathtype == PNPATH_CLIPS || pathtype == PNPATH_TOOLS)
+	// Do paths that are relative to PN home dir.
+	if(pathtype < PNPATH_USERMIN)
 	{
 		GetModuleFileName(NULL, buf, MAX_PATH);
 		path = buf;
@@ -309,12 +310,21 @@ void COptionsManager::GetPNPath(tstring& path, int pathtype)
 		int cutoff = path.rfind(_T('\\'));
 		path = path.substr(0, cutoff+1);
 
-		if(pathtype == PNPATH_SCHEMES)
-			path += _T("Schemes\\");
-		else if(pathtype == PNPATH_CLIPS)
-			path += _T("Clips\\");
-		else if(pathtype == PNPATH_TOOLS)
-			path += _T("Tools\\");
+		switch(pathtype)
+		{
+			case PNPATH_SCHEMES:
+				path += _T("Schemes\\");
+				break;
+			case PNPATH_CLIPS:
+				path += _T("Clips\\");
+				break;
+			case PNPATH_TOOLS:
+				path += _T("Tools\\");
+				break;
+			case PNPATH_TAGGERS:
+				path += _T("Taggers\\");
+				break;
+		}
 	}
 	else if(pathtype == PNPATH_USERSETTINGS || pathtype == PNPATH_USERCLIPS)
 	{

@@ -22,11 +22,17 @@ static const TCHAR* PNSK_FIND = _T("Find");
 
 #define PNPATH_PN				0
 #define	PNPATH_SCHEMES			1
-#define	PNPATH_USERSETTINGS		2
 #define PNPATH_CLIPS			3
-#define PNPATH_USERCLIPS		4
 #define PNPATH_TOOLS			5
-#define PNPATH_USERTOOLS		2 // PNPATH_USERSETTINGS
+#define PNPATH_TAGGERS			6
+
+#define PNPATH_USERMIN			50
+
+#define	PNPATH_USERSETTINGS		50
+#define PNPATH_USERTOOLS		50 // PNPATH_USERSETTINGS
+#define PNPATH_USERCLIPS		51
+
+
 
 /**
  * This class represents all of the major

@@ -161,7 +161,9 @@ protected:
 			( GetStyle() & TVS_EDITLABELS ) && 
 			( nHitFlags & TVHT_ONITEMLABEL ) )
 		{
-			if ( hClickedItem == GetSelectedItem() )
+			// We check to see if we have the focus, because if we don't then the
+			// user clicked elsewhere between clicks so we shouldn't edit.
+			if ( hClickedItem == GetSelectedItem() && ::GetFocus() == m_hWnd )
 			{
 				// Clear multple selection before label editing
 				ClearSelection();

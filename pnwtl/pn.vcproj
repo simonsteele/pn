@@ -237,6 +237,9 @@
 				RelativePath=".\Files.cpp">
 			</File>
 			<File
+				RelativePath=".\jumpto.cpp">
+			</File>
+			<File
 				RelativePath="mainfrm.cpp">
 			</File>
 			<File
@@ -367,6 +370,9 @@
 				RelativePath=".\fromhandle.h">
 			</File>
 			<File
+				RelativePath=".\jumpto.h">
+			</File>
+			<File
 				RelativePath=".\mainfrm.h">
 			</File>
 			<File
@@ -380,6 +386,9 @@
 			</File>
 			<File
 				RelativePath="outputview.h">
+			</File>
+			<File
+				RelativePath=".\plugins.h">
 			</File>
 			<File
 				RelativePath=".\pn.h">

@@ -17,6 +17,7 @@
 #include "pndialogs.h"
 #include "docprops.h"
 #include "include/pagesetupdialog.h"
+#include "jumpto.h"
 
 #if defined (_DEBUG)
 #define new DEBUG_NEW
@@ -737,6 +738,12 @@ LRESULT CChildFrame::OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	return 0;
 }
 
+LRESULT CChildFrame::OnJumpTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	JumpToHandler::GetInstance()->DoJumpTo(this);
+	return 0;
+}
+
 LRESULT CChildFrame::OnLineEndingsToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(wID == ID_TOOLS_LECRLF)
@@ -1258,6 +1265,12 @@ void CChildFrame::PrintSetup()
 CTextView* CChildFrame::GetTextView()
 {
 	return &m_view;
+}
+
+COutputView* CChildFrame::GetOutputWindow()
+{
+	EnsureOutputWindow();
+	return m_pOutputView;
 }
 
 HACCEL CChildFrame::GetToolAccelerators()

@@ -784,6 +784,8 @@ class Singleton : public DelObject
 	protected:
 		static T* s_pTheInstance;
 };
+template <class T, bool t_bAutoRegister>
+T* Singleton< T, t_bAutoRegister >::s_pTheInstance = NULL;
 
 class MultipleInstanceManager
 {

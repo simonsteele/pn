@@ -283,7 +283,6 @@
 #define IDC_REOPEN_ASKME                1091
 #define IDC_REDROP_SWITCH               1092
 #define IDC_REDROP_DOIT                 1093
-#define IDC_RADIO6                      1094
 #define IDC_REDROP_ASKME                1094
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
@@ -352,6 +351,7 @@
 #define ID_PROJECT_SETACTIVEPROJECT     32897
 #define ID_BUTTON32901                  32901
 #define ID_VIEW_FILEPROPERTIES          32902
+#define ID_EDIT_JUMPTO                  32905
 #define IDC_FINDTEXT_LABEL              65535
 
 // Next default values for new objects
@@ -359,7 +359,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        321
-#define _APS_NEXT_COMMAND_VALUE         32905
+#define _APS_NEXT_COMMAND_VALUE         32906
 #define _APS_NEXT_CONTROL_VALUE         1092
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

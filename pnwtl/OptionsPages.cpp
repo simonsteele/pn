@@ -1077,7 +1077,7 @@ void COptionsPageStyle::OnOK()
 		m_FontCombo.GetLBText(i, str);
 
 		pS->FontName = str;
-		pS->FontSize = pS->FontSize = GetDlgItemInt(IDC_FONTSIZE_COMBO);
+		pS->FontSize = GetDlgItemInt(IDC_FONTSIZE_COMBO);
 		pS->ForeColor = m_fore.SafeGetColor();
 		pS->BackColor = m_back.SafeGetColor();
 		pS->Bold = (m_bold.GetCheck() == BST_CHECKED);
