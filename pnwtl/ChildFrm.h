@@ -198,13 +198,14 @@ public:
 		_PoorMansUIEntry* pMap = GetDefaultUIMap();
 		int so = sizeof(pMap);
 		m_pUIData = new _PoorMansUIEntry[so];
-		memcpy(m_pUIData, pMap, sizeof(_PoorMansUIEntry)*so);
+		memcpy(m_pUIData, pMap, sizeof(_PoorMansUIEntry) * so);
 	}
 
 	CChildFrame()
 	{
 		m_hImgList = NULL;
 		m_FileAge = -1;
+		m_onClose = NULL;
 
 		InitUpdateUI();
 	}
@@ -216,7 +217,13 @@ public:
 			::ImageList_Destroy(m_hImgList);
 		}
 
-		delete [] m_pUIData;
+		if(m_onClose)
+		{
+			delete m_onClose;
+		}
+
+		if(m_pUIData)
+			delete [] m_pUIData;
 	}
 
 	/**
