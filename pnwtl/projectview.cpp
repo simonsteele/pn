@@ -577,8 +577,6 @@ CProjectDocker::~CProjectDocker()
 		delete workspace;
 		workspace = NULL;
 	}
-	
-	//m_view.DestroyWindow();
 }
 
 LRESULT CProjectDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -589,7 +587,7 @@ LRESULT CProjectDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
 	RECT rc;
 	GetClientRect(&rc);
-	m_view.Create(m_hWnd, rc, _T("ProjectTree"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_HASLINES | TVS_EDITLABELS, 0, 100);
+	m_view.Create(m_hWnd, rc, _T("ProjectTree"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_HASLINES | TVS_EDITLABELS , 0, 100);
 
 	return 0;
 }

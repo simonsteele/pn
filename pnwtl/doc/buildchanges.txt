@@ -3,6 +3,11 @@
 
 Since 16/10/03:
 
+Fixed drop-downs in the find and replace dialogs.
+Opening a project or workspace shows the Projects window.
+Workspace saving and loading.
+Some changes to workspace/project close logic.
+
 Since 13/10/03:
 
 Projects view sets correct icons when adding files, not just when loading a project.

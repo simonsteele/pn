@@ -18,6 +18,41 @@ namespace Projects
 {
 
 //////////////////////////////////////////////////////////////////////////////
+// Parsing Gubbins...
+//////////////////////////////////////////////////////////////////////////////
+
+#define FILENODE	_T("File")
+#define FOLDERNODE	_T("Folder")
+#define PROJECTNODE	_T("Project")
+#define WORKSPACENODE	_T("Workspace")
+
+#define PS_START	0x1
+#define PS_PROJECT	0x2
+#define PS_FOLDER	0x3
+#define PS_WORKSPACE 0x4
+
+#define MATCH(ename) \
+	(_tcscmp(name, ename) == 0)
+
+#define IN_STATE(state) \
+	(parseState == state)
+
+#define STATE(state) \
+	parseState = state
+
+#define ATTVAL(attname) \
+	atts.getValue(attname)
+
+#define SETVALIDATTSTR(str, attname) \
+	{ \
+		LPCTSTR ppppppszAtt = ATTVAL(attname); \
+		if(ppppppszAtt != NULL) \
+			str = ppppppszAtt; \
+		else \
+			str = "error"; \
+	}
+
+//////////////////////////////////////////////////////////////////////////////
 // ProjectType
 //////////////////////////////////////////////////////////////////////////////
 
@@ -295,14 +330,6 @@ void Folder::setDirty()
 // Project
 //////////////////////////////////////////////////////////////////////////////
 
-#define FILENODE	_T("File")
-#define FOLDERNODE	_T("Folder")
-#define PROJECTNODE	_T("Project")
-
-#define PS_START	0x1
-#define PS_PROJECT	0x2
-#define PS_FOLDER	0x3
-
 bool Project::CreateEmptyProject(LPCTSTR projectname, LPCTSTR filename)
 {
 	Project Fake;
@@ -360,6 +387,11 @@ void Project::SetFileName(LPCTSTR filename)
 	fileName = filename;
 }
 
+tstring Project::GetFileName()
+{
+	return fileName;
+}
+
 bool Project::IsDirty()
 {
 	return bDirty;
@@ -381,18 +413,6 @@ void Project::parse()
 		::OutputDebugString(ex.GetMessage());
 	}
 }
-
-#define MATCH(ename) \
-	(_tcscmp(name, ename) == 0)
-
-#define IN_STATE(state) \
-	(parseState == state)
-
-#define STATE(state) \
-	parseState = state
-
-#define ATTVAL(attname) \
-	atts.getValue(attname)
 
 void Project::startElement(LPCTSTR name, XMLAttributes& atts)
 {
@@ -499,10 +519,8 @@ Workspace::Workspace() : ProjectType(ptWorkspace)
 
 Workspace::Workspace(LPCTSTR projectFile) : ProjectType(ptWorkspace)
 {
-	// TODO:
-	// 1. Parse XML Workspace File, collect project file names.
-	// 2. Parse individual projects.
 	fileName = projectFile;
+	parse();
 }
 
 Workspace::~Workspace()
@@ -551,7 +569,31 @@ bool Workspace::CanSave()
 
 void Workspace::Save()
 {
-	//TODO: Implement Workspace Saving.
+	ofstream str;
+	str.open(fileName.c_str(), ios_base::out);
+
+	str << "<?xml version=\"1.0\"?>\n";
+	str << "<Workspace name=\"" << name << "\">\n";
+
+	CFileName wspFN(fileName.c_str());
+	tstring wspPath = wspFN.GetPath();
+
+	for(PROJECT_LIST::const_iterator i = projects.begin();
+		i != projects.end();
+		++i)
+	{
+		Project* p = (*i);
+		
+		CFileName pfn(p->GetFileName().c_str());
+		tstring relpath = pfn.GetRelativePath(wspPath.c_str());
+
+		str << "\t<Project path=\"" << relpath << "\" />\n";
+	}
+
+	str << "</Workspace>";
+
+	str.close();
+	ClearDirty();
 }
 
 void Workspace::ClearDirty()
@@ -592,12 +634,32 @@ File* Workspace::FindFile(LPCTSTR filename)
 
 void Workspace::startElement(LPCTSTR name, XMLAttributes& atts)
 {
-
+	if ( IN_STATE(PS_START) )
+	{
+		if ( MATCH(WORKSPACENODE) )
+		{
+			SETVALIDATTSTR(this->name, "name");
+			STATE(PS_WORKSPACE);
+		}
+	}
+	else if ( IN_STATE(PS_WORKSPACE) )
+	{
+		if ( MATCH(PROJECTNODE) )
+		{
+			LPCTSTR path = ATTVAL("path");
+			if(path != NULL && _tcslen(path) > 0)
+			{
+				Project* pProject = new Project(path);
+				AddProject(pProject);
+			}
+		}
+	}
 }
 
 void Workspace::endElement(LPCTSTR name)
 {
-
+	if ( IN_STATE(PS_WORKSPACE) && MATCH(WORKSPACENODE) )
+		STATE( PS_START );
 }
 
 void Workspace::Clear()

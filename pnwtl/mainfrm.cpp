@@ -484,7 +484,7 @@ HWND CMainFrame::CreateSchemeToolbar()
 	sToolbar.SetButtonInfo(ID_PLACEHOLDER_SCHEMECOMBO, &tbi); 						
 	sToolbar.GetItemRect(0, &rc); 
 
-	rc.bottom = TOOLBAR_COMBO_DROPLINES * sizeChar.cy;
+	rc.bottom = rc.top + TOOLBAR_COMBO_DROPLINES * sizeChar.cy;
 	
 	HWND hWndCombo =  m_SchemeCombo.Create(m_hWnd, rc, NULL, CBS_DROPDOWNLIST | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL,
 		0, IDC_SCHEMECOMBO);
@@ -1643,6 +1643,14 @@ void CMainFrame::ToggleOutputWindow(bool bSetValue, bool bShowing)
 
 void CMainFrame::OpenProject(LPCTSTR projectPath)
 {
+	if(!m_pProjectsWnd)
+		UNEXPECTED(_T("No projects window!"))
+	else
+	{
+		if(!m_pProjectsWnd->IsWindowVisible())
+			m_pProjectsWnd->Toggle();
+	}
+
 	Projects::Workspace* workspace = new Projects::Workspace;
 	workspace->SetName(_T("New Workspace"));
 	
@@ -1659,7 +1667,6 @@ void CMainFrame::OpenWorkspace(LPCTSTR workspacePath)
 {
 	Projects::Workspace* workspace = new Projects::Workspace(workspacePath);
 	m_pProjectsWnd->SetWorkspace(workspace);
-	workspace->ClearDirty();
 }
 
 bool CMainFrame::SaveWorkspaceAs(Projects::Workspace* pWorkspace)
@@ -1786,6 +1793,29 @@ bool CMainFrame::CloseWorkspace(bool bAllowCloseFiles)
 	if( !workspace )
 		return true;
 
+	if( workspace->IsDirty() )
+	{
+		if(workspace->IsDirty(false))
+		{
+			// Something about the workspace has changed, 
+			// see if the user wants to save it.
+			DWORD dwRes = SaveWorkspace(workspace, true);
+			if( dwRes == IDCANCEL )
+				return false;
+
+			if( dwRes == IDNO )
+			{
+				if( !SaveProjects(workspace) )
+					return false;
+			}	
+		}
+		else
+		{
+			if( !SaveProjects(workspace) )
+				return false;
+		}
+	}
+
 	if(bAllowCloseFiles)
 	{
 		// No point in asking if there are no files open.
@@ -1800,37 +1830,6 @@ bool CMainFrame::CloseWorkspace(bool bAllowCloseFiles)
 			else if( dwRes == IDYES )
 				if(!CloseWorkspaceFiles(workspace))
 					return false;
-		}
-	}
-
-	if( workspace->IsDirty() )
-	{
-		if(workspace->CanSave())
-		{
-			workspace->Save();
-		}
-		else
-		{
-			// This is a blank workspace with no file.
-			if(workspace->IsDirty(false))
-			{
-				// Something about the workspace has changed, 
-				// see if the user wants to save it.
-				DWORD dwRes = SaveWorkspace(workspace, true);
-				if( dwRes == IDCANCEL )
-					return false;
-
-				if( dwRes == IDNO )
-				{
-					if( !SaveProjects(workspace) )
-						return false;
-				}	
-			}
-			else
-			{
-				if( !SaveProjects(workspace) )
-					return false;
-			}
 		}
 	}
 	

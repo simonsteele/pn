@@ -213,6 +213,18 @@ protected:
 		T* pT = static_cast<T*>(this);
 		pT->m_FindText = findText;
 	}
+
+	CSize GetGUIFontSize()
+	{
+		CClientDC dc(m_hWnd);
+		dc.SelectFont((HFONT) GetStockObject( DEFAULT_GUI_FONT ));		
+		TEXTMETRIC tm;
+		dc.GetTextMetrics( &tm );
+		//int cxChar = tm.tmAveCharWidth;
+		//int cyChar = tm.tmHeight + tm.tmExternalLeading;
+
+		return CSize( tm.tmAveCharWidth, tm.tmHeight + tm.tmExternalLeading);
+	}
 };
 
 class CFindDlg : public CSearchDlg<CFindDlg>,
@@ -260,7 +272,10 @@ public:
 		::GetWindowRect(GetDlgItem(IDC_FINDTEXT_DUMMY), rc);
 		ScreenToClient(rc);
 
-		m_FindTextCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO,
+		CSize size = GetGUIFontSize();
+		rc.bottom = rc.top + (size.cy * 10);
+
+		m_FindTextCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VSCROLL | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO,
 			_T("Software\\Echo Software\\PN2\\AutoComplete\\Find"), IDC_FINDTEXT_DUMMY);
 
 		m_ReHelperBtn.SubclassWindow(GetDlgItem(IDC_REHELPER_BUTTON));
@@ -458,11 +473,18 @@ public:
 
 		::GetWindowRect(GetDlgItem(IDC_FINDTEXT_DUMMY), rc);
 		ScreenToClient(rc);
+
+		CSize size = GetGUIFontSize();
+		rc.bottom = rc.top + (size.cy * 10);
+
 		m_FindTextCombo.Create(m_hWnd, rc, _T("RFINDTEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO,
 			_T("Software\\Echo Software\\PN2\\AutoComplete\\Find"), IDC_FINDTEXT_DUMMY);
 		
 		::GetWindowRect(GetDlgItem(IDC_REPLACETEXT_DUMMY), rc);
 		ScreenToClient(rc);
+
+		rc.bottom = rc.top + (size.cy * 10);
+
 		m_ReplaceTextCombo.Create(m_hWnd, rc, _T("REPLACETEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_REPLACETEXT_COMBO,
 			_T("Software\\Echo Software\\PN2\\AutoComplete\\Replace"), IDC_REPLACETEXT_DUMMY);
 		

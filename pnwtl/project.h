@@ -134,6 +134,7 @@ class Project : public Folder, XMLParseState
 		void Save();
 
 		void SetFileName(LPCTSTR filename);
+		tstring GetFileName();
 
 		bool IsDirty();
 
