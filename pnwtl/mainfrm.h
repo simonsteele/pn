@@ -305,6 +305,8 @@ public:
 
 		pChild->CreateEx(/*m_hWndClient*/m_hWndMDIClient);
 
+		pChild->SetupNewMenu(this);
+
 		pChild->m_onClose = new CallbackClassPtr<CMainFrame, CChildFrame*, bool>(*this, OnEditorClosing);
 
 		return pChild;
@@ -498,10 +500,6 @@ public:
 			CSPopupMenu sm;
 
 			theApp.GetSchemes().BuildMenu(sm.GetHandle(), this);
-					
-			POINT pt;
-			pt.x = 100;
-			pt.y = 100;
 			
 			::ModifyMenu(file.GetHandle(), 0, MF_BYPOSITION | MF_POPUP, (UINT)sm.GetHandle(), _T("&New"));
 
@@ -529,8 +527,8 @@ BOOL CALLBACK CloseChildEnumProc(HWND hWnd, LPARAM lParam)
 	CChildFrame* pChild = CChildFrame::FromHandle(hWnd);
 	if(pChild != NULL)
 	{
-		SCloseStruct* s = (SCloseStruct*)lParam;
-		CMainFrame *pMF = (CMainFrame*)s->pMainFrm;
+		SCloseStruct* s = reinterpret_cast<SCloseStruct*>(lParam);
+		CMainFrame *pMF = static_cast<CMainFrame*>(s->pMainFrm);
 
 		if(!pMF->OnEditorClosing(pChild))
 			s->bCanClose = false;
