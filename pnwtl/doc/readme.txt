@@ -1,18 +1,13 @@
-======================================
-Release Name: 2.0.2-simba
-Build: 2.0.2.27, Version Label: simba
-======================================
-
-This is the second release of Programmers Notepad 2.
+========================================
+Release Name: 2.0.3-coltrane
+Build: 2.0.3.27, Version Label: coltrane
+========================================
 
 What's new?
 -----------
 
-1) Options dialog.
-2) Printing support.
-3) Less bugs.
-4) Configurable schemes (through options dialog).
-5) Python Scheme
+1) Configurable scheme keywords.
+2) Now opens filenames from the command-line (or explorer associations).
 
 Printing note: This feature is experimental, and we have experienced the odd problem after printing. Please experiment and let us know how you get on.
 
@@ -45,3 +40,4 @@ So what is good?
 9) The minibar from pn1 is here (see at the bottom of the edit windows).
 10) Scoping / Folding / Outlining (Open a C++ or Pascal file to see this, it's lovely).
 11) Word-wrap.
+12) Schemes configuration.
