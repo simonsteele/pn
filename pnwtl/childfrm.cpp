@@ -988,6 +988,8 @@ LRESULT CChildFrame::OnGetInfoTip(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 ////////////////////////////////////////////////////
 // File Management Methods
 
+#include "include/atlmsgboxcheck.h"
+
 void CChildFrame::CheckAge()
 {
 	if(CanSave())
@@ -999,7 +1001,7 @@ void CChildFrame::CheckAge()
 			{
 				CString msg;
 				msg.Format(_T("%s\n\nThe above file has been modified outside of Programmers Notepad, do\nyou want to refresh and lose changes?"), (LPCTSTR)m_FileName);
-				if ( MessageBox((LPCTSTR)msg, _T("File Changed"), MB_YESNO) == IDYES )
+				if ( AtlMessageBoxCheckNet(m_hWnd, (LPCTSTR)msg, _T("File Changed"), MB_YESNO | MB_FORCESYSMENU) == IDYES )
 				{
 					Revert();
 				}

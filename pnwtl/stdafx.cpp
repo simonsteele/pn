@@ -9,4 +9,5 @@
 #endif
 #endif
 
-#include "DockingFramework/DockImpl.cpp"
+#include <DockImpl.cpp>
+#include <TabbedMDISave.cpp>

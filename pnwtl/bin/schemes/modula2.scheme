@@ -41,8 +41,6 @@
 			<style name="PreProcessor" key="9" fore="colour.preproc"/>
 			<style name="Operators" key="10" bold="true"/>
 			<style name="Class Definition Words" key="16" class="keyword"/>
-			<style name="Brace Match" key="34" bold="true" fore="0000ff"/>
-			<style name="Brace MisMatch" key="35" bold="true" fore="ff0000"/>
 		</use-styles>
 	</language>
 </Scheme>

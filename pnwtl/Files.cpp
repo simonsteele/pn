@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "Files.h"
-
+#include "shellapi.h"
 #include <algorithm>
 
 #ifndef pnutils_h__included
@@ -105,6 +105,34 @@ bool CreateDirectoryRecursive(LPCTSTR pszDirectory, LPSECURITY_ATTRIBUTES lpSA)
 	}
 
 	return true;
+}
+
+bool DeleteDirectory(LPCTSTR szDir, bool undoable)
+{
+	// Create a buffer with the directory in it (dual null-terminated)
+	int inLen = _tcslen(szDir);
+		
+	TCHAR* buf = new TCHAR[inLen+2];
+	_tcscpy(buf, szDir);
+	buf[inLen+1] = '\0';
+	
+	if(szDir[inLen-1] == '\\' || szDir[inLen-1] == '/')
+		buf[inLen-1] = '\0';
+
+	SHFILEOPSTRUCT fo;
+	fo.hwnd = NULL;
+	fo.wFunc = FO_DELETE;
+	fo.pFrom = buf;
+	fo.pTo = NULL;
+	fo.fFlags = FOF_NOCONFIRMATION | FOF_WANTNUKEWARNING;
+	if(undoable)
+		fo.fFlags |= FOF_ALLOWUNDO;
+	
+	bool bRet = SHFileOperation(&fo) == 0;
+
+	delete [] buf;
+
+	return bRet;
 }
 
 ///////////////////////////////////////////////////////////////////////////

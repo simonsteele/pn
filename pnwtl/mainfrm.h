@@ -308,6 +308,8 @@ protected:
 	bool CloseWorkspace(bool bAllowCloseFiles = false);
 	bool CloseWorkspaceFiles(Projects::Workspace* pWorkspace);
 	bool EnumWorkspaceWindows(SWorkspaceWindowsStruct* pWWS);
+	
+	bool getProjectsModified(ITabbedMDIChildModifiedList* pModifiedList);
 
 	void launchExternalSearch(LPCTSTR searchString);
 

@@ -9,9 +9,15 @@ Changes:
 Presing up/down from the jump to edit box now moves the list selection.
 Upgraded the tabbing framework to Daniel's latest code.
 You can now drag to re-arrange tabs.
+Docking windows reworked a bit - few visible changes, but a bit cleaner in the code.
+Added new file on startup option.
+Switched to scintilla 1.60
+Duplicate brace match colour settings (SF Bug #951146).
+New dialog to show the changed files/projects on exit.
 [Projects] Folder position on adding folders corrected.
 [Projects] Adding folders from explorer no longer breaks sorting.
 [Projects] Fixed crash when almost dragging an item.
+[Projects] Magic Folders in projects - folders that reflect real directory contents.
 
 Since 25/04/2004:
 

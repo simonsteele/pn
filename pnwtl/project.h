@@ -238,12 +238,21 @@ class MagicFolder : public Folder
 
 		void Refresh();
 
+		LPCTSTR GetFullPath() const;
+
+		LPCTSTR GetFilter() const;
+		void SetFilter(LPCTSTR filter);
+
 	protected:
 		tstring GetFolderCachePath();
+
 		void HandleReadCache(XMLParser* parser, XMLParseState* parent);
+
+		static tstring getMagicFolderPath(MagicFolder* last);
 
 	protected:
 		tstring				path;
+		tstring				filter;
 		bool				read;
 		MagicFolderCache*	cache;
 };

@@ -11,6 +11,10 @@
 #ifndef folderadder_h__included
 #define folderadder_h__included
 
+#ifndef filematcher_h__included
+	#error folderadder.h requires filematcher.h to be included first.
+#endif
+
 //////////////////////////////////////////////////////////////////////////////
 // FolderAdder
 //////////////////////////////////////////////////////////////////////////////
@@ -18,9 +22,9 @@
 namespace Projects
 {
 
-class FolderAdder : public FileFinderImpl<FolderAdder, FolderAdder>
+class FolderAdder : public RegExFileFinder<FolderAdder>//FileFinderImpl<FolderAdder, FolderAdder>
 {
-	typedef FileFinderImpl<FolderAdder, FolderAdder> base;
+	typedef RegExFileFinder<FolderAdder> base;
 	friend base;
 
 public:
@@ -42,7 +46,9 @@ public:
 		// make sure the path has a trailing slash, CPathName will do that.
 		CPathName pn(path);
 
-		Find(pn.c_str(), filter, recurse);
+		ClearFilters();
+		SetFilters(filter, NULL, NULL, _T("CVS;.svn"));
+		FindMatching(pn.c_str(), recurse);
 
 		return pFolder;
 	}
@@ -96,7 +102,9 @@ public:
 		// make sure the path has a trailing slash, CPathName will do that.
 		CPathName pn(path);
 
-		Find(pn.c_str(), filter, recurse);
+		ClearFilters();
+		SetFilters(filter, NULL, NULL, _T("CVS;.svn"));
+		FindMatching(pn.c_str(), recurse);
 	}
 
 protected:

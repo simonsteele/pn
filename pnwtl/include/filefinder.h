@@ -70,8 +70,13 @@ public:
 					}
 				}
 				else
+				{
 					// Call owner class with found data...
-					(owner->*f)(path, FindFileData.cFileName);
+					if( shouldMatch(FindFileData.cFileName) )
+					{
+						(owner->*f)(path, FindFileData.cFileName);
+					}
+				}
 
 				found = FindNextFile(hFind, &FindFileData);
 			}
@@ -90,6 +95,11 @@ protected:
 		if(_tcscmp(subfolder, _T("..")) != 0 && _tcscmp(subfolder, _T(".")) != 0)
 			return true;
 		return false;
+	}
+
+	bool shouldMatch(LPCTSTR folder)
+	{
+		return true;
 	}
 
 protected:

@@ -93,9 +93,6 @@
 			<style name="Operator" key="10" bold="true"/>
 			<style name="Identifier" key="11" />
 			<style name="End of line string" key="12" fore="000000" font="font.monospace" back="e0c0e0" eolfilled="true"/>
-			
-			<style name="Brace Match" key="34" fore="0000ee" bold="true"/>
-			<style name="Brace Mismatch" key="35" fore="ee0000" bold="true"/>
 		</use-styles>
 	</base-language>
 	

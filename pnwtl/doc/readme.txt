@@ -17,7 +17,7 @@ What's new?
 8) Added current project path to the tool variables.
 9) New (fairly empty) confirmations options page.
 10) Drag files from explorer onto the projects window.
-11) Upgraded to Scintilla 1.59
+11) Upgraded to Scintilla 1.60
 12) Project files now written using Genx.
 13) Project files keep most unknown XML elements between load and save.
 14) Added Duplicate, Copy, Cut and Transpose Line commands.
@@ -31,6 +31,8 @@ What's new?
 22) Drag and drop in the projects window.
 23) Folders in project window now remain above files.
 24) Drag to re-arrange tabs.
+25) Optional new, empty file on startup.
+26) Magic Folders in projects - folders that reflect real directory contents.
 
 Bug Fixes:
 ----------
@@ -54,6 +56,8 @@ Bug Fixes:
 17) Update status bar when last file closed (SF Bug #514527).
 18) Highlight colors in scheme wrong when choosing defaults (SF Bug #909343).
 19) PN loses focus on closing search dialogs (SF Bug #939917).
+20) Duplicate brace match colour settings (SF Bug #951146).
+21) Esc doesn't close the refresh dialog (SF Bug #939931).
 
 If you find a bug:
 ------------------

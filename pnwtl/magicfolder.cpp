@@ -14,7 +14,9 @@
 #include "include/genx/genx.h"
 #include "projectwriter.h"
 
+#include "include/pcreplus.h"
 #include "include/filefinder.h"
+#include "include/filematcher.h"
 #include "folderadder.h"
 
 #include <algorithm>
@@ -133,7 +135,7 @@ void MagicFolder::SetGotContents(bool bGotContents)
 	read = bGotContents;
 }
 
-tstring getMagicFolderPath(MagicFolder* last)
+tstring MagicFolder::getMagicFolderPath(MagicFolder* last)
 {
 	if(last->GetParent()->GetType() != ptMagicFolder)
 	{
@@ -159,6 +161,21 @@ tstring MagicFolder::GetFolderCachePath()
                tolower);
 
 	return path;
+}
+
+LPCTSTR MagicFolder::GetFullPath() const
+{
+	return path.c_str();
+}
+
+LPCTSTR MagicFolder::GetFilter() const
+{
+	return filter.c_str();
+}
+
+void MagicFolder::SetFilter(LPCTSTR szFilter)
+{
+	filter = filter;
 }
 
 //////////////////////////////////////////////////////////////////////////////

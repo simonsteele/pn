@@ -98,9 +98,6 @@
 			<style name="qx = Back Ticks" key="28" fore="ffff00" back="a08080" />
 			<style name="qr = Regex" key="29" back="a0ffa0" />
 			<style name="qw = Array" key="30" fore="00005e" />
-			
-			<style name="Brace Match" key="34" bold="true" fore="0000ff" />
-			<style name="Brace MisMatch" key="35" bold="true" fore="ff0000" />
 		</use-styles>
 	</language>
 </Scheme>

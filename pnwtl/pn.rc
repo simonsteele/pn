@@ -48,29 +48,6 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Toolbar
-//
-
-IDR_MAINFRAME TOOLBAR  16, 16
-BEGIN
-    BUTTON      ID_FILE_NEW
-    BUTTON      ID_FILE_OPEN
-    SEPARATOR
-    BUTTON      ID_FILE_SAVE
-    SEPARATOR
-    BUTTON      ID_FILE_CLOSE
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Menu
 //
 
@@ -366,45 +343,6 @@ BEGIN
     VK_MULTIPLY,    ID_VIEW_TOGGLEFOLD,     VIRTKEY, CONTROL, NOINVERT
 END
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Version
-//
-
-VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,5,29
- PRODUCTVERSION 2,0,5,29
- FILEFLAGSMASK 0x3fL
-#ifdef _DEBUG
- FILEFLAGS 0x1L
-#else
- FILEFLAGS 0x0L
-#endif
- FILEOS 0x4L
- FILETYPE 0x2L
- FILESUBTYPE 0x0L
-BEGIN
-    BLOCK "StringFileInfo"
-    BEGIN
-        BLOCK "040904b0"
-        BEGIN
-            VALUE "CompanyName", "Simon Steele (Echo Software)"
-            VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.5.29"
-            VALUE "InternalName", "PNWTL"
-            VALUE "LegalCopyright", "Copyright © 2002-2004 Simon Steele (Echo Software)"
-            VALUE "OriginalFilename", "pn.exe"
-            VALUE "ProductName", "Programmers Notepad"
-            VALUE "ProductVersion", "2.0.5.29-devel"
-        END
-    END
-    BLOCK "VarFileInfo"
-    BEGIN
-        VALUE "Translation", 0x409, 1200
-    END
-END
-
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -437,6 +375,16 @@ END
 //
 // Toolbar
 //
+
+IDR_MAINFRAME TOOLBAR  16, 16
+BEGIN
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    SEPARATOR
+    BUTTON      ID_FILE_SAVE
+    SEPARATOR
+    BUTTON      ID_FILE_CLOSE
+END
 
 IDR_TBR_EDIT TOOLBAR  16, 16
 BEGIN
@@ -474,6 +422,7 @@ END
 // Bitmap
 //
 
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
 IDB_EDITOR              BITMAP                  "res\\editor.bmp"
 IDR_TBR_EDIT            BITMAP                  "res\\edittbr.bmp"
 IDB_TRUETYPE_FONTTYPE   BITMAP                  "res\\font_tru.bmp"
@@ -658,6 +607,19 @@ BEGIN
     END
 END
 
+IDR_POPUP_PROJECTMFOLDER MENU 
+BEGIN
+    POPUP "DUMMY"
+    BEGIN
+        MENUITEM "&Add New Folder",             ID_PROJECT_MAGICADDFOLDER
+        MENUITEM SEPARATOR
+        MENUITEM "&Open All Files",             299
+        MENUITEM "&Sort Folders",               ID_PROJECT_SORTFOLDERS
+        MENUITEM SEPARATOR
+        MENUITEM "&Delete",                     ID_PROJECT_DELETE
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -818,8 +780,8 @@ BEGIN
     COMBOBOX        IDC_SCHEMECOMBO,0,10,185,64,CBS_DROPDOWNLIST | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
     LTEXT           "Scheme:",IDC_SCHEMELABEL,0,0,46,8
-    CONTROL         "",IDC_PS_PLACEHOLDER,"Static",SS_BLACKFRAME,0,24,299,
-                    175
+    CONTROL         "",IDC_PS_PLACEHOLDER,"Static",SS_BLACKFRAME,0,25,299,
+                    174
 END
 
 IDD_TAB_STYLES DIALOGEX 0, 0, 295, 157
@@ -1208,19 +1170,14 @@ BEGIN
     RTEXT           "Jump to:",IDC_STATIC,6,8,36,8
 END
 
-IDD_CHECKSAVE DIALOGEX 0, 0, 230, 140
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
-CAPTION "Dialog"
+IDD_MAGICFOLDERWIZ1 DIALOGEX 0, 0, 268, 158
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    PUSHBUTTON      "&No",IDNO,120,120,50,14
-    PUSHBUTTON      "&Cancel",IDCANCEL,174,120,50,14
-    DEFPUSHBUTTON   "&Yes",IDYES,66,120,50,14
-    CONTROL         "",IDC_LIST1,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | 
-                    WS_BORDER | WS_TABSTOP,6,18,216,96
-    LTEXT           "Do you want to save changes to these files?",IDC_STATIC,
-                    6,4,216,12
+    LTEXT           "A Magic Folder will reflect the contents of a file system folder in a Projects folder. Select the folder you wish to include below:",
+                    IDC_STATIC,7,7,254,23
+    CONTROL         "",IDC_SHELLTREE,"SysTreeView32",TVS_HASBUTTONS | 
+                    TVS_HASLINES | WS_BORDER | WS_TABSTOP,7,33,254,118
 END
 
 
@@ -1383,15 +1340,54 @@ BEGIN
         BOTTOMMARGIN, 176
     END
 
-    IDD_CHECKSAVE, DIALOG
+    IDD_MAGICFOLDERWIZ1, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 223
+        RIGHTMARGIN, 261
         TOPMARGIN, 7
-        BOTTOMMARGIN, 133
+        BOTTOMMARGIN, 151
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,0,5,29
+ PRODUCTVERSION 2,0,5,29
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "Simon Steele (Echo Software)"
+            VALUE "FileDescription", "Programmers Notepad 2"
+            VALUE "FileVersion", "2.0.5.29"
+            VALUE "InternalName", "PNWTL"
+            VALUE "LegalCopyright", "Copyright © 2002-2004 Simon Steele (Echo Software)"
+            VALUE "OriginalFilename", "pn.exe"
+            VALUE "ProductName", "Programmers Notepad"
+            VALUE "ProductVersion", "2.0.5.29-devel"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
 
 
 /////////////////////////////////////////////////////////////////////////////

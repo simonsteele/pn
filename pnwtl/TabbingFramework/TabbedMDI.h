@@ -1226,7 +1226,13 @@ public:
 						// The dialog will update the list and remove
 						// any items that the user unchecked
 
-						this->SaveModified(modifiedItems);
+						HRESULT hr = this->SaveModified(modifiedItems);
+						// Check if we've been cancelled further down.
+						if(hr == E_ABORT)
+						{
+							// Not safe to close
+							return false;
+						}
 					}
 					else if(response == IDCANCEL)
 					{
@@ -1309,7 +1315,7 @@ public:
 
 	HRESULT SaveModified(ITabbedMDIChildModifiedList* modifiedItems) const
 	{
-		if(modifiedItems)
+		if(modifiedItems == NULL)
 		{
 			return E_INVALIDARG;
 		}
@@ -1330,7 +1336,12 @@ public:
 				modifiedItem->get_Window(&hWnd);
 				if(hWnd && ::IsWindow(hWnd))
 				{
-					::SendMessage(hWnd, UWM_MDICHILDSAVEMODIFIED, 0, (LPARAM)modifiedItem.p);
+					if(::SendMessage(hWnd, UWM_MDICHILDSAVEMODIFIED, 0, (LPARAM)modifiedItem.p) != 0)
+					{
+						// Non-Zero result indicates cancel desired...
+						hr = E_ABORT;
+						break;
+					}
 				}
 
 				// Important!  If an item has sub-items, the "top-level"

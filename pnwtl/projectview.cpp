@@ -15,6 +15,7 @@
 #include "pndialogs.h"
 #include "include/shellicons.h"
 #include "include/filefinder.h"
+#include "MagicFolderWiz.h"
 
 using namespace Projects;
 
@@ -268,6 +269,13 @@ void CProjectTreeCtrl::doContextMenu(LPPOINT pt)
 			case ptFolder:
 			{
 				CSPopupMenu popup(IDR_POPUP_PROJECTFOLDER);
+				g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
+			}
+			break;
+
+			case ptMagicFolder:
+			{
+				CSPopupMenu popup(IDR_POPUP_PROJECTMFOLDER);
 				g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
 			}
 			break;
@@ -744,6 +752,10 @@ LRESULT CProjectTreeCtrl::OnAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 		Expand(hLastItem);
 		EditLabel(hFolderNode);
 	}
+	else if(lastItem->GetType() == ptMagicFolder)
+	{
+		// TODO
+	}
 
 	return 0;
 }
@@ -752,6 +764,17 @@ LRESULT CProjectTreeCtrl::OnAddMagicFolder(WORD /*wNotifyCode*/, WORD /*wID*/, H
 {
 	if(lastItem == NULL)
 		return 0;
+
+/*	MagicFolderWizard1 wiz;
+	CPropertySheet ps(_T("Add Magic Folder"));
+	ps.m_psh.dwFlags |= PSH_WIZARD97;
+	//ps.SetWizardMode();
+	ps.AddPage(wiz);
+	
+	int res = ps.DoModal();
+	DWORD x = GetLastError();
+
+	int a =0 ;*/
 
 	if(lastItem->GetType() == ptProject)
 	{
@@ -825,6 +848,7 @@ LRESULT CProjectTreeCtrl::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 	switch(lastItem->GetType())
 	{
+		case ptMagicFile:
 		case ptFile:
 		{
 			// We can't delete lots of items and still be in the middle of using the
@@ -846,8 +870,8 @@ LRESULT CProjectTreeCtrl::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 				File* pF = reinterpret_cast<File*>( GetItemData((*i)) );
 				Projects::Folder* pFolder = pF->GetFolder();
 				tstring filename = pF->GetFileName();
-				tstring askstr = "Are you sure you wish to delete:\n" + filename;
-				if( ::MessageBox(m_hWnd, askstr.c_str(), "Delete File", MB_YESNO | MB_ICONQUESTION) == IDYES )
+				tstring askstr = _T("Are you sure you wish to delete:\n") + filename;
+				if( ::MessageBox(m_hWnd, askstr.c_str(), _T("Delete File"), MB_YESNO | MB_ICONQUESTION) == IDYES )
 				{
 					if(::DeleteFile(filename.c_str()) != 0)
 					{
@@ -855,11 +879,43 @@ LRESULT CProjectTreeCtrl::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 						DeleteItem((*i));
 					}
 				}
-
-				sel = GetNextSelectedItem(sel);
 			}
 		}
 		break;
+
+		case ptMagicFolder:
+		{
+			// GetFirst/GetNextSelectedItem loop because the current selection will
+			// change. 
+			std::list<HTREEITEM> selectedItems;
+			HTREEITEM sel = GetFirstSelectedItem();
+			while(sel)
+			{
+				selectedItems.push_front(sel);
+				sel = GetNextSelectedItem(sel);
+			}
+
+			for(std::list<HTREEITEM>::const_iterator i = selectedItems.begin();
+				i != selectedItems.end(); ++i)
+			{
+				MagicFolder* pMF = reinterpret_cast<MagicFolder*>( GetItemData((*i)) );
+				tstring msg = _T("Are you sure you wish to delete the folder ");
+				msg += pMF->GetFullPath();
+				msg += _T(" and all its contents?");
+				if( ::MessageBox(m_hWnd, msg.c_str(), _T("Delete Folder"), MB_YESNO | MB_ICONQUESTION) == IDYES )
+				{
+					if(::DeleteDirectory(pMF->GetFullPath()))
+					{
+						Projects::Folder* pParent = pMF->GetParent();
+						pParent->RemoveChild(pMF);
+						DeleteItem((*i));
+					}
+				}
+			}
+			
+		}
+		break;
+
 	}
 
 	return 0;

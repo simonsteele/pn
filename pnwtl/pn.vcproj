@@ -317,6 +317,9 @@
 				RelativePath=".\magicfolder.cpp">
 			</File>
 			<File
+				RelativePath=".\MagicFolderWiz.cpp">
+			</File>
+			<File
 				RelativePath="mainfrm.cpp">
 			</File>
 			<File
@@ -444,10 +447,10 @@
 				RelativePath=".\CustomAutoComplete.h">
 			</File>
 			<File
-				RelativePath="exporters.h">
+				RelativePath=".\docprops.h">
 			</File>
 			<File
-				RelativePath=".\FilePropertiesDialog.h">
+				RelativePath="exporters.h">
 			</File>
 			<File
 				RelativePath=".\finddlg.h">
@@ -469,6 +472,9 @@
 			</File>
 			<File
 				RelativePath=".\jumptointerface.h">
+			</File>
+			<File
+				RelativePath=".\MagicFolderWiz.h">
 			</File>
 			<File
 				RelativePath=".\mainfrm.h">
@@ -640,6 +646,9 @@
 		<Filter
 			Name="Include"
 			Filter="">
+			<File
+				RelativePath=".\include\browsetree.h">
+			</File>
 			<File
 				RelativePath=".\include\genx\charProps.c">
 				<FileConfiguration

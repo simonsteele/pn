@@ -34,8 +34,6 @@
 #include "SchemeConfig.h"	// Scheme Configuration
 #include <dbstate.h>		// Docking window state stuff...
 
-#include <TabbedMDISave.cpp>
-
 #if defined (_DEBUG)
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -366,25 +364,54 @@ LRESULT CMainFrame::OnChildNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 
 LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	// Check we want to close the workspace...
-	if(!CloseWorkspace())
-	{
-		return 0;
-	}
+	CComPtr<ITabbedMDIChildModifiedList> modifiedItems;
+	long modifiedCount = 0;
 
-	// Check that all of the child windows are ready to close...
-	/*SCloseStruct s;
-	s.pFunction = ChildCloseNotify; 
-	s.bCanClose = true;
-
-	PerformChildEnum(&s);
+	// Find any children that report they're modified...
+	m_tabbedClient.FindModified(&modifiedItems);
 	
-	if(s.bCanClose)*/
-	if(m_tabbedClient.SaveAllModified(true, true))
+	if(modifiedItems == NULL)
 	{
-		// We're going to exit.
+		::CreateTabbedMDIChildModifiedList(&modifiedItems);
+	}
+	
+	// Now add any modified projects items...
+	getProjectsModified(modifiedItems);
+
+	// Display the "save modified items" dialog with
+	// checkboxes for each item if there's anything modified.
+	modifiedItems->get_Count(&modifiedCount);
+	if(modifiedCount > 0)
+	{
+		//  There's at least one modified item
+		CSaveModifiedItemsDialog dialog(modifiedItems, true);
+
+		INT_PTR response = dialog.DoModal();
+
+		switch(response)
+		{
+		case IDYES:
+			// The dialog will update the list and remove
+			// any items that the user unchecked
+			m_tabbedClient.SaveModified(modifiedItems);
+			bHandled = FALSE;
+			break;
+
+		case IDNO:
+			bHandled = FALSE;
+			break;
+
+		case IDCANCEL:
+			// Do nothing...
+			break;
+		}
+	}
+	else
 		bHandled = FALSE;
 
+	if(FALSE == bHandled)
+	{
+		// Still going to close...
 		SaveGUIState();
 
 		CloseAndFreeDlg(m_FindDialog);
@@ -522,26 +549,6 @@ HWND CMainFrame::CreateSchemeToolbar()
 	return hWnd;
 }
 
-/*CPNDockingWindow* CreateDockWrapper(CMainFrame* parent, HWND client, LPCTSTR title, 
-									bool bDock, dockwins::CDockingSide side = dockwins::CDockingSide::sLeft, 
-									int nBar = 0, float fPctPos = 0, int width = 0, int height = 0)
-{
-	DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
-	CRect rcBar(0, 0, 200, 70);
-
-	CPNDockingWindow* pDocker = new CPNDockingWindow();
-	pDocker->SetClientFlatOutline(true);
-	pDocker->SetClient( client );
-	pDocker->Create(parent->m_hWnd, rcBar, title, dwStyle, WS_EX_TOOLWINDOW);
-	
-	if(bDock)
-	{
-		parent->DockWindow(*pDocker, side, nBar, fPctPos, width, height);
-	}
-
-	return pDocker;
-}*/
-
 template<class TWnd>
 TWnd* CreateDocker(LPCTSTR title, CRect& rect, CMainFrame* owner, CPNDockingWindow** pArr, int index,
 					bool bDock, dockwins::CDockingSide side = dockwins::CDockingSide::sLeft, 
@@ -574,13 +581,6 @@ void CMainFrame::CreateDockingWindows()
 	// Create docking windows...
 	CRect rcLeft(0,0,200,400);
 	CRect rcBottom(0,0,400,200);
-
-	//m_pProjectsWnd = new CProjectDocker;
-	//m_pProjectsWnd->Create(m_hWnd, rcLeft, _T("Projects"));
-	//m_pClipsWnd = new CClipsDocker;
-	//m_pClipsWnd->Create(m_hWnd, rcLeft, _T("Text-Clips"));
-	//m_pOutputWnd = new COutputView;
-	//m_pOutputWnd->Create(m_hWnd, rcBottom, _T("Output"));
 	
 	m_pOutputWnd = CreateDocker<COutputView>(_T("Output"), rcBottom, this, 
 		m_dockingWindows, ID_VIEW_OUTPUT - ID_VIEW_FIRSTDOCKER,
@@ -595,23 +595,6 @@ void CMainFrame::CreateDockingWindows()
 		false);
 
 	getDocker(DW_PROJECTS)->DockTo( getDocker(DW_TEXTCLIPS)->m_hWnd, 0 );
-
-	//m_dockingWindows[ID_VIEW_OUTPUT - ID_VIEW_FIRSTDOCKER] = CreateDockWrapper( this, m_pOutputWnd->m_hWnd, _T("Output"), true, dockwins::CDockingSide::sBottom, 0, 1, 200, 80 );
-	//m_dockingWindows[ID_VIEW_WINDOWS_TEXTCLIPS - ID_VIEW_FIRSTDOCKER] = CreateDockWrapper( this, m_pClipsWnd->m_hWnd, _T("Text-Clips"), true, dockwins::CDockingSide::sLeft, 0, 1, 170, 200 );
-	//m_dockingWindows[ID_VIEW_WINDOWS_PROJECT - ID_VIEW_FIRSTDOCKER] = CreateDockWrapper( this, m_pProjectsWnd->m_hWnd, _T("Projects"), false );
-
-	/*m_pOutputWnd = new CDockingOutputWindow;
-	m_pOutputWnd->Create(m_hWnd, rcBar, _T("Output"), dwStyle, WS_EX_TOOLWINDOW);
-	DockWindow(*m_pOutputWnd, dockwins::CDockingSide::sBottom, 0, 1, 200, 80);
-
-	m_pClipsWnd = new CClipsDocker;
-	m_pClipsWnd->Create(m_hWnd, rcBar, _T("Text-Clips"), dwStyle, WS_EX_TOOLWINDOW);
-	DockWindow(*m_pClipsWnd, dockwins::CDockingSide::sLeft, 0, 1, 170, 200);
-
-	m_pProjectsWnd = new CProjectDocker;
-	m_pProjectsWnd->Create(m_hWnd, rcBar, _T("Projects"), dwStyle, WS_EX_TOOLWINDOW);
-	m_pProjectsWnd->DockTo(m_pClipsWnd->m_hWnd, 0);*/
-	//DockWindow(*m_pProjectsWnd, dockwins::CDockingSide::sLeft, 0, 1, 100, 200);
 }
 
 /**
@@ -777,6 +760,15 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_StatusBar.SetPaneWidth(ID_MOD_PANE, 70);
 	m_StatusBar.SetPaneWidth(ID_INS_PANE, 80);
 
+	bool bStatusBar = OPTIONS->Get(PNSK_INTERFACE, _T("StatusBarVisible"), true);
+	UISetCheck(ID_VIEW_STATUS_BAR, bStatusBar);
+
+	if(!bStatusBar)
+	{
+		m_StatusBar.ShowWindow(SW_HIDE);
+		UpdateLayout();
+	}
+
 	m_bIsXPOrLater = 
 		(g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
 		( (g_Context.OSVersion.dwMajorVersion > 4) && (g_Context.OSVersion.dwMinorVersion > 0) );
@@ -796,7 +788,6 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	UISetCheck(ID_VIEW_TOOLBAR_EDIT, 1);
 	UISetCheck(ID_VIEW_TOOLBARS_FIND, 1);
 	UISetCheck(ID_VIEW_TOOLBARS_SCHEMES, 1);
-	UISetCheck(ID_VIEW_STATUS_BAR, 1);
 
 	InitializeDockingFrame();
 	
@@ -876,10 +867,10 @@ LRESULT CMainFrame::OnDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 LRESULT CMainFrame::OnEscapePressed(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	if( m_pOutputWnd->IsWindowVisible() )
+	if( getDocker(DW_OUTPUT)->IsWindowVisible() )
 	{
 		getDocker(DW_OUTPUT)->Hide();
-		//m_pOutputWnd->Hide();
+
 		return TRUE;
 	}
 
@@ -1209,8 +1200,9 @@ LRESULT CMainFrame::OnViewFindBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 LRESULT CMainFrame::OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	BOOL bVisible = !::IsWindowVisible(m_hWndStatusBar);
+	bool bVisible = !::IsWindowVisible(m_hWndStatusBar);
 	::ShowWindow(m_hWndStatusBar, bVisible ? SW_SHOWNOACTIVATE : SW_HIDE);
+	OPTIONS->Set(PNSK_INTERFACE, _T("StatusBarVisible"), bVisible);
 	UISetCheck(ID_VIEW_STATUS_BAR, bVisible);
 	UpdateLayout();
 	return 0;
@@ -1692,10 +1684,6 @@ void CMainFrame::InitGUIState()
 	// Create a list of the docking windows to manage.
 	sstate::CDockWndMgrEx dockers(m_hWnd);
 	
-	/*dockers.Add(sstate::CDockingWindowStateAdapterEx<CDockingOutputWindow>(*m_pOutputWnd));
-	dockers.Add(sstate::CDockingWindowStateAdapterEx<CProjectDocker>(*m_pProjectsWnd));
-	dockers.Add(sstate::CDockingWindowStateAdapterEx<CClipsDocker>(*m_pClipsWnd));*/
-
 	for(int i = 0; i <= ID_VIEW_LASTDOCKER-ID_VIEW_FIRSTDOCKER; ++i)
 	{
 		dockers.Add(sstate::CDockingWindowStateAdapter<CPNDockingWindow>(*m_dockingWindows[i]));
@@ -1737,7 +1725,7 @@ void CMainFrame::LoadGUIState(LPCTSTR stateName)
 	}
 
 	// Set initial UpdateUI state...
-	UISetCheck(ID_EDITOR_OUTPUTWND, m_pOutputWnd->IsWindowVisible());
+	UISetCheck(ID_EDITOR_OUTPUTWND, getDocker(DW_OUTPUT)->IsWindowVisible());
 
 	UpdateLayout();
 
@@ -2187,4 +2175,57 @@ bool CMainFrame::CloseWorkspace(bool bAllowCloseFiles)
 	delete workspace;
 
 	return true;
+}
+
+bool CMainFrame::getProjectsModified(ITabbedMDIChildModifiedList* pModifiedList)
+{
+	USES_CONVERSION;
+
+	bool bRet = false;
+
+	Projects::Workspace* workspace = m_pProjectsWnd->GetWorkspace();
+
+	if( workspace != NULL && workspace->IsDirty() )
+	{
+		// See if it's just projects that are dirty...
+		if(workspace->IsDirty(false))
+		{
+			// No, the workspace is dirty itself...
+			CComPtr<ITabbedMDIChildModifiedItem> wsmod;
+			::CreateTabbedMDIChildModifiedItem(m_hWnd, L"Project Group", CT2CW(workspace->GetName()), L"Project Group", 0, ::LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_WORKSPACE)), &wsmod);
+			pModifiedList->Insert(-1, wsmod);
+			bRet = true;
+		}
+
+        CComPtr<ITabbedMDIChildModifiedItem> wsitem;
+		::CreateTabbedMDIChildModifiedItem(m_hWnd, L"Projects", CT2CW(workspace->GetName()), L"Projects", 0, ::LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_WORKSPACE)), &wsitem);
+		CComPtr<ITabbedMDIChildModifiedList> subitems;
+		wsitem->get_SubItems(&subitems);
+
+		int addCount = 0;
+	
+		Projects::PROJECT_LIST projects = workspace->GetProjects();
+		for(Projects::PL_CIT i = projects.begin();
+			i != projects.end();
+			++i)
+		{
+			if((*i)->IsDirty())
+			{
+				ITabbedMDIChildModifiedItem* pitem;
+				::CreateTabbedMDIChildModifiedItem(m_hWnd, L"Project", CT2CW((*i)->GetName()), L"Project", 0, ::LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_PROJECTFOLDER)), &pitem);
+				subitems->Insert(-1, pitem);
+				addCount++;
+			}
+		}
+
+		CComPtr<ITabbedMDIChildModifiedList> ml;
+		wsitem->get_SubItems(&ml);
+		if(addCount)
+		{
+			bRet = true;
+			pModifiedList->Insert(-1, wsitem);
+		}
+	}
+
+	return bRet;
 }
