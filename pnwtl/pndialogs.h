@@ -22,6 +22,8 @@ using std::list;
 template <class T>
 class CPNFileDialogImpl : public CFileDialogImpl<T>
 {
+	typedef CFileDialogImpl<T> baseClass;
+
 	public:
 		CPNFileDialogImpl(BOOL bOpenFileDialog, // TRUE for FileOpen, FALSE for FileSaveAs
 			LPCTSTR lpszDefExt = NULL,
@@ -57,15 +59,21 @@ class CPNFileDialogImpl : public CFileDialogImpl<T>
 		}
 
 		BEGIN_MSG_MAP(CPNFileDialogImpl)
+			CHAIN_MSG_MAP(baseClass)
 		END_MSG_MAP()
 
 	protected:
 		LPTSTR m_szFilter;
 };
 
+/**
+ * @brief Empty implementation of CPNFileDialogImpl
+ */
 class CPNFileDialog : public CPNFileDialogImpl<CPNFileDialog>
 {
 public:
+	typedef CPNFileDialogImpl<CPNFileDialog> baseClass;
+
 	CPNFileDialog(BOOL bOpenFileDialog, // TRUE for FileOpen, FALSE for FileSaveAs
 		LPCTSTR lpszDefExt = NULL,
 		LPCTSTR lpszFileName = NULL,
@@ -76,7 +84,54 @@ public:
 	{ }
 
 	// override base class map and references to handlers
-	DECLARE_EMPTY_MSG_MAP()
+	BEGIN_MSG_MAP(CPNFileDialog)
+        CHAIN_MSG_MAP(baseClass)
+	END_MSG_MAP()
+};
+
+/**
+ * @brief File Dialog with special functionality for opening files.
+ * This "special functionality" basically involves being able to open
+ * an unlimited number of files with OFN_ALLOWMULTISELECT and also the
+ * fact that the class automatically parses any selected filenames 
+ * (multiple or single) into a list of tstrings.
+ */
+class CPNOpenDialog : public CPNFileDialogImpl<CPNOpenDialog>
+{
+	typedef CPNFileDialogImpl<CPNOpenDialog> baseClass;
+	public:
+		typedef std::list<tstring>::const_iterator const_iterator;
+
+		CPNOpenDialog(LPCTSTR szFilter, LPCTSTR szPath = NULL);
+		~CPNOpenDialog();
+
+		INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow());
+
+		void OnSelChange(LPOFNOTIFY /*lpon*/);
+
+		// List functionality:
+		int GetCount();
+		const std::list<tstring>& GetFiles();
+		const_iterator begin();
+		const_iterator end();
+
+	protected:
+		TCHAR*	m_szFilesBuffer;
+		TCHAR*	m_szFolder;
+		bool	m_bParsed;
+		bool	m_bIncludePath;
+		int		m_bufSizeFiles;
+		int		m_bufSizeFolder;
+
+		std::list<tstring>	m_files;
+
+		void Clear();
+		void PreProcess();
+		inline void EnsureBuffer(TCHAR*& buffer, int size, int& cursize);
+
+	BEGIN_MSG_MAP(CPNOpenDialog)
+		CHAIN_MSG_MAP(baseClass)
+	END_MSG_MAP()
 };
 
 /**

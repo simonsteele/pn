@@ -366,8 +366,14 @@ LRESULT CChildFrame::OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 
 LRESULT CChildFrame::OnOptionsUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	UpdateTools(m_view.GetCurrentScheme());
+	CScheme* pS = m_view.GetCurrentScheme();
+	UpdateTools(pS);
 	UpdateMenu();
+
+	// Cheesy way of re-loading the compiled scheme...
+	if(pS)
+		m_view.SetScheme(pS);
+
 	return 0;
 }
 
@@ -794,7 +800,8 @@ void CChildFrame::UpdateTools(CScheme* pScheme)
 		}
 	}
 
- 	iFirstToolCmd = SchemeToolsManager::GetInstance()->GetMenuFor(pScheme->GetName(), tools, ID_TOOLS_DUMMY);
+	if(pScheme)
+ 		iFirstToolCmd = SchemeToolsManager::GetInstance()->GetMenuFor(pScheme->GetName(), tools, ID_TOOLS_DUMMY);
 
 	if(iFirstToolCmd != ID_TOOLS_DUMMY)
 		::RemoveMenu(m, ID_TOOLS_DUMMY, MF_BYCOMMAND);

@@ -379,7 +379,8 @@ const CScheme& CScheme::operator = (const CScheme& copy)
 
 void CDefaultScheme::Load(CScintilla& sc, LPCTSTR filename)
 {
-	SetupScintilla(sc);
+	//SetupScintilla(sc);
+	CScheme::Load(sc, m_SchemeFile);
 }
 
 ///////////////////////////////////////////////////////////
@@ -467,6 +468,12 @@ void CSchemeManager::Load()
 			bCompile = true;
 	}
 
+	tstring defaultPath = m_CompiledPath;
+	defaultPath += _T("default.cscheme");
+	m_DefaultScheme.SetFileName(defaultPath.c_str());
+	if(!FileExists(defaultPath.c_str()))
+		bCompile = true;
+
 	// Find the scheme def files one by one...
 	HANDLE hFind;
 	WIN32_FIND_DATA FindFileData;
@@ -530,26 +537,30 @@ void CSchemeManager::Load()
 
 		while(found)
 		{
-			CScheme sch;
-			csi = m_Schemes.insert(m_Schemes.end(), sch);
-			cs = &(*csi);
+			if(_tcscmp(_T("default.cscheme"), FindFileData.cFileName) != 0)
+			{
+				
+				CScheme sch;
+				csi = m_Schemes.insert(m_Schemes.end(), sch);
+				cs = &(*csi);
 
-			cs->SetSchemeManager(this);
-			
-			to_open = m_CompiledPath;
-			to_open += FindFileData.cFileName;
+				cs->SetSchemeManager(this);
+				
+				to_open = m_CompiledPath;
+				to_open += FindFileData.cFileName;
 
-			cs->SetFileName(to_open.c_str());
-			cs->CheckName();
+				cs->SetFileName(to_open.c_str());
+				cs->CheckName();
 
-			SchemeName = cs->GetName();
-			TCHAR *tcs = new TCHAR[SchemeName.size()+1];
-			_tcscpy(tcs, SchemeName.c_str());
-			tcs = CharLower(tcs);
-			SchemeName = tcs;
-			delete [] tcs;
+				SchemeName = cs->GetName();
+				TCHAR *tcs = new TCHAR[SchemeName.size()+1];
+				_tcscpy(tcs, SchemeName.c_str());
+				tcs = CharLower(tcs);
+				SchemeName = tcs;
+				delete [] tcs;
 
-			m_SchemeNameMap.insert(m_SchemeNameMap.end(), SCMITEM(SchemeName, cs));
+				m_SchemeNameMap.insert(m_SchemeNameMap.end(), SCMITEM(SchemeName, cs));
+			}
 
 			found = FindNextFile(hFind, &FindFileData);
 		}

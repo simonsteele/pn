@@ -538,20 +538,37 @@ void UserSettingsParser::processScheme(CSchemeLoaderState* pState, XMLAttributes
 
 void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 {
-
 	CString UserSettingsFile = outpath;
 	UserSettingsFile += _T("UserSettings.xml");
 
 	m_LoadState.m_csOutPath = outpath;
 
 	SchemeParser::Parse(path, mainfile, (LPCTSTR)UserSettingsFile);
+
+	CString filename(m_LoadState.m_csOutPath);
+	filename += _T("default.cscheme");
+
+	// Now we record a default scheme for use when no Scheme is selected. 
+	// It has only one style (0) and default.
+	m_Recorder.StartRecording(_T("default"), _T("default"), filename, 0);
+	m_Recorder.SetLexer(0);
+	StyleDetails* pDefault = m_LoadState.m_CustomClasses.GetStyle(_T("default"));
+	if(!pDefault)
+		pDefault = &m_LoadState.m_Default;
+	StyleDetails temp(*pDefault);
+	temp.Key = STYLE_DEFAULT;
+	m_Recorder.SetDefStyle(&temp);
+	sendStyle(&temp, &m_Recorder);
+	temp.Key = 0;
+	sendStyle(&temp, &m_Recorder);
+	m_Recorder.EndRecording();
 }
 
 void SchemeCompiler::onLanguage(LPCTSTR name, LPCTSTR title, int foldflags)
 {
 	CString filename(m_LoadState.m_csOutPath);
 	filename += name;
-	filename += ".cscheme";
+	filename += _T(".cscheme");
 
 	m_Recorder.StartRecording(name, title, filename, foldflags);
 	

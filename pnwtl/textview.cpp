@@ -402,5 +402,6 @@ void CTextView::ProcessNumberedBookmark(int n)
 
 void CTextView::OnFirstShow()
 {
-	CSchemeManager::GetInstance()->GetDefaultScheme()->Load(*this);
+	m_pLastScheme = CSchemeManager::GetInstance()->GetDefaultScheme();
+	m_pLastScheme->Load(*this);
 }

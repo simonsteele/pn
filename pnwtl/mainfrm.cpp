@@ -395,11 +395,16 @@ LRESULT CMainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 
 LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CPNFileDialog dlgOpen(TRUE, NULL, NULL, OFN_HIDEREADONLY, _T("All Files (*.*)|*.*|"), m_hWndClient);
+	CPNOpenDialog dlgOpen(_T("All Files (*.*)|*.*|"));
+	dlgOpen.m_ofn.Flags |= OFN_ALLOWMULTISELECT;
+
 	if (dlgOpen.DoModal() == IDOK)
 	{
-		PNOpenFile(dlgOpen.m_ofn.lpstrFile, dlgOpen.m_ofn.lpstrFileTitle);
-		AddMRUEntry(dlgOpen.m_ofn.lpstrFile);
+		for(CPNOpenDialog::const_iterator i = dlgOpen.begin(); i != dlgOpen.end(); ++i)
+		{
+			PNOpenFile((*i).c_str());
+			AddMRUEntry((*i).c_str());
+		}
 	}
 
 	return 0;
@@ -511,6 +516,8 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	{
 		// pass in true to cache menu resources.
 		SchemeToolsManager::GetInstance()->ReLoad(true);
+
+		CSchemeManager::GetInstance()->Compile();
 
 		//PN_OPTIONSUPDATED
 		EnumChildWindows(m_hWndMDIClient, OptionsUpdatedChildEnumProc, 0);
