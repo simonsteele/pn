@@ -172,3 +172,174 @@ int CGotoDialog::GetLineNo()
 {
 	return lineno;
 }
+
+//////////////////////////////////////////////////////////////////////////////
+// COptionsDialog
+//////////////////////////////////////////////////////////////////////////////
+
+COptionsDialog::COptionsDialog()
+{
+	m_pCurrentPage = NULL;
+}
+
+BOOL COptionsDialog::EndDialog(int nRetCode)
+{
+	ClosePages();
+	return baseClass::EndDialog(nRetCode);
+}
+
+LRESULT COptionsDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	PAGEPTRLIST::iterator i;
+
+	for(i = m_Pages.begin(); i != m_Pages.end(); ++i)
+	{
+		(*i)->OnOK();
+	}
+
+	EndDialog(wID);
+
+	return TRUE;
+}
+
+LRESULT COptionsDialog::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	PAGEPTRLIST::iterator i;
+
+	for(i = m_Pages.begin(); i != m_Pages.end(); ++i)
+	{
+		(*i)->OnCancel();
+	}
+
+	EndDialog(wID);
+	
+	return TRUE;
+}
+
+LRESULT COptionsDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	m_tree.Attach(GetDlgItem(IDC_TREE));
+
+	InitialisePages();
+		
+	CenterWindow(GetParent());
+	
+	return TRUE;
+}
+
+void COptionsDialog::AddPage(COptionsPage* pPage)
+{
+	m_Pages.insert(m_Pages.end(), pPage);
+}
+
+HTREEITEM COptionsDialog::FindAtThisLevel(LPCTSTR title, HTREEITEM context)
+{
+	HTREEITEM i = (context ? m_tree.GetChildItem(context) : m_tree.GetRootItem());
+
+	TCHAR buf[32];
+	TVITEM tvi;
+	tvi.mask = TVIF_TEXT;
+	tvi.pszText = buf;
+	tvi.cchTextMax = 30;
+	
+	while(i)
+	{
+		tvi.hItem = i;
+		m_tree.GetItem(&tvi);
+
+		if(_tcscmp(buf, title) == 0)
+			break;
+
+		i = m_tree.GetNextSiblingItem(i);
+	}
+
+	return i;
+}
+
+HTREEITEM COptionsDialog::AddTreeEntry(LPCTSTR title, HTREEITEM context)
+{
+	HTREEITEM i = FindAtThisLevel(title, context);
+
+	if(!i)
+	{
+		i = m_tree.InsertItem(title, context, NULL);
+		m_tree.SetItemData(i, NULL);
+	}
+
+	return i;
+}
+
+void COptionsDialog::InitialisePages()
+{
+	TCHAR buf[200];
+	PAGEPTRLIST::iterator i;
+
+	for(i = m_Pages.begin(); i != m_Pages.end(); ++i)
+	{
+		LPCTSTR treeloc = (*i)->GetTreePosition();
+		PNASSERT(_tcslen(treeloc) < 200);
+		_tcscpy(buf, treeloc);
+
+		HTREEITEM ti = NULL;
+		TCHAR* pSlash = NULL;
+		TCHAR* pNext = buf;
+
+		while((pSlash = _tcschr(pNext, _T('\\'))) != NULL)
+		{
+			*pSlash = NULL;
+			ti = AddTreeEntry(pNext, ti);
+			*pSlash = '\\';
+			pNext = pSlash + 1;
+		}
+		// Add Tree Item
+		HTREEITEM item = AddTreeEntry(pNext, ti);
+		m_tree.SetItemData(item, reinterpret_cast<DWORD_PTR>(*i));
+	}
+}
+
+void COptionsDialog::ClosePages()
+{
+	PAGEPTRLIST::iterator i;
+	for(i = m_Pages.begin(); i != m_Pages.end(); ++i)
+	{
+		if((*i)->m_bCreated)
+		{
+			(*i)->ClosePage();
+		}
+	}
+}
+
+void COptionsDialog::SelectPage(COptionsPage* pPage)
+{
+	CRect rcPage;
+	GetDlgItem(IDC_PLACEHOLDER).GetWindowRect(rcPage);
+	ScreenToClient(rcPage);
+
+	if(m_pCurrentPage)
+	{
+		m_pCurrentPage->ShowPage(SW_HIDE);
+	}
+
+	if(!pPage->m_bCreated)
+	{
+		pPage->CreatePage(m_hWnd, rcPage, m_tree);
+		pPage->OnInitialise();
+		pPage->m_bCreated = true;
+	}
+	
+	pPage->ShowPage(SW_SHOW);
+	m_pCurrentPage = pPage;
+}
+
+LRESULT COptionsDialog::OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	LPNMTREEVIEW pN = reinterpret_cast<LPNMTREEVIEW>(pnmh);
+	if(pnmh->code == TVN_SELCHANGED)
+	{
+		COptionsPage* pPage = reinterpret_cast<COptionsPage*>(m_tree.GetItemData(pN->itemNew.hItem));
+		if(pPage)
+			SelectPage(pPage);
+	}
+
+	return 0;
+}

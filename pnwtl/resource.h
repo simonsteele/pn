@@ -50,11 +50,20 @@
 #define ID_VIEW_LINENUMBERS             240
 #define ID_VIEW_SYNTAXHIGHLIGHTING      241
 #define ID_VIEW_WORDWRAP                242
+#define IDD_OPTIONS                     243
+#define IDD_TESTPAGE                    244
+#define ID_TOOLS_OPTIONS                245
 #define IDD_PNSAVE                      423
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_GOTOEDIT                    1004
 #define IDC_PNSCOMBO                    1005
+#define IDC_HELPBTN                     1006
+#define IDC_TREE                        1007
+#define IDC_PLACEHOLDER                 1008
+#define IDC_PROGRESS1                   1009
+#define IDC_BUTTON1                     1010
+#define IDC_EDIT1                       1011
 #define IDC_REPLACETEXT_LABEL           1042
 #define IDC_BACKSLASH_CHECK             1043
 #define IDC_PNSAVE_SAVEASSTATIC         1056
@@ -75,7 +84,6 @@
 #define ID_BOOKMARKS_NUMBERED_JUMP      32784
 #define ID_BOOKMARKS_TOGGLE             32786
 #define ID_BOOKMARKS_NEXT               32787
-#define ID_ACCELERATOR32788             32788
 #define ID_VIEW_VIEWTABS                32825
 #define ID_TAB_CLOSE                    32835
 #define ID_VIEW_TABS_TOP                32836
@@ -100,9 +108,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        243
+#define _APS_NEXT_RESOURCE_VALUE        246
 #define _APS_NEXT_COMMAND_VALUE         32790
-#define _APS_NEXT_CONTROL_VALUE         1006
+#define _APS_NEXT_CONTROL_VALUE         1012
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

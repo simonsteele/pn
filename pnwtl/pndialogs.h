@@ -10,6 +10,9 @@
 #ifndef pndialogs_h__included
 #define pndialogs_h__included
 
+#include <list>
+using std::list;
+
 #include "resource.h"
 
 /**
@@ -136,6 +139,156 @@ class CGotoDialog : public CDialogImpl<CGotoDialog>
 	
 	protected:
 		int lineno;
+};
+
+class COptionsDialog;
+
+class COptionsPage
+{
+	friend class COptionsDialog;
+
+public:
+	COptionsPage()
+	{
+		m_bCreated = false;
+		m_bOrphan = false;
+	}
+
+	// Methods called by COptionsDialog when dealing with COptionsPage.
+	virtual void OnOK(){};
+	virtual void OnCancel(){};
+	virtual void OnInitialise(){};
+
+	// Return a tree position like "Schemes\AddOn Options"
+	virtual LPCTSTR GetTreePosition() = 0;
+
+	virtual HWND CreatePage(HWND hOwner, LPRECT rcPos, HWND hInsertAfter = NULL) = 0;
+	virtual void ClosePage() = 0;
+	virtual void ShowPage(int showCmd) = 0;
+
+protected:
+	bool m_bCreated;
+	bool m_bOrphan;
+};
+
+template <class T>
+class COptionsPageImpl : public CDialogImpl<T>, public COptionsPage
+{
+	public:
+		virtual ~COptionsPageImpl(){}
+
+		virtual HWND CreatePage(HWND hParent, LPRECT rcPos, HWND hInsertAfter = NULL)
+		{
+			Create(hParent);
+			SetWindowPos(hInsertAfter, rcPos, SWP_NOACTIVATE);
+			MoveWindow(rcPos);
+
+			return m_hWnd;
+		}
+
+		virtual void ClosePage()
+		{
+			DestroyWindow();
+			if(m_bOrphan)
+				delete this;
+		}
+
+		virtual void ShowPage(int showCmd)
+		{
+			ShowWindow(showCmd);
+		}
+};
+
+class COptionsDialog : public CDialogImpl<COptionsDialog>
+{
+	typedef list<COptionsPage*> PAGEPTRLIST;
+	typedef CDialogImpl<COptionsDialog> baseClass;
+
+	public:
+
+		COptionsDialog();
+
+		enum { IDD = IDD_OPTIONS };
+
+		BEGIN_MSG_MAP(COptionsDialog)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			COMMAND_ID_HANDLER(IDOK, OnOK)
+			COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
+			NOTIFY_ID_HANDLER(IDC_TREE, OnTreeNotify)
+		END_MSG_MAP()
+
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+
+		void AddPage(COptionsPage* pPage);
+
+		BOOL EndDialog(int nRetCode);
+
+	protected:
+		PAGEPTRLIST		m_Pages;
+		COptionsPage*	m_pCurrentPage;
+		CTreeViewCtrl	m_tree;
+
+		void InitialisePages();
+		void ClosePages();
+		void SelectPage(COptionsPage* pPage);
+		HTREEITEM FindAtThisLevel(LPCTSTR title, HTREEITEM context);
+		HTREEITEM AddTreeEntry(const char* title, HTREEITEM context);
+};
+
+class CTestPage : public COptionsPageImpl<CTestPage>
+{
+	typedef COptionsPageImpl<CTestPage> baseClass;
+
+	public:
+		BEGIN_MSG_MAP(CTestPage)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+		END_MSG_MAP()
+		enum { IDD = IDD_TESTPAGE };
+
+		virtual void OnOK()
+		{
+			::OutputDebugString(_T("CTestPage::OnOK\n"));
+		}
+
+		virtual void OnCancel()
+		{
+			::OutputDebugString(_T("CTestPage::OnCancel\n"));
+		}
+		
+		virtual void OnInitialise()
+		{
+			::OutputDebugString(_T("CTestPage::OnInitialise\n"));
+		}
+
+		virtual LPCTSTR GetTreePosition()
+		{
+			return _T("Options\\Test\\Test Page 1");
+		}
+
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+		{
+			HWND hProgress = GetDlgItem(IDC_PROGRESS1);
+			::SendMessage(hProgress, PBM_SETRANGE, 0, MAKELPARAM(0, 10));
+			::SendMessage(hProgress, PBM_SETPOS, 7, 0);
+
+			return 0;
+		}
+};
+
+class CTestPage2 : public COptionsPageImpl<CTestPage2>
+{
+	public:
+		enum { IDD = IDD_TESTPAGE };
+
+		DECLARE_EMPTY_MSG_MAP()
+
+		virtual LPCTSTR GetTreePosition()
+		{
+			return _T("Options\\Test");
+		}
 };
 
 #endif

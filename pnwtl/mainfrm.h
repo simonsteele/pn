@@ -100,6 +100,7 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
 		COMMAND_ID_HANDLER(ID_EDIT_FIND, OnFind)
 		COMMAND_ID_HANDLER(ID_EDIT_REPLACE, OnReplace)
+		COMMAND_ID_HANDLER(ID_TOOLS_OPTIONS, OnOptions)
 		COMMAND_RANGE_HANDLER(ID_MRUFILE_BASE, (ID_MRUFILE_BASE+15), OnMRUSelected)
 		ROUTE_MENUCOMMANDS()
 		CHAIN_MDI_CHILD_COMMANDS()
@@ -479,6 +480,19 @@ public:
 		}
 				
 		return TRUE;
+	}
+
+	LRESULT OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		CTestPage page;
+		CTestPage2 page2;
+
+		COptionsDialog options;
+		options.AddPage(&page);
+		options.AddPage(&page2);
+		options.DoModal();
+
+		return 0;
 	}
 
 	LRESULT OnFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
