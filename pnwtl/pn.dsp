@@ -95,7 +95,15 @@ SOURCE=.\Files.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\mainfrm.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\OptionsManager.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\OptionsPages.cpp
 # End Source File
 # Begin Source File
 
@@ -181,6 +189,10 @@ SOURCE=.\fromhandle.h
 # Begin Source File
 
 SOURCE=.\mainfrm.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\OptionsPages.h
 # End Source File
 # Begin Source File
 

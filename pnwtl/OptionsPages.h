@@ -102,6 +102,8 @@ typedef CScintillaWindow<CScintilla>	CScintillaWnd;
 class CTabPageKeywords : public CPropertyPageImpl<CTabPageKeywords>
 {
 	public:
+		CTabPageKeywords();
+
 		enum {IDD = IDD_TAB_KEYWORDS};
 
 		BEGIN_MSG_MAP(CTabPageKeywords)
