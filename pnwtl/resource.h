@@ -137,7 +137,10 @@
 #define IDC_TE_FILTERCHECK              1048
 #define IDC_OPT_USETABSCHECK            1049
 #define IDC_CHECK1                      1051
+#define IDC_OPT_LINENOSCHECK            1051
 #define IDC_TE_SAVEALLCHECK             1052
+#define IDC_COMBO1                      1053
+#define IDC_OPT_LECOMBO                 1054
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_PNSAVE_TYPECOMBO            1057
 #define IDC_MARKALL_BUTTON              21199
@@ -189,7 +192,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        262
 #define _APS_NEXT_COMMAND_VALUE         32866
-#define _APS_NEXT_CONTROL_VALUE         1053
+#define _APS_NEXT_CONTROL_VALUE         1055
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

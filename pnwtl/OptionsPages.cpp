@@ -141,10 +141,15 @@ void COptionsPageGeneral::OnOK()
 
 	DoDataExchange(TRUE);
 
+	CComboBox cb(GetDlgItem(IDC_OPT_LECOMBO));
+	m_SaveFormat = (EPNSaveFormat)cb.GetItemData(cb.GetCurSel());
+
 	COptionsManager& options = COptionsManager::GetInstanceRef();
 	options.ShowIndentGuides = m_bIndentGuides != FALSE;
 	options.UseTabs = m_bUseTabs != FALSE;
 	options.TabWidth = m_iTabWidth;
+	options.LineNumbers = m_bLineNos != FALSE;
+	options.LineEndings = m_SaveFormat;
 }
 
 void COptionsPageGeneral::OnInitialise()
@@ -153,9 +158,37 @@ void COptionsPageGeneral::OnInitialise()
 	m_bIndentGuides = options.ShowIndentGuides;
 	m_bUseTabs = options.UseTabs;
 	m_iTabWidth = options.TabWidth;
+	m_bLineNos = options.LineNumbers;
+	m_SaveFormat = options.LineEndings;
+
+	CComboBox cb(GetDlgItem(IDC_OPT_LECOMBO));
+	for(int i = 0; i < cb.GetCount(); i++)
+	{
+		if(cb.GetItemData(i) == m_SaveFormat)
+		{
+			cb.SetCurSel(i);
+			break;
+		}
+	}
 
 	DoDataExchange();
 }
+
+LRESULT COptionsPageGeneral::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	//typedef enum { PNSF_Windows = SC_EOL_CRLF, PNSF_Unix = SC_EOL_LF, PNSF_Mac = SC_EOL_CR, PNSF_NoChange} EPNSaveFormat;
+	CComboBox cb;
+	cb.Attach(GetDlgItem(IDC_OPT_LECOMBO));
+	int idx = cb.InsertString(0, _T("Windows (CRLF)"));
+	cb.SetItemData(idx, PNSF_Windows);
+	idx = cb.InsertString(1, _T("Unix (LF)"));
+	cb.SetItemData(idx, PNSF_Unix);
+	idx = cb.InsertString(2, _T("Macintosh (CR)"));
+	cb.SetItemData(idx, PNSF_Mac);
+	return 0;
+}
+
+
 
 //////////////////////////////////////////////////////////////////////////////
 // CTabPageKeywords

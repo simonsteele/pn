@@ -823,9 +823,14 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,6,168,12
     CONTROL         "Use the tab character for indentation",
                     IDC_OPT_USETABSCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,6,24,168,12
-    LTEXT           "Default tab width:",IDC_STATIC,6,42,66,12
-    EDITTEXT        IDC_OPT_TABWIDTHEDIT,72,42,40,14,ES_AUTOHSCROLL
+                    WS_TABSTOP,6,48,168,12
+    LTEXT           "Default tab width:",IDC_STATIC,6,66,66,12
+    EDITTEXT        IDC_OPT_TABWIDTHEDIT,72,66,40,14,ES_AUTOHSCROLL
+    CONTROL         "Show Line Numbers",IDC_OPT_LINENOSCHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,6,24,138,12
+    LTEXT           "Default Line Endings:",IDC_STATIC,6,90,72,12
+    COMBOBOX        IDC_OPT_LECOMBO,78,90,102,66,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
 END
 
 

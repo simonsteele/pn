@@ -48,6 +48,7 @@ class COptionsManager
 		bool UseTabs;
 		int TabWidth;
 		bool ShowIndentGuides;
+		bool LineNumbers;
 		EPNSaveFormat LineEndings;
 
 		void Set(LPCTSTR subkey, LPCTSTR value, bool bVal);

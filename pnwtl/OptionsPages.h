@@ -34,6 +34,7 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 {
 	public:
 		BEGIN_MSG_MAP(COptionsPageGeneral)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 		enum { IDD = IDD_PAGE_GENERAL };
@@ -41,6 +42,7 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 		BEGIN_DDX_MAP(COptionsPageGeneral)
 			DDX_CHECK(IDC_OPT_INDENTGUIDESCHECK, m_bIndentGuides)
 			DDX_CHECK(IDC_OPT_USETABSCHECK, m_bUseTabs)
+			DDX_CHECK(IDC_OPT_LINENOSCHECK, m_bLineNos)
 			DDX_UINT(IDC_OPT_TABWIDTHEDIT, m_iTabWidth)
 		END_DDX_MAP()
 
@@ -49,9 +51,13 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 		virtual LPCTSTR GetTreePosition();
 
 	protected:
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		
 		BOOL m_bUseTabs;
 		BOOL m_bIndentGuides;
+		BOOL m_bLineNos;
 		UINT m_iTabWidth;
+		EPNSaveFormat m_SaveFormat;
 };
 
 class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>

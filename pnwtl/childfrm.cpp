@@ -307,8 +307,10 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	UISetChecked(ID_EDITOR_COLOURISE, true);
 	UISetChecked(ID_EDITOR_WORDWRAP, false);
-	UISetChecked(ID_EDITOR_LINENOS, false);
+	UISetChecked(ID_EDITOR_LINENOS, COptionsManager::GetInstance()->LineNumbers);
 	UISetChecked(ID_TOOLS_LECONVERT, true);
+
+	m_view.ShowLineNumbers(COptionsManager::GetInstance()->LineNumbers);
 
 	UpdateMenu();
 

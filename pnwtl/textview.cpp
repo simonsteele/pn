@@ -393,4 +393,5 @@ void CTextView::OnFirstShow()
 {
 	m_pLastScheme = CSchemeManager::GetInstance()->GetDefaultScheme();
 	m_pLastScheme->Load(*this);
+	SetEOLMode( COptionsManager::GetInstance()->LineEndings );
 }

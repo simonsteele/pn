@@ -39,6 +39,7 @@ void COptionsManager::Load()
 	LineEndings = (EPNSaveFormat)reg.ReadInt(_T("DefaultLineEndings"), PNSF_Windows);
 	TabWidth = reg.ReadInt(_T("TabWidth"), 4);
 	UseTabs = reg.ReadBool(_T("UseTabs"), true);
+	LineNumbers = reg.ReadBool(_T("LineNumbers"), false);
 
 	// Find and Replace Settings ------------
 
@@ -68,6 +69,7 @@ void COptionsManager::Save()
 	reg.WriteInt(_T("DefaultLineEndings"), LineEndings);
 	reg.WriteInt(_T("TabWidth"), TabWidth);
 	reg.WriteBool(_T("UseTabs"), UseTabs);
+	reg.WriteBool(_T("LineNumbers"), LineNumbers);
 	
 	//cs = root + _T("Interface Settings");
 	//reg.OpenKey(cs, true);
