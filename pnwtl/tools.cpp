@@ -406,6 +406,8 @@ void SchemeToolsManager::processTool(XMLAttributes& atts)
 				pDef->Folder = val;
 			else if(_tcscmp(attr, _T("shortcut")) == 0)
 				pDef->Shortcut = val;
+			else if(_tcscmp(attr, _T("parsepattern")) == 0)
+				pDef->CustomParsePattern = val;
 			else if(_tcscmp(attr, _T("flags")) == 0)
 			{
 				int flags = _ttoi(val);
