@@ -579,7 +579,7 @@ LRESULT CChildFrame::OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	CGotoDialog g;
 	if(g.DoModal() == IDOK)
 	{
-		m_view.GotoLine(g.GetLineNo());
+		m_view.GotoLine(g.GetLineNo()-1);
 	}
 
 	return 0;
