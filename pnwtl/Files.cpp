@@ -554,6 +554,11 @@ void CFileName::Root(LPCTSTR rootPath)
 				//1. Remove the dotslash
 				m_FileName.erase(0, 2);
 			}
+			else
+			{
+				// Filename must begin with a dot!
+				break;
+			}
 
 			len = m_FileName.length();
 		}

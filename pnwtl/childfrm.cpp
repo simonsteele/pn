@@ -775,7 +775,12 @@ LRESULT CChildFrame::OnClose(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 LRESULT CChildFrame::OnWordWrapToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	m_view.SetWrapMode( UIInvertCheck(wID) ? SC_WRAP_WORD : SC_WRAP_NONE );
+	if(m_view.GetWrapMode() == SC_WRAP_WORD)
+		m_view.SetWrapMode( SC_WRAP_NONE );
+	else
+		m_view.SetWrapMode( SC_WRAP_WORD );
+	//m_view.SetWrapMode( UIInvertCheck(wID) ? SC_WRAP_WORD : SC_WRAP_NONE );
+	UpdateMenu();
 
 	return 0;
 }
@@ -1252,6 +1257,8 @@ void CChildFrame::UpdateMenu()
 	menu.CheckMenuItem(ID_ENCODING_UTF8, e == eUtf8);
 	menu.CheckMenuItem(ID_ENCODING_UTF16BE, e == eUtf16BigEndian);
 	menu.CheckMenuItem(ID_ENCODING_UTF16LE, e == eUtf16LittleEndian);
+
+	UISetChecked(ID_EDITOR_WORDWRAP, m_view.GetWrapMode() == SC_WRAP_WORD);
 	
 	bool bToolsRunning = false;
 	if( ToolOwner::HasInstance() )

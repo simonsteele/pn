@@ -63,6 +63,9 @@ Bug Fixes:
 23) Regular Expression replace (SF Bug #957788).
 24) Global keyboard shortcuts don't work (SF Bug #960000).
 
+26) Fixed infinite loop when working with magic folders containing ".files".
+27) Fixed word-wrap default preference.
+
 If you find a bug:
 ------------------
 There are quite possibly bugs with these features (or others), 

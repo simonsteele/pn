@@ -631,6 +631,7 @@ void genxDispose(genxWriter w)
   genxNamespace * nn = (genxNamespace *) w->namespaces.pointers;
   genxElement * ee = (genxElement *) w->elements.pointers;
   genxAttribute * aa = (genxAttribute *) w->attributes.pointers;
+  utf8 * pp = (utf8 *) w->prefixes.pointers;
 
   for (i = 0; i < w->namespaces.count; i++)
   {
@@ -651,12 +652,20 @@ void genxDispose(genxWriter w)
     deallocate(w, aa[i]);
   }
 
+  for(i = 0; i < w->prefixes.count; i++)
+  {
+    deallocate(w, pp[i]);
+  }
+
   deallocate(w, w->namespaces.pointers);
   deallocate(w, w->elements.pointers);
   deallocate(w, w->attributes.pointers);
+  deallocate(w, w->prefixes.pointers);
   deallocate(w, w->stack.pointers);
 
   deallocate(w, w->arec.value.buf);
+
+  deallocate(w, w->empty);
 
   /* how Oscar dealt with Igli */
   deallocate(w, w);
