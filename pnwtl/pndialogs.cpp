@@ -152,6 +152,11 @@ CPNOpenDialog::const_iterator CPNOpenDialog::end()
 	return m_files.end();
 }
 
+LPCTSTR CPNOpenDialog::GetSingleFileName()
+{
+	return m_ofn.lpstrFile;
+}
+
 /**
  * This function processes either our own buffer (m_szFilesBuffer) or
  * the standard one and adds each filename found to a list<tstring>.
@@ -245,7 +250,7 @@ void CPNOpenDialog::PreProcess()
 // CPNSaveDialog
 //////////////////////////////////////////////////////////////////////////////
 
-CPNSaveDialog::CPNSaveDialog(LPCTSTR szFilter) : baseClass(FALSE, /*_T(".txt")*/NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter)
+CPNSaveDialog::CPNSaveDialog(LPCTSTR szFilter, LPCTSTR szPath) : baseClass(FALSE, /*_T(".txt")*/NULL, szPath, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter)
 {
 	m_Format = PNSF_NoChange;
 	m_ofn.Flags |= OFN_ENABLETEMPLATE;

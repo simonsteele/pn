@@ -16,29 +16,63 @@
 namespace Projects
 {
 
+#include "xmlparser.h"
+
+
 class Folder;
+class File;
 
 typedef std::list<Folder*>		FOLDER_LIST;
 typedef FOLDER_LIST::iterator	FL_IT;
 
-typedef std::list<tstring>		FILE_LIST;
+typedef std::list<File*>		FILE_LIST;
+typedef FILE_LIST::iterator		FILE_IT;
+
+typedef enum {ptFile, ptFolder, ptProject, ptWorkspace} PROJECT_TYPE;
+
+class ProjectType
+{
+public:
+	ProjectType(PROJECT_TYPE);
+	PROJECT_TYPE GetType();
+protected:
+	PROJECT_TYPE type;
+};
+
+class File : public ProjectType
+{
+	public:
+		File(LPCTSTR basePath, LPCTSTR path);
+
+		LPCTSTR GetDisplayName();
+		LPCTSTR GetFileName();
+
+	protected:
+		tstring displayName;
+		tstring fullPath;
+};
 
 /**
  * @brief Represents a collection of files.
  */
-class Folder
+class Folder : public ProjectType
 {
 	public:
+		Folder();
 		Folder(LPCTSTR name_, LPCTSTR basepath);
 		~Folder();
 
 		LPCTSTR GetName();
+		LPCTSTR GetBasePath();
 
 		void AddChild(Folder* folder);
 		void AddFile(LPCTSTR file);
 
 		const FOLDER_LIST&	GetFolders();
 		const FILE_LIST&	GetFiles();
+
+		void SetParent(Folder* folder);
+		Folder* GetParent();
 
 	protected:
 		void Clear();
@@ -48,15 +82,39 @@ class Folder
 		tstring		basePath;
 		FOLDER_LIST	children;
 		FILE_LIST	files;
+		Folder*		parent;
 };
 
 /**
  * @brief Represents a project within a solution.
  * Inherits from Folder to get all the folder/sub-folder behaviour.
  */
-class Project : public Folder
+class Project : public Folder, XMLParseState
 {
+public:
+	Project(LPCTSTR projectFile);
 
+	bool Exists();
+
+//Implement XMLParseState
+protected:
+	virtual void startElement(LPCTSTR name, XMLAttributes& atts);
+	virtual void endElement(LPCTSTR name);
+	virtual void characterData(LPCTSTR data, int len){};
+
+	void processProject(XMLAttributes& atts);
+	void processFolder(XMLAttributes& atts);
+	void processFile(XMLAttributes& atts);
+
+protected:
+	
+	void parse();
+
+	Folder*	currentFolder;
+	tstring fileName;
+	bool	bExists;
+	int		parseState;
+	int		nestingLevel;
 };
 
 typedef std::list<Project*>		PROJECT_LIST;
@@ -65,20 +123,30 @@ typedef PROJECT_LIST::iterator	PL_IT;
 /**
  * @brief Represents a collection of Projects.
  */
-class Solution
+class Workspace : public ProjectType
 {
 	public:
-		~Solution();
+		Workspace();
+		Workspace(LPCTSTR projectFile);
+		~Workspace();
 
 		void AddProject(Project* project);
 
+		void SetName(LPCTSTR name_);
+
+		LPCTSTR GetName();
+
 		const PROJECT_LIST	GetProjects();
+
+		bool CanSave();
 
 	protected:
 		void Clear();
 
 	protected:
 		PROJECT_LIST	projects;
+		tstring			name;
+		tstring			fileName;
 };
 
 }

@@ -404,6 +404,36 @@ void CFileName::Root(LPCTSTR rootPath)
 	if( root[root.length()-1] != _T('\\') && root[root.length()-1] != _T('/') )
 		root += (bForwards ? _T('/') : _T('\\'));
 
+	TCHAR slash = bForwards ? _T('/') : _T('\\');
+
+	int len = m_FileName.length();
+
+	if(len >= 2)
+	{
+		while(m_FileName[0] == _T('.'))
+		{
+			if(len >= 3 && m_FileName[1] == _T('.') && m_FileName[2] == slash) // Do we have a ..\?
+			{
+				//1. Remove one folder from the end of root.
+				tstring::size_type slashPos = root.rfind(slash, root.length() - 2);
+				if( slashPos != root.npos )
+				{
+					root.erase(slashPos + 1);
+				}
+				
+				//2. Remove the ..\ from m_FileName;
+				m_FileName.erase(0, 3);
+			}
+			else if(len >= 2 && m_FileName[1] == slash) // Do we have a .\?
+			{
+				//1. Remove the dotslash
+				m_FileName.erase(0, 2);
+			}
+
+			len = m_FileName.length();
+		}
+	}
+
 	root += m_FileName;
 
 	m_FileName = root;

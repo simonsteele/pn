@@ -96,6 +96,7 @@ public:
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
 		COMMAND_ID_HANDLER(ID_FILE_OPEN, OnFileOpen)
 		COMMAND_ID_HANDLER(ID_FILE_SAVEALL, OnFileSaveAll)
+		COMMAND_ID_HANDLER(ID_FILE_OPENPROJECT, OnFileOpenProject)
 		
 		// Global edit action handlers - simply to map accelerators to action...
 		COMMAND_ID_HANDLER(ID_EDIT_CUT, OnCut)
@@ -170,6 +171,7 @@ public:
 	LRESULT OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileSaveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFileOpenProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	// Edit
 	LRESULT OnCut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -229,7 +231,7 @@ public:
 	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL, HWND hWndCaller = NULL);
 	virtual void SetStatusText(LPCTSTR text, bool bLongLife = true);
 	virtual void SaveAll();
-	virtual void OpenFile(LPCTSTR pathname);
+	virtual void OpenFile(LPCTSTR pathname, bool bAddMRU = false);
 	virtual bool CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction = COptionsManager::GetInstance()->AlreadyOpenAction);
 
 	////////////////////////////////////////////////////////////////
@@ -259,6 +261,9 @@ protected:
 	void PerformChildEnum(lpChildEnumFn pFunction);
 
 	void _setWindowText(LPCTSTR newText);
+
+	void OpenProject(LPCTSTR project);
+	void OpenWorkspace(LPCTSTR workspace);
 
 protected:
 	CFindDlg*				m_FindDialog;

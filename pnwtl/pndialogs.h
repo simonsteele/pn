@@ -113,6 +113,8 @@ class CPNOpenDialog : public CPNFileDialogImpl<CPNOpenDialog>
 		const_iterator begin();
 		const_iterator end();
 
+		LPCTSTR GetSingleFileName();
+
 	protected:
 		TCHAR*	m_szFilesBuffer;
 		TCHAR*	m_szFolder;
@@ -144,7 +146,7 @@ class CPNSaveDialog : public CPNFileDialogImpl<CPNSaveDialog>
 {
 	typedef CPNFileDialogImpl<CPNSaveDialog> baseClass;
 	public:
-		CPNSaveDialog(LPCTSTR szFilter);
+		CPNSaveDialog(LPCTSTR szFilter, LPCTSTR szPath = NULL);
 
 		BEGIN_MSG_MAP (CPNSaveDialog)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)

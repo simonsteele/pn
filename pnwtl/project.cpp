@@ -15,11 +15,54 @@ namespace Projects
 {
 
 //////////////////////////////////////////////////////////////////////////////
+// ProjectType
+//////////////////////////////////////////////////////////////////////////////
+
+ProjectType::ProjectType(PROJECT_TYPE type_)
+{
+	type = type_;
+}
+
+PROJECT_TYPE ProjectType::GetType()
+{
+	return type;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// File
+//////////////////////////////////////////////////////////////////////////////
+
+File::File(LPCTSTR basePath, LPCTSTR path) : ProjectType(ptFile)
+{
+	CFileName fn(path);
+	fn.Root(basePath);
+	
+	displayName = fn.GetFileName();
+	fullPath = fn;
+}
+
+LPCTSTR File::GetDisplayName()
+{
+	return displayName.c_str();
+}
+
+LPCTSTR File::GetFileName()
+{
+	return fullPath.c_str();
+}
+
+//////////////////////////////////////////////////////////////////////////////
 // Folder
 //////////////////////////////////////////////////////////////////////////////
 
-Folder::Folder(LPCTSTR name_, LPCTSTR basepath)
+Folder::Folder() : ProjectType(ptFolder)
 {
+	parent = NULL;
+}
+
+Folder::Folder(LPCTSTR name_, LPCTSTR basepath) : ProjectType(ptFolder)
+{
+	parent = NULL;
 	name = name_;
 	basePath = basepath;
 }
@@ -32,6 +75,11 @@ Folder::~Folder()
 LPCTSTR Folder::GetName()
 {
 	return name.c_str();
+}
+
+LPCTSTR Folder::GetBasePath()
+{
+	return basePath.c_str();
 }
 
 const FOLDER_LIST& Folder::GetFolders()
@@ -51,7 +99,8 @@ void Folder::AddChild(Folder* folder)
 
 void Folder::AddFile(LPCTSTR file)
 {
-	files.insert(files.begin(), tstring(file));
+	File* pFile = new File(basePath.c_str(), file);
+	files.insert(files.begin(), pFile);
 }
 
 void Folder::Clear()
@@ -62,33 +111,216 @@ void Folder::Clear()
 	}
 
 	children.clear();
+
+	for(FILE_IT i = files.begin(); i != files.end(); ++i)
+	{
+		delete (*i);
+	}
+
+	files.clear();
+}
+
+void Folder::SetParent(Folder* folder)
+{
+	parent = folder;
+}
+
+Folder* Folder::GetParent()
+{
+	return parent;
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// Solution
+// Project
 //////////////////////////////////////////////////////////////////////////////
 
-Solution::~Solution()
+Project::Project(LPCTSTR projectFile) : Folder()
+{
+	type = ptProject;
+
+	fileName = projectFile;
+	bExists = FileExists(projectFile);
+	CFileName(projectFile).GetPath(basePath);
+
+	if(bExists)
+	{
+		parse();
+	}
+}
+
+bool Project::Exists()
+{
+	return bExists;
+}
+
+#define PS_START	0x1
+#define PS_PROJECT	0x2
+#define PS_FOLDER	0x3
+
+#define FILENODE	_T("File")
+#define FOLDERNODE	_T("Folder")
+#define PROJECTNODE	_T("Project")
+
+void Project::parse()
+{
+	currentFolder = this;
+	parseState = PS_START;
+	
+	XMLParser parser;
+	parser.SetParseState(this);
+	try
+	{
+		parser.LoadFile(fileName.c_str());
+	}
+	catch (XMLParserException& ex)
+	{
+		::OutputDebugString(ex.GetMessage());
+	}
+}
+
+#define MATCH(ename) \
+	(_tcscmp(name, ename) == 0)
+
+#define IN_STATE(state) \
+	(parseState == state)
+
+#define STATE(state) \
+	parseState = state
+
+#define ATTVAL(attname) \
+	atts.getValue(attname)
+
+void Project::startElement(LPCTSTR name, XMLAttributes& atts)
+{
+	if( IN_STATE(PS_START) )
+	{
+		if( MATCH( PROJECTNODE ) )
+		{
+			processProject(atts);
+			STATE(PS_PROJECT);
+		}
+	}
+	else if( IN_STATE(PS_PROJECT) )
+	{
+		if( MATCH( FOLDERNODE ) )
+		{
+			nestingLevel = 0;
+			processFolder(atts);
+			STATE(PS_FOLDER);
+		}
+		else if( MATCH( FILENODE ) )
+		{
+			processFile(atts);
+		}
+
+	}
+	else if( IN_STATE(PS_FOLDER) )
+	{
+		if( MATCH( FILENODE ) )
+		{
+			processFile(atts);
+		}
+		else if( MATCH( FOLDERNODE ) )
+		{
+			nestingLevel++;
+			processFolder(atts);
+		}
+	}
+}
+
+void Project::endElement(LPCTSTR name)
+{
+	if( IN_STATE(PS_PROJECT) )
+	{
+		if( MATCH( PROJECTNODE ) )
+		{
+			STATE(PS_START);
+		}
+	}
+	else if( IN_STATE(PS_FOLDER) )
+	{
+		if( MATCH( FOLDERNODE ) )
+		{
+			currentFolder = currentFolder->GetParent();
+
+			if( nestingLevel == 0 )
+				STATE(PS_PROJECT);
+			else
+				nestingLevel--;
+		}
+	}
+}
+
+void Project::processProject(XMLAttributes& atts)
+{
+	name = ATTVAL(_T("name"));
+}
+
+void Project::processFolder(XMLAttributes& atts)
+{
+	Folder* folder = new Folder(ATTVAL(_T("name")), basePath.c_str());
+	folder->SetParent(currentFolder);
+	currentFolder->AddChild(folder);
+	currentFolder = folder;
+}
+
+void Project::processFile(XMLAttributes& atts)
+{
+	currentFolder->AddFile(ATTVAL(_T("path")));
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Workspace
+//////////////////////////////////////////////////////////////////////////////
+
+Workspace::Workspace() : ProjectType(ptWorkspace)
+{
+	fileName = _T("");
+}
+
+Workspace::Workspace(LPCTSTR projectFile) : ProjectType(ptWorkspace)
+{
+	// TO DO:
+	// 1. Parse XML Workspace File, collect project file names.
+	// 2. Parse individual projects.
+}
+
+Workspace::~Workspace()
 {
 	Clear();
 }
 
-void Solution::AddProject(Project* project)
+void Workspace::AddProject(Project* project)
 {
 	projects.insert(projects.begin(), project);
 }
 
-const PROJECT_LIST Solution::GetProjects()
+const PROJECT_LIST Workspace::GetProjects()
 {
 	return projects;
 }
 
-void Solution::Clear()
+void Workspace::SetName(LPCTSTR name_)
+{
+	name = name_;
+}
+
+LPCTSTR Workspace::GetName()
+{
+	return name.c_str();
+}
+
+void Workspace::Clear()
 {
 	for(PL_IT i = projects.begin(); i != projects.end(); ++i)
 	{
 		delete (*i);
 	}
+}
+
+bool Workspace::CanSave()
+{
+	return (fileName != _T(""));
 }
 
 } // namespace Projects

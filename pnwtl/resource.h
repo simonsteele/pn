@@ -69,7 +69,7 @@
 #define IDD_TOOLEDITOR                  255
 #define ID_VIEW_OUTPUT                  256
 #define IDR_POPUP_OUTPUT                257
-#define ID_DUMMY_PASTE                  258
+#define ID_PROJECT_DELETE               258
 #define ID_OUTPUT_CLEAR                 259
 #define ID_OUTPUT_HIDE                  260
 #define ID_TOOLS_USETABS                261
@@ -97,6 +97,12 @@
 #define ID_FINDBAR_SEARCHGOOGLE         282
 #define ID_FINDBAR_SEARCHGOOGLEGROUPS   283
 #define IDI_ICON1                       284
+#define IDR_MENU1                       285
+#define IDR_POPUP_PROJECTFILE           285
+#define ID_PROJECT_REMOVE               286
+#define ID_PROJECT_OPEN                 287
+#define ID_PROJECT_ADDFILES             288
+#define ID_FILE_OPENPROJECT             289
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -255,7 +261,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        285
+#define _APS_NEXT_RESOURCE_VALUE        290
 #define _APS_NEXT_COMMAND_VALUE         32877
 #define _APS_NEXT_CONTROL_VALUE         1070
 #define _APS_NEXT_SYMED_VALUE           104

@@ -983,7 +983,13 @@ bool CChildFrame::CanSave()
 
 bool CChildFrame::SaveAs()
 {
-	CPNSaveDialog dlgSave(_T("All Files (*.*)|*.*|"));
+	LPCTSTR saPath = NULL;
+	if(CanSave())
+	{
+		saPath = m_FileName;
+	}
+
+	CPNSaveDialog dlgSave(_T("All Files (*.*)|*.*|"), saPath);
 	bool bRet = true;
 
 	if(dlgSave.DoModal() == IDOK)

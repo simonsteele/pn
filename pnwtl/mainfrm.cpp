@@ -26,6 +26,7 @@
 #include "aboutdlg.h"		// About Dialog
 #include "pndialogs.h"		// Misc Dialogs.
 #include "textclipsview.h"	// Text-Clips Docker...
+#include "project.h"		// Projects
 #include "projectview.h"	// Projects Docker...
 
 // Other stuff
@@ -97,9 +98,13 @@ void CMainFrame::OpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme)
 	}
 }
 
-void CMainFrame::OpenFile(LPCTSTR pathname)
+void CMainFrame::OpenFile(LPCTSTR pathname, bool bAddMRU)
 {
 	OpenFile(pathname, NULL, NULL);
+	if(bAddMRU)
+	{
+		AddMRUEntry(pathname);
+	}
 }
 
 void CMainFrame::OpenFile(LPCTSTR pathname, CScheme* pScheme)
@@ -697,6 +702,27 @@ LRESULT CMainFrame::OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 {
 	LPCTSTR filename = m_RecentFiles.GetEntry(wID - ID_MRUFILE_BASE);
 	OpenFile(filename);
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnFileOpenProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CPNOpenDialog dlgOpen(_T("Projects and Workspaces (*.pnproj, *.pnwsp)|*.pnproj;*.pnwsp|"));
+	
+	if(dlgOpen.DoModal() == IDOK)
+	{
+		CFileName fn(dlgOpen.GetSingleFileName());
+		fn.ToLower();
+		if( fn.GetExtension() == _T(".pnproj") )
+		{
+			OpenProject(fn.c_str());
+		}
+		else if( fn.GetExtension() == _T(".pnwsp") )
+		{
+			OpenWorkspace(fn.c_str());
+		}
+	}
 
 	return 0;
 }
@@ -1363,4 +1389,21 @@ void CMainFrame::ToggleOutputWindow(bool bSetValue, bool bShowing)
 	}
 	else
 		m_pOutputWnd->Toggle();
+}
+
+void CMainFrame::OpenProject(LPCTSTR projectPath)
+{
+	Projects::Workspace* workspace = new Projects::Workspace;
+	workspace->SetName(_T("New Workspace"));
+	
+	Projects::Project* project = new Projects::Project(projectPath);
+
+	workspace->AddProject(project);
+
+	m_pProjectsWnd->SetWorkspace(workspace);
+}
+
+void CMainFrame::OpenWorkspace(LPCTSTR workspace)
+{
+
 }

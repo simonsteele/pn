@@ -80,6 +80,7 @@ BEGIN
     BEGIN
         MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
         MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM "Open Project/&Workspace...",  ID_FILE_OPENPROJECT
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
     END
@@ -116,6 +117,7 @@ BEGIN
     BEGIN
         MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
         MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM "Open Project/&Workspace...",  289
         MENUITEM "Re&vert",                     ID_FILE_REVERT
         MENUITEM SEPARATOR
         MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
@@ -627,6 +629,18 @@ BEGIN
         MENUITEM "&Google",                     ID_FINDBAR_SEARCHGOOGLE
         MENUITEM "Google Gr&oups",              ID_FINDBAR_SEARCHGOOGLEGROUPS
 
+    END
+END
+
+IDR_POPUP_PROJECTFILE MENU 
+BEGIN
+    POPUP "DUMMY"
+    BEGIN
+        MENUITEM "&Open",                       287
+        MENUITEM SEPARATOR
+        MENUITEM "&Add Files...",               ID_PROJECT_ADDFILES
+        MENUITEM "&Remove",                     ID_PROJECT_REMOVE
+        MENUITEM "&Delete",                     258
     END
 END
 
