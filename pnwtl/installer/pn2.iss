@@ -7,7 +7,7 @@ AppSupportURL=http://www.pnotepad.org/
 AppUpdatesURL=http://www.pnotepad.org/
 DefaultDirName={pf}\Programmers Notepad
 DefaultGroupName=Programmers Notepad
-LicenseFile=license.txt
+LicenseFile=doc\license.txt
 OutputDir=installer
 
 [Tasks]
