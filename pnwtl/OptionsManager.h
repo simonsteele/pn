@@ -12,7 +12,8 @@
 #define optionsmanager_h__included
 
 static const TCHAR* pnregroot = _T("Software\\Echo Software\\PN2\\");
-static const TCHAR* pnmrukey = _T("MRU");
+static const TCHAR* PNSK_MRU = _T("MRU");
+static const TCHAR* PNSK_MRUP = _T("MRUProjects");
 static const TCHAR* PNSK_INTERFACE = _T("Interface Settings");
 static const TCHAR* PNSK_EDITOR = _T("Editor Settings");
 static const TCHAR* PNSK_PRINT = _T("Print Settings");

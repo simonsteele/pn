@@ -53,7 +53,7 @@ const DWORD ToolbarIds[4] = {
 	ATL_IDW_BAND_FIRST + 1,
 };
 
-CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4)
+CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(ID_MRUPROJECT_BASE, 4)
 {
 	m_FindDialog = NULL;
 	m_ReplaceDialog = NULL;
@@ -720,12 +720,21 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_Switcher.Reset(MENUMESSAGE_CHANGESCHEME);
 	CSchemeManager::GetInstance()->BuildMenu((HMENU)m_NewMenu, this);
 	
+	COptionsManager* pOM = COptionsManager::GetInstance();
+
 	CString mrukey;
 	mrukey = pnregroot;
-	mrukey += pnmrukey;
-	m_RecentFiles.SetSize(COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("MRUSize"), 4));
+	mrukey += PNSK_MRU;
+	m_RecentFiles.SetSize(pOM->Get(PNSK_INTERFACE, _T("MRUSize"), 4));
 	m_RecentFiles.SetRegistryKey(mrukey);
 	m_RecentFiles.UpdateMenu();
+
+	mrukey = pnregroot;
+	mrukey += PNSK_MRUP;
+	m_RecentProjects.SetSize(pOM->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4));
+	m_RecentProjects.SetRegistryKey(mrukey);
+	m_RecentProjects.UpdateMenu();
+
 	
 	AddMRUMenu(CSMenuHandle(m_hMenu));
 	AddNewMenu(CSMenuHandle(m_hMenu));
@@ -831,6 +840,14 @@ LRESULT CMainFrame::OnMenuSelect(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 			if(wID >= m_RecentFiles.base() && wID <= m_RecentFiles.last())
 			{
 				LPCTSTR fn = m_RecentFiles.GetEntry(wID - m_RecentFiles.base());
+				::SendMessage(m_hWndStatusBar, SB_SIMPLE, TRUE, 0L);
+				::SendMessage(m_hWndStatusBar, SB_SETTEXT, (255 | SBT_NOBORDERS), (LPARAM)fn);
+				::OutputDebugString(fn);
+				bHandled = true;
+			}
+			else if(wID >= m_RecentProjects.base() && wID <= m_RecentProjects.last())
+			{
+				LPCTSTR fn = m_RecentProjects.GetEntry(wID - m_RecentProjects.base());
 				::SendMessage(m_hWndStatusBar, SB_SIMPLE, TRUE, 0L);
 				::SendMessage(m_hWndStatusBar, SB_SETTEXT, (255 | SBT_NOBORDERS), (LPARAM)fn);
 				::OutputDebugString(fn);
@@ -993,6 +1010,24 @@ LRESULT CMainFrame::OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 		// As we abused OpenFile() for the error message the later might be
 		// a bad choice...
 		//m_RecentFiles.RemoveFromList(wID - ID_MRUFILE_BASE);
+	}
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnMRUProjectSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	LPCTSTR filename = m_RecentProjects.GetEntry(wID - ID_MRUPROJECT_BASE);
+
+	CFileName fn(filename);
+	fn.ToLower();
+	if( fn.GetExtension() == _T(".pnproj") )
+	{
+		OpenProject(fn.c_str());
+	}
+	else if( fn.GetExtension() == _T(".ppg") )
+	{
+		OpenWorkspace(fn.c_str());
 	}
 
 	return 0;
@@ -1232,6 +1267,8 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 
 		m_RecentFiles.SetSize( COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("MRUSize"), 4) );
 		m_RecentFiles.UpdateMenu();
+
+		m_RecentProjects.SetSize( COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4) );
 	}
 
 	return 0;
@@ -1435,6 +1472,8 @@ void CMainFrame::AddMRUMenu(CSMenuHandle& menu)
 {
 	CSMenuHandle file(menu.GetSubMenu(0));
 	::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_BYCOMMAND | MF_POPUP, (UINT)(HMENU)m_RecentFiles, _T("&Recent Files"));
+	if(m_RecentProjects.GetCount() > 0)
+		::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_BYCOMMAND | MF_POPUP, (UINT)(HMENU)m_RecentProjects, _T("Recent P&rojects"));
 	::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_BYCOMMAND | MF_SEPARATOR, 0, NULL);
 }
 
@@ -1448,7 +1487,8 @@ void CMainFrame::MoveMRU(CSMenuHandle& r, CSMenuHandle& a)
 {
 	CSMenuHandle file( r.GetSubMenu(0) );
 	int state;
-	for(int i = 0; i < file.GetCount(); i++)
+	int count = 0;
+	for(int i = file.GetCount() - 1; i >= 0; i--)
 	{
 		state = ::GetMenuState(file, i, MF_BYPOSITION);
 		if(state & MF_POPUP)
@@ -1462,14 +1502,32 @@ void CMainFrame::MoveMRU(CSMenuHandle& r, CSMenuHandle& a)
 				// Recent Files Item found...
 				if(::RemoveMenu(file, i, MF_BYPOSITION))
 				{
-					// We should be able to remove the separator for the MRU too...
-					::RemoveMenu(file, i, MF_BYPOSITION);
-					AddMRUMenu(a);
-					break;
+					count++;
+					// Remove the separator too.
+					if(m_RecentProjects.GetCount() == 0)
+					{
+						count++;
+						::RemoveMenu(file, i, MF_BYPOSITION);
+					}
 				}
 			}
+			else if(mii.hSubMenu == (HMENU)m_RecentProjects)
+			{
+				if(::RemoveMenu(file, i, MF_BYPOSITION))
+				{
+					// Remove the separator too.
+					if(m_RecentProjects.GetCount() > 0)
+						::RemoveMenu(file, i, MF_BYPOSITION);
+					count++;
+				}
+			}
+
+			if(count == 2)
+				break;
 		}
 	}
+
+	AddMRUMenu(a);
 }
 
 void CMainFrame::MoveNewMenu(CSMenuHandle& remove, CSMenuHandle& add)

@@ -143,6 +143,10 @@ void CMRUList::LoadFromRegistry()
 	}
 }
 
+int CMRUList::GetCount()
+{
+	return m_entries.GetSize();
+}
 
 
 ///////////////////////////////////////////////////////////////

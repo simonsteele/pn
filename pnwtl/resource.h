@@ -138,6 +138,8 @@
 #define IDR_TBR_PROJECTS                316
 #define IDB_ABOUT                       319
 #define IDD_FILEPROPERTIES              320
+#define ID_MRUPROJECT_BASE				321
+#define ID_MRUPROJECT_MAX				340
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425

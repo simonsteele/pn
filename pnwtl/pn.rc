@@ -130,7 +130,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
         MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
-        MENUITEM "Save All",                    ID_FILE_SAVEALL
+        MENUITEM "Save A&ll",                   ID_FILE_SAVEALL
         POPUP "Enco&ding"
         BEGIN
             MENUITEM "8-bit",                       ID_ENCODING_8
@@ -150,7 +150,7 @@ BEGIN
         MENUITEM "Close Proje&ct(s)",           301
         MENUITEM SEPARATOR
         MENUITEM "&Print...\tCtrl+P",           ID_FILE_PRINT
-        MENUITEM "P&rint Setup...",             ID_FILE_PRINT_SETUP
+        MENUITEM "Print Set&up...",             ID_FILE_PRINT_SETUP
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
     END

@@ -142,6 +142,7 @@ public:
 		NOTIFY_CODE_HANDLER(TBN_DROPDOWN, OnToolbarDropDown)
 
 		COMMAND_RANGE_HANDLER(ID_MRUFILE_BASE, ID_MRUFILE_MAX, OnMRUSelected)
+		COMMAND_RANGE_HANDLER(ID_MRUPROJECT_BASE, ID_MRUPROJECT_MAX, OnMRUProjectSelected)
 		ROUTE_MENUCOMMANDS()
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
@@ -193,6 +194,7 @@ public:
 	LRESULT OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileSaveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnMRUProjectSelected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileOpenProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileCloseWorkspace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
@@ -336,6 +338,7 @@ protected:
 
 	CSPopupMenu				m_NewMenu;
 	CMRUMenu				m_RecentFiles;
+	CMRUMenu				m_RecentProjects;
 	CSchemeSwitcher			m_Switcher;
 
 	// GUI Stuff:

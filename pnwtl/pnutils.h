@@ -192,6 +192,8 @@ class CMRUList
 
 		void SetSize(int size);
 
+		int GetCount();
+
 		void AddEntry(LPCTSTR data);
 		bool MoveToTop(int index);
 		bool RemoveEntry(int index);

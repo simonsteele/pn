@@ -920,8 +920,8 @@ int ToolRunner::Run_NoCapture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	STARTUPINFO si;
 	memset(&si, 0, sizeof(STARTUPINFO));
 	si.cb = sizeof(STARTUPINFO);
-	si.dwFlags = STARTF_USESHOWWINDOW;
-	si.wShowWindow = SW_HIDE;
+	/*si.dwFlags = STARTF_USESHOWWINDOW; - don't want to hide these processes!
+	si.wShowWindow = SW_HIDE;*/
 
 	PROCESS_INFORMATION pi = {0, 0, 0, 0};
 
