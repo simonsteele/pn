@@ -380,19 +380,36 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 		BEGIN_MSG_MAP(COptionsPageTools)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			COMMAND_HANDLER(IDC_SCHEMECOMBO, CBN_SELCHANGE, OnComboChange)
+			COMMAND_HANDLER(IDC_TOOLS_EDITBUTTON, BN_CLICKED, OnEditClicked)
+			COMMAND_HANDLER(IDC_TOOLS_REMOVEBUTTON, BN_CLICKED, OnRemoveClicked)
+			COMMAND_HANDLER(IDC_TOOLS_ADDBUTTON, BN_CLICKED, OnAddClicked)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 
+		virtual void OnInitialise();
 		virtual LPCTSTR GetTreePosition();
 
 	protected:
+		void EnableButtons();
+
+		void Update();
+	
+	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+		LRESULT OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	protected:
 		CComboBox			m_combo;
 		CListViewCtrl		m_list;
 		SchemeConfigParser* m_pSchemes;
+		SchemeConfig*		m_pScheme;
+
+		CArrowButton		m_btnMoveUp;
+		CArrowButton		m_btnMoveDown;
 };
 
 #endif

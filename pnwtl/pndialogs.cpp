@@ -1031,6 +1031,7 @@ void COptionsPageSchemes::Update()
 COptionsPageTools::COptionsPageTools(SchemeConfigParser* pSchemes)
 {
 	m_pSchemes = pSchemes;
+	m_pScheme = NULL;
 }
 
 LRESULT COptionsPageTools::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -1058,11 +1059,84 @@ LRESULT COptionsPageTools::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	rcCombo.left = rc.right + 5;
 	m_combo.SetWindowPos(HWND_TOP, &rcCombo, 0);
 
+	m_list.Attach(GetDlgItem(IDC_LIST));
+
+	m_btnMoveUp.SetDirection(CArrowButton::abdUp);
+	m_btnMoveUp.SubclassWindow(GetDlgItem(IDC_TOOLS_MOVEUPBUTTON));
+	m_btnMoveDown.SubclassWindow(GetDlgItem(IDC_TOOLS_MOVEDOWNBUTTON));
+
+	EnableButtons();
+
+	return 0;
+}
+
+void COptionsPageTools::OnInitialise()
+{
+	for(SCF_IT i = m_pSchemes->GetSchemes().begin(); i != m_pSchemes->GetSchemes().end(); ++i)
+	{
+		int index = m_combo.AddString((*i)->m_Title);
+		m_combo.SetItemDataPtr(index, (*i));
+	}
+	
+	if(m_combo.GetCount() > 0)
+	{
+		m_combo.SetCurSel(0);
+		Update();
+	}
+}
+
+void COptionsPageTools::Update()
+{
+	//if(m_pScheme)
+	//	SetItem();
+
+	int iSel = m_combo.GetCurSel();
+	if (iSel != -1)
+	{
+		m_pScheme = reinterpret_cast<SchemeConfig*>(m_combo.GetItemData(iSel));
+	}
+	
+	EnableButtons();
+}
+
+void COptionsPageTools::EnableButtons()
+{
+	bool bEnable = (m_pScheme != NULL);
+	int iSelIndex = m_list.GetSelectedIndex();
+
+	::EnableWindow(GetDlgItem(IDC_TOOLS_ADDBUTTON), bEnable);
+	
+	// A scheme, and a selected item...
+	bEnable = bEnable && (iSelIndex != -1);
+
+	::EnableWindow(GetDlgItem(IDC_TOOLS_REMOVEBUTTON), bEnable);
+	::EnableWindow(GetDlgItem(IDC_TOOLS_EDITBUTTON), bEnable);
+
+	m_btnMoveUp.EnableWindow(bEnable && (iSelIndex != 0));
+	m_btnMoveDown.EnableWindow(bEnable && (iSelIndex != (m_list.GetItemCount() - 1)));
+}
+
+LRESULT COptionsPageTools::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+
+	return 0;
+}
+
+LRESULT COptionsPageTools::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+
+	return 0;
+}
+
+LRESULT COptionsPageTools::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+
 	return 0;
 }
 
 LRESULT COptionsPageTools::OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	Update();
 
 	return 0;
 }

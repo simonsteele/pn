@@ -734,24 +734,26 @@ BEGIN
     PUSHBUTTON      "&Sort",IDC_KEYWORDS_SORTBUTTON,138,141,54,18
 END
 
-IDD_PAGE_TOOLS DIALOGEX 0, 0, 299, 170
+IDD_PAGE_TOOLS DIALOGEX 0, 0, 299, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    COMBOBOX        IDC_SCHEMECOMBO,110,2,185,64,CBS_DROPDOWNLIST | CBS_SORT | 
-                    WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Scheme:",IDC_SCHEMELABEL,2,1,46,12
-    CONTROL         "",IDC_LIST1,"SysListView32",LVS_ALIGNLEFT | WS_BORDER | 
-                    WS_TABSTOP,6,24,156,114
-    PUSHBUTTON      "&Add",IDC_BUTTON1,6,144,48,18
-    PUSHBUTTON      "&Edit",IDC_BUTTON3,60,144,48,18
-    PUSHBUTTON      "&Remove",IDC_BUTTON4,114,144,48,18
-    PUSHBUTTON      "Button2",IDC_BUTTON2,168,24,12,12
-    PUSHBUTTON      "Button2",IDC_BUTTON5,168,126,12,12
+    COMBOBOX        IDC_SCHEMECOMBO,108,36,185,64,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Scheme:",IDC_SCHEMELABEL,6,36,46,12
+    CONTROL         "",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | 
+                    LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | 
+                    WS_TABSTOP,0,54,276,96
+    PUSHBUTTON      "&Add",IDC_TOOLS_ADDBUTTON,174,156,48,18
+    PUSHBUTTON      "&Edit",IDC_TOOLS_EDITBUTTON,102,156,48,18
+    PUSHBUTTON      "&Remove",IDC_TOOLS_REMOVEBUTTON,228,156,48,18
+    PUSHBUTTON      "Button2",IDC_TOOLS_MOVEUPBUTTON,282,54,12,12
+    PUSHBUTTON      "Button2",IDC_TOOLS_MOVEDOWNBUTTON,282,138,12,12
     LTEXT           "In many cases it may be useful to set up external tools such as compilers or syntax checkers. You can set these tools up here.",
-                    IDC_STATIC,186,24,108,36
-    LTEXT           "The first item in any list will be the default tool.",
-                    IDC_STATIC,186,72,108,18
+                    IDC_STATIC,36,6,258,24
+    LTEXT           "note: The first item in any list will be the default tool.",
+                    IDC_STATIC,0,189,252,8
+    ICON            IDR_MDICHILD,IDC_STATIC,6,6,20,20
 END
 
 
@@ -822,6 +824,7 @@ BEGIN
     IDD_PAGE_TOOLS, DIALOG
     BEGIN
         LEFTMARGIN, 2
+        BOTTOMMARGIN, 170
     END
 END
 #endif    // APSTUDIO_INVOKED
