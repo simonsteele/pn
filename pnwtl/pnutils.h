@@ -795,4 +795,95 @@ class OpTimer
 
 #endif
 
+class FileInformation
+{
+public:
+	FileInformation(LPCTSTR filePath)
+	{
+		set(filePath);
+	}
+
+	tstring FileDate;
+	tstring FileTime;
+	tstring FileAttr;
+
+protected:
+
+	void set(LPCTSTR filePath)
+	{
+		const int TEMP_LEN = 100;
+		char temp[TEMP_LEN];
+
+		HANDLE hf = ::CreateFile(filePath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+		if (hf != INVALID_HANDLE_VALUE) {
+			FILETIME ft;
+			::GetFileTime(hf, NULL, NULL, &ft);
+			::CloseHandle(hf);
+			FILETIME lft;
+			::FileTimeToLocalFileTime(&ft, &lft);
+			SYSTEMTIME st;
+			::FileTimeToSystemTime(&lft, &st);
+			::GetTimeFormat(LOCALE_SYSTEM_DEFAULT,
+							0, &st,
+							NULL, temp, TEMP_LEN);
+			FileTime = temp;
+
+			::GetDateFormat(LOCALE_SYSTEM_DEFAULT,
+							DATE_SHORTDATE, &st,
+							NULL, temp, TEMP_LEN);
+			
+			FileDate = temp;
+
+			DWORD attr = ::GetFileAttributes(filePath);
+			tstring fa;
+			if (attr & FILE_ATTRIBUTE_READONLY)
+				fa += _T("R");
+			if (attr & FILE_ATTRIBUTE_HIDDEN)
+				fa += _T("H");
+			if (attr & FILE_ATTRIBUTE_SYSTEM)
+				fa += _T("S");
+
+			FileAttr = fa.c_str();
+		}
+		else 
+		{
+			/* Reset values for no file */
+			FileTime = _T("");
+			FileDate = _T("");
+			FileAttr = _T("");
+		}
+
+
+	}
+};
+
+class DateTimeInformation
+{
+public:
+	DateTimeInformation()
+	{
+		set();
+	}
+
+	tstring CurrentDate;
+	tstring CurrentTime;
+
+protected:
+	void set()
+	{
+		const int TEMP_LEN = 100;
+		char temp[TEMP_LEN];
+
+		::GetDateFormat(LOCALE_SYSTEM_DEFAULT,
+						DATE_SHORTDATE, NULL,    	// Current date
+						NULL, temp, TEMP_LEN);
+		CurrentDate = temp;
+
+		::GetTimeFormat(LOCALE_SYSTEM_DEFAULT,
+						0, NULL,    	// Current time
+						NULL, temp, TEMP_LEN);
+		CurrentTime = temp;
+	}
+};
+
 #endif //#ifndef pnutils_h__included

@@ -48,6 +48,9 @@ typedef struct tagPrintOptions
 	CString Header;
 	CString Footer;
 
+	// Filename
+	CString Filename;
+
 } SPrintOptions;
 
 #define TOOL_CAPTURE		0x01

@@ -685,6 +685,64 @@ int CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 // Printing Code...
 ////////////////////////////////////////////////////////////
 
+class PrintFormatStringBuilder : public CustomFormatStringBuilder<PrintFormatStringBuilder>
+{
+public:
+	PrintFormatStringBuilder(LPCTSTR fileName, int nPage, int nPages) 
+		: fi(fileName), page(nPage), pages(nPages)
+	{
+		CFileName fn(fileName);
+		filename = fn.GetFileName();
+		filepath = fn.GetPath();
+	}
+
+	void OnFormatChar(TCHAR thechar)
+	{
+		switch(thechar)
+		{
+		case _T('f'):
+			m_string += filename;
+			break;
+		case _T('p'):
+			// current page
+			m_string += IntToTString(page).c_str();
+			break;
+		case _T('P'):
+			// page count
+			m_string += IntToTString(pages).c_str();
+			break;
+		case _T('d'):
+			// path
+			m_string += filepath;
+			break;
+		case _T('D'):
+			// file date
+			m_string += fi.FileDate;
+			break;
+		case _T('c'):
+			// current date
+			m_string += dti.CurrentDate;
+			break;
+		case _T('t'):
+			// current time
+			m_string += dti.CurrentTime;
+			break;
+		case _T('T'):
+			// file time
+			m_string += fi.FileTime;
+			break;
+		}
+	}
+
+protected:
+	DateTimeInformation dti;
+	FileInformation fi;
+	tstring filename;
+	tstring filepath;
+	int page;
+	int pages;
+};
+
 /**
  * PrintDocument
  * note: This code originally copied from SciTE.
@@ -821,8 +879,8 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 	DPtoLP(hdc, (LPPOINT) &ptPage, 1);
 
 	///@todo...
-	//SString headerFormat = props.Get("print.header.format");
-	//SString footerFormat = props.Get("print.footer.format");
+	tstring headerFormat = pOptions->Header;
+	tstring footerFormat = pOptions->Footer;
 	//SString headerOrFooter;	// Usually the path, date and page number
 
 	TEXTMETRIC tm;
@@ -915,10 +973,10 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 	frPrint.rcPage.bottom = ptPage.y - rectPhysMargins.top - rectPhysMargins.bottom - 1;
 	
 	///@todo header format...
-	if (/*headerFormat.size()*/0) {
+	if (headerFormat.size()) {
 		frPrint.rc.top += headerLineHeight + headerLineHeight / 2;
 	}
-	if (/*footerFormat.size()*/0) {
+	if (footerFormat.size()) {
 		frPrint.rc.bottom -= footerLineHeight + footerLineHeight / 2;
 	}
 
@@ -926,30 +984,20 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 	int pageNum = 1;
 	bool printPage;
 	
-	///@todo setup scintilla for printing...
-	//PropSet propsPrint;
-	//propsPrint.superPS = &props;
-	//SetFileProperties(propsPrint);
-
 	while (lengthPrinted < lengthDoc) 
 	{
 		printPage = (!(pdlg.Flags & PD_PAGENUMS) ||
 		             (pageNum >= pdlg.nFromPage) && (pageNum <= pdlg.nToPage));
 
-		char pageString[32];
-		sprintf(pageString, "%0d", pageNum);
-		
-		//propsPrint.Set("CurrentPage", pageString);
+		PrintFormatStringBuilder fb( pOptions->Filename, pageNum, 0 );
 
-		if (printPage) 
+		if( printPage )
 		{
 			::StartPage(hdc);
 
-			///@todo headerFormat
-			if (/*headerFormat.size()*/0) 
+			if( headerFormat.size() ) 
 			{
-				//SString sHeader = propsPrint.GetExpanded("print.header.format");
-				tstring sHeader = _T("Header");
+				tstring sHeader = fb.Build(headerFormat.c_str());
 				::SetTextColor(hdc, /*sdHeader.fore.AsLong()*/0);
 				::SetBkColor(hdc, /*sdHeader.back.AsLong()*/RGB(255,255,255));
 				::SelectObject(hdc, fontHeader);
@@ -977,13 +1025,11 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 		                         printPage,
 		                         reinterpret_cast<LPARAM>(&frPrint));
 
-		if (printPage) 
+		if( printPage )
 		{
-			///@todo footerFormat
-			if (/*footerFormat.size()*/0) 
+			if(footerFormat.size())
 			{
-				//SString sFooter = propsPrint.GetExpanded("print.footer.format");
-				tstring sFooter = _T("Footer");
+				tstring sFooter = fb.Build(footerFormat.c_str());
 				::SetTextColor(hdc, /*sdFooter.fore.AsLong()*/0);
 				::SetBkColor(hdc, /*sdFooter.back.AsLong()*/RGB(255,255,255));
 				::SelectObject(hdc, fontFooter);
