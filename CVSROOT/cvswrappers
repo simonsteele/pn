@@ -24,3 +24,5 @@
 *.ico -k 'b'
 *.bmp -k 'b'
 *.cur -k 'b'
+*.res -k 'b'
+*.scp -k 'b'
