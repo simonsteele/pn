@@ -13,11 +13,95 @@
 
 #include "include/utf8_16.h"
 
+typedef std::map<tstring, tstring> STRING_MAP;
+typedef STRING_MAP::value_type SM_VT;
+typedef STRING_MAP::iterator SM_IT;
+
+class SmartStart
+{
+public:
+	typedef enum {eContinue, eMatched, eGiveUp} EContinueState;
+
+	static SmartStart* GetInstance()
+	{
+		if(!s_pInstance)
+			s_pInstance = new SmartStart;
+		return s_pInstance;
+	}
+
+	static void DeleteInstance()
+	{
+		if(s_pInstance)
+		{
+			delete s_pInstance;
+			s_pInstance = NULL;
+		}
+	}
+
+	~SmartStart()
+	{
+		delete [] m_buffer;
+	}
+
+	EContinueState OnChar(CTextView* pView)
+	{
+		pView->GetText(m_max, m_buffer);
+		SM_IT found = m_Map.find(tstring(m_buffer));
+		if(found != m_Map.end())
+		{
+			CScheme* pScheme = CSchemeManager::GetInstance()->SchemeByName((*found).second.c_str());
+			if(pScheme)
+				pView->SetScheme(pScheme);
+			return eMatched;
+		}
+
+		if(_tcslen(m_buffer) == (m_max - 1))
+		{
+			//buffer is full and we haven't matched. Give up trying...
+			return eGiveUp;
+		}
+		else
+			return eContinue;
+	}
+
+protected:
+	SmartStart()
+	{
+		m_Map.insert(SM_VT(tstring("#ifndef"), tstring("cpp")));
+		m_Map.insert(SM_VT(tstring("#include"), tstring("cpp")));
+		m_Map.insert(SM_VT(tstring("unit"), tstring("pascal")));
+		m_Map.insert(SM_VT(tstring("public class"), tstring("csharp")));
+		m_Map.insert(SM_VT(tstring("<"), tstring("web")));
+
+		m_max = 0;
+
+		for(SM_IT i = m_Map.begin(); i != m_Map.end(); ++i)
+		{
+			m_max = ((*i).first.size() > m_max ? (*i).first.size() : m_max);
+		}
+
+		m_max++;
+
+		m_buffer = new TCHAR[m_max];
+		memset(m_buffer, 0, m_max * sizeof(TCHAR));
+	}
+
+protected:
+	static SmartStart* s_pInstance;
+	CTextView*	m_pView;
+	STRING_MAP	m_Map;
+	size_t		m_max;
+	TCHAR*		m_buffer;
+};
+
+SmartStart* SmartStart::s_pInstance = NULL;
+
 CTextView::CTextView() : baseClass()
 {
 	m_pLastScheme = NULL;
 	m_waitOnBookmarkNo = FALSE;
 	m_encType = eUnknown;
+	m_bSmartStart = true;
 }
 
 BOOL CTextView::PreTranslateMessage(MSG* pMsg)
@@ -131,7 +215,10 @@ EPNSaveFormat determineLineEndings(char* pBuf, int nLen)
 
 bool CTextView::OpenFile(LPCTSTR filename)
 {
-	CFile file;		
+	// We don't want smart start if we're opening a file...
+	m_bSmartStart = false;
+
+	CFile file;
 	if ( file.Open(filename, CFile::modeRead | CFile::modeBinary) ) 
 	{
 		SPerform(SCI_CLEARALL);
@@ -290,6 +377,12 @@ int CTextView::HandleNotify(LPARAM lParam)
 	else if(msg == SCN_UPDATEUI)
 	{
 		SendMessage(GetParent(), PN_NOTIFY, 0, SCN_UPDATEUI);
+	}
+	else if(msg == SCN_CHARADDED)
+	{
+		if(m_bSmartStart)
+			if(SmartStart::GetInstance()->OnChar(this) != SmartStart::eContinue)
+				m_bSmartStart = false;
 	}
 	
 	return msg;

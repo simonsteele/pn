@@ -60,6 +60,8 @@
 			<style name="Keywords 2" key="16" fore="b00040"/>
 			<style name="Comment Doc Keyword" key="17" class="commentdoc" fore="3060a0"/>
 			<style name="Unknown Comment Doc Keyword" key="18" class="commentdoc" fore="804020"/>
+			<style name="Brace Match" key="34" fore="0000ee" bold="true"/>
+			<style name="Brace Mismatch" key="35" fore="ee0000" bold="true"/>
 		</use-styles>
 	</language>
 

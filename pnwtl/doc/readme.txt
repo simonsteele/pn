@@ -1,31 +1,12 @@
 ========================================
-Release Name: 2.0.3-coltrane
-Build: 2.0.3.29, Version Label: coltrane
+Release Name: 2.0.4-miles
+Build: 2.0.4.x, Version Label: miles
 ========================================
-
-Breaking Change Notices:
-------------------------
-User configuration files have moved from:
-%usersettings%\Echo Software\Programmers Notepad\Schemes\
-to:
-%usersettings%\Echo Software\PN2\
-
-this will lose any scheme colouring changes you have made. 
-You can simply move all files from the previous version into
-the new correct location to fix this. Sorry for any 
-inconvenience...
 
 What's new?
 -----------
 
-1) Configurable scheme keywords.
-2) Now opens filenames from the command-line (or explorer associations).
-3) Tools functionality. Configure from Options->Tools.
-4) CSS Scheme now works.
-5) Colourised output capturing in tools (configurable in Options->Schemes).
-6) C#, JavaScript, Batch, Diff and makefile schemes.
-7) Double-click on MDI area to open file.
-8) General options page - default editor options.
+1) 
 
 Please let me know about any problems with this release: ss@pnotepad.org.
 

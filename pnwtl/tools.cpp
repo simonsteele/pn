@@ -14,12 +14,11 @@
 #include <sstream>
 #include <fstream>
 
-#ifdef _DEBUG 
-# define LLR_DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__) 
-# define LLR_DEBUG_MALLOC(size) _malloc_dbg(size, _NORMAL_BLOCK, __FILE__, __LINE__) 
-# define new LLR_DEBUG_NEW 
-# define malloc LLR_DEBUG_MALLOC 
-#endif // _DEBUG 
+#if defined (_DEBUG)
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 
 //////////////////////////////////////////////////////////////////////////////
 // SchemeTools

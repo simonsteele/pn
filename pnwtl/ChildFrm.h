@@ -98,6 +98,8 @@ public:
 		COMMAND_ID_HANDLER(ID_TOOLS_STOPTOOLS, OnStopTools)
 		COMMAND_ID_HANDLER(ID_TOOLS_USETABS, OnUseTabs)
 
+		COMMAND_ID_HANDLER(ID_EDIT_HEADERSWITCH, OnHeaderSwitch)
+
 		NOTIFY_CODE_HANDLER(TBN_GETINFOTIP, OnGetInfoTip)
 
 		IMPLEMENT_FROMHANDLE()
@@ -199,6 +201,7 @@ public:
 	LRESULT OnLineEndingsConvert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnStopTools(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnUseTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	////////////////////////////////////////////////////
 	// Notify Handlers
@@ -260,6 +263,11 @@ protected:
 	void KillTools(bool bWaitForKill);
 	bool IsOutputVisible();
 	BOOL OnEscapePressed();
+
+	// Modes Stuff
+protected:
+	//cpp
+	bool				m_bHeaderSwitch;
 
 protected:
 	HWND				m_hWndOutput;

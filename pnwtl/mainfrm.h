@@ -141,10 +141,9 @@ public:
 	LRESULT OnWebSFPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnWebSFBug(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	void PNOpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme = NULL);
-	void PNOpenFile(LPCTSTR pathname, CScheme* pScheme);
-	void PNOpenFile(LPCTSTR pathname);
-
+	void OpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme = NULL);
+	void OpenFile(LPCTSTR pathname, CScheme* pScheme);
+	
 	void UpdateStatusBar();
 
 	static BOOL CALLBACK ChildEnumProc(HWND hWnd, LPARAM lParam);
@@ -163,6 +162,7 @@ public:
 	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL);
 	virtual void SetStatusText(LPCTSTR text);
 	virtual void SaveAll();
+	virtual void OpenFile(LPCTSTR pathname);
 
 protected:
 	void AddNewMenu(CSMenuHandle& menu);

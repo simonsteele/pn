@@ -184,6 +184,7 @@
 #define ID_EDIT_INDENT                  32863
 #define ID_EDIT_UNINDENT                32864
 #define ID_FILE_SAVEALL                 32865
+#define ID_EDIT_HEADERSWITCH            32866
 #define IDC_FINDTEXT_LABEL              65535
 
 // Next default values for new objects
@@ -191,7 +192,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        262
-#define _APS_NEXT_COMMAND_VALUE         32866
+#define _APS_NEXT_COMMAND_VALUE         32868
 #define _APS_NEXT_CONTROL_VALUE         1055
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

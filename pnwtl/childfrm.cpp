@@ -13,12 +13,11 @@
 #include "outputview.h"
 #include "tools.h"
 
-#ifdef _DEBUG 
-# define LLR_DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__) 
-# define LLR_DEBUG_MALLOC(size) _malloc_dbg(size, _NORMAL_BLOCK, __FILE__, __LINE__) 
-# define new LLR_DEBUG_NEW 
-# define malloc LLR_DEBUG_MALLOC 
-#endif // _DEBUG 
+#if defined (_DEBUG)
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
 
 CChildFrame::CChildFrame()
 {
@@ -40,6 +39,8 @@ CChildFrame::CChildFrame()
 	InitUpdateUI();
 
 	m_iFirstToolCmd = ID_TOOLS_DUMMY;
+
+	m_bHeaderSwitch = false;
 }
 
 CChildFrame::~CChildFrame()
@@ -624,6 +625,69 @@ LRESULT CChildFrame::OnUseTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	return 0;
 }
 
+/**
+ * @note CPP Specific
+ */
+LRESULT CChildFrame::OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
+{
+	if(m_bHeaderSwitch)
+	{
+		// Check there's a valid filename...
+		if(CanSave())
+		{
+			CFileName fn(m_FileName);
+			tstring ext = fn.GetExtension();
+			tstring newfn;
+			tstring tryfn;
+			
+			fn.GetFileName_NoExt(newfn);
+
+			const TCHAR** altexts = NULL;
+
+			if(ext.length() < 2) //.x
+				return 0;
+
+			if(ext[1] == 'h')
+			{
+				static const TCHAR* haltexts[] = {_T(".cxx"), _T(".c"), _T(".cpp"), NULL};
+				altexts = haltexts;
+			}
+			else if(ext[1] == 'c')
+			{
+				static const TCHAR* cppaltexts[] = {_T(".h"), _T(".hpp"), NULL};
+				altexts = cppaltexts;
+			}
+
+			if(!altexts)
+				return 0;
+
+			bool bFound = false;
+
+			while(*altexts)
+			{
+				tryfn = newfn;
+				tryfn += *altexts;
+
+				if(FileExists(tryfn.c_str()))
+				{
+					g_Context.m_frame->OpenFile(tryfn.c_str());
+					bFound = true;
+					break;
+				}
+
+				altexts++;
+			}
+
+			if(!bFound)
+				g_Context.m_frame->SetStatusText(_T("No alternate file found."));
+		}
+	}
+	else
+		bHandled = FALSE;
+
+	return 0;
+}
+
 ////////////////////////////////////////////////////
 // Notify Handlers
 
@@ -850,6 +914,8 @@ void CChildFrame::SchemeChanged(CScheme* pScheme)
 {
 	UpdateTools(pScheme);
 	g_Context.m_frame->SetActiveScheme(m_hWnd, static_cast<LPVOID>(pScheme));
+
+	m_bHeaderSwitch = (_tcscmp(pScheme->GetName(), _T("cpp")) == 0);
 }
 
 void CChildFrame::UpdateMenu()

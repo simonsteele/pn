@@ -56,7 +56,7 @@ CChildFrame* CMainFrame::NewEditor()
 	return pChild;
 }
 
-void CMainFrame::PNOpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme)
+void CMainFrame::OpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme)
 {
 	CChildFrame* pChild = NewEditor();
 	if(filename)
@@ -72,14 +72,14 @@ void CMainFrame::PNOpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme
 	}
 }
 
-void CMainFrame::PNOpenFile(LPCTSTR pathname)
+void CMainFrame::OpenFile(LPCTSTR pathname)
 {
-	PNOpenFile(pathname, NULL, NULL);
+	OpenFile(pathname, NULL, NULL);
 }
 
-void CMainFrame::PNOpenFile(LPCTSTR pathname, CScheme* pScheme)
+void CMainFrame::OpenFile(LPCTSTR pathname, CScheme* pScheme)
 {
-	PNOpenFile(pathname, NULL, pScheme);
+	OpenFile(pathname, NULL, pScheme);
 }
 
 void CMainFrame::UpdateStatusBar()
@@ -305,7 +305,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		}
 		else
 		{
-			PNOpenFile(__argv[i]);
+			OpenFile(__argv[i]);
 		}
 	}
 
@@ -321,7 +321,7 @@ LRESULT CMainFrame::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	for(int i = 0; i < files; i++)
 	{
 		DragQueryFile(hDrop, i, buf, MAX_PATH);
-		PNOpenFile(buf);
+		OpenFile(buf);
 		AddMRUEntry(buf);
 	}
 
@@ -415,7 +415,7 @@ LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	{
 		for(CPNOpenDialog::const_iterator i = dlgOpen.begin(); i != dlgOpen.end(); ++i)
 		{
-			PNOpenFile((*i).c_str());
+			OpenFile((*i).c_str());
 			AddMRUEntry((*i).c_str());
 		}
 	}
@@ -432,7 +432,7 @@ LRESULT CMainFrame::OnFileSaveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 LRESULT CMainFrame::OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	LPCTSTR filename = m_RecentFiles.GetEntry(wID - ID_MRUFILE_BASE);
-	PNOpenFile(filename);
+	OpenFile(filename);
 
 	return 0;
 }

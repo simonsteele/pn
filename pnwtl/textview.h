@@ -77,6 +77,7 @@ protected:
 	BOOL m_waitOnBookmarkNo;
 	CScheme* m_pLastScheme;
 	EPNEncoding m_encType;
+	bool m_bSmartStart;
 };
 
 /////////////////////////////////////////////////////////////////////////////
