@@ -65,4 +65,10 @@ typedef enum {
 	eLast
 } EPNEncoding;
 
+typedef enum {
+	eOpenAgain,
+	eWarnOpen,
+	eSwitch
+} EAlreadyOpenAction;
+
 #endif

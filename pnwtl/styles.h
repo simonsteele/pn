@@ -37,6 +37,7 @@ class StyleDetails
 			Italic = false;
 			Underline = false;
 			EOLFilled = false;
+			Hotspot = false;
 			values = 0;
 		}
 
@@ -56,12 +57,19 @@ class StyleDetails
 			Italic = copy.Italic;
 			Underline = copy.Underline;
 			EOLFilled = copy.EOLFilled;
+			Hotspot = copy.Hotspot;
+
 			values = copy.values;
 			classname = copy.classname;
 			name = copy.name;
+			
 			return *this;
 		}
 
+		/**
+		 * This method should only compare parts of the style that
+		 * users can change - others need not be compared.
+		 */
 		bool operator == (const StyleDetails& compare)
 		{
 			return (
@@ -88,6 +96,8 @@ class StyleDetails
 		/**
 		 * This function sets the "values" bit mask with
 		 * all the values that are different from those in compare.
+		 * This only takes into account values that the user may
+		 * change - not hotspots for example.
 		 */
 		void compareTo(StyleDetails& compare)
 		{
@@ -116,6 +126,7 @@ class StyleDetails
 		bool Italic;
 		bool Underline;
 		bool EOLFilled;
+		bool Hotspot;
 
 		string name;
 		string classname;

@@ -121,6 +121,21 @@ void CMainFrame::ChildSaveNotify(CChildFrame* pChild, SChildEnumStruct* pES)
 	pChild->Save();
 }
 
+void CMainFrame::FileOpenNotify(CChildFrame* pChild, SChildEnumStruct* pES)
+{
+	SIsOpen* pS = static_cast<SIsOpen*>(pES);
+	if(!pS->bFound)
+	{
+		TCHAR buffer[MAX_PATH+1];
+		GetShortPathName(pChild->GetFileName().c_str(), buffer, MAX_PATH+1);
+		if(_tcsicmp(buffer, pS->pszFilename) == 0)
+		{
+			pS->bFound = true;
+			pS->pMatch = pChild;
+		}
+	}
+}
+
 void CMainFrame::OnSchemeNew(LPVOID data)
 {	
 	CChildFrame* pChild = NewEditor();
@@ -415,10 +430,14 @@ LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 	if (dlgOpen.DoModal() == IDOK)
 	{
+		EAlreadyOpenAction action = COptionsManager::GetInstanceRef().AlreadyOpenAction;
 		for(CPNOpenDialog::const_iterator i = dlgOpen.begin(); i != dlgOpen.end(); ++i)
 		{
-			OpenFile((*i).c_str());
-			AddMRUEntry((*i).c_str());
+			if( !CheckAlreadyOpen((*i).c_str(), action) )
+			{
+				OpenFile((*i).c_str());
+				AddMRUEntry((*i).c_str());
+			}
 		}
 	}
 
@@ -526,7 +545,8 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	
 	COptionsPageStyle		page(&schemeconfig);
 	COptionsPageSchemes		page2(&schemeconfig);
-	COptionsPageTools		page3(&schemeconfig);
+	COptionsPageSmartStart	page3;
+	COptionsPageTools		page4(&schemeconfig);
 
 	schemeconfig.LoadConfig(pSM->GetPath(), pSM->GetCompiledPath());
 
@@ -535,6 +555,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	options.AddPage(&page);
 	options.AddPage(&page2);
 	options.AddPage(&page3);
+	options.AddPage(&page4);
 
 	options.SetInitialPage(&general);
 	
@@ -580,6 +601,59 @@ LRESULT CMainFrame::OnWebSFBug(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	::ShellExecute(m_hWnd, _T("open"), _T("http://sourceforge.net/tracker/?func=add&group_id=45545&atid=443219"), NULL, NULL, SW_SHOW);
 
 	return 0;
+}
+
+/**
+ * This function first looks to see if a file is already open, and then carries
+ * out a specific action if it is.
+ * @param filename to find - first gets converted to short form.
+ * @param action What to do if the file is found.
+ */
+bool CMainFrame::CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction action)
+{
+	TCHAR shortForm[MAX_PATH+1];
+	GetShortPathName(filename, shortForm, MAX_PATH+1);
+	
+	SIsOpen s;
+	s.pFunction = FileOpenNotify;
+	s.pszFilename = shortForm;
+	s.bFound = false; // not found
+	s.pMatch = NULL;
+
+	PerformChildEnum(&s);
+
+	if(s.bFound)
+	{
+		switch( action )
+		{
+			case eSwitch:
+				{
+					s.pMatch->BringWindowToTop();
+				}
+				break;
+			case eWarnOpen:
+				{
+					CString str;
+					str.Format(_T("Do you want to open another copy of %s?"), filename);
+					if( MessageBox(str, _T("Programmers Notepad 2"), MB_YESNO) == IDYES )
+					{
+						// Just claim the file wasn't open...
+						s.bFound = false;
+					}
+					else
+						s.pMatch->BringWindowToTop();
+				}
+				break;
+			case eOpenAgain:
+				{
+					// Just claim the file wasn't open...
+					s.bFound = false;
+				}
+				break;
+		}
+	}
+
+	return s.bFound;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

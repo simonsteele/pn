@@ -16,6 +16,8 @@
 
 #include "resource.h"
 
+#include "pntypes.h"
+
 struct IMainFrame
 {
 	virtual CWindow* GetWindow() = 0;
@@ -25,6 +27,7 @@ struct IMainFrame
 	virtual void SetStatusText(LPCTSTR text) = 0;
 	virtual void SaveAll() = 0;
 	virtual void OpenFile(LPCTSTR lpszFilename) = 0;
+	virtual bool CheckAlreadyOpen(LPCTSTR lpszFilename, EAlreadyOpenAction action) = 0;
 };
 
 struct _Context 
@@ -37,7 +40,6 @@ extern __declspec( thread ) _Context g_Context;
 HWND GetCurrentEditor();
 
 // Utility Classes and Definitions:
-#include "pntypes.h"
 #include "pntabs.h"
 #include "xmlparser.h"
 #include "ssmenus.h"

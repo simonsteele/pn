@@ -677,8 +677,11 @@ LRESULT CChildFrame::OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 			tstring ext = fn.GetExtension();
 			tstring newfn;
 			tstring tryfn;
+			tstring path;
 			
 			fn.GetFileName_NoExt(newfn);
+			fn.GetPath(path);
+			newfn = path + newfn;
 
 			const TCHAR** altexts = NULL;
 
@@ -708,7 +711,9 @@ LRESULT CChildFrame::OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 				if(FileExists(tryfn.c_str()))
 				{
-					g_Context.m_frame->OpenFile(tryfn.c_str());
+					// If the file's already open, just switch to it, otherwise open it.
+					if( !g_Context.m_frame->CheckAlreadyOpen(tryfn.c_str(), eSwitch) )
+						g_Context.m_frame->OpenFile(tryfn.c_str());
 					bFound = true;
 					break;
 				}

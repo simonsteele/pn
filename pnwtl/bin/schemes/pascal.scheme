@@ -2,7 +2,7 @@
 <Scheme>
 	<keyword-classes>
 		<keyword-class name="pascal">
-			program const type var begin end array set packed record string if then else
+			program const type var begin break end array set packed record string if then else
 			while for to downto do with repeat until case of goto exit label procedure
 			function nil file and or not xor div mod unit uses implementation interface
 			external asm inline object constructor destructor virtual far assembler near

@@ -13,7 +13,8 @@ public:
 
 	virtual ~SmartStart();
 
-	EContinueState OnChar(CTextView* pView);
+	EContinueState	OnChar(CTextView* pView);
+	STRING_MAP&		GetMap();
 
 //XMLParseState
 public:

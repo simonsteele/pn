@@ -612,6 +612,7 @@ void SchemeCompiler::sendStyle(StyleDetails* s, SchemeRecorder* compiler)
 	compiler->StyleSetItalic(s->Key, s->Italic);
 	compiler->StyleSetUnderline(s->Key, s->Underline);
 	compiler->StyleSetEOLFilled(s->Key, s->EOLFilled);
+	compiler->StyleSetHotSpot(s->Key, s->Hotspot);
 
 	if(s->Key == STYLE_DEFAULT)
 		compiler->StyleClearAll();
@@ -800,6 +801,10 @@ void SchemeParser::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, S
 		else if(valname == _T("eolfilled"))
 		{
 			pStyle->EOLFilled = PNStringToBool(t);
+		}
+		else if(valname == _T("hotspot"))
+		{
+			pStyle->Hotspot = PNStringToBool(t);
 		}
 	}
 }

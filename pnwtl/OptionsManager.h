@@ -50,6 +50,7 @@ class COptionsManager
 		bool ShowIndentGuides;
 		bool LineNumbers;
 		EPNSaveFormat LineEndings;
+		EAlreadyOpenAction AlreadyOpenAction;
 
 		void Set(LPCTSTR subkey, LPCTSTR value, bool bVal);
 		void Set(LPCTSTR subkey, LPCTSTR value, int iVal);

@@ -284,6 +284,9 @@
 				RelativePath=".\scintillaimpl.h">
 			</File>
 			<File
+				RelativePath="smartstart.h">
+			</File>
+			<File
 				RelativePath=".\ssmenus.h">
 			</File>
 			<File

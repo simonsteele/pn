@@ -28,20 +28,6 @@ typedef long(__cdecl* scmsgfn)(void *ptr, long Msg, WPARAM wParam, LPARAM lParam
 
 typedef enum {efsVSNet, efsVSNetR, efsPlus, efsArrow} EFoldStyle;
 
-/**
- * CScintilla is a no-framework Scintilla wrapper for C++, it still requires
- * assistance from a window loop in the containing window. The code for
- * many methods is derived from / taken from code found in Scite.
- */
-
-#ifndef min
-	#define min(a, b)  (((a) < (b)) ? (a) : (b))
-#endif
-
-#ifndef max
-	#define max(a, b)  (((a) > (b)) ? (a) : (b))
-#endif
-
 struct RangeToFormat 
 {
 	void* hdc;
@@ -51,6 +37,11 @@ struct RangeToFormat
 	CharacterRange chrg;
 };
 
+/**
+ * CScintilla is a no-framework Scintilla wrapper for C++, it still requires
+ * assistance from a window loop in the containing window. The code for
+ * many methods is derived from / taken from code found in Scite.
+ */
 class CScintilla
 {
 	public:
@@ -179,47 +170,47 @@ class CScintilla
 		
 		//++FuncDef
 		/**
-		 * Add text to the document
+		 * Add text to the document.
 		 */
 		void AddText(int length, const char* text);
 		/**
-		 * Add array of cells to document
+		 * Add array of cells to document.
 		 */
 		void AddStyledText(int length, char* c);
 		/**
-		 * Insert string at a position
+		 * Insert string at a position.
 		 */
 		void InsertText(long pos, const char* text);
 		/**
-		 * Delete all text in the document
+		 * Delete all text in the document.
 		 */
 		void ClearAll();
 		/**
-		 * Set all style bytes to 0, remove all folding information
+		 * Set all style bytes to 0, remove all folding information.
 		 */
 		void ClearDocumentStyle();
 		/**
-		 * The number of characters in the document
+		 * The number of characters in the document.
 		 */
 		int GetLength();
 		/**
-		 * Returns the character byte at the position
+		 * Returns the character byte at the position.
 		 */
 		int GetCharAt(long pos);
 		/**
-		 * Returns the position of the caret
+		 * Returns the position of the caret.
 		 */
 		long GetCurrentPos();
 		/**
-		 * Returns the position of the opposite end of the selection to the caret
+		 * Returns the position of the opposite end of the selection to the caret.
 		 */
 		long GetAnchor();
 		/**
-		 * Returns the style byte at the position
+		 * Returns the style byte at the position.
 		 */
 		int GetStyleAt(long pos);
 		/**
-		 * Redoes the next action on the undo history
+		 * Redoes the next action on the undo history.
 		 */
 		void Redo();
 		/**
@@ -242,11 +233,11 @@ class CScintilla
 		 */
 		int GetStyledText(TextRange* tr);
 		/**
-		 * Are there any redoable actions in the undo history.
+		 * Are there any redoable actions in the undo history?
 		 */
 		bool CanRedo();
 		/**
-		 * Retrieve the line number at which a particular marker is located
+		 * Retrieve the line number at which a particular marker is located.
 		 */
 		int MarkerLineFromHandle(int handle);
 		/**
@@ -311,8 +302,7 @@ class CScintilla
 		void SetEOLMode(int eolMode);
 		/**
 		 * Set the current styling position to pos and the styling mask to mask.
-		 * The styling mask can be used to protect some bits in each styling byte from
-		 * modification.
+		 * The styling mask can be used to protect some bits in each styling byte from modification.
 		 */
 		void StartStyling(long pos, int mask);
 		/**
@@ -321,7 +311,7 @@ class CScintilla
 		 */
 		void SetStyling(int length, int style);
 		/**
-		 * Is drawing done first into a buffer or direct to the screen.
+		 * Is drawing done first into a buffer or direct to the screen?
 		 */
 		bool GetBufferedDraw();
 		/**
@@ -330,8 +320,7 @@ class CScintilla
 		 */
 		void SetBufferedDraw(bool buffered);
 		/**
-		 * Change the visible size of a tab to be a multiple of the width of a space
-		 * character.
+		 * Change the visible size of a tab to be a multiple of the width of a space character.
 		 */
 		void SetTabWidth(int tabWidth);
 		/**
@@ -344,7 +333,7 @@ class CScintilla
 		 */
 		void SetCodePage(int codePage);
 		/**
-		 * In palette mode, Scintilla uses the environments palette calls to display
+		 * In palette mode, Scintilla uses the environment's palette calls to display
 		 * more colours. This may lead to ugly displays.
 		 */
 		void SetUsePalette(bool usePalette);
@@ -365,11 +354,11 @@ class CScintilla
 		 */
 		int MarkerAdd(int line, int markerNumber);
 		/**
-		 * Delete a marker from a line
+		 * Delete a marker from a line.
 		 */
 		void MarkerDelete(int line, int markerNumber);
 		/**
-		 * Delete all markers with a particular number from all lines
+		 * Delete all markers with a particular number from all lines.
 		 */
 		void MarkerDeleteAll(int markerNumber);
 		/**
@@ -384,6 +373,10 @@ class CScintilla
 		 * Find the previous line before lineStart that includes a marker in mask.
 		 */
 		int MarkerPrevious(int lineStart, int markerMask);
+		/**
+		 * Define a marker from a pixmap.
+		 */
+		void MarkerDefinePixmap(int markerNumber, const char* pixmap);
 		/**
 		 * Set a margin to be either numeric or symbolic.
 		 */
@@ -465,6 +458,10 @@ class CScintilla
 		 */
 		void StyleSetCharacterSet(int style, int characterSet);
 		/**
+		 * Set a style to be a hotspot or not.
+		 */
+		void StyleSetHotSpot(int style, bool hotspot);
+		/**
 		 * Set the foreground colour of the selection and whether to use this setting.
 		 */
 		void SetSelFore(bool useSetting, COLORREF fore);
@@ -505,8 +502,7 @@ class CScintilla
 		 */
 		void SetCaretPeriod(int periodMilliseconds);
 		/**
-		 * Set the set of characters making up words for when moving or selecting
-		 * by word.
+		 * Set the set of characters making up words for when moving or selecting by word.
 		 */
 		void SetWordChars(const char* characters);
 		/**
@@ -535,8 +531,16 @@ class CScintilla
 		 */
 		COLORREF IndicGetFore(int indic);
 		/**
-		 * Divide each styling byte into lexical class bits (default:5) and indicator
-		 * bits (default:3). If a lexer requires more than 32 lexical states, then this
+		 * Set the foreground colour of all whitespace and whether to use this setting.
+		 */
+		void SetWhitespaceFore(bool useSetting, COLORREF fore);
+		/**
+		 * Set the background colour of all whitespace and whether to use this setting.
+		 */
+		void SetWhitespaceBack(bool useSetting, COLORREF back);
+		/**
+		 * Divide each styling byte into lexical class bits (default: 5) and indicator
+		 * bits (default: 3). If a lexer requires more than 32 lexical states, then this
 		 * is used to expand the possible states.
 		 */
 		void SetStyleBits(int bits);
@@ -561,7 +565,7 @@ class CScintilla
 		 */
 		bool GetCaretLineVisible();
 		/**
-		 * Dsplay the background of the line containing the caret in a different colour.
+		 * Display the background of the line containing the caret in a different colour.
 		 */
 		void SetCaretLineVisible(bool show);
 		/**
@@ -592,8 +596,7 @@ class CScintilla
 		 */
 		bool AutoCActive();
 		/**
-		 * Retrieve the position of the caret when the auto-completion list was
-		 * displayed.
+		 * Retrieve the position of the caret when the auto-completion list was displayed.
 		 */
 		long AutoCPosStart();
 		/**
@@ -605,8 +608,8 @@ class CScintilla
 		 */
 		void AutoCStops(const char* characterSet);
 		/**
-		 * Change the separator character in the string setting up an auto-completion
-		 * list. Default is space but can be changed if items contain space.
+		 * Change the separator character in the string setting up an auto-completion list.
+		 * Default is space but can be changed if items contain space.
 		 */
 		void AutoCSetSeparator(int separatorCharacter);
 		/**
@@ -652,21 +655,40 @@ class CScintilla
 		 */
 		void UserListShow(int listType, const char* itemList);
 		/**
-		 * Set whether or not autocompletion is hidden automatically when nothing matches
+		 * Set whether or not autocompletion is hidden automatically when nothing matches.
 		 */
 		void AutoCSetAutoHide(bool autoHide);
 		/**
-		 * Retrieve whether or not autocompletion is hidden automatically when nothing matches
+		 * Retrieve whether or not autocompletion is hidden automatically when nothing matches.
 		 */
 		bool AutoCGetAutoHide();
 		/**
-		 * Set whether or not autocompletion deletes any word characters after the inserted text upon completion
+		 * Set whether or not autocompletion deletes any word characters
+		 * after the inserted text upon completion.
 		 */
 		void AutoCSetDropRestOfWord(bool dropRestOfWord);
 		/**
-		 * Retrieve whether or not autocompletion deletes any word characters after the inserted text upon completion
+		 * Retrieve whether or not autocompletion deletes any word characters
+		 * after the inserted text upon completion.
 		 */
 		bool AutoCGetDropRestOfWord();
+		/**
+		 * Register an XPM image for use in autocompletion lists.
+		 */
+		void RegisterImage(int type, const char* xpmData);
+		/**
+		 * Clear all the registered XPM images.
+		 */
+		void ClearRegisteredImages();
+		/**
+		 * Retrieve the auto-completion list type-separator character.
+		 */
+		int AutoCGetTypeSeparator();
+		/**
+		 * Change the type-separator character in the string setting up an auto-completion list.
+		 * Default is '?' but can be changed if items contain '?'.
+		 */
+		void AutoCSetTypeSeparator(int separatorCharacter);
 		/**
 		 * Set the number of spaces used for one level of indentation.
 		 */
@@ -786,11 +808,11 @@ class CScintilla
 		 */
 		long FindText(int flags, TextToFind* ft);
 		/**
-		 * On Windows will draw the document into a display context such as a printer.
+		 * On Windows, will draw the document into a display context such as a printer.
 		 */
 		void FormatRange(bool draw, long fr);
 		/**
-		 * Retrieve the line at the top of the display.
+		 * Retrieve the display line at the top of the display.
 		 */
 		int GetFirstVisibleLine();
 		/**
@@ -881,7 +903,7 @@ class CScintilla
 		 */
 		bool CanPaste();
 		/**
-		 * Are there any undoable actions in the undo history.
+		 * Are there any undoable actions in the undo history?
 		 */
 		bool CanUndo();
 		/**
@@ -943,7 +965,7 @@ class CScintilla
 		 */
 		void SetCaretWidth(int pixelWidth);
 		/**
-		 * Returns the width of the insert mode caret
+		 * Returns the width of the insert mode caret.
 		 */
 		int GetCaretWidth();
 		/**
@@ -986,11 +1008,11 @@ class CScintilla
 		 */
 		int SearchInTarget(int length, const char* text);
 		/**
-		 * Set the search flags used by SearchInTarget
+		 * Set the search flags used by SearchInTarget.
 		 */
 		void SetSearchFlags(int flags);
 		/**
-		 * Get the search flags used by SearchInTarget
+		 * Get the search flags used by SearchInTarget.
 		 */
 		int GetSearchFlags();
 		/**
@@ -1017,6 +1039,14 @@ class CScintilla
 		 * Set the background colour for the call tip.
 		 */
 		void CallTipSetBack(COLORREF back);
+		/**
+		 * Set the foreground colour for the call tip.
+		 */
+		void CallTipSetFore(COLORREF fore);
+		/**
+		 * Set the foreground colour for the highlighted part of the call tip.
+		 */
+		void CallTipSetForeHlt(COLORREF fore);
 		/**
 		 * Find the display line of a document line taking hidden lines into account.
 		 */
@@ -1072,7 +1102,7 @@ class CScintilla
 		 */
 		void EnsureVisible(int line);
 		/**
-		 * Set some debugging options for folding
+		 * Set some style options for folding.
 		 */
 		void SetFoldFlags(int flags);
 		/**
@@ -1081,7 +1111,7 @@ class CScintilla
 		 */
 		void EnsureVisibleEnforcePolicy(int line);
 		/**
-		 * Sets whether a tab pressed when caret is within indentation indents
+		 * Sets whether a tab pressed when caret is within indentation indents.
 		 */
 		void SetTabIndents(bool tabIndents);
 		/**
@@ -1089,7 +1119,7 @@ class CScintilla
 		 */
 		bool GetTabIndents();
 		/**
-		 * Sets whether a backspace pressed when caret is within indentation unindents
+		 * Sets whether a backspace pressed when caret is within indentation unindents.
 		 */
 		void SetBackSpaceUnIndents(bool bsUnIndents);
 		/**
@@ -1153,6 +1183,53 @@ class CScintilla
 		 * line at the bottom of the view.
 		 */
 		int GetEndAtLastLine();
+		/**
+		 * Retrieve the height of a particular line of text in pixels.
+		 */
+		int TextHeight(int line);
+		/**
+		 * Show or hide the vertical scroll bar.
+		 */
+		void SetVScrollBar(bool show);
+		/**
+		 * Is the vertical scroll bar visible?
+		 */
+		bool GetVScrollBar();
+		/**
+		 * Append a string to the end of the document without changing the selection.
+		 */
+		void AppendText(int length, const char* text);
+		/**
+		 * Is drawing done in two phases with backgrounds drawn before faoregrounds?
+		 */
+		bool GetTwoPhaseDraw();
+		/**
+		 * In twoPhaseDraw mode, drawing is performed in two phases, first the background
+		 * and then the foreground. This avoids chopping off characters that overlap the next run.
+		 */
+		void SetTwoPhaseDraw(bool twoPhase);
+		/**
+		 * Make the target range start and end be the same as the selection range start and end.
+		 */
+		void TargetFromSelection();
+		/**
+		 * Join the lines in the target.
+		 * This is an experimental feature and may be changed or removed.
+		 */
+		void LinesJoin();
+		/**
+		 * Split the lines in the target into lines that are less wide than pixelWidth
+		 * where possible.
+		 */
+		void LinesSplit(int pixelWidth);
+		/**
+		 * Set the colours used as a chequerboard pattern in the fold margin
+		 */
+		void SetFoldMarginColour(bool useSetting, COLORREF back);
+		/**
+		 * Set the colours used as a chequerboard pattern in the fold margin
+		 */
+		void SetFoldMarginHiColour(bool useSetting, COLORREF fore);
 		/**
 		 * Move caret down one line.
 		 */
@@ -1262,8 +1339,7 @@ class CScintilla
 		 */
 		void DeleteBack();
 		/**
-		 * If selection is empty or all on one line replace the selection with a tab
-		 * character.
+		 * If selection is empty or all on one line replace the selection with a tab character.
 		 * If more than one line selected, indent the lines.
 		 */
 		void Tab();
@@ -1317,6 +1393,10 @@ class CScintilla
 		 */
 		void LineTranspose();
 		/**
+		 * Duplicate the current line.
+		 */
+		void LineDuplicate();
+		/**
 		 * Transform the selection to lower case.
 		 */
 		void LowerCase();
@@ -1334,15 +1414,81 @@ class CScintilla
 		void LineScrollUp();
 		/**
 		 * Delete the selection or if no selection, the character before the caret.
-		 * Will not delete the chraacter before at the start of a line.
+		 * Will not delete the character before at the start of a line.
 		 */
 		void DeleteBackNotLine();
 		/**
-		 * Move the caret inside current view if it's not there already
+		 * Move caret to first position on display line.
+		 */
+		void HomeDisplay();
+		/**
+		 * Move caret to first position on display line extending selection to
+		 * new caret position.
+		 */
+		void HomeDisplayExtend();
+		/**
+		 * Move caret to last position on display line.
+		 */
+		void LineEndDisplay();
+		/**
+		 * Move caret to last position on display line extending selection to new
+		 * caret position.
+		 */
+		void LineEndDisplayExtend();
+		/**
+		 * These are like their namesakes Home(Extend)?, LineEnd(Extend)?, VCHome(Extend)?
+		 * except they behave differently when word-wrap is enabled:
+		 * They go first to the start / end of the display line, like (Home|LineEnd)Display
+		 * The difference is that, the cursor is already at the point, it goes on to the start
+		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)Extend.
+		 */
+		void HomeWrap();
+		/**
+		 * These are like their namesakes Home(Extend)?, LineEnd(Extend)?, VCHome(Extend)?
+		 * except they behave differently when word-wrap is enabled:
+		 * They go first to the start / end of the display line, like (Home|LineEnd)Display
+		 * The difference is that, the cursor is already at the point, it goes on to the start
+		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)Extend.
+		 */
+		void HomeWrapExtend();
+		/**
+		 * These are like their namesakes Home(Extend)?, LineEnd(Extend)?, VCHome(Extend)?
+		 * except they behave differently when word-wrap is enabled:
+		 * They go first to the start / end of the display line, like (Home|LineEnd)Display
+		 * The difference is that, the cursor is already at the point, it goes on to the start
+		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)Extend.
+		 */
+		void LineEndWrap();
+		/**
+		 * These are like their namesakes Home(Extend)?, LineEnd(Extend)?, VCHome(Extend)?
+		 * except they behave differently when word-wrap is enabled:
+		 * They go first to the start / end of the display line, like (Home|LineEnd)Display
+		 * The difference is that, the cursor is already at the point, it goes on to the start
+		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)Extend.
+		 */
+		void LineEndWrapExtend();
+		/**
+		 * These are like their namesakes Home(Extend)?, LineEnd(Extend)?, VCHome(Extend)?
+		 * except they behave differently when word-wrap is enabled:
+		 * They go first to the start / end of the display line, like (Home|LineEnd)Display
+		 * The difference is that, the cursor is already at the point, it goes on to the start
+		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)Extend.
+		 */
+		void VCHomeWrap();
+		/**
+		 * These are like their namesakes Home(Extend)?, LineEnd(Extend)?, VCHome(Extend)?
+		 * except they behave differently when word-wrap is enabled:
+		 * They go first to the start / end of the display line, like (Home|LineEnd)Display
+		 * The difference is that, the cursor is already at the point, it goes on to the start
+		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)Extend.
+		 */
+		void VCHomeWrapExtend();
+		/**
+		 * Move the caret inside current view if it's not there already.
 		 */
 		void MoveCaretInsideView();
 		/**
-		 * How many characters are on a line, not including end of line characters.
+		 * How many characters are on a line, not including end of line characters?
 		 */
 		int LineLength(int line);
 		/**
@@ -1358,11 +1504,11 @@ class CScintilla
 		 */
 		long BraceMatch(long pos);
 		/**
-		 * Are the end of line characters visible.
+		 * Are the end of line characters visible?
 		 */
 		bool GetViewEOL();
 		/**
-		 * Make the end of line characters visible or invisible
+		 * Make the end of line characters visible or invisible.
 		 */
 		void SetViewEOL(bool visible);
 		/**
@@ -1418,10 +1564,6 @@ class CScintilla
 		 */
 		int SearchPrev(int flags, const char* text);
 		/**
-		 * Set the way the line the caret is on is kept visible.
-		 */
-		void SetCaretPolicy(int caretPolicy, int caretSlop);
-		/**
 		 * Retrieves the number of lines completely visible.
 		 */
 		int LinesOnScreen();
@@ -1431,7 +1573,7 @@ class CScintilla
 		 */
 		void UsePopUp(bool allowPopUp);
 		/**
-		 * Is the selection a rectangular. The alternative is the more common stream selection.
+		 * Is the selection rectangular? The alternative is the more common stream selection.
 		 */
 		bool SelectionIsRectangle();
 		/**
@@ -1461,87 +1603,124 @@ class CScintilla
 		 */
 		int GetModEventMask();
 		/**
-		 * Change internal focus flag
+		 * Change internal focus flag.
 		 */
 		void SetFocus(bool focus);
 		/**
-		 * Get internal focus flag
+		 * Get internal focus flag.
 		 */
 		bool GetFocus();
 		/**
-		 * Change error status - 0 = OK
+		 * Change error status - 0 = OK.
 		 */
 		void SetStatus(int statusCode);
 		/**
-		 * Get error status
+		 * Get error status.
 		 */
 		int GetStatus();
 		/**
-		 * Set whether the mouse is captured when its button is pressed
+		 * Set whether the mouse is captured when its button is pressed.
 		 */
 		void SetMouseDownCaptures(bool captures);
 		/**
-		 * Get whether mouse gets captured
+		 * Get whether mouse gets captured.
 		 */
 		bool GetMouseDownCaptures();
 		/**
-		 * Sets the cursor to one of the SC_CURSOR* values
+		 * Sets the cursor to one of the SC_CURSOR* values.
 		 */
 		void SetCursor(int cursorType);
 		/**
-		 * Get cursor type
+		 * Get cursor type.
 		 */
 		int GetCursor();
 		/**
 		 * Change the way control characters are displayed:
-		 * If symbol is < 32, keep the drawn way, else, use the given character
+		 * If symbol is < 32, keep the drawn way, else, use the given character.
 		 */
 		void SetControlCharSymbol(int symbol);
 		/**
-		 * Get the way control characters are displayed
+		 * Get the way control characters are displayed.
 		 */
 		int GetControlCharSymbol();
 		/**
-		 * Move to the previous change in capitalistion
+		 * Move to the previous change in capitalisation.
 		 */
 		void WordPartLeft();
 		/**
-		 * Move to the previous change in capitalistion extending selection to new caret position.
+		 * Move to the previous change in capitalisation extending selection
+		 * to new caret position.
 		 */
 		void WordPartLeftExtend();
 		/**
-		 * Move to the change next in capitalistion
+		 * Move to the change next in capitalisation.
 		 */
 		void WordPartRight();
 		/**
-		 * Move to the next change in capitalistion extending selection to new caret position.
+		 * Move to the next change in capitalisation extending selection
+		 * to new caret position.
 		 */
 		void WordPartRightExtend();
 		/**
-		 * Set the way the display area is determined when a particular line is to be moved to.
+		 * Set the way the display area is determined when a particular line
+		 * is to be moved to by Find, FindNext, GotoLine, etc.
 		 */
 		void SetVisiblePolicy(int visiblePolicy, int visibleSlop);
 		/**
-		 * Delete back from the current position to the start of the line
+		 * Delete back from the current position to the start of the line.
 		 */
 		void DelLineLeft();
 		/**
-		 * Delete forwards from the current position to the end of the line
+		 * Delete forwards from the current position to the end of the line.
 		 */
 		void DelLineRight();
 		/**
-		 * Get and Set the xOffset (ie, horizonal scroll position)
+		 * Get and Set the xOffset (ie, horizonal scroll position).
 		 */
 		void SetXOffset(int newOffset);
 		/**
-		 * Get and Set the xOffset (ie, horizonal scroll position)
+		 * Get and Set the xOffset (ie, horizonal scroll position).
 		 */
 		int GetXOffset();
 		/**
+		 * Set the last x chosen value to be the caret x position
+		 */
+		void ChooseCaretX();
+		/**
 		 * Set the focus to this Scintilla widget.
-		 * GTK+ Specific
+		 * GTK+ Specific.
 		 */
 		void GrabFocus();
+		/**
+		 * Set the way the caret is kept visible when going sideway.
+		 * The exclusion zone is given in pixels.
+		 */
+		void SetXCaretPolicy(int caretPolicy, int caretSlop);
+		/**
+		 * Set the way the line the caret is on is kept visible.
+		 * The exclusion zone is given in lines.
+		 */
+		void SetYCaretPolicy(int caretPolicy, int caretSlop);
+		/**
+		 * Set printing to line wrapped (SC_WRAP_WORD) or not line wrapped (SC_WRAP_NONE).
+		 */
+		void SetPrintWrapMode(int mode);
+		/**
+		 * Is printing line wrapped.
+		 */
+		int GetPrintWrapMode();
+		/**
+		 * Set a fore colour for active hotspots.
+		 */
+		void SetHotspotActiveFore(bool useSetting, COLORREF fore);
+		/**
+		 * Set a back colour for active hotspots.
+		 */
+		void SetHotspotActiveBack(bool useSetting, COLORREF back);
+		/**
+		 * Enable / Disable underlining active hotspots.
+		 */
+		void SetHotspotActiveUnderline(bool underline);
 		/**
 		 * Start notifying the container of all key presses and commands.
 		 */
@@ -1574,6 +1753,10 @@ class CScintilla
 		 * Set the lexing language of the document based on string name.
 		 */
 		void SetLexerLanguage(const char* language);
+		/**
+		 * Load a lexer library (dll / so)
+		 */
+		void LoadLexerLibrary(const char* path);
 	//--
 	//@}
 };

@@ -86,6 +86,11 @@ SmartStart::EContinueState SmartStart::OnChar(CTextView* pView)
 		return eContinue;
 }
 
+STRING_MAP& SmartStart::GetMap()
+{
+	return m_Map;
+}
+
 // XMLParseState Implementation:
 
 /// Called on each XML element start - looks for tags: <ssv from="keyphrase" to="lexer" />

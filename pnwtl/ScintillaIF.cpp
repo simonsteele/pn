@@ -307,6 +307,9 @@ void CScintilla::GetSel(CharacterRange& cr)
 	cr.cpMax = GetSelectionEnd();
 }
 
+#define min(a, b)  (((a) < (b)) ? (a) : (b))
+#define max(a, b)  (((a) > (b)) ? (a) : (b))
+
 void CScintilla::EnsureRangeVisible(int begin, int end)
 {
 	int lineStart = LineFromPosition(min(begin, end));
@@ -811,6 +814,11 @@ int CScintilla::MarkerPrevious(int lineStart, int markerMask)
 	return (int)SPerform(SCI_MARKERPREVIOUS, (long)lineStart, (long)markerMask);
 }
 
+void CScintilla::MarkerDefinePixmap(int markerNumber, const char* pixmap)
+{
+	SPerform(SCI_MARKERDEFINEPIXMAP, (long)markerNumber, (long)pixmap);
+}
+
 void CScintilla::SetMarginTypeN(int margin, int marginType)
 {
 	SPerform(SCI_SETMARGINTYPEN, (long)margin, (long)marginType);
@@ -911,6 +919,11 @@ void CScintilla::StyleSetCharacterSet(int style, int characterSet)
 	SPerform(SCI_STYLESETCHARACTERSET, (long)style, (long)characterSet);
 }
 
+void CScintilla::StyleSetHotSpot(int style, bool hotspot)
+{
+	SPerform(SCI_STYLESETHOTSPOT, (long)style, (long)hotspot);
+}
+
 void CScintilla::SetSelFore(bool useSetting, COLORREF fore)
 {
 	SPerform(SCI_SETSELFORE, (long)useSetting, (long)fore);
@@ -994,6 +1007,16 @@ void CScintilla::IndicSetFore(int indic, COLORREF fore)
 COLORREF CScintilla::IndicGetFore(int indic)
 {
 	return (COLORREF)SPerform(SCI_INDICGETFORE, (long)indic, 0);
+}
+
+void CScintilla::SetWhitespaceFore(bool useSetting, COLORREF fore)
+{
+	SPerform(SCI_SETWHITESPACEFORE, (long)useSetting, (long)fore);
+}
+
+void CScintilla::SetWhitespaceBack(bool useSetting, COLORREF back)
+{
+	SPerform(SCI_SETWHITESPACEBACK, (long)useSetting, (long)back);
 }
 
 void CScintilla::SetStyleBits(int bits)
@@ -1149,6 +1172,26 @@ void CScintilla::AutoCSetDropRestOfWord(bool dropRestOfWord)
 bool CScintilla::AutoCGetDropRestOfWord()
 {
 	return SPerform(SCI_AUTOCGETDROPRESTOFWORD, 0, 0) != 0;
+}
+
+void CScintilla::RegisterImage(int type, const char* xpmData)
+{
+	SPerform(SCI_REGISTERIMAGE, (long)type, (long)xpmData);
+}
+
+void CScintilla::ClearRegisteredImages()
+{
+	SPerform(SCI_CLEARREGISTEREDIMAGES, 0, 0);
+}
+
+int CScintilla::AutoCGetTypeSeparator()
+{
+	return (int)SPerform(SCI_AUTOCGETTYPESEPARATOR, 0, 0);
+}
+
+void CScintilla::AutoCSetTypeSeparator(int separatorCharacter)
+{
+	SPerform(SCI_AUTOCSETTYPESEPARATOR, (long)separatorCharacter, 0);
 }
 
 void CScintilla::SetIndent(int indentSize)
@@ -1566,6 +1609,16 @@ void CScintilla::CallTipSetBack(COLORREF back)
 	SPerform(SCI_CALLTIPSETBACK, (long)back, 0);
 }
 
+void CScintilla::CallTipSetFore(COLORREF fore)
+{
+	SPerform(SCI_CALLTIPSETFORE, (long)fore, 0);
+}
+
+void CScintilla::CallTipSetForeHlt(COLORREF fore)
+{
+	SPerform(SCI_CALLTIPSETFOREHLT, (long)fore, 0);
+}
+
 int CScintilla::VisibleFromDocLine(int line)
 {
 	return (int)SPerform(SCI_VISIBLEFROMDOCLINE, (long)line, 0);
@@ -1724,6 +1777,61 @@ void CScintilla::SetEndAtLastLine(bool endAtLastLine)
 int CScintilla::GetEndAtLastLine()
 {
 	return (int)SPerform(SCI_GETENDATLASTLINE, 0, 0);
+}
+
+int CScintilla::TextHeight(int line)
+{
+	return (int)SPerform(SCI_TEXTHEIGHT, (long)line, 0);
+}
+
+void CScintilla::SetVScrollBar(bool show)
+{
+	SPerform(SCI_SETVSCROLLBAR, (long)show, 0);
+}
+
+bool CScintilla::GetVScrollBar()
+{
+	return SPerform(SCI_GETVSCROLLBAR, 0, 0) != 0;
+}
+
+void CScintilla::AppendText(int length, const char* text)
+{
+	SPerform(SCI_APPENDTEXT, (long)length, (long)text);
+}
+
+bool CScintilla::GetTwoPhaseDraw()
+{
+	return SPerform(SCI_GETTWOPHASEDRAW, 0, 0) != 0;
+}
+
+void CScintilla::SetTwoPhaseDraw(bool twoPhase)
+{
+	SPerform(SCI_SETTWOPHASEDRAW, (long)twoPhase, 0);
+}
+
+void CScintilla::TargetFromSelection()
+{
+	SPerform(SCI_TARGETFROMSELECTION, 0, 0);
+}
+
+void CScintilla::LinesJoin()
+{
+	SPerform(SCI_LINESJOIN, 0, 0);
+}
+
+void CScintilla::LinesSplit(int pixelWidth)
+{
+	SPerform(SCI_LINESSPLIT, (long)pixelWidth, 0);
+}
+
+void CScintilla::SetFoldMarginColour(bool useSetting, COLORREF back)
+{
+	SPerform(SCI_SETFOLDMARGINCOLOUR, (long)useSetting, (long)back);
+}
+
+void CScintilla::SetFoldMarginHiColour(bool useSetting, COLORREF fore)
+{
+	SPerform(SCI_SETFOLDMARGINHICOLOUR, (long)useSetting, (long)fore);
 }
 
 void CScintilla::LineDown()
@@ -1926,6 +2034,11 @@ void CScintilla::LineTranspose()
 	SPerform(SCI_LINETRANSPOSE, 0, 0);
 }
 
+void CScintilla::LineDuplicate()
+{
+	SPerform(SCI_LINEDUPLICATE, 0, 0);
+}
+
 void CScintilla::LowerCase()
 {
 	SPerform(SCI_LOWERCASE, 0, 0);
@@ -1949,6 +2062,56 @@ void CScintilla::LineScrollUp()
 void CScintilla::DeleteBackNotLine()
 {
 	SPerform(SCI_DELETEBACKNOTLINE, 0, 0);
+}
+
+void CScintilla::HomeDisplay()
+{
+	SPerform(SCI_HOMEDISPLAY, 0, 0);
+}
+
+void CScintilla::HomeDisplayExtend()
+{
+	SPerform(SCI_HOMEDISPLAYEXTEND, 0, 0);
+}
+
+void CScintilla::LineEndDisplay()
+{
+	SPerform(SCI_LINEENDDISPLAY, 0, 0);
+}
+
+void CScintilla::LineEndDisplayExtend()
+{
+	SPerform(SCI_LINEENDDISPLAYEXTEND, 0, 0);
+}
+
+void CScintilla::HomeWrap()
+{
+	SPerform(SCI_HOMEWRAP, 0, 0);
+}
+
+void CScintilla::HomeWrapExtend()
+{
+	SPerform(SCI_HOMEWRAPEXTEND, 0, 0);
+}
+
+void CScintilla::LineEndWrap()
+{
+	SPerform(SCI_LINEENDWRAP, 0, 0);
+}
+
+void CScintilla::LineEndWrapExtend()
+{
+	SPerform(SCI_LINEENDWRAPEXTEND, 0, 0);
+}
+
+void CScintilla::VCHomeWrap()
+{
+	SPerform(SCI_VCHOMEWRAP, 0, 0);
+}
+
+void CScintilla::VCHomeWrapExtend()
+{
+	SPerform(SCI_VCHOMEWRAPEXTEND, 0, 0);
 }
 
 void CScintilla::MoveCaretInsideView()
@@ -2044,11 +2207,6 @@ int CScintilla::SearchNext(int flags, const char* text)
 int CScintilla::SearchPrev(int flags, const char* text)
 {
 	return (int)SPerform(SCI_SEARCHPREV, (long)flags, (long)text);
-}
-
-void CScintilla::SetCaretPolicy(int caretPolicy, int caretSlop)
-{
-//	SPerform(SCI_SETCARETPOLICY, (long)caretPolicy, (long)caretSlop);
 }
 
 int CScintilla::LinesOnScreen()
@@ -2191,9 +2349,49 @@ int CScintilla::GetXOffset()
 	return (int)SPerform(SCI_GETXOFFSET, 0, 0);
 }
 
+void CScintilla::ChooseCaretX()
+{
+	SPerform(SCI_CHOOSECARETX, 0, 0);
+}
+
 void CScintilla::GrabFocus()
 {
 	SPerform(SCI_GRABFOCUS, 0, 0);
+}
+
+void CScintilla::SetXCaretPolicy(int caretPolicy, int caretSlop)
+{
+	SPerform(SCI_SETXCARETPOLICY, (long)caretPolicy, (long)caretSlop);
+}
+
+void CScintilla::SetYCaretPolicy(int caretPolicy, int caretSlop)
+{
+	SPerform(SCI_SETYCARETPOLICY, (long)caretPolicy, (long)caretSlop);
+}
+
+void CScintilla::SetPrintWrapMode(int mode)
+{
+	SPerform(SCI_SETPRINTWRAPMODE, (long)mode, 0);
+}
+
+int CScintilla::GetPrintWrapMode()
+{
+	return (int)SPerform(SCI_GETPRINTWRAPMODE, 0, 0);
+}
+
+void CScintilla::SetHotspotActiveFore(bool useSetting, COLORREF fore)
+{
+	SPerform(SCI_SETHOTSPOTACTIVEFORE, (long)useSetting, (long)fore);
+}
+
+void CScintilla::SetHotspotActiveBack(bool useSetting, COLORREF back)
+{
+	SPerform(SCI_SETHOTSPOTACTIVEBACK, (long)useSetting, (long)back);
+}
+
+void CScintilla::SetHotspotActiveUnderline(bool underline)
+{
+	SPerform(SCI_SETHOTSPOTACTIVEUNDERLINE, (long)underline, 0);
 }
 
 void CScintilla::StartRecord()
@@ -2234,6 +2432,11 @@ void CScintilla::SetKeyWords(int keywordSet, const char* keyWords)
 void CScintilla::SetLexerLanguage(const char* language)
 {
 	SPerform(SCI_SETLEXERLANGUAGE, 0, (long)language);
+}
+
+void CScintilla::LoadLexerLibrary(const char* path)
+{
+	SPerform(SCI_LOADLEXERLIBRARY, 0, (long)path);
 }
 
 //--

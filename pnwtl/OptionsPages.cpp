@@ -1424,3 +1424,101 @@ void CToolEditorDialog::SetTitle(LPCTSTR title)
 {
 	m_csDisplayTitle = title;
 }
+
+//////////////////////////////////////////////////////////////////////////////
+// COptionsPageSmartStart
+//////////////////////////////////////////////////////////////////////////////
+
+#include "smartstart.h"
+
+void COptionsPageSmartStart::AddItem(LPCTSTR key, LPCTSTR schemetitle)
+{
+	LVITEM lvi;
+
+	lvi.mask = LVIF_IMAGE | LVIF_TEXT | LVIF_PARAM;
+	lvi.iItem = m_list.GetItemCount();
+	lvi.iSubItem = 0;
+	lvi.pszText = const_cast<LPTSTR>( key );
+	lvi.iImage = 0;
+	//lvi.lParam = reinterpret_cast<LPARAM>(pDef);
+
+	int iItem = m_list.InsertItem(&lvi);
+
+	lvi.mask = LVIF_TEXT;
+	lvi.iItem = iItem;
+	lvi.iSubItem = 1;
+	lvi.pszText = const_cast<LPTSTR>( schemetitle );
+
+	m_list.SetItem(&lvi);
+}
+
+void COptionsPageSmartStart::OnInitialise()
+{
+	STRING_MAP& smap = SmartStart::GetInstance()->GetMap();
+	
+	for(SM_IT i = smap.begin(); i != smap.end(); ++i)
+	{
+		CScheme* pScheme = CSchemeManager::GetInstance()->SchemeByName((*i).second.c_str());
+		if(pScheme)
+		{
+			AddItem((*i).first.c_str(), pScheme->GetTitle());
+		}
+	}
+}
+
+void COptionsPageSmartStart::OnOK()
+{
+
+}
+
+LPCTSTR COptionsPageSmartStart::GetTreePosition()
+{
+	return _T("SmartStart");
+}
+
+LRESULT COptionsPageSmartStart::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	m_list.Attach(GetDlgItem(IDC_SMARTSTART_LIST));
+	CRect rc;
+	m_list.GetClientRect(rc);
+	m_list.InsertColumn(0, _T("Starting Phrase"), LVCFMT_LEFT, (rc.Width() / 3) * 2, 0);
+	m_list.InsertColumn(1, _T("Scheme"), LVCFMT_LEFT, (rc.Width() / 3) - 20, 0);
+
+	return 0;
+}
+
+LRESULT COptionsPageSmartStart::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+
+	return 0;
+}
+
+LRESULT COptionsPageSmartStart::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+
+	return 0;
+}
+
+LRESULT COptionsPageSmartStart::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+
+	return 0;
+}
+
+LRESULT COptionsPageSmartStart::OnListKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+
+	return 0;
+}
+
+LRESULT COptionsPageSmartStart::OnListClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+
+	return 0;
+}
+
+LRESULT COptionsPageSmartStart::OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+
+	return 0;
+}

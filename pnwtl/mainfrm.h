@@ -31,6 +31,13 @@ typedef struct tagCloseStruct : public tagEnumChildrenStruct
 	bool	bCanClose;
 } SCloseStruct;
 
+typedef struct tagIsOpenStruct : public tagEnumChildrenStruct
+{
+	bool bFound;
+	LPCTSTR pszFilename;
+	CChildFrame* pMatch;
+} SIsOpen;
+
 /**
  * @class CMainFrame
  * @brief PN (WTL Edition) Main MDI Frame
@@ -151,6 +158,7 @@ public:
 	void __stdcall ChildCloseNotify(CChildFrame* pChild, SChildEnumStruct* pES);
 	void __stdcall ChildOptionsUpdateNotify(CChildFrame* pChild, SChildEnumStruct* pES);
 	void __stdcall ChildSaveNotify(CChildFrame* pChild, SChildEnumStruct* pES);
+	void __stdcall FileOpenNotify(CChildFrame* pChild, SChildEnumStruct* pES);
 
 	////////////////////////////////////////////////////////////////
 	// IMainFrame Implementation
@@ -163,6 +171,7 @@ public:
 	virtual void SetStatusText(LPCTSTR text);
 	virtual void SaveAll();
 	virtual void OpenFile(LPCTSTR pathname);
+	virtual bool CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction = COptionsManager::GetInstance()->AlreadyOpenAction);
 
 protected:
 	void AddNewMenu(CSMenuHandle& menu);

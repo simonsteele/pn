@@ -771,9 +771,9 @@ BEGIN
     CONTROL         "",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | 
                     LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | 
                     WS_TABSTOP,0,54,276,96
-    PUSHBUTTON      "&Add",IDC_TOOLS_ADDBUTTON,174,156,48,18
-    PUSHBUTTON      "&Edit",IDC_TOOLS_EDITBUTTON,228,156,48,18
-    PUSHBUTTON      "&Remove",IDC_TOOLS_REMOVEBUTTON,90,156,48,18
+    PUSHBUTTON      "&Add",IDC_TOOLS_ADDBUTTON,108,156,48,18
+    PUSHBUTTON      "&Edit",IDC_TOOLS_EDITBUTTON,162,156,48,18
+    PUSHBUTTON      "&Remove",IDC_TOOLS_REMOVEBUTTON,228,156,48,18
     PUSHBUTTON      "",IDC_TOOLS_MOVEUPBUTTON,282,54,12,12
     PUSHBUTTON      "",IDC_TOOLS_MOVEDOWNBUTTON,282,138,12,12
     LTEXT           "In many cases it may be useful to set up external tools such as compilers or syntax checkers. You can set these tools up here.",
@@ -831,6 +831,24 @@ BEGIN
     LTEXT           "Default Line Endings:",IDC_STATIC,6,90,72,12
     COMBOBOX        IDC_OPT_LECOMBO,78,90,102,66,CBS_DROPDOWNLIST | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_PAGE_SMARTSTART DIALOGEX 0, 0, 299, 168
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "SmartStart attempts to automatically select a scheme for a new file when you start typing. It does this by matching the first few characters you type to a set of start phrases. These can be edited on this page.",
+                    IDC_STATIC,36,6,258,24
+    ICON            IDR_MDICHILD,IDC_STATIC,6,6,20,20
+    CONTROL         "",IDC_SMARTSTART_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | 
+                    WS_BORDER | WS_TABSTOP,0,36,294,96
+    PUSHBUTTON      "&Remove",IDC_SMARTSTART_REMOVEBUTTON,246,138,48,18,
+                    WS_DISABLED
+    PUSHBUTTON      "&Edit",IDC_SMARTSTART_EDITBUTTON,180,138,48,18,
+                    WS_DISABLED
+    PUSHBUTTON      "&Add",IDC_SMARTSTART_ADDBUTTON,126,138,48,18,
+                    WS_DISABLED
 END
 
 
@@ -913,6 +931,14 @@ BEGIN
     END
 
     IDD_PAGE_GENERAL, DIALOG
+    BEGIN
+        LEFTMARGIN, 2
+        RIGHTMARGIN, 296
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 166
+    END
+
+    IDD_PAGE_SMARTSTART, DIALOG
     BEGIN
         LEFTMARGIN, 2
         RIGHTMARGIN, 296

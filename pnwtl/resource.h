@@ -77,6 +77,7 @@
 #define IDD_TAB_KEYWORDS                425
 #define IDD_PAGE_TOOLS                  426
 #define IDD_PAGE_GENERAL                427
+#define IDD_PAGE_SMARTSTART             428
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_GOTOEDIT                    1004
@@ -90,6 +91,8 @@
 #define IDC_STYLE_FOREBUTTON            1010
 #define IDC_TOOLS_ADDBUTTON             1010
 #define IDC_TE_COMMANDBUTTON            1010
+#define IDC_SMARTSTART_REMOVE           1010
+#define IDC_SMARTSTART_REMOVEBUTTON     1010
 #define IDC_EDIT1                       1011
 #define IDC_KEYWORDS_KEYWORDTEXT        1011
 #define IDC_TOOLS_EDITBUTTON            1011
@@ -116,13 +119,16 @@
 #define IDC_KEYWORDS_RESETBUTTON        1033
 #define IDC_TOOLS_MOVEUPBUTTON          1033
 #define IDC_TE_CLEARBUTTON              1033
+#define IDC_SMARTSTART_EDITBUTTON       1033
 #define IDC_KEYWORDS_SORTBUTTON         1034
 #define IDC_TOOLS_MOVEDOWNBUTTON        1034
+#define IDC_SMARTSTART_ADDBUTTON        1034
 #define IDC_STYLE_RESETBTN              1036
 #define IDC_STYLE_RESETALLBTN           1037
 #define IDC_LIST1                       1039
 #define IDC_KEYWORDS_LIST               1039
 #define IDC_LIST                        1039
+#define IDC_SMARTSTART_LIST             1039
 #define IDC_TE_CMDEDIT                  1040
 #define IDC_TE_FOLDEREDIT               1041
 #define IDC_REPLACETEXT_LABEL           1042

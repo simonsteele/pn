@@ -40,6 +40,7 @@ void COptionsManager::Load()
 	TabWidth = reg.ReadInt(_T("TabWidth"), 4);
 	UseTabs = reg.ReadBool(_T("UseTabs"), true);
 	LineNumbers = reg.ReadBool(_T("LineNumbers"), false);
+	AlreadyOpenAction = (EAlreadyOpenAction)reg.ReadInt(_T("AlreadyOpenAction"), eSwitch);
 
 	// Find and Replace Settings ------------
 
@@ -70,6 +71,7 @@ void COptionsManager::Save()
 	reg.WriteInt(_T("TabWidth"), TabWidth);
 	reg.WriteBool(_T("UseTabs"), UseTabs);
 	reg.WriteBool(_T("LineNumbers"), LineNumbers);
+	reg.WriteInt(_T("AlreadyOpenAction"), AlreadyOpenAction);
 	
 	//cs = root + _T("Interface Settings");
 	//reg.OpenKey(cs, true);
