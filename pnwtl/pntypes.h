@@ -53,7 +53,7 @@ typedef struct tagSearchOptions : tagFindOptions
 	// Find In Files
 	CString	FileExts;
 	CString Path;
-	bool MatchCase;
+	//bool MatchCase;
 	bool Recurse;
 } SearchOptions;
 

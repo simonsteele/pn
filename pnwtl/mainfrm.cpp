@@ -932,26 +932,38 @@ LRESULT CMainFrame::OnEscapePressed(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	return FALSE;
 }
 
-LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 {
 	bool bHaveLine = false;
 	bool bHaveCol = false;
 	bool bHaveScheme = false;
 	int iLine = 0, iCol = 0;
 	CScheme* pScheme = NULL;
+	
+	if(parameters.size() < 1)
+		return;
 
-	int lastArg = __argc - 1;
+	// Store the last position in the list...
+	std::list<tstring>::iterator iLast = parameters.end();
+	iLast--;
 
-	// Process cmdline params... __argv and __argc in VC++
-	for(int i = 1; i < __argc; i++)
+	for(std::list<tstring>::iterator i = parameters.begin();
+		i != parameters.end();
+		++i)
 	{
-		LPCTSTR parm = __argv[i];
+		if((*i).length() < 1)
+			continue;
+
+		LPCTSTR parm = (*i).c_str();//__argv[i];
+
 		if(parm[0] == _T('/') || parm[0] == _T('-'))
 		{
 			// special params, check there's another parameter for these ones...
-			if(i < lastArg)
+			if(i != iLast)
 			{
-				LPCTSTR nextArg = __argv[i+1];
+				std::list<tstring>::iterator next = i;
+				next++;
+				LPCTSTR nextArg = (*next).c_str();
 
 				if(_tcsicmp(&parm[1], _T("l")) == 0 || _tcsicmp(&parm[1], _T("-line")) == 0)
 				{
@@ -981,7 +993,13 @@ LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 		}
 		else
 		{
-			openFileCheckType(__argv[i]);
+			if(CheckAlreadyOpen( parm ))
+			{
+				bHaveCol = bHaveLine = bHaveScheme = false;
+				continue;
+			}
+			
+			openFileCheckType(parm);
 			CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
 			if(pChild)
 			{
@@ -1004,6 +1022,27 @@ LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 
 		bHaveCol = bHaveLine = bHaveScheme = false;
 	}
+}
+
+LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	bool bHaveLine = false;
+	bool bHaveCol = false;
+	bool bHaveScheme = false;
+	int iLine = 0, iCol = 0;
+	CScheme* pScheme = NULL;
+
+	int lastArg = __argc - 1;
+
+	std::list<tstring> params;
+
+	// Process cmdline params... __argv and __argc in VC++
+	for(int i = 1; i < __argc; i++)
+	{
+		params.insert(params.end(), tstring(__argv[i]));
+	}
+
+	handleCommandLine(params);
 
 	HWND hWndEditor = GetCurrentEditor();
 	if(hWndEditor == NULL)
@@ -1066,21 +1105,7 @@ LRESULT CMainFrame::OnMultiInstanceMsg(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
 		std::list<tstring> parameters;
 		g_Context.m_miManager->GetParameters(parameters, lParam);
 
-		for(std::list<tstring>::iterator i = parameters.begin();
-			i != parameters.end();
-			++i)
-		{
-			TCHAR ch = (*i)[0];
-			if( ch == _T('/') || ch == _T('-') )
-			{
-				// handle special param...
-			}
-			else
-			{
-				if( !CheckAlreadyOpen( (*i).c_str() ) )
-					openFileCheckType( (*i).c_str() );
-			}
-		}
+		handleCommandLine(parameters);
 	}
 
 	if(IsIconic())

@@ -351,6 +351,8 @@ protected:
 
 	void openFileCheckType(LPCTSTR filename);
 
+	void handleCommandLine(std::list<tstring>& parameters);
+
 protected:
 	inline CPNDockingWindow* getDocker(EDocker window) const;
 
