@@ -32,97 +32,137 @@
 			string struct switch this throw true try typeof uint ulong
 			unchecked unsafe ushort using virtual void while
 		</keyword-class>
+		<keyword-class name="java">
+			abstract assert boolean break byte case catch char class const
+			continue default do double else extends final finally float for future
+			generic goto if implements import inner instanceof int interface long
+			native new null operator outer package private protected public rest
+			return short static super switch synchronized this throw throws
+			transient try var void volatile while
+		</keyword-class>
+		<keyword-class name="idl">
+			aggregatable allocate appobject arrays async async_uuid
+			auto_handle
+			bindable boolean broadcast byte byte_count
+			call_as callback char coclass code comm_status
+			const context_handle context_handle_noserialize
+			context_handle_serialize control cpp_quote custom
+			decode default defaultbind defaultcollelem
+			defaultvalue defaultvtable dispinterface displaybind dllname
+			double dual
+			enable_allocate encode endpoint entry enum error_status_t
+			explicit_handle
+			fault_status first_is float
+			handle_t heap helpcontext helpfile helpstring
+			helpstringcontext helpstringdll hidden hyper
+			id idempotent ignore iid_as iid_is immediatebind implicit_handle
+			import importlib in include in_line int __int64 __int3264 interface
+			last_is lcid length_is library licensed local long
+			max_is maybe message methods midl_pragma
+			midl_user_allocate midl_user_free min_is module ms_union
+			ncacn_at_dsp ncacn_dnet_nsp ncacn_http ncacn_ip_tcp
+			ncacn_nb_ipx ncacn_nb_nb ncacn_nb_tcp ncacn_np
+			ncacn_spx ncacn_vns_spp ncadg_ip_udp ncadg_ipx ncadg_mq
+			ncalrpc nocode nonbrowsable noncreatable nonextensible notify
+			object odl oleautomation optimize optional out out_of_line
+			pipe pointer_default pragma properties propget propput propputref
+			ptr public
+			range readonly ref represent_as requestedit restricted retval
+			shape short signed size_is small source strict_context_handle
+			string struct switch switch_is switch_type
+			transmit_as typedef
+			uidefault union unique unsigned user_marshal usesgetlasterror uuid
+			v1_enum vararg version void wchar_t wire_marshal
+		</keyword-class>
 	</keyword-classes>
-	<language name="cpp" title="C / C++" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+	
+	<!-- base scheme for C++ style languages -->
+	<base-language name="cppbase">
+		<lexer name="cpp" />
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="Whitespace" key="0" />
+			<style name="Comment" key="1" class="commentbox"/>
+			<style name="Comment Line" key="2" class="commentline"/>
+			
+			<style name="Number" key="4" fore="colour.number"/>
+			<style name="Keyword" key="5" class="keyword"/>
+			<style name="String" key="6" fore="colour.string"/>
+			<style name="Character" key="7" fore="colour.char"/>
+			
+			<style name="Operator" key="10" bold="true"/>
+			<style name="Identifier" key="11" />
+			<style name="End of line string" key="12" fore="000000" font="font.monospace" back="e0c0e0" eolfilled="true"/>
+			
+			<style name="Brace Match" key="34" fore="0000ee" bold="true"/>
+			<style name="Brace Mismatch" key="35" fore="ee0000" bold="true"/>
+		</use-styles>
+	</base-language>
+	
+	<language base="cppbase" name="cpp" title="C / C++" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
 		<lexer name="cpp" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="cpp"/>
 			<keyword key="2" name="Doxygen Keywords" class="doxygen"/>
 		</use-keywords>
 		<use-styles>
-			<style name="Default" key="32" />
-			<style name="Whitespace" key="0" />
-			<style name="Comment" key="1" class="commentbox"/>
-			<style name="Comment Line" key="2" class="commentline"/>
 			<style name="Doc Comments" key="3" class="commentdoc"/>
-			<style name="Number" key="4" fore="colour.number"/>
-			<style name="Keyword" key="5" class="keyword"/>
-			<style name="String" key="6" fore="colour.string"/>
-			<style name="Character" key="7" fore="colour.char"/>
 			<style name="UUID" key="8" fore="804080"/>
 			<style name="Preprocessor" key="9" class="preprocessor"/>
-			<style name="Operator" key="10" bold="true"/>
-			<style name="Identifier" key="11" />
-			<style name="End of line string" key="12" fore="000000" font="font.monospace" back="e0c0e0" eolfilled="true"/>
 			<style name="Verbatim" key="13" fore="007f00" font="font.monospace" back="e0ffe0" eolfilled="true"/>
 			<style name="RegEx" key="14" fore="3f7f3f" font="font.monospace" back="e0f0ff" eolfilled="true"/>
 			<style name="Comment Line Doc" key="15" class="commentdoc"/>
 			<style name="Keywords 2" key="16" fore="b00040"/>
 			<style name="Comment Doc Keyword" key="17" class="commentdoc" fore="3060a0"/>
 			<style name="Unknown Comment Doc Keyword" key="18" class="commentdoc" fore="804020"/>
-			<style name="Brace Match" key="34" fore="0000ee" bold="true"/>
-			<style name="Brace Mismatch" key="35" fore="ee0000" bold="true"/>
 		</use-styles>
 	</language>
+	
+	<language base="cppbase" name="idl" title="IDL" folding="true">
+		<use-keywords>
+			<keyword key="0" name="Keywords" />
+		</use-keywords>
+	</language>
 
-	<language name="javascript" title="JavaScript" folding="true" foldcomments="true" foldcompact="true">
-		<lexer name="cpp" />
+	<language base="cppbase" name="javascript" title="JavaScript" folding="true" foldcomments="true" foldcompact="true">
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="javascript"/>
 		</use-keywords>
-		<use-styles>
-			<style name="Default" key="32" />
-			<style name="Whitespace" key="0" />
-			<style name="Comment" key="1" class="commentbox"/>
-			<style name="Comment Line" key="2" class="commentline"/>
-			<style name="Number" key="4" fore="colour.number"/>
-			<style name="Keyword" key="5" class="keyword"/>
-			<style name="String" key="6" fore="colour.string"/>
-			<style name="Character" key="7" fore="colour.char"/>
-			<style name="Operator" key="10" bold="true"/>
-			<style name="Identifier" key="11" />
-			<style name="End of line string" key="12" fore="000000" font="font.monospace" back="e0c0e0" eolfilled="true"/>
-			<!-- Unused cpp keywords: ???
-			<style name="Doc Comments" key="3" class="commentdoc"/>
-			<style name="UUID" key="8" fore="804080"/>
-			<style name="Preprocessor" key="9" class="preprocessor"/>
-			<style name="Verbatim" key="13" fore="007f00" font="font.monospace" back="e0ffe0" eolfilled="true"/>
-			<style name="RegEx" key="14" fore="3f7f3f" font="font.monospace" back="e0f0ff" eolfilled="true"/>
-			<style name="Comment Line Doc" key="15" class="commentdoc"/>
-			<style name="Keywords 2" key="16" fore="b00040"/>
-			<style name="Comment Doc Keyword" key="17" class="commentdoc" fore="3060a0"/>
-			<style name="Unknown Comment Doc Keyword" key="18" class="commentdoc" fore="804020"/>
-			-->
-		</use-styles>
 	</language>
 
-	<language name="csharp" title="C#" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
-		<lexer name="cpp" />
+	<language base="cppbase" name="csharp" title="C#" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="csharp"/>
 		</use-keywords>
 		<use-styles>
-			<style name="Default" key="32" />
-			<style name="Whitespace" key="0" />
-			<style name="Comment" key="1" class="commentbox"/>
-			<style name="Comment Line" key="2" class="commentline"/>
 			<style name="Doc Comments" key="3" class="commentdoc"/>
-			<style name="Number" key="4" fore="colour.number"/>
-			<style name="Keyword" key="5" class="keyword"/>
-			<style name="String" key="6" fore="colour.string"/>
-			<style name="Character" key="7" fore="colour.char"/>
 			<style name="UUID" key="8" fore="804080"/>
 			<style name="Preprocessor" key="9" class="preprocessor"/>
-			<style name="Operator" key="10" bold="true"/>
-			<style name="Identifier" key="11" />
-			<style name="End of line string" key="12" fore="000000" font="font.monospace" back="e0c0e0" eolfilled="true"/>
 			<style name="Verbatim" key="13" fore="007f00" font="font.monospace" back="e0ffe0" eolfilled="true"/>
 			<style name="RegEx" key="14" fore="3f7f3f" font="font.monospace" back="e0f0ff" eolfilled="true"/>
 			<style name="Comment Line Doc" key="15" class="commentdoc"/>
 			<style name="Keywords 2" key="16" fore="b00040"/>
-			<!--
-			<style name="Comment Doc Keyword" key="17" class="commentdoc" fore="3060a0"/>
+			
+			<!--<style name="Comment Doc Keyword" key="17" class="commentdoc" fore="3060a0"/>
 			<style name="Unknown Comment Doc Keyword" key="18" class="commentdoc" fore="804020"/>-->
+		</use-styles>
+	</language>
+	
+	<language base="cppbase" name="java" title="Java" folding="true" foldcomments="true" foldcompact="true">
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="java"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Doc Comments" key="3" class="commentdoc"/>
+			<style name="UUID" key="8" fore="804080"/>
+			<style name="Comment Line Doc" key="15" class="commentdoc"/>
+			<style name="Keywords 2" key="16" fore="b00040"/>
+			<style name="Comment Doc Keyword" key="17" class="commentdoc" fore="3060a0"/>
+			<style name="Unknown Comment Doc Keyword" key="18" class="commentdoc" fore="804020"/>
+			
+			<!--<style name="Preprocessor" key="9" class="preprocessor"/>
+			<style name="Verbatim" key="13" fore="007f00" font="font.monospace" back="e0ffe0" eolfilled="true"/>
+			<style name="RegEx" key="14" fore="3f7f3f" font="font.monospace" back="e0f0ff" eolfilled="true"/>-->
 		</use-styles>
 	</language>
 </Scheme>
