@@ -833,22 +833,29 @@ BEGIN
                     WS_VSCROLL | WS_TABSTOP
 END
 
-IDD_PAGE_SMARTSTART DIALOGEX 0, 0, 299, 168
+IDD_PAGE_NEWFILES DIALOGEX 0, 0, 299, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    LTEXT           "SmartStart attempts to automatically select a scheme for a new file when you start typing. It does this by matching the first few characters you type to a set of start phrases. These can be edited on this page.",
-                    IDC_STATIC,36,6,258,24
-    ICON            IDR_MDICHILD,IDC_STATIC,6,6,20,20
+    LTEXT           "SmartStart attempts to automatically select a scheme for a new file when you start typing. It does this by matching the first few characters you type to a set of start phrases. Edit the start phrases here:",
+                    IDC_STATIC,1,60,294,24
     CONTROL         "",IDC_SMARTSTART_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | 
-                    WS_BORDER | WS_TABSTOP,0,36,294,96
-    PUSHBUTTON      "&Remove",IDC_SMARTSTART_REMOVEBUTTON,246,138,48,18,
+                    WS_BORDER | WS_TABSTOP,0,90,294,84
+    PUSHBUTTON      "&Remove",IDC_SMARTSTART_REMOVEBUTTON,246,180,48,18,
                     WS_DISABLED
-    PUSHBUTTON      "&Edit",IDC_SMARTSTART_EDITBUTTON,180,138,48,18,
+    PUSHBUTTON      "&Edit",IDC_SMARTSTART_EDITBUTTON,180,180,48,18,
                     WS_DISABLED
-    PUSHBUTTON      "&Add",IDC_SMARTSTART_ADDBUTTON,126,138,48,18,
+    PUSHBUTTON      "&Add",IDC_SMARTSTART_ADDBUTTON,126,180,48,18,
                     WS_DISABLED
+    COMBOBOX        IDC_NEW_SCHEMECOMBO,72,30,144,12,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    RTEXT           "New File Scheme:",IDC_STATIC,0,30,66,12
+    LTEXT           "When you press the new button, PN can automatically select a default scheme for you. Choose this scheme here:",
+                    IDC_STATIC,36,6,258,18
+    ICON            IDR_MDICHILD,IDC_STATIC,6,6,20,20
+    CONTROL         "Enable SmartStart",IDC_SMARTSTART_ENABLECHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,0,180,120,12
 END
 
 
@@ -938,12 +945,12 @@ BEGIN
         BOTTOMMARGIN, 166
     END
 
-    IDD_PAGE_SMARTSTART, DIALOG
+    IDD_PAGE_NEWFILES, DIALOG
     BEGIN
         LEFTMARGIN, 2
         RIGHTMARGIN, 296
         TOPMARGIN, 3
-        BOTTOMMARGIN, 166
+        BOTTOMMARGIN, 198
     END
 END
 #endif    // APSTUDIO_INVOKED

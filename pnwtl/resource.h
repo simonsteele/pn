@@ -78,6 +78,7 @@
 #define IDD_PAGE_TOOLS                  426
 #define IDD_PAGE_GENERAL                427
 #define IDD_PAGE_SMARTSTART             428
+#define IDD_PAGE_NEWFILES               428
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_GOTOEDIT                    1004
@@ -144,8 +145,10 @@
 #define IDC_OPT_USETABSCHECK            1049
 #define IDC_CHECK1                      1051
 #define IDC_OPT_LINENOSCHECK            1051
+#define IDC_SMARTSTART_ENABLECHECK      1051
 #define IDC_TE_SAVEALLCHECK             1052
 #define IDC_COMBO1                      1053
+#define IDC_NEW_SCHEMECOMBO             1053
 #define IDC_OPT_LECOMBO                 1054
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_PNSAVE_TYPECOMBO            1057

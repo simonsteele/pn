@@ -419,12 +419,14 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 		CInfoLabel m_infolabel;
 };
 
-class COptionsPageSmartStart : public COptionsPageImpl<COptionsPageSmartStart>
+class COptionsPageNewFiles : public COptionsPageImpl<COptionsPageNewFiles>
 {
 	public:
-		enum {IDD = IDD_PAGE_SMARTSTART};
+		COptionsPageNewFiles(SchemeConfigParser* pSchemes);
 
-		BEGIN_MSG_MAP(COptionsPageSmartStart)
+		enum {IDD = IDD_PAGE_NEWFILES};
+
+		BEGIN_MSG_MAP(COptionsPageNewFiles)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			//COMMAND_HANDLER(IDC_SCHEMECOMBO, CBN_SELCHANGE, OnComboChange)
 			COMMAND_HANDLER(IDC_SMARTSTART_EDITBUTTON, BN_CLICKED, OnEditClicked)
@@ -451,7 +453,9 @@ class COptionsPageSmartStart : public COptionsPageImpl<COptionsPageSmartStart>
 
 		void AddItem(LPCTSTR key, LPCTSTR schemetitle);
 
-		CListViewCtrl	m_list;
+		CListViewCtrl		m_list;
+		SchemeConfigParser*	m_pSchemes;
+		CComboBox			m_combo;
 };
 
 #endif

@@ -545,7 +545,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	
 	COptionsPageStyle		page(&schemeconfig);
 	COptionsPageSchemes		page2(&schemeconfig);
-	COptionsPageSmartStart	page3;
+	COptionsPageNewFiles	page3(&schemeconfig);
 	COptionsPageTools		page4(&schemeconfig);
 
 	schemeconfig.LoadConfig(pSM->GetPath(), pSM->GetCompiledPath());

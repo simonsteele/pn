@@ -1426,12 +1426,17 @@ void CToolEditorDialog::SetTitle(LPCTSTR title)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// COptionsPageSmartStart
+// COptionsPageNewFiles
 //////////////////////////////////////////////////////////////////////////////
 
 #include "smartstart.h"
 
-void COptionsPageSmartStart::AddItem(LPCTSTR key, LPCTSTR schemetitle)
+COptionsPageNewFiles::COptionsPageNewFiles(SchemeConfigParser* pSchemes)
+{
+	m_pSchemes = pSchemes;
+}
+
+void COptionsPageNewFiles::AddItem(LPCTSTR key, LPCTSTR schemetitle)
 {
 	LVITEM lvi;
 
@@ -1452,8 +1457,23 @@ void COptionsPageSmartStart::AddItem(LPCTSTR key, LPCTSTR schemetitle)
 	m_list.SetItem(&lvi);
 }
 
-void COptionsPageSmartStart::OnInitialise()
+void COptionsPageNewFiles::OnInitialise()
 {
+	// Populate and initialise schemes combo.
+	int index = m_combo.AddString(_T("Plain Text"));
+	m_combo.SetItemDataPtr(index, NULL);
+	for(SCF_IT i = m_pSchemes->GetSchemes().begin(); i != m_pSchemes->GetSchemes().end(); ++i)
+	{
+		index = m_combo.AddString((*i)->m_Title);
+		m_combo.SetItemDataPtr(index, (*i));
+	}
+	
+	if(m_combo.GetCount() > 0)
+	{
+		m_combo.SetCurSel(0);
+	}
+
+	// Populate SmartStart list.
 	STRING_MAP& smap = SmartStart::GetInstance()->GetMap();
 	
 	for(SM_IT i = smap.begin(); i != smap.end(); ++i)
@@ -1466,17 +1486,17 @@ void COptionsPageSmartStart::OnInitialise()
 	}
 }
 
-void COptionsPageSmartStart::OnOK()
+void COptionsPageNewFiles::OnOK()
 {
 
 }
 
-LPCTSTR COptionsPageSmartStart::GetTreePosition()
+LPCTSTR COptionsPageNewFiles::GetTreePosition()
 {
-	return _T("SmartStart");
+	return _T("New Files");
 }
 
-LRESULT COptionsPageSmartStart::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT COptionsPageNewFiles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	m_list.Attach(GetDlgItem(IDC_SMARTSTART_LIST));
 	CRect rc;
@@ -1484,40 +1504,42 @@ LRESULT COptionsPageSmartStart::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, L
 	m_list.InsertColumn(0, _T("Starting Phrase"), LVCFMT_LEFT, (rc.Width() / 3) * 2, 0);
 	m_list.InsertColumn(1, _T("Scheme"), LVCFMT_LEFT, (rc.Width() / 3) - 20, 0);
 
+	m_combo.Attach(GetDlgItem(IDC_NEW_SCHEMECOMBO));
+
 	return 0;
 }
 
-LRESULT COptionsPageSmartStart::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT COptionsPageNewFiles::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 
 	return 0;
 }
 
-LRESULT COptionsPageSmartStart::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT COptionsPageNewFiles::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 
 	return 0;
 }
 
-LRESULT COptionsPageSmartStart::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT COptionsPageNewFiles::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 
 	return 0;
 }
 
-LRESULT COptionsPageSmartStart::OnListKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+LRESULT COptionsPageNewFiles::OnListKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 
 	return 0;
 }
 
-LRESULT COptionsPageSmartStart::OnListClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+LRESULT COptionsPageNewFiles::OnListClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 
 	return 0;
 }
 
-LRESULT COptionsPageSmartStart::OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+LRESULT COptionsPageNewFiles::OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 
 	return 0;

@@ -201,6 +201,7 @@ void CScintilla::DefineNumberedBookmarks(int base, bool SetDefaultColours)
 #ifdef SCINTILLA_PIXMAPS
 	for(int i = 0; i < 10; i++)
 	{
+		m_numberedBookmarks[i] = -1;
 		SPerform(SCI_MARKERDEFINEPIXMAP, base + i, (LPARAM)scpixmap_bookmarks[i]);
 	}
 #else
