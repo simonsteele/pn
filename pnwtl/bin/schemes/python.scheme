@@ -9,6 +9,7 @@
 	</keyword-classes>
 	<language name="python" title="Python" folding="true" foldcomments="true" foldcompact="false">
 		<lexer name="python" />
+		<property name="tab.timmy.whinge.level" value="1"/>
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="python"/>
 		</use-keywords>

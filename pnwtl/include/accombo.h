@@ -258,7 +258,9 @@ public:
 			else if(i < 0)
 				InsertString(0, text);
 			SetCurSel(0);
-			m_pAC->AddItem(text);
+
+			if(m_pAC)
+				m_pAC->AddItem(text);
 		}
 	}
 
