@@ -2,7 +2,7 @@
  * @file tools.h
  * @brief External tools code
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -88,6 +88,17 @@ class GlobalTools : public SchemeTools
 		void WriteDefinition(ToolsXMLWriter& writer, ToolSource* source);
 };
 
+class ProjectTools : public SchemeTools
+{
+	public:
+		ProjectTools(LPCTSTR id);
+
+		void WriteDefinition(ToolsXMLWriter& writer, ToolSource* source);
+	
+	protected:
+		tstring	m_ProjectID;
+};
+
 /**
  * @brief Class can be used both standalone and as a singleton.
  */
@@ -102,6 +113,7 @@ class SchemeToolsManager :
 		SchemeTools* GetGlobalTools();
 
 		SchemeTools* GetToolsFor(LPCTSTR scheme);
+		ProjectTools* GetToolsForProject(LPCTSTR id);
 		//int GetMenuFor(LPCTSTR scheme, CSMenuHandle& menu, int iInsertBefore);
 
 		void ReLoad(bool bWantMenuResources = false);
@@ -119,6 +131,7 @@ class SchemeToolsManager :
 		// Scheme & Tool Creation
 		void processScheme(XMLAttributes& atts);
 		void processGlobal(XMLAttributes& atts);
+		void processProject(XMLAttributes& atts);
 		void processTool(XMLAttributes& atts);
 
 		// XML Parsing
@@ -130,11 +143,14 @@ class SchemeToolsManager :
 		typedef std::map<tstring, SchemeTools*> SCHEMETOOLS_MAP;
 		typedef std::list<ToolSource*> SOURCES_LIST;
 
+		SchemeTools* find(LPCTSTR id, SCHEMETOOLS_MAP& col);
+
 		ToolSource		m_DefaultToolsSource;
 		SchemeTools*	m_pCur;
 		GlobalTools*	m_pGlobalTools;
 		ToolSource*		m_pCurSource;
 		SCHEMETOOLS_MAP m_toolSets;
+		SCHEMETOOLS_MAP	m_projectTools;
 		SOURCES_LIST	m_toolSources;
 };
 

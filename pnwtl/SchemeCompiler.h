@@ -242,6 +242,7 @@ class SchemeParser
 		virtual void onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom) = 0;
 		virtual void onFile(LPCTSTR filename) = 0;
 		virtual void onColours(const EditorColours* colours) = 0;
+		virtual void onError(XMLParserException& ex) = 0;
 };
 
 /**
@@ -269,6 +270,7 @@ class SchemeCompiler : public SchemeParser
 		virtual void onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom);
 		virtual void onLexer(LPCTSTR name, int styleBits);
 		virtual void onColours(const EditorColours* colours);
+		virtual void onError(XMLParserException& ex);
 };
 
 #endif //#ifndef schemecompiler_h__included

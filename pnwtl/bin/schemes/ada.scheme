@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="ada">
+		abort abs accept access all and array at begin
+		body case constant declare delay delta digits do
+		else elsif end entry exception exit for function
+		generic goto if in is limited loop mod new
+		not null of or others out package pragma private
+		procedure raise range record rem renames return
+		reverse select separate subtype tagged task
+		terminate then
+		type until use when while with xor
+		</keyword-class>
+		
+		<keyword-class name="gpr">
+		project export
+		</keyword-class>
+	</keyword-classes>
+
+	<language name="ada" title="Ada" folding="false">
+		<lexer name="ada" />
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="ada"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="Whitespace" key="0" />
+			<style name="Keyword" key="1" class="keyword" />
+			<style name="Identifier" key="2" />
+			<style name="Number" key="3" class="number"/>
+			<style name="Operator" key="4" class="operator"/>
+			<style name="Character" key="5" fore="colour.char"/>
+			<style name="Un-Closed Character" key="6" back="e0c0e0" eolfilled="true"/>
+			<style name="String" key="7" class="string"/>
+			<style name="Un-Closed String" key="8" back="e0c0e0" eolfilled="true"/>
+			<style name="Label" key="9" fore="7f0000"/>
+			<style name="Comment" key="10" class="commentline"/>
+			<style name="Illegal Token" key="11" fore="ff0000"/>
+			<!--<style name="Class Definition Words" key="16" class="keyword"/>-->
+		</use-styles>
+	</language>
+</Scheme>

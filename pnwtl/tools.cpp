@@ -2,7 +2,7 @@
  * @file tools.cpp
  * @brief External tools code
  * @author Simon Steele
- * @note Copyright (c) 2002-2004 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -71,6 +71,17 @@ public:
 		pop();
 	}
 
+	void beginProject(LPCTSTR id)
+	{
+		genxStartElement(m_eProject);
+		genxAddAttribute(m_aPID, u(id));
+	}
+
+	void endProject()
+	{
+		pop();
+	}
+
 protected:
 	virtual void initXmlBits()
 	{
@@ -78,6 +89,7 @@ protected:
 
 		m_eScheme = genxDeclareElement(m_writer, NULL, u("scheme"), &s);
 		m_eTool = genxDeclareElement(m_writer, NULL, u("tool"), &s);
+		m_eProject = genxDeclareElement(m_writer, NULL, u("project"), &s);
 
 		PREDECLARE_ATTRIBUTES()
 			ATT("name", m_aName);
@@ -88,12 +100,14 @@ protected:
 			ATT("parsepattern", m_aParsePattern);
 			ATT("flags", m_aFlags);
 			ATT("index", m_aIndex);
+			ATT("projectid", m_aPID);
 		END_ATTRIBUTES();
 	}
 
 protected:
 	genxElement m_eScheme;
 	genxElement m_eTool;
+	genxElement m_eProject;
 	genxAttribute m_aName;
 	genxAttribute m_aCommand;
 	genxAttribute m_aFolder;
@@ -102,6 +116,7 @@ protected:
 	genxAttribute m_aParsePattern;
 	genxAttribute m_aFlags;
 	genxAttribute m_aIndex;
+	genxAttribute m_aPID;
 };
 
 #include <sstream>
@@ -350,6 +365,25 @@ void GlobalTools::WriteDefinition(ToolsXMLWriter& writer, ToolSource* source)
 }
 
 //////////////////////////////////////////////////////////////////////////////
+// ProjectTools
+//////////////////////////////////////////////////////////////////////////////
+
+ProjectTools::ProjectTools(LPCTSTR id)
+{
+	m_ProjectID = id;
+}
+
+void ProjectTools::WriteDefinition(ToolsXMLWriter& writer, ToolSource* source)
+{
+	if(ToolsInSource(source))
+	{
+		writer.beginProject(m_ProjectID.c_str());
+		InternalWriteDefinition(writer, source);
+		writer.endProject();
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////
 // CToolCommandString
 //////////////////////////////////////////////////////////////////////////////
 
@@ -545,34 +579,44 @@ SchemeTools* SchemeToolsManager::GetGlobalTools()
 
 SchemeTools* SchemeToolsManager::GetToolsFor(LPCTSTR scheme)
 {
-	tstring stofind(scheme);
-	SCHEMETOOLS_MAP::iterator i = m_toolSets.find(stofind);
+	SchemeTools* tools = find(scheme, m_toolSets);
+	if(!tools)
+	{
+		tstring sid(scheme);
+		tools = new SchemeTools(scheme);
+		m_toolSets.insert(SCHEMETOOLS_MAP::value_type(sid, tools));
+	}
+
+	return tools;
+}
+
+ProjectTools* SchemeToolsManager::GetToolsForProject(LPCTSTR id)
+{
+	ProjectTools* tools = static_cast<ProjectTools*>( find(id, m_projectTools) );
+	if(!tools)
+	{
+		tstring sid(id);
+		tools = new ProjectTools(id);
+		m_projectTools.insert(SCHEMETOOLS_MAP::value_type(sid, tools));
+	}
+
+	return tools;
+}
+
+SchemeTools* SchemeToolsManager::find(LPCTSTR id, SCHEMETOOLS_MAP& col)
+{
+	tstring stofind(id);
+	SCHEMETOOLS_MAP::iterator i = col.find(id);
 	
 	SchemeTools* pRet = NULL;
 
-	if(i != m_toolSets.end())
+	if(i != col.end())
 	{
 		pRet = (*i).second;
-	}
-	else
-	{
-		pRet = new SchemeTools(stofind.c_str());
-		m_toolSets.insert(SCHEMETOOLS_MAP::value_type(stofind, pRet));
 	}
 
 	return pRet;
 }
-
-/*int SchemeToolsManager::GetMenuFor(LPCTSTR scheme, CSMenuHandle& menu, int iInsertAfter)
-{
-	SchemeTools* pTools = GetToolsFor(scheme);
-	if(pTools)
-	{
-		return pTools->GetMenu(menu, iInsertAfter);
-	}
-	
-	return iInsertAfter;
-}*/
 
 int SchemeToolsManager::UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, int iDummyID, LPCSTR schemename)
 {
@@ -762,6 +806,11 @@ void SchemeToolsManager::Save()
 			{
 				(*j).second->WriteDefinition(writer, (*i));
 			}
+
+			for(SCHEMETOOLS_MAP::const_iterator k = m_projectTools.begin(); k != m_toolSets.end(); ++k)
+			{
+				(*k).second->WriteDefinition(writer, (*i));
+			}
 			
 			writer.endSchemeTools();
 			writer.Close();
@@ -776,15 +825,20 @@ void SchemeToolsManager::processScheme(XMLAttributes& atts)
 	{
 		// Only ever one SchemeTools object per named scheme, independent of source files.
 		SchemeTools* old = GetToolsFor(schemename);
-		if(old)
-			m_pCur = old;
-		else
-		{
-			m_pCur = new SchemeTools(schemename);
+		PNASSERT(old != NULL);
+		m_pCur = old;
+	}
+}
 
-			tstring stoadd(schemename);
-			m_toolSets.insert(SCHEMETOOLS_MAP::value_type(stoadd, m_pCur));
-		}
+void SchemeToolsManager::processProject(XMLAttributes& atts)
+{
+	LPCTSTR projectid = atts.getValue(_T("projectid"));
+	if(projectid)
+	{
+		// Only ever one SchemeTools object per named scheme, independent of source files.
+		ProjectTools* old = GetToolsForProject(projectid);
+		PNASSERT(old != NULL);
+		m_pCur = old;
 	}
 }
 
@@ -842,6 +896,10 @@ void SchemeToolsManager::startElement(LPCTSTR name, XMLAttributes& atts)
 	{
 		processGlobal(atts);
 	}
+	else if(_tcscmp(name, _T("project")) == 0)
+	{
+		processProject(atts);
+	}
 	else if(_tcscmp(name, _T("tool")) == 0)
 	{
 		processTool(atts);
@@ -855,7 +913,7 @@ bool CompareToolDefinitions(ToolDefinition* t1, ToolDefinition* t2)
 
 void SchemeToolsManager::endElement(LPCTSTR name)
 {
-	if(_tcscmp(name, _T("scheme")) == 0 || _tcscmp(name, _T("global")) == 0)
+	if(_tcscmp(name, _T("scheme")) == 0 || _tcscmp(name, _T("global")) == 0 || _tcscmp(name, _T("project")) == 0)
 	{
 		if(m_pCur != NULL)
 			m_pCur->GetTools().sort(CompareToolDefinitions);

@@ -994,13 +994,11 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 		}
 		else
 		{
-			if(CheckAlreadyOpen( parm ))
+			if(!CheckAlreadyOpen( parm ))
 			{
-				bHaveCol = bHaveLine = bHaveScheme = false;
-				continue;
+				openFileCheckType(parm);
 			}
 			
-			openFileCheckType(parm);
 			CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
 			if(pChild)
 			{

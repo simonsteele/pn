@@ -562,6 +562,12 @@ void SchemeCompiler::onColours(const EditorColours* colours)
 	colours->SendColours(&m_Recorder);
 }
 
+void SchemeCompiler::onError(XMLParserException& ex)
+{
+	if (m_Recorder.IsRecording())
+		m_Recorder.EndRecording();
+}
+
 ////////////////////////////////////////////////////////////
 // SchemeParser Implementation
 ////////////////////////////////////////////////////////////
@@ -604,6 +610,8 @@ void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
 				E.GetMessage(), E.GetFileName(), E.GetLine(), E.GetColumn());
 			
 			OutputDebugString(err);
+
+			onError(E);
 		}
 		catch (XMLParserException& E)
 		{
@@ -612,9 +620,10 @@ void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
 				XML_ErrorString(E.GetErrorCode()), E.GetFileName(), E.GetLine(), E.GetColumn());
 			
 			OutputDebugString(err);
+
+			onError(E);
 		}
 
-		
 		parser.Reset();
 	}
 }
