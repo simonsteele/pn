@@ -4,22 +4,23 @@ PN is attempting to keep to a minimum of one release every two months.
 The planned feature-implementation schedule can be seen below. This will
 be modified as and when I see fit - so don't bet money on it or anything.
 
-last updated: 30/07/2003
+last updated: 04/10/2003
 
 0.5 Mingus
 ==========
 
 Tab order management.
 Basic Project Management - file grouping etc.
-Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
 Menu to choose file encoding type (currently PN just preserves the original type).
-[In-Progress - Bjoern Graf] Find & Replace actual combo-box entries (not just auto-complete).
+[Implemented - Bjoern Graf] Find & Replace actual combo-box entries (not just auto-complete).
 [Implemented] Combo-box toolbar for scheme selection.
 Better printing - margins, header and footer.
-Export types other than RTF.
+HTML Export.
 Header switch as a generic feature.
+Start help file.
 
 0.6 Ella
 ========
 
+Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
 Basic Build Management - see http://www.pnotepad.org/articles/pn2projects.html

@@ -214,16 +214,36 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 
 BOOL CMainFrame::OnIdle()
 {
-	UIUpdateToolBar();
-
 	// Because it's complicated to handle the case directly when a docking window
 	// is closed by the user by clicking on its X button, we do it in OnIdle() - a bit
 	// messy but hey!
 	if(m_pOutputWnd != NULL)
 		UISetCheck(ID_EDITOR_OUTPUTWND, m_pOutputWnd->IsWindowVisible());
+	if(m_pProjectsWnd != NULL)
+		UISetCheck(ID_VIEW_WINDOWS_PROJECT, m_pProjectsWnd->IsWindowVisible());
+	if(m_pClipsWnd != NULL)
+		UISetCheck(ID_VIEW_WINDOWS_TEXTCLIPS, m_pClipsWnd->IsWindowVisible());
 
 	HWND hWnd = MDIGetActive();
 	m_SchemeCombo.EnableWindow( hWnd != NULL );
+
+	bool bChild = false;
+	bool bCanSave = false;
+
+	if(hWnd != NULL)
+	{
+		CChildFrame* pChild = CChildFrame::FromHandle(hWnd);
+		if(pChild != NULL)
+		{
+			bChild = true;
+			bCanSave = pChild->GetModified();
+		}
+	}
+	
+	UIEnable(ID_FILE_CLOSE, bChild);
+	UIEnable(ID_FILE_SAVE, bCanSave);
+
+	UIUpdateToolBar();
 
 	return FALSE;
 }
@@ -496,6 +516,8 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	UIAddToolBar(hWndSchemeToolBar);
 	UISetCheck(ID_VIEW_TOOLBAR, 1);
 	UISetCheck(ID_VIEW_TOOLBAR_EDIT, 1);
+	UISetCheck(ID_VIEW_TOOLBARS_FIND, 1);
+	UISetCheck(ID_VIEW_TOOLBARS_SCHEMES, 1);
 	UISetCheck(ID_VIEW_STATUS_BAR, 1);
 
 	InitializeDockingFrame();
@@ -769,6 +791,7 @@ LRESULT CMainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	rebar.ShowBand(nBandIndex, bVisible);
 	UISetCheck(ID_VIEW_TOOLBAR, bVisible);
 	UpdateLayout();
+
 	return 0;
 }
 
@@ -781,6 +804,33 @@ LRESULT CMainFrame::OnViewEditBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	rebar.ShowBand(index, bVisible);
 	UISetCheck(ID_VIEW_TOOLBAR_EDIT, bVisible);
 	UpdateLayout();
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnViewSchemesBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	static BOOL bVisible = TRUE; // initially visible
+	bVisible = !bVisible;
+	CReBarCtrl rebar = m_hWndToolBar;
+	int index = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 3);
+	rebar.ShowBand(index, bVisible);
+	UISetCheck(ID_VIEW_TOOLBARS_FIND, bVisible);
+	UpdateLayout();
+	
+	return 0;
+}
+
+LRESULT CMainFrame::OnViewFindBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	static BOOL bVisible = TRUE; // initially visible
+	bVisible = !bVisible;
+	CReBarCtrl rebar = m_hWndToolBar;
+	int index = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 4);
+	rebar.ShowBand(index, bVisible);
+	UISetCheck(ID_VIEW_TOOLBARS_FIND, bVisible);
+	UpdateLayout();
+
 	return 0;
 }
 

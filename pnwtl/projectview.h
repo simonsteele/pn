@@ -30,6 +30,7 @@ public:
 		COMMAND_ID_HANDLER(ID_PROJECT_ADDFOLDER, OnAddFolder)
 		COMMAND_ID_HANDLER(ID_PROJECT_OPENALLFILES, OnOpenAll)
 		COMMAND_ID_HANDLER(ID_PROJECT_REMOVE, OnRemove)
+		COMMAND_ID_HANDLER(ID_PROJECT_DELETE, OnDelete)
 	END_MSG_MAP()
 
 	Projects::File* GetSelectedFile();
@@ -55,6 +56,7 @@ protected:
 	LRESULT OnAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnOpenAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 protected:
 	HTREEITEM				hLastItem;

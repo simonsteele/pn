@@ -456,6 +456,34 @@ LRESULT CProjectTreeCtrl::OnRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	return 0;
 }
 
+LRESULT CProjectTreeCtrl::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(lastItem == NULL)
+		return 0;
+
+	switch(lastItem->GetType())
+	{
+		case ptFile:
+		{
+			File* pF = static_cast<File*>(lastItem);
+			Projects::Folder* pFolder = pF->GetFolder();
+			tstring filename = pF->GetFileName();
+			tstring askstr = "Are you sure you wish to delete:\n" + filename;
+			if( ::MessageBox(m_hWnd, askstr.c_str(), "Delete File", MB_YESNO | MB_ICONQUESTION) == IDYES )
+			{
+				if(::DeleteFile(filename.c_str()) != 0)
+				{
+					pFolder->RemoveFile(pF);
+					DeleteItem(hLastItem);
+				}
+			}
+		}
+		break;
+	}
+
+	return 0;
+}
+
 HTREEITEM CProjectTreeCtrl::AddFileNode(File* file, HTREEITEM hParent, HTREEITEM hInsertAfter)
 {
 	HTREEITEM hFile = InsertItem( file->GetDisplayName(), 0, 0, hParent, hInsertAfter );

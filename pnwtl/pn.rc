@@ -91,6 +91,8 @@ BEGIN
         BEGIN
             MENUITEM "&Standard",                   ID_VIEW_TOOLBAR
             MENUITEM "&Edit",                       238
+            MENUITEM "&Find",                       302
+            MENUITEM "&Schemes",                    ID_VIEW_TOOLBARS_SCHEMES
         END
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM SEPARATOR
@@ -108,7 +110,7 @@ BEGIN
         MENUITEM "Report a &bug...",            253
         MENUITEM "Request a &feature...",       ID_HELP_WEB_SR
         MENUITEM SEPARATOR
-        MENUITEM "&About pn...",                ID_APP_ABOUT
+        MENUITEM "&About Programmers Notepad...", ID_APP_ABOUT
     END
 END
 
@@ -162,6 +164,14 @@ BEGIN
         BEGIN
             MENUITEM "&Standard",                   ID_VIEW_TOOLBAR
             MENUITEM "&Edit",                       ID_VIEW_TOOLBAR_EDIT
+            MENUITEM "&Find",                       ID_VIEW_TOOLBARS_FIND
+            MENUITEM "&Schemes",                    303
+        END
+        POPUP "&Windows"
+        BEGIN
+            MENUITEM "&Project",                    ID_VIEW_WINDOWS_PROJECT
+            MENUITEM "&Text Clips",                 ID_VIEW_WINDOWS_TEXTCLIPS
+
         END
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM SEPARATOR
@@ -218,7 +228,7 @@ BEGIN
         MENUITEM "Report a &bug...",            253
         MENUITEM "Request a &feature...",       ID_HELP_WEB_SR
         MENUITEM SEPARATOR
-        MENUITEM "&About pn...",                ID_APP_ABOUT
+        MENUITEM "&About Programmers Notepad...", ID_APP_ABOUT
     END
 END
 
@@ -652,6 +662,8 @@ BEGIN
     BEGIN
         MENUITEM "&Add Files",                  288
         MENUITEM "&Add Folder",                 ID_PROJECT_ADDFOLDER
+        MENUITEM SEPARATOR
+        MENUITEM "&Open All Files",             299
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     286
     END

@@ -116,6 +116,11 @@
 #define IDI_ICON2                       300
 #define IDI_PROJECTS                    300
 #define ID_FILE_CLOSEWORKSPACE          301
+#define ID_VIEW_TOOLBARS_FIND           302
+#define ID_VIEW_TOOLBARS_SCHEMES        303
+#define ID_VIEW_WINDOWS                 304
+#define ID_VIEW_WINDOWS_PROJECT         305
+#define ID_VIEW_WINDOWS_TEXTCLIPS       306
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -274,7 +279,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        302
+#define _APS_NEXT_RESOURCE_VALUE        307
 #define _APS_NEXT_COMMAND_VALUE         32877
 #define _APS_NEXT_CONTROL_VALUE         1070
 #define _APS_NEXT_SYMED_VALUE           104

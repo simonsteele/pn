@@ -14,6 +14,7 @@ What's new?
 6) Visual Help options (highlight current line, long line help).
 7) Sanitise file names from output window to better find files.
 8) Text clips browser.
+9) Projects/Workspaces.
 
 Bug Fixes:
 ----------
@@ -21,6 +22,8 @@ Bug Fixes:
 1) Show Full Path turns off after a revert. (SF Bug #773608)
 2) Stop Tools doesn't work. (SF Bug #773294)
 3) If you don't update a file when it's changed on disk it is marked as changed.
+4) Maximized window state not saved. (SF Bug #770302)
+5) Mixed path styles now sanitised in output window. (SF Bug #797397)
 
 If you find a bug:
 ------------------
@@ -28,6 +31,8 @@ There are quite possibly bugs with these features (or others),
 please let us know if you find any. You can help by providing 
 us with a copy of the file(s):
 %appdata%\Echo Software\PN2\User*.xml
+e.g.
+C:\Documents and Settings\Simon\Application Data\Echo Software\PN2\User*.xml
 
 E-mail: ss@pnotepad.org with your reports, or use the handy 
 "Report a Bug" option on the Help menu to add it straight to the
@@ -42,10 +47,9 @@ Known things:
 Please don't moan about the following, they are all quite obvious to us already:
 
 1) Missing schemes from pn1.
-2) No project management.
-3) Toolbars aren't dockable.
-4) You can't turn the tabs off.
-5) PN needs a "Monospaced Font" mode.
+2) Toolbars aren't dockable.
+3) You can't turn the tabs off.
+4) PN needs a "Monospaced Font" mode.
 
 So what is good?
 ----------------
@@ -63,3 +67,5 @@ So what is good?
 11) Word-wrap.
 12) Schemes configuration.
 13) Tools with output capturing, running in a separate thread. Much better than PN1.
+14) Smart-Start.
+15) Projects much more powerful - more like those in Visual Studio.
