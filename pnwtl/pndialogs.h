@@ -323,6 +323,8 @@ class CStylesTabPage : public CPropertyPageImpl<CStylesTabPage>
 			COMMAND_HANDLER(IDC_STYLE_UNDERLINECHECK, BN_CLICKED, OnUnderlineClicked)
 			COMMAND_HANDLER(IDC_STYLE_FONTCOMBO, CBN_SELCHANGE, OnFontChanged)
 			COMMAND_HANDLER(IDC_STYLE_SIZECOMBO, CBN_SELCHANGE, OnSizeChanged)
+			COMMAND_HANDLER(IDC_STYLE_RESETBTN, BN_CLICKED, OnResetClicked)
+			COMMAND_HANDLER(IDC_STYLE_RESETALLBTN, BN_CLICKED, OnResetAllClicked)
 			NOTIFY_HANDLER(IDC_STYLE_FOREBUTTON, CPN_SELCHANGE, OnForeChanged)
 			NOTIFY_HANDLER(IDC_STYLE_BACKBUTTON, CPN_SELCHANGE, OnBackChanged)
 			NOTIFY_HANDLER(IDC_STYLES_TREE, TVN_SELCHANGED, OnTreeSelChanged)
@@ -344,7 +346,12 @@ class CStylesTabPage : public CPropertyPageImpl<CStylesTabPage>
 		LRESULT OnItalicClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnUnderlineClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnEOLFilledClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+		LRESULT OnResetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnResetAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		
 		void AddFontSize(int size, LPCTSTR sizestr);
+		void UpdateSel();
 		void SetItem();
 
 	protected:
@@ -364,6 +371,8 @@ class CStylesTabPage : public CPropertyPageImpl<CStylesTabPage>
 		CButton			m_italic;
 		CButton			m_underline;
 		CButton			m_eolfilled;
+
+		bool			m_bChanging;
 };
 
 class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
@@ -379,11 +388,14 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 
-		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		virtual void OnInitialise();
 		virtual void OnOK();
 		virtual LPCTSTR GetTreePosition();
-		LRESULT OnComboChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
+	protected:
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		LRESULT OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		void Update();
 
 	protected:
 		CComboBox			m_combo;

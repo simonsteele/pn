@@ -12,11 +12,7 @@ CustomStyleCollection::CustomStyleCollection()
 
 CustomStyleCollection::~CustomStyleCollection()
 {
-	for(SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
-	{
-		delete (*i);
-	}
-	m_Styles.clear();
+	RemoveAll();
 
 	if(m_pNext)
 		delete m_pNext;
@@ -65,6 +61,23 @@ StyleDetails* CustomStyleCollection::FindStyle(int key)
 	}
 	
 	return pS;
+}
+
+void CustomStyleCollection::RemoveStyle(int key)
+{
+	StyleDetails* pS = GetStyle(key);
+	if(pS)
+		m_Styles.remove(pS);
+	delete pS;
+}
+
+void CustomStyleCollection::RemoveAll()
+{
+	for(SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
+	{
+		delete (*i);
+	}
+	m_Styles.clear();
 }
 
 void CustomStyleCollection::SetName(LPCTSTR name)

@@ -478,10 +478,13 @@ void CStyleDisplay::UpdateFont()
 CStylesTabPage::CStylesTabPage()
 {
 	m_pStyle = NULL;
+	m_bChanging = false;
 }
 
 void CStylesTabPage::SetScheme(SchemeConfig* pScheme)
 {
+	m_bChanging = true;
+	m_pStyle = NULL;
 	m_pScheme = pScheme;
 
 	m_tree.DeleteAllItems();
@@ -508,6 +511,8 @@ void CStylesTabPage::SetScheme(SchemeConfig* pScheme)
 	}
 
 	m_tree.EnsureVisible(m_tree.GetRootItem());
+
+	m_bChanging = false;
 }
 
 void CStylesTabPage::Finalise()
@@ -594,51 +599,59 @@ LRESULT CStylesTabPage::OnSizeChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 LRESULT CStylesTabPage::OnTreeSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-	SetItem();
+	UpdateSel();
 
-	HTREEITEM item = m_tree.GetSelectedItem();
+	return 0;
+}
 
-	if(item)
+void CStylesTabPage::UpdateSel()
+{
+	if(!m_bChanging)
 	{
-		if(m_tree.GetChildItem(item) == NULL)
-		{
-			StyleDetails* pS = reinterpret_cast<StyleDetails*>(m_tree.GetItemData(item));
-			if(pS)
-			{
-				StyleDetails* existing = m_pScheme->m_customs.GetStyle(pS->Key);
-				if(existing)
-					m_Style = *existing;
-				else
-                    m_Style = *pS;
-				
-				m_pStyle = pS;
-				m_sd.SetStyle(m_Style.FontName.c_str(), m_Style.FontSize, m_Style.ForeColor, m_Style.BackColor, m_Style.name.c_str(), m_Style.Bold, m_Style.Italic, m_Style.Underline);
-				m_bold.SetCheck(m_Style.Bold ? BST_CHECKED : BST_UNCHECKED);
-				m_italic.SetCheck(m_Style.Italic ? BST_CHECKED : BST_UNCHECKED);
-				m_underline.SetCheck(m_Style.Underline ? BST_CHECKED : BST_UNCHECKED);
-				m_eolfilled.SetCheck(m_Style.EOLFilled ? BST_CHECKED : BST_UNCHECKED);
-				m_fore.SetColor(m_Style.ForeColor);
-				m_back.SetColor(m_Style.BackColor);
+		SetItem();
 
-				m_FontCombo.SelectString(0, m_Style.FontName.c_str());
-				TCHAR buf[10];
-				_itot(m_Style.FontSize, buf, 10);
-				if (m_SizeCombo.SelectString(0, buf) == CB_ERR)
+		HTREEITEM item = m_tree.GetSelectedItem();
+
+		if(item)
+		{
+			if(m_tree.GetChildItem(item) == NULL)
+			{
+				StyleDetails* pS = reinterpret_cast<StyleDetails*>(m_tree.GetItemData(item));
+				if(pS)
 				{
-					int idx = m_SizeCombo.AddString(buf);
-					m_SizeCombo.SetCurSel(idx);
+					StyleDetails* existing = m_pScheme->m_customs.GetStyle(pS->Key);
+					if(existing)
+						m_Style = *existing;
+					else
+						m_Style = *pS;
+					
+					m_pStyle = pS;
+					m_sd.SetStyle(m_Style.FontName.c_str(), m_Style.FontSize, m_Style.ForeColor, m_Style.BackColor, m_Style.name.c_str(), m_Style.Bold, m_Style.Italic, m_Style.Underline);
+					m_bold.SetCheck(m_Style.Bold ? BST_CHECKED : BST_UNCHECKED);
+					m_italic.SetCheck(m_Style.Italic ? BST_CHECKED : BST_UNCHECKED);
+					m_underline.SetCheck(m_Style.Underline ? BST_CHECKED : BST_UNCHECKED);
+					m_eolfilled.SetCheck(m_Style.EOLFilled ? BST_CHECKED : BST_UNCHECKED);
+					m_fore.SetColor(m_Style.ForeColor);
+					m_back.SetColor(m_Style.BackColor);
+
+					m_FontCombo.SelectString(0, m_Style.FontName.c_str());
+					TCHAR buf[10];
+					_itot(m_Style.FontSize, buf, 10);
+					if (m_SizeCombo.SelectString(0, buf) == CB_ERR)
+					{
+						int idx = m_SizeCombo.AddString(buf);
+						m_SizeCombo.SetCurSel(idx);
+					}
 				}
+			}
+			else
+			{
+				///@todo Disable everything
 			}
 		}
 		else
-		{
-			///@todo Disable everything
-		}
+			m_pStyle = NULL;
 	}
-	else
-		m_pStyle = NULL;
-
-	return 0;
 }
 
 LRESULT CStylesTabPage::OnBoldClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -713,6 +726,35 @@ void CStylesTabPage::SetItem()
 			}
 		}
 	}
+}
+
+LRESULT CStylesTabPage::OnResetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(m_pScheme)
+	{
+		if(m_pStyle)
+		{
+			m_pScheme->m_customs.RemoveStyle(m_pStyle->Key);
+			m_pStyle = NULL;
+		}
+	
+		UpdateSel();
+	}
+
+	return 0;
+}
+
+LRESULT CStylesTabPage::OnResetAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(m_pScheme)
+	{
+		m_pStyle = NULL;
+		m_pScheme->m_customs.RemoveAll();
+
+		UpdateSel();
+	}
+	
+	return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -812,6 +854,12 @@ void COptionsPageSchemes::OnInitialise()
 		int index = m_combo.AddString((*i)->m_Title);
 		m_combo.SetItemDataPtr(index, (*i));
 	}
+	
+	if(m_combo.GetCount() > 0)
+	{
+		m_combo.SetCurSel(0);
+		Update();
+	}
 }
 
 void COptionsPageSchemes::OnOK()
@@ -825,10 +873,15 @@ LPCTSTR COptionsPageSchemes::GetTreePosition()
 	return _T("Style\\Schemes");
 }
 
-LRESULT COptionsPageSchemes::OnComboChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT COptionsPageSchemes::OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	Update();
+	return 0;
+}
+
+void COptionsPageSchemes::Update()
 {
 	int i = m_combo.GetCurSel();
 	SchemeConfig* pScheme = static_cast<SchemeConfig*>(m_combo.GetItemDataPtr(i));
 	m_stylestab.SetScheme(pScheme);
-	return 0;
 }

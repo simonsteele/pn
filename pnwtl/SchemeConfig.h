@@ -12,6 +12,8 @@ class CustomStyleCollection
 		~CustomStyleCollection();
 
 		virtual void AddStyle(StyleDetails* pStyle);
+		void RemoveStyle(int key);
+		void RemoveAll();
 
 		CustomStyleCollection* GetNext();
 		void SetNext(CustomStyleCollection* pNext);

@@ -87,6 +87,9 @@
 #define IDC_STYLE_SIZECOMBO             1032
 #define IDC_BUTTON2                     1033
 #define IDC_STYLE_BACKBUTTON            1033
+#define IDC_STYLE_RESET                 1036
+#define IDC_STYLE_RESETBTN              1036
+#define IDC_STYLE_RESETALLBTN           1037
 #define IDC_REPLACETEXT_LABEL           1042
 #define IDC_BACKSLASH_CHECK             1043
 #define IDC_PNSAVE_SAVEASSTATIC         1056
@@ -133,7 +136,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        252
 #define _APS_NEXT_COMMAND_VALUE         32790
-#define _APS_NEXT_CONTROL_VALUE         1036
+#define _APS_NEXT_CONTROL_VALUE         1038
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif
