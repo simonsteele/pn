@@ -14,7 +14,7 @@
 #include "pcreplus.h"
 
 #ifdef PCRE_STATIC
-	#pragma comment(lib, "lib/libpcre.lib") 
+	#pragma comment(lib, "libpcre.lib") 
 	#pragma message("Automatically linking with libpcre.lib")
 #endif
 
