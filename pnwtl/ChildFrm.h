@@ -38,6 +38,10 @@ typedef enum {EP_LINE, EP_COL} EGPType;
 class COutputView;
 class ToolRunner;
 
+#define CHAIN_OUTPUT_COMMANDS() \
+	if(uMsg == WM_COMMAND && m_hWndOutput != NULL) \
+		::SendMessage(m_hWndOutput, uMsg, wParam, lParam);
+
 class CChildFrame : public CTabbedMDIChildWindowImpl<CChildFrame>, 
 	public CFromHandle<CChildFrame>, public CSMenuEventHandler
 {
@@ -104,7 +108,8 @@ public:
 		
 		// Chaining
 		CHAIN_MSG_MAP(baseClass)
-		CHAIN_CLIENT_COMMANDS ()
+		CHAIN_CLIENT_COMMANDS()
+		CHAIN_OUTPUT_COMMANDS()
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
 
@@ -257,13 +262,14 @@ protected:
 	BOOL OnEscapePressed();
 
 protected:
+	HWND				m_hWndOutput;
 	HIMAGELIST			m_hImgList;
 	CTextView			m_view;
 	CString				m_Title;
 	CString				m_FileName;
 	long				m_FileAge;
 	
-	int					iFirstToolCmd;
+	int					m_iFirstToolCmd;
 
 	CRITICAL_SECTION	m_crRunningTools;
 	ToolRunner*			m_pFirstTool;

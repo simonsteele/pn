@@ -24,6 +24,7 @@ typedef std::list<SToolDefinition*> TOOLDEFS_LIST;
 class SchemeTools
 {
 	public:
+		SchemeTools(){}
 		SchemeTools(LPCTSTR schemename);
 		~SchemeTools();
 
@@ -39,10 +40,18 @@ class SchemeTools
 
 	protected:
 		void			BuildMenu(int iCommand);
+		void			InternalWriteDefinition(ofstream& stream);
 		
 		TOOLDEFS_LIST	m_Tools;
 		tstring			m_Scheme;
 		CSPopupMenu		m_Menu;
+};
+
+class GlobalTools : public SchemeTools
+{
+	public:
+		//GlobalTools();
+		void WriteDefinition(ofstream& stream);
 };
 
 /**
@@ -54,17 +63,22 @@ class SchemeToolsManager : public Singleton<SchemeToolsManager>, public XMLParse
 		SchemeToolsManager();
 		~SchemeToolsManager();
 
+		SchemeTools* GetGlobalTools();
+
 		SchemeTools* GetToolsFor(LPCTSTR scheme);
 		int GetMenuFor(LPCTSTR scheme, CSMenuHandle& menu, int iInsertBefore);
 
 		void ReLoad(bool bWantMenuResources = false);
 		void Save();
 
+		int UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, int iDummyID, LPCSTR schemename);
+
 	protected:
 		void Clear(bool bWantMenuResources = false);
 
 		// Scheme & Tool Creation
 		void processScheme(XMLAttributes& atts);
+		void processGlobal(XMLAttributes& atts);
 		void processTool(XMLAttributes& atts);
 
 		// XML Parsing
@@ -76,6 +90,7 @@ class SchemeToolsManager : public Singleton<SchemeToolsManager>, public XMLParse
 		typedef std::map<tstring, SchemeTools*> SCHEMETOOLS_MAP;
 
 		SchemeTools*	m_pCur;
+		GlobalTools*	m_pGlobalTools;
 		SCHEMETOOLS_MAP m_toolSets;
 };
 

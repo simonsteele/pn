@@ -47,8 +47,6 @@ CChildFrame* CMainFrame::NewEditor()
 
 	pChild->CreateEx(m_hWndMDIClient);
 
-	//pChild->m_onClose = new CallbackClassPtr<CMainFrame, CChildFrame*, bool>(*this, OnEditorClosing);
-
 	return pChild;
 }
 
@@ -378,7 +376,9 @@ LRESULT CMainFrame::OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 LRESULT CMainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	NewEditor();
+	CChildFrame* pChild = NewEditor();
+	pChild->SetScheme(CSchemeManager::GetInstance()->GetDefaultScheme());
+	
 	return 0;
 }
 

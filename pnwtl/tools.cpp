@@ -109,21 +109,42 @@ void SchemeTools::WriteDefinition(ofstream& stream)
 	{
 		stream << "\t<scheme name=\"" << m_Scheme << "\">\n";
 		
-		for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
-		{
-			int flags = 0;
-			flags |= ((*i)->bCaptureOutput ? TOOL_CAPTURE : 0);
-			flags |= ((*i)->bIsFilter ? TOOL_ISFILTER : 0);
-			stream << "\t\t<tool name=\"" << FormatXML((*i)->Name) << "\" ";
-			stream << "command=\"" << FormatXML((*i)->Command) << "\" ";
-			stream << "folder=\"" << FormatXML((*i)->Folder) << "\" ";
-			stream << "params=\"" << FormatXML((*i)->Params) << "\" ";
-			stream << "shortcut=\"" << FormatXML((*i)->Shortcut) << "\" ";
-			stream << "flags=\"" << flags << "\" ";
-			stream << "/>\n";
-		}
+		InternalWriteDefinition(stream);	
 
 		stream << "\t</scheme>\n";
+	}
+}
+
+void SchemeTools::InternalWriteDefinition(ofstream& stream)
+{
+	for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
+	{
+		int flags = 0;
+		flags |= ((*i)->bCaptureOutput ? TOOL_CAPTURE : 0);
+		flags |= ((*i)->bIsFilter ? TOOL_ISFILTER : 0);
+		stream << "\t\t<tool name=\"" << FormatXML((*i)->Name) << "\" ";
+		stream << "command=\"" << FormatXML((*i)->Command) << "\" ";
+		stream << "folder=\"" << FormatXML((*i)->Folder) << "\" ";
+		stream << "params=\"" << FormatXML((*i)->Params) << "\" ";
+		stream << "shortcut=\"" << FormatXML((*i)->Shortcut) << "\" ";
+		stream << "flags=\"" << flags << "\" ";
+		stream << "/>\n";
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// GlobalTools
+//////////////////////////////////////////////////////////////////////////////
+
+void GlobalTools::WriteDefinition(ofstream& stream)
+{
+	if(m_Tools.size() != 0)
+	{
+		stream << "\t<global>\n";
+		
+		InternalWriteDefinition(stream);	
+
+		stream << "\t</global>\n";
 	}
 }
 
@@ -136,6 +157,7 @@ SchemeToolsManager* SchemeToolsManager::s_pTheInstance = NULL;
 SchemeToolsManager::SchemeToolsManager()
 {
 	m_pCur = NULL;
+	m_pGlobalTools = NULL;
 
 	ReLoad();
 }
@@ -155,6 +177,22 @@ void SchemeToolsManager::Clear(bool bWantMenuResources)
 	}
 
 	m_toolSets.clear();
+
+	if(m_pGlobalTools)
+	{
+		if(bWantMenuResources)
+			m_pGlobalTools->ReleaseMenuResources();
+		delete m_pGlobalTools;
+		m_pGlobalTools = NULL;
+	}
+}
+
+SchemeTools* SchemeToolsManager::GetGlobalTools()
+{
+	if(!m_pGlobalTools)
+		m_pGlobalTools = new GlobalTools;
+
+	return m_pGlobalTools;
 }
 
 SchemeTools* SchemeToolsManager::GetToolsFor(LPCTSTR scheme)
@@ -186,6 +224,49 @@ int SchemeToolsManager::GetMenuFor(LPCTSTR scheme, CSMenuHandle& menu, int iInse
 	}
 	
 	return iInsertAfter;
+}
+
+int SchemeToolsManager::UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, int iDummyID, LPCSTR schemename)
+{
+	HMENU m = tools;
+	
+	//First we ensure there's a marker item...
+	if(iFirstToolCmd != iDummyID)
+	{
+		bool bDeleting = false;
+		int iCount = tools.GetCount();
+		int id;
+		for(int i = iCount - 1; i >= 0; i--)
+		{
+			id = ::GetMenuItemID(m, i);
+			if(id == iFirstToolCmd)
+			{
+				::InsertMenu(m, i+1, MF_BYPOSITION | MF_STRING, iDummyID, _T("Add Tools..."));
+				bDeleting = true;
+			}
+
+			if(bDeleting)
+			{
+				if(id == 0) // found separator
+					bDeleting = false;
+				else
+					::RemoveMenu(m, id, MF_BYCOMMAND);
+			}
+		}
+	}
+
+	if(m_pGlobalTools)
+		iFirstToolCmd = m_pGlobalTools->GetMenu(tools, iDummyID);
+	if(schemename)
+	{
+		int iNextFirst = GetMenuFor(schemename, tools, iDummyID);
+		iFirstToolCmd = (iNextFirst != iDummyID ? iNextFirst : iFirstToolCmd);
+	}
+	
+	if(iFirstToolCmd != iDummyID)
+		::RemoveMenu(m, iDummyID, MF_BYCOMMAND);
+
+	return iFirstToolCmd;
 }
 
 void SchemeToolsManager::ReLoad(bool bWantMenuResources)
@@ -225,6 +306,8 @@ void SchemeToolsManager::Save()
 	if(str.is_open())
 	{
 		str << "<?xml version=\"1.0\"?>\n<schemetools>";
+		if(m_pGlobalTools)
+			m_pGlobalTools->WriteDefinition(str);
 		for(SCHEMETOOLS_MAP::const_iterator i = m_toolSets.begin(); i != m_toolSets.end(); ++i)
 		{
 			(*i).second->WriteDefinition(str);
@@ -245,6 +328,12 @@ void SchemeToolsManager::processScheme(XMLAttributes& atts)
 		tstring stoadd(schemename);
 		m_toolSets.insert(SCHEMETOOLS_MAP::value_type(stoadd, m_pCur));
 	}
+}
+
+void SchemeToolsManager::processGlobal(XMLAttributes& atts)
+{
+	m_pGlobalTools = new GlobalTools;
+	m_pCur = m_pGlobalTools;
 }
 
 void SchemeToolsManager::processTool(XMLAttributes& atts)
@@ -291,6 +380,10 @@ void SchemeToolsManager::startElement(LPCTSTR name, XMLAttributes& atts)
 	{
 		processScheme(atts);
 	}
+	else if(_tcscmp(name, _T("global")) == 0)
+	{
+		processGlobal(atts);
+	}
 	else if(_tcscmp(name, _T("tool")) == 0)
 	{
 		processTool(atts);
@@ -299,7 +392,7 @@ void SchemeToolsManager::startElement(LPCTSTR name, XMLAttributes& atts)
 
 void SchemeToolsManager::endElement(LPCTSTR name)
 {
-	if(_tcscmp(name, _T("scheme")) == 0)
+	if(_tcscmp(name, _T("scheme")) == 0 || _tcscmp(name, _T("global")) == 0)
 		m_pCur = NULL;
 }
 

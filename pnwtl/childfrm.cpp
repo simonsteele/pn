@@ -24,7 +24,7 @@ CChildFrame::CChildFrame()
 {
 	::InitializeCriticalSection(&m_crRunningTools);
 
-//	m_onClose = NULL;
+	m_hWndOutput = NULL;
 	m_hImgList = NULL;
 	m_pSplitter = NULL;
 	m_pOutputView = NULL;
@@ -39,7 +39,7 @@ CChildFrame::CChildFrame()
 
 	InitUpdateUI();
 
-	iFirstToolCmd = ID_TOOLS_DUMMY;
+	m_iFirstToolCmd = ID_TOOLS_DUMMY;
 }
 
 CChildFrame::~CChildFrame()
@@ -51,9 +51,6 @@ CChildFrame::~CChildFrame()
 
 	if(m_hImgList)
 		::ImageList_Destroy(m_hImgList);
-
-	//if(m_onClose)
-	//	delete m_onClose;
 
 	if(m_pSplitter)
 		delete m_pSplitter;
@@ -193,6 +190,7 @@ void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 
 			m_pOutputView = new COutputView;
 			m_pOutputView->Create(m_hWnd, rc2, _T("Output"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
+			m_hWndOutput = m_pOutputView->m_hWnd;
 
 			m_pSplitter->Create(m_hWnd, rc, _T("Splitter"), 0, 0);
 			m_pSplitter->SetPanes((HWND)m_view, m_pOutputView->m_hWnd);
@@ -336,13 +334,6 @@ LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 		bHandled = TRUE;
 	}
-	
-	/*if(m_onClose)
-	{
-		// Ok, so maybe this OnClose handling should be moved into this class :(
-		if( ! (*m_onClose)((CChildFrame*)this) )
-			bHandled = TRUE; // cancel close.
-	}*/
 
 	return 0;
 }
@@ -843,40 +834,14 @@ void CChildFrame::SetScheme(CScheme* pScheme)
 
 void CChildFrame::UpdateTools(CScheme* pScheme)
 {
+	//m_iFirstToolCmd
+
 	CSMenuHandle menu(m_hMenu);
 	CSMenuHandle tools( menu.GetSubMenu(3) );
-	HMENU m = tools;
 	
-	//First we ensure there's a marker item...
-	if(iFirstToolCmd != ID_TOOLS_DUMMY)
-	{
-		bool bDeleting = false;
-		int iCount = tools.GetCount();
-		int id;
-		for(int i = iCount - 1; i >= 0; i--)
-		{
-			id = ::GetMenuItemID(m, i);
-			if(id == iFirstToolCmd)
-			{
-				::InsertMenu(m, i+1, MF_BYPOSITION | MF_STRING, ID_TOOLS_DUMMY, _T("Add Tools..."));
-				bDeleting = true;
-			}
-
-			if(bDeleting)
-			{
-				if(id == 0) // found separator
-					bDeleting = false;
-				else
-					::RemoveMenu(m, id, MF_BYCOMMAND);
-			}
-		}
-	}
-
-	if(pScheme)
- 		iFirstToolCmd = SchemeToolsManager::GetInstance()->GetMenuFor(pScheme->GetName(), tools, ID_TOOLS_DUMMY);
-
-	if(iFirstToolCmd != ID_TOOLS_DUMMY)
-		::RemoveMenu(m, ID_TOOLS_DUMMY, MF_BYCOMMAND);
+	m_iFirstToolCmd = SchemeToolsManager::GetInstance()->UpdateToolsMenu(
+		tools, m_iFirstToolCmd, ID_TOOLS_DUMMY, pScheme->GetName()
+	);
 }
 
 void CChildFrame::SchemeChanged(CScheme* pScheme)

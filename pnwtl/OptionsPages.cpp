@@ -955,6 +955,8 @@ LRESULT COptionsPageTools::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 void COptionsPageTools::OnInitialise()
 {
+	m_combo.AddString(_T("(None - Global Tools)"));
+	m_combo.SetItemDataPtr(0, NULL);
 	for(SCF_IT i = m_pSchemes->GetSchemes().begin(); i != m_pSchemes->GetSchemes().end(); ++i)
 	{
 		int index = m_combo.AddString((*i)->m_Title);
@@ -983,7 +985,16 @@ void COptionsPageTools::Update()
 	int iSel = m_combo.GetCurSel();
 	if (iSel != -1)
 	{
-		m_pScheme = reinterpret_cast<SchemeConfig*>(m_combo.GetItemData(iSel));
+		if(iSel != 0)
+		{
+			m_pScheme = reinterpret_cast<SchemeConfig*>(m_combo.GetItemData(iSel));
+		}
+		else
+		{
+			// Global Tools
+			m_pScheme = NULL;
+			m_pCurrent = m_toolstore.GetGlobalTools();
+		}
 	}
 	else
 		m_pScheme = NULL;
@@ -1018,12 +1029,12 @@ void COptionsPageTools::EnableButtons()
 	if(m_bChanging)
 		return;
 
-	bool bEnable = (m_pScheme != NULL);
+	bool bEnable = (m_pScheme != NULL || m_combo.GetCurSel() == 0);
 	int iSelIndex = m_list.GetSelectedIndex();
 
 	::EnableWindow(GetDlgItem(IDC_TOOLS_ADDBUTTON), bEnable);
 	
-	// A scheme, and a selected item...
+	// A scheme or global tools and a selected item...
 	bEnable = bEnable && (iSelIndex != -1);
 
 	::EnableWindow(GetDlgItem(IDC_TOOLS_REMOVEBUTTON), bEnable);
