@@ -898,6 +898,13 @@ BEGIN
     CONTROL         "Don't change the foreground.",IDC_STYLE_SELUSEFORE,
                     "Button",BS_AUTOCHECKBOX | BS_NOTIFY | WS_TABSTOP,58,46,
                     108,10
+    LTEXT           "Override Indentation:",IDC_STATIC,4,124,76,8
+    CONTROL         "No Override",IDC_TAB_NOORRADIO,"Button",
+                    BS_AUTORADIOBUTTON,24,136,53,10
+    CONTROL         "Use tabs",IDC_TAB_TABSRADIO,"Button",BS_AUTORADIOBUTTON,
+                    84,136,48,10
+    CONTROL         "Use Spaces",IDC_TAB_SPACESRADIO,"Button",
+                    BS_AUTORADIOBUTTON,144,136,60,10
 END
 
 IDD_PAGESETUP DIALOGEX 0, 0, 356, 196
@@ -1363,8 +1370,10 @@ BEGIN
     BEGIN
         LEFTMARGIN, 4
         RIGHTMARGIN, 290
+        VERTGUIDE, 24
         TOPMARGIN, 4
         BOTTOMMARGIN, 153
+        HORZGUIDE, 136
     END
 
     IDD_PAGE_AFILES, DIALOG

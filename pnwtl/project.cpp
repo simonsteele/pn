@@ -1204,6 +1204,8 @@ Projects::Project* Workspace::GetActiveProject()
 void Workspace::SetActiveProject(Projects::Project* project)
 {
 	activeProject = project;
+
+	Notify(pcActive, NULL, project);
 }
 
 void Workspace::Notify(PROJECT_CHANGE_TYPE changeType, Folder* changeContainer, ProjectType* changeItem)

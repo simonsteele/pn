@@ -253,10 +253,40 @@ bool CMainFrame::CloseAll()
 		return false;
 }
 
-void CMainFrame::OnSchemeNew(LPVOID data)
+bool CMainFrame::OnSchemeNew(LPVOID data)
 {	
 	CChildFrame* pChild = NewEditor();
 	pChild->SetScheme((CScheme*)data);
+
+	return true; // we handled it.
+}
+
+bool CMainFrame::OnRunTool(LPVOID pTool)
+{
+	ToolDefinition* pToolDef = static_cast<ToolDefinition*>(pTool);
+
+	// If there's an editor open, and the tool is not for a project,
+	// let the child frame handle it...
+	//@todo check if it's a project tool.
+	HWND curEditor = GetCurrentEditor();
+	if(curEditor != NULL && !pToolDef->IsProjectTool())
+		return false;
+
+	ToolWrapper* pWrapper = NULL;
+	if(	pToolDef->GlobalOutput() )
+	{
+		pWrapper = MakeGlobalOutputWrapper(pToolDef);
+	}
+	else
+	{
+		return false;
+	}
+
+	pWrapper->SetNotifyWindow(m_hWnd);
+
+	ToolOwner::GetInstance()->RunTool(pWrapper, this);
+
+	return true;
 }
 
 /**
@@ -282,6 +312,9 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 			return TRUE;
 
 		if(m_hGlobalToolAccel != 0 && ::TranslateAccelerator(m_hWnd, m_hGlobalToolAccel, pMsg))
+			return TRUE;
+
+		if(m_hProjAccel != 0 && ::TranslateAccelerator(m_hWnd, m_hProjAccel, pMsg))
 			return TRUE;
 	}
 
@@ -340,9 +373,21 @@ BOOL CMainFrame::OnIdle()
 	{
 		Projects::Workspace* pWorkspace = m_pProjectsWnd->GetWorkspace();
 		UIEnable(ID_FILE_CLOSEWORKSPACE, (pWorkspace != NULL));
+
+		/*if(pWorkspace)
+		{
+			setupToolsUI();
+		}*/
 	}
 
 	UIUpdateToolBar();
+
+	bool bToolsRunning = false;
+	if( ToolOwner::HasInstance() )
+		bToolsRunning = ToolOwner::GetInstance()->HaveRunningTools(this);
+
+	CSMenuHandle menu(m_hMenu);
+	menu.EnableMenuItem(ID_TOOLS_STOPTOOLS, bToolsRunning);
 
 	return FALSE;
 }
@@ -404,7 +449,16 @@ LRESULT CMainFrame::OnChildNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 	{
 		SetStatusText(NULL);
 	}
-			
+	
+	return TRUE;
+}
+
+LRESULT CMainFrame::OnProjectNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+{
+	bHandled = FALSE;
+
+	setupToolsUI();
+
 	return TRUE;
 }
 
@@ -878,7 +932,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	CreateDockingWindows();
 	InitGUIState();
 
-	setupToolsMenu();
+	setupToolsUI();
 
 	PostMessage(PN_INITIALISEFRAME);
 
@@ -1644,11 +1698,22 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 
 		m_RecentProjects.SetSize( OPTIONS->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4) );
 
-		setupToolsMenu();
+		setupToolsUI();
 
 		pSTM->GetGlobalTools()->AllocateMenuResources();
 		m_hGlobalToolAccel = pSTM->GetGlobalTools()->GetAcceleratorTable();
 	}
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnStopTools(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
+{
+	// Always pass this message on to children.
+	bHandled = FALSE;
+
+	// Don't need to wait, we'll assume the user is still using the app.
+	ToolOwner::GetInstance()->KillTools(false, this); 
 
 	return 0;
 }
@@ -1991,10 +2056,11 @@ void CMainFrame::AddMRUProjectsEntry(LPCTSTR lpszFile)
 	}
 }
 
-void CMainFrame::setupToolsMenu()
+void CMainFrame::setupToolsUI()
 {
 	CSMenuHandle menu(m_hMenu);
 	CSMenuHandle tools( menu.GetSubMenu(2) );
+	ToolsManager* pTM = ToolsManager::GetInstance();
 
 	tstring projid;
 
@@ -2012,9 +2078,17 @@ void CMainFrame::setupToolsMenu()
 		}
 	}
 	
-	m_iFirstToolCmd = ToolsManager::GetInstance()->UpdateToolsMenu(
+	m_iFirstToolCmd = pTM->UpdateToolsMenu(
 		tools, m_iFirstToolCmd, ID_TOOLS_DUMMY, NULL, projid.size() > 0 ? projid.c_str() : NULL
 	);
+
+	if(projid.size() > 0)
+	{
+		ProjectTools* pTools = pTM->GetToolsForProject(projid.c_str());
+		m_hProjAccel = pTools != NULL ? pTools->GetAcceleratorTable() : NULL;
+	}
+	else
+		m_hProjAccel = NULL;
 }
 
 /**

@@ -35,7 +35,7 @@ typedef std::list<File*>		FILE_LIST;
 typedef FILE_LIST::iterator		FILE_IT;
 
 typedef enum {ptFile, ptMagicFile, ptFolder, ptMagicFolder, ptProject, ptWorkspace} PROJECT_TYPE;
-typedef enum {pcAdd, pcRemove, pcEdit, pcClear, pcDirty, pcClean} PROJECT_CHANGE_TYPE;
+typedef enum {pcAdd, pcRemove, pcEdit, pcClear, pcDirty, pcClean, pcActive} PROJECT_CHANGE_TYPE;
 
 class FolderAdder;
 class MagicFolderAdder;

@@ -174,8 +174,7 @@ bool CSMenuManager::HandleCommand(int iID)
 		menu_event_handler* pRecord = (*i).second;
 		if(pRecord->pHandler)
 		{
-			pRecord->pHandler->SHandleMenuCommand(pRecord->iID, pRecord->data);
-			bHandled = true;
+			bHandled = pRecord->pHandler->SHandleMenuCommand(pRecord->iID, pRecord->data);
 		}
 	}
 
@@ -196,9 +195,7 @@ bool CSMenuManager::LocalHandleCommand(int iID, int iCommand, CSMenuEventHandler
 		menu_event_handler* pRecord = (*i).second;
 		if(pRecord->iID == iCommand)
 		{
-			pHandler->SHandleMenuCommand(pRecord->iID, pRecord->data);
-
-			bHandled = true;
+			bHandled = pHandler->SHandleMenuCommand(pRecord->iID, pRecord->data);
 		}
 	}
 

@@ -77,14 +77,15 @@ typedef struct tagPrintOptions
 
 } SPrintOptions;
 
-#define TOOL_CAPTURE		0x01
-#define TOOL_ISFILTER		0x02
-#define TOOL_SAVEALL		0x04
-#define TOOL_GLOBALOUTPUT	0x08
-#define TOOL_CUSTOMPARSER	0x10
-#define TOOL_CLEAROUTPUT	0x20
-#define TOOL_SAVEONE		0x40
-#define TOOL_REVERSESLASHES	0x80
+#define TOOL_CAPTURE		0x001
+#define TOOL_ISFILTER		0x002
+#define TOOL_SAVEALL		0x004
+#define TOOL_GLOBALOUTPUT	0x008
+#define TOOL_CUSTOMPARSER	0x010
+#define TOOL_CLEAROUTPUT	0x020
+#define TOOL_SAVEONE		0x040
+#define TOOL_REVERSESLASHES	0x080
+#define TOOL_ISPROJECTTOOL	0x100
 
 /**
  * @brief Defines a single external tool.
@@ -123,6 +124,7 @@ public:
 	bool UseCustomParser() const { return (iFlags & TOOL_CUSTOMPARSER) != 0; }
 	bool ShouldClearOutput() const { return (iFlags & TOOL_CLEAROUTPUT) != 0; }
 	bool ShouldUseForwardSlashes() const { return (iFlags & TOOL_REVERSESLASHES) != 0; }
+	bool IsProjectTool() const { return (iFlags & TOOL_ISPROJECTTOOL) != 0; }
 
 protected:
 	void _copy(const ToolDefinition& copy)

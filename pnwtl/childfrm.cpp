@@ -973,7 +973,7 @@ public:
 	{}
 };
 
-LRESULT CChildFrame::OnRunTool(LPVOID pTool)
+bool CChildFrame::OnRunTool(LPVOID pTool)
 {
 	ToolDefinition* pToolDef = static_cast<ToolDefinition*>(pTool);
 	ToolWrapper* pWrapper = NULL;
@@ -992,7 +992,7 @@ LRESULT CChildFrame::OnRunTool(LPVOID pTool)
 
 	ToolOwner::GetInstance()->RunTool(pWrapper, this);
 
-	return 0;
+	return true;
 }
 
 ////////////////////////////////////////////////////
@@ -1361,9 +1361,11 @@ void CChildFrame::SetPosStatus(CMultiPaneStatusBarCtrl&	stat)
 	m_view.SetPosStatus(stat);
 }
 
-void CChildFrame::OnSchemeChange(LPVOID pVoid)
+bool CChildFrame::OnSchemeChange(LPVOID pVoid)
 {
 	SetScheme(static_cast<CScheme*>(pVoid));
+
+	return true;
 }
 
 void CChildFrame::SetScheme(CScheme* pScheme)
@@ -1432,7 +1434,10 @@ void CChildFrame::UpdateMenu()
 	
 	bool bToolsRunning = false;
 	if( ToolOwner::HasInstance() )
+	{
 		bToolsRunning = ToolOwner::GetInstance()->HaveRunningTools(this);
+		bToolsRunning |= ToolOwner::GetInstance()->HaveRunningTools(g_Context.m_frame);
+	}
 
 	menu.EnableMenuItem(ID_TOOLS_STOPTOOLS, bToolsRunning);
 

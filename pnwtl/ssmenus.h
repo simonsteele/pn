@@ -47,7 +47,7 @@ typedef struct
 class CSMenuEventHandler
 {
 	public:
-		virtual void SHandleMenuCommand(int iCommand, LPVOID data) = 0;
+		virtual bool SHandleMenuCommand(int iCommand, LPVOID data) = 0;
 };
 
 typedef struct
@@ -355,18 +355,17 @@ class CSPopupMenu : public CSMenu
 	}
 
 #define BEGIN_MENU_HANDLER_MAP() \
-	void SHandleMenuCommand(int iCommand, LPVOID data) \
-	{
-
+	bool SHandleMenuCommand(int iCommand, LPVOID data) \
+	{ 
 
 #define HANDLE_MENU_COMMAND(id, handler) \
 	if(id == iCommand) \
 	{ \
-		handler(data); \
-		return; \
+		return handler(data); \
 	}
 
 #define END_MENU_HANDLER_MAP() \
+		return false; \
 	}
 
 #endif

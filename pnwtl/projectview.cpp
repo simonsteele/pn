@@ -118,6 +118,12 @@ void CProjectTreeCtrl::SetWorkspace(Projects::Workspace* ws)
 	{
 		buildTree();
 		workspace->SetWatcher(this);
+
+		SendMessage(g_Context.m_frame->GetWindow()->m_hWnd, PN_PROJECTNOTIFY, (WPARAM)workspace->GetActiveProject(), pcActive);
+	}
+	else
+	{
+		SendMessage(g_Context.m_frame->GetWindow()->m_hWnd, PN_PROJECTNOTIFY, NULL, pcActive);
 	}
 }
 
@@ -190,6 +196,12 @@ void CProjectTreeCtrl::OnProjectItemChange(PROJECT_CHANGE_TYPE changeType, Proje
 			ProjectViewState* viewState = pProject->GetViewState();
 			viewState->Clear();
 			storeViewState(viewState, hProjectNode);
+		}
+		break;
+
+		case pcActive:
+		{
+			::SendMessage(g_Context.m_frame->GetWindow()->m_hWnd, PN_PROJECTNOTIFY, (WPARAM)changeItem, pcActive);
 		}
 		break;
 	}

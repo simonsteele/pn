@@ -235,7 +235,7 @@ public:
 	LRESULT OnViewFileProps(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnProjectAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	LRESULT OnRunTool(LPVOID pTool);
+	bool OnRunTool(LPVOID pTool);
 
 	////////////////////////////////////////////////////
 	// Notify Handlers
@@ -262,7 +262,7 @@ public:
 	int ReplaceAll(SReplaceOptions* options);
 	int GetPosition(EGPType type);
 	void SetPosStatus(CMultiPaneStatusBarCtrl&	stat);
-	void OnSchemeChange(LPVOID pVoid);
+	bool OnSchemeChange(LPVOID pVoid);
 	
 	void SetScheme(CScheme* pScheme);
 	void UpdateMenu();

@@ -91,6 +91,7 @@ public:
 		MESSAGE_HANDLER(WM_INITMENUPOPUP, OnInitMenuPopup)
 		MESSAGE_HANDLER(WM_DROPFILES, OnDropFiles)
 		MESSAGE_HANDLER(PN_NOTIFY, OnChildNotify)
+		MESSAGE_HANDLER(PN_PROJECTNOTIFY, OnProjectNotify)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		MESSAGE_HANDLER(WM_ACTIVATE, OnActivate)
 		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnDblClick)
@@ -135,6 +136,7 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_FINDINFILES, OnFindInFiles)
 		COMMAND_ID_HANDLER(ID_TOOLS_OPTIONS, OnOptions)
 		COMMAND_ID_HANDLER(ID_TOOLS_DUMMY, OnOptions)
+		COMMAND_ID_HANDLER(ID_TOOLS_STOPTOOLS, OnStopTools)
 		COMMAND_ID_HANDLER(ID_HELP_WEB_PN, OnWebPNHome)
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SF, OnWebSFPage)
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SB, OnWebSFBug)
@@ -151,7 +153,11 @@ public:
 		COMMAND_RANGE_HANDLER(ID_VIEW_FIRSTDOCKER, ID_VIEW_LASTDOCKER, OnDockerToggle)
 		COMMAND_RANGE_HANDLER(ID_MRUFILE_BASE, ID_MRUFILE_MAX, OnMRUSelected)
 		COMMAND_RANGE_HANDLER(ID_MRUPROJECT_BASE, ID_MRUPROJECT_MAX, OnMRUProjectSelected)
+		
+		LOCAL_MENUCOMMAND(TOOLS_RUNTOOL)
+
 		ROUTE_MENUCOMMANDS()
+		
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
 		CHAIN_MSG_MAP(baseClass)
@@ -174,11 +180,13 @@ public:
 
 	BEGIN_MENU_HANDLER_MAP()
 		HANDLE_MENU_COMMAND(SCHEMEMANAGER_SELECTSCHEME, OnSchemeNew)
+		HANDLE_MENU_COMMAND(TOOLS_RUNTOOL, OnRunTool)
 	END_MENU_HANDLER_MAP()
 
 	CChildFrame* NewEditor();
 
-	void OnSchemeNew(LPVOID data);
+	bool OnSchemeNew(LPVOID data);
+	bool OnRunTool(LPVOID pTool);
 	void OnMDISetMenu(HMENU hOld, HMENU hNew);
 
 	LRESULT OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
@@ -187,6 +195,7 @@ public:
 
 	LRESULT OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnChildNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnProjectNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnEscapePressed(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -239,6 +248,7 @@ public:
 	LRESULT OnReplace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFindInFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnStopTools(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnWebPNHome(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnWebSFPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -353,7 +363,7 @@ protected:
 
 	void handleCommandLine(std::list<tstring>& parameters);
 
-	void setupToolsMenu();
+	void setupToolsUI();
 
 protected:
 	inline CPNDockingWindow* getDocker(EDocker window) const;
@@ -409,6 +419,7 @@ protected:
 
 	HACCEL					m_hToolAccel;
 	HACCEL					m_hGlobalToolAccel;
+	HACCEL					m_hProjAccel;
 
 	HIMAGELIST				m_hILMain;
 	HIMAGELIST				m_hILMainD;
