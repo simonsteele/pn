@@ -3,7 +3,7 @@
 
 #include "ssreg.h"
 
-static const TCHAR* pnregroot = _T("Software\\Echo Software\\Programmers Notepad\\");
+static const TCHAR* pnregroot = _T("Software\\Echo Software\\PN2\\");
 
 typedef enum {leCRLF, leCR, leLF} ELineEndings;
 
