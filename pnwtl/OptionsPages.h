@@ -179,6 +179,7 @@ class CTabPageStyles : public CPropertyPageImpl<CTabPageStyles>
 			COMMAND_HANDLER(IDC_STYLE_EOLFILLEDCHECK, BN_CLICKED, OnEOLFilledClicked)
 			COMMAND_HANDLER(IDC_STYLE_FONTCOMBO, CBN_SELCHANGE, OnFontChanged)
 			COMMAND_HANDLER(IDC_STYLE_SIZECOMBO, CBN_SELCHANGE, OnSizeChanged)
+			COMMAND_HANDLER(IDC_STYLE_SIZECOMBO, CBN_EDITCHANGE, OnSizeChanged)
 			COMMAND_HANDLER(IDC_STYLE_RESETBTN, BN_CLICKED, OnResetClicked)
 			COMMAND_HANDLER(IDC_STYLE_RESETALLBTN, BN_CLICKED, OnResetAllClicked)
 			NOTIFY_HANDLER(IDC_STYLE_FOREBUTTON, CPN_SELCHANGE, OnForeChanged)
@@ -247,9 +248,19 @@ class CTabPageMisc : public CPropertyPageImpl<CTabPageMisc>
 
 		BEGIN_MSG_MAP(CTabPageMisc)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			
+			NOTIFY_HANDLER(IDC_STYLE_SELFOREBUTTON, CPN_SELCHANGE, OnValueChanged)
+			NOTIFY_HANDLER(IDC_STYLE_SELBACKBUTTON, CPN_SELCHANGE, OnValueChanged)
+			NOTIFY_HANDLER(IDC_STYLE_CURCOLBUTTON, CPN_SELCHANGE, OnValueChanged)
+			NOTIFY_HANDLER(IDC_STYLE_IGCOLBUTTON, CPN_SELCHANGE, OnValueChanged)
+
+			COMMAND_HANDLER(IDC_STYLE_SELUSEFORE, BN_CLICKED, OnSelUseForeClicked)
+
 			CHAIN_MSG_MAP(CPropertyPageImpl<CTabPageMisc>)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
+
+		bool IsDirty();
 
 		void SetScheme(SchemeConfig* pScheme);
 		void Finalise();
@@ -257,7 +268,12 @@ class CTabPageMisc : public CPropertyPageImpl<CTabPageMisc>
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		
+		LRESULT OnValueChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+		LRESULT OnSelUseForeClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
 		void SetValues();
+		void EnableButtons();
+		void UpdateDisplay();
 
 	protected:
 		SchemeConfig*	m_pScheme;
@@ -266,8 +282,10 @@ class CTabPageMisc : public CPropertyPageImpl<CTabPageMisc>
 		CPNColorButton	m_selBack;
 		CPNColorButton	m_cursorCol;
 		CPNColorButton	m_igCol;
+		CButton			m_selUseExistingFore;
 
 		bool			m_bChanging;
+		bool			m_bDirty;
 };
 
 class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>

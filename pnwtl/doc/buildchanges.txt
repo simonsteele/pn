@@ -4,7 +4,12 @@
 Since 04/11/03:
 
 Italic font customisations not picked up. (SF Bug #834967)
-Save All only saves unchanged files. (SF Bug #827998)
+Changed Workspace to Project Group (hopefully everywhere).
+Added new scheme options tab "More Options". Currently allows setting of
+  cursor, selection and indent guide colours.
+Fixed colour overrides for brace matches, line numbers and control 
+  characters.
+Project Group files saved as .ppg.
 
 Since 16/10/03:
 
@@ -20,6 +25,7 @@ Icon file icons no longer cached.
 Enabled multiple-selection in projects tree control.
 Added (X)HTML export from Bjoern Graf.
 Some UI fixes (minor) from Bjoern Graf.
+Save All only saves unchanged files. (SF Bug #827998)
 
 Since 13/10/03:
 

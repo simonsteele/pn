@@ -486,7 +486,7 @@ LRESULT CTabPageStyles::OnSizeChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 {
 	if(m_pStyle)
 	{
-		int i = GetDlgItemInt(IDC_STYLE_SIZECOMBO);
+		int i = m_SizeCombo.GetSelection();//GetDlgItemInt(IDC_STYLE_SIZECOMBO);
 		m_sd.SetSize(i);
 		m_Style.FontSize = i;
 	}
@@ -789,26 +789,49 @@ CTabPageMisc::CTabPageMisc()
 {
 	m_bChanging = false;
 	m_pScheme = NULL;
+	m_bDirty = false;
+}
+
+bool CTabPageMisc::IsDirty()
+{
+	return m_bDirty;
 }
 
 void CTabPageMisc::SetScheme(SchemeConfig* pScheme)
 {
-	m_bChanging = true;
-
 	SetValues();
-	
+
 	m_pScheme = pScheme;
 
-
-
-	m_bChanging = false;
+	UpdateDisplay();
 }
 
 void CTabPageMisc::SetValues()
 {
-	if(m_pScheme != NULL)
+	if(m_pScheme != NULL && ::IsWindow(m_hWnd))
 	{
+		COLORREF theColour;
 
+		// Clear existing customisations.
+		m_pScheme->m_editorColours.Clear();
+		
+		if( m_selUseExistingFore.GetCheck() == BST_CHECKED )
+			theColour = -1;
+		else
+			theColour = m_selFore.GetColor();
+		m_pScheme->m_editorColours.SetColour( EditorColours::ecSelFore, theColour);
+		
+		theColour = m_selBack.GetColor();
+		if(theColour != -1)
+			m_pScheme->m_editorColours.SetColour( EditorColours::ecSelBack, theColour);
+
+		theColour = m_cursorCol.GetColor();
+		if(theColour != -1)
+			m_pScheme->m_editorColours.SetColour( EditorColours::ecCaret, theColour);
+
+		theColour = m_igCol.GetColor();
+		if(theColour != -1)
+			m_pScheme->m_editorColours.SetColour( EditorColours::ecIndentG, theColour);
 	}
 }
 
@@ -829,13 +852,62 @@ LRESULT CTabPageMisc::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	m_cursorCol.SetDefaultColor(::GetSysColor(COLOR_WINDOWTEXT));
 	m_igCol.SetDefaultColor(RGB(0,0,0));
 
+	m_selUseExistingFore.Attach( GetDlgItem(IDC_STYLE_SELUSEFORE) );
+
+	if(m_pScheme)
+		UpdateDisplay();
+
 	return 0;
 }
 
-/*void CTabPageMisc::UpdateSel()
+LRESULT CTabPageMisc::OnValueChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHandled)
 {
+	bHandled = false;
 
-}*/
+	m_bDirty = true;
+
+	return 0;
+}
+
+LRESULT CTabPageMisc::OnSelUseForeClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	EnableButtons();
+
+	m_bDirty = true;
+
+	return 0;
+}
+
+void CTabPageMisc::EnableButtons()
+{
+	m_selFore.EnableWindow( m_selUseExistingFore.GetCheck() != BST_CHECKED );
+}
+
+void CTabPageMisc::UpdateDisplay()
+{
+	if( ::IsWindow(m_hWnd) && (m_pScheme != NULL) )
+	{
+		COLORREF theColour;
+		if(	m_pScheme->m_editorColours.GetColour( EditorColours::ecSelFore, theColour) )
+		{
+			if(theColour == -1)
+				m_selUseExistingFore.SetCheck(BST_CHECKED);
+			else
+				m_selFore.SetColor( theColour );
+		}
+
+		if( m_pScheme->m_editorColours.GetColour( EditorColours::ecSelBack, theColour) )
+			m_selBack.SetColor( theColour );
+
+		if( m_pScheme->m_editorColours.GetColour( EditorColours::ecCaret, theColour) )
+			m_cursorCol.SetColor( theColour );
+	    
+		if( m_pScheme->m_editorColours.GetColour( EditorColours::ecIndentG, theColour) )
+			m_igCol.SetColor( theColour );
+
+		EnableButtons();
+	}
+}
 
 //////////////////////////////////////////////////////////////////////////////
 // COptionsPageStyle
@@ -984,7 +1056,10 @@ COptionsPageSchemes::COptionsPageSchemes(SchemeConfigParser* pSchemes) : COption
 
 bool COptionsPageSchemes::IsDirty()
 {
-	return m_bDirty;
+	// In anticipation of a better dirty flag, we should or the IsDirty
+	// methods of each tab to see if we're dirty. For now, m_bDirty will
+	// always be true if we've shown.
+	return m_bDirty || m_misctab.IsDirty();
 }
 
 // Dialog Message Hook stuff...

@@ -79,15 +79,6 @@ public:
 
 	~CMainFrame();
 
-	enum {
-		TBR_SCHEME = 100,
-		TBR_FIND = 101,
-		SCHEME_COMBO_SIZE = 24, /* characters */
-		FIND_COMBO_SIZE = 30,
-		TOOLBAR_COMBO_DROPLINES = 16,
-		REBAR_SAVESTATE_VERSION = 0
-	};
-
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 	virtual BOOL OnIdle();
@@ -288,6 +279,12 @@ protected:
 	HWND CreateFindToolbar();
 	HWND CreateSchemeToolbar();
 
+	void ToggleToolbar(DWORD toolbarId);
+	inline DWORD GetRebarBarCmd(DWORD toolbarId);
+	inline DWORD GetRebarBarId(DWORD toolbarId);
+	inline DWORD GetRebarBarIndex(DWORD toolbarId);
+	bool GetToolbarShowing(DWORD toolbarId);
+
 	void InitGUIState();
 	void LoadGUIState(LPCTSTR stateName = NULL);
 	void SaveGUIState(LPCTSTR stateName = NULL);
@@ -306,6 +303,21 @@ protected:
 	bool CloseWorkspace(bool bAllowCloseFiles = false);
 	bool CloseWorkspaceFiles(Projects::Workspace* pWorkspace);
 	bool EnumWorkspaceWindows(SWorkspaceWindowsStruct* pWWS);
+
+protected:
+	enum {
+		SCHEME_COMBO_SIZE = 24, /* characters */
+		FIND_COMBO_SIZE = 30,
+		TOOLBAR_COMBO_DROPLINES = 16,
+		REBAR_SAVESTATE_VERSION = 0
+	};
+
+	enum {
+		TBR_SCHEME = 100,
+		TBR_FIND = 101,
+		TBR_EDIT = 102,
+		TBR_FILE = 103,
+	};
 
 protected:
 	CFindDlg*				m_FindDialog;

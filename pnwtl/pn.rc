@@ -348,7 +348,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,5,10
+ FILEVERSION 2,0,5,11
  PRODUCTVERSION 2,0,5,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -366,7 +366,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele (Echo Software)"
             VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.5.10"
+            VALUE "FileVersion", "2.0.5.11"
             VALUE "InternalName", "PNWTL"
             VALUE "LegalCopyright", "Copyright © 2002-2003 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"
@@ -1086,8 +1086,9 @@ BEGIN
                     WS_EX_RIGHT
     LTEXT           "Indentation Guides:",IDC_STATIC,0,59,84,12,0,
                     WS_EX_RIGHT
-    CONTROL         "Don't change the foreground.",IDC_CHECK2,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,168,24,108,12
+    CONTROL         "Don't change the foreground.",IDC_STYLE_SELUSEFORE,
+                    "Button",BS_AUTOCHECKBOX | BS_NOTIFY | WS_TABSTOP,168,24,
+                    108,12
 END
 
 

@@ -440,6 +440,13 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 			const char* pS = T2CA((LPCTSTR)s);
 			file.Write((void*)pS, strlen(pS));
 
+			if( (*i)->m_editorColours.HasColours() )
+			{
+				tstring colourXml = (*i)->m_editorColours.ToXml();
+				const char* pS = T2CA(colourXml.c_str());
+				file.Write((void*)pS, strlen(pS));
+			}
+
 			if(pKeywordSet != NULL)
 			{
 				// Keywords

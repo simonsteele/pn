@@ -19,6 +19,70 @@ using std::string;
 using std::list;
 using std::map;
 
+////////////////////////////////////////////////////////////
+// Useful Functions
+////////////////////////////////////////////////////////////
+
+static int chartoval(TCHAR inp)
+{
+	int Result = 0;
+	
+	if (inp >= '0' && inp <= '9') 
+	{
+		Result = inp - 48;
+	}
+	else if (inp >= 'a' && inp <= 'f')
+	{
+		Result = inp - 87;
+	}
+	else if (inp >= 'A' && inp <= 'F') 
+	{
+		Result = inp - 55;
+	}
+  
+	return Result;
+}
+
+static COLORREF PNStringToColor(LPCTSTR input)
+{
+  	LPCTSTR	Part;
+	int		res;
+
+	//b,g,r - output format in hex $bbggrr
+	//r,g,b - input format in string, rr,gg,bb
+	// Default colour
+	res = ::GetSysColor(COLOR_WINDOWTEXT);
+	// only works for xxxxxx colours...
+	if (_tcslen(input) != 6)
+	{
+		return res;
+	}
+	
+	Part = input;
+	res = (0x10 * chartoval(Part[0]));
+	if (Part[1] != _T('0'))
+	{
+		res = res + (chartoval(Part[1]));
+	}
+	Part += 2;
+	res += (0x1000 * chartoval(Part[0]));
+	res += (0x100 * chartoval(Part[1]));
+	Part += 2;
+	res += (0x100000 * chartoval(Part[0]));
+	res += (0x10000 * chartoval(Part[1]));
+
+	return res;
+}
+
+static bool PNStringToBool(LPCTSTR input)
+{
+	return (input[0] == 'T' || input[0] == 't');
+}
+
+////////////////////////////////////////////////////////////
+// EditorColours
+////////////////////////////////////////////////////////////
+
 class EditorColours
 {
 public:
@@ -71,28 +135,33 @@ public:
 		return (values & colour) != 0;
 	}
 
-	COLORREF GetColour(Colours colour) const
+	bool HasColours() const
+	{
+		return (values != 0);
+	}
+
+	bool GetColour(Colours colour, COLORREF& theColour) const
 	{
 		if( (values & colour) == 0)
-			return (DWORD)-1;
+			return false;
 		
 		switch(colour)
 		{
 			case ecSelFore:
-				return crSelFore;
-				break;
+				theColour = crSelFore;
+				return true;
 			case ecSelBack:
-				return crSelBack;
-				break;
+				theColour = crSelBack;
+				return true;
 			case ecCaret:
-				return crCaret;
-				break;
+				theColour = crCaret;
+				return true;
 			case ecIndentG:
-				return crIG;
-				break;
+				theColour = crIG;
+				return true;
 		}
 			
-		return (DWORD) -1;
+		return false;
 	}
 
 	tstring ToXml() const
@@ -122,7 +191,7 @@ public:
 		{
 			szKey = atts.getName(i);
 			szValue = atts.getValue(i);
-			val = _ttoi(szValue);
+			val = (szValue[0] == _T('-') ? -1 : PNStringToColor(szValue));
 
 			if(_tcscmp(szKey, _T("selFore")) == 0)
 			{
@@ -163,7 +232,7 @@ public:
 			pSc->SPerform(SCI_STYLESETFORE, STYLE_INDENTGUIDE, crIG);
 	}
 
-	static void SendColours(XMLAttributes& atts, CScintilla* pSc)
+	/*static void SendColours(XMLAttributes& atts, CScintilla* pSc)
 	{
 		LPCTSTR szKey, szValue;
 		int val;
@@ -193,6 +262,11 @@ public:
 				pSc->SPerform(SCI_STYLESETFORE, STYLE_INDENTGUIDE, (DWORD)val);
 			}
 		}
+	}*/
+
+	void Clear()
+	{
+		values = 0;
 	}
 
 protected:
@@ -201,10 +275,17 @@ protected:
 		buf += name;
 		buf += _T("=\"");
 		
-		TCHAR colbuf[12];
-		colbuf[11] = NULL;
-		_sntprintf(colbuf, 11, _T("%.2x%.2x%.2x\" "), GetRValue(colour), GetGValue(colour), GetBValue(colour));
-		buf += colbuf;
+		if(colour == (DWORD)-1)
+		{
+			buf += _T("-1\" ");
+		}
+		else
+		{
+			TCHAR colbuf[12];
+			colbuf[11] = NULL;
+			_sntprintf(colbuf, 11, _T("%.2x%.2x%.2x\" "), GetRValue(colour), GetGValue(colour), GetBValue(colour));
+			buf += colbuf;
+		}
 	}
 
 protected:
@@ -641,7 +722,8 @@ class CustomKeywordHolder
  */
 class CustomisedScheme : public CustomKeywordHolder, public StylesList
 {
-
+public:
+	EditorColours m_editorColours;
 };
 
 

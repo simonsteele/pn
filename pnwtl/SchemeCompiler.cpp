@@ -18,66 +18,6 @@
 using namespace ssreg;
 
 ////////////////////////////////////////////////////////////
-// Useful Functions
-////////////////////////////////////////////////////////////
-
-static int chartoval(TCHAR inp)
-{
-	int Result = 0;
-	
-	if (inp >= '0' && inp <= '9') 
-	{
-		Result = inp - 48;
-	}
-	else if (inp >= 'a' && inp <= 'f')
-	{
-		Result = inp - 87;
-	}
-	else if (inp >= 'A' && inp <= 'F') 
-	{
-		Result = inp - 55;
-	}
-  
-	return Result;
-}
-
-static COLORREF PNStringToColor(LPCTSTR input)
-{
-  	LPCTSTR	Part;
-	int		res;
-
-	//b,g,r - output format in hex $bbggrr
-	//r,g,b - input format in string, rr,gg,bb
-	// Default colour
-	res = ::GetSysColor(COLOR_WINDOWTEXT);
-	// only works for xxxxxx colours...
-	if (_tcslen(input) != 6)
-	{
-		return res;
-	}
-	
-	Part = input;
-	res = (0x10 * chartoval(Part[0]));
-	if (Part[1] != _T('0'))
-	{
-		res = res + (chartoval(Part[1]));
-	}
-	Part += 2;
-	res += (0x1000 * chartoval(Part[0]));
-	res += (0x100 * chartoval(Part[1]));
-	Part += 2;
-	res += (0x100000 * chartoval(Part[0]));
-	res += (0x10000 * chartoval(Part[1]));
-
-	return res;
-}
-
-static bool PNStringToBool(LPCTSTR input)
-{
-	return (input[0] == 'T' || input[0] == 't');
-}
-
-////////////////////////////////////////////////////////////
 // SchemeRecorder Implementation
 ////////////////////////////////////////////////////////////
 
@@ -364,10 +304,6 @@ void UserSettingsParser::startElement(void *userData, LPCTSTR name, XMLAttribute
 	{
 		pState->m_State = US_CLASSES;
 	}
-	else if(_tcscmp(name, _T("colours")) == 0)
-	{
-		pState->m_editorColours.SetFromXml(atts);
-	}
 }
 
 void UserSettingsParser::endElement(void *userData, LPCTSTR name)
@@ -467,6 +403,10 @@ void UserSettingsParser::processSchemeElement(CSchemeLoaderState* pState, LPCTST
 		else if(_tcscmp(name, _T("override-styles")) == 0)
 		{
 			pState->m_State = US_STYLE_OVERRIDES;
+		}
+		else if(_tcscmp(name, _T("colours")) == 0)
+		{
+			pScheme->m_editorColours.SetFromXml(atts);
 		}
 	}
 }
@@ -1195,10 +1135,6 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 				// Signal the implementing class that there's a language (scheme) coming.
 				onLanguage(scheme, title, flags);
 
-				sendBaseStyles(pState);
-				
-				onColours(&pState->m_editorColours);
-
 				if( pBase )
 				{
 					sendBaseScheme(pState, pBase);
@@ -1654,6 +1590,15 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 		// Only come out of language mode if we're really out...
 		if(_tcscmp(name, _T("language")) == 0 || _tcscmp(name, _T("schemedef")) == 0)
 		{
+			// Now we send any styles that haven't been sent yet, and the last of
+			// the editor setup. This has to be done here because otherwise it's wiped
+			// out by the clearall which is sent after the default style.
+			sendBaseStyles(pS);
+
+			if(pS->m_pCustom)
+				if(pS->m_pCustom->m_editorColours.HasColours())
+					onColours(&pS->m_pCustom->m_editorColours);
+
 			onLanguageEnd();
 			
 			pS->m_State = 0;

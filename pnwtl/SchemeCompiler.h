@@ -116,8 +116,6 @@ class CSchemeLoaderState
 		StyleDetails*			m_pGroupClass;
 		BaseScheme*				m_pBase;
 
-		EditorColours			m_editorColours;
-
 		CUSTOMISED_NAMEMAP		m_BaseSchemes;
 
 		XMLParser*				m_pParser;

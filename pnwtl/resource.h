@@ -241,7 +241,7 @@
 #define IDC_TE_HOTKEY                   1071
 #define IDC_STATIC_TC                   1072
 #define IDC_STYLE_CURCOLBUTTON          1073
-#define IDC_CHECK2                      1074
+#define IDC_STYLE_SELUSEFORE            1074
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204

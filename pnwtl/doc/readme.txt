@@ -14,12 +14,13 @@ What's new?
 6) Visual Help options (highlight current line, long line help).
 7) Sanitise file names from output window to better find files.
 8) Text clips browser.
-9) Projects/Workspaces.
+9) Projects/Project Groups.
 10) Change MRU text length. (SF Feature #760660)
 11) Keyboard-shortcuts for Tools.
 12) More editor colouring options.
 13) Statusbar text on mouse-over MRU items.
 14) (X)HTML Export.
+15) Added Modula-2 Scheme.
 
 Bug Fixes:
 ----------
@@ -38,6 +39,7 @@ Bug Fixes:
 12) Collapse all folds menu item fixed.
 13) Italic font customisations not picked up. (SF Bug #834967)
 14) Save All only saves unchanged files. (SF Bug #827998)
+15) Fixed view->toolbars menu. Now represents correct startup state.
 
 If you find a bug:
 ------------------

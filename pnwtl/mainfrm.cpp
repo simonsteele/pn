@@ -39,6 +39,20 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+const DWORD ToolbarCmds[4] = {
+	ID_VIEW_TOOLBARS_SCHEMES,
+	ID_VIEW_TOOLBARS_FIND,
+	ID_VIEW_TOOLBAR_EDIT,
+	ID_VIEW_TOOLBAR,
+};
+
+const DWORD ToolbarIds[4] = {
+	ATL_IDW_BAND_FIRST + 3,
+	ATL_IDW_BAND_FIRST + 4,
+	ATL_IDW_BAND_FIRST + 2,
+	ATL_IDW_BAND_FIRST + 1,
+};
+
 CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4)
 {
 	m_FindDialog = NULL;
@@ -844,7 +858,7 @@ LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 					OpenProject((*i).c_str());
 					break;
 				}
-				else if(fn.GetExtension() == _T(".pnwsp"))
+				else if(fn.GetExtension() == _T(".ppg"))
 				{
 					OpenWorkspace((*i).c_str());
 					break;
@@ -945,53 +959,25 @@ LRESULT CMainFrame::OnUndo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 
 LRESULT CMainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	static BOOL bVisible = TRUE;	// initially visible
-	bVisible = !bVisible;
-	CReBarCtrl rebar = m_hWndToolBar;
-	int nBandIndex = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 1);	// toolbar is 2nd added band
-	rebar.ShowBand(nBandIndex, bVisible);
-	UISetCheck(ID_VIEW_TOOLBAR, bVisible);
-	UpdateLayout();
-
+	ToggleToolbar(TBR_FILE);
 	return 0;
 }
 
 LRESULT CMainFrame::OnViewEditBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	static BOOL bVisible = TRUE; // initially visible
-	bVisible = !bVisible;
-	CReBarCtrl rebar = m_hWndToolBar;
-	int index = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 2);
-	rebar.ShowBand(index, bVisible);
-	UISetCheck(ID_VIEW_TOOLBAR_EDIT, bVisible);
-	UpdateLayout();
-
+	ToggleToolbar(TBR_EDIT);
 	return 0;
 }
 
 LRESULT CMainFrame::OnViewSchemesBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	static BOOL bVisible = TRUE; // initially visible
-	bVisible = !bVisible;
-	CReBarCtrl rebar = m_hWndToolBar;
-	int index = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 3);
-	rebar.ShowBand(index, bVisible);
-	UISetCheck(ID_VIEW_TOOLBARS_FIND, bVisible);
-	UpdateLayout();
-	
+	ToggleToolbar(TBR_SCHEME);	
 	return 0;
 }
 
 LRESULT CMainFrame::OnViewFindBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	static BOOL bVisible = TRUE; // initially visible
-	bVisible = !bVisible;
-	CReBarCtrl rebar = m_hWndToolBar;
-	int index = rebar.IdToIndex(ATL_IDW_BAND_FIRST + 4);
-	rebar.ShowBand(index, bVisible);
-	UISetCheck(ID_VIEW_TOOLBARS_FIND, bVisible);
-	UpdateLayout();
-
+	ToggleToolbar(TBR_FIND);
 	return 0;
 }
 
@@ -1427,6 +1413,49 @@ void CMainFrame::MoveLanguage(CSMenuHandle& remove, CSMenuHandle& add)
 }
 
 /**
+ * Get the menu command id associated with the toolbar.
+ */
+DWORD CMainFrame::GetRebarBarCmd(DWORD toolbarId)
+{
+	return ToolbarCmds[toolbarId - 100];
+}
+
+/**
+ * Get the ID of the rebar band a toolbar is on.
+ */
+DWORD CMainFrame::GetRebarBarId(DWORD toolbarId)
+{
+	return ToolbarIds[toolbarId - 100];
+}
+
+/**
+ * Get the rebar band index of a given toolbar.
+ */
+DWORD CMainFrame::GetRebarBarIndex(DWORD toolbarId)
+{
+	return ::SendMessage(m_hWndToolBar, RB_IDTOINDEX, GetRebarBarId(toolbarId), 0);
+}
+
+bool CMainFrame::GetToolbarShowing(DWORD toolbarId)
+{
+	REBARBANDINFO rbbi = {sizeof(rbbi), RBBIM_STYLE, 0};
+	::SendMessage(m_hWndToolBar, RB_GETBANDINFO, GetRebarBarIndex(toolbarId), (LPARAM)&rbbi);
+	return ((rbbi.fStyle & RBBS_HIDDEN) == 0);
+}
+
+/**
+ * Show/Hide toggle a toolbar (rebar band).
+ */
+void CMainFrame::ToggleToolbar(DWORD toolbarId)
+{
+	DWORD cmd = GetRebarBarCmd( toolbarId );
+	BOOL bNowVisible = !((UIGetState( cmd ) & UPDUI_CHECKED) != 0);
+	::SendMessage(m_hWndToolBar, RB_SHOWBAND, GetRebarBarIndex( toolbarId ), bNowVisible);
+	UISetCheck(cmd, bNowVisible);
+	UpdateLayout();
+}
+
+/**
  * Initialise the GUI state manager with all of the GUI items that it controls.
  */
 void CMainFrame::InitGUIState()
@@ -1446,6 +1475,11 @@ void CMainFrame::InitGUIState()
 	m_GUIState.Add(dockers);
 
 	LoadGUIState();
+
+	UISetCheck( GetRebarBarCmd( TBR_FILE   ), GetToolbarShowing( TBR_FILE   ));
+	UISetCheck( GetRebarBarCmd( TBR_EDIT   ), GetToolbarShowing( TBR_EDIT   ));
+	UISetCheck( GetRebarBarCmd( TBR_SCHEME ), GetToolbarShowing( TBR_SCHEME ));
+	UISetCheck( GetRebarBarCmd( TBR_FIND   ), GetToolbarShowing( TBR_FIND   ));
 }
 
 /**

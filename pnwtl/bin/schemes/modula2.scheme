@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="modula2">
+			<!--keywords from XDS Lexis-->
+			and array begin by case const definition div
+			do else elsif end exit except export finally
+			for forward from if implementation import in loop
+			mod module not of or packedset pointer procedure
+			qualified record rem retry repeat return set then
+			to type until var while with
+			<!--identifiers from XDS Lexis-->
+			abs bitset boolean cardinal cap chr char complex
+			cmplx dec dispose excl false float halt high
+			im inc incl int interruptible integer length lfloat
+			longcomplex longreal max min new nil odd ord
+			proc protection re real size true trunc uninterruptible
+			val
+		</keyword-class>
+		<keyword-class name="modula2_foldwords">
+			begin case record
+		</keyword-class>
+	</keyword-classes>
+	<language name="modula2" title="Modula-2" folding="true" foldcomments="true" foldcompact="false">
+		<lexer name="pascal" />
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="modula2"/>
+			<keyword key="2" name="Fold Start Words" class="modula2_foldwords"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="Whitespace" key="0" />
+			<style name="Comment" key="1" class="comment"/>
+			<style name="Line Comment" key="2" class="commentline"/>
+			<style name="Doc Comment" key="3" class="commentdoc"/>
+			<style name="Number" key="4" fore="colour.number"/>
+			<style name="Keyword" key="5" class="keyword"/>
+			<style name="Double-Quoted String" key="6" /><!-- fore="colour.string" -->
+			<style name="Single-Quoted String" key="7" fore="colour.string"/>
+			<style name="Symbols" key="8" />
+			<style name="PreProcessor" key="9" fore="colour.preproc"/>
+			<style name="Operators" key="10" bold="true"/>
+			<style name="Class Definition Words" key="16" class="keyword"/>
+			<style name="Brace Match" key="34" bold="true" fore="0000ff"/>
+			<style name="Brace MisMatch" key="35" bold="true" fore="ff0000"/>
+		</use-styles>
+	</language>
+</Scheme>

@@ -20,6 +20,38 @@
 
 #include "ssmenus.h"
 
+class CWindowText
+{
+	public:
+		CWindowText(HWND hWnd)
+		{
+			PNASSERT(::IsWindow(hWnd));
+			m_buffer = NULL;
+
+			int len = ::GetWindowTextLength(hWnd);
+			if(len > 0)
+			{
+				len++;
+				m_buffer = new TCHAR[len];
+				::GetWindowText(hWnd, m_buffer, len);
+			}
+		}
+
+		~CWindowText()
+		{
+			if(m_buffer)
+				delete [] m_buffer;
+		}
+
+		operator LPCTSTR ()
+		{
+			return m_buffer;
+		}
+
+	protected:
+		TCHAR* m_buffer;
+};
+
 /**
  * @class CContainedPropSheet
  * @brief Create a propsheet as a child window.
@@ -469,8 +501,17 @@ class CNumberCombo : public CComboBox
 
 		int GetSelection()
 		{
+			CWindowText wt(m_hWnd);
+			if(_tcslen((LPCTSTR)wt) > 0)
+			{
+				int size = _ttol((LPCTSTR)wt);
+				if( size != 0 )
+					return size;
+			}
+			
+			// fallback to the last proper selection.
 			int i = GetCurSel();
-			return GetItemData(i);			
+			return GetItemData(i);
 		}
 
 	protected:
@@ -692,38 +733,6 @@ class Singleton : public DelObject
 };
 
 #define SINGLETON_AUTO_DELETE true
-
-class CWindowText
-{
-	public:
-		CWindowText(HWND hWnd)
-		{
-			PNASSERT(::IsWindow(hWnd));
-			m_buffer = NULL;
-
-			int len = ::GetWindowTextLength(hWnd);
-			if(len > 0)
-			{
-				len++;
-				m_buffer = new TCHAR[len];
-				::GetWindowText(hWnd, m_buffer, len);
-			}
-		}
-
-		~CWindowText()
-		{
-			if(m_buffer)
-				delete [] m_buffer;
-		}
-
-		operator LPCTSTR ()
-		{
-			return m_buffer;
-		}
-
-	protected:
-		TCHAR* m_buffer;
-};
 
 #ifdef _DEBUG
 
