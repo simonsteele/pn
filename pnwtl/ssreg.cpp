@@ -62,7 +62,7 @@ bool CSRegistry::OpenKey(LPCTSTR key, bool bCreate, bool bDegradeToRead)
 			m_root,
 			key,
 			0,
-			KEY_READ_ACCESS,
+			KEY_READ,
 			&m_hKey
 		) == ERROR_SUCCESS;
 	}
