@@ -20,6 +20,7 @@
 #include <atlframe.h>
 #include "DockMisc.h"
 #include "PackageWindow.h"
+#include "DockingFocus.h"
 
 namespace dockwins{
 /////////////////CDockingFrameImplBase
@@ -79,7 +80,7 @@ public:
 	bool InitializeDockingFrame(CStyle style=CStyle::sUseSysSettings)
 	{
 		m_settings.SetStyle(style);
-		bool bRes=true;		
+		bool bRes=true;
 #ifdef DF_AUTO_HIDE_FEATURES
 		assert(m_hWnd);
 		bRes=m_ahManager.Initialize(m_hWnd);
@@ -90,7 +91,10 @@ public:
 		pThis->UpdateLayout(FALSE);
 		m_vPackage.Insert(&m_hPackage,m_vPackage);
 		m_hPackage.Insert(&m_hWndClient,m_vPackage);
-		return bRes;		
+#ifdef DF_FOCUS_FEATURES
+		m_focusHandler.InstallHook(pThis->m_hWnd);
+#endif
+		return bRes;
 	}
 
 	void UpdateLayout(BOOL bResizeBars = TRUE)
@@ -105,7 +109,7 @@ public:
 		m_vPackage.UpdateLayout(rc);
 		Draw(dc);
 	}
-	
+
 	void GetMinMaxInfo(LPMINMAXINFO pMinMaxInfo) const
 	{
 		CRect rc;
@@ -153,7 +157,7 @@ public:
 			else
 				bRes=m_vPackage.StartSliding(m_hWnd,pt,m_settings.GhostDrag());
 			if(bRes)
-				RedrawWindow(NULL,NULL,RDW_INVALIDATE | RDW_UPDATENOW | 
+				RedrawWindow(NULL,NULL,RDW_INVALIDATE | RDW_UPDATENOW |
 										((m_hWndClient==NULL)?RDW_ERASE:0));
 		}
 		return bRes;
@@ -174,7 +178,7 @@ public:
 		limit=rc.Height()/3;
 		if(pHdr->rect.bottom-pHdr->rect.top>limit)
 			pHdr->rect.bottom=pHdr->rect.top+limit;
-		
+
 		limit=GetSystemMetrics(SM_CYMIN);
 		if(pHdr->rect.bottom-pHdr->rect.top<limit)
 			pHdr->rect.bottom=pHdr->rect.top+limit;
@@ -211,7 +215,7 @@ public:
 		else
 			lRes=m_vPackage.Dock(pHdr);
 		ClientToScreen(&(pHdr->rect));
-		RedrawWindow(NULL,NULL,RDW_INVALIDATE | RDW_UPDATENOW | 
+		RedrawWindow(NULL,NULL,RDW_INVALIDATE | RDW_UPDATENOW |
 									((m_hWndClient==NULL)?RDW_ERASE:0));
 		return lRes;
 	}
@@ -224,7 +228,7 @@ public:
 		if(!bRes)
 			bRes=m_hPackage.Undock(pHdr);
 		assert(bRes);
-		RedrawWindow(NULL,NULL,RDW_INVALIDATE | RDW_UPDATENOW | 
+		RedrawWindow(NULL,NULL,RDW_INVALIDATE | RDW_UPDATENOW |
 									((m_hWndClient==NULL)?RDW_ERASE:0));
 		return bRes;
 	}
@@ -256,11 +260,11 @@ public:
 			bRes=m_vPackage.SetDockingPosition(pHdr);
 		else
 			bRes=m_hPackage.SetDockingPosition(pHdr);
-		RedrawWindow(NULL,NULL,RDW_INVALIDATE | RDW_UPDATENOW | 
+		RedrawWindow(NULL,NULL,RDW_INVALIDATE | RDW_UPDATENOW |
 									((m_hWndClient==NULL)?RDW_ERASE:0));
 		return bRes;
 	}
-	
+
 	bool GetDockingPosition(DFDOCKPOS* pHdr) const
 	{
 		assert(::IsWindow(pHdr->hdr.hWnd));
@@ -304,7 +308,7 @@ public:
 		{
 			T* pThis = static_cast<T*>(this);
 			pThis->UpdateLayout(FALSE);
-			pThis->RedrawWindow(NULL,NULL,RDW_INVALIDATE | RDW_UPDATENOW | 
+			pThis->RedrawWindow(NULL,NULL,RDW_INVALIDATE | RDW_UPDATENOW |
 											((m_hWndClient==NULL)?RDW_ERASE:0));
 		}
 		return bRes;
@@ -318,6 +322,7 @@ protected:
 ////////////////messages handlers//////////////////////
     BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
+		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
 		MESSAGE_HANDLER(WM_SYSCOLORCHANGE, OnSysColorChange)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
@@ -331,6 +336,9 @@ protected:
 #endif
 /////////////////////
 		MESSAGE_HANDLER(WMDF_DOCK,OnDock)
+#ifdef DF_FOCUS_FEATURES
+		CHAIN_MSG_MAP_MEMBER(m_focusHandler)
+#endif
 		CHAIN_MSG_MAP(baseClass)
     END_MSG_MAP()
 
@@ -341,6 +349,16 @@ protected:
 		bHandled=FALSE;
 		return 0;
 	}
+
+	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+	{
+		bHandled = FALSE;
+#ifdef DF_FOCUS_FEATURES
+		m_focusHandler.RemoveHook(m_hWnd);
+#endif
+		return 0;
+	}
+
 	LRESULT OnSettingChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		T* pThis=static_cast<T*>(this);
@@ -376,7 +394,7 @@ protected:
 		{
 			DWORD dwPos = ::GetMessagePos();
             CPoint pt(GET_X_LPARAM(dwPos), GET_Y_LPARAM(dwPos));
-			pThis->ScreenToClient(&pt);			
+			pThis->ScreenToClient(&pt);
 			HCURSOR hCursor=pThis->GetCursor(pt);
 			bHandled=(hCursor!=NULL);
 			if(bHandled)
@@ -463,10 +481,10 @@ protected:
 #ifdef DF_AUTO_HIDE_FEATURES
 	CAutoHideManager<TAutoHidePaneTraits> m_ahManager;
 #endif
+#ifdef DF_FOCUS_FEATURES
+	CDockingFocusHandler m_focusHandler;
+#endif
 };
-
-typedef CDockingFrameTraitsT< CSimpleSplitterBarEx<6>,
-		WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,0> CDockingSiteTraits;
 
 /////////////////CDockingSiteBasement
 template <class T, class TBase = CWindow, class TWinTraits = CDockingSiteTraits>
@@ -530,7 +548,7 @@ public:
 		m_vPackage.UpdateLayout(rc);
 		m_vPackage.Draw(dc);
     }
-};	
+};
 
 /////////////////CDockingFrameImpl
 
@@ -545,10 +563,10 @@ public:
 };
 
 /////////////////CMDIDockingFrameImpl
-template <class T, 
-		  class TBase = CMDIWindow, 		  
+template <class T,
+		  class TBase = CMDIWindow,
 		  class TWinTraits = CDockingFrameTraits >
-class ATL_NO_VTABLE CMDIDockingFrameImpl : 
+class ATL_NO_VTABLE CMDIDockingFrameImpl :
 	public CDockingFrameImplBase< T, CMDIFrameWindowImpl< T ,TBase, TWinTraits> ,TWinTraits >
 {
 public:
@@ -557,11 +575,11 @@ public:
 
 #ifdef DF_AUTO_HIDE_FEATURES
 /////////////////CAutoHideMDIDockingFrameImpl
-template <class T, 
-		  class TBase = CMDIWindow, 		  
+template <class T,
+		  class TBase = CMDIWindow,
 		  class TWinTraits = CDockingFrameTraits,
 		  class TAutoHidePaneTraits = COutlookLikeAutoHidePaneTraits >
-class ATL_NO_VTABLE CAutoHideMDIDockingFrameImpl : 
+class ATL_NO_VTABLE CAutoHideMDIDockingFrameImpl :
 	public CDockingFrameImplBase< T, CMDIFrameWindowImpl< T ,TBase, TWinTraits> ,TWinTraits, TAutoHidePaneTraits >
 {
 public:

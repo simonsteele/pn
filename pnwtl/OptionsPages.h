@@ -30,6 +30,7 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 			DDX_UINT(IDC_OPT_MRUCOUNT,			m_iMRUSize)
 			DDX_CHECK(IDC_OPT_MAXCHECK,			m_bMaximise)
 			DDX_CHECK(IDC_OPT_FULLPATHCHECK,	m_bFullPath)
+			DDX_CHECK(IDC_OPT_NEWFILEONSTART,	m_bNewOnStart)
 			DDX_CHECK(IDC_MULTIINSTANCECHECK,	m_bMultiInstanceOk)
 		END_DDX_MAP()
 
@@ -40,11 +41,11 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		
+		BOOL			m_bNewOnStart;
 		BOOL			m_bMaximise;
 		BOOL			m_bFullPath;
 		BOOL			m_bMultiInstanceOk;
 		UINT			m_iMRUSize;
-		
 };
 
 class COptionsPageEditDefaults : public COptionsPageImpl<COptionsPageEditDefaults>,

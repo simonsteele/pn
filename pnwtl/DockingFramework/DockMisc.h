@@ -36,6 +36,7 @@ namespace dockwins{
 
 #endif
 
+#ifndef DF_AUTO_HIDE_FEATURES
 template <class TSplitterBar,/* DWORD TDockFrameStyle=0,*/
 			DWORD t_dwStyle = 0, DWORD t_dwExStyle = 0>
 struct CDockingFrameTraitsT : CWinTraits <t_dwStyle,t_dwExStyle>
@@ -47,6 +48,11 @@ typedef CDockingFrameTraitsT< CSimpleSplitterBar<5>,
 		WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 		WS_EX_APPWINDOW | WS_EX_WINDOWEDGE> CDockingFrameTraits;
 
+
+typedef CDockingFrameTraitsT< CSimpleSplitterBarEx<6>,
+		WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,0> CDockingSiteTraits;
+
+#endif
 //////////////////messages///////////////////////////
 #define WMDF_FIRST  (WM_USER)
 #define WMDF_LAST	(WMDF_FIRST+1)
@@ -74,6 +80,8 @@ typedef CDockingFrameTraitsT< CSimpleSplitterBar<5>,
 #define DC_PINUP				(12)
 
 #define DC_GETMINDIST			(13)
+
+#define DC_PINBTNPRESS			(14)
 
 #define HDOCKBAR				HWND
 #define HNONDOCKBAR				(0)
@@ -134,6 +142,12 @@ typedef struct tagDFPINUP
 	unsigned long	n;
 	HWND*			phWnds;
 } DFPINUP;
+
+typedef struct tagDFPINBTNPRESS
+{
+	DFMHDR	hdr;
+	BOOL	bVisualize;
+} DFPINBTNPRESS;
 
 #define DFPU_VISUALIZE	(1)
 

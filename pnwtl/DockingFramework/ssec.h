@@ -60,7 +60,7 @@ struct bounds_type
 	position_t hi;
 };
 
-//uncommenting default value for TPosition yield "fatal error C1001: INTERNAL COMPILER ERROR" I don't know why 
+//uncommenting default value for TPosition yield "fatal error C1001: INTERNAL COMPILER ERROR" I don't know why
 template<class T,class TPosition/*=long*/,class TDistance=long,const TDistance TMinDistance=0>
 class spraits
 {
@@ -74,8 +74,8 @@ public:
 };
 
 //SeparatedSection
-template<class T,class TTraits=spraits<> >
-class ssection  
+template<class T,class TTraits >
+class ssection
 {
 	typedef T						separator_t;
 	typedef TTraits					traits;
@@ -105,7 +105,7 @@ protected:
 	{
 		while(begin!=end)
 		{
-			(*begin)+=offset;			
+			(*begin)+=offset;
 			if((*begin)>rbound)
 				(*begin)=rbound;
 			rbound+=traits::min_distance(*begin);
@@ -117,12 +117,21 @@ protected:
 	{
 		while(begin!=end)
 		{
-			(*begin)+=offset;	
+			(*begin)+=offset;
 			lbound-=traits::min_distance(*begin);
 			if((*begin)<lbound)
-				(*begin)=lbound;			
+				(*begin)=lbound;
 			++begin;
 		}
+	}
+
+	inline const double& Min( const double& a, const double& b )
+	{
+		return b < a ? b : a;
+	}
+	inline const double& Max( const double& a, const double& b )
+	{
+		return a < b ? b : a;
 	}
 
 	template<class T>
@@ -130,15 +139,18 @@ protected:
 	{
 		if(begin!=end)
 		{
-			position low=bounds.low;
-			position offset=low-(*begin);			
+			double low=bounds.low;
+			double offset=low-begin->get_real();
 			(*begin)=low;
 			bounds.low+=traits::min_distance(*begin);
 			bounds.hi-=distance_limit(++begin,end);
 			while(begin!=end)
 			{
-				(*begin)+=offset;
-				(*begin)=bounds.bind(low+position(((*begin)-low)*ratio));
+				(*begin)= begin->get_real() + offset;
+// pk021110 replaced following line due to truncation error.
+// Also CPtrFrame & CWndFrame classes modified to use double m_pos.
+//				(*begin)=(double)(bounds.bind(low+position(((*begin)-low)*ratio)));
+				(*begin)=Max((double)bounds.low,Min((double)bounds.hi,low+(begin->get_real()-low)*ratio));
 				distance d=traits::min_distance(*begin);
 				bounds.hi+=d;
 				bounds.low=(*begin)+d;
@@ -167,7 +179,7 @@ public:
 	{
 		return m_bounds.hi;
 	}
-	iterator begin() 
+	iterator begin()
 	{
 		return m_separators.begin();
 	}
@@ -209,7 +221,7 @@ public:
 	{
 		return m_separators.size();
 	}
-	
+
 	const_iterator locate(position pos) const
 	{
 		assert(m_bounds.bind(pos)==pos);
@@ -222,7 +234,7 @@ public:
 		return i;
 
 	}
-	iterator locate(position pos) 
+	iterator locate(position pos)
 	{
 		assert(m_bounds.bind(pos)==pos);
 		iterator i=m_separators.begin();
@@ -233,7 +245,7 @@ public:
 		}
 		return i;
 	}
-	
+
 	position get_frame_low(const_iterator i) const
 	{
 		assert(i!=m_separators.end());
@@ -243,7 +255,7 @@ public:
 	position get_frame_hi(const_iterator i) const
 	{
 		assert(i!=m_separators.end());
-		return (++i==m_separators.end()) ?m_bounds.hi :(*i);
+		return (++i==m_separators.end()) ? m_bounds.hi : position(*i);
 	}
 
 	distance get_frame_size(const_iterator i) const
@@ -265,7 +277,7 @@ public:
 //        distance rightLimit=distance_limit(i,m_separators.end())/*+traits::min_distance(x)*/;
 //
 //        bounds_t ef_bounds(m_bounds.low+leftLimit,m_bounds.hi-rightLimit-traits::min_distance(x));
-//        
+//
 //        assert(ef_bounds.low<=ef_bounds.hi);
 //        pos=ef_bounds.bind(pos);
 //
@@ -326,7 +338,7 @@ public:
 		assert(pos-limit>=m_bounds.low);
 		lshrink(m_separators.begin(),i,pos-limit);
 
-	
+
 		limit=distance_limit(i,m_separators.end());
 		assert(pos+limit<=m_bounds.hi);
 
@@ -352,7 +364,7 @@ public:
 		i=m_separators.erase(i);
 		if(i!=m_separators.end() && (i==m_separators.begin()) )
 			(*i)=m_bounds.low;
-		return i;	
+		return i;
 	}
 	const_iterator replace(iterator i,const T& x)
 	{
@@ -360,7 +372,7 @@ public:
 		position pos=(*i);
 		i=m_separators.erase(i);
 		i=m_separators.insert(i,x);
-		(*i)=pos;		
+		(*i)=pos;
 		return i;
 	}
 //////////////////some ugly additions////////////////////////////////////////
@@ -430,7 +442,7 @@ public:
 	iterator insert(iterator i,P p,const T& x,distance length)
 	{
 		assert(std::find_if(m_separators.begin(),m_separators.end(),p)!=m_separators.end());
-		
+
 		iterator first=std::find_if(m_separators.begin(),i,p);
 		iterator last=i;
 		distance n=length/*+traits::min_distance(x)*/;
@@ -472,7 +484,7 @@ public:
 		}
 		else
 			++first;
-		shift(first,last,n);		
+		shift(first,last,n);
 		return i;
 	}
 protected:

@@ -96,12 +96,13 @@ BEGIN
         END
         POPUP "&Windows"
         BEGIN
-            MENUITEM "&Projects",                   305
-            MENUITEM "&Text Clips",                 306
+            MENUITEM "&Projects",                   ID_VIEW_WINDOWS_PROJECT
+            MENUITEM "&Text Clips",                 ID_VIEW_WINDOWS_TEXTCLIPS
+
         END
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM SEPARATOR
-        MENUITEM "&Output\tF8",                 133
+        MENUITEM "&Output\tF8",                 ID_VIEW_OUTPUT
     END
     POPUP "&Tools"
     BEGIN
@@ -217,7 +218,7 @@ BEGIN
         MENUITEM "Schemes",                     ID_VIEW_CHANGESCHEME
         MENUITEM SEPARATOR
         MENUITEM "Individual Output\tShift+F8", ID_VIEW_INDIVIDUALOUTPUT
-        MENUITEM "&Output\tF8",                 133
+        MENUITEM "&Output\tF8",                 ID_VIEW_OUTPUT
     END
     POPUP "&Tools"
     BEGIN
@@ -344,12 +345,13 @@ BEGIN
     "G",            ID_EDIT_GOTO,           VIRTKEY, CONTROL, NOINVERT
     "H",            ID_EDIT_HEADERSWITCH,   VIRTKEY, SHIFT, CONTROL, 
                                                     NOINVERT
+    "G",            ID_EDIT_JUMPTO,         VIRTKEY, ALT, NOINVERT
     "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
     VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
     "R",            ID_EDIT_REPLACE,        VIRTKEY, CONTROL, NOINVERT
     VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
     "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
-    VK_F8,          ID_EDITOR_OUTPUTWND,    VIRTKEY, NOINVERT
+    VK_F8,          ID_VIEW_OUTPUT,         VIRTKEY, NOINVERT
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
     "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
@@ -362,7 +364,6 @@ BEGIN
     VK_RETURN,      ID_VIEW_FILEPROPERTIES, VIRTKEY, ALT, NOINVERT
     VK_F8,          ID_VIEW_INDIVIDUALOUTPUT, VIRTKEY, SHIFT, NOINVERT
     VK_MULTIPLY,    ID_VIEW_TOGGLEFOLD,     VIRTKEY, CONTROL, NOINVERT
-    "G",            ID_EDIT_JUMPTO,         VIRTKEY, ALT, NOINVERT
 END
 
 
@@ -955,10 +956,13 @@ BEGIN
     CONTROL         "&Show full file path in document windows",
                     IDC_OPT_FULLPATHCHECK,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,10,36,156,10
-    LTEXT           "&Display",IDC_STATIC,10,58,28,8
-    EDITTEXT        IDC_OPT_MRUCOUNT,42,56,30,14,ES_AUTOHSCROLL
+    LTEXT           "&Display",IDC_STATIC,10,70,28,8
+    EDITTEXT        IDC_OPT_MRUCOUNT,42,68,30,14,ES_AUTOHSCROLL
     LTEXT           "(1 to 50) items in the most recently used list.",
-                    IDC_STATIC,75,58,168,8
+                    IDC_STATIC,75,70,168,8
+    CONTROL         "&Start with a new, blank document",
+                    IDC_OPT_NEWFILEONSTART,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,10,48,196,10
 END
 
 IDD_PAGE_NEWFILES DIALOGEX 0, 0, 300, 200

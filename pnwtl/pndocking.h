@@ -15,6 +15,7 @@
 #include <DockingFrame.h>
 #include <DockingBox.h>
 #include <TabDockingBox.h>
+#include <VC7LikeCaption.h>
 
 // These includes are to enable the state manager stuff.
 #include <sstate.h>
@@ -66,18 +67,25 @@ class CPNStateManager : public sstate::CWindowStateMgr
 		}
 };
 
+// 1 
+//	public CTabbedFrameImpl<CPNDockingWindow, CDotNetTabCtrl<CTabViewTabItem>, 
+		//dockwins::CTitleDockingWindowImpl< CPNDockingWindow, CWindow, dockwins::COutlookLikeTitleDockingWindowTraits> >
+
+// 2
+	//public dockwins::CBoxedDockingWindowImpl<T, CWindow, dockwins::CVC7LikeBoxedDockingWindowTraits >
+
 /**
  * @brief This is the base class for all docking windows in Programmers Notepad 2.
  */
 template <class T>
-class /*ATL_NO_VTABLE*/ CPNDockingWindow : public dockwins::CBoxedDockingWindowImpl<T,
+class /*ATL_NO_VTABLE*/ CPNDockingWindowT : public dockwins::CBoxedDockingWindowImpl<T,
                 CWindow, dockwins::CVC7LikeBoxedDockingWindowTraits >
 {
 	typedef dockwins::CBoxedDockingWindowImpl<T, CWindow, dockwins::CVC7LikeBoxedDockingWindowTraits> baseClass;
-	typedef CPNDockingWindow<T> thisClass;
+	typedef CPNDockingWindowT<T> thisClass;
 
 	public:
-		CPNDockingWindow()
+		CPNDockingWindowT()
 		{
 			m_hWndClient = NULL;
 		}
@@ -126,12 +134,17 @@ class /*ATL_NO_VTABLE*/ CPNDockingWindow : public dockwins::CBoxedDockingWindowI
 		HWND m_hWndClient;
 };
 
+// Get a slightly slimmer splitter - much nicer.
+typedef dockwins::CDockingFrameTraitsT< dockwins::CSimpleSplitterBar<3>,
+		WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
+		WS_EX_APPWINDOW | WS_EX_WINDOWEDGE> CPNDockingFrameTraits;
+
 /**
  * @brief This class combines the Tabbed MDI framework with the docking windows framework
  */
 template <class T, 
 		  class TBase = CMDIWindow, 		  
-		  class TWinTraits = dockwins::CDockingFrameTraits >
+		  class TWinTraits = CPNDockingFrameTraits >
 class ATL_NO_VTABLE CPNDockingTabbedMDIFrameWindow : 
 	public dockwins::CDockingFrameImplBase< T, CTabbedMDIFrameWindowImpl< T , CPNMDIClient, TBase, TWinTraits> ,TWinTraits >
 {
@@ -139,5 +152,6 @@ public:
 	DECLARE_WND_CLASS(_T("CPNDockingTabbedMDIFrameWindow"))
 };
 
+#include "pndockingwindow.h"
 
 #endif //#ifndef pndocking_h__included

@@ -234,8 +234,8 @@
 #define CTCN_BEGINITEMDRAG      (TCN_FIRST - 21)
 #define CTCN_ACCEPTITEMDRAG     (TCN_FIRST - 22)
 #define CTCN_CANCELITEMDRAG     (TCN_FIRST - 23)
-#define CTCN_MCLICK				(TCN_FIRST - 16)
-#define CTCN_MDBLCLK			(TCN_FIRST - 17)
+#define CTCN_MCLICK				(TCN_FIRST - 24)
+#define CTCN_MDBLCLK			(TCN_FIRST - 25)
 
 // Hit Test codes
 #define CTCHT_NOWHERE            0x0001             // TCHT_NOWHERE

@@ -22,13 +22,13 @@
 #endif
 
 namespace dockwins{
-	
+
 template<long TThickness=5>
 class CSimpleSplitterBar :  public CRect
 {
 public:
 	enum{sbThickness=TThickness};
-	
+
 	CSimpleSplitterBar(bool bHorizontal=true)
 		:m_bHorizontal(bHorizontal)
 	{
@@ -69,7 +69,7 @@ public:
 		}
 		return hCursor;
 	}
-	
+
     void Draw(CDC& dc) const
     {
         dc.FillRect(this, (HBRUSH)LongToPtr(COLOR_3DFACE + 1));
@@ -115,7 +115,7 @@ public:
         dc.FillRect(this, (HBRUSH)LongToPtr(COLOR_3DFACE + 1));
 		CRect rc(*this);
 //		dc.DrawEdge(&rc, EDGE_RAISED, (IsHorizontal()) ? (BF_TOP | BF_BOTTOM) : (BF_LEFT | BF_RIGHT) );
-		dc.DrawEdge(&rc, BDR_RAISEDINNER, (IsHorizontal()) ? (BF_TOP | BF_BOTTOM) : (BF_LEFT | BF_RIGHT) );		
+		dc.DrawEdge(&rc, BDR_RAISEDINNER, (IsHorizontal()) ? (BF_TOP | BF_BOTTOM) : (BF_LEFT | BF_RIGHT) );
 
     }
 
@@ -125,7 +125,7 @@ template<class T>
 class CSimpleSplitterBarSlider
 {
 	typedef T CSplitter;
-	typedef CSimpleSplitterBarSlider<CSplitter> thisClass; 
+	typedef CSimpleSplitterBarSlider<CSplitter> thisClass;
 public:
 	CSimpleSplitterBarSlider(CSplitter& splitter)
 		:m_splitter(splitter)
@@ -166,7 +166,7 @@ public:
 protected:
 	CSplitter& m_splitter;
 	long	*m_pTop;
-	long	*m_pDependant;		
+	long	*m_pDependant;
 };
 
 }//namespace dockwins

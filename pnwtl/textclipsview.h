@@ -17,10 +17,11 @@ namespace TextClips {
 	class TextClipSet;
 }
 
-class CClipsDocker : public CPNDockingWindow<CClipsDocker>
+class CClipsDocker : public CWindowImpl<CClipsDocker>//CPNDockingWindow<CClipsDocker>
 {
 	typedef CClipsDocker thisClass;
-	typedef CPNDockingWindow<CClipsDocker> baseClass;
+	//typedef CPNDockingWindow<CClipsDocker> baseClass;
+	typedef CWindowImpl<CClipsDocker> baseClass;
 
 public:
 	DECLARE_WND_CLASS(_T("CClipsDocker"))
@@ -41,7 +42,7 @@ public:
 		COMMAND_HANDLER(IDC_CLIPSCOMBO, CBN_SELCHANGE, OnComboSelChange)
 		NOTIFY_HANDLER(IDC_CLIPSLIST, NM_DBLCLK, OnClipSelected);
 		REFLECT_NOTIFICATIONS()
-		CHAIN_MSG_MAP(baseClass)
+		//CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
 protected:

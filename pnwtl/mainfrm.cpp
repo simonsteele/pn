@@ -16,6 +16,7 @@
 
 // Needed because we derive from it.
 #include "tools.h"			// External Tools
+#include "pndocking.h"		// Docking Window Stuff
 
 // Windows and Dialogs
 #include "mainfrm.h"		// This Window
@@ -261,15 +262,11 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 
 BOOL CMainFrame::OnIdle()
 {
-	// Because it's complicated to handle the case directly when a docking window
-	// is closed by the user by clicking on its X button, we do it in OnIdle() - a bit
-	// messy but hey!
-	if(m_pOutputWnd != NULL)
-		UISetCheck(ID_EDITOR_OUTPUTWND, m_pOutputWnd->IsWindowVisible());
-	if(m_pProjectsWnd != NULL)
-		UISetCheck(ID_VIEW_WINDOWS_PROJECT, m_pProjectsWnd->IsWindowVisible());
-	if(m_pClipsWnd != NULL)
-		UISetCheck(ID_VIEW_WINDOWS_TEXTCLIPS, m_pClipsWnd->IsWindowVisible());
+	// Deal with docking window visible states...
+	for(int i = 0; i <= ID_VIEW_LASTDOCKER - ID_VIEW_FIRSTDOCKER; i++)
+	{
+		UISetCheck( ID_VIEW_FIRSTDOCKER + i, m_dockingWindows[i]->IsWindowVisible() );
+	}
 
 	HWND hWnd = MDIGetActive();
 	m_SchemeCombo.EnableWindow( hWnd != NULL );
@@ -525,6 +522,98 @@ HWND CMainFrame::CreateSchemeToolbar()
 	return hWnd;
 }
 
+/*CPNDockingWindow* CreateDockWrapper(CMainFrame* parent, HWND client, LPCTSTR title, 
+									bool bDock, dockwins::CDockingSide side = dockwins::CDockingSide::sLeft, 
+									int nBar = 0, float fPctPos = 0, int width = 0, int height = 0)
+{
+	DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+	CRect rcBar(0, 0, 200, 70);
+
+	CPNDockingWindow* pDocker = new CPNDockingWindow();
+	pDocker->SetClientFlatOutline(true);
+	pDocker->SetClient( client );
+	pDocker->Create(parent->m_hWnd, rcBar, title, dwStyle, WS_EX_TOOLWINDOW);
+	
+	if(bDock)
+	{
+		parent->DockWindow(*pDocker, side, nBar, fPctPos, width, height);
+	}
+
+	return pDocker;
+}*/
+
+template<class TWnd>
+TWnd* CreateDocker(LPCTSTR title, CRect& rect, CMainFrame* owner, CPNDockingWindow** pArr, int index,
+					bool bDock, dockwins::CDockingSide side = dockwins::CDockingSide::sLeft, 
+					int nBar = 0, float fPctPos = 0)
+{
+	DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+	CRect rcBar(0, 0, 200, 70);
+
+	TWnd* pWnd = new TWnd;
+	CPNDockingWindow* pDocker = new CPNDockingWindow();
+	pDocker->Create(owner->m_hWnd, rect, title, dwStyle, WS_EX_TOOLWINDOW);
+
+	pWnd->Create(pDocker->m_hWnd, rect, title);
+
+	pDocker->SetClientFlatOutline(true);
+	pDocker->SetClient(pWnd->m_hWnd);
+
+	pArr[index] = pDocker;
+
+	if(bDock)
+	{
+		owner->DockWindow(*pDocker, side, nBar, fPctPos, rect.Width(), rect.Height());
+	}
+
+	return pWnd;
+}
+
+void CMainFrame::CreateDockingWindows()
+{
+	// Create docking windows...
+	CRect rcLeft(0,0,200,400);
+	CRect rcBottom(0,0,400,200);
+
+	//m_pProjectsWnd = new CProjectDocker;
+	//m_pProjectsWnd->Create(m_hWnd, rcLeft, _T("Projects"));
+	//m_pClipsWnd = new CClipsDocker;
+	//m_pClipsWnd->Create(m_hWnd, rcLeft, _T("Text-Clips"));
+	//m_pOutputWnd = new COutputView;
+	//m_pOutputWnd->Create(m_hWnd, rcBottom, _T("Output"));
+	
+	m_pOutputWnd = CreateDocker<COutputView>(_T("Output"), rcBottom, this, 
+		m_dockingWindows, ID_VIEW_OUTPUT - ID_VIEW_FIRSTDOCKER,
+		true, dockwins::CDockingSide::sBottom);
+
+	m_pClipsWnd = CreateDocker<CClipsDocker>(_T("Text-Clips"), rcLeft, this,
+		m_dockingWindows, ID_VIEW_WINDOWS_TEXTCLIPS - ID_VIEW_FIRSTDOCKER,
+		true, dockwins::CDockingSide::sLeft);
+
+	m_pProjectsWnd = CreateDocker<CProjectDocker>(_T("Projects"), rcLeft, this, 
+		m_dockingWindows, ID_VIEW_WINDOWS_PROJECT - ID_VIEW_FIRSTDOCKER,
+		false);
+
+	getDocker(DW_PROJECTS)->DockTo( getDocker(DW_TEXTCLIPS)->m_hWnd, 0 );
+
+	//m_dockingWindows[ID_VIEW_OUTPUT - ID_VIEW_FIRSTDOCKER] = CreateDockWrapper( this, m_pOutputWnd->m_hWnd, _T("Output"), true, dockwins::CDockingSide::sBottom, 0, 1, 200, 80 );
+	//m_dockingWindows[ID_VIEW_WINDOWS_TEXTCLIPS - ID_VIEW_FIRSTDOCKER] = CreateDockWrapper( this, m_pClipsWnd->m_hWnd, _T("Text-Clips"), true, dockwins::CDockingSide::sLeft, 0, 1, 170, 200 );
+	//m_dockingWindows[ID_VIEW_WINDOWS_PROJECT - ID_VIEW_FIRSTDOCKER] = CreateDockWrapper( this, m_pProjectsWnd->m_hWnd, _T("Projects"), false );
+
+	/*m_pOutputWnd = new CDockingOutputWindow;
+	m_pOutputWnd->Create(m_hWnd, rcBar, _T("Output"), dwStyle, WS_EX_TOOLWINDOW);
+	DockWindow(*m_pOutputWnd, dockwins::CDockingSide::sBottom, 0, 1, 200, 80);
+
+	m_pClipsWnd = new CClipsDocker;
+	m_pClipsWnd->Create(m_hWnd, rcBar, _T("Text-Clips"), dwStyle, WS_EX_TOOLWINDOW);
+	DockWindow(*m_pClipsWnd, dockwins::CDockingSide::sLeft, 0, 1, 170, 200);
+
+	m_pProjectsWnd = new CProjectDocker;
+	m_pProjectsWnd->Create(m_hWnd, rcBar, _T("Projects"), dwStyle, WS_EX_TOOLWINDOW);
+	m_pProjectsWnd->DockTo(m_pClipsWnd->m_hWnd, 0);*/
+	//DockWindow(*m_pProjectsWnd, dockwins::CDockingSide::sLeft, 0, 1, 100, 200);
+}
+
 /**
  * This function is mostly identical to the one in WTL but allows the optional
  * use of chevrons.
@@ -733,29 +822,13 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_RecentProjects.SetSize(OPTIONS->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4));
 	m_RecentProjects.SetRegistryKey(mrukey);
 	m_RecentProjects.UpdateMenu();
-
 	
 	AddMRUMenu(CSMenuHandle(m_hMenu));
 	AddNewMenu(CSMenuHandle(m_hMenu));
 
-	// Create docking windows...
-	DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
-	CRect rcBar(0, 0, 200, 70);
-	
-	m_pOutputWnd = new CDockingOutputWindow;
-	m_pOutputWnd->Create(m_hWnd, rcBar, _T("Output"), dwStyle, WS_EX_TOOLWINDOW);
-	DockWindow(*m_pOutputWnd, dockwins::CDockingSide::sBottom, 0, 1, 200, 80);
-
-	m_pClipsWnd = new CClipsDocker;
-	m_pClipsWnd->Create(m_hWnd, rcBar, _T("Text-Clips"), dwStyle, WS_EX_TOOLWINDOW);
-	DockWindow(*m_pClipsWnd, dockwins::CDockingSide::sLeft, 0, 1, 170, 200);
-
-	m_pProjectsWnd = new CProjectDocker;
-	m_pProjectsWnd->Create(m_hWnd, rcBar, _T("Projects"), dwStyle, WS_EX_TOOLWINDOW);
-	m_pProjectsWnd->DockTo(m_pClipsWnd->m_hWnd, 0);
-	//DockWindow(*m_pProjectsWnd, dockwins::CDockingSide::sLeft, 0, 1, 100, 200);
-
+	CreateDockingWindows();
 	InitGUIState();
+
 	PostMessage(PN_INITIALISEFRAME);
 
 	return 0;
@@ -805,7 +878,8 @@ LRESULT CMainFrame::OnEscapePressed(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 {
 	if( m_pOutputWnd->IsWindowVisible() )
 	{
-		m_pOutputWnd->Hide();
+		getDocker(DW_OUTPUT)->Hide();
+		//m_pOutputWnd->Hide();
 		return TRUE;
 	}
 
@@ -824,6 +898,17 @@ LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 		else
 		{
 			OpenFile(__argv[i]);
+		}
+	}
+
+	HWND hWndEditor = GetCurrentEditor();
+	if(hWndEditor == NULL)
+	{
+		if(OPTIONS->Get(PNSK_INTERFACE, _T("NewOnStart"), true))
+		{
+			// Bad simon, bad.
+			BOOL bHandled;
+			OnFileNew(0, 0, 0, bHandled);
 		}
 	}
 
@@ -1018,6 +1103,14 @@ LRESULT CMainFrame::OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 	return 0;
 }
 
+LRESULT CMainFrame::OnDockerToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	PNASSERT(wID >= ID_VIEW_FIRSTDOCKER && wID <= ID_VIEW_LASTDOCKER);
+	m_dockingWindows[wID - ID_VIEW_FIRSTDOCKER]->Toggle();
+
+	return 0;
+}
+
 LRESULT CMainFrame::OnMRUProjectSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	LPCTSTR filename = m_RecentProjects.GetEntry(wID - ID_MRUPROJECT_BASE);
@@ -1123,36 +1216,9 @@ LRESULT CMainFrame::OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	return 0;
 }
 
-LRESULT CMainFrame::OnOutputWindowToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainFrame::OnHideOutput(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	if(m_pOutputWnd == NULL)
-		RETURN_UNEXPECTED(_T("No Projects Window."), 0);
-
-	m_pOutputWnd->Toggle();
-	UISetCheck(ID_EDITOR_OUTPUTWND, m_pOutputWnd->IsWindowVisible());
-
-	return 0;
-}
-
-LRESULT CMainFrame::OnViewProjectWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	if(m_pProjectsWnd == NULL)
-		RETURN_UNEXPECTED(_T("No Projects Window."), 0);
-
-	m_pProjectsWnd->Toggle();
-	UISetCheck(ID_VIEW_WINDOWS_PROJECT, m_pProjectsWnd->IsWindowVisible());
-
-	return 0;
-}
-
-LRESULT CMainFrame::OnViewTextClipsWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	if(m_pClipsWnd == NULL)
-		RETURN_UNEXPECTED(_T("No Clips Window."), 0);
-
-	m_pClipsWnd->Toggle();
-	UISetCheck(ID_VIEW_WINDOWS_PROJECT, m_pClipsWnd->IsWindowVisible());
-
+	getDocker(DW_OUTPUT)->Hide();
 	return 0;
 }
 
@@ -1329,6 +1395,11 @@ void CMainFrame::launchExternalSearch(LPCTSTR searchString)
 	}
 
 	::ShellExecute(m_hWnd, _T("open"), s.c_str(), NULL, NULL, SW_SHOW);
+}
+
+CPNDockingWindow* CMainFrame::getDocker(EDocker window) const
+{
+	return m_dockingWindows[(int)window - ID_VIEW_FIRSTDOCKER];
 }
 
 LRESULT CMainFrame::OnSearchGoogle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -1620,9 +1691,15 @@ void CMainFrame::InitGUIState()
 {
 	// Create a list of the docking windows to manage.
 	sstate::CDockWndMgrEx dockers(m_hWnd);
-	dockers.Add(sstate::CDockingWindowStateAdapterEx<CDockingOutputWindow>(*m_pOutputWnd));
+	
+	/*dockers.Add(sstate::CDockingWindowStateAdapterEx<CDockingOutputWindow>(*m_pOutputWnd));
 	dockers.Add(sstate::CDockingWindowStateAdapterEx<CProjectDocker>(*m_pProjectsWnd));
-	dockers.Add(sstate::CDockingWindowStateAdapterEx<CClipsDocker>(*m_pClipsWnd));
+	dockers.Add(sstate::CDockingWindowStateAdapterEx<CClipsDocker>(*m_pClipsWnd));*/
+
+	for(int i = 0; i <= ID_VIEW_LASTDOCKER-ID_VIEW_FIRSTDOCKER; ++i)
+	{
+		dockers.Add(sstate::CDockingWindowStateAdapter<CPNDockingWindow>(*m_dockingWindows[i]));
+	}
 	
 	tstring statekey(pnregroot);
 	statekey += PNSK_INTERFACE;
@@ -1694,7 +1771,8 @@ void CMainFrame::SaveGUIState(LPCTSTR stateName)
 void CMainFrame::SetDefaultGUIState()
 {
 	// Dock the output window to the bottom of the main frame, hide it.
-	m_pOutputWnd->Hide();
+	getDocker(DW_OUTPUT)->Hide();
+	//m_pOutputWnd->Hide();
 	//m_pClipsWnd->Hide();
 	//m_pProjectsWnd->Hide();
 }
@@ -1731,7 +1809,7 @@ public:
 ToolWrapper* CMainFrame::MakeGlobalOutputWrapper(ToolDefinition* pDefinition)
 {
 	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
-	return new GlobalOutputWrapper(this, m_pOutputWnd->GetView(), pChild, *pDefinition);
+	return new GlobalOutputWrapper(this, m_pOutputWnd, pChild, *pDefinition);
 }
 
 void CMainFrame::AddMRUEntry(LPCTSTR lpszFile)
@@ -1847,17 +1925,17 @@ void CMainFrame::ToggleOutputWindow(bool bSetValue, bool bShowing)
 	{
 		if(bShowing)
 		{
-			if( !m_pOutputWnd->IsWindowVisible() )
-				m_pOutputWnd->Show();
+			if( !getDocker(DW_OUTPUT)->IsWindowVisible() )
+				getDocker(DW_OUTPUT)->Show();
 		}
 		else
 		{
-			if( m_pOutputWnd->IsWindowVisible() )
-				m_pOutputWnd->Hide();
+			if( getDocker(DW_OUTPUT)->IsWindowVisible() )
+				getDocker(DW_OUTPUT)->Hide();
 		}
 	}
 	else
-		m_pOutputWnd->Toggle();
+		getDocker(DW_OUTPUT)->Toggle();
 }
 
 void CMainFrame::NewProject(LPCTSTR szProjectFile)
@@ -1869,8 +1947,8 @@ void CMainFrame::NewProject(LPCTSTR szProjectFile)
 	}
 	else
 	{
-		if(!m_pProjectsWnd->IsWindowVisible())
-			m_pProjectsWnd->Toggle();
+		if(!getDocker(DW_PROJECTS)->IsWindowVisible())
+			getDocker(DW_PROJECTS)->Toggle();
 	}
 
 	Projects::Workspace* workspace = m_pProjectsWnd->GetWorkspace();
@@ -1909,8 +1987,8 @@ void CMainFrame::OpenProject(LPCTSTR projectPath)
 		UNEXPECTED(_T("No projects window!"))
 	else
 	{
-		if(!m_pProjectsWnd->IsWindowVisible())
-			m_pProjectsWnd->Toggle();
+		if(!getDocker(DW_PROJECTS)->IsWindowVisible())
+			getDocker(DW_PROJECTS)->Toggle();
 	}
 
 	if(!FileExists(projectPath))

@@ -20,6 +20,7 @@
 
 #include <sstream>
 #include <fstream>
+#include <algorithm>
 
 #if defined (_DEBUG)
 #define new DEBUG_NEW

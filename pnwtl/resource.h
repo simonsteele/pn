@@ -74,7 +74,6 @@
 #define ID_HELP_WEB_SB                  253
 #define ID_HELP_REPORTABUG              254
 #define IDD_TOOLEDITOR                  255
-#define ID_VIEW_OUTPUT                  256
 #define IDR_POPUP_OUTPUT                257
 #define ID_PROJECT_DELETE               258
 #define ID_OUTPUT_CLEAR                 259
@@ -125,8 +124,6 @@
 #define ID_VIEW_TOOLBARS_FIND           302
 #define ID_VIEW_TOOLBARS_SCHEMES        303
 #define ID_VIEW_WINDOWS                 304
-#define ID_VIEW_WINDOWS_PROJECT         305
-#define ID_VIEW_WINDOWS_TEXTCLIPS       306
 #define IDR_POPUP_WORKSPACE             307
 #define ID_WORKSPACE_NEWPROJECT         308
 #define ID_WORKSPACE_ADDPROJECT         309
@@ -239,6 +236,7 @@
 #define IDC_OPT_LINENOSCHECK            1051
 #define IDC_SMARTSTART_ENABLECHECK      1051
 #define IDC_TE_CLEARCHECK               1051
+#define IDC_OPT_NEWFILEONSTART          1051
 #define IDC_TE_SAVEALLCHECK             1052
 #define IDC_COMBO1                      1053
 #define IDC_NEW_SCHEMECOMBO             1053
@@ -300,6 +298,11 @@
 #define IDC_DIRECTION_GROUP             21207
 #define IDC_FINDCOMBO                   21208
 #define IDI_INFOICON                    32516
+#define ID_VIEW_FIRSTDOCKER             32700
+#define ID_VIEW_OUTPUT                  32700
+#define ID_VIEW_WINDOWS_PROJECT         32701
+#define ID_VIEW_WINDOWS_TEXTCLIPS       32702
+#define ID_VIEW_LASTDOCKER              32702
 #define ID_EDIT_FINDNEXT                32773
 #define ID_EDIT_GOTO                    32774
 #define ID_TOOLS_LECRLF                 32777

@@ -14,6 +14,7 @@
 #include "version.h"
 #include "pnutils.h"
 
+#include "pndocking.h"
 #include "MainFrm.h"
 
 //#ifdef _DEBUG

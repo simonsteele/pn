@@ -104,34 +104,4 @@ class CToolREBuilder : public CustomFormatStringBuilder<CToolREBuilder>
 		void OnFormatChar(TCHAR thechar);
 };
 
-/**
- * @brief Docking frame for the tool output view.
- */
-class CDockingOutputWindow : public CPNDockingWindow<CDockingOutputWindow>
-{
-	typedef CDockingOutputWindow thisClass;
-	typedef CPNDockingWindow<CDockingOutputWindow> baseClass;
-
-public:
-	DECLARE_WND_CLASS(_T("CDockingOutputWindow"))
-
-	BEGIN_MSG_MAP(thisClass)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
-		MESSAGE_HANDLER(WM_SIZE, OnSize)
-		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHide)
-		REFLECT_NOTIFICATIONS()
-		CHAIN_MSG_MAP(baseClass)
-	END_MSG_MAP()
-
-	COutputView* GetView();
-
-protected:
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
-	LRESULT OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
-protected:
-	COutputView m_view;
-};
-
 #endif

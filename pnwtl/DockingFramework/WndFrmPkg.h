@@ -62,7 +62,7 @@ public:
 
 	operator position() const
 	{
-		return m_pos;
+		return (position)m_pos;
 	}
 
 	CWndFrame& operator += (position val)
@@ -75,13 +75,24 @@ public:
 		m_pos-=val;
 		return *this;
 	}
-	
+
 	CWndFrame& operator = (position pos)
 	{
 		m_pos=pos;
 		return *this;
 	}
-	
+
+	CWndFrame& operator = (double pos)
+	{
+		m_pos=pos;
+		return *this;
+	}
+
+	double get_real()
+	{
+		return m_pos;
+	}
+
 	HDWP DeferFramePos(HDWP hdwp,long x1,long y1,long x2,long y2) const
 	{
 		return ::DeferWindowPos(hdwp,hwnd(),
@@ -104,7 +115,7 @@ public:
 		return ::SendMessage(dockHdr.hBar,WMDF_DOCK,NULL,reinterpret_cast<LPARAM>(&dockHdr));
 	}
 protected:
-	position m_pos;
+	double m_pos;
 	mutable HWND m_hWnd;
 };
 
@@ -175,7 +186,7 @@ protected:
                     top=rcClient.top;
                     bottom=rcClient.bottom;
             }
-		
+
 		}
 	};
 	class CEmbeddedSplitterBarPainter
@@ -234,7 +245,7 @@ protected:
 			}
 		}
 		virtual void Move()=0;
-		
+
 	protected:
 		thisClass&		m_owner;
 		CFrames&		m_frames;
@@ -260,7 +271,7 @@ protected:
 			SetPosition();
 		}
 	};
-	
+
 	class CSplitterMoveTrackerGhost : public CSplitterMoveTrackerBase
 	{
 		typedef CEmbeddedSplitterBar CSplitterBar;
@@ -309,7 +320,7 @@ protected:
 	public:
 		CMinMaxInfoAccumulator(bool bHorizontal)
 		{
-			m_pFun=bHorizontal ? &MinMaxInfoH : &MinMaxInfoV; 
+			m_pFun=bHorizontal ? &MinMaxInfoH : &MinMaxInfoV;
 		}
 		LPMINMAXINFO operator() (LPMINMAXINFO pMinMaxInfo,const CFrame& x) const
 		{
@@ -428,7 +439,7 @@ public:
 	{
 		m_bHorizontal=bHorizontal;
 	}
-	
+
 	HCURSOR GetCursor(const CPoint& pt,const CRect& rc) const
 	{
 		HCURSOR hCursor=NULL;
@@ -436,7 +447,7 @@ public:
 		const_iterator i=m_frames.locate(pos);
 		if(i!=m_frames.end())
 		{
-			CEmbeddedSplitterBar splitter(!IsHorizontal(),(*i),rc);		
+			CEmbeddedSplitterBar splitter(!IsHorizontal(),(*i),rc);
 			hCursor=splitter.GetCursor(pt);
 		}
 		return hCursor;
@@ -447,11 +458,9 @@ public:
 		std::auto_ptr<CSplitterMoveTrackerBase> pTracker;
 
 		if(bGhostMove)
-			pTracker=std::auto_ptr<CSplitterMoveTrackerBase>(
-								new CSplitterMoveTrackerGhost(hWnd,*this,pt,rc));
+			pTracker.reset(new CSplitterMoveTrackerGhost(hWnd,*this,pt,rc));
 		else
-			pTracker=std::auto_ptr<CSplitterMoveTrackerBase>(
-								new CSplitterMoveTrackerFull(*this,pt,rc));
+			pTracker.reset(new CSplitterMoveTrackerFull(hWnd,*this,pt,rc));
 
 		bool bRes=false;
 		if(const_iterator(*pTracker)!=m_frames.end())
@@ -466,17 +475,24 @@ public:
 		const_iterator i=m_frames.locate(pos);
 		if(i!=m_frames.end())
 		{
-			CEmbeddedSplitterBar splitter(!IsHorizontal(),(*i),rc);		
+			CEmbeddedSplitterBar splitter(!IsHorizontal(),(*i),rc);
 			if(splitter.IsPtIn(pt))
 			{
 				std::auto_ptr<CSplitterMoveTrackerBase> pTracker;
 
+#if (_MSC_VER >= 1310)
+				if(bGhostMove)
+					pTracker.reset(new CSplitterMoveTrackerGhost(hWnd,*this,pt,rc));
+				else
+					pTracker.reset(new CSplitterMoveTrackerFull(hWnd,*this,pt,rc));
+#else // (_MSC_VER < 1310)
 				if(bGhostMove)
 					pTracker=std::auto_ptr<CSplitterMoveTrackerBase>(
 										new CSplitterMoveTrackerGhost(hWnd,*this,pt,rc));
 				else
 					pTracker=std::auto_ptr<CSplitterMoveTrackerBase>(
 										new CSplitterMoveTrackerFull(hWnd,*this,pt,rc));
+#endif
 
 				if(const_iterator(*pTracker)!=m_frames.end())
 					 bRes=TrackDragAndDrop(*pTracker,hWnd);
@@ -546,7 +562,7 @@ public:
 		CSize sz;
 		GetMinFrameSize(&(pHdr->hdr),sz);
 		if(rc.PtInRect(CPoint(pHdr->rect.left,pHdr->rect.top))
-			&& (sz.cx<=rc.Width()) 
+			&& (sz.cx<=rc.Width())
 				&& (sz.cy<=rc.Height())
 					&& ((( (IsHorizontal()) ? sz.cx : sz.cy)+m_frames.distance_limit())<(m_frames.hi()-m_frames.low())))
 		{
@@ -585,13 +601,13 @@ public:
 		{
 			iterator inext=i;
 			++inext;
-			CBounds fbounds((*i),(inext!=m_frames.end())?(*inext):m_frames.hi());
+			CBounds fbounds((*i),(inext!=m_frames.end()) ? position(*inext) : m_frames.hi());
 			if((fbounds.low+(fbounds.hi-fbounds.low)/3)<pos)
 				i=inext;
 		}
 		frame=pos;
 		m_frames.insert(i,frame,len);
-		
+
 		return Arrange(rc);
 	}
 	bool Undock(const DFMHDR* pHdr,const CRect& rc)
@@ -732,7 +748,7 @@ public:
 };
 
 template<class T>
-class CPtrFrame  
+class CPtrFrame
 {
 	typedef CPtrFrame<T> thisClass;
 public:
@@ -753,11 +769,11 @@ public:
 		HWND m_hWnd;
 	};
 
-	CPtrFrame(const CPtrFrame& x):m_pos(x.m_pos),m_ptr(x.m_ptr)  
+	CPtrFrame(const CPtrFrame& x):m_pos(x.m_pos),m_ptr(x.m_ptr)
 	{
 	}
 	CPtrFrame(position pos, T* ptr)
-		:m_pos(pos),m_ptr(ptr)  
+		:m_pos(pos),m_ptr(ptr)
 	{
 	}
 	HWND hwnd() const
@@ -767,7 +783,7 @@ public:
 
 	operator position() const
 	{
-		return m_pos;
+		return (position)m_pos;
 	}
 
 	thisClass& operator += (position val)
@@ -780,11 +796,22 @@ public:
 		m_pos-=val;
 		return *this;
 	}
-	
+
 	thisClass& operator = (position pos)
 	{
 		m_pos=pos;
 		return *this;
+	}
+
+	thisClass& operator = (double pos)
+	{
+		m_pos=pos;
+		return *this;
+	}
+
+	double get_real()
+	{
+		return m_pos;
 	}
 
 	HDWP DeferFramePos(HDWP hdwp,long x1,long y1,long x2,long y2) const
@@ -804,7 +831,7 @@ public:
 		return m_ptr->MinDistance();
 	}
 protected:
-	position m_pos;
+	double m_pos;
 #ifdef USE_BOOST
 	mutable boost::shared_ptr<T> m_ptr;
 #else
@@ -820,7 +847,7 @@ struct IFrame
 
 	virtual  ~IFrame(){};
 	virtual  HWND hwnd() const=0;
-	operator HWND() const 
+	operator HWND() const
 	{
 		return hwnd();
 	}
@@ -881,18 +908,18 @@ protected:
 
 //TImbeddedPackegeWnd
 template<class TPackageFrame,class TTraits = CDockingWindowTraits >
-class CSubWndFramesPackage : 
+class CSubWndFramesPackage :
 		public CRect,
 		public CWndFramesPackageBase<CPtrFrame<IFrame>,TTraits >
 {
-	typedef typename CPtrFrame<IFrame> CFrame;
-	typedef typename TTraits CTraits;
+	typedef CPtrFrame<IFrame> CFrame;
+	typedef TTraits CTraits;
 	typedef typename CTraits::CSplitterBar	CSplitterBar;
 	typedef CSubWndFramesPackage<TPackageFrame,TTraits> thisClass;
 	typedef CWndFramesPackageBase<CFrame,TTraits >		baseClass;
 	typedef typename TPackageFrame	CPackageFrame;
 	enum {controlledLen=(15+CSplitterBar::sbThickness)};
-	struct  CDockOrientationFlag  
+	struct  CDockOrientationFlag
 	{
 		enum{low=0,high=1};
 		static void SetHigh(DWORD& flag)
@@ -1091,7 +1118,7 @@ public:
 				{
 					pHdr->rect.right=(i==m_frames.end()) ? m_frames.hi() : (*i);
 					pHdr->rect.left=pHdr->rect.right-len;
-					
+
 				}
 			}
 			else
@@ -1227,7 +1254,7 @@ public:
 //		}
 //		else
 //		{
-//			reverse_iterator ri=ssec::search_n(m_frames.rbegin(),m_frames.rend(),CFrame::CCmp(m_pDecl->hwnd()),pHdr->nBar);   
+//			reverse_iterator ri=ssec::search_n(m_frames.rbegin(),m_frames.rend(),CFrame::CCmp(m_pDecl->hwnd()),pHdr->nBar);
 //			assert(ri!=m_frames.rend());
 //			iterator i=ri.base();
 //			if(/*ri->hwnd()*/(*ri).hwnd()==m_pDecl->hwnd() || side.IsSingle())
@@ -1235,7 +1262,7 @@ public:
 //				CPackageFrame* ptr=CPackageFrame::CreateInstance(pHdr->hdr.hBar,!IsHorizontal());
 //				bRes=(ptr!=0);
 //				if(bRes)
-//				{					
+//				{
 //					position pos=(i==m_frames.end())? m_frames.hi():*i;
 //					pos-=pHdr->nWidth+CSplitterBar::GetThickness();
 //					if(pos<m_frames.low())
@@ -1288,7 +1315,7 @@ public:
 		}
 		else
 		{
-			reverse_iterator ri=ssec::search_n(m_frames.rbegin(),m_frames.rend(),CFrame::CCmp(m_pDecl->hwnd()),pHdr->nBar);   
+			reverse_iterator ri=ssec::search_n(m_frames.rbegin(),m_frames.rend(),CFrame::CCmp(m_pDecl->hwnd()),pHdr->nBar);
 			assert(ri!=m_frames.rend());
 			iterator i=ri.base();
 			if(/*ri->hwnd()*/(*ri).hwnd()==m_pDecl->hwnd() || side.IsSingle())
@@ -1296,7 +1323,7 @@ public:
 				CPackageFrame* ptr=CPackageFrame::CreateInstance(pHdr->hdr.hBar,!IsHorizontal());
 				bRes=(ptr!=0);
 				if(bRes)
-				{					
+				{
 					position pos=(i==m_frames.end())? m_frames.hi():*i;
 					pos-=pHdr->nWidth+CSplitterBar::GetThickness();
 					if(pos<m_frames.low())
@@ -1308,7 +1335,7 @@ public:
 					pHdr->hdr.hBar=i->hwnd();
 				}
 			}
-			else 
+			else
 				pHdr->hdr.hBar=/*ri->hwnd()*/(*ri).hwnd();
 		}
 		if(bRes)

@@ -70,7 +70,6 @@ void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message);
 
 // Utility Classes and Definitions:
 #include "pntabs.h"
-#include "pndocking.h"
 #include "xmlparser.h"
 #include "ssmenus.h"
 

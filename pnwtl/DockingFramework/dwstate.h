@@ -45,18 +45,22 @@ public:
 #endif
 	class CImpl : public CStateBase<IState>
 	{
-	public:
+#if _MSC_VER >= 7000
+protected:
+#else
+public:
+#endif
 		struct CRestPos : dockwins::DFDOCKPOSEX
 		{
 			DWORD	weight;
 			ID		id;
 		};
-
-		struct weighter : std::binary_function<CRestPos, CRestPos, bool> 
+protected:
+		struct weighter : std::binary_function<CRestPos, CRestPos, bool>
 		{
 			bool operator()(const CRestPos& x, const CRestPos& y) const
 			{
-				return (x.weight > y.weight); 
+				return (x.weight > y.weight);
 			}
 		};
 
@@ -73,7 +77,7 @@ public:
 			}
 			void operator() (std::pair<const ID,CItem>& x) const
 			{
-				dockwins::DFDOCKPOSEX dpos = {0}; // ss: Initialise to 0.
+				dockwins::DFDOCKPOSEX dpos={0};
 				if(x.second->Store(m_pMState,&dpos))
 				{
 					std::basic_stringstream<TCHAR> sstrKey;
@@ -171,7 +175,7 @@ public:
 				 m_bunch[dpos.id]->Restore(pMState,&dpos);
 				 m_queue.pop();
 			}
-			return true;			
+			return true;
 		}
 		virtual bool RestoreDefault()
 		{
@@ -189,7 +193,7 @@ public:
 			CStateHolder<IDockWndState> h (pState);
 			m_bunch[id]=h;
 		}
-		void Remove(ID id) 
+		void Remove(ID id)
 		{
 			assert(m_bunch.find(id)!=m_bunch.end());
 			m_bunch.erase(id);
@@ -225,7 +229,7 @@ public:
 	{
 		m_pImpl->Add(id,pState);
 	}
-	void Remove(ID id) 
+	void Remove(ID id)
 	{
 		m_pImpl->Remove(id);
 	}
@@ -234,7 +238,7 @@ protected:
 };
 
 template<class T>
-class CDockingWindowStateAdapter 
+class CDockingWindowStateAdapter
 {
 #if _MSC_VER >= 7000
 protected:
@@ -271,15 +275,15 @@ public:
 		}
 		virtual bool Restore(IMainState* pMState,CRegKey& key)
 		{
-			dockwins::DFDOCKPOSEX dpos = {0}; // ss: Initialise to 0.
+			dockwins::DFDOCKPOSEX dpos={0};
 			DWORD dwType;
 			DWORD cbData=sizeof(dockwins::DFDOCKPOSEX);
             bool bRes=(::RegQueryValueEx(key,ctxtPlacement,NULL,&dwType,
 							reinterpret_cast<LPBYTE>(&dpos),&cbData)==ERROR_SUCCESS)
-							&&(dwType==REG_BINARY);	
+							&&(dwType==REG_BINARY);
 			if(bRes)
 				bRes=Restore(pMState,&dpos);
-			return bRes;			
+			return bRes;
 		}
 		virtual bool RestoreDefault()
 		{
@@ -355,4 +359,4 @@ protected:
 };
 
 }//namespace sstate
-#endif // !defined(AFX_DWSTATE_H__82E591F5_81CD_4C67_9982_DD9A35974699__INCLUDED_)
+#endif // __WTL_DW__DWSTATE_H__

@@ -23,10 +23,10 @@
 namespace dockwins{
 
 template <class T,
-		  class TWndPackage, 
-          class TBase = CWindow, 
+		  class TWndPackage,
+          class TBase = CWindow,
           class TWinTraits = CControlWinTraits>
-class ATL_NO_VTABLE CPackageWindowImpl : public CWindowImpl< T, TBase, TWinTraits > 
+class ATL_NO_VTABLE CPackageWindowImpl : public CWindowImpl< T, TBase, TWinTraits >
 {
 	typedef TWndPackage			CWndPackage;
 	typedef	CPackageWindowImpl<T,TWndPackage,TBase,TWinTraits>	thisClass;
@@ -121,13 +121,13 @@ public:
 	LRESULT Undock(DFMHDR* pHdr)
 	{
 		CRect rcClient;
-		GetClientRect(&rcClient);		
+		GetClientRect(&rcClient);
 		return m_package.Undock(pHdr,rcClient);
 	}
 	LRESULT Replace(DFDOCKREPLACE* pHdr)
 	{
 		CRect rcClient;
-		GetClientRect(&rcClient);		
+		GetClientRect(&rcClient);
 		return m_package.Replace(pHdr,rcClient);
 	}
 
@@ -186,7 +186,7 @@ protected:
 		{
 			DWORD dwPos = ::GetMessagePos();
             CPoint pt(GET_X_LPARAM(dwPos), GET_Y_LPARAM(dwPos));
-			pThis->ScreenToClient(&pt);			
+			pThis->ScreenToClient(&pt);
 			HCURSOR hCursor=pThis->GetCursor(pt);
 			bHandled=(hCursor!=NULL);
 			if(bHandled)
@@ -259,7 +259,7 @@ protected:
 	struct CPackageWindowT : CPackageWindowImpl<CPackageWindowT, CWndFramesPackage<TTraits> >
 	{
 	public:
-		DECLARE_WND_CLASS(_T("CPackageWindowFrame::CPackageWindow"))        
+		DECLARE_WND_CLASS(_T("CPackageWindowFrame::CPackageWindow"))
         virtual void OnFinalMessage(HWND /*hWnd*/)
         {
             delete this;

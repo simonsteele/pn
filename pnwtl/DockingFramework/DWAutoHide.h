@@ -29,15 +29,36 @@
 
 namespace dockwins{
 
+typedef CDockingWindowTraits<COutlookLikeCaption,
+								WS_CAPTION | WS_CHILD |
+								WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW>
+								COutlookLikeAutoHidePaneTraits;
+
+
+template <class TAutoHidePaneTraits,class TSplitterBar,/* DWORD TDockFrameStyle=0,*/
+			DWORD t_dwStyle = 0, DWORD t_dwExStyle = 0>
+struct CDockingFrameTraitsT : CWinTraits <t_dwStyle,t_dwExStyle>
+{
+	typedef TSplitterBar		CSplitterBar;
+	typedef TAutoHidePaneTraits CAutoHidePaneTraits;
+};
+
+typedef CDockingFrameTraitsT< COutlookLikeAutoHidePaneTraits,CSimpleSplitterBar<5>,
+		WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
+		WS_EX_APPWINDOW | WS_EX_WINDOWEDGE> CDockingFrameTraits;
+
+typedef CDockingFrameTraitsT<COutlookLikeAutoHidePaneTraits, CSimpleSplitterBarEx<6>,
+		WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,0> CDockingSiteTraits;
+
 struct IPinnedLabel
 {
 	typedef CDockingSide	CSide;
 	enum
 	{
-		leftBorder=3,			
+		leftBorder=3,
 		rightBorder=3,
 		labelEdge=2,
-		labelPadding=5,			// padding between the labels 
+		labelPadding=5,			// padding between the labels
 		captionPadding=3		// padding between border of the label and the lable caption
 	};
 
@@ -72,7 +93,7 @@ struct IPinnedLabel
 			m_width=width;
 			m_icon=reinterpret_cast<HICON>(::SendMessage(hWnd, WM_GETICON, FALSE, 0));
 			if(m_icon == NULL)
-				m_icon = reinterpret_cast<HICON>(::GetClassLong(hWnd, GCL_HICONSM));		
+				m_icon = reinterpret_cast<HICON>(::GetClassLong(hWnd, GCL_HICONSM));
 			delete [] m_txt;
 			int len=0;
 			try
@@ -109,7 +130,7 @@ struct IPinnedLabel
 		}
 		void PrepareForDock(HDOCKBAR hBar,bool bHorizontal)
 		{
-			::ShowWindow(m_hWnd,SW_HIDE);        
+			::ShowWindow(m_hWnd,SW_HIDE);
 			DWORD style = ::GetWindowLong(m_hWnd,GWL_STYLE);
 			DWORD newStyle = style&(~(WS_POPUP | WS_CAPTION))|WS_CHILD;
 			::SetWindowLong(m_hWnd, GWL_STYLE, newStyle);
@@ -121,7 +142,7 @@ struct IPinnedLabel
 		}
 		void PrepareForUndock(HDOCKBAR	hBar)
 		{
-			::ShowWindow(m_hWnd,SW_HIDE);		
+			::ShowWindow(m_hWnd,SW_HIDE);
 			DWORD style = ::GetWindowLong(m_hWnd,GWL_STYLE);
 			DWORD newStyle = style&(~WS_CHILD) | WS_POPUP | WS_CAPTION;
 			::SetWindowLong(m_hWnd, GWL_STYLE, newStyle);
@@ -155,14 +176,14 @@ struct IPinnedLabel
 						rcOutput.top+=szIcon.cy+captionPadding;
 						dc.DrawIconEx(pt,m_icon,szIcon);
 					}
-				}					
+				}
 			}
 			DrawEllipsisText(dc,m_txt,_tcslen(m_txt),&rcOutput,side.IsHorizontal());
 		}
 	protected:
 		unsigned long	m_width;
 		HWND			m_hWnd;
-		HICON			m_icon;	
+		HICON			m_icon;
 		mutable LPTSTR	m_txt;
 	};
 
@@ -172,7 +193,7 @@ struct IPinnedLabel
 		CCmp(HWND hWnd):m_hWnd(hWnd)
 		{
 		}
-		bool operator() (const IPinnedLabel* ptr) const 
+		bool operator() (const IPinnedLabel* ptr) const
 		{
 			return ptr->IsOwner(m_hWnd);
 		}
@@ -191,11 +212,11 @@ struct IPinnedLabel
 
 	virtual bool GetDockingPosition(DFDOCKPOS* pHdr) const=0;
 
-	virtual CPinnedWindow* ActivePinnedWindow()=0;	
+	virtual CPinnedWindow* ActivePinnedWindow()=0;
 	virtual CPinnedWindow* FromPoint(long x,bool bActivate)=0;
 	virtual bool IsOwner(HWND hWnd) const=0;
 	virtual void Draw(CDC& dc,const CRect& rc,const CSide& side) const=0;
-	
+
 };
 
 class CSinglePinnedLabel : public IPinnedLabel
@@ -226,7 +247,7 @@ public:
 		if(bRes)
 		{
 			pHdr->hdr.code=DC_SETDOCKPOSITION;
-			::SendMessage(pHdr->hdr.hBar,WMDF_DOCK,NULL,reinterpret_cast<LPARAM>(pHdr));		
+			::SendMessage(pHdr->hdr.hBar,WMDF_DOCK,NULL,reinterpret_cast<LPARAM>(pHdr));
 		}
 		return bRes;
 	}
@@ -272,7 +293,7 @@ public:
 		m_wnd.DrawLabel(dc,rc,side);
 	}
 
-	virtual bool IsOwner(HWND hWnd) const 
+	virtual bool IsOwner(HWND hWnd) const
 	{
 		return m_wnd.Wnd()==hWnd;
 	}
@@ -319,7 +340,7 @@ public:
 	{
 		delete [] m_tabs;
 	}
-	
+
 	virtual bool UnPin(HWND hWnd,HDOCKBAR hBar,DFDOCKPOS* pHdr)
 	{
 		assert(pHdr->hdr.hWnd==hWnd);
@@ -388,7 +409,7 @@ public:
 				return i;
 			return (unsigned long)npos;
 	}
-	virtual bool IsOwner(HWND hWnd) const 
+	virtual bool IsOwner(HWND hWnd) const
 	{
 		return (Locate(hWnd)!=npos);
 	}
@@ -452,8 +473,8 @@ public:
 		HICON icon=m_tabs[i].Icon();
 		CDWSettings settings;
 		CSize  sz(settings.CXMinIcon(),settings.CYMinIcon());
-		if( icon!=0 
-			&& (sz.cx<=(rc.Width()-2*captionPadding)) 
+		if( icon!=0
+			&& (sz.cx<=(rc.Width()-2*captionPadding))
 			&& (sz.cy<=(rc.Height()-2*captionPadding)) )
 		{
 			POINT pt={rcOutput.left,rcOutput.top};
@@ -473,9 +494,9 @@ public:
 	{
 		CRect rcOutput(rc);
 		dc.Rectangle(&rcOutput);
-		long* pLeft; 
+		long* pLeft;
 		long* pRight;
-		long* px; 
+		long* px;
 		long* py;
 		if(side.IsHorizontal())
 		{
@@ -543,11 +564,11 @@ class CAutoHideBar: protected CRect
 {
 	typedef CRect	baseClass;
 protected:
-	typedef IPinnedLabel*				CPinnedLabelPtr;
-	typedef std::deque<CPinnedLabelPtr>	CBunch;	
-	typedef CBunch::const_iterator		const_iterator;
+	typedef IPinnedLabel*					CPinnedLabelPtr;
+	typedef std::deque<CPinnedLabelPtr>		CBunch;
+	typedef CBunch::const_iterator			const_iterator;
 public:
-	typedef IPinnedLabel::CSide			CSide;
+	typedef IPinnedLabel::CSide	CSide;
 
 	CAutoHideBar()
 	{
@@ -634,13 +655,13 @@ public:
 
 		typedef std::priority_queue<long,std::deque<long>,std::greater<long> > CQWidth;
 		CQWidth widths;
-		long width = 0;		
+		long width = 0;
 		for(const_iterator i=m_bunch.begin();i!=m_bunch.end();++i)
 		{
 			int labelWidth=(*i)->DesiredWidth(dc);
 			(*i)->Width(labelWidth);
 			labelWidth+=IPinnedLabel::labelPadding;
-			widths.push(labelWidth);			
+			widths.push(labelWidth);
 			width+=labelWidth;
 		}
 		long averageLableWidth=width;
@@ -697,7 +718,7 @@ public:
 				dc.PatBlt(left, top, Width(), Height(), PATCOPY);
 				dc.SelectBrush(hOldBrush);
 			}
-			
+
 			CDWSettings settings;
 			CPen pen;
 			pen.CreatePen(PS_SOLID,1,::GetSysColor(COLOR_BTNSHADOW));
@@ -711,7 +732,7 @@ public:
 			int oldBkMode=dc.SetBkMode(TRANSPARENT);
 
 			HFONT hOldFont;
-			long* pLeft; 
+			long* pLeft;
 			long* pRight;
 			CRect rcLabel(this);
 			long *xELine,*yELine;
@@ -729,7 +750,7 @@ public:
 					rcLabel.top+=IPinnedLabel::labelEdge;
 					tmp=rcLabel.bottom-1;
 					yELine=&tmp;
-				}				
+				}
 				hOldFont=dc.SelectFont(settings.HSysFont());
 				pLeft=&rcLabel.left;
 				pRight=&rcLabel.right;
@@ -757,7 +778,7 @@ public:
 			*pRight-=IPinnedLabel::rightBorder;
 
 			long minSize=m_bunch.size()*IPinnedLabel::labelPadding-IPinnedLabel::labelPadding;
-										
+
 			if(minSize<(*pRight-*pLeft))
 			{
 				*pRight=*pLeft+1;
@@ -775,11 +796,11 @@ public:
 					HPEN hPrevPen=dc.SelectPen(penEraser);
 					dc.MoveTo(ptELine);
 					dc.LineTo(*xELine,*yELine);
-					dc.SelectPen(hPrevPen);					
-					
+					dc.SelectPen(hPrevPen);
+
 					*pRight=*pLeft+1;
-					assert( m_side.IsHorizontal() 
-								? (*pLeft>=left && (*pLeft<=right+IPinnedLabel::labelPadding) ) 
+					assert( m_side.IsHorizontal()
+								? (*pLeft>=left && (*pLeft<=right+IPinnedLabel::labelPadding) )
 								: (*pLeft>=top && (*pLeft<=bottom+IPinnedLabel::labelPadding) ) );
 				}
 			}
@@ -832,7 +853,7 @@ public:
 			if(pHdr->n>1)
 				ptr=new CMultyPinnedLabel(pHdr,IsHorizontal());
 			else
-				ptr=new CSinglePinnedLabel(pHdr,IsHorizontal());				
+				ptr=new CSinglePinnedLabel(pHdr,IsHorizontal());
 			m_bunch.push_back(ptr);
 		}
 		catch(std::bad_alloc& /*e*/)
@@ -882,14 +903,6 @@ protected:
 	CSide			m_side;
 	CBunch			m_bunch;
 };
-typedef CDockingWindowTraits<COutlookLikeCaption,
-								WS_CAPTION | WS_CHILD | 
-								WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW> 
-								COutlookLikeAutoHidePaneTraits;
-typedef CDockingWindowTraits<CVC7LikeCaption,
-								WS_CAPTION | WS_CHILD | 
-								WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW> 
-								CVC7LikeAutoHidePaneTraits;
 
 #define HTSPLITTERH HTLEFT
 #define HTSPLITTERV HTTOP
@@ -904,7 +917,7 @@ class ATL_NO_VTABLE CAutoHidePaneImpl :
     typedef CAutoHidePaneImpl< T, TBase, TAutoHidePaneTraits >	thisClass;
 protected:
 	typedef typename TAutoHidePaneTraits::CCaption	CCaption;
-	typedef typename CAutoHideBar::CSide				CSide;
+	typedef typename CAutoHideBar::CSide			CSide;
 	struct  CSplitterBar : CSimpleSplitterBarEx<>
 	{
 		CSplitterBar(bool bHorizontal=true):CSimpleSplitterBarEx<>(bHorizontal)
@@ -1002,7 +1015,7 @@ public:
 		PostMessage(WM_CLOSE);
 		return false;
 	}
-	bool PinBtnPress()
+	bool PinBtnPress(bool bVisualize=true)
 	{
 		return true;
 	}
@@ -1025,7 +1038,7 @@ public:
 		long* ppoint;
 		long  step;
 		CRect rcInvalidate(rc);
-		long* pipoint; 
+		long* pipoint;
 		if(m_side.IsHorizontal())
 		{
 			step=rc.Height()/n;
@@ -1041,8 +1054,8 @@ public:
 				pipoint=&rc.top;
 				rcInvalidate.top=rcInvalidate.bottom;
 				step=-step;
-			}			
-		}		
+			}
+		}
 		else
 		{
 			step=rc.Width()/n;
@@ -1058,8 +1071,8 @@ public:
 				pipoint=&rc.left;
 				rcInvalidate.right=rcInvalidate.left;
 				step=-step;
-			}			
-		}		
+			}
+		}
 		if(!bShow)
 			step=-step;
 		else
@@ -1099,7 +1112,7 @@ protected:
 		MESSAGE_HANDLER(WM_SETICON,OnCaptionChange)
 		MESSAGE_HANDLER(WM_NCLBUTTONDOWN, OnNcLButtonDown)
 		MESSAGE_HANDLER(WM_NCLBUTTONUP,OnNcLButtonUp)
-		MESSAGE_HANDLER(WM_NCLBUTTONDBLCLK,OnNcLButtonDblClk)			
+		MESSAGE_HANDLER(WM_NCLBUTTONDBLCLK,OnNcLButtonDblClk)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
 		MESSAGE_HANDLER(WM_SYSCOLORCHANGE, OnSysColorChange)
@@ -1157,7 +1170,7 @@ protected:
 //		LockWindowUpdate(FALSE);
 		return lRes;
 	}
-	
+
 	LRESULT OnNcPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		CWindowDC dc(m_hWnd);
@@ -1184,14 +1197,25 @@ protected:
 				bHandled=pThis->CloseBtnPress();
 				break;
 			case HTPIN:
-				bHandled=pThis->PinBtnPress();
+				{
+					HWND hWndFocus = ::GetFocus();
+					bHandled=pThis->PinBtnPress();
+					if(::IsWindow(hWndFocus) && ::IsWindowVisible(hWndFocus))
+					{
+						::SetFocus(hWndFocus);
+					}
+					else
+					{
+						::SetFocus(this->GetTopLevelParent());
+					}
+				}
 				break;
 			default:
 				bHandled=FALSE;
 		}
         return 0;
 	}
-	
+
 	LRESULT OnNcLButtonDblClk(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		return 0;
@@ -1202,7 +1226,8 @@ protected:
 		bHandled=pThis->OnClosing();
 		return 0;
 	}
-	LRESULT OnSettingChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+
+	LRESULT OnSettingChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		// Note: We can depend on CDWSettings already being updated
 		//  since we will always be a descendant of the main frame
@@ -1215,6 +1240,7 @@ protected:
 		bHandled = FALSE;
 		return 1;
 	}
+
 	LRESULT OnSysColorChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		// Note: We can depend on CDWSettings already being updated
@@ -1319,7 +1345,7 @@ protected:
 		CBounds		m_bounds;
 		CRect		m_rc;
 		const CSide	m_side;
-		long*		m_ppos;	
+		long*		m_ppos;
 		long		m_offset;
 	};
 	class CSizeTrackerGhost : public CSizeTrackerFull
@@ -1439,7 +1465,7 @@ public:
 			if(IsTop())
 				rc.bottom=rc.top+( (maxWidth>width) ? width : maxWidth );
 			else
-				rc.top=rc.bottom-( (maxWidth>width) ? width : maxWidth );					
+				rc.top=rc.bottom-( (maxWidth>width) ? width : maxWidth );
 		}
 		else
 		{
@@ -1482,7 +1508,7 @@ public:
 		{
 			CAutoHideBar* pbar=m_bars+i;
 			ptr=pbar->MouseEnter(pt);
-			if((ptr!=0) 
+			if((ptr!=0)
 				&& IsVisualizationNeeded(ptr))
 			{
 				m_pTracked=ptr;
@@ -1497,7 +1523,7 @@ public:
 		}
 		return (ptr!=0);
 	}
-	
+
 	bool MouseHover(HWND hWnd,const CPoint& pt)
 	{
 		IPinnedLabel::CPinnedWindow* ptr=0;
@@ -1505,7 +1531,7 @@ public:
 		{
 			CAutoHideBar* pbar=m_bars+i;
 			ptr=pbar->MouseEnter(pt,true);
-			if((ptr!=0) 
+			if((ptr!=0)
 				&& (ptr==m_pTracked)
 					&&IsVisualizationNeeded(ptr))
 			{
@@ -1584,7 +1610,7 @@ public:
 		HDOCKBAR hBar=GetParent();
 		assert(::IsWindow(hBar));
 		DFDOCKPOS* pHdr=0;
-		DFDOCKPOS dockHdr = {0}; // ss: Initialise to 0.
+		DFDOCKPOS dockHdr={0};
 		if(bUnpin)
 		{
 //			dockHdr.hdr.code=DC_SETDOCKPOSITION;
@@ -1633,7 +1659,7 @@ public:
 	{
 		return (ptr!=m_pActive);
 	}
-	
+
 	bool Visualize(IPinnedLabel::CPinnedWindow* ptr,const CSide& side,bool bAnimate=false)
 	{
 		assert(ptr);
@@ -1723,6 +1749,7 @@ public:
 	DECLARE_WND_CLASS(_T("CAutoHideManager"))
 protected:
 	BEGIN_MSG_MAP(thisClass)
+		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		MESSAGE_HANDLER(WM_TIMER,OnTimer)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 /////////////////
@@ -1730,17 +1757,24 @@ protected:
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
+	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+	{
+		bHandled = false;
+		Vanish(false);
+		return 0;
+	}
+
 	LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		POINT pt;
 		CRect rc;
 		GetCursorPos(&pt);
-		GetWindowRect(&rc);	
+		GetWindowRect(&rc);
 		if(!rc.PtInRect(pt))
 		{
 			CWindow wndParent (GetParent());
 			wndParent.ScreenToClient(&pt);
-			
+
 			IPinnedLabel::CPinnedWindow* ptr=LocatePinnedWindow(pt);
 			if(ptr==0 || IsVisualizationNeeded(ptr))
 			{
@@ -1765,7 +1799,7 @@ protected:
         {
 			CRect rc;
 			GetClientRect(&rc);
-			::SetWindowPos(m_pActive->Wnd(),NULL, 
+			::SetWindowPos(m_pActive->Wnd(),NULL,
 							 rc.left,rc.top,
 							 rc.Width(),rc.Height(),
 							 SWP_NOZORDER | SWP_NOACTIVATE);

@@ -1,6 +1,4 @@
-
 #include "stdafx.h"
-
 #include "mdump.h"
 
 LPCSTR MiniDumper::m_szAppName;
@@ -9,7 +7,7 @@ MiniDumper::MiniDumper( LPCSTR szAppName )
 {
 	// if this assert fires then you have two instances of MiniDumper
 	// which is not allowed
-	assert( m_szAppName==NULL );
+	PNASSERT( m_szAppName==NULL );
 
 	m_szAppName = szAppName ? strdup(szAppName) : "Application";
 

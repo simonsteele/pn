@@ -110,7 +110,7 @@ LRESULT CClipsDocker::OnCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 
 LRESULT CClipsDocker::OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	Hide();
+	//Hide();
 
 	return 0;
 }

@@ -18,7 +18,7 @@ class CMainFrame;
 class CChildFrame;
 class CFindDlg;
 class CReplaceDlg;
-class CDockingOutputWindow;
+class COutputView;
 class CClipsDocker;
 class CProjectDocker;
 
@@ -117,9 +117,7 @@ public:
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBARS_SCHEMES, OnViewSchemesBar)
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBARS_FIND, OnViewFindBar)
 		COMMAND_ID_HANDLER(ID_VIEW_STATUS_BAR, OnViewStatusBar)
-		COMMAND_ID_HANDLER(ID_EDITOR_OUTPUTWND, OnOutputWindowToggle)
-		COMMAND_ID_HANDLER(ID_VIEW_WINDOWS_PROJECT, OnViewProjectWindow)
-		COMMAND_ID_HANDLER(ID_VIEW_WINDOWS_TEXTCLIPS, OnViewTextClipsWindow)
+		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHideOutput)
 		COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
 		COMMAND_ID_HANDLER(ID_WINDOW_CASCADE, OnWindowCascade)
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTile)
@@ -140,8 +138,8 @@ public:
 		COMMAND_HANDLER(IDC_FINDCOMBO, BXTN_ENTER, OnFindComboEnter)
 
 		NOTIFY_CODE_HANDLER(TBN_DROPDOWN, OnToolbarDropDown)
-		NOTIFY_CODE_HANDLER(CTCN_MCLICK, OnMClick)
 
+		COMMAND_RANGE_HANDLER(ID_VIEW_FIRSTDOCKER, ID_VIEW_LASTDOCKER, OnDockerToggle)
 		COMMAND_RANGE_HANDLER(ID_MRUFILE_BASE, ID_MRUFILE_MAX, OnMRUSelected)
 		COMMAND_RANGE_HANDLER(ID_MRUPROJECT_BASE, ID_MRUPROJECT_MAX, OnMRUProjectSelected)
 		ROUTE_MENUCOMMANDS()
@@ -156,7 +154,7 @@ public:
 		UPDATE_ELEMENT(ID_VIEW_TOOLBAR_EDIT, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_TOOLBARS_SCHEMES, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_TOOLBARS_FIND, UPDUI_MENUPOPUP)
-		UPDATE_ELEMENT(ID_EDITOR_OUTPUTWND, UPDUI_MENUPOPUP)
+		UPDATE_ELEMENT(ID_VIEW_OUTPUT, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_WINDOWS_TEXTCLIPS, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_WINDOWS_PROJECT, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_FILE_SAVE, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
@@ -167,13 +165,6 @@ public:
 	BEGIN_MENU_HANDLER_MAP()
 		HANDLE_MENU_COMMAND(SCHEMEMANAGER_SELECTSCHEME, OnSchemeNew)
 	END_MENU_HANDLER_MAP()
-
-	LRESULT OnMClick(WPARAM wParam, LPNMHDR lParam, BOOL& bHandled)
-	{
-		::MessageBox(m_hWnd, _T("Click!"), _T("Test"), MB_OK);
-
-		return 0;
-	}
 
 	CChildFrame* NewEditor();
 
@@ -202,6 +193,7 @@ public:
 	LRESULT OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileSaveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnDockerToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnMRUProjectSelected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileOpenProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileCloseWorkspace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -218,9 +210,7 @@ public:
 	LRESULT OnViewSchemesBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewFindBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnOutputWindowToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnViewProjectWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnViewTextClipsWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnHideOutput(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	// MDI Window Arrangement
 	LRESULT OnWindowCascade(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -290,6 +280,7 @@ protected:
 	CSize GetGUIFontSize();
 	HWND CreateFindToolbar();
 	HWND CreateSchemeToolbar();
+	void CreateDockingWindows();
 	BOOL AddReBarBand(HWND hWndBand, LPTSTR lpstrTitle = NULL, BOOL bNewRow = FALSE, bool bUseChevrons = false, int cxWidth = 0, BOOL bFullWidthAlways = FALSE);
 
 	void ToggleToolbar(DWORD toolbarId);
@@ -321,6 +312,18 @@ protected:
 	void launchExternalSearch(LPCTSTR searchString);
 
 protected:
+
+	typedef enum {
+		DW_OUTPUT = ID_VIEW_OUTPUT,
+		DW_TEXTCLIPS = ID_VIEW_WINDOWS_TEXTCLIPS,
+		DW_PROJECTS = ID_VIEW_WINDOWS_PROJECT,
+	} EDocker;
+
+	inline CPNDockingWindow* getDocker(EDocker window) const;
+
+	CPNDockingWindow*		m_dockingWindows[(ID_VIEW_LASTDOCKER-ID_VIEW_FIRSTDOCKER)+1];
+
+protected:
 	enum {
 		SCHEME_COMBO_SIZE = 24, /* characters */
 		FIND_COMBO_SIZE = 30,
@@ -338,7 +341,8 @@ protected:
 protected:
 	CFindDlg*				m_FindDialog;
 	CReplaceDlg*			m_ReplaceDialog;
-	CDockingOutputWindow*	m_pOutputWnd;
+	//CDockingOutputWindow*	m_pOutputWnd;
+	COutputView*			m_pOutputWnd;
 	CClipsDocker*			m_pClipsWnd;
 	CProjectDocker*			m_pProjectsWnd;
 	
@@ -380,7 +384,6 @@ protected:
 			delete pD;
 		}
 	}
-
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -24,8 +24,8 @@ namespace dockwins{
 	
 
 template<class TTraits=COutlookLikeDockingBoxTraits>
-class CTabDockingBox : 
-			public  CDockingBoxBaseImpl<CTabDockingBox,CWindow,TTraits> 
+class CTabDockingBox :
+			public  CDockingBoxBaseImpl<CTabDockingBox,CWindow,TTraits>
 {
 	typedef	CDockingBoxBaseImpl<CTabDockingBox,CWindow,TTraits> baseClass;
 	typedef CTabDockingBox  thisClass;
@@ -36,11 +36,11 @@ protected:
 		pHdr->rect.left=index;
 		pHdr->rect.right=index;
 		pHdr->rect.top=index;
-		pHdr->rect.bottom=index; 
+		pHdr->rect.bottom=index;
 	}
 	static int GetIndex(DFDOCKRECT* pHdr)
 	{
-		return pHdr->rect.left; 
+		return pHdr->rect.left;
 	}
 public:
 	static HWND CreateInstance(HWND hWnd)
@@ -120,14 +120,14 @@ public:
 			int curSel=m_tabs.GetCurSel();
 			assert(curSel!=-1);
 			HWND hWnd=GetItemHWND(curSel);
-///11		bool bHorizontal=!(m_tabs.GetWindowLong(GWL_STYLE)&TCS_VERTICAL); 
-			bool bHorizontal=!(m_tabs.GetWindowLong(GWL_STYLE)&CTCS_VERTICAL); 
+///11		bool bHorizontal=!(m_tabs.GetWindowLong(GWL_STYLE)&TCS_VERTICAL);
+			bool bHorizontal=!(m_tabs.GetWindowLong(GWL_STYLE)&CTCS_VERTICAL);
 			int pos = bHorizontal ? pt.x : pt.y;
 
 ///11		TCHITTESTINFO tchti = { 0 };
 			CTCHITTESTINFO tchti = { 0 };
 			tchti.pt.x = pt.x;
-			tchti.pt.y = pt.y;			
+			tchti.pt.y = pt.y;
 			int index=m_tabs.HitTest(&tchti);
 			if((hWnd!=NULL) && (hWnd!=pHdr->hdr.hWnd))
 			{
@@ -151,8 +151,8 @@ public:
 			}
 			if(
 				(index!=-1)
-					&&( index!=curSel) 
-						 && 
+					&&( index!=curSel)
+						 &&
 						 !( ( index==m_prevItem)
 								&& ( (pos-m_prevPos)*(m_prevItem-curSel) <=0) ) )
 			{
@@ -185,12 +185,12 @@ public:
 					}
 				}
 			}
-			
+
 			pt.x=GET_X_LPARAM( msg.lParam );
 			pt.y=GET_Y_LPARAM( msg.lParam );
 			::ClientToScreen(msg.hwnd,&pt);
 
-			if( msg.message!=WM_MOUSEMOVE 
+			if( msg.message!=WM_MOUSEMOVE
 				|| (::GetKeyState(VK_CONTROL)&0x8000)
 					|| !IsPointInAcceptedArea(&pt) )
 			{
@@ -201,9 +201,9 @@ public:
 					assert(m_prevSelItem<m_tabs.GetItemCount());
 					m_tabs.SetCurSel(m_prevSelItem);
 				}
-				//let control update itself!!! 
+				//let control update itself!!!
 				while(PeekMessage(&msg, NULL, WM_PAINT, WM_PAINT, PM_REMOVE))
-					DispatchMessage(&msg);				
+					DispatchMessage(&msg);
 			}
 		}
 		return bRes;
@@ -226,7 +226,7 @@ public:
 		IsStillAlive();
 		return bRes;
     }
-	
+
 	LRESULT OnActivate(DFMHDR* pHdr)
 	{
 		int index=FindItem(pHdr->hWnd);
@@ -240,7 +240,7 @@ public:
 
 	void PrepareForDock(CWindow wnd)
 	{
-        wnd.ShowWindow(SW_HIDE);        
+        wnd.ShowWindow(SW_HIDE);
         DWORD style = wnd.GetWindowLong(GWL_STYLE);
         DWORD newStyle = style&(~(WS_POPUP | WS_CAPTION))|WS_CHILD;
         wnd.SetWindowLong( GWL_STYLE, newStyle);
@@ -253,7 +253,7 @@ public:
 	}
 	void PrepareForUndock(CWindow wnd)
 	{
-        wnd.ShowWindow(SW_HIDE);		
+        wnd.ShowWindow(SW_HIDE);
         DWORD style = wnd.GetWindowLong(GWL_STYLE);
         DWORD newStyle = style&(~WS_CHILD) | WS_POPUP | WS_CAPTION;
         wnd.SetWindowLong( GWL_STYLE, newStyle);
@@ -274,7 +274,7 @@ public:
 		assert(index<=m_tabs.GetItemCount());
 		assert(wnd.IsWindow());
 		int txtLen=wnd.GetWindowTextLength()+1;
-		TCHAR* ptxt = new TCHAR[txtLen]; 
+		TCHAR* ptxt = new TCHAR[txtLen];
 		wnd.GetWindowText(ptxt,txtLen);
 		int image = -1;
 		HICON hIcon=wnd.GetIcon(FALSE);
@@ -339,7 +339,7 @@ public:
 		{
 			assert(m_wnd.GetParent()==m_hWnd);
 			int len= m_wnd.GetWindowTextLength()+1;
-			TCHAR* ptxt = new TCHAR[len]; 
+			TCHAR* ptxt = new TCHAR[len];
 			m_wnd.GetWindowText(ptxt,len);
 			SetWindowText(ptxt);
 			HICON hIcon=m_wnd.GetIcon(FALSE);
@@ -386,7 +386,7 @@ public:
 						RECT rc;
 						BOOL bRes=GetWindowRect(&rc);
 						if(bRes)
-							bRes=::SetWindowPos(hWnd,HWND_TOP,rc.left, rc.top, 
+							bRes=::SetWindowPos(hWnd,HWND_TOP,rc.left, rc.top,
 													rc.right - rc.left, rc.bottom - rc.top,SWP_SHOWWINDOW);
 					}
 					assert(!IsDocking());
@@ -469,7 +469,7 @@ public:
 			PostMessage(WM_CLOSE);
 		}
 		catch(std::bad_alloc& /*e*/)
-		{				
+		{
 		}
 		return bRes;
 	}
@@ -492,7 +492,7 @@ public:
 		REFLECT_NOTIFICATIONS()
         CHAIN_MSG_MAP(baseClass)
     END_MSG_MAP()
-	
+
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 ///11	m_tabs.Create(m_hWnd, rcDefault, NULL,WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | TCS_TOOLTIPS | TCS_BOTTOM);
@@ -521,14 +521,14 @@ public:
 	{
 		return 0;
 	}
-	
+
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		bHandled = FALSE;
 		m_images.Destroy();
 		return 0;
 	}
-	
+
 	LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		int index=m_tabs.GetCurSel();
@@ -579,13 +579,13 @@ public:
 			{
 				HWND hWnd=GetItemHWND(index);
 				assert(::IsWindow(hWnd));
-				CRect rc; 
+				CRect rc;
 				::GetWindowRect(hWnd,&rc);
 				::PostMessage(hWnd,WM_NCLBUTTONDOWN,HTCAPTION,MAKELPARAM(rc.right,rc.bottom));
 				/*
 				DWORD dwPos = ::GetMessagePos();
 				CPoint pt(GET_X_LPARAM(dwPos), GET_Y_LPARAM(dwPos));
-				DWORD style=m_tabs.GetWindowLong(GWL_STYLE); 
+				DWORD style=m_tabs.GetWindowLong(GWL_STYLE);
 ///11			if(style&TCS_VERTICAL)
 				if(style&CTCS_VERTICAL)
 				{
@@ -602,7 +602,7 @@ public:
 						pt.y=2*rc.bottom-pt.y;
 					else
 						pt.y=2*rc.top-pt.y;
-						
+
 				}
 				::PostMessage(hWnd,WM_NCLBUTTONDOWN,HTCAPTION,MAKELPARAM(pt.x,pt.y));
 				*/
@@ -637,7 +637,7 @@ protected:
 };
 
 template <class TCaption,class TBox,DWORD t_dwStyle = 0, DWORD t_dwExStyle = 0>
-struct CBoxedDockingWindowTraits 
+struct CBoxedDockingWindowTraits
 		: CDockingBoxTraits<TCaption,t_dwStyle,t_dwExStyle>
 {
 	typedef TBox	CBox;
@@ -645,28 +645,18 @@ struct CBoxedDockingWindowTraits
 
 typedef CBoxedDockingWindowTraits<COutlookLikeCaption, CTabDockingBox<COutlookLikeDockingBoxTraits>,
 									WS_OVERLAPPEDWINDOW | WS_POPUP | WS_VISIBLE |
-									WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW> 
+									WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW>
 								COutlookLikeBoxedDockingWindowTraits;
 
 typedef CBoxedDockingWindowTraits<COutlookLikeExCaption, CTabDockingBox<COutlookLikeExDockingBoxTraits>,
 									WS_OVERLAPPEDWINDOW | WS_POPUP | WS_VISIBLE |
-									WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW> 
+									WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW>
 								COutlookLikeExBoxedDockingWindowTraits;
 
 typedef CBoxedDockingWindowTraits<CVC6LikeCaption, CTabDockingBox<CVC6LikeDockingBoxTraits>,
 									WS_OVERLAPPEDWINDOW | WS_POPUP | WS_VISIBLE |
-									WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW> 
+									WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW>
 								CVC6LikeBoxedDockingWindowTraits;
-
-typedef CBoxedDockingWindowTraits<CVC7LikeCaption, CTabDockingBox<CVC7LikeDockingBoxTraits>,
-									WS_OVERLAPPEDWINDOW | WS_POPUP | WS_VISIBLE |
-									WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW> 
-								CVC7LikeBoxedDockingWindowTraits;
-
-typedef CBoxedDockingWindowTraits<CVC7LikeExCaption, CTabDockingBox<CVC7LikeExDockingBoxTraits>,
-									WS_OVERLAPPEDWINDOW | WS_POPUP | WS_VISIBLE |
-									WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW> 
-								CVC7LikeExBoxedDockingWindowTraits;
 
 
 }//namespace dockwins

@@ -164,10 +164,11 @@ protected:
 	CComObject<DropTarget>* m_pDropTarget;
 };
 
-class CProjectDocker : public CPNDockingWindow<CProjectDocker>
+class CProjectDocker : public CWindowImpl<CProjectDocker>// CPNDockingWindow<CProjectDocker>
 {
 	typedef CProjectDocker thisClass;
-	typedef CPNDockingWindow<CProjectDocker> baseClass;
+	//typedef CPNDockingWindow<CProjectDocker> baseClass;
+	typedef CWindowImpl<CProjectDocker> baseClass;
 
 public:
 	DECLARE_WND_CLASS(_T("CProjectDocker"))
@@ -183,7 +184,7 @@ public:
 		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHide)
 		NOTIFY_ID_HANDLER(100, OnTreeNotify)
 		REFLECT_NOTIFICATIONS()
-		CHAIN_MSG_MAP(baseClass)
+		//CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
 	void SetWorkspace(Projects::Workspace* ws);
@@ -205,6 +206,7 @@ protected:
 
 	Projects::Workspace*	workspace;
 	CProjectTreeCtrl		m_view;
+	HWND					m_hWndClient;
 };
 
 #endif

@@ -35,16 +35,17 @@ void COptionsPageGeneral::OnOK()
 	// Ensure MRU size <= 50 && >= 1
 	m_iMRUSize = ( m_iMRUSize > 50 ? 50 : ( m_iMRUSize < 1 ? 1 : m_iMRUSize ) );
 	options.Set(PNSK_INTERFACE, _T("MRUSize"), (int)m_iMRUSize);
-	options.Set(PNSK_INTERFACE, _T("AllowMultiInstance"), (bool)(m_bMultiInstanceOk  != FALSE));
+	options.Set(PNSK_INTERFACE, _T("AllowMultiInstance"), (bool)(m_bMultiInstanceOk != FALSE));
+	options.Set(PNSK_INTERFACE, _T("NewOnStart"), (bool)(m_bNewOnStart != FALSE));
 }
 
 void COptionsPageGeneral::OnInitialise()
 {
-	
 	m_bMaximise = OPTIONS->GetCached(Options::OMaximiseNew);
 	m_bFullPath = OPTIONS->GetCached(Options::OShowFullPath);
 	m_iMRUSize = OPTIONS->Get(PNSK_INTERFACE, _T("MRUSize"), 4);
 	m_bMultiInstanceOk = OPTIONS->Get(PNSK_INTERFACE, _T("AllowMultiInstance"), false);
+	m_bNewOnStart = OPTIONS->Get(PNSK_INTERFACE, _T("NewOnStart"), true);
 
 	DoDataExchange();
 }

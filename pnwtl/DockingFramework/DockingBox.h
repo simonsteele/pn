@@ -19,6 +19,7 @@
 
 #include <sstream>
 #include "ExtDockingWindow.h"
+#include "DockMisc.h"
 
 namespace dockwins{
 
@@ -67,7 +68,7 @@ public:
 	{
 		return IsWindowBox(m_hWnd);
 	}
-	static bool IsWindowBox(HWND hWnd) 
+	static bool IsWindowBox(HWND hWnd)
 	{
 		DFMHDR dockHdr;
 		dockHdr.code=DC_ISBOX;
@@ -75,7 +76,7 @@ public:
 //		dockHdr.hBar=HNONDOCKBAR;
 		return (::SendMessage(hWnd,m_message,NULL,reinterpret_cast<LPARAM>(&dockHdr))!=FALSE);
 	}
-	static unsigned long DockingBoxMessage() 
+	static unsigned long DockingBoxMessage()
 	{
 		return	m_message;
 	}
@@ -87,7 +88,7 @@ public:
 		dockHdr.hBar=m_hWnd;
 		return (::SendMessage(dockHdr.hBar,WMDF_DOCK,NULL,reinterpret_cast<LPARAM>(&dockHdr))!=FALSE);
 	}
-	
+
 	BOOL PlaceAs(HWND hWnd)
 	{
 		RECT rc;
@@ -147,8 +148,8 @@ public:
 			else
 			{
 				::SetWindowPos(pHdr->hdr.hWnd ,HWND_TOP ,
-								pHdr->rcFloat.left, pHdr->rcFloat.top, 
-								pHdr->rcFloat.right - pHdr->rcFloat.left, 
+								pHdr->rcFloat.left, pHdr->rcFloat.top,
+								pHdr->rcFloat.right - pHdr->rcFloat.left,
 								pHdr->rcFloat.bottom - pHdr->rcFloat.top,
 								SWP_SHOWWINDOW);
 				return true;
@@ -170,31 +171,23 @@ public:
 template <class TCaption,DWORD t_dwStyle = 0, DWORD t_dwExStyle = 0>
 struct CDockingBoxTraits : CDockingWindowTraits<TCaption,t_dwStyle,t_dwExStyle>
 {
-	typedef CBoxDocker	CDocker;	
+	typedef CBoxDocker	CDocker;
 };
 
 typedef CDockingBoxTraits<COutlookLikeCaption,
-								WS_OVERLAPPEDWINDOW | WS_POPUP/* WS_CHILD*/ | 
+								WS_OVERLAPPEDWINDOW | WS_POPUP/* WS_CHILD*/ |
 								/*WS_VISIBLE |*/ WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 								WS_EX_TOOLWINDOW/* WS_EX_CLIENTEDGE*/> COutlookLikeDockingBoxTraits;
 typedef CDockingBoxTraits<COutlookLikeExCaption,
-								WS_OVERLAPPEDWINDOW | WS_POPUP/* WS_CHILD*/ | 
+								WS_OVERLAPPEDWINDOW | WS_POPUP/* WS_CHILD*/ |
 								/*WS_VISIBLE |*/ WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 								WS_EX_TOOLWINDOW/* WS_EX_CLIENTEDGE*/> COutlookLikeExDockingBoxTraits;
 typedef CDockingBoxTraits<CVC6LikeCaption,
-								WS_OVERLAPPEDWINDOW | WS_POPUP/* WS_CHILD*/ | 
+								WS_OVERLAPPEDWINDOW | WS_POPUP/* WS_CHILD*/ |
 								/*WS_VISIBLE |*/ WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 								WS_EX_TOOLWINDOW/* WS_EX_CLIENTEDGE*/> CVC6LikeDockingBoxTraits;
-typedef CDockingBoxTraits<CVC7LikeCaption,
-								WS_OVERLAPPEDWINDOW | WS_POPUP/* WS_CHILD*/ | 
-								/*WS_VISIBLE |*/ WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-								WS_EX_TOOLWINDOW/* WS_EX_CLIENTEDGE*/> CVC7LikeDockingBoxTraits;
-typedef CDockingBoxTraits<CVC7LikeExCaption,
-								WS_OVERLAPPEDWINDOW | WS_POPUP/* WS_CHILD*/ | 
-								/*WS_VISIBLE |*/ WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-								WS_EX_TOOLWINDOW/* WS_EX_CLIENTEDGE*/> CVC7LikeExDockingBoxTraits;
 template <class T,
-          class TBase = CWindow, 
+          class TBase = CWindow,
           class TDockingWinTraits = COutlookLikeDockingBoxTraits>
 class ATL_NO_VTABLE CBoxedDockingWindowBaseImpl :
 			public CTitleDockingWindowImpl<T,TBase,TDockingWinTraits>
@@ -209,7 +202,7 @@ public:
 		{
 			if(IsDocking())
 						Undock();
-			DFDOCKPOS dockHdr = {0}; // ss: Initialise to 0.
+			DFDOCKPOS dockHdr={0};
 //			dockHdr.hdr.code=DC_SETDOCKPOSITION;
 			dockHdr.hdr.hWnd=m_hWnd;
 			dockHdr.hdr.hBar=hWnd;
@@ -244,6 +237,13 @@ public:
 		return FALSE;
 	}
 
+#ifdef DF_AUTO_HIDE_FEATURES
+	LRESULT OnPinBtnPress(DFPINBTNPRESS* pHdr)
+	{
+		T* pThis=static_cast<T*>(this);
+		return pThis->PinBtnPress(pHdr->bVisualize ? true : false);
+	}
+#endif
 	bool OnSetDockingPosition(DFDOCKPOS* /*pHdr*/)
 	{
 		assert(false);
@@ -307,9 +307,14 @@ protected:
 			case DC_GETDOCKPOSITION:
 				lRes=pThis->OnGetDockingPosition(reinterpret_cast<DFDOCKPOS*>(pHdr));
 				break;
-			case DC_ACTIVATE:	
+			case DC_ACTIVATE:
 				lRes=pThis->OnActivate(pHdr);
 				break;
+#ifdef DF_AUTO_HIDE_FEATURES
+			case DC_PINBTNPRESS:	
+				lRes=pThis->OnPinBtnPress(reinterpret_cast<DFPINBTNPRESS*>(pHdr));
+				break;
+#endif
 
 		}
 		return lRes;
@@ -318,14 +323,14 @@ protected:
 };
 
 template <class T,
-          class TBase = CWindow, 
+          class TBase = CWindow,
           class TDockingWinTraits = COutlookLikeDockingBoxTraits>
 class ATL_NO_VTABLE CDockingBoxBaseImpl :
 			public CBoxedDockingWindowBaseImpl<T,TBase,TDockingWinTraits>
 {
     typedef CBoxedDockingWindowBaseImpl< T, TBase, TDockingWinTraits >	baseClass;
     typedef CDockingBoxBaseImpl< T, TBase, TDockingWinTraits >			thisClass;
-protected:	
+protected:
 	// use CreateInstance instead
 	CDockingBoxBaseImpl()
 	{
@@ -352,7 +357,7 @@ public:
 
 
 template <class T,
-          class TBase ,  
+          class TBase ,
           class TDockingWinTraits >
 class ATL_NO_VTABLE CBoxedDockingWindowImpl :
 			public CBoxedDockingWindowBaseImpl<T,TBase,TDockingWinTraits>
@@ -385,7 +390,7 @@ public:
 			{
 //				dockHdr.code=DC_ACTIVATE;
 				dockHdr.hWnd=m_hWnd;
-				bRes=m_docker.Activate(&dockHdr);			
+				bRes=m_docker.Activate(&dockHdr);
 			}
 			else
 				bRes=baseClass::Show();
@@ -408,7 +413,7 @@ public:
 			{
 //				dockHdr.code=DC_ACTIVATE;
 				dockHdr.hWnd=m_hWnd;
-				bRes=m_docker.Activate(&dockHdr);			
+				bRes=m_docker.Activate(&dockHdr);
 			}
 		}
 		return bRes;

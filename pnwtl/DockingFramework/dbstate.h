@@ -31,6 +31,8 @@ protected:
 	public:
 		class CQLoader
 		{
+		protected:
+			typedef CDockWndMgr::CImpl::CRestPos CRestPos;
 		public:
 			CQLoader(CRestQueue& q,IMainState* pMState,CRegKey& keyTop)
 					:m_queue(q),m_pMState(pMState),m_keyTop(keyTop)
@@ -133,7 +135,7 @@ protected:
 				if(curSide.Side()!=side.Side()
 					|| (dpos.dockPos.nBar!=m_nBar) )
 										PinUp();
-				m_wnds.push_back(dpos.dockPos.hdr.hWnd);				
+				m_wnds.push_back(dpos.dockPos.hdr.hWnd);
 				m_pinHdr.dwDockSide=side;
 				m_nBar=dpos.dockPos.nBar;
 				m_width=dpos.dockPos.nWidth;
@@ -143,7 +145,7 @@ protected:
 					m_pinHdr.nWidth=dpos.dockPos.nWidth;
 				}
 			}
-			static void PrepareForRestoring(CRestPos& dpos) 
+			static void PrepareForRestoring(CRestPos& dpos)
 			{
 				::SetRectEmpty(&dpos.rect);
 				dpos.bDocking=FALSE;
@@ -225,14 +227,14 @@ protected:
 				if(!bVisible )
 					::SendMessage(::GetParent(hBar),WM_CLOSE,0,0);
 			}
-			return true;			
+			return true;
 		}
 	protected:
 		dockwins::CDocker m_docker;
 	};
 public:
 	CDockWndMgrEx(HWND hDockingFrameWnd)
-		:CDockWndMgr(new CImpl(hDockingFrameWnd))		
+		:CDockWndMgr(new CImpl(hDockingFrameWnd))
 	{
 	}
 };

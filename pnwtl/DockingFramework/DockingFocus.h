@@ -1,5 +1,5 @@
 // Copyright (c) 2002
-// Sergey Klimov (kidd@ukr.net)
+// Peter Krnjevic(peter@dynalinktech.com)
 // WTL Docking windows
 //
 // This code is provided "as is", with absolutely no warranty expressed
@@ -13,6 +13,10 @@
 // then a simple email woulod be nice.
 
 #pragma once
+#ifndef __WTL_DW__DOCKINGFOCUS_H__
+#define __WTL_DW__DOCKINGFOCUS_H__
+
+#define DF_FOCUS_FEATURES
 
 #include <map>
 #include <queue>
@@ -33,7 +37,7 @@ public:
 		// make	sure the hook is installed
 		if (m_hHook == NULL)
 		{
-			m_hHook = ::SetWindowsHookEx(WH_CBT, CBTProc, _Module.m_hInst, GetCurrentThreadId());
+			m_hHook = ::SetWindowsHookEx(WH_CBT, CBTProcStub, _Module.m_hInst, GetCurrentThreadId());
 			// is the hook set?
 			if (m_hHook == NULL)
 			{
@@ -54,7 +58,7 @@ public:
 	}
 
 	void AddWindow(HWND hwnd)
-	{	
+	{
 		ATLASSERT(hwnd);
 		if (m_mapHwnd.end() == m_mapHwnd.find(hwnd))
 			m_mapHwnd.insert(HWNDMAP::value_type(hwnd,::IsChild(hwnd,GetFocus())?GetFocus():NULL));
@@ -68,7 +72,7 @@ public:
 
 	LRESULT OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
-		bHandled = false;
+//		bHandled = false;
 		SetFocusIfWindowFound(m_hwndMSg);
 		return 0;
 	}
@@ -89,7 +93,7 @@ public:
 				if (::IsChild(m_hWnd,hWnd))
 				{
 					bHandled = true;
-					SetFocus(hWnd); // ::PostMessage(hWnd,WM_SETFOCUS,0,0);
+					SetFocusEx(hWnd); // ::PostMessage(hWnd,WM_SETFOCUS,0,0);
 				}
 			}
 			InvalidateCaption(hWnd);
@@ -101,7 +105,7 @@ public:
 	static CDockingFocusHandler* This(CDockingFocusHandler* t=0)
 	{
 		static CDockingFocusHandler* pThis;
-		if (t) 
+		if (t)
 		{
 			ATLASSERT(0 == pThis);
 			pThis=t;
@@ -110,18 +114,47 @@ public:
 		return pThis;
 	}
 
+	static HWND SetFocusEx(HWND hwnd)
+	{
+		CWindow dad(GetParent(hwnd));
+		if (dad.IsWindow())
+		{
+			TCHAR sz[100];
+			int n = GetClassName(dad,sz,sizeof(sz)/sizeof(sz[0]));
+			if (n && 0 == _tcscmp(_T("#32770"),sz))
+			{
+				HWND hwndFocus = GetFocus();
+				dad.GotoDlgCtrl(hwnd);
+				return hwndFocus;
+			}
+		}
+		return ::SetFocus(hwnd);
+	}
+
 private:
-	static LRESULT CALLBACK CBTProc(int nCode, WPARAM wParam, LPARAM lParam)
+	static LRESULT CALLBACK CBTProcStub(int nCode, WPARAM wParam, LPARAM lParam)
+	{
+		ATLASSERT(This());
+		return This()->CBTProc(nCode,wParam,lParam);
+	}
+
+	LRESULT CALLBACK CBTProc(int nCode, WPARAM wParam, LPARAM lParam)
 	{
 		LPMSG lpMsg	= (LPMSG) lParam;
 		if (nCode == HCBT_SETFOCUS)
 		{
-			This()->InvalidateCaption((HWND)wParam);
-			This()->InvalidateCaption((HWND)lParam);
-			This()->UpdateFocus(GetDockingParent((HWND)wParam),(HWND)wParam);
+			InvalidateCaption((HWND)wParam);
+			InvalidateCaption((HWND)lParam);
+			UpdateFocus(GetDockingParent((HWND)wParam),(HWND)wParam);
+		}
+		else if (nCode == HCBT_DESTROYWND)
+		{
+			HWNDMAP::iterator i =  m_mapHwnd.find((HWND)wParam);
+			if (m_mapHwnd.end() != i)
+				m_mapHwnd.erase(i);
 		}
 		// Pass to the next hook in the chain.
-		return ::CallNextHookEx(This()->m_hHook, nCode, wParam, lParam);
+		return ::CallNextHookEx(m_hHook, nCode, wParam, lParam);
 	}
 
 	void InvalidateCaption(HWND hWnd)
@@ -155,13 +188,13 @@ private:
 			wc.cbSize = sizeof(wc);
 			aClass = GetClassInfoEx(_Module.GetModuleInstance(),_T("CPackageWindowFrame::CPackageWindow"),&wc);
 		}
-		// looks for parent window 2 levels down from m_hWnd, which 
+		// looks for parent window 2 levels down from m_hWnd, which
 		// was initialized in InitializeDockingFrame.
 		//	ATLASSERT(aClass);
 		if (0 == aClass)
 			return NULL;
 		ATLASSERT(This());
-		while (NULL != hWnd) 
+		while (NULL != hWnd)
 		{
 			HWND h = GetParent(hWnd);
 			if (!h)
@@ -182,10 +215,10 @@ private:
 		{
 			// ensure setting focus won't change activation.
 			if (::IsChild(hwnd,i->second))
-				SetFocus(i->second);
+				SetFocusEx(i->second);
 		}
 		else
-			SetFocus(i->first);
+			SetFocusEx(i->first);
 		return true;
 	}
 
@@ -210,14 +243,14 @@ class CCaptionFocus
 {
 public:
 	CCaptionFocus(HDC hdc) : m_hWnd(::WindowFromDC(hdc)), m_DockingFocusHandler(*CDockingFocusHandler::This()) { }
-	HBRUSH GetCaptionBgBrush() 
+	HBRUSH GetCaptionBgBrush()
 	{
 		m_DockingFocusHandler.AddWindow(m_hWnd);
-		return GetSysColorBrush(HasFocus() ? COLOR_ACTIVECAPTION : COLOR_3DFACE); 
+		return GetSysColorBrush(HasFocus() ? COLOR_ACTIVECAPTION : COLOR_3DFACE);
 	}
-	DWORD GetCaptionTextColor() { return GetSysColor(HasFocus() ? COLOR_CAPTIONTEXT : COLOR_BTNTEXT); }
-private:
-	bool HasFocus() { return 0!= CWindow(m_hWnd).IsChild(GetFocus()); }
+	DWORD GetCaptionTextColor() const { return GetSysColor(HasFocus() ? COLOR_CAPTIONTEXT : COLOR_BTNTEXT); }
+//private:
+	bool HasFocus() const { return 0!= CWindow(m_hWnd).IsChild(GetFocus()); }
 private:
 	HWND m_hWnd;
 	CDockingFocusHandler& m_DockingFocusHandler;
@@ -226,3 +259,4 @@ private:
 
 
 } // namespace dockwins
+#endif // __WTL_DW__DOCKINGFOCUS_H__

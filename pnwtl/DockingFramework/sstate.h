@@ -130,7 +130,7 @@ public:
         assert(m_keyMain.m_hKey);
         return m_keyMain;
     }
-    virtual float XRatio() const 
+    virtual float XRatio() const
     {
 		return m_xratio;
     }
@@ -143,16 +143,16 @@ public:
         DWORD dwDisposition;
         assert(!m_strMainKey.empty());
         bool bRes=(m_keyMain.Create(HKEY_CURRENT_USER,m_strMainKey.c_str(),REG_NONE,
-                                    REG_OPTION_NON_VOLATILE, KEY_WRITE|KEY_READ, 
+                                    REG_OPTION_NON_VOLATILE, KEY_WRITE|KEY_READ,
                                     NULL,&dwDisposition)==ERROR_SUCCESS);
         if(bRes)
         {
             CRegKey keyGeneral;
             bRes=(keyGeneral.Create(m_keyMain,ctxtGeneral,REG_NONE,
-                                    REG_OPTION_NON_VOLATILE, KEY_WRITE|KEY_READ, 
+                                    REG_OPTION_NON_VOLATILE, KEY_WRITE|KEY_READ,
                                     NULL,&dwDisposition)==ERROR_SUCCESS);
             if(bRes)
-            {                               
+            {
 
 				DWORD val=::GetSystemMetrics(SM_CXSCREEN);
 				::RegSetValueEx(keyGeneral, ctxtCXScreen, NULL, REG_DWORD,
@@ -162,7 +162,7 @@ public:
 								reinterpret_cast<BYTE*>(&val), sizeof(DWORD));
 /*
 				keyGeneral.SetValue(::GetSystemMetrics(SM_CXSCREEN),ctxtCXScreen);
-				keyGeneral.SetValue(::GetSystemMetrics(SM_CYSCREEN),ctxtCYScreen);                 
+				keyGeneral.SetValue(::GetSystemMetrics(SM_CYSCREEN),ctxtCYScreen);
 */
             }
         }
@@ -229,7 +229,7 @@ protected:
             CRegKey key;
             DWORD dwDisposition;
             LONG lRes = key.Create(m_keyTop,sstrKey.str().c_str(),REG_NONE,
-                                    REG_OPTION_NON_VOLATILE, KEY_WRITE|KEY_READ, 
+                                    REG_OPTION_NON_VOLATILE, KEY_WRITE|KEY_READ,
                                     NULL,&dwDisposition);
             if(lRes==ERROR_SUCCESS)
                     x.second->Store(m_pMState,key);
@@ -284,7 +284,7 @@ public:
 	virtual bool Restore(IMainState* pMState,CRegKey& key)
 	{
         std::for_each(m_bunch.begin(),m_bunch.end(),CRestorer(pMState,key));
-		return true;			
+		return true;
 	}
 	virtual bool RestoreDefault()
 	{
@@ -302,7 +302,7 @@ public:
 		CStateHolder<IState> h (pState);
 		m_bunch[id]=h;
 	}
-	void Remove(ID id) 
+	void Remove(ID id)
 	{
 		assert(m_bunch.find(id)!=m_bunch.end());
 		m_bunch.erase(id);
@@ -314,7 +314,7 @@ protected:
 
 class CWindowStateMgr
 {
-protected:	
+protected:
 	class CImpl : public CContainerImpl
 	{
 		typedef CContainerImpl baseClass;
@@ -328,7 +328,7 @@ protected:
             assert(::IsWindow(hWnd));
             m_hWnd=hWnd;
             m_nDefCmdShow=nDefCmdShow;
-        }		
+        }
 		virtual bool Store(IMainState* pMState,CRegKey& key)
 		{
 			assert(IsWindow(m_hWnd));
@@ -338,7 +338,11 @@ protected:
             bool bRes=false;
             if (::GetWindowPlacement(m_hWnd,&wp))
             {
-                wp.flags &= WPF_RESTORETOMAXIMIZED;
+                wp.flags = 0;
+                if(::IsZoomed(m_hWnd))
+					wp.flags |= WPF_RESTORETOMAXIMIZED;
+				if(wp.showCmd==SW_SHOWMINIMIZED)
+					wp.showCmd=SW_SHOWNORMAL;					
                 bRes=(::RegSetValueEx(key,ctxtPlacement,NULL,REG_BINARY,
 										reinterpret_cast<CONST BYTE *>(&wp),
 										sizeof(WINDOWPLACEMENT))==ERROR_SUCCESS);
@@ -354,27 +358,21 @@ protected:
 
             bool bRes=(::RegQueryValueEx(key,ctxtPlacement,NULL,&dwType,
 											reinterpret_cast<LPBYTE>(&wp),&cbData)==ERROR_SUCCESS)
-											&&(dwType==REG_BINARY); 
+											&&(dwType==REG_BINARY);
             if(bRes)
 			{
-				UINT nCmdShow;
-				if((wp.flags & WPF_RESTORETOMAXIMIZED) != 0)
-					wp.showCmd = nCmdShow = SW_MAXIMIZE;
-				else if(wp.showCmd == SW_SHOWMINIMIZED)
-					nCmdShow = SW_NORMAL;
-				else
-					nCmdShow = wp.showCmd; 
+				UINT nCmdShow=wp.showCmd;
 //				LockWindowUpdate(m_hWnd);
-				if(wp.showCmd == SW_MAXIMIZE)
+				if(wp.showCmd==SW_MAXIMIZE)
 					::ShowWindow(m_hWnd,nCmdShow);
 				wp.showCmd=SW_HIDE;
                 ::SetWindowPlacement(m_hWnd,&wp);
-				bRes=baseClass::Restore(pMState,key);				
-				::ShowWindow(m_hWnd, /*nCmdShow*/SW_SHOW);
+				bRes=baseClass::Restore(pMState,key);
+				::ShowWindow(m_hWnd,nCmdShow);
 //				LockWindowUpdate(NULL);
 			}
 			else
-				bRes=baseClass::RestoreDefault();			
+				bRes=baseClass::RestoreDefault();
 			return bRes;
 		}
 		virtual bool RestoreDefault()
@@ -410,7 +408,7 @@ public:
 	{
 		m_pImpl->Add(id,pState);
 	}
-	void Remove(ID id) 
+	void Remove(ID id)
 	{
 		m_pImpl->Remove(id);
 	}
@@ -427,7 +425,7 @@ public:
             CRegKey key;
             DWORD dwDisposition;
             if(key.Create(mstate.MainKey(),ctxtMainWindow,REG_NONE,
-							REG_OPTION_NON_VOLATILE, KEY_WRITE|KEY_READ, 
+							REG_OPTION_NON_VOLATILE, KEY_WRITE|KEY_READ,
 							NULL,&dwDisposition)==ERROR_SUCCESS)
 					m_pImpl->Store(&mstate,key);
         }
@@ -450,7 +448,7 @@ protected:
 class CWindowStateAdapter
 {
 protected:
-	class CImpl : public CStateBase<IState>	
+	class CImpl : public CStateBase<IState>
 	{
 	public:
 		CImpl(HWND hWnd,int nDefCmdShow=SW_SHOWNA)
@@ -483,7 +481,7 @@ protected:
             DWORD cbData=sizeof(WINDOWPLACEMENT);
             bool bRes=(::RegQueryValueEx(key,ctxtPlacement,NULL,&dwType,
 											reinterpret_cast<LPBYTE>(&wp),&cbData)==ERROR_SUCCESS)
-											&&(dwType==REG_BINARY); 
+											&&(dwType==REG_BINARY);
             if(bRes)
                     bRes=(::SetWindowPlacement(m_hWnd,&wp)!=FALSE);
             return bRes;
@@ -518,7 +516,7 @@ protected:
 class CToggleWindowAdapter
 {
 protected:
-	class CImpl : public CStateBase<IState>	
+	class CImpl : public CStateBase<IState>
 	{
 	public:
 		CImpl(HWND hWnd,int nDefCmdShow=SW_SHOWNA)
@@ -576,7 +574,7 @@ protected:
 class CRebarStateAdapter
 {
 protected:
-	class CImpl : public CStateBase<IState>	
+	class CImpl : public CStateBase<IState>
 	{
 	public:
 		CImpl(HWND hWnd, int storeVersion)
@@ -604,9 +602,9 @@ protected:
 							// breaking windows theme changes.
 							//RBBIM_COLORS |
 							// The following causes the rebars to shift left on restore.
-							//#if (_WIN32_IE >= 0x0400)
-							//	| RBBIM_HEADERSIZE | RBBIM_IDEALSIZE
-							//#endif	
+							#if (_WIN32_IE >= 0x0400)
+								| /*RBBIM_HEADERSIZE |*/ RBBIM_IDEALSIZE
+							#endif	
 								;
 				m_rebar.GetBandInfo(i, &rbi);
 				::RegSetValueEx(key,sstrKey.str().c_str(),NULL,REG_BINARY,
@@ -615,7 +613,7 @@ protected:
 			}
 			return true;
 		}
-		
+
 		virtual bool Restore(IMainState* /*pMState*/,CRegKey& key)
 		{
 			DWORD dwType;

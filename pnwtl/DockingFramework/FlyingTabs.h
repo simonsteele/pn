@@ -33,14 +33,14 @@
 #endif
 
 namespace dockwins{
-	
+
 #define CTCN_TABLEAVCTRL CTCN_LAST-1
 
 #ifndef CTCS_VERTICAL
 #define CTCS_VERTICAL TCS_VERTICAL
 #endif
 
-class CFlyingTabCtrl : 
+class CFlyingTabCtrl :
 	public CDotNetTabCtrlImpl<CFlyingTabCtrl, CTabViewTabItem>
 {
 	typedef CDotNetTabCtrlImpl<CFlyingTabCtrl, CTabViewTabItem>	baseClass;
@@ -69,8 +69,8 @@ protected:
 			int index=m_ctrlTab.HitTest(&tchti);
 			if(index!=-1)
 			{
-				if(( index!=m_curItem) 
-					&& 
+				if(( index!=m_curItem)
+					&&
 					 !( ( index==m_prevItem)
 						&& ( (pos-m_prevPos)*(m_prevItem-m_curItem) <=0) ) )
 				{
@@ -85,7 +85,7 @@ protected:
 				::ReleaseCapture();
 /*
 			{
-				NMHDR nmh; 
+				NMHDR nmh;
 				nmh.hwndFrom = m_ctrlTab.m_hWnd;
 				nmh.idFrom=m_ctrlTab.GetDlgCtrlID();
 				nmh.code=CTCN_TABLEAVCTRL;
@@ -134,14 +134,14 @@ protected:
 			if(style&CTCS_BOTTOM)
 				pRc->left=pRc->right - tabHeight;
 			else
-				pRc->right=pRc->left + tabHeight;				
+				pRc->right=pRc->left + tabHeight;
 		}
 		else
 		{
-			if(style&CTCS_BOTTOM)				
+			if(style&CTCS_BOTTOM)
 				pRc->top=pRc->bottom - tabHeight;
 			else
-				pRc->bottom=pRc->top + tabHeight;				
+				pRc->bottom=pRc->top + tabHeight;
 		}
 	}
 public:
@@ -152,7 +152,7 @@ public:
 /*
     int InsertItem(int nItem, LPCTSTR sText = NULL, int nImage = -1, HWND hWndTabView = NULL, LPCTSTR sToolTip = NULL, bool bSelectItem = false)
     {
-		return baseClass::InsertItem(nItem, sText, nImage, hWndTabView, sToolTip, bSelectItem); 	
+		return baseClass::InsertItem(nItem, sText, nImage, hWndTabView, sToolTip, bSelectItem);
 	}
 	int InsertItem(int nItem, CTabViewTabItem* pItem, bool bSelectItem = false)
 	{
@@ -208,15 +208,15 @@ public:
 			if(style&CTCS_BOTTOM)
 				pRc->right-=tabHeight;
 			else
-				pRc->left+=tabHeight;				
+				pRc->left+=tabHeight;
 		}
 		else
 		{
-			if(style&CTCS_BOTTOM)				
-				pRc->bottom-=tabHeight;				
+			if(style&CTCS_BOTTOM)
+				pRc->bottom-=tabHeight;
 			else
 				pRc->top+=tabHeight;
-				
+
 		}
 		return TRUE;
 	}
@@ -227,7 +227,7 @@ public:
 		MESSAGE_HANDLER(WM_SETFONT, OnSetFont)
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLButtonDown)
 		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnLButtonDblClk)
-		CHAIN_MSG_MAP(baseClass)		
+		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -262,14 +262,14 @@ public:
 				{
 					CTCHITTESTINFO tchti = { 0 };
 					::GetCursorPos(&tchti.pt);
-					ScreenToClient(&tchti.pt);					
+					ScreenToClient(&tchti.pt);
 					int index=HitTest(&tchti);
 					if(index==-1)
 					{
 						MSG msg;
 						while(PeekMessage(&msg, NULL, NULL, NULL, PM_REMOVE))
 							DispatchMessage(&msg);
-						NMHDR nmh; 
+						NMHDR nmh;
 						nmh.hwndFrom = m_hWnd;
 						nmh.idFrom=GetDlgCtrlID();
 						nmh.code=CTCN_TABLEAVCTRL;
@@ -289,12 +289,12 @@ public:
 		int index=HitTest(&tchti);
 		if(index!=-1)
 		{
-			NMHDR nmh; 
+			NMHDR nmh;
 			nmh.hwndFrom = m_hWnd;
 			nmh.idFrom=GetDlgCtrlID();
 			nmh.code=NM_DBLCLK;
 			::SendMessage(GetParent(), WM_NOTIFY, nmh.idFrom, (LPARAM)&nmh);
-		}		
+		}
 		return 0;
 	}
 protected:

@@ -119,8 +119,8 @@ protected:
 		}
 		void DrawGhostRect(CDC& dc,RECT* pRect)
 		{
-			CBrush brush = CDCHandle::GetHalftoneBrush();
-			if(brush.m_hBrush != NULL)
+			CBrush brush((HBRUSH)CDCHandle::GetHalftoneBrush());
+			if(!brush.IsNull())
 			{
 				HBRUSH hBrushOld = dc.SelectBrush(brush);
 
@@ -160,7 +160,7 @@ protected:
 			m_dockHdr.rect.right=m_dockHdr.rect.left+m_size.cx;
 			m_dockHdr.rect.bottom=m_dockHdr.rect.top+m_size.cy;
 			m_docker.AdjustDragRect(&m_dockHdr);
-			if((GetKeyState(VK_CONTROL) & 0x80000000) || !m_docker.AcceptDock(&m_dockHdr))
+			if((GetKeyState(VK_CONTROL) & 0x8000) || !m_docker.AcceptDock(&m_dockHdr))
 			{
 				m_dockHdr.hdr.hBar=HNONDOCKBAR;
 				m_dockHdr.rect.left=x+m_offset.cx;
@@ -341,7 +341,7 @@ public:
     bool BeginMoving(const POINT& point)
     {
 		DFDOCKRECT dockHdr;
-//		dockHdr.hdr.code=DC_ACCEPT; 
+//		dockHdr.hdr.code=DC_ACCEPT;
 		dockHdr.hdr.hWnd=m_hWnd;
 		dockHdr.hdr.hBar=HNONDOCKBAR;//GetOwnerDockingBar();
 
@@ -350,7 +350,7 @@ public:
 			GetWindowRect(&dockHdr.rect);
 //			dockHdr.hdr.code=DC_ADJUSTDRAGRECT;
 			m_docker.AdjustDragRect(&dockHdr);
-			m_rcUndock.CopyRect(&dockHdr.rect);			
+			m_rcUndock.CopyRect(&dockHdr.rect);
 		}
 		GetWindowRect(&dockHdr.rect);
 		CPoint pt(point);
@@ -401,7 +401,7 @@ public:
         MESSAGE_HANDLER(WM_NCLBUTTONDOWN,OnNcLButtonDown)
 		MESSAGE_HANDLER(WM_WINDOWPOSCHANGED, OnWindowPosChanged)
 		MESSAGE_HANDLER(WMDF_NDOCKSTATECHANGED,OnDockStateChanged)
-		MESSAGE_HANDLER(WM_MENUCHAR, OnMenuChar) // ss 18/5/03 (make menu keys work)
+		MESSAGE_HANDLER(WM_MENUCHAR,OnMenuChar)
 	END_MSG_MAP()
 
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -463,16 +463,14 @@ public:
 		return TRUE;
 	}
 
-	// ss 18/5/03 (make menu keys work)
 	LRESULT OnMenuChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
 		LRESULT lRes = DefWindowProc(uMsg, wParam, lParam);
 		if( HIWORD(lRes) == MNC_IGNORE ) {
-			return ::SendMessage(GetTopLevelParent(), uMsg, wParam, lParam);
+			return ::SendMessage(this->GetTopLevelParent(), uMsg, wParam, lParam);
 		}
 		return lRes;
 	}
-
 protected:
 	CDocker		m_docker;
 	HDOCKBAR	m_hBarOwner;
@@ -762,10 +760,10 @@ public:
 		return m_docker.PinUp(&pinHdr);
 	}
 
-	bool PinBtnPress()
+	bool PinBtnPress(bool bVisualize=true)
 	{
 		assert(IsDocking());
-		DFDOCKPOS dockHdr = {0}; // ss: Initialise to 0.
+		DFDOCKPOS dockHdr={0};
 //		dockHdr.hdr.code=DC_GETDOCKPOSITION;
 		dockHdr.hdr.hWnd=m_hWnd;
 		dockHdr.hdr.hBar=GetOwnerDockingBar();
@@ -776,7 +774,7 @@ public:
 			if(bRes)
 			{
 				T* pThis=static_cast<T*>(this);
-				bRes=pThis->PinUp(CDockingSide(dockHdr.dwDockSide),dockHdr.nWidth,true);
+				bRes=pThis->PinUp(CDockingSide(dockHdr.dwDockSide),dockHdr.nWidth,bVisualize);
 			}
 		}
 		return bRes;
@@ -795,7 +793,11 @@ protected:
 			MESSAGE_HANDLER(WM_SETICON,OnCaptionChange)
 			MESSAGE_HANDLER(WM_NCLBUTTONDOWN, OnNcLButtonDown)
 			MESSAGE_HANDLER(WM_NCLBUTTONUP,OnNcLButtonUp)
-			MESSAGE_HANDLER(WM_NCLBUTTONDBLCLK,OnNcLButtonDblClk)			
+			MESSAGE_HANDLER(WM_NCLBUTTONDBLCLK,OnNcLButtonDblClk)
+#ifdef DF_FOCUS_FEATURES
+			ATLASSERT(CDockingFocusHandler::This());
+			CHAIN_MSG_MAP_ALT_MEMBER((*CDockingFocusHandler::This()),0)
+#endif
 		}
 		MESSAGE_HANDLER(WM_GETMINMAXINFO,OnGetMinMaxInfo)
 		MESSAGE_HANDLER(WM_SETTINGCHANGE,OnSettingChange)
@@ -810,6 +812,7 @@ protected:
 		pThis->GetMinMaxInfo(reinterpret_cast<LPMINMAXINFO>(lParam));
 		return lRes;
 	}
+
 	LRESULT OnSettingChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
 		if(!IsDocking())
@@ -949,7 +952,18 @@ protected:
 				break;
 #ifdef DF_AUTO_HIDE_FEATURES
 			case HTPIN:
-				bHandled=pThis->PinBtnPress();
+				{
+					HWND hWndFocus = ::GetFocus();
+					bHandled=pThis->PinBtnPress();
+					if(::IsWindow(hWndFocus) && ::IsWindowVisible(hWndFocus))
+					{
+						::SetFocus(hWndFocus);
+					}
+					else
+					{
+						::SetFocus(this->GetTopLevelParent());
+					}
+				}
 				break;
 #endif
 			default:
@@ -1025,8 +1039,8 @@ public:
 	{
 		bool bRes=baseClass::GetDockingWindowPlacement(pHdr);
 		pHdr->bVisible=static_cast<const T*>(this)->IsWindowVisible();
-		if((!pHdr->bDocking) 
-			&& (!pHdr->bVisible) 
+		if((!pHdr->bDocking)
+			&& (!pHdr->bVisible)
 				&& (m_pos.hdr.hBar!=HNONDOCKBAR))
 			::CopyMemory(&pHdr->dockPos,&m_pos,sizeof(DFDOCKPOS));
 		return bRes;
@@ -1041,11 +1055,21 @@ public:
 		else
 		{
 			if(IsDocking())
-						Undock();
+				Undock();
 			::CopyRect(&m_rcUndock,&pHdr->rect);
-			bRes=(SetWindowPos(NULL,&m_rcUndock,SWP_NOZORDER | SWP_HIDEWINDOW |
-													SWP_NOACTIVATE )!=FALSE);
+			bRes=(SetWindowPos(NULL,&m_rcUndock,
+					SWP_NOZORDER | SWP_HIDEWINDOW |	SWP_NOACTIVATE )!=FALSE);
 		}
+
+#ifdef DF_AUTO_HIDE_FEATURES
+		// Update from Peter Carlson.
+		//  A fix for the pin restore problem.
+		CDockingSide side(pHdr->dockPos.dwDockSide);
+		if (side.IsPinned())
+			PinUp(side, (side.IsHorizontal() ? pHdr->dockPos.nHeight : pHdr->dockPos.nWidth));
+		//
+#endif
+
 		return bRes;
 	}
 
@@ -1066,8 +1090,16 @@ public:
 		bHandled=!(static_cast<T*>(this)->CanBeClosed(wParam));
 		return 0;
 	}
-	LRESULT OnNcLButtonDblClk(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+	LRESULT OnNcLButtonDblClk(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 	{
+		if(IsIconic() || IsZoomed())
+		{
+			// Docking a minimised window is a bad idea!
+			// Let Windows restore.
+			bHandled = FALSE;
+			return 0;
+		}
+
 		if(wParam==HTCAPTION)
 		{
 			if(IsDocking())
