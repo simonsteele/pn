@@ -94,7 +94,7 @@ EPNSaveFormat determineLineEndings(char* pBuf, int nLen)
 	for(int i = 0; i < nLen; i++)
 	{
 		c = pBuf[i];
-		n = ((i < nLen) ? pBuf[i] : NULL);
+		n = ((i < nLen) ? pBuf[i+1] : NULL);
 
         if (c == '\r') 
 		{
@@ -102,7 +102,7 @@ EPNSaveFormat determineLineEndings(char* pBuf, int nLen)
 			{
 				linesCRLF++;
 				// Skip the next character (\n).
-				n++;
+				i++;
 				p = '\n';
 				continue;
 			}

@@ -310,6 +310,7 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	UISetChecked(ID_EDITOR_COLOURISE, true);
 	UISetChecked(ID_EDITOR_WORDWRAP, false);
 	UISetChecked(ID_EDITOR_LINENOS, false);
+	UISetChecked(ID_TOOLS_LECONVERT, true);
 
 	UpdateMenu();
 
@@ -599,18 +600,18 @@ LRESULT CChildFrame::OnLineEndingsToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*
 		m_view.SetEOLMode((int)PNSF_Unix);
 	else
 		m_view.SetEOLMode((int)PNSF_Mac);
+	
+	if(UIGetChecked(ID_TOOLS_LECONVERT))
+		m_view.ConvertEOLs(m_view.GetEOLMode());
+
 	UpdateMenu();
 	return 0;
 }
 
 LRESULT CChildFrame::OnLineEndingsConvert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	if(MessageBox(_T("Are you sure you wish to convert the line endings\nin this file to the currently selected type?"), 
-		_T("Programmers Notepad 2"), MB_YESNO | MB_ICONQUESTION) == IDYES)
-	{
-		m_view.ConvertEOLs(m_view.GetEOLMode());
-	}
-
+	UIInvertCheck(ID_TOOLS_LECONVERT);	
+	
 	return 0;
 }
 
@@ -1102,6 +1103,7 @@ CChildFrame::_PoorMansUIEntry* CChildFrame::GetDefaultUIMap()
 		{ID_EDITOR_WHITESPACE, PMUI_MENU},
 		{ID_EDITOR_EOLCHARS, PMUI_MENU},
 		{ID_EDITOR_OUTPUTWND, PMUI_MENU},
+		{ID_TOOLS_LECONVERT, PMUI_MENU},
 		// note: This one must be at the end.
 		{-1, 0}
 	};
