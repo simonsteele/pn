@@ -25,7 +25,7 @@ class CSRegistry
 	public:
 		CSRegistry() : m_open(false), m_hKey(NULL), m_root(HKEY_CURRENT_USER){};
 		~CSRegistry();
-		bool OpenKey(LPCTSTR key, bool bCreate=true);
+		bool OpenKey(LPCTSTR key, bool bCreate=true, bool bDegradeToRead=true);
 		void CloseKey();
 
 		void WriteInt(LPCTSTR valname, int value);

@@ -21,7 +21,7 @@ CSRegistry::~CSRegistry()
 		CloseKey();
 }
 
-bool CSRegistry::OpenKey(LPCTSTR key, bool bCreate)
+bool CSRegistry::OpenKey(LPCTSTR key, bool bCreate, bool bDegradeToRead)
 {
 	if(m_open)
 		CloseKey();
@@ -53,6 +53,20 @@ bool CSRegistry::OpenKey(LPCTSTR key, bool bCreate)
 			&m_hKey
 		) == ERROR_SUCCESS;
 	}
+	
+	if(!bSuccess && bDegradeToRead)
+	{
+		// This is quite possibly because the user does not have admin rights,
+		// we try to degrade to just read...
+		bSuccess = RegOpenKeyEx(
+			m_root,
+			key,
+			0,
+			KEY_READ_ACCESS,
+			&m_hKey
+		) == ERROR_SUCCESS;
+	}
+	
 	if(bSuccess)
 		m_open = true;
 
