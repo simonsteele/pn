@@ -176,7 +176,15 @@ public:
 		m_StatusBar.SetPaneWidth(ID_POS_PANE, 120);
 		m_StatusBar.SetPaneWidth(ID_MOD_PANE, 70);
 		m_StatusBar.SetPaneWidth(ID_INS_PANE, 80);
-		m_StatusBar.SetPaneText(ID_DEFAULT_PANE, _T("Ready"), SBT_NOBORDERS);
+		
+		OSVERSIONINFO osvi;
+		ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
+		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		GetVersionEx (&osvi);
+		m_bIsXPOrLater = 
+			(osvi.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
+			( (osvi.dwMajorVersion > 5) && (osvi.dwMinorVersion > 0) );
+		SetStatusText(NULL);
 		m_bShowingDefaultStatus = true;
 
 		DragAcceptFiles(TRUE);
@@ -550,13 +558,13 @@ public:
 	{
 		if(text)
 		{
-			m_StatusBar.SetPaneText(ID_DEFAULT_PANE, text, SBT_NOBORDERS);
+			m_StatusBar.SetPaneText(ID_DEFAULT_PANE, text, (m_bIsXPOrLater ? SBT_NOBORDERS : 0));
 			m_bShowingDefaultStatus = false;
 		}
 		else
 			if(!m_bShowingDefaultStatus)
 			{
-				m_StatusBar.SetPaneText(ID_DEFAULT_PANE, _T("Ready"), SBT_NOBORDERS);
+				m_StatusBar.SetPaneText(ID_DEFAULT_PANE, _T("Ready"), (m_bIsXPOrLater ? SBT_NOBORDERS : 0));
 				m_bShowingDefaultStatus = true;
 			}
 	}
@@ -664,6 +672,7 @@ protected:
 	HWND					hReplWnd;
 
 	bool					m_bShowingDefaultStatus;
+	bool					m_bIsXPOrLater;
 
 	void CloseAndFreeDlg(CDialogImplBase* pD)
 	{
