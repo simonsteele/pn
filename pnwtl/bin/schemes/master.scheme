@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<globals>
+		<value name="font.monospace">Courier New</value>
+		<value name="font.comment">Comic Sans</value>
+		<value name="colour.preproc">7f7f00</value>
+		<value name="colour.string">7f007f</value>
+		<value name="colour.char">7f007f</value>
+		<value name="colour.number">007f7f</value>
+		<value name="colour.keyword">00007f</value>
+		<value name="colour.operator">000000</value>
+	</globals>
+	<style-classes>
+		<!-- All styles inherit the default style. -->
+		<style-class name="default" fore="000000" back="FFFFFF" size="10" font="Lucida Console"/>
+		<!-- the bold style adds bold=true to the parent -->
+		<style-class name="comment" font="Comic Sans" size="9" fore="font.comment"/>
+		<style-class name="commentdoc" inherit-style="comment" fore="3f703f"/>
+		<style-class name="commentline" inherit-style="comment" fore="007f00"/>
+		<style-class name="commentbox" inherit-style="comment"/>
+		<style-class name="keyword" fore="colour.keyword" bold="true"/>
+	</style-classes>
+	<keyword-classes>
+		<keyword-class name="javascript">
+			abstract boolean break byte case catch char class 
+			const continue debugger default delete do double else enum export extends 
+			final finally float for function goto if implements import in instanceof 
+			int interface long native new package private protected public 
+			return short static super switch synchronized this throw throws 
+			transient try typeof var void volatile while with
+		</keyword-class>
+	</keyword-classes>
+	<imports>
+		<set pattern="*.scheme"/>
+		<!--<file name="userSettings.xml"/>-->
+	</imports>
+</Scheme>
