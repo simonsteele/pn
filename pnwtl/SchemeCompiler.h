@@ -109,6 +109,7 @@ class StyleDetails
 			Italic = false;
 			Underline = false;
 			EOLFilled = false;
+			values = 0;
 		}
 
 		StyleDetails(const StyleDetails& copy)
@@ -131,6 +132,29 @@ class StyleDetails
 			classname = copy.classname;
 			name = copy.name;
 			return *this;
+		}
+
+		bool operator == (const StyleDetails& compare)
+		{
+			return (
+				Key == compare.Key &&
+				FontName == compare.FontName &&
+				FontSize == compare.FontSize &&
+				ForeColor == compare.ForeColor &&
+				BackColor == compare.BackColor &&
+				Bold == compare.Bold &&
+				Italic == compare.Italic &&
+				Underline == compare.Underline &&
+				EOLFilled == compare.EOLFilled &&
+				//values == copy.values &&
+				classname == compare.classname &&
+				name == compare.name
+				);
+		}
+
+		bool operator != (const StyleDetails& compare)
+		{
+			return !(*this == compare);
 		}
 
 		int Key;
@@ -364,7 +388,7 @@ class SchemeParser
 		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags) = 0;
 		virtual void onLanguageEnd() = 0;
 		virtual void onStyleGroup(XMLAttributes& atts) = 0;
-		virtual void onStyle(StyleDetails* pStyle) = 0;
+		virtual void onStyle(StyleDetails* pStyle, StyleDetails* pCustom) = 0;
 		virtual void onStyleGroupEnd() = 0;
 		virtual void onKeywords(int key, LPCTSTR keywords) = 0;
 		virtual void onFile(LPCTSTR filename) = 0;
@@ -387,7 +411,7 @@ class SchemeCompiler : public SchemeParser
 		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags);
 		virtual void onLanguageEnd();
 		virtual void onStyleGroup(XMLAttributes& atts){}
-		virtual void onStyle(StyleDetails* pStyle);
+		virtual void onStyle(StyleDetails* pStyle, StyleDetails* pCustom);
 		virtual void onStyleGroupEnd(){}
 		virtual void onFile(LPCTSTR filename);
 		virtual void onKeywords(int key, LPCTSTR keywords);

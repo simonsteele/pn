@@ -20,6 +20,8 @@ class CustomStyleCollection
 		LPCTSTR GetName();
 		LPCTSTR GetDescription();
 
+		StyleDetails* GetStyle(int key);
+
 		STYLES_LIST	m_Styles;
 
 	protected:
@@ -51,6 +53,8 @@ class SchemeConfig : public CustomKeywordHolder, public CustomStyleHolder
 		CString m_Name;
 		CString m_Title;
 		int m_foldflags;
+
+		CustomStyleCollection m_customs;
 };
 
 typedef list<SchemeConfig*>	LIST_SCHEMECONFIGS;
@@ -78,7 +82,7 @@ class SchemeConfigParser : public SchemeParser
 		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags);
 		virtual void onLanguageEnd();
 		virtual void onStyleGroup(XMLAttributes& att);
-		virtual void onStyle(StyleDetails* pStyle);
+		virtual void onStyle(StyleDetails* pStyle, StyleDetails* pCustom);
 		virtual void onStyleGroupEnd();
 		virtual void onKeywords(int key, LPCTSTR keywords);
 		virtual void onFile(LPCTSTR filename);

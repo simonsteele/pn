@@ -285,8 +285,16 @@ void UserSettingsParser::Parse(LPCTSTR path, CSchemeLoaderState*	pState)
 	catch (CSchemeParserException& E)
 	{
 		CString err;
-		err.Format(_T("Error Parsing Scheme XML: %s\n (file: %s, line: %d, column %d)"), 
+		err.Format(_T("Error Parsing Scheme UserSettings XML: %s\n (file: %s, line: %d, column %d)"), 
 			E.GetMessage(), E.GetFileName(), E.GetLine(), E.GetColumn());
+		
+		OutputDebugString(err);
+	}
+	catch (XMLParserException& E)
+	{
+		CString err;
+		err.Format(_T("Error Parsing Scheme UserSettings XML: %s\n (file: %s, line: %d, column %d)"), 
+			XML_ErrorString(E.GetErrorCode()), E.GetFileName(), E.GetLine(), E.GetColumn());
 		
 		OutputDebugString(err);
 	}
@@ -518,8 +526,11 @@ void SchemeCompiler::onLanguageEnd()
 		m_Recorder.EndRecording();
 }
 
-void SchemeCompiler::onStyle(StyleDetails* pStyle)
+void SchemeCompiler::onStyle(StyleDetails* pStyle, StyleDetails* pCustom)
 {
+	if(pCustom)
+		customiseStyle(pStyle, pCustom);
+
 	if(pStyle->Key == STYLE_DEFAULT)
 	{
 		m_Recorder.SetDefStyle(&m_LoadState.m_Default);
@@ -583,10 +594,10 @@ void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
 	
 	UserSettingsParser p;
 
-	//if(FileExists(userfile))
-	//{
-		//p.Parse(userfile, &m_LoadState);
-	//}
+	if(FileExists(userfile))
+	{
+		p.Parse(userfile, &m_LoadState);
+	}
 
 	XMLParser parser;
 	parser.SetParseState(&callback);
@@ -840,10 +851,7 @@ void SchemeParser::processLanguageStyle(CSchemeLoaderState* pState, XMLAttribute
 
 	Style.Key = key;
 
-	if(pCustom)
-		customiseStyle(&Style, pCustom);
-
-	onStyle(&Style);
+	onStyle(&Style, pCustom);
 }
 
 void SchemeParser::processLanguageKeywords(CSchemeLoaderState* pState, XMLAttributes& atts)

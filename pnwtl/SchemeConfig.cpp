@@ -37,6 +37,17 @@ void CustomStyleCollection::AddStyle(StyleDetails* pStyle)
 	m_Styles.insert(m_Styles.end(), pStyle);
 }
 
+StyleDetails* CustomStyleCollection::GetStyle(int key)
+{
+	for(SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
+	{
+		if( (*i)->Key == key )
+			return (*i);
+	}
+
+	return NULL;
+}
+
 void CustomStyleCollection::SetName(LPCTSTR name)
 {
 	m_name = name;
@@ -161,12 +172,19 @@ void SchemeConfigParser::onStyleGroup(XMLAttributes& att)
 	}
 }
 
-void SchemeConfigParser::onStyle(StyleDetails* pStyle)
+void SchemeConfigParser::onStyle(StyleDetails* pStyle, StyleDetails* pCustom)
 {
 	PNASSERT(m_pCurrent != NULL);
 
 	StyleDetails* pCopy = new StyleDetails(*pStyle);
 	m_pCurrent->AddStyle(pCopy);
+
+	if(pCustom)
+	{
+		StyleDetails* pC = new StyleDetails(*pStyle);
+		customiseStyle(pC, pCustom);
+		m_pCurrent->m_customs.AddStyle(pC);
+	}
 }
 
 void SchemeConfigParser::onStyleGroupEnd()

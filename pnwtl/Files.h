@@ -129,6 +129,7 @@ public:
 };
 
 int FileAge(LPCTSTR FileName);
+bool FileExists(LPCTSTR FileName);
 bool CreateDirectoryRecursive(LPCTSTR pszDirectory, LPSECURITY_ATTRIBUTES lpSA = NULL);
 
 #endif

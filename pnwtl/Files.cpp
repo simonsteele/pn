@@ -30,6 +30,17 @@ int FileAge(LPCTSTR FileName)
   return -1;
 }
 
+bool FileExists(LPCTSTR FileName)
+{
+	HANDLE h;
+	WIN32_FIND_DATA FindData;
+
+	h = FindFirstFile(FileName, &FindData);
+	FindClose(h);
+	
+	return h != INVALID_HANDLE_VALUE;
+}
+
 /**
  * @brief Recursively create a directory.
  * @param pszDirectory full directory path to create.

@@ -301,6 +301,7 @@ class CStyleDisplay : public CWindowImpl<CStyleDisplay>
 		CStyleDisplay()
 		{
 			m_Font = NULL;
+			memset(&m_lf, 0, sizeof(LOGFONT));
 		}
 
 		~CStyleDisplay()
@@ -314,37 +315,82 @@ class CStyleDisplay : public CWindowImpl<CStyleDisplay>
 			MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
 		END_MSG_MAP()
 
+		void SetBold(bool bold)
+		{
+			m_lf.lfWeight = (bold ? FW_BOLD : FW_NORMAL);
+			UpdateFont();
+		}
+
+		void SetItalic(bool italic)
+		{
+			m_lf.lfItalic = italic;
+			UpdateFont();
+		}
+
+		void SetUnderline(bool underline)
+		{
+			m_lf.lfUnderline = underline;
+			UpdateFont();
+		}
+
+		void SetFontName(LPCTSTR fontname)
+		{
+			_tcscpy(m_lf.lfFaceName, fontname);
+			UpdateFont();
+		}
+
+		void SetSize(int size, bool bInvalidate = true)
+		{
+			HDC dc = GetDC();			
+			m_lf.lfHeight = -MulDiv(size, GetDeviceCaps(dc, LOGPIXELSY), 72);
+			ReleaseDC(dc);
+
+			if(bInvalidate)
+				UpdateFont();
+		}
+
+		void SetFore(COLORREF fore)
+		{
+			m_Fore = fore;
+			Invalidate();
+		}
+
+		void SetBack(COLORREF back)
+		{
+			m_Back = back;
+			Invalidate();
+		}
+
+		void UpdateFont()
+		{
+			if(m_Font)
+				delete m_Font;
+
+			m_Font = new CFont;
+			m_Font->CreateFontIndirect(&m_lf);
+
+			Invalidate();
+		}
+
 		void SetStyle(LPCTSTR fontname, int fontsize, COLORREF fore, COLORREF back, LPCTSTR name, bool bold, bool italic, bool underline)
 		{
 			m_Name = name;
 			m_Fore = fore;
 			m_Back = back;
 
-			if(m_Font)
-				delete m_Font;
-
-			HDC dc = GetDC();
-
-			LOGFONT lf;
-			memset(&lf, 0, sizeof(LOGFONT));
-			lf.lfHeight = -MulDiv(fontsize, GetDeviceCaps(dc, LOGPIXELSY), 72);
-			lf.lfWeight = (bold ? FW_BOLD : FW_NORMAL);
-			if(underline)
-				lf.lfUnderline = TRUE;
-			if(italic)
-				lf.lfItalic = TRUE;
-			_tcscpy(lf.lfFaceName, fontname);
-
-			ReleaseDC(dc);
+			SetSize(fontsize, false);
 			
-			m_Font = new CFont;
-			m_Font->CreateFontIndirect(&lf);
+			m_lf.lfWeight = (bold ? FW_BOLD : FW_NORMAL);
+			m_lf.lfUnderline = underline;
+			m_lf.lfItalic = italic;
+			_tcscpy(m_lf.lfFaceName, fontname);
 
-			Invalidate();
+			UpdateFont();
 		}
 
 	protected:
 		CString		m_Name;
+		LOGFONT		m_lf;
 		CFont*		m_Font;
 		COLORREF	m_Fore;
 		COLORREF	m_Back;
@@ -385,60 +431,36 @@ class CStyleDisplay : public CWindowImpl<CStyleDisplay>
 		}
 };
 
+#include "Include/ColorButton.h"
+
 class CStylesTabDialog : public CPropertyPageImpl<CStylesTabDialog>
 {
 	public:	
 		enum {IDD = IDD_TAB_STYLES};
 
+		CStylesTabDialog()
+		{
+			m_pStyle = NULL;
+		}
+
 		BEGIN_MSG_MAP(CStylesTabDialog)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			COMMAND_HANDLER(IDC_STYLE_BOLDCHECK, BN_CLICKED, OnBoldClicked)
+			COMMAND_HANDLER(IDC_STYLE_ITALICCHECK, BN_CLICKED, OnItalicClicked)
+			COMMAND_HANDLER(IDC_STYLE_UNDERLINECHECK, BN_CLICKED, OnUnderlineClicked)
+			COMMAND_HANDLER(IDC_STYLE_FONTCOMBO, CBN_SELCHANGE, OnFontChanged)
+			COMMAND_HANDLER(IDC_STYLE_SIZECOMBO, CBN_SELCHANGE, OnSizeChanged)
+			NOTIFY_HANDLER(IDC_STYLE_FOREBUTTON, CPN_SELCHANGE, OnForeChanged)
+			NOTIFY_HANDLER(IDC_STYLE_BACKBUTTON, CPN_SELCHANGE, OnBackChanged)
 			NOTIFY_HANDLER(IDC_STYLES_TREE, TVN_SELCHANGED, OnTreeSelChanged)
 			CHAIN_MSG_MAP(CPropertyPageImpl<CStylesTabDialog>)
+			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
-
-		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-		{
-			CRect rc;
-			
-			m_tree.Attach(GetDlgItem(IDC_STYLES_TREE));
-
-			CWindow placeholder(GetDlgItem(IDC_STYLE_EXAMPLE));
-			placeholder.GetWindowRect(rc);
-			ScreenToClient(rc);
-			m_sd.Create(m_hWnd, rc, _T("Style Display"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS);
-
-			return 0;
-		}
-
-		LRESULT OnTreeSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
-		{
-			HTREEITEM item = m_tree.GetSelectedItem();
-
-			if(item)
-			{
-				if(m_tree.GetChildItem(item) == NULL)
-				{
-					StyleDetails* pStyle = reinterpret_cast<StyleDetails*>(m_tree.GetItemData(item));
-					if(pStyle)
-					{
-						m_sd.SetStyle(pStyle->FontName.c_str(), pStyle->FontSize, pStyle->ForeColor, pStyle->BackColor, pStyle->name.c_str(), pStyle->Bold, pStyle->Italic, pStyle->Underline);
-						CheckDlgButton(IDC_STYLE_BOLDCHECK, pStyle->Bold ? BST_CHECKED : BST_UNCHECKED);
-						CheckDlgButton(IDC_STYLE_ITALICCHECK, pStyle->Italic ? BST_CHECKED : BST_UNCHECKED);
-						CheckDlgButton(IDC_STYLE_UNDERLINECHECK, pStyle->Underline ? BST_CHECKED : BST_UNCHECKED);
-						CheckDlgButton(IDC_STYLE_EOLFILLEDCHECK, pStyle->EOLFilled ? BST_CHECKED : BST_UNCHECKED);
-					}
-				}
-				else
-				{
-					///@todo Disable everything
-				}
-			}
-
-			return 0;
-		}
 
 		void SetScheme(SchemeConfig* pScheme)
 		{
+			m_pScheme = pScheme;
+
 			m_tree.DeleteAllItems();
 
 			CustomStyleCollection* pColl = static_cast<CustomStyleCollection*>(pScheme);
@@ -466,8 +488,224 @@ class CStylesTabDialog : public CPropertyPageImpl<CStylesTabDialog>
 		}
 
 	protected:
+
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+		{
+			CRect rc;
+			
+			m_tree.Attach(GetDlgItem(IDC_STYLES_TREE));
+
+			CWindow placeholder(GetDlgItem(IDC_STYLE_EXAMPLE));
+			placeholder.GetWindowRect(rc);
+			ScreenToClient(rc);
+			m_sd.Create(m_hWnd, rc, _T("Style Display"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS);
+
+			//IDC_FORE_PLACEHOLDER, IDC_BACK_PLACEHOLDER
+			//IDC_STYLE_FONTCOMBO, IDC_STYLE_SIZECOMBO
+
+			m_FontCombo.SubclassWindow(GetDlgItem(IDC_STYLE_FONTCOMBO));
+			m_SizeCombo.Attach(GetDlgItem(IDC_STYLE_SIZECOMBO));
+
+			m_fore.SubclassWindow(GetDlgItem(IDC_STYLE_FOREBUTTON));
+			m_back.SubclassWindow(GetDlgItem(IDC_STYLE_BACKBUTTON));
+			
+			AddFontSize(6, _T("6"));
+			AddFontSize(8, _T("8"));
+			AddFontSize(10, _T("10"));
+			AddFontSize(12, _T("12"));
+			AddFontSize(14, _T("14"));
+			AddFontSize(16, _T("16"));
+			AddFontSize(18, _T("18"));
+
+			m_bold.Attach(GetDlgItem(IDC_STYLE_BOLDCHECK));
+			m_italic.Attach(GetDlgItem(IDC_STYLE_ITALICCHECK));
+			m_underline.Attach(GetDlgItem(IDC_STYLE_UNDERLINECHECK));
+			m_eolfilled.Attach(GetDlgItem(IDC_STYLE_EOLFILLEDCHECK));
+
+			return 0;
+		}
+
+		LRESULT OnForeChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+		{
+			NMCOLORBUTTON* pN = reinterpret_cast<NMCOLORBUTTON*>(pnmh);
+			m_sd.SetFore(pN->clr);
+			m_Style.ForeColor = pN->clr;
+			return 0;
+		}
+
+		LRESULT OnBackChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+		{
+			NMCOLORBUTTON* pN = reinterpret_cast<NMCOLORBUTTON*>(pnmh);
+			m_sd.SetBack(pN->clr);
+			m_Style.BackColor = pN->clr;
+			return 0;
+		}
+
+		LRESULT OnFontChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+		{			
+			if(m_pStyle)
+			{
+				int i = m_FontCombo.GetCurSel();
+				CString str;
+				m_FontCombo.GetLBText(i, str);
+				m_sd.SetFontName(str);
+				m_Style.FontName = (LPCTSTR)str;
+			}
+			return 0;
+		}
+
+		LRESULT OnSizeChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+		{
+			if(m_pStyle)
+			{
+				int i = m_SizeCombo.GetCurSel();
+				i = m_SizeCombo.GetItemData(i);
+				m_sd.SetSize(i);
+				m_Style.FontSize = i;
+			}
+			return 0;
+		}
+
+		LRESULT OnTreeSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+		{
+			SetItem();
+
+			HTREEITEM item = m_tree.GetSelectedItem();
+
+			if(item)
+			{
+				if(m_tree.GetChildItem(item) == NULL)
+				{
+					StyleDetails* pS = reinterpret_cast<StyleDetails*>(m_tree.GetItemData(item));
+					if(pS)
+					{
+						StyleDetails* existing = m_pScheme->m_customs.GetStyle(pS->Key);
+						if(existing)
+							m_Style = *existing;
+						else
+                            m_Style = *pS;
+						
+						m_pStyle = pS;
+						m_sd.SetStyle(m_Style.FontName.c_str(), m_Style.FontSize, m_Style.ForeColor, m_Style.BackColor, m_Style.name.c_str(), m_Style.Bold, m_Style.Italic, m_Style.Underline);
+						m_bold.SetCheck(m_Style.Bold ? BST_CHECKED : BST_UNCHECKED);
+						m_italic.SetCheck(m_Style.Italic ? BST_CHECKED : BST_UNCHECKED);
+						m_underline.SetCheck(m_Style.Underline ? BST_CHECKED : BST_UNCHECKED);
+						m_eolfilled.SetCheck(m_Style.EOLFilled ? BST_CHECKED : BST_UNCHECKED);
+						m_fore.SetColor(m_Style.ForeColor);
+						m_back.SetColor(m_Style.BackColor);
+
+						m_FontCombo.SelectString(0, m_Style.FontName.c_str());
+						TCHAR buf[10];
+						_itot(m_Style.FontSize, buf, 10);
+						if (m_SizeCombo.SelectString(0, buf) == CB_ERR)
+						{
+							int idx = m_SizeCombo.AddString(buf);
+							m_SizeCombo.SetCurSel(idx);
+						}
+					}
+				}
+				else
+				{
+					///@todo Disable everything
+				}
+			}
+			else
+				m_pStyle = NULL;
+
+			return 0;
+		}
+
+		LRESULT OnBoldClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+		{
+			if(m_pStyle)
+			{
+				bool bC = m_bold.GetCheck() == BST_CHECKED;
+				m_Style.Bold = bC;
+				m_sd.SetBold(bC);
+			}
+
+			return 0;
+		}
+
+		LRESULT OnItalicClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+		{
+			if(m_pStyle)
+			{
+				bool bC = m_italic.GetCheck() == BST_CHECKED;
+				m_Style.Italic = bC;
+				m_sd.SetItalic(bC);
+			}
+			return 0;
+		}
+
+		LRESULT OnUnderlineClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+		{
+			if(m_pStyle)
+			{
+				bool bC = m_underline.GetCheck() == BST_CHECKED;
+				m_Style.Underline = bC;
+				m_sd.SetUnderline(bC);
+			}
+			return 0;
+		}
+
+		LRESULT OnEOLFilledClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+		{
+			if(m_pStyle)
+			{
+				bool bC = m_eolfilled.GetCheck() == BST_CHECKED;
+				m_Style.EOLFilled = bC;
+				//m_sd.SetEOLFilled(bC);
+			}
+			return 0;
+		}
+
+		void AddFontSize(int size, LPCTSTR sizestr)
+		{
+			int idx = m_SizeCombo.AddString(sizestr);
+			m_SizeCombo.SetItemData(idx, size);
+		}
+
+		void SetItem()
+		{
+			if(m_pStyle)
+			{
+				int mask = 0;
+
+				if(m_Style != *m_pStyle)
+				{
+					StyleDetails* existing = m_pScheme->m_customs.GetStyle(m_Style.Key);
+					if(existing)
+					{
+						*existing = m_Style;
+					}
+					else
+					{
+						existing = new StyleDetails;
+						*existing = m_Style;
+						m_pScheme->m_customs.AddStyle(existing);
+					}
+				}
+			}
+		}
+
+	protected:
+		StyleDetails	m_Style;
+		StyleDetails*	m_pStyle;
+		SchemeConfig*	m_pScheme;
 		CTreeViewCtrl	m_tree;
 		CStyleDisplay	m_sd;
+
+		CFontCombo		m_FontCombo;
+		CComboBox		m_SizeCombo;
+
+		CColorButton	m_fore;
+		CColorButton	m_back;
+
+		CButton			m_bold;
+		CButton			m_italic;
+		CButton			m_underline;
+		CButton			m_eolfilled;
 };
 
 class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>

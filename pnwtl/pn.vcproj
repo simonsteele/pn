@@ -306,6 +306,13 @@
 				RelativePath=".\res\toolbar1.bmp">
 			</File>
 		</Filter>
+		<Filter
+			Name="Include"
+			Filter="">
+			<File
+				RelativePath="include\ColorButton.cpp">
+			</File>
+		</Filter>
 		<File
 			RelativePath="pn.exe.manifest">
 		</File>
