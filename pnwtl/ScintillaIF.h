@@ -229,7 +229,7 @@ class CScintilla
 		void SetSavePoint();
 		/**
 		 * Retrieve a buffer of cells.
-		 * Returns the number of bytes in the buffer not including terminating nulls.
+		 * Returns the number of bytes in the buffer not including terminating NULs.
 		 */
 		int GetStyledText(TextRange* tr);
 		/**
@@ -260,12 +260,12 @@ class CScintilla
 		/**
 		 * Find the position from a point within the window.
 		 */
-		int PositionFromPoint(int x, int y);
+		long PositionFromPoint(int x, int y);
 		/**
 		 * Find the position from a point within the window but return
 		 * INVALID_POSITION if not close to text.
 		 */
-		int PositionFromPointClose(int x, int y);
+		long PositionFromPointClose(int x, int y);
 		/**
 		 * Set caret to start of a line and ensure it is visible.
 		 */
@@ -478,7 +478,7 @@ class CScintilla
 		 */
 		void AssignCmdKey(DWORD km, int msg);
 		/**
-		 * When key+modifier combination km do nothing.
+		 * When key+modifier combination km is pressed do nothing.
 		 */
 		void ClearCmdKey(DWORD km);
 		/**
@@ -503,6 +503,7 @@ class CScintilla
 		void SetCaretPeriod(int periodMilliseconds);
 		/**
 		 * Set the set of characters making up words for when moving or selecting by word.
+		 * First sets deaults like SetCharsDefault.
 		 */
 		void SetWordChars(const char* characters);
 		/**
@@ -810,7 +811,7 @@ class CScintilla
 		/**
 		 * On Windows, will draw the document into a display context such as a printer.
 		 */
-		void FormatRange(bool draw, long fr);
+		long FormatRange(bool draw, long fr);
 		/**
 		 * Retrieve the display line at the top of the display.
 		 */
@@ -877,7 +878,7 @@ class CScintilla
 		/**
 		 * Retrieve the position at the start of a line.
 		 */
-		int PositionFromLine(int line);
+		long PositionFromLine(int line);
 		/**
 		 * Scroll horizontally and vertically.
 		 */
@@ -988,13 +989,13 @@ class CScintilla
 		long GetTargetEnd();
 		/**
 		 * Replace the target text with the argument text.
-		 * Text is counted so it can contain nulls.
+		 * Text is counted so it can contain NULs.
 		 * Returns the length of the replacement text.
 		 */
 		int ReplaceTarget(int length, const char* text);
 		/**
 		 * Replace the target text with the argument text after \d processing.
-		 * Text is counted so it can contain nulls.
+		 * Text is counted so it can contain NULs.
 		 * Looks for \d where d is between 1 and 9 and replaces these with the strings
 		 * matched in the last search operation which were surrounded by \( and \).
 		 * Returns the length of the replacement text including any change
@@ -1003,7 +1004,7 @@ class CScintilla
 		int ReplaceTargetRE(int length, const char* text);
 		/**
 		 * Search for a counted string in the target and set the target to the found
-		 * range. Text is counted so it can contain nulls.
+		 * range. Text is counted so it can contain NULs.
 		 * Returns length of range or -1 for failure in which case target is not moved.
 		 */
 		int SearchInTarget(int length, const char* text);
@@ -1168,7 +1169,7 @@ class CScintilla
 		int GetScrollWidth();
 		/**
 		 * Measure the pixel width of some text in a particular style.
-		 * Nul terminated text argument.
+		 * NUL terminated text argument.
 		 * Does not handle tab or control characters.
 		 */
 		int TextWidth(int style, const char* text);
@@ -1214,7 +1215,6 @@ class CScintilla
 		void TargetFromSelection();
 		/**
 		 * Join the lines in the target.
-		 * This is an experimental feature and may be changed or removed.
 		 */
 		void LinesJoin();
 		/**
@@ -1440,7 +1440,7 @@ class CScintilla
 		 * except they behave differently when word-wrap is enabled:
 		 * They go first to the start / end of the display line, like (Home|LineEnd)Display
 		 * The difference is that, the cursor is already at the point, it goes on to the start
-		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)Extend.
+		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)(Extend)?.
 		 */
 		void HomeWrap();
 		/**
@@ -1448,7 +1448,7 @@ class CScintilla
 		 * except they behave differently when word-wrap is enabled:
 		 * They go first to the start / end of the display line, like (Home|LineEnd)Display
 		 * The difference is that, the cursor is already at the point, it goes on to the start
-		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)Extend.
+		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)(Extend)?.
 		 */
 		void HomeWrapExtend();
 		/**
@@ -1456,7 +1456,7 @@ class CScintilla
 		 * except they behave differently when word-wrap is enabled:
 		 * They go first to the start / end of the display line, like (Home|LineEnd)Display
 		 * The difference is that, the cursor is already at the point, it goes on to the start
-		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)Extend.
+		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)(Extend)?.
 		 */
 		void LineEndWrap();
 		/**
@@ -1464,7 +1464,7 @@ class CScintilla
 		 * except they behave differently when word-wrap is enabled:
 		 * They go first to the start / end of the display line, like (Home|LineEnd)Display
 		 * The difference is that, the cursor is already at the point, it goes on to the start
-		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)Extend.
+		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)(Extend)?.
 		 */
 		void LineEndWrapExtend();
 		/**
@@ -1472,7 +1472,7 @@ class CScintilla
 		 * except they behave differently when word-wrap is enabled:
 		 * They go first to the start / end of the display line, like (Home|LineEnd)Display
 		 * The difference is that, the cursor is already at the point, it goes on to the start
-		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)Extend.
+		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)(Extend)?.
 		 */
 		void VCHomeWrap();
 		/**
@@ -1480,9 +1480,13 @@ class CScintilla
 		 * except they behave differently when word-wrap is enabled:
 		 * They go first to the start / end of the display line, like (Home|LineEnd)Display
 		 * The difference is that, the cursor is already at the point, it goes on to the start
-		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)Extend.
+		 * or end of the document line, as appropriate for (Home|LineEnd|VCHome)(Extend)?.
 		 */
 		void VCHomeWrapExtend();
+		/**
+		 * Copy the line containing the caret.
+		 */
+		void LineCopy();
 		/**
 		 * Move the caret inside current view if it's not there already.
 		 */
@@ -1683,7 +1687,7 @@ class CScintilla
 		 */
 		int GetXOffset();
 		/**
-		 * Set the last x chosen value to be the caret x position
+		 * Set the last x chosen value to be the caret x position.
 		 */
 		void ChooseCaretX();
 		/**
@@ -1706,7 +1710,7 @@ class CScintilla
 		 */
 		void SetPrintWrapMode(int mode);
 		/**
-		 * Is printing line wrapped.
+		 * Is printing line wrapped?
 		 */
 		int GetPrintWrapMode();
 		/**
@@ -1721,6 +1725,148 @@ class CScintilla
 		 * Enable / Disable underlining active hotspots.
 		 */
 		void SetHotspotActiveUnderline(bool underline);
+		/**
+		 * Limit hotspots to single line so hotspots on two lines don't merge.
+		 */
+		void SetHotspotSingleLine(bool singleLine);
+		/**
+		 * Move caret between paragraphs (delimited by empty lines).
+		 */
+		void ParaDown();
+		/**
+		 * Move caret between paragraphs (delimited by empty lines).
+		 */
+		void ParaDownExtend();
+		/**
+		 * Move caret between paragraphs (delimited by empty lines).
+		 */
+		void ParaUp();
+		/**
+		 * Move caret between paragraphs (delimited by empty lines).
+		 */
+		void ParaUpExtend();
+		/**
+		 * Given a valid document position, return the previous position taking code
+		 * page into account. Returns 0 if passed 0.
+		 */
+		long PositionBefore(long pos);
+		/**
+		 * Given a valid document position, return the next position taking code
+		 * page into account. Maximum value returned is the last position in the document.
+		 */
+		long PositionAfter(long pos);
+		/**
+		 * Copy a range of text to the clipboard. Positions are clipped into the document.
+		 */
+		void CopyRange(long start, long end);
+		/**
+		 * Copy argument text to the clipboard.
+		 */
+		void CopyText(int length, const char* text);
+		/**
+		 * Set the selection mode to stream (SC_SEL_STREAM) or rectangular (SC_SEL_RECTANGLE) or
+		 * by lines (SC_SEL_LINES).
+		 */
+		void SetSelectionMode(int mode);
+		/**
+		 * Get the mode of the current selection.
+		 */
+		int GetSelectionMode();
+		/**
+		 * Retrieve the position of the start of the selection at the given line (INVALID_POSITION if no selection on this line).
+		 */
+		long GetLineSelStartPosition(int line);
+		/**
+		 * Retrieve the position of the end of the selection at the given line (INVALID_POSITION if no selection on this line).
+		 */
+		long GetLineSelEndPosition(int line);
+		/**
+		 * Move caret down one line, extending rectangular selection to new caret position.
+		 */
+		void LineDownRectExtend();
+		/**
+		 * Move caret up one line, extending rectangular selection to new caret position.
+		 */
+		void LineUpRectExtend();
+		/**
+		 * Move caret left one character, extending rectangular selection to new caret position.
+		 */
+		void CharLeftRectExtend();
+		/**
+		 * Move caret right one character, extending rectangular selection to new caret position.
+		 */
+		void CharRightRectExtend();
+		/**
+		 * Move caret to first position on line, extending rectangular selection to new caret position.
+		 */
+		void HomeRectExtend();
+		/**
+		 * Move caret to before first visible character on line.
+		 * If already there move to first character on line.
+		 * In either case, extend rectangular selection to new caret position.
+		 */
+		void VCHomeRectExtend();
+		/**
+		 * Move caret to last position on line, extending rectangular selection to new caret position.
+		 */
+		void LineEndRectExtend();
+		/**
+		 * Move caret one page up, extending rectangular selection to new caret position.
+		 */
+		void PageUpRectExtend();
+		/**
+		 * Move caret one page down, extending rectangular selection to new caret position.
+		 */
+		void PageDownRectExtend();
+		/**
+		 * Move caret to top of page, or one page up if already at top of page.
+		 */
+		void StutteredPageUp();
+		/**
+		 * Move caret to top of page, or one page up if already at top of page, extending selection to new caret position.
+		 */
+		void StutteredPageUpExtend();
+		/**
+		 * Move caret to bottom of page, or one page down if already at bottom of page.
+		 */
+		void StutteredPageDown();
+		/**
+		 * Move caret to bottom of page, or one page down if already at bottom of page, extending selection to new caret position.
+		 */
+		void StutteredPageDownExtend();
+		/**
+		 * Move caret left one word, position cursor at end of word.
+		 */
+		void WordLeftEnd();
+		/**
+		 * Move caret left one word, position cursor at end of word, extending selection to new caret position.
+		 */
+		void WordLeftEndExtend();
+		/**
+		 * Move caret right one word, position cursor at end of word.
+		 */
+		void WordRightEnd();
+		/**
+		 * Move caret right one word, position cursor at end of word, extending selection to new caret position.
+		 */
+		void WordRightEndExtend();
+		/**
+		 * Set the set of characters making up whitespace for when moving or selecting by word.
+		 * Should be called after SetWordChars.
+		 */
+		void SetWhitespaceChars(const char* characters);
+		/**
+		 * Reset the set of characters for whitespace and word characters to the defaults.
+		 */
+		void SetCharsDefault();
+		/**
+		 * Get currently selected item position in the auto-completion list
+		 */
+		int AutoCGetCurrent();
+		/**
+		 * Enlarge the document to a particular size of text bytes.
+		 */
+		void Allocate(int bytes);
 		/**
 		 * Start notifying the container of all key presses and commands.
 		 */
@@ -1754,9 +1900,17 @@ class CScintilla
 		 */
 		void SetLexerLanguage(const char* language);
 		/**
-		 * Load a lexer library (dll / so)
+		 * Load a lexer library (dll / so).
 		 */
 		void LoadLexerLibrary(const char* path);
+		/**
+		 * Enable/Disable convert-on-paste for line endings
+		 */
+		void SetPasteConvertEndings();
+		/**
+		 * Get convert-on-paste setting
+		 */
+		bool GetPasteConvertEndings();
 	//--
 	//@}
 };

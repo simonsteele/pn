@@ -165,6 +165,15 @@ BEGIN
         MENUITEM "Copy as RTF",                 ID_EDIT_COPYRTF
         MENUITEM "Clipboard S&wap\tCtrl+Shift+C", ID_EDIT_CLIPBOARDSWAP
         MENUITEM SEPARATOR
+        MENUITEM "Cut &Line\tCtrl+L",           ID_EDIT_CUTLINE
+        MENUITEM "Cop&y Line\tCtrl+Shift+T",    ID_EDIT_COPYLINE
+        MENUITEM "Delete L&ine\tCtrl+Shift+L",  ID_EDIT_DELETELINE
+        MENUITEM "&Duplicate Line\tCtrl+D",     ID_EDIT_DUPLICATELINE
+        MENUITEM "Transp&ose Lines\tCtrl+T",    ID_EDIT_TRANSPOSELINES
+        MENUITEM SEPARATOR
+        MENUITEM "Lo&wercase\tCtrl+U",          ID_EDIT_LOWERCASE
+        MENUITEM "U&ppercase\tCtrl+Shift+U",    ID_EDIT_UPPERCASE
+        MENUITEM SEPARATOR
         MENUITEM "&Select All\tCtrl+A",         ID_EDIT_SELECTALL
         MENUITEM SEPARATOR
         MENUITEM "&Find\tCtrl+F",               ID_EDIT_FIND
@@ -172,7 +181,7 @@ BEGIN
         MENUITEM "R&eplace\tCtrl+R",            ID_EDIT_REPLACE
         MENUITEM SEPARATOR
         MENUITEM "&Goto\tCtrl+G",               ID_EDIT_GOTO
-        MENUITEM "Jump To...\tAlt+G",           ID_EDIT_JUMPTO
+        MENUITEM "&Jump To...\tAlt+G",          ID_EDIT_JUMPTO
     END
     POPUP "&View"
     BEGIN
@@ -363,8 +372,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,5,25
- PRODUCTVERSION 2,0,5,25
+ FILEVERSION 2,0,5,26
+ PRODUCTVERSION 2,0,5,26
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -386,7 +395,7 @@ BEGIN
             VALUE "LegalCopyright", "Copyright © 2002-2003 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"
             VALUE "ProductName", "Programmers Notepad"
-            VALUE "ProductVersion", "2.0.5.25-devel"
+            VALUE "ProductVersion", "2.0.5.26-devel"
         END
     END
     BLOCK "VarFileInfo"
@@ -408,7 +417,7 @@ BEGIN
     ID_EDITOR_WORDWRAP      "Toggle word wrap"
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
     ID_EDITOR_LINENOS       "Toggle line numbers display"
-    IDS_ABOUTVERSIONSTRING  "Programmers Notepad 2\nv%s\n\nCopyright (c) 2002-2003 Simon Steele"
+    IDS_ABOUTVERSIONSTRING  "Programmers Notepad 2\nv%s\n\nCopyright (c) 2002-2004 Simon Steele"
     IDS_TOOLFORMATSTRINGS   "%f: File Name\n%n: File Name (no ext)\n%l: Current Line Number\n%?: Ask for parameters\n%p: Current Project File|%d: Path of File\n%c: Column\n%%: Percent Symbol\n%w: Current word\n%g: Project Group File"
     IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c: Column"
     ID_FILE_NEW_PROJECT     "Create a new project."

@@ -17,7 +17,7 @@ Start help file.
 Preview for scheme configurator.
 Tab order management.
 [80%] Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
-Basic Build Management - see http://www.pnotepad.org/articles/pn2projects.html
+[60%] Basic Build Management - see http://www.pnotepad.org/articles/pn2projects.html
 PCRE Based Search.
 Filetype filters - e.g. allow loading of .dfm files.
 HTML Export configuration, inline HTML export.

@@ -20,8 +20,10 @@ What's new?
 11) Upgraded to Scintilla 1.59
 12) Project files now written using Genx.
 13) Project files keep most unknown XML elements between load and save.
-14) Dialog cleanup by Bjoern Graf.
-15) Press "del" to remove project files.
+14) Added Duplicate, Copy, Cut and Transpose Line commands.
+15) Added Uppercase/Lowercase
+16) Bjoern Graf tidied the Options dialog plus some others.
+17) Keyboard works in the projects tree (inc. "del" to remove project files).
 
 Bug Fixes:
 ----------

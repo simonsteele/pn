@@ -650,6 +650,48 @@ LRESULT CChildFrame::OnClipboardSwap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	return 0;
 }
 
+LRESULT CChildFrame::OnDuplicateLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	m_view.LineDuplicate();
+	return 0;
+}
+
+LRESULT CChildFrame::OnDeleteLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	m_view.LineDelete();
+	return 0;
+}
+
+LRESULT CChildFrame::OnCutLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	m_view.LineCut();
+	return 0;
+}
+
+LRESULT CChildFrame::OnCopyLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	m_view.LineCopy();
+	return 0;
+}
+
+LRESULT CChildFrame::OnTransposeLines(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	m_view.LineTranspose();
+	return 0;
+}
+
+LRESULT CChildFrame::OnLowerCase(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	m_view.LowerCase();
+	return 0;
+}
+
+LRESULT CChildFrame::OnUpperCase(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	m_view.UpperCase();
+	return 0;
+}
+
 LRESULT CChildFrame::OnRevert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	Revert();

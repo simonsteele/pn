@@ -201,7 +201,6 @@ void CScintilla::DefineNumberedBookmarks(int base, bool SetDefaultColours)
 #ifdef SCINTILLA_PIXMAPS
 	for(int i = 0; i < 10; i++)
 	{
-		m_numberedBookmarks[i] = -1;
 		SPerform(SCI_MARKERDEFINEPIXMAP, base + i, (LPARAM)scpixmap_bookmarks[i]);
 	}
 #else
@@ -680,14 +679,14 @@ void CScintilla::SetViewWS(int viewWS)
 	SPerform(SCI_SETVIEWWS, (long)viewWS, 0);
 }
 
-int CScintilla::PositionFromPoint(int x, int y)
+long CScintilla::PositionFromPoint(int x, int y)
 {
-	return (int)SPerform(SCI_POSITIONFROMPOINT, (long)x, (long)y);
+	return SPerform(SCI_POSITIONFROMPOINT, (long)x, (long)y);
 }
 
-int CScintilla::PositionFromPointClose(int x, int y)
+long CScintilla::PositionFromPointClose(int x, int y)
 {
-	return (int)SPerform(SCI_POSITIONFROMPOINTCLOSE, (long)x, (long)y);
+	return SPerform(SCI_POSITIONFROMPOINTCLOSE, (long)x, (long)y);
 }
 
 void CScintilla::GotoLine(int line)
@@ -1340,9 +1339,9 @@ long CScintilla::FindText(int flags, TextToFind* ft)
 	return SPerform(SCI_FINDTEXT, (long)flags, (long)ft);
 }
 
-void CScintilla::FormatRange(bool draw, long fr)
+long CScintilla::FormatRange(bool draw, long fr)
 {
-	SPerform(SCI_FORMATRANGE, (long)draw, fr);
+	return SPerform(SCI_FORMATRANGE, (long)draw, fr);
 }
 
 int CScintilla::GetFirstVisibleLine()
@@ -1420,9 +1419,9 @@ int CScintilla::LineFromPosition(long pos)
 	return (int)SPerform(SCI_LINEFROMPOSITION, pos, 0);
 }
 
-int CScintilla::PositionFromLine(int line)
+long CScintilla::PositionFromLine(int line)
 {
-	return (int)SPerform(SCI_POSITIONFROMLINE, (long)line, 0);
+	return SPerform(SCI_POSITIONFROMLINE, (long)line, 0);
 }
 
 void CScintilla::LineScroll(int columns, int lines)
@@ -2115,6 +2114,11 @@ void CScintilla::VCHomeWrapExtend()
 	SPerform(SCI_VCHOMEWRAPEXTEND, 0, 0);
 }
 
+void CScintilla::LineCopy()
+{
+	SPerform(SCI_LINECOPY, 0, 0);
+}
+
 void CScintilla::MoveCaretInsideView()
 {
 	SPerform(SCI_MOVECARETINSIDEVIEW, 0, 0);
@@ -2395,6 +2399,176 @@ void CScintilla::SetHotspotActiveUnderline(bool underline)
 	SPerform(SCI_SETHOTSPOTACTIVEUNDERLINE, (long)underline, 0);
 }
 
+void CScintilla::SetHotspotSingleLine(bool singleLine)
+{
+	SPerform(SCI_SETHOTSPOTSINGLELINE, (long)singleLine, 0);
+}
+
+void CScintilla::ParaDown()
+{
+	SPerform(SCI_PARADOWN, 0, 0);
+}
+
+void CScintilla::ParaDownExtend()
+{
+	SPerform(SCI_PARADOWNEXTEND, 0, 0);
+}
+
+void CScintilla::ParaUp()
+{
+	SPerform(SCI_PARAUP, 0, 0);
+}
+
+void CScintilla::ParaUpExtend()
+{
+	SPerform(SCI_PARAUPEXTEND, 0, 0);
+}
+
+long CScintilla::PositionBefore(long pos)
+{
+	return SPerform(SCI_POSITIONBEFORE, pos, 0);
+}
+
+long CScintilla::PositionAfter(long pos)
+{
+	return SPerform(SCI_POSITIONAFTER, pos, 0);
+}
+
+void CScintilla::CopyRange(long start, long end)
+{
+	SPerform(SCI_COPYRANGE, start, end);
+}
+
+void CScintilla::CopyText(int length, const char* text)
+{
+	SPerform(SCI_COPYTEXT, (long)length, (long)text);
+}
+
+void CScintilla::SetSelectionMode(int mode)
+{
+	SPerform(SCI_SETSELECTIONMODE, (long)mode, 0);
+}
+
+int CScintilla::GetSelectionMode()
+{
+	return (int)SPerform(SCI_GETSELECTIONMODE, 0, 0);
+}
+
+long CScintilla::GetLineSelStartPosition(int line)
+{
+	return SPerform(SCI_GETLINESELSTARTPOSITION, (long)line, 0);
+}
+
+long CScintilla::GetLineSelEndPosition(int line)
+{
+	return SPerform(SCI_GETLINESELENDPOSITION, (long)line, 0);
+}
+
+void CScintilla::LineDownRectExtend()
+{
+	SPerform(SCI_LINEDOWNRECTEXTEND, 0, 0);
+}
+
+void CScintilla::LineUpRectExtend()
+{
+	SPerform(SCI_LINEUPRECTEXTEND, 0, 0);
+}
+
+void CScintilla::CharLeftRectExtend()
+{
+	SPerform(SCI_CHARLEFTRECTEXTEND, 0, 0);
+}
+
+void CScintilla::CharRightRectExtend()
+{
+	SPerform(SCI_CHARRIGHTRECTEXTEND, 0, 0);
+}
+
+void CScintilla::HomeRectExtend()
+{
+	SPerform(SCI_HOMERECTEXTEND, 0, 0);
+}
+
+void CScintilla::VCHomeRectExtend()
+{
+	SPerform(SCI_VCHOMERECTEXTEND, 0, 0);
+}
+
+void CScintilla::LineEndRectExtend()
+{
+	SPerform(SCI_LINEENDRECTEXTEND, 0, 0);
+}
+
+void CScintilla::PageUpRectExtend()
+{
+	SPerform(SCI_PAGEUPRECTEXTEND, 0, 0);
+}
+
+void CScintilla::PageDownRectExtend()
+{
+	SPerform(SCI_PAGEDOWNRECTEXTEND, 0, 0);
+}
+
+void CScintilla::StutteredPageUp()
+{
+	SPerform(SCI_STUTTEREDPAGEUP, 0, 0);
+}
+
+void CScintilla::StutteredPageUpExtend()
+{
+	SPerform(SCI_STUTTEREDPAGEUPEXTEND, 0, 0);
+}
+
+void CScintilla::StutteredPageDown()
+{
+	SPerform(SCI_STUTTEREDPAGEDOWN, 0, 0);
+}
+
+void CScintilla::StutteredPageDownExtend()
+{
+	SPerform(SCI_STUTTEREDPAGEDOWNEXTEND, 0, 0);
+}
+
+void CScintilla::WordLeftEnd()
+{
+	SPerform(SCI_WORDLEFTEND, 0, 0);
+}
+
+void CScintilla::WordLeftEndExtend()
+{
+	SPerform(SCI_WORDLEFTENDEXTEND, 0, 0);
+}
+
+void CScintilla::WordRightEnd()
+{
+	SPerform(SCI_WORDRIGHTEND, 0, 0);
+}
+
+void CScintilla::WordRightEndExtend()
+{
+	SPerform(SCI_WORDRIGHTENDEXTEND, 0, 0);
+}
+
+void CScintilla::SetWhitespaceChars(const char* characters)
+{
+	SPerform(SCI_SETWHITESPACECHARS, 0, (long)characters);
+}
+
+void CScintilla::SetCharsDefault()
+{
+	SPerform(SCI_SETCHARSDEFAULT, 0, 0);
+}
+
+int CScintilla::AutoCGetCurrent()
+{
+	return (int)SPerform(SCI_AUTOCGETCURRENT, 0, 0);
+}
+
+void CScintilla::Allocate(int bytes)
+{
+	SPerform(SCI_ALLOCATE, (long)bytes, 0);
+}
+
 void CScintilla::StartRecord()
 {
 	SPerform(SCI_STARTRECORD, 0, 0);
@@ -2438,6 +2612,16 @@ void CScintilla::SetLexerLanguage(const char* language)
 void CScintilla::LoadLexerLibrary(const char* path)
 {
 	SPerform(SCI_LOADLEXERLIBRARY, 0, (long)path);
+}
+
+void CScintilla::SetPasteConvertEndings()
+{
+	SPerform(SCI_SETPASTECONVERTENDINGS, 0, 0);
+}
+
+bool CScintilla::GetPasteConvertEndings()
+{
+	return SPerform(SCI_GETPASTECONVERTENDINGS, 0, 0) != 0;
 }
 
 //--

@@ -71,6 +71,13 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_FINDNEXT, OnFindNext)
 		COMMAND_ID_HANDLER(ID_EDIT_COPYRTF, OnCopyRTF)
 		COMMAND_ID_HANDLER(ID_EDIT_CLIPBOARDSWAP, OnClipboardSwap)
+		COMMAND_ID_HANDLER(ID_EDIT_DUPLICATELINE, OnDuplicateLine)
+		COMMAND_ID_HANDLER(ID_EDIT_DELETELINE, OnDeleteLine)
+		COMMAND_ID_HANDLER(ID_EDIT_CUTLINE, OnCutLine)
+		COMMAND_ID_HANDLER(ID_EDIT_COPYLINE, OnCopyLine)
+		COMMAND_ID_HANDLER(ID_EDIT_TRANSPOSELINES, OnTransposeLines)
+		COMMAND_ID_HANDLER(ID_EDIT_LOWERCASE, OnLowerCase)
+		COMMAND_ID_HANDLER(ID_EDIT_UPPERCASE, OnUpperCase)
 		
 		COMMAND_ID_HANDLER(ID_EDITOR_WORDWRAP, OnWordWrapToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_COLOURISE, OnColouriseToggle)
@@ -190,6 +197,13 @@ public:
 	LRESULT OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnClipboardSwap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnDuplicateLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnDeleteLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCutLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCopyLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnTransposeLines(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnLowerCase(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnUpperCase(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnRevert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
