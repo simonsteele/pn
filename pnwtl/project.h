@@ -92,6 +92,7 @@ class Folder : public ProjectType
 
 		void AddChild(Folder* folder);
 		File* AddFile(LPCTSTR file);
+		Folder* AddFolder(LPCTSTR path, LPCTSTR filter, bool recursive);
 
 		const FOLDER_LIST&	GetFolders();
 		const FILE_LIST&	GetFiles();

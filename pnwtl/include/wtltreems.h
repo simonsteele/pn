@@ -2,7 +2,7 @@
  * @file WTLTreeMS.h
  * @brief Multiple-Selection TreeView for WTL
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2003 Simon Steele <s.steele@pnotepad.org>
  *
  * This file is a port from MFC to WTL of the CTreeCtrlEx class 
  * written by Bendik Engebretsen <bendik@techsoft.no>.

@@ -14,6 +14,7 @@
 #include "projectview.h"
 #include "pndialogs.h"
 #include "include/shellicons.h"
+#include "include/filefinder.h"
 
 using namespace Projects;
 
@@ -51,10 +52,10 @@ HWND CProjectTreeCtrl::Create(HWND hWndParent, _U_RECT rect, LPCTSTR szWindowNam
 
 	SetImageList(shellImages->GetImageList(), TVSIL_NORMAL);
 
+	// Create an IDropTarget helper
 	CComObject<DropTarget>::CreateInstance(&m_pDropTarget);
 	m_pDropTarget->AddRef();
-
-	m_pDropTarget->pCallbacks = this;
+	m_pDropTarget->SetCallbackTarget(this);
 	
 	HRESULT hr = RegisterDragDrop(hWndRet, m_pDropTarget);
 	ATLASSERT(SUCCEEDED(hr));
@@ -801,14 +802,12 @@ HRESULT CProjectTreeCtrl::OnDragOver(DWORD /*dwKeyState*/, POINTL pt, LPDWORD pd
 	else
 		*pdwEffect = DROPEFFECT_NONE;
 
-	::OutputDebugString(_T("OnDragOver"));
 	return S_OK;
 }
 
 HRESULT CProjectTreeCtrl::OnDragLeave(void)
 {
 	TreeView_SelectDropTarget(m_hWnd, NULL);
-	::OutputDebugString(_T("OnDragLeave"));
 	return S_OK;
 }
 
@@ -864,7 +863,6 @@ HRESULT CProjectTreeCtrl::OnDrop(LPDATAOBJECT pDataObject, DWORD /*dwKeyState*/,
 
 	TreeView_SelectDropTarget(m_hWnd, NULL);
 
-	::OutputDebugString(_T("OnDrop"));
 	return hret;
 }
 
@@ -877,13 +875,26 @@ void CProjectTreeCtrl::handleDrop(HDROP hDrop, HTREEITEM hDropItem, Projects::Fo
 	{
 		DragQueryFile(hDrop, i, buf, MAX_PATH);
 	
-		///@todo: Handle directories dropped - need a IsDirectory style thing.
+		if(IsDirectory(buf))
+		{
+			Projects::Folder* pAdded = pFolder->AddFolder(buf, _T("*.*"), true);
+			HTREEITEM hFolder = AddFolderNode(pAdded, hDropItem, NULL);
 
-		File* pAdded = pFolder->AddFile(buf);
-		AddFileNode(pAdded, hDropItem, NULL);
+			HTREEITEM hLastChild = NULL;
+
+			if( pAdded->GetFolders().size() > 0 )
+				hLastChild = buildFolders(hFolder, pAdded->GetFolders());
+
+			buildFiles(hFolder, hLastChild, pAdded->GetFiles());
+		}
+		else
+		{
+			File* pAdded = pFolder->AddFile(buf);
+			AddFileNode(pAdded, hDropItem, NULL);
+		}
 	}
 
-	//DragFinish(hDrop);
+	TreeView_SortChildren(m_hWnd, hDropItem, true);
 }
 
 //////////////////////////////////////////////////////////////////////////////

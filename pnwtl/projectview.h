@@ -12,98 +12,9 @@
 #define projectview_h__included
 
 #include "include/wtltreems.h"
+#include "include/droptargetimpl.h"
 
 class ShellImageList;
-
-template <class T>
-class IDropTargetImpl : public IDropTarget
-{
-public:
-
-	STDMETHOD(DragEnter)(LPDATAOBJECT pDataObject, DWORD dwKeyState, POINTL pt, LPDWORD pdwEffect)
-	{
-		return static_cast<T*>(this)->OnDragEnter(pDataObject, dwKeyState, pt, pdwEffect);
-	}
-
-	STDMETHOD(DragOver)(DWORD dwKeyState, POINTL pt, LPDWORD pdwEffect)
-	{
-		return static_cast<T*>(this)->OnDragOver(dwKeyState, pt, pdwEffect);
-	}
-
-	STDMETHOD(DragLeave)(void)
-	{
-		return static_cast<T*>(this)->OnDragLeave();
-	}
-
-	STDMETHOD(Drop)(LPDATAOBJECT pDataObject, DWORD dwKeyState, POINTL pt, LPDWORD pdwEffect)
-	{
-		return static_cast<T*>(this)->OnDrop(pDataObject, dwKeyState, pt, pdwEffect);
-	}
-
-	HRESULT OnDragEnter(LPDATAOBJECT /*pDataObject*/, DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/)
-	{
-		return E_NOTIMPL;
-	}
-
-	HRESULT OnDragOver(DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/)
-	{
-		return E_NOTIMPL;
-	}
-
-	HRESULT OnDragLeave(void)
-	{
-		return E_NOTIMPL;
-	}
-
-	HRESULT OnDrop(LPDATAOBJECT /*pDataObject*/, DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/)
-	{
-		return E_NOTIMPL;
-	}
-
-};
-
-template<class callbacks>
-class DropTargetImpl : public CComObjectRoot,
-	public IDropTargetImpl<DropTargetImpl>
-{	
-	//DECLARE_POLY_AGGREGATABLE(DropTargetImpl)
-
-	BEGIN_COM_MAP(DropTargetImpl)
-        COM_INTERFACE_ENTRY(IDropTarget)
-    END_COM_MAP()
-
-	public:
-		DropTargetImpl()
-		{
-			pCallbacks = NULL;
-		}
-
-		callbacks* pCallbacks;
-
-		HRESULT OnDragEnter(LPDATAOBJECT pDataObject, DWORD dwKeyState, POINTL pt, LPDWORD pdwEffect)
-		{
-			if(!pCallbacks) return E_NOTIMPL;
-			return pCallbacks->OnDragEnter(pDataObject, dwKeyState, pt, pdwEffect);
-		}
-
-		HRESULT OnDragOver(DWORD dwKeyState, POINTL pt, LPDWORD pdwEffect)
-		{
-			if(!pCallbacks) return E_NOTIMPL;
-			return pCallbacks->OnDragOver(dwKeyState, pt, pdwEffect);
-		}
-
-		HRESULT OnDragLeave(void)
-		{
-			if(!pCallbacks) return E_NOTIMPL;
-			return pCallbacks->OnDragLeave();
-		}
-
-		HRESULT OnDrop(LPDATAOBJECT pDataObject, DWORD dwKeyState, POINTL pt, LPDWORD pdwEffect)
-		{
-			if(!pCallbacks) return E_NOTIMPL;
-			return pCallbacks->OnDrop(pDataObject, dwKeyState, pt, pdwEffect);
-		}
-};
 
 class CProjectTreeCtrl : public CMSTreeViewCtrl
 {
@@ -187,6 +98,7 @@ protected:
 	ShellImageList*			shellImages;
 	Projects::ProjectType*	lastItem;
 	Projects::Workspace*	workspace;
+	void*					recursiveState;
 	int						projectIcon;
 	int						workspaceIcon;
 	int						badProjectIcon;

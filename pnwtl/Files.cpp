@@ -34,7 +34,7 @@ int FileAge(LPCTSTR FileName)
 
 bool DirExists(LPCTSTR szDir)
 {
-	return (GetFileAttributes(szDir) != -1);
+	return (GetFileAttributes(szDir) != INVALID_FILE_ATTRIBUTES);
 }
 
 bool FileExists(LPCTSTR FileName)
@@ -46,6 +46,12 @@ bool FileExists(LPCTSTR FileName)
 	FindClose(h);
 	
 	return h != INVALID_HANDLE_VALUE;
+}
+
+bool IsDirectory(LPCTSTR szDir)
+{
+	DWORD fa = GetFileAttributes(szDir);
+	return (fa != INVALID_FILE_ATTRIBUTES && ((fa & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY));
 }
 
 /**
@@ -325,7 +331,10 @@ int CFileName::GetLastSlashPos()
 		// couldn't find '\\', try again for '/'
 		pos = m_FileName.rfind(_T('/'));
 	}
-	return ++pos;
+	if(pos != m_FileName.npos)
+		return ++pos;
+	else
+		return m_FileName.npos;
 }
 
 int CFileName::GetLastDotPos(tstring* str)
@@ -359,6 +368,30 @@ tstring CFileName::GetPath()
 	{
 		return _T("");
 	}
+}
+
+tstring CFileName::GetDirectoryName()
+{
+	tstring path = GetPath();
+	char cLast = path[path.length() - 1];
+	if(cLast == _T('\\') || cLast == _T('/'))
+	{
+		// remove the last char.
+		path.erase(path.length()-1);
+	}
+
+	int pos = path.rfind(_T('\\'));
+	if(pos == path.npos)
+	{
+		// couldn't find '\\', try again for '/'
+		pos = path.rfind(_T('/'));
+	}
+	if(pos != path.npos)
+	{
+		path = path.substr(++pos);
+	}
+	
+	return path;
 }
 
 void CFileName::GetPath(tstring& buf)
@@ -515,6 +548,26 @@ bool CFileName::PathIsParentElementOf(LPCTSTR path)
 	return (_tcsnicmp(path, myPath.c_str(), myPath.length()) == 0);
 }
 
+TCHAR hexcharval(TCHAR inp)
+{
+	int Result = 0;
+	
+	if (inp >= '0' && inp <= '9') 
+	{
+		Result = inp - 48;
+	}
+	else if (inp >= 'a' && inp <= 'f')
+	{
+		Result = inp - 87;
+	}
+	else if (inp >= 'A' && inp <= 'F') 
+	{
+		Result = inp - 55;
+	}
+  
+	return Result;
+}
+
 /**
  * This function removes stupidities from paths, whether they be
  * file:// style URLs or /\ issues.
@@ -527,10 +580,29 @@ tstring& CFileName::Sanitise()
 		// We have a file:// url. Fix it up.
 		m_FileName.erase(fpos, 7);
 		
-		fpos = m_FileName.find(_T("%3A"));
+		/*fpos = m_FileName.find(_T("%3A"));
 		if( fpos != m_FileName.npos )
 		{
 			m_FileName.replace(fpos, 3, _T(":"));
+		}*/
+
+		fpos = m_FileName.find(_T("%"));
+		TCHAR replaceBuf[2];
+		replaceBuf[1] = _T('\0');
+		while( fpos != m_FileName.npos )
+		{
+			if( ((fpos + 1) != m_FileName.npos) && ((fpos + 2) != m_FileName.npos) )
+			{
+				if(_istxdigit(m_FileName.at(fpos+1)) && _istxdigit(m_FileName.at(fpos+2)))
+				{
+					replaceBuf[0] = (16*hexcharval(m_FileName.at(fpos+1))) + hexcharval(m_FileName.at(fpos+2));
+					m_FileName.replace(fpos, 3, replaceBuf);
+				}
+
+				fpos = m_FileName.find(_T('%'), fpos);
+			}
+			else
+				fpos = m_FileName.npos;
 		}
 	}
 
@@ -701,4 +773,12 @@ tstring CFileName::GetCurrentDirectory()
 	TCHAR buf[MAX_PATH+1];
 	::GetCurrentDirectory(MAX_PATH, buf);
 	return tstring(buf);
+}
+
+CPathName::CPathName(LPCTSTR path)
+{
+	m_FileName = path;
+	char cLast = m_FileName[m_FileName.length() - 1];
+	if(cLast != _T('\\') && cLast != _T('/'))
+		m_FileName += _T("\\");
 }

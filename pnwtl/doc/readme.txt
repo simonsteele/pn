@@ -30,6 +30,7 @@ Bug Fixes:
 8)  HTML export leaves open the last span tag (SF Bug #904149).
 9)  Fixed HTML export to use full style range (previously stopped at 31).
 10) Dropped files always open new windows. (SF Bug #873386).
+11) Deal with all URL encoded chars in output window, not just %20.
 
 If you find a bug:
 ------------------

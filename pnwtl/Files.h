@@ -112,10 +112,14 @@ public:
 	tstring GetFileName();
 	tstring GetFileName_NoExt();
 	tstring GetPath();
+	tstring GetDirectoryName();							///< Return temp of c:\a\b\temp\d.e
 	void GetPath(tstring& buf);							///< Return c:\temp\ of c:\temp\dat.dat
 	void GetFileName_NoExt(tstring& buf);				///< Return the filename part of c:\temp\filename.dat
 	void GetFileName(tstring& buf);						///< Return the filename.dat part of c:\temp\filename.dat
+	
 	tstring& Sanitise();								///< Fix up the filename to standard form.
+	
+	
 
 	bool IsRelativePath();								///< Return true if it's a relative path.
 	tstring GetRelativePath(LPCTSTR path);				///< Return the relative path string required to get to path.
@@ -149,8 +153,15 @@ protected:
 	int GetLastDotPos(tstring* str=NULL);
 };
 
+class CPathName : public CFileName
+{
+public:
+	CPathName(LPCTSTR path);
+};
+
 int FileAge(LPCTSTR FileName);
 bool DirExists(LPCTSTR szDir);
+bool IsDirectory(LPCTSTR szDir);
 bool FileExists(LPCTSTR FileName);
 bool CreateDirectoryRecursive(LPCTSTR pszDirectory, LPSECURITY_ATTRIBUTES lpSA = NULL);
 

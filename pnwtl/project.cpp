@@ -10,6 +10,7 @@
 
 #include "stdafx.h"
 #include "project.h"
+#include "include/filefinder.h"
 
 #include <sstream>
 #include <fstream>
@@ -283,6 +284,76 @@ File* Folder::AddFile(LPCTSTR file)
 	files.insert(files.begin(), pFile);
 	setDirty();
 	return pFile;
+}
+
+class FolderAdder : FileFinderImpl<FolderAdder, FolderAdder>
+{
+	typedef FileFinderImpl<FolderAdder, FolderAdder> base;
+	friend base;
+
+public:
+	FolderAdder() : base(this, &FolderAdder::onFind)
+	{
+		pFolder = NULL;
+		pCursor = NULL;
+		setDirChangeCallback(&FolderAdder::onEnterDir);
+		setFinishedDirCallback(&FolderAdder::onLeaveDir);
+	}
+
+	Folder* GetFolder(LPCTSTR path, LPCTSTR filter, LPCTSTR basePath, bool recurse)
+	{
+		lpszBasePath = basePath;
+
+		pFolder = newFolder(path);
+		pCursor = pFolder;
+
+		// make sure the path has a trailing slash, CPathName will do that.
+		CPathName pn(path);
+
+		Find(pn.c_str(), filter, recurse);
+
+		return pFolder;
+	}
+
+protected:
+	Folder* pFolder;
+	Folder* pCursor;
+	LPCTSTR lpszBasePath;
+
+	void onFind(LPCTSTR path, LPCTSTR filename)
+	{
+		tstring fullpath(path);
+		fullpath += filename;
+		pCursor->AddFile(fullpath.c_str());
+	}
+
+	void onEnterDir(LPCTSTR path)
+	{
+		Folder* pFolder = newFolder(path);
+		pCursor->AddChild(pFolder);
+		pCursor = pFolder;
+	}
+
+	void onLeaveDir(LPCTSTR path)
+	{
+		pCursor = pCursor->GetParent();
+	}
+
+	Folder* newFolder(LPCTSTR path)
+	{
+		CPathName fn(path);
+		tstring dirName = fn.GetDirectoryName();
+		return new Folder(dirName.c_str(), lpszBasePath);
+	}
+};
+
+Folder* Folder::AddFolder(LPCTSTR path, LPCTSTR filter, bool recursive)
+{
+	FolderAdder fa;
+	Folder* folder = fa.GetFolder(path, filter, basePath.c_str(), recursive);
+	AddChild(folder);
+	setDirty();
+	return folder;
 }
 
 void Folder::RemoveFile(File* file)
