@@ -4,6 +4,7 @@
 //
 #define ID_RECENTFILES_BLANKER          0
 #define IDC_REPLACE_BUTTON              4
+#define IDR_TBR_EDIT                    4
 #define IDC_REPLACEALL_BUTTON           5
 #define IDC_REPLACEINSEL_BUTTON         6
 #define IDD_ABOUTBOX                    100
@@ -27,7 +28,6 @@
 #define IDR_POPUP_REGEXP                170
 #define IDD_REPLACE                     171
 #define IDR_POPUP_EDITOR                173
-#define IDR_IMAGES                      201
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define ID_MRUFILE_BASE                 205
@@ -53,6 +53,7 @@
 #define ID_TOOLS_LELF                   32778
 #define ID_TOOLS_LECR                   32779
 #define ID_TOOLS_LECONVERT              32780
+#define ID_BUTTON32781                  32781
 #define ID_VIEW_VIEWTABS                32825
 #define ID_TAB_CLOSE                    32835
 #define ID_VIEW_TABS_TOP                32836
@@ -77,8 +78,8 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        223
-#define _APS_NEXT_COMMAND_VALUE         32781
+#define _APS_NEXT_RESOURCE_VALUE        225
+#define _APS_NEXT_COMMAND_VALUE         32783
 #define _APS_NEXT_CONTROL_VALUE         1006
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

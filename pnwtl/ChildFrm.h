@@ -73,6 +73,8 @@ public:
 		COMMAND_ID_HANDLER(ID_TOOLS_LECR, OnLineEndingsToggle)
 		COMMAND_ID_HANDLER(ID_TOOLS_LECONVERT, OnLineEndingsConvert)
 
+		NOTIFY_CODE_HANDLER(TBN_GETINFOTIP, OnGetInfoTip)
+
 		IMPLEMENT_FROMHANDLE()
 
 		LOCAL_MENUCOMMAND(MENUMESSAGE_CHANGESCHEME)
@@ -162,7 +164,6 @@ public:
 		button.iBitmap = 1;
 		button.fsState = TBSTATE_ENABLED | TBSTATE_CHECKED;
 		button.fsStyle = TBSTYLE_CHECK;
-		button.iString = NULL;
 		button.idCommand = ID_EDITOR_COLOURISE;
 
 		toolbar.AddButtons(1, &button);
@@ -334,6 +335,22 @@ public:
 			}
 		}
 		return TRUE;
+	}
+
+	LRESULT OnGetInfoTip(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+	{
+		LPNMTBGETINFOTIP pS = (LPNMTBGETINFOTIP)pnmh;
+
+		switch(pS->iItem)
+		{
+			case ID_EDITOR_COLOURISE:
+				_tcsncpy(pS->pszText, _T("Toggle Highlighting"), pS->cchTextMax);
+				break;
+			case ID_EDITOR_WORDWRAP:
+				_tcsncpy(pS->pszText, _T("Toggle Word-Wrap"), pS->cchTextMax);
+		}
+
+		return 0;
 	}
 
 	////////////////////////////////////////////////////

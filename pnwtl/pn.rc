@@ -51,18 +51,14 @@ END
 // Toolbar
 //
 
-IDR_MAINFRAME TOOLBAR  16, 15
+IDR_MAINFRAME TOOLBAR  16, 16
 BEGIN
     BUTTON      ID_FILE_NEW
     BUTTON      ID_FILE_OPEN
+    SEPARATOR
     BUTTON      ID_FILE_SAVE
     SEPARATOR
-    BUTTON      ID_EDIT_CUT
-    BUTTON      ID_EDIT_COPY
-    BUTTON      ID_EDIT_PASTE
-    SEPARATOR
-    BUTTON      ID_FILE_PRINT
-    BUTTON      ID_APP_ABOUT
+    BUTTON      ID_FILE_CLOSE
 END
 
 
@@ -421,9 +417,14 @@ END
 // Toolbar
 //
 
-IDR_IMAGES TOOLBAR  16, 15
+IDR_TBR_EDIT TOOLBAR  16, 16
 BEGIN
     BUTTON      ID_EDIT_UNDO
+    BUTTON      ID_EDIT_REDO
+    SEPARATOR
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
 END
 
 
@@ -432,8 +433,8 @@ END
 // Bitmap
 //
 
-IDR_IMAGES              BITMAP                  "res\\toolbar1.bmp"
 IDB_EDITOR              BITMAP                  "res\\editor.bmp"
+IDR_TBR_EDIT            BITMAP                  "res\\edittbr.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

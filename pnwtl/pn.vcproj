@@ -271,6 +271,9 @@
 				RelativePath=".\res\editor.bmp">
 			</File>
 			<File
+				RelativePath="res\edittbr.bmp">
+			</File>
+			<File
 				RelativePath=".\res\pn.ico">
 			</File>
 			<File

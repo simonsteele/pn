@@ -108,6 +108,7 @@ public:
 	BEGIN_UPDATE_UI_MAP(CMainFrame)
 		UPDATE_ELEMENT(ID_VIEW_TOOLBAR, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_STATUS_BAR, UPDUI_MENUPOPUP)
+		//UPDATE_ELEMENT(ID_FILE_CLOSE, UPDUI_MENUPOPUP)
 	END_UPDATE_UI_MAP()
 
 	BEGIN_MENU_HANDLER_MAP()
@@ -128,15 +129,18 @@ public:
 		m_CmdBar.AttachMenu(GetMenu());
 		// load command bar images
 		m_CmdBar.LoadImages(IDR_MAINFRAME);
-		m_CmdBar.LoadImages(IDR_IMAGES);
+		m_CmdBar.LoadImages(IDR_TBR_EDIT);
+		//m_CmdBar.LoadImages(IDR_IMAGES);
 		// remove old menu
 		SetMenu(NULL);
 
 		HWND hWndToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
+		HWND hWndEdtToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_TBR_EDIT, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
 
 		CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
 		AddSimpleReBarBand(hWndCmdBar);
 		AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
+		AddSimpleReBarBand(hWndEdtToolBar, NULL, FALSE);
 		
 		CreateSimpleStatusBar(_T(""));
 
