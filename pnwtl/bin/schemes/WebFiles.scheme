@@ -81,7 +81,7 @@
 		</keyword-class>
 	</keyword-classes>
 	
-	<language name="web" folding="false" foldcomments="false" foldcompact="false">
+	<language name="web" title="Hypertext" folding="false" foldcomments="false" foldcompact="false">
 		<lexer name="hypertext" stylebits="7" />
 		<use-keywords>
 			<keyword key="0" class="hypertext"/>
@@ -219,8 +219,8 @@
 			<style name="PHP operator" key="127" class="php" fore="000000"/>
 		</use-styles>
 	</language>
-	<language name="xml" folding="false" foldcomments="false" foldcompact="false">
-		<lexer name="xml"/>
+	<language name="xml" title="XML" folding="false" foldcomments="false" foldcompact="false">
+		<lexer name="xml" stylebits="7"/>
 		<use-keywords>
 			<keyword key="5" class="dtd"/>
 		</use-keywords>
@@ -254,7 +254,7 @@
 			<style name="SGML block" key="31" class="sgml" fore="000066" back="CCCCE0"/>
 		</use-styles>
 	</language>
-	<language name="css" folding="false" foldcomments="false" foldcompact="false">
+	<language name="css" title="CSS" folding="false" foldcomments="false" foldcompact="false">
 		<lexer name="hypertext"/>
 		<use-keywords>
 			<keyword key="0" class="css"/>

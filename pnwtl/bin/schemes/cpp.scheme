@@ -22,7 +22,7 @@
 			var verbatim verbinclude version warning weakgroup $ @ \ &amp; &lt; &gt; # { }
 		</keyword-class>
 	</keyword-classes>
-	<language name="cpp" folding="true" foldcomments="true" foldcompact="true">
+	<language name="cpp" title="C++" folding="true" foldcomments="true" foldcompact="true">
 		<lexer name="cpp" />
 		<use-keywords>
 			<keyword key="0" class="cpp"/>
