@@ -46,6 +46,7 @@
 .rng=xml
 .scheme=xml
 .schemedef=xml
+.sql=sql
 .tcl=tcl
 .vb=vb
 .vbs=vbscript

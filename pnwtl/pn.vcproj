@@ -377,18 +377,6 @@
 				RelativePath=".\pnutils.cpp">
 			</File>
 			<File
-				RelativePath="project.cpp">
-			</File>
-			<File
-				RelativePath=".\projectprops.cpp">
-			</File>
-			<File
-				RelativePath="projectview.cpp">
-			</File>
-			<File
-				RelativePath=".\projpropsview.cpp">
-			</File>
-			<File
 				RelativePath="scaccessor.cpp">
 			</File>
 			<File
@@ -574,18 +562,6 @@
 			</File>
 			<File
 				RelativePath=".\pnutils.h">
-			</File>
-			<File
-				RelativePath=".\project.h">
-			</File>
-			<File
-				RelativePath=".\projectprops.h">
-			</File>
-			<File
-				RelativePath=".\projectwriter.h">
-			</File>
-			<File
-				RelativePath=".\projpropsview.h">
 			</File>
 			<File
 				RelativePath=".\resource.h">
@@ -811,6 +787,40 @@
 			</File>
 			<File
 				RelativePath=".\exporters\rtfexporter.cpp">
+			</File>
+		</Filter>
+		<Filter
+			Name="Projects"
+			Filter="">
+			<File
+				RelativePath="project.cpp">
+			</File>
+			<File
+				RelativePath=".\project.h">
+			</File>
+			<File
+				RelativePath=".\projectmeta.cpp">
+			</File>
+			<File
+				RelativePath=".\projectmeta.h">
+			</File>
+			<File
+				RelativePath=".\projectprops.cpp">
+			</File>
+			<File
+				RelativePath=".\projectprops.h">
+			</File>
+			<File
+				RelativePath="projectview.cpp">
+			</File>
+			<File
+				RelativePath=".\projectwriter.h">
+			</File>
+			<File
+				RelativePath=".\projpropsview.cpp">
+			</File>
+			<File
+				RelativePath=".\projpropsview.h">
 			</File>
 		</Filter>
 		<File

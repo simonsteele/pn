@@ -185,6 +185,9 @@ BEGIN
         MENUITEM "Syntax Highlighting",         131
         MENUITEM "Word Wrap",                   130
         MENUITEM SEPARATOR
+        MENUITEM "Toggle &Bookmark\tCtrl+F2",   ID_BOOKMARKS_TOGGLE
+        MENUITEM "Next B&ookmark\tF2",          ID_BOOKMARKS_NEXT
+        MENUITEM SEPARATOR
         POPUP "Folding"
         BEGIN
             MENUITEM "Toggle Fold\tCtrl+*",         ID_VIEW_TOGGLEFOLD

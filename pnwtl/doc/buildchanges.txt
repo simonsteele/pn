@@ -1,7 +1,11 @@
 | Working towards 0.6 :: Ella
 ---------------------------------------
 
-Since 15/12/2004:
+Since 0.5.26:
+
+Added Set and Next bookmark menu items.
+
+Since 0.5.45:
 
 Changes:
 Updated Tool configuration dialog.

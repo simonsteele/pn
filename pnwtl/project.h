@@ -1,8 +1,8 @@
 /**
  * @file project.h
- * @brief Projects
+ * @brief Implement a Solution->Project->Folders hierarchy.
  * @author Simon Steele
- * @note Copyright (c) 2002-2004 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -11,7 +11,7 @@
 #ifndef project_h__included
 #define project_h__included
 
-// Implement a Solution->Project->Folders hierarchy.
+#include "projectmeta.h"
 
 namespace Projects
 {
@@ -33,111 +33,9 @@ typedef FILE_LIST::iterator		FILE_IT;
 
 typedef enum {ptFile, ptMagicFile, ptFolder, ptMagicFolder, ptProject, ptWorkspace} PROJECT_TYPE;
 
-class XmlNode;
-class XmlAttribute;
 class FolderAdder;
 class MagicFolderAdder;
 class MagicFolderCache;
-
-typedef std::list<XmlNode*>			LIST_NODES;
-typedef std::list<XmlAttribute*>	LIST_ATTRS;
-
-typedef LIST_NODES::iterator		XN_IT;
-typedef LIST_NODES::const_iterator	XN_CIT;
-
-typedef LIST_ATTRS::const_iterator	XA_IT;
-
-class XmlNode
-{
-	public:
-		XmlNode(LPCTSTR qualifiedName);
-		XmlNode(LPCTSTR lpszNamespace, LPCTSTR lpszName);
-		XmlNode(const XmlNode& copy);
-		~XmlNode();
-
-		XmlNode& operator = (const XmlNode& copy);
-		
-		void Write(ProjectWriter writer);
-
-		void AddAttributes(XMLAttributes& atts);
-		void AddChild(XmlNode* pChild);
-
-		XmlNode* GetParent();
-		LIST_NODES& GetChildren();
-
-		LPCTSTR GetText();
-		void SetText(LPCTSTR text);
-
-		bool Matches(LPCTSTR ns, LPCTSTR name);
-
-	protected:
-		void clear();
-
-	protected:
-		tstring		sNamespace;
-		tstring		sName;
-		tstring		sText;
-
-		XmlNode*	pParent;
-		
-		LIST_NODES	children;
-		LIST_ATTRS	attributes;
-};
-
-class XmlAttribute
-{
-	public:
-		XmlAttribute(LPCTSTR lpszNamespace, LPCTSTR lpszName, LPCTSTR lpszValue);
-		XmlAttribute(const XmlAttribute& copy);
-
-		XmlAttribute& operator = (const XmlAttribute& copy);
-
-		void Write(ProjectWriter writer);
-
-	protected:
-		tstring		sNamespace;
-		tstring		sName;
-		tstring		sValue;
-};
-
-class UserData
-{
-	public:
-		~UserData();
-		
-		UserData& operator = (const UserData& copy);
-
-		void Add(XmlNode* node);
-
-		const LIST_NODES& GetNodes();
-
-		const int GetCount();
-
-		void Write(ProjectWriter writer);
-
-		bool Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, bool defval);
-		int Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, int defval);
-		LPCTSTR Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, LPCTSTR defval);
-
-		void Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, bool val);
-		void Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, int val);
-		void Set(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, LPCTSTR val);
-
-		XmlNode* GetCategoryNode(LPCTSTR ns, LPCTSTR group, LPCTSTR category);
-		XmlNode* GetGroupNode(LPCTSTR ns, LPCTSTR group);
-
-		XN_CIT	begin();
-		XN_CIT	end();
-
-	protected:
-		void clear();
-		XmlNode* lookUp(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value);
-		XmlNode* lookUpOrCreate(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value);
-
-	protected:
-		LIST_NODES nodes;
-		//LIST_ATTRS attrs;
-};
 
 /**
  * Base-type for all Projects objects
