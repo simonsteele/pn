@@ -160,6 +160,8 @@ public:
 	CPathName(const tstring& copy){*this = copy;}
 
 	CPathName& operator = (const tstring& filename);	///< Set the filename to "filename".
+
+	void ChangeLastElement(LPCTSTR lastEl);
 };
 
 int FileAge(LPCTSTR FileName);

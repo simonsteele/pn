@@ -827,6 +827,10 @@ tstring CFileName::GetCurrentDirectory()
 	return tstring(buf);
 }
 
+///////////////////////////////////////////////////////////////////////////
+// CPathName
+///////////////////////////////////////////////////////////////////////////
+
 CPathName::CPathName(LPCTSTR path)
 {
 	m_FileName = path;
@@ -839,4 +843,28 @@ CPathName& CPathName::operator = (const tstring& filename)
 {
 	m_FileName = filename;
 	return *this;
+}
+
+void CPathName::ChangeLastElement(LPCTSTR lastEl)
+{
+	tstring path = GetPath();
+	char cLast = path[path.length() - 1];
+	if(cLast == _T('\\') || cLast == _T('/'))
+	{
+		// remove the last char.
+		path.erase(path.length()-1);
+	}
+
+	m_FileName = path;
+	int pos = GetLastSlashPos();
+	if(pos != m_FileName.npos)
+	{
+		m_FileName = path.substr(0, pos);
+		m_FileName += lastEl;
+		m_FileName += _T('\\');
+	}
+	else
+	{
+		m_FileName = lastEl;
+	}
 }

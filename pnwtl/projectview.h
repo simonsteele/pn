@@ -153,6 +153,7 @@ protected:
 	int						projectIcon;
 	int						workspaceIcon;
 	int						badProjectIcon;
+	int						magicFolderIcon;
 	bool					multipleSelection;
 	bool					dragging;
 	HIMAGELIST				hDragImageList;

@@ -559,6 +559,7 @@ BEGIN
         MENUITEM "&Open All Files",             299
         MENUITEM "&Sort Folders",               ID_PROJECT_SORTFOLDERS
         MENUITEM SEPARATOR
+        MENUITEM "&Remove",                     ID_PROJECT_REMOVE
         MENUITEM "&Delete",                     ID_PROJECT_DELETE
     END
 END
@@ -577,6 +578,7 @@ IDI_PROJECTS            ICON                    "res\\projects.ico"
 IDI_PROJECTFOLDER       ICON                    "res\\projectfolder.ico"
 IDI_WORKSPACE           ICON                    "res\\workspace.ico"
 IDI_BADPROJECT          ICON                    "res\\noproject.ico"
+IDI_MAGICFOLDER         ICON                    "res\\magicfolder.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

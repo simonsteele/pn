@@ -243,6 +243,8 @@ class MagicFolder : public Folder
 		LPCTSTR GetFilter() const;
 		void SetFilter(LPCTSTR filter);
 
+		bool RenameFolder(LPCTSTR newName);
+
 	protected:
 		tstring GetFolderCachePath();
 

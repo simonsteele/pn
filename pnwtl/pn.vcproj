@@ -607,6 +607,9 @@
 				RelativePath=".\res\infoicon.ico">
 			</File>
 			<File
+				RelativePath=".\res\magicfolder.ico">
+			</File>
+			<File
 				RelativePath="res\noproject.ico">
 			</File>
 			<File

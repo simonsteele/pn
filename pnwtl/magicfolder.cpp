@@ -154,13 +154,13 @@ tstring MagicFolder::getMagicFolderPath(MagicFolder* last)
 
 tstring MagicFolder::GetFolderCachePath()
 {
-	tstring path = getMagicFolderPath(this);
+	tstring thePath = getMagicFolderPath(this);
 
-	std::transform (path.begin(), path.end(),    // source
-               path.begin(),					// destination
+	std::transform (thePath.begin(), thePath.end(),    // source
+               thePath.begin(),					// destination
                tolower);
 
-	return path;
+	return thePath;
 }
 
 LPCTSTR MagicFolder::GetFullPath() const
@@ -176,6 +176,20 @@ LPCTSTR MagicFolder::GetFilter() const
 void MagicFolder::SetFilter(LPCTSTR szFilter)
 {
 	filter = filter;
+}
+
+bool MagicFolder::RenameFolder(LPCTSTR newName)
+{
+	CPathName fp(path);
+	fp.ChangeLastElement(newName);
+	
+	if(::MoveFile(path.c_str(), fp.c_str()) != 0)
+	{
+		path = fp.c_str();
+		return true;
+	}
+
+	return false;
 }
 
 //////////////////////////////////////////////////////////////////////////////

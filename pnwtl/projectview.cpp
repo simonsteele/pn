@@ -35,7 +35,8 @@ CProjectTreeCtrl::CProjectTreeCtrl()
 	shellImages = new ShellImageList();
 	projectIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_PROJECTFOLDER)) );
 	badProjectIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_BADPROJECT)) );
-	workspaceIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_WORKSPACE)) );	
+	workspaceIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_WORKSPACE)) );
+	magicFolderIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_MAGICFOLDER)) );
 }
 
 CProjectTreeCtrl::~CProjectTreeCtrl()
@@ -119,6 +120,10 @@ HTREEITEM CProjectTreeCtrl::addFolderNode(Projects::Folder* folder, HTREEITEM hP
 {
 	HTREEITEM hFolder = InsertItem( folder->GetName(), 0, 0, hParent, hInsertAfter );
 	SetItemData(hFolder, reinterpret_cast<DWORD_PTR>( folder ));
+
+	if(folder->GetType() == ptMagicFolder)
+		SetItemImage(hFolder, magicFolderIcon, magicFolderIcon);
+
 	return hFolder;
 }
 
@@ -184,8 +189,8 @@ HTREEITEM CProjectTreeCtrl::buildFolders(HTREEITEM hParentNode, const FOLDER_LIS
 
 	for(FOLDER_LIST::const_iterator i = folders.begin(); i != folders.end(); ++i)
 	{
-		hFolder = InsertItem( (*i)->GetName(), 0, 0, hParentNode, hFolder );
-		SetItemData(hFolder, reinterpret_cast<DWORD_PTR>( (*i)));
+		hFolder = addFolderNode((*i), hParentNode, hFolder);
+		
 		const FOLDER_LIST& folders2 = (*i)->GetFolders();
 		if( folders2.size() > 0 )
 			hLastChild = buildFolders(hFolder, folders2, viewState);
@@ -276,6 +281,15 @@ void CProjectTreeCtrl::doContextMenu(LPPOINT pt)
 			case ptMagicFolder:
 			{
 				CSPopupMenu popup(IDR_POPUP_PROJECTMFOLDER);
+
+				HTREEITEM hParent = GetParentItem(hLastItem);
+				PNASSERT(hParent != NULL);
+				ProjectType* pPTParent = reinterpret_cast<ProjectType*>( GetItemData(hParent) );
+				if(pPTParent->GetType() == ptMagicFolder)
+				{
+					popup.EnableMenuItem(ID_PROJECT_REMOVE, false);
+				}
+
 				g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
 			}
 			break;
@@ -562,6 +576,23 @@ LRESULT CProjectTreeCtrl::OnEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 			
 			PNASSERT(ptvdi->item.mask == TVIF_TEXT);
 			SetItem(&ptvdi->item);
+		}
+		break;
+
+		case ptMagicFolder:
+		{
+			Projects::MagicFolder* pF = static_cast<Projects::MagicFolder*>(type);
+			
+			if(::MessageBox(m_hWnd, _T("Are you sure you wish to rename this magic folder?\nThis will have the effect of renaming the actual folder on the disk."), _T("Programmers Notepad"), MB_YESNOCANCEL | MB_ICONQUESTION) == IDYES)
+			{
+				if(	pF->RenameFolder(ptvdi->item.pszText) )
+				{
+					pF->SetName(ptvdi->item.pszText);
+					
+					PNASSERT(ptvdi->item.mask == TVIF_TEXT);
+					SetItem(&ptvdi->item);
+				}
+			}
 		}
 		break;
 
@@ -902,7 +933,7 @@ LRESULT CProjectTreeCtrl::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 				tstring msg = _T("Are you sure you wish to delete the folder ");
 				msg += pMF->GetFullPath();
 				msg += _T(" and all its contents?");
-				if( ::MessageBox(m_hWnd, msg.c_str(), _T("Delete Folder"), MB_YESNO | MB_ICONQUESTION) == IDYES )
+				if( ::MessageBox(m_hWnd, msg.c_str(), _T("Delete Folder"), MB_YESNO | MB_ICONWARNING) == IDYES )
 				{
 					if(::DeleteDirectory(pMF->GetFullPath()))
 					{
