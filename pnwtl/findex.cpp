@@ -526,7 +526,8 @@ bool CFindExDialog::findNext()
 	if(editor != NULL)
 	{
 		SFindOptions* pOptions = getOptions();
-		found = editor->FindNext(pOptions);			
+		found = editor->FindNext(pOptions);
+		g_Context.m_frame->GetWindow()->SendMessage(PN_UPDATEFINDTEXT,0,0);
 	}
 	
 	return found != 0;

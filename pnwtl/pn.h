@@ -19,6 +19,7 @@
 #define PN_SCHEMECHANGED	(WM_USER+41)
 #define PN_HANDLEHSCLICK	(WM_USER+42)
 #define PN_ESCAPEPRESSED	(WM_USER+43)
+#define PN_UPDATEFINDTEXT	(WM_USER+44)
 
 #define PN_MDIACTIVATE		0x1
 #define TOOLS_RUNTOOL		0x2
@@ -37,6 +38,13 @@ namespace Projects {
 	class Workspace;
 }
 
+typedef enum {
+	PNDW_OUTPUT = 0,
+	PNDW_PROJECTS = 1,
+	PNDW_TEXTCLIPS = 2,
+	PNDW_FINDRESULTS = 3,
+} EDockingWindow;
+
 struct IMainFrame
 {
 	// Window Accessor
@@ -46,6 +54,7 @@ struct IMainFrame
 	virtual void AddMRUEntry(LPCTSTR lpszFile) = 0;
 	virtual void SetStatusText(LPCTSTR text, bool bLongLife = true) = 0;
 	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL, HWND hWndCaller = NULL) = 0;
+	virtual void ToggleDockingWindow(EDockingWindow window, bool bSetValue = false, bool bShowing = true) = 0;
 	
 	// Document Operations
 	virtual bool CloseAll() = 0;

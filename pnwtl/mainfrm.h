@@ -99,6 +99,7 @@ public:
 		MESSAGE_HANDLER(WM_MENUSELECT, OnMenuSelect)
 		MESSAGE_HANDLER(m_uiMIMessageID, OnMultiInstanceMsg)
 		MESSAGE_HANDLER(UWM_MDICHILDSAVEMODIFIED, OnSaveModifiedItem)
+		MESSAGE_HANDLER(PN_UPDATEFINDTEXT, OnUpdateFindText)
 		
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
@@ -130,12 +131,14 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
 		COMMAND_ID_HANDLER(ID_EDIT_FIND, OnFind)
 		COMMAND_ID_HANDLER(ID_EDIT_REPLACE, OnReplace)
+		COMMAND_ID_HANDLER(ID_EDIT_FINDINFILES, OnFindInFiles)
 		COMMAND_ID_HANDLER(ID_TOOLS_OPTIONS, OnOptions)
 		COMMAND_ID_HANDLER(ID_TOOLS_DUMMY, OnOptions)
 		COMMAND_ID_HANDLER(ID_HELP_WEB_PN, OnWebPNHome)
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SF, OnWebSFPage)
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SB, OnWebSFBug)
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SR, OnWebSFRFE)
+		COMMAND_ID_HANDLER(ID_FINDTYPE_BUTTON, OnFindBarFind)
 		COMMAND_ID_HANDLER(ID_FINDBAR_SEARCHGOOGLE, OnSearchGoogle)
 		COMMAND_ID_HANDLER(ID_FINDBAR_SEARCHGOOGLEGROUPS, OnSearchGoogleGroups)
 
@@ -192,6 +195,8 @@ public:
 	LRESULT OnMultiInstanceMsg(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
 	LRESULT OnSaveModifiedItem(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	
+	LRESULT OnUpdateFindText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
@@ -230,12 +235,14 @@ public:
 	LRESULT OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnReplace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFindInFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnWebPNHome(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnWebSFPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnWebSFBug(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnWebSFRFE(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFindBarFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSearchGoogle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSearchGoogleGroups(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
@@ -273,6 +280,7 @@ public:
 	virtual bool CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction action = (EAlreadyOpenAction)OPTIONS->GetCached(Options::OAlreadyOpenAction));
 	virtual Projects::Workspace* GetActiveWorkspace();
 	virtual void FindInFiles(SearchOptions* options);
+	virtual void ToggleDockingWindow(EDockingWindow window, bool bSetValue = false, bool bShowing = true);
 
 	////////////////////////////////////////////////////////////////
 	// IToolOutputSink Implementation

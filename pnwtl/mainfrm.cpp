@@ -1,5 +1,5 @@
 /**
-7 * @file mainfrm.cpp
+ * @file mainfrm.cpp
  * @brief Main Window for Programmers Notepad 2 (Implementation)
  * @author Simon Steele
  * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
@@ -29,6 +29,7 @@
 #include "textclipsview.h"	// Text-Clips Docker...
 #include "project.h"		// Projects
 #include "projectview.h"	// Projects Docker...
+#include "findex.h"			// Find Dialog
 #include "findinfiles.h"	// Find in Files
 #include "findinfilesview.h"// Find in Files view...
 
@@ -58,10 +59,10 @@ const DWORD ToolbarIds[4] = {
 	ATL_IDW_BAND_FIRST + 1,
 };
 
-class CFindInFilesSink : public FIFSink
+/*class CFindInFilesSink : public FIFSink
 {
 public:
-	CFindInFilesSink(CMainFrame* pMainFrame, COutputView* pOutputView)
+	CFindInFilesSink(CMainFrame* pMainFrame, CFindInFilesView* pOutputView)
 	{
 		PNASSERT(pOutputView != NULL);
 		PNASSERT(pMainFrame != NULL);
@@ -74,53 +75,27 @@ public:
 	{
 		m_pMainFrame->ToggleDockingWindow(CMainFrame::DW_FINDRESULTS, true, true);
 		dwStartTicks = GetTickCount();
+		m_pOutputView->Clear();
 	}
-
 
 	virtual void OnEndSearch(int nFound, int nFiles)
 	{
 		DWORD dwTicksTaken = GetTickCount() - dwStartTicks;
-		_sntprintf(m_fBuf, MAX_PATH+4096+40, _T("Search complete: %d occurrences found in %d files, taking %d milliseconds.\n"), nFound, nFiles, dwTicksTaken);
-		m_pOutputView->AddToolOutput(m_fBuf);
-		m_pMainFrame->SetStatusText(m_fBuf);
+		TCHAR buf[4096];
+		_sntprintf(buf, 4096, _T("Search complete: %d occurrences found in %d files, taking %d milliseconds.\n"), nFound, nFiles, dwTicksTaken);
+		m_pMainFrame->SetStatusText(buf);
 	}
 
 	virtual void OnFoundString(LPCTSTR stringFound, LPCTSTR szFilename, int line, LPCTSTR buf)
 	{
-		// Quicker to printf than to add lots...
-#ifdef OLD
-		_sntprintf(m_fBuf, MAX_PATH+4096+40, _T("%s:%d: %s\n"), szFilename, line, buf);
-		m_pOutputView->SafeAppendText(m_fBuf, -1, false);
-#endif
-
-		m_fBuf[0] = '\0';
-		_tcscat(m_fBuf, szFilename);
-		_tcscat(m_fBuf, _T(":"));
-		_itoa(line, m_lnBuf, 10);
-		_tcscat(m_fBuf, m_lnBuf);
-		_tcscat(m_fBuf, _T(": "));
-		_tcscat(m_fBuf, buf);
-		_tcscat(m_fBuf, _T("\n"));
-		//m_pOutputView->SafeAppendText(m_fBuf, -1, false);
-		
-#ifdef OLD
-		m_pOutputView->AddToolOutput(szFilename);
-		_itoa(line, m_lnBuf, 10);
-		m_pOutputView->AddToolOutput(_T(":"), 1);
-		m_pOutputView->AddToolOutput(m_lnBuf);
-		m_pOutputView->AddToolOutput(_T(": "), 2);
-		m_pOutputView->AddToolOutput(buf);
-		m_pOutputView->AddToolOutput(_T("\n"), 1);
-#endif
+		m_pOutputView->AddResult(szFilename, line, buf);
 	}
 
 protected:
-	CMainFrame*		m_pMainFrame;
-	COutputView*	m_pOutputView;
-	TCHAR			m_lnBuf[34];
-	TCHAR			m_fBuf[MAX_PATH+4096+40];
-	DWORD			dwStartTicks;
-};
+	CMainFrame*			m_pMainFrame;
+	CFindInFilesView*	m_pOutputView;
+	DWORD				dwStartTicks;
+};*/
 
 CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(ID_MRUPROJECT_BASE, 4)
 {
@@ -147,7 +122,7 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(I
 	pSchemeTools->AllocateMenuResources();
 	m_hGlobalToolAccel = pSchemeTools->GetAcceleratorTable();
 
-	m_pFIFSink = NULL;
+	//m_pFIFSink = NULL;
 }
 
 CMainFrame::~CMainFrame()
@@ -164,8 +139,8 @@ CMainFrame::~CMainFrame()
 	if(m_pProjectsWnd)
 		delete m_pProjectsWnd;
 
-	if(m_pFIFSink)
-		delete m_pFIFSink;
+	//if(m_pFIFSink)
+	//	delete m_pFIFSink;
 }
 
 /**
@@ -924,7 +899,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	CreateDockingWindows();
 	InitGUIState();
 
-	m_pFIFSink = new CFindInFilesSink(this, m_pOutputWnd);//m_pFindResultsWnd);
+	//m_pFIFSink = new CFindInFilesSink(this, m_pFindResultsWnd);
 
 	PostMessage(PN_INITIALISEFRAME);
 
@@ -1211,6 +1186,13 @@ LRESULT CMainFrame::OnSaveModifiedItem(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 		}
 	}
 
+	return 0;
+}
+
+LRESULT CMainFrame::OnUpdateFindText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	SearchOptions* so = OPTIONS->GetSearchOptions();
+	m_FindCombo.SetWindowText((LPCTSTR)so->FindText);
 	return 0;
 }
 
@@ -1515,28 +1497,8 @@ LRESULT CMainFrame::OnWindowArrangeIcons(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	return 0;
 }
 
-#include "findex.h"
-
 LRESULT CMainFrame::OnFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	/*if(m_FindDialog == NULL)
-	{
-		m_FindDialog = new CFindDlg;
-		hFindWnd = m_FindDialog->Create(m_hWnd);
-	}
-
-	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
-	if(pChild)
-		m_FindDialog->Show(pChild->GetTextView()->GetCurrentWord().c_str());
-	else
-		m_FindDialog->Show(NULL);*/
-	
-	//CPNDockingWindow* temp[1];
-
-	//CreateDocker<CFindExFrame>(_T("Find"), CRect(0,0,200,100), this, 
-	//	temp, 0,
-	//	true, dockwins::CDockingSide::sTop);
-
 	if(m_pFindEx == NULL)
 	{
 		m_pFindEx = new CFindExDialog();
@@ -1549,25 +1511,11 @@ LRESULT CMainFrame::OnFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	else
 		m_pFindEx->Show();
 
-	//m_pFindEx->ShowWindow(SW_SHOW);
-
 	return 0;
 }
 
 LRESULT CMainFrame::OnReplace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	/*if(m_ReplaceDialog == NULL)
-	{
-		m_ReplaceDialog = new CReplaceDlg;
-		hReplWnd = m_ReplaceDialog->Create(m_hWnd);
-	}
-
-	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
-	if(pChild)
-		m_ReplaceDialog->Show(pChild->GetTextView()->GetCurrentWord().c_str());
-	else
-		m_ReplaceDialog->Show(NULL);*/
-
 	if(m_pFindEx == NULL)
 	{
 		m_pFindEx = new CFindExDialog();
@@ -1580,6 +1528,19 @@ LRESULT CMainFrame::OnReplace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	else
 		m_pFindEx->Show(eftReplace);
 
+	return 0;
+}
+
+LRESULT CMainFrame::OnFindInFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(m_pFindEx == NULL)
+	{
+		m_pFindEx = new CFindExDialog();
+		hFindWnd = m_pFindEx->Create(m_hWnd);
+	}
+
+	m_pFindEx->Show(eftFindInFiles);
+	
 	return 0;
 }
 
@@ -1708,6 +1669,11 @@ void CMainFrame::launchExternalSearch(LPCTSTR searchString)
 CPNDockingWindow* CMainFrame::getDocker(EDocker window) const
 {
 	return m_dockingWindows[(int)window - ID_VIEW_FIRSTDOCKER];
+}
+
+LRESULT CMainFrame::OnFindBarFind(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+	return OnFindComboEnter(wNotifyCode, wID, hWndCtl, bHandled);
 }
 
 LRESULT CMainFrame::OnSearchGoogle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -1852,7 +1818,12 @@ void CMainFrame::FindInFiles(SearchOptions* options)
 		options->FileExts,
 		options->Recurse,
 		options->MatchCase,
-		m_pFIFSink);
+		m_pFindResultsWnd);
+}
+
+void CMainFrame::ToggleDockingWindow(EDockingWindow window, bool bSetValue, bool bShowing)
+{
+	ToggleDockingWindow((EDocker)(window + ID_VIEW_FIRSTDOCKER), bSetValue, bShowing);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
