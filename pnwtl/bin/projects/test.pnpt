@@ -5,9 +5,13 @@
 			<category name="general" description="General Options">
 				<folderPath name="outputdir" description="Output Directory" helpid="1023" />
 				<filePath name="intermediate" description="Intermediate Directory" helpid="1024" />
+			</category>
+			<category name="general2" description="Another Category">
 				<option name="cheese" description="Consume Cheese?" default="true"/>
 				<option name="add" description="Add an option?" default="false"/>
-			</category>
+			</category>			
+		</group>
+		<group name="test2" description="Defaults">
 			<category name="defaults" description="Project Defaults">
 				<optionlist name="configtype" description="Configuration Type" helpid="1025">
 					<value description="Makefile" value="1" />

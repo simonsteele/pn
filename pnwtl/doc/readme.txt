@@ -30,6 +30,7 @@ pn -l 49 -c 14 --scheme cpp test.dat
 11) New items on the status bar: Encoding, Line Endings and Insert/Overwrite
 12) Line Endings view toggle on the minibar.
 13) Line Endings and WhiteSpace added to Defaults pane in options.
+14) Added SQL Scheme
 
 Bug Fixes:
 ----------

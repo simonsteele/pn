@@ -136,16 +136,6 @@ bool CMainFrame::Open(LPCTSTR pathname, bool bAddMRU)
 	return bRet;
 }
 
-/**
-typedef enum {
-	eUnknown,
-	eUtf16BigEndian,
-	eUtf16LittleEndian,  // Default on Windows
-	eUtf8,
-	eLast
-} EPNEncoding;
-*/
-
 LPCTSTR encodingNames[] = 
 {
 	_T("ANSI"),

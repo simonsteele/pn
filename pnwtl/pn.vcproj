@@ -296,6 +296,9 @@
 				RelativePath=".\afiles.cpp">
 			</File>
 			<File
+				RelativePath=".\appsettings.cpp">
+			</File>
+			<File
 				RelativePath=".\include\boyermoore.cpp">
 			</File>
 			<File
@@ -466,6 +469,9 @@
 			</File>
 			<File
 				RelativePath=".\afiles.h">
+			</File>
+			<File
+				RelativePath=".\appsettings.h">
 			</File>
 			<File
 				RelativePath=".\include\boyermoore.h">
