@@ -1005,6 +1005,7 @@ BEGIN
     LTEXT           "Files in the most recently used list:",IDC_STATIC,6,48,
                     120,12
     EDITTEXT        IDC_OPT_MRUCOUNT,126,48,30,12,ES_AUTOHSCROLL
+    LTEXT           "(1 to 50)",IDC_STATIC,162,48,42,12
 END
 
 IDD_PAGE_NEWFILES DIALOGEX 0, 0, 299, 200

@@ -6,6 +6,7 @@
 #define IDR_TBR_EDIT                    5
 #define IDC_REPLACEALL_BUTTON           6
 #define IDC_REPLACEINSEL_BUTTON         7
+#define ID_MRUFILE_BASE					50
 #define IDD_ABOUTBOX                    100
 #define IDC_FINDTEXT_COMBO              102
 #define IDC_FINDNEXT_BUTTON             103
@@ -38,7 +39,7 @@
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define IDD_INPUTBOX                    204
-#define ID_MRUFILE_BASE                 205
+//#define ID_MRUFILE_BASE                 205
 #define ID_VIEW_CHANGESCHEME            221
 #define ID_VIEW_SCHEMES                 222
 #define IDR_POPUP_REGEXPM               226
