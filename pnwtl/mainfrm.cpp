@@ -771,40 +771,6 @@ LRESULT CMainFrame::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	return 0;
 }
 
-/**
- * This function incorporates a fix from Nenad Stefanovic which 
- * re-enables double-clicking to close the window when using WTL 7. 
- * Should probably be un-necessary with future releases.
- */
-LRESULT CMainFrame::OnInitMenuPopup(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
-{
-	HMENU hMenu = (HMENU)wParam;
-	
-	if(hMenu == NULL)
-		return 1;
-	
-	_AtlUpdateUIData* pUIData = m_pUIData;
-	
-	if(pUIData == NULL)
-		return 1;
-	
-	if(!(BOOL)HIWORD(lParam))
-		::SetMenuDefaultItem(hMenu, (UINT)-1, 0);
-	
-	const _AtlUpdateUIMap* pMap = m_pUIMap;
-	
-	while(pMap->m_nID != (WORD)-1)
-	{
-		if(pMap->m_wType & UPDUI_MENUPOPUP)
-		UIUpdateMenuBarElement(pMap->m_nID,
-		pUIData, hMenu);
-		pMap++;
-		pUIData++;
-	}
-
-	return DefWindowProc(uMsg, wParam, lParam);
-}
-
 LRESULT CMainFrame::OnDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	BOOL b = TRUE;
@@ -1510,9 +1476,7 @@ void CMainFrame::MoveMRU(CSMenuHandle& r, CSMenuHandle& a)
 		state = ::GetMenuState(file, i, MF_BYPOSITION);
 		if(state & MF_POPUP)
 		{
-			MENUITEMINFO mii;
-			memset(&mii, 0, sizeof(mii));
-			mii.cbSize = sizeofMENUITEMINFO(); //sizeof(MENUITEMINFO);
+			CMenuItemInfo mii;
 			mii.fMask = MIIM_SUBMENU;
 			file.GetItemInfo(i, &mii);
 			
@@ -1549,9 +1513,7 @@ void CMainFrame::MoveLanguage(CSMenuHandle& remove, CSMenuHandle& add)
 			state = ::GetMenuState(view, i, MF_BYPOSITION);
 			if(state & MF_POPUP)
 			{
-				MENUITEMINFO mii;
-				memset(&mii, 0, sizeof(MENUITEMINFO));
-				mii.cbSize = sizeofMENUITEMINFO();
+				CMenuItemInfo mii;
 				mii.fMask = MIIM_SUBMENU;
 				view.GetItemInfo(i, &mii);
 
