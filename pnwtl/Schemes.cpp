@@ -325,6 +325,8 @@ void CScheme::SetupScintilla(CScintilla& sc)
 	///@todo allow default scintilla coloured selection...
 	sc.SPerform(SCI_SETSELFORE, 1, ::GetSysColor(COLOR_HIGHLIGHTTEXT));
 	sc.SPerform(SCI_SETSELBACK, 1, ::GetSysColor(COLOR_HIGHLIGHT));
+
+	sc.SPerform(SCI_SETPROPERTY, (WPARAM)"asp.default.language", (LPARAM)"2");
 }
 
 bool CScheme::operator < (const CScheme& compare) const 

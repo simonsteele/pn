@@ -1,5 +1,5 @@
 /**
- * @file xmlparser.h
+ * @file xmlparser.cpp
  * @brief Implement the XML parser framework.
  * @author Simon Steele
  * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>

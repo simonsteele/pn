@@ -19,7 +19,7 @@
 #define scintillawtl_h__included
 
 #include "scintillaif.h"
-#include "schemes.h"
+//#include "schemes.h"
 
 /**
  * @class CScintillaWindow

@@ -11,6 +11,7 @@
  */
 
 #include "pntypes.h"
+#include "xmlparser.h"
 
 #define PN_NOTIFY (WM_USER+37)
 

@@ -1,5 +1,5 @@
 /**
- * @file ScintillaImpl.h
+ * @file ScintillaImpl.cpp
  * @brief Implement further functionality for a scintilla wrapper.
  * @author Simon Steele
  * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>

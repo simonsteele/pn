@@ -16,7 +16,6 @@
 #define schemecompiler_h__included
 
 #include "scintillaif.h"
-#include "xmlparser.h"
 #include <string>
 #include <list>
 #include <map>
