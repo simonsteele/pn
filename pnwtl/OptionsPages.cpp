@@ -961,6 +961,11 @@ LRESULT COptionsPageProjectTools::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
 		m_combo.SetItemDataPtr(index, (*i).second);
 	}
 
+	if(m_combo.GetCount() > 0)
+	{
+		m_combo.SetCurSel(0);
+	}
+
 	ScreenToClient(rcCombo);
 	rcCombo.left = rc.right + 5;
 	//m_combo.SetWindowPos(HWND_TOP, &rcCombo, 0);

@@ -2,7 +2,7 @@
  * @file SchemeCompiler.h
  * @brief Define scheme reader and compiler classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2004 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -42,6 +42,7 @@ typedef struct tagSchemeHdr
 	char Name[SC_HDR_NAMESIZE];
 	char Title[SC_HDR_TITLESIZE];
 	UINT Flags;
+	short TabWidth;
 } SchemeHdrRec;
 
 typedef struct tagSchemeTextRec
@@ -69,7 +70,7 @@ typedef struct tagSchemeProp
 typedef enum {ttFontName, ttKeywords, ttLexerLanguage} eTextType;
 typedef enum {nrMsgRec, nrTextRec, nrPropRec} eNextRec;
 typedef enum {fldEnabled = 0x01, fldCompact = 0x02, fldComments = 0x04, fldPreProc = 0x08} eFoldFlags;
-typedef enum {schUseTabs = 0x10, schInternal = 0x20} eSchemeFlags;
+typedef enum {schUseTabs = 0x10, schInternal = 0x20, schOverrideTabs = 0x40, schOverrideTabSize = 0x80} eSchemeFlags;
 //typedef enum {ovrTabWidth = 1, ovrIndentGuides = 2} eOverrideFlags;
 
 // Parser State Defines
@@ -96,7 +97,7 @@ typedef enum {schUseTabs = 0x10, schInternal = 0x20} eSchemeFlags;
 #define US_CLASS				7
 
 // File Content Defines
-#define CompileVersion 0x04
+#define CompileVersion 0x05
 #define FileID "Caffeine.Scheme"
 
 class CSchemeLoaderState

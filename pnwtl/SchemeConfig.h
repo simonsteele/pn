@@ -78,7 +78,7 @@ class SchemeConfig : public CustomKeywordHolder, public CustomStyleHolder
 {
 	_NO_COPY(SchemeConfig)
 	public:
-		SchemeConfig(SchemeConfigParser* pOwner){m_pOwner = pOwner;}
+		SchemeConfig(SchemeConfigParser* pOwner);
 
 		// Style class customisation support
 		void AddCustomStyleClass(const CString& name, StyleDetails* pCustom);
@@ -97,6 +97,8 @@ class SchemeConfig : public CustomKeywordHolder, public CustomStyleHolder
 		CString m_Name;
 		CString m_Title;
 		int m_foldflags;
+		int m_origfoldflags;
+		int m_tabwidth;
 
 		CustomStyleCollection	m_customs;
 		CustomKeywordHolder		m_cKeywords;

@@ -339,7 +339,7 @@ class CTabPageStyles : public CPropertyPageImpl<CTabPageStyles>
 		bool			m_bChanging;
 };
 
-class CTabPageMisc : public CPropertyPageImpl<CTabPageMisc>
+class CTabPageMisc : public CPropertyPageImpl<CTabPageMisc>, CWinDataExchange<CTabPageMisc>
 {
 	public:	
 		enum {IDD = IDD_TAB_MISC};
@@ -359,6 +359,10 @@ class CTabPageMisc : public CPropertyPageImpl<CTabPageMisc>
 			CHAIN_MSG_MAP(CPropertyPageImpl<CTabPageMisc>)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
+
+		BEGIN_DDX_MAP(COptionsPageConf)
+			DDX_RADIO(IDC_TAB_NOORRADIO, m_iTabOverride)
+		END_DDX_MAP()
 
 		bool IsDirty();
 
@@ -386,6 +390,7 @@ class CTabPageMisc : public CPropertyPageImpl<CTabPageMisc>
 
 		bool			m_bChanging;
 		bool			m_bDirty;
+		int				m_iTabOverride;
 };
 
 class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>

@@ -79,6 +79,10 @@ class CScheme
 		TCHAR*			m_Name;
 		TCHAR*			m_Title;
 		bool			m_bInternal;
+		/*bool			m_bOverrideUseTabs;
+		bool			m_bOverrideTabWidth;
+		bool			m_bUseTabs;
+		short			m_tabWidth;*/
 		CSchemeManager*	m_pManager;
 
 		bool InitialLoad(CFile& file, SchemeHdrRec& hdr);

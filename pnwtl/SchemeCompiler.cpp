@@ -1098,8 +1098,13 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 			}
 
 			t = atts.getValue(_T("usetabs"));
-			if(t != NULL && PNStringToBool(t))
-				flags |= schUseTabs;
+			if(t != NULL)
+			{
+				if(PNStringToBool(t))
+					flags |= schOverrideTabs & schUseTabs;
+				else
+					flags |= schOverrideTabs;
+			}
 
 			t = atts.getValue(_T("internal"));
 			if(t != NULL && PNStringToBool(t))

@@ -10,6 +10,176 @@
 #include "stdafx.h"
 #include "schemeconfig.h"
 
+#include "include/genx/genx.h"
+#include "include/pngenx.h"
+
+/////////////////////////////////////////////////////////
+// Writer
+/////////////////////////////////////////////////////////
+
+#define USERSETTINGS_START			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<UserSettings>\n"
+#define USERSETTINGS_END			"</UserSettings>"
+#define USERSETTINGS_SCHEMES_START	"\t<schemes>\n"
+#define USERSETTINGS_SCHEMES_END	"\t</schemes>\n"
+#define USERSETTINGS_SCHEME_START	_T("\t\t<scheme name=\"%s\">\n")
+#define USERSETTINGS_SCHEME_END		"\t\t</scheme>\n"
+#define USERSETTINGS_STYLES_START	"\t\t\t<override-styles>\n"
+#define USERSETTINGS_STYLES_END		"\t\t\t</override-styles>\n"
+#define USERSETTINGS_KEYWORDS_START "\t\t\t<override-keywords>\n"
+#define USERSETTINGS_KEYWORDS_END	"\t\t\t</override-keywords>\n"
+#define USERSETTINGS_CLASSES_START	"\t<override-classes>\n"
+#define USERSETTINGS_CLASSES_END	"\t</override-classes>\n"
+
+#define USERSETTINGS_STYLE_START	_T("\t\t\t\t<style key=\"%d\" ")
+#define USERSETTINGS_KEYWORDS_NODE	_T("\t\t\t\t<keywords key=\"%d\">%s</keywords>\n")
+#define USERSETTINGS_CLASS_START	_T("\t\t<style-class name=\"%s\" ")
+#define USERSETTINGS_STYLE_FN		_T("font=\"%s\" ")
+#define USERSETTINGS_STYLE_FS		_T("size=\"%d\" ")
+#define USERSETTINGS_STYLE_FC		_T("fore")
+#define USERSETTINGS_STYLE_BC		_T("back")
+#define USERSETTINGS_STYLE_SB		_T("bold")
+#define USERSETTINGS_STYLE_SI		_T("italic")
+#define USERSETTINGS_STYLE_SU		_T("underline")
+#define USERSETTINGS_STYLE_SE		_T("eolfilled")
+#define USERSETTINGS_STYLE_CL		_T("class=\"%s\" ")
+
+namespace Schemes
+{
+	class Writer : public GenxXMLWriter
+	{
+		public:
+			void beginScheme(LPCTSTR name, int foldflags, int oldfoldflags)
+			{
+				genxStartElement(m_eScheme);
+				genxAddAttribute(m_aName, u(name));
+			}
+
+			void endScheme()
+			{
+				pop();
+			}
+
+			void beginStyle(int key)
+			{
+				genxStartElement(m_eStyle);
+				genxAddAttribute(m_aKey, u(IntToTString(key).c_str()));
+			}
+
+			void beginStyleClass(LPCTSTR name)
+			{
+				genxStartElement(m_eStyleClass);
+				genxAddAttribute(m_aName, u(name));
+			}
+
+			void setBold(bool on)
+			{
+				if(on)
+				{
+					genxAddAttribute(m_aBold, u("true"));
+				}
+				else
+				{
+					genxAddAttribute(m_aBold, u("false"));
+				}
+			}
+
+			void setItalic(bool on)
+			{
+				if(on)
+				{
+					genxAddAttribute(m_aItalic, u("true"));
+				}
+				else
+				{
+					genxAddAttribute(m_aItalic, u("false"));
+				}
+			}
+
+			void setUnderline(bool on)
+			{
+				if(on)
+				{
+					genxAddAttribute(m_aUnderline, u("true"));
+				}
+				else
+				{
+					genxAddAttribute(m_aUnderline, u("false"));
+				}
+			}
+
+			void setEolFilled(bool on)
+			{
+				if(on)
+				{
+					genxAddAttribute(m_aEolFilled, u("true"));
+				}
+				else
+				{
+					genxAddAttribute(m_aEolFilled, u("false"));
+				}
+			}
+
+			void endStyle()
+			{
+				pop();
+			}
+
+			void endStyleClass()
+			{
+				pop();
+			}
+
+		protected:
+			virtual void initXmlBits()
+			{
+				genxStatus s;
+
+				m_eScheme = genxDeclareElement(m_writer, NULL, u("scheme"), &s);
+				m_eStyle = genxDeclareElement(m_writer, NULL, u("style"), &s);
+				m_eStyleClass = genxDeclareElement(m_writer, NULL, u("style-class"), &s);
+				m_eKeywords = genxDeclareElement(m_writer, NULL, u("keywords"), &s);
+				m_eOvStyles = genxDeclareElement(m_writer, NULL, u("override-styles"), &s);
+				m_eOvKeywords = genxDeclareElement(m_writer, NULL, u("override-styles"), &s);
+				m_eOvClasses = genxDeclareElement(m_writer, NULL, u("override-styles"), &s);
+
+				PREDECLARE_ATTRIBUTES()
+					ATT("key", m_aKey);
+					ATT("font", m_aFont);
+					ATT("size", m_aSize);
+					ATT("fore", m_aFore);
+					ATT("back", m_aBack);
+					ATT("bold", m_aBold);
+					ATT("italic", m_aItalic);
+					ATT("underline", m_aUnderline);
+					ATT("eolfilled", m_aEolFilled);
+					ATT("class", m_aClass);
+					ATT("name", m_aName);
+				END_ATTRIBUTES();
+			}
+
+		protected:
+			genxElement m_eScheme;
+			genxElement m_eStyle;
+			genxElement m_eStyleClass;
+			genxElement m_eKeywords;
+			genxElement m_eOvStyles;
+			genxElement m_eOvKeywords;
+			genxElement m_eOvClasses;
+			
+			genxAttribute m_aKey;
+			genxAttribute m_aFont;
+			genxAttribute m_aSize;
+			genxAttribute m_aFore;
+			genxAttribute m_aBack;
+			genxAttribute m_aBold;
+			genxAttribute m_aItalic;
+			genxAttribute m_aUnderline;
+			genxAttribute m_aEolFilled;
+			genxAttribute m_aClass;
+			genxAttribute m_aName;
+	};
+}
+
 /////////////////////////////////////////////////////////
 // CustomStyleCollection
 /////////////////////////////////////////////////////////
@@ -121,6 +291,14 @@ void CustomStyleHolder::AddStyle(StyleDetails* pStyle)
 /////////////////////////////////////////////////////////
 // SchemeConfig
 /////////////////////////////////////////////////////////
+
+SchemeConfig::SchemeConfig(SchemeConfigParser* pOwner)
+{
+	m_pOwner = pOwner; 
+	m_tabwidth = 4; 
+	m_foldflags = 0;
+	m_origfoldflags = 0;
+}
 
 StyleDetails* SchemeConfig::FindStyleClass(LPCTSTR name)
 {
@@ -509,6 +687,7 @@ void SchemeConfigParser::onLanguage(LPCTSTR name, LPCTSTR title, int foldflags)
 	m_pCurrent->m_Name = name;
 	m_pCurrent->m_Title = title;
 	m_pCurrent->m_foldflags = foldflags;
+	m_pCurrent->m_origfoldflags = m_pCurrent->m_foldflags;
 	m_Schemes.insert(m_Schemes.begin(), m_pCurrent);
 }
 

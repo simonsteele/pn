@@ -695,6 +695,8 @@ void CTabPageMisc::SetValues()
 {
 	if(m_pScheme != NULL && ::IsWindow(m_hWnd))
 	{
+		DoDataExchange(true);
+
 		COLORREF theColour;
 
 		// Clear existing customisations.
@@ -719,6 +721,28 @@ void CTabPageMisc::SetValues()
 		theColour = m_igCol.GetColor();
 		if(theColour != CLR_DEFAULT)
 			m_pScheme->m_editorColours.SetColour( EditorColours::ecIndentG, theColour);
+
+		switch(m_iTabOverride)
+		{
+		case 0:
+			{
+				m_pScheme->m_foldflags &= ~(schOverrideTabs|schUseTabs);
+			}
+			break;
+
+		case 1:
+			{
+				m_pScheme->m_foldflags |= (schOverrideTabs | schUseTabs);
+			}
+			break;
+
+		case 2:
+			{
+				m_pScheme->m_foldflags |= schOverrideTabs;
+				m_pScheme->m_foldflags &= ~schUseTabs;
+			}
+			break;
+		}
 	}
 }
 

@@ -50,6 +50,10 @@ void CScheme::Init()
 	m_Title = NULL;
 	m_pManager = NULL;
 	m_bInternal = false;
+	/*m_bOverrideUseTabs = false;
+	m_bOverrideTabWidth = false;
+	m_bUseTabs = false;
+	m_tabWidth = 4;*/
 }
 
 CScheme::~CScheme()
@@ -349,8 +353,18 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.preprocessor"), (LPARAM)_T("1"));
 		}
 
-		if(hdr.Flags & schUseTabs)
-			sc.SPerform(SCI_SETUSETABS, 1, 0);
+		if(hdr.Flags & schOverrideTabs)
+		{
+			if(hdr.Flags & schUseTabs)
+				sc.SPerform(SCI_SETUSETABS, 1, 0);
+			else
+				sc.SPerform(SCI_SETUSETABS, 0, 0);
+		}
+
+		if(hdr.Flags & schOverrideTabSize)
+		{
+			sc.SPerform(SCI_SETTABWIDTH, hdr.TabWidth, 0);
+		}
 
 		while (cfile.GetPosition() < cfile.GetLength())
 		{
