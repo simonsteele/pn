@@ -69,6 +69,7 @@ protected:
 	
 	void HandleCustomError(int style, int position);
 
+	bool ExpandMatchedPath(CFileName& fn);
 	bool LocateInProjects(LPCTSTR part, tstring& full);
 
 	bool HandleREError(PCRE::RegExp& re, int style, int position);

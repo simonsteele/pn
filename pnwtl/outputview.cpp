@@ -74,6 +74,63 @@ void COutputView::ExtendStyleRange(int startPos, int style, TextRange* tr)
 }
 
 /**
+ * Try and find a sensible match for a relative filename
+ */
+bool COutputView::ExpandMatchedPath(CFileName& fn)
+{
+	bool bRet = false;
+
+	if(m_basepath.length() != 0)
+	{
+		fn.Root( m_basepath.c_str() );
+		//filename = fn.c_str();
+#ifdef _DEBUG
+		tstring dbgout = _T("Rooted path to: ");
+		dbgout += fn.c_str();
+		dbgout += _T("\n");
+		::OutputDebugString(dbgout.c_str());
+#endif
+		bRet = true;
+	}
+	else
+	{
+		// There is no base directory, and the filename is relative.
+		// Only a couple of options left.
+		
+		// 1. See if we can open from the project.
+		tstring fullname;
+		if( LocateInProjects(fn.c_str(), fullname) )
+		{
+			fn = fullname;
+			bRet = true;
+		}
+		else
+		{
+			// 2) See if we can open from the current directory.
+			// Attach the filename to the current directory so that it's
+			// at least a full path.
+			TCHAR dirbuf[MAX_PATH+1];
+			memset(dirbuf, 0, (MAX_PATH + 1)*sizeof(TCHAR));
+			GetCurrentDirectory(MAX_PATH, dirbuf);
+			
+			if( _tcslen(dirbuf) > 0 )
+			{
+				CFileName fn2 = fn;
+				fn2.Root( dirbuf );	
+				
+				if(FileExists(fn2.c_str()))
+				{
+					fn = fn2;
+					bRet = true;
+				}
+			}
+		}
+	}
+
+	return bRet;
+}
+
+/**
  * @brief Uses any regular expression string to try and match an error.
  * @param style - style that the error is displayed in.
  * @param position - position of the character clicked.
@@ -81,7 +138,7 @@ void COutputView::ExtendStyleRange(int startPos, int style, TextRange* tr)
  */
 bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 {
-	bool bRet = false;
+	bool bRet = true;
 
 	TextRange tr;
 				
@@ -98,86 +155,63 @@ bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 		tstring colstr;
         
 		// Extract the named matches from the RE, noting if there was a line or column.
-		re.GetNamedMatch("f", filename);
+		bool bFile = re.GetNamedMatch("f", filename);
 		bool bLine = re.GetNamedMatch("l", linestr);
 		bool bCol = re.GetNamedMatch("c", colstr);
 
 #ifdef _DEBUG
-		tstring dbgout = _T("Matched file (");
-		dbgout += filename;
-		dbgout += _T(") line (");
-		dbgout += linestr;
-		dbgout += _T(") col (");
-		dbgout += colstr;
-		dbgout += _T(")\n");
-		::OutputDebugString(dbgout.c_str());
+			tstring dbgout = _T("Matched file (");
+			dbgout += filename;
+			dbgout += _T(") line (");
+			dbgout += linestr;
+			dbgout += _T(") col (");
+			dbgout += colstr;
+			dbgout += _T(")\n");
+			::OutputDebugString(dbgout.c_str());
 #endif
 
-		int line = atoi(linestr.c_str());
-
-		//First check if the file exists as is, if it does then we go with that,
-		//else we try to resolve it.
-		CFileName fn(filename.c_str());
-		fn.Sanitise();
-
-#ifdef _DEBUG
-		dbgout = _T("After sanitise, filename = ");
-		dbgout += fn.c_str();
-		::OutputDebugString(dbgout.c_str());
-#endif
-
-		if( fn.IsRelativePath() )
+		if(bFile)
 		{
-			if(m_basepath.length() != 0)
-			{
-				fn.Root( m_basepath.c_str() );
-				filename = fn.c_str();
+			//First check if the file exists as is, if it does then we go with that,
+			//else we try to resolve it.
+			CFileName fn(filename.c_str());
+			fn.Sanitise();
+
 #ifdef _DEBUG
-				dbgout = _T("Rooted path to: ");
-				dbgout += filename;
-				dbgout += _T("\n");
-				::OutputDebugString(dbgout.c_str());
+			dbgout = _T("After sanitise, filename = ");
+			dbgout += fn.c_str();
+			::OutputDebugString(dbgout.c_str());
 #endif
+
+			if( fn.IsRelativePath() )
+			{
+				ExpandMatchedPath(fn);
+			}
+
+			if(FileExists(fn.c_str()))
+			{
+				// If the file's already open, just switch to it, otherwise open it.
+				if( !g_Context.m_frame->CheckAlreadyOpen(fn.c_str(), eSwitch) )
+					g_Context.m_frame->Open(fn.c_str());
 			}
 			else
 			{
-				// There is no base directory, and the filename is relative.
-				// Only a couple of options left.
-				
-				// 1. See if we can open from the project.
-				tstring fullname;
-				if( LocateInProjects(fn.c_str(), fullname) )
-				{
-					fn = fullname;
-				}
-				else
-				{
-					// 2) See if we can open from the current directory.
-					// Attach the filename to the current directory so that it's
-					// at least a full path.
-					TCHAR dirbuf[MAX_PATH+1];
-					memset(dirbuf, 0, (MAX_PATH + 1)*sizeof(TCHAR));
-					GetCurrentDirectory(MAX_PATH, dirbuf);
-					
-					if( _tcslen(dirbuf) > 0 )
-					{
-						CFileName fn2 = fn;
-						fn2.Root( dirbuf );	
-					}
-				}
+				tstring msg = _T("Could not locate ") + filename;
+				msg += _T(". If the file exists, see help under \"Output\" to fix this.");
+				g_Context.m_frame->SetStatusText(msg.c_str());
+				bRet = false;
 			}
 		}
 
-		if(FileExists(fn.c_str()))
+		if(bRet)
 		{
-			// If the file's already open, just switch to it, otherwise open it.
-			if( !g_Context.m_frame->CheckAlreadyOpen(fn.c_str(), eSwitch) )
-				g_Context.m_frame->Open(fn.c_str());
+			CChildFrame* pWnd = CChildFrame::FromHandle(GetCurrentEditor());
+			CTextView* pView = pWnd->GetTextView();
 
 			if( bLine )
 			{
-				CChildFrame* pWnd = CChildFrame::FromHandle(GetCurrentEditor());
-				CTextView* pView = pWnd->GetTextView();
+				int line = atoi(linestr.c_str());
+
 				if(pView)
 				{
 					pView->GotoLine(line-1);
@@ -189,19 +223,15 @@ bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 						lPos += column;
 						pView->SetCurrentPos(lPos);
 					}
-					
-					::SetFocus(pView->m_hWnd);
 				}
 			}
-		}
-		else
-		{
-			tstring msg = _T("Could not locate ") + filename;
-			msg += _T(". If the file exists, see help under \"Output\" to fix this.");
-			g_Context.m_frame->SetStatusText(msg.c_str());
-		}
 
-		bRet = true;
+			::SetFocus(pView->m_hWnd);
+		}
+	}
+	else
+	{
+		bRet = false;
 	}
 
 	delete [] tr.lpstrText;
