@@ -35,6 +35,8 @@ typedef struct tagMethodInfo
 #define TAG_UNION			12
 #define TAG_VARIABLE		13
 
+#define TAG_MAX				13
+
 #define TAGM_UNKNOWN		1
 #define TAGM_FUNCTION		1 << 1
 #define TAGM_PROCEDURE		1 << 2

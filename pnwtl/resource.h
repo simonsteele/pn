@@ -139,8 +139,8 @@
 #define IDB_ABOUT                       319
 #define IDD_FILEPROPERTIES              320
 #define ID_MRUPROJECT_BASE              321
-#define IDD_DIALOG1                     321
 #define IDD_JUMPTO                      321
+#define IDB_TAGTYPES                    322
 #define ID_MRUPROJECT_MAX               340
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
@@ -286,6 +286,7 @@
 #define IDC_REOPEN_DOIT                 1090
 #define IDC_REOPEN_ASKME                1091
 #define IDC_REDROP_SWITCH               1092
+#define IDC_OPTHELPER_BUTTON            1092
 #define IDC_REDROP_DOIT                 1093
 #define IDC_REDROP_ASKME                1094
 #define IDC_MARKALL_BUTTON              21199
@@ -362,9 +363,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        322
+#define _APS_NEXT_RESOURCE_VALUE        323
 #define _APS_NEXT_COMMAND_VALUE         32908
-#define _APS_NEXT_CONTROL_VALUE         1092
+#define _APS_NEXT_CONTROL_VALUE         1093
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

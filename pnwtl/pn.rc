@@ -587,6 +587,7 @@ IDR_TBR_FIND            BITMAP                  "res\\tbrFindCombo.bmp"
 IDB_FINDTOOLBAR         BITMAP                  "res\\findbarbmps.bmp"
 IDR_TBR_PROJECTS        BITMAP                  "res\\tbrProjects.bmp"
 IDB_ABOUT               BITMAP                  "res\\about.bmp"
+IDB_TAGTYPES            BITMAP                  "res\\tagtypes.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1001,7 +1002,7 @@ BEGIN
     PUSHBUTTON      "...",IDC_TE_COMMANDBUTTON,204,36,13,12
     EDITTEXT        IDC_TE_FOLDEREDIT,60,54,138,12,ES_AUTOHSCROLL
     PUSHBUTTON      "...",IDC_TE_DIRBUTTON,204,54,13,12
-    EDITTEXT        IDC_TE_PARAMSEDIT,60,72,156,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_TE_PARAMSEDIT,60,72,138,12,ES_AUTOHSCROLL
     PUSHBUTTON      "c",IDC_TE_CLEARBUTTON,144,90,13,12
     CONTROL         "This tool will modify the current file.",
                     IDC_TE_FILTERCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
@@ -1037,6 +1038,8 @@ BEGIN
                     WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_TE_HOTKEY,"msctls_hotkey32",WS_BORDER | 
                     WS_TABSTOP,60,90,78,12
+    CONTROL         "",IDC_OPTHELPER_BUTTON,"Button",BS_OWNERDRAW | 
+                    WS_TABSTOP,204,72,9,11,0,HIDC_OPTHELPER_BUTTON
 END
 
 IDD_PAGE_GENERAL DIALOGEX 0, 0, 299, 200
@@ -1286,9 +1289,8 @@ BEGIN
     LTEXT           "When an open file is dropped:",IDC_STATIC,6,24,108,12
 END
 
-IDD_JUMPTO DIALOGEX 0, 0, 285, 161
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+IDD_JUMPTO DIALOGEX 0, 0, 286, 161
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_THICKFRAME
 CAPTION "Jump To..."
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -1297,8 +1299,8 @@ BEGIN
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
                     LVS_NOSORTHEADER | WS_TABSTOP,6,24,216,132,
                     WS_EX_CLIENTEDGE
-    DEFPUSHBUTTON   "OK",IDOK,228,6,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,228,24,50,14
+    DEFPUSHBUTTON   "OK",IDOK,229,6,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,229,24,50,14
     RTEXT           "Jump to:",IDC_STATIC,6,6,36,12
 END
 
@@ -1456,7 +1458,7 @@ BEGIN
     IDD_JUMPTO, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 278
+        RIGHTMARGIN, 279
         TOPMARGIN, 7
         BOTTOMMARGIN, 154
     END

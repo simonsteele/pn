@@ -190,6 +190,8 @@ LRESULT CToolEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	m_HotKeyCtrl = GetDlgItem(IDC_TE_HOTKEY);
 	m_HotKeyCtrl.SetHotKey(LOBYTE(m_wHotKey), HIBYTE(m_wHotKey));
 
+	m_paramHelper.SubclassWindow( GetDlgItem(IDC_OPTHELPER_BUTTON) );
+
 	DoDataExchange();
 
 	EnableButtons();
@@ -277,6 +279,12 @@ LRESULT CToolEditorDialog::OnWindowStateChanged(WORD /*wNotifyCode*/, WORD /*wID
 LRESULT CToolEditorDialog::OnClearShortcut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	m_HotKeyCtrl.SetHotKey(0,0);
+
+	return 0;
+}
+
+LRESULT CToolEditorDialog::OnParamHelper(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
 
 	return 0;
 }

@@ -306,7 +306,8 @@ void CScintillaImpl::DumbIndent(char ch)
 	if(ch == '\r' || ch == '\n')
 	{
 		int previousIndent = GetIndentLevel(curLine-1);
-		IndentLine(curLine, previousIndent);
+		if( previousIndent && GetIndentLevel(curLine) == 0 )
+			IndentLine(curLine, previousIndent);
 	}
 }
 

@@ -9,6 +9,7 @@
 #define HIDC_MARKALL_BUTTON             0x80a852cf    // IDD_FIND
 #define HIDC_MATCHCASE_CHECK            0x80a80069    // IDD_FIND
 #define HIDC_MATCHWHOLE_CHECK           0x80a80068    // IDD_FIND
+#define HIDC_OPTHELPER_BUTTON           0x80ff0444    // IDD_TOOLEDITOR
 #define HIDC_PSHELPER2_BUTTON           0x800c52d5    // IDD_PAGESETUP
 #define HIDC_PSHELPER_BUTTON            0x800c0434    // IDD_PAGESETUP
 #define HIDC_REGEXP_CHECK               0x80a8006b    // IDD_FIND

@@ -60,12 +60,12 @@ tstring JumpToPlugin::GetSchemesSupported()
 	return tstring(CW2T(buffer));
 }
 
-bool JumpToPlugin::GetMethods(const wchar_t* filename, HWND editorWnd, FP_CALLBACK callback, int mask)
+bool JumpToPlugin::GetMethods(const wchar_t* filename, HWND editorWnd, FP_CALLBACK callback, int mask, LPVOID cookie)
 {
 	if(!Valid())
 		return false;
 
-	return pfnGetMethods(filename, editorWnd, callback, mask);
+	return pfnGetMethods(filename, editorWnd, callback, mask, cookie);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -143,19 +143,16 @@ void JumpToHandler::DoJumpTo(CChildFrame* pChildFrame, IJumpToFindSink* pNotifyS
 
 	tstring fn = pChildFrame->GetFileName();
 
-	outputWindow = pChildFrame->GetOutputWindow();
 	sink = pNotifySink;
 
 	USES_CONVERSION;
 
 	const wchar_t* pFN = CT2CW(fn.c_str());
 
-	pPlugin->GetMethods(pFN, pChildFrame->m_hWnd, &JumpToHandler::callback);
+	pPlugin->GetMethods(pFN, pChildFrame->m_hWnd, &JumpToHandler::callback, TAGM_ALL, (LPVOID)this);
 }
 
-void __stdcall JumpToHandler::callback(int dataCount, LPMETHODINFO methodInfo)
+void __stdcall JumpToHandler::callback(int dataCount, LPMETHODINFO methodInfo, LPVOID cookie)
 {
-	JumpToHandler::GetInstance()->outputWindow->AddToolOutput(methodInfo->methodName);
-	JumpToHandler::GetInstance()->outputWindow->AddToolOutput(_T("\n"));
-	JumpToHandler::GetInstance()->sink->OnFound(dataCount, methodInfo);
+	static_cast<JumpToHandler*>(cookie)->sink->OnFound(dataCount, methodInfo);
 }

@@ -27,17 +27,17 @@ class IJumpToFindSink
 class JumpToPlugin : Plugin
 {
 	public:
-		typedef void (__stdcall *FP_CALLBACK)(int dataCount, LPMETHODINFO methodInfo);
+		typedef void (__stdcall *FP_CALLBACK)(int dataCount, LPMETHODINFO methodInfo, LPVOID cookie);
 
 		JumpToPlugin(LPCTSTR filename);
 		
 		virtual bool Valid();
 
 		tstring GetSchemesSupported();
-		bool GetMethods(const wchar_t* filename, HWND editorWnd, FP_CALLBACK callback, int mask = TAGM_ALL);
+		bool GetMethods(const wchar_t* filename, HWND editorWnd, FP_CALLBACK callback, int mask, LPVOID cookie);
 
 	protected:
-		typedef bool (__stdcall *LPFnGetMethods)(const wchar_t* filename, HWND editorWnd, FP_CALLBACK callback, int mask);
+		typedef bool (__stdcall *LPFnGetMethods)(const wchar_t* filename, HWND editorWnd, FP_CALLBACK callback, int mask, LPVOID cookie);
 		typedef void (__stdcall *LPFnGetSchemesSupported)(wchar_t* schemesBuffer, int cchBuffer);
 		typedef int (__stdcall *LPFnGetCapabilities)();
 
@@ -61,7 +61,7 @@ class JumpToHandler : public Singleton<JumpToHandler, true>
 		JumpToHandler();
 		~JumpToHandler();
 
-		static void __stdcall callback(int dataCount, LPMETHODINFO methodInfo);
+		static void __stdcall callback(int dataCount, LPMETHODINFO methodInfo, LPVOID cookie);
 
 		HANDLERS_MAP handlers;
 		PLUGINS_LIST plugins;

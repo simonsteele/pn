@@ -33,6 +33,8 @@ Bug Fixes:
 10) Dropped files always open new windows. (SF Bug #873386).
 11) Deal with all URL encoded chars in output window, not just %20.
 12) Projects window renames too readily.
+13) Auto-indent empty line. (SF Bug #879950).
+14) Can't export a file that isn't saved to disk. (SF Bug #911381).
 
 If you find a bug:
 ------------------

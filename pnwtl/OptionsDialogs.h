@@ -30,6 +30,8 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 			COMMAND_ID_HANDLER(IDC_TE_CLEARBUTTON, OnClearShortcut)
 			COMMAND_ID_HANDLER(IDC_TE_BUILTIN, OnWindowStateChanged)
 			COMMAND_ID_HANDLER(IDC_TE_CUSTOMPARSE, OnWindowStateChanged)
+			COMMAND_ID_HANDLER(IDC_OPTHELPER_BUTTON, OnParamHelper)
+			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 
 		BEGIN_DDX_MAP(CToolEditorDialog)
@@ -82,6 +84,7 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 		LRESULT OnAboutBuiltin(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnWindowStateChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnClearShortcut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnParamHelper(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 		void EnableButtons();
 
@@ -107,6 +110,8 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 		CInfoLabel	m_infolabel2;
 		CComboBox	m_outputcombo;
 		CComboBox	m_saveCombo;
+
+		CArrowButton m_paramHelper;
 };
 
 // pre-declare SchemeConfig.

@@ -1,8 +1,8 @@
 /**
- * @file tools.h
+ * @file jumptodialog.h
  * @brief Jump To Dialog
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2004 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -10,6 +10,9 @@
 #ifndef jumptodialog_h__included
 #define jumptodialog_h__included
 
+/**
+ * @brief Jump to dialog class
+ */
 class CJumpToDialog : public CDialogImpl<CJumpToDialog>, IJumpToFindSink
 {
 	typedef CDialogImpl<CJumpToDialog> baseClass;
@@ -20,6 +23,9 @@ class CJumpToDialog : public CDialogImpl<CJumpToDialog>, IJumpToFindSink
 			COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
 
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			MESSAGE_HANDLER(WM_SIZE, OnSize)
+
+			NOTIFY_HANDLER(IDC_JUMPTOLIST, NM_DBLCLK, OnListDblClick)
 		END_MSG_MAP()
 		enum { IDD = IDD_JUMPTO };
 
@@ -29,12 +35,7 @@ class CJumpToDialog : public CDialogImpl<CJumpToDialog>, IJumpToFindSink
 
 		LRESULT OnOk(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-		LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-		{
-			EndDialog(wID);
-
-			return 0;
-		}
+		LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 		virtual void OnFound(int count, LPMETHODINFO methodInfo);
 
@@ -43,11 +44,20 @@ class CJumpToDialog : public CDialogImpl<CJumpToDialog>, IJumpToFindSink
 	protected:
 
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		LRESULT OnListDblClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 		void filter(LPCTSTR text);
+		void transfer();
 
 		CChildFrame*	m_pChild;
+		CButton			btnOk;
+		CButton			btnCancel;
+		CEdit			edtTag;
 		CListViewCtrl	list;
+		CImageList		images;
+		int				buttonGap;
+		SIZE			listGaps;
 		TCHAR			itoabuf[20];
 		int				line;
 };

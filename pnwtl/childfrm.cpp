@@ -744,7 +744,7 @@ LRESULT CChildFrame::OnJumpTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	CJumpToDialog dlg(this);
 	if(dlg.DoModal() == IDOK)
 	{
-		m_view.GotoLine(dlg.GetLine()-1);
+		m_view.GotoLine(dlg.GetLine() - 1);
 	}
 
 	return 0;
@@ -1193,16 +1193,24 @@ void CChildFrame::Export(int type)
 	
 	if(pExp)
 	{
-		CFileName fn(m_FileName);
 		tstring guessName;
-		tstring fileMask(pExp->GetFileMask());
-		
-		fileMask += _T("All Files (*.*)|*.*|");
 
-		fn.GetFileName_NoExt(guessName);
+		if(CanSave())
+		{
+			CFileName fn(m_FileName);
+			fn.GetFileName_NoExt(guessName);
+		}
+		else
+		{
+			guessName = _T("untitled");
+		}	
+
 		guessName += _T(".");
 		guessName += pExp->GetDefaultExtension();
-		
+
+		tstring fileMask(pExp->GetFileMask());
+		fileMask += _T("All Files (*.*)|*.*|");
+
 		CPNFileDialog dlgSave(FALSE, pExp->GetDefaultExtension(), guessName.c_str(), 
 			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
 			fileMask.c_str(), m_hWnd);

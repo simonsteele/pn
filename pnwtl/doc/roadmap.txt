@@ -8,7 +8,7 @@ Active CVS development branches are denoted with {branch-name}.
 Work completed or in-progress is shown with [proportion-developer] or [complete-developer],
 where no developer name is given it's Simon.
 
-last updated: 08/02/2004
+last updated: 22/03/2004
 
 0.6 Ella
 ========
@@ -16,20 +16,20 @@ last updated: 08/02/2004
 Start help file.
 Preview for scheme configurator.
 Tab order management.
-[10%] Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
+[80%] Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
 Basic Build Management - see http://www.pnotepad.org/articles/pn2projects.html
 PCRE Based Search.
 Filetype filters - e.g. allow loading of .dfm files.
 HTML Export configuration, inline HTML export.
 
-0.7 Basie
+0.8 Basie
 =========
 
 Unicode build.
 File browser window.
 HTML preview window (ie+moz) {feature_browser_2-0-5}.
 
-0.8 Ellington
+0.10 Ellington
 =============
 
 Mini-PN - true notepad-style document-centric PN alternative build.
