@@ -725,11 +725,9 @@ void CSchemeManager::BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCo
 	{
 		m.AddItem(_T("&Default\tCtrl+N"), ID_FILE_NEW);
 	}
-	else
-	{
-		id = CSMenuManager::GetInstance()->RegisterCallback(pHandler, iCommand, (LPVOID)GetDefaultScheme());
-		m.AddItem(_T("Plain Text"), id);
-	}
+	
+	id = CSMenuManager::GetInstance()->RegisterCallback(pHandler, iCommand, (LPVOID)GetDefaultScheme());
+	m.AddItem(_T("Plain Text"), id);
 
 	for(SCIT i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
 	{

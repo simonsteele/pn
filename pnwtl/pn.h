@@ -10,7 +10,12 @@
  * Thanks to the author of kPad for the g_Context here!
  */
 
-#define PN_NOTIFY (WM_USER+37)
+#define PN_NOTIFY			(WM_USER+36)
+#define PN_CHECKAGE			(WM_USER+37)
+#define PN_OPTIONSUPDATED	(WM_USER+38)
+#define PN_TOGGLEOUTPUT		(WM_USER+39)
+#define PN_TOOLFINISHED		(WM_USER+40)
+#define PN_SCHEMECHANGED	(WM_USER+41)
 
 #define TOOLS_RUNTOOL	0x2
 

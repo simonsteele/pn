@@ -317,7 +317,7 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 		virtual LPCTSTR GetTreePosition();
 
 	protected:
-		void AddDefinition(SToolDefinition* pDef);
+		void AddDefinition(ToolDefinition* pDef);
 
 		void EnableButtons();
 		void Update();

@@ -193,28 +193,30 @@ LRESULT CToolEditorDialog::OnBrowseCommand(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	return 0;
 }
 
-void CToolEditorDialog::GetValues(SToolDefinition* pDefinition)
+void CToolEditorDialog::GetValues(ToolDefinition* pDefinition)
 {
 	pDefinition->Name			= m_csName;
 	pDefinition->Command		= m_csCommand;
 	pDefinition->Folder			= m_csFolder;
 	pDefinition->Params			= m_csParams;
 	pDefinition->Shortcut		= m_csShortcut;
-	pDefinition->bCaptureOutput = m_bCapture != 0;
-	pDefinition->bIsFilter		= m_bFilter != 0;
-	pDefinition->bSaveAll		= m_bSaveAll != 0;
+	
+	pDefinition->iFlags = 
+		(m_bCapture	? TOOL_CAPTURE	: 0) |
+		(m_bFilter	? TOOL_ISFILTER : 0) |
+		(m_bSaveAll	? TOOL_SAVEALL	: 0);
 }
 
-void CToolEditorDialog::SetValues(SToolDefinition* pDefinition)
+void CToolEditorDialog::SetValues(ToolDefinition* pDefinition)
 {
 	m_csName		= pDefinition->Name.c_str();
 	m_csCommand		= pDefinition->Command.c_str();
 	m_csFolder		= pDefinition->Folder.c_str();
 	m_csParams		= pDefinition->Params.c_str();
 	m_csShortcut	= pDefinition->Shortcut.c_str();
-	m_bCapture		= pDefinition->bCaptureOutput;
-	m_bFilter		= pDefinition->bIsFilter;
-	m_bSaveAll		= pDefinition->bSaveAll;
+	m_bCapture		= pDefinition->CaptureOutput();
+	m_bFilter		= pDefinition->IsFilter();
+	m_bSaveAll		= pDefinition->SaveAll();
 }
 
 void CToolEditorDialog::SetTitle(LPCTSTR title)

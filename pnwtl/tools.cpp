@@ -54,7 +54,7 @@ int SchemeTools::GetMenu(CSMenuHandle& menu, int iInsertBefore, int iCommand)
 		
 		for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
 		{
-			SToolDefinition* pT = (*i);
+			ToolDefinition* pT = (*i);
 			
             if(pT->CommandID == -1)
 				pT->CommandID = pMan->RegisterCallback(pT->CommandID, NULL, iCommand, (LPVOID)pT);
@@ -75,7 +75,7 @@ void SchemeTools::ReleaseMenuResources()
 {
 	if(m_Tools.size() != 0)
 	{
-		SToolDefinition* pT = NULL;
+		ToolDefinition* pT = NULL;
 		CSMenuManager* pMan = CSMenuManager::GetInstance();
 
 		for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
@@ -90,13 +90,13 @@ void SchemeTools::ReleaseMenuResources()
 	}
 }
 
-void SchemeTools::Add(SToolDefinition* pDef)
+void SchemeTools::Add(ToolDefinition* pDef)
 {
 	m_Tools.push_back(pDef);
 	pDef->CommandID = -1;
 }
 
-void SchemeTools::Delete(SToolDefinition* pDef)
+void SchemeTools::Delete(ToolDefinition* pDef)
 {
 	m_Tools.remove(pDef);
 	delete pDef;
@@ -119,9 +119,9 @@ void SchemeTools::InternalWriteDefinition(ofstream& stream)
 	for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
 	{
 		int flags = 0;
-		flags |= ((*i)->bCaptureOutput ? TOOL_CAPTURE : 0);
-		flags |= ((*i)->bIsFilter ? TOOL_ISFILTER : 0);
-		flags |= ((*i)->bSaveAll ? TOOL_SAVEALL : 0);
+		flags |= ((*i)->CaptureOutput() ? TOOL_CAPTURE : 0);
+		flags |= ((*i)->IsFilter() ? TOOL_ISFILTER : 0);
+		flags |= ((*i)->SaveAll() ? TOOL_SAVEALL : 0);
 		stream << "\t\t<tool name=\"" << FormatXML((*i)->Name) << "\" ";
 		stream << "command=\"" << FormatXML((*i)->Command) << "\" ";
 		stream << "folder=\"" << FormatXML((*i)->Folder) << "\" ";
@@ -343,10 +343,9 @@ void SchemeToolsManager::processTool(XMLAttributes& atts)
 	LPCTSTR toolname = atts.getValue(_T("name"));
 	if(m_pCur && toolname)
 	{
-		SToolDefinition* pDef = new SToolDefinition;
+		ToolDefinition* pDef = new ToolDefinition;
 		
 		// Initialise members...
-		pDef->bCaptureOutput = false;
 		pDef->Name = toolname;
 		
 		int c = atts.getCount();
@@ -367,9 +366,7 @@ void SchemeToolsManager::processTool(XMLAttributes& atts)
 			else if(_tcscmp(attr, _T("flags")) == 0)
 			{
 				int flags = _ttoi(val);
-				pDef->bCaptureOutput = flags & TOOL_CAPTURE;
-				pDef->bIsFilter = (flags & TOOL_ISFILTER) != 0;
-				pDef->bSaveAll = (flags & TOOL_SAVEALL) != 0;
+				pDef->iFlags = flags;
 			}
 		}
 
@@ -403,7 +400,7 @@ void SchemeToolsManager::endElement(LPCTSTR name)
 // ToolRunner
 //////////////////////////////////////////////////////////////////////////////
 
-ToolRunner::ToolRunner(CChildFrame* pActiveChild, SToolDefinition* pDef)
+ToolRunner::ToolRunner(CChildFrame* pActiveChild, ToolDefinition* pDef)
 {
 	m_pTool = pDef;
 	m_pChild = pActiveChild;
@@ -418,7 +415,7 @@ ToolRunner::~ToolRunner()
 }
 
 /// Only works if m_pCopyDef has been created.
-const SToolDefinition* ToolRunner::GetToolDef()
+const ToolDefinition* ToolRunner::GetToolDef()
 {
 	return m_pCopyDef;
 }
@@ -427,7 +424,7 @@ bool ToolRunner::GetThreadedExecution()
 {
 	if(m_pTool)
 	{
-		return m_pTool->bCaptureOutput;
+		return m_pTool->CaptureOutput();
 	}
 
 	return false;
@@ -715,13 +712,14 @@ int ToolRunner::Execute()
 	CToolCommandString builder;
 	builder.pChild = m_pChild;
 	
-	m_pCopyDef = new SToolDefinition;
+	m_pCopyDef = new ToolDefinition(*m_pTool);
 
+	// Expand the strings...
 	m_pCopyDef->Command = builder.Build(m_pTool->Command.c_str());
 	m_pCopyDef->Params = builder.Build(m_pTool->Params.c_str());
 	m_pCopyDef->Folder = builder.Build(m_pTool->Folder.c_str());
 
-	if(!m_pTool->bCaptureOutput)
+	if(!m_pTool->CaptureOutput())
 	{
 		Run_ShellExecute(m_pCopyDef->Command.c_str(), m_pCopyDef->Params.c_str(), m_pCopyDef->Folder.c_str());
 	}

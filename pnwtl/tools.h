@@ -10,14 +10,11 @@
 #ifndef tools_h__included
 #define tools_h__included
 
-typedef std::list<SToolDefinition*> TOOLDEFS_LIST;
+typedef std::list<ToolDefinition*> TOOLDEFS_LIST;
 
 #include "include/ssthreads.h"
 
 #define TOOLS_BUFFER_SIZE 16384
-#define TOOL_CAPTURE	0x01
-#define TOOL_ISFILTER	0x02
-#define TOOL_SAVEALL	0x04
 
 /**
  * @brief Collection class representing tools associated with one scheme
@@ -32,8 +29,8 @@ class SchemeTools
 		TOOLDEFS_LIST&	GetTools();
 		int				GetMenu(CSMenuHandle& menu, int iInsertAfter, int iCommand = TOOLS_RUNTOOL);
 
-		void			Add(SToolDefinition* pDef);
-		void			Delete(SToolDefinition* pDef);
+		void			Add(ToolDefinition* pDef);
+		void			Delete(ToolDefinition* pDef);
 
 		void			WriteDefinition(ofstream& stream);
 
@@ -200,14 +197,14 @@ class CLastErrorInfo
 class ToolRunner : public CSSThread
 {
 public:
-	ToolRunner(CChildFrame* pChild, SToolDefinition* pDef);
+	ToolRunner(CChildFrame* pChild, ToolDefinition* pDef);
 	~ToolRunner();
 	
 	int Execute();
 
 	bool GetThreadedExecution();
 
-	const SToolDefinition* GetToolDef();
+	const ToolDefinition* GetToolDef();
 
 	ToolRunner* m_pNext;
 
@@ -222,9 +219,9 @@ protected:
 
 protected:
 	CChildFrame*		m_pChild;
-	SToolDefinition*	m_pTool;
+	ToolDefinition*		m_pTool;
 	int					m_RetCode;
-	SToolDefinition*	m_pCopyDef;
+	ToolDefinition*		m_pCopyDef;
 };
 
 #endif

@@ -30,8 +30,8 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 
 		CString m_csDisplayTitle;
 
-		void GetValues(SToolDefinition* pDefinition);
-		void SetValues(SToolDefinition* pDefinition);
+		void GetValues(ToolDefinition* pDefinition);
+		void SetValues(ToolDefinition* pDefinition);
 
 		void SetTitle(LPCTSTR title);
 

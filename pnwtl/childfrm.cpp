@@ -983,21 +983,21 @@ void CChildFrame::UpdateMenu()
 
 void CChildFrame::OnRunTool(LPVOID pVoid)
 {
-	SToolDefinition* pTool = reinterpret_cast<SToolDefinition*>(pVoid);
+	ToolDefinition* pTool = reinterpret_cast<ToolDefinition*>(pVoid);
 	ToolRunner *r = new ToolRunner(this, pTool);
 	
 	bool bThreaded = r->GetThreadedExecution();
 	if(bThreaded)
 		AddRunningTool(r);
 	
-	if(pTool->bSaveAll)
+	if(pTool->SaveAll())
 		g_Context.m_frame->SaveAll();
 
 	r->Execute();
 	
 	if(!bThreaded)
 	{
-		if(pTool->bIsFilter)
+		if(pTool->IsFilter())
 			Revert();
 
 		delete r;
@@ -1059,7 +1059,7 @@ void CChildFrame::ToolFinished(ToolRunner* pRunner)
 		AddOutput(exitcode.c_str());
 		if(pRunner->GetToolDef())
 		{
-			if(pRunner->GetToolDef()->bIsFilter)
+			if(pRunner->GetToolDef()->IsFilter())
 				Revert();
 		}
 

@@ -1187,7 +1187,7 @@ void COptionsPageTools::EnableButtons()
 	m_btnMoveDown.EnableWindow(bEnable && (iSelIndex != (m_list.GetItemCount() - 1)));
 }
 
-void COptionsPageTools::AddDefinition(SToolDefinition* pDef)
+void COptionsPageTools::AddDefinition(ToolDefinition* pDef)
 {
 	LVITEM lvi;
 
@@ -1218,7 +1218,7 @@ LRESULT COptionsPageTools::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	{
 		//@todo check if the name is valid...
 
-		SToolDefinition* pDef = new SToolDefinition;
+		ToolDefinition* pDef = new ToolDefinition;
 		GetTools()->Add(pDef);
 		dlg.GetValues(pDef);
 
@@ -1234,7 +1234,7 @@ LRESULT COptionsPageTools::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 
 	if(iSelIndex != -1)
 	{
-		SToolDefinition* pDef = reinterpret_cast<SToolDefinition*>(m_list.GetItemData(iSelIndex));
+		ToolDefinition* pDef = reinterpret_cast<ToolDefinition*>(m_list.GetItemData(iSelIndex));
 		if(pDef != NULL)
 		{
 			CToolEditorDialog dlg;
@@ -1272,7 +1272,7 @@ LRESULT COptionsPageTools::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 	if(iSelIndex != -1)
 	{
-		SToolDefinition* pDef = reinterpret_cast<SToolDefinition*>(m_list.GetItemData(iSelIndex));
+		ToolDefinition* pDef = reinterpret_cast<ToolDefinition*>(m_list.GetItemData(iSelIndex));
 		if(pDef != NULL)
 			GetTools()->Delete(pDef);
 		m_list.DeleteItem(iSelIndex);
