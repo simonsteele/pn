@@ -74,6 +74,9 @@ MagicFolder::MagicFolder(LPCTSTR name_, /*LPCTSTR path_, */LPCTSTR base_)
 	read = false;
 	
 	cache = NULL;
+
+	filter = _T("*.*");
+	folderFilter = _T("CVS;.svn");
 }
 
 MagicFolder::~MagicFolder()
@@ -108,7 +111,7 @@ void MagicFolder::Refresh()
 	MagicFolderAdder mfa;
 	
 	//TODO: remove parameter duplication here...
-	mfa.BuildFolder(this, basePath.c_str(), _T("*.*"), basePath.c_str(), true);
+	mfa.BuildFolder(this, basePath.c_str(), filter.c_str(), basePath.c_str(), folderFilter.c_str(), true);
 
 	read = true;
 }
@@ -121,6 +124,9 @@ void MagicFolder::WriteDefinition(SProjectWriter* definition)
 	CFileName cfn( basePath.c_str() );
 	tstring relPath = cfn.GetRelativePath( GetParent()->GetBasePath() );
 	genxAddAttributeLiteral(definition->w, NULL, u("path"), u(relPath.c_str()));
+
+	genxAddAttributeLiteral(definition->w, NULL, u("filter"), u(filter.c_str()));
+	genxAddAttributeLiteral(definition->w, NULL, u("excludeFolders"), u(folderFilter.c_str()));
 
 	writeContents(definition);
 
@@ -172,7 +178,17 @@ LPCTSTR MagicFolder::GetFilter() const
 
 void MagicFolder::SetFilter(LPCTSTR szFilter)
 {
-	filter = filter;
+	filter = szFilter;
+}
+
+LPCTSTR MagicFolder::GetFolderFilter() const
+{
+	return folderFilter.c_str();
+}
+
+void MagicFolder::SetFolderFilter(LPCTSTR filter)
+{
+	folderFilter = filter;
 }
 
 bool MagicFolder::RenameFolder(LPCTSTR newName)

@@ -20,6 +20,7 @@ MagicFolderWizard1::MagicFolderWizard1() : baseClass(_T("Add Magic Folder"))
 	shelltree = NULL;
 	SetHeaderTitle(_T("Add Magic Folder"));
 	SetHeaderSubTitle(_T("Select a folder to include as a magic folder..."));
+	selFolder = _T("");
 }
 
 MagicFolderWizard1::~MagicFolderWizard1()
@@ -33,29 +34,86 @@ LRESULT MagicFolderWizard1::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 	shelltree = new CBrowseTree();
 	shelltree->SubclassWindow( GetDlgItem(IDC_SHELLTREE) );
 	shelltree->SetupTree();
+	shelltree->ShowFiles(FALSE);
 	
 	return 0;
 }
 
 int MagicFolderWizard1::OnSetActive()
 {
-    SetWizardButtons ( 0 );
+	if(selFolder.GetLength() > 0)
+	{
+		SetWizardButtons( PSWIZB_NEXT );
+	}
+	else
+	{
+		SetWizardButtons ( 0 );
+	}
 
     return 1;
 }
 
 LRESULT MagicFolderWizard1::OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-	
-
-	
-	TCHAR buf[MAX_PATH+1];
-	memset(buf, 0, (MAX_PATH+1)*sizeof(TCHAR));
-	//shelltree->GetItemPath(pnmtv->itemNew.hItem, buf);
-	if(_tcslen(buf) > 0)
+	CString str;
+	shelltree->GetSelectedPath(str);
+	if(str.GetLength() > 0)
 	{
-		SetWizardButtons( PSWIZB_NEXT | PSWIZB_DISABLEDFINISH );
+		SetWizardButtons( PSWIZB_NEXT /*| PSWIZB_DISABLEDFINISH*/ );
+		selFolder = str;
 	}
+	else
+		selFolder = _T("");
 	
 	return 0;
+}
+
+LPCTSTR MagicFolderWizard1::GetSelFolder() const
+{
+	return selFolder;
+}
+
+MagicFolderWizard2::MagicFolderWizard2() : baseClass(_T("Add Magic Folder"))
+{
+	SetHeaderTitle(_T("Add Magic Folder"));
+	SetHeaderSubTitle(_T("Set up filters..."));
+}
+
+LRESULT MagicFolderWizard2::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	CEdit fileFilter(GetDlgItem(IDC_MAGICFOLDER_FILEFILTER));
+	CEdit folderFilter(GetDlgItem(IDC_MAGICFOLDER_FOLDERFILTER));
+
+	fileFilter.SetWindowText("*.*");
+	folderFilter.SetWindowText("CVS;.svn");
+
+	return 0;
+}
+
+int MagicFolderWizard2::OnSetActive()
+{
+	SetWizardButtons ( PSWIZB_BACK | PSWIZB_FINISH );
+
+	return 1;
+}
+
+int MagicFolderWizard2::OnWizardFinish()
+{
+	CEdit fileFilter(GetDlgItem(IDC_MAGICFOLDER_FILEFILTER));
+	CEdit folderFilter(GetDlgItem(IDC_MAGICFOLDER_FOLDERFILTER));
+
+	fileFilter.GetWindowText(strFileFilter);
+	folderFilter.GetWindowText(strFolderFilter);
+
+	return 1;
+}
+
+LPCTSTR MagicFolderWizard2::GetFileFilter() const
+{
+	return strFileFilter;
+}
+
+LPCTSTR MagicFolderWizard2::GetFolderFilter() const
+{
+	return strFolderFilter;
 }

@@ -117,6 +117,10 @@ protected:
 					else
 						sOut += _T("\\\\");
 					break;
+
+				case '.':
+					sOut += "\\.";
+					break;
 				
 				default:
 					if(i == 0)

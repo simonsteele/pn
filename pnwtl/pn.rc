@@ -1185,6 +1185,21 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,7,180,176,10
 END
 
+IDD_MAGICFOLDERWIZ2 DIALOGEX 0, 0, 268, 158
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "You can restrict the file types shown by a magic folder, and the directories that it displays.",
+                    IDC_STATIC,7,7,254,23
+    LTEXT           "Enter a semi-colon separated list of file types that you wish to include:",
+                    IDC_STATIC,23,39,191,19
+    EDITTEXT        IDC_MAGICFOLDER_FILEFILTER,23,60,186,13,ES_AUTOHSCROLL
+    LTEXT           "Enter a semi-colon separated list of directories that you do not wish to include:",
+                    IDC_STATIC,23,83,191,19
+    EDITTEXT        IDC_MAGICFOLDER_FOLDERFILTER,23,105,186,13,
+                    ES_AUTOHSCROLL
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1364,6 +1379,15 @@ BEGIN
         RIGHTMARGIN, 293
         TOPMARGIN, 7
         BOTTOMMARGIN, 191
+    END
+
+    IDD_MAGICFOLDERWIZ2, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 261
+        VERTGUIDE, 23
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 151
     END
 END
 #endif    // APSTUDIO_INVOKED

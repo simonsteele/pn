@@ -243,6 +243,9 @@ class MagicFolder : public Folder
 		LPCTSTR GetFilter() const;
 		void SetFilter(LPCTSTR filter);
 
+		LPCTSTR GetFolderFilter() const;
+		void SetFolderFilter(LPCTSTR filter);
+
 		bool RenameFolder(LPCTSTR newName);
 
 	protected:
@@ -255,6 +258,7 @@ class MagicFolder : public Folder
 	protected:
 		//tstring				path;
 		tstring				filter;
+		tstring				folderFilter;
 		bool				read;
 		MagicFolderCache*	cache;
 };

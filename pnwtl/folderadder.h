@@ -92,7 +92,7 @@ protected:
 class MagicFolderAdder : public FolderAdder
 {
 public:
-	void BuildFolder(MagicFolder* folder, LPCTSTR path, LPCTSTR filter, LPCTSTR basePath, bool recurse)
+	void BuildFolder(MagicFolder* folder, LPCTSTR path, LPCTSTR filter, LPCTSTR basePath, LPCTSTR folderFilter, bool recurse)
 	{
 		lpszBasePath = basePath;
 
@@ -102,8 +102,11 @@ public:
 		// make sure the path has a trailing slash, CPathName will do that.
 		CPathName pn(path);
 
+		sFilter = filter;
+		sFolderFilter = folderFilter;
+
 		ClearFilters();
-		SetFilters(filter, NULL, NULL, _T("CVS;.svn"));
+		SetFilters(filter, NULL, NULL, folderFilter);
 		FindMatching(pn.c_str(), recurse);
 	}
 
@@ -113,9 +116,14 @@ protected:
 		CPathName fn(path);
 		tstring dirName = fn.GetDirectoryName();
 		MagicFolder* mf = new MagicFolder(dirName.c_str(), path/*, lpszBasePath*/);
+		mf->SetFilter( sFilter.c_str() );
+		mf->SetFolderFilter( sFolderFilter.c_str() );
 		mf->SetGotContents(true);
 		return mf;
 	}
+
+	tstring sFilter;
+	tstring sFolderFilter;
 };
 
 } // namespace Projects

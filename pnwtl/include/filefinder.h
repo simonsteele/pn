@@ -72,7 +72,7 @@ public:
 				else
 				{
 					// Call owner class with found data...
-					if( shouldMatch(FindFileData.cFileName) )
+					if( pT->shouldMatch(FindFileData.cFileName) )
 					{
 						(owner->*f)(path, FindFileData.cFileName);
 					}

@@ -795,27 +795,48 @@ LRESULT CProjectTreeCtrl::OnAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 LRESULT CProjectTreeCtrl::OnAddMagicFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	if(lastItem == NULL)
+	if(lastItem == NULL || lastItem->GetType() != ptProject)
 		return 0;
 
-/*	MagicFolderWizard1 wiz;
+	MagicFolderWizard1 wiz;
+	MagicFolderWizard2 wiz2;
 	CPropertySheet ps(_T("Add Magic Folder"));
 	ps.m_psh.dwFlags |= PSH_WIZARD97;
 	//ps.SetWizardMode();
 	ps.AddPage(wiz);
+	ps.AddPage(wiz2);
 	
 	int res = ps.DoModal();
-	DWORD x = GetLastError();
+	if(res == IDOK)
+	{
+		CPathName pn(wiz.GetSelFolder());
 
-	int a =0 ;*/
+		// Add a Magic Folder...
+		Projects::Folder* folder = static_cast<Projects::Folder*>(lastItem);
+		Projects::MagicFolder* newFolder = new Projects::MagicFolder(pn.GetDirectoryName().c_str(), pn.c_str());
 
-	if(lastItem->GetType() == ptProject)
+		newFolder->SetFilter( wiz2.GetFileFilter() );
+		newFolder->SetFolderFilter( wiz2.GetFolderFilter() );
+
+		folder->AddChild(newFolder);
+			
+		HTREEITEM hInsertAfter = getLastFolderItem(hLastItem);
+		FOLDER_LIST fl;
+		fl.insert(fl.end(), newFolder);
+		ProjectViewState viewState;
+		HTREEITEM theFolder = buildFolders(hLastItem, fl, viewState);
+		sort(theFolder);
+
+		Expand(hLastItem);
+	}
+
+	/*if(lastItem->GetType() == ptProject)
 	{
 		CFolderDialog fd;
 		if(fd.DoModal() == IDOK)
 		{
 			Projects::Folder* folder = static_cast<Projects::Folder*>(lastItem);
-			Projects::MagicFolder* newFolder = new Projects::MagicFolder(fd.GetFolderDisplayName(), fd.GetFolderPath()/*, folder->GetBasePath()*/);
+			Projects::MagicFolder* newFolder = new Projects::MagicFolder(fd.GetFolderDisplayName(), fd.GetFolderPath());
 			
 			folder->AddChild(newFolder);
 			
@@ -827,7 +848,7 @@ LRESULT CProjectTreeCtrl::OnAddMagicFolder(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 			Expand(hLastItem);
 		}
-	}
+	}*/
 
 	return 0;
 }

@@ -958,6 +958,8 @@ void Project::processMagicFolder(XMLAttributes& atts)
 {
 	Utf8_Windows1252 path( ATTVAL(_T("path")) );
 	Utf8_Windows1252 name( ATTVAL(_T("name")) );
+	Utf8_Windows1252 filter( ATTVAL(_T("filter")) );
+	Utf8_Windows1252 folderFilter( ATTVAL(_T("excludeFolders")) );
 
 	if(!path.IsValid() || !name.IsValid())
 		return;
@@ -969,6 +971,13 @@ void Project::processMagicFolder(XMLAttributes& atts)
 	}
 
 	MagicFolder* mf = new MagicFolder(name, mfPath.c_str());
+	
+	if(filter.IsValid())
+		mf->SetFilter( (const char*)filter );
+
+	if(folderFilter.IsValid())
+		mf->SetFolderFilter( (const char*)folderFilter );
+
 	currentFolder->AddChild(mf);
 	
 	// This will pass over the XML Parsing to the MagicFolder

@@ -161,6 +161,7 @@
 #define IDD_AFILEEDITOR                 432
 #define IDD_PAGE_EDITDEFS               433
 #define IDD_PAGE_CONF                   434
+#define IDD_MAGICFOLDERWIZ2             435
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_GOTOEDIT                    1004
@@ -277,7 +278,10 @@
 #define IDC_TE_SAVECOMBO                1063
 #define IDC_EDIT2                       1064
 #define IDC_OPT_MRUCOUNT                1064
+#define IDC_MAGICFOLDER_FILEFILTER      1064
 #define IDC_OPT_MRUTEXTLENGTH           1065
+#define IDC_MAGICFOLDER_FILEFILTER2     1065
+#define IDC_MAGICFOLDER_FOLDERFILTER    1065
 #define IDC_OPT_LINELIGHTCHECK          1066
 #define IDC_OPT_NOLLHELPRADIO           1067
 #define IDC_OPT_LLHIGHLIGHTRADIO        1068

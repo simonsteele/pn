@@ -18,10 +18,13 @@ e.g.
 
 pn -l 49 -c 14 --scheme cpp test.dat
 
+4) MagicFolder wizard instead of simple folder selector. Now allows 
+   specification of file and folder filters for magic folders.
+
 Bug Fixes:
 ----------
 
-1)  
+1) 
 
 If you find a bug:
 ------------------

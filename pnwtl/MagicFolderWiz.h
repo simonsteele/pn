@@ -24,10 +24,12 @@ public:
 
 	BEGIN_MSG_MAP(MagicFolderWizard1)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-		//NOTIFY_HANDLER(IDC_SHELLTREE, TVN_SELCHANGED, OnSelChanged)
+		NOTIFY_HANDLER(IDC_SHELLTREE, TVN_SELCHANGED, OnSelChanged)
         CHAIN_MSG_MAP(baseClass)
 		REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
+
+	LPCTSTR GetSelFolder() const;
 
 protected:
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -36,7 +38,37 @@ protected:
 	int OnSetActive();
 
 protected:
+	CString selFolder;
 	CBrowseTree* shelltree;
+};
+
+class MagicFolderWizard2 : public CPropertyPageImpl<MagicFolderWizard2>
+{
+	typedef CPropertyPageImpl<MagicFolderWizard2> baseClass;
+	friend class baseClass;
+public:
+	MagicFolderWizard2();
+
+	enum { IDD = IDD_MAGICFOLDERWIZ2 };
+
+	BEGIN_MSG_MAP(MagicFolderWizard2)
+		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+		CHAIN_MSG_MAP(baseClass);
+	END_MSG_MAP()
+
+	LPCTSTR GetFileFilter() const;
+	LPCTSTR GetFolderFilter() const;
+
+protected:
+	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+	int OnSetActive();
+
+	int OnWizardFinish();
+
+protected:
+	CString strFileFilter;
+	CString strFolderFilter;
 };
 
 #endif

@@ -68,7 +68,7 @@ class CBrowseTree : public CWindowImpl<CBrowseTree, CTreeViewCtrl>
 
 			// Make sure we are the LVS_EDITLABELS style is not
 			// specified.
-			ModifyStyle( LVS_EDITLABELS, 0 );
+			ModifyStyle( TVS_EDITLABELS, TVS_LINESATROOT );
 
 			// Use a specific root?
 			if ( pszRoot && _tcslen( pszRoot ))
