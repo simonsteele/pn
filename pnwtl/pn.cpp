@@ -33,46 +33,31 @@
 #include "MainFrm.h"
 
 CAppModule _Module;
-CPNAppState theApp;
 
+__declspec( thread ) _Context g_Context = {0};
 
-HWND GetCurrentEditor(CWindow* pMDIFrameWnd)
+HWND GetCurrentEditor()
 {
-	return ((CMDIWindow*)pMDIFrameWnd)->MDIGetActive();
+	return static_cast<CMDIWindow*>(g_Context.m_frame->GetWindow())->MDIGetActive();
 }
 
-/////////////////////////////////////////////////////////////////////////
-// CPNAppState
-/////////////////////////////////////////////////////////////////////////
-
-CPNAppState::CPNAppState()
+void Init()
 {
 	// Where are the Schemes stored?
-	TCHAR *buf = new TCHAR[MAX_PATH +1];
-	GetModuleFileName(NULL, buf, MAX_PATH);
-	ctcString csPath(buf);
-	delete [] buf;
-	int cutoff = csPath.rfind(_T('\\'));
-	csPath = csPath.substr(0, cutoff+1);
-	csPath += "Schemes\\";
+	ctcString path;
+	ctcString cpath;
+	COptionsManager::GetInstance()->GetSchemesPaths(path, cpath);
 
-	m_FindOptions.Direction = true;
-	m_FindOptions.Loop = true;
-	m_FindOptions.FindText = _T("");
-	
-	m_ReplaceOptions.Direction = true;
-	m_ReplaceOptions.Loop = true;
-	m_ReplaceOptions.FindText = _T("");
-	m_ReplaceOptions.ReplaceText = _T("");
-	
-	m_Schemes.SetPath(csPath.c_str());
-	m_Schemes.SetCompiledPath(csPath.c_str());
-	m_Schemes.Load();
+	CSchemeManager& SM = CSchemeManager::GetInstanceRef();
+	SM.SetPath(path.c_str());
+	SM.SetCompiledPath(cpath.c_str());
+	SM.Load();
 }
 
-CPNAppState::~CPNAppState()
+void Shutdown()
 {
-
+	CSchemeManager::DeleteInstance();
+	COptionsManager::DeleteInstance();
 }
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
@@ -81,6 +66,9 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	_Module.AddMessageLoop(&theLoop);
 
 	CMainFrame wndMain;
+	g_Context.m_frame = static_cast<IMainFrame*>(&wndMain);
+
+	Init();
 
 	if(wndMain.CreateEx() == NULL)
 	{
@@ -117,7 +105,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 	hRes = _Module.Init(NULL, hInstance);
 	ATLASSERT(SUCCEEDED(hRes));
-
 
 	int nRet = Run(lpstrCmdLine, nCmdShow);
 

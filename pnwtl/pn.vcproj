@@ -198,6 +198,9 @@
 				RelativePath=".\CustomAutoComplete.h">
 			</File>
 			<File
+				RelativePath="OptionsManager.h">
+			</File>
+			<File
 				RelativePath=".\SchemeCompiler.h">
 			</File>
 			<File

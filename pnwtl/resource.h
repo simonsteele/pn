@@ -31,6 +31,8 @@
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define ID_MRUFILE_BASE                 205
+#define ID_VIEW_CHANGESCHEME            221
+#define ID_VIEW_SCHEMES                 222
 #define IDD_PNSAVE                      423
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
@@ -75,7 +77,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        221
+#define _APS_NEXT_RESOURCE_VALUE        223
 #define _APS_NEXT_COMMAND_VALUE         32781
 #define _APS_NEXT_CONTROL_VALUE         1006
 #define _APS_NEXT_SYMED_VALUE           104

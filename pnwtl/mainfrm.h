@@ -6,6 +6,9 @@
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
+ *
+ * Notes: It might be better to try and use a single instance of the child frame
+ * menu instead of all the switching work that is done in the current version.
  */
 
 #if !defined(MAINFRM_H__INCLUDED)
@@ -25,15 +28,18 @@ BOOL CALLBACK CloseChildEnumProc(HWND hWnd, LPARAM lParam);
  * @class CMainFrame
  * @brief PN (WTL Edition) Main MDI Frame
  */
-class CMainFrame : public CTabbedMDIFrameWindowImpl<CMainFrame, CPNMDIClient>, public CUpdateUI<CMainFrame>,
+class CMainFrame : public CTabbedMDIFrameWindowImpl<CMainFrame, CPNMDIClient>, public IMainFrame, public CUpdateUI<CMainFrame>,
 		public CMessageFilter, public CIdleHandler, public CSMenuEventHandler
 {
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
 
-	typedef CTabbedMDIFrameWindowImpl<CMainFrame, CPNMDIClient> myClass;
+	typedef CTabbedMDIFrameWindowImpl<CMainFrame, CPNMDIClient> baseClass;
 
-	CMainFrame()
+	////////////////////////////////////////////////////////////////
+	// CMainFrame Implementation
+
+	CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4)
 	{
 		m_FindDialog = NULL;
 		m_ReplaceDialog = NULL;
@@ -49,11 +55,9 @@ public:
 		CloseAndFreeDlg(m_ReplaceDialog);
 	}
 
-    CPNTabbedMDICommandBarCtrl<CMainFrame> m_CmdBar;
-
 	virtual BOOL PreTranslateMessage(MSG* pMsg)
 	{
-		if(myClass::PreTranslateMessage(pMsg))
+		if(baseClass::PreTranslateMessage(pMsg))
 			return TRUE;
 
 		// We have to do the following two to get the modeless dialogs
@@ -98,7 +102,7 @@ public:
 		ROUTE_MENUCOMMANDS()
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
-		CHAIN_MSG_MAP(myClass)
+		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
 	BEGIN_UPDATE_UI_MAP(CMainFrame)
@@ -166,9 +170,13 @@ public:
 		pLoop->AddMessageFilter(this);
 		pLoop->AddIdleHandler(this);
 
-		ConfigureNewMenu();
-
-		ConfigureMRUMenus();
+		// Initialise our popup menus.
+		m_Switcher.Reset(MENUMESSAGE_CHANGESCHEME);
+		CSchemeManager::GetInstance()->BuildMenu((HMENU)m_NewMenu, this);
+		m_RecentFiles.UpdateMenu();
+		
+		AddMRUMenu(CSMenuHandle(m_hMenu));
+		AddNewMenu(CSMenuHandle(m_hMenu));
 
 		return 0;
 	}
@@ -215,35 +223,9 @@ public:
 		CSMenuHandle r(hOld);
 		CSMenuHandle a(hNew);
 
-		CSMenuHandle file( r.GetSubMenu(0) );
-		int state;
-		int lastSep = -1;
-		for(int i = 0; i < file.GetCount(); i++)
-		{
-			state = ::GetMenuState(file, i, MF_BYPOSITION);
-			if(state & MF_SEPARATOR)
-				lastSep = i;
-			else if(state & MF_POPUP)
-			{
-				MENUITEMINFO mii;
-				memset(&mii, 0, sizeof(mii));
-				mii.cbSize = sizeof(MENUITEMINFO);
-				mii.fMask = MIIM_SUBMENU;
-				file.GetItemInfo(i, &mii);
-				
-				if(mii.hSubMenu == (HMENU)m_RecentFiles)
-				{
-					// Recent Files Item found...
-					if(::RemoveMenu(file, i, MF_BYPOSITION))
-					{
-						// We should be able to remove the separator for the MRU too...
-						::RemoveMenu(file, i, MF_BYPOSITION);
-						AddMRUMenu(a);
-						break;
-					}
-				}
-			}
-		}
+		MoveMRU(r, a);
+		MoveLanguage(r, a);
+		MoveNewMenu(r, a);
 	}
 
 	/**
@@ -289,9 +271,7 @@ public:
 		CChildFrame* pChild = new CChildFrame;
 		ATLASSERT(pChild != NULL);
 
-		pChild->CreateEx(/*m_hWndClient*/m_hWndMDIClient);
-
-		pChild->SetupNewMenu(this);
+		pChild->CreateEx(m_hWndMDIClient);
 
 		pChild->m_onClose = new CallbackClassPtr<CMainFrame, CChildFrame*, bool>(*this, OnEditorClosing);
 
@@ -376,6 +356,7 @@ public:
 		if (dlgOpen.DoModal() == IDOK)
 		{
 			PNOpenFile(dlgOpen.m_ofn.lpstrFile, dlgOpen.m_ofn.lpstrFileTitle);
+			AddMRUEntry(dlgOpen.m_ofn.lpstrFile);
 		}
 
 		return 0;
@@ -442,7 +423,7 @@ public:
 	{
 		if(m_FindDialog == NULL)
 		{
-			m_FindDialog = new CFindDlg(this);
+			m_FindDialog = new CFindDlg;
 			hFindWnd = m_FindDialog->Create(m_hWnd);
 		}
 		
@@ -455,7 +436,7 @@ public:
 	{
 		if(m_ReplaceDialog == NULL)
 		{
-			m_ReplaceDialog = new CReplaceDlg(this);
+			m_ReplaceDialog = new CReplaceDlg;
 			hReplWnd = m_ReplaceDialog->Create(m_hWnd);
 		}
 
@@ -466,7 +447,7 @@ public:
 
 	void UpdateStatusBar()
 	{
-		CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor(this));
+		CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
 		
 		if(pChild)
 		{
@@ -475,64 +456,150 @@ public:
 		}
 	}
 
-	protected:
+	////////////////////////////////////////////////////////////////
+	// IMainFrame Implementation
 
-		void ConfigureNewMenu()
+public:
+	
+	virtual CWindow* GetWindow()
+	{
+		return static_cast<CWindow*>(this);
+	}
+	
+	virtual void AddMRUEntry(LPCTSTR lpszFile)
+	{
+		m_RecentFiles.AddEntry(lpszFile);
+		m_RecentFiles.UpdateMenu();
+	}
+
+	virtual void SetActiveScheme(HWND notifier, CScheme* pScheme)
+	{
+		if(notifier == MDIGetActive())
 		{
-			CSMenuHandle cs(m_hMenu);
-
-			CSMenuHandle file = cs.GetSubMenu(0);
-			
-			CSPopupMenu sm;
-
-			theApp.GetSchemes().BuildMenu(sm.GetHandle(), this);
-			
-			::ModifyMenu(file.GetHandle(), 0, MF_BYPOSITION | MF_POPUP, (UINT)sm.GetHandle(), _T("&New"));
-
-			cs.Detach();
-			sm.Detach();
+			m_Switcher.SetActiveScheme(pScheme);
 		}
+	}
 
-		void AddMRUMenu(CSMenuHandle& menu)
+protected:
+
+	void AddNewMenu(CSMenuHandle& menu)
+	{
+		CSMenuHandle file = menu.GetSubMenu(0);
+		::ModifyMenu(file.GetHandle(), 0, MF_BYPOSITION | MF_POPUP, (UINT)(HMENU)m_NewMenu, _T("&New"));
+	}
+
+	void AddMRUMenu(CSMenuHandle& menu)
+	{
+		CSMenuHandle file(menu.GetSubMenu(0));
+		::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_BYCOMMAND | MF_POPUP, (UINT)(HMENU)m_RecentFiles, _T("&Recent Files"));
+		::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_BYCOMMAND | MF_SEPARATOR, 0, NULL);
+	}
+
+	void AddLanguageMenu(CSMenuHandle& menu)
+	{
+		CSMenuHandle view(menu.GetSubMenu(2));
+		::ModifyMenu(view.GetHandle(), ID_VIEW_CHANGESCHEME, MF_BYCOMMAND | MF_POPUP, (UINT)(HMENU)m_Switcher, _T("&Change Scheme"));
+	}
+
+	void MoveMRU(CSMenuHandle& r, CSMenuHandle& a)
+	{
+		CSMenuHandle file( r.GetSubMenu(0) );
+		int state;
+		for(int i = 0; i < file.GetCount(); i++)
 		{
-			CSMenuHandle file(menu.GetSubMenu(0));
-			::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_BYCOMMAND | MF_POPUP, (UINT)m_RecentFiles.GetHandle(), _T("&Recent Files"));
-			::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_BYCOMMAND | MF_SEPARATOR, 0, NULL);
-		}
-
-		void ConfigureMRUMenus()
-		{
-			MRUManager m(ID_MRUFILE_BASE, 4);
-			//m.ReadFromRegistry();
-			m.UpdateMenu(m_RecentFiles.GetHandle());
-
-			AddMRUMenu(CSMenuHandle(m_hMenu));
-		
-			//cs.Detach();			
-		}
-
-	protected:
-		CFindDlg*				m_FindDialog;
-		CReplaceDlg*			m_ReplaceDialog;
-		CScintilla				m_Dummy;			///< Scintilla often doesn't like unloading and reloading.
-
-		CSPopupMenu				m_RecentFiles;//sm
-
-		CMultiPaneStatusBarCtrl	m_StatusBar;
-
-		HWND					hFindWnd;
-		HWND					hReplWnd;
-
-		void CloseAndFreeDlg(CDialogImplBase* pD)
-		{
-			if(pD)
+			state = ::GetMenuState(file, i, MF_BYPOSITION);
+			if(state & MF_POPUP)
 			{
-				if(::IsWindow(pD->m_hWnd))
-					if(pD->IsWindowVisible())
-						pD->PostMessage(WM_CLOSE);
-				delete pD;
+				MENUITEMINFO mii;
+				memset(&mii, 0, sizeof(mii));
+				mii.cbSize = sizeof(MENUITEMINFO);
+				mii.fMask = MIIM_SUBMENU;
+				file.GetItemInfo(i, &mii);
+				
+				if(mii.hSubMenu == (HMENU)m_RecentFiles)
+				{
+					// Recent Files Item found...
+					if(::RemoveMenu(file, i, MF_BYPOSITION))
+					{
+						// We should be able to remove the separator for the MRU too...
+						::RemoveMenu(file, i, MF_BYPOSITION);
+						AddMRUMenu(a);
+						break;
+					}
+				}
 			}
 		}
+	}
+
+	void MoveNewMenu(CSMenuHandle& remove, CSMenuHandle& add)
+	{
+		CSMenuHandle file( remove.GetSubMenu(0) );
+		::ModifyMenu(file, 0, MF_BYPOSITION | MF_STRING, ID_FILE_NEW, _T("n"));
+		AddNewMenu(add);
+	}
+
+	void MoveLanguage(CSMenuHandle& remove, CSMenuHandle& add)
+	{
+		CSMenuHandle view = remove.GetSubMenu(2);
+		if((HMENU)remove != m_hMenu)
+		{
+			int state;
+			for(int i = view.GetCount() - 1; i >= 0; i--)
+			{
+				state = ::GetMenuState(view, i, MF_BYPOSITION);
+				if(state & MF_POPUP)
+				{
+					MENUITEMINFO mii;
+					memset(&mii, 0, sizeof(MENUITEMINFO));
+					mii.cbSize = sizeof(MENUITEMINFO);
+					mii.fMask = MIIM_SUBMENU;
+					view.GetItemInfo(i, &mii);
+
+					if(mii.hSubMenu == (HMENU)m_Switcher)
+					{
+						/*if(::RemoveMenu(view, i, MF_BYPOSITION))
+						{
+							// Remove Splitter
+							::RemoveMenu(view, i-1, MF_BYPOSITION);
+							// Insert Insertion Point (kludgy :)
+							::InsertMenu(view, i-1, MF_BYPOSITION, ID_VIEW_CHANGESCHEME, _T("temp"));
+							break;
+						}*/
+						::ModifyMenu(view, i, MF_BYPOSITION | MF_STRING, ID_VIEW_CHANGESCHEME, _T("s"));
+					}
+				}
+			}
+		}
+		
+		if((HMENU)add != m_hMenu)
+			AddLanguageMenu(add);
+	}
+
+protected:
+	CFindDlg*				m_FindDialog;
+	CReplaceDlg*			m_ReplaceDialog;
+	CScintilla				m_Dummy;			///< Scintilla often doesn't like unloading and reloading.
+
+	CSPopupMenu				m_NewMenu;
+	CMRUMenu				m_RecentFiles;
+	CSchemeSwitcher			m_Switcher;
+
+	CMultiPaneStatusBarCtrl	m_StatusBar;
+	CPNTabbedMDICommandBarCtrl<CMainFrame> m_CmdBar;
+
+	HWND					hFindWnd;
+	HWND					hReplWnd;
+
+	void CloseAndFreeDlg(CDialogImplBase* pD)
+	{
+		if(pD)
+		{
+			if(::IsWindow(pD->m_hWnd))
+				if(pD->IsWindowVisible())
+					pD->PostMessage(WM_CLOSE);
+			delete pD;
+		}
+	}
 };
 
 BOOL CALLBACK CloseChildEnumProc(HWND hWnd, LPARAM lParam)

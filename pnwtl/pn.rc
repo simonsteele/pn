@@ -135,7 +135,7 @@ BEGIN
         MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM SEPARATOR
-        MENUITEM "Change &Scheme",              65535
+        MENUITEM "Schemes",                     ID_VIEW_CHANGESCHEME
     END
     POPUP "&Tools"
     BEGIN

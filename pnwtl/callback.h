@@ -4,10 +4,10 @@
  * @author Simon Steele
  * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes
  * the conditions under which this source may be modified / distributed.
  *
- * Implementations of CallbackBase and Callback copied almost entirely 
+ * Implementations of CallbackBase and Callback copied almost entirely
  * from an article (GotW #83) by Herb Sutter.
  */
 

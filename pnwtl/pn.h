@@ -6,6 +6,8 @@
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
+ *
+ * Thanks to the author of kPad for the g_Context here!
  */
 
 #include "pntypes.h"
@@ -14,24 +16,18 @@
 
 #define PN_NOTIFY (WM_USER+37)
 
-class CPNAppState
+struct IMainFrame
 {
-	public:
-		CPNAppState();
-		~CPNAppState();
-
-		CSchemeManager& GetSchemes(){return m_Schemes;}
-		COptionsManager& GetOptionsManager(){return m_Options;}
-
-		SFindOptions*		GetFindOptions(){return &m_FindOptions;}
-		SReplaceOptions*	GetReplaceOptions(){return &m_ReplaceOptions;}
-	protected:
-
-		CSchemeManager	m_Schemes;
-		COptionsManager	m_Options;
-
-		SFindOptions	m_FindOptions;
-		SReplaceOptions	m_ReplaceOptions;
+	virtual CWindow* GetWindow() = 0;
+	virtual void AddMRUEntry(LPCTSTR lpszFile) = 0;
+	virtual void SetActiveScheme(HWND notifier, CScheme* pScheme) = 0;
 };
 
-HWND GetCurrentEditor(CWindow* pMDIFrameWnd);
+struct _Context 
+{
+	IMainFrame *m_frame;
+};
+
+extern __declspec( thread ) _Context g_Context;
+
+HWND GetCurrentEditor();

@@ -123,11 +123,8 @@ protected:
 
 	CChildFrame* GetCurrentEditorWnd()
 	{
-		return CChildFrame::FromHandle(GetCurrentEditor(m_pParent));
+		return CChildFrame::FromHandle(GetCurrentEditor());
 	}
-
-protected:
-	CWindow* m_pParent;
 };
 
 class CFindDlg : public CSearchDlg<CFindDlg>,
@@ -159,11 +156,6 @@ public:
 		DDX_CHECK(IDC_REGEXP_CHECK, m_bRegExp)
 		DDX_RADIO(IDC_UP_RADIO, m_Direction)
 	END_DDX_MAP()
-
-	CFindDlg(CWindow* pParent)
-	{
-		m_pParent = pParent;
-	}
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
@@ -237,7 +229,7 @@ public:
 	{
 		DoDataExchange(TRUE);
 
-		SFindOptions* pOptions = theApp.GetFindOptions();
+		SFindOptions* pOptions = COptionsManager::GetInstanceRef().GetFindOptions();
 
 		pOptions->FindText			= m_FindText;
 		pOptions->Direction			= (m_Direction == 1);
@@ -257,7 +249,7 @@ public:
 		
 		if((BOOL)wParam)
 		{
-			SFindOptions* pOptions = theApp.GetFindOptions();
+			SFindOptions* pOptions = COptionsManager::GetInstanceRef().GetFindOptions();
 			
 			m_FindText = pOptions->FindText;
 			m_Direction = pOptions->Direction;
@@ -337,16 +329,11 @@ public:
 		//DDX_CHECK(IDC_SEARCHALL_CHECK, m_bSearchAll)
 	END_DDX_MAP()
 
-	CReplaceDlg(CWindow* pParent)
-	{
-		m_pParent = pParent;
-	}
-
 	SReplaceOptions* GetOptions()
 	{
 		DoDataExchange(TRUE);
 
-		SReplaceOptions* pOptions = theApp.GetReplaceOptions();
+		SReplaceOptions* pOptions = COptionsManager::GetInstanceRef().GetReplaceOptions();
 
 		pOptions->FindText			= m_FindText;
 		pOptions->ReplaceText		= m_ReplaceText;
@@ -433,7 +420,7 @@ public:
 	{
 		if((BOOL) wParam)
 		{
-			SReplaceOptions* pOptions = theApp.GetReplaceOptions();
+			SReplaceOptions* pOptions = COptionsManager::GetInstanceRef().GetReplaceOptions();
 			
 			m_FindText = pOptions->FindText;
 			m_ReplaceText = pOptions->ReplaceText;

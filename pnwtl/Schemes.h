@@ -119,15 +119,17 @@ class CSchemeSwitcher
 		CSchemeSwitcher();
 		~CSchemeSwitcher();
 
-		void Reset();
+		void Reset(int iCommand = SCHEMEMANAGER_SELECTSCHEME);
 
-		void AddMenu(HMENU hMenu, int iCommand = SCHEMEMANAGER_SELECTSCHEME);
-		void SetActiveScheme(HMENU hMenu, CScheme* pCurrent);
+		void SetActiveScheme(CScheme* pCurrent);
+
+		operator HMENU ();
 
 	protected:
-		void BuildMenu(HMENU hMenu, int iCommand);
+		void BuildMenu(int iCommand);
 
-		MISCHEMELIST		m_list;
+		MISCHEMELIST	m_list;
+		CSPopupMenu		m_menu;
 };
 
 class CSchemeManager
@@ -156,6 +158,10 @@ class CSchemeManager
 
 		void BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCommand = SCHEMEMANAGER_SELECTSCHEME, bool bNewMenu = true);
 
+		static CSchemeManager * GetInstance();
+		static CSchemeManager & GetInstanceRef();
+		static void DeleteInstance();
+
 	protected:
 		TCHAR*			m_SchemePath;
 		TCHAR*			m_CompiledPath;
@@ -165,6 +171,8 @@ class CSchemeManager
 		SCHEME_MAP		m_SchemeExtMap;
 
 		CDefaultScheme	m_DefaultScheme;
+
+		static CSchemeManager* s_pInstance;
 };
 
 #endif //#ifndef schemes_h__included

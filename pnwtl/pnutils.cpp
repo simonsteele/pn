@@ -2,31 +2,71 @@
 #include "pnutils.h"
 
 ///////////////////////////////////////////////////////////////
-// MRUManager
+// CMRUList
 ///////////////////////////////////////////////////////////////
 
-MRUManager::MRUManager(UINT baseCmd, int size)
+CMRUList::CMRUList(int size)
 {
 	SetSize(size);
-	m_iBase = baseCmd;
-	m_szEmpty = new TCHAR[_tcslen(_T("(empty)"))+1];
-	_tcscpy(m_szEmpty, _T("(empty)"));
 }
 
-MRUManager::~MRUManager()
-{
-	delete [] m_szEmpty;
-}
-
-void MRUManager::SetSize(int size)
+void CMRUList::SetSize(int size)
 {
 	m_iMaxSize = size;
 	Resize();
 }
 
-void MRUManager::UpdateMenu(HMENU hMenu)
+void CMRUList::AddEntry(LPCTSTR data)
 {
-	CSMenuHandle m(hMenu);
+	// Set up an _entry
+	_entry e;
+	e.pszData = new TCHAR[_tcslen(data)+1];
+	_tcscpy(e.pszData, data);
+
+	int f = m_entries.Find(e);
+	if(f != -1)
+	{
+		m_entries.RemoveAt(f);
+	}
+
+	if(m_entries.GetSize() == m_iMaxSize)
+		m_entries.RemoveAt(0);
+
+	BOOL bRet = m_entries.Add(e);
+}
+
+void CMRUList::Resize()
+{
+	if(m_iMaxSize > m_entries.GetSize())
+	{
+		int nTooMany = m_entries.GetSize() - m_iMaxSize;
+		for(int i = 0; i < nTooMany; i++)
+		{
+			m_entries.RemoveAt(0);
+		}
+	}
+}
+
+///////////////////////////////////////////////////////////////
+// CMRUMenu
+///////////////////////////////////////////////////////////////
+
+CMRUMenu::CMRUMenu(UINT baseCmd, int size) : CMRUList(size)
+{
+	m_iBase = baseCmd;
+	m_szEmpty = new TCHAR[_tcslen(_T("(empty)"))+1];
+	_tcscpy(m_szEmpty, _T("(empty)"));
+}
+
+CMRUMenu::~CMRUMenu()
+{
+	if(m_szEmpty)
+		delete [] m_szEmpty;
+}
+
+void CMRUMenu::UpdateMenu()
+{
+	CSMenuHandle m = m_Menu.GetHandle();
 	TCHAR szBuf[50];
 	TCHAR szItemText[50+6]; // add space for &, 2 digits, and a space
 
@@ -59,7 +99,7 @@ void MRUManager::UpdateMenu(HMENU hMenu)
 		for(offset = 0; offset < m_entries.GetSize(); offset++)
 		{
 			_entry& e = m_entries[nSize - 1 - offset];
-			AtlCompactPath(szBuf, e.pszFilename, 40);
+			AtlCompactPath(szBuf, e.pszData, 40);
 			wsprintf(szItemText, _T("&%i %s"), offset + 1, szBuf);
 			::InsertMenu(m, insertPoint + offset, MF_BYPOSITION | MF_STRING, m_iBase + offset, szItemText);
 		}
@@ -73,33 +113,7 @@ void MRUManager::UpdateMenu(HMENU hMenu)
 	::DeleteMenu(m, insertPoint + offset, MF_BYPOSITION);
 }
 
-void MRUManager::AddFile(LPCTSTR filename)
+CMRUMenu::operator HMENU()
 {
-	// Set up an _entry
-	_entry e;
-	e.pszFilename = new TCHAR[_tcslen(filename)+1];
-	_tcscpy(e.pszFilename, filename);
-
-	int f = m_entries.Find(e);
-	if(f != -1)
-	{
-		m_entries.RemoveAt(f);
-	}
-
-	if(m_entries.GetSize() == m_iMaxSize)
-		m_entries.RemoveAt(0);
-
-	BOOL bRet = m_entries.Add(e);
-}
-
-void MRUManager::Resize()
-{
-	if(m_iMaxSize > m_entries.GetSize())
-	{
-		int nTooMany = m_entries.GetSize() - m_iMaxSize;
-		for(int i = 0; i < nTooMany; i++)
-		{
-			m_entries.RemoveAt(0);
-		}
-	}
+	return (HMENU)m_Menu;
 }

@@ -243,6 +243,11 @@ class CSPopupMenu : public CSMenu
 
 		int TrackPopupMenu(LPPOINT pt, HWND hWnd);
 
+		operator HMENU ()
+		{
+			return GetHandle();
+		}
+
 	protected:
 		HMENU m_hSubMenu;
 };

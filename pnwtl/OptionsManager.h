@@ -30,10 +30,14 @@ class COptionsManager
 	// Class Functionality
 	public:
 		COptionsManager();
-		virtual ~COptionsManager();
+		~COptionsManager();
 
 		void Load();
 		void Save();
+
+		static COptionsManager*	GetInstance();
+		static COptionsManager&	GetInstanceRef();
+		static void DeleteInstance();
 
 	// Class Members
 	public:
@@ -43,6 +47,16 @@ class COptionsManager
 
 		void SetInterface(LPCTSTR key, bool val);		
 		bool GetInterface(LPCTSTR key, bool defval);
+		
+		void GetSchemesPaths(ctcString& path, ctcString& compiledPath);
+		
+		SFindOptions*		GetFindOptions(){return &m_FindOptions;}
+		SReplaceOptions*	GetReplaceOptions(){return &m_ReplaceOptions;}
+
+	protected:
+		static COptionsManager* s_pInstance;
+		SFindOptions			m_FindOptions;
+		SReplaceOptions			m_ReplaceOptions;
 };
 
 #endif

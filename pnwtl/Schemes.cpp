@@ -15,7 +15,9 @@
 #include "ssreg.h"
 using namespace ssreg;
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+// CScheme
+///////////////////////////////////////////////////////////
 
 CScheme::CScheme()
 {
@@ -296,7 +298,7 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 
 void CScheme::SetupScintilla(CScintilla& sc)
 {
-	COptionsManager& options = theApp.GetOptionsManager();
+	COptionsManager& options = COptionsManager::GetInstanceRef();
 
 	sc.SPerform(SCI_SETEOLMODE, options.LineEndings);
 
@@ -345,14 +347,18 @@ const CScheme& CScheme::operator = (const CScheme& copy)
 	return *this;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+// CDefaultScheme
+///////////////////////////////////////////////////////////
 
 void CDefaultScheme::Load(CScintilla& sc, LPCTSTR filename)
 {
 	SetupScintilla(sc);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+// CSchemeManager
+///////////////////////////////////////////////////////////
 
 
 CSchemeManager::CSchemeManager(LPCTSTR schemepath, LPCTSTR compiledpath)
@@ -620,7 +626,7 @@ void CSchemeManager::BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCo
 	}
 	else
 	{
-		id = CSMenuManager::GetInstance()->RegisterCallback(pHandler, iCommand, (LPVOID)theApp.GetSchemes().GetDefaultScheme());
+		id = CSMenuManager::GetInstance()->RegisterCallback(pHandler, iCommand, (LPVOID)GetDefaultScheme());
 		m.AddItem(_T("Plain Text"), id);
 	}
 
@@ -631,7 +637,37 @@ void CSchemeManager::BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCo
 	}
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////
+CSchemeManager * CSchemeManager::GetInstance()
+{
+	if(!s_pInstance)
+		s_pInstance = new CSchemeManager;
+
+	return s_pInstance;
+}
+
+CSchemeManager & CSchemeManager::GetInstanceRef()
+{
+	return *GetInstance();
+}
+
+void CSchemeManager::DeleteInstance()
+{
+	if(s_pInstance)
+	{
+		delete s_pInstance;
+		s_pInstance = NULL;
+	}
+}
+
+///////////////////////////////////////////////////////////
+// CSchemeManager statics
+///////////////////////////////////////////////////////////
+
+CSchemeManager* CSchemeManager::s_pInstance = NULL;
+
+///////////////////////////////////////////////////////////
+// CSchemeSwitcher
+///////////////////////////////////////////////////////////
 
 CSchemeSwitcher::CSchemeSwitcher()
 {
@@ -640,57 +676,46 @@ CSchemeSwitcher::CSchemeSwitcher()
 
 CSchemeSwitcher::~CSchemeSwitcher()
 {
-	m_list.clear();
+
 }
 
-void CSchemeSwitcher::AddMenu(HMENU hMenu, int iCommand)
+void CSchemeSwitcher::BuildMenu(int iCommand)
 {
-	CSMenuHandle m(hMenu);
-
-	if(m_list.size() == 0)
-	{
-		BuildMenu(hMenu, iCommand);
-	}
+	menuid_scheme_pair x;
+	CSchemeManager& sm = CSchemeManager::GetInstanceRef();
+	SCHEME_LIST* pSchemes = sm.GetSchemesList();
+	CSMenuManager& mm = *CSMenuManager::GetInstance();
 	
-	for(MISCHEMELIST::iterator i = m_list.begin(); i != m_list.end(); ++i)
-	{
-		m.AddItem( (*i).pScheme->GetTitle(), (*i).iCommand);
-	}
-}
+	m_menu.AddItem( sm.GetDefaultScheme()->GetTitle(), mm.RegisterCallback(NULL, iCommand, (LPVOID)sm.GetDefaultScheme()) );
 
-void CSchemeSwitcher::BuildMenu(HMENU hMenu, int iCommand)
-{
-	if(m_list.size() == 0)
+	for(SCIT i = pSchemes->begin(); i != pSchemes->end(); ++i)
 	{
-		menuid_scheme_pair x;
-		
-		x.pScheme = theApp.GetSchemes().GetDefaultScheme();
+		x.pScheme = &(*i);
 		x.iCommand = CSMenuManager::GetInstance()->RegisterCallback(NULL, iCommand, (LPVOID)x.pScheme);
-		m_list.insert(m_list.end(), x);
-		
-		SCHEME_LIST* pSchemes = theApp.GetSchemes().GetSchemesList();
 
-		for(SCIT i = pSchemes->begin(); i != pSchemes->end(); ++i)
-		{
-			x.pScheme = &(*i);
-			x.iCommand = CSMenuManager::GetInstance()->RegisterCallback(NULL, iCommand, (LPVOID)x.pScheme);
-			m_list.insert(m_list.end(), x);
-		}
+		m_menu.AddItem( x.pScheme->GetTitle(), x.iCommand );
+		m_list.insert(m_list.end(), x);
 	}
 }
 
-void CSchemeSwitcher::Reset()
+void CSchemeSwitcher::Reset(int iCommand)
 {
-	throw "Not Yet Implemented";
+	m_list.clear();
+	BuildMenu(iCommand);
 }
 
-void CSchemeSwitcher::SetActiveScheme(HMENU hMenu, CScheme* pCurrent)
+void CSchemeSwitcher::SetActiveScheme(CScheme* pCurrent)
 {
 	for(MISCHEMELIST::iterator i = m_list.begin(); i != m_list.end(); ++i)
 	{
 		if((*i).pScheme == pCurrent)
-			::CheckMenuItem((HMENU)hMenu, (*i).iCommand, MF_BYCOMMAND | MF_CHECKED);
+			::CheckMenuItem((HMENU)m_menu, (*i).iCommand, MF_BYCOMMAND | MF_CHECKED);
 		else
-			::CheckMenuItem((HMENU)hMenu, (*i).iCommand, MF_BYCOMMAND | MF_UNCHECKED);
+			::CheckMenuItem((HMENU)m_menu, (*i).iCommand, MF_BYCOMMAND | MF_UNCHECKED);
 	}
+}
+
+CSchemeSwitcher::operator HMENU ()
+{
+	return (HMENU)m_menu;
 }

@@ -11,6 +11,8 @@
 #include "stdafx.h"
 #include "OptionsManager.h"
 
+COptionsManager* COptionsManager::s_pInstance = NULL;
+
 COptionsManager::COptionsManager()
 {
 	Load();
@@ -34,9 +36,19 @@ void COptionsManager::Load()
 	LineEndings = (ELineEndings)reg.ReadInt(_T("DefaultLineEndings"), leCRLF);
 	TabWidth = reg.ReadInt(_T("TabWidth"), 4);
 
+	// Find and Replace Settings ------------
+
+	m_FindOptions.Direction = true;
+	m_FindOptions.Loop = true;
+	m_FindOptions.FindText = _T("");
+	
+	m_ReplaceOptions.Direction = true;
+	m_ReplaceOptions.Loop = true;
+	m_ReplaceOptions.FindText = _T("");
+	m_ReplaceOptions.ReplaceText = _T("");
+
 	//cs = root + _T("Interface Settings");
 	//reg.OpenKey(cs, true);
-	
 }
 
 void COptionsManager::Save()
@@ -74,4 +86,41 @@ bool COptionsManager::GetInterface(LPCTSTR key, bool defval)
 
 	reg.OpenKey(root.c_str());
 	return reg.ReadBool(key, defval);
+}
+
+COptionsManager* COptionsManager::GetInstance()
+{
+	if(!s_pInstance)
+		s_pInstance = new COptionsManager;
+
+	return s_pInstance;
+}
+
+COptionsManager& COptionsManager::GetInstanceRef()
+{
+	return *GetInstance();
+}
+
+void COptionsManager::DeleteInstance()
+{
+	if(s_pInstance)
+	{
+		delete s_pInstance;
+		s_pInstance = NULL;
+	}
+}
+
+void COptionsManager::GetSchemesPaths(ctcString& path, ctcString& compiledPath)
+{
+	TCHAR *buf = new TCHAR[MAX_PATH +1];
+	GetModuleFileName(NULL, buf, MAX_PATH);
+	path = buf;
+	delete [] buf;
+	
+	int cutoff = path.rfind(_T('\\'));
+	path = path.substr(0, cutoff+1);
+	path += "Schemes\\";
+
+	//@todo Change this to the path for the compiled schemes
+	compiledPath = path;
 }

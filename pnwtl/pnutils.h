@@ -2,49 +2,62 @@
 #define pnutils_h__included
 
 /**
- * @class MRUManager
+ * @class CMRUList
  * Some inspiration taken from CRecentDocumentList <atlmisc.h>
- *
- * @parm t_MaxSize	- Maximum number of MRU entries.
- * @parm t_Base		- Base resource ID for the menu (i.e. Range must be t_Base -> t_Base + (t_MaxSize - 1)
  */
-class MRUManager
+class CMRUList
 {
-	struct _entry
-	{
-		TCHAR* pszFilename;
-
-		bool operator==(const _entry& e) const
-		{ return (lstrcmpi(pszFilename, e.pszFilename) == 0); }
-
-		_entry& operator = (const _entry& e)
+	protected:
+		struct _entry
 		{
-			if(pszFilename)
-				delete [] pszFilename;
-			pszFilename = new TCHAR[_tcslen(e.pszFilename)+1];
-			_tcscpy(pszFilename, e.pszFilename);
-			return *this;
-		}
-	};
+			TCHAR* pszData;
+
+			bool operator==(const _entry& e) const
+			{ return (lstrcmpi(pszData, e.pszData) == 0); }
+
+			_entry& operator = (const _entry& e)
+			{
+				if(pszData)
+					delete [] pszData;
+				pszData = new TCHAR[_tcslen(e.pszData)+1];
+				_tcscpy(pszData, e.pszData);
+				return *this;
+			}
+		};
 
 	public:
-		MRUManager(UINT baseCmd, int size = 10);
-		~MRUManager();
+		CMRUList(int size = 10);
 
 		void SetSize(int size);
 
-		void UpdateMenu(HMENU hMenu);
-
-		void AddFile(LPCTSTR filename);
+		void AddEntry(LPCTSTR data);
 
 	protected:		
-		void BuildMenu(HMENU hMenu, int iCommand);
 		void Resize();
 
 		CSimpleArray<_entry>	m_entries;
 		int						m_iMaxSize;
 		UINT					m_iBase;
-		TCHAR*					m_szEmpty;
+};
+
+/**
+ * @class CMRUMenu
+ * A menu version of CMRUList
+ */
+class CMRUMenu : public CMRUList
+{
+	public:
+		CMRUMenu(UINT baseCmd, int size = 10);
+		~CMRUMenu();
+
+		void UpdateMenu();
+
+		operator HMENU();
+
+	protected:
+		UINT		m_iBase;
+		TCHAR*		m_szEmpty;
+		CSPopupMenu	m_Menu;
 };
 
 

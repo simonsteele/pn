@@ -43,6 +43,7 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
+		MESSAGE_HANDLER(WM_MDIACTIVATE, OnMDIActivate)
 
 		MESSAGE_HANDLER(PN_NOTIFY, OnViewNotify)
 
@@ -72,7 +73,6 @@ public:
 		COMMAND_ID_HANDLER(ID_TOOLS_LECR, OnLineEndingsToggle)
 		COMMAND_ID_HANDLER(ID_TOOLS_LECONVERT, OnLineEndingsConvert)
 
-		// For ::FromHandle
 		IMPLEMENT_FROMHANDLE()
 
 		LOCAL_MENUCOMMAND(MENUMESSAGE_CHANGESCHEME)
@@ -86,12 +86,13 @@ public:
 
 	BEGIN_MENU_HANDLER_MAP()
 		HANDLE_MENU_COMMAND(MENUMESSAGE_CHANGESCHEME, OnSchemeChange)
-		//HANDLE_MENU_COMMAND(SCHEMEMANAGER_SELECTSCHEME, OnSchemeNew)
 	END_MENU_HANDLER_MAP()
 
-	// We override UpdateLayout in order to call UpdateBarsPosition in this class,
-	// instead of in CFrameWindowImplBase. This way we can automagically have a toolbar
-	// at the bottom of the window.
+	/**
+	 * We override UpdateLayout in order to call UpdateBarsPosition in this class,
+	 * instead of in CFrameWindowImplBase. This way we can automagically have a toolbar
+	 * at the bottom of the window. 
+	 */
 	void UpdateLayout(BOOL bResizeBars = TRUE)
 	{
 		RECT rect;
@@ -175,43 +176,6 @@ public:
 		m_hWndToolBar = toolbar.Detach();
 	}
 
-	void SetupNewMenu(CSMenuEventHandler* pOwner)
-	{
-		// Irritatingly, what would be ideal would be to have a pointer to
-		// CMainFrame here but obviously doing that would really upset the
-		// whole include ordering system :(
-		CSMenuHandle cs(m_hMenu);
-
-		CSMenuHandle file = cs.GetSubMenu(0);
-			
-		CSPopupMenu sm;
-
-		theApp.GetSchemes().BuildMenu(sm.GetHandle(), pOwner);
-		
-		::ModifyMenu(file.GetHandle(), 0, MF_BYPOSITION | MF_POPUP, (UINT)sm.GetHandle(), _T("&New"));
-
-		cs.Detach();
-		sm.Detach();
-	}
-
-	void SetupMenu()
-	{
-		CSMenuHandle cs(m_hMenu);
-
-		CSMenuHandle view = cs.GetSubMenu(2);
-
-		CSPopupMenu sm;
-
-		s_Switcher.AddMenu(sm.GetHandle(), MENUMESSAGE_CHANGESCHEME);
-		s_Switcher.SetActiveScheme(m_hMenu, NULL);
-
-		::ModifyMenu(view.GetHandle(), 3, MF_BYPOSITION | MF_POPUP, (UINT)sm.GetHandle(), _T("Change &Scheme"));
-
-		cs.Detach();
-		sm.Detach();
-
-	}
-
 	////////////////////////////////////////////////////
 	// Document Entries
 
@@ -248,12 +212,18 @@ public:
 		SetTitle(_T("<new>"));
 
 		SetupToolbar();
-		SetupMenu();
 
 		UpdateMenu();
 
 		bHandled = FALSE;
 		return 1;
+	}
+	
+	LRESULT OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+	{
+		UpdateMenu();
+		bHandled = FALSE;
+		return 0;
 	}
 
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -353,7 +323,7 @@ public:
 
 	LRESULT OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		SFindOptions* pOptions = theApp.GetFindOptions();
+		SFindOptions* pOptions = COptionsManager::GetInstanceRef().GetFindOptions();
 		if( pOptions->FindText != _T("") )
 		{
 			if( !m_view.FindNext(pOptions) )
@@ -444,8 +414,7 @@ public:
 
 	void OnSchemeChange(LPVOID pVoid)
 	{
-		m_view.SetScheme(static_cast<CScheme*>(pVoid));
-		s_Switcher.SetActiveScheme(m_hMenu, m_view.GetCurrentScheme());
+		SetScheme(static_cast<CScheme*>(pVoid));
 	}
 
 	////////////////////////////////////////////////////
@@ -465,7 +434,7 @@ public:
 		}
 	}
 
-	void SaveFile(LPCTSTR pathname, bool bStoreFilename = true)
+	void SaveFile(LPCTSTR pathname, bool bStoreFilename = true, bool bUpdateMRU = true)
 	{
 		if(m_view.Save(pathname, bStoreFilename))
 		{
@@ -477,6 +446,11 @@ public:
 				SetTitle(fn.c_str());
 
 				m_FileName = pathname;
+			}
+
+			if(bUpdateMRU)
+			{
+				g_Context.m_frame->AddMRUEntry(m_FileName);
 			}
 		}
 		else
@@ -557,6 +531,7 @@ public:
 	void SetScheme(CScheme* pScheme)
 	{
 		m_view.SetScheme(pScheme);
+		g_Context.m_frame->SetActiveScheme(m_hWnd, pScheme);
 	}
 
 	void UpdateMenu()
@@ -568,16 +543,14 @@ public:
 		menu.CheckMenuItem(ID_TOOLS_LECRLF, f == PNSF_Windows);
 		menu.CheckMenuItem(ID_TOOLS_LECR, f == PNSF_Mac);
 		menu.CheckMenuItem(ID_TOOLS_LELF, f == PNSF_Unix);
+
+		g_Context.m_frame->SetActiveScheme(m_hWnd, m_view.GetCurrentScheme());
 	}
 
 protected:
 	HIMAGELIST m_hImgList;
-	int m_lastLexer;
-
-	static CSchemeSwitcher s_Switcher;
+	int m_lastLexer;	
 };
-
-CSchemeSwitcher CChildFrame::s_Switcher;
 
 /////////////////////////////////////////////////////////////////////////////
 

@@ -82,7 +82,7 @@ public:
 				ctcString ext;
 				ext = cfn.GetExtension();
 
-				CScheme* sch = theApp.GetSchemes().SchemeForExt(ext.c_str());
+				CScheme* sch = CSchemeManager::GetInstance()->SchemeForExt(ext.c_str());
 				SetScheme(sch);
 			}
 			else
@@ -136,7 +136,7 @@ public:
 				ext = cfn.GetExtension();
 				if(ext.size() > 0)
 				{
-					CScheme* sch = theApp.GetSchemes().SchemeForExt(ext.c_str());
+					CScheme* sch = CSchemeManager::GetInstance()->SchemeForExt(ext.c_str());
 					SetScheme(sch);
 				}
 			}
@@ -211,7 +211,7 @@ protected:
 
 	virtual void OnFirstShow()
 	{
-		theApp.GetSchemes().GetDefaultScheme()->Load(*this);
+		CSchemeManager::GetInstance()->GetDefaultScheme()->Load(*this);
 	}
 
 	CScheme* m_pLastScheme;
