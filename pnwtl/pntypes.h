@@ -30,4 +30,10 @@ typedef struct tagReplaceOptions : tagFindOptions
 	bool	InSelection;
 } SReplaceOptions;
 
+typedef struct tagCloseStruct
+{
+	void*	pMainFrm;
+	bool	bCanClose;
+} SCloseStruct;
+
 #endif

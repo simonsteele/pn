@@ -244,9 +244,13 @@ public:
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		// Check that all of the child windows are ready to close...
-		EnumChildWindows(m_hWndMDIClient, CloseChildEnumProc, (long)this);
+		SCloseStruct s;
+		s.pMainFrm = (void*)this;
+		s.bCanClose = true;
 
-		if(NULL == ::GetWindow(m_hWndMDIClient, GW_CHILD))
+		EnumChildWindows(m_hWndMDIClient, CloseChildEnumProc, (long)&s);
+
+		if(s.bCanClose)
 			bHandled = FALSE;
 		
 		return 0;
@@ -489,11 +493,13 @@ BOOL CALLBACK CloseChildEnumProc(HWND hWnd, LPARAM lParam)
 	CChildFrame* pChild = CChildFrame::FromHandle(hWnd);
 	if(pChild != NULL)
 	{
-		CMainFrame* pMF = (CMainFrame*)lParam;
-		if(!pMF->OnEditorClosing(pChild))
-			return TRUE;
+		SCloseStruct* s = (SCloseStruct*)lParam;
+		CMainFrame *pMF = (CMainFrame*)s->pMainFrm;
 
-		SendMessage(GetParent(hWnd), WM_MDIDESTROY, (WPARAM)hWnd, 0);
+		if(!pMF->OnEditorClosing(pChild))
+			s->bCanClose = false;
+
+		//SendMessage(GetParent(hWnd), WM_MDIDESTROY, (WPARAM)hWnd, 0);
 	}
 	
 	return TRUE;
