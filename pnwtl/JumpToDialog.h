@@ -26,6 +26,10 @@ class CJumpToDialog : public CDialogImpl<CJumpToDialog>, IJumpToFindSink
 			MESSAGE_HANDLER(WM_SIZE, OnSize)
 
 			NOTIFY_HANDLER(IDC_JUMPTOLIST, NM_DBLCLK, OnListDblClick)
+
+			ALT_MSG_MAP(1)
+			MESSAGE_HANDLER(WM_KEYDOWN, OnEditKeyDown)
+
 		END_MSG_MAP()
 		enum { IDD = IDD_JUMPTO };
 
@@ -46,14 +50,16 @@ class CJumpToDialog : public CDialogImpl<CJumpToDialog>, IJumpToFindSink
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnListDblClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+		LRESULT OnEditKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 		void filter(LPCTSTR text);
 		void transfer();
 
+		CContainedWindowT<CEdit> edtTag;
 		CChildFrame*	m_pChild;
 		CButton			btnOk;
 		CButton			btnCancel;
-		CEdit			edtTag;
+		//CEdit			edtTag;
 		CListViewCtrl	list;
 		CImageList		images;
 		int				buttonGap;

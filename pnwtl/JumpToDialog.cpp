@@ -34,7 +34,7 @@ static int jumpToTagImages [TAG_MAX+1] =
 	10	/* TAG_VARIABLE */
 };
 
-CJumpToDialog::CJumpToDialog(CChildFrame* pChild)
+CJumpToDialog::CJumpToDialog(CChildFrame* pChild) : edtTag(this, 1)
 {
 	m_pChild = pChild;
 }
@@ -47,7 +47,11 @@ LRESULT CJumpToDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	btnOk.Attach(GetDlgItem(IDOK));
 	btnCancel.Attach(GetDlgItem(IDCANCEL));
-	edtTag.Attach(GetDlgItem(IDC_JUMPTOTEXT));
+	//edtTag.Attach(GetDlgItem(IDC_JUMPTOTEXT));
+
+	//edtTag.SubclassDlgItem(IDC_JUMPTOTEXT, this);
+	//edtTag.SubclassWindow(GetDlgItem(IDC_JUMPTOTEXT));
+	edtTag.SubclassWindow(GetDlgItem(IDC_JUMPTOTEXT));
 
 	list.InsertColumn(0, _T("Tag"), LVCFMT_LEFT, COLWIDTH_TAG, 0);
 	list.InsertColumn(1, _T("Parent"), LVCFMT_LEFT, COLWIDTH_PARENT, 0);
@@ -122,6 +126,28 @@ LRESULT CJumpToDialog::OnListDblClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 	transfer();
 	if(line != -1)
 		EndDialog(IDOK);
+
+	return 0;
+}
+
+LRESULT CJumpToDialog::OnEditKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	if(wParam == VK_DOWN)
+	{
+		int index = list.GetSelectedIndex() + 1;
+		if(index >= list.GetItemCount())
+			index--;
+		list.SelectItem(index);
+	}
+	else if(wParam == VK_UP)
+	{
+		int index = list.GetSelectedIndex() - 1;
+		if(index < 0)
+			index = 0;
+		list.SelectItem(index);
+	}
+	else
+		bHandled = FALSE;
 
 	return 0;
 }

@@ -484,7 +484,7 @@ void CProjectTreeCtrl::setStatus(Projects::ProjectType* selection)
 	}
 }
 
-void CProjectTreeCtrl::sort(HTREEITEM hFolderNode, bool bSortFolders)
+void CProjectTreeCtrl::sort(HTREEITEM hFolderNode, bool bSortFolders, bool bRecurse)
 {
 	/*typedef struct tagTVSORTCB {
 		HTREEITEM hParent;
@@ -503,7 +503,7 @@ void CProjectTreeCtrl::sort(HTREEITEM hFolderNode, bool bSortFolders)
 	BOOL caseSensitive = OPTIONS->Get("Projects", "SortCaseSensitive", true);
 	sortcb.lParam = caseSensitive;
 
-	SortChildrenCB(&sortcb);
+	SortChildrenCB(&sortcb, bRecurse);
 }
 
 LRESULT CProjectTreeCtrl::OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
@@ -734,7 +734,8 @@ LRESULT CProjectTreeCtrl::OnAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 		folder->AddChild(newFolder);
 
-		HTREEITEM hFolderNode = addFolderNode(newFolder, hLastItem, NULL);
+		HTREEITEM hInsertAfter = getLastFolderItem(hLastItem);
+		HTREEITEM hFolderNode = addFolderNode(newFolder, hLastItem, hInsertAfter);
 
 		Expand(hLastItem);
 		EditLabel(hFolderNode);
@@ -1275,7 +1276,9 @@ void CProjectTreeCtrl::handleDrop(HDROP hDrop, HTREEITEM hDropItem, Projects::Fo
 		if(IsDirectory(buf))
 		{
 			Projects::Folder* pAdded = pFolder->AddFolder(buf, _T("*.*"), true);
-			HTREEITEM hFolder = addFolderNode(pAdded, hDropItem, NULL);
+			
+			HTREEITEM hInsertAfter = getLastFolderItem(hDropItem);
+			HTREEITEM hFolder = addFolderNode(pAdded, hDropItem, hInsertAfter);
 
 			HTREEITEM hLastChild = NULL;
 
@@ -1294,7 +1297,8 @@ void CProjectTreeCtrl::handleDrop(HDROP hDrop, HTREEITEM hDropItem, Projects::Fo
 		}
 	}
 
-	TreeView_SortChildren(m_hWnd, hDropItem, true);
+	//sort(hDropItem, true, true);
+	//TreeView_SortChildren(m_hWnd, hDropItem, true);
 }
 
 /**
@@ -1598,7 +1602,7 @@ bool CProjectTreeCtrl::handleFolderDrop(Projects::Folder* target)
 			Projects::Folder* pFolder = static_cast<Projects::Folder*>( ptSelItem );
 			Projects::Folder::MoveChild(pFolder, target);
 
-			bool bExpanded = GetItemState((*i), TVIS_EXPANDED) & TVIS_EXPANDED;
+			bool bExpanded = (GetItemState((*i), TVIS_EXPANDED) & TVIS_EXPANDED) != 0;
 
 			// Move the tree item(s)...
 			DeleteItem( (*i) );

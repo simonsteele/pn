@@ -49,4 +49,5 @@
 .xhtml=Web
 .xml=xml
 .xsl=xml
+.rng=xml
 makefile=makefile

@@ -85,7 +85,7 @@ protected:
 	void		handleRightClick(LPPOINT pt);
 	void		openAll(Projects::Folder* folder);
 	void		setStatus(Projects::ProjectType* selection);
-	void		sort(HTREEITEM hFolderNode, bool bSortFolders = false);
+	void		sort(HTREEITEM hFolderNode, bool bSortFolders = false, bool bRecurse = false);
 
 	// IDropTarget Drop
 	void		handleDrop(HDROP hDrop, HTREEITEM hDropItem, Projects::Folder* pFolder);

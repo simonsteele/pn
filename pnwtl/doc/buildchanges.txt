@@ -1,6 +1,18 @@
 | Working towards 0.6 :: Ella
 ---------------------------------------
 
+Since 27/04/2004:
+
+Changes:
+Presing up/down from the jump to edit box now moves the list selection.
+[Projects] Folder position on adding folders corrected.
+[Projects] Adding folders from explorer no longer breaks sorting.
+
+Since 25/04/2004:
+
+Fixes:
+Crash in Jump To.
+
 Since 09/04/2004:
 
 Changes:
