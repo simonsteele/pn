@@ -58,6 +58,11 @@ Options::~Options()
 {
 }
 
+void Options::LoadCache()
+{
+	loadCache();
+}
+
 int Options::GetCached(ECachedOption option)
 {
 	return cache[option];
@@ -369,10 +374,6 @@ Options* OptionsFactory::GetOptions(EOptionsType type, Options* oldOptions)
 	{
 		newInstance->copy(oldOptions);
 		delete oldOptions;
-	}
-	else
-	{
-		newInstance->loadCache();
 	}
 
 	return newInstance;

@@ -2,7 +2,7 @@
  * @file pn.cpp
  * @brief Main Source File for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -110,7 +110,10 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	OPTIONS->GetPNPath(usPath, PNPATH_USERSETTINGS);
 	if(!CreateDirectoryRecursive(usPath.c_str()))
 		UNEXPECTED(_T("Could not create user settings folder"));
-	
+
+	// Finally load the cached or default cached options
+	OPTIONS->LoadCache();
+
 	// See if we allow multiple instances...
 	bool bAllowMulti = OPTIONS->Get(PNSK_INTERFACE, _T("AllowMultiInstance"), true);
 	if(!bAllowMulti)

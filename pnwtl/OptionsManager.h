@@ -77,6 +77,8 @@ class Options
 			OPTION_COUNT				= 21
 		} ECachedOption;
 
+		void LoadCache();
+
 		virtual void Set(LPCTSTR subkey, LPCTSTR value, bool bVal) = 0;
 		virtual void Set(LPCTSTR subkey, LPCTSTR value, int iVal) = 0;
 		virtual void Set(LPCTSTR subkey, LPCTSTR value, LPCTSTR szVal) = 0;
