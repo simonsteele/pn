@@ -283,7 +283,7 @@ void COptionsManager::GetPNPath(tstring& path, int pathtype)
 	TCHAR buf[MAX_PATH +1];
 	memset(buf, 0, sizeof(buf));
 
-	if(pathtype == PNPATH_PN || pathtype == PNPATH_SCHEMES)
+	if(pathtype == PNPATH_PN || pathtype == PNPATH_SCHEMES || pathtype == PNPATH_CLIPS)
 	{
 		GetModuleFileName(NULL, buf, MAX_PATH);
 		path = buf;
@@ -293,8 +293,10 @@ void COptionsManager::GetPNPath(tstring& path, int pathtype)
 
 		if(pathtype == PNPATH_SCHEMES)
 			path += _T("Schemes\\");
+		else if(pathtype == PNPATH_CLIPS)
+			path += _T("Clips\\");
 	}
-	else if(pathtype == PNPATH_USERSETTINGS)
+	else if(pathtype == PNPATH_USERSETTINGS || pathtype == PNPATH_USERCLIPS)
 	{
 		/*ss 20/01/2003 Fix SF Bug #671357
 		SHGetSpecialFolderPath(NULL, buf, CSIDL_APPDATA, TRUE)*/

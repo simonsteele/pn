@@ -13,6 +13,7 @@
 
 namespace TextClips {
 	class Clip;
+	class TextClipsManager;
 }
 
 class CClipsDocker : public CPNDockingWindow<CClipsDocker>
@@ -24,6 +25,7 @@ public:
 	DECLARE_WND_CLASS(_T("CClipsDocker"))
 
 	CClipsDocker();
+	~CClipsDocker();
 
 	enum {
 		IDC_CLIPSLIST = 100,
@@ -32,6 +34,7 @@ public:
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
+		MESSAGE_HANDLER(WM_CTLCOLORLISTBOX , OnCtlColor)
 		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHide)
 		NOTIFY_HANDLER(IDC_CLIPSLIST, NM_DBLCLK, OnClipSelected);
 		REFLECT_NOTIFICATIONS()
@@ -41,6 +44,7 @@ public:
 protected:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnClipSelected(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
@@ -48,7 +52,10 @@ protected:
 	void AddClip(TextClips::Clip* tc);
 
 	CListViewCtrl	m_view;
+	CComboBox		m_combo;
+	TextClips::TextClipsManager* m_pTheClips;
 
+	int m_comboHeight;
 };
 
 #endif

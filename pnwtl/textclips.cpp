@@ -10,6 +10,7 @@
 
 #include "stdafx.h"
 #include "textclips.h"
+#include "include/filefinder.h"
 
 namespace TextClips {
 
@@ -30,6 +31,11 @@ TextClipSet::~TextClipSet()
 const LIST_CLIPS& TextClipSet::GetClips()
 {
 	return clips;
+}
+
+LPCTSTR TextClipSet::GetName()
+{
+	return name.c_str();
 }
 
 void TextClipSet::clear()
@@ -128,6 +134,71 @@ void TextClipSet::characterData(LPCTSTR data, int len)
 
 		cData += cdata;
 	}
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// TextClipsManager
+//////////////////////////////////////////////////////////////////////////////
+
+TextClipsManager::TextClipsManager()
+{
+	FindClips();
+}
+
+TextClipsManager::~TextClipsManager()
+{
+	clear();
+}
+
+const LIST_CLIPSETS& TextClipsManager::GetClipSets()
+{
+	return clipSets;
+}
+
+/**
+ * Uses FileFinder to find the clips files.
+ */
+void TextClipsManager::FindClips()
+{
+	COptionsManager& opt = COptionsManager::GetInstanceRef();
+	FileFinder<TextClipsManager> finder(this, OnFound);
+
+	tstring path;
+	
+	// Search distribution clips directory.
+	opt.GetPNPath(path, PNPATH_CLIPS);
+	if( DirExists(path.c_str()) )
+		finder.Find(path.c_str(), _T("*.clips"));
+	
+	// Search user clips directory.
+	opt.GetPNPath(path, PNPATH_USERCLIPS);
+	if( DirExists(path.c_str()) )
+		finder.Find(path.c_str(), _T("*.clips"));
+}
+
+/**
+ * Called by the file finder class, creates a new TextClipSet from
+ * the given file path.
+ */
+void TextClipsManager::OnFound(LPCTSTR path, LPCTSTR filename)
+{
+	tstring fullpath(path);
+	fullpath += filename;
+	TextClipSet* tcs = new TextClipSet(fullpath.c_str());
+	clipSets.insert(clipSets.end(), tcs);
+}
+
+/**
+ * Free all the TextClipSet instances and clear the list.
+ */
+void TextClipsManager::clear()
+{
+	for(LIST_CLIPSETS::iterator i = clipSets.begin(); i != clipSets.end(); ++i)
+	{
+		delete (*i);
+	}
+
+	clipSets.clear();
 }
 
 } // namespace TextClips

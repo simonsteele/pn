@@ -130,7 +130,8 @@ void __stdcall CMainFrame::ChildCloseNotify(CChildFrame* pChild, SChildEnumStruc
 {
 	SCloseStruct* s = static_cast<SCloseStruct*>(pES);
 
-	if(!pChild->CanClose())
+	// check bCanClose first to see if we've already decided not to close.
+	if(s->bCanClose && !pChild->CanClose())
 		s->bCanClose = false;
 }
 

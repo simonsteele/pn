@@ -38,6 +38,8 @@ class TextClipSet : public XMLParseState
 
 		const LIST_CLIPS& GetClips();
 
+		LPCTSTR GetName();
+
 	//XMLParseState
 	public:
 		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
@@ -54,6 +56,30 @@ class TextClipSet : public XMLParseState
 		int	parseState;
 		tstring cData;
 		tstring curName;
+		tstring name;
+};
+
+typedef std::list<TextClipSet*> LIST_CLIPSETS;
+
+/**
+ * Represents a set of text clip sets.
+ */
+class TextClipsManager
+{
+public:
+	TextClipsManager();
+	~TextClipsManager();
+
+	void FindClips();
+	void OnFound(LPCTSTR path, LPCTSTR filename);
+
+	const LIST_CLIPSETS& GetClipSets();
+
+protected:
+	void clear();
+
+protected:
+	LIST_CLIPSETS	clipSets;
 };
 
 } // namespace TextClips

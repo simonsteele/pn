@@ -32,6 +32,11 @@ int FileAge(LPCTSTR FileName)
   return -1;
 }
 
+bool DirExists(LPCTSTR szDir)
+{
+	return (GetFileAttributes(szDir) != -1);
+}
+
 bool FileExists(LPCTSTR FileName)
 {
 	HANDLE h;
