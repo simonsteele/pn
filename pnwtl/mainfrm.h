@@ -87,6 +87,7 @@ public:
 		MESSAGE_HANDLER(WM_DROPFILES, OnDropFiles)
 		MESSAGE_HANDLER(PN_NOTIFY, OnChildNotify)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
+		MESSAGE_HANDLER(WM_ACTIVATE, OnActivate)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
 		COMMAND_ID_HANDLER(ID_FILE_OPEN, OnFileOpen)
@@ -114,6 +115,21 @@ public:
 	BEGIN_MENU_HANDLER_MAP()
 		HANDLE_MENU_COMMAND(SCHEMEMANAGER_SELECTSCHEME, OnSchemeNew)
 	END_MENU_HANDLER_MAP()
+
+	LRESULT OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+	{
+		if(LOWORD(wParam) != WA_INACTIVE && !HIWORD(wParam))
+		{
+			HWND hMDIChild = MDIGetActive();
+			if(hMDIChild != 0)
+			{
+				::PostMessage(hMDIChild, PN_CHECKAGE, 0, 0);
+			}
+		}
+		
+		bHandled = FALSE;
+		return 1;
+	}
 
 	void OnSchemeNew(LPVOID data)
 	{	
@@ -496,6 +512,11 @@ public:
 		{
 			m_Switcher.SetActiveScheme(static_cast<CScheme*>(pScheme));
 		}
+	}
+
+	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL)
+	{
+		return m_CmdBar.TrackPopupMenu(hMenu, uFlags, x, y, lpParams);
 	}
 
 protected:

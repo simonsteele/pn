@@ -256,7 +256,9 @@ public:
 	{
 		CSPopupMenu popup(IDR_POPUP_EDITOR);
 		
-		popup.TrackPopupMenu((LPPOINT)point, g_Context.m_frame->GetWindow()->m_hWnd);
+		//popup.TrackPopupMenu((LPPOINT)point, g_Context.m_frame->GetWindow()->m_hWnd);
+
+		g_Context.m_frame->TrackPopupMenu(popup, 0, point->x, point->y, NULL);
 	}
 
 	LRESULT OnIndent(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

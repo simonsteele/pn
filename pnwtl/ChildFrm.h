@@ -18,6 +18,7 @@
 #define MINI_BAR_HEIGHT 15
 
 #define MENUMESSAGE_CHANGESCHEME 0xa
+#define PN_CHECKAGE WM_USER+32
 
 #include "fromhandle.h"
 
@@ -28,11 +29,7 @@ public:
 
 	typedef CTabbedMDIChildWindowImpl<CChildFrame> baseClass;
 
-	CTextView m_view;
 	CallbackBase2<bool, CChildFrame*>* m_onClose;
-	
-	CString m_Title;
-	CString m_FileName;
 
 	virtual void OnFinalMessage(HWND /*hWnd*/)
 	{
@@ -49,6 +46,8 @@ public:
 
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
+
+		MESSAGE_HANDLER(PN_CHECKAGE, OnCheckAge)
 
 		// Global Cut, Copy, Paste and Undo handling....
 		COMMAND_ID_HANDLER(ID_EDIT_CUT, OnCut)
@@ -90,6 +89,20 @@ public:
 	BEGIN_MENU_HANDLER_MAP()
 		HANDLE_MENU_COMMAND(MENUMESSAGE_CHANGESCHEME, OnSchemeChange)
 	END_MENU_HANDLER_MAP()
+
+	CChildFrame()
+	{
+		m_hImgList = NULL;
+		m_FileAge = -1;
+	}
+
+	~CChildFrame()
+	{
+		if(m_hImgList)
+		{
+			::ImageList_Destroy(m_hImgList);
+		}
+	}
 
 	/**
 	 * We override UpdateLayout in order to call UpdateBarsPosition in this class,
@@ -224,7 +237,15 @@ public:
 	LRESULT OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		UpdateMenu();
+		CheckAge();
 		bHandled = FALSE;
+		return 0;
+	}
+
+	LRESULT OnCheckAge(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+	{
+		CheckAge();
+
 		return 0;
 	}
 
@@ -442,12 +463,43 @@ public:
 	}
 
 	////////////////////////////////////////////////////
-	// Editor Window Methods
+	// File Management Methods
+	
+	void CheckAge()
+	{
+		if(CanSave())
+		{
+			long age = FileAge(m_FileName);
+			if(age != m_FileAge)
+			{
+				CString msg;
+				msg.Format(_T("%s\n\nThe above file has been modified outside of Programmers Notepad, do\nyou want to refresh and lose changes?"), (LPCTSTR)m_FileName);
+				if ( MessageBox((LPCTSTR)msg, _T("File Changed"), MB_YESNO) == IDYES )
+				{
+					Revert();
+				}
+				else
+					m_FileAge = age;
+			}
+		}
+	}
+
+	void Revert()
+	{
+		// Check that we have a valid filename first...
+		if(CanSave())
+		{
+			//@todo maybe flag this instead of re-applying the scheme (a little un-necessary)
+			m_view.Load((LPCTSTR)m_FileName, m_view.GetCurrentScheme());
+			m_FileAge = FileAge(m_FileName);
+		}
+	}
 
 	void PNOpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme = NULL)
 	{
 		if(m_view.Load(pathname, pScheme))
 		{
+			m_FileAge = FileAge(pathname);
 			SetTitle(filename);
 			m_FileName = pathname;
 		}
@@ -464,6 +516,8 @@ public:
 		{
 			if(bStoreFilename)
 			{
+				m_FileAge = FileAge(pathname);
+
 				ctcString fn;
 				CFileName(pathname).GetFileName(fn);
 
@@ -527,6 +581,9 @@ public:
 		SaveFile(m_FileName, false);
 	}
 
+	////////////////////////////////////////////////////
+	// Editor Window Methods	
+
 	bool FindNext(SFindOptions* options)
 	{
 		return m_view.FindNext(options);
@@ -573,7 +630,10 @@ public:
 
 protected:
 	HIMAGELIST m_hImgList;
-	int m_lastLexer;	
+	CTextView m_view;
+	CString m_Title;
+	CString m_FileName;
+	long m_FileAge;
 };
 
 /////////////////////////////////////////////////////////////////////////////

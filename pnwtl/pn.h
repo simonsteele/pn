@@ -20,6 +20,7 @@ struct IMainFrame
 	virtual CWindow* GetWindow() = 0;
 	virtual void AddMRUEntry(LPCTSTR lpszFile) = 0;
 	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme) = 0;
+	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL) = 0;
 };
 
 struct _Context 

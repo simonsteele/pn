@@ -11,10 +11,6 @@
 #include "stdafx.h"
 #include "resource.h"
 
-#include <atlframe.h>
-#include <atlctrlw.h>
-#include <atlctrlx.h>
-
 // Tabbed MDI Framework
 #include "pntabs.h"
 

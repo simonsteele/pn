@@ -175,10 +175,11 @@ void CMRUMenu::UpdateMenu()
 	{
 		for(offset = 0; offset < m_entries.GetSize(); offset++)
 		{
-			_entry& e = m_entries[nSize - 1 - offset];
+			int co = nSize - 1 - offset;
+			_entry& e = m_entries[co];
 			AtlCompactPath(szBuf, e.pszData, 40);
 			wsprintf(szItemText, _T("&%i %s"), offset + 1, szBuf);
-			::InsertMenu(m, insertPoint + offset, MF_BYPOSITION | MF_STRING, m_iBase + offset, szItemText);
+			::InsertMenu(m, insertPoint + offset, MF_BYPOSITION | MF_STRING, m_iBase + co, szItemText);
 		}
 	}
 	else
