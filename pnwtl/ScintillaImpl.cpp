@@ -398,7 +398,7 @@ void CScintillaImpl::HighlightAll(SFindOptions* pOptions)
 
 	/////////////////////////////////////
 	IndicSetStyle(0, INDIC_SQUIGGLE);
-	IndicSetFore(0, PNStringToColor("00,80,00"));
+	IndicSetFore(0, RGB(0, 0x80, 0));
 	/////////////////////////////////////
 	
 	int posFind = SearchInTarget(findLen, (LPCTSTR)findTarget);

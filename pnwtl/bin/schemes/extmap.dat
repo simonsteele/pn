@@ -8,6 +8,7 @@
 .pas=ObjectPascal
 .properties=Properties
 .ini=Properties
-.scheme=Properties
+.scheme=xml
 .conf=Properties
 .cf=Properties
+.xml=xml
