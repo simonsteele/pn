@@ -23,6 +23,8 @@ class ATL_NO_VTABLE CComboBoxACImpl : public CWindowImpl< T, TBase, TWinTraits>
 public:
 	DECLARE_WND_SUPERCLASS(NULL, TBase::GetWndClassName())
 
+	typedef CWindowImpl< T, TBase, TWinTraits >	baseClass;
+
 	/**
 	 * @class CComboBoxEditImpl
 	 * @brief template class implementing simple edit control selection persistence.
@@ -115,7 +117,7 @@ public:
 	// overridden to provide proper initialization
 	BOOL SubclassWindow(HWND hWnd, LPCTSTR szSubKey)
 	{
-		BOOL bRet = CWindowImpl< T, TBase, TWinTraits>::SubclassWindow(hWnd);
+		BOOL bRet = baseClass::SubclassWindow(hWnd);
 		if(bRet)
 			Init(szSubKey);
 		return bRet;
@@ -125,7 +127,7 @@ public:
 			DWORD dwStyle, DWORD dwExStyle, _U_MENUorID MenuOrID,
 			LPCTSTR szSubKey, UINT nDummyId)
 	{
-		HWND hWnd = CWindowImpl< T, TBase, TWinTraits>::Create(hWndParent, rect.m_lpRect, szWindowName, dwStyle, dwExStyle, MenuOrID.m_hMenu);
+		HWND hWnd = baseClass::Create(hWndParent, *rect.m_lpRect, szWindowName, dwStyle, dwExStyle, (unsigned int)MenuOrID.m_hMenu);
 		if(hWnd)
 		{
 			Init(szSubKey);

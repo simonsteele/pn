@@ -200,6 +200,10 @@ void CToolCommandString::OnFormatChar(TCHAR thechar)
 			m_string += itosbuf;
 			break;
 
+		case _T('w'):
+			m_string += pChild->GetTextView()->GetCurrentWord();
+			break;
+
 		case _T('?'):
 			{
 				CInputDialog* dlg = new CInputDialog(_T("Tool Parameters"), _T("Parameters:"));

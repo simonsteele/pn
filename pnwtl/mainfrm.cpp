@@ -813,7 +813,7 @@ void CMainFrame::MoveMRU(CSMenuHandle& r, CSMenuHandle& a)
 		{
 			MENUITEMINFO mii;
 			memset(&mii, 0, sizeof(mii));
-			mii.cbSize = sizeof(MENUITEMINFO);
+			mii.cbSize = sizeofMENUITEMINFO(); //sizeof(MENUITEMINFO);
 			mii.fMask = MIIM_SUBMENU;
 			file.GetItemInfo(i, &mii);
 			
@@ -852,7 +852,7 @@ void CMainFrame::MoveLanguage(CSMenuHandle& remove, CSMenuHandle& add)
 			{
 				MENUITEMINFO mii;
 				memset(&mii, 0, sizeof(MENUITEMINFO));
-				mii.cbSize = sizeof(MENUITEMINFO);
+				mii.cbSize = sizeofMENUITEMINFO();
 				mii.fMask = MIIM_SUBMENU;
 				view.GetItemInfo(i, &mii);
 
