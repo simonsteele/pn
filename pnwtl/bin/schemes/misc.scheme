@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="dosbatch">
+			rem set if exist errorlevel for in do
+			break call chcp cd chdir choice cls country ctty date del erase dir echo
+			exit goto loadfix loadhigh mkdir md move path pause prompt rename ren
+			rmdir rd shift time type ver verify vol com con lpt nul
+		</keyword-class>
+	</keyword-classes>
+	<language name="batch" title="Batch Files" folding="false">
+		<lexer name="batch" />
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="dosbatch"/>
+		</use-keywords>
+		<use-styles>
+			<!--<style name="Default" key="32" />-->
+			<style name="Whitespace" key="0" />
+			<style name="Comment" key="1" class="comment" />
+			<style name="Keyword" key="2" class="keyword" />
+			<style name="Label" key="3" fore="ffff00" back="606060" eolfilled="true" />
+			<style name="Hide command char '@'" key="4" class="preprocessor" />
+			<style name="External commands" key="5" bold="true" fore="colour.keyword" />
+			<style name="Variable (%x)" key="6" back="ffffe0" />
+			<style name="Operator" key="7" class="operator" />
+		</use-styles>
+	</language>
+	<language name="makefile" title="Make" folding="false">
+		<lexer name="makefile" />
+		<!--<use-keywords>
+			<keyword key="0" name="Keywords" class="dosbatch"/>
+		</use-keywords>-->
+		<use-styles>
+			<!--<style name="Default" key="32" />-->
+			<style name="Whitespace" key="0" />
+			<style name="Comment" key="1" class="comment" />
+			<style name="Pre-Processor" key="2" class="preprocessor" />
+			<style name="Variable $(x)" key="3" fore="000080" />
+			<style name="Operator" key="4" class="operator" />
+			<style name="Target" key="5" fore="a00000" />
+			<style name="Error" key="9" class="error" />
+		</use-styles>
+	</language>
+	<language name="diff" title="Diff" folding="false">
+		<lexer name="diff" />
+		<use-styles>
+			<style name="Whitespace" key="0" />
+			<style name="Comment" key="1" fore="007f00" />
+			<style name="Command" key="2" fore="7f7f00" />
+			<style name="Source and Destination" key="3" fore="7f0000" />
+			<style name="Position Setting (@@)" key="4" fore="7f007f" />
+			<style name="Line Removed (-)" key="5" fore="007f7f" />
+			<style name="Line Added (+)" key="6" fore="00007f" />
+		</use-styles>
+	</language>
+	<language name="output" title="Output" folding="false" internal="true">
+		<lexer name="errorlist" />
+		<use-styles>
+			<style name="Default" key="32" fore="b06000" />
+			<style name="Whitespace" key="0" fore="000000" />
+			<style name="Python error" key="1" fore="ff0000" />
+			<style name="gcc error" key="2" fore="800080" />
+			<style name="Microsoft error" key="3" fore="808000" />
+			<style name="command or return status" key="4" fore="0000ff" />
+			<style name="Borland message" key="5" fore="b06000" />
+			<style name="Perl message" key="6" fore="ff0000" />
+			<style name=".NET tracebacks" key="7" fore="ff0000" />
+			<style name="Lua messages" key="8" fore="ff0000" />
+			<style name="ctags" key="9" fore="ff00ff" />
+			<group name="diff">
+				<style name="change (!)" key="10" fore="007f00" />
+				<style name="addition (+)" key="11" fore="00007f" />
+				<style name="deletion (-)" key="12" fore="007f7f" />
+				<style name="message (---)" key="13" fore="7f0000" />
+			</group>
+			<style name="PHP error" key="14" fore="ff0000" />
+		</use-styles>
+	</language>
+</Scheme>
