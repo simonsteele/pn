@@ -424,6 +424,7 @@ public:
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnListViewEraseBackground)
 		MESSAGE_HANDLER(WM_PAINT, OnListViewPaint)
 		MESSAGE_HANDLER(WM_PRINTCLIENT, OnListViewPaint)
+		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
 
 		NOTIFY_CODE_HANDLER(HDN_BEGINTRACKA, OnHeaderBeginTrack)
 		NOTIFY_CODE_HANDLER(HDN_BEGINTRACKW, OnHeaderBeginTrack)
@@ -452,6 +453,8 @@ public:
 
 	LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
+	LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	LRESULT OnYes(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 	LRESULT OnEndDialog(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);

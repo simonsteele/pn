@@ -78,7 +78,7 @@
 			border-color border-style width height float clear
 			display white-space list-style-type list-style-image list-style-position list-style
 		</keyword-class>
-		<keyword-class name="css-psuedo">
+		<keyword-class name="css-pseudo">
 		first-letter first-line link active visited first-child focus hover lang before after left right first
 		</keyword-class>
 		<keyword-class name="css2">
@@ -296,7 +296,7 @@
 		<lexer name="css"/>
 		<use-keywords>
 			<keyword key="0" name="CSS 1" class="css"/>
-			<keyword key="1" name="Psuedo Classes" class="css-psuedo" />
+			<keyword key="1" name="pseudo Classes" class="css-pseudo" />
 			<keyword key="2" name="CSS 2" class="css2"/>
 		</use-keywords>
 		<use-styles>
@@ -304,8 +304,8 @@
 			<style name="Text" key="0" class="default"/>
 			<style name="Selector (HTML tag)" key="1" class="keyword"/>
 			<style name="Class selector" key="2"/>
-			<style name="Psuedo class" key="3" fore="800000"/>
-			<style name="Unknown Psuedo" key="4" fore="ff0000"/>
+			<style name="Pseudo class" key="3" fore="800000"/>
+			<style name="Unknown pseudo" key="4" fore="ff0000"/>
 			<style name="Operator" key="5" class="operator"/>
 			<style name="Property" key="6" fore="0000b0"/>
 			<style name="Unknown Property" key="7" fore="fa0000"/>

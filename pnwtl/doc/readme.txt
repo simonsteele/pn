@@ -33,6 +33,7 @@ What's new?
 24) Drag to re-arrange tabs.
 25) Optional new, empty file on startup.
 26) Magic Folders in projects - folders that reflect real directory contents.
+27) Now open the "open file" dialog in the same directory as the current file.
 
 Bug Fixes:
 ----------
@@ -58,6 +59,8 @@ Bug Fixes:
 19) PN loses focus on closing search dialogs (SF Bug #939917).
 20) Duplicate brace match colour settings (SF Bug #951146).
 21) Esc doesn't close the refresh dialog (SF Bug #939931).
+22) Pseudo misspelt in CSS scheme (SF Bug #969586).
+23) Regular Expression replace (SF Bug #957788).
 
 If you find a bug:
 ------------------

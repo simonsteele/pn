@@ -1114,6 +1114,18 @@ LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	CPNOpenDialog dlgOpen(_T("All Files (*.*)|*.*|"));
 	dlgOpen.m_ofn.Flags |= OFN_ALLOWMULTISELECT;
 
+	tstring path;
+
+	if(OPTIONS->Get(PNSK_INTERFACE, _T("OpenInCurrentDir"), true))
+	{
+		CChildFrame* pChild = CChildFrame::FromHandle( GetCurrentEditor() );
+		if(pChild != NULL)
+		{
+			path = pChild->GetFileName( FN_PATH );
+			dlgOpen.m_ofn.lpstrInitialDir = path.c_str();
+		}
+	}
+
 	if (dlgOpen.DoModal() == IDOK)
 	{
 		EAlreadyOpenAction action = (EAlreadyOpenAction)OPTIONS->GetCached(Options::OAlreadyOpenAction);

@@ -573,6 +573,7 @@ LRESULT CChildFrame::OnChildSaveModified(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 	}
 	else
 	{
+		// If SaveAs succeeds, we return 0 - we can close. Else return -1, user cancelled.
 		return SaveAs() ? 0 : -1;
 	}
 }
@@ -1121,6 +1122,8 @@ bool CChildFrame::SaveAs()
 		{
 			ChangeFormat(format);
 		}
+		if(dlgSave.m_ofn.lpstrFile == NULL)
+			RETURN_UNEXPECTED(_T("SaveAs lpstrFile == NULL"), false);
 		SaveFile(dlgSave.m_ofn.lpstrFile);
 	}
 	else

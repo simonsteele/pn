@@ -668,6 +668,22 @@ LRESULT CSaveModifiedItemsDialog::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 	return 0;
 }
 
+LRESULT CSaveModifiedItemsDialog::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	bHandled = FALSE;
+
+	if(wParam == 0x59 /*'Y'*/)
+	{
+		::PostMessage(m_hWnd, WM_COMMAND, IDYES, 0);
+	}
+	else if(wParam == 0x4E /*'N'*/)
+	{
+		::PostMessage(m_hWnd, WM_COMMAND, IDNO, 0);
+	}
+
+	return 0;
+}
+
 LRESULT CSaveModifiedItemsDialog::OnYes(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(m_modifiedList)
