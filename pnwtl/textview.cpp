@@ -141,9 +141,11 @@ bool CTextView::OpenFile(LPCTSTR filename)
 	CFile file;
 	if ( file.Open(filename, CFile::modeRead | CFile::modeBinary) ) 
 	{
-		SPerform(SCI_CLEARALL);
 		// Disable UNDO
 		SPerform(SCI_SETUNDOCOLLECTION, 0);
+
+		SPerform(SCI_CLEARALL);
+		
 		char data[blockSize];
 		int lenFile = file.Read(data, sizeof(data));
 

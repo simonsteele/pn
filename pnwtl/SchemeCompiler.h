@@ -105,10 +105,14 @@ class CSchemeLoaderState
 		StylesMap				m_CustomClasses;
 		CustomisedScheme*		m_pCustom;
 		StyleDetails*			m_pGroupClass;
+		BaseScheme*				m_pBase;
+
+		CUSTOMISED_NAMEMAP		m_BaseSchemes;
 
 		XMLParser*				m_pParser;
 
-		int m_State;
+		int						m_State;
+		bool					m_bBaseParse;
 		
 		CString m_csGName;
 		CString m_csLangName;

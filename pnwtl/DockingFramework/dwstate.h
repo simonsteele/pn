@@ -258,7 +258,7 @@ public:
 		}
 		virtual bool Store(IMainState* pMState,CRegKey& key)
 		{
-			dockwins::DFDOCKPOSEX dpos = {0}; // ss: Initialise to 0.
+			dockwins::DFDOCKPOSEX dpos;
 			ZeroMemory(&dpos,sizeof(dockwins::DFDOCKPOSEX));
 			bool bRes=Store(pMState,&dpos);
 			if(bRes)

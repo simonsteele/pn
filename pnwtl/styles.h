@@ -19,9 +19,13 @@ using std::string;
 using std::list;
 using std::map;
 
+/* The edvGroupStart value is a misappropriation of the values field. It allows
+ * a StyleDetails object to be stored in a list as a marker for the start of
+ * a group. The value should never be used by anything but the schemeparser.
+ * The edvGroupEnd value is its counterpart. */
 typedef enum {edvFontName = 0x0001,	edvFontSize = 0x0002, edvForeColor = 0x0004, edvBackColor = 0x0008,
 				edvBold = 0x0010, edvItalic = 0x0020, edvUnderline = 0x0040, edvEOLFilled = 0x0080, 
-				edvClass = 0x0100} EValuesSet;
+				edvClass = 0x0100, edvGroupStart = 0x0200, edvGroupEnd = 0x0400} EValuesSet;
 
 /** 
  * @brief represents a single style as sent to Scintilla.
@@ -432,6 +436,27 @@ class CustomKeywordHolder
 class CustomisedScheme : public CustomKeywordHolder, public StylesList
 {
 
+};
+
+
+typedef enum {ebvLexer = 0x01} EBaseSet;
+
+class BaseScheme : public CustomisedScheme
+{
+	public:
+		BaseScheme()
+		{
+			lexer		= _T("");
+			styleBits	= 0;
+			valuesSet	= 0;
+			flags		= 0;
+		}
+
+		tstring lexer;
+		int		styleBits;
+		int		flags;
+
+		int		valuesSet;
 };
 
 typedef map<CString, CustomisedScheme*> CUSTOMISED_NAMEMAP;
