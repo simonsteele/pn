@@ -148,6 +148,7 @@ public:
 
 	BEGIN_MSG_MAP(CFindDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDC_FINDNEXT_BUTTON, OnFindNextClicked)
@@ -187,10 +188,14 @@ public:
 		return TRUE;
 	}
 
-	void CloseDialog(int nVal)
+	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		m_fAC->Unbind();
+		return 0;
+	}
 
+	void CloseDialog(int nVal)
+	{
 		DestroyWindow();
 		::PostQuitMessage(nVal);
 	}
@@ -293,7 +298,7 @@ public:
 
 protected:
 	CComboBoxEx						m_FindTextCombo;
-	CDropDownButton					m_ReHelperBtn;
+	CArrowButton					m_ReHelperBtn;
 
 	CCustomAutoComplete*			m_fAC;
 
@@ -313,6 +318,7 @@ public:
 
 	BEGIN_MSG_MAP(CReplaceDlg)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
 		COMMAND_HANDLER(IDC_REHELPER_BUTTON, BN_CLICKED, OnReHelperClicked)
@@ -391,6 +397,14 @@ public:
 
 		CenterWindow(GetParent());
 		return TRUE;
+	}
+
+	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+	{
+		m_pFAC->Unbind();
+		m_pRAC->Unbind();
+		
+		return 0;
 	}
 
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -472,12 +486,10 @@ public:
 		return 0;
 	}
 
-	LRESULT OnCloseWindow(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+	LRESULT OnCloseWindow(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
-		m_pRAC->Unbind();
-		m_pFAC->Unbind();
-		bHandled = FALSE;
-
+		//bHandled = FALSE;
+		ShowWindow(SW_HIDE);
 		return 0;
 	}
 
@@ -548,8 +560,8 @@ public:
 protected:
 	CComboBoxEx				m_FindTextCombo;
 	CComboBoxEx				m_ReplaceTextCombo;
-	CDropDownButton			m_ReHelperBtn;
-	CDropDownButton			m_ReHelperBtn2;
+	CArrowButton			m_ReHelperBtn;
+	CArrowButton			m_ReHelperBtn2;
 
 	CCustomAutoComplete*	m_pFAC;
 	CCustomAutoComplete*	m_pRAC;
