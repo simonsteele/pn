@@ -325,13 +325,17 @@ void Folder::AddChild(Folder* folder)
 	folder->SetParent(this);
 	children.insert(children.end(), folder);
 	SetDirty();
+	notify(pcAdd, folder);
 }
 
 File* Folder::AddFile(LPCTSTR file)
 {
 	File* pFile = new File(basePath.c_str(), file, this);
 	files.insert(files.end(), pFile);
+	
 	SetDirty();
+	notify(pcAdd, pFile);
+	
 	return pFile;
 }
 
@@ -339,7 +343,10 @@ void Folder::AddFile(File* file)
 {
 	//TODO: file->SetBasePath(basePath.c_str());
 	files.insert(files.end(), file);
+	
 	SetDirty();
+	notify(pcAdd, file);
+
 	file->SetFolder(this);
 }
 
@@ -349,6 +356,7 @@ Folder* Folder::AddFolder(LPCTSTR path, LPCTSTR filter, bool recursive)
 	Folder* folder = fa.GetFolder(path, filter, basePath.c_str(), recursive);
 	AddChild(folder);
 	SetDirty();
+	
 	return folder;
 }
 
@@ -367,13 +375,17 @@ void Folder::RemoveFile(File* file)
 void Folder::DetachChild(Folder* folder)
 {
 	children.remove(folder);
+	
 	SetDirty();
+	notify(pcRemove, folder);
 }
 
 void Folder::DetachFile(File* file)
 {
 	files.remove(file);
+	
 	SetDirty();
+	notify(pcRemove, file);
 }
 
 void Folder::Clear()
@@ -391,6 +403,8 @@ void Folder::Clear()
 	}
 
 	files.clear();
+
+	notify(pcClear, this);
 }
 
 void Folder::SetParent(Folder* folder)
@@ -511,6 +525,24 @@ bool Folder::hasUserData()
 	return false;
 }
 
+void Folder::notify(PROJECT_CHANGE_TYPE changeType)
+{
+	notify(changeType, this, this);
+}
+
+void Folder::notify(PROJECT_CHANGE_TYPE changeType, ProjectType* changeItem)
+{
+	notify(changeType, this, changeItem);
+}
+
+void Folder::notify(PROJECT_CHANGE_TYPE changeType, Folder* changeContainer, ProjectType* changeItem)
+{
+	if(parent != NULL)
+	{
+		parent->notify(changeType, changeContainer, changeItem);
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // Project
 //////////////////////////////////////////////////////////////////////////////
@@ -528,6 +560,8 @@ bool Project::CreateEmptyProject(LPCTSTR projectname, LPCTSTR filename)
 
 Project::Project()
 {
+	parentWorkspace = NULL;
+
 	type = ptProject;
 
 	bDirty = true;
@@ -538,6 +572,8 @@ Project::Project()
 
 Project::Project(LPCTSTR projectFile) : Folder()
 {
+	parentWorkspace = NULL;
+
 	type = ptProject;
 
 	fileName = projectFile;
@@ -592,6 +628,7 @@ void Project::Save()
 	genxDispose(writer.w);
 	
 	bDirty = false;
+	Folder::notify(pcClean);
 }
 
 void Project::SetFileName(LPCTSTR filename)
@@ -607,6 +644,19 @@ tstring Project::GetFileName()
 bool Project::IsDirty()
 {
 	return bDirty;
+}
+
+void Project::notify(PROJECT_CHANGE_TYPE changeType, Folder* changeContainer, ProjectType* changeItem)
+{
+	if(parentWorkspace != NULL)
+	{
+		parentWorkspace->Notify(changeType, changeContainer, changeItem);
+	}
+}
+
+void Project::setWorkspace(Workspace* workspace)
+{
+	parentWorkspace = workspace;
 }
 
 void Project::parse()
@@ -884,7 +934,11 @@ void Project::processUserData(LPCTSTR name, XMLAttributes& atts)
 
 void Project::SetDirty()
 {
+	bool bOld = bDirty;
 	bDirty = true;
+	
+	if(!bOld)
+		Folder::notify(pcDirty);
 }
 
 ProjectTemplate* Project::GetTemplate() const
@@ -901,12 +955,14 @@ Workspace::Workspace() : ProjectType(ptWorkspace)
 	fileName = _T("");
 	bDirty = false;
 	activeProject = NULL;
+	watcher = NULL;
 }
 
 Workspace::Workspace(LPCTSTR projectFile) : ProjectType(ptWorkspace)
 {
 	fileName = projectFile;
 	activeProject = NULL;
+	watcher = NULL;
 	parse();
 }
 
@@ -918,6 +974,7 @@ Workspace::~Workspace()
 void Workspace::AddProject(Project* project)
 {
 	projects.insert(projects.end(), project);
+	project->setWorkspace(this);
 	bDirty = true;
 
 	if(activeProject == NULL)
@@ -939,6 +996,7 @@ void Workspace::InsertProject(Project* project, Project* insertAfter)
 	}
 
 	projects.insert(iAfter, project);
+	project->setWorkspace(this);
     
 	bDirty = true;
 }
@@ -946,6 +1004,7 @@ void Workspace::InsertProject(Project* project, Project* insertAfter)
 void Workspace::RemoveProject(Project* project)
 {
 	DetachProject(project);
+	project->setWorkspace(NULL);
 	delete project;	
 }
 
@@ -969,6 +1028,7 @@ void Workspace::DetachProject(Project* project)
 	}
 
 	projects.remove(project);
+	project->setWorkspace(NULL);
 
 	if(activeProject == project)
 	{
@@ -1111,6 +1171,19 @@ Projects::Project* Workspace::GetActiveProject()
 void Workspace::SetActiveProject(Projects::Project* project)
 {
 	activeProject = project;
+}
+
+void Workspace::Notify(PROJECT_CHANGE_TYPE changeType, Folder* changeContainer, ProjectType* changeItem)
+{
+	if(watcher != NULL)
+	{
+		watcher->OnProjectItemChange(changeType, changeContainer, changeItem);
+	}
+}
+
+void Workspace::SetWatcher(IProjectWatcher* newWatcher)
+{
+	watcher = newWatcher;
 }
 
 void Workspace::startElement(LPCTSTR name, XMLAttributes& atts)

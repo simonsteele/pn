@@ -16,7 +16,7 @@
 
 class ShellImageList;
 
-class CProjectTreeCtrl : public CMSTreeViewCtrl
+class CProjectTreeCtrl : public CMSTreeViewCtrl, Projects::IProjectWatcher
 {
 	typedef CMSTreeViewCtrl baseClass;
 	
@@ -27,7 +27,7 @@ public:
 	DECLARE_WND_CLASS(_T("ProjectTree"))
 
 	CProjectTreeCtrl();
-	~CProjectTreeCtrl();
+	virtual ~CProjectTreeCtrl();
 
 	BEGIN_MSG_MAP(CProjectTreeCtrl)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
@@ -73,6 +73,8 @@ public:
 	Projects::File* GetSelectedFile();
 	void			SetWorkspace(Projects::Workspace* ws);	
 
+	virtual void	OnProjectItemChange(Projects::PROJECT_CHANGE_TYPE changeType, Projects::Folder* changeContainer, Projects::ProjectType* changeItem);
+
 protected:
 	HTREEITEM	addFileNode(Projects::File* file, HTREEITEM hParent, HTREEITEM hInsertAfter);
 	HTREEITEM	addFolderNode(Projects::Folder* folder, HTREEITEM hParent, HTREEITEM hInsertAfter);
@@ -82,6 +84,8 @@ protected:
 	HTREEITEM	buildFiles(HTREEITEM hParentNode, HTREEITEM hInsertAfter, const Projects::FILE_LIST& files);
 	void		clearTree();
 	void		doContextMenu(LPPOINT pt);
+	HTREEITEM	findItem(Projects::ProjectType* item, HTREEITEM startat);
+	HTREEITEM	findFolder(Projects::Folder* folder);
 	HTREEITEM	getLastFolderItem(HTREEITEM hParentNode);
 	void		handleRemove();
 	void		handleRightClick(LPPOINT pt);
@@ -158,6 +162,7 @@ protected:
 	int						magicFolderIcon;
 	bool					multipleSelection;
 	bool					dragging;
+	bool					processNotifications;
 	HIMAGELIST				hDragImageList;
 	int						dragTimer;
 	HTREEITEM				hDropTargetItem;

@@ -34,7 +34,7 @@ typedef std::list<File*>		FILE_LIST;
 typedef FILE_LIST::iterator		FILE_IT;
 
 typedef enum {ptFile, ptMagicFile, ptFolder, ptMagicFolder, ptProject, ptWorkspace} PROJECT_TYPE;
-typedef enum {pcAdd, pcRemove, pcEdit} PROJECT_CHANGE_TYPE;
+typedef enum {pcAdd, pcRemove, pcEdit, pcClear, pcDirty, pcClean} PROJECT_CHANGE_TYPE;
 
 class FolderAdder;
 class MagicFolderAdder;
@@ -81,7 +81,7 @@ public:
 	 * @param changeContainer Folder that contains the changed/added/deleted item
 	 * @param changeItem Item that was changed/added/deleted
 	 */
-	virtual void OnProjectItemChange(PROJECT_CHANGE_TYPE changeType, Folder* changeContainer, ProjectType* changeItem);
+	virtual void OnProjectItemChange(PROJECT_CHANGE_TYPE changeType, Folder* changeContainer, ProjectType* changeItem) = 0;
 };
 
 class File : public ProjectType
@@ -161,6 +161,9 @@ class Folder : public ProjectType
 	protected:
 		void Clear();
 		bool hasUserData();
+		virtual void notify(PROJECT_CHANGE_TYPE changeType);
+		virtual void notify(PROJECT_CHANGE_TYPE changeType, ProjectType* changeItem);
+		virtual void notify(PROJECT_CHANGE_TYPE changeType, Folder* changeContainer, ProjectType* changeItem);
 		void writeContents(ProjectWriter definition);
 
 	protected:
@@ -299,6 +302,12 @@ class Project : public Folder, XMLParseState
 	protected:
 		Project();
 
+		friend class Workspace;
+
+		virtual void notify(PROJECT_CHANGE_TYPE changeType, Folder* changeContainer, ProjectType* changeItem);
+
+		void setWorkspace(Workspace* workspace);
+
 		void writeDefinition(ProjectWriter definition);	
 
 		void processProject(XMLAttributes& atts);
@@ -314,6 +323,7 @@ class Project : public Folder, XMLParseState
 		Folder*				currentFolder;
 		File*				lastParsedFile;
 		XmlNode*			lastNode;
+		Workspace*			parentWorkspace;
 		ProjectTemplate*	m_template;
 		tstring				fileName;
 		tstring				udText;
@@ -368,6 +378,11 @@ class Workspace : public ProjectType, XMLParseState
 		Projects::Project* GetActiveProject();
 		void SetActiveProject(Projects::Project* project);
 
+		void Notify(PROJECT_CHANGE_TYPE changeType, Folder* changeContainer, ProjectType* changeItem);
+
+		///Set to NULL to cancel watcher.
+		void SetWatcher(IProjectWatcher* newWatcher);
+
 	//Implement XMLParseState
 	protected:
 		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
@@ -385,6 +400,7 @@ class Workspace : public ProjectType, XMLParseState
 		tstring				fileName;
 		bool				bDirty;
 		Projects::Project*	activeProject;
+		IProjectWatcher*	watcher;
 };
 
 class ProjectViewState

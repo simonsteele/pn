@@ -31,10 +31,13 @@ using namespace Projects;
 
 CProjectTreeCtrl::CProjectTreeCtrl()
 {
+	workspace = NULL;
 	lastItem = NULL;
 	m_pDropTarget = NULL;
 
 	dragging = false;
+
+	processNotifications = true;
 
 	shellImages = new ShellImageList();
 	projectIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_PROJECTFOLDER)) );
@@ -101,12 +104,87 @@ File* CProjectTreeCtrl::GetSelectedFile()
 
 void CProjectTreeCtrl::SetWorkspace(Projects::Workspace* ws)
 {
+	if(workspace != NULL)
+	{
+		// Remove our events subscription...
+		workspace->SetWatcher(NULL);
+	}
+
 	workspace = ws;
 
 	clearTree();
 
 	if(workspace != NULL)
+	{
 		buildTree();
+		workspace->SetWatcher(this);
+	}
+}
+
+void CProjectTreeCtrl::OnProjectItemChange(PROJECT_CHANGE_TYPE changeType, Projects::Folder* changeContainer, Projects::ProjectType* changeItem)
+{
+	if(!processNotifications)
+		return;
+
+	switch(changeType)
+	{
+		case pcAdd:
+		{
+			if(changeItem->GetType() == ptFile)
+			{
+				// Added a file.
+				PNASSERT(changeContainer != NULL);
+				HTREEITEM hParent = findFolder(changeContainer);
+				PNASSERT(hParent != NULL);
+
+				HTREEITEM hLastFolder = getLastFolderItem(hParent);
+				
+				if(hParent != NULL)
+				{
+					addFileNode(static_cast<File*>( changeItem ), hParent, hLastFolder);
+					SortChildren(hParent);
+					Expand(hParent);
+				}
+			}
+			else if(changeItem->GetType() == ptFolder)
+			{
+				PNASSERT(changeContainer != NULL);
+				HTREEITEM hParent = findFolder(changeContainer);
+				PNASSERT(hParent != NULL);
+
+				HTREEITEM hLastFolder = getLastFolderItem(hParent);
+
+				if(hParent != NULL)
+				{
+					addFolderNode(static_cast<Projects::Folder*>( changeItem ), hParent, hLastFolder);
+					SortChildren(hParent);
+					Expand(hParent);
+				}
+			}
+		}
+		break;
+
+		case pcDirty:
+		{
+			HTREEITEM hProjectNode = findFolder(changeContainer);
+			PNASSERT(hProjectNode != NULL);
+
+			tstring str = changeContainer->GetName();
+			str += _T(" *");
+
+			SetItemText(hProjectNode, str.c_str());
+		}
+		break;
+
+		case pcClean:
+		{
+			HTREEITEM hProjectNode = findFolder(changeContainer);
+			PNASSERT(hProjectNode != NULL);
+
+			SetItemText(hProjectNode, changeContainer->GetName());
+		}
+		break;
+	}
 }
 
 HTREEITEM CProjectTreeCtrl::addFileNode(File* file, HTREEITEM hParent, HTREEITEM hInsertAfter)
@@ -339,6 +417,37 @@ void CProjectTreeCtrl::doContextMenu(LPPOINT pt)
 			break;
 		}
 	}
+}
+
+HTREEITEM CProjectTreeCtrl::findItem(Projects::ProjectType* item, HTREEITEM startat)
+{
+	HTREEITEM hN = startat;
+	while(hN)
+	{
+		if(GetItemData(hN) == reinterpret_cast<DWORD_PTR>(item))
+		{
+			return hN;
+		}
+
+		// If we have children, walk'em...
+		HTREEITEM hChild = GetChildItem( hN );
+		if(hChild != NULL)
+		{
+			HTREEITEM ret = findItem(item, hChild);
+			if(ret)
+				return ret;
+		}
+
+		hN = GetNextSiblingItem( hN );
+	}
+
+	return NULL;
+}
+
+HTREEITEM CProjectTreeCtrl::findFolder(Projects::Folder* folder)
+{
+	HTREEITEM hItem = GetRootItem();
+	return findItem(static_cast<Projects::ProjectType*>(folder), hItem);
 }
 
 HTREEITEM CProjectTreeCtrl::getLastFolderItem(HTREEITEM hParentNode)
@@ -755,6 +864,8 @@ LRESULT CProjectTreeCtrl::OnAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 		{
 			HTREEITEM hLastInsert = getLastFolderItem(hParent);
 
+			processNotifications = false;
+
 			for(CPNOpenDialog::const_iterator i = dlgOpen.begin(); 
 				i != dlgOpen.end();
 				++i)
@@ -763,6 +874,8 @@ LRESULT CProjectTreeCtrl::OnAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 				
 				hLastInsert = addFileNode(newFile, hParent, hLastInsert);
 			}
+
+			processNotifications = true;
 			
 			SortChildren(hParent);
 			Expand(hParent);
@@ -782,12 +895,10 @@ LRESULT CProjectTreeCtrl::OnAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 		Projects::Folder* folder = static_cast<Projects::Folder*>(lastItem);
 		Projects::Folder* newFolder = new Projects::Folder(_T("New Folder"), folder->GetBasePath());
 
+		// Add the folder (this will add it to the tree through notifications)
 		folder->AddChild(newFolder);
-
-		HTREEITEM hInsertAfter = getLastFolderItem(hLastItem);
-		HTREEITEM hFolderNode = addFolderNode(newFolder, hLastItem, hInsertAfter);
-
-		Expand(hLastItem);
+		
+		HTREEITEM hFolderNode = findFolder(newFolder);
 		EditLabel(hFolderNode);
 	}
 	else if(lastItem->GetType() == ptMagicFolder)
@@ -816,6 +927,8 @@ LRESULT CProjectTreeCtrl::OnAddMagicFolder(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	{
 		CPathName pn(wiz.GetSelFolder());
 
+		processNotifications = false;
+
 		// Add a Magic Folder...
 		Projects::Folder* folder = static_cast<Projects::Folder*>(lastItem);
 		Projects::MagicFolder* newFolder = new Projects::MagicFolder(pn.GetDirectoryName().c_str(), pn.c_str());
@@ -830,30 +943,13 @@ LRESULT CProjectTreeCtrl::OnAddMagicFolder(WORD /*wNotifyCode*/, WORD /*wID*/, H
 		fl.insert(fl.end(), newFolder);
 		ProjectViewState viewState;
 		HTREEITEM theFolder = buildFolders(hLastItem, fl, viewState);
+
+		processNotifications = true;
+
 		sort(theFolder);
 
 		Expand(hLastItem);
 	}
-
-	/*if(lastItem->GetType() == ptProject)
-	{
-		CFolderDialog fd;
-		if(fd.DoModal() == IDOK)
-		{
-			Projects::Folder* folder = static_cast<Projects::Folder*>(lastItem);
-			Projects::MagicFolder* newFolder = new Projects::MagicFolder(fd.GetFolderDisplayName(), fd.GetFolderPath());
-			
-			folder->AddChild(newFolder);
-			
-			HTREEITEM hInsertAfter = getLastFolderItem(hLastItem);
-			FOLDER_LIST fl;
-			fl.insert(fl.end(), newFolder);
-			ProjectViewState viewState;
-			buildFolders(hLastItem, fl, viewState);
-
-			Expand(hLastItem);
-		}
-	}*/
 
 	return 0;
 }
