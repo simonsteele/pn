@@ -34,6 +34,9 @@ class SchemeTools
 		void			Add(ToolDefinition* pDef);
 		void			Delete(ToolDefinition* pDef);
 
+		void			MoveUp(ToolDefinition* pDef);
+		void			MoveDown(ToolDefinition* pDef);
+
 		void			WriteDefinition(ofstream& stream);
 
 		void			ReleaseMenuResources();

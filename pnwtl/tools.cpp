@@ -103,6 +103,29 @@ void SchemeTools::Delete(ToolDefinition* pDef)
 	delete pDef;
 }
 
+void SchemeTools::MoveUp(ToolDefinition* pDef)
+{
+	TOOLDEFS_LIST::iterator i = std::find(m_Tools.begin(), m_Tools.end(), pDef);
+	if(i != m_Tools.end() && i != m_Tools.begin())
+	{
+		TOOLDEFS_LIST::iterator j = i;
+		i--;
+		std::iter_swap(i, j);
+	}
+}
+
+void SchemeTools::MoveDown(ToolDefinition* pDef)
+{
+	TOOLDEFS_LIST::iterator i = std::find(m_Tools.begin(), m_Tools.end(), pDef);
+	if(i != m_Tools.end())
+	{
+		TOOLDEFS_LIST::iterator j = i;
+		i++;
+		if(i != m_Tools.end())
+			std::iter_swap(i, j);
+	}
+}
+
 void SchemeTools::WriteDefinition(ofstream& stream)
 {
 	if(m_Tools.size() != 0)
