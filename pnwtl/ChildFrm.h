@@ -363,9 +363,9 @@ public:
 	////////////////////////////////////////////////////
 	// Editor Window Methods
 
-	void PNOpenFile(LPCTSTR pathname, LPCTSTR filename)
+	void PNOpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme = NULL)
 	{
-		m_view.Load(pathname);
+		m_view.Load(pathname, pScheme);
 		SetTitle(filename);
 		m_FileName = pathname;
 	}
@@ -434,6 +434,11 @@ public:
 	void SetPosStatus(CMultiPaneStatusBarCtrl&	stat)
 	{
 		m_view.SetPosStatus(stat);
+	}
+
+	void SetScheme(CScheme* pScheme)
+	{
+		m_view.SetScheme(pScheme);
 	}
 
 protected:
