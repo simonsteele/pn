@@ -10,9 +10,9 @@ last updated: 13/10/2003
 ==========
 
 Menu to choose file encoding type (currently PN just preserves the original type).
-Better printing - margins, header and footer.
 Header switch as a generic feature.
 Start help file.
+[50% Implemented] Better printing - margins, header and footer.
 [99% Implemented] Basic Project Management - file grouping etc.
 [Implemented - Bjoern Graf] Find & Replace actual combo-box entries (not just auto-complete).
 [Implemented] Combo-box toolbar for scheme selection.
@@ -26,3 +26,16 @@ Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
 Basic Build Management - see http://www.pnotepad.org/articles/pn2projects.html
 PCRE Based Search.
 Filetype filters - e.g. allow loading of .dfm files.
+HTML Export configuration, inline HTML export.
+
+0.7 Basie
+=========
+
+Unicode build.
+File browser window.
+HTML preview window (ie+moz).
+
+0.8 Ellington
+=============
+
+Mini-PN - true notepad-style document-centric PN alternative build.

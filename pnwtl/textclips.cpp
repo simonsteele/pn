@@ -11,6 +11,7 @@
 #include "stdafx.h"
 #include "textclips.h"
 #include "include/filefinder.h"
+#include "include/encoding.h"
 
 namespace TextClips {
 
@@ -40,6 +41,9 @@ LPCTSTR TextClipSet::GetName()
 
 void TextClipSet::clear()
 {
+	encoding = eNone;
+	decodeNames = false;
+
 	for(LIST_CLIPS::iterator i = clips.begin(); i != clips.end(); ++i)
 	{
 		delete (*i);
@@ -93,6 +97,20 @@ void TextClipSet::startElement(LPCTSTR name, XMLAttributes& atts)
 				this->name = szName;
 			else
 				this->name = _T("(unknown)");
+
+			LPCTSTR szEncoding = atts.getValue(_T("encoding"));
+			if(szEncoding != NULL)
+			{
+				if(_tcscmp(szEncoding, _T("windows-1252")) == 0)
+					encoding = eWindows1252;
+				else if(_tcscmp(szEncoding, _T("ansi")) == 0)
+					encoding = eANSI;
+			}
+
+			szEncoding = atts.getValue(_T("decodeNames"));
+			if(szEncoding != NULL)
+				if(szEncoding[0] == _T('t') || szEncoding[0] == _T('T'))
+					decodeNames = true;
 		}
 	}
 	else if( IN_STATE(TCPS_CLIPS) )
@@ -112,7 +130,19 @@ void TextClipSet::endElement(LPCTSTR name)
 	{
 		// Create new clip - name = curName, content = cData;
 		Clip* clip = new Clip;
-		clip->Name = curName;
+		if(decodeNames)
+#ifndef _UNICODE
+			clip->Name = Utf8_Windows1252( curName.c_str() );
+#else
+			//todo 
+			clip->Name = curName;
+#endif
+		else
+			clip->Name = curName;
+		
+		if(encoding != eNone)
+			decodeData();
+
 		clip->Text = cData;
 
 		///@todo implement this, and remove the delete.
@@ -140,6 +170,30 @@ void TextClipSet::characterData(LPCTSTR data, int len)
 
 		cData += cdata;
 	}
+}
+
+void TextClipSet::decodeData()
+{
+	// Until we have UTF-16 to 'x' conversion routines these won't work.
+	#ifndef _UNICODE
+	switch(encoding)
+	{
+		case eWindows1252:
+		{
+			Utf8_Windows1252 conv( cData.c_str() );
+			if(conv.IsValid())
+				cData = (const char*)conv;
+		}
+		break;
+		case eANSI:
+		{
+			Utf8_ANSI conv( cData.c_str() );
+			if(conv.IsValid())
+				cData = (const char*)conv;
+		}
+		break;
+	}
+	#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////

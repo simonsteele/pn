@@ -49,10 +49,20 @@ class TextClipSet : public XMLParseState
 	protected:
 		void clear();
 		void parse(LPCTSTR filename);
+		void decodeData();
 
 		LIST_CLIPS	clips;
 
+		typedef enum tagEncodings
+		{
+			eNone,
+			eWindows1252,
+			eANSI,
+		} EEncoding;
+
 	protected:
+		EEncoding encoding;
+		bool decodeNames;
 		int	parseState;
 		tstring cData;
 		tstring curName;

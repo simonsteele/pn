@@ -501,6 +501,9 @@
 				RelativePath="include\ColorButton.cpp">
 			</File>
 			<File
+				RelativePath=".\include\encoding.h">
+			</File>
+			<File
 				RelativePath="include\OptionsDialog.h">
 			</File>
 			<File

@@ -1,6 +1,23 @@
 | Working towards 0.5 :: Mingus
 ---------------------------------------
 
+Since 18/11/03:
+
+Added encoding conversions to text-clip imports. Text clips must be saved as
+UTF-8, UTF-16 or iso-8859-1 text, but come into PN2 as UTF-8. Due to this,
+some characters could not be shown previously, but can now be converted to 
+ANSI or Windows-1252 (just about iso-8859-1 ) on import. This allows text-
+clips to include characters in these encodings for insertion into documents.
+To enable an encoding for a given clips file, simply include an encoding=""
+attribute on the clips element, and specify one of "windows-1252" or "ansi".
+
+The name of each clip is by default treated as UTF-8. If the title itself 
+contains non-ASCII characters then PN will make an attempt at displaying 
+anything that fits into windows-1252. To enable this, a clips element can 
+specify decodeNames="true".
+
+Fixed the text-clips chooser.
+
 Since 10/11/03:
 
 Output window no longer inherits line length helper styles.
