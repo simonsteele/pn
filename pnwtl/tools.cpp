@@ -64,6 +64,65 @@ TOOLDEFS_LIST& SchemeTools::GetTools()
 	return m_Tools;
 }
 
+#include "include/sscontainers.h"
+
+//CString CHotKeyCtrl::GetKeyName(UINT vk, BOOL fExtended)
+tstring SchemeTools::GetKeyName(UINT vk, bool extended) const
+{
+	LONG lScan = MapVirtualKey(vk, 0) << 16;
+
+	// if it's an extended key, add the extended flag
+	if (extended)
+		lScan |= 0x01000000L;
+
+	tstring str;
+	GArray<TCHAR> tcbuf;
+	
+	int nBufferLen = 64;
+	int nLen;
+	do
+	{
+		nBufferLen *= 2;
+		//LPTSTR psz = str.GetBufferSetLength(nBufferLen);
+		tcbuf.grow(nBufferLen);
+		nLen = ::GetKeyNameText(lScan, &tcbuf[0], nBufferLen + 1);
+	}
+	while (nLen == nBufferLen);
+	return tstring(&tcbuf[0]);
+}
+
+static const TCHAR szPlus[] = _T(" + ");
+
+tstring SchemeTools::GetShortcutText(int wCode, int wModifiers) const
+{
+	tstring strKeyName;
+
+	if (wCode != 0 || wModifiers != 0)
+	{
+		if (wModifiers & HOTKEYF_CONTROL)
+		{
+			strKeyName += GetKeyName(VK_CONTROL, false);
+			strKeyName += szPlus;
+		}
+
+		if (wModifiers & HOTKEYF_SHIFT)
+		{
+			strKeyName += GetKeyName(VK_SHIFT, false);
+			strKeyName += szPlus;
+		}
+
+		if (wModifiers & HOTKEYF_ALT)
+		{
+			strKeyName += GetKeyName(VK_MENU, false);
+			strKeyName += szPlus;
+		}
+
+		strKeyName += GetKeyName(wCode, (wModifiers & HOTKEYF_EXT) != 0);
+	}
+
+	return strKeyName;
+}
+
 ///@return ID of last command added...
 int SchemeTools::GetMenu(CSMenuHandle& menu, int iInsertBefore, int iCommand)
 {
@@ -79,7 +138,18 @@ int SchemeTools::GetMenu(CSMenuHandle& menu, int iInsertBefore, int iCommand)
             if(pT->CommandID == -1)
 				pT->CommandID = pMan->RegisterCallback(pT->CommandID, NULL, iCommand, (LPVOID)pT);
 
-			::InsertMenu(menu, iInsertBefore, MF_BYCOMMAND | MF_STRING, pT->CommandID, pT->Name.c_str());
+			tstring str = pT->Name;
+			if(pT->Shortcut != 0)
+			{
+				tstring sc = GetShortcutText(LOBYTE(pT->Shortcut), HIBYTE(pT->Shortcut));
+				if(sc.length() > 0)
+				{
+					str += "\t";
+					str += sc;
+				}
+			}
+
+			::InsertMenu(menu, iInsertBefore, MF_BYCOMMAND | MF_STRING, pT->CommandID, str.c_str());
 			iLastCommand = pT->CommandID;
 		}
 	}

@@ -72,6 +72,8 @@ class SchemeTools
 		bool			ToolsInSource(ToolSource* source);
 		void			BuildMenu(int iCommand);
 		void			InternalWriteDefinition(ofstream& stream, ToolSource* source);
+		tstring			GetShortcutText(int wCode, int wModifiers) const;
+		tstring			GetKeyName(UINT vkcode, bool extended) const;
 		
 		TOOLDEFS_LIST	m_Tools;
 		tstring			m_Scheme;
