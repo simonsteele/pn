@@ -493,9 +493,6 @@ class CNumberCombo : public CComboBox
 #include <vector>
 using std::vector;
 
-#include <string>
-typedef basic_string<TCHAR> tstring;
-
 template <typename TStringType>
 static void StringTokenise(const TStringType& str,
                       vector<TStringType>& tokens,

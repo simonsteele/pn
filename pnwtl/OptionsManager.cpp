@@ -188,32 +188,47 @@ BOOL PNGetSpecialFolderPath (LPTSTR path, int folder)
 
 void COptionsManager::GetSchemesPaths(ctcString& path, ctcString& compiledPath)
 {
+	GetPNPath(path, PNPATH_SCHEMES);
+	GetPNPath(compiledPath, PNPATH_USERSETTINGS);
+}
+
+void COptionsManager::GetPNPath(tstring& path, int pathtype)
+{
 	TCHAR buf[MAX_PATH +1];
-	
-	GetModuleFileName(NULL, buf, MAX_PATH);
-	path = buf;
-	
-	int cutoff = path.rfind(_T('\\'));
-	path = path.substr(0, cutoff+1);
-	path += "Schemes\\";
-	
-	/*ss 20/01/2003 Fix SF Bug #671357
-	SHGetSpecialFolderPath(NULL, buf, CSIDL_APPDATA, TRUE)*/
-	if(PNGetSpecialFolderPath(buf, CSIDL_APPDATA))
+	memset(buf, 0, sizeof(buf));
+
+	if(pathtype == PNPATH_PN || pathtype == PNPATH_SCHEMES)
 	{
-		compiledPath = buf;
-		if(compiledPath[compiledPath.length()-1] != _T('\\'))
-		{
-			compiledPath += _T('\\');
-		}
+		GetModuleFileName(NULL, buf, MAX_PATH);
+		path = buf;
+		
+		int cutoff = path.rfind(_T('\\'));
+		path = path.substr(0, cutoff+1);
 
-		compiledPath += _T("Echo Software\\PN2\\");
-
-		CreateDirectoryRecursive(compiledPath.c_str());
+		if(pathtype == PNPATH_SCHEMES)
+			path += _T("Schemes\\");
 	}
-	else
+	else if(pathtype == PNPATH_USERSETTINGS)
 	{
-		// fallback and compile into the schemes definition folder.
-        compiledPath = path;
+		/*ss 20/01/2003 Fix SF Bug #671357
+		SHGetSpecialFolderPath(NULL, buf, CSIDL_APPDATA, TRUE)*/
+		if(PNGetSpecialFolderPath(buf, CSIDL_APPDATA))
+		{
+			path = buf;
+			if(path[path.length()-1] != _T('\\'))
+			{
+				path += _T('\\');
+			}
+
+			path += _T("Echo Software\\PN2\\");
+
+			CreateDirectoryRecursive(path.c_str());
+		}
+		else
+		{
+			// fallback and compile into the schemes definition folder.
+			///@todo should we fallback to the temp directory?
+			GetPNPath(path, PNPATH_SCHEMES);
+		}
 	}
 }

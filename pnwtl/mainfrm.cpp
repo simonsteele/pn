@@ -18,6 +18,8 @@
 
 #include "aboutdlg.h"
 
+#include "OptionsPages.h"
+
 CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4)
 {
 	m_FindDialog = NULL;

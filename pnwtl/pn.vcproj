@@ -142,6 +142,9 @@
 				RelativePath=".\OptionsManager.cpp">
 			</File>
 			<File
+				RelativePath="OptionsPages.cpp">
+			</File>
+			<File
 				RelativePath=".\SchemeCompiler.cpp">
 			</File>
 			<File
@@ -207,6 +210,9 @@
 			</File>
 			<File
 				RelativePath="OptionsManager.h">
+			</File>
+			<File
+				RelativePath="OptionsPages.h">
 			</File>
 			<File
 				RelativePath=".\SchemeCompiler.h">

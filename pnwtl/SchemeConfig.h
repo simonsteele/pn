@@ -4,6 +4,9 @@
 #include "SchemeCompiler.h"
 #include "files.h"
 
+/**
+ * @brief collection of StyleDetails objects
+ */
 class CustomStyleCollection
 {
 	_NO_COPY(CustomStyleCollection)
@@ -35,6 +38,9 @@ class CustomStyleCollection
 		CustomStyleCollection* m_pNext;
 };
 
+/**
+ * @brief Subclass of CustomStyleCollection providing linked-list based grouping.
+ */
 class CustomStyleHolder : public CustomStyleCollection
 {
 	_NO_COPY(CustomStyleHolder)
@@ -48,6 +54,12 @@ class CustomStyleHolder : public CustomStyleCollection
         CustomStyleCollection* m_pCurrent;
 };
 
+/**
+ * @brief Class representing the configuration of one scheme.
+ *
+ * Stores custom styles and keywords, and also stores the existing
+ * styles and keywords for a single scheme.
+ */
 class SchemeConfig : public CustomKeywordHolder, public CustomStyleHolder
 {
 	_NO_COPY(SchemeConfig)
@@ -65,6 +77,9 @@ class SchemeConfig : public CustomKeywordHolder, public CustomStyleHolder
 typedef list<SchemeConfig*>	LIST_SCHEMECONFIGS;
 typedef LIST_SCHEMECONFIGS::iterator SCF_IT;
 
+/**
+ * @brief Sub-Class of the Scheme file parser, specifically for configuration...
+ */
 class SchemeConfigParser : public SchemeParser
 {
 	_NO_COPY(SchemeConfigParser)

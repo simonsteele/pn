@@ -44,6 +44,7 @@ HWND GetCurrentEditor();
 
 #include "schemes.h"
 
+#include "pnutils.h"
 #include "pndialogs.h"
 #include "textview.h"
 #include "ChildFrm.h"

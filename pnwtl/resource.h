@@ -61,6 +61,7 @@
 #define ID_HELP_WEB_SF                  252
 #define ID_HELP_WEB_SB                  253
 #define ID_HELP_REPORTABUG              254
+#define IDD_TOOLEDITOR                  255
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -77,11 +78,14 @@
 #define IDC_BUTTON1                     1010
 #define IDC_STYLE_FOREBUTTON            1010
 #define IDC_TOOLS_ADDBUTTON             1010
+#define IDC_TE_COMMANDBUTTON            1010
 #define IDC_EDIT1                       1011
 #define IDC_KEYWORDS_KEYWORDTEXT        1011
 #define IDC_TOOLS_EDITBUTTON            1011
+#define IDC_TE_NAMEEDIT                 1011
 #define IDC_FONT_COMBO                  1012
 #define IDC_TOOLS_REMOVEBUTTON          1012
+#define IDC_TE_BROWSEBUTTON             1012
 #define IDC_FONTSIZE_COMBO              1013
 #define IDC_SCHEMECOMBO                 1016
 #define IDC_SCHEMELABEL                 1017
@@ -98,16 +102,21 @@
 #define IDC_STYLE_BACKBUTTON            1033
 #define IDC_KEYWORDS_RESETBUTTON        1033
 #define IDC_TOOLS_MOVEUPBUTTON          1033
+#define IDC_TE_CLEARBUTTON              1033
 #define IDC_KEYWORDS_SORTBUTTON         1034
-#define IDC_BUTTON5                     1034
 #define IDC_TOOLS_MOVEDOWNBUTTON        1034
 #define IDC_STYLE_RESETBTN              1036
 #define IDC_STYLE_RESETALLBTN           1037
 #define IDC_LIST1                       1039
 #define IDC_KEYWORDS_LIST               1039
 #define IDC_LIST                        1039
+#define IDC_TE_CMDEDIT                  1040
+#define IDC_TE_FOLDEREDIT               1041
 #define IDC_REPLACETEXT_LABEL           1042
+#define IDC_TE_PARAMSEDIT               1042
 #define IDC_BACKSLASH_CHECK             1043
+#define IDC_EDIT5                       1043
+#define IDC_TE_SHORTCUTEDIT             1043
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_PNSAVE_TYPECOMBO            1057
 #define IDC_MARKALL_BUTTON              21199
@@ -150,9 +159,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        255
+#define _APS_NEXT_RESOURCE_VALUE        256
 #define _APS_NEXT_COMMAND_VALUE         32790
-#define _APS_NEXT_CONTROL_VALUE         1040
+#define _APS_NEXT_CONTROL_VALUE         1044
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

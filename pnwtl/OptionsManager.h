@@ -17,6 +17,10 @@ static const TCHAR* PNSK_INTERFACE = _T("Interface Settings");
 static const TCHAR* PNSK_EDITOR = _T("Editor Settings");
 static const TCHAR* PNSK_PRINT = _T("Print Settings");
 
+#define PNPATH_PN				0
+#define	PNPATH_SCHEMES			1
+#define	PNPATH_USERSETTINGS		2
+
 typedef enum {leCRLF, leCR, leLF} ELineEndings;
 
 /**
@@ -57,6 +61,7 @@ class COptionsManager
 		void LoadPrintSettings(SPrintOptions* pSettings);
 		
 		void GetSchemesPaths(ctcString& path, ctcString& compiledPath);
+		void GetPNPath(tstring& path, int pathtype = PNPATH_PN);
 		
 		SFindOptions*		GetFindOptions(){return &m_FindOptions;}
 		SReplaceOptions*	GetReplaceOptions(){return &m_ReplaceOptions;}

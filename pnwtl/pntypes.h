@@ -13,6 +13,9 @@
 
 #include "scintilla.h"
 
+#include <string>
+typedef std::basic_string<TCHAR> tstring;
+
 typedef struct tagFindOptions
 {
 	CString FindText;
@@ -44,6 +47,15 @@ typedef struct tagPrintOptions
 	HGLOBAL hDevNames;
 	RECT	rcMargins;
 } SPrintOptions;
+
+typedef struct tagToolDefinition
+{
+	tstring	Name;
+	tstring Command;
+	tstring	Folder;
+	tstring	Params;
+	tstring Shortcut;
+} SToolDefinition;
 
 typedef enum { PNSF_Windows = SC_EOL_CRLF, PNSF_Unix = SC_EOL_LF, PNSF_Mac = SC_EOL_CR, PNSF_NoChange} EPNSaveFormat;
 
