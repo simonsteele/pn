@@ -7,11 +7,11 @@
 #define AFX_STDAFX_H__41A3A8B3_1419_494D_BBD8_4394DCE4A180__INCLUDED_
 
 // Change these values to use different versions
-#define WINVER		0x0400
+#define WINVER		0x0500	// Changed to allow CDotNetTabCtrl to compile with COLOR_HOTLIGHT
+#define _WIN32_WINNT 0x0500
+
 #define _WIN32_IE	0x0400
 #define _RICHEDIT_VER	0x0100
-
-#define _WIN32_WINNT 0x0500
 
 #include <atlbase.h>
 #include <atlapp.h>
@@ -19,6 +19,13 @@
 extern CAppModule _Module;
 
 #include <atlwin.h>
+
+#if (_ATL_VER >= 0x0700)
+	#include <atlstr.h>
+	#define _WTL_NO_CSTRING
+	extern "C" const int _fltused = 0;
+#endif
+
 #include <atlmisc.h>
 #include <atlddx.h>
 

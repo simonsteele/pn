@@ -27,9 +27,9 @@
  * windows list control, what better way than to use the framework
  * provided in tabbed MDI code.
  */
-class CPNMDIClient : public CTabbedMDIClient< CDotNetTabCtrl >
+class CPNMDIClient : public CTabbedMDIClient< CDotNetTabCtrl<CTabViewTabItem> >
 {
-	typedef CTabbedMDIClient<CDotNetTabCtrl> baseClass;
+	typedef CTabbedMDIClient< CDotNetTabCtrl<CTabViewTabItem> > baseClass;
 
 public:
 	BEGIN_MSG_MAP(CPNMDIClient)

@@ -15,8 +15,13 @@
 #include <atlctrlw.h>
 #include <atlctrlx.h>
 
+#if (_ATL_VER >= 0x0700)
+#include <atlcoll.h>
+#endif
+
 #include "TabbingFramework\atlgdix.h"
-#include "TabbingFramework\CoolTabCtrls.h"
+#include "TabbingFramework\CustomTabCtrl.h"
+#include "TabbingFramework\DotNetTabCtrl.h"
 #include "TabbingFramework\TabbedFrame.h"
 #include "TabbingFramework\TabbedMDI.h"
 
