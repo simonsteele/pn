@@ -374,7 +374,18 @@ LRESULT CMainFrame::OnInitMenuPopup(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 LRESULT CMainFrame::OnDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	BOOL b;
-	OnFileOpen(0, 0, 0, b);
+
+	switch( COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("MDIDoubleClickAction"), 0) )
+	{
+		case 0:
+			OnFileOpen(0, 0, 0, b);
+			break;
+		case 1:
+			OnFileNew(0, 0, 0, b);
+			break;
+		default:
+			OutputDebugString(_T("PN2: Unknown MDI Double-Click Action Code"));
+	}
 	return 0;
 }
 
