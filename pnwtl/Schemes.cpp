@@ -408,23 +408,23 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 
 void CScheme::SetupScintilla(CScintilla& sc)
 {
-	COptionsManager& options = COptionsManager::GetInstanceRef();
+	Options& options = *OPTIONS;
 
 	//ss 16/02/2003 Now performed by document...
 	//sc.SPerform(SCI_SETEOLMODE, options.LineEndings);
 
 	// Line Indentation...
-	sc.SPerform(SCI_SETINDENTATIONGUIDES, (options.ShowIndentGuides ? 1 : 0));
-	sc.SPerform(SCI_SETUSETABS, options.UseTabs ? 1 : 0);
-	sc.SPerform(SCI_SETTABWIDTH, options.TabWidth);
-	if( options.LineHighlight )
+	sc.SPerform(SCI_SETINDENTATIONGUIDES, (options.GetCached(Options::OShowIndentGuides) ? 1 : 0));
+	sc.SPerform(SCI_SETUSETABS, options.GetCached(Options::OUseTabs) ? 1 : 0);
+	sc.SPerform(SCI_SETTABWIDTH, options.GetCached(Options::OTabWidth));
+	if( options.GetCached(Options::OLineHighlight) )
 	{
 		sc.SPerform(SCI_SETCARETLINEVISIBLE, true);
-		sc.SPerform(SCI_SETCARETLINEBACK, options.LineHighlightColour);
+		sc.SPerform(SCI_SETCARETLINEBACK, options.GetCached(Options::OLineHighlightColour));
 	}
-	sc.SPerform(SCI_SETEDGEMODE, options.RightGuide);
-	sc.SPerform(SCI_SETEDGECOLUMN, options.RightColumn);
-	sc.SPerform(SCI_SETEDGECOLOUR, options.RightGuideColour);
+	sc.SPerform(SCI_SETEDGEMODE, options.GetCached(Options::ORightGuide));
+	sc.SPerform(SCI_SETEDGECOLUMN, options.GetCached(Options::ORightColumn));
+	sc.SPerform(SCI_SETEDGECOLOUR, options.GetCached(Options::ORightGuideColour));
 
 	// Set even treatment of left and right caret positioning, and sloppy behaviour. 
 	// Use 3 lines as the jump when scrolling up and down.
@@ -441,9 +441,11 @@ void CScheme::SetupScintilla(CScintilla& sc)
 
 	sc.SPerform(SCI_SETMARGINWIDTHN, 1, 16/*margin ? marginWidth : 0*/);
 	
+	options.BeginGroupOperation(PNSK_EDITOR);
+
 	// Default windows edit control behaviour... This needs to be optional.
 	///@todo allow default scintilla coloured selection...
-	if(options.Get(PNSK_EDITOR, _T("DefaultSelectionColours"), true))
+	if(options.Get(NULL, _T("DefaultSelectionColours"), true))
 	{
 		sc.SPerform(SCI_SETSELFORE, 1, ::GetSysColor(COLOR_HIGHLIGHTTEXT));
 		sc.SPerform(SCI_SETSELBACK, 1, ::GetSysColor(COLOR_HIGHLIGHT));
@@ -452,19 +454,21 @@ void CScheme::SetupScintilla(CScintilla& sc)
 	{
 		COLORREF c;
 
-		if(options.Get(PNSK_EDITOR, _T("SetSelectionFore"), false))
+		if(options.Get(NULL, _T("SetSelectionFore"), false))
 		{
-			c = (COLORREF)options.Get(PNSK_EDITOR, _T("SelectionFore"), (int)::GetSysColor(COLOR_HIGHLIGHTTEXT));
+			c = (COLORREF)options.Get(NULL, _T("SelectionFore"), (int)::GetSysColor(COLOR_HIGHLIGHTTEXT));
 			sc.SPerform(SCI_SETSELFORE, 1, c);
 		}
 		else
 			sc.SPerform(SCI_SETSELFORE, 0, 0);
 		
-		c = (COLORREF)options.Get(PNSK_EDITOR, _T("SelectionBack"), (int)::GetSysColor(COLOR_HIGHLIGHT));
+		c = (COLORREF)options.Get(NULL, _T("SelectionBack"), (int)::GetSysColor(COLOR_HIGHLIGHT));
 		sc.SPerform(SCI_SETSELBACK, 1, c);
 	}
 
-	sc.SPerform(SCI_SETCODEPAGE, (long)options.DefaultCodePage);
+	sc.SPerform(SCI_SETCODEPAGE, (long)options.GetCached(Options::ODefaultCodePage));
+
+	options.EndGroupOperation();
 }
 
 bool CScheme::operator < (const CScheme& compare) const 

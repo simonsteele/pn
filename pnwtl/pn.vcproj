@@ -252,10 +252,16 @@
 				RelativePath="OptionsDialogs.cpp">
 			</File>
 			<File
+				RelativePath=".\OptionsIni.cpp">
+			</File>
+			<File
 				RelativePath=".\OptionsManager.cpp">
 			</File>
 			<File
 				RelativePath="OptionsPages.cpp">
+			</File>
+			<File
+				RelativePath=".\OptionsRegistry.cpp">
 			</File>
 			<File
 				RelativePath="outputview.cpp">
@@ -388,10 +394,16 @@
 				RelativePath="OptionsDialogs.h">
 			</File>
 			<File
+				RelativePath=".\OptionsIni.h">
+			</File>
+			<File
 				RelativePath="OptionsManager.h">
 			</File>
 			<File
 				RelativePath="OptionsPages.h">
+			</File>
+			<File
+				RelativePath=".\OptionsRegistry.h">
 			</File>
 			<File
 				RelativePath="outputview.h">

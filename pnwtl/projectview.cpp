@@ -1047,7 +1047,7 @@ LRESULT CProjectDocker::OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandle
 			{
 				g_Context.m_frame->Open(file->GetFileName(), true);
 				HWND hWndEditor = GetCurrentEditor();
-				::SetFocus(hWndEditor);
+				::PostMessage(hWndEditor, WM_SETFOCUS, NULL, NULL);
 			}
 		}
 	}

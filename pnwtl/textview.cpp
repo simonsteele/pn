@@ -20,7 +20,7 @@ CTextView::CTextView() : baseClass()
 	m_waitOnBookmarkNo = FALSE;
 	m_encType = eUnknown;
 	
-	m_bSmartStart = COptionsManager::GetInstance()->Get(PNSK_EDITOR, _T("SmartStart"), true);
+	m_bSmartStart = OPTIONS->Get(PNSK_EDITOR, _T("SmartStart"), true);
 }
 
 BOOL CTextView::PreTranslateMessage(MSG* pMsg)
@@ -138,13 +138,15 @@ EPNSaveFormat determineLineEndings(char* pBuf, int nLen)
 		return PNSF_Windows;
 
 	// Default
-	return COptionsManager::GetInstance()->LineEndings;
+	return (EPNSaveFormat)OPTIONS->GetCached(Options::OLineEndings);
 }
 
 bool CTextView::OpenFile(LPCTSTR filename)
 {
 	// We don't want smart start if we're opening a file...
 	m_bSmartStart = false;
+
+	DWORD timeIn = GetTickCount();
 
 	CFile file;
 	if ( file.Open(filename, CFile::modeRead | CFile::modeBinary) ) 
@@ -153,6 +155,15 @@ bool CTextView::OpenFile(LPCTSTR filename)
 		SPerform(SCI_SETUNDOCOLLECTION, 0);
 
 		SPerform(SCI_CLEARALL);
+
+		// Pre-Allocate room for file...
+		int length = file.GetLength();
+		SPerform(SCI_ALLOCATE, length + 1024);
+		
+		if(length >= 10485760)
+			SPerform(SCI_SETLAYOUTCACHE, SC_CACHE_NONE);
+		else
+			SPerform(SCI_SETLAYOUTCACHE, OPTIONS->GetCached(Options::ODefaultScintillaCache));
 		
 		char data[blockSize];
 		int lenFile = file.Read(data, sizeof(data));
@@ -193,6 +204,11 @@ bool CTextView::OpenFile(LPCTSTR filename)
 		SPerform(SCI_SETSAVEPOINT);
 
 		SetLineNumberChars();
+
+		DWORD timeTotal = GetTickCount() - timeIn;
+		TCHAR outstr[300];
+		_stprintf(outstr, _T("Load file takes %d\n"), timeTotal);
+		::OutputDebugString(outstr);
 
 		return true;
 	}
@@ -352,7 +368,7 @@ void CTextView::SetLineNumberChars(bool bSet)
 {
 	if( SPerform(SCI_GETMARGINWIDTHN, 0) > 0 || bSet)
 	{
-		int w = COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("LineNumbersWidth"), 4);
+		int w = OPTIONS->Get(PNSK_INTERFACE, _T("LineNumbersWidth"), 4);
 		
 		long lines = SPerform(SCI_GETLINECOUNT);
 		char lnbuf[40];
@@ -586,5 +602,5 @@ void CTextView::OnFirstShow()
 {
 	m_pLastScheme = CSchemeManager::GetInstance()->GetDefaultScheme();
 	m_pLastScheme->Load(*this);
-	SetEOLMode( COptionsManager::GetInstance()->LineEndings );
+	SetEOLMode( OPTIONS->GetCached(Options::OLineEndings) );
 }

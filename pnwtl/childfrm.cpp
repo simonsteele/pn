@@ -40,7 +40,7 @@ CChildFrame::CChildFrame()
 	m_po.hDevMode = 0;
 	m_po.hDevNames = 0;
 	memset(&m_po.rcMargins, 0, sizeof(RECT));
-	COptionsManager::GetInstance()->LoadPrintSettings(&m_po);
+	OPTIONS->LoadPrintSettings(&m_po);
 
 	InitUpdateUI();
 
@@ -179,7 +179,7 @@ void CChildFrame::EnsureOutputWindow()
 	{
 		m_pSplitter = new CCFSplitter(this);
 		
-		m_pSplitter->SetHorizontal( COptionsManager::GetInstance()->Get(PNSK_EDITOR, _T("OutputSplitHorizontal"), true) );
+		m_pSplitter->SetHorizontal( OPTIONS->Get(PNSK_EDITOR, _T("OutputSplitHorizontal"), true) );
 
 		CRect rc;
 		GetClientRect(rc);
@@ -249,7 +249,7 @@ void CChildFrame::SetTitle( bool bModified )
 		else
 			filepart = sFullPath;
 		
-		if( COptionsManager::GetInstance()->ShowFullPath )
+		if( OPTIONS->GetCached(Options::OShowFullPath) )
 		{
 			title = sFullPath;
 			tabTitle = filepart;
@@ -350,7 +350,7 @@ void CChildFrame::LoadExternalLexers()
 	WIN32_FIND_DATA FindFileData;
 
 	tstring sPath;
-	COptionsManager::GetInstance()->GetPNPath(sPath, PNPATH_SCHEMES);
+	OPTIONS->GetPNPath(sPath, PNPATH_SCHEMES);
 
 	tstring sPattern(sPath);
 	sPattern += "*.lexer";
@@ -394,10 +394,10 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	UISetChecked(ID_EDITOR_COLOURISE, true);
 	UISetChecked(ID_EDITOR_WORDWRAP, false);
-	UISetChecked(ID_EDITOR_LINENOS, COptionsManager::GetInstance()->LineNumbers);
+	UISetChecked(ID_EDITOR_LINENOS, OPTIONS->GetCached(Options::OLineNumbers) != 0);
 	UISetChecked(ID_TOOLS_LECONVERT, true);
 
-	m_view.ShowLineNumbers(COptionsManager::GetInstance()->LineNumbers);
+	m_view.ShowLineNumbers(OPTIONS->GetCached(Options::OLineNumbers) != 0);
 
 	UpdateMenu();
 
@@ -504,6 +504,8 @@ LRESULT CChildFrame::OnOptionsUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 
 	UpdateMenu();
 
+	SetTitle(GetModified());
+
 	return 0;
 }
 
@@ -572,7 +574,7 @@ LRESULT CChildFrame::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 
 LRESULT CChildFrame::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	SFindOptions* pOptions = COptionsManager::GetInstanceRef().GetFindOptions();
+	SFindOptions* pOptions = OPTIONS->GetFindOptions();
 	if( pOptions->FindText != _T("") )
 	{
 		if( !/*m_view.*/FindNext(pOptions) )
@@ -1132,10 +1134,10 @@ int CChildFrame::ReplaceAll(SReplaceOptions* options)
 	return m_view.ReplaceAll(options);
 }
 
-void CChildFrame::HighlightAll(SFindOptions* options)
+/*void CChildFrame::HighlightAll(SFindOptions* options)
 {
 	m_view.HighlightAll(options);
-}
+}*/
 
 int CChildFrame::GetPosition(EGPType type)
 {
@@ -1317,7 +1319,7 @@ void CChildFrame::PrintSetup()
 	m_po.Header = psd.GetHeaderText();
 	m_po.Footer = psd.GetFooterText();
 
-	COptionsManager::GetInstance()->SavePrintSettings(&m_po);
+	OPTIONS->SavePrintSettings(&m_po);
 }
 
 CTextView* CChildFrame::GetTextView()

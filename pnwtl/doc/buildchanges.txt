@@ -1,6 +1,19 @@
 | Working towards 0.6 :: Ella
 ---------------------------------------
 
+Since 09/04/2004:
+
+Added:
+Options can now be saved to a .ini file instead of the registry.
+Middle-click mouse on the document tab to close a document.
+
+Fixes:
+Can't bring up project context menus with the keyboard.
+Highlight colors in scheme wrong when choosing defaults (SF Bug #909343).
+Update status bar when last file closed (SF Bug #514527).
+Changing full path option doesn't affect open files (SF Bug #871628).
+Word-count won't crash with unicode files.
+
 Since 0.5:
 
 See readme.txt

@@ -25,7 +25,7 @@ public:
 	int FindNext(SFindOptions* pOptions);
 	bool ReplaceOnce(SReplaceOptions* pOptions);
 	int ReplaceAll(SReplaceOptions* pOptions);
-	void HighlightAll(SFindOptions* pOptions);
+	//void HighlightAll(SFindOptions* pOptions); - doesn't work with all schemes...
 
 	void ToggleFold();
 	void FoldAll();

@@ -203,9 +203,15 @@ protected:
 		::DestroyMenu(hRegExpMenu);
 	}
 
+	bool EditorChanged()
+	{
+		return lastEditor == CChildFrame::FromHandle(GetCurrentEditor());
+	}
+
 	CChildFrame* GetCurrentEditorWnd()
 	{
-		return CChildFrame::FromHandle(GetCurrentEditor());
+		lastEditor = CChildFrame::FromHandle(GetCurrentEditor());
+		return lastEditor;
 	}
 
 	void SetFindText(LPCTSTR findText)
@@ -225,6 +231,8 @@ protected:
 
 		return CSize( tm.tmAveCharWidth, tm.tmHeight + tm.tmExternalLeading);
 	}
+
+	CChildFrame* lastEditor;
 };
 
 class CFindDlg : public CSearchDlg<CFindDlg>,
@@ -329,10 +337,12 @@ public:
 	{
 		DoDataExchange(TRUE);
 
-		SFindOptions* pOptions = COptionsManager::GetInstanceRef().GetFindOptions();
+		SFindOptions* pOptions = OPTIONS->GetFindOptions();
 
-		//Found might often be true!
-		//pOptions->Found				= false;
+		// If the user has changed to a differnent scintilla window
+		// then Found is no longer necessarily true.
+		if(EditorChanged())
+			pOptions->Found = false;
 
 		pOptions->FindText			= m_FindText;
 		pOptions->Direction			= (m_Direction == 1);
@@ -351,7 +361,7 @@ public:
 	{
 		if((BOOL)wParam)
 		{
-			SFindOptions* pOptions = COptionsManager::GetInstanceRef().GetFindOptions();
+			SFindOptions* pOptions = OPTIONS->GetFindOptions();
 			SetFindText(m_FindText);
 			if(m_FindText.GetLength() == 0 && pOptions->FindText.GetLength())
 				m_FindText = pOptions->FindText;
@@ -452,9 +462,12 @@ public:
 	{
 		DoDataExchange(TRUE);
 
-		SReplaceOptions* pOptions = COptionsManager::GetInstanceRef().GetReplaceOptions();
+		SReplaceOptions* pOptions = OPTIONS->GetReplaceOptions();
 
-		//pOptions->Found = false;	// found might be true!!
+		// If the user has changed to a differnent scintilla window
+		// then Found is no longer necessarily true.
+		if(EditorChanged())
+			pOptions->Found = false;
 
 		pOptions->FindText			= m_FindText;
 		pOptions->ReplaceText		= m_ReplaceText;
@@ -563,7 +576,7 @@ public:
 	{
 		if((BOOL) wParam)
 		{
- 			SReplaceOptions* pOptions = COptionsManager::GetInstanceRef().GetReplaceOptions();
+ 			SReplaceOptions* pOptions = OPTIONS->GetReplaceOptions();
 			
 			if(m_FindText.GetLength() == 0 && pOptions->FindText.GetLength())
 				m_FindText = pOptions->FindText;
@@ -610,9 +623,11 @@ public:
 
 	LRESULT OnReplaceClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		CChildFrame* pEditor = GetCurrentEditorWnd();
-		
+		// Call this before GetCurrentEditorWnd - it will check if the editor
+		// has changed and if so set Found to false.
 		SReplaceOptions* pOptions = GetOptions();
+
+		CChildFrame* pEditor = GetCurrentEditorWnd();		
 			
 		if(pEditor)
 			pEditor->Replace(pOptions);
@@ -622,9 +637,9 @@ public:
 	
 	LRESULT OnReplaceAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		CChildFrame* pEditor = GetCurrentEditorWnd();
-
 		SReplaceOptions* pOptions = GetOptions();
+
+		CChildFrame* pEditor = GetCurrentEditorWnd();
 			
 		if(pEditor)
 		{
@@ -639,11 +654,12 @@ public:
 	
 	LRESULT OnReplaceInSelectionClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
+		SReplaceOptions* pOptions = GetOptions();
+
 		CChildFrame* pEditor = GetCurrentEditorWnd();
 
 		if(pEditor)
 		{
-			SReplaceOptions* pOptions = GetOptions();
 			pOptions->InSelection = true;
 
 			pEditor->ReplaceAll(pOptions);

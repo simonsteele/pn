@@ -113,7 +113,7 @@ AlternateFiles::AlternateFiles()
 	state = AF_START;
 
 	tstring path;
-	COptionsManager::GetInstance()->GetPNPath(path, PNPATH_USERSETTINGS);
+	OPTIONS->GetPNPath(path, PNPATH_USERSETTINGS);
 	path += _T("AlternateFiles.xml");
 
 	if(!FileExists(path.c_str()))
@@ -232,7 +232,7 @@ void AlternateFiles::SetSets(const AFILES_LIST& sets_)
 void AlternateFiles::Save() const
 {
 	tstring path;
-	COptionsManager::GetInstance()->GetPNPath(path, PNPATH_USERSETTINGS);
+	OPTIONS->GetPNPath(path, PNPATH_USERSETTINGS);
 	path += _T("AlternateFiles.xml");
 
 	CFile f;

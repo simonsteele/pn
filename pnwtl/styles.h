@@ -191,7 +191,7 @@ public:
 		{
 			szKey = atts.getName(i);
 			szValue = atts.getValue(i);
-			val = (szValue[0] == _T('-') ? -1 : PNStringToColor(szValue));
+			val = (szValue[0] == _T('-') ? CLR_NONE : PNStringToColor(szValue));
 
 			if(_tcscmp(szKey, _T("selFore")) == 0)
 			{
@@ -216,7 +216,7 @@ public:
 	{
 		if((values & ecSelFore) != 0)
 		{
-			if((int)crSelFore == -1)
+			if((int)crSelFore == CLR_NONE)
 				pSc->SPerform(SCI_SETSELFORE, false, 0);
 			else
 				pSc->SPerform(SCI_SETSELFORE, true, crSelFore);
@@ -275,7 +275,7 @@ protected:
 		buf += name;
 		buf += _T("=\"");
 		
-		if(colour == (DWORD)-1)
+		if(colour == CLR_NONE)
 		{
 			buf += _T("-1\" ");
 		}

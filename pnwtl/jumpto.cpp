@@ -78,7 +78,7 @@ JumpToHandler::JumpToHandler()
 	FileFinder<JumpToHandler> finder(this, &JumpToHandler::LoadHandler);
 
 	tstring pnpath;
-	COptionsManager::GetInstance()->GetPNPath(pnpath, PNPATH_TAGGERS);
+	OPTIONS->GetPNPath(pnpath, PNPATH_TAGGERS);
 
 	finder.Find(pnpath.c_str(), _T("*.dll"), false);
 }

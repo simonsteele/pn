@@ -200,6 +200,7 @@ bool CSRegistry::ReadString(LPCTSTR valname, tstring& value)
 void CSRegistry::CloseKey()
 {
 	RegCloseKey(m_hKey);
+	m_open = false;
 }
 
 bool CSRegistry::DeleteValue(LPCTSTR valname)

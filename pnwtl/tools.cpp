@@ -527,7 +527,7 @@ void SchemeToolsManager::ReLoad(bool bWantMenuResources)
 
 	/// Try and load the user tools file.
 	tstring uspath;
-	COptionsManager::GetInstance()->GetPNPath(uspath, PNPATH_USERTOOLS);
+	OPTIONS->GetPNPath(uspath, PNPATH_USERTOOLS);
 	uspath += _T("UserTools.xml");
 
 	m_DefaultToolsSource.FileName = uspath;
@@ -550,7 +550,7 @@ void SchemeToolsManager::ReLoad(bool bWantMenuResources)
 	}
 
 	// Now we try and find any pre-shipped tool configurations.
-	COptionsManager::GetInstance()->GetPNPath(uspath, PNPATH_TOOLS);
+	OPTIONS->GetPNPath(uspath, PNPATH_TOOLS);
 	tstring pattern(uspath);
 	tstring to_open;
 

@@ -383,17 +383,50 @@ MultipleInstanceManager::MultipleInstanceManager(LPCTSTR pszKey)
 	m_sKey = pszKey;
 
 	m_uiMessage = ::RegisterWindowMessage(pszKey);
+
+	bool bWin95 = (g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) &&
+		( (g_Context.OSVersion.dwMajorVersion == 4) && (g_Context.OSVersion.dwMinorVersion == 0) );
+
+	m_hUser32 = ::LoadLibrary("User32.dll");
+
+	if(m_hUser32 != NULL)
+	{
+
+		if(bWin95)
+		{
+			m_pfnBSM = (PFNBroadcastSystemMessage)::GetProcAddress(m_hUser32, "BroadcastSystemMessage");
+		}
+		else
+		{
+#ifdef _UNICODE
+			m_pfnBSM = (PFNBroadcastSystemMessage)::GetProcAddress(m_hUser32, "BroadcastSystemMessageW");
+#else
+			m_pfnBSM = (PFNBroadcastSystemMessage)::GetProcAddress(m_hUser32, "BroadcastSystemMessageA");
+#endif
+		}
+	}
+	else
+	{
+		m_hUser32 = NULL;
+		m_pfnBSM = NULL;
+	}
 }
 
 MultipleInstanceManager::~MultipleInstanceManager()
 {
 	::CloseHandle(m_hMutex);
+
+	if(m_hUser32)
+	{
+		::FreeLibrary(m_hUser32);
+		m_hUser32 = NULL;
+	}
 }
 
 void MultipleInstanceManager::ActivateOther()
 {
 	DWORD dwRecipients = BSM_APPLICATIONS;
-	long res = ::BroadcastSystemMessage(
+	long res = m_pfnBSM(
 		BSF_ALLOWSFW | BSF_FORCEIFHUNG | BSF_IGNORECURRENTTASK,
 		&dwRecipients, 
 		m_uiMessage,

@@ -270,7 +270,7 @@ public:
 	virtual void SetStatusText(LPCTSTR text, bool bLongLife = true);
 	virtual void SaveAll();
 	virtual bool Open(LPCTSTR pathname, bool bAddMRU = false);
-	virtual bool CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction = COptionsManager::GetInstance()->AlreadyOpenAction);
+	virtual bool CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction action = (EAlreadyOpenAction)OPTIONS->GetCached(Options::OAlreadyOpenAction));
 	virtual Projects::Workspace* GetActiveWorkspace();
 
 	////////////////////////////////////////////////////////////////

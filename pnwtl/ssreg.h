@@ -11,8 +11,6 @@
 #ifndef __SSREG_H__
 #define __SSREG_H__
 
-#include "stdafx.h"
-
 namespace ssreg
 {
 

@@ -29,9 +29,9 @@ void COptionsPageGeneral::OnOK()
 
 	DoDataExchange(TRUE);
 
-	COptionsManager& options = COptionsManager::GetInstanceRef();
-	options.MaximiseNew = m_bMaximise != FALSE;
-	options.ShowFullPath = m_bFullPath != FALSE;
+	Options& options = *OPTIONS;
+	options.SetCached(Options::OMaximiseNew, m_bMaximise != FALSE);
+	options.SetCached(Options::OShowFullPath, m_bFullPath != FALSE);
 	// Ensure MRU size <= 50 && >= 1
 	m_iMRUSize = ( m_iMRUSize > 50 ? 50 : ( m_iMRUSize < 1 ? 1 : m_iMRUSize ) );
 	options.Set(PNSK_INTERFACE, _T("MRUSize"), (int)m_iMRUSize);
@@ -40,11 +40,11 @@ void COptionsPageGeneral::OnOK()
 
 void COptionsPageGeneral::OnInitialise()
 {
-	COptionsManager& options = COptionsManager::GetInstanceRef();
-	m_bMaximise = options.MaximiseNew;
-	m_bFullPath = options.ShowFullPath;
-	m_iMRUSize = options.Get(PNSK_INTERFACE, _T("MRUSize"), 4);
-	m_bMultiInstanceOk = options.Get(PNSK_INTERFACE, _T("AllowMultiInstance"), false);
+	
+	m_bMaximise = OPTIONS->GetCached(Options::OMaximiseNew);
+	m_bFullPath = OPTIONS->GetCached(Options::OShowFullPath);
+	m_iMRUSize = OPTIONS->Get(PNSK_INTERFACE, _T("MRUSize"), 4);
+	m_bMultiInstanceOk = OPTIONS->Get(PNSK_INTERFACE, _T("AllowMultiInstance"), false);
 
 	DoDataExchange();
 }
@@ -73,24 +73,23 @@ void COptionsPageEditDefaults::OnOK()
 	CComboBox cb2(GetDlgItem(IDC_OPT_CPCOMBO));
 	m_CodePage = (ECodePage)cb2.GetItemData(cb2.GetCurSel());
 
-	COptionsManager& options = COptionsManager::GetInstanceRef();
-	options.UseTabs = m_bUseTabs != FALSE;
-	options.TabWidth = m_iTabWidth;
-	options.LineNumbers = m_bLineNos != FALSE;
-	options.LineEndings = m_SaveFormat;
-	options.DefaultCodePage = m_CodePage;
-	options.WordWrap = m_bWrap != FALSE;
+	Options& options = *OPTIONS;
+	options.SetCached(Options::OUseTabs, m_bUseTabs != FALSE);
+	options.SetCached(Options::OTabWidth, m_iTabWidth);
+	options.SetCached(Options::OLineNumbers, m_bLineNos != FALSE);
+	options.SetCached(Options::OLineEndings, m_SaveFormat);
+	options.SetCached(Options::ODefaultCodePage, m_CodePage);
+	options.SetCached(Options::OWordWrap, m_bWrap != FALSE);
 }
 
 void COptionsPageEditDefaults::OnInitialise()
 {
-	COptionsManager& options = COptionsManager::GetInstanceRef();
-	m_bUseTabs = options.UseTabs;
-	m_iTabWidth = options.TabWidth;
-	m_bLineNos = options.LineNumbers;
-	m_bWrap = options.WordWrap;
-	m_SaveFormat = options.LineEndings;
-	m_CodePage = options.DefaultCodePage;
+	m_bUseTabs		= OPTIONS->GetCached(Options::OUseTabs);
+	m_iTabWidth		= OPTIONS->GetCached(Options::OTabWidth);
+	m_bLineNos		= OPTIONS->GetCached(Options::OLineNumbers);
+	m_bWrap			= OPTIONS->GetCached(Options::OWordWrap);
+	m_SaveFormat	= (EPNSaveFormat)OPTIONS->GetCached(Options::OLineEndings);
+	m_CodePage		= (ECodePage)OPTIONS->GetCached(Options::ODefaultCodePage);
 
 	CComboBox cb(GetDlgItem(IDC_OPT_LECOMBO));
 	for(int i = 0; i < cb.GetCount(); i++)
@@ -162,24 +161,24 @@ void COptionsPageVisual::OnOK()
 
 	DoDataExchange(TRUE);
 
-	COptionsManager& options = COptionsManager::GetInstanceRef();
-	options.ShowIndentGuides = m_bIndentGuides != FALSE;
-	options.LineHighlight = m_bLineHighlight != FALSE;
-	options.LineHighlightColour = m_btnLineCol.SafeGetColor();
-	options.RightGuide = m_iLongLineHelp;
-	options.RightColumn = m_iRightColumn;
-	options.RightGuideColour = m_btnLLCol.SafeGetColor();
+	Options& options = *OPTIONS;
+	options.SetCached(Options::OShowIndentGuides, m_bIndentGuides != FALSE);
+	options.SetCached(Options::OLineHighlight, m_bLineHighlight != FALSE);
+	options.SetCached(Options::OLineHighlightColour, m_btnLineCol.SafeGetColor());
+	options.SetCached(Options::ORightGuide, m_iLongLineHelp);
+	options.SetCached(Options::ORightColumn, m_iRightColumn);
+	options.SetCached(Options::ORightGuideColour, m_btnLLCol.SafeGetColor());
 }
 
 void COptionsPageVisual::OnInitialise()
 {
-	COptionsManager& options = COptionsManager::GetInstanceRef();
-	m_bIndentGuides = options.ShowIndentGuides;
-	m_bLineHighlight = options.LineHighlight;
-	m_btnLineCol.SetColor( options.LineHighlightColour );
-	m_iLongLineHelp = options.RightGuide;
-	m_iRightColumn = options.RightColumn;
-	m_btnLLCol.SetColor(options.RightGuideColour);
+	m_bIndentGuides		= OPTIONS->GetCached(Options::OShowIndentGuides);
+	m_bLineHighlight	= OPTIONS->GetCached(Options::OLineHighlight);
+	m_iLongLineHelp		= OPTIONS->GetCached(Options::ORightGuide);
+	m_iRightColumn		= OPTIONS->GetCached(Options::ORightColumn);
+	
+	m_btnLineCol.SetColor( OPTIONS->GetCached(Options::OLineHighlightColour) );
+	m_btnLLCol.SetColor( OPTIONS->GetCached(Options::ORightGuideColour) );
 
 	DoDataExchange();
 }
@@ -207,20 +206,16 @@ void COptionsPageConf::OnOK()
 
 	DoDataExchange(TRUE);
 
-	COptionsManager* pOM = COptionsManager::GetInstance();
-
-	pOM->AlreadyOpenAction = (EAlreadyOpenAction)m_iReOpen;
-	pOM->AlreadyOpenDropAction = (EAlreadyOpenAction)m_iReDrop;
+	OPTIONS->SetCached(Options::OAlreadyOpenAction, m_iReOpen);
+	OPTIONS->SetCached(Options::OAlreadyOpenDropAction, m_iReDrop);
 }
 
 void COptionsPageConf::OnInitialise()
 {
-	COptionsManager* pOM = COptionsManager::GetInstance();
+	m_iReOpen = OPTIONS->GetCached(Options::OAlreadyOpenAction);
+	m_iReDrop = OPTIONS->GetCached(Options::OAlreadyOpenDropAction);
 
-	 m_iReOpen = (int)pOM->AlreadyOpenAction;
-	 m_iReDrop = (int)pOM->AlreadyOpenDropAction;
-
-	 DoDataExchange();
+	DoDataExchange();
 }
 
 LPCTSTR COptionsPageConf::GetTreePosition()
@@ -920,21 +915,23 @@ void CTabPageMisc::SetValues()
 		m_pScheme->m_editorColours.Clear();
 		
 		if( m_selUseExistingFore.GetCheck() == BST_CHECKED )
-			theColour = -1;
+			theColour = CLR_NONE;
 		else
 			theColour = m_selFore.GetColor();
-		m_pScheme->m_editorColours.SetColour( EditorColours::ecSelFore, theColour);
+		
+		if(theColour != CLR_DEFAULT)
+			m_pScheme->m_editorColours.SetColour( EditorColours::ecSelFore, theColour);
 		
 		theColour = m_selBack.GetColor();
-		if(theColour != -1)
+		if(theColour != CLR_DEFAULT)
 			m_pScheme->m_editorColours.SetColour( EditorColours::ecSelBack, theColour);
 
 		theColour = m_cursorCol.GetColor();
-		if(theColour != -1)
+		if(theColour != CLR_DEFAULT)
 			m_pScheme->m_editorColours.SetColour( EditorColours::ecCaret, theColour);
 
 		theColour = m_igCol.GetColor();
-		if(theColour != -1)
+		if(theColour != CLR_DEFAULT)
 			m_pScheme->m_editorColours.SetColour( EditorColours::ecIndentG, theColour);
 	}
 }
@@ -1638,8 +1635,7 @@ void COptionsPageNewFiles::FreeResources()
 
 void COptionsPageNewFiles::OnInitialise()
 {
-	COptionsManager* pOM = COptionsManager::GetInstance();
-	tstring strNewScheme = pOM->Get(PNSK_EDITOR, _T("NewScheme"), _T("Plain Text"));
+	tstring strNewScheme = OPTIONS->Get(PNSK_EDITOR, _T("NewScheme"), _T("Plain Text"));
 
 	// Populate and initialise schemes combo.
 	m_combo.Load(m_pSchemes, strNewScheme.c_str());
@@ -1654,7 +1650,7 @@ void COptionsPageNewFiles::OnInitialise()
 	}
 
 	m_ssCheck.SetCheck( 
-		pOM->Get(PNSK_EDITOR, _T("SmartStart"), true) ? BST_CHECKED : BST_UNCHECKED
+		OPTIONS->Get(PNSK_EDITOR, _T("SmartStart"), true) ? BST_CHECKED : BST_UNCHECKED
 	);
 	
 	EnableButtons();
@@ -1692,11 +1688,11 @@ void COptionsPageNewFiles::OnOK()
 				wt = pS->m_Name;
 			else
 				wt = _T("Plain Text");
-			COptionsManager::GetInstance()->Set(PNSK_EDITOR, _T("NewScheme"), wt);
+			OPTIONS->Set(PNSK_EDITOR, _T("NewScheme"), wt);
 
 			// Enable SmartStart?
 			CButton button(GetDlgItem(IDC_SMARTSTART_ENABLECHECK));
-			COptionsManager::GetInstance()->Set(PNSK_EDITOR, _T("SmartStart"), button.GetCheck() == BST_CHECKED);
+			OPTIONS->Set(PNSK_EDITOR, _T("SmartStart"), button.GetCheck() == BST_CHECKED);
 		}
 
 		FreeResources();

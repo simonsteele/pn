@@ -38,7 +38,7 @@ class WordCounter
 			{
 				char c = pT->getNextChar();
 
-				if( inspace && isalnum(c) )
+				if( inspace && c > 0 && c < 256 && isalnum(c) )
 				{
 					words++;
 					inspace = false;

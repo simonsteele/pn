@@ -250,7 +250,7 @@ public:
 	int FindNext(SFindOptions* options);
 	bool Replace(SReplaceOptions* options);
 	int ReplaceAll(SReplaceOptions* options);
-	void HighlightAll(SFindOptions* options);
+	//void HighlightAll(SFindOptions* options);
 	int GetPosition(EGPType type);
 	void SetPosStatus(CMultiPaneStatusBarCtrl&	stat);
 	void OnSchemeChange(LPVOID pVoid);

@@ -94,7 +94,7 @@ CChildFrame* CMainFrame::NewEditor()
 	PNASSERT(pChild != NULL);
 
 	// Give the user the option to always maximise new windows.
-	bool bMax = COptionsManager::GetInstance()->MaximiseNew;
+	bool bMax = OPTIONS->GetCached(Options::OMaximiseNew) != 0;
 	pChild->CreateEx(m_hWndMDIClient, 0, 0, bMax ? WS_MAXIMIZE : 0);
 
 	return pChild;
@@ -133,14 +133,12 @@ void CMainFrame::UpdateStatusBar()
 		m_StatusBar.SetPaneText(ID_MOD_PANE, pChild->GetModified() ? _T("Modified") : _T(""));
 		pChild->SetPosStatus(m_StatusBar);
 	}
-	/* This never gets called, the child is always valid when MDIDestroy happens.
 	else
 	{
 		m_StatusBar.SetPaneText(ID_MOD_PANE, _T(""));
 		m_StatusBar.SetPaneText(ID_POS_PANE, _T(""));
 		SetStatusText(NULL);	
 	}
-	*/
 }
 
 void __stdcall CMainFrame::ChildCloseNotify(CChildFrame* pChild, SChildEnumStruct* pES)
@@ -286,6 +284,11 @@ BOOL CMainFrame::OnIdle()
 			bCanSave = pChild->GetModified();
 		}
 	}
+	else
+	{
+		// Clear the status bar if there are no files loaded.
+		UpdateStatusBar();
+	}
 	
 	UIEnable(ID_FILE_CLOSE, bChild);
 	UIEnable(ID_FILE_SAVE, bCanSave);
@@ -354,11 +357,6 @@ LRESULT CMainFrame::OnChildNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 		else
 			m_hToolAccel = NULL;
 	}
-
-	// Can do status bar clear here. This is done by getting notification here
-	// of the WM_MDIDESTROY message, then Posting a message to ourselves for
-	// stage 2 notification. When that message comes in, the MDIDestroy has gone
-	// through and we can check MDIGetActive.
 			
 	return TRUE;
 }
@@ -682,14 +680,10 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_StatusBar.SetPaneWidth(ID_POS_PANE, 120);
 	m_StatusBar.SetPaneWidth(ID_MOD_PANE, 70);
 	m_StatusBar.SetPaneWidth(ID_INS_PANE, 80);
-	
-	OSVERSIONINFO osvi;
-	ZeroMemory(&osvi, sizeof(OSVERSIONINFO));
-	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	GetVersionEx (&osvi);
+
 	m_bIsXPOrLater = 
-		(osvi.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
-		( (osvi.dwMajorVersion > 4) && (osvi.dwMinorVersion > 0) );
+		(g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
+		( (g_Context.OSVersion.dwMajorVersion > 4) && (g_Context.OSVersion.dwMinorVersion > 0) );
 	
 	m_bShowingDefaultStatus = false;
 	SetStatusText(NULL);
@@ -719,19 +713,17 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	// Initialise our popup menus.
 	m_Switcher.Reset(MENUMESSAGE_CHANGESCHEME);
 	CSchemeManager::GetInstance()->BuildMenu((HMENU)m_NewMenu, this);
-	
-	COptionsManager* pOM = COptionsManager::GetInstance();
 
 	CString mrukey;
 	mrukey = pnregroot;
 	mrukey += PNSK_MRU;
-	m_RecentFiles.SetSize(pOM->Get(PNSK_INTERFACE, _T("MRUSize"), 4));
+	m_RecentFiles.SetSize(OPTIONS->Get(PNSK_INTERFACE, _T("MRUSize"), 4));
 	m_RecentFiles.SetRegistryKey(mrukey);
 	m_RecentFiles.UpdateMenu();
 
 	mrukey = pnregroot;
 	mrukey += PNSK_MRUP;
-	m_RecentProjects.SetSize(pOM->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4));
+	m_RecentProjects.SetSize(OPTIONS->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4));
 	m_RecentProjects.SetRegistryKey(mrukey);
 	m_RecentProjects.UpdateMenu();
 
@@ -772,7 +764,7 @@ LRESULT CMainFrame::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	{
 		DragQueryFile(hDrop, i, buf, MAX_PATH);
 		
-		if( !CheckAlreadyOpen(buf, COptionsManager::GetInstance()->AlreadyOpenDropAction) )
+		if( !CheckAlreadyOpen(buf, (EAlreadyOpenAction)OPTIONS->GetCached(Options::OAlreadyOpenDropAction)) )
 		{
 			OpenFile(buf);
 			AddMRUEntry(buf);
@@ -788,7 +780,7 @@ LRESULT CMainFrame::OnDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 {
 	BOOL b = TRUE;
 
-	switch( COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("MDIDoubleClickAction"), 0) )
+	switch( OPTIONS->Get(PNSK_INTERFACE, _T("MDIDoubleClickAction"), 0) )
 	{
 		case 0:
 			OnFileOpen(0, 0, 0, b);
@@ -911,7 +903,7 @@ LRESULT CMainFrame::OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 LRESULT CMainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CChildFrame* pChild = NewEditor();
-	tstring newscheme =	COptionsManager::GetInstance()->Get(PNSK_EDITOR, _T("NewScheme"), _T(""));
+	tstring newscheme =	OPTIONS->Get(PNSK_EDITOR, _T("NewScheme"), _T(""));
 	if(newscheme.length() > 0)
         pChild->SetScheme(CSchemeManager::GetInstance()->SchemeByName(newscheme.c_str()));
 	else
@@ -960,7 +952,7 @@ LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 	if (dlgOpen.DoModal() == IDOK)
 	{
-		EAlreadyOpenAction action = COptionsManager::GetInstanceRef().AlreadyOpenAction;
+		EAlreadyOpenAction action = (EAlreadyOpenAction)OPTIONS->GetCached(Options::OAlreadyOpenAction);
 		bool bOnlyOne = dlgOpen.GetCount() == 1;
 		for(CPNOpenDialog::const_iterator i = dlgOpen.begin(); i != dlgOpen.end(); ++i)
 		{
@@ -1271,10 +1263,10 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 
 		PerformChildEnum(ChildOptionsUpdateNotify);
 
-		m_RecentFiles.SetSize( COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("MRUSize"), 4) );
+		m_RecentFiles.SetSize( OPTIONS->Get(PNSK_INTERFACE, _T("MRUSize"), 4) );
 		m_RecentFiles.UpdateMenu();
 
-		m_RecentProjects.SetSize( COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4) );
+		m_RecentProjects.SetSize( OPTIONS->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4) );
 	}
 
 	return 0;
@@ -1366,7 +1358,7 @@ LRESULT CMainFrame::OnFindComboEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	CChildFrame* pEditor = CChildFrame::FromHandle( GetCurrentEditor() );
 	if( pEditor != NULL )
 	{
-		SFindOptions* pFindOptions = COptionsManager::GetInstance()->GetFindOptions();
+		SFindOptions* pFindOptions = OPTIONS->GetFindOptions();
 		if(pFindOptions->FindText != (LPCTSTR)wt)
 		{
 			pFindOptions->Found = false;

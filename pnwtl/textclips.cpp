@@ -220,18 +220,17 @@ const LIST_CLIPSETS& TextClipsManager::GetClipSets()
  */
 void TextClipsManager::FindClips()
 {
-	COptionsManager& opt = COptionsManager::GetInstanceRef();
 	FileFinder<TextClipsManager> finder(this, &TextClipsManager::OnFound);
 
 	tstring path;
 	
 	// Search distribution clips directory.
-	opt.GetPNPath(path, PNPATH_CLIPS);
+	OPTIONS->GetPNPath(path, PNPATH_CLIPS);
 	if( DirExists(path.c_str()) )
 		finder.Find(path.c_str(), _T("*.clips"));
 	
 	// Search user clips directory.
-	opt.GetPNPath(path, PNPATH_USERCLIPS);
+	OPTIONS->GetPNPath(path, PNPATH_USERCLIPS);
 	if( DirExists(path.c_str()) )
 		finder.Find(path.c_str(), _T("*.clips"));
 }

@@ -24,6 +24,10 @@ What's new?
 15) Added Uppercase/Lowercase
 16) Bjoern Graf tidied the Options dialog plus some others.
 17) Keyboard works in the projects tree (inc. "del" to remove project files).
+18) Options can now be saved to a .ini file instead of the registry.
+19) Middle-click mouse on the document tab to close a document.
+20) Allow specification of default character set (includes Shift-JIS and UTF-8).
+21) Optimised file loading - significantly reduces load time for large files.
 
 Bug Fixes:
 ----------
@@ -37,12 +41,15 @@ Bug Fixes:
 7)  HTML export doubles the '&' (SF Bug #899079).
 8)  HTML export leaves open the last span tag (SF Bug #904149).
 9)  Fixed HTML export to use full style range (previously stopped at 31).
-10) Dropped files always open new windows. (SF Bug #873386).
+10) Dropped files always open new windows (SF Bug #873386).
 11) Deal with all URL encoded chars in output window, not just %20.
 12) Projects window renames too readily.
-13) Auto-indent empty line. (SF Bug #879950).
-14) Can't export a file that isn't saved to disk. (SF Bug #911381).
-15) Can't bring up project context menus with the keyboard. 
+13) Auto-indent empty line (SF Bug #879950).
+14) Can't export a file that isn't saved to disk (SF Bug #911381).
+15) Can't bring up project context menus with the keyboard.
+16) Changing full path option doesn't affect open files (SF Bug #871628).
+17) Update status bar when last file closed (SF Bug #514527).
+18) Highlight colors in scheme wrong when choosing defaults (SF Bug #909343).
 
 If you find a bug:
 ------------------

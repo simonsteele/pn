@@ -532,18 +532,18 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 	return bRet;
 }
 
-void CScintillaImpl::HighlightAll(SFindOptions* pOptions) 
+/*void CScintillaImpl::HighlightAll(SFindOptions* pOptions) 
 {
 	CString findTarget(pOptions->FindText);
 
-	int findLen = UnSlashAsNeeded(findTarget, /*pOptions->UnSlash*/false, pOptions->UseRegExp);
+	int findLen = UnSlashAsNeeded(findTarget, pOptions->UnSlash, pOptions->UseRegExp);
 	if (findLen == 0) 
 	{
-		/*SString msg = LocaliseMessage(
-			inSelection ?
-			"Find string must not be empty for 'Replace in Selection' command." :
-			"Find string must not be empty for 'Replace All' command.");
-		FindMessageBox(msg);*/
+		///SString msg = LocaliseMessage(
+		//	inSelection ?
+		//	"Find string must not be empty for 'Replace in Selection' command." :
+		//	"Find string must not be empty for 'Replace All' command.");
+		//FindMessageBox(msg);
 		return;
 	}
 
@@ -598,14 +598,12 @@ void CScintillaImpl::HighlightAll(SFindOptions* pOptions)
 		
 		//EndUndoAction();
 	}
-}
-
+}*/
 
 bool CScintillaImpl::ReplaceOnce(SReplaceOptions* pOptions)
 {
 	if(pOptions->Found) 
 	{
-		///@todo this....
 		CString replaceTarget(pOptions->ReplaceText);
 		int replaceLen = UnSlashAsNeeded(replaceTarget, pOptions->UseSlashes, pOptions->UseRegExp);
 		
@@ -636,7 +634,7 @@ int CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 	CString findTarget(pOptions->FindText);
 
 	int findLen = UnSlashAsNeeded(findTarget, pOptions->UseSlashes, pOptions->UseRegExp);
-	if (findLen == 0) 
+	if (findLen == 0)
 	{
 		/*SString msg = LocaliseMessage(
 			inSelection ?

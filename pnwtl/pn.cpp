@@ -11,11 +11,8 @@
 #include "stdafx.h"
 #include "resource.h"
 
-//#include "callback.h"
 #include "version.h"
 #include "pnutils.h"
-
-//#include "tools.h"
 
 #include "MainFrm.h"
 
@@ -47,7 +44,8 @@ void Init()
 	// Where are the Schemes stored?
 	tstring path;
 	tstring cpath;
-	COptionsManager::GetInstance()->GetSchemesPaths(path, cpath);
+	OPTIONS->GetPNPath(path, PNPATH_SCHEMES);
+	OPTIONS->GetPNPath(cpath, PNPATH_COMPILEDSCHEMES);
 
 	CSchemeManager& SM = CSchemeManager::GetInstanceRef();
 	SM.SetPath(path.c_str());
@@ -58,18 +56,30 @@ void Init()
 void Shutdown()
 {
 	CSchemeManager::DeleteInstance();
-	COptionsManager::DeleteInstance();
 	CSMenuManager::ReleaseInstance();
 
 	DeletionManager::DeleteAll();
+
+	// Free up the options object, thus storing the options.
+	OptionsFactory::Release(g_Context.options);
+	g_Context.options = NULL;
 }
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
+	ZeroMemory(&g_Context.OSVersion, sizeof(OSVERSIONINFO));
+	g_Context.OSVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	::GetVersionEx(&g_Context.OSVersion);
+
+	// This is our multiple instance checker...
 	MultipleInstanceManager checkMI( _T("{FCA6FB45-3224-497a-AC73-C30E498E9ADA}") );
 	g_Context.m_miManager = &checkMI;
 
-	bool bAllowMulti = COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("AllowMultiInstance"), true);
+	// This is our options object.
+	g_Context.options = OptionsFactory::GetOptions(OptionsFactory::OTRegistry);
+
+	// See if we allow multiple instances...
+	bool bAllowMulti = OPTIONS->Get(PNSK_INTERFACE, _T("AllowMultiInstance"), true);
 	if(!bAllowMulti)
 	{
 		if(checkMI.AlreadyActive())
@@ -84,9 +94,11 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
 
+	// Set up the main window for the app.
 	CMainFrame wndMain;
 	g_Context.m_frame = static_cast<IMainFrame*>(&wndMain);
 
+	// Load scheme types and do other pre-run init.
 	Init();
 
 	if(wndMain.CreateEx() == NULL)

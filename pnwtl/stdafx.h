@@ -1,10 +1,19 @@
-// stdafx.h : include file for standard system include files,
-//  or project specific include files that are used frequently, but
-//      are changed infrequently
-//
+/**
+ * @file stdafx.h
+ * @brief Pre-compiled header file.
+ * @author Simon Steele
+ * @note Copyright (c) 2004 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ * 
+ * Notes: 
+ * Include file for standard system include files, or project specific 
+ * include files that are used frequently, but are changed infrequently.
+ */
 
-#if !defined(AFX_STDAFX_H__41A3A8B3_1419_494D_BBD8_4394DCE4A180__INCLUDED_)
-#define AFX_STDAFX_H__41A3A8B3_1419_494D_BBD8_4394DCE4A180__INCLUDED_
+#if !defined(pn2_stdafx_h__included)
+#define pn2_stdafx_h__included
 
 // Change these values to use different versions
 #define WINVER			0x0500	// Changed to allow CDotNetTabCtrl to compile with COLOR_HOTLIGHT
@@ -17,12 +26,10 @@
 
 // Implement debug mode memory allocation checking.
 #ifdef _DEBUG
-
-#define CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define DEBUG_NEW  new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-
+	#define CRTDBG_MAP_ALLOC
+	#include <stdlib.h>
+	#include <crtdbg.h>
+	#define DEBUG_NEW  new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
 #endif // #ifdef _DEBUG
 
 #define _ATL_FREE_THREADED
@@ -54,7 +61,6 @@ extern CAppModule _Module;
 #include <atltheme.h>
 
 #include <string>
-
 typedef std::basic_string<TCHAR> tstring;
 
 #define PNASSERT ATLASSERT
@@ -65,9 +71,7 @@ typedef std::basic_string<TCHAR> tstring;
 	#define _NO_COPY(x) /##/
 #endif
 
+// Lots of good stuff in here...
 #include "pn.h"
 
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
-
-#endif // !defined(AFX_STDAFX_H__41A3A8B3_1419_494D_BBD8_4394DCE4A180__INCLUDED_)
+#endif // !defined(pn2_stdafx_h__included)

@@ -20,7 +20,7 @@
 SmartStart::SmartStart()
 {
 	tstring path;
-	COptionsManager::GetInstance()->GetPNPath(path, PNPATH_USERSETTINGS);
+	OPTIONS->GetPNPath(path, PNPATH_USERSETTINGS);
 	path += _T("UserSmartStart.xml");
 
 	if(!FileExists(path.c_str()))
@@ -71,7 +71,7 @@ SmartStart::~SmartStart()
 void SmartStart::Save()
 {
 	tstring path;
-	COptionsManager::GetInstance()->GetPNPath(path, PNPATH_USERSETTINGS);
+	OPTIONS->GetPNPath(path, PNPATH_USERSETTINGS);
 	path += _T("UserSmartStart.xml");
 
 	CFile f;

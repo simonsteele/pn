@@ -25,10 +25,15 @@
 
 #include "pntypes.h"
 
+// Pre-declarations...
+
 class ToolWrapper;
+class Options;
 namespace Projects {
 	class Workspace;
 }
+
+
 
 struct IMainFrame
 {
@@ -48,13 +53,18 @@ struct IMainFrame
 
 struct _Context 
 {
-	IMainFrame *m_frame;
+	IMainFrame				*m_frame;
 	MultipleInstanceManager *m_miManager;
+	Options					*options;
+	OSVERSIONINFO			OSVersion;
 };
 
+/// This is the global application context.
 extern /*__declspec( thread )*/ _Context g_Context;
 
 HWND GetCurrentEditor();
+
+/// This function is used to show that something odd and unexpected has happened.
 void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message);
 
 // Utility Classes and Definitions:
@@ -68,6 +78,9 @@ void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message);
 #include "ScintillaWTL.h"
 
 #include "schemes.h"
+
+#define OPTIONS \
+	g_Context.options
 
 //#if defined(DEBUG_)
 	#define UNEXPECTED(message) \

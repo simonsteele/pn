@@ -791,6 +791,7 @@ class Singleton : public DelObject
 	protected:
 		static T* s_pTheInstance;
 };
+
 template <class T, bool t_bAutoRegister>
 T* Singleton< T, t_bAutoRegister >::s_pTheInstance = NULL;
 
@@ -818,11 +819,20 @@ protected:
 	bool CreateSharedData(BYTE** buffer, HANDLE* hMappedFile, size_t size);
 	void ReleaseSharedData(BYTE* buffer, HANDLE hMappedFile);
 
+	typedef long (__stdcall *PFNBroadcastSystemMessage)(DWORD dwFlags,
+		LPDWORD lpdwRecipients,
+		UINT uiMessage,
+		WPARAM wParam,
+		LPARAM lParam);
+
 protected:
 	HANDLE	m_hMutex;
 	bool	m_bAlreadyActive;
 	tstring	m_sKey;
 	UINT	m_uiMessage;
+	
+	PFNBroadcastSystemMessage	m_pfnBSM;
+	HMODULE						m_hUser32;
 };
 
 #define SINGLETON_AUTO_DELETE true
