@@ -416,7 +416,7 @@ class CStylesTabDialog : public CPropertyPageImpl<CStylesTabDialog>
 
 			if(item)
 			{
-				if(m_tree.GetParentItem(item) == NULL)
+				if(m_tree.GetChildItem(item) == NULL)
 				{
 					StyleDetails* pStyle = reinterpret_cast<StyleDetails*>(m_tree.GetItemData(item));
 					if(pStyle)
@@ -427,6 +427,10 @@ class CStylesTabDialog : public CPropertyPageImpl<CStylesTabDialog>
 						CheckDlgButton(IDC_STYLE_UNDERLINECHECK, pStyle->Underline ? BST_CHECKED : BST_UNCHECKED);
 						CheckDlgButton(IDC_STYLE_EOLFILLEDCHECK, pStyle->EOLFilled ? BST_CHECKED : BST_UNCHECKED);
 					}
+				}
+				else
+				{
+					///@todo Disable everything
 				}
 			}
 
