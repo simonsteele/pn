@@ -12,6 +12,7 @@
 #include "outputview.h"
 #include "textview.h"
 #include "childfrm.h"
+#include "include/pcreplus.h"
 
 /**
  * Finds the full extent of the text which is styled with "style" and
@@ -43,10 +44,12 @@ void COutputView::ExtendStyleRange(int startPos, int style, TextRange* tr)
 }
 
 /**
- * Parse a simple GCC error string:
- * filename.ext:linenumber: error string/whatever
+ * @brief Uses any regular expression string to try and match an error.
+ * @param style - style that the error is displayed in.
+ * @param position - position of the character clicked.
+ * @param reDef - Regular Expression pattern definition.
  */
-void COutputView::HandleGCCError(int style, int position)
+void COutputView::HandleREError(int style, int position, const char* reDef)
 {
 	TextRange tr;
 				
@@ -56,46 +59,59 @@ void COutputView::HandleGCCError(int style, int position)
 
 	GetTextRange(&tr);
 
-	if( strlen(tr.lpstrText) > 0 )
+	try
 	{
-		char* cPos = strchr(buf, ':');
-		
-		// Skip past a drive letter...
-		if( cPos != NULL && !isdigit(*(cPos+1)) )
-			cPos = strchr(cPos+1, ':');
-
-		if( cPos != NULL )
+		PCRE::RegExp re(reDef);
+		if( re.Match(tr.lpstrText) )
 		{
-			// We found the filename, now find the line number.
-			*cPos = '\0';
-			char* pLineNo  = cPos + 1;
-			cPos = strchr(pLineNo, ':');
-			if(cPos != NULL)
+			tstring filename;
+			tstring linestr;
+			tstring colstr;
+            
+			// Extract the named matches from the RE, noting if there was a line or column.
+			re.GetNamedMatch("f", filename);
+			bool bLine = re.GetNamedMatch("l", linestr);
+			bool bCol = re.GetNamedMatch("c", colstr);
+
+			int line = atoi(linestr.c_str());
+
+			if(FileExists(filename.c_str()))
 			{
-				// Got the line number too, it's a valid error string.
-				*cPos = '\0';
+				// If the file's already open, just switch to it, otherwise open it.
+				if( !g_Context.m_frame->CheckAlreadyOpen(filename.c_str(), eSwitch) )
+					g_Context.m_frame->OpenFile(filename.c_str());
 
-				int lineno = atoi(pLineNo);
-
-				if(FileExists(buf))
+				if( bLine )
 				{
-					// If the file's already open, just switch to it, otherwise open it.
-					if( !g_Context.m_frame->CheckAlreadyOpen(buf, eSwitch) )
-						g_Context.m_frame->OpenFile(buf);
-
 					CChildFrame* pWnd = CChildFrame::FromHandle(GetCurrentEditor());
 					CTextView* pView = pWnd->GetTextView();
 					if(pView)
 					{
-						pView->GotoLine(lineno-1);
+						pView->GotoLine(line-1);
 						::SetFocus(pView->m_hWnd);
+					}
+
+					if( bCol )
+					{
+						//@todo Jump to column.
 					}
 				}
 			}
 		}
 	}
+	catch (PCRE::REException& ex)
+	{
+		::MessageBox(NULL, ex.GetMessage(), "PN2 - Regular Expression Error", MB_OK);
+	}
+}
 
-	delete [] buf;
+/**
+ * Parse a simple GCC error string:
+ * filename.ext:linenumber: error string/whatever
+ */
+void COutputView::HandleGCCError(int style, int position)
+{
+	HandleREError(style, position, "(?P<f>.+):(?P<l>[0-9]+): .*");
 }
 
 LRESULT COutputView::OnHotSpotClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -147,6 +163,11 @@ void COutputView::SafeAppendText(LPCSTR s, int len)
 	line = SendMessage(SCI_LINEFROMPOSITION, line, 0);
 	SendMessage(SCI_ENSUREVISIBLEENFORCEPOLICY, line);
 	SendMessage(SCI_GOTOLINE, line);
+}
+
+void COutputView::_AddToolOutput(LPCTSTR output, int nLength)
+{
+	SafeAppendText(output, nLength);
 }
 
 LRESULT COutputView::OnClear(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

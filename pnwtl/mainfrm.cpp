@@ -906,7 +906,7 @@ CWindow* CMainFrame::GetWindow()
 
 IToolOutputSink* CMainFrame::GetGlobalOutputSink()
 {
-	return static_cast<IToolOutputSink*>(this);
+	return m_pOutputWnd->GetView();
 }
 
 void CMainFrame::AddMRUEntry(LPCTSTR lpszFile)

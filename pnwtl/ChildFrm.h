@@ -245,6 +245,7 @@ public:
 	void UpdateRunningTools();
 	void ToggleOutputWindow(bool bSetValue = false, bool bSetShowing = true);
 	void AddToolOutput(LPCSTR outputstring, int nLength = -1);
+	IToolOutputSink* GetOutputSink();
 
 protected:
 

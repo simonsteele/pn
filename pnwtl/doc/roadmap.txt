@@ -4,22 +4,22 @@ PN is attempting to keep to a minimum of one release every two months.
 The planned feature-implementation schedule can be seen below. This will
 be modified as and when I see fit - so don't bet money on it or anything.
 
-last updated: 16/04/2003
+last updated: 11/05/2003
 
 0.4 Miles
 =========
 
-SmartStart
-Header-Switch (at least cpp <-> h)
-Click on error - jumps to error (only for known output formats like GCC etc.)
-Better printing - margins, header and footer.
-Export types.
-Copy as RTF (dual-format copy?).
+[implemented] SmartStart
+[implemented] Header-Switch (at least cpp <-> h)
+[implemented] Global Output Window.
+[in-progress] Click on error - jumps to error (at least for known output formats like GCC etc.)
+[waiting....] Better printing - margins, header and footer.
+[in-progress] Export types.
+[implemented] Copy as RTF (dual-format copy?).
 
 0.5 Mingus
 ==========
 
-Global Output Window
 Basic Project Management - file grouping etc.
 Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
 

@@ -46,6 +46,7 @@ typedef struct tagPrintOptions
 #define TOOL_ISFILTER		0x02
 #define TOOL_SAVEALL		0x04
 #define TOOL_GLOBALOUTPUT	0x08
+#define TOOL_CUSTOMPARSER	0x10
 
 /**
  * @brief Defines a single external tool.
@@ -67,6 +68,7 @@ public:
 		Params = copy.Params;
 		Shortcut = copy.Shortcut;
 		CommandID = copy.CommandID;
+		CustomParsePattern = copy.CustomParsePattern;
 		iFlags = copy.iFlags;
 	}
 
@@ -75,6 +77,7 @@ public:
 	tstring	Folder;
 	tstring	Params;
 	tstring Shortcut;
+	tstring CustomParsePattern;
 	int		CommandID;
 	int		iFlags;
 
@@ -82,6 +85,7 @@ public:
 	bool IsFilter() const { return (iFlags & TOOL_ISFILTER) != 0; }
 	bool SaveAll() const { return (iFlags & TOOL_SAVEALL) != 0; }
 	bool GlobalOutput() const { return (iFlags & TOOL_GLOBALOUTPUT) != 0; }
+	bool UseCustomParser() const { return (iFlags & TOOL_CUSTOMPARSER) != 0; }
 };
 
 /**

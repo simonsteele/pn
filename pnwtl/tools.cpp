@@ -125,6 +125,7 @@ void SchemeTools::InternalWriteDefinition(ofstream& stream)
 		stream << "folder=\"" << FormatXML((*i)->Folder) << "\" ";
 		stream << "params=\"" << FormatXML((*i)->Params) << "\" ";
 		stream << "shortcut=\"" << FormatXML((*i)->Shortcut) << "\" ";
+		stream << "parsepattern=\"" << FormatXML((*i)->CustomParsePattern) << "\" ";
 		stream << "flags=\"" << flags << "\" ";
 		stream << "/>\n";
 	}

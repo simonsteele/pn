@@ -1,5 +1,7 @@
 PN2 Build Instructions:
 
+PN2 can only be built using Microsoft Visual C++ at the moment.
+
 For PN2 to work correctly, check that these are satisfied:
 
 WTL:
@@ -9,6 +11,8 @@ PN2 uses the Windows Template Library, make sure you have this!
 If you don't know what it is, or don't have it, see:
 
 http://www.pnotepad.org/articles/wtljoys.html
+
+You will also probably need to install the Microsoft Platform SDK.
 
 Expat:
 ======
@@ -30,9 +34,31 @@ libexpat.dll
 and / or
 libexpatw.dll (unicode)
 
+PCRE:
+=====
+
+PN2 currently requires a separate PCRE download:
+http://pcre.sourceforge.net/
+
+PN uses PCRE (by default) as a static lib. You need to manually configure
+PCRE to build a static lib called libpcre.lib. We define SUPPORT_UTF8 when
+building.
+
+In the pn2 /lib directory you must have:
+libpcre.lib
+
+We will release a VC7 project or NAnt buildfile to build the lib in the future.
+
 Additional Notes:
 =================
 
-SchemeConfig.cpp has a function which works only with the ATL in VC7. This will need fixing to provide a VC6 version too, although I'm not too worried for now. For now, it is #ifdefd away.
+SchemeConfig.cpp has a function which works only with the ATL in VC7. 
+This will need fixing to provide a VC6 version too, although I'm not 
+too worried for now. For now, it is #ifdefd away.
+
+Due to the extensive use of templates in PN2, VC6 can have problems 
+with its stack size - you need to allow it to use more space which is 
+probably in project options or something. You could also try using the 
+latest VC6 service pack.
 
 Good Luck!

@@ -201,7 +201,7 @@ class ToolOwner : public IToolOutputSink
 		{
 			T* pT = static_cast<T*>(this);
 			ToolDefinition* pTool = reinterpret_cast<ToolDefinition*>(pVoid);
-			ToolRunner *r = new ToolRunner(pT, pTool, pTool->GlobalOutput() ? g_Context.m_frame->GetGlobalOutputSink() : this );
+			ToolRunner *r = new ToolRunner(pT, pTool, pTool->GlobalOutput() ? GetGlobalOutputSink() : this );
 			
 			bool bThreaded = r->GetThreadedExecution();
 			if(bThreaded)
@@ -298,14 +298,17 @@ class ToolOwner : public IToolOutputSink
 		{
 			T* pT = static_cast<T*>(this);
 
-			tstring exitcode(_T("\n> Process Exit Code: "));
-			exitcode += IntToTString(r->GetExitCode());
-			exitcode += _T("\n");
-			
-			IToolOutputSink* pSink = t->GlobalOutput() ? 
-				g_Context.m_frame->GetGlobalOutputSink() : pT;
-			
-			pSink->_AddToolOutput(exitcode.c_str());
+			if( t->CaptureOutput() )
+			{
+				tstring exitcode(_T("\n> Process Exit Code: "));
+				exitcode += IntToTString(r->GetExitCode());
+				exitcode += _T("\n");
+				
+				IToolOutputSink* pSink = t->GlobalOutput() ? 
+					GetGlobalOutputSink() : pT;
+				
+				pSink->_AddToolOutput(exitcode.c_str());
+			}
 
 			if(t_bDoc)
 			{
@@ -346,6 +349,11 @@ class ToolOwner : public IToolOutputSink
 						break;
 				}
 			}
+		}
+
+		IToolOutputSink* GetGlobalOutputSink()
+		{
+			return g_Context.m_frame->GetGlobalOutputSink();
 		}
 
 		//void UpdateTools(CScheme* pScheme);

@@ -1044,6 +1044,12 @@ void CChildFrame::AddToolOutput(LPCSTR outputstring, int nLength)
 	m_pOutputView->SafeAppendText(outputstring, nLength);
 }
 
+IToolOutputSink* CChildFrame::GetOutputSink()
+{
+	ToggleOutputWindow(true, true);
+	return m_pOutputView;
+}
+
 bool CChildFrame::IsOutputVisible()
 {
 	return ((m_pSplitter != NULL) ? m_pSplitter->GetSinglePaneMode() == SPLITTER_NORMAL : false);

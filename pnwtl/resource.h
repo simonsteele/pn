@@ -27,6 +27,7 @@
 #define ID_EDITOR_OUTPUTWND             133
 #define IDS_ABOUTVERSIONSTRING          133
 #define IDS_TOOLFORMATSTRINGS           134
+#define IDS_PATTERNFORMATSTRINGS        135
 #define IDD_FIND                        168
 #define IDR_TABS_POPUP                  169
 #define IDR_POPUP_REGEXP                170
@@ -161,6 +162,12 @@
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_OPT_MAXCHECK                1056
 #define IDC_PNSAVE_TYPECOMBO            1057
+#define IDC_TE_BUILTIN                  1057
+#define IDC_TE_ABOUTBUILTIN             1058
+#define IDC_TE_CUSTOMPARSE              1059
+#define IDC_TE_CUSTOMSTR                1060
+#define IDC_TE_CUSTOMTEXT               1060
+#define IDC_TE_CUSTOMINFO               1061
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -211,7 +218,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        267
 #define _APS_NEXT_COMMAND_VALUE         32869
-#define _APS_NEXT_CONTROL_VALUE         1057
+#define _APS_NEXT_CONTROL_VALUE         1062
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

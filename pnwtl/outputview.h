@@ -17,7 +17,8 @@
 /**
  * Scintilla window with special output handling.
  */
-class COutputView : public CScintillaWindowImpl< COutputView, CScintillaImpl >
+class COutputView : public CScintillaWindowImpl< COutputView, CScintillaImpl >, 
+	public IToolOutputSink
 {
 public:
 	typedef CScintillaWindowImpl< COutputView, CScintillaImpl > baseClass;
@@ -34,11 +35,17 @@ public:
 
 	virtual int HandleNotify(LPARAM lParam);
 
+// Implement IToolOutputSink
+public:
+	virtual void _AddToolOutput(LPCTSTR output, int nLength = -1);
+
 protected:
 	LRESULT OnHotSpotClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	void ExtendStyleRange(int startPos, int style, TextRange* tr);
 	void HandleGCCError(int style, int position);
+
+	void HandleREError(int style, int position, const char* reDef);
 
 	LRESULT OnClear(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 

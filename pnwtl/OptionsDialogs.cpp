@@ -6,12 +6,13 @@
 // CToolEditorDialog
 //////////////////////////////////////////////////////////////////////////////
 
-CToolEditorDialog::CInfoLabel::CInfoLabel()
+CToolEditorDialog::CInfoLabel::CInfoLabel(LPCTSTR title, DWORD StringID)
 {
 	m_pTitleFont = /*m_pBodyFont =*/ NULL;
+	m_title = title;
 
 	memset(strbuf, 0, sizeof(strbuf));
-	LoadString(NULL, IDS_TOOLFORMATSTRINGS, strbuf, 200);
+	LoadString(NULL, StringID, strbuf, 200);
 }
 
 CToolEditorDialog::CInfoLabel::~CInfoLabel()
@@ -73,7 +74,7 @@ LRESULT CToolEditorDialog::CInfoLabel::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/,
 		dc.SetBkColor(GetSysColor(COLOR_INFOBK));
 		dc.SetTextColor(GetSysColor(COLOR_INFOTEXT));
 
-		int height = dc.DrawText(_T("Special Symbols:"), 16, rc, DT_TOP | DT_LEFT);
+		int height = dc.DrawText(m_title.c_str(), m_title.length(), rc, DT_TOP | DT_LEFT);
 		rc.top += height + 2;
 		rc.left += 25;
 
@@ -122,7 +123,9 @@ LRESULT CToolEditorDialog::CInfoLabel::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/,
 	return 0;
 }
 
-CToolEditorDialog::CToolEditorDialog()
+CToolEditorDialog::CToolEditorDialog() : 
+	m_infolabel(_T("Special Symbols:"), IDS_TOOLFORMATSTRINGS), 
+	m_infolabel2(_T("Pattern Symbols:"), IDS_PATTERNFORMATSTRINGS)
 {
 	m_csName = _T("");
 	m_csCommand = _T("");
@@ -131,6 +134,8 @@ CToolEditorDialog::CToolEditorDialog()
 	m_csShortcut = _T("");
 
 	m_bCapture = true;
+
+	m_iBuiltIn = 0;
 
 	m_csDisplayTitle = _T("New Tool");
 }
@@ -142,6 +147,7 @@ LRESULT CToolEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	SetWindowText(m_csDisplayTitle);
 
 	m_infolabel.SubclassWindow(GetDlgItem(IDC_TE_INFOLABEL));
+	m_infolabel2.SubclassWindow(GetDlgItem(IDC_TE_CUSTOMINFO));
 
 	m_outputcombo.Attach(GetDlgItem(IDC_TE_OUTPUTCOMBO));
 	m_outputcombo.AddString(_T("Use the main output window."));
@@ -152,6 +158,8 @@ LRESULT CToolEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	m_outputcombo.EnableWindow(m_bCapture);
 
 	DoDataExchange();
+
+	EnableButtons();
 
 	return 0;
 }
@@ -206,9 +214,21 @@ LRESULT CToolEditorDialog::OnBrowseCommand(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 LRESULT CToolEditorDialog::OnCaptureChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	DoDataExchange(TRUE);
+	EnableButtons();
 
-	m_outputcombo.EnableWindow(m_bCapture);
+	return 0;
+}
+
+LRESULT CToolEditorDialog::OnAboutBuiltin(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	MessageBox(_T("Programmers Notepad 2 provides built-in support\nfor parsing output from the following tools:\n\nGCC\n"));
+
+	return 0;
+}
+
+LRESULT CToolEditorDialog::OnWindowStateChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	EnableButtons();
 
 	return 0;
 }
@@ -225,7 +245,13 @@ void CToolEditorDialog::GetValues(ToolDefinition* pDefinition)
 		(m_bCapture	? TOOL_CAPTURE	: 0) |
 		(m_bFilter	? TOOL_ISFILTER : 0) |
 		(m_bSaveAll	? TOOL_SAVEALL	: 0) | 
-		(m_bGlobal	? TOOL_GLOBALOUTPUT : 0);
+		(m_bGlobal	? TOOL_GLOBALOUTPUT : 0) |
+		(m_iBuiltIn * TOOL_CUSTOMPARSER);
+
+	if(m_iBuiltIn)
+	{
+		pDefinition->CustomParsePattern = m_csCustomPattern;
+	}
 }
 
 void CToolEditorDialog::SetValues(ToolDefinition* pDefinition)
@@ -239,11 +265,28 @@ void CToolEditorDialog::SetValues(ToolDefinition* pDefinition)
 	m_bFilter		= pDefinition->IsFilter();
 	m_bSaveAll		= pDefinition->SaveAll();
 	m_bGlobal		= pDefinition->GlobalOutput();
+	m_iBuiltIn		= pDefinition->UseCustomParser() ? 1 : 0;
 }
 
 void CToolEditorDialog::SetTitle(LPCTSTR title)
 {
 	m_csDisplayTitle = title;
+}
+
+void CToolEditorDialog::EnableButtons()
+{
+	CButton capture(GetDlgItem(IDC_TE_CAPTURECHECK));
+	BOOL bCapture = capture.GetCheck();
+
+	m_outputcombo.EnableWindow(bCapture);
+	::EnableWindow(GetDlgItem(IDC_TE_BUILTIN), bCapture);
+	::EnableWindow(GetDlgItem(IDC_TE_ABOUTBUILTIN), bCapture);
+
+	CButton customParse(GetDlgItem(IDC_TE_CUSTOMPARSE));
+	customParse.EnableWindow(bCapture);
+	BOOL bCustom = customParse.GetCheck();
+	
+	::EnableWindow(GetDlgItem(IDC_TE_CUSTOMTEXT), bCustom && bCapture);
 }
 
 //////////////////////////////////////////////////////////////////////////////

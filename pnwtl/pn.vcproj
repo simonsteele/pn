@@ -103,7 +103,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="delayimp.lib"
+				AdditionalDependencies="delayimp.lib lib\libpcre.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -367,6 +367,9 @@
 			</File>
 			<File
 				RelativePath="include\Utf8_16.cpp">
+			</File>
+			<File
+				RelativePath="include\pcreplus.cpp">
 			</File>
 		</Filter>
 		<File

@@ -352,7 +352,8 @@ BEGIN
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
     ID_EDITOR_LINENOS       "Toggle line numbers display"
     IDS_ABOUTVERSIONSTRING  "Programmers Notepad 2\nv%s\n\nCopyright (c) 2002-2003 Simon Steele"
-    IDS_TOOLFORMATSTRINGS   "%f: File Name\n%n: File Name (no ext)\n%l: Current Line Number|%d: Path of File\n%c: Caret Column\n%%: Percent Symbol|%?: Ask for parameters"
+    IDS_TOOLFORMATSTRINGS   "%f: File Name\n%n: File Name (no ext)\n%l: Current Line Number\n%?: Ask for parameters|%d: Path of File\n%c: Column\n%%: Percent Symbol"
+    IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c Column"
 END
 
 STRINGTABLE 
@@ -797,38 +798,50 @@ BEGIN
     ICON            IDR_MDICHILD,IDC_STATIC,6,6,20,20
 END
 
-IDD_TOOLEDITOR DIALOGEX 0, 0, 286, 180
+IDD_TOOLEDITOR DIALOGEX 0, 0, 388, 228
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Tool Editor"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_TE_NAMEEDIT,54,6,168,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_TE_CMDEDIT,54,24,150,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_TE_COMMANDBUTTON,209,24,13,12
-    EDITTEXT        IDC_TE_FOLDEREDIT,54,42,150,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_TE_DIRBUTTON,209,42,13,12
-    EDITTEXT        IDC_TE_PARAMSEDIT,54,60,168,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_TE_SHORTCUTEDIT,54,78,150,12,ES_AUTOHSCROLL | 
+    EDITTEXT        IDC_TE_NAMEEDIT,60,18,138,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_TE_CMDEDIT,60,36,138,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_TE_COMMANDBUTTON,204,36,13,12
+    EDITTEXT        IDC_TE_FOLDEREDIT,60,54,138,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_TE_DIRBUTTON,204,54,13,12
+    EDITTEXT        IDC_TE_PARAMSEDIT,60,72,156,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_TE_SHORTCUTEDIT,60,90,138,12,ES_AUTOHSCROLL | 
                     WS_DISABLED
-    PUSHBUTTON      "c",IDC_TE_CLEARBUTTON,209,78,13,12,WS_DISABLED
+    PUSHBUTTON      "c",IDC_TE_CLEARBUTTON,204,90,13,12,WS_DISABLED
     CONTROL         "Save all before running this tool?",IDC_TE_SAVEALLCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,96,126,12
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,12,108,126,12
     CONTROL         "This tool will modify the current file.",
                     IDC_TE_FILTERCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    132,96,150,12
+                    12,126,150,12
     CONTROL         "Capture output?",IDC_TE_CAPTURECHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,6,114,84,12
-    COMBOBOX        IDC_TE_OUTPUTCOMBO,84,114,144,12,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    DEFPUSHBUTTON   "OK",IDOK,234,6,48,14
-    PUSHBUTTON      "Cancel",IDCANCEL,234,24,48,14
-    RTEXT           "Name:",IDC_STATIC,6,6,42,12
-    RTEXT           "Command:",IDC_STATIC,6,24,42,12
-    RTEXT           "Folder:",IDC_STATIC,6,42,42,12
-    RTEXT           "Parameters:",IDC_STATIC,6,60,42,8
-    RTEXT           "Shortcut:",IDC_STATIC,6,78,42,12
-    LTEXT           "Static",IDC_TE_INFOLABEL,6,132,276,42
+                    BS_AUTOCHECKBOX | WS_TABSTOP,234,18,84,12
+    COMBOBOX        IDC_TE_OUTPUTCOMBO,234,36,144,12,CBS_DROPDOWNLIST | 
+                    WS_DISABLED | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Use the built-in error parser.",IDC_TE_BUILTIN,"Button",
+                    BS_AUTORADIOBUTTON | WS_DISABLED | WS_GROUP,234,60,102,
+                    12
+    PUSHBUTTON      "?",IDC_TE_ABOUTBUILTIN,348,60,12,12,WS_DISABLED
+    CONTROL         "Look for a custom pattern:",IDC_TE_CUSTOMPARSE,"Button",
+                    BS_AUTORADIOBUTTON | WS_DISABLED,234,78,114,12
+    EDITTEXT        IDC_TE_CUSTOMTEXT,246,96,132,12,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    DEFPUSHBUTTON   "OK",IDOK,282,210,48,14
+    PUSHBUTTON      "Cancel",IDCANCEL,336,210,48,14
+    RTEXT           "Name:",IDC_STATIC,12,18,42,12
+    RTEXT           "Command:",IDC_STATIC,12,36,42,12
+    RTEXT           "Folder:",IDC_STATIC,12,54,42,12
+    RTEXT           "Parameters:",IDC_STATIC,12,72,42,8
+    RTEXT           "Shortcut:",IDC_STATIC,12,90,42,12
+    LTEXT           "Static",IDC_TE_INFOLABEL,12,144,204,54
+    GROUPBOX        "Tool:",IDC_STATIC,6,6,216,198
+    GROUPBOX        "Output:",IDC_STATIC,228,6,156,174
+    LTEXT           "",IDC_TE_CUSTOMINFO,246,132,132,42
+    LTEXT           "example: %f:%l: ",IDC_STATIC,252,114,126,12
 END
 
 IDD_PAGE_GENERAL DIALOGEX 0, 0, 299, 168
@@ -962,9 +975,9 @@ BEGIN
     IDD_TOOLEDITOR, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 279
+        RIGHTMARGIN, 381
         TOPMARGIN, 7
-        BOTTOMMARGIN, 173
+        BOTTOMMARGIN, 221
     END
 
     IDD_PAGE_GENERAL, DIALOG

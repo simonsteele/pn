@@ -62,4 +62,3 @@ HWND GetCurrentEditor();
 
 #include "pnutils.h"
 #include "pndialogs.h"
-//#include "textview.h"
