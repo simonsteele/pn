@@ -251,10 +251,14 @@ Left := -1;
         Top := Screen.Height div 2 - (Height div 2);
    If Left = -1 Then
         Left := Screen.Width div 2 - (Width div 2);
-   If Top + Height > Screen.Height - 25 then
-     Repeat Top := Top - 100 until (Top + Height) < (Screen.Height - 25);
-   If Left > Screen.Width - 25 then
-     Repeat Left := Left - 25 until Left < (Screen.Width - 25);
+   If Top > Screen.Height then
+     Top := 0;
+   //If Top + Height > Screen.Height - 25 then
+     //Repeat Top := Top - 100 until (Top + Height) < (Screen.Height - 25);
+   If Left > Screen.Width then
+     Left := 0;
+   //If Left + Width > Screen.Width - 25 then
+     //Repeat Left := Left - 25 until Left < (Screen.Width - 25);
 end; {GetPosition}
 
 { The form position must be set to poDesigned for this to work, and it cannot  }
