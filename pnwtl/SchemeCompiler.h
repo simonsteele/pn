@@ -2,7 +2,7 @@
  * @file SchemeCompiler.h
  * @brief Define scheme reader and compiler classes.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2004 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -216,7 +216,6 @@ class SchemeParser
 		void specifyImportSet(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void specifyImportFile(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processBaseStyle(CSchemeLoaderState* pState, XMLAttributes& atts);
-		//void processBaseColour(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processLanguageElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts);
 		void processLanguageKeywords(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processLanguageStyle(CSchemeLoaderState* pState, XMLAttributes& atts);

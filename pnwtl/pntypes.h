@@ -2,7 +2,7 @@
  * @file pntypes.h
  * @brief Define structs etc. used throughout pn2.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2004 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -97,6 +97,7 @@ public:
 		CommandID = 0;
 		iFlags = 0;
 		Shortcut = 0;
+		Index = 0;
 	}
 
 	ToolDefinition(const ToolDefinition& copy)
@@ -112,6 +113,7 @@ public:
 	tstring CustomParsePattern;
 	int		CommandID;
 	int		iFlags;
+	int		Index;
 
 	bool CaptureOutput() const { return (iFlags & TOOL_CAPTURE) != 0; }
 	bool IsFilter() const { return (iFlags & TOOL_ISFILTER) != 0; }
@@ -133,6 +135,7 @@ protected:
 		CommandID = copy.CommandID;
 		CustomParsePattern = copy.CustomParsePattern;
 		iFlags = copy.iFlags;
+		Index = copy.Index;
 	}
 
 };

@@ -172,6 +172,7 @@
 #define IDD_PAGE_CONF                   434
 #define IDD_MAGICFOLDERWIZ2             435
 #define IDD_FINDEX                      436
+#define IDD_PAGE_DIALOGS                437
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_FINDTYPE_DUMMY              1003
@@ -345,6 +346,10 @@
 #define IDC_FINDTEXT_LABEL              1110
 #define IDC_SEARCHIN_GROUP              1111
 #define IDC_FINDEXTABS_PLACEHOLDER      1112
+#define IDC_OPENCURFILEDIRCHECK         1114
+#define IDC_CLOSEONFINDNEXTCHECK        1115
+#define IDC_FINDALPHACHECK              1116
+#define IDC_TREE1                       1117
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -357,7 +362,7 @@
 #define ID_VIEW_OUTPUT                  32700
 #define ID_VIEW_WINDOWS_PROJECT         32701
 #define ID_VIEW_WINDOWS_TEXTCLIPS       32702
-#define ID_VIEW_WINDOWS_FINDRESULTS		32703
+#define ID_VIEW_WINDOWS_FINDRESULTS     32703
 #define ID_VIEW_LASTDOCKER              32703
 #define ID_EDIT_FINDNEXT                32773
 #define ID_EDIT_GOTO                    32774
@@ -439,7 +444,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        333
 #define _APS_NEXT_COMMAND_VALUE         32925
-#define _APS_NEXT_CONTROL_VALUE         1114
+#define _APS_NEXT_CONTROL_VALUE         1118
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

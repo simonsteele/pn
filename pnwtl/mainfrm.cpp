@@ -2,7 +2,7 @@
  * @file mainfrm.cpp
  * @brief Main Window for Programmers Notepad 2 (Implementation)
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2004 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -1561,6 +1561,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsPageEditDefaults	editDefs;
 	COptionsPageVisual			visual;
 	COptionsPageConf			confirmations;
+	COptionsPageDialogs			dialogs;
 
 	COptionsPageStyle			pageStyle(&schemeconfig);
 	COptionsPageSchemes			pageSchemes(&schemeconfig);
@@ -1577,6 +1578,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	options.AddPage(&editDefs);
 	options.AddPage(&visual);
 	options.AddPage(&confirmations);
+	options.AddPage(&dialogs);
 	options.AddPage(&pageStyle);
 	options.AddPage(&pageSchemes);
 	options.AddPage(&pageNewFiles);

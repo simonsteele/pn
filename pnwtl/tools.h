@@ -54,7 +54,7 @@ class SchemeTools
 		~SchemeTools();
 
 		TOOLDEFS_LIST&	GetTools();
-		int				GetMenu(CSMenuHandle& menu, int iInsertAfter, int iCommand = TOOLS_RUNTOOL);
+		//int				GetMenu(CSMenuHandle& menu, int iInsertAfter, int iCommand = TOOLS_RUNTOOL);
 
 		void			Add(SourcedToolDefinition* pDef);
 		void			Delete(ToolDefinition* pDef);
@@ -74,8 +74,6 @@ class SchemeTools
 		bool			ToolsInSource(ToolSource* source);
 		void			BuildMenu(int iCommand);
 		void			InternalWriteDefinition(ToolsXMLWriter& writer, ToolSource* source);
-		tstring			GetShortcutText(int wCode, int wModifiers) const;
-		tstring			GetKeyName(UINT vkcode, bool extended) const;
 		
 		TOOLDEFS_LIST	m_Tools;
 		tstring			m_Scheme;
@@ -104,7 +102,7 @@ class SchemeToolsManager :
 		SchemeTools* GetGlobalTools();
 
 		SchemeTools* GetToolsFor(LPCTSTR scheme);
-		int GetMenuFor(LPCTSTR scheme, CSMenuHandle& menu, int iInsertBefore);
+		//int GetMenuFor(LPCTSTR scheme, CSMenuHandle& menu, int iInsertBefore);
 
 		void ReLoad(bool bWantMenuResources = false);
 		void Save();
@@ -115,6 +113,8 @@ class SchemeToolsManager :
 
 	protected:
 		void Clear(bool bWantMenuResources = false);
+
+		int BuildMenu(TOOLDEFS_LIST& list, CSMenuHandle& menu, int iInsertBefore, int iCommand = TOOLS_RUNTOOL);
 
 		// Scheme & Tool Creation
 		void processScheme(XMLAttributes& atts);

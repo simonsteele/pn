@@ -76,7 +76,7 @@ namespace Projects
 	}
 
 //////////////////////////////////////////////////////////////////////////////
-// Xml Data Storage
+// XmlNode
 //////////////////////////////////////////////////////////////////////////////
 
 XmlNode::XmlNode(LPCTSTR lpszNamespace, LPCTSTR lpszName)
@@ -182,6 +182,20 @@ void XmlNode::Write(ProjectWriter writer)
 	genxEndElement(writer->w);
 }
 
+LPCTSTR XmlNode::GetText()
+{
+	return sText.c_str();
+}
+
+void XmlNode::SetText(LPCTSTR text)
+{
+	sText = text;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// XmlAttribute
+//////////////////////////////////////////////////////////////////////////////
+
 XmlAttribute::XmlAttribute(LPCTSTR lpszNamespace, LPCTSTR lpszName, LPCTSTR lpszValue)
 {
 	sNamespace = lpszNamespace != NULL ? lpszNamespace : _T("");
@@ -257,6 +271,11 @@ ProjectType::ProjectType(PROJECT_TYPE type_)
 PROJECT_TYPE ProjectType::GetType()
 {
 	return type;
+}
+
+UserData& ProjectType::GetUserData()
+{
+	return userData;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -379,11 +398,6 @@ void File::WriteDefinition(SProjectWriter* definition)
 void File::setDirty()
 {
 	parentFolder->setDirty();
-}
-
-UserData& File::GetUserData()
-{
-	return userData;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -635,11 +649,6 @@ void Folder::setDirty()
 {
 	if(parent)
 		parent->setDirty();
-}
-
-UserData& Folder::GetUserData()
-{
-	return userData;
 }
 
 bool Folder::MoveFile(File* file, Folder* into)
@@ -902,10 +911,23 @@ void Project::endElement(LPCTSTR name)
 	else if( IN_STATE(PS_USERDATA) )
 	{
 		if(lastNode)
+		{
+			lastNode->SetText(udText.c_str());
 			lastNode = lastNode->GetParent();
+			if(lastNode)
+				udText = lastNode->GetText();
+		}
 		udNestingLevel--;
 		if(udNestingLevel == 0)
 			STATE(udBase);
+	}
+}
+
+void Project::characterData(LPCTSTR data, int len)
+{
+	if( IN_STATE(PS_USERDATA) )
+	{
+		udText.append(data, len);
 	}
 }
 
@@ -998,6 +1020,7 @@ void Project::processUserData(LPCTSTR name, XMLAttributes& atts)
 
 	if(lastNode)
 	{
+		lastNode->SetText(udText.c_str());
 		lastNode->AddChild(pNode);
 	}
 	else
@@ -1019,6 +1042,7 @@ void Project::processUserData(LPCTSTR name, XMLAttributes& atts)
 	}
 
 	lastNode = pNode;
+	udText = _T("");
 }
 
 void Project::setDirty()

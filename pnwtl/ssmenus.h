@@ -244,6 +244,61 @@ class CSMenuT
 		{
 			return m_hMenu;
 		}
+
+		static const TCHAR szPlus[];
+
+		static tstring GetShortcutText(int wCode, int wModifiers)
+		{
+			tstring strKeyName;
+
+			if (wCode != 0 || wModifiers != 0)
+			{
+				if (wModifiers & HOTKEYF_CONTROL)
+				{
+					strKeyName += GetKeyName(VK_CONTROL, false);
+					strKeyName += _T("+");
+				}
+
+				if (wModifiers & HOTKEYF_SHIFT)
+				{
+					strKeyName += GetKeyName(VK_SHIFT, false);
+					strKeyName += _T("+");
+				}
+
+				if (wModifiers & HOTKEYF_ALT)
+				{
+					strKeyName += GetKeyName(VK_MENU, false);
+					strKeyName += _T("+");
+				}
+
+				strKeyName += GetKeyName(wCode, (wModifiers & HOTKEYF_EXT) != 0);
+			}
+
+			return strKeyName;
+		}
+
+		static tstring GetKeyName(UINT vk, bool extended)
+		{
+			LONG lScan = MapVirtualKey(vk, 0) << 16;
+
+			// if it's an extended key, add the extended flag
+			if (extended)
+				lScan |= 0x01000000L;
+
+			tstring str;
+			GArray<TCHAR> tcbuf;
+			
+			int nBufferLen = 64;
+			int nLen;
+			do
+			{
+				nBufferLen *= 2;
+				tcbuf.grow(nBufferLen);
+				nLen = ::GetKeyNameText(lScan, &tcbuf[0], nBufferLen + 1);
+			}
+			while (nLen == nBufferLen);
+			return tstring(&tcbuf[0]);
+		}
 	
 	protected:
 		HMENU m_hMenu;

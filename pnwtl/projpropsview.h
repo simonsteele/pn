@@ -23,6 +23,7 @@ public:
 		COMMAND_ID_HANDLER(IDOK, OnOK)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
 		//NOTIFY_HANDLER(IDC_LIST1, PIN_BROWSE, OnBrowse)
+		NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnTreeSelChanged)
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
 
@@ -33,13 +34,20 @@ protected:
 	LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
+	LRESULT OnTreeSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+
 	void displayGroups(Projects::PropGroupList& groups, HTREEITEM hParent = NULL);
 	void displayCategories(Projects::PropCatList& categories);
 	void displayProperties(Projects::PropList& properties);
 
+	void selectGroup(Projects::PropGroup* group);
+
 protected:
-	CPropertyListCtrl	m_props;
-	Projects::PropSet*	m_pPropSet;
+	CPropertyListCtrl		m_props;
+	CTreeViewCtrl			m_tree;
+	Projects::PropSet*		m_pPropSet;
+	Projects::PropGroup*	m_pCurGroup;
+	Projects::ProjectType*	m_pCurItem;
 };
 
 #endif // #ifndef projpropsview_h__included

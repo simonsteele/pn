@@ -430,7 +430,7 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 			CustomKeywordSet* pKeywordSet = (*i)->m_cKeywords.GetFirstKeywordSet();
 
 			bool bCustomised = ((*i)->m_customs.StylesCount() != 0) ||
-				(pKeywordSet != NULL);
+				(pKeywordSet != NULL) || (*i)->m_editorColours.HasColours();
 
 			if(!bCustomised)
 				continue;

@@ -2,7 +2,7 @@
  * @file tools.cpp
  * @brief External tools code
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2004 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -28,7 +28,6 @@ class ToolsXMLWriter : public GenxXMLWriter
 public:
 	void writeTool(ToolDefinition* tool)
 	{
-		int flags = tool->iFlags;
 		genxStartElement(m_eTool);
 		addAttributeConvertUTF8(m_aName, tool->Name.c_str());
 		addAttributeConvertUTF8(m_aCommand, tool->Command.c_str());
@@ -36,7 +35,8 @@ public:
 		addAttributeConvertUTF8(m_aParams, tool->Params.c_str());
 		addAttributeConvertUTF8(m_aShortcut, IntToTString(tool->Shortcut).c_str());
 		addAttributeConvertUTF8(m_aParsePattern, tool->CustomParsePattern.c_str());
-		addAttributeConvertUTF8(m_aFlags, IntToTString(flags).c_str());
+		addAttributeConvertUTF8(m_aFlags, IntToTString(tool->iFlags).c_str());
+		addAttributeConvertUTF8(m_aIndex, IntToTString(tool->Index).c_str());
 		genxEndElement(m_writer);
 	}
 
@@ -87,6 +87,7 @@ protected:
 			ATT("shortcut", m_aShortcut);
 			ATT("parsepattern", m_aParsePattern);
 			ATT("flags", m_aFlags);
+			ATT("index", m_aIndex);
 		END_ATTRIBUTES();
 	}
 
@@ -100,6 +101,7 @@ protected:
 	genxAttribute m_aShortcut;
 	genxAttribute m_aParsePattern;
 	genxAttribute m_aFlags;
+	genxAttribute m_aIndex;
 };
 
 #include <sstream>
@@ -148,65 +150,8 @@ TOOLDEFS_LIST& SchemeTools::GetTools()
 	return m_Tools;
 }
 
-//CString CHotKeyCtrl::GetKeyName(UINT vk, BOOL fExtended)
-tstring SchemeTools::GetKeyName(UINT vk, bool extended) const
-{
-	LONG lScan = MapVirtualKey(vk, 0) << 16;
-
-	// if it's an extended key, add the extended flag
-	if (extended)
-		lScan |= 0x01000000L;
-
-	tstring str;
-	GArray<TCHAR> tcbuf;
-	
-	int nBufferLen = 64;
-	int nLen;
-	do
-	{
-		nBufferLen *= 2;
-		//LPTSTR psz = str.GetBufferSetLength(nBufferLen);
-		tcbuf.grow(nBufferLen);
-		nLen = ::GetKeyNameText(lScan, &tcbuf[0], nBufferLen + 1);
-	}
-	while (nLen == nBufferLen);
-	return tstring(&tcbuf[0]);
-}
-
-static const TCHAR szPlus[] = _T(" + ");
-
-tstring SchemeTools::GetShortcutText(int wCode, int wModifiers) const
-{
-	tstring strKeyName;
-
-	if (wCode != 0 || wModifiers != 0)
-	{
-		if (wModifiers & HOTKEYF_CONTROL)
-		{
-			strKeyName += GetKeyName(VK_CONTROL, false);
-			strKeyName += szPlus;
-		}
-
-		if (wModifiers & HOTKEYF_SHIFT)
-		{
-			strKeyName += GetKeyName(VK_SHIFT, false);
-			strKeyName += szPlus;
-		}
-
-		if (wModifiers & HOTKEYF_ALT)
-		{
-			strKeyName += GetKeyName(VK_MENU, false);
-			strKeyName += szPlus;
-		}
-
-		strKeyName += GetKeyName(wCode, (wModifiers & HOTKEYF_EXT) != 0);
-	}
-
-	return strKeyName;
-}
-
 ///@return ID of last command added...
-int SchemeTools::GetMenu(CSMenuHandle& menu, int iInsertBefore, int iCommand)
+/*int SchemeTools::GetMenu(CSMenuHandle& menu, int iInsertBefore, int iCommand)
 {
 	int iLastCommand = iInsertBefore;
 	if(m_Tools.size() != 0)
@@ -237,7 +182,7 @@ int SchemeTools::GetMenu(CSMenuHandle& menu, int iInsertBefore, int iCommand)
 	}
 
 	return iLastCommand;
-}
+}*/
 
 void SchemeTools::AllocateMenuResources(int iCommand)
 {
@@ -550,8 +495,6 @@ Projects::Project* CToolCommandString::GetActiveProject()
 // SchemeToolsManager
 //////////////////////////////////////////////////////////////////////////////
 
-//SchemeToolsManager* SchemeToolsManager::s_pTheInstance = NULL;
-
 SchemeToolsManager::SchemeToolsManager()
 {
 	m_pCur = NULL;
@@ -620,7 +563,7 @@ SchemeTools* SchemeToolsManager::GetToolsFor(LPCTSTR scheme)
 	return pRet;
 }
 
-int SchemeToolsManager::GetMenuFor(LPCTSTR scheme, CSMenuHandle& menu, int iInsertAfter)
+/*int SchemeToolsManager::GetMenuFor(LPCTSTR scheme, CSMenuHandle& menu, int iInsertAfter)
 {
 	SchemeTools* pTools = GetToolsFor(scheme);
 	if(pTools)
@@ -629,7 +572,7 @@ int SchemeToolsManager::GetMenuFor(LPCTSTR scheme, CSMenuHandle& menu, int iInse
 	}
 	
 	return iInsertAfter;
-}
+}*/
 
 int SchemeToolsManager::UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, int iDummyID, LPCSTR schemename)
 {
@@ -660,20 +603,67 @@ int SchemeToolsManager::UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, 
 		}
 	}
 
+	TOOLDEFS_LIST theTools;
+	
 	if(m_pGlobalTools)
-		iFirstToolCmd = m_pGlobalTools->GetMenu(tools, iDummyID);
-	else
-		iFirstToolCmd = iDummyID;
+	{
+		TOOLDEFS_LIST& gt = m_pGlobalTools->GetTools();
+		theTools.insert(theTools.end(), gt.begin(), gt.end());
+	}
+
 	if(schemename)
 	{
-		int iNextFirst = GetMenuFor(schemename, tools, iDummyID);
-		iFirstToolCmd = (iNextFirst != iDummyID ? iNextFirst : iFirstToolCmd);
+		SchemeTools* pS = GetToolsFor(schemename);
+		theTools.insert(theTools.end(), pS->GetTools().begin(), pS->GetTools().end());
 	}
+
+	if(theTools.size() > 0)
+	{
+		iFirstToolCmd = BuildMenu(theTools, tools, iDummyID);
+	}
+	else
+		iFirstToolCmd = iDummyID;
 	
 	if(iFirstToolCmd != iDummyID)
 		::RemoveMenu(m, iDummyID, MF_BYCOMMAND);
 
 	return iFirstToolCmd;
+}
+
+/**
+ * @return ID of last command added...
+ */
+int SchemeToolsManager::BuildMenu(TOOLDEFS_LIST& tools, CSMenuHandle& menu, int iInsertBefore, int iCommand)
+{
+	int iLastCommand = iInsertBefore;
+	if(tools.size() != 0)
+	{
+		CSMenuManager* pMan = CSMenuManager::GetInstance();
+		
+		for(TOOLDEFS_LIST::const_iterator i = tools.begin(); i != tools.end(); ++i)
+		{
+			ToolDefinition* pT = (*i);
+			
+            if(pT->CommandID == -1)
+				pT->CommandID = pMan->RegisterCallback(pT->CommandID, NULL, iCommand, (LPVOID)pT);
+
+			tstring str = pT->Name;
+			if(pT->Shortcut != 0)
+			{
+				tstring sc = CSMenu::GetShortcutText(LOBYTE(pT->Shortcut), HIBYTE(pT->Shortcut));
+				if(sc.length() > 0)
+				{
+					str += "\t";
+					str += sc;
+				}
+			}
+
+			::InsertMenu(menu, iInsertBefore, MF_BYCOMMAND | MF_STRING, pT->CommandID, str.c_str());
+			iLastCommand = pT->CommandID;
+		}
+	}
+
+	return iLastCommand;	
 }
 
 const ToolSource* SchemeToolsManager::GetDefaultToolStore()
@@ -834,6 +824,8 @@ void SchemeToolsManager::processTool(XMLAttributes& atts)
 				pDef->CustomParsePattern = Utf8_Windows1252(val);
 			else if(_tcscmp(attr, _T("flags")) == 0)
 				pDef->iFlags = _ttoi(val);
+			else if(_tcscmp(attr, _T("index")) == 0)
+				pDef->Index = _ttoi(val);
 		}
 
 		m_pCur->Add(pDef);
@@ -856,10 +848,19 @@ void SchemeToolsManager::startElement(LPCTSTR name, XMLAttributes& atts)
 	}
 }
 
+bool CompareToolDefinitions(ToolDefinition* t1, ToolDefinition* t2)
+{
+	return (t1->Index < t2->Index);
+}
+
 void SchemeToolsManager::endElement(LPCTSTR name)
 {
 	if(_tcscmp(name, _T("scheme")) == 0 || _tcscmp(name, _T("global")) == 0)
+	{
+		if(m_pCur != NULL)
+			m_pCur->GetTools().sort(CompareToolDefinitions);
 		m_pCur = NULL;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1156,8 +1157,6 @@ int ToolRunner::Run_NoCapture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	STARTUPINFO si;
 	memset(&si, 0, sizeof(STARTUPINFO));
 	si.cb = sizeof(STARTUPINFO);
-	/*si.dwFlags = STARTF_USESHOWWINDOW; - don't want to hide these processes!
-	si.wShowWindow = SW_HIDE;*/
 
 	PROCESS_INFORMATION pi = {0, 0, 0, 0};
 
@@ -1243,8 +1242,6 @@ void ToolRunner::PostRun()
 // ToolOwner
 //////////////////////////////////////////////////////////////////////////////
 
-//ToolOwner* ToolOwner::s_pTheInstance = NULL;
-
 ToolOwner::ToolOwner()
 {
 	::InitializeCriticalSection(&m_crRunningTools);
@@ -1318,8 +1315,6 @@ void ToolOwner::MarkToolForDeletion(ToolRunner* pRunningTool)
 			tool.bDelete = true;
 			break;
 		}
-
-		//pT->UpdateRunningTools();
 	}
 }
 

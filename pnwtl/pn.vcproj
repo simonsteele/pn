@@ -437,6 +437,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\StyleTabPages.cpp">
+			</File>
+			<File
 				RelativePath="textclips.cpp">
 			</File>
 			<File

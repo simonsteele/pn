@@ -2,7 +2,7 @@
  * @file optionspages.h
  * @brief Options Dialog Pages (1) for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2004 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -145,6 +145,34 @@ class COptionsPageConf : public COptionsPageImpl<COptionsPageConf>,
 
 		int m_iReOpen;
 		int m_iReDrop;
+};
+
+class COptionsPageDialogs : public COptionsPageImpl<COptionsPageDialogs>,
+							public CWinDataExchange<COptionsPageDialogs>
+{
+	public:
+		BEGIN_MSG_MAP(COptionsPageDialogs)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			REFLECT_NOTIFICATIONS()
+		END_MSG_MAP()
+		enum { IDD = IDD_PAGE_DIALOGS };
+
+		BEGIN_DDX_MAP(COptionsPageDialogs)
+			DDX_CHECK(IDC_OPENCURFILEDIRCHECK,	m_bOpenCurFileDir)
+			DDX_CHECK(IDC_FINDALPHACHECK,		m_bFindAlpha)
+			DDX_CHECK(IDC_CLOSEONFINDNEXTCHECK,	m_bCloseFindNext)
+		END_DDX_MAP()
+
+		virtual void OnOK();
+		virtual void OnInitialise();
+		virtual LPCTSTR GetTreePosition();
+
+	protected:
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		
+		BOOL m_bOpenCurFileDir;
+		BOOL m_bFindAlpha;
+		BOOL m_bCloseFindNext;
 };
 
 class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
@@ -441,8 +469,7 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 	protected:
 		bool				m_bChanging;
 		CSchemeCombo		m_combo;
-		//CListViewCtrl		m_list;
-		CSSListCtrl		m_list;
+		CSSListCtrl			m_list;
 		SchemeConfigParser* m_pSchemes;
 		SchemeConfig*		m_pScheme;
 		SchemeTools*		m_pCurrent;

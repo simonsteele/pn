@@ -61,9 +61,13 @@ class XmlNode
 
 		XmlNode* GetParent();
 
+		LPCTSTR GetText();
+		void SetText(LPCTSTR text);
+
 	protected:
 		tstring		sNamespace;
 		tstring		sName;
+		tstring		sText;
 
 		XmlNode*	pParent;
 		
@@ -90,14 +94,15 @@ class UserData
 		~UserData();
 		
 		void Add(XmlNode* node);
-		//void AddAttribute(XmlAttribute* attribute);
-		//void AddAttributes(XMLAttributes& atts);
 
 		const LIST_NODES& GetNodes();
 
 		const int GetCount();
 
 		void Write(ProjectWriter writer);
+
+		//void Lookup(LPCTSTR group, LPCTSTR category, LPCTSTR value, int defval);
+		//void Lookup(LPCTSTR group, LPCTSTR category, LPCTSTR value, LPCTSTR defval);
 
 		XN_CIT	begin();
 		XN_CIT	end();
@@ -107,6 +112,9 @@ class UserData
 		//LIST_ATTRS attrs;
 };
 
+/**
+ * Base-type for all Projects objects
+ */
 class ProjectType
 {
 public:
@@ -122,7 +130,10 @@ public:
 	*/
 	virtual PROJECT_TYPE GetType();
 
+	UserData& GetUserData();
+
 protected:
+	UserData	 userData;
 	PROJECT_TYPE type;
 };
 
@@ -142,8 +153,6 @@ class File : public ProjectType
 
 		void WriteDefinition(ProjectWriter definition);
 
-		UserData& GetUserData();
-
 	protected:
 		void setDirty();
 
@@ -154,8 +163,6 @@ class File : public ProjectType
 		tstring fullPath;
 		tstring relPath;
 		Folder*	parentFolder;
-		
-		UserData	userData;
 };
 
 /**
@@ -198,8 +205,6 @@ class Folder : public ProjectType
 
 		virtual void WriteDefinition(ProjectWriter definition);
 
-		UserData& GetUserData();
-
 		static bool MoveFile(File* file, Projects::Folder* into);
 		static bool MoveChild(Projects::Folder* folder, Projects::Folder* into);
 
@@ -216,8 +221,6 @@ class Folder : public ProjectType
 		FOLDER_LIST	children;
 		FILE_LIST	files;
 		Folder*		parent;
-
-		UserData	userData;
 };
 
 class MagicFolder : public Folder
@@ -339,7 +342,7 @@ class Project : public Folder, XMLParseState
 	protected:
 		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
 		virtual void endElement(LPCTSTR name);
-		virtual void characterData(LPCTSTR data, int len){};
+		virtual void characterData(LPCTSTR data, int len);
 
 	protected:
 		Project();
@@ -361,6 +364,7 @@ class Project : public Folder, XMLParseState
 		File*		lastParsedFile;
 		XmlNode*	lastNode;
 		tstring		fileName;
+		tstring		udText;
 		bool		bExists;
 		bool		bDirty;
 		int			parseState;

@@ -2,7 +2,7 @@
  * @file SchemeParser.cpp
  * @brief Implement scheme reader and compiler classes.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2004 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -492,32 +492,7 @@ void SchemeCompiler::onStyle(StyleDetails* pStyle, StyleDetails* pCustom)
 		m_Recorder.SetDefStyle(&m_LoadState.m_Default);
 	}
 
-	/*if(pStyle->ColourOnly)
-	{
-		if((pStyle->values && edvForeColor) == 0)
-			return;
-
-		if(pStyle->KeyIsMessage)
-		{
-			//Special-case selection-fore and selection-back.
-			if(pStyle->Key == 2068 || pStyle->Key == 2067)
-			{
-				m_Recorder.SPerform(pStyle->Key, 1, pStyle->ForeColor);
-			}
-			else
-			{
-				m_Recorder.SPerform(pStyle->Key, (long)pStyle->ForeColor);
-			}
-		}
-		else
-		{
-			m_Recorder.StyleSetFore(pStyle->Key, pStyle->ForeColor);
-		}
-	}
-	else*/
-	{
-		sendStyle(pStyle, &m_Recorder);
-	}
+	sendStyle(pStyle, &m_Recorder);
 }
 
 void SchemeCompiler::onStyleClass(StyleDetails* pClass, StyleDetails* pCustom)
@@ -649,27 +624,14 @@ void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
  */
 void SchemeParser::processBaseStyle(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
-	//Should this inherit from pState->m_Default?
-	StyleDetails* pS = new StyleDetails();
+	// Create a style with no default settings, the defaults will be applied
+	// later as the base style is used for each scheme.
+	StyleDetails* pS = new StyleDetails( );
 	
 	parseStyle(pState, atts, pS);
 
 	pState->m_BaseStyles.AddStyle(pS);
 }
-
-/**
- * A base colour is a colour that affects every scheme - things like
- * cursor colour and selection colours.
- */
-/*void SchemeParser::processBaseColour(CSchemeLoaderState* pState, XMLAttributes& atts)
-{
-	StyleDetails* pS = new StyleDetails();
-
-	parseStyle(pState, atts, pS);
-	pS->ColourOnly = true;
-	
-	pState->m_BaseStyles.AddStyle(pS);
-}*/
 
 void SchemeParser::processGlobal(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
@@ -1263,10 +1225,14 @@ void SchemeParser::sendBaseStyle(CSchemeLoaderState* pState, StyleDetails* pS)
 	{
 		pBase = pState->m_StyleClasses.GetStyle(classname);
 	}
+	else
+	{
+		// If we didn't find a class, we base the style on the default style...
+		pBase = &pState->m_Default;
+	}
 
 	StyleDetails Style(*pS);
-
-	// If we didn't find a class, we base the style on the default style...
+	
 	if( pBase )
 		customiseStyle(&Style, pBase);
 

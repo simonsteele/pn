@@ -17,15 +17,14 @@
 LRESULT CProjPropsView::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	m_props.SubclassWindow(GetDlgItem(IDC_LISTPROPS));
+	m_tree.Attach(GetDlgItem(IDC_TREE));
 	
 	// Categorized properties TODO: make this optional.
 	m_props.SetExtendedListStyle(PLS_EX_CATEGORIZED | PLS_EX_XPLOOK);
 
-	//m_props.AddItem( PropCreateSimple(_T("Property"), false) );
-	//m_props.AddItem( PropCreateCategory(_T("Category")) );
-	//m_props.AddItem( PropCreateSimple(_T("Property"), false) );
-
 	displayGroups(m_pPropSet->GetGroups());
+	
+	m_tree.SelectItem( m_tree.GetRootItem() );
 
 	CString s;
 	s.Format(IDS_PROPSTITLE, _T("Project"));
@@ -48,71 +47,42 @@ LRESULT CProjPropsView::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
 	return 0;
 }
 
-void CProjPropsView::DisplayFor(Projects::ProjectType* pItem, Projects::ProjectTemplate* pTemplate)
+LRESULT CProjPropsView::OnTreeSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-	m_pPropSet = pTemplate->GetProperties(pItem->GetType());
-	//pTemplate->
-	//Projects::PropSet* pSet = 
+	LPNMTREEVIEW pN = reinterpret_cast<LPNMTREEVIEW>(pnmh);
+	if(pnmh->code == TVN_SELCHANGED)
+	{
+		Projects::PropGroup* pGroup = reinterpret_cast<Projects::PropGroup*>( m_tree.GetItemData( pN->itemNew.hItem ) );
+		if(pGroup != NULL)
+		{
+			selectGroup(pGroup);
+		}
+	}
 
-	DoModal();
-
-	//Projects::PropGroupList& groups = pSet->GetGroups();
-	
+	return 0;
 }
 
-	/*if(m_state == OS_DEFAULT)
-	{
-		if(_tcscmp(name, _T("optionset")) == 0)
-		{
-			LPCTSTR title = atts.getValue(_T("title"));
-			if(!title)
-				return;
+void CProjPropsView::DisplayFor(Projects::ProjectType* pItem, Projects::ProjectTemplate* pTemplate)
+{
+	PNASSERT(pItem != NULL);
+	PNASSERT(pTemplate != NULL);
 
-			m_list.AddItem( PropCreateCategory(title) );
-			m_state = OS_OPTIONS;
-		}
-	}
-	else if(m_state == OS_OPTIONS)
-	{
-		LPCTSTR title = atts.getValue(_T("title"));
-		LPCTSTR elname = atts.getValue(_T("name"));
+	m_pCurItem = pItem;
+	m_pPropSet = pTemplate->GetProperties(pItem->GetType());
 
-		if(_tcscmp(name, _T("folderpath")) == 0)
-		{
-			m_list.AddItem( PropCreateFileName(title, _T("")) );
-		}
-		else if(_tcscmp(name, _T("option")) == 0)
-		{
-			m_list.AddItem( PropCreateSimple(title, false));
-		}
-		
-		else if(_tcscmp(name, _T("optionlist")) == 0)
-		{
-			m_state = OS_OPTLIST;
-			m_pListItem = static_cast<CPropertyListItem*>( PropCreateList(title, NULL) );
-		}
-		else if(_tcscmp(name, _T("text")) == 0)
-		{
-			m_list.AddItem( PropCreateSimple(title, _T("")));
-		}
-	}
-	else if(m_state == OS_OPTLIST)
-	{
-		if(_tcscmp(name, _T("value")) == 0)
-			onValue(atts);
-	}*/
-
+	DoModal();	
+}
 
 void CProjPropsView::displayGroups(Projects::PropGroupList& groups, HTREEITEM hParent)
 {
+	HTREEITEM hItem = NULL;
+
 	for(Projects::PropGroupList::const_iterator i = groups.begin();
 		i != groups.end();
 		++i)
 	{
-		HTREEITEM hItem = NULL;
-
-		// Later this will happen on a tree item selection.
-		displayCategories((*i)->GetCategories());
+		hItem = m_tree.InsertItem((*i)->GetName(), hParent, hItem);
+		m_tree.SetItemData(hItem, reinterpret_cast<DWORD_PTR>( (*i) ));
 
 		displayGroups((*i)->GetSubGroups(), hItem);
 	}
@@ -163,12 +133,13 @@ void CProjPropsView::displayProperties(Projects::PropList& properties)
 				m_props.AddItem(pListItem);
 			}
 			break;
+
 		case Projects::propString:
 			m_props.AddItem( PropCreateSimple((*i)->GetDescription(), _T("")) );
 			break;
 
 		case Projects::propLongString:
-			m_props.AddItem( PropCreateSimple((*i)->GetDescription(), _T("longstring")) );
+			m_props.AddItem( PropCreateSimple((*i)->GetDescription(), _T("")) );
 			break;
 
 		case Projects::propFile:
@@ -180,4 +151,10 @@ void CProjPropsView::displayProperties(Projects::PropList& properties)
 			break;
 		}
 	}
+}
+
+void CProjPropsView::selectGroup(Projects::PropGroup* group)
+{
+	displayCategories(group->GetCategories());
+	m_pCurGroup = group;
 }

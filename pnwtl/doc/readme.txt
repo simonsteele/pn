@@ -22,12 +22,24 @@ pn -l 49 -c 14 --scheme cpp test.dat
    specification of file and folder filters for magic folders.
 5) Trying to save a readonly file will now allow you to attempt to overwrite
    that file.
+7) New Find dialog, encompassing Find, Replace and Find in Files.
+6) Find in Files (in case you missed it on the above line)!
 
 Bug Fixes:
 ----------
 
 1) The external file change notification window now appears on the correct
    monitor in multiple monitor systems.
+2) losing scheme options when changing scheme (SF Bug #1033170).
+3) inability to reduce font size beneath 10 for all styles (SF Bug #1070782).
+4) Font changes not set for common style items (SF Bug #952562).
+5) AutoComplete boxes on Win98 (SF Bug #1075138).
+6) XML parser does not like ´ character (SF Bug #1036079).
+7) Find dialog focus problem.
+8) 'Find in files' doesn't do anything? (SF Bug #969334).
+9) "More Options" in schemes not saving changes (SF Bug #1028974).
+10) Option to choose whether Open should start in current file's directory (SF Bug #1055115).
+11) Option to choose whether to close Find dialog on Find Next (SF Bug #945135).
 
 If you find a bug:
 ------------------
