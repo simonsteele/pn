@@ -27,6 +27,16 @@
 		<style-class name="commentline" inherit-style="comment"/>
 		<style-class name="commentbox" inherit-style="comment"/>
 	</style-classes>
+	<base-options>
+		<colour name="Cursor" />
+		<colour name="Indentation Guides" />
+		<colour name="Selection Back" />
+		<colour name="Selection Fore" />
+		<style name="Line Numbers" key="33" />
+		<style name="Brace Match" key="34" fore="0000ff" bold="true" />
+		<style name="Brace Mismatch" key="35" fore="ff0000" bold="true" />
+		<style name="Control Characters" key="36" fore="808080" />
+	</base-options>
 	<keyword-classes>
 		<keyword-class name="javascript">
 			abstract boolean break byte case catch char class 
