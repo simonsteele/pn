@@ -10,7 +10,7 @@
 #define IDC_HEADERTEXT                  30
 #define IDC_FOOTERTEXT                  31
 #define ID_MRUFILE_BASE                 50
-#define ID_MRUFILE_MAX					99
+#define ID_MRUFILE_MAX                  99
 #define IDD_ABOUTBOX                    100
 #define IDC_FINDTEXT_COMBO              102
 #define IDC_FINDNEXT_BUTTON             103
@@ -136,6 +136,7 @@
 #define IDR_POPUP_HEADERFOOTER          314
 #define IDR_TOOLBAR2                    316
 #define IDR_TBR_PROJECTS                316
+#define IDB_ABOUT                       319
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -260,6 +261,8 @@
 #define IDC_AFILES_ADDBUTTON            1078
 #define IDC_AFILES_EDITBUTTON           1079
 #define IDC_AFILES_REMOVEBUTTON         1080
+#define IDC_ABOUTIMAGE                  1081
+#define IDC_TOPSTATIC                   1082
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -332,9 +335,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        318
+#define _APS_NEXT_RESOURCE_VALUE        320
 #define _APS_NEXT_COMMAND_VALUE         32902
-#define _APS_NEXT_CONTROL_VALUE         1081
+#define _APS_NEXT_CONTROL_VALUE         1083
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

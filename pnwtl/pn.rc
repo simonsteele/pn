@@ -260,15 +260,18 @@ IDR_MDICHILD            ICON                    "res\\pnDoc.ico"
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 187, 84
+IDD_ABOUTBOX DIALOGEX 0, 0, 169, 129
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,132,66,50,14
-    CTEXT           "",IDC_VERSIONSTATIC,42,18,132,32
-    ICON            IDR_MAINFRAME,IDC_STATIC,12,18,21,20
-    GROUPBOX        "",IDC_STATIC,7,7,173,53
+    CONTROL         319,IDC_ABOUTIMAGE,"Static",SS_BITMAP,8,7,153,54
+    DEFPUSHBUTTON   "OK",IDOK,112,108,50,14
+    CTEXT           "",IDC_VERSIONSTATIC,7,70,153,32
+    CONTROL         "",IDC_TOPSTATIC,"Static",SS_ETCHEDHORZ,7,7,156,1
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDVERT,7,7,1,57
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,7,62,156,1
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDVERT,161,7,1,57
 END
 
 IDD_PNSAVE DIALOG  0, 0, 230, 14
@@ -293,9 +296,9 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 180
+        RIGHTMARGIN, 162
         TOPMARGIN, 7
-        BOTTOMMARGIN, 77
+        BOTTOMMARGIN, 122
     END
 
     IDD_PNSAVE, DIALOG
@@ -355,7 +358,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,5,17
+ FILEVERSION 2,0,5,18
  PRODUCTVERSION 2,0,5,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -373,12 +376,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele (Echo Software)"
             VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.5.17"
+            VALUE "FileVersion", "2.0.5.18"
             VALUE "InternalName", "PNWTL"
             VALUE "LegalCopyright", "Copyright © 2002-2003 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"
             VALUE "ProductName", "Programmers Notepad"
-            VALUE "ProductVersion", "2.0.5.0-devel"
+            VALUE "ProductVersion", "2.0.5.0-rc1"
         END
     END
     BLOCK "VarFileInfo"
@@ -578,6 +581,7 @@ IDR_TBR_SCHEME          BITMAP                  "res\\tbrScheme.bmp"
 IDR_TBR_FIND            BITMAP                  "res\\tbrFindCombo.bmp"
 IDB_FINDTOOLBAR         BITMAP                  "res\\findbarbmps.bmp"
 IDR_TBR_PROJECTS        BITMAP                  "res\\tbrProjects.bmp"
+IDB_ABOUT               BITMAP                  "res\\about.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

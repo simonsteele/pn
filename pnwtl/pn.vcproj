@@ -455,6 +455,9 @@
 			Name="Resource Files"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
 			<File
+				RelativePath=".\res\about.bmp">
+			</File>
+			<File
 				RelativePath="res\bitmap1.bmp">
 			</File>
 			<File
