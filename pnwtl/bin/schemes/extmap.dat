@@ -1,5 +1,7 @@
+.c=cpp
 .cpp=cpp
 .h=cpp
+.hpp=cpp
 .cxx=cpp
 .idl=cpp
 .html=Web
