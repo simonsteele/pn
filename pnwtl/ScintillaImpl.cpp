@@ -481,8 +481,10 @@ bool CScintillaImpl::ReplaceOnce(SReplaceOptions* pOptions)
 	return FindNext(pOptions);
 }
 
-void CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions) 
+int CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions) 
 {
+	int repCount = 0;
+
 	CString findTarget(pOptions->FindText);
 
 	int findLen = UnSlashAsNeeded(findTarget, /*pOptions->UnSlash*/false, pOptions->UseRegExp);
@@ -493,7 +495,7 @@ void CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 			"Find string must not be empty for 'Replace in Selection' command." :
 			"Find string must not be empty for 'Replace All' command.");
 		FindMessageBox(msg);*/
-		return;
+		return 0;
 	}
 
 	CharacterRange cr;
@@ -508,7 +510,7 @@ void CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 		{
 			/*SString msg = LocaliseMessage("Selection must not be empty for 'Replace in Selection' command.");
 			FindMessageBox(msg);*/
-			return;
+			return 0;
 		}
 	} 
 	else 
@@ -556,6 +558,8 @@ void CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 			else
 				ReplaceTarget(replaceLen, (LPCTSTR)replaceTarget);
 
+			repCount++;
+
 			// Modify for change caused by replacement
 			endPosition += lenReplaced - lenTarget;
 			lastMatch = posFind + lenReplaced;
@@ -582,4 +586,6 @@ void CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 			"No replacements because string '^0' was not present.", findWhat.c_str());
 		FindMessageBox(msg);*/
 	}
+
+	return repCount;
 }

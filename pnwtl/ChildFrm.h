@@ -740,9 +740,9 @@ public:
 		}
 	}
 
-	void ReplaceAll(SReplaceOptions* options)
+	int ReplaceAll(SReplaceOptions* options)
 	{
-		m_view.ReplaceAll(options);
+		return m_view.ReplaceAll(options);
 	}
 
 	void HighlightAll(SFindOptions* options)

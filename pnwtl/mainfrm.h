@@ -177,6 +177,7 @@ public:
 		m_StatusBar.SetPaneWidth(ID_MOD_PANE, 70);
 		m_StatusBar.SetPaneWidth(ID_INS_PANE, 80);
 		m_StatusBar.SetPaneText(ID_DEFAULT_PANE, _T("Ready"), SBT_NOBORDERS);
+		m_bShowingDefaultStatus = true;
 
 		DragAcceptFiles(TRUE);
 
@@ -506,6 +507,14 @@ public:
 			m_StatusBar.SetPaneText(ID_MOD_PANE, pChild->GetModified() ? _T("Modified") : _T(""));
 			pChild->SetPosStatus(m_StatusBar);
 		}
+		/* This never gets called, the child is always valid when MDIDestroy happens.
+		else
+		{
+			m_StatusBar.SetPaneText(ID_MOD_PANE, _T(""));
+			m_StatusBar.SetPaneText(ID_POS_PANE, _T(""));
+			SetStatusText(NULL);	
+		}
+		*/
 	}
 
 	////////////////////////////////////////////////////////////////
@@ -535,6 +544,21 @@ public:
 	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL)
 	{
 		return m_CmdBar.TrackPopupMenu(hMenu, uFlags, x, y, lpParams);
+	}
+
+	virtual void SetStatusText(LPCTSTR text)
+	{
+		if(text)
+		{
+			m_StatusBar.SetPaneText(ID_DEFAULT_PANE, text, SBT_NOBORDERS);
+			m_bShowingDefaultStatus = false;
+		}
+		else
+			if(!m_bShowingDefaultStatus)
+			{
+				m_StatusBar.SetPaneText(ID_DEFAULT_PANE, _T("Ready"), SBT_NOBORDERS);
+				m_bShowingDefaultStatus = true;
+			}
 	}
 
 protected:
@@ -638,6 +662,8 @@ protected:
 
 	HWND					hFindWnd;
 	HWND					hReplWnd;
+
+	bool					m_bShowingDefaultStatus;
 
 	void CloseAndFreeDlg(CDialogImplBase* pD)
 	{

@@ -90,7 +90,7 @@ class CScintilla
 
 		void SetInitialTabWidth(int ts){m_TabWidth = ts;}
 
-		int GetSelLengh(){return m_SelLength;}
+		int GetSelLength(){return m_SelLength;}
 
 		// The following are helper functions - they allow
 		// the code using certain parts of Scintilla to look

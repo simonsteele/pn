@@ -1,10 +1,10 @@
 #include "StdAfx.h"
 #include "Files.h"
 
-///////////////////////////////////////////////////////////////////////////
-// FileAge - gets the timestamp of a file in Windows.
-///////////////////////////////////////////////////////////////////////////
-
+/**
+ * @brief Get the dos file time of a file.
+ * @param FileName fully qualified path.
+ */
 int FileAge(LPCTSTR FileName)
 {
 	HANDLE Handle;
@@ -28,6 +28,50 @@ int FileAge(LPCTSTR FileName)
 		}
 	}
   return -1;
+}
+
+/**
+ * @brief Recursively create a directory.
+ * @param pszDirectory full directory path to create.
+ * @param lpSA pointer to a SECURITY_ATTRIBUTES structure to be passed to CreateDirectory
+ *
+ * Credit to Eugen@Fastfertig.com who posted almost exactly this code
+ * to CodeGuru. Saved me writing it!
+ * link: http://www.codeguru.com/mfc/comments/39715.shtml
+ */
+bool CreateDirectoryRecursive(LPCTSTR pszDirectory, LPSECURITY_ATTRIBUTES lpSA) 
+{
+	char szDir[MAX_PATH];
+	char *p, *pNext;
+	strcpy(szDir, pszDirectory);
+
+	pNext = strchr(szDir, '\\');
+	if (pNext)
+	{
+		pNext++;
+		while ( ( p = strchr(pNext, '\\') ) != 0 )
+		{
+			*p = NULL;
+			if (GetFileAttributes(szDir) == -1)
+			{
+				if (CreateDirectory(szDir, lpSA) == FALSE)
+				{
+					return FALSE;
+				}
+			}
+			*p = '\\';
+			pNext = p+1;
+		}
+	}
+	if (GetFileAttributes (szDir) == -1)
+	{
+		if (CreateDirectory(szDir, lpSA) == FALSE)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////

@@ -10,6 +10,7 @@
 
 #include "stdafx.h"
 #include "OptionsManager.h"
+#include "files.h"
 #include "ssreg.h"
 using namespace ssreg;
 
@@ -151,12 +152,9 @@ void COptionsManager::GetSchemesPaths(ctcString& path, ctcString& compiledPath)
 			compiledPath += _T('\\');
 		}
 
-		compiledPath += _T("Programmers Notepad\\");
-		//@todo Check DirExists()...
-		::CreateDirectory(compiledPath.c_str(), NULL);
+		compiledPath += _T("Echo Software\\Programmers Notepad\\Schemes\\");
 
-		compiledPath += _T("Schemes\\");
-		::CreateDirectory(compiledPath.c_str(), NULL);
+		CreateDirectoryRecursive(compiledPath.c_str());
 	}
 	else
 	{

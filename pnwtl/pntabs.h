@@ -33,6 +33,7 @@ public:
 
 	LRESULT OnMDIDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
+		SendMessage(GetParent(), PN_NOTIFY, 0, SCN_UPDATEUI);
 		bHandled = FALSE;
 
 		return 0;

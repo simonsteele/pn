@@ -222,7 +222,7 @@ public:
 
 	void SetPosStatus(CMultiPaneStatusBarCtrl& stat)
 	{
-		TCHAR tvstatbuf[30];
+		TCHAR tvstatbuf[50];
 		
 		long pos = GetCurrentPos();
 
@@ -233,6 +233,21 @@ public:
 		);
 
 		stat.SetPaneText(ID_POS_PANE, tvstatbuf);
+		
+		if(GetSelLength() > 0)
+		{
+			if(SelectionIsRectangle())
+			{
+				_tcscpy(tvstatbuf, _T("Rectangular Selection."));
+			}
+			else
+			{
+				_stprintf(tvstatbuf, _T("%d character(s) selected."), GetSelLength());
+			}
+			g_Context.m_frame->SetStatusText(tvstatbuf);
+		}
+		else
+			g_Context.m_frame->SetStatusText(NULL);
 	}
 
 	CScheme* GetCurrentScheme()

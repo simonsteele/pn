@@ -518,7 +518,12 @@ public:
 		m_pRAC->AddItem( pOptions->ReplaceText );
 		
 		if(pEditor)
-			pEditor->ReplaceAll(pOptions);
+		{
+			int count = pEditor->ReplaceAll(pOptions);
+			CString s;
+			s.Format(_T("%d occurrance(s) replaced."), count);
+			MessageBox((LPCTSTR)s, "Programmers Notepad", MB_OK | MB_ICONINFORMATION);
+		}
 
 		return 0;
 	}

@@ -22,7 +22,7 @@ class CScintillaImpl : public CScintilla
 public:
 	bool FindNext(SFindOptions* pOptions);
 	bool ReplaceOnce(SReplaceOptions* pOptions);
-	void ReplaceAll(SReplaceOptions* pOptions);
+	int ReplaceAll(SReplaceOptions* pOptions);
 	void HighlightAll(SFindOptions* pOptions);
 
 	virtual int HandleNotify(LPARAM lParam);
