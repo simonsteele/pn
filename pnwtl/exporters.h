@@ -50,6 +50,9 @@ class BaseExporter
 
 		void Export(int start, int finish);
 
+		virtual LPCTSTR GetDefaultExtension();
+		virtual LPCTSTR GetFileMask();
+
 	protected:
 		virtual void InternalExport(int start, int finish) = 0;
 
@@ -63,6 +66,18 @@ class BaseExporter
 		CScintilla*	m_pScintilla;
 		StylesList*	m_pStyles;
 		IOutput*	m_out;
+};
+
+class ExporterFactory
+{
+	public:
+		typedef enum { RTF } EExporterType;
+
+		static BaseExporter* GetExporter(EExporterType type, 
+			IOutput* pOutput, StylesList* pStyles, CScintilla* pScintilla);
+
+	private:
+		ExporterFactory(){}
 };
 
 /**
@@ -93,6 +108,9 @@ class FileOutput : public PrintfConduit
 		FileOutput(LPCTSTR fileName);
 		~FileOutput();
 
+		void SetFileName(LPCTSTR fileName);
+		bool IsValid();
+
 		virtual void puts(const char* str);
 		virtual void putc(const char ch);
 
@@ -109,6 +127,9 @@ class RTFExporter : public BaseExporter
 {
 	public:
 		RTFExporter(IOutput* pOutput, StylesList* pStyles, CScintilla* pScintilla);
+
+		virtual LPCTSTR GetDefaultExtension();
+		virtual LPCTSTR GetFileMask();
 
 	protected:
 		virtual void InternalExport(int start, int end);

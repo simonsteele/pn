@@ -74,6 +74,9 @@
 #define ID_TOOLS_USETABS                261
 #define IDD_SMARTSTARTEDITOR            262
 #define ID_FILE_REVERT                  263
+#define ID_VIEW_INDIVIDUALOUTPUT        264
+#define ID_FILE_EXPORT                  265
+#define ID_EXPORT_RTF                   266
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -206,8 +209,8 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        264
-#define _APS_NEXT_COMMAND_VALUE         32868
+#define _APS_NEXT_RESOURCE_VALUE        267
+#define _APS_NEXT_COMMAND_VALUE         32869
 #define _APS_NEXT_CONTROL_VALUE         1057
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

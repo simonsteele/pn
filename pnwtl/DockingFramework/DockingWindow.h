@@ -470,7 +470,7 @@ class CDockingWindowPlacement : public DFDOCKPOS
 {
 public:
 	CDockingWindowPlacement(T& dw)
-		:m_dw(dw)
+		:DFDOCKPOS(0),m_dw(dw)
 	{
 		hdr.hBar=HNONDOCKBAR;
 	}
@@ -747,7 +747,7 @@ public:
 	bool PinBtnPress()
 	{
 		assert(IsDocking());
-		DFDOCKPOS dockHdr;
+		DFDOCKPOS dockHdr = {0}; // ss: Initialise to 0.
 //		dockHdr.hdr.code=DC_GETDOCKPOSITION;
 		dockHdr.hdr.hWnd=m_hWnd;
 		dockHdr.hdr.hBar=GetOwnerDockingBar();
@@ -889,6 +889,7 @@ class ATL_NO_VTABLE CTitleDockingWindowImpl
 public:
 	CTitleDockingWindowImpl()
 	{
+		::ZeroMemory(&m_pos, sizeof(DFDOCKPOS));
 		m_pos.hdr.hBar=HNONDOCKBAR;
 	}
 	virtual bool Undock()

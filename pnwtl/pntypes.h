@@ -90,7 +90,7 @@ public:
 class IToolOutputSink
 {
 public:
-	virtual void AddToolOutput(LPCTSTR output, int nLength = -1) = 0;
+	virtual void _AddToolOutput(LPCTSTR output, int nLength = -1) = 0;
 };
 
 typedef enum { PNSF_Windows = SC_EOL_CRLF, PNSF_Unix = SC_EOL_LF, PNSF_Mac = SC_EOL_CR, PNSF_NoChange} EPNSaveFormat;

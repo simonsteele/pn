@@ -10,6 +10,7 @@
 
 #include "stdafx.h"
 #include "tools.h"
+#include "childfrm.h"
 
 #include <sstream>
 #include <fstream>
@@ -144,6 +145,50 @@ void GlobalTools::WriteDefinition(ofstream& stream)
 		stream << "\t</global>\n";
 	}
 }
+
+//////////////////////////////////////////////////////////////////////////////
+// CToolCommandString
+//////////////////////////////////////////////////////////////////////////////
+
+void CToolCommandString::OnFormatChar(TCHAR thechar)
+{
+	switch(thechar)
+	{
+		case _T('f'):
+			m_string += pChild->GetFileName(FN_FILE);
+			break;
+
+		case _T('d'):
+			m_string += pChild->GetFileName(FN_PATH);
+			break;
+
+		case _T('n'):
+			m_string += pChild->GetFileName(FN_FILEPART);
+			break;
+
+		case _T('l'):
+			_itoa(pChild->GetPosition(EP_LINE), itosbuf, 10);
+			m_string += itosbuf;
+			break;
+
+		case _T('c'):
+			_itoa(pChild->GetPosition(EP_COL), itosbuf, 10);
+			m_string += itosbuf;
+			break;
+
+		case _T('?'):
+			{
+				CInputDialog* dlg = new CInputDialog(_T("Tool Parameters"), _T("Parameters:"));
+				if( dlg->DoModal() == IDOK )
+				{
+					m_string += dlg->GetInput();
+				}
+				delete dlg;
+			}
+			break;
+	}		
+}
+
 
 //////////////////////////////////////////////////////////////////////////////
 // SchemeToolsManager
@@ -483,8 +528,8 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
     if( ! ::CreatePipe(&hReadPipe, &hWritePipe, &sa, 0) )
 	{
 		CLastErrorInfo lei;
-		m_pOutputter->AddToolOutput("\n>Failed to create StdOut and StdErr Pipe: ");
-		m_pOutputter->AddToolOutput((LPCTSTR)lei);
+		m_pOutputter->_AddToolOutput("\n>Failed to create StdOut and StdErr Pipe: ");
+		m_pOutputter->_AddToolOutput((LPCTSTR)lei);
 
 		return lei.GetErrorCode();
 	}
@@ -495,8 +540,8 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	{
 		CLastErrorInfo lei;
 
-		m_pOutputter->AddToolOutput("\n>Failed to create StdIn Pipe: ");
-		m_pOutputter->AddToolOutput((LPCTSTR)lei);
+		m_pOutputter->_AddToolOutput("\n>Failed to create StdIn Pipe: ");
+		m_pOutputter->_AddToolOutput((LPCTSTR)lei);
 
 		return lei.GetErrorCode();
 	}
@@ -538,8 +583,8 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 		::CloseHandle(hStdInWrite);
 
 		CLastErrorInfo lei;
-		m_pOutputter->AddToolOutput("\n>Failed to create process: ");
-		m_pOutputter->AddToolOutput((LPCTSTR)lei);
+		m_pOutputter->_AddToolOutput("\n>Failed to create process: ");
+		m_pOutputter->_AddToolOutput((LPCTSTR)lei);
 
 		return lei.GetErrorCode();
 	}
@@ -566,7 +611,7 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 
 			if(bRead && dwBytesRead)
 			{
-				m_pOutputter->AddToolOutput(buffer, dwBytesRead);
+				m_pOutputter->_AddToolOutput(buffer, dwBytesRead);
 			}
 			else
 			{
@@ -619,7 +664,7 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 				// don't answer to a normal termination command.
 				// This function is dangerous: dependant DLLs don't know the process
 				// is terminated, and memory isn't released.
-				m_pOutputter->AddToolOutput("\n> Forcefully terminating process...\n");
+				m_pOutputter->_AddToolOutput("\n> Forcefully terminating process...\n");
 				::TerminateProcess(pi.hProcess, 1);
 			}
 			bCompleted = true;
@@ -628,7 +673,7 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 
 	if (WAIT_OBJECT_0 != ::WaitForSingleObject(pi.hProcess, 1000)) 
 	{
-		m_pOutputter->AddToolOutput("\n>Process failed to respond; forcing abrupt termination...");
+		m_pOutputter->_AddToolOutput("\n>Process failed to respond; forcing abrupt termination...");
 		::TerminateProcess(pi.hProcess, 2);
 	}
 

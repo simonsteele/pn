@@ -211,6 +211,7 @@ public:
 	COrientedRect(bool bHorizontal,unsigned long thickness)
 		:m_thickness(thickness),m_bHorizontal(bHorizontal)
 	{
+		SetRectEmpty();
 	}
 	void SetOrientation(bool bHorizontal)
 	{

@@ -12,15 +12,21 @@
  */
 
 #include "stdafx.h"
-#include "mainfrm.h"
 
-#include "SchemeConfig.h"
+// Needed because we derive from it.
+#include "tools.h"			// External Tools
 
-#include "aboutdlg.h"
+// Windows and Dialogs
+#include "mainfrm.h"		// This Window
+#include "outputview.h"		// Output window
+#include "childfrm.h"		// MDI Child
+#include "finddlg.h"		// Find Dialogs
+#include "OptionsPages.h"	// Options Pages
+#include "aboutdlg.h"		// About Dialog
 
-#include "OptionsPages.h"
-
-#include "outputview.h"
+// Other stuff
+#include "SchemeConfig.h"	// Scheme Configuration
+#include <dbstate.h>		// Docking window state stuff...
 
 #if defined (_DEBUG)
 #define new DEBUG_NEW
@@ -32,6 +38,7 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4)
 {
 	m_FindDialog = NULL;
 	m_ReplaceDialog = NULL;
+	m_pOutputWnd = NULL;
 	hFindWnd = NULL;
 	hReplWnd = NULL;
 
@@ -44,6 +51,9 @@ CMainFrame::~CMainFrame()
 {
 	CloseAndFreeDlg(m_FindDialog);
 	CloseAndFreeDlg(m_ReplaceDialog);
+
+	if(m_pOutputWnd)
+		delete m_pOutputWnd;
 }
 
 /**
@@ -243,7 +253,12 @@ LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	PerformChildEnum(&s);
 	
 	if(s.bCanClose)
+	{
+		// We're going to exit.
 		bHandled = FALSE;
+
+		SaveGUIState();
+	}
 	
 	return 0;
 }
@@ -343,10 +358,16 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		}
 	}
 
-	CRect rcBar(0, 0, 200, 80);
+	// Create docking windows...
+	DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+	CRect rcBar(0, 0, 200, 70);
+	
 	m_pOutputWnd = new CDockingOutputWindow;
-	m_pOutputWnd->Create(m_hWnd, rcBar, _T("Output"));
+	m_pOutputWnd->Create(m_hWnd, rcBar, _T("Output"), dwStyle, WS_EX_TOOLWINDOW);
 	DockWindow(*m_pOutputWnd, dockwins::CDockingSide::sBottom, 0, 1, 200, 80);
+
+	InitGUIState();
+	//PostMessage(PN_INITIALISEFRAME);
 
 	return 0;
 }
@@ -405,7 +426,7 @@ LRESULT CMainFrame::OnInitMenuPopup(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
 LRESULT CMainFrame::OnDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	BOOL b;
+	BOOL b = TRUE;
 
 	switch( COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("MDIDoubleClickAction"), 0) )
 	{
@@ -420,6 +441,13 @@ LRESULT CMainFrame::OnDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	}
 	return 0;
 }
+
+//LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+//{
+//	InitGUIState();
+//
+//	return 0;
+//}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Command Handlers...
@@ -515,6 +543,14 @@ LRESULT CMainFrame::OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	::ShowWindow(m_hWndStatusBar, bVisible ? SW_SHOWNOACTIVATE : SW_HIDE);
 	UISetCheck(ID_VIEW_STATUS_BAR, bVisible);
 	UpdateLayout();
+	return 0;
+}
+
+LRESULT CMainFrame::OnOutputWindowToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	m_pOutputWnd->Toggle();
+	UISetCheck(ID_EDITOR_OUTPUTWND, m_pOutputWnd->IsWindowVisible());
+
 	return 0;
 }
 
@@ -771,6 +807,83 @@ void CMainFrame::MoveLanguage(CSMenuHandle& remove, CSMenuHandle& add)
 		AddLanguageMenu(add);
 }
 
+/**
+ * Initialise the GUI state manager with all of the GUI items that it controls.
+ */
+void CMainFrame::InitGUIState()
+{
+	// Create a list of the docking windows to manage.
+	sstate::CDockWndMgrEx dockers(m_hWnd);
+	dockers.Add(sstate::CDockingWindowStateAdapterEx<CDockingOutputWindow>(*m_pOutputWnd));
+	
+	tstring statekey(pnregroot);
+	statekey += PNSK_INTERFACE;
+	statekey += PNSK_DEFGUI;
+
+	m_GUIState.Initialize(statekey.c_str(), m_hWnd/*, SW_SHOWMAXIMIZED*/);
+	m_GUIState.Add(sstate::CRebarStateAdapter(m_hWndToolBar));
+	m_GUIState.Add(dockers);
+
+	LoadGUIState();
+}
+
+/**
+ * Load a named or default GUI state from the registry.
+ */
+void CMainFrame::LoadGUIState(LPCTSTR stateName)
+{
+	tstring* pConfigName = NULL;
+	if(stateName)
+	{
+		pConfigName = new tstring(pnregroot);
+		*pConfigName += PNSK_INTERFACE;
+		*pConfigName += _T('\\');
+		*pConfigName += stateName;
+	}
+
+	if( !m_GUIState.Restore(pConfigName) )
+	{
+		SetDefaultGUIState();
+	}
+
+	// Set initial UpdateUI state...
+	UISetCheck(ID_EDITOR_OUTPUTWND, m_pOutputWnd->IsWindowVisible());
+
+	UpdateLayout();
+
+	if(pConfigName)
+		delete pConfigName;
+}
+
+/**
+ * Save the default or a named GUI state to the registry.
+ */
+void CMainFrame::SaveGUIState(LPCTSTR stateName)
+{
+	tstring* pConfigName = NULL;
+	if(stateName)
+	{
+		pConfigName = new tstring(pnregroot);
+		*pConfigName += PNSK_INTERFACE;
+		*pConfigName += _T('\\');
+		*pConfigName += stateName;
+	}
+
+	m_GUIState.Store(pConfigName);
+	
+	if(pConfigName)
+		delete pConfigName;
+}
+
+/**
+ * Configure docking windows etc. to their default state.
+ */
+void CMainFrame::SetDefaultGUIState()
+{
+	// Dock the output window to the bottom of the main frame, hide it.
+	m_pOutputWnd->Hide();
+}
+
 void CMainFrame::PerformChildEnum(SChildEnumStruct* s)
 {
 	s->pMainFrame = this;
@@ -874,10 +987,24 @@ void CMainFrame::_setWindowText(LPCTSTR lpszNew)
 
 	#undef _countof
 }
+
 void CMainFrame::AddToolOutput(LPCSTR outputstring, int nLength)
 {
 	if(m_pOutputWnd)
 	{
 		m_pOutputWnd->GetView()->SafeAppendText(outputstring, nLength);
 	}
+}
+
+void CMainFrame::ToggleOutputWindow(bool bSetValue, bool bShowing)
+{
+	if(bSetValue)
+	{
+		if(bShowing)
+			m_pOutputWnd->Show();
+		else
+			m_pOutputWnd->Hide();
+	}
+	else
+		m_pOutputWnd->Toggle();
 }

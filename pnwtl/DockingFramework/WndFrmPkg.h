@@ -951,6 +951,7 @@ public:
 	CSubWndFramesPackage(bool bHorizontal)
 		:baseClass(bHorizontal),m_pDecl(0)
 	{
+		SetRectEmpty();
 	}
 	HCURSOR GetCursor(const CPoint& pt) const
 	{

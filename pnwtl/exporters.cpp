@@ -65,6 +65,30 @@ void BaseExporter::Export(int start, int finish)
 	InternalExport(start, finish);
 }
 
+LPCTSTR BaseExporter::GetDefaultExtension()
+{
+	return _T("txt");
+}
+
+LPCTSTR BaseExporter::GetFileMask()
+{
+	return _T("Text Files (*.txt)|*.txt|");
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// ExporterFactory class
+			
+BaseExporter* ExporterFactory::GetExporter(EExporterType type, IOutput* pOutput, StylesList* pStyles, CScintilla* pScintilla)
+{
+	switch(type)
+	{
+		case RTF:
+			return new RTFExporter(pOutput, pStyles, pScintilla);
+	}
+	
+	return NULL;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // StringOutput class
 
@@ -110,7 +134,11 @@ const char* StringOutput::c_str()
  */
 FileOutput::FileOutput(LPCTSTR fileName)
 {
-	m_bValid = m_file.Open(fileName, CFile::modeWrite | CFile::modeBinary);
+	if(fileName)
+	{
+		m_bValid = m_file.Open(fileName, CFile::modeWrite | CFile::modeBinary);
+	}
+	else m_bValid = false;
 }
 
 FileOutput::~FileOutput()
@@ -119,6 +147,19 @@ FileOutput::~FileOutput()
 	{
 		m_file.Close();
 	}
+}
+
+void FileOutput::SetFileName(LPCTSTR fileName)
+{
+	if(!m_bValid)
+	{
+		m_bValid = m_file.Open(fileName, CFile::modeWrite | CFile::modeBinary);
+	}
+}
+
+bool FileOutput::IsValid()
+{
+	return m_bValid;
 }
 
 void FileOutput::puts(const char* str)
@@ -189,6 +230,10 @@ int RTFExporter::GetHexByte(const char *hexbyte)
 	return (GetHexChar(*hexbyte) << 4) | GetHexChar(hexbyte[1]);
 }
 
+/**
+ * There are a fixed number of highlights available to us. We try and find
+ * the one that most closely matches any background colour set.
+ */
 int RTFExporter::GetRTFHighlight(const char *rgb)
 { // "#RRGGBB"
 	static int highlights[][3] = 
@@ -227,6 +272,11 @@ int RTFExporter::GetRTFHighlight(const char *rgb)
 	return index + 1;
 }
 
+/**
+ * This function steps through the incoming and outgoing style definitions (RTF style)
+ * and decides which bits of the style have changed - so most style changes will end
+ * up as just a simple colour change.
+ */
 void RTFExporter::GetRTFStyleChange(char *delta, char *last, const char *current) 
 { // \f0\fs20\cf0\highlight0\b0\i0
 	int lastLen = strlen(last), offset = 2, lastOffset, currentOffset, len;
@@ -377,7 +427,7 @@ void RTFExporter::InternalExport(int start, int end)
 	int wysiwyg           = /*pOptions->GetRtfWYSIWYG()*/	1;
 	CString strFontFace   = /*pOptions->GetRtfFontName()*/	"Courier New";
 	unsigned characterset = /*pOptions->GetRtfCharset()*/	0;
-	int fontSize          = /*pOptions->GetRtfFontSize()*/	10;
+	int fontSize          = /*pOptions->GetRtfFontSize()*/	10 << 1;
 	int tabs              = /*pOptions->GetRtfTabs()*/		1;
 
 	int tabSize = SendEditor(SCI_GETTABWIDTH, 0, 0);
@@ -403,27 +453,37 @@ void RTFExporter::InternalExport(int start, int end)
 	CString strFontFamily;
 	CString strForeground;
 	CString strBackground;
+	
+	StyleDetails* pDefStyle = GetStyle(STYLE_DEFAULT);
 
 	// First comes first, we parse the styles in this scheme and define
 	// the rtf style lookup tables for them.
 	for (int istyle = 0; istyle <= STYLE_DEFAULT; istyle++)
 	{
+		TCHAR szColorTmp[32] = {0};
+
 		StyleDetails* pStyle = GetStyle(istyle);
 		
-		//@todo get default style def...
-		//if (pStyle == NULL && pEditorConfig)
-			//pStyle = pEditorConfig->GetCommonStyle(istyle);
-//				if ((valdef && *valdef) || (val && *val))
+		// If there is no style at number 0, then get the default style.
+		if(istyle == 0 && !pStyle)
+		{
+			pStyle = pDefStyle;
+		}
+
 		if (pStyle)
 		{
-			// Action here
-			TCHAR szColorTmp[32] = {0};
-			sprintf(szColorTmp, "#%02X%02X%02X", 
-				GetRValue(pStyle->BackColor), 
-				GetGValue(pStyle->BackColor), 
-				GetBValue(pStyle->BackColor));
-			
-			strBackground = szColorTmp;
+			// Background colour:
+			if(pDefStyle && pStyle->BackColor != pDefStyle->BackColor)
+			{
+				sprintf(szColorTmp, "#%02X%02X%02X", 
+					GetRValue(pStyle->BackColor), 
+					GetGValue(pStyle->BackColor), 
+					GetBValue(pStyle->BackColor));
+				
+				strBackground = szColorTmp;
+			}
+			else
+				strBackground = "";
 
 			sprintf(szColorTmp, "#%02X%02X%02X", 
 				GetRValue(pStyle->ForeColor), 
@@ -477,7 +537,7 @@ void RTFExporter::InternalExport(int start, int end)
 			else
 				strcat(lastStyle, RTF_SETCOLOR "0");
 
-			// The background colour seems to be defined using the GetRTFHighlight function.
+			// Find the closest RTF highlight to the background colour.
 			sprintf(lastStyle + strlen(lastStyle), RTF_SETBACKGROUND "%d",
 					strBackground.GetLength() ? GetRTFHighlight(strBackground) : 0);
 			
@@ -555,6 +615,16 @@ void RTFExporter::InternalExport(int start, int end)
 		prevCR = ch == '\r';
 	}
 	m_out->puts(RTF_BODYCLOSE);
+}
+
+LPCTSTR RTFExporter::GetDefaultExtension()
+{
+	return _T("rtf");
+}
+
+LPCTSTR RTFExporter::GetFileMask()
+{
+	return _T("Rich Text Files (*.rtf, *.doc)|*.rtf;*.doc|");
 }
 
 ////////////////////////////////////////////////////////////////////////////////

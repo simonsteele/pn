@@ -118,6 +118,10 @@ BEGIN
         MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
         MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
         MENUITEM "Save All",                    ID_FILE_SAVEALL
+        POPUP "&Export"
+        BEGIN
+            MENUITEM "As &RTF...",                  ID_EXPORT_RTF
+        END
         MENUITEM SEPARATOR
         MENUITEM "&Close\tCtrl+F4",             ID_FILE_CLOSE
         MENUITEM SEPARATOR
@@ -159,6 +163,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Schemes",                     ID_VIEW_CHANGESCHEME
         MENUITEM SEPARATOR
+        MENUITEM "Individual Output\tShift+F8", ID_VIEW_INDIVIDUALOUTPUT
         MENUITEM "&Output\tF8",                 133
     END
     POPUP "&Tools"
@@ -277,6 +282,8 @@ BEGIN
     "F",            ID_EDIT_FIND,           VIRTKEY, CONTROL, NOINVERT
     VK_F3,          ID_EDIT_FINDNEXT,       VIRTKEY, NOINVERT
     "G",            ID_EDIT_GOTO,           VIRTKEY, CONTROL, NOINVERT
+    "H",            ID_EDIT_HEADERSWITCH,   VIRTKEY, SHIFT, CONTROL, 
+                                                    NOINVERT
     "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
     VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
     "R",            ID_EDIT_REPLACE,        VIRTKEY, CONTROL, NOINVERT
@@ -289,8 +296,7 @@ BEGIN
     "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
     VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
     VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
-    "H",            ID_EDIT_HEADERSWITCH,   VIRTKEY, SHIFT, CONTROL, 
-                                                    NOINVERT
+    VK_F8,          ID_VIEW_INDIVIDUALOUTPUT, VIRTKEY, SHIFT, NOINVERT
 END
 
 
@@ -300,7 +306,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,4,3
+ FILEVERSION 2,0,4,8
  PRODUCTVERSION 2,0,4,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -318,7 +324,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele (Echo Software)"
             VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.4.3"
+            VALUE "FileVersion", "2.0.4.8"
             VALUE "InternalName", "PNWTL"
             VALUE "LegalCopyright", "Copyright © 2002-2003 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"

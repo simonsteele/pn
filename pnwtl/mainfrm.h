@@ -11,15 +11,15 @@
 #if !defined(MAINFRM_H__INCLUDED)
 #define MAINFRM_H__INCLUDED
 
-#if _MSC_VER >= 1000
-	#pragma once
-#endif
-
-#include "pndocking.h"
+#pragma once
 
 // Pre-declarations...
 class CMainFrame;
+class CChildFrame;
+class CFindDlg;
+class CReplaceDlg;
 class CDockingOutputWindow;
+class CSampleDockingWindow;
 struct tagEnumChildrenStruct;
 
 typedef void(__stdcall CMainFrame::*lpChildEnumFn)(CChildFrame* pFrame, tagEnumChildrenStruct* pStruct);
@@ -47,12 +47,13 @@ typedef struct tagIsOpenStruct : public tagEnumChildrenStruct
  * @brief PN (WTL Edition) Main MDI Frame
  */
 class CMainFrame : public CPNDockingTabbedMDIFrameWindow<CMainFrame>, public IMainFrame, public CUpdateUI<CMainFrame>,
-		public CMessageFilter, public CIdleHandler, public CSMenuEventHandler, public IToolOutputSink
+		public CMessageFilter, public CIdleHandler, public CSMenuEventHandler, public ToolOwner<CMainFrame, false>
 {
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
 
-	typedef CPNDockingTabbedMDIFrameWindow<CMainFrame> baseClass;
+	typedef CPNDockingTabbedMDIFrameWindow<CMainFrame>	baseClass;
+	typedef CPNTabbedMDICommandBarCtrl<CMainFrame>		commandBarClass;
 
 	////////////////////////////////////////////////////////////////
 	// CMainFrame Implementation
@@ -73,7 +74,8 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		MESSAGE_HANDLER(WM_ACTIVATE, OnActivate)
 		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnDblClick)
-
+		//MESSAGE_HANDLER(PN_INITIALISEFRAME, OnInitialiseFrame)
+		
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
 		COMMAND_ID_HANDLER(ID_FILE_OPEN, OnFileOpen)
@@ -81,6 +83,7 @@ public:
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR_EDIT, OnViewEditBar)
 		COMMAND_ID_HANDLER(ID_VIEW_STATUS_BAR, OnViewStatusBar)
+		COMMAND_ID_HANDLER(ID_EDITOR_OUTPUTWND, OnOutputWindowToggle)
 		COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
 		COMMAND_ID_HANDLER(ID_WINDOW_CASCADE, OnWindowCascade)
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTile)
@@ -94,6 +97,7 @@ public:
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SB, OnWebSFBug)
 		COMMAND_RANGE_HANDLER(ID_MRUFILE_BASE, (ID_MRUFILE_BASE+15), OnMRUSelected)
 		ROUTE_MENUCOMMANDS()
+		IMPLEMENT_TOOLOWNER()
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
 		CHAIN_MSG_MAP(baseClass)
@@ -103,6 +107,7 @@ public:
 		UPDATE_ELEMENT(ID_VIEW_TOOLBAR, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_STATUS_BAR, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_TOOLBAR_EDIT, UPDUI_MENUPOPUP)
+		UPDATE_ELEMENT(ID_EDITOR_OUTPUTWND, UPDUI_MENUPOPUP)
 		//UPDATE_ELEMENT(ID_FILE_CLOSE, UPDUI_MENUPOPUP)
 	END_UPDATE_UI_MAP()
 
@@ -114,7 +119,6 @@ public:
 
 	void OnSchemeNew(LPVOID data);
 	void OnMDISetMenu(HMENU hOld, HMENU hNew);
-	//bool OnEditorClosing(CChildFrame* pChild);
 
 	LRESULT OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -124,6 +128,7 @@ public:
 	LRESULT OnChildNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnInitMenuPopup(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	//LRESULT OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
@@ -136,6 +141,7 @@ public:
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewEditBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnOutputWindowToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	// MDI Window Arrangement
 	LRESULT OnWindowCascade(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -182,7 +188,8 @@ public:
 	// IToolOutputSink Implementation
 
 public:
-	virtual void AddToolOutput(LPCSTR outputstring, int nLength = -1);
+	void ToggleOutputWindow(bool bSetValue = false, bool bShowing = true);
+	void AddToolOutput(LPCSTR outputstring, int nLength = -1);
 
 protected:
 	void AddNewMenu(CSMenuHandle& menu);
@@ -191,6 +198,11 @@ protected:
 	void MoveMRU(CSMenuHandle& r, CSMenuHandle& a);
 	void MoveNewMenu(CSMenuHandle& remove, CSMenuHandle& add);
 	void MoveLanguage(CSMenuHandle& remove, CSMenuHandle& add);
+
+	void InitGUIState();
+	void LoadGUIState(LPCTSTR stateName = NULL);
+	void SaveGUIState(LPCTSTR stateName = NULL);
+	void SetDefaultGUIState();
 
 	void PerformChildEnum(SChildEnumStruct* s);
 	void PerformChildEnum(lpChildEnumFn pFunction);
@@ -208,8 +220,10 @@ protected:
 	CMRUMenu				m_RecentFiles;
 	CSchemeSwitcher			m_Switcher;
 
+	// GUI Stuff:
 	CMultiPaneStatusBarCtrl	m_StatusBar;
-	CPNTabbedMDICommandBarCtrl<CMainFrame> m_CmdBar;
+	commandBarClass			m_CmdBar;
+	CPNStateManager			m_GUIState;
 
 	HWND					hFindWnd;
 	HWND					hReplWnd;

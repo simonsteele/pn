@@ -10,6 +10,7 @@
  * Thanks to the author of kPad for the g_Context here!
  */
 
+//#define PN_INITIALISEFRAME	(WM_USER+35)
 #define PN_NOTIFY			(WM_USER+36)
 #define PN_CHECKAGE			(WM_USER+37)
 #define PN_OPTIONSUPDATED	(WM_USER+38)
@@ -49,6 +50,7 @@ HWND GetCurrentEditor();
 
 // Utility Classes and Definitions:
 #include "pntabs.h"
+#include "pndocking.h"
 #include "xmlparser.h"
 #include "ssmenus.h"
 
@@ -60,6 +62,4 @@ HWND GetCurrentEditor();
 
 #include "pnutils.h"
 #include "pndialogs.h"
-#include "textview.h"
-#include "ChildFrm.h"
-#include "finddlg.h"
+//#include "textview.h"

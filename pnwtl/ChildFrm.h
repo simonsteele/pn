@@ -25,12 +25,13 @@
 
 #include "fromhandle.h"
 #include "include/wtlsplitter.h"
+#include "textview.h"
+#include "tools.h"
 
 typedef enum {FN_FULL, FN_FILE, FN_PATH, FN_FILEPART} EGFNType;
 typedef enum {EP_LINE, EP_COL} EGPType;
 
 class COutputView;
-class ToolRunner;
 
 #define CHAIN_OUTPUT_COMMANDS() \
 	if(uMsg == WM_COMMAND && m_hWndOutput != NULL) \
@@ -38,7 +39,7 @@ class ToolRunner;
 
 class CChildFrame : public CTabbedMDIChildWindowImpl<CChildFrame>, 
 	public CFromHandle<CChildFrame>, public CSMenuEventHandler,
-	public IToolOutputSink
+	public ToolOwner<CChildFrame>
 {
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MDICHILD)
@@ -58,7 +59,6 @@ public:
 		MESSAGE_HANDLER(PN_NOTIFY, OnViewNotify)
 		MESSAGE_HANDLER(PN_CHECKAGE, OnCheckAge)
 		MESSAGE_HANDLER(PN_OPTIONSUPDATED, OnOptionsUpdate)
-		MESSAGE_HANDLER(PN_TOGGLEOUTPUT, OnToggleOutput)
 		MESSAGE_HANDLER(PN_TOOLFINISHED, OnToolFinished)
 		MESSAGE_HANDLER(PN_SCHEMECHANGED, OnSchemeChanged)
 
@@ -75,11 +75,12 @@ public:
 		COMMAND_ID_HANDLER(ID_EDITOR_WORDWRAP, OnWordWrapToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_COLOURISE, OnColouriseToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_LINENOS, OnLineNoToggle)
-		COMMAND_ID_HANDLER(ID_EDITOR_OUTPUTWND, OnOutputWindowToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_WHITESPACE, OnMarkWhiteSpaceToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_EOLCHARS, OnEOLMarkerToggle)
 
 		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHideOutput)
+
+		COMMAND_ID_HANDLER(ID_VIEW_INDIVIDUALOUTPUT, OnIndividualOutputToggle);
 
 		COMMAND_ID_HANDLER(ID_FILE_REVERT, OnRevert)
 		COMMAND_ID_HANDLER(ID_FILE_SAVE_AS, OnSaveAs)
@@ -87,6 +88,8 @@ public:
 		COMMAND_ID_HANDLER(ID_FILE_CLOSE, OnClose)
 		COMMAND_ID_HANDLER(ID_FILE_PRINT, OnPrint)
 		COMMAND_ID_HANDLER(ID_FILE_PRINT_SETUP, OnPrintSetup)
+
+		COMMAND_ID_HANDLER(ID_EXPORT_RTF, OnExportRTF)
 
 		COMMAND_ID_HANDLER(ID_TOOLS_LECRLF, OnLineEndingsToggle)
 		COMMAND_ID_HANDLER(ID_TOOLS_LELF, OnLineEndingsToggle)
@@ -100,6 +103,7 @@ public:
 		NOTIFY_CODE_HANDLER(TBN_GETINFOTIP, OnGetInfoTip)
 
 		IMPLEMENT_FROMHANDLE()
+		IMPLEMENT_TOOLOWNER()
 
 		LOCAL_MENUCOMMAND(MENUMESSAGE_CHANGESCHEME)
 		LOCAL_MENUCOMMAND(TOOLS_RUNTOOL)
@@ -123,7 +127,6 @@ public:
 	void UpdateLayout(BOOL bResizeBars = TRUE);
 	void UpdateBarsPosition(RECT& rect, BOOL bResizeBars = TRUE);
 	void SetupToolbar();
-	void ToggleOutputWindow(bool bSetValue = false, bool bSetShowing = true);
 
 public:
     
@@ -176,6 +179,7 @@ public:
 
 	LRESULT OnPrint(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnPrintSetup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnExportRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnPaste(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -191,7 +195,7 @@ public:
 	LRESULT OnWordWrapToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnColouriseToggle(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/);
 	LRESULT OnLineNoToggle(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/);
-	LRESULT OnOutputWindowToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnIndividualOutputToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnMarkWhiteSpaceToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnEOLMarkerToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnHideOutput(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -220,7 +224,7 @@ public:
 	void Save();
 
 	////////////////////////////////////////////////////
-	// Editor Window Methods	
+	// Editor Window Methods
 
 	bool FindNext(SFindOptions* options);
 	bool Replace(SReplaceOptions* options);
@@ -233,14 +237,14 @@ public:
 	void SetScheme(CScheme* pScheme);
 	void UpdateMenu();
 
-	void OnRunTool(LPVOID pVoid);
-
-	// IToolOutputSink
-	virtual void AddToolOutput(LPCSTR outputstring, int nLength = -1);
-
 	CTextView* GetTextView();
 
-	//CallbackBase2<bool, CChildFrame*>* m_onClose;
+	////////////////////////////////////////////////////
+	// ToolOwner needed methods.
+
+	void UpdateRunningTools();
+	void ToggleOutputWindow(bool bSetValue = false, bool bSetShowing = true);
+	void AddToolOutput(LPCSTR outputstring, int nLength = -1);
 
 protected:
 
@@ -261,12 +265,10 @@ protected:
 	void LoadExternalLexers();
 	void PrintSetup();
 	void SchemeChanged(CScheme* pScheme);
-	void AddRunningTool(ToolRunner* pRunner);
-	void ToolFinished(ToolRunner* pRunner);
 	void UpdateTools(CScheme* pScheme);
-	void KillTools(bool bWaitForKill);
 	bool IsOutputVisible();
 	BOOL OnEscapePressed();
+	void Export(int type);
 
 	// Modes Stuff
 protected:
@@ -283,9 +285,6 @@ protected:
 	long				m_FileAge;
 	
 	int					m_iFirstToolCmd;
-
-	CRITICAL_SECTION	m_crRunningTools;
-	ToolRunner*			m_pFirstTool;
 
 	CCFSplitter*		m_pSplitter;
 	COutputView*		m_pOutputView;

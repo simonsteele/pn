@@ -707,4 +707,33 @@ class CWindowText
 		TCHAR* m_buffer;
 };
 
+#ifdef _DEBUG
+
+/**
+ * @brief operation timer class - allows simple timing within scope operators.
+ *
+ * note: Only available in debug builds.
+ */
+class OpTimer
+{
+	public:
+		OpTimer()
+		{
+			dwTicksStart = GetTickCount();
+		}
+
+		~OpTimer()
+		{
+			DWORD diffTicks = GetTickCount() - dwTicksStart;
+			TCHAR buffer[50];
+			_sntprintf(buffer, 50, "OpTimer recorded %d Milliseconds.\n", diffTicks);
+			::OutputDebugString(buffer);
+		}
+
+	protected:
+		DWORD dwTicksStart;
+};
+
+#endif
+
 #endif //#ifndef pnutils_h__included

@@ -13,6 +13,15 @@
 #include "stdafx.h"
 #include "xmlparser.h"
 
+#ifdef XML_UNICODE
+	#pragma comment(lib,"lib/libexpatw.lib") 
+	#pragma message("Automatically linking with libexpatw.lib")
+#else
+	#pragma comment(lib,"lib/libexpat.lib") 
+	#pragma message("Automatically linking with libexpat.lib")
+#endif
+
+
 // Get CFile for XMLParser::LoadFile
 #include "Files.h"
 

@@ -36,7 +36,7 @@ CChildFrame::CChildFrame()
 	
 	m_po.hDevMode = 0;
 	m_po.hDevNames = 0;
-	//memset(&m_po.rcMargins, 0, sizeof(RECT));
+	memset(&m_po.rcMargins, 0, sizeof(RECT));
 	COptionsManager::GetInstance()->LoadPrintSettings(&m_po);
 
 	InitUpdateUI();
@@ -210,7 +210,7 @@ void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 		m_pSplitter->SetSinglePaneMode(SPLITTER_TOP);
 	}
 
-	UISetChecked(ID_EDITOR_OUTPUTWND, bShow);
+	UISetChecked(ID_VIEW_INDIVIDUALOUTPUT, bShow);
 }
 
 ////////////////////////////////////////////////////
@@ -494,6 +494,13 @@ LRESULT CChildFrame::OnPrintSetup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return TRUE;
 }
 
+LRESULT CChildFrame::OnExportRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	Export(ExporterFactory::RTF);
+
+	return 0;
+}
+
 LRESULT CChildFrame::OnCut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	::PostMessage(::GetFocus(), WM_CUT, 0, 0);
@@ -552,7 +559,23 @@ LRESULT CChildFrame::OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	RTFExporter rtf(&so, pStyles, &m_view);
 	rtf.Export(m_view.GetSelectionStart(), m_view.GetSelectionEnd());
 	delete pStyles;
-	so.c_str();
+	
+	const char* pRTF = so.c_str();
+	int len = strlen(pRTF) + 1;
+
+	HGLOBAL hData = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, len);
+	if( hData )
+	{
+		if( OpenClipboard() )
+		{
+			EmptyClipboard();
+			char* pBuf = static_cast<char*>(::GlobalLock(hData));
+			memcpy(pBuf, pRTF, len);
+			::GlobalUnlock(hData);
+			::SetClipboardData(::RegisterClipboardFormat(CF_RTF), hData);
+			CloseClipboard();
+		}
+	}
 
 	return 0;
 }
@@ -606,7 +629,7 @@ LRESULT CChildFrame::OnLineNoToggle(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl
 	return 0;
 }
 
-LRESULT CChildFrame::OnOutputWindowToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CChildFrame::OnIndividualOutputToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	ToggleOutputWindow();
 
@@ -1011,130 +1034,14 @@ void CChildFrame::UpdateMenu()
 	g_Context.m_frame->SetActiveScheme(m_hWnd, m_view.GetCurrentScheme());
 }
 
-void CChildFrame::OnRunTool(LPVOID pVoid)
+void CChildFrame::UpdateRunningTools()
 {
-	ToolDefinition* pTool = reinterpret_cast<ToolDefinition*>(pVoid);
-	ToolRunner *r = new ToolRunner(this, pTool, pTool->GlobalOutput() ? g_Context.m_frame->GetGlobalOutputSink() : this );
-	
-	bool bThreaded = r->GetThreadedExecution();
-	if(bThreaded)
-		AddRunningTool(r);
-	
-	if(pTool->SaveAll())
-		g_Context.m_frame->SaveAll();
-
-	r->Execute();
-	
-	if(!bThreaded)
-	{
-		if(pTool->IsFilter())
-			Revert();
-
-		delete r;
-	}
+	UpdateMenu();
 }
 
 void CChildFrame::AddToolOutput(LPCSTR outputstring, int nLength)
 {
-	// We do a sendmessage so that the windows are created in the 
-	// window thread, and not in any calling thread.
-	SendMessage(PN_TOGGLEOUTPUT, 1, 1);
-
 	m_pOutputView->SafeAppendText(outputstring, nLength);
-}
-
-void CChildFrame::AddRunningTool(ToolRunner* pRunner)
-{
-	CSSCritLock lock(&m_crRunningTools);
-
-    if(m_pFirstTool)
-		pRunner->m_pNext = m_pFirstTool;
-
-	m_pFirstTool = pRunner;
-
-	UpdateMenu();
-}
-
-void CChildFrame::ToolFinished(ToolRunner* pRunner)
-{
-	CSSCritLock lock(&m_crRunningTools);
-
-	if(m_pFirstTool)
-	{
-		ToolRunner* pT = m_pFirstTool;
-		ToolRunner* pP = NULL;
-
-		while(pT != NULL && pT != pRunner)
-		{
-			pP = pT;
-			pT = pT->m_pNext;
-		}
-
-		if(pT)
-		{
-			if(pP)
-				pP->m_pNext = pT->m_pNext;
-
-			if(m_pFirstTool == pT)
-				m_pFirstTool = pT->m_pNext;
-		}
-
-		do{
-		}
-		while(!pRunner->GetStopped(20));
-
-		tstring exitcode(_T("\n> Process Exit Code: "));
-		exitcode += IntToTString(pRunner->GetExitCode());
-		exitcode += _T("\n");
-		IToolOutputSink* pSink = 
-			pRunner->GetToolDef()->GlobalOutput() ? 
-				g_Context.m_frame->GetGlobalOutputSink()
-				: this;
-		pSink->AddToolOutput(exitcode.c_str());
-		if(pRunner->GetToolDef())
-		{
-			if(pRunner->GetToolDef()->IsFilter())
-				Revert();
-		}
-
-		delete pRunner;
-
-		UpdateMenu();
-	}
-}
-
-void CChildFrame::KillTools(bool bWaitForKill)
-{
-	int iLoopCount = 0;
-
-	// Signal to all tools to exit, scope to enter and exit critical section
-	{
-		CSSCritLock lock(&m_crRunningTools);
-
-		ToolRunner* pT = m_pFirstTool;
-		while(pT)
-		{
-			pT->SetCanRun(false);
-			pT = pT->m_pNext;
-		}
-	}
-
-	while(bWaitForKill)
-	{
-		// Normally, we give all the tools a chance to exit before continuing...
-		Sleep(100);
-		iLoopCount++;
-
-		// Don't tolerate more than 5 seconds of waiting...
-		if(iLoopCount > 50)
-			break;
-
-		{
-			CSSCritLock lock(&m_crRunningTools);
-			if(!m_pFirstTool)
-				break;
-		}
-	}
 }
 
 bool CChildFrame::IsOutputVisible()
@@ -1154,6 +1061,48 @@ BOOL CChildFrame::OnEscapePressed()
 	}
 
 	return FALSE;
+}
+
+/**
+ * @brief Generic exporter function
+ */
+void CChildFrame::Export(int type)
+{
+	FileOutput fout(NULL);
+	StylesList* pStyles = m_view.GetCurrentScheme()->CreateStylesList();
+	BaseExporter* pExp = ExporterFactory::GetExporter(
+		(ExporterFactory::EExporterType)type, 
+		&fout, pStyles, &m_view);
+	
+	if(pExp)
+	{
+		CFileName fn(m_FileName);
+		tstring guessName;
+		tstring fileMask(pExp->GetFileMask());
+		
+		fileMask += _T("All Files (*.*)|*.*|");
+
+		fn.GetFileName_NoExt(guessName);
+		guessName += _T(".");
+		guessName += pExp->GetDefaultExtension();
+		
+		CPNFileDialog dlgSave(FALSE, pExp->GetDefaultExtension(), guessName.c_str(), 
+			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
+			fileMask.c_str(), m_hWnd);
+		
+		if(dlgSave.DoModal() == IDOK)
+		{
+			fout.SetFileName(dlgSave.m_ofn.lpstrFile);
+			if(fout.IsValid())
+			{
+				pExp->Export(0, -1);
+			}
+		}
+
+		delete pExp;
+	}
+
+	delete pStyles;
 }
 
 void CChildFrame::PrintSetup()
@@ -1223,7 +1172,7 @@ CChildFrame::_PoorMansUIEntry* CChildFrame::GetDefaultUIMap()
 		{ID_EDITOR_LINENOS, PMUI_MINIBAR | PMUI_MENU},
 		{ID_EDITOR_WHITESPACE, PMUI_MENU},
 		{ID_EDITOR_EOLCHARS, PMUI_MENU},
-		{ID_EDITOR_OUTPUTWND, PMUI_MENU},
+		{ID_VIEW_INDIVIDUALOUTPUT, PMUI_MENU},
 		{ID_TOOLS_LECONVERT, PMUI_MENU},
 		// note: This one must be at the end.
 		{-1, 0}

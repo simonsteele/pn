@@ -71,7 +71,7 @@ public:
 			}
 			void operator() (std::pair<const ID,CItem>& x) const
 			{
-				dockwins::DFDOCKPOSEX dpos;
+				dockwins::DFDOCKPOSEX dpos = {0}; // ss: Initialise to 0.
 				if(x.second->Store(m_pMState,&dpos))
 				{
 					std::basic_stringstream<TCHAR> sstrKey;
@@ -246,6 +246,7 @@ public:
         CImplT(T& x,int nDefCmdShow=SW_SHOWNOACTIVATE)
 			:m_dockWnd(x),m_nDefCmdShow(nDefCmdShow)
         {
+			::ZeroMemory(&m_pos, sizeof(dockwins::DFDOCKPOSEX));
 			m_pos.dockPos.hdr.hWnd=NULL;
         }
 		virtual void Reset()
@@ -257,7 +258,7 @@ public:
 		}
 		virtual bool Store(IMainState* pMState,CRegKey& key)
 		{
-			dockwins::DFDOCKPOSEX dpos;
+			dockwins::DFDOCKPOSEX dpos = {0}; // ss: Initialise to 0.
 			ZeroMemory(&dpos,sizeof(dockwins::DFDOCKPOSEX));
 			bool bRes=Store(pMState,&dpos);
 			if(bRes)
@@ -268,7 +269,7 @@ public:
 		}
 		virtual bool Restore(IMainState* pMState,CRegKey& key)
 		{
-			dockwins::DFDOCKPOSEX dpos;
+			dockwins::DFDOCKPOSEX dpos = {0}; // ss: Initialise to 0.
 			DWORD dwType;
 			DWORD cbData=sizeof(dockwins::DFDOCKPOSEX);
             bool bRes=(::RegQueryValueEx(key,ctxtPlacement,NULL,&dwType,

@@ -10,7 +10,7 @@
 
 #include "stdafx.h"
 #include "outputview.h"
-
+#include "textview.h"
 #include "childfrm.h"
 
 /**
@@ -165,17 +165,25 @@ void COutputView::OnFirstShow()
 
 LRESULT CDockingOutputWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	CRect rc(0, 0, 0, 0);
-	m_view.Create(m_hWnd, rc, _T("GlobalOutput"));
+	//HICON hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(m_dwIcon), 
+	//		IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
+	//SetIcon(hIconSmall, FALSE);
+
+	m_view.Create(m_hWnd, NULL, _T("GlobalOutput"));
+
 	return 0;
 }
 
-LRESULT CDockingOutputWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT CDockingOutputWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	int w = LOWORD(lParam);
-	int h = HIWORD(lParam);
+	if(wParam != SIZE_MINIMIZED )
+	{
+		RECT rc;
+		GetClientRect(&rc);
+		m_view.SetWindowPos(NULL, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top ,SWP_NOZORDER | SWP_NOACTIVATE);
+	}
 
-	m_view.MoveWindow(0, 0, w, h);
+	bHandled = FALSE;
 
 	return 0;
 }

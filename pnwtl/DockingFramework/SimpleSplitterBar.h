@@ -30,6 +30,7 @@ public:
 	CSimpleSplitterBar(bool bHorizontal=true)
 		:m_bHorizontal(bHorizontal)
 	{
+		SetRectEmpty();
 	}
 	CSimpleSplitterBar(const CSimpleSplitterBar& ref)
 		:CRect(ref),m_bHorizontal(ref.IsHorizontal())

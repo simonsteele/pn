@@ -11,10 +11,12 @@
 #ifndef outputview_h__included
 #define outputview_h__included
 
+#include "ScintillaImpl.h"
 #include "ScintillaWTL.h"
 
-#include "pndocking.h"
-
+/**
+ * Scintilla window with special output handling.
+ */
 class COutputView : public CScintillaWindowImpl< COutputView, CScintillaImpl >
 {
 public:
@@ -43,6 +45,9 @@ protected:
 	virtual void OnFirstShow();
 };
 
+/**
+ * @brief Docking frame for the tool output view.
+ */
 class CDockingOutputWindow : public CPNDockingWindow<CDockingOutputWindow>
 {
 	typedef CDockingOutputWindow thisClass;

@@ -199,7 +199,7 @@ public:
 		{
 			if(IsDocking())
 						Undock();
-			DFDOCKPOS dockHdr;
+			DFDOCKPOS dockHdr = {0}; // ss: Initialise to 0.
 //			dockHdr.hdr.code=DC_SETDOCKPOSITION;
 			dockHdr.hdr.hWnd=m_hWnd;
 			dockHdr.hdr.hBar=hWnd;
