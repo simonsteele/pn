@@ -437,6 +437,24 @@ LRESULT CTextView::OnNextBookmark(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return 0;
 }
 
+LRESULT CTextView::OnCollapseAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	FoldAll();
+	return 0;
+}
+
+LRESULT CTextView::OnExpandAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	UnFoldAll();
+	return 0;
+}
+
+LRESULT CTextView::OnToggleFold(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	ToggleFold();
+	return 0;
+}
+
 void CTextView::ProcessNumberedBookmark(int n)
 {
 	switch(m_waitOnBookmarkNo)

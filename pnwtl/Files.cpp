@@ -350,7 +350,53 @@ void CFileName::GetPath(tstring& buf)
  */
 bool CFileName::IsRelativePath()
 {
-	return false;
+	// If there's no slash in it, it's definitely relative...
+	int spos = GetLastSlashPos();
+	if( spos == m_FileName.npos )
+		return true;
+
+	// If the length is less than 3 then there isn't a drive letter.
+	if( m_FileName.length() < 3 )
+		return true;
+
+	// Is there a drive letter as the first two characters (then it's not relative)?
+	if( ::isalpha(m_FileName[0]) && (m_FileName[1] == _T(':')) )
+		return false;
+
+	// If it begins with a slash then it's not relative - mostly linux style paths.
+	if( m_FileName[0] == _T('\\') || m_FileName[0] == _T('/') )
+		return false;
+
+	return true;
+}
+
+/**
+ * This function first checks if there are duplicate slashes, and then
+ * combines the current path with the rootPath provided.
+ */
+void CFileName::Root(LPCTSTR rootPath)
+{
+	tstring root(rootPath);
+	bool bForwards = false;
+
+	// We always have the trailing slash in root, so make sure that
+	// m_FileName doesn't have a starting one.
+	if( m_FileName[0] == _T('\\') || m_FileName[0] == _T('/') )
+	{
+		m_FileName.erase(m_FileName.begin());
+	}
+
+	// Are we using forward slashes?
+	if( root.find(_T('/')) != root.npos )
+		bForwards = true;
+
+	// Make sure there's a trailing slash.
+	if( root[root.length()-1] != _T('\\') || root[root.length()-1] != _T('/') )
+		root += (bForwards ? _T('/') : _T('\\'));
+
+	root += m_FileName;
+
+	m_FileName = root;
 }
 
 void CFileName::GetFileName(tstring& buf)

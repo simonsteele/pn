@@ -1,130 +1,16 @@
+/**
+ * @file optionspages.cpp
+ * @brief Options Dialog Pages (1) for Programmers Notepad 2
+ * @author Simon Steele
+ * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #include "stdafx.h"
 #include "OptionsPages.h"
 #include "OptionsDialogs.h"
-
-//////////////////////////////////////////////////////////////////////////////
-// CStyleDisplay
-//////////////////////////////////////////////////////////////////////////////
-
-CStyleDisplay::CStyleDisplay()
-{
-	m_Font = NULL;
-	memset(&m_lf, 0, sizeof(LOGFONT));
-}
-
-CStyleDisplay::~CStyleDisplay()
-{
-	if(m_Font)
-		delete m_Font;
-}
-
-void CStyleDisplay::SetBold(bool bold)
-{
-	m_lf.lfWeight = (bold ? FW_BOLD : FW_NORMAL);
-	UpdateFont();
-}
-
-void CStyleDisplay::SetItalic(bool italic)
-{
-	m_lf.lfItalic = italic;
-	UpdateFont();
-}
-
-void CStyleDisplay::SetUnderline(bool underline)
-{
-	m_lf.lfUnderline = underline;
-	UpdateFont();
-}
-
-void CStyleDisplay::SetFontName(LPCTSTR fontname)
-{
-	_tcscpy(m_lf.lfFaceName, fontname);
-	UpdateFont();
-}
-
-void CStyleDisplay::SetSize(int size, bool bInvalidate)
-{
-	HDC dc = GetDC();			
-	m_lf.lfHeight = -MulDiv(size, GetDeviceCaps(dc, LOGPIXELSY), 72);
-	ReleaseDC(dc);
-
-	if(bInvalidate)
-		UpdateFont();
-}
-
-void CStyleDisplay::SetFore(COLORREF fore)
-{
-	m_Fore = fore;
-	Invalidate();
-}
-
-void CStyleDisplay::SetBack(COLORREF back)
-{
-	m_Back = back;
-	Invalidate();
-}
-
-void CStyleDisplay::SetStyle(LPCTSTR fontname, int fontsize, COLORREF fore, COLORREF back, LPCTSTR name, bool bold, bool italic, bool underline)
-{
-	m_Name = name;
-	m_Fore = fore;
-	m_Back = back;
-
-	SetSize(fontsize, false);
-	
-	m_lf.lfWeight = (bold ? FW_BOLD : FW_NORMAL);
-	m_lf.lfUnderline = underline;
-	m_lf.lfItalic = italic;
-	_tcscpy(m_lf.lfFaceName, fontname);
-
-	UpdateFont();
-}
-
-LRESULT CStyleDisplay::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	PAINTSTRUCT ps;
-	BeginPaint(&ps);
-
-	CDC dc(ps.hdc);
-	
-	CRect rc;
-	GetClientRect(rc);
-
-	dc.FillRect(rc, (HBRUSH)::GetStockObject(WHITE_BRUSH));
-
-	// Draw in the example text.
-	if(m_Font)
-	{
-		HFONT hOldFont = dc.SelectFont(m_Font->m_hFont);
-		dc.SetBkColor(m_Back);
-		dc.SetTextColor(m_Fore);
-		dc.DrawText(m_Name, m_Name.GetLength(), rc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-		dc.SelectFont(hOldFont);
-	}
-
-	// Draw a light border around the control.
-	HBRUSH light = ::GetSysColorBrush(COLOR_3DSHADOW);
-	dc.FrameRect(rc, light);
-	
-	EndPaint(&ps);
-	return 0;
-}
-
-LRESULT CStyleDisplay::OnEraseBkgnd(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	return 1;
-}
-
-void CStyleDisplay::UpdateFont()
-{
-	if(m_Font)
-		delete m_Font;
-
-	m_Font = new CFont;
-	m_Font->CreateFontIndirect(&m_lf);
-
-	Invalidate();
-}
 
 //////////////////////////////////////////////////////////////////////////////
 // COptionsPageGeneral
@@ -1009,24 +895,19 @@ LRESULT COptionsPageSchemes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 	m_props.AddPage(m_stylestab);
 	m_props.AddPage(m_keywordstab);
 	
+	// Store focus or the property sheet eats it.
+	HWND hCurFocus = ::GetFocus();
 	m_props.Create(m_hWnd, 0, rcPH);
+	::SetFocus(hCurFocus);
 
 	return 0;
 }
 
 void COptionsPageSchemes::OnInitialise()
 {
-	for(SCF_IT i = m_pSchemes->GetSchemes().begin(); i != m_pSchemes->GetSchemes().end(); ++i)
-	{
-		int index = m_combo.AddString((*i)->m_Title);
-		m_combo.SetItemDataPtr(index, (*i));
-	}
-	
-	if(m_combo.GetCount() > 0)
-	{
-		m_combo.SetCurSel(0);
-		Update();
-	}
+	// Load the schemes, we don't want "Plain Text", but we do want internal schemes.
+	m_combo.Load(m_pSchemes, NULL, false, true);
+	Update();
 
 	m_bDirty = true;
 }
@@ -1052,7 +933,7 @@ LRESULT COptionsPageSchemes::OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, H
 void COptionsPageSchemes::Update()
 {
 	int i = m_combo.GetCurSel();
-	SchemeConfig* pScheme = static_cast<SchemeConfig*>(m_combo.GetItemDataPtr(i));
+	SchemeConfig* pScheme = m_combo.GetItemScheme(i);
 	m_stylestab.SetScheme(pScheme);
 	m_keywordstab.SetScheme(pScheme);
 }
@@ -1116,13 +997,9 @@ LRESULT COptionsPageTools::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 void COptionsPageTools::OnInitialise()
 {
-	m_combo.AddString(_T("(None - Global Tools)"));
-	m_combo.SetItemDataPtr(0, NULL);
-	for(SCF_IT i = m_pSchemes->GetSchemes().begin(); i != m_pSchemes->GetSchemes().end(); ++i)
-	{
-		int index = m_combo.AddString((*i)->m_Title);
-		m_combo.SetItemDataPtr(index, (*i));
-	}
+	m_combo.AddScheme(_T("(None - Global Tools)"), NULL);
+	
+	m_combo.Load(m_pSchemes);
 	
 	if(m_combo.GetCount() > 0)
 	{
@@ -1148,7 +1025,7 @@ void COptionsPageTools::Update()
 	{
 		if(iSel != 0)
 		{
-			m_pScheme = reinterpret_cast<SchemeConfig*>(m_combo.GetItemData(iSel));
+			m_pScheme = m_combo.GetItemScheme(iSel);
 		}
 		else
 		{
@@ -1405,22 +1282,7 @@ void COptionsPageNewFiles::OnInitialise()
 	tstring strNewScheme = pOM->Get(PNSK_EDITOR, _T("NewScheme"), _T("Plain Text"));
 
 	// Populate and initialise schemes combo.
-	int index = m_combo.AddString(_T("Plain Text"));
-	int selIndex = index;
-	m_combo.SetItemDataPtr(index, NULL);
-	for(SCF_IT i = m_pSchemes->GetSchemes().begin(); i != m_pSchemes->GetSchemes().end(); ++i)
-	{
-		index = m_combo.AddString((*i)->m_Title);
-		m_combo.SetItemDataPtr(index, (*i));
-		
-		if((*i)->m_Name == strNewScheme.c_str())
-			selIndex = index;
-	}
-	
-	if(m_combo.GetCount() > 0)
-	{
-		m_combo.SetCurSel(selIndex);
-	}
+	m_combo.Load(m_pSchemes, strNewScheme.c_str());
 
 	// Populate SmartStart list.
 	STRING_MAP& smap = SmartStart::GetInstance()->GetMap();
@@ -1465,7 +1327,7 @@ void COptionsPageNewFiles::OnOK()
 			// Set the default new-scheme.
 			int selIndex = m_combo.GetCurSel();
 			LPCTSTR wt = NULL;
-			SchemeConfig* pS = static_cast<SchemeConfig*>(m_combo.GetItemDataPtr(selIndex));
+			SchemeConfig* pS = m_combo.GetItemScheme(selIndex);
 			if(pS)
 				wt = pS->m_Name;
 			else

@@ -175,6 +175,57 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 }
 
 ////////////////////////////////////////////////////////////
+// Folding Code...
+////////////////////////////////////////////////////////////
+
+void CScintillaImpl::ToggleFold()
+{
+	int line = LineFromPosition(GetCurrentPos());
+	
+	if( !(GetFoldLevel(line) & SC_FOLDLEVELHEADERFLAG) )
+	{
+        line = GetFoldParent(line);
+	}
+
+	CScintilla::ToggleFold(line);
+}
+
+void CScintillaImpl::FoldAll()
+{
+	SPerform(SCI_COLOURISE, 0, -1);
+	int maxLine = SPerform(SCI_GETLINECOUNT);
+	for (int line = 0; line < maxLine; line++)
+	{
+		int level = SPerform(SCI_GETFOLDLEVEL, line);
+		if ((level & SC_FOLDLEVELHEADERFLAG) &&
+		        (SC_FOLDLEVELBASE == (level & SC_FOLDLEVELNUMBERMASK)))
+		{
+			int lineMaxSubord = SPerform(SCI_GETLASTCHILD, line, -1);
+			SPerform(SCI_SETFOLDEXPANDED, line, 0);
+			if (lineMaxSubord > line)
+				SPerform(SCI_HIDELINES, line + 1, lineMaxSubord);
+		}
+	}
+}
+
+void CScintillaImpl::UnFoldAll()
+{
+	SPerform(SCI_COLOURISE, 0, -1);
+	int maxLine = SPerform(SCI_GETLINECOUNT);
+	for (int line = 0; line < maxLine; line++)
+	{
+		int level = SPerform(SCI_GETFOLDLEVEL, line);
+		if ((level & SC_FOLDLEVELHEADERFLAG) &&
+		        (SC_FOLDLEVELBASE == (level & SC_FOLDLEVELNUMBERMASK)))
+		{
+			SPerform(SCI_SETFOLDEXPANDED, line, 1);
+			Expand(line, true, false, 0, level);
+			line--;
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////
 // Indentation Code
 ////////////////////////////////////////////////////////////
 

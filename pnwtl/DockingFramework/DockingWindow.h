@@ -399,6 +399,7 @@ public:
         MESSAGE_HANDLER(WM_NCLBUTTONDOWN,OnNcLButtonDown)
 		MESSAGE_HANDLER(WM_WINDOWPOSCHANGED, OnWindowPosChanged)
 		MESSAGE_HANDLER(WMDF_NDOCKSTATECHANGED,OnDockStateChanged)
+		MESSAGE_HANDLER(WM_MENUCHAR, OnMenuChar) // ss 18/5/03 (make menu keys work)
 	END_MSG_MAP()
 
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -459,6 +460,17 @@ public:
 			pThis->OnUndocked(reinterpret_cast<HDOCKBAR>(lParam));
 		return TRUE;
 	}
+
+	// ss 18/5/03 (make menu keys work)
+	LRESULT OnMenuChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+		LRESULT lRes = DefWindowProc(uMsg, wParam, lParam);
+		if( HIWORD(lRes) == MNC_IGNORE ) {
+			return ::SendMessage(GetTopLevelParent(), uMsg, wParam, lParam);
+		}
+		return lRes;
+	}
+
 protected:
 	CDocker		m_docker;
 	HDOCKBAR	m_hBarOwner;

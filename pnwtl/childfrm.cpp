@@ -563,6 +563,43 @@ LRESULT CChildFrame::OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	return 0;
 }
 
+LRESULT CChildFrame::OnClipboardSwap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	TextRange tr;
+
+	tr.chrg.cpMin = m_view.GetSelectionStart();
+	tr.chrg.cpMax = m_view.GetSelectionEnd();
+	if( tr.chrg.cpMax < tr.chrg.cpMin )
+		tr.chrg.cpMax = m_view.GetLength();
+	int length = tr.chrg.cpMax - tr.chrg.cpMin;
+	
+	char* pNewBuf = new char[length + 1];
+	pNewBuf[length] = '\0';
+	tr.lpstrText = pNewBuf;
+				
+	m_view.GetTextRange(&tr);
+
+	m_view.Paste();
+
+	HGLOBAL hData = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, length+1);
+	if( hData )
+	{
+		if( OpenClipboard() )
+		{
+			EmptyClipboard();
+			char* pBuf = static_cast<char*>(::GlobalLock(hData));
+			memcpy(pBuf, pNewBuf, length + 1);
+			::GlobalUnlock(hData);
+			::SetClipboardData(CF_TEXT, hData);
+			CloseClipboard();
+		}
+	}
+
+	delete [] pNewBuf;
+
+	return 0;
+}
+
 LRESULT CChildFrame::OnRevert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	Revert();

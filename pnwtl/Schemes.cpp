@@ -47,6 +47,7 @@ void CScheme::Init()
 	m_Name = NULL;
 	m_Title = NULL;
 	m_pManager = NULL;
+	m_bInternal = false;
 }
 
 CScheme::~CScheme()
@@ -69,61 +70,56 @@ CScheme::~CScheme()
 	}
 }
 
-void CScheme::CheckName()
+bool CScheme::InitialLoad(CFile& file, SchemeHdrRec& hdr)
 {
-	CFile cfile;
 	CompiledHdrRec Header;
-	char *buf = NULL;
-
-	PNASSERT(m_SchemeFile != NULL);
-
-	LPCTSTR fn = m_SchemeFile;
-
-	if(cfile.Open(fn, 0) == true)
+	file.Read(&Header, sizeof(CompiledHdrRec));
+	if( strcmp(Header.Magic, FileID) != 0 || Header.Version != CompileVersion )
 	{
-		cfile.Read(&Header, sizeof(CompiledHdrRec));
-		if(strcmp(Header.Magic, FileID) != 0)
-		{
-			cfile.Close();
-			throw "Not the right kinda file...";
-			return;
-		}
+		file.Close();
+		m_pManager->Compile();
 
-		if(Header.Version != CompileVersion)
+		if( file.Open(m_SchemeFile) )
 		{
-			cfile.Close();
-			
-			// Attempt to re-compile the schemes...
-			m_pManager->Compile();
-
-			cfile.Open(fn, 0);
-			cfile.Read(&Header, sizeof(CompiledHdrRec));
+			file.Read(&Header, sizeof(CompiledHdrRec));
 			if(strcmp(Header.Magic, FileID) != 0 || Header.Version != CompileVersion)
 			{
 				// Not the right version, and compiling didn't help:
-				cfile.Close();
+				file.Close();
 				::OutputDebugString(_T("PN2: Compiled Scheme Header invalid or corrupt after compile."));
-				return;
-			}	
+				return false;
+			}
 		}
+		else
+			return false;
+	}
 
+	file.Read(&hdr, sizeof(SchemeHdrRec));
+	
+	#ifdef UNICODE
+	// Convert into a unicode string...	
+	USES_CONVERSION;
+	SetName(A2T(&hdr.Name[0]));
+	SetTitle(A2T(&hdr.Title[0]));
+	#else
+	// Otherwise just copy the string.	
+	SetName(&hdr.Name[0]);
+	SetTitle(&hdr.Title[0]);
+	#endif
+
+	m_bInternal = (hdr.Flags & schInternal) != 0;
+
+	return true;
+}
+
+void CScheme::CheckName()
+{
+	CFile cfile;
+	
+	if( cfile.Open(m_SchemeFile) )
+	{
 		SchemeHdrRec hdr;
-		cfile.Read(&hdr, sizeof(SchemeHdrRec));
-		
-		#ifdef UNICODE
-
-		USES_CONVERSION;
-
-		// Convert into a unicode string...	
-		SetName(A2T(&hdr.Name[0]));
-		SetTitle(A2T(&hdr.Title[0]));
-		#else
-		// Otherwise just copy the string.	
-		SetName(&hdr.Name[0]);
-		SetTitle(&hdr.Title[0]);
-		#endif
-
-		// Close the file...
+		InitialLoad(cfile, hdr);
 		cfile.Close();
 	}
 }
@@ -163,31 +159,14 @@ void CScheme::SetFileName(LPCTSTR filename)
 	}
 }
 
+bool CScheme::IsInternal() const
+{
+	return m_bInternal;
+}
 
 void CScheme::SetSchemeManager(CSchemeManager* pManager)
 {
 	m_pManager = pManager;
-}
-
-bool CScheme::OpenCompiledFile(CFile& file, LPCTSTR filename)
-{
-	CFileName fn;
-
-	if(filename)
-	{
-		fn = filename;
-	}
-	else
-	{
-		if(m_SchemeFile)
-		{
-			fn = m_SchemeFile;
-		}
-		else
-			throw "No filename for scheme to be opened!";
-	}
-
-	return ( file.Open(fn.c_str(), 0) == TRUE );
 }
 
 /**
@@ -198,32 +177,17 @@ bool CScheme::OpenCompiledFile(CFile& file, LPCTSTR filename)
 StylesList* CScheme::CreateStylesList()
 {
 	CFile			cfile;
-	CompiledHdrRec	Header;
 	SchemeHdrRec	hdr;
 	TextRec			Txt;
 	MsgRec			Msg;
 	char			Next2;
 	char*			buf;
 
-	if(OpenCompiledFile(cfile))
+	if( cfile.Open(m_SchemeFile) )
 	{
-		cfile.Read(&Header, sizeof(CompiledHdrRec));
-		if(strcmp(Header.Magic, FileID) != 0)
-		{
-			// Can't read the file... never mind.
-			cfile.Close();
-			return NULL;
-		}
+		InitialLoad(cfile, hdr);
 
-		if(Header.Version != CompileVersion)
-		{
-			cfile.Close();
-			return  NULL;
-		}
-
-		cfile.Read(&hdr, sizeof(SchemeHdrRec));
-
-		long posFirstStyle = cfile.GetPosition();
+		//long posFirstStyle = cfile.GetPosition();
 
 		StylesList* pList = new StylesList;
 		StyleDetails* pDefault = new StyleDetails;
@@ -339,62 +303,23 @@ StylesList* CScheme::CreateStylesList()
 void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 {
 	CFile cfile;
-	CompiledHdrRec Header;
 	SchemeHdrRec hdr;
 	MsgRec Msg;
 	TextRec Txt;
 	char *buf = NULL;
 	char Next2;
 
-	if( OpenCompiledFile(cfile, filename) )
+	if( filename )
 	{
-		cfile.Read(&Header, sizeof(CompiledHdrRec));
-		if(strcmp(Header.Magic, FileID) != 0)
-		{
-			cfile.Close();
-			throw "Not the right kinda file...";
-			return;
-		}
+		SetFileName(filename);
+	}
 
-		if(Header.Version != CompileVersion)
-		{
-			cfile.Close();
-			// Attempt to compile me...
-			m_pManager->Compile();
-			
-			if( OpenCompiledFile(cfile, filename) )
-			{
-				cfile.Read(&Header, sizeof(CompiledHdrRec));
-				if(strcmp(Header.Magic, FileID) != 0 || Header.Version != CompileVersion)
-				{
-					// Not the right version, and compiling didn't help:
-					cfile.Close();
-					throw "Not the right kinda file...";
-					return;
-				}
-			}
-			else
-				return;
-		}
+	if( cfile.Open(m_SchemeFile) )
+	{
+		// Check the file is OK and read the header.
+		InitialLoad(cfile, hdr);
 
-		cfile.Read(&hdr, sizeof(SchemeHdrRec));
-		
-		#ifdef UNICODE
-		// Convert into a unicode string...	
-		USES_CONVERSION;
-
-		SetName(A2T(&hdr.Name[0]));
-		SetTitle(A2T(&hdr.Title[0]));
-		
-		#else
-		// Otherwise just copy the string.	
-		SetName(&hdr.Name[0]);
-		SetTitle(&hdr.Title[0]);
-		
-		#endif
-
-		// Set the defaults - these may be changed by the scheme loading
-		// process...
+		// Set the defaults - these may be changed by the load.
 		SetupScintilla(sc);
 
 		if(hdr.Flags & fldEnabled)
@@ -528,6 +453,7 @@ const CScheme& CScheme::operator = (const CScheme& copy)
 	SetName(copy.GetName());
 	SetTitle(copy.GetTitle());
 	SetFileName(copy.GetFileName());
+	m_bInternal = copy.m_bInternal;
 
 	return *this;
 }
@@ -539,7 +465,7 @@ const CScheme& CScheme::operator = (const CScheme& copy)
 void CDefaultScheme::Load(CScintilla& sc, LPCTSTR filename)
 {
 	//SetupScintilla(sc);
-	CScheme::Load(sc, m_SchemeFile);
+	CScheme::Load(sc);
 }
 
 ///////////////////////////////////////////////////////////
@@ -890,8 +816,11 @@ void CSchemeManager::BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCo
 
 	for(SCIT i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
 	{
-		id = CSMenuManager::GetInstance()->RegisterCallback(pHandler, iCommand, (LPVOID)&(*i));
-		m.AddItem( (*i).GetTitle(), id);
+		if( !(*i).IsInternal() )
+		{
+			id = CSMenuManager::GetInstance()->RegisterCallback(pHandler, iCommand, (LPVOID)&(*i));
+			m.AddItem( (*i).GetTitle(), id);
+		}
 	}
 }
 
@@ -948,11 +877,14 @@ void CSchemeSwitcher::BuildMenu(int iCommand)
 
 	for(SCIT i = pSchemes->begin(); i != pSchemes->end(); ++i)
 	{
-		x.pScheme = &(*i);
-		x.iCommand = CSMenuManager::GetInstance()->RegisterCallback(NULL, iCommand, (LPVOID)x.pScheme);
+		if( !(*i).IsInternal() )
+		{
+			x.pScheme = &(*i);
+			x.iCommand = CSMenuManager::GetInstance()->RegisterCallback(NULL, iCommand, (LPVOID)x.pScheme);
 
-		m_menu.AddItem( x.pScheme->GetTitle(), x.iCommand );
-		m_list.insert(m_list.end(), x);
+			m_menu.AddItem( x.pScheme->GetTitle(), x.iCommand );
+			m_list.insert(m_list.end(), x);
+		}
 	}
 }
 

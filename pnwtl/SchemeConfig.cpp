@@ -28,20 +28,6 @@ void CustomStyleCollection::SetNext(CustomStyleCollection* pNext)
 	m_pNext = pNext;
 }
 
-/*void CustomStyleCollection::AddStyle(StyleDetails* pStyle)
-{
-	m_Styles.AddStyle(pStyle);
-}*/
-
-/**
- * This function will find a style if it exists in this
- * CustomStyleCollection instance.
- */
-/*StyleDetails* CustomStyleCollection::GetStyle(int key)
-{
-	return m_Styles.GetStyle(key);
-}*/
-
 /**
  * This function will find a style if it exists in this, or any
  * related CustomStyleCollection instance.
@@ -56,18 +42,6 @@ StyleDetails* CustomStyleCollection::FindStyle(int key)
 	
 	return pS;
 }
-
-/*void CustomStyleCollection::RemoveStyle(int key)
-{
-	StyleDetails* pS = GetStyle(key);
-	if(pS)
-		m_Styles.DeleteStyle(pS);
-}*/
-
-/*void CustomStyleCollection::RemoveAll()
-{
-	m_Styles.DeleteAllStyles();
-}*/
 
 void CustomStyleCollection::SetName(LPCTSTR name)
 {
@@ -215,13 +189,25 @@ void SchemeConfig::ResetAll()
 	}
 }
 
+bool SchemeConfig::IsInternal()
+{
+	return (m_foldflags & schInternal) != 0;
+}
+
 /////////////////////////////////////////////////////////
 // SchemeConfigParser
 /////////////////////////////////////////////////////////
 
-SchemeConfigParser::SchemeConfigParser()
+SchemeConfigParser::SchemeConfigParser(LPCTSTR currentScheme)
+	: m_DefaultScheme(this)
 {
 	m_pCurrent = NULL;
+
+	if(currentScheme)
+		m_CurrentScheme = currentScheme;
+
+	m_DefaultScheme.m_Name = _T("default");
+	m_DefaultScheme.m_Title = _T("Plain Text");
 }
 
 SchemeConfigParser::~SchemeConfigParser()
@@ -253,6 +239,10 @@ StyleDetails* SchemeConfigParser::GetDefaultStyle()
 {
 	return &m_LoadState.m_Default;
 }
+SchemeConfig* SchemeConfigParser::GetPlainTextScheme()
+{
+	return &m_DefaultScheme;
+}
 
 void SchemeConfigParser::LoadConfig(LPCTSTR path, LPCTSTR compiledpath)
 {
@@ -273,6 +263,11 @@ void SchemeConfigParser::LoadConfig(LPCTSTR path, LPCTSTR compiledpath)
 void SchemeConfigParser::SaveConfig()
 {
 	Save((LPCTSTR)m_Path);
+}
+
+LPCTSTR SchemeConfigParser::GetCurrentScheme()
+{
+	return (LPCTSTR)m_CurrentScheme;
 }
 
 #define USERSETTINGS_START			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<UserSettings>\n"

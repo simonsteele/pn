@@ -631,11 +631,18 @@ LRESULT CMainFrame::OnReplace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {		
 	CSchemeManager* pSM = CSchemeManager::GetInstance();
+	LPCTSTR currentScheme = NULL;
 
+	CChildFrame* pFrame = CChildFrame::FromHandle(GetCurrentEditor());
+	if(pFrame)
+	{
+		currentScheme = pFrame->GetTextView()->GetCurrentScheme()->GetName();
+	}
+
+	SchemeConfigParser		schemeconfig(currentScheme);
+	
 	COptionsPageGeneral		general;
 
-	SchemeConfigParser		schemeconfig;
-	
 	COptionsPageStyle		pageStyle(&schemeconfig);
 	COptionsPageSchemes		pageSchemes(&schemeconfig);
 	COptionsPageNewFiles	pageNewFiles(&schemeconfig);

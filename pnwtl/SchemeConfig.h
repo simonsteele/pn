@@ -83,6 +83,8 @@ class SchemeConfig : public CustomKeywordHolder, public CustomStyleHolder
 		void ResetAll();
 		void UpdateGroupedStyles(CustomStyleCollection* pColl, StyleDetails* pUpdatedClass);
 
+		bool IsInternal();
+
 		CString m_Name;
 		CString m_Title;
 		int m_foldflags;
@@ -102,18 +104,21 @@ typedef LIST_SCHEMECONFIGS::iterator SCF_IT;
  */
 class SchemeConfigParser : public SchemeParser
 {
-	_NO_COPY(SchemeConfigParser)
 	public:
-		SchemeConfigParser();
+		SchemeConfigParser(LPCTSTR currentScheme = NULL);
 		~SchemeConfigParser();
 
 		void LoadConfig(LPCTSTR path, LPCTSTR compiledpath);
 		void SaveConfig();
 
+		LPCTSTR GetCurrentScheme();
+
 		LIST_SCHEMECONFIGS&		GetSchemes();
 		StylesMap&				GetStyleClasses();
 		StylesMap&				GetCustomClasses();
 		StyleDetails*			GetDefaultStyle();
+
+		SchemeConfig*			GetPlainTextScheme();
 
 		StylesMap				m_originalclasses;
 		StylesMap				m_customclasses;
@@ -129,6 +134,8 @@ class SchemeConfigParser : public SchemeParser
 		LIST_SCHEMECONFIGS	m_Schemes;
 		SchemeConfig*		m_pCurrent;
 		CString				m_Path;
+		CString				m_CurrentScheme;
+		SchemeConfig		m_DefaultScheme;
 
 	// SchemeParser
 	protected:

@@ -100,6 +100,7 @@ bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 		bool bLine = re.GetNamedMatch("l", linestr);
 		bool bCol = re.GetNamedMatch("c", colstr);
 
+#ifdef _DEBUG
 		tstring dbgout = "Matched file (";
 		dbgout += filename;
 		dbgout += ") line (";
@@ -108,8 +109,27 @@ bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 		dbgout += colstr;
 		dbgout += ")\n";
 		::OutputDebugString(dbgout.c_str());
+#endif
 
 		int line = atoi(linestr.c_str());
+
+		//First check if the file exists as is, if it does then we go with that,
+		//else we try to resolve it.
+		if(! FileExists(filename.c_str()) )
+		{
+			CFileName fn(filename.c_str());
+			if( fn.IsRelativePath() && m_basepath.length() != 0 )
+			{
+				fn.Root( m_basepath.c_str() );
+				filename = fn.c_str();
+#ifdef _DEBUG
+				dbgout = "Rooted path to: ";
+				dbgout += filename;
+				dbgout += "\n";
+				::OutputDebugString(dbgout.c_str());
+#endif
+			}
+		}
 
 		if(FileExists(filename.c_str()))
 		{
@@ -261,6 +281,9 @@ LRESULT COutputView::OnHotSpotClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 	return 0;
 }
 
+/**
+ * @brief Syntax highlighter using regexs.
+ */
 void COutputView::CustomColouriseLine(ScintillaAccessor& styler, char *lineBuffer, int length, int endLine)
 {
 	// It is needed to remember the current state to recognize starting
@@ -284,7 +307,7 @@ void COutputView::CustomColouriseLine(ScintillaAccessor& styler, char *lineBuffe
 }
 
 /**
- * Implement container based lexing for custom errors.
+ * @brief Implement container based lexing for custom errors.
  */
 void COutputView::HandleStyleNeeded(ScintillaAccessor& styler, int startPos, int length)
 {
@@ -344,15 +367,9 @@ int COutputView::HandleNotify(LPARAM lParam)
 			end = lengthDoc;
 		int length = end - start;
 
+		// The Accessor takes care of managing the lex state for us.
 		ScintillaAccessor styler(this);
-
-		//int styleStart = 0;
-		//if(start > 0)
-		//	/*styleStart = */styler.StartAt(start - 1);
-	
 		styler.SetCodePage(GetCodePage());
-
-		//lexCurrent->Lex(start, len, styleStart, keyWordLists, styler);
 		HandleStyleNeeded(styler, start, length);
 		styler.Flush();
 

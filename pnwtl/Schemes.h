@@ -31,8 +31,12 @@ class CScheme
 		CScheme();
 		CScheme(CSchemeManager* pManager);
 		CScheme(CSchemeManager* pManager, LPCTSTR filename);
-
-		CScheme(const CScheme& copy){Init(); *this = copy;}
+		
+		CScheme(const CScheme& copy)
+		{
+			Init();
+			*this = copy;
+		}
 
 		~CScheme();
 
@@ -62,6 +66,8 @@ class CScheme
 			return m_SchemeFile;
 		}
 
+		bool IsInternal() const;
+
 		void SetSchemeManager(CSchemeManager* pManager);
 
 		bool operator < (const CScheme& compare) const;
@@ -69,12 +75,13 @@ class CScheme
 		const CScheme& operator = (const CScheme& copy);
 
 	protected:
-		TCHAR* m_SchemeFile;
-		TCHAR* m_Name;
-		TCHAR* m_Title;
-		CSchemeManager* m_pManager;
+		TCHAR*			m_SchemeFile;
+		TCHAR*			m_Name;
+		TCHAR*			m_Title;
+		bool			m_bInternal;
+		CSchemeManager*	m_pManager;
 
-		bool OpenCompiledFile(CFile& file, LPCTSTR filename = NULL);
+		bool InitialLoad(CFile& file, SchemeHdrRec& hdr);
 
 		void SetupScintilla(CScintilla& sc);
 		void Init();

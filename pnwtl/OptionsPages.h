@@ -11,23 +11,9 @@
 #define optionspages_h__included
 
 #include "include/optionsdialog.h"
-#include "include/fontcombo.h"
-#include "include/ColorButton.h"
-
+#include "optionscontrols.h"
 #include "SchemeConfig.h"
 #include "tools.h"
-
-class CPNColorButton : public CColorButton
-{
-	public:
-		COLORREF SafeGetColor (void) const
-		{
-			if(m_clrCurrent != CLR_DEFAULT)
-				return m_clrCurrent;
-			else
-				return GetDefaultColor();
-		}
-};
 
 class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 							public CWinDataExchange<COptionsPageGeneral>
@@ -98,56 +84,6 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 		bool			m_bDirty;
 
 		SchemeConfigParser* m_pSchemes;
-};
-
-class CStyleDisplay : public CWindowImpl<CStyleDisplay>
-{
-	public:
-		CStyleDisplay();
-		~CStyleDisplay();
-
-		BEGIN_MSG_MAP(CStyleDisplay)
-			MESSAGE_HANDLER(WM_PAINT, OnPaint)
-			MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
-		END_MSG_MAP()
-
-		void SetBold(bool bold);
-		void SetItalic(bool italic);
-		void SetUnderline(bool underline);
-		void SetFontName(LPCTSTR fontname);
-		void SetSize(int size, bool bInvalidate = true);
-		void SetFore(COLORREF fore);
-		void SetBack(COLORREF back);
-		void SetStyle(LPCTSTR fontname, int fontsize, COLORREF fore, COLORREF back, LPCTSTR name, bool bold, bool italic, bool underline);
-		
-	protected:
-		CString		m_Name;
-		LOGFONT		m_lf;
-		CFont*		m_Font;
-		COLORREF	m_Fore;
-		COLORREF	m_Back;
-
-		LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-		LRESULT OnEraseBkgnd(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-
-		void UpdateFont();
-};
-
-#include "ScintillaWTL.h"
-
-class CScintillaDialogWnd : public CScintillaWindowImpl< CScintillaDialogWnd, CScintilla>
-{
-public:
-	typedef CScintillaWindowImpl< CScintillaDialogWnd, CScintilla> baseClass;
-	BEGIN_MSG_MAP(CScintillaDialogWnd)
-		MESSAGE_HANDLER(WM_GETDLGCODE, OnGetDlgCode)
-		CHAIN_MSG_MAP(baseClass)
-	END_MSG_MAP()
-
-	LRESULT OnGetDlgCode(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-	{
-		return DLGC_HASSETSEL | DLGC_WANTARROWS | DLGC_WANTCHARS;
-	}
 };
 
 class CTabPageKeywords : public CPropertyPageImpl<CTabPageKeywords>
@@ -290,7 +226,7 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 		void Update();
 
 	protected:
-		CComboBox			m_combo;
+		CSchemeCombo		m_combo;
 		CContainedPropSheet	m_props;
 		SchemeConfigParser* m_pSchemes;
 		CTabPageStyles		m_stylestab;
@@ -348,7 +284,7 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 
 	protected:
 		bool				m_bChanging;
-		CComboBox			m_combo;
+		CSchemeCombo		m_combo;
 		CListViewCtrl		m_list;
 		SchemeConfigParser* m_pSchemes;
 		SchemeConfig*		m_pScheme;
@@ -403,7 +339,7 @@ class COptionsPageNewFiles : public COptionsPageImpl<COptionsPageNewFiles>
 		bool				m_bDirty;
 		CListViewCtrl		m_list;
 		SchemeConfigParser*	m_pSchemes;
-		CComboBox			m_combo;
+		CSchemeCombo		m_combo;
 		CButton				m_ssCheck;
 };
 

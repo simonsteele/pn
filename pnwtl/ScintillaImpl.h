@@ -25,6 +25,10 @@ public:
 	int ReplaceAll(SReplaceOptions* pOptions);
 	void HighlightAll(SFindOptions* pOptions);
 
+	void ToggleFold();
+	void FoldAll();
+	void UnFoldAll();
+
 	void PrintDocument(SPrintOptions* pOptions, bool showDialog = true);
 
 	virtual int HandleNotify(LPARAM lParam);

@@ -36,6 +36,7 @@ public:
 	BEGIN_MSG_MAP(COutputView)
 		COMMAND_ID_HANDLER(ID_OUTPUT_CLEAR, OnClear)
 		MESSAGE_HANDLER(PN_HANDLEHSCLICK, OnHotSpotClicked)
+		//MESSAGE_HANDLER(WM_SYSKEYDOWN, OnSysKeyDown)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -53,6 +54,12 @@ public:
 
 protected:
 	LRESULT OnHotSpotClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	//LRESULT OnSysKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	//{
+	//	int a = 0;
+	//	::OutputDebugString(_T("WM_SYSKEYDOWN\n"));
+	//	return a;
+	//}
 
 	void ExtendStyleRange(int startPos, int style, TextRange* tr);
 	
@@ -106,6 +113,7 @@ public:
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
+		//MESSAGE_HANDLER(WM_MENUCHAR, OnMenuChar)
 		REFLECT_NOTIFICATIONS()
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
@@ -115,6 +123,16 @@ public:
 protected:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+
+	//LRESULT OnMenuChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	//{
+	//	LRESULT lRes = DefWindowProc(uMsg, wParam, lParam);
+	//	if( HIWORD(lRes) == MNC_IGNORE ) {
+	//		//CWindow wndRoot = m_pCtx->hwndRoot;
+	//		return ::SendMessage(GetTopLevelParent(), uMsg, wParam, lParam);
+	//	}
+	//	return lRes;
+	//}
 
 protected:
 	COutputView m_view;

@@ -171,6 +171,9 @@
 				RelativePath="mainfrm.cpp">
 			</File>
 			<File
+				RelativePath="optionscontrols.cpp">
+			</File>
+			<File
 				RelativePath="outputview.cpp">
 			</File>
 			<File
