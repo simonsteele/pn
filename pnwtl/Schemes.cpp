@@ -261,6 +261,10 @@ void CScheme::SetupScintilla(CScintilla& sc)
 
 	sc.SPerform(SCI_SETTABWIDTH, options.TabWidth);
 
+	// Set even treatment of left and right caret positioning, and sloppy behaviour. 
+	// Use 3 lines as the jump when scrolling up and down.
+	sc.SPerform(SCI_SETCARETPOLICY, CARET_SLOP | CARET_XEVEN, 3);
+
 	sc.SPerform(SCI_STYLERESETDEFAULT);
 	sc.SPerform(SCI_STYLESETFORE, STYLE_DEFAULT, ::GetSysColor(COLOR_WINDOWTEXT));
 	sc.SPerform(SCI_STYLESETBACK, STYLE_DEFAULT, ::GetSysColor(COLOR_WINDOW));
