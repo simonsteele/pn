@@ -1,20 +1,30 @@
 /**
  * @file SchemeCompiler.h
- * @brief Interface of the CSchemeCompiler class, and definitions for scheme files.
+ * @brief Define scheme reader and compiler classes.
  * @author Simon Steele
- * @note copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
- * 
+ * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
+ *
+ * These classes make use of expat through the XMLParser wrapper class.
+ *
+ * Unicode Status: Unicode Ready (untested).
  */
 
-#ifndef __scheme_compiler_h__
-#define __scheme_compiler_h__
+#ifndef schemecompiler_h__included
+#define schemecompiler_h__included
 
 #include "scintillaif.h"
-#include "scintilla.h"
+#include "xmlparser.h"
 #include <string>
-#include "inifile.h"
+#include <list>
+#include <map>
+
+using namespace std;
+
+typedef map<CString, CString> CSTRING_MAP;
+typedef list<CString> CSTRING_LIST;
 
 /**********************************************
  * Structs for compiled scheme file reading...
@@ -53,42 +63,67 @@ typedef struct
 typedef enum {ttFontName, ttKeywords, ttLexerLanguage} eTextType;
 typedef enum {nrMsgRec, nrTextRec} eNextRec;
 typedef enum {fldEnabled = 1, fldCompact = 2, fldComments = 4} eFoldFlags;
-typedef enum {ovrTabWidth = 1, ovrIndentGuides = 2} eOverrideFlags;
+//typedef enum {ovrTabWidth = 1, ovrIndentGuides = 2} eOverrideFlags;
 
+// Parser State Defines
+#define DOING_GLOBALS			1
+#define DOING_GLOBAL			2
+#define DOING_KEYWORDC			3
+#define DOING_KEYWORDS			4
+#define DOING_STYLECS			5	//style-classes
+#define DOING_STYLEC			6	//style-class
+#define DOING_LANGUAGE			7	//language and children...
+#define DOING_LANGUAGE_DETAILS	8
+#define DOING_LANGUAGE_KW		9
+#define DOING_LANGUAGE_STYLES	10
+#define	DOING_IMPORTS			11
+#define DOING_KEYWORDCOMBINE	12
+
+// File Content Defines
 #define CompileVersion 0x02
 #define FileID "Caffeine.Scheme"
 
-/**********************************************
- * Scheme Classes
- **********************************************/
-
-#define DefaultStyleBits 5
-#define sGroup _T("Group")
-#define sBase _T("Base")
-#define sNewBase _T("NewBase")
-#define sStyles _T("Styles.")
-#define sKeywords _T("Keywords.")
-#define scLexer _T("PNLexer")
-#define scBraces _T("Braces")
-#define sDefStyle _T("Styles.Default")
-//#define BraceHighlight 34
-//#define BraceHighlightIncomplete 35
-#define _allowTWOverride true
-#define _allowIDOverride true
-
-///@todo move PNStringToColor into another place...
-// export this function, other things may find it useful.
-COLORREF PNStringToColor(const char* input);
-
-// pre-define...
-class CSchemeCompiler;
-
-class CStyleDetails
+class StyleDetails
 {
 	public:
-		CStyleDetails();
-		CStyleDetails(const CStyleDetails& copy){*this = copy;}
-		CStyleDetails& operator = (const CStyleDetails& copy);
+		StyleDetails()
+		{
+			Key = 0;
+			FontName = "Courier New";
+			FontSize = 10;
+			ForeColor = RGB(0,0,0);
+			FCString = "000000";
+			BackColor = RGB(255,255,255);
+			BCString = "ffffff";
+			Bold = false;
+			Italic = false;
+			Underline = false;
+			EOLFilled = false;
+		}
+
+		StyleDetails(const StyleDetails& copy)
+		{
+			*this = copy;
+		}
+
+		StyleDetails& operator = (const StyleDetails& copy)
+		{
+			Key = copy.Key;
+			FontName = copy.FontName;
+			FontSize = copy.FontSize;
+			ForeColor = copy.ForeColor;
+			FCString = copy.FCString;
+			BackColor = copy.BackColor;
+			BCString = copy.BCString;
+			Bold = copy.Bold;
+			Italic = copy.Italic;
+			Underline = copy.Underline;
+			EOLFilled = copy.EOLFilled;
+			return *this;
+		}
+
+		int Key;
+		
 		std::string FontName;
 		int FontSize;
 		COLORREF ForeColor;
@@ -99,39 +134,99 @@ class CStyleDetails
 		bool Italic;
 		bool Underline;
 		bool EOLFilled;
-
-		void Send(CSchemeCompiler* compiler, int Style);
 };
 
-class CSchemeCompiler : public CRecordingScintilla
+typedef map<CString, StyleDetails*> STYLEDETAILS_NAMEMAP;
+typedef STYLEDETAILS_NAMEMAP::iterator SDNM_IT;
+
+class CSchemeLoaderState
 {
+	public:
+		CSTRING_MAP				m_Globals;
+		CSTRING_MAP				m_Keywords;
+		STYLEDETAILS_NAMEMAP	m_StyleClasses;
+		StyleDetails			m_Default;
 
-	friend class CStyleDetails;
-protected:
-	FILE*				m_out;
-	CIniFile*			m_ini;
-	eNextRec			m_next;
-	eTextType			m_tType;
-	int					m_SchemeOffset;
-	CStyleDetails		m_DefStyle;
-	CStyleDetails		m_NextStyle;
+		XMLParser*				m_pParser;
 
-	bool				m_BracesSloppy;
-	int					m_BracesStyle;
+		int m_State;
+		
+		CString m_csGName;
+		CString m_csLangName;
 
-	void NormaliseFileTimes(LPCTSTR setfrom, LPCTSTR set);
+		// Character Data Caching...
+		CString m_csCData;
 
-	virtual void Record(long Msg, WPARAM wParam, LPARAM lParam);
-
-	void ParseStyle(LPCTSTR scS, int Style, bool CanSend = true);
-	void ParseDefaultStyle();
-	std::string ParseKeyWords(LPCTSTR Section, int KId);
-
-	bool CheckNecessary(long Msg, WPARAM wParam, LPARAM lParam);
-public:
-	bool Compile(LPCTSTR filename, LPCTSTR outfile);
-
-	bool BeginParse();
+		CString m_csBasePath;
+		CString m_csOutPath;
+		CSTRING_LIST m_IncludeFiles;
 };
 
-#endif
+// Empty class for exception source identification purposes...
+class CSchemeCompilerException : public XMLParserException
+{
+	public:
+		CSchemeCompilerException(XMLParser* pParser, LPCTSTR msg = NULL)
+			: XMLParserException(pParser, msg) {}
+		
+		CSchemeCompilerException(XMLParser* pParser, int ErrorCode = 0, LPCTSTR msg = NULL)
+			: XMLParserException(pParser, ErrorCode, msg) {}
+};
+
+class SchemeRecorder : public CScintilla
+{
+	public:
+		SchemeRecorder();
+	
+		bool StartRecording(LPCTSTR scheme, LPCTSTR outfile, int FoldFlags);
+		bool EndRecording();
+		bool IsRecording(){return m_out != NULL;}
+
+		virtual void Record(long Msg, WPARAM wParam, LPARAM lParam);
+
+		void SetDefStyle(StyleDetails* defaults);
+
+		virtual long SPerform(long Msg, WPARAM wParam=0, LPARAM lParam=0);
+
+	protected:
+		bool CheckNecessary(long Msg, WPARAM wParam, LPARAM lParam);
+
+		void WriteHeader(LPCTSTR schemename, int FoldFlags);
+
+		StyleDetails	m_DefStyle;
+		eNextRec		m_next;
+		FILE*			m_out;
+		eTextType		m_tType;
+};
+
+/**
+ * XML Scheme Compiler
+ * Uses James Clark's XML parser expat.
+ */
+class SchemeCompiler
+{
+	public:
+		void Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile);
+
+	protected:
+		CSchemeLoaderState	m_LoadState;
+		SchemeRecorder		m_Recorder;
+
+	protected:
+		void characterData(void* userData, LPCTSTR data, int len);
+		void endElement(void *userData, LPCTSTR name);
+		void startElement(void *userData, LPCTSTR name, XMLAttributes& atts);
+		void processKeywordCombine(CSchemeLoaderState* pState, XMLAttributes& atts);
+		void specifyImportSet(CSchemeLoaderState* pState, XMLAttributes& atts);
+		void specifyImportFile(CSchemeLoaderState* pState, XMLAttributes& atts);
+		void processLanguageElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts);
+		void processLanguageKeywords(CSchemeLoaderState* pState, XMLAttributes& atts);
+		void processLanguageStyle(CSchemeLoaderState* pState, XMLAttributes& atts);
+		void processStyleClass(CSchemeLoaderState* pState, XMLAttributes& atts);
+		void sendStyle(StyleDetails* s, SchemeRecorder* compiler);
+		void parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, StyleDetails* pStyle);
+		void processKeywordClass(CSchemeLoaderState* pState, XMLAttributes& atts);
+		void processGlobal(CSchemeLoaderState* pState, XMLAttributes& atts);
+};
+
+#endif //#ifndef schemecompiler_h__included
