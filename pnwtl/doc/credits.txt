@@ -8,6 +8,11 @@ Code Contributors:
 Bjoern Graf
 Klaus Kurzawa
 
+Libraries:
+----------
+Daniel Bowen (Tabbing Framework)
+Sergey Klimov (Docking Framework)
+Philip Hazel (PCRE)
 
 Testers:
 --------
