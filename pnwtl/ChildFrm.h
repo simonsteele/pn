@@ -11,9 +11,7 @@
 #if !defined(CHILDFRM_H__INCLUDED)
 #define CHILDFRM_H__INCLUDED
 
-#if _MSC_VER >= 1000
-	#pragma once
-#endif
+#pragma once
 
 #define MINI_BAR_HEIGHT 15
 
@@ -37,6 +35,9 @@ class COutputView;
 	if(uMsg == WM_COMMAND && m_hWndOutput != NULL) \
 		::SendMessage(m_hWndOutput, uMsg, wParam, lParam);
 
+/**
+ * @brief Programmers Notepad 2 MDI Child window.
+ */
 class CChildFrame : public CTabbedMDIChildWindowImpl<CChildFrame>, 
 	public CFromHandle<CChildFrame>, public CSMenuEventHandler
 {
@@ -61,10 +62,8 @@ public:
 		MESSAGE_HANDLER(PN_TOOLFINISHED, OnToolFinished)
 		MESSAGE_HANDLER(PN_SCHEMECHANGED, OnSchemeChanged)
 
-		COMMAND_ID_HANDLER(ID_EDIT_CUT, OnCut)
-		COMMAND_ID_HANDLER(ID_EDIT_COPY, OnCopy)
-		COMMAND_ID_HANDLER(ID_EDIT_PASTE, OnPaste)
-		COMMAND_ID_HANDLER(ID_EDIT_UNDO, OnUndo)
+		//Now handled globally: Cut, Copy, Paste, Undo
+		//Still handled locally: Redo...
 		COMMAND_ID_HANDLER(ID_EDIT_REDO, OnRedo)
 		COMMAND_ID_HANDLER(ID_EDIT_DELETE, OnDelete)
 		COMMAND_ID_HANDLER(ID_EDIT_GOTO, OnGoto)
@@ -178,10 +177,6 @@ public:
 	LRESULT OnPrint(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnPrintSetup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnExportRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnCut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnPaste(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnUndo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnRedo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -244,9 +239,6 @@ public:
 
 	void EnsureOutputWindow();
 	void ToggleOutputWindow(bool bSetValue = false, bool bSetShowing = true);
-	//void UpdateRunningTools();
-	//void AddToolOutput(LPCSTR outputstring, int nLength = -1);
-	//IToolOutputSink* GetOutputSink();
 
 protected:
 

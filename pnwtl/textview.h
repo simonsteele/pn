@@ -49,6 +49,7 @@ public:
 	void Revert(LPCTSTR filename);
 
 	void EnableHighlighting(bool bEnable);
+	void SetLineNumberChars(bool bSet = false);
 	void ShowLineNumbers(bool bShow);
 
 	void SetPosStatus(CMultiPaneStatusBarCtrl& stat);
@@ -80,6 +81,7 @@ protected:
 	CScheme* m_pLastScheme;
 	EPNEncoding m_encType;
 	bool m_bSmartStart;
+	bool m_bLineNos;
 };
 
 /////////////////////////////////////////////////////////////////////////////

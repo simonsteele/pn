@@ -180,6 +180,9 @@ bool CTextView::OpenFile(LPCTSTR filename)
 		// Re-Enable UNDO
 		SPerform(SCI_SETUNDOCOLLECTION, 1);
 		SPerform(SCI_SETSAVEPOINT);
+
+		SetLineNumberChars();
+
 		return true;
 	}
 	else
@@ -292,11 +295,32 @@ void CTextView::EnableHighlighting(bool bEnable)
 	}
 }
 
+/**
+ * @brief Intelligently set the number of characters available for line numbers.
+ */
+void CTextView::SetLineNumberChars(bool bSet)
+{
+	if( SPerform(SCI_GETMARGINWIDTHN, 0) > 0 || bSet)
+	{
+		int w = COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("LineNumbersWidth"), 4);
+		
+		long lines = SPerform(SCI_GETLINECOUNT);
+		char lnbuf[40];
+		itoa(lines, lnbuf, 10);
+		w = max(w, (int)strlen(lnbuf));
+		
+		int pixelWidth = 4 + w * SPerform(SCI_TEXTWIDTH, STYLE_LINENUMBER, (LPARAM)"9");
+		SPerform(SCI_SETMARGINWIDTHN, 0, pixelWidth);
+	}
+}
+
 void CTextView::ShowLineNumbers(bool bShow)
 {
-	int w = COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("LineNumbersWidth"), 4);
-	int pixelWidth = 4 + w * SPerform(SCI_TEXTWIDTH, STYLE_LINENUMBER, (LPARAM)"9");
-	SPerform(SCI_SETMARGINWIDTHN, 0, bShow ? pixelWidth : 0);
+	m_bLineNos = bShow;
+	if(bShow)
+		SetLineNumberChars(true);
+	else
+        SPerform(SCI_SETMARGINWIDTHN, 0, 0);
 }
 
 int CTextView::HandleNotify(LPARAM lParam)
@@ -316,6 +340,11 @@ int CTextView::HandleNotify(LPARAM lParam)
 	else if(msg == SCN_UPDATEUI)
 	{
 		SendMessage(GetParent(), PN_NOTIFY, 0, SCN_UPDATEUI);
+		
+		if( m_bLineNos )
+		{
+			SetLineNumberChars();
+		}
 	}
 	else if(msg == SCN_CHARADDED)
 	{

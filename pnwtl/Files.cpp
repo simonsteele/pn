@@ -343,6 +343,16 @@ void CFileName::GetPath(tstring& buf)
 	}
 }
 
+/**
+ * We assume that a filename that starts with a \ or has a drive letter 
+ * at the start is non-relative. Any path with no slash at all is 
+ * definitely relative.
+ */
+bool CFileName::IsRelativePath()
+{
+	return false;
+}
+
 void CFileName::GetFileName(tstring& buf)
 {
 	buf = GetFileName();

@@ -110,6 +110,8 @@ public:
 	void GetFileName_NoExt(tstring& buf);				///< Return the filename part of c:\temp\filename.dat
 	void GetFileName(tstring& buf);						///< Return the filename.dat part of c:\temp\filename.dat
 
+	bool IsRelativePath();
+
 	/**
 	 * GetFileAge returns the integer dos date of the
 	 * file represented by this class. If the file does

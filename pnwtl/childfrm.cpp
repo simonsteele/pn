@@ -508,30 +508,6 @@ LRESULT CChildFrame::OnExportRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	return 0;
 }
 
-LRESULT CChildFrame::OnCut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	::PostMessage(::GetFocus(), WM_CUT, 0, 0);
-	return TRUE;
-}
-
-LRESULT CChildFrame::OnCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	::PostMessage(::GetFocus(), WM_COPY, 0, 0);
-	return TRUE;
-}
-
-LRESULT CChildFrame::OnPaste(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	::PostMessage(::GetFocus(), WM_PASTE, 0, 0);
-	return TRUE;
-}
-
-LRESULT CChildFrame::OnUndo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	::PostMessage(::GetFocus(), WM_UNDO, 0, 0);
-	return TRUE;
-}
-
 LRESULT CChildFrame::OnRedo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	m_view.Redo();
@@ -961,7 +937,7 @@ void CChildFrame::ChangeFormat(EPNSaveFormat format)
 {
 	m_view.SetEOLMode( (int)format );
 	m_view.ConvertEOLs( (int)format );
-	//@todo Update menu item...
+
 	UpdateMenu();
 }
 
@@ -1070,24 +1046,6 @@ void CChildFrame::UpdateMenu()
 
 	g_Context.m_frame->SetActiveScheme(m_hWnd, m_view.GetCurrentScheme());
 }
-
-/*
-void CChildFrame::UpdateRunningTools()
-{
-	UpdateMenu();
-}
-
-void CChildFrame::AddToolOutput(LPCSTR outputstring, int nLength)
-{
-	m_pOutputView->SafeAppendText(outputstring, nLength);
-}
-
-IToolOutputSink* CChildFrame::GetOutputSink()
-{
-	ToggleOutputWindow(true, true);
-	return m_pOutputView;
-}
-*/
 
 bool CChildFrame::IsOutputVisible()
 {

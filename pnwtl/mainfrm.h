@@ -80,6 +80,14 @@ public:
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
 		COMMAND_ID_HANDLER(ID_FILE_OPEN, OnFileOpen)
 		COMMAND_ID_HANDLER(ID_FILE_SAVEALL, OnFileSaveAll)
+		
+		// Global edit action handlers - simply to map accelerators to action...
+		COMMAND_ID_HANDLER(ID_EDIT_CUT, OnCut)
+		COMMAND_ID_HANDLER(ID_EDIT_COPY, OnCopy)
+		COMMAND_ID_HANDLER(ID_EDIT_PASTE, OnPaste)
+		COMMAND_ID_HANDLER(ID_EDIT_UNDO, OnUndo)
+		//COMMAND_ID_HANDLER(ID_EDIT_REDO, OnRedo)
+
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR_EDIT, OnViewEditBar)
 		COMMAND_ID_HANDLER(ID_VIEW_STATUS_BAR, OnViewStatusBar)
@@ -136,6 +144,12 @@ public:
 	LRESULT OnFileSaveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
+	// Edit
+	LRESULT OnCut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnPaste(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnUndo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
 	// View
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewEditBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -174,7 +188,6 @@ public:
 
 public:
 	virtual CWindow* GetWindow();
-	//virtual IToolOutputSink* GetGlobalOutputSink();
 	virtual ToolWrapper* MakeGlobalOutputWrapper(ToolDefinition* pDefinition);
 	virtual void AddMRUEntry(LPCTSTR lpszFile);
 	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme);
@@ -189,7 +202,6 @@ public:
 
 public:
 	void ToggleOutputWindow(bool bSetValue = false, bool bShowing = true);
-	void AddToolOutput(LPCSTR outputstring, int nLength = -1);
 
 protected:
 	void AddNewMenu(CSMenuHandle& menu);

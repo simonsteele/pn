@@ -55,7 +55,12 @@ protected:
 	LRESULT OnHotSpotClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	void ExtendStyleRange(int startPos, int style, TextRange* tr);
+	
+	// Built-in error handlers...
 	void HandleGCCError(int style, int position);
+	void HandleBorlandCPPError(int style, int position);
+	
+	
 	void HandleCustomError(int style, int position);
 
 	void HandleREError(PCRE::RegExp& re, int style, int position);

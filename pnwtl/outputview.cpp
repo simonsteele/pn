@@ -90,6 +90,15 @@ void COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 		bool bLine = re.GetNamedMatch("l", linestr);
 		bool bCol = re.GetNamedMatch("c", colstr);
 
+		tstring dbgout = "Matched file (";
+		dbgout += filename;
+		dbgout += ") line (";
+		dbgout += linestr;
+		dbgout += ") col (";
+		dbgout += colstr;
+		dbgout += ")\n";
+		::OutputDebugString(dbgout.c_str());
+
 		int line = atoi(linestr.c_str());
 
 		if(FileExists(filename.c_str()))
@@ -105,6 +114,15 @@ void COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 				if(pView)
 				{
 					pView->GotoLine(line-1);
+					
+					if( bCol )
+					{
+						long lPos = pView->GetCurrentPos();
+						long column = atol(colstr.c_str());
+						lPos += column;
+						pView->SetCurrentPos(lPos);
+					}
+					
 					::SetFocus(pView->m_hWnd);
 				}
 
@@ -115,8 +133,21 @@ void COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 			}
 		}
 	}
+
+	delete [] tr.lpstrText;
 }
 
+/**
+ * @brief Calls HandleREError with a pre-built regular expression handler.
+ */
+void COutputView::HandleCustomError(int style, int position)
+{
+	HandleREError(*m_pRE, style, position);
+}
+
+/**
+ * @brief Builds a regular expression object from reDef and then calls HandleREError.
+ */
 void COutputView::BuildAndHandleREError(int style, int position, const char* reDef)
 {
 	try
@@ -131,7 +162,7 @@ void COutputView::BuildAndHandleREError(int style, int position, const char* reD
 }
 
 /**
- * Parse a simple GCC error string:
+ * @brief Parse a simple GCC error string:
  * filename.ext:linenumber: error string/whatever
  */
 void COutputView::HandleGCCError(int style, int position)
@@ -139,9 +170,17 @@ void COutputView::HandleGCCError(int style, int position)
 	BuildAndHandleREError(style, position, "(?P<f>.+):(?P<l>[0-9]+): .*");
 }
 
-void COutputView::HandleCustomError(int style, int position)
+/**
+ * @brief Parse Borland C++ errors, warnings and resource compiler warnings...
+ *
+ * Error E2034 clippert.cpp 207: message...
+ * Warning W8070 clippert.cpp 208: message...
+ * Error resources.rc 14 18: message (column line:)
+ */
+void COutputView::HandleBorlandCPPError(int style, int position)
 {
-	HandleREError(*m_pRE, style, position);
+	// Explanation of this RE: http://www.pnotepad.org/devlog/archives/000086.html
+	BuildAndHandleREError(style, position, "(Error|Warning) ((E|W)[0-9]{4} )?(?U)(?P<f>.+) ((?P<c>[0-9]+) )?(?P<l>[0-9]+): [^\\s]");
 }
 
 LRESULT COutputView::OnHotSpotClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -153,6 +192,12 @@ LRESULT COutputView::OnHotSpotClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 			case /*SCE_ERR_GCC*/ 2:
 			{
 				HandleGCCError(wParam, lParam);
+			}
+			break;
+
+			case 5: // Borland C++
+			{
+				HandleBorlandCPPError(wParam, lParam);
 			}
 			break;
 		}

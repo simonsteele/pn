@@ -200,6 +200,12 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 BOOL CMainFrame::OnIdle()
 {
 	UIUpdateToolBar();
+
+	// Because it's complicated to handle the case directly when a docking window
+	// is closed by the user by clicking on its X button, we do it in OnIdle() - a bit
+	// messy but hey!
+	UISetCheck(ID_EDITOR_OUTPUTWND, m_pOutputWnd->IsWindowVisible());
+
 	return FALSE;
 }
 
@@ -366,8 +372,6 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_pOutputWnd->Create(m_hWnd, rcBar, _T("Output"), dwStyle, WS_EX_TOOLWINDOW);
 	DockWindow(*m_pOutputWnd, dockwins::CDockingSide::sBottom, 0, 1, 200, 80);
 
-	m_pOutputWnd->GetView()->SetToolParser(false, "%f:%l: .*");
-
 	InitGUIState();
 	//PostMessage(PN_INITIALISEFRAME);
 
@@ -513,6 +517,30 @@ LRESULT CMainFrame::OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 	OpenFile(filename);
 
 	return 0;
+}
+
+LRESULT CMainFrame::OnCut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	::PostMessage(::GetFocus(), WM_CUT, 0, 0);
+	return TRUE;
+}
+
+LRESULT CMainFrame::OnCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	::PostMessage(::GetFocus(), WM_COPY, 0, 0);
+	return TRUE;
+}
+
+LRESULT CMainFrame::OnPaste(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	::PostMessage(::GetFocus(), WM_PASTE, 0, 0);
+	return TRUE;
+}
+
+LRESULT CMainFrame::OnUndo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	::PostMessage(::GetFocus(), WM_UNDO, 0, 0);
+	return TRUE;
 }
 
 LRESULT CMainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -998,14 +1026,6 @@ void CMainFrame::_setWindowText(LPCTSTR lpszNew)
 	}
 
 	#undef _countof
-}
-
-void CMainFrame::AddToolOutput(LPCSTR outputstring, int nLength)
-{
-	if(m_pOutputWnd)
-	{
-		m_pOutputWnd->GetView()->SafeAppendText(outputstring, nLength);
-	}
 }
 
 void CMainFrame::ToggleOutputWindow(bool bSetValue, bool bShowing)
