@@ -42,6 +42,7 @@ protected:
 	{
 		tstring findPhrase;
 		long	startPos;
+		long    lastPos;
 		int		flags;
 		int     result;
 	} lastFindDetails;

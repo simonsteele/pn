@@ -380,6 +380,8 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 	{
 		pOptions->Found = false;
 
+		GetSel(cr);
+
 		///@todo SCFIND_WORDSTART
 		int flags = (pOptions->MatchWholeWord ? SCFIND_WHOLEWORD : 0) |
 					(pOptions->MatchCase ? SCFIND_MATCHCASE : 0) |
@@ -394,10 +396,11 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 			lastFindDetails.findPhrase = pOptions->FindText;
 			lastFindDetails.flags = flags;
 			lastFindDetails.result = fnNotFound;
+			lastFindDetails.lastPos = -1;
 			checkFoundPos = false;
 		}
-
-		GetSel(cr);
+		else
+			checkFoundPos = (lastFindDetails.lastPos == cr.cpMin);
 
 		USES_CONVERSION;
 		#ifdef CT2A
@@ -446,7 +449,7 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 			int start = GetTargetStart();
 			int end = GetTargetEnd();
 			if( checkFoundPos && lastFindDetails.result == fnFound &&
-				lastFindDetails.startPos == start )
+				lastFindDetails.startPos == start)
 			{
 				pOptions->Found = true;
 				bRet = fnReachedStart;
@@ -461,6 +464,7 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 		}
 
 		lastFindDetails.result = bRet;
+		lastFindDetails.lastPos = posFind;
 		if( checkFoundPos == false )
 		{
 			GetSel(cr);
