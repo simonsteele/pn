@@ -1,0 +1,21 @@
+PN2 RoadMap:
+
+last updated: 16/04/2003
+
+0.4 Miles
+=========
+
+SmartStart
+Header-Switch (at least cpp <-> h)
+Click on error - jumps to error.
+Better printing - margins, header and footer.
+Export types.
+Copy as RTF (dual-format copy?).
+
+0.5 Mingus
+==========
+
+
+0.6 Ella
+========
+
