@@ -39,18 +39,29 @@ namespace Projects {
 
 struct IMainFrame
 {
+	// Window Accessor
 	virtual CWindow* GetWindow() = 0;
-	virtual ToolWrapper* MakeGlobalOutputWrapper(ToolDefinition* pDefinition) = 0;
+	
+	// Global UI
 	virtual void AddMRUEntry(LPCTSTR lpszFile) = 0;
-	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme) = 0;
-	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL, HWND hWndCaller = NULL) = 0;
 	virtual void SetStatusText(LPCTSTR text, bool bLongLife = true) = 0;
+	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL, HWND hWndCaller = NULL) = 0;
+	
+	// Document Operations
 	virtual bool CloseAll() = 0;
 	virtual bool SaveAll(bool ask = false) = 0;
 	virtual bool Open(LPCTSTR lpszFilename, bool bAddMRU = false) = 0;
 	virtual bool CheckAlreadyOpen(LPCTSTR lpszFilename, EAlreadyOpenAction action) = 0;
+	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme) = 0;
+
+	// Projects
 	virtual Projects::Workspace* GetActiveWorkspace() = 0;
-	virtual void FindInFiles(SFindInFilesOptions* options) = 0;
+	
+	// Tools
+	virtual ToolWrapper* MakeGlobalOutputWrapper(ToolDefinition* pDefinition) = 0;
+	
+	// Search
+	virtual void FindInFiles(SearchOptions* options) = 0;
 };
 
 #include "pnutils.h"

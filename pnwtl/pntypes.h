@@ -29,7 +29,7 @@ typedef struct tagFindOptions
 	bool UseSlashes;
 } SFindOptions;
 
-typedef struct tagReplaceOptions : tagFindOptions
+/*typedef struct tagReplaceOptions : tagFindOptions
 {
 	CString ReplaceText;
 	bool	InSelection;
@@ -42,7 +42,22 @@ typedef struct tagFindInFilesOptions
 	CString Path;
 	bool MatchCase;
 	bool Recurse;
-} SFindInFilesOptions;
+} SFindInFilesOptions;*/
+
+typedef struct tagSearchOptions : tagFindOptions
+{
+	// Replace
+	CString ReplaceText;
+	bool	InSelection;
+
+	// Find In Files
+	CString	FileExts;
+	CString Path;
+	bool MatchCase;
+	bool Recurse;
+} SearchOptions;
+
+typedef SearchOptions SReplaceOptions;
 
 typedef struct tagPrintOptions
 {

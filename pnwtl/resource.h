@@ -357,7 +357,8 @@
 #define ID_VIEW_OUTPUT                  32700
 #define ID_VIEW_WINDOWS_PROJECT         32701
 #define ID_VIEW_WINDOWS_TEXTCLIPS       32702
-#define ID_VIEW_LASTDOCKER              32702
+#define ID_VIEW_WINDOWS_FINDRESULTS		32703
+#define ID_VIEW_LASTDOCKER              32703
 #define ID_EDIT_FINDNEXT                32773
 #define ID_EDIT_GOTO                    32774
 #define ID_TOOLS_LECRLF                 32777

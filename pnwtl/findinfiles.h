@@ -6,7 +6,9 @@
 class FIFSink
 {
 	public:
+		virtual void OnBeginSearch(LPCTSTR stringLookingFor, bool bIsRegex) = 0;
 		virtual void OnFoundString(LPCTSTR stringFound, LPCTSTR szFilename, int line, LPCTSTR buf) = 0;
+		virtual void OnEndSearch(int nFound, int nFiles) = 0;
 };
 
 class BoyerMoore;

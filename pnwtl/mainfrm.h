@@ -270,13 +270,23 @@ public:
 	virtual bool Open(LPCTSTR pathname, bool bAddMRU = false);
 	virtual bool CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction action = (EAlreadyOpenAction)OPTIONS->GetCached(Options::OAlreadyOpenAction));
 	virtual Projects::Workspace* GetActiveWorkspace();
-	virtual void FindInFiles(SFindInFilesOptions* options);
+	virtual void FindInFiles(SearchOptions* options);
 
 	////////////////////////////////////////////////////////////////
 	// IToolOutputSink Implementation
 
 public:
 	void ToggleOutputWindow(bool bSetValue = false, bool bShowing = true);
+
+public:
+	typedef enum {
+		DW_OUTPUT = ID_VIEW_OUTPUT,
+		DW_TEXTCLIPS = ID_VIEW_WINDOWS_TEXTCLIPS,
+		DW_PROJECTS = ID_VIEW_WINDOWS_PROJECT,
+		DW_FINDRESULTS = ID_VIEW_WINDOWS_FINDRESULTS,
+	} EDocker;
+
+	void ToggleDockingWindow(EDocker window, bool bSetValue = false, bool bShowing = true);
 
 protected:
 	void AddNewMenu(CSMenuHandle& menu);
@@ -330,13 +340,6 @@ protected:
 	void openFileCheckType(LPCTSTR filename);
 
 protected:
-
-	typedef enum {
-		DW_OUTPUT = ID_VIEW_OUTPUT,
-		DW_TEXTCLIPS = ID_VIEW_WINDOWS_TEXTCLIPS,
-		DW_PROJECTS = ID_VIEW_WINDOWS_PROJECT,
-	} EDocker;
-
 	inline CPNDockingWindow* getDocker(EDocker window) const;
 
 	CPNDockingWindow*		m_dockingWindows[(ID_VIEW_LASTDOCKER-ID_VIEW_FIRSTDOCKER)+1];
@@ -361,6 +364,7 @@ protected:
 	CReplaceDlg*			m_ReplaceDialog;
 	//CDockingOutputWindow*	m_pOutputWnd;
 	COutputView*			m_pOutputWnd;
+	COutputView*			m_pFindResultsWnd;
 	CClipsDocker*			m_pClipsWnd;
 	CProjectDocker*			m_pProjectsWnd;
 	CFindExDialog*			m_pFindEx;

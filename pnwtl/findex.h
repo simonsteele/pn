@@ -15,6 +15,8 @@ class CChildFrame;
 
 typedef enum { eftFind, eftReplace, eftFindInFiles } EFindDialogType;
 
+typedef BOOL (__stdcall *PFNSetLayeredWindowAttributes)(HWND hwnd, COLORREF crKey, BYTE bAlpha, DWORD dwFlags);
+
 class CFindExDialog : public CDialogImpl<CFindExDialog, CWindow>,
 						public CWinDataExchange<CFindExDialog>,
 						public CUpdateUI<CFindExDialog>,
@@ -118,12 +120,13 @@ protected:
 	void findInFiles();
 	CChildFrame* getCurrentEditorWnd();
 	CSize getGUIFontSize();
-	SReplaceOptions* getOptions();
+	SearchOptions* getOptions();
 	int getRegExpString(int nID, CString& Text);
 	void moveUp(int offset, CWindow& ctrl);
 	void placeWindow(const POINT& pt, int lineHeight = 10);
 	int positionChecks(int top, const UINT* checkboxIDs, int nCheckboxIDs);
 	void updateLayout();
+	BOOL setLayeredWindowAttributes(HWND hwnd, COLORREF crKey, BYTE bAlpha, DWORD dwFlags);
 
 protected:
 	typedef enum { elwCurrentDoc, elwAllDocs, elwCurrentProj, elwSelection } ELookWhere;
@@ -161,6 +164,8 @@ protected:
 	BOOL		m_bUseSlashes;
 	BOOL		m_bSearchSubdirs;
 	BOOL		m_bSearchUp;
+
+	PFNSetLayeredWindowAttributes	m_pFnSLWA;
 };
 
 #endif //#ifndef findex_h__included_8B16FC2D_D4A3_4d2c_ACA1_4A80DE51B836

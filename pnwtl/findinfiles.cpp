@@ -65,7 +65,16 @@ void FIFThread::Run()
 {
 	FIFFinder finder(this, &FIFThread::OnFoundFile);
 	finder.SetFilters(m_fileExts.c_str(), NULL, NULL, NULL);
+	m_nFiles = 0;
+	m_nLines = 0;
+	
+	// TODO: Change to true if using RegEx...
+	if(m_pSink)
+		m_pSink->OnBeginSearch(m_pBM->GetSearchString(), false);
+
 	finder.FindMatching(m_path.c_str(), m_bRecurse);
+
+	m_pSink->OnEndSearch(m_nLines, m_nFiles);
 }
 
 void FIFThread::OnException()
@@ -86,7 +95,7 @@ void FIFThread::OnFoundFile(LPCTSTR path, LPCTSTR filename)
 		TCHAR szBuf[ FIFBUFFERSIZE ];
 
 		int nLine = 0;
-		//m_nFiles++;
+		m_nFiles++;
 
 		while(_fgetts(szBuf, FIFBUFFERSIZE, file))
 		{

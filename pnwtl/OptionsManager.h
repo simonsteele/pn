@@ -91,8 +91,9 @@ class Options
 
 		void GetPNPath(tstring& path, int pathtype = PNPATH_PN);
 		
-		SFindOptions*		GetFindOptions()	{ return &m_FindOptions;}
-		SReplaceOptions*	GetReplaceOptions()	{return &m_ReplaceOptions;}
+		SFindOptions*		GetFindOptions()		{return &m_FindOptions;}
+		SReplaceOptions*	GetReplaceOptions()		{return &m_ReplaceOptions;}
+		SearchOptions*		GetSearchOptions()		{return &m_SearchOptions;}
 
 		void BeginGroupOperation(LPCTSTR subkey);
 		void EndGroupOperation();
@@ -107,6 +108,7 @@ class Options
 
 		SFindOptions			m_FindOptions;
 		SReplaceOptions			m_ReplaceOptions;
+		SearchOptions			m_SearchOptions;
 
 		void loadCache();
 		void saveCache();

@@ -1,5 +1,5 @@
 /**
- * @file mainfrm.cpp
+7 * @file mainfrm.cpp
  * @brief Main Window for Programmers Notepad 2 (Implementation)
  * @author Simon Steele
  * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
@@ -69,21 +69,33 @@ public:
 		m_pMainFrame = pMainFrame;
 	}
 
+	virtual void OnBeginSearch(LPCTSTR stringLookingFor, bool bIsRegex)
+	{
+		m_pMainFrame->ToggleDockingWindow(CMainFrame::DW_FINDRESULTS, true, true);
+	}
+
+
+	virtual void OnEndSearch(int nFound, int nFiles)
+	{
+		_sntprintf(m_fBuf, MAX_PATH+4096+40, _T("Search complete: %d occurrences found in %d files.\n"), nFound, nFiles);
+		m_pOutputView->AddToolOutput(m_fBuf);
+	}
+
 	virtual void OnFoundString(LPCTSTR stringFound, LPCTSTR szFilename, int line, LPCTSTR buf)
 	{
-		//m_pMainFrame->ToggleOutputWindow(true, true);
-
+		// Quicker to printf than to add lots...
 		_sntprintf(m_fBuf, MAX_PATH+4096+40, _T("%s:%d: %s\n"), szFilename, line, buf);
 		m_pOutputView->AddToolOutput(m_fBuf);
 		
-
-		/*m_pOutputView->AddToolOutput(szFilename);
+#ifdef OLD
+		m_pOutputView->AddToolOutput(szFilename);
 		_itoa(line, m_lnBuf, 10);
 		m_pOutputView->AddToolOutput(_T(":"), 1);
 		m_pOutputView->AddToolOutput(m_lnBuf);
 		m_pOutputView->AddToolOutput(_T(": "), 2);
 		m_pOutputView->AddToolOutput(buf);
-		m_pOutputView->AddToolOutput(_T("\n"), 1);*/
+		m_pOutputView->AddToolOutput(_T("\n"), 1);
+#endif
 	}
 
 protected:
@@ -99,6 +111,7 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(I
 	m_ReplaceDialog = NULL;
 	m_pFindEx = NULL;
 	m_pOutputWnd = NULL;
+	m_pFindResultsWnd = NULL;
 	m_pClipsWnd = NULL;
 	m_pProjectsWnd = NULL;
 	hFindWnd = NULL;
@@ -124,6 +137,9 @@ CMainFrame::~CMainFrame()
 {
 	if(m_pOutputWnd)
 		delete m_pOutputWnd;
+
+	if(m_pFindResultsWnd)
+		delete m_pFindResultsWnd;
 
 	if(m_pClipsWnd)
 		delete m_pClipsWnd;
@@ -613,6 +629,10 @@ void CMainFrame::CreateDockingWindows()
 		m_dockingWindows, ID_VIEW_OUTPUT - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sBottom);
 
+	m_pFindResultsWnd = CreateDocker<COutputView>(_T("Find Results"), rcBottom, this,
+		m_dockingWindows, ID_VIEW_WINDOWS_FINDRESULTS - ID_VIEW_FIRSTDOCKER,
+		true, dockwins::CDockingSide::sBottom);
+
 	m_pClipsWnd = CreateDocker<CClipsDocker>(_T("Text-Clips"), rcLeft, this,
 		m_dockingWindows, ID_VIEW_WINDOWS_TEXTCLIPS - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sLeft);
@@ -887,7 +907,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	CreateDockingWindows();
 	InitGUIState();
 
-	m_pFIFSink = new CFindInFilesSink(this, m_pOutputWnd);
+	m_pFIFSink = new CFindInFilesSink(this, m_pFindResultsWnd);
 
 	PostMessage(PN_INITIALISEFRAME);
 
@@ -1443,6 +1463,10 @@ LRESULT CMainFrame::OnHideOutput(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCt
 	{
 		getDocker(DW_OUTPUT)->Hide();
 	}
+	else if(hWndCtl == m_pFindResultsWnd->m_hWnd)
+	{
+		getDocker(DW_FINDRESULTS)->Hide();
+	}
 	else
 	{
 		::SendMessage(::GetParent(hWndCtl), WM_COMMAND, ID_OUTPUT_HIDE, (LPARAM)hWndCtl);
@@ -1803,7 +1827,7 @@ Projects::Workspace* CMainFrame::GetActiveWorkspace()
 	return m_pProjectsWnd->GetWorkspace();
 }
 
-void CMainFrame::FindInFiles(SFindInFilesOptions* options)
+void CMainFrame::FindInFiles(SearchOptions* options)
 {
 	FindInFiles::GetInstance()->Start(
 		options->FindText,
@@ -2067,6 +2091,7 @@ void CMainFrame::SetDefaultGUIState()
 {
 	// Dock the output window to the bottom of the main frame, hide it.
 	getDocker(DW_OUTPUT)->Hide();
+	getDocker(DW_FINDRESULTS)->Hide();
 	//m_pOutputWnd->Hide();
 	//m_pClipsWnd->Hide();
 	//m_pProjectsWnd->Hide();
@@ -2251,21 +2276,29 @@ void CMainFrame::_setWindowText(LPCTSTR lpszNew)
 
 void CMainFrame::ToggleOutputWindow(bool bSetValue, bool bShowing)
 {
+	ToggleDockingWindow(DW_OUTPUT, bSetValue, bShowing);
+}
+
+void CMainFrame::ToggleDockingWindow(EDocker window, bool bSetValue, bool bShowing)
+{
+	CPNDockingWindow* dw = getDocker(window);
+	PNASSERT(dw);
+
 	if(bSetValue)
 	{
 		if(bShowing)
 		{
-			if( !getDocker(DW_OUTPUT)->IsWindowVisible() )
-				getDocker(DW_OUTPUT)->Show();
+			if( !dw->IsWindowVisible() )
+				dw->Show();
 		}
 		else
 		{
-			if( getDocker(DW_OUTPUT)->IsWindowVisible() )
-				getDocker(DW_OUTPUT)->Hide();
+			if( dw->IsWindowVisible() )
+				dw->Hide();
 		}
 	}
 	else
-		getDocker(DW_OUTPUT)->Toggle();
+		dw->Toggle();
 }
 
 void CMainFrame::NewProject(LPCTSTR szProjectFile)

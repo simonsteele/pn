@@ -88,6 +88,14 @@ CFindExDialog::CFindExDialog()
 
 	m_lastVisibleCB = -1;
 	m_bottom = -1;
+
+	m_pFnSLWA = NULL;
+
+	if(g_Context.OSVersion.dwMajorVersion >= 5)
+	{
+		HMODULE hUser32 = ::GetModuleHandleA("USER32.DLL");
+		m_pFnSLWA = (PFNSetLayeredWindowAttributes)::GetProcAddress(hUser32, "SetLayeredWindowAttributes");
+	}
 }
 
 BOOL CFindExDialog::PreTranslateMessage(MSG* pMsg)
@@ -290,7 +298,7 @@ LRESULT CFindExDialog::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 	{
 		SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) | WS_EX_LAYERED);
 		int tspct = OPTIONS->GetCached(Options::OFindAlphaPercent);
-		::SetLayeredWindowAttributes(m_hWnd, NULL, (255 * tspct) / 100, LWA_ALPHA);
+		setLayeredWindowAttributes(m_hWnd, NULL, (255 * tspct) / 100, LWA_ALPHA);
 	}
 	else
 	{
@@ -521,16 +529,9 @@ bool CFindExDialog::findNext()
 
 void CFindExDialog::findInFiles()
 {
-	DoDataExchange(TRUE);
+	SearchOptions* pOptions = getOptions();
 
-	SFindInFilesOptions options;
-	options.FindText = m_FindText;
-	options.Path = m_FindWhereText;
-	options.FileExts = m_FindTypeText;
-	options.Recurse = m_bSearchSubdirs != false;;
-	options.MatchCase = m_bMatchCase != false;
-
-	g_Context.m_frame->FindInFiles(&options);
+	g_Context.m_frame->FindInFiles(pOptions);
 
 	ShowWindow(SW_HIDE);
 }
@@ -604,7 +605,7 @@ SReplaceOptions* CFindExDialog::getOptions()
 	DoDataExchange(TRUE);
 
 	//SFindOptions* pOptions = OPTIONS->GetFindOptions();
-	SReplaceOptions* pOptions = OPTIONS->GetReplaceOptions();
+	SReplaceOptions* pOptions = OPTIONS->GetSearchOptions();
 
 	// If the user has changed to a differnent scintilla window
 	// then Found is no longer necessarily true.
@@ -615,6 +616,8 @@ SReplaceOptions* CFindExDialog::getOptions()
 
 	pOptions->FindText			= m_FindText;
 	pOptions->ReplaceText		= m_ReplaceText;
+	pOptions->Path				= m_FindWhereText;
+	pOptions->FileExts			= m_FindTypeText;
 	pOptions->Direction			= (m_bSearchUp == FALSE);
 	pOptions->MatchCase			= (m_bMatchCase == TRUE);
 	pOptions->MatchWholeWord	= (m_bMatchWhole == TRUE);
@@ -622,6 +625,7 @@ SReplaceOptions* CFindExDialog::getOptions()
 	pOptions->UseSlashes		= (m_bUseSlashes == TRUE);
 	pOptions->InSelection		= (where == elwSelection);
 	pOptions->SearchAll			= (where == elwAllDocs);
+	pOptions->Recurse			= (m_bSearchSubdirs == TRUE);
 	
 	///@todo Add a user interface counterpart for the loop search option.
 	pOptions->Loop				= true;
@@ -867,4 +871,15 @@ void CFindExDialog::updateLayout()
 	//m_bottom = rcMe.bottom;
 
 	SetWindowPos(HWND_TOP, rcMe, SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);	
+}
+
+// Stub for dynamically loaded SetLayered...
+BOOL CFindExDialog::setLayeredWindowAttributes(HWND hwnd, COLORREF crKey, BYTE bAlpha, DWORD dwFlags)
+{
+	if(m_pFnSLWA != NULL)
+	{
+		return m_pFnSLWA(hwnd, crKey, bAlpha, dwFlags);
+	}
+	else
+		return TRUE;
 }
