@@ -687,7 +687,7 @@ void CTabPageStyles::UpdateSel()
 					m_fore.SetColor(m_Style.ForeColor);
 					m_back.SetColor(m_Style.BackColor);
 
-					m_FontCombo.SelectString(0, m_Style.FontName.c_str());
+					m_FontCombo.SelectString(-1, m_Style.FontName.c_str());
 					m_SizeCombo.Select(m_Style.FontSize);
 				}
 			}
@@ -840,7 +840,7 @@ void COptionsPageStyle::OnInitialise()
 	{
 		StyleDetails* pStyle = m_pSchemes->GetDefaultStyle();
 		
-		m_FontCombo.SelectString(0, pStyle->FontName.c_str());
+		m_FontCombo.SelectString(-1, pStyle->FontName.c_str());
 		m_SizeCombo.Select(pStyle->FontSize);
 		
 		m_fore.SetColor(pStyle->ForeColor);
