@@ -19,6 +19,9 @@ class CChildFrame;
 class CFindDlg;
 class CReplaceDlg;
 class CDockingOutputWindow;
+class CClipsDocker;
+class CProjectDocker;
+
 struct tagEnumChildrenStruct;
 
 // Auto-complete for the find combo box.
@@ -117,9 +120,13 @@ public:
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SF, OnWebSFPage)
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SB, OnWebSFBug)
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SR, OnWebSFRFE)
+		COMMAND_ID_HANDLER(ID_FINDBAR_SEARCHGOOGLE, OnSearchGoogle)
+		COMMAND_ID_HANDLER(ID_FINDBAR_SEARCHGOOGLEGROUPS, OnSearchGoogleGroups)
 
 		COMMAND_HANDLER(IDC_SCHEMECOMBO, CBN_SELCHANGE, OnSchemeComboChange)
 		COMMAND_HANDLER(IDC_FINDCOMBO, BXTN_ENTER, OnFindComboEnter)
+
+		NOTIFY_CODE_HANDLER(TBN_DROPDOWN, OnToolbarDropDown)
 
 		COMMAND_RANGE_HANDLER(ID_MRUFILE_BASE, (ID_MRUFILE_BASE+15), OnMRUSelected)
 		ROUTE_MENUCOMMANDS()
@@ -190,9 +197,13 @@ public:
 	LRESULT OnWebSFPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnWebSFBug(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnWebSFRFE(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnSearchGoogle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnSearchGoogleGroups(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnSchemeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFindComboEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+	LRESULT OnToolbarDropDown(WPARAM /*wParam*/, LPNMHDR /*lParam*/, BOOL& /*bHandled*/);
 
 	void OpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme = NULL);
 	void OpenFile(LPCTSTR pathname, CScheme* pScheme);
@@ -252,6 +263,8 @@ protected:
 	CFindDlg*				m_FindDialog;
 	CReplaceDlg*			m_ReplaceDialog;
 	CDockingOutputWindow*	m_pOutputWnd;
+	CClipsDocker*			m_pClipsWnd;
+	CProjectDocker*			m_pProjectsWnd;
 	
 	CScintilla				m_Dummy;			///< Scintilla often doesn't like unloading and reloading.
 

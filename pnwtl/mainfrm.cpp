@@ -25,6 +25,8 @@
 #include "OptionsPages.h"	// Options Pages
 #include "aboutdlg.h"		// About Dialog
 #include "pndialogs.h"		// Misc Dialogs.
+#include "textclipsview.h"	// Text-Clips Docker...
+#include "projectview.h"	// Projects Docker...
 
 // Other stuff
 #include "SchemeConfig.h"	// Scheme Configuration
@@ -41,6 +43,8 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4)
 	m_FindDialog = NULL;
 	m_ReplaceDialog = NULL;
 	m_pOutputWnd = NULL;
+	m_pClipsWnd = NULL;
+	m_pProjectsWnd = NULL;
 	hFindWnd = NULL;
 	hReplWnd = NULL;
 
@@ -53,6 +57,12 @@ CMainFrame::~CMainFrame()
 {
 	if(m_pOutputWnd)
 		delete m_pOutputWnd;
+
+	if(m_pClipsWnd)
+		delete m_pClipsWnd;
+
+	if(m_pProjectsWnd)
+		delete m_pProjectsWnd;
 }
 
 /**
@@ -302,14 +312,20 @@ CSize CMainFrame::GetGUIFontSize()
 	return CSize( tm.tmAveCharWidth, tm.tmHeight + tm.tmExternalLeading);
 }
 
+#define PN_BETTER_TOOLBAR_STYLE \
+	(WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | CCS_NODIVIDER | CCS_NORESIZE | CCS_NOPARENTALIGN | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT | TBSTYLE_LIST)
+
 HWND CMainFrame::CreateFindToolbar()
 {
-	HWND hWnd = CreateSimpleToolBarCtrl(m_hWnd, IDR_TBR_FIND, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE, TBR_FIND);
+	HWND hWnd = CreateSimpleToolBarCtrl(m_hWnd, IDR_TBR_FIND, FALSE, PN_BETTER_TOOLBAR_STYLE, TBR_FIND);
 
 	if(!hWnd)
 		return 0;
 
 	CToolBarCtrl fToolbar(hWnd);
+	fToolbar.SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
+	// Only IE 501
+	fToolbar.SetExtendedStyle(fToolbar.GetExtendedStyle() | TBSTYLE_EX_HIDECLIPPEDBUTTONS | TBSTYLE_EX_MIXEDBUTTONS);
 
 	CSize sizeChar = GetGUIFontSize();
 	int cx = FIND_COMBO_SIZE * sizeChar.cx;
@@ -346,6 +362,19 @@ HWND CMainFrame::CreateFindToolbar()
 	m_FindCombo.SetParent(hWnd);
 	m_FindCombo.SetFont((HFONT)GetStockObject( DEFAULT_GUI_FONT ));
 	m_FindCombo.SetOwnerHWND(m_hWnd); // Get enter notifications.
+
+	// Set the drop-down button...
+	int nIndex = fToolbar.CommandToIndex(ID_FINDTYPE_BUTTON);
+	ATLASSERT(nIndex != -1);
+		
+	// Add drop-down style to the button
+	tbi.dwMask = TBIF_STYLE;
+	fToolbar.GetButtonInfo(ID_FINDTYPE_BUTTON, &tbi);
+	tbi.fsStyle |= BTNS_DROPDOWN;
+	tbi.fsStyle |= BTNS_SHOWTEXT | BTNS_AUTOSIZE;
+	tbi.dwMask |= TBIF_TEXT;
+	tbi.pszText = _T("Find");
+	fToolbar.SetButtonInfo(ID_FINDTYPE_BUTTON, &tbi);
 
 	return hWnd;
 }
@@ -492,6 +521,15 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_pOutputWnd = new CDockingOutputWindow;
 	m_pOutputWnd->Create(m_hWnd, rcBar, _T("Output"), dwStyle, WS_EX_TOOLWINDOW);
 	DockWindow(*m_pOutputWnd, dockwins::CDockingSide::sBottom, 0, 1, 200, 80);
+
+	m_pClipsWnd = new CClipsDocker;
+	m_pClipsWnd->Create(m_hWnd, rcBar, _T("Text-Clips"), dwStyle, WS_EX_TOOLWINDOW);
+	DockWindow(*m_pClipsWnd, dockwins::CDockingSide::sLeft, 0, 1, 170, 200);
+
+	m_pProjectsWnd = new CProjectDocker;
+	m_pProjectsWnd->Create(m_hWnd, rcBar, _T("Projects"), dwStyle, WS_EX_TOOLWINDOW);
+	m_pProjectsWnd->DockTo(m_pClipsWnd->m_hWnd, 0);
+	//DockWindow(*m_pProjectsWnd, dockwins::CDockingSide::sLeft, 0, 1, 100, 200);
 
 	InitGUIState();
 	PostMessage(PN_INITIALISEFRAME);
@@ -869,6 +907,46 @@ LRESULT CMainFrame::OnWebSFRFE(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	return 0;
 }
 
+LRESULT CMainFrame::OnSearchGoogle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	tstring s = _T("http://www.google.com/search?q=");
+
+	CWindowText wt(m_FindCombo.m_hWnd);
+
+	LPTSTR searchstr = new TCHAR[_tcslen((LPCTSTR)wt)+1];
+	_tcscpy(searchstr, (LPCTSTR)wt);
+	for(size_t i = 0; i < _tcslen(searchstr); i++)
+	{
+		if(searchstr[i] == _T(' '))
+			searchstr[i] = _T('+');
+	}
+
+	s += (LPCTSTR)searchstr;
+	::ShellExecute(m_hWnd, _T("open"), s.c_str(), NULL, NULL, SW_SHOW);
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnSearchGoogleGroups(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	tstring s = _T("http://groups.google.com/groups?q=");
+
+	CWindowText wt(m_FindCombo.m_hWnd);
+
+	LPTSTR searchstr = new TCHAR[_tcslen((LPCTSTR)wt)+1];
+	_tcscpy(searchstr, (LPCTSTR)wt);
+	for(size_t i = 0; i < _tcslen(searchstr); i++)
+	{
+		if(searchstr[i] == _T(' '))
+			searchstr[i] = _T('+');
+	}
+
+	s += (LPCTSTR)searchstr;
+	::ShellExecute(m_hWnd, _T("open"), s.c_str(), NULL, NULL, SW_SHOW);
+
+	return 0;
+}
+
 LRESULT CMainFrame::OnSchemeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	int iSel = m_SchemeCombo.GetCurSel();
@@ -899,6 +977,28 @@ LRESULT CMainFrame::OnFindComboEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 		pEditor->FindNext(pFindOptions);
 	}
 	
+	return 0;
+}
+
+LRESULT CMainFrame::OnToolbarDropDown(WPARAM /*wParam*/, LPNMHDR lParam, BOOL& /*bHandled*/)
+{
+	#define lpnmTB ((LPNMTOOLBAR)lParam)
+	
+	switch(lParam->idFrom)
+	{
+		case TBR_FIND:
+		{
+			CSPopupMenu popup(IDR_POPUP_FINDBARDD);
+			
+			CPoint pt(lpnmTB->rcButton.left, lpnmTB->rcButton.bottom);
+			::ClientToScreen(lParam->hwndFrom, &pt);
+
+			TrackPopupMenu(popup, 0, pt.x, pt.y);
+		};
+		break;
+	}
+
+	#undef lpnmTB
 	return 0;
 }
 
@@ -1118,6 +1218,8 @@ void CMainFrame::SetDefaultGUIState()
 {
 	// Dock the output window to the bottom of the main frame, hide it.
 	m_pOutputWnd->Hide();
+	//m_pClipsWnd->Hide();
+	//m_pProjectsWnd->Hide();
 }
 
 void CMainFrame::PerformChildEnum(SChildEnumStruct* s)

@@ -1,6 +1,6 @@
 /**
- * @file projectview.h
- * @brief View to display project trees.
+ * @file textclipsview.h
+ * @brief View to display text clips.
  * @author Simon Steele
  * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
  *
@@ -8,26 +8,32 @@
  * the conditions under which this source may be modified / distributed.
  */
 
-#ifndef projectview_h__included
-#define projectview_h__included
+#ifndef textclipsview_h__included
+#define textclipsview_h__included
 
-namespace Projects {
-	class Solution; }
+namespace TextClips {
+	class Clip;
+}
 
-class CProjectDocker : public CPNDockingWindow<CProjectDocker>
+class CClipsDocker : public CPNDockingWindow<CClipsDocker>
 {
-	typedef CProjectDocker thisClass;
-	typedef CPNDockingWindow<CProjectDocker> baseClass;
+	typedef CClipsDocker thisClass;
+	typedef CPNDockingWindow<CClipsDocker> baseClass;
 
 public:
-	DECLARE_WND_CLASS(_T("CProjectDocker"))
+	DECLARE_WND_CLASS(_T("CClipsDocker"))
 
-	CProjectDocker();
+	CClipsDocker();
+
+	enum {
+		IDC_CLIPSLIST = 100,
+	};
 
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHide)
+		NOTIFY_HANDLER(IDC_CLIPSLIST, NM_DBLCLK, OnClipSelected);
 		REFLECT_NOTIFICATIONS()
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
@@ -37,9 +43,12 @@ protected:
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	Projects::Solution*	solution;
+	LRESULT OnClipSelected(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
-	CTreeViewCtrl	m_view;
+	void AddClip(TextClips::Clip* tc);
+
+	CListViewCtrl	m_view;
+
 };
 
 #endif

@@ -4,6 +4,7 @@
 //
 #define IDC_REPLACE_BUTTON              4
 #define IDR_TBR_EDIT                    5
+#define IDI_TEXTCLIPS                   5
 #define IDC_REPLACEALL_BUTTON           6
 #define IDC_REPLACEINSEL_BUTTON         7
 #define IDD_ABOUTBOX                    100
@@ -90,8 +91,12 @@
 #define IDR_TOOLBAR1                    278
 #define IDR_TBR_FINDCOMBO               278
 #define IDR_TBR_FIND                    278
-#define IDB_BITMAP1                     280
 #define IDB_FINDTOOLBAR                 280
+#define IDR_FINDBAR_DDMENU              281
+#define IDR_POPUP_FINDBARDD             281
+#define ID_FINDBAR_SEARCHGOOGLE         282
+#define ID_FINDBAR_SEARCHGOOGLEGROUPS   283
+#define IDI_ICON1                       284
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -250,7 +255,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        282
+#define _APS_NEXT_RESOURCE_VALUE        285
 #define _APS_NEXT_COMMAND_VALUE         32877
 #define _APS_NEXT_CONTROL_VALUE         1070
 #define _APS_NEXT_SYMED_VALUE           104

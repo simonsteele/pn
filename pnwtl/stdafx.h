@@ -9,7 +9,7 @@
 // Change these values to use different versions
 #define WINVER			0x0500	// Changed to allow CDotNetTabCtrl to compile with COLOR_HOTLIGHT
 #define _WIN32_WINNT	0x0501
-#define _WIN32_IE		0x0400
+#define _WIN32_IE		0x0501
 #define _RICHEDIT_VER	0x0100
 
 // Implement debug mode memory allocation checking.

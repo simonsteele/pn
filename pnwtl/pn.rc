@@ -620,6 +620,25 @@ BEGIN
     END
 END
 
+IDR_POPUP_FINDBARDD MENU 
+BEGIN
+    POPUP "DUMMY"
+    BEGIN
+        MENUITEM "&Google",                     ID_FINDBAR_SEARCHGOOGLE
+        MENUITEM "Google Gr&oups",              ID_FINDBAR_SEARCHGOOGLEGROUPS
+
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_TEXTCLIPS           ICON                    "res\\textclips.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1090,6 +1109,17 @@ END
 //
 
 1                       RT_MANIFEST             "pn.exe.manifest"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    ID_FINDTYPE_BUTTON      "Find"
+END
+
 #endif    // English (U.K.) resources
 /////////////////////////////////////////////////////////////////////////////
 

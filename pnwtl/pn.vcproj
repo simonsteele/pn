@@ -227,6 +227,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="textclipsview.cpp">
+			</File>
+			<File
 				RelativePath="textview.cpp">
 			</File>
 			<File
@@ -330,6 +333,9 @@
 				RelativePath="styles.h">
 			</File>
 			<File
+				RelativePath="textclipsview.h">
+			</File>
+			<File
 				RelativePath=".\textview.h">
 			</File>
 			<File
@@ -371,6 +377,9 @@
 			</File>
 			<File
 				RelativePath="res\tbrScheme.bmp">
+			</File>
+			<File
+				RelativePath="res\textclips.ico">
 			</File>
 			<File
 				RelativePath=".\res\toolbar.bmp">

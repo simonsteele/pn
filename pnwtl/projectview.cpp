@@ -26,7 +26,7 @@ LRESULT CProjectDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
 	RECT rc;
 	GetClientRect(&rc);
-	//m_view.Create(m_hWnd, rc, _T("GlobalOutput"));
+	m_view.Create(m_hWnd, rc, _T("ProjectTree"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS);
 
 	return 0;
 }
@@ -37,7 +37,7 @@ LRESULT CProjectDocker::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 	{
 		RECT rc;
 		GetClientRect(&rc);
-		//m_view.SetWindowPos(NULL, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top ,SWP_NOZORDER | SWP_NOACTIVATE);
+		m_view.SetWindowPos(NULL, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top ,SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 
 	bHandled = FALSE;
