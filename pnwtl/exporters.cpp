@@ -890,7 +890,7 @@ void HTMLExporter::InternalExport(int start, int end)
 		// Deal with special characters:
 		if(ch == '&')
 			m_out->puts("&amp;");
-		if(ch == '"')
+		else if(ch == '"')
 			m_out->puts("&quot;");
 		else if(ch == '<')
 			m_out->puts("&lt;");

@@ -837,7 +837,7 @@ LRESULT CMainFrame::OnMenuSelect(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 		if(!(wFlags & MF_POPUP))
 		{
 			WORD wID = LOWORD(wParam);
-			if(wID >= m_RecentFiles.base() && wID <= m_RecentFiles.last())
+			if(wID >= m_RecentFiles.base() && wID <= m_RecentFiles.last() && m_RecentFiles.GetCount() > 0)
 			{
 				LPCTSTR fn = m_RecentFiles.GetEntry(wID - m_RecentFiles.base());
 				::SendMessage(m_hWndStatusBar, SB_SIMPLE, TRUE, 0L);
@@ -845,7 +845,7 @@ LRESULT CMainFrame::OnMenuSelect(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 				::OutputDebugString(fn);
 				bHandled = true;
 			}
-			else if(wID >= m_RecentProjects.base() && wID <= m_RecentProjects.last())
+			else if(wID >= m_RecentProjects.base() && wID <= m_RecentProjects.last() && m_RecentProjects.GetCount() > 0)
 			{
 				LPCTSTR fn = m_RecentProjects.GetEntry(wID - m_RecentProjects.base());
 				::SendMessage(m_hWndStatusBar, SB_SIMPLE, TRUE, 0L);

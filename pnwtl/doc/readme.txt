@@ -9,12 +9,18 @@ What's new?
 1) Document Properties Window (hit alt-enter).
 2) Editor Defaults options page.
 3) Default word-wrap option.
+4) Most Recently Used Projects menu.
 
 Bug Fixes:
 ----------
 
 1) Empty search on google causes crash (SF Bug #870649).
 2) Change line endings in Save-As dialog doesn't work (SF Bug #885586).
+3) Tools run without capture don't show (SF Bug #896269).
+4) Conflict in shortcut assignment (SF Bug #891208).
+5) Crash if mouse over 'Recent Files'->(empty) (SF Bug #900929).
+6) PN doesn't become active after clicking Output window (SF Bug #760362).
+7) HTML export doubles the '&' (SF Bug #899079).
 
 If you find a bug:
 ------------------
