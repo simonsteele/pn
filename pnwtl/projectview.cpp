@@ -12,6 +12,7 @@
 #include "resource.h"
 #include "project.h"
 #include "projectview.h"
+#include "pndialogs.h"
 
 using namespace Projects;
 
@@ -21,7 +22,7 @@ using namespace Projects;
 
 CProjectTreeCtrl::CProjectTreeCtrl()
 {
-	lastFile = NULL;
+	lastItem = NULL;
 }
 
 void CProjectTreeCtrl::SetWorkspace(Projects::Workspace* ws)
@@ -51,16 +52,26 @@ File* CProjectTreeCtrl::GetSelectedFile()
 void CProjectTreeCtrl::buildTree()
 {
 	// Image, SelImage, hParent, hInsertAfter
-	HTREEITEM hTopItem = InsertItem( workspace->GetName(), 0, 0, NULL, NULL );
-	SetItemData(hTopItem, reinterpret_cast<DWORD_PTR>( workspace ));
-	const PROJECT_LIST& projects = workspace->GetProjects();
+	SetRedraw(FALSE);
 
-	for(PROJECT_LIST::const_iterator i = projects.begin(); i != projects.end(); ++i)
+	try
 	{
-		buildProject(hTopItem, (*i));
+		HTREEITEM hTopItem = InsertItem( workspace->GetName(), 0, 0, NULL, NULL );
+		SetItemData(hTopItem, reinterpret_cast<DWORD_PTR>( workspace ));
+		const PROJECT_LIST& projects = workspace->GetProjects();
+
+		for(PROJECT_LIST::const_iterator i = projects.begin(); i != projects.end(); ++i)
+		{
+			buildProject(hTopItem, (*i));
+		}
+
+		Expand(hTopItem);
+	}
+	catch(...)
+	{
 	}
 
-	Expand(hTopItem);
+	SetRedraw(TRUE);
 }
 
 void CProjectTreeCtrl::buildProject(HTREEITEM hParentNode, Projects::Project* pj)
@@ -121,7 +132,43 @@ HTREEITEM CProjectTreeCtrl::buildFiles(HTREEITEM hParentNode, HTREEITEM hInsertA
 
 void CProjectTreeCtrl::clearTree()
 {
+	SetRedraw(FALSE);
+	DeleteAllItems();
+	SetRedraw(TRUE);
+}
 
+void CProjectTreeCtrl::setStatus(Projects::ProjectType* selection)
+{
+	switch( selection->GetType() )
+	{
+	case ptFile:
+		{
+			File* file = static_cast<File*>( selection );
+			tstring s(_T("Project file: "));
+			s += file->GetFileName();
+			g_Context.m_frame->SetStatusText(s.c_str());
+		}
+		break;
+
+	case ptFolder:
+		{
+			Projects::Folder* folder = static_cast<Projects::Folder*>( selection );
+			tstring s(_T("Folder root: "));
+			s += folder->GetBasePath();
+			g_Context.m_frame->SetStatusText(s.c_str());
+		}
+		break;
+
+	case ptProject:
+		{
+		g_Context.m_frame->SetStatusText(_T("Project selected."));
+		}
+		break;
+
+	case ptWorkspace:
+		g_Context.m_frame->SetStatusText(_T("Workspace selected."));
+		break;
+	}
 }
 
 LRESULT CProjectTreeCtrl::OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
@@ -132,37 +179,7 @@ LRESULT CProjectTreeCtrl::OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	if(!pt)
 		return 0;
 
-	switch( pt->GetType() )
-	{
-	case ptFile:
-		{
-			File* file = static_cast<File*>( pt );
-			tstring s(_T("Project file: "));
-			s += file->GetFileName();
-			g_Context.m_frame->SetStatusText(s.c_str());
-		}
-		break;
-
-	case ptFolder:
-		{
-			Projects::Folder* folder = static_cast<Projects::Folder*>( pt );
-			tstring s(_T("Folder root: "));
-			s += folder->GetBasePath();
-			g_Context.m_frame->SetStatusText(s.c_str());
-		}
-		break;
-
-	case ptProject:
-		{
-		g_Context.m_frame->SetStatusText(_T("Project selected."));
-		//Project* pProject = static_cast<Project*>( pt );
-		}
-		break;
-
-	case ptWorkspace:
-		g_Context.m_frame->SetStatusText(_T("Workspace selected."));
-		break;
-	}
+	setStatus(pt);
 
 	return 0;
 }
@@ -183,19 +200,21 @@ LRESULT CProjectTreeCtrl::OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	tvhti.pt = pt2;
     HitTest(&tvhti);
 
-	lastFile = NULL;
+	lastItem = NULL;
+	hLastItem = NULL;
 
 	if(tvhti.hItem != NULL)
 	{
 		if (tvhti.flags & (TVHT_ONITEMLABEL|TVHT_ONITEMICON))
 		{
 			ProjectType* ptype = reinterpret_cast<ProjectType*>( GetItemData(tvhti.hItem) );
+			hLastItem = tvhti.hItem;
+			lastItem = ptype;
+
 			switch(ptype->GetType())
 			{
 				case ptFile:
 				{
-					lastFile = static_cast<File*>( ptype );
-
 					CSPopupMenu popup(IDR_POPUP_PROJECTFILE);
 
 					CMenuItemInfo mii;
@@ -209,6 +228,20 @@ LRESULT CProjectTreeCtrl::OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 					g_Context.m_frame->TrackPopupMenu(popup, 0, pt.x, pt.y, NULL, m_hWnd);
 				}
 				break;
+
+				case ptFolder:
+				{
+					CSPopupMenu popup(IDR_POPUP_PROJECTFOLDER);
+					g_Context.m_frame->TrackPopupMenu(popup, 0, pt.x, pt.y, NULL, m_hWnd);
+				}
+				break;
+
+				case ptProject:
+				{
+					CSPopupMenu popup(IDR_POPUP_PROJECT);
+					g_Context.m_frame->TrackPopupMenu(popup, 0, pt.x, pt.y, NULL, m_hWnd);
+				}
+				break;
 			}
 		}
 	}
@@ -216,15 +249,183 @@ LRESULT CProjectTreeCtrl::OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	return 0;
 }
 
+LRESULT CProjectTreeCtrl::OnEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	LPNMTVDISPINFO ptvdi = (LPNMTVDISPINFO)pnmh;
+
+	// Edit cancelled...
+	if(ptvdi->item.pszText == NULL)
+		return 0;
+	
+	ProjectType* type = reinterpret_cast<ProjectType*>( GetItemData(ptvdi->item.hItem) );
+	switch( type->GetType() )
+	{
+		case ptProject:
+		case ptFolder:
+		{
+			Projects::Folder* pF = static_cast<Projects::Folder*>(type);
+			pF->SetName(ptvdi->item.pszText);
+			
+			PNASSERT(ptvdi->item.mask == TVIF_TEXT);
+			SetItem(&ptvdi->item);
+		}
+		break;
+
+		case ptFile:
+		{
+			File* pF = static_cast<File*>(type);
+			if( pF->Rename(ptvdi->item.pszText) )
+			{
+				PNASSERT(ptvdi->item.mask == TVIF_TEXT);
+				SetItem(&ptvdi->item);
+			}
+		}
+		break;
+	}
+
+	if(GetSelectedItem() == ptvdi->item.hItem)
+		setStatus(type);
+
+	return 0;
+}
+
 LRESULT CProjectTreeCtrl::OnOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	if(lastFile != NULL)
+	if(lastItem != NULL && (lastItem->GetType() == ptFile))
 	{
-		if( !g_Context.m_frame->CheckAlreadyOpen(lastFile->GetFileName(), eSwitch) )
-			g_Context.m_frame->OpenFile(lastFile->GetFileName(), true);
+		File* pFile = static_cast<File*>( lastItem );
+		if( !g_Context.m_frame->CheckAlreadyOpen(pFile->GetFileName(), eSwitch) )
+			g_Context.m_frame->OpenFile(pFile->GetFileName(), true);
 	}
 
 	return 0;
+}
+
+LRESULT CProjectTreeCtrl::OnAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(lastItem != NULL)
+	{
+		Projects::Folder* folder = NULL;
+		HTREEITEM hParent = NULL;
+
+		switch(lastItem->GetType())
+		{
+			case ptFile:
+			{
+				File* file = static_cast<Projects::File*>( lastItem );
+				folder = file->GetFolder();
+				hParent = GetParentItem(hLastItem);
+			}
+			break;
+
+			case ptProject:
+			case ptFolder:
+			{
+				folder = static_cast<Projects::Folder*>( lastItem );
+				hParent = hLastItem;
+			}
+			break;
+		}
+
+		if(folder == NULL)
+			return 0;
+
+		CPNOpenDialog dlgOpen(_T("All Files (*.*)|*.*|"));
+		dlgOpen.m_ofn.Flags |= OFN_ALLOWMULTISELECT;
+		if(dlgOpen.DoModal() == IDOK)
+		{
+			for(CPNOpenDialog::const_iterator i = dlgOpen.begin(); 
+				i != dlgOpen.end();
+				++i)
+			{
+				File* newFile = folder->AddFile((*i).c_str());
+				
+				AddFileNode(newFile, hParent, NULL);
+				Expand(hParent);
+			}
+		}
+	}
+
+	return 0;
+}
+
+LRESULT CProjectTreeCtrl::OnAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(lastItem == NULL)
+		return 0;
+
+	if(lastItem->GetType() == ptFolder || lastItem->GetType() == ptProject)
+	{
+		Projects::Folder* folder = static_cast<Projects::Folder*>(lastItem);
+		Projects::Folder* newFolder = new Projects::Folder(_T("NewFolder"), folder->GetBasePath());
+
+		folder->AddChild(newFolder);
+
+		HTREEITEM hFolderNode = AddFolderNode(newFolder, hLastItem, NULL);
+
+		Expand(hLastItem);
+		EditLabel(hFolderNode);
+	}
+
+	return 0;
+}
+
+void CProjectTreeCtrl::openAll(Projects::Folder* folder)
+{
+	for(FOLDER_LIST::const_iterator i = folder->GetFolders().begin();
+		i != folder->GetFolders().end();
+		++i)
+	{
+		openAll((*i));
+	}
+
+	for(FILE_LIST::const_iterator i = folder->GetFiles().begin();
+		i != folder->GetFiles().end();
+		++i)
+	{
+		if( !g_Context.m_frame->CheckAlreadyOpen((*i)->GetFileName(), eSwitch) )
+			g_Context.m_frame->OpenFile((*i)->GetFileName(), true);
+	}
+}
+
+LRESULT CProjectTreeCtrl::OnOpenAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(lastItem == NULL || lastItem->GetType() == ptFile)
+		return 0;
+
+	if(lastItem->GetType() == ptWorkspace)
+	{
+		Workspace* pW = static_cast<Workspace*>(lastItem);
+		
+		for(PROJECT_LIST::const_iterator i = pW->GetProjects().begin();
+			i != pW->GetProjects().end();
+			++i)
+		{
+			openAll((*i));
+		}
+	}
+	else
+	{
+		Projects::Folder* pF = static_cast<Projects::Folder*>(lastItem);
+		
+		openAll(pF);
+	}
+
+	return 0;
+}
+
+HTREEITEM CProjectTreeCtrl::AddFileNode(File* file, HTREEITEM hParent, HTREEITEM hInsertAfter)
+{
+	HTREEITEM hFile = InsertItem( file->GetDisplayName(), 0, 0, hParent, hInsertAfter );
+	SetItemData(hFile, reinterpret_cast<DWORD_PTR>( file ));
+	return hFile;
+}
+
+HTREEITEM CProjectTreeCtrl::AddFolderNode(Projects::Folder* folder, HTREEITEM hParent, HTREEITEM hInsertAfter)
+{
+	HTREEITEM hFolder = InsertItem( folder->GetName(), 0, 0, hParent, hInsertAfter );
+	SetItemData(hFolder, reinterpret_cast<DWORD_PTR>( folder ));
+	return hFolder;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -253,7 +454,7 @@ LRESULT CProjectDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
 	RECT rc;
 	GetClientRect(&rc);
-	m_view.Create(m_hWnd, rc, _T("ProjectTree"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_HASLINES, 0, 100);
+	m_view.Create(m_hWnd, rc, _T("ProjectTree"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_HASLINES | TVS_EDITLABELS, 0, 100);
 
 	return 0;
 }

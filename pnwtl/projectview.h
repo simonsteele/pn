@@ -23,8 +23,12 @@ public:
 
 	BEGIN_MSG_MAP(CProjectTreeCtrl)
 		REFLECTED_NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnSelChanged)
+		REFLECTED_NOTIFY_CODE_HANDLER(TVN_ENDLABELEDIT, OnEndLabelEdit)
 		REFLECTED_NOTIFY_CODE_HANDLER(NM_RCLICK, OnRightClick)
 		COMMAND_ID_HANDLER(ID_PROJECT_OPEN, OnOpenFile)
+		COMMAND_ID_HANDLER(ID_PROJECT_ADDFILES, OnAddFiles)
+		COMMAND_ID_HANDLER(ID_PROJECT_ADDFOLDER, OnAddFolder)
+		COMMAND_ID_HANDLER(ID_PROJECT_OPENALLFILES, OnOpenAll)
 	END_MSG_MAP()
 
 	Projects::File* GetSelectedFile();
@@ -35,14 +39,24 @@ protected:
 	HTREEITEM buildFolders(HTREEITEM hParentNode, const Projects::FOLDER_LIST& folders);
 	HTREEITEM buildFiles(HTREEITEM hParentNode, HTREEITEM hInsertAfter, const Projects::FILE_LIST& files);
 	void clearTree();
+	void setStatus(Projects::ProjectType* selection);
+	void openAll(Projects::Folder* folder);
+
+	HTREEITEM AddFileNode(Projects::File* file, HTREEITEM hParent, HTREEITEM hInsertAfter);
+	HTREEITEM AddFolderNode(Projects::Folder* folder, HTREEITEM hParent, HTREEITEM hInsertAfter);
 
 	LRESULT OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT OnEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	LRESULT OnOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnOpenAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 protected:
-	Projects::File*			lastFile;
+	HTREEITEM				hLastItem;
+	Projects::ProjectType*	lastItem;
 	Projects::Workspace*	workspace;
 };
 

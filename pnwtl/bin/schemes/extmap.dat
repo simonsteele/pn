@@ -33,4 +33,5 @@
 .schemedef=xml
 .tcl=tcl
 .java=java
+.pnproj=xml
 makefile=makefile

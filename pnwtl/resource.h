@@ -103,6 +103,17 @@
 #define ID_PROJECT_OPEN                 287
 #define ID_PROJECT_ADDFILES             288
 #define ID_FILE_OPENPROJECT             289
+#define IDR_POPUP_PROJECTFOLDER         290
+#define ID_DUMMY_ADDFILES               291
+#define ID_DUMMY_DELETE                 292
+#define ID_PROJECT_ADDFOLDER            293
+#define IDR_MENU2                       294
+#define IDR_POPUP_PROJECT               294
+#define ID_DUMMY_ADDFILES295            295
+#define ID_DUMMY_ADDFOLDER              296
+#define ID_PROJECT_REMOVEPROJECT        297
+#define ID_PROJECT_DELETEPROJECT        298
+#define ID_PROJECT_OPENALLFILES         299
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -261,7 +272,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        290
+#define _APS_NEXT_RESOURCE_VALUE        300
 #define _APS_NEXT_COMMAND_VALUE         32877
 #define _APS_NEXT_CONTROL_VALUE         1070
 #define _APS_NEXT_SYMED_VALUE           104

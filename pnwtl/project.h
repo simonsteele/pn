@@ -42,14 +42,20 @@ protected:
 class File : public ProjectType
 {
 	public:
-		File(LPCTSTR basePath, LPCTSTR path);
+		File(LPCTSTR basePath, LPCTSTR path, Projects::Folder* parent);
 
 		LPCTSTR GetDisplayName();
 		LPCTSTR GetFileName();
 
+		Folder* GetFolder();
+
+		bool Rename(LPCTSTR newFilePart);
+
 	protected:
 		tstring displayName;
 		tstring fullPath;
+		tstring relPath;
+		Folder*	parentFolder;
 };
 
 /**
@@ -62,11 +68,13 @@ class Folder : public ProjectType
 		Folder(LPCTSTR name_, LPCTSTR basepath);
 		~Folder();
 
+		void SetName(LPCTSTR name_);
 		LPCTSTR GetName();
+
 		LPCTSTR GetBasePath();
 
 		void AddChild(Folder* folder);
-		void AddFile(LPCTSTR file);
+		File* AddFile(LPCTSTR file);
 
 		const FOLDER_LIST&	GetFolders();
 		const FILE_LIST&	GetFiles();

@@ -108,13 +108,20 @@ public:
 	
 	tstring GetExtension();
 	tstring GetFileName();
+	tstring GetPath();
 	void GetPath(tstring& buf);							///< Return c:\temp\ of c:\temp\dat.dat
 	void GetFileName_NoExt(tstring& buf);				///< Return the filename part of c:\temp\filename.dat
 	void GetFileName(tstring& buf);						///< Return the filename.dat part of c:\temp\filename.dat
 	tstring& Sanitise();								///< Fix up the filename to standard form.
 
 	bool IsRelativePath();								///< Return true if it's a relative path.
+	tstring GetRelativePath(LPCTSTR path);				///< Return the relative path string required to get to path.
+	bool CanGetRelativePath(LPCTSTR path);				///< Return true if we can build a relative path to 'path'.
 	void Root(LPCTSTR rootPath);						///< Root the relative filename in rootPath.
+
+	bool IsSubElementOf(LPCTSTR path);					///< Return true if this file is below path in the file system.
+	bool PathIsParentElementOf(LPCTSTR path);			///< Return true if the path is below us in the file system.
+	
 
 	/**
 	 * GetFileAge returns the integer dos date of the

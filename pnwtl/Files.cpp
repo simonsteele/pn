@@ -340,17 +340,22 @@ int CFileName::GetLastDotPos(tstring* str)
 	}
 }
 
-void CFileName::GetPath(tstring& buf)
+tstring CFileName::GetPath()
 {
 	int pos = GetLastSlashPos();
 	if (pos != m_FileName.npos)
 	{
-		buf = m_FileName.substr(0, pos);
+		return m_FileName.substr(0, pos);
 	}
 	else
 	{
-		buf = "";
+		return _T("");
 	}
+}
+
+void CFileName::GetPath(tstring& buf)
+{
+	buf = GetPath();
 }
 
 /**
@@ -378,6 +383,48 @@ bool CFileName::IsRelativePath()
 		return false;
 
 	return true;
+}
+
+/**
+ * Get the relative path from path to us.
+ */
+tstring CFileName::GetRelativePath(LPCTSTR path)
+{
+	if(IsSubElementOf(path))
+	{
+		TCHAR slash;
+		int chopLen = _tcslen(path);
+		
+		if(_tcschr(path, _T('/')) != NULL)
+			slash = _T('/');
+		else
+			slash = _T('\\');
+
+		// We're walking down the tree...
+		if(path[_tcslen(path)-1] == slash)
+		{
+			chopLen++;
+		}
+
+        return m_FileName.substr(chopLen-1);
+	}
+	else if(PathIsParentElementOf(path))
+	{
+		//Cop out.
+		return m_FileName;
+	}
+	else
+	{
+		///@todo Add a relative filename thing to walk down if we're a sub-element of path.
+		
+		//Cop out.
+		return m_FileName;
+	}
+}
+
+bool CFileName::CanGetRelativePath(LPCTSTR path)
+{
+	return (IsSubElementOf(path) || PathIsParentElementOf(path));
 }
 
 /**
@@ -437,6 +484,27 @@ void CFileName::Root(LPCTSTR rootPath)
 	root += m_FileName;
 
 	m_FileName = root;
+}
+
+/**
+ * Find out if we're below path in the filesystem.
+ */
+bool CFileName::IsSubElementOf(LPCTSTR path)
+{
+	// This function simply checks if the path string passed in is
+	// the start of our filename string.
+	return (_tcsnicmp(m_FileName.c_str(), path, _tcslen(path)) == 0);
+}
+
+/**
+ * Find out if the path passed in is below us in the file system.
+ */
+bool CFileName::PathIsParentElementOf(LPCTSTR path)
+{
+	// This function simply checks if the path string passed in has our
+	// filename as its beginning.
+	tstring myPath = GetPath();
+	return (_tcsnicmp(path, myPath.c_str(), myPath.length()) == 0);
 }
 
 /**

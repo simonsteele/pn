@@ -640,7 +640,33 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Add Files...",               ID_PROJECT_ADDFILES
         MENUITEM "&Remove",                     ID_PROJECT_REMOVE
-        MENUITEM "&Delete",                     258
+        MENUITEM "&Delete",                     258, GRAYED
+    END
+END
+
+IDR_POPUP_PROJECTFOLDER MENU 
+BEGIN
+    POPUP "DUMMY"
+    BEGIN
+        MENUITEM "&Add Files",                  288
+        MENUITEM "&Add Folder",                 ID_PROJECT_ADDFOLDER
+        MENUITEM SEPARATOR
+        MENUITEM "&Remove",                     286
+    END
+END
+
+IDR_POPUP_PROJECT MENU 
+BEGIN
+    POPUP "PROJECT"
+    BEGIN
+        MENUITEM "&Add Files",                  288
+        MENUITEM "&Add Folder",                 293
+        MENUITEM SEPARATOR
+        MENUITEM "&Open All Files",             ID_PROJECT_OPENALLFILES
+        MENUITEM SEPARATOR
+        MENUITEM "&Remove Project",             ID_PROJECT_REMOVEPROJECT
+        MENUITEM "&Delete Project",             ID_PROJECT_DELETEPROJECT
+        , GRAYED
     END
 END
 

@@ -32,13 +32,29 @@ PROJECT_TYPE ProjectType::GetType()
 // File
 //////////////////////////////////////////////////////////////////////////////
 
-File::File(LPCTSTR basePath, LPCTSTR path) : ProjectType(ptFile)
+File::File(LPCTSTR basePath, LPCTSTR path, Projects::Folder* parent) : ProjectType(ptFile)
 {
 	CFileName fn(path);
-	fn.Root(basePath);
+
+	if(fn.IsRelativePath())
+	{
+		relPath = path;
+		fn.Root(basePath);
+	}
+	else
+	{
+		tstring actualPath = fn.GetPath();
+		if(actualPath != basePath)
+		{
+			// This will do its best to make a relative path, eventually
+			// giving up and returning the full path if it's unreasonable to make one.
+			relPath = fn.GetRelativePath(basePath);
+		}
+	}
 	
 	displayName = fn.GetFileName();
 	fullPath = fn;
+	parentFolder = parent;
 }
 
 LPCTSTR File::GetDisplayName()
@@ -49,6 +65,40 @@ LPCTSTR File::GetDisplayName()
 LPCTSTR File::GetFileName()
 {
 	return fullPath.c_str();
+}
+
+Projects::Folder* File::GetFolder()
+{
+	return parentFolder;
+}
+
+bool File::Rename(LPCTSTR newFilePart)
+{
+	CFileName fn(fullPath.c_str());
+	tstring path = fn.GetPath();
+	
+	CFileName fn2(newFilePart);
+	fn2.Root(path.c_str());
+
+	if( FileExists(fn2.c_str()) )
+	{
+		g_Context.m_frame->SetStatusText(_T("Cannot rename file, a file with the new name already exists."));
+	}
+	else
+	{
+		if( MoveFile(fullPath.c_str(), fn2.c_str()) != 0 )
+		{
+			fullPath = fn2;
+			displayName = newFilePart;
+			return true;
+		}
+		else
+		{
+			g_Context.m_frame->SetStatusText(_T("Rename file failed."));
+		}
+	}
+
+	return false;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -70,6 +120,11 @@ Folder::Folder(LPCTSTR name_, LPCTSTR basepath) : ProjectType(ptFolder)
 Folder::~Folder()
 {
 	Clear();
+}
+
+void Folder::SetName(LPCTSTR name_)
+{
+	name = name_;
 }
 
 LPCTSTR Folder::GetName()
@@ -97,10 +152,11 @@ void Folder::AddChild(Folder* folder)
 	children.insert(children.begin(), folder);
 }
 
-void Folder::AddFile(LPCTSTR file)
+File* Folder::AddFile(LPCTSTR file)
 {
-	File* pFile = new File(basePath.c_str(), file);
+	File* pFile = new File(basePath.c_str(), file, this);
 	files.insert(files.begin(), pFile);
+	return pFile;
 }
 
 void Folder::Clear()
