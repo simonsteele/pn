@@ -13,8 +13,6 @@
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include "atlres.h"
-#include "res/pn.rc2"
-
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -40,9 +38,7 @@ END
 
 2 TEXTINCLUDE 
 BEGIN
-    "#include ""atlres.h""\r\n"
-    "#include ""res/pn.rc2""\r\n"
-    "\0"
+    "#include ""atlres.h""\0"
 END
 
 #endif    // APSTUDIO_INVOKED
@@ -369,8 +365,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
 
 3 TEXTINCLUDE 
 BEGIN
-    "\r\n"
-    "\0"
+    "#include ""res/pn.rc2""\0"
 END
 
 #endif    // APSTUDIO_INVOKED
@@ -1552,8 +1547,7 @@ END
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
-
-
+#include "res/pn.rc2"
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

@@ -27,6 +27,7 @@ AppReadmeFile={app}\readme.txt
 UninstallDisplayIcon={app}\pn.exe
 UninstallDisplayName=Programmers Notepad 2
 WizardSmallImageFile=C:\Source\pnwtl\installer\small.bmp
+Compression=lzma/ultra
 
 [Tasks]
 Name: desktopicon; Description: Create a &desktop icon; GroupDescription: Additional icons:
@@ -41,6 +42,7 @@ Source: ..\bin\libexpat.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\bin\SciLexer.dll; DestDir: {app}; Flags: ignoreversion
 
 Source: ..\bin\schemes\*.scheme; DestDir: {app}\schemes
+Source: ..\bin\schemes\*.lexer; DestDir: {app}\schemes
 Source: ..\bin\schemes\extmap.dat; DestDir: {app}\schemes
 Source: ..\bin\clips\*.clips; DestDir: {app}\clips
 
