@@ -119,7 +119,7 @@ void SchemeRecorder::WriteHeader(LPCTSTR schemename, LPCTSTR schemetitle, int Fo
 		strcpy(&scHdr.Title[0], T2CA(schemetitle));
 	}
 
-	scHdr.Folding = FoldFlags;
+	scHdr.Flags = FoldFlags;
 
 	fwrite(&scHdr, sizeof(SchemeHdrRec), 1, m_out);
 }
@@ -986,28 +986,36 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 				pState->m_pCustom = NULL;
 			}
 			
-			int foldflags = 0;
+			int flags = 0;
 			
 			t = atts.getValue(_T("folding"));
 			if(t != NULL && PNStringToBool(t))
 			{
 				//fldEnabled = 1, fldCompact = 2, fldComments = 4, fldPreProc = 8
-				foldflags = fldEnabled;
+				flags |= fldEnabled;
 				
 				t = atts.getValue(_T("foldcompact"));
 				if(t != NULL && PNStringToBool(t))
-					foldflags |= fldCompact;
+					flags |= fldCompact;
 
 				t = atts.getValue(_T("foldcomments"));
 				if(t != NULL && PNStringToBool(t))
-					foldflags |= fldComments;
+					flags |= fldComments;
 
 				t = atts.getValue(_T("foldpreproc"));
 				if(t != NULL && PNStringToBool(t))
-					foldflags |= fldPreProc;
+					flags |= fldPreProc;
 			}
 
-			onLanguage(scheme, title, foldflags);
+			t = atts.getValue(_T("usetabs"));
+			if(t != NULL && PNStringToBool(t))
+				flags |= schUseTabs;
+
+			t = atts.getValue(_T("internal"));
+			if(t != NULL && PNStringToBool(t))
+				flags |= schInternal;
+
+			onLanguage(scheme, title, flags);
 			
 			pState->m_State = DOING_LANGUAGE_DETAILS;
 		}

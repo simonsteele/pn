@@ -25,11 +25,31 @@ class CPNMDIClient : public CTabbedMDIClient< CDotNetTabCtrl<CTabViewTabItem> >
 
 public:
 	BEGIN_MSG_MAP(CPNMDIClient)
+		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(UWM_MDICHILDACTIVATIONCHANGE, OnChildActivationChange)
 		MESSAGE_HANDLER(UWM_MDICHILDTABTEXTCHANGE, OnChildTabTextChange)
 		MESSAGE_HANDLER(WM_MDIDESTROY, OnMDIDestroy)
+		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnDblClick)		
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
+
+	BOOL SubclassWindow(HWND hWnd)
+	{
+		BOOL bSuccess = baseClass::SubclassWindow(hWnd);
+		
+		if(bSuccess)
+			SetClassLong(m_hWnd, GCL_STYLE,
+				GetClassLong(m_hWnd, GCL_STYLE) | CS_DBLCLKS);	
+
+		return bSuccess;
+	}
+
+	LRESULT OnDblClick(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+		// Forward the message
+		SendMessage(GetParent(), WM_LBUTTONDBLCLK, wParam, lParam);
+		return 0;
+	}
 
 	LRESULT OnMDIDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{

@@ -23,7 +23,9 @@ What's new?
 3) Basic Tools functionality. Configure from Options->Tools.
 4) CSS Scheme now works.
 5) Colourised output capturing in tools (configurable in Options->Schemes).
-6) Batch, Diff and Make files schemes.
+6) C#, JavaScript, Batch, Diff and makefile schemes.
+7) Double-click on MDI area to open file.
+8) General options page - Use Tabs & Show Indent Guides & Tab Width options.
 
 Please hammer the tools stuff, it uses threads and I'm worried 
 about a couple of the synchronisation bits. Please let me know 
@@ -50,12 +52,11 @@ Please don't moan about the following, they are all quite obvious to us already:
 
 1) Missing schemes from pn1.
 2) No project management.
-3) No tools.
-4) Toolbars aren't dockable.
-5) You can't turn the tabs off.
-6) Tools are currently only on a per-scheme basis, there are no global tools. This will change.
-7) Output current shows up as a new file type, and you can switch the highlighter to it. This is a bug.
-8) PN needs a "Monospaced Font" mode.
+3) Toolbars aren't dockable.
+4) You can't turn the tabs off.
+5) Tools are currently only on a per-scheme basis, there are no global tools. This will change.
+6) Output current shows up as a new file type, and you can switch the highlighter to it. This is a bug.
+7) PN needs a "Monospaced Font" mode.
 
 So what is good?
 ----------------

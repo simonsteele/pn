@@ -7,7 +7,8 @@
 			friend goto if inline int long mutable namespace new operator private protected public
 			register reinterpret_cast return short signed sizeof static static_cast struct switch
 			template this throw true try typedef typeid typename union unsigned using
-			virtual void volatile wchar_t while
+			virtual void volatile wchar_t while and and_eq bitand bitor compl not not_eq or
+			or_eq xor xor_eq
 		</keyword-class>
 		<keyword-class name="doxygen">
 			a addindex addtogroup anchor arg attention
@@ -21,8 +22,18 @@
 			test throw todo typedef union until
 			var verbatim verbinclude version warning weakgroup $ @ \ &amp; &lt; &gt; # { }
 		</keyword-class>
+		<keyword-class name="csharp">
+			abstract as base bool break byte case catch char checked class
+			const continue decimal default delegate do double else enum
+			event explicit extern false finally fixed float for foreach goto if
+			implicit in int interface internal is lock long namespace new null
+			object operator out override params private protected public
+			readonly ref return sbyte sealed short sizeof stackalloc static
+			string struct switch this throw true try typeof uint ulong
+			unchecked unsafe ushort using virtual void while
+		</keyword-class>
 	</keyword-classes>
-	<language name="cpp" title="C++" folding="true" foldcomments="true" foldcompact="true">
+	<language name="cpp" title="C++" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
 		<lexer name="cpp" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="cpp"/>
@@ -49,6 +60,67 @@
 			<style name="Keywords 2" key="16" fore="b00040"/>
 			<style name="Comment Doc Keyword" key="17" class="commentdoc" fore="3060a0"/>
 			<style name="Unknown Comment Doc Keyword" key="18" class="commentdoc" fore="804020"/>
+		</use-styles>
+	</language>
+
+	<language name="javascript" title="JavaScript" folding="true" foldcomments="true" foldcompact="true">
+		<lexer name="cpp" />
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="javascript"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="Whitespace" key="0" />
+			<style name="Comment" key="1" class="commentbox"/>
+			<style name="Comment Line" key="2" class="commentline"/>
+			<style name="Number" key="4" fore="colour.number"/>
+			<style name="Keyword" key="5" class="keyword"/>
+			<style name="String" key="6" fore="colour.string"/>
+			<style name="Character" key="7" fore="colour.char"/>
+			<style name="Operator" key="10" bold="true"/>
+			<style name="Identifier" key="11" />
+			<style name="End of line string" key="12" fore="000000" font="font.monospace" back="e0c0e0" eolfilled="true"/>
+			<!-- Unused cpp keywords: ???
+			<style name="Doc Comments" key="3" class="commentdoc"/>
+			<style name="UUID" key="8" fore="804080"/>
+			<style name="Preprocessor" key="9" class="preprocessor"/>
+			<style name="Verbatim" key="13" fore="007f00" font="font.monospace" back="e0ffe0" eolfilled="true"/>
+			<style name="RegEx" key="14" fore="3f7f3f" font="font.monospace" back="e0f0ff" eolfilled="true"/>
+			<style name="Comment Line Doc" key="15" class="commentdoc"/>
+			<style name="Keywords 2" key="16" fore="b00040"/>
+			<style name="Comment Doc Keyword" key="17" class="commentdoc" fore="3060a0"/>
+			<style name="Unknown Comment Doc Keyword" key="18" class="commentdoc" fore="804020"/>
+			-->
+		</use-styles>
+	</language>
+
+	<language name="csharp" title="C#" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="cpp" />
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="csharp"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="Whitespace" key="0" />
+			<style name="Comment" key="1" class="commentbox"/>
+			<style name="Comment Line" key="2" class="commentline"/>
+			<style name="Doc Comments" key="3" class="commentdoc"/>
+			<style name="Number" key="4" fore="colour.number"/>
+			<style name="Keyword" key="5" class="keyword"/>
+			<style name="String" key="6" fore="colour.string"/>
+			<style name="Character" key="7" fore="colour.char"/>
+			<style name="UUID" key="8" fore="804080"/>
+			<style name="Preprocessor" key="9" class="preprocessor"/>
+			<style name="Operator" key="10" bold="true"/>
+			<style name="Identifier" key="11" />
+			<style name="End of line string" key="12" fore="000000" font="font.monospace" back="e0c0e0" eolfilled="true"/>
+			<style name="Verbatim" key="13" fore="007f00" font="font.monospace" back="e0ffe0" eolfilled="true"/>
+			<style name="RegEx" key="14" fore="3f7f3f" font="font.monospace" back="e0f0ff" eolfilled="true"/>
+			<style name="Comment Line Doc" key="15" class="commentdoc"/>
+			<style name="Keywords 2" key="16" fore="b00040"/>
+			<!--
+			<style name="Comment Doc Keyword" key="17" class="commentdoc" fore="3060a0"/>
+			<style name="Unknown Comment Doc Keyword" key="18" class="commentdoc" fore="804020"/>-->
 		</use-styles>
 	</language>
 </Scheme>

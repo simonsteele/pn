@@ -29,6 +29,31 @@ class CPNColorButton : public CColorButton
 		}
 };
 
+class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
+							public CWinDataExchange<COptionsPageGeneral>
+{
+	public:
+		BEGIN_MSG_MAP(COptionsPageGeneral)
+			REFLECT_NOTIFICATIONS()
+		END_MSG_MAP()
+		enum { IDD = IDD_PAGE_GENERAL };
+
+		BEGIN_DDX_MAP(COptionsPageGeneral)
+			DDX_CHECK(IDC_OPT_INDENTGUIDESCHECK, m_bIndentGuides)
+			DDX_CHECK(IDC_OPT_USETABSCHECK, m_bUseTabs)
+			DDX_UINT(IDC_OPT_TABWIDTHEDIT, m_iTabWidth)
+		END_DDX_MAP()
+
+		virtual void OnOK();
+		virtual void OnInitialise();
+		virtual LPCTSTR GetTreePosition();
+
+	protected:
+		BOOL m_bUseTabs;
+		BOOL m_bIndentGuides;
+		UINT m_iTabWidth;
+};
+
 class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 {
 	public:

@@ -340,9 +340,6 @@
 			Name="Include"
 			Filter="">
 			<File
-				RelativePath="include\BrowseForFolder.cpp">
-			</File>
-			<File
 				RelativePath="include\ColorButton.cpp">
 			</File>
 			<File

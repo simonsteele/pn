@@ -803,6 +803,19 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,6,96,84,12
 END
 
+IDD_PAGE_GENERAL DIALOGEX 0, 0, 299, 168
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "Show Indentation Guides",IDC_OPT_INDENTGUIDESCHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,24,168,12
+    CONTROL         "Use the tab character for indentation",
+                    IDC_OPT_USETABSCHECK,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,6,42,168,12
+    LTEXT           "Default tab width:",IDC_STATIC,6,60,66,12
+    EDITTEXT        IDC_OPT_TABWIDTHEDIT,72,60,40,14,ES_AUTOHSCROLL
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -880,6 +893,14 @@ BEGIN
         RIGHTMARGIN, 279
         TOPMARGIN, 7
         BOTTOMMARGIN, 155
+    END
+
+    IDD_PAGE_GENERAL, DIALOG
+    BEGIN
+        LEFTMARGIN, 2
+        RIGHTMARGIN, 296
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 166
     END
 END
 #endif    // APSTUDIO_INVOKED

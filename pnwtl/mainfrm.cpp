@@ -371,6 +371,13 @@ LRESULT CMainFrame::OnInitMenuPopup(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 	return DefWindowProc(uMsg, wParam, lParam);
 }
 
+LRESULT CMainFrame::OnDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	BOOL b;
+	OnFileOpen(0, 0, 0, b);
+	return 0;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Command Handlers...
 
@@ -499,7 +506,10 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 {		
 	CSchemeManager* pSM = CSchemeManager::GetInstance();
 
+	COptionsPageGeneral		general;
+
 	SchemeConfigParser		schemeconfig;
+	
 	COptionsPageStyle		page(&schemeconfig);
 	COptionsPageSchemes		page2(&schemeconfig);
 	COptionsPageTools		page3(&schemeconfig);
@@ -507,9 +517,11 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	schemeconfig.LoadConfig(pSM->GetPath(), pSM->GetCompiledPath());
 
 	COptionsDialog options;
+	options.AddPage(&general);
 	options.AddPage(&page);
 	options.AddPage(&page2);
 	options.AddPage(&page3);
+	
 	bool bOK = options.DoModal() == IDOK;
 
 	if(bOK)

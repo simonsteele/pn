@@ -238,7 +238,7 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 		// process...
 		SetupScintilla(sc);
 
-		if(hdr.Folding & fldEnabled)
+		if(hdr.Flags & fldEnabled)
 		{
 			///@todo obviously these details need to come from settings somewhere...
 			sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold"), (LPARAM)_T("1"));
@@ -249,14 +249,17 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 			sc.SPerform(SCI_SETFOLDFLAGS, 16, 0);
 			sc.SetFoldingMargins(efsVSNet);
 
-			sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.compact"), (LPARAM)((hdr.Folding & fldCompact) ? _T("1") : _T("0")));
+			sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.compact"), (LPARAM)((hdr.Flags & fldCompact) ? _T("1") : _T("0")));
 			
-			if(hdr.Folding & fldComments)
+			if(hdr.Flags & fldComments)
 				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.comment"), (LPARAM)_T("1"));
 
-			if(hdr.Folding & fldPreProc)
+			if(hdr.Flags & fldPreProc)
 				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.preprocessor"), (LPARAM)_T("1"));
 		}
+
+		if(hdr.Flags & schUseTabs)
+			sc.SPerform(SCI_SETUSETABS, 1, 0);
 
 		while (cfile.GetPosition() < cfile.GetLength())
 		{
@@ -305,12 +308,9 @@ void CScheme::SetupScintilla(CScintilla& sc)
 	//sc.SPerform(SCI_SETEOLMODE, options.LineEndings);
 
 	// Line Indentation...
-	if (options.ShowIndentGuides)
-	{
-		///@todo Specify indentation guides colours?
-		sc.SPerform(SCI_SETINDENTATIONGUIDES, 1);
-	}
-
+	///@todo Specify indentation guides colours?
+	sc.SPerform(SCI_SETINDENTATIONGUIDES, (options.ShowIndentGuides ? 1 : 0));
+	sc.SPerform(SCI_SETUSETABS, options.UseTabs ? 1 : 0);
 	sc.SPerform(SCI_SETTABWIDTH, options.TabWidth);
 
 	// Set even treatment of left and right caret positioning, and sloppy behaviour. 

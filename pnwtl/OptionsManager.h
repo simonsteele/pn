@@ -45,6 +45,7 @@ class COptionsManager
 
 	// Class Members
 	public:
+		bool UseTabs;
 		int TabWidth;
 		bool ShowIndentGuides;
 		EPNSaveFormat LineEndings;

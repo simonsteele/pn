@@ -76,6 +76,7 @@
 #define IDD_TAB_STYLES1                 425
 #define IDD_TAB_KEYWORDS                425
 #define IDD_PAGE_TOOLS                  426
+#define IDD_PAGE_GENERAL                427
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_GOTOEDIT                    1004
@@ -93,6 +94,8 @@
 #define IDC_KEYWORDS_KEYWORDTEXT        1011
 #define IDC_TOOLS_EDITBUTTON            1011
 #define IDC_TE_NAMEEDIT                 1011
+#define IDC_EDIT_TABWIDTH               1011
+#define IDC_OPT_TABWIDTHEDIT            1011
 #define IDC_FONT_COMBO                  1012
 #define IDC_TOOLS_REMOVEBUTTON          1012
 #define IDC_TE_BROWSEBUTTON             1012
@@ -131,6 +134,8 @@
 #define IDC_TEXTTITLE                   1045
 #define IDC_VERSIONSTATIC               1046
 #define IDC_TE_CAPTURECHECK             1047
+#define IDC_OPT_INDENTGUIDESCHECK       1048
+#define IDC_OPT_USETABSCHECK            1049
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_PNSAVE_TYPECOMBO            1057
 #define IDC_MARKALL_BUTTON              21199
@@ -178,7 +183,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        261
 #define _APS_NEXT_COMMAND_VALUE         32791
-#define _APS_NEXT_CONTROL_VALUE         1048
+#define _APS_NEXT_CONTROL_VALUE         1051
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

@@ -128,6 +128,35 @@ void CStyleDisplay::UpdateFont()
 }
 
 //////////////////////////////////////////////////////////////////////////////
+// COptionsPageGeneral
+//////////////////////////////////////////////////////////////////////////////
+
+LPCTSTR COptionsPageGeneral::GetTreePosition()
+{
+	return _T("General");
+}
+
+void COptionsPageGeneral::OnOK()
+{
+	DoDataExchange(TRUE);
+
+	COptionsManager& options = COptionsManager::GetInstanceRef();
+	options.ShowIndentGuides = m_bIndentGuides != FALSE;
+	options.UseTabs = m_bUseTabs != FALSE;
+	options.TabWidth = m_iTabWidth;
+}
+
+void COptionsPageGeneral::OnInitialise()
+{
+	COptionsManager& options = COptionsManager::GetInstanceRef();
+	m_bIndentGuides = options.ShowIndentGuides;
+	m_bUseTabs = options.UseTabs;
+	m_iTabWidth = options.TabWidth;
+
+	DoDataExchange();
+}
+
+//////////////////////////////////////////////////////////////////////////////
 // CTabPageKeywords
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1273,15 +1302,15 @@ LRESULT CToolEditorDialog::OnBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 {	
 	DoDataExchange(TRUE);
 
-	CBrowseForFolder bff(m_hWnd, _T("Select a Folder"));
+	CFolderDialog dlg;
+	dlg.m_bi.ulFlags |= BIF_USENEWUI;
 	
-	if(m_csFolder.Find(_T('%')) == -1)
-		bff.SetInitialSelection(m_csFolder);
-	if(bff.SelectFolder())
+	if( dlg.DoModal() == IDOK )
 	{
-		m_csFolder = bff.GetSelectedFolder();
+		m_csFolder = dlg.GetFolderPath();
 		DoDataExchange();
 	}
+
 	return 0;
 }
 

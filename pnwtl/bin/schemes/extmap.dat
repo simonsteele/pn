@@ -21,3 +21,5 @@
 .cmd=batch
 .patch=diff
 .diff=diff
+.cs=csharp
+.js=javascript

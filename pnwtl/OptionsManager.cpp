@@ -38,6 +38,7 @@ void COptionsManager::Load()
 	ShowIndentGuides = reg.ReadBool(_T("IndentationMarkers"), true);
 	LineEndings = (EPNSaveFormat)reg.ReadInt(_T("DefaultLineEndings"), PNSF_Windows);
 	TabWidth = reg.ReadInt(_T("TabWidth"), 4);
+	UseTabs = reg.ReadBool(_T("UseTabs"), true);
 
 	// Find and Replace Settings ------------
 
@@ -66,6 +67,7 @@ void COptionsManager::Save()
 	reg.WriteBool(_T("IndentationMarkers"), ShowIndentGuides);
 	reg.WriteInt(_T("DefaultLineEndings"), LineEndings);
 	reg.WriteInt(_T("TabWidth"), TabWidth);
+	reg.WriteBool(_T("UseTabs"), UseTabs);
 	
 	//cs = root + _T("Interface Settings");
 	//reg.OpenKey(cs, true);

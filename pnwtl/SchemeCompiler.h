@@ -41,7 +41,7 @@ typedef struct
 {
 	char Name[SC_HDR_NAMESIZE];
 	char Title[SC_HDR_TITLESIZE];
-	int Folding;
+	UINT Flags;
 } SchemeHdrRec;
 
 typedef struct
@@ -62,7 +62,8 @@ typedef struct
 
 typedef enum {ttFontName, ttKeywords, ttLexerLanguage} eTextType;
 typedef enum {nrMsgRec, nrTextRec} eNextRec;
-typedef enum {fldEnabled = 1, fldCompact = 2, fldComments = 4, fldPreProc = 8} eFoldFlags;
+typedef enum {fldEnabled = 0x01, fldCompact = 0x02, fldComments = 0x04, fldPreProc = 0x08} eFoldFlags;
+typedef enum {schUseTabs = 0x10, schInternal = 0x20} eSchemeFlags;
 //typedef enum {ovrTabWidth = 1, ovrIndentGuides = 2} eOverrideFlags;
 
 // Parser State Defines
