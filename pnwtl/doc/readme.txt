@@ -1,6 +1,6 @@
 ========================================
 Release Name: 2.0.4.2
-Build: 2.0.4.15, Version Label: (none)
+Build: 2.0.4.18, Version Label: (none)
 ========================================
 
 What's new?
@@ -8,6 +8,7 @@ What's new?
 
 1) Re-organised general options page to clarify.
 2) Show full path in title bar option.
+3) Save none / one / all files on running a tool.
 
 Bug Fixes:
 ----------

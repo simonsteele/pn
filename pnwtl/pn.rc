@@ -326,7 +326,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,4,15
+ FILEVERSION 2,0,4,18
  PRODUCTVERSION 2,0,4,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -344,7 +344,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele (Echo Software)"
             VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.4.17"
+            VALUE "FileVersion", "2.0.4.18"
             VALUE "InternalName", "PNWTL"
             VALUE "LegalCopyright", "Copyright © 2002-2003 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"
