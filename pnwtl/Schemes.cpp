@@ -169,6 +169,173 @@ void CScheme::SetSchemeManager(CSchemeManager* pManager)
 	m_pManager = pManager;
 }
 
+bool CScheme::OpenCompiledFile(CFile& file, LPCTSTR filename)
+{
+	CFileName fn;
+
+	if(filename)
+	{
+		fn = filename;
+	}
+	else
+	{
+		if(m_SchemeFile)
+		{
+			fn = m_SchemeFile;
+		}
+		else
+			throw "No filename for scheme to be opened!";
+	}
+
+	return ( file.Open(fn.c_str(), 0) == TRUE );
+}
+
+/**
+ * This function allocates a list of StyleDetails objects containing
+ * the settings used by this scheme. The caller must free the list
+ * and the items contained within.
+ */
+STYLES_LIST* CScheme::CreateStylesList()
+{
+	CFile			cfile;
+	CompiledHdrRec	Header;
+	SchemeHdrRec	hdr;
+	TextRec			Txt;
+	MsgRec			Msg;
+	char			Next2;
+	char*			buf;
+
+	if(OpenCompiledFile(cfile))
+	{
+		cfile.Read(&Header, sizeof(CompiledHdrRec));
+		if(strcmp(Header.Magic, FileID) != 0)
+		{
+			// Can't read the file... never mind.
+			cfile.Close();
+			return NULL;
+		}
+
+		if(Header.Version != CompileVersion)
+		{
+			cfile.Close();
+			return  NULL;
+		}
+
+		cfile.Read(&hdr, sizeof(SchemeHdrRec));
+
+		long posFirstStyle = cfile.GetPosition();
+
+		STYLES_LIST* pList = new STYLES_LIST;
+		StyleDetails* pDefault = new StyleDetails;
+		StyleDetails* pS = NULL;
+		pDefault->Key = STYLE_DEFAULT;
+		pList->insert(pList->end(), pDefault);
+		int curStyle = -1;
+
+		// Find the default style...
+		while (cfile.GetPosition() < cfile.GetLength())
+		{
+			cfile.Read(&Next2, sizeof(char));
+			switch(Next2)
+			{
+				case nrMsgRec:
+				{
+					cfile.Read(&Msg, sizeof(MsgRec));
+					if(Msg.MsgNum == SCI_STYLESETBOLD || Msg.MsgNum == SCI_STYLESETITALIC ||
+						Msg.MsgNum == SCI_STYLESETUNDERLINE || Msg.MsgNum == SCI_STYLESETSIZE ||
+						Msg.MsgNum == SCI_STYLESETFORE || Msg.MsgNum == SCI_STYLESETBACK ||
+						Msg.MsgNum == SCI_STYLESETEOLFILLED)
+					{
+						if(Msg.wParam != curStyle)
+						{
+							if(Msg.wParam == STYLE_DEFAULT)
+							{
+								pS = pDefault;
+							}
+							else
+							{
+								pS = new StyleDetails(*pDefault);
+								pS->Key = Msg.wParam;
+								pList->insert(pList->end(), pS);
+							}
+							curStyle = Msg.wParam;
+						}
+						
+						switch(Msg.MsgNum)
+						{
+						case SCI_STYLESETBOLD:
+							pS->Bold = (Msg.lParam != 0);
+							break;
+						case SCI_STYLESETITALIC:
+							pS->Italic = (Msg.lParam != 0);
+							break;
+						case SCI_STYLESETUNDERLINE:
+							pS->Underline = (Msg.lParam != 0);
+							break;
+						case SCI_STYLESETSIZE:
+							pS->FontSize = Msg.lParam;
+							break;
+						case SCI_STYLESETFORE:
+							pS->ForeColor = Msg.lParam;
+							break;
+						case SCI_STYLESETBACK:
+							pS->BackColor = Msg.lParam;
+							break;
+						case SCI_STYLESETEOLFILLED:
+							pS->EOLFilled = (Msg.lParam != 0);
+							break;
+						};
+					}
+				}
+				break;
+
+				case nrTextRec:
+				{
+					cfile.Read(&Txt, sizeof(TextRec));
+					if(Txt.TextType == ttFontName)
+					{
+						if(Txt.wParam != curStyle)
+						{
+							if(Txt.wParam == STYLE_DEFAULT)
+							{
+								pS = pDefault;
+							}
+							else
+							{
+								pS = new StyleDetails(*pDefault);
+								pS->Key = Txt.wParam;
+								pList->insert(pList->end(), pS);
+							}
+							curStyle = Txt.wParam;
+						}
+
+						buf = new char[Txt.TextLength + 1];
+						cfile.Read(buf, Txt.TextLength * sizeof(char));
+						buf[Txt.TextLength] = '\0';
+						switch(Txt.TextType)
+						{
+							case ttFontName : 
+								pS->FontName = buf;
+								break;
+						}
+						delete [] buf;
+						buf = NULL;
+					}
+					else 
+						cfile.Seek(Txt.TextLength * sizeof(char), CFile::current);
+				}
+				break;
+			}
+		}
+
+		cfile.Close();
+
+		return pList;
+	}
+
+	return NULL;
+}
+
 void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 {
 	CFile cfile;
@@ -179,19 +346,7 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 	char *buf = NULL;
 	char Next2;
 
-	CFileName fn;
-
-	if(filename)
-		fn = filename;
-	else
-		if(m_SchemeFile)
-		{
-			fn = m_SchemeFile;
-		}
-		else
-			throw "No filename for scheme to be opened!";
-
-	if (cfile.Open(fn.c_str(), 0) == TRUE)
+	if( OpenCompiledFile(cfile, filename) )
 	{
 		cfile.Read(&Header, sizeof(CompiledHdrRec));
 		if(strcmp(Header.Magic, FileID) != 0)
@@ -207,15 +362,19 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 			// Attempt to compile me...
 			m_pManager->Compile();
 			
-			cfile.Open(fn.c_str(), 0);
-			cfile.Read(&Header, sizeof(CompiledHdrRec));
-			if(strcmp(Header.Magic, FileID) != 0 || Header.Version != CompileVersion)
+			if( OpenCompiledFile(cfile, filename) )
 			{
-				// Not the right version, and compiling didn't help:
-				cfile.Close();
-				throw "Not the right kinda file...";
+				cfile.Read(&Header, sizeof(CompiledHdrRec));
+				if(strcmp(Header.Magic, FileID) != 0 || Header.Version != CompileVersion)
+				{
+					// Not the right version, and compiling didn't help:
+					cfile.Close();
+					throw "Not the right kinda file...";
+					return;
+				}
+			}
+			else
 				return;
-			}	
 		}
 
 		cfile.Read(&hdr, sizeof(SchemeHdrRec));

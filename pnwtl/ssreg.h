@@ -32,7 +32,7 @@ class CSRegistry
 		int ReadInt(LPCTSTR valname, int defaultval = 0);
 
 		void WriteString(LPCTSTR valname, LPCTSTR value);
-		bool ReadString(LPCTSTR valname, ctcString& value);
+		bool ReadString(LPCTSTR valname, tstring& value);
 
 		void WriteBool(LPCTSTR valname, bool value);
 		bool ReadBool(LPCTSTR valname, bool defaultval = false);

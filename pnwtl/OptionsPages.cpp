@@ -451,7 +451,7 @@ void CTabPageStyles::SetScheme(SchemeConfig* pScheme)
 	
 	while(pColl)
 	{
-		for(SL_IT i = pColl->m_Styles.begin(); i != pColl->m_Styles.end(); ++i)
+		for(SL_CIT i = pColl->StylesBegin(); i != pColl->StylesEnd(); ++i)
 		{
 			HTREEITEM hi = m_tree.InsertItem((*i)->name.c_str(), insertunder, TVI_LAST);
 			m_tree.SetItemData(hi, reinterpret_cast<DWORD_PTR>(*i));
@@ -731,7 +731,7 @@ void CTabPageStyles::UpdateStyle()
 	{
 		/* If we have set the style to be like the original, then
 			we can safely remove any custom styles. */
-		m_pScheme->m_customs.RemoveStyle(m_Style.Key);
+		m_pScheme->m_customs.DeleteStyle(m_Style.Key);
 	}
 }
 
@@ -793,7 +793,7 @@ LRESULT CTabPageStyles::OnResetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 			}
 			else
 			{
-				m_pScheme->m_customs.RemoveStyle(m_pStyle->Key);
+				m_pScheme->m_customs.DeleteStyle(m_pStyle->Key);
 			}
 			m_pStyle = NULL;
 		}
@@ -1402,9 +1402,9 @@ void COptionsPageNewFiles::OnInitialise()
 	// Populate SmartStart list.
 	STRING_MAP& smap = SmartStart::GetInstance()->GetMap();
 	
-	for(SM_IT i = smap.begin(); i != smap.end(); ++i)
+	for(SM_IT j = smap.begin(); j != smap.end(); ++j)
 	{
-		AddItem((*i).first.c_str(), (*i).second.c_str());
+		AddItem((*j).first.c_str(), (*j).second.c_str());
 	}
 	
 	EnableButtons();

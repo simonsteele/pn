@@ -142,7 +142,7 @@ public:
 
 	LRESULT OnGetDlgCode(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
-		return DLGC_HASSETSEL | DLGC_WANTARROWS;
+		return DLGC_HASSETSEL | DLGC_WANTARROWS | DLGC_WANTCHARS;
 	}
 };
 

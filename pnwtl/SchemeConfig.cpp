@@ -12,7 +12,7 @@ CustomStyleCollection::CustomStyleCollection()
 
 CustomStyleCollection::~CustomStyleCollection()
 {
-	RemoveAll();
+	ClearStyles();
 
 	if(m_pNext)
 		delete m_pNext;
@@ -28,25 +28,19 @@ void CustomStyleCollection::SetNext(CustomStyleCollection* pNext)
 	m_pNext = pNext;
 }
 
-void CustomStyleCollection::AddStyle(StyleDetails* pStyle)
+/*void CustomStyleCollection::AddStyle(StyleDetails* pStyle)
 {
-	m_Styles.insert(m_Styles.end(), pStyle);
-}
+	m_Styles.AddStyle(pStyle);
+}*/
 
 /**
  * This function will find a style if it exists in this
  * CustomStyleCollection instance.
  */
-StyleDetails* CustomStyleCollection::GetStyle(int key)
+/*StyleDetails* CustomStyleCollection::GetStyle(int key)
 {
-	for(SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
-	{
-		if( (*i)->Key == key )
-			return (*i);
-	}
-
-	return NULL;
-}
+	return m_Styles.GetStyle(key);
+}*/
 
 /**
  * This function will find a style if it exists in this, or any
@@ -63,22 +57,17 @@ StyleDetails* CustomStyleCollection::FindStyle(int key)
 	return pS;
 }
 
-void CustomStyleCollection::RemoveStyle(int key)
+/*void CustomStyleCollection::RemoveStyle(int key)
 {
 	StyleDetails* pS = GetStyle(key);
 	if(pS)
-		m_Styles.remove(pS);
-	delete pS;
-}
+		m_Styles.DeleteStyle(pS);
+}*/
 
-void CustomStyleCollection::RemoveAll()
+/*void CustomStyleCollection::RemoveAll()
 {
-	for(SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
-	{
-		delete (*i);
-	}
-	m_Styles.clear();
-}
+	m_Styles.DeleteAllStyles();
+}*/
 
 void CustomStyleCollection::SetName(LPCTSTR name)
 {
@@ -182,7 +171,7 @@ void SchemeConfig::RemoveCustomStyleClass(const CString& name)
 
 void SchemeConfig::UpdateGroupedStyles(CustomStyleCollection* pColl, StyleDetails* pUpdatedClass)
 {
-	for(SL_IT i = pColl->m_Styles.begin(); i != pColl->m_Styles.end(); ++i)
+	for(SL_CIT i = pColl->StylesBegin(); i != pColl->StylesEnd(); ++i)
 	{
 		StyleDetails* pStyle = (*i);
 
@@ -207,7 +196,7 @@ void SchemeConfig::UpdateGroupedStyles(CustomStyleCollection* pColl, StyleDetail
 void SchemeConfig::ResetAll()
 {
 	// Remove all custom styles
-	m_customs.RemoveAll();
+	m_customs.DeleteAllStyles();
 
 	// Remove all custom style class explicitly linked to groups, assuming we don't have one.
 	CustomStyleCollection* pColl = m_pNext;
@@ -405,7 +394,7 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 	{
         file.Write(USERSETTINGS_CLASSES_START, strlen(USERSETTINGS_CLASSES_START));
 
-		ctcString name;
+		tstring name;
 		STYLEDETAILS_NAMEMAP& map = GetCustomClasses().GetMap();
 		for(SDNM_IT j = map.begin(); j != map.end(); ++j)
 		{
@@ -436,7 +425,7 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 		{
 			CustomKeywordSet* pKeywordSet = (*i)->m_cKeywords.GetFirstKeywordSet();
 
-			bool bCustomised = ((*i)->m_customs.m_Styles.size() != 0) ||
+			bool bCustomised = ((*i)->m_customs.StylesCount() != 0) ||
 				(pKeywordSet != NULL);
 
 			if(!bCustomised)
@@ -461,12 +450,12 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 				file.Write(USERSETTINGS_KEYWORDS_END, strlen(USERSETTINGS_KEYWORDS_END));
 			}
 
-			if((*i)->m_customs.m_Styles.size() != 0)
+			if((*i)->m_customs.StylesCount() != 0)
 			{
 				// Styles
 				file.Write(USERSETTINGS_STYLES_START, strlen(USERSETTINGS_STYLES_START));
-				for(SL_IT j = (*i)->m_customs.m_Styles.begin();
-					j != (*i)->m_customs.m_Styles.end();
+				for(SL_CIT j = (*i)->m_customs.StylesBegin();
+					j != (*i)->m_customs.StylesEnd();
 					++j)
 				{
 					StyleDetails* pOriginal = (*i)->FindStyle( (*j)->Key );

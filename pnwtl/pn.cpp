@@ -30,8 +30,8 @@ HWND GetCurrentEditor()
 void Init()
 {
 	// Where are the Schemes stored?
-	ctcString path;
-	ctcString cpath;
+	tstring path;
+	tstring cpath;
 	COptionsManager::GetInstance()->GetSchemesPaths(path, cpath);
 
 	CSchemeManager& SM = CSchemeManager::GetInstanceRef();

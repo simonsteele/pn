@@ -831,7 +831,7 @@ void CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 		{
 			m_FileAge = FileAge(pathname);
 
-			ctcString fn;
+			tstring fn;
 			CFileName(pathname).GetFileName(fn);
 
 			SetTitle(fn.c_str());

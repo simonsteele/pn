@@ -103,11 +103,19 @@ SOURCE=.\mainfrm.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\OptionsDialogs.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\OptionsManager.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\OptionsPages.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\outputview.cpp
 # End Source File
 # Begin Source File
 

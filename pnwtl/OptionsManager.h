@@ -64,7 +64,7 @@ class COptionsManager
 		void SavePrintSettings(SPrintOptions* pSettings);
 		void LoadPrintSettings(SPrintOptions* pSettings);
 		
-		void GetSchemesPaths(ctcString& path, ctcString& compiledPath);
+		void GetSchemesPaths(tstring& path, tstring& compiledPath);
 		void GetPNPath(tstring& path, int pathtype = PNPATH_PN);
 		
 		SFindOptions*		GetFindOptions(){return &m_FindOptions;}

@@ -29,8 +29,8 @@ COptionsManager::~COptionsManager()
 void COptionsManager::Load()
 {
 	CSRegistry reg;
-	ctcString root(pnregroot);
-	ctcString cs(root);
+	tstring root(pnregroot);
+	tstring cs(root);
 	
 	// Editor Settings ----------------------
 	cs += PNSK_EDITOR;
@@ -61,8 +61,8 @@ void COptionsManager::Load()
 void COptionsManager::Save()
 {
 	ssreg::CSRegistry reg;
-	ctcString root(pnregroot);
-	ctcString cs;
+	tstring root(pnregroot);
+	tstring cs;
 
 	// Editor Settings ----------------------
 	cs = root + _T("Editor Settings");
@@ -82,7 +82,7 @@ void COptionsManager::Save()
 bool COptionsManager::Get(LPCTSTR subkey, LPCTSTR value, bool bDefault)
 {
 	CSRegistry reg;
-	ctcString root(pnregroot);
+	tstring root(pnregroot);
 	root += subkey;
 
 	reg.OpenKey(root.c_str());
@@ -92,7 +92,7 @@ bool COptionsManager::Get(LPCTSTR subkey, LPCTSTR value, bool bDefault)
 int COptionsManager::Get(LPCTSTR subkey, LPCTSTR value, int iDefault)
 {
 	CSRegistry reg;
-	ctcString root(pnregroot);
+	tstring root(pnregroot);
 	root += subkey;
 
 	reg.OpenKey(root.c_str());
@@ -115,7 +115,7 @@ tstring COptionsManager::Get(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
 void COptionsManager::Set(LPCTSTR subkey, LPCTSTR value, bool bVal)
 {
 	CSRegistry reg;
-	ctcString root(pnregroot);
+	tstring root(pnregroot);
 	root += subkey;
 
 	reg.OpenKey(root.c_str());
@@ -125,7 +125,7 @@ void COptionsManager::Set(LPCTSTR subkey, LPCTSTR value, bool bVal)
 void COptionsManager::Set(LPCTSTR subkey, LPCTSTR value, int iVal)
 {
 	CSRegistry reg;
-	ctcString root(pnregroot);
+	tstring root(pnregroot);
 	root += subkey;
 
 	reg.OpenKey(root.c_str());
@@ -145,7 +145,7 @@ void COptionsManager::Set(LPCTSTR subkey, LPCTSTR value, LPCTSTR szVal)
 void COptionsManager::SavePrintSettings(SPrintOptions* pSettings)
 {
 	CSRegistry reg;
-	ctcString root(pnregroot);
+	tstring root(pnregroot);
 	root += PNSK_PRINT;
 
 	if ( reg.OpenKey(root.c_str()) )
@@ -160,7 +160,7 @@ void COptionsManager::SavePrintSettings(SPrintOptions* pSettings)
 void COptionsManager::LoadPrintSettings(SPrintOptions* pSettings)
 {
 	CSRegistry reg;
-	ctcString root(pnregroot);
+	tstring root(pnregroot);
 	root += PNSK_PRINT;
 
 	if ( reg.OpenKey(root.c_str()) )
@@ -202,7 +202,7 @@ BOOL PNGetSpecialFolderPath (LPTSTR path, int folder)
 {
     ITEMIDLIST *pidl;		// Shell Item ID List ptr
     IMalloc    *imalloc;	// Shell IMalloc interface ptr
-    BOOL result;			// Return value
+    BOOL		result;		// Return value
 
     if (SHGetSpecialFolderLocation (NULL, folder, &pidl) != NOERROR)
         return FALSE;
@@ -217,7 +217,7 @@ BOOL PNGetSpecialFolderPath (LPTSTR path, int folder)
     return result;
 }
 
-void COptionsManager::GetSchemesPaths(ctcString& path, ctcString& compiledPath)
+void COptionsManager::GetSchemesPaths(tstring& path, tstring& compiledPath)
 {
 	GetPNPath(path, PNPATH_SCHEMES);
 	GetPNPath(compiledPath, PNPATH_USERSETTINGS);

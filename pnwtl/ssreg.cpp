@@ -167,7 +167,7 @@ void CSRegistry::WriteString(LPCTSTR valname, LPCTSTR value)
 	}
 }
 
-bool CSRegistry::ReadString(LPCTSTR valname, ctcString& value)
+bool CSRegistry::ReadString(LPCTSTR valname, tstring& value)
 {
 	if(!m_open) throw "CSRegistry Exception - no open key.";
 

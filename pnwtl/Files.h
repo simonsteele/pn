@@ -43,6 +43,12 @@ class CFile
 			modeText			= 0x0008
 		};
 
+		enum EFrom {
+			current		= SEEK_CUR, // Current position of file pointer. 
+			end			= SEEK_END, // End of file. 
+			begin		= SEEK_SET	// Beginning of file.
+		};
+
 		CFile();
 		virtual ~CFile();
 		
@@ -50,6 +56,7 @@ class CFile
 		int Read(void* lpBuf, UINT nCount);
 		int Write(void* lpBuf, UINT nCount);
 		void Close();
+		void Seek(UINT offset, EFrom from = begin);
 
 		int ShowError(LPCTSTR filename, bool bOpen = true);
 

@@ -156,6 +156,12 @@ long CFile::GetPosition() const
 		return -1;
 }
 
+void CFile::Seek(UINT offset, CFile::EFrom from)
+{
+	if(m_file)
+		fseek(m_file, offset, (int)from);
+}
+
 long CFile::GetLength()
 {
 	if(m_file)

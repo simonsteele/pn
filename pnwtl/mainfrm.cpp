@@ -69,7 +69,7 @@ void CMainFrame::OpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme)
 	}
 	else
 	{
-		ctcString buf;
+		tstring buf;
 		CFileName(pathname).GetFileName(buf);
 		
 		pChild->PNOpenFile(pathname, buf.c_str(), pScheme);

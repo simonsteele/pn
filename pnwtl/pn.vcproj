@@ -163,6 +163,9 @@
 				RelativePath="childfrm.cpp">
 			</File>
 			<File
+				RelativePath="exporters.cpp">
+			</File>
+			<File
 				RelativePath="mainfrm.cpp">
 			</File>
 			<File
@@ -252,6 +255,9 @@
 			</File>
 			<File
 				RelativePath=".\aboutdlg.h">
+			</File>
+			<File
+				RelativePath="exporters.h">
 			</File>
 			<File
 				RelativePath=".\finddlg.h">

@@ -13,12 +13,16 @@
 		<keyword-class name="pascal_inclass">
 			read write override overload public protected private property published default
 		</keyword-class>
+		<keyword-class name="pascal_foldwords">
+			begin object case class record try
+		</keyword-class>
 	</keyword-classes>
 	<language name="pascal" title="Pascal" folding="true" foldcomments="true" foldcompact="false">
 		<lexer name="pascal" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="pascal"/>
 			<keyword key="1" name="Property Keywords" class="pascal_inclass"/>
+			<keyword key="2" name="Fold Start Words" class="pascal_foldwords"/>
 		</use-keywords>
 		<use-styles>
 			<style name="DEFAULT" key="32" />

@@ -423,7 +423,7 @@ void UserSettingsParser::processSchemeElement(CSchemeLoaderState* pState, LPCTST
 			StyleDetails* pStyle = new StyleDetails;
 			SchemeParser::parseStyle(pState, atts, pStyle, false);
 
-			pScheme->m_Styles.push_back(pStyle);
+			pScheme->AddStyle(pStyle);
 		}
 	}
 	else if (pState->m_State == US_KEYWORD_OVERRIDES)
@@ -560,7 +560,7 @@ void SchemeCompiler::onFile(LPCTSTR filename)
 	CSRegistry reg;
 	reg.OpenKey(_T("Software\\Echo Software\\PN2\\SchemeDates"), true);
 
-	ctcString filepart;
+	tstring filepart;
 	CFileName fn(filename);
 	fn.GetFileName(filepart);
 
@@ -870,7 +870,7 @@ void SchemeParser::processLanguageStyle(CSchemeLoaderState* pState, XMLAttribute
 	// Custom styles first (storing any custom version for later)...
 	if(pState->m_pCustom)
 	{
-		pCustom = pState->m_pCustom->FindStyle(key);
+		pCustom = pState->m_pCustom->GetStyle(key);
 		if(pCustom)
 		{
 			if(pCustom->values |= edvClass)

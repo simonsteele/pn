@@ -110,7 +110,7 @@ void CMRUList::LoadFromRegistry()
 	{
 		CSRegistry	reg;
 		TCHAR		buf[3];
-		ctcString	valbuf;
+		tstring		valbuf;
 
 		reg.OpenKey(m_regkey);
 

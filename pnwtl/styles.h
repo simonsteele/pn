@@ -23,6 +23,9 @@ typedef enum {edvFontName = 0x0001,	edvFontSize = 0x0002, edvForeColor = 0x0004,
 				edvBold = 0x0010, edvItalic = 0x0020, edvUnderline = 0x0040, edvEOLFilled = 0x0080, 
 				edvClass = 0x0100} EValuesSet;
 
+/** 
+ * @brief represents a single style as sent to Scintilla.
+ */
 class StyleDetails
 {
 	public:
@@ -116,6 +119,12 @@ class StyleDetails
 				;
 		}
 
+		/**
+		 * This sets any values that are not included in the values bitmask
+		 * to those in the update parameter.
+		 *
+		 * @param update source of the values to be copied.
+		 */
 		void updateUnmasked(StyleDetails& update)
 		{
 			if((values & edvFontName) == 0)
@@ -165,7 +174,119 @@ class StyleDetails
 
 typedef list<StyleDetails*>	STYLES_LIST;
 typedef STYLES_LIST::iterator SL_IT;
+typedef STYLES_LIST::const_iterator SL_CIT;
 
+/**
+ * Simple wrapper class for a list of StyleDetails objects. The class
+ * is designed to be aggregated into others, so the method names
+ * all include "Style" to make their purpose clear.
+ */
+class StylesList
+{
+public:
+	~StylesList()
+	{
+		ClearStyles();
+	}
+
+	/**
+	 * Orphan a StyleDetails object into the list.
+	 */
+	void AddStyle(StyleDetails* pStyle)
+	{
+		m_Styles.push_back(pStyle);
+	}
+
+	/**
+	 * Removes pStyle from the list, also @see DetachStyle
+	 */
+	void RemoveStyle(StyleDetails* pStyle)
+	{
+		m_Styles.remove(pStyle);
+	}
+
+	/**
+	 * Removes any style from the list with the style number "key".
+	 */
+	StyleDetails* RemoveStyle(int key)
+	{
+		StyleDetails* pS = GetStyle(key);
+		if(pS)
+			RemoveStyle(pS);
+		return pS;
+	}
+
+	/**
+	 * Deletes pStyle from the list.
+	 */
+	void DeleteStyle(StyleDetails* pStyle)
+	{
+		RemoveStyle(pStyle);
+		delete pStyle;
+	}
+
+	/**
+	 * Deletes a style with the style number "key" from the list.
+	 */
+	void DeleteStyle(int key)
+	{
+		StyleDetails* pS = RemoveStyle(key);
+		if(pS)
+			delete pS;
+	}
+
+	/**
+	 * Deletes all stored styles.
+	 */
+	void DeleteAllStyles()
+	{
+		ClearStyles();
+	}
+
+	/**
+	 * Find a StyleDetails given its style number (key)
+	 */
+	StyleDetails* GetStyle(int key)
+	{
+		for(SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
+		{
+			if((*i)->Key == key)
+				return *i;
+		}
+		return NULL;
+	}
+
+	SL_CIT StylesBegin()
+	{
+		return m_Styles.begin();
+	}
+
+	inline SL_CIT StylesEnd()
+	{
+		return m_Styles.end();
+	}
+
+	size_t StylesCount()
+	{
+		return m_Styles.size();
+	}
+
+	protected:
+		void ClearStyles()
+		{
+			for(SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
+			{
+				delete (*i);
+			}
+			m_Styles.clear();
+		}
+
+		STYLES_LIST	m_Styles;
+};
+
+/**
+ * @brief Represents a single set of keywords.
+ */
 class CustomKeywordSet
 {
 	public:
@@ -180,6 +301,7 @@ class CustomKeywordSet
 		CustomKeywordSet(const CustomKeywordSet& copy)
 		{
 			pNext = NULL;
+			pWords = NULL;
 
 			key = copy.key;
 			
@@ -198,6 +320,9 @@ class CustomKeywordSet
 		CustomKeywordSet* pNext;
 };
 
+/**
+ * @brief Collection class for a CustomKeywordSet instances.
+ */
 class CustomKeywordHolder
 {
 	public:
@@ -300,29 +425,13 @@ class CustomKeywordHolder
 		CustomKeywordSet* pLast;
 };
 
-class CustomisedScheme : public CustomKeywordHolder
+/**
+ * Aggregating class for keywords and styles - represents all the settings
+ * for a customised scheme when loaded from the user settings file.
+ */
+class CustomisedScheme : public CustomKeywordHolder, public StylesList
 {
-public:
-	~CustomisedScheme()
-	{
-		for(SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
-		{
-			delete (*i);
-		}
-		m_Styles.clear();
-	}
 
-	StyleDetails* FindStyle(int key)
-	{
-		for(SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
-		{
-			if((*i)->Key == key)
-				return *i;
-		}
-		return NULL;
-	}
-
-	STYLES_LIST	m_Styles;
 };
 
 typedef map<CString, CustomisedScheme*> CUSTOMISED_NAMEMAP;

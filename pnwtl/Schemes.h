@@ -37,6 +37,8 @@ class CScheme
 		~CScheme();
 
 		virtual void Load(CScintilla& sc, LPCTSTR filename = NULL);
+		
+		virtual STYLES_LIST* CreateStylesList();
 
 		virtual void SetName(LPCTSTR name);
 		virtual void SetTitle(LPCTSTR title);
@@ -72,6 +74,8 @@ class CScheme
 		TCHAR* m_Title;
 		CSchemeManager* m_pManager;
 
+		bool OpenCompiledFile(CFile& file, LPCTSTR filename = NULL);
+
 		void SetupScintilla(CScintilla& sc);
 		void Init();
 };
@@ -101,7 +105,7 @@ class CDefaultScheme : public CScheme
 
 typedef std::list<CScheme>				SCHEME_LIST;
 typedef SCHEME_LIST::iterator			SCIT;	 
-typedef std::map<ctcString, CScheme*>	SCHEME_MAP;
+typedef std::map<tstring, CScheme*>		SCHEME_MAP;
 typedef SCHEME_MAP::iterator			SCHEME_MAPIT;
 typedef SCHEME_MAP::value_type			SCMITEM;
 
@@ -143,9 +147,9 @@ class CSchemeManager
 		void SetCompiledPath(LPCTSTR compiledpath);
 
 		LPCTSTR GetPath(){return m_SchemePath;}
-		void GetPath(ctcString& csPath){if(m_SchemePath) csPath = m_SchemePath;}
+		void GetPath(tstring& csPath){if(m_SchemePath) csPath = m_SchemePath;}
 		LPCTSTR GetCompiledPath(){return m_CompiledPath;}
-		void GetCompiledPath(ctcString& csPath){if(m_CompiledPath) csPath = m_CompiledPath;}
+		void GetCompiledPath(tstring& csPath){if(m_CompiledPath) csPath = m_CompiledPath;}
 
 		void Load();
 		void Compile();

@@ -7,16 +7,17 @@
 /**
  * @brief collection of StyleDetails objects
  */
-class CustomStyleCollection
+class CustomStyleCollection : public StylesList
 {
 	_NO_COPY(CustomStyleCollection)
 	public:
 		CustomStyleCollection();
 		~CustomStyleCollection();
 
-		virtual void AddStyle(StyleDetails* pStyle);
-		void RemoveStyle(int key);
-		void RemoveAll();
+		//virtual void AddStyle(StyleDetails* pStyle);
+		//void RemoveStyle(int key);
+		//void RemoveAll();
+		//StyleDetails* GetStyle(int key);
 
 		CustomStyleCollection* GetNext();
 		void SetNext(CustomStyleCollection* pNext);
@@ -28,15 +29,14 @@ class CustomStyleCollection
 		LPCTSTR GetDescription();
 		LPCTSTR GetClassName();
 
-		StyleDetails* GetStyle(int key);
 		StyleDetails* FindStyle(int key);
 
-		STYLES_LIST	m_Styles;
+		//StylesList m_Styles;
 
 	protected:
-		ctcString m_name;
-		ctcString m_description;
-		ctcString m_classname; // for groups with classes.
+		tstring	m_name;
+		tstring	m_description;
+		tstring	m_classname; // for groups with classes.
 
 		CustomStyleCollection* m_pNext;
 };

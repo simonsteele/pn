@@ -7,19 +7,20 @@
 #define AFX_STDAFX_H__41A3A8B3_1419_494D_BBD8_4394DCE4A180__INCLUDED_
 
 // Change these values to use different versions
-#define WINVER		0x0500	// Changed to allow CDotNetTabCtrl to compile with COLOR_HOTLIGHT
-#define _WIN32_WINNT 0x0501
-
-#define _WIN32_IE	0x0400
+#define WINVER			0x0500	// Changed to allow CDotNetTabCtrl to compile with COLOR_HOTLIGHT
+#define _WIN32_WINNT	0x0501
+#define _WIN32_IE		0x0400
 #define _RICHEDIT_VER	0x0100
 
+// Implement debug mode memory allocation checking.
 #ifdef _DEBUG
 
 #define CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
 #define DEBUG_NEW  new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-#endif
+
+#endif // #ifdef _DEBUG
 
 #include <atlbase.h>
 #include <atlapp.h>
@@ -39,7 +40,6 @@ extern CAppModule _Module;
 
 #include <atlctrls.h>
 #include <atldlgs.h>
-//#include <atlcrack.h>
 #include <atlframe.h>
 #include <atlctrlw.h>
 #include <atlctrlx.h>
@@ -47,20 +47,14 @@ extern CAppModule _Module;
 
 #include <string>
 
-#ifndef ctcString
-	#ifdef UNICODE
-		#define ctcString std::wstring
-	#else
-		#define ctcString std::string
-	#endif
-#endif
+typedef std::basic_string<TCHAR> tstring;
 
 #define PNASSERT ATLASSERT
 
 #ifdef _DEBUG
 	#define _NO_COPY(x) private: x(x&){;} x& operator = (x& copy){;}
 #else
-	#define _NO_COPY(x) ;
+	#define _NO_COPY(x) /##/
 #endif
 
 #include "pn.h"
