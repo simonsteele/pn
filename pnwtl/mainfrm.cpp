@@ -312,6 +312,19 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	AddMRUMenu(CSMenuHandle(m_hMenu));
 	AddNewMenu(CSMenuHandle(m_hMenu));
 
+	// Process cmdline params... __argv and __argc in VC++
+	for(int i = 1; i < __argc; i++)
+	{
+		if(__argv[i][0] == _T('/') || __argv[i][0] == _T('-'))
+		{
+			// special params, none yet...
+		}
+		else
+		{
+			PNOpenFile(__argv[i]);
+		}
+	}
+
 	return 0;
 }
 
