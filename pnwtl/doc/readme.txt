@@ -34,6 +34,7 @@ What's new?
 25) Optional new, empty file on startup.
 26) Magic Folders in projects - folders that reflect real directory contents.
 27) Now open the "open file" dialog in the same directory as the current file.
+28) Added error parsing for microsoft error messages.
 
 Bug Fixes:
 ----------

@@ -285,6 +285,18 @@ void COutputView::HandleGCCError(int style, int position)
 }
 
 /**
+ * @brief Parse a microsoft message string:
+ *      filename.ext(line,col): message
+ * Derived from: \s%f\(%l,%c\): 
+ *
+ * Currently tested with NAnt output.
+ */
+void COutputView::HandleMSError(int style, int position)
+{
+	BuildAndHandleREError(style, position, "\\s*(?P<f>.+)\\((?P<l>[0-9]+),(?P<c>[0-9]+)\\): ");
+}
+
+/**
  * @brief Parse Borland C++ errors, warnings and resource compiler warnings...
  *
  * Also handle lcc-win32 errors.
@@ -348,6 +360,12 @@ LRESULT COutputView::OnHotSpotClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 			case SCE_ERR_GCC:
 			{
 				HandleGCCError(wParam, lParam);
+			}
+			break;
+
+			case SCE_ERR_MS:
+			{
+				HandleMSError(wParam, lParam);
 			}
 			break;
 

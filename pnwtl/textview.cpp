@@ -668,6 +668,12 @@ void CTextView::checkLineLength()
 	::LeaveCriticalSection(&m_csMeasure);	
 }
 
+/**
+ * This thread is responsible for trying to make the line length in
+ * the scintilla view much more sensible. We optionally whack it up
+ * to the maximum limit. This is much more useful for viewing long
+ * documents.
+ */
 UINT __stdcall CTextView::RunMeasureThread(void* pThis)
 {
 	CTextView* pTextView = static_cast<CTextView*>(pThis);
@@ -680,6 +686,17 @@ UINT __stdcall CTextView::RunMeasureThread(void* pThis)
 	int maxLength = pTextView->GetScrollWidth() - 10;
 	int endPos;
 	int endX;
+	int absMaxLength;
+
+	// NT has a 1000000 pixel max, 9x has 30000.
+	if(g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_NT)
+		absMaxLength = 1000000;
+	else
+		absMaxLength = 30000;
+
+	// We add 10 to the length we find as a little buffer, so
+	// remove it from the absolute.
+	absMaxLength -= 10;
 
 	while(true)
 	{
@@ -698,8 +715,14 @@ UINT __stdcall CTextView::RunMeasureThread(void* pThis)
 		endX = pTextView->PointXFromPosition(endPos);
 		maxLength = max(endX, maxLength);
 
+		if(maxLength >= absMaxLength)
+			break;
+
 		index++;
 	}
+
+	// ensure we stay below the absolute maximum...
+	maxLength = max(maxLength, absMaxLength);
 
 	TCHAR buf[50];
 	_stprintf(buf, _T("Max line length: %d"), maxLength);
@@ -707,6 +730,7 @@ UINT __stdcall CTextView::RunMeasureThread(void* pThis)
 
 	pTextView->SetScrollWidth(maxLength + 10);
 
+	// As long as nothing else wants direct access we're ok!
 	pTextView->EnableDirectAccess();
 
 	::EnterCriticalSection(&pTextView->m_csMeasure);

@@ -65,6 +65,7 @@ protected:
 	void HandleBorlandCPPError(int style, int position);
 	void HandlePerlError(int style, int position);
 	void HandlePythonError(int style, int position);
+	void HandleMSError(int style, int position);
 	
 	void HandleCustomError(int style, int position);
 

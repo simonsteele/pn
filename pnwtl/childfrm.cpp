@@ -19,6 +19,7 @@
 #include "include/pagesetupdialog.h"
 #include "jumpto.h"
 #include "jumptodialog.h"
+#include "afiles.h"
 
 #include "tabbingframework/TabbedMDISave.h"
 
@@ -839,8 +840,15 @@ LRESULT CChildFrame::OnJumpTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 {
 	CJumpToDialog dlg(this);
 	if(dlg.DoModal() == IDOK)
-	{
+	{		
 		m_view.GotoLine(dlg.GetLine() - 1);
+		m_view.EnsureVisibleEnforcePolicy(dlg.GetLine()-1);
+
+		int offset = m_view.GetFirstVisibleLine();
+		
+		// Put the line we jump to two off the top of the screen...
+		offset = ((dlg.GetLine()-1) - offset) - 2;
+		m_view.LineScroll(0, offset);
 	}
 
 	return 0;
@@ -884,8 +892,6 @@ LRESULT CChildFrame::OnUseTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 	return 0;
 }
-
-#include "afiles.h"
 
 LRESULT CChildFrame::OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
 {

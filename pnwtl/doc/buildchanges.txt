@@ -16,6 +16,7 @@ Duplicate brace match colour settings (SF Bug #951146).
 New dialog to show the changed files/projects on exit.
 Pseudo misspelt in CSS scheme (SF Bug #969586).
 Regular Expression replace (SF Bug #957788).
+Added error parsing for microsoft error messages (hopefully).
 [Projects] Folder position on adding folders corrected.
 [Projects] Adding folders from explorer no longer breaks sorting.
 [Projects] Fixed crash when almost dragging an item.
