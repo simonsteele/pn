@@ -464,7 +464,7 @@ public:
 
 	bool SaveAs()
 	{
-		CSSFileDialog	dlgSave(FALSE, NULL, NULL, OFN_HIDEREADONLY, "All Files (*.*)|*.*", m_hWndClient);
+		CPNSaveDialog dlgSave(_T("All Files (*.*)|*.*"));
 		bool			bRet = true;
 
 		if(dlgSave.DoModal() == IDOK)

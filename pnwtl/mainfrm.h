@@ -386,7 +386,7 @@ public:
 
 	LRESULT OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		CSSFileDialog dlgOpen(TRUE, NULL, NULL, OFN_HIDEREADONLY, "All Files (*.*)|*.*", m_hWndClient);
+		CPNFileDialog dlgOpen(TRUE, NULL, NULL, OFN_HIDEREADONLY, "All Files (*.*)|*.*", m_hWndClient);
 		if (dlgOpen.DoModal() == IDOK)
 		{
 			PNOpenFile(dlgOpen.m_ofn.lpstrFile, dlgOpen.m_ofn.lpstrFileTitle);
