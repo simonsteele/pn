@@ -71,6 +71,11 @@
 #define ID_TOOLS_LECR                   32779
 #define ID_TOOLS_LECONVERT              32780
 #define ID_BUTTON32781                  32781
+#define ID_BOOKMARKS_NUMBERED_SET       32783
+#define ID_BOOKMARKS_NUMBERED_JUMP      32784
+#define ID_BOOKMARKS_TOGGLE             32786
+#define ID_BOOKMARKS_NEXT               32787
+#define ID_ACCELERATOR32788             32788
 #define ID_VIEW_VIEWTABS                32825
 #define ID_TAB_CLOSE                    32835
 #define ID_VIEW_TABS_TOP                32836
@@ -96,7 +101,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        243
-#define _APS_NEXT_COMMAND_VALUE         32783
+#define _APS_NEXT_COMMAND_VALUE         32790
 #define _APS_NEXT_CONTROL_VALUE         1006
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

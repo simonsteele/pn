@@ -15,6 +15,9 @@
 #define WTL_SCINTILLA 1
 #define PLAT_WIN 1
 
+#define SC_BOOKMARK 0
+#define SC_NUMBERED_BOOKMARK 1
+
 #include "scintilla.h"
 
 //! Block size for disk reading and writing.
@@ -97,8 +100,18 @@ class CScintilla
 		void SetTarget(int begin, int end);
 		void SetTarget(CharacterRange* cr);
 		
+		void GotoLineEnsureVisible(int line);
+
 		void DefineMarker(int marker, int markerType, COLORREF fore, COLORREF back);
 
+		void DefineNumberedBookmarks(int base = SC_NUMBERED_BOOKMARK, bool SetDefaultColours = true);
+		void ToggleNumberedBookmark(int number, int base = SC_NUMBERED_BOOKMARK);
+		void JumpToNumberedBookmark(int number, int base = SC_NUMBERED_BOOKMARK);
+
+		void DefineBookmarks();
+		void ToggleBookmark(int marker = SC_BOOKMARK);
+		void NextBookmark();
+        
 		// Folding (mostly Scite implementation)
 		/// Set the Folding Margins
 		void SetFoldingMargins(EFoldStyle style);
@@ -134,6 +147,8 @@ class CScintilla
 		int	m_TabWidth;
 
 		int m_SelLength;
+
+		int m_numberedBookmarks[10];
 	
 	// Python Wrapper-Generator Generated header...
 	public:

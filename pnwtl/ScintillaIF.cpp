@@ -190,6 +190,100 @@ void CScintilla::DefineMarker(int marker, int markerType, COLORREF fore, COLORRE
 	SPerform(SCI_MARKERSETBACK, marker, back);
 }
 
+void CScintilla::DefineNumberedBookmarks(int base, bool SetDefaultColours)
+{
+	COLORREF fore;
+	COLORREF back;
+
+	if(SetDefaultColours)
+	{
+		fore = ::GetSysColor(COLOR_HIGHLIGHTTEXT /*COLOR_INFOTEXT*/);
+		back = ::GetSysColor(COLOR_HIGHLIGHT /*COLOR_INFOBK*/);
+	}
+
+	for(int i = 0; i < 10; i++)
+	{
+		SPerform(SCI_MARKERDEFINE, base + i, SC_MARK_CHARACTER + '0' + i);
+		m_numberedBookmarks[i] = -1;
+		if(SetDefaultColours)
+		{
+			SPerform(SCI_MARKERSETFORE, base+i, fore);
+			SPerform(SCI_MARKERSETBACK, base+i, back);
+		}
+	}
+}
+
+void CScintilla::DefineBookmarks()
+{
+	MarkerSetFore(SC_BOOKMARK, ::GetSysColor(COLOR_HIGHLIGHT));
+	MarkerSetBack(SC_BOOKMARK, ::GetSysColor(COLOR_HOTLIGHT));
+	MarkerDefine(SC_BOOKMARK, SC_MARK_CIRCLE);
+}
+
+void CScintilla::ToggleBookmark(int marker)
+{
+	int line = LineFromPosition(GetCurrentPos());
+	if(MarkerGet(line) & (1 << SC_BOOKMARK))
+	{
+		MarkerDelete(line, SC_BOOKMARK);
+	}
+	else
+	{
+		MarkerAdd(line, SC_BOOKMARK);
+	}
+}
+
+void CScintilla::NextBookmark()
+{
+	int line = LineFromPosition(GetCurrentPos());
+	int nextLine = MarkerNext(line+1, 1 << SC_BOOKMARK);
+	if (nextLine < 0)
+		nextLine = MarkerNext(0, 1 << SC_BOOKMARK);
+	if(! (nextLine < 0 || nextLine == line))
+	{
+		GotoLineEnsureVisible(nextLine);
+	}
+}
+
+void CScintilla::ToggleNumberedBookmark(int number, int base)
+{
+	if(number >= 0 && number <= 9)
+	{
+		int line = LineFromPosition(GetCurrentPos());
+		int oldline = -1;
+
+		if(m_numberedBookmarks[number] != -1)
+		{
+			oldline = MarkerLineFromHandle(m_numberedBookmarks[number]);
+			MarkerDeleteHandle(m_numberedBookmarks[number]);
+		}
+
+		int markers = MarkerGet(line);
+		for(int i = 0; i < 10; i++)
+		{
+			if(markers & (1 << (base + i)))
+			{
+				MarkerDelete(line, base + i);
+				m_numberedBookmarks[base+i] = -1;
+			}
+		}
+
+		if(oldline != line)
+		{
+			m_numberedBookmarks[number] = MarkerAdd(line, base + number);
+		}
+	}
+}
+
+void CScintilla::JumpToNumberedBookmark(int number, int base)
+{
+	if(number >= 0 && number <= 9 && m_numberedBookmarks[number] != -1)
+	{
+		int line = MarkerLineFromHandle(m_numberedBookmarks[number]);
+		GotoLineEnsureVisible(line);
+	}
+}
+
 void CScintilla::GetSel(CharacterRange& cr)
 {
 	cr.cpMin = GetSelectionStart();
@@ -208,6 +302,12 @@ void CScintilla::EnsureRangeVisible(int begin, int end)
 	{
 		EnsureVisible(line);
 	}
+}
+
+void CScintilla::GotoLineEnsureVisible(int line)
+{
+	SPerform(SCI_ENSUREVISIBLEENFORCEPOLICY, line);
+	SPerform(SCI_GOTOLINE, line);
 }
 
 void CScintilla::SetTarget(int begin, int end)

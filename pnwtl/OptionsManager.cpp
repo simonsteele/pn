@@ -32,7 +32,7 @@ void COptionsManager::Load()
 	ctcString cs(root);
 	
 	// Editor Settings ----------------------
-	cs += _T("Editor Settings");
+	cs += PNSK_EDITOR;
 	reg.OpenKey(cs.c_str(), true);
 	ShowIndentGuides = reg.ReadBool(_T("IndentationMarkers"), true);
 	LineEndings = (ELineEndings)reg.ReadInt(_T("DefaultLineEndings"), leCRLF);
@@ -49,7 +49,7 @@ void COptionsManager::Load()
 	m_ReplaceOptions.FindText = _T("");
 	m_ReplaceOptions.ReplaceText = _T("");
 
-	//cs = root + _T("Interface Settings");
+	//cs = root + PNSK_INTERFACE
 	//reg.OpenKey(cs, true);
 }
 

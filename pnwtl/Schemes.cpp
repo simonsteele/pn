@@ -320,11 +320,32 @@ void CScheme::SetupScintilla(CScintilla& sc)
 	sc.SPerform(SCI_STYLESETFORE, STYLE_DEFAULT, ::GetSysColor(COLOR_WINDOWTEXT));
 	sc.SPerform(SCI_STYLESETBACK, STYLE_DEFAULT, ::GetSysColor(COLOR_WINDOW));
 	sc.SPerform(SCI_STYLECLEARALL);
+
+	sc.DefineBookmarks();
+	sc.DefineNumberedBookmarks();
 	
 	// Default windows edit control behaviour... This needs to be optional.
 	///@todo allow default scintilla coloured selection...
-	sc.SPerform(SCI_SETSELFORE, 1, ::GetSysColor(COLOR_HIGHLIGHTTEXT));
-	sc.SPerform(SCI_SETSELBACK, 1, ::GetSysColor(COLOR_HIGHLIGHT));
+	if(options.Get(PNSK_EDITOR, _T("DefaultSelectionColours"), true))
+	{
+		sc.SPerform(SCI_SETSELFORE, 1, ::GetSysColor(COLOR_HIGHLIGHTTEXT));
+		sc.SPerform(SCI_SETSELBACK, 1, ::GetSysColor(COLOR_HIGHLIGHT));
+	}
+	else
+	{
+		COLORREF c;
+
+		if(options.Get(PNSK_EDITOR, _T("SetSelectionFore"), false))
+		{
+			c = (COLORREF)options.Get(PNSK_EDITOR, _T("SelectionFore"), (int)::GetSysColor(COLOR_HIGHLIGHTTEXT));
+			sc.SPerform(SCI_SETSELFORE, 1, c);
+		}
+		else
+			sc.SPerform(SCI_SETSELFORE, 0, 0);
+		
+		c = (COLORREF)options.Get(PNSK_EDITOR, _T("SelectionBack"), (int)::GetSysColor(COLOR_HIGHLIGHT));
+		sc.SPerform(SCI_SETSELBACK, 1, c);
+	}
 
 	sc.SPerform(SCI_SETPROPERTY, (WPARAM)"asp.default.language", (LPARAM)"2");
 }

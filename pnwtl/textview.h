@@ -30,15 +30,33 @@ public:
 	CTextView() : CScintillaWindow< CScintillaImpl >()
 	{
 		m_pLastScheme = NULL;
+		m_waitOnBookmarkNo = FALSE;
+	}
+
+	BOOL PreTranslateMessage(MSG* pMsg)
+	{
+		if(m_waitOnBookmarkNo && pMsg->message == WM_KEYDOWN)
+		{
+			if((pMsg->wParam >= 0x30) && (pMsg->wParam <= 0x39))
+			{
+				ProcessNumberedBookmark(pMsg->wParam - 0x30);
+				return TRUE;
+			}
+			m_waitOnBookmarkNo = FALSE;
+		}
+		return FALSE;
 	}
 
 	BEGIN_MSG_MAP(CTextView)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
 		COMMAND_ID_HANDLER(ID_EDIT_INDENT, OnIndent)
 		COMMAND_ID_HANDLER(ID_EDIT_UNINDENT, OnUnindent)
+		COMMAND_ID_HANDLER(ID_BOOKMARKS_NUMBERED_SET, OnSetNumberedBookmark)
+		COMMAND_ID_HANDLER(ID_BOOKMARKS_NUMBERED_JUMP, OnNumberedBookmarkJump)
+		COMMAND_ID_HANDLER(ID_BOOKMARKS_TOGGLE, OnToggleBookmark)
+		COMMAND_ID_HANDLER(ID_BOOKMARKS_NEXT, OnNextBookmark)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
-
 
 	void SetScheme(CScheme* pScheme)
 	{
@@ -169,7 +187,7 @@ public:
 			EnsureRangeVisible(0, GetLength());
 			ClearDocumentStyle();
 			Colourise(0, -1);
-			SPerform(SCI_STYLECLEARALL, 0, 0);
+			StyleClearAll();
 		}
 	}
 
@@ -268,6 +286,9 @@ public:
 		g_Context.m_frame->TrackPopupMenu(popup, 0, point->x, point->y, NULL);
 	}
 
+	////////////////////////////////////////////////////////////////
+	// Command Handlers
+
 	LRESULT OnIndent(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		Tab();
@@ -280,13 +301,51 @@ public:
 		return 0;
 	}
 
-protected:
+	LRESULT OnSetNumberedBookmark(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		m_waitOnBookmarkNo = 1;
+		return 0;
+	}
 
+	LRESULT OnNumberedBookmarkJump(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		m_waitOnBookmarkNo = 2;
+		return 0;
+	}
+
+	LRESULT OnToggleBookmark(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		ToggleBookmark();
+		return 0;
+	}
+
+	LRESULT OnNextBookmark(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		NextBookmark();
+		return 0;
+	}
+
+	void ProcessNumberedBookmark(int n)
+	{
+		switch(m_waitOnBookmarkNo)
+		{
+			case 1:
+				ToggleNumberedBookmark(n);
+				break;
+
+			case 2:
+				JumpToNumberedBookmark(n);
+				break;
+		}
+	}
+
+protected:
 	virtual void OnFirstShow()
 	{
 		CSchemeManager::GetInstance()->GetDefaultScheme()->Load(*this);
 	}
 
+	BOOL m_waitOnBookmarkNo;
 	CScheme* m_pLastScheme;
 };
 

@@ -1,0 +1,16 @@
+Registry Settings:
+
+PN2
+
+PN2\Interface Settings
+int MRUSize						// MRU list length
+int LineNumbersWidth			// magnitude of line numbers to show
+
+PN2\Editor Settings
+bool DefaultSelectionColours	// settings for sel colours should be read?
+bool SetSelectionFore			// should set non-default sel fore?
+int SelectionFore				// non-default sel fore (int->COLORREF)
+int selectionBack				// non-default sel back (int->COLORREF)
+bool IndentationMarkers
+int DefaultLineEndings			// CRLF, LF, CR
+int TabWidth

@@ -14,6 +14,7 @@
 static const TCHAR* pnregroot = _T("Software\\Echo Software\\PN2\\");
 static const TCHAR* pnmrukey = _T("MRU");
 static const TCHAR* PNSK_INTERFACE = _T("Interface Settings");
+static const TCHAR* PNSK_EDITOR = _T("Editor Settings");
 
 typedef enum {leCRLF, leCR, leLF} ELineEndings;
 
