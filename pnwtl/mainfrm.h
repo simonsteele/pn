@@ -326,6 +326,8 @@ protected:
 	HWND					hFindWnd;
 	HWND					hReplWnd;
 
+	HACCEL					m_hToolAccel;
+
 	bool					m_bShowingDefaultStatus;
 	bool					m_bIsXPOrLater;
 	short					m_statusResetCounter;

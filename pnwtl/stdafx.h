@@ -12,6 +12,9 @@
 #define _WIN32_IE		0x0501
 #define _RICHEDIT_VER	0x0100
 
+// Disable the "unreferenced formal parameter" warning. I see no reason for it.
+#pragma warning( disable: 4100 )
+
 // Implement debug mode memory allocation checking.
 #ifdef _DEBUG
 

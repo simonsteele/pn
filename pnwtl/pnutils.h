@@ -492,10 +492,16 @@ class CNumberCombo : public CComboBox
 
 ///@todo this should probably go in a pnstrings.h file or something similar...
 
+#if defined(UNICODE)
+	typedef std::wostream tstream;
+#else
+	typedef std::ostream tstream;
+#endif
+
 static tstring IntToTString(int x)
 {
 	TCHAR _buffer[32];
-	_sntprintf(_buffer, 32, "%0d", x);
+	_sntprintf(_buffer, 32, _T("%0d"), x);
 	
 	return tstring(_buffer);
 }
@@ -506,7 +512,7 @@ using std::vector;
 template <typename TStringType>
 static void StringTokenise(const TStringType& str,
                       vector<TStringType>& tokens,
-                      const TStringType& delimiters = _T(" "))
+                      const TStringType& delimiters/* = _T(" ")*/)
 {
     // Skip delimiters at beginning.
     TStringType::size_type lastPos = str.find_first_not_of(delimiters, 0);
@@ -593,7 +599,7 @@ void XMLSafeString(tstring& str);
 struct FormatXML {
    tstring str_;
    explicit FormatXML(const tstring& str) : str_(str) { XMLSafeString(str_); }
-   friend std::ostream& operator<<(std::ostream& s, const FormatXML& x)
+   friend tstream& operator<<(tstream& s, const FormatXML& x)
    {
 		s << x.str_;
 		return s;
@@ -731,7 +737,7 @@ class OpTimer
 		{
 			DWORD diffTicks = GetTickCount() - dwTicksStart;
 			TCHAR buffer[50];
-			_sntprintf(buffer, 50, "OpTimer recorded %d Milliseconds.\n", diffTicks);
+			_sntprintf(buffer, 50, _T("OpTimer recorded %d Milliseconds.\n"), diffTicks);
 			::OutputDebugString(buffer);
 		}
 

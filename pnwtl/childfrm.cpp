@@ -1100,8 +1100,6 @@ void CChildFrame::SetScheme(CScheme* pScheme)
 
 void CChildFrame::UpdateTools(CScheme* pScheme)
 {
-	//m_iFirstToolCmd
-
 	CSMenuHandle menu(m_hMenu);
 	CSMenuHandle tools( menu.GetSubMenu(3) );
 	
@@ -1157,8 +1155,6 @@ BOOL CChildFrame::OnEscapePressed()
 	}
 	else
 		return ::SendMessage(GetTopLevelParent(), PN_ESCAPEPRESSED, 0, 0);
-
-	return FALSE;
 }
 
 /**

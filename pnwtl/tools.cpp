@@ -32,6 +32,7 @@ static char THIS_FILE[] = __FILE__;
 SchemeTools::SchemeTools(LPCTSTR schemename)
 {
 	m_Scheme = schemename;
+	m_hAccel = NULL;
 }
 
 SchemeTools::~SchemeTools()
@@ -42,6 +43,12 @@ SchemeTools::~SchemeTools()
 	}
 
 	m_Tools.clear();
+
+	if(m_hAccel)
+	{
+		::DestroyAcceleratorTable(m_hAccel);
+		m_hAccel = NULL;
+	}
 }
 
 TOOLDEFS_LIST& SchemeTools::GetTools()
@@ -93,6 +100,48 @@ void SchemeTools::ReleaseMenuResources()
 			}
 		}
 	}
+}
+
+void AccelFromCode(ACCEL& accel, WORD wCmd, DWORD hotkey)
+{
+	ATLASSERT(wCmd != 0);
+	ATLASSERT(hotkey != 0);
+	accel.cmd = wCmd;
+	accel.key = LOWORD(hotkey);
+	accel.fVirt = FVIRTKEY | FNOINVERT;
+	if( HIWORD(hotkey) & HOTKEYF_ALT ) accel.fVirt |= FALT;
+	if( HIWORD(hotkey) & HOTKEYF_CONTROL ) accel.fVirt |= FCONTROL;
+	if( HIWORD(hotkey) & HOTKEYF_SHIFT ) accel.fVirt |= FSHIFT;      
+}
+
+HACCEL SchemeTools::GetAcceleratorTable()
+{
+	if(m_hAccel)
+		return m_hAccel;
+
+	if(m_Tools.size() == 0)
+		return NULL;
+
+	ACCEL* accels = new ACCEL[m_Tools.size()];
+	int accelCount = 0;
+	ToolDefinition* pT = NULL;
+	for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
+	{
+		pT = (*i);
+		
+		if(pT->CommandID == -1) // check we've got command ids sorted.
+			throw "You must allocate menu resources before asking for an accelerator table.";
+
+		if(pT->Shortcut != 0)
+		{
+			AccelFromCode(accels[accelCount], pT->CommandID, pT->Shortcut);
+			accelCount++;
+		}
+	}
+
+	if(accelCount > 0)
+		m_hAccel = ::CreateAcceleratorTable(accels, accelCount);
+	return m_hAccel;
 }
 
 void SchemeTools::Add(ToolDefinition* pDef)
@@ -151,7 +200,7 @@ void SchemeTools::InternalWriteDefinition(ofstream& stream)
 		stream << "command=\"" << FormatXML((*i)->Command) << "\" ";
 		stream << "folder=\"" << FormatXML((*i)->Folder) << "\" ";
 		stream << "params=\"" << FormatXML((*i)->Params) << "\" ";
-		stream << "shortcut=\"" << FormatXML((*i)->Shortcut) << "\" ";
+		stream << "shortcut=\"" << (*i)->Shortcut << "\" ";
 		stream << "parsepattern=\"" << FormatXML((*i)->CustomParsePattern) << "\" ";
 		stream << "flags=\"" << flags << "\" ";
 		stream << "/>\n";
@@ -195,12 +244,12 @@ void CToolCommandString::OnFormatChar(TCHAR thechar)
 			break;
 
 		case _T('l'):
-			_itoa(pChild->GetPosition(EP_LINE), itosbuf, 10);
+			_itot(pChild->GetPosition(EP_LINE), itosbuf, 10);
 			m_string += itosbuf;
 			break;
 
 		case _T('c'):
-			_itoa(pChild->GetPosition(EP_COL), itosbuf, 10);
+			_itot(pChild->GetPosition(EP_COL), itosbuf, 10);
 			m_string += itosbuf;
 			break;
 
@@ -436,14 +485,11 @@ void SchemeToolsManager::processTool(XMLAttributes& atts)
 			else if(_tcscmp(attr, _T("folder")) == 0)
 				pDef->Folder = val;
 			else if(_tcscmp(attr, _T("shortcut")) == 0)
-				pDef->Shortcut = val;
+				pDef->Shortcut = _ttoi(val);
 			else if(_tcscmp(attr, _T("parsepattern")) == 0)
 				pDef->CustomParsePattern = val;
 			else if(_tcscmp(attr, _T("flags")) == 0)
-			{
-				int flags = _ttoi(val);
-				pDef->iFlags = flags;
-			}
+				pDef->iFlags = _ttoi(val);
 		}
 
 		m_pCur->Add(pDef);
@@ -538,7 +584,7 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	if(_tcslen(dir) == 0)
 		dir = NULL;
 
-	OSVERSIONINFO osv = {sizeof(OSVERSIONINFO), 0, 0, 0, 0, ""};
+	OSVERSIONINFO osv = {sizeof(OSVERSIONINFO), 0, 0, 0, 0, _T("")};
 
 	::GetVersionEx(&osv);
 	bool bWin9x = osv.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS;

@@ -340,7 +340,7 @@ LRESULT CTabPageKeywords::OnSortClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 
 	vector<string> tokens;
 
-	StringTokenise(str, tokens);
+	StringTokenise(str, tokens, string(" "));
 	
 	std::sort(tokens.begin(), tokens.end());
 

@@ -53,7 +53,7 @@ void CMRUList::AddEntry(LPCTSTR data)
 	if(m_entries.GetSize() == m_iMaxSize)
 		m_entries.RemoveAt(0);
 
-	BOOL bRet = m_entries.Add(e);
+	/*BOOL bRet = */m_entries.Add(e);
 }
 
 LPCTSTR CMRUList::GetEntry(int index)
@@ -64,7 +64,7 @@ LPCTSTR CMRUList::GetEntry(int index)
 
 void CMRUList::Resize()
 {
-	if(m_iMaxSize > m_entries.GetSize())
+	if(m_iMaxSize < m_entries.GetSize())
 	{
 		int nTooMany = m_entries.GetSize() - m_iMaxSize;
 		for(int i = 0; i < nTooMany; i++)
@@ -96,7 +96,7 @@ void CMRUList::SaveToRegistry()
 
 		for(int i = 0; i < size; i++)
 		{
-			_itoa(i, buf, 10);
+			_itot(i, buf, 10);
 			reg.WriteString(buf, m_entries[i].pszData);
 		}
 	}
@@ -117,7 +117,7 @@ void CMRUList::LoadFromRegistry()
 		int size = reg.ReadInt(_T("Number"));
 		for(int i = 0; i < size; i++)
 		{
-			_itoa(i, buf, 10);
+			_itot(i, buf, 10);
 			reg.ReadString(buf, valbuf);
 			AddEntry(valbuf.c_str());
 		}
@@ -154,8 +154,8 @@ void CMRUMenu::UpdateMenu()
 	UINT maxChars = (UINT)COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("MRUMaxLength"), 50);
 	if(maxChars > 0)
 	{
-		TCHAR* pszBuf = new TCHAR[maxChars];
-		TCHAR* pszItemText = new TCHAR[maxChars+6]; // add space for &, 2 digits, and a space
+		pszBuf = new TCHAR[maxChars];
+		pszItemText = new TCHAR[maxChars+6]; // add space for &, 2 digits, and a space
 	}
 
 	int num = m.GetCount();
@@ -164,7 +164,7 @@ void CMRUMenu::UpdateMenu()
 		for(int i = num - 1; i >= 0; i--)
 		{
 			id = ::GetMenuItemID(m, i);
-			if( (id >= m_iBase+1) && (id <= (m_iBase + m_iMaxSize)) )
+			if( (id >= m_iBase+1) && (id <= (m_iBase + num)) )
 			{
 				::RemoveMenu(m, i, MF_BYPOSITION);
 			}

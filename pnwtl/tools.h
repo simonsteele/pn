@@ -41,6 +41,8 @@ class SchemeTools
 
 		void			ReleaseMenuResources();
 
+		HACCEL			GetAcceleratorTable();
+
 	protected:
 		void			BuildMenu(int iCommand);
 		void			InternalWriteDefinition(ofstream& stream);
@@ -48,6 +50,7 @@ class SchemeTools
 		TOOLDEFS_LIST	m_Tools;
 		tstring			m_Scheme;
 		CSPopupMenu		m_Menu;
+		HACCEL			m_hAccel;
 };
 
 class GlobalTools : public SchemeTools

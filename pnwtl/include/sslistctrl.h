@@ -100,7 +100,7 @@ class CSSListCtrl : public CListViewCtrl
 			{
 				memset(&pData->pItems[i], 0, sizeof(LVITEM));
 				pData->pItems[i].mask = LVIF_IMAGE | LVIF_PARAM | LVIF_STATE;
-				pData->pItems[i].stateMask = -1;
+				pData->pItems[i].stateMask = (UINT)-1;
 				pData->pItems[i].iItem = index;
 				pData->pItems[i].iSubItem = i;
 				

@@ -408,11 +408,13 @@ tstring CTextView::GetCurrentWord()
 	GetSel(cr);
 	int len = cr.cpMax - cr.cpMin;
 
-	CString sel;
+	char* pStr = NULL;
+
+	//CString sel;
 	if(len > 0)
 	{
-		GetSelText(sel.GetBuffer(len + 2));
-		sel.ReleaseBuffer();
+		pStr = new char[len+2];
+		GetSelText(pStr);
 	}
 	else
 	{
@@ -423,14 +425,24 @@ tstring CTextView::GetCurrentWord()
 		len = tr.chrg.cpMax - tr.chrg.cpMin;
 		if(len > 0)
 		{
-			tr.lpstrText = sel.GetBuffer(len + 2);
-			sel.ReleaseBuffer();
-			if(GetTextRange(&tr) > 0)
-				sel = tr.lpstrText;
+			pStr = new char[len + 2];
+			tr.lpstrText = pStr;
+			GetTextRange(&tr);
 		}
 	}
 
-	return tstring( sel );
+	tstring ret;
+
+	if(pStr != NULL)
+	{
+		USES_CONVERSION;
+
+		ret = A2CT(pStr);
+		delete [] pStr;
+		pStr = NULL;
+	}
+
+	return ret;
 }
 
 CScheme* CTextView::GetCurrentScheme()

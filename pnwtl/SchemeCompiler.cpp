@@ -593,7 +593,7 @@ void SchemeCompiler::onFile(LPCTSTR filename)
 	reg.WriteInt(filepart.c_str(), FileAge(filename));
 }
 
-void SchemeCompiler::onKeywords(int key, LPCSTR keywords, LPCTSTR name, LPCTSTR custom)
+void SchemeCompiler::onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom)
 {
 	USES_CONVERSION;
 	if(custom)

@@ -60,6 +60,7 @@ public:
 	{
 		CommandID = 0;
 		iFlags = 0;
+		Shortcut = 0;
 	}
 
 	ToolDefinition(const ToolDefinition& copy)
@@ -71,7 +72,7 @@ public:
 	tstring Command;
 	tstring	Folder;
 	tstring	Params;
-	tstring Shortcut;
+	DWORD	Shortcut;
 	tstring CustomParsePattern;
 	int		CommandID;
 	int		iFlags;

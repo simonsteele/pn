@@ -143,7 +143,6 @@ CToolEditorDialog::CToolEditorDialog() :
 	m_csCommand = _T("");
 	m_csFolder = _T("");
 	m_csParams = _T("");
-	m_csShortcut = _T("");
 	m_csCustomPattern = _T("");
 
 	m_bCapture = true;
@@ -151,6 +150,8 @@ CToolEditorDialog::CToolEditorDialog() :
 	m_bGlobal = false;
 
 	m_iSaveStyle = 0;
+
+	m_dwHotKey = 0;
 
 	m_iBuiltIn = 0;
 
@@ -186,6 +187,9 @@ LRESULT CToolEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	else
 		m_saveCombo.SetCurSel(0);
 
+	m_HotKeyCtrl = GetDlgItem(IDC_TE_HOTKEY);
+	m_HotKeyCtrl.SetHotKey(LOWORD(m_dwHotKey), HIWORD(m_dwHotKey));
+
 	DoDataExchange();
 
 	EnableButtons();
@@ -198,6 +202,8 @@ LRESULT CToolEditorDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/
 	DoDataExchange(TRUE);
 	
 	m_bGlobal = (m_outputcombo.GetCurSel() == 0);
+
+	m_dwHotKey = m_HotKeyCtrl.GetHotKey();
 
 	int saveSel = m_saveCombo.GetCurSel();
 	m_iSaveStyle = (saveSel == 2 ? TOOL_SAVEALL : (saveSel == 1 ? TOOL_SAVEONE : 0));
@@ -268,13 +274,20 @@ LRESULT CToolEditorDialog::OnWindowStateChanged(WORD /*wNotifyCode*/, WORD /*wID
 	return 0;
 }
 
+LRESULT CToolEditorDialog::OnClearShortcut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	m_HotKeyCtrl.SetHotKey(0,0);
+
+	return 0;
+}
+
 void CToolEditorDialog::GetValues(ToolDefinition* pDefinition)
 {
 	pDefinition->Name			= m_csName;
 	pDefinition->Command		= m_csCommand;
 	pDefinition->Folder			= m_csFolder;
 	pDefinition->Params			= m_csParams;
-	pDefinition->Shortcut		= m_csShortcut;
+	pDefinition->Shortcut		= m_dwHotKey;
 	
 	pDefinition->iFlags = 
 		(m_bCapture	? TOOL_CAPTURE	: 0) |
@@ -296,7 +309,7 @@ void CToolEditorDialog::SetValues(ToolDefinition* pDefinition)
 	m_csCommand		= pDefinition->Command.c_str();
 	m_csFolder		= pDefinition->Folder.c_str();
 	m_csParams		= pDefinition->Params.c_str();
-	m_csShortcut	= pDefinition->Shortcut.c_str();
+	m_dwHotKey		= pDefinition->Shortcut;
 	m_bCapture		= pDefinition->CaptureOutput();
 	m_bFilter		= pDefinition->IsFilter();
 	m_bGlobal		= pDefinition->GlobalOutput();

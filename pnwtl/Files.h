@@ -93,7 +93,7 @@ class CTextFile : public CFile
 class CFileName
 {
 public:
-	CFileName() : m_FileName(""){}
+	CFileName() : m_FileName(_T("")){}
 	CFileName(const CFileName& copy){*this = copy;}
 	CFileName(LPCTSTR filename){m_FileName = filename;}
 	

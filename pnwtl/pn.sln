@@ -1,22 +1,27 @@
 Microsoft Visual Studio Solution File, Format Version 7.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pn", "pn.vcproj", "{09E60CEB-F210-4524-89CC-D73EBCA224A1}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CustomScheme", "CustomScheme\CustomScheme.vcproj", "{A7E621BE-65CC-446A-A5A1-4C20D117D344}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "customscheme", "CustomScheme\CustomScheme.vcproj", "{A7E621BE-65CC-446A-A5A1-4C20D117D344}"
 EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		ConfigName.0 = Debug
-		ConfigName.1 = Release
+		ConfigName.1 = DebugUnicode
+		ConfigName.2 = Release
 	EndGlobalSection
 	GlobalSection(ProjectDependencies) = postSolution
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{09E60CEB-F210-4524-89CC-D73EBCA224A1}.Debug.ActiveCfg = Debug|Win32
 		{09E60CEB-F210-4524-89CC-D73EBCA224A1}.Debug.Build.0 = Debug|Win32
+		{09E60CEB-F210-4524-89CC-D73EBCA224A1}.DebugUnicode.ActiveCfg = DebugUnicode|Win32
+		{09E60CEB-F210-4524-89CC-D73EBCA224A1}.DebugUnicode.Build.0 = DebugUnicode|Win32
 		{09E60CEB-F210-4524-89CC-D73EBCA224A1}.Release.ActiveCfg = Release|Win32
 		{09E60CEB-F210-4524-89CC-D73EBCA224A1}.Release.Build.0 = Release|Win32
 		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.Debug.ActiveCfg = Debug|Win32
 		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.Debug.Build.0 = Debug|Win32
+		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.DebugUnicode.ActiveCfg = DebugUnicode|Win32
+		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.DebugUnicode.Build.0 = DebugUnicode|Win32
 		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.Release.ActiveCfg = Release|Win32
 		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.Release.Build.0 = Release|Win32
 	EndGlobalSection

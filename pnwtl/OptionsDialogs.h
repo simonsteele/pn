@@ -27,7 +27,7 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 			COMMAND_ID_HANDLER(IDC_TE_DIRBUTTON, OnBrowseDir)
 			COMMAND_ID_HANDLER(IDC_TE_CAPTURECHECK, OnCaptureChanged)
 			COMMAND_ID_HANDLER(IDC_TE_ABOUTBUILTIN, OnAboutBuiltin)
-			
+			COMMAND_ID_HANDLER(IDC_TE_CLEARBUTTON, OnClearShortcut)
 			COMMAND_ID_HANDLER(IDC_TE_BUILTIN, OnWindowStateChanged)
 			COMMAND_ID_HANDLER(IDC_TE_CUSTOMPARSE, OnWindowStateChanged)
 		END_MSG_MAP()
@@ -37,7 +37,6 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 			DDX_TEXT(IDC_TE_CMDEDIT,		m_csCommand)
 			DDX_TEXT(IDC_TE_FOLDEREDIT,		m_csFolder)
 			DDX_TEXT(IDC_TE_PARAMSEDIT,		m_csParams)
-			DDX_TEXT(IDC_TE_SHORTCUTEDIT,	m_csShortcut)
 			DDX_TEXT(IDC_TE_CUSTOMTEXT,		m_csCustomPattern)
 			DDX_CHECK(IDC_TE_CAPTURECHECK,	m_bCapture)
 			DDX_CHECK(IDC_TE_FILTERCHECK,	m_bFilter)
@@ -82,22 +81,23 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 		LRESULT OnCaptureChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnAboutBuiltin(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnWindowStateChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnClearShortcut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 		void EnableButtons();
 
 	protected:
-		CString	m_csName;
-		CString	m_csCommand;
-		CString	m_csFolder;
-		CString	m_csParams;
-		CString	m_csShortcut;
-		CString m_csCustomPattern;
+		CString		m_csName;
+		CString		m_csCommand;
+		CString		m_csFolder;
+		CString		m_csParams;
+		CString		m_csCustomPattern;
+		CHotKeyCtrl	m_HotKeyCtrl;
 
 		BOOL	m_bCapture;
 		BOOL	m_bFilter;
 		int		m_iSaveStyle;
-		//BOOL	m_bSaveAll;
 		BOOL	m_bClear;
+		DWORD	m_dwHotKey;
 
 		int		m_iBuiltIn;
 

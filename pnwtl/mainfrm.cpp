@@ -52,6 +52,13 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4)
 	m_statusResetCounter = 0;
 
 	m_CmdBar.SetCallback(this, OnMDISetMenu);
+
+	ACCEL a;
+	a.cmd = ID_FILE_NEW_WORKSPACE;
+	a.fVirt = FVIRTKEY | FCONTROL;
+	a.key = (WORD)'Q';
+
+	m_hToolAccel = ::CreateAcceleratorTable(&a, 1);
 }
 
 CMainFrame::~CMainFrame()
@@ -73,7 +80,7 @@ CMainFrame::~CMainFrame()
 CChildFrame* CMainFrame::NewEditor()
 {
 	CChildFrame* pChild = new CChildFrame;
-	ATLASSERT(pChild != NULL);
+	PNASSERT(pChild != NULL);
 
 	// Give the user the option to always maximise new windows.
 	bool bMax = COptionsManager::GetInstance()->MaximiseNew;
@@ -210,6 +217,12 @@ void CMainFrame::OnMDISetMenu(HMENU hOld, HMENU hNew)
  */
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 {
+	if((pMsg->message >= WM_KEYFIRST) && (pMsg->message <= WM_KEYLAST) && m_hToolAccel != 0)
+	{
+		if(::TranslateAccelerator(m_hWnd, m_hToolAccel, pMsg))
+			return TRUE;
+	}
+
 	if(baseClass::PreTranslateMessage(pMsg))
 		return TRUE;
 
@@ -1086,7 +1099,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 		PerformChildEnum(ChildOptionsUpdateNotify);
 
 		m_RecentFiles.SetSize( COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("MRUSize"), 4) );
-		// m_RecentFiles.UpdateMenu(); - causes bug to show. please.fix.me.
+		m_RecentFiles.UpdateMenu();
 	}
 
 	return 0;

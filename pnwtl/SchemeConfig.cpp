@@ -317,7 +317,7 @@ void SchemeConfigParser::AddColourParam(CString& buf, LPCTSTR name, COLORREF col
 	buf += name;
 	buf += _T("=\"");
 	
-	char colbuf[12];
+	TCHAR colbuf[12];
 	colbuf[11] = NULL;
 	_sntprintf(colbuf, 11, _T("%.2x%.2x%.2x\" "), GetRValue(colour), GetGValue(colour), GetBValue(colour));
 	buf += colbuf;

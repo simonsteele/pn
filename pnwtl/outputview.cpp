@@ -50,7 +50,7 @@ void COutputView::ExtendStyleRange(int startPos, int style, TextRange* tr)
 	
 	while( startRange >= 0 )
 	{
-		char c = GetCharAt(startRange);
+		int c = GetCharAt(startRange);
 		if(GetStyleAt(startRange) != style || c == '\n' || c == '\r')
 			break;
 		startRange--;
@@ -63,7 +63,7 @@ void COutputView::ExtendStyleRange(int startPos, int style, TextRange* tr)
 		
 		endRange++;
 		
-		char c = GetCharAt(endRange-1);
+		int c = GetCharAt(endRange-1);
 		if( c == '\n' || c == '\r' )
 			break;
 	}
@@ -102,13 +102,13 @@ bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 		bool bCol = re.GetNamedMatch("c", colstr);
 
 #ifdef _DEBUG
-		tstring dbgout = "Matched file (";
+		tstring dbgout = _T("Matched file (");
 		dbgout += filename;
-		dbgout += ") line (";
+		dbgout += _T(") line (");
 		dbgout += linestr;
-		dbgout += ") col (";
+		dbgout += _T(") col (");
 		dbgout += colstr;
-		dbgout += ")\n";
+		dbgout += _T(")\n");
 		::OutputDebugString(dbgout.c_str());
 #endif
 

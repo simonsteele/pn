@@ -949,7 +949,7 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 			if (/*headerFormat.size()*/0) 
 			{
 				//SString sHeader = propsPrint.GetExpanded("print.header.format");
-				string sHeader = _T("Header");
+				tstring sHeader = _T("Header");
 				::SetTextColor(hdc, /*sdHeader.fore.AsLong()*/0);
 				::SetBkColor(hdc, /*sdHeader.back.AsLong()*/RGB(255,255,255));
 				::SelectObject(hdc, fontHeader);
@@ -983,7 +983,7 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 			if (/*footerFormat.size()*/0) 
 			{
 				//SString sFooter = propsPrint.GetExpanded("print.footer.format");
-				string sFooter = _T("Footer");
+				tstring sFooter = _T("Footer");
 				::SetTextColor(hdc, /*sdFooter.fore.AsLong()*/0);
 				::SetBkColor(hdc, /*sdFooter.back.AsLong()*/RGB(255,255,255));
 				::SelectObject(hdc, fontFooter);

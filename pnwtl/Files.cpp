@@ -184,6 +184,7 @@ long CFile::GetLength()
 int CFile::ShowError(LPCTSTR filename, bool bOpen)
 {
 	int err = GetLastError();
+	int ret = 0;
 	
 	TCHAR* fstr;
 	
@@ -234,11 +235,12 @@ int CFile::ShowError(LPCTSTR filename, bool bOpen)
 	TCHAR* buffer = new TCHAR[bs];
 	_sntprintf(buffer, bs, fstr, filename);
 	if(bOpen)
-		return ::MessageBox(NULL, (LPCTSTR)buffer, _T("Programmers Notepad 2"), MB_OK);
+		ret = ::MessageBox(NULL, (LPCTSTR)buffer, _T("Programmers Notepad 2"), MB_OK);
 	else
-		return ::MessageBox(NULL, (LPCTSTR)buffer, _T("Programmers Notepad 2"), MB_YESNOCANCEL);
+		ret = ::MessageBox(NULL, (LPCTSTR)buffer, _T("Programmers Notepad 2"), MB_YESNOCANCEL);
 
 	delete [] buffer;
+	return ret;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -636,7 +638,7 @@ tstring CFileName::GetExtension()
 		return m_FileName.substr(pos-1);
 	}
 	else
-		return tstring("");
+		return tstring(_T(""));
 }
 
 void CFileName::GetFileName_NoExt(tstring& buf)
