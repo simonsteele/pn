@@ -7,6 +7,7 @@ Fixed drop-downs in the find and replace dialogs.
 Opening a project or workspace shows the Projects window.
 Workspace saving and loading.
 Some changes to workspace/project close logic.
+Fixed projects tree-control background.
 
 Since 13/10/03:
 
