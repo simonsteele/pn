@@ -258,12 +258,11 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 {
 	if((pMsg->message >= WM_KEYFIRST) && (pMsg->message <= WM_KEYLAST))
 	{
-		if(m_hToolAccel != 0)
-			if(::TranslateAccelerator(m_hWnd, m_hToolAccel, pMsg))
-				return TRUE;
-		if(m_hGlobalToolAccel != NULL)
-			if(::TranslateAccelerator(m_hWnd, m_hGlobalToolAccel, pMsg))
-				return TRUE;
+		if(m_hToolAccel != 0 && ::TranslateAccelerator(m_hWnd, m_hToolAccel, pMsg))
+			return TRUE;
+
+		if(m_hGlobalToolAccel != 0 && ::TranslateAccelerator(m_hWnd, m_hGlobalToolAccel, pMsg))
+			return TRUE;
 	}
 
 	if(baseClass::PreTranslateMessage(pMsg))
