@@ -181,8 +181,6 @@ protected:
 	void MoveNewMenu(CSMenuHandle& remove, CSMenuHandle& add);
 	void MoveLanguage(CSMenuHandle& remove, CSMenuHandle& add);
 
-	void CloseAndFreeDlg(CDialogImplBase* pD);
-
 protected:
 	CFindDlg*				m_FindDialog;
 	CReplaceDlg*			m_ReplaceDialog;
@@ -200,6 +198,21 @@ protected:
 
 	bool					m_bShowingDefaultStatus;
 	bool					m_bIsXPOrLater;
+
+	/* Can't free dialogs via the base class or destructors don't get
+	called. Use a template function to free any dialog class */
+	template <class T>
+	void CloseAndFreeDlg(T* pD)
+	{
+		if(pD)
+		{
+			if(::IsWindow(pD->m_hWnd))
+				if(pD->IsWindowVisible())
+					pD->PostMessage(WM_CLOSE);
+			delete pD;
+		}
+	}
+
 };
 
 /////////////////////////////////////////////////////////////////////////////

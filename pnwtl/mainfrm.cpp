@@ -150,17 +150,6 @@ bool CMainFrame::OnEditorClosing(CChildFrame* pChild)
 	return bRet;
 }
 
-void CMainFrame::CloseAndFreeDlg(CDialogImplBase* pD)
-{
-	if(pD)
-	{
-		if(::IsWindow(pD->m_hWnd))
-			if(pD->IsWindowVisible())
-				pD->PostMessage(WM_CLOSE);
-		delete pD;
-	}
-}
-
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 {
 	if(baseClass::PreTranslateMessage(pMsg))
