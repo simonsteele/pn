@@ -232,14 +232,9 @@ class CInputDialogImpl : public CDialogImpl<CInputDialogImpl>
 			HWND hEdit = GetDlgItem(IDC_THEEDIT);
 			int i = ::GetWindowTextLength(hEdit) + 1;
 			
-			CWindow wnd;
-			wnd.Attach(hEdit);
-			wnd.GetWindowText(m_inputText);
-			wnd.Detach();
-
-			/*LPTSTR buf = m_inputText.GetBuffer(i);
+			LPTSTR buf = m_inputText.GetBuffer(i);
 			::GetWindowText(hEdit, buf, i);
-			m_inputText.ReleaseBuffer();*/
+			m_inputText.ReleaseBuffer();
 
 			EndDialog(wID);
 

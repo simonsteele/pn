@@ -7,13 +7,16 @@
 .html=Web
 .htm=Web
 .php=Web
+.asp=Web
 .pas=pascal
 .dfm=pascal
 .properties=Properties
 .ini=Properties
-.scheme=xml
 .conf=Properties
 .cf=Properties
+.build=xml
+.scheme=xml
+.xsl=xml
 .xml=xml
 .py=python
 .css=css

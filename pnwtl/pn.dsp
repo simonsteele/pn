@@ -160,6 +160,14 @@ SOURCE=.\stdafx.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\textview.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\tools.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\xmlparser.cpp
 # End Source File
 # End Group
@@ -293,6 +301,10 @@ SOURCE=.\res\toolbar1.bmp
 # Begin Source File
 
 SOURCE=.\include\ColorButton.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\Utf8_16.cpp
 # End Source File
 # End Group
 # End Target
