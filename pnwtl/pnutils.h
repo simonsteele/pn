@@ -452,4 +452,30 @@ class CNumberCombo : public CComboBox
 		}
 };
 
+///@todo this should probably go in a pnstrings.h file or something similar...
+
+#include <vector>
+using std::vector;
+
+template <typename TStringType>
+static void StringTokenise(const TStringType& str,
+                      vector<TStringType>& tokens,
+                      const TStringType& delimiters = _T(" "))
+{
+    // Skip delimiters at beginning.
+    TStringType::size_type lastPos = str.find_first_not_of(delimiters, 0);
+    // Find first "non-delimiter".
+    TStringType::size_type pos     = str.find_first_of(delimiters, lastPos);
+
+    while (TStringType::npos != pos || TStringType::npos != lastPos)
+    {
+        // Found a token, add it to the vector.
+        tokens.push_back(str.substr(lastPos, pos - lastPos));
+        // Skip delimiters.  Note the "not_of"
+        lastPos = str.find_first_not_of(delimiters, pos);
+        // Find next "non-delimiter"
+        pos = str.find_first_of(delimiters, lastPos);
+    }
+}
+
 #endif //#ifndef pnutils_h__included

@@ -442,6 +442,12 @@ LRESULT CTabPageKeywords::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	ScreenToClient(rcScintilla);
 	m_scintilla.Create(m_hWnd, rcScintilla, "Keywords", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS);
 	m_scintilla.SetWrapMode(SC_WRAP_WORD);
+	m_scintilla.AssignCmdKey(SCK_HOME, SCI_HOMEDISPLAY);
+	m_scintilla.AssignCmdKey(SCK_END, SCI_LINEENDDISPLAY);
+	
+	// Stop scintilla from capturing the escape and tab keys...
+	m_scintilla.ClearCmdKey(SCK_ESCAPE);
+	m_scintilla.ClearCmdKey(SCK_TAB);
 
 	CRect rc;
 	m_list.GetClientRect(&rc);
@@ -467,8 +473,36 @@ LRESULT CTabPageKeywords::OnResetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	return 0;
 }
 
+#include <algorithm>
+
 LRESULT CTabPageKeywords::OnSortClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	string str;
+
+	int len = m_scintilla.GetTextLength();
+	TCHAR* pCS = new TCHAR[len+1];
+	m_scintilla.GetText(len+1, pCS);
+	pCS[len] = _T('\0');
+	str = pCS;
+	delete [] pCS;
+
+	vector<string> tokens;
+
+	StringTokenise(str, tokens);
+	
+	std::sort(tokens.begin(), tokens.end());
+
+	string strout;
+	strout.reserve(len+1);
+
+	for(vector<string>::iterator i = tokens.begin(); i != tokens.end(); ++i)
+	{
+		if(i != tokens.begin())
+			strout += _T(" ");
+		strout += (*i);
+	}
+
+	m_scintilla.SetText(strout.c_str());
 
 	return 0;
 }
