@@ -630,7 +630,7 @@ LRESULT CChildFrame::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 
 LRESULT CChildFrame::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	SFindOptions* pOptions = OPTIONS->GetReplaceOptions();
+	SFindOptions* pOptions = OPTIONS->GetSearchOptions();
 	if( pOptions->FindText != _T("") )
 	{
 		if( !/*m_view.*/FindNext(pOptions) )

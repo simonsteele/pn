@@ -122,6 +122,20 @@ void Options::loadCache()
 	m_ReplaceOptions.UseRegExp		= (BOOL)Get(NULL, _T("Replace UseRegExp"), false);
 	m_ReplaceOptions.UseSlashes		= (BOOL)Get(NULL, _T("Replace UseSlashes"), false);
 
+	// New Search Options...
+	m_SearchOptions.FindText		= Get(NULL, _T("FindText"), _T("")).c_str();
+	m_SearchOptions.ReplaceText		= Get(NULL, _T("ReplaceText"), _T("")).c_str();
+	m_SearchOptions.Path			= Get(NULL, _T("Path"), _T("")).c_str();
+	m_SearchOptions.FileExts		= Get(NULL, _T("FileExts"), _T("")).c_str();
+	
+	m_SearchOptions.Direction		= (BOOL)Get(NULL, _T("Direction"), true);
+	m_SearchOptions.Loop			= (BOOL)Get(NULL, _T("Loop"), true);
+	m_SearchOptions.MatchCase		= (BOOL)Get(NULL, _T("MatchCase"), false);
+	m_SearchOptions.MatchWholeWord	= (BOOL)Get(NULL, _T("MatchWholeWord"), false);
+	m_SearchOptions.Recurse			= (BOOL)Get(NULL, _T("Recurse"), true);
+	m_SearchOptions.UseRegExp		= (BOOL)Get(NULL, _T("UseRegExp"), false);
+	m_SearchOptions.UseSlashes		= (BOOL)Get(NULL, _T("UseSlashes"), false);	
+
 	cache[OFindAlphaEnabled]		= Get(NULL, _T("FindAlphaEnabled"), true);
 	cache[OFindAlphaPercent]		= Get(NULL, _T("FindAlphaPercent"), 60);
 
@@ -178,6 +192,20 @@ void Options::saveCache()
 	Set(NULL, _T("Replace MatchWholeWord"), m_ReplaceOptions.MatchWholeWord);
 	Set(NULL, _T("Replace UseRegExp"),		m_ReplaceOptions.UseRegExp);
 	Set(NULL, _T("Replace UseSlashes"),		m_ReplaceOptions.UseSlashes);
+
+	// New search options
+	Set(NULL, _T("FindText"),				m_SearchOptions.FindText);
+	Set(NULL, _T("ReplaceText"),			m_SearchOptions.ReplaceText);
+	Set(NULL, _T("Path"),					m_SearchOptions.Path);
+	Set(NULL, _T("FileExts"),				m_SearchOptions.FileExts);
+	
+	Set(NULL, _T("Direction"),				m_SearchOptions.Direction);
+	Set(NULL, _T("Loop"),					m_SearchOptions.Loop);
+	Set(NULL, _T("MatchCase"),				m_SearchOptions.MatchCase);
+	Set(NULL, _T("MatchWholeWord"),			m_SearchOptions.MatchWholeWord);
+	Set(NULL, _T("Recurse"),				m_SearchOptions.Recurse);
+	Set(NULL, _T("UseRegExp"),				m_SearchOptions.UseRegExp);
+	Set(NULL, _T("UseSlashes"),				m_SearchOptions.UseSlashes);
 
 	Set(NULL, _T("FindAlphaEnabled"),		cache[OFindAlphaEnabled]);
 	Set(NULL, _T("FindAlphaPercent"),		cache[OFindAlphaPercent]);

@@ -85,6 +85,7 @@ CFindExDialog::CFindExDialog()
 {
 	m_SearchWhere = 0;
 	m_type = eftFind;
+	m_lastType = eftInvalid;
 
 	m_lastVisibleCB = -1;
 	m_bottom = -1;
@@ -246,16 +247,20 @@ LRESULT CFindExDialog::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 {
 	if((BOOL)wParam)
 	{
-		SReplaceOptions* pOptions = OPTIONS->GetReplaceOptions();
+		SReplaceOptions* pOptions = OPTIONS->GetSearchOptions();
 		//SetFindText(m_FindText);
 		if(m_FindText.GetLength() == 0 && pOptions->FindText.GetLength())
 			m_FindText = pOptions->FindText;
 		m_ReplaceText = pOptions->ReplaceText;
+		m_FindWhereText = pOptions->Path;
+		m_FindTypeText = pOptions->FileExts;
+
 		m_bMatchCase = pOptions->MatchCase;
 		m_bMatchWhole = pOptions->MatchWholeWord;
 		m_bSearchUp = !pOptions->Direction;
 		m_bRegExp = pOptions->UseRegExp;
 		m_bUseSlashes = pOptions->UseSlashes;
+		m_bSearchSubdirs = pOptions->Recurse;
 
 		//m_bSearchAll = pOptions->SearchAll;
 		

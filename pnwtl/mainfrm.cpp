@@ -1727,7 +1727,7 @@ LRESULT CMainFrame::OnFindComboEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	CChildFrame* pEditor = CChildFrame::FromHandle( GetCurrentEditor() );
 	if( pEditor != NULL && lstrlen((LPCTSTR)wt) > 0 )
 	{
-		SFindOptions* pFindOptions = OPTIONS->GetFindOptions();
+		SFindOptions* pFindOptions = OPTIONS->GetSearchOptions();
 		if(pFindOptions->FindText != (LPCTSTR)wt)
 		{
 			pFindOptions->Found = false;

@@ -13,7 +13,7 @@
 
 class CChildFrame;
 
-typedef enum { eftFind, eftReplace, eftFindInFiles } EFindDialogType;
+typedef enum { eftFind, eftReplace, eftFindInFiles, eftInvalid } EFindDialogType;
 
 typedef BOOL (__stdcall *PFNSetLayeredWindowAttributes)(HWND hwnd, COLORREF crKey, BYTE bAlpha, DWORD dwFlags);
 
