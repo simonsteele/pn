@@ -1,0 +1,13 @@
+.cpp=cpp
+.h=cpp
+.cxx=cpp
+.idl=cpp
+.html=Web
+.htm=Web
+.php=Web
+.pas=ObjectPascal
+.properties=Properties
+.ini=Properties
+.scheme=Properties
+.conf=Properties
+.cf=Properties
