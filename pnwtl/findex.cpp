@@ -4,6 +4,57 @@
 #include "include/accombo.h"
 #include "findex.h"
 
+#define SWP_SIMPLEMOVE (SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE)
+
+const UINT CHECKBOX_CONTROL_IDS [] = {
+	IDC_MATCHWHOLE_CHECK, 
+	IDC_MATCHCASE_CHECK, 
+	IDC_REGEXP_CHECK, 
+	IDC_BACKSLASHES_CHECK,
+	IDC_SEARCHUP_CHECK,
+	IDC_SUBDIRS_CHECK
+};
+
+const UINT RADIO_CONTROL_IDS [] = {
+	IDC_CURRENTDOC_RADIO,
+	IDC_ALLOPEN_RADIO,
+	IDC_CURRENTPROJ_RADIO,
+	IDC_INSELECTION_RADIO
+};
+
+const int CHECKBOX_CONTROL_COUNT = 6;
+
+const UINT FIND_CHECKBOXES [] = {
+	IDC_MATCHWHOLE_CHECK, 
+	IDC_MATCHCASE_CHECK, 
+	IDC_REGEXP_CHECK, 
+	IDC_BACKSLASHES_CHECK,
+	IDC_SEARCHUP_CHECK
+};
+
+const int nFIND_CHECKBOXES = 5;
+
+const UINT REPLACE_CHECKBOXES [] = {
+	IDC_MATCHWHOLE_CHECK, 
+	IDC_MATCHCASE_CHECK, 
+	IDC_REGEXP_CHECK,
+	IDC_BACKSLASHES_CHECK,
+	IDC_SEARCHUP_CHECK
+};
+
+const int nREPLACE_CHECKBOXES = 4;
+
+const UINT FINDINFILES_CHECKBOXES [] = {
+	//IDC_MATCHWHOLE_CHECK, 
+	IDC_MATCHCASE_CHECK, 
+	//IDC_REGEXP_CHECK, 
+	//IDC_SEARCHUP_CHECK, 
+	//IDC_BACKSLASHES_CHECK
+	IDC_SUBDIRS_CHECK
+};
+
+int nFINDINFILES_CHECKBOXES = 2;
+
 class ATL_NO_VTABLE ClientRect : public CRect
 {
 public:
@@ -21,8 +72,11 @@ public:
 
 CFindExDialog::CFindExDialog()
 {
-	m_Direction = 1;
+	m_SearchWhere = 0;
 	m_type = eftFind;
+
+	m_lastVisibleCB = -1;
+	m_bottom = -1;
 }
 
 // A derived class might not need to override this although they can.
@@ -60,11 +114,49 @@ int CFindExDialog::calcTabAreaHeight(void)
 	return nNewTabAreaHeight;
 }
 
+void CFindExDialog::moveUp(int offset, CWindow& ctrl)
+{
+	ClientRect rc(ctrl, *this);
+	rc.top -= offset;
+	ctrl.SetWindowPos(HWND_TOP, rc, SWP_SIMPLEMOVE);
+}
+
 LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	CSize size = GetGUIFontSize();
+	// Set up the tab control images.
+	m_imageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, 4, 4);
+	
+	HBITMAP hBitmap = (HBITMAP)::LoadImage(
+		_Module.m_hInst,
+		MAKEINTRESOURCE(IDB_FINDTOOLBAR),
+		IMAGE_BITMAP, 0, 0, LR_SHARED);
 
-	ClientRect rc(GetDlgItem(IDC_FINDTEXT_DUMMY), *this);
+	m_imageList.Add(hBitmap, RGB(255,0,255));
+	m_tabControl.SetImageList(m_imageList.m_hImageList);
+	
+	// Position and create the tab control.
+	DWORD dwStyle = WS_TABSTOP | WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CTCS_HOTTRACK | CTCS_FLATEDGE;
+
+	CRect rcTabs;
+	GetClientRect(rcTabs);
+	rcTabs.top = 2;
+	rcTabs.left = 2;
+	rcTabs.bottom = calcTabAreaHeight();
+
+	m_tabControl.Create(m_hWnd, rcTabs, NULL, dwStyle, 0, IDC_FINDEX_TABS);
+	m_tabControl.SetWindowPos(GetDlgItem(IDC_FINDEXTABS_PLACEHOLDER), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW | SWP_NOACTIVATE);
+
+	// Move the line that goes beneath the tab control.
+	CStatic s(GetDlgItem(IDC_FINDEX_LINE));
+	ClientRect rc(s, *this);
+	int height = rc.Height();
+	rc.top = rcTabs.bottom + 1;
+	s.SetWindowPos(HWND_TOP, rc, SWP_SIMPLEMOVE);
+
+	// Sort out the combo boxes.
+	CSize size = GetGUIFontSize();
+	
+	rc.set(GetDlgItem(IDC_FINDTEXT_DUMMY), *this);
 	rc.bottom = rc.top + (size.cy * 10);
 
 	m_FindTextCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VSCROLL | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO,
@@ -82,14 +174,15 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	rc.set(GetDlgItem(IDC_FINDWHERE_DUMMY), *this);
 	rc.bottom = rc.top + (size.cy * 10);
 
-	m_FindWhereCombo.Create(m_hWnd, rc, _T("FINDWHERECOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_REPLACETEXT_COMBO,
+	m_FindWhereCombo.Create(m_hWnd, rc, _T("FINDWHERECOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDWHERE_COMBO,
 		IDC_FINDWHERE_DUMMY);
 
 	rc.set(GetDlgItem(IDC_FINDTYPE_DUMMY), *this);
 	rc.bottom = rc.top + (size.cy * 10);
 
-	m_FindTypeCombo.Create(m_hWnd, rc, _T("FINDTYPECOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0);
+	m_FindTypeCombo.Create(m_hWnd, rc, _T("FINDTYPECOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTYPE_COMBO);
 	m_FindTypeCombo.SetFont(GetFont());
+	m_FindTypeCombo.SetWindowPos(GetDlgItem(IDC_FINDTYPE_DUMMY), 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW | SWP_NOACTIVATE);
 
 	m_ReHelperBtn.SubclassWindow(GetDlgItem(IDC_REHELPER_BUTTON));
 	m_ReHelperBtn2.SubclassWindow(GetDlgItem(IDC_RHELPER_BUTTON));
@@ -100,55 +193,82 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	CenterWindow(GetParent());
 
-	// Set up the tab control images.
-	m_imageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, 4, 4);
-	
-	HBITMAP hBitmap = (HBITMAP)::LoadImage(
-		_Module.m_hInst,
-		MAKEINTRESOURCE(IDB_FINDTOOLBAR),
-		IMAGE_BITMAP, 0, 0, LR_SHARED);
-
-	m_imageList.Add(hBitmap, RGB(255,0,255));
-	m_tabControl.SetImageList(m_imageList.m_hImageList);
-	
-	// Position and create the tab control.
-	DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CTCS_HOTTRACK | CTCS_FLATEDGE;
-
-	CRect rcTabs;
-	GetClientRect(rcTabs);
-	rcTabs.top = 2;
-	rcTabs.left = 2;
-	rcTabs.bottom = calcTabAreaHeight();
-
-	m_tabControl.Create(m_hWnd, rcTabs, NULL, dwStyle, 0, IDC_FINDEX_TABS);
-
-	// Move the line that goes beneath the tab control.
-	CStatic s(GetDlgItem(IDC_FINDEX_LINE));
-	rc.set(s, *this);
-	int height = rc.Height();
-	rc.top = rcTabs.bottom + 1;
-	s.SetWindowPos(HWND_TOP, rc, SWP_NOZORDER | SWP_NOSIZE);
-
-	// Setup find where autocomplete.
-	//m_FindWhereAC
-
+	// Work out some combo box vertical positions.
 	ClientRect rcCombo(m_FindWhereCombo, *this);
 
 	m_comboDistance = rcCombo.top - m_group2Top;
 	m_group3Bottom = rcCombo.bottom;
+
+	// Move all the combo boxes into position.
+	moveUp(m_comboDistance, m_FindWhereCombo);
+	moveUp(m_comboDistance, m_FindTypeCombo);
+	moveUp(m_comboDistance, CStatic(GetDlgItem(IDC_FINDWHERE_LABEL)));
+	moveUp(m_comboDistance, CStatic(GetDlgItem(IDC_FINDTYPE_LABEL)));
 
 	rcCombo.set(m_ReplaceTextCombo, *this);
 	
 	m_group2Bottom = rcCombo.bottom;
 	m_group1Bottom = m_group2Bottom - m_comboDistance;
 
-	setupTabs();
+	// Add tabs
+	addTab(_T("Find"), 2);
+	addTab(_T("Replace"), 3);
+	addTab(_T("Find in Files"), 0);
 
 	updateLayout();
 
 	DlgResize_Init();
 
+	m_FindTextCombo.SetFocus();
+
 	return TRUE;
+}
+
+LRESULT CFindExDialog::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	if((BOOL)wParam)
+	{
+		SFindOptions* pOptions = OPTIONS->GetFindOptions();
+		//SetFindText(m_FindText);
+		if(m_FindText.GetLength() == 0 && pOptions->FindText.GetLength())
+			m_FindText = pOptions->FindText;
+		m_bSearchUp = pOptions->Direction;
+		m_bMatchCase = pOptions->MatchCase;
+		m_bMatchWhole = pOptions->MatchWholeWord;
+		//m_bSearchAll = pOptions->SearchAll;
+		m_bRegExp = pOptions->UseRegExp;
+		
+		// Do the funky DDX thang...
+		DoDataExchange(FALSE);
+
+		m_FindTextCombo.SetFocus();
+
+		UIEnable(IDC_REHELPER_BUTTON, m_bRegExp);
+		UIUpdateChildWindows();
+	}
+
+	return 0;
+}
+
+LRESULT CFindExDialog::OnCloseCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	/*CChildFrame* pChild = GetCurrentEditorWnd();
+	if(pChild != NULL)
+		pChild->SetFocus();
+	else
+		GetWindow(GW_OWNER).SetFocus();*/
+
+	ShowWindow(SW_HIDE);
+	
+	return 0;
+}
+
+LRESULT CFindExDialog::OnSelChange(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHandled)
+{
+	int nNewTab = m_tabControl.GetCurSel();
+	m_type = (EFindDialogType)nNewTab;
+	updateLayout();
+	return 0;
 }
 
 int CFindExDialog::addTab(LPCTSTR name, int iconIndex)
@@ -166,46 +286,27 @@ int CFindExDialog::addTab(LPCTSTR name, int iconIndex)
 	return -1;
 }
 
-void CFindExDialog::setupTabs()
+int CFindExDialog::positionChecks(int top, const UINT* checkboxIDs, int nCheckboxIDs)
 {
-	addTab(_T("Find"), 2);
-	addTab(_T("Replace"), 3);
-	addTab(_T("Find in Files"), 0);
-}
+	int chkDist = m_checkDist;
 
-#define SWP_SIMPLEMOVE (SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE)
-
-int CFindExDialog::positionChecks(int top)
-{
-	UINT checkboxIDs [] = {
-		IDC_MATCHWHOLE_CHECK, 
-		IDC_MATCHCASE_CHECK, 
-		IDC_REGEXP_CHECK, 
-		IDC_SEARCHALL_CHECK, 
-		IDC_BACKSLASHES_CHECK
-	};
-	
-	int nCheckboxes = 5;
-
-	CRect rc;
-	int chkDist;
-	CButton cb1(GetDlgItem(checkboxIDs[0]));
-	cb1.GetWindowRect(rc);
-	ScreenToClient(rc);
-	chkDist = rc.top;
-	CButton cb2(GetDlgItem(checkboxIDs[1]));
-	cb2.GetWindowRect(rc);
-	ScreenToClient(rc);
-	chkDist = rc.top - chkDist;
-
+	ClientRect rc(CButton(GetDlgItem(checkboxIDs[0])), *this);
 	rc.top = top;
 
-	for(int i = 0; i < nCheckboxes; i++)
+	for(int j = 0; j < CHECKBOX_CONTROL_COUNT; j++)
+	{
+		CButton(GetDlgItem(CHECKBOX_CONTROL_IDS[j])).ShowWindow(SW_HIDE);
+	}
+
+	for(int i = 0; i < nCheckboxIDs; i++)
 	{
 		CButton cb(GetDlgItem(checkboxIDs[i]));
 		cb.SetWindowPos(HWND_TOP, rc, SWP_SIMPLEMOVE);
 		rc.top += chkDist;
+		cb.ShowWindow(SW_SHOW);
 	}
+
+	m_lastVisibleCB = checkboxIDs[nCheckboxIDs-1];
 
 	return rc.top;
 }
@@ -213,47 +314,137 @@ int CFindExDialog::positionChecks(int top)
 void CFindExDialog::updateLayout()
 {
 	int restTop;
-	ClientRect rcLastCheck(GetDlgItem(IDC_BACKSLASHES_CHECK), *this);
-	int oldBottom = rcLastCheck.bottom;
+	const UINT* checkboxes = NULL;
+	int nCheckboxes = 0;
+
+	if(m_lastVisibleCB == -1)
+	{
+		// First time through, we calculate the gap between checkboxes
+		// and work out where the initial last-visible checkbox is.
+		int chkDist;
+		CButton cb1(GetDlgItem(CHECKBOX_CONTROL_IDS[0]));
+		ClientRect rc(cb1, *this);
+		
+		chkDist = rc.top;
+		
+		CButton cb2(GetDlgItem(CHECKBOX_CONTROL_IDS[1]));
+		rc.set(cb2, *this);
+		
+		m_checkDist = rc.top - chkDist;
+
+		m_lastVisibleCB = CHECKBOX_CONTROL_IDS[CHECKBOX_CONTROL_COUNT-1];
+
+		ClientRect rcLastCheck(GetDlgItem(CHECKBOX_CONTROL_IDS[CHECKBOX_CONTROL_COUNT-1]), *this);
+		m_bottom = rcLastCheck.bottom;
+	}
+	
+	int oldBottom = m_bottom;
 
 	switch(m_type)
 	{
 	case eftFind:
 		{
+			checkboxes = FIND_CHECKBOXES;
+			nCheckboxes = nFIND_CHECKBOXES;
+			
 			CStatic(GetDlgItem(IDC_REPLACETEXT_LABEL)).ShowWindow(SW_HIDE);
 			m_ReplaceTextCombo.ShowWindow(SW_HIDE);
+			m_ReHelperBtn2.ShowWindow(SW_HIDE);
+
 			CStatic(GetDlgItem(IDC_FINDWHERE_LABEL)).ShowWindow(SW_HIDE);
 			m_FindWhereCombo.ShowWindow(SW_HIDE);
 			CStatic(GetDlgItem(IDC_FINDTYPE_LABEL)).ShowWindow(SW_HIDE);
 			m_FindTypeCombo.ShowWindow(SW_HIDE);
-			m_ReHelperBtn2.ShowWindow(SW_HIDE);
+
+			CButton(GetDlgItem(IDC_REPLACE_BUTTON)).ShowWindow(SW_HIDE);
+			CButton(GetDlgItem(IDC_REPLACEALL_BUTTON)).ShowWindow(SW_HIDE);
+
+			CButton(GetDlgItem(IDC_MARKALL_BUTTON)).ShowWindow(SW_SHOW);
 			
 			restTop = m_group1Bottom + 12;
 		}
 		break;
+
+	case eftReplace:
+		{
+			checkboxes = REPLACE_CHECKBOXES;
+			nCheckboxes = nREPLACE_CHECKBOXES;
+			
+			CStatic(GetDlgItem(IDC_FINDWHERE_LABEL)).ShowWindow(SW_HIDE);
+			m_FindWhereCombo.ShowWindow(SW_HIDE);
+			CStatic(GetDlgItem(IDC_FINDTYPE_LABEL)).ShowWindow(SW_HIDE);
+			m_FindTypeCombo.ShowWindow(SW_HIDE);
+
+			CButton(GetDlgItem(IDC_MARKALL_BUTTON)).ShowWindow(SW_SHOW);
+
+			CStatic(GetDlgItem(IDC_REPLACETEXT_LABEL)).ShowWindow(SW_SHOW);
+			m_ReplaceTextCombo.ShowWindow(SW_SHOW);
+			m_ReHelperBtn2.ShowWindow(SW_SHOW);
+
+			CButton(GetDlgItem(IDC_REPLACE_BUTTON)).ShowWindow(SW_SHOW);
+			CButton(GetDlgItem(IDC_REPLACEALL_BUTTON)).ShowWindow(SW_SHOW);
+
+			restTop = m_group2Bottom + 12;
+		}
+		break;
+
+	case eftFindInFiles:
+		{
+			checkboxes = FINDINFILES_CHECKBOXES;
+			nCheckboxes = nFINDINFILES_CHECKBOXES;
+
+			int nCheckboxes = 2;
+
+			CStatic(GetDlgItem(IDC_REPLACETEXT_LABEL)).ShowWindow(SW_HIDE);
+			m_ReplaceTextCombo.ShowWindow(SW_HIDE);
+			m_ReHelperBtn2.ShowWindow(SW_HIDE);
+
+			CButton(GetDlgItem(IDC_MARKALL_BUTTON)).ShowWindow(SW_HIDE);
+			CButton(GetDlgItem(IDC_REPLACE_BUTTON)).ShowWindow(SW_HIDE);
+			CButton(GetDlgItem(IDC_REPLACEALL_BUTTON)).ShowWindow(SW_HIDE);
+
+			CStatic(GetDlgItem(IDC_FINDWHERE_LABEL)).ShowWindow(SW_SHOW);
+			m_FindWhereCombo.ShowWindow(SW_SHOW);
+			CStatic(GetDlgItem(IDC_FINDTYPE_LABEL)).ShowWindow(SW_SHOW);
+			m_FindTypeCombo.ShowWindow(SW_SHOW);
+
+			restTop = m_group3Bottom + 12;
+		}
+		break;
 	}
 
-	int bottomChecks = positionChecks(restTop);
+	int bottomChecks = positionChecks(restTop, checkboxes, nCheckboxes);
 
-	CStatic dirgroup(GetDlgItem(IDC_FINDEX_DIRGROUP));
+	CStatic dirgroup(GetDlgItem(IDC_SEARCHIN_GROUP));
 	ClientRect rc(dirgroup, *this);
 	int dy = rc.top - (restTop);
 	rc.top = restTop;
 	dirgroup.SetWindowPos(HWND_TOP, rc, SWP_SIMPLEMOVE);
-	
-	CButton up(GetDlgItem(IDC_UP_RADIO));
-	rc.set(up, *this);
-	rc.top -= dy;
-	up.SetWindowPos(HWND_TOP, rc, SWP_SIMPLEMOVE);
-	
-	CButton down(GetDlgItem(IDC_DOWN_RADIO));
-	rc.set(down, *this);
-	rc.top -= dy;
-	down.SetWindowPos(HWND_TOP, rc, SWP_SIMPLEMOVE);
 
-	//int height = bottomChecks + gap;
+	for(int i = 0; i < 4; i++)
+	{
+		CButton up(GetDlgItem(RADIO_CONTROL_IDS[i]));
+		rc.set(up, *this);
+		rc.top -= dy;
+		up.SetWindowPos(HWND_TOP, rc, SWP_SIMPLEMOVE);
+	}
+
+	// Get the new position of the bottom of the window.
 	CRect rcMe;
 	GetWindowRect(rcMe);
-	rcMe.bottom -= (oldBottom - bottomChecks);
-	SetWindowPos(HWND_TOP, rcMe, SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
+	int newBottom = rcMe.bottom - (oldBottom - bottomChecks);
+	
+	// Check whether it's below the groupbox.
+	CRect rcGroup;
+	dirgroup.GetWindowRect(rcGroup);
+	newBottom = max(newBottom, rcGroup.bottom+12);
+
+	// Get that difference and offset our minmaxinfo
+	dy = rcMe.bottom - newBottom;
+	m_ptMinTrackSize.y -= dy;
+
+	m_bottom = rcMe.bottom = newBottom;
+	//m_bottom = rcMe.bottom;
+
+	SetWindowPos(HWND_TOP, rcMe, SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);	
 }

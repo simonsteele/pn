@@ -18,6 +18,7 @@ class CMainFrame;
 class CChildFrame;
 class CFindDlg;
 class CReplaceDlg;
+class CFindExDialog;
 class COutputView;
 class CClipsDocker;
 class CProjectDocker;
@@ -360,6 +361,7 @@ protected:
 	COutputView*			m_pOutputWnd;
 	CClipsDocker*			m_pClipsWnd;
 	CProjectDocker*			m_pProjectsWnd;
+	CFindExDialog*			m_pFindEx;
 	
 	CScintilla				m_Dummy;			///< Scintilla often doesn't like unloading and reloading.
 

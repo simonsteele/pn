@@ -1425,7 +1425,7 @@ LRESULT CMainFrame::OnWindowArrangeIcons(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	return 0;
 }
 
-//#include "findex.h"
+#include "findex.h"
 
 LRESULT CMainFrame::OnFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
@@ -1447,9 +1447,9 @@ LRESULT CMainFrame::OnFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	//	temp, 0,
 	//	true, dockwins::CDockingSide::sTop);
 
-	//CFindExDialog* find = new CFindExDialog();
-	//find->Create(m_hWnd);
-	//find->ShowWindow(SW_SHOW);
+	//m_pFindEx = new CFindExDialog();
+	//hFindWnd = m_pFindEx->Create(m_hWnd);
+	//m_pFindEx->ShowWindow(SW_SHOW);
 
 	return 0;
 }

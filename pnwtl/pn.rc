@@ -1216,7 +1216,7 @@ BEGIN
                     LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
 END
 
-IDD_FINDEX DIALOGEX 0, 0, 283, 168
+IDD_FINDEX DIALOGEX 0, 0, 288, 180
 STYLE DS_SETFONT | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "Find Ex..."
 FONT 8, "MS Sans Serif", 0, 0, 0x1
@@ -1224,8 +1224,12 @@ BEGIN
     LTEXT           "Static",IDC_FINDTEXT_DUMMY,56,26,145,12,NOT WS_VISIBLE
     CONTROL         "",IDC_REHELPER_BUTTON,"Button",BS_OWNERDRAW | 
                     WS_TABSTOP,207,27,9,11,0,HIDC_REHELPER_BUTTON
-    DEFPUSHBUTTON   "&Find Next",IDC_FINDNEXT_BUTTON,226,26,50,14,WS_GROUP,0,
-                    HIDC_FINDNEXT_BUTTON
+    LTEXT           "Static",IDC_REPLACETEXT_DUMMY,56,43,145,12,NOT 
+                    WS_VISIBLE
+    PUSHBUTTON      "",IDC_RHELPER_BUTTON,207,44,9,11,0,0,
+                    HIDC_RHELPER_BUTTON
+    LTEXT           "Static",IDC_FINDWHERE_DUMMY,56,60,145,12,NOT WS_VISIBLE
+    LTEXT           "Static",IDC_FINDTYPE_DUMMY,56,77,145,12,NOT WS_VISIBLE
     CONTROL         "Match &whole word only",IDC_MATCHWHOLE_CHECK,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,101,103,10,0,
                     HIDC_MATCHWHOLE_CHECK
@@ -1235,36 +1239,44 @@ BEGIN
     CONTROL         "Regular &expression",IDC_REGEXP_CHECK,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,125,98,10,0,
                     HIDC_REGEXP_CHECK
-    CONTROL         "Search &all open documents",IDC_SEARCHALL_CHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,137,102,11,0,
-                    HIDC_SEARCHALL_CHECK
-    CONTROL         "&Up",IDC_UP_RADIO,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,124,118,43,10,0,HIDC_UP_RADIO
-    CONTROL         "&Down",IDC_DOWN_RADIO,"Button",BS_AUTORADIOBUTTON,124,
-                    129,43,10,0,HIDC_DOWN_RADIO
-    PUSHBUTTON      "&Mark All",IDC_MARKALL_BUTTON,226,45,50,14,WS_DISABLED | 
+    CONTROL         "Allow backslash expressions",IDC_BACKSLASHES_CHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,137,
+                    109,11,0,HIDC_BACKSLASHES_CHECK
+    CONTROL         "Search &up",IDC_SEARCHUP_CHECK,"Button",BS_AUTOCHECKBOX | 
+                    WS_GROUP | WS_TABSTOP,7,149,51,11,0,HIDC_SEARCHUP_CHECK
+    CONTROL         "Search &subdirectories",IDC_SUBDIRS_CHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,161,109,11,0,
+                    HIDC_SUBDIRS_CHECK
+    CONTROL         "Current document",IDC_CURRENTDOC_RADIO,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP,124,114,91,10,
+                    WS_EX_TRANSPARENT
+    CONTROL         "All open documents",IDC_ALLOPEN_RADIO,"Button",
+                    BS_AUTORADIOBUTTON,124,126,91,10,WS_EX_TRANSPARENT
+    CONTROL         "Current project",IDC_CURRENTPROJ_RADIO,"Button",
+                    BS_AUTORADIOBUTTON,124,138,91,10,WS_EX_TRANSPARENT
+    CONTROL         "In selection",IDC_INSELECTION_RADIO,"Button",
+                    BS_AUTORADIOBUTTON,124,150,91,10,WS_EX_TRANSPARENT
+    DEFPUSHBUTTON   "&Find Next",IDC_FINDNEXT_BUTTON,228,26,53,14,WS_GROUP,0,
+                    HIDC_FINDNEXT_BUTTON
+    PUSHBUTTON      "&Mark All",IDC_MARKALL_BUTTON,228,43,53,14,WS_DISABLED | 
                     WS_GROUP,0,HIDC_MARKALL_BUTTON
-    PUSHBUTTON      "Cancel",IDCANCEL,226,64,50,14,WS_GROUP
+    PUSHBUTTON      "&Replace",IDC_REPLACE_BUTTON,228,60,53,14,WS_GROUP
+    PUSHBUTTON      "Replace &All",IDC_REPLACEALL_BUTTON,228,77,53,14,
+                    WS_GROUP
+    PUSHBUTTON      "Cancel",IDCANCEL,228,94,53,14,WS_GROUP
+    LTEXT           "Tabs go here.",IDC_FINDEXTABS_PLACEHOLDER,7,2,274,12,
+                    NOT WS_VISIBLE,WS_EX_TRANSPARENT
     RTEXT           "Fi&nd what:",IDC_FINDTEXT_LABEL,12,28,40,10,0,0,
-                    HIDC_FINDTEXT_LABEL
-    GROUPBOX        "Direction",IDC_FINDEX_DIRGROUP,119,107,74,35,0,
-                    WS_EX_TRANSPARENT,HIDC_FINDEX_DIRGROUP
-    CONTROL         "",IDC_FINDEX_LINE,"Static",SS_ETCHEDHORZ,1,16,268,1
-    LTEXT           "Static",IDC_REPLACETEXT_DUMMY,56,43,145,12,NOT 
-                    WS_VISIBLE
-    PUSHBUTTON      "",IDC_RHELPER_BUTTON,207,44,9,11,0,0,
-                    HIDC_RHELPER_BUTTON
+                    0x81b40456
+    CONTROL         "",IDC_FINDEX_LINE,"Static",SS_ETCHEDHORZ,1,16,284,1
     LTEXT           "Replace with:",IDC_REPLACETEXT_LABEL,7,46,45,10,0,0,
                     HIDC_REPLACETEXT_LABEL
-    LTEXT           "Static",IDC_FINDTYPE_DUMMY,56,77,145,12,NOT WS_VISIBLE
-    LTEXT           "Static",IDC_FINDWHERE_DUMMY,56,60,145,12,NOT WS_VISIBLE
     RTEXT           "File types:",IDC_FINDTYPE_LABEL,7,80,45,10,0,0,
                     HIDC_FINDTYPE_LABEL
     RTEXT           "Find where:",IDC_FINDWHERE_LABEL,7,63,45,10,0,0,
                     HIDC_FINDWHERE_LABEL
-    CONTROL         "Allow backslash expressions",IDC_BACKSLASHES_CHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,149,
-                    109,11,0,HIDC_BACKSLASHES_CHECK
+    GROUPBOX        "Search",IDC_SEARCHIN_GROUP,117,101,106,67,0,
+                    WS_EX_TRANSPARENT
 END
 
 
@@ -1468,9 +1480,9 @@ BEGIN
     IDD_FINDEX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 276
+        RIGHTMARGIN, 281
         TOPMARGIN, 7
-        BOTTOMMARGIN, 160
+        BOTTOMMARGIN, 172
     END
 END
 #endif    // APSTUDIO_INVOKED

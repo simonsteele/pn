@@ -19,6 +19,8 @@
 #define IDC_MATCHCASE_CHECK             105
 #define IDC_REPLACETEXT_COMBO           106
 #define IDC_REGEXP_CHECK                107
+#define IDC_FINDWHERE_COMBO				108
+#define IDC_FINDTYPE_COMBO				109
 #define IDC_UP_RADIO                    113
 #define IDC_DOWN_RADIO                  114
 #define ID_POS_PANE                     115
@@ -173,6 +175,7 @@
 #define IDC_GOTOEDIT                    1004
 #define IDC_THEEDIT                     1004
 #define IDC_FINDWHERE_DUMMY             1004
+#define IDC_FINDWHERE_DUMM              1004
 #define IDC_PNSCOMBO                    1005
 #define IDC_HELPBTN                     1006
 #define IDC_TREE                        1007
@@ -248,10 +251,11 @@
 #define IDC_TE_INFOLABEL                1044
 #define IDC_FINDWHERE_LABEL             1044
 #define IDC_TEXTTITLE                   1045
-#define IDC_BACKSLASH_CHECK2            1045
 #define IDC_BACKSLASHES_CHECK           1045
 #define IDC_VERSIONSTATIC               1046
+#define IDC_SUBDIRS_CHECK               1046
 #define IDC_TE_CAPTURECHECK             1047
+#define IDC_SEARCHUP_CHECK              1047
 #define IDC_OPT_INDENTGUIDESCHECK       1048
 #define IDC_TE_FILTERCHECK              1048
 #define IDC_OPT_USETABSCHECK            1049
@@ -330,7 +334,14 @@
 #define IDC_FINDEX_TABDUMMY             1102
 #define IDC_FINDEX_TABS                 1103
 #define IDC_FINDEX_LINE                 1104
-#define IDC_FINDEX_DIRGROUP             1105
+#define IDC_CURRENTDOC_RADIO            1106
+#define IDC_ALLOPEN_RADIO               1107
+#define IDC_CURRENTPROJ_RADIO           1108
+#define IDC_RADIO4                      1109
+#define IDC_INSELECTION_RADIO           1109
+#define IDC_FINDTEXT_LABEL              1110
+#define IDC_SEARCHIN_GROUP              1111
+#define IDC_FINDEXTABS_PLACEHOLDER      1112
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -416,7 +427,6 @@
 #define ID_PROJECT_MAGICADDFOLDER       32918
 #define ID_FILE_CLOSEALL                32920
 #define ID_PROJECT_PROPERTIES           32924
-#define IDC_FINDTEXT_LABEL              65535
 
 // Next default values for new objects
 // 
@@ -425,7 +435,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        333
 #define _APS_NEXT_COMMAND_VALUE         32925
-#define _APS_NEXT_CONTROL_VALUE         1106
+#define _APS_NEXT_CONTROL_VALUE         1114
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif
