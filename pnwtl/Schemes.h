@@ -27,19 +27,18 @@ class CScheme
 		CScheme(CSchemeManager* pManager, LPCTSTR filename);
 		~CScheme();
 
-		virtual bool Compile(LPCTSTR outfile=NULL);
-
-		virtual bool IsCompiled();
-
-		virtual void EnsureCompiled();
-
 		virtual void Load(CScintilla& sc, LPCTSTR filename = NULL);
 
 		virtual void SetName(LPCTSTR name);
 
-		virtual void CheckName(LPCTSTR filename = NULL);
+		virtual void CheckName();
 
-		virtual LPCTSTR GetName(){return m_Name;}
+		virtual LPCTSTR GetName()
+		{
+			if(!m_Name)
+				CheckName();
+			return m_Name;
+		}
 };
 
 /**
@@ -52,13 +51,8 @@ class CDefaultScheme : public CScheme
 {
 	public:
 		CDefaultScheme(){}
-		virtual bool Compile(LPCTSTR outfile = NULL){return true;}
 
 		virtual void Load(CScintilla& sc, LPCTSTR filename = NULL){SetupScintilla(sc);}
-		
-		virtual bool IsCompiled(){return true;}
-		
-		virtual void EnsureCompiled(){}
 
 		// Can't set name, it's always "Default"
 		virtual void SetName(LPCTSTR name){}
@@ -76,7 +70,26 @@ typedef SCHEME_MAP::value_type			SCMITEM;
 
 class CSchemeManager
 {
-private:
+public:
+	CSchemeManager() : m_SchemePath(NULL), m_CompiledPath(NULL){}
+	CSchemeManager(LPCTSTR schemepath, LPCTSTR compiledpath=NULL);
+	~CSchemeManager();
+	
+	void SetPath(LPCTSTR schemepath);
+	void SetCompiledPath(LPCTSTR compiledpath);
+
+	void GetPath(ctcString& csPath){if(m_SchemePath) csPath = m_SchemePath;}
+	LPCTSTR GetCompiledPath(){return m_CompiledPath;}
+	void GetCompiledPath(ctcString& csPath){if(m_CompiledPath) csPath = m_CompiledPath;}
+
+	void Load();
+	void Compile();
+	void LoadExtMap(LPCTSTR folder);
+	
+	CScheme* SchemeForExt(LPCTSTR ext);
+	CScheme* SchemeByName(LPCTSTR name);
+
+protected:
 	TCHAR*			m_SchemePath;
 	TCHAR*			m_CompiledPath;
 	SCHEME_LIST		m_Schemes;
@@ -85,22 +98,6 @@ private:
 	SCHEME_MAP		m_SchemeExtMap;
 
 	CDefaultScheme	m_DefaultScheme;
-
-public:
-	CSchemeManager() : m_SchemePath(NULL), m_CompiledPath(NULL){}
-	CSchemeManager(LPCTSTR schemepath, LPCTSTR compiledpath=NULL);
-	~CSchemeManager();
-	
-	void Load(LPCTSTR fromfolder = NULL);
-	void LoadExtMap(LPCTSTR folder);
-	void SetPath(LPCTSTR schemepath);
-	void SetCompiledPath(LPCTSTR compiledpath);
-	void GetPath(ctcString& csPath){if(m_SchemePath) csPath = m_SchemePath;}
-	LPCTSTR GetCompiledPath(){return m_CompiledPath;}
-	void GetCompiledPath(ctcString& csPath){if(m_CompiledPath) csPath = m_CompiledPath;}
-
-	CScheme* SchemeForExt(LPCTSTR ext);
-	CScheme* SchemeByName(LPCTSTR name);
 };
 
 #endif

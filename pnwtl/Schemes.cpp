@@ -1,5 +1,10 @@
 #include "stdafx.h"
+
 #include "Schemes.h"
+#include "files.h"
+
+#include "ssreg.h"
+using namespace ssreg;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -44,27 +49,17 @@ CScheme::~CScheme()
 	}
 }
 
-void CScheme::CheckName(LPCTSTR filename)
+void CScheme::CheckName()
 {
 	CFile cfile;
 	CompiledHdrRec Header;
 	char *buf = NULL;
 
-	LPCTSTR fn = NULL;
+	PNASSERT(m_SchemeFile != NULL);
 
-	if(filename)
-		fn = filename;
-	else
-		if(m_SchemeFile)
-			fn = m_SchemeFile;
-		else
-			throw "No filename for scheme to be opened!";
+	LPCTSTR fn = m_SchemeFile;
 
-	CFileName cfn(fn);
-	cfn.ChangeExtensionTo(_T(".cscheme"));
-	cfn.ChangePathTo(m_pManager->GetCompiledPath());
-
-	if(cfile.Open(cfn.c_str(), 0) == true)
+	if(cfile.Open(fn, 0) == true)
 	{
 		cfile.Read(&Header, sizeof(CompiledHdrRec));
 		if(strcmp(Header.Magic, FileID) != 0)
@@ -77,9 +72,11 @@ void CScheme::CheckName(LPCTSTR filename)
 		if(Header.Version != CompileVersion)
 		{
 			cfile.Close();
-			// Attempt to compile me...
-			Compile();
-			cfile.Open(cfn.c_str(), 0);
+			
+			// Attempt to re-compile the schemes...
+			m_pManager->Compile();
+
+			cfile.Open(fn, 0);
 			cfile.Read(&Header, sizeof(CompiledHdrRec));
 			if(strcmp(Header.Magic, FileID) != 0 || Header.Version != CompileVersion)
 			{
@@ -135,8 +132,6 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 		if(m_SchemeFile)
 		{
 			fn = m_SchemeFile;
-			fn.ChangeExtensionTo(_T(".cscheme"));
-			fn.ChangePathTo(m_pManager->GetCompiledPath());
 		}
 		else
 			throw "No filename for scheme to be opened!";
@@ -155,7 +150,8 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 		{
 			cfile.Close();
 			// Attempt to compile me...
-			Compile();
+			m_pManager->Compile();
+			
 			cfile.Open(fn.c_str(), 0);
 			cfile.Read(&Header, sizeof(CompiledHdrRec));
 			if(strcmp(Header.Magic, FileID) != 0 || Header.Version != CompileVersion)
@@ -257,59 +253,6 @@ void CScheme::SetupScintilla(CScintilla& sc)
 	sc.SPerform(SCI_SETTABWIDTH, options.TabWidth);
 }
 
-bool CScheme::IsCompiled()
-{
-	CFileName fn(m_SchemeFile);
-	CFileName cfile(fn);
-
-	cfile.ChangeExtensionTo(_T(".cscheme"));
-	cfile.ChangePathTo(m_pManager->GetCompiledPath());
-
-	int fac = cfile.GetFileAge();
-	if(fac != -1)
-	{
-		if(fn.GetFileAge() == fac)
-			return true;
-	}
-
-	return false;
-}
-
-
-void CScheme::EnsureCompiled()
-{
-	if(!IsCompiled())
-	{
-		Compile();
-	}
-}
-
-bool CScheme::Compile(LPCTSTR outfile)
-{
-	TCHAR* output = (TCHAR*)outfile;
-	bool bAllocated = false;
-	
-	if(!outfile)
-	{
-		CFileName fn(m_SchemeFile);
-		fn.ChangeExtensionTo(_T(".cscheme"));
-		fn.ChangePathTo(m_pManager->GetCompiledPath());
-		output = new TCHAR[fn.GetLength()+1];
-		_tcscpy(output, fn.c_str());
-		bAllocated = true;
-	}
-
-	CSchemeCompiler compiler;
-	bool bRet = compiler.Compile(m_SchemeFile, output);
-
-	if(bAllocated)
-		delete [] output;
-
-	return bRet;
-}
-
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -323,7 +266,7 @@ CSchemeManager::CSchemeManager(LPCTSTR schemepath, LPCTSTR compiledpath)
 	}
 	else
 	{
-		m_CompiledPath = NULL;
+		SetCompiledPath(schemepath);
 	}
 
 	Load();
@@ -332,10 +275,10 @@ CSchemeManager::CSchemeManager(LPCTSTR schemepath, LPCTSTR compiledpath)
 CSchemeManager::~CSchemeManager()
 {
 	if(m_SchemePath)
-		delete m_SchemePath;
+		delete [] m_SchemePath;
 	
 	if(m_CompiledPath)
-		delete m_CompiledPath;
+		delete [] m_CompiledPath;
 
 	for(scit i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
 	{
@@ -355,7 +298,7 @@ void SetSMString(TCHAR*& str, LPCTSTR newpath)
 		i++;
 	
 	if(str != NULL)
-		delete str;
+		delete [] str;
 
 	str = new TCHAR[i+1];
 	_tcscpy(str, newpath);
@@ -373,50 +316,72 @@ void CSchemeManager::SetPath(LPCTSTR schemepath)
 	SetSMString(m_SchemePath, schemepath);
 }
 
-void CSchemeManager::Load(LPCTSTR fromfolder)
+void CSchemeManager::Load()
 {
-	LPCTSTR path = NULL;
-	if(NULL == fromfolder)
-		path = m_SchemePath;
-	else
-		path = fromfolder;
+	PNASSERT(m_SchemePath != NULL);
+	PNASSERT(m_CompiledPath != NULL);
 
-	if(!path)
-		return;
+	CSRegistry reg;
+	reg.OpenKey(_T("Software\\Echo Software\\PN2\\SchemeDates"), true);
 
 	// Find the scheme def files one by one...
 	HANDLE hFind;
 	WIN32_FIND_DATA FindFileData;
 
-	ctcString sPattern = path;
+	ctcString sPattern(m_SchemePath);
 	
 	ctcString SchemeName(_T(""));
 
 	sPattern += _T("*.scheme");
 
-	CScheme *cs;
+	bool bCompile = false;
+
+	BOOL found = TRUE;
+	ctcString to_open;
 
 	hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
 	if (hFind != INVALID_HANDLE_VALUE) 
 	{
-		//Found the first file...
-		BOOL found = TRUE;
-		ctcString to_open;
-
 		while (found)
 		{
 			///@todo Do we really need to keep a list of Schemes and a map?
 			// to_open is a scheme file
-			to_open = path;
+			to_open = m_SchemePath;
+			to_open += FindFileData.cFileName;
+
+			if( reg.ReadInt(FindFileData.cFileName, 0) != FileAge(to_open.c_str()) )
+			{
+				bCompile = true;
+				break;
+			}
+
+			found = FindNextFile(hFind, &FindFileData);
+		}
+
+		FindClose(hFind);
+	}
+
+	if(bCompile)
+	{
+		Compile();
+	}
+
+	CScheme *cs = NULL;
+
+	sPattern = m_CompiledPath;
+	sPattern += _T("*.cscheme");
+	hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
+	if (hFind != INVALID_HANDLE_VALUE)
+	{
+		found = TRUE;
+		while(found)
+		{
+			to_open = m_CompiledPath;
 			to_open += FindFileData.cFileName;
 
 			cs = new CScheme(this, to_open.c_str());
-			
 			m_Schemes.insert(m_Schemes.end(), cs);
 
-			cs->EnsureCompiled();
-			cs->CheckName();
-			
 			///@todo replace this with something less lower-case un-friendly
 			SchemeName = cs->GetName();
 			TCHAR *tcs = new TCHAR[SchemeName.size()+1];
@@ -427,15 +392,13 @@ void CSchemeManager::Load(LPCTSTR fromfolder)
 
 			m_SchemeNameMap.insert(m_SchemeNameMap.end(), SCMITEM(SchemeName, cs));
 
-			
-
 			found = FindNextFile(hFind, &FindFileData);
 		}
 
 		FindClose(hFind);
 	}
 
-	LoadExtMap(path);
+	LoadExtMap(m_CompiledPath);
 }
 
 /**
@@ -526,4 +489,13 @@ CScheme* CSchemeManager::SchemeByName(LPCTSTR name)
 	}
 	else
 		return &m_DefaultScheme;
+}
+
+void CSchemeManager::Compile()
+{
+	PNASSERT(m_SchemePath != NULL);
+	PNASSERT(m_CompiledPath != NULL);
+
+	SchemeCompiler sc;
+	sc.Compile(m_SchemePath, m_CompiledPath, _T("master.scheme"));
 }
