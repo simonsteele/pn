@@ -47,7 +47,7 @@ BOOL PNCenterWindow(HWND hWnd, HWND hWndCenter) throw()
 		}
 		
 		// We get an area to ensure the window sits within it...
-		if(g_Context.OSVersion.dwMajorVersion > 5) // support multiple monitors on 2k+
+		if(g_Context.OSVersion.dwMajorVersion >= 5) // support multiple monitors on 2k+
 		{
 			rcArea.top = 0;
 			rcArea.left = 0;
