@@ -649,7 +649,7 @@ LRESULT CMainFrame::OnReplace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	return 0;
 }
 
-LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {		
 	CSchemeManager* pSM = CSchemeManager::GetInstance();
 	LPCTSTR currentScheme = NULL;
@@ -678,7 +678,10 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	options.AddPage(&pageNewFiles);
 	options.AddPage(&pageTools);
 
-	options.SetInitialPage(&general);
+	if( wID != ID_TOOLS_DUMMY )
+		options.SetInitialPage(&general);
+	else
+		options.SetInitialPage(&pageTools);
 
 	if( options.DoModal() == IDOK )
 	{
@@ -693,14 +696,6 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 		PerformChildEnum(ChildOptionsUpdateNotify);
 	}
 
-	return 0;
-}
-
-LRESULT CMainFrame::OnToolsDummy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	BOOL b;
-	MessageBox(_T("You can add external tools to this menu using the Tools\n section of the options dialog.\n\nThis dialog will open now so that you can do so."), _T("Programmers Notepad"), MB_OK);
-	OnOptions(0,0,0, b);
 	return 0;
 }
 
@@ -721,6 +716,13 @@ LRESULT CMainFrame::OnWebSFPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 LRESULT CMainFrame::OnWebSFBug(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	::ShellExecute(m_hWnd, _T("open"), _T("http://sourceforge.net/tracker/?func=add&group_id=45545&atid=443219"), NULL, NULL, SW_SHOW);
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnWebSFRFE(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	::ShellExecute(m_hWnd, _T("open"), _T("http://sourceforge.net/tracker/?func=add&group_id=45545&atid=443222"), NULL, NULL, SW_SHOW);
 
 	return 0;
 }

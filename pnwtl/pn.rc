@@ -103,7 +103,8 @@ BEGIN
         MENUITEM "PN &HomePage",                ID_HELP_WEB_PN
         MENUITEM "PN on &Sourceforge",          252
         MENUITEM SEPARATOR
-        MENUITEM "Report a bug...",             253
+        MENUITEM "Report a &bug...",            253
+        MENUITEM "Request a &feature...",       ID_HELP_WEB_SR
         MENUITEM SEPARATOR
         MENUITEM "&About pn...",                ID_APP_ABOUT
     END
@@ -209,7 +210,8 @@ BEGIN
         MENUITEM "PN &HomePage",                251
         MENUITEM "PN on &Sourceforge",          252
         MENUITEM SEPARATOR
-        MENUITEM "Report a bug...",             253
+        MENUITEM "Report a &bug...",            253
+        MENUITEM "Request a &feature...",       ID_HELP_WEB_SR
         MENUITEM SEPARATOR
         MENUITEM "&About pn...",                ID_APP_ABOUT
     END
