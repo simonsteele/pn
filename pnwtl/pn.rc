@@ -867,9 +867,19 @@ BEGIN
     EDITTEXT        IDC_OPT_MRUCOUNT,42,68,30,14,ES_AUTOHSCROLL
     LTEXT           "(1 to 50) items in the most recently used list.",
                     IDC_STATIC,75,70,168,8
-    CONTROL         "&Start with a new, blank document",
+    CONTROL         "Start with a new, &blank document",
                     IDC_OPT_NEWFILEONSTART,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,10,48,196,10
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,92,299,1
+    LTEXT           "Tabs",IDC_STATIC,0,88,16,8
+    CONTROL         "Show &Tabs",IDC_OPT_SHOWTABSCHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,100,228,10
+    CONTROL         "Only show with ma&ximized document windows",
+                    IDC_OPT_MAXTABSONLY,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,19,112,165,10
+    CONTROL         "At the &bottom of the main window",
+                    IDC_OPT_TABSBOTTOMCHECK,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,19,124,228,10
 END
 
 IDD_PAGE_NEWFILES DIALOGEX 0, 0, 300, 200

@@ -32,6 +32,10 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 			DDX_CHECK(IDC_OPT_FULLPATHCHECK,	m_bFullPath)
 			DDX_CHECK(IDC_OPT_NEWFILEONSTART,	m_bNewOnStart)
 			DDX_CHECK(IDC_MULTIINSTANCECHECK,	m_bMultiInstanceOk)
+			DDX_CHECK(IDC_OPT_SHOWTABSCHECK,	m_bShowTabs)
+			//DDX_CHECK(IDC_OPT_HIDEONETABCHECK,	m_bHideSingleTab)
+			DDX_CHECK(IDC_OPT_TABSBOTTOMCHECK,	m_bTabsOnBottom)
+			DDX_CHECK(IDC_OPT_MAXTABSONLY,		m_bTabsOnlyMax)
 		END_DDX_MAP()
 
 		virtual void OnOK();
@@ -46,6 +50,10 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 		BOOL			m_bFullPath;
 		BOOL			m_bMultiInstanceOk;
 		UINT			m_iMRUSize;
+		BOOL			m_bShowTabs;
+		//BOOL			m_bHideSingleTab;
+		BOOL			m_bTabsOnBottom;
+		BOOL			m_bTabsOnlyMax;
 };
 
 class COptionsPageEditDefaults : public COptionsPageImpl<COptionsPageEditDefaults>,

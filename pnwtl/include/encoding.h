@@ -1,6 +1,6 @@
 /**
  * @file encoding.h
- * @brief Find files according to a spec.
+ * @brief Various simple text encoding conversion routines.
  * @author Simon Steele
  * @note Copyright (c) 2003 Simon Steele <s.steele@pnotepad.org>
  *
@@ -234,6 +234,83 @@ protected:
 	bool inPlace;
 	bool bValid;
 	char* decoded;
+};
+
+class Windows1252_Utf8
+{
+public:
+	Windows1252_Utf8(const char* winstr)
+	{
+		if(winstr)
+			bValid = convert(winstr);
+		else
+		{
+			bValid = false;
+			decoded = NULL;
+		}
+	}
+
+	~Windows1252_Utf8()
+	{
+		if(decoded)
+		{
+			delete [] decoded;
+		}
+	}
+
+	operator const unsigned char* () const
+	{
+		return decoded;
+	}
+
+	bool IsValid()
+	{
+		return bValid;
+	}
+
+protected:
+	bool convert(const char* instr)
+	{
+		/*All characters in the range of 0-127 (hex 00 through 7F), are represented 
+		identically in both encodings.  This covers the entire range of the original 
+		ASCII characters. 
+		All iso-8859-1 characters in the range of 128-191 (hex 80 through BF) need to 
+		be preceeded by a byte with the value of 194 (hex C2) in utf-8, but otherwise 
+		are left intact. 
+		All iso-8859-1 characters in the range of 192-255 (hex C0 through FF) not only 
+		need to be preceede by a byte with the value of 195 (hex C3) in utf-8, but 
+		also need to have 64 (hex 40) subtracted from the iso-8859-1 character value. 
+		Thanks to: http://intertwingly.net/stories/2004/04/14/i18n.html*/
+
+		size_t length = strlen(instr);
+		decoded = new unsigned char[(length*2)+1];
+		unsigned char* pD = decoded;
+
+		for(size_t i = 0; i < length; i++)
+		{
+			if(instr[i] > 0 && instr[i] < 0x80)
+			{
+				*pD++ = instr[i];
+			}
+			else if(instr[i] > 0x7f && instr[i] < 0xc0)
+			{
+				*pD++ = 0xc2;
+				*pD++ = instr[i];
+			}
+			else //if(instr[i] > 0xbf && instr[i] <= 0xff)
+			{
+				*pD++ = 0xc3;
+				*pD++ = instr[i] - 0x40;
+			}
+		}
+
+		*pD = NULL;
+
+		return true;
+	}
+
+	unsigned char* decoded;
+	bool bValid;
 };
 
 #endif // #ifndef encoding_h__included

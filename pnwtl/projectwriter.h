@@ -11,7 +11,7 @@ typedef struct tagProjectWriter
 	genxWriter w;
 } SProjectWriter, * ProjectWriter;
 
-#define u(x) (utf8)x
+#define u(x) (constUtf8)x
 
 }
 

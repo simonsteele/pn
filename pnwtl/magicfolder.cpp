@@ -21,7 +21,7 @@
 
 #include <algorithm>
 
-#define u(x) (utf8)x
+#define u(x) (constUtf8)x
 
 #if defined (_DEBUG)
 #define new DEBUG_NEW

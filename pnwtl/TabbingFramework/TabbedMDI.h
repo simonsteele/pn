@@ -692,7 +692,7 @@ public:
 		m_nTabStyles = nTabStyles;
 	}
 
-	bool GetTabStyles(void) const
+	DWORD GetTabStyles(void) const
 	{
 		return m_nTabStyles;
 	}

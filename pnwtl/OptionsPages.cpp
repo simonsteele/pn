@@ -37,6 +37,11 @@ void COptionsPageGeneral::OnOK()
 	options.Set(PNSK_INTERFACE, _T("MRUSize"), (int)m_iMRUSize);
 	options.Set(PNSK_INTERFACE, _T("AllowMultiInstance"), (bool)(m_bMultiInstanceOk != FALSE));
 	options.Set(PNSK_INTERFACE, _T("NewOnStart"), (bool)(m_bNewOnStart != FALSE));
+
+	options.Set(PNSK_INTERFACE, _T("Tabs"), (bool)(m_bShowTabs != FALSE));
+	//options.Set(PNSK_INTERFACE, _T("HideSingleTab"), (bool)(m_bHideSingleTab != FALSE));
+	options.Set(PNSK_INTERFACE, _T("TabsOnBottom"), (bool)(m_bTabsOnBottom != FALSE));
+	options.Set(PNSK_INTERFACE, _T("MaximizedTabsOnly"), (bool)(m_bTabsOnlyMax != FALSE));
 }
 
 void COptionsPageGeneral::OnInitialise()
@@ -47,6 +52,10 @@ void COptionsPageGeneral::OnInitialise()
 	m_bMultiInstanceOk = OPTIONS->Get(PNSK_INTERFACE, _T("AllowMultiInstance"), false);
 	m_bNewOnStart = OPTIONS->Get(PNSK_INTERFACE, _T("NewOnStart"), true);
 
+    m_bShowTabs = OPTIONS->Get(PNSK_INTERFACE, _T("Tabs"), true);
+	//m_bHideSingleTab = OPTIONS->Get(PNSK_INTERFACE, _T("HideSingleTab"), false);
+	m_bTabsOnBottom = OPTIONS->Get(PNSK_INTERFACE, _T("TabsOnBottom"), false);
+	m_bTabsOnlyMax = OPTIONS->Get(PNSK_INTERFACE, _T("MaximizedTabsOnly"), false);
 	DoDataExchange();
 }
 

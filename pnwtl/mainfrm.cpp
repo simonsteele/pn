@@ -795,6 +795,17 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	
 	DragAcceptFiles(TRUE);
 
+	if(!OPTIONS->Get(PNSK_INTERFACE, _T("Tabs"), true))
+		m_tabbedClient.GetTabOwner().KeepTabsHidden(true);
+	else
+	{
+		if(OPTIONS->Get(PNSK_INTERFACE, _T("MaximizedTabsOnly"), false))
+			m_tabbedClient.HideMDITabsWhenMDIChildNotMaximized(true);
+
+		if(OPTIONS->Get(PNSK_INTERFACE, _T("TabsOnBottom"), false))
+			m_tabbedClient.GetTabOwner().ModifyTabStyles(0, CTCS_BOTTOM);
+	}
+
 	CreateMDIClient();
 	m_CmdBar.SetMDIClient(m_hWndMDIClient);
 

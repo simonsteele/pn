@@ -17,6 +17,7 @@
 #include "include/pcreplus.h"
 #include "include/filefinder.h"
 #include "include/filematcher.h"
+#include "include/encoding.h"
 #include "folderadder.h"
 
 #if defined (_DEBUG)
@@ -358,7 +359,16 @@ void File::WriteDefinition(SProjectWriter* definition)
 {
 	genxStartElement(definition->eFile);
 	
-	genxAddAttribute(definition->aFilePath, (const utf8)relPath.c_str());
+	genxStatus writeOk = genxAddAttribute(definition->aFilePath, (const utf8)relPath.c_str());
+	if(writeOk == GENX_BAD_UTF8)
+	{
+		Windows1252_Utf8 conv(relPath.c_str());
+
+		writeOk = genxAddAttribute(definition->aFilePath, conv);
+
+		if(writeOk != GENX_SUCCESS)
+			UNEXPECTED(_T("Could not write file name."));
+	}
 
 	// Save user data...
 	userData.Write(definition);
@@ -584,7 +594,15 @@ Folder* Folder::GetParent()
 void Folder::WriteDefinition(SProjectWriter* definition)
 {
 	genxStartElementLiteral(definition->w, NULL, u("Folder"));
-	genxAddAttributeLiteral(definition->w, NULL, u("name"), u(name.c_str()));
+	genxStatus writeOk = genxAddAttributeLiteral(definition->w, NULL, u("name"), u(name.c_str()));
+	if(writeOk == GENX_BAD_UTF8)
+	{
+		Windows1252_Utf8 conv(name.c_str());
+
+		writeOk = genxAddAttributeLiteral(definition->w, NULL, u("name"), conv);
+		if(writeOk != GENX_SUCCESS)
+			UNEXPECTED(_T("Could not write folder name."));
+	}
 	
 	writeContents(definition);
 
@@ -888,7 +906,15 @@ void Project::endElement(LPCTSTR name)
 void Project::writeDefinition(SProjectWriter* definition)
 {
 	genxStartElementLiteral(definition->w, NULL, u("Project"));
-	genxAddAttributeLiteral(definition->w, NULL, u("name"), u(name.c_str()));
+	genxStatus writeOk = genxAddAttributeLiteral(definition->w, NULL, u("name"), u(name.c_str()));
+	if(writeOk == GENX_BAD_UTF8)
+	{
+		Windows1252_Utf8 conv(name.c_str());
+		writeOk = genxAddAttributeLiteral(definition->w, NULL, u("name"), conv);
+
+		if(writeOk != GENX_SUCCESS)
+			UNEXPECTED(_T("Could not encode project name for writing."));
+	}
 
 	writeContents(definition);
 
@@ -897,25 +923,39 @@ void Project::writeDefinition(SProjectWriter* definition)
 
 void Project::processProject(XMLAttributes& atts)
 {
-	name = ATTVAL(_T("name"));
+	if(atts.getValue(_T("name")) != NULL)
+	{
+		name = Utf8_Windows1252( ATTVAL(_T("name")) );
+	}
+	else
+	{
+		// TODO - not valid...
+		name = _T("error");
+	}
 }
 
 void Project::processFolder(XMLAttributes& atts)
 {
-	Folder* folder = new Folder(ATTVAL(_T("name")), basePath.c_str());
+	Utf8_Windows1252 nm( ATTVAL(_T("name")) );
+	Folder* folder = new Folder(nm, basePath.c_str());
 	currentFolder->AddChild(folder);
 	currentFolder = folder;
 }
 
 void Project::processFile(XMLAttributes& atts)
 {
-	lastParsedFile = currentFolder->AddFile(ATTVAL(_T("path")));
+	Utf8_Windows1252 path( ATTVAL(_T("path")) );
+	lastParsedFile = currentFolder->AddFile(path);
 }
 
 void Project::processMagicFolder(XMLAttributes& atts)
 {
 	// TODO: Combine basePath with ATTVAL(_T("path")) to get the new basePath
-	MagicFolder* mf = new MagicFolder(ATTVAL(_T("name")), ATTVAL(_T("path"))/*, basePath.c_str()*/);
+
+	Utf8_Windows1252 path( ATTVAL(_T("path")) );
+	Utf8_Windows1252 name( ATTVAL(_T("name")) );
+
+	MagicFolder* mf = new MagicFolder(name, path/*, basePath.c_str()*/);
 	currentFolder->AddChild(mf);
 	
 	// This will pass over the XML Parsing to the MagicFolder

@@ -248,12 +248,16 @@
 #define IDC_FILEPROP_LINEENDINGS        1053
 #define IDC_OPT_LECOMBO                 1054
 #define IDC_FILEPROP_ENCODING           1054
+#define IDC_OPT_SHOWTABSCHECK           1054
 #define IDC_OPT_CPCOMBO                 1055
 #define IDC_FILEPROP_SCHEME             1055
+#define IDC_OPT_TABSBOTTOMCHECK         1055
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_OPT_MAXCHECK                1056
 #define IDC_PNSAVE_TYPECOMBO            1057
 #define IDC_TE_BUILTIN                  1057
+#define IDC_OPT_HIDEONETABCHECK         1057
+#define IDC_OPT_MAXTABSONLY             1057
 #define IDC_TE_ABOUTBUILTIN             1058
 #define IDC_TE_CUSTOMPARSE              1059
 #define IDC_TE_CUSTOMSTR                1060
