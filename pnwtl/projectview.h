@@ -40,9 +40,9 @@ public:
 		REFLECTED_NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnSelChanged)
 	END_MSG_MAP()
 
-	HWND Create(HWND hWndParent, WTL::_U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
+	HWND Create(HWND hWndParent, _U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
 			DWORD dwStyle = 0, DWORD dwExStyle = 0,
-			WTL::_U_MENUorID MenuOrID = 0U, LPVOID lpCreateParam = NULL);
+			_U_MENUorID MenuOrID = 0U, LPVOID lpCreateParam = NULL);
 
 	void			AddProject(Projects::Project* project);
 	Projects::File* GetSelectedFile();

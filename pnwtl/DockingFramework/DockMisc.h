@@ -12,15 +12,17 @@
 // the source code in  this file is used in any commercial application
 // then a simple email woulod be nice.
 
-#if !defined(AFX_DOCKMISC_H__2A1A3052_6F61_4F89_A2C4_AAAC46D67AF1__INCLUDED_)
-#define AFX_DOCKMISC_H__2A1A3052_6F61_4F89_A2C4_AAAC46D67AF1__INCLUDED_
+#ifndef __WTL_DW__DOCKMISC_H__
+#define __WTL_DW__DOCKMISC_H__
+
+#pragma once
 
 #ifndef __ATLMISC_H__
         #error dockmisk.h requires atlmisc.h to be included first
 #endif
 
 #include <cassert>
-#include <SimpleSplitterBar.h>
+#include "SimpleSplitterBar.h"
 
 namespace dockwins{
 
@@ -321,8 +323,14 @@ protected:
 	public:
 		typedef CDWStyle CStyle;
 
-		CSettings()
+		CSettings() :
+			m_colorCoolCtrlBackground(RGB(0,0,0)),
+			m_colorAutoHideBarText(RGB(0,0,0)),
+			m_hHResizeCursor(NULL),
+			m_hVResizeCursor(NULL)
 		{
+			::ZeroMemory(&m_ncm, sizeof(m_ncm));
+
 			Update();
 		}
 
@@ -348,9 +356,23 @@ protected:
 				lf.lfOutPrecision = OUT_TT_ONLY_PRECIS;
 				lf.lfEscapement   = 2700;
 				lf.lfOrientation  = 2700;
-				m_vfont.Attach( CreateFontIndirect(&lf) );
+				m_vfont.Attach( ::CreateFontIndirect(&lf) );
 				assert(m_vfont.m_hFont);
 			}
+			m_ncm.cbSize = sizeof(m_ncm);
+			if(::SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(m_ncm), &m_ncm, 0))
+			{
+				LOGFONT lf = m_ncm.lfSmCaptionFont;
+				lf.lfWeight = FW_NORMAL;
+				m_hfontSmCaption.Attach( ::CreateFontIndirect(&lf) );
+				assert(m_hfontSmCaption.m_hFont);
+				lf.lfOutPrecision = OUT_TT_ONLY_PRECIS;
+				lf.lfEscapement   = 2700;
+				lf.lfOrientation  = 2700;
+				m_vfontSmCaption.Attach( ::CreateFontIndirect(&lf) );
+				assert(m_vfontSmCaption.m_hFont);
+			}
+
 			m_hHResizeCursor=::LoadCursor(NULL, IDC_SIZENS );
 			m_hVResizeCursor=::LoadCursor(NULL, IDC_SIZEWE );
 			m_colorCoolCtrlBackground=CreateCoolCtrlBackgroundColor();
@@ -439,6 +461,14 @@ protected:
 		{
 			return m_vfont;
 		}
+		HFONT HSmCaptionFont() const
+		{
+			return m_hfontSmCaption;
+		}
+		HFONT VSmCaptionFont() const
+		{
+			return m_vfontSmCaption;
+		}
 		long CXMinIcon() const
 		{
 			return ::GetSystemMetrics(SM_CXSMICON);
@@ -446,6 +476,14 @@ protected:
 		long CYMinIcon() const
 		{
 			return ::GetSystemMetrics(SM_CYSMICON);
+		}
+		int CXSmCaption() const
+		{
+			return m_ncm.iSmCaptionWidth;
+		}
+		int CYSmCaption() const
+		{
+			return m_ncm.iSmCaptionHeight;
 		}
 		COLORREF AutoHideBarTextColor() const
 		{
@@ -469,8 +507,11 @@ protected:
 		CStyle		m_style;
 		CFont		m_vfont;
 		CFontHandle m_hfont;
+		CFont		m_hfontSmCaption;
+		CFont		m_vfontSmCaption;
 		HCURSOR		m_hHResizeCursor;
 		HCURSOR		m_hVResizeCursor;
+		NONCLIENTMETRICS m_ncm;
 
 	};
 public:
@@ -508,6 +549,14 @@ public:
 	{
 		return settings.VSysFont();
 	}
+	HFONT HSmCaptionFont() const
+	{
+		return settings.HSmCaptionFont();
+	}
+	HFONT VSmCaptionFont() const
+	{
+		return settings.VSmCaptionFont();
+	}
 	long CXMinIcon() const
 	{
 		return settings.CXMinIcon();
@@ -515,6 +564,14 @@ public:
 	long CYMinIcon() const
 	{
 		return settings.CYMinIcon();
+	}
+	int CXSmCaption() const
+	{
+		return settings.CXSmCaption();
+	}
+	int CYSmCaption() const
+	{
+		return settings.CYSmCaption();
 	}
 	COLORREF AutoHideBarTextColor() const
 	{
@@ -540,4 +597,4 @@ protected:
 void DrawEllipsisText(CDC& dc,LPCTSTR sText,int n,LPRECT prc,bool bHorizontal);
 
 }//namespace dockwins
-#endif // !defined(AFX_DOCKMISC_H__2A1A3052_6F61_4F89_A2C4_AAAC46D67AF1__INCLUDED_)};
+#endif // __WTL_DW__DOCKMISC_H__

@@ -1,8 +1,10 @@
 // Copyright (c) 2002
 // Sergey Klimov (kidd@ukr.net)
 
-#if !defined(AFX_FLYINGTABS_H__A741B2C1_B480_4B05_906C_605FF70700AC__INCLUDED_)
-#define AFX_FLYINGTABS_H__A741B2C1_B480_4B05_906C_605FF70700AC__INCLUDED_
+#ifndef __WTL_DW__FLYING_TABS_H__
+#define __WTL_DW__FLYING_TABS_H__
+
+#pragma once
 
 #include <cassert>
 #include <vector>
@@ -10,15 +12,25 @@
 #include <algorithm>
 #include <functional>
 
-#include <DDTracker.h>
+#include "DDTracker.h"
 
-#include <atlgdix.h>
+//#include <atlgdix.h>
+#ifndef __ATLGDIX_H__
+	#error FlyingTabs.h requires atlgdix.h to be included first
+#endif
+
 // NOTE: See CustomTabCtrl.h and DotNetTabCtrl.h for copyright information.
 // Please download the latest versions of these files from from The Codeproject article
 // "Custom Tab Controls, Tabbed Frame and Tabbed MDI" by Daniel Bowen (dbowen@es.com)
 // http://www.codeproject.com/wtl/TabbingFramework.asp
-#include <CustomTabCtrl.h>
-#include <DotNetTabCtrl.h>
+//#include <CustomTabCtrl.h>
+//#include <DotNetTabCtrl.h>
+#ifndef __CUSTOMTABCTRL_H__
+	#error FlyingTabs.h requires CustomTabCtrl.h to be included first
+#endif
+#ifndef __DOTNET_TABCTRL_H__
+	#error FlyingTabs.h requires DotNetTabCtrl.h to be included first
+#endif
 
 namespace dockwins{
 	
@@ -289,4 +301,4 @@ protected:
 	int m_tabBarHeight;
 };
 }//namespace dockwins
-#endif // !defined(AFX_FLYINGTABS_H__A741B2C1_B480_4B05_906C_605FF70700AC__INCLUDED_)
+#endif // __WTL_DW__FLYING_TABS_H__

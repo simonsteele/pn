@@ -1,8 +1,10 @@
 // Copyright (c) 2000
 // Sergey Klimov (kidd@ukr.net)
 
-#if !defined(AFX_DDTRACKER_H__36DE1857_9CA8_4B9C_B263_C6A7987FF764__INCLUDED_)
-#define AFX_DDTRACKER_H__36DE1857_9CA8_4B9C_B263_C6A7987FF764__INCLUDED_
+#ifndef __WTL_DW__DDTRACKER_H__
+#define __WTL_DW__DDTRACKER_H__
+
+#pragma once
 
 #include<cassert>
 
@@ -101,4 +103,4 @@ bool TrackDragAndDrop(T& tracker,HWND hWnd)
     assert(::GetCapture()!=hWnd);
     return bResult;
 }
-#endif // !defined(AFX_DDTRACKER_H__36DE1857_9CA8_4B9C_B263_C6A7987FF764__INCLUDED_)
+#endif // __WTL_DW__DDTRACKER_H__

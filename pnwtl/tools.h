@@ -10,13 +10,36 @@
 #ifndef tools_h__included
 #define tools_h__included
 
-typedef std::list<ToolDefinition*> TOOLDEFS_LIST;
-
 #include "include/ssthreads.h"
 
 #define TOOLS_BUFFER_SIZE 16384
 
 class CChildFrame;
+
+class ToolSource
+{
+public:
+	tstring FileName;
+};
+
+class SourcedToolDefinition : public ToolDefinition
+{
+public:
+	const ToolSource* source;
+
+	SourcedToolDefinition(const ToolSource* source_) : ToolDefinition()
+	{
+		source = source_;
+	}
+
+	SourcedToolDefinition(const SourcedToolDefinition& copy)
+	{
+		source = copy.source;
+		_copy(copy);
+	}
+};
+
+typedef std::list<SourcedToolDefinition*> TOOLDEFS_LIST;
 
 /**
  * @brief Collection class representing tools associated with one scheme
@@ -31,21 +54,22 @@ class SchemeTools
 		TOOLDEFS_LIST&	GetTools();
 		int				GetMenu(CSMenuHandle& menu, int iInsertAfter, int iCommand = TOOLS_RUNTOOL);
 
-		void			Add(ToolDefinition* pDef);
+		void			Add(SourcedToolDefinition* pDef);
 		void			Delete(ToolDefinition* pDef);
 
 		void			MoveUp(ToolDefinition* pDef);
 		void			MoveDown(ToolDefinition* pDef);
 
-		void			WriteDefinition(ofstream& stream);
+		void			WriteDefinition(ofstream& stream, ToolSource* source);
 
 		void			ReleaseMenuResources();
 
 		HACCEL			GetAcceleratorTable();
 
 	protected:
+		bool			ToolsInSource(ToolSource* source);
 		void			BuildMenu(int iCommand);
-		void			InternalWriteDefinition(ofstream& stream);
+		void			InternalWriteDefinition(ofstream& stream, ToolSource* source);
 		
 		TOOLDEFS_LIST	m_Tools;
 		tstring			m_Scheme;
@@ -57,7 +81,7 @@ class GlobalTools : public SchemeTools
 {
 	public:
 		//GlobalTools();
-		void WriteDefinition(ofstream& stream);
+		void WriteDefinition(ofstream& stream, ToolSource* source);
 };
 
 /**
@@ -81,6 +105,8 @@ class SchemeToolsManager :
 
 		int UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, int iDummyID, LPCSTR schemename);
 
+		const ToolSource* GetDefaultToolStore();
+
 	protected:
 		void Clear(bool bWantMenuResources = false);
 
@@ -96,10 +122,14 @@ class SchemeToolsManager :
 
 	protected:
 		typedef std::map<tstring, SchemeTools*> SCHEMETOOLS_MAP;
+		typedef std::list<ToolSource*> SOURCES_LIST;
 
+		ToolSource		m_DefaultToolsSource;
 		SchemeTools*	m_pCur;
 		GlobalTools*	m_pGlobalTools;
+		ToolSource*		m_pCurSource;
 		SCHEMETOOLS_MAP m_toolSets;
+		SOURCES_LIST	m_toolSources;
 };
 
 //#include "aboutdlg.h"

@@ -131,6 +131,13 @@ BEGIN
         MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
         MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
         MENUITEM "Save All",                    ID_FILE_SAVEALL
+        POPUP "Enco&ding"
+        BEGIN
+            MENUITEM "8-bit",                       ID_ENCODING_8
+            MENUITEM "UTF-8",                       ID_ENCODING_UTF8
+            MENUITEM "UTF-16 Big Endian",           ID_ENCODING_UTF16BE
+            MENUITEM "UTF-16 Little Endian",        ID_ENCODING_UTF16LE
+        END
         POPUP "&Export"
         BEGIN
             MENUITEM "As &RTF...",                  ID_EXPORT_RTF
@@ -348,7 +355,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,5,13
+ FILEVERSION 2,0,5,14
  PRODUCTVERSION 2,0,5,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -366,7 +373,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele (Echo Software)"
             VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.5.13"
+            VALUE "FileVersion", "2.0.5.14"
             VALUE "InternalName", "PNWTL"
             VALUE "LegalCopyright", "Copyright © 2002-2003 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"

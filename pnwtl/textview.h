@@ -59,6 +59,9 @@ public:
 	void SetPosStatus(CMultiPaneStatusBarCtrl& stat);
 
 	tstring GetCurrentWord();
+
+	EPNEncoding GetEncoding();
+	void SetEncoding(EPNEncoding encoding);
 	
 	////////////////////////////////////////////////////////////////
 	// Overrides from CScintillaImpl / CScintillaWindowImpl

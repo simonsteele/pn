@@ -43,6 +43,49 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2003/06/27: Daniel Bowen
+// - CCustomTabOwnerImpl -
+//   * Remove WTL:: scope off of CImageList member.
+// - CTabbedFrameImpl -
+//   * Have new "CHAIN_ACTIVETABVIEW_COMMANDS" macro that is used to forward
+//     WM_COMMAND messages to the active view.  This is done after
+//     the CHAIN_MSG_MAP(baseClass), so be careful if the base
+//     class also handles WM_COMMAND messages (the default
+//     CFrameWindowImpl does not, and neither does CMDIChildWindowImpl
+//     or CTabbedMDIChildWindowImpl).
+//   * New "GetActiveView" that returns what CTabbedFrameImpl
+//     thinks is the active view.
+//   * Replace
+//      DECLARE_FRAME_WND_CLASS(_T("TabbedFrame"), 0)
+//     with
+//      DECLARE_FRAME_WND_CLASS_EX(_T("TabbedFrame"), 0, 0, COLOR_APPWORKSPACE)
+//     (gets rid of CS_DBLCLKS, CS_HREDRAW and CS_VREDRAW, sets background brush)
+//   * Support "empty" tabbed frame (have window class brush, 
+//     let default handling of WM_ERASEBKGND happen if no active view,
+//     and NULL out m_hWndActive in OnRemoveLastTab).
+// - CTabbedPopupFrame -
+//   * Replace
+//      DECLARE_FRAME_WND_CLASS(_T("TabbedPopupFrame"), 0)
+//     with
+//      DECLARE_FRAME_WND_CLASS_EX(_T("TabbedPopupFrame"), 0, 0, COLOR_APPWORKSPACE)
+//     (gets rid of CS_DBLCLKS, CS_HREDRAW and CS_VREDRAW, sets background brush)
+// - CTabbedChildWindow -
+//   * Replace
+//      DECLARE_WND_CLASS(_T("TabbedChildWindow"))
+//     with
+//      DECLARE_FRAME_WND_CLASS_EX(_T("TabbedChildWindow"), 0, 0, COLOR_APPWORKSPACE)
+//     (gets rid of CS_DBLCLKS, CS_HREDRAW and CS_VREDRAW, sets background brush)
+//
+// 2003/02/27: Daniel Bowen
+// - Use _U_STRINGorID instead of WTL::_U_STRINGorID.
+//   For VC7, this means you must #define _WTL_NO_UNION_CLASSES
+//   before including the WTL header files, or you will
+//   get compile errors (the ATL7 union classes are defined
+//   in atlwin.h).
+//
+// 2002/11/27: Daniel Bowen
+// - CTabbedFrameImpl::GetTabStyles needs to return DWORD, not bool 
+//
 // 2002/09/25: Daniel Bowen
 // - CTabbedFrameImpl -
 //   * Expose "SetTabStyles" and "GetTabStyles" so that you can change
@@ -123,7 +166,7 @@ class CCustomTabOwnerImpl
 // Member variables
 protected:
 	TTabCtrl m_TabCtrl;
-	WTL::CImageList m_ImageList;
+	CImageList m_ImageList;
 	int m_cxImage, m_cyImage;
 	int m_nTabAreaHeight;
 
@@ -249,7 +292,7 @@ public:
 		return m_ImageList.Add(hBitmap, crMask);
 	}
 
-	int AddBitmap(WTL::_U_STRINGorID bitmap, COLORREF crMask, HMODULE hModule = _Module.GetResourceInstance())
+	int AddBitmap(_U_STRINGorID bitmap, COLORREF crMask, HMODULE hModule = _Module.GetResourceInstance())
 	{
 		HBITMAP hBitmap = (HBITMAP)::LoadImage(
 			hModule,
@@ -258,7 +301,7 @@ public:
 		return hBitmap ? m_ImageList.Add(hBitmap, crMask) : -1;
 	}
 
-	int AddBitmap(WTL::_U_STRINGorID bitmap, HBITMAP hBitmapMask = NULL, HMODULE hModule = _Module.GetResourceInstance())
+	int AddBitmap(_U_STRINGorID bitmap, HBITMAP hBitmapMask = NULL, HMODULE hModule = _Module.GetResourceInstance())
 	{
 		HBITMAP hBitmap = (HBITMAP)::LoadImage(
 			hModule,
@@ -273,7 +316,7 @@ public:
 		return m_ImageList.AddIcon(hIcon);
 	}
 
-	int AddIcon(WTL::_U_STRINGorID icon, HMODULE hModule = _Module.GetResourceInstance())
+	int AddIcon(_U_STRINGorID icon, HMODULE hModule = _Module.GetResourceInstance())
 	{
 		HICON hIcon = (HICON)::LoadImage(
 			hModule,
@@ -307,7 +350,7 @@ public:
 		return this->AddTab(hWnd, sTabText, nImageIndex);
 	}
 
-	int AddTabWithBitmap(HWND hWnd, LPCTSTR sTabText, WTL::_U_STRINGorID bitmap, HBITMAP hBitmapMask = NULL, HMODULE hModule = _Module.GetResourceInstance())
+	int AddTabWithBitmap(HWND hWnd, LPCTSTR sTabText, _U_STRINGorID bitmap, HBITMAP hBitmapMask = NULL, HMODULE hModule = _Module.GetResourceInstance())
 	{
 		if(hWnd == NULL)
 		{
@@ -319,7 +362,7 @@ public:
 		return this->AddTab(hWnd, sTabText, nImageIndex);
 	}
 
-	int AddTabWithBitmap(HWND hWnd, LPCTSTR sTabText, WTL::_U_STRINGorID bitmap, COLORREF crMask, HMODULE hModule = _Module.GetResourceInstance())
+	int AddTabWithBitmap(HWND hWnd, LPCTSTR sTabText, _U_STRINGorID bitmap, COLORREF crMask, HMODULE hModule = _Module.GetResourceInstance())
 	{
 		if(hWnd == NULL)
 		{
@@ -344,7 +387,7 @@ public:
 		return this->AddTab(hWnd, sTabText, nImageIndex);
 	}
 
-	int AddTabWithIcon(HWND hWnd, LPCTSTR sTabText, WTL::_U_STRINGorID icon, HMODULE hModule = _Module.GetResourceInstance())
+	int AddTabWithIcon(HWND hWnd, LPCTSTR sTabText, _U_STRINGorID icon, HMODULE hModule = _Module.GetResourceInstance())
 	{
 		if(hWnd == NULL)
 		{
@@ -587,6 +630,10 @@ public:
 //
 /////////////////////////////////////////////////////////////////////////////
 
+#define CHAIN_ACTIVETABVIEW_COMMANDS() \
+	if(uMsg == WM_COMMAND && m_hWndActive != NULL) \
+		::SendMessage(m_hWndActive, uMsg, wParam, lParam);
+
 template <
 	class T,
 	class TTabCtrl = CDotNetTabCtrl<CTabViewTabItem>,
@@ -632,9 +679,14 @@ public:
 		m_nTabStyles = nTabStyles;
 	}
 
-	bool GetTabStyles(void) const
+	DWORD GetTabStyles(void) const
 	{
 		return m_nTabStyles;
+	}
+
+	HWND GetActiveView(void) const
+	{
+		return m_hWndActive;
 	}
 
 	virtual void OnFinalMessage(HWND /*hWnd*/)
@@ -649,7 +701,8 @@ public:
 
 // Message Handling
 public:
-	DECLARE_FRAME_WND_CLASS(_T("TabbedFrame"), 0)
+	// The class that derives from this class should set an appropriate background brush
+	DECLARE_FRAME_WND_CLASS_EX(_T("TabbedFrame"), 0, 0, COLOR_APPWORKSPACE)
 
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
@@ -677,6 +730,7 @@ public:
 			}
 		}
 
+		CHAIN_ACTIVETABVIEW_COMMANDS()
 		if(m_bReflectNotifications)
 		{
 			REFLECT_NOTIFICATIONS()
@@ -688,8 +742,16 @@ public:
 		// "baseClass::OnCreate()"
 		LRESULT lRet = DefWindowProc(uMsg, wParam, lParam);
 		bHandled = TRUE;
+		if(lRet == -1)
+		{
+			return -1;
+		}
 
-		CreateTabWindow(m_hWnd, rcDefault, m_nTabStyles);
+		// The derived C++ class should set the background brush for
+		// the window class (DECLARE_FRAME_WND_CLASS_EX)
+		//::SetClassLongPtr(m_hWnd, GCLP_HBRBACKGROUND, COLOR_APPWORKSPACE+1);
+
+		this->CreateTabWindow(m_hWnd, rcDefault, m_nTabStyles);
 
 		return 0;
 	}
@@ -718,11 +780,22 @@ public:
 		return 0;
 	}
 
-	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
-		// Let the active view and the tabs do all the drawing
-		// as flicker-free as possible.
-		return 1;
+		if(m_hWndActive)
+		{
+			// Let the active view and the tabs do all the drawing
+			// as flicker-free as possible.
+			bHandled = TRUE;
+			return 1;
+		}
+		else
+		{
+			// There is no active tab view.
+			// Let the default erase happen with the window class brush.
+			bHandled = FALSE;
+			return 0;
+		}
 	}
 
 	LRESULT OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -810,6 +883,14 @@ public:
 			pT->UpdateLayout();
 			Invalidate();
 		}
+	}
+
+	void OnRemoveLastTab()
+	{
+		// NOTE: Derived classes should call this base class version as well
+		m_hWndActive = NULL;
+
+		customTabOwnerClass::OnRemoveLastTab();
 	}
 
 // Overrides from TBase
@@ -939,7 +1020,7 @@ public:
 
 // Message Handling
 public:
-	DECLARE_FRAME_WND_CLASS(_T("TabbedPopupFrame"), 0)
+	DECLARE_FRAME_WND_CLASS_EX(_T("TabbedPopupFrame"), 0, 0, COLOR_APPWORKSPACE)
 
 	BOOL PreTranslateMessage(MSG* pMsg)
 	{
@@ -1041,7 +1122,7 @@ public:
 
 // Message Handling
 public:
-	DECLARE_WND_CLASS(_T("TabbedChildWindow"))
+	DECLARE_FRAME_WND_CLASS_EX(_T("TabbedChildWindow"), 0, 0, COLOR_APPWORKSPACE)
 
 	BOOL PreTranslateMessage(MSG* pMsg)
 	{

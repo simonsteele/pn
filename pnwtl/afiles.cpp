@@ -119,7 +119,8 @@ AlternateFiles::AlternateFiles()
 	if(!FileExists(path.c_str()))
 	{
 		// Some simple defaults...
-		sets.push_front( new AlternateFileSet(_T(".cxx;.c;.cpp;.cc"), _T(".h;.hpp;.hh")) );
+		sets.push_back( new AlternateFileSet(_T(".cxx;.c;.cpp;.cc"), _T(".h;.hpp;.hh")) );
+		sets.push_back( new AlternateFileSet(_T(".dfm"), _T(".pas")) );
 	}
 	else
 	{
@@ -148,7 +149,7 @@ AlternateFiles::~AlternateFiles()
 
 void AlternateFiles::Add(AlternateFileSet* pSet)
 {
-	sets.push_front(pSet);
+	sets.push_back(pSet);
 }
 
 void AlternateFiles::Remove(AlternateFileSet* pSet)
@@ -270,6 +271,7 @@ bool AlternateFiles::extMatches(LPCTSTR pSet, LPCTSTR ext) const
 		}
 		
 		p += _tcslen(p);
+		p++;
 	}
 
 	return false;
@@ -310,7 +312,7 @@ void AlternateFiles::startElement(LPCTSTR name, XMLAttributes& atts)
 			(_tcslen(s2) > 0) )
 		{
 			AlternateFileSet* pSet = new AlternateFileSet(s1, s2);
-			sets.push_front(pSet);
+			sets.push_back(pSet);
 		}
 	}
 	else

@@ -243,30 +243,59 @@ void CTextView::Revert(LPCTSTR filename)
 
 bool CTextView::SaveFile(LPCTSTR filename)
 {
-	CFile file;
-	if( file.Open(filename, CFile::modeWrite | CFile::modeBinary) )
+	char data[blockSize + 1];
+	int lengthDoc = SPerform(SCI_GETLENGTH);
+
+	if(m_encType == eUnknown)
 	{
-		char data[blockSize + 1];
-		int lengthDoc = SPerform(SCI_GETLENGTH);
-		for (int i = 0; i < lengthDoc; i += blockSize) 
+		// Standard 8-bit ascii...
+		CFile file;
+		if( file.Open(filename, CFile::modeWrite | CFile::modeBinary) )
 		{
-			int grabSize = lengthDoc - i;
-			if (grabSize > blockSize)
-				grabSize = blockSize;
-			GetRange(i, i + grabSize, data);
-			
-			/*if (props.GetInt("strip.trailing.spaces"))
-				grabSize = StripTrailingSpaces(
-								data, grabSize, grabSize != blockSize);*/
-			
-			file.Write(data, grabSize);
+			for (int i = 0; i < lengthDoc; i += blockSize) 
+			{
+				int grabSize = lengthDoc - i;
+				if (grabSize > blockSize)
+					grabSize = blockSize;
+				GetRange(i, i + grabSize, data);
+				
+				/*if (props.GetInt("strip.trailing.spaces"))
+					grabSize = StripTrailingSpaces(
+									data, grabSize, grabSize != blockSize);*/
+				
+				file.Write(data, grabSize);
+			}
+			file.Close();
 		}
-		file.Close();
-		SPerform(SCI_SETSAVEPOINT);
-		return true;
+		else
+			return false;
 	}
 	else
-		return false;
+	{
+		// Deal with writing unicode formats here...
+		Utf8_16_Write converter;
+		converter.setEncoding( static_cast<Utf8_16::encodingType>(m_encType) );
+
+		FILE* fp = converter.fopen(filename, _T("wb"));
+		if(fp != NULL)
+		{
+			for(int i = 0; i < lengthDoc; i += blockSize)
+			{
+				int grabSize = lengthDoc - i;
+				if( grabSize > blockSize )
+					grabSize = blockSize;
+				GetRange(i, i + grabSize, data);
+
+				converter.fwrite(data, grabSize);
+			}
+			converter.fclose();
+		}
+		else
+			return false;
+	}
+	
+	SPerform(SCI_SETSAVEPOINT);
+	return true;
 }
 
 bool CTextView::Save(LPCTSTR filename, bool bSetScheme)
@@ -443,6 +472,16 @@ tstring CTextView::GetCurrentWord()
 	}
 
 	return ret;
+}
+
+EPNEncoding CTextView::GetEncoding()
+{
+	return m_encType;
+}
+
+void CTextView::SetEncoding(EPNEncoding encoding)
+{
+	m_encType = encoding;
 }
 
 CScheme* CTextView::GetCurrentScheme()

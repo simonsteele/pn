@@ -12,11 +12,13 @@
 // the source code in  this file is used in any commercial application
 // then a simple email woulod be nice.
 
-#if !defined(AFX_TABDOCKINGBOX_H__D6775B62_2AA5_4678_8DE0_7BD3B37BB5DD__INCLUDED_)
-#define AFX_TABDOCKINGBOX_H__D6775B62_2AA5_4678_8DE0_7BD3B37BB5DD__INCLUDED_
+#ifndef __WTL_DW__TABDOCKINGBOX_H__
+#define __WTL_DW__TABDOCKINGBOX_H__
 
-#include <DockingBox.h>
-#include <FlyingTabs.h>
+#pragma once
+
+#include "DockingBox.h"
+#include "FlyingTabs.h"
 
 namespace dockwins{
 	
@@ -395,7 +397,21 @@ public:
 		{
 			bRes=n<2;
 			if(!bRes)
-				bRes=baseClass::CanBeClosed(param);
+			{
+				int curSel=m_tabs.GetCurSel();
+				assert(curSel!=-1);
+				HWND hWnd=GetItemHWND(curSel);      
+				assert(hWnd);
+				if(hWnd)
+				{
+					::PostMessage(hWnd, WM_CLOSE, 0, 0);
+					bRes = false;
+				}
+				else
+				{
+					bRes=baseClass::CanBeClosed(param);
+				}
+			}
 		}
 		return bRes;
 	}
@@ -465,6 +481,7 @@ public:
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
 
 ///11	NOTIFY_CODE_HANDLER(TCN_SELCHANGE, OnTabSelChange)
 ///11	NOTIFY_CODE_HANDLER(TCN_TABLEAVCTRL, OnTabLeavCtrl)
@@ -511,6 +528,20 @@ public:
 		m_images.Destroy();
 		return 0;
 	}
+	
+	LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+	{
+		int index=m_tabs.GetCurSel();
+		if(index!=-1)
+		{
+			HWND hWnd=GetItemHWND(index);
+			if(hWnd != NULL && ::IsWindowVisible(hWnd))
+				::SetFocus(hWnd);
+		}
+
+		bHandled = FALSE;
+		return 1;
+	}
 
 	LRESULT OnTabSelChange(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 	{
@@ -530,6 +561,7 @@ public:
 					m_wnd=hWnd;
 					UpdateWindowCaption();
 					AdjustCurentItem();
+					::SetFocus(hWnd);
 				}
 			}
 		}
@@ -626,7 +658,17 @@ typedef CBoxedDockingWindowTraits<CVC6LikeCaption, CTabDockingBox<CVC6LikeDockin
 									WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW> 
 								CVC6LikeBoxedDockingWindowTraits;
 
+typedef CBoxedDockingWindowTraits<CVC7LikeCaption, CTabDockingBox<CVC7LikeDockingBoxTraits>,
+									WS_OVERLAPPEDWINDOW | WS_POPUP | WS_VISIBLE |
+									WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW> 
+								CVC7LikeBoxedDockingWindowTraits;
+
+typedef CBoxedDockingWindowTraits<CVC7LikeExCaption, CTabDockingBox<CVC7LikeExDockingBoxTraits>,
+									WS_OVERLAPPEDWINDOW | WS_POPUP | WS_VISIBLE |
+									WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW> 
+								CVC7LikeExBoxedDockingWindowTraits;
+
 
 }//namespace dockwins
 
-#endif // !defined(AFX_TABDOCKINGBOX_H__D6775B62_2AA5_4678_8DE0_7BD3B37BB5DD__INCLUDED_)
+#endif // __WTL_DW__TABDOCKINGBOX_H__

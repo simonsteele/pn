@@ -12,10 +12,12 @@
 // the source code in  this file is used in any commercial application
 // then a simple email woulod be nice.
 
-#if !defined(AFX_DOCKINGWINDOW_H__B52D9183_DF95_4DCD_8A16_937836FA5F06__INCLUDED_)
-#define AFX_DOCKINGWINDOW_H__B52D9183_DF95_4DCD_8A16_937836FA5F06__INCLUDED_
+#ifndef __WTL_DW__DOCKINGWINDOW_H__
+#define __WTL_DW__DOCKINGWINDOW_H__
 
-#include <DDTracker.h>
+#pragma once
+
+#include "DDTracker.h"
 
 namespace dockwins{
 
@@ -657,6 +659,10 @@ public:
 	{
 		return false;
 	}
+	void UpdateMetrics()
+	{
+		// Override in derived class if it depends on system metrics
+	}
 };
 
 
@@ -792,6 +798,8 @@ protected:
 			MESSAGE_HANDLER(WM_NCLBUTTONDBLCLK,OnNcLButtonDblClk)			
 		}
 		MESSAGE_HANDLER(WM_GETMINMAXINFO,OnGetMinMaxInfo)
+		MESSAGE_HANDLER(WM_SETTINGCHANGE,OnSettingChange)
+		MESSAGE_HANDLER(WM_SYSCOLORCHANGE,OnSysColorChange)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -802,6 +810,70 @@ protected:
 		pThis->GetMinMaxInfo(reinterpret_cast<LPMINMAXINFO>(lParam));
 		return lRes;
 	}
+	LRESULT OnSettingChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		if(!IsDocking())
+		{
+			// If we're floating, we're a top level window.
+			// We might be getting this message before the main frame
+			// (which is also a top-level window).
+			// The main frame handles this message, and refreshes
+			// system settings cached in CDWSettings.  In case we
+			// are getting this message before the main frame,
+			// update these cached settings (so that when we update
+			// our caption's settings that depend on them,
+			// its using the latest).
+			CDWSettings settings;
+			settings.Update();
+
+			// In addition, because we are a top-level window,
+			// we should be sure to send this message to all our descendants
+			// in case there are common controls and other windows that
+			// depend on cached system metrics.
+			this->SendMessageToDescendants(uMsg, wParam, lParam, TRUE);
+		}
+
+		m_caption.UpdateMetrics();
+
+		T* pThis=static_cast<T*>(this);
+		pThis->SetWindowPos(NULL,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+
+		bHandled = FALSE;
+		return 1;
+	}
+
+	LRESULT OnSysColorChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		if(!IsDocking())
+		{
+			// If we're floating, we're a top level window.
+			// We might be getting this message before the main frame
+			// (which is also a top-level window).
+			// The main frame handles this message, and refreshes
+			// system settings cached in CDWSettings.  In case we
+			// are getting this message before the main frame,
+			// update these cached settings (so that when we update
+			// our caption's settings that depend on them,
+			// its using the latest).
+			CDWSettings settings;
+			settings.Update();
+
+			// In addition, because we are a top-level window,
+			// we should be sure to send this message to all our descendants
+			// in case there are common controls and other windows that
+			// depend on cached system metrics.
+			this->SendMessageToDescendants(uMsg, wParam, lParam, TRUE);
+		}
+
+		m_caption.UpdateMetrics();
+
+		T* pThis=static_cast<T*>(this);
+		pThis->SetWindowPos(NULL,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+
+		bHandled = FALSE;
+		return 1;
+	}
+
 	LRESULT OnWindowPosChanging(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		return NULL;
@@ -861,7 +933,10 @@ protected:
 	LRESULT OnNcLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		bHandled=m_caption.OnAction(m_hWnd,wParam);
-        return !bHandled;
+		if(!bHandled && wParam == HTCAPTION)
+			this->SetFocus();
+
+		return !bHandled;
 	}
 
 	LRESULT OnNcLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
@@ -1034,4 +1109,4 @@ struct ATL_NO_VTABLE CTitleExDockingWindowImpl : CTitleDockingWindowImpl< T, TBa
 };
 
 }//namespace dockwins
-#endif // !defined(AFX_DOCKINGWINDOW_H__B52D9183_DF95_4DCD_8A16_937836FA5F06__INCLUDED_)
+#endif // __WTL_DW__DOCKINGWINDOW_H__

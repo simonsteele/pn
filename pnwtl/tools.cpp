@@ -147,7 +147,7 @@ HACCEL SchemeTools::GetAcceleratorTable()
 	return m_hAccel;
 }
 
-void SchemeTools::Add(ToolDefinition* pDef)
+void SchemeTools::Add(SourcedToolDefinition* pDef)
 {
 	m_Tools.push_back(pDef);
 	pDef->CommandID = -1;
@@ -155,13 +155,13 @@ void SchemeTools::Add(ToolDefinition* pDef)
 
 void SchemeTools::Delete(ToolDefinition* pDef)
 {
-	m_Tools.remove(pDef);
+	m_Tools.remove((SourcedToolDefinition*)pDef);
 	delete pDef;
 }
 
 void SchemeTools::MoveUp(ToolDefinition* pDef)
 {
-	TOOLDEFS_LIST::iterator i = std::find(m_Tools.begin(), m_Tools.end(), pDef);
+	TOOLDEFS_LIST::iterator i = std::find(m_Tools.begin(), m_Tools.end(), (SourcedToolDefinition*)pDef);
 	if(i != m_Tools.end() && i != m_Tools.begin())
 	{
 		TOOLDEFS_LIST::iterator j = i;
@@ -172,7 +172,7 @@ void SchemeTools::MoveUp(ToolDefinition* pDef)
 
 void SchemeTools::MoveDown(ToolDefinition* pDef)
 {
-	TOOLDEFS_LIST::iterator i = std::find(m_Tools.begin(), m_Tools.end(), pDef);
+	TOOLDEFS_LIST::iterator i = std::find(m_Tools.begin(), m_Tools.end(), (SourcedToolDefinition*)pDef);
 	if(i != m_Tools.end())
 	{
 		TOOLDEFS_LIST::iterator j = i;
@@ -182,22 +182,24 @@ void SchemeTools::MoveDown(ToolDefinition* pDef)
 	}
 }
 
-void SchemeTools::WriteDefinition(ofstream& stream)
+void SchemeTools::WriteDefinition(ofstream& stream, ToolSource* source)
 {
-	if(m_Tools.size() != 0)
+	if(ToolsInSource(source))
 	{
 		stream << "\t<scheme name=\"" << m_Scheme << "\">\n";
 		
-		InternalWriteDefinition(stream);	
+		InternalWriteDefinition(stream, source);	
 
 		stream << "\t</scheme>\n";
 	}
 }
 
-void SchemeTools::InternalWriteDefinition(ofstream& stream)
+void SchemeTools::InternalWriteDefinition(ofstream& stream, ToolSource* source)
 {
 	for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
 	{
+		if( (*i)->source != source )
+			continue;
 		int flags = (*i)->iFlags;
 		stream << "\t\t<tool name=\"" << FormatXML((*i)->Name) << "\" ";
 		stream << "command=\"" << FormatXML((*i)->Command) << "\" ";
@@ -210,17 +212,28 @@ void SchemeTools::InternalWriteDefinition(ofstream& stream)
 	}
 }
 
+bool SchemeTools::ToolsInSource(ToolSource* source)
+{
+	for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
+	{
+		if( (*i)->source == source )
+			return true;
+	}
+
+	return false;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // GlobalTools
 //////////////////////////////////////////////////////////////////////////////
 
-void GlobalTools::WriteDefinition(ofstream& stream)
+void GlobalTools::WriteDefinition(ofstream& stream, ToolSource* source)
 {
-	if(m_Tools.size() != 0)
+	if(ToolsInSource(source))
 	{
 		stream << "\t<global>\n";
 		
-		InternalWriteDefinition(stream);	
+		InternalWriteDefinition(stream, source);	
 
 		stream << "\t</global>\n";
 	}
@@ -273,7 +286,6 @@ void CToolCommandString::OnFormatChar(TCHAR thechar)
 	}		
 }
 
-
 //////////////////////////////////////////////////////////////////////////////
 // SchemeToolsManager
 //////////////////////////////////////////////////////////////////////////////
@@ -302,7 +314,14 @@ void SchemeToolsManager::Clear(bool bWantMenuResources)
 		delete (*i).second;
 	}
 
+	for(SOURCES_LIST::iterator i = m_toolSources.begin(); i != m_toolSources.end(); ++i)
+	{
+		if((*i) != &m_DefaultToolsSource)
+			delete (*i);
+	}
+
 	m_toolSets.clear();
+	m_toolSources.clear();
 
 	if(m_pGlobalTools)
 	{
@@ -397,6 +416,11 @@ int SchemeToolsManager::UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, 
 	return iFirstToolCmd;
 }
 
+const ToolSource* SchemeToolsManager::GetDefaultToolStore()
+{
+	return &m_DefaultToolsSource;
+}
+
 void SchemeToolsManager::ReLoad(bool bWantMenuResources)
 {
 	Clear(bWantMenuResources);
@@ -405,8 +429,12 @@ void SchemeToolsManager::ReLoad(bool bWantMenuResources)
 	parser.SetParseState(this);
 
 	tstring uspath;
-	COptionsManager::GetInstance()->GetPNPath(uspath, PNPATH_USERSETTINGS);
+	COptionsManager::GetInstance()->GetPNPath(uspath, PNPATH_USERTOOLS);
 	uspath += _T("UserTools.xml");
+
+	m_DefaultToolsSource.FileName = uspath;
+	m_toolSources.push_back(&m_DefaultToolsSource);
+	m_pCurSource = &m_DefaultToolsSource;
 
 	if(FileExists(uspath.c_str()))
 	{
@@ -416,33 +444,74 @@ void SchemeToolsManager::ReLoad(bool bWantMenuResources)
 		}
 		catch ( XMLParserException& ex )
 		{
-			::OutputDebugString(_T("XML Parser Exception loading Scheme Tools:"));
-			::OutputDebugString(ex.GetMessage());
+			tstring str(_T("XML Parser Exception loading Scheme Tools:"));
+			str += ex.GetMessage();
+			UNEXPECTED(str.c_str());
 		}
 
+	}
+
+	COptionsManager::GetInstance()->GetPNPath(uspath, PNPATH_TOOLS);
+	tstring pattern(uspath);
+	tstring to_open;
+
+	pattern += "*.xml";
+
+	WIN32_FIND_DATA FindFileData;
+	HANDLE hFind = FindFirstFile(pattern.c_str(), &FindFileData);
+	if(hFind != INVALID_HANDLE_VALUE)
+	{
+		BOOL found = TRUE;
+		while (found)
+		{
+			///@todo Do we really need to keep a list of Schemes and a map?
+			// to_open is a scheme file
+			to_open = uspath;
+			to_open += FindFileData.cFileName;
+
+			try
+			{
+				ToolSource* ts = new ToolSource;
+				ts->FileName = to_open;
+				m_toolSources.push_back(ts);
+				m_pCurSource = ts;
+
+				parser.Reset();
+				parser.LoadFile(to_open.c_str());
+			}
+			catch( XMLParserException& ex)
+			{
+				tstring str(_T("XML Parser Exception loading Scheme Tools:"));
+				str += ex.GetMessage();
+				UNEXPECTED(str.c_str());
+			}
+
+			found = FindNextFile(hFind, &FindFileData);
+		}
+
+		FindClose(hFind);
 	}
 }
 
 void SchemeToolsManager::Save()
 {
-	tstring uspath;
-	COptionsManager::GetInstance()->GetPNPath(uspath, PNPATH_USERSETTINGS);
-	uspath += _T("UserTools.xml");
-
-	ofstream str;
-	str.open(uspath.c_str(), ios_base::out);
-	if(str.is_open())
+	for(SOURCES_LIST::iterator i = m_toolSources.begin(); i != m_toolSources.end(); ++i)
 	{
-		str << "<?xml version=\"1.0\"?>\n<schemetools>";
-		if(m_pGlobalTools)
-			m_pGlobalTools->WriteDefinition(str);
-		for(SCHEMETOOLS_MAP::const_iterator i = m_toolSets.begin(); i != m_toolSets.end(); ++i)
+		ofstream str;
+		str.open((*i)->FileName.c_str(), ios_base::out);
+		if(str.is_open())
 		{
-			(*i).second->WriteDefinition(str);
-		}
-		str << "</schemetools>";
+			str << "<?xml version=\"1.0\"?>\n<schemetools>\n";
+			if(m_pGlobalTools)
+				m_pGlobalTools->WriteDefinition(str, (*i));
+			for(SCHEMETOOLS_MAP::const_iterator j = m_toolSets.begin(); j != m_toolSets.end(); ++j)
+			{
+				(*j).second->WriteDefinition(str, (*i));
+			}
+			str << "</schemetools>";
 
-		str.close();
+			str.close();
+		}
 	}
 }
 
@@ -451,10 +520,16 @@ void SchemeToolsManager::processScheme(XMLAttributes& atts)
 	LPCTSTR schemename = atts.getValue(_T("name"));
 	if(schemename)
 	{
-		m_pCur = new SchemeTools(schemename);
+		SchemeTools* old = GetToolsFor(schemename);
+		if(old)
+			m_pCur = old;
+		else
+		{
+			m_pCur = new SchemeTools(schemename);
 
-		tstring stoadd(schemename);
-		m_toolSets.insert(SCHEMETOOLS_MAP::value_type(stoadd, m_pCur));
+			tstring stoadd(schemename);
+			m_toolSets.insert(SCHEMETOOLS_MAP::value_type(stoadd, m_pCur));
+		}
 	}
 }
 
@@ -469,7 +544,7 @@ void SchemeToolsManager::processTool(XMLAttributes& atts)
 	LPCTSTR toolname = atts.getValue(_T("name"));
 	if(m_pCur && toolname)
 	{
-		ToolDefinition* pDef = new ToolDefinition;
+		SourcedToolDefinition* pDef = new SourcedToolDefinition(m_pCurSource);
 		
 		// Initialise members...
 		pDef->Name = toolname;

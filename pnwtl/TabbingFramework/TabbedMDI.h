@@ -65,6 +65,59 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2003/08/11: Daniel Bowen
+// - CMDITabOwner:
+//   * Add new "KeepTabsHidden" method.
+//   * Have the old CMDITabOwner be CMDITabOwnerImpl with new template parameter
+//     for most derived class so that others can derive from it and
+//     have things work right.  CMDITabOwner now is very simple and
+//     just inherits from CMDITabOwnerImpl
+// - Use "LongToHandle" with return value from GetClassLong
+//
+// 2003/06/27: Daniel Bowen
+// - CMDITabOwner:
+//   * Use typedefs for thisClass, baseClass, customTabOwnerClass
+//   * Replace
+//      DECLARE_WND_CLASS(_T("MdiTabOwner"))
+//     with
+//      DECLARE_WND_CLASS_EX(_T("MdiTabOwner"), 0, COLOR_APPWORKSPACE)
+//     (gets rid of CS_DBLCLKS, CS_HREDRAW and CS_VREDRAW, sets background brush)
+//   * Have OnAddFirstTab and OnRemoveLastTab call base class versions
+//     (in case we ever do anything interesting there)
+// - Check failure of window creation (DefWindowProc when handling WM_CREATE)
+//   and return immediately if it failed.
+//
+// 2003/06/03: Daniel Bowen
+// - Fix compile errors for VC 7.1
+//
+// 2003/02/27: Daniel Bowen
+// - Use _U_RECT instead of WTL::_U_RECT.
+//   For VC7, this means you must #define _WTL_NO_UNION_CLASSES
+//   before including the WTL header files, or you will
+//   get compile errors (the ATL7 union classes are defined
+//   in atlwin.h).
+//
+// 2002/12/11: Daniel Bowen
+// - New UWM_MDICHILDSAVEMODIFIED message sent to MDI child frames.
+//   The child frame receiving this should see if the "document"
+//   has been modified, and needs to be saved (usually with a 
+//   yes/no/cancel message box).  If the user chooses to cancel,
+//   return non-zero from the UWM_MDICHILDSAVEMODIFIED handler.
+// - CTabbedMDIClient -
+//   * SaveAllModified - Iterates the MDI child windows, and
+//      sends UWM_MDICHILDSAVEMODIFIED. If a child returns non-zero,
+//      the iteration stops.  You can also specify whether to
+//      close the child window after sending UWM_MDICHILDSAVEMODIFIED.
+//   * CloseAll - Close All MDI child windows.  When handling WM_CLOSE,
+//      the MDI child window should *not* have a "Cancel" option
+//      if prompting to save a modified document.
+//
+// 2002/11/27: Daniel Bowen
+// - CTabbedMDIChildWindowImpl -
+//   * When handling WM_MOUSEACTIVATE in CTabbedMDIChildWindowImpl,
+//     let the message get to the top window before possibly doing
+//     MDIActivate (more like the MFC code in CMDIChildWnd::OnMouseActivate)
+//
 // 2002/11/21: Daniel Bowen
 // - CMDITabOwner - 
 //   * ModifyTabStyles for use before CMDITabOwner is created as a window
@@ -187,6 +240,7 @@
 #define UWM_MDICHILDMAXIMIZED_MSG          _T("UWM_MDICHILDMAXIMIZED_MSG-5DAD28E7-C961-11d5-8BDA-00500477589F")
 #define UWM_MDICHILDUNMAXIMIZED_MSG        _T("UWM_MDICHILDUNMAXIMIZED_MSG-5DAD28E9-C961-11d5-8BDA-00500477589F")
 #define UWM_MDICHILDSHOWTABCONTEXTMENU_MSG _T("UWM_MDICHILDSHOWTABCONTEXTMENU_MSG-5DAD28EB-C961-11d5-8BDA-00500477589F")
+#define UWM_MDICHILDSAVEMODIFIED_MSG       _T("UWM_MDICHILDSAVEMODIFIED_MSG-5DAD28EC-C961-11d5-8BDA-00500477589F")
 
 __declspec(selectany) UINT UWM_MDICHILDTABTEXTCHANGE = 0;
 __declspec(selectany) UINT UWM_MDICHILDTABTOOLTIPCHANGE = 0;
@@ -194,6 +248,7 @@ __declspec(selectany) UINT UWM_MDICHILDACTIVATIONCHANGE = 0;
 __declspec(selectany) UINT UWM_MDICHILDMAXIMIZED = 0;
 __declspec(selectany) UINT UWM_MDICHILDUNMAXIMIZED = 0;
 __declspec(selectany) UINT UWM_MDICHILDSHOWTABCONTEXTMENU = 0;
+__declspec(selectany) UINT UWM_MDICHILDSAVEMODIFIED = 0;
 
 struct RegisterTabbedMDIMessages
 {
@@ -205,6 +260,7 @@ struct RegisterTabbedMDIMessages
 		UWM_MDICHILDMAXIMIZED =          ::RegisterWindowMessage(UWM_MDICHILDMAXIMIZED_MSG);
 		UWM_MDICHILDUNMAXIMIZED =        ::RegisterWindowMessage(UWM_MDICHILDUNMAXIMIZED_MSG);
 		UWM_MDICHILDSHOWTABCONTEXTMENU = ::RegisterWindowMessage(UWM_MDICHILDSHOWTABCONTEXTMENU_MSG);
+		UWM_MDICHILDSAVEMODIFIED =       ::RegisterWindowMessage(UWM_MDICHILDSAVEMODIFIED_MSG);
 	}
 };
 
@@ -249,7 +305,7 @@ class ATL_NO_VTABLE CTabbedMDIFrameWindowImpl :
 {
 public:
 	// Expose the type of MDI client
-	typedef TClient TClient;
+	typedef typename TClient TClient;
 	// Expose the type of tab control
 	typedef typename TClient::TTabCtrl TTabCtrl;
 	
@@ -316,7 +372,7 @@ public:
 public:
 
 	// NOTE: CreateEx also calls this (through T*)
-	HWND Create(HWND hWndParent, WTL::_U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
+	HWND Create(HWND hWndParent, _U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
 			DWORD dwStyle = 0U, DWORD dwExStyle = 0U,
 			UINT nMenuID = 0U, LPVOID lpCreateParam = NULL)
 	{
@@ -395,6 +451,7 @@ public:
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
 		MESSAGE_HANDLER(WM_MOUSEACTIVATE, OnMouseActivate)
 		MESSAGE_HANDLER(UWM_MDICHILDSHOWTABCONTEXTMENU, OnShowTabContextMenu)
+		MESSAGE_HANDLER(UWM_MDICHILDSAVEMODIFIED, OnSaveModified)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -439,13 +496,18 @@ public:
 
 	LRESULT OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
+		LRESULT lRes = this->DefWindowProc(uMsg, wParam, lParam);
+		if(lRes == MA_NOACTIVATE || lRes == MA_NOACTIVATEANDEAT)
+			return lRes;   // frame does not want to activate
+
+		// activate window if necessary
 		HWND hWndActive = this->MDIGetActive();
 		if(m_hWnd != hWndActive)
 		{
 			this->MDIActivate(m_hWnd);
 		}
 
-		return MA_ACTIVATE;
+		return lRes;
 	}
 
 	LRESULT OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -496,6 +558,13 @@ public:
 
 		return 0;
 	}
+
+	LRESULT OnSaveModified(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		// A derived class should handle this message.
+		// Return non-zero if you want to "cancel"
+		return 0;
+	}
 };
 
 
@@ -505,25 +574,32 @@ public:
 //
 /////////////////////////////////////////////////////////////////////////////
 
-template< class TTabCtrl >
-class CMDITabOwner :
-	public CWindowImpl<CMDITabOwner>,
-	public CCustomTabOwnerImpl<CMDITabOwner, TTabCtrl>
+template< class T, class TTabCtrl >
+class CMDITabOwnerImpl :
+	public CWindowImpl<T>,
+	public CCustomTabOwnerImpl<T, TTabCtrl>
 {
 public:
 	// Expose the type of tab control
-	typedef TTabCtrl TTabCtrl;
+	typedef typename TTabCtrl TTabCtrl;
+
+protected:
+	typedef CMDITabOwnerImpl< T, TTabCtrl > thisClass;
+	typedef CWindowImpl<T> baseClass;
+	typedef CCustomTabOwnerImpl<T, TTabCtrl> customTabOwnerClass;
 
 // Member variables
 protected:
 	HWND m_hWndMDIClient;
 	DWORD m_nTabStyles;
+	bool m_bKeepTabsHidden;
 
 // Constructors
 public:
-	CMDITabOwner() :
+	CMDITabOwnerImpl() :
 		m_hWndMDIClient(NULL),
-		m_nTabStyles(CTCS_TOOLTIPS | CTCS_BOLDSELECTEDTAB | CTCS_SCROLL | CTCS_CLOSEBUTTON)
+		m_nTabStyles(CTCS_TOOLTIPS | CTCS_BOLDSELECTEDTAB | CTCS_SCROLL | CTCS_CLOSEBUTTON),
+		m_bKeepTabsHidden(false)
 	{
 		ATLASSERT(UWM_MDICHILDACTIVATIONCHANGE != 0 && "The TabbedMDI Messages didn't get registered properly");
 	}
@@ -554,11 +630,29 @@ public:
 		}
 	}
 
+	void KeepTabsHidden(bool bKeepTabsHidden = true)
+	{
+		if(m_bKeepTabsHidden != bKeepTabsHidden)
+		{
+			m_bKeepTabsHidden = bKeepTabsHidden;
+			this->CalcTabAreaHeight();
+
+			if(m_bKeepTabsHidden)
+			{
+				this->OnRemoveLastTab();
+			}
+			else if(this->GetTabCtrl().GetItemCount() > 0)
+			{
+				this->OnAddFirstTab();
+			}
+		}
+	}
+
 // Message Handling
 public:
-	DECLARE_WND_CLASS(_T("MdiTabOwner"))
+	DECLARE_WND_CLASS_EX(_T("MdiTabOwner"), 0, COLOR_APPWORKSPACE)
 
-	BEGIN_MSG_MAP(CMDITabOwner)
+	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
@@ -579,6 +673,10 @@ public:
 		// "baseClass::OnCreate()"
 		LRESULT lRet = DefWindowProc(uMsg, wParam, lParam);
 		bHandled = TRUE;
+		if(lRet == -1)
+		{
+			return -1;
+		}
 
 		CreateTabWindow(m_hWnd, rcDefault, m_nTabStyles);
 
@@ -779,6 +877,8 @@ public:
 				(rcMDIClient.right - rcMDIClient.left),(rcMDIClient.bottom - rcMDIClient.top),
 				SWP_NOZORDER);
 		}
+
+		customTabOwnerClass::OnAddFirstTab();
 	}
 
 	void OnRemoveLastTab()
@@ -822,11 +922,17 @@ public:
 					SWP_NOZORDER);
 			}
 		}
+
+		customTabOwnerClass::OnRemoveLastTab();
 	}
 
 	void SetTabAreaHeight(int nNewTabAreaHeight)
 	{
-		if(m_nTabAreaHeight != nNewTabAreaHeight)
+		if(m_bKeepTabsHidden)
+		{
+			m_nTabAreaHeight = 0;
+		}
+		else if(m_nTabAreaHeight != nNewTabAreaHeight)
 		{
 			int nOldTabAreaHeight = m_nTabAreaHeight;
 
@@ -861,6 +967,11 @@ public:
 	}
 };
 
+template< class TTabCtrl >
+class CMDITabOwner :
+	public CMDITabOwnerImpl<CMDITabOwner, TTabCtrl>
+{
+};
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -873,8 +984,8 @@ class CTabbedMDIClient : public CWindowImpl<CTabbedMDIClient, CWindow>
 {
 public:
 	// Expose the type of tab control and tab owner
-	typedef TTabCtrl TTabCtrl;
-	typedef TTabOwner TTabOwner;
+	typedef typename TTabCtrl TTabCtrl;
+	typedef typename TTabOwner TTabOwner;
 
 protected:
 	typedef CWindowImpl<CTabbedMDIClient, CWindow> baseClass;
@@ -955,6 +1066,44 @@ public:
 		return m_bDrawFlat;
 	}
 
+	bool SaveAllModified(bool bClose) const
+	{
+		HWND hWndChild = ::GetTopWindow(m_hWnd);
+		while(hWndChild != NULL)
+		{
+			if(::SendMessage(hWndChild, UWM_MDICHILDSAVEMODIFIED, 0, 0))
+			{
+				// "Cancel"
+				return false;
+			}
+			else
+			{
+				HWND hWndClose = hWndChild;
+				hWndChild = ::GetNextWindow(hWndChild, GW_HWNDNEXT);
+
+				if(bClose)
+				{
+					::SendMessage(hWndClose, WM_SYSCOMMAND, SC_CLOSE, 0L);
+				}
+			}
+		}
+
+		// Safe to terminate the application if desired
+		return true;
+	}
+
+	void CloseAll(void) const
+	{
+		HWND hWndChild = ::GetTopWindow(m_hWnd);
+		while(hWndChild != NULL)
+		{
+			HWND hWndClose = hWndChild;
+			hWndChild = ::GetNextWindow(hWndChild, GW_HWNDNEXT);
+
+			::SendMessage(hWndClose, WM_SYSCOMMAND, SC_CLOSE, 0L);
+		}
+	}
+
 	BOOL SubclassWindow(HWND hWnd)
 	{
 		BOOL bSuccess = baseClass::SubclassWindow(hWnd);
@@ -1019,6 +1168,10 @@ public:
 		// "base::OnCreate()"
 		LRESULT lRet = DefWindowProc(uMsg, wParam, lParam);
 		bHandled = TRUE;
+		if(lRet == -1)
+		{
+			return -1;
+		}
 
 		InitTabs();
 
@@ -1364,10 +1517,10 @@ public:
 			m_hIconChildMaximized = wnd.GetIcon(FALSE);
 			if(m_hIconChildMaximized == NULL)	// no icon set with WM_SETICON, get the class one
 			{
-				m_hIconChildMaximized = (HICON) ::GetClassLong(wnd, GCL_HICONSM);
+				m_hIconChildMaximized = (HICON) LongToHandle(::GetClassLong(wnd, GCL_HICONSM));
 				if(m_hIconChildMaximized == NULL)
 				{
-					m_hIconChildMaximized = (HICON) ::GetClassLong(wnd, GCL_HICON);
+					m_hIconChildMaximized = (HICON) LongToHandle(::GetClassLong(wnd, GCL_HICON));
 				}
 			}
 		}

@@ -25,6 +25,20 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2003/06/27: Daniel Bowen
+// - Update comment referencing DECLARE_WND_CLASS to be DECLARE_WND_CLASS_EX instead
+// - If the creation of the window fails, don't try to initialize.
+// 
+// 2003/06/03: Daniel Bowen
+// - Fix compile errors for VC 7.1
+//
+// 2003/01/07: Daniel Bowen
+// - Destroy or detach tooltip control when handling WM_DESTROY
+//
+// 2002/12/05: Daniel Bowen
+// - Handle WM_SYSCOLORCHANGE in case its broadcast to us
+//   from a top-level window. Call OnSettingChange.
+//
 // 2002/11/13: Daniel Bowen
 // - New CTCS_FLATEDGE style.  Tab controls derived from
 //   CCustomTabCtrl can use this style to determine whether
@@ -518,7 +532,7 @@ class ATL_NO_VTABLE CCustomTabCtrl :
 {
 public:
 	// Expose the item type (that's a template parameter to this base class)
-	typedef TItem TItem;
+	typedef typename TItem TItem;
 
 protected:
 	typedef CWindowImpl< T, TBase, TWinTraits > baseClass;
@@ -921,10 +935,10 @@ protected:
 // Message Handling
 public:
 	// Your derived class should use DECLARE_WND_CLASS or DECLARE_WND_SUPERCLASS, etc.
-	//DECLARE_WND_CLASS(_T("WTL_CustomTabCtrl"))
+	//DECLARE_WND_CLASS_EX(_T("WTL_CustomTabCtrl"), CS_DBLCLKS, COLOR_WINDOW)
 
 	BEGIN_MSG_MAP(CCustomTabCtrl)
-		CHAIN_MSG_MAP(COffscreenDrawRect< T >)
+		CHAIN_MSG_MAP(offscreenDrawClass)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
@@ -939,6 +953,7 @@ public:
 		MESSAGE_HANDLER(WM_RBUTTONUP, OnRButtonUp)
 		MESSAGE_HANDLER(WM_RBUTTONDBLCLK, OnRButtonDoubleClick)
 		MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
+		MESSAGE_HANDLER(WM_SYSCOLORCHANGE, OnSettingChange)
 		MESSAGE_HANDLER(WM_GETDLGCODE, OnGetDlgCode)
 		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
 		MESSAGE_HANDLER(WM_GETFONT, OnGetFont)
@@ -952,6 +967,11 @@ public:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		LRESULT lRes = DefWindowProc();
+		if(lRes == -1)
+		{
+			return -1;
+		}
+
 		T* pT = static_cast<T*>(this);
 		pT->Initialize();
 		return lRes;
@@ -976,6 +996,16 @@ public:
 		}
 
 		DeleteAllItems();
+
+		if(m_tooltip.IsWindow())
+		{
+			// Also sets the contained m_hWnd to NULL
+			m_tooltip.DestroyWindow();
+		}
+		else
+		{
+			m_tooltip = NULL;
+		}
 
 		bHandled = FALSE;
 		return 0;

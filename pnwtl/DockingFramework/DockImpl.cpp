@@ -12,8 +12,8 @@
 // the source code in  this file is used in any commercial application
 // then a simple email woulod be nice.
 
-#include <DockMisc.h>
-#include <DockingBox.h>
+#include "DockMisc.h"
+#include "DockingBox.h"
 
 namespace dockwins{
 

@@ -10,7 +10,7 @@
 
 #pragma once
 
-#ifndef __WTL_DW__EXTDOCKINGWINDOW_H__
+#if !defined(__WTL_DW__EXTDOCKINGWINDOW_H__) && !defined(AFX_EXTDOCKINGWINDOW_H__0CD64AFC_8687_4B20_8B8F_EE149C8C0E94__INCLUDED_)
 	#error TabbedDockingWindow.h requires ExtDockingWindow.h to be included first
 #endif
 #ifndef __WTL_TABBED_FRAME_H__
@@ -33,7 +33,7 @@ public:
 
 // Message Handling
 public:
-	DECLARE_WND_CLASS(_T("CTabbedDockingWindow"))
+	DECLARE_WND_CLASS_EX(_T("TabbedDockingWindow"), CS_DBLCLKS, COLOR_APPWORKSPACE)
 
 	BOOL PreTranslateMessage(MSG* pMsg)
 	{
@@ -83,24 +83,26 @@ public:
 #ifdef DF_AUTO_HIDE_FEATURES
 
 class CTabbedAutoHideDockingWindow :
-	public dockwins::CBoxedDockingWindowImpl< CTabbedAutoHideDockingWindow,CWindow,dockwins::COutlookLikeExBoxedDockingWindowTraits>
+	public dockwins::CBoxedDockingWindowImpl< CTabbedAutoHideDockingWindow,CWindow,dockwins::CVC7LikeExBoxedDockingWindowTraits>
 {
 protected:
 	typedef CTabbedAutoHideDockingWindow	thisClass;
-	typedef dockwins::CBoxedDockingWindowImpl< CTabbedAutoHideDockingWindow,CWindow,dockwins::COutlookLikeExBoxedDockingWindowTraits> baseClass;
+	typedef dockwins::CBoxedDockingWindowImpl< CTabbedAutoHideDockingWindow,CWindow,dockwins::CVC7LikeExBoxedDockingWindowTraits> baseClass;
 
 // Member variables
 protected:
 	HWND m_hWndClient;
 	bool m_bReflectNotifications;
 	bool m_bClientFlatOutline;
+	int m_nMenuID;
 
 // Constructors
 public:
 	CTabbedAutoHideDockingWindow(HWND hWndClient = NULL) : 
 		m_hWndClient(hWndClient),
 		m_bReflectNotifications(false),
-		m_bClientFlatOutline(false)
+		m_bClientFlatOutline(false),
+		m_nMenuID(0)
 	{
 	}
 
@@ -146,7 +148,7 @@ public:
 			{
 				::SetWindowPos(m_hWndClient, NULL, rect.left+1, rect.top+1,
 					rect.right - rect.left-2, rect.bottom - rect.top-2,
-					SWP_NOZORDER | SWP_NOACTIVATE);
+					SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 			}
 			else
 			{
@@ -186,9 +188,19 @@ public:
 		return m_bClientFlatOutline;
 	}
 
+	void SetMenuID(int nMenuID)
+	{
+		m_nMenuID = nMenuID;
+	}
+
+	int GetMenuID(void) const
+	{
+		return m_nMenuID;
+	}
+
 // Message Handling
 public:
-    DECLARE_WND_CLASS(_T("CTabbedAutoHideDockingWindow"))
+	DECLARE_WND_CLASS_EX(_T("TabbedAutoHideDockingWindow"), CS_DBLCLKS, COLOR_APPWORKSPACE)
 
 	virtual void OnFinalMessage(HWND /*hWnd*/)
 	{
@@ -219,9 +231,17 @@ public:
 
 	BEGIN_MSG_MAP(thisClass)	
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
+		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+		MESSAGE_HANDLER(WM_CLOSE, OnClose)
+		//MESSAGE_HANDLER(WM_PARENTNOTIFY, OnParentNotify)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)		
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
+
+		// TEMPORARY:
+		ATLASSERT(dockwins::CDockingFocusHandler::This());
+		CHAIN_MSG_MAP_ALT_MEMBER((*dockwins::CDockingFocusHandler::This()),0)
+
 		CHAIN_MSG_MAP(baseClass)
 		if(m_bReflectNotifications)
 		{
@@ -234,6 +254,57 @@ public:
 		bHandled = FALSE;
 		return 0;
 	}
+
+	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+	{
+		bHandled = FALSE;
+		return 0;
+	}
+
+	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+	{
+		// IMPORTANT!
+		// The docking window framework deals with WM_CLOSE differently
+		// than you might expect.  To the framework, WM_CLOSE essentially
+		// means "Hide".  So if you send WM_CLOSE to this window, don't
+		// expect it to destruct.  Instead, you should send WM_CLOSE to the window
+		// first, then DestroyWindow if that's what you're wanting to do.
+		bHandled = FALSE;
+
+		// What we might do if WM_CLOSE didn't mean "hide"
+		/*
+		if(m_hWndClient != NULL)
+		{
+			if(::IsWindow(m_hWndClient))
+			{
+				LRESULT lResult = ::SendMessage(m_hWndClient, WM_CLOSE, 0, 0L);
+				if(lResult)
+				{
+					// If the client doesn't want to close,
+					// don't let DefWindowProc have at WM_CLOSE,
+					// and return the response from the client
+					bHandled = TRUE;
+					return lResult;
+				}
+				// else, let DefWindowProc happen,
+				// and let go of m_hWndClient
+				m_hWndClient = NULL;
+			}
+		}
+		*/
+		return 0;
+	}
+
+	// If we ever need it:
+	//LRESULT OnParentNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+	//{
+	//	bHandled = FALSE;
+	//	if(LOWORD(wParam) == WM_DESTROY)
+	//	{
+	//		m_hWndClient = NULL;
+	//	}
+	//	return 0;
+	//}
 
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 	{
@@ -283,17 +354,20 @@ public:
 			return 1;
 		}
 
-		// Else no client view is set, so at least fill in the background with something
+		// Else no client view is set, so let the default erase happen
+		// (which will use the brush of the window class)
+		bHandled = FALSE;
+		return 0;
 
-		HDC hdc = (HDC)wParam;
-		if(hdc != NULL)
-		{
-			RECT rect;
-			::GetClipBox(hdc, &rect);
-			::SetBkColor(hdc, ::GetSysColor(COLOR_APPWORKSPACE));
-			::ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &rect, NULL, 0, NULL);
-		}
-		return 1;
+		//HDC hdc = (HDC)wParam;
+		//if(hdc != NULL)
+		//{
+		//	RECT rect;
+		//	::GetClipBox(hdc, &rect);
+		//	::SetBkColor(hdc, ::GetSysColor(COLOR_APPWORKSPACE));
+		//	::ExtTextOut(hdc, 0, 0, ETO_OPAQUE, &rect, NULL, 0, NULL);
+		//}
+		//return 1;
 	}
 
 	LRESULT OnSetFocus(UINT, WPARAM, LPARAM, BOOL& bHandled)

@@ -12,8 +12,10 @@
 // the source code in  this file is used in any commercial application
 // then a simple email woulod be nice.
 
-#if !defined(AFX_SIMPLESPLITTERBAR_H__B76B4E1A_3780_4903_8B08_0D25C7C47E62__INCLUDED_)
-#define AFX_SIMPLESPLITTERBAR_H__B76B4E1A_3780_4903_8B08_0D25C7C47E62__INCLUDED_
+#ifndef __WTL_DW__SIMPLESPLITTERBAR_H__
+#define __WTL_DW__SIMPLESPLITTERBAR_H__
+
+#pragma once
 
 #ifndef __ATLMISC_H__
         #error SimpleSplitterBar.h requires atlmisc.h to be included first
@@ -169,4 +171,4 @@ protected:
 
 }//namespace dockwins
 
-#endif // !defined(AFX_SIMPLESPLITTERBAR_H__B76B4E1A_3780_4903_8B08_0D25C7C47E62__INCLUDED_)
+#endif // __WTL_DW__SIMPLESPLITTERBAR_H__

@@ -316,6 +316,11 @@
 #define ID_HEADERFOOTERFIELDS_USERNAME  32886
 #define ID_HEADERFOOTERFIELDS_FILETIME  32887
 #define ID_HEADERFOOTERFIELDS_CURRENTTIME 32888
+#define ID_FILE_ENCODING                32889
+#define ID_ENCODING_8                   32890
+#define ID_ENCODING_UTF16BE             32891
+#define ID_ENCODING_UTF16LE             32892
+#define ID_ENCODING_UTF8                32893
 #define IDC_FINDTEXT_LABEL              65535
 
 // Next default values for new objects
@@ -323,7 +328,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        316
-#define _APS_NEXT_COMMAND_VALUE         32889
+#define _APS_NEXT_COMMAND_VALUE         32897
 #define _APS_NEXT_CONTROL_VALUE         1081
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

@@ -35,9 +35,9 @@ CProjectTreeCtrl::~CProjectTreeCtrl()
 	delete shellImages;
 }
 
-HWND CProjectTreeCtrl::Create(HWND hWndParent, WTL::_U_RECT rect, LPCTSTR szWindowName ,
+HWND CProjectTreeCtrl::Create(HWND hWndParent, _U_RECT rect, LPCTSTR szWindowName ,
 		DWORD dwStyle, DWORD dwExStyle,
-		WTL::_U_MENUorID MenuOrID, LPVOID lpCreateParam)
+		_U_MENUorID MenuOrID, LPVOID lpCreateParam)
 {
 	HWND hWndRet = baseClass::Create(hWndParent, rect.m_lpRect, szWindowName, dwStyle, dwExStyle, MenuOrID.m_hMenu, lpCreateParam);
 

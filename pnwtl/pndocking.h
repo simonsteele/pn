@@ -71,9 +71,9 @@ class CPNStateManager : public sstate::CWindowStateMgr
  */
 template <class T>
 class /*ATL_NO_VTABLE*/ CPNDockingWindow : public dockwins::CBoxedDockingWindowImpl<T,
-                CWindow, dockwins::COutlookLikeBoxedDockingWindowTraits >
+                CWindow, dockwins::CVC7LikeBoxedDockingWindowTraits >
 {
-	typedef dockwins::CBoxedDockingWindowImpl<T, CWindow, dockwins::COutlookLikeBoxedDockingWindowTraits> baseClass;
+	typedef dockwins::CBoxedDockingWindowImpl<T, CWindow, dockwins::CVC7LikeBoxedDockingWindowTraits> baseClass;
 	typedef CPNDockingWindow<T> thisClass;
 
 	public:

@@ -12,11 +12,13 @@
 // the source code in  this file is used in any commercial application
 // then a simple email woulod be nice.
 
-#if !defined(AFX_DOCKINGBOX_H__CD3331B7_B480_47A0_9D73_B005220B1EA7__INCLUDED_)
-#define AFX_DOCKINGBOX_H__CD3331B7_B480_47A0_9D73_B005220B1EA7__INCLUDED_
+#ifndef __WTL_DW__DOCKINGBOX_H__
+#define __WTL_DW__DOCKINGBOX_H__
+
+#pragma once
 
 #include <sstream>
-#include <ExtDockingWindow.h>
+#include "ExtDockingWindow.h"
 
 namespace dockwins{
 
@@ -183,6 +185,14 @@ typedef CDockingBoxTraits<CVC6LikeCaption,
 								WS_OVERLAPPEDWINDOW | WS_POPUP/* WS_CHILD*/ | 
 								/*WS_VISIBLE |*/ WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 								WS_EX_TOOLWINDOW/* WS_EX_CLIENTEDGE*/> CVC6LikeDockingBoxTraits;
+typedef CDockingBoxTraits<CVC7LikeCaption,
+								WS_OVERLAPPEDWINDOW | WS_POPUP/* WS_CHILD*/ | 
+								/*WS_VISIBLE |*/ WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
+								WS_EX_TOOLWINDOW/* WS_EX_CLIENTEDGE*/> CVC7LikeDockingBoxTraits;
+typedef CDockingBoxTraits<CVC7LikeExCaption,
+								WS_OVERLAPPEDWINDOW | WS_POPUP/* WS_CHILD*/ | 
+								/*WS_VISIBLE |*/ WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
+								WS_EX_TOOLWINDOW/* WS_EX_CLIENTEDGE*/> CVC7LikeExDockingBoxTraits;
 template <class T,
           class TBase = CWindow, 
           class TDockingWinTraits = COutlookLikeDockingBoxTraits>
@@ -510,4 +520,4 @@ public:
 };
 
 }//namespace dockwins
-#endif // !defined(AFX_DOCKINGBOX_H__CD3331B7_B480_47A0_9D73_B005220B1EA7__INCLUDED_)
+#endif // __WTL_DW__DOCKINGBOX_H__

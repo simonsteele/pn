@@ -12,26 +12,40 @@
 // the source code in  this file is used in any commercial application
 // then a simple email woulod be nice.
 
-#if !defined(AFX_DOCKINGFRAME_H__00E099AA_F8A4_40A6_8368_4FF0870CC58D__INCLUDED_)
-#define AFX_DOCKINGFRAME_H__00E099AA_F8A4_40A6_8368_4FF0870CC58D__INCLUDED_
+#ifndef __WTL_DW__DOCKINGFRAME_H__
+#define __WTL_DW__DOCKINGFRAME_H__
+
+#pragma once
 
 #include <atlframe.h>
-#include <DockMisc.h>
-#include <PackageWindow.h>
+#include "DockMisc.h"
+#include "PackageWindow.h"
 
 namespace dockwins{
 /////////////////CDockingFrameImplBase
 
-template <class T, class TBase,class TWinTraits = CDockingFrameTraits >
+#ifdef DF_AUTO_HIDE_FEATURES
+template <	class T,
+			class TBase,
+			class TWinTraits = CDockingFrameTraits,
+			class TAutoHidePaneTraits = COutlookLikeAutoHidePaneTraits >
+class ATL_NO_VTABLE CDockingFrameImplBase : public TBase
+{
+	typedef CDockingFrameImplBase<T,TBase,TWinTraits,TAutoHidePaneTraits>	thisClass;
+#else
+template <	class T,
+			class TBase,
+			class TWinTraits = CDockingFrameTraits >
 class ATL_NO_VTABLE CDockingFrameImplBase : public TBase
 {
 	typedef CDockingFrameImplBase<T,TBase,TWinTraits>	thisClass;
-	typedef TBase										baseClass;
-	typedef TWinTraits									CTraits; 
-	typedef typename CTraits::CSplitterBar						CSplitterBar;
+#endif
+	typedef typename TBase								baseClass;
+	typedef typename TWinTraits							CTraits; 
+	typedef typename CTraits::CSplitterBar				CSplitterBar;
 	typedef CPackageWindowFrame<CTraits>				CPackageFrame; 
 	typedef CSubWndFramesPackage<CPackageFrame,CTraits>	CWndPackage;
-	typedef typename CDWSettings::CStyle							CStyle; 
+	typedef typename CDWSettings::CStyle				CStyle; 
 	struct  CDockOrientationFlag  
 	{
 		enum{hor=0x80000000,ver=0};
@@ -220,7 +234,7 @@ public:
 		if(dockWnd.IsDocking())
 			dockWnd.Undock();
 
-		DFDOCKPOS dockHdr;
+		DFDOCKPOS dockHdr={0};
 		dockHdr.hdr.code=DC_SETDOCKPOSITION;
 		dockHdr.hdr.hWnd=dockWnd.m_hWnd;
 		dockHdr.hdr.hBar=m_hWnd;
@@ -305,6 +319,7 @@ protected:
     BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
+		MESSAGE_HANDLER(WM_SYSCOLORCHANGE, OnSysColorChange)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
 		MESSAGE_HANDLER(WM_SETCURSOR,OnSetCursor)
@@ -324,14 +339,22 @@ protected:
 		T* pThis=static_cast<T*>(this);
 		pThis->InitializeDockingFrame();
 		bHandled=FALSE;
-		return NULL;
+		return 0;
 	}
 	LRESULT OnSettingChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		T* pThis=static_cast<T*>(this);
 		pThis->ApplySystemSettings();
 //		pThis->UpdateLayout();
-		return NULL;
+		return 0;
+	}
+
+	LRESULT OnSysColorChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+	{
+		T* pThis=static_cast<T*>(this);
+		pThis->ApplySystemSettings();
+//		pThis->UpdateLayout();
+		return 0;
 	}
 
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -438,7 +461,7 @@ protected:
 	CWndPackage	m_hPackage;
 	CRect		m_rcClient;
 #ifdef DF_AUTO_HIDE_FEATURES
-	CAutoHideManager m_ahManager;
+	CAutoHideManager<TAutoHidePaneTraits> m_ahManager;
 #endif
 };
 
@@ -521,7 +544,7 @@ public:
 	DECLARE_WND_CLASS(_T("CDockingFrameImpl"))
 };
 
-/////////////////CMIDIDockingFrameImpl
+/////////////////CMDIDockingFrameImpl
 template <class T, 
 		  class TBase = CMDIWindow, 		  
 		  class TWinTraits = CDockingFrameTraits >
@@ -532,5 +555,20 @@ public:
 	DECLARE_WND_CLASS(_T("CMDIDockingFrameImpl"))
 };
 
+#ifdef DF_AUTO_HIDE_FEATURES
+/////////////////CAutoHideMDIDockingFrameImpl
+template <class T, 
+		  class TBase = CMDIWindow, 		  
+		  class TWinTraits = CDockingFrameTraits,
+		  class TAutoHidePaneTraits = COutlookLikeAutoHidePaneTraits >
+class ATL_NO_VTABLE CAutoHideMDIDockingFrameImpl : 
+	public CDockingFrameImplBase< T, CMDIFrameWindowImpl< T ,TBase, TWinTraits> ,TWinTraits, TAutoHidePaneTraits >
+{
+public:
+	DECLARE_WND_CLASS(_T("CAutoHideMDIDockingFrameImpl"))
+};
+#endif
+
+
 }//namespace dockwins
-#endif // !defined(AFX_DOCKINGFRAME_H__00E099AA_F8A4_40A6_8368_4FF0870CC58D__INCLUDED_)
+#endif // __WTL_DW__DOCKINGFRAME_H__

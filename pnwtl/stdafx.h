@@ -26,17 +26,20 @@
 #endif // #ifdef _DEBUG
 
 #include <atlbase.h>
-#include <atlapp.h>
-
-extern CAppModule _Module;
-
-#include <atlwin.h>
 
 #if (_ATL_VER >= 0x0700)
 	#include <atlstr.h>
+	#include <atltypes.h>
 	#define _WTL_NO_CSTRING
+	#define _WTL_NO_WTYPES
+	#define _WTL_NO_UNION_CLASSES
 	extern "C" const int _fltused = 0;
 #endif
+
+#include <atlwin.h>
+#include <atlapp.h>
+
+extern CAppModule _Module;
 
 #include <atlmisc.h>
 #include <atlddx.h>

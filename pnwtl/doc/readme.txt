@@ -21,6 +21,10 @@ What's new?
 13) Statusbar text on mouse-over MRU items.
 14) (X)HTML Export.
 15) Added Modula-2 Scheme.
+16) Pre-defined toolsets can now be added in the %pn%\tools directory.
+17) Updates to the tab and docking frameworks.
+18) Added encoding menu.
+19) Configurable alternate file switching (use Ctrl-Shift-H to switch).
 
 Bug Fixes:
 ----------
@@ -40,6 +44,7 @@ Bug Fixes:
 13) Italic font customisations not picked up. (SF Bug #834967)
 14) Save All only saves unchanged files. (SF Bug #827998)
 15) Fixed view->toolbars menu. Now represents correct startup state.
+16) Files read as unicode now saved as unicode.
 
 If you find a bug:
 ------------------

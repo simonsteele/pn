@@ -1323,7 +1323,7 @@ LRESULT COptionsPageTools::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	{
 		//@todo check if the name is valid...
 
-		ToolDefinition* pDef = new ToolDefinition;
+		SourcedToolDefinition* pDef = new SourcedToolDefinition(m_toolstore.GetDefaultToolStore());
 		GetTools()->Add(pDef);
 		dlg.GetValues(pDef);
 
@@ -1888,6 +1888,8 @@ LRESULT COptionsPageAFiles::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, 
 
     m_list.DeleteItem(i);
 
+	m_bDirty = true;
+
 	return 0;
 }
 
@@ -1908,4 +1910,12 @@ void COptionsPageAFiles::addItem(LPCTSTR set1, LPCTSTR set2, AlternateFileSet* l
 	lvi.iSubItem = 1;
 
 	m_list.SetItem(&lvi);
+}
+
+LRESULT COptionsPageAFiles::OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	BOOL b;
+	OnEditClicked(0, 0, 0, b);
+
+	return 0;
 }

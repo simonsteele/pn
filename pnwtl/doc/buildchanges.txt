@@ -1,6 +1,15 @@
 | Working towards 0.5 :: Mingus
 ---------------------------------------
 
+Since 20/11/03:
+
+Moved New Files options page to Files|New Files.
+Added user-customisable alternate files, see Options:Files|Alternate Files
+Added encoding menu to the File menu to allow file encoding selection.
+Fixed unicode file saving, previously load was ok but save worked in ascii.
+Updates to the docking window framework and the tabs.
+Tool sets can now be defined using the standard syntax in %pn%\tools\*.xml.
+
 Since 18/11/03:
 
 Added encoding conversions to text-clip imports. Text clips must be saved as

@@ -12,11 +12,13 @@
 // the source code in  this file is used in any commercial application
 // then a simple email woulod be nice.
 
-#if !defined(AFX_PACKAGEWINDOW_H__5BDE9FEF_04A0_4FEF_9CB9_AD1D45871DF4__INCLUDED_)
-#define AFX_PACKAGEWINDOW_H__5BDE9FEF_04A0_4FEF_9CB9_AD1D45871DF4__INCLUDED_
+#ifndef __WTL_DW__PACKAGEWINDOW_H__
+#define __WTL_DW__PACKAGEWINDOW_H__
 
-#include <DockMisc.h>
-#include <WndFrmPkg.h>
+#pragma once
+
+#include "DockMisc.h"
+#include "WndFrmPkg.h"
 
 namespace dockwins{
 
@@ -316,4 +318,4 @@ protected:
 };
 
 }//namespace dockwins
-#endif // !defined(AFX_PACKAGEWINDOW_H__5BDE9FEF_04A0_4FEF_9CB9_AD1D45871DF4__INCLUDED_)
+#endif // __WTL_DW__PACKAGEWINDOW_H__

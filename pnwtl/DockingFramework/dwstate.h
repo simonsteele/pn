@@ -12,13 +12,15 @@
 // the source code in  this file is used in any commercial application
 // then a simple email woulod be nice.
 
-#if !defined(AFX_DWSTATE_H__82E591F5_81CD_4C67_9982_DD9A35974699__INCLUDED_)
-#define AFX_DWSTATE_H__82E591F5_81CD_4C67_9982_DD9A35974699__INCLUDED_
+#ifndef __WTL_DW__DWSTATE_H__
+#define __WTL_DW__DWSTATE_H__
+
+#pragma once
 
 #include <cassert>
 #include <queue>
-#include <sstate.h>
-#include <DockMisc.h>
+#include "sstate.h"
+#include "DockMisc.h"
 
 
 namespace sstate{
@@ -50,7 +52,6 @@ public:
 			ID		id;
 		};
 
-	protected:
 		struct weighter : std::binary_function<CRestPos, CRestPos, bool> 
 		{
 			bool operator()(const CRestPos& x, const CRestPos& y) const
@@ -259,7 +260,7 @@ public:
 		}
 		virtual bool Store(IMainState* pMState,CRegKey& key)
 		{
-			dockwins::DFDOCKPOSEX dpos;
+			dockwins::DFDOCKPOSEX dpos={0};
 			ZeroMemory(&dpos,sizeof(dockwins::DFDOCKPOSEX));
 			bool bRes=Store(pMState,&dpos);
 			if(bRes)

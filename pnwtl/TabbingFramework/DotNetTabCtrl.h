@@ -12,7 +12,7 @@
 //  
 //
 // Written by Daniel Bowen (dbowen@es.com).
-// Copyright (c) 2001-2002 Daniel Bowen.
+// Copyright (c) 2001-2003 Daniel Bowen.
 //
 // This code may be used in compiled form in any way you desire. This
 // file may be redistributed by any means PROVIDING it is 
@@ -27,6 +27,28 @@
 //
 // History (Date/Author/Description):
 // ----------------------------------
+//
+// 2003/08/01: Daniel Bowen
+// - CDotNetButtonTabCtrl can now be used for MDI tabs.
+// - There is now a CDotNetButtonTabCtrlImpl, which
+//   CDotNetButtonTabCtrl inherits from.
+// - Reorganize so that CDotNetTabCtrlImpl is broken up a little bit
+//   more into overridable pieces, and have CDotNetButtonTabCtrlImpl
+//   inherit from CDotNetTabCtrlImpl.  Have CDotNetButtonTabCtrlImpl
+//   only override the parts of CDotNetTabCtrlImpl needed.
+//
+// 2003/06/27: Daniel Bowen
+// - Replace DECLARE_WND_CLASS with DECLARE_WND_CLASS_EX.
+//   Use CS_DBLCLKS as the style and COLOR_WINDOW as the brush -
+//   which essentially means that it doesn't use CS_HREDRAW or CS_VREDRAW now.
+//
+// 2002/12/05: Daniel Bowen
+// - In CDotNetTabCtrlImpl::UpdateLayout_Default,
+//   the code that calculates nRatioWithSelectionFullSize
+//   would sometimes get a 0 in the divisor.
+//   Guard against divide-by-0.
+// - Handle WM_SYSCOLORCHANGE in case its broadcast to us
+//   from a top-level window. Call OnSettingChange.
 //
 // 2002/11/13: Daniel Bowen
 // - CDotNetTabCtrl:
@@ -76,7 +98,7 @@ protected:
 
 protected:
 	CBrush m_hbrBackground;
-	COLORREF m_clrBackground, m_clrInactiveTab;
+	COLORREF m_clrTextInactiveTab, m_clrSelectedTab;
 
 	signed char m_nFontSizeTextTopOffset;
 
@@ -85,8 +107,8 @@ protected:
 // Constructor
 public:
 	CDotNetTabCtrlImpl() :
-		m_clrBackground(::GetSysColor(COLOR_APPWORKSPACE)),
-		m_clrInactiveTab(::GetSysColor(COLOR_GRAYTEXT)),
+		m_clrTextInactiveTab(::GetSysColor(COLOR_GRAYTEXT)),
+		m_clrSelectedTab(::GetSysColor(COLOR_BTNFACE)),
 		m_nFontSizeTextTopOffset(0),
 		m_nMinWidthToDisplayText(12)
 	{
@@ -94,10 +116,11 @@ public:
 
 // Message Handling
 public:
-	DECLARE_WND_CLASS(_T("WTL_DotNetTabCtrl"))
+	DECLARE_WND_CLASS_EX(_T("WTL_DotNetTabCtrl"), CS_DBLCLKS, COLOR_WINDOW)
 
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
+		MESSAGE_HANDLER(WM_SYSCOLORCHANGE, OnSettingChange)
 		CHAIN_MSG_MAP(customTabClass)
 	END_MSG_MAP()
 
@@ -196,8 +219,7 @@ public:
 				nBlue = (BYTE)(nBlue + (nMagicBackgroundOffset*(nBlue/(double)nMax) + 0.5));
 			}
 
-			m_clrBackground = RGB(nRed, nGreen, nBlue);
-			m_hbrBackground.CreateSolidBrush(m_clrBackground);
+			m_hbrBackground.CreateSolidBrush(RGB(nRed, nGreen, nBlue));
 
 
 			// The inactive tab color seems to be calculated in a similar way to
@@ -228,12 +250,12 @@ public:
 					nBlue = (BYTE)(nBlue - (nMagicInactiveOffset*(nBlue/(double)nMax) + 0.5));
 			}
 
-			m_clrInactiveTab = RGB(nRed, nGreen, nBlue);
+			m_clrTextInactiveTab = RGB(nRed, nGreen, nBlue);
 		}
 		else
 		{
 			m_hbrBackground =  CDCHandle::GetHalftoneBrush();
-			m_clrInactiveTab = ::GetSysColor(COLOR_GRAYTEXT);
+			m_clrTextInactiveTab = ::GetSysColor(COLOR_GRAYTEXT);
 		}
 
 		m_settings.iIndent = 5;
@@ -251,36 +273,14 @@ public:
 
 		T* pT = static_cast<T*>(this);
 		pT->UpdateLayout();
-		this->Invalidate();
+		pT->Invalidate();
 		return 0;
 	}
 
-// Overrides for painting from CCustomTabCtrl
+
+// Overrideables
 public:
-
-	void InitializeDrawStruct(LPNMCTCCUSTOMDRAW lpNMCustomDraw)
-	{
-		DWORD dwStyle = this->GetStyle();
-
-		lpNMCustomDraw->hFontInactive = m_font;
-		lpNMCustomDraw->hFontSelected = m_fontSel;
-		lpNMCustomDraw->hBrushBackground = m_hbrBackground;
-		lpNMCustomDraw->clrTextSelected = ::GetSysColor(COLOR_BTNTEXT);
-		lpNMCustomDraw->clrTextInactive = m_clrInactiveTab;
-		lpNMCustomDraw->clrSelectedTab = ::GetSysColor(COLOR_BTNFACE);
-		lpNMCustomDraw->clrBtnFace = ::GetSysColor(COLOR_BTNFACE);
-		lpNMCustomDraw->clrBtnShadow = ::GetSysColor(COLOR_BTNSHADOW);
-		lpNMCustomDraw->clrBtnHighlight = ::GetSysColor(COLOR_BTNHIGHLIGHT);
-		lpNMCustomDraw->clrBtnText = ::GetSysColor(COLOR_BTNTEXT);
-		lpNMCustomDraw->clrHighlight = ::GetSysColor(COLOR_HIGHLIGHT);
-#if WINVER >= 0x0500 || _WIN32_WINNT >= 0x0500
-		lpNMCustomDraw->clrHighlightHotTrack = ::GetSysColor(COLOR_HOTLIGHT);
-#else
-		lpNMCustomDraw->clrHighlightHotTrack = ::GetSysColor(COLOR_HIGHLIGHT);
-#endif
-	}
-
-	void DoPrePaint(RECT rcClient, LPNMCTCCUSTOMDRAW lpNMCustomDraw)
+	void DrawBackground(RECT rcClient, LPNMCTCCUSTOMDRAW lpNMCustomDraw)
 	{
 		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
 
@@ -378,109 +378,109 @@ public:
 		}
 	}
 
-	void DoItemPaint(LPNMCTCCUSTOMDRAW lpNMCustomDraw)
+	void DrawItem_InitBounds(DWORD dwStyle, RECT rcItem, RECT& rcTab, RECT& rcText, int& nIconVerticalCenter)
 	{
-		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
-		bool bSelected = (CDIS_SELECTED == (lpNMCustomDraw->nmcd.uItemState & CDIS_SELECTED));
-		bool bHot = (CDIS_HOT == (lpNMCustomDraw->nmcd.uItemState & CDIS_HOT));
-		// NOTE: lpNMCustomDraw->nmcd.rc is in logical coordinates
-		RECT &rc = lpNMCustomDraw->nmcd.rc;
-		int nItem = lpNMCustomDraw->nmcd.dwItemSpec;
-
-		DWORD dwStyle = this->GetStyle();
-
-		int nIconVerticalCenter = 0;
-
-		RECT rcTab = rc;
-		RECT rcText = rc;
-
 		if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
 		{
 			rcTab.top += 3;
 			rcTab.bottom -= 2;
 
 			rcText.top = rcTab.top+1 + m_nFontSizeTextTopOffset;
-			rcText.bottom = rc.bottom;
+			rcText.bottom = rcItem.bottom;
 			//nIconVerticalCenter = rcTab.top + (rc.bottom - rcTab.top) / 2;
 			//nIconVerticalCenter = rcTab.top + rcText.Height() / 2;
-			nIconVerticalCenter = (rc.bottom + rc.top) / 2 + rcTab.top / 2;
+			nIconVerticalCenter = (rcItem.bottom + rcItem.top) / 2 + rcTab.top / 2;
 		}
 		else
 		{
 			rcTab.top += 3;
 			rcTab.bottom -= 2;
 
-			rcText.top = rc.top+1 + m_nFontSizeTextTopOffset;
-			rcText.bottom = rc.bottom;
-			nIconVerticalCenter = (rc.bottom + rc.top) / 2 + rcTab.top / 2;
+			rcText.top = rcItem.top+1 + m_nFontSizeTextTopOffset;
+			rcText.bottom = rcItem.bottom;
+			nIconVerticalCenter = (rcItem.bottom + rcItem.top) / 2 + rcTab.top / 2;
 		}
+	}
 
-		if( bSelected )
+	void DrawItem_TabSelected(DWORD dwStyle, LPNMCTCCUSTOMDRAW lpNMCustomDraw, RECT& rcTab)
+	{
+		// Tab is selected, so paint tab folder
+
+		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
+
+		rcTab.right--;
+		dc.FillSolidRect(&rcTab, lpNMCustomDraw->clrSelectedTab);
+
+		CPen penText, penHilight;
+		penText.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrBtnText);
+		penHilight.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrBtnHighlight);
+
+		if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
 		{
-			// Tab is selected, so paint tab folder
+			CPenHandle penOld = dc.SelectPen(penText);
 
-			rcTab.right--;
-			dc.FillSolidRect(&rcTab, lpNMCustomDraw->clrSelectedTab);
+			dc.MoveTo(rcTab.right, rcTab.top);
+			dc.LineTo(rcTab.right, rcTab.bottom);
+			dc.LineTo(rcTab.left, rcTab.bottom);
+			dc.SelectPen(penHilight);
+			dc.LineTo(rcTab.left, rcTab.top-1);
 
-			CPen penText, penHilight;
-			penText.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrBtnText);
-			penHilight.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrBtnHighlight);
-
-			if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
-			{
-				CPenHandle penOld = dc.SelectPen(penText);
-
-				dc.MoveTo(rcTab.right, rcTab.top);
-				dc.LineTo(rcTab.right, rcTab.bottom);
-				dc.LineTo(rcTab.left, rcTab.bottom);
-				dc.SelectPen(penHilight);
-				dc.LineTo(rcTab.left, rcTab.top-1);
-
-				dc.SelectPen(penOld);
-			}
-			else
-			{
-				CPenHandle penOld = dc.SelectPen(penHilight);
-
-				dc.MoveTo(rcTab.left, rcTab.bottom-1);
-				dc.LineTo(rcTab.left, rcTab.top);
-				dc.LineTo(rcTab.right, rcTab.top);
-				dc.SelectPen(penText);
-				dc.LineTo(rcTab.right, rcTab.bottom);
-
-				dc.SelectPen(penOld);
-			}
+			dc.SelectPen(penOld);
 		}
 		else
 		{
-			// Tab is not selected
+			CPenHandle penOld = dc.SelectPen(penHilight);
 
-			// Draw division line on right, unless we're the item
-			// on the left of the selected tab
-			if(nItem + 1 == m_iCurSel)
+			dc.MoveTo(rcTab.left, rcTab.bottom-1);
+			dc.LineTo(rcTab.left, rcTab.top);
+			dc.LineTo(rcTab.right, rcTab.top);
+			dc.SelectPen(penText);
+			dc.LineTo(rcTab.right, rcTab.bottom);
+
+			dc.SelectPen(penOld);
+		}
+	}
+
+	void DrawItem_TabInactive(DWORD dwStyle, LPNMCTCCUSTOMDRAW lpNMCustomDraw, RECT& rcTab)
+	{
+		// Tab is not selected
+
+		int nItem = lpNMCustomDraw->nmcd.dwItemSpec;
+		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
+
+		// Draw division line on right, unless we're the item
+		// on the left of the selected tab
+		if(nItem + 1 == m_iCurSel)
+		{
+			// Item just left of selected tab
+		}
+		else
+		{
+			CPen pen;
+			pen.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrBtnShadow);
+			CPenHandle penOld = dc.SelectPen(pen);
+			if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
 			{
-				// Item just left of selected tab
+				// Important!  Be sure and keep within "our" tab area horizontally
+				dc.MoveTo(rcTab.right-1, rcTab.top + 3);
+				dc.LineTo(rcTab.right-1, rcTab.bottom - 1);
 			}
 			else
 			{
-				CPen pen;
-				pen.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrBtnShadow);
-				CPenHandle penOld = dc.SelectPen(pen);
-				if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
-				{
-					// Important!  Be sure and keep within "our" tab area horizontally
-					dc.MoveTo(rcTab.right-1, rcTab.top + 3);
-					dc.LineTo(rcTab.right-1, rcTab.bottom - 1);
-				}
-				else
-				{
-					// Important!  Be sure and keep within "our" tab area horizontally
-					dc.MoveTo(rcTab.right-1, rcTab.top + 2);
-					dc.LineTo(rcTab.right-1, rcTab.bottom - 2);
-				}
-				dc.SelectPen(penOld);
+				// Important!  Be sure and keep within "our" tab area horizontally
+				dc.MoveTo(rcTab.right-1, rcTab.top + 2);
+				dc.LineTo(rcTab.right-1, rcTab.bottom - 2);
 			}
+			dc.SelectPen(penOld);
 		}
+	}
+
+	void DrawItem_ImageAndText(DWORD dwStyle, LPNMCTCCUSTOMDRAW lpNMCustomDraw, int nIconVerticalCenter, RECT& rcTab, RECT& rcText)
+	{
+		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
+		bool bSelected = (CDIS_SELECTED == (lpNMCustomDraw->nmcd.uItemState & CDIS_SELECTED));
+		bool bHot = (CDIS_HOT == (lpNMCustomDraw->nmcd.uItemState & CDIS_HOT));
+		int nItem = lpNMCustomDraw->nmcd.dwItemSpec;
 
 		TItem* pItem = this->GetItem(nItem);
 
@@ -507,6 +507,7 @@ public:
 		{
 			crPrevious = dc.SetTextColor(lpNMCustomDraw->clrTextInactive);
 		}
+
 
 		//--------------------------------------------
 		// This is how CDotNetTabCtrlImpl interprets padding, margin, etc.:
@@ -553,22 +554,15 @@ public:
 			::InflateRect(&rcText, -m_settings.iPadding, 0);
 
 			CString sText = pItem->GetText();
-			dc.DrawText(sText, sText.GetLength(), &rcText, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_END_ELLIPSIS);
+			dc.DrawText(sText, sText.GetLength(), &rcText, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_PATH_ELLIPSIS);
 		}
 
 		dc.SetTextColor(crPrevious);
 		dc.SelectFont(hOldFont);
 	}
 
-	void DoPostPaint(RECT /*rcClient*/, LPNMCTCCUSTOMDRAW lpNMCustomDraw)
+	void DrawCloseButton(LPNMCTCCUSTOMDRAW lpNMCustomDraw)
 	{
-		DWORD dwStyle = this->GetStyle();
-
-		if(0 == (dwStyle & (CTCS_CLOSEBUTTON | CTCS_SCROLL)))
-		{
-			return;
-		}
-
 		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
 
 		CPen penButtons;
@@ -579,132 +573,222 @@ public:
 		CPenHandle penOld = dc.SelectPen(penButtons);
 		CBrushHandle brushOld = dc.SelectBrush(brushArrow);
 
-		// Close Button
-		if(CTCS_CLOSEBUTTON == (dwStyle & CTCS_CLOSEBUTTON))
+		RECT rcX = m_rcCloseButton;
+
+		if(ectcMouseDown_CloseButton == (m_dwState & ectcMouseDown))
 		{
-			RECT rcX = m_rcCloseButton;
-
-			if(ectcMouseDown_CloseButton == (m_dwState & ectcMouseDown))
+			if(ectcMouseOver_CloseButton == (m_dwState & ectcMouseOver))
 			{
-				if(ectcMouseOver_CloseButton == (m_dwState & ectcMouseOver))
-				{
-					::OffsetRect(&rcX, 1, 1);
-				}
-			}
-
-			const int sp = 4;
-
-			dc.MoveTo(rcX.left+sp+ -1, rcX.top+sp);
-			dc.LineTo(rcX.right-sp -1, rcX.bottom-sp);
-			dc.MoveTo(rcX.left+sp, rcX.top+sp);
-			dc.LineTo(rcX.right-sp, rcX.bottom-sp);
-
-			dc.MoveTo(rcX.left+sp -1, rcX.bottom-sp -1);
-			dc.LineTo(rcX.right-sp -1, rcX.top+sp -1 );
-			dc.MoveTo(rcX.left+sp, rcX.bottom-sp -1);
-			dc.LineTo(rcX.right-sp, rcX.top+sp -1);
-
-			if(ectcMouseDown_CloseButton == (m_dwState & ectcMouseDown))
-			{
-				if(ectcMouseOver_CloseButton == (m_dwState & ectcMouseOver))
-				{
-					dc.DrawEdge(&m_rcCloseButton, BDR_SUNKENOUTER, BF_RECT);
-				}
-			}
-			else if(ectcHotTrack_CloseButton == (m_dwState & ectcHotTrack))
-			{
-				dc.DrawEdge(&m_rcCloseButton, BDR_RAISEDINNER, BF_RECT);
+				::OffsetRect(&rcX, 1, 1);
 			}
 		}
 
-		// Scroll Buttons
-		if(CTCS_SCROLL == (dwStyle & CTCS_SCROLL))
+		const int sp = 4;
+
+		dc.MoveTo(rcX.left+sp+ -1, rcX.top+sp);
+		dc.LineTo(rcX.right-sp -1, rcX.bottom-sp);
+		dc.MoveTo(rcX.left+sp, rcX.top+sp);
+		dc.LineTo(rcX.right-sp, rcX.bottom-sp);
+
+		dc.MoveTo(rcX.left+sp -1, rcX.bottom-sp -1);
+		dc.LineTo(rcX.right-sp -1, rcX.top+sp -1 );
+		dc.MoveTo(rcX.left+sp, rcX.bottom-sp -1);
+		dc.LineTo(rcX.right-sp, rcX.top+sp -1);
+
+		if(ectcMouseDown_CloseButton == (m_dwState & ectcMouseDown))
 		{
-			RECT rcArrowRight = m_rcScrollRight;
-			RECT rcArrowLeft = m_rcScrollLeft;
+			if(ectcMouseOver_CloseButton == (m_dwState & ectcMouseOver))
+			{
+				dc.DrawEdge(&m_rcCloseButton, BDR_SUNKENOUTER, BF_RECT);
+			}
+		}
+		else if(ectcHotTrack_CloseButton == (m_dwState & ectcHotTrack))
+		{
+			dc.DrawEdge(&m_rcCloseButton, BDR_RAISEDINNER, BF_RECT);
+		}
+
+		dc.SelectBrush(brushOld);
+		dc.SelectPen(penOld);
+	}
+
+	void DrawScrollButtons(LPNMCTCCUSTOMDRAW lpNMCustomDraw)
+	{
+		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
+
+		CPen penButtons;
+		penButtons.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrTextInactive);
+		CBrush brushArrow;
+		brushArrow.CreateSolidBrush(lpNMCustomDraw->clrTextInactive);
+
+		CPenHandle penOld = dc.SelectPen(penButtons);
+		CBrushHandle brushOld = dc.SelectBrush(brushArrow);
+
+		RECT rcArrowRight = m_rcScrollRight;
+		RECT rcArrowLeft = m_rcScrollLeft;
+
+		if(ectcMouseDown_ScrollRight == (m_dwState & ectcMouseDown))
+		{
+			if(ectcMouseOver_ScrollRight == (m_dwState & ectcMouseOver))
+			{
+				if(ectcOverflowRight == (m_dwState & ectcOverflowRight))
+				{
+					::OffsetRect(&rcArrowRight, 1, 1);
+				}
+			}
+		}
+		if(ectcMouseDown_ScrollLeft == (m_dwState & ectcMouseDown))
+		{
+			if(ectcMouseOver_ScrollLeft == (m_dwState & ectcMouseOver))
+			{
+				if(ectcOverflowLeft == (m_dwState & ectcOverflowLeft))
+				{
+					::OffsetRect(&rcArrowLeft, 1, 1);
+				}
+			}
+		}
+
+		const int spRight = 5;
+		const int spLeft = 6;
+
+		POINT ptsArrowRight[] = {
+			{rcArrowRight.left+spRight, rcArrowRight.top+spRight -2},
+			{rcArrowRight.left+spRight, rcArrowRight.bottom-spRight +1},
+			{rcArrowRight.right-spRight -1, (rcArrowRight.bottom + m_rcScrollRight.top) / 2},
+			{rcArrowRight.left+spRight, rcArrowRight.top+spRight -2}
+		};
+		if(ectcOverflowRight != (m_dwState & ectcOverflowRight))
+		{
+			dc.Polyline(ptsArrowRight, 4);
+		}
+		else
+		{
+			dc.Polygon(ptsArrowRight, 4);
 
 			if(ectcMouseDown_ScrollRight == (m_dwState & ectcMouseDown))
 			{
 				if(ectcMouseOver_ScrollRight == (m_dwState & ectcMouseOver))
 				{
-					if(ectcOverflowRight == (m_dwState & ectcOverflowRight))
-					{
-						::OffsetRect(&rcArrowRight, 1, 1);
-					}
+					dc.DrawEdge(&m_rcScrollRight, BDR_SUNKENOUTER, BF_RECT);
 				}
 			}
+			else if(ectcHotTrack_ScrollRight == (m_dwState & ectcHotTrack))
+			{
+				dc.DrawEdge(&m_rcScrollRight, BDR_RAISEDINNER, BF_RECT);
+			}
+		}
+
+		POINT ptsArrowLeft[] = {
+			{rcArrowLeft.right-spLeft, rcArrowLeft.top+spLeft -3},
+			{rcArrowLeft.right-spLeft, rcArrowLeft.bottom-spLeft +2},
+			{rcArrowLeft.left+spLeft -1, (rcArrowLeft.bottom + m_rcScrollLeft.top) / 2},
+			{rcArrowLeft.right-spLeft, rcArrowLeft.top+spLeft -3}
+		};
+		if(ectcOverflowLeft != (m_dwState & ectcOverflowLeft))
+		{
+			dc.Polyline(ptsArrowLeft, 4);
+		}
+		else
+		{
+			dc.Polygon(ptsArrowLeft, 4);
+
 			if(ectcMouseDown_ScrollLeft == (m_dwState & ectcMouseDown))
 			{
 				if(ectcMouseOver_ScrollLeft == (m_dwState & ectcMouseOver))
 				{
-					if(ectcOverflowLeft == (m_dwState & ectcOverflowLeft))
-					{
-						::OffsetRect(&rcArrowLeft, 1, 1);
-					}
+					dc.DrawEdge(&m_rcScrollLeft, BDR_SUNKENOUTER, BF_RECT);
 				}
 			}
-
-			const int spRight = 5;
-			const int spLeft = 6;
-
-			POINT ptsArrowRight[] = {
-				{rcArrowRight.left+spRight, rcArrowRight.top+spRight -2},
-				{rcArrowRight.left+spRight, rcArrowRight.bottom-spRight +1},
-				{rcArrowRight.right-spRight -1, (rcArrowRight.bottom + m_rcScrollRight.top) / 2},
-				{rcArrowRight.left+spRight, rcArrowRight.top+spRight -2}
-			};
-			if(ectcOverflowRight != (m_dwState & ectcOverflowRight))
+			else if(ectcHotTrack_ScrollLeft == (m_dwState & ectcHotTrack))
 			{
-				dc.Polyline(ptsArrowRight, 4);
+				dc.DrawEdge(&m_rcScrollLeft, BDR_RAISEDINNER, BF_RECT);
 			}
-			else
-			{
-				dc.Polygon(ptsArrowRight, 4);
-
-				if(ectcMouseDown_ScrollRight == (m_dwState & ectcMouseDown))
-				{
-					if(ectcMouseOver_ScrollRight == (m_dwState & ectcMouseOver))
-					{
-						dc.DrawEdge(&m_rcScrollRight, BDR_SUNKENOUTER, BF_RECT);
-					}
-				}
-				else if(ectcHotTrack_ScrollRight == (m_dwState & ectcHotTrack))
-				{
-					dc.DrawEdge(&m_rcScrollRight, BDR_RAISEDINNER, BF_RECT);
-				}
-			}
-
-			POINT ptsArrowLeft[] = {
-				{rcArrowLeft.right-spLeft, rcArrowLeft.top+spLeft -3},
-				{rcArrowLeft.right-spLeft, rcArrowLeft.bottom-spLeft +2},
-				{rcArrowLeft.left+spLeft -1, (rcArrowLeft.bottom + m_rcScrollLeft.top) / 2},
-				{rcArrowLeft.right-spLeft, rcArrowLeft.top+spLeft -3}
-			};
-			if(ectcOverflowLeft != (m_dwState & ectcOverflowLeft))
-			{
-				dc.Polyline(ptsArrowLeft, 4);
-			}
-			else
-			{
-				dc.Polygon(ptsArrowLeft, 4);
-
-				if(ectcMouseDown_ScrollLeft == (m_dwState & ectcMouseDown))
-				{
-					if(ectcMouseOver_ScrollLeft == (m_dwState & ectcMouseOver))
-					{
-						dc.DrawEdge(&m_rcScrollLeft, BDR_SUNKENOUTER, BF_RECT);
-					}
-				}
-				else if(ectcHotTrack_ScrollLeft == (m_dwState & ectcHotTrack))
-				{
-					dc.DrawEdge(&m_rcScrollLeft, BDR_RAISEDINNER, BF_RECT);
-				}
-			}
-
 		}
 
 		dc.SelectBrush(brushOld);
 		dc.SelectPen(penOld);
+	}
+
+// Overrides for painting from CCustomTabCtrl
+public:
+
+	void InitializeDrawStruct(LPNMCTCCUSTOMDRAW lpNMCustomDraw)
+	{
+		DWORD dwStyle = this->GetStyle();
+
+		lpNMCustomDraw->hFontInactive = m_font;
+		lpNMCustomDraw->hFontSelected = m_fontSel;
+		lpNMCustomDraw->hBrushBackground = m_hbrBackground;
+		lpNMCustomDraw->clrTextSelected = ::GetSysColor(COLOR_BTNTEXT);
+		lpNMCustomDraw->clrTextInactive = m_clrTextInactiveTab;
+		lpNMCustomDraw->clrSelectedTab = m_clrSelectedTab;
+		lpNMCustomDraw->clrBtnFace = ::GetSysColor(COLOR_BTNFACE);
+		lpNMCustomDraw->clrBtnShadow = ::GetSysColor(COLOR_BTNSHADOW);
+		lpNMCustomDraw->clrBtnHighlight = ::GetSysColor(COLOR_BTNHIGHLIGHT);
+		lpNMCustomDraw->clrBtnText = ::GetSysColor(COLOR_BTNTEXT);
+		lpNMCustomDraw->clrHighlight = ::GetSysColor(COLOR_HIGHLIGHT);
+#if WINVER >= 0x0500 || _WIN32_WINNT >= 0x0500
+		lpNMCustomDraw->clrHighlightHotTrack = ::GetSysColor(COLOR_HOTLIGHT);
+#else
+		lpNMCustomDraw->clrHighlightHotTrack = ::GetSysColor(COLOR_HIGHLIGHT);
+#endif
+	}
+
+	void DoPrePaint(RECT rcClient, LPNMCTCCUSTOMDRAW lpNMCustomDraw)
+	{
+		T* pT = static_cast<T*>(this);
+
+		pT->DrawBackground(rcClient, lpNMCustomDraw);
+	}
+
+	void DoItemPaint(LPNMCTCCUSTOMDRAW lpNMCustomDraw)
+	{
+		T* pT = static_cast<T*>(this);
+
+		bool bSelected = (CDIS_SELECTED == (lpNMCustomDraw->nmcd.uItemState & CDIS_SELECTED));
+		// NOTE: lpNMCustomDraw->nmcd.rc is in logical coordinates
+		RECT &rcItem = lpNMCustomDraw->nmcd.rc;
+
+		DWORD dwStyle = pT->GetStyle();
+		RECT rcTab = rcItem;
+		RECT rcText = rcItem;
+		int nIconVerticalCenter = 0;
+
+		pT->DrawItem_InitBounds(dwStyle, rcItem, rcTab, rcText, nIconVerticalCenter);
+
+		if( bSelected )
+		{
+			pT->DrawItem_TabSelected(dwStyle, lpNMCustomDraw, rcTab);
+		}
+		else
+		{
+			pT->DrawItem_TabInactive(dwStyle, lpNMCustomDraw, rcTab);
+		}
+
+		pT->DrawItem_ImageAndText(dwStyle, lpNMCustomDraw, nIconVerticalCenter, rcTab, rcText);
+	}
+
+	void DoPostPaint(RECT /*rcClient*/, LPNMCTCCUSTOMDRAW lpNMCustomDraw)
+	{
+		T* pT = static_cast<T*>(this);
+
+		DWORD dwStyle = this->GetStyle();
+
+		if(0 == (dwStyle & (CTCS_CLOSEBUTTON | CTCS_SCROLL)))
+		{
+			return;
+		}
+
+		// Close Button
+		if(CTCS_CLOSEBUTTON == (dwStyle & CTCS_CLOSEBUTTON))
+		{
+			pT->DrawCloseButton(lpNMCustomDraw);
+		}
+
+		// Scroll Buttons
+		if(CTCS_SCROLL == (dwStyle & CTCS_SCROLL))
+		{
+			pT->DrawScrollButtons(lpNMCustomDraw);
+		}
 	}
 
 // Overrides from CCustomTabCtrl
@@ -936,8 +1020,13 @@ public:
 			LONG nSelectedWidth = (rcSelected.right - rcSelected.left);
 
 			long cxClientInactiveTabs = nTabAreaWidth - (m_settings.iIndent * 2) - nSelectedWidth;
+			long cxDesiredInactiveTabs = xpos - (m_settings.iIndent * 2) - nSelectedWidth;
 
-			double nRatioWithSelectionFullSize = (double) (cxClientInactiveTabs) / (double)(xpos - (m_settings.iIndent * 2) - nSelectedWidth);
+			double nRatioWithSelectionFullSize = 0.0;
+			if(cxDesiredInactiveTabs != 0)
+			{
+				nRatioWithSelectionFullSize = (double) (cxClientInactiveTabs) / (double)(cxDesiredInactiveTabs);
+			}
 
 			long nInactiveSameSizeWidth = (m_nMinWidthToDisplayText + (m_settings.iMargin*2) + (m_settings.iPadding));
 
@@ -960,7 +1049,7 @@ public:
 					}
 					else
 					{
-						if(bMakeInactiveSameSize)
+						if(bMakeInactiveSameSize && (nCount != 1))
 						{
 							rcItem.right += (long)((cxClientInactiveTabs / (nCount-1)) + 0.5);
 						}
@@ -1067,33 +1156,56 @@ public:
 
 };
 
-
 template <class TItem = CCustomTabItem>
-class CDotNetButtonTabCtrl : 
-	public CCustomTabCtrl<CDotNetButtonTabCtrl, TItem>
+class CDotNetTabCtrl :
+	public CDotNetTabCtrlImpl<CDotNetTabCtrl, TItem>
 {
 protected:
-	typedef CCustomTabCtrl<CDotNetButtonTabCtrl, TItem> customTabClass;
+	typedef CDotNetTabCtrl thisClass;
+	typedef CDotNetTabCtrlImpl<CDotNetTabCtrl, TItem> baseClass;
 
+// Constructors:
+public:
+	CDotNetTabCtrl()
+	{
+	}
+
+public:
+
+	DECLARE_WND_CLASS_EX(_T("WTL_DotNetTabCtrl"), CS_DBLCLKS, COLOR_WINDOW)
+
+	//We have nothing special to add.
+	//BEGIN_MSG_MAP(thisClass)
+	//	CHAIN_MSG_MAP(baseClass)
+	//END_MSG_MAP()
+};
+
+template<typename T, typename TItem = CCustomTabItem, class TBase = CWindow, class TWinTraits = CCustomTabCtrlWinTraits>
+class CDotNetButtonTabCtrlImpl : 
+	public CDotNetTabCtrlImpl<T, TItem, TBase, TWinTraits>
+{
 protected:
-	CBrush m_hbrBackground;
-
-	const signed char m_nMinWidthToDisplayText;
+	typedef CDotNetButtonTabCtrlImpl<T, TItem, TBase, TWinTraits> thisClass;
+	typedef CDotNetTabCtrlImpl<T, TItem, TBase, TWinTraits> baseClass;
 
 // Constructor
 public:
-	CDotNetButtonTabCtrl() :
-		m_nMinWidthToDisplayText(12)
+	CDotNetButtonTabCtrlImpl()
 	{
+		// We can't use a member initialization list to initialize
+		// members of our base class, so do it explictly by assignment here.
+		m_clrTextInactiveTab = ::GetSysColor(COLOR_BTNTEXT);
+		m_clrSelectedTab = ::GetSysColor(COLOR_WINDOW);
 	}
 
 // Message Handling
 public:
-	DECLARE_WND_CLASS(_T("WTL_DotNetButtonTabCtrl"))
+	DECLARE_WND_CLASS_EX(_T("WTL_DotNetButtonTabCtrl"), CS_DBLCLKS, COLOR_WINDOW)
 
-	BEGIN_MSG_MAP(CDotNetButtonTabCtrl)
+	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
-		CHAIN_MSG_MAP(customTabClass)
+		MESSAGE_HANDLER(WM_SYSCOLORCHANGE, OnSettingChange)
+		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
 	LRESULT OnSettingChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -1152,39 +1264,16 @@ public:
 		m_settings.iMargin = 3;
 		m_settings.iSelMargin = 3;
 
-		//T* pT = static_cast<T*>(this);
-		//pT->UpdateLayout();
-		this->UpdateLayout();
-		this->Invalidate();
+		T* pT = static_cast<T*>(this);
+		pT->UpdateLayout();
+		pT->Invalidate();
 		return 0;
 	}
 
-// Overrides for painting from CCustomTabCtrl
+// Overrides for painting from CDotNetTabCtrlImpl
 public:
 
-	void InitializeDrawStruct(LPNMCTCCUSTOMDRAW lpNMCustomDraw)
-	{
-		DWORD dwStyle = this->GetStyle();
-
-		lpNMCustomDraw->hFontInactive = m_font;
-		lpNMCustomDraw->hFontSelected = m_fontSel;
-		lpNMCustomDraw->hBrushBackground = m_hbrBackground;
-		lpNMCustomDraw->clrTextSelected = ::GetSysColor(COLOR_BTNTEXT);
-		lpNMCustomDraw->clrTextInactive = ::GetSysColor(COLOR_BTNTEXT);
-		lpNMCustomDraw->clrSelectedTab = ::GetSysColor(COLOR_WINDOW);
-		lpNMCustomDraw->clrBtnFace = ::GetSysColor(COLOR_BTNFACE);
-		lpNMCustomDraw->clrBtnShadow = ::GetSysColor(COLOR_BTNSHADOW);
-		lpNMCustomDraw->clrBtnHighlight = ::GetSysColor(COLOR_BTNHIGHLIGHT);
-		lpNMCustomDraw->clrBtnText = ::GetSysColor(COLOR_BTNTEXT);
-		lpNMCustomDraw->clrHighlight = ::GetSysColor(COLOR_HIGHLIGHT);
-#if WINVER >= 0x0500 || _WIN32_WINNT >= 0x0500
-		lpNMCustomDraw->clrHighlightHotTrack = ::GetSysColor(COLOR_HOTLIGHT);
-#else
-		lpNMCustomDraw->clrHighlightHotTrack = ::GetSysColor(COLOR_HIGHLIGHT);
-#endif
-	}
-
-	void DoPrePaint(RECT rcClient, LPNMCTCCUSTOMDRAW lpNMCustomDraw)
+	void DrawBackground(RECT rcClient, LPNMCTCCUSTOMDRAW lpNMCustomDraw)
 	{
 		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
 
@@ -1209,331 +1298,61 @@ public:
 		HBRUSH hOldBrush = dc.SelectBrush(lpNMCustomDraw->hBrushBackground);
 		dc.PatBlt(rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, PATCOPY);
 		dc.SelectBrush(hOldBrush);
-
 	}
 
-	void DoItemPaint(LPNMCTCCUSTOMDRAW lpNMCustomDraw)
+	void DrawItem_InitBounds(DWORD dwStyle, RECT rcItem, RECT& rcTab, RECT& rcText, int& nIconVerticalCenter)
 	{
-		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
-		bool bSelected = (CDIS_SELECTED == (lpNMCustomDraw->nmcd.uItemState & CDIS_SELECTED));
-		bool bHot = (CDIS_HOT == (lpNMCustomDraw->nmcd.uItemState & CDIS_HOT));
-		// NOTE: lpNMCustomDraw->nmcd.rc is in logical coordinates
-		RECT &rc = lpNMCustomDraw->nmcd.rc;
-		int nItem = lpNMCustomDraw->nmcd.dwItemSpec;
-
-		DWORD dwStyle = this->GetStyle();
-
-		int nIconVerticalCenter = (rc.bottom + rc.top) / 2;
-
-		RECT rcTab = rc;
-		RECT rcText = rc;
-
 		rcTab.top += 3;
 		rcTab.bottom -= 3;
-
-		if( bSelected )
-		{
-			// Tab is selected, so paint as select
-
-			CPen penOutline;
-			penOutline.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrHighlight);
-
-			CBrush brushSelected;
-			brushSelected.CreateSolidBrush(lpNMCustomDraw->clrSelectedTab);
-
-			HPEN hOldPen = dc.SelectPen(penOutline);
-			HBRUSH hOldBrush = dc.SelectBrush(brushSelected);
-
-			dc.Rectangle(&rcTab);
-
-			dc.SelectPen(hOldPen);
-			dc.SelectBrush(hOldBrush);
-		}
-		else
-		{
-			// Tab is not selected
-
-			// Draw division line on right, unless we're the item
-			// on the left of the selected tab
-			if(nItem + 1 == m_iCurSel)
-			{
-				// Item just left of selected tab
-			}
-			else
-			{
-				CPen pen;
-				pen.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrBtnShadow);
-				CPenHandle penOld = dc.SelectPen(pen);
-				if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
-				{
-					// Important!  Be sure and keep within "our" tab area horizontally
-					dc.MoveTo(rcTab.right-1, rcTab.top + 3);
-					dc.LineTo(rcTab.right-1, rcTab.bottom - 1);
-				}
-				else
-				{
-					// Important!  Be sure and keep within "our" tab area horizontally
-					dc.MoveTo(rcTab.right-1, rcTab.top + 2);
-					dc.LineTo(rcTab.right-1, rcTab.bottom - 2);
-				}
-				dc.SelectPen(penOld);
-			}
-		}
-
-		customTabClass::TItem* pItem = this->GetItem(nItem);
-
-		HFONT hOldFont = NULL;
-		if( bSelected )
-		{
-			hOldFont = dc.SelectFont(lpNMCustomDraw->hFontSelected);
-		}
-		else
-		{
-			hOldFont = dc.SelectFont(lpNMCustomDraw->hFontInactive);
-		}
-		COLORREF crPrevious = 0;
-		if( bHot )
-		{
-			crPrevious = dc.SetTextColor(lpNMCustomDraw->clrHighlightHotTrack);
-		}
-		else if( bSelected )
-		{
-			crPrevious = dc.SetTextColor(lpNMCustomDraw->clrTextSelected);
-		}
-		else
-		{
-			crPrevious = dc.SetTextColor(lpNMCustomDraw->clrTextInactive);
-		}
-
-
-		//--------------------------------------------
-		// This is how CDotNetButtonTabCtrl interprets padding, margin, etc.:
-		//
-		//  M - Margin
-		//  P - Padding
-		//  I - Image
-		//  Text - Tab Text
-		//
-		// With image:
-		//     __________________________
-		//
-		//    | M | I | P | Text | P | M |
-		//     --------------------------
-		//
-		// Without image:
-		//     ______________________
-		//
-		//    | M | P | Text | P | M |
-		//     ----------------------
-
-		//rcText.left += (bSelected ? m_settings.iSelMargin : m_settings.iMargin);
-		rcText.left += m_settings.iMargin;
-		rcText.right -= m_settings.iMargin;
-		if (pItem->UsingImage() && !m_imageList.IsNull())
-		{
-			// Draw the image.
-			IMAGEINFO ii = {0};
-			int nImageIndex = pItem->GetImageIndex();
-			m_imageList.GetImageInfo(nImageIndex, &ii);
-
-			if( (ii.rcImage.right - ii.rcImage.left) < (rcTab.right - rcTab.left) )
-			{
-				int nImageHalfHeight = (ii.rcImage.bottom - ii.rcImage.top) / 2;
-				m_imageList.Draw(dc, nImageIndex, rcText.left, nIconVerticalCenter - nImageHalfHeight, ILD_NORMAL);
-			}
-
-			// Offset on the right of the image.
-			rcText.left += (ii.rcImage.right - ii.rcImage.left);
-		}
-
-		if (rcText.left + m_nMinWidthToDisplayText < rcText.right)
-		{
-			::InflateRect(&rcText, -m_settings.iPadding, 0);
-
-			CString sText = pItem->GetText();
-			dc.DrawText(sText, sText.GetLength(), &rcText, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_PATH_ELLIPSIS);
-		}
-
-		dc.SetTextColor(crPrevious);
-		dc.SelectFont(hOldFont);
+		nIconVerticalCenter = (rcTab.bottom + rcTab.top) / 2;
 	}
 
-
-// Overrides from CCustomTabCtrl
-public:
-
-	void UpdateLayout_Default(RECT rcTabItemArea)
+	void DrawItem_TabSelected(DWORD dwStyle, LPNMCTCCUSTOMDRAW lpNMCustomDraw, RECT& rcTab)
 	{
-		long nMinInactiveWidth = 0x7FFFFFFF;
-		long nMaxInactiveWidth = 0;
+		// Tab is selected, so paint as select
 
-		DWORD dwStyle = this->GetStyle();
+		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
 
-		CClientDC dc(m_hWnd);
-		//HFONT hOldFont = dc.SelectFont(lpNMCustomDraw->hFontInactive);
-		HFONT hOldFont = dc.SelectFont(m_font);
+		CPen penOutline;
+		penOutline.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrHighlight);
 
-		LONG nTabAreaWidth = (rcTabItemArea.right - rcTabItemArea.left);
+		CBrush brushSelected;
+		brushSelected.CreateSolidBrush(lpNMCustomDraw->clrSelectedTab);
 
-		RECT rcItem = rcTabItemArea;
-		// rcItem.top and rcItem.bottom aren't really going to change
+		HPEN hOldPen = dc.SelectPen(penOutline);
+		HBRUSH hOldBrush = dc.SelectBrush(brushSelected);
 
-		// Recalculate tab positions and widths
-		// See OnItemPrePaint for a discussion of how CDotNetButtonTabCtrl
-		//  interprets margin, padding, etc.
-		size_t nCount = m_Items.GetCount();
-		int xpos = m_settings.iIndent;
-		HFONT hRestoreNormalFont = NULL;
-		for( size_t i=0; i<nCount; ++i )
-		{
-			bool bSelected = ((int)i == m_iCurSel);
-			if(bSelected)
-			{
-				//hRestoreNormalFont = dc.SelectFont(lpNMCustomDraw->hFontSelected);
-				hRestoreNormalFont = dc.SelectFont(m_fontSel);
-			}
+		dc.Rectangle(&rcTab);
 
-			customTabClass::TItem* pItem = m_Items[i];
-			rcItem.left = rcItem.right = xpos;
-			//rcItem.right += ((bSelected ? m_settings.iSelMargin : m_settings.iMargin));
-			rcItem.right += m_settings.iMargin;
-			if( pItem->UsingImage() && !m_imageList.IsNull())
-			{
-				IMAGEINFO ii = {0};
-				int nImageIndex = pItem->GetImageIndex();
-				m_imageList.GetImageInfo(nImageIndex, &ii);
-				rcItem.right += (ii.rcImage.right - ii.rcImage.left);
-			}
-			if( pItem->UsingText() )
-			{
-				RECT rcText = {0};
-				CString sText = pItem->GetText();
-				dc.DrawText(sText, sText.GetLength(), &rcText, DT_SINGLELINE | DT_CALCRECT);
-				rcItem.right += (rcText.right - rcText.left) + (m_settings.iPadding * 2);
-			}
-			rcItem.right += m_settings.iMargin;
-			pItem->SetRect(rcItem);
-			xpos += (rcItem.right - rcItem.left);
-
-			if(hRestoreNormalFont != NULL)
-			{
-				dc.SelectFont(hRestoreNormalFont);
-				hRestoreNormalFont = NULL;
-			}
-
-			if(!bSelected)
-			{
-				if((rcItem.right - rcItem.left) < nMinInactiveWidth)
-				{
-					nMinInactiveWidth = (rcItem.right - rcItem.left);
-				}
-				if((rcItem.right - rcItem.left) > nMaxInactiveWidth)
-				{
-					nMaxInactiveWidth = (rcItem.right - rcItem.left);
-				}
-			}
-		}
-		xpos += m_settings.iIndent;
-
-		if(xpos > nTabAreaWidth && nCount > 0 && m_iCurSel >= 0)
-		{
-			// Our desired widths are more than the width of the client area.
-			// We need to have some or all of the tabs give up some real estate
-
-			// We'll try to let the selected tab have its fully desired width.
-			// If it can't, we'll make all the tabs the same width.
-
-			RECT rcSelected = m_Items[m_iCurSel]->GetRect();
-			LONG nSelectedWidth = (rcSelected.right - rcSelected.left);
-
-			long cxClientInactiveTabs = nTabAreaWidth - (m_settings.iIndent * 2) - nSelectedWidth;
-
-			double nRatioWithSelectionFullSize = (double) (cxClientInactiveTabs) / (double)(xpos - (m_settings.iIndent * 2) - nSelectedWidth);
-
-			long nInactiveSameSizeWidth = (m_nMinWidthToDisplayText + (m_settings.iMargin*2) + (m_settings.iPadding));
-
-			if(cxClientInactiveTabs > (nInactiveSameSizeWidth * (long)(nCount-1)))
-			{
-				//  There should be enough room to display the entire contents of
-				//  the selected tab plus something for the inactive tabs
-
-				bool bMakeInactiveSameSize = ((nMinInactiveWidth * nRatioWithSelectionFullSize) < nInactiveSameSizeWidth);
-
-				xpos = m_settings.iIndent;
-				for(i=0; i<nCount; ++i )
-				{
-					customTabClass::TItem* pItem = m_Items[i];
-					RECT rcItemDesired = pItem->GetRect();
-					rcItem.left = rcItem.right = xpos;
-					if((int)i == m_iCurSel)
-					{
-						rcItem.right += (rcItemDesired.right - rcItemDesired.left);
-					}
-					else
-					{
-						if(bMakeInactiveSameSize)
-						{
-							rcItem.right += (long)((cxClientInactiveTabs / (nCount-1)) + 0.5);
-						}
-						else
-						{
-							rcItem.right += (long)(((rcItemDesired.right - rcItemDesired.left) * nRatioWithSelectionFullSize) + 0.5);
-						}
-					}
-					pItem->SetRect(rcItem);
-					xpos += (rcItem.right-rcItem.left);
-				}
-			}
-			else
-			{
-				// We're down pretty small, so just make all the tabs the same width
-				int cxItem = (nTabAreaWidth - (m_settings.iIndent*2)) / (int)nCount;
-
-				xpos = m_settings.iIndent;
-
-				for(i=0; i<nCount; ++i)
-				{
-					rcItem.left = rcItem.right = xpos;
-					rcItem.right += cxItem;
-					m_Items[i]->SetRect(rcItem);
-					xpos += (rcItem.right-rcItem.left);
-				}
-			}
-		}
-
-		dc.SelectFont(hOldFont);
-	}
-
-	void UpdateLayout_ScrollToFit(RECT rcTabItemArea)
-	{
+		dc.SelectPen(hOldPen);
+		dc.SelectBrush(hOldBrush);
 	}
 
 };
 
 template <class TItem = CCustomTabItem>
-class CDotNetTabCtrl :
-	public CDotNetTabCtrlImpl<CDotNetTabCtrl, TItem>
+class CDotNetButtonTabCtrl :
+	public CDotNetButtonTabCtrlImpl<CDotNetButtonTabCtrl, TItem>
 {
 protected:
-	typedef CDotNetTabCtrl thisClass;
-	typedef CDotNetTabCtrlImpl<CDotNetTabCtrl, TItem> baseClass;
+	typedef CDotNetButtonTabCtrl<TItem> thisClass;
+	typedef CDotNetButtonTabCtrlImpl<CDotNetButtonTabCtrl, TItem> baseClass;
 
 // Constructors:
 public:
-	CDotNetTabCtrl()
+	CDotNetButtonTabCtrl()
 	{
 	}
 
 public:
 
-	DECLARE_WND_CLASS(_T("WTL_DotNetTabCtrl"))  
+	DECLARE_WND_CLASS_EX(_T("WTL_DotNetButtonTabCtrl"), CS_DBLCLKS, COLOR_WINDOW)
 
 	//We have nothing special to add.
 	//BEGIN_MSG_MAP(thisClass)
 	//	CHAIN_MSG_MAP(baseClass)
 	//END_MSG_MAP()
 };
-
 
 #endif // __DOTNET_TABCTRL_H__
 

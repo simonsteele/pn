@@ -456,6 +456,7 @@ class COptionsPageAFiles : public COptionsPageImpl<COptionsPageAFiles>
 			COMMAND_HANDLER(IDC_AFILES_ADDBUTTON, BN_CLICKED, OnAddClicked)
 			COMMAND_HANDLER(IDC_AFILES_EDITBUTTON, BN_CLICKED, OnEditClicked)
 			COMMAND_HANDLER(IDC_AFILES_REMOVEBUTTON, BN_CLICKED, OnRemoveClicked)
+			NOTIFY_HANDLER(IDC_AFILES_LIST, NM_DBLCLK, OnListDblClicked)
 		END_MSG_MAP()
 
 		virtual void OnInitialise();
@@ -469,6 +470,8 @@ class COptionsPageAFiles : public COptionsPageImpl<COptionsPageAFiles>
 		LRESULT OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+		LRESULT OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 		void addItem(LPCTSTR set1, LPCTSTR set2, AlternateFileSet* lpData);
 

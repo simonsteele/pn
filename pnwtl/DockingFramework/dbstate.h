@@ -12,12 +12,14 @@
 // the source code in  this file is used in any commercial application
 // then a simple email woulod be nice.
 
-#if !defined(AFX_DBSTATE_H__05B4C486_973C_4275_97A3_AE6F5A20107A__INCLUDED_)
-#define AFX_DBSTATE_H__05B4C486_973C_4275_97A3_AE6F5A20107A__INCLUDED_
+#ifndef __WTL_DW__DBSTATE_H__
+#define __WTL_DW__DBSTATE_H__
+
+#pragma once
 
 #include <list>
-#include <dwstate.h>
-#include <TabDockingBox.h>
+#include "dwstate.h"
+#include "TabDockingBox.h"
 
 namespace sstate{
 
@@ -244,4 +246,4 @@ struct CDockingWindowStateAdapterEx : CDockingWindowStateAdapter<T>
 	}
 };
 }//namespace sstate
-#endif // !defined(AFX_DBSTATE_H__05B4C486_973C_4275_97A3_AE6F5A20107A__INCLUDED_)
+#endif // __WTL_DW__DBSTATE_H__

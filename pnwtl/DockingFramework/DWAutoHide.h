@@ -13,16 +13,18 @@
 // the source code in  this file is used in any commercial application
 // then a simple email woulod be nice.
 
-#if !defined(AFX_DWAUTOHIDE_H__027A1657_F8F6_4D05_A693_16D5E5B6FCA2__INCLUDED_)
-#define AFX_DWAUTOHIDE_H__027A1657_F8F6_4D05_A693_16D5E5B6FCA2__INCLUDED_
+#ifndef __WTL_DW__DWAUTOHIDE_H__
+#define __WTL_DW__DWAUTOHIDE_H__
+
+#pragma once
 
 #define DF_AUTO_HIDE_FEATURES
 
 #include <queue>
 #include <deque>
-#include <ssec.h>
-#include <DockMisc.h>
-#include <ExtDockingWindow.h>
+#include "ssec.h"
+#include "DockMisc.h"
+#include "ExtDockingWindow.h"
 
 
 namespace dockwins{
@@ -884,6 +886,10 @@ typedef CDockingWindowTraits<COutlookLikeCaption,
 								WS_CAPTION | WS_CHILD | 
 								WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW> 
 								COutlookLikeAutoHidePaneTraits;
+typedef CDockingWindowTraits<CVC7LikeCaption,
+								WS_CAPTION | WS_CHILD | 
+								WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW> 
+								CVC7LikeAutoHidePaneTraits;
 
 #define HTSPLITTERH HTLEFT
 #define HTSPLITTERV HTTOP
@@ -897,8 +903,8 @@ class ATL_NO_VTABLE CAutoHidePaneImpl :
     typedef CWindowImpl< T, TBase,  TAutoHidePaneTraits >		baseClass;
     typedef CAutoHidePaneImpl< T, TBase, TAutoHidePaneTraits >	thisClass;
 protected:
-	typedef TAutoHidePaneTraits::CCaption	CCaption;
-	typedef CAutoHideBar::CSide				CSide;
+	typedef typename TAutoHidePaneTraits::CCaption	CCaption;
+	typedef typename CAutoHideBar::CSide				CSide;
 	struct  CSplitterBar : CSimpleSplitterBarEx<>
 	{
 		CSplitterBar(bool bHorizontal=true):CSimpleSplitterBarEx<>(bHorizontal)
@@ -1095,6 +1101,8 @@ protected:
 		MESSAGE_HANDLER(WM_NCLBUTTONUP,OnNcLButtonUp)
 		MESSAGE_HANDLER(WM_NCLBUTTONDBLCLK,OnNcLButtonDblClk)			
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
+		MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
+		MESSAGE_HANDLER(WM_SYSCOLORCHANGE, OnSysColorChange)
 	END_MSG_MAP()
 
 	LRESULT OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -1194,16 +1202,43 @@ protected:
 		bHandled=pThis->OnClosing();
 		return 0;
 	}
+	LRESULT OnSettingChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		// Note: We can depend on CDWSettings already being updated
+		//  since we will always be a descendant of the main frame
+
+		m_caption.UpdateMetrics();
+
+		T* pThis=static_cast<T*>(this);
+		pThis->SetWindowPos(NULL,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+
+		bHandled = FALSE;
+		return 1;
+	}
+	LRESULT OnSysColorChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		// Note: We can depend on CDWSettings already being updated
+		//  since we will always be a descendant of the main frame
+
+		m_caption.UpdateMetrics();
+
+		T* pThis=static_cast<T*>(this);
+		pThis->SetWindowPos(NULL,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+
+		bHandled = FALSE;
+		return 1;
+	}
 protected:
 	CCaption		m_caption;
 	CSplitterBar	m_splitter;
 	CSide			m_side;
 };
 
-class CAutoHideManager : public CAutoHidePaneImpl<CAutoHideManager>
+template <class TAutoHidePaneTraits = COutlookLikeAutoHidePaneTraits>
+class CAutoHideManager : public CAutoHidePaneImpl<CAutoHideManager,CWindow,TAutoHidePaneTraits>
 {
-	typedef CAutoHidePaneImpl<CAutoHideManager>	baseClass;
-	typedef CAutoHideManager					thisClass;
+	typedef CAutoHidePaneImpl<CAutoHideManager,CWindow,TAutoHidePaneTraits>	baseClass;
+	typedef CAutoHideManager<TAutoHidePaneTraits>					thisClass;
 protected:
 	typedef CAutoHideBar::CSide		CSide;
 	enum{ tmID=1,tmTimeout=1300};
@@ -1321,7 +1356,7 @@ protected:
 	};
 public:
 	CAutoHideManager() 
-		: m_pActive(0)
+		: m_barThickness(0),m_pActive(0),m_pTracked(0)
 	{
 		m_rcBound.SetRectEmpty();
 		m_side=0;
@@ -1765,4 +1800,4 @@ protected:
 };
 
 }//namespace dockwins
-#endif // !defined(AFX_DWAUTOHIDE_H__027A1657_F8F6_4D05_A693_16D5E5B6FCA2__INCLUDED_)
+#endif // __WTL_DW__DWAUTOHIDE_H__

@@ -1,8 +1,10 @@
 // Copyright (c) 2002
 // Sergey Klimov (kidd@ukr.net)
 
-#if !defined(AFX_SSTATE_H__C541FDDA_E102_497D_BC97_802D5A7D5001__INCLUDED_)
-#define AFX_SSTATE_H__C541FDDA_E102_497D_BC97_802D5A7D5001__INCLUDED_
+#ifndef __WTL_DW__SSTATE_H__
+#define __WTL_DW__SSTATE_H__
+
+#pragma once
 
 #include<memory>
 #include<utility>
@@ -679,4 +681,4 @@ protected:
 };
 
 }//namespace sstate
-#endif // !defined(AFX_SSTATE_H__C541FDDA_E102_497D_BC97_802D5A7D5001__INCLUDED_)
+#endif // __WTL_DW__SSTATE_H__

@@ -43,7 +43,6 @@ CChildFrame::CChildFrame()
 
 	m_iFirstToolCmd = ID_TOOLS_DUMMY;
 
-	m_bHeaderSwitch = false;
 	m_bModifiedOverride = false;
 }
 
@@ -778,70 +777,42 @@ LRESULT CChildFrame::OnUseTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	return 0;
 }
 
-/**
- * @note CPP Specific
- */
+#include "afiles.h"
+
 LRESULT CChildFrame::OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
 {
-	if(m_bHeaderSwitch)
+	// Check there's a valid filename...
+	if(CanSave())
 	{
-		// Check there's a valid filename...
-		if(CanSave())
+		tstring alternateFile;
+
+		AlternateFiles* afiles = AlternateFiles::GetInstance();
+		
+		if(	afiles->GetAlternate(m_FileName, alternateFile) )
 		{
-			CFileName fn(m_FileName);
-			tstring ext = fn.GetExtension();
-			tstring newfn;
-			tstring tryfn;
-			tstring path;
-			
-			fn.GetFileName_NoExt(newfn);
-			fn.GetPath(path);
-			newfn = path + newfn;
-
-			const TCHAR** altexts = NULL;
-
-			if(ext.length() < 2) //.x
-				return 0;
-
-			if(ext[1] == 'h')
-			{
-				static const TCHAR* haltexts[] = {_T(".cxx"), _T(".c"), _T(".cpp"), _T(".cc"), NULL};
-				altexts = haltexts;
-			}
-			else if(ext[1] == 'c')
-			{
-				static const TCHAR* cppaltexts[] = {_T(".h"), _T(".hpp"), _T(".hh"), NULL};
-				altexts = cppaltexts;
-			}
-
-			if(!altexts)
-				return 0;
-
-			bool bFound = false;
-
-			while(*altexts)
-			{
-				tryfn = newfn;
-				tryfn += *altexts;
-
-				if(FileExists(tryfn.c_str()))
-				{
-					// If the file's already open, just switch to it, otherwise open it.
-					if( !g_Context.m_frame->CheckAlreadyOpen(tryfn.c_str(), eSwitch) )
-						g_Context.m_frame->Open(tryfn.c_str());
-					bFound = true;
-					break;
-				}
-
-				altexts++;
-			}
-
-			if(!bFound)
-				g_Context.m_frame->SetStatusText(_T("No alternate file found."));
+				if( !g_Context.m_frame->CheckAlreadyOpen(alternateFile.c_str(), eSwitch) )
+					g_Context.m_frame->Open(alternateFile.c_str());
 		}
+		else
+			g_Context.m_frame->SetStatusText(_T("No alternate file found."));
 	}
-	else
-		bHandled = FALSE;
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnEncodingSelect(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	EPNEncoding oldEncoding = m_view.GetEncoding();
+	EPNEncoding encoding = (EPNEncoding)(wID - ID_ENCODING_8);
+	
+	if(oldEncoding != encoding)
+	{
+		m_view.SetEncoding(encoding);
+
+		SetModifiedOverride(true);
+
+		UpdateMenu();
+	}
 
 	return 0;
 }
@@ -1126,8 +1097,6 @@ void CChildFrame::SchemeChanged(CScheme* pScheme)
 {
 	UpdateTools(pScheme);
 	g_Context.m_frame->SetActiveScheme(m_hWnd, static_cast<LPVOID>(pScheme));
-
-	m_bHeaderSwitch = (_tcscmp(pScheme->GetName(), _T("cpp")) == 0);
 	
 	::PostMessage(GetMDIFrame(), PN_NOTIFY, 0, PN_SCHEMECHANGED);
 }
@@ -1142,6 +1111,13 @@ void CChildFrame::UpdateMenu()
 	menu.CheckMenuItem(ID_TOOLS_LECR, f == PNSF_Mac);
 	menu.CheckMenuItem(ID_TOOLS_LELF, f == PNSF_Unix);
 	menu.CheckMenuItem(ID_TOOLS_USETABS, m_view.GetUseTabs());
+
+	EPNEncoding e = m_view.GetEncoding();
+
+	menu.CheckMenuItem(ID_ENCODING_8, e == eUnknown);
+	menu.CheckMenuItem(ID_ENCODING_UTF8, e == eUtf8);
+	menu.CheckMenuItem(ID_ENCODING_UTF16BE, e == eUtf16BigEndian);
+	menu.CheckMenuItem(ID_ENCODING_UTF16LE, e == eUtf16LittleEndian);
 	
 	bool bToolsRunning = false;
 	if( ToolOwner::HasInstance() )
@@ -1218,16 +1194,6 @@ void CChildFrame::SetModifiedOverride(bool bVal)
 	m_bModifiedOverride = bVal;
 	SetTitle(GetModified());
 	g_Context.m_frame->GetWindow()->SendMessage(PN_NOTIFY, 0, SCN_UPDATEUI);
-}
-
-static UINT CALLBACK PaintHookProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	return 0;
-}
-
-static UINT_PTR APIENTRY HookProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 void CChildFrame::PrintSetup()

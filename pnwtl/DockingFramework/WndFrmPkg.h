@@ -12,16 +12,18 @@
 // the source code in  this file is used in any commercial application
 // then a simple email woulod be nice.
 
-#if !defined(AFX_WNDFRMPKG_H__4C823036_1E4A_4DD5_8C4D_5E480DCED39F__INCLUDED_)
-#define AFX_WNDFRMPKG_H__4C823036_1E4A_4DD5_8C4D_5E480DCED39F__INCLUDED_
+#ifndef __WTL_DW__WNDFRMPKG_H__
+#define __WTL_DW__WNDFRMPKG_H__
+
+#pragma once
 
 #ifndef __ATLMISC_H__
         #error WndFrmPkg.h requires atlmisc.h to be included first
 #endif
 
 #include <memory>
-#include <ssec.h>
-#include <DDTracker.h>
+#include "ssec.h"
+#include "DDTracker.h"
 #ifdef USE_BOOST
 #include<boost/smart_ptr.hpp>
 #endif
@@ -121,15 +123,19 @@ protected:
 template< class TFrame = CWndFrame , class TTraits = CDockingFrameTraits>
 class CWndFramesPackageBase
 {
-	typedef TFrame CFrame;
-	typedef TTraits CTraits;
+	typedef typename TFrame CFrame;
+	typedef typename TTraits CTraits;
 	typedef typename CTraits::CSplitterBar	CSplitterBar;
 	typedef CWndFramesPackageBase<CFrame,TTraits> thisClass;
 protected:
 	enum {splitterSize=CSplitterBar::sbThickness};
 	typedef typename CFrame::position	position;
 
+#if _MSC_VER >= 1310
 	template<class T,const typename T::distance TMinDist=0>
+#else
+	template<class T,const T::distance TMinDist=0>
+#endif
 	struct CWndFrameTraits : ssec::spraits<T, typename T::position, typename T::distance/*,TMinDist*/>
 	{
 		typedef ssec::spraits<T,position,position/*,TMinDist*/> baseClass;
@@ -611,8 +617,8 @@ protected:
 template< class TTraits = CDockingFrameTraits >
 class CWndFramesPackage : public CWndFramesPackageBase<CWndFrame,TTraits >
 {
-	typedef CWndFrame CFrame;
-	typedef TTraits CTraits;
+	typedef typename CWndFrame CFrame;
+	typedef typename TTraits CTraits;
 	typedef typename CTraits::CSplitterBar	CSplitterBar;
 	typedef CWndFramesPackage<TTraits> thisClass;
 	typedef CWndFramesPackageBase<CFrame,TTraits > baseClass;
@@ -879,12 +885,12 @@ class CSubWndFramesPackage :
 		public CRect,
 		public CWndFramesPackageBase<CPtrFrame<IFrame>,TTraits >
 {
-	typedef CPtrFrame<IFrame> CFrame;
-	typedef TTraits CTraits;
+	typedef typename CPtrFrame<IFrame> CFrame;
+	typedef typename TTraits CTraits;
 	typedef typename CTraits::CSplitterBar	CSplitterBar;
 	typedef CSubWndFramesPackage<TPackageFrame,TTraits> thisClass;
 	typedef CWndFramesPackageBase<CFrame,TTraits >		baseClass;
-	typedef TPackageFrame	CPackageFrame;
+	typedef typename TPackageFrame	CPackageFrame;
 	enum {controlledLen=(15+CSplitterBar::sbThickness)};
 	struct  CDockOrientationFlag  
 	{
@@ -1337,4 +1343,4 @@ protected:
 
 }//namespace dockwins
 
-#endif // !defined(AFX_WNDFRMPKG_H__4C823036_1E4A_4DD5_8C4D_5E480DCED39F__INCLUDED_)
+#endif // __WTL_DW__WNDFRMPKG_H__

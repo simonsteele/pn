@@ -100,6 +100,8 @@ public:
 
 		COMMAND_ID_HANDLER(ID_EDIT_HEADERSWITCH, OnHeaderSwitch)
 
+		COMMAND_RANGE_HANDLER(ID_ENCODING_8, ID_ENCODING_UTF8, OnEncodingSelect)
+
 		NOTIFY_CODE_HANDLER(TBN_GETINFOTIP, OnGetInfoTip)
 
 		IMPLEMENT_FROMHANDLE()
@@ -202,6 +204,7 @@ public:
 	LRESULT OnStopTools(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnUseTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnEncodingSelect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnRunTool(LPVOID pTool);
 
@@ -270,11 +273,6 @@ protected:
 	BOOL OnEscapePressed();
 	void Export(int type);
 	void SetModifiedOverride(bool bVal);
-
-	// Modes Stuff
-protected:
-	//cpp
-	bool				m_bHeaderSwitch;
 
 protected:
 	static bool			s_bFirstChild;

@@ -295,7 +295,7 @@ void COptionsManager::GetPNPath(tstring& path, int pathtype)
 	TCHAR buf[MAX_PATH +1];
 	memset(buf, 0, sizeof(buf));
 
-	if(pathtype == PNPATH_PN || pathtype == PNPATH_SCHEMES || pathtype == PNPATH_CLIPS)
+	if(pathtype == PNPATH_PN || pathtype == PNPATH_SCHEMES || pathtype == PNPATH_CLIPS || pathtype == PNPATH_TOOLS)
 	{
 		GetModuleFileName(NULL, buf, MAX_PATH);
 		path = buf;
@@ -307,6 +307,8 @@ void COptionsManager::GetPNPath(tstring& path, int pathtype)
 			path += _T("Schemes\\");
 		else if(pathtype == PNPATH_CLIPS)
 			path += _T("Clips\\");
+		else if(pathtype == PNPATH_TOOLS)
+			path += _T("Tools\\");
 	}
 	else if(pathtype == PNPATH_USERSETTINGS || pathtype == PNPATH_USERCLIPS)
 	{
