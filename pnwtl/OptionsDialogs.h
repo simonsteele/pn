@@ -43,6 +43,7 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 			DDX_CHECK(IDC_TE_FILTERCHECK,	m_bFilter)
 			DDX_CHECK(IDC_TE_SAVEALLCHECK,	m_bSaveAll)
 			DDX_RADIO(IDC_TE_BUILTIN,		m_iBuiltIn)
+			DDX_CHECK(IDC_TE_CLEARCHECK,	m_bClear)
 		END_DDX_MAP()
 
 		CString m_csDisplayTitle;
@@ -95,6 +96,7 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 		BOOL	m_bCapture;
 		BOOL	m_bFilter;
 		BOOL	m_bSaveAll;
+		BOOL	m_bClear;
 
 		int		m_iBuiltIn;
 

@@ -47,6 +47,7 @@ typedef struct tagPrintOptions
 #define TOOL_SAVEALL		0x04
 #define TOOL_GLOBALOUTPUT	0x08
 #define TOOL_CUSTOMPARSER	0x10
+#define TOOL_CLEAROUTPUT	0x20
 
 /**
  * @brief Defines a single external tool.
@@ -79,6 +80,7 @@ public:
 	bool SaveAll() const { return (iFlags & TOOL_SAVEALL) != 0; }
 	bool GlobalOutput() const { return (iFlags & TOOL_GLOBALOUTPUT) != 0; }
 	bool UseCustomParser() const { return (iFlags & TOOL_CUSTOMPARSER) != 0; }
+	bool ShouldClearOutput() const { return (iFlags & TOOL_CLEAROUTPUT) != 0; }
 
 protected:
 	void _copy(const ToolDefinition& copy)

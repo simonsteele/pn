@@ -2,7 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by pn.rc
 //
-#define ID_EDIT_COPYRTF                 0
 #define IDC_REPLACE_BUTTON              4
 #define IDR_TBR_EDIT                    5
 #define IDC_REPLACEALL_BUTTON           6
@@ -160,6 +159,7 @@
 #define IDC_CHECK1                      1051
 #define IDC_OPT_LINENOSCHECK            1051
 #define IDC_SMARTSTART_ENABLECHECK      1051
+#define IDC_TE_CLEARCHECK               1051
 #define IDC_TE_SAVEALLCHECK             1052
 #define IDC_COMBO1                      1053
 #define IDC_NEW_SCHEMECOMBO             1053
@@ -216,6 +216,7 @@
 #define ID_EDIT_UNINDENT                32864
 #define ID_FILE_SAVEALL                 32865
 #define ID_EDIT_HEADERSWITCH            32866
+#define ID_EDIT_COPYRTF                 32871
 #define IDC_FINDTEXT_LABEL              65535
 
 // Next default values for new objects
@@ -223,7 +224,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        273
-#define _APS_NEXT_COMMAND_VALUE         32871
+#define _APS_NEXT_COMMAND_VALUE         32872
 #define _APS_NEXT_CONTROL_VALUE         1062
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

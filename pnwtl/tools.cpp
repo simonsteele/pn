@@ -773,6 +773,10 @@ int ToolRunner::Execute()
 	{
 		m_pWrapper->SetToolParser( !m_pWrapper->UseCustomParser(), m_pWrapper->CustomParsePattern.c_str() );
 		m_pWrapper->SetToolBasePath( m_pWrapper->Folder.c_str() );
+
+		if(m_pWrapper->ShouldClearOutput())
+			m_pWrapper->ClearOutput();
+
 		// Launch the thread which will run the CreateProcess stuff...
 		Start();
 	}

@@ -1003,7 +1003,6 @@ void COptionsPageTools::OnInitialise()
 	
 	if(m_combo.GetCount() > 0)
 	{
-		m_combo.SetCurSel(0);
 		Update();
 	}
 }

@@ -19,6 +19,7 @@ last updated: 21/05/2003
 0.5 Mingus
 ==========
 
+Tab order management.
 Basic Project Management - file grouping etc.
 Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
 Menu to choose file encoding type (currently PN just preserves the original type).

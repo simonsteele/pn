@@ -243,6 +243,16 @@ void COutputView::HandlePerlError(int style, int position)
 }
 
 /**
+ * @brief Parse python errors
+ * 
+ * File "T:\source\ipconfig\ipconfig.py", line 45
+ */
+void COutputView::HandlePythonError(int style, int position)
+{
+	BuildAndHandleREError(style, position, "File \"(?P<f>.+)\", line (?P<l>[0-9]+)");
+}
+
+/**
  * Handle when a hotspot is clicked.
  */
 LRESULT COutputView::OnHotSpotClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -251,6 +261,12 @@ LRESULT COutputView::OnHotSpotClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 	{
 		switch(wParam)
 		{
+			case SCE_ERR_PYTHON:
+			{
+				HandlePythonError(wParam, lParam);
+			}
+			break;
+
 			case SCE_ERR_GCC:
 			{
 				HandleGCCError(wParam, lParam);
@@ -432,6 +448,11 @@ void COutputView::SetToolParser(bool bBuiltIn, LPCTSTR customExpression)
 		m_bCustom = false;
 		SetOutputLexer();
 	}
+}
+
+void COutputView::ClearOutput()
+{
+	ClearAll();
 }
 
 LRESULT COutputView::OnClear(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

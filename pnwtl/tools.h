@@ -96,7 +96,7 @@ class SchemeToolsManager :
 		SCHEMETOOLS_MAP m_toolSets;
 };
 
-#include "aboutdlg.h"
+//#include "aboutdlg.h"
 
 /**
  * Format string builder class to build up command-line parameters for a tool.
@@ -191,6 +191,7 @@ class ToolWrapper : public ToolDefinition
 		virtual void _AddToolOutput(LPCTSTR output, int nLength = -1) = 0;
 		virtual void SetToolBasePath(LPCTSTR path) = 0;
 		virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL) = 0;
+		virtual void ClearOutput() = 0;
 
 	protected:
 		CChildFrame*	m_pActiveChild;
@@ -269,6 +270,11 @@ class ToolWrapperT : public ToolWrapper
 		virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL)
 		{
 			m_pOutputSink->SetToolParser(bBuiltIn, customExpression);
+		}
+
+		virtual void ClearOutput()
+		{
+			m_pOutputSink->ClearOutput();
 		}
 
 	protected:

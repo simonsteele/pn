@@ -145,6 +145,7 @@ CToolEditorDialog::CToolEditorDialog() :
 	m_csCustomPattern = _T("");
 
 	m_bCapture = true;
+	m_bClear = true;
 
 	m_iBuiltIn = 0;
 
@@ -233,7 +234,7 @@ LRESULT CToolEditorDialog::OnCaptureChanged(WORD /*wNotifyCode*/, WORD /*wID*/, 
 LRESULT CToolEditorDialog::OnAboutBuiltin(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	MessageBox(
-		_T("Programmers Notepad 2 provides built-in support\nfor parsing output from the following tools:\n\nBorland C++\nGCC\nlcc-win32\nand Perl"), 
+		_T("Programmers Notepad 2 provides built-in support\nfor parsing output from the following tools:\n\nBorland C++\nGCC\nlcc-win32\nPython\nand Perl"), 
 		_T("Information"),
 		MB_OK | MB_ICONINFORMATION);
 
@@ -260,6 +261,7 @@ void CToolEditorDialog::GetValues(ToolDefinition* pDefinition)
 		(m_bFilter	? TOOL_ISFILTER : 0) |
 		(m_bSaveAll	? TOOL_SAVEALL	: 0) | 
 		(m_bGlobal	? TOOL_GLOBALOUTPUT : 0) |
+		(m_bClear	? TOOL_CLEAROUTPUT : 0) |
 		(m_iBuiltIn * TOOL_CUSTOMPARSER);
 
 	if(m_iBuiltIn)
@@ -279,6 +281,7 @@ void CToolEditorDialog::SetValues(ToolDefinition* pDefinition)
 	m_bFilter		= pDefinition->IsFilter();
 	m_bSaveAll		= pDefinition->SaveAll();
 	m_bGlobal		= pDefinition->GlobalOutput();
+	m_bClear		= pDefinition->ShouldClearOutput();
 	m_iBuiltIn		= pDefinition->UseCustomParser() ? 1 : 0;
 	m_csCustomPattern = pDefinition->CustomParsePattern.c_str();
 }
@@ -296,6 +299,7 @@ void CToolEditorDialog::EnableButtons()
 	m_outputcombo.EnableWindow(bCapture);
 	::EnableWindow(GetDlgItem(IDC_TE_BUILTIN), bCapture);
 	::EnableWindow(GetDlgItem(IDC_TE_ABOUTBUILTIN), bCapture);
+	::EnableWindow(GetDlgItem(IDC_TE_CLEARCHECK), bCapture);
 
 	CButton customParse(GetDlgItem(IDC_TE_CUSTOMPARSE));
 	customParse.EnableWindow(bCapture);
