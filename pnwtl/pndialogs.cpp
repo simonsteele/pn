@@ -244,7 +244,7 @@ void CPNOpenDialog::PreProcess()
 // CPNSaveDialog
 //////////////////////////////////////////////////////////////////////////////
 
-CPNSaveDialog::CPNSaveDialog(LPCTSTR szFilter) : baseClass(FALSE, _T(".txt"), NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter)
+CPNSaveDialog::CPNSaveDialog(LPCTSTR szFilter) : baseClass(FALSE, /*_T(".txt")*/NULL, NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter)
 {
 	m_Format = PNSF_NoChange;
 	m_ofn.Flags |= OFN_ENABLETEMPLATE;
