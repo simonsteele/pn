@@ -873,7 +873,6 @@ void Project::processUserData(LPCTSTR name, XMLAttributes& atts)
 	if(lastNode)
 	{
 		lastNode->AddChild(pNode);
-		lastNode = pNode;
 	}
 	else
 	{
@@ -892,6 +891,8 @@ void Project::processUserData(LPCTSTR name, XMLAttributes& atts)
 			break;
 		}
 	}
+
+	lastNode = pNode;
 }
 
 void Project::setDirty()
