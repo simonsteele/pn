@@ -91,6 +91,8 @@ void Options::loadCache()
 	cache[ODefaultCodePage]			= Get(NULL, _T("DefaultCodePage"), PNCP_Default);
 	cache[OWordWrap]				= Get(NULL, _T("WordWrap"), false);
 	cache[ODefaultScintillaCache]	= Get(NULL, _T("LayoutCacheMode"), SC_CACHE_CARET);
+	cache[OVisibleLineEndings]		= Get(NULL, _T("VisibleLineEndings"), FALSE);
+	cache[OVisibleWhiteSpace]		= Get(NULL, _T("VisibleWhiteSpace"), FALSE);
 	ungroup();
 	
 	// Interface Settings -------------------
@@ -160,6 +162,8 @@ void Options::saveCache()
 	Set(NULL, _T("DefaultCodePage"),		cache[ODefaultCodePage]);
 	Set(NULL, _T("WordWrap"),				cache[OWordWrap]);
 	Set(NULL, _T("DefaultScintillaCache"),	cache[ODefaultScintillaCache]);
+	Set(NULL, _T("VisibleLineEndings"),		cache[OVisibleLineEndings]);
+	Set(NULL, _T("VisibleWhiteSpace"),		cache[OVisibleWhiteSpace]);
 
 	ungroup();
 	

@@ -5,6 +5,7 @@
 #define IDOK2                           3
 #define IDC_REPLACE_BUTTON              4
 #define IDR_TBR_EDIT                    5
+#define IDR_POPUP_TABS                  5
 #define IDC_REPLACEALL_BUTTON           6
 #define IDC_REPLACEINSEL_BUTTON         7
 #define IDD_PAGESETUP                   12
@@ -46,7 +47,6 @@
 #define IDS_NREPLACEMENTS               142
 #define IDS_FINDLOOPED                  143
 #define IDI_TEXTCLIPS                   167
-#define IDR_TABS_POPUP                  169
 #define IDR_POPUP_REGEXP                170
 #define IDR_POPUP_EDITOR                173
 #define IDB_EDITOR                      203
@@ -353,6 +353,11 @@
 #define IDC_FINDALPHACHECK              1116
 #define IDC_TREE1                       1117
 #define IDC_VAR_LIST                    1118
+#define IDC_TE_CLICKRESULTSSTATIC       1120
+#define IDC_TE_OUTPUTGROUP              1121
+#define IDC_OPT_LINEENDINGS_CHECK       1122
+#define IDC_OPT_LINEENDINGSCHECK        1122
+#define IDC_OPT_WHITESPACECHECK         1123
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -443,15 +448,16 @@
 #define ID_PROJECT_MAGICADDFOLDER       32918
 #define ID_FILE_CLOSEALL                32920
 #define ID_PROJECT_PROPERTIES           32924
+#define ID_WINDOW_CLOSEALLOTHER         32931
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        334
-#define _APS_NEXT_COMMAND_VALUE         32928
-#define _APS_NEXT_CONTROL_VALUE         1119
+#define _APS_NEXT_RESOURCE_VALUE        335
+#define _APS_NEXT_COMMAND_VALUE         32933
+#define _APS_NEXT_CONTROL_VALUE         1124
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

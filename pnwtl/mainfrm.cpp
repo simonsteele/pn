@@ -1481,6 +1481,29 @@ LRESULT CMainFrame::OnWindowArrangeIcons(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	return 0;
 }
 
+LRESULT CMainFrame::OnWindowCloseAllOther(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	HWND hWndCurChild = GetCurrentEditor();
+	if(!hWndCurChild)
+		return 0;
+
+	HWND hWndChild = ::GetTopWindow(m_tabbedClient.m_hWnd);
+	while(hWndChild != NULL)
+	{
+		HWND hWndClose = hWndChild;
+		hWndChild = ::GetNextWindow(hWndChild, GW_HWNDNEXT);
+
+		if(hWndClose != hWndCurChild && ::IsWindow(hWndClose))
+		{
+			// This is not the current window, so send a 
+			// close message it should understand.
+			::SendMessage(hWndClose, WM_SYSCOMMAND, SC_CLOSE, 0L);
+		}
+	}
+
+	return 0;
+}
+
 LRESULT CMainFrame::OnFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(m_pFindEx == NULL)

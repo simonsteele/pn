@@ -2,7 +2,7 @@
  * @file optionspages.cpp
  * @brief Options Dialog Pages (1) for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -90,6 +90,8 @@ void COptionsPageEditDefaults::OnOK()
 	options.SetCached(Options::OLineEndings, m_SaveFormat);
 	options.SetCached(Options::ODefaultCodePage, m_CodePage);
 	options.SetCached(Options::OWordWrap, m_bWrap != FALSE);
+	options.SetCached(Options::OVisibleLineEndings, m_bLineEndings);
+	options.SetCached(Options::OVisibleWhiteSpace, m_bWhiteSpace);
 }
 
 void COptionsPageEditDefaults::OnInitialise()
@@ -100,6 +102,8 @@ void COptionsPageEditDefaults::OnInitialise()
 	m_bWrap			= OPTIONS->GetCached(Options::OWordWrap);
 	m_SaveFormat	= (EPNSaveFormat)OPTIONS->GetCached(Options::OLineEndings);
 	m_CodePage		= (ECodePage)OPTIONS->GetCached(Options::ODefaultCodePage);
+	m_bLineEndings  = OPTIONS->GetCached(Options::OVisibleLineEndings);
+	m_bWhiteSpace	= OPTIONS->GetCached(Options::OVisibleWhiteSpace);
 
 	CComboBox cb(GetDlgItem(IDC_OPT_LECOMBO));
 	for(int i = 0; i < cb.GetCount(); i++)
@@ -653,6 +657,35 @@ SchemeTools* COptionsPageTools::GetTools()
 	return m_pCurrent;
 }
 
+bool COptionsPageTools::doToolEditDlg(ToolDefinition* in, ToolDefinition* out)
+{
+	LPCTSTR title = (in != NULL) ? _T("Edit Tool") : _T("New Tool");
+	CPropertySheet sheet( title, 0, m_hWnd );
+	sheet.m_psh.dwFlags |= (PSH_NOAPPLYNOW | PSH_PROPTITLE | PSH_USEICONID);
+	sheet.m_psh.pszIcon = MAKEINTRESOURCE(IDR_MDICHILD);
+	
+	CToolSettingsPage toolPage(_T("Properties"));
+	CToolConsoleIOPage consolePage(_T("Console I/O"));
+
+	if(in)
+	{
+		toolPage.SetValues(in);
+		consolePage.SetValues(out);
+	}
+
+	sheet.AddPage(toolPage);
+	sheet.AddPage(consolePage);
+	if(sheet.DoModal() == IDOK)
+	{
+		toolPage.GetValues(out);
+		consolePage.GetValues(out);
+		
+		return true;
+	}
+
+	return false;
+}
+
 void COptionsPageTools::EnableButtons()
 {
 	if(m_bChanging)
@@ -696,39 +729,11 @@ void COptionsPageTools::AddDefinition(ToolDefinition* pDef)
 	m_list.SetItem(&lvi);
 }
 
-bool doToolEditDlg(LPCTSTR title, HWND hWndOwner, ToolDefinition* in, ToolDefinition* out)
-{
-	CPropertySheet sheet( title, 0, hWndOwner );
-	sheet.m_psh.dwFlags |= (PSH_NOAPPLYNOW | PSH_PROPTITLE | PSH_USEICONID);
-	sheet.m_psh.pszIcon = MAKEINTRESOURCE(IDR_MDICHILD);
-	
-	CToolEditorDialog toolPage(_T("Properties"));
-	CToolConsoleIOPage consolePage(_T("Console I/O"));
-
-	if(in)
-	{
-		toolPage.SetValues(in);
-		consolePage.SetValues(out);
-	}
-
-	sheet.AddPage(toolPage);
-	sheet.AddPage(consolePage);
-	if(sheet.DoModal() == IDOK)
-	{
-		toolPage.GetValues(out);
-		consolePage.GetValues(out);
-		
-		return true;
-	}
-
-	return false;
-}
-
 LRESULT COptionsPageTools::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	SourcedToolDefinition* pDef = new SourcedToolDefinition(m_toolstore.GetDefaultToolStore());
 
-	if (doToolEditDlg(_T("New Tool"), m_hWnd, NULL, pDef))
+	if (doToolEditDlg(NULL, pDef))
 	{
 		//@todo check if the name is valid...
 		GetTools()->Add(pDef);
@@ -752,7 +757,7 @@ LRESULT COptionsPageTools::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 		ToolDefinition* pDef = reinterpret_cast<ToolDefinition*>(m_list.GetItemData(iSelIndex));
 		if(pDef != NULL)
 		{
-			if(doToolEditDlg( _T("Edit Tool"), m_hWnd, pDef, pDef))
+			if(doToolEditDlg(pDef, pDef))
 			{
 				//dlg.GetValues(pDef);
 

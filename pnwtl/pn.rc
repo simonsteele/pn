@@ -222,6 +222,8 @@ BEGIN
         MENUITEM "Tile &Horizontal",            ID_WINDOW_TILE_HORZ
         MENUITEM "Tile &Vertical",              57652
         MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
+        MENUITEM SEPARATOR
+        MENUITEM "Close All &Other Windows",    ID_WINDOW_CLOSEALLOTHER
     END
     POPUP "&Help"
     BEGIN
@@ -417,18 +419,6 @@ BEGIN
     END
 END
 
-IDR_TABS_POPUP MENU 
-BEGIN
-    POPUP "DUMMY"
-    BEGIN
-        MENUITEM "&Close\tCtrl+F4",             ID_TAB_CLOSE
-        MENUITEM SEPARATOR
-        MENUITEM "&Top",                        ID_VIEW_TABS_TOP, CHECKED
-        MENUITEM "&Bottom",                     ID_VIEW_TABS_BOTTOM
-        MENUITEM "Visible",                     ID_VIEW_VIEWTABS, CHECKED
-    END
-END
-
 IDR_POPUP_EDITOR MENU 
 BEGIN
     POPUP "DUMMY"
@@ -581,6 +571,16 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     ID_PROJECT_REMOVE
         MENUITEM "&Delete",                     ID_PROJECT_DELETE
+    END
+END
+
+IDR_POPUP_TABS MENU 
+BEGIN
+    POPUP "DUMMY"
+    BEGIN
+        MENUITEM "&Close",                      ID_FILE_CLOSE
+        MENUITEM "Close &All",                  ID_FILE_CLOSEALL
+        MENUITEM "Close All &Other",            ID_WINDOW_CLOSEALLOTHER
     END
 END
 
@@ -743,34 +743,34 @@ IDD_TOOLEDITOR DIALOGEX 0, 0, 243, 238
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_TE_NAMEEDIT,60,16,138,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_TE_CMDEDIT,60,34,138,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_TE_COMMANDBUTTON,204,34,13,14
-    EDITTEXT        IDC_TE_FOLDEREDIT,60,52,138,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_TE_DIRBUTTON,204,52,13,14
-    EDITTEXT        IDC_TE_PARAMSEDIT,60,70,138,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "&Clear",IDC_TE_CLEARBUTTON,144,88,47,14
+    EDITTEXT        IDC_TE_NAMEEDIT,60,10,138,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_TE_CMDEDIT,60,28,138,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_TE_COMMANDBUTTON,204,28,13,14
+    EDITTEXT        IDC_TE_FOLDEREDIT,60,46,138,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_TE_DIRBUTTON,204,46,13,14
+    EDITTEXT        IDC_TE_PARAMSEDIT,60,64,138,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Clear",IDC_TE_CLEARBUTTON,144,82,47,14
     CONTROL         "This tool will modify the current file.",
                     IDC_TE_FILTERCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    12,128,150,10
-    RTEXT           "Name:",IDC_STATIC,12,18,42,8
-    RTEXT           "Command:",IDC_STATIC,12,36,42,8
-    RTEXT           "Folder:",IDC_STATIC,12,54,42,8
-    RTEXT           "Parameters:",IDC_STATIC,12,72,42,8
-    RTEXT           "Shortcut:",IDC_STATIC,12,90,42,8
-    GROUPBOX        "Tool",IDC_STATIC,4,3,235,231
-    RTEXT           "Save:",IDC_STATIC,12,112,42,8
-    COMBOBOX        IDC_TE_SAVECOMBO,60,110,132,42,CBS_DROPDOWNLIST | 
+                    12,122,150,10
+    RTEXT           "Name:",IDC_STATIC,12,12,42,8
+    RTEXT           "Command:",IDC_STATIC,12,30,42,8
+    RTEXT           "Folder:",IDC_STATIC,12,48,42,8
+    RTEXT           "Parameters:",IDC_STATIC,12,66,42,8
+    RTEXT           "Shortcut:",IDC_STATIC,12,84,42,8
+    RTEXT           "Save:",IDC_STATIC,12,106,42,8
+    COMBOBOX        IDC_TE_SAVECOMBO,60,104,132,42,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_TE_HOTKEY,"msctls_hotkey32",WS_BORDER | 
-                    WS_TABSTOP,60,88,78,14
+                    WS_TABSTOP,60,82,78,14
     CONTROL         "",IDC_OPTHELPER_BUTTON,"Button",BS_OWNERDRAW | NOT 
-                    WS_VISIBLE | WS_TABSTOP,204,70,13,14,0,
+                    WS_VISIBLE | WS_TABSTOP,204,64,13,14,0,
                     HIDC_OPTHELPER_BUTTON
     CONTROL         "",IDC_VAR_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_NOLABELWRAP | LVS_ALIGNLEFT | 
-                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,12,156,218,73
-    LTEXT           "Special Symbols:",IDC_STATIC,13,145,122,8
+                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,8,161,227,73
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,153,235,1
+    LTEXT           "Special Symbols:",IDC_STATIC,4,149,54,8
 END
 
 IDD_PAGE_GENERAL DIALOGEX 0, 0, 300, 200
@@ -972,15 +972,19 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,10,24,138,10
     CONTROL         "&Use the tab character for indentation",
                     IDC_OPT_USETABSCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,10,36,168,10
-    LTEXT           "&Tab Width:",IDC_STATIC,10,52,48,8
-    EDITTEXT        IDC_OPT_TABWIDTHEDIT,60,50,30,14,ES_AUTOHSCROLL
-    LTEXT           "&Line Endings:",IDC_STATIC,10,68,42,8
-    COMBOBOX        IDC_OPT_LECOMBO,10,78,102,66,CBS_DROPDOWNLIST | CBS_SORT | 
-                    WS_VSCROLL | WS_TABSTOP
-    LTEXT           "&Code Page:",IDC_STATIC,10,96,48,8
-    COMBOBOX        IDC_OPT_CPCOMBO,10,106,102,66,CBS_DROPDOWNLIST | 
+                    WS_TABSTOP,10,60,168,10
+    LTEXT           "&Tab Width:",IDC_STATIC,10,76,48,8
+    EDITTEXT        IDC_OPT_TABWIDTHEDIT,60,74,30,14,ES_AUTOHSCROLL
+    LTEXT           "&Line Endings:",IDC_STATIC,10,92,42,8
+    COMBOBOX        IDC_OPT_LECOMBO,10,102,102,66,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Code Page:",IDC_STATIC,10,120,48,8
+    COMBOBOX        IDC_OPT_CPCOMBO,10,130,102,66,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Visible Line &Endings",IDC_OPT_LINEENDINGSCHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,36,84,10
+    CONTROL         "Visible &Whitespace Characters",IDC_OPT_WHITESPACECHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,48,111,10
 END
 
 IDD_FILEPROPERTIES DIALOGEX 0, 0, 194, 204
@@ -1212,26 +1216,38 @@ BEGIN
                     10,84,218,10
 END
 
-IDD_TOOLCONSOLEIOPAGE DIALOGEX 0, 0, 233, 212
+IDD_TOOLCONSOLEIOPAGE DIALOGEX 0, 0, 243, 238
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "Capture output?",IDC_TE_CAPTURECHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,11,17,84,10
-    COMBOBOX        IDC_TE_OUTPUTCOMBO,11,31,141,37,CBS_DROPDOWNLIST | 
+                    BS_AUTOCHECKBOX | WS_TABSTOP,8,20,84,10
+    COMBOBOX        IDC_TE_OUTPUTCOMBO,8,33,141,37,CBS_DROPDOWNLIST | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Clear output before running?",IDC_TE_CLEARCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,11,51,144,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,8,50,144,10
     CONTROL         "Use the built-in error parser.",IDC_TE_BUILTIN,"Button",
-                    BS_AUTORADIOBUTTON | WS_DISABLED | WS_GROUP,11,63,102,10
+                    BS_AUTORADIOBUTTON | WS_DISABLED | WS_GROUP,8,90,102,10
     CONTROL         "Look for a custom pattern:",IDC_TE_CUSTOMPARSE,"Button",
-                    BS_AUTORADIOBUTTON | WS_DISABLED,11,75,114,10
-    EDITTEXT        IDC_TE_CUSTOMTEXT,21,92,129,14,ES_AUTOHSCROLL | 
+                    BS_AUTORADIOBUTTON | WS_DISABLED,8,103,114,10
+    EDITTEXT        IDC_TE_CUSTOMTEXT,51,128,114,14,ES_AUTOHSCROLL | 
                     WS_DISABLED
-    GROUPBOX        "Output",IDC_STATIC,7,7,153,186
-    LTEXT           "",IDC_TE_CUSTOMINFO,11,129,140,42
-    LTEXT           "example: %f:%l: ",IDC_STATIC,21,111,129,19
-    PUSHBUTTON      "?",IDC_TE_ABOUTBUILTIN,139,63,12,12,WS_DISABLED
+    LTEXT           "%f: Filename, %l: Line Number, %c: Column",
+                    IDC_TE_CUSTOMINFO,52,146,148,9
+    LTEXT           "example: %f:%l: ",IDC_STATIC,169,129,63,12
+    PUSHBUTTON      "?",IDC_TE_ABOUTBUILTIN,132,90,12,12,WS_DISABLED
+    LTEXT           "Static",IDC_PLACEHOLDER,14,169,214,32,SS_SUNKEN | NOT 
+                    WS_VISIBLE
+    LTEXT           "(enter text and click above to test)",
+                    IDC_TE_CLICKRESULTSSTATIC,14,202,214,9
+    LTEXT           "Testing:",IDC_STATIC,14,159,27,8
+    GROUPBOX        "Custom Output Parsing",IDC_TE_OUTPUTGROUP,8,116,225,97
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,81,235,1
+    LTEXT           "Output Parsing:",IDC_STATIC,4,77,52,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,12,235,1
+    LTEXT           "Standard Input and Output:",IDC_STATIC,4,8,91,8
+    RTEXT           "Pattern:",IDC_STATIC,11,128,37,12
+    RTEXT           "Shortcuts:",IDC_STATIC,11,146,37,12
 END
 
 
@@ -1432,10 +1448,10 @@ BEGIN
 
     IDD_TOOLCONSOLEIOPAGE, DIALOG
     BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 226
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 205
+        LEFTMARGIN, 8
+        RIGHTMARGIN, 239
+        TOPMARGIN, 8
+        BOTTOMMARGIN, 234
     END
 END
 #endif    // APSTUDIO_INVOKED

@@ -13,6 +13,10 @@
 
 #include "schemeconfig.h"
 
+#include "include/pcreplus.h"
+#include "outputview.h"
+#include "scilexer.h"
+
 //////////////////////////////////////////////////////////////////////////////
 // CStyleDisplay
 //////////////////////////////////////////////////////////////////////////////
@@ -135,6 +139,52 @@ void CStyleDisplay::UpdateFont()
 	m_Font->CreateFontIndirect(&m_lf);
 
 	Invalidate();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// CCustomREScintilla
+//////////////////////////////////////////////////////////////////////////////
+
+CCustomREScintilla::CCustomREScintilla()
+{
+	m_pRE = NULL;
+}
+
+CCustomREScintilla::~CCustomREScintilla()
+{
+	if(m_pRE)
+	{
+		delete m_pRE;
+	}
+}
+
+void CCustomREScintilla::SetRE(LPCTSTR regex)
+{
+	// First of all build up the regular expression to use.
+	CToolREBuilder builder;
+	m_customre = builder.Build(regex);
+	
+	if(m_pRE)
+	{
+		delete m_pRE;
+	}
+	
+	m_pRE = new PCRE::RegExp(m_customre.c_str());
+	m_pRE->Study();
+
+	// Now turn Scintilla into custom lex mode, first get styles from the output scheme.
+	CScheme* pScheme = CSchemeManager::GetInstance()->SchemeByName("output");
+	if(pScheme && ::IsWindow(m_hWnd))
+	{
+		pScheme->Load( *(static_cast<CScintilla*>(this)) );
+		
+		// Override some nastiness inherited from the default schemes...
+		SPerform(SCI_SETCARETLINEVISIBLE, false);
+		SPerform(SCI_SETEDGEMODE, EDGE_NONE);
+	}
+
+	// Switch to container-based lexing...
+	SetLexer(SCLEX_CONTAINER);
 }
 
 //////////////////////////////////////////////////////////////////////////////

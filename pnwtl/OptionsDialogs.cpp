@@ -137,8 +137,8 @@ LRESULT CInfoLabel::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	return 0;
 }
 
-CToolEditorDialog::CToolEditorDialog(LPCTSTR title) : 
-	CPropertyPageImpl<CToolEditorDialog>(title)
+CToolSettingsPage::CToolSettingsPage(LPCTSTR title) : 
+	CPropertyPageImpl<CToolSettingsPage>(title)
 {
 	m_csName = _T("");
 	m_csCommand = _T("");
@@ -154,7 +154,7 @@ CToolEditorDialog::CToolEditorDialog(LPCTSTR title) :
 
 const LPCTSTR toolvarstrs = _T("%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectPath),Path of Project,c:\\source\\pn2\\,$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\");
 
-LRESULT CToolEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CToolSettingsPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	CenterWindow(GetParent());
 
@@ -178,9 +178,9 @@ LRESULT CToolEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	m_paramHelper.SubclassWindow( GetDlgItem(IDC_OPTHELPER_BUTTON) );
 
 	m_VarList.Attach(GetDlgItem(IDC_VAR_LIST));
-	m_VarList.InsertColumn(0, _T("Text"), LVCFMT_LEFT, 100, -1);
-	m_VarList.InsertColumn(1, _T("Meaning"), LVCFMT_LEFT, 105, -1);
-	m_VarList.InsertColumn(2, _T("Example"), LVCFMT_LEFT, 105, -1);
+	m_VarList.InsertColumn(0, _T("Text"), LVCFMT_LEFT, 105, -1);
+	m_VarList.InsertColumn(1, _T("Meaning"), LVCFMT_LEFT, 115, -1);
+	m_VarList.InsertColumn(2, _T("Example"), LVCFMT_LEFT, 100, -1);
 
 	tstring delimiters = _T(",");
 	tstring varstr = toolvarstrs;
@@ -215,7 +215,7 @@ LRESULT CToolEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	return 0;
 }
 
-BOOL CToolEditorDialog::OnApply()
+BOOL CToolSettingsPage::OnApply()
 {
 	DoDataExchange(TRUE);
 	
@@ -227,7 +227,7 @@ BOOL CToolEditorDialog::OnApply()
 	return TRUE;
 }
 
-LRESULT CToolEditorDialog::OnBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CToolSettingsPage::OnBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {	
 	DoDataExchange(TRUE);
 
@@ -243,7 +243,7 @@ LRESULT CToolEditorDialog::OnBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	return 0;
 }
 
-LRESULT CToolEditorDialog::OnBrowseCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CToolSettingsPage::OnBrowseCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	DoDataExchange(TRUE);
 
@@ -257,20 +257,20 @@ LRESULT CToolEditorDialog::OnBrowseCommand(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	return 0;
 }
 
-LRESULT CToolEditorDialog::OnClearShortcut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CToolSettingsPage::OnClearShortcut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	m_HotKeyCtrl.SetHotKey(0,0);
 
 	return 0;
 }
 
-LRESULT CToolEditorDialog::OnParamHelper(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CToolSettingsPage::OnParamHelper(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 
 	return 0;
 }
 
-void CToolEditorDialog::GetValues(ToolDefinition* pDefinition)
+void CToolSettingsPage::GetValues(ToolDefinition* pDefinition)
 {
 	pDefinition->Name			= m_csName;
 	pDefinition->Command		= m_csCommand;
@@ -283,7 +283,7 @@ void CToolEditorDialog::GetValues(ToolDefinition* pDefinition)
 		m_iSaveStyle;
 }
 
-void CToolEditorDialog::SetValues(ToolDefinition* pDefinition)
+void CToolSettingsPage::SetValues(ToolDefinition* pDefinition)
 {
 	m_csName		= pDefinition->Name.c_str();
 	m_csCommand		= pDefinition->Command.c_str();
@@ -295,7 +295,7 @@ void CToolEditorDialog::SetValues(ToolDefinition* pDefinition)
 	m_iSaveStyle = pDefinition->iFlags & (TOOL_SAVEALL | TOOL_SAVEONE);
 }
 
-void CToolEditorDialog::SetTitle(LPCTSTR title)
+void CToolSettingsPage::SetTitle(LPCTSTR title)
 {
 	m_csDisplayTitle = title;
 }
@@ -305,8 +305,8 @@ void CToolEditorDialog::SetTitle(LPCTSTR title)
 //////////////////////////////////////////////////////////////////////////////
 
 CToolConsoleIOPage::CToolConsoleIOPage(LPCTSTR title) : 
-	CPropertyPageImpl<CToolConsoleIOPage>(title),
-	m_infolabel2(_T("Pattern Symbols:"), IDS_PATTERNFORMATSTRINGS)
+	CPropertyPageImpl<CToolConsoleIOPage>(title)//,
+	//m_infolabel2(_T("Pattern Symbols:"), IDS_PATTERNFORMATSTRINGS)
 {
 	m_csCustomPattern = _T("");
 
@@ -349,7 +349,7 @@ void CToolConsoleIOPage::SetValues(ToolDefinition* pDefinition)
 
 LRESULT CToolConsoleIOPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	m_infolabel2.SubclassWindow(GetDlgItem(IDC_TE_CUSTOMINFO));
+	//m_infolabel2.SubclassWindow(GetDlgItem(IDC_TE_CUSTOMINFO));
 
 	m_outputcombo.Attach(GetDlgItem(IDC_TE_OUTPUTCOMBO));
 	m_outputcombo.AddString(_T("Use the main output window."));
@@ -358,6 +358,19 @@ LRESULT CToolConsoleIOPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 	m_outputcombo.SetCurSel(m_bGlobal ? 0 : 1);
 
 	m_outputcombo.EnableWindow(m_bCapture);
+
+	CRect rcScintilla;
+	::GetWindowRect(GetDlgItem(IDC_PLACEHOLDER), rcScintilla);
+	ScreenToClient(rcScintilla);
+	m_scintilla.Create(m_hWnd, rcScintilla, "Keywords", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_TABSTOP);
+	::SetWindowPos(m_scintilla, GetDlgItem(IDC_PLACEHOLDER), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+	m_scintilla.SetWrapMode(SC_WRAP_WORD);
+	m_scintilla.AssignCmdKey(SCK_HOME, SCI_HOMEDISPLAY);
+	m_scintilla.AssignCmdKey(SCK_END, SCI_LINEENDDISPLAY);
+	
+	// Stop scintilla from capturing the escape and tab keys...
+	m_scintilla.ClearCmdKey(SCK_ESCAPE);
+	m_scintilla.ClearCmdKey(SCK_TAB);
 
 	DoDataExchange();
 
@@ -405,6 +418,9 @@ void CToolConsoleIOPage::enableButtons()
 	BOOL bCustom = customParse.GetCheck();
 	
 	::EnableWindow(GetDlgItem(IDC_TE_CUSTOMTEXT), bCustom && bCapture);
+
+	m_scintilla.EnableWindow( bCustom && bCapture );
+	GetDlgItem( IDC_TE_OUTPUTGROUP ).EnableWindow( bCustom && bCapture );
 }
 
 //////////////////////////////////////////////////////////////////////////////

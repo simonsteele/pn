@@ -11,6 +11,8 @@
 #ifndef optionsdialogs_h__included
 #define optionsdialogs_h__included
 
+#include "optionscontrols.h"
+
 class CInfoLabel : public CWindowImpl<CInfoLabel>
 {
 	public:
@@ -30,17 +32,17 @@ class CInfoLabel : public CWindowImpl<CInfoLabel>
 		tstring m_title;
 };
 
-class CToolEditorDialog : public CPropertyPageImpl<CToolEditorDialog>,
-							public CWinDataExchange<CToolEditorDialog>
+class CToolSettingsPage : public CPropertyPageImpl<CToolSettingsPage>,
+							public CWinDataExchange<CToolSettingsPage>
 {
-	friend class CPropertyPageImpl<CToolEditorDialog>;
+	friend class CPropertyPageImpl<CToolSettingsPage>;
 
 	public:
-		CToolEditorDialog(LPCTSTR title);
+		CToolSettingsPage(LPCTSTR title);
         
 		enum {IDD = IDD_TOOLEDITOR};
 
-		BEGIN_MSG_MAP(CToolEditorDialog)
+		BEGIN_MSG_MAP(CToolSettingsPage)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			COMMAND_ID_HANDLER(IDC_TE_COMMANDBUTTON, OnBrowseCommand)
 			COMMAND_ID_HANDLER(IDC_TE_DIRBUTTON, OnBrowseDir)
@@ -49,7 +51,7 @@ class CToolEditorDialog : public CPropertyPageImpl<CToolEditorDialog>,
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 
-		BEGIN_DDX_MAP(CToolEditorDialog)
+		BEGIN_DDX_MAP(CToolSettingsPage)
 			DDX_TEXT(IDC_TE_NAMEEDIT,		m_csName)
 			DDX_TEXT(IDC_TE_CMDEDIT,		m_csCommand)
 			DDX_TEXT(IDC_TE_FOLDEREDIT,		m_csFolder)
@@ -134,7 +136,7 @@ class CToolConsoleIOPage : public CPropertyPageImpl<CToolConsoleIOPage>,
 		void enableButtons();
 
 	protected:
-		CInfoLabel	m_infolabel2;
+		//CInfoLabel	m_infolabel2;
 		CComboBox	m_outputcombo;
 
 		CString		m_csCustomPattern;
@@ -142,6 +144,8 @@ class CToolConsoleIOPage : public CPropertyPageImpl<CToolConsoleIOPage>,
 		int			m_iBuiltIn;
 		BOOL		m_bClear;
 		bool		m_bGlobal;
+		
+		CScintillaDialogWnd	m_scintilla;
 };
 
 // pre-declare SchemeConfig.

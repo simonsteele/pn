@@ -24,6 +24,12 @@ pn -l 49 -c 14 --scheme cpp test.dat
    that file.
 6) New Find dialog, encompassing Find, Replace and Find in Files.
 7) Find in Files (in case you missed it on the above line)!
+8) Updated Tool configuration dialog.
+9) Close All and Close All Other on tab context menu.
+10) Close All Other Windows in Window menu.
+11) New items on the status bar: Encoding, Line Endings and Insert/Overwrite
+12) Line Endings view toggle on the minibar.
+13) Line Endings and WhiteSpace added to Defaults pane in options.
 
 Bug Fixes:
 ----------

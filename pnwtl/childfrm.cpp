@@ -569,6 +569,18 @@ LRESULT CChildFrame::OnChildSaveModified(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 	}
 }
 
+LRESULT CChildFrame::OnShowTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+{
+	bHandled = TRUE;
+
+	POINT point = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+
+	CSPopupMenu popup(IDR_POPUP_TABS);
+	g_Context.m_frame->TrackPopupMenu(popup, 0, point.x, point.y, NULL, g_Context.m_frame->GetWindow()->m_hWnd);
+
+	return 0;
+}
+
 ////////////////////////////////////////////////////
 // Command Handlers
 
@@ -1390,6 +1402,8 @@ void CChildFrame::UpdateMenu()
 	menu.CheckMenuItem(ID_ENCODING_UTF16LE, e == eUtf16LittleEndian);
 
 	UISetChecked(ID_EDITOR_WORDWRAP, m_view.GetWrapMode() == SC_WRAP_WORD);
+	UISetChecked(ID_EDITOR_EOLCHARS, m_view.GetViewEOL());
+	UISetChecked(ID_EDITOR_WHITESPACE, m_view.GetViewWS() == SCWS_VISIBLEALWAYS);
 	
 	bool bToolsRunning = false;
 	if( ToolOwner::HasInstance() )

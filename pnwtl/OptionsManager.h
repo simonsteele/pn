@@ -72,7 +72,9 @@ class Options
 			ODefaultScintillaCache		= 16,
 			OFindAlphaEnabled			= 17,
 			OFindAlphaPercent			= 18,
-			OPTION_COUNT				= 19
+			OVisibleLineEndings			= 19,
+			OVisibleWhiteSpace			= 20,
+			OPTION_COUNT				= 21
 		} ECachedOption;
 
 		virtual void Set(LPCTSTR subkey, LPCTSTR value, bool bVal) = 0;

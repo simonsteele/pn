@@ -17,6 +17,10 @@
 class SchemeConfig;
 class SchemeConfigParser;
 
+namespace PCRE {
+	class RegExp;
+}
+
 /**
  * @brief Static control to display text styles.
  */
@@ -71,6 +75,24 @@ public:
 	{
 		return DLGC_HASSETSEL | DLGC_WANTARROWS | DLGC_WANTCHARS;
 	}
+};
+
+class CCustomREScintilla : public CScintillaDialogWnd
+{
+public:
+	CCustomREScintilla();
+	~CCustomREScintilla();
+
+	typedef CScintillaDialogWnd baseClass;
+	BEGIN_MSG_MAP(CCustomREScintilla)
+			CHAIN_MSG_MAP(baseClass)
+	END_MSG_MAP()
+
+	void SetRE(LPCTSTR regex);
+
+protected:
+	tstring			m_customre;
+	PCRE::RegExp*	m_pRE;
 };
 
 /**

@@ -2,7 +2,7 @@
  * @file optionspages.h
  * @brief Options Dialog Pages (1) for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2004 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -71,6 +71,8 @@ class COptionsPageEditDefaults : public COptionsPageImpl<COptionsPageEditDefault
 			DDX_CHECK(IDC_OPT_LINENOSCHECK,		m_bLineNos)
 			DDX_CHECK(IDC_OPT_WORDWRAPCHECK,	m_bWrap)
 			DDX_UINT(IDC_OPT_TABWIDTHEDIT,		m_iTabWidth)
+			DDX_CHECK(IDC_OPT_LINEENDINGSCHECK, m_bLineEndings)
+			DDX_CHECK(IDC_OPT_WHITESPACECHECK,	m_bWhiteSpace)
 		END_DDX_MAP()
 
 		virtual void OnOK();
@@ -83,6 +85,8 @@ class COptionsPageEditDefaults : public COptionsPageImpl<COptionsPageEditDefault
 		BOOL			m_bUseTabs;
 		BOOL			m_bLineNos;
 		BOOL			m_bWrap;
+		BOOL			m_bLineEndings;
+		BOOL			m_bWhiteSpace;
 		UINT			m_iTabWidth;
 		EPNSaveFormat	m_SaveFormat;
 		ECodePage		m_CodePage;
@@ -450,6 +454,8 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 		void SetItem();
 
 		SchemeTools* GetTools();
+
+		bool doToolEditDlg(ToolDefinition* in, ToolDefinition* out);
 	
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
