@@ -122,6 +122,7 @@ void SchemeTools::InternalWriteDefinition(ofstream& stream)
 		int flags = 0;
 		flags |= ((*i)->bCaptureOutput ? TOOL_CAPTURE : 0);
 		flags |= ((*i)->bIsFilter ? TOOL_ISFILTER : 0);
+		flags |= ((*i)->bSaveAll ? TOOL_SAVEALL : 0);
 		stream << "\t\t<tool name=\"" << FormatXML((*i)->Name) << "\" ";
 		stream << "command=\"" << FormatXML((*i)->Command) << "\" ";
 		stream << "folder=\"" << FormatXML((*i)->Folder) << "\" ";
@@ -369,6 +370,7 @@ void SchemeToolsManager::processTool(XMLAttributes& atts)
 				int flags = _ttoi(val);
 				pDef->bCaptureOutput = flags & TOOL_CAPTURE;
 				pDef->bIsFilter = (flags & TOOL_ISFILTER) != 0;
+				pDef->bSaveAll = (flags & TOOL_SAVEALL) != 0;
 			}
 		}
 

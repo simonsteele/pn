@@ -17,6 +17,7 @@ typedef std::list<SToolDefinition*> TOOLDEFS_LIST;
 #define TOOLS_BUFFER_SIZE 16384
 #define TOOL_CAPTURE	0x01
 #define TOOL_ISFILTER	0x02
+#define TOOL_SAVEALL	0x04
 
 /**
  * @brief Collection class representing tools associated with one scheme

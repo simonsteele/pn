@@ -15,6 +15,22 @@
 	#pragma once
 #endif
 
+class CMainFrame;
+struct tagEnumChildrenStruct;
+
+typedef void(__stdcall CMainFrame::*lpChildEnumFn)(CChildFrame* pFrame, tagEnumChildrenStruct* pStruct);
+
+typedef struct tagEnumChildrenStruct
+{
+	CMainFrame* pMainFrame;
+	lpChildEnumFn pFunction;
+} SChildEnumStruct;
+
+typedef struct tagCloseStruct : public tagEnumChildrenStruct
+{
+	bool	bCanClose;
+} SCloseStruct;
+
 /**
  * @class CMainFrame
  * @brief PN (WTL Edition) Main MDI Frame
@@ -50,6 +66,7 @@ public:
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
 		COMMAND_ID_HANDLER(ID_FILE_OPEN, OnFileOpen)
+		COMMAND_ID_HANDLER(ID_FILE_SAVEALL, OnFileSaveAll)
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR_EDIT, OnViewEditBar)
 		COMMAND_ID_HANDLER(ID_VIEW_STATUS_BAR, OnViewStatusBar)
@@ -101,6 +118,7 @@ public:
 
 	LRESULT OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFileSaveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	// View
@@ -129,8 +147,11 @@ public:
 
 	void UpdateStatusBar();
 
-	static BOOL CALLBACK CloseChildEnumProc(HWND hWnd, LPARAM lParam);
-	static BOOL CALLBACK OptionsUpdatedChildEnumProc(HWND hWnd, LPARAM lParam);
+	static BOOL CALLBACK ChildEnumProc(HWND hWnd, LPARAM lParam);
+
+	void __stdcall ChildCloseNotify(CChildFrame* pChild, SChildEnumStruct* pES);
+	void __stdcall ChildOptionsUpdateNotify(CChildFrame* pChild, SChildEnumStruct* pES);
+	void __stdcall ChildSaveNotify(CChildFrame* pChild, SChildEnumStruct* pES);
 
 	////////////////////////////////////////////////////////////////
 	// IMainFrame Implementation
@@ -141,6 +162,7 @@ public:
 	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme);
 	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL);
 	virtual void SetStatusText(LPCTSTR text);
+	virtual void SaveAll();
 
 protected:
 	void AddNewMenu(CSMenuHandle& menu);
@@ -149,6 +171,9 @@ protected:
 	void MoveMRU(CSMenuHandle& r, CSMenuHandle& a);
 	void MoveNewMenu(CSMenuHandle& remove, CSMenuHandle& add);
 	void MoveLanguage(CSMenuHandle& remove, CSMenuHandle& add);
+
+	void PerformChildEnum(SChildEnumStruct* s);
+	void PerformChildEnum(lpChildEnumFn pFunction);
 
 protected:
 	CFindDlg*				m_FindDialog;

@@ -2,7 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by pn.rc
 //
-#define ID_DUMMY_VC_IS_RUBBISH          0
 #define IDC_REPLACE_BUTTON              4
 #define IDR_TBR_EDIT                    5
 #define IDC_REPLACEALL_BUTTON           6
@@ -137,6 +136,8 @@
 #define IDC_OPT_INDENTGUIDESCHECK       1048
 #define IDC_TE_FILTERCHECK              1048
 #define IDC_OPT_USETABSCHECK            1049
+#define IDC_CHECK1                      1051
+#define IDC_TE_SAVEALLCHECK             1052
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_PNSAVE_TYPECOMBO            1057
 #define IDC_MARKALL_BUTTON              21199
@@ -179,6 +180,7 @@
 #define ID_EDIT_DELETE                  32862
 #define ID_EDIT_INDENT                  32863
 #define ID_EDIT_UNINDENT                32864
+#define ID_FILE_SAVEALL                 32865
 #define IDC_FINDTEXT_LABEL              65535
 
 // Next default values for new objects
@@ -186,8 +188,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        262
-#define _APS_NEXT_COMMAND_VALUE         32796
-#define _APS_NEXT_CONTROL_VALUE         1051
+#define _APS_NEXT_COMMAND_VALUE         32866
+#define _APS_NEXT_CONTROL_VALUE         1053
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

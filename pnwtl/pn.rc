@@ -115,6 +115,7 @@ BEGIN
         MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
         MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
         MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
+        MENUITEM "Save All",                    ID_FILE_SAVEALL
         MENUITEM SEPARATOR
         MENUITEM "&Close\tCtrl+F4",             ID_FILE_CLOSE
         MENUITEM SEPARATOR
@@ -782,7 +783,7 @@ BEGIN
     ICON            IDR_MDICHILD,IDC_STATIC,6,6,20,20
 END
 
-IDD_TOOLEDITOR DIALOGEX 0, 0, 286, 162
+IDD_TOOLEDITOR DIALOGEX 0, 0, 286, 174
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Tool Editor"
@@ -804,12 +805,14 @@ BEGIN
     RTEXT           "Folder:",IDC_STATIC,6,42,42,12
     RTEXT           "Parameters:",IDC_STATIC,6,60,42,8
     RTEXT           "Shortcut:",IDC_STATIC,6,78,42,12
-    LTEXT           "Static",IDC_TE_INFOLABEL,6,114,276,42
+    LTEXT           "Static",IDC_TE_INFOLABEL,6,126,276,42
     CONTROL         "Capture output?",IDC_TE_CAPTURECHECK,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,6,96,84,12
     CONTROL         "This tool will modify the current file.",
                     IDC_TE_FILTERCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
                     90,96,150,12
+    CONTROL         "Save all before running this tool?",IDC_TE_SAVEALLCHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,111,126,12
 END
 
 IDD_PAGE_GENERAL DIALOGEX 0, 0, 299, 168
@@ -901,7 +904,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 279
         TOPMARGIN, 7
-        BOTTOMMARGIN, 155
+        BOTTOMMARGIN, 167
     END
 
     IDD_PAGE_GENERAL, DIALOG

@@ -942,7 +942,8 @@ LRESULT COptionsPageTools::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	m_list.SetExtendedListViewStyle( m_list.GetExtendedListViewStyle() | LVS_EX_FULLROWSELECT );
 	m_list.GetClientRect(rc);
 	m_list.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 130, 0);
-	m_list.InsertColumn(1, _T("Command"), LVCFMT_LEFT, rc.Width() - 130 - 20, 0);
+	m_list.InsertColumn(1, _T("Command"), LVCFMT_LEFT, rc.Width() - 130 - 100 - 20, 0);
+	m_list.InsertColumn(2, _T("Params"), LVCFMT_LEFT, 100, 0);
 
 	m_btnMoveUp.SetDirection(CArrowButton::abdUp);
 	m_btnMoveUp.SubclassWindow(GetDlgItem(IDC_TOOLS_MOVEUPBUTTON));
@@ -1062,6 +1063,9 @@ void COptionsPageTools::AddDefinition(SToolDefinition* pDef)
 	lvi.iSubItem = 1;
 	lvi.pszText = const_cast<LPTSTR>( pDef->Command.c_str() );
 	m_list.SetItem(&lvi);
+	lvi.iSubItem = 2;
+	lvi.pszText = const_cast<LPTSTR>( pDef->Params.c_str() );
+	m_list.SetItem(&lvi);
 }
 
 LRESULT COptionsPageTools::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -1108,6 +1112,10 @@ LRESULT COptionsPageTools::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 
 				lvi.iSubItem = 1;
 				lvi.pszText = const_cast<LPTSTR>( pDef->Command.c_str() );
+				m_list.SetItem(&lvi);
+
+				lvi.iSubItem = 2;
+				lvi.pszText = const_cast<LPTSTR>( pDef->Params.c_str() );
 				m_list.SetItem(&lvi);
 			}
 		}
@@ -1364,6 +1372,7 @@ void CToolEditorDialog::GetValues(SToolDefinition* pDefinition)
 	pDefinition->Shortcut		= m_csShortcut;
 	pDefinition->bCaptureOutput = m_bCapture != 0;
 	pDefinition->bIsFilter		= m_bFilter != 0;
+	pDefinition->bSaveAll		= m_bSaveAll != 0;
 }
 
 void CToolEditorDialog::SetValues(SToolDefinition* pDefinition)
@@ -1375,6 +1384,7 @@ void CToolEditorDialog::SetValues(SToolDefinition* pDefinition)
 	m_csShortcut	= pDefinition->Shortcut.c_str();
 	m_bCapture		= pDefinition->bCaptureOutput;
 	m_bFilter		= pDefinition->bIsFilter;
+	m_bSaveAll		= pDefinition->bSaveAll;
 }
 
 void CToolEditorDialog::SetTitle(LPCTSTR title)

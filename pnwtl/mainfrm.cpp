@@ -95,6 +95,24 @@ void CMainFrame::UpdateStatusBar()
 	*/
 }
 
+void __stdcall CMainFrame::ChildCloseNotify(CChildFrame* pChild, SChildEnumStruct* pES)
+{
+	SCloseStruct* s = static_cast<SCloseStruct*>(pES);
+
+	if(!pChild->CanClose())
+		s->bCanClose = false;
+}
+
+void CMainFrame::ChildOptionsUpdateNotify(CChildFrame* pChild, SChildEnumStruct* pES)
+{
+	pChild->SendMessage(PN_OPTIONSUPDATED);
+}
+
+void CMainFrame::ChildSaveNotify(CChildFrame* pChild, SChildEnumStruct* pES)
+{
+	pChild->Save();
+}
+
 void CMainFrame::OnSchemeNew(LPVOID data)
 {	
 	CChildFrame* pChild = NewEditor();
@@ -181,11 +199,11 @@ LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 {
 	// Check that all of the child windows are ready to close...
 	SCloseStruct s;
-	s.pMainFrm = (void*)this;
+	s.pFunction = ChildCloseNotify; 
 	s.bCanClose = true;
 
-	EnumChildWindows(m_hWndMDIClient, CloseChildEnumProc, (long)&s);
-
+	PerformChildEnum(&s);
+	
 	if(s.bCanClose)
 		bHandled = FALSE;
 	
@@ -399,6 +417,12 @@ LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	return 0;
 }
 
+LRESULT CMainFrame::OnFileSaveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	SaveAll();
+	return 0;
+}
+
 LRESULT CMainFrame::OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	LPCTSTR filename = m_RecentFiles.GetEntry(wID - ID_MRUFILE_BASE);
@@ -515,8 +539,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 
 		CSchemeManager::GetInstance()->Compile();
 
-		//PN_OPTIONSUPDATED
-		EnumChildWindows(m_hWndMDIClient, OptionsUpdatedChildEnumProc, 0);
+		PerformChildEnum(ChildOptionsUpdateNotify);
 	}
 
 	return 0;
@@ -639,6 +662,18 @@ void CMainFrame::MoveLanguage(CSMenuHandle& remove, CSMenuHandle& add)
 		AddLanguageMenu(add);
 }
 
+void CMainFrame::PerformChildEnum(SChildEnumStruct* s)
+{
+	s->pMainFrame = this;
+	EnumChildWindows(m_hWndMDIClient, ChildEnumProc, reinterpret_cast<LPARAM>(s));
+}
+
+void CMainFrame::PerformChildEnum(lpChildEnumFn pFunction)
+{
+	SChildEnumStruct s = {this, pFunction};
+	EnumChildWindows(m_hWndMDIClient, ChildEnumProc, reinterpret_cast<LPARAM>(&s));
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // IMainFrame implementation...
 
@@ -681,32 +716,23 @@ void CMainFrame::SetStatusText(LPCTSTR text)
 		}
 }
 
-BOOL CALLBACK CMainFrame::CloseChildEnumProc(HWND hWnd, LPARAM lParam)
+void CMainFrame::SaveAll()
+{
+	PerformChildEnum(ChildSaveNotify);
+}
+
+BOOL CALLBACK CMainFrame::ChildEnumProc(HWND hWnd, LPARAM lParam)
 {
 	if(::GetWindow(hWnd, GW_OWNER))
 		return TRUE;
 
-	//if(GetParent(hWnd) == pMF->m_hWndMDIClient) <-- Alternative check...
 	CChildFrame* pChild = CChildFrame::FromHandle(hWnd);
 	if(pChild != NULL)
 	{
-		SCloseStruct* s = reinterpret_cast<SCloseStruct*>(lParam);
-
-		if(!pChild->CanClose())
-			s->bCanClose = false;
+		SChildEnumStruct* s = reinterpret_cast<SChildEnumStruct*>(lParam);
+		lpChildEnumFn fn = s->pFunction;
+		(s->pMainFrame->*fn)(pChild, s);
 	}
-	
-	return TRUE;
-}
-
-BOOL CALLBACK CMainFrame::OptionsUpdatedChildEnumProc(HWND hWnd, LPARAM lParam)
-{
-	if(::GetWindow(hWnd, GW_OWNER))
-		return TRUE;
-
-	CChildFrame* pChild = CChildFrame::FromHandle(hWnd);
-	if(pChild)
-		pChild->SendMessage(PN_OPTIONSUPDATED);
 
 	return TRUE;
 }

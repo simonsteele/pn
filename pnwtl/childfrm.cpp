@@ -874,10 +874,16 @@ void CChildFrame::OnRunTool(LPVOID pVoid)
 {
 	SToolDefinition* pTool = reinterpret_cast<SToolDefinition*>(pVoid);
 	ToolRunner *r = new ToolRunner(this, pTool);
+	
 	bool bThreaded = r->GetThreadedExecution();
 	if(bThreaded)
 		AddRunningTool(r);
+	
+	if(pTool->bSaveAll)
+		g_Context.m_frame->SaveAll();
+
 	r->Execute();
+	
 	if(!bThreaded)
 	{
 		if(pTool->bIsFilter)

@@ -242,9 +242,6 @@
 				RelativePath=".\aboutdlg.h">
 			</File>
 			<File
-				RelativePath=".\callback.h">
-			</File>
-			<File
 				RelativePath=".\finddlg.h">
 			</File>
 			<File

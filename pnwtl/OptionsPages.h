@@ -363,9 +363,7 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 			DDX_TEXT(IDC_TE_SHORTCUTEDIT,	m_csShortcut)
 			DDX_CHECK(IDC_TE_CAPTURECHECK,	m_bCapture)
 			DDX_CHECK(IDC_TE_FILTERCHECK,	m_bFilter)
-			
-			//DDX_CHECK(IDC_MATCHCASE_CHECK, m_bMatchCase)
-			//DDX_RADIO(IDC_UP_RADIO, m_Direction)
+			DDX_CHECK(IDC_TE_SAVEALLCHECK,	m_bSaveAll)
 		END_DDX_MAP()
 
 		CString m_csDisplayTitle;
@@ -392,7 +390,6 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 
 				CFont*	m_pTitleFont;
 				TCHAR	strbuf[200];
-				//CFont*	m_pBodyFont;
 		};
 
 	protected:
@@ -411,6 +408,7 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 
 		BOOL	m_bCapture;
 		BOOL	m_bFilter;
+		BOOL	m_bSaveAll;
 
 		CInfoLabel m_infolabel;
 };
