@@ -4,7 +4,6 @@
 //
 #define IDC_REPLACE_BUTTON              4
 #define IDR_TBR_EDIT                    5
-#define IDI_TEXTCLIPS                   5
 #define IDC_REPLACEALL_BUTTON           6
 #define IDC_REPLACEINSEL_BUTTON         7
 #define IDD_ABOUTBOX                    100
@@ -28,6 +27,7 @@
 #define IDS_ABOUTVERSIONSTRING          133
 #define IDS_TOOLFORMATSTRINGS           134
 #define IDS_PATTERNFORMATSTRINGS        135
+#define IDI_TEXTCLIPS                   167
 #define IDD_FIND                        168
 #define IDR_TABS_POPUP                  169
 #define IDR_POPUP_REGEXP                170

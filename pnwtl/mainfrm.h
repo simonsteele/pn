@@ -74,6 +74,7 @@ public:
 		SCHEME_COMBO_SIZE = 24, /* characters */
 		FIND_COMBO_SIZE = 30,
 		TOOLBAR_COMBO_DROPLINES = 16,
+		REBAR_SAVESTATE_VERSION = 0
 	};
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg);

@@ -14,6 +14,7 @@
 namespace TextClips {
 	class Clip;
 	class TextClipsManager;
+	class TextClipSet;
 }
 
 class CClipsDocker : public CPNDockingWindow<CClipsDocker>
@@ -36,6 +37,7 @@ public:
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_CTLCOLORLISTBOX , OnCtlColor)
 		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHide)
+		COMMAND_HANDLER(IDC_CLIPSLIST, CBN_SELCHANGE, OnComboSelChange)
 		NOTIFY_HANDLER(IDC_CLIPSLIST, NM_DBLCLK, OnClipSelected);
 		REFLECT_NOTIFICATIONS()
 		CHAIN_MSG_MAP(baseClass)
@@ -46,10 +48,13 @@ protected:
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	
+	LRESULT OnComboSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnClipSelected(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	void AddClip(TextClips::Clip* tc);
+	void LoadSet(TextClips::TextClipSet* set);
 
 	CListViewCtrl	m_view;
 	CComboBox		m_combo;

@@ -1158,7 +1158,7 @@ void CMainFrame::InitGUIState()
 	statekey += PNSK_DEFGUI;
 
 	m_GUIState.Initialize(statekey.c_str(), m_hWnd/*, SW_SHOWMAXIMIZED*/);
-	m_GUIState.Add(sstate::CRebarStateAdapter(m_hWndToolBar));
+	m_GUIState.Add(sstate::CRebarStateAdapter(m_hWndToolBar, REBAR_SAVESTATE_VERSION));
 	m_GUIState.Add(dockers);
 
 	LoadGUIState();

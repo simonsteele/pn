@@ -40,7 +40,8 @@ LRESULT CClipsDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	HFONT hOldFont = static_cast<HFONT>( ::SelectObject(hdc, hFont) );
 	
 	GetTextMetrics(hdc, &tm);
-	//::SelectObject(hdc, hOldFont);
+	::SelectObject(hdc, hOldFont);
+	
 	int fontHeight = tm.tmHeight;
 	m_comboHeight = MulDiv(12, fontHeight, 8); // 12 dialog units - default height.
 	
@@ -56,26 +57,21 @@ LRESULT CClipsDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	m_combo.Create(m_hWnd, rcCombo, _T("ClipsCombo"), WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_TABSTOP | CBS_DROPDOWNLIST);
 	m_combo.SetFont( static_cast<HFONT> (GetStockObject( DEFAULT_GUI_FONT )) );
 	
-	for(TextClips::LIST_CLIPSETS::const_iterator i = m_pTheClips->GetClipSets().begin();
-		i != m_pTheClips->GetClipSets().end();
-		++i)
-	{
-		m_combo.InsertString(m_combo.GetCount(), (*i)->GetName());
-	}
+	// Fill the combo box.
 
-	m_combo.InsertString(0, "test 1");
-	m_combo.InsertString(0, "test 2");
-	m_combo.InsertString(0, "test 3");
-	m_combo.InsertString(0, "test 4");
-
-	const TextClips::LIST_CLIPS& clips = (*m_pTheClips->GetClipSets().begin())->GetClips();
+	const TextClips::LIST_CLIPSETS& sets = m_pTheClips->GetClipSets();
 	
 	int index;
-	for(TextClips::LIST_CLIPS::const_iterator i = clips.begin(); i != clips.end(); ++i)
+	for(TextClips::LIST_CLIPSETS::const_iterator i = sets.begin();
+		i != sets.end();
+		++i)
 	{
-		index = m_view.InsertItem(m_view.GetItemCount(), (*i)->Name.c_str());
-		m_view.SetItemData(index, reinterpret_cast<DWORD_PTR>( (*i) ));
+		index = m_combo.InsertString(m_combo.GetCount(), (*i)->GetName());
+		m_combo.SetItemDataPtr(index, *i);
 	}
+
+	if( sets.size() > 0 )
+		LoadSet(*sets.begin());
 
 	return 0;
 }
@@ -115,11 +111,28 @@ LRESULT CClipsDocker::OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 	return 0;
 }
 
+LRESULT CClipsDocker::OnComboSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int index = m_combo.GetCurSel();
+	TextClips::TextClipSet* pSet = reinterpret_cast<TextClips::TextClipSet*>( 
+		m_combo.GetItemDataPtr(index) );
+
+	if( pSet != NULL )
+	{
+		LoadSet(pSet);
+	}
+
+	return 0;
+}
+
 /**
  * Insert a selected clip into the current text
  */
 LRESULT CClipsDocker::OnClipSelected(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
+	if( ((LPNMITEMACTIVATE)pnmh)->iItem == -1 )
+		return 0;
+
 	TextClips::Clip* clip = reinterpret_cast<TextClips::Clip*>( m_view.GetItemData(((LPNMITEMACTIVATE)pnmh)->iItem));
 	
 	CChildFrame* pChild = CChildFrame::FromHandle( GetCurrentEditor() );
@@ -149,7 +162,17 @@ LRESULT CClipsDocker::OnClipSelected(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 	return 0;
 }
 
-void CClipsDocker::AddClip(TextClips::Clip* tc)
+void CClipsDocker::LoadSet(TextClips::TextClipSet* set)
+{
+	const TextClips::LIST_CLIPS& clips = set->GetClips();
+		
+	for(TextClips::LIST_CLIPS::const_iterator i = clips.begin(); i != clips.end(); ++i)
+	{
+		AddClip(*i);
+	}
+}
+
+inline void CClipsDocker::AddClip(TextClips::Clip* tc)
 {
 	int iIndex = m_view.InsertItem(m_view.GetItemCount(), tc->Name.c_str());
 	m_view.SetItemData(iIndex, reinterpret_cast<DWORD_PTR>(tc));

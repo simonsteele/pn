@@ -22,6 +22,7 @@ const	TCHAR ctxtPlacement[]	=_T("placement");
 const	TCHAR ctxtMainWindow[]	=_T("Main Window");
 const	TCHAR ctxtVisible[]		=_T("visible");
 const	TCHAR ctxtBand[]		=_T("band");
+const	TCHAR ctxtStoreVer[]	=_T("version");
 
 typedef std::basic_string<TCHAR> tstring;
 typedef unsigned long ID;
@@ -572,8 +573,8 @@ protected:
 	class CImpl : public CStateBase<IState>	
 	{
 	public:
-		CImpl(HWND hWnd)
-			:m_rebar(hWnd)
+		CImpl(HWND hWnd, int storeVersion)
+			:m_rebar(hWnd), m_storageVersion(storeVersion)
 		{
 			assert(::IsWindow(hWnd));
 		}
@@ -581,6 +582,8 @@ protected:
 		virtual bool Store(IMainState* /*pMState*/,CRegKey& key)
 		{
 			assert(m_rebar.IsWindow());
+			::RegSetValueEx(key,ctxtStoreVer, NULL, REG_DWORD, (LPBYTE)&m_storageVersion, sizeof(DWORD));
+			
 			unsigned int bandCount=m_rebar.GetBandCount();
 			for(unsigned int i=0;i<bandCount;i++)
 			{
@@ -609,6 +612,25 @@ protected:
 		
 		virtual bool Restore(IMainState* /*pMState*/,CRegKey& key)
 		{
+			DWORD dwType;
+			DWORD dwVal;
+			DWORD cbData = sizeof(DWORD);
+
+			if( ::RegQueryValueEx(key, ctxtStoreVer, NULL, &dwType,
+				(LPBYTE)&dwVal, &cbData) == ERROR_SUCCESS && (dwType == REG_DWORD) )
+			{
+				// If the versions aren't the same, then we don't bother to
+				// restore - we'll probably brake the ReBars by doing so.
+				if( dwVal != m_storageVersion )
+					return false;
+			}
+			else
+			{
+				// If we couldn't query that key, then we never wrote a version
+				// number before, so it must be an old version.
+				return false;
+			}
+
 			unsigned int bandCount=m_rebar.GetBandCount();
 			for(unsigned int i=0;i<bandCount;i++)
 			{
@@ -617,8 +639,8 @@ protected:
 				CRegKey keyBand;
 				REBARBANDINFO rbi;
 				//ZeroMemory(&rbi,sizeof(REBARBANDINFO));
-				DWORD dwType;
-				DWORD cbData=sizeof(REBARBANDINFO);
+				
+				cbData=sizeof(REBARBANDINFO);
 	            if((::RegQueryValueEx(key,sstrKey.str().c_str(),NULL,&dwType,
 							reinterpret_cast<LPBYTE>(&rbi),&cbData)==ERROR_SUCCESS)
 							&&(dwType==REG_BINARY))
@@ -635,12 +657,13 @@ protected:
 			return true;
 		}
 	protected:
-		CReBarCtrl m_rebar;
+		CReBarCtrl	m_rebar;
+		int			m_storageVersion;
 	};
 public:
-    CRebarStateAdapter(HWND hWnd)
+    CRebarStateAdapter(HWND hWnd, int storeVersion = 0)
     {
-		m_pImpl = new CImpl(hWnd);
+		m_pImpl = new CImpl(hWnd, storeVersion);
     }
 	~CRebarStateAdapter()
 	{
