@@ -170,8 +170,6 @@ public:
 	{
 		m_Direction = 1;
 
-		DoDataExchange(FALSE);
-
 		CRect rc;
 		::GetWindowRect(GetDlgItem(IDC_FINDTEXT_DUMMY), rc);
 		ScreenToClient(rc);
