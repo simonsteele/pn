@@ -21,7 +21,7 @@
 
 CAppModule _Module;
 
-__declspec( thread ) _Context g_Context = {0};
+/*__declspec( thread )*/ _Context g_Context = {0};
 
 void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message)
 {

@@ -484,11 +484,11 @@ LRESULT CTabPageStyles::OnFontChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	return 0;
 }
 
-LRESULT CTabPageStyles::OnSizeChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CTabPageStyles::OnSizeChanged(WORD wNotifyCode, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(m_pStyle)
 	{
-		int i = m_SizeCombo.GetSelection();//GetDlgItemInt(IDC_STYLE_SIZECOMBO);
+		int i = m_SizeCombo.GetSelection((wNotifyCode != CBN_SELCHANGE));//GetDlgItemInt(IDC_STYLE_SIZECOMBO);
 		m_sd.SetSize(i);
 		m_Style.FontSize = i;
 	}

@@ -1,6 +1,16 @@
 | Working towards 0.5 :: Mingus
 ---------------------------------------
 
+Since 05/12/03:
+
+Fixed size combo box on styles tab.
+Fixed rebar to not use single-click auto-size. Double-click now auto-sizes.
+Fixed revert to scroll to the selected line properly.
+Fixed revert to invalidate the window to avoid drawing problems (hopefully).
+Fixed tool runner to wait for non-captured processes when "modifies file" is set.
+Patched scintilla to fix the wrong line-endings paste issue.
+Fixed 0-length regex replace bug.
+
 Since 20/11/03:
 
 Moved New Files options page to Files|New Files.

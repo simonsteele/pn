@@ -836,7 +836,8 @@ LRESULT CChildFrame::OnRunTool(LPVOID pTool)
 	}
 	else
 	{
-		EnsureOutputWindow();
+		if(pToolDef->CaptureOutput())
+			EnsureOutputWindow();
 		pWrapper = new ChildOutputWrapper(this, m_pOutputView, this, *pToolDef);
 	}
 

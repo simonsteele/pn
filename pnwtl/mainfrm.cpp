@@ -520,6 +520,116 @@ HWND CMainFrame::CreateSchemeToolbar()
 	return hWnd;
 }
 
+/**
+ * This function is mostly identical to the one in WTL but allows the optional
+ * use of chevrons.
+ */
+static BOOL AddReBarBandCtrl(HWND hWndReBar, HWND hWndBand, int nID = 0, LPTSTR lpstrTitle = NULL, BOOL bNewRow = FALSE, int cxWidth = 0, BOOL bFullWidthAlways = FALSE, bool bUseChevrons = false)
+{
+	ATLASSERT(::IsWindow(hWndReBar));	// must be already created
+#ifdef _DEBUG
+	// block - check if this is really a rebar
+	{
+		TCHAR lpszClassName[sizeof(REBARCLASSNAME)];
+		::GetClassName(hWndReBar, lpszClassName, sizeof(REBARCLASSNAME));
+		ATLASSERT(lstrcmp(lpszClassName, REBARCLASSNAME) == 0);
+	}
+#endif //_DEBUG
+	ATLASSERT(::IsWindow(hWndBand));	// must be already created
+
+	// Get number of buttons on the toolbar
+	int nBtnCount = (int)::SendMessage(hWndBand, TB_BUTTONCOUNT, 0, 0L);
+
+	// Set band info structure
+	REBARBANDINFO rbBand;
+	rbBand.cbSize = sizeof(REBARBANDINFO);
+#if (_WIN32_IE >= 0x0400)
+	rbBand.fMask = RBBIM_CHILD | RBBIM_CHILDSIZE | RBBIM_STYLE | RBBIM_ID | RBBIM_SIZE | RBBIM_IDEALSIZE;
+#else
+	rbBand.fMask = RBBIM_CHILD | RBBIM_CHILDSIZE | RBBIM_STYLE | RBBIM_ID | RBBIM_SIZE;
+#endif //!(_WIN32_IE >= 0x0400)
+	if(lpstrTitle != NULL)
+		rbBand.fMask |= RBBIM_TEXT;
+	rbBand.fStyle = RBBS_CHILDEDGE;
+#if (_WIN32_IE >= 0x0500)
+	if(nBtnCount > 0 && bUseChevrons)	// add chevron style for toolbar with buttons
+		rbBand.fStyle |= RBBS_USECHEVRON;
+#endif //(_WIN32_IE >= 0x0500)
+	if(bNewRow)
+		rbBand.fStyle |= RBBS_BREAK;
+
+	rbBand.lpText = lpstrTitle;
+	rbBand.hwndChild = hWndBand;
+	if(nID == 0)	// calc band ID
+		nID = ATL_IDW_BAND_FIRST + (int)::SendMessage(hWndReBar, RB_GETBANDCOUNT, 0, 0L);
+	rbBand.wID = nID;
+
+	// Calculate the size of the band
+	BOOL bRet;
+	RECT rcTmp;
+	if(nBtnCount > 0)
+	{
+		bRet = (BOOL)::SendMessage(hWndBand, TB_GETITEMRECT, nBtnCount - 1, (LPARAM)&rcTmp);
+		ATLASSERT(bRet);
+		rbBand.cx = (cxWidth != 0) ? cxWidth : rcTmp.right;
+		rbBand.cyMinChild = rcTmp.bottom - rcTmp.top;
+		if(bFullWidthAlways)
+		{
+			rbBand.cxMinChild = rbBand.cx;
+		}
+		else if(lpstrTitle == 0)
+		{
+			bRet = (BOOL)::SendMessage(hWndBand, TB_GETITEMRECT, 0, (LPARAM)&rcTmp);
+			ATLASSERT(bRet);
+			rbBand.cxMinChild = rcTmp.right;
+		}
+		else
+		{
+			rbBand.cxMinChild = 0;
+		}
+	}
+	else	// no buttons, either not a toolbar or really has no buttons
+	{
+		bRet = ::GetWindowRect(hWndBand, &rcTmp);
+		ATLASSERT(bRet);
+		rbBand.cx = (cxWidth != 0) ? cxWidth : (rcTmp.right - rcTmp.left);
+		rbBand.cxMinChild = bFullWidthAlways ? rbBand.cx : 0;
+		rbBand.cyMinChild = rcTmp.bottom - rcTmp.top;
+	}
+
+#if (_WIN32_IE >= 0x0400)
+	rbBand.cxIdeal = rbBand.cx;
+#endif //(_WIN32_IE >= 0x0400)
+
+	// Add the band
+	LRESULT lRes = ::SendMessage(hWndReBar, RB_INSERTBAND, (WPARAM)-1, (LPARAM)&rbBand);
+	if(lRes == 0)
+	{
+		ATLTRACE2(atlTraceUI, 0, _T("Failed to add a band to the rebar.\n"));
+		return FALSE;
+	}
+
+#if (_WIN32_IE >= 0x0501)
+	if(bUseChevrons)
+	{
+		DWORD dwExStyle = (DWORD)::SendMessage(hWndBand, TB_GETEXTENDEDSTYLE, 0, 0L);
+		::SendMessage(hWndBand, TB_SETEXTENDEDSTYLE, 0, dwExStyle | TBSTYLE_EX_HIDECLIPPEDBUTTONS);
+	}
+#endif //(_WIN32_IE >= 0x0501)
+
+	return TRUE;
+}
+
+BOOL CMainFrame::AddReBarBand(HWND hWndBand, LPTSTR lpstrTitle, BOOL bNewRow, bool bUseChevrons, int cxWidth, BOOL bFullWidthAlways)
+{
+	ATLASSERT(::IsWindow(m_hWndToolBar));	// must be an existing rebar
+	ATLASSERT(::IsWindow(hWndBand));	// must be created
+	return AddReBarBandCtrl(m_hWndToolBar, hWndBand, 0, lpstrTitle, bNewRow, cxWidth, bFullWidthAlways, bUseChevrons);
+}
+
+#define PN_REBAR_STYLE \
+	(WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | RBS_VARHEIGHT | RBS_BANDBORDERS | RBS_AUTOSIZE | CCS_NODIVIDER | RBS_DBLCLKTOGGLE)
+
 LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	// create command bar window
@@ -538,12 +648,12 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	HWND hWndSchemeToolBar = CreateSchemeToolbar();
 	HWND hWndFindToolBar = CreateFindToolbar();
 
-	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
-	AddSimpleReBarBand(hWndCmdBar);
-	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
-	AddSimpleReBarBand(hWndEdtToolBar, NULL, FALSE);
-	AddSimpleReBarBand(hWndSchemeToolBar, NULL, FALSE);
-	AddSimpleReBarBand(hWndFindToolBar, NULL, FALSE);
+	CreateSimpleReBar(PN_REBAR_STYLE);
+	AddReBarBand(hWndCmdBar, NULL, FALSE, true);
+	AddReBarBand(hWndToolBar, NULL, TRUE, true);
+	AddReBarBand(hWndEdtToolBar, NULL, FALSE, true);
+	AddReBarBand(hWndSchemeToolBar, NULL, FALSE, true);
+	AddReBarBand(hWndFindToolBar, NULL, FALSE, true);
 	SizeSimpleReBarBands();
 	
 	CreateSimpleStatusBar(_T(""));

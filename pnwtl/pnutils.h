@@ -500,14 +500,17 @@ class CNumberCombo : public CComboBox
 				SetCurSel(InternalAdd(n, buf, GetInsertPos(n)));
 		}
 
-		int GetSelection()
+		int GetSelection(bool bTryWindowText = true)
 		{
-			CWindowText wt(m_hWnd);
-			if(_tcslen((LPCTSTR)wt) > 0)
+			if(bTryWindowText)
 			{
-				int size = _ttol((LPCTSTR)wt);
-				if( size != 0 )
-					return size;
+				CWindowText wt(m_hWnd);
+				if(_tcslen((LPCTSTR)wt) > 0)
+				{
+					int size = _ttol((LPCTSTR)wt);
+					if( size != 0 )
+						return size;
+				}
 			}
 			
 			// fallback to the last proper selection.

@@ -52,7 +52,7 @@ struct _Context
 	MultipleInstanceManager *m_miManager;
 };
 
-extern __declspec( thread ) _Context g_Context;
+extern /*__declspec( thread )*/ _Context g_Context;
 
 HWND GetCurrentEditor();
 void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message);

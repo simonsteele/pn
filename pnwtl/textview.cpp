@@ -231,12 +231,22 @@ bool CTextView::Load(LPCTSTR filename, CScheme* pScheme)
 void CTextView::Revert(LPCTSTR filename)
 {
 	int lastPos = GetCurrentPos();
+	int scrollPos = DocLineFromVisible( GetFirstVisibleLine() );
 
 	if( OpenFile(filename) )
 	{
 		if( GetLength() >= lastPos )
 		{
+			// Make sure the line is in view.
+			int selLine = LineFromPosition( lastPos );
+			EnsureVisibleEnforcePolicy( selLine );
+			
 			SetSel(lastPos, lastPos);
+
+            int curTop = GetFirstVisibleLine();
+			int lineTop = VisibleFromDocLine( scrollPos );
+			LineScroll(0, lineTop - curTop);
+			Invalidate();
 		}
 	}
 }

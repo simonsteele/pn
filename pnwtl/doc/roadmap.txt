@@ -4,13 +4,13 @@ PN is attempting to keep to a minimum of one release every two months.
 The planned feature-implementation schedule can be seen below. This will
 be modified as and when I see fit - so don't bet money on it or anything.
 
-last updated: 03/12/2003
+last updated: 07/12/2003
 
 0.5 Mingus
 ==========
 
 Start help file.
-Pre-defined tools support.
+[Implemented] Pre-defined tools support.
 [Implemented] Menu to choose file encoding type (currently PN just preserves the original type).
 [Implemented] Header switch as a generic feature.
 [Implemented] Basic Project Management - file grouping etc.
@@ -22,6 +22,7 @@ Pre-defined tools support.
 0.6 Ella
 ========
 
+Preview for scheme configurator.
 Tab order management.
 Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
 Basic Build Management - see http://www.pnotepad.org/articles/pn2projects.html

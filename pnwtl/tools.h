@@ -281,8 +281,8 @@ public:
 	ToolRunner* m_pNext;
 
 protected:
-	int Run_ShellExecute(LPCTSTR command, LPCTSTR params, LPCTSTR dir);
-	int Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir);
+	int Run_NoCapture(LPCTSTR command, LPCTSTR params, LPCTSTR dir);
+	int Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir);
 
 	virtual void Run();
 	virtual void OnException();

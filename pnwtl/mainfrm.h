@@ -281,6 +281,7 @@ protected:
 	CSize GetGUIFontSize();
 	HWND CreateFindToolbar();
 	HWND CreateSchemeToolbar();
+	BOOL AddReBarBand(HWND hWndBand, LPTSTR lpstrTitle = NULL, BOOL bNewRow = FALSE, bool bUseChevrons = false, int cxWidth = 0, BOOL bFullWidthAlways = FALSE);
 
 	void ToggleToolbar(DWORD toolbarId);
 	inline DWORD GetRebarBarCmd(DWORD toolbarId);

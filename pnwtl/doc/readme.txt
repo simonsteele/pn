@@ -45,6 +45,9 @@ Bug Fixes:
 14) Save All only saves unchanged files. (SF Bug #827998)
 15) Fixed view->toolbars menu. Now represents correct startup state.
 16) Files read as unicode now saved as unicode.
+17) Tool Modifies File w/o Capture Output. (SF Bug #799763)
+18) Tool Modifies File causes refresh oddness. (SF Bug #800331)
+19) Regular Expression loop. (SF Bug #793002)
 
 If you find a bug:
 ------------------

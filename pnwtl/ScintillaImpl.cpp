@@ -643,6 +643,16 @@ int CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 		while (posFind != -1) 
 		{
 			int lenTarget = GetTargetEnd() - GetTargetStart();
+			
+			// See if the next character is an end-of-line if we have a zero-length replace target.
+			int movePastEOL = 0;
+			if(lenTarget <= 0)
+			{
+				char chNext = static_cast<char>(GetCharAt(GetTargetEnd()));
+				if( chNext == '\r' || chNext == '\n' )
+					movePastEOL = 1;
+			}
+				
 			int lenReplaced = replaceLen;
 			if (pOptions->UseRegExp)
 				lenReplaced = ReplaceTargetRE(replaceLen, (LPCTSTR)replaceTarget);
@@ -653,15 +663,22 @@ int CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 
 			// Modify for change caused by replacement
 			endPosition += lenReplaced - lenTarget;
-			lastMatch = posFind + lenReplaced;
-
+			
 			// For the special cases of start of line and end of line
 			// Something better could be done but there are too many special cases
-			if (lenTarget <= 0)
-				lastMatch++;
-
-			SetTarget(lastMatch, endPosition);
-			posFind = SearchInTarget(findLen, (LPCTSTR)findTarget);
+			lastMatch = posFind + lenReplaced + movePastEOL;
+			
+			if( lastMatch >= endPosition )
+			{
+				// With an empty match we might have added one too
+				// many to avoid reg-ex replace freezes.
+				posFind = -1;
+			}
+			else
+			{
+				SetTarget(lastMatch, endPosition);
+				posFind = SearchInTarget(findLen, (LPCTSTR)findTarget);
+			}
 		}
 
 		if (pOptions->InSelection)

@@ -636,7 +636,7 @@ int ToolRunner::GetExitCode()
 void ToolRunner::Run()
 {
 	m_pWrapper->OnStart();
-	m_RetCode = Run_CreateProcess(m_pWrapper->Command.c_str(), m_pWrapper->Params.c_str(), m_pWrapper->Folder.c_str());
+	m_RetCode = Run_Capture(m_pWrapper->Command.c_str(), m_pWrapper->Params.c_str(), m_pWrapper->Folder.c_str());
 	PostRun();
 	m_pWrapper->SetRunning(false);
 	m_pWrapper->OnFinished();
@@ -648,7 +648,7 @@ void ToolRunner::OnException()
 	::OutputDebugString(_T("PN2: Exception whilst running a tool.\n"));
 }
 
-int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
+int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 {
 	tstring tempstr(_T("\"\" "));
 	tempstr.insert(1, command);
@@ -723,7 +723,7 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	bool bCreated = ::CreateProcess(
 		NULL, 
 		commandBuf, 
-		NULL, /*LPSECURITY_ATTRIBUTES lpProcessAttributes*/
+		&sa, /*LPSECURITY_ATTRIBUTES lpProcessAttributes*/
 		NULL, /*LPSECURITYATTRIBUTES lpThreadAttributes*/
 		TRUE, /*BOOL bInheritHandles*/ 
 		CREATE_NEW_PROCESS_GROUP, /*DWORD dwCreationFlags*/
@@ -857,55 +857,74 @@ struct ShellErr
 	LPCTSTR description;
 };
 
-int ToolRunner::Run_ShellExecute(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
+int ToolRunner::Run_NoCapture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 {
-	DWORD result = reinterpret_cast<DWORD>(::ShellExecute(NULL, _T("open"), command, params, dir, SW_SHOW));
+	int result = 0;
 
-	if(! (result > 32)) // ShellExecute failed...
+	tstring tempstr(_T("\"\" "));
+	tempstr.insert(1, command);
+	tempstr += params;
+
+	TCHAR* commandBuf = new TCHAR[tempstr.size() + 1];
+	_tcscpy(commandBuf, tempstr.c_str());
+
+	if(_tcslen(dir) == 0)
+		dir = NULL;
+
+	OSVERSIONINFO osv = {sizeof(OSVERSIONINFO), 0, 0, 0, 0, _T("")};
+
+	::GetVersionEx(&osv);
+	bool bWin9x = osv.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS;
+	
+	SECURITY_ATTRIBUTES sa = {sizeof(SECURITY_ATTRIBUTES), 0, 0};
+	sa.bInheritHandle = TRUE;
+	sa.lpSecurityDescriptor = NULL;
+
+	SECURITY_DESCRIPTOR sd;
+	if(!bWin9x)
 	{
-		// This section shamelessly copied from SciTE
-		const int numErrcodes = 15;
-		static const ShellErr field[numErrcodes] = 
-		{
-			{ 0, _T("The operating system is out of memory or resources.") },
-			{ ERROR_FILE_NOT_FOUND, _T("The specified file was not found.") },
-			{ ERROR_PATH_NOT_FOUND, _T("The specified path was not found.") },
-			{ ERROR_BAD_FORMAT, _T("The .exe file is invalid (non-Win32\256 .exe or error in .exe image).") },
-			{ SE_ERR_ACCESSDENIED, _T("The operating system denied access to the specified file.") },
-			{ SE_ERR_ASSOCINCOMPLETE, _T("The file name association is incomplete or invalid.") },
-			{ SE_ERR_DDEBUSY, _T("The DDE transaction could not be completed because other DDE transactions were being processed.") },
-			{ SE_ERR_DDEFAIL, _T("The DDE transaction failed.") },
-			{ SE_ERR_DDETIMEOUT, _T("The DDE transaction could not be completed because the request timed out.") },
-			{ SE_ERR_DLLNOTFOUND, _T("The specified dynamic-link library was not found.") },
-			{ SE_ERR_FNF, _T("The specified file was not found.") },
-			{ SE_ERR_NOASSOC, _T("There is no application associated with the given file name extension.") },
-			{ SE_ERR_OOM, _T("There was not enough memory to complete the operation.") },
-			{ SE_ERR_PNF, _T("The specified path was not found.") },
-			{ SE_ERR_SHARE, _T("A sharing violation occurred.") },
-		};
-
-		for (int i = 0; i < numErrcodes; ++i) 
-		{
-			if (field[i].code == result)
-				break;
-		}
-
-		basic_ostringstream<TCHAR> errmsg;
-
-		errmsg << _T("Could not run tool: \nCommand: ") << command << 
-			_T("\n\nMessage: ");
-
-		if(i < numErrcodes)
-		{
-			errmsg << field[i].description;
-		}
-		else
-		{
-			errmsg << _T("Unknown error code (") << result << _T(").");
-		}
-
-		::MessageBox(m_pWrapper->GetActiveChild()->m_hWnd, errmsg.str().c_str(), _T("Programmers Notepad"), MB_ICONWARNING | MB_OK);
+		// On NT we can have a proper security descriptor...
+		::InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
+		::SetSecurityDescriptorDacl(&sd, TRUE, NULL, FALSE);
+		sa.lpSecurityDescriptor = &sd;
 	}
+
+	STARTUPINFO si;
+	memset(&si, 0, sizeof(STARTUPINFO));
+	si.cb = sizeof(STARTUPINFO);
+	si.dwFlags = STARTF_USESHOWWINDOW;
+	si.wShowWindow = SW_HIDE;
+
+	PROCESS_INFORMATION pi = {0, 0, 0, 0};
+
+	bool bCreated = ::CreateProcess(
+		NULL, 
+		commandBuf, 
+		&sa, /*LPSECURITY_ATTRIBUTES lpProcessAttributes*/
+		NULL, /*LPSECURITYATTRIBUTES lpThreadAttributes*/
+		TRUE, /*BOOL bInheritHandles*/ 
+		CREATE_NEW_PROCESS_GROUP, /*DWORD dwCreationFlags*/
+		NULL, /*LPVOID lpEnvironment*/
+		dir, /*LPCTSTR lpWorkingDir*/
+		&si, /*LPSTARTUPINFO lpStartupInfo*/
+		&pi /*LPPROCESS_INFORMATION lpProcessInformation*/ 
+	) != 0;
+
+	// We're waiting for this one to finish because it's a filter process - 
+	// i.e. it will change the current file.
+	if( m_pWrapper->IsFilter() )
+	{
+		::WaitForSingleObject( pi.hProcess, INFINITE );
+		DWORD dwExitCode;
+		::GetExitCodeProcess(pi.hProcess, &dwExitCode);
+		result = dwExitCode;
+	}
+	else
+		result = pi.dwProcessId;
+	
+	// Detach...
+	::CloseHandle(pi.hProcess);
+	::CloseHandle(pi.hThread);
 
 	PostRun();
 
@@ -923,7 +942,7 @@ int ToolRunner::Execute()
 
 	if(!m_pWrapper->CaptureOutput())
 	{
-		Run_ShellExecute(m_pWrapper->Command.c_str(), m_pWrapper->Params.c_str(), m_pWrapper->Folder.c_str());
+		Run_NoCapture(m_pWrapper->Command.c_str(), m_pWrapper->Params.c_str(), m_pWrapper->Folder.c_str());
 	}
 	else
 	{
