@@ -1446,13 +1446,14 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 		options.SetInitialPage(&general);
 	else
 		options.SetInitialPage(&pageTools);
-options.SetInitialPage(&pageFileAssoc);
+
 	if( options.DoModal() == IDOK )
 	{
+		SchemeToolsManager* pSTM = SchemeToolsManager::GetInstance();
 		///@todo more dirty checking...
 
 		// pass in true to cache menu resources.
-		SchemeToolsManager::GetInstance()->ReLoad(true);
+		pSTM->ReLoad(true);
 
 		if( pageStyle.IsDirty() || pageSchemes.IsDirty() )
             CSchemeManager::GetInstance()->Compile();
@@ -1464,7 +1465,8 @@ options.SetInitialPage(&pageFileAssoc);
 
 		m_RecentProjects.SetSize( OPTIONS->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4) );
 
-		m_hGlobalToolAccel = SchemeToolsManager::GetInstance()->GetGlobalTools()->GetAcceleratorTable();
+		pSTM->GetGlobalTools()->AllocateMenuResources();
+		m_hGlobalToolAccel = pSTM->GetGlobalTools()->GetAcceleratorTable();
 	}
 
 	return 0;
@@ -1559,7 +1561,7 @@ LRESULT CMainFrame::OnFindComboEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	CWindowText wt(m_FindCombo.m_hWnd); //Get find text...
 
 	CChildFrame* pEditor = CChildFrame::FromHandle( GetCurrentEditor() );
-	if( pEditor != NULL )
+	if( pEditor != NULL && (LPCTSTR)wt != NULL )
 	{
 		SFindOptions* pFindOptions = OPTIONS->GetFindOptions();
 		if(pFindOptions->FindText != (LPCTSTR)wt)

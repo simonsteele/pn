@@ -13,6 +13,7 @@
 #include "textclips.h"
 #include "textclipsview.h"
 #include "childfrm.h"
+#include <algorithm>
 
 CClipsDocker::CClipsDocker()
 {
@@ -147,7 +148,38 @@ LRESULT CClipsDocker::OnClipSelected(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 		if(!pS)
 			return 0;
 
-		tstring clipstr = clip->Text;
+		tstring clipstr;
+		// clip->Text is in Unix EOL mode (LF only), convert it to target EOL mode
+		switch(pS->GetEOLMode())
+		{
+		case PNSF_Unix:
+			// no conversion needed, just copy
+			clipstr = clip->Text;
+			break;
+
+		case PNSF_Windows:
+			{
+				// heuristically reserve size for the target string
+				// and copy the string by inserting '\r' where appropriate
+				clipstr.reserve(clip->Text.size() + (clip->Text.size() / 16));
+				tstring::const_iterator it = clip->Text.begin();
+				tstring::const_iterator end = clip->Text.end();
+				for(; it != end; ++it)
+				{
+					if(*it == '\n')
+						clipstr += '\r';
+					clipstr += *it;
+				}
+			}
+			break;
+
+		case PNSF_Mac:
+			// reserve size for the target string and use standard algorithm
+			clipstr.reserve(clip->Text.size());
+			std::replace_copy(clip->Text.begin(), clip->Text.end(),
+				std::back_inserter(clipstr), '\n', '\r');
+			break;
+		}
 		
 		size_t offset = clipstr.find(_T('|'));
 		if(offset != clipstr.npos)

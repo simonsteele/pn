@@ -303,7 +303,13 @@ void FileAssoc::GetVerbCommand(const CString& assoc, Verb verb)
 			m_verbCmd = assocString;
 	}
 
-	m_fConflict = (m_verbCmd.GetLength() > 0 && m_verbCmd.Find(m_appPath) == -1);
+	// Convert both paths to lowercase for comparison purposes...
+	CString lcRegCmd(m_verbCmd);
+	lcRegCmd.MakeLower();
+	CString lcApp(m_appPath);
+	lcApp.MakeLower();
+
+	m_fConflict = (m_verbCmd.GetLength() > 0 && lcRegCmd.Find(lcApp) == -1);
 }
 
 void FileAssoc::GetTypeName()
