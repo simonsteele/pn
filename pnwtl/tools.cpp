@@ -537,7 +537,8 @@ void SchemeToolsManager::processScheme(XMLAttributes& atts)
 
 void SchemeToolsManager::processGlobal(XMLAttributes& atts)
 {
-	m_pGlobalTools = new GlobalTools;
+	if(!m_pGlobalTools)
+		m_pGlobalTools = new GlobalTools;
 	m_pCur = m_pGlobalTools;
 }
 

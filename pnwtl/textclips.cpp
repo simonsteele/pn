@@ -221,7 +221,7 @@ const LIST_CLIPSETS& TextClipsManager::GetClipSets()
 void TextClipsManager::FindClips()
 {
 	COptionsManager& opt = COptionsManager::GetInstanceRef();
-	FileFinder<TextClipsManager> finder(this, OnFound);
+	FileFinder<TextClipsManager> finder(this, &TextClipsManager::OnFound);
 
 	tstring path;
 	

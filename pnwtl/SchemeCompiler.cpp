@@ -230,7 +230,7 @@ void UserSettingsParser::Parse(LPCTSTR path, CSchemeLoaderState* pState)
 		return;
 	}
 
-	XMLParserCallback<UserSettingsParser> callback(*this, startElement, endElement, characterData);
+	XMLParserCallback<UserSettingsParser> callback(*this, &UserSettingsParser::startElement, &UserSettingsParser::endElement, &UserSettingsParser::characterData);
 
 	XMLParser parser;
 	parser.SetParseState(&callback);
@@ -589,7 +589,7 @@ void SchemeCompiler::onColours(const EditorColours* colours)
 
 void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
 {
-	XMLParserCallback<SchemeParser> callback(*this, startElement, endElement, characterData);
+	XMLParserCallback<SchemeParser> callback(*this, &SchemeParser::startElement, &SchemeParser::endElement, &SchemeParser::characterData);
 	
 	UserSettingsParser p;
 	p.Parse(userfile, &m_LoadState);
