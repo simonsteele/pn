@@ -44,12 +44,10 @@ typedef enum {efsVSNet, efsVSNetR, efsPlus, efsArrow} EFoldStyle;
 
 struct RangeToFormat 
 {
-	//SurfaceID hdc;
-	//SurfaceID hdcTarget;
-	HDC hdc;
-	HDC hdcTarget;
-	CRect rc;
-	CRect rcPage;
+	void* hdc;
+	void* hdcTarget;
+	RECT rc;
+	RECT rcPage;
 	CharacterRange chrg;
 };
 
