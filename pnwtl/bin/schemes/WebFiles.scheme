@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<!-- Some reasonable background colours found in the default Windows palette
+		Off White #FFFBF0    Light green #C0DCC0    Light Blue #A6CAF0 -->
+	<style-classes>
+		<style-class name="embeddedjs" back="fofoff"/>
+		<style-class name="aspjs" fore="000000" back="dfdf7f"/>
+		<style-class name="embeddedvbs" fore="000000" back="efefff" eolfilled="true"/>
+		<style-class name="aspvbs" fore="000000" back="cfcfef" eolfilled="true" />
+		<style-class name="embeddedpython" back="efffef" eolfilled="true"/>
+		<style-class name="asppython" back="cfefcf" eolfilled="true"/>
+		<style-class name="php" back="fff8f8" eolfilled="true"/>
+		<style-class name="sgml" back="efefff" eolfilled="true"/>
+	</style-classes>
+	<keyword-classes>
+		<keyword-class name="hypertext.elements">
+			a abbr acronym address applet area b base basefont
+			bdo big blockquote body br button caption center
+			cite code col colgroup dd del dfn dir div dl dt em
+			fieldset font form frame frameset h1 h2 h3 h4 h5 h6
+			head hr html i iframe img input ins isindex kbd label
+			legend li link map menu meta noframes noscript
+			object ol optgroup option p param pre q s samp
+			script select small span strike strong style sub sup
+			table tbody td textarea tfoot th thead title tr tt u ul
+			var xml xmlns
+		</keyword-class>
+		<keyword-class name="hypertext.attributes">
+			abbr accept-charset accept accesskey action align alink
+			alt archive axis background bgcolor border
+			cellpadding cellspacing char charoff charset checked cite
+			class classid clear codebase codetype color cols colspan
+			compact content coords
+			data datafld dataformatas datapagesize datasrc datetime
+			declare defer dir disabled enctype event
+			face for frame frameborder
+			headers height href hreflang hspace http-equiv
+			id ismap label lang language leftmargin link longdesc
+			marginwidth marginheight maxlength media method multiple
+			name nohref noresize noshade nowrap
+			object onblur onchange onclick ondblclick onfocus
+			onkeydown onkeypress onkeyup onload onmousedown
+			onmousemove onmouseover onmouseout onmouseup
+			onreset onselect onsubmit onunload
+			profile prompt readonly rel rev rows rowspan rules
+			scheme scope selected shape size span src standby start style
+			summary tabindex target text title topmargin type usemap
+			valign value valuetype version vlink vspace width
+			text password checkbox radio submit reset
+			file hidden image
+		</keyword-class>
+		<keyword-class name="hypertext">
+			<include-class name="hypertext.elements"/>
+			<include-class name="hypertext.attributes"/>
+			public !doctype
+		</keyword-class>
+		<keyword-class name="dtd">
+			ELEMENT DOCTYPE ATTLIST ENTITY NOTATION
+		</keyword-class>
+		<keyword-class name="php">
+			and argv as argc break case cfunction class continue declare default do
+			die echo else elseif empty enddeclare endfor endforeach endif endswitch
+			endwhile E_ALL E_PARSE E_ERROR E_WARNING eval exit extends FALSE for
+			foreach function global HTTP_COOKIE_VARS HTTP_GET_VARS HTTP_POST_VARS
+			HTTP_POST_FILES HTTP_ENV_VARS HTTP_SERVER_VARS if include include_once
+			list new not NULL old_function or parent PHP_OS PHP_SELF PHP_VERSION
+			print require require_once return static switch stdClass this TRUE var
+			xor virtual while __FILE__ __LINE__ __sleep __wakeup
+		</keyword-class>
+		<keyword-class name="css">
+			background background-attachment background-color background-image background-position background-repeat
+			border-color border-bottom border-bottom-width border-left border-left-width
+			border border-right-width border-right border-style border-top border-top-width border-width			clear clip color cursor display float \
+			font font-family font-size font-style font-variant font-weight
+			height left letter-spacing line-height
+			list-style list-style-image list-style-position list-style-type
+			margin margin-bottom margin-left margin-right margin-top overflow
+			padding padding-bottom padding-left padding-right padding-top position
+			text-align text-decoration text-indent text-transform top
+			vertical-align visibility width white-space word-spacing z-index
+		</keyword-class>
+	</keyword-classes>
+	
+	<language name="web" folding="false" foldcomments="false" foldcompact="false">
+		<lexer name="hypertext" stylebits="7" />
+		<use-keywords>
+			<keyword key="0" class="hypertext"/>
+			<keyword key="1" class="javascript"/>
+			<keyword key="2" class="vb"/>
+			<keyword key="3" class="python"/>
+			<keyword key="4" class="php"/>
+			<keyword key="5" class="dtd"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32" class="default"/>
+			<style name="Text" key="0" class="default"/>
+			<style name="Tags" key="1" fore="000080"/>
+			<style name="Unknown Tags" key="2" fore="ff0000"/>
+			<style name="Attributes" key="3" fore="008080"/>
+			<style name="Unknown Attributes" key="4" fore="ff0000"/>
+			<style name="Numbers" key="5" fore="colour.number"/>
+			<style name="Double Quoted Strings" key="6" fore="colour.string"/>
+			<style name="Single Quoted Strings" key="7" fore="colour.string"/>
+			<style name="Other inside tag" key="8" fore="800080"/>
+			<style name="Comment" key="9" fore="808000" font="font.comment"/>
+			<style name="Entity" key="10" fore="800080"/>
+			<style name="XML style tag ends /&gt;" key="11" fore="000080"/>
+			<style name="XML Identifier start &lt; ?" key="12" fore="0000ff"/>
+			<style name="XML Identifier end ?&gt;" key="13" fore="0000ff"/>
+			<style name="Script" key="14" fore="000080"/>
+			<style name="ASP &lt;% ... %&gt;" key="15" back="ffff00"/>
+			<style name="ASP &lt;% ... %&gt;" key="16" back="ffdf00"/>
+			<style name="CDATA" key="17" back="ffdf00"/>
+			<style name="PHP" key="18" fore="0000ff" back="ffefbf"/>
+			<style name="Unquoted Values" key="19" fore="ff00ff" back="ffefff"/>
+			
+			<!-- SGML Tags -->
+			<style name="SGML Tags &lt;!...&gt;" key="21" fore="000080" back="efefff"/>
+			<style name="SGML Command" key="22" fore="000080" back="efefff" bold="true"/>
+			<style name="SGML 1st Param" key="23" fore="006600" back="efefff"/>
+			<style name="SGML double string" key="24" fore="006600" back="efefff"/>
+			<style name="SGML single string" key="25" fore="993300" back="efefff"/>
+			<style name="SGML error" key="26" fore="800000" back="ff6666"/>
+			<style name="SGML special (#xxxx type)" key="27" fore="3366ff" back="efefff"/>
+			<style name="SGML entity" key="28" fore="333333" back="efefff"/>
+			<style name="SGML comment" key="29" fore="808000" back="efefff"/>
+			<style name="SGML block" key="31" fore="000066" back="cccce0"/>
+			
+			<!-- Embedded JavaScript -->			
+			<style name="JS Start" key="40" class="embeddedjs" fore="7f7f00"/>
+			<style name="JS Default" key="41" class="embeddedjs" fore="000000" bold="true" eolfilled="true"/>
+			<style name="JS Comment" key="42" class="embeddedjs" fore="colour.commentbox" eolfilled="true"/>
+			<style name="JS Line Comment" key="43" class="embeddedjs" fore="colour.commentline"/>
+			<style name="JS Doc comment" key="44" class="embeddedjs" fore="colour.commentdoc" bold="true" eolfilled="true"/>
+			<style name="JS Number" key="45" class="embeddedjs" fore="colour.number" />
+			<style name="JS Word" key="46" class="embeddedjs" fore="000000"/>
+			<style name="JS Keyword" key="47" class="embeddedjs" fore="colour.keyword" bold="true"/>
+			<style name="JS Double quoted string" key="48" class="embeddedjs" fore="colour.string"/>
+			<style name="JS Single quoted string" key="49" class="embeddedjs" fore="colour.string"/>
+			<style name="JS Symbols " key="50" class="embeddedjs" fore="colour.operator" bold="true"/>
+			<style name="JavaScript EOL" key="51" class="embeddedjs" back="bfbbb0" eolfilled="true"/>
+			<style name="JavaScript RegEx" key="52" class="embeddedjs" back="ffbbb0"/>
+			
+			<!-- ASP JavaScript -->
+			<style name="JS Start" key="55" class="aspjs" fore="7F7F00" />
+			<style name="JS Default" key="56" class="aspjs" eolfilled="true" bold="true"/>
+			<style name="JS Comment" key="57" class="aspjs" fore="007F00" eolfilled="true"/>
+			<style name="JS Line Comment" key="58" class="aspjs" fore="007F00"/>
+			<style name="JS Doc comment" key="59" class="aspjs" fore="7F7F7F" bold="true" eolfilled="true"/>
+			<style name="JS Number" key="60" class="aspjs" fore="007F7F"/>
+			<style name="JS Word" key="61" class="aspjs"/>
+			<style name="JS Keyword" key="62" class="aspjs" fore="00007F" bold="true"/>
+			<style name="JS Double quoted string" key="63" class="aspjs" fore="7F007F"/>
+			<style name="JS Single quoted string" key="64" class="aspjs" fore="7F007F"/>
+			<style name="JS Symbols" key="65" class="aspjs" bold="true"/>
+			<style name="JavaScript EOL" key="66" class="aspjs" back="BFBBB0" eolfilled="true"/>
+			<style name="JavaScript RegEx" key="67" class="aspjs" back="FFBBB0"/>
+			
+			<!-- Embedded VBS -->
+			<style name="Start" key="70" class="embeddedvbs"/>
+			<style name="Default" key="71" class="embeddedvbs" fore="000000"/>
+			<style name="Comment" key="72" class="embeddedvbs" font="font.comment" fore="008000"/>
+			<style name="Number" key="73" class="embeddedvbs" fore="008080"/>
+			<style name="KeyWord" key="74" class="embeddedvbs" fore="000080" bold="true"/>
+			<style name="String" key="75" class="embeddedvbs" fore="800080"/>
+			<style name="Identifier" key="76" class="embeddedvbs" fore="000080"/>
+			<style name="Unterminated string" key="77" class="embeddedvbs" back="7F7FFF" fore="000080"/>
+			
+			<!-- ASP VBS -->
+			<style name="Start" key="80" class="aspvbs"/>
+			<style name="Default" key="81" class="aspvbs" fore="000000"/>
+			<style name="Comment" key="82" class="aspvbs" font="font.comment" fore="008000"/>
+			<style name="Number" key="83" class="aspvbs" fore="008080"/>
+			<style name="KeyWord" key="84" class="aspvbs" fore="000080" bold="true"/>
+			<style name="String" key="85" class="aspvbs" fore="800080"/>
+			<style name="Identifier" key="86" class="aspvbs" fore="000080"/>
+			<style name="Unterminated string" key="87" class="aspvbs" back="7F7FBF" fore="000080"/>
+			
+			<!-- Embedded Python -->
+			<style name="Embedded Python" key="90" class="embeddedpython" fore="808080"/>
+			<style name="Embedded Python" key="91" class="embeddedpython" fore="808080"/>
+			<style name="Comment" key="92" class="embeddedpython" font="font.comment" fore="007F00"/>
+			<style name="Number" key="93" class="embeddedpython" fore="007F7F"/>
+			<style name="String" key="94" class="embeddedpython" fore="7F007F" font="font.monospace"/>
+			<style name="Single quoted string" key="95" class="embeddedpython" fore="7F007F" font="font.monospace"/>
+			<style name="Keyword" key="96" class="embeddedpython" fore="00007F" bold="true"/>
+			<style name="Triple quotes" key="97" class="embeddedpython" fore="7F0000"/>
+			<style name="Triple double quotes" key="98" class="embeddedpython" fore="7F0000"/>
+			<style name="Class name definition" key="99" class="embeddedpython" fore="0000FF" bold="true"/>
+			<style name="Function or method name definition" key="100" class="embeddedpython" fore="007F7F" bold="true"/>
+			<style name="Operators" key="101" class="embeddedpython" bold="true"/>
+			<style name="Identifiers" key="102" class="embeddedpython"/>
+			
+			<!-- ASP Python -->
+			<style name="ASP Python" key="105" class="asppython" fore="808080"/>
+			<style name="ASP Python" key="106" class="asppython" fore="808080"/>
+			<style name="Comment" key="107" class="asppython" fore="007F00" font="font.comment"/>
+			<style name="Number" key="108" class="asppython" fore="007F7F"/>
+			<style name="String" key="109" class="asppython" fore="7F007F" font="font.monospace"/>
+			<style name="Single quoted string" key="110" class="asppython" fore="7F007F" font="font.monospace"/>
+			<style name="Keyword" key="111" class="asppython" fore="00007F" bold="true"/>
+			<style name="Triple quotes" key="112" class="asppython" fore="7F0000"/>
+			<style name="Triple double quotes" key="113" class="asppython" fore="7F0000"/>
+			<style name="Class name definition" key="114" class="asppython" fore="0000FF" bold="true"/>
+			<style name="Function or method name definition" key="115" class="asppython" fore="007F7F" bold="true"/>
+			<style name="Operators" key="116" class="asppython" bold="true"/>
+			<style name="Identifiers" key="117" class="asppython"/>
+			
+			<!-- PHP -->
+			<style name="Default" key="118" class="php" fore="000033" />
+			<style name="Double quoted String" key="119" class="php" fore="007F00"/>
+			<style name="Single quoted string" key="120" class="php" fore="009F00"/>
+			<style name="Keyword" key="121" class="php" fore="7F007F" italic="true"/>
+			<style name="Number" key="122" class="php" fore="CC9900"/>
+			<style name="Variable" key="123" class="php" fore="00007F" italic="true"/>
+			<style name="Comment" key="124" class="php" fore="999999" font="font.comment"/>
+			<style name="One line comment" key="125" class="php" fore="666666" italic="true" font="font.comment"/>
+			<style name="PHP variable in double quoted string" key="126" class="php" fore="00007F" italic="true"/>
+			<style name="PHP operator" key="127" class="php" fore="000000"/>
+		</use-styles>
+	</language>
+	<language name="xml" folding="false" foldcomments="false" foldcompact="false">
+		<lexer name="xml"/>
+		<use-keywords>
+			<keyword key="5" class="dtd"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="0" fore="000000"/>
+			<style name="Tags" key="1" fore="000080"/>
+			<style name="Unknown Tags" key="2" fore="000080"/>
+			<style name="Attributes" key="3" fore="008080"/>
+			<style name="Unknown Attributes" key="4" fore="008080"/>
+			<style name="Numbers" key="5" fore="colour.number"/>
+			<style name="Double quoted strings" key="6" fore="colour.string"/>
+			<style name="Single quoted strings" key="7" fore="colour.string"/>
+			<style name="Other inside tag" key="8" fore="800080"/>
+			<style name="Comment" key="9" fore="808000"/>
+			<style name="Entities" key="10" fore="800080"/>
+			<style name="XML style tag ends '/&gt;'" key="11" fore="000080"/>
+			<style name="XML identifier start '&lt;?'" key="12" fore="800080" bold="true"/>
+			<style name="XML identifier end '?&gt;'" key="13" fore="800080" bold="true"/>
+			<style name="CDATA" key="17" fore="800000" back="FFF0F0" eolfilled="true"/>
+			<style name="Question" key="18" fore="800000"/>
+			<style name="Unquoted Value" key="19" fore="608060"/>
+			<style name="SGML tags &lt;! ... &gt;" key="21" class="sgml" fore="000080"/>
+			<style name="SGML command" key="22" class="sgml" fore="000080" bold="true"/>
+			<style name="SGML 1st param" key="23" class="sgml" fore="006600"/>
+			<style name="SGML double string" key="24" class="sgml" fore="800000"/>
+			<style name="SGML single string" key="25" class="sgml" fore="993300"/>
+			<style name="SGML error" key="26" class="sgml" fore="800000" back="FF6666"/>
+			<style name="SGML special (#xxxx type)" key="27" class="sgml" fore="3366FF"/>
+			<style name="SGML entity" key="28" class="sgml" fore="333333"/>
+			<style name="SGML comment" key="29" class="sgml" fore="808000"/>
+			<style name="SGML block" key="31" class="sgml" fore="000066" back="CCCCE0"/>
+		</use-styles>
+	</language>
+	<language name="css" folding="false" foldcomments="false" foldcompact="false">
+		<lexer name="hypertext"/>
+		<use-keywords>
+			<keyword key="0" class="css"/>
+		</use-keywords>
+	</language>
+</Scheme>
