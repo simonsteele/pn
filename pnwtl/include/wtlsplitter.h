@@ -60,7 +60,8 @@ class CWTLSplitter : public CWindowImpl<CWTLSplitter>
 			if(bUpdate)
 			{
 				CRect rc;
-				::GetClientRect(m_hwOwner, rc);
+				static_cast<T*>(this)->GetOwnerClientRect(m_hwOwner, rc);
+				
 				//We assume this is being changed mid-run, so we guess at the split position.
 				if(m_bHorz)
 				{
@@ -116,32 +117,52 @@ class CWTLSplitter : public CWindowImpl<CWTLSplitter>
 				UpdateLayout();
 		}
 
+		void ProportionSplit(float proportion = 0.75, bool bUpdate = true)
+		{
+			CRect rc;
+			static_cast<T*>(this)->GetOwnerClientRect(m_hwOwner, rc);
+			if(m_bHorz)
+			{
+				m_nSplitterPos = rc.top + (int)((float)rc.Height() * proportion) - m_halfSize;
+			}
+			else
+			{
+				m_nSplitterPos = rc.left + (int)((float)rc.Width() * proportion) - m_halfSize;
+			}
+
+			if(bUpdate)
+				UpdateLayout();
+		}
+
+		void CentreSplit(bool bUpdate = true)
+		{
+			CRect rc;
+			static_cast<T*>(this)->GetOwnerClientRect(m_hwOwner, rc);
+
+			if(m_bHorz)
+			{
+				m_nSplitterPos = rc.top + (rc.Height() / 2) - m_halfSize;
+			}
+			else
+			{
+				m_nSplitterPos = rc.left + (rc.Width() / 2) - m_halfSize;
+			}
+
+			if(bUpdate)
+				UpdateLayout();
+		}
+
 		void UpdateLayout()
 		{
 			T* pT = static_cast<T*>(this);
 			pT->LayoutWindows();
-		}
-
-		void CentreSplit()
-		{
-			CRect rc;
-			::GetClientRect(m_hwOwner, rc);
-
-			if(m_bHorz)
-			{
-				m_nSplitterPos = rc.top + (rc.Height() / 2) - (m_splitterSize / 2);
-			}
-			else
-			{
-				m_nSplitterPos = rc.left + (rc.Width() / 2) - (m_splitterSize / 2);
-			}
 		}
 		
 	protected:
 		void LayoutWindows()
 		{
 			CRect rc;
-			::GetClientRect(m_hwOwner, rc);
+			static_cast<T*>(this)->GetOwnerClientRect(m_hwOwner, rc);
 
 			if(SPLITTER_NORMAL != m_singlePane)
 			{
@@ -212,12 +233,17 @@ class CWTLSplitter : public CWindowImpl<CWTLSplitter>
 
 	// Message Handlers:
 	protected:
+		void GetOwnerClientRect(HWND hOwner, LPRECT lpRect)
+		{
+			::GetClientRect(m_hwOwner, lpRect);
+		}
+
 		void InternalAdjustPoints(LPRECT lpRect, LPPOINT lpPoint)
 		{
 			RECT wrect;
 
 			::GetWindowRect(m_hwOwner, &wrect);
-			::GetClientRect(m_hwOwner, lpRect);
+			static_cast<T*>(this)->GetOwnerClientRect(m_hwOwner, lpRect);
 			::ClientToScreen(m_hwOwner, (LPPOINT)lpRect);
 			::ClientToScreen(m_hwOwner, ((LPPOINT)lpRect)+1);
 

@@ -153,6 +153,8 @@ BEGIN
         MENUITEM "Word Wrap",                   130
         MENUITEM SEPARATOR
         MENUITEM "Schemes",                     ID_VIEW_CHANGESCHEME
+        MENUITEM SEPARATOR
+        MENUITEM "&Output",                     133
     END
     POPUP "&Tools"
     BEGIN

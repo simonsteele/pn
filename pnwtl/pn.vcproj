@@ -157,6 +157,9 @@
 				RelativePath=".\ScintillaImpl.cpp">
 			</File>
 			<File
+				RelativePath="childfrm.cpp">
+			</File>
+			<File
 				RelativePath="mainfrm.cpp">
 			</File>
 			<File

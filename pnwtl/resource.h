@@ -24,7 +24,8 @@
 #define ID_EDITOR_WORDWRAP              130
 #define ID_EDITOR_COLOURISE             131
 #define ID_EDITOR_LINENOS               132
-#define IDS_TOOLFORMATSTRINGS           133
+#define ID_EDITOR_OUTPUTWND				133
+#define IDS_TOOLFORMATSTRINGS           134
 #define IDD_FIND                        168
 #define IDR_TABS_POPUP                  169
 #define IDR_POPUP_REGEXP                170
@@ -63,6 +64,7 @@
 #define ID_HELP_WEB_SB                  253
 #define ID_HELP_REPORTABUG              254
 #define IDD_TOOLEDITOR                  255
+#define ID_VIEW_OUTPUT                  256
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -160,7 +162,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        256
+#define _APS_NEXT_RESOURCE_VALUE        257
 #define _APS_NEXT_COMMAND_VALUE         32790
 #define _APS_NEXT_CONTROL_VALUE         1045
 #define _APS_NEXT_SYMED_VALUE           104
