@@ -516,6 +516,12 @@
 				RelativePath=".\pndialogs.h">
 			</File>
 			<File
+				RelativePath=".\include\pngenx.h">
+			</File>
+			<File
+				RelativePath=".\pnstrings.h">
+			</File>
+			<File
 				RelativePath="pntabs.h">
 			</File>
 			<File
@@ -556,6 +562,9 @@
 			</File>
 			<File
 				RelativePath=".\ScintillaWTL.h">
+			</File>
+			<File
+				RelativePath=".\include\singleton.h">
 			</File>
 			<File
 				RelativePath="smartstart.h">

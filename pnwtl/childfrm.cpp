@@ -1076,8 +1076,7 @@ bool CChildFrame::PNOpenFile(LPCTSTR pathname, CScheme* pScheme, EPNEncoding enc
 	}
 	else
 	{
-		CFile err;
-		err.ShowError(pathname);
+		HandleFailedFileOp(pathname, true);
 	}
 	
 	// Loading a file may have changed the line endings/text encoding of the
@@ -1089,7 +1088,39 @@ bool CChildFrame::PNOpenFile(LPCTSTR pathname, CScheme* pScheme, EPNEncoding enc
 
 void CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMRU)
 {
+	bool bSuccess = false;
+
 	if(m_view.Save(pathname, bStoreFilename))
+	{
+		bSuccess = true;
+	}
+	else
+	{
+		switch(HandleFailedFileOp(pathname, false))
+		{
+		case PNID_SAVEAS:
+			SaveAs();
+			break;
+		case PNID_OVERWRITE:
+			if(attemptOverwrite(pathname))
+			{
+				if(m_view.Save(pathname, bStoreFilename))
+				{
+					bSuccess = true;
+				}
+				else
+				{
+					CString s;
+					s.Format(IDS_SAVEREADONLYFAIL, pathname);
+					if(AtlMessageBoxCheckNet(m_hWnd, (LPCTSTR)s, IDR_MAINFRAME, MB_YESNOCANCEL | MB_ICONWARNING) == IDYES)
+						SaveAs();
+				}
+			}
+			break;
+		}
+	}
+
+	if(bSuccess)
 	{
 		if(bStoreFilename)
 		{
@@ -1105,14 +1136,105 @@ void CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 			g_Context.m_frame->AddMRUEntry(m_FileName);
 		}
 	}
-	else
+}
+
+bool CChildFrame::attemptOverwrite(LPCTSTR filename)
+{
+	DWORD dwFileAtts = ::GetFileAttributes(filename);
+	if(dwFileAtts & FILE_ATTRIBUTE_READONLY)
 	{
-		CFile err;
-		if ( err.ShowError(pathname, false) == IDYES )
-		{
-			SaveAs();
-		}
+		dwFileAtts &= ~FILE_ATTRIBUTE_READONLY;
+		::SetFileAttributes(filename, dwFileAtts);
+		return true;
 	}
+	else return false;
+}
+
+//TODO Move all the CFILE_ defines into the string resources.
+#define PN_CouldNotSaveReadOnly _T("The file \"%s\" could not be saved because it is write-protected.\n\nYou can either save in a different location or PN can attempt to remove the protection and\n overwrite the file in its current location.")
+const WTL::BXT::MBItem SaveReadOnlyButtons [] = {
+	{PNID_SAVEAS, _T("Save &As...")},
+	{PNID_OVERWRITE, _T("&Overwrite")},
+	{IDCANCEL, 0}
+};
+const int SaveReadOnlyButtonsCount = 3;
+
+int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
+{
+	int err = GetLastError();
+	int ret = 0;
+	
+	TCHAR* fstr;
+
+	int MBStyle = bOpen ? MB_OK : MB_YESNOCANCEL;
+	WTL::BXT::LPCMBItem pItems = NULL;
+	int nItems = 0;
+
+	CFileName cfn(filename);
+	tstring fn = cfn.GetFileName();
+	
+	switch(err)
+	{
+	case ERROR_ACCESS_DENIED:
+		if (bOpen )
+			fstr = CFILE_LoadAccessDenied;
+		else
+		{
+			// Special Read-Only handling...
+			fstr = PN_CouldNotSaveReadOnly; //IDS_SAVEREADONLY
+			MBStyle = MB_ICONWARNING | MB_CUSTOMBUTTONS;
+			pItems = &SaveReadOnlyButtons[0];
+			nItems = SaveReadOnlyButtonsCount;
+		}
+		break;
+	case ERROR_NOT_DOS_DISK:
+	case ERROR_WRITE_PROTECT:
+		if (bOpen )
+			fstr = CFILE_LoadAccessDenied;
+		else
+			fstr = CFILE_SaveAccessDenied;
+		break;
+		
+	case ERROR_DISK_FULL:
+	case ERROR_HANDLE_DISK_FULL:
+		if (bOpen)
+			fstr = CFILE_CouldNotLoadError;
+		else
+			fstr = CFILE_SaveDiskFullError;
+		break;
+		
+	case ERROR_SHARING_VIOLATION:
+	case ERROR_LOCK_VIOLATION:
+		if (bOpen)
+			fstr = CFILE_LoadShareViolation;
+		else
+			fstr = CFILE_SaveShareViolation;
+		break;
+		
+	case ERROR_DEV_NOT_EXIST:
+	case ERROR_BAD_NETPATH:
+	case ERROR_NETWORK_BUSY:
+		if (bOpen)
+			fstr = CFILE_NetLoadError;
+		else
+			fstr = CFILE_NetSaveError;
+		break;
+		
+	default:
+		if (bOpen)
+			fstr = CFILE_CouldNotLoadError;
+		else
+			fstr = CFILE_CouldNotSaveError;
+	}
+
+	int bs = _tcslen(fstr) + fn.length() + 10;
+	TCHAR* buffer = new TCHAR[bs];
+	_sntprintf(buffer, bs, fstr, fn.c_str());
+
+	ret = AtlCustomMessageBoxNet(m_hWnd, (LPCTSTR)buffer, IDR_MAINFRAME, pItems, nItems, MBStyle);
+	
+	delete [] buffer;
+	return ret;	
 }
 
 bool CChildFrame::CanSave()

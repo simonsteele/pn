@@ -18,105 +18,14 @@
 
 #include "project.h"
 
+#include "include/sscontainers.h"
+
 #include "include/genx/genx.h"
-
-class GenxXMLWriter
-{
-public:
-	GenxXMLWriter()
-	{
-		m_hFile = NULL;
-		
-		m_writer = genxNew(NULL, NULL, NULL);
-
-		initXmlBits();
-	}
-
-	~GenxXMLWriter()
-	{
-		if(m_hFile != NULL)
-			Close();
-
-		genxDispose(m_writer);
-	}
-
-	void Start(LPCTSTR filename)
-	{
-		m_hFile = _tfopen(filename, "wb");
-
-		if(m_hFile == NULL)
-		{
-			UNEXPECTED(_T("Could not open an XML file for writing"));
-			return;
-		}
-
-		genxStartDocFile(m_writer, m_hFile);
-	}
-
-	void Close()
-	{
-		if (genxEndDocument(m_writer))
-		{
-			// error...
-		}
-
-		fclose(m_hFile);
-		m_hFile = NULL;
-	}
-
-	operator genxWriter ()
-	{
-		return m_writer;
-	}
-
-protected:
-	/**
-	 * Use this to initialize all your elements that you'll use over and
-	 * over.
-	 */
-	virtual void initXmlBits()
-	{
-		//genxStatus s;
-	}
-
-protected:
-	genxWriter	m_writer;
-	FILE*		m_hFile;
-};
-
-#define PREDECLARE_ATTRIBUTES() \
-	{
-#define ATT(name, member) \
-	member = genxDeclareAttribute(m_writer, NULL, u(name), &s)
-#define END_ATTRIBUTES() \
-	}
-
-#define u(x) (constUtf8)x
+#include "include/pngenx.h"
 
 class ToolsXMLWriter : public GenxXMLWriter
 {
-protected:
-	//genxAttribute genxDeclareAttribute(genxWriter w,
-	//			   genxNamespace ns,
-	//			   constUtf8 name, genxStatus * statusP);
-	virtual void initXmlBits()
-	{
-		genxStatus s;
-
-		m_eScheme = genxDeclareElement(m_writer, NULL, u("Scheme"), &s);
-		m_eTool = genxDeclareElement(m_writer, NULL, u("Tool"), &s);
-
-		PREDECLARE_ATTRIBUTES()
-			ATT("name", m_aName);
-			ATT("command", m_aCommand);
-			ATT("folder", m_aFolder);
-			ATT("params", m_aParams);
-			ATT("shortcut", m_aShortcut);
-			ATT("parsepattern", m_aParsePattern);
-			ATT("flags", m_aFlags);
-		END_ATTRIBUTES();
-	}
-
+public:
 	void writeTool(ToolDefinition* tool)
 	{
 		int flags = tool->iFlags;
@@ -131,6 +40,16 @@ protected:
 		genxEndElement(m_writer);
 	}
 
+	void beginSchemeTools()
+	{
+		genxStartElementLiteral(m_writer, NULL, u("schemetools"));
+	}
+
+	void endSchemeTools()
+	{
+		pop();
+	}
+
 	void beginScheme(LPCTSTR name)
 	{
 		genxStartElement(m_eScheme);
@@ -139,7 +58,36 @@ protected:
 
 	void endScheme()
 	{
-		genxEndElement(m_writer);
+		pop();
+	}
+
+	void beginGlobal()
+	{
+		genxStartElementLiteral(m_writer, NULL, u("global"));
+	}
+
+	void endGlobal()
+	{
+		pop();
+	}
+
+protected:
+	virtual void initXmlBits()
+	{
+		genxStatus s;
+
+		m_eScheme = genxDeclareElement(m_writer, NULL, u("scheme"), &s);
+		m_eTool = genxDeclareElement(m_writer, NULL, u("tool"), &s);
+
+		PREDECLARE_ATTRIBUTES()
+			ATT("name", m_aName);
+			ATT("command", m_aCommand);
+			ATT("folder", m_aFolder);
+			ATT("params", m_aParams);
+			ATT("shortcut", m_aShortcut);
+			ATT("parsepattern", m_aParsePattern);
+			ATT("flags", m_aFlags);
+		END_ATTRIBUTES();
 	}
 
 protected:
@@ -159,9 +107,9 @@ protected:
 #include <algorithm>
 
 #if defined (_DEBUG)
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
+	#define new DEBUG_NEW
+	#undef THIS_FILE
+	static char THIS_FILE[] = __FILE__;
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
@@ -199,8 +147,6 @@ TOOLDEFS_LIST& SchemeTools::GetTools()
 {
 	return m_Tools;
 }
-
-#include "include/sscontainers.h"
 
 //CString CHotKeyCtrl::GetKeyName(UINT vk, BOOL fExtended)
 tstring SchemeTools::GetKeyName(UINT vk, bool extended) const
@@ -411,33 +357,25 @@ void SchemeTools::MoveDown(ToolDefinition* pDef)
 	}
 }
 
-void SchemeTools::WriteDefinition(ofstream& stream, ToolSource* source)
+void SchemeTools::WriteDefinition(ToolsXMLWriter& writer, ToolSource* source)
 {
 	if(ToolsInSource(source))
 	{
-		stream << "\t<scheme name=\"" << m_Scheme << "\">\n";
+		writer.beginScheme(m_Scheme.c_str());
 		
-		InternalWriteDefinition(stream, source);	
+		InternalWriteDefinition(writer, source);	
 
-		stream << "\t</scheme>\n";
+		writer.endScheme();
 	}
 }
 
-void SchemeTools::InternalWriteDefinition(ofstream& stream, ToolSource* source)
+void SchemeTools::InternalWriteDefinition(ToolsXMLWriter& writer, ToolSource* source)
 {
 	for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
 	{
 		if( (*i)->source != source )
 			continue;
-		int flags = (*i)->iFlags;
-		stream << "\t\t<tool name=\"" << FormatXML((*i)->Name) << "\" ";
-		stream << "command=\"" << FormatXML((*i)->Command) << "\" ";
-		stream << "folder=\"" << FormatXML((*i)->Folder) << "\" ";
-		stream << "params=\"" << FormatXML((*i)->Params) << "\" ";
-		stream << "shortcut=\"" << (*i)->Shortcut << "\" ";
-		stream << "parsepattern=\"" << FormatXML((*i)->CustomParsePattern) << "\" ";
-		stream << "flags=\"" << flags << "\" ";
-		stream << "/>\n";
+		writer.writeTool((*i));
 	}
 }
 
@@ -456,15 +394,13 @@ bool SchemeTools::ToolsInSource(ToolSource* source)
 // GlobalTools
 //////////////////////////////////////////////////////////////////////////////
 
-void GlobalTools::WriteDefinition(ofstream& stream, ToolSource* source)
+void GlobalTools::WriteDefinition(ToolsXMLWriter& writer, ToolSource* source)
 {
 	if(ToolsInSource(source))
 	{
-		stream << "\t<global>\n";
-		
-		InternalWriteDefinition(stream, source);	
-
-		stream << "\t</global>\n";
+		writer.beginGlobal();
+		InternalWriteDefinition(writer, source);
+		writer.endGlobal();
 	}
 }
 
@@ -822,21 +758,22 @@ void SchemeToolsManager::Save()
 	// Save all the source files.
 	for(SOURCES_LIST::iterator i = m_toolSources.begin(); i != m_toolSources.end(); ++i)
 	{
-		ofstream str;
-		str.open((*i)->FileName.c_str(), ios_base::out);
-		if(str.is_open())
+		ToolsXMLWriter writer;
+		writer.Start((*i)->FileName.c_str());
+
+		if(writer.IsValid())
 		{
-			str << "<?xml version=\"1.0\"?>\n<schemetools>\n";
 			if(m_pGlobalTools)
-				m_pGlobalTools->WriteDefinition(str, (*i));
+				m_pGlobalTools->WriteDefinition(writer, (*i));
+
 			for(SCHEMETOOLS_MAP::const_iterator j = m_toolSets.begin(); j != m_toolSets.end(); ++j)
 			{
-				(*j).second->WriteDefinition(str, (*i));
+				(*j).second->WriteDefinition(writer, (*i));
 			}
-			str << "</schemetools>";
-
-			str.close();
-		}
+			
+			writer.endSchemeTools();
+			writer.Close();
+		}		
 	}
 }
 

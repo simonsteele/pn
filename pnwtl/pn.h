@@ -24,6 +24,9 @@
 #define TOOLS_RUNTOOL		0x2
 #define PN_MDIDESTROY		0x3
 
+#define PNID_SAVEAS			14
+#define PNID_OVERWRITE		15
+
 #include "pntypes.h"
 
 // Pre-declarations...
@@ -33,8 +36,6 @@ class Options;
 namespace Projects {
 	class Workspace;
 }
-
-
 
 struct IMainFrame
 {
@@ -52,6 +53,8 @@ struct IMainFrame
 };
 
 #include "pnutils.h"
+#include "pnstrings.h"
+#include "include/singleton.h"
 
 struct _Context 
 {

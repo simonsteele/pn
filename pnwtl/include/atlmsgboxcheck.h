@@ -15,9 +15,11 @@
 // The author accepts no liability if it causes any damage to you or your
 // computer whatsoever. It's free, so don't hassle me about it.
 //
+// Modifications to support a forced system menu and also custom
+// buttons by Simon Steele (s.steele@pnotepad.org) November 2004
 
 //
-// WTL adoption of
+// WTL adaptation of
 // http://www.codeproject.com/dialog/xmessagebox.asp
 //
 
@@ -41,6 +43,7 @@ namespace BXT
 //
 
 #define MB_CONTINUEABORT	0x00000008L     // adds two buttons, "Continue"  and "Abort"
+#define MB_CUSTOMBUTTONS	0x00000009L		// Use a custom list of buttons.
 #define MB_FORCESYSMENU		0x00400000L		// Force system menu...
 #define MB_DONOTASKAGAIN	0x01000000L     // add checkbox "Do not ask me again"
 #define MB_DONOTTELLAGAIN	0x02000000L     // add checkbox "Do not tell me again"
@@ -240,6 +243,14 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // CMsgBoxTemplateT
 
+typedef struct tagMBITEM
+{
+	UINT	ID;
+	LPCTSTR Caption;
+} MBItem, *LPMBItem;
+
+typedef const MBItem* LPCMBItem;
+
 template < WORD TWidth, WORD THeight, bool TFitToContents, int TCheckBreakCount, bool TCenterButtons >
 class CMsgBoxTemplateT : public CDlgTemplateBase
 {
@@ -255,11 +266,13 @@ public:
 		MB_FORCE_WORD     = 0x7FFF,
 	};
 
-	HICON m_hIcon;
-	CSimpleArray<WORD> m_buttons;
-	WORD  m_buttonsWidth;
+	HICON				m_hIcon;
+	CSimpleArray<WORD>	m_buttons;
+	WORD				m_buttonsWidth;
+	LPCMBItem			m_lpButtonDefs;
+	WORD				m_nButtons;
 
-	CMsgBoxTemplateT() : CDlgTemplateBase(), m_hIcon(NULL)
+	CMsgBoxTemplateT() : CDlgTemplateBase(), m_hIcon(NULL), m_nButtons(0), m_lpButtonDefs(0)
 	{}
 
 	DLGTEMPLATE* Create(LPCTSTR pszMessage, LPCTSTR pszTitle, UINT uType)
@@ -274,12 +287,16 @@ public:
 
 		CDlgTemplateBase::Create(NULL, pszTitle, dwStyle, 0, 0, TWidth, THeight, 8, _T("MS Shell Dlg"));
 
+		// Set the default button.
 		UINT nDefButton = (uType & MB_DEFMASK) >> 8;
 
+		// Set up the available buttons.
 		AddButtons(uType);
+
 		if(TFitToContents && m_pDlgTemplate->cx < m_buttonsWidth + (2 * MB_SPACING))
 			ResizeDlgTemplate(m_buttonsWidth + (2 * MB_SPACING), 0);
 
+		// Add the icon and the message text.
 		WORD x;
 		WORD y = m_pDlgTemplate->cy - (MB_SPACING + MB_BUTTON_HEIGHT);
 		WORD cy = y - (MB_SPACING + MB_BUTTON_SPACING);
@@ -302,6 +319,7 @@ public:
 		AddControl(_T("Static"), pszMessage, SS_LEFT | SS_NOPREFIX | WS_VISIBLE,
 			x, MB_SPACING, cx, cy, IDMESSAGETEXT);
 
+		// Add the buttons to the dialog.
 		if(TCenterButtons)
 			x = (m_pDlgTemplate->cx - m_buttonsWidth) / 2;
 		else
@@ -315,6 +333,7 @@ public:
 			x += (MB_BUTTON_WIDTH + MB_BUTTON_SPACING);
 		}
 
+		// Add the show again checkbox.
 		UINT uCheckId = 0;
 		if((uType & MB_DONOTASKAGAIN) != 0)
 			uCheckId = IDDONOTASKAGAIN;
@@ -348,10 +367,36 @@ public:
 			m_pDlgTemplate->cy = max(cy, MB_MIN_HEIGHT);
 	}
 
+	void AddCustomButtons()
+	{
+		LPCMBItem pItem = m_lpButtonDefs;
+		if(pItem == NULL)
+			return;
+
+		for(int i = 0; i < m_nButtons; i++)
+		{
+			if(pItem == NULL)
+				break;
+
+			if(pItem->ID != NULL)
+			{
+				m_buttons.Add(pItem->ID);
+			}
+			if(pItem->Caption != NULL)
+			{
+				ATLASSERT(_tcslen(pItem->Caption) < BXT_MB_MAX_BUTTON_TEXT);
+			}
+			pItem++;
+		}
+	}
+
 	void AddButtons(UINT uType)
 	{
 		switch(uType & MB_TYPEMASK)
 		{
+		case MB_CUSTOMBUTTONS:
+			AddCustomButtons();
+			break;
 		case MB_OK:
 			m_buttons.Add(IDOK);
 			break;
@@ -402,6 +447,32 @@ public:
 			m_buttons.Add(IDHELP);
 
 		m_buttonsWidth = (WORD)((m_buttons.GetSize() * (MB_BUTTON_WIDTH + MB_BUTTON_SPACING)) - MB_BUTTON_SPACING);
+	}
+
+	bool GetCustomText(UINT uID, LPTSTR szText) const
+	{
+		LPCMBItem pItem = m_lpButtonDefs;
+
+		for(int i = 0; i < m_nButtons; i++)
+		{
+			if(pItem == NULL)
+				break;
+
+			if(pItem->ID == uID)
+			{
+				if(pItem->Caption != NULL && _tcslen(pItem->Caption) > 0)
+				{
+					_tcscpy(szText, pItem->Caption);
+					return true;
+				}
+				else
+					break;
+			}
+
+			pItem++;
+		}
+
+		return false;
 	}
 
 	LPCTSTR GetButtonText(UINT uID, bool bUseResource) const
@@ -474,7 +545,9 @@ public:
 				::lstrcpy(szText, _T("Do not show this message &again"));
 				break;
 			default:
-				ATLASSERT(false);
+				if(!GetCustomText(uID, szText))
+					ATLASSERT(false);
+				break;
 			}
 		}
 		return szText;
@@ -573,7 +646,8 @@ public:
 			}
 
 			if((m_pDlgTemplate->style & DS_CENTER) != 0)
-				dlg->CenterWindow(dlg->GetParent());
+				PNCenterWindow(dlg->m_hWnd, dlg->GetParent());
+				//dlg->CenterWindow(dlg->GetParent()); - no multi-monitor support.
 		}
 	}
 };
@@ -586,6 +660,12 @@ class CMessageBoxCheckT : public CDialogImplBase
 {
 public:
 	TDlgTemplate m_dlgTmpl;
+
+	void SetCustomButtons(LPCMBItem lpItems, WORD nItems)
+	{
+		m_dlgTmpl.m_lpButtonDefs = lpItems;
+		m_dlgTmpl.m_nButtons = nItems;
+	}
 
 // Creation
 	INT_PTR DoModal(HWND hWndOwner, _U_STRINGorID message, _U_STRINGorID title, UINT uType)
@@ -752,6 +832,34 @@ inline int AtlMessageBoxCheckWin(HWND hWndOwner, _U_STRINGorID message, _U_STRIN
 		nRet = msgBox.DoModal(hWndOwner, message, title, uType);
 	}
 	return nRet;
+}
+
+inline int AtlCustomMessageBoxNet(HWND hWndOwner, _U_STRINGorID message, _U_STRINGorID title = (LPCTSTR)NULL, BXT::LPCMBItem lpItems = NULL, WORD nItems = 0, UINT uType = MB_CUSTOMBUTTONS | MB_ICONINFORMATION)
+{
+	BXT::CMessageBoxCheckNet msgBox;
+	msgBox.SetCustomButtons(lpItems, nItems);
+	
+	// Ensure custom buttons.
+	int type = uType;
+	
+	if(lpItems != NULL && nItems > 0)
+		type |= MB_CUSTOMBUTTONS;
+	
+	return msgBox.DoModal(hWndOwner, message, title, type);
+}
+
+inline int AtlCustomMessageBoxWin(HWND hWndOwner, _U_STRINGorID message, _U_STRINGorID title = (LPCTSTR)NULL, BXT::LPCMBItem lpItems = NULL, WORD nItems = 0, UINT uType = MB_CUSTOMBUTTONS | MB_ICONINFORMATION)
+{
+	BXT::CMessageBoxCheckWin msgBox;
+	msgBox.SetCustomButtons(lpItems, nItems);
+	
+	// Ensure custom buttons.
+	int type = uType;
+	
+	if(lpItems != NULL && nItems > 0)
+		type |= MB_CUSTOMBUTTONS;
+	
+	return msgBox.DoModal(hWndOwner, message, title, type);
 }
 
 };

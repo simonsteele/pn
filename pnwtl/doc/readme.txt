@@ -20,11 +20,14 @@ pn -l 49 -c 14 --scheme cpp test.dat
 
 4) MagicFolder wizard instead of simple folder selector. Now allows 
    specification of file and folder filters for magic folders.
+5) Trying to save a readonly file will now allow you to attempt to overwrite
+   that file.
 
 Bug Fixes:
 ----------
 
-1) 
+1) The external file change notification window now appears on the correct
+   monitor in multiple monitor systems.
 
 If you find a bug:
 ------------------

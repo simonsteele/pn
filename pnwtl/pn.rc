@@ -1480,6 +1480,8 @@ BEGIN
     IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c: Column"
     ID_FILE_NEW_PROJECT     "Create a new project."
     ID_FILE_NEW_WORKSPACE   "Create a new workspace."
+    IDS_SAVEREADONLY        "The file ""%s"" could not be saved because it is write-protected.\n\nYou can either save in a different location or PN can attempt to remove the protection and overwrite the file in its current location."
+    IDS_SAVEREADONLYFAIL    "PN could not remove the write-protection from ""%s"".\n\n Would you like to save with a different name?"
 END
 
 STRINGTABLE 

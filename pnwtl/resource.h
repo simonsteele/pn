@@ -35,6 +35,8 @@
 #define IDS_PATTERNFORMATSTRINGS        135
 #define ID_FILE_NEW_PROJECT             136
 #define ID_FILE_NEW_WORKSPACE           137
+#define IDS_SAVEREADONLY                138
+#define IDS_SAVEREADONLYFAIL            139
 #define IDI_TEXTCLIPS                   167
 #define IDD_FIND                        168
 #define IDR_TABS_POPUP                  169
@@ -280,7 +282,6 @@
 #define IDC_OPT_MRUCOUNT                1064
 #define IDC_MAGICFOLDER_FILEFILTER      1064
 #define IDC_OPT_MRUTEXTLENGTH           1065
-#define IDC_MAGICFOLDER_FILEFILTER2     1065
 #define IDC_MAGICFOLDER_FOLDERFILTER    1065
 #define IDC_OPT_LINELIGHTCHECK          1066
 #define IDC_OPT_NOLLHELPRADIO           1067

@@ -297,6 +297,8 @@ protected:
 	BOOL OnEscapePressed();
 	void Export(int type);
 	void SetModifiedOverride(bool bVal);
+	int HandleFailedFileOp(LPCSTR filename, bool bOpening);
+	bool attemptOverwrite(LPCTSTR filename);
 
 protected:
 	static bool			s_bFirstChild;

@@ -16,6 +16,92 @@ using namespace ssreg;
 
 #include "include/sscontainers.h"
 
+BOOL PNCenterWindow(HWND hWnd, HWND hWndCenter) throw()
+{
+	ATLASSERT(::IsWindow(hWnd));
+
+	// determine owner window to center against
+	DWORD dwStyle = (DWORD)::GetWindowLong(hWnd, GWL_STYLE);//GetStyle();
+	if(hWndCenter == NULL)
+	{
+		if(dwStyle & WS_CHILD)
+			hWndCenter = ::GetParent(hWnd);
+		else
+			hWndCenter = ::GetWindow(hWnd, GW_OWNER);
+	}
+
+	// get coordinates of the window relative to its parent
+	RECT rcDlg;
+	::GetWindowRect(hWnd, &rcDlg);
+	RECT rcArea;
+	RECT rcCenter;
+	HWND hWndParent;
+	if(!(dwStyle & WS_CHILD))
+	{
+		// don't center against invisible or minimized windows
+		if(hWndCenter != NULL)
+		{
+			DWORD dwStyleCenter = ::GetWindowLong(hWndCenter, GWL_STYLE);
+			if(!(dwStyleCenter & WS_VISIBLE) || (dwStyleCenter & WS_MINIMIZE))
+				hWndCenter = NULL;
+		}
+		
+		// We get an area to ensure the window sits within it...
+		if(g_Context.OSVersion.dwMajorVersion > 5) // support multiple monitors on 2k+
+		{
+			rcArea.top = 0;
+			rcArea.left = 0;
+			rcArea.right = ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
+			rcArea.bottom = ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
+		}
+		else
+		{
+			// On older systems we rely on GetWorkArea which doesn't support 
+			// multiple monitors.
+			::SystemParametersInfo(SPI_GETWORKAREA, NULL, &rcArea, NULL);
+		}
+		
+		if(hWndCenter == NULL)
+			// center within screen coordinates
+			rcCenter = rcArea;
+		else
+			::GetWindowRect(hWndCenter, &rcCenter);
+	}
+	else
+	{
+		// center within parent client coordinates
+		hWndParent = ::GetParent(hWnd);
+		ATLASSERT(::IsWindow(hWndParent));
+
+		::GetClientRect(hWndParent, &rcArea);
+		ATLASSERT(::IsWindow(hWndCenter));
+		::GetClientRect(hWndCenter, &rcCenter);
+		::MapWindowPoints(hWndCenter, hWndParent, (POINT*)&rcCenter, 2);
+	}
+
+	int DlgWidth = rcDlg.right - rcDlg.left;
+	int DlgHeight = rcDlg.bottom - rcDlg.top;
+
+	// find dialog's upper left based on rcCenter
+	int xLeft = (rcCenter.left + rcCenter.right) / 2 - DlgWidth / 2;
+	int yTop = (rcCenter.top + rcCenter.bottom) / 2 - DlgHeight / 2;
+
+	// if the dialog is outside the screen, move it inside
+	if(xLeft < rcArea.left)
+		xLeft = rcArea.left;
+	else if(xLeft + DlgWidth > rcArea.right)
+		xLeft = rcArea.right - DlgWidth;
+
+	if(yTop < rcArea.top)
+		yTop = rcArea.top;
+	else if(yTop + DlgHeight > rcArea.bottom)
+		yTop = rcArea.bottom - DlgHeight;
+
+	// map screen coordinates to child coordinates
+	return ::SetWindowPos(hWnd, NULL, xLeft, yTop, -1, -1,
+		SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+}
+
 ///////////////////////////////////////////////////////////////
 // CMRUList
 ///////////////////////////////////////////////////////////////

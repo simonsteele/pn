@@ -15,6 +15,11 @@ Sergey Klimov (Docking Framework)
 Philip Hazel (PCRE)
 Neil Hodgson + Community (Scintilla)
 
+Schemes:
+--------
+
+Steve Baer (Modula-2)
+
 Testers:
 --------
 Robert Scarborough

@@ -16,6 +16,8 @@
 
 class CChildFrame;
 
+class ToolsXMLWriter;
+
 class ToolSource
 {
 public:
@@ -60,7 +62,7 @@ class SchemeTools
 		void			MoveUp(ToolDefinition* pDef);
 		void			MoveDown(ToolDefinition* pDef);
 
-		void			WriteDefinition(ofstream& stream, ToolSource* source);
+		void			WriteDefinition(ToolsXMLWriter& writer, ToolSource* source);
 
 		// You only need to do the following if you can't call GetMenu.
 		void			AllocateMenuResources(int iCommand = TOOLS_RUNTOOL);
@@ -71,7 +73,7 @@ class SchemeTools
 	protected:
 		bool			ToolsInSource(ToolSource* source);
 		void			BuildMenu(int iCommand);
-		void			InternalWriteDefinition(ofstream& stream, ToolSource* source);
+		void			InternalWriteDefinition(ToolsXMLWriter& writer, ToolSource* source);
 		tstring			GetShortcutText(int wCode, int wModifiers) const;
 		tstring			GetKeyName(UINT vkcode, bool extended) const;
 		
@@ -85,7 +87,7 @@ class GlobalTools : public SchemeTools
 {
 	public:
 		//GlobalTools();
-		void WriteDefinition(ofstream& stream, ToolSource* source);
+		void WriteDefinition(ToolsXMLWriter& writer, ToolSource* source);
 };
 
 /**
@@ -135,8 +137,6 @@ class SchemeToolsManager :
 		SCHEMETOOLS_MAP m_toolSets;
 		SOURCES_LIST	m_toolSources;
 };
-
-//#include "aboutdlg.h"
 
 namespace Projects
 {

@@ -8,10 +8,12 @@
  * the conditions under which this source may be modified / distributed.
  *
  * Classes in this file:
+ *		CWindowText			- Get the text from a window.
  *		CContainedPropSheet	- Create a propsheet as a child window.
  *		CMRUList			- "Most Recently Used" list container.
  *		CMRUMenu			- "Most Recently Used" menu.
- *		CDropDownButton		- XP Themes friendly drop-down arrow button.
+  *		CXPButton			- XP Theme friendly standard button.
+ *		CArrowButton		- XP Themes friendly drop-down arrow button.
  *		CNumberCombo		- ComboBox derivative simplifying number display.
  */
 
@@ -52,6 +54,8 @@ class CWindowText
 	protected:
 		TCHAR* m_buffer;
 };
+
+BOOL PNCenterWindow(HWND hWnd, HWND hWndCenter = NULL) throw();
 
 /**
  * @class CContainedPropSheet
@@ -366,7 +370,7 @@ class CXPButton : public CWindowImpl <T>,  public CThemeImpl <CXPButton>
 };
 
 /**
- * @class CDropDownButton
+ * @class CArrowButton
  * Most of the credit for this class goes to the collective authors of CColorButton
  * which can be found at http://www.codeproject.com/wtl/wtlcolorbutton.asp
  * Who'd have thought that to have a themed button with a drop-down arrow on it would
@@ -544,257 +548,6 @@ class CNumberCombo : public CComboBox
 		}
 };
 
-///@todo this should probably go in a pnstrings.h file or something similar...
-
-#if defined(UNICODE)
-	typedef std::wostream tstream;
-#else
-	typedef std::ostream tstream;
-#endif
-
-static TCHAR* tcsnewdup(LPCTSTR strin)
-{
-	TCHAR* ret = new TCHAR[_tcslen(strin)+1];
-	_tcscpy(ret, strin);
-	return ret;
-}
-
-static tstring IntToTString(int x)
-{
-	TCHAR _buffer[32];
-	_sntprintf(_buffer, 32, _T("%0d"), x);
-	
-	return tstring(_buffer);
-}
-
-#include <vector>
-using std::vector;
-
-template <typename TStringType>
-static void StringTokenise(const TStringType& str,
-                      vector<TStringType>& tokens,
-                      const TStringType& delimiters/* = _T(" ")*/)
-{
-    // Skip delimiters at beginning.
-    TStringType::size_type lastPos = str.find_first_not_of(delimiters, 0);
-    // Find first "non-delimiter".
-    TStringType::size_type pos     = str.find_first_of(delimiters, lastPos);
-
-    while (TStringType::npos != pos || TStringType::npos != lastPos)
-    {
-        // Found a token, add it to the vector.
-        tokens.push_back(str.substr(lastPos, pos - lastPos));
-        // Skip delimiters.  Note the "not_of"
-        lastPos = str.find_first_not_of(delimiters, pos);
-        // Find next "non-delimiter"
-        pos = str.find_first_of(delimiters, lastPos);
-    }
-}
-
-/**
- * This class builds strings using custom format specifiers. It
- * supports both %x style format strings and also $(var) style
- * strings. The user must implement at least one of OnFormatChar
- * or OnFormatKey and add text to m_string.
- */
-template <class T>
-class CustomFormatStringBuilder
-{
-	public:
-		const tstring& Build(LPCTSTR str)
-		{
-			TCHAR next;
-			T* pT = static_cast<T*>(this);
-			int len = _tcslen(str);
-
-			m_string = _T("");
-
-			for(int i = 0; i < len; i++)
-			{
-				if(str[i] == _T('%'))
-				{
-					next = SafeGetNextChar(str, i, len);
-					
-					if(next == NULL)
-					{
-						m_string += str[i];
-					}
-					else if(next == _T('%'))
-					{
-						m_string += next;
-						// Push past the next %
-						i++;
-					}
-					else
-					{
-						pT->OnFormatChar(next);
-						i++;
-					}
-				}
-				else if(str[i] == _T('$') && (i != (len-1)))
-				{
-					if( str[i+1] == _T('$') )
-					{
-						// If we are seeing a $$( then it means we want the $ sign.
-						if(SafeGetNextChar(str, i+1, len) == _T('('))
-						{
-							m_string += str[i];
-							// Skip the next dollar sign as well.
-							i += 1;
-							continue;
-						}
-					}
-					else if( str[i+1] != _T('(') )
-					{
-						m_string += str[i];
-						continue;
-					}
-
-					// we matched a $(x) property...
-					LPCTSTR pProp = &str[i+2];
-					LPCTSTR endProp = _tcschr(pProp, _T(')'));
-					if(endProp != NULL)
-					{
-						int keylen = (endProp - pProp) / sizeof(TCHAR);
-						TCHAR* buf = new TCHAR[keylen+1];
-
-						try
-						{
-							_tcsncpy(buf, pProp, keylen);
-							buf[keylen] = _T('\0');
-							pT->OnFormatKey(buf);
-						}
-						catch(...)
-						{
-						}
-
-						i += (2 + keylen); // skip ( + len + )
-
-						delete [] buf;
-					}
-				}
-				else
-				{
-					m_string += str[i];
-				}				
-			}
-
-			return m_string;
-		}
-
-		void OnFormatChar(TCHAR thechar){}
-		void OnFormatKey(LPCTSTR key){}
-
-	protected:
-		TCHAR SafeGetNextChar(LPCTSTR str, int i, int len)
-		{
-			PNASSERT(i < len);
-			PNASSERT(i >= 0);
-
-			if(i == (len-1))
-				return NULL;
-            
-			return str[i+1];
-		}
-
-		tstring	m_string;
-};
-
-///@todo could this be faster at all?
-void XMLSafeString(LPCTSTR from, tstring& to);
-void XMLSafeString(tstring& str);
-
-struct FormatXML {
-   tstring str_;
-   explicit FormatXML(const tstring& str) : str_(str) { XMLSafeString(str_); }
-   friend tstream& operator<<(tstream& s, const FormatXML& x)
-   {
-		s << x.str_;
-		return s;
-   }
-};
-
-/**
- * Class to provide a base class with a virtual destructor that can be added
- * to a simple list of objects to delete. Used for singleton and orphan patterns.
- */
-class DelObject
-{
-public:
-	DelObject() : m_pNextToDelete(NULL){}
-	virtual ~DelObject(){}
-	DelObject* m_pNextToDelete;
-};
-
-/**
- * Class to provide managed singleton/orphan deletion.
- */
-class DeletionManager
-{
-public:
-	static void Register(DelObject* pObject);
-	static void UnRegister(DelObject* pObject);
-	static void DeleteAll();
-	static DelObject* s_pFirst;
-	static DelObject* s_pLast;
-};
-
-/**
- * Class to provide simple singleton functionality.
- */
-template <class T, bool t_bAutoRegister = false>
-class Singleton : public DelObject
-{
-	public:
-		virtual ~Singleton(){}
-
-		static bool HasInstance()
-		{
-			return s_pTheInstance != NULL;
-		}
-
-		static T* GetInstance()
-		{
-			if(!s_pTheInstance)
-			{
-				s_pTheInstance = T::CreateTheInstance();
-			}
-
-			return s_pTheInstance;
-		}
-
-		/// Subclasses can override this to create their single instance...
-		static T* CreateTheInstance()
-		{
-			T* pT = new T;
-			if(t_bAutoRegister)
-			{
-				DeletionManager::Register(pT);
-			}
-			return pT;
-		}
-
-		static T& GetInstanceRef()
-		{
-			return *GetInstance();
-		}
-
-		static void ReleaseInstance()
-		{
-			if(s_pTheInstance)
-			{
-				delete s_pTheInstance;
-				s_pTheInstance = NULL;
-			}
-		}
-
-	protected:
-		static T* s_pTheInstance;
-};
-
-template <class T, bool t_bAutoRegister>
-T* Singleton< T, t_bAutoRegister >::s_pTheInstance = NULL;
-
 class MultipleInstanceManager
 {
 public:
@@ -834,8 +587,6 @@ protected:
 	PFNBroadcastSystemMessage	m_pfnBSM;
 	HMODULE						m_hUser32;
 };
-
-#define SINGLETON_AUTO_DELETE true
 
 #ifdef _DEBUG
 
