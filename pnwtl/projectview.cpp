@@ -242,12 +242,36 @@ LRESULT CProjectTreeCtrl::OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	{
 		if (tvhti.flags & (TVHT_ONITEMLABEL|TVHT_ONITEMICON))
 		{
+
 			ProjectType* ptype = reinterpret_cast<ProjectType*>( GetItemData(tvhti.hItem) );
 			hLastItem = tvhti.hItem;
 			lastItem = ptype;
 
 			if(!ptype)
 				return 0;
+
+			if(GetSelectedCount() > 1)
+			{
+				// We have a multiple-selection thing going on. Check that all items
+				// are of the same type.
+				
+				HTREEITEM sel = GetFirstSelectedItem();
+				while(sel)
+				{
+					// If any items do not match the main type, we bail.
+					ProjectType* ptypeCheck = reinterpret_cast<ProjectType*>( GetItemData(sel) );
+					if( !ptypeCheck )
+						return 0;
+					if( !(ptype->GetType() == ptypeCheck->GetType()) )
+						return 0;
+
+					sel = GetNextSelectedItem(sel);
+				}
+
+				multipleSelection = true;
+			}
+			else
+				multipleSelection = false;
 
 			switch(ptype->GetType())
 			{
@@ -343,9 +367,15 @@ LRESULT CProjectTreeCtrl::OnOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 {
 	if(lastItem != NULL && (lastItem->GetType() == ptFile))
 	{
-		File* pFile = static_cast<File*>( lastItem );
-		if( !g_Context.m_frame->CheckAlreadyOpen(pFile->GetFileName(), eSwitch) )
-			g_Context.m_frame->Open(pFile->GetFileName(), true);
+		HTREEITEM sel = GetFirstSelectedItem();
+		while(sel)
+		{
+			File* pFile = reinterpret_cast<File*>( GetItemData(sel) );
+			if( !g_Context.m_frame->CheckAlreadyOpen(pFile->GetFileName(), eSwitch) )
+				g_Context.m_frame->Open(pFile->GetFileName(), true);
+
+			sel = GetNextSelectedItem(sel);
+		}		
 	}
 
 	return 0;
@@ -457,9 +487,15 @@ LRESULT CProjectTreeCtrl::OnOpenAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	}
 	else
 	{
-		Projects::Folder* pF = static_cast<Projects::Folder*>(lastItem);
-		
-		openAll(pF);
+		HTREEITEM sel = GetFirstSelectedItem();
+		while(sel)
+		{
+			Projects::Folder* pF = reinterpret_cast<Projects::Folder*>( GetItemData(sel) );
+			
+			openAll(pF);
+
+			sel = GetNextSelectedItem(sel);
+		}
 	}
 
 	return 0;
@@ -470,34 +506,60 @@ LRESULT CProjectTreeCtrl::OnRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	if(lastItem == NULL)
 		return 0;
 
+	// We can't delete lots of items and still be in the middle of using the
+	// GetFirst/GetNextSelectedItem loop because the current selection will
+	// change. 
+	std::list<HTREEITEM> selectedItems;
+	HTREEITEM sel = GetFirstSelectedItem();
+	while(sel)
+	{
+		selectedItems.push_front(sel);
+		sel = GetNextSelectedItem(sel);
+	}
+
+	std::list<HTREEITEM>::iterator i = selectedItems.begin();
+
+	// just to be safe we cache the selected list and
+	// clear the selection to be safe.
+	//ClearSelection();
+
 	switch(lastItem->GetType())
 	{
 		case ptFile:
 		{
 			// Remove a file from a folder.
-			File* pF = static_cast<File*>(lastItem);
-			Projects::Folder* pFolder = pF->GetFolder();
-			pFolder->RemoveFile(pF);
-			DeleteItem(hLastItem);
+			for(;i != selectedItems.end(); ++i)
+			{
+				File* pF = reinterpret_cast<File*>( GetItemData((*i)) );
+				Projects::Folder* pFolder = pF->GetFolder();
+				pFolder->RemoveFile(pF);
+				DeleteItem((*i));
+			}
 		}
 		break;
 
 		case ptFolder:
 		{
 			// Remove a folder from a folder (or a project).
-			Projects::Folder* pFolder = static_cast<Projects::Folder*>( lastItem );
-			Projects::Folder* pParent = pFolder->GetParent();
-			pParent->RemoveChild(pFolder);
-			DeleteItem(hLastItem);
+			for(;i != selectedItems.end(); ++i)
+			{
+				Projects::Folder* pFolder = reinterpret_cast<Projects::Folder*>( GetItemData((*i)) );
+				Projects::Folder* pParent = pFolder->GetParent();
+				pParent->RemoveChild(pFolder);
+				DeleteItem((*i));
+			}
 		}
 		break;
 
 		case ptProject:
 		{
 			// All projects belong to single workspace (at the moment).
-			Project* pProject = static_cast<Projects::Project*>( lastItem );
-			workspace->RemoveProject(pProject);
-			DeleteItem(hLastItem);
+			for(;i != selectedItems.end(); ++i)
+			{
+				Project* pProject = reinterpret_cast<Projects::Project*>( GetItemData((*i)) );
+				workspace->RemoveProject(pProject);
+				DeleteItem((*i));
+			}
 		}
 		break;
 	}
@@ -514,17 +576,36 @@ LRESULT CProjectTreeCtrl::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	{
 		case ptFile:
 		{
-			File* pF = static_cast<File*>(lastItem);
-			Projects::Folder* pFolder = pF->GetFolder();
-			tstring filename = pF->GetFileName();
-			tstring askstr = "Are you sure you wish to delete:\n" + filename;
-			if( ::MessageBox(m_hWnd, askstr.c_str(), "Delete File", MB_YESNO | MB_ICONQUESTION) == IDYES )
+			// We can't delete lots of items and still be in the middle of using the
+			// GetFirst/GetNextSelectedItem loop because the current selection will
+			// change. 
+			std::list<HTREEITEM> selectedItems;
+			HTREEITEM sel = GetFirstSelectedItem();
+			while(sel)
 			{
-				if(::DeleteFile(filename.c_str()) != 0)
+				selectedItems.push_front(sel);
+				sel = GetNextSelectedItem(sel);
+			}
+
+			std::list<HTREEITEM>::iterator i = selectedItems.begin();
+
+			for(std::list<HTREEITEM>::iterator i = selectedItems.begin();
+				i != selectedItems.end(); ++i)
+			{
+				File* pF = reinterpret_cast<File*>( GetItemData((*i)) );
+				Projects::Folder* pFolder = pF->GetFolder();
+				tstring filename = pF->GetFileName();
+				tstring askstr = "Are you sure you wish to delete:\n" + filename;
+				if( ::MessageBox(m_hWnd, askstr.c_str(), "Delete File", MB_YESNO | MB_ICONQUESTION) == IDYES )
 				{
-					pFolder->RemoveFile(pF);
-					DeleteItem(hLastItem);
+					if(::DeleteFile(filename.c_str()) != 0)
+					{
+						pFolder->RemoveFile(pF);
+						DeleteItem((*i));
+					}
 				}
+
+				sel = GetNextSelectedItem(sel);
 			}
 		}
 		break;
@@ -599,7 +680,7 @@ LRESULT CProjectDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
 	RECT rc;
 	GetClientRect(&rc);
-	m_view.Create(m_hWnd, rc, _T("ProjectTree"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_HASLINES | TVS_EDITLABELS , 0, 100);
+	m_view.Create(m_hWnd, rc, _T("ProjectTree"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_HASLINES | TVS_EDITLABELS | TVS_SHOWSELALWAYS, 0, 100);
 
 	return 0;
 }

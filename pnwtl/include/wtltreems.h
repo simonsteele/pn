@@ -40,6 +40,7 @@ public:
 		MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLButtonDown)
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtonUp)
 		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnLButtonDblClk)
+		MESSAGE_HANDLER(WM_RBUTTONDOWN, OnRButtonDown)
 		MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
 		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
 		MESSAGE_HANDLER(WM_TIMER, OnTimer)
@@ -230,6 +231,42 @@ protected:
 		editPending = false;
 		bHandled = FALSE;
 		KillTimer(m_idTimer);
+
+		return 0;
+	}
+
+	LRESULT OnRButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		bHandled = FALSE;
+
+		// Cancel any edit.
+		editPending = false;
+		// Cancel any select.
+		selectPending = false;
+		
+		CPoint point;
+		point.x = GET_X_LPARAM(lParam); 
+		point.y = GET_Y_LPARAM(lParam); 
+
+		UINT nHitFlags = 0;
+		HTREEITEM hClickedItem = HitTest( point, &nHitFlags );
+
+		if( nHitFlags & TVHT_ONITEM )
+		{
+
+			// Is the item that was right-clicked selected?
+			BOOL bIsClickedItemSelected = GetItemState( hClickedItem, TVIS_SELECTED ) & TVIS_SELECTED;
+
+			if ( bIsClickedItemSelected )
+			{
+				// If it is, then we let events proceed...
+			}
+			else
+			{
+				ClearSelection();
+				SelectItem( hClickedItem );
+			}
+		}
 
 		return 0;
 	}

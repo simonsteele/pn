@@ -831,7 +831,7 @@ void SchemeParser::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, S
 			pStyle->FontSize = _ttoi(t);
 			pStyle->values |= edvFontSize;
 		}
-		else if(_tcscmp(nm, _T("italics")) == 0)
+		else if(_tcscmp(nm, _T("italic")) == 0)
 		{
 			pStyle->Italic = PNStringToBool(t);
 			pStyle->values |= edvItalic;

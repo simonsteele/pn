@@ -82,6 +82,7 @@ protected:
 	int						projectIcon;
 	int						workspaceIcon;
 	int						badProjectIcon;
+	bool					multipleSelection;
 };
 
 class CProjectDocker : public CPNDockingWindow<CProjectDocker>

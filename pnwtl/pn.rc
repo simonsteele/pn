@@ -665,7 +665,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Add Files...",               ID_PROJECT_ADDFILES
         MENUITEM "&Remove",                     ID_PROJECT_REMOVE
-        MENUITEM "&Delete",                     258, GRAYED
+        MENUITEM "&Delete",                     258
     END
 END
 

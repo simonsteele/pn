@@ -19,6 +19,7 @@ What's new?
 11) Keyboard-shortcuts for Tools.
 12) More editor colouring options.
 13) Statusbar text on mouse-over MRU items.
+14) (X)HTML Export.
 
 Bug Fixes:
 ----------
@@ -34,6 +35,9 @@ Bug Fixes:
 9) Edit SmartStart Phrase Dialog no scheme list. (SF Bug #771661)
 10) WindowState is not save when close. (SF Bug #770302)
 11) Unable to define a shortcut for a custom tool. (SF Bug #753458)
+12) Collapse all folds menu item fixed.
+13) Italic font customisations not picked up. (SF Bug #834967)
+14) Save All only saves unchanged files. (SF Bug #827998)
 
 If you find a bug:
 ------------------

@@ -1,6 +1,11 @@
 | Working towards 0.5 :: Mingus
 ---------------------------------------
 
+Since 04/11/03:
+
+Italic font customisations not picked up. (SF Bug #834967)
+Save All only saves unchanged files. (SF Bug #827998)
+
 Since 16/10/03:
 
 Fixed drop-downs in the find and replace dialogs.
@@ -13,6 +18,8 @@ Merged changes from Bjoern Graf for re-ordering MRU items on file open.
 Added project and workspace icons.
 Icon file icons no longer cached.
 Enabled multiple-selection in projects tree control.
+Added (X)HTML export from Bjoern Graf.
+Some UI fixes (minor) from Bjoern Graf.
 
 Since 13/10/03:
 

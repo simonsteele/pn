@@ -510,7 +510,7 @@
 				RelativePath="include\Utf8_16.cpp">
 			</File>
 			<File
-				RelativePath="include\wtltreeex.h">
+				RelativePath=".\include\wtltreems.h">
 			</File>
 		</Filter>
 		<File
