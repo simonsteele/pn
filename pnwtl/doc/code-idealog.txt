@@ -1,0 +1,14 @@
+This file is meant to be a place to record ideas as they come to PN2 developers - so that they don't get lost. Every now and then, people can take a look through it, and see if there are any ideas they'd like to implement.
+
+Scheme Disabling:
+
+Probably need a way to disable the schemes one-by-one - some people 
+don't want certain schemes and want an easy checkbox way to
+disable them.
+
+Ideas for optimisation:
+	
+After compiling schemes, write out a table of schemes linking scheme files to scheme names / titles. 
+This saves examining all .cscheme files each time. It also gives
+a good list of .cscheme files to delete before compilation or on
+a cleanout.
