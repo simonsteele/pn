@@ -396,6 +396,14 @@ void CScheme::SetupScintilla(CScintilla& sc)
 	sc.SPerform(SCI_SETINDENTATIONGUIDES, (options.ShowIndentGuides ? 1 : 0));
 	sc.SPerform(SCI_SETUSETABS, options.UseTabs ? 1 : 0);
 	sc.SPerform(SCI_SETTABWIDTH, options.TabWidth);
+	if( options.LineHighlight )
+	{
+		sc.SPerform(SCI_SETCARETLINEVISIBLE, true);
+		sc.SPerform(SCI_SETCARETLINEBACK, options.LineHighlightColour);
+	}
+	sc.SPerform(SCI_SETEDGEMODE, options.RightGuide);
+	sc.SPerform(SCI_SETEDGECOLUMN, options.RightColumn);
+	sc.SPerform(SCI_SETEDGECOLOUR, options.RightGuideColour);
 
 	// Set even treatment of left and right caret positioning, and sloppy behaviour. 
 	// Use 3 lines as the jump when scrolling up and down.

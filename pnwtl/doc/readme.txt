@@ -10,6 +10,9 @@ What's new?
 2) Find toolbar.
 3) Many find improvements (thanks mostly to Bjoern Graf).
 4) Tile Vertical / Tile Horizontal.
+5) Show path of file to be executed (SF Feature #765270).
+6) Visual Help options (highlight current line, long line help).
+7) Sanitise file names from output window to better find files.
 
 Bug Fixes:
 ----------

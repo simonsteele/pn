@@ -33,7 +33,6 @@ void COptionsPageGeneral::OnOK()
 	m_SaveFormat = (EPNSaveFormat)cb.GetItemData(cb.GetCurSel());
 
 	COptionsManager& options = COptionsManager::GetInstanceRef();
-	options.ShowIndentGuides = m_bIndentGuides != FALSE;
 	options.UseTabs = m_bUseTabs != FALSE;
 	options.TabWidth = m_iTabWidth;
 	options.LineNumbers = m_bLineNos != FALSE;
@@ -46,7 +45,6 @@ void COptionsPageGeneral::OnOK()
 void COptionsPageGeneral::OnInitialise()
 {
 	COptionsManager& options = COptionsManager::GetInstanceRef();
-	m_bIndentGuides = options.ShowIndentGuides;
 	m_bUseTabs = options.UseTabs;
 	m_iTabWidth = options.TabWidth;
 	m_bLineNos = options.LineNumbers;
@@ -79,10 +77,57 @@ LRESULT COptionsPageGeneral::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 	cb.SetItemData(idx, PNSF_Unix);
 	idx = cb.InsertString(2, _T("Macintosh (CR)"));
 	cb.SetItemData(idx, PNSF_Mac);
+
 	return 0;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// COptionsPageVisual
+//////////////////////////////////////////////////////////////////////////////
 
+LPCTSTR COptionsPageVisual::GetTreePosition()
+{
+	return _T("General\\Visual Help");
+}
+
+void COptionsPageVisual::OnOK()
+{
+	if(!m_bCreated)
+		return;
+
+	DoDataExchange(TRUE);
+
+	COptionsManager& options = COptionsManager::GetInstanceRef();
+	options.ShowIndentGuides = m_bIndentGuides != FALSE;
+	options.LineHighlight = m_bLineHighlight != FALSE;
+	options.LineHighlightColour = m_btnLineCol.SafeGetColor();
+	options.RightGuide = m_iLongLineHelp;
+	options.RightColumn = m_iRightColumn;
+	options.RightGuideColour = m_btnLLCol.SafeGetColor();
+}
+
+void COptionsPageVisual::OnInitialise()
+{
+	COptionsManager& options = COptionsManager::GetInstanceRef();
+	m_bIndentGuides = options.ShowIndentGuides;
+	m_bLineHighlight = options.LineHighlight;
+	m_btnLineCol.SetColor( options.LineHighlightColour );
+	m_iLongLineHelp = options.RightGuide;
+	m_iRightColumn = options.RightColumn;
+	m_btnLLCol.SetColor(options.RightGuideColour);
+
+	DoDataExchange();
+}
+
+LRESULT COptionsPageVisual::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	m_btnLineCol.SubclassWindow(GetDlgItem(IDC_OPT_LINELIGHTBUTTON));
+	m_btnLineCol.SetDefaultColor(RGB(255, 255, 224));
+	m_btnLLCol.SubclassWindow(GetDlgItem(IDC_OPT_LLCOLORBUTTON));
+	m_btnLLCol.SetDefaultColor(RGB(215,215,215));
+	
+	return 0;
+}
 
 //////////////////////////////////////////////////////////////////////////////
 // CTabPageKeywords

@@ -889,28 +889,26 @@ IDD_PAGE_GENERAL DIALOGEX 0, 0, 299, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "Show Indentation Guides",IDC_OPT_INDENTGUIDESCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,6,168,12
     CONTROL         "Show Line Numbers",IDC_OPT_LINENOSCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,18,97,138,12
+                    BS_AUTOCHECKBOX | WS_TABSTOP,18,73,138,12
     CONTROL         "Use the tab character for indentation",
                     IDC_OPT_USETABSCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,18,138,168,12
-    LTEXT           "Tab Width:",IDC_STATIC,18,156,48,12
-    EDITTEXT        IDC_OPT_TABWIDTHEDIT,66,156,30,14,ES_AUTOHSCROLL
-    LTEXT           "Line Endings:",IDC_STATIC,18,114,48,12
-    COMBOBOX        IDC_OPT_LECOMBO,66,114,102,66,CBS_DROPDOWNLIST | 
-                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+                    WS_TABSTOP,18,114,168,12
+    LTEXT           "Tab Width:",IDC_STATIC,18,132,48,12
+    EDITTEXT        IDC_OPT_TABWIDTHEDIT,66,132,30,14,ES_AUTOHSCROLL
+    LTEXT           "Line Endings:",IDC_STATIC,18,90,48,12
+    COMBOBOX        IDC_OPT_LECOMBO,66,90,102,66,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
     CONTROL         "Maximise new document windows",IDC_OPT_MAXCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,6,24,150,12
-    LTEXT           "Defaults:",IDC_STATIC,6,84,66,12
-    LTEXT           "",IDC_STATIC,42,89,252,2,SS_SUNKEN
+                    BS_AUTOCHECKBOX | WS_TABSTOP,6,6,150,12
+    LTEXT           "Defaults:",IDC_STATIC,6,60,66,12
+    LTEXT           "",IDC_STATIC,42,65,252,2,SS_SUNKEN
     CONTROL         "Show full file path in document windows",
                     IDC_OPT_FULLPATHCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,6,42,156,12
-    LTEXT           "Files in the most recently used list:",IDC_STATIC,6,60,
+                    WS_TABSTOP,6,25,156,12
+    LTEXT           "Files in the most recently used list:",IDC_STATIC,6,42,
                     120,12
-    EDITTEXT        IDC_OPT_MRUCOUNT,126,60,30,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_OPT_MRUCOUNT,126,42,30,12,ES_AUTOHSCROLL
 END
 
 IDD_PAGE_NEWFILES DIALOGEX 0, 0, 299, 200
@@ -948,6 +946,28 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,203,24,50,14
     RTEXT           "Start Phrase:",IDC_STATIC,6,6,54,12
     RTEXT           "Scheme:",IDC_STATIC,6,30,54,12
+END
+
+IDD_PAGE_VISUALHELP DIALOGEX 0, 0, 299, 200
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "Show Indentation Guides",IDC_OPT_INDENTGUIDESCHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,6,168,12
+    CONTROL         "Highlight current editor line",IDC_OPT_LINELIGHTCHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,24,114,12
+    PUSHBUTTON      "Button1",IDC_OPT_LINELIGHTBUTTON,126,24,60,12
+    GROUPBOX        "Long Line Helpers",IDC_STATIC,6,48,192,72
+    CONTROL         "No long line help",IDC_OPT_NOLLHELPRADIO,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP,12,60,120,12
+    CONTROL         "Show a line at the edge column",IDC_OPT_LLLINERADIO,
+                    "Button",BS_AUTORADIOBUTTON,12,72,126,12
+    CONTROL         "Highlight text beyond the edge column",
+                    IDC_OPT_LLHIGHLIGHTRADIO,"Button",BS_AUTORADIOBUTTON,12,
+                    84,150,12
+    EDITTEXT        IDC_OPT_LLCOLUMNEDIT,84,102,48,12,ES_AUTOHSCROLL
+    LTEXT           "Rightmost Column:",IDC_STATIC,12,102,66,12
+    PUSHBUTTON      "Button2",IDC_OPT_LLCOLORBUTTON,138,102,54,12
 END
 
 
@@ -1051,6 +1071,14 @@ BEGIN
         RIGHTMARGIN, 253
         TOPMARGIN, 7
         BOTTOMMARGIN, 42
+    END
+
+    IDD_PAGE_VISUALHELP, DIALOG
+    BEGIN
+        LEFTMARGIN, 2
+        RIGHTMARGIN, 296
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 198
     END
 END
 #endif    // APSTUDIO_INVOKED

@@ -100,6 +100,7 @@
 #define IDD_PAGE_GENERAL                427
 #define IDD_PAGE_SMARTSTART             428
 #define IDD_PAGE_NEWFILES               428
+#define IDD_PAGE_VISUALHELP             429
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_GOTOEDIT                    1004
@@ -115,12 +116,14 @@
 #define IDC_TE_COMMANDBUTTON            1010
 #define IDC_SMARTSTART_REMOVE           1010
 #define IDC_SMARTSTART_REMOVEBUTTON     1010
+#define IDC_OPT_LINELIGHTBUTTON         1010
 #define IDC_EDIT1                       1011
 #define IDC_KEYWORDS_KEYWORDTEXT        1011
 #define IDC_TOOLS_EDITBUTTON            1011
 #define IDC_TE_NAMEEDIT                 1011
 #define IDC_OPT_TABWIDTHEDIT            1011
 #define IDC_PHRASEEDIT                  1011
+#define IDC_OPT_LLCOLUMNEDIT            1011
 #define IDC_FONT_COMBO                  1012
 #define IDC_TOOLS_REMOVEBUTTON          1012
 #define IDC_TE_BROWSEBUTTON             1012
@@ -143,6 +146,7 @@
 #define IDC_TOOLS_MOVEUPBUTTON          1033
 #define IDC_TE_CLEARBUTTON              1033
 #define IDC_SMARTSTART_EDITBUTTON       1033
+#define IDC_OPT_LLCOLORBUTTON           1033
 #define IDC_KEYWORDS_SORTBUTTON         1034
 #define IDC_TOOLS_MOVEDOWNBUTTON        1034
 #define IDC_SMARTSTART_ADDBUTTON        1034
@@ -188,6 +192,10 @@
 #define IDC_TE_SAVECOMBO                1063
 #define IDC_EDIT2                       1064
 #define IDC_OPT_MRUCOUNT                1064
+#define IDC_OPT_LINELIGHTCHECK          1066
+#define IDC_OPT_NOLLHELPRADIO           1067
+#define IDC_OPT_LLHIGHLIGHTRADIO        1068
+#define IDC_OPT_LLLINERADIO             1069
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -242,9 +250,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        281
+#define _APS_NEXT_RESOURCE_VALUE        282
 #define _APS_NEXT_COMMAND_VALUE         32877
-#define _APS_NEXT_CONTROL_VALUE         1065
+#define _APS_NEXT_CONTROL_VALUE         1070
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

@@ -53,6 +53,11 @@ class COptionsManager
 		bool LineNumbers;
 		bool MaximiseNew;
 		bool ShowFullPath;
+		bool LineHighlight;
+		int RightGuide;
+		UINT RightColumn;
+		COLORREF LineHighlightColour;
+		COLORREF RightGuideColour;
 		EPNSaveFormat LineEndings;
 		EAlreadyOpenAction AlreadyOpenAction;
 

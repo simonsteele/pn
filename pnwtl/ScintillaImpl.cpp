@@ -400,7 +400,11 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 		GetSel(cr);
 
 		USES_CONVERSION;
+		#ifdef CT2A
 		const char* findtext = CT2A(pOptions->FindText);
+		#else
+		const char* findtext = T2A(const_cast<TCHAR*>( (LPCTSTR)pOptions->FindText ));
+		#endif
 
 		if(!pOptions->Direction)
 		{

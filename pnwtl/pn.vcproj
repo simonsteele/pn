@@ -191,6 +191,12 @@
 				RelativePath=".\pnutils.cpp">
 			</File>
 			<File
+				RelativePath="project.cpp">
+			</File>
+			<File
+				RelativePath="projectview.cpp">
+			</File>
+			<File
 				RelativePath="scaccessor.cpp">
 			</File>
 			<File

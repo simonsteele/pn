@@ -144,6 +144,14 @@ SOURCE=.\pnutils.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\project.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\projectview.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\scaccessor.cpp
 # End Source File
 # Begin Source File

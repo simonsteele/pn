@@ -49,6 +49,11 @@ void COptionsManager::Load()
 	UseTabs = reg.ReadBool(_T("UseTabs"), true);
 	LineNumbers = reg.ReadBool(_T("LineNumbers"), false);
 	AlreadyOpenAction = (EAlreadyOpenAction)reg.ReadInt(_T("AlreadyOpenAction"), eSwitch);
+	LineHighlight = reg.ReadBool(_T("LineHighlight"), false);
+	LineHighlightColour = reg.ReadInt(_T("LineHighlightColour"), RGB(255, 255, 224));
+	RightGuide = reg.ReadInt(_T("RightGuide"), 0);
+	RightColumn = reg.ReadInt(_T("RightColumn"), 76);
+	RightGuideColour = reg.ReadInt(_T("RightGuideColour"), RGB(215, 215, 215));
 	
 	// Interface Settings -------------------
 	cs = root + PNSK_INTERFACE;
@@ -68,10 +73,7 @@ void COptionsManager::Load()
 	m_FindOptions.MatchWholeWord = reg.ReadBool(_T("Find MatchWholeWord"), false);
 	m_FindOptions.UseRegExp = reg.ReadBool(_T("Find UseRegExp"), false);
 	m_FindOptions.UseSlashes = reg.ReadBool(_T("Find UseSlashes"), false);
-/*
-	m_FindOptions.Direction = true;
-	m_FindOptions.Loop = true;
-*/
+
 	m_ReplaceOptions.Direction = reg.ReadBool(_T("Replace Direction"), true);
 	if( reg.ReadString(_T("Replace FindText"), val) )
 		m_ReplaceOptions.FindText = val.c_str();
@@ -82,9 +84,6 @@ void COptionsManager::Load()
 	m_ReplaceOptions.MatchWholeWord = reg.ReadBool(_T("Replace MatchWholeWord"), false);
 	m_ReplaceOptions.UseRegExp = reg.ReadBool(_T("Replace UseRegExp"), false);
 	m_ReplaceOptions.UseSlashes = reg.ReadBool(_T("Replace UseSlashes"), false);
-/*
-	m_ReplaceOptions.Direction = true;
-	m_ReplaceOptions.Loop = true;*/
 }
 
 void COptionsManager::Save()
@@ -102,6 +101,11 @@ void COptionsManager::Save()
 	reg.WriteBool(_T("UseTabs"), UseTabs);
 	reg.WriteBool(_T("LineNumbers"), LineNumbers);
 	reg.WriteInt(_T("AlreadyOpenAction"), AlreadyOpenAction);
+	reg.WriteBool(_T("LineHighlight"), LineHighlight);
+	reg.WriteInt(_T("LineHighlightColour"), LineHighlightColour);
+	reg.WriteInt(_T("RightGuide"), RightGuide);
+	reg.WriteInt(_T("RightColumn"), RightColumn);
+	reg.WriteInt(_T("RightGuideColour"), RightGuideColour);
 	
 	// Interface Settings -------------------
 	cs = root + PNSK_INTERFACE;

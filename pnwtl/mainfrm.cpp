@@ -800,6 +800,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	SchemeConfigParser		schemeconfig(currentScheme);
 	
 	COptionsPageGeneral		general;
+	COptionsPageVisual		visual;
 
 	COptionsPageStyle		pageStyle(&schemeconfig);
 	COptionsPageSchemes		pageSchemes(&schemeconfig);
@@ -810,6 +811,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 
 	COptionsDialog options;
 	options.AddPage(&general);
+	options.AddPage(&visual);
 	options.AddPage(&pageStyle);
 	options.AddPage(&pageSchemes);
 	options.AddPage(&pageNewFiles);

@@ -10,6 +10,11 @@ Probably need a way to disable the schemes one-by-one - some people
 don't want certain schemes and want an easy checkbox way to
 disable them.
 
+Scintilla Options:
+------------------
+
+Currently the scintilla display options are set as part of CScheme. This is wrongly placed - the Scheme should deal entirely with scheme settings. The display options code should be moved into a ScintillaConfigurator class (or similar) which runs the config code and then loads a scheme. This way different configurators can be used for different scintilla situations (e.g. options/output/editor).
+
 Modes:
 ------
 

@@ -531,6 +531,10 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	TCHAR* commandBuf = new TCHAR[tempstr.size() + 1];
 	_tcscpy(commandBuf, tempstr.c_str());
 
+	tempstr.insert(0, _T("> "));
+	tempstr += _T("\n");
+	m_pWrapper->_AddToolOutput(tempstr.c_str());
+
 	if(_tcslen(dir) == 0)
 		dir = NULL;
 

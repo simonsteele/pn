@@ -27,7 +27,6 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 		enum { IDD = IDD_PAGE_GENERAL };
 
 		BEGIN_DDX_MAP(COptionsPageGeneral)
-			DDX_CHECK(IDC_OPT_INDENTGUIDESCHECK, m_bIndentGuides)
 			DDX_CHECK(IDC_OPT_USETABSCHECK, m_bUseTabs)
 			DDX_CHECK(IDC_OPT_LINENOSCHECK, m_bLineNos)
 			DDX_UINT(IDC_OPT_TABWIDTHEDIT, m_iTabWidth)
@@ -44,13 +43,45 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		
 		BOOL m_bUseTabs;
-		BOOL m_bIndentGuides;
 		BOOL m_bLineNos;
 		BOOL m_bMaximise;
 		BOOL m_bFullPath;
 		UINT m_iTabWidth;
 		UINT m_iMRUSize;
 		EPNSaveFormat m_SaveFormat;
+};
+
+class COptionsPageVisual : public COptionsPageImpl<COptionsPageVisual>,
+							public CWinDataExchange<COptionsPageVisual>
+{
+	public:
+		BEGIN_MSG_MAP(COptionsPageVisual)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			REFLECT_NOTIFICATIONS()
+		END_MSG_MAP()
+		enum { IDD = IDD_PAGE_VISUALHELP };
+
+		BEGIN_DDX_MAP(COptionsPageVisual)
+			DDX_CHECK(IDC_OPT_INDENTGUIDESCHECK, m_bIndentGuides)
+			DDX_CHECK(IDC_OPT_LINELIGHTCHECK, m_bLineHighlight)
+			DDX_RADIO(IDC_OPT_NOLLHELPRADIO, m_iLongLineHelp)
+			DDX_UINT(IDC_OPT_LLCOLUMNEDIT, m_iRightColumn)
+		END_DDX_MAP()
+
+		virtual void OnOK();
+		virtual void OnInitialise();
+		virtual LPCTSTR GetTreePosition();
+
+	protected:
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		
+		BOOL m_bIndentGuides;
+		BOOL m_bLineHighlight;
+		int m_iLongLineHelp;
+		UINT m_iRightColumn;
+
+		CPNColorButton	m_btnLineCol;
+		CPNColorButton	m_btnLLCol;
 };
 
 class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
