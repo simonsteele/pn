@@ -166,8 +166,9 @@ protected:
 			if ( hClickedItem == GetSelectedItem() && ::GetFocus() == m_hWnd )
 			{
 				// Clear multple selection before label editing
-				ClearSelection();
-				SelectItem( hClickedItem );
+				//ClearSelection();
+				//SelectItem( hClickedItem );
+				m_hClickedItem = hClickedItem;
 
 				// Invoke label editing
 				editPending = TRUE;
@@ -291,7 +292,9 @@ protected:
 			if ( abs(sizeMoved.cx) > GetSystemMetrics( SM_CXDRAG ) || 
 				abs(sizeMoved.cy) > GetSystemMetrics( SM_CYDRAG ) )
 			{
+				KillTimer(m_idTimer);
 				selectPending = false;
+				editPending = false;
 
 				// Notify parent that he may begin drag operation
 				// Since we have taken over OnLButtonDown(), the default handler doesn't
@@ -335,7 +338,15 @@ protected:
 
 			// Invoke label editing.
 			if (editPending)
+			{
+				// Remove multiple selection before editing...
+				HTREEITEM hSelectedItem = GetSelectedItem();
+				ClearSelection();
+				SelectItem( hSelectedItem );
+				m_hClickedItem = NULL;
+				
 				EditLabel(GetSelectedItem());
+			}
 
 			editPending = FALSE;
 

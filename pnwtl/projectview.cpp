@@ -27,6 +27,8 @@ CProjectTreeCtrl::CProjectTreeCtrl()
 	lastItem = NULL;
 	m_pDropTarget = NULL;
 
+	dragging = false;
+
 	shellImages = new ShellImageList();
 	projectIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_PROJECTFOLDER)) );
 	badProjectIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_BADPROJECT)) );
@@ -342,6 +344,112 @@ LRESULT CProjectTreeCtrl::OnEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 
 	if(GetSelectedItem() == ptvdi->item.hItem)
 		setStatus(type);
+
+	return 0;
+}
+
+LRESULT	CProjectTreeCtrl::OnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	LPNMTREEVIEW lpnmtv = (LPNMTREEVIEW)pnmh;
+
+	// Tell the tree-view control to create an image to use 
+    // for dragging. 
+	HIMAGELIST hImageList = TreeView_CreateDragImage(m_hWnd, lpnmtv->itemNew.hItem);
+	hDragImageList = hImageList;
+
+	// Get the bounding rectangle of the item being dragged. 
+	RECT rcItem;
+	TreeView_GetItemRect(m_hWnd, lpnmtv->itemNew.hItem, &rcItem, TRUE);
+
+	DWORD dwIndent = TreeView_GetIndent(m_hWnd);
+
+	if(ImageList_BeginDrag(hImageList, 0, 0, 0) == 0)
+		::OutputDebugString(_T("Failed BeginDrag\n"));
+
+	//ImageList_DragEnter(m_hWnd, rcItem.left - dwIndent, rcItem.top);
+	ImageList_DragEnter(m_hWnd, lpnmtv->ptDrag.x, lpnmtv->ptDrag.y);
+
+	//ShowCursor(FALSE);
+	SetCapture();
+
+	dragging = true;
+
+	::OutputDebugString(_T("Dragging\n"));
+
+	return 0;
+}
+
+LRESULT CProjectTreeCtrl::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	bHandled = false;
+
+	if(dragging)
+	{
+		DWORD dwLastPos = GetMessagePos();
+
+		CPoint pt(GET_X_LPARAM(dwLastPos), GET_Y_LPARAM(dwLastPos));
+		ScreenToClient(&pt);
+
+		HTREEITEM htiTarget;
+		TVHITTESTINFO tvht;
+		tvht.pt.x = pt.x;
+        tvht.pt.y = pt.y;
+        
+		if ((htiTarget = TreeView_HitTest(m_hWnd, &tvht)) != NULL) 
+        { 
+			// This code is surrounded by DragShowNoLock in order
+			// to allow the treeview to update it's display when
+			// we change the selection. Without this, we get nasty
+			// trails.
+            ImageList_DragShowNolock(false);
+			TreeView_SelectDropTarget(m_hWnd, htiTarget);
+			ImageList_DragShowNolock(true);
+        }
+
+		ImageList_DragMove(pt.x, pt.y);
+	}
+
+	return 0;
+}
+
+void CProjectTreeCtrl::handleEndDrag()
+{
+	ImageList_DragLeave(m_hWnd);
+	ImageList_EndDrag();
+    ReleaseCapture();
+	//ShowCursor(TRUE);
+
+	TreeView_SelectDropTarget(m_hWnd, NULL);
+
+	ImageList_Destroy(hDragImageList);
+
+	dragging = false;
+}
+
+LRESULT CProjectTreeCtrl::OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	bHandled = false;
+	if(dragging)
+	{		
+		handleEndDrag();
+	}
+	return 0;
+}
+
+LRESULT CProjectTreeCtrl::OnRButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	bHandled = false;
+	if(dragging)
+	{
+		handleEndDrag();
+	}
+	return 0;
+}
+
+LRESULT CProjectTreeCtrl::OnCaptureChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	if(dragging && (HWND)lParam != m_hWnd)
+		dragging = false;
 
 	return 0;
 }
