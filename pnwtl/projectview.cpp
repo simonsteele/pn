@@ -396,6 +396,7 @@ void CProjectTreeCtrl::handleRemove()
 		break;
 
 		case ptFolder:
+		case ptMagicFolder:
 		{
 			// Remove a folder from a folder (or a project).
 			for(;i != selectedItems.end(); ++i)

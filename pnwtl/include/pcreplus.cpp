@@ -21,6 +21,14 @@
 namespace PCRE
 {
 
+RegExp::RegExp()
+{
+	m_pRE = NULL;
+	m_pStudyData = NULL;
+	m_pSubStringVector = NULL;
+	m_strmatch = NULL;
+}
+
 RegExp::RegExp(const char* expression, int flags)
 {
 	m_pRE = NULL;
@@ -33,20 +41,12 @@ RegExp::RegExp(const char* expression, int flags)
 
 RegExp::~RegExp()
 {
-	if(m_pRE)
-	{
-		pcre_free(m_pRE);
-	}
-	
-	if(m_pStudyData)
-	{
-		pcre_free(m_pStudyData);
-	}
-	
-	if(m_pSubStringVector)
-	{
-		delete [] m_pSubStringVector;
-	}
+	clear();
+}
+
+void RegExp::Compile(const char* expression, int flags /*= -1*/)
+{
+	compile(expression, (flags != -1) ? flags : PCRE_DEFAULT_FLAGS);
 }
 
 /**
@@ -109,6 +109,16 @@ bool RegExp::GetNamedMatch(const char* name, tstring& str)
  */
 void RegExp::clear()
 {
+	if(m_pRE)
+	{
+		pcre_free(m_pRE);
+	}
+	
+	if(m_pStudyData)
+	{
+		pcre_free(m_pStudyData);
+	}
+	
 	if(m_pSubStringVector)
 	{
 		delete [] m_pSubStringVector;

@@ -15,19 +15,29 @@ AppSettings::AppSettings()
 {
 	m_bUseIni = false;
 	m_userPath = _T("");
+
+	load();
+}
+
+OptionsFactory::EOptionsType AppSettings::GetOptionsType() const
+{
+	return m_bUseIni ? OptionsFactory::OTIni : OptionsFactory::OTRegistry;
+}
+
+LPCTSTR AppSettings::GetUserPath() const
+{
+	return m_userPath.c_str();
+}
+
+bool AppSettings::HaveUserPath() const
+{
+	return m_userPath.size() > 0;
 }
 
 /*AppSettings::~AppSettings()
 {
 
 }*/
-
-#define PTL_DEFAULT	0
-#define PTL_CONFIG	1
-#define PTL_SET		2
-#define PTL_GROUP	3
-#define PTL_CAT		4
-#define PTL_OPTLIST	5
 
 #define MATCH(ename) \
 	(_tcscmp(name, ename) == 0)
@@ -104,6 +114,34 @@ AppSettings::AppSettings()
 #define AS_DEFAULT	0
 #define AS_CONFIG	1
 
+void AppSettings::load()
+{
+	tstring path;
+	OPTIONS->GetPNPath(path, PNPATH_PN);
+	CFileName fn(_T("config.xml"));
+	fn.Root(path.c_str());
+	
+	if(!FileExists(fn.c_str()))
+		return;
+
+	XMLParser parser;
+	parser.SetParseState(this);
+	m_parseState = AS_DEFAULT;
+
+	try
+	{
+        parser.LoadFile(fn.c_str());
+	}
+	catch(XMLParserException& E)
+	{
+		CString err;
+		err.Format(_T("Error parsing application configuration xml: %s\n (file: %s, line: %d, column %d)"), 
+			XML_ErrorString(E.GetErrorCode()), E.GetFileName(), E.GetLine(), E.GetColumn());
+		
+		UNEXPECTED((LPCTSTR)err);
+	}
+}
+
 void AppSettings::startElement(LPCTSTR name, XMLAttributes& atts)
 {
 	BEGIN_HANDLERS()
@@ -112,6 +150,7 @@ void AppSettings::startElement(LPCTSTR name, XMLAttributes& atts)
 		END_STATE()
 		BEGIN_STATE(AS_CONFIG)
 			HANDLE(_T("userSettings"), onUserSettingsPath)
+			HANDLE(_T("storeType"), onStoreType)
 		END_STATE()
 	END_HANDLERS()
 }
@@ -125,7 +164,7 @@ void AppSettings::endElement(LPCTSTR name)
 	END_HANDLERS()
 }
 
-void AppSettings::characterData(LPCTSTR data, int len)
+void AppSettings::characterData(LPCTSTR /*data*/, int /*len*/)
 {
 
 }
@@ -135,8 +174,7 @@ void AppSettings::onUserSettingsPath(XMLAttributes& atts)
 	LPCTSTR szPath = atts.getValue(_T("path"));
 	if(szPath != NULL)
 	{
-		if(DirExists(szPath))
-			m_userPath = szPath;
+		m_userPath = szPath;
 	}
 }
 

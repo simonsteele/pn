@@ -348,8 +348,15 @@ LRESULT CToolConsoleIOPage::OnTextChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 {
 	CString cs;
 	GetDlgItem(IDC_TE_CUSTOMTEXT).GetWindowText(cs);
-	
-	m_scintilla.SetRE(cs);
+
+	try
+	{
+		m_scintilla.SetRE(cs);
+	}
+	catch(PCRE::REException& /*ex*/)
+	{
+		// The RE is invalid...
+	}
 	
 	return 0;	
 }

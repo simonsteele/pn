@@ -42,11 +42,16 @@ BOOL PNGetSpecialFolderPath (LPTSTR path, int folder)
 Options::Options()
 {
 	// Initialisation
-	m_FindOptions.Found = false;
+	/*m_FindOptions.Found = false;
 	m_ReplaceOptions.Found = false;
 	m_ReplaceOptions.FindText = _T("");
 	m_ReplaceOptions.ReplaceText = _T("");
-	m_FindOptions.FindText = _T("");
+	m_FindOptions.FindText = _T("");*/
+	/*m_SearchOptions.FindText = _T("");
+	m_SearchOptions.ReplaceText = _T("");*/
+	
+	m_SearchOptions.Found = false;
+	m_UserSettingsPath = _T("");
 }
 
 Options::~Options()
@@ -107,7 +112,7 @@ void Options::loadCache()
 	// Find and Replace Settings ------------
 	group(PNSK_FIND);
 	
-	m_FindOptions.Direction			= (BOOL)Get(NULL, _T("Find Direction"), true);
+	/*m_FindOptions.Direction			= (BOOL)Get(NULL, _T("Find Direction"), true);
 	m_FindOptions.FindText			= Get(NULL, _T("Find FindText"), _T("")).c_str();
 	m_FindOptions.Loop				= (BOOL)Get(NULL, _T("Find Loop"), true);
 	m_FindOptions.MatchCase			= (BOOL)Get(NULL, _T("Find MatchCase"), false);
@@ -122,7 +127,7 @@ void Options::loadCache()
 	m_ReplaceOptions.MatchCase		= (BOOL)Get(NULL, _T("Replace MatchCase"), false);
 	m_ReplaceOptions.MatchWholeWord = (BOOL)Get(NULL, _T("Replace MatchWholeWord"), false);
 	m_ReplaceOptions.UseRegExp		= (BOOL)Get(NULL, _T("Replace UseRegExp"), false);
-	m_ReplaceOptions.UseSlashes		= (BOOL)Get(NULL, _T("Replace UseSlashes"), false);
+	m_ReplaceOptions.UseSlashes		= (BOOL)Get(NULL, _T("Replace UseSlashes"), false);*/
 
 	// New Search Options...
 	m_SearchOptions.FindText		= Get(NULL, _T("FindText"), _T("")).c_str();
@@ -180,7 +185,7 @@ void Options::saveCache()
 	// Find and Replace Settings ------------
 	group(PNSK_FIND);
 	
-	Set(NULL, _T("Find Direction"),			m_FindOptions.Direction);
+	/*Set(NULL, _T("Find Direction"),			m_FindOptions.Direction);
 	Set(NULL, _T("Find FindText"),			m_FindOptions.FindText);
 	Set(NULL, _T("Find Loop"),				m_FindOptions.Loop);
 	Set(NULL, _T("Find MatchCase"),			m_FindOptions.MatchCase);
@@ -195,7 +200,7 @@ void Options::saveCache()
 	Set(NULL, _T("Replace MatchCase"),		m_ReplaceOptions.MatchCase);
 	Set(NULL, _T("Replace MatchWholeWord"), m_ReplaceOptions.MatchWholeWord);
 	Set(NULL, _T("Replace UseRegExp"),		m_ReplaceOptions.UseRegExp);
-	Set(NULL, _T("Replace UseSlashes"),		m_ReplaceOptions.UseSlashes);
+	Set(NULL, _T("Replace UseSlashes"),		m_ReplaceOptions.UseSlashes);*/
 
 	// New search options
 	Set(NULL, _T("FindText"),				m_SearchOptions.FindText);
@@ -221,7 +226,7 @@ void Options::copy(Options* other)
 {
 	memcpy(cache, other->cache, sizeof(int)*OPTION_COUNT);
 
-	m_FindOptions.Direction			= other->m_FindOptions.Direction;
+	/*m_FindOptions.Direction			= other->m_FindOptions.Direction;
 	m_FindOptions.FindText			= other->m_FindOptions.FindText;
 	m_FindOptions.Loop				= other->m_FindOptions.Loop;
 	m_FindOptions.MatchCase			= other->m_FindOptions.MatchCase;
@@ -236,7 +241,9 @@ void Options::copy(Options* other)
 	m_ReplaceOptions.MatchCase		= other->m_ReplaceOptions.MatchCase;
 	m_ReplaceOptions.MatchWholeWord = other->m_ReplaceOptions.MatchWholeWord;
 	m_ReplaceOptions.UseRegExp		= other->m_ReplaceOptions.UseRegExp;
-	m_ReplaceOptions.UseSlashes		= other->m_ReplaceOptions.UseSlashes;
+	m_ReplaceOptions.UseSlashes		= other->m_ReplaceOptions.UseSlashes;*/
+
+	//TODO Copy m_SearchOptions
 }
 
 void Options::SavePrintSettings(SPrintOptions* pSettings)
@@ -305,9 +312,13 @@ void Options::GetPNPath(tstring& path, int pathtype)
 	}
 	else if(pathtype == PNPATH_USERSETTINGS || pathtype == PNPATH_USERCLIPS)
 	{
+		if(m_UserSettingsPath.length() > 0)
+		{
+			path = m_UserSettingsPath;
+		}
 		/*ss 20/01/2003 Fix SF Bug #671357
 		SHGetSpecialFolderPath(NULL, buf, CSIDL_APPDATA, TRUE)*/
-		if(PNGetSpecialFolderPath(buf, CSIDL_APPDATA))
+		else if(PNGetSpecialFolderPath(buf, CSIDL_APPDATA))
 		{
 			path = buf;
 			if(path[path.length()-1] != _T('\\'))
@@ -317,7 +328,7 @@ void Options::GetPNPath(tstring& path, int pathtype)
 
 			path += _T("Echo Software\\PN2\\");
 
-			CreateDirectoryRecursive(path.c_str());
+			//CreateDirectoryRecursive(path.c_str());
 		}
 		else
 		{
@@ -326,6 +337,12 @@ void Options::GetPNPath(tstring& path, int pathtype)
 			GetPNPath(path, PNPATH_SCHEMES);
 		}
 	}
+}
+
+void Options::SetUserSettingsPath(LPCTSTR path)
+{
+	CPathName usPath(path);
+	m_UserSettingsPath = usPath.c_str();
 }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -429,7 +429,7 @@ void CScheme::SetupScintilla(CScintilla& sc)
 	sc.SPerform(SCI_SETWRAPMODE, options.GetCached(Options::OWordWrap) ? SC_WRAP_WORD : SC_WRAP_NONE);
 
 	sc.SetViewWS((options.GetCached(Options::OVisibleWhiteSpace) ? SCWS_VISIBLEALWAYS : SCWS_INVISIBLE));
-	sc.SetViewEOL(options.GetCached(Options::OVisibleLineEndings));
+	sc.SetViewEOL(options.GetCached(Options::OVisibleLineEndings) != FALSE);
 
 	// Set even treatment of left and right caret positioning, and sloppy behaviour. 
 	// Use 3 lines as the jump when scrolling up and down.

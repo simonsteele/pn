@@ -14,6 +14,8 @@
 #include "version.h"
 #include "pnutils.h"
 
+#include "appsettings.h"
+
 #include "pndocking.h"
 #include "MainFrm.h"
 
@@ -91,9 +93,24 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	MultipleInstanceManager checkMI( _T("{FCA6FB45-3224-497a-AC73-C30E498E9ADA}") );
 	g_Context.m_miManager = &checkMI;
 
-	// This is our options object.
-	g_Context.options = OptionsFactory::GetOptions(OptionsFactory::OTRegistry);
+	// This loads some global app settings, including what to
+	// use as the options store and where user settings files are
+	// to be stored.
+	AppSettings as;
 
+	// This is our options object.
+	g_Context.options = OptionsFactory::GetOptions(as.GetOptionsType());
+	
+	// See if there's a custom user settings dir.
+	if(as.HaveUserPath())
+		g_Context.options->SetUserSettingsPath(as.GetUserPath());
+
+	// Now ensure the user settings directory is available!
+	tstring usPath;
+	OPTIONS->GetPNPath(usPath, PNPATH_USERSETTINGS);
+	if(!CreateDirectoryRecursive(usPath.c_str()))
+		UNEXPECTED(_T("Could not create user settings folder"));
+	
 	// See if we allow multiple instances...
 	bool bAllowMulti = OPTIONS->Get(PNSK_INTERFACE, _T("AllowMultiInstance"), true);
 	if(!bAllowMulti)

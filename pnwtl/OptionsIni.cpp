@@ -51,6 +51,25 @@ IniOptions::~IniOptions()
 	}
 }
 
+void IniOptions::SetUserSettingsPath(LPCTSTR path)
+{
+	// Call the base class.
+	Options::SetUserSettingsPath(path);
+	
+	if(_filename)
+	{
+		delete [] _filename;
+		_filename = NULL;
+	}
+	
+	// Update our stored filename...
+	tstring userSettingsPath;
+	GetPNPath(userSettingsPath, PNPATH_USERSETTINGS);
+	userSettingsPath += _T("UserSettings.ini");
+	_filename = new TCHAR[userSettingsPath.length()+1];
+	_tcscpy(_filename, userSettingsPath.c_str());
+}
+
 void IniOptions::Set(LPCTSTR subkey, LPCTSTR value, bool bVal)
 {
 	::WritePrivateProfileString(groupLocked ? _group : subkey, value, bVal ? _T("1") : _T("0"), _filename);

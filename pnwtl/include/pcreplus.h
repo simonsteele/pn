@@ -33,8 +33,11 @@ namespace PCRE
 class RegExp
 {
 	public:
+		RegExp();
 		RegExp(const char* expression, int flags = -1);
 		~RegExp();
+
+		void Compile(const char* expression, int flags = -1);
 
 		void Study();
 		
@@ -106,6 +109,12 @@ class REException
 		REException(const REException& copy)
 		{
 			set(copy.m_pMsg, copy.m_offset);
+		}
+
+		~REException()
+		{
+			if(m_pMsg != NULL)
+				delete [] m_pMsg;
 		}
 
 		void set(const char* message, int offset = -1)

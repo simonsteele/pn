@@ -35,12 +35,18 @@ void REScintilla::SetRE(LPCTSTR regex, bool bClearStyling)
 	CToolREBuilder builder;
 	m_customre = builder.Build(regex);
 	
-	if(m_pRE)
+	/*if(m_pRE)
 	{
 		delete m_pRE;
+		m_pRE = NULL;
+	}*/
+
+	if(!m_pRE)
+	{
+		m_pRE = new PCRE::RegExp;
 	}
-	
-	m_pRE = new PCRE::RegExp(m_customre.c_str());
+
+	m_pRE->Compile(m_customre.c_str());
 	m_pRE->Study();
 
 	if(!schemeLoaded)

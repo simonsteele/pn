@@ -92,9 +92,11 @@ class Options
 		void SetCached(ECachedOption option, int value);
 
 		void GetPNPath(tstring& path, int pathtype = PNPATH_PN);
+
+		virtual void SetUserSettingsPath(LPCTSTR path);
 		
-		SFindOptions*		GetFindOptions()		{return &m_FindOptions;}
-		SReplaceOptions*	GetReplaceOptions()		{return &m_ReplaceOptions;}
+		//SFindOptions*		GetFindOptions()		{return &m_FindOptions;}
+		//SReplaceOptions*	GetReplaceOptions()		{return &m_ReplaceOptions;}
 		SearchOptions*		GetSearchOptions()		{return &m_SearchOptions;}
 
 		void BeginGroupOperation(LPCTSTR subkey);
@@ -108,9 +110,10 @@ class Options
 		virtual void group(LPCTSTR location) = 0;
 		virtual void ungroup() = 0;
 
-		SFindOptions			m_FindOptions;
-		SReplaceOptions			m_ReplaceOptions;
+		//SFindOptions			m_FindOptions;
+		//SReplaceOptions			m_ReplaceOptions;
 		SearchOptions			m_SearchOptions;
+		tstring					m_UserSettingsPath;
 
 		void loadCache();
 		void saveCache();

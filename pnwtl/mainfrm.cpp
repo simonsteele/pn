@@ -1561,7 +1561,11 @@ LRESULT CMainFrame::OnFindInFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		hFindWnd = m_pFindEx->Create(m_hWnd);
 	}
 
-	m_pFindEx->Show(eftFindInFiles);
+	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
+	if(pChild)
+		m_pFindEx->Show(eftFindInFiles, pChild->GetTextView()->GetCurrentWord().c_str());
+	else
+		m_pFindEx->Show(eftFindInFiles);
 	
 	return 0;
 }

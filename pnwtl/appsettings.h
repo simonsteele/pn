@@ -16,6 +16,10 @@ class AppSettings : public XMLParseState
 public:
 	AppSettings();
 
+	OptionsFactory::EOptionsType GetOptionsType() const;
+	bool HaveUserPath() const;
+	LPCTSTR GetUserPath() const;
+
 // XMLParseState
 public:
 	virtual void startElement(LPCTSTR name, XMLAttributes& atts);
@@ -23,6 +27,7 @@ public:
 	virtual void characterData(LPCTSTR data, int len);
 
 protected:
+	void load();
 	void onUserSettingsPath(XMLAttributes& atts);
 	void onStoreType(XMLAttributes& atts);
 
