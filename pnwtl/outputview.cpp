@@ -166,11 +166,6 @@ bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 					
 					::SetFocus(pView->m_hWnd);
 				}
-
-				if( bCol )
-				{
-					//@todo Jump to column.
-				}
 			}
 		}
 
@@ -313,15 +308,15 @@ LRESULT COutputView::OnHotSpotClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
  */
 void COutputView::CustomColouriseLine(ScintillaAccessor& styler, char *lineBuffer, int length, int endLine)
 {
-	// It is needed to remember the current state to recognize starting
-	// comment lines before the first "diff " or "--- ". If a real
-	// difference starts then each line starting with ' ' is a whitespace
-	// otherwise it is considered a comment (Only in..., Binary file...)
-	
 	// Check a regex has been constructed...
 	if(m_pRE)
 	{
-		//OpTimer timer; - for measuring performance...
+		// If the last character is a line end, then we don't continue the styling up to it.
+		// This stops the hotspot from line-wrapping.
+		bool bHaveLineEnd = (styler[endLine] == '\n' || styler[endLine] == '\r');
+		if(bHaveLineEnd)
+			endLine--;
+		
 		if( m_pRE->Match(lineBuffer, length, 0) )
 		{
 			styler.ColourTo(endLine, SCE_CUSTOM_ERROR);
@@ -330,6 +325,9 @@ void COutputView::CustomColouriseLine(ScintillaAccessor& styler, char *lineBuffe
 		{
 			styler.ColourTo(endLine, SCE_ERR_DEFAULT);
 		}
+
+		if(bHaveLineEnd)
+			styler.ColourTo(endLine+1, SCE_ERR_DEFAULT);
 	}
 }
 
