@@ -183,10 +183,11 @@ public:
 		GetVersionEx (&osvi);
 		m_bIsXPOrLater = 
 			(osvi.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
-			( (osvi.dwMajorVersion > 5) && (osvi.dwMinorVersion > 0) );
+			( (osvi.dwMajorVersion > 4) && (osvi.dwMinorVersion > 0) );
+		
+		m_bShowingDefaultStatus = false;
 		SetStatusText(NULL);
-		m_bShowingDefaultStatus = true;
-
+		
 		DragAcceptFiles(TRUE);
 
 		CreateMDIClient();
