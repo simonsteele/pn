@@ -98,6 +98,7 @@ BOOL CFindExDialog::PreTranslateMessage(MSG* pMsg)
 void CFindExDialog::Show(EFindDialogType type, LPCTSTR findText)
 {
 	m_type = type;
+	m_tabControl.SetCurSel((int)type, false);
 	updateLayout();
 
 	m_FindText = findText;
@@ -128,6 +129,10 @@ void CFindExDialog::Show(EFindDialogType type, LPCTSTR findText)
 
 LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	CMessageLoop* pLoop = _Module.GetMessageLoop();
+	ATLASSERT(pLoop != NULL);
+	pLoop->AddMessageFilter(this);
+
 	// Set up the tab control images.
 	m_imageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, 4, 4);
 	
@@ -276,6 +281,26 @@ LRESULT CFindExDialog::OnCloseCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 	ShowWindow(SW_HIDE);
 	
+	return 0;
+}
+
+LRESULT CFindExDialog::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	if(LOWORD(wParam) == WA_INACTIVE && OPTIONS->GetCached(Options::OFindAlphaEnabled))
+	{
+		SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) | WS_EX_LAYERED);
+		int tspct = OPTIONS->GetCached(Options::OFindAlphaPercent);
+		::SetLayeredWindowAttributes(m_hWnd, NULL, (255 * tspct) / 100, LWA_ALPHA);
+	}
+	else
+	{
+		// Remove WS_EX_LAYERED from this window styles
+		SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) & ~WS_EX_LAYERED);
+
+		// Ask the window and its children to repaint
+		RedrawWindow(NULL, NULL, RDW_ERASE | RDW_INVALIDATE | RDW_FRAME | RDW_ALLCHILDREN);
+	}
+
 	return 0;
 }
 
@@ -677,6 +702,11 @@ void CFindExDialog::updateLayout()
 	int restTop;
 	const UINT* checkboxes = NULL;
 	int nCheckboxes = 0;
+
+	if(m_type == m_lastType)
+		return;
+
+	m_lastType = m_type;
 
 	if(m_lastVisibleCB == -1)
 	{

@@ -18,7 +18,8 @@ typedef enum { eftFind, eftReplace, eftFindInFiles } EFindDialogType;
 class CFindExDialog : public CDialogImpl<CFindExDialog, CWindow>,
 						public CWinDataExchange<CFindExDialog>,
 						public CUpdateUI<CFindExDialog>,
-						public CDialogResize<CFindExDialog>
+						public CDialogResize<CFindExDialog>,
+						public CMessageFilter
 {
 public:
 	CFindExDialog();
@@ -34,6 +35,7 @@ protected:
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		MESSAGE_HANDLER(WM_SHOWWINDOW, OnShowWindow)
 		MESSAGE_HANDLER(WM_CLOSE, OnCloseWindow)
+		MESSAGE_HANDLER(WM_ACTIVATE, OnActivate)
 
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
@@ -90,6 +92,7 @@ protected:
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnShowWindow(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnCloseWindow(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	
 	// Commands
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -124,6 +127,7 @@ protected:
 protected:
 	typedef enum { elwCurrentDoc, elwAllDocs, elwCurrentProj, elwSelection } ELookWhere;
 	EFindDialogType			m_type;
+	EFindDialogType			m_lastType;
 	CDotNetButtonTabCtrl<>	m_tabControl;
 	CImageList				m_imageList;
 	BXT::CComboBoxAC		m_FindTextCombo;

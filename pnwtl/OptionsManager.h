@@ -25,6 +25,7 @@ static const TCHAR* PNSK_FIND = _T("Find");
 #define PNPATH_CLIPS			3
 #define PNPATH_TOOLS			5
 #define PNPATH_TAGGERS			6
+#define PNPATH_PROJECTTEMPLATES	7
 
 #define PNPATH_USERMIN			50
 
@@ -69,7 +70,9 @@ class Options
 			OAlreadyOpenAction			= 14,
 			ODefaultCodePage			= 15,
 			ODefaultScintillaCache		= 16,
-			OPTION_COUNT				= 17
+			OFindAlphaEnabled			= 17,
+			OFindAlphaPercent			= 18,
+			OPTION_COUNT				= 19
 		} ECachedOption;
 
 		virtual void Set(LPCTSTR subkey, LPCTSTR value, bool bVal) = 0;

@@ -17,7 +17,7 @@ namespace Projects
 /**
  * Types of property
  */
-typedef enum {ptBool, ptInt, ptChoice, ptString, ptLongString} PropType;
+typedef enum {propBool, propInt, propChoice, propString, propLongString, propFile, propFolder} PropType;
 
 /**
  * Represent one property in a template.
@@ -25,15 +25,44 @@ typedef enum {ptBool, ptInt, ptChoice, ptString, ptLongString} PropType;
 class ProjectProp
 {
 public:
-	ProjectProp(LPCTSTR name);
-	ProjectProp(LPCTSTR name, PropType type);
+	ProjectProp(LPCTSTR name, LPCTSTR description);
+	ProjectProp(LPCTSTR name, LPCTSTR description, PropType type);
+	virtual ~ProjectProp(){}
 
 	LPCTSTR GetName() const;
+	LPCTSTR GetDescription() const;
 	PropType GetType() const;
 
 protected:
 	PropType	m_type;
 	tstring		m_name;
+	tstring		m_description;
+};
+
+class Choice
+{
+public:
+	tstring Description;
+	tstring Value;
+};
+
+typedef std::list<Choice*> ValueList;
+
+class ListProp : public ProjectProp
+{
+public:
+	ListProp(LPCTSTR name, LPCTSTR description);
+	virtual ~ListProp();
+
+	void Add(Choice* value);
+
+	const ValueList& GetValues();
+
+protected:
+	void clear();
+
+protected:
+	ValueList m_values;
 };
 
 typedef std::list<ProjectProp*> PropList;
@@ -44,13 +73,14 @@ typedef std::list<ProjectProp*> PropList;
 class PropCategory
 {
 public:
-	PropCategory(LPCTSTR name);
+	PropCategory(LPCTSTR name, LPCTSTR description);
 	~PropCategory();
 
 	void Add(ProjectProp* property);
 	void Remove(ProjectProp* property);
 
 	LPCTSTR GetName() const;
+	LPCTSTR GetDescription() const;
 
 	PropList& GetProperties();
 
@@ -59,6 +89,7 @@ protected:
 
 protected:
 	tstring			m_name;
+	tstring			m_description;
 	PropList		m_list;
 };
 
@@ -75,7 +106,7 @@ typedef std::list<PropGroup*> PropGroupList;
 class PropGroup
 {
 public:
-	PropGroup(LPCTSTR name);
+	PropGroup(LPCTSTR name, LPCTSTR description);
 	~PropGroup();
 
 	void Add(PropCategory* cat);
@@ -89,6 +120,7 @@ public:
 	PropGroupList& GetSubGroups();
 
 	LPCTSTR GetName() const;
+	LPCTSTR GetDescription() const;
 
 protected:
 	void clear();
@@ -97,6 +129,7 @@ protected:
 	PropGroupList	m_subgroups;
 	PropCatList		m_cats;
 	tstring			m_name;
+	tstring			m_description;
 };
 
 /**
@@ -133,7 +166,7 @@ typedef std::list<PropSet*> PropSetList;
 class ProjectTemplate
 {
 public:
-	ProjectTemplate(LPCTSTR name, LPCTSTR path);
+	ProjectTemplate(LPCTSTR name);
 	~ProjectTemplate();
 
 	LPCTSTR GetName() const;
@@ -145,6 +178,48 @@ public:
 protected:
 	PropSetList	m_propsets;
 	tstring		m_name;
+};
+
+class TemplateLoader : XMLParseState
+{
+public:
+	TemplateLoader();
+
+	ProjectTemplate* FromFile(LPCTSTR path);
+
+//XMLParseState
+public:
+	virtual void startElement(LPCTSTR name, XMLAttributes& atts);
+	virtual void endElement(LPCTSTR name);
+	virtual void characterData(LPCTSTR data, int len);
+
+	int m_parseState;
+
+protected:
+	void onProjectConfig(XMLAttributes& atts);
+	void onSet(XMLAttributes& atts);
+	void onEndSet();
+	void onGroup(XMLAttributes& atts);
+	void onEndGroup();
+	void onCategory(XMLAttributes& atts);
+	void onEndCategory();
+	void onOption(XMLAttributes& atts);
+	void onFolderPath(XMLAttributes& atts);
+	void onOptionList(XMLAttributes& atts);
+	void onOptionListValue(XMLAttributes& atts);
+	void onEndOptionList();
+	void onText(XMLAttributes& atts);
+
+	void makeProp(XMLAttributes& atts, PropType type);
+
+protected:
+	ProjectTemplate*	m_pTemplate;
+	PropGroupList		m_PropGroups;
+	PropGroup*			m_pParentGroup;
+	PropGroup*			m_pCurrentGroup;
+	PropCategory*		m_pCurrentCat;
+	ListProp*			m_pCurrentListProp;
+	PROJECT_TYPE		m_currentSetType;
 };
 
 } // namespace Projects

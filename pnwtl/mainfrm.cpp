@@ -250,11 +250,6 @@ void CMainFrame::OnMDISetMenu(HMENU hOld, HMENU hNew)
 	MoveNewMenu(r, a);
 }
 
-/* Notes: This function could be completely removed by doing the following:
- *  1. Get Find and Replace dialogs to register themselves as message filters.
- *  2. Get child windows to register as message filters.
- * What are the (dis)advantages of doing this I wonder?
- */
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 {
 	if((pMsg->message >= WM_KEYFIRST) && (pMsg->message <= WM_KEYLAST))
@@ -272,11 +267,11 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 	// We have to do the following two to get the modeless dialogs
 	// to work. An alternative is to spawn a thread for each and to
 	// call DoModal from that thread. 
-	if(::IsDialogMessage(hFindWnd, pMsg))
+	/*if(::IsDialogMessage(hFindWnd, pMsg))
 		return TRUE;
 
 	if(::IsDialogMessage(hReplWnd, pMsg))
-		return TRUE;
+		return TRUE;*/
 
 	HWND hWnd = MDIGetActive();
 	if(hWnd != NULL)

@@ -19,14 +19,16 @@ namespace Projects
 // ProjectProp
 //////////////////////////////////////////////////////////////////////////////
 
-ProjectProp::ProjectProp(LPCTSTR name)
+ProjectProp::ProjectProp(LPCTSTR name, LPCTSTR description)
 {
 	m_name = name;
+	m_description = description;
 }
 
-ProjectProp::ProjectProp(LPCTSTR name, PropType type)
+ProjectProp::ProjectProp(LPCTSTR name, LPCTSTR description, PropType type)
 {
 	m_name = name;
+	m_description = description;
 	m_type = type;
 }
 
@@ -35,18 +37,58 @@ LPCTSTR ProjectProp::GetName() const
 	return m_name.c_str();
 }
 
+LPCTSTR ProjectProp::GetDescription() const
+{
+	return m_description.c_str();
+}
+
 PropType ProjectProp::GetType() const
 {
 	return m_type;
 }
 
 //////////////////////////////////////////////////////////////////////////////
+// ListProp
+//////////////////////////////////////////////////////////////////////////////
+
+ListProp::ListProp(LPCTSTR name, LPCTSTR description) : ProjectProp(name, description, propChoice)
+{
+}
+
+ListProp::~ListProp()
+{
+	clear();
+}
+
+void ListProp::Add(Choice* value)
+{
+	m_values.insert(m_values.end(), value);
+}
+
+const ValueList& ListProp::GetValues()
+{
+	return m_values;
+}
+
+void ListProp::clear()
+{
+	for(ValueList::const_iterator i = m_values.begin();
+		i != m_values.end();
+		++i)
+	{
+		delete (*i);
+	}
+	m_values.clear();
+}
+
+//////////////////////////////////////////////////////////////////////////////
 // PropCategory
 //////////////////////////////////////////////////////////////////////////////
 
-PropCategory::PropCategory(LPCTSTR name)
+PropCategory::PropCategory(LPCTSTR name, LPCTSTR description)
 {
 	m_name = name;
+	m_description = description;
 }
 
 PropCategory::~PropCategory()
@@ -57,6 +99,11 @@ PropCategory::~PropCategory()
 LPCTSTR PropCategory::GetName() const
 {
 	return m_name.c_str();
+}
+
+LPCTSTR PropCategory::GetDescription() const
+{
+	return m_description.c_str();
 }
 
 void PropCategory::Add(ProjectProp* property)
@@ -89,9 +136,10 @@ void PropCategory::clear()
 // PropGroup
 //////////////////////////////////////////////////////////////////////////////
 
-PropGroup::PropGroup(LPCTSTR name)
+PropGroup::PropGroup(LPCTSTR name, LPCTSTR description)
 {
 	m_name = name;
+	m_description = description;
 }
 
 PropGroup::~PropGroup()
@@ -102,6 +150,11 @@ PropGroup::~PropGroup()
 LPCTSTR PropGroup::GetName() const
 {
 	return m_name.c_str();
+}
+
+LPCTSTR PropGroup::GetDescription() const
+{
+	return m_description.c_str();
 }
 
 void PropGroup::clear()
@@ -215,7 +268,7 @@ void PropSet::clear()
 // ProjectTemplate
 //////////////////////////////////////////////////////////////////////////////
 
-ProjectTemplate::ProjectTemplate(LPCTSTR name, LPCTSTR path)
+ProjectTemplate::ProjectTemplate(LPCTSTR name)
 {
 	m_name = name;
 }
@@ -261,6 +314,345 @@ void ProjectTemplate::AddProperties(PROJECT_TYPE type, LPCTSTR extmask, PropGrou
 	orphanProps.clear();
 
 	m_propsets.insert(m_propsets.end(), pPropSet);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// TemplateLoader
+//////////////////////////////////////////////////////////////////////////////
+
+#define PTL_DEFAULT	0
+#define PTL_CONFIG	1
+#define PTL_SET		2
+#define PTL_GROUP	3
+#define PTL_CAT		4
+#define PTL_OPTLIST	5
+
+#define MATCH(ename) \
+	(_tcscmp(name, ename) == 0)
+
+#define IN_STATE(state) \
+	(m_parseState == state)
+
+#define STATE(state) \
+	m_parseState = state
+
+#define ATTVAL(attname) \
+	atts.getValue(attname)
+
+#define BEGIN_HANDLERS() \
+	if(name == NULL) \
+	{	return;		}
+
+#define HANDLE(ename, fn) \
+	if(MATCH(ename)) \
+	{ \
+		fn(atts); \
+	} else
+
+#define HANDLEEND(ename, fn) \
+	if(MATCH(ename)) \
+	{ \
+		fn(); \
+	} else
+
+#define HANDLE_NEWSTATE(ename, fn, s) \
+	if(MATCH(ename)) \
+	{ \
+		fn(atts); \
+		STATE(s); \
+	} else
+
+#define HANDLEEND_NEWSTATE(ename, fn, s) \
+	if(MATCH(ename)) \
+	{ \
+		fn(); \
+		STATE(s); \
+	} else
+
+#define MATCH_NEWSTATE(ename, s) \
+	if(MATCH(ename)) \
+	{ \
+		STATE(s); \
+	} else
+
+#define BEGIN_STATE(state) \
+	if(m_parseState == state) \
+	{ \
+
+#define END_STATE() \
+		{} \
+	} else
+
+#define END_STATE_HANDLE_UNKNOWN(fn) \
+		{ \
+			fn(name, atts); \
+		} \
+	}
+
+#define HANDLE_UNKNOWN_NEWSTATE(fn, s) \
+	else \
+	{ \
+		fn(name, atts); \
+		STATE(s); \
+	}
+
+#define END_HANDLERS() \
+	{}
+
+TemplateLoader::TemplateLoader()
+{
+	m_pTemplate = NULL;
+	m_pParentGroup = NULL;
+	m_pCurrentGroup = NULL;
+	m_pCurrentCat = NULL;
+	m_pCurrentListProp = NULL;
+}
+
+ProjectTemplate* TemplateLoader::FromFile(LPCTSTR path)
+{
+	XMLParser parser;
+	parser.SetParseState(this);
+	m_parseState = 0;
+	parser.LoadFile(path);
+
+	return m_pTemplate;
+}
+
+void TemplateLoader::startElement(LPCTSTR name, XMLAttributes& atts)
+{
+	BEGIN_HANDLERS()
+		BEGIN_STATE(PTL_DEFAULT)
+			HANDLE_NEWSTATE(_T("projectConfig"), onProjectConfig, PTL_CONFIG)
+		END_STATE()
+		BEGIN_STATE(PTL_CONFIG)
+			HANDLE_NEWSTATE(_T("set"), onSet, PTL_SET)
+		END_STATE()
+		BEGIN_STATE(PTL_SET)
+			HANDLE_NEWSTATE(_T("group"), onGroup, PTL_GROUP)
+		END_STATE()
+		BEGIN_STATE(PTL_GROUP)
+			HANDLE_NEWSTATE(_T("category"), onCategory, PTL_CAT)
+			HANDLE(_T("group"), onGroup)
+		END_STATE()
+		BEGIN_STATE(PTL_CAT)
+			HANDLE(_T("option"), onOption)
+			HANDLE(_T("folderPath"), onFolderPath)
+			HANDLE_NEWSTATE(_T("optionlist"), onOptionList, PTL_OPTLIST)
+			HANDLE(_T("text"), onText)
+		END_STATE()
+		BEGIN_STATE(PTL_OPTLIST)
+			HANDLE(_T("value"), onOptionListValue)
+		END_STATE()
+	END_HANDLERS()
+}
+
+void TemplateLoader::endElement(LPCTSTR name)
+{
+	BEGIN_HANDLERS()
+		BEGIN_STATE(PTL_CONFIG)
+			MATCH_NEWSTATE(_T("projectConfig"), PTL_DEFAULT)
+		END_STATE()
+		BEGIN_STATE(PTL_SET)
+			HANDLEEND_NEWSTATE(_T("set"), onEndSet, PTL_CONFIG)
+		END_STATE()
+		BEGIN_STATE(PTL_GROUP)
+			HANDLEEND(_T("group"), onEndGroup)
+		END_STATE()
+		BEGIN_STATE(PTL_CAT)
+			HANDLEEND_NEWSTATE(_T("category"), onEndCategory, PTL_GROUP)
+		END_STATE()
+		BEGIN_STATE(PTL_OPTLIST)
+			HANDLEEND_NEWSTATE(_T("optionlist"), onEndOptionList, PTL_CAT)
+		END_STATE()
+	END_HANDLERS()
+}
+
+void TemplateLoader::characterData(LPCTSTR data, int len)
+{
+
+}
+
+void TemplateLoader::onProjectConfig(XMLAttributes& atts)
+{
+	LPCTSTR name = ATTVAL(_T("name"));
+	if(name == NULL)
+		name = _T("unknown");
+	m_pTemplate = new ProjectTemplate(name);
+}
+
+void TemplateLoader::onSet(XMLAttributes& atts)
+{
+	LPCTSTR type = ATTVAL(_T("type"));
+	PROJECT_TYPE pType;
+	if(type != NULL)
+	{
+		if(_tcscmp(type, _T("file")) == 0)
+			pType = ptFile;
+		else if(_tcscmp(type, _T("project")) == 0)
+			pType = ptProject;
+		else if(_tcscmp(type, _T("folder")) == 0)
+			pType = ptFolder;
+		else
+			pType = ptFile;
+	}
+	else
+		pType = ptFile;
+	
+	m_currentSetType = pType;
+}
+
+void TemplateLoader::onEndSet()
+{
+	if(m_PropGroups.size() > 0)
+	{
+		m_pTemplate->AddProperties(m_currentSetType, NULL, m_PropGroups);
+		m_PropGroups.clear();
+	}
+}
+
+void TemplateLoader::onGroup(XMLAttributes& atts)
+{
+	if(m_pCurrentGroup != NULL)
+	{
+		// We're already in a group, this is a sub-group.
+		if(m_pParentGroup != NULL)
+		{
+			// ARGH! Too much nesting, can't cope.
+			// TODO: See if we can handle this better...
+			return;
+		}
+
+		m_pParentGroup = m_pCurrentGroup;
+	}
+
+	LPCTSTR name = ATTVAL(_T("name"));
+	LPCTSTR desc = ATTVAL(_T("description"));
+	if(name == NULL)
+	{
+		m_pCurrentGroup = NULL;
+		return;
+	}
+	if(desc == NULL)
+		desc = _T("ERROR");
+
+	m_pCurrentGroup = new PropGroup(name, desc);
+	m_PropGroups.insert(m_PropGroups.end(), m_pCurrentGroup);
+}
+
+void TemplateLoader::onEndGroup()
+{
+	if(m_pCurrentGroup != NULL)
+	{
+		m_pCurrentGroup = NULL;
+	}
+	if(m_pParentGroup != NULL)
+	{
+		m_pCurrentGroup = m_pParentGroup;
+		m_pParentGroup = NULL;
+	}
+	else
+	{
+		STATE(PTL_SET);
+	}
+}
+
+void TemplateLoader::onCategory(XMLAttributes& atts)
+{
+	if(!m_pCurrentGroup)
+		return;
+
+	LPCTSTR name = ATTVAL(_T("name"));
+	LPCTSTR desc = ATTVAL(_T("description"));
+	if(name == NULL)
+	{
+		m_pCurrentCat = NULL;
+		return;
+	}
+	if(desc == NULL)
+		desc = _T("ERROR");
+
+	m_pCurrentCat = new PropCategory(name, desc);
+	m_pCurrentGroup->Add(m_pCurrentCat);
+}
+
+void TemplateLoader::onEndCategory()
+{
+	m_pCurrentCat = NULL;
+}
+
+void TemplateLoader::onOption(XMLAttributes& atts)
+{
+	makeProp(atts, propBool);
+}
+
+void TemplateLoader::onFolderPath(XMLAttributes& atts)
+{
+	makeProp(atts, propFolder);
+}
+
+void TemplateLoader::onOptionList(XMLAttributes& atts)
+{
+	if(!m_pCurrentCat)
+		return;
+
+	makeProp(atts, propChoice);
+}
+
+void TemplateLoader::onOptionListValue(XMLAttributes& atts)
+{
+	if(!m_pCurrentListProp)
+		return;
+
+	LPCTSTR desc = ATTVAL("description");
+	LPCTSTR value = ATTVAL("value");
+
+	if(!value)
+		return;
+	if(!desc)
+		desc = _T("ERROR");
+
+	Choice* pChoice = new Choice();
+	pChoice->Description = desc;
+	pChoice->Value = value;
+	m_pCurrentListProp->Add(pChoice);
+}
+
+void TemplateLoader::onEndOptionList()
+{
+	m_pCurrentListProp = NULL;
+}
+
+void TemplateLoader::onText(XMLAttributes& atts)
+{
+	makeProp(atts, propString);
+}
+
+void TemplateLoader::makeProp(XMLAttributes& atts, PropType type)
+{
+	if(!m_pCurrentCat)
+		return;
+
+	LPCTSTR name = ATTVAL(_T("name"));
+	LPCTSTR desc = ATTVAL(_T("description"));
+	if(name == NULL)
+		return;
+	if(desc == NULL)
+		desc = _T("ERROR");
+
+	ProjectProp* pProp;
+
+	if(type == propChoice)
+	{
+		ListProp* pListProp = new ListProp(name, desc);
+		pProp = static_cast<ProjectProp*>(pListProp);
+		m_pCurrentListProp = pListProp;
+	}
+	else
+	{
+		pProp = new ProjectProp(name, desc, type);
+	}
+
+	m_pCurrentCat->Add(pProp);
 }
 
 } // namespace Projects

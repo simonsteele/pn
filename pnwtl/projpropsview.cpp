@@ -60,6 +60,49 @@ void CProjPropsView::DisplayFor(Projects::ProjectType* pItem, Projects::ProjectT
 	
 }
 
+	/*if(m_state == OS_DEFAULT)
+	{
+		if(_tcscmp(name, _T("optionset")) == 0)
+		{
+			LPCTSTR title = atts.getValue(_T("title"));
+			if(!title)
+				return;
+
+			m_list.AddItem( PropCreateCategory(title) );
+			m_state = OS_OPTIONS;
+		}
+	}
+	else if(m_state == OS_OPTIONS)
+	{
+		LPCTSTR title = atts.getValue(_T("title"));
+		LPCTSTR elname = atts.getValue(_T("name"));
+
+		if(_tcscmp(name, _T("folderpath")) == 0)
+		{
+			m_list.AddItem( PropCreateFileName(title, _T("")) );
+		}
+		else if(_tcscmp(name, _T("option")) == 0)
+		{
+			m_list.AddItem( PropCreateSimple(title, false));
+		}
+		
+		else if(_tcscmp(name, _T("optionlist")) == 0)
+		{
+			m_state = OS_OPTLIST;
+			m_pListItem = static_cast<CPropertyListItem*>( PropCreateList(title, NULL) );
+		}
+		else if(_tcscmp(name, _T("text")) == 0)
+		{
+			m_list.AddItem( PropCreateSimple(title, _T("")));
+		}
+	}
+	else if(m_state == OS_OPTLIST)
+	{
+		if(_tcscmp(name, _T("value")) == 0)
+			onValue(atts);
+	}*/
+
+
 void CProjPropsView::displayGroups(Projects::PropGroupList& groups, HTREEITEM hParent)
 {
 	for(Projects::PropGroupList::const_iterator i = groups.begin();
@@ -81,7 +124,7 @@ void CProjPropsView::displayCategories(Projects::PropCatList& categories)
 			j != categories.end();
 			++j)
 	{
-        m_props.AddItem( PropCreateCategory((*j)->GetName()) );
+        m_props.AddItem( PropCreateCategory((*j)->GetDescription()) );
 		displayProperties( (*j)->GetProperties() );
 	}
 }
@@ -94,20 +137,46 @@ void CProjPropsView::displayProperties(Projects::PropList& properties)
 	{
 		switch((*i)->GetType())
 		{
-		case Projects::ptBool:
-			m_props.AddItem( PropCreateSimple((*i)->GetName(), false) );
+
+		case Projects::propBool:
+			//m_props.AddItem( PropCreateSimple((*i)->GetDescription(), false) );
+			m_props.AddItem( PropCreateCheckButton((*i)->GetDescription(), false));
 			break;
-		case Projects::ptInt:
-			m_props.AddItem( PropCreateSimple((*i)->GetName(), 0) );
+
+		case Projects::propInt:
+			m_props.AddItem( PropCreateSimple((*i)->GetDescription(), 0) );
 			break;
-		case Projects::ptChoice:
-			//m_props.AddItem( PropC
+
+		case Projects::propChoice:
+			{
+				CPropertyListItem* pListItem = new CPropertyListItem((*i)->GetDescription(), 0);
+
+				const Projects::ValueList& values = static_cast<Projects::ListProp*>((*i))->GetValues();
+				
+				for(Projects::ValueList::const_iterator j = values.begin();
+					j != values.end();
+					++j)
+				{
+					pListItem->AddListItem( (*j)->Description.c_str() );
+				}
+
+				m_props.AddItem(pListItem);
+			}
 			break;
-		case Projects::ptString:
-			m_props.AddItem( PropCreateSimple((*i)->GetName(), _T("")) );
+		case Projects::propString:
+			m_props.AddItem( PropCreateSimple((*i)->GetDescription(), _T("")) );
 			break;
-		case Projects::ptLongString:
-			m_props.AddItem( PropCreateSimple((*i)->GetName(), _T("longstring")) );
+
+		case Projects::propLongString:
+			m_props.AddItem( PropCreateSimple((*i)->GetDescription(), _T("longstring")) );
+			break;
+
+		case Projects::propFile:
+			m_props.AddItem( PropCreateFileName((*i)->GetDescription(), _T("")) );
+			break;
+
+		case Projects::propFolder:
+			m_props.AddItem( PropCreateFileName((*i)->GetDescription(), _T("")) );
 			break;
 		}
 	}

@@ -122,6 +122,9 @@ void Options::loadCache()
 	m_ReplaceOptions.UseRegExp		= (BOOL)Get(NULL, _T("Replace UseRegExp"), false);
 	m_ReplaceOptions.UseSlashes		= (BOOL)Get(NULL, _T("Replace UseSlashes"), false);
 
+	cache[OFindAlphaEnabled]		= Get(NULL, _T("FindAlphaEnabled"), true);
+	cache[OFindAlphaPercent]		= Get(NULL, _T("FindAlphaPercent"), 60);
+
 	ungroup();
 }
 
@@ -142,6 +145,7 @@ void Options::saveCache()
 	Set(NULL, _T("RightGuideColour"),		cache[ORightGuideColour]);
 	Set(NULL, _T("DefaultCodePage"),		cache[ODefaultCodePage]);
 	Set(NULL, _T("WordWrap"),				cache[OWordWrap]);
+	Set(NULL, _T("DefaultScintillaCache"),	cache[ODefaultScintillaCache]);
 
 	ungroup();
 	
@@ -174,6 +178,9 @@ void Options::saveCache()
 	Set(NULL, _T("Replace MatchWholeWord"), m_ReplaceOptions.MatchWholeWord);
 	Set(NULL, _T("Replace UseRegExp"),		m_ReplaceOptions.UseRegExp);
 	Set(NULL, _T("Replace UseSlashes"),		m_ReplaceOptions.UseSlashes);
+
+	Set(NULL, _T("FindAlphaEnabled"),		cache[OFindAlphaEnabled]);
+	Set(NULL, _T("FindAlphaPercent"),		cache[OFindAlphaPercent]);
 
 	ungroup();
 }
@@ -258,6 +265,9 @@ void Options::GetPNPath(tstring& path, int pathtype)
 				break;
 			case PNPATH_TAGGERS:
 				path += _T("Taggers\\");
+				break;
+			case PNPATH_PROJECTTEMPLATES:
+				path += _T("Projects\\");
 				break;
 		}
 	}
