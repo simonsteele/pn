@@ -71,7 +71,7 @@ BOOL CALLBACK CloseChildEnumProc(HWND hWnd, LPARAM lParam);
  * @brief PN (WTL Edition) Main MDI Frame
  */
 class CMainFrame : public CTabbedMDIFrameWindowImpl<CMainFrame, CPNMDIClient>, public CUpdateUI<CMainFrame>,
-		public CMessageFilter, public CIdleHandler
+		public CMessageFilter, public CIdleHandler, public CSMenuEventHandler
 {
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
@@ -152,6 +152,7 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
 		COMMAND_ID_HANDLER(ID_EDIT_FIND, OnFind)
 		COMMAND_ID_HANDLER(ID_EDIT_REPLACE, OnReplace)
+		CALLBACK_COMMAND_HANDLER()
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
 		CHAIN_MSG_MAP(myClass)
@@ -162,7 +163,15 @@ public:
 		UPDATE_ELEMENT(ID_VIEW_STATUS_BAR, UPDUI_MENUPOPUP)
 	END_UPDATE_UI_MAP()
 
+	BEGIN_MENU_HANDLER_MAP()
+		HANDLE_MENU_COMMAND(SCHEMEMANAGER_SELECTSCHEME, OnSchemeNew)
+	END_MENU_HANDLER_MAP()
 
+	void OnSchemeNew(LPVOID data)
+	{	
+		CChildFrame* pChild = NewEditor();
+		pChild->SetScheme((CScheme*)data);
+	}
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
@@ -213,6 +222,8 @@ public:
 		ATLASSERT(pLoop != NULL);
 		pLoop->AddMessageFilter(this);
 		pLoop->AddIdleHandler(this);
+
+		ConfigureNewMenu();
 
 		return 0;
 	}
@@ -345,20 +356,30 @@ public:
 		return 0;
 	}
 
-	void PNOpenFile(LPCTSTR pathname, LPCTSTR filename = NULL)
+	void PNOpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme = NULL)
 	{
 		CChildFrame* pChild = NewEditor();
 		if(filename)
 		{
-			pChild->PNOpenFile(pathname, filename);
+			pChild->PNOpenFile(pathname, filename, pScheme);
 		}
 		else
 		{
 			ctcString buf;
 			CFileName(pathname).GetFileName(buf);
 			
-			pChild->PNOpenFile(pathname, buf.c_str());
+			pChild->PNOpenFile(pathname, buf.c_str(), pScheme);
 		}
+	}
+
+	void PNOpenFile(LPCTSTR pathname, CScheme* pScheme)
+	{
+		PNOpenFile(pathname, NULL, pScheme);
+	}
+
+	void PNOpenFile(LPCTSTR pathname)
+	{
+		PNOpenFile(pathname, NULL, NULL);
 	}
 
 	LRESULT OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -465,6 +486,28 @@ public:
 			pChild->SetPosStatus(m_StatusBar);
 		}
 	}
+
+	protected:
+
+		void ConfigureNewMenu()
+		{
+			CSMenuHandle cs(m_hMenu);
+
+			CSMenuHandle file = cs.GetSubMenu(0);
+			
+			CSPopupMenu sm;
+
+			theApp.GetSchemes().BuildMenu(sm.GetHandle(), this);
+					
+			POINT pt;
+			pt.x = 100;
+			pt.y = 100;
+			
+			::ModifyMenu(file.GetHandle(), 0, MF_BYPOSITION | MF_POPUP, (UINT)sm.GetHandle(), _T("&New"));
+
+			cs.Detach();
+			sm.Detach();
+		}
 
 	protected:
 		CFindDlg*				m_FindDialog;
