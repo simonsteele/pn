@@ -32,6 +32,14 @@ public:
 		m_pLastScheme = NULL;
 	}
 
+	BEGIN_MSG_MAP(CTextView)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
+		COMMAND_ID_HANDLER(ID_EDIT_INDENT, OnIndent)
+		COMMAND_ID_HANDLER(ID_EDIT_UNINDENT, OnUnindent)
+		CHAIN_MSG_MAP(baseClass)
+	END_MSG_MAP()
+
+
 	void SetScheme(CScheme* pScheme)
 	{
 		pScheme->Load(*this);
@@ -205,6 +213,62 @@ public:
 	CScheme* GetCurrentScheme()
 	{
 		return m_pLastScheme;
+	}
+
+	LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+	{
+		CPoint pt(LOWORD(lParam), HIWORD(lParam));
+
+		if ((pt.x == -1) && (pt.y == -1)) 
+		{
+			// Caused by keyboard so display menu near caret
+			int position = GetCurrentPos();
+
+			pt.x = PointXFromPosition(position);
+			pt.y = PointYFromPosition(position);
+
+			ClientToScreen(&pt);
+
+			//POINT spt = {pt.x, pt.y};
+			//::ClientToScreen(static_cast<HWND>(w.GetID()), &spt);
+			//pt = Point(spt.x, spt.y);
+			DoContextMenu(&pt);
+		} 
+		else 
+		{
+			CRect rcEditor;
+			GetWindowRect(rcEditor);
+
+			if (!rcEditor.PtInRect(pt)) 
+			{
+				bHandled = FALSE;
+			}
+			else
+			{
+				DoContextMenu(&pt);
+			}
+		}
+		
+		return 0;
+	}
+
+	void DoContextMenu(CPoint* point)
+	{
+		CSPopupMenu popup(IDR_POPUP_EDITOR);
+		
+		popup.TrackPopupMenu((LPPOINT)point, g_Context.m_frame->GetWindow()->m_hWnd);
+	}
+
+	LRESULT OnIndent(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		Tab();
+		return 0;
+	}
+
+	LRESULT OnUnindent(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		BackTab();
+		return 0;
 	}
 
 protected:

@@ -171,6 +171,6 @@ HMENU CSPopupMenu::GetHandle()
 
 int CSPopupMenu::TrackPopupMenu(LPPOINT pt, HWND hWnd)
 {
-	::TrackPopupMenu(SafeGetHandle(), 0, pt->x, pt->y, 0, hWnd, NULL);
+	::TrackPopupMenu(GetHandle(), 0, pt->x, pt->y, 0, hWnd, NULL);
 	return 0;
 }

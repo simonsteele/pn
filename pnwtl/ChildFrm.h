@@ -56,6 +56,7 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_PASTE, OnPaste)
 		COMMAND_ID_HANDLER(ID_EDIT_UNDO, OnUndo)
 		COMMAND_ID_HANDLER(ID_EDIT_REDO, OnRedo)
+		COMMAND_ID_HANDLER(ID_EDIT_DELETE, OnDelete)
 
 		COMMAND_ID_HANDLER(ID_EDIT_FINDNEXT, OnFindNext)
 		
@@ -319,6 +320,12 @@ public:
 	LRESULT OnRedo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		m_view.Redo();
+		return TRUE;
+	}
+
+	LRESULT OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		m_view.DeleteBack();
 		return TRUE;
 	}
 
