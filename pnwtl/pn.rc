@@ -515,6 +515,12 @@ BEGIN
     BUTTON      ID_PLACEHOLDER_SCHEMECOMBO
 END
 
+IDR_TBR_FINDCOMBO TOOLBAR  16, 15
+BEGIN
+    BUTTON      ID_FINDTYPE_BUTTON
+    BUTTON      ID_PLACEHOLDER_FINDCOMBO
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -525,6 +531,7 @@ IDB_EDITOR              BITMAP                  "res\\editor.bmp"
 IDR_TBR_EDIT            BITMAP                  "res\\edittbr.bmp"
 IDB_TRUETYPE_FONTTYPE   BITMAP                  "res\\font_tru.bmp"
 IDR_TBR_SCHEME          BITMAP                  "res\\tbrScheme.bmp"
+IDR_TBR_FINDCOMBO       BITMAP                  "res\\tbrFindCombo.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

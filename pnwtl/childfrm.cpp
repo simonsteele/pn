@@ -1102,6 +1102,8 @@ void CChildFrame::SchemeChanged(CScheme* pScheme)
 	g_Context.m_frame->SetActiveScheme(m_hWnd, static_cast<LPVOID>(pScheme));
 
 	m_bHeaderSwitch = (_tcscmp(pScheme->GetName(), _T("cpp")) == 0);
+	
+	::PostMessage(GetMDIFrame(), PN_NOTIFY, 0, PN_SCHEMECHANGED);
 }
 
 void CChildFrame::UpdateMenu()

@@ -232,22 +232,35 @@ LRESULT CMainFrame::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 
 LRESULT CMainFrame::OnChildNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
-	if(lParam == SCN_UPDATEUI || PN_MDIACTIVATE)
+	if(lParam == SCN_UPDATEUI || lParam == PN_MDIACTIVATE)
 	{
 		// Update the status bar when Scintilla thinks that we should.
 		UpdateStatusBar();
 	}
 
-	/*if(lParam == PN_MDIACTIVATE)
+	// Update scheme combo...
+	if(lParam == PN_MDIACTIVATE || lParam == PN_SCHEMECHANGED)
 	{
-		LPCTSTR childTitle = CChildFrame::FromHandle(GetCurrentEditor())->GetTitle();
-		TCHAR* titleBuf = new TCHAR[_tcslen(childTitle) + _tcslen(_T("Programmers Notepad 2"))+5];
-		_tcscpy(titleBuf, childTitle);
-		_tcscat(titleBuf, _T(" - "));
-		_tcscat(titleBuf, _T("Programmers Notepad 2"));
-		_setWindowText(titleBuf);
-		delete [] titleBuf;
-	}*/
+		HWND hMDIChild = MDIGetActive();
+		if(hMDIChild != NULL)
+		{
+			CChildFrame* pChild = CChildFrame::FromHandle(hMDIChild);
+			CScheme* pScheme = pChild->GetTextView()->GetCurrentScheme();
+			for(int i = 0; i < m_SchemeCombo.GetCount(); i++)
+			{
+				if( pScheme == static_cast<CScheme*>( m_SchemeCombo.GetItemDataPtr(i) ) )
+				{
+					m_SchemeCombo.SetCurSel(i);
+					break;
+				}
+			}
+		}
+	}
+
+	// Can do status bar clear here. This is done by getting notification here
+	// of the WM_MDIDESTROY message, then Posting a message to ourselves for
+	// stage 2 notification. When that message comes in, the MDIDestroy has gone
+	// through and we can check MDIGetActive.
 			
 	return TRUE;
 }

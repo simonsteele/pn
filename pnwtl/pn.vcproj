@@ -358,6 +358,9 @@
 				RelativePath=".\res\pndoc.ico">
 			</File>
 			<File
+				RelativePath="res\tbrFindCombo.bmp">
+			</File>
+			<File
 				RelativePath="res\tbrScheme.bmp">
 			</File>
 			<File
