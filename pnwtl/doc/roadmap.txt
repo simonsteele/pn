@@ -16,19 +16,20 @@ last updated: 05/08/2004
 Start help file.
 Preview for scheme configurator.
 Tab order management.
-[80%] Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
-[85%] Basic Build Management - see http://www.pnotepad.org/articles/pn2projects.html
-PCRE Based Search.
 Filetype filters - e.g. allow loading of .dfm files.
 HTML Export configuration, inline HTML export.
+[95%] Basic Build Management - see http://www.pnotepad.org/articles/pn2projects.html
+[complete] Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
 [complete-BjoernGraf]File Association Editor
 
 0.8 Basie
 =========
 
+PCRE Based Search.
 File browser window.
 HTML preview window (ie+moz) {feature_browser_2-0-5}.
 Hex editor.
+Scripting/Extensions.
 
 0.10 Ellington
 ==============

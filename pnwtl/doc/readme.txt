@@ -12,6 +12,7 @@ What's new?
 4) Right-Click on a file to add to a project.
 5) Selected text insertion into find dialog is more selective (no pun intended).
 6) Project changed indicator (appends * to name).
+7) Project tools.
 
 Bug Fixes:
 ----------
