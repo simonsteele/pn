@@ -17,9 +17,11 @@
 
 #define MINI_BAR_HEIGHT 15
 
+#define MENUMESSAGE_CHANGESCHEME 0xa
+
 #include "fromhandle.h"
 
-class CChildFrame : public CTabbedMDIChildWindowImpl<CChildFrame>, public CFromHandle<CChildFrame>
+class CChildFrame : public CTabbedMDIChildWindowImpl<CChildFrame>, public CFromHandle<CChildFrame>, public CSMenuEventHandler
 {
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MDICHILD)
@@ -72,6 +74,11 @@ public:
 		CHAIN_CLIENT_COMMANDS ()
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
+
+	BEGIN_MENU_HANDLER_MAP()
+		HANDLE_MENU_COMMAND(MENUMESSAGE_CHANGESCHEME, OnSchemeChange)
+		//HANDLE_MENU_COMMAND(SCHEMEMANAGER_SELECTSCHEME, OnSchemeNew)
+	END_MENU_HANDLER_MAP()
 
 	// We override UpdateLayout in order to call UpdateBarsPosition in this class,
 	// instead of in CFrameWindowImplBase. This way we can automagically have a toolbar
@@ -162,6 +169,42 @@ public:
 		m_hWndToolBar = toolbar.Detach();
 	}
 
+	void SetupNewMenu(CSMenuEventHandler* pOwner)
+	{
+		// Irritatingly, what would be ideal would be to have a pointer to
+		// CMainFrame here but obviously doing that would really upset the
+		// whole include ordering system :(
+		CSMenuHandle cs(m_hMenu);
+
+		CSMenuHandle file = cs.GetSubMenu(0);
+			
+		CSPopupMenu sm;
+
+		theApp.GetSchemes().BuildMenu(sm.GetHandle(), pOwner);
+		
+		::ModifyMenu(file.GetHandle(), 0, MF_BYPOSITION | MF_POPUP, (UINT)sm.GetHandle(), _T("&New"));
+
+		cs.Detach();
+		sm.Detach();
+	}
+
+	void SetupMenu()
+	{
+		CSMenuHandle cs(m_hMenu);
+
+		CSMenuHandle view = cs.GetSubMenu(2);
+
+		CSPopupMenu sm;
+
+		theApp.GetSchemes().BuildMenu(sm.GetHandle(), this, MENUMESSAGE_CHANGESCHEME);
+
+		::ModifyMenu(view.GetHandle(), 3, MF_BYPOSITION | MF_POPUP, (UINT)sm.GetHandle(), _T("Change &Scheme"));
+
+		cs.Detach();
+		sm.Detach();
+
+	}
+
 	////////////////////////////////////////////////////
 	// Document Entries
 
@@ -198,6 +241,7 @@ public:
 		SetTitle(_T("<new>"));
 
 		SetupToolbar();
+		SetupMenu();
 
 		bHandled = FALSE;
 		return 1;
@@ -358,6 +402,11 @@ public:
 		}
 
 		return 0;
+	}
+
+	void OnSchemeChange(LPVOID pVoid)
+	{
+		m_view.SetScheme(static_cast<CScheme*>(pVoid));
 	}
 
 	////////////////////////////////////////////////////
