@@ -51,8 +51,10 @@ protected:
 		COMMAND_RANGE_HANDLER(ID_REGEXP_ANYCHARACTER, ID_REGEXP_GROUP, OnReInsertClicked)
 		COMMAND_RANGE_HANDLER(ID_REGEXP_TAGGEDEXPRESSION1, ID_REGEXP_TAGGEDEXPRESSION9, OnReMatchesMenuItemClicked)
 		COMMAND_ID_HANDLER(IDC_REGEXP_CHECK, OnUseRegExpClicked)
+		COMMAND_RANGE_CODE_HANDLER(IDC_CURRENTDOC_RADIO, IDC_INSELECTION_RADIO, BN_CLICKED, OnRadioClicked)
 
 		NOTIFY_CODE_HANDLER(CTCN_SELCHANGE, OnSelChange)
+		
 
         CHAIN_MSG_MAP(CDialogResize<CFindExDialog>)
 		REFLECT_NOTIFICATIONS ()
@@ -106,6 +108,7 @@ protected:
 	LRESULT OnReplaceClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnReplaceAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnUseRegExpClicked(WORD /*wNotifyCode*/, WORD /*nID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnRadioClicked(WORD /*wNotifyCode*/, WORD /*nID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	// Notifications
 	LRESULT OnSelChange(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHandled);
@@ -116,10 +119,13 @@ protected:
 	void doRegExpHelperMenu(LPRECT rc, bool bDoMatches = false);
 	int doRegExpInsert(BXT::CComboBoxAC* pCB, LPCTSTR insert, CString& str, int offset);
 	bool editorChanged();
+	void enableButtons();
 	bool findNext();
 	void findInFiles();
 	CChildFrame* getCurrentEditorWnd();
+	int getFirstNonWS(const char* lineBuf);
 	CSize getGUIFontSize();
+	int getLastNonWSChar(const char* lineBuf, int lineLength);
 	SearchOptions* getOptions();
 	int getRegExpString(int nID, CString& Text);
 	void moveUp(int offset, CWindow& ctrl);

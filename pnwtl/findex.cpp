@@ -104,6 +104,36 @@ BOOL CFindExDialog::PreTranslateMessage(MSG* pMsg)
 	return IsDialogMessage(pMsg);
 }
 
+int CFindExDialog::getFirstNonWS(const char* lineBuf)
+{
+	PNASSERT(AtlIsValidString(lineBuf));
+
+	const char* p = lineBuf;
+	int i = 0;
+	while(*p != 0 && (*p == _T(' ') || *p == 0x9))
+	{
+		i++;
+		p++;
+	}
+
+	return i;
+}
+
+int CFindExDialog::getLastNonWSChar(const char* lineBuf, int lineLength)
+{
+	PNASSERT(AtlIsValidString(lineBuf));
+
+	const char* p = &lineBuf[lineLength-1];
+	int i = lineLength-1;
+	while(p > lineBuf && (*p == _T(' ') || *p == 0x9))
+	{
+		p--;
+		i--;
+	}
+
+	return i;
+}
+
 void CFindExDialog::Show(EFindDialogType type, LPCTSTR findText)
 {
 	m_type = type;
@@ -129,6 +159,69 @@ void CFindExDialog::Show(EFindDialogType type, LPCTSTR findText)
 		
 		// Place the window away from the caret.
 		placeWindow(pt, lineHeight);
+
+		if(type == eftReplace)
+		{
+			// Need to decide if we want to put the dialog into "Replace In Selection" mode.
+			// Rules:
+			// There is a selection AND
+			// (The selection runs from the first character on the line to the last OR
+			// The selection spans multiple lines OR
+			// The selection is longer than 1024 characters)
+
+            int selLength = textView->GetSelLength();
+			bool bShouldReplaceInSel = false;
+			if(selLength > 1024)
+			{
+				bShouldReplaceInSel = true;
+			}
+			else if(selLength > 0)
+			{
+				CharacterRange cr;
+				textView->GetSel(cr);
+
+				int lineStart = textView->LineFromPosition(cr.cpMin);
+				int lineEnd = textView->LineFromPosition(cr.cpMax);
+
+				int posLineStart = textView->PositionFromLine(lineStart);
+
+				if(lineStart == lineEnd)
+				{
+					if(textView->GetLineEndPosition(lineStart) == cr.cpMax &&
+						posLineStart == cr.cpMin)
+						bShouldReplaceInSel = true;
+					else
+					{
+						// The selection is inside one line, but does it span from the first
+						// non-whitespace char to the last?
+						int lineLength = textView->LineLength(lineStart);
+						char* lineBuf = new char[lineLength+1];
+						lineBuf[lineLength] = '\0';
+						textView->GetLine(lineStart, lineBuf);
+
+						int firstNonWSChar = getFirstNonWS(lineBuf);
+						if(cr.cpMin <= (firstNonWSChar + posLineStart))
+						{
+							int lastNonWSChar = getLastNonWSChar(lineBuf, lineLength);
+							if(cr.cpMax >= lastNonWSChar)
+								bShouldReplaceInSel = true;
+						}
+
+						delete [] lineBuf;
+					}
+				}
+				else
+				{
+					// Sel spans multiple lines
+					bShouldReplaceInSel = true;
+				}
+
+				if(bShouldReplaceInSel)
+				{
+					CheckRadioButton(IDC_CURRENTDOC_RADIO, IDC_INSELECTION_RADIO, IDC_INSELECTION_RADIO);
+				}
+			}
+		}
 	}
 
 	ShowWindow(SW_SHOW);
@@ -426,6 +519,12 @@ LRESULT CFindExDialog::OnSelChange(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHand
 	return 0;
 }
 
+LRESULT CFindExDialog::OnRadioClicked(WORD /*wNotifyCode*/, WORD /*nID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	enableButtons();
+	return 0;
+}
+
 int CFindExDialog::addTab(LPCTSTR name, int iconIndex)
 {
 	CDotNetButtonTabCtrl<>::TItem* pItem = m_tabControl.CreateNewItem();
@@ -515,6 +614,13 @@ int CFindExDialog::doRegExpInsert(BXT::CComboBoxAC* pCB, LPCTSTR insert, CString
 bool CFindExDialog::editorChanged()
 {
 	return m_pLastEditor != getCurrentEditorWnd();// CChildFrame::FromHandle(GetCurrentEditor());
+}
+
+void CFindExDialog::enableButtons()
+{
+	CButton inSelRadio(GetDlgItem(IDC_INSELECTION_RADIO));
+	CButton(GetDlgItem(IDC_REPLACE_BUTTON)).EnableWindow( inSelRadio.GetCheck() != BST_CHECKED );
+	CButton(GetDlgItem(IDC_FINDNEXT_BUTTON)).EnableWindow( inSelRadio.GetCheck() != BST_CHECKED );
 }
 
 bool CFindExDialog::findNext()
@@ -613,7 +719,7 @@ SReplaceOptions* CFindExDialog::getOptions()
 	//SFindOptions* pOptions = OPTIONS->GetFindOptions();
 	SReplaceOptions* pOptions = OPTIONS->GetSearchOptions();
 
-	// If the user has changed to a differnent scintilla window
+	// If the user has changed to a different scintilla window
 	// then Found is no longer necessarily true.
 	if(editorChanged())
 		pOptions->Found = false;
