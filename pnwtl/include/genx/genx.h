@@ -1,3 +1,4 @@
+
 /*
  * genx - C-callable library for generating XML documents
  */
@@ -31,19 +32,18 @@ typedef enum
   GENX_ALLOC_FAILED,
   GENX_BAD_NAMESPACE_NAME,
   GENX_INTERNAL_ERROR,
-  GENX_DUPLICATE_NAME,
   GENX_DUPLICATE_PREFIX,
   GENX_SEQUENCE_ERROR,
   GENX_NO_START_TAG,
   GENX_IO_ERROR,
-  GENX_PREMATURE_END,
   GENX_MISSING_VALUE,
   GENX_MALFORMED_COMMENT,
   GENX_XML_PI_TARGET,
   GENX_MALFORMED_PI,
   GENX_DUPLICATE_ATTRIBUTE,
   GENX_ATTRIBUTE_IN_DEFAULT_NAMESPACE,
-  GENX_BAD_NAMESPACE_REDECLARATION
+  GENX_DUPLICATE_NAMESPACE,
+  GENX_BAD_DEFAULT_DECLARATION
 } genxStatus;
 
 /* character types */
@@ -53,6 +53,7 @@ typedef enum
 
 /* a UTF-8 string */
 typedef unsigned char * utf8;
+typedef const unsigned char * constUtf8;
 
 /*
  * genx's own types
@@ -118,15 +119,13 @@ utf8 genxGetNamespacePrefix(genxNamespace ns);
  */
 
 /*
- * Declare a namespace.  You can only have one uri-prefix binding in effect
- *  at any one time.  A second declaration of a namespace with a different
- *  prefix is an error.  If no namespace is provided, genx will generate one
- *  of the form g-%d.  Declaring two namespaces with the same prefix
- *  (including a collision with a genx-generated prefix) is an error.
+ * Declare a namespace.  The provided prefix is the default but can be
+ *  overridden by genxAddNamespace.  If no default prefiix is provided,
+ *  genx will generate one of the form g-%d.  
  * On error, returns NULL and signals via statusp
  */
 genxNamespace genxDeclareNamespace(genxWriter w,
-				   utf8 uri, utf8 prefix,
+				   constUtf8 uri, constUtf8 prefix,
 				   genxStatus * statusP);
 
 /* 
@@ -134,7 +133,7 @@ genxNamespace genxDeclareNamespace(genxWriter w,
  * If something failed, returns NULL and sets the status code via statusP
  */
 genxElement genxDeclareElement(genxWriter w,
-			       genxNamespace ns, utf8 type,
+			       genxNamespace ns, constUtf8 type,
 			       genxStatus * statusP);
 
 /*
@@ -142,7 +141,7 @@ genxElement genxDeclareElement(genxWriter w,
  */
 genxAttribute genxDeclareAttribute(genxWriter w,
 				   genxNamespace ns,
-				   utf8 name, genxStatus * statusP);
+				   constUtf8 name, genxStatus * statusP);
 
 /*
  * Writing XML
@@ -161,8 +160,8 @@ genxStatus genxStartDocFile(genxWriter w, FILE * file);
  */
 typedef struct
 {
-  genxStatus (* send)(void * userData, utf8 s); 
-  genxStatus (* sendBounded)(void * userData, utf8 start, utf8 end);
+  genxStatus (* send)(void * userData, constUtf8 s); 
+  genxStatus (* sendBounded)(void * userData, constUtf8 start, constUtf8 end);
   genxStatus (* flush)(void * userData);
 } genxSender;
 
@@ -176,18 +175,18 @@ genxStatus genxEndDocument(genxWriter w);
 /*
  * Write a comment
  */
-genxStatus genxComment(genxWriter w, const utf8 text);
+genxStatus genxComment(genxWriter w, constUtf8 text);
 
 /*
  * Write a PI
  */
-genxStatus genxPI(genxWriter w, const utf8 target, const utf8 text);
+genxStatus genxPI(genxWriter w, constUtf8 target, constUtf8 text);
 
 /*
  * Start an element
  */
 genxStatus genxStartElementLiteral(genxWriter w,
-				   const utf8 xmlns, const utf8 type);
+				   constUtf8 xmlns, constUtf8 type);
 
 /*
  * Start a predeclared element
@@ -198,18 +197,18 @@ genxStatus genxStartElement(genxElement e);
 /*
  * Write an attribute
  */
-genxStatus genxAddAttributeLiteral(genxWriter w, const utf8 xmlns,
-				   const utf8 name, const utf8 value);
+genxStatus genxAddAttributeLiteral(genxWriter w, constUtf8 xmlns,
+				   constUtf8 name, constUtf8 value);
 
 /*
  * Write a predeclared attribute
  */
-genxStatus genxAddAttribute(genxAttribute a, const utf8 value);
+genxStatus genxAddAttribute(genxAttribute a, constUtf8 value);
 
 /*
  * add a namespace declaration
  */
-genxStatus genxAddNamespace(genxNamespace ns);
+genxStatus genxAddNamespace(genxNamespace ns, utf8 prefix);
 
 /*
  * Clear default namespace declaration
@@ -226,9 +225,9 @@ genxStatus genxEndElement(genxWriter w);
  * You can't write any text outside the root element, except with
  *  genxComment and genxPI
  */
-genxStatus genxAddText(genxWriter w, const utf8 start);
-genxStatus genxAddCountedText(genxWriter w, const utf8 start, int byteCount);
-genxStatus genxAddBoundedText(genxWriter w, const utf8 start, const utf8 end);
+genxStatus genxAddText(genxWriter w, constUtf8 start);
+genxStatus genxAddCountedText(genxWriter w, constUtf8 start, int byteCount);
+genxStatus genxAddBoundedText(genxWriter w, constUtf8 start, constUtf8 end);
 
 /*
  * Write one character.  The integer value is the Unicode character
@@ -247,13 +246,13 @@ genxStatus genxAddCharacter(genxWriter w, int c);
  *  argument to point at the first byte past the point past the malformed
  *  ones.
  */
-int genxNextUnicodeChar(utf8 * sp);
+int genxNextUnicodeChar(constUtf8 * sp);
 
 /*
  * Scan a buffer allegedly full of UTF-8 encoded XML characters; return
  *  one of GENX_SUCCESS, GENX_BAD_UTF8, or GENX_NON_XML_CHARACTER
  */
-genxStatus genxCheckText(genxWriter w, const utf8 s);
+genxStatus genxCheckText(genxWriter w, constUtf8 s);
 
 /*
  * return character status, the OR of GENX_XML_CHAR,
@@ -270,7 +269,7 @@ int genxCharClass(genxWriter w, int c);
  * The output can never be longer than the input.
  * Returns true if any changes were made.
  */
-int genxScrubText(genxWriter w, utf8 in, utf8 out);
+int genxScrubText(genxWriter w, constUtf8 in, utf8 out);
 
 /*
  * return error messages

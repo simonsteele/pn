@@ -3,12 +3,18 @@
  *  permission, see http://www.tbray.org/ongoing/genx/COPYING
  */
 
-#define GENX_VERSION "beta3"
+#define GENX_VERSION "beta5"
 
 #include <stdlib.h>
 #include <string.h>
 
 #include "genx.h"
+
+#define Boolean int
+#define True 1
+#define False 0
+#define STRLEN_XMLNS_COLON 6
+
 
 /*******************************
  * writer state
@@ -19,6 +25,7 @@ typedef enum
   SEQUENCE_PRE_DOC,
   SEQUENCE_POST_DOC,
   SEQUENCE_START_TAG,
+  SEQUENCE_ATTRIBUTES,
   SEQUENCE_CONTENT
 } writerSequence;
 
@@ -46,13 +53,24 @@ typedef struct
 /*******************************
  * Structs with opaquely-exposed handles
  */
+
+/*
+ * This one's tricky, to handle stacking namespaces
+ *  'declaration' is the current attribute which would be used to
+ *    declare the currently-effective prefix
+ *  'defDeclaration' is a appropriate declaration when this is being
+ *    used with the default prefix as passed to genxDeclareNamespace
+ *  baroque is true if this namespace has been used with more than one
+ *   prefix, or is the default namespace but has been unset
+ */
 struct genxNamespace_rec
 {
   genxWriter 	writer;
   utf8       	name;
-  utf8       	prefix;
+  int           declCount;
+  Boolean       baroque;
   genxAttribute declaration;
-  int           inEffect;
+  genxAttribute defaultDecl;
 };
 
 struct genxElement_rec
@@ -90,13 +108,17 @@ struct genxWriter_rec
   writerSequence  	   sequence;
   char            	   xmlChars[0x10000];
   void *          	   userData;
-  plist           	   namespaces;
   int             	   nextPrefix;
+  utf8                     empty;
+  Boolean                  defaultNsDeclared;
+  genxAttribute            xmlnsEquals;
+  genxElement              nowStarting;
+  plist           	   namespaces;
   plist           	   elements;
   plist           	   attributes;
+  plist                    prefixes;
   plist           	   stack;   
   struct genxAttribute_rec arec;
-  genxAttribute            defaultNS;
   char *                   etext[100];
   void *       		(* alloc)(void * userData, int bytes);
   void         		(* dealloc)(void * userData, void * data);
@@ -106,9 +128,11 @@ struct genxWriter_rec
  * Forward declarations
  */
 static genxAttribute declareAttribute(genxWriter w, genxNamespace ns,
-				      utf8 name, utf8 value,
+				      constUtf8 name, constUtf8 valuestr,
 				      genxStatus * statusP);
-static genxStatus addAttribute(genxAttribute a, const utf8 valuestr);
+static genxStatus addNamespace(genxNamespace ns, utf8 prefix);
+static genxStatus unsetDefaultNamespace(genxWriter w);
+static genxStatus addAttribute(genxAttribute a, constUtf8 valuestr);
 void genxSetCharProps(char * p);
 
 /*******************************
@@ -134,7 +158,7 @@ static void deallocate(genxWriter w, void * data)
     free(data);
 }
 
-static utf8 copy(genxWriter w, utf8 from)
+static utf8 copy(genxWriter w, constUtf8 from)
 {
   utf8 temp;
 
@@ -177,7 +201,7 @@ static void endCollect(collector * c)
   c->buf[c->used] = 0;
 }
 
-static genxStatus collectString(genxWriter w, collector * c, utf8 string)
+static genxStatus collectString(genxWriter w, collector * c, constUtf8 string)
 {
   int sl = strlen((const char *) string);
 
@@ -209,24 +233,24 @@ static genxStatus initPlist(genxWriter w, plist * pl)
 /*
  * make room in a plist
  */
-static int checkExpand(plist * pl)
+static Boolean checkExpand(plist * pl)
 {
   void * * newlist;
   int i;
 
   if (pl->count < pl->space)
-    return 1;
+    return True;
 
   pl->space *= 2;
   newlist = (void * *) allocate(pl->writer, pl->space * sizeof(void *));
   if (newlist == NULL)
-    return 0;
+    return False;
   for (i = 0; i < pl->count; i++)
     newlist[i] = pl->pointers[i];
   deallocate(pl->writer, pl->pointers); 
   pl->pointers = newlist;
 
-  return 1;
+  return True;
 }
 
 /*
@@ -263,7 +287,7 @@ static genxStatus listInsert(plist * pl, void * pointer, int at)
  * list lookups
  */
 
-static genxNamespace findNamespace(plist * pl, utf8 uri)
+static genxNamespace findNamespace(plist * pl, constUtf8 uri)
 {
   int i;
   genxNamespace * nn = (genxNamespace *) pl->pointers;
@@ -275,22 +299,7 @@ static genxNamespace findNamespace(plist * pl, utf8 uri)
   return NULL;
 }
 
-static genxNamespace findNamespaceByPrefix(genxWriter w, utf8 prefix)
-{
-  int i;
-  genxNamespace * nn = (genxNamespace *) w->namespaces.pointers;
-
-  /*
-   * we bypass the undeclare-default pattern
-   */
-  for (i = 0; i < w->namespaces.count; i++)
-    if (strcmp((const char *) prefix, (const char *) nn[i]->prefix) == 0)
-      return nn[i];
-
-  return NULL;
-}
-
-static genxElement findElement(plist * pl, utf8 xmlns, utf8 type)
+static genxElement findElement(plist * pl, constUtf8 xmlns, constUtf8 type)
 {
   int i;
   genxElement * ee = (genxElement *) pl->pointers;
@@ -315,6 +324,59 @@ static genxElement findElement(plist * pl, utf8 xmlns, utf8 type)
   return NULL;
 }
 
+/*
+ * store & intern a prefix, after giving it the
+ *  "xmlns:" prefix.  Don't allow storing the same one twice unless 'force'
+ *  is set.
+ */
+static utf8 storePrefix(genxWriter w, constUtf8 prefix, Boolean force)
+{
+  int high, low;
+  utf8 * pp = (utf8 *) w->prefixes.pointers;
+  unsigned char buf[1024];
+
+  if (prefix[0] == 0)
+    prefix = (utf8) "xmlns";
+  else
+  {
+    sprintf((char *) buf, "xmlns:%s", prefix);
+    prefix = buf;
+  }
+
+  high = w->prefixes.count; low = -1;
+  while (high - low > 1)
+  {
+    int probe = (high + low) / 2;
+    if (strcmp((const char *) prefix, (const char *) pp[probe]) < 0)
+      high = probe;
+    else
+      low = probe;
+  }
+
+  /* already there? */
+  if (low != -1 && strcmp((const char *) prefix, (const char *) pp[low]) == 0)
+  {
+    if (force)
+      return pp[low];
+
+    w->status = GENX_DUPLICATE_PREFIX;
+    return NULL;
+  }
+
+  /* copy & insert */
+  if ((prefix = copy(w, prefix)) == NULL)
+  {
+    w->status = GENX_ALLOC_FAILED;
+    return NULL;
+  }
+  
+  w->status = listInsert(&w->prefixes, (void *) prefix, high);
+  if (w->status != GENX_SUCCESS)
+    return NULL;
+
+  return (utf8) prefix;
+}
+
 /*******************************
  * UTF8 bit-banging
  */
@@ -323,9 +385,9 @@ static genxElement findElement(plist * pl, utf8 xmlns, utf8 type)
  * Retrieve the character pointed at, and advance the pointer; return -1 on
  *  error
  */
-int genxNextUnicodeChar(utf8 * sp)
+int genxNextUnicodeChar(constUtf8 * sp)
 {
-  utf8 s = *sp;
+  utf8 s = (utf8) *sp;
   int c;
 
   if (*s == 0)
@@ -413,28 +475,28 @@ malformed:
   return -1;
 }
 
-static int isXMLChar(genxWriter w, int c)
+static Boolean isXMLChar(genxWriter w, int c)
 {
   if (c < 0)
-    return 0;
+    return False;
   else if (c < 0x10000)
     return (int) w->xmlChars[c];
   else
     return (c <= 0x10ffff);
 }
 
-static int isLetter(genxWriter w, int c)
+static Boolean isLetter(genxWriter w, int c)
 {
   if (c < 0 || c > 0xffff)
-    return 0;
+    return False;
   else
     return w->xmlChars[c] & GENX_LETTER;
 }
 
-static int isNameChar(genxWriter w, int c)
+static Boolean isNameChar(genxWriter w, int c)
 {
   if (c < 0 || c > 0xffff)
-    return 0;
+    return False;
   else
     return w->xmlChars[c] & GENX_NAMECHAR;
 }
@@ -451,6 +513,7 @@ genxWriter genxNew(void * (* alloc)(void * userData, int bytes),
 		   void * userData)
 {
   genxWriter w;
+  genxNamespace xml;
 
   if (alloc)
     w = (genxWriter) (*alloc)(userData, sizeof(struct genxWriter_rec));
@@ -469,18 +532,25 @@ genxWriter genxNew(void * (* alloc)(void * userData, int bytes),
   if (initPlist(w, &w->namespaces) != GENX_SUCCESS ||
       initPlist(w, &w->elements) != GENX_SUCCESS ||
       initPlist(w, &w->attributes) != GENX_SUCCESS ||
+      initPlist(w, &w->prefixes) != GENX_SUCCESS ||
       initPlist(w, &w->stack) != GENX_SUCCESS)
     return NULL;
 
   if ((w->status = initCollector(w, &w->arec.value)) != GENX_SUCCESS)
     return NULL;
 
-  w->nextPrefix = 1;
-
-  w->defaultNS = declareAttribute(w, NULL,
-				  (utf8) "xmlns", (utf8) "", &w->status);
-  if (w->status != GENX_SUCCESS)
+  if ((w->empty = copy(w, (utf8) "")) == NULL)
+  {
+    w->status = GENX_ALLOC_FAILED;
     return NULL;
+  }
+
+  w->xmlnsEquals = declareAttribute(w, NULL, (utf8) "xmlns", NULL, &w->status);
+  if (w->xmlnsEquals == NULL || w->status != GENX_SUCCESS)
+    return NULL;
+  w->defaultNsDeclared = False;
+
+  w->nextPrefix = 1;
 
   genxSetCharProps(w->xmlChars);
 
@@ -491,12 +561,10 @@ genxWriter genxNew(void * (* alloc)(void * userData, int bytes),
   w->etext[GENX_ALLOC_FAILED] = "Memory allocation failed";
   w->etext[GENX_BAD_NAMESPACE_NAME] = "Bad namespace name";
   w->etext[GENX_INTERNAL_ERROR] = "Internal error";
-  w->etext[GENX_DUPLICATE_NAME] = "Duplicate name";
   w->etext[GENX_DUPLICATE_PREFIX] = "Duplicate prefix";
   w->etext[GENX_SEQUENCE_ERROR] = "Call out of sequence";
   w->etext[GENX_NO_START_TAG] = "No Start-tag for EndElement call";
   w->etext[GENX_IO_ERROR] = "I/O error";
-  w->etext[GENX_PREMATURE_END] = "EndDocument call with unclosed element(s)";
   w->etext[GENX_MISSING_VALUE] = "Missing attribute value";
   w->etext[GENX_MALFORMED_COMMENT] = "Malformed comment body";
   w->etext[GENX_MALFORMED_PI] = "?> in PI";
@@ -505,8 +573,18 @@ genxWriter genxNew(void * (* alloc)(void * userData, int bytes),
     "Same attribute specified more than once";
   w->etext[GENX_ATTRIBUTE_IN_DEFAULT_NAMESPACE] =
     "Attribute cannot be in default namespace";
-  w->etext[GENX_BAD_NAMESPACE_REDECLARATION] =
-    "Attempt to redeclare namespace while still in scope";
+  w->etext[GENX_DUPLICATE_NAMESPACE] =
+    "Declared namespace twice with different prefixes on one element.";
+  w->etext[GENX_BAD_DEFAULT_DECLARATION] =
+    "Declared a default namespace on an element which is in no namespace";
+
+  /* the xml: namespace is pre-wired */
+  xml = genxDeclareNamespace(w, (utf8) "http://www.w3.org/XML/1998/namespace",
+			     (utf8) "xml", &w->status);
+  if (xml == NULL)
+    return NULL;
+  xml->declCount = 1;
+  xml->declaration = xml->defaultDecl;
 
   return w;
 }
@@ -557,7 +635,6 @@ void genxDispose(genxWriter w)
   for (i = 0; i < w->namespaces.count; i++)
   {
     deallocate(w, nn[i]->name);
-    deallocate(w, nn[i]->prefix);
     deallocate(w, nn[i]);
   }
 
@@ -592,11 +669,11 @@ void genxDispose(genxWriter w)
 /*
  * scan a buffer and report problems with UTF-8 encoding or non-XML characters
  */
-genxStatus genxCheckText(genxWriter w, const utf8 s)
+genxStatus genxCheckText(genxWriter w, constUtf8 s)
 {
   while (*s)
   {
-    int c = genxNextUnicodeChar((utf8 *) &s);
+    int c = genxNextUnicodeChar(&s);
     if (c == -1)
       return GENX_BAD_UTF8;
 
@@ -609,10 +686,10 @@ genxStatus genxCheckText(genxWriter w, const utf8 s)
 /*
  * Purify some text
  */
-int genxScrubText(genxWriter w, utf8 in, utf8 out)
+int genxScrubText(genxWriter w, constUtf8 in, utf8 out)
 {
   int problems = 0;
-  utf8 last = in;
+  constUtf8 last = in;
 
   while (*in)
   {
@@ -654,7 +731,7 @@ int genxCharClass(genxWriter w, int c)
   return ret;
 }
 
-static genxStatus checkNCName(genxWriter w, utf8 name)
+static genxStatus checkNCName(genxWriter w, constUtf8 name)
 {
   int c;
 
@@ -662,7 +739,7 @@ static genxStatus checkNCName(genxWriter w, utf8 name)
     return GENX_BAD_NAME;
 
   c = genxNextUnicodeChar(&name);
-  if (!isLetter(w, c))
+  if (!isLetter(w, c) && c != ':' && c != '_')
     return GENX_BAD_NAME;
 
   while (*name)
@@ -690,138 +767,110 @@ char * genxLastErrorMessage(genxWriter w)
  */
 
 /*
- * DeclareNamespace - see genx.h for details
+ * DeclareNamespace - by far the most complex routine in Genx
  */
-genxNamespace genxDeclareNamespace(genxWriter w, utf8 uri, utf8 prefix,
+genxNamespace genxDeclareNamespace(genxWriter w, constUtf8 uri,
+				   constUtf8 defaultPref,
 				   genxStatus * statusP)
 {
-  genxNamespace old;
   genxNamespace ns;
-  genxAttribute a;
-  unsigned char nsdecl[1024];
+  genxAttribute defaultDecl;
+  unsigned char newPrefix[100];
 
   if (uri == NULL || uri[0] == 0)
   {
-    w->status = *statusP = GENX_BAD_NAMESPACE_NAME;
-    return NULL;
+    w->status = GENX_BAD_NAMESPACE_NAME;
+    goto busted;
   }
 
   if ((w->status = genxCheckText(w, uri)) != GENX_SUCCESS)
-  {
-    *statusP = w->status;
-    return NULL;
-  }
+    goto busted;
 
-  if (prefix != NULL && prefix[0] != 0)
-  {
-    if ((w->status = checkNCName(w, prefix)) != GENX_SUCCESS)
-    {
-      *statusP = w->status;
-      return NULL;
-    }
-  }
+  /* if a prefix is provided, it has to be an NCname */
+  if (defaultPref != NULL && defaultPref[0] != 0 &&
+      (w->status = checkNCName(w, defaultPref)) != GENX_SUCCESS)
+    goto busted;
 
   /* previously declared? */
-  if ((old = findNamespace(&w->namespaces, uri)))
+  if ((ns = findNamespace(&w->namespaces, uri)))
   {
-    if (prefix && strcmp((const char *) old->prefix, (const char *) prefix))
+    /* just a lookup, really */
+    if ((defaultPref == NULL) ||
+	(defaultPref[0] == 0 && ns->defaultDecl == w->xmlnsEquals) ||
+	(strcmp((const char *) ns->defaultDecl->name + STRLEN_XMLNS_COLON,
+		(const char *) defaultPref) == 0))
     {
-      if (old->inEffect)
-      {
-	w->status = *statusP = GENX_BAD_NAMESPACE_REDECLARATION;
-	return NULL;
-      }
-	
-      deallocate(w, old->prefix);
-      old->prefix = copy(w, prefix);
       w->status = *statusP = GENX_SUCCESS;
-      return old;
+      return ns;
     }
-    else
-    {
-      *statusP = GENX_SUCCESS;
-      return old;
-    }
-  }
-
-  /* this prefix currently used? */
-  if (prefix && findNamespaceByPrefix(w, prefix))
-  {
-    w->status = *statusP = GENX_DUPLICATE_PREFIX;
-    return NULL;
   }
 
   /* wasn't already declared */
-  if (prefix == NULL)
+  else
   {
-    /* make a prefix */
-    unsigned char newPrefix[100];
 
-    /* dodge malicious user having created their own g-%d prefix */
-    do
-      sprintf((char *) newPrefix, "g-%d", w->nextPrefix++);
-    while (findNamespaceByPrefix(w, newPrefix));
-      
-    prefix = copy(w, newPrefix);
-    if (prefix == NULL)
+    /* make a default prefix if none provided */
+    if (defaultPref == NULL)
     {
-      w->status = *statusP = GENX_ALLOC_FAILED;
-      return NULL;
+      sprintf((char *) newPrefix, "g%d", w->nextPrefix++);
+      defaultPref = newPrefix;
     }
+
+    ns = (genxNamespace) allocate(w, sizeof(struct genxNamespace_rec));
+    if (ns == NULL)
+    {
+      w->status = GENX_ALLOC_FAILED;
+      goto busted;
+    }
+    ns->writer = w;
+    ns->baroque = False;
+
+    if ((ns->name = copy(w, uri)) == NULL)
+    {
+      w->status = GENX_ALLOC_FAILED;
+      goto busted;
+    }
+
+    if ((w->status = listAppend(&w->namespaces, ns)) != GENX_SUCCESS)
+      goto busted;
+    ns->defaultDecl = ns->declaration = NULL;
+    ns->declCount = 0;
+  }
+
+  if (defaultPref[0] == 0)
+  {
+    if (w->defaultNsDeclared)
+    {
+      w->status = GENX_DUPLICATE_PREFIX;
+      goto busted;
+    }
+    defaultDecl = w->xmlnsEquals;
+    w->defaultNsDeclared = True;
   }
   else
   {
-    utf8 temp;
+    /* this catches dupes too */
+    if ((defaultPref = storePrefix(w, defaultPref, False)) == NULL)
+      goto busted;
 
-    if ((temp = copy(w, prefix)) == NULL)
-    {
-      w->status = *statusP = GENX_ALLOC_FAILED;
-      return NULL;
-    }
-    prefix = temp;
-  }
-
-  ns = (genxNamespace) allocate(w, sizeof(struct genxNamespace_rec));
-  if (ns == NULL)
-  {
-    w->status = *statusP = GENX_ALLOC_FAILED;
-    return NULL;
-  }
-
-  if ((ns->name = copy(w, uri)) == NULL)
-  {
-    w->status = *statusP = GENX_ALLOC_FAILED;
-    return NULL;
-  }
-
-  ns->writer = w;
-  ns->prefix = prefix;
-  ns->inEffect = 0;
-  if ((w->status = listAppend(&w->namespaces, ns)) != GENX_SUCCESS)
-  {
-    *statusP = w->status;
-    return NULL;
-  }
-
-  if (ns->prefix[0] == 0)
-    a = w->defaultNS;
-
-  else
-  {
-    sprintf((char *) nsdecl, "xmlns:%s", (const char *) ns->prefix);
-
-    a = declareAttribute(w, NULL, nsdecl, ns->name, statusP);
-    if (a == NULL || *statusP != GENX_SUCCESS)
+    defaultDecl = declareAttribute(w, NULL, defaultPref, ns->name, statusP);
+    if (defaultDecl == NULL || *statusP != GENX_SUCCESS)
     {
       w->status = *statusP;
       return NULL;
     }
   }
-  
-  ns->declaration = a;
+
+  if (ns->defaultDecl != NULL && defaultDecl != ns->defaultDecl)
+    ns->baroque = True;
+  ns->defaultDecl = defaultDecl;
   
   *statusP = GENX_SUCCESS;
   return ns;
+
+busted:
+  *statusP = w->status;
+  return NULL;
 }
 
 /*
@@ -829,14 +878,20 @@ genxNamespace genxDeclareNamespace(genxWriter w, utf8 uri, utf8 prefix,
  */
 utf8 genxGetNamespacePrefix(genxNamespace ns)
 {
-  return ns->prefix;
+  if (ns->declaration == NULL)
+    return NULL;
+
+  if (ns->declaration == ns->writer->xmlnsEquals)
+    return ns->writer->empty;
+
+  return ns->declaration->name + STRLEN_XMLNS_COLON;
 }
 
 /*
  * DeclareElement - see genx.h for details
  */
 genxElement genxDeclareElement(genxWriter w,
-			       genxNamespace ns, utf8 type, 
+			       genxNamespace ns, constUtf8 type, 
 			       genxStatus * statusP)
 {
   genxElement old;
@@ -849,7 +904,8 @@ genxElement genxDeclareElement(genxWriter w,
   }
 
   /* already declared? */
-  if ((old = findElement(&w->elements, (ns == NULL) ? NULL : ns->name, type)))
+  old = findElement(&w->elements, (ns == NULL) ? NULL : ns->name, type);
+  if (old)
     return old;
 
   if ((el = (genxElement) allocate(w, sizeof(struct genxElement_rec))) == NULL)
@@ -908,45 +964,38 @@ static int orderAttributes(genxAttribute a1, genxAttribute a2)
 }
 
 /*
- * internal declare-attribute allows specification of value, for
- *  use in declaring namespaces.
- * contains the first 'goto' statement I've written in 20 years
+ * internal declare-attribute.  This one allows colonized values for
+ *  names, so that you can declare xmlns:-type attributes
  */
 static genxAttribute declareAttribute(genxWriter w, genxNamespace ns,
-				      utf8 name, utf8 valuestr,
+				      constUtf8 name, constUtf8 valuestr,
 				      genxStatus * statusP)
 {
-  int high, low, probe;
+  int high, low;
   genxAttribute * aa = (genxAttribute *) w->attributes.pointers;
   genxAttribute a;
 
   w->arec.ns = ns;
-  w->arec.name = name;
-  if (valuestr)
-  {
-    w->status = collectString(w, &w->arec.value, valuestr);
-    if (w->status != GENX_SUCCESS)
-      goto busted;
-    w->arec.atype = ATTR_NSDECL;
-  }
-  else if (ns)
-  {
-    /* no attributes in the default namespace */
-    if (ns->prefix[0] == 0)
-    {
-      w->status = GENX_ATTRIBUTE_IN_DEFAULT_NAMESPACE;
-      goto busted;
-    }
+  w->arec.name = (utf8) name;
+
+  if (ns)
     w->arec.atype = ATTR_PREFIXED;
-  }
+  else if (strncmp((const char *) name, "xmlns", STRLEN_XMLNS_COLON - 1) == 0)
+    w->arec.atype = ATTR_NSDECL;
   else
     w->arec.atype = ATTR_NAKED;
+
+  if (ns && (ns->defaultDecl == w->xmlnsEquals))
+  {
+    w->status = GENX_ATTRIBUTE_IN_DEFAULT_NAMESPACE;
+    goto busted;
+  }
 
   /* attribute list has to be kept sorted per c14n rules */
   high = w->attributes.count; low = -1;
   while (high - low > 1)
   {
-    probe = (high + low) / 2;
+    int probe = (high + low) / 2;
     if (orderAttributes(&w->arec, aa[probe]) < 0)
       high = probe;
     else
@@ -967,7 +1016,7 @@ static genxAttribute declareAttribute(genxWriter w, genxNamespace ns,
 
   a->writer = w;
   a->ns = ns;
-  a->provided = 0;
+  a->provided = False;
   a->atype = w->arec.atype;
 
   if ((a->name = copy(w, name)) == NULL)
@@ -999,7 +1048,7 @@ busted:
  * genxDeclareAttribute - see genx.h for details
  */
 genxAttribute genxDeclareAttribute(genxWriter w,
-				   genxNamespace ns, utf8 name,
+				   genxNamespace ns, constUtf8 name,
 				   genxStatus * statusP)
 {
   if ((w->status = checkNCName(w, name)) != GENX_SUCCESS)
@@ -1014,7 +1063,7 @@ genxAttribute genxDeclareAttribute(genxWriter w,
 /*******************************
  * I/O
  */
-static genxStatus sendx(genxWriter w, utf8 s)
+static genxStatus sendx(genxWriter w, constUtf8 s)
 {
   if (w->sender)
     return (*w->sender->send)(w->userData, s);
@@ -1027,7 +1076,7 @@ static genxStatus sendx(genxWriter w, utf8 s)
   }
 }
 
-static genxStatus sendxBounded(genxWriter w, utf8 start, utf8 end)
+static genxStatus sendxBounded(genxWriter w, constUtf8 start, constUtf8 end)
 {
   if (w->sender)
     return (*w->sender->sendBounded)(w->userData, start, end);
@@ -1080,20 +1129,43 @@ genxStatus genxStartDocSender(genxWriter w, genxSender * sender)
  *  we build it, then as each attribute is added, we fill in its value and
  *  mark the fact that it's been added, in the "provided" field.
  */
-static genxStatus writeAttributes(genxWriter w)
+static genxStatus writeStartTag(genxWriter w)
 {
   int i;
   genxAttribute * aa = (genxAttribute *) w->attributes.pointers;
+  genxElement e = w->nowStarting;
+
+  /*
+   * make sure the right namespace decls are in effect;
+   *  if they are these might create an error, so ignore it
+   */
+  if (e->ns)
+    addNamespace(e->ns, NULL);
+  else
+    unsetDefaultNamespace(w);
+  w->status = GENX_SUCCESS;
+
+  SendCheck(w, "<");
+  if (e->ns && (e->ns->declaration != w->xmlnsEquals))
+  {
+    SendCheck(w, e->ns->declaration->name + STRLEN_XMLNS_COLON);
+    SendCheck(w, ":");
+  }
+  SendCheck(w, e->type);
 
   for (i = 0; i < w->attributes.count; i++)
   {
     if (aa[i]->provided)
     {
+      if (aa[i]->ns && aa[i]->ns->baroque &&
+	  aa[i]->ns->declaration == w->xmlnsEquals)
+	return w->status = GENX_ATTRIBUTE_IN_DEFAULT_NAMESPACE;
+
       SendCheck(w, " ");
 
       if (aa[i]->ns)
       {
-	SendCheck(w, aa[i]->ns->prefix)
+	SendCheck(w, aa[i]->ns->declaration->name + STRLEN_XMLNS_COLON)
 	SendCheck(w, ":");
       }
       SendCheck(w, aa[i]->name);
@@ -1104,6 +1176,70 @@ static genxStatus writeAttributes(genxWriter w)
   }
   SendCheck(w, ">");
   return GENX_SUCCESS;
+}
+
+/*
+ * internal clear-er; no sequence checking
+ */
+static genxStatus unsetDefaultNamespace(genxWriter w)
+{
+  int i;
+  Boolean found = False;
+
+  /* don't put it in if not needed */
+  i = w->stack.count - 1;
+  while (found == False && i > 0)
+  {
+    while (w->stack.pointers[i] != NULL)
+    {
+      genxAttribute decl = (genxAttribute) w->stack.pointers[i--];
+      genxNamespace ns = (genxNamespace) w->stack.pointers[i--];
+
+      /* if already unset */
+      if (ns == NULL)
+	return w->status = GENX_SUCCESS;
+
+      /*
+       * the default namespace was declared.  This namespace now
+       *  becomes baroque
+       */
+      if (decl == w->xmlnsEquals)
+      {
+	ns->baroque = True;
+	found = True;
+	break;
+      }
+    }
+    i -= 2;
+  }
+
+  if (!found)
+    return GENX_SUCCESS;
+
+  /*
+   * push a signal on the stack
+   */
+  if ((w->status = listAppend(&w->stack, NULL)) != GENX_SUCCESS)
+    return w->status;
+  w->status = listAppend(&w->stack, w->xmlnsEquals);
+  if (w->status != GENX_SUCCESS)
+    return w->status;
+
+  /* add the xmlns= attribute, it must be the first one */
+  return addAttribute(w->xmlnsEquals, w->empty);
+}
+
+/*
+ * clear the default namespace declaration
+ */
+genxStatus genxUnsetDefaultNamespace(genxWriter w)
+{
+
+  /* can only do this while in start-tag mode */
+  if (w->sequence != SEQUENCE_START_TAG)
+    return w->status = GENX_SEQUENCE_ERROR;
+
+  return unsetDefaultNamespace(w);
 }
 
 genxStatus genxStartElement(genxElement e)
@@ -1117,7 +1253,8 @@ genxStatus genxStartElement(genxElement e)
   case SEQUENCE_POST_DOC:
     return w->status = GENX_SEQUENCE_ERROR;
   case SEQUENCE_START_TAG:
-    if ((w->status = writeAttributes(w)) != GENX_SUCCESS)
+  case SEQUENCE_ATTRIBUTES:
+    if ((w->status = writeStartTag(w)) != GENX_SUCCESS)
       return w->status;
     break;
   case SEQUENCE_PRE_DOC:
@@ -1132,114 +1269,150 @@ genxStatus genxStartElement(genxElement e)
     ((genxAttribute) w->attributes.pointers[i])->provided = 0;
 
   /*
-   * push the stack.  We push a NULL after a pointer to this element,
+   * push the stack.  We push a NULL after a pointer to this element
    *  because the stack will also contain pointers to the namespace
    *  attributes that got declared here, so we can keep track of what's
    *  in effect.  I.e. a single stack entry consists logically of a pointer
-   *  to an element object, a NULL, then zero or more pointers to
-   *  namespace objects
+   *  to an element object, a NULL, then zero or more pairs of pointers to
+   *  namespace objects/declarations
    */
   if ((w->status = listAppend(&w->stack, e)) != GENX_SUCCESS)
     return w->status;
   if ((w->status = listAppend(&w->stack, NULL)) != GENX_SUCCESS)
     return w->status;
 
-  SendCheck(w, "<");
-  if (e->ns)
-  {
-    if (e->ns->prefix[0])
-    {
-      SendCheck(w, e->ns->prefix);
-      SendCheck(w, ":");
-    }
-    if ((w->status = genxAddNamespace(e->ns)) != GENX_SUCCESS)
-      return w->status;
-  }
-  SendCheck(w, e->type);
-
-  /*
-   * if this is in no namespace, but there is a default namespace in
-   *  effect, then we have to undeclare the default.  Fortunately,
-   *  that sorts first per C14n rules.
-   */
-  if (e->ns == NULL)
-  {
-    int i;
-
-    /*
-     * could climb the stuack, but easier to just run through the namespaces
-     */
-    for (i = 0; i < w->namespaces.count; i++)
-    {
-      genxNamespace ns = (genxNamespace) w->namespaces.pointers[i];
-      if (ns->inEffect && (ns->prefix[0] == 0))
-      {
-	if ((w->status = genxUnsetDefaultNamespace(w)) != GENX_SUCCESS)
-	  return w->status;
-      }
-    }
-  }
+  w->nowStarting = e;
 
   return GENX_SUCCESS;
 }
 
 /*
- * clear the default namespace declaration
+ * internal namespace adder; no sequence checking
  */
-genxStatus genxUnsetDefaultNamespace(genxWriter w)
+static genxStatus addNamespace(genxNamespace ns, utf8 prefix)
 {
+  genxWriter w = ns->writer;
+  genxAttribute decl;
   int i;
-  genxNamespace * nn = (genxNamespace *) w->namespaces.pointers;
+  genxElement e;
 
-  for (i = 0; i < w->namespaces.count; i++)
-    if (nn[i]->prefix[0] == 0)
+  /*
+   * first, we'll find the declaring attribute
+   */
+  if (prefix == NULL)
+    decl = ns->defaultDecl;
+  else
+  {
+    if (prefix[0] == 0)
+      decl = w->xmlnsEquals;
+    else
     {
-      nn[i]->inEffect = 0;
-      break;
+      if ((prefix = storePrefix(w, prefix, True)) == NULL)
+	return w->status;
+      decl = declareAttribute(w, NULL, prefix, ns->name, &w->status);
+      if (decl == NULL || w->status != GENX_SUCCESS)
+	return w->status;
     }
+  }
 
-  return genxAddAttribute(w->defaultNS, (utf8) "");
+  if (decl != ns->defaultDecl)
+    ns->baroque = True;
+
+  /*
+   * avoid doing anything if this namespace is already declared.  If
+   *  they've shown good taste we can do this cheaply
+   */
+  if (!ns->baroque)
+  {
+    if (ns->declCount > 0)
+      return w->status = GENX_SUCCESS;
+  }
+  else
+  {
+
+    /*
+     * First, we'll run all the way up the stack to see if there is
+     *  another declaration for this namespace/prefix in scope, in which
+     *  case it's a no-op; or, if there's another declaration for this
+     *  prefix on another namespace, in which case we have to over-ride
+     */
+    i = w->stack.count - 1;
+    while (i > 0)
+    {
+      while (w->stack.pointers[i] != NULL)
+      {
+	genxAttribute otherDecl = (genxAttribute) w->stack.pointers[i--];
+	genxNamespace otherNs = (genxNamespace) w->stack.pointers[i--];
+
+	if (ns == otherNs)
+	{
+	  if (decl == otherDecl)
+	    return w->status = GENX_SUCCESS;
+	  else
+	  {
+	    i = 0;
+	    break;
+	  }
+	}
+	else
+	{
+	  /* different namespace, same prefix? */
+	  if (decl == otherDecl)
+	  {
+	    i = 0;
+	    break;
+	  }
+	}
+      }
+      i -= 2;
+    }
+  }
+
+  /*
+   * If this namespace is already declared on
+   *  this element (with different prefix/decl) which is an error.
+   */
+  i = w->stack.count - 1;
+  while (w->stack.pointers[i] != NULL)
+  {
+    genxNamespace otherNs;
+    i--; /* don't need declaration */
+    otherNs = (genxNamespace) w->stack.pointers[i--];
+
+    if (ns == otherNs)
+      return w->status = GENX_DUPLICATE_NAMESPACE;
+  }
+
+  /* move pointer from NULL to element */
+  --i;
+
+  /*
+   * It's also an error if this is a default-namespace declaration and the
+   *  element is in no namespace.
+   */
+  e = (genxElement) w->stack.pointers[i];    
+  if (e->ns == NULL && decl == w->xmlnsEquals)
+    return w->status = GENX_BAD_DEFAULT_DECLARATION;
+
+  if ((w->status = listAppend(&w->stack, ns)) != GENX_SUCCESS)
+    return w->status;
+  if ((w->status = listAppend(&w->stack, decl)) != GENX_SUCCESS)
+    return w->status;
+
+  ns->declaration = decl;
+  ns->declCount++;
+  return addAttribute(decl, ns->name);
 }
 
 /*
  * Add a namespace declaration
  */
-genxStatus genxAddNamespace(genxNamespace ns)
+genxStatus genxAddNamespace(genxNamespace ns, utf8 prefix)
 {
-  genxWriter w = ns->writer;
+  if (ns->writer->sequence != SEQUENCE_START_TAG)
+    return ns->writer->status = GENX_SEQUENCE_ERROR;
 
-  if (w->sequence != SEQUENCE_START_TAG)
-    return w->status = GENX_SEQUENCE_ERROR;
-
-  if (ns->inEffect)
-    return GENX_SUCCESS;
-
-  /*
-   * If this is the default namespace, but the element is in no namespace,
-   *  just refuse.  Have to look up the stack to find the element
-   */
-  if (ns->prefix[0] == 0)
-  {
-    int i;
-    for (i = w->stack.count - 1; w->stack.pointers[i] != NULL; i--)
-      ;
-    --i;
-    if (((genxElement) w->stack.pointers[i])->ns == NULL)
-      return GENX_SUCCESS;
-  }
-
-  ns->inEffect = 1;
-  if ((w->status = listAppend(&w->stack, ns)) != GENX_SUCCESS)
-    return w->status;
-
-  /*
-   * if this is the default namespace, we have to plug in the URI value
-   */
-  if (ns->prefix[0] == 0)
-    addAttribute(ns->declaration, ns->name);
-  else
-    addAttribute(ns->declaration, NULL);
-  return GENX_SUCCESS;
+  return addNamespace(ns, prefix);
 }
 
 /*
@@ -1247,9 +1420,9 @@ genxStatus genxAddNamespace(genxNamespace ns)
  * most of the work here is normalizing the value, which is the same
  *  as regular normalization except for " is replaced by "&quot;"
  */
-static genxStatus addAttribute(genxAttribute a, const utf8 valuestr)
+static genxStatus addAttribute(genxAttribute a, constUtf8 valuestr)
 {
-  utf8 lastv = valuestr;
+  utf8 lastv = (utf8) valuestr;
   genxWriter w = a->writer;
 
   /* if valuestr not provided, this is an xmlns with a pre-cooked value */
@@ -1258,7 +1431,7 @@ static genxStatus addAttribute(genxAttribute a, const utf8 valuestr)
     startCollect(&a->value);
     while (*valuestr)
     {
-      int c = genxNextUnicodeChar((utf8 *) &valuestr);
+      int c = genxNextUnicodeChar(&valuestr);
       
       if (c == -1)
 	return w->status = GENX_BAD_UTF8;
@@ -1268,6 +1441,12 @@ static genxStatus addAttribute(genxAttribute a, const utf8 valuestr)
       
       switch(c)
       {
+      case 9:
+	collectPiece(w, &a->value, "&#x9;", 5);
+	break;
+      case 0xa:
+	collectPiece(w, &a->value, "&#xA;", 5); 
+	break;
       case 0xd:
 	collectPiece(w, &a->value, "&#xD;", 5); 
 	break;
@@ -1280,22 +1459,23 @@ static genxStatus addAttribute(genxAttribute a, const utf8 valuestr)
       case '&':
 	collectPiece(w, &a->value, "&amp;", 5);
 	break;
+	/*
       case '>':
 	collectPiece(w, &a->value, "&gt;", 4);
 	break;
+	*/
       default:
 	collectPiece(w, &a->value, (const char *) lastv, valuestr - lastv);
 	break;
       }
-      lastv = valuestr;
+      lastv = (utf8) valuestr;
     }
     endCollect(&a->value);
   }
 
-  /* now add the namespace attribute */
+  /* now add the namespace attribute; might fail if it's bee hand-declared */
   if (a->ns)
-    if ((w->status = genxAddNamespace(a->ns)) != GENX_SUCCESS)
-      return w->status;
+    addNamespace(a->ns, NULL);
 
   if (valuestr && a->provided)
     return w->status = GENX_DUPLICATE_ATTRIBUTE;
@@ -1308,10 +1488,12 @@ static genxStatus addAttribute(genxAttribute a, const utf8 valuestr)
  * public attribute adder.
  * The only difference is that it doesn't allow a NULL value
  */
-genxStatus genxAddAttribute(genxAttribute a, const utf8 valuestr)
+genxStatus genxAddAttribute(genxAttribute a, constUtf8 valuestr)
 {
-  if (a->writer->sequence != SEQUENCE_START_TAG)
+  if (a->writer->sequence != SEQUENCE_START_TAG &&
+      a->writer->sequence != SEQUENCE_ATTRIBUTES)
     return a->writer->status = GENX_SEQUENCE_ERROR;
+  a->writer->sequence = SEQUENCE_ATTRIBUTES;
 
   if (valuestr == NULL)
     return a->writer->status = GENX_MISSING_VALUE;
@@ -1322,6 +1504,7 @@ genxStatus genxAddAttribute(genxAttribute a, const utf8 valuestr)
 genxStatus genxEndElement(genxWriter w)
 {
   genxElement e;
+  int i;
 
   switch (w->sequence)
   {
@@ -1330,7 +1513,8 @@ genxStatus genxEndElement(genxWriter w)
   case SEQUENCE_POST_DOC:
     return w->status = GENX_SEQUENCE_ERROR;
   case SEQUENCE_START_TAG:
-    if ((w->status = writeAttributes(w)) != GENX_SUCCESS)
+  case SEQUENCE_ATTRIBUTES:
+    if ((w->status = writeStartTag(w)) != GENX_SUCCESS)
       return w->status;
     break;
   case SEQUENCE_CONTENT:
@@ -1338,35 +1522,79 @@ genxStatus genxEndElement(genxWriter w)
   }
 
   /*
-   * pop zero or more namespace declarations, then a null, then the
-   *  start-element declaration off the stack
+   * first peek into the stack to find the right namespace declaration
+   *  (if any) so we can properly prefix the end-tag.  Have to do this
+   *  before unwinding the stack because that might reset some xmlns
+   *  prefixes to the context in the parent element
    */
-  while (w->stack.count > 0 && w->stack.pointers[w->stack.count - 1] != NULL)
-  {
-    /* namespace record */
-    genxNamespace ns = (genxNamespace) w->stack.pointers[--w->stack.count];
-    ns->inEffect = 0;
-  }
-
-  /* pop the NULL */
-  --w->stack.count;
-  if (w->stack.count <= 0)
-    return w->status = GENX_NO_START_TAG;
-
-  e = (genxElement) w->stack.pointers[--w->stack.count];
-  if (w->stack.count == 0)
-    w->sequence = SEQUENCE_POST_DOC;
-  else
-    w->sequence = SEQUENCE_CONTENT;
+  for (i = w->stack.count - 1; w->stack.pointers[i] != NULL; i -= 2)
+    ;
+  e = (genxElement) w->stack.pointers[--i];
 
   SendCheck(w, "</");
-  if (e->ns && e->ns->prefix[0])
+  if (e->ns && e->ns->declaration != w->xmlnsEquals)
   {
-    SendCheck(w, e->ns->prefix);
+    SendCheck(w, e->ns->declaration->name + STRLEN_XMLNS_COLON);
     SendCheck(w, ":");
   }
   SendCheck(w, e->type);
   SendCheck(w, ">");
+
+  /*
+   * pop zero or more namespace declarations, then a null, then the
+   *  start-element declaration off the stack
+   */
+  w->stack.count--;
+  while (w->stack.pointers[w->stack.count] != NULL)
+  {
+    genxNamespace ns = (genxNamespace) w->stack.pointers[--w->stack.count];
+    w->stack.count--; /* don't need decl */
+
+    /* if not a fake unset-default namespace */
+    if (ns)
+    {
+      /*
+       * if they've stupidly jammed in their own namespace-prefix
+       *  declarations, we have to go looking to see if there's another
+       *  one in effect
+       */
+      if (ns->baroque)
+      {
+	i = w->stack.count;
+	while (i > 0)
+	{
+	  while (w->stack.pointers[i] != NULL)
+	  {
+	    genxAttribute otherDecl = (genxAttribute) w->stack.pointers[i--];
+	    genxNamespace otherNs = (genxNamespace) w->stack.pointers[i--];
+	    
+	    if (otherNs == ns)
+	    {
+	      ns->declaration = otherDecl;
+	      i = 0;
+	      break;
+	    }
+	  }
+	  
+	  /* skip NULL & element */
+	  i -= 2;
+	}
+      }
+      ns->declCount--;
+      if (ns->declCount == 0)
+	ns->baroque = False;
+    }
+  }
+
+  /* pop the NULL */
+  --w->stack.count;
+  if (w->stack.count < 0)
+    return w->status = GENX_NO_START_TAG;
+
+  if (w->stack.count == 0)
+    w->sequence = SEQUENCE_POST_DOC;
+  else
+    w->sequence = SEQUENCE_CONTENT;
 
   return GENX_SUCCESS;
 }
@@ -1381,8 +1609,8 @@ genxStatus genxEndElement(genxWriter w)
  *  character, breakerP* indirectly points to the last place genx
  *  changed the UTF8, e.g. by escaping a '<'
  */
-static genxStatus addChar(genxWriter w, int c, utf8 next,
-			  utf8 * lastsP, utf8 * breakerP)
+static genxStatus addChar(genxWriter w, int c, constUtf8 next,
+			  constUtf8 * lastsP, constUtf8 * breakerP)
 {
   if (c == -1)
     return GENX_BAD_UTF8;
@@ -1423,14 +1651,15 @@ static genxStatus addChar(genxWriter w, int c, utf8 next,
   return GENX_SUCCESS;
 }
 
-genxStatus genxAddText(genxWriter w, const utf8 start)
+genxStatus genxAddText(genxWriter w, constUtf8 start)
 {
-  utf8 lasts = start;
-  utf8 breaker = start;
+  constUtf8 lasts = start;
+  constUtf8 breaker = start;
 
-  if (w->sequence == SEQUENCE_START_TAG)
+  if (w->sequence == SEQUENCE_START_TAG ||
+      w->sequence == SEQUENCE_ATTRIBUTES)
   {
-    if ((w->status = writeAttributes(w)) != GENX_SUCCESS)
+    if ((w->status = writeStartTag(w)) != GENX_SUCCESS)
       return w->status;
     w->sequence = SEQUENCE_CONTENT;
   }
@@ -1440,22 +1669,24 @@ genxStatus genxAddText(genxWriter w, const utf8 start)
 
   while (*start)
   {
-    int c = genxNextUnicodeChar((utf8 *) &start);
+    int c = genxNextUnicodeChar(&start);
 
-    if ((w->status = addChar(w, c, start, &lasts, &breaker)) != GENX_SUCCESS)
+    w->status = addChar(w, c, start, &lasts, &breaker);
+    if (w->status != GENX_SUCCESS)
       return w->status;
   }
-  return sendxBounded(w, breaker, start);
+  return sendxBounded(w, breaker, (utf8) start);
 }
 
-genxStatus genxAddBoundedText(genxWriter w, const utf8 start, const utf8 end)
+genxStatus genxAddBoundedText(genxWriter w, constUtf8 start, constUtf8 end)
 {
-  utf8 lasts = start;
-  utf8 breaker = start;
+  constUtf8 lasts = start;
+  constUtf8 breaker = start;
 
-  if (w->sequence == SEQUENCE_START_TAG)
+  if (w->sequence == SEQUENCE_START_TAG ||
+      w->sequence == SEQUENCE_ATTRIBUTES)
   {
-    if ((w->status = writeAttributes(w)) != GENX_SUCCESS)
+    if ((w->status = writeStartTag(w)) != GENX_SUCCESS)
       return w->status;
     w->sequence = SEQUENCE_CONTENT;
   }
@@ -1465,17 +1696,18 @@ genxStatus genxAddBoundedText(genxWriter w, const utf8 start, const utf8 end)
 
   while (start < end)
   {
-    int c = genxNextUnicodeChar((utf8 *) &start);
+    int c = genxNextUnicodeChar(&start);
 
-    if ((w->status = addChar(w, c, start, &lasts, &breaker)) != GENX_SUCCESS)
+    w->status = addChar(w, c, (utf8) start, &lasts, &breaker);
+    if (w->status != GENX_SUCCESS)
       return w->status;
   }
-  return sendxBounded(w, breaker, start);
+  return sendxBounded(w, breaker, (utf8) start);
 }
 
-genxStatus genxAddCountedText(genxWriter w, const utf8 start, int byteCount)
+genxStatus genxAddCountedText(genxWriter w, constUtf8 start, int byteCount)
 {
-  utf8 end = start + byteCount;
+  utf8 end = (utf8) (start + byteCount);
 
   return genxAddBoundedText(w, start, end);
 }
@@ -1485,9 +1717,10 @@ genxStatus genxAddCharacter(genxWriter w, int c)
   unsigned char cUTF8[10];
   utf8 lasts, breaker, next;
 
-  if (w->sequence == SEQUENCE_START_TAG)
+  if (w->sequence == SEQUENCE_START_TAG ||
+      w->sequence == SEQUENCE_ATTRIBUTES)
   {
-    if ((w->status = writeAttributes(w)) != GENX_SUCCESS)
+    if ((w->status = writeStartTag(w)) != GENX_SUCCESS)
       return w->status;
     w->sequence = SEQUENCE_CONTENT;
   }
@@ -1523,7 +1756,9 @@ genxStatus genxAddCharacter(genxWriter w, int c)
   }
   *next = 0;
 
-  if ((w->status = addChar(w, c, next, &lasts, &breaker)) != GENX_SUCCESS)
+  w->status =
+    addChar(w, c, next, (constUtf8 *) &lasts, (constUtf8 *) &breaker);
+  if (w->status != GENX_SUCCESS)
     return w->status;
 
   return sendxBounded(w, breaker, next);
@@ -1544,7 +1779,7 @@ genxStatus genxEndDocument(genxWriter w)
   return GENX_SUCCESS;
 }
 
-genxStatus genxComment(genxWriter w, const utf8 text)
+genxStatus genxComment(genxWriter w, constUtf8 text)
 {
   int i;
 
@@ -1561,9 +1796,10 @@ genxStatus genxComment(genxWriter w, const utf8 text)
     if (text[i] == '-' && (text[i + 1] == '-' || text[i + 1] == 0))
       return w->status = GENX_MALFORMED_COMMENT;
 
-  if (w->sequence == SEQUENCE_START_TAG)
+  if (w->sequence == SEQUENCE_START_TAG ||
+      w->sequence == SEQUENCE_ATTRIBUTES)
   {
-    if ((w->status = writeAttributes(w)) != GENX_SUCCESS)
+    if ((w->status = writeStartTag(w)) != GENX_SUCCESS)
       return w->status;
     w->sequence = SEQUENCE_CONTENT;
   }
@@ -1574,7 +1810,7 @@ genxStatus genxComment(genxWriter w, const utf8 text)
 
   if ((w->status = sendx(w, (utf8) "<!--")) != GENX_SUCCESS)
     return w->status;
-  if ((w->status = sendx(w, text)) != GENX_SUCCESS)
+  if ((w->status = sendx(w, (utf8) text)) != GENX_SUCCESS)
     return w->status;
   if ((w->status = sendx(w, (utf8) "-->")) != GENX_SUCCESS)
     return w->status;
@@ -1586,7 +1822,7 @@ genxStatus genxComment(genxWriter w, const utf8 text)
   return GENX_SUCCESS;
 }
 
-genxStatus genxPI(genxWriter w, const utf8 target, const utf8 text)
+genxStatus genxPI(genxWriter w, constUtf8 target, constUtf8 text)
 {
   int i;
 
@@ -1612,9 +1848,10 @@ genxStatus genxPI(genxWriter w, const utf8 target, const utf8 text)
     if (text[i] == '>' && text[i - 1] == '?')
       return w->status = GENX_MALFORMED_PI;
 
-  if (w->sequence == SEQUENCE_START_TAG)
+  if (w->sequence == SEQUENCE_START_TAG ||
+      w->sequence == SEQUENCE_ATTRIBUTES)
   {
-    if ((w->status = writeAttributes(w)) != GENX_SUCCESS)
+    if ((w->status = writeStartTag(w)) != GENX_SUCCESS)
       return w->status;
     w->sequence = SEQUENCE_CONTENT;
   }
@@ -1627,10 +1864,13 @@ genxStatus genxPI(genxWriter w, const utf8 target, const utf8 text)
     return w->status;
   if ((w->status = sendx(w, target)) != GENX_SUCCESS)
     return w->status;
-  if ((w->status = sendx(w, (utf8) " ")) != GENX_SUCCESS)
-    return w->status;
-  if ((w->status = sendx(w, text)) != GENX_SUCCESS)
-    return w->status;
+  if (text[0])
+  {
+    if ((w->status = sendx(w, (utf8) " ")) != GENX_SUCCESS)
+      return w->status;
+    if ((w->status = sendx(w, text)) != GENX_SUCCESS)
+      return w->status;
+  }
   if ((w->status = sendx(w, (utf8) "?>")) != GENX_SUCCESS)
     return w->status;
 
@@ -1645,7 +1885,7 @@ genxStatus genxPI(genxWriter w, const utf8 target, const utf8 text)
  * Literal versions of the writing routines
  */
 genxStatus genxStartElementLiteral(genxWriter w,
-				   const utf8 xmlns, const utf8 type)
+				   constUtf8 xmlns, constUtf8 type)
 {
   genxNamespace ns = NULL;
   genxElement e;
@@ -1663,8 +1903,8 @@ genxStatus genxStartElementLiteral(genxWriter w,
   return genxStartElement(e);
 }
 
-genxStatus genxAddAttributeLiteral(genxWriter w, const utf8 xmlns,
-				   const utf8 name, const utf8 value)
+genxStatus genxAddAttributeLiteral(genxWriter w, constUtf8 xmlns,
+				   constUtf8 name, constUtf8 value)
 {
   genxNamespace ns = NULL;
   genxAttribute a;
