@@ -812,7 +812,7 @@ protected:
 	void set(LPCTSTR filePath)
 	{
 		const int TEMP_LEN = 100;
-		char temp[TEMP_LEN];
+		TCHAR temp[TEMP_LEN];
 
 		HANDLE hf = ::CreateFile(filePath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 		if (hf != INVALID_HANDLE_VALUE) {
@@ -872,7 +872,7 @@ protected:
 	void set()
 	{
 		const int TEMP_LEN = 100;
-		char temp[TEMP_LEN];
+		TCHAR temp[TEMP_LEN];
 
 		::GetDateFormat(LOCALE_SYSTEM_DEFAULT,
 						DATE_SHORTDATE, NULL,    	// Current date
@@ -883,6 +883,32 @@ protected:
 						0, NULL,    	// Current time
 						NULL, temp, TEMP_LEN);
 		CurrentTime = temp;
+	}
+};
+
+class UserInformation
+{
+public:
+	UserInformation()
+	{
+		set();
+	}
+
+	tstring UserName;
+	//tstring DisplayName;
+
+protected:
+	void set()
+	{
+		const int TEMP_LEN = 100;
+		TCHAR temp[TEMP_LEN];
+
+		//if( ::GetUserNameEx(NameDisplay, temp, TEMP_LEN) == 0 )
+		//	DisplayName = temp;
+
+		DWORD len = TEMP_LEN;
+		if( ::GetUserName/*Ex*/(/*NameSamCompatible, */temp, &len) != 0 )
+			UserName = temp;
 	}
 };
 

@@ -223,16 +223,17 @@ void COptionsManager::LoadPrintSettings(SPrintOptions* pSettings)
 
 	if ( reg.OpenKey(root.c_str()) )
 	{
-		pSettings->rcMargins.left = reg.ReadInt(_T("LeftMargin"), 10);
-		pSettings->rcMargins.top = reg.ReadInt(_T("TopMargin"), 10);
-		pSettings->rcMargins.right = reg.ReadInt(_T("RightMargin"), 10);
-		pSettings->rcMargins.bottom = reg.ReadInt(_T("BottomMargin"), 10);
+		// defaults are in 10ths of a millimeter, so we go for a centimeter on each side.
+		pSettings->rcMargins.left = reg.ReadInt(_T("LeftMargin"), 1000);
+		pSettings->rcMargins.top = reg.ReadInt(_T("TopMargin"), 1000);
+		pSettings->rcMargins.right = reg.ReadInt(_T("RightMargin"), 1000);
+		pSettings->rcMargins.bottom = reg.ReadInt(_T("BottomMargin"), 1000);
 
 		tstring val;
 		val = _T("Programmers Notepad - %f");
 		if( reg.ReadString(_T("Header"), val) )
 			pSettings->Header = val.c_str();
-		val = _T("");
+		val = _T("Page %p, %c - %t");
 		if( reg.ReadString(_T("Footer"), val) )
             pSettings->Footer = val.c_str();
 	}

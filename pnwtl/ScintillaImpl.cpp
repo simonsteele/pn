@@ -687,13 +687,21 @@ int CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 
 class PrintFormatStringBuilder : public CustomFormatStringBuilder<PrintFormatStringBuilder>
 {
+	typedef CustomFormatStringBuilder<PrintFormatStringBuilder> baseClass;
 public:
-	PrintFormatStringBuilder(LPCTSTR fileName, int nPage, int nPages) 
-		: fi(fileName), page(nPage), pages(nPages)
+	PrintFormatStringBuilder(LPCTSTR fileName) 
+		: fi(fileName)
 	{
 		CFileName fn(fileName);
 		filename = fn.GetFileName();
 		filepath = fn.GetPath();
+	}
+
+	const tstring& Build(LPCTSTR str, int nPage, int nPages)
+	{
+		page = nPage;
+		pages = nPages;
+		return baseClass::Build(str);
 	}
 
 	void OnFormatChar(TCHAR thechar)
@@ -731,12 +739,16 @@ public:
 			// file time
 			m_string += fi.FileTime;
 			break;
+		case _T('u'):
+			m_string += ui.UserName;
+			break;
 		}
 	}
 
 protected:
 	DateTimeInformation dti;
 	FileInformation fi;
+	UserInformation ui;
 	tstring filename;
 	tstring filepath;
 	int page;
@@ -984,12 +996,12 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 	int pageNum = 1;
 	bool printPage;
 	
+	PrintFormatStringBuilder fb( pOptions->Filename );
+
 	while (lengthPrinted < lengthDoc) 
 	{
 		printPage = (!(pdlg.Flags & PD_PAGENUMS) ||
 		             (pageNum >= pdlg.nFromPage) && (pageNum <= pdlg.nToPage));
-
-		PrintFormatStringBuilder fb( pOptions->Filename, pageNum, 0 );
 
 		if( printPage )
 		{
@@ -997,7 +1009,7 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 
 			if( headerFormat.size() ) 
 			{
-				tstring sHeader = fb.Build(headerFormat.c_str());
+				tstring sHeader = fb.Build(headerFormat.c_str(), pageNum, 0);
 				::SetTextColor(hdc, /*sdHeader.fore.AsLong()*/0);
 				::SetBkColor(hdc, /*sdHeader.back.AsLong()*/RGB(255,255,255));
 				::SelectObject(hdc, fontHeader);
@@ -1029,7 +1041,7 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 		{
 			if(footerFormat.size())
 			{
-				tstring sFooter = fb.Build(footerFormat.c_str());
+				tstring sFooter = fb.Build(footerFormat.c_str(), pageNum, 0);
 				::SetTextColor(hdc, /*sdFooter.fore.AsLong()*/0);
 				::SetBkColor(hdc, /*sdFooter.back.AsLong()*/RGB(255,255,255));
 				::SelectObject(hdc, fontFooter);

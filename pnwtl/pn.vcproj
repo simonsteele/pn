@@ -388,6 +388,9 @@
 				RelativePath=".\resource.h">
 			</File>
 			<File
+				RelativePath=".\resource.hm">
+			</File>
+			<File
 				RelativePath=".\SchemeCompiler.h">
 			</File>
 			<File

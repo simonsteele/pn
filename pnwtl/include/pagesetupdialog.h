@@ -19,6 +19,10 @@ class CPageSetupDialog : public CPageSetupDialogImpl<CPageSetupDialog>
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			
 			COMMAND_ID_HANDLER(IDOK, OnOK)
+			COMMAND_HANDLER(IDC_PSHELPER_BUTTON, BN_CLICKED, OnHelperClicked)
+			COMMAND_HANDLER(IDC_PSHELPER2_BUTTON, BN_CLICKED, OnHelperClicked)
+
+			MESSAGE_HANDLER(WM_DRAWITEM, OnDrawItem)
 
 			CHAIN_MSG_MAP(baseClass)
 		END_MSG_MAP()
@@ -64,9 +68,33 @@ class CPageSetupDialog : public CPageSetupDialogImpl<CPageSetupDialog>
 			m_HeaderEdit = GetDlgItem(IDC_HEADERTEXT);
 			m_FooterEdit = GetDlgItem(IDC_FOOTERTEXT);
 
+			m_HeaderEdit.SetWindowText( header );
+			m_FooterEdit.SetWindowText( footer );
+
+			m_helperBtn.SubclassWindow( GetDlgItem(IDC_PSHELPER_BUTTON ) );
+			m_helperBtn2.SubclassWindow( GetDlgItem(IDC_PSHELPER2_BUTTON ) );
+
 			bHandled = FALSE;
 			
 			return TRUE;
+		}
+
+		LRESULT OnDrawItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+		{
+			if( ((LPDRAWITEMSTRUCT)lParam)->hwndItem == m_helperBtn.m_hWnd )
+			{
+				return m_helperBtn.SendMessage( OCM__BASE + uMsg, wParam, lParam );
+			}
+			else if( ((LPDRAWITEMSTRUCT)lParam)->hwndItem == m_helperBtn2.m_hWnd )
+			{
+				return m_helperBtn2.SendMessage( OCM__BASE + uMsg, wParam, lParam );
+			}
+			else
+			{
+				bHandled = FALSE;
+			}
+
+			return 0;
 		}
 
 		LRESULT OnOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
@@ -79,11 +107,98 @@ class CPageSetupDialog : public CPageSetupDialogImpl<CPageSetupDialog>
 			return 0;
 		}
 
+		LRESULT OnHelperClicked(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& bHandled)
+		{
+			CArrowButton& btn = (wID == IDC_PSHELPER_BUTTON ? m_helperBtn : m_helperBtn2);
+			
+			CRect rc;
+			btn.GetWindowRect(rc);
+
+            doHelper(rc, wID == IDC_PSHELPER2_BUTTON);			
+
+			return 0;
+		}
+
+		int doHelperInsert(CEdit& cbedit, LPCTSTR insert)
+		{
+			DWORD dwSel = cbedit.GetSel();
+			cbedit.ReplaceSel(insert);
+
+			int pos = LOWORD(dwSel);
+			pos += _tcslen(insert);
+			cbedit.SetFocus();
+			cbedit.SetSel(pos, pos);
+
+			return pos;
+		}
+
+		bool getHelperString(DWORD dwId, CString& str)
+		{
+			switch(dwId)
+			{
+				case ID_HEADERFOOTERFIELDS_FILENAME:
+					str = _T("%f");
+					break;
+				case ID_HEADERFOOTERFIELDS_FILEPATH:
+					str = _T("%d");
+					break;
+				case ID_HEADERFOOTERFIELDS_FILEDATE:
+					str = _T("%D");
+					break;
+				case ID_HEADERFOOTERFIELDS_FILETIME:
+					str = _T("%T");
+					break;
+				case ID_HEADERFOOTERFIELDS_CURRENTDATE:
+					str = _T("%c");
+					break;
+				case ID_HEADERFOOTERFIELDS_CURRENTTIME:
+					str = _T("%t");
+					break;
+				case ID_HEADERFOOTERFIELDS_USERNAME:
+					str = _T("%u");
+					break;
+				case ID_HEADERFOOTERFIELDS_CURRENTPAGE:
+					str = _T("%p");
+					break;
+
+				default:
+					return false;
+			}
+
+			return true;
+		}
+
+		void doHelper(LPRECT rc, bool bFooter)
+		{
+			HMENU hPSHelperMenu;
+
+			CEdit& editCtrl = (bFooter ? m_FooterEdit : m_HeaderEdit);
+			
+			hPSHelperMenu = ::LoadMenu(_Module.m_hInst, MAKEINTRESOURCE(IDR_POPUP_HEADERFOOTER));
+			
+			HMENU hPopup = ::GetSubMenu(hPSHelperMenu, 0);
+
+			DWORD dwRes = ::TrackPopupMenu(hPopup, TPM_RETURNCMD, rc->right, rc->top, 0, m_hWnd, NULL);
+			if(dwRes != 0)
+			{
+				CString str;
+				if( getHelperString(dwRes, str) )
+				{
+					doHelperInsert(editCtrl, str);
+				}
+
+			}
+
+			::DestroyMenu(hPSHelperMenu);
+		}
+
 	protected:
 		CEdit m_HeaderEdit;
 		CEdit m_FooterEdit;
 		CString header;
 		CString footer;
+		CArrowButton m_helperBtn;
+		CArrowButton m_helperBtn2;
 };
 
 }

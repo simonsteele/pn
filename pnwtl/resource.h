@@ -132,6 +132,7 @@
 #define IDI_WORKSPACE                   311
 #define IDI_ICON3                       312
 #define IDI_BADPROJECT                  312
+#define IDR_POPUP_HEADERFOOTER          314
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -246,11 +247,12 @@
 #define IDC_STATIC_TC                   1072
 #define IDC_STYLE_CURCOLBUTTON          1073
 #define IDC_STYLE_SELUSEFORE            1074
-#define IDC_CHECK2                      1075
+#define IDC_PSHELPER_BUTTON             1076
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
 #define IDC_RHELPER_BUTTON              21205
+#define IDC_PSHELPER2_BUTTON            21205
 #define IDC_DIRECTION_GROUP             21207
 #define IDC_FINDCOMBO                   21208
 #define ID_EDIT_FINDNEXT                32773
@@ -296,15 +298,23 @@
 #define ID_PLACEHOLDER_FINDCOMBO        32875
 #define ID_FINDTYPE_BUTTON              32876
 #define ID_EXPORT_HTML                  32878
+#define ID_HEADERFOOTERFIELDS_FILENAME  32879
+#define ID_HEADERFOOTERFIELDS_FILEPATH  32880
+#define ID_HEADERFOOTERFIELDS_CURRENTPAGE 32881
+#define ID_HEADERFOOTERFIELDS_FILEDATE  32882
+#define ID_HEADERFOOTERFIELDS_CURRENTDATE 32884
+#define ID_HEADERFOOTERFIELDS_USERNAME  32886
+#define ID_HEADERFOOTERFIELDS_FILETIME  32887
+#define ID_HEADERFOOTERFIELDS_CURRENTTIME 32888
 #define IDC_FINDTEXT_LABEL              65535
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        314
-#define _APS_NEXT_COMMAND_VALUE         32879
-#define _APS_NEXT_CONTROL_VALUE         1076
+#define _APS_NEXT_RESOURCE_VALUE        315
+#define _APS_NEXT_COMMAND_VALUE         32889
+#define _APS_NEXT_CONTROL_VALUE         1077
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

@@ -4,7 +4,7 @@ PN is attempting to keep to a minimum of one release every two months.
 The planned feature-implementation schedule can be seen below. This will
 be modified as and when I see fit - so don't bet money on it or anything.
 
-last updated: 13/10/2003
+last updated: 24/11/2003
 
 0.5 Mingus
 ==========
@@ -12,10 +12,11 @@ last updated: 13/10/2003
 Menu to choose file encoding type (currently PN just preserves the original type).
 Header switch as a generic feature.
 Start help file.
-[50% Implemented] Better printing - margins, header and footer.
+Pre-defined tools support.
 [99% Implemented] Basic Project Management - file grouping etc.
-[Implemented - Bjoern Graf] Find & Replace actual combo-box entries (not just auto-complete).
+[Implemented] Better printing - margins, header and footer.
 [Implemented] Combo-box toolbar for scheme selection.
+[Implemented - Bjoern Graf] Find & Replace actual combo-box entries (not just auto-complete).
 [Implemented - Bjoern Graf] HTML Export.
 
 0.6 Ella

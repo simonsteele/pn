@@ -531,6 +531,7 @@ LRESULT CChildFrame::OnSchemeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 
 LRESULT CChildFrame::OnPrint(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	m_po.Filename = m_FileName;
 	m_view.PrintDocument(&m_po, true);
 
 	return TRUE;
