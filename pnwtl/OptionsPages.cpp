@@ -200,6 +200,9 @@ LRESULT COptionsPageVisual::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 
 void COptionsPageConf::OnOK()
 {
+	if(!m_bCreated)
+		return;
+
 	DoDataExchange(TRUE);
 
 	COptionsManager* pOM = COptionsManager::GetInstance();

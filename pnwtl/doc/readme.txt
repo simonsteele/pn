@@ -17,6 +17,9 @@ What's new?
 8) Added current project path to the tool variables.
 9) New (fairly empty) confirmations options page.
 10) Drag files from explorer onto the projects window.
+11) Upgraded to Scintilla 1.59
+12) Project files now written using Genx.
+13) Project files keep most unknown XML elements between load and save.
 
 Bug Fixes:
 ----------
@@ -60,7 +63,6 @@ Please don't moan about the following, they are all quite obvious to us already:
 1) Missing schemes from pn1.
 2) Toolbars aren't dockable.
 3) You can't turn the tabs off.
-4) PN needs a "Monospaced Font" mode.
 
 So what is good?
 ----------------
@@ -74,7 +76,7 @@ So what is good?
 7) Support for C++, HTML, XML and Object Pascal. More schemes coming soon.
 8) Highly configurable XML backend for scheme configuration.
 9) The minibar from pn1 is here (see at the bottom of the edit windows).
-10) Scoping / Folding / Outlining (Open a C++, Pascal or Java file to see this, it's lovely).
+10) Scoping / Folding / Outlining (Open a C++, Pascal or Java file to see this, it's cool!).
 11) Word-wrap.
 12) Schemes configuration.
 13) Tools with output capturing, running in a separate thread. Much better than PN1.

@@ -38,11 +38,17 @@ class XmlAttribute;
 typedef std::list<XmlNode*>			LIST_NODES;
 typedef std::list<XmlAttribute*>	LIST_ATTRS;
 
+typedef LIST_NODES::iterator		XN_IT;
+typedef LIST_NODES::const_iterator	XN_CIT;
+
+typedef LIST_ATTRS::const_iterator	XA_IT;
+
 class XmlNode
 {
 	public:
 		XmlNode(LPCTSTR qualifiedName);
 		XmlNode(LPCTSTR lpszNamespace, LPCTSTR lpszName);
+		~XmlNode();
 		
 		void Write(ProjectWriter writer);
 
@@ -67,6 +73,27 @@ class XmlAttribute
 		tstring		sNamespace;
 		tstring		sName;
 		tstring		sValue;
+};
+
+class UserData
+{
+	public:
+		~UserData();
+		
+		void Add(XmlNode* node);
+		//void AddAttribute(XmlAttribute* attribute);
+		//void AddAttributes(XMLAttributes& atts);
+
+		const LIST_NODES& GetNodes();
+
+		void Write(ProjectWriter writer);
+
+		XN_CIT	begin();
+		XN_CIT	end();
+
+	protected:
+		LIST_NODES nodes;
+		//LIST_ATTRS attrs;
 };
 
 class ProjectType
@@ -102,7 +129,7 @@ class File : public ProjectType
 
 		void WriteDefinition(ProjectWriter definition);
 
-		LIST_NODES& GetUserData();
+		UserData& GetUserData();
 
 	protected:
 		void setDirty();
@@ -113,7 +140,7 @@ class File : public ProjectType
 		tstring relPath;
 		Folder*	parentFolder;
 		
-		LIST_NODES	userData;
+		UserData	userData;
 };
 
 /**
@@ -151,7 +178,7 @@ class Folder : public ProjectType
 
 		void WriteDefinition(ProjectWriter definition);
 
-		LIST_NODES& GetUserData();
+		UserData& GetUserData();
 
 	protected:
 		void Clear();
@@ -166,7 +193,7 @@ class Folder : public ProjectType
 		FILE_LIST	files;
 		Folder*		parent;
 
-		LIST_NODES	userData;
+		UserData	userData;
 };
 
 /**

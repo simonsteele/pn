@@ -91,6 +91,21 @@ XmlNode::XmlNode(LPCTSTR qualifiedName)
 		sName = qualifiedName;
 }
 
+XmlNode::~XmlNode()
+{
+	for(XA_IT i = attributes.begin(); i != attributes.end(); ++i)
+	{
+		delete (*i);
+	}
+	attributes.clear();
+
+	for(XN_IT j = children.begin(); j != children.end(); ++j)
+	{
+		delete (*j);
+	}
+	children.clear();
+}
+
 void XmlNode::AddAttributes(XMLAttributes& atts)
 {
 	TCHAR* pSep;
@@ -122,7 +137,9 @@ void XmlNode::AddAttributes(XMLAttributes& atts)
 
 void XmlNode::Write(ProjectWriter writer)
 {
-	genxStartElementLiteral(writer->w, (utf8)sNamespace.c_str(), (utf8)sName.c_str());
+	genxStartElementLiteral(writer->w, 
+		sNamespace.length() ? (utf8)sNamespace.c_str() : NULL, 
+		(utf8)sName.c_str());
 	
 	for(LIST_ATTRS::iterator i = attributes.begin(); i != attributes.end(); ++i)
 	{
@@ -146,8 +163,54 @@ XmlAttribute::XmlAttribute(LPCTSTR lpszNamespace, LPCTSTR lpszName, LPCTSTR lpsz
 
 void XmlAttribute::Write(ProjectWriter writer)
 {
-	genxAddAttributeLiteral(writer->w, (utf8)sNamespace.c_str(), (utf8)sName.c_str(), (utf8)sValue.c_str());
+	genxAddAttributeLiteral(writer->w, 
+		sNamespace.length() ? (utf8)sNamespace.c_str() : NULL, 
+		(utf8)sName.c_str(), 
+		(utf8)sValue.c_str());
 }
+
+//////////////////////////////////////////////////////////////////////////////
+// UserData
+//////////////////////////////////////////////////////////////////////////////
+
+UserData::~UserData()
+{
+	for(XN_CIT i = nodes.begin(); i != nodes.end(); ++i)
+	{
+		delete (*i);
+	}
+	nodes.clear();
+}
+		
+void UserData::Add(XmlNode* node)
+{
+	nodes.insert(nodes.end(), node);
+}
+
+const LIST_NODES& UserData::GetNodes()
+{
+	return nodes;
+}
+
+void UserData::Write(ProjectWriter writer)
+{
+	for(XN_CIT i = nodes.begin(); i != nodes.end(); ++i)
+	{
+		(*i)->Write(writer);
+	}
+}
+
+
+XN_CIT UserData::begin()
+{
+	return nodes.begin();
+}
+
+XN_CIT UserData::end()
+{
+	return nodes.end();
+}
+
 
 //////////////////////////////////////////////////////////////////////////////
 // ProjectType
@@ -257,7 +320,12 @@ bool File::Rename(LPCTSTR newFilePart)
 void File::WriteDefinition(SProjectWriter* definition)
 {
 	genxStartElement(definition->eFile);
+	
 	genxAddAttribute(definition->aFilePath, (const utf8)relPath.c_str());
+
+	// Save user data...
+	userData.Write(definition);
+
 	genxEndElement(definition->w);
 }
 
@@ -266,7 +334,7 @@ void File::setDirty()
 	parentFolder->setDirty();
 }
 
-LIST_NODES& File::GetUserData()
+UserData& File::GetUserData()
 {
 	return userData;
 }
@@ -512,6 +580,13 @@ void Folder::WriteDefinition(SProjectWriter* definition)
 
 void Folder::writeContents(SProjectWriter* definition)
 {
+	// Save user data...
+	for(XN_CIT i = userData.begin(); i != userData.end(); ++i)
+	{
+		(*i)->Write(definition);
+	}
+
+	// Save children folders
 	for(FOLDER_LIST::const_iterator i = children.begin();
 		i != children.end();
 		++i)
@@ -519,6 +594,7 @@ void Folder::writeContents(SProjectWriter* definition)
 		(*i)->WriteDefinition(definition);
 	}
 
+	// Save files
 	for(FILE_LIST::const_iterator j = files.begin(); 
 		j != files.end(); 
 		++j)
@@ -533,7 +609,7 @@ void Folder::setDirty()
 		parent->setDirty();
 }
 
-LIST_NODES& Folder::GetUserData()
+UserData& Folder::GetUserData()
 {
 	return userData;
 }
@@ -633,6 +709,7 @@ void Project::parse()
 {
 	currentFolder = this;
 	parseState = PS_START;
+	udNestingLevel = 0;
 	
 	// create a namespace aware parser...
 	XMLParser parser(true);
@@ -725,10 +802,9 @@ void Project::endElement(LPCTSTR name)
 	}
 	else if( IN_STATE(PS_USERDATA) )
 	{
+		udNestingLevel--;
 		if(udNestingLevel == 0)
-			STATE(udBase);
-		else
-			udNestingLevel--;
+			STATE(udBase);			
 	}
 }
 
@@ -771,11 +847,11 @@ void Project::processUserData(LPCTSTR name, XMLAttributes& atts)
 	switch(udBase)
 	{
 		case PS_PROJECT:
-			userData.insert(userData.end(), pNode);
+			userData.Add(pNode);
 		break;
 
 		case PS_FOLDER:
-			currentFolder->GetUserData().insert(userData.end(), pNode);
+			currentFolder->GetUserData().Add(pNode);
 		break;
 
 		case PS_FILE:
