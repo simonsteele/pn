@@ -306,6 +306,12 @@ LRESULT CFindExDialog::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 
 LRESULT CFindExDialog::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	if(m_type == eftFindInFiles)
+	{
+		findInFiles();
+		return TRUE;
+	}
+
 	if(findNext())
 	{
 		if(m_type != eftReplace && !OPTIONS->Get(PNSK_INTERFACE, _T("FindStaysOpen"), false))
@@ -325,8 +331,6 @@ LRESULT CFindExDialog::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	}
 
 	return TRUE;
-
-	findNext();
 }
 
 LRESULT CFindExDialog::OnReHelperClicked(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -513,6 +517,22 @@ bool CFindExDialog::findNext()
 	}
 	
 	return found != 0;
+}
+
+void CFindExDialog::findInFiles()
+{
+	DoDataExchange(TRUE);
+
+	SFindInFilesOptions options;
+	options.FindText = m_FindText;
+	options.Path = m_FindWhereText;
+	options.FileExts = m_FindTypeText;
+	options.Recurse = m_bSearchSubdirs != false;;
+	options.MatchCase = m_bMatchCase != false;
+
+	g_Context.m_frame->FindInFiles(&options);
+
+	ShowWindow(SW_HIDE);
 }
 
 int CFindExDialog::getRegExpString(int nID, CString& Text)

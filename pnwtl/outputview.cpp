@@ -180,6 +180,7 @@ bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 #ifdef _DEBUG
 			dbgout = _T("After sanitise, filename = ");
 			dbgout += fn.c_str();
+			dbgout += _T("\n");
 			::OutputDebugString(dbgout.c_str());
 #endif
 

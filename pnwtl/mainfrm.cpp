@@ -29,6 +29,7 @@
 #include "textclipsview.h"	// Text-Clips Docker...
 #include "project.h"		// Projects
 #include "projectview.h"	// Projects Docker...
+#include "findinfiles.h"	// Find in Files
 
 // Other stuff
 #include "SchemeConfig.h"	// Scheme Configuration
@@ -56,6 +57,42 @@ const DWORD ToolbarIds[4] = {
 	ATL_IDW_BAND_FIRST + 1,
 };
 
+class CFindInFilesSink : public FIFSink
+{
+public:
+	CFindInFilesSink(CMainFrame* pMainFrame, COutputView* pOutputView)
+	{
+		PNASSERT(pOutputView != NULL);
+		PNASSERT(pMainFrame != NULL);
+		
+		m_pOutputView = pOutputView;
+		m_pMainFrame = pMainFrame;
+	}
+
+	virtual void OnFoundString(LPCTSTR stringFound, LPCTSTR szFilename, int line, LPCTSTR buf)
+	{
+		//m_pMainFrame->ToggleOutputWindow(true, true);
+
+		_sntprintf(m_fBuf, MAX_PATH+4096+40, _T("%s:%d: %s\n"), szFilename, line, buf);
+		m_pOutputView->AddToolOutput(m_fBuf);
+		
+
+		/*m_pOutputView->AddToolOutput(szFilename);
+		_itoa(line, m_lnBuf, 10);
+		m_pOutputView->AddToolOutput(_T(":"), 1);
+		m_pOutputView->AddToolOutput(m_lnBuf);
+		m_pOutputView->AddToolOutput(_T(": "), 2);
+		m_pOutputView->AddToolOutput(buf);
+		m_pOutputView->AddToolOutput(_T("\n"), 1);*/
+	}
+
+protected:
+	CMainFrame*		m_pMainFrame;
+	COutputView*	m_pOutputView;
+	TCHAR			m_lnBuf[34];
+	TCHAR			m_fBuf[MAX_PATH+4096+40];
+};
+
 CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(ID_MRUPROJECT_BASE, 4)
 {
 	m_FindDialog = NULL;
@@ -79,6 +116,8 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(I
 	SchemeTools* pSchemeTools = SchemeToolsManager::GetInstance()->GetGlobalTools();
 	pSchemeTools->AllocateMenuResources();
 	m_hGlobalToolAccel = pSchemeTools->GetAcceleratorTable();
+
+	m_pFIFSink = NULL;
 }
 
 CMainFrame::~CMainFrame()
@@ -91,6 +130,9 @@ CMainFrame::~CMainFrame()
 
 	if(m_pProjectsWnd)
 		delete m_pProjectsWnd;
+
+	if(m_pFIFSink)
+		delete m_pFIFSink;
 }
 
 /**
@@ -844,6 +886,8 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	CreateDockingWindows();
 	InitGUIState();
+
+	m_pFIFSink = new CFindInFilesSink(this, m_pOutputWnd);
 
 	PostMessage(PN_INITIALISEFRAME);
 
@@ -1757,6 +1801,17 @@ Projects::Workspace* CMainFrame::GetActiveWorkspace()
 		RETURN_UNEXPECTED(_T("No Projects Window."), NULL); // bail.
 
 	return m_pProjectsWnd->GetWorkspace();
+}
+
+void CMainFrame::FindInFiles(SFindInFilesOptions* options)
+{
+	FindInFiles::GetInstance()->Start(
+		options->FindText,
+		options->Path,
+		options->FileExts,
+		options->Recurse,
+		options->MatchCase,
+		m_pFIFSink);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

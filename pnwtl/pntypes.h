@@ -35,6 +35,15 @@ typedef struct tagReplaceOptions : tagFindOptions
 	bool	InSelection;
 } SReplaceOptions;
 
+typedef struct tagFindInFilesOptions
+{
+	CString FindText;
+	CString	FileExts;
+	CString Path;
+	bool MatchCase;
+	bool Recurse;
+} SFindInFilesOptions;
+
 typedef struct tagPrintOptions
 {
 	// Cached object references...

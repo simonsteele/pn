@@ -296,6 +296,9 @@
 				RelativePath=".\afiles.cpp">
 			</File>
 			<File
+				RelativePath=".\include\boyermoore.cpp">
+			</File>
+			<File
 				RelativePath="childfrm.cpp">
 			</File>
 			<File
@@ -312,6 +315,9 @@
 			</File>
 			<File
 				RelativePath=".\findex.cpp">
+			</File>
+			<File
+				RelativePath=".\findinfiles.cpp">
 			</File>
 			<File
 				RelativePath=".\jumpto.cpp">
@@ -453,6 +459,9 @@
 				RelativePath=".\afiles.h">
 			</File>
 			<File
+				RelativePath=".\include\boyermoore.h">
+			</File>
+			<File
 				RelativePath=".\ChildFrm.h">
 			</File>
 			<File
@@ -471,10 +480,16 @@
 				RelativePath=".\FileAssocInfo.h">
 			</File>
 			<File
+				RelativePath=".\Files.h">
+			</File>
+			<File
 				RelativePath=".\finddlg.h">
 			</File>
 			<File
 				RelativePath=".\findex.h">
+			</File>
+			<File
+				RelativePath=".\findinfiles.h">
 			</File>
 			<File
 				RelativePath=".\folderadder.h">

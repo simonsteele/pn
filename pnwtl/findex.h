@@ -115,6 +115,7 @@ protected:
 	int doRegExpInsert(BXT::CComboBoxAC* pCB, LPCTSTR insert, CString& str, int offset);
 	bool editorChanged();
 	bool findNext();
+	void findInFiles();
 	CChildFrame* getCurrentEditorWnd();
 	CSize getGUIFontSize();
 	SReplaceOptions* getOptions();

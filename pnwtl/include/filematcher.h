@@ -148,14 +148,14 @@ protected:
 // If we know about filefinder, then we can make a special one of those for
 // matching...
 
-template <class TOwner>
-class RegExFileFinder : protected FileFinderImpl<RegExFileFinder, TOwner>
+template <class T, class TOwner>
+class RegExFileFinderImpl : protected FileFinderImpl<T, TOwner>
 {
-	typedef FileFinderImpl<RegExFileFinder, TOwner> baseClass;
+	typedef FileFinderImpl<T, TOwner> baseClass;
 	friend baseClass;
 
 	public:
-		RegExFileFinder(TOwner* pOwner, OnFoundFunc func) : baseClass(pOwner, func)
+		RegExFileFinderImpl(TOwner* pOwner, OnFoundFunc func) : baseClass(pOwner, func)
 		{
 			matcher = NULL;
 			blocker = NULL;
@@ -163,7 +163,7 @@ class RegExFileFinder : protected FileFinderImpl<RegExFileFinder, TOwner>
 			fBlocker = NULL;
 		}
 
-		~RegExFileFinder()
+		~RegExFileFinderImpl()
 		{
 			ClearFilters();
 		}
@@ -223,6 +223,14 @@ class RegExFileFinder : protected FileFinderImpl<RegExFileFinder, TOwner>
 
 		PCRE::RegExFileMatcher* fMatcher;
 		PCRE::RegExFileMatcher* fBlocker;
+};
+
+template <class TOwner>
+class RegExFileFinder : public RegExFileFinderImpl<RegExFileFinder, TOwner>
+{
+	typedef RegExFileFinderImpl<RegExFileFinder, TOwner> baseClass;
+public:
+	RegExFileFinder(TOwner* pOwner, OnFoundFunc func) : baseClass(pOwner, func){}
 };
 
 #endif

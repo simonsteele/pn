@@ -22,6 +22,7 @@ class CFindExDialog;
 class COutputView;
 class CClipsDocker;
 class CProjectDocker;
+class CFindInFilesSink;
 
 namespace Projects
 {
@@ -269,6 +270,7 @@ public:
 	virtual bool Open(LPCTSTR pathname, bool bAddMRU = false);
 	virtual bool CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction action = (EAlreadyOpenAction)OPTIONS->GetCached(Options::OAlreadyOpenAction));
 	virtual Projects::Workspace* GetActiveWorkspace();
+	virtual void FindInFiles(SFindInFilesOptions* options);
 
 	////////////////////////////////////////////////////////////////
 	// IToolOutputSink Implementation
@@ -362,6 +364,7 @@ protected:
 	CClipsDocker*			m_pClipsWnd;
 	CProjectDocker*			m_pProjectsWnd;
 	CFindExDialog*			m_pFindEx;
+	CFindInFilesSink*		m_pFIFSink;
 	
 	CScintilla				m_Dummy;			///< Scintilla often doesn't like unloading and reloading.
 

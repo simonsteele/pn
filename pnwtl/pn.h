@@ -50,6 +50,7 @@ struct IMainFrame
 	virtual bool Open(LPCTSTR lpszFilename, bool bAddMRU = false) = 0;
 	virtual bool CheckAlreadyOpen(LPCTSTR lpszFilename, EAlreadyOpenAction action) = 0;
 	virtual Projects::Workspace* GetActiveWorkspace() = 0;
+	virtual void FindInFiles(SFindInFilesOptions* options) = 0;
 };
 
 #include "pnutils.h"

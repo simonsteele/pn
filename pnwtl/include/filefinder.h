@@ -53,7 +53,7 @@ public:
 		{
 			T* pT = static_cast<T*>(this);
 
-			while (found)
+			while (found && pT->shouldContinue())
 			{
 				if( bRecurse && ((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) )
 				{
@@ -98,6 +98,11 @@ protected:
 	}
 
 	bool shouldMatch(LPCTSTR folder)
+	{
+		return true;
+	}
+
+	bool shouldContinue()
 	{
 		return true;
 	}
