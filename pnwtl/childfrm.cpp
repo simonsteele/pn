@@ -222,10 +222,12 @@ void CChildFrame::SetTitle(LPCTSTR sFileName, bool bModified)
 	if(bModified)
 		buf += " *";
 	
-	this->SetWindowText(buf);
+	SetWindowText(buf);
 	SetTabText(buf);
 	
 	m_Title = sFileName;
+
+	MDIRefreshMenu();
 }
 
 tstring CChildFrame::GetFileName(EGFNType type)
