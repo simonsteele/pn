@@ -690,12 +690,12 @@ LRESULT CChildFrame::OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 			if(ext[1] == 'h')
 			{
-				static const TCHAR* haltexts[] = {_T(".cxx"), _T(".c"), _T(".cpp"), NULL};
+				static const TCHAR* haltexts[] = {_T(".cxx"), _T(".c"), _T(".cpp"), _T(".cc"), NULL};
 				altexts = haltexts;
 			}
 			else if(ext[1] == 'c')
 			{
-				static const TCHAR* cppaltexts[] = {_T(".h"), _T(".hpp"), NULL};
+				static const TCHAR* cppaltexts[] = {_T(".h"), _T(".hpp"), _T(".hh"), NULL};
 				altexts = cppaltexts;
 			}
 

@@ -175,7 +175,7 @@ public:
 		::GetWindowRect(GetDlgItem(IDC_FINDTEXT_DUMMY), rc);
 		ScreenToClient(rc);
 
-		m_FindTextCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), CBS_DROPDOWN | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO);
+		m_FindTextCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO);
 		::SetWindowPos(m_FindTextCombo, GetDlgItem(IDC_FINDTEXT_DUMMY), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
 		m_ReHelperBtn.SubclassWindow(GetDlgItem(IDC_REHELPER_BUTTON));
@@ -381,7 +381,7 @@ public:
 
 		::GetWindowRect(GetDlgItem(IDC_FINDTEXT_DUMMY), rc);
 		ScreenToClient(rc);
-		m_FindTextCombo.Create(m_hWnd, rc, _T("RFINDTEXTCOMBO"), CBS_DROPDOWN | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO);
+		m_FindTextCombo.Create(m_hWnd, rc, _T("RFINDTEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO);
 		m_FindTextCombo.SetWindowPos(GetDlgItem(IDC_FINDTEXT_DUMMY), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
 		m_pFAC = new CCustomAutoComplete(HKEY_CURRENT_USER, _T("Software\\Echo Software\\PN2\\AutoComplete\\Find"));;
@@ -389,7 +389,7 @@ public:
 		
 		::GetWindowRect(GetDlgItem(IDC_REPLACETEXT_DUMMY), rc);
 		ScreenToClient(rc);
-		m_ReplaceTextCombo.Create(m_hWnd, rc, _T("REPLACETEXTCOMBO"), CBS_DROPDOWN | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_REPLACETEXT_COMBO);
+		m_ReplaceTextCombo.Create(m_hWnd, rc, _T("REPLACETEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_REPLACETEXT_COMBO);
 		m_ReplaceTextCombo.SetWindowPos(GetDlgItem(IDC_REPLACETEXT_DUMMY), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 		
 		m_pRAC = new CCustomAutoComplete( HKEY_CURRENT_USER, _T("Software\\Echo Software\\PN2\\AutoComplete\\Replace"));
