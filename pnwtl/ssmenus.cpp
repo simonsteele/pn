@@ -156,6 +156,11 @@ int CSMenuManager::GetNextID()
 	return ret;
 }
 
+void CSMenuManager::ReturnID(int id)
+{
+	m_IDCache.push(id);
+}
+
 /**
  * This method calls the predefined handler for a command.
  */

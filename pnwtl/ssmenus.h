@@ -98,6 +98,7 @@ class CSMenuManager
 		void UnRegisterCallback(int iID);
 
 		int GetNextID();
+		void ReturnID(int id);
 
 		bool HandleCommand(int iID);
 		bool LocalHandleCommand(int iID, int iCommand, CSMenuEventHandler* pHandler);

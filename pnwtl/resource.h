@@ -448,6 +448,8 @@
 #define ID_FILE_CLOSEALL                32920
 #define ID_PROJECT_PROPERTIES           32924
 #define ID_WINDOW_CLOSEALLOTHER         32931
+#define ID_DUMMY_ADDTOPROJECT           32938
+#define ID_PROJECT_ADDTHISFILE			32939
 
 // Next default values for new objects
 // 
@@ -455,7 +457,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        335
-#define _APS_NEXT_COMMAND_VALUE         32938
+#define _APS_NEXT_COMMAND_VALUE         32940
 #define _APS_NEXT_CONTROL_VALUE         1124
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

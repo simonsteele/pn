@@ -55,6 +55,9 @@ namespace WTL
 /////////////////////////////////////////////////////////////////////////////
 // CIcon
 
+// WTL 7.5 has its own CIcon, CCursor, CAccelerator CLogFont in atluser.h.
+#if !(_WTL_VER >= 0x750)
+
 template< bool t_bManaged >
 class CIconT
 {
@@ -366,7 +369,6 @@ public:
 typedef CCursorT<true> CCursor;
 typedef CCursorT<false> CCursorHandle;
 
-
 /////////////////////////////////////////////////////////////////////////////
 // CAccelerator
 
@@ -457,7 +459,6 @@ public:
 
 typedef CAcceleratorT<true> CAccelerator;
 typedef CAcceleratorT<false> CAcceleratorHandle;
-
 
 /////////////////////////////////////////////////////////////////////////////
 // CLogFont
@@ -596,6 +597,7 @@ public:
    }
 };
 
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CMemDC

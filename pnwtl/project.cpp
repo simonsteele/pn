@@ -942,7 +942,7 @@ void Workspace::MoveProject(Project* project, Project* moveAfter)
 	InsertProject(project, moveAfter);
 }
 
-const PROJECT_LIST Workspace::GetProjects()
+const PROJECT_LIST& Workspace::GetProjects()
 {
 	return projects;
 }

@@ -35,6 +35,36 @@ static tstring IntToTString(int x)
 	return tstring(_buffer);
 }
 
+static int strFirstNonWS(const char* lineBuf)
+{
+	PNASSERT(AtlIsValidString(lineBuf));
+
+	const char* p = lineBuf;
+	int i = 0;
+	while(*p != 0 && (*p == _T(' ') || *p == 0x9))
+	{
+		i++;
+		p++;
+	}
+
+	return i;
+}
+
+static int strLastNonWSChar(const char* lineBuf, int lineLength)
+{
+	PNASSERT(AtlIsValidString(lineBuf));
+
+	const char* p = &lineBuf[lineLength-1];
+	int i = lineLength-1;
+	while(p > lineBuf && (*p == _T(' ') || *p == 0x9))
+	{
+		p--;
+		i--;
+	}
+
+	return i;
+}
+
 #include <vector>
 using std::vector;
 

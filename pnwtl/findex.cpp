@@ -2,7 +2,7 @@
  * @file findex.cpp
  * @brief Find and Replace dialogs for PN 2
  * @author Simon Steele
- * @note Copyright (c) 2004 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2004-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -104,43 +104,12 @@ BOOL CFindExDialog::PreTranslateMessage(MSG* pMsg)
 	return IsDialogMessage(pMsg);
 }
 
-int CFindExDialog::getFirstNonWS(const char* lineBuf)
-{
-	PNASSERT(AtlIsValidString(lineBuf));
-
-	const char* p = lineBuf;
-	int i = 0;
-	while(*p != 0 && (*p == _T(' ') || *p == 0x9))
-	{
-		i++;
-		p++;
-	}
-
-	return i;
-}
-
-int CFindExDialog::getLastNonWSChar(const char* lineBuf, int lineLength)
-{
-	PNASSERT(AtlIsValidString(lineBuf));
-
-	const char* p = &lineBuf[lineLength-1];
-	int i = lineLength-1;
-	while(p > lineBuf && (*p == _T(' ') || *p == 0x9))
-	{
-		p--;
-		i--;
-	}
-
-	return i;
-}
-
 void CFindExDialog::Show(EFindDialogType type, LPCTSTR findText)
 {
 	m_type = type;
 	m_tabControl.SetCurSel((int)type, false);
 	updateLayout();
 
-	m_FindText = findText;
 	DoDataExchange(FALSE);
 
 	// Place the dialog so it doesn't hide the text under the caret
@@ -160,68 +129,30 @@ void CFindExDialog::Show(EFindDialogType type, LPCTSTR findText)
 		// Place the window away from the caret.
 		placeWindow(pt, lineHeight);
 
+		// Need to decide if we want to put the dialog into "Replace In Selection" mode
+		// and whether to include the selected text as the find text.
+
+		// Rules:
+		// There is a selection AND
+		// (The selection runs from the first character on the line to the last OR
+		// The selection spans multiple lines OR
+		// The selection is longer than 1024 characters)
+		bool bigSelection = selectionIsWholeLine(textView);
+
 		if(type == eftReplace)
 		{
-			// Need to decide if we want to put the dialog into "Replace In Selection" mode.
-			// Rules:
-			// There is a selection AND
-			// (The selection runs from the first character on the line to the last OR
-			// The selection spans multiple lines OR
-			// The selection is longer than 1024 characters)
-
-            int selLength = textView->GetSelLength();
-			bool bShouldReplaceInSel = false;
-			if(selLength > 1024)
+			if(bigSelection)
 			{
-				bShouldReplaceInSel = true;
+				m_SearchWhere = elwSelection;
 			}
-			else if(selLength > 0)
+			else
 			{
-				CharacterRange cr;
-				textView->GetSel(cr);
-
-				int lineStart = textView->LineFromPosition(cr.cpMin);
-				int lineEnd = textView->LineFromPosition(cr.cpMax);
-
-				int posLineStart = textView->PositionFromLine(lineStart);
-
-				if(lineStart == lineEnd)
-				{
-					if(textView->GetLineEndPosition(lineStart) == cr.cpMax &&
-						posLineStart == cr.cpMin)
-						bShouldReplaceInSel = true;
-					else
-					{
-						// The selection is inside one line, but does it span from the first
-						// non-whitespace char to the last?
-						int lineLength = textView->LineLength(lineStart);
-						char* lineBuf = new char[lineLength+1];
-						lineBuf[lineLength] = '\0';
-						textView->GetLine(lineStart, lineBuf);
-
-						int firstNonWSChar = getFirstNonWS(lineBuf);
-						if(cr.cpMin <= (firstNonWSChar + posLineStart))
-						{
-							int lastNonWSChar = getLastNonWSChar(lineBuf, lineLength);
-							if(cr.cpMax >= lastNonWSChar)
-								bShouldReplaceInSel = true;
-						}
-
-						delete [] lineBuf;
-					}
-				}
-				else
-				{
-					// Sel spans multiple lines
-					bShouldReplaceInSel = true;
-				}
-
-				if(bShouldReplaceInSel)
-				{
-					CheckRadioButton(IDC_CURRENTDOC_RADIO, IDC_INSELECTION_RADIO, IDC_INSELECTION_RADIO);
-				}
+				m_SearchWhere = elwCurrentDoc;
 			}
 		}
+
+		if(!bigSelection)
+			m_FindText = findText;
 	}
 
 	ShowWindow(SW_SHOW);
@@ -835,6 +766,8 @@ int CFindExDialog::positionChecks(int top, const UINT* checkboxIDs, int nCheckbo
 
 void CFindExDialog::updateLayout()
 {
+	DoDataExchange(TRUE);
+
 	int restTop;
 	const UINT* checkboxes = NULL;
 	int nCheckboxes = 0;
@@ -892,6 +825,9 @@ void CFindExDialog::updateLayout()
 			CButton(GetDlgItem(IDC_INSELECTION_RADIO)).EnableWindow(FALSE);
 			
 			restTop = m_group1Bottom + 12;
+
+			if(m_SearchWhere != elwCurrentDoc)
+				m_SearchWhere = elwCurrentDoc;
 		}
 		break;
 
@@ -918,6 +854,9 @@ void CFindExDialog::updateLayout()
 			CButton(GetDlgItem(IDC_INSELECTION_RADIO)).EnableWindow(TRUE);
 
 			restTop = m_group2Bottom + 12;
+
+			if(m_SearchWhere != elwCurrentDoc && m_SearchWhere != elwSelection)
+				m_SearchWhere = elwCurrentDoc;
 		}
 		break;
 
@@ -945,6 +884,9 @@ void CFindExDialog::updateLayout()
 			CButton(GetDlgItem(IDC_INSELECTION_RADIO)).EnableWindow(FALSE);
 
 			restTop = m_group3Bottom + 12;
+
+			if(m_SearchWhere != elwCurrentDoc)
+				m_SearchWhere = elwCurrentDoc;
 		}
 		break;
 	}
@@ -982,7 +924,63 @@ void CFindExDialog::updateLayout()
 	m_bottom = rcMe.bottom = newBottom;
 	//m_bottom = rcMe.bottom;
 
-	SetWindowPos(HWND_TOP, rcMe, SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);	
+	SetWindowPos(HWND_TOP, rcMe, SWP_NOZORDER | SWP_NOMOVE | SWP_NOACTIVATE);
+
+	// Put settings back normalizing radio selections...
+	DoDataExchange();
+}
+
+bool CFindExDialog::selectionIsWholeLine(CTextView* textView)
+{
+	int selLength = textView->GetSelLength();
+	bool bShouldReplaceInSel = false;
+	if(selLength > 1024)
+	{
+		bShouldReplaceInSel = true;
+	}
+	else if(selLength > 0)
+	{
+		CharacterRange cr;
+		textView->GetSel(cr);
+
+		int lineStart = textView->LineFromPosition(cr.cpMin);
+		int lineEnd = textView->LineFromPosition(cr.cpMax);
+
+		int posLineStart = textView->PositionFromLine(lineStart);
+
+		if(lineStart == lineEnd)
+		{
+			if(textView->GetLineEndPosition(lineStart) == cr.cpMax &&
+				posLineStart == cr.cpMin)
+				bShouldReplaceInSel = true;
+			else
+			{
+				// The selection is inside one line, but does it span from the first
+				// non-whitespace char to the last?
+				int lineLength = textView->LineLength(lineStart);
+				char* lineBuf = new char[lineLength+1];
+				lineBuf[lineLength] = '\0';
+				textView->GetLine(lineStart, lineBuf);
+
+				int firstNonWSChar = strFirstNonWS(lineBuf);
+				if(cr.cpMin <= (firstNonWSChar + posLineStart))
+				{
+					int lastNonWSChar = strLastNonWSChar(lineBuf, lineLength);
+					if(cr.cpMax >= lastNonWSChar)
+						bShouldReplaceInSel = true;
+				}
+
+				delete [] lineBuf;
+			}
+		}
+		else
+		{
+			// Sel spans multiple lines
+			bShouldReplaceInSel = true;
+		}
+	}
+	
+	return bShouldReplaceInSel;
 }
 
 // Stub for dynamically loaded SetLayered...

@@ -557,10 +557,73 @@ CScheme* CTextView::GetCurrentScheme()
 	return m_pLastScheme;
 }
 
+#include "project.h"
+#include "childfrm.h"
+
 void CTextView::DoContextMenu(CPoint* point)
 {
 	CSPopupMenu popup(IDR_POPUP_EDITOR);
-	g_Context.m_frame->TrackPopupMenu(popup, 0, point->x, point->y, NULL);
+	CSPopupMenu popupProjects;
+
+	// Build up a menu allowing us to add this file to a current project...
+	CChildFrame* pParent = CChildFrame::FromHandle(GetParent());
+	
+	Projects::Workspace* pWS = g_Context.m_frame->GetActiveWorkspace();
+	std::vector<int> menuIDs;
+
+	if(pParent->CanSave() && pWS != NULL)
+	{
+		const Projects::PROJECT_LIST& projects = pWS->GetProjects();
+		int index = 0;
+		for(Projects::PL_CIT i = projects.begin(); i != projects.end(); ++i)
+		{
+			int iCmd = CSMenuManager::GetInstance()->GetNextID();
+			popupProjects.AddItem((*i)->GetName(), iCmd);
+			menuIDs.push_back(iCmd);
+			index++;
+		}
+
+		if(popupProjects.GetCount() > 0)
+		{
+			::InsertMenu(popup.GetHandle(), popup.GetCount()-1, MF_BYPOSITION | MF_POPUP, (UINT)(HMENU)popupProjects.GetHandle(), _T("Add to Project"));
+			::InsertMenu(popup.GetHandle(), popup.GetCount()-1, MF_BYPOSITION | MF_SEPARATOR, 0, _T(""));
+		}
+	}
+
+	BOOL mnuResult = g_Context.m_frame->TrackPopupMenu(popup, TPM_RETURNCMD, point->x, point->y, NULL);
+
+	if(mnuResult != 0)
+	{
+		bool bFoundOne = false;
+		
+		if(menuIDs.size())
+		{
+			const Projects::PROJECT_LIST& projects = pWS->GetProjects();
+			Projects::PL_CIT i2 = projects.begin();
+			
+			for(size_t k = 0; k < menuIDs.size(); ++k)
+			{
+				if(menuIDs.at(k) == mnuResult)
+				{
+					// we should add this file to the project at index i.
+					bFoundOne = true;
+					tstring fn = pParent->GetFileName();
+					(*i2)->AddFile(fn.c_str());
+				}
+				i2++;
+			}
+		}
+
+		if(!bFoundOne)
+		{
+			::SendMessage(g_Context.m_frame->GetWindow()->m_hWnd, WM_COMMAND, mnuResult, NULL);
+		}
+	}
+
+	for(std::vector<int>::iterator i = menuIDs.begin(); i != menuIDs.end(); ++i)
+	{
+		CSMenuManager::GetInstance()->ReturnID((*i));
+	}
 }
 
 ////////////////////////////////////////////////////////////////

@@ -958,6 +958,12 @@ LRESULT CChildFrame::OnViewFileProps(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	return 0;
 }
 
+LRESULT CChildFrame::OnProjectAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int a = 0;
+	return 0;
+}
+
 class ChildOutputWrapper : public ToolWrapperT<CChildFrame, COutputView>
 {
 typedef ToolWrapperT<CChildFrame, COutputView> baseClass;

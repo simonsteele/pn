@@ -32,6 +32,7 @@ typedef std::list<File*>		FILE_LIST;
 typedef FILE_LIST::iterator		FILE_IT;
 
 typedef enum {ptFile, ptMagicFile, ptFolder, ptMagicFolder, ptProject, ptWorkspace} PROJECT_TYPE;
+typedef enum {pcAdd, pcRemove, pcEdit} PROJECT_CHANGE_TYPE;
 
 class FolderAdder;
 class MagicFolderAdder;
@@ -62,6 +63,23 @@ public:
 protected:
 	UserData	 userData;
 	PROJECT_TYPE type;
+};
+
+/**
+ * Interface class to be implemented by classes wishing to be notified
+ * of project changes.
+ */
+class IProjectWatcher
+{
+public:
+	virtual ~IProjectWatcher(){}
+	
+	/**
+	 * @param changeType Type of change that occurred.
+	 * @param changeContainer Folder that contains the changed/added/deleted item
+	 * @param changeItem Item that was changed/added/deleted
+	 */
+	virtual void OnProjectItemChange(PROJECT_CHANGE_TYPE changeType, Folder* changeContainer, ProjectType* changeItem);
 };
 
 class File : public ProjectType
@@ -327,7 +345,7 @@ class Workspace : public ProjectType, XMLParseState
 		LPCTSTR GetName();
 		LPCTSTR GetFileName();
 
-		const PROJECT_LIST	GetProjects();
+		const PROJECT_LIST& GetProjects();
 
 		bool CanSave();
 

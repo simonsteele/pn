@@ -2,7 +2,7 @@
  * @file findex.h
  * @brief Find and Replace dialogs for PN 2
  * @author Simon Steele
- * @note Copyright (c) 2004 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2004-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -12,6 +12,7 @@
 #define findex_h__included_8B16FC2D_D4A3_4d2c_ACA1_4A80DE51B836
 
 class CChildFrame;
+class CTextView;
 
 typedef enum { eftFind, eftReplace, eftFindInFiles, eftInvalid } EFindDialogType;
 
@@ -123,15 +124,14 @@ protected:
 	bool findNext();
 	void findInFiles();
 	CChildFrame* getCurrentEditorWnd();
-	int getFirstNonWS(const char* lineBuf);
 	CSize getGUIFontSize();
-	int getLastNonWSChar(const char* lineBuf, int lineLength);
 	SearchOptions* getOptions();
 	int getRegExpString(int nID, CString& Text);
 	void moveUp(int offset, CWindow& ctrl);
 	void placeWindow(const POINT& pt, int lineHeight = 10);
 	int positionChecks(int top, const UINT* checkboxIDs, int nCheckboxIDs);
 	void updateLayout();
+	bool selectionIsWholeLine(CTextView* textView);
 	BOOL setLayeredWindowAttributes(HWND hwnd, COLORREF crKey, BYTE bAlpha, DWORD dwFlags);
 
 protected:
