@@ -174,7 +174,6 @@ class CMRUList
 		CSimpleArray<_entry>	m_entries;
 		CString					m_regkey;
 		int						m_iMaxSize;
-		UINT					m_iBase;
 };
 
 /**
@@ -190,6 +189,9 @@ class CMRUMenu : public CMRUList
 		void UpdateMenu();
 
 		operator HMENU();
+
+		UINT base() const;
+		UINT last() const;
 
 	protected:
 		UINT		m_iBase;

@@ -170,17 +170,17 @@ void __stdcall CMainFrame::WorkspaceChildCloseNotify(CChildFrame* pChild, SChild
 	}
 }
 
-void CMainFrame::ChildOptionsUpdateNotify(CChildFrame* pChild, SChildEnumStruct* pES)
+void __stdcall CMainFrame::ChildOptionsUpdateNotify(CChildFrame* pChild, SChildEnumStruct* pES)
 {
 	pChild->SendMessage(PN_OPTIONSUPDATED);
 }
 
-void CMainFrame::ChildSaveNotify(CChildFrame* pChild, SChildEnumStruct* pES)
+void __stdcall CMainFrame::ChildSaveNotify(CChildFrame* pChild, SChildEnumStruct* pES)
 {
 	pChild->Save();
 }
 
-void CMainFrame::FileOpenNotify(CChildFrame* pChild, SChildEnumStruct* pES)
+void __stdcall CMainFrame::FileOpenNotify(CChildFrame* pChild, SChildEnumStruct* pES)
 {
 	SIsOpen* pS = static_cast<SIsOpen*>(pES);
 	if(!pS->bFound)
@@ -718,6 +718,30 @@ LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 	}
 
 	return 0;
+}
+
+LRESULT CMainFrame::OnMenuSelect(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	bHandled = false;
+
+	WORD wFlags = HIWORD(wParam);
+	if(!(wFlags == 0xFFFF && lParam == NULL))	// menu closing
+	{
+		if(!(wFlags & MF_POPUP))
+		{
+			WORD wID = LOWORD(wParam);
+			if(wID >= m_RecentFiles.base() && wID <= m_RecentFiles.last())
+			{
+				LPCTSTR fn = m_RecentFiles.GetEntry(wID - m_RecentFiles.base());
+				::SendMessage(m_hWndStatusBar, SB_SIMPLE, TRUE, 0L);
+				::SendMessage(m_hWndStatusBar, SB_SETTEXT, (255 | SBT_NOBORDERS), (LPARAM)fn);
+				::OutputDebugString(fn);
+				bHandled = true;
+			}
+		}
+	}
+
+	return 1;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1633,7 +1657,7 @@ void CMainFrame::OpenProject(LPCTSTR projectPath)
 
 void CMainFrame::OpenWorkspace(LPCTSTR workspacePath)
 {
-	Projects::Workspace* workspace = new Projects::Workspace(wsfile);
+	Projects::Workspace* workspace = new Projects::Workspace(workspacePath);
 	m_pProjectsWnd->SetWorkspace(workspace);
 	workspace->ClearDirty();
 }

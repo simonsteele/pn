@@ -348,7 +348,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,5,8
+ FILEVERSION 2,0,5,9
  PRODUCTVERSION 2,0,5,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -366,7 +366,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele (Echo Software)"
             VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.5.8"
+            VALUE "FileVersion", "2.0.5.9"
             VALUE "InternalName", "PNWTL"
             VALUE "LegalCopyright", "Copyright © 2002-2003 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"
@@ -1002,14 +1002,9 @@ BEGIN
     CONTROL         "Show full file path in document windows",
                     IDC_OPT_FULLPATHCHECK,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,6,25,156,12
-    LTEXT           "Files in the most recently used list:",IDC_STATIC,6,42,
+    LTEXT           "Files in the most recently used list:",IDC_STATIC,6,48,
                     120,12
-    EDITTEXT        IDC_OPT_MRUCOUNT,126,42,30,12,ES_AUTOHSCROLL
-    LTEXT           "MRU list maximum display length:",IDC_STATIC,6,60,120,
-                    12
-    EDITTEXT        IDC_OPT_MRUTEXTLENGTH,126,60,30,12,ES_AUTOHSCROLL
-    LTEXT           "(0 displays paths of any length.)",IDC_STATIC,162,60,
-                    108,12
+    EDITTEXT        IDC_OPT_MRUCOUNT,126,48,30,12,ES_AUTOHSCROLL
 END
 
 IDD_PAGE_NEWFILES DIALOGEX 0, 0, 299, 200

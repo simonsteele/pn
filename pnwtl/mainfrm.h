@@ -102,6 +102,7 @@ public:
 		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnDblClick)
 		MESSAGE_HANDLER(PN_ESCAPEPRESSED, OnEscapePressed)
 		MESSAGE_HANDLER(PN_INITIALISEFRAME, OnInitialiseFrame)
+		MESSAGE_HANDLER(WM_MENUSELECT, OnMenuSelect)
 		
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
@@ -188,6 +189,8 @@ public:
 	LRESULT OnDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnEscapePressed(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+	LRESULT OnMenuSelect(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 

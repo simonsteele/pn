@@ -1,6 +1,13 @@
+| Working towards 0.5 :: Mingus
+---------------------------------------
+
+Since 16/10/03:
+
 Since 13/10/03:
 
 Projects view sets correct icons when adding files, not just when loading a project.
 Only asks you to close files in the workspace if there are workspace files open - not just any file.
 Tooltip for Find in Files item.
 Changed new folder text to "Add New Folder" to disabiguate from Add Files.
+Rolled back mru text length changes - maximum now hard-coded to 97.
+Status bar now shows filenames of files on the MRU list as the mouse moves over them.

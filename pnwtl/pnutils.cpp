@@ -205,6 +205,16 @@ CMRUMenu::operator HMENU()
 	return (HMENU)m_Menu;
 }
 
+UINT CMRUMenu::base() const
+{
+	return m_iBase;
+}
+
+UINT CMRUMenu::last() const
+{
+	return m_iBase + m_iMaxSize;
+}
+
 void XMLSafeString(LPCTSTR from, tstring& to)
 {
 	int len = _tcslen(from);

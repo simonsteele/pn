@@ -18,6 +18,7 @@ What's new?
 10) Change MRU text length. (SF Feature #760660)
 11) Keyboard-shortcuts for Tools.
 12) More editor colouring options.
+13) Statusbar text on mouse-over MRU items.
 
 Bug Fixes:
 ----------
