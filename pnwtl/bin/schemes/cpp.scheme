@@ -1,117 +1,54 @@
-[PNLexer]
-FileVersion=1
-Name=C++
-Index=3
-;Lexer=cpp - not needed because of Index=3 line above.
-;Styles specified from 0 to x where Styles=x.
-Styles=11
-;word.chars.cxx=$(chars.alpha)$(chars.numeric)_#
-Folding=1
-CompactFolding=1
-CommentFolding=1
-
-[Styles.Default]
-; Default for this lexer, overrides default defaults...
-FontName=Courier
-FontSize=10
-FontColor=00,00,00
-
-[Styles.0]
-Name=White Space
-
-[Styles.Comments]
-Name=Comments
-ForeColor=00,7f,00
-
-[Styles.1]
-Name=Comment
-Group=Comments
-
-[Styles.2]
-Name=Line Comment
-Group=Comments
-
-[Styles.3]
-Name=Doc Comment
-ForeColor=3f,70,3f
-
-[Styles.4]
-Name=Numbers
-ForeColor=00,7f,7f
-
-[Styles.5]
-Name=Keyword
-ForeColor=00,00,ff
-
-[Styles.Strings]
-Name=Strings
-ForeColor=7f,00,7f
-
-[Styles.6]
-Name=Double Quoted Strings
-Group=Strings
-
-[Styles.7]
-Name=Single Quoted Strings
-Group=Strings
-
-[Styles.8]
-Name=UUIDs (only in IDL)
-ForeColor=80,40,80
-
-[Styles.9]
-Name=Pre-Processor
-ForeColor=7f,7f,00
-
-[Styles.10]
-Name=Operators
-FontBold=0
-
-[Styles.11]
-Name=Identifiers
-
-[Styles.12]
-Name=Unclosed String
-ForeColor=00,00,00
-BackColor=e0,c0,e0
-EOLFilled=1
-
-[Styles.13]
-Name=C# Verbatim Strings
-ForeColor=00,7f,00
-BackColor=e0,ff,e0
-EOLFilled=1
-
-[Styles.14]
-Name=RegExp for JavaScript
-ForeColor=3f,7f,3f
-BackColor=e0,f0,ff
-EOLFilled=1
-
-[Styles.15]
-Name=Doc Comment Line
-ForeColor=3f,70,3f
-
-[Keywords.0]
-Sets=6
-Words1=asm auto bool break case catch char class const const_cast continue
-Words2=default delete do double dynamic_cast else enum explicit export extern false float for
-Words3=friend goto if inline int long mutable namespace new operator private protected public
-Words4=register reinterpret_cast return short signed sizeof static static_cast struct switch
-Words5=template this throw true try typedef typeid typename union unsigned using
-Words6=virtual void volatile wchar_t while
-
-[Braces]
-BracesSloppy=1;
-BracesStyle=10;
-ForeColor.Complete=00,00,FF
-ForeColor.Incomplete=FF,00,00
-
-[Indent]
-Sets=2
-Words1=case catch class default do else for if
-Words2=private protected public struct try union while
-BlockStart=10,{
-BlockEnd=10,}
-StatementEnd=10,;
-StatementLookback=20;
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="cpp">
+			asm auto bool break case catch char class const const_cast continue
+			default delete do double dynamic_cast else enum explicit export extern false float for
+			friend goto if inline int long mutable namespace new operator private protected public
+			register reinterpret_cast return short signed sizeof static static_cast struct switch
+			template this throw true try typedef typeid typename union unsigned using
+			virtual void volatile wchar_t while
+		</keyword-class>
+		<keyword-class name="doxygen">
+			a addindex addtogroup anchor arg attention
+			author b brief bug c class code date def defgroup deprecated dontinclude
+			e em endcode endhtmlonly endif endlatexonly endlink endverbatim enum example exception
+			f$ f[ f] file fn hideinitializer htmlinclude htmlonly
+			if image include ingroup internal invariant interface latexonly li line link
+			mainpage name namespace nosubgrouping note overload
+			p page par param post pre ref relates remarks return retval
+			sa section see showinitializer since skip skipline struct subsection
+			test throw todo typedef union until
+			var verbatim verbinclude version warning weakgroup $ @ \ &amp; &lt; &gt; # { }
+		</keyword-class>
+	</keyword-classes>
+	<language name="cpp" folding="true" foldcomments="true" foldcompact="true">
+		<lexer name="cpp" />
+		<use-keywords>
+			<keyword key="0" class="cpp"/>
+			<keyword key="2" class="doxygen"/>
+		</use-keywords>
+		<use-styles>
+			<style name="DEFAULT" key="32" />
+			<style name="WHITESPACE" key="0" />
+			<style name="COMMENT" key="1" class="commentbox"/>
+			<style name="COMMENTLINE" key="2" class="commentline"/>
+			<style name="COMMENTDOC" key="3" class="commentdoc"/>
+			<style name="NUMBER" key="4" fore="colour.number"/>
+			<style name="WORD" key="5" class="keyword"/>
+			<style name="STRING" key="6" fore="colour.string"/>
+			<style name="CHARACTER" key="7" fore="colour.char"/>
+			<style name="UUID" key="8" fore="804080"/>
+			<style name="PREPROCESSOR" key="9" fore="colour.preproc"/>
+			<style name="OPERATOR" key="10" bold="true"/>
+			<style name="IDENTIFIER" key="11" />
+			<style name="STRINGEOL" key="12" fore="000000" font="font.monospace" back="e0c0e0" eolfilled="true"/>
+			<style name="VERBATIM" key="13" fore="007f00" font="font.monospace" back="e0ffe0" eolfilled="true"/>
+			<style name="REGEX" key="14" fore="3f7f3f" font="font.monospace" back="e0f0ff" eolfilled="true"/>
+			<style name="COMMENTLINEDOC" key="15" class="commentdoc"/>
+			<style name="KEYWORDS2" key="16" fore="b00040"/>
+			<style name="COMMENTDOCKEYWORD" key="17" class="commentdoc" fore="3060a0"/>
+			<style name="COMMENTDOCKEYWORDERROR" key="18" class="commentdoc" fore="804020"/>
+		</use-styles>
+	</language>
+</Scheme>
