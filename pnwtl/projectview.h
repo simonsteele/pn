@@ -15,9 +15,103 @@
 
 class ShellImageList;
 
+template <class T>
+class IDropTargetImpl : public IDropTarget
+{
+public:
+
+	STDMETHOD(DragEnter)(LPDATAOBJECT pDataObject, DWORD dwKeyState, POINTL pt, LPDWORD pdwEffect)
+	{
+		return static_cast<T*>(this)->OnDragEnter(pDataObject, dwKeyState, pt, pdwEffect);
+	}
+
+	STDMETHOD(DragOver)(DWORD dwKeyState, POINTL pt, LPDWORD pdwEffect)
+	{
+		return static_cast<T*>(this)->OnDragOver(dwKeyState, pt, pdwEffect);
+	}
+
+	STDMETHOD(DragLeave)(void)
+	{
+		return static_cast<T*>(this)->OnDragLeave();
+	}
+
+	STDMETHOD(Drop)(LPDATAOBJECT pDataObject, DWORD dwKeyState, POINTL pt, LPDWORD pdwEffect)
+	{
+		return static_cast<T*>(this)->OnDrop(pDataObject, dwKeyState, pt, pdwEffect);
+	}
+
+	HRESULT OnDragEnter(LPDATAOBJECT /*pDataObject*/, DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/)
+	{
+		return E_NOTIMPL;
+	}
+
+	HRESULT OnDragOver(DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/)
+	{
+		return E_NOTIMPL;
+	}
+
+	HRESULT OnDragLeave(void)
+	{
+		return E_NOTIMPL;
+	}
+
+	HRESULT OnDrop(LPDATAOBJECT /*pDataObject*/, DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/)
+	{
+		return E_NOTIMPL;
+	}
+
+};
+
+template<class callbacks>
+class DropTargetImpl : public CComObjectRoot,
+	public IDropTargetImpl<DropTargetImpl>
+{	
+	//DECLARE_POLY_AGGREGATABLE(DropTargetImpl)
+
+	BEGIN_COM_MAP(DropTargetImpl)
+        COM_INTERFACE_ENTRY(IDropTarget)
+    END_COM_MAP()
+
+	public:
+		DropTargetImpl()
+		{
+			pCallbacks = NULL;
+		}
+
+		callbacks* pCallbacks;
+
+		HRESULT OnDragEnter(LPDATAOBJECT pDataObject, DWORD dwKeyState, POINTL pt, LPDWORD pdwEffect)
+		{
+			if(!pCallbacks) return E_NOTIMPL;
+			return pCallbacks->OnDragEnter(pDataObject, dwKeyState, pt, pdwEffect);
+		}
+
+		HRESULT OnDragOver(DWORD dwKeyState, POINTL pt, LPDWORD pdwEffect)
+		{
+			if(!pCallbacks) return E_NOTIMPL;
+			return pCallbacks->OnDragOver(dwKeyState, pt, pdwEffect);
+		}
+
+		HRESULT OnDragLeave(void)
+		{
+			if(!pCallbacks) return E_NOTIMPL;
+			return pCallbacks->OnDragLeave();
+		}
+
+		HRESULT OnDrop(LPDATAOBJECT pDataObject, DWORD dwKeyState, POINTL pt, LPDWORD pdwEffect)
+		{
+			if(!pCallbacks) return E_NOTIMPL;
+			return pCallbacks->OnDrop(pDataObject, dwKeyState, pt, pdwEffect);
+		}
+};
+
 class CProjectTreeCtrl : public CMSTreeViewCtrl
 {
 	typedef CMSTreeViewCtrl baseClass;
+	
+	typedef DropTargetImpl<CProjectTreeCtrl> DropTarget;
+	friend class DropTarget;
+
 public:
 	DECLARE_WND_CLASS(_T("ProjectTree"))
 
@@ -25,7 +119,7 @@ public:
 	~CProjectTreeCtrl();
 
 	BEGIN_MSG_MAP(CProjectTreeCtrl)
-		
+		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		REFLECTED_NOTIFY_CODE_HANDLER(TVN_ENDLABELEDIT, OnEndLabelEdit)
 		REFLECTED_NOTIFY_CODE_HANDLER(NM_RCLICK, OnRightClick)
 		COMMAND_ID_HANDLER(ID_PROJECT_OPEN, OnOpenFile)
@@ -41,6 +135,8 @@ public:
 		REFLECTED_NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnSelChanged)
 	END_MSG_MAP()
 
+
+
 	HWND Create(HWND hWndParent, _U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
 			DWORD dwStyle = 0, DWORD dwExStyle = 0,
 			_U_MENUorID MenuOrID = 0U, LPVOID lpCreateParam = NULL);
@@ -48,6 +144,31 @@ public:
 	void			AddProject(Projects::Project* project);
 	Projects::File* GetSelectedFile();
 	void			SetWorkspace(Projects::Workspace* ws);	
+
+protected:
+	HRESULT OnDragEnter(LPDATAOBJECT /*pDataObject*/, DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/)
+	{
+		::OutputDebugString(_T("OnDragEnter"));
+		return E_NOTIMPL;
+	}
+
+	HRESULT OnDragOver(DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/)
+	{
+		::OutputDebugString(_T("OnDragOver"));
+		return E_NOTIMPL;
+	}
+
+	HRESULT OnDragLeave(void)
+	{
+		::OutputDebugString(_T("OnDragLeave"));
+		return E_NOTIMPL;
+	}
+
+	HRESULT OnDrop(LPDATAOBJECT /*pDataObject*/, DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/)
+	{
+		::OutputDebugString(_T("OnDrop"));
+		return E_NOTIMPL;
+	}
 
 protected:
 	void		buildTree();
@@ -76,6 +197,8 @@ protected:
 	LRESULT OnNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnAddProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
+	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
 protected:
 	HTREEITEM				hLastItem;
 	ShellImageList*			shellImages;
@@ -85,6 +208,7 @@ protected:
 	int						workspaceIcon;
 	int						badProjectIcon;
 	bool					multipleSelection;
+	CComObject<DropTarget>* m_pDropTarget;
 };
 
 class CProjectDocker : public CPNDockingWindow<CProjectDocker>

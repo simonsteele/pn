@@ -117,10 +117,15 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {
-	HRESULT hRes = ::CoInitialize(NULL);
-// If you are running on NT 4.0 or higher you can use the following call instead to 
-// make the EXE free threaded. This means that calls come in on a random RPC thread.
-//	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	// If you are running on NT 4.0 or higher you can use the following call instead to 
+	// make the EXE free threaded. This means that calls come in on a random RPC thread.
+	//	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	//HRESULT hRes = ::CoInitialize(NULL);
+	//HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
+	
+	// We now use OleInitialize so that we can use IDropTarget for the projects view 
+	// (and maybe other stuff later).
+	HRESULT hRes = ::OleInitialize(NULL);
 	ATLASSERT(SUCCEEDED(hRes));
 
 #if (_WIN32_IE >= 0x0300)

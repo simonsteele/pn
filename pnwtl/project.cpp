@@ -228,9 +228,9 @@ File* Folder::FindFile(LPCTSTR filename)
 
 	File* pF = NULL;
 
-	for(FL_IT i = children.begin(); i != children.end(); ++i)
+	for(FL_IT j = children.begin(); j != children.end(); ++j)
 	{
-		pF = (*i)->FindFile(filename);
+		pF = (*j)->FindFile(filename);
 		if(pF)
 			return pF;
 	}

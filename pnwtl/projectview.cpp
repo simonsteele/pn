@@ -24,15 +24,23 @@ using namespace Projects;
 CProjectTreeCtrl::CProjectTreeCtrl()
 {
 	lastItem = NULL;
+	m_pDropTarget = NULL;
+
 	shellImages = new ShellImageList();
 	projectIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_PROJECTFOLDER)) );
 	badProjectIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_BADPROJECT)) );
-	workspaceIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_WORKSPACE)) );
+	workspaceIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_WORKSPACE)) );	
 }
 
 CProjectTreeCtrl::~CProjectTreeCtrl()
 {
 	delete shellImages;
+	
+	if(m_pDropTarget != NULL)
+	{
+		m_pDropTarget->Release();
+		m_pDropTarget = NULL;
+	}
 }
 
 HWND CProjectTreeCtrl::Create(HWND hWndParent, _U_RECT rect, LPCTSTR szWindowName ,
@@ -43,7 +51,28 @@ HWND CProjectTreeCtrl::Create(HWND hWndParent, _U_RECT rect, LPCTSTR szWindowNam
 
 	SetImageList(shellImages->GetImageList(), TVSIL_NORMAL);
 
+	CComObject<DropTarget>::CreateInstance(&m_pDropTarget);
+	m_pDropTarget->AddRef();
+
+	m_pDropTarget->pCallbacks = this;
+	
+	HRESULT hr = RegisterDragDrop(hWndRet, m_pDropTarget);
+	ATLASSERT(SUCCEEDED(hr));
+
 	return hWndRet;
+}
+
+LRESULT CProjectTreeCtrl::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	bHandled = FALSE;
+
+	if(m_pDropTarget != NULL)
+	{
+		HRESULT hr = RevokeDragDrop(m_hWnd);
+		ATLASSERT(SUCCEEDED(hr));
+	}
+
+	return 0;
 }
 
 void CProjectTreeCtrl::AddProject(Projects::Project* project)
@@ -493,12 +522,12 @@ void CProjectTreeCtrl::openAll(Projects::Folder* folder)
 		openAll((*i));
 	}
 
-	for(FILE_LIST::const_iterator i = folder->GetFiles().begin();
-		i != folder->GetFiles().end();
-		++i)
+	for(FILE_LIST::const_iterator j = folder->GetFiles().begin();
+		j != folder->GetFiles().end();
+		++j)
 	{
-		if( !g_Context.m_frame->CheckAlreadyOpen((*i)->GetFileName(), eSwitch) )
-			g_Context.m_frame->Open((*i)->GetFileName(), true);
+		if( !g_Context.m_frame->CheckAlreadyOpen((*j)->GetFileName(), eSwitch) )
+			g_Context.m_frame->Open((*j)->GetFileName(), true);
 	}
 }
 
@@ -620,7 +649,7 @@ LRESULT CProjectTreeCtrl::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 				sel = GetNextSelectedItem(sel);
 			}
 
-			std::list<HTREEITEM>::iterator i = selectedItems.begin();
+			//std::list<HTREEITEM>::iterator i = selectedItems.begin();
 
 			for(std::list<HTREEITEM>::iterator i = selectedItems.begin();
 				i != selectedItems.end(); ++i)
@@ -726,7 +755,7 @@ LRESULT CProjectDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
 	RECT rc;
 	GetClientRect(&rc);
-	m_view.Create(m_hWnd, rc, _T("ProjectTree"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_HASLINES | TVS_EDITLABELS | TVS_SHOWSELALWAYS, 0, 100);
+	m_hWndClient = m_view.Create(m_hWnd, rc, _T("ProjectTree"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_HASLINES | TVS_EDITLABELS | TVS_SHOWSELALWAYS, 0, 100);
 
 	return 0;
 }

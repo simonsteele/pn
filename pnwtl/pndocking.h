@@ -77,6 +77,11 @@ class /*ATL_NO_VTABLE*/ CPNDockingWindow : public dockwins::CBoxedDockingWindowI
 	typedef CPNDockingWindow<T> thisClass;
 
 	public:
+		CPNDockingWindow()
+		{
+			m_hWndClient = NULL;
+		}
+
 		// Prevent Hide from de-activating the current window. This is a bit kludgy.
 		virtual bool Hide()
 		{
@@ -100,8 +105,25 @@ class /*ATL_NO_VTABLE*/ CPNDockingWindow : public dockwins::CBoxedDockingWindowI
 		}
 
 		BEGIN_MSG_MAP(thisClass)
+			MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
 			CHAIN_MSG_MAP(baseClass)
 		END_MSG_MAP()
+
+	protected:
+		LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+		{
+			bHandled = FALSE;
+			HWND hWndParent = GetParent();
+
+			::SetWindowPos(hWndParent, m_hWnd, 0,0,0,0, SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOMOVE);
+
+			if(m_hWndClient != NULL && ::IsWindowVisible(m_hWndClient))
+				::SetFocus(m_hWndClient);
+
+			return 0;
+		}
+
+		HWND m_hWndClient;
 };
 
 /**

@@ -25,6 +25,8 @@
 
 #endif // #ifdef _DEBUG
 
+#define _ATL_FREE_THREADED
+
 #include <atlbase.h>
 
 #if (_ATL_VER >= 0x0700)

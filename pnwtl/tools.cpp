@@ -341,10 +341,10 @@ void SchemeToolsManager::Clear(bool bWantMenuResources)
 		delete (*i).second;
 	}
 
-	for(SOURCES_LIST::iterator i = m_toolSources.begin(); i != m_toolSources.end(); ++i)
+	for(SOURCES_LIST::iterator j = m_toolSources.begin(); j != m_toolSources.end(); ++j)
 	{
-		if((*i) != &m_DefaultToolsSource)
-			delete (*i);
+		if((*j) != &m_DefaultToolsSource)
+			delete (*j);
 	}
 
 	m_toolSets.clear();

@@ -556,7 +556,7 @@ LRESULT CDockingOutputWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 	RECT rc;
 	GetClientRect(&rc);
-	m_view.Create(m_hWnd, rc, _T("GlobalOutput"));
+	m_hWndClient = m_view.Create(m_hWnd, rc, _T("GlobalOutput"));
 
 	return 0;
 }
