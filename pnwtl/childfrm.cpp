@@ -544,6 +544,13 @@ LRESULT CChildFrame::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	return TRUE;
 }
 
+LRESULT CChildFrame::OnRevert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	Revert();
+
+	return 0;
+}
+
 LRESULT CChildFrame::OnSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	Save();
@@ -783,8 +790,7 @@ void CChildFrame::Revert()
 	// Check that we have a valid filename first...
 	if(CanSave())
 	{
-		//@todo maybe flag this instead of re-applying the scheme (a little un-necessary)
-		m_view.Load((LPCTSTR)m_FileName, m_view.GetCurrentScheme());
+		m_view.Revert((LPCTSTR)m_FileName);
 		m_FileAge = FileAge(m_FileName);
 	}
 }

@@ -113,6 +113,8 @@ BEGIN
     BEGIN
         MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
         MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM "&Revert",                     ID_FILE_REVERT
+        MENUITEM SEPARATOR
         MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
         MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
         MENUITEM "Save All",                    ID_FILE_SAVEALL
@@ -428,6 +430,11 @@ END
 STRINGTABLE 
 BEGIN
     ATL_IDS_MRU_FILE        "Open this document"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_FILE_REVERT          "Revert this document to the current saved state\nRevert"
 END
 
 #endif    // English (U.S.) resources

@@ -79,6 +79,7 @@ public:
 
 		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHideOutput)
 
+		COMMAND_ID_HANDLER(ID_FILE_REVERT, OnRevert)
 		COMMAND_ID_HANDLER(ID_FILE_SAVE_AS, OnSaveAs)
 		COMMAND_ID_HANDLER(ID_FILE_SAVE, OnSave)
 		COMMAND_ID_HANDLER(ID_FILE_CLOSE, OnClose)
@@ -180,6 +181,7 @@ public:
 	LRESULT OnRedo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnRevert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnClose(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

@@ -207,6 +207,26 @@ bool CTextView::Load(LPCTSTR filename, CScheme* pScheme)
 		return false;
 }
 
+/**
+ * Add some extra intelligence to Revert so that we try to keep the cursor
+ * in the same position - we're not going to extreme lengths though.
+ * 
+ * An alternative idea is to store the start and end of any text selection
+ * and re-apply that instead of just re-setting the position.
+ */
+void CTextView::Revert(LPCTSTR filename)
+{
+	int lastPos = GetCurrentPos();
+
+	if( OpenFile(filename) )
+	{
+		if( GetLength() >= lastPos )
+		{
+			SetSel(lastPos, lastPos);
+		}
+	}
+}
+
 bool CTextView::SaveFile(LPCTSTR filename)
 {
 	CFile file;
@@ -334,7 +354,7 @@ void CTextView::SetPosStatus(CMultiPaneStatusBarCtrl& stat)
 		g_Context.m_frame->SetStatusText(tvstatbuf);
 	}
 	else
-		g_Context.m_frame->SetStatusText(NULL);
+		g_Context.m_frame->SetStatusText(_T(""));
 }
 
 CScheme* CTextView::GetCurrentScheme()

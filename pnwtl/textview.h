@@ -46,6 +46,8 @@ public:
 	bool Load(LPCTSTR filename, CScheme* pScheme = NULL);
 	bool Save(LPCTSTR filename, bool bSetScheme = true);
 
+	void Revert(LPCTSTR filename);
+
 	void EnableHighlighting(bool bEnable);
 	void ShowLineNumbers(bool bShow);
 
