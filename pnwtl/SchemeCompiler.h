@@ -147,14 +147,35 @@ class StyleDetails
 				Underline == compare.Underline &&
 				EOLFilled == compare.EOLFilled &&
 				//values == copy.values &&
-				classname == compare.classname &&
-				name == compare.name
+				classname == compare.classname //&&
+				//name == compare.name
 				);
 		}
 
 		bool operator != (const StyleDetails& compare)
 		{
 			return !(*this == compare);
+		}
+
+		/**
+		 * This function sets the "values" bit mask with
+		 * all the values that are different from those in compare.
+		 */
+		void compareTo(StyleDetails& compare)
+		{
+			values = 0 |
+				((FontName == compare.FontName) ? 0 : edvFontName) |
+				((FontSize == compare.FontSize) ? 0 : edvFontSize) |
+				((ForeColor == compare.ForeColor) ? 0 : edvForeColor) |
+				((BackColor == compare.BackColor) ? 0 : edvBackColor) |
+				((Bold == compare.Bold) ? 0 : edvBold) |
+				((Italic == compare.Italic) ? 0 : edvItalic) |
+				((Underline == compare.Underline) ? 0 : edvUnderline) |
+				((EOLFilled == compare.EOLFilled) ? 0 : edvEOLFilled) |
+				((classname == compare.classname) ? 0 : edvClass)//&&
+				//values == copy.values &&
+				//name == compare.name;
+				;
 		}
 
 		int Key;

@@ -188,4 +188,9 @@ void CSRegistry::CloseKey()
 	RegCloseKey(m_hKey);
 }
 
+bool CSRegistry::DeleteValue(LPCTSTR valname)
+{
+	return ::RegDeleteValue(m_hKey, valname) == ERROR_SUCCESS;
+}
+
 } // namespace ssreg

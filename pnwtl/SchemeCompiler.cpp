@@ -261,8 +261,21 @@ UserSettingsParser::UserSettingsParser()
 	pScheme = NULL;
 }
 
-void UserSettingsParser::Parse(LPCTSTR path, CSchemeLoaderState*	pState)
+void UserSettingsParser::Parse(LPCTSTR path, CSchemeLoaderState* pState)
 {
+	CSRegistry reg;
+	reg.OpenKey(_T("Software\\Echo Software\\PN2\\SchemeDates"), true);
+	
+	if(FileExists(path))
+	{
+		reg.WriteInt(_T("UserSettings"),  FileAge(path));
+	}
+	else
+	{
+		reg.DeleteValue(_T("UserSettings"));
+		return;
+	}
+
 	XMLParserCallback<UserSettingsParser> callback(*this, startElement, endElement, characterData);
 
 	XMLParser parser;
@@ -273,10 +286,6 @@ void UserSettingsParser::Parse(LPCTSTR path, CSchemeLoaderState*	pState)
 	pState->m_pParser = &parser;
 
 	pState->m_State = 0;
-
-	CSRegistry reg;
-	reg.OpenKey(_T("Software\\Echo Software\\PN2\\SchemeDates"), true);
-	reg.WriteInt(_T("UserSettings"),  FileAge(path));
 
 	try
 	{
@@ -593,11 +602,7 @@ void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
 	XMLParserCallback<SchemeParser> callback(*this, startElement, endElement, characterData);
 	
 	UserSettingsParser p;
-
-	if(FileExists(userfile))
-	{
-		p.Parse(userfile, &m_LoadState);
-	}
+	p.Parse(userfile, &m_LoadState);
 
 	XMLParser parser;
 	parser.SetParseState(&callback);

@@ -151,16 +151,17 @@ void CMRUMenu::UpdateMenu()
 	int insertPoint = 0;
 	int offset = 0;
 
-	if(m.GetCount() != 0)
+	int num = m.GetCount();
+	if(num != 0)
 	{
-		for(int i = m.GetCount() - 1; i >= 0; i--)
+		for(int i = num - 1; i >= 0; i--)
 		{
 			id = ::GetMenuItemID(m, i);
 			if( (id >= m_iBase+1) && (id <= (m_iBase + m_iMaxSize)) )
 			{
 				::RemoveMenu(m, i, MF_BYPOSITION);
 			}
-			if(id == m_iBase)
+			if(id == m_iBase + (num - 1))
 				insertPoint = i;
 		}
 	}

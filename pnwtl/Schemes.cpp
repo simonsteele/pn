@@ -450,6 +450,22 @@ void CSchemeManager::Load()
 	CSRegistry reg;
 	reg.OpenKey(_T("Software\\Echo Software\\PN2\\SchemeDates"), true);
 
+	bool bCompile = false;
+	
+	ctcString usersettings = m_CompiledPath;
+	usersettings += _T("UserSettings.xml");
+	int us_age = reg.ReadInt(_T("UserSettings"), 0);
+	if(FileExists(usersettings.c_str()))
+	{
+		if(FileAge(usersettings.c_str()) != us_age)
+			bCompile = true;
+	}
+	else
+	{
+		if(us_age != 0)
+			bCompile = true;
+	}
+
 	// Find the scheme def files one by one...
 	HANDLE hFind;
 	WIN32_FIND_DATA FindFileData;
@@ -460,31 +476,33 @@ void CSchemeManager::Load()
 
 	sPattern += _T("*.scheme");
 
-	bool bCompile = false;
-
 	BOOL found = TRUE;
 	ctcString to_open;
 
-	hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
-	if (hFind != INVALID_HANDLE_VALUE) 
+	if(!bCompile)
 	{
-		while (found)
-		{
-			///@todo Do we really need to keep a list of Schemes and a map?
-			// to_open is a scheme file
-			to_open = m_SchemePath;
-			to_open += FindFileData.cFileName;
 
-			if( reg.ReadInt(FindFileData.cFileName, 0) != FileAge(to_open.c_str()) )
+		hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
+		if (hFind != INVALID_HANDLE_VALUE) 
+		{
+			while (found)
 			{
-				bCompile = true;
-				break;
+				///@todo Do we really need to keep a list of Schemes and a map?
+				// to_open is a scheme file
+				to_open = m_SchemePath;
+				to_open += FindFileData.cFileName;
+
+				if( reg.ReadInt(FindFileData.cFileName, 0) != FileAge(to_open.c_str()) )
+				{
+					bCompile = true;
+					break;
+				}
+
+				found = FindNextFile(hFind, &FindFileData);
 			}
 
-			found = FindNextFile(hFind, &FindFileData);
+			FindClose(hFind);
 		}
-
-		FindClose(hFind);
 	}
 
 	if(bCompile)

@@ -107,23 +107,27 @@ protected:
 		dc.SetBkMode(TRANSPARENT);
 		dc.FillRect(&rc, br);
 		
-		DWORD dwData = GetItemData(lpDIS->itemID);
-
-		int nLen = GetLBTextLen(lpDIS->itemID);
-		TCHAR* psFont = (TCHAR *)_alloca(sizeof TCHAR * (nLen + 1));
-		GetLBText(lpDIS->itemID, psFont);
-		
-		SIZE sz;
-
-		if (dwData & TRUETYPE_FONTTYPE)
+		// ss 02/12/2002
+		if(lpDIS->itemID != -1)
 		{
-			m_img.GetIconSize(sz);
-			m_img.Draw(dc, 0, rc.left + 2, rc.top + ((rc.bottom - rc.top - sz.cy) / 2) ,ILD_TRANSPARENT);
+			DWORD dwData = GetItemData(lpDIS->itemID);
+
+			int nLen = GetLBTextLen(lpDIS->itemID);
+			TCHAR* psFont = (TCHAR *)_alloca(sizeof TCHAR * (nLen + 1));
+			GetLBText(lpDIS->itemID, psFont);
+			
+			SIZE sz;
+
+			if (dwData & TRUETYPE_FONTTYPE)
+			{
+				m_img.GetIconSize(sz);
+				m_img.Draw(dc, 0, rc.left + 2, rc.top + ((rc.bottom - rc.top - sz.cy) / 2) ,ILD_TRANSPARENT);
+			}
+		
+			rc.left += GLYPH_WIDTH + 2;
+			dc.GetTextExtent(psFont, nLen, &sz);
+			dc.TextOut(rc.left, rc.top + ((rc.bottom - rc.top - sz.cy) / 2), psFont);
 		}
-	
-		rc.left += GLYPH_WIDTH + 2;
-		dc.GetTextExtent(psFont, nLen, &sz);
-		dc.TextOut(rc.left, rc.top + ((rc.bottom - rc.top - sz.cy) / 2), psFont);
 
 		dc.RestoreDC(nIndexDC);
 		return 0;

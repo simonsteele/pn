@@ -38,6 +38,8 @@ class CSRegistry
 		bool ReadBool(LPCTSTR valname, bool defaultval = false);
 
 		bool SetRootKey(HKEY root){m_root = root;};
+
+		bool DeleteValue(LPCTSTR valname);
 };
 
 }

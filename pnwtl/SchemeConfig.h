@@ -2,6 +2,7 @@
 #define schemeconfig_h__included
 
 #include "SchemeCompiler.h"
+#include "files.h"
 
 class CustomStyleCollection
 {
@@ -21,6 +22,7 @@ class CustomStyleCollection
 		LPCTSTR GetDescription();
 
 		StyleDetails* GetStyle(int key);
+		StyleDetails* FindStyle(int key);
 
 		STYLES_LIST	m_Styles;
 
@@ -68,13 +70,21 @@ class SchemeConfigParser : public SchemeParser
 		~SchemeConfigParser();
 
 		void LoadConfig(LPCTSTR path, LPCTSTR compiledpath);
+		void SaveConfig();
 
 		LIST_SCHEMECONFIGS& GetSchemes();
 
 	protected:
 		void Sort();
+		void Save(LPCTSTR filename);
+		void WriteStyle(CFile& file, StyleDetails& style);
+
+		inline void AddBoolParam(CString& buf, LPCTSTR name, bool bVal);
+		inline void AddColourParam(CString& buf, LPCTSTR name, COLORREF colour);
+
 		LIST_SCHEMECONFIGS	m_Schemes;
 		SchemeConfig*		m_pCurrent;
+		CString				m_Path;
 
 	// SchemeParser
 	protected:
