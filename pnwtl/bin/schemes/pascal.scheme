@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="pascal">
+			program const type var begin end array set record string if then else
+			while for to downto do with repeat until case of goto exit label procedure
+			function nil file and or not xor div mod unit uses implementation interface
+			external asm inline object constructor destructor virtual far assembler near
+			inherited stdcall cdecl library export exports end.
+			class private public protected ansistring raise try except on
+			property read write override overload resourcestring
+			false true initialization index name finally
+		</keyword-class>
+	</keyword-classes>
+	<language name="pascal" title="Pascal" folding="true" foldcomments="true" foldcompact="false">
+		<lexer name="pascal" />
+		<use-keywords>
+			<keyword key="0" class="pascal"/>
+		</use-keywords>
+		<use-styles>
+			<style name="DEFAULT" key="32" />
+			<style name="WHITESPACE" key="0" />
+			<style name="Comment" key="1" class="comment"/>
+			<style name="Line Comment" key="2" class="commentline"/>
+			<style name="Doc Comment" key="3" class="commentdoc"/>
+			<style name="Number" key="4" fore="colour.number"/>
+			<style name="Keyword" key="5" class="keyword"/>
+			<style name="Double-Quoted String" key="6" /><!-- fore="colour.string" -->
+			<style name="Single-Quoted String" key="7" fore="colour.string"/>
+			<style name="Symbols" key="8" />
+			<style name="PreProcessor" key="9" fore="colour.preproc"/>
+			<style name="Operators" key="10" bold="true"/>
+			<style name="Brace Match" key="34" bold="true" fore="0000ff"/>
+			<style name="Brace MisMatch" key="35" bold="true" fore="ff0000"/>
+		</use-styles>
+	</language>
+</Scheme>
