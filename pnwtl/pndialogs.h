@@ -141,108 +141,18 @@ class CGotoDialog : public CDialogImpl<CGotoDialog>
 		int lineno;
 };
 
-class COptionsDialog;
-
-class COptionsPage
-{
-	friend class COptionsDialog;
-
-public:
-	COptionsPage()
-	{
-		m_bCreated = false;
-		m_bOrphan = false;
-	}
-
-	// Methods called by COptionsDialog when dealing with COptionsPage.
-	virtual void OnOK(){};
-	virtual void OnCancel(){};
-	virtual void OnInitialise(){};
-
-	// Return a tree position like "Schemes\AddOn Options"
-	virtual LPCTSTR GetTreePosition() = 0;
-
-	virtual HWND CreatePage(HWND hOwner, LPRECT rcPos, HWND hInsertAfter = NULL) = 0;
-	virtual void ClosePage() = 0;
-	virtual void ShowPage(int showCmd) = 0;
-
-protected:
-	bool m_bCreated;
-	bool m_bOrphan;
-};
-
-template <class T>
-class COptionsPageImpl : public CDialogImpl<T>, public COptionsPage
-{
-	public:
-		virtual ~COptionsPageImpl(){}
-
-		virtual HWND CreatePage(HWND hParent, LPRECT rcPos, HWND hInsertAfter = NULL)
-		{
-			Create(hParent);
-			SetWindowPos(hInsertAfter, rcPos, SWP_NOACTIVATE);
-			MoveWindow(rcPos);
-
-			return m_hWnd;
-		}
-
-		virtual void ClosePage()
-		{
-			DestroyWindow();
-			if(m_bOrphan)
-				delete this;
-		}
-
-		virtual void ShowPage(int showCmd)
-		{
-			ShowWindow(showCmd);
-		}
-};
-
-class COptionsDialog : public CDialogImpl<COptionsDialog>
-{
-	typedef list<COptionsPage*> PAGEPTRLIST;
-	typedef CDialogImpl<COptionsDialog> baseClass;
-
-	public:
-
-		COptionsDialog();
-
-		enum { IDD = IDD_OPTIONS };
-
-		BEGIN_MSG_MAP(COptionsDialog)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			COMMAND_ID_HANDLER(IDOK, OnOK)
-			COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
-			NOTIFY_ID_HANDLER(IDC_TREE, OnTreeNotify)
-		END_MSG_MAP()
-
-		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-		LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		LRESULT OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-
-		void AddPage(COptionsPage* pPage);
-
-		BOOL EndDialog(int nRetCode);
-
-	protected:
-		PAGEPTRLIST		m_Pages;
-		COptionsPage*	m_pCurrentPage;
-		CTreeViewCtrl	m_tree;
-
-		void InitialisePages();
-		void ClosePages();
-		void SelectPage(COptionsPage* pPage);
-		HTREEITEM FindAtThisLevel(LPCTSTR title, HTREEITEM context);
-		HTREEITEM AddTreeEntry(const char* title, HTREEITEM context);
-};
-
+#include "include/optionsdialog.h"
 #include "include/fontcombo.h"
+#include "include/ColorButton.h"
+
+#include "SchemeConfig.h"
+#include "pnutils.h"
 
 class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 {
 	public:
+		COptionsPageStyle(SchemeConfigParser* pSchemes) : m_pSchemes(pSchemes){}
+
 		BEGIN_MSG_MAP(COptionsPageStyle)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			REFLECT_NOTIFICATIONS()
@@ -253,15 +163,24 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 		virtual void OnCancel();
 		virtual void OnInitialise();
 		virtual LPCTSTR GetTreePosition();
-		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	protected:
-		CFontCombo	m_FontCombo;
-		CComboBox	m_SizeCombo;
-};
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		StyleDetails* GetDefault(bool& bIsCustom, bool bAllowCustom = true);
+	
+	protected:
+		CFontCombo		m_FontCombo;
+		CNumberCombo	m_SizeCombo;
 
-#include "SchemeConfig.h"
-#include "pnutils.h"
+		CColorButton	m_fore;
+		CColorButton	m_back;
+		
+		CButton			m_bold;
+		CButton			m_italic;
+		CButton			m_underline;
+
+		SchemeConfigParser* m_pSchemes;
+};
 
 class CStyleDisplay : public CWindowImpl<CStyleDisplay>
 {
@@ -307,8 +226,6 @@ class CKeywordsTabPage : public CPropertyPageImpl<CKeywordsTabPage>
 		END_MSG_MAP()
 };
 
-#include "Include/ColorButton.h"
-
 class CStylesTabPage : public CPropertyPageImpl<CStylesTabPage>
 {
 	public:	
@@ -350,7 +267,6 @@ class CStylesTabPage : public CPropertyPageImpl<CStylesTabPage>
 		LRESULT OnResetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnResetAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		
-		void AddFontSize(int size, LPCTSTR sizestr);
 		void UpdateSel();
 		void SetItem();
 
@@ -362,7 +278,7 @@ class CStylesTabPage : public CPropertyPageImpl<CStylesTabPage>
 		CStyleDisplay	m_sd;
 
 		CFontCombo		m_FontCombo;
-		CComboBox		m_SizeCombo;
+		CNumberCombo	m_SizeCombo;
 
 		CColorButton	m_fore;
 		CColorButton	m_back;

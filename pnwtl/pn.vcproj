@@ -312,6 +312,9 @@
 			<File
 				RelativePath="include\ColorButton.cpp">
 			</File>
+			<File
+				RelativePath="include\OptionsDialog.h">
+			</File>
 		</Filter>
 		<File
 			RelativePath="pn.exe.manifest">

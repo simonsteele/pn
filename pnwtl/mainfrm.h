@@ -485,14 +485,14 @@ public:
 	}
 
 	LRESULT OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-	{
-		COptionsPageStyle		page;
-		
+	{		
 		CSchemeManager* pSM = CSchemeManager::GetInstance();
-		SchemeConfigParser		schemeconfig;
-		schemeconfig.LoadConfig(pSM->GetPath(), pSM->GetCompiledPath());
 
+		SchemeConfigParser		schemeconfig;
+		COptionsPageStyle		page(&schemeconfig);
 		COptionsPageSchemes		page2(&schemeconfig);
+
+		schemeconfig.LoadConfig(pSM->GetPath(), pSM->GetCompiledPath());
 
 		COptionsDialog options;
 		options.AddPage(&page);

@@ -1,0 +1,281 @@
+/**
+ * @file optionsdialog.h
+ * @brief A Tree-Item-Per-Page Options dialog.
+ * @author Simon Steele
+ * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ *
+ * To create your options dialog, first create a dialog template and give
+ * it the resource ID "IDD_OPTIONS". On that dialog, ensure that there is
+ * a tree control with ID "IDC_TREE" and somewhere for your child dialogs to
+ * go, with the ID "IDC_PLACEHOLDER".
+ *
+ * For each page in the dialog, derive a class from COptionsPageImpl (like 
+ * CDialogImpl) and implement the GetTreePosition method. From this method,
+ * you should return a path-style options tree position. Examples would be:
+ *    Root\Child
+ *    AnotheerRoot\Folder\Child
+ *    ARootNode
+ * The options dialog will deal with organising the items for each page in the
+ * tree. The items are not currently sorted, so the order can be controlled
+ * by order of addition.
+ */
+
+#ifndef optionsdialog_h__included
+#define optionsdialog_h__included
+
+class COptionsDialog;
+
+class COptionsPage
+{
+	friend class COptionsDialog;
+
+public:
+	COptionsPage()
+	{
+		m_bCreated = false;
+		m_bOrphan = false;
+	}
+
+	// Methods called by COptionsDialog when dealing with COptionsPage.
+	virtual void OnOK(){};
+	virtual void OnCancel(){};
+	virtual void OnInitialise(){};
+
+	// Return a tree position like "Schemes\AddOn Options"
+	virtual LPCTSTR GetTreePosition() = 0;
+
+	virtual HWND CreatePage(HWND hOwner, LPRECT rcPos, HWND hInsertAfter = NULL) = 0;
+	virtual void ClosePage() = 0;
+	virtual void ShowPage(int showCmd) = 0;
+
+protected:
+	bool m_bCreated;
+	bool m_bOrphan;
+};
+
+template <class T>
+class COptionsPageImpl : public CDialogImpl<T>, public COptionsPage
+{
+	public:
+		virtual ~COptionsPageImpl(){}
+
+		virtual HWND CreatePage(HWND hParent, LPRECT rcPos, HWND hInsertAfter = NULL)
+		{
+			Create(hParent);
+			SetWindowPos(hInsertAfter, rcPos, SWP_NOACTIVATE);
+			MoveWindow(rcPos);
+
+			return m_hWnd;
+		}
+
+		virtual void ClosePage()
+		{
+			DestroyWindow();
+			if(m_bOrphan)
+				delete this;
+		}
+
+		virtual void ShowPage(int showCmd)
+		{
+			ShowWindow(showCmd);
+		}
+};
+
+class COptionsDialog : public CDialogImpl<COptionsDialog>
+{
+	typedef list<COptionsPage*> PAGEPTRLIST;
+	typedef CDialogImpl<COptionsDialog> baseClass;
+
+	public:
+
+		COptionsDialog()
+		{
+			m_pCurrentPage = NULL;
+		}
+
+		enum { IDD = IDD_OPTIONS };
+
+		BEGIN_MSG_MAP(COptionsDialog)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			COMMAND_ID_HANDLER(IDOK, OnOK)
+			COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
+			NOTIFY_ID_HANDLER(IDC_TREE, OnTreeNotify)
+		END_MSG_MAP()
+
+		BOOL EndDialog(int nRetCode)
+		{
+			ClosePages();
+			return baseClass::EndDialog(nRetCode);
+		}
+
+		void AddPage(COptionsPage* pPage)
+		{
+			m_Pages.insert(m_Pages.end(), pPage);
+		}
+
+	protected:
+
+		LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+		{
+			PAGEPTRLIST::iterator i;
+
+			for(i = m_Pages.begin(); i != m_Pages.end(); ++i)
+			{
+				(*i)->OnOK();
+			}
+
+			EndDialog(wID);
+
+			return TRUE;
+		}
+
+		LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+		{
+			PAGEPTRLIST::iterator i;
+
+			for(i = m_Pages.begin(); i != m_Pages.end(); ++i)
+			{
+				(*i)->OnCancel();
+			}
+
+			EndDialog(wID);
+			
+			return TRUE;
+		}
+
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+		{
+			m_tree.Attach(GetDlgItem(IDC_TREE));
+
+			InitialisePages();
+				
+			CenterWindow(GetParent());
+			
+			return TRUE;
+		}
+
+		void InitialisePages()
+		{
+			TCHAR buf[200];
+			PAGEPTRLIST::iterator i;
+
+			for(i = m_Pages.begin(); i != m_Pages.end(); ++i)
+			{
+				LPCTSTR treeloc = (*i)->GetTreePosition();
+				PNASSERT(_tcslen(treeloc) < 200);
+				_tcscpy(buf, treeloc);
+
+				HTREEITEM ti = NULL;
+				TCHAR* pSlash = NULL;
+				TCHAR* pNext = buf;
+
+				while((pSlash = _tcschr(pNext, _T('\\'))) != NULL)
+				{
+					*pSlash = NULL;
+					ti = AddTreeEntry(pNext, ti);
+					*pSlash = '\\';
+					pNext = pSlash + 1;
+				}
+				// Add Tree Item
+				HTREEITEM item = AddTreeEntry(pNext, ti);
+				m_tree.SetItemData(item, reinterpret_cast<DWORD_PTR>(*i));
+			}
+		}
+
+		void ClosePages()
+		{
+			PAGEPTRLIST::iterator i;
+			for(i = m_Pages.begin(); i != m_Pages.end(); ++i)
+			{
+				if((*i)->m_bCreated)
+				{
+					(*i)->ClosePage();
+				}
+			}
+		}
+
+		void SelectPage(COptionsPage* pPage)
+		{
+			CRect rcPage;
+			::GetWindowRect(GetDlgItem(IDC_PLACEHOLDER), rcPage);
+			ScreenToClient(rcPage);
+
+			if(m_pCurrentPage)
+			{
+				m_pCurrentPage->ShowPage(SW_HIDE);
+			}
+
+			if(!pPage->m_bCreated)
+			{
+				pPage->CreatePage(m_hWnd, rcPage, m_tree);
+				pPage->OnInitialise();
+				pPage->m_bCreated = true;
+			}
+			
+			pPage->ShowPage(SW_SHOW);
+			m_pCurrentPage = pPage;
+		}
+
+		HTREEITEM FindAtThisLevel(LPCTSTR title, HTREEITEM context)
+		{
+			HTREEITEM i = (context ? m_tree.GetChildItem(context) : m_tree.GetRootItem());
+
+			TCHAR buf[32];
+			TVITEM tvi;
+			tvi.mask = TVIF_TEXT;
+			tvi.pszText = buf;
+			tvi.cchTextMax = 30;
+			
+			while(i)
+			{
+				tvi.hItem = i;
+				m_tree.GetItem(&tvi);
+
+				if(_tcscmp(buf, title) == 0)
+					break;
+
+				i = m_tree.GetNextSiblingItem(i);
+			}
+
+			return i;
+		}
+
+		HTREEITEM AddTreeEntry(LPCTSTR title, HTREEITEM context)
+		{
+			HTREEITEM i = FindAtThisLevel(title, context);
+
+			if(!i)
+			{
+				i = m_tree.InsertItem(title, context, NULL);
+				if(context)
+					m_tree.Expand(context, TVE_EXPAND);
+				m_tree.SetItemData(i, NULL);
+			}
+
+			return i;
+		}
+
+
+		LRESULT OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+		{
+			LPNMTREEVIEW pN = reinterpret_cast<LPNMTREEVIEW>(pnmh);
+			if(pnmh->code == TVN_SELCHANGED)
+			{
+				COptionsPage* pPage = reinterpret_cast<COptionsPage*>(m_tree.GetItemData(pN->itemNew.hItem));
+				if(pPage)
+					SelectPage(pPage);
+			}
+
+			return 0;
+		}
+
+	protected:
+		PAGEPTRLIST		m_Pages;
+		COptionsPage*	m_pCurrentPage;
+		CTreeViewCtrl	m_tree;
+};
+
+#endif

@@ -9,9 +9,10 @@
  *
  * Classes in this file:
  *		CContainedPropSheet	- Create a propsheet as a child window.
- *		CMRUList			- "Most Recently Used" list container
+ *		CMRUList			- "Most Recently Used" list container.
  *		CMRUMenu			- "Most Recently Used" menu.
- *		CDropDownButton		- XP Themes friendly drop-down arrow button
+ *		CDropDownButton		- XP Themes friendly drop-down arrow button.
+ *		CNumberCombo		- ComboBox derivative simplifying number display.
  */
 
 #ifndef pnutils_h__included
@@ -390,6 +391,64 @@ class CDropDownButton : public CWindowImpl <CDropDownButton>,  public CThemeImpl
 			dc .SelectBrush (hbrOld);
 			dc .SelectPen (hpenOld);
 			return;
+		}
+};
+
+/**
+ * @class CNumberComboBox
+ * @author Simon Steele
+ * @brief A simple class to store numbers in a combobox, with support for sorting.
+ */
+class CNumberCombo : public CComboBox
+{
+	public:
+		void Add(int n)
+		{
+			_itot(n, buf, 10);
+			InternalAdd(n, buf);
+		}
+
+		void AddSorted(int n)
+		{
+			_itot(n, buf, 10);
+			InternalAdd(n, buf, GetInsertPos(n));
+		}
+
+		void Select(int n)
+		{
+			_itot(n, buf, 10);
+
+			if(SelectString(0, buf) == CB_ERR)
+				SetCurSel(InternalAdd(n, buf, GetInsertPos(n)));
+		}
+
+		int GetSelection()
+		{
+			int i = GetCurSel();
+			return GetItemData(i);			
+		}
+
+	protected:
+		TCHAR buf[10];
+		inline int InternalAdd(int n, LPCTSTR s, int index = -1)
+		{
+			int i = InsertString(index, s);
+			SetItemData(i, n);
+			return i;
+		}
+
+		inline int GetInsertPos(int n)
+		{
+			int count = GetCount();
+			int data;
+			for(int i = 0; i < count; i++)
+			{
+				data = GetItemData(i);
+				if(n < data)
+					return i;
+			}
+			
+			return -1;
 		}
 };
 

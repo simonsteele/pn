@@ -174,180 +174,6 @@ int CGotoDialog::GetLineNo()
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// COptionsDialog
-//////////////////////////////////////////////////////////////////////////////
-
-COptionsDialog::COptionsDialog()
-{
-	m_pCurrentPage = NULL;
-}
-
-BOOL COptionsDialog::EndDialog(int nRetCode)
-{
-	ClosePages();
-	return baseClass::EndDialog(nRetCode);
-}
-
-LRESULT COptionsDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	PAGEPTRLIST::iterator i;
-
-	for(i = m_Pages.begin(); i != m_Pages.end(); ++i)
-	{
-		(*i)->OnOK();
-	}
-
-	EndDialog(wID);
-
-	return TRUE;
-}
-
-LRESULT COptionsDialog::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	PAGEPTRLIST::iterator i;
-
-	for(i = m_Pages.begin(); i != m_Pages.end(); ++i)
-	{
-		(*i)->OnCancel();
-	}
-
-	EndDialog(wID);
-	
-	return TRUE;
-}
-
-LRESULT COptionsDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	m_tree.Attach(GetDlgItem(IDC_TREE));
-
-	InitialisePages();
-		
-	CenterWindow(GetParent());
-	
-	return TRUE;
-}
-
-void COptionsDialog::AddPage(COptionsPage* pPage)
-{
-	m_Pages.insert(m_Pages.end(), pPage);
-}
-
-HTREEITEM COptionsDialog::FindAtThisLevel(LPCTSTR title, HTREEITEM context)
-{
-	HTREEITEM i = (context ? m_tree.GetChildItem(context) : m_tree.GetRootItem());
-
-	TCHAR buf[32];
-	TVITEM tvi;
-	tvi.mask = TVIF_TEXT;
-	tvi.pszText = buf;
-	tvi.cchTextMax = 30;
-	
-	while(i)
-	{
-		tvi.hItem = i;
-		m_tree.GetItem(&tvi);
-
-		if(_tcscmp(buf, title) == 0)
-			break;
-
-		i = m_tree.GetNextSiblingItem(i);
-	}
-
-	return i;
-}
-
-HTREEITEM COptionsDialog::AddTreeEntry(LPCTSTR title, HTREEITEM context)
-{
-	HTREEITEM i = FindAtThisLevel(title, context);
-
-	if(!i)
-	{
-		i = m_tree.InsertItem(title, context, NULL);
-		if(context)
-			m_tree.Expand(context, TVE_EXPAND);
-		m_tree.SetItemData(i, NULL);
-	}
-
-	return i;
-}
-
-void COptionsDialog::InitialisePages()
-{
-	TCHAR buf[200];
-	PAGEPTRLIST::iterator i;
-
-	for(i = m_Pages.begin(); i != m_Pages.end(); ++i)
-	{
-		LPCTSTR treeloc = (*i)->GetTreePosition();
-		PNASSERT(_tcslen(treeloc) < 200);
-		_tcscpy(buf, treeloc);
-
-		HTREEITEM ti = NULL;
-		TCHAR* pSlash = NULL;
-		TCHAR* pNext = buf;
-
-		while((pSlash = _tcschr(pNext, _T('\\'))) != NULL)
-		{
-			*pSlash = NULL;
-			ti = AddTreeEntry(pNext, ti);
-			*pSlash = '\\';
-			pNext = pSlash + 1;
-		}
-		// Add Tree Item
-		HTREEITEM item = AddTreeEntry(pNext, ti);
-		m_tree.SetItemData(item, reinterpret_cast<DWORD_PTR>(*i));
-	}
-}
-
-void COptionsDialog::ClosePages()
-{
-	PAGEPTRLIST::iterator i;
-	for(i = m_Pages.begin(); i != m_Pages.end(); ++i)
-	{
-		if((*i)->m_bCreated)
-		{
-			(*i)->ClosePage();
-		}
-	}
-}
-
-void COptionsDialog::SelectPage(COptionsPage* pPage)
-{
-	CRect rcPage;
-	::GetWindowRect(GetDlgItem(IDC_PLACEHOLDER), rcPage);
-	ScreenToClient(rcPage);
-
-	if(m_pCurrentPage)
-	{
-		m_pCurrentPage->ShowPage(SW_HIDE);
-	}
-
-	if(!pPage->m_bCreated)
-	{
-		pPage->CreatePage(m_hWnd, rcPage, m_tree);
-		pPage->OnInitialise();
-		pPage->m_bCreated = true;
-	}
-	
-	pPage->ShowPage(SW_SHOW);
-	m_pCurrentPage = pPage;
-}
-
-LRESULT COptionsDialog::OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
-{
-	LPNMTREEVIEW pN = reinterpret_cast<LPNMTREEVIEW>(pnmh);
-	if(pnmh->code == TVN_SELCHANGED)
-	{
-		COptionsPage* pPage = reinterpret_cast<COptionsPage*>(m_tree.GetItemData(pN->itemNew.hItem));
-		if(pPage)
-			SelectPage(pPage);
-	}
-
-	return 0;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////
 // CStyleDisplay
 //////////////////////////////////////////////////////////////////////////////
 
@@ -435,11 +261,9 @@ LRESULT CStyleDisplay::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	CRect rc;
 	GetClientRect(rc);
 
-	HBRUSH light = ::CreateSolidBrush(::GetSysColor(COLOR_3DSHADOW));
-
 	dc.FillRect(rc, (HBRUSH)::GetStockObject(WHITE_BRUSH));
-	dc.FrameRect(rc, light);
 
+	// Draw in the example text.
 	if(m_Font)
 	{
 		HFONT hOldFont = dc.SelectFont(m_Font->m_hFont);
@@ -449,6 +273,9 @@ LRESULT CStyleDisplay::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 		dc.SelectFont(hOldFont);
 	}
 
+	// Draw a light border around the control.
+	HBRUSH light = ::CreateSolidBrush(::GetSysColor(COLOR_3DSHADOW));
+	dc.FrameRect(rc, light);
 	::DeleteObject(light);
 	
 	EndPaint(&ps);
@@ -531,22 +358,19 @@ LRESULT CStylesTabPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	ScreenToClient(rc);
 	m_sd.Create(m_hWnd, rc, _T("Style Display"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS);
 
-	//IDC_FORE_PLACEHOLDER, IDC_BACK_PLACEHOLDER
-	//IDC_STYLE_FONTCOMBO, IDC_STYLE_SIZECOMBO
-
 	m_FontCombo.SubclassWindow(GetDlgItem(IDC_STYLE_FONTCOMBO));
 	m_SizeCombo.Attach(GetDlgItem(IDC_STYLE_SIZECOMBO));
 
 	m_fore.SubclassWindow(GetDlgItem(IDC_STYLE_FOREBUTTON));
 	m_back.SubclassWindow(GetDlgItem(IDC_STYLE_BACKBUTTON));
 	
-	AddFontSize(6, _T("6"));
-	AddFontSize(8, _T("8"));
-	AddFontSize(10, _T("10"));
-	AddFontSize(12, _T("12"));
-	AddFontSize(14, _T("14"));
-	AddFontSize(16, _T("16"));
-	AddFontSize(18, _T("18"));
+	m_SizeCombo.Add(6);
+	m_SizeCombo.Add(8);
+	m_SizeCombo.Add(10);
+	m_SizeCombo.Add(12);
+	m_SizeCombo.Add(14);
+	m_SizeCombo.Add(16);
+	m_SizeCombo.Add(18);
 
 	m_bold.Attach(GetDlgItem(IDC_STYLE_BOLDCHECK));
 	m_italic.Attach(GetDlgItem(IDC_STYLE_ITALICCHECK));
@@ -589,8 +413,7 @@ LRESULT CStylesTabPage::OnSizeChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 {
 	if(m_pStyle)
 	{
-		int i = m_SizeCombo.GetCurSel();
-		i = m_SizeCombo.GetItemData(i);
+		int i = m_SizeCombo.GetSelection();
 		m_sd.SetSize(i);
 		m_Style.FontSize = i;
 	}
@@ -606,6 +429,7 @@ LRESULT CStylesTabPage::OnTreeSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 
 void CStylesTabPage::UpdateSel()
 {
+	// If we're not in the middle of changing scheme...
 	if(!m_bChanging)
 	{
 		SetItem();
@@ -635,13 +459,7 @@ void CStylesTabPage::UpdateSel()
 					m_back.SetColor(m_Style.BackColor);
 
 					m_FontCombo.SelectString(0, m_Style.FontName.c_str());
-					TCHAR buf[10];
-					_itot(m_Style.FontSize, buf, 10);
-					if (m_SizeCombo.SelectString(0, buf) == CB_ERR)
-					{
-						int idx = m_SizeCombo.AddString(buf);
-						m_SizeCombo.SetCurSel(idx);
-					}
+					m_SizeCombo.Select(m_Style.FontSize);
 				}
 			}
 			else
@@ -699,12 +517,6 @@ LRESULT CStylesTabPage::OnEOLFilledClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	return 0;
 }
 
-void CStylesTabPage::AddFontSize(int size, LPCTSTR sizestr)
-{
-	int idx = m_SizeCombo.AddString(sizestr);
-	m_SizeCombo.SetItemData(idx, size);
-}
-
 void CStylesTabPage::SetItem()
 {
 	if(m_pStyle)
@@ -713,6 +525,9 @@ void CStylesTabPage::SetItem()
 
 		if(m_Style != *m_pStyle)
 		{
+			/* The style the user has configured and the original definition version
+			   do not match. We need to store the new style in the custom style
+			   store. */
 			StyleDetails* existing = m_pScheme->m_customs.GetStyle(m_Style.Key);
 			if(existing)
 			{
@@ -724,6 +539,12 @@ void CStylesTabPage::SetItem()
 				*existing = m_Style;
 				m_pScheme->m_customs.AddStyle(existing);
 			}
+		}
+		else
+		{
+			/* If we have set the style to be like the original, then
+			   we can safely remove any custom styles. */
+			m_pScheme->m_customs.RemoveStyle(m_Style.Key);
 		}
 	}
 }
@@ -761,21 +582,110 @@ LRESULT CStylesTabPage::OnResetAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 // COptionsPageStyle
 //////////////////////////////////////////////////////////////////////////////
 
-void COptionsPageStyle::OnOK()
+LRESULT COptionsPageStyle::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	::OutputDebugString(_T("COptionsPageStyle::OnOK\n"));
-}
+	m_FontCombo.SubclassWindow(GetDlgItem(IDC_FONT_COMBO));
+	m_SizeCombo.Attach(GetDlgItem(IDC_FONTSIZE_COMBO));
 
-void COptionsPageStyle::OnCancel()
-{
-	::OutputDebugString(_T("COptionsPageStyle::OnCancel\n"));
+	m_fore.SubclassWindow(GetDlgItem(IDC_STYLE_FOREBUTTON));
+	m_back.SubclassWindow(GetDlgItem(IDC_STYLE_BACKBUTTON));
+
+	m_bold.Attach(GetDlgItem(IDC_STYLE_BOLDCHECK));
+	m_italic.Attach(GetDlgItem(IDC_STYLE_ITALICCHECK));
+	m_underline.Attach(GetDlgItem(IDC_STYLE_UNDERLINECHECK));
+	
+	m_SizeCombo.Add(6);
+	m_SizeCombo.Add(8);
+	m_SizeCombo.Add(10);
+	m_SizeCombo.Add(12);
+	m_SizeCombo.Add(14);
+	m_SizeCombo.Add(16);
+	m_SizeCombo.Add(18);
+
+	return 0;
 }
 
 void COptionsPageStyle::OnInitialise()
 {
-	::OutputDebugString(_T("COptionsPageStyle::OnInitialise\n"));
-	m_FontCombo.SelectString(0, _T("Lucida Console"));
-	m_SizeCombo.SelectString(0, _T("10"));
+	if(m_pSchemes)
+	{
+		StyleDetails* pStyle = m_pSchemes->GetDefaultStyle();
+		
+		m_FontCombo.SelectString(0, pStyle->FontName.c_str());
+		m_SizeCombo.Select(pStyle->FontSize);
+		
+		m_fore.SetColor(pStyle->ForeColor);
+		m_fore.SetDefaultColor(RGB(0,0,0));
+		
+		m_back.SetColor(pStyle->BackColor);
+		m_back.SetDefaultColor(RGB(255,255,255));
+
+		m_bold.SetCheck(pStyle->Bold ? BST_CHECKED : BST_UNCHECKED);
+		m_italic.SetCheck(pStyle->Italic ? BST_CHECKED : BST_UNCHECKED);
+		m_underline.SetCheck(pStyle->Underline ? BST_CHECKED : BST_UNCHECKED);
+	}
+}
+
+void COptionsPageStyle::OnOK()
+{
+	if(m_bCreated)
+	{
+		bool bIsCustom;
+		StyleDetails* pDefault = GetDefault(bIsCustom);
+
+		StyleDetails* pS = new StyleDetails;
+		*pS = *pDefault;
+		
+		int i = m_FontCombo.GetCurSel();
+		CString str;
+		m_FontCombo.GetLBText(i, str);
+
+		pS->FontName = str;
+		pS->FontSize = m_SizeCombo.GetSelection();
+		pS->ForeColor = m_fore.GetColor();
+		pS->BackColor = m_back.GetColor();
+		pS->Bold = (m_bold.GetCheck() == BST_CHECKED);
+		pS->Italic = (m_italic.GetCheck() == BST_CHECKED);
+		pS->Underline = (m_underline.GetCheck() == BST_CHECKED);
+
+		if(*pS != *pDefault)
+		{
+			if(bIsCustom)
+			{
+				StyleDetails* pOrig = GetDefault(bIsCustom, false);
+				if(*pOrig == *pS)
+				{
+					// The user has reverted to the original style.
+					SDNM_IT i = m_pSchemes->m_customclasses.find(CString(_T("default")));
+					if(i != m_pSchemes->m_customclasses.end())
+					{
+						StyleDetails* pStemp = (*i).second;
+						m_pSchemes->m_customclasses.erase(i);
+						delete pStemp;
+					}
+				}
+				else
+				{
+					// We just save the details into the original StyleDetails.
+					*pDefault = *pS;
+				}
+
+				/* If there was already a custom version of this style then one
+				way or another, there is no need for our temporary one any more. */
+				delete pS;
+			}
+			else
+			{
+				// There isn't already a custom style for this class, so we add one.
+				m_pSchemes->m_customclasses.insert(m_pSchemes->m_customclasses.end(), 
+					STYLEDETAILS_NAMEMAP::value_type(CString(_T("default")), pS));
+			}
+		}
+	}
+}
+
+void COptionsPageStyle::OnCancel()
+{
 }
 
 LPCTSTR COptionsPageStyle::GetTreePosition()
@@ -783,21 +693,24 @@ LPCTSTR COptionsPageStyle::GetTreePosition()
 	return _T("Style");
 }
 
-LRESULT COptionsPageStyle::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+StyleDetails* COptionsPageStyle::GetDefault(bool& bIsCustom, bool bAllowCustom)
 {
-	m_FontCombo.SubclassWindow(GetDlgItem(IDC_FONT_COMBO));
-	m_SizeCombo = GetDlgItem(IDC_FONTSIZE_COMBO);
-	
-	m_SizeCombo.AddString(_T("6"));
-	m_SizeCombo.AddString(_T("8"));
-	m_SizeCombo.AddString(_T("10"));
-	m_SizeCombo.AddString(_T("12"));
-	m_SizeCombo.AddString(_T("14"));
-	m_SizeCombo.AddString(_T("16"));
-	m_SizeCombo.AddString(_T("18"));
+	SDNM_IT i;
 
-	return 0;
+	if(bAllowCustom)
+	{
+		i = m_pSchemes->m_customclasses.find(CString(_T("default")));
+		if(i != m_pSchemes->m_customclasses.end())
+		{
+			bIsCustom = true;
+			return (*i).second;
+		}
+	}
+	
+	bIsCustom = false;
+	return m_pSchemes->GetDefaultStyle();
 }
+
 
 //////////////////////////////////////////////////////////////////////////////
 // COptionsPageSchemes

@@ -250,6 +250,11 @@ CSchemeLoaderState::~CSchemeLoaderState()
 	{
 		delete (*j).second;
 	}
+
+	for(SDNM_IT k = m_CustomClasses.begin(); k != m_CustomClasses.end(); ++k)
+	{
+		delete (*k).second;
+	}
 }
 
 ////////////////////////////////////////////////////////////
@@ -338,9 +343,17 @@ void UserSettingsParser::startElement(void *userData, LPCTSTR name, XMLAttribute
 	{
 		processSchemeElement(pState, name, atts);
 	}
+	else if(state == US_CLASSES)
+	{
+		processClassElement(pState, name, atts);
+	}
 	else if(_tcscmp(name, _T("schemes")) == 0)
 	{
 		pState->m_State = US_SCHEMES;
+	}
+	else if(_tcscmp(name, _T("override-classes")) == 0)
+	{
+		pState->m_State = US_CLASSES;
 	}
 }
 
@@ -388,10 +401,91 @@ void UserSettingsParser::endElement(void *userData, LPCTSTR name)
 	{
 		pState->m_State = US_SCHEME;
 	}
+	else if(state == US_CLASSES && (_tcscmp(name, _T("override-classes")) == 0))
+	{
+		pState->m_State = 0;
+	}
 
 	pState->m_csCData = _T("");
 }
 
+void UserSettingsParser::DefineStyle(StyleDetails* pStyle, XMLAttributes atts)
+{
+	int c = atts.getCount();
+			
+	for(int i = 0; i < c; i++)
+	{
+		LPCTSTR aname = atts.getName(i);
+	
+		if(_tcscmp(aname, _T("key")) == 0)
+		{
+			pStyle->Key = _ttoi(atts.getValue(i));
+		}
+		if(_tcscmp(aname, _T("font")) == 0)
+		{
+			pStyle->FontName = atts.getValue(i);
+			pStyle->values |= edvFontName;
+		}
+		else if(_tcscmp(aname, _T("size")) == 0)
+		{
+			pStyle->FontSize = _ttoi(atts.getValue(i));
+			pStyle->values |= edvFontSize;
+		}
+		else if(_tcscmp(aname, _T("fore")) == 0)
+		{
+			pStyle->ForeColor = PNStringToColor(atts.getValue(i));
+			pStyle->values |= edvForeColor;
+		}
+		else if(_tcscmp(aname, _T("back")) == 0)
+		{
+			pStyle->BackColor = PNStringToColor(atts.getValue(i));
+			pStyle->values |= edvBackColor;
+		}
+		else if(_tcscmp(aname, _T("bold")) == 0)
+		{
+			pStyle->Bold = PNStringToBool(atts.getValue(i));
+			pStyle->values |= edvBold;
+		}
+		else if(_tcscmp(aname, _T("italic")) == 0)
+		{
+			pStyle->Italic = PNStringToBool(atts.getValue(i));
+			pStyle->values |= edvItalic;
+		}
+		else if(_tcscmp(aname, _T("underline")) == 0)
+		{
+			pStyle->Underline = PNStringToBool(atts.getValue(i));
+			pStyle->values |= edvUnderline;
+		}
+		else if(_tcscmp(aname, _T("eolfilled")) == 0)
+		{
+			pStyle->EOLFilled = PNStringToBool(atts.getValue(i));
+			pStyle->values |= edvEOLFilled;
+		}
+		else if(_tcscmp(aname, _T("class")) == 0)
+		{
+			pStyle->classname = atts.getValue(i);
+			pStyle->values |= edvClass;
+		}
+		else if(_tcscmp(aname, _T("name")) == 0)
+		{
+			pStyle->name = atts.getValue(i);
+			//pStyle->values |= edvName;
+		}
+			
+	}
+}
+
+void UserSettingsParser::processClassElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts)
+{
+	if(_tcscmp(name, _T("style-class")) == 0)
+	{
+		StyleDetails* pStyle = new StyleDetails;
+		DefineStyle(pStyle, atts);
+		
+		pState->m_CustomClasses.insert(pState->m_CustomClasses.end(), 
+			STYLEDETAILS_NAMEMAP::value_type(CString(pStyle->name.c_str()), pStyle));
+	}
+}
 
 void UserSettingsParser::processSchemeElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts)
 {
@@ -400,62 +494,7 @@ void UserSettingsParser::processSchemeElement(CSchemeLoaderState* pState, LPCTST
 		if(_tcscmp(name, _T("style")) == 0)
 		{
 			StyleDetails* pStyle = new StyleDetails;
-			int c = atts.getCount();
-			
-			for(int i = 0; i < c; i++)
-			{
-				LPCTSTR aname = atts.getName(i);
-			
-				if(_tcscmp(aname, _T("key")) == 0)
-				{
-					pStyle->Key = _ttoi(atts.getValue(i));
-				}
-				if(_tcscmp(aname, _T("font")) == 0)
-				{
-					pStyle->FontName = atts.getValue(i);
-					pStyle->values |= edvFontName;
-				}
-				else if(_tcscmp(aname, _T("size")) == 0)
-				{
-					pStyle->FontSize = _ttoi(atts.getValue(i));
-					pStyle->values |= edvFontSize;
-				}
-				else if(_tcscmp(aname, _T("fore")) == 0)
-				{
-					pStyle->ForeColor = PNStringToColor(atts.getValue(i));
-					pStyle->values |= edvForeColor;
-				}
-				else if(_tcscmp(aname, _T("back")) == 0)
-				{
-					pStyle->BackColor = PNStringToColor(atts.getValue(i));
-					pStyle->values |= edvBackColor;
-				}
-				else if(_tcscmp(aname, _T("bold")) == 0)
-				{
-					pStyle->Bold = PNStringToBool(atts.getValue(i));
-					pStyle->values |= edvBold;
-				}
-				else if(_tcscmp(aname, _T("italic")) == 0)
-				{
-					pStyle->Italic = PNStringToBool(atts.getValue(i));
-					pStyle->values |= edvItalic;
-				}
-				else if(_tcscmp(aname, _T("underline")) == 0)
-				{
-					pStyle->Underline = PNStringToBool(atts.getValue(i));
-					pStyle->values |= edvUnderline;
-				}
-				else if(_tcscmp(aname, _T("eolfilled")) == 0)
-				{
-					pStyle->EOLFilled = PNStringToBool(atts.getValue(i));
-					pStyle->values |= edvEOLFilled;
-				}
-				else if(_tcscmp(aname, _T("class")) == 0)
-				{
-					pStyle->classname = atts.getValue(i);
-					pStyle->values |= edvClass;
-				}
-			}
+			DefineStyle(pStyle, atts);
 
 			pScheme->m_Styles.push_back(pStyle);
 		}
@@ -810,7 +849,13 @@ void SchemeParser::processStyleClass(CSchemeLoaderState* pState, XMLAttributes& 
 
 		parseStyle(pState, atts, pStyle);
 
-		
+        StyleDetails* pCustom = NULL;
+		SDNM_IT found;
+		if(pState->m_CustomClasses.end() != (found = pState->m_CustomClasses.find(name)))
+		{
+			pCustom = (*found).second;
+			customiseStyle(pStyle, pCustom);
+		}
 	}
 }
 

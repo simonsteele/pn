@@ -151,11 +151,27 @@ SchemeConfigParser::~SchemeConfigParser()
 		delete (*i);
 	}
 	m_Schemes.clear();
+
+	for(SDNM_IT j = m_customclasses.begin(); j != m_customclasses.end(); ++j)
+	{
+		delete (*j).second;
+	}
+	m_customclasses.clear();
 }
 
 LIST_SCHEMECONFIGS& SchemeConfigParser::GetSchemes()
 {
 	return m_Schemes;
+}
+
+STYLEDETAILS_NAMEMAP& SchemeConfigParser::GetStyleClasses()
+{
+	return m_LoadState.m_StyleClasses;
+}
+
+StyleDetails* SchemeConfigParser::GetDefaultStyle()
+{
+	return &m_LoadState.m_Default;
 }
 
 void SchemeConfigParser::LoadConfig(LPCTSTR path, LPCTSTR compiledpath)
@@ -180,8 +196,11 @@ void SchemeConfigParser::SaveConfig()
 #define USERSETTINGS_SCHEME_END		"\t\t</scheme>\n"
 #define USERSETTINGS_STYLES_START	"\t\t\t<override-styles>\n"
 #define USERSETTINGS_STYLES_END		"\t\t\t</override-styles>\n"
+#define USERSETTINGS_CLASSES_START	"\t<override-classes>\n"
+#define USERSETTINGS_CLASSES_END	"\t</override-classes>\n"
 
 #define USERSETTINGS_STYLE_START	_T("\t\t\t\t<style key=\"%d\" ")
+#define USERSETTINGS_CLASS_START	_T("\t\t<style-class name=\"%s\" ")
 #define USERSETTINGS_STYLE_FN		_T("font=\"%s\" ")
 #define USERSETTINGS_STYLE_FS		_T("size=\"%d\" ")
 #define USERSETTINGS_STYLE_FC		_T("fore")
@@ -210,13 +229,21 @@ void SchemeConfigParser::AddColourParam(CString& buf, LPCTSTR name, COLORREF col
 	buf += colbuf;
 }
 
-void SchemeConfigParser::WriteStyle(CFile& file, StyleDetails& style)
+void SchemeConfigParser::WriteStyle(CFile& file, StyleDetails& style, bool bIsClass)
 {
 	USES_CONVERSION;
 
 	CString stylestr;
 	CString tempstr;
-	stylestr.Format(USERSETTINGS_STYLE_START, style.Key);
+
+	if(bIsClass)
+	{
+		stylestr.Format(USERSETTINGS_CLASS_START, A2CT(style.name.c_str()));
+	}
+	else
+	{
+		stylestr.Format(USERSETTINGS_STYLE_START, style.Key);
+	}
 	
 	if(style.values & edvFontName)
 	{
@@ -247,7 +274,7 @@ void SchemeConfigParser::WriteStyle(CFile& file, StyleDetails& style)
 		AddBoolParam(stylestr, USERSETTINGS_STYLE_SE, style.EOLFilled);
 
 	// @todo
-	if(style.values & edvClass)
+	if(style.values & edvClass && !bIsClass)
 	{
 		tempstr.Format(USERSETTINGS_STYLE_CL, A2CT(style.classname.c_str()));
 		stylestr += tempstr;
@@ -268,43 +295,79 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 
 	// Write file header, and begin Schemes section.
 	file.Write(USERSETTINGS_START, strlen(USERSETTINGS_START));
-	file.Write(USERSETTINGS_SCHEMES_START, strlen(USERSETTINGS_SCHEMES_START));
 
-	for(SCF_IT i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
+	// Style Classes
+	if(m_customclasses.size() != 0)
 	{
-		// Scheme
-		if((*i)->m_customs.m_Styles.size() != 0)
+        file.Write(USERSETTINGS_CLASSES_START, strlen(USERSETTINGS_CLASSES_START));
+
+		ctcString name;
+		for(SDNM_IT j = m_customclasses.begin(); j != m_customclasses.end(); ++j)
 		{
-			s.Format(USERSETTINGS_SCHEME_START, (LPCTSTR)(*i)->m_Name);
-			const char* pS = T2CA((LPCTSTR)s);
-			file.Write((void*)pS, strlen(pS));
-			
-			// Styles
-			file.Write(USERSETTINGS_STYLES_START, strlen(USERSETTINGS_STYLES_START));
-			for(SL_IT j = (*i)->m_customs.m_Styles.begin();
-				j != (*i)->m_customs.m_Styles.end();
-				++j)
+			name = (*j).second->name;
+			if(name == _T("default"))
 			{
-				StyleDetails* pOriginal = (*i)->FindStyle( (*j)->Key );
-				if(pOriginal)
+				(*j).second->compareTo(*this->GetDefaultStyle());
+			}
+			else
+			{
+				SDNM_IT origit = GetStyleClasses().find(CString(name.c_str()));
+				if(origit != GetStyleClasses().end())
 				{
-					(*j)->compareTo(*pOriginal);
-					WriteStyle(file, *(*j));
+					StyleDetails& pStyle = * (*origit).second;
+					(*j).second->compareTo(pStyle);
 				}
 				else
-				{
-					ATLTRACE(_T("PN2 Warning: Custom style with no original...\n"));
-				}
+					(*j).second->values = ~ 0;
 			}
-			file.Write(USERSETTINGS_STYLES_END, strlen(USERSETTINGS_STYLES_END));
-	        		
-			// End of Scheme
-			file.Write(USERSETTINGS_SCHEME_END, strlen(USERSETTINGS_SCHEME_END));
+
+			WriteStyle(file, * (*j).second, true);
 		}
+
+		file.Write(USERSETTINGS_CLASSES_END, strlen(USERSETTINGS_CLASSES_END));
 	}
 
-	// End of Schemes...
-	file.Write(USERSETTINGS_SCHEMES_END, strlen(USERSETTINGS_SCHEMES_END));
+	// Schemes
+	if(m_Schemes.size() != 0)
+	{
+		file.Write(USERSETTINGS_SCHEMES_START, strlen(USERSETTINGS_SCHEMES_START));
+
+		for(SCF_IT i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
+		{
+			// Scheme
+			if((*i)->m_customs.m_Styles.size() != 0)
+			{
+				s.Format(USERSETTINGS_SCHEME_START, (LPCTSTR)(*i)->m_Name);
+				const char* pS = T2CA((LPCTSTR)s);
+				file.Write((void*)pS, strlen(pS));
+
+				// Styles
+				file.Write(USERSETTINGS_STYLES_START, strlen(USERSETTINGS_STYLES_START));
+				for(SL_IT j = (*i)->m_customs.m_Styles.begin();
+					j != (*i)->m_customs.m_Styles.end();
+					++j)
+				{
+					StyleDetails* pOriginal = (*i)->FindStyle( (*j)->Key );
+					if(pOriginal)
+					{
+						(*j)->compareTo(*pOriginal);
+						WriteStyle(file, *(*j));
+					}
+					else
+					{
+						ATLTRACE(_T("PN2 Warning: Custom style with no original...\n"));
+					}
+				}
+				file.Write(USERSETTINGS_STYLES_END, strlen(USERSETTINGS_STYLES_END));
+		        		
+				// End of Scheme
+				file.Write(USERSETTINGS_SCHEME_END, strlen(USERSETTINGS_SCHEME_END));
+			}
+		}
+
+		// End of Schemes...
+		file.Write(USERSETTINGS_SCHEMES_END, strlen(USERSETTINGS_SCHEMES_END));
+	}
 	
 	// End of file.
 	file.Write(USERSETTINGS_END, strlen(USERSETTINGS_END));

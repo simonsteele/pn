@@ -90,6 +90,8 @@ typedef enum {edvFontName = 0x0001,	edvFontSize = 0x0002, edvForeColor = 0x0004,
 #define US_KEYWORD_OVERRIDES	3
 #define US_STYLE_OVERRIDES		4
 #define US_KEYWORDS				5
+#define US_CLASSES				6
+#define US_CLASS				7
 
 // File Content Defines
 #define CompileVersion 0x03
@@ -300,6 +302,7 @@ class CSchemeLoaderState
 		StyleDetails			m_Default;
 
 		CUSTOMISED_NAMEMAP		m_CustomSchemes;
+		STYLEDETAILS_NAMEMAP	m_CustomClasses;
 		CustomisedScheme*		m_pCustom;
 
 		XMLParser*				m_pParser;
@@ -372,6 +375,9 @@ class UserSettingsParser
 
 		void processScheme(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processSchemeElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts);
+		void processClassElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts);
+
+		void DefineStyle(StyleDetails* pStyle, XMLAttributes atts);
 };
 
 /**

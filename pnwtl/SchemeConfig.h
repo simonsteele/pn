@@ -58,7 +58,7 @@ class SchemeConfig : public CustomKeywordHolder, public CustomStyleHolder
 		CString m_Title;
 		int m_foldflags;
 
-		CustomStyleCollection m_customs;
+		CustomStyleCollection	m_customs;
 };
 
 typedef list<SchemeConfig*>	LIST_SCHEMECONFIGS;
@@ -74,12 +74,16 @@ class SchemeConfigParser : public SchemeParser
 		void LoadConfig(LPCTSTR path, LPCTSTR compiledpath);
 		void SaveConfig();
 
-		LIST_SCHEMECONFIGS& GetSchemes();
+		LIST_SCHEMECONFIGS&		GetSchemes();
+		STYLEDETAILS_NAMEMAP&	GetStyleClasses();
+		StyleDetails*			GetDefaultStyle();
+
+		STYLEDETAILS_NAMEMAP	m_customclasses;
 
 	protected:
 		void Sort();
 		void Save(LPCTSTR filename);
-		void WriteStyle(CFile& file, StyleDetails& style);
+		void WriteStyle(CFile& file, StyleDetails& style, bool bIsClass = false);
 
 		inline void AddBoolParam(CString& buf, LPCTSTR name, bool bVal);
 		inline void AddColourParam(CString& buf, LPCTSTR name, COLORREF colour);
