@@ -222,6 +222,7 @@ public:
 		{
 			DragQueryFile(hDrop, i, buf, MAX_PATH);
 			PNOpenFile(buf);
+			AddMRUEntry(buf);
 		}
 
 		DragFinish(hDrop);
