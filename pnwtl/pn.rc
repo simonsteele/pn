@@ -92,13 +92,13 @@ BEGIN
         END
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
     END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About pn...",                ID_APP_ABOUT
-    END
     POPUP "&Tools"
     BEGIN
         MENUITEM "&Options",                    ID_TOOLS_OPTIONS
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About pn...",                ID_APP_ABOUT
     END
 END
 
