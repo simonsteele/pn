@@ -30,4 +30,9 @@ libexpat.dll
 and / or
 libexpatw.dll (unicode)
 
+Additional Notes:
+=================
+
+SchemeConfig.cpp has a function which works only with the ATL in VC7. This will need fixing to provide a VC6 version too, although I'm not too worried for now. For now, it is #ifdefd away.
+
 Good Luck!

@@ -119,6 +119,10 @@ SOURCE=.\SchemeCompiler.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\SchemeConfig.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Schemes.cpp
 # End Source File
 # Begin Source File

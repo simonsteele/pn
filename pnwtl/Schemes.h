@@ -142,6 +142,7 @@ class CSchemeManager
 		void SetPath(LPCTSTR schemepath);
 		void SetCompiledPath(LPCTSTR compiledpath);
 
+		LPCTSTR GetPath(){return m_SchemePath;}
 		void GetPath(ctcString& csPath){if(m_SchemePath) csPath = m_SchemePath;}
 		LPCTSTR GetCompiledPath(){return m_CompiledPath;}
 		void GetCompiledPath(ctcString& csPath){if(m_CompiledPath) csPath = m_CompiledPath;}

@@ -293,31 +293,107 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 		CComboBox	m_SizeCombo;
 };
 
+#include "SchemeConfig.h"
+
+template <class T>
+class CTabbedDialogPageImpl : public CDialogImpl<T>
+{
+	BEGIN_MSG_MAP(CTabbedDialogPageImpl)
+		MESSAGE_HANDLER(WM_CTLCOLORDLG, OnCtlColor)
+	END_MSG_MAP()
+
+	LRESULT OnCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+		if((HWND)lParam == m_hWnd)
+		{
+			return reinterpret_cast<INT_PTR>(::GetStockObject(NULL_BRUSH));
+
+		}
+		return 0;
+	}
+};
+
+class CStylesTabDialog : public CTabbedDialogPageImpl<CStylesTabDialog>
+{
+	public:	
+		enum {IDD = IDD_TAB_STYLES};
+
+		BEGIN_MSG_MAP(CStylesTabDialog)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			CHAIN_MSG_MAP(CTabbedDialogPageImpl<CStylesTabDialog>)
+		END_MSG_MAP()
+
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+		{
+			CRect rc;
+			
+			m_tree.Attach(GetDlgItem(IDC_STYLES_TREE));
+
+			return 0;
+		}
+
+		void SetScheme(SchemeConfig* pScheme)
+		{
+			m_tree.DeleteAllItems();
+
+			CustomStyleCollection* pColl = static_cast<CustomStyleCollection*>(pScheme);
+			HTREEITEM insertunder = TVI_ROOT;
+			
+			while(pColl)
+			{
+				for(SL_IT i = pScheme->m_Styles.begin(); i != pScheme->m_Styles.end(); ++i)
+				{
+					HTREEITEM hi = m_tree.InsertItem((*i)->name.c_str(), insertunder, TVI_LAST);
+					m_tree.SetItemData(hi, reinterpret_cast<DWORD_PTR>(*i));
+				}
+				if(insertunder != TVI_ROOT)
+					m_tree.Expand(insertunder, TVE_EXPAND);
+
+				pColl = pColl->GetNext();
+				if(pColl)
+				{
+					insertunder = m_tree.InsertItem(pColl->GetName(), NULL, NULL);
+					m_tree.SetItemData(insertunder, reinterpret_cast<DWORD_PTR>(pColl));
+				}
+			}
+
+			m_tree.EnsureVisible(m_tree.GetRootItem());
+		}
+
+	protected:
+		CTreeViewCtrl	m_tree;
+};
+
 class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 {
 	public:
 		BEGIN_MSG_MAP(COptionsPageSchemes)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			COMMAND_HANDLER(IDC_SCHEMECOMBO, CBN_SELCHANGE, OnComboChange)
+			NOTIFY_HANDLER(IDC_TAB, TCN_SELCHANGE, OnTabChange)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 		enum {IDD = IDD_PAGE_SCHEMES};
 
+		COptionsPageSchemes(SchemeConfigParser* pSchemes) : COptionsPageImpl<COptionsPageSchemes>()
+		{
+			m_pSchemes = pSchemes;
+		}
 
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 		{
-			CTabCtrlT<CWindow> tabs;
-			tabs.Attach(GetDlgItem(IDC_TAB));
+			m_tabs.Attach(GetDlgItem(IDC_TAB));
 
 			TCITEM tci;
 			tci.mask = TCIF_TEXT | TCIF_IMAGE;
 
 			tci.pszText = _T("Styles");
 			tci.iImage = 0;
-			tabs.InsertItem(0, &tci);
+			m_tabs.InsertItem(0, &tci);
 			
 			tci.pszText = _T("Keywords");
 			tci.iImage = 1;
-			tabs.InsertItem(1, &tci);
+			m_tabs.InsertItem(1, &tci);
 
 			CWindow label;
 			CSize s;
@@ -333,23 +409,65 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 			rc.right = rc.left + s.cx;
 			label.SetWindowPos(HWND_TOP, &rc, 0);
 
-			CWindow combo;
 			CRect rcCombo;
 
-			combo.Attach(GetDlgItem(IDC_SCHEMECOMBO));
+			m_combo.Attach(GetDlgItem(IDC_SCHEMECOMBO));
 
-			combo.GetWindowRect(rcCombo);
+			m_combo.GetWindowRect(rcCombo);
 			ScreenToClient(rcCombo);
 			rcCombo.left = rc.right + 5;
-			combo.SetWindowPos(HWND_TOP, &rcCombo, 0);
+			m_combo.SetWindowPos(HWND_TOP, &rcCombo, 0);
 
+			m_stylestab.Create(m_tabs.m_hWnd);
+			m_tabs.GetWindowRect(rc);
+			m_tabs.ScreenToClient(rc);
+			m_tabs.AdjustRect(FALSE, rc);
+			m_stylestab.SetWindowPos(HWND_TOP, rc, SWP_SHOWWINDOW);
+			m_stylestab.ShowWindow(SW_SHOW);
 			return 0;
+		}
+
+		virtual void OnInitialise()
+		{
+			for(SCF_IT i = m_pSchemes->GetSchemes().begin(); i != m_pSchemes->GetSchemes().end(); ++i)
+			{
+				int index = m_combo.AddString((*i)->m_Title);
+				m_combo.SetItemDataPtr(index, (*i));
+			}
 		}
 
 		virtual LPCTSTR GetTreePosition()
 		{
 			return _T("Style\\Schemes");
 		}
+
+		LRESULT OnComboChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+		{
+			int i = m_combo.GetCurSel();
+			SchemeConfig* pScheme = static_cast<SchemeConfig*>(m_combo.GetItemDataPtr(i));
+			m_stylestab.SetScheme(pScheme);
+			return 0;
+		}
+
+		LRESULT OnTabChange(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+		{
+			int iTab = m_tabs.GetCurSel();
+			if(iTab == 0)
+			{
+				m_stylestab.ShowWindow(SW_SHOW);
+			}
+			else
+			{
+				m_stylestab.ShowWindow(SW_HIDE);
+			}
+			return 0;
+		}
+
+	protected:
+		CComboBox			m_combo;
+		CTabCtrlT<CWindow>	m_tabs;
+		SchemeConfigParser* m_pSchemes;
+		CStylesTabDialog	m_stylestab;
 };
 
 #endif

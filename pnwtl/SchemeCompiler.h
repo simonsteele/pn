@@ -129,6 +129,7 @@ class StyleDetails
 			EOLFilled = copy.EOLFilled;
 			values = copy.values;
 			classname = copy.classname;
+			name = copy.name;
 			return *this;
 		}
 
@@ -143,6 +144,7 @@ class StyleDetails
 		bool Underline;
 		bool EOLFilled;
 
+		std::string name;
 		std::string classname;
 		int values;
 };
@@ -157,60 +159,72 @@ struct CustomKeywordSet
 	CustomKeywordSet* pNext;
 };
 
-class CustomisedScheme
+class CustomKeywordHolder
 {
-public:
-	CustomisedScheme()
-	{
-		pKeywordSets = NULL;
-		pLast = NULL;
-	}
-
-	~CustomisedScheme()
-	{
-		CustomKeywordSet* pSet = pKeywordSets;
-		CustomKeywordSet* pDel;
-		while(pSet)
+	public:
+		CustomKeywordHolder()
 		{
-			pDel = pSet;
-			pSet = pSet->pNext;
-			if(pDel->pWords)
-				delete [] pDel->pWords;
-			delete pDel;
+			pKeywordSets = NULL;
+			pLast = NULL;
 		}
 
-		pKeywordSets = NULL;
+		~CustomKeywordHolder()
+		{
+			CustomKeywordSet* pSet = pKeywordSets;
+			CustomKeywordSet* pDel;
+			while(pSet)
+			{
+				pDel = pSet;
+				pSet = pSet->pNext;
+				if(pDel->pWords)
+					delete [] pDel->pWords;
+				delete pDel;
+			}
 
+			pKeywordSets = NULL;
+		}
+
+		void AddKeywordSet(CustomKeywordSet* pSet)
+		{
+			if(pLast)
+			{
+				pLast->pNext = pSet;
+				pLast = pSet;
+			}
+			else
+			{
+				pKeywordSets = pLast = pSet;
+			}
+			pLast->pNext = NULL;
+		}
+
+		CustomKeywordSet* FindKeywordSet(int key)
+		{
+			CustomKeywordSet* pSet = pKeywordSets;
+			while(pSet)
+			{
+				if(pSet->key == key)
+					break;
+				pSet = pSet->pNext;
+			}
+			return pSet;
+		}
+
+	protected:
+		CustomKeywordSet* pKeywordSets;
+		CustomKeywordSet* pLast;
+};
+
+class CustomisedScheme : public CustomKeywordHolder
+{
+public:
+	~CustomisedScheme()
+	{
 		for(SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
 		{
 			delete (*i);
 		}
-	}
-
-	void AddKeywordSet(CustomKeywordSet* pSet)
-	{
-		if(pLast)
-		{
-			pLast->pNext = pSet;
-			pLast = pSet;
-		}
-		else
-		{
-			pKeywordSets = pLast = pSet;
-		}
-		pLast->pNext = NULL;
-	}
-
-	CustomKeywordSet* FindKeywordSet(int key)
-	{
-		CustomKeywordSet* pSet = pKeywordSets;
-		while(pSet)
-		{
-			if(pSet->key == key)
-				break;
-			pSet = pSet->pNext;
-		}
-		return pSet;
+		m_Styles.clear();
 	}
 
 	StyleDetails* FindStyle(int key)
@@ -224,10 +238,6 @@ public:
 	}
 
 	STYLES_LIST	m_Styles;
-
-protected:
-	CustomKeywordSet* pKeywordSets;
-	CustomKeywordSet* pLast;
 };
 
 typedef map<CString, CustomisedScheme*> CUSTOMISED_NAMEMAP;
@@ -341,6 +351,7 @@ class SchemeParser
 		void processLanguageElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts);
 		void processLanguageKeywords(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processLanguageStyle(CSchemeLoaderState* pState, XMLAttributes& atts);
+		void processLanguageStyleGroup(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processStyleClass(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void sendStyle(StyleDetails* s, SchemeRecorder* compiler);
 		void parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, StyleDetails* pStyle);
@@ -352,7 +363,9 @@ class SchemeParser
 		virtual void onLexer(LPCTSTR name, int styleBits) = 0;
 		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags) = 0;
 		virtual void onLanguageEnd() = 0;
+		virtual void onStyleGroup(XMLAttributes& atts) = 0;
 		virtual void onStyle(StyleDetails* pStyle) = 0;
+		virtual void onStyleGroupEnd() = 0;
 		virtual void onKeywords(int key, LPCTSTR keywords) = 0;
 		virtual void onFile(LPCTSTR filename) = 0;
 };
@@ -373,7 +386,9 @@ class SchemeCompiler : public SchemeParser
 	protected:
 		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags);
 		virtual void onLanguageEnd();
+		virtual void onStyleGroup(XMLAttributes& atts){}
 		virtual void onStyle(StyleDetails* pStyle);
+		virtual void onStyleGroupEnd(){}
 		virtual void onFile(LPCTSTR filename);
 		virtual void onKeywords(int key, LPCTSTR keywords);
 		virtual void onLexer(LPCTSTR name, int styleBits);

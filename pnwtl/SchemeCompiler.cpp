@@ -246,9 +246,9 @@ CSchemeLoaderState::~CSchemeLoaderState()
 		delete (*i).second;
 	}
 
-	for(CNM_IT i = m_CustomSchemes.begin(); i != m_CustomSchemes.end(); ++i)
+	for(CNM_IT j = m_CustomSchemes.begin(); j != m_CustomSchemes.end(); ++j)
 	{
-		delete (*i).second;
+		delete (*j).second;
 	}
 }
 
@@ -678,19 +678,24 @@ void SchemeParser::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, S
 		valname = nm;
 
 		if(valname == _T("name"))
+		{
+			pStyle->name = t;
 			continue;
+		}
 
 		CSTRING_MAP::iterator it = pState->m_Globals.find(t);
 		if(it != pState->m_Globals.end())
 		{
 			t = (*it).second;
 		}
+#ifdef _DEBUG
 		else
 		{
 			CString todebug;
 			todebug.Format(_T("No match for: %s=%s\n"), nm, t);
 			OutputDebugString(todebug);
 		}
+#endif
 
 		if(valname == _T("fore"))
 		{
@@ -791,6 +796,11 @@ void SchemeParser::processStyleClass(CSchemeLoaderState* pState, XMLAttributes& 
 
 		
 	}
+}
+
+void SchemeParser::processLanguageStyleGroup(CSchemeLoaderState* pState, XMLAttributes& atts)
+{
+	onStyleGroup(atts);
 }
 
 void SchemeParser::processLanguageStyle(CSchemeLoaderState* pState, XMLAttributes& atts)
@@ -1060,6 +1070,10 @@ void SchemeParser::startElement(void *userData, LPCTSTR name, XMLAttributes& att
 	{
 		processLanguageElement(pState, name, atts);
 	}
+	else if(state == DOING_LANGUAGE_STYLES && _tcscmp(name, _T("group")) == 0)
+	{
+		processLanguageStyleGroup(pState, atts);
+	}
 	else if(state == DOING_LANGUAGE_STYLES)
 	{
 		processLanguageStyle(pState, atts);
@@ -1135,6 +1149,7 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 			{
 				global = (*it).second;
 			}
+#ifdef _DEBUG
 			else
 			{
 				CString todebug;
@@ -1144,7 +1159,7 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 
 			stattext.Format(_T("Added Global: %s = %s\r\n"), pS->m_csGName, global);
 			OutputDebugString(stattext);
-
+#endif
 			pS->m_Globals.insert(pS->m_Globals.end(), CSTRING_MAP::value_type(pS->m_csGName, global));
 		}
 
@@ -1172,8 +1187,10 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 
 			pS->m_Keywords.insert(pS->m_Keywords.end(), CSTRING_MAP::value_type(pS->m_csGName, pS->m_csCData));
 
+#ifdef _DEBUG
 			stattext.Format(_T("Added Keyword Class: %s\r\n"), pS->m_csGName);
 			OutputDebugString(stattext);
+#endif
 		}
 
 		pS->m_State = DOING_KEYWORDC;
@@ -1192,6 +1209,8 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 	{
 		if((_tcscmp(name, _T("use-keywords")) == 0) || (_tcscmp(name, _T("use-styles")) == 0))
 			pS->m_State = DOING_LANGUAGE_DETAILS;
+		else if(_tcscmp(name, _T("group")) == 0)
+			onStyleGroupEnd();
 	}
 	else if(state == DOING_KEYWORDCOMBINE)
 	{

@@ -115,108 +115,124 @@
 			<style name="Unquoted Values" key="19" fore="ff00ff" back="ffefff"/>
 			
 			<!-- SGML Tags -->
-			<style name="SGML Tags &lt;!...&gt;" key="21" fore="000080" back="efefff"/>
-			<style name="SGML Command" key="22" fore="000080" back="efefff" bold="true"/>
-			<style name="SGML 1st Param" key="23" fore="006600" back="efefff"/>
-			<style name="SGML double string" key="24" fore="006600" back="efefff"/>
-			<style name="SGML single string" key="25" fore="993300" back="efefff"/>
-			<style name="SGML error" key="26" fore="800000" back="ff6666"/>
-			<style name="SGML special (#xxxx type)" key="27" fore="3366ff" back="efefff"/>
-			<style name="SGML entity" key="28" fore="333333" back="efefff"/>
-			<style name="SGML comment" key="29" fore="808000" back="efefff"/>
-			<style name="SGML block" key="31" fore="000066" back="cccce0"/>
+			<group name="SGML" description="SGML Tags">
+				<style name="Tags &lt;!...&gt;" key="21" fore="000080" back="efefff"/>
+				<style name="Command" key="22" fore="000080" back="efefff" bold="true"/>
+				<style name="1st Param" key="23" fore="006600" back="efefff"/>
+				<style name="double string" key="24" fore="006600" back="efefff"/>
+				<style name="single string" key="25" fore="993300" back="efefff"/>
+				<style name="error" key="26" fore="800000" back="ff6666"/>
+				<style name="special (#xxxx type)" key="27" fore="3366ff" back="efefff"/>
+				<style name="entity" key="28" fore="333333" back="efefff"/>
+				<style name="comment" key="29" fore="808000" back="efefff"/>
+				<style name="block" key="31" fore="000066" back="cccce0"/>
+			</group>
 			
 			<!-- Embedded JavaScript -->			
-			<style name="JS Start" key="40" class="embeddedjs" fore="7f7f00"/>
-			<style name="JS Default" key="41" class="embeddedjs" fore="000000" bold="true" eolfilled="true"/>
-			<style name="JS Comment" key="42" class="embeddedjs" fore="colour.commentbox" eolfilled="true"/>
-			<style name="JS Line Comment" key="43" class="embeddedjs" fore="colour.commentline"/>
-			<style name="JS Doc comment" key="44" class="embeddedjs" fore="colour.commentdoc" bold="true" eolfilled="true"/>
-			<style name="JS Number" key="45" class="embeddedjs" fore="colour.number" />
-			<style name="JS Word" key="46" class="embeddedjs" fore="000000"/>
-			<style name="JS Keyword" key="47" class="embeddedjs" fore="colour.keyword" bold="true"/>
-			<style name="JS Double quoted string" key="48" class="embeddedjs" fore="colour.string"/>
-			<style name="JS Single quoted string" key="49" class="embeddedjs" fore="colour.string"/>
-			<style name="JS Symbols " key="50" class="embeddedjs" fore="colour.operator" bold="true"/>
-			<style name="JavaScript EOL" key="51" class="embeddedjs" back="bfbbb0" eolfilled="true"/>
-			<style name="JavaScript RegEx" key="52" class="embeddedjs" back="ffbbb0"/>
+			<group name="JavaScript" description="Embedded JavaScript">
+				<style name="Start" key="40" class="embeddedjs" fore="7f7f00"/>
+				<style name="Default" key="41" class="embeddedjs" fore="000000" bold="true" eolfilled="true"/>
+				<style name="Comment" key="42" class="embeddedjs" fore="colour.commentbox" eolfilled="true"/>
+				<style name="Line Comment" key="43" class="embeddedjs" fore="colour.commentline"/>
+				<style name="Doc comment" key="44" class="embeddedjs" fore="colour.commentdoc" bold="true" eolfilled="true"/>
+				<style name="Number" key="45" class="embeddedjs" fore="colour.number" />
+				<style name="Word" key="46" class="embeddedjs" fore="000000"/>
+				<style name="Keyword" key="47" class="embeddedjs" fore="colour.keyword" bold="true"/>
+				<style name="Double quoted string" key="48" class="embeddedjs" fore="colour.string"/>
+				<style name="Single quoted string" key="49" class="embeddedjs" fore="colour.string"/>
+				<style name="Symbols " key="50" class="embeddedjs" fore="colour.operator" bold="true"/>
+				<style name="EOL" key="51" class="embeddedjs" back="bfbbb0" eolfilled="true"/>
+				<style name="Regular Expression" key="52" class="embeddedjs" back="ffbbb0"/>
+			</group>
 			
 			<!-- ASP JavaScript -->
-			<style name="JS Start" key="55" class="aspjs" fore="7F7F00" />
-			<style name="JS Default" key="56" class="aspjs" eolfilled="true" bold="true"/>
-			<style name="JS Comment" key="57" class="aspjs" fore="007F00" eolfilled="true"/>
-			<style name="JS Line Comment" key="58" class="aspjs" fore="007F00"/>
-			<style name="JS Doc comment" key="59" class="aspjs" fore="7F7F7F" bold="true" eolfilled="true"/>
-			<style name="JS Number" key="60" class="aspjs" fore="007F7F"/>
-			<style name="JS Word" key="61" class="aspjs"/>
-			<style name="JS Keyword" key="62" class="aspjs" fore="00007F" bold="true"/>
-			<style name="JS Double quoted string" key="63" class="aspjs" fore="7F007F"/>
-			<style name="JS Single quoted string" key="64" class="aspjs" fore="7F007F"/>
-			<style name="JS Symbols" key="65" class="aspjs" bold="true"/>
-			<style name="JavaScript EOL" key="66" class="aspjs" back="BFBBB0" eolfilled="true"/>
-			<style name="JavaScript RegEx" key="67" class="aspjs" back="FFBBB0"/>
+			<group name="ASP JavaScript" description="JavaScript embedded within an ASP file.">
+				<style name="Start" key="55" class="aspjs" fore="7F7F00" />
+				<style name="Default" key="56" class="aspjs" eolfilled="true" bold="true"/>
+				<style name="Comment" key="57" class="aspjs" fore="007F00" eolfilled="true"/>
+				<style name="Line Comment" key="58" class="aspjs" fore="007F00"/>
+				<style name="Doc comment" key="59" class="aspjs" fore="7F7F7F" bold="true" eolfilled="true"/>
+				<style name="Number" key="60" class="aspjs" fore="007F7F"/>
+				<style name="Word" key="61" class="aspjs"/>
+				<style name="Keyword" key="62" class="aspjs" fore="00007F" bold="true"/>
+				<style name="Double quoted string" key="63" class="aspjs" fore="7F007F"/>
+				<style name="Single quoted string" key="64" class="aspjs" fore="7F007F"/>
+				<style name="Symbols" key="65" class="aspjs" bold="true"/>
+				<style name="EOL" key="66" class="aspjs" back="BFBBB0" eolfilled="true"/>
+				<style name="Regular Expression" key="67" class="aspjs" back="FFBBB0"/>
+			</group>
 			
 			<!-- Embedded VBS -->
-			<style name="Start" key="70" class="embeddedvbs"/>
-			<style name="Default" key="71" class="embeddedvbs" fore="000000"/>
-			<style name="Comment" key="72" class="embeddedvbs" font="font.comment" fore="008000"/>
-			<style name="Number" key="73" class="embeddedvbs" fore="008080"/>
-			<style name="KeyWord" key="74" class="embeddedvbs" fore="000080" bold="true"/>
-			<style name="String" key="75" class="embeddedvbs" fore="800080"/>
-			<style name="Identifier" key="76" class="embeddedvbs" fore="000080"/>
-			<style name="Unterminated string" key="77" class="embeddedvbs" back="7F7FFF" fore="000080"/>
+			<group name="VBScript" description="VBScript code in HTML documents">
+				<style name="Start" key="70" class="embeddedvbs"/>
+				<style name="Default" key="71" class="embeddedvbs" fore="000000"/>
+				<style name="Comment" key="72" class="embeddedvbs" font="font.comment" fore="008000"/>
+				<style name="Number" key="73" class="embeddedvbs" fore="008080"/>
+				<style name="KeyWord" key="74" class="embeddedvbs" fore="000080" bold="true"/>
+				<style name="String" key="75" class="embeddedvbs" fore="800080"/>
+				<style name="Identifier" key="76" class="embeddedvbs" fore="000080"/>
+				<style name="Unterminated string" key="77" class="embeddedvbs" back="7F7FFF" fore="000080"/>
+			</group>
 			
 			<!-- ASP VBS -->
-			<style name="Start" key="80" class="aspvbs"/>
-			<style name="Default" key="81" class="aspvbs" fore="000000"/>
-			<style name="Comment" key="82" class="aspvbs" font="font.comment" fore="008000"/>
-			<style name="Number" key="83" class="aspvbs" fore="008080"/>
-			<style name="KeyWord" key="84" class="aspvbs" fore="000080" bold="true"/>
-			<style name="String" key="85" class="aspvbs" fore="800080"/>
-			<style name="Identifier" key="86" class="aspvbs" fore="000080"/>
-			<style name="Unterminated string" key="87" class="aspvbs" back="7F7FBF" fore="000080"/>
+			<group name="ASP VBScript" description="VBScript code embedded within an ASP file.">
+				<style name="Start" key="80" class="aspvbs"/>
+				<style name="Default" key="81" class="aspvbs" fore="000000"/>
+				<style name="Comment" key="82" class="aspvbs" font="font.comment" fore="008000"/>
+				<style name="Number" key="83" class="aspvbs" fore="008080"/>
+				<style name="KeyWord" key="84" class="aspvbs" fore="000080" bold="true"/>
+				<style name="String" key="85" class="aspvbs" fore="800080"/>
+				<style name="Identifier" key="86" class="aspvbs" fore="000080"/>
+				<style name="Unterminated string" key="87" class="aspvbs" back="7F7FBF" fore="000080"/>
+			</group>
 			
 			<!-- Embedded Python -->
-			<style name="Embedded Python" key="90" class="embeddedpython" fore="808080"/>
-			<style name="Embedded Python" key="91" class="embeddedpython" fore="808080"/>
-			<style name="Comment" key="92" class="embeddedpython" font="font.comment" fore="007F00"/>
-			<style name="Number" key="93" class="embeddedpython" fore="007F7F"/>
-			<style name="String" key="94" class="embeddedpython" fore="7F007F" font="font.monospace"/>
-			<style name="Single quoted string" key="95" class="embeddedpython" fore="7F007F" font="font.monospace"/>
-			<style name="Keyword" key="96" class="embeddedpython" fore="00007F" bold="true"/>
-			<style name="Triple quotes" key="97" class="embeddedpython" fore="7F0000"/>
-			<style name="Triple double quotes" key="98" class="embeddedpython" fore="7F0000"/>
-			<style name="Class name definition" key="99" class="embeddedpython" fore="0000FF" bold="true"/>
-			<style name="Function or method name definition" key="100" class="embeddedpython" fore="007F7F" bold="true"/>
-			<style name="Operators" key="101" class="embeddedpython" bold="true"/>
-			<style name="Identifiers" key="102" class="embeddedpython"/>
+			<group name="Python" description="Python code in HTML documents">
+				<style name="Start" key="90" class="embeddedpython" fore="808080"/>
+				<style name="Default" key="91" class="embeddedpython" fore="808080"/>
+				<style name="Comment" key="92" class="embeddedpython" font="font.comment" fore="007F00"/>
+				<style name="Number" key="93" class="embeddedpython" fore="007F7F"/>
+				<style name="String" key="94" class="embeddedpython" fore="7F007F" font="font.monospace"/>
+				<style name="Single quoted string" key="95" class="embeddedpython" fore="7F007F" font="font.monospace"/>
+				<style name="Keyword" key="96" class="embeddedpython" fore="00007F" bold="true"/>
+				<style name="Triple quotes" key="97" class="embeddedpython" fore="7F0000"/>
+				<style name="Triple double quotes" key="98" class="embeddedpython" fore="7F0000"/>
+				<style name="Class name definition" key="99" class="embeddedpython" fore="0000FF" bold="true"/>
+				<style name="Function or method name definition" key="100" class="embeddedpython" fore="007F7F" bold="true"/>
+				<style name="Operators" key="101" class="embeddedpython" bold="true"/>
+				<style name="Identifiers" key="102" class="embeddedpython"/>
+			</group>
 			
 			<!-- ASP Python -->
-			<style name="ASP Python" key="105" class="asppython" fore="808080"/>
-			<style name="ASP Python" key="106" class="asppython" fore="808080"/>
-			<style name="Comment" key="107" class="asppython" fore="007F00" font="font.comment"/>
-			<style name="Number" key="108" class="asppython" fore="007F7F"/>
-			<style name="String" key="109" class="asppython" fore="7F007F" font="font.monospace"/>
-			<style name="Single quoted string" key="110" class="asppython" fore="7F007F" font="font.monospace"/>
-			<style name="Keyword" key="111" class="asppython" fore="00007F" bold="true"/>
-			<style name="Triple quotes" key="112" class="asppython" fore="7F0000"/>
-			<style name="Triple double quotes" key="113" class="asppython" fore="7F0000"/>
-			<style name="Class name definition" key="114" class="asppython" fore="0000FF" bold="true"/>
-			<style name="Function or method name definition" key="115" class="asppython" fore="007F7F" bold="true"/>
-			<style name="Operators" key="116" class="asppython" bold="true"/>
-			<style name="Identifiers" key="117" class="asppython"/>
+			<group name="ASP Python" description="Python code embedded within an ASP file.">
+				<style name="ASP Python" key="105" class="asppython" fore="808080"/>
+				<style name="ASP Python" key="106" class="asppython" fore="808080"/>
+				<style name="Comment" key="107" class="asppython" fore="007F00" font="font.comment"/>
+				<style name="Number" key="108" class="asppython" fore="007F7F"/>
+				<style name="String" key="109" class="asppython" fore="7F007F" font="font.monospace"/>
+				<style name="Single quoted string" key="110" class="asppython" fore="7F007F" font="font.monospace"/>
+				<style name="Keyword" key="111" class="asppython" fore="00007F" bold="true"/>
+				<style name="Triple quotes" key="112" class="asppython" fore="7F0000"/>
+				<style name="Triple double quotes" key="113" class="asppython" fore="7F0000"/>
+				<style name="Class name definition" key="114" class="asppython" fore="0000FF" bold="true"/>
+				<style name="Function or method name definition" key="115" class="asppython" fore="007F7F" bold="true"/>
+				<style name="Operators" key="116" class="asppython" bold="true"/>
+				<style name="Identifiers" key="117" class="asppython"/>
+			</group>
 			
 			<!-- PHP -->
-			<style name="Default" key="118" class="php" fore="000033" />
-			<style name="Double quoted String" key="119" class="php" fore="007F00"/>
-			<style name="Single quoted string" key="120" class="php" fore="009F00"/>
-			<style name="Keyword" key="121" class="php" fore="7F007F" italic="true"/>
-			<style name="Number" key="122" class="php" fore="CC9900"/>
-			<style name="Variable" key="123" class="php" fore="00007F" italic="true"/>
-			<style name="Comment" key="124" class="php" fore="999999" font="font.comment"/>
-			<style name="One line comment" key="125" class="php" fore="666666" italic="true" font="font.comment"/>
-			<style name="PHP variable in double quoted string" key="126" class="php" fore="00007F" italic="true"/>
-			<style name="PHP operator" key="127" class="php" fore="000000"/>
+			<group name="PHP" description="PHP code">
+				<style name="Default" key="118" class="php" fore="000033" />
+				<style name="Double quoted String" key="119" class="php" fore="007F00"/>
+				<style name="Single quoted string" key="120" class="php" fore="009F00"/>
+				<style name="Keyword" key="121" class="php" fore="7F007F" italic="true"/>
+				<style name="Number" key="122" class="php" fore="CC9900"/>
+				<style name="Variable" key="123" class="php" fore="00007F" italic="true"/>
+				<style name="Comment" key="124" class="php" fore="999999" font="font.comment"/>
+				<style name="Line comment" key="125" class="php" fore="666666" italic="true" font="font.comment"/>
+				<style name="String variable" key="126" class="php" fore="00007F" italic="true"/>
+				<style name="Operator" key="127" class="php" fore="000000"/>
+			</group>
 		</use-styles>
 	</language>
 	<language name="xml" title="XML" folding="false" foldcomments="false" foldcompact="false">

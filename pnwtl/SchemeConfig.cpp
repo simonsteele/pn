@@ -1,52 +1,94 @@
 #include "stdafx.h"
 #include "schemeconfig.h"
 
-//#include <algorithm>
-//using std::sort;
-
 /////////////////////////////////////////////////////////
-// SchemeConfig
+// CustomStyleCollection
 /////////////////////////////////////////////////////////
 
-SchemeConfig::SchemeConfig()
+CustomStyleCollection::CustomStyleCollection()
 {
-
+	m_pNext = NULL;
 }
 
-SchemeConfig::SchemeConfig(const SchemeConfig& copy)
+CustomStyleCollection::~CustomStyleCollection()
 {
-	*this = copy;
+	for(SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
+	{
+		delete (*i);
+	}
+	m_Styles.clear();
+
+	if(m_pNext)
+		delete m_pNext;
 }
 
-SchemeConfig& SchemeConfig::operator = (const SchemeConfig& copy)
+CustomStyleCollection* CustomStyleCollection::GetNext()
 {
-	m_Name = copy.m_Name;
-	m_Title = copy.m_Title;
+	return m_pNext;
+}
 
-	// Copy Keyword sets...
-	CustomKeywordSet* pS = copy.pKeywordSets;
-	while(pS)
-	{
-		CustomKeywordSet* pSet = new CustomKeywordSet;
-		pSet->key = pS->key;
-		pSet->pWords = new TCHAR[_tcslen(pS->pWords)+1];
-		_tcscpy(pSet->pWords, pS->pWords);
-		AddKeywordSet(pSet);
+void CustomStyleCollection::SetNext(CustomStyleCollection* pNext)
+{
+	m_pNext = pNext;
+}
 
-		pS = pS->pNext;
-	}
+void CustomStyleCollection::AddStyle(StyleDetails* pStyle)
+{
+	m_Styles.insert(m_Styles.end(), pStyle);
+}
 
-	// Copy styles...
-	STYLES_LIST::const_iterator i;
-	for(i = copy.m_Styles.begin(); i != copy.m_Styles.end(); ++i)
-	{
-		StyleDetails* pStyle = *i;
-		StyleDetails* pNew = new StyleDetails;
-		*pNew = *(*i);
-		m_Styles.insert(m_Styles.end(), pNew);
-	}
+void CustomStyleCollection::SetName(LPCTSTR name)
+{
+	m_name = name;
+}
 
-	return *this;
+void CustomStyleCollection::SetDescription(LPCTSTR description)
+{
+	m_description = description;
+}
+
+LPCTSTR CustomStyleCollection::GetName()
+{
+	return m_name.c_str();
+}
+
+LPCTSTR CustomStyleCollection::GetDescription()
+{
+	return m_description.c_str();
+}
+
+/////////////////////////////////////////////////////////
+// CustomStyleHolder
+/////////////////////////////////////////////////////////
+
+CustomStyleHolder::CustomStyleHolder() : CustomStyleCollection()
+{
+	m_pCurrent = NULL;
+}
+
+void CustomStyleHolder::BeginGroup(LPCTSTR name, LPCTSTR description)
+{
+	CustomStyleCollection* pColl = new CustomStyleCollection;
+	pColl->SetName(name);
+	if(description)
+		pColl->SetDescription(description);
+
+	pColl->SetNext(m_pNext);
+	m_pNext = pColl;
+	m_pCurrent = pColl;
+}
+
+void CustomStyleHolder::EndGroup()
+{
+	m_pCurrent = NULL;
+}
+
+void CustomStyleHolder::AddStyle(StyleDetails* pStyle)
+{
+	if(m_pCurrent)
+		m_pCurrent->AddStyle(pStyle);
+	else
+		CustomStyleCollection::AddStyle(pStyle);
 }
 
 /////////////////////////////////////////////////////////
@@ -63,6 +105,30 @@ SchemeConfigParser::SchemeConfigParser()
 	m_pCurrent = NULL;
 }
 
+SchemeConfigParser::~SchemeConfigParser()
+{
+	LIST_SCHEMECONFIGS::iterator i;
+	for(i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
+	{
+		delete (*i);
+	}
+	m_Schemes.clear();
+}
+
+LIST_SCHEMECONFIGS& SchemeConfigParser::GetSchemes()
+{
+	return m_Schemes;
+}
+
+void SchemeConfigParser::LoadConfig(LPCTSTR path, LPCTSTR compiledpath)
+{
+	CString UserSettingsFile = compiledpath;
+	UserSettingsFile += _T("UserSettings.xml");
+
+	Parse(path, _T("master.scheme"), (LPCTSTR)UserSettingsFile);
+	Sort();
+}
+
 void SchemeConfigParser::onLexer(LPCTSTR name, int styleBits)
 {
 
@@ -73,6 +139,9 @@ void SchemeConfigParser::onLanguage(LPCTSTR name, LPCTSTR title, int foldflags)
 	PNASSERT(m_pCurrent == NULL);
 
 	m_pCurrent = new SchemeConfig;
+	m_pCurrent->m_Name = name;
+	m_pCurrent->m_Title = title;
+	m_pCurrent->m_foldflags = foldflags;
 	m_Schemes.insert(m_Schemes.begin(), m_pCurrent);
 }
 
@@ -81,11 +150,28 @@ void SchemeConfigParser::onLanguageEnd()
 	m_pCurrent = NULL;
 }
 
+void SchemeConfigParser::onStyleGroup(XMLAttributes& att)
+{
+	PNASSERT(m_pCurrent != NULL);
+
+	LPCTSTR name = att.getValue(_T("name"));
+	if(name)
+	{
+		m_pCurrent->BeginGroup(name, att.getValue(_T("description")));
+	}
+}
+
 void SchemeConfigParser::onStyle(StyleDetails* pStyle)
 {
 	PNASSERT(m_pCurrent != NULL);
 
-	m_pCurrent->m_Styles.insert(m_pCurrent->m_Styles.begin(), pStyle);
+	StyleDetails* pCopy = new StyleDetails(*pStyle);
+	m_pCurrent->AddStyle(pCopy);
+}
+
+void SchemeConfigParser::onStyleGroupEnd()
+{
+	m_pCurrent->EndGroup();
 }
 
 void SchemeConfigParser::onKeywords(int key, LPCTSTR keywords)
@@ -106,5 +192,8 @@ void SchemeConfigParser::onFile(LPCTSTR filename)
 
 void SchemeConfigParser::Sort()
 {
+///@todo find a way to do this in VC6
+#if (_ATL_VER >= 0x0700)
 	m_Schemes.sort(SortSchemes);
+#endif
 }

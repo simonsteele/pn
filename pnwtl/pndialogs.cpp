@@ -312,7 +312,7 @@ void COptionsDialog::ClosePages()
 void COptionsDialog::SelectPage(COptionsPage* pPage)
 {
 	CRect rcPage;
-	GetDlgItem(IDC_PLACEHOLDER).GetWindowRect(rcPage);
+	::GetWindowRect(GetDlgItem(IDC_PLACEHOLDER), rcPage);
 	ScreenToClient(rcPage);
 
 	if(m_pCurrentPage)

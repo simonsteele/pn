@@ -20,6 +20,8 @@
 
 #include "files.h"
 
+#include "SchemeConfig.h"
+
 BOOL CALLBACK CloseChildEnumProc(HWND hWnd, LPARAM lParam);
 
 /**
@@ -485,7 +487,12 @@ public:
 	LRESULT OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		COptionsPageStyle		page;
-		COptionsPageSchemes		page2;
+		
+		CSchemeManager* pSM = CSchemeManager::GetInstance();
+		SchemeConfigParser		schemeconfig;
+		schemeconfig.LoadConfig(pSM->GetPath(), pSM->GetCompiledPath());
+
+		COptionsPageSchemes		page2(&schemeconfig);
 
 		COptionsDialog options;
 		options.AddPage(&page);
