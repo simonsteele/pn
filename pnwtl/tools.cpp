@@ -294,7 +294,7 @@ bool ToolRunner::GetThreadedExecution()
 {
 	if(m_pTool)
 	{
-		return m_pTool->bCaptureOutput;
+		return /*m_pTool->bCaptureOutput*/ true;
 	}
 
 	return false;
@@ -308,6 +308,11 @@ void ToolRunner::Run()
 	m_RetCode = Run_CreateProcess(m_pCopyDef->Command.c_str(), m_pCopyDef->Params.c_str(), m_pCopyDef->Folder.c_str());
 	delete m_pCopyDef;
 	::PostMessage(m_pChild->m_hWnd, PN_TOOLFINISHED, 0, reinterpret_cast<LPARAM>(this));
+}
+
+void ToolRunner::OnException()
+{
+	::OutputDebugString(_T("PN2: Exception whilst running a tool.\n"));
 }
 
 int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
@@ -343,7 +348,7 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
     if( ! ::CreatePipe(&hReadPipe, &hWritePipe, &sa, 0) )
 	{
 		CLastErrorInfo lei;
-		::MessageBox(NULL, lei, _T("Error Running Tool:"), MB_OK | MB_ICONERROR);
+		::MessageBox(NULL, (LPCTSTR)lei, _T("Error Running Tool:"), MB_OK | MB_ICONERROR);
 		return lei.GetErrorCode();
 	}
 
@@ -378,7 +383,7 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	if(!bCreated)
 	{
 		CLastErrorInfo lei;
-		::MessageBox(NULL, lei, _T("Error Running Tool:"), MB_OK | MB_ICONERROR);
+		::MessageBox(NULL, (LPCTSTR)lei, _T("Error Running Tool:"), MB_OK | MB_ICONERROR);
 
 		::CloseHandle(hReadPipe);
 		::CloseHandle(hWritePipe);

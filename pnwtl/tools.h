@@ -158,7 +158,7 @@ class CLastErrorInfo
 
 		operator LPCTSTR ()
 		{
-			return reinterpret_cast<LPCTSTR>(&m_lpMsgBuf);
+			return reinterpret_cast<LPCTSTR>(m_lpMsgBuf);
 		}
 
 		int GetErrorCode()
@@ -190,6 +190,7 @@ protected:
 	int Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir);
 
 	virtual void Run();
+	virtual void OnException();
 
 protected:
 	CChildFrame*		m_pChild;
