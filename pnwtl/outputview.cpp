@@ -117,6 +117,13 @@ bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 		//First check if the file exists as is, if it does then we go with that,
 		//else we try to resolve it.
 		CFileName fn(filename.c_str());
+		fn.Sanitise();
+
+#ifdef _DEBUG
+		dbgout = _T("After sanitise, filename = ");
+		dbgout += fn.c_str();
+		::OutputDebugString(dbgout.c_str());
+#endif
 
 		if(! FileExists(fn.c_str()) )
 		{

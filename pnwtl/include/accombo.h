@@ -8,6 +8,12 @@
  * the conditions under which this source may be modified / distributed.
  */
 
+#ifndef accombo_h__included
+#define accombo_h__included
+
+#define BXTN_ENTER	11
+#define BXT_WM_ENTER WM_USER + 1
+
 namespace WTL
 {
 namespace BXT
@@ -50,6 +56,7 @@ public:
 			MESSAGE_HANDLER(EM_GETSEL, OnGetSel)
 			MESSAGE_HANDLER(EM_REPLACESEL, OnReplaceSel)
 			MESSAGE_HANDLER(WM_KILLFOCUS, OnKillFocus)
+			MESSAGE_HANDLER(WM_KEYUP, OnKeyUp)
 		END_MSG_MAP()
 
 		LRESULT OnGetSel(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -86,6 +93,15 @@ public:
 			return 0;
 		}
 
+		LRESULT OnKeyUp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+		{
+			if( /*wParam == VK_ENTER ||*/ wParam == VK_RETURN )
+			{
+				::SendMessage(GetParent(), BXT_WM_ENTER, 0, 0);
+			}
+			return 0;
+		}
+
 	protected:
 		bool m_bInternalGetSel;
 		int m_selStart;
@@ -102,15 +118,17 @@ public:
 		{ }
 	};
 
+	HWND m_hWndOwner; // window that wants enter key-press notifies.
 	CComboBoxEdit m_edit;
 	CCustomAutoComplete* m_pAC;
 
 // Constructors
-	CComboBoxACImpl() : m_pAC(NULL) { }
+	CComboBoxACImpl() : m_pAC(NULL), m_hWndOwner(NULL) { }
 
 	CComboBoxACImpl< TBase >& operator=(HWND hWnd)
 	{
 		m_hWnd = hWnd;
+
 		return *this;
 	}
 
@@ -127,6 +145,8 @@ public:
 			DWORD dwStyle, DWORD dwExStyle, _U_MENUorID MenuOrID,
 			LPCTSTR szSubKey, UINT nDummyId)
 	{
+		m_hWndOwner = hWndParent;
+
 		HWND hWnd = baseClass::Create(hWndParent, *rect.m_lpRect, szWindowName, dwStyle, dwExStyle, (unsigned int)MenuOrID.m_hMenu);
 		if(hWnd)
 		{
@@ -136,11 +156,31 @@ public:
 		return hWnd;
 	}
 
+	HWND Create(HWND hWndParent, _U_RECT rect, LPCTSTR szWindowName,
+			DWORD dwStyle, DWORD dwExStyle, _U_MENUorID MenuOrID,
+			LPCTSTR szSubKey)
+	{
+		m_hWndOwner = hWndParent;
+
+		HWND hWnd = baseClass::Create(hWndParent, *rect.m_lpRect, szWindowName, dwStyle, dwExStyle, (unsigned int)MenuOrID.m_hMenu);
+		if(hWnd)
+		{
+			Init(szSubKey);
+		}
+		return hWnd;
+	}
+
+	void SetOwnerHWND(HWND hWndOwner)
+	{
+		m_hWndOwner = hWndOwner;
+	}
+
 // Message map and handlers
 	typedef CComboBoxACImpl< T, TBase, TWinTraits >	thisClass;
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_SETTEXT, OnSetText)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+		MESSAGE_HANDLER(BXT_WM_ENTER, OnEnterPressed)
 	END_MSG_MAP()
 
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -171,24 +211,38 @@ public:
 		return 0;
 	}
 
+	LRESULT OnEnterPressed(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+	{
+		::SendMessage(m_hWndOwner, WM_COMMAND, MAKELONG(GetWindowLong(GWL_ID), BXTN_ENTER), (LPARAM)m_hWnd);
+		return 0;
+	}
+
 // Implementation
-	void Init(LPCTSTR szSubKey)
+	bool Init(LPCTSTR szSubKey)
 	{
 		SetFont((HFONT)::SendMessage(GetParent(), WM_GETFONT, 0, 0));
 		HWND hWndEdit = GetWindow(GW_CHILD);
-		m_edit.SubclassWindow(hWndEdit);
-
-		m_pAC = new CCustomAutoComplete(HKEY_CURRENT_USER, szSubKey);
-		m_pAC->Bind(hWndEdit, /*ACO_UPDOWNKEYDROPSLIST |*/ ACO_AUTOSUGGEST | ACO_AUTOAPPEND);
-
-		// Fill combobox with the 20 recent entries, assuming AC stores the
-		// strings inorder.
-		const CSimpleArray<CString> items = m_pAC->GetList();
-		int size = min(items.GetSize(), 20);
-		for(int i = 0; i < size; i++)
+		
+		if(hWndEdit)
 		{
-			AddString(items[i]);
+			m_edit.SubclassWindow(hWndEdit);
+
+			m_pAC = new CCustomAutoComplete(HKEY_CURRENT_USER, szSubKey);
+			m_pAC->Bind(hWndEdit, /*ACO_UPDOWNKEYDROPSLIST |*/ ACO_AUTOSUGGEST | ACO_AUTOAPPEND);
+
+			// Fill combobox with the 20 recent entries, assuming AC stores the
+			// strings inorder.
+			const CSimpleArray<CString> items = m_pAC->GetList();
+			int size = min(items.GetSize(), 20);
+			for(int i = 0; i < size; i++)
+			{
+				AddString(items[i]);
+			}
+
+			return true;
 		}
+
+		return false;
 	}
 };
 class CComboBoxAC : public CComboBoxACImpl<CComboBoxAC>
@@ -202,3 +256,5 @@ public:
 };
 
 } } // namespace WTL::BXT
+
+#endif // accombo_h__included

@@ -111,6 +111,7 @@ public:
 	void GetPath(tstring& buf);							///< Return c:\temp\ of c:\temp\dat.dat
 	void GetFileName_NoExt(tstring& buf);				///< Return the filename part of c:\temp\filename.dat
 	void GetFileName(tstring& buf);						///< Return the filename.dat part of c:\temp\filename.dat
+	tstring& Sanitise();								///< Fix up the filename to standard form.
 
 	bool IsRelativePath();								///< Return true if it's a relative path.
 	void Root(LPCTSTR rootPath);						///< Root the relative filename in rootPath.

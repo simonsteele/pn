@@ -290,6 +290,56 @@ LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	return 0;
 }
 
+CSize CMainFrame::GetGUIFontSize()
+{
+	CClientDC dc(m_hWnd);
+	dc.SelectFont((HFONT) GetStockObject( DEFAULT_GUI_FONT ));		
+	TEXTMETRIC tm;
+	dc.GetTextMetrics( &tm );
+	//int cxChar = tm.tmAveCharWidth;
+	//int cyChar = tm.tmHeight + tm.tmExternalLeading;
+
+	return CSize( tm.tmAveCharWidth, tm.tmHeight + tm.tmExternalLeading);
+}
+
+HWND CMainFrame::CreateFindToolbar()
+{
+	HWND hWnd = CreateSimpleToolBarCtrl(m_hWnd, IDR_TBR_FIND, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE, TBR_FIND);
+
+	if(!hWnd)
+		return 0;
+
+	CToolBarCtrl fToolbar(hWnd);
+
+	CSize sizeChar = GetGUIFontSize();
+	int cx = FIND_COMBO_SIZE * sizeChar.cx;
+
+	TBBUTTONINFO tbi;
+	RECT rc;
+
+	tbi.cbSize = sizeof TBBUTTONINFO;
+	tbi.dwMask = TBIF_STYLE | TBIF_SIZE;
+	tbi.fsStyle = TBSTYLE_SEP;
+	tbi.cx = (unsigned short)cx;
+
+	fToolbar.SetButtonInfo(ID_PLACEHOLDER_FINDCOMBO, &tbi);
+	fToolbar.GetItemRect(1, &rc);
+
+	rc.bottom = TOOLBAR_COMBO_DROPLINES * sizeChar.cy;
+
+	HWND hWndCombo = m_FindCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), 
+		CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+		0, IDC_FINDCOMBO, _T("Software\\Echo Software\\PN2\\AutoComplete\\FindToolbar"));
+	hWndCombo;
+	ATLASSERT(hWndCombo != 0);
+
+	m_FindCombo.SetParent(hWnd);
+	m_FindCombo.SetFont((HFONT)GetStockObject( DEFAULT_GUI_FONT ));
+	m_FindCombo.SetOwnerHWND(m_hWnd); // Get enter notifications.
+
+	return hWnd;
+}
+
 HWND CMainFrame::CreateSchemeToolbar()
 {
 	HWND hWnd = CreateSimpleToolBarCtrl(m_hWnd, IDR_TBR_SCHEME, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE, TBR_SCHEME);
@@ -297,16 +347,10 @@ HWND CMainFrame::CreateSchemeToolbar()
 	if (!hWnd) 
 		return 0;
 
-	CToolBarCtrl m_fbar(hWnd);
-				
-	CClientDC dc(m_hWnd);
-	dc.SelectFont((HFONT) GetStockObject( DEFAULT_GUI_FONT ));		
-	TEXTMETRIC tm;
-	dc.GetTextMetrics( &tm );
-	int cxChar = tm.tmAveCharWidth;
-	int cyChar = tm.tmHeight + tm.tmExternalLeading;
-	int cx = SCHEME_COMBO_SIZE * cxChar;
-	int cy = 16 * cyChar;
+	CToolBarCtrl sToolbar(hWnd);
+
+	CSize sizeChar = GetGUIFontSize();
+	int cx = SCHEME_COMBO_SIZE * sizeChar.cx;
 
 	RECT rc;
 
@@ -316,10 +360,10 @@ HWND CMainFrame::CreateSchemeToolbar()
 	tbi.fsStyle = TBSTYLE_SEP;
 	tbi.cx = (unsigned short)cx;
 	
-	m_fbar.SetButtonInfo(ID_PLACEHOLDER_SCHEMECOMBO, &tbi); 						
-	m_fbar.GetItemRect(0, &rc); 
+	sToolbar.SetButtonInfo(ID_PLACEHOLDER_SCHEMECOMBO, &tbi); 						
+	sToolbar.GetItemRect(0, &rc); 
 
-	rc.bottom = cy;
+	rc.bottom = TOOLBAR_COMBO_DROPLINES * sizeChar.cy;
 	
 	HWND hWndCombo =  m_SchemeCombo.Create(m_hWnd, rc, NULL, CBS_DROPDOWNLIST | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
 		0, IDC_SCHEMECOMBO);
@@ -360,12 +404,14 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	HWND hWndToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
 	HWND hWndEdtToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_TBR_EDIT, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
 	HWND hWndSchemeToolBar = CreateSchemeToolbar();
+	HWND hWndFindToolBar = CreateFindToolbar();
 
 	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
 	AddSimpleReBarBand(hWndCmdBar);
 	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
 	AddSimpleReBarBand(hWndEdtToolBar, NULL, FALSE);
 	AddSimpleReBarBand(hWndSchemeToolBar, NULL, FALSE);
+	AddSimpleReBarBand(hWndFindToolBar, NULL, FALSE);
 	SizeSimpleReBarBands();
 	
 	CreateSimpleStatusBar(_T(""));
@@ -815,6 +861,13 @@ LRESULT CMainFrame::OnSchemeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 		if( pEditor != NULL )
 			pEditor->SetScheme( pScheme );
 	}
+	return 0;
+}
+
+LRESULT CMainFrame::OnFindComboEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	//CWindowText wt(m_FindCombo.m_hWnd); //Get find text...
+	
 	return 0;
 }
 

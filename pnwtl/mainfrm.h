@@ -21,6 +21,10 @@ class CReplaceDlg;
 class CDockingOutputWindow;
 struct tagEnumChildrenStruct;
 
+// Auto-complete for the find combo box.
+#include "CustomAutoComplete.h"	// Autocompletion.
+#include "include/accombo.h"	// Autocompleting combo box.
+
 typedef void(__stdcall CMainFrame::*lpChildEnumFn)(CChildFrame* pFrame, tagEnumChildrenStruct* pStruct);
 
 typedef struct tagEnumChildrenStruct
@@ -63,7 +67,10 @@ public:
 
 	enum {
 		TBR_SCHEME = 100,
+		TBR_FIND = 101,
 		SCHEME_COMBO_SIZE = 24, /* characters */
+		FIND_COMBO_SIZE = 30,
+		TOOLBAR_COMBO_DROPLINES = 16,
 	};
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
@@ -111,6 +118,7 @@ public:
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SR, OnWebSFRFE)
 
 		COMMAND_HANDLER(IDC_SCHEMECOMBO, CBN_SELCHANGE, OnSchemeComboChange)
+		COMMAND_HANDLER(IDC_FINDCOMBO, BXTN_ENTER, OnFindComboEnter)
 
 		COMMAND_RANGE_HANDLER(ID_MRUFILE_BASE, (ID_MRUFILE_BASE+15), OnMRUSelected)
 		ROUTE_MENUCOMMANDS()
@@ -182,6 +190,7 @@ public:
 	LRESULT OnWebSFRFE(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnSchemeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFindComboEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	void OpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme = NULL);
 	void OpenFile(LPCTSTR pathname, CScheme* pScheme);
@@ -223,6 +232,8 @@ protected:
 	void MoveNewMenu(CSMenuHandle& remove, CSMenuHandle& add);
 	void MoveLanguage(CSMenuHandle& remove, CSMenuHandle& add);
 
+	CSize GetGUIFontSize();
+	HWND CreateFindToolbar();
 	HWND CreateSchemeToolbar();
 
 	void InitGUIState();
@@ -251,6 +262,7 @@ protected:
 	commandBarClass			m_CmdBar;
 	CPNStateManager			m_GUIState;
 	CComboBox				m_SchemeCombo;
+	BXT::CComboBoxAC		m_FindCombo;
 
 	HWND					hFindWnd;
 	HWND					hReplWnd;

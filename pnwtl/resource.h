@@ -89,6 +89,7 @@
 #define IDR_TBR_SCHEME                  276
 #define IDR_TOOLBAR1                    278
 #define IDR_TBR_FINDCOMBO               278
+#define IDR_TBR_FIND                    278
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -190,6 +191,7 @@
 #define IDC_REHELPER_BUTTON             21204
 #define IDC_RHELPER_BUTTON              21205
 #define IDC_DIRECTION_GROUP             21207
+#define IDC_FINDCOMBO					21208
 #define ID_EDIT_FINDNEXT                32773
 #define ID_EDIT_GOTO                    32774
 #define ID_TOOLS_LECRLF                 32777

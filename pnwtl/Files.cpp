@@ -404,6 +404,87 @@ void CFileName::Root(LPCTSTR rootPath)
 	m_FileName = root;
 }
 
+/**
+ * This function removes stupidities from paths, whether they be
+ * file:// style URLs or /\ issues.
+ */
+tstring& CFileName::Sanitise()
+{
+	UINT fpos = m_FileName.find(_T("file://"));
+	if( fpos != m_FileName.npos )
+	{
+		// We have a file:// url. Fix it up.
+		m_FileName.erase(fpos, 7);
+		
+		fpos = m_FileName.find(_T("%3A"));
+		if( fpos != m_FileName.npos )
+		{
+			m_FileName.replace(fpos, 3, _T(":"));
+		}
+	}
+
+	LPCTSTR in = m_FileName.c_str();
+	LPTSTR res = new TCHAR[_tcslen(in)+1];
+
+	LPCTSTR fnd = _tcschr(in, _T(':'));
+	bool bColon = fnd != NULL;
+
+	if( bColon )
+	{
+        // There's a colon, so there's a drive letter.
+		// Make sure drive letter is at the start of the string.
+		while( (!_istalpha( *in )) && (in != fnd) )
+		{
+			in++;
+		}
+	}
+
+	bool bSlash = false;
+	LPTSTR build = res;
+
+	// Step through the input string and catch things like double-slashes,
+	// and forward instead of backward slashes.
+	while(*in != NULL)
+	{
+		char ch = *in;
+		switch(ch)
+		{
+			// Pretend forward slashes are back-slashes and fall-through
+			// to back-slash handling.
+			case _T('/'):
+				ch = _T('\\');
+			
+			// If there is a colon (i.e. a drive letter) and a double
+			// slash, then it's a duplicate to skip. If there is no colon
+			// and a double slash closer than 4 characters to the start
+			// of the filename then we assume it's ok.
+			case _T('\\'):
+				if( (bSlash && bColon) ||
+					bSlash && ((in - m_FileName.c_str()) > 4) )
+				{
+					bSlash = false;
+					break;
+				}
+				bSlash = true;
+			
+			default:
+				if(ch != _T('\\'))
+					bSlash = false;
+				*build++ = ch;
+		}
+		
+		in++;
+	}
+
+	*build++ = NULL;
+
+	m_FileName = res;
+
+	delete [] res;
+
+	return m_FileName;
+}
+
 void CFileName::GetFileName(tstring& buf)
 {
 	buf = GetFileName();
