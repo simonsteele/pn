@@ -1190,20 +1190,22 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 
 	SchemeConfigParser		schemeconfig(currentScheme);
 	
-	COptionsPageGeneral		general;
-	COptionsPageVisual		visual;
+	COptionsPageGeneral			general;
+	COptionsPageEditDefaults	editDefs;
+	COptionsPageVisual			visual;
 
-	COptionsPageStyle		pageStyle(&schemeconfig);
-	COptionsPageSchemes		pageSchemes(&schemeconfig);
-	COptionsPageNewFiles	pageNewFiles(&schemeconfig);
-	COptionsPageTools		pageTools(&schemeconfig);
+	COptionsPageStyle			pageStyle(&schemeconfig);
+	COptionsPageSchemes			pageSchemes(&schemeconfig);
+	COptionsPageNewFiles		pageNewFiles(&schemeconfig);
+	COptionsPageTools			pageTools(&schemeconfig);
 
-	COptionsPageAFiles		pageAFiles;
+	COptionsPageAFiles			pageAFiles;
 
 	schemeconfig.LoadConfig(pSM->GetPath(), pSM->GetCompiledPath());
 
 	COptionsDialog options;
 	options.AddPage(&general);
+	options.AddPage(&editDefs);
 	options.AddPage(&visual);
 	options.AddPage(&pageStyle);
 	options.AddPage(&pageSchemes);

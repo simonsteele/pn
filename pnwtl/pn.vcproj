@@ -228,6 +228,9 @@
 				RelativePath="childfrm.cpp">
 			</File>
 			<File
+				RelativePath=".\docprops.cpp">
+			</File>
+			<File
 				RelativePath="exporters.cpp">
 			</File>
 			<File
@@ -350,6 +353,9 @@
 			</File>
 			<File
 				RelativePath="exporters.h">
+			</File>
+			<File
+				RelativePath=".\FilePropertiesDialog.h">
 			</File>
 			<File
 				RelativePath=".\finddlg.h">

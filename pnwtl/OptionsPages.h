@@ -27,9 +27,6 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 		enum { IDD = IDD_PAGE_GENERAL };
 
 		BEGIN_DDX_MAP(COptionsPageGeneral)
-			DDX_CHECK(IDC_OPT_USETABSCHECK,		m_bUseTabs)
-			DDX_CHECK(IDC_OPT_LINENOSCHECK,		m_bLineNos)
-			DDX_UINT(IDC_OPT_TABWIDTHEDIT,		m_iTabWidth)
 			DDX_UINT(IDC_OPT_MRUCOUNT,			m_iMRUSize)
 			DDX_CHECK(IDC_OPT_MAXCHECK,			m_bMaximise)
 			DDX_CHECK(IDC_OPT_FULLPATHCHECK,	m_bFullPath)
@@ -43,13 +40,41 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		
-		BOOL			m_bUseTabs;
-		BOOL			m_bLineNos;
 		BOOL			m_bMaximise;
 		BOOL			m_bFullPath;
 		BOOL			m_bMultiInstanceOk;
-		UINT			m_iTabWidth;
 		UINT			m_iMRUSize;
+		
+};
+
+class COptionsPageEditDefaults : public COptionsPageImpl<COptionsPageEditDefaults>,
+								public CWinDataExchange<COptionsPageEditDefaults>
+{
+	public:
+		BEGIN_MSG_MAP(COptionsPageEditDefaults)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			REFLECT_NOTIFICATIONS()
+		END_MSG_MAP()
+		enum { IDD = IDD_PAGE_EDITDEFS };
+
+		BEGIN_DDX_MAP(COptionsPageEditDefaults)
+			DDX_CHECK(IDC_OPT_USETABSCHECK,		m_bUseTabs)
+			DDX_CHECK(IDC_OPT_LINENOSCHECK,		m_bLineNos)
+			DDX_CHECK(IDC_OPT_WORDWRAPCHECK,	m_bWrap)
+			DDX_UINT(IDC_OPT_TABWIDTHEDIT,		m_iTabWidth)
+		END_DDX_MAP()
+
+		virtual void OnOK();
+		virtual void OnInitialise();
+		virtual LPCTSTR GetTreePosition();
+
+	protected:
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+		BOOL			m_bUseTabs;
+		BOOL			m_bLineNos;
+		BOOL			m_bWrap;
+		UINT			m_iTabWidth;
 		EPNSaveFormat	m_SaveFormat;
 		ECodePage		m_CodePage;
 };

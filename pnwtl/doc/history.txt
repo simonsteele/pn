@@ -1,4 +1,57 @@
 ========================================
+Release Name: 2.0.5.0
+Build: 2.0.5.18, Version Label: mingus
+========================================
+
+What's new?
+-----------
+
+1) Scheme-selector toolbar.
+2) Find toolbar.
+3) Many find improvements (thanks mostly to Bjoern Graf).
+4) Tile Vertical / Tile Horizontal.
+5) Show path of file to be executed (SF Feature #765270).
+6) Visual Help options (highlight current line, long line help).
+7) Sanitise file names from output window to better find files.
+8) Text clips browser.
+9) Projects/Project Groups.
+10) Change MRU text length. (SF Feature #760660)
+11) Keyboard-shortcuts for Tools.
+12) More editor colouring options.
+13) Statusbar text on mouse-over MRU items.
+14) (X)HTML Export.
+15) Added Modula-2 Scheme.
+16) Pre-defined toolsets can now be added in the %pn%\tools directory.
+17) Updates to the tab and docking frameworks.
+18) Added encoding menu.
+19) Configurable alternate file switching (use Ctrl-Shift-H to switch).
+
+Bug Fixes:
+----------
+
+1) Show Full Path turns off after a revert. (SF Bug #773608)
+2) Stop Tools doesn't work. (SF Bug #773294)
+3) If you don't update a file when it's changed on disk it is marked as changed.
+4) Maximized window state not saved. (SF Bug #770302)
+5) Mixed path styles now sanitised in output window. (SF Bug #797397)
+6) File opened from the wrong directory from output window. (SF Bug #806343)
+7) No way to find out what file you're working on. (SF Bug #783786)
+8) NT4 recent files menu disappears. (SF Bug #780828)
+9) Edit SmartStart Phrase Dialog no scheme list. (SF Bug #771661)
+10) WindowState is not save when close. (SF Bug #770302)
+11) Unable to define a shortcut for a custom tool. (SF Bug #753458)
+12) Collapse all folds menu item fixed.
+13) Italic font customisations not picked up. (SF Bug #834967)
+14) Save All only saves unchanged files. (SF Bug #827998)
+15) Fixed view->toolbars menu. Now represents correct startup state.
+16) Files read as unicode now saved as unicode.
+17) Tool Modifies File w/o Capture Output. (SF Bug #799763)
+18) Tool Modifies File causes refresh oddness. (SF Bug #800331)
+19) Regular Expression loop. (SF Bug #793002)
+20) Close when minimized bug. (SF Bug #849572)
+
+
+========================================
 Release Name: 2.0.4.2
 Build: 2.0.4.18, Version Label: (none)
 ========================================

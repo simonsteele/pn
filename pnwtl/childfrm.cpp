@@ -15,6 +15,7 @@
 #include "outputview.h"
 #include "exporters.h"
 #include "pndialogs.h"
+#include "docprops.h"
 #include "include/pagesetupdialog.h"
 
 #if defined (_DEBUG)
@@ -277,7 +278,7 @@ void CChildFrame::SetTitle( bool bModified )
 tstring CChildFrame::GetFileName(EGFNType type)
 {
 	CFileName fn(m_FileName);
-	tstring s;
+	//tstring s;
 
 	switch(type)
 	{
@@ -285,19 +286,17 @@ tstring CChildFrame::GetFileName(EGFNType type)
 			return fn;
 
 		case FN_FILE:
-			fn.GetFileName(s);
-			break;
+			return fn.GetFileName();
 
 		case FN_FILEPART:
-			fn.GetFileName_NoExt(s);
-			break;
+			return fn.GetFileName_NoExt();
 
 		case FN_PATH:
-			fn.GetPath(s);
-			break;
+			return fn.GetPath();
+
+		default:
+			return fn;
 	};
-	
-	return s;
 }
 
 LPCTSTR CChildFrame::GetTitle()
@@ -812,6 +811,24 @@ LRESULT CChildFrame::OnEncodingSelect(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 		SetModifiedOverride(true);
 
 		UpdateMenu();
+	}
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnViewFileProps(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	tstring fn = GetFileName(FN_FILE).c_str();
+	CPropertySheet sheet( fn.c_str(), 0, m_hWnd );
+	DocumentPropSheet docPropPage(this, _T("Properties"));
+
+	sheet.AddPage(docPropPage);
+	if(sheet.DoModal() == IDOK)
+	{
+		UpdateMenu();
+
+		if(docPropPage.ModifiedDocument())
+			SetModifiedOverride(true);
 	}
 
 	return 0;

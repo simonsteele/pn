@@ -344,11 +344,12 @@ BEGIN
     "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
     VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
     VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
-    VK_F8,          ID_VIEW_INDIVIDUALOUTPUT, VIRTKEY, SHIFT, NOINVERT
-    VK_MULTIPLY,    ID_VIEW_TOGGLEFOLD,     VIRTKEY, CONTROL, NOINVERT
     VK_SUBTRACT,    ID_VIEW_COLLAPSEALLFOLDS, VIRTKEY, CONTROL, ALT, 
                                                     NOINVERT
     VK_ADD,         ID_VIEW_EXPANDALLFOLDS, VIRTKEY, CONTROL, ALT, NOINVERT
+    VK_F8,          ID_VIEW_INDIVIDUALOUTPUT, VIRTKEY, SHIFT, NOINVERT
+    VK_MULTIPLY,    ID_VIEW_TOGGLEFOLD,     VIRTKEY, CONTROL, NOINVERT
+    VK_RETURN,      ID_VIEW_FILEPROPERTIES, VIRTKEY, ALT, NOINVERT
 END
 
 
@@ -358,8 +359,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,5,18
- PRODUCTVERSION 2,0,5,0
+ FILEVERSION 2,0,6,0
+ PRODUCTVERSION 2,0,6,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -376,12 +377,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele (Echo Software)"
             VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.5.18"
+            VALUE "FileVersion", "2.0.6.0"
             VALUE "InternalName", "PNWTL"
             VALUE "LegalCopyright", "Copyright © 2002-2003 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"
             VALUE "ProductName", "Programmers Notepad"
-            VALUE "ProductVersion", "2.0.5.0-rc1"
+            VALUE "ProductVersion", "2.0.6.0-devel"
         END
     END
     BLOCK "VarFileInfo"
@@ -1047,24 +1048,9 @@ BEGIN
                     IDC_OPT_FULLPATHCHECK,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,6,42,156,12
     EDITTEXT        IDC_OPT_MRUCOUNT,126,60,30,12,ES_AUTOHSCROLL
-    CONTROL         "Show Line Numbers",IDC_OPT_LINENOSCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,18,102,138,12
-    COMBOBOX        IDC_OPT_LECOMBO,66,120,102,66,CBS_DROPDOWNLIST | 
-                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    COMBOBOX        IDC_OPT_CPCOMBO,66,144,102,66,CBS_DROPDOWNLIST | 
-                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Use the tab character for indentation",
-                    IDC_OPT_USETABSCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,18,162,168,12
-    EDITTEXT        IDC_OPT_TABWIDTHEDIT,66,180,30,14,ES_AUTOHSCROLL
-    LTEXT           "Tab Width:",IDC_STATIC,18,180,48,12
-    LTEXT           "Line Endings:",IDC_STATIC,18,120,42,12
-    LTEXT           "Defaults:",IDC_STATIC,6,84,66,12
-    LTEXT           "",IDC_STATIC,42,89,252,2,SS_SUNKEN
     LTEXT           "Files in the most recently used list:",IDC_STATIC,6,60,
                     120,12
     LTEXT           "(1 to 50)",IDC_STATIC,162,60,42,12
-    RTEXT           "Code Page:",IDC_STATIC,12,144,48,12
 END
 
 IDD_PAGE_NEWFILES DIALOGEX 0, 0, 299, 200
@@ -1224,6 +1210,57 @@ BEGIN
     ICON            IDI_INFOICON,IDC_STATIC,7,53,21,20
 END
 
+IDD_PAGE_EDITDEFS DIALOGEX 0, 0, 299, 200
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "Show Line Numbers",IDC_OPT_LINENOSCHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,6,18,138,12
+    COMBOBOX        IDC_OPT_LECOMBO,54,103,102,66,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_OPT_CPCOMBO,54,127,102,66,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Use the tab character for indentation",
+                    IDC_OPT_USETABSCHECK,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,6,54,168,12
+    EDITTEXT        IDC_OPT_TABWIDTHEDIT,54,78,30,14,ES_AUTOHSCROLL
+    LTEXT           "Tab Width:",-1,6,78,48,12
+    LTEXT           "Line Endings:",-1,6,102,42,12
+    LTEXT           "Defaults:",-1,0,0,38,12
+    LTEXT           "",-1,36,5,252,2,SS_SUNKEN
+    RTEXT           "Code Page:",-1,0,126,48,12
+    CONTROL         "Word-Wrap",IDC_OPT_WORDWRAPCHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,6,36,138,12
+END
+
+IDD_FILEPROPERTIES DIALOGEX 0, 0, 194, 204
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    COMBOBOX        IDC_FILEPROP_SCHEME,66,96,114,84,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_FILEPROP_LINEENDINGS,66,120,114,48,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_FILEPROP_ENCODING,66,144,114,36,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_FILEPROP_TABWIDTH,66,168,48,12,ES_AUTOHSCROLL
+    ICON            IDR_MDICHILD,IDI_ICON2,6,6,20,20
+    RTEXT           "Lines:",IDC_STATIC,30,24,30,8
+    RTEXT           "Characters:",IDC_STATIC,6,42,54,8
+    RTEXT           "Words:",IDC_STATIC,6,60,54,8
+    LTEXT           "",IDC_STATIC,6,84,186,2,SS_SUNKEN
+    RTEXT           "Scheme:",IDC_STATIC,6,96,54,8
+    RTEXT           "Line Endings:",IDC_STATIC,6,120,54,8
+    RTEXT           "Encoding:",IDC_STATIC,6,144,54,8
+    RTEXT           "Tab Width:",IDC_STATIC,6,168,54,8
+    LTEXT           "Static",IDC_FILEPROP_LINES,66,24,102,12
+    LTEXT           "Static",IDC_FILEPROP_CHARS,66,42,102,12
+    LTEXT           "Static",IDC_FILEPROP_WORDS,66,60,102,12
+    RTEXT           "File:",IDC_STATIC,24,6,36,12
+    EDITTEXT        IDC_FILEPROP_FILENAME,66,6,120,12,ES_AUTOHSCROLL | 
+                    ES_READONLY | NOT WS_BORDER,WS_EX_TRANSPARENT
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1349,6 +1386,22 @@ BEGIN
         RIGHTMARGIN, 259
         TOPMARGIN, 7
         BOTTOMMARGIN, 107
+    END
+
+    IDD_PAGE_EDITDEFS, DIALOG
+    BEGIN
+        LEFTMARGIN, 2
+        RIGHTMARGIN, 296
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 198
+    END
+
+    IDD_FILEPROPERTIES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 187
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 197
     END
 END
 #endif    // APSTUDIO_INVOKED

@@ -137,6 +137,7 @@
 #define IDR_TOOLBAR2                    316
 #define IDR_TBR_PROJECTS                316
 #define IDB_ABOUT                       319
+#define IDD_FILEPROPERTIES              320
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -149,6 +150,7 @@
 #define IDD_TAB_MISC                    430
 #define IDD_PAGE_AFILES                 431
 #define IDD_AFILEEDITOR                 432
+#define IDD_PAGE_EDITDEFS               433
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_GOTOEDIT                    1004
@@ -174,6 +176,7 @@
 #define IDC_OPT_LLCOLUMNEDIT            1011
 #define IDC_STYLE_SELFOREBUTTON         1011
 #define IDC_AFILE_STARTTEXT             1011
+#define IDC_FILEPROP_TABWIDTH           1011
 #define IDC_FONT_COMBO                  1012
 #define IDC_TOOLS_REMOVEBUTTON          1012
 #define IDC_TE_BROWSEBUTTON             1012
@@ -232,9 +235,11 @@
 #define IDC_NEW_SCHEMECOMBO             1053
 #define IDC_TE_OUTPUTCOMBO              1053
 #define IDC_MULTIINSTANCECHECK          1053
+#define IDC_FILEPROP_LINEENDINGS        1053
 #define IDC_OPT_LECOMBO                 1054
-#define IDC_OPT_LECOMBO2                1055
+#define IDC_FILEPROP_ENCODING           1054
 #define IDC_OPT_CPCOMBO                 1055
+#define IDC_FILEPROP_SCHEME             1055
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_OPT_MAXCHECK                1056
 #define IDC_PNSAVE_TYPECOMBO            1057
@@ -265,6 +270,12 @@
 #define IDC_AFILES_REMOVEBUTTON         1080
 #define IDC_ABOUTIMAGE                  1081
 #define IDC_TOPSTATIC                   1082
+#define IDC_OPT_WORDWRAPCHECK           1083
+#define IDC_FILEPROP_LINES              1085
+#define IDC_FILEPROP_CHARS              1086
+#define IDC_FILEPROP_WORDS              1087
+#define IDC_FILEPROP_SUBTITLE           1088
+#define IDC_FILEPROP_FILENAME           1088
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -331,15 +342,16 @@
 #define ID_ENCODING_UTF8                32893
 #define ID_PROJECT_SETACTIVEPROJECT     32897
 #define ID_BUTTON32901                  32901
+#define ID_VIEW_FILEPROPERTIES          32902
 #define IDC_FINDTEXT_LABEL              65535
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        320
-#define _APS_NEXT_COMMAND_VALUE         32902
-#define _APS_NEXT_CONTROL_VALUE         1083
+#define _APS_NEXT_RESOURCE_VALUE        321
+#define _APS_NEXT_COMMAND_VALUE         32904
+#define _APS_NEXT_CONTROL_VALUE         1089
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

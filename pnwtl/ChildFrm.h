@@ -100,6 +100,8 @@ public:
 
 		COMMAND_ID_HANDLER(ID_EDIT_HEADERSWITCH, OnHeaderSwitch)
 
+		COMMAND_ID_HANDLER(ID_VIEW_FILEPROPERTIES, OnViewFileProps)
+
 		COMMAND_RANGE_HANDLER(ID_ENCODING_8, ID_ENCODING_UTF8, OnEncodingSelect)
 
 		NOTIFY_CODE_HANDLER(TBN_GETINFOTIP, OnGetInfoTip)
@@ -205,6 +207,7 @@ public:
 	LRESULT OnUseTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnEncodingSelect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnViewFileProps(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnRunTool(LPVOID pTool);
 

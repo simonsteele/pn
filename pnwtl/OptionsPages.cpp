@@ -29,6 +29,44 @@ void COptionsPageGeneral::OnOK()
 
 	DoDataExchange(TRUE);
 
+	COptionsManager& options = COptionsManager::GetInstanceRef();
+	options.MaximiseNew = m_bMaximise != FALSE;
+	options.ShowFullPath = m_bFullPath != FALSE;
+	// Ensure MRU size <= 50 && >= 1
+	m_iMRUSize = ( m_iMRUSize > 50 ? 50 : ( m_iMRUSize < 1 ? 1 : m_iMRUSize ) );
+	options.Set(PNSK_INTERFACE, _T("MRUSize"), (int)m_iMRUSize);
+	options.Set(PNSK_INTERFACE, _T("AllowMultiInstance"), (bool)(m_bMultiInstanceOk  != FALSE));
+}
+
+void COptionsPageGeneral::OnInitialise()
+{
+	COptionsManager& options = COptionsManager::GetInstanceRef();
+	m_bMaximise = options.MaximiseNew;
+	m_bFullPath = options.ShowFullPath;
+	m_iMRUSize = options.Get(PNSK_INTERFACE, _T("MRUSize"), 4);
+	m_bMultiInstanceOk = options.Get(PNSK_INTERFACE, _T("AllowMultiInstance"), false);
+
+	DoDataExchange();
+}
+
+LRESULT COptionsPageGeneral::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+
+
+	return 0;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// COptionsPageEditDefaults
+//////////////////////////////////////////////////////////////////////////////
+
+void COptionsPageEditDefaults::OnOK()
+{
+	if(!m_bCreated)
+		return;
+
+	DoDataExchange(TRUE);
+
 	CComboBox cb(GetDlgItem(IDC_OPT_LECOMBO));
 	m_SaveFormat = (EPNSaveFormat)cb.GetItemData(cb.GetCurSel());
 
@@ -40,26 +78,18 @@ void COptionsPageGeneral::OnOK()
 	options.TabWidth = m_iTabWidth;
 	options.LineNumbers = m_bLineNos != FALSE;
 	options.LineEndings = m_SaveFormat;
-	options.MaximiseNew = m_bMaximise != FALSE;
-	options.ShowFullPath = m_bFullPath != FALSE;
 	options.DefaultCodePage = m_CodePage;
-	// Ensure MRU size <= 50 && >= 1
-	m_iMRUSize = ( m_iMRUSize > 50 ? 50 : ( m_iMRUSize < 1 ? 1 : m_iMRUSize ) );
-	options.Set(PNSK_INTERFACE, _T("MRUSize"), (int)m_iMRUSize);
-	options.Set(PNSK_INTERFACE, _T("AllowMultiInstance"), (bool)(m_bMultiInstanceOk  != FALSE));
+	options.WordWrap = m_bWrap != FALSE;
 }
 
-void COptionsPageGeneral::OnInitialise()
+void COptionsPageEditDefaults::OnInitialise()
 {
 	COptionsManager& options = COptionsManager::GetInstanceRef();
 	m_bUseTabs = options.UseTabs;
 	m_iTabWidth = options.TabWidth;
 	m_bLineNos = options.LineNumbers;
+	m_bWrap = options.WordWrap;
 	m_SaveFormat = options.LineEndings;
-	m_bMaximise = options.MaximiseNew;
-	m_bFullPath = options.ShowFullPath;
-	m_iMRUSize = options.Get(PNSK_INTERFACE, _T("MRUSize"), 4);
-	m_bMultiInstanceOk = options.Get(PNSK_INTERFACE, _T("AllowMultiInstance"), false);
 	m_CodePage = options.DefaultCodePage;
 
 	CComboBox cb(GetDlgItem(IDC_OPT_LECOMBO));
@@ -86,7 +116,13 @@ void COptionsPageGeneral::OnInitialise()
 	DoDataExchange();
 }
 
-LRESULT COptionsPageGeneral::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LPCTSTR COptionsPageEditDefaults::GetTreePosition()
+{
+	return _T("General\\Defaults");
+}
+
+
+LRESULT COptionsPageEditDefaults::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	//typedef enum { PNSF_Windows = SC_EOL_CRLF, PNSF_Unix = SC_EOL_LF, PNSF_Mac = SC_EOL_CR, PNSF_NoChange} EPNSaveFormat;
 	CComboBox cb;

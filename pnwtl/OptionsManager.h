@@ -58,6 +58,7 @@ class COptionsManager
 		bool MaximiseNew;
 		bool ShowFullPath;
 		bool LineHighlight;
+		bool WordWrap;
 		int RightGuide;
 		UINT RightColumn;
 		COLORREF LineHighlightColour;
