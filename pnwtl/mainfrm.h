@@ -9,13 +9,6 @@
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
- *
- * Changes:
- * 22/04/2002 ss Modified CTabbedMDIFrameWindowImpl to take an extra template
- *				 parameter, allowing it to use the CPNMDIClient client class
- *				 instead of the default. This means that PN can use the MDI
- *				 management stuff in the Tabbed MDI framework. Changes submitted
- *				 to Daniel Owen.
  */
 
 #if _MSC_VER >= 1000
