@@ -18,6 +18,142 @@
 
 #include "project.h"
 
+#include "include/genx/genx.h"
+
+class GenxXMLWriter
+{
+public:
+	GenxXMLWriter()
+	{
+		m_hFile = NULL;
+		
+		m_writer = genxNew(NULL, NULL, NULL);
+
+		initXmlBits();
+	}
+
+	~GenxXMLWriter()
+	{
+		if(m_hFile != NULL)
+			Close();
+
+		genxDispose(m_writer);
+	}
+
+	void Start(LPCTSTR filename)
+	{
+		m_hFile = _tfopen(filename, "wb");
+
+		if(m_hFile == NULL)
+		{
+			UNEXPECTED(_T("Could not open an XML file for writing"));
+			return;
+		}
+
+		genxStartDocFile(m_writer, m_hFile);
+	}
+
+	void Close()
+	{
+		if (genxEndDocument(m_writer))
+		{
+			// error...
+		}
+
+		fclose(m_hFile);
+		m_hFile = NULL;
+	}
+
+	operator genxWriter ()
+	{
+		return m_writer;
+	}
+
+protected:
+	/**
+	 * Use this to initialize all your elements that you'll use over and
+	 * over.
+	 */
+	virtual void initXmlBits()
+	{
+		//genxStatus s;
+	}
+
+protected:
+	genxWriter	m_writer;
+	FILE*		m_hFile;
+};
+
+#define PREDECLARE_ATTRIBUTES() \
+	{
+#define ATT(name, member) \
+	member = genxDeclareAttribute(m_writer, NULL, u(name), &s)
+#define END_ATTRIBUTES() \
+	}
+
+#define u(x) (constUtf8)x
+
+class ToolsXMLWriter : public GenxXMLWriter
+{
+protected:
+	//genxAttribute genxDeclareAttribute(genxWriter w,
+	//			   genxNamespace ns,
+	//			   constUtf8 name, genxStatus * statusP);
+	virtual void initXmlBits()
+	{
+		genxStatus s;
+
+		m_eScheme = genxDeclareElement(m_writer, NULL, u("Scheme"), &s);
+		m_eTool = genxDeclareElement(m_writer, NULL, u("Tool"), &s);
+
+		PREDECLARE_ATTRIBUTES()
+			ATT("name", m_aName);
+			ATT("command", m_aCommand);
+			ATT("folder", m_aFolder);
+			ATT("params", m_aParams);
+			ATT("shortcut", m_aShortcut);
+			ATT("parsepattern", m_aParsePattern);
+			ATT("flags", m_aFlags);
+		END_ATTRIBUTES();
+	}
+
+	void writeTool(ToolDefinition* tool)
+	{
+		int flags = tool->iFlags;
+		genxStartElement(m_eTool);
+		genxAddAttribute(m_aName, u(tool->Name.c_str()));
+		genxAddAttribute(m_aCommand, u(tool->Command.c_str()));
+		genxAddAttribute(m_aFolder, u(tool->Folder.c_str()));
+		genxAddAttribute(m_aParams, u(tool->Params.c_str()));
+		genxAddAttribute(m_aShortcut, u(IntToTString(tool->Shortcut).c_str()));
+		genxAddAttribute(m_aParsePattern, u(tool->CustomParsePattern.c_str()));
+		genxAddAttribute(m_aFlags, u(IntToTString(flags).c_str()));
+		genxEndElement(m_writer);
+	}
+
+	void beginScheme(LPCTSTR name)
+	{
+		genxStartElement(m_eScheme);
+		genxAddAttribute(m_aName, u(name));
+	}
+
+	void endScheme()
+	{
+		genxEndElement(m_writer);
+	}
+
+protected:
+	genxElement m_eScheme;
+	genxElement m_eTool;
+	genxAttribute m_aName;
+	genxAttribute m_aCommand;
+	genxAttribute m_aFolder;
+	genxAttribute m_aParams;
+	genxAttribute m_aShortcut;
+	genxAttribute m_aParsePattern;
+	genxAttribute m_aFlags;
+};
+
 #include <sstream>
 #include <fstream>
 #include <algorithm>

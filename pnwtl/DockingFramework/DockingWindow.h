@@ -661,6 +661,10 @@ public:
 	{
 		// Override in derived class if it depends on system metrics
 	}
+    virtual void ThemeChanged()
+    {
+        // Override to support changed themes message
+    }
 };
 
 
@@ -695,6 +699,12 @@ public:
 		}
 		return lRes;
 	}
+
+	LRESULT ThemeChanged()
+	{
+        m_caption.ThemeChanged();
+        return 0;
+    }
 
 	void GetMinMaxInfo(LPMINMAXINFO pMinMaxInfo) const
 	{
@@ -794,6 +804,7 @@ protected:
 			MESSAGE_HANDLER(WM_NCLBUTTONDOWN, OnNcLButtonDown)
 			MESSAGE_HANDLER(WM_NCLBUTTONUP,OnNcLButtonUp)
 			MESSAGE_HANDLER(WM_NCLBUTTONDBLCLK,OnNcLButtonDblClk)
+			MESSAGE_HANDLER(WM_THEMECHANGED,OnThemeChanged)
 #ifdef DF_FOCUS_FEATURES
 			ATLASSERT(CDockingFocusHandler::This());
 			CHAIN_MSG_MAP_ALT_MEMBER((*CDockingFocusHandler::This()),0)
@@ -909,6 +920,12 @@ protected:
 		pt.y-=rcWnd.TopLeft().y;
 		return pThis->NcHitTest(pt);
 	}
+
+	LRESULT OnThemeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+        T* pThis=static_cast<T*>(this);
+		return pThis->ThemeChanged();
+	}
 //OnSetIcon
 //OnSetText
 	LRESULT OnCaptionChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -945,6 +962,7 @@ protected:
 	LRESULT OnNcLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		T* pThis=static_cast<T*>(this);
+		HWND hWndFocus = ::GetFocus();
 		switch(wParam)
 		{
 			case HTCLOSE:
@@ -952,22 +970,23 @@ protected:
 				break;
 #ifdef DF_AUTO_HIDE_FEATURES
 			case HTPIN:
-				{
-					HWND hWndFocus = ::GetFocus();
-					bHandled=pThis->PinBtnPress();
-					if(::IsWindow(hWndFocus) && ::IsWindowVisible(hWndFocus))
-					{
-						::SetFocus(hWndFocus);
-					}
-					else
-					{
-						::SetFocus(this->GetTopLevelParent());
-					}
-				}
+				bHandled=pThis->PinBtnPress();
 				break;
 #endif
 			default:
 				bHandled=FALSE;
+		}
+
+		if(hWndFocus != ::GetFocus())
+		{
+			if(::IsWindow(hWndFocus) && ::IsWindowVisible(hWndFocus))
+			{
+				::SetFocus(hWndFocus);
+			}
+			else
+			{
+				::SetFocus(this->GetTopLevelParent());
+			}
 		}
         return 0;
 	}
@@ -1064,9 +1083,11 @@ public:
 #ifdef DF_AUTO_HIDE_FEATURES
 		// Update from Peter Carlson.
 		//  A fix for the pin restore problem.
+        /*
 		CDockingSide side(pHdr->dockPos.dwDockSide);
 		if (side.IsPinned())
 			PinUp(side, (side.IsHorizontal() ? pHdr->dockPos.nHeight : pHdr->dockPos.nWidth));
+        */
 		//
 #endif
 
@@ -1075,7 +1096,21 @@ public:
 
 	bool CanBeClosed(unsigned long /*param*/)
 	{
-		Hide();
+		HWND hWndFocus = ::GetFocus();
+
+		this->Hide();
+
+		if(hWndFocus != ::GetFocus())
+		{
+			if(::IsWindow(hWndFocus) && ::IsWindowVisible(hWndFocus))
+			{
+				::SetFocus(hWndFocus);
+			}
+			else
+			{
+				::SetFocus(this->GetTopLevelParent());
+			}
+		}
 		return false;
 	}
 

@@ -246,9 +246,9 @@ public:
 	HBRUSH GetCaptionBgBrush()
 	{
 		m_DockingFocusHandler.AddWindow(m_hWnd);
-		return GetSysColorBrush(HasFocus() ? COLOR_ACTIVECAPTION : COLOR_3DFACE);
+		return GetSysColorBrush(HasFocus() ? COLOR_ACTIVECAPTION : COLOR_INACTIVECAPTION);
 	}
-	DWORD GetCaptionTextColor() const { return GetSysColor(HasFocus() ? COLOR_CAPTIONTEXT : COLOR_BTNTEXT); }
+	DWORD GetCaptionTextColor() const { return GetSysColor(HasFocus() ? COLOR_CAPTIONTEXT : COLOR_INACTIVECAPTIONTEXT); }
 //private:
 	bool HasFocus() const { return 0!= CWindow(m_hWnd).IsChild(GetFocus()); }
 private:

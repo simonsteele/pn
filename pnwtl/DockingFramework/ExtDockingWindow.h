@@ -130,6 +130,10 @@ protected:
 	typedef baseClass::CButton CButtonBase;
 	struct CButton : CButtonBase
 	{
+        CTheme *m_pTheme;
+        CButton() : m_pTheme(NULL)
+        {
+        }
         virtual void CalculateRect(CRect& rc,bool bHorizontal=true)
         {
             CopyRect(rc);
@@ -145,12 +149,14 @@ protected:
 				rc.top=bottom;
 			}
         }
-		virtual void Draw (CDC& dc)=0;
+		virtual void Draw (CDC& dc, int state)=0;
+		virtual void Draw (CDC& dc) { Draw(dc, EBHC_NORMAL); }
 		virtual void Press(HWND hWnd)
 		{
 			CWindowDC dc(hWnd);
-			Draw(dc);
-            dc.DrawEdge(this,BDR_SUNKENOUTER/*|BF_ADJUST*/ ,BF_RECT); //look like button push
+			Draw(dc, EBHC_PRESSED);
+            if(!m_pTheme || !m_pTheme->m_hTheme)
+                dc.DrawEdge(this,BDR_SUNKENOUTER/*|BF_ADJUST*/ ,BF_RECT);
 		}
 		virtual void Release(HWND hWnd)
 		{
@@ -160,8 +166,9 @@ protected:
 		virtual void Hot(HWND hWnd)
 		{
 			CWindowDC dc(hWnd);
-			Draw(dc);
-			dc.DrawEdge(this,BDR_RAISEDINNER/*|BF_ADJUST*/ ,BF_RECT); //look like button raise
+			Draw(dc, EBHC_HOT);
+            if(!m_pTheme || !m_pTheme->m_hTheme)
+                dc.DrawEdge(this,BDR_RAISEDINNER/*|BF_ADJUST*/ ,BF_RECT); //look like button raise
 		}
 
 	};
@@ -169,8 +176,14 @@ protected:
 	class CCloseButton : public CButton
 	{
 	public:
-        virtual void Draw(CDC& dc)
+        virtual void Draw(CDC& dc, int state = EBHC_NORMAL)
         {
+            if(m_pTheme && m_pTheme->m_hTheme)
+            {
+                m_pTheme->DrawThemeBackground(dc, EBP_HEADERCLOSE, state, this, NULL);
+                return;
+            }
+
             CPen pen;
 #ifdef DF_FOCUS_FEATURES
 			CCaptionFocus cf(dc);
@@ -208,8 +221,14 @@ protected:
 		{
 			m_state=state;
 		}
-        virtual void Draw(CDC& dc)
+        virtual void Draw(CDC& dc, int state = EBHC_NORMAL)
         {
+            if(m_pTheme && m_pTheme->m_hTheme)
+            {
+                m_pTheme->DrawThemeBackground(dc, EBP_HEADERPIN, state + 
+                    ((m_state == CIcons::sPinned) ? 0 : 3), this, NULL);
+                return;
+            }
 
 #ifdef DF_FOCUS_FEATURES
 			CCaptionFocus cf(dc);
@@ -245,9 +264,10 @@ public:
 	}
 #endif
 public:
-	COutlookLikeExCaption():baseClass(0,false)
+    COutlookLikeExCaption():baseClass(0,false),m_winTheme(NULL),m_themeFont(NULL)
 	{
 		SetOrientation(!IsHorizontal());
+        ThemeChanged();
 	}
 
 	void UpdateMetrics()
@@ -282,14 +302,54 @@ public:
 #endif
 		return bRes;
 	}
+
+    ~COutlookLikeExCaption()
+    {
+        ThemeChanged(TRUE);
+    }
+
+    CTheme m_Theme;
+    HTHEME m_winTheme;
+    HFONT m_themeFont;
+    void ThemeChanged(BOOL dontLoad = FALSE)
+    {
+        if(!m_Theme.IsThemingSupported()) return;
+
+        if(m_themeFont) { ::DeleteObject(m_themeFont); m_themeFont = NULL; }
+        if(m_winTheme) { ::CloseThemeData(m_winTheme); m_winTheme = NULL; }
+        m_Theme.CloseThemeData();
+
+        if(dontLoad) return;
+
+        m_Theme.OpenThemeData(NULL, L"ExplorerBar");
+        m_winTheme = ::OpenThemeData(NULL,L"Window");
+#ifdef DF_AUTO_HIDE_FEATURES
+        m_btnPin.m_pTheme = &m_Theme;
+#endif
+        m_btnClose.m_pTheme = &m_Theme;
+        if(m_winTheme)
+        {
+            LOGFONTW lf;
+            ::GetThemeSysFont(m_winTheme, TMT_SMALLCAPTIONFONT, (LOGFONT *)&lf);
+            m_themeFont = ::CreateFontIndirectW(&lf);
+        }
+    }
+
 	void Draw(HWND hWnd,CDC& dc)
 	{
 #ifdef DF_FOCUS_FEATURES
 		CCaptionFocus cf(dc);
-		dc.FillRect(this,cf.GetCaptionBgBrush());
-#else
-		dc.FillRect(this,(HBRUSH)LongToPtr(COLOR_3DFACE + 1));
 #endif
+        if(m_Theme.m_hTheme)
+            ::DrawThemeBackground(m_winTheme, dc, WP_MAXCAPTION, CWindow(hWnd).IsChild(GetFocus()) ? CS_ACTIVE : CS_INACTIVE, this, NULL);
+        else
+        {
+#ifdef DF_FOCUS_FEATURES
+		    dc.FillRect(this,cf.GetCaptionBgBrush());
+#else
+    		dc.FillRect(this,(HBRUSH)LongToPtr(COLOR_3DFACE + 1));
+#endif
+        }
 		int len=GetWindowTextLength(hWnd)+1;
 		TCHAR* sText=new TCHAR[len];
 		if(GetWindowText(hWnd,sText,len)!=0)
@@ -318,21 +378,37 @@ public:
 				 hFont = settings.VSysFont();
 			}
 #ifdef DF_FOCUS_FEATURES
-			dc.SetTextColor(cf.GetCaptionTextColor());
+    		dc.SetTextColor(cf.GetCaptionTextColor());
 #else
-			dc.SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
+    		dc.SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
 #endif
-			dc.SetBkMode(TRANSPARENT);
-			HFONT hFontOld = dc.SelectFont(hFont);
-			if( (rc.left<rc.right) && (rc.top<rc.bottom))
-				DrawEllipsisText(dc,sText,_tcslen(sText),&rc,IsHorizontal());
-			dc.SelectFont(hFontOld);
+    		dc.SetBkMode(TRANSPARENT);
+            HFONT hFontOld;
+            if(m_themeFont)
+        		hFontOld = dc.SelectFont(m_themeFont);
+            else
+        		hFontOld = dc.SelectFont(hFont);
+            /*
+            if(m_Theme.IsThemingSupported())
+            {
+                USES_CONVERSION;
+                m_Theme.DrawThemeText(dc, EBP_SPECIALGROUPHEAD, CWindow(hWnd).IsChild(GetFocus()) ? CS_ACTIVE : CS_INACTIVE,
+                    T2OLE(sText), -1, DT_END_ELLIPSIS | DT_VCENTER | DT_SINGLELINE, 0, &rc);
+            }
+            else
+            {
+            */
+    			if( (rc.left<rc.right) && (rc.top<rc.bottom))
+    				DrawEllipsisText(dc,sText,_tcslen(sText),&rc,IsHorizontal());
+            //}
+    		dc.SelectFont(hFontOld);
 		}
 		m_btnClose.Draw(dc);
 #ifdef DF_AUTO_HIDE_FEATURES
 		m_btnPin.Draw(dc);
 #endif
-		dc.DrawEdge(this,EDGE_ETCHED,BF_RECT);
+        if(!m_Theme.IsThemingSupported())
+		    dc.DrawEdge(this,EDGE_ETCHED,BF_RECT);
 		delete [] sText;
 	}
 

@@ -15,7 +15,10 @@
 #include <DockingFrame.h>
 #include <DockingBox.h>
 #include <TabDockingBox.h>
-#include <VC7LikeCaption.h>
+
+//#include <VC7LikeCaption.h>
+//typedef dockwins::CVC7LikeBoxedDockingWindowTraits	CPNBoxedDockingWindowTraits;
+typedef dockwins::COutlookLikeBoxedDockingWindowTraits	CPNBoxedDockingWindowTraits;
 
 // These includes are to enable the state manager stuff.
 #include <sstate.h>
@@ -79,9 +82,9 @@ class CPNStateManager : public sstate::CWindowStateMgr
  */
 template <class T>
 class /*ATL_NO_VTABLE*/ CPNDockingWindowT : public dockwins::CBoxedDockingWindowImpl<T,
-                CWindow, dockwins::CVC7LikeBoxedDockingWindowTraits >
+                CWindow, CPNBoxedDockingWindowTraits >
 {
-	typedef dockwins::CBoxedDockingWindowImpl<T, CWindow, dockwins::CVC7LikeBoxedDockingWindowTraits> baseClass;
+	typedef dockwins::CBoxedDockingWindowImpl<T, CWindow, CPNBoxedDockingWindowTraits> baseClass;
 	typedef CPNDockingWindowT<T> thisClass;
 
 	public:

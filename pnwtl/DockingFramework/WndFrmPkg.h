@@ -631,7 +631,8 @@ protected:
 };
 
 template< class TTraits = CDockingFrameTraits >
-class CWndFramesPackage : public CWndFramesPackageBase<CWndFrame,TTraits >
+class CWndFramesPackage : public CWndFramesPackageBase<CWndFrame,TTraits >,
+    public CThemeImpl <CWndFramesPackage>
 {
 	typedef typename CWndFrame CFrame;
 	typedef typename TTraits CTraits;
@@ -640,13 +641,13 @@ class CWndFramesPackage : public CWndFramesPackageBase<CWndFrame,TTraits >
 	typedef CWndFramesPackageBase<CFrame,TTraits > baseClass;
 public:
 	CWndFramesPackage(bool bHorizontal):baseClass(bHorizontal)
-	{
-	}
+	{ }
 	void PrepareForDocking(CWindow wnd,HDOCKBAR bar)
 	{
 		wnd.ShowWindow(SW_HIDE);
 		DWORD style = wnd.GetWindowLong(GWL_STYLE);
 		DWORD newStyle = style&(~WS_POPUP)|WS_CHILD;
+        if(IsThemingSupported()) ::SetWindowTheme(wnd.m_hWnd, NULL, L"");
 		wnd.SetWindowLong( GWL_STYLE, newStyle);
 		wnd.SetParent(bar);
 		wnd.SendMessage(WM_NCACTIVATE,TRUE);
@@ -659,6 +660,7 @@ public:
 		wnd.ShowWindow(SW_HIDE);
 		DWORD style = wnd.GetWindowLong(GWL_STYLE);
 		DWORD newStyle = style&(~WS_CHILD)|WS_POPUP;
+        if(IsThemingSupported()) ::SetWindowTheme(wnd.m_hWnd, NULL, NULL);
 		wnd.SetWindowLong( GWL_STYLE, newStyle);
 		wnd.SetParent(NULL);
 
