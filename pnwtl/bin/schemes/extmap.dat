@@ -28,4 +28,6 @@
 .js=javascript
 .pl=perl
 .pm=perl
+.cgi=perl
+.pod=perl
 makefile=makefile

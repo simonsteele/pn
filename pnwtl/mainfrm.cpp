@@ -211,11 +211,22 @@ LRESULT CMainFrame::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 
 LRESULT CMainFrame::OnChildNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
-	if(lParam == SCN_UPDATEUI)
+	if(lParam == SCN_UPDATEUI || PN_MDIACTIVATE)
 	{
 		// Update the status bar when Scintilla thinks that we should.
 		UpdateStatusBar();
 	}
+
+	/*if(lParam == PN_MDIACTIVATE)
+	{
+		LPCTSTR childTitle = CChildFrame::FromHandle(GetCurrentEditor())->GetTitle();
+		TCHAR* titleBuf = new TCHAR[_tcslen(childTitle) + _tcslen(_T("Programmers Notepad 2"))+5];
+		_tcscpy(titleBuf, childTitle);
+		_tcscat(titleBuf, _T(" - "));
+		_tcscat(titleBuf, _T("Programmers Notepad 2"));
+		_setWindowText(titleBuf);
+		delete [] titleBuf;
+	}*/
 			
 	return TRUE;
 }
@@ -830,4 +841,22 @@ BOOL CALLBACK CMainFrame::ChildEnumProc(HWND hWnd, LPARAM lParam)
 	}
 
 	return TRUE;
+}
+
+void CMainFrame::_setWindowText(LPCTSTR lpszNew)
+{
+	#define _countof(array) (sizeof(array)/sizeof(array[0]))
+
+	int nNewLen = lstrlen(lpszNew);
+	TCHAR szOld[256];
+	// fast check to see if text really changes (reduces flash in controls)
+	if (nNewLen > _countof(szOld) ||
+		GetWindowText(szOld, _countof(szOld)) != nNewLen ||
+		lstrcmp(szOld, lpszNew) != 0)
+	{
+		// change it
+		SetWindowText(lpszNew);
+	}
+
+	#undef _countof
 }

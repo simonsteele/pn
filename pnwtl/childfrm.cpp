@@ -1171,6 +1171,11 @@ void CChildFrame::PrintSetup()
 	COptionsManager::GetInstance()->SavePrintSettings(&m_po);
 }
 
+CTextView* CChildFrame::GetTextView()
+{
+	return &m_view;
+}
+
 ////////////////////////////////////////////////////
 // CChildFrame::CCFSplitter
 

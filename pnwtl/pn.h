@@ -17,7 +17,8 @@
 #define PN_TOOLFINISHED		(WM_USER+40)
 #define PN_SCHEMECHANGED	(WM_USER+41)
 
-#define TOOLS_RUNTOOL	0x2
+#define PN_MDIACTIVATE		0x1
+#define TOOLS_RUNTOOL		0x2
 
 #include "resource.h"
 

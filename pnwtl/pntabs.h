@@ -61,7 +61,7 @@ public:
 
 	LRESULT OnChildActivationChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
-		SendMessage(GetParent(), PN_NOTIFY, 0, SCN_UPDATEUI);
+		SendMessage(GetParent(), PN_NOTIFY, 0, PN_MDIACTIVATE);
 
 		bHandled = FALSE;
 		

@@ -233,6 +233,8 @@ public:
 	void OnRunTool(LPVOID pVoid);
 	void AddOutput(LPCSTR outputstring, int nLength = -1);
 
+	CTextView* GetTextView();
+
 	//CallbackBase2<bool, CChildFrame*>* m_onClose;
 
 protected:

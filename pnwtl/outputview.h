@@ -13,6 +13,8 @@
 
 #include "ScintillaWTL.h"
 
+#define PN_HANDLEHSCLICK	(WM_USER+20)
+
 class COutputView : public CScintillaWindowImpl< COutputView, CScintillaImpl >
 {
 public:
@@ -20,6 +22,7 @@ public:
 
 	BEGIN_MSG_MAP(COutputView)
 		COMMAND_ID_HANDLER(ID_OUTPUT_CLEAR, OnClear)
+		MESSAGE_HANDLER(PN_HANDLEHSCLICK, OnHotSpotClicked)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -41,7 +44,13 @@ public:
 		SendMessage(SCI_GOTOLINE, line);
 	}
 
+	virtual int HandleNotify(LPARAM lParam);
+
 protected:
+	LRESULT OnHotSpotClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+	void ExtendStyleRange(int startPos, int style, TextRange* tr);
+	void HandleGCCError(int style, int position);
 
 	LRESULT OnClear(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{

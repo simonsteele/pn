@@ -184,6 +184,8 @@ protected:
 	void PerformChildEnum(SChildEnumStruct* s);
 	void PerformChildEnum(lpChildEnumFn pFunction);
 
+	void _setWindowText(LPCTSTR newText);
+
 protected:
 	CFindDlg*				m_FindDialog;
 	CReplaceDlg*			m_ReplaceDialog;

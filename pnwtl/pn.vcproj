@@ -166,6 +166,9 @@
 				RelativePath="mainfrm.cpp">
 			</File>
 			<File
+				RelativePath="outputview.cpp">
+			</File>
+			<File
 				RelativePath=".\pn.cpp">
 			</File>
 			<File
