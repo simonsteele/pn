@@ -9,14 +9,15 @@
 		<value name="colour.number">007f7f</value>
 		<value name="colour.keyword">00007f</value>
 		<value name="colour.operator">000000</value>
+		<value name="colour.comment">007f00</value>
 	</globals>
 	<style-classes>
 		<!-- All styles inherit the default style. Font fore and back colours are not specified - this way we inherit the system defaults -->
 		<style-class name="default" size="10" font="Lucida Console"/>
 		<!-- the bold style adds bold=true to the parent -->
-		<style-class name="comment" font="Comic Sans" size="9" fore="font.comment"/>
+		<style-class name="comment" font="font.comment" size="9" fore="colour.comment"/>
 		<style-class name="commentdoc" inherit-style="comment" fore="3f703f"/>
-		<style-class name="commentline" inherit-style="comment" fore="007f00"/>
+		<style-class name="commentline" inherit-style="comment"/>
 		<style-class name="commentbox" inherit-style="comment"/>
 		<style-class name="keyword" fore="colour.keyword" bold="true"/>
 	</style-classes>

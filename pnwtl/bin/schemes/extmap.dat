@@ -5,7 +5,8 @@
 .html=Web
 .htm=Web
 .php=Web
-.pas=ObjectPascal
+.pas=pascal
+.dfm=pascal
 .properties=Properties
 .ini=Properties
 .scheme=xml
