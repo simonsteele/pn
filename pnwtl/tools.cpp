@@ -32,6 +32,11 @@ static char THIS_FILE[] = __FILE__;
 // SchemeTools
 //////////////////////////////////////////////////////////////////////////////
 
+SchemeTools::SchemeTools()
+{
+	m_hAccel = NULL;
+}
+
 SchemeTools::SchemeTools(LPCTSTR schemename)
 {
 	m_Scheme = schemename;
@@ -80,6 +85,21 @@ int SchemeTools::GetMenu(CSMenuHandle& menu, int iInsertBefore, int iCommand)
 	}
 
 	return iLastCommand;
+}
+
+void SchemeTools::AllocateMenuResources(int iCommand)
+{
+	if(m_Tools.size() != 0)
+	{
+		CSMenuManager* pMan = CSMenuManager::GetInstance();
+		for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
+		{
+			ToolDefinition* pT = (*i);
+			
+			if(pT->CommandID == -1)
+				pT->CommandID = pMan->RegisterCallback(pT->CommandID, NULL, iCommand, (LPVOID)pT);
+		}
+	}
 }
 
 /**

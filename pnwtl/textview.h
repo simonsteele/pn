@@ -27,6 +27,7 @@ public:
 	typedef CScintillaWindowImpl< CTextView, CScintillaImpl > baseClass;
 
 	CTextView();
+	~CTextView();
 
 	BOOL PreTranslateMessage(MSG* pMsg);
 
@@ -86,6 +87,8 @@ public:
 	LRESULT OnExpandAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnToggleFold(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
+	void checkLineLength();
+
 protected:
 	void ProcessNumberedBookmark(int n);
 	virtual void OnFirstShow();
@@ -95,6 +98,12 @@ protected:
 	EPNEncoding m_encType;
 	bool m_bSmartStart;
 	bool m_bLineNos;
+
+	bool m_bMeasureCanRun;
+	CRITICAL_SECTION m_csMeasure;
+	HANDLE m_hMeasureThread;
+
+	static UINT __stdcall RunMeasureThread(void*);
 };
 
 /////////////////////////////////////////////////////////////////////////////

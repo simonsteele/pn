@@ -61,6 +61,7 @@ Bug Fixes:
 21) Esc doesn't close the refresh dialog (SF Bug #939931).
 22) Pseudo misspelt in CSS scheme (SF Bug #969586).
 23) Regular Expression replace (SF Bug #957788).
+24) Global keyboard shortcuts don't work (SF Bug #960000).
 
 If you find a bug:
 ------------------

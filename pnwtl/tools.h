@@ -47,7 +47,7 @@ typedef std::list<SourcedToolDefinition*> TOOLDEFS_LIST;
 class SchemeTools
 {
 	public:
-		SchemeTools(){}
+		SchemeTools();
 		SchemeTools(LPCTSTR schemename);
 		~SchemeTools();
 
@@ -62,6 +62,8 @@ class SchemeTools
 
 		void			WriteDefinition(ofstream& stream, ToolSource* source);
 
+		// You only need to do the following if you can't call GetMenu.
+		void			AllocateMenuResources(int iCommand = TOOLS_RUNTOOL);
 		void			ReleaseMenuResources();
 
 		HACCEL			GetAcceleratorTable();

@@ -32,6 +32,7 @@ CScintilla::CScintilla()
 	refs++;
 	m_Modified = false;
 	Perform = NULL;
+	StoredPerform = NULL;
 	m_TabWidth = 4;
 	m_SelLength = 0;
 }
@@ -78,6 +79,23 @@ HWND CScintilla::Create(HWND hParent, HINSTANCE hInst)
 }
 
 #endif
+
+void CScintilla::DisableDirectAccess()
+{
+	StoredPerform = Perform;
+	Perform = NULL;
+}
+
+bool CScintilla::EnableDirectAccess()
+{
+	if(StoredPerform != NULL)
+	{
+		Perform = StoredPerform;
+		return true;
+	}
+	else
+		return false;
+}
 
 bool CScintilla::OpenFile(LPCTSTR filename)
 {

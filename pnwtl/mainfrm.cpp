@@ -71,8 +71,13 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(I
 	m_CmdBar.SetCallback(this, OnMDISetMenu);
 
 	m_hToolAccel = NULL;
+	m_hGlobalToolAccel = NULL;
 
 	m_uiMIMessageID = g_Context.m_miManager->GetMessageID();
+
+	SchemeTools* pSchemeTools = SchemeToolsManager::GetInstance()->GetGlobalTools();
+	pSchemeTools->AllocateMenuResources();
+	m_hGlobalToolAccel = pSchemeTools->GetAcceleratorTable();
 }
 
 CMainFrame::~CMainFrame()
@@ -251,10 +256,14 @@ void CMainFrame::OnMDISetMenu(HMENU hOld, HMENU hNew)
  */
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 {
-	if((pMsg->message >= WM_KEYFIRST) && (pMsg->message <= WM_KEYLAST) && m_hToolAccel != 0)
+	if((pMsg->message >= WM_KEYFIRST) && (pMsg->message <= WM_KEYLAST))
 	{
-		if(::TranslateAccelerator(m_hWnd, m_hToolAccel, pMsg))
-			return TRUE;
+		if(m_hToolAccel != 0)
+			if(::TranslateAccelerator(m_hWnd, m_hToolAccel, pMsg))
+				return TRUE;
+		if(m_hGlobalToolAccel != NULL)
+			if(::TranslateAccelerator(m_hWnd, m_hGlobalToolAccel, pMsg))
+				return TRUE;
 	}
 
 	if(baseClass::PreTranslateMessage(pMsg))
@@ -1432,6 +1441,8 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 		m_RecentFiles.UpdateMenu();
 
 		m_RecentProjects.SetSize( OPTIONS->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4) );
+
+		m_hGlobalToolAccel = SchemeToolsManager::GetInstance()->GetGlobalTools()->GetAcceleratorTable();
 	}
 
 	return 0;

@@ -21,6 +21,23 @@ CTextView::CTextView() : baseClass()
 	m_encType = eUnknown;
 	
 	m_bSmartStart = OPTIONS->Get(PNSK_EDITOR, _T("SmartStart"), true);
+
+	::InitializeCriticalSection(&m_csMeasure);
+	m_hMeasureThread = NULL;
+	m_bMeasureCanRun = false;
+}
+
+CTextView::~CTextView()
+{
+	::EnterCriticalSection(&m_csMeasure);
+	m_bMeasureCanRun = false;
+	::LeaveCriticalSection(&m_csMeasure);
+
+	if(m_hMeasureThread != NULL)
+	{
+		::WaitForSingleObject(m_hMeasureThread, 10000);
+		::CloseHandle(m_hMeasureThread);
+	}
 }
 
 BOOL CTextView::PreTranslateMessage(MSG* pMsg)
@@ -225,6 +242,11 @@ bool CTextView::OpenFile(LPCTSTR filename)
 		_stprintf(outstr, _T("File load takes %d milliseconds\n"), timeTotal);
 		::OutputDebugString(outstr);
 #endif
+
+		if(OPTIONS->Get(PNSK_EDITOR, _T("EnableLongLineThread"), true))
+		{
+			checkLineLength();
+		}
 
 		return true;
 	}
@@ -619,4 +641,79 @@ void CTextView::OnFirstShow()
 	m_pLastScheme = CSchemeManager::GetInstance()->GetDefaultScheme();
 	m_pLastScheme->Load(*this);
 	SetEOLMode( OPTIONS->GetCached(Options::OLineEndings) );
+}
+
+void CTextView::checkLineLength()
+{
+	::EnterCriticalSection(&m_csMeasure);
+	if(m_bMeasureCanRun)
+	{
+		::LeaveCriticalSection(&m_csMeasure);
+		return;
+	}
+	
+	if(m_hMeasureThread != NULL)
+	{
+		::LeaveCriticalSection(&m_csMeasure);
+		::WaitForSingleObject(m_hMeasureThread, 10000);
+		::EnterCriticalSection(&m_csMeasure);
+		::CloseHandle(m_hMeasureThread);
+	}
+
+	m_bMeasureCanRun = true;
+
+	unsigned int thrdid;
+	m_hMeasureThread = (HANDLE)_beginthreadex(NULL, 0, &CTextView::RunMeasureThread, this, 0, &thrdid);
+	
+	::LeaveCriticalSection(&m_csMeasure);	
+}
+
+UINT __stdcall CTextView::RunMeasureThread(void* pThis)
+{
+	CTextView* pTextView = static_cast<CTextView*>(pThis);
+
+	pTextView->DisableDirectAccess();
+
+	bool bCanRun = true;
+	int maxLines = 0;
+	int index = 0;
+	int maxLength = pTextView->GetScrollWidth() - 10;
+	int endPos;
+	int endX;
+
+	while(true)
+	{
+		::EnterCriticalSection(&pTextView->m_csMeasure);
+		bCanRun = pTextView->m_bMeasureCanRun;
+		::LeaveCriticalSection(&pTextView->m_csMeasure);
+		if(!bCanRun)
+			break;
+
+		maxLines = pTextView->GetLineCount();
+		
+		if(index >= maxLines)
+			break;
+		
+		endPos = pTextView->GetLineEndPosition(index);
+		endX = pTextView->PointXFromPosition(endPos);
+		maxLength = max(endX, maxLength);
+
+		index++;
+	}
+
+	TCHAR buf[50];
+	_stprintf(buf, _T("Max line length: %d"), maxLength);
+	::OutputDebugString(buf);
+
+	pTextView->SetScrollWidth(maxLength + 10);
+
+	pTextView->EnableDirectAccess();
+
+	::EnterCriticalSection(&pTextView->m_csMeasure);
+	pTextView->m_bMeasureCanRun = false;
+	::LeaveCriticalSection(&pTextView->m_csMeasure);
+
+	_endthreadex(0);
+
+	return 0;
 }

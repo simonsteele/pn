@@ -380,6 +380,7 @@ protected:
 	UINT					m_uiMIMessageID;
 
 	HACCEL					m_hToolAccel;
+	HACCEL					m_hGlobalToolAccel;
 
 	HIMAGELIST				m_hILMain;
 	HIMAGELIST				m_hILMainD;

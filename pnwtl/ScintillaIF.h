@@ -132,6 +132,9 @@ class CScintilla
 		/// Call FoldAll() to collapse the entire document.
 		void FoldAll();
 
+		void DisableDirectAccess();
+		bool EnableDirectAccess();
+
 	protected:
 	
 		// Locally Written CScintilla members.
@@ -146,6 +149,7 @@ class CScintilla
 		void	*m_Pointer;
 		//! Function pointer to Scintilla window message pump.
 		scmsgfn	Perform;
+		scmsgfn StoredPerform;
 		
 		//! Is text modified?
 		bool m_Modified;
