@@ -42,6 +42,8 @@ protected:
 	{
 		tstring findPhrase;
 		long	startPos;
+		int		flags;
+		int     result;
 	} lastFindDetails;
 
 	void IndentLine(int line, int indent);

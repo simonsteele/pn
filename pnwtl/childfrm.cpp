@@ -565,7 +565,7 @@ LRESULT CChildFrame::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	SFindOptions* pOptions = COptionsManager::GetInstanceRef().GetFindOptions();
 	if( pOptions->FindText != _T("") )
 	{
-		if( !m_view.FindNext(pOptions) )
+		if( !/*m_view.*/FindNext(pOptions) )
 		{
 			CString cs;
 			cs.Format(_T("Could not find %s."), pOptions->FindText);

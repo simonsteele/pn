@@ -14,7 +14,7 @@ Basic Project Management - file grouping etc.
 Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
 Menu to choose file encoding type (currently PN just preserves the original type).
 [In-Progress - Bjoern Graf] Find & Replace actual combo-box entries (not just auto-complete).
-Combo-box toolbar for scheme selection.
+[Implemented] Combo-box toolbar for scheme selection.
 Better printing - margins, header and footer.
 Export types other than RTF.
 Header switch as a generic feature.

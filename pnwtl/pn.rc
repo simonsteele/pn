@@ -202,7 +202,8 @@ BEGIN
     POPUP "&Window"
     BEGIN
         MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
-        MENUITEM "&Tile",                       ID_WINDOW_TILE_HORZ
+        MENUITEM "Tile &Horizontal",            ID_WINDOW_TILE_HORZ
+        MENUITEM "Tile &Vertical",              57652
         MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
     END
     POPUP "&Help"

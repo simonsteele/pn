@@ -17,6 +17,7 @@ static const TCHAR* PNSK_INTERFACE = _T("Interface Settings");
 static const TCHAR* PNSK_EDITOR = _T("Editor Settings");
 static const TCHAR* PNSK_PRINT = _T("Print Settings");
 static const TCHAR* PNSK_DEFGUI = _T("\\default");
+static const TCHAR* PNSK_FIND = _T("Find");
 
 #define PNPATH_PN				0
 #define	PNPATH_SCHEMES			1

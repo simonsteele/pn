@@ -57,12 +57,34 @@ void COptionsManager::Load()
 	ShowFullPath = reg.ReadBool(_T("ShowFullPath"), false);
 
 	// Find and Replace Settings ------------
-
+	cs = root + PNSK_FIND;
+	reg.OpenKey(cs.c_str(), true);
+	m_FindOptions.Direction = reg.ReadBool(_T("Find Direction"), true);
+	tstring val;
+	if( reg.ReadString(_T("Find FindText"), val) )
+		m_FindOptions.FindText = val.c_str();
+	m_FindOptions.Loop = reg.ReadBool(_T("Find Loop"), true);
+	m_FindOptions.MatchCase = reg.ReadBool(_T("Find MatchCase"), false);
+	m_FindOptions.MatchWholeWord = reg.ReadBool(_T("Find MatchWholeWord"), false);
+	m_FindOptions.UseRegExp = reg.ReadBool(_T("Find UseRegExp"), false);
+	m_FindOptions.UseSlashes = reg.ReadBool(_T("Find UseSlashes"), false);
+/*
 	m_FindOptions.Direction = true;
 	m_FindOptions.Loop = true;
-	
+*/
+	m_ReplaceOptions.Direction = reg.ReadBool(_T("Replace Direction"), true);
+	if( reg.ReadString(_T("Replace FindText"), val) )
+		m_ReplaceOptions.FindText = val.c_str();
+	if( reg.ReadString(_T("Replace ReplaceText"), val) )
+		m_ReplaceOptions.ReplaceText = val.c_str();
+	m_ReplaceOptions.Loop = reg.ReadBool(_T("Replace Loop"), true);
+	m_ReplaceOptions.MatchCase = reg.ReadBool(_T("Replace MatchCase"), false);
+	m_ReplaceOptions.MatchWholeWord = reg.ReadBool(_T("Replace MatchWholeWord"), false);
+	m_ReplaceOptions.UseRegExp = reg.ReadBool(_T("Replace UseRegExp"), false);
+	m_ReplaceOptions.UseSlashes = reg.ReadBool(_T("Replace UseSlashes"), false);
+/*
 	m_ReplaceOptions.Direction = true;
-	m_ReplaceOptions.Loop = true;
+	m_ReplaceOptions.Loop = true;*/
 }
 
 void COptionsManager::Save()
@@ -86,6 +108,26 @@ void COptionsManager::Save()
 	reg.OpenKey(cs.c_str(), true);
 	reg.WriteBool(_T("MaximiseNew"), MaximiseNew);
 	reg.WriteBool(_T("ShowFullPath"), ShowFullPath);
+
+	// Find and Replace Settings ------------
+	cs = root + PNSK_FIND;
+	reg.OpenKey(cs.c_str(), true);
+	reg.WriteBool(_T("Find Direction"), m_FindOptions.Direction);
+	reg.WriteString(_T("Find FindText"), m_FindOptions.FindText);
+	reg.WriteBool(_T("Find Loop"), m_FindOptions.Loop);
+	reg.WriteBool(_T("Find MatchCase"), m_FindOptions.MatchCase);
+	reg.WriteBool(_T("Find MatchWholeWord"), m_FindOptions.MatchWholeWord);
+	reg.WriteBool(_T("Find UseRegExp"), m_FindOptions.UseRegExp);
+	reg.WriteBool(_T("Find UseSlashes"), m_FindOptions.UseSlashes);
+
+	reg.WriteBool(_T("Replace Direction"), m_ReplaceOptions.Direction);
+	reg.WriteString(_T("Replace FindText"), m_ReplaceOptions.FindText);
+	reg.WriteString(_T("Replace ReplaceText"), m_ReplaceOptions.ReplaceText);
+	reg.WriteBool(_T("Replace Loop"), m_ReplaceOptions.Loop);
+	reg.WriteBool(_T("Replace MatchCase"), m_ReplaceOptions.MatchCase);
+	reg.WriteBool(_T("Replace MatchWholeWord"), m_ReplaceOptions.MatchWholeWord);
+	reg.WriteBool(_T("Replace UseRegExp"), m_ReplaceOptions.UseRegExp);
+	reg.WriteBool(_T("Replace UseSlashes"), m_ReplaceOptions.UseSlashes);
 }
 
 bool COptionsManager::Get(LPCTSTR subkey, LPCTSTR value, bool bDefault)

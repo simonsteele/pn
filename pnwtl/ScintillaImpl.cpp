@@ -380,21 +380,27 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 	{
 		pOptions->Found = false;
 
+		///@todo SCFIND_WORDSTART
+		int flags = (pOptions->MatchWholeWord ? SCFIND_WHOLEWORD : 0) |
+					(pOptions->MatchCase ? SCFIND_MATCHCASE : 0) |
+					(pOptions->UseRegExp ? SCFIND_REGEXP : 0);
 		///@todo set find pos on selchange/edit update
-		if( pOptions->FindText.Compare( lastFindDetails.findPhrase.c_str() ) != 0 )
+		if( pOptions->FindText.Compare( lastFindDetails.findPhrase.c_str() ) != 0 ||
+			flags != lastFindDetails.flags)
 		{
 			// Find text has changed, set the startPos value, 
 			// and don't check to see if we wrapped this time.
 			//lastFindDetails.startPos = GetCurrentPos();
 			lastFindDetails.findPhrase = pOptions->FindText;
+			lastFindDetails.flags = flags;
+			lastFindDetails.result = fnNotFound;
 			checkFoundPos = false;
 		}
 
 		GetSel(cr);
 
-		LPTSTR ft = pOptions->FindText.LockBuffer();
 		USES_CONVERSION;
-		const char* findtext = T2A(ft);
+		const char* findtext = CT2A(pOptions->FindText);
 
 		if(!pOptions->Direction)
 		{
@@ -406,11 +412,6 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 			startPosition = cr.cpMax;
 			endPosition = GetLength();
 		}
-
-		///@todo SCFIND_WORDSTART
-		int flags = (pOptions->MatchWholeWord ? SCFIND_WHOLEWORD : 0) |
-					(pOptions->MatchCase ? SCFIND_MATCHCASE : 0) |
-					(pOptions->UseRegExp ? SCFIND_REGEXP : 0);
 
 		SetTargetStart(startPosition);
 		SetTargetEnd(endPosition);
@@ -440,25 +441,24 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 		{
 			int start = GetTargetStart();
 			int end = GetTargetEnd();
-			EnsureRangeVisible(start, end);
-			SetSel(start, end);
-			pOptions->Found = true;
-			bRet = fnFound;
-		}
-
-		// Must un-lock that string before we return...
-		pOptions->FindText.UnlockBuffer();
-
-		if( checkFoundPos && bRet )
-		{
-			GetSel(cr);
-
-			if( lastFindDetails.startPos == cr.cpMin )
+			if( checkFoundPos && lastFindDetails.result == fnFound &&
+				lastFindDetails.startPos == start )
+			{
+				pOptions->Found = true;
 				bRet = fnReachedStart;
+			}
+			else
+			{
+				EnsureRangeVisible(start, end);
+				SetSel(start, end);
+				pOptions->Found = true;
+				bRet = fnFound;
+			}
 		}
-		else
+
+		lastFindDetails.result = bRet;
+		if( checkFoundPos == false )
 		{
-			CharacterRange cr;
 			GetSel(cr);
 			lastFindDetails.startPos = cr.cpMin;
 		}

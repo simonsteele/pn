@@ -1,20 +1,20 @@
 ========================================
-Release Name: 2.0.4.2
-Build: 2.0.4.18, Version Label: (none)
+Release Name: 2.0.5.0
+Build: 2.0.5.x, Version Label: (none)
 ========================================
 
 What's new?
 -----------
 
-1) Re-organised general options page to clarify.
-2) Show full path in title bar option.
-3) Save none / one / all files on running a tool.
+1) Scheme-selector toolbar.
+2) Find toolbar.
+3) Many find improvements (thanks mostly to Bjoern Graf).
+4) Tile Vertical / Tile Horizontal.
 
 Bug Fixes:
 ----------
 
-1) Global output window not toggled properly by running a tool.
-2) SF Bug #763393 - files opened at startup do not get tabs.
+1) 
 
 If you find a bug:
 ------------------
@@ -47,7 +47,7 @@ So what is good?
 1) New editing engine (The excellent Scintilla: http://www.scintilla.org/).
 2) Now written in C++ using the Windows Template Library.
 3) Fast. Really Fast - compare opening times for large files with PN1.
-4) Two (count-em!) toolbars. Obviously this sort of stuff will get better as time goes on.
+4) Four (count-em!) toolbars.
 5) Lovely XP-Style tabs.
 6) Save-As dialog contains a "File Format" feature.
 7) Support for C++, HTML, XML and Object Pascal. More schemes coming soon.
