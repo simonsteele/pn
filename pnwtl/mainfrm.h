@@ -67,6 +67,8 @@ public:
 
 };
 
+BOOL CALLBACK CloseChildEnumProc(HWND hWnd, LPARAM lParam);
+
 /**
  * @class CMainFrame
  * @brief PN (WTL Edition) Main MDI Frame
@@ -140,6 +142,8 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_INITMENUPOPUP, OnInitMenuPopup)
 		MESSAGE_HANDLER(WM_DROPFILES, OnDropFiles)
+		MESSAGE_HANDLER(PN_NOTIFY, OnChildNotify)
+		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
 		COMMAND_ID_HANDLER(ID_FILE_OPEN, OnFileOpen)
@@ -180,7 +184,23 @@ public:
 		CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
 		AddSimpleReBarBand(hWndCmdBar);
 		AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
-		CreateSimpleStatusBar();
+		
+		CreateSimpleStatusBar(_T(""));
+
+		int statusBarPanes[] =
+		{
+			ID_POS_PANE,
+			ID_MOD_PANE,
+			ID_INS_PANE,
+			ID_DEFAULT_PANE
+		};
+
+		m_StatusBar.SubclassWindow(m_hWndStatusBar);
+		m_StatusBar.SetPanes(statusBarPanes, sizeof(statusBarPanes) / sizeof(int), false);
+		m_StatusBar.SetPaneWidth(ID_POS_PANE, 120);
+		m_StatusBar.SetPaneWidth(ID_MOD_PANE, 70);
+		m_StatusBar.SetPaneWidth(ID_INS_PANE, 80);
+		m_StatusBar.SetPaneText(ID_DEFAULT_PANE, _T("Ready"), SBT_NOBORDERS);
 
 		DragAcceptFiles(TRUE);
 
@@ -213,6 +233,17 @@ public:
 		}
 
 		DragFinish(hDrop);
+		
+		return 0;
+	}
+
+	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+	{
+		// Check that all of the child windows are ready to close...
+		EnumChildWindows(m_hWndMDIClient, CloseChildEnumProc, (long)this);
+
+		if(NULL == ::GetWindow(m_hWndMDIClient, GW_CHILD))
+			bHandled = FALSE;
 		
 		return 0;
 	}
@@ -386,6 +417,17 @@ public:
 		return 0;
 	}
 
+	LRESULT OnChildNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+	{
+		if(lParam == SCN_UPDATEUI)
+		{
+			// Update the status bar when Scintilla thinks that we should.
+			UpdateStatusBar();
+		}
+				
+		return TRUE;
+	}
+
 	LRESULT OnFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		if(m_FindDialog == NULL)
@@ -394,7 +436,6 @@ public:
 			hFindWnd = m_FindDialog->Create(m_hWnd);
 		}
 		
-		//m_FindDialog->DoModal();
 		m_FindDialog->ShowWindow(SW_SHOW);
 
 		return 0;
@@ -413,14 +454,46 @@ public:
 		return 0;
 	}
 
-	protected:
-		CFindDlg*		m_FindDialog;
-		CReplaceDlg*	m_ReplaceDialog;
-		CScintilla		m_Dummy;			///< Scintilla often doesn't like unloading and reloading.
+	void UpdateStatusBar()
+	{
+		CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor(this));
+		
+		if(pChild)
+		{
+			m_StatusBar.SetPaneText(ID_MOD_PANE, pChild->GetModified() ? _T("Modified") : _T(""));
+			pChild->SetPosStatus(m_StatusBar);
+		}
+	}
 
-		HWND			hFindWnd;
-		HWND			hReplWnd;
+	protected:
+		CFindDlg*				m_FindDialog;
+		CReplaceDlg*			m_ReplaceDialog;
+		CScintilla				m_Dummy;			///< Scintilla often doesn't like unloading and reloading.
+
+		CMultiPaneStatusBarCtrl	m_StatusBar;
+
+		HWND					hFindWnd;
+		HWND					hReplWnd;
 };
+
+BOOL CALLBACK CloseChildEnumProc(HWND hWnd, LPARAM lParam)
+{
+	if(GetWindow(hWnd, GW_OWNER))
+		return TRUE;
+
+	//if(GetParent(hWnd) == pMF->m_hWndMDIClient) <-- Alternative check...
+	CChildFrame* pChild = CChildFrame::FromHandle(hWnd);
+	if(pChild != NULL)
+	{
+		CMainFrame* pMF = (CMainFrame*)lParam;
+		if(!pMF->OnEditorClosing(pChild))
+			return TRUE;
+
+		SendMessage(GetParent(hWnd), WM_MDIDESTROY, (WPARAM)hWnd, 0);
+	}
+	
+	return TRUE;
+}
 
 /////////////////////////////////////////////////////////////////////////////
 

@@ -14,6 +14,9 @@
 #define IDC_REGEXP_CHECK                107
 #define IDC_UP_RADIO                    113
 #define IDC_DOWN_RADIO                  114
+#define ID_POS_PANE                     115
+#define ID_MOD_PANE                     116
+#define ID_INS_PANE                     117
 #define IDR_MAINFRAME                   128
 #define IDR_MDICHILD                    129
 #define ID_EDITOR_WORDWRAP              130
@@ -25,8 +28,10 @@
 #define IDR_POPUP_EDITOR                173
 #define IDR_IMAGES                      201
 #define IDB_EDITOR                      203
+#define IDD_GOTO                        204
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
+#define IDC_GOTOEDIT                    1004
 #define IDC_REPLACETEXT_LABEL           1042
 #define IDC_BACKSLASH_CHECK             1043
 #define IDC_MARKALL_BUTTON              21199
@@ -34,6 +39,8 @@
 #define IDC_REHELPER_BUTTON             21204
 #define IDC_RHELPER_BUTTON              21205
 #define IDC_DIRECTION_GROUP             21207
+#define ID_EDIT_FINDNEXT                32773
+#define ID_EDIT_GOTO                    32774
 #define ID_VIEW_VIEWTABS                32825
 #define ID_TAB_CLOSE                    32835
 #define ID_VIEW_TABS_TOP                32836
@@ -58,9 +65,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        204
-#define _APS_NEXT_COMMAND_VALUE         32773
-#define _APS_NEXT_CONTROL_VALUE         1004
-#define _APS_NEXT_SYMED_VALUE           101
+#define _APS_NEXT_RESOURCE_VALUE        205
+#define _APS_NEXT_COMMAND_VALUE         32775
+#define _APS_NEXT_CONTROL_VALUE         1005
+#define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

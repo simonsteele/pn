@@ -280,7 +280,7 @@ void CScheme::EnsureCompiled()
 {
 	if(!IsCompiled())
 	{
-		Compile();
+		//Compile();
 	}
 }
 

@@ -47,12 +47,16 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_PASTE, OnPaste)
 		COMMAND_ID_HANDLER(ID_EDIT_UNDO, OnUndo)
 		COMMAND_ID_HANDLER(ID_EDIT_REDO, OnRedo)
+
+		COMMAND_ID_HANDLER(ID_EDIT_FINDNEXT, OnFindNext)
 		
 		COMMAND_ID_HANDLER(ID_EDITOR_WORDWRAP, OnWordWrapToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_COLOURISE, OnColouriseToggle)
 
 		COMMAND_ID_HANDLER(ID_FILE_SAVE_AS, OnSaveAs)
 		COMMAND_ID_HANDLER(ID_FILE_SAVE, OnSave)
+
+		COMMAND_ID_HANDLER(ID_EDIT_GOTO, OnGoto)
 
 		// For ::FromHandle
 		IMPLEMENT_FROMHANDLE()
@@ -240,7 +244,7 @@ public:
 		return 0;
 	}
 
-	LRESULT OnViewNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+	LRESULT OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 	{
 		if(lParam == SCN_SAVEPOINTREACHED)
 		{
@@ -249,6 +253,10 @@ public:
 		else if(lParam == SCN_SAVEPOINTLEFT)
 		{
 			SetTitle(m_Title, true);
+		}
+		else
+		{
+			SendMessage(GetMDIFrame(), PN_NOTIFY, wParam, lParam);
 		}
 
 		return TRUE;
@@ -284,6 +292,21 @@ public:
 		return TRUE;
 	}
 
+	LRESULT OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		SFindOptions* pOptions = theApp.GetFindOptions();
+		if( pOptions->FindText != _T("") )
+		{
+			if( !m_view.FindNext(pOptions) )
+			{
+				CString cs;
+				cs.Format(_T("Could not find %s."), pOptions->FindText);
+				MessageBox(cs, _T("Programmers Notepad"), MB_OK);
+			}
+		}
+		return TRUE;
+	}
+
 	////////////////////////////////////////////////////
 	// Command Handlers
 
@@ -316,6 +339,17 @@ public:
 		CToolBarCtrl toolbar(m_hWndToolBar);
 		m_view.EnableHighlighting(toolbar.IsButtonChecked(wID) != 0);
 		
+
+		return 0;
+	}
+
+	LRESULT OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		CGotoDialog g;
+		if(g.DoModal() == IDOK)
+		{
+			m_view.GotoLine(g.GetLineNo());
+		}
 
 		return 0;
 	}
@@ -389,6 +423,11 @@ public:
 	void HighlightAll(SFindOptions* options)
 	{
 		m_view.HighlightAll(options);
+	}
+
+	void SetPosStatus(CMultiPaneStatusBarCtrl&	stat)
+	{
+		m_view.SetPosStatus(stat);
 	}
 
 protected:

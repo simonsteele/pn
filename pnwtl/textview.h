@@ -95,8 +95,27 @@ public:
 			SendMessage(GetParent(), PN_NOTIFY, 0, SCN_SAVEPOINTLEFT);
 			m_Modified = true;
 		}
+		else if(msg == SCN_UPDATEUI)
+		{
+			SendMessage(GetParent(), PN_NOTIFY, 0, SCN_UPDATEUI);
+		}
 		
 		return msg;
+	}
+
+	void SetPosStatus(CMultiPaneStatusBarCtrl& stat)
+	{
+		TCHAR tvstatbuf[30];
+		
+		long pos = GetCurrentPos();
+
+		_stprintf(tvstatbuf, _T("[%d:%d] : %d"), 
+			(LineFromPosition(pos) + 1),	/* row    */
+			(GetColumn(pos) + 1),			/* column */
+			GetLineCount()					/* lines  */
+		);
+
+		stat.SetPaneText(ID_POS_PANE, tvstatbuf);
 	}
 
 protected:

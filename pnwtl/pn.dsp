@@ -172,6 +172,10 @@ SOURCE=.\pn.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\pndialogs.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\pntypes.h
 # End Source File
 # Begin Source File

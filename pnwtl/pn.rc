@@ -123,7 +123,10 @@ BEGIN
         MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
         MENUITEM SEPARATOR
         MENUITEM "&Find\tCtrl+F",               ID_EDIT_FIND
+        MENUITEM "Find &Next\tF3",              ID_EDIT_FINDNEXT
         MENUITEM "R&eplace\tCtrl+R",            ID_EDIT_REPLACE
+        MENUITEM SEPARATOR
+        MENUITEM "&Goto\tCtrl+G",               ID_EDIT_GOTO
     END
     POPUP "&View"
     BEGIN
@@ -199,6 +202,7 @@ IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE
 BEGIN
     "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
     "F",            ID_EDIT_FIND,           VIRTKEY, CONTROL, NOINVERT
+    "G",            ID_EDIT_GOTO,           VIRTKEY, CONTROL, NOINVERT
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
     "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
@@ -207,6 +211,7 @@ BEGIN
     "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
     VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
     VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
+    VK_F3,          ID_EDIT_FINDNEXT,       VIRTKEY, NOINVERT
     VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
     VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
     VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
@@ -473,10 +478,11 @@ STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 CAPTION "Find..."
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "Fi&nd what:",IDC_FINDTEXT_LABEL,7,9,40,10,0,0,
-                    HIDC_FINDTEXT_LABEL
+    LTEXT           "Static",IDC_FINDTEXT_DUMMY,48,7,145,12,NOT WS_VISIBLE
     PUSHBUTTON      "",IDC_REHELPER_BUTTON,197,8,9,11,0,0,
                     HIDC_REHELPER_BUTTON
+    DEFPUSHBUTTON   "&Find Next",IDC_FINDNEXT_BUTTON,213,7,50,14,WS_GROUP,0,
+                    HIDC_FINDNEXT_BUTTON
     CONTROL         "Match &whole word only",IDC_MATCHWHOLE_CHECK,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,28,103,10,0,
                     HIDC_MATCHWHOLE_CHECK
@@ -489,18 +495,17 @@ BEGIN
     CONTROL         "Search &all open documents",IDC_SEARCHALL_CHECK,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,64,102,11,0,
                     HIDC_SEARCHALL_CHECK
-    GROUPBOX        "Direction",IDC_DIRECTION_GROUP,119,34,74,35,0,0,
-                    HIDC_DIRECTION_GROUP
     CONTROL         "&Up",IDC_UP_RADIO,"Button",BS_AUTORADIOBUTTON | 
                     WS_GROUP,124,44,43,10,0,HIDC_UP_RADIO
     CONTROL         "&Down",IDC_DOWN_RADIO,"Button",BS_AUTORADIOBUTTON,124,
                     55,43,10,0,HIDC_DOWN_RADIO
-    DEFPUSHBUTTON   "&Find Next",IDC_FINDNEXT_BUTTON,213,7,50,14,WS_GROUP,0,
-                    HIDC_FINDNEXT_BUTTON
     PUSHBUTTON      "&Mark All",IDC_MARKALL_BUTTON,213,26,50,14,WS_GROUP,0,
                     HIDC_MARKALL_BUTTON
     PUSHBUTTON      "Cancel",IDCANCEL,213,45,50,14,WS_GROUP
-    LTEXT           "Static",IDC_FINDTEXT_DUMMY,48,7,145,12,NOT WS_VISIBLE
+    LTEXT           "Fi&nd what:",IDC_FINDTEXT_LABEL,7,9,40,10,0,0,
+                    HIDC_FINDTEXT_LABEL
+    GROUPBOX        "Direction",IDC_DIRECTION_GROUP,119,34,74,35,0,0,
+                    HIDC_DIRECTION_GROUP
 END
 
 IDD_REPLACE DIALOGEX 0, 0, 300, 97
@@ -508,14 +513,20 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Replace"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LTEXT           "Fi&nd what:",IDC_FINDTEXT_LABEL,7,9,40,10,0,0,
-                    HIDC_FINDTEXT_LABEL
+    LTEXT           "Static",IDC_FINDTEXT_DUMMY,56,7,119,12,NOT WS_VISIBLE
     PUSHBUTTON      "",IDC_REHELPER_BUTTON,179,8,9,11,0,0,
                     HIDC_REHELPER_BUTTON
-    LTEXT           "Replace with:",IDC_REPLACETEXT_LABEL,7,27,45,10,0,0,
-                    HIDC_REPLACETEXT_LABEL
+    LTEXT           "Static",IDC_REPLACETEXT_DUMMY,56,24,119,12,NOT 
+                    WS_VISIBLE
     PUSHBUTTON      "",IDC_RHELPER_BUTTON,179,25,9,11,0,0,
                     HIDC_RHELPER_BUTTON
+    DEFPUSHBUTTON   "&Find Next",IDC_FINDNEXT_BUTTON,212,7,81,14,WS_GROUP,0,
+                    HIDC_FINDNEXT_BUTTON
+    PUSHBUTTON      "&Replace",IDC_REPLACE_BUTTON,212,23,81,14,WS_GROUP
+    PUSHBUTTON      "Replace &All",IDC_REPLACEALL_BUTTON,212,39,81,14,
+                    WS_GROUP
+    PUSHBUTTON      "Replace in &Selection",IDC_REPLACEINSEL_BUTTON,212,55,
+                    81,14,WS_GROUP
     CONTROL         "Match &whole word only",IDC_MATCHWHOLE_CHECK,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,43,103,10,0,
                     HIDC_MATCHWHOLE_CHECK
@@ -528,23 +539,28 @@ BEGIN
     CONTROL         "Allow backslash expressions",IDC_BACKSLASH_CHECK,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,79,109,11,0,
                     HIDC_BACKSLASH_CHECK
-    GROUPBOX        "Direction",IDC_DIRECTION_GROUP,119,49,74,35,0,0,
-                    HIDC_DIRECTION_GROUP
     CONTROL         "&Up",IDC_UP_RADIO,"Button",BS_AUTORADIOBUTTON | 
                     WS_GROUP,124,59,43,10,0,HIDC_UP_RADIO
     CONTROL         "&Down",IDC_DOWN_RADIO,"Button",BS_AUTORADIOBUTTON,124,
                     70,43,10,0,HIDC_DOWN_RADIO
-    DEFPUSHBUTTON   "&Find Next",IDC_FINDNEXT_BUTTON,212,7,81,14,WS_GROUP,0,
-                    HIDC_FINDNEXT_BUTTON
-    PUSHBUTTON      "&Replace",IDC_REPLACE_BUTTON,212,23,81,14,WS_GROUP
-    PUSHBUTTON      "Replace &All",IDC_REPLACEALL_BUTTON,212,39,81,14,
-                    WS_GROUP
-    PUSHBUTTON      "Replace in &Selection",IDC_REPLACEINSEL_BUTTON,212,55,
-                    81,14,WS_GROUP
+    LTEXT           "Fi&nd what:",IDC_FINDTEXT_LABEL,7,9,40,10,0,0,
+                    HIDC_FINDTEXT_LABEL
+    LTEXT           "Replace with:",IDC_REPLACETEXT_LABEL,7,27,45,10,0,0,
+                    HIDC_REPLACETEXT_LABEL
+    GROUPBOX        "Direction",IDC_DIRECTION_GROUP,119,49,74,35,0,0,
+                    HIDC_DIRECTION_GROUP
     PUSHBUTTON      "Close",IDCANCEL,212,71,81,14,WS_GROUP
-    LTEXT           "Static",IDC_FINDTEXT_DUMMY,56,7,119,12,NOT WS_VISIBLE
-    LTEXT           "Static",IDC_REPLACETEXT_DUMMY,56,24,119,12,NOT 
-                    WS_VISIBLE
+END
+
+IDD_GOTO DIALOG DISCARDABLE  0, 0, 246, 46
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Go To"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_GOTOEDIT,40,7,137,13,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,189,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,189,24,50,14
+    LTEXT           "Go To:",IDC_STATIC,7,7,29,12
 END
 
 
@@ -570,6 +586,14 @@ BEGIN
         RIGHTMARGIN, 293
         TOPMARGIN, 7
         BOTTOMMARGIN, 90
+    END
+
+    IDD_GOTO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 239
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 39
     END
 END
 #endif    // APSTUDIO_INVOKED

@@ -8,6 +8,7 @@
 #include <atlctrls.h>
 #include <atldlgs.h>
 #include <atlctrlw.h>
+#include <atlctrlx.h>
 
 #include "TabbingFramework\atlgdix.h"
 #include "TabbingFramework\CoolTabCtrls.h"
@@ -18,6 +19,8 @@
 #include "pntypes.h"
 #include "callback.h"
 #include "ssfiledialog.h"
+
+#include "pndialogs.h"
 
 #include "ScintillaWTL.h"
 #include "textview.h"
