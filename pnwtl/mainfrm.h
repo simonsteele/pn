@@ -61,6 +61,11 @@ public:
 
 	~CMainFrame();
 
+	enum {
+		TBR_SCHEME = 100,
+		SCHEME_COMBO_SIZE = 24, /* characters */
+	};
+
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
 	virtual BOOL OnIdle();
@@ -104,6 +109,9 @@ public:
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SF, OnWebSFPage)
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SB, OnWebSFBug)
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SR, OnWebSFRFE)
+
+		COMMAND_HANDLER(IDC_SCHEMECOMBO, CBN_SELCHANGE, OnSchemeComboChange)
+
 		COMMAND_RANGE_HANDLER(ID_MRUFILE_BASE, (ID_MRUFILE_BASE+15), OnMRUSelected)
 		ROUTE_MENUCOMMANDS()
 		CHAIN_MDI_CHILD_COMMANDS()
@@ -173,6 +181,8 @@ public:
 	LRESULT OnWebSFBug(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnWebSFRFE(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
+	LRESULT OnSchemeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
 	void OpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme = NULL);
 	void OpenFile(LPCTSTR pathname, CScheme* pScheme);
 	
@@ -213,6 +223,8 @@ protected:
 	void MoveNewMenu(CSMenuHandle& remove, CSMenuHandle& add);
 	void MoveLanguage(CSMenuHandle& remove, CSMenuHandle& add);
 
+	HWND CreateSchemeToolbar();
+
 	void InitGUIState();
 	void LoadGUIState(LPCTSTR stateName = NULL);
 	void SaveGUIState(LPCTSTR stateName = NULL);
@@ -238,6 +250,7 @@ protected:
 	CMultiPaneStatusBarCtrl	m_StatusBar;
 	commandBarClass			m_CmdBar;
 	CPNStateManager			m_GUIState;
+	CComboBox				m_SchemeCombo;
 
 	HWND					hFindWnd;
 	HWND					hReplWnd;

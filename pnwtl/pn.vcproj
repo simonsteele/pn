@@ -358,6 +358,9 @@
 				RelativePath=".\res\pndoc.ico">
 			</File>
 			<File
+				RelativePath="res\tbrScheme.bmp">
+			</File>
+			<File
 				RelativePath=".\res\toolbar.bmp">
 			</File>
 			<File

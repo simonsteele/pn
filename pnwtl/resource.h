@@ -86,6 +86,8 @@
 #define ID_EDIT_SELECTALL               273
 #define ID_FOLDING_COLLAPSEALLFOLDS     274
 #define ID_HELP_WEB_SR                  275
+#define IDR_TOOLBAR1                    276
+#define IDR_TBR_SCHEME                  276
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -225,14 +227,15 @@
 #define ID_FILE_SAVEALL                 32865
 #define ID_EDIT_HEADERSWITCH            32866
 #define ID_EDIT_COPYRTF                 32871
+#define ID_PLACEHOLDER_SCHEMECOMBO      32873
 #define IDC_FINDTEXT_LABEL              65535
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        276
-#define _APS_NEXT_COMMAND_VALUE         32872
+#define _APS_NEXT_RESOURCE_VALUE        278
+#define _APS_NEXT_COMMAND_VALUE         32874
 #define _APS_NEXT_CONTROL_VALUE         1065
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

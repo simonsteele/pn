@@ -206,6 +206,9 @@ BOOL CMainFrame::OnIdle()
 	if(m_pOutputWnd != NULL)
 		UISetCheck(ID_EDITOR_OUTPUTWND, m_pOutputWnd->IsWindowVisible());
 
+	HWND hWnd = MDIGetActive();
+	m_SchemeCombo.EnableWindow( hWnd != NULL );
+
 	return FALSE;
 }
 
@@ -274,6 +277,60 @@ LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	return 0;
 }
 
+HWND CMainFrame::CreateSchemeToolbar()
+{
+	HWND hWnd = CreateSimpleToolBarCtrl(m_hWnd, IDR_TBR_SCHEME, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE, TBR_SCHEME);
+
+	if (!hWnd) 
+		return 0;
+
+	CToolBarCtrl m_fbar(hWnd);
+				
+	CClientDC dc(m_hWnd);
+	dc.SelectFont((HFONT) GetStockObject( DEFAULT_GUI_FONT ));		
+	TEXTMETRIC tm;
+	dc.GetTextMetrics( &tm );
+	int cxChar = tm.tmAveCharWidth;
+	int cyChar = tm.tmHeight + tm.tmExternalLeading;
+	int cx = SCHEME_COMBO_SIZE * cxChar;
+	int cy = 16 * cyChar;
+
+	RECT rc;
+
+	TBBUTTONINFO tbi;
+	tbi.cbSize = sizeof TBBUTTONINFO;		
+	tbi.dwMask = TBIF_STYLE | TBIF_SIZE;
+	tbi.fsStyle = TBSTYLE_SEP;
+	tbi.cx = (unsigned short)cx;
+	
+	m_fbar.SetButtonInfo(ID_PLACEHOLDER_SCHEMECOMBO, &tbi); 						
+	m_fbar.GetItemRect(0, &rc); 
+
+	rc.bottom = cy;
+	
+	HWND hWndCombo =  m_SchemeCombo.Create(m_hWnd, rc, NULL, CBS_DROPDOWNLIST | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+		0, IDC_SCHEMECOMBO);
+	hWndCombo;
+	ATLASSERT(hWndCombo != 0);
+	
+	m_SchemeCombo.SetParent(hWnd); 
+	m_SchemeCombo.SetFont((HFONT)GetStockObject( DEFAULT_GUI_FONT ));
+
+	CSchemeManager* pM = CSchemeManager::GetInstance();
+	SCHEME_LIST* pSchemes = pM->GetSchemesList();
+
+	int index = m_SchemeCombo.AddString( pM->GetDefaultScheme()->GetTitle() );
+	m_SchemeCombo.SetItemDataPtr( index, pM->GetDefaultScheme() );
+
+	for(SCIT i = pSchemes->begin(); i != pSchemes->end(); ++i)
+	{
+		index = m_SchemeCombo.AddString( (*i).GetTitle() );
+		m_SchemeCombo.SetItemDataPtr( index, &(*i) );
+	}
+
+	return hWnd;
+}
+
 LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	// create command bar window
@@ -289,11 +346,13 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	HWND hWndToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
 	HWND hWndEdtToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_TBR_EDIT, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
+	HWND hWndSchemeToolBar = CreateSchemeToolbar();
 
 	CreateSimpleReBar(ATL_SIMPLE_REBAR_NOBORDER_STYLE);
 	AddSimpleReBarBand(hWndCmdBar);
 	AddSimpleReBarBand(hWndToolBar, NULL, TRUE);
 	AddSimpleReBarBand(hWndEdtToolBar, NULL, FALSE);
+	AddSimpleReBarBand(hWndSchemeToolBar, NULL, FALSE);
 	SizeSimpleReBarBands();
 	
 	CreateSimpleStatusBar(_T(""));
@@ -330,6 +389,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	UIAddToolBar(hWndToolBar);
 	UIAddToolBar(hWndEdtToolBar);
+	UIAddToolBar(hWndSchemeToolBar);
 	UISetCheck(ID_VIEW_TOOLBAR, 1);
 	UISetCheck(ID_VIEW_TOOLBAR_EDIT, 1);
 	UISetCheck(ID_VIEW_STATUS_BAR, 1);
@@ -729,6 +789,19 @@ LRESULT CMainFrame::OnWebSFRFE(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 {
 	::ShellExecute(m_hWnd, _T("open"), _T("http://sourceforge.net/tracker/?func=add&group_id=45545&atid=443222"), NULL, NULL, SW_SHOW);
 
+	return 0;
+}
+
+LRESULT CMainFrame::OnSchemeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int iSel = m_SchemeCombo.GetCurSel();
+	CScheme* pScheme = static_cast<CScheme*>( m_SchemeCombo.GetItemDataPtr( iSel ) );
+	if( pScheme != NULL )
+	{
+		CChildFrame* pEditor = CChildFrame::FromHandle( GetCurrentEditor() );
+		if( pEditor != NULL )
+			pEditor->SetScheme( pScheme );
+	}
 	return 0;
 }
 

@@ -510,6 +510,11 @@ BEGIN
     BUTTON      ID_EDIT_PASTE
 END
 
+IDR_TBR_SCHEME TOOLBAR  16, 15
+BEGIN
+    BUTTON      ID_PLACEHOLDER_SCHEMECOMBO
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -519,6 +524,7 @@ END
 IDB_EDITOR              BITMAP                  "res\\editor.bmp"
 IDR_TBR_EDIT            BITMAP                  "res\\edittbr.bmp"
 IDB_TRUETYPE_FONTTYPE   BITMAP                  "res\\font_tru.bmp"
+IDR_TBR_SCHEME          BITMAP                  "res\\tbrScheme.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
