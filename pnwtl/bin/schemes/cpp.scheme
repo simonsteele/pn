@@ -1,0 +1,117 @@
+[PNLexer]
+FileVersion=1
+Name=C++
+Index=3
+;Lexer=cpp - not needed because of Index=3 line above.
+;Styles specified from 0 to x where Styles=x.
+Styles=11
+;word.chars.cxx=$(chars.alpha)$(chars.numeric)_#
+Folding=1
+CompactFolding=1
+CommentFolding=1
+
+[Styles.Default]
+; Default for this lexer, overrides default defaults...
+FontName=Courier
+FontSize=10
+FontColor=00,00,00
+
+[Styles.0]
+Name=White Space
+
+[Styles.Comments]
+Name=Comments
+ForeColor=00,7f,00
+
+[Styles.1]
+Name=Comment
+Group=Comments
+
+[Styles.2]
+Name=Line Comment
+Group=Comments
+
+[Styles.3]
+Name=Doc Comment
+ForeColor=3f,70,3f
+
+[Styles.4]
+Name=Numbers
+ForeColor=00,7f,7f
+
+[Styles.5]
+Name=Keyword
+ForeColor=00,00,ff
+
+[Styles.Strings]
+Name=Strings
+ForeColor=7f,00,7f
+
+[Styles.6]
+Name=Double Quoted Strings
+Group=Strings
+
+[Styles.7]
+Name=Single Quoted Strings
+Group=Strings
+
+[Styles.8]
+Name=UUIDs (only in IDL)
+ForeColor=80,40,80
+
+[Styles.9]
+Name=Pre-Processor
+ForeColor=7f,7f,00
+
+[Styles.10]
+Name=Operators
+FontBold=0
+
+[Styles.11]
+Name=Identifiers
+
+[Styles.12]
+Name=Unclosed String
+ForeColor=00,00,00
+BackColor=e0,c0,e0
+EOLFilled=1
+
+[Styles.13]
+Name=C# Verbatim Strings
+ForeColor=00,7f,00
+BackColor=e0,ff,e0
+EOLFilled=1
+
+[Styles.14]
+Name=RegExp for JavaScript
+ForeColor=3f,7f,3f
+BackColor=e0,f0,ff
+EOLFilled=1
+
+[Styles.15]
+Name=Doc Comment Line
+ForeColor=3f,70,3f
+
+[Keywords.0]
+Sets=6
+Words1=asm auto bool break case catch char class const const_cast continue
+Words2=default delete do double dynamic_cast else enum explicit export extern false float for
+Words3=friend goto if inline int long mutable namespace new operator private protected public
+Words4=register reinterpret_cast return short signed sizeof static static_cast struct switch
+Words5=template this throw true try typedef typeid typename union unsigned using
+Words6=virtual void volatile wchar_t while
+
+[Braces]
+BracesSloppy=1;
+BracesStyle=10;
+ForeColor.Complete=00,00,FF
+ForeColor.Incomplete=FF,00,00
+
+[Indent]
+Sets=2
+Words1=case catch class default do else for if
+Words2=private protected public struct try union while
+BlockStart=10,{
+BlockEnd=10,}
+StatementEnd=10,;
+StatementLookback=20;

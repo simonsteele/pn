@@ -1,0 +1,19 @@
+// Microsoft Developer Studio generated Help ID include file.
+// Used by pn.rc
+//
+#define HIDC_BACKSLASH_CHECK            0x80ab0413    // IDD_REPLACE
+#define HIDC_DIRECTION_GROUP            0x80a852d7    // IDD_FIND
+#define HIDC_DOWN_RADIO                 0x80a80072    // IDD_FIND
+#define HIDC_FINDNEXT_BUTTON            0x80a80067    // IDD_FIND
+#define HIDC_FINDTEXT_COMBO             0x80a80066    // IDD_FIND
+#define HIDC_FINDTEXT_LABEL             0x80a8ffff    // IDD_FIND
+#define HIDC_MARKALL_BUTTON             0x80a852cf    // IDD_FIND
+#define HIDC_MATCHCASE_CHECK            0x80a80069    // IDD_FIND
+#define HIDC_MATCHWHOLE_CHECK           0x80a80068    // IDD_FIND
+#define HIDC_REGEXP_CHECK               0x80a8006b    // IDD_FIND
+#define HIDC_REHELPER_BUTTON            0x80a852d4    // IDD_FIND
+#define HIDC_REPLACETEXT_COMBO          0x80ab006a    // IDD_REPLACE
+#define HIDC_REPLACETEXT_LABEL          0x80ab0412    // IDD_REPLACE
+#define HIDC_RHELPER_BUTTON             0x80ab52d5    // IDD_REPLACE
+#define HIDC_SEARCHALL_CHECK            0x80a852d0    // IDD_FIND
+#define HIDC_UP_RADIO                   0x80a80071    // IDD_FIND

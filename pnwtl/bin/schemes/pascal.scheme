@@ -1,0 +1,91 @@
+[PNLexer]
+FileVersion=1
+Name=Object Pascal
+;Index=18
+Lexer=pascal
+;Styles specified from 0 to x where Styles=x.
+Styles=11
+; Overrides for default settings
+StyleBits=5
+IndentGuides=1
+TabWidth=2
+
+[Styles.Default]
+; Default for this lexer, overrides default defaults...
+FontName=Courier New
+FontSize=10
+ForeColor=00,00,00
+
+[Styles.0]
+Name=White Space
+
+[Styles.Comments]
+Name=Comments
+ForeColor=00,80,00
+
+[Styles.1]
+Name=Curly Brace Comments
+Group=Comments
+
+[Styles.2]
+Name=Line Comment
+Group=Comments
+
+[Styles.3]
+Name=Doc Comment
+ForeColor=7f,7f,7f
+
+[Styles.4]
+Name=Numbers
+ForeColor=00,7f,7f
+
+[Styles.5]
+Name=Keyword
+ForeColor=00,00,ff
+
+[Styles.Strings]
+Name=Strings
+ForeColor=7f,00,7f
+
+[Styles.6]
+Name=Double Quoted Strings
+Group=Strings
+
+[Styles.7]
+Name=Single Quoted Strings
+Group=Strings
+
+[Styles.8]
+Name=Symbols
+ForeColor=00,7f,7f
+
+[Styles.9]
+Name=Pre-Processor
+ForeColor=7f,7f,00
+
+[Styles.10]
+Name=Operators
+
+[Keywords.NotInScite]
+Sets=1
+Words1=try catch finally except
+
+[Keywords.0]
+Links=1
+Link1=NotInScite
+Sets=7
+Words1=program const type var begin end array set record string if then else
+Words2=while for to downto do with repeat until case of goto exit label
+Words3=procedure function nil file and or not xor div mod unit uses
+Words4=implementation interface external asm inline object constructor
+Words5=destructor virtual far assembler near inherited override private public
+Words6=protected published property read write default nodefault stored message 
+Words7=initialization finalization cdecl stdcall exports
+
+[Braces]
+BracesSloppy=1;
+BracesStyle=10;
+ForeColor.Complete=00,00,FF
+ForeColor.Incomplete=FF,00,00
+FontBold.Complete=1
+FontBold.Incomplete=1
