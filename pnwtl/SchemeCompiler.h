@@ -261,13 +261,13 @@ class CSchemeLoaderState
 };
 
 // Empty class for exception source identification purposes...
-class CSchemeCompilerException : public XMLParserException
+class CSchemeParserException : public XMLParserException
 {
 	public:
-		CSchemeCompilerException(XMLParser* pParser, LPCTSTR msg = NULL)
+		CSchemeParserException(XMLParser* pParser, LPCTSTR msg = NULL)
 			: XMLParserException(pParser, msg) {}
 		
-		CSchemeCompilerException(XMLParser* pParser, int ErrorCode = 0, LPCTSTR msg = NULL)
+		CSchemeParserException(XMLParser* pParser, int ErrorCode = 0, LPCTSTR msg = NULL)
 			: XMLParserException(pParser, ErrorCode, msg) {}
 };
 
@@ -318,17 +318,16 @@ class UserSettingsParser
 };
 
 /**
- * XML Scheme Compiler
+ * XML Scheme Parser
  * Uses James Clark's XML parser expat.
  */
-class SchemeCompiler
+class SchemeParser
 {
 	public:
-		void Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile);
+		void Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile);
 
 	protected:
 		CSchemeLoaderState	m_LoadState;
-		SchemeRecorder		m_Recorder;
 
 	protected:
 		void characterData(void* userData, LPCTSTR data, int len);
@@ -346,6 +345,36 @@ class SchemeCompiler
 		void processKeywordClass(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processGlobal(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void customiseStyle(StyleDetails* style, StyleDetails* custom);
+
+	protected:
+		virtual void onLexer(LPCTSTR name, int styleBits) = 0;
+		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags) = 0;
+		virtual void onLanguageEnd() = 0;
+		virtual void onStyle(StyleDetails* pStyle) = 0;
+		virtual void onKeywords(int key, LPCTSTR keywords) = 0;
+		virtual void onFile(LPCTSTR filename) = 0;
+};
+
+/**
+ * XML Scheme Compiler
+ */
+class SchemeCompiler : public SchemeParser
+{
+	public:
+		void Compile(LPCTSTR path, LPCTSTR output, LPCTSTR mainfile);
+
+	protected:
+		SchemeRecorder m_Recorder;
+		void sendStyle(StyleDetails* s, SchemeRecorder* compiler);
+	
+	// Implement SchemeParser
+	protected:
+		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags);
+		virtual void onLanguageEnd();
+		virtual void onStyle(StyleDetails* pStyle);
+		virtual void onFile(LPCTSTR filename);
+		virtual void onKeywords(int key, LPCTSTR keywords);
+		virtual void onLexer(LPCTSTR name, int styleBits);
 };
 
 #endif //#ifndef schemecompiler_h__included

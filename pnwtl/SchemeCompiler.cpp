@@ -1,5 +1,5 @@
 /**
- * @file SchemeCompiler.cpp
+ * @file SchemeParser.cpp
  * @brief Implement scheme reader and compiler classes.
  * @author Simon Steele
  * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
@@ -45,16 +45,15 @@ static COLORREF PNStringToColor(LPCTSTR input)
 {
   	LPCTSTR	Part;
 	int		res;
-	int		Result;
 
 	//b,g,r - output format in hex $bbggrr
 	//r,g,b - input format in string, rr,gg,bb
 	// Default colour
-	Result = ::GetSysColor(COLOR_WINDOWTEXT);
+	res = ::GetSysColor(COLOR_WINDOWTEXT);
 	// only works for xxxxxx colours...
 	if (_tcslen(input) != 6)
 	{
-		return Result;
+		return res;
 	}
 	
 	Part = input;
@@ -69,9 +68,8 @@ static COLORREF PNStringToColor(LPCTSTR input)
 	Part += 2;
 	res += (0x100000 * chartoval(Part[0]));
 	res += (0x10000 * chartoval(Part[1]));
-	Result = res;
 
-	return Result;
+	return res;
 }
 
 static bool PNStringToBool(LPCTSTR input)
@@ -284,7 +282,7 @@ void UserSettingsParser::Parse(LPCTSTR path, CSchemeLoaderState*	pState)
 	{
 		parser.LoadFile(path);
 	}
-	catch (CSchemeCompilerException& E)
+	catch (CSchemeParserException& E)
 	{
 		CString err;
 		err.Format(_T("Error Parsing Scheme XML: %s\n (file: %s, line: %d, column %d)"), 
@@ -494,14 +492,100 @@ void UserSettingsParser::processScheme(CSchemeLoaderState* pState, XMLAttributes
 
 void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 {
-	XMLParserCallback<SchemeCompiler> callback(*this, startElement, endElement, characterData);
-	
-	UserSettingsParser p;
+
 	CString UserSettingsFile = outpath;
 	UserSettingsFile += _T("UserSettings.xml");
-	//if(FileExists((LPCTSTR)UserSettingsFile))
+
+	m_LoadState.m_csOutPath = outpath;
+
+	SchemeParser::Parse(path, mainfile, (LPCTSTR)UserSettingsFile);
+}
+
+void SchemeCompiler::onLanguage(LPCTSTR name, LPCTSTR title, int foldflags)
+{
+	CString filename(m_LoadState.m_csOutPath);
+	filename += name;
+	filename += ".cscheme";
+
+	m_Recorder.StartRecording(name, title, filename, foldflags);
+	
+	m_Recorder.SetDefStyle(&m_LoadState.m_Default);
+}
+
+void SchemeCompiler::onLanguageEnd()
+{
+	if (m_Recorder.IsRecording())
+		m_Recorder.EndRecording();
+}
+
+void SchemeCompiler::onStyle(StyleDetails* pStyle)
+{
+	if(pStyle->Key == STYLE_DEFAULT)
+	{
+		m_Recorder.SetDefStyle(&m_LoadState.m_Default);
+	}
+
+	sendStyle(pStyle, &m_Recorder);	
+}
+
+void SchemeCompiler::sendStyle(StyleDetails* s, SchemeRecorder* compiler)
+{
+	compiler->StyleSetFont(s->Key, s->FontName.c_str());
+	compiler->StyleSetSize(s->Key, s->FontSize);
+	if(s->ForeColor != -1)
+		compiler->StyleSetFore(s->Key, s->ForeColor);
+	if(s->BackColor != -1)
+		compiler->StyleSetBack(s->Key, s->BackColor);
+	compiler->StyleSetBold(s->Key, s->Bold);
+	compiler->StyleSetItalic(s->Key, s->Italic);
+	compiler->StyleSetUnderline(s->Key, s->Underline);
+	compiler->StyleSetEOLFilled(s->Key, s->EOLFilled);
+
+	if(s->Key == STYLE_DEFAULT)
+		compiler->StyleClearAll();
+}
+
+void SchemeCompiler::onFile(LPCTSTR filename)
+{
+	CSRegistry reg;
+	reg.OpenKey(_T("Software\\Echo Software\\PN2\\SchemeDates"), true);
+
+	ctcString filepart;
+	CFileName fn(filename);
+	fn.GetFileName(filepart);
+
+	reg.WriteInt(filepart.c_str(), FileAge(filename));
+}
+
+void SchemeCompiler::onKeywords(int key, LPCSTR keywords)
+{
+	USES_CONVERSION;
+	m_Recorder.SetKeyWords(key, T2CA((LPCTSTR)keywords));
+}
+
+void SchemeCompiler::onLexer(LPCTSTR name, int styleBits)
+{
+	if(name)
+	{
+		USES_CONVERSION;
+		m_Recorder.SetLexerLanguage(T2A((LPTSTR)name));
+	}
+	m_Recorder.SetStyleBits(styleBits);
+}
+
+////////////////////////////////////////////////////////////
+// SchemeParser Implementation
+////////////////////////////////////////////////////////////
+
+void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
+{
+	XMLParserCallback<SchemeParser> callback(*this, startElement, endElement, characterData);
+	
+	UserSettingsParser p;
+
+	//if(FileExists(userfile))
 	//{
-		//p.Parse(UserSettingsFile, &m_LoadState);
+		//p.Parse(userfile, &m_LoadState);
 	//}
 
 	XMLParser parser;
@@ -512,11 +596,6 @@ void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 	m_LoadState.m_pParser = &parser;
 
 	m_LoadState.m_csBasePath = path;
-	m_LoadState.m_csOutPath = outpath;
-
-	CSRegistry reg;
-	reg.OpenKey(_T("Software\\Echo Software\\PN2\\SchemeDates"), true);
-	ctcString filepart;
 
 	CString csFile = path;
 	csFile += mainfile;
@@ -531,11 +610,9 @@ void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 		{
 			parser.LoadFile(file);
 			
-			CFileName fn(file);
-			fn.GetFileName(filepart);
-			reg.WriteInt(filepart.c_str(), FileAge(file));
+			onFile(file);
 		}
-		catch (CSchemeCompilerException& E)
+		catch (CSchemeParserException& E)
 		{
 			CString err;
 			err.Format(_T("Error Parsing Scheme XML: %s\n (file: %s, line: %d, column %d)"), 
@@ -557,7 +634,7 @@ void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 	}
 }
 
-void SchemeCompiler::processGlobal(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processGlobal(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
 	for(int i = 0; i < atts.getCount(); i++)
 	{
@@ -571,7 +648,7 @@ void SchemeCompiler::processGlobal(CSchemeLoaderState* pState, XMLAttributes& at
 	}
 }
 
-void SchemeCompiler::processKeywordClass(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processKeywordClass(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
 	for(int i = 0; i < atts.getCount(); i++)
 	{
@@ -585,7 +662,7 @@ void SchemeCompiler::processKeywordClass(CSchemeLoaderState* pState, XMLAttribut
 	}
 }
 
-void SchemeCompiler::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, StyleDetails* pStyle)
+void SchemeParser::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, StyleDetails* pStyle)
 {
 	LPCTSTR nm;
 	CString t;
@@ -651,7 +728,7 @@ void SchemeCompiler::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts,
 	}
 }
 
-void SchemeCompiler::customiseStyle(StyleDetails* style, StyleDetails* custom)
+void SchemeParser::customiseStyle(StyleDetails* style, StyleDetails* custom)
 {
 	if(custom->values & edvFontName)
 		style->FontName = custom->FontName;
@@ -678,24 +755,7 @@ void SchemeCompiler::customiseStyle(StyleDetails* style, StyleDetails* custom)
 		style->EOLFilled = custom->EOLFilled;
 }
 
-void SchemeCompiler::sendStyle(StyleDetails* s, SchemeRecorder* compiler)
-{
-	compiler->StyleSetFont(s->Key, s->FontName.c_str());
-	compiler->StyleSetSize(s->Key, s->FontSize);
-	if(s->ForeColor != -1)
-		compiler->StyleSetFore(s->Key, s->ForeColor);
-	if(s->BackColor != -1)
-		compiler->StyleSetBack(s->Key, s->BackColor);
-	compiler->StyleSetBold(s->Key, s->Bold);
-	compiler->StyleSetItalic(s->Key, s->Italic);
-	compiler->StyleSetUnderline(s->Key, s->Underline);
-	compiler->StyleSetEOLFilled(s->Key, s->EOLFilled);
-
-	if(s->Key == STYLE_DEFAULT)
-		compiler->StyleClearAll();
-}
-
-void SchemeCompiler::processStyleClass(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processStyleClass(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
 	//<style-class name="comment" inherit-style="bold" fore="comment-color"/>
 	// fore, back, font, size, italics, bold, underline, eolfilled
@@ -733,7 +793,7 @@ void SchemeCompiler::processStyleClass(CSchemeLoaderState* pState, XMLAttributes
 	}
 }
 
-void SchemeCompiler::processLanguageStyle(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processLanguageStyle(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
 	CString classname;
 	StyleDetails* pCustom = NULL;
@@ -770,18 +830,13 @@ void SchemeCompiler::processLanguageStyle(CSchemeLoaderState* pState, XMLAttribu
 
 	Style.Key = key;
 
-	if(Style.Key == STYLE_DEFAULT)
-	{
-		m_Recorder.SetDefStyle(&pState->m_Default);
-	}
-
 	if(pCustom)
 		customiseStyle(&Style, pCustom);
 
-	sendStyle(&Style, &m_Recorder);	
+	onStyle(&Style);
 }
 
-void SchemeCompiler::processLanguageKeywords(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processLanguageKeywords(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
 	 //<keyword key="0" class="hypertext"/>
 	int x = atts.getCount();
@@ -812,12 +867,11 @@ void SchemeCompiler::processLanguageKeywords(CSchemeLoaderState* pState, XMLAttr
 
 	if(kw != _T("") && key != -1)
 	{
-		USES_CONVERSION;
-		m_Recorder.SetKeyWords(key, T2CA((LPCTSTR)kw));
+		onKeywords(key, kw);
 	}
 }
 
-void SchemeCompiler::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts)
+void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts)
 {
 	LPCTSTR t = NULL;
 
@@ -837,10 +891,6 @@ void SchemeCompiler::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR 
 			{
 				pState->m_pCustom = NULL;
 			}
-
-			CString filename(pState->m_csOutPath);
-			filename += scheme;
-			filename += ".cscheme";
 			
 			int foldflags = 0;
 			
@@ -863,9 +913,8 @@ void SchemeCompiler::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR 
 					foldflags |= fldPreProc;
 			}
 
-			m_Recorder.StartRecording(scheme, title, filename, foldflags);
+			onLanguage(scheme, title, foldflags);
 			
-			m_Recorder.SetDefStyle(&pState->m_Default);
 			pState->m_State = DOING_LANGUAGE_DETAILS;
 		}
 	}
@@ -875,24 +924,23 @@ void SchemeCompiler::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR 
 
 		if(_tcscmp(name, _T("lexer")) == 0)
 		{
-			t = atts.getValue(_T("name"));
-			if(t != NULL)
-			{
-				USES_CONVERSION;
-				m_Recorder.SetLexerLanguage(T2A((LPTSTR)t));
-			}
+			LPCTSTR lexer;
+			int		sbits = 5;
+			lexer = atts.getValue(_T("name"));
+			
 			t = atts.getValue(_T("stylebits"));
 			if(t != NULL)
 			{
-				int a = _ttoi(t);
-				if(a != 0)
+				sbits = _ttoi(t);
+				if(sbits == 0)
 				{
-					m_Recorder.SetStyleBits(a);
+					//throw CSchemeParserException(pState->m_pParser, _T("Style Bits value not valid (0 or non-numeric)"));
+					::OutputDebugString(_T("Style Bits value not valid (0 or non-numeric)"));
+					sbits = 5;
 				}
-				else
-					throw CSchemeCompilerException(pState->m_pParser, _T("Style Bits value not valid (0 or non-numeric)"));
-				
 			}
+
+			onLexer(lexer, sbits);
 		}
 		else if(_tcscmp(name, _T("use-keywords")) == 0)
 		{
@@ -905,7 +953,7 @@ void SchemeCompiler::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR 
 	}
 }
 
-void SchemeCompiler::specifyImportFile(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::specifyImportFile(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
 	LPCTSTR name = atts.getValue(_T("name"));
 	if(name != NULL)
@@ -916,11 +964,11 @@ void SchemeCompiler::specifyImportFile(CSchemeLoaderState* pState, XMLAttributes
 	}
 	else
 	{
-		throw CSchemeCompilerException(pState->m_pParser, _T("Import element with no name attribute."));
+		throw CSchemeParserException(pState->m_pParser, _T("Import element with no name attribute."));
 	}
 }
 
-void SchemeCompiler::specifyImportSet(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::specifyImportSet(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
 	LPCTSTR pattern = atts.getValue(_T("pattern"));
 
@@ -958,11 +1006,11 @@ void SchemeCompiler::specifyImportSet(CSchemeLoaderState* pState, XMLAttributes&
 	}
 	else
 	{
-		throw CSchemeCompilerException(pState->m_pParser, _T("Set element with no pattern attribute."));
+		throw CSchemeParserException(pState->m_pParser, _T("Set element with no pattern attribute."));
 	}
 }
 
-void SchemeCompiler::processKeywordCombine(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processKeywordCombine(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
 	pState->m_State = DOING_KEYWORDCOMBINE;
 
@@ -976,16 +1024,16 @@ void SchemeCompiler::processKeywordCombine(CSchemeLoaderState* pState, XMLAttrib
 		}
 		else
 		{
-			throw CSchemeCompilerException(pState->m_pParser, _T("Unmatched keyword class inclusion."));
+			throw CSchemeParserException(pState->m_pParser, _T("Unmatched keyword class inclusion."));
 		}
 	}
 	else
 	{
-		throw CSchemeCompilerException(pState->m_pParser, _T("include-class element with no name attribute"));
+		throw CSchemeParserException(pState->m_pParser, _T("include-class element with no name attribute"));
 	}
 }
 
-void SchemeCompiler::startElement(void *userData, LPCTSTR name, XMLAttributes& atts)
+void SchemeParser::startElement(void *userData, LPCTSTR name, XMLAttributes& atts)
 {
 	CSchemeLoaderState* pState = static_cast<CSchemeLoaderState*>(userData);
 	int state = pState->m_State;
@@ -1066,7 +1114,7 @@ void SchemeCompiler::startElement(void *userData, LPCTSTR name, XMLAttributes& a
 		OutputDebugString(stattext);
 }
 
-void SchemeCompiler::endElement(void *userData, LPCTSTR name)
+void SchemeParser::endElement(void *userData, LPCTSTR name)
 {
 	CSchemeLoaderState* pS = static_cast<CSchemeLoaderState*>(userData);
 	
@@ -1135,8 +1183,8 @@ void SchemeCompiler::endElement(void *userData, LPCTSTR name)
 		// Only come out of language mode if we're really out...
 		if(_tcscmp(name, _T("language")) == 0)
 		{
-			if (m_Recorder.IsRecording())
-				m_Recorder.EndRecording();
+			onLanguageEnd();
+			
 			pS->m_State = 0;
 		}
 	}
@@ -1159,7 +1207,8 @@ void SchemeCompiler::endElement(void *userData, LPCTSTR name)
 		pS->m_csCData = _T("");
 }
 
-void SchemeCompiler::characterData(void* userData, LPCTSTR data, int len)
+///@todo perhaps change this to use strncat and go straight into the CData buffer...
+void SchemeParser::characterData(void* userData, LPCTSTR data, int len)
 {
 	CSchemeLoaderState* pState = static_cast<CSchemeLoaderState*>(userData);
 
