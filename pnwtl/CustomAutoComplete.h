@@ -158,12 +158,14 @@ public:
 			if (p_dwOptions)
 			{
 				CComQIPtr<IAutoComplete2> pAC2(m_pac);
-
-				ATLASSERT(pAC2);
-
-				hr = pAC2->SetOptions(p_dwOptions);			// This never fails?
-				pAC2.Release();
-
+                
+				//ATLASSERT(pAC2);
+				// IAutoComplete2 only available with shell.dll v5+
+				if(pAC2 != NULL)
+				{
+					hr = pAC2->SetOptions(p_dwOptions);			// This never fails?
+					pAC2.Release();
+				}
 			}
 
 			USES_CONVERSION;
