@@ -312,6 +312,8 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			COMMAND_ID_HANDLER(IDOK, OnOK)
 			COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
+			COMMAND_ID_HANDLER(IDC_TE_COMMANDBUTTON, OnBrowseCommand);
+			COMMAND_ID_HANDLER(IDC_TE_DIRBUTTON, OnBrowseDir);
 		END_MSG_MAP()
 
 		BEGIN_DDX_MAP(CToolEditorDialog)
@@ -320,6 +322,7 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 			DDX_TEXT(IDC_TE_FOLDEREDIT,		m_csFolder)
 			DDX_TEXT(IDC_TE_PARAMSEDIT,		m_csParams)
 			DDX_TEXT(IDC_TE_SHORTCUTEDIT,	m_csShortcut)
+			DDX_CHECK(IDC_TE_CAPTURECHECK,	m_bCapture)
 			
 			//DDX_CHECK(IDC_MATCHCASE_CHECK, m_bMatchCase)
 			//DDX_RADIO(IDC_UP_RADIO, m_Direction)
@@ -356,6 +359,8 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnBrowseCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	protected:
 		CString	m_csName;
@@ -363,6 +368,8 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 		CString	m_csFolder;
 		CString	m_csParams;
 		CString	m_csShortcut;
+
+		BOOL	m_bCapture;
 
 		CInfoLabel m_infolabel;
 };

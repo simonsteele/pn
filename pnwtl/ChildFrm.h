@@ -89,6 +89,7 @@ public:
 		COMMAND_ID_HANDLER(ID_TOOLS_LELF, OnLineEndingsToggle)
 		COMMAND_ID_HANDLER(ID_TOOLS_LECR, OnLineEndingsToggle)
 		COMMAND_ID_HANDLER(ID_TOOLS_LECONVERT, OnLineEndingsConvert)
+		COMMAND_ID_HANDLER(ID_TOOLS_STOPTOOLS, OnStopTools)
 
 		NOTIFY_CODE_HANDLER(TBN_GETINFOTIP, OnGetInfoTip)
 
@@ -184,6 +185,7 @@ public:
 	LRESULT OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLineEndingsToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLineEndingsConvert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnStopTools(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	////////////////////////////////////////////////////
 	// Notify Handlers

@@ -130,7 +130,7 @@ class CInputDialogImpl : public CDialogImpl<CInputDialogImpl>
 
 		enum { IDD = IDD_INPUTBOX };
 
-		BEGIN_MSG_MAP(CInputDialog)
+		BEGIN_MSG_MAP(CInputDialogImpl)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			COMMAND_ID_HANDLER(IDOK, OnOK)
 			COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
@@ -138,7 +138,7 @@ class CInputDialogImpl : public CDialogImpl<CInputDialogImpl>
 
 		LPCTSTR GetInput()
 		{
-			return m_inputText;
+			return (LPCTSTR)m_inputText;
 		}
 
 	protected:
@@ -150,21 +150,30 @@ class CInputDialogImpl : public CDialogImpl<CInputDialogImpl>
 
 		LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 		{
-			return static_cast<T*>(this)->OK(wID);
+			T* pT = static_cast<T*>(this);
+			return pT->OK(wID);
 		}
 
 		LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 		{
-			return static_cast<T*>(this)->Cancel(wID);
+			//return static_cast<T*>(this)->Cancel(wID);
+			EndDialog(wID);
+			return TRUE;
 		}
 
 		LRESULT OK(WORD wID)
 		{
 			HWND hEdit = GetDlgItem(IDC_THEEDIT);
 			int i = ::GetWindowTextLength(hEdit) + 1;
-			LPTSTR buf = m_inputText.GetBuffer(i);
+			
+			CWindow wnd;
+			wnd.Attach(hEdit);
+			wnd.GetWindowText(m_inputText);
+			wnd.Detach();
+
+			/*LPTSTR buf = m_inputText.GetBuffer(i);
 			::GetWindowText(hEdit, buf, i);
-			m_inputText.ReleaseBuffer();
+			m_inputText.ReleaseBuffer();*/
 
 			EndDialog(wID);
 

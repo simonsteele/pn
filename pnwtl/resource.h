@@ -2,6 +2,7 @@
 // Microsoft Visual C++ generated include file.
 // Used by pn.rc
 //
+#define ID_DUMMY_VC_IS_RUBBISH          0
 #define IDC_REPLACE_BUTTON              4
 #define IDR_TBR_EDIT                    5
 #define IDC_REPLACEALL_BUTTON           6
@@ -66,7 +67,6 @@
 #define ID_HELP_REPORTABUG              254
 #define IDD_TOOLEDITOR                  255
 #define ID_VIEW_OUTPUT                  256
-#define IDR_MENU1                       257
 #define IDR_POPUP_OUTPUT                257
 #define ID_DUMMY_PASTE                  258
 #define ID_OUTPUT_CLEAR                 259
@@ -96,6 +96,7 @@
 #define IDC_FONT_COMBO                  1012
 #define IDC_TOOLS_REMOVEBUTTON          1012
 #define IDC_TE_BROWSEBUTTON             1012
+#define IDC_TE_DIRBUTTON                1012
 #define IDC_FONTSIZE_COMBO              1013
 #define IDC_SCHEMECOMBO                 1016
 #define IDC_SCHEMELABEL                 1017
@@ -129,6 +130,7 @@
 #define IDC_TE_INFOLABEL                1044
 #define IDC_TEXTTITLE                   1045
 #define IDC_VERSIONSTATIC               1046
+#define IDC_TE_CAPTURECHECK             1047
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_PNSAVE_TYPECOMBO            1057
 #define IDC_MARKALL_BUTTON              21199
@@ -148,6 +150,7 @@
 #define ID_BOOKMARKS_TOGGLE             32786
 #define ID_BOOKMARKS_NEXT               32787
 #define ID_TOOLS_DUMMY                  32788
+#define ID_TOOLS_STOPTOOLS              32789
 #define ID_RECENTFILES_BLANKER          32790
 #define ID_VIEW_VIEWTABS                32825
 #define ID_TAB_CLOSE                    32835
@@ -175,7 +178,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        261
 #define _APS_NEXT_COMMAND_VALUE         32791
-#define _APS_NEXT_CONTROL_VALUE         1047
+#define _APS_NEXT_CONTROL_VALUE         1048
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

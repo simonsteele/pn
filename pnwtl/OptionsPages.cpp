@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "OptionsPages.h"
 
+#include "include/BrowseForFolder.h"
+
 //////////////////////////////////////////////////////////////////////////////
 // CStyleDisplay
 //////////////////////////////////////////////////////////////////////////////
@@ -1183,27 +1185,38 @@ LRESULT CToolEditorDialog::CInfoLabel::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/,
 
 		dc.SelectStockFont(DEFAULT_GUI_FONT);
 
-		/* We draw up to two columns of text to display the % special chars. 
+		/* We draw n columns of text to display the % special chars. 
 		This should be modified to draw as many as necessary. 
 		Use a while pPipe instead of if...*/
-		///@todo Make this x-column tastic.
 
-		TCHAR* pPipe = _tcschr(strbuf, _T('|'));
-		CRect rcCol(rc);
-		if(pPipe)
+		TCHAR* pStr = strbuf;
+		TCHAR* pPipe = _tcschr(pStr, _T('|'));
+
+		while(pPipe)
 		{
+			CRect rcCol(rc);
+			
 			*pPipe = '\0';
-			dc.DrawText(strbuf, _tcslen(strbuf), rcCol, DT_TOP | DT_LEFT | DT_WORDBREAK | DT_CALCRECT);	
-		}
+			
+			// Calculate the rect for this column.
+			dc.DrawText(pStr, _tcslen(pStr), rcCol, DT_TOP | DT_LEFT | DT_WORDBREAK | DT_CALCRECT);	
 
-		dc.DrawText(strbuf, _tcslen(strbuf), rc, DT_TOP | DT_LEFT | DT_WORDBREAK);
+			// Actually draw the text.
+			dc.DrawText(pStr, _tcslen(pStr), rc, DT_TOP | DT_LEFT | DT_WORDBREAK);
 
-		if(pPipe)
-		{
-			*pPipe++ = _T('|');
+			// Find the next column start.
 			rc.left += rcCol.Width() + 20;
-			dc.DrawText(pPipe, _tcslen(pPipe), rc, DT_TOP | DT_LEFT | DT_WORDBREAK);
+
+			// Replace the pipe, and skip pStr past it.
+			*pPipe++ = _T('|');
+			pStr = pPipe;
+
+			// Are there any more?
+			pPipe = _tcschr(pStr, _T('|'));
 		}
+
+		// Draw the remaining text.
+		dc.DrawText(pStr, _tcslen(pStr), rc, DT_TOP | DT_LEFT | DT_WORDBREAK);
 
 		dc.SelectFont(hOldFont);
 	}
@@ -1223,11 +1236,15 @@ CToolEditorDialog::CToolEditorDialog()
 	m_csParams = _T("");
 	m_csShortcut = _T("");
 
+	m_bCapture = true;
+
 	m_csDisplayTitle = _T("New Tool");
 }
 
 LRESULT CToolEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	CenterWindow(GetParent());
+
 	SetWindowText(m_csDisplayTitle);
 
 	m_infolabel.SubclassWindow(GetDlgItem(IDC_TE_INFOLABEL));
@@ -1252,6 +1269,36 @@ LRESULT CToolEditorDialog::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 	return 0;
 }
 
+LRESULT CToolEditorDialog::OnBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{	
+	DoDataExchange(TRUE);
+
+	CBrowseForFolder bff(m_hWnd, _T("Select a Folder"));
+	
+	if(m_csFolder.Find(_T('%')) == -1)
+		bff.SetInitialSelection(m_csFolder);
+	if(bff.SelectFolder())
+	{
+		m_csFolder = bff.GetSelectedFolder();
+		DoDataExchange();
+	}
+	return 0;
+}
+
+LRESULT CToolEditorDialog::OnBrowseCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	DoDataExchange(TRUE);
+
+	LPCTSTR pFN = ( (m_csCommand.Find(_T('%')) == -1) ? (LPCTSTR)m_csCommand : NULL );
+	CFileDialog fd(true, _T("exe"), pFN, OFN_HIDEREADONLY, _T("Executable Files (exe, com, bat, vbs...)\0*.exe;*.com;*.bat;*.vbs;*.cmd\0All Files (*.*)\0*.*\0"), NULL);
+	if( fd.DoModal() )
+	{
+		m_csCommand = fd.m_ofn.lpstrFile;
+		DoDataExchange();
+	}
+	return 0;
+}
+
 void CToolEditorDialog::GetValues(SToolDefinition* pDefinition)
 {
 	pDefinition->Name		= m_csName;
@@ -1259,6 +1306,7 @@ void CToolEditorDialog::GetValues(SToolDefinition* pDefinition)
 	pDefinition->Folder		= m_csFolder;
 	pDefinition->Params		= m_csParams;
 	pDefinition->Shortcut	= m_csShortcut;
+	pDefinition->bCaptureOutput = m_bCapture != 0;
 }
 
 void CToolEditorDialog::SetValues(SToolDefinition* pDefinition)
@@ -1268,6 +1316,7 @@ void CToolEditorDialog::SetValues(SToolDefinition* pDefinition)
 	m_csFolder		= pDefinition->Folder.c_str();
 	m_csParams		= pDefinition->Params.c_str();
 	m_csShortcut	= pDefinition->Shortcut.c_str();
+	m_bCapture		= pDefinition->bCaptureOutput;
 }
 
 void CToolEditorDialog::SetTitle(LPCTSTR title)

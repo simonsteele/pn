@@ -168,6 +168,7 @@ BEGIN
         END
         MENUITEM SEPARATOR
         MENUITEM "Add Tools...",                ID_TOOLS_DUMMY
+        MENUITEM "&Stop Tools",                 ID_TOOLS_STOPTOOLS, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "&Options",                    245
     END
@@ -335,7 +336,7 @@ BEGIN
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
     ID_EDITOR_LINENOS       "Toggle line numbers display"
     IDS_ABOUTVERSIONSTRING  "Programmers Notepad 2\nv%s\n\nCopyright (c) 2002-2003 Simon Steele"
-    IDS_TOOLFORMATSTRINGS   "%f: File Name\n%n: File Name (no ext)\n%l: Current Line Number|%d: Path of File\n%c: Caret Column\n%%: Percent Symbol"
+    IDS_TOOLFORMATSTRINGS   "%f: File Name\n%n: File Name (no ext)\n%l: Current Line Number|%d: Path of File\n%c: Caret Column\n%%: Percent Symbol|%?: Ask for parameters"
 END
 
 STRINGTABLE 
@@ -775,7 +776,7 @@ BEGIN
     ICON            IDR_MDICHILD,IDC_STATIC,6,6,20,20
 END
 
-IDD_TOOLEDITOR DIALOGEX 0, 0, 286, 145
+IDD_TOOLEDITOR DIALOGEX 0, 0, 286, 162
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Tool Editor"
@@ -785,10 +786,11 @@ BEGIN
     EDITTEXT        IDC_TE_CMDEDIT,54,24,150,12,ES_AUTOHSCROLL
     PUSHBUTTON      "...",IDC_TE_COMMANDBUTTON,209,24,13,12
     EDITTEXT        IDC_TE_FOLDEREDIT,54,42,150,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_TE_BROWSEBUTTON,209,42,13,12
+    PUSHBUTTON      "...",IDC_TE_DIRBUTTON,209,42,13,12
     EDITTEXT        IDC_TE_PARAMSEDIT,54,60,168,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_TE_SHORTCUTEDIT,54,78,150,12,ES_AUTOHSCROLL
-    PUSHBUTTON      "c",IDC_TE_CLEARBUTTON,209,78,13,12
+    EDITTEXT        IDC_TE_SHORTCUTEDIT,54,78,150,12,ES_AUTOHSCROLL | 
+                    WS_DISABLED
+    PUSHBUTTON      "c",IDC_TE_CLEARBUTTON,209,78,13,12,WS_DISABLED
     DEFPUSHBUTTON   "OK",IDOK,234,6,48,14
     PUSHBUTTON      "Cancel",IDCANCEL,234,24,48,14
     RTEXT           "Name:",IDC_STATIC,6,6,42,12
@@ -796,7 +798,9 @@ BEGIN
     RTEXT           "Folder:",IDC_STATIC,6,42,42,12
     RTEXT           "Parameters:",IDC_STATIC,6,60,42,8
     RTEXT           "Shortcut:",IDC_STATIC,6,78,42,12
-    LTEXT           "Static",IDC_TE_INFOLABEL,6,96,276,42
+    LTEXT           "Static",IDC_TE_INFOLABEL,6,114,276,42
+    CONTROL         "Capture output",IDC_TE_CAPTURECHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,6,96,84,12
 END
 
 
@@ -875,7 +879,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 279
         TOPMARGIN, 7
-        BOTTOMMARGIN, 138
+        BOTTOMMARGIN, 155
     END
 END
 #endif    // APSTUDIO_INVOKED

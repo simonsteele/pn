@@ -33,6 +33,11 @@ public:
 		if(len == -1)
 			len = strlen(s);
 		SendMessage(SCI_APPENDTEXT, len, reinterpret_cast<LPARAM>(s));
+
+		int line = SendMessage(SCI_GETLENGTH, 0, 0);
+		line = SendMessage(SCI_LINEFROMPOSITION, line, 0);
+		SendMessage(SCI_ENSUREVISIBLEENFORCEPOLICY, line);
+		SendMessage(SCI_GOTOLINE, line);
 	}
 
 protected:

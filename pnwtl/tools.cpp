@@ -14,6 +14,13 @@
 #include <sstream>
 #include <fstream>
 
+#ifdef _DEBUG 
+# define LLR_DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__) 
+# define LLR_DEBUG_MALLOC(size) _malloc_dbg(size, _NORMAL_BLOCK, __FILE__, __LINE__) 
+# define new LLR_DEBUG_NEW 
+# define malloc LLR_DEBUG_MALLOC 
+#endif // _DEBUG 
+
 //////////////////////////////////////////////////////////////////////////////
 // SchemeTools
 //////////////////////////////////////////////////////////////////////////////
@@ -104,11 +111,14 @@ void SchemeTools::WriteDefinition(ofstream& stream)
 		
 		for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
 		{
+			int flags = 0;
+			flags |= ((*i)->bCaptureOutput ? 0x1 : 0);
 			stream << "\t\t<tool name=\"" << FormatXML((*i)->Name) << "\" ";
 			stream << "command=\"" << FormatXML((*i)->Command) << "\" ";
 			stream << "folder=\"" << FormatXML((*i)->Folder) << "\" ";
 			stream << "params=\"" << FormatXML((*i)->Params) << "\" ";
 			stream << "shortcut=\"" << FormatXML((*i)->Shortcut) << "\" ";
+			stream << "flags=\"" << flags << "\" ";
 			stream << "/>\n";
 		}
 
@@ -242,6 +252,9 @@ void SchemeToolsManager::processTool(XMLAttributes& atts)
 	if(m_pCur && toolname)
 	{
 		SToolDefinition* pDef = new SToolDefinition;
+		
+		// Initialise members...
+		pDef->bCaptureOutput = false;
 		pDef->Name = toolname;
 		
 		int c = atts.getCount();
@@ -259,6 +272,11 @@ void SchemeToolsManager::processTool(XMLAttributes& atts)
 				pDef->Folder = val;
 			else if(_tcscmp(attr, _T("shortcut")) == 0)
 				pDef->Shortcut = val;
+			else if(_tcscmp(attr, _T("flags")) == 0)
+			{
+				int flags = _ttoi(val);
+				pDef->bCaptureOutput = flags & 0x1;
+			}
 		}
 
 		m_pCur->Add(pDef);
@@ -294,10 +312,15 @@ bool ToolRunner::GetThreadedExecution()
 {
 	if(m_pTool)
 	{
-		return /*m_pTool->bCaptureOutput*/ true;
+		return m_pTool->bCaptureOutput;
 	}
 
 	return false;
+}
+
+int ToolRunner::GetExitCode()
+{
+	return m_RetCode;
 }
 
 /**
@@ -466,7 +489,7 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 				// don't answer to a normal termination command.
 				// This function is dangerous: dependant DLLs don't know the process
 				// is terminated, and memory isn't released.
-				m_pChild->AddOutput("\n>Process failed to respond; forcing abrupt termination...\n");
+				m_pChild->AddOutput("\n> Forcefully terminating process...\n");
 				::TerminateProcess(pi.hProcess, 1);
 			}
 			bCompleted = true;
@@ -563,20 +586,7 @@ int ToolRunner::Execute()
 	m_pCopyDef->Params = builder.Build(m_pTool->Params.c_str());
 	m_pCopyDef->Folder = builder.Build(m_pTool->Folder.c_str());
 
-	#if 0
-	::CreateProcess(command.c_str(), params.c_str(), 
-		lpProcessAttributes, /*LPSECURITY_ATTRIBUTES lpProcessAttributes*/
-		lpThreadAttributes, /*LPSECURITYATTRIBUTES lpThreadAttributes*/
-		bInheritHandles, /*BOOL bInheritHandles*/ 
-		dwCreationFlags, /*DWORD dwCreationFlags*/
-		lpEnvironment, /*LPVOID lpEnvironment*/
-		workingdir.c_str(), /*LPCTSTR lpWorkingDir*/
-		lpStartupInfo, /*LPSTARTUPINFO lpStartupInfo*/
-		lpProcessInformation /*LPPROCESS_INFORMATION lpProcessInformation*/ 
-	);
-	#endif
-
-	if(0)
+	if(!m_pTool->bCaptureOutput)
 	{
 		Run_ShellExecute(m_pCopyDef->Command.c_str(), m_pCopyDef->Params.c_str(), m_pCopyDef->Folder.c_str());
 		delete m_pCopyDef;

@@ -169,7 +169,8 @@ class CSSThread
 			// close the thread-handle
 			if (NULL != m_hThread)
 			{
-				::CloseHandle(m_hThread);
+				// Note: Should not call CloseHandle on a beginthreadex thread...
+				//::CloseHandle(m_hThread);
 				m_hThread = NULL;
 
 				return true;
@@ -223,7 +224,11 @@ class CSSThread
 		{
 			// is the "stopped" event signalled?
 			if (WAIT_OBJECT_0 == ::WaitForSingleObject(m_evtStopped, timeout))
-				return true;	// thread has stopped
+			{
+				if(WAIT_OBJECT_0 == ::WaitForSingleObject(m_hThread, timeout))
+					return true;	// thread has stopped
+			}
+			
 
 			return false;		// thread has not stopped
 		}

@@ -13,6 +13,13 @@
 #include "outputview.h"
 #include "tools.h"
 
+#ifdef _DEBUG 
+# define LLR_DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__) 
+# define LLR_DEBUG_MALLOC(size) _malloc_dbg(size, _NORMAL_BLOCK, __FILE__, __LINE__) 
+# define new LLR_DEBUG_NEW 
+# define malloc LLR_DEBUG_MALLOC 
+#endif // _DEBUG 
+
 CChildFrame::CChildFrame()
 {
 	::InitializeCriticalSection(&m_crRunningTools);
@@ -539,6 +546,13 @@ LRESULT CChildFrame::OnLineEndingsConvert(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	return 0;
 }
 
+LRESULT CChildFrame::OnStopTools(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	KillTools();
+
+	return 0;
+}
+
 ////////////////////////////////////////////////////
 // Notify Handlers
 
@@ -801,6 +815,12 @@ void CChildFrame::UpdateMenu()
 	menu.CheckMenuItem(ID_TOOLS_LECRLF, f == PNSF_Windows);
 	menu.CheckMenuItem(ID_TOOLS_LECR, f == PNSF_Mac);
 	menu.CheckMenuItem(ID_TOOLS_LELF, f == PNSF_Unix);
+	
+	{
+		// Scope to restrict lock scope.
+		CSSCritLock lock(&m_crRunningTools);
+		menu.EnableMenuItem(ID_TOOLS_STOPTOOLS, m_pFirstTool != NULL);
+	}
 
 	g_Context.m_frame->SetActiveScheme(m_hWnd, m_view.GetCurrentScheme());
 }
@@ -833,6 +853,8 @@ void CChildFrame::AddRunningTool(ToolRunner* pRunner)
 		pRunner->m_pNext = m_pFirstTool;
 
 	m_pFirstTool = pRunner;
+
+	UpdateMenu();
 }
 
 void CChildFrame::ToolFinished(ToolRunner* pRunner)
@@ -859,9 +881,18 @@ void CChildFrame::ToolFinished(ToolRunner* pRunner)
 				m_pFirstTool = pT->m_pNext;
 		}
 
+		do{
+		}
 		while(!pRunner->GetStopped(20));
 
+		tstring exitcode(_T("\n> Process Exit Code: "));
+		exitcode += IntToTString(pRunner->GetExitCode());
+		exitcode += _T("\n");
+		AddOutput(exitcode.c_str());
+
 		delete pRunner;
+
+		UpdateMenu();
 	}
 }
 
@@ -878,7 +909,7 @@ void CChildFrame::KillTools(bool bFriendlyKill)
 			ToolRunner* pT = m_pFirstTool;
 			while(pT)
 			{
-				pT->Stop();
+				pT->SetCanRun(false);
 				pT = pT->m_pNext;
 			}
 		}

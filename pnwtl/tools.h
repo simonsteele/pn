@@ -77,6 +77,8 @@ class SchemeToolsManager : public Singleton<SchemeToolsManager>, public XMLParse
 		SCHEMETOOLS_MAP m_toolSets;
 };
 
+#include "aboutdlg.h"
+
 /**
  * Format string builder class to build up command-line parameters for a tool.
  */
@@ -111,11 +113,12 @@ class CToolCommandString : public CustomFormatStringBuilder<CToolCommandString>
 
 				case _T('?'):
 					{
-						CInputDialog dlg(_T("Tool Parameters"), _T("Parameters:"));
-						if( dlg.DoModal() == IDOK )
+						CInputDialog* dlg = new CInputDialog(_T("Tool Parameters"), _T("Parameters:"));
+						if( dlg->DoModal() == IDOK )
 						{
-							m_string += dlg.GetInput();
+							m_string += dlg->GetInput();
 						}
+						delete dlg;
 					}
 					break;
 			}		
@@ -184,6 +187,8 @@ public:
 	bool GetThreadedExecution();
 
 	ToolRunner* m_pNext;
+
+	int GetExitCode();
 
 protected:
 	int Run_ShellExecute(LPCTSTR command, LPCTSTR params, LPCTSTR dir);

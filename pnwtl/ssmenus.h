@@ -187,6 +187,11 @@ class CSMenuT
 			::CheckMenuItem(GetHandle(), uIDCheckItem, mfchecked[bChecked]);
 		}
 
+		void EnableMenuItem(int uIDEnableItem, bool bEnabled)
+		{
+			::EnableMenuItem(GetHandle(), uIDEnableItem, mfenabled[bEnabled]);
+		}
+
 		int GetCount()
 		{
 			return ::GetMenuItemCount(GetHandle());
