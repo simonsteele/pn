@@ -242,8 +242,7 @@ public:
 
 	LRESULT OnToolbarDropDown(WPARAM /*wParam*/, LPNMHDR /*lParam*/, BOOL& /*bHandled*/);
 
-	void OpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme = NULL);
-	void OpenFile(LPCTSTR pathname, CScheme* pScheme);
+	bool OpenFile(LPCTSTR pathname, CScheme* pScheme = NULL);
 	
 	void UpdateStatusBar();
 
@@ -267,7 +266,7 @@ public:
 	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL, HWND hWndCaller = NULL);
 	virtual void SetStatusText(LPCTSTR text, bool bLongLife = true);
 	virtual void SaveAll();
-	virtual void OpenFile(LPCTSTR pathname, bool bAddMRU = false);
+	virtual bool Open(LPCTSTR pathname, bool bAddMRU = false);
 	virtual bool CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction = COptionsManager::GetInstance()->AlreadyOpenAction);
 	virtual Projects::Workspace* GetActiveWorkspace();
 

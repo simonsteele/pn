@@ -56,6 +56,23 @@ void CMRUList::AddEntry(LPCTSTR data)
 	/*BOOL bRet = */m_entries.Add(e);
 }
 
+bool CMRUList::MoveToTop(int index)
+{
+	if(index >= 0 && index < m_entries.GetSize())
+	{
+		_entry e(m_entries[index]);
+		m_entries.RemoveAt(index);
+		return (m_entries.Add(e) != FALSE);
+	}
+
+	return false;
+}
+
+bool CMRUList::RemoveEntry(int index)
+{
+	return (m_entries.RemoveAt(index) != FALSE);
+}
+
 LPCTSTR CMRUList::GetEntry(int index)
 {
 	ATLASSERT(index >= 0 && index < m_iMaxSize);
@@ -123,6 +140,8 @@ void CMRUList::LoadFromRegistry()
 		}
 	}
 }
+
+
 
 ///////////////////////////////////////////////////////////////
 // CMRUMenu
@@ -213,6 +232,18 @@ UINT CMRUMenu::base() const
 UINT CMRUMenu::last() const
 {
 	return m_iBase + m_iMaxSize;
+}
+
+void CMRUMenu::RemoveEntry(int index)
+{
+	if(CMRUList::RemoveEntry(index))
+		UpdateMenu();
+}
+
+void CMRUMenu::MoveToTop(int index)
+{
+	if(CMRUList::MoveToTop(index))
+		UpdateMenu();
 }
 
 void XMLSafeString(LPCTSTR from, tstring& to)

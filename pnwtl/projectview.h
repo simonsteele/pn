@@ -11,11 +11,13 @@
 #ifndef projectview_h__included
 #define projectview_h__included
 
+#include "include/wtltreems.h"
+
 class ShellImageList;
 
-class CProjectTreeCtrl : public CWindowImpl<CProjectTreeCtrl, CTreeViewCtrl>
+class CProjectTreeCtrl : public CMSTreeViewCtrl
 {
-	typedef CWindowImpl<CProjectTreeCtrl, CTreeViewCtrl> baseClass;
+	typedef CMSTreeViewCtrl baseClass;
 public:
 	DECLARE_WND_CLASS(_T("ProjectTree"))
 
@@ -23,7 +25,7 @@ public:
 	~CProjectTreeCtrl();
 
 	BEGIN_MSG_MAP(CProjectTreeCtrl)
-		REFLECTED_NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnSelChanged)
+		
 		REFLECTED_NOTIFY_CODE_HANDLER(TVN_ENDLABELEDIT, OnEndLabelEdit)
 		REFLECTED_NOTIFY_CODE_HANDLER(NM_RCLICK, OnRightClick)
 		COMMAND_ID_HANDLER(ID_PROJECT_OPEN, OnOpenFile)
@@ -33,7 +35,9 @@ public:
 		COMMAND_ID_HANDLER(ID_PROJECT_REMOVE, OnRemove)
 		COMMAND_ID_HANDLER(ID_PROJECT_DELETE, OnDelete)
 		COMMAND_ID_HANDLER(ID_WORKSPACE_NEWPROJECT, OnNewProject)
-		COMMAND_ID_HANDLER(ID_WORKSPACE_ADDPROJECT, OnAddProject)		
+		COMMAND_ID_HANDLER(ID_WORKSPACE_ADDPROJECT, OnAddProject)
+		CHAIN_MSG_MAP(baseClass)
+		REFLECTED_NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnSelChanged)
 	END_MSG_MAP()
 
 	HWND Create(HWND hWndParent, WTL::_U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
@@ -75,7 +79,9 @@ protected:
 	ShellImageList*			shellImages;
 	Projects::ProjectType*	lastItem;
 	Projects::Workspace*	workspace;
-
+	int						projectIcon;
+	int						workspaceIcon;
+	int						badProjectIcon;
 };
 
 class CProjectDocker : public CPNDockingWindow<CProjectDocker>

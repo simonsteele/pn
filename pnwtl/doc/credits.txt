@@ -1,2 +1,16 @@
+Author:
+-------
+Simon Steele
+
+
+Code Contributors:
+------------------
 Bjoern Graf
 Klaus Kurzawa
+
+
+Testers:
+--------
+Robert Scarborough
+Adam Scheinberg
+Eric Weddington

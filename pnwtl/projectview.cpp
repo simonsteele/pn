@@ -25,6 +25,9 @@ CProjectTreeCtrl::CProjectTreeCtrl()
 {
 	lastItem = NULL;
 	shellImages = new ShellImageList();
+	projectIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_PROJECTFOLDER)) );
+	badProjectIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_BADPROJECT)) );
+	workspaceIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_WORKSPACE)) );
 }
 
 CProjectTreeCtrl::~CProjectTreeCtrl()
@@ -83,7 +86,7 @@ void CProjectTreeCtrl::buildTree()
 
 	try
 	{
-		HTREEITEM hTopItem = InsertItem( workspace->GetName(), 0, 0, NULL, NULL );
+		HTREEITEM hTopItem = InsertItem( workspace->GetName(), workspaceIcon, workspaceIcon, NULL, NULL );
 		SetItemData(hTopItem, reinterpret_cast<DWORD_PTR>( workspace ));
 		const PROJECT_LIST& projects = workspace->GetProjects();
 
@@ -104,7 +107,7 @@ void CProjectTreeCtrl::buildTree()
 
 void CProjectTreeCtrl::buildProject(HTREEITEM hParentNode, Projects::Project* pj)
 {
-	HTREEITEM hProject = InsertItem( pj->GetName(), 0, 0, hParentNode, NULL );
+	HTREEITEM hProject = InsertItem( pj->GetName(), projectIcon, projectIcon, hParentNode, NULL );
 	ProjectType* pPT = static_cast<ProjectType*>(pj);
 	SetItemData(hProject, reinterpret_cast<DWORD_PTR>( pPT ));
 
@@ -120,7 +123,7 @@ void CProjectTreeCtrl::buildProject(HTREEITEM hParentNode, Projects::Project* pj
 	}
 	else
 	{
-		HTREEITEM hni = InsertItem( _T("Could not load project..."), 0, 0, hProject, NULL );
+		HTREEITEM hni = InsertItem( _T("Could not load project..."), badProjectIcon, badProjectIcon, hProject, NULL );
 		SetItemData(hni, NULL);
 	}
 	
@@ -222,7 +225,8 @@ LRESULT CProjectTreeCtrl::OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 
 	CPoint pt(GetMessagePos());
 	CPoint pt2(pt);
-	
+
+	// Keyboard right-click...
 	if(pt.x == -1)
 		return 0;
 		
@@ -241,6 +245,9 @@ LRESULT CProjectTreeCtrl::OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 			ProjectType* ptype = reinterpret_cast<ProjectType*>( GetItemData(tvhti.hItem) );
 			hLastItem = tvhti.hItem;
 			lastItem = ptype;
+
+			if(!ptype)
+				return 0;
 
 			switch(ptype->GetType())
 			{
@@ -269,8 +276,13 @@ LRESULT CProjectTreeCtrl::OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 
 				case ptProject:
 				{
-					CSPopupMenu popup(IDR_POPUP_PROJECT);
-					g_Context.m_frame->TrackPopupMenu(popup, 0, pt.x, pt.y, NULL, m_hWnd);
+					Projects::Project* project = static_cast<Projects::Project*>(ptype);
+
+					if(project->Exists())
+					{
+						CSPopupMenu popup(IDR_POPUP_PROJECT);
+						g_Context.m_frame->TrackPopupMenu(popup, 0, pt.x, pt.y, NULL, m_hWnd);
+					}
 				}
 				break;
 
@@ -333,7 +345,7 @@ LRESULT CProjectTreeCtrl::OnOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	{
 		File* pFile = static_cast<File*>( lastItem );
 		if( !g_Context.m_frame->CheckAlreadyOpen(pFile->GetFileName(), eSwitch) )
-			g_Context.m_frame->OpenFile(pFile->GetFileName(), true);
+			g_Context.m_frame->Open(pFile->GetFileName(), true);
 	}
 
 	return 0;
@@ -423,7 +435,7 @@ void CProjectTreeCtrl::openAll(Projects::Folder* folder)
 		++i)
 	{
 		if( !g_Context.m_frame->CheckAlreadyOpen((*i)->GetFileName(), eSwitch) )
-			g_Context.m_frame->OpenFile((*i)->GetFileName(), true);
+			g_Context.m_frame->Open((*i)->GetFileName(), true);
 	}
 }
 
@@ -647,7 +659,7 @@ LRESULT CProjectDocker::OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandle
 		if(file != NULL)
 		{
 			if( !g_Context.m_frame->CheckAlreadyOpen(file->GetFileName(), eSwitch) )
-				g_Context.m_frame->OpenFile(file->GetFileName(), true);
+				g_Context.m_frame->Open(file->GetFileName(), true);
 		}
 	}
 	else

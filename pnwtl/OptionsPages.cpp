@@ -39,6 +39,8 @@ void COptionsPageGeneral::OnOK()
 	options.LineEndings = m_SaveFormat;
 	options.MaximiseNew = m_bMaximise != FALSE;
 	options.ShowFullPath = m_bFullPath != FALSE;
+	// Ensure MRU size <= 50 && >= 1
+	m_iMRUSize = ( m_iMRUSize > 50 ? 50 : ( m_iMRUSize < 1 ? 1 : m_iMRUSize ) );
 	options.Set(PNSK_INTERFACE, _T("MRUSize"), (int)m_iMRUSize);
 }
 

@@ -160,6 +160,8 @@ class CMRUList
 		void SetSize(int size);
 
 		void AddEntry(LPCTSTR data);
+		bool MoveToTop(int index);
+		bool RemoveEntry(int index);
 
 		LPCTSTR GetEntry(int index);
 
@@ -192,6 +194,9 @@ class CMRUMenu : public CMRUList
 
 		UINT base() const;
 		UINT last() const;
+		
+		void MoveToTop(int index);
+		void RemoveEntry(int index);
 
 	protected:
 		UINT		m_iBase;

@@ -8,6 +8,11 @@ Opening a project or workspace shows the Projects window.
 Workspace saving and loading.
 Some changes to workspace/project close logic.
 Fixed projects tree-control background.
+Added "Specified text was not found" message thanks to Klaus Kurzawa.
+Merged changes from Bjoern Graf for re-ordering MRU items on file open.
+Added project and workspace icons.
+Icon file icons no longer cached.
+Enabled multiple-selection in projects tree control.
 
 Since 13/10/03:
 

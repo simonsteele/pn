@@ -141,7 +141,7 @@ bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 		{
 			// If the file's already open, just switch to it, otherwise open it.
 			if( !g_Context.m_frame->CheckAlreadyOpen(fn.c_str(), eSwitch) )
-				g_Context.m_frame->OpenFile(fn.c_str());
+				g_Context.m_frame->Open(fn.c_str());
 
 			if( bLine )
 			{

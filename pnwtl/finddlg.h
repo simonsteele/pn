@@ -303,6 +303,16 @@ public:
 			///@todo implement window stays open behaviour as well...
 			ShowWindow(SW_HIDE);
 		}
+		else
+		{
+			CString strTextToFind=m_FindText, strMsg;
+			if (strTextToFind.IsEmpty())
+				strTextToFind = _T("(empty)");
+
+			strMsg.Format(_T("The specified text '%s' was not found."), strTextToFind);
+			MessageBox((LPCTSTR)strMsg, _T("Programmers Notepad"), MB_OK | MB_ICONINFORMATION);
+		}
+
 		return TRUE;
 	}
 
@@ -585,7 +595,16 @@ public:
 
 	LRESULT OnFindNextClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		FindNext();
+		if (!FindNext())
+		{
+			CString strTextToFind=m_FindText, strMsg;
+			if (strTextToFind.IsEmpty())
+				strTextToFind = _T("(empty)");
+
+			strMsg.Format(_T("The specified text '%s' was not found."), strTextToFind);
+			MessageBox((LPCTSTR)strMsg, _T("Programmers Notepad"), MB_OK | MB_ICONINFORMATION);
+		}
+
 		return 0;
 	}
 

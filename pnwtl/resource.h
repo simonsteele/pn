@@ -6,7 +6,7 @@
 #define IDR_TBR_EDIT                    5
 #define IDC_REPLACEALL_BUTTON           6
 #define IDC_REPLACEINSEL_BUTTON         7
-#define ID_MRUFILE_BASE					50
+#define ID_MRUFILE_BASE                 50
 #define IDD_ABOUTBOX                    100
 #define IDC_FINDTEXT_COMBO              102
 #define IDC_FINDNEXT_BUTTON             103
@@ -39,7 +39,6 @@
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define IDD_INPUTBOX                    204
-//#define ID_MRUFILE_BASE                 205
 #define ID_VIEW_CHANGESCHEME            221
 #define ID_VIEW_SCHEMES                 222
 #define IDR_POPUP_REGEXPM               226
@@ -127,6 +126,10 @@
 #define IDR_POPUP_WORKSPACE             307
 #define ID_WORKSPACE_NEWPROJECT         308
 #define ID_WORKSPACE_ADDPROJECT         309
+#define IDI_PROJECTFOLDER               310
+#define IDI_WORKSPACE                   311
+#define IDI_ICON3                       312
+#define IDI_BADPROJECT                  312
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -288,7 +291,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        310
+#define _APS_NEXT_RESOURCE_VALUE        313
 #define _APS_NEXT_COMMAND_VALUE         32877
 #define _APS_NEXT_CONTROL_VALUE         1073
 #define _APS_NEXT_SYMED_VALUE           104

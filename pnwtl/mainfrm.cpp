@@ -84,34 +84,28 @@ CChildFrame* CMainFrame::NewEditor()
 	return pChild;
 }
 
-void CMainFrame::OpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme)
+bool CMainFrame::OpenFile(LPCTSTR pathname, CScheme* pScheme)
 {
+	bool bRet = false;
+
 	CChildFrame* pChild = NewEditor();
-	if(filename)
+	if(pathname)
 	{
-		pChild->PNOpenFile(pathname, filename, pScheme);
+		bRet = pChild->PNOpenFile(pathname, pScheme);
 	}
-	else
-	{
-		tstring buf;
-		CFileName(pathname).GetFileName(buf);
-		
-		pChild->PNOpenFile(pathname, buf.c_str(), pScheme);
-	}
+
+	return bRet;
 }
 
-void CMainFrame::OpenFile(LPCTSTR pathname, bool bAddMRU)
+bool CMainFrame::Open(LPCTSTR pathname, bool bAddMRU)
 {
-	OpenFile(pathname, NULL, NULL);
-	if(bAddMRU)
+	bool bRet = OpenFile(pathname, NULL);
+	if(bAddMRU && bRet)
 	{
 		AddMRUEntry(pathname);
 	}
-}
 
-void CMainFrame::OpenFile(LPCTSTR pathname, CScheme* pScheme)
-{
-	OpenFile(pathname, NULL, pScheme);
+	return bRet;
 }
 
 void CMainFrame::UpdateStatusBar()
@@ -177,7 +171,8 @@ void __stdcall CMainFrame::ChildOptionsUpdateNotify(CChildFrame* pChild, SChildE
 
 void __stdcall CMainFrame::ChildSaveNotify(CChildFrame* pChild, SChildEnumStruct* pES)
 {
-	pChild->Save();
+	if(pChild->GetModified())
+		pChild->Save();
 }
 
 void __stdcall CMainFrame::FileOpenNotify(CChildFrame* pChild, SChildEnumStruct* pES)
@@ -858,8 +853,10 @@ LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 			if( !CheckAlreadyOpen((*i).c_str(), action) )
 			{
-				OpenFile((*i).c_str());
-				AddMRUEntry((*i).c_str());
+				if(OpenFile((*i).c_str()))
+				{
+					AddMRUEntry((*i).c_str());
+				}
 			}
 		}
 	}
@@ -876,7 +873,18 @@ LRESULT CMainFrame::OnFileSaveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 LRESULT CMainFrame::OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	LPCTSTR filename = m_RecentFiles.GetEntry(wID - ID_MRUFILE_BASE);
-	OpenFile(filename);
+
+	if( OpenFile(filename) )
+	{
+		m_RecentFiles.MoveToTop(wID - ID_MRUFILE_BASE);
+	}
+	else
+	{
+		// Ask to create? Remove form list?
+		// As we abused OpenFile() for the error message the later might be
+		// a bad choice...
+		//m_RecentFiles.RemoveFromList(wID - ID_MRUFILE_BASE);
+	}
 
 	return 0;
 }

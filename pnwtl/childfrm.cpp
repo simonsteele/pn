@@ -819,7 +819,7 @@ LRESULT CChildFrame::OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 				{
 					// If the file's already open, just switch to it, otherwise open it.
 					if( !g_Context.m_frame->CheckAlreadyOpen(tryfn.c_str(), eSwitch) )
-						g_Context.m_frame->OpenFile(tryfn.c_str());
+						g_Context.m_frame->Open(tryfn.c_str());
 					bFound = true;
 					break;
 				}
@@ -936,13 +936,16 @@ void CChildFrame::Revert()
 	}
 }
 
-void CChildFrame::PNOpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme)
+bool CChildFrame::PNOpenFile(LPCTSTR pathname, CScheme* pScheme)
 {
+	bool bRet = false;
+
 	if(m_view.Load(pathname, pScheme))
 	{
 		m_FileAge = FileAge(pathname);
 		m_FileName = pathname;
 		SetTitle();
+		bRet = true;
 	}
 	else
 	{
@@ -953,6 +956,8 @@ void CChildFrame::PNOpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pSchem
 	// Loading a file may have changed the line endings/text encoding of the
 	// document, so we update the menu...
 	UpdateMenu();
+
+	return bRet;
 }
 
 void CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMRU)

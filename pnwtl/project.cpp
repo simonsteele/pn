@@ -363,7 +363,7 @@ Project::Project(LPCTSTR projectFile) : Folder()
 		parse();
 	}
 
-	bDirty = !bExists;
+	bDirty = false;
 }
 
 bool Project::Exists()
@@ -649,7 +649,15 @@ void Workspace::startElement(LPCTSTR name, XMLAttributes& atts)
 			LPCTSTR path = ATTVAL("path");
 			if(path != NULL && _tcslen(path) > 0)
 			{
-				Project* pProject = new Project(path);
+				CFileName fn(path);
+				if(fn.IsRelativePath())
+				{
+					CFileName fn2(fileName.c_str());
+					tstring path = fn2.GetPath();
+					fn.Root(path.c_str());
+				}
+
+				Project* pProject = new Project(fn.c_str());
 				AddProject(pProject);
 			}
 		}
@@ -684,6 +692,8 @@ void Workspace::parse()
 	{
 		::OutputDebugString(ex.GetMessage());
 	}
+
+	bDirty = false;
 }
 
 } // namespace Projects

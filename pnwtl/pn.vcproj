@@ -441,10 +441,16 @@
 				RelativePath="res\font_tru.bmp">
 			</File>
 			<File
+				RelativePath="res\noproject.ico">
+			</File>
+			<File
 				RelativePath=".\res\pn.ico">
 			</File>
 			<File
 				RelativePath=".\res\pndoc.ico">
+			</File>
+			<File
+				RelativePath="res\projectfolder.ico">
 			</File>
 			<File
 				RelativePath="res\projects.ico">
@@ -464,6 +470,9 @@
 			<File
 				RelativePath=".\res\toolbar1.bmp">
 			</File>
+			<File
+				RelativePath="res\workspace.ico">
+			</File>
 		</Filter>
 		<Filter
 			Name="Include"
@@ -479,6 +488,9 @@
 			</File>
 			<File
 				RelativePath="include\pcreplus.cpp">
+			</File>
+			<File
+				RelativePath="include\wtltreeex.h">
 			</File>
 		</Filter>
 		<File

@@ -88,11 +88,14 @@ class ShellImageList
 			CFileName fn(filename);
 			tstring ext = fn.GetExtension();
 
-			std::map<tstring, int>::const_iterator i = extIndexes.find(ext);
-
-			if(i != extIndexes.end())
+			if(_tcsicmp(ext.c_str(), _T(".ico")) != 0)
 			{
-				return (*i).second;
+				std::map<tstring, int>::const_iterator i = extIndexes.find(ext);
+
+				if(i != extIndexes.end())
+				{
+					return (*i).second;
+				}
 			}
 
 			HICON icon = extractor.IconForFile(filename);
