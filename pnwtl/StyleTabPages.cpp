@@ -827,6 +827,19 @@ void CTabPageMisc::UpdateDisplay()
 		else
 			m_igCol.SetColor( CLR_DEFAULT );
 
+		switch(m_pScheme->m_foldflags & (schOverrideTabs | schUseTabs))
+		{
+		case 0:
+			m_iTabOverride = 0;
+			break;
+		case schOverrideTabs:
+			m_iTabOverride = 2;
+			break;
+		default:
+			m_iTabOverride = 1;
+		}
+
+		DoDataExchange();
 		EnableButtons();
 	}
 }

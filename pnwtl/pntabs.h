@@ -54,14 +54,24 @@ class CPNMDIClient : public CTabbedMDIClient< CDotNetTabCtrl<CTabViewTabItem>,
 		CPNMDITabOwner< CDotNetTabCtrl<CTabViewTabItem> > > baseClass;
 
 public:
+	CPNMDIClient();
+
 	BEGIN_MSG_MAP(CPNMDIClient)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(UWM_MDICHILDACTIVATIONCHANGE, OnChildActivationChange)
 		MESSAGE_HANDLER(UWM_MDICHILDTABTEXTCHANGE, OnChildTabTextChange)
 		MESSAGE_HANDLER(WM_MDIDESTROY, OnMDIDestroy)
 		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnDblClick)
+		
+		MESSAGE_HANDLER(WM_MDIACTIVATE, OnMDIActivate)
+		MESSAGE_HANDLER(WM_MDINEXT, OnMDINext)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
+
+	LRESULT OnMDINext(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+	void ControlUp();
 
 	BOOL SubclassWindow(HWND hWnd)
 	{
@@ -81,22 +91,9 @@ public:
 		return 0;
 	}
 
-	LRESULT OnMDIDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-	{
-		SendMessage(GetParent(), PN_NOTIFY, 0, PN_MDIDESTROY);
-		bHandled = FALSE;
+	LRESULT OnMDIDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
-		return 0;
-	}
-
-	LRESULT OnChildActivationChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-	{
-		SendMessage(GetParent(), PN_NOTIFY, 0, PN_MDIACTIVATE);
-
-		bHandled = FALSE;
-		
-		return 0;
-	}
+	LRESULT OnChildActivationChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
 	LRESULT OnChildTabTextChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
@@ -108,6 +105,12 @@ public:
 
 		return 0;
 	}
+
+protected:
+	typedef std::list<HWND> CHILD_STACK;
+	bool					m_bMoving;
+	CHILD_STACK				m_children;
+	CHILD_STACK::iterator	m_moveIt;
 };
 
 /**

@@ -2,7 +2,7 @@
  * @file SchemeConfig.cpp
  * @brief Scheme configuration classes.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -12,300 +12,7 @@
 
 #include "include/genx/genx.h"
 #include "include/pngenx.h"
-
-/////////////////////////////////////////////////////////
-// Writer
-/////////////////////////////////////////////////////////
-
-#define USERSETTINGS_START			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<UserSettings>\n"
-#define USERSETTINGS_END			"</UserSettings>"
-#define USERSETTINGS_SCHEMES_START	"\t<schemes>\n"
-#define USERSETTINGS_SCHEMES_END	"\t</schemes>\n"
-#define USERSETTINGS_SCHEME_START	_T("\t\t<scheme name=\"%s\">\n")
-#define USERSETTINGS_SCHEME_END		"\t\t</scheme>\n"
-#define USERSETTINGS_STYLES_START	"\t\t\t<override-styles>\n"
-#define USERSETTINGS_STYLES_END		"\t\t\t</override-styles>\n"
-#define USERSETTINGS_KEYWORDS_START "\t\t\t<override-keywords>\n"
-#define USERSETTINGS_KEYWORDS_END	"\t\t\t</override-keywords>\n"
-#define USERSETTINGS_CLASSES_START	"\t<override-classes>\n"
-#define USERSETTINGS_CLASSES_END	"\t</override-classes>\n"
-
-#define USERSETTINGS_STYLE_START	_T("\t\t\t\t<style key=\"%d\" ")
-#define USERSETTINGS_KEYWORDS_NODE	_T("\t\t\t\t<keywords key=\"%d\">%s</keywords>\n")
-#define USERSETTINGS_CLASS_START	_T("\t\t<style-class name=\"%s\" ")
-#define USERSETTINGS_STYLE_FN		_T("font=\"%s\" ")
-#define USERSETTINGS_STYLE_FS		_T("size=\"%d\" ")
-#define USERSETTINGS_STYLE_FC		_T("fore")
-#define USERSETTINGS_STYLE_BC		_T("back")
-#define USERSETTINGS_STYLE_SB		_T("bold")
-#define USERSETTINGS_STYLE_SI		_T("italic")
-#define USERSETTINGS_STYLE_SU		_T("underline")
-#define USERSETTINGS_STYLE_SE		_T("eolfilled")
-#define USERSETTINGS_STYLE_CL		_T("class=\"%s\" ")
-
-namespace Schemes
-{
-	class Writer : public GenxXMLWriter
-	{
-		public:
-			void beginDoc()
-			{
-				genxStartElementLiteral(m_writer, NULL, u("UserSettings"));
-			}
-
-			void endDoc()
-			{
-				pop();
-			}
-
-			void beginSchemes()
-			{
-				genxStartElementLiteral(m_writer, NULL, u("Schemes"));
-			}
-
-			void endSchemes()
-			{
-				pop();
-			}
-
-			void beginScheme(LPCTSTR name, int foldflags, int oldfoldflags)
-			{
-				genxStartElement(m_eScheme);
-				genxAddAttribute(m_aName, u(name));
-			}
-
-			void endScheme()
-			{
-				pop();
-			}
-
-			void beginOverrideStyles()
-			{
-				genxStartElement(m_eOvStyles);
-			}
-
-			void endOverrideStyles()
-			{
-				pop();
-			}
-
-			void beginOverrideKeywords()
-			{
-				genxStartElement(m_eOvKeywords);
-			}
-
-			void endOverrideKeywords()
-			{
-				pop();
-			}
-
-			void beginOverrideClasses()
-			{
-				genxStartElement(m_eOvClasses);
-			}
-
-			void endOverrideClasses()
-			{
-				pop();
-			}
-
-			void beginStyle(int key)
-			{
-				genxStartElement(m_eStyle);
-				genxAddAttribute(m_aKey, u(IntToTString(key).c_str()));
-			}
-
-			void beginStyleClass(LPCTSTR name)
-			{
-				genxStartElement(m_eStyleClass);
-				genxAddAttribute(m_aName, u(name));
-			}
-
-			void writeKeywords(int key, LPCTSTR keywords)
-			{
-				genxStartElement(m_eKeywords);
-				genxAddAttribute(m_aKey, u(IntToTString(key).c_str()));
-				Windows1252_Utf8 kwconv(keywords);
-				genxAddText(m_writer, u(kwconv));
-				pop();
-			}
-
-			void writeEditorColours(EditorColours* colours)
-			{
-				if(!colours->HasColours())
-					return;
-	
-				genxStartElement(m_eColours);
-				COLORREF colour;
-				if(colours->GetColour(EditorColours::ecSelFore, colour))
-					addColourAtt(m_aSelFore, colour);
-				if(colours->GetColour(EditorColours::ecSelBack, colour))
-					addColourAtt(m_aSelBack, colour);
-				if(colours->GetColour(EditorColours::ecCaret, colour))
-					addColourAtt(m_aCaret, colour);
-				if(colours->GetColour(EditorColours::ecIndentG, colour))
-					addColourAtt(m_aIndentGuides, colour);
-				pop();
-			}
-
-			void addColourAtt(genxAttribute att, COLORREF colour)
-			{
-				if(colour == CLR_NONE)
-				{
-					genxAddAttribute(att, u("-1"));
-				}
-				else
-				{
-					TCHAR colbuf[12];
-					colbuf[11] = NULL;
-					_sntprintf(colbuf, 11, _T("%.2x%.2x%.2x"), GetRValue(colour), GetGValue(colour), GetBValue(colour));
-					genxAddAttribute(att, u(colbuf));
-				}
-			}
-
-			void setFont(LPCTSTR name)
-			{
-				genxAddAttribute(m_aFont, u(name));
-			}
-
-			void setSize(int size)
-			{
-				genxAddAttribute(m_aSize, u(IntToTString(size).c_str()));
-			}
-
-			void setFore(COLORREF fore)
-			{
-				addColourAtt(m_aFore, fore);
-			}
-
-			void setBack(COLORREF back)
-			{
-				addColourAtt(m_aBack, back);
-			}
-
-			void setBold(bool on)
-			{
-				if(on)
-				{
-					genxAddAttribute(m_aBold, u("true"));
-				}
-				else
-				{
-					genxAddAttribute(m_aBold, u("false"));
-				}
-			}
-
-			void setItalic(bool on)
-			{
-				if(on)
-				{
-					genxAddAttribute(m_aItalic, u("true"));
-				}
-				else
-				{
-					genxAddAttribute(m_aItalic, u("false"));
-				}
-			}
-
-			void setUnderline(bool on)
-			{
-				if(on)
-				{
-					genxAddAttribute(m_aUnderline, u("true"));
-				}
-				else
-				{
-					genxAddAttribute(m_aUnderline, u("false"));
-				}
-			}
-
-			void setEolFilled(bool on)
-			{
-				if(on)
-				{
-					genxAddAttribute(m_aEolFilled, u("true"));
-				}
-				else
-				{
-					genxAddAttribute(m_aEolFilled, u("false"));
-				}
-			}
-
-			void setClass(LPCTSTR theClass)
-			{
-				genxAddAttribute(m_aClass, u(theClass));
-			}
-
-			void endStyle()
-			{
-				pop();
-			}
-
-			void endStyleClass()
-			{
-				pop();
-			}
-
-		protected:
-			virtual void initXmlBits()
-			{
-				genxStatus s;
-
-				m_eScheme = genxDeclareElement(m_writer, NULL, u("scheme"), &s);
-				m_eStyle = genxDeclareElement(m_writer, NULL, u("style"), &s);
-				m_eStyleClass = genxDeclareElement(m_writer, NULL, u("style-class"), &s);
-				m_eKeywords = genxDeclareElement(m_writer, NULL, u("keywords"), &s);
-				m_eOvStyles = genxDeclareElement(m_writer, NULL, u("override-styles"), &s);
-				m_eOvKeywords = genxDeclareElement(m_writer, NULL, u("override-styles"), &s);
-				m_eOvClasses = genxDeclareElement(m_writer, NULL, u("override-styles"), &s);
-				m_eColours = genxDeclareElement(m_writer, NULL, u("colours"), &s);
-
-				PREDECLARE_ATTRIBUTES()
-					ATT("key", m_aKey);
-					ATT("font", m_aFont);
-					ATT("size", m_aSize);
-					ATT("fore", m_aFore);
-					ATT("back", m_aBack);
-					ATT("bold", m_aBold);
-					ATT("italic", m_aItalic);
-					ATT("underline", m_aUnderline);
-					ATT("eolfilled", m_aEolFilled);
-					ATT("class", m_aClass);
-					ATT("name", m_aName);
-					ATT("selFore", m_aSelFore);
-					ATT("selBack", m_aSelBack);
-					ATT("caret", m_aCaret);
-					ATT("indentGuides", m_aIndentGuides);
-				END_ATTRIBUTES();
-			}
-
-		protected:
-			genxElement m_eScheme;
-			genxElement m_eStyle;
-			genxElement m_eStyleClass;
-			genxElement m_eKeywords;
-			genxElement m_eOvStyles;
-			genxElement m_eOvKeywords;
-			genxElement m_eOvClasses;
-			genxElement m_eColours;
-			
-			genxAttribute m_aKey;
-			genxAttribute m_aFont;
-			genxAttribute m_aSize;
-			genxAttribute m_aFore;
-			genxAttribute m_aBack;
-			genxAttribute m_aBold;
-			genxAttribute m_aItalic;
-			genxAttribute m_aUnderline;
-			genxAttribute m_aEolFilled;
-			genxAttribute m_aClass;
-			genxAttribute m_aName;
-			genxAttribute m_aSelFore;
-			genxAttribute m_aSelBack;
-			genxAttribute m_aCaret;
-			genxAttribute m_aIndentGuides;
-	};
-}
+#include "usersettingswriter.h"
 
 /////////////////////////////////////////////////////////
 // CustomStyleCollection
@@ -503,9 +210,18 @@ void SchemeConfig::ResetAll()
 	}
 }
 
-bool SchemeConfig::IsInternal()
+bool SchemeConfig::IsInternal() const
 {
 	return (m_foldflags & schInternal) != 0;
+}
+
+bool SchemeConfig::IsCustomised() const
+{
+	CustomKeywordSet* pKeywordSet = m_cKeywords.GetFirstKeywordSet();
+
+	return	(m_customs.StylesCount() != 0) ||
+			(pKeywordSet != NULL) || 
+			m_editorColours.HasColours();
 }
 
 /////////////////////////////////////////////////////////
@@ -584,71 +300,13 @@ LPCTSTR SchemeConfigParser::GetCurrentScheme()
 	return (LPCTSTR)m_CurrentScheme;
 }
 
-#define USERSETTINGS_START			"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<UserSettings>\n"
-#define USERSETTINGS_END			"</UserSettings>"
-#define USERSETTINGS_SCHEMES_START	"\t<schemes>\n"
-#define USERSETTINGS_SCHEMES_END	"\t</schemes>\n"
-#define USERSETTINGS_SCHEME_START	_T("\t\t<scheme name=\"%s\">\n")
-#define USERSETTINGS_SCHEME_END		"\t\t</scheme>\n"
-#define USERSETTINGS_STYLES_START	"\t\t\t<override-styles>\n"
-#define USERSETTINGS_STYLES_END		"\t\t\t</override-styles>\n"
-#define USERSETTINGS_KEYWORDS_START "\t\t\t<override-keywords>\n"
-#define USERSETTINGS_KEYWORDS_END	"\t\t\t</override-keywords>\n"
-#define USERSETTINGS_CLASSES_START	"\t<override-classes>\n"
-#define USERSETTINGS_CLASSES_END	"\t</override-classes>\n"
-
-#define USERSETTINGS_STYLE_START	_T("\t\t\t\t<style key=\"%d\" ")
-#define USERSETTINGS_KEYWORDS_NODE	_T("\t\t\t\t<keywords key=\"%d\">%s</keywords>\n")
-#define USERSETTINGS_CLASS_START	_T("\t\t<style-class name=\"%s\" ")
-#define USERSETTINGS_STYLE_FN		_T("font=\"%s\" ")
-#define USERSETTINGS_STYLE_FS		_T("size=\"%d\" ")
-#define USERSETTINGS_STYLE_FC		_T("fore")
-#define USERSETTINGS_STYLE_BC		_T("back")
-#define USERSETTINGS_STYLE_SB		_T("bold")
-#define USERSETTINGS_STYLE_SI		_T("italic")
-#define USERSETTINGS_STYLE_SU		_T("underline")
-#define USERSETTINGS_STYLE_SE		_T("eolfilled")
-#define USERSETTINGS_STYLE_CL		_T("class=\"%s\" ")
-
-void SchemeConfigParser::AddBoolParam(CString& buf, LPCTSTR name, bool bVal)
+/*void SchemeConfigParser::WriteStyle(Schemes::Writer& writer, StyleDetails& style, bool bIsClass)
 {
-	buf += name;
-	buf += _T("=\"");
-	buf += bVal ? _T("true\" ") : _T("false\" ");
-}
-
-void SchemeConfigParser::AddColourParam(CString& buf, LPCTSTR name, COLORREF colour)
-{
-	buf += name;
-	buf += _T("=\"");
-	
-	TCHAR colbuf[12];
-	colbuf[11] = NULL;
-	_sntprintf(colbuf, 11, _T("%.2x%.2x%.2x\" "), GetRValue(colour), GetGValue(colour), GetBValue(colour));
-	buf += colbuf;
-}
-
-void SchemeConfigParser::WriteStyle(Schemes::Writer& writer, StyleDetails& style, bool bIsClass)
-{
-	USES_CONVERSION;
-
-	CString stylestr;
-	CString tempstr;
-
 	if(bIsClass)
 		writer.beginStyleClass(style.name.c_str());
 	else
 		writer.beginStyle(style.Key);
 
-	/*if(bIsClass)
-	{
-		stylestr.Format(USERSETTINGS_CLASS_START, A2CT(style.name.c_str()));
-	}
-	else
-	{
-		stylestr.Format(USERSETTINGS_STYLE_START, style.Key);
-	}*/
-	
 	if(style.values & edvFontName)
 		writer.setFont(style.FontName.c_str());
 	if(style.values & edvFontSize)
@@ -669,92 +327,34 @@ void SchemeConfigParser::WriteStyle(Schemes::Writer& writer, StyleDetails& style
 	if(style.values & edvClass && !bIsClass)
 		writer.setClass(style.classname.c_str());
 
-	/*if(style.values & edvFontName)
-	{
-		tempstr.Format(USERSETTINGS_STYLE_FN, A2CT(style.FontName.c_str()));
-		stylestr += tempstr;
-	}
-	if(style.values & edvFontSize)
-	{
-		tempstr.Format(USERSETTINGS_STYLE_FS, style.FontSize);
-		stylestr += tempstr;
-	}*/
-	
-	/*if(style.values & edvForeColor)
-		AddColourParam(stylestr, USERSETTINGS_STYLE_FC, style.ForeColor);
-
-	if(style.values & edvBackColor)
-		AddColourParam(stylestr, USERSETTINGS_STYLE_BC, style.BackColor);
-
-	if(style.values & edvBold)
-		AddBoolParam(stylestr, USERSETTINGS_STYLE_SB, style.Bold);
-
-	if(style.values & edvItalic)
-		AddBoolParam(stylestr, USERSETTINGS_STYLE_SI, style.Italic);
-
-	if(style.values & edvUnderline)
-		AddBoolParam(stylestr, USERSETTINGS_STYLE_SU, style.Underline);
-
-	if(style.values & edvEOLFilled)
-		AddBoolParam(stylestr, USERSETTINGS_STYLE_SE, style.EOLFilled);
-	
-	if(style.values & edvClass && !bIsClass)
-	{
-		tempstr.Format(USERSETTINGS_STYLE_CL, A2CT(style.classname.c_str()));
-		stylestr += tempstr;
-	}
-	*/
-
-	
-	/*if(style.values & edvClass && !bIsClass)
-	{
-		tempstr.Format(USERSETTINGS_STYLE_CL, A2CT(style.classname.c_str()));
-		stylestr += tempstr;
-	}
-
-	stylestr += _T("/>\n");
-	const char* pSS = T2CA((LPCTSTR)stylestr);
-	file.Write((void*)pSS, strlen(pSS));*/
-
 	if(bIsClass)
 		writer.endStyleClass();
 	else
 		writer.endStyle();
-}
+}*/
 
 void SchemeConfigParser::Save(LPCTSTR filename)
 {
 	Schemes::Writer writer;
 
-	USES_CONVERSION;
-
-	//CFile file;
-	CString s;
 	StyleDetails* pStyle = NULL;
 	StyleDetails* pOrig = NULL;
 	
-	//file.Open(filename, CFile::modeWrite | CFile::modeBinary);
-
 	writer.Start(filename);
 	writer.beginDoc();
-
-	// Write file header, and begin Schemes section.
-	//file.Write(USERSETTINGS_START, strlen(USERSETTINGS_START));
 
 	// Style Classes
 	if(GetCustomClasses().GetCount() != 0)
 	{
 		writer.beginOverrideClasses();
-        //file.Write(USERSETTINGS_CLASSES_START, strlen(USERSETTINGS_CLASSES_START));
 
 		tstring name;
 		STYLEDETAILS_NAMEMAP& map = GetCustomClasses().GetMap();
 		for(SDNM_IT j = map.begin(); j != map.end(); ++j)
 		{
 			pStyle = (*j).second;
-			name = pStyle->name;
 			{
-				pOrig = GetStyleClasses().GetStyle(name.c_str());
+				pOrig = GetStyleClasses().GetStyle(pStyle->name.c_str());
 				if(pOrig)
 				{					
 					pStyle->compareTo(*pOrig);
@@ -763,17 +363,15 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 					(*j).second->values = ~ 0;
 			}
 
-			WriteStyle(writer, * (*j).second, true);
+			writer.writeStyleClass(* (*j).second);
 		}
 
-		//file.Write(USERSETTINGS_CLASSES_END, strlen(USERSETTINGS_CLASSES_END));
 		writer.endOverrideClasses();
 	}
 
 	// Schemes
 	if(m_Schemes.size() != 0)
 	{
-		//file.Write(USERSETTINGS_SCHEMES_START, strlen(USERSETTINGS_SCHEMES_START));
 		writer.beginSchemes();
 
 		for(SCF_IT i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
@@ -787,33 +385,18 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 				continue;
 
 			// Write out scheme block...
-			//s.Format(USERSETTINGS_SCHEME_START, (LPCTSTR)(*i)->m_Name);
-			//const char* pS = T2CA((LPCTSTR)s);
-			//file.Write((void*)pS, strlen(pS));
-			writer.beginScheme( (*i)->m_Name, (*i)->m_foldflags, (*i)->m_origfoldflags );
+			writer.beginScheme( (*i) );
 
 			writer.writeEditorColours( &((*i)->m_editorColours) );
-			//if( (*i)->m_editorColours.HasColours() )
-			//{
-			//	tstring colourXml = (*i)->m_editorColours.ToXml();
-			//	const char* pS = T2CA(colourXml.c_str());
-			//	file.Write((void*)pS, strlen(pS));
-			//}
 
 			if(pKeywordSet != NULL)
 			{
 				// Keywords
-				//file.Write(USERSETTINGS_KEYWORDS_START, strlen(USERSETTINGS_KEYWORDS_START));
 				writer.beginOverrideKeywords();
 				while(pKeywordSet)
 				{
-					//s.Format(USERSETTINGS_KEYWORDS_NODE, pKeywordSet->key, pKeywordSet->pWords);
-					//const char* pS = T2CA((LPCTSTR)s);
-					//file.Write((void*)pS, strlen(pS));
-					//pKeywordSet = pKeywordSet->pNext;
 					writer.writeKeywords(pKeywordSet->key, pKeywordSet->pWords);
 				}
-				//file.Write(USERSETTINGS_KEYWORDS_END, strlen(USERSETTINGS_KEYWORDS_END));
 				writer.endOverrideKeywords();
 			}
 
@@ -821,7 +404,6 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 			{
 				// Styles
 				writer.beginOverrideStyles();
-				//file.Write(USERSETTINGS_STYLES_START, strlen(USERSETTINGS_STYLES_START));
 				for(SL_CIT j = (*i)->m_customs.StylesBegin();
 					j != (*i)->m_customs.StylesEnd();
 					++j)
@@ -830,31 +412,26 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 					if(pOriginal)
 					{
 						(*j)->compareTo(*pOriginal);
-						WriteStyle(writer, *(*j));
+						writer.writeStyle(*(*j));
 					}
 					else
 					{
 						ATLTRACE(_T("PN2 Warning: Custom style with no original...\n"));
 					}
 				}
-				//file.Write(USERSETTINGS_STYLES_END, strlen(USERSETTINGS_STYLES_END));
 				writer.endOverrideStyles();
 			}
 
 			// End of Scheme
-			//file.Write(USERSETTINGS_SCHEME_END, strlen(USERSETTINGS_SCHEME_END));
 			writer.endScheme();
 		}
 
 		// End of Schemes...
-		//file.Write(USERSETTINGS_SCHEMES_END, strlen(USERSETTINGS_SCHEMES_END));
 		writer.endSchemes();
 	}
 	
 	// End of file.
-	//file.Write(USERSETTINGS_END, strlen(USERSETTINGS_END));
 	writer.endDoc();
-	//file.Close();
 	writer.Close();
 }
 
@@ -863,7 +440,7 @@ void SchemeConfigParser::onLexer(LPCTSTR name, int styleBits)
 
 }
 
-void SchemeConfigParser::onLanguage(LPCTSTR name, LPCTSTR title, int foldflags)
+void SchemeConfigParser::onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int ncfoldflags)
 {
 	PNASSERT(m_pCurrent == NULL);
 
@@ -871,7 +448,7 @@ void SchemeConfigParser::onLanguage(LPCTSTR name, LPCTSTR title, int foldflags)
 	m_pCurrent->m_Name = name;
 	m_pCurrent->m_Title = title;
 	m_pCurrent->m_foldflags = foldflags;
-	m_pCurrent->m_origfoldflags = m_pCurrent->m_foldflags;
+	m_pCurrent->m_origfoldflags = ncfoldflags;
 	m_Schemes.insert(m_Schemes.begin(), m_pCurrent);
 }
 

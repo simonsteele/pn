@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="delayimp.lib version.lib"
+				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -111,7 +111,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="delayimp.lib lib\libpcre.lib version.lib"
+				AdditionalDependencies="delayimp.lib lib\libpcre.lib version.lib htmlhelp.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -368,6 +368,9 @@
 				RelativePath=".\pndialogs.cpp">
 			</File>
 			<File
+				RelativePath=".\pntabs.cpp">
+			</File>
+			<File
 				RelativePath=".\pnutils.cpp">
 			</File>
 			<File
@@ -610,6 +613,9 @@
 			</File>
 			<File
 				RelativePath="tools.h">
+			</File>
+			<File
+				RelativePath=".\usersettingswriter.h">
 			</File>
 			<File
 				RelativePath="version.h">

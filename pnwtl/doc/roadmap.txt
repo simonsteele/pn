@@ -13,12 +13,12 @@ last updated: 05/08/2004
 0.6 Ella
 ========
 
-Start help file.
 Preview for scheme configurator.
-Tab order management.
 Filetype filters - e.g. allow loading of .dfm files.
 HTML Export configuration, inline HTML export.
+[50%-SteveRiekeberg]Start help file.
 [95%] Basic Build Management - see http://www.pnotepad.org/articles/pn2projects.html
+[complete] Tab order management.
 [complete] Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
 [complete-BjoernGraf]File Association Editor
 

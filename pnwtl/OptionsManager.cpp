@@ -112,6 +112,7 @@ void Options::loadCache()
 	cache[OShowFullPath]			= Get(NULL, _T("ShowFullPath"), false);
 	cache[OAlreadyOpenAction]		= Get(NULL, _T("AlreadyOpenAction"), eSwitch);
 	cache[OAlreadyOpenDropAction]	= Get(NULL, _T("AlreadyOpenDropAction"), eSwitch);
+	cache[OManageTabOrder]			= Get(NULL, _T("ManageTabOrder"), true);
 	ungroup();
 
 	// Find and Replace Settings ------------
@@ -184,6 +185,7 @@ void Options::saveCache()
 	Set(NULL, _T("ShowFullPath"),			cache[OShowFullPath]);
 	Set(NULL, _T("AlreadyOpenAction"),		cache[OAlreadyOpenAction]);
 	Set(NULL, _T("AlreadyOpenDropAction"),	cache[OAlreadyOpenDropAction]);
+	Set(NULL, _T("ManageTabOrder"),			cache[OManageTabOrder]);
 
 	ungroup();
 

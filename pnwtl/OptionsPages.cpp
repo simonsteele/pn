@@ -32,6 +32,8 @@ void COptionsPageGeneral::OnOK()
 	Options& options = *OPTIONS;
 	options.SetCached(Options::OMaximiseNew, m_bMaximise != FALSE);
 	options.SetCached(Options::OShowFullPath, m_bFullPath != FALSE);
+	options.SetCached(Options::OManageTabOrder, m_bManageTabOrder);
+
 	// Ensure MRU size <= 50 && >= 1
 	m_iMRUSize = ( m_iMRUSize > 50 ? 50 : ( m_iMRUSize < 1 ? 1 : m_iMRUSize ) );
 	options.Set(PNSK_INTERFACE, _T("MRUSize"), (int)m_iMRUSize);
@@ -48,6 +50,7 @@ void COptionsPageGeneral::OnInitialise()
 {
 	m_bMaximise = OPTIONS->GetCached(Options::OMaximiseNew);
 	m_bFullPath = OPTIONS->GetCached(Options::OShowFullPath);
+	m_bManageTabOrder = OPTIONS->GetCached(Options::OManageTabOrder);
 	m_iMRUSize = OPTIONS->Get(PNSK_INTERFACE, _T("MRUSize"), 4);
 	m_bMultiInstanceOk = OPTIONS->Get(PNSK_INTERFACE, _T("AllowMultiInstance"), false);
 	m_bNewOnStart = OPTIONS->Get(PNSK_INTERFACE, _T("NewOnStart"), true);

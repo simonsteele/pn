@@ -92,7 +92,9 @@ class SchemeConfig : public CustomKeywordHolder, public CustomStyleHolder
 		void ResetAll();
 		void UpdateGroupedStyles(CustomStyleCollection* pColl, StyleDetails* pUpdatedClass);
 
-		bool IsInternal();
+		bool IsInternal() const;
+
+		bool IsCustomised() const;
 
 		CString m_Name;
 		CString m_Title;
@@ -144,10 +146,10 @@ class SchemeConfigParser : public SchemeParser
 	protected:
 		void Sort();
 		void Save(LPCTSTR filename);
-		void WriteStyle(Schemes::Writer& writer, StyleDetails& style, bool bIsClass = false);
 
-		inline void AddBoolParam(CString& buf, LPCTSTR name, bool bVal);
-		inline void AddColourParam(CString& buf, LPCTSTR name, COLORREF colour);
+		//void WriteStyle(Schemes::Writer& writer, StyleDetails& style, bool bIsClass = false);
+		//inline void AddBoolParam(CString& buf, LPCTSTR name, bool bVal);
+		//inline void AddColourParam(CString& buf, LPCTSTR name, COLORREF colour);
 
 		LIST_SCHEMECONFIGS	m_Schemes;
 		SchemeConfig*		m_pCurrent;
@@ -158,7 +160,7 @@ class SchemeConfigParser : public SchemeParser
 	// SchemeParser
 	protected:
 		virtual void onLexer(LPCTSTR name, int styleBits);
-		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags);
+		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int ncfoldflags);
 		virtual void onLanguageEnd();
 		virtual void onStyleGroup(XMLAttributes& att, StyleDetails* pClass);
 		virtual void onStyle(StyleDetails* pStyle, StyleDetails* pCustom);

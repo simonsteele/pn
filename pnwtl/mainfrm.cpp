@@ -37,6 +37,8 @@
 #include "SchemeConfig.h"	// Scheme Configuration
 #include <dbstate.h>		// Docking window state stuff...
 
+#include <htmlhelp.h>
+
 #include "projectholder.h"
 
 #if defined (_DEBUG)
@@ -308,6 +310,12 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 {
 	if((pMsg->message >= WM_KEYFIRST) && (pMsg->message <= WM_KEYLAST))
 	{
+		// We need Ctrl-Up to see when to stop monkeying with the tab order.
+		if(pMsg->message == WM_KEYUP && pMsg->wParam == VK_CONTROL)
+		{
+			m_tabbedClient.ControlUp();
+		}
+		
 		if(m_hToolAccel != 0 && ::TranslateAccelerator(m_hWnd, m_hToolAccel, pMsg))
 			return TRUE;
 
@@ -1790,6 +1798,22 @@ LRESULT CMainFrame::OnSearchGoogle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 LRESULT CMainFrame::OnSearchGoogleGroups(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	launchExternalSearch(_T("http://groups.google.com/groups?q="));
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnHelpContents(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	tstring path;
+	OPTIONS->GetPNPath(path);
+	CFileName fn("pn2.chm");
+	fn.Root(path.c_str());
+	path = fn.c_str();
+	path += "::/index.html";
+	::HtmlHelp(m_hWnd,
+         path.c_str(),
+         HH_DISPLAY_TOC,
+         NULL) ;
 
 	return 0;
 }

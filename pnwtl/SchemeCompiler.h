@@ -15,91 +15,6 @@
 #ifndef schemecompiler_h__included
 #define schemecompiler_h__included
 
-#include "scintillaif.h"
-
-// Including styles.h we also get <list> <map> and <string>
-#include "styles.h"
-
-
-typedef map<CString, CString> CSTRING_MAP;
-typedef list<CString> CSTRING_LIST;
-
-/**********************************************
- * Structs for compiled scheme file reading...
- **********************************************/
-
-typedef struct tagCompiledSchemeHdr
-{
-	char Magic[16];
-	int	Version;
-} CompiledHdrRec;
-
-#define SC_HDR_NAMESIZE 11
-#define SC_HDR_TITLESIZE 40
-
-typedef struct tagSchemeHdr
-{
-	char Name[SC_HDR_NAMESIZE];
-	char Title[SC_HDR_TITLESIZE];
-	UINT Flags;
-	short TabWidth;
-} SchemeHdrRec;
-
-typedef struct tagSchemeTextRec
-{
-	unsigned long	TextLength;
-	long			MsgNum;
-	long			lParam;
-	long			wParam;
-	char			TextType;
-} TextRec;
-
-typedef struct tagSchemeMsg
-{
-	int MsgNum;
-	long lParam;
-	long wParam;
-} MsgRec;
-
-typedef struct tagSchemeProp
-{
-	unsigned long NameLength;
-	unsigned long ValueLength;
-} PropRec;
-
-typedef enum {ttFontName, ttKeywords, ttLexerLanguage} eTextType;
-typedef enum {nrMsgRec, nrTextRec, nrPropRec} eNextRec;
-typedef enum {fldEnabled = 0x01, fldCompact = 0x02, fldComments = 0x04, fldPreProc = 0x08} eFoldFlags;
-typedef enum {schUseTabs = 0x10, schInternal = 0x20, schOverrideTabs = 0x40, schOverrideTabSize = 0x80} eSchemeFlags;
-//typedef enum {ovrTabWidth = 1, ovrIndentGuides = 2} eOverrideFlags;
-
-// Parser State Defines
-#define DOING_GLOBALS			1
-#define DOING_GLOBAL			2
-#define DOING_KEYWORDC			3
-#define DOING_KEYWORDS			4
-#define DOING_STYLECS			5	//style-classes
-#define DOING_STYLEC			6	//style-class
-#define DOING_LANGUAGE			7	//language and children...
-#define DOING_LANGUAGE_DETAILS	8
-#define DOING_LANGUAGE_KW		9
-#define DOING_LANGUAGE_STYLES	10
-#define	DOING_IMPORTS			11
-#define DOING_KEYWORDCOMBINE	12
-#define DOING_BASE_OPTIONS		13
-
-#define US_SCHEMES				1
-#define US_SCHEME				2
-#define US_KEYWORD_OVERRIDES	3
-#define US_STYLE_OVERRIDES		4
-#define US_KEYWORDS				5
-#define US_CLASSES				6
-#define US_CLASS				7
-
-// File Content Defines
-#define CompileVersion 0x05
-#define FileID "Caffeine.Scheme"
-
 class CSchemeLoaderState
 {
 	public:
@@ -123,6 +38,9 @@ class CSchemeLoaderState
 
 		int						m_State;
 		bool					m_bBaseParse;
+		
+		DWORD					m_StartLoad;
+		DWORD					m_StartLang;
 		
 		CString m_csGName;
 		CString m_csLangName;
@@ -233,7 +151,7 @@ class SchemeParser
 
 	protected:
 		virtual void onLexer(LPCTSTR name, int styleBits) = 0;
-		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags) = 0;
+		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int ncfoldflags) = 0;
 		virtual void onLanguageEnd() = 0;
 		virtual void onStyleGroup(XMLAttributes& atts, StyleDetails* pClass) = 0;
 		virtual void onStyle(StyleDetails* pStyle, StyleDetails* pCustom) = 0;
@@ -260,7 +178,7 @@ class SchemeCompiler : public SchemeParser
 	
 	// Implement SchemeParser
 	protected:
-		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags);
+		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int ncfoldflags);
 		virtual void onLanguageEnd();
 		virtual void onStyleGroup(XMLAttributes& atts, StyleDetails* pClass){}
 		virtual void onStyle(StyleDetails* pStyle, StyleDetails* pCustom);

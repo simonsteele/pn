@@ -233,6 +233,8 @@ BEGIN
     END
     POPUP "&Help"
     BEGIN
+        MENUITEM "&Contents",                   ID_HELP_CONTENTS
+        MENUITEM SEPARATOR
         MENUITEM "PN &HomePage",                251
         MENUITEM "PN on &Sourceforge",          252
         MENUITEM SEPARATOR
@@ -595,6 +597,8 @@ BEGIN
         MENUITEM "&Close",                      ID_FILE_CLOSE
         MENUITEM "Close &All",                  ID_FILE_CLOSEALL
         MENUITEM "Close All &Other",            ID_WINDOW_CLOSEALLOTHER
+        MENUITEM SEPARATOR
+        MENUITEM "&Properties\tAlt+Enter",      ID_VIEW_FILEPROPERTIES
     END
 END
 
@@ -802,23 +806,26 @@ BEGIN
     CONTROL         "&Show full file path in document windows",
                     IDC_OPT_FULLPATHCHECK,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,10,36,156,10
-    LTEXT           "&Display",IDC_STATIC,10,70,28,8
-    EDITTEXT        IDC_OPT_MRUCOUNT,42,68,30,14,ES_AUTOHSCROLL
+    LTEXT           "&Display",IDC_STATIC,10,82,28,8
+    EDITTEXT        IDC_OPT_MRUCOUNT,42,80,30,14,ES_AUTOHSCROLL
     LTEXT           "(1 to 50) items in the most recently used list.",
-                    IDC_STATIC,75,70,168,8
+                    IDC_STATIC,75,82,168,8
     CONTROL         "Start with a new, &blank document",
                     IDC_OPT_NEWFILEONSTART,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,10,48,196,10
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,92,299,1
-    LTEXT           "Tabs",IDC_STATIC,0,88,16,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,104,299,1
+    LTEXT           "Tabs",IDC_STATIC,0,100,16,8
     CONTROL         "Show &Tabs",IDC_OPT_SHOWTABSCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,10,100,228,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,112,228,10
     CONTROL         "Only show with ma&ximized document windows",
                     IDC_OPT_MAXTABSONLY,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,19,112,165,10
+                    WS_TABSTOP,19,124,165,10
     CONTROL         "At the &bottom of the main window",
                     IDC_OPT_TABSBOTTOMCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,19,124,228,10
+                    WS_TABSTOP,19,136,228,10
+    CONTROL         "Tab &order controlled by recent use",
+                    IDC_OPT_TABORDERCHECK,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,10,60,175,10
 END
 
 IDD_PAGE_NEWFILES DIALOGEX 0, 0, 300, 200
@@ -900,7 +907,7 @@ BEGIN
                     108,10
     LTEXT           "Override Indentation:",IDC_STATIC,4,124,76,8
     CONTROL         "No Override",IDC_TAB_NOORRADIO,"Button",
-                    BS_AUTORADIOBUTTON,24,136,53,10
+                    BS_AUTORADIOBUTTON | WS_GROUP,24,136,53,10
     CONTROL         "Use tabs",IDC_TAB_TABSRADIO,"Button",BS_AUTORADIOBUTTON,
                     84,136,48,10
     CONTROL         "Use Spaces",IDC_TAB_SPACESRADIO,"Button",

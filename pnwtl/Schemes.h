@@ -2,7 +2,7 @@
  * @file Schemes.h
  * @brief Define CScheme and CSchemeManager.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -12,17 +12,95 @@
 #define schemes_h__included
 
 #include "Scintillaif.h"
-#include "Files.h"
-#include "SchemeCompiler.h"
-#include "ssmenus.h"
-#include <list>
-#include <map>
+
+// Including styles.h we also get <list> <map> and <string>
+#include "styles.h"
+
+typedef map<CString, CString> CSTRING_MAP;
+typedef list<CString> CSTRING_LIST;
+
+/**********************************************
+ * Stuff for compiled scheme files
+ **********************************************/
+
+// File Content Defines
+#define CompileVersion 0x05
+#define FileID "Caffeine.Scheme"
+
+typedef struct tagCompiledSchemeHdr
+{
+	char Magic[16];
+	int	Version;
+} CompiledHdrRec;
+
+#define SC_HDR_NAMESIZE 11
+#define SC_HDR_TITLESIZE 40
+
+/**
+ * File header for compiled scheme files
+ */
+typedef struct tagSchemeHdr
+{
+	char Name[SC_HDR_NAMESIZE];
+	char Title[SC_HDR_TITLESIZE];
+	UINT Flags;
+	short TabWidth;
+} SchemeHdrRec;
+
+/**
+ * Define some text that will follow, used
+ * for storing textual bits of configuration
+ */
+typedef struct tagSchemeTextRec
+{
+	unsigned long	TextLength;
+	long			MsgNum;
+	long			lParam;
+	long			wParam;
+	char			TextType;
+} TextRec;
+
+/**
+ * Define a standard message to send to the editor
+ */
+typedef struct tagSchemeMsg
+{
+	int MsgNum;
+	long lParam;
+	long wParam;
+} MsgRec;
+
+/**
+ * define a scheme property to be forwarded to
+ * the lexer. After this will follow the name
+ * then the value.
+ */
+typedef struct tagSchemeProp
+{
+	unsigned long NameLength;
+	unsigned long ValueLength;
+} PropRec;
+
+/// Text types used in the TextRec struct
+typedef enum {ttFontName, ttKeywords, ttLexerLanguage} eTextType;
+
+/// Used to store what the next thing to expect is
+typedef enum {nrMsgRec, nrTextRec, nrPropRec} eNextRec;
+
+/// Flags for folding
+typedef enum {fldEnabled = 0x01, fldCompact = 0x02, fldComments = 0x04, fldPreProc = 0x08} eFoldFlags;
+
+/// Flags for general other settings
+typedef enum {schUseTabs = 0x10, schInternal = 0x20, schOverrideTabs = 0x40, schOverrideTabSize = 0x80} eSchemeFlags;
+
+#define USETABFOLDFLAGSMASK (schOverrideTabs | schUseTabs)
 
 #define SCHEMEMANAGER_SELECTSCHEME	0x01
 
 using namespace std;
 
 class CSchemeManager;
+class CFile;
 
 ///@todo Add a m_CompiledFile member to save repeatedly changing the file extension and path.
 class CScheme

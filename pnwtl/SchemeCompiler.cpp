@@ -1,8 +1,8 @@
 /**
- * @file SchemeParser.cpp
+ * @file SchemeCompiler.cpp
  * @brief Implement scheme reader and compiler classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2004 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -12,10 +12,30 @@
 
 #include "stdafx.h"
 #include "SchemeCompiler.h"
-#include "files.h"
 #include "ssreg.h"
 
-using namespace ssreg;
+// Parser State Defines
+#define DOING_GLOBALS			1
+#define DOING_GLOBAL			2
+#define DOING_KEYWORDC			3
+#define DOING_KEYWORDS			4
+#define DOING_STYLECS			5	//style-classes
+#define DOING_STYLEC			6	//style-class
+#define DOING_LANGUAGE			7	//language and children...
+#define DOING_LANGUAGE_DETAILS	8
+#define DOING_LANGUAGE_KW		9
+#define DOING_LANGUAGE_STYLES	10
+#define	DOING_IMPORTS			11
+#define DOING_KEYWORDCOMBINE	12
+#define DOING_BASE_OPTIONS		13
+
+#define US_SCHEMES				1
+#define US_SCHEME				2
+#define US_KEYWORD_OVERRIDES	3
+#define US_STYLE_OVERRIDES		4
+#define US_KEYWORDS				5
+#define US_CLASSES				6
+#define US_CLASS				7
 
 ////////////////////////////////////////////////////////////
 // SchemeRecorder Implementation
@@ -221,7 +241,7 @@ UserSettingsParser::UserSettingsParser()
 
 void UserSettingsParser::Parse(LPCTSTR path, CSchemeLoaderState* pState)
 {
-	CSRegistry reg;
+	ssreg::CSRegistry reg;
 	reg.OpenKey(_T("Software\\Echo Software\\PN2\\SchemeDates"), true);
 	
 	if(FileExists(path))
@@ -255,7 +275,7 @@ void UserSettingsParser::Parse(LPCTSTR path, CSchemeLoaderState* pState)
 		err.Format(_T("Error Parsing Scheme UserSettings XML: %s\n (file: %s, line: %d, column %d)"), 
 			E.GetMessage(), E.GetFileName(), E.GetLine(), E.GetColumn());
 		
-		OutputDebugString(err);
+		LOG(err);
 	}
 	catch (XMLParserException& E)
 	{
@@ -263,7 +283,7 @@ void UserSettingsParser::Parse(LPCTSTR path, CSchemeLoaderState* pState)
 		err.Format(_T("Error Parsing Scheme UserSettings XML: %s\n (file: %s, line: %d, column %d)"), 
 			XML_ErrorString(E.GetErrorCode()), E.GetFileName(), E.GetLine(), E.GetColumn());
 		
-		OutputDebugString(err);
+		LOG(err);
 	}
 }
 
@@ -415,6 +435,9 @@ void UserSettingsParser::processSchemeElement(CSchemeLoaderState* pState, LPCTST
 	}
 }
 
+#define SZTRUE(s) \
+	(s[0] == 't')
+
 void UserSettingsParser::processScheme(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
 	LPCTSTR pName =  atts.getValue(_T("name"));
@@ -424,6 +447,34 @@ void UserSettingsParser::processScheme(CSchemeLoaderState* pState, XMLAttributes
 		pScheme = new CustomisedScheme;
 		m_SchemeName = pName;
 		pState->m_State = US_SCHEME;
+
+		LPCTSTR temp = atts.getValue("ovtabs");
+		if(temp != NULL && _tcslen(temp) > 0)
+		{
+			pScheme->hasflags |= schOverrideTabs;
+
+			if(SZTRUE(temp))
+				// Signal that we definitely want to override the tab use.
+				pScheme->flags |= schOverrideTabs;
+		
+			temp = atts.getValue("usetabs");
+			if(temp != NULL && _tcslen(temp) > 0)
+			{
+				pScheme->hasflags |= schUseTabs;
+				if(SZTRUE(temp))
+					pScheme->flags |= schUseTabs;
+			}
+
+		}
+
+		temp = atts.getValue("tabwidth");
+		if(temp != NULL && _tcslen(temp) > 0)
+		{
+			pScheme->hasflags |= schOverrideTabSize;
+			pScheme->flags |= schOverrideTabSize;
+
+			pScheme->m_tabwidth = _ttoi(temp);
+		}
 	}
 #ifdef _DEBUG
 	else
@@ -465,7 +516,7 @@ void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 	m_Recorder.EndRecording();
 }
 
-void SchemeCompiler::onLanguage(LPCTSTR name, LPCTSTR title, int foldflags)
+void SchemeCompiler::onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int /*ncfoldflags*/)
 {
 	CString filename(m_LoadState.m_csOutPath);
 	filename += name;
@@ -528,7 +579,7 @@ void SchemeCompiler::sendStyle(StyleDetails* s, SchemeRecorder* compiler)
 
 void SchemeCompiler::onFile(LPCTSTR filename)
 {
-	CSRegistry reg;
+	ssreg::CSRegistry reg;
 	reg.OpenKey(_T("Software\\Echo Software\\PN2\\SchemeDates"), true);
 
 	tstring filepart;
@@ -574,6 +625,8 @@ void SchemeCompiler::onError(XMLParserException& ex)
 
 void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
 {
+	m_LoadState.m_StartLoad = ::GetTickCount();
+
 	XMLParserCallback<SchemeParser> callback(*this, &SchemeParser::startElement, &SchemeParser::endElement, &SchemeParser::characterData);
 	
 	UserSettingsParser p;
@@ -609,7 +662,7 @@ void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
 			err.Format(_T("Error Parsing Scheme XML: %s\n (file: %s, line: %d, column %d)"), 
 				E.GetMessage(), E.GetFileName(), E.GetLine(), E.GetColumn());
 			
-			OutputDebugString(err);
+			LOG(err);
 
 			onError(E);
 		}
@@ -619,13 +672,18 @@ void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
 			err.Format(_T("Error Parsing Scheme XML: %s\n (file: %s, line: %d, column %d)"), 
 				XML_ErrorString(E.GetErrorCode()), E.GetFileName(), E.GetLine(), E.GetColumn());
 			
-			OutputDebugString(err);
+			LOG(err);
 
 			onError(E);
 		}
 
 		parser.Reset();
 	}
+
+	DWORD dwTimeDiff = GetTickCount() - m_LoadState.m_StartLoad;
+	TCHAR buf[200];
+	_sntprintf(buf, 200, _T("Schemes Load: %dms\n"), dwTimeDiff);
+	LOG(buf);
 }
 
 /**
@@ -729,7 +787,7 @@ void SchemeParser::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, S
 			{
 				CString todebug;
 				todebug.Format(_T("No match for: %s=%s\n"), nm, t);
-				OutputDebugString(todebug);
+				LOG(todebug);
 			}
 #endif
 		}
@@ -1038,6 +1096,7 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 {
 	LPCTSTR t = NULL;
 	int flags = 0;
+	int ncflags = 0;
 	BaseScheme* pBase = NULL;
 
 	if(pState->m_State == DOING_LANGUAGE && 
@@ -1048,6 +1107,8 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 		LPCTSTR title = atts.getValue(_T("title"));
 		if(scheme != NULL)
 		{
+			pState->m_StartLang = ::GetTickCount(); // diags.
+
 			pState->m_csLangName = scheme;
 
 			LPCTSTR base = atts.getValue(_T("base"));
@@ -1061,22 +1122,6 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 					flags = pBase->flags;
 				}
 			}
-
-			// Only look for customisations if this is an actual scheme.
-			if(!pState->m_bBaseParse)
-			{
-				CNM_IT custom = pState->m_CustomSchemes.find(pState->m_csLangName);
-				if(custom != pState->m_CustomSchemes.end())
-				{
-					pState->m_pCustom = (*custom).second;
-				}
-				else
-				{
-					pState->m_pCustom = NULL;
-				}
-			}
-			else
-				pState->m_pCustom = NULL;
 			
 			t = atts.getValue(_T("folding"));
 			if(t != NULL && PNStringToBool(t))
@@ -1103,17 +1148,52 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 				if(PNStringToBool(t))
 					flags |= schOverrideTabs & schUseTabs;
 				else
+				{
 					flags |= schOverrideTabs;
+					flags &= ~schUseTabs;
+				}
 			}
 
 			t = atts.getValue(_T("internal"));
 			if(t != NULL && PNStringToBool(t))
 				flags |= schInternal;
 
+			// Store the non-customised flags to pass on
+			ncflags = flags;
+
+			// Only look for customisations if this is an actual scheme.
+			if(!pState->m_bBaseParse)
+			{
+				CNM_IT custom = pState->m_CustomSchemes.find(pState->m_csLangName);
+				if(custom != pState->m_CustomSchemes.end())
+				{
+					pState->m_pCustom = (*custom).second;
+
+					// Final flags stage, see if the user has removed some.
+					if(pState->m_pCustom->hasflags & schOverrideTabs)
+					{
+						flags &= ~(schOverrideTabs|schUseTabs);
+						flags |= (pState->m_pCustom->flags & (schOverrideTabs|schUseTabs));
+					}
+					
+					if(pState->m_pCustom->hasflags & schOverrideTabSize)
+					{
+						flags &= ~(schOverrideTabSize);
+						flags |= (pState->m_pCustom->flags & schOverrideTabSize);
+					}
+				}
+				else
+				{
+					pState->m_pCustom = NULL;
+				}
+			}
+			else
+				pState->m_pCustom = NULL;
+
 			if(!pState->m_bBaseParse)
 			{
 				// Signal the implementing class that there's a language (scheme) coming.
-				onLanguage(scheme, title, flags);
+				onLanguage(scheme, title, flags, ncflags);
 
 				if( pBase )
 				{
@@ -1147,7 +1227,7 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 				if(sbits == 0)
 				{
 					//throw CSchemeParserException(pState->m_pParser, _T("Style Bits value not valid (0 or non-numeric)"));
-					::OutputDebugString(_T("Style Bits value not valid (0 or non-numeric)"));
+					LOG(_T("Style Bits value not valid (0 or non-numeric)"));
 					sbits = 5;
 				}
 			}
@@ -1169,7 +1249,7 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 			}
 			else
 			{
-				::OutputDebugString(_T("property element not supported in base languages."));
+				LOG(_T("property element not supported in base languages."));
 			}
 		}
 		else if(_tcscmp(name, _T("use-keywords")) == 0)
@@ -1499,7 +1579,7 @@ void SchemeParser::startElement(void *userData, LPCTSTR name, XMLAttributes& att
 	}
 
 	if(stattext.GetLength() > 0)
-		OutputDebugString(stattext);
+		LOG(stattext);
 }
 
 void SchemeParser::endElement(void *userData, LPCTSTR name)
@@ -1528,11 +1608,11 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 			{
 				CString todebug;
 				todebug.Format(_T("No match for: %s\n"), global);
-				OutputDebugString(todebug);
+				LOG(todebug);
 			}
 
 			stattext.Format(_T("Added Global: %s = %s\r\n"), pS->m_csGName, global);
-			OutputDebugString(stattext);
+			LOG(stattext);
 #endif
 			pS->m_Globals.insert(pS->m_Globals.end(), CSTRING_MAP::value_type(pS->m_csGName, global));
 		}
@@ -1563,7 +1643,7 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 
 #ifdef _DEBUG
 			stattext.Format(_T("Added Keyword Class: %s\r\n"), pS->m_csGName);
-			OutputDebugString(stattext);
+			LOG(stattext);
 #endif
 		}
 
@@ -1584,6 +1664,11 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 					onColours(&pS->m_pCustom->m_editorColours);
 
 			onLanguageEnd();
+
+			DWORD dwTimeDiff = ::GetTickCount() - pS->m_StartLang;
+			TCHAR buf[300];
+			_sntprintf(buf, 300, _T("Language Load (%s): %dms\n"), pS->m_csLangName, dwTimeDiff);
+			LOG(buf);
 			
 			pS->m_State = 0;
 		}

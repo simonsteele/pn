@@ -365,6 +365,8 @@ LRESULT CFindExDialog::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 		strMsg.Format(IDS_FINDNOTFOUND, strTextToFind);
 		MessageBox((LPCTSTR)strMsg, _T("Programmers Notepad"), MB_OK | MB_ICONINFORMATION);
+
+		m_FindTextCombo.SetFocus();
 	}
 
 	return TRUE;

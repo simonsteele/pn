@@ -2,16 +2,18 @@
  * @file Schemes.cpp
  * @brief Implement CScheme and CSchemeManager.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #include "stdafx.h"
 
-#include "Schemes.h"
-#include "optionsmanager.h"
 #include "files.h"
+
+#include "Schemes.h"
+#include "SchemeCompiler.h"
+#include "optionsmanager.h"
 
 #include "resource.h"
 

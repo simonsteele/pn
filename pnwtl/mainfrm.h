@@ -144,6 +144,7 @@ public:
 		COMMAND_ID_HANDLER(ID_FINDTYPE_BUTTON, OnFindBarFind)
 		COMMAND_ID_HANDLER(ID_FINDBAR_SEARCHGOOGLE, OnSearchGoogle)
 		COMMAND_ID_HANDLER(ID_FINDBAR_SEARCHGOOGLEGROUPS, OnSearchGoogleGroups)
+		COMMAND_ID_HANDLER(ID_HELP_CONTENTS, OnHelpContents)
 
 		COMMAND_HANDLER(IDC_SCHEMECOMBO, CBN_SELCHANGE, OnSchemeComboChange)
 		COMMAND_HANDLER(IDC_FINDCOMBO, BXTN_ENTER, OnFindComboEnter)
@@ -257,6 +258,7 @@ public:
 	LRESULT OnFindBarFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSearchGoogle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSearchGoogleGroups(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnHelpContents(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnSchemeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFindComboEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

@@ -13,6 +13,8 @@ What's new?
 5) Selected text insertion into find dialog is more selective (no pun intended).
 6) Project changed indicator (appends * to name).
 7) Project tools.
+8) Tab usage option per scheme (SF RFE #1050938).
+9) Stack Based Ctrl-Tab Ordering (SF RFE #995790).
 
 Bug Fixes:
 ----------
@@ -20,6 +22,7 @@ Bug Fixes:
 1) Find in Files gets selected text.
 2) Find in selection fixed.
 3) Find Next and Replace One no longer supported in "in selection" mode.
+4) Find Next replaces selection in find text box when text not found.
 
 If you find a bug:
 ------------------

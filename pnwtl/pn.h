@@ -2,7 +2,7 @@
  * @file pn.h
  * @brief Main Header File for Programmers Notepad 2, defines the application level services.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -106,6 +106,8 @@ void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message);
 
 #include "schemes.h"
 
+#include "files.h"
+
 #define OPTIONS \
 	g_Context.options
 
@@ -124,3 +126,6 @@ void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message);
 	#define UNEXPECTED(message) ;
 	#define RETURN_UNEXPECTED(message, ret) return ret;
 #endif*/
+
+#define LOG(message) \
+	::OutputDebugString(message)

@@ -74,7 +74,8 @@ class Options
 			OFindAlphaPercent			= 18,
 			OVisibleLineEndings			= 19,
 			OVisibleWhiteSpace			= 20,
-			OPTION_COUNT				= 21
+			OManageTabOrder				= 21,
+			OPTION_COUNT				= 22
 		} ECachedOption;
 
 		void LoadCache();

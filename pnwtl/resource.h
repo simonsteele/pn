@@ -362,6 +362,7 @@
 #define IDC_TAB_FORCERADIO              1125
 #define IDC_TAB_TABSRADIO               1125
 #define IDC_TAB_SPACESRADIO             1126
+#define IDC_OPT_TABORDERCHECK           1127
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -455,6 +456,7 @@
 #define ID_WINDOW_CLOSEALLOTHER         32931
 #define ID_DUMMY_ADDTOPROJECT           32938
 #define ID_PROJECT_ADDTHISFILE          32939
+#define ID_HELP_CONTENTS                32943
 
 // Next default values for new objects
 // 
@@ -462,8 +464,8 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        335
-#define _APS_NEXT_COMMAND_VALUE         32942
-#define _APS_NEXT_CONTROL_VALUE         1127
+#define _APS_NEXT_COMMAND_VALUE         32944
+#define _APS_NEXT_CONTROL_VALUE         1128
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

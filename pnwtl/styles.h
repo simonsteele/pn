@@ -164,25 +164,6 @@ public:
 		return false;
 	}
 
-	tstring ToXml() const
-	{
-		if(values == 0)
-			return tstring(_T(""));
-		
-		tstring buf = _T("<colours ");
-		if((values & ecSelFore) != 0)
-			AddColourParam(buf, _T("selFore"), crSelFore);
-		if((values & ecSelBack) != 0)
-			AddColourParam(buf, _T("selBack"), crSelBack);
-		if((values & ecCaret) != 0)
-			AddColourParam(buf, _T("caret"), crCaret);
-		if((values & ecIndentG) != 0)
-			AddColourParam(buf, _T("indentGuides"), crIG);
-		buf += _T("/>");
-		
-		return buf;
-	}
-
 	void SetFromXml(XMLAttributes& atts)
 	{
 		LPCTSTR szKey, szValue;
@@ -232,60 +213,9 @@ public:
 			pSc->SPerform(SCI_STYLESETFORE, STYLE_INDENTGUIDE, crIG);
 	}
 
-	/*static void SendColours(XMLAttributes& atts, CScintilla* pSc)
-	{
-		LPCTSTR szKey, szValue;
-		int val;
-		for(int i = 0; i < atts.getCount(); i++)
-		{
-			szKey = atts.getName(i);
-			szValue = atts.getValue(i);
-			val = _ttoi(szValue);
-
-			if(_tcscmp(szKey, _T("selFore")) == 0)
-			{
-				if(val == -1)
-					pSc->SPerform(SCI_SETSELFORE, false, 0);
-				else
-					pSc->SPerform(SCI_SETSELFORE, true, (DWORD)val);
-			}
-			else if(_tcscmp(szKey, _T("selBack")) == 0)
-			{
-				pSc->SPerform(SCI_SETSELBACK, true, (DWORD)val);
-			}
-			else if(_tcscmp(szKey, _T("caret")) == 0)
-			{
-				pSc->SPerform(SCI_SETCARETFORE, (DWORD)val);
-			}
-			else if(_tcscmp(szKey, _T("indentGuides")) == 0)
-			{
-				pSc->SPerform(SCI_STYLESETFORE, STYLE_INDENTGUIDE, (DWORD)val);
-			}
-		}
-	}*/
-
 	void Clear()
 	{
 		values = 0;
-	}
-
-protected:
-	void AddColourParam(tstring& buf, LPCTSTR name, COLORREF colour) const
-	{
-		buf += name;
-		buf += _T("=\"");
-		
-		if(colour == CLR_NONE)
-		{
-			buf += _T("-1\" ");
-		}
-		else
-		{
-			TCHAR colbuf[12];
-			colbuf[11] = NULL;
-			_sntprintf(colbuf, 11, _T("%.2x%.2x%.2x\" "), GetRValue(colour), GetGValue(colour), GetBValue(colour));
-			buf += colbuf;
-		}
 	}
 
 protected:
@@ -557,7 +487,7 @@ public:
 		return m_Styles.end();
 	}
 
-	size_t StylesCount()
+	size_t StylesCount() const
 	{
 		return m_Styles.size();
 	}
@@ -697,7 +627,7 @@ class CustomKeywordHolder
 			return pSet;
 		}
 
-		CustomKeywordSet* GetFirstKeywordSet()
+		CustomKeywordSet* GetFirstKeywordSet() const
 		{
 			return pKeywordSets;
 		}
@@ -723,7 +653,16 @@ class CustomKeywordHolder
 class CustomisedScheme : public CustomKeywordHolder, public StylesList
 {
 public:
-	EditorColours m_editorColours;
+	CustomisedScheme()
+	{
+		flags = 0;
+		hasflags = 0;
+	}
+
+	int				flags;
+	int				hasflags;
+	int				m_tabwidth;
+	EditorColours	m_editorColours;
 };
 
 
@@ -765,7 +704,6 @@ class BaseScheme : public CustomisedScheme
 
 		tstring lexer;
 		int		styleBits;
-		int		flags;
 
 		int		valuesSet;
 
@@ -795,7 +733,7 @@ class BaseScheme : public CustomisedScheme
 
 typedef map<CString, CustomisedScheme*> CUSTOMISED_NAMEMAP;
 typedef CUSTOMISED_NAMEMAP::iterator CNM_IT;
-typedef map<CString, StyleDetails*> STYLEDETAILS_NAMEMAP;
+typedef map<tstring, StyleDetails*> STYLEDETAILS_NAMEMAP;
 typedef STYLEDETAILS_NAMEMAP::iterator SDNM_IT;
 
 /**
@@ -819,7 +757,7 @@ class StylesMap
 			m_Styles.clear();
 		}
 
-		void AddStyle(const CString& name, StyleDetails* pStyle)
+		void AddStyle(const tstring& name, StyleDetails* pStyle)
 		{
 			m_Styles.insert(m_Styles.end(),
 				STYLEDETAILS_NAMEMAP::value_type(name, pStyle));
@@ -828,10 +766,10 @@ class StylesMap
 		// at the moment, this just uses a CString to call the above fn.
 		void AddStyle(LPCTSTR name, StyleDetails* pStyle)
 		{
-			AddStyle(CString(name), pStyle);
+			AddStyle(tstring(name), pStyle);
 		}
 
-		void DeleteStyle(const CString& name)
+		void DeleteStyle(const tstring& name)
 		{
 			SDNM_IT i = m_Styles.find(name);
 			if(i != m_Styles.end())
@@ -843,10 +781,10 @@ class StylesMap
 
 		void DeleteStyle(LPCTSTR name)
 		{
-			DeleteStyle(CString(name));
+			DeleteStyle(tstring(name));
 		}
 
-		StyleDetails* GetStyle(const CString& name)
+		StyleDetails* GetStyle(const tstring& name)
 		{
 			SDNM_IT i = m_Styles.find(name);
 			if(i != m_Styles.end())
@@ -858,7 +796,7 @@ class StylesMap
 		// at the moment, this just uses a CString to call the above fn.
 		StyleDetails* GetStyle(LPCTSTR name)
 		{
-			return GetStyle(CString(name));
+			return GetStyle(tstring(name));
 		}
 
 		STYLEDETAILS_NAMEMAP& GetMap()
