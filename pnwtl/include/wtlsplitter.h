@@ -42,6 +42,7 @@ class CWTLSplitter : public CWindowImpl<CWTLSplitter>
 			MESSAGE_HANDLER(WM_PAINT, OnPaint)
 			MESSAGE_HANDLER(WM_CREATE, OnCreate)
 			MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
+			MESSAGE_HANDLER(WM_CAPTURECHANGED, OnCaptureChanged)
 		END_MSG_MAP()
 
 		void SetPanes(HWND pane1, HWND pane2, bool bUpdate = true)
@@ -503,6 +504,13 @@ class CWTLSplitter : public CWindowImpl<CWTLSplitter>
 		{
 			GetSysSettings();
 			UpdateLayout();
+			return 0;
+		}
+
+		LRESULT OnCaptureChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+		{
+			if(m_bDragging && (HWND)lParam != m_hWnd)
+				m_bDragging = false;
 			return 0;
 		}
 
