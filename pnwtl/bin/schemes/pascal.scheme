@@ -25,8 +25,8 @@
 			<keyword key="2" name="Fold Start Words" class="pascal_foldwords"/>
 		</use-keywords>
 		<use-styles>
-			<style name="DEFAULT" key="32" />
-			<style name="WHITESPACE" key="0" />
+			<style name="Default" key="32" />
+			<style name="Whitespace" key="0" />
 			<style name="Comment" key="1" class="comment"/>
 			<style name="Line Comment" key="2" class="commentline"/>
 			<style name="Doc Comment" key="3" class="commentdoc"/>

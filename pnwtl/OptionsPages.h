@@ -214,6 +214,7 @@ class CTabPageStyles : public CPropertyPageImpl<CTabPageStyles>
 		void UpdateGroup();
 		void UpdateGroupChildren(StyleDetails* pUpdatedClass, CustomStyleCollection* pColl = NULL);
 		void UpdateStyle();
+		void DisableNonColourItems();
 
 	protected:
 		StyleDetails	m_Style;

@@ -97,7 +97,7 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 		BOOL	m_bFilter;
 		int		m_iSaveStyle;
 		BOOL	m_bClear;
-		DWORD	m_dwHotKey;
+		WORD	m_wHotKey;
 
 		int		m_iBuiltIn;
 

@@ -94,6 +94,11 @@ BEGIN
             MENUITEM "&Find",                       302
             MENUITEM "&Schemes",                    ID_VIEW_TOOLBARS_SCHEMES
         END
+        POPUP "&Windows"
+        BEGIN
+            MENUITEM "&Project",                    305
+            MENUITEM "&Text Clips",                 306
+        END
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM SEPARATOR
         MENUITEM "&Output\tF8",                 133
@@ -880,7 +885,7 @@ BEGIN
     PUSHBUTTON      "Reset &All",IDC_STYLE_RESETALLBTN,168,141,54,18
     LTEXT           "Static",IDC_STYLE_EXAMPLE,108,122,179,18,NOT WS_VISIBLE
     GROUPBOX        "Style:",IDC_STATIC,108,77,180,42
-    LTEXT           "Text Colour:",IDC_STATIC,108,42,54,12
+    LTEXT           "Text Colour:",IDC_STATIC_TC,108,42,54,12
     LTEXT           "Background:",IDC_STATIC,108,60,54,12
     LTEXT           "Font:",IDC_STATIC,108,6,48,12
     LTEXT           "Text Size:",IDC_STATIC,108,24,48,12

@@ -419,9 +419,6 @@ void UserSettingsParser::endElement(void *userData, LPCTSTR name)
 	pState->m_csCData = _T("");
 }
 
-//void UserSettingsParser::DefineStyle(StyleDetails* pStyle, XMLAttributes atts)
-//Obsoleted by SchemeParser::parseStyle...
-
 void UserSettingsParser::processClassElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts)
 {
 	if(_tcscmp(name, _T("style-class")) == 0)
@@ -547,7 +544,32 @@ void SchemeCompiler::onStyle(StyleDetails* pStyle, StyleDetails* pCustom)
 		m_Recorder.SetDefStyle(&m_LoadState.m_Default);
 	}
 
-	sendStyle(pStyle, &m_Recorder);	
+	if(pStyle->ColourOnly)
+	{
+		if((pStyle->values && edvForeColor) == 0)
+			return;
+
+		if(pStyle->KeyIsMessage)
+		{
+			//Special-case selection-fore and selection-back.
+			if(pStyle->Key == 2068 || pStyle->Key == 2067)
+			{
+				m_Recorder.SPerform(pStyle->Key, 1, pStyle->ForeColor);
+			}
+			else
+			{
+				m_Recorder.SPerform(pStyle->Key, (long)pStyle->ForeColor);
+			}
+		}
+		else
+		{
+			m_Recorder.StyleSetFore(pStyle->Key, pStyle->ForeColor);
+		}
+	}
+	else
+	{
+		sendStyle(pStyle, &m_Recorder);
+	}
 }
 
 void SchemeCompiler::onStyleClass(StyleDetails* pClass, StyleDetails* pCustom)
@@ -669,6 +691,33 @@ void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
 	}
 }
 
+/**
+ * A base style is a style that every scheme reflects.
+ */
+void SchemeParser::processBaseStyle(CSchemeLoaderState* pState, XMLAttributes& atts)
+{
+	//Should this inherit from pState->m_Default?
+	StyleDetails* pS = new StyleDetails();
+	
+	parseStyle(pState, atts, pS);
+
+	pState->m_BaseStyles.AddStyle(pS);
+}
+
+/**
+ * A base colour is a colour that affects every scheme - things like
+ * cursor colour and selection colours.
+ */
+void SchemeParser::processBaseColour(CSchemeLoaderState* pState, XMLAttributes& atts)
+{
+	StyleDetails* pS = new StyleDetails();
+
+	parseStyle(pState, atts, pS);
+	pS->ColourOnly = true;
+	
+	pState->m_BaseStyles.AddStyle(pS);
+}
+
 void SchemeParser::processGlobal(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
 	for(int i = 0; i < atts.getCount(); i++)
@@ -708,7 +757,6 @@ void SchemeParser::processKeywordClass(CSchemeLoaderState* pState, XMLAttributes
 	}
 }
 
-//void SchemeParser::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, StyleDetails* pStyle)
 void SchemeParser::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, StyleDetails* pStyle, bool bExpandGlobals)
 {
 	LPCTSTR nm;
@@ -738,13 +786,18 @@ void SchemeParser::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, S
 			pStyle->Key = _ttoi(t);
 			continue;
 		}
+		else if(_tcscmp(nm, _T("message")) == 0)
+		{
+			pStyle->Key = _ttoi(t);
+			pStyle->KeyIsMessage = true;
+			continue;
+		}
 
 		if(bExpandGlobals)
 		{
 			CSTRING_MAP::iterator it = pState->m_Globals.find(CString(t));
 			if(it != pState->m_Globals.end())
 			{
-				// Will this work? It's an implicit cast to LPCTSTR for a CString in a map....
 				t = (*it).second;
 			}
 #ifdef _DEBUG
@@ -1133,6 +1186,8 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 				// Signal the implementing class that there's a language (scheme) coming.
 				onLanguage(scheme, title, flags);
 
+				sendBaseStyles(pState);
+
 				if( pBase )
 				{
 					sendBaseScheme(pState, pBase);
@@ -1219,6 +1274,79 @@ void SchemeParser::specifyImportFile(CSchemeLoaderState* pState, XMLAttributes& 
 	}
 }
 
+void SchemeParser::sendBaseStyle(CSchemeLoaderState* pState, StyleDetails* pS)
+{
+	StyleDetails* pCustom = NULL;
+	StyleDetails* pBase = NULL;
+	CString classname;
+	int key = pS->Key;
+
+	if(pState->m_pCustom)
+	{
+		pCustom = pState->m_pCustom->GetStyle(key);
+		if(pCustom)
+		{
+			if((pCustom->values & edvClass) != 0)
+				classname = pCustom->classname.c_str();
+		}
+	}
+
+	// No customised style class, is there a group class?
+	if(classname.GetLength() == 0)
+	{
+		if(pState->m_pGroupClass != NULL)
+		{
+			// There is a class associated with a group of styles.
+			// We also don't need to find the style, it will already
+			// be the m_pGroupClass member of pState.
+			pBase = pState->m_pGroupClass;
+		}
+		else
+		{
+			classname = pS->classname.c_str();
+		}
+	}
+
+	// We've not found a class yet, but if we do have a class name, we try to find that.
+	if(!pBase && (classname.GetLength() > 0) && (classname != _T("default")))
+	{
+		pBase = pState->m_StyleClasses.GetStyle(classname);
+	}
+
+	StyleDetails Style(*pS);
+
+	// If we didn't find a class, we base the style on the default style...
+	if( pBase )
+		customiseStyle(&Style, pBase);
+
+	onStyle(&Style, pCustom);
+}
+
+/**
+ * Send all of the base styles for the current scheme.
+ */
+void SchemeParser::sendBaseStyles(CSchemeLoaderState* pState)
+{
+	LPCTSTR attstr[5];
+	attstr[0] = _T("name");
+	attstr[1] = _T("Common");
+	attstr[2] = _T("description");
+	attstr[3] = _T("Common styles and colours.");
+	attstr[4] = NULL;
+	XMLAttributes atts(&attstr[0]);
+
+	onStyleGroup(atts, NULL);
+	
+	for(SL_CIT i = pState->m_BaseStyles.StylesBegin();
+		i != pState->m_BaseStyles.StylesEnd();
+		++i)
+	{
+		sendBaseStyle(pState, (*i));
+	}
+
+	onStyleGroupEnd();
+}
+
 void SchemeParser::sendBaseScheme(CSchemeLoaderState* pState, BaseScheme* pBase)
 {
 	GroupDetails_t* pGroupDetails = pBase->pGroupDetails;
@@ -1264,50 +1392,7 @@ void SchemeParser::sendBaseScheme(CSchemeLoaderState* pState, BaseScheme* pBase)
 		}
 		else
 		{
-			StyleDetails* pCustom = NULL;
-			StyleDetails* pBase = NULL;
-			CString classname;
-			int key = pS->Key;
-
-			if(pState->m_pCustom)
-			{
-				pCustom = pState->m_pCustom->GetStyle(key);
-				if(pCustom)
-				{
-					if((pCustom->values & edvClass) != 0)
-						classname = pCustom->classname.c_str();
-				}
-			}
-
-			// No customised style class, is there a group class?
-			if(classname.GetLength() == 0)
-			{
-				if(pState->m_pGroupClass != NULL)
-				{
-					// There is a class associated with a group of styles.
-					// We also don't need to find the style, it will already
-					// be the m_pGroupClass member of pState.
-					pBase = pState->m_pGroupClass;
-				}
-				else
-				{
-					classname = pS->classname.c_str();
-				}
-			}
-
-			// We've not found a class yet, but if we do have a class name, we try to find that.
-			if(!pBase && (classname.GetLength() > 0) && (classname != _T("default")))
-			{
-				pBase = pState->m_StyleClasses.GetStyle(classname);
-			}
-
-			StyleDetails Style(*pS);
-
-			// If we didn't find a class, we base the style on the default style...
-			if( pBase )
-				customiseStyle(&Style, pBase);
-
-			onStyle(&Style, pCustom);
+			sendBaseStyle(pState, pS);
 		}
 	}
 }
@@ -1430,6 +1515,14 @@ void SchemeParser::startElement(void *userData, LPCTSTR name, XMLAttributes& att
 			specifyImportFile(pState, atts);
 		}
 	}
+	else if(state == DOING_BASE_OPTIONS && _tcscmp(name, _T("colour")) == 0)
+	{
+		processBaseColour(pState, atts);
+	}
+	else if(state == DOING_BASE_OPTIONS && _tcscmp(name, _T("style")) == 0)
+	{
+		processBaseStyle(pState, atts);
+	}
 	else if(_tcscmp(name, _T("globals")) == 0)
 	{		
 		stattext = _T("Processing Globals\r\n");
@@ -1444,6 +1537,11 @@ void SchemeParser::startElement(void *userData, LPCTSTR name, XMLAttributes& att
 	{
 		stattext = _T("Processing Style Classes\r\n");
 		pState->m_State = DOING_STYLECS;
+	}
+	else if(_tcscmp(name, _T("base-options")) == 0)
+	{
+		stattext = _T("Processing Base Options\r\n");
+		pState->m_State = DOING_BASE_OPTIONS;
 	}
 	else if(_tcscmp(name, _T("language")) == 0 || _tcscmp(name, _T("schemedef")) == 0)
 	{
@@ -1588,6 +1686,13 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 	{
 		if( _tcscmp(name, _T("imports")) == 0 )
 			pS->m_State = 0;
+	}
+	else if(state == DOING_BASE_OPTIONS)
+	{
+		if( _tcscmp(name, _T("base-options")) == 0 )
+		{
+			pS->m_State = 0;
+		}
 	}
 	else
 	{

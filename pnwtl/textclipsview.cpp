@@ -87,9 +87,10 @@ LRESULT CClipsDocker::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BO
 		GetClientRect(&rc);
 		CRect rcCombo(rc);
 		rcCombo.bottom = rcCombo.top + m_comboHeight;
-		rc.top += m_comboHeight;
+		rc.top += m_comboHeight + 1;
 
 		m_view.SetWindowPos(NULL, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top ,SWP_NOZORDER | SWP_NOACTIVATE);
+		m_view.SetColumnWidth(0, rc.right - rc.left - ::GetSystemMetrics(SM_CXVSCROLL) - 1);
 		m_combo.SetWindowPos(NULL, rcCombo.left, rcCombo.top, rcCombo.right - rcCombo.left, rcCombo.bottom - rcCombo.top, SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 

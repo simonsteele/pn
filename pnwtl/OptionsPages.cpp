@@ -531,7 +531,6 @@ void CTabPageStyles::UpdateSel()
 			{
 				// This is a group item, we see if there is an attached class, and if
 				// so then we let the user customise it. Else we disable the controls.
-				///@todo Disable everything - except maybe not...
 				m_bGroup = true;
 				
 				CustomStyleCollection* pColl = reinterpret_cast<CustomStyleCollection*>( m_tree.GetItemData(item) );
@@ -569,17 +568,28 @@ void CTabPageStyles::UpdateSel()
 				else
 					m_sd.SetStyle(m_Style.FontName.c_str(), m_Style.FontSize, m_Style.ForeColor, m_Style.BackColor, m_Style.name.c_str(), m_Style.Bold, m_Style.Italic, m_Style.Underline);
 
-				m_bold.SetCheck(m_Style.Bold ? BST_CHECKED : BST_UNCHECKED);
-				m_italic.SetCheck(m_Style.Italic ? BST_CHECKED : BST_UNCHECKED);
-				m_underline.SetCheck(m_Style.Underline ? BST_CHECKED : BST_UNCHECKED);
-				m_eolfilled.SetCheck(m_Style.EOLFilled ? BST_CHECKED : BST_UNCHECKED);
-				m_fore.SetColor(m_Style.ForeColor);
-				m_back.SetColor(m_Style.BackColor);
+				if(!pS->ColourOnly)
+				{
+					m_bold.SetCheck(m_Style.Bold ? BST_CHECKED : BST_UNCHECKED);
+					m_italic.SetCheck(m_Style.Italic ? BST_CHECKED : BST_UNCHECKED);
+					m_underline.SetCheck(m_Style.Underline ? BST_CHECKED : BST_UNCHECKED);
+					m_eolfilled.SetCheck(m_Style.EOLFilled ? BST_CHECKED : BST_UNCHECKED);
+					m_fore.SetColor(m_Style.ForeColor);
+					m_back.SetColor(m_Style.BackColor);
 
-				m_FontCombo.SelectString(-1, m_Style.FontName.c_str());
-				m_SizeCombo.Select(m_Style.FontSize);
+					m_FontCombo.SelectString(-1, m_Style.FontName.c_str());
+					m_SizeCombo.Select(m_Style.FontSize);
 
-				EnableButtons(true);
+					::SetWindowText(GetDlgItem(IDC_STATIC_TC), _T("Text Colour: "));
+
+					EnableButtons(true);
+				}
+				else
+				{
+					m_fore.SetColor(m_Style.ForeColor);
+					::SetWindowText(GetDlgItem(IDC_STATIC_TC), _T("Colour: "));
+					DisableNonColourItems();
+				}
 			}
 			else
 				EnableButtons(false);
@@ -599,6 +609,18 @@ void CTabPageStyles::EnableButtons(bool bEnable)
 	m_eolfilled.EnableWindow(bEnable);
 	m_fore.EnableWindow(bEnable);
 	m_back.EnableWindow(bEnable);
+}
+
+void CTabPageStyles::DisableNonColourItems()
+{
+	m_FontCombo.EnableWindow(false);
+	m_SizeCombo.EnableWindow(false);
+	m_bold.EnableWindow(false);
+	m_italic.EnableWindow(false);
+	m_underline.EnableWindow(false);
+	m_eolfilled.EnableWindow(false);
+	m_fore.EnableWindow(true);
+	m_back.EnableWindow(false);
 }
 
 LRESULT CTabPageStyles::OnBoldClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

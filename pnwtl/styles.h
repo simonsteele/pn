@@ -45,6 +45,8 @@ class StyleDetails
 			Underline = false;
 			EOLFilled = false;
 			Hotspot = false;
+			ColourOnly = false;
+			KeyIsMessage = false;
 			values = 0;
 		}
 
@@ -65,6 +67,8 @@ class StyleDetails
 			Underline = copy.Underline;
 			EOLFilled = copy.EOLFilled;
 			Hotspot = copy.Hotspot;
+			ColourOnly = copy.ColourOnly;
+			KeyIsMessage = copy.KeyIsMessage;
 
 			values = copy.values;
 			classname = copy.classname;
@@ -170,6 +174,12 @@ class StyleDetails
 		bool Underline;
 		bool EOLFilled;
 		bool Hotspot;
+
+		///ColourOnly == true means that this style is only a colour setting.
+		bool ColourOnly;
+		
+		///KeyIsMessage == true means that the key is a scintilla message number.
+		bool KeyIsMessage;
 
 		string name;
 		string classname;

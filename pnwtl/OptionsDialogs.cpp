@@ -151,7 +151,7 @@ CToolEditorDialog::CToolEditorDialog() :
 
 	m_iSaveStyle = 0;
 
-	m_dwHotKey = 0;
+	m_wHotKey = 0;
 
 	m_iBuiltIn = 0;
 
@@ -188,7 +188,7 @@ LRESULT CToolEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 		m_saveCombo.SetCurSel(0);
 
 	m_HotKeyCtrl = GetDlgItem(IDC_TE_HOTKEY);
-	m_HotKeyCtrl.SetHotKey(LOWORD(m_dwHotKey), HIWORD(m_dwHotKey));
+	m_HotKeyCtrl.SetHotKey(LOBYTE(m_wHotKey), HIBYTE(m_wHotKey));
 
 	DoDataExchange();
 
@@ -203,7 +203,7 @@ LRESULT CToolEditorDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/
 	
 	m_bGlobal = (m_outputcombo.GetCurSel() == 0);
 
-	m_dwHotKey = m_HotKeyCtrl.GetHotKey();
+	m_wHotKey = (WORD)m_HotKeyCtrl.GetHotKey();
 
 	int saveSel = m_saveCombo.GetCurSel();
 	m_iSaveStyle = (saveSel == 2 ? TOOL_SAVEALL : (saveSel == 1 ? TOOL_SAVEONE : 0));
@@ -287,7 +287,7 @@ void CToolEditorDialog::GetValues(ToolDefinition* pDefinition)
 	pDefinition->Command		= m_csCommand;
 	pDefinition->Folder			= m_csFolder;
 	pDefinition->Params			= m_csParams;
-	pDefinition->Shortcut		= m_dwHotKey;
+	pDefinition->Shortcut		= m_wHotKey;
 	
 	pDefinition->iFlags = 
 		(m_bCapture	? TOOL_CAPTURE	: 0) |
@@ -309,7 +309,7 @@ void CToolEditorDialog::SetValues(ToolDefinition* pDefinition)
 	m_csCommand		= pDefinition->Command.c_str();
 	m_csFolder		= pDefinition->Folder.c_str();
 	m_csParams		= pDefinition->Params.c_str();
-	m_dwHotKey		= pDefinition->Shortcut;
+	m_wHotKey		= pDefinition->Shortcut;
 	m_bCapture		= pDefinition->CaptureOutput();
 	m_bFilter		= pDefinition->IsFilter();
 	m_bGlobal		= pDefinition->GlobalOutput();

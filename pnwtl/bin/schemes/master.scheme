@@ -28,10 +28,10 @@
 		<style-class name="commentbox" inherit-style="comment"/>
 	</style-classes>
 	<base-options>
-		<colour name="Cursor" />
-		<colour name="Indentation Guides" />
-		<colour name="Selection Back" />
-		<colour name="Selection Fore" />
+		<colour name="Cursor" message="2069" />
+		<colour name="Selection Back" message="2068" />
+		<colour name="Selection Fore" message="2067" />
+		<colour name="Indentation Guides" key="37" />
 		<style name="Line Numbers" key="33" />
 		<style name="Brace Match" key="34" fore="0000ff" bold="true" />
 		<style name="Brace Mismatch" key="35" fore="ff0000" bold="true" />

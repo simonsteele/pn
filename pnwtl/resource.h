@@ -231,8 +231,8 @@
 #define IDC_OPT_NOLLHELPRADIO           1067
 #define IDC_OPT_LLHIGHLIGHTRADIO        1068
 #define IDC_OPT_LLLINERADIO             1069
-#define IDC_HOTKEY1                     1071
 #define IDC_TE_HOTKEY                   1071
+#define IDC_STATIC_TC                   1072
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -289,7 +289,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        310
 #define _APS_NEXT_COMMAND_VALUE         32877
-#define _APS_NEXT_CONTROL_VALUE         1072
+#define _APS_NEXT_CONTROL_VALUE         1073
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

@@ -85,6 +85,7 @@ typedef enum {schUseTabs = 0x10, schInternal = 0x20} eSchemeFlags;
 #define DOING_LANGUAGE_STYLES	10
 #define	DOING_IMPORTS			11
 #define DOING_KEYWORDCOMBINE	12
+#define DOING_BASE_OPTIONS		13
 
 #define US_SCHEMES				1
 #define US_SCHEME				2
@@ -106,6 +107,8 @@ class CSchemeLoaderState
 		CSTRING_MAP				m_Keywords;
 		StylesMap				m_StyleClasses;
 		StyleDetails			m_Default;
+
+		StylesList				m_BaseStyles;
 
 		CUSTOMISED_NAMEMAP		m_CustomSchemes;
 		StylesMap				m_CustomClasses;
@@ -212,6 +215,8 @@ class SchemeParser
 		void processKeywordCombine(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void specifyImportSet(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void specifyImportFile(CSchemeLoaderState* pState, XMLAttributes& atts);
+		void processBaseStyle(CSchemeLoaderState* pState, XMLAttributes& atts);
+		void processBaseColour(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processLanguageElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts);
 		void processLanguageKeywords(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processLanguageStyle(CSchemeLoaderState* pState, XMLAttributes& atts);
@@ -223,6 +228,8 @@ class SchemeParser
 		void processProperty(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void customiseStyle(StyleDetails* style, StyleDetails* custom);
 		void sendBaseScheme(CSchemeLoaderState* pState, BaseScheme* pBase);
+		void sendBaseStyle(CSchemeLoaderState* pState, StyleDetails* pS);
+		void sendBaseStyles(CSchemeLoaderState* pState);
 
 	protected:
 		virtual void onLexer(LPCTSTR name, int styleBits) = 0;

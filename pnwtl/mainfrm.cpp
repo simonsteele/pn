@@ -203,16 +203,6 @@ void CMainFrame::OnMDISetMenu(HMENU hOld, HMENU hNew)
 	MoveMRU(r, a);
 	MoveLanguage(r, a);
 	MoveNewMenu(r, a);
-
-	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
-	if(pChild)
-	{
-		m_hToolAccel = pChild->GetToolAccelerators();
-	}
-	else
-	{
-		m_hToolAccel = NULL;
-	}
 }
 
 /* Notes: This function could be completely removed by doing the following:
@@ -322,16 +312,25 @@ LRESULT CMainFrame::OnChildNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 		if(hMDIChild != NULL)
 		{
 			CChildFrame* pChild = CChildFrame::FromHandle(hMDIChild);
-			CScheme* pScheme = pChild->GetTextView()->GetCurrentScheme();
-			for(int i = 0; i < m_SchemeCombo.GetCount(); i++)
+			if(pChild != NULL)
 			{
-				if( pScheme == static_cast<CScheme*>( m_SchemeCombo.GetItemDataPtr(i) ) )
+				CScheme* pScheme = pChild->GetTextView()->GetCurrentScheme();
+				for(int i = 0; i < m_SchemeCombo.GetCount(); i++)
 				{
-					m_SchemeCombo.SetCurSel(i);
-					break;
+					if( pScheme == static_cast<CScheme*>( m_SchemeCombo.GetItemDataPtr(i) ) )
+					{
+						m_SchemeCombo.SetCurSel(i);
+						break;
+					}
 				}
+
+				m_hToolAccel = pChild->GetToolAccelerators();
 			}
+			else
+				m_hToolAccel = NULL;
 		}
+		else
+			m_hToolAccel = NULL;
 	}
 
 	// Can do status bar clear here. This is done by getting notification here
@@ -418,7 +417,6 @@ HWND CMainFrame::CreateFindToolbar()
 	rc.left += 1; // slight offset from previous and next buttons.
 	rc.right -= 1;
 
-	//m_FindImages.Create(MAKEINTRESOURCE(IDB_FINDTOOLBAR), 16, 1, RGB(255,0,255));
 	m_FindImages.Create(16, 16, ILC_COLOR32 | ILC_MASK, 3, 1);
 	CBitmap bmp;
 	bmp.LoadBitmap(IDB_FINDTOOLBAR);
@@ -1382,6 +1380,8 @@ void CMainFrame::InitGUIState()
 	// Create a list of the docking windows to manage.
 	sstate::CDockWndMgrEx dockers(m_hWnd);
 	dockers.Add(sstate::CDockingWindowStateAdapterEx<CDockingOutputWindow>(*m_pOutputWnd));
+	dockers.Add(sstate::CDockingWindowStateAdapterEx<CProjectDocker>(*m_pProjectsWnd));
+	dockers.Add(sstate::CDockingWindowStateAdapterEx<CClipsDocker>(*m_pClipsWnd));
 	
 	tstring statekey(pnregroot);
 	statekey += PNSK_INTERFACE;
