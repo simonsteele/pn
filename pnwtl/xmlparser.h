@@ -123,7 +123,7 @@ class XMLParserCallback : public XMLParseState
 class XMLParser
 {
 	public:
-		XMLParser();
+		XMLParser(bool namespaceAware = false);
 		~XMLParser();
 		bool LoadFile(LPCTSTR filename);
 		void SetParseState(XMLParseState* pState);

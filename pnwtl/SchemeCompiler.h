@@ -28,7 +28,7 @@ typedef list<CString> CSTRING_LIST;
  * Structs for compiled scheme file reading...
  **********************************************/
 
-typedef struct
+typedef struct tagCompiledSchemeHdr
 {
 	char Magic[16];
 	int	Version;
@@ -37,14 +37,14 @@ typedef struct
 #define SC_HDR_NAMESIZE 11
 #define SC_HDR_TITLESIZE 40
 
-typedef struct
+typedef struct tagSchemeHdr
 {
 	char Name[SC_HDR_NAMESIZE];
 	char Title[SC_HDR_TITLESIZE];
 	UINT Flags;
 } SchemeHdrRec;
 
-typedef struct
+typedef struct tagSchemeTextRec
 {
 	unsigned long	TextLength;
 	long			MsgNum;
@@ -53,14 +53,14 @@ typedef struct
 	char			TextType;
 } TextRec;
 
-typedef struct
+typedef struct tagSchemeMsg
 {
 	int MsgNum;
 	long lParam;
 	long wParam;
 } MsgRec;
 
-typedef struct
+typedef struct tagSchemeProp
 {
 	unsigned long NameLength;
 	unsigned long ValueLength;

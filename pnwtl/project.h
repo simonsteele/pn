@@ -31,6 +31,44 @@ typedef FILE_LIST::iterator		FILE_IT;
 
 typedef enum {ptFile, ptFolder, ptProject, ptWorkspace} PROJECT_TYPE;
 
+class XmlNode;
+class XmlAttribute;
+
+#include <list>
+typedef std::list<XmlNode*>			LIST_NODES;
+typedef std::list<XmlAttribute*>	LIST_ATTRS;
+
+class XmlNode
+{
+	public:
+		XmlNode(LPCTSTR qualifiedName);
+		XmlNode(LPCTSTR lpszNamespace, LPCTSTR lpszName);
+		
+		void Write(ProjectWriter writer);
+
+		void AddAttributes(XMLAttributes& atts);
+
+	protected:
+		tstring		sNamespace;
+		tstring		sName;
+		
+		LIST_NODES	children;
+		LIST_ATTRS	attributes;
+};
+
+class XmlAttribute
+{
+	public:
+		XmlAttribute(LPCTSTR lpszNamespace, LPCTSTR lpszName, LPCTSTR lpszValue);
+
+		void Write(ProjectWriter writer);
+
+	protected:
+		tstring		sNamespace;
+		tstring		sName;
+		tstring		sValue;
+};
+
 class ProjectType
 {
 public:
@@ -64,6 +102,8 @@ class File : public ProjectType
 
 		void WriteDefinition(ProjectWriter definition);
 
+		LIST_NODES& GetUserData();
+
 	protected:
 		void setDirty();
 
@@ -72,6 +112,8 @@ class File : public ProjectType
 		tstring fullPath;
 		tstring relPath;
 		Folder*	parentFolder;
+		
+		LIST_NODES	userData;
 };
 
 /**
@@ -109,6 +151,8 @@ class Folder : public ProjectType
 
 		void WriteDefinition(ProjectWriter definition);
 
+		LIST_NODES& GetUserData();
+
 	protected:
 		void Clear();
 		void writeContents(ProjectWriter definition);
@@ -121,6 +165,8 @@ class Folder : public ProjectType
 		FOLDER_LIST	children;
 		FILE_LIST	files;
 		Folder*		parent;
+
+		LIST_NODES	userData;
 };
 
 /**
@@ -157,17 +203,21 @@ class Project : public Folder, XMLParseState
 		void processProject(XMLAttributes& atts);
 		void processFolder(XMLAttributes& atts);
 		void processFile(XMLAttributes& atts);
+		void processUserData(LPCTSTR name, XMLAttributes& atts);
 
 		virtual void setDirty();
 		
 		void parse();
 
 		Folder*	currentFolder;
+		File*	lastParsedFile;
 		tstring fileName;
 		bool	bExists;
 		bool	bDirty;
 		int		parseState;
 		int		nestingLevel;
+		int		udNestingLevel;
+		int		udBase;
 };
 
 typedef std::list<Project*>		PROJECT_LIST;

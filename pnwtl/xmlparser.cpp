@@ -106,12 +106,20 @@ LPCTSTR XMLAttributes::getValue(LPCTSTR name) const
 // XMLParser - expat parser wrapper...
 //////////////////////////////////////////////////////////
 
-XMLParser::XMLParser()
+XMLParser::XMLParser(bool namespaceAware)
 {
 	m_pState = NULL;
 	m_szFilename = NULL;
 	
-	m_parser = XML_ParserCreate(NULL);
+	if(namespaceAware)
+	{
+		m_parser = XML_ParserCreateNS(NULL, _T(':'));
+	}
+	else
+	{
+		m_parser = XML_ParserCreate(NULL);
+	}
+	
 	XML_SetElementHandler(m_parser, XMLParserStartElement, XMLParserEndElement);
 	XML_SetCharacterDataHandler(m_parser, XMLParserCharacterData);
 }
