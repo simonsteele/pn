@@ -195,39 +195,33 @@ class CMRUMenu : public CMRUList
 		CSPopupMenu	m_Menu;
 };
 
-/**
- * @class CDropDownButton
- * Most of the credit for this class goes to the collective authors of CColorButton
- * which can be found at http://www.codeproject.com/wtl/wtlcolorbutton.asp
- * Who'd have thought that to have a themed button with a drop-down arrow on it would
- * require such a ridiculous amount of code. Gotta love Windows programming.
- */
-class CDropDownButton : public CWindowImpl <CDropDownButton>,  public CThemeImpl <CDropDownButton>
+template <class T>
+class CXPButton : public CWindowImpl <T>,  public CThemeImpl <CXPButton>
 {
+	typedef CXPButton<T> thisClass;
 	public:
-		BEGIN_MSG_MAP(CDropDownButton)
-			CHAIN_MSG_MAP (CThemeImpl <CDropDownButton>)
+		BEGIN_MSG_MAP(thisClass)
+			CHAIN_MSG_MAP (CThemeImpl <CXPButton>)
 			MESSAGE_HANDLER (OCM__BASE + WM_DRAWITEM, OnDrawItem)
 			MESSAGE_HANDLER (WM_MOUSEMOVE, OnMouseMove)
 			MESSAGE_HANDLER (WM_MOUSELEAVE, OnMouseLeave)
 		END_MSG_MAP()
 
-		CDropDownButton()
+		CXPButton()
 		{
 			m_bMouseOver = false;
+			m_hTheme = NULL;
 		}
 
 		BOOL SubclassWindow (HWND hWnd)
 		{
-			CWindowImpl <CDropDownButton>::SubclassWindow (hWnd);
+			CWindowImpl <T>::SubclassWindow (hWnd);
 			ModifyStyle (0, BS_OWNERDRAW);
 			OpenThemeData (L"Button");
 			return TRUE;
 		}
 
 	protected:
-		CDC		m_MemDC;
-		HBITMAP m_hOldBmp;
 		bool	m_bMouseOver;
 
 		LRESULT OnMouseLeave (UINT uMsg, WPARAM wParam, 
@@ -262,7 +256,7 @@ class CDropDownButton : public CWindowImpl <CDropDownButton>,  public CThemeImpl
 		LRESULT OnDrawItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 		{
 			LPDRAWITEMSTRUCT lpItem = (LPDRAWITEMSTRUCT) lParam;
-			CDC dc (lpItem ->hDC);
+			CDCHandle dc (lpItem ->hDC);
 
 			// Get data about the request
 			UINT uState = lpItem ->itemState;
@@ -302,17 +296,18 @@ class CDropDownButton : public CWindowImpl <CDropDownButton>,  public CThemeImpl
 					rcDraw .OffsetRect (1, 1);
 			}
 
-			// Draw the arrow
+			// Draw the content
 			{
-				CRect rcArrow;
+				CRect rcContent;
 				
-				rcArrow.left   = rcDraw.left + (rcDraw.Width() / 2 - 2);
-				rcArrow.top    = (rcDraw.bottom + rcDraw.top) / 2 - 2 / 2;
-				rcArrow.right  = rcArrow.left + 4;
-				rcArrow.bottom = (rcDraw .bottom + rcDraw .top) / 2 + 2 / 2;
+				// This may be too arrow specific, it may be refined in the future...
+				rcContent.left   = rcDraw.left + (rcDraw.Width() / 2 - 2);
+				rcContent.top    = (rcDraw.bottom + rcDraw.top) / 2 - 2 / 2;
+				rcContent.right  = rcContent.left + 4;
+				rcContent.bottom = (rcDraw .bottom + rcDraw .top) / 2 + 2 / 2;
 
-				DrawArrow (dc, rcArrow, 0, 
-					(uState & ODS_DISABLED) ? ::GetSysColor (COLOR_GRAYTEXT) : RGB (0,0,0));
+				T* pT = static_cast<T*>(this);
+				pT->DrawContent (dc, rcContent, uState);
 			}
 
 			if ((uState & ODS_FOCUS) != 0)
@@ -324,8 +319,43 @@ class CDropDownButton : public CWindowImpl <CDropDownButton>,  public CThemeImpl
 
 			return 1;
 		}
+};
 
-		void DrawArrow (CDC &dc, const RECT &rect, 
+/**
+ * @class CDropDownButton
+ * Most of the credit for this class goes to the collective authors of CColorButton
+ * which can be found at http://www.codeproject.com/wtl/wtlcolorbutton.asp
+ * Who'd have thought that to have a themed button with a drop-down arrow on it would
+ * require such a ridiculous amount of code. Gotta love Windows programming.
+ */
+class CArrowButton : public CXPButton <CArrowButton>
+{
+	public:
+		typedef enum {abdDown = 0, abdUp, abdLeft, abdRight} EABDirection;
+
+		CArrowButton()
+		{
+			m_direction = abdDown;
+		}
+
+		CArrowButton(EABDirection direction)
+		{
+			SetDirection(direction);
+		}
+
+		void SetDirection(EABDirection direction)
+		{
+			m_direction = direction;
+		}
+
+		void DrawContent(CDCHandle &dc, const RECT &rect, UINT uState)
+		{
+			DrawArrow(dc, rect, m_direction, 
+				(uState & ODS_DISABLED) ? ::GetSysColor (COLOR_GRAYTEXT) : RGB (0,0,0) );
+		}
+
+	protected:
+		void DrawArrow (CDCHandle &dc, const RECT &rect, 
 			int iDirection, COLORREF clrArrow)
 		{
 			POINT ptsArrow[3];
@@ -390,8 +420,14 @@ class CDropDownButton : public CWindowImpl <CDropDownButton>,  public CThemeImpl
 
 			dc .SelectBrush (hbrOld);
 			dc .SelectPen (hpenOld);
+
+			penArrow.DeleteObject();
+			brArrow.DeleteObject();
 			return;
 		}
+
+	protected:
+		EABDirection m_direction;
 };
 
 /**
