@@ -65,7 +65,7 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 {
 	public:
-		COptionsPageStyle(SchemeConfigParser* pSchemes) : m_pSchemes(pSchemes){}
+		COptionsPageStyle(SchemeConfigParser* pSchemes) : m_pSchemes(pSchemes), m_bDirty(false) {}
 
 		BEGIN_MSG_MAP(COptionsPageStyle)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -77,6 +77,8 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 		virtual void OnCancel();
 		virtual void OnInitialise();
 		virtual LPCTSTR GetTreePosition();
+
+		bool IsDirty();
 
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -92,6 +94,8 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 		CButton			m_bold;
 		CButton			m_italic;
 		CButton			m_underline;
+
+		bool			m_bDirty;
 
 		SchemeConfigParser* m_pSchemes;
 };
@@ -278,6 +282,8 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 		virtual void OnOK();
 		virtual LPCTSTR GetTreePosition();
 
+		bool IsDirty();
+
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -289,6 +295,7 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 		SchemeConfigParser* m_pSchemes;
 		CTabPageStyles		m_stylestab;
 		CTabPageKeywords	m_keywordstab;
+		bool				m_bDirty;
 };
 
 /**
@@ -366,6 +373,7 @@ class COptionsPageNewFiles : public COptionsPageImpl<COptionsPageNewFiles>
 			COMMAND_HANDLER(IDC_SMARTSTART_EDITBUTTON, BN_CLICKED, OnEditClicked)
 			COMMAND_HANDLER(IDC_SMARTSTART_REMOVEBUTTON, BN_CLICKED, OnRemoveClicked)
 			COMMAND_HANDLER(IDC_SMARTSTART_ADDBUTTON, BN_CLICKED, OnAddClicked)
+			COMMAND_HANDLER(IDC_SMARTSTART_ENABLECHECK, BN_CLICKED, OnEnabledChanged)
 			NOTIFY_HANDLER(IDC_SMARTSTART_LIST, LVN_KEYDOWN, OnListKeyDown);
 			NOTIFY_HANDLER(IDC_SMARTSTART_LIST, NM_CLICK, OnListClicked)
 			NOTIFY_HANDLER(IDC_SMARTSTART_LIST, NM_DBLCLK, OnListDblClicked)
@@ -383,6 +391,7 @@ class COptionsPageNewFiles : public COptionsPageImpl<COptionsPageNewFiles>
 		LRESULT OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnEnabledChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnListKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 		LRESULT OnListClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 		LRESULT OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
@@ -395,6 +404,7 @@ class COptionsPageNewFiles : public COptionsPageImpl<COptionsPageNewFiles>
 		CListViewCtrl		m_list;
 		SchemeConfigParser*	m_pSchemes;
 		CComboBox			m_combo;
+		CButton				m_ssCheck;
 };
 
 #endif

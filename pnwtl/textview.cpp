@@ -18,7 +18,8 @@ CTextView::CTextView() : baseClass()
 	m_pLastScheme = NULL;
 	m_waitOnBookmarkNo = FALSE;
 	m_encType = eUnknown;
-	m_bSmartStart = true;
+	
+	m_bSmartStart = COptionsManager::GetInstance()->Get(PNSK_EDITOR, _T("SmartStart"), true);
 }
 
 BOOL CTextView::PreTranslateMessage(MSG* pMsg)

@@ -36,7 +36,9 @@ COutputView::~COutputView()
 
 /**
  * Finds the full extent of the text which is styled with "style" and
- * contains the position startPos.
+ * contains the position startPos. This tries to avoid going before the
+ * start of the line and after the end of the line because we only do
+ * line matches anyway at the moment.
  */
 void COutputView::ExtendStyleRange(int startPos, int style, TextRange* tr)
 {
@@ -47,7 +49,8 @@ void COutputView::ExtendStyleRange(int startPos, int style, TextRange* tr)
 	
 	while( startRange >= 0 )
 	{
-		if(GetStyleAt(startRange) != style)
+		char c = GetCharAt(startRange);
+		if(GetStyleAt(startRange) != style || c == '\n' || c == '\r')
 			break;
 		startRange--;
 	}
@@ -56,11 +59,16 @@ void COutputView::ExtendStyleRange(int startPos, int style, TextRange* tr)
 	{
 		if(GetStyleAt(endRange) != style)
 			break;
+		
 		endRange++;
+		
+		char c = GetCharAt(endRange-1);
+		if( c == '\n' || c == '\r' )
+			break;
 	}
 
 	tr->chrg.cpMin = startRange + 1;
-	tr->chrg.cpMax = endRange - 1;
+	tr->chrg.cpMax = endRange /* - 1*/;
 }
 
 /**
@@ -69,8 +77,10 @@ void COutputView::ExtendStyleRange(int startPos, int style, TextRange* tr)
  * @param position - position of the character clicked.
  * @param reDef - Regular Expression pattern definition.
  */
-void COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
+bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 {
+	bool bRet = false;
+
 	TextRange tr;
 				
 	ExtendStyleRange(position, style, &tr);
@@ -132,9 +142,13 @@ void COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 				}
 			}
 		}
+
+		bRet = true;
 	}
 
 	delete [] tr.lpstrText;
+
+	return bRet;
 }
 
 /**
@@ -148,17 +162,19 @@ void COutputView::HandleCustomError(int style, int position)
 /**
  * @brief Builds a regular expression object from reDef and then calls HandleREError.
  */
-void COutputView::BuildAndHandleREError(int style, int position, const char* reDef)
+bool COutputView::BuildAndHandleREError(int style, int position, const char* reDef)
 {
 	try
 	{
 		PCRE::RegExp re(reDef);
-		HandleREError(re, style, position);
+		return HandleREError(re, style, position);
 	}
 	catch (PCRE::REException& ex)
 	{
 		::MessageBox(NULL, ex.GetMessage(), "PN2 - Regular Expression Error", MB_OK);
 	}
+
+	return false;
 }
 
 /**
@@ -173,6 +189,8 @@ void COutputView::HandleGCCError(int style, int position)
 /**
  * @brief Parse Borland C++ errors, warnings and resource compiler warnings...
  *
+ * Also handle lcc-win32 errors.
+ *
  * Error E2034 clippert.cpp 207: message...
  * Warning W8070 clippert.cpp 208: message...
  * Error resources.rc 14 18: message (column line:)
@@ -180,24 +198,54 @@ void COutputView::HandleGCCError(int style, int position)
 void COutputView::HandleBorlandCPPError(int style, int position)
 {
 	// Explanation of this RE: http://www.pnotepad.org/devlog/archives/000086.html
-	BuildAndHandleREError(style, position, "(Error|Warning) ((E|W)[0-9]{4} )?(?U)(?P<f>.+) ((?P<c>[0-9]+) )?(?P<l>[0-9]+): [^\\s]");
+	
+	if( !BuildAndHandleREError(style, position, "(Error|Warning) ((E|W)[0-9]{4} )?(?U)(?P<f>.+) ((?P<c>[0-9]+) )?(?P<l>[0-9]+): [^\\s]") )
+	{
+		// Didn't match borland C++, try lcc-win32:
+		BuildAndHandleREError(style, position, "(Error|Warning) (?P<f>.+): (?P<l>[0-9]+) .");
+	}
 }
 
+/**
+ * @brief Parse perl errors...
+ *
+ * Perl errors are not anchored to the start of the line, beginning with "at".
+ * syntax error at P:\tex\packages\authorindex.pl line 103, near "){"
+ * String found where operator expected at P:\tex\packages\authorindex.pl line 110
+ * Bareword "AUXFILE" not allowed while "strict subs" in use at P:\tex\packages\authorindex.pl line 100
+ *
+ * It might be nice in the future to handle the (near "expression") part of 
+ * the string - although perhaps un-necessary.
+ */
+void COutputView::HandlePerlError(int style, int position)
+{
+	BuildAndHandleREError(style, position, "at (?P<f>.+) line (?P<l>[0-9]+)");
+}
+
+/**
+ * Handle when a hotspot is clicked.
+ */
 LRESULT COutputView::OnHotSpotClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
 	if(!m_bCustom)
 	{
 		switch(wParam)
 		{
-			case /*SCE_ERR_GCC*/ 2:
+			case SCE_ERR_GCC:
 			{
 				HandleGCCError(wParam, lParam);
 			}
 			break;
 
-			case 5: // Borland C++
+			case SCE_ERR_BORLAND: // Borland C++
 			{
 				HandleBorlandCPPError(wParam, lParam);
+			}
+			break;
+
+			case SCE_ERR_PERL:
+			{
+				HandlePerlError(wParam, lParam);
 			}
 			break;
 		}
@@ -272,6 +320,10 @@ int COutputView::HandleNotify(LPARAM lParam)
 	SCNotification *scn = (SCNotification*)lParam;
 	if( scn->nmhdr.code == SCN_HOTSPOTCLICK )
 	{
+		// Ignore if Ctrl is pressed...
+		if( (((SCNotification*)lParam)->modifiers & SCMOD_CTRL) != 0 )
+			return baseClass::HandleNotify(lParam);
+
 		int style = GetStyleAt(scn->position);
 		PostMessage(PN_HANDLEHSCLICK, style, scn->position);
 		return 0;

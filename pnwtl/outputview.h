@@ -59,12 +59,12 @@ protected:
 	// Built-in error handlers...
 	void HandleGCCError(int style, int position);
 	void HandleBorlandCPPError(int style, int position);
-	
+	void HandlePerlError(int style, int position);
 	
 	void HandleCustomError(int style, int position);
 
-	void HandleREError(PCRE::RegExp& re, int style, int position);
-	void BuildAndHandleREError(int style, int position, const char* reDef);
+	bool HandleREError(PCRE::RegExp& re, int style, int position);
+	bool BuildAndHandleREError(int style, int position, const char* reDef);
 
 	void CustomColouriseLine(ScintillaAccessor& styler, char *lineBuffer, int length, int endLine);
 	void HandleStyleNeeded(ScintillaAccessor& styler, int startPos, int length);

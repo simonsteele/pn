@@ -636,30 +636,31 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 
 	SchemeConfigParser		schemeconfig;
 	
-	COptionsPageStyle		page(&schemeconfig);
-	COptionsPageSchemes		page2(&schemeconfig);
-	COptionsPageNewFiles	page3(&schemeconfig);
-	COptionsPageTools		page4(&schemeconfig);
+	COptionsPageStyle		pageStyle(&schemeconfig);
+	COptionsPageSchemes		pageSchemes(&schemeconfig);
+	COptionsPageNewFiles	pageNewFiles(&schemeconfig);
+	COptionsPageTools		pageTools(&schemeconfig);
 
 	schemeconfig.LoadConfig(pSM->GetPath(), pSM->GetCompiledPath());
 
 	COptionsDialog options;
 	options.AddPage(&general);
-	options.AddPage(&page);
-	options.AddPage(&page2);
-	options.AddPage(&page3);
-	options.AddPage(&page4);
+	options.AddPage(&pageStyle);
+	options.AddPage(&pageSchemes);
+	options.AddPage(&pageNewFiles);
+	options.AddPage(&pageTools);
 
 	options.SetInitialPage(&general);
-	
-	bool bOK = options.DoModal() == IDOK;
 
-	if(bOK)
+	if( options.DoModal() == IDOK )
 	{
+		///@todo more dirty checking...
+
 		// pass in true to cache menu resources.
 		SchemeToolsManager::GetInstance()->ReLoad(true);
 
-		CSchemeManager::GetInstance()->Compile();
+		if( pageStyle.IsDirty() || pageSchemes.IsDirty() )
+            CSchemeManager::GetInstance()->Compile();
 
 		PerformChildEnum(ChildOptionsUpdateNotify);
 	}

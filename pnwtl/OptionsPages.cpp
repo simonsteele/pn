@@ -825,6 +825,11 @@ LRESULT CTabPageStyles::OnResetAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 // COptionsPageStyle
 //////////////////////////////////////////////////////////////////////////////
 
+bool COptionsPageStyle::IsDirty()
+{
+	return m_bDirty;
+}
+
 LRESULT COptionsPageStyle::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	m_FontCombo.SubclassWindow(GetDlgItem(IDC_FONT_COMBO));
@@ -866,6 +871,9 @@ void COptionsPageStyle::OnInitialise()
 		m_bold.SetCheck(pStyle->Bold ? BST_CHECKED : BST_UNCHECKED);
 		m_italic.SetCheck(pStyle->Italic ? BST_CHECKED : BST_UNCHECKED);
 		m_underline.SetCheck(pStyle->Underline ? BST_CHECKED : BST_UNCHECKED);
+
+		// Simple dirty checking - if the page is shown we rebuild.
+		m_bDirty = true;
 	}
 }
 
@@ -955,6 +963,12 @@ StyleDetails* COptionsPageStyle::GetDefault(bool& bIsCustom)
 COptionsPageSchemes::COptionsPageSchemes(SchemeConfigParser* pSchemes) : COptionsPageImpl<COptionsPageSchemes>()
 {
 	m_pSchemes = pSchemes;
+	m_bDirty = false;
+}
+
+bool COptionsPageSchemes::IsDirty()
+{
+	return m_bDirty;
 }
 
 // Dialog Message Hook stuff...
@@ -1013,6 +1027,8 @@ void COptionsPageSchemes::OnInitialise()
 		m_combo.SetCurSel(0);
 		Update();
 	}
+
+	m_bDirty = true;
 }
 
 void COptionsPageSchemes::OnOK()
@@ -1358,11 +1374,17 @@ void COptionsPageNewFiles::AddItem(LPCTSTR key, LPCTSTR schemename)
 	}
 }
 
+/**
+ * Manage the enabled state of the controls.
+ */
 void COptionsPageNewFiles::EnableButtons()
 {
+	bool bSS = m_ssCheck.GetCheck() == BST_CHECKED;
 	int iSI = m_list.GetSelectedIndex();
-	::EnableWindow(GetDlgItem(IDC_SMARTSTART_EDITBUTTON), iSI != -1);
-	::EnableWindow(GetDlgItem(IDC_SMARTSTART_REMOVEBUTTON), iSI != -1);
+	m_list.EnableWindow(bSS);
+	::EnableWindow(GetDlgItem(IDC_SMARTSTART_ADDBUTTON), bSS);
+	::EnableWindow(GetDlgItem(IDC_SMARTSTART_EDITBUTTON), bSS && (iSI != -1));
+	::EnableWindow(GetDlgItem(IDC_SMARTSTART_REMOVEBUTTON), bSS && (iSI != -1));
 }
 
 void COptionsPageNewFiles::FreeResources()
@@ -1379,7 +1401,8 @@ void COptionsPageNewFiles::FreeResources()
 
 void COptionsPageNewFiles::OnInitialise()
 {
-	tstring strNewScheme = COptionsManager::GetInstance()->Get(PNSK_EDITOR, _T("NewScheme"), _T("Plain Text"));
+	COptionsManager* pOM = COptionsManager::GetInstance();
+	tstring strNewScheme = pOM->Get(PNSK_EDITOR, _T("NewScheme"), _T("Plain Text"));
 
 	// Populate and initialise schemes combo.
 	int index = m_combo.AddString(_T("Plain Text"));
@@ -1401,11 +1424,16 @@ void COptionsPageNewFiles::OnInitialise()
 
 	// Populate SmartStart list.
 	STRING_MAP& smap = SmartStart::GetInstance()->GetMap();
+	///@todo Sort the SmartStart list.
 	
 	for(SM_IT j = smap.begin(); j != smap.end(); ++j)
 	{
 		AddItem((*j).first.c_str(), (*j).second.c_str());
 	}
+
+	m_ssCheck.SetCheck( 
+		pOM->Get(PNSK_EDITOR, _T("SmartStart"), true) ? BST_CHECKED : BST_UNCHECKED
+	);
 	
 	EnableButtons();
 }
@@ -1443,6 +1471,10 @@ void COptionsPageNewFiles::OnOK()
 			else
 				wt = _T("Plain Text");
 			COptionsManager::GetInstance()->Set(PNSK_EDITOR, _T("NewScheme"), wt);
+
+			// Enable SmartStart?
+			CButton button(GetDlgItem(IDC_SMARTSTART_ENABLECHECK));
+			COptionsManager::GetInstance()->Set(PNSK_EDITOR, _T("SmartStart"), button.GetCheck() == BST_CHECKED);
 		}
 
 		FreeResources();
@@ -1470,6 +1502,8 @@ LRESULT COptionsPageNewFiles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 	m_list.InsertColumn(1, _T("Scheme"), LVCFMT_LEFT, (rc.Width() / 3) - 20, 0);
 
 	m_combo.Attach(GetDlgItem(IDC_NEW_SCHEMECOMBO));
+
+	m_ssCheck.Attach(GetDlgItem(IDC_SMARTSTART_ENABLECHECK));
 
 	return 0;
 }
@@ -1541,6 +1575,13 @@ LRESULT COptionsPageNewFiles::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/
 LRESULT COptionsPageNewFiles::OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	m_bDirty = true;
+	return 0;
+}
+
+LRESULT COptionsPageNewFiles::OnEnabledChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	m_bDirty = true;
+	EnableButtons();
 	return 0;
 }
 
