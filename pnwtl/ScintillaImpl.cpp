@@ -432,101 +432,104 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 	int				bRet = fnNotFound;
 	bool			checkFoundPos = true;
 
-	int lenFind = UnSlashAsNeeded(pOptions->FindText, pOptions->UseSlashes, pOptions->UseRegExp);
-	if(lenFind > 0)
+	CString localFindText = pOptions->FindText;
+	int lenFind = UnSlashAsNeeded(localFindText, pOptions->UseSlashes, pOptions->UseRegExp);
+	
+	if(lenFind == 0)
+		return -1;
+	
+	pOptions->Found = false;
+
+	GetSel(cr);
+
+	///@todo SCFIND_WORDSTART
+	int flags = (pOptions->MatchWholeWord ? SCFIND_WHOLEWORD : 0) |
+				(pOptions->MatchCase ? SCFIND_MATCHCASE : 0) |
+				(pOptions->UseRegExp ? SCFIND_REGEXP : 0);
+
+	///@todo set find pos on selchange/edit update
+	if( pOptions->FindText.Compare( lastFindDetails.findPhrase.c_str() ) != 0 ||
+		flags != lastFindDetails.flags)
 	{
-		pOptions->Found = false;
+		// Find text has changed, set the startPos value, 
+		// and don't check to see if we wrapped this time.
+		//lastFindDetails.startPos = GetCurrentPos();
+		lastFindDetails.findPhrase = pOptions->FindText;
+		lastFindDetails.flags = flags;
+		lastFindDetails.result = fnNotFound;
+		lastFindDetails.lastPos = -1;
+		checkFoundPos = false;
+	}
+	else
+		checkFoundPos = (lastFindDetails.lastPos == cr.cpMin);
 
-		GetSel(cr);
+	USES_CONVERSION;
+	#ifdef CT2A
+	const char* findtext = CT2A(localFindText);
+	#else
+	const char* findtext = T2A(const_cast<TCHAR*>( (LPCTSTR)localFindText ));
+	#endif
 
-		///@todo SCFIND_WORDSTART
-		int flags = (pOptions->MatchWholeWord ? SCFIND_WHOLEWORD : 0) |
-					(pOptions->MatchCase ? SCFIND_MATCHCASE : 0) |
-					(pOptions->UseRegExp ? SCFIND_REGEXP : 0);
-		///@todo set find pos on selchange/edit update
-		if( pOptions->FindText.Compare( lastFindDetails.findPhrase.c_str() ) != 0 ||
-			flags != lastFindDetails.flags)
-		{
-			// Find text has changed, set the startPos value, 
-			// and don't check to see if we wrapped this time.
-			//lastFindDetails.startPos = GetCurrentPos();
-			lastFindDetails.findPhrase = pOptions->FindText;
-			lastFindDetails.flags = flags;
-			lastFindDetails.result = fnNotFound;
-			lastFindDetails.lastPos = -1;
-			checkFoundPos = false;
-		}
-		else
-			checkFoundPos = (lastFindDetails.lastPos == cr.cpMin);
+	if(!pOptions->Direction)
+	{
+		startPosition = cr.cpMin - 1;
+		endPosition = 0;
+	}
+	else
+	{
+		startPosition = cr.cpMax;
+		endPosition = GetLength();
+	}
 
-		USES_CONVERSION;
-		#ifdef CT2A
-		const char* findtext = CT2A(pOptions->FindText);
-		#else
-		const char* findtext = T2A(const_cast<TCHAR*>( (LPCTSTR)pOptions->FindText ));
-		#endif
+	SetTargetStart(startPosition);
+	SetTargetEnd(endPosition);
+	SetSearchFlags(flags);
+	
+	int posFind = SearchInTarget(lenFind, findtext);
 
+	if(posFind == -1 && pOptions->Loop)
+	{
 		if(!pOptions->Direction)
 		{
-			startPosition = cr.cpMin - 1;
+			startPosition = GetLength();
 			endPosition = 0;
 		}
 		else
 		{
-			startPosition = cr.cpMax;
+			startPosition = 0;
 			endPosition = GetLength();
 		}
 
 		SetTargetStart(startPosition);
 		SetTargetEnd(endPosition);
-		SetSearchFlags(flags);
-		
-		int posFind = SearchInTarget(lenFind, findtext);
+		posFind = SearchInTarget(lenFind, findtext);
+	}
 
-		if(posFind == -1 && pOptions->Loop)
+	if(posFind != -1)
+	{
+		int start = GetTargetStart();
+		int end = GetTargetEnd();
+		if( checkFoundPos && lastFindDetails.result == fnFound &&
+			lastFindDetails.startPos == start)
 		{
-			if(!pOptions->Direction)
-			{
-				startPosition = GetLength();
-				endPosition = 0;
-			}
-			else
-			{
-				startPosition = 0;
-				endPosition = GetLength();
-			}
-
-			SetTargetStart(startPosition);
-			SetTargetEnd(endPosition);
-			posFind = SearchInTarget(lenFind, findtext);
+			pOptions->Found = true;
+			bRet = fnReachedStart;
 		}
-
-		if(posFind != -1)
+		else
 		{
-			int start = GetTargetStart();
-			int end = GetTargetEnd();
-			if( checkFoundPos && lastFindDetails.result == fnFound &&
-				lastFindDetails.startPos == start)
-			{
-				pOptions->Found = true;
-				bRet = fnReachedStart;
-			}
-			else
-			{
-				EnsureRangeVisible(start, end);
-				SetSel(start, end);
-				pOptions->Found = true;
-				bRet = fnFound;
-			}
+			EnsureRangeVisible(start, end);
+			SetSel(start, end);
+			pOptions->Found = true;
+			bRet = fnFound;
 		}
+	}
 
-		lastFindDetails.result = bRet;
-		lastFindDetails.lastPos = posFind;
-		if( checkFoundPos == false )
-		{
-			GetSel(cr);
-			lastFindDetails.startPos = cr.cpMin;
-		}
+	lastFindDetails.result = bRet;
+	lastFindDetails.lastPos = posFind;
+	if( checkFoundPos == false )
+	{
+		GetSel(cr);
+		lastFindDetails.startPos = cr.cpMin;
 	}
 
 	return bRet;
@@ -615,7 +618,7 @@ bool CScintillaImpl::ReplaceOnce(SReplaceOptions* pOptions)
 		int lenReplaced = replaceLen;
 		
 		if (pOptions->UseRegExp)
-			ReplaceTargetRE(replaceLen, (LPCTSTR)replaceTarget);
+			lenReplaced = ReplaceTargetRE(replaceLen, (LPCTSTR)replaceTarget);
 		else
 			ReplaceTarget(replaceLen, (LPCTSTR)replaceTarget);
 		

@@ -205,7 +205,7 @@ protected:
 
 	bool EditorChanged()
 	{
-		return lastEditor == CChildFrame::FromHandle(GetCurrentEditor());
+		return lastEditor != CChildFrame::FromHandle(GetCurrentEditor());
 	}
 
 	CChildFrame* GetCurrentEditorWnd()
