@@ -28,6 +28,10 @@
  *                         view.
  *            01/04/2001 - Added the file browse helper (hopefully). Success!
  *            11/04/2001 - Added full-size toggle to helper window menu.
+ *            10/04/2003 - Woo! Just under two years later. Fixed a Setup bug
+ *                         where the projects directory could be set to the
+ *                         clips directory. Also fixed the renaming current file
+ *                         problem. SF Bug: #704375.
  *
  ******************************************************************************}
 
@@ -298,7 +302,7 @@ begin
   Begin
     If (not DirExists(locpath + 'Clips')) Then
       MkDir(locpath + 'Clips');
-    ProjDir := locpath + 'Clips\';
+    ClipDir := locpath + 'Clips\';
   End;
   if not DirExists(SchemeDir) Then
   begin
@@ -754,10 +758,11 @@ var ChangeNode : tTreeNode;
     SelItem, nItems, n : Integer;
     prIni : tIniFile;
     itemData : PChar;
-    orgFile, fstr : String;
+    orgFile, fstr, newpath : String;
     rFile : File;
 Begin { ProjectsEdited }
-   ChangeNode := Projects.Selected;
+   //ChangeNode := Projects.Selected;
+   ChangeNode := CurrentNode; // Might fix that big bad bug...
    If ChangeNode.Parent = Nil then
    begin
      {Rename Projects}
@@ -780,11 +785,12 @@ Begin { ProjectsEdited }
        fstr := prIni.ReadString('Files', 'File' + inttostr(n), 'error');
        if fstr = orgfile Then
        begin
-         prIni.WriteString('files', 'File' + inttostr(n),
-                                                  ExtractFilePath(orgfile) + S);
-         StrPCopy(itemData,fstr);
+         newpath := ExtractFilePath(orgfile) + S;
+         prIni.WriteString('files', 'File' + inttostr(n), newpath);
+         StrPCopy(itemData, newpath);
          AssignFile(rfile, orgfile);
-         Rename(rfile, ExtractFilePath(orgfile) + S);
+         Rename(rfile, newpath);
+         Break;
        end;
      end; { For n :=.. }
      prIni.Free;
