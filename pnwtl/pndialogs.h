@@ -238,57 +238,59 @@ class COptionsDialog : public CDialogImpl<COptionsDialog>
 		HTREEITEM AddTreeEntry(const char* title, HTREEITEM context);
 };
 
-class CTestPage : public COptionsPageImpl<CTestPage>
-{
-	typedef COptionsPageImpl<CTestPage> baseClass;
+#include "include/fontcombo.h"
 
+class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
+{
 	public:
-		BEGIN_MSG_MAP(CTestPage)
+		BEGIN_MSG_MAP(COptionsPageStyle)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
-		enum { IDD = IDD_TESTPAGE };
+		enum { IDD = IDD_PAGE_STYLE };
 
 		virtual void OnOK()
 		{
-			::OutputDebugString(_T("CTestPage::OnOK\n"));
+			::OutputDebugString(_T("COptionsPageStyle::OnOK\n"));
 		}
 
 		virtual void OnCancel()
 		{
-			::OutputDebugString(_T("CTestPage::OnCancel\n"));
+			::OutputDebugString(_T("COptionsPageStyle::OnCancel\n"));
 		}
 		
 		virtual void OnInitialise()
 		{
-			::OutputDebugString(_T("CTestPage::OnInitialise\n"));
+			::OutputDebugString(_T("COptionsPageStyle::OnInitialise\n"));
+			m_FontCombo.SelectString(0, _T("Lucida Console"));
+			m_SizeCombo.SelectString(0, _T("10"));
 		}
 
 		virtual LPCTSTR GetTreePosition()
 		{
-			return _T("Options\\Test\\Test Page 1");
+			return _T("Style");
 		}
 
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 		{
-			HWND hProgress = GetDlgItem(IDC_PROGRESS1);
-			::SendMessage(hProgress, PBM_SETRANGE, 0, MAKELPARAM(0, 10));
-			::SendMessage(hProgress, PBM_SETPOS, 7, 0);
+			m_FontCombo.SubclassWindow(GetDlgItem(IDC_FONT_COMBO));
+			m_SizeCombo = GetDlgItem(IDC_FONTSIZE_COMBO);
+			
+			m_SizeCombo.AddString(_T("6"));
+			m_SizeCombo.AddString(_T("8"));
+			m_SizeCombo.AddString(_T("10"));
+			m_SizeCombo.AddString(_T("12"));
+			m_SizeCombo.AddString(_T("14"));
+			m_SizeCombo.AddString(_T("16"));
+			m_SizeCombo.AddString(_T("18"));
+			
 
 			return 0;
 		}
-};
 
-class CTestPage2 : public COptionsPageImpl<CTestPage2>
-{
-	public:
-		enum { IDD = IDD_TESTPAGE };
-
-		DECLARE_EMPTY_MSG_MAP()
-
-		virtual LPCTSTR GetTreePosition()
-		{
-			return _T("Options\\Test");
-		}
+	protected:
+		CFontCombo	m_FontCombo;
+		CComboBox	m_SizeCombo;
 };
 
 #endif

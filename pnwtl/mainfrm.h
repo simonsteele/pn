@@ -484,12 +484,10 @@ public:
 
 	LRESULT OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		CTestPage page;
-		CTestPage2 page2;
+		COptionsPageStyle page;
 
 		COptionsDialog options;
 		options.AddPage(&page);
-		options.AddPage(&page2);
 		options.DoModal();
 
 		return 0;

@@ -159,6 +159,7 @@ BEGIN
             MENUITEM SEPARATOR
             MENUITEM "&Convert...",                 ID_TOOLS_LECONVERT
         END
+        MENUITEM "&Options",                    245
     END
     POPUP "&Window"
     BEGIN
@@ -456,6 +457,7 @@ END
 
 IDB_EDITOR              BITMAP                  "res\\editor.bmp"
 IDR_TBR_EDIT            BITMAP                  "res\\edittbr.bmp"
+IDB_TRUETYPE_FONTTYPE   BITMAP                  "res\\font_tru.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -638,15 +640,17 @@ BEGIN
     LTEXT           "Static",IDC_PLACEHOLDER,102,6,240,168,NOT WS_VISIBLE
 END
 
-IDD_TESTPAGE DIALOGEX 0, 0, 240, 150
+IDD_PAGE_STYLE DIALOGEX 0, 0, 240, 150
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    GROUPBOX        "Static",IDC_STATIC,7,7,226,34
-    CONTROL         "",IDC_PROGRESS1,"msctls_progress32",WS_BORDER,7,52,226,
-                    15
-    PUSHBUTTON      "Button1",IDC_BUTTON1,24,94,54,29
-    EDITTEXT        IDC_EDIT1,117,106,106,21,ES_AUTOHSCROLL
+    LTEXT           "Basic Font:",IDC_STATIC,6,6,48,12
+    COMBOBOX        IDC_FONT_COMBO,54,6,132,120,CBS_DROPDOWNLIST | 
+                    CBS_OWNERDRAWFIXED | CBS_SORT | CBS_HASSTRINGS | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_FONTSIZE_COMBO,54,24,60,66,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Font Size:",IDC_STATIC,6,24,42,12
 END
 
 
@@ -690,12 +694,12 @@ BEGIN
         BOTTOMMARGIN, 196
     END
 
-    IDD_TESTPAGE, DIALOG
+    IDD_PAGE_STYLE, DIALOG
     BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 233
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 143
+        LEFTMARGIN, 2
+        RIGHTMARGIN, 237
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 148
     END
 END
 #endif    // APSTUDIO_INVOKED

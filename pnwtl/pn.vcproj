@@ -224,6 +224,9 @@
 				RelativePath=".\finddlg.h">
 			</File>
 			<File
+				RelativePath="include\fontcombo.h">
+			</File>
+			<File
 				RelativePath=".\fromhandle.h">
 			</File>
 			<File
@@ -270,6 +273,9 @@
 			Name="Resource Files"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
 			<File
+				RelativePath="res\bitmap1.bmp">
+			</File>
+			<File
 				RelativePath="res\dropdown.bmp">
 			</File>
 			<File
@@ -277,6 +283,9 @@
 			</File>
 			<File
 				RelativePath="res\edittbr.bmp">
+			</File>
+			<File
+				RelativePath="res\font_tru.bmp">
 			</File>
 			<File
 				RelativePath=".\res\pn.ico">
