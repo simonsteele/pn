@@ -149,7 +149,7 @@ public:
 	////////////////////////////////////////////////////
 	// Document Entries
 
-	void SetTitle(LPCTSTR sFullPath, LPCTSTR sFilePart = NULL, bool bModified = false);
+	void SetTitle(bool bModified = false);
 	tstring GetFileName(EGFNType type = FN_FULL);
 	LPCTSTR GetTitle();
 	bool GetModified();

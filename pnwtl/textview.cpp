@@ -9,6 +9,7 @@
  */
 
 #include "stdafx.h"
+#include "resource.h"
 #include "textview.h"
 #include "smartstart.h"
 #include "include/utf8_16.h"

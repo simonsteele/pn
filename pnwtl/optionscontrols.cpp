@@ -8,6 +8,7 @@
  * the conditions under which this source may be modified / distributed.
  */
 #include "stdafx.h"
+#include "resource.h"
 #include "optionscontrols.h"
 
 #include "schemeconfig.h"

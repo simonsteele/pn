@@ -9,10 +9,12 @@
  */
 
 #include "stdafx.h"
+#include "resource.h"
 #include "childfrm.h"
 #include "tools.h"
 #include "outputview.h"
 #include "exporters.h"
+#include "pndialogs.h"
 
 #if defined (_DEBUG)
 #define new DEBUG_NEW
@@ -219,14 +221,21 @@ void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 ////////////////////////////////////////////////////
 // Document Entries
 
-//void CChildFrame::SetTitle(LPCTSTR sFileName, bool bModified)
-void CChildFrame::SetTitle(LPCTSTR sFullPath, LPCTSTR sFilePart, bool bModified)
+void CChildFrame::SetTitle( bool bModified )
 {
-	tstring filepart;
-	tstring buf;
-	tstring tabbuf;
+	LPCTSTR sFullPath = m_FileName;
 
-	if( sFilePart == NULL )
+	tstring filepart;
+	
+	tstring title;
+	tstring tabTitle;
+
+	if(_tcschr(sFullPath, _T('<')) != 0)
+	{
+		// no filename yet...
+		title = tabTitle = _T("<new>");
+	}
+	else
 	{
 		if( _tcschr(sFullPath, _T('\\')) != NULL )
 		{
@@ -235,32 +244,31 @@ void CChildFrame::SetTitle(LPCTSTR sFullPath, LPCTSTR sFilePart, bool bModified)
 		}
 		else
 			filepart = sFullPath;
-	}
-	else
-		filepart = sFilePart;
+		
+		if( COptionsManager::GetInstance()->ShowFullPath )
+		{
+			title = sFullPath;
+			tabTitle = filepart;
+		}
+		else
+		{
+			title = filepart;
+			tabTitle = filepart;
+		}
 
-	if( COptionsManager::GetInstance()->ShowFullPath )
-	{
-		buf = sFullPath;
-		tabbuf = filepart;
-	}
-	else
-	{
-		buf = filepart;
-		tabbuf = filepart;
 	}
 
 	if(bModified)
 	{
-		buf += " *";
-		tabbuf += " *";
+		title += " *";
+		tabTitle += " *";
 	}
 
-	SetWindowText(buf.c_str());
-	SetTabText(tabbuf.c_str());
+	SetWindowText(title.c_str());
+	SetTabText(tabTitle.c_str());
 	SetTabToolTip(sFullPath);
 	
-	m_Title = filepart.c_str();
+	m_Title = sFullPath;
 
 	MDIRefreshMenu();
 }
@@ -377,7 +385,8 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		s_bFirstChild = false;
 	}
 
-	SetTitle(_T("<new>"));
+	m_FileName = _T("<new>");
+	SetTitle();
 
 	SetupToolbar();
 
@@ -468,11 +477,11 @@ LRESULT CChildFrame::OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 {
 	if(lParam == SCN_SAVEPOINTREACHED)
 	{
-		SetTitle(m_Title, NULL, false);
+		SetTitle();
 	}
 	else if(lParam == SCN_SAVEPOINTLEFT)
 	{
-		SetTitle(m_Title, NULL, true);
+		SetTitle(true);
 	}
 	else
 	{
@@ -926,8 +935,8 @@ void CChildFrame::PNOpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pSchem
 	if(m_view.Load(pathname, pScheme))
 	{
 		m_FileAge = FileAge(pathname);
-		SetTitle(pathname, filename);
 		m_FileName = pathname;
+		SetTitle();
 	}
 	else
 	{
@@ -947,13 +956,9 @@ void CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 		if(bStoreFilename)
 		{
 			m_FileAge = FileAge(pathname);
-
-			tstring fn;
-			CFileName(pathname).GetFileName(fn);
-
-			SetTitle(fn.c_str());
-
 			m_FileName = pathname;
+
+			SetTitle();			
 		}
 
 		if(bUpdateMRU)

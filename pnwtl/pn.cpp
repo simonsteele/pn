@@ -9,12 +9,13 @@
  */
 
 #include "stdafx.h"
+#include "resource.h"
 
 //#include "callback.h"
 
 #include "pnutils.h"
 
-#include "tools.h"
+//#include "tools.h"
 
 #include "MainFrm.h"
 

@@ -31,6 +31,7 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 			DDX_CHECK(IDC_OPT_USETABSCHECK, m_bUseTabs)
 			DDX_CHECK(IDC_OPT_LINENOSCHECK, m_bLineNos)
 			DDX_UINT(IDC_OPT_TABWIDTHEDIT, m_iTabWidth)
+			DDX_UINT(IDC_OPT_MRUCOUNT, m_iMRUSize)
 			DDX_CHECK(IDC_OPT_MAXCHECK, m_bMaximise)
 			DDX_CHECK(IDC_OPT_FULLPATHCHECK, m_bFullPath)
 		END_DDX_MAP()
@@ -48,6 +49,7 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 		BOOL m_bMaximise;
 		BOOL m_bFullPath;
 		UINT m_iTabWidth;
+		UINT m_iMRUSize;
 		EPNSaveFormat m_SaveFormat;
 };
 

@@ -9,6 +9,7 @@
  */
 
 #include "stdafx.h"
+#include "resource.h"
 #include "textview.h"
 #include "xmlparser.h"
 #include "smartstart.h"
@@ -27,9 +28,11 @@ SmartStart::SmartStart()
 		// Some simple defaults...
 		m_Map.insert(SM_VT(tstring(_T("#ifndef")), tstring(_T("cpp"))));
 		m_Map.insert(SM_VT(tstring(_T("#include")), tstring(_T("cpp"))));
+		m_Map.insert(SM_VT(tstring(_T("/*")), tstring(_T("cpp"))));
 		m_Map.insert(SM_VT(tstring(_T("unit")), tstring(_T("pascal"))));
 		m_Map.insert(SM_VT(tstring(_T("public class")), tstring(_T("csharp"))));
-		m_Map.insert(SM_VT(tstring(_T("<")), tstring(_T("web"))));
+		m_Map.insert(SM_VT(tstring(_T("<?")), tstring(_T("xml"))));
+		m_Map.insert(SM_VT(tstring(_T("<html")), tstring(_T("web"))));
 	}
 	else
 	{

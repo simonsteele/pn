@@ -9,8 +9,12 @@
  */
 
 #include "stdafx.h"
+#include "resource.h"
 #include "tools.h"
 #include "childfrm.h"
+
+#include "resource.h"
+#include "pndialogs.h" // for InputBox...
 
 #include <sstream>
 #include <fstream>

@@ -9,8 +9,10 @@
  */
 
 #include "stdafx.h"
+#include "resource.h"
 #include "OptionsDialogs.h"
 #include "SchemeConfig.h"
+#include "pndialogs.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // CToolEditorDialog

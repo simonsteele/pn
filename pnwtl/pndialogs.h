@@ -13,8 +13,6 @@
 #include <list>
 using std::list;
 
-#include "resource.h"
-
 /**
  * @class CPNFileDialogImpl
  * @brief Very simply adds handling for pipe (|) separated filters.

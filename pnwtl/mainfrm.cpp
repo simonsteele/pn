@@ -12,6 +12,7 @@
  */
 
 #include "stdafx.h"
+#include "resource.h"
 
 // Needed because we derive from it.
 #include "tools.h"			// External Tools
@@ -23,6 +24,7 @@
 #include "finddlg.h"		// Find Dialogs
 #include "OptionsPages.h"	// Options Pages
 #include "aboutdlg.h"		// About Dialog
+#include "pndialogs.h"		// Misc Dialogs.
 
 // Other stuff
 #include "SchemeConfig.h"	// Scheme Configuration
@@ -694,6 +696,9 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
             CSchemeManager::GetInstance()->Compile();
 
 		PerformChildEnum(ChildOptionsUpdateNotify);
+
+		m_RecentFiles.SetSize( COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("MRUSize"), 4) );
+		// m_RecentFiles.UpdateMenu(); - causes bug to show. please.fix.me.
 	}
 
 	return 0;

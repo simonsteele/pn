@@ -9,6 +9,7 @@
  */
 
 #include "stdafx.h"
+#include "resource.h"
 #include "OptionsPages.h"
 #include "OptionsDialogs.h"
 
@@ -39,6 +40,7 @@ void COptionsPageGeneral::OnOK()
 	options.LineEndings = m_SaveFormat;
 	options.MaximiseNew = m_bMaximise != FALSE;
 	options.ShowFullPath = m_bFullPath != FALSE;
+	options.Set(PNSK_INTERFACE, _T("MRUSize"), (int)m_iMRUSize);
 }
 
 void COptionsPageGeneral::OnInitialise()
@@ -51,6 +53,7 @@ void COptionsPageGeneral::OnInitialise()
 	m_SaveFormat = options.LineEndings;
 	m_bMaximise = options.MaximiseNew;
 	m_bFullPath = options.ShowFullPath;
+	m_iMRUSize = options.Get(PNSK_INTERFACE, _T("MRUSize"), 4);
 
 	CComboBox cb(GetDlgItem(IDC_OPT_LECOMBO));
 	for(int i = 0; i < cb.GetCount(); i++)

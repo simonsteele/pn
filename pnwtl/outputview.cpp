@@ -9,6 +9,7 @@
  */
 
 #include "stdafx.h"
+#include "resource.h"
 #include "outputview.h"
 #include "textview.h"
 #include "childfrm.h"

@@ -9,6 +9,7 @@
  */
 
 #include "stdafx.h"
+#include "resource.h"
 #include "pndialogs.h"
 
 CPNOpenDialog::CPNOpenDialog(LPCTSTR szFilter, LPCTSTR szPath) :

@@ -23,8 +23,6 @@
 #define PN_MDIACTIVATE		0x1
 #define TOOLS_RUNTOOL		0x2
 
-#include "resource.h"
-
 #include "pntypes.h"
 
 class ToolWrapper;
@@ -64,4 +62,3 @@ HWND GetCurrentEditor();
 #include "schemes.h"
 
 #include "pnutils.h"
-#include "pndialogs.h"

@@ -374,7 +374,7 @@ BEGIN
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
     ID_EDITOR_LINENOS       "Toggle line numbers display"
     IDS_ABOUTVERSIONSTRING  "Programmers Notepad 2\nv%s\n\nCopyright (c) 2002-2003 Simon Steele"
-    IDS_TOOLFORMATSTRINGS   "%f: File Name\n%n: File Name (no ext)\n%l: Current Line Number\n%?: Ask for parameters|%d: Path of File\n%c: Column\n%%: Percent Symbol"
+    IDS_TOOLFORMATSTRINGS   "%f: File Name\n%n: File Name (no ext)\n%l: Current Line Number\n%?: Ask for parameters|%d: Path of File\n%c: Column\n%%: Percent Symbol\n%w: Current word"
     IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c: Column"
 END
 
@@ -869,29 +869,32 @@ BEGIN
                     WS_VSCROLL | WS_TABSTOP
 END
 
-IDD_PAGE_GENERAL DIALOGEX 0, 0, 299, 168
+IDD_PAGE_GENERAL DIALOGEX 0, 0, 299, 200
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "Show Indentation Guides",IDC_OPT_INDENTGUIDESCHECK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,6,168,12
     CONTROL         "Show Line Numbers",IDC_OPT_LINENOSCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,18,78,138,12
+                    BS_AUTOCHECKBOX | WS_TABSTOP,18,97,138,12
     CONTROL         "Use the tab character for indentation",
                     IDC_OPT_USETABSCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,18,120,168,12
-    LTEXT           "Tab Width:",IDC_STATIC,18,138,48,12
-    EDITTEXT        IDC_OPT_TABWIDTHEDIT,66,138,40,14,ES_AUTOHSCROLL
-    LTEXT           "Line Endings:",IDC_STATIC,18,96,48,12
-    COMBOBOX        IDC_OPT_LECOMBO,66,96,102,66,CBS_DROPDOWNLIST | CBS_SORT | 
-                    WS_VSCROLL | WS_TABSTOP
+                    WS_TABSTOP,18,138,168,12
+    LTEXT           "Tab Width:",IDC_STATIC,18,156,48,12
+    EDITTEXT        IDC_OPT_TABWIDTHEDIT,66,156,30,14,ES_AUTOHSCROLL
+    LTEXT           "Line Endings:",IDC_STATIC,18,114,48,12
+    COMBOBOX        IDC_OPT_LECOMBO,66,114,102,66,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Maximise new document windows",IDC_OPT_MAXCHECK,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,6,24,150,12
-    LTEXT           "Defaults:",IDC_STATIC,6,66,66,12
-    LTEXT           "",IDC_STATIC,42,70,252,2,SS_SUNKEN
+    LTEXT           "Defaults:",IDC_STATIC,6,84,66,12
+    LTEXT           "",IDC_STATIC,42,89,252,2,SS_SUNKEN
     CONTROL         "Show full file path in document windows",
                     IDC_OPT_FULLPATHCHECK,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,6,42,156,12
+    LTEXT           "Files in the most recently used list:",IDC_STATIC,6,60,
+                    120,12
+    EDITTEXT        IDC_OPT_MRUCOUNT,126,60,30,12,ES_AUTOHSCROLL
 END
 
 IDD_PAGE_NEWFILES DIALOGEX 0, 0, 299, 200
@@ -1015,7 +1018,7 @@ BEGIN
         LEFTMARGIN, 2
         RIGHTMARGIN, 296
         TOPMARGIN, 3
-        BOTTOMMARGIN, 166
+        BOTTOMMARGIN, 198
     END
 
     IDD_PAGE_NEWFILES, DIALOG
