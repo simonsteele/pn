@@ -9,7 +9,7 @@
  *				 Any modifications from the original are copyright Echo
  *				 Software and Simon Steele.
  *
- ****************************************************************} 
+ ****************************************************************}
 
 unit GrepSearchDlg;
 
@@ -17,8 +17,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  Registry, GrepResultsDlg, Editor, Main, Mask, Placemnt, pntypes,
-  BrowseDr, EnhCBox, echocombo, StdCtrls{, vgNLS};
+  Registry, GrepResultsDlg, Editor, Main, Mask, pntypes,
+  BrowseDr, EnhCBox, echocombo, StdCtrls{, vgNLS , Placemnt};
 
 type
   TfrmGrepSearch = class(TForm)
@@ -42,7 +42,7 @@ type
     btnHelp: TButton;
     chkRegEx: TCheckBox;
     chkGrepANSI: TCheckBox;
-    FormStorage: TFormStorage;
+//    FormStorage: TFormStorage;  - no RX Library any more.
     btnBrowse: TButton;
     dlgBrowse: TdfsBrowseDirectoryDlg;
     cbDirectory: tEchoComboBox;
@@ -69,7 +69,7 @@ implementation
 {$R *.DFM}
 
 uses
-  Menus, AppUtils;
+  Menus{, AppUtils};
 
 procedure TfrmGrepSearch.FormCreate(Sender: TObject);
 Var

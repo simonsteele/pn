@@ -21,7 +21,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, ExtCtrls, SearchFile, ComCtrls, AppUtils, Registry,
+  StdCtrls, ExtCtrls, SearchFile, ComCtrls, {AppUtils,} Registry,
   DropSource, ActnList, ImgList, TB97Tlbr, TB97Ctls, TB97, Menus
   {, vgNLS};
 

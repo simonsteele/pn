@@ -21,13 +21,12 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, SyntaxEd, RXSpin, RXCombos, Registry;
+  StdCtrls, SyntaxEd, Registry, ComCtrls, FontComboBox;
 
 type
   TfrmPrint = class(TForm)
     GroupBox1: TGroupBox;
     FontComboBox1: TFontComboBox;
-    RxSpinEdit1: TRxSpinEdit;
     GroupBox2: TGroupBox;
     cblineno: TCheckBox;
     cbfilename: TCheckBox;
@@ -39,6 +38,8 @@ type
     btnPrintSetup: TButton;
     chkHideBGColours: TCheckBox;
     chkColour: TCheckBox;
+    txtFontSize: TEdit;
+    updFontSize: TUpDown;
     procedure btnOKClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -84,8 +85,8 @@ begin
            Try
               FFont.Assign(synMDI.Font);
               FOptions := synMDI.Options;
-              synMDI.Font.Name := FontComboBox1.FontName;
-              synMDI.Font.Size := trunc(RXSpinEdit1.Value);
+              synMDI.Font.Name := FontComboBox1.Font.Name;
+              synMDI.Font.Size := trunc(updFontSize.Position);
               if cblineno.checked then
                 synMDI.Options := synMDI.Options + [smoPrintLinenos] else
                 synMDI.Options := synMDI.Options - [smoPrintLinenos];
@@ -127,8 +128,8 @@ begin
         end else
         begin
            FFont := tFont.Create;
-           FFont.Name := FontComboBox1.FontName;
-           FFont.Size := trunc(RXSpinEdit1.Value);
+           FFont.Name := FontComboBox1.Font.Name;
+           FFont.Size := trunc(updFontSize.Position);
            HexPrint(FFont);
         end;
      End;
@@ -146,8 +147,8 @@ Begin
   Try
      With Settings do
      Begin
-        WriteString( 'FontName', FontComboBox1.FontName);
-        WriteInteger('FontSize', trunc(RxspinEdit1.Value));
+        WriteString( 'FontName', FontComboBox1.Font.Name);
+        WriteInteger('FontSize', trunc(updFontSize.Position));
         WriteBool(   'LineNo',   cbLineno.Checked);
         WriteBool(   'Filename', cbFilename.Checked);
         WriteBool(   'DateTime', cbDatetime.Checked);
@@ -170,16 +171,16 @@ Begin
    FEditor := frmMain.GetCurrentEditor;
    if Assigned(FEditor) then
    Begin
-      FontComboBox1.FontName := FEditor.synMDI.Font.Name;
-      RxSpinEdit1.Value      := Abs(Feditor.synMDI.Font.Size);
+      FontComboBox1.Font.Name := FEditor.synMDI.Font.Name;
+      updFontSize.Position   := Abs(Feditor.synMDI.Font.Size);
    End;
    Settings := TRegistry.Create;
    Settings.OpenKey(PrintKey, True);
    Try
       With Settings do
       Begin
-         FontComboBox1.FontName := ReadString('FontName');
-         RxspinEdit1.Value      := ReadInteger('FontSize');
+         FontComboBox1.Font.Name := ReadString('FontName');
+         updFontSize.Position   := ReadInteger('FontSize');
          cbLineno.Checked       := ReadBool('LineNo');
          cbFilename.Checked     := ReadBool('Filename');
          cbDatetime.Checked     := ReadBool('DateTime');
@@ -196,8 +197,8 @@ Begin
      cbWordWrap.Checked := True;
      cbDateTime.Checked := False;
      cbLineNo.Checked := False;
-     FontComboBox1.FontName := 'Courier New';
-     RxspinEdit1.Value := 10;
+     FontComboBox1.Font.Name := 'Courier New';
+     updFontSize.Position := 10;
    End;
    if fEditor.Mode = emHex then
    begin

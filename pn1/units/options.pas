@@ -16,9 +16,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  StdCtrls, RXSpin, RXCombos, ComCtrls,Registry, ExtCtrls, Menus, CheckLst,
+  StdCtrls, ComCtrls,Registry, ExtCtrls, Menus, CheckLst,
   Buttons, useful, ImgList, pntypes, UrlLabel, EnhListView, synParse, IniFiles,
-  BrowseDr, ColorPickerButton, hotkey, ActnList, commctrl;
+  BrowseDr, ColorPickerButton, hotkey, ActnList, commctrl, FontComboBox;
 
 Type TConfigInfo=class(TComponent)
   private
@@ -63,7 +63,6 @@ type
     Image11: TImage;
     fcbFont: TFontComboBox;
     Label27: TLabel;
-    seFontSize: TRxSpinEdit;
     Bevel7: TBevel;
     Label28: TLabel;
     cbWordwrap: TCheckBox;
@@ -275,6 +274,8 @@ type
     chkOpenWholeProject: TCheckBox;
     chkDeleteFileCheck: TCheckBox;
     RadioButton4: TRadioButton;
+    txtFontSize: TEdit;
+    updFontSize: TUpDown;
     procedure btnOKClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -349,6 +350,7 @@ type
     procedure lstActionCatsClick(Sender: TObject);
     procedure lstActionCommsClick(Sender: TObject);
     procedure btnAssignClick(Sender: TObject);
+    procedure btnQLAddClick(Sender: TObject);
   private
     { Private declarations }
     _BSOverride : Boolean;
@@ -449,8 +451,8 @@ begin
    Screen.Cursor:=crHourglass;
    With Config do
    Begin
-      FontName:=fcbFont.FontName;
-      FontSize:=trunc(seFontSize.Value);
+      FontName:=fcbFont.Font.Name{.FontName};
+      FontSize:=trunc(updFontSize.Position);
       ShowChange:=cbShowChange.Checked;
    End;
    If CurrScheme <> '' then SaveTools(CurrScheme);
@@ -540,8 +542,8 @@ procedure TfrmOptions.FormCreate(Sender: TObject);
 begin
    With Config do
    Begin
-     fcbFont.FontName:=FontName;
-     seFontSize.Value:=FontSize;
+     fcbFont.Font.Name:=FontName;
+     updFontSize.Position:=FontSize;
      cbShowChange.Checked:=ShowChange;
    End;
    PIs := tStringList.Create;
@@ -2537,6 +2539,11 @@ begin
   begin
     TAction(Actions.Objects[lstActionComms.Selected.Index]).ShortCut := txtHotKey.HotKey;
   end;
+end;
+
+procedure TfrmOptions.btnQLAddClick(Sender: TObject);
+begin
+  CreateQuickLaunchLink(Handle);
 end;
 
 end.

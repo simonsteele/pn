@@ -1,6 +1,6 @@
 object frmOptions: TfrmOptions
-  Left = 263
-  Top = 318
+  Left = 358
+  Top = 188
   ActiveControl = treOptions
   BorderIcons = [biSystemMenu, biMinimize, biMaximize, biHelp]
   BorderStyle = bsDialog
@@ -160,7 +160,7 @@ object frmOptions: TfrmOptions
     Top = 8
     Width = 321
     Height = 329
-    PageIndex = 14
+    PageIndex = 4
     TabOrder = 1
     object TPage
       Left = 0
@@ -362,20 +362,74 @@ object frmOptions: TfrmOptions
         Left = 72
         Top = 80
         Width = 241
-        Height = 20
+        Height = 22
         HelpContext = 30
+        DropDownCount = 16
+        Items.Strings = (
+          'Arial'
+          'Arial Black'
+          'Arial Narrow'
+          'Book Antiqua'
+          'Bookman Old Style'
+          'Century Gothic'
+          'Comic Sans MS'
+          'Courier'
+          'Courier New'
+          'Estrangelo Edessa'
+          'Fixedsys'
+          'Franklin Gothic Medium'
+          'Garamond'
+          'Gautami'
+          'Georgia'
+          'Haettenschweiler'
+          'Impact'
+          'Latha'
+          'Lucida Console'
+          'Lucida Sans Unicode'
+          'Mangal'
+          'Marlett'
+          'Microsoft Sans Serif'
+          'Modern'
+          'Monotype Corsiva'
+          'MS Outlook'
+          'MS Sans Serif'
+          'MS Serif'
+          'MV Boli'
+          'Palatino Linotype'
+          'Raavi'
+          'Roman'
+          'SAS Monospace'
+          'SAS Monospace Bold'
+          'Sasfont'
+          'Script'
+          'Shruti'
+          'Small Fonts'
+          'Sydnie'
+          'Sylfaen'
+          'Symbol'
+          'System'
+          'Tahoma'
+          'Terminal'
+          'Times New Roman'
+          'Trebuchet MS'
+          'Tunga'
+          'Verdana'
+          'VisualUI'
+          'Webdings'
+          'Wingdings'
+          'Wingdings 2'
+          'Wingdings 3'
+          'WST_Czec'
+          'WST_Engl'
+          'WST_Fren'
+          'WST_Germ'
+          'WST_Ital'
+          'WST_Span'
+          'WST_Swed')
         TabOrder = 0
-      end
-      object seFontSize: TRxSpinEdit
-        Left = 104
-        Top = 112
-        Width = 41
-        Height = 21
-        HelpContext = 31
-        MaxValue = 40
-        MinValue = 4
-        Value = 10
-        TabOrder = 1
+        TTonly = False
+        UseItemFont = False
+        UpdateAllForms = False
       end
       object cbWordwrap: TCheckBox
         Left = 72
@@ -384,7 +438,7 @@ object frmOptions: TfrmOptions
         Height = 17
         HelpContext = 32
         Caption = 'Wordwrap'
-        TabOrder = 2
+        TabOrder = 3
       end
       object cbShowChange: TCheckBox
         Left = 72
@@ -393,7 +447,7 @@ object frmOptions: TfrmOptions
         Height = 17
         HelpContext = 33
         Caption = 'Show changes in gutter'
-        TabOrder = 3
+        TabOrder = 4
       end
       object chkMaximiseFiles: TCheckBox
         Left = 72
@@ -402,7 +456,7 @@ object frmOptions: TfrmOptions
         Height = 17
         HelpContext = 34
         Caption = 'Maximise files on opening'
-        TabOrder = 4
+        TabOrder = 5
       end
       object txtMRUMax: TEdit
         Left = 136
@@ -410,7 +464,7 @@ object frmOptions: TfrmOptions
         Width = 73
         Height = 21
         HelpContext = 38
-        TabOrder = 7
+        TabOrder = 9
         OnKeyDown = txtProxyPortKeyDown
         OnKeyPress = txtProxyPortKeyPress
       end
@@ -421,7 +475,7 @@ object frmOptions: TfrmOptions
         Height = 17
         HelpContext = 36
         Caption = 'Show clock with this format:'
-        TabOrder = 5
+        TabOrder = 6
         OnClick = chkShowClockClick
       end
       object txtClockFormat: TEdit
@@ -431,7 +485,7 @@ object frmOptions: TfrmOptions
         Height = 21
         HelpContext = 37
         Enabled = False
-        TabOrder = 6
+        TabOrder = 7
         Text = 'hh:mm'
         OnKeyDown = txtClockFormatKeyDown
         OnKeyPress = txtClockFormatKeyPress
@@ -444,6 +498,27 @@ object frmOptions: TfrmOptions
         HelpContext = 35
         Caption = 'Show highlight sub-menu.'
         TabOrder = 8
+      end
+      object txtFontSize: TEdit
+        Left = 104
+        Top = 112
+        Width = 89
+        Height = 21
+        TabOrder = 1
+        Text = '0'
+      end
+      object updFontSize: TUpDown
+        Left = 193
+        Top = 112
+        Width = 16
+        Height = 21
+        Associate = txtFontSize
+        Min = 4
+        Max = 40
+        Increment = 2
+        Position = 4
+        TabOrder = 2
+        Wrap = False
       end
     end
     object TPage
@@ -1035,7 +1110,7 @@ object frmOptions: TfrmOptions
         HelpContext = 65
         Style = csDropDownList
         Enabled = False
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 6
       end
       object btnNewAdd: TBitBtn
@@ -1276,6 +1351,7 @@ object frmOptions: TfrmOptions
         HelpContext = 67
         Caption = 'Add "&Quick Launch" Shortcut'
         TabOrder = 1
+        OnClick = btnQLAddClick
       end
       object chkMultiLineTabs: TCheckBox
         Left = 32
@@ -1984,7 +2060,7 @@ object frmOptions: TfrmOptions
         Height = 21
         HelpContext = 89
         Style = csDropDownList
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 6
       end
       object chkUnixSave: TCheckBox
@@ -2715,7 +2791,7 @@ object frmOptions: TfrmOptions
         Height = 21
         HelpContext = 108
         Style = csDropDownList
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 0
         OnChange = cmbSchemesChange
       end
@@ -3309,7 +3385,7 @@ object frmOptions: TfrmOptions
         Width = 233
         Height = 21
         Style = csDropDownList
-        ItemHeight = 0
+        ItemHeight = 13
         TabOrder = 3
       end
     end

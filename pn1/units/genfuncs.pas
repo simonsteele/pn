@@ -405,6 +405,7 @@ begin
     s := path;
   end;
   StrDispose(Path);
+
   CreateLink(ParamStr(0), '', ExtractFilePath(ParamStr(0)), s + c + '\Programmers Notepad.lnk');
 end;
 
