@@ -217,7 +217,7 @@ class SchemeParser
 		virtual void onStyle(StyleDetails* pStyle, StyleDetails* pCustom) = 0;
 		virtual void onStyleGroupEnd() = 0;
 		virtual void onStyleClass(StyleDetails* pClass, StyleDetails* pCustom) = 0;
-		virtual void onKeywords(int key, LPCTSTR keywords, LPCTSTR name) = 0;
+		virtual void onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom) = 0;
 		virtual void onFile(LPCTSTR filename) = 0;
 };
 
@@ -242,7 +242,7 @@ class SchemeCompiler : public SchemeParser
 		virtual void onStyleGroupEnd(){}
 		virtual void onStyleClass(StyleDetails* pClass, StyleDetails* pCustom);
 		virtual void onFile(LPCTSTR filename);
-		virtual void onKeywords(int key, LPCTSTR keywords, LPCTSTR name);
+		virtual void onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom);
 		virtual void onLexer(LPCTSTR name, int styleBits);
 };
 

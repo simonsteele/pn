@@ -202,10 +202,13 @@ void SchemeConfigParser::SaveConfig()
 #define USERSETTINGS_SCHEME_END		"\t\t</scheme>\n"
 #define USERSETTINGS_STYLES_START	"\t\t\t<override-styles>\n"
 #define USERSETTINGS_STYLES_END		"\t\t\t</override-styles>\n"
+#define USERSETTINGS_KEYWORDS_START "\t\t\t<override-keywords>\n"
+#define USERSETTINGS_KEYWORDS_END	"\t\t\t</override-keywords>\n"
 #define USERSETTINGS_CLASSES_START	"\t<override-classes>\n"
 #define USERSETTINGS_CLASSES_END	"\t</override-classes>\n"
 
 #define USERSETTINGS_STYLE_START	_T("\t\t\t\t<style key=\"%d\" ")
+#define USERSETTINGS_KEYWORDS_NODE	_T("\t\t\t\t<keywords key=\"%d\">%s</keywords>\n")
 #define USERSETTINGS_CLASS_START	_T("\t\t<style-class name=\"%s\" ")
 #define USERSETTINGS_STYLE_FN		_T("font=\"%s\" ")
 #define USERSETTINGS_STYLE_FS		_T("size=\"%d\" ")
@@ -339,13 +342,35 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 
 		for(SCF_IT i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
 		{
-			// Scheme
+			CustomKeywordSet* pKeywordSet = (*i)->m_cKeywords.GetFirstKeywordSet();
+
+			bool bCustomised = ((*i)->m_customs.m_Styles.size() != 0) ||
+				(pKeywordSet != NULL);
+
+			if(!bCustomised)
+				continue;
+
+			// Write out scheme block...
+			s.Format(USERSETTINGS_SCHEME_START, (LPCTSTR)(*i)->m_Name);
+			const char* pS = T2CA((LPCTSTR)s);
+			file.Write((void*)pS, strlen(pS));
+
+			if(pKeywordSet != NULL)
+			{
+				// Keywords
+				file.Write(USERSETTINGS_KEYWORDS_START, strlen(USERSETTINGS_KEYWORDS_START));
+				while(pKeywordSet)
+				{
+					s.Format(USERSETTINGS_KEYWORDS_NODE, pKeywordSet->key, pKeywordSet->pWords);
+					const char* pS = T2CA((LPCTSTR)s);
+					file.Write((void*)pS, strlen(pS));
+					pKeywordSet = pKeywordSet->pNext;
+				}
+				file.Write(USERSETTINGS_KEYWORDS_END, strlen(USERSETTINGS_KEYWORDS_END));
+			}
+
 			if((*i)->m_customs.m_Styles.size() != 0)
 			{
-				s.Format(USERSETTINGS_SCHEME_START, (LPCTSTR)(*i)->m_Name);
-				const char* pS = T2CA((LPCTSTR)s);
-				file.Write((void*)pS, strlen(pS));
-
 				// Styles
 				file.Write(USERSETTINGS_STYLES_START, strlen(USERSETTINGS_STYLES_START));
 				for(SL_IT j = (*i)->m_customs.m_Styles.begin();
@@ -364,10 +389,10 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 					}
 				}
 				file.Write(USERSETTINGS_STYLES_END, strlen(USERSETTINGS_STYLES_END));
-		        		
-				// End of Scheme
-				file.Write(USERSETTINGS_SCHEME_END, strlen(USERSETTINGS_SCHEME_END));
 			}
+
+			// End of Scheme
+			file.Write(USERSETTINGS_SCHEME_END, strlen(USERSETTINGS_SCHEME_END));
 		}
 
 		// End of Schemes...
@@ -446,18 +471,25 @@ void SchemeConfigParser::onStyleGroupEnd()
 	m_pCurrent->EndGroup();
 }
 
-void SchemeConfigParser::onKeywords(int key, LPCTSTR keywords, LPCTSTR name)
+void SchemeConfigParser::onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom)
 {
 	PNASSERT(m_pCurrent != NULL);
 
 	CustomKeywordSet* pSet = new CustomKeywordSet;
-	pSet->bChanged = false;
 	pSet->key = key;
 	pSet->pWords = new TCHAR[_tcslen(keywords)+1];
 	_tcscpy(pSet->pWords, keywords);
 	pSet->pName = new TCHAR[_tcslen(name)+1];
 	_tcscpy(pSet->pName, name);
 	m_pCurrent->AddKeywordSet(pSet);
+
+	if(custom)
+	{
+		CustomKeywordSet* pCustomSet = new CustomKeywordSet(*pSet);
+		pCustomSet->pWords = new TCHAR[_tcslen(custom)+1];
+		_tcscpy(pCustomSet->pWords, custom);
+		m_pCurrent->m_cKeywords.AddKeywordSet(pCustomSet);
+	}
 }
 
 void SchemeConfigParser::onFile(LPCTSTR filename)

@@ -93,6 +93,8 @@
 #define IDC_BUTTON2                     1033
 #define IDC_STYLE_BACKBUTTON            1033
 #define IDC_KEYWORDS_RESETBUTTON        1033
+#define IDC_KEYWORDS_RESETBUTTON2       1034
+#define IDC_KEYWORDS_SORTBUTTON         1034
 #define IDC_STYLE_RESETBTN              1036
 #define IDC_STYLE_RESETALLBTN           1037
 #define IDC_LIST1                       1039

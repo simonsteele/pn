@@ -352,7 +352,7 @@ void UserSettingsParser::endElement(void *userData, LPCTSTR name)
 	CSchemeLoaderState* pState = static_cast<CSchemeLoaderState*>(userData);
 	int state = pState->m_State;
 
-	if(state == US_KEYWORDS && (_tcscmp(name, _T("set")) == 0))
+	if(state == US_KEYWORDS && (_tcscmp(name, _T("keywords")) == 0))
 	{
 		pState->m_csCData.Replace(_T("\r"), _T(""));
 		pState->m_csCData.Replace(_T("\n"), _T(" "));
@@ -491,9 +491,9 @@ void UserSettingsParser::processSchemeElement(CSchemeLoaderState* pState, LPCTST
 	}
 	else if (pState->m_State == US_KEYWORD_OVERRIDES)
 	{
-		if(_tcscmp(name, _T("set")) == 0)
+		if(_tcscmp(name, _T("keywords")) == 0)
 		{
-			LPCTSTR key = atts.getValue(_T("id"));
+			LPCTSTR key = atts.getValue(_T("key"));
 			m_idval = _ttoi(key);
 
 			pState->m_csCData = _T("");
@@ -612,10 +612,13 @@ void SchemeCompiler::onFile(LPCTSTR filename)
 	reg.WriteInt(filepart.c_str(), FileAge(filename));
 }
 
-void SchemeCompiler::onKeywords(int key, LPCSTR keywords, LPCTSTR name)
+void SchemeCompiler::onKeywords(int key, LPCSTR keywords, LPCTSTR name, LPCTSTR custom)
 {
 	USES_CONVERSION;
-	m_Recorder.SetKeyWords(key, T2CA((LPCTSTR)keywords));
+	if(custom)
+		m_Recorder.SetKeyWords(key, T2CA((LPCTSTR)custom));
+	else
+		m_Recorder.SetKeyWords(key, T2CA((LPCTSTR)keywords));
 }
 
 void SchemeCompiler::onLexer(LPCTSTR name, int styleBits)
@@ -931,9 +934,17 @@ void SchemeParser::processLanguageKeywords(CSchemeLoaderState* pState, XMLAttrib
 		}
 	}
 
+	LPCTSTR custom = NULL;
+	if(pState->m_pCustom)
+	{
+		CustomKeywordSet* pCustom = pState->m_pCustom->FindKeywordSet(key);
+		if(pCustom)
+			custom = pCustom->pWords;
+	}
+
 	if(kw != _T("") && key != -1)
 	{
-		onKeywords(key, kw, namestr);
+		onKeywords(key, kw, namestr, custom);
 	}
 }
 

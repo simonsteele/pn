@@ -59,6 +59,7 @@ class SchemeConfig : public CustomKeywordHolder, public CustomStyleHolder
 		int m_foldflags;
 
 		CustomStyleCollection	m_customs;
+		CustomKeywordHolder		m_cKeywords;
 };
 
 typedef list<SchemeConfig*>	LIST_SCHEMECONFIGS;
@@ -103,10 +104,8 @@ class SchemeConfigParser : public SchemeParser
 		virtual void onStyle(StyleDetails* pStyle, StyleDetails* pCustom);
 		virtual void onStyleGroupEnd();
 		virtual void onStyleClass(StyleDetails* pClass, StyleDetails* pCustom);
-		virtual void onKeywords(int key, LPCTSTR keywords, LPCTSTR name);
-		virtual void onFile(LPCTSTR filename);
-
-		
+		virtual void onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom);
+		virtual void onFile(LPCTSTR filename);	
 };
 
 

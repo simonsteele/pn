@@ -125,13 +125,36 @@ class StyleDetails
 typedef list<StyleDetails*>	STYLES_LIST;
 typedef STYLES_LIST::iterator SL_IT;
 
-struct CustomKeywordSet
+class CustomKeywordSet
 {
-	int		key;
-	bool	bChanged;
-	TCHAR*	pWords;
-	TCHAR*	pName;
-	CustomKeywordSet* pNext;
+	public:
+		CustomKeywordSet()
+		{
+			key = 0;
+			pWords = 0;
+			pName = 0;
+			pNext = 0;
+		}
+		
+		CustomKeywordSet(const CustomKeywordSet& copy)
+		{
+			pNext = NULL;
+
+			key = copy.key;
+			
+			pName = new TCHAR[_tcslen(copy.pName)+1];
+			_tcscpy(pName, copy.pName);
+			
+			// We rarely construct to copy the words...
+			//pWords = new TCHAR[_tcslen(copy->pWords)+1];
+			//_tcscpy(pWords, copy->pWords);
+		}
+
+	public:
+		int		key;
+		TCHAR*	pWords;
+		TCHAR*	pName;
+		CustomKeywordSet* pNext;
 };
 
 class CustomKeywordHolder
@@ -151,11 +174,7 @@ class CustomKeywordHolder
 			{
 				pDel = pSet;
 				pSet = pSet->pNext;
-				if(pDel->pWords)
-					delete [] pDel->pWords;
-				if(pDel->pName)
-					delete [] pDel->pName;
-				delete pDel;
+				InternalDeleteSet(pDel);
 			}
 
 			pKeywordSets = NULL;
@@ -173,6 +192,40 @@ class CustomKeywordHolder
 				pKeywordSets = pLast = pSet;
 			}
 			pLast->pNext = NULL;
+		}
+
+		void DeleteKeywordSet(CustomKeywordSet* pSet)
+		{
+			if(!pSet)
+				return;
+
+			CustomKeywordSet* pPrev = NULL;
+
+			if(pSet == pKeywordSets)
+			{
+				pKeywordSets = pSet->pNext;
+			}
+			else
+			{
+				// Not the first item, something must point to it.
+				CustomKeywordSet* pS = pKeywordSets;
+				while(pS)
+				{
+					if(pS->pNext == pSet)
+					{
+						pPrev = pS;
+						pS->pNext = pSet->pNext;
+						break;
+					}
+
+					pS = pS->pNext;
+				}
+			}
+
+			if(pSet == pLast)
+				pLast = pPrev;
+
+			InternalDeleteSet(pSet);
 		}
 
 		CustomKeywordSet* FindKeywordSet(int key)
@@ -193,6 +246,15 @@ class CustomKeywordHolder
 		}
 
 	protected:
+		inline void InternalDeleteSet(CustomKeywordSet* pDel)
+		{
+			if(pDel->pWords)
+				delete [] pDel->pWords;
+			if(pDel->pName)
+				delete [] pDel->pName;
+			delete pDel;
+		}
+
 		CustomKeywordSet* pKeywordSets;
 		CustomKeywordSet* pLast;
 };

@@ -310,7 +310,6 @@ CTabPageKeywords::CTabPageKeywords()
 
 void CTabPageKeywords::SetScheme(SchemeConfig* pScheme)
 {
-	m_bChanging = true;
 	m_pSet = NULL;
 	m_pScheme = pScheme;
 
@@ -319,12 +318,12 @@ void CTabPageKeywords::SetScheme(SchemeConfig* pScheme)
 	{
 		DoSetScheme();
 	}
-	
-	m_bChanging = false;
 }
 
 void CTabPageKeywords::DoSetScheme()
 {
+	m_bChanging = true;
+
 	CustomKeywordSet* pSet = m_pScheme->GetFirstKeywordSet();
 	
 	int iPos = 0;
@@ -340,29 +339,79 @@ void CTabPageKeywords::DoSetScheme()
 		pSet = pSet->pNext;
 	}
 
+	m_bChanging = false;
+}
+
+void CTabPageKeywords::SetItem()
+{
+	if(m_pSet)
+	{
+		// compare the keyword sets first, has the current one changed?
+		int len = m_scintilla.GetTextLength();
+		TCHAR* pCS = new TCHAR[len+1];
+		m_scintilla.GetText(len+1, pCS);
+		pCS[len] = _T('\0');
+		
+		if(_tcscmp(m_pSet->pWords, pCS) != 0)
+		{
+			CustomKeywordSet* pCustomSet = m_pScheme->m_cKeywords.FindKeywordSet(m_pSet->key);
+
+			if(pCustomSet)
+			{
+				delete [] pCustomSet->pWords;
+				pCustomSet->pWords = pCS;
+				pCS = NULL;
+			}
+			else
+			{
+				CustomKeywordSet* pNewSet = new CustomKeywordSet(*m_pSet);
+				pNewSet->pWords = pCS;
+				pCS = NULL;
+				m_pScheme->m_cKeywords.AddKeywordSet(pNewSet);
+			}
+		}
+		else
+		{
+			CustomKeywordSet* pCustomSet = m_pScheme->m_cKeywords.FindKeywordSet(m_pSet->key);
+			if(pCustomSet)
+				m_pScheme->m_cKeywords.DeleteKeywordSet(pCustomSet);
+		}
+
+		if(pCS)
+			delete [] pCS;
+	}
 }
 
 void CTabPageKeywords::Finalise()
 {
 	// Ensure everything is saved that should be...
+	SetItem();
 }
 
 void CTabPageKeywords::UpdateSel()
 {
 	if(!m_bChanging)
 	{
+		SetItem();
+
 		int iSelected = m_list.GetSelectedIndex();
 		if(iSelected != -1)
 		{
-			CustomKeywordSet* pSet = reinterpret_cast<CustomKeywordSet*>( m_list.GetItemData(iSelected) );
+			CustomKeywordSet* pRealSet = reinterpret_cast<CustomKeywordSet*>( m_list.GetItemData(iSelected) );
 
-			if(pSet)
+			if(pRealSet)
 			{
-				m_pSet = pSet;
+				m_pSet = pRealSet;
 
-				if(pSet->pWords)
+				CustomKeywordSet* pS = pRealSet;
+				CustomKeywordSet* pCustomSet = m_pScheme->m_cKeywords.FindKeywordSet(m_pSet->key);
+
+				if(pCustomSet)
+					pS = pCustomSet;
+
+				if(pS->pWords)
 				{
-					m_scintilla.SetText(pSet->pWords);
+					m_scintilla.SetText(pS->pWords);
 					EnableControls();
 				}
 			}
@@ -402,11 +451,7 @@ LRESULT CTabPageKeywords::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	EnableControls(FALSE);
 
 	if(m_pScheme)
-	{
-		m_bChanging = true;
 		DoSetScheme();
-		m_bChanging = false;
-	}
 
 	m_list.Invalidate(TRUE);
 
@@ -415,6 +460,16 @@ LRESULT CTabPageKeywords::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 LRESULT CTabPageKeywords::OnResetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	if(m_pSet)
+	{
+		m_scintilla.SetText(m_pSet->pWords);
+	}
+	return 0;
+}
+
+LRESULT CTabPageKeywords::OnSortClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+
 	return 0;
 }
 
