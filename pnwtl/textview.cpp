@@ -390,10 +390,10 @@ void CTextView::SetPosStatus(CMultiPaneStatusBarCtrl& stat)
 		{
 			_stprintf(tvstatbuf, _T("%d character(s) selected."), GetSelLength());
 		}
-		g_Context.m_frame->SetStatusText(tvstatbuf);
+		g_Context.m_frame->SetStatusText(tvstatbuf, false);
 	}
 	else
-		g_Context.m_frame->SetStatusText(_T(""));
+		g_Context.m_frame->SetStatusText(NULL);
 }
 
 CScheme* CTextView::GetCurrentScheme()
