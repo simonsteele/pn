@@ -125,29 +125,16 @@ bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 		::OutputDebugString(dbgout.c_str());
 #endif
 
-		if(! FileExists(fn.c_str()) )
+		if( fn.IsRelativePath() && m_basepath.length() != 0 )
 		{
-			if( fn.IsRelativePath() && m_basepath.length() != 0 )
-			{
-				fn.Root( m_basepath.c_str() );
-				filename = fn.c_str();
+			fn.Root( m_basepath.c_str() );
+			filename = fn.c_str();
 #ifdef _DEBUG
-				dbgout = "Rooted path to: ";
-				dbgout += filename;
-				dbgout += "\n";
-				::OutputDebugString(dbgout.c_str());
+			dbgout = _T("Rooted path to: ");
+			dbgout += filename;
+			dbgout += _T("\n");
+			::OutputDebugString(dbgout.c_str());
 #endif
-			}
-		}
-		else
-		{
-			// Still need to ensure that the filename is fully qualified.
-			// If the file is found straight away, and is a relative path 
-			// then it must be in the current directory.
-			if( fn.IsRelativePath() )
-			{
-				fn.Root( CFileName::GetCurrentDirectory().c_str() );
-			}
 		}
 
 		if(FileExists(fn.c_str()))

@@ -617,7 +617,7 @@ int CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 
 	CString replaceTarget(pOptions->ReplaceText);
 	
-	int replaceLen = UnSlashAsNeeded(replaceTarget, /*pOptions->UnSlash*/false, pOptions->UseRegExp);
+	int replaceLen = UnSlashAsNeeded(replaceTarget, pOptions->UseSlashes, pOptions->UseRegExp);
 	
 	int flags = (pOptions->MatchWholeWord ? SCFIND_WHOLEWORD : 0) |
 	            (pOptions->MatchCase ? SCFIND_MATCHCASE : 0) |

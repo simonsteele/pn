@@ -16,6 +16,8 @@ What's new?
 8) Text clips browser.
 9) Projects/Workspaces.
 10) Change MRU text length. (SF Feature #760660)
+11) Keyboard-shortcuts for Tools.
+12) More editor colouring options.
 
 Bug Fixes:
 ----------
@@ -25,6 +27,12 @@ Bug Fixes:
 3) If you don't update a file when it's changed on disk it is marked as changed.
 4) Maximized window state not saved. (SF Bug #770302)
 5) Mixed path styles now sanitised in output window. (SF Bug #797397)
+6) File opened from the wrong directory from output window. (SF Bug #806343)
+7) No way to find out what file you're working on. (SF Bug #783786)
+8) NT4 recent files menu disappears. (SF Bug #780828)
+9) Edit SmartStart Phrase Dialog no scheme list. (SF Bug #771661)
+10) WindowState is not save when close. (SF Bug #770302)
+11) Unable to define a shortcut for a custom tool. (SF Bug #753458)
 
 If you find a bug:
 ------------------

@@ -397,7 +397,7 @@ HWND CMainFrame::CreateFindToolbar()
 	CToolBarCtrl fToolbar(hWnd);
 	fToolbar.SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
 	// Only IE 501
-	fToolbar.SetExtendedStyle(fToolbar.GetExtendedStyle() | TBSTYLE_EX_HIDECLIPPEDBUTTONS | TBSTYLE_EX_MIXEDBUTTONS);
+	fToolbar.SetExtendedStyle(fToolbar.GetExtendedStyle() | /*TBSTYLE_EX_HIDECLIPPEDBUTTONS |*/ TBSTYLE_EX_MIXEDBUTTONS);
 
 	CSize sizeChar = GetGUIFontSize();
 	int cx = FIND_COMBO_SIZE * sizeChar.cx;
@@ -425,7 +425,7 @@ HWND CMainFrame::CreateFindToolbar()
 	fToolbar.SetImageList(m_FindImages.m_hImageList);
 
 	HWND hWndCombo = m_FindCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), 
-		CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+		CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL,
 		0, IDC_FINDCOMBO, _T("Software\\Echo Software\\PN2\\AutoComplete\\FindToolbar"));
 	hWndCombo;
 	ATLASSERT(hWndCombo != 0);
@@ -475,7 +475,7 @@ HWND CMainFrame::CreateSchemeToolbar()
 
 	rc.bottom = TOOLBAR_COMBO_DROPLINES * sizeChar.cy;
 	
-	HWND hWndCombo =  m_SchemeCombo.Create(m_hWnd, rc, NULL, CBS_DROPDOWNLIST | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP,
+	HWND hWndCombo =  m_SchemeCombo.Create(m_hWnd, rc, NULL, CBS_DROPDOWNLIST | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL,
 		0, IDC_SCHEMECOMBO);
 	hWndCombo;
 	ATLASSERT(hWndCombo != 0);
