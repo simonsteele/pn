@@ -636,10 +636,21 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
 	// attach menu
 	m_CmdBar.AttachMenu(GetMenu());
+	
 	// load command bar images
 	m_CmdBar.LoadImages(IDR_MAINFRAME);
-	m_CmdBar.LoadImages(IDR_TBR_EDIT);
-	//m_CmdBar.LoadImages(IDR_IMAGES);
+ 	m_CmdBar.LoadImages(IDR_TBR_EDIT);
+	
+	// Allow us to add images with a pink mask...
+	COLORREF clrOld = m_CmdBar.m_clrMask;
+	m_CmdBar.m_clrMask = RGB(255,0,255);
+	
+	// Load some images from a toolbar that's not used.
+	m_CmdBar.LoadImages(IDR_TBR_PROJECTS);
+	
+	// Set the mask back...
+	m_CmdBar.m_clrMask = clrOld;
+	
 	// remove old menu
 	SetMenu(NULL);
 
@@ -1772,6 +1783,25 @@ void CMainFrame::SetStatusText(LPCTSTR text, bool bLongLife)
 void CMainFrame::SaveAll()
 {
 	PerformChildEnum(ChildSaveNotify);
+
+	if( !m_pProjectsWnd )
+		return;
+	
+	Projects::Workspace* workspace = m_pProjectsWnd->GetWorkspace();
+	if( !workspace )
+		return;
+
+	if( workspace->IsDirty() )
+	{
+		if(workspace->IsDirty(false))
+		{
+			// Something about the workspace has changed, 
+			// see if the user wants to save it.
+			DWORD dwRes = SaveWorkspace(workspace, true);
+		}
+
+		SaveProjects(workspace);
+	}
 }
 
 BOOL CALLBACK CMainFrame::ChildEnumProc(HWND hWnd, LPARAM lParam)
@@ -1864,16 +1894,19 @@ bool CMainFrame::SaveWorkspaceAs(Projects::Workspace* pWorkspace)
 	if(projects.size() > 0)
 		path = (*projects.begin())->GetBasePath();
 	
-	CPNSaveDialog save(_T("Project Group Files (*.ppg)|*.ppg|"), path);
-	save.m_ofn.lpstrTitle = _T("Save Project Group");
+	CPNSaveDialog dlg(_T("Project Group Files (*.ppg)|*.ppg|"), NULL, _T("ppg"));
+	dlg.SetTitle(_T("Save Project Group"));
+	dlg.SetInitialPath(path);
 
-	if(save.DoModal() == IDOK)
+	if(dlg.DoModal() == IDOK)
 	{
-		pWorkspace->SetFileName(save.m_ofn.lpstrFile);
+		pWorkspace->SetFileName(dlg.m_ofn.lpstrFile);
 		return true;
 	}
 	else
+	{
 		return false;
+	}
 }
 
 DWORD CMainFrame::SaveWorkspace(Projects::Workspace* pWorkspace, bool bAsk)
@@ -1989,11 +2022,8 @@ bool CMainFrame::CloseWorkspace(bool bAllowCloseFiles)
 			if( dwRes == IDCANCEL )
 				return false;
 
-			if( dwRes == IDNO )
-			{
-				if( !SaveProjects(workspace) )
-					return false;
-			}	
+			if( !SaveProjects(workspace) )
+				return false;
 		}
 		else
 		{

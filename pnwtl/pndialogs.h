@@ -71,6 +71,11 @@ class CPNFileDialogImpl : public CFileDialogImpl<T>
 			m_ofn.lpstrDefExt = defext;
 		}
 
+		void SetInitialPath(LPCTSTR path)
+		{
+			m_ofn.lpstrInitialDir = path;
+		}
+
 		BEGIN_MSG_MAP(CPNFileDialogImpl)
 			CHAIN_MSG_MAP(baseClass)
 		END_MSG_MAP()

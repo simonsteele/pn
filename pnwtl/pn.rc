@@ -355,7 +355,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,5,15
+ FILEVERSION 2,0,5,17
  PRODUCTVERSION 2,0,5,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -373,7 +373,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele (Echo Software)"
             VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.5.15"
+            VALUE "FileVersion", "2.0.5.17"
             VALUE "InternalName", "PNWTL"
             VALUE "LegalCopyright", "Copyright © 2002-2003 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"
@@ -401,7 +401,7 @@ BEGIN
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
     ID_EDITOR_LINENOS       "Toggle line numbers display"
     IDS_ABOUTVERSIONSTRING  "Programmers Notepad 2\nv%s\n\nCopyright (c) 2002-2003 Simon Steele"
-    IDS_TOOLFORMATSTRINGS   "%f: File Name\n%n: File Name (no ext)\n%l: Current Line Number\n%?: Ask for parameters|%d: Path of File\n%c: Column\n%%: Percent Symbol\n%w: Current word"
+    IDS_TOOLFORMATSTRINGS   "%f: File Name\n%n: File Name (no ext)\n%l: Current Line Number\n%?: Ask for parameters\n%p: Current Project File|%d: Path of File\n%c: Column\n%%: Percent Symbol\n%w: Current word\n%g: Project Group File"
     IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c: Column"
     ID_FILE_NEW_PROJECT     "Create a new project."
     ID_FILE_NEW_WORKSPACE   "Create a new workspace."
@@ -557,6 +557,14 @@ BEGIN
     BUTTON      ID_FINDTYPE_BUTTON
 END
 
+IDR_TBR_PROJECTS TOOLBAR  16, 16
+BEGIN
+    BUTTON      ID_PROJECT_ADDFOLDER
+    BUTTON      ID_PROJECT_REMOVE
+    BUTTON      ID_PROJECT_DELETE
+    BUTTON      ID_PROJECT_OPEN
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -569,6 +577,7 @@ IDB_TRUETYPE_FONTTYPE   BITMAP                  "res\\font_tru.bmp"
 IDR_TBR_SCHEME          BITMAP                  "res\\tbrScheme.bmp"
 IDR_TBR_FIND            BITMAP                  "res\\tbrFindCombo.bmp"
 IDB_FINDTOOLBAR         BITMAP                  "res\\findbarbmps.bmp"
+IDR_TBR_PROJECTS        BITMAP                  "res\\tbrProjects.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -698,7 +707,9 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Open All Files",             ID_PROJECT_OPENALLFILES
         MENUITEM SEPARATOR
-        MENUITEM "&Remove Project",             286
+        MENUITEM "&Set Active Project",         ID_PROJECT_SETACTIVEPROJECT
+        MENUITEM SEPARATOR
+        MENUITEM "&Remove Project",             ID_PROJECT_REMOVE
         MENUITEM "&Delete Project",             ID_PROJECT_DELETEPROJECT
         , GRAYED
     END
@@ -1007,8 +1018,8 @@ BEGIN
     RTEXT           "Folder:",IDC_STATIC,12,54,42,12
     RTEXT           "Parameters:",IDC_STATIC,12,72,42,8
     RTEXT           "Shortcut:",IDC_STATIC,12,90,42,12
-    LTEXT           "Static",IDC_TE_INFOLABEL,12,150,204,54
-    GROUPBOX        "Tool:",IDC_STATIC,6,6,216,204
+    LTEXT           "Static",IDC_TE_INFOLABEL,12,150,204,60
+    GROUPBOX        "Tool:",IDC_STATIC,6,6,216,210
     GROUPBOX        "Output:",IDC_STATIC,228,6,156,186
     LTEXT           "",IDC_TE_CUSTOMINFO,246,144,132,42
     LTEXT           "example: %f:%l: ",IDC_STATIC,252,126,126,12

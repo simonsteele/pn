@@ -515,11 +515,13 @@ Workspace::Workspace() : ProjectType(ptWorkspace)
 {
 	fileName = _T("");
 	bDirty = false;
+	activeProject = NULL;
 }
 
 Workspace::Workspace(LPCTSTR projectFile) : ProjectType(ptWorkspace)
 {
 	fileName = projectFile;
+	activeProject = NULL;
 	parse();
 }
 
@@ -532,13 +534,41 @@ void Workspace::AddProject(Project* project)
 {
 	projects.insert(projects.begin(), project);
 	bDirty = true;
+
+	if(activeProject == NULL)
+		activeProject = project;
 }
 
 void Workspace::RemoveProject(Project* project)
 {
+	if(project->IsDirty())
+	{
+		tstring msg = _T("Do you want to save changes to the project: ");
+		msg += project->GetName();
+		msg += _T("?");
+		DWORD dwRes = ::MessageBox(g_Context.m_frame->GetWindow()->m_hWnd, msg.c_str(), _T("Programmers Notepad"), MB_YESNOCANCEL | MB_ICONQUESTION);
+
+		if ( dwRes == IDCANCEL )
+		{
+			return;
+		}
+		else if( dwRes == IDYES )
+		{
+			project->Save();
+		}
+	}
+
 	projects.remove(project);
 	delete project;
 	bDirty = true;
+
+	if(activeProject == project)
+	{
+		if(projects.size() > 0)
+			activeProject = (*projects.begin());
+		else
+			activeProject = NULL;
+	}
 }
 
 const PROJECT_LIST Workspace::GetProjects()
@@ -560,6 +590,11 @@ void Workspace::SetFileName(LPCTSTR filename_)
 LPCTSTR Workspace::GetName()
 {
 	return name.c_str();
+}
+
+LPCTSTR Workspace::GetFileName()
+{
+	return fileName.c_str();
 }
 
 bool Workspace::CanSave()
@@ -632,6 +667,16 @@ File* Workspace::FindFile(LPCTSTR filename)
 	return pF;
 }
 
+Projects::Project* Workspace::GetActiveProject()
+{
+	return activeProject;
+}
+
+void Workspace::SetActiveProject(Projects::Project* project)
+{
+	activeProject = project;
+}
+
 void Workspace::startElement(LPCTSTR name, XMLAttributes& atts)
 {
 	if ( IN_STATE(PS_START) )
@@ -676,6 +721,8 @@ void Workspace::Clear()
 	{
 		delete (*i);
 	}
+
+	activeProject = NULL;
 }
 
 void Workspace::parse()

@@ -34,6 +34,7 @@ public:
 		COMMAND_ID_HANDLER(ID_PROJECT_OPENALLFILES, OnOpenAll)
 		COMMAND_ID_HANDLER(ID_PROJECT_REMOVE, OnRemove)
 		COMMAND_ID_HANDLER(ID_PROJECT_DELETE, OnDelete)
+		COMMAND_ID_HANDLER(ID_PROJECT_SETACTIVEPROJECT, OnSetActiveProject)
 		COMMAND_ID_HANDLER(ID_WORKSPACE_NEWPROJECT, OnNewProject)
 		COMMAND_ID_HANDLER(ID_WORKSPACE_ADDPROJECT, OnAddProject)
 		CHAIN_MSG_MAP(baseClass)
@@ -70,6 +71,7 @@ protected:
 	LRESULT		OnOpenAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT		OnSetActiveProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnAddProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

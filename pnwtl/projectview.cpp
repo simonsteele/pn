@@ -146,6 +146,7 @@ HTREEITEM CProjectTreeCtrl::buildFolders(HTREEITEM hParentNode, const FOLDER_LIS
 		const FILE_LIST& files = (*i)->GetFiles();
 		hLastChild = buildFiles(hFolder, hLastChild, files);
 
+		SortChildren(hFolder);
 		Expand(hFolder);
 	}
 
@@ -281,7 +282,7 @@ LRESULT CProjectTreeCtrl::OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 
 					CMenuItemInfo mii;
 					mii.fMask = MIIM_STATE;
-					mii.fState = MFS_DEFAULT;
+					mii.fState = MFS_ENABLED | MFS_DEFAULT;
 					
 					///@todo This doesn't work, but I'll leave it in to remind me to try
 					// and fix it sometime. Stupid menus.
@@ -305,6 +306,25 @@ LRESULT CProjectTreeCtrl::OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 					if(project->Exists())
 					{
 						CSPopupMenu popup(IDR_POPUP_PROJECT);
+
+						if(multipleSelection)
+						{
+							CMenuItemInfo mii;
+							mii.fMask = MIIM_STATE;
+							mii.fState = MFS_DISABLED | MFS_GRAYED;
+
+							::SetMenuItemInfo(popup, ID_PROJECT_SETACTIVEPROJECT, FALSE, &mii);
+						}
+						else if(workspace->GetActiveProject() == project)
+						{
+							CMenuItemInfo mii;
+							mii.fMask = MIIM_STATE | MIIM_STRING;
+							mii.fState = MFS_ENABLED | MFS_CHECKED;
+							mii.dwTypeData = _T("Active Project");
+
+							::SetMenuItemInfo(popup, ID_PROJECT_SETACTIVEPROJECT, FALSE, &mii);
+						}
+
 						g_Context.m_frame->TrackPopupMenu(popup, 0, pt.x, pt.y, NULL, m_hWnd);
 					}
 				}
@@ -353,6 +373,16 @@ LRESULT CProjectTreeCtrl::OnEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 				PNASSERT(ptvdi->item.mask == TVIF_TEXT);
 				SetItem(&ptvdi->item);
 			}
+		}
+		break;
+
+		case ptWorkspace:
+		{
+			Projects::Workspace* pW = static_cast<Projects::Workspace*>(type);
+			pW->SetName(ptvdi->item.pszText);
+
+			PNASSERT(ptvdi->item.mask == TVIF_TEXT);
+			SetItem(&ptvdi->item);
 		}
 		break;
 	}
@@ -415,15 +445,18 @@ LRESULT CProjectTreeCtrl::OnAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 		dlgOpen.SetTitle(_T("Add Files"));
 		if(dlgOpen.DoModal() == IDOK)
 		{
+			HTREEITEM hLastInsert = NULL;
 			for(CPNOpenDialog::const_iterator i = dlgOpen.begin(); 
 				i != dlgOpen.end();
 				++i)
 			{
 				File* newFile = folder->AddFile((*i).c_str());
 				
-				AddFileNode(newFile, hParent, NULL);
-				Expand(hParent);
+				hLastInsert = AddFileNode(newFile, hParent, hLastInsert);
 			}
+			
+			SortChildren(hParent);
+			Expand(hParent);
 		}
 	}
 
@@ -610,6 +643,19 @@ LRESULT CProjectTreeCtrl::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 		}
 		break;
 	}
+
+	return 0;
+}
+
+LRESULT CProjectTreeCtrl::OnSetActiveProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(lastItem == NULL)
+		return 0;
+
+	if(lastItem->GetType() != ptProject)
+		return 0;
+
+	workspace->SetActiveProject( static_cast<Projects::Project*>(lastItem) );
 
 	return 0;
 }

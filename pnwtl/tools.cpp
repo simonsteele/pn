@@ -16,6 +16,8 @@
 #include "resource.h"
 #include "pndialogs.h" // for InputBox...
 
+#include "project.h"
+
 #include <sstream>
 #include <fstream>
 
@@ -271,6 +273,31 @@ void CToolCommandString::OnFormatChar(TCHAR thechar)
 
 		case _T('w'):
 			m_string += pChild->GetTextView()->GetCurrentWord();
+			break;
+
+		// current project file.
+		case _T('p'):
+			{
+				Projects::Workspace* pWorkspace = g_Context.m_frame->GetActiveWorkspace();
+				if(pWorkspace != NULL)
+				{
+					Projects::Project* pProject = pWorkspace->GetActiveProject();
+					
+					if(pProject != NULL && pProject->Exists())
+						m_string += pProject->GetFileName();
+				}
+			}
+			break;
+
+		// current project group (workspace) file.
+		case _T('g'):
+			{
+				Projects::Workspace* pWorkspace = g_Context.m_frame->GetActiveWorkspace();
+				if(pWorkspace != NULL && pWorkspace->CanSave())
+				{
+					m_string += pWorkspace->GetFileName();
+				}
+			}
 			break;
 
 		case _T('?'):

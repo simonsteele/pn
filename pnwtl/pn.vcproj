@@ -391,6 +391,9 @@
 				RelativePath=".\pnutils.h">
 			</File>
 			<File
+				RelativePath=".\project.h">
+			</File>
+			<File
 				RelativePath=".\resource.h">
 			</File>
 			<File
@@ -491,6 +494,9 @@
 				RelativePath="res\tbrFindCombo.bmp">
 			</File>
 			<File
+				RelativePath=".\res\tbrProjects.bmp">
+			</File>
+			<File
 				RelativePath="res\tbrScheme.bmp">
 			</File>
 			<File
@@ -498,9 +504,6 @@
 			</File>
 			<File
 				RelativePath=".\res\toolbar.bmp">
-			</File>
-			<File
-				RelativePath=".\res\toolbar1.bmp">
 			</File>
 			<File
 				RelativePath="res\workspace.ico">

@@ -189,6 +189,7 @@ class Workspace : public ProjectType, XMLParseState
 		void SetFileName(LPCTSTR filename_);
 
 		LPCTSTR GetName();
+		LPCTSTR GetFileName();
 
 		const PROJECT_LIST	GetProjects();
 
@@ -201,6 +202,9 @@ class Workspace : public ProjectType, XMLParseState
 
 		File* FindFile(LPCTSTR filename);
 
+		Projects::Project* GetActiveProject();
+		void SetActiveProject(Projects::Project* project);
+
 	//Implement XMLParseState
 	protected:
 		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
@@ -212,11 +216,12 @@ class Workspace : public ProjectType, XMLParseState
 		void Clear();
 
 	protected:
-		int				parseState;
-		PROJECT_LIST	projects;
-		tstring			name;
-		tstring			fileName;
-		bool			bDirty;
+		int					parseState;
+		PROJECT_LIST		projects;
+		tstring				name;
+		tstring				fileName;
+		bool				bDirty;
+		Projects::Project*	activeProject;
 };
 
 }

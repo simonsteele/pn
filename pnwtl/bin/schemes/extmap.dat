@@ -6,6 +6,7 @@
 .cf=Properties
 .cmd=batch
 .conf=Properties
+.config=xml
 .cpp=cpp
 .cs=csharp
 .css=css

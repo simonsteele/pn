@@ -10,6 +10,7 @@
 #define IDC_HEADERTEXT                  30
 #define IDC_FOOTERTEXT                  31
 #define ID_MRUFILE_BASE                 50
+#define ID_MRUFILE_MAX					99
 #define IDD_ABOUTBOX                    100
 #define IDC_FINDTEXT_COMBO              102
 #define IDC_FINDNEXT_BUTTON             103
@@ -133,6 +134,8 @@
 #define IDI_ICON3                       312
 #define IDI_BADPROJECT                  312
 #define IDR_POPUP_HEADERFOOTER          314
+#define IDR_TOOLBAR2                    316
+#define IDR_TBR_PROJECTS                316
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -321,14 +324,16 @@
 #define ID_ENCODING_UTF16BE             32891
 #define ID_ENCODING_UTF16LE             32892
 #define ID_ENCODING_UTF8                32893
+#define ID_PROJECT_SETACTIVEPROJECT     32897
+#define ID_BUTTON32901                  32901
 #define IDC_FINDTEXT_LABEL              65535
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        316
-#define _APS_NEXT_COMMAND_VALUE         32897
+#define _APS_NEXT_RESOURCE_VALUE        318
+#define _APS_NEXT_COMMAND_VALUE         32902
 #define _APS_NEXT_CONTROL_VALUE         1081
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

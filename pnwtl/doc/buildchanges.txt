@@ -1,6 +1,22 @@
 | Working towards 0.5 :: Mingus
 ---------------------------------------
 
+Since 08/12/03:
+
+Fixed save changed workspace code.
+Fixed save changed project code.
+Fixed project-group rename.
+Added .config to the xml file extensions - .NET config files.
+Added some bitmaps for projects context menus.
+Save All now saves the current project group and projects if changed.
+Added %p and %g to tool parameters. %p for project file, %g for project group file.
+Added Active Project concept. Right-click on a project to set active - or first project added is active.
+Removing a modified project from a project group causes a "do you want to save".
+
+Since 07/12/03:
+
+Fixed global pre-defined tools behaviour.
+
 Since 05/12/03:
 
 Fixed size combo box on styles tab.
