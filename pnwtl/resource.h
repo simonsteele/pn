@@ -29,11 +29,15 @@
 #define IDR_IMAGES                      201
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
+#define IDD_PNSAVE                      423
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_GOTOEDIT                    1004
+#define IDC_PNSCOMBO                    1005
 #define IDC_REPLACETEXT_LABEL           1042
 #define IDC_BACKSLASH_CHECK             1043
+#define IDC_PNSAVE_SAVEASSTATIC         1056
+#define IDC_PNSAVE_TYPECOMBO            1057
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -67,7 +71,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        205
 #define _APS_NEXT_COMMAND_VALUE         32777
-#define _APS_NEXT_CONTROL_VALUE         1005
+#define _APS_NEXT_CONTROL_VALUE         1006
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif
