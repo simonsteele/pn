@@ -18,6 +18,8 @@
 
 using namespace Projects;
 
+#define TCEX_DRAGTIMER	2
+
 //////////////////////////////////////////////////////////////////////////////
 // CProjectTreeCtrl
 //////////////////////////////////////////////////////////////////////////////
@@ -371,6 +373,7 @@ LRESULT	CProjectTreeCtrl::OnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 
 	//ShowCursor(FALSE);
 	SetCapture();
+	dragTimer = SetTimer(TCEX_DRAGTIMER, 25, NULL);
 
 	dragging = true;
 
@@ -404,6 +407,8 @@ LRESULT CProjectTreeCtrl::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
             ImageList_DragShowNolock(false);
 			TreeView_SelectDropTarget(m_hWnd, htiTarget);
 			ImageList_DragShowNolock(true);
+
+			hDropTargetItem = htiTarget;
         }
 
 		ImageList_DragMove(pt.x, pt.y);
@@ -412,11 +417,40 @@ LRESULT CProjectTreeCtrl::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 	return 0;
 }
 
+bool CProjectTreeCtrl::canDrop()
+{
+	//hDropTargetItem is the one the mouse is over.
+
+	//1) Check if the item is selected - can't drop an item on itself.
+	if( GetItemState(hDropTargetItem, TVIS_SELECTED) == TVIS_SELECTED )
+		return false;
+
+	//2) Now check if the target is a project that it's only a project
+	//   that's being dropped.
+
+	//3) If it's a file, check that it's only files being dropped.
+	
+	//4) If it's a folder, check that we're not trying to drop a parent.
+
+	return true;
+}
+
+bool CProjectTreeCtrl::handleDrop()
+{
+	//1) Move the individual items first.
+	//2) Move the folders after.
+	// - this makes sure we don't try to move subitems of folders once 
+	//   they've already been moved thus invalidating the HTREEITEMs.
+
+	return false;
+}
+
 void CProjectTreeCtrl::handleEndDrag()
 {
 	ImageList_DragLeave(m_hWnd);
 	ImageList_EndDrag();
     ReleaseCapture();
+	KillTimer(dragTimer);
 	//ShowCursor(TRUE);
 
 	TreeView_SelectDropTarget(m_hWnd, NULL);
@@ -430,8 +464,13 @@ LRESULT CProjectTreeCtrl::OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 {
 	bHandled = false;
 	if(dragging)
-	{		
+	{
 		handleEndDrag();
+
+		if(canDrop())
+		{
+			handleDrop();
+		}
 	}
 	return 0;
 }
@@ -450,6 +489,147 @@ LRESULT CProjectTreeCtrl::OnCaptureChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 {
 	if(dragging && (HWND)lParam != m_hWnd)
 		dragging = false;
+
+	return 0;
+}
+
+class ImageListDragShowNoLock
+{
+public:
+	ImageListDragShowNoLock()
+	{
+		ImageList_DragShowNolock(false);
+	}
+
+	~ImageListDragShowNoLock()
+	{
+		ImageList_DragShowNolock(true);
+	}
+};
+
+LRESULT CProjectTreeCtrl::OnMouseWheel(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if(dragging)
+	{
+		// Prevent corruption when mouse scrolling during a drag operation...
+		ImageListDragShowNoLock lockDrag;
+		DefWindowProc(uMsg, wParam, lParam);
+	}
+	else
+		bHandled = false;
+
+	return 0;
+}
+
+int GetScrollLimit(HWND hWnd, int nBar)
+{
+	int nMin = 0, nMax = 0;
+	::GetScrollRange(hWnd, nBar, &nMin, &nMax);
+	SCROLLINFO info = { 0 };
+	info.cbSize = sizeof(SCROLLINFO);
+	info.fMask = SIF_PAGE;
+	if(::GetScrollInfo(hWnd, nBar, &info))
+		nMax -= ((info.nPage - 1) > 0) ? (info.nPage - 1) : 0;
+
+	return nMax;
+}
+
+LRESULT CProjectTreeCtrl::OnTimer(UINT /*uMsg*/, WPARAM nIDEvent, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	if(!dragging || nIDEvent != TCEX_DRAGTIMER)
+	{
+		bHandled = false;
+		return 0;
+	}
+
+	POINT point;
+    GetCursorPos(&point);
+    ScreenToClient(&point);
+
+    // highlight target
+
+    TVHITTESTINFO tvHit;
+    tvHit.pt = point;
+    HTREEITEM hTarget = TreeView_HitTest(m_hWnd, &tvHit);
+
+	// If we're hovering over an item...
+	if(hTarget)
+	{
+		if(hTarget != hDragHoverItem)
+		{
+			dwDragHoverAcquire = GetTickCount();
+			hDragHoverItem = hTarget;
+		}
+		else
+		{
+			if((int)(GetTickCount() - dwDragHoverAcquire) > 1000)
+			{
+				// Prevent corruption
+				ImageListDragShowNoLock lockDrag;
+				
+				Expand(hTarget, TVE_TOGGLE);
+				
+				// Don't re-collapse unless the user waits another period of x...
+				dwDragHoverAcquire = GetTickCount() + 2000;
+			}
+		}
+	}
+	else
+	{
+		RECT rect;
+		GetClientRect(&rect);
+
+		int iMaxV = GetScrollLimit(m_hWnd, SB_VERT);
+		int iPosV = GetScrollPos  (SB_VERT);
+
+		// up
+		if((point.y < rect.top -10) && iPosV)
+		{
+			HTREEITEM hPrev = GetPrevVisibleItem(GetFirstVisibleItem());
+			ImageListDragShowNoLock lockDrag;
+			
+			EnsureVisible(hPrev);
+		}
+
+		// down
+		if((point.y > (rect.bottom + 10)) && (iPosV != iMaxV))
+		{
+			UINT Nb = GetVisibleCount();
+			if(Nb != -1)
+			{
+				HTREEITEM hNext = GetFirstVisibleItem();
+				for(UINT i = 0; i < Nb; i++)
+					hNext = GetNextVisibleItem(hNext);
+				
+				ImageListDragShowNoLock lockDrag;
+				
+				EnsureVisible(hNext);
+			}
+		}
+
+		int iPosH = GetScrollPos  (SB_HORZ);
+		int iMaxH = GetScrollLimit(m_hWnd, SB_HORZ);
+
+		// left
+		if((point.x < rect.left) && iPosH)
+		{
+			ImageListDragShowNoLock lockDrag;
+
+			SendMessage(WM_HSCROLL, SB_LINELEFT);
+		}
+
+		// right
+		if((point.x > rect.right) && (iPosH != iMaxH))
+		{
+			ImageListDragShowNoLock lockDrag;
+			
+			SendMessage(WM_HSCROLL, SB_LINERIGHT);
+		}
+	}
+
+	//m_pDragImgList->DragMove(point);
+
+//}
 
 	return 0;
 }

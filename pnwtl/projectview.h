@@ -39,6 +39,8 @@ public:
 		MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtonUp)
 		MESSAGE_HANDLER(WM_RBUTTONDOWN, OnRButtonDown)
 		MESSAGE_HANDLER(WM_CAPTURECHANGED, OnCaptureChanged)
+		MESSAGE_HANDLER(WM_MOUSEWHEEL, OnMouseWheel)
+		MESSAGE_HANDLER(WM_TIMER, OnTimer)
 
 		REFLECTED_NOTIFY_CODE_HANDLER(TVN_ENDLABELEDIT, OnEndLabelEdit)
 		REFLECTED_NOTIFY_CODE_HANDLER(NM_RCLICK, OnRightClick)
@@ -107,18 +109,24 @@ protected:
 	LRESULT OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnRButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnCaptureChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnMouseWheel(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
+	// Shell Drop
 	void handleDrop(HDROP hDrop, HTREEITEM hDropItem, Projects::Folder* pFolder);
 
+	// Drag and Drop
+	bool canDrop();
+	bool handleDrop();
+	void handleEndDrag();
+
 	void handleRemove();
-	//void handleRightClick();
 	void handleRightClick(LPPOINT pt);
 	void doContextMenu(LPPOINT pt);
-	void handleEndDrag();
 
 protected:
 	HTREEITEM				hLastItem;
@@ -132,6 +140,10 @@ protected:
 	bool					multipleSelection;
 	bool					dragging;
 	HIMAGELIST				hDragImageList;
+	int						dragTimer;
+	HTREEITEM				hDropTargetItem;
+	HTREEITEM				hDragHoverItem;
+	DWORD					dwDragHoverAcquire;
 	CComObject<DropTarget>* m_pDropTarget;
 };
 
