@@ -163,6 +163,29 @@ void COptionsManager::DeleteInstance()
 	}
 }
 
+/**
+ * @param path Path buffer, must be at least MAX_PATH big...
+ * @param folder Folder ID
+ */
+BOOL PNGetSpecialFolderPath (LPTSTR path, int folder)
+{
+    ITEMIDLIST *pidl;		// Shell Item ID List ptr
+    IMalloc    *imalloc;	// Shell IMalloc interface ptr
+    BOOL result;			// Return value
+
+    if (SHGetSpecialFolderLocation (NULL, folder, &pidl) != NOERROR)
+        return FALSE;
+
+    result = SHGetPathFromIDList (pidl, path);
+
+    if (SHGetMalloc (&imalloc) == NOERROR) {
+		imalloc->Free(pidl);
+        imalloc->Release();
+    }
+
+    return result;
+}
+
 void COptionsManager::GetSchemesPaths(ctcString& path, ctcString& compiledPath)
 {
 	TCHAR buf[MAX_PATH +1];
@@ -173,8 +196,10 @@ void COptionsManager::GetSchemesPaths(ctcString& path, ctcString& compiledPath)
 	int cutoff = path.rfind(_T('\\'));
 	path = path.substr(0, cutoff+1);
 	path += "Schemes\\";
-
-	if(SHGetSpecialFolderPath(NULL, buf, CSIDL_APPDATA, TRUE))
+	
+	/*ss 20/01/2003 Fix SF Bug #671357
+	SHGetSpecialFolderPath(NULL, buf, CSIDL_APPDATA, TRUE)*/
+	if(PNGetSpecialFolderPath(buf, CSIDL_APPDATA))
 	{
 		compiledPath = buf;
 		if(compiledPath[compiledPath.length()-1] != _T('\\'))
