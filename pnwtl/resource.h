@@ -24,6 +24,7 @@
 #define ID_EDITOR_WORDWRAP              130
 #define ID_EDITOR_COLOURISE             131
 #define ID_EDITOR_LINENOS               132
+#define IDS_TOOLFORMATSTRINGS           133
 #define IDD_FIND                        168
 #define IDR_TABS_POPUP                  169
 #define IDR_POPUP_REGEXP                170
@@ -115,8 +116,8 @@
 #define IDC_REPLACETEXT_LABEL           1042
 #define IDC_TE_PARAMSEDIT               1042
 #define IDC_BACKSLASH_CHECK             1043
-#define IDC_EDIT5                       1043
 #define IDC_TE_SHORTCUTEDIT             1043
+#define IDC_TE_INFOLABEL                1044
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_PNSAVE_TYPECOMBO            1057
 #define IDC_MARKALL_BUTTON              21199
@@ -161,7 +162,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        256
 #define _APS_NEXT_COMMAND_VALUE         32790
-#define _APS_NEXT_CONTROL_VALUE         1044
+#define _APS_NEXT_CONTROL_VALUE         1045
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

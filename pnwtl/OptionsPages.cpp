@@ -102,9 +102,8 @@ LRESULT CStyleDisplay::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	}
 
 	// Draw a light border around the control.
-	HBRUSH light = ::CreateSolidBrush(::GetSysColor(COLOR_3DSHADOW));
+	HBRUSH light = ::GetSysColorBrush(COLOR_3DSHADOW);
 	dc.FrameRect(rc, light);
-	::DeleteObject(light);
 	
 	EndPaint(&ps);
 	return 0;
@@ -875,22 +874,6 @@ TOOLDEFS_LIST& SchemeTools::GetTools()
 	return m_Tools;
 }
 
-void SchemeTools::Load()
-{
-	///@todo
-	tstring uspath;
-	COptionsManager::GetInstance()->GetPNPath(uspath, PNPATH_USERSETTINGS);
-	uspath += _T("exttools.ini");
-}
-
-void SchemeTools::Save()
-{
-	///@todo
-	tstring uspath;
-	COptionsManager::GetInstance()->GetPNPath(uspath, PNPATH_USERSETTINGS);
-	uspath += _T("exttools.ini");
-}
-
 void SchemeTools::Add(SToolDefinition* pDef)
 {
 	m_Tools.push_back(pDef);
@@ -900,6 +883,176 @@ void SchemeTools::Delete(SToolDefinition* pDef)
 {
 	m_Tools.remove(pDef);
 	delete pDef;
+}
+
+void SchemeTools::WriteDefinition(ofstream& stream)
+{
+	if(m_Tools.size() != 0)
+	{
+		stream << "\t<scheme name=\"" << m_Scheme << "\">\n";
+		
+		for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
+		{
+			stream << "\t\t<tool name=\"" << (*i)->Name << "\" ";
+			stream << "command=\"" << (*i)->Command << "\" ";
+			stream << "folder=\"" << (*i)->Folder << "\" ";
+			stream << "params=\"" << (*i)->Params << "\" ";
+			stream << "shortcut=\"" << (*i)->Shortcut << "\" ";
+			stream << "/>\n";
+		}
+
+		stream << "\t</scheme>\n";
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// SchemeToolsManager
+//////////////////////////////////////////////////////////////////////////////
+
+SchemeToolsManager::SchemeToolsManager()
+{
+	m_pCur = NULL;
+
+	ReLoad();
+}
+
+SchemeToolsManager::~SchemeToolsManager()
+{
+	Clear();
+}
+
+void SchemeToolsManager::Clear()
+{
+	for(SCHEMETOOLS_MAP::iterator i = m_toolSets.begin(); i != m_toolSets.end(); ++i)
+	{
+		delete (*i).second;
+	}
+
+	m_toolSets.clear();
+}
+
+SchemeTools* SchemeToolsManager::GetToolsFor(LPCTSTR scheme)
+{
+	tstring stofind(scheme);
+	SCHEMETOOLS_MAP::iterator i = m_toolSets.find(stofind);
+	
+	SchemeTools* pRet = NULL;
+
+	if(i != m_toolSets.end())
+	{
+		pRet = (*i).second;
+	}
+	else
+	{
+		pRet = new SchemeTools(stofind.c_str());
+		m_toolSets.insert(SCHEMETOOLS_MAP::value_type(stofind, pRet));
+	}
+
+	return pRet;
+}
+
+void SchemeToolsManager::ReLoad()
+{
+	XMLParser parser;
+	parser.SetParseState(this);
+
+	tstring uspath;
+	COptionsManager::GetInstance()->GetPNPath(uspath, PNPATH_USERSETTINGS);
+	uspath += _T("UserTools.xml");
+
+	if(FileExists(uspath.c_str()))
+	{
+		try
+		{
+			parser.LoadFile(uspath.c_str());
+		}
+		catch ( XMLParserException& ex )
+		{
+			::OutputDebugString(_T("XML Parser Exception loading Scheme Tools:"));
+			::OutputDebugString(ex.GetMessage());
+		}
+
+	}
+}
+
+void SchemeToolsManager::Save()
+{
+	tstring uspath;
+	COptionsManager::GetInstance()->GetPNPath(uspath, PNPATH_USERSETTINGS);
+	uspath += _T("UserTools.xml");
+
+	ofstream str;
+	str.open(uspath.c_str(), ios_base::out);
+	if(str.is_open())
+	{
+		str << "<?xml version=\"1.0\"?>\n<schemetools>";
+		for(SCHEMETOOLS_MAP::const_iterator i = m_toolSets.begin(); i != m_toolSets.end(); ++i)
+		{
+			(*i).second->WriteDefinition(str);
+		}
+		str << "</schemetools>";
+
+		str.close();
+	}
+}
+
+void SchemeToolsManager::processScheme(XMLAttributes& atts)
+{
+	LPCTSTR schemename = atts.getValue(_T("name"));
+	if(schemename)
+	{
+		m_pCur = new SchemeTools(schemename);
+
+		tstring stoadd(schemename);
+		m_toolSets.insert(SCHEMETOOLS_MAP::value_type(stoadd, m_pCur));
+	}
+}
+
+void SchemeToolsManager::processTool(XMLAttributes& atts)
+{
+	LPCTSTR toolname = atts.getValue(_T("name"));
+	if(m_pCur && toolname)
+	{
+		SToolDefinition* pDef = new SToolDefinition;
+		pDef->Name = toolname;
+		
+		int c = atts.getCount();
+
+		for(int i = 0; i < c; ++i)
+		{
+			LPCTSTR attr = atts.getName(i);
+			LPCTSTR val = atts.getValue(i);
+			
+			if(_tcscmp(attr, _T("command")) == 0)
+				pDef->Command = val;
+			else if(_tcscmp(attr, _T("params")) == 0)
+				pDef->Params = val;
+			else if(_tcscmp(attr, _T("folder")) == 0)
+				pDef->Folder = val;
+			else if(_tcscmp(attr, _T("shortcut")) == 0)
+				pDef->Shortcut = val;
+		}
+
+		m_pCur->Add(pDef);
+	}
+}
+
+void SchemeToolsManager::startElement(LPCTSTR name, XMLAttributes& atts)
+{
+	if(_tcscmp(name, _T("scheme")) == 0)
+	{
+		processScheme(atts);
+	}
+	else if(_tcscmp(name, _T("tool")) == 0)
+	{
+		processTool(atts);
+	}
+}
+
+void SchemeToolsManager::endElement(LPCTSTR name)
+{
+	if(_tcscmp(name, _T("scheme")) == 0)
+		m_pCur = NULL;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -915,12 +1068,7 @@ COptionsPageTools::COptionsPageTools(SchemeConfigParser* pSchemes)
 
 COptionsPageTools::~COptionsPageTools()
 {
-	for(SCHEMETOOLS_MAP::iterator i = m_toolstores.begin(); i != m_toolstores.end(); ++i)
-	{
-		delete (*i).second;
-	}
-
-	m_toolstores.clear();
+	
 }
 
 LRESULT COptionsPageTools::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -949,9 +1097,10 @@ LRESULT COptionsPageTools::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	m_combo.SetWindowPos(HWND_TOP, &rcCombo, 0);
 
 	m_list.Attach(GetDlgItem(IDC_LIST));
+	m_list.SetExtendedListViewStyle( m_list.GetExtendedListViewStyle() | LVS_EX_FULLROWSELECT );
 	m_list.GetClientRect(rc);
-	m_list.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 100, 0);
-	m_list.InsertColumn(1, _T("Command"), LVCFMT_LEFT, rc.Width() - 100 - 20, 0);
+	m_list.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 130, 0);
+	m_list.InsertColumn(1, _T("Command"), LVCFMT_LEFT, rc.Width() - 130 - 20, 0);
 
 	m_btnMoveUp.SetDirection(CArrowButton::abdUp);
 	m_btnMoveUp.SubclassWindow(GetDlgItem(IDC_TOOLS_MOVEUPBUTTON));
@@ -979,21 +1128,35 @@ void COptionsPageTools::OnInitialise()
 
 void COptionsPageTools::OnOK()
 {
-	for(SCHEMETOOLS_MAP::iterator i = m_toolstores.begin(); i != m_toolstores.end(); ++i)
-	{
-		(*i).second->Save();
-	}
+	m_toolstore.Save();
 }
 
 void COptionsPageTools::Update()
 {
+	m_bChanging = true;
+
+	m_pCurrent = NULL;
+	m_list.DeleteAllItems();
+
 	int iSel = m_combo.GetCurSel();
 	if (iSel != -1)
 	{
 		m_pScheme = reinterpret_cast<SchemeConfig*>(m_combo.GetItemData(iSel));
 	}
+	else
+		m_pScheme = NULL;
 
-	m_pCurrent = NULL;
+	SchemeTools* pTools = GetTools();
+	if(pTools)
+	{
+		TOOLDEFS_LIST& l = pTools->GetTools();
+		for(TOOLDEFS_LIST::const_iterator i = l.begin(); i != l.end(); ++i)
+		{
+			AddDefinition(*i);
+		}
+	}
+
+	m_bChanging = false;
 	
 	EnableButtons();
 }
@@ -1002,18 +1165,7 @@ SchemeTools* COptionsPageTools::GetTools()
 {
 	if(!m_pCurrent)
 	{
-		tstring stofind(m_pScheme->m_Name);
-		SCHEMETOOLS_MAP::iterator i = m_toolstores.find(stofind);
-
-		if(i != m_toolstores.end())
-		{
-			m_pCurrent = (*i).second;
-		}
-		else
-		{
-			m_pCurrent = new SchemeTools(stofind.c_str());
-			m_toolstores.insert(SCHEMETOOLS_MAP::value_type(stofind, m_pCurrent));
-		}
+		m_pCurrent = m_toolstore.GetToolsFor(m_pScheme->m_Name);
 	}
 		
 	return m_pCurrent;
@@ -1021,6 +1173,9 @@ SchemeTools* COptionsPageTools::GetTools()
 
 void COptionsPageTools::EnableButtons()
 {
+	if(m_bChanging)
+		return;
+
 	bool bEnable = (m_pScheme != NULL);
 	int iSelIndex = m_list.GetSelectedIndex();
 
@@ -1036,6 +1191,26 @@ void COptionsPageTools::EnableButtons()
 	m_btnMoveDown.EnableWindow(bEnable && (iSelIndex != (m_list.GetItemCount() - 1)));
 }
 
+void COptionsPageTools::AddDefinition(SToolDefinition* pDef)
+{
+	LVITEM lvi;
+
+	lvi.mask = LVIF_IMAGE | LVIF_TEXT | LVIF_PARAM;
+	lvi.iItem = m_list.GetItemCount();
+	lvi.iSubItem = 0;
+	lvi.pszText = const_cast<LPTSTR>( pDef->Name.c_str() );
+	lvi.iImage = 0;
+	lvi.lParam = reinterpret_cast<LPARAM>(pDef);
+
+	int iItem = m_list.InsertItem(&lvi);
+
+	lvi.iItem = iItem;
+	lvi.mask = LVIF_TEXT;
+	lvi.iSubItem = 1;
+	lvi.pszText = const_cast<LPTSTR>( pDef->Command.c_str() );
+	m_list.SetItem(&lvi);
+}
+
 LRESULT COptionsPageTools::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CToolEditorDialog dlg;
@@ -1048,22 +1223,7 @@ LRESULT COptionsPageTools::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 		GetTools()->Add(pDef);
 		dlg.GetValues(pDef);
 
-		LVITEM lvi;
-
-		lvi.mask = LVIF_IMAGE | LVIF_TEXT | LVIF_PARAM;
-		lvi.iItem = m_list.GetItemCount();
-		lvi.iSubItem = 0;
-		lvi.pszText = const_cast<LPTSTR>( pDef->Name.c_str() );
-		lvi.iImage = 0;
-		lvi.lParam = reinterpret_cast<LPARAM>(pDef);
-
-		int iItem = m_list.InsertItem(&lvi);
-
-		lvi.iItem = iItem;
-		lvi.mask = LVIF_TEXT;
-		lvi.iSubItem = 1;
-		lvi.pszText = const_cast<LPTSTR>( pDef->Command.c_str() );
-		m_list.SetItem(&lvi);
+		AddDefinition(pDef);
 	}
 
 	return 0;
@@ -1144,9 +1304,121 @@ LRESULT COptionsPageTools::OnListClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 	return 0;
 }
 
+LRESULT COptionsPageTools::OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	BOOL bHandled;
+	OnEditClicked(0, 0, 0, bHandled);
+	return 0;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // CToolEditorDialog
 //////////////////////////////////////////////////////////////////////////////
+
+CToolEditorDialog::CInfoLabel::CInfoLabel()
+{
+	m_pTitleFont = /*m_pBodyFont =*/ NULL;
+
+	memset(strbuf, 0, sizeof(strbuf));
+	LoadString(NULL, IDS_TOOLFORMATSTRINGS, strbuf, 200);
+}
+
+CToolEditorDialog::CInfoLabel::~CInfoLabel()
+{
+	if(m_pTitleFont)
+	{
+		delete m_pTitleFont;
+		//delete m_pBodyFont;
+	}
+}
+
+void CToolEditorDialog::CInfoLabel::MakeFonts(HDC hDC)
+{
+	if(!m_pTitleFont)
+	{
+		LOGFONT lf;
+		memset(&lf, 0, sizeof(LOGFONT));
+
+		HFONT hDefFont = static_cast<HFONT>( GetStockObject(DEFAULT_GUI_FONT) );
+		GetObject(hDefFont, sizeof(LOGFONT), &lf);
+		
+		lf.lfWeight = FW_BOLD;
+
+		m_pTitleFont = new CFont;
+		m_pTitleFont->CreateFontIndirect(&lf);
+	}
+	
+	//lf.lfWeight = FW_NORMAL;
+	//m_pBodyFont->CreateFontIndirect(&lf);
+}
+
+LRESULT CToolEditorDialog::CInfoLabel::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	PAINTSTRUCT ps;
+	::BeginPaint(m_hWnd, &ps);
+
+	CDCHandle dc(ps.hdc);
+
+	MakeFonts(dc);
+
+	CRect rc;
+
+	GetClientRect(rc);
+	
+	CRect framerc(rc);
+
+	CBrush brush;
+	brush.CreateSysColorBrush(COLOR_INFOBK);
+
+	dc.FillRect(rc, brush);
+
+	rc.DeflateRect(3, 3, 2, 2);
+
+	// Draw Text...
+	if(m_pTitleFont)
+	{
+		HFONT hOldFont = dc.SelectFont(m_pTitleFont->m_hFont);
+		
+		dc.SetBkColor(GetSysColor(COLOR_INFOBK));
+		dc.SetTextColor(GetSysColor(COLOR_INFOTEXT));
+
+		int height = dc.DrawText(_T("Special Symbols:"), 16, rc, DT_TOP | DT_LEFT);
+		rc.top += height + 2;
+		rc.left += 25;
+
+		dc.SelectStockFont(DEFAULT_GUI_FONT);
+
+		/* We draw up to two columns of text to display the % special chars. 
+		This should be modified to draw as many as necessary. 
+		Use a while pPipe instead of if...*/
+		///@todo Make this x-column tastic.
+
+		TCHAR* pPipe = _tcschr(strbuf, _T('|'));
+		CRect rcCol(rc);
+		if(pPipe)
+		{
+			*pPipe = '\0';
+			dc.DrawText(strbuf, _tcslen(strbuf), rcCol, DT_TOP | DT_LEFT | DT_WORDBREAK | DT_CALCRECT);	
+		}
+
+		dc.DrawText(strbuf, _tcslen(strbuf), rc, DT_TOP | DT_LEFT | DT_WORDBREAK);
+
+		if(pPipe)
+		{
+			*pPipe++ = _T('|');
+			rc.left += rcCol.Width() + 20;
+			dc.DrawText(pPipe, _tcslen(pPipe), rc, DT_TOP | DT_LEFT | DT_WORDBREAK);
+		}
+
+		dc.SelectFont(hOldFont);
+	}
+
+	HBRUSH light = ::GetSysColorBrush(COLOR_3DSHADOW);
+	dc.FrameRect(framerc, light);
+
+	::EndPaint(m_hWnd, &ps);
+	return 0;
+}
 
 CToolEditorDialog::CToolEditorDialog()
 {
@@ -1162,6 +1434,8 @@ CToolEditorDialog::CToolEditorDialog()
 LRESULT CToolEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	SetWindowText(m_csDisplayTitle);
+
+	m_infolabel.SubclassWindow(GetDlgItem(IDC_TE_INFOLABEL));
 
 	DoDataExchange();
 

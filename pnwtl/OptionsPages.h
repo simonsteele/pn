@@ -16,6 +16,8 @@
 
 #include "SchemeConfig.h"
 
+#include <fstream>
+
 class CPNColorButton : public CColorButton
 {
 	public:
@@ -253,12 +255,44 @@ class SchemeTools
 		void			Add(SToolDefinition* pDef);
 		void			Delete(SToolDefinition* pDef);
 
-		void			Load();
-		void			Save();
+		void			WriteDefinition(ofstream& stream);
+
+		/*void			Load();
+		void			Save();*/
 
 	protected:
 		TOOLDEFS_LIST	m_Tools;
 		tstring			m_Scheme;
+};
+
+class SchemeToolsManager : public XMLParseState
+{
+	public:
+		SchemeToolsManager();
+		~SchemeToolsManager();
+		
+		SchemeTools* GetToolsFor(LPCTSTR scheme);
+
+		void ReLoad();
+		void Save();
+
+	protected:
+		void Clear();
+
+		// Scheme & Tool Creation
+		void processScheme(XMLAttributes& atts);
+		void processTool(XMLAttributes& atts);
+
+		// XML Parsing
+		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
+		virtual void endElement(LPCTSTR name);
+		virtual void characterData(LPCTSTR data, int len){}
+
+	protected:
+		typedef std::map<tstring, SchemeTools*> SCHEMETOOLS_MAP;
+
+		SchemeTools*	m_pCur;
+		SCHEMETOOLS_MAP m_toolSets;
 };
 
 /**
@@ -280,6 +314,7 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 			COMMAND_HANDLER(IDC_TOOLS_ADDBUTTON, BN_CLICKED, OnAddClicked)
 			NOTIFY_HANDLER(IDC_LIST, LVN_KEYDOWN, OnListKeyDown);
 			NOTIFY_HANDLER(IDC_LIST, NM_CLICK, OnListClicked)
+			NOTIFY_HANDLER(IDC_LIST, NM_DBLCLK, OnListDblClicked)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 
@@ -288,6 +323,8 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 		virtual LPCTSTR GetTreePosition();
 
 	protected:
+		void AddDefinition(SToolDefinition* pDef);
+
 		void EnableButtons();
 		void Update();
 		void SetItem();
@@ -304,17 +341,17 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 
 		LRESULT OnListKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 		LRESULT OnListClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+		LRESULT OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	protected:
-		typedef std::map<tstring, SchemeTools*> SCHEMETOOLS_MAP;
-
+		bool				m_bChanging;
 		CComboBox			m_combo;
 		CListViewCtrl		m_list;
 		SchemeConfigParser* m_pSchemes;
 		SchemeConfig*		m_pScheme;
 		SchemeTools*		m_pCurrent;
 
-		SCHEMETOOLS_MAP		m_toolstores;
+		SchemeToolsManager	m_toolstore;
 
 		CArrowButton		m_btnMoveUp;
 		CArrowButton		m_btnMoveDown;
@@ -325,7 +362,7 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 {
 	public:
 		CToolEditorDialog();
-
+        
 		enum {IDD = IDD_TOOLEDITOR};
 
 		BEGIN_MSG_MAP(CToolEditorDialog)
@@ -353,6 +390,26 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 		void SetTitle(LPCTSTR title);
 
 	protected:
+		class CInfoLabel : public CWindowImpl<CInfoLabel>
+		{
+			public:
+				CInfoLabel();
+				~CInfoLabel();
+
+				BEGIN_MSG_MAP(CInfoLabel)
+					MESSAGE_HANDLER(WM_PAINT, OnPaint);
+				END_MSG_MAP()
+
+			protected:
+				void MakeFonts(HDC hDC);
+				LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+				CFont*	m_pTitleFont;
+				TCHAR	strbuf[200];
+				//CFont*	m_pBodyFont;
+		};
+
+	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -363,6 +420,8 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 		CString	m_csFolder;
 		CString	m_csParams;
 		CString	m_csShortcut;
+
+		CInfoLabel m_infolabel;
 };
 
 #endif

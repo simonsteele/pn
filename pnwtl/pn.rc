@@ -330,6 +330,7 @@ BEGIN
     ID_EDITOR_WORDWRAP      "Toggle word wrap"
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
     ID_EDITOR_LINENOS       "Toggle line numbers display"
+    IDS_TOOLFORMATSTRINGS   "%f: File Name\n%n: File Name (no ext)\n%l: Current Line Number|%d: Path of File\n%c: Caret Column\n%%: Percent Symbol"
 END
 
 STRINGTABLE 
@@ -756,7 +757,7 @@ BEGIN
     ICON            IDR_MDICHILD,IDC_STATIC,6,6,20,20
 END
 
-IDD_TOOLEDITOR DIALOGEX 0, 0, 286, 137
+IDD_TOOLEDITOR DIALOGEX 0, 0, 286, 145
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Tool Editor"
@@ -777,6 +778,7 @@ BEGIN
     RTEXT           "Folder:",IDC_STATIC,6,42,42,12
     RTEXT           "Parameters:",IDC_STATIC,6,60,42,8
     RTEXT           "Shortcut:",IDC_STATIC,6,78,42,12
+    LTEXT           "Static",IDC_TE_INFOLABEL,6,96,276,42
 END
 
 
@@ -855,7 +857,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 279
         TOPMARGIN, 7
-        BOTTOMMARGIN, 130
+        BOTTOMMARGIN, 138
     END
 END
 #endif    // APSTUDIO_INVOKED

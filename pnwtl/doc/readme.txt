@@ -20,7 +20,8 @@ What's new?
 
 1) Configurable scheme keywords.
 2) Now opens filenames from the command-line (or explorer associations).
-
+3) Basic Tools functionality. Configure from Options->Tools.
+4) CSS Scheme now works.
 
 If you find a bug:
 ------------------
@@ -39,7 +40,6 @@ Please don't moan about the following, they are all quite obvious to us already:
 3) No tools.
 4) Toolbars aren't dockable.
 5) You can't turn the tabs off.
-6) CSS Scheme isn't implemented properly.
 
 So what is good?
 ----------------
