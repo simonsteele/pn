@@ -16,6 +16,8 @@
 namespace Projects
 {
 
+#include <list>
+
 #include "xmlparser.h"
 
 typedef struct tagProjectWriter* ProjectWriter;
@@ -34,7 +36,6 @@ typedef enum {ptFile, ptFolder, ptProject, ptWorkspace} PROJECT_TYPE;
 class XmlNode;
 class XmlAttribute;
 
-#include <list>
 typedef std::list<XmlNode*>			LIST_NODES;
 typedef std::list<XmlAttribute*>	LIST_ATTRS;
 
@@ -53,10 +54,15 @@ class XmlNode
 		void Write(ProjectWriter writer);
 
 		void AddAttributes(XMLAttributes& atts);
+		void AddChild(XmlNode* pChild);
+
+		XmlNode* GetParent();
 
 	protected:
 		tstring		sNamespace;
 		tstring		sName;
+
+		XmlNode*	pParent;
 		
 		LIST_NODES	children;
 		LIST_ATTRS	attributes;
@@ -236,15 +242,16 @@ class Project : public Folder, XMLParseState
 		
 		void parse();
 
-		Folder*	currentFolder;
-		File*	lastParsedFile;
-		tstring fileName;
-		bool	bExists;
-		bool	bDirty;
-		int		parseState;
-		int		nestingLevel;
-		int		udNestingLevel;
-		int		udBase;
+		Folder*		currentFolder;
+		File*		lastParsedFile;
+		XmlNode*	lastNode;
+		tstring		fileName;
+		bool		bExists;
+		bool		bDirty;
+		int			parseState;
+		int			nestingLevel;
+		int			udNestingLevel;
+		int			udBase;
 };
 
 typedef std::list<Project*>		PROJECT_LIST;

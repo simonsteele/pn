@@ -15,6 +15,12 @@
 
 #define u(x) (utf8)x
 
+#if defined (_DEBUG)
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 namespace Projects
 {
 
@@ -70,6 +76,7 @@ XmlNode::XmlNode(LPCTSTR lpszNamespace, LPCTSTR lpszName)
 {
 	sNamespace = lpszNamespace;
 	sName = lpszName;
+	pParent = NULL;
 }
 
 XmlNode::XmlNode(LPCTSTR qualifiedName)
@@ -84,11 +91,14 @@ XmlNode::XmlNode(LPCTSTR qualifiedName)
 		int nslen = (pSep - qualifiedName) / sizeof(TCHAR);
 		_tcsncpy(buf, qualifiedName, (pSep - qualifiedName) / sizeof(TCHAR));
 		buf[nslen] = _T('\0');
+		sNamespace = buf;
 		
 		delete [] buf;
 	}
 	else
 		sName = qualifiedName;
+
+	pParent = NULL;
 }
 
 XmlNode::~XmlNode()
@@ -135,6 +145,17 @@ void XmlNode::AddAttributes(XMLAttributes& atts)
 	}
 }
 
+void XmlNode::AddChild(XmlNode* pChild)
+{
+	children.insert(children.end(), pChild);
+	pChild->pParent = this;
+}
+
+XmlNode* XmlNode::GetParent()
+{
+	return pParent;
+}
+
 void XmlNode::Write(ProjectWriter writer)
 {
 	genxStartElementLiteral(writer->w, 
@@ -156,7 +177,7 @@ void XmlNode::Write(ProjectWriter writer)
 
 XmlAttribute::XmlAttribute(LPCTSTR lpszNamespace, LPCTSTR lpszName, LPCTSTR lpszValue)
 {
-	sNamespace = lpszNamespace;
+	sNamespace = lpszNamespace != NULL ? lpszNamespace : _T("");
 	sName = lpszName;
 	sValue = lpszValue;
 }
@@ -581,10 +602,7 @@ void Folder::WriteDefinition(SProjectWriter* definition)
 void Folder::writeContents(SProjectWriter* definition)
 {
 	// Save user data...
-	for(XN_CIT i = userData.begin(); i != userData.end(); ++i)
-	{
-		(*i)->Write(definition);
-	}
+	userData.Write(definition);
 
 	// Save children folders
 	for(FOLDER_LIST::const_iterator i = children.begin();
@@ -710,6 +728,7 @@ void Project::parse()
 	currentFolder = this;
 	parseState = PS_START;
 	udNestingLevel = 0;
+	lastNode = NULL;
 	
 	// create a namespace aware parser...
 	XMLParser parser(true);
@@ -766,6 +785,10 @@ void Project::startElement(LPCTSTR name, XMLAttributes& atts)
 			processFolder(atts);
 		}
 	}
+	else if( IN_STATE(PS_FILE) )
+	{
+		processUserData(name, atts);
+	}
 	else if( IN_STATE(PS_USERDATA) )
 	{
 		processUserData(name, atts);
@@ -802,9 +825,11 @@ void Project::endElement(LPCTSTR name)
 	}
 	else if( IN_STATE(PS_USERDATA) )
 	{
+		if(lastNode)
+			lastNode = lastNode->GetParent();
 		udNestingLevel--;
 		if(udNestingLevel == 0)
-			STATE(udBase);			
+			STATE(udBase);
 	}
 }
 
@@ -843,19 +868,29 @@ void Project::processUserData(LPCTSTR name, XMLAttributes& atts)
 	udNestingLevel++;
 	
 	XmlNode* pNode = new XmlNode(name);
+	pNode->AddAttributes(atts);
 
-	switch(udBase)
+	if(lastNode)
 	{
-		case PS_PROJECT:
-			userData.Add(pNode);
-		break;
+		lastNode->AddChild(pNode);
+		lastNode = pNode;
+	}
+	else
+	{
+		switch(udBase)
+		{
+			case PS_PROJECT:
+				userData.Add(pNode);
+			break;
 
-		case PS_FOLDER:
-			currentFolder->GetUserData().Add(pNode);
-		break;
+			case PS_FOLDER:
+				currentFolder->GetUserData().Add(pNode);
+			break;
 
-		case PS_FILE:
-		break;
+			case PS_FILE:
+				lastParsedFile->GetUserData().Add(pNode);
+			break;
+		}
 	}
 }
 
