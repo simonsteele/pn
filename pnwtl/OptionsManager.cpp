@@ -124,15 +124,35 @@ void COptionsManager::DeleteInstance()
 
 void COptionsManager::GetSchemesPaths(ctcString& path, ctcString& compiledPath)
 {
-	TCHAR *buf = new TCHAR[MAX_PATH +1];
+	TCHAR buf[MAX_PATH +1];
+	
 	GetModuleFileName(NULL, buf, MAX_PATH);
 	path = buf;
-	delete [] buf;
 	
 	int cutoff = path.rfind(_T('\\'));
 	path = path.substr(0, cutoff+1);
 	path += "Schemes\\";
 
 	//@todo Change this to the path for the compiled schemes
-	compiledPath = path;
+	
+	if(SHGetSpecialFolderPath(NULL, buf, CSIDL_APPDATA, TRUE))
+	{
+		compiledPath = buf;
+		if(compiledPath[compiledPath.length()-1] != _T('\\'))
+		{
+			compiledPath += _T('\\');
+		}
+
+		compiledPath += _T("Programmers Notepad\\");
+		//@todo Check DirExists()...
+		::CreateDirectory(compiledPath.c_str(), NULL);
+
+		compiledPath += _T("Schemes\\");
+		::CreateDirectory(compiledPath.c_str(), NULL);
+	}
+	else
+	{
+		// fallback and compile into the schemes definition folder.
+        compiledPath = path;
+	}
 }

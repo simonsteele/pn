@@ -388,10 +388,6 @@ CSchemeManager::~CSchemeManager()
 	if(m_CompiledPath)
 		delete [] m_CompiledPath;
 
-	/*for(SCIT i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
-	{
-		delete (*i);
-	}*/
 	m_Schemes.clear();
 
 	m_SchemeNameMap.clear();
@@ -478,6 +474,12 @@ void CSchemeManager::Load()
 	sPattern += _T("*.cscheme");
 	
 	hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
+	if(hFind == INVALID_HANDLE_VALUE)
+	{
+		// The compiled schemes directory may have been moved, re-compile.
+		Compile();
+		hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
+	}
 	if (hFind != INVALID_HANDLE_VALUE)
 	{
 		found = TRUE;
@@ -516,53 +518,62 @@ void CSchemeManager::Load()
 
 	m_Schemes.sort();
 
-	LoadExtMap(m_CompiledPath);
+	LoadExtMap();
 }
 
 /**
- * Now we load the extension to filetype mappings from a flat
+ * Load the extension to filetype mappings from a flat
  * properties style key=value file. The file must be formatted:
  * .extension=schemename\r\n
  */
-void CSchemeManager::LoadExtMap(LPCTSTR folder)
+void CSchemeManager::LoadExtMap()
 {
-	CString fn(folder);
-	fn += _T("extmap.dat");
+	PNASSERT(m_SchemePath != NULL);
+	PNASSERT(m_CompiledPath != NULL);
 	
 	CTextFile file;
-	file.Open(fn, CFile::modeText);
-
-	CString buf;
+	CString fn;
+	bool bOK;
 	
-	// The strings currently used for the rest of the scheme management
-	// system are std::strings typedef'd to ctcString.
-	ctcString ext;
-	ctcString scheme;
+	fn = m_CompiledPath;
+	fn += _T("extmap.dat");
+	bOK = file.Open(fn, CFile::modeText);
 	
-	CScheme* sch;
-	int pos;
-
-	while(file.ReadLine(buf))
+	if(!bOK)
 	{
-		pos = buf.Find(_T('='));
-		ext = buf.Left(pos);
-		scheme = buf.Mid(pos+1);
-
-		sch = SchemeByName(scheme.c_str());
-		m_SchemeExtMap.insert(m_SchemeExtMap.end(), SCMITEM(ext, sch));
+		fn = m_SchemePath;
+		fn += _T("extmap.dat");
+		bOK = file.Open(fn, CFile::modeText);
 	}
-	file.Close();
+		
+	if(bOK)
+	{
+
+		CString buf;
+		
+		// The strings currently used for the rest of the scheme management
+		// system are std::strings typedef'd to ctcString.
+		ctcString ext;
+		ctcString scheme;
+		
+		CScheme* sch;
+		int pos;
+
+		while(file.ReadLine(buf))
+		{
+			pos = buf.Find(_T('='));
+			ext = buf.Left(pos);
+			scheme = buf.Mid(pos+1);
+
+			sch = SchemeByName(scheme.c_str());
+			m_SchemeExtMap.insert(m_SchemeExtMap.end(), SCMITEM(ext, sch));
+		}
+		file.Close();
+	}
 }
 
 /**
- * Here is where it may be better to use some custom string class than
- * a basic_string - we can use one with built in allocation limiting,
- * and lowercasing. Therefore, the comparison will save allocating a 
- * string twice for every get. However, this is for later... Alternatively,
- * we could simply make use of the stricmp feature then... Another alternative
- * would be to make a sub-class of basic_string which used _tcsicmp. This would
- * not provide allocation limiting, but might be simpler.
- * @todo above optimisations.
+ * @return The scheme for extension "ext" e.g. .pas
  */
 CScheme* CSchemeManager::SchemeForExt(LPCTSTR ext)
 {
@@ -583,13 +594,7 @@ CScheme* CSchemeManager::SchemeForExt(LPCTSTR ext)
 }
 
 /**
- * Here is where it may be better to use some custom string class than
- * a basic_string - we can use one with built in allocation limiting,
- * and lowercasing. Therefore, the comparison will save allocating a 
- * string twice for every get. However, this is for later... Alternatively,
- * we could simply make use of the stricmp feature then... Another alternative
- * would be to make a sub-class of basic_string which used _tcsicmp. This would
- * not provide allocation limiting, but might be simpler.
+ * @return CScheme* identified by "name"
  */
 CScheme* CSchemeManager::SchemeByName(LPCTSTR name)
 {
@@ -609,6 +614,9 @@ CScheme* CSchemeManager::SchemeByName(LPCTSTR name)
 		return &m_DefaultScheme;
 }
 
+/**
+ * Compile all available schemes
+ */
 void CSchemeManager::Compile()
 {
 	PNASSERT(m_SchemePath != NULL);

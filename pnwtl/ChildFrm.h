@@ -393,10 +393,7 @@ public:
 
 	LRESULT OnSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		if(m_Title.Find('<') == -1)
-			SaveFile(m_FileName, false);
-		else
-			SaveAs();
+		Save();
 
 		return 0;
 	}
@@ -578,7 +575,13 @@ public:
 
 	void Save()
 	{
-		SaveFile(m_FileName, false);
+		if(CanSave())
+		{
+			SaveFile(m_FileName, false);
+			m_FileAge = FileAge(m_FileName);
+		}
+		else
+			SaveAs();
 	}
 
 	////////////////////////////////////////////////////

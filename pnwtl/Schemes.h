@@ -148,7 +148,7 @@ class CSchemeManager
 
 		void Load();
 		void Compile();
-		void LoadExtMap(LPCTSTR folder);
+		void LoadExtMap();
 		
 		CScheme* SchemeForExt(LPCTSTR ext);
 		CScheme* SchemeByName(LPCTSTR name);
