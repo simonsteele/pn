@@ -11,6 +11,30 @@
 #include <TabbedFrame.h>
 #include <TabbedMDI.h>
 
+template< class TTabCtrl >
+class CPNMDITabOwner :
+	public CMDITabOwnerImpl<CPNMDITabOwner, TTabCtrl>
+{
+	typedef CMDITabOwnerImpl<CPNMDITabOwner, TTabCtrl> baseClass;
+
+public:
+	BEGIN_MSG_MAP(CPNMDITabOwner)
+		NOTIFY_CODE_HANDLER(CTCN_MCLICK, OnMClick)
+		CHAIN_MSG_MAP(baseClass)
+	END_MSG_MAP()
+
+	LRESULT OnMClick(WPARAM wParam, LPNMHDR lParam, BOOL& bHandled)
+	{
+		//We want middle-click to signal a close.
+		NMCTCITEM* pHdr = (NMCTCITEM*)lParam;
+		
+		NMCTCITEM nmh = {{ m_hWnd, GetDlgCtrlID(), CTCN_CLOSE }, pHdr->iItem, {pHdr->pt.x, pHdr->pt.y}};
+		SendMessage(WM_NOTIFY, nmh.hdr.idFrom, (LPARAM)&nmh);
+
+		return 0;
+	}
+};
+
 /**
  * @class CPNMDIClient
  * @brief Add extra MDI plumbing to the TabbedMDIClient Framework.
@@ -19,9 +43,11 @@
  * windows list control, what better way than to use the framework
  * provided in tabbed MDI code.
  */
-class CPNMDIClient : public CTabbedMDIClient< CDotNetTabCtrl<CTabViewTabItem> >
+class CPNMDIClient : public CTabbedMDIClient< CDotNetTabCtrl<CTabViewTabItem>, 
+	CPNMDITabOwner< CDotNetTabCtrl<CTabViewTabItem> > >
 {
-	typedef CTabbedMDIClient< CDotNetTabCtrl<CTabViewTabItem> > baseClass;
+	typedef CTabbedMDIClient< CDotNetTabCtrl<CTabViewTabItem>, 
+		CPNMDITabOwner< CDotNetTabCtrl<CTabViewTabItem> > > baseClass;
 
 public:
 	BEGIN_MSG_MAP(CPNMDIClient)
@@ -29,7 +55,10 @@ public:
 		MESSAGE_HANDLER(UWM_MDICHILDACTIVATIONCHANGE, OnChildActivationChange)
 		MESSAGE_HANDLER(UWM_MDICHILDTABTEXTCHANGE, OnChildTabTextChange)
 		MESSAGE_HANDLER(WM_MDIDESTROY, OnMDIDestroy)
-		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnDblClick)		
+		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnDblClick)
+
+		NOTIFY_CODE_HANDLER(CTCN_MCLICK, OnMClick)
+
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -75,6 +104,13 @@ public:
 		//SendMessage(GetParent(), PN_NOTIFY, 0, SCN_UPDATEUI);
 
 		bHandled = FALSE;
+
+		return 0;
+	}
+
+	LRESULT OnMClick(WPARAM wParam, LPNMHDR lParam, BOOL& bHandled)
+	{
+		::MessageBox(m_hWnd, _T("Click!"), _T("Test"), MB_OK);
 
 		return 0;
 	}

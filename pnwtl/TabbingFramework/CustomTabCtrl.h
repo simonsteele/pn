@@ -195,6 +195,8 @@
 #define CTCN_MOVEITEM           (TCN_FIRST - 13)
 #define CTCN_SWAPITEMPOSITIONS  (TCN_FIRST - 14)
 #define CTCN_CLOSE              (TCN_FIRST - 15)
+#define CTCN_MCLICK				(TCN_FIRST - 16)
+#define CTCN_MDBLCLK			(TCN_FIRST - 17)
 
 // Hit Test codes
 #define CTCHT_NOWHERE            0x0001             // TCHT_NOWHERE
@@ -952,6 +954,9 @@ public:
 		MESSAGE_HANDLER(WM_RBUTTONDOWN, OnRButtonDown)
 		MESSAGE_HANDLER(WM_RBUTTONUP, OnRButtonUp)
 		MESSAGE_HANDLER(WM_RBUTTONDBLCLK, OnRButtonDoubleClick)
+		MESSAGE_HANDLER(WM_MBUTTONDOWN, OnMButtonDown)
+		MESSAGE_HANDLER(WM_MBUTTONUP, OnMButtonUp)
+		MESSAGE_HANDLER(WM_MBUTTONDBLCLK, OnMButtonDoubleClick)
 		MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
 		MESSAGE_HANDLER(WM_SYSCOLORCHANGE, OnSettingChange)
 		MESSAGE_HANDLER(WM_GETDLGCODE, OnGetDlgCode)
@@ -1438,6 +1443,63 @@ public:
 
 		return 0;
 	}
+
+	LRESULT OnMButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+		POINT ptMouse = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+
+		// Search for a tab
+		T* pT = static_cast<T*>(this);
+		CTCHITTESTINFO tchti = { 0 };
+		tchti.pt = ptMouse;
+		int nIndex = pT->HitTest(&tchti);
+
+		// returning TRUE tells us not to do our default handling
+		NMCTCITEM nmh = {{ m_hWnd, m_idDlgCtrl, CTCN_MCLICK }, nIndex, {ptMouse.x, ptMouse.y}};
+		if(FALSE == ::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM)&nmh))
+		{
+			// returning FALSE let's us do our default handling
+			if( nIndex!=-1 )
+			{
+				//pT->SetFocus();
+				//pT->SetCurSel(nIndex);
+			}
+		}
+
+		return 0;
+	}
+
+	LRESULT OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+	{
+		bHandled = FALSE;
+		return 0;
+	}
+
+	LRESULT OnMButtonDoubleClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+		POINT ptMouse = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+
+		// Search for a tab
+		T* pT = static_cast<T*>(this);
+		CTCHITTESTINFO tchti = { 0 };
+		tchti.pt = ptMouse;
+		int nIndex = pT->HitTest(&tchti);
+
+		// returning TRUE tells us not to do our default handling
+		NMCTCITEM nmh = {{ m_hWnd, m_idDlgCtrl, CTCN_MDBLCLK }, nIndex, {ptMouse.x, ptMouse.y}};
+		if(FALSE == ::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM)&nmh))
+		{
+			// returning FALSE let's us do our default handling
+			if( nIndex!=-1 )
+			{
+				//pT->SetFocus();
+				//pT->SetCurSel(nIndex);
+			}
+		}
+
+		return 0;
+	}
+
 
 	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 	{
