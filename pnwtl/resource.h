@@ -23,6 +23,7 @@
 #define IDR_MDICHILD                    129
 #define ID_EDITOR_WORDWRAP              130
 #define ID_EDITOR_COLOURISE             131
+#define ID_EDITOR_LINENOS               132
 #define IDD_FIND                        168
 #define IDR_TABS_POPUP                  169
 #define IDR_POPUP_REGEXP                170

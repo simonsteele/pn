@@ -55,8 +55,6 @@ public:
 		CFile file;		
 		if ( file.Open(filename, CFile::modeRead | CFile::modeBinary) ) 
 		{
-			//fileModTime = GetModTime(fullPath);
-
 			SPerform(SCI_CLEARALL);
 			// Disable UNDO
 			SPerform(SCI_SETUNDOCOLLECTION, 0);
@@ -65,7 +63,7 @@ public:
 			while (lenFile > 0) 
 			{
 				SPerform(SCI_ADDTEXT, lenFile, (long)data);
-				lenFile = file.Read(data, sizeof(data)); //fread(data, 1, sizeof(data), fp);
+				lenFile = file.Read(data, sizeof(data));
 			}
 			file.Close();
 			SPerform(SCI_SETSEL, 0, 0);
@@ -171,6 +169,13 @@ public:
 			ClearDocumentStyle();
 			Colourise(0, -1);
 		}
+	}
+
+	void ShowLineNumbers(bool bShow)
+	{
+		int w = COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("LineNumbersWidth"), 4);
+		int pixelWidth = 4 + w * SPerform(SCI_TEXTWIDTH, STYLE_LINENUMBER, (LPARAM)"9");
+		SPerform(SCI_SETMARGINWIDTHN, 0, bShow ? pixelWidth : 0);
 	}
 
 	virtual int HandleNotify(LPARAM lParam)

@@ -13,6 +13,7 @@
 
 static const TCHAR* pnregroot = _T("Software\\Echo Software\\PN2\\");
 static const TCHAR* pnmrukey = _T("MRU");
+static const TCHAR* PNSK_INTERFACE = _T("Interface Settings");
 
 typedef enum {leCRLF, leCR, leLF} ELineEndings;
 
@@ -44,11 +45,11 @@ class COptionsManager
 		bool ShowIndentGuides;
 		ELineEndings LineEndings;
 
-		void SetInterface(LPCTSTR value, bool val);
-		void SetInterface(LPCTSTR value, int val);
+		void Set(LPCTSTR subkey, LPCTSTR value, bool bVal);
+		void Set(LPCTSTR subkey, LPCTSTR value, int iVal);
 
-		bool GetInterface(LPCTSTR value, bool defval);
-		int	 GetInterface(LPCTSTR value, int defval);
+		bool Get(LPCTSTR subkey, LPCTSTR value, bool bDefault);
+		int Get(LPCTSTR subkey, LPCTSTR value, int iDefault);
 		
 		void GetSchemesPaths(ctcString& path, ctcString& compiledPath);
 		

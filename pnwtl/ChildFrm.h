@@ -61,6 +61,7 @@ public:
 		
 		COMMAND_ID_HANDLER(ID_EDITOR_WORDWRAP, OnWordWrapToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_COLOURISE, OnColouriseToggle)
+		COMMAND_ID_HANDLER(ID_EDITOR_LINENOS, OnLineNoToggle)
 
 		COMMAND_ID_HANDLER(ID_FILE_SAVE_AS, OnSaveAs)
 		COMMAND_ID_HANDLER(ID_FILE_SAVE, OnSave)
@@ -185,6 +186,11 @@ public:
 		button.iBitmap = 0;
 		button.idCommand = ID_EDITOR_WORDWRAP;
 		button.fsState = TBSTATE_ENABLED;
+
+		toolbar.AddButtons(1, &button);
+
+		button.iBitmap = 2;
+		button.idCommand = ID_EDITOR_LINENOS;
 
 		toolbar.AddButtons(1, &button);
 
@@ -376,6 +382,10 @@ public:
 				break;
 			case ID_EDITOR_WORDWRAP:
 				_tcsncpy(pS->pszText, _T("Toggle Word-Wrap"), pS->cchTextMax);
+				break;
+			case ID_EDITOR_LINENOS:
+				_tcsncpy(pS->pszText, _T("Toggle Line Numbers"), pS->cchTextMax);
+				break;
 		}
 
 		return 0;
@@ -417,6 +427,14 @@ public:
 		CToolBarCtrl toolbar(m_hWndToolBar);
 		m_view.EnableHighlighting(toolbar.IsButtonChecked(wID) != 0);
 		
+		return 0;
+	}
+
+	LRESULT OnLineNoToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		CToolBarCtrl toolbar(m_hWndToolBar);
+		m_view.ShowLineNumbers(toolbar.IsButtonChecked(wID) != 0);
+
 		return 0;
 	}
 

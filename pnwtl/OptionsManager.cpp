@@ -70,34 +70,44 @@ void COptionsManager::Save()
 	//reg.OpenKey(cs, true);
 }
 
-void COptionsManager::SetInterface(LPCTSTR value, bool val)
+bool COptionsManager::Get(LPCTSTR subkey, LPCTSTR value, bool bDefault)
 {
 	CSRegistry reg;
 	ctcString root(pnregroot);
-	root += _T("Interface Settings");
+	root += subkey;
 
 	reg.OpenKey(root.c_str());
-	reg.WriteBool(value, val);
+	return reg.ReadBool(value, bDefault);
 }
 
-bool COptionsManager::GetInterface(LPCTSTR value, bool defval)
+int COptionsManager::Get(LPCTSTR subkey, LPCTSTR value, int iDefault)
 {
 	CSRegistry reg;
 	ctcString root(pnregroot);
-	root += _T("Interface Settings");
+	root += subkey;
 
 	reg.OpenKey(root.c_str());
-	return reg.ReadBool(value, defval);
+	return reg.ReadInt(value, iDefault);
 }
 
-int COptionsManager::GetInterface(LPCTSTR value, int defval)
+void COptionsManager::Set(LPCTSTR subkey, LPCTSTR value, bool bVal)
 {
 	CSRegistry reg;
 	ctcString root(pnregroot);
-	root += _T("Interface Settings");
+	root += subkey;
 
 	reg.OpenKey(root.c_str());
-	return reg.ReadInt(value, defval);
+	reg.WriteBool(value, bVal);
+}
+
+void COptionsManager::Set(LPCTSTR subkey, LPCTSTR value, int iVal)
+{
+	CSRegistry reg;
+	ctcString root(pnregroot);
+	root += subkey;
+
+	reg.OpenKey(root.c_str());
+	reg.WriteInt(value, iVal);
 }
 
 COptionsManager* COptionsManager::GetInstance()
@@ -133,8 +143,6 @@ void COptionsManager::GetSchemesPaths(ctcString& path, ctcString& compiledPath)
 	path = path.substr(0, cutoff+1);
 	path += "Schemes\\";
 
-	//@todo Change this to the path for the compiled schemes
-	
 	if(SHGetSpecialFolderPath(NULL, buf, CSIDL_APPDATA, TRUE))
 	{
 		compiledPath = buf;

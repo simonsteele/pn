@@ -298,6 +298,7 @@ BEGIN
     IDR_MDICHILD            "Document"
     ID_EDITOR_WORDWRAP      "Toggle word wrap"
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
+    ID_EDITOR_LINENOS       "Toggle line numbers display"
 END
 
 STRINGTABLE 

@@ -197,7 +197,7 @@ public:
 		CString mrukey;
 		mrukey = pnregroot;
 		mrukey += pnmrukey;
-		m_RecentFiles.SetSize(COptionsManager::GetInstance()->GetInterface(_T("MRUSize"), 4));
+		m_RecentFiles.SetSize(COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("MRUSize"), 4));
 		m_RecentFiles.SetRegistryKey(mrukey);
 		m_RecentFiles.UpdateMenu();
 		
@@ -596,14 +596,6 @@ protected:
 
 					if(mii.hSubMenu == (HMENU)m_Switcher)
 					{
-						/*if(::RemoveMenu(view, i, MF_BYPOSITION))
-						{
-							// Remove Splitter
-							::RemoveMenu(view, i-1, MF_BYPOSITION);
-							// Insert Insertion Point (kludgy :)
-							::InsertMenu(view, i-1, MF_BYPOSITION, ID_VIEW_CHANGESCHEME, _T("temp"));
-							break;
-						}*/
 						::ModifyMenu(view, i, MF_BYPOSITION | MF_STRING, ID_VIEW_CHANGESCHEME, _T("s"));
 					}
 				}
