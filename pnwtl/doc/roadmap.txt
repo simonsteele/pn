@@ -25,11 +25,12 @@ HTML Export configuration, inline HTML export.
 0.8 Basie
 =========
 
-Unicode build.
 File browser window.
 HTML preview window (ie+moz) {feature_browser_2-0-5}.
+Hex editor.
 
 0.10 Ellington
 =============
 
+Unicode build.
 Mini-PN - true notepad-style document-centric PN alternative build.

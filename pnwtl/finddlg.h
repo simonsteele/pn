@@ -297,9 +297,14 @@ public:
 
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
-		//DoDataExchange(TRUE);
-		//EndDialog(wID);
+		CChildFrame* pChild = GetCurrentEditorWnd();
+		if(pChild != NULL)
+			pChild->SetFocus();
+		else
+			GetWindow(GW_OWNER).SetFocus();
+
 		ShowWindow(SW_HIDE);
+		
 		return 0;
 	}
 
@@ -519,7 +524,14 @@ public:
 
 	LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
+		CChildFrame* pChild = GetCurrentEditorWnd();
+		if(pChild != NULL)
+			pChild->SetFocus();
+		else
+			GetWindow(GW_OWNER).SetFocus();
+
 		ShowWindow(SW_HIDE);
+		
 		return 0;
 	}
 	

@@ -137,7 +137,7 @@ void CMainFrame::UpdateStatusBar()
 	{
 		m_StatusBar.SetPaneText(ID_MOD_PANE, _T(""));
 		m_StatusBar.SetPaneText(ID_POS_PANE, _T(""));
-		SetStatusText(NULL);	
+		//SetStatusText(NULL);
 	}
 }
 
@@ -356,6 +356,10 @@ LRESULT CMainFrame::OnChildNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 		}
 		else
 			m_hToolAccel = NULL;
+	}
+	else if(lParam == PN_MDIDESTROY)
+	{
+		SetStatusText(NULL);
 	}
 			
 	return TRUE;

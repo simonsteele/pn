@@ -111,6 +111,7 @@ public:
 	{
 		for ( HTREEITEM hItem = GetRootItem(); hItem != NULL; hItem = GetNextVisibleItem( hItem ) )
 			if ( GetItemState( hItem, TVIS_SELECTED ) & TVIS_SELECTED )
+			//if( GetItemState( hItem, TVIS_SELECTED | TVIS_DROPHILITED) == TVIS_SELECTED )
 				return hItem;
 
 		return NULL;
@@ -124,6 +125,7 @@ public:
 	{
 		for ( hItem = GetNextVisibleItem( hItem ); hItem!=NULL; hItem = GetNextVisibleItem( hItem ) )
 			if ( GetItemState( hItem, TVIS_SELECTED ) & TVIS_SELECTED )
+			//if( GetItemState( hItem, TVIS_SELECTED | TVIS_DROPHILITED) == TVIS_SELECTED )
 				return hItem;
 
 		return NULL;
@@ -137,6 +139,7 @@ public:
 	{
 		for ( hItem = GetPrevVisibleItem( hItem ); hItem!=NULL; hItem = GetPrevVisibleItem( hItem ) )
 			if ( GetItemState( hItem, TVIS_SELECTED ) & TVIS_SELECTED )
+			//if( GetItemState( hItem, TVIS_SELECTED | TVIS_DROPHILITED) == TVIS_SELECTED )
 				return hItem;
 
 		return NULL;

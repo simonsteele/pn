@@ -13,9 +13,11 @@ Libraries:
 Daniel Bowen (Tabbing Framework)
 Sergey Klimov (Docking Framework)
 Philip Hazel (PCRE)
+Neil Hodgson + Community (Scintilla)
 
 Testers:
 --------
 Robert Scarborough
 Adam Scheinberg
+Darren Schroeder
 Eric Weddington

@@ -67,45 +67,13 @@ HWND CProjectTreeCtrl::Create(HWND hWndParent, _U_RECT rect, LPCTSTR szWindowNam
 	return hWndRet;
 }
 
-LRESULT CProjectTreeCtrl::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	bHandled = FALSE;
 
-	if(m_pDropTarget != NULL)
-	{
-		HRESULT hr = RevokeDragDrop(m_hWnd);
-		ATLASSERT(SUCCEEDED(hr));
-	}
-
-	return 0;
-}
-
-LRESULT CProjectTreeCtrl::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	if(wParam == VK_DELETE)
-	{
-		handleRemove();
-	}
-	else bHandled = FALSE;
-
-	return 0;
-}
 
 void CProjectTreeCtrl::AddProject(Projects::Project* project)
 {
 	workspace->AddProject(project);
 	buildProject(GetRootItem(), project);
 	Expand(GetRootItem());
-}
-
-void CProjectTreeCtrl::SetWorkspace(Projects::Workspace* ws)
-{
-	workspace = ws;
-
-	clearTree();
-
-	if(workspace != NULL)
-		buildTree();
 }
 
 File* CProjectTreeCtrl::GetSelectedFile()
@@ -122,6 +90,35 @@ File* CProjectTreeCtrl::GetSelectedFile()
 	}
 
 	return NULL;
+}
+
+
+void CProjectTreeCtrl::SetWorkspace(Projects::Workspace* ws)
+{
+	workspace = ws;
+
+	clearTree();
+
+	if(workspace != NULL)
+		buildTree();
+}
+
+HTREEITEM CProjectTreeCtrl::addFileNode(File* file, HTREEITEM hParent, HTREEITEM hInsertAfter)
+{
+	HTREEITEM hFile = InsertItem( file->GetDisplayName(), 0, 0, hParent, hInsertAfter );
+	SetItemData(hFile, reinterpret_cast<DWORD_PTR>( file ));
+
+	int index = shellImages->IndexForFile( file->GetFileName() );
+	SetItemImage(hFile, index, index);
+
+	return hFile;
+}
+
+HTREEITEM CProjectTreeCtrl::addFolderNode(Projects::Folder* folder, HTREEITEM hParent, HTREEITEM hInsertAfter)
+{
+	HTREEITEM hFolder = InsertItem( folder->GetName(), 0, 0, hParent, hInsertAfter );
+	SetItemData(hFolder, reinterpret_cast<DWORD_PTR>( folder ));
+	return hFolder;
 }
 
 void CProjectTreeCtrl::buildTree()
@@ -150,9 +147,9 @@ void CProjectTreeCtrl::buildTree()
 	SetRedraw(TRUE);
 }
 
-void CProjectTreeCtrl::buildProject(HTREEITEM hParentNode, Projects::Project* pj)
+HTREEITEM CProjectTreeCtrl::buildProject(HTREEITEM hParentNode, Projects::Project* pj, HTREEITEM hInsertAfter)
 {
-	HTREEITEM hProject = InsertItem( pj->GetName(), projectIcon, projectIcon, hParentNode, NULL );
+	HTREEITEM hProject = InsertItem( pj->GetName(), projectIcon, projectIcon, hParentNode, hInsertAfter );
 	ProjectType* pPT = static_cast<ProjectType*>(pj);
 	SetItemData(hProject, reinterpret_cast<DWORD_PTR>( pPT ));
 
@@ -160,9 +157,11 @@ void CProjectTreeCtrl::buildProject(HTREEITEM hParentNode, Projects::Project* pj
 	{
 		HTREEITEM hLastChild = NULL;
 
+		ProjectViewState state;
+
 		const FOLDER_LIST& folders = pj->GetFolders();
 		if( folders.size() > 0 )
-			hLastChild = buildFolders(hProject, folders);
+			hLastChild = buildFolders(hProject, folders, state);
 
 		buildFiles(hProject, hLastChild, pj->GetFiles());
 	}
@@ -173,11 +172,13 @@ void CProjectTreeCtrl::buildProject(HTREEITEM hParentNode, Projects::Project* pj
 	}
 	
 	Expand(hProject);
+
+	return hProject;
 }
 
-HTREEITEM CProjectTreeCtrl::buildFolders(HTREEITEM hParentNode, const FOLDER_LIST& folders)
+HTREEITEM CProjectTreeCtrl::buildFolders(HTREEITEM hParentNode, const FOLDER_LIST& folders, Projects::ProjectViewState& viewState)
 {
-	HTREEITEM hFolder = NULL;
+	HTREEITEM hFolder = getLastFolderItem(hParentNode);
 	HTREEITEM hLastChild = NULL;
 
 	for(FOLDER_LIST::const_iterator i = folders.begin(); i != folders.end(); ++i)
@@ -186,13 +187,15 @@ HTREEITEM CProjectTreeCtrl::buildFolders(HTREEITEM hParentNode, const FOLDER_LIS
 		SetItemData(hFolder, reinterpret_cast<DWORD_PTR>( (*i)));
 		const FOLDER_LIST& folders2 = (*i)->GetFolders();
 		if( folders2.size() > 0 )
-			hLastChild = buildFolders(hFolder, folders2);
+			hLastChild = buildFolders(hFolder, folders2, viewState);
 
 		const FILE_LIST& files = (*i)->GetFiles();
 		hLastChild = buildFiles(hFolder, hLastChild, files);
 
-		SortChildren(hFolder);
-		Expand(hFolder);
+		sort(hFolder);
+
+		if( viewState.ShouldExpand((*i)) )
+			Expand(hFolder);
 	}
 
 	return hFolder;
@@ -204,7 +207,7 @@ HTREEITEM CProjectTreeCtrl::buildFiles(HTREEITEM hParentNode, HTREEITEM hInsertA
 
 	for(FILE_LIST::const_iterator i = files.begin(); i != files.end(); ++i)
 	{
-		hFile = AddFileNode((*i), hParentNode, hFile);
+		hFile = addFileNode((*i), hParentNode, hFile);
 	}
 
 	return hFile;
@@ -215,6 +218,236 @@ void CProjectTreeCtrl::clearTree()
 	SetRedraw(FALSE);
 	DeleteAllItems();
 	SetRedraw(TRUE);
+}
+
+void CProjectTreeCtrl::doContextMenu(LPPOINT pt)
+{
+	if(hLastItem != NULL && lastItem != NULL)
+	{
+		if(GetSelectedCount() > 1)
+		{
+			// We have a multiple-selection thing going on. Check that all items
+			// are of the same type.
+			
+			HTREEITEM sel = GetFirstSelectedItem();
+			while(sel)
+			{
+				// If any items do not match the main type, we bail.
+				ProjectType* ptypeCheck = reinterpret_cast<ProjectType*>( GetItemData(sel) );
+				if( !ptypeCheck )
+					return;
+				if( !(lastItem->GetType() == ptypeCheck->GetType()) )
+					return;
+
+				sel = GetNextSelectedItem(sel);
+			}
+
+			multipleSelection = true;
+		}
+		else
+			multipleSelection = false;
+
+		switch(lastItem->GetType())
+		{
+			case ptFile:
+			{
+				CSPopupMenu popup(IDR_POPUP_PROJECTFILE);
+
+				CMenuItemInfo mii;
+				mii.fMask = MIIM_STATE;
+				mii.fState = MFS_ENABLED | MFS_DEFAULT;
+				
+				///@todo This doesn't work, but I'll leave it in to remind me to try
+				// and fix it sometime. Stupid menus.
+				::SetMenuItemInfo(popup, ID_PROJECT_OPEN, FALSE, &mii);
+				
+				g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
+			}
+			break;
+
+			case ptFolder:
+			{
+				CSPopupMenu popup(IDR_POPUP_PROJECTFOLDER);
+				g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
+			}
+			break;
+
+			case ptProject:
+			{
+				Projects::Project* project = static_cast<Projects::Project*>(lastItem);
+
+				if(project->Exists())
+				{
+					CSPopupMenu popup(IDR_POPUP_PROJECT);
+
+					if(multipleSelection)
+					{
+						CMenuItemInfo mii;
+						mii.fMask = MIIM_STATE;
+						mii.fState = MFS_DISABLED | MFS_GRAYED;
+
+						::SetMenuItemInfo(popup, ID_PROJECT_SETACTIVEPROJECT, FALSE, &mii);
+					}
+					else if(workspace->GetActiveProject() == project)
+					{
+						CMenuItemInfo mii;
+						mii.fMask = MIIM_STATE | MIIM_STRING;
+						mii.fState = MFS_ENABLED | MFS_CHECKED;
+						mii.dwTypeData = _T("Active Project");
+
+						::SetMenuItemInfo(popup, ID_PROJECT_SETACTIVEPROJECT, FALSE, &mii);
+					}
+
+					g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
+				}
+			}
+			break;
+
+			case ptWorkspace:
+			{
+				CSPopupMenu popup(IDR_POPUP_WORKSPACE);
+				g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
+			}
+			break;
+		}
+	}
+}
+
+HTREEITEM CProjectTreeCtrl::getLastFolderItem(HTREEITEM hParentNode)
+{
+	HTREEITEM hN = GetChildItem(hParentNode);
+	HTREEITEM hLast = NULL;
+
+	while (hN != NULL)
+	{
+		ProjectType* pT = reinterpret_cast<ProjectType*>( GetItemData(hN) );
+		if(pT->GetType() != ptFolder)
+			break;
+
+		hLast = hN;
+		hN = GetNextItem(hN, TVGN_NEXT);
+	}
+
+	return hLast;
+}
+
+void CProjectTreeCtrl::handleRemove()
+{
+	if(lastItem == NULL)
+		return;
+
+	// We can't delete lots of items and still be in the middle of using the
+	// GetFirst/GetNextSelectedItem loop because the current selection will
+	// change. 
+	std::list<HTREEITEM> selectedItems;
+	HTREEITEM sel = GetFirstSelectedItem();
+	while(sel)
+	{
+		selectedItems.push_front(sel);
+		sel = GetNextSelectedItem(sel);
+	}
+
+	std::list<HTREEITEM>::iterator i = selectedItems.begin();
+
+	// just to be safe we cache the selected list and
+	// clear the selection to be safe.
+	//ClearSelection();
+
+	switch(lastItem->GetType())
+	{
+		case ptFile:
+		{
+			// Remove a file from a folder.
+			for(;i != selectedItems.end(); ++i)
+			{
+				File* pF = reinterpret_cast<File*>( GetItemData((*i)) );
+				Projects::Folder* pFolder = pF->GetFolder();
+				pFolder->RemoveFile(pF);
+				DeleteItem((*i));
+			}
+		}
+		break;
+
+		case ptFolder:
+		{
+			// Remove a folder from a folder (or a project).
+			for(;i != selectedItems.end(); ++i)
+			{
+				Projects::Folder* pFolder = reinterpret_cast<Projects::Folder*>( GetItemData((*i)) );
+				Projects::Folder* pParent = pFolder->GetParent();
+				pParent->RemoveChild(pFolder);
+				DeleteItem((*i));
+			}
+		}
+		break;
+
+		case ptProject:
+		{
+			// All projects belong to single workspace (at the moment).
+			for(;i != selectedItems.end(); ++i)
+			{
+				Project* pProject = reinterpret_cast<Projects::Project*>( GetItemData((*i)) );
+				workspace->RemoveProject(pProject);
+				DeleteItem((*i));
+			}
+		}
+		break;
+	}	
+}
+
+void CProjectTreeCtrl::openAll(Projects::Folder* folder)
+{
+	for(FOLDER_LIST::const_iterator i = folder->GetFolders().begin();
+		i != folder->GetFolders().end();
+		++i)
+	{
+		openAll((*i));
+	}
+
+	for(FILE_LIST::const_iterator j = folder->GetFiles().begin();
+		j != folder->GetFiles().end();
+		++j)
+	{
+		if( !g_Context.m_frame->CheckAlreadyOpen((*j)->GetFileName(), eSwitch) )
+			g_Context.m_frame->Open((*j)->GetFileName(), true);
+	}
+}
+
+void CProjectTreeCtrl::handleRightClick(LPPOINT pt)
+{
+	//CPoint pt(GetMessagePos());
+	CPoint pt2(*pt);
+
+	// Test for keyboard right-click...
+	if(pt->x != -1)
+	{
+		ScreenToClient(&pt2);
+
+		TVHITTESTINFO tvhti;
+		memset(&tvhti, 0, sizeof(TV_HITTESTINFO));
+		
+		tvhti.pt = pt2;
+		HitTest(&tvhti);
+
+		lastItem = NULL;
+		hLastItem = NULL;
+
+		if(tvhti.hItem != NULL)
+		{
+			if (tvhti.flags & (TVHT_ONITEM|TVHT_ONITEMRIGHT))
+			{
+
+				ProjectType* ptype = reinterpret_cast<ProjectType*>( GetItemData(tvhti.hItem) );
+				hLastItem = tvhti.hItem;
+				lastItem = ptype;
+
+				if(!ptype)
+					return;
+			}
+		}
+	}
+
+	doContextMenu(pt);
 }
 
 void CProjectTreeCtrl::setStatus(Projects::ProjectType* selection)
@@ -251,6 +484,28 @@ void CProjectTreeCtrl::setStatus(Projects::ProjectType* selection)
 	}
 }
 
+void CProjectTreeCtrl::sort(HTREEITEM hFolderNode, bool bSortFolders)
+{
+	/*typedef struct tagTVSORTCB {
+		HTREEITEM hParent;
+		PFNTVCOMPARE lpfnCompare;
+		LPARAM lParam;
+	} TVSORTCB, *LPTVSORTCB;*/
+
+	TVSORTCB sortcb;
+	sortcb.hParent = hFolderNode;
+	
+	if(bSortFolders)
+		sortcb.lpfnCompare = &CProjectTreeCtrl::CompareItemSortAll;
+	else
+		sortcb.lpfnCompare = &CProjectTreeCtrl::CompareItem;
+
+	BOOL caseSensitive = OPTIONS->Get("Projects", "SortCaseSensitive", true);
+	sortcb.lParam = caseSensitive;
+
+	SortChildrenCB(&sortcb);
+}
+
 LRESULT CProjectTreeCtrl::OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 	LPNMTREEVIEW n = (LPNMTREEVIEW)pnmh;
@@ -268,26 +523,6 @@ LRESULT CProjectTreeCtrl::OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	lastItem = pt;
 
 	setStatus(pt);
-
-	return 0;
-}
-
-LRESULT CProjectTreeCtrl::OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-{
-	// If this is from a keyboard press...
-	if(GET_X_LPARAM(lParam) == -1 && GET_Y_LPARAM(lParam) == -1)
-	{
-		CRect rc;
-		GetItemRect(hLastItem, &rc, TRUE);
-		CPoint pt(rc.right, rc.top);
-		ClientToScreen(&pt);
-		doContextMenu(&pt);
-	}
-	else
-	{
-		CPoint pt(GetMessagePos());
-		handleRightClick(&pt);
-	}
 
 	return 0;
 }
@@ -354,6 +589,19 @@ LRESULT	CProjectTreeCtrl::OnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 {
 	LPNMTREEVIEW lpnmtv = (LPNMTREEVIEW)pnmh;
 
+	// Cache the selected items for use elsewhere in the drag and drop procedure...
+	dropSelectedItems.clear();
+	HTREEITEM sel = GetFirstSelectedItem();
+	while(sel)
+	{
+		dropSelectedItems.insert(dropSelectedItems.begin(), sel);
+		sel = GetNextSelectedItem(sel);
+	}
+
+	// See if we're actually allowed to drag...
+	if(!canDrag())
+		return 0;
+
 	// Tell the tree-view control to create an image to use 
     // for dragging. 
 	HIMAGELIST hImageList = TreeView_CreateDragImage(m_hWnd, lpnmtv->itemNew.hItem);
@@ -382,255 +630,25 @@ LRESULT	CProjectTreeCtrl::OnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 	return 0;
 }
 
-LRESULT CProjectTreeCtrl::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT CProjectTreeCtrl::OnNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	bHandled = false;
-
-	if(dragging)
-	{
-		DWORD dwLastPos = GetMessagePos();
-
-		CPoint pt(GET_X_LPARAM(dwLastPos), GET_Y_LPARAM(dwLastPos));
-		ScreenToClient(&pt);
-
-		HTREEITEM htiTarget;
-		TVHITTESTINFO tvht;
-		tvht.pt.x = pt.x;
-        tvht.pt.y = pt.y;
-        
-		if ((htiTarget = TreeView_HitTest(m_hWnd, &tvht)) != NULL) 
-        { 
-			// This code is surrounded by DragShowNoLock in order
-			// to allow the treeview to update it's display when
-			// we change the selection. Without this, we get nasty
-			// trails.
-            ImageList_DragShowNolock(false);
-			TreeView_SelectDropTarget(m_hWnd, htiTarget);
-			ImageList_DragShowNolock(true);
-
-			hDropTargetItem = htiTarget;
-        }
-
-		ImageList_DragMove(pt.x, pt.y);
-	}
-
+	g_Context.m_frame->GetWindow()->PostMessage(WM_COMMAND, ID_FILE_NEW_PROJECT, NULL);
 	return 0;
 }
 
-bool CProjectTreeCtrl::canDrop()
+LRESULT CProjectTreeCtrl::OnAddProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	//hDropTargetItem is the one the mouse is over.
+	CPNOpenDialog dlgOpen(_T("Project Files (*.pnproj)|*.pnproj|"));
+	dlgOpen.SetTitle(_T("Open Project"));
 
-	//1) Check if the item is selected - can't drop an item on itself.
-	if( GetItemState(hDropTargetItem, TVIS_SELECTED) == TVIS_SELECTED )
-		return false;
-
-	//2) Now check if the target is a project that it's only a project
-	//   that's being dropped.
-
-	//3) If it's a file, check that it's only files being dropped.
+	if(dlgOpen.DoModal() == IDOK)
+	{
+		Project* pProject = new Project(dlgOpen.GetSingleFileName());
+		workspace->AddProject(pProject);
+		buildProject(GetRootItem(), pProject);
+		Expand(GetRootItem());
+	}
 	
-	//4) If it's a folder, check that we're not trying to drop a parent.
-
-	return true;
-}
-
-bool CProjectTreeCtrl::handleDrop()
-{
-	//1) Move the individual items first.
-	//2) Move the folders after.
-	// - this makes sure we don't try to move subitems of folders once 
-	//   they've already been moved thus invalidating the HTREEITEMs.
-
-	return false;
-}
-
-void CProjectTreeCtrl::handleEndDrag()
-{
-	ImageList_DragLeave(m_hWnd);
-	ImageList_EndDrag();
-    ReleaseCapture();
-	KillTimer(dragTimer);
-	//ShowCursor(TRUE);
-
-	TreeView_SelectDropTarget(m_hWnd, NULL);
-
-	ImageList_Destroy(hDragImageList);
-
-	dragging = false;
-}
-
-LRESULT CProjectTreeCtrl::OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	bHandled = false;
-	if(dragging)
-	{
-		handleEndDrag();
-
-		if(canDrop())
-		{
-			handleDrop();
-		}
-	}
-	return 0;
-}
-
-LRESULT CProjectTreeCtrl::OnRButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	bHandled = false;
-	if(dragging)
-	{
-		handleEndDrag();
-	}
-	return 0;
-}
-
-LRESULT CProjectTreeCtrl::OnCaptureChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-{
-	if(dragging && (HWND)lParam != m_hWnd)
-		dragging = false;
-
-	return 0;
-}
-
-class ImageListDragShowNoLock
-{
-public:
-	ImageListDragShowNoLock()
-	{
-		ImageList_DragShowNolock(false);
-	}
-
-	~ImageListDragShowNoLock()
-	{
-		ImageList_DragShowNolock(true);
-	}
-};
-
-LRESULT CProjectTreeCtrl::OnMouseWheel(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-	if(dragging)
-	{
-		// Prevent corruption when mouse scrolling during a drag operation...
-		ImageListDragShowNoLock lockDrag;
-		DefWindowProc(uMsg, wParam, lParam);
-	}
-	else
-		bHandled = false;
-
-	return 0;
-}
-
-int GetScrollLimit(HWND hWnd, int nBar)
-{
-	int nMin = 0, nMax = 0;
-	::GetScrollRange(hWnd, nBar, &nMin, &nMax);
-	SCROLLINFO info = { 0 };
-	info.cbSize = sizeof(SCROLLINFO);
-	info.fMask = SIF_PAGE;
-	if(::GetScrollInfo(hWnd, nBar, &info))
-		nMax -= ((info.nPage - 1) > 0) ? (info.nPage - 1) : 0;
-
-	return nMax;
-}
-
-LRESULT CProjectTreeCtrl::OnTimer(UINT /*uMsg*/, WPARAM nIDEvent, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	if(!dragging || nIDEvent != TCEX_DRAGTIMER)
-	{
-		bHandled = false;
-		return 0;
-	}
-
-	POINT point;
-    GetCursorPos(&point);
-    ScreenToClient(&point);
-
-    // highlight target
-
-    TVHITTESTINFO tvHit;
-    tvHit.pt = point;
-    HTREEITEM hTarget = TreeView_HitTest(m_hWnd, &tvHit);
-
-	// If we're hovering over an item...
-	if(hTarget)
-	{
-		if(hTarget != hDragHoverItem)
-		{
-			dwDragHoverAcquire = GetTickCount();
-			hDragHoverItem = hTarget;
-		}
-		else
-		{
-			if((int)(GetTickCount() - dwDragHoverAcquire) > 1000)
-			{
-				// Prevent corruption
-				ImageListDragShowNoLock lockDrag;
-				
-				Expand(hTarget, TVE_TOGGLE);
-				
-				// Don't re-collapse unless the user waits another period of x...
-				dwDragHoverAcquire = GetTickCount() + 2000;
-			}
-		}
-	}
-	else
-	{
-		RECT rect;
-		GetClientRect(&rect);
-
-		int iMaxV = GetScrollLimit(m_hWnd, SB_VERT);
-		int iPosV = GetScrollPos  (SB_VERT);
-
-		// up
-		if((point.y < rect.top -10) && iPosV)
-		{
-			HTREEITEM hPrev = GetPrevVisibleItem(GetFirstVisibleItem());
-			ImageListDragShowNoLock lockDrag;
-			
-			EnsureVisible(hPrev);
-		}
-
-		// down
-		if((point.y > (rect.bottom + 10)) && (iPosV != iMaxV))
-		{
-			UINT Nb = GetVisibleCount();
-			if(Nb != -1)
-			{
-				HTREEITEM hNext = GetFirstVisibleItem();
-				for(UINT i = 0; i < Nb; i++)
-					hNext = GetNextVisibleItem(hNext);
-				
-				ImageListDragShowNoLock lockDrag;
-				
-				EnsureVisible(hNext);
-			}
-		}
-
-		int iPosH = GetScrollPos  (SB_HORZ);
-		int iMaxH = GetScrollLimit(m_hWnd, SB_HORZ);
-
-		// left
-		if((point.x < rect.left) && iPosH)
-		{
-			ImageListDragShowNoLock lockDrag;
-
-			SendMessage(WM_HSCROLL, SB_LINELEFT);
-		}
-
-		// right
-		if((point.x > rect.right) && (iPosH != iMaxH))
-		{
-			ImageListDragShowNoLock lockDrag;
-			
-			SendMessage(WM_HSCROLL, SB_LINERIGHT);
-		}
-	}
-
-	//m_pDragImgList->DragMove(point);
-
-//}
-
 	return 0;
 }
 
@@ -693,7 +711,7 @@ LRESULT CProjectTreeCtrl::OnAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 			{
 				File* newFile = folder->AddFile((*i).c_str());
 				
-				hLastInsert = AddFileNode(newFile, hParent, hLastInsert);
+				hLastInsert = addFileNode(newFile, hParent, hLastInsert);
 			}
 			
 			SortChildren(hParent);
@@ -716,31 +734,13 @@ LRESULT CProjectTreeCtrl::OnAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 		folder->AddChild(newFolder);
 
-		HTREEITEM hFolderNode = AddFolderNode(newFolder, hLastItem, NULL);
+		HTREEITEM hFolderNode = addFolderNode(newFolder, hLastItem, NULL);
 
 		Expand(hLastItem);
 		EditLabel(hFolderNode);
 	}
 
 	return 0;
-}
-
-void CProjectTreeCtrl::openAll(Projects::Folder* folder)
-{
-	for(FOLDER_LIST::const_iterator i = folder->GetFolders().begin();
-		i != folder->GetFolders().end();
-		++i)
-	{
-		openAll((*i));
-	}
-
-	for(FILE_LIST::const_iterator j = folder->GetFiles().begin();
-		j != folder->GetFiles().end();
-		++j)
-	{
-		if( !g_Context.m_frame->CheckAlreadyOpen((*j)->GetFileName(), eSwitch) )
-			g_Context.m_frame->Open((*j)->GetFileName(), true);
-	}
 }
 
 LRESULT CProjectTreeCtrl::OnOpenAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -845,44 +845,286 @@ LRESULT CProjectTreeCtrl::OnSetActiveProject(WORD /*wNotifyCode*/, WORD /*wID*/,
 	return 0;
 }
 
-LRESULT CProjectTreeCtrl::OnNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+/**
+ * The user wants to sort the folders underneath this one.
+ */
+LRESULT CProjectTreeCtrl::OnSortFolders(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	g_Context.m_frame->GetWindow()->PostMessage(WM_COMMAND, ID_FILE_NEW_PROJECT, NULL);
+	if(lastItem == NULL)
+		return 0;
+
+	if(lastItem->GetType() != ptProject && lastItem->GetType() != ptFolder)
+		return 0;
+
+	sort(hLastItem, true);
+
 	return 0;
 }
 
-LRESULT CProjectTreeCtrl::OnAddProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+class ImageListDragShowNoLock
 {
-	CPNOpenDialog dlgOpen(_T("Project Files (*.pnproj)|*.pnproj|"));
-	dlgOpen.SetTitle(_T("Open Project"));
-
-	if(dlgOpen.DoModal() == IDOK)
+public:
+	ImageListDragShowNoLock()
 	{
-		Project* pProject = new Project(dlgOpen.GetSingleFileName());
-		workspace->AddProject(pProject);
-		buildProject(GetRootItem(), pProject);
-		Expand(GetRootItem());
+		ImageList_DragShowNolock(false);
 	}
-	
+
+	~ImageListDragShowNoLock()
+	{
+		ImageList_DragShowNolock(true);
+	}
+};
+
+LRESULT CProjectTreeCtrl::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	bHandled = false;
+
+	if(dragging)
+	{
+		DWORD dwLastPos = GetMessagePos();
+
+		CPoint pt(GET_X_LPARAM(dwLastPos), GET_Y_LPARAM(dwLastPos));
+		ScreenToClient(&pt);
+
+		HTREEITEM htiTarget;
+		TVHITTESTINFO tvht;
+		tvht.pt.x = pt.x;
+        tvht.pt.y = pt.y;
+        
+		if ((htiTarget = TreeView_HitTest(m_hWnd, &tvht)) != NULL) 
+        { 
+			// This code is surrounded by DragShowNoLock in order
+			// to allow the treeview to update it's display when
+			// we change the selection. Without this, we get nasty
+			// trails.
+			{
+				ImageListDragShowNoLock lockDrag;
+            
+				TreeView_SelectDropTarget(m_hWnd, htiTarget);
+			}
+
+			hDropTargetItem = htiTarget;
+
+			if(canDrop())
+			{
+				::SetCursor( ::LoadCursor(NULL, IDC_ARROW) );
+			}
+			else
+			{
+				::SetCursor( ::LoadCursor(NULL, IDC_NO) );
+			}
+        }
+
+		ImageList_DragMove(pt.x, pt.y);
+	}
+
 	return 0;
 }
 
-HTREEITEM CProjectTreeCtrl::AddFileNode(File* file, HTREEITEM hParent, HTREEITEM hInsertAfter)
+LRESULT CProjectTreeCtrl::OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	HTREEITEM hFile = InsertItem( file->GetDisplayName(), 0, 0, hParent, hInsertAfter );
-	SetItemData(hFile, reinterpret_cast<DWORD_PTR>( file ));
+	bHandled = false;
+	if(dragging)
+	{
+		handleEndDrag();
 
-	int index = shellImages->IndexForFile( file->GetFileName() );
-	SetItemImage(hFile, index, index);
-
-	return hFile;
+		if(canDrop())
+		{
+			handleDrop();
+		}
+	}
+	return 0;
 }
 
-HTREEITEM CProjectTreeCtrl::AddFolderNode(Projects::Folder* folder, HTREEITEM hParent, HTREEITEM hInsertAfter)
+LRESULT CProjectTreeCtrl::OnRButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	HTREEITEM hFolder = InsertItem( folder->GetName(), 0, 0, hParent, hInsertAfter );
-	SetItemData(hFolder, reinterpret_cast<DWORD_PTR>( folder ));
-	return hFolder;
+	bHandled = false;
+	if(dragging)
+	{
+		handleEndDrag();
+	}
+	return 0;
+}
+
+LRESULT CProjectTreeCtrl::OnCaptureChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	if(dragging && (HWND)lParam != m_hWnd)
+		dragging = false;
+
+	return 0;
+}
+
+LRESULT CProjectTreeCtrl::OnMouseWheel(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if(dragging)
+	{
+		// Prevent corruption when mouse scrolling during a drag operation...
+		ImageListDragShowNoLock lockDrag;
+		DefWindowProc(uMsg, wParam, lParam);
+	}
+	else
+		bHandled = false;
+
+	return 0;
+}
+
+int GetScrollLimit(HWND hWnd, int nBar)
+{
+	int nMin = 0, nMax = 0;
+	::GetScrollRange(hWnd, nBar, &nMin, &nMax);
+	SCROLLINFO info = { 0 };
+	info.cbSize = sizeof(SCROLLINFO);
+	info.fMask = SIF_PAGE;
+	if(::GetScrollInfo(hWnd, nBar, &info))
+		nMax -= ((info.nPage - 1) > 0) ? (info.nPage - 1) : 0;
+
+	return nMax;
+}
+
+LRESULT CProjectTreeCtrl::OnTimer(UINT /*uMsg*/, WPARAM nIDEvent, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	if(!dragging || nIDEvent != TCEX_DRAGTIMER)
+	{
+		bHandled = false;
+		return 0;
+	}
+
+	POINT point;
+    GetCursorPos(&point);
+    ScreenToClient(&point);
+
+    // highlight target
+
+    TVHITTESTINFO tvHit;
+    tvHit.pt = point;
+    HTREEITEM hTarget = TreeView_HitTest(m_hWnd, &tvHit);
+
+	// If we're hovering over an item...
+	if(hTarget)
+	{
+		if(hTarget != hDragHoverItem)
+		{
+			dwDragHoverAcquire = GetTickCount();
+			hDragHoverItem = hTarget;
+		}
+		else
+		{
+			if((int)(GetTickCount() - dwDragHoverAcquire) > 1000)
+			{
+				// Prevent corruption
+				ImageListDragShowNoLock lockDrag;
+				
+				// Never toggle the root item - it has no button.
+				if(hTarget != GetRootItem())
+					Expand(hTarget, TVE_TOGGLE);
+				
+				// Don't re-collapse unless the user waits another period of x...
+				dwDragHoverAcquire = GetTickCount() + 2000;
+			}
+		}
+	}
+	else
+	{
+		RECT rect;
+		GetClientRect(&rect);
+
+		int iMaxV = GetScrollLimit(m_hWnd, SB_VERT);
+		int iPosV = GetScrollPos  (SB_VERT);
+
+		// up
+		if((point.y < rect.top -10) && iPosV)
+		{
+			HTREEITEM hPrev = GetPrevVisibleItem(GetFirstVisibleItem());
+			ImageListDragShowNoLock lockDrag;
+			
+			EnsureVisible(hPrev);
+		}
+
+		// down
+		if((point.y > (rect.bottom + 10)) && (iPosV != iMaxV))
+		{
+			UINT Nb = GetVisibleCount();
+			if(Nb != -1)
+			{
+				HTREEITEM hNext = GetFirstVisibleItem();
+				for(UINT i = 0; i < Nb; i++)
+					hNext = GetNextVisibleItem(hNext);
+				
+				ImageListDragShowNoLock lockDrag;
+				
+				EnsureVisible(hNext);
+			}
+		}
+
+		int iPosH = GetScrollPos  (SB_HORZ);
+		int iMaxH = GetScrollLimit(m_hWnd, SB_HORZ);
+
+		// left
+		if((point.x < rect.left) && iPosH)
+		{
+			ImageListDragShowNoLock lockDrag;
+
+			SendMessage(WM_HSCROLL, SB_LINELEFT);
+		}
+
+		// right
+		if((point.x > rect.right) && (iPosH != iMaxH))
+		{
+			ImageListDragShowNoLock lockDrag;
+			
+			SendMessage(WM_HSCROLL, SB_LINERIGHT);
+		}
+	}
+
+	//m_pDragImgList->DragMove(point);
+
+//}
+
+	return 0;
+}
+
+LRESULT CProjectTreeCtrl::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	bHandled = FALSE;
+
+	if(m_pDropTarget != NULL)
+	{
+		HRESULT hr = RevokeDragDrop(m_hWnd);
+		ATLASSERT(SUCCEEDED(hr));
+	}
+
+	return 0;
+}
+
+LRESULT CProjectTreeCtrl::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	if(wParam == VK_DELETE)
+	{
+		handleRemove();
+	}
+	else bHandled = FALSE;
+
+	return 0;
+}
+
+LRESULT CProjectTreeCtrl::OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	// If this is from a keyboard press...
+	if(GET_X_LPARAM(lParam) == -1 && GET_Y_LPARAM(lParam) == -1)
+	{
+		CRect rc;
+		GetItemRect(hLastItem, &rc, TRUE);
+		CPoint pt(rc.right, rc.top);
+		ClientToScreen(&pt);
+		doContextMenu(&pt);
+	}
+	else
+	{
+		CPoint pt(GetMessagePos());
+		handleRightClick(&pt);
+	}
+
+	return 0;
 }
 
 HRESULT CProjectTreeCtrl::OnDragEnter(LPDATAOBJECT pDataObject, DWORD /*dwKeyState*/, POINTL pt, LPDWORD pdwEffect)
@@ -1033,217 +1275,423 @@ void CProjectTreeCtrl::handleDrop(HDROP hDrop, HTREEITEM hDropItem, Projects::Fo
 		if(IsDirectory(buf))
 		{
 			Projects::Folder* pAdded = pFolder->AddFolder(buf, _T("*.*"), true);
-			HTREEITEM hFolder = AddFolderNode(pAdded, hDropItem, NULL);
+			HTREEITEM hFolder = addFolderNode(pAdded, hDropItem, NULL);
 
 			HTREEITEM hLastChild = NULL;
 
 			if( pAdded->GetFolders().size() > 0 )
-				hLastChild = buildFolders(hFolder, pAdded->GetFolders());
+			{
+				ProjectViewState viewState;
+				hLastChild = buildFolders(hFolder, pAdded->GetFolders(), viewState);
+			}
 
 			buildFiles(hFolder, hLastChild, pAdded->GetFiles());
 		}
 		else
 		{
 			File* pAdded = pFolder->AddFile(buf);
-			AddFileNode(pAdded, hDropItem, NULL);
+			addFileNode(pAdded, hDropItem, NULL);
 		}
 	}
 
 	TreeView_SortChildren(m_hWnd, hDropItem, true);
 }
 
-void CProjectTreeCtrl::handleRemove()
+/**
+ * See if we can perform a drag->drop operation given the current
+ * selection.
+ */
+bool CProjectTreeCtrl::canDrag()
 {
-	if(lastItem == NULL)
-		return;
+	ProjectType* ptSelItem;
+	
+	// We Check:
+	// 1) If the user is trying to drag projects and non-projects.
+	// 2) If the user is trying to drag a project group.
+	bool hasProject = false;
+	bool hasNonProject = false;
+	bool hasWorkspace = false;
 
-	// We can't delete lots of items and still be in the middle of using the
-	// GetFirst/GetNextSelectedItem loop because the current selection will
-	// change. 
-	std::list<HTREEITEM> selectedItems;
-	HTREEITEM sel = GetFirstSelectedItem();
-	while(sel)
+	std::list<HTREEITEM>::const_iterator i;
+
+	for(i = dropSelectedItems.begin(); 
+		(i != dropSelectedItems.end()) && (!hasProject || !hasNonProject);
+		++i)
 	{
-		selectedItems.push_front(sel);
-		sel = GetNextSelectedItem(sel);
+		ptSelItem = reinterpret_cast<ProjectType*>( GetItemData((*i)) );
+		switch(ptSelItem->GetType())
+		{
+		case ptProject:
+			hasProject = true;
+			break;
+
+		case ptWorkspace:
+			hasWorkspace = true;
+			break;
+
+		default:
+			hasNonProject = true;
+			break;
+		}
 	}
 
-	std::list<HTREEITEM>::iterator i = selectedItems.begin();
-
-	// just to be safe we cache the selected list and
-	// clear the selection to be safe.
-	//ClearSelection();
-
-	switch(lastItem->GetType())
+	// either way is fine, but not both.
+	if(hasProject && hasNonProject)
 	{
-		case ptFile:
-		{
-			// Remove a file from a folder.
-			for(;i != selectedItems.end(); ++i)
-			{
-				File* pF = reinterpret_cast<File*>( GetItemData((*i)) );
-				Projects::Folder* pFolder = pF->GetFolder();
-				pFolder->RemoveFile(pF);
-				DeleteItem((*i));
-			}
-		}
-		break;
+		g_Context.m_frame->SetStatusText(_T("Cannot drag projects and non-projects at the same time."));
+		return false;
+	}
+	else if(hasWorkspace)
+	{
+		g_Context.m_frame->SetStatusText(_T("Cannot drag project groups."));
+		return false;
+	}
 
-		case ptFolder:
-		{
-			// Remove a folder from a folder (or a project).
-			for(;i != selectedItems.end(); ++i)
-			{
-				Projects::Folder* pFolder = reinterpret_cast<Projects::Folder*>( GetItemData((*i)) );
-				Projects::Folder* pParent = pFolder->GetParent();
-				pParent->RemoveChild(pFolder);
-				DeleteItem((*i));
-			}
-		}
-		break;
-
-		case ptProject:
-		{
-			// All projects belong to single workspace (at the moment).
-			for(;i != selectedItems.end(); ++i)
-			{
-				Project* pProject = reinterpret_cast<Projects::Project*>( GetItemData((*i)) );
-				workspace->RemoveProject(pProject);
-				DeleteItem((*i));
-			}
-		}
-		break;
-	}	
+	return true;
 }
 
-void CProjectTreeCtrl::doContextMenu(LPPOINT pt)
+/**
+ * See if we can drop the current drag->drop selection on the item
+ * the user is hovering over.
+ */
+bool CProjectTreeCtrl::canDrop()
 {
-	if(hLastItem != NULL && lastItem != NULL)
+	//hDropTargetItem is the one the mouse is over.
+
+	//1) Check if the item is selected - can't drop an item on itself.
+	if( GetItemState(hDropTargetItem, TVIS_SELECTED) == TVIS_SELECTED )
+		return false;
+
+	ProjectType* ptype = reinterpret_cast<ProjectType*>( GetItemData(hDropTargetItem) );
+
+	//2) Can't drop an item on itself.
+	if(dropSelectionContainsItem(hDropTargetItem))
+		return false;
+
+	//3) check that we're not trying to drop a parent.
+	if(dropSelectionContainsParent(hDropTargetItem))
 	{
-		if(GetSelectedCount() > 1)
-		{
-			// We have a multiple-selection thing going on. Check that all items
-			// are of the same type.
-			
-			HTREEITEM sel = GetFirstSelectedItem();
-			while(sel)
+		g_Context.m_frame->SetStatusText(_T("Cannot drop a parent onto a child."));
+		return false;
+	}
+
+	std::list<HTREEITEM>::iterator i;
+	
+	//4) perform type-related checking...
+	switch(ptype->GetType())
+	{
+		case ptWorkspace:
+			return false; // TODO
+			break;
+
+		//4.2) Now check if the target is a project that it's only a project
+		//   that's being dropped.
+		case ptProject:
 			{
-				// If any items do not match the main type, we bail.
-				ProjectType* ptypeCheck = reinterpret_cast<ProjectType*>( GetItemData(sel) );
-				if( !ptypeCheck )
-					return;
-				if( !(lastItem->GetType() == ptypeCheck->GetType()) )
-					return;
-
-				sel = GetNextSelectedItem(sel);
-			}
-
-			multipleSelection = true;
-		}
-		else
-			multipleSelection = false;
-
-		switch(lastItem->GetType())
-		{
-			case ptFile:
-			{
-				CSPopupMenu popup(IDR_POPUP_PROJECTFILE);
-
-				CMenuItemInfo mii;
-				mii.fMask = MIIM_STATE;
-				mii.fState = MFS_ENABLED | MFS_DEFAULT;
-				
-				///@todo This doesn't work, but I'll leave it in to remind me to try
-				// and fix it sometime. Stupid menus.
-				::SetMenuItemInfo(popup, ID_PROJECT_OPEN, FALSE, &mii);
-				
-				g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
+				return true;
 			}
 			break;
 
-			case ptFolder:
+		//4.3) If we're dropping onto a folder, then we can drop folders and files...
+		case ptFolder:
 			{
-				CSPopupMenu popup(IDR_POPUP_PROJECTFOLDER);
-				g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
-			}
-			break;
-
-			case ptProject:
-			{
-				Projects::Project* project = static_cast<Projects::Project*>(lastItem);
-
-				if(project->Exists())
+				ProjectType* ptSelItem;
+				for(i = dropSelectedItems.begin(); i != dropSelectedItems.end(); ++i)
 				{
-					CSPopupMenu popup(IDR_POPUP_PROJECT);
-
-					if(multipleSelection)
-					{
-						CMenuItemInfo mii;
-						mii.fMask = MIIM_STATE;
-						mii.fState = MFS_DISABLED | MFS_GRAYED;
-
-						::SetMenuItemInfo(popup, ID_PROJECT_SETACTIVEPROJECT, FALSE, &mii);
-					}
-					else if(workspace->GetActiveProject() == project)
-					{
-						CMenuItemInfo mii;
-						mii.fMask = MIIM_STATE | MIIM_STRING;
-						mii.fState = MFS_ENABLED | MFS_CHECKED;
-						mii.dwTypeData = _T("Active Project");
-
-						::SetMenuItemInfo(popup, ID_PROJECT_SETACTIVEPROJECT, FALSE, &mii);
-					}
-
-					g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
+					ptSelItem = reinterpret_cast<ProjectType*>( GetItemData((*i)) );
+					if(ptSelItem->GetType() != ptFile &&
+						ptSelItem->GetType() != ptFolder)
+						return false;
 				}
 			}
 			break;
 
-			case ptWorkspace:
+		//4) If it's a file, check that it's only files being dropped.
+		//   Also, only support re-ordering files in the same folder.
+		// TODO: In fact, for now we don't support re-ordering...
+		case ptFile:
 			{
-				CSPopupMenu popup(IDR_POPUP_WORKSPACE);
-				g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
+				/*ProjectType* ptSelItem;
+				HTREEITEM parent = GetParentItem(hDropTargetItem);
+				for(i = dropSelectedItems.begin(); i != dropSelectedItems.end(); ++i)
+				{
+					ptSelItem = reinterpret_cast<ProjectType*>( GetItemData((*i)) );
+					if(ptSelItem->GetType() != ptFile)
+						return false;
+					if( GetParentItem((*i)) != parent )
+						return false;
+				}*/
+				return false;
 			}
+			break;
+	}
+
+	return true;
+}
+
+bool CProjectTreeCtrl::dropSelectionContainsItem(HTREEITEM item)
+{
+	std::list<HTREEITEM>::const_iterator i;
+	for(i = dropSelectedItems.begin(); i != dropSelectedItems.end(); i++)
+	{
+		if( (*i) == item )
+			return true;
+	}
+
+	return false;
+}
+
+bool CProjectTreeCtrl::dropSelectionContainsParent(HTREEITEM item)
+{
+	HTREEITEM parent = GetParentItem(item);
+	while(parent)
+	{
+		if(dropSelectionContainsItem(parent))
+			return true;
+		parent = GetParentItem(parent);
+	}
+
+	return false;
+}
+
+bool CProjectTreeCtrl::handleDrop()
+{
+	//1) Move the individual file items first.
+	//2) Move the folders after.
+	// - this makes sure we don't try to move subitems of folders once 
+	//   they've already been moved thus invalidating the HTREEITEMs.
+
+	ProjectType* pDropTargetType = reinterpret_cast<ProjectType*>( GetItemData(hDropTargetItem) );
+
+	switch(pDropTargetType->GetType())
+	{
+		case ptWorkspace:
+			break;
+		
+		case ptProject:
+			{
+				Project* target = static_cast<Project*>( pDropTargetType );
+				return handleProjectDrop(target);
+			}
+			break;
+
+		case ptFolder:
+			{
+				Projects::Folder* target = static_cast<Projects::Folder*>( pDropTargetType );
+				return handleFolderDrop(target);
+			}
+			break;
+
+		case ptFile:
+			break;
+	}
+
+	return false;
+}
+
+/**
+ * Handles a drag->drop for the specific case of items dropped on
+ * a project.
+ *
+ * If the items dropped are not projects, then we call through to
+ * handleFolderDrop.
+ * 
+ * @param target The project the items were dropped on.
+ */
+bool CProjectTreeCtrl::handleProjectDrop(Projects::Project* target)
+{
+	std::list<HTREEITEM>::const_iterator i;
+	ProjectType* ptSelItem;
+	
+	bool folderDrop = false;
+
+	// If there're any non-project items in the selection, then we do this
+	// as a folder drop...
+	for(i = dropSelectedItems.begin(); i != dropSelectedItems.end(); ++i)
+	{
+		ptSelItem = reinterpret_cast<ProjectType*>( GetItemData((*i)) );
+		if(ptSelItem->GetType() != ptProject)
+		{
+			folderDrop = true;
 			break;
 		}
 	}
-}
 
-void CProjectTreeCtrl::handleRightClick(LPPOINT pt)
-{
-	//CPoint pt(GetMessagePos());
-	CPoint pt2(*pt);
+	Projects::Project* pProject;
 
-	// Test for keyboard right-click...
-	if(pt->x != -1)
+	if(folderDrop)
 	{
-		ScreenToClient(&pt2);
-
-		TVHITTESTINFO tvhti;
-		memset(&tvhti, 0, sizeof(TV_HITTESTINFO));
+		handleFolderDrop(target);
+	}
+	else
+	{
+		PROJECT_LIST projects;
 		
-		tvhti.pt = pt2;
-		HitTest(&tvhti);
-
-		lastItem = NULL;
-		hLastItem = NULL;
-
-		if(tvhti.hItem != NULL)
+		// We move all project items to after the item that was selected.
+		// First remove all the projects from the tree...
+		for(i = dropSelectedItems.begin(); i != dropSelectedItems.end(); ++i)
 		{
-			if (tvhti.flags & (TVHT_ONITEM|TVHT_ONITEMRIGHT))
-			{
+			pProject = reinterpret_cast<Project*>( GetItemData((*i)) );
+			projects.insert(projects.end(), pProject);
+			DeleteItem( (*i) );
+		}
 
-				ProjectType* ptype = reinterpret_cast<ProjectType*>( GetItemData(tvhti.hItem) );
-				hLastItem = tvhti.hItem;
-				lastItem = ptype;
+		HTREEITEM hParent = GetParentItem(hDropTargetItem);
+		HTREEITEM hInsertAfter = hDropTargetItem;
+		Project* pLast = target;
 
-				if(!ptype)
-					return;
-			}
+		// Then re-add them, and move them in the projects list at the same time.
+		for(PROJECT_LIST::iterator j = projects.begin(); j != projects.end(); ++j)
+		{
+			hInsertAfter = buildProject(hParent, (*j), hInsertAfter);
+			
+			workspace->MoveProject((*j), pLast);
+			pLast = (*j);
 		}
 	}
 
-	doContextMenu(pt);
+	return true;
+}
+
+/**
+ * Handles a drag->drop for the specific case of items dropped on
+ * a folder.
+ * 
+ * @param target The folder the items were dropped on.
+ */
+bool CProjectTreeCtrl::handleFolderDrop(Projects::Folder* target)
+{
+	std::list<HTREEITEM> queue;
+	ProjectType* ptSelItem;
+	std::list<HTREEITEM>::const_iterator i;
+	for(i = dropSelectedItems.begin(); i != dropSelectedItems.end(); ++i)
+	{
+		ptSelItem = reinterpret_cast<ProjectType*>( GetItemData((*i)) );
+		
+		if(ptSelItem->GetType() == ptFile)
+		{
+			// Move the file object...
+			File* pTheFile = static_cast<File*>( ptSelItem );
+			Projects::Folder::MoveFile(pTheFile, target);
+
+			// Move the tree item...
+			DeleteItem( (*i) );
+			addFileNode(pTheFile, hDropTargetItem, NULL);
+		}
+		else if(ptSelItem->GetType() == ptFolder)
+		{
+			// queue folders for moving afterwards...
+			queue.insert(queue.begin(), (*i));
+		}
+	}
+
+	FOLDER_LIST folders;
+	ProjectViewState viewState;
+
+	// Now move any queued folders...
+	for(i = queue.begin(); i != queue.end(); i++)
+	{
+		ptSelItem = reinterpret_cast<ProjectType*>( GetItemData((*i)) );
+		if(ptSelItem->GetType() == ptFolder)
+		{
+			// Move the folder object...
+			Projects::Folder* pFolder = static_cast<Projects::Folder*>( ptSelItem );
+			Projects::Folder::MoveChild(pFolder, target);
+
+			bool bExpanded = GetItemState((*i), TVIS_EXPANDED) & TVIS_EXPANDED;
+
+			// Move the tree item(s)...
+			DeleteItem( (*i) );
+
+			// Add the folder to a list of folders to re-add in a moment, and store 
+			// a view state.
+			folders.insert(folders.end(), pFolder);
+			viewState.SetExpand(pFolder, bExpanded);
+		}
+	}
+
+	buildFolders(hDropTargetItem, folders, viewState);
+
+	Expand( hDropTargetItem, TVE_EXPAND );
+
+	return true;
+}
+
+/**
+ * Clean up after a drag->drop operation.
+ */
+void CProjectTreeCtrl::handleEndDrag()
+{
+	// Stop the imagelist drag thing...
+	ImageList_DragLeave(m_hWnd);
+	ImageList_EndDrag();
+    
+	// Release the mouse capture.
+	ReleaseCapture();
+
+	// Kill the drag timer.
+	KillTimer(dragTimer);
+	
+	// Reset the mouse cursor.
+	::SetCursor( ::LoadCursor(NULL, IDC_ARROW) );
+
+	// Clear the drop target selection.
+	TreeView_SelectDropTarget(m_hWnd, NULL);
+
+	// Destroy the imagelist used for dragging.
+	ImageList_Destroy(hDragImageList);
+
+	dragging = false;
+}
+
+int CProjectTreeCtrl::CompareWorker(LPARAM lParam1, LPARAM lParam2, LPARAM caseSensitive, bool sortAll)
+{
+	ProjectType* pt1 = reinterpret_cast<ProjectType*>(lParam1);
+	ProjectType* pt2 = reinterpret_cast<ProjectType*>(lParam2);
+
+	PROJECT_TYPE t1 = pt1->GetType();
+	PROJECT_TYPE t2 = pt2->GetType();
+
+	if(t1 == ptFolder && t2 == ptFile)
+	{
+		return -1;
+	}
+	else if(t1 == ptFile && t2 == ptFolder)
+	{
+		return 1;
+	}
+	else if(t1 == ptFile && t2 == ptFile)
+	{
+		File* pF1 = reinterpret_cast<File*>(pt1);
+		File* pF2 = reinterpret_cast<File*>(pt2);
+		
+		if(caseSensitive)
+			return _tcscmp(pF1->GetDisplayName(), pF2->GetDisplayName());
+		else
+			return _tcsicmp(pF1->GetDisplayName(), pF2->GetDisplayName());
+	}
+	else if(sortAll && t1 == ptFolder && t2 == ptFolder)
+	{
+		Projects::Folder* pF1 = reinterpret_cast<Projects::Folder*>(pt1);
+		Projects::Folder* pF2 = reinterpret_cast<Projects::Folder*>(pt2);
+
+		if(caseSensitive)
+			return _tcscmp(pF1->GetName(), pF2->GetName());
+		else
+			return _tcsicmp(pF1->GetName(), pF2->GetName());
+	}
+
+	return 0;
+}
+
+int CALLBACK CProjectTreeCtrl::CompareItem(LPARAM lParam1, LPARAM lParam2, LPARAM caseSensitive)
+{
+	return CompareWorker(lParam1, lParam2, caseSensitive, false);
+}
+
+int CALLBACK CProjectTreeCtrl::CompareItemSortAll(LPARAM lParam1, LPARAM lParam2, LPARAM caseSensitive)
+{
+	return CompareWorker(lParam1, lParam2, caseSensitive, true);
 }
 
 //////////////////////////////////////////////////////////////////////////////

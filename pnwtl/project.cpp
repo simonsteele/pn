@@ -21,6 +21,14 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
+#if (_ATL_VER >= 0x0700)
+	#pragma warning( push )
+	#pragma warning(disable: 4996) // see MSDN on hash_map
+	#include <hash_map>
+#else
+	#include <map>
+#endif
+
 namespace Projects
 {
 
@@ -295,6 +303,11 @@ Projects::Folder* File::GetFolder()
 	return parentFolder;
 }
 
+void File::SetFolder(Projects::Folder* folder)
+{
+	parentFolder = folder;
+}
+
 bool File::Rename(LPCTSTR newFilePart)
 {
 	CFileName fn(fullPath.c_str());
@@ -470,12 +483,39 @@ void Folder::AddChild(Folder* folder)
 	setDirty();
 }
 
+/*void Folder::AddChild(Folder* folder, Folder* insertBelow)
+{
+	FOLDER_LIST::iterator i;
+	FOLDER_LIST::iterator iAfter = children.end();
+	for(i = children.begin(); i != children.end(); ++i)
+	{
+		if( (*i) == insertBelow )
+		{
+			iAfter = i;
+			++iAfter;
+			break;
+		}
+	}
+
+	folder->SetParent(this);
+	children.insert(iAfter, folder);
+	setDirty();
+}*/
+
 File* Folder::AddFile(LPCTSTR file)
 {
 	File* pFile = new File(basePath.c_str(), file, this);
-	files.insert(files.begin(), pFile);
+	files.insert(files.end(), pFile);
 	setDirty();
 	return pFile;
+}
+
+void Folder::AddFile(File* file)
+{
+	//TODO: file->SetBasePath(basePath.c_str());
+	files.insert(files.end(), file);
+	setDirty();
+	file->SetFolder(this);
 }
 
 class FolderAdder : FileFinderImpl<FolderAdder, FolderAdder>
@@ -548,18 +588,28 @@ Folder* Folder::AddFolder(LPCTSTR path, LPCTSTR filter, bool recursive)
 	return folder;
 }
 
+void Folder::RemoveChild(Folder* folder)
+{
+	DetachChild(folder);
+	delete folder;
+}
+
 void Folder::RemoveFile(File* file)
 {
-	files.remove(file);
-	setDirty();
+	DetachFile(file);
 	delete file;
 }
 
-void Folder::RemoveChild(Folder* folder)
+void Folder::DetachChild(Folder* folder)
 {
 	children.remove(folder);
 	setDirty();
-	delete folder;
+}
+
+void Folder::DetachFile(File* file)
+{
+	files.remove(file);
+	setDirty();
 }
 
 void Folder::Clear()
@@ -630,6 +680,32 @@ void Folder::setDirty()
 UserData& Folder::GetUserData()
 {
 	return userData;
+}
+
+bool Folder::MoveFile(File* file, Folder* into)
+{
+	Folder* from = file->GetFolder();
+	if(into == NULL)
+		return false;
+
+	if(from != NULL)
+		from->DetachFile(file);
+	into->AddFile(file);
+
+	return true;
+}
+
+bool Folder::MoveChild(Folder* folder, Folder* into)
+{
+	Folder* from = folder->GetParent();
+	if(into == NULL)
+		return false;
+
+	if(from != NULL)
+		from->DetachChild(folder);
+	into->AddChild(folder);
+	
+	return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -925,14 +1001,39 @@ Workspace::~Workspace()
 
 void Workspace::AddProject(Project* project)
 {
-	projects.insert(projects.begin(), project);
+	projects.insert(projects.end(), project);
 	bDirty = true;
 
 	if(activeProject == NULL)
 		activeProject = project;
 }
 
+void Workspace::InsertProject(Project* project, Project* insertAfter)
+{
+	PROJECT_LIST::iterator iAfter = projects.end();
+	PROJECT_LIST::iterator i;
+	for(i = projects.begin(); i != projects.end(); ++i)
+	{
+		if( (*i) == insertAfter )
+		{
+			iAfter = i;
+			++iAfter;
+			break;
+		}
+	}
+
+	projects.insert(iAfter, project);
+    
+	bDirty = true;
+}
+
 void Workspace::RemoveProject(Project* project)
+{
+	DetachProject(project);
+	delete project;	
+}
+
+void Workspace::DetachProject(Project* project)
 {
 	if(project->IsDirty())
 	{
@@ -952,8 +1053,6 @@ void Workspace::RemoveProject(Project* project)
 	}
 
 	projects.remove(project);
-	delete project;
-	bDirty = true;
 
 	if(activeProject == project)
 	{
@@ -962,6 +1061,14 @@ void Workspace::RemoveProject(Project* project)
 		else
 			activeProject = NULL;
 	}
+	
+	bDirty = true;
+}
+
+void Workspace::MoveProject(Project* project, Project* moveAfter)
+{
+	projects.remove(project);
+	InsertProject(project, moveAfter);
 }
 
 const PROJECT_LIST Workspace::GetProjects()
@@ -1142,4 +1249,78 @@ void Workspace::parse()
 	bDirty = false;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// ProjectViewState
+//////////////////////////////////////////////////////////////////////////////
+
+#if (_ATL_VER >= 0x0700)
+	class ProjectViewState::ExpandCache : public std::hash_map<tstring, bool>{};
+#else
+	class ProjectViewState::ExpandCache : public std::map<tstring, bool>{};
+#endif
+
+ProjectViewState::ProjectViewState()
+{
+	cache = new ExpandCache();
+}
+
+ProjectViewState::~ProjectViewState()
+{
+	delete cache;
+}
+
+bool ProjectViewState::ShouldExpand(Folder* folder)
+{
+	tstring path;
+	getFolderPath(folder, path);
+
+	ExpandCache::const_iterator i = cache->find(path);
+	if(i != cache->end())
+	{
+		return (*i).second;
+	}
+	else
+		return OPTIONS->Get("Projects", "ExpandDefault", false);
+}
+
+void ProjectViewState::SetExpand(Folder* folder, bool expand)
+{
+	tstring path;
+	getFolderPath(folder, path);
+
+	cache->insert( ExpandCache::value_type(path, expand) );
+}
+
+void ProjectViewState::SetExpand(LPCTSTR folderPath, bool expand)
+{
+	tstring path(folderPath);
+	cache->insert( ExpandCache::value_type(path, expand) );
+}
+
+tstring ProjectViewState::GetFolderPath(Folder* folder)
+{
+	tstring path;
+	getFolderPath(folder, path);
+	return path;
+}
+
+void ProjectViewState::getFolderPath(Folder* folder, tstring path)
+{
+	Folder* parent = folder->GetParent();
+	if(parent != NULL)
+	{
+		getFolderPath(parent, path);
+		path += _T('\\');
+		path += folder->GetName();
+	}
+	else
+	{
+		path = folder->GetName();
+	}
+}
+
 } // namespace Projects
+
+#if (_ATL_VER >= 0x0700)
+	#pragma warning( pop ) // 4996 - deprecated hash_map.
+#endif

@@ -28,6 +28,8 @@ What's new?
 19) Middle-click mouse on the document tab to close a document.
 20) Allow specification of default character set (includes Shift-JIS and UTF-8).
 21) Optimised file loading - significantly reduces load time for large files.
+22) Drag and drop in the projects window.
+23) Folders in project window now remain above files.
 
 Bug Fixes:
 ----------
@@ -50,6 +52,7 @@ Bug Fixes:
 16) Changing full path option doesn't affect open files (SF Bug #871628).
 17) Update status bar when last file closed (SF Bug #514527).
 18) Highlight colors in scheme wrong when choosing defaults (SF Bug #909343).
+19) PN loses focus on closing search dialogs (SF Bug #939917).
 
 If you find a bug:
 ------------------

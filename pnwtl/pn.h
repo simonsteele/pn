@@ -22,6 +22,7 @@
 
 #define PN_MDIACTIVATE		0x1
 #define TOOLS_RUNTOOL		0x2
+#define PN_MDIDESTROY		0x3
 
 #include "pntypes.h"
 

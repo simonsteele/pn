@@ -44,7 +44,6 @@ public:
 
 		REFLECTED_NOTIFY_CODE_HANDLER(TVN_ENDLABELEDIT, OnEndLabelEdit)
 		REFLECTED_NOTIFY_CODE_HANDLER(NM_RCLICK, OnRightClick)
-		//REFLECTED_NOTIFY_CODE_HANDLER(NM_CLICK, OnClick)
 		
 		MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
 		COMMAND_ID_HANDLER(ID_PROJECT_OPEN, OnOpenFile)
@@ -54,11 +53,14 @@ public:
 		COMMAND_ID_HANDLER(ID_PROJECT_REMOVE, OnRemove)
 		COMMAND_ID_HANDLER(ID_PROJECT_DELETE, OnDelete)
 		COMMAND_ID_HANDLER(ID_PROJECT_SETACTIVEPROJECT, OnSetActiveProject)
+		COMMAND_ID_HANDLER(ID_PROJECT_SORTFOLDERS, OnSortFolders)
 		COMMAND_ID_HANDLER(ID_WORKSPACE_NEWPROJECT, OnNewProject)
 		COMMAND_ID_HANDLER(ID_WORKSPACE_ADDPROJECT, OnAddProject)
 		
 		CHAIN_MSG_MAP(baseClass)
+		
 		REFLECTED_NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnSelChanged)
+	
 	END_MSG_MAP()
 
 	HWND Create(HWND hWndParent, _U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
@@ -70,30 +72,54 @@ public:
 	void			SetWorkspace(Projects::Workspace* ws);	
 
 protected:
-	HRESULT OnDragEnter(LPDATAOBJECT /*pDataObject*/, DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/);
-	HRESULT OnDragOver(DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/);
-	HRESULT OnDragLeave(void);
-	HRESULT OnDrop(LPDATAOBJECT /*pDataObject*/, DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/);
-
-protected:
+	HTREEITEM	addFileNode(Projects::File* file, HTREEITEM hParent, HTREEITEM hInsertAfter);
+	HTREEITEM	addFolderNode(Projects::Folder* folder, HTREEITEM hParent, HTREEITEM hInsertAfter);
 	void		buildTree();
-	void		buildProject(HTREEITEM hParentNode, Projects::Project* pj);
-	HTREEITEM	buildFolders(HTREEITEM hParentNode, const Projects::FOLDER_LIST& folders);
+	HTREEITEM	buildProject(HTREEITEM hParentNode, Projects::Project* pj, HTREEITEM hInsertAfter = NULL);
+	HTREEITEM	buildFolders(HTREEITEM hParentNode, const Projects::FOLDER_LIST& folders, Projects::ProjectViewState& viewState);
 	HTREEITEM	buildFiles(HTREEITEM hParentNode, HTREEITEM hInsertAfter, const Projects::FILE_LIST& files);
 	void		clearTree();
-	void		setStatus(Projects::ProjectType* selection);
+	void		doContextMenu(LPPOINT pt);
+	HTREEITEM	getLastFolderItem(HTREEITEM hParentNode);
+	void		handleRemove();
+	void		handleRightClick(LPPOINT pt);
 	void		openAll(Projects::Folder* folder);
+	void		setStatus(Projects::ProjectType* selection);
+	void		sort(HTREEITEM hFolderNode, bool bSortFolders = false);
 
-	HTREEITEM	AddFileNode(Projects::File* file, HTREEITEM hParent, HTREEITEM hInsertAfter);
-	HTREEITEM	AddFolderNode(Projects::Folder* folder, HTREEITEM hParent, HTREEITEM hInsertAfter);
+	// IDropTarget Drop
+	void		handleDrop(HDROP hDrop, HTREEITEM hDropItem, Projects::Folder* pFolder);
 
+	// Drag and Drop
+	bool		canDrag();
+	bool		canDrop();
+	bool		dropSelectionContainsItem(HTREEITEM item);
+	bool		dropSelectionContainsParent(HTREEITEM item);
+	bool		handleDrop();
+	bool		handleFolderDrop(Projects::Folder* target);
+	bool		handleProjectDrop(Projects::Project* target);
+	void		handleEndDrag();
+
+	static int CompareWorker(LPARAM lParam1, LPARAM lParam2, LPARAM caseSensitive, bool sortAll);
+	static int CALLBACK CompareItem(LPARAM lParam1, LPARAM lParam2, LPARAM caseSensitive);
+	static int CALLBACK CompareItemSortAll(LPARAM lParam1, LPARAM lParam2, LPARAM caseSensitive);
+
+protected:
+	// IDropTarget Handlers
+	HRESULT		OnDragEnter(LPDATAOBJECT /*pDataObject*/, DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/);
+	HRESULT		OnDragOver(DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/);
+	HRESULT		OnDragLeave(void);
+	HRESULT		OnDrop(LPDATAOBJECT /*pDataObject*/, DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/);
+
+	// Notification Handlers
 	LRESULT		OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-	//LRESULT		OnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT		OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT		OnEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-
 	LRESULT		OnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
+	// Command Handlers
+	LRESULT		OnNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT		OnAddProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -101,32 +127,20 @@ protected:
 	LRESULT		OnRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnSetActiveProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT		OnSortFolders(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	LRESULT OnNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnAddProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	// Drag and Drop Handlers
+	LRESULT		OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT		OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT		OnRButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT		OnCaptureChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT		OnMouseWheel(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT		OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
-	LRESULT OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnRButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnCaptureChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnMouseWheel(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-
-	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-
-	// Shell Drop
-	void handleDrop(HDROP hDrop, HTREEITEM hDropItem, Projects::Folder* pFolder);
-
-	// Drag and Drop
-	bool canDrop();
-	bool handleDrop();
-	void handleEndDrag();
-
-	void handleRemove();
-	void handleRightClick(LPPOINT pt);
-	void doContextMenu(LPPOINT pt);
+	// Misc. Message Handlers
+	LRESULT		OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT		OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT		OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 protected:
 	HTREEITEM				hLastItem;
@@ -144,6 +158,7 @@ protected:
 	HTREEITEM				hDropTargetItem;
 	HTREEITEM				hDragHoverItem;
 	DWORD					dwDragHoverAcquire;
+	std::list<HTREEITEM>	dropSelectedItems;
 	CComObject<DropTarget>* m_pDropTarget;
 };
 

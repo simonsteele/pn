@@ -365,6 +365,7 @@
 #define ID_EDIT_LOWERCASE               32912
 #define ID_EDIT_TRANSPOSELINES          32913
 #define ID_EDIT_COPYLINE                32914
+#define ID_PROJECT_SORTFOLDERS          32916
 #define IDC_FINDTEXT_LABEL              65535
 
 // Next default values for new objects
@@ -372,7 +373,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        323
-#define _APS_NEXT_COMMAND_VALUE         32915
+#define _APS_NEXT_COMMAND_VALUE         32917
 #define _APS_NEXT_CONTROL_VALUE         1097
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

@@ -123,6 +123,8 @@ protected:
 
 class File : public ProjectType
 {
+	friend class Folder;
+
 	public:
 		File(LPCTSTR basePath, LPCTSTR path, Projects::Folder* parent);
 
@@ -139,6 +141,8 @@ class File : public ProjectType
 
 	protected:
 		void setDirty();
+
+		void SetFolder(Folder* folder);
 
 	protected:
 		tstring displayName;
@@ -167,7 +171,9 @@ class Folder : public ProjectType
 		LPCTSTR GetBasePath();
 
 		void AddChild(Folder* folder);
+		//void AddChild(Folder* folder, Folder* insertBelow);
 		File* AddFile(LPCTSTR file);
+		void AddFile(File* file);
 		Folder* AddFolder(LPCTSTR path, LPCTSTR filter, bool recursive);
 
 		const FOLDER_LIST&	GetFolders();
@@ -179,12 +185,18 @@ class Folder : public ProjectType
 		void RemoveChild(Folder* folder);
 		void RemoveFile(File* file);
 
+		void DetachChild(Folder* folder);
+		void DetachFile(File* file);
+
 		void SetParent(Folder* folder);
 		Folder* GetParent();
 
 		void WriteDefinition(ProjectWriter definition);
 
 		UserData& GetUserData();
+
+		static bool MoveFile(File* file, Projects::Folder* into);
+		static bool MoveChild(Projects::Folder* folder, Projects::Folder* into);
 
 	protected:
 		void Clear();
@@ -269,8 +281,11 @@ class Workspace : public ProjectType, XMLParseState
 		~Workspace();
 
 		void AddProject(Project* project);
-
+		void InsertProject(Project* project, Project* insertAfter);
 		void RemoveProject(Project* project);
+		void DetachProject(Project* project);
+
+		void MoveProject(Project* project, Project* moveAfter);
 
 		void SetName(LPCTSTR name_);
 		void SetFileName(LPCTSTR filename_);
@@ -309,6 +324,28 @@ class Workspace : public ProjectType, XMLParseState
 		tstring				fileName;
 		bool				bDirty;
 		Projects::Project*	activeProject;
+};
+
+class ProjectViewState
+{
+	public:
+		ProjectViewState();
+		~ProjectViewState();
+
+		bool ShouldExpand(Folder* folder);
+
+		void SetExpand(Folder* folder, bool expand);
+		void SetExpand(LPCTSTR folderPath, bool expand);
+
+		tstring GetFolderPath(Folder* folder);
+
+	protected:
+		void getFolderPath(Folder* folder, tstring path);
+
+	protected:
+		class ExpandCache;
+
+		ExpandCache*	cache;
 };
 
 }

@@ -82,7 +82,7 @@ public:
 
 	LRESULT OnMDIDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
-		SendMessage(GetParent(), PN_NOTIFY, 0, 2);
+		SendMessage(GetParent(), PN_NOTIFY, 0, PN_MDIDESTROY);
 		bHandled = FALSE;
 
 		return 0;

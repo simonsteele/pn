@@ -60,6 +60,7 @@ extern CAppModule _Module;
 #include <atlctrlx.h>
 #include <atltheme.h>
 
+#include <list>
 #include <string>
 typedef std::basic_string<TCHAR> tstring;
 
