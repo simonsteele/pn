@@ -1,6 +1,13 @@
 | Working towards 0.5 :: Mingus
 ---------------------------------------
 
+Since 11/12/03:
+
+Fixed one potential MRU issue.
+Some tidying up.
+Changed about box.
+RC1
+
 Since 08/12/03:
 
 Fixed save changed workspace code.
