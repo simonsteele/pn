@@ -283,7 +283,6 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 			m_SizeCombo.AddString(_T("14"));
 			m_SizeCombo.AddString(_T("16"));
 			m_SizeCombo.AddString(_T("18"));
-			
 
 			return 0;
 		}
@@ -294,33 +293,107 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 };
 
 #include "SchemeConfig.h"
+#include "pnutils.h"
 
-template <class T>
-class CTabbedDialogPageImpl : public CDialogImpl<T>
+class CStyleDisplay : public CWindowImpl<CStyleDisplay>
 {
-	BEGIN_MSG_MAP(CTabbedDialogPageImpl)
-		MESSAGE_HANDLER(WM_CTLCOLORDLG, OnCtlColor)
-	END_MSG_MAP()
-
-	LRESULT OnCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
-	{
-		if((HWND)lParam == m_hWnd)
+	public:
+		CStyleDisplay()
 		{
-			return reinterpret_cast<INT_PTR>(::GetStockObject(NULL_BRUSH));
-
+			m_Font = NULL;
 		}
-		return 0;
-	}
+
+		~CStyleDisplay()
+		{
+			if(m_Font)
+				delete m_Font;
+		}
+
+		BEGIN_MSG_MAP(CStyleDisplay)
+			MESSAGE_HANDLER(WM_PAINT, OnPaint)
+			MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
+		END_MSG_MAP()
+
+		void SetStyle(LPCTSTR fontname, int fontsize, COLORREF fore, COLORREF back, LPCTSTR name, bool bold, bool italic, bool underline)
+		{
+			m_Name = name;
+			m_Fore = fore;
+			m_Back = back;
+
+			if(m_Font)
+				delete m_Font;
+
+			HDC dc = GetDC();
+
+			LOGFONT lf;
+			memset(&lf, 0, sizeof(LOGFONT));
+			lf.lfHeight = -MulDiv(fontsize, GetDeviceCaps(dc, LOGPIXELSY), 72);
+			lf.lfWeight = (bold ? FW_BOLD : FW_NORMAL);
+			if(underline)
+				lf.lfUnderline = TRUE;
+			if(italic)
+				lf.lfItalic = TRUE;
+			_tcscpy(lf.lfFaceName, fontname);
+
+			ReleaseDC(dc);
+			
+			m_Font = new CFont;
+			m_Font->CreateFontIndirect(&lf);
+
+			Invalidate();
+		}
+
+	protected:
+		CString		m_Name;
+		CFont*		m_Font;
+		COLORREF	m_Fore;
+		COLORREF	m_Back;
+
+		LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+		{
+			PAINTSTRUCT ps;
+			BeginPaint(&ps);
+
+			CDC dc(ps.hdc);
+			
+			CRect rc;
+			GetClientRect(rc);
+
+			HBRUSH light = ::CreateSolidBrush(::GetSysColor(COLOR_3DSHADOW));
+
+			dc.FillRect(rc, (HBRUSH)::GetStockObject(WHITE_BRUSH));
+			dc.FrameRect(rc, light);
+
+			if(m_Font)
+			{
+				HFONT hOldFont = dc.SelectFont(m_Font->m_hFont);
+				dc.SetBkColor(m_Back);
+				dc.SetTextColor(m_Fore);
+				dc.DrawText(m_Name, m_Name.GetLength(), rc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+				dc.SelectFont(hOldFont);
+			}
+
+			::DeleteObject(light);
+			
+			EndPaint(&ps);
+			return 0;
+		}
+
+		LRESULT OnEraseBkgnd(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+		{
+			return 1;
+		}
 };
 
-class CStylesTabDialog : public CTabbedDialogPageImpl<CStylesTabDialog>
+class CStylesTabDialog : public CPropertyPageImpl<CStylesTabDialog>
 {
 	public:	
 		enum {IDD = IDD_TAB_STYLES};
 
 		BEGIN_MSG_MAP(CStylesTabDialog)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			CHAIN_MSG_MAP(CTabbedDialogPageImpl<CStylesTabDialog>)
+			NOTIFY_HANDLER(IDC_STYLES_TREE, TVN_SELCHANGED, OnTreeSelChanged)
+			CHAIN_MSG_MAP(CPropertyPageImpl<CStylesTabDialog>)
 		END_MSG_MAP()
 
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -328,6 +401,34 @@ class CStylesTabDialog : public CTabbedDialogPageImpl<CStylesTabDialog>
 			CRect rc;
 			
 			m_tree.Attach(GetDlgItem(IDC_STYLES_TREE));
+
+			CWindow placeholder(GetDlgItem(IDC_STYLE_EXAMPLE));
+			placeholder.GetWindowRect(rc);
+			ScreenToClient(rc);
+			m_sd.Create(m_hWnd, rc, _T("Style Display"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS);
+
+			return 0;
+		}
+
+		LRESULT OnTreeSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+		{
+			HTREEITEM item = m_tree.GetSelectedItem();
+
+			if(item)
+			{
+				if(m_tree.GetParentItem(item) == NULL)
+				{
+					StyleDetails* pStyle = reinterpret_cast<StyleDetails*>(m_tree.GetItemData(item));
+					if(pStyle)
+					{
+						m_sd.SetStyle(pStyle->FontName.c_str(), pStyle->FontSize, pStyle->ForeColor, pStyle->BackColor, pStyle->name.c_str(), pStyle->Bold, pStyle->Italic, pStyle->Underline);
+						CheckDlgButton(IDC_STYLE_BOLDCHECK, pStyle->Bold ? BST_CHECKED : BST_UNCHECKED);
+						CheckDlgButton(IDC_STYLE_ITALICCHECK, pStyle->Italic ? BST_CHECKED : BST_UNCHECKED);
+						CheckDlgButton(IDC_STYLE_UNDERLINECHECK, pStyle->Underline ? BST_CHECKED : BST_UNCHECKED);
+						CheckDlgButton(IDC_STYLE_EOLFILLEDCHECK, pStyle->EOLFilled ? BST_CHECKED : BST_UNCHECKED);
+					}
+				}
+			}
 
 			return 0;
 		}
@@ -341,7 +442,7 @@ class CStylesTabDialog : public CTabbedDialogPageImpl<CStylesTabDialog>
 			
 			while(pColl)
 			{
-				for(SL_IT i = pScheme->m_Styles.begin(); i != pScheme->m_Styles.end(); ++i)
+				for(SL_IT i = pColl->m_Styles.begin(); i != pColl->m_Styles.end(); ++i)
 				{
 					HTREEITEM hi = m_tree.InsertItem((*i)->name.c_str(), insertunder, TVI_LAST);
 					m_tree.SetItemData(hi, reinterpret_cast<DWORD_PTR>(*i));
@@ -362,6 +463,7 @@ class CStylesTabDialog : public CTabbedDialogPageImpl<CStylesTabDialog>
 
 	protected:
 		CTreeViewCtrl	m_tree;
+		CStyleDisplay	m_sd;
 };
 
 class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
@@ -370,7 +472,6 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 		BEGIN_MSG_MAP(COptionsPageSchemes)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			COMMAND_HANDLER(IDC_SCHEMECOMBO, CBN_SELCHANGE, OnComboChange)
-			NOTIFY_HANDLER(IDC_TAB, TCN_SELCHANGE, OnTabChange)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 		enum {IDD = IDD_PAGE_SCHEMES};
@@ -382,19 +483,6 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 		{
-			m_tabs.Attach(GetDlgItem(IDC_TAB));
-
-			TCITEM tci;
-			tci.mask = TCIF_TEXT | TCIF_IMAGE;
-
-			tci.pszText = _T("Styles");
-			tci.iImage = 0;
-			m_tabs.InsertItem(0, &tci);
-			
-			tci.pszText = _T("Keywords");
-			tci.iImage = 1;
-			m_tabs.InsertItem(1, &tci);
-
 			CWindow label;
 			CSize s;
 			CRect rc;
@@ -418,12 +506,14 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 			rcCombo.left = rc.right + 5;
 			m_combo.SetWindowPos(HWND_TOP, &rcCombo, 0);
 
-			m_stylestab.Create(m_tabs.m_hWnd);
-			m_tabs.GetWindowRect(rc);
-			m_tabs.ScreenToClient(rc);
-			m_tabs.AdjustRect(FALSE, rc);
-			m_stylestab.SetWindowPos(HWND_TOP, rc, SWP_SHOWWINDOW);
-			m_stylestab.ShowWindow(SW_SHOW);
+			
+			CRect rcPH;
+			GetDlgItem(IDC_PS_PLACEHOLDER).GetWindowRect(rcPH);
+			ScreenToClient(rcPH);
+			m_stylestab.SetTitle(_T("Styles"));
+			m_props.AddPage(m_stylestab);
+			m_props.Create(m_hWnd, 0, rcPH);
+
 			return 0;
 		}
 
@@ -449,23 +539,9 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 			return 0;
 		}
 
-		LRESULT OnTabChange(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
-		{
-			int iTab = m_tabs.GetCurSel();
-			if(iTab == 0)
-			{
-				m_stylestab.ShowWindow(SW_SHOW);
-			}
-			else
-			{
-				m_stylestab.ShowWindow(SW_HIDE);
-			}
-			return 0;
-		}
-
 	protected:
 		CComboBox			m_combo;
-		CTabCtrlT<CWindow>	m_tabs;
+		CContainedPropSheet	m_props;
 		SchemeConfigParser* m_pSchemes;
 		CStylesTabDialog	m_stylestab;
 };

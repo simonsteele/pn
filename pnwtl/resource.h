@@ -71,10 +71,18 @@
 #define IDC_EDIT1                       1011
 #define IDC_FONT_COMBO                  1012
 #define IDC_FONTSIZE_COMBO              1013
-#define IDC_TAB                         1015
 #define IDC_SCHEMECOMBO                 1016
 #define IDC_SCHEMELABEL                 1017
 #define IDC_STYLES_TREE                 1020
+#define IDC_STYLE_BOLDCHECK             1021
+#define IDC_STYLE_ITALICCHECK           1022
+#define IDC_STYLE_UNDERLINECHECK        1023
+#define IDC_STYLE_EOLFILLEDCHECK        1024
+#define IDC_FORE_PLACEHOLDER            1025
+#define IDC_BACK_PLACEHOLDER            1026
+#define IDC_STYLE_EXAMPLE               1027
+#define IDC_PS_PLACEHOLDER              1029
+#define IDC_COMBO1                      1030
 #define IDC_REPLACETEXT_LABEL           1042
 #define IDC_BACKSLASH_CHECK             1043
 #define IDC_PNSAVE_SAVEASSTATIC         1056
@@ -121,7 +129,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        251
 #define _APS_NEXT_COMMAND_VALUE         32790
-#define _APS_NEXT_CONTROL_VALUE         1021
+#define _APS_NEXT_CONTROL_VALUE         1031
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif
