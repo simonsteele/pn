@@ -686,9 +686,9 @@ BEGIN
                     TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_NOSCROLL | 
                     WS_BORDER | WS_TABSTOP,7,7,88,206
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,102,212,302,1
-    DEFPUSHBUTTON   "OK",IDOK,239,219,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,294,219,50,14
-    PUSHBUTTON      "&Help",IDC_HELPBTN,348,219,54,14,WS_DISABLED
+    DEFPUSHBUTTON   "OK",IDOK,244,219,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,298,219,50,14
+    PUSHBUTTON      "&Help",IDC_HELPBTN,352,219,50,14,WS_DISABLED
     LTEXT           "Static",IDC_PLACEHOLDER,102,7,300,200,NOT WS_VISIBLE
 END
 
@@ -1136,6 +1136,43 @@ BEGIN
                     TVS_HASLINES | WS_BORDER | WS_TABSTOP,7,33,254,118
 END
 
+IDD_PAGE_FILEASSO DIALOGEX 0, 0, 300, 200
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Ex&tension:",IDC_STATIC,0,0,35,8
+    EDITTEXT        IDC_EXTENSION,0,10,40,14,ES_AUTOHSCROLL
+    LTEXT           "&Method:",IDC_STATIC,44,0,28,8
+    COMBOBOX        IDC_FILEASSO_METHOD,44,10,148,30,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "&Edit",IDC_ADD,196,10,50,14,WS_DISABLED
+    PUSHBUTTON      "&Remove",IDC_REMOVE,250,10,50,14,WS_DISABLED
+    CONTROL         "",IDC_FILEASSO_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
+                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,0,28,299,154
+    CONTROL         "PN2 should &check the associations when starting",
+                    IDC_CHECKONSTARTUP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    1,188,245,10
+    PUSHBUTTON      "Check &Now",IDC_CHECKNOW,250,186,50,14
+END
+
+IDD_FILEASSOC_INFO DIALOGEX 0, 0, 300, 198
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+CAPTION "PN2 File Associations"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Yes",IDYES,189,177,50,14
+    PUSHBUTTON      "No",IDNO,243,177,50,14
+    CONTROL         "",IDC_LIST,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | 
+                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,20,286,139
+    LTEXT           "Programmers Notepad 2 is not the handler for these extensions:",
+                    IDC_STATIC,7,7,286,8
+    LTEXT           "Do you want to associate these extensions with Programmers Notepad 2 now?",
+                    IDC_STATIC,7,164,286,8
+    CONTROL         "Do not &ask me again",IDC_CHECK1,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,180,176,10
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1302,6 +1339,19 @@ BEGIN
         RIGHTMARGIN, 261
         TOPMARGIN, 7
         BOTTOMMARGIN, 151
+    END
+
+    IDD_PAGE_FILEASSO, DIALOG
+    BEGIN
+        HORZGUIDE, 10
+    END
+
+    IDD_FILEASSOC_INFO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 293
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 191
     END
 END
 #endif    // APSTUDIO_INVOKED

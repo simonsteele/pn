@@ -930,6 +930,14 @@ LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 		}
 	}
 
+	if(OPTIONS->Get(PNSK_INTERFACE, _T("CheckAssocsOnStartup"), false))
+	{
+		FileAssocManager fam;
+		if(fam.CheckAssociations())
+		{
+			fam.UpdateAssociations();
+		}
+	}
 	return 0;
 }
 
@@ -1418,6 +1426,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsPageTools			pageTools(&schemeconfig);
 
 	COptionsPageAFiles			pageAFiles;
+	COptionsPageFileAssoc		pageFileAssoc;
 
 	schemeconfig.LoadConfig(pSM->GetPath(), pSM->GetCompiledPath());
 
@@ -1429,6 +1438,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	options.AddPage(&pageStyle);
 	options.AddPage(&pageSchemes);
 	options.AddPage(&pageNewFiles);
+	options.AddPage(&pageFileAssoc);
 	options.AddPage(&pageTools);
 	options.AddPage(&pageAFiles);
 
@@ -1436,7 +1446,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 		options.SetInitialPage(&general);
 	else
 		options.SetInitialPage(&pageTools);
-
+options.SetInitialPage(&pageFileAssoc);
 	if( options.DoModal() == IDOK )
 	{
 		///@todo more dirty checking...

@@ -21,3 +21,6 @@ Robert Scarborough
 Adam Scheinberg
 Darren Schroeder
 Eric Weddington
+David Symons
+John Hawkins
+Richard Mansfield

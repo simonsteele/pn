@@ -305,6 +305,9 @@
 				RelativePath="exporters.cpp">
 			</File>
 			<File
+				RelativePath=".\FileAssoc.cpp">
+			</File>
+			<File
 				RelativePath=".\Files.cpp">
 			</File>
 			<File
@@ -451,6 +454,12 @@
 			</File>
 			<File
 				RelativePath="exporters.h">
+			</File>
+			<File
+				RelativePath=".\FileAssoc.h">
+			</File>
+			<File
+				RelativePath=".\FileAssocInfo.h">
 			</File>
 			<File
 				RelativePath=".\finddlg.h">

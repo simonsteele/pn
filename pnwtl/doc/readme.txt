@@ -1,6 +1,6 @@
 ========================================
-Release Name: 2.0.6.0
-Build: 2.0.6.x, Version Label: (none)
+Release Name: 2.0.5.5
+Build: 2.0.5.32, Version Label: herbie
 ========================================
 
 What's new?
@@ -86,7 +86,6 @@ Please don't moan about the following, they are all quite obvious to us already:
 
 1) Missing schemes from pn1.
 2) Toolbars aren't dockable.
-3) You can't turn the tabs off.
 
 So what is good?
 ----------------

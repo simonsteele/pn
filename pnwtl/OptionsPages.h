@@ -542,4 +542,84 @@ class COptionsPageAFiles : public COptionsPageImpl<COptionsPageAFiles>
 		bool			m_bDirty;
 };
 
+#include "FileAssoc.h"
+
+class COptionsPageFileAssoc : public COptionsPageImpl<COptionsPageFileAssoc>,
+	public CCustomDraw<COptionsPageFileAssoc>
+{
+	enum Mode
+	{
+		ModeNone,
+		ModeEdit,
+		ModeAdd,
+		ModeChanging,
+	};
+	enum Columns
+	{
+		ColConflict,
+		ColExtension,
+		ColMethod,
+		ColTypeName,
+	};
+
+	typedef CSimpleMap<CString, CString> StringMap;
+
+	public:
+		COptionsPageFileAssoc();
+
+		enum {IDD = IDD_PAGE_FILEASSO};
+
+		BEGIN_MSG_MAP(COptionsPageFileAssoc)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			COMMAND_HANDLER(IDC_EXTENSION, EN_CHANGE, OnExtensionChange)
+			COMMAND_HANDLER(IDC_ADD, BN_CLICKED, OnAddClicked)
+			COMMAND_HANDLER(IDC_REMOVE, BN_CLICKED, OnRemoveClicked)
+			COMMAND_HANDLER(IDC_CHECKNOW, BN_CLICKED, OnCheckNowClicked)
+			NOTIFY_HANDLER(IDC_LIST, LVN_ITEMCHANGED, OnListItemChanged)
+			NOTIFY_HANDLER(IDC_LIST, NM_SETFOCUS, OnListSetFocus)
+			NOTIFY_HANDLER(IDC_LIST, LVN_GETINFOTIP, OnListGetInfoTip)
+			NOTIFY_HANDLER(IDC_LIST, LVN_KEYDOWN, OnListKeyDown)
+			CHAIN_MSG_MAP(CCustomDraw<COptionsPageFileAssoc>)
+			REFLECT_NOTIFICATIONS()
+		END_MSG_MAP()
+
+		virtual void OnInitialise();
+		virtual void OnOK();
+		virtual void OnCancel();
+		virtual LPCTSTR GetTreePosition();
+
+		DWORD OnPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
+		DWORD OnItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
+		DWORD OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
+
+	protected:
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+		LRESULT OnExtensionChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+		LRESULT OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnCheckNowClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+		LRESULT OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+		LRESULT OnListSetFocus(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+		LRESULT OnListGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+		LRESULT OnListKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+
+		void SetMode(Mode mode, bool setExt = true, LPCTSTR extension = NULL);
+		void ListItemToFileAssoc(int index, FileAssoc& fa);
+		void RemoveExtension(int index);
+
+		bool			m_bDirty;
+		Mode			m_mode;
+		CComboBox		m_combo;
+		CButton			m_buttonAddEdit;
+		CButton			m_buttonRemove;
+		CListViewCtrl	m_list;
+		FileAssocManager m_fam;
+		StringMap		m_conflicts;
+		CFont			m_boldFont;
+		COLORREF		m_colors[2];
+};
+
 #endif
