@@ -39,12 +39,31 @@ typedef struct
 	int current;
 } menu_id_range;
 
-typedef map<int, CallbackBase*> MAP_HANDLERS;
+/**
+ * @class CSMenuEventHandler
+ * @brief Mixin class for implementing custom menu generation and handling...
+ */
+class CSMenuEventHandler
+{
+	public:
+		virtual void SHandleMenuCommand(int iCommand, LPVOID data) = 0;
+};
+
+typedef struct
+{
+	CSMenuEventHandler*	pHandler;
+	int					iID;
+	
+	LPVOID				data;
+} menu_event_handler;
+
+typedef map<int, menu_event_handler*> MAP_HANDLERS;
 typedef MAP_HANDLERS::value_type MH_VT;
+typedef MAP_HANDLERS::iterator MH_IT;
 typedef MAP_HANDLERS::const_iterator MH_CI;
 
 /**
- * @class CMenuManager
+ * @class CSMenuManager
  * @brief This class basically manages resource ID allocation.
  */
 class CSMenuManager
@@ -55,8 +74,8 @@ class CSMenuManager
 		static CSMenuManager* GetInstance();
 		static void ReleaseInstance();
 
-		void RegisterCallback(int iID, CallbackBase* pHandler);
-		void UnRegisterCallback(int iID);
+		int RegisterCallback(CSMenuEventHandler* pHandler, int iCommand, LPVOID data = NULL);
+		void UnRegisterCallbacks(int iID);
 
 		bool HandleCommand(int iID);
 
@@ -72,6 +91,8 @@ class CSMenuManager
 		menu_id_range* m_pRange;
 
 		MAP_HANDLERS m_Handlers;
+
+		int GetNextID();
 };
 
 template <bool t_bManaged> class CSMenuT;
@@ -200,4 +221,29 @@ class CSPopupMenu : public CSMenu
 		HMENU m_hSubMenu;
 };
 
+#define CALLBACK_COMMAND_HANDLER() \
+	if(uMsg == WM_COMMAND) \
+	{ \
+		bHandled = TRUE; \
+		if(CSMenuManager::GetInstance()->HandleCommand(LOWORD(wParam))) \
+			return TRUE; \
+		else \
+			bHandled = FALSE; \
+	}
+
 #endif
+
+#define BEGIN_MENU_HANDLER_MAP() \
+	void SHandleMenuCommand(int iCommand, LPVOID data) \
+	{
+
+
+#define HANDLE_MENU_COMMAND(id, handler) \
+	if(id == iCommand) \
+	{ \
+		handler(data); \
+		return; \
+	}
+
+#define END_MENU_HANDLER_MAP() \
+	}

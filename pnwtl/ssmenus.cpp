@@ -11,7 +11,7 @@
 #include "stdafx.h"
 #include "ssmenus.h"
 
-menu_id_range menu_id_range1 = {1,2,0};
+menu_id_range menu_id_range1 = {20000,21000,0};
 //menu_id_range menu_id_range2 = {6,8,0};
 
 // NULL is important here for counting the available IDs.
@@ -51,20 +51,54 @@ void CSMenuManager::ReleaseInstance()
 {
 	if(s_pTheInstance)
 	{
+		for(MH_IT i = s_pTheInstance->m_Handlers.begin(); i != s_pTheInstance->m_Handlers.end(); ++i)
+		{
+			delete (*i).second;
+		}
+
 		delete s_pTheInstance;
 		s_pTheInstance = NULL;
 	}
 }
 
-void CSMenuManager::RegisterCallback(int iID, CallbackBase* pHandler)
+/**
+ * @return int The actual ID of the registered command
+ */
+int CSMenuManager::RegisterCallback(CSMenuEventHandler *pHandler, int iCommand, LPVOID data)
 {
-	m_Handlers.insert(m_Handlers.begin(), MH_VT(iID, pHandler));
+	int iID = GetNextID();
+
+	menu_event_handler* pRecord = new menu_event_handler;
+	pRecord->iID = iCommand;
+	pRecord->pHandler = pHandler;
+	pRecord->data = data;
+
+	m_Handlers.insert(m_Handlers.begin(), MH_VT(iID, pRecord));
+
+	return iID;
 }
 
-void CSMenuManager::UnRegisterCallback(int iID)
+int CSMenuManager::GetNextID()
+{
+	if(m_pRange->current == 0)
+	{
+		m_pRange->current = m_pRange->start;
+	}
+
+	int ret = m_pRange->current;
+
+	if(++m_pRange->current > m_pRange->end)
+	{
+		m_pRange++;
+	}
+	
+	return ret;
+}
+
+/*void CSMenuManager::UnRegisterCallback(int iID)
 {
 	m_Handlers.erase(iID);
-}
+}*/
 
 bool CSMenuManager::HandleCommand(int iID)
 {
@@ -73,8 +107,10 @@ bool CSMenuManager::HandleCommand(int iID)
 	MH_CI i = m_Handlers.find(iID);
 	if(i != m_Handlers.end())
 	{
-		CallbackBase* pBase = (*i).second;
-		(*pBase)();
+		menu_event_handler* pRecord = (*i).second;
+
+		pRecord->pHandler->SHandleMenuCommand(pRecord->iID, pRecord->data);
+
 		bHandled = true;
 	}
 
@@ -116,8 +152,7 @@ HMENU CSPopupMenu::GetHandle()
 	if(m_hSubMenu)
 		return m_hSubMenu;
 	else
-		return m_hMenu;
-}
+		return m_hMenu;}
 
 
 int CSPopupMenu::TrackPopupMenu(LPPOINT pt, HWND hWnd)
