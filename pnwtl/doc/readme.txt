@@ -1,6 +1,6 @@
 ========================================
 Release Name: 2.0.4-miles
-Build: 2.0.4.x, Version Label: miles
+Build: 2.0.4.14, Version Label: miles
 ========================================
 
 What's new?
@@ -11,6 +11,33 @@ What's new?
 example: To change the background for all PHP styles, simply change the background
 on the main PHP item that contains the styles below it. This will not override any
 custom backgrounds already set on those items - those will need to be reset.
+
+2) User-Schemes
+
+Define your own schemes using simple XML - can support a large number of languages. 
+See the included vhdl.schemedef sample. There will be documentation for this soon.
+
+3) Tool output parsing for a number of built-in types.
+4) Output parsing for user-defined output strings.
+5) Matched output jumps to the correct position in the correct file when clicked.
+6) Tool editor dialog re-designed (a bit)
+7) Docking global output window.
+8) Clipboard Swap (Ctrl-Shift-C)
+
+paste clipboard into selection and place selection on the clipboard.
+
+9) Options dialog more keyboard accessible.
+10) Maximise on opening.
+11) PN remembers its window positioning between loads.
+12) Perl scheme.
+13) Better pascal scheme.
+14) Folding keyboard shortcuts: 
+
+Ctrl-Alt-+ Expand All, Ctrl-Alt-- Collapse All, Ctrl+* toggle current fold block
+
+15) Copy as RTF and export RTF.
+
+16-ish) A Modula-2 scheme will be released separately in a week or two. Some code changes were made to Scintilla for this.
 
 Please let me know about any problems with this release: ss@pnotepad.org.
 
@@ -37,9 +64,7 @@ Please don't moan about the following, they are all quite obvious to us already:
 2) No project management.
 3) Toolbars aren't dockable.
 4) You can't turn the tabs off.
-5) Tools are currently only on a per-scheme basis, there are no global tools. This will change.
-6) Output current shows up as a new file type, and you can switch the highlighter to it. This is a bug.
-7) PN needs a "Monospaced Font" mode.
+5) PN needs a "Monospaced Font" mode.
 
 So what is good?
 ----------------

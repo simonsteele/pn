@@ -1,1 +1,1 @@
-#define PN_VERSION	_T("2.0.4-devel")
+#define PN_VERSION	_T("2.0.4-miles")

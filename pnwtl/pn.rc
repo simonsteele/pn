@@ -91,6 +91,8 @@ BEGIN
             MENUITEM "&Edit",                       238
         END
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+        MENUITEM SEPARATOR
+        MENUITEM "&Output\tF8",                 133
     END
     POPUP "&Tools"
     BEGIN
@@ -320,7 +322,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,4,12
+ FILEVERSION 2,0,4,14
  PRODUCTVERSION 2,0,4,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -338,12 +340,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele (Echo Software)"
             VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.4.12"
+            VALUE "FileVersion", "2.0.4.14"
             VALUE "InternalName", "PNWTL"
             VALUE "LegalCopyright", "Copyright © 2002-2003 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"
             VALUE "ProductName", "Programmers Notepad"
-            VALUE "ProductVersion", "2.0.4-devel"
+            VALUE "ProductVersion", "2.0.4-miles"
         END
     END
     BLOCK "VarFileInfo"
