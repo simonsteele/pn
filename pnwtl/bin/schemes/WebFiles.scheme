@@ -147,20 +147,20 @@
 			</group>
 			
 			<!-- Embedded JavaScript -->			
-			<group name="JavaScript" description="Embedded JavaScript">
-				<style name="Start" key="40" class="embeddedjs" fore="7f7f00"/>
-				<style name="Default" key="41" class="embeddedjs" fore="000000" bold="true" eolfilled="true"/>
-				<style name="Comment" key="42" class="embeddedjs" fore="colour.commentbox" eolfilled="true"/>
-				<style name="Line Comment" key="43" class="embeddedjs" fore="colour.commentline"/>
-				<style name="Doc comment" key="44" class="embeddedjs" fore="colour.commentdoc" bold="true" eolfilled="true"/>
-				<style name="Number" key="45" class="embeddedjs" fore="colour.number" />
-				<style name="Word" key="46" class="embeddedjs" fore="000000"/>
-				<style name="Keyword" key="47" class="embeddedjs" fore="colour.keyword" bold="true"/>
-				<style name="Double quoted string" key="48" class="embeddedjs" fore="colour.string"/>
-				<style name="Single quoted string" key="49" class="embeddedjs" fore="colour.string"/>
-				<style name="Symbols " key="50" class="embeddedjs" fore="colour.operator" bold="true"/>
-				<style name="EOL" key="51" class="embeddedjs" back="bfbbb0" eolfilled="true"/>
-				<style name="Regular Expression" key="52" class="embeddedjs" back="ffbbb0"/>
+			<group name="JavaScript" description="Embedded JavaScript" class="embeddedjs">
+				<style name="Start" key="40" fore="7f7f00"/>
+				<style name="Default" key="41" fore="000000" bold="true" eolfilled="true"/>
+				<style name="Comment" key="42" fore="colour.commentbox" eolfilled="true"/>
+				<style name="Line Comment" key="43" fore="colour.commentline"/>
+				<style name="Doc comment" key="44" fore="colour.commentdoc" bold="true" eolfilled="true"/>
+				<style name="Number" key="45" fore="colour.number" />
+				<style name="Word" key="46" fore="000000"/>
+				<style name="Keyword" key="47" fore="colour.keyword" bold="true"/>
+				<style name="Double quoted string" key="48" fore="colour.string"/>
+				<style name="Single quoted string" key="49" fore="colour.string"/>
+				<style name="Symbols " key="50" fore="colour.operator" bold="true"/>
+				<style name="EOL" key="51" back="bfbbb0" eolfilled="true"/>
+				<style name="Regular Expression" key="52" back="ffbbb0"/>
 			</group>
 			
 			<!-- ASP JavaScript -->
@@ -239,17 +239,17 @@
 			</group>
 			
 			<!-- PHP -->
-			<group name="PHP" description="PHP code">
-				<style name="Default" key="118" class="php" fore="000033" />
-				<style name="Double quoted String" key="119" class="php" fore="007F00"/>
-				<style name="Single quoted string" key="120" class="php" fore="009F00"/>
-				<style name="Keyword" key="121" class="php" fore="7F007F" italic="true"/>
-				<style name="Number" key="122" class="php" fore="CC9900"/>
-				<style name="Variable" key="123" class="php" fore="00007F" italic="true"/>
-				<style name="Comment" key="124" class="php" fore="999999" font="font.comment"/>
-				<style name="Line comment" key="125" class="php" fore="666666" italic="true" font="font.comment"/>
-				<style name="String variable" key="126" class="php" fore="00007F" italic="true"/>
-				<style name="Operator" key="127" class="php" fore="000000"/>
+			<group name="PHP" description="PHP code" class="php">
+				<style name="Default" key="118" fore="000033" />
+				<style name="Double quoted String" key="119" fore="007F00"/>
+				<style name="Single quoted string" key="120" fore="009F00"/>
+				<style name="Keyword" key="121" fore="7F007F" italic="true"/>
+				<style name="Number" key="122" fore="CC9900"/>
+				<style name="Variable" key="123" fore="00007F" italic="true"/>
+				<style name="Comment" key="124" fore="999999" font="font.comment"/>
+				<style name="Line comment" key="125" fore="666666" italic="true" font="font.comment"/>
+				<style name="String variable" key="126" fore="00007F" italic="true"/>
+				<style name="Operator" key="127" fore="000000"/>
 			</group>
 		</use-styles>
 	</language>

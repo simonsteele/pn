@@ -6,7 +6,11 @@ Build: 2.0.4.x, Version Label: miles
 What's new?
 -----------
 
-1) 
+1) Groups of scheme settings can now be configured using their style group head item.
+
+example: To change the background for all PHP styles, simply change the background
+on the main PHP item that contains the styles below it. This will not override any
+custom backgrounds already set on those items - those will need to be reset.
 
 Please let me know about any problems with this release: ss@pnotepad.org.
 

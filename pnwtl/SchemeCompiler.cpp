@@ -400,78 +400,15 @@ void UserSettingsParser::endElement(void *userData, LPCTSTR name)
 	pState->m_csCData = _T("");
 }
 
-void UserSettingsParser::DefineStyle(StyleDetails* pStyle, XMLAttributes atts)
-{
-	int c = atts.getCount();
-			
-	for(int i = 0; i < c; i++)
-	{
-		LPCTSTR aname = atts.getName(i);
-	
-		if(_tcscmp(aname, _T("key")) == 0)
-		{
-			pStyle->Key = _ttoi(atts.getValue(i));
-		}
-		if(_tcscmp(aname, _T("font")) == 0)
-		{
-			pStyle->FontName = atts.getValue(i);
-			pStyle->values |= edvFontName;
-		}
-		else if(_tcscmp(aname, _T("size")) == 0)
-		{
-			pStyle->FontSize = _ttoi(atts.getValue(i));
-			pStyle->values |= edvFontSize;
-		}
-		else if(_tcscmp(aname, _T("fore")) == 0)
-		{
-			pStyle->ForeColor = PNStringToColor(atts.getValue(i));
-			pStyle->values |= edvForeColor;
-		}
-		else if(_tcscmp(aname, _T("back")) == 0)
-		{
-			pStyle->BackColor = PNStringToColor(atts.getValue(i));
-			pStyle->values |= edvBackColor;
-		}
-		else if(_tcscmp(aname, _T("bold")) == 0)
-		{
-			pStyle->Bold = PNStringToBool(atts.getValue(i));
-			pStyle->values |= edvBold;
-		}
-		else if(_tcscmp(aname, _T("italic")) == 0)
-		{
-			pStyle->Italic = PNStringToBool(atts.getValue(i));
-			pStyle->values |= edvItalic;
-		}
-		else if(_tcscmp(aname, _T("underline")) == 0)
-		{
-			pStyle->Underline = PNStringToBool(atts.getValue(i));
-			pStyle->values |= edvUnderline;
-		}
-		else if(_tcscmp(aname, _T("eolfilled")) == 0)
-		{
-			pStyle->EOLFilled = PNStringToBool(atts.getValue(i));
-			pStyle->values |= edvEOLFilled;
-		}
-		else if(_tcscmp(aname, _T("class")) == 0)
-		{
-			pStyle->classname = atts.getValue(i);
-			pStyle->values |= edvClass;
-		}
-		else if(_tcscmp(aname, _T("name")) == 0)
-		{
-			pStyle->name = atts.getValue(i);
-			//pStyle->values |= edvName;
-		}
-			
-	}
-}
+//void UserSettingsParser::DefineStyle(StyleDetails* pStyle, XMLAttributes atts)
+//Obsoleted by SchemeParser::parseStyle...
 
 void UserSettingsParser::processClassElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts)
 {
 	if(_tcscmp(name, _T("style-class")) == 0)
 	{
 		StyleDetails* pStyle = new StyleDetails;
-		DefineStyle(pStyle, atts);
+		SchemeParser::parseStyle(pState, atts, pStyle, false);
 		
 		pState->m_CustomClasses.AddStyle(pStyle->name.c_str(), pStyle);
 	}
@@ -484,7 +421,7 @@ void UserSettingsParser::processSchemeElement(CSchemeLoaderState* pState, LPCTST
 		if(_tcscmp(name, _T("style")) == 0)
 		{
 			StyleDetails* pStyle = new StyleDetails;
-			DefineStyle(pStyle, atts);
+			SchemeParser::parseStyle(pState, atts, pStyle, false);
 
 			pScheme->m_Styles.push_back(pStyle);
 		}
@@ -665,8 +602,8 @@ void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
 	
 	callback.SetUserData((void*)&m_LoadState);
 
+	m_LoadState.m_pGroupClass = NULL;
 	m_LoadState.m_pParser = &parser;
-
 	m_LoadState.m_csBasePath = path;
 
 	CString csFile = path;
@@ -734,77 +671,100 @@ void SchemeParser::processKeywordClass(CSchemeLoaderState* pState, XMLAttributes
 	}
 }
 
-void SchemeParser::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, StyleDetails* pStyle)
+//void SchemeParser::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, StyleDetails* pStyle)
+void SchemeParser::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, StyleDetails* pStyle, bool bExpandGlobals)
 {
 	LPCTSTR nm;
-	CString t;
-	CString valname;
-	int x = atts.getCount();
+	LPCTSTR t;
+	int c = atts.getCount();
 
 	// need to add global substitution.
-	for(int i = 0; i < x; i++)
+	for(int i = 0; i < c; i++)
 	{
 		nm = atts.getName(i);
 		t = atts.getValue(i);
-		
-		valname = nm;
 
-		if(valname == _T("name"))
+		// Definitely don't want any variable expansion for these:
+		if(_tcscmp(nm, _T("name")) == 0)
 		{
 			pStyle->name = t;
 			continue;
 		}
-
-		CSTRING_MAP::iterator it = pState->m_Globals.find(t);
-		if(it != pState->m_Globals.end())
+		else if(_tcscmp(nm, _T("class")) == 0)
 		{
-			t = (*it).second;
+			pStyle->classname = t;
+			pStyle->values |= edvClass;
+			continue;
 		}
+		else if(_tcscmp(nm, _T("key")) == 0)
+		{
+			pStyle->Key = _ttoi(t);
+			continue;
+		}
+
+		if(bExpandGlobals)
+		{
+			CSTRING_MAP::iterator it = pState->m_Globals.find(CString(t));
+			if(it != pState->m_Globals.end())
+			{
+				// Will this work? It's an implicit cast to LPCTSTR for a CString in a map....
+				t = (*it).second;
+			}
 #ifdef _DEBUG
-		else
-		{
-			CString todebug;
-			todebug.Format(_T("No match for: %s=%s\n"), nm, t);
-			OutputDebugString(todebug);
-		}
+			else
+			{
+				CString todebug;
+				todebug.Format(_T("No match for: %s=%s\n"), nm, t);
+				OutputDebugString(todebug);
+			}
 #endif
+		}
 
-		if(valname == _T("fore"))
+		if(_tcscmp(nm, _T("fore")) == 0)
 		{
 			pStyle->ForeColor = PNStringToColor(t);
+			pStyle->values |= edvForeColor;
 		}
-		else if(valname == _T("back"))
+		else if(_tcscmp(nm, _T("back")) == 0)
 		{
 			pStyle->BackColor = PNStringToColor(t);
+			pStyle->values |= edvBackColor;
 		}
-		else if(valname == _T("font"))
+		else if(_tcscmp(nm, _T("font")) == 0)
 		{
 			USES_CONVERSION;
-			pStyle->FontName = T2CA((LPCTSTR)t);
+			pStyle->FontName = T2CA(t);
+			pStyle->values |= edvFontName;
 		}
-		else if(valname == _T("size"))
+		else if(_tcscmp(nm, _T("size")) == 0)
 		{
 			pStyle->FontSize = _ttoi(t);
+			pStyle->values |= edvFontSize;
 		}
-		else if(valname == _T("italics"))
+		else if(_tcscmp(nm, _T("italics")) == 0)
 		{
 			pStyle->Italic = PNStringToBool(t);
+			pStyle->values |= edvItalic;
 		}
-		else if(valname == _T("bold"))
+		else if(_tcscmp(nm, _T("bold")) == 0)
 		{
 			pStyle->Bold = PNStringToBool(t);
+			pStyle->values |= edvBold;
 		}
-		else if(valname == _T("underline"))
+		else if(_tcscmp(nm, _T("underline")) == 0)
 		{
 			pStyle->Underline = PNStringToBool(t);
+			pStyle->values |= edvUnderline;
 		}
-		else if(valname == _T("eolfilled"))
+		else if(_tcscmp(nm, _T("eolfilled")) == 0)
 		{
 			pStyle->EOLFilled = PNStringToBool(t);
+			pStyle->values |= edvEOLFilled;
 		}
-		else if(valname == _T("hotspot"))
+		else if(_tcscmp(nm, _T("hotspot")) == 0)
 		{
 			pStyle->Hotspot = PNStringToBool(t);
+			// no values flag for this, it's set in the bases only.
 		}
 	}
 }
@@ -879,18 +839,35 @@ void SchemeParser::processStyleClass(CSchemeLoaderState* pState, XMLAttributes& 
 
 void SchemeParser::processLanguageStyleGroup(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
-	onStyleGroup(atts);
+	StyleDetails* pClass = NULL;
+	LPCTSTR pszClass = atts.getValue(_T("class"));
+	if(pszClass)
+	{
+		pClass = pState->m_StyleClasses.GetStyle(pszClass);
+		if(pClass)
+			pState->m_pGroupClass = pClass;
+	}
+
+	onStyleGroup(atts, pClass);
 }
 
+/**
+ * Style Classes are found in this order of priority:
+ * 1) Customised style class attribute.
+ * 2) Class assigned to property group.
+ * 3) Class in the current style class attribute.
+ * 4) Default style.
+ */
 void SchemeParser::processLanguageStyle(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
 	CString classname;
 	StyleDetails* pCustom = NULL;
-	StyleDetails* pBase = &pState->m_Default;
+	StyleDetails* pBase = NULL;
 
 	LPCTSTR skey = atts.getValue(_T("key"));
 	int key = _ttoi(skey);
 
+	// Custom styles first (storing any custom version for later)...
 	if(pState->m_pCustom)
 	{
 		pCustom = pState->m_pCustom->FindStyle(key);
@@ -901,24 +878,44 @@ void SchemeParser::processLanguageStyle(CSchemeLoaderState* pState, XMLAttribute
 		}
 	}
 
+	// No customised style class, is there a group class?
 	if(classname.GetLength() == 0)
 	{
-		classname = atts.getValue(_T("class"));
+		if(pState->m_pGroupClass != NULL)
+		{
+			// There is a class associated with a group of styles.
+			// We also don't need to find the style, it will already
+			// be the m_pGroupClass member of pState.
+			pBase = pState->m_pGroupClass;
+		}
+		else
+		{
+			classname = atts.getValue(_T("class"));
+		}
 	}
 
-	if((classname.GetLength() > 0) && (classname != _T("default")))
+	// We've not found a class yet, but if we do have a class name, we try to find that.
+	if(!pBase && (classname.GetLength() > 0) && (classname != _T("default")))
 	{
-		StyleDetails* pFound = pState->m_StyleClasses.GetStyle(classname);
-		if(pFound)
-			pBase = pFound;
+		pBase = pState->m_StyleClasses.GetStyle(classname);
 	}
 
-	StyleDetails Style(*pBase);
+	// If we didn't find a class, we base the style on the default style...
+	if(!pBase)
+		pBase = &pState->m_Default;
 
+	// Create a new style based on either the class or the default style.
+	StyleDetails Style(*pBase);
+	
+	// we reset this, so that parseStyle will tell us what has been changed.
+	Style.values = 0;
+
+	// Read the details into it from it's attributes.
 	parseStyle(pState, atts, &Style);
 
 	Style.Key = key;
 
+	// Pass it to whatever wants to know about it.
 	onStyle(&Style, pCustom);
 }
 
@@ -1305,9 +1302,15 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 	else if(state == DOING_LANGUAGE_KW || state == DOING_LANGUAGE_STYLES)
 	{
 		if((_tcscmp(name, _T("use-keywords")) == 0) || (_tcscmp(name, _T("use-styles")) == 0))
+		{
 			pS->m_State = DOING_LANGUAGE_DETAILS;
+		}
 		else if(_tcscmp(name, _T("group")) == 0)
+		{
+			// Remove any custom group class we had assigned.
+			pS->m_pGroupClass = NULL;
 			onStyleGroupEnd();
+		}
 	}
 	else if(state == DOING_KEYWORDCOMBINE)
 	{

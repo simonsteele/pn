@@ -104,6 +104,7 @@ class CSchemeLoaderState
 		CUSTOMISED_NAMEMAP		m_CustomSchemes;
 		StylesMap				m_CustomClasses;
 		CustomisedScheme*		m_pCustom;
+		StyleDetails*			m_pGroupClass;
 
 		XMLParser*				m_pParser;
 
@@ -177,7 +178,7 @@ class UserSettingsParser
 		void processSchemeElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts);
 		void processClassElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts);
 
-		void DefineStyle(StyleDetails* pStyle, XMLAttributes atts);
+		//void DefineStyle(StyleDetails* pStyle, XMLAttributes atts);
 };
 
 /**
@@ -188,6 +189,8 @@ class SchemeParser
 {
 	public:
 		void Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile);
+
+		static void parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, StyleDetails* pStyle, bool bExpandGlobals = true);
 
 	protected:
 		CSchemeLoaderState	m_LoadState;
@@ -205,7 +208,6 @@ class SchemeParser
 		void processLanguageStyleGroup(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processStyleClass(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void sendStyle(StyleDetails* s, SchemeRecorder* compiler);
-		void parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, StyleDetails* pStyle);
 		void processKeywordClass(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processGlobal(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void customiseStyle(StyleDetails* style, StyleDetails* custom);
@@ -214,7 +216,7 @@ class SchemeParser
 		virtual void onLexer(LPCTSTR name, int styleBits) = 0;
 		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags) = 0;
 		virtual void onLanguageEnd() = 0;
-		virtual void onStyleGroup(XMLAttributes& atts) = 0;
+		virtual void onStyleGroup(XMLAttributes& atts, StyleDetails* pClass) = 0;
 		virtual void onStyle(StyleDetails* pStyle, StyleDetails* pCustom) = 0;
 		virtual void onStyleGroupEnd() = 0;
 		virtual void onStyleClass(StyleDetails* pClass, StyleDetails* pCustom) = 0;
@@ -238,7 +240,7 @@ class SchemeCompiler : public SchemeParser
 	protected:
 		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags);
 		virtual void onLanguageEnd();
-		virtual void onStyleGroup(XMLAttributes& atts){}
+		virtual void onStyleGroup(XMLAttributes& atts, StyleDetails* pClass){}
 		virtual void onStyle(StyleDetails* pStyle, StyleDetails* pCustom);
 		virtual void onStyleGroupEnd(){}
 		virtual void onStyleClass(StyleDetails* pClass, StyleDetails* pCustom);

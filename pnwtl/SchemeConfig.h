@@ -22,9 +22,11 @@ class CustomStyleCollection
 		void SetNext(CustomStyleCollection* pNext);
 		void SetName(LPCTSTR name);
 		void SetDescription(LPCTSTR description);
+		void SetClassName(LPCTSTR classname);
 
 		LPCTSTR GetName();
 		LPCTSTR GetDescription();
+		LPCTSTR GetClassName();
 
 		StyleDetails* GetStyle(int key);
 		StyleDetails* FindStyle(int key);
@@ -34,6 +36,7 @@ class CustomStyleCollection
 	protected:
 		ctcString m_name;
 		ctcString m_description;
+		ctcString m_classname; // for groups with classes.
 
 		CustomStyleCollection* m_pNext;
 };
@@ -48,11 +51,13 @@ class CustomStyleHolder : public CustomStyleCollection
 		CustomStyleHolder();
 		virtual void AddStyle(StyleDetails* pStyle);
 
-		void BeginGroup(LPCTSTR name, LPCTSTR description = NULL);
+		void BeginGroup(LPCTSTR name, LPCTSTR description = NULL, LPCTSTR classname = NULL);
 		void EndGroup();
 	protected:
         CustomStyleCollection* m_pCurrent;
 };
+
+class SchemeConfigParser;
 
 /**
  * @brief Class representing the configuration of one scheme.
@@ -64,7 +69,19 @@ class SchemeConfig : public CustomKeywordHolder, public CustomStyleHolder
 {
 	_NO_COPY(SchemeConfig)
 	public:
-		SchemeConfig(){}
+		SchemeConfig(SchemeConfigParser* pOwner){m_pOwner = pOwner;}
+
+		// Style class customisation support
+		void AddCustomStyleClass(const CString& name, StyleDetails* pCustom);
+		void RemoveCustomStyleClass(const CString& name);
+		StyleDetails* FindStyleClass(LPCTSTR name);
+		StyleDetails* FindStyleClass(const CString& name);
+		StyleDetails* FindCustomStyleClass(LPCTSTR name);
+		StyleDetails* FindCustomStyleClass(const CString& name);
+
+		// Configuration functions
+		void ResetAll();
+		void UpdateGroupedStyles(CustomStyleCollection* pColl, StyleDetails* pUpdatedClass);
 
 		CString m_Name;
 		CString m_Title;
@@ -72,6 +89,9 @@ class SchemeConfig : public CustomKeywordHolder, public CustomStyleHolder
 
 		CustomStyleCollection	m_customs;
 		CustomKeywordHolder		m_cKeywords;
+
+	protected:
+		SchemeConfigParser*		m_pOwner;
 };
 
 typedef list<SchemeConfig*>	LIST_SCHEMECONFIGS;
@@ -115,7 +135,7 @@ class SchemeConfigParser : public SchemeParser
 		virtual void onLexer(LPCTSTR name, int styleBits);
 		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags);
 		virtual void onLanguageEnd();
-		virtual void onStyleGroup(XMLAttributes& att);
+		virtual void onStyleGroup(XMLAttributes& att, StyleDetails* pClass);
 		virtual void onStyle(StyleDetails* pStyle, StyleDetails* pCustom);
 		virtual void onStyleGroupEnd();
 		virtual void onStyleClass(StyleDetails* pClass, StyleDetails* pCustom);

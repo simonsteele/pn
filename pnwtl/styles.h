@@ -116,6 +116,36 @@ class StyleDetails
 				;
 		}
 
+		void updateUnmasked(StyleDetails& update)
+		{
+			if((values & edvFontName) == 0)
+				FontName = update.FontName;
+
+			if((values & edvFontSize) == 0)
+				FontSize = update.FontSize;
+
+			if((values & edvForeColor) == 0)
+				ForeColor = update.ForeColor;
+
+			if((values & edvBackColor) == 0)
+				BackColor = update.BackColor;
+
+			if((values & edvBold) == 0)
+				Bold = update.Bold;
+
+			if((values & edvItalic) == 0)
+				Italic = update.Italic;
+
+			if((values & edvUnderline) == 0)
+				Underline = update.Underline;
+
+			if((values & edvEOLFilled) == 0)
+				EOLFilled = update.EOLFilled;
+
+			if((values & edvClass) == 0)
+				classname = update.classname;
+		}
+
 		int Key;
 		
 		string FontName;

@@ -231,6 +231,10 @@ class CTabPageStyles : public CPropertyPageImpl<CTabPageStyles>
 		
 		void UpdateSel();
 		void SetItem();
+		void EnableButtons(bool bEnable);
+		void UpdateGroup();
+		void UpdateGroupChildren(StyleDetails* pUpdatedClass, CustomStyleCollection* pColl = NULL);
+		void UpdateStyle();
 
 	protected:
 		StyleDetails	m_Style;
@@ -250,6 +254,9 @@ class CTabPageStyles : public CPropertyPageImpl<CTabPageStyles>
 		CButton			m_underline;
 		CButton			m_eolfilled;
 
+		HTREEITEM		m_lastTreeItem;
+
+		bool			m_bGroup;
 		bool			m_bChanging;
 };
 

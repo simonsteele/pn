@@ -567,12 +567,16 @@ void CTabPageStyles::UpdateSel()
 		SetItem();
 
 		HTREEITEM item = m_tree.GetSelectedItem();
+		m_lastTreeItem = item;
 
 		if(item)
 		{
+			StyleDetails* pS = NULL;
+			m_bGroup = false;
+
 			if(m_tree.GetChildItem(item) == NULL)
 			{
-				StyleDetails* pS = reinterpret_cast<StyleDetails*>(m_tree.GetItemData(item));
+				pS = reinterpret_cast<StyleDetails*>(m_tree.GetItemData(item));
 				if(pS)
 				{
 					StyleDetails* existing = m_pScheme->m_customs.GetStyle(pS->Key);
@@ -580,28 +584,80 @@ void CTabPageStyles::UpdateSel()
 						m_Style = *existing;
 					else
 						m_Style = *pS;
-					
-					m_pStyle = pS;
-					m_sd.SetStyle(m_Style.FontName.c_str(), m_Style.FontSize, m_Style.ForeColor, m_Style.BackColor, m_Style.name.c_str(), m_Style.Bold, m_Style.Italic, m_Style.Underline);
-					m_bold.SetCheck(m_Style.Bold ? BST_CHECKED : BST_UNCHECKED);
-					m_italic.SetCheck(m_Style.Italic ? BST_CHECKED : BST_UNCHECKED);
-					m_underline.SetCheck(m_Style.Underline ? BST_CHECKED : BST_UNCHECKED);
-					m_eolfilled.SetCheck(m_Style.EOLFilled ? BST_CHECKED : BST_UNCHECKED);
-					m_fore.SetColor(m_Style.ForeColor);
-					m_back.SetColor(m_Style.BackColor);
-
-					m_FontCombo.SelectString(-1, m_Style.FontName.c_str());
-					m_SizeCombo.Select(m_Style.FontSize);
 				}
 			}
 			else
 			{
-				///@todo Disable everything
+				// This is a group item, we see if there is an attached class, and if
+				// so then we let the user customise it. Else we disable the controls.
+				///@todo Disable everything - except maybe not...
+				m_bGroup = true;
+				
+				CustomStyleCollection* pColl = reinterpret_cast<CustomStyleCollection*>( m_tree.GetItemData(item) );
+				if(pColl)
+				{
+					// CStrings used for indexing the style maps (at the moment)
+					CString classname = pColl->GetClassName();
+					if(classname.GetLength() != 0)
+					{
+						pS = m_pScheme->FindStyleClass(classname);
+
+						if(pS)
+						{
+							StyleDetails* pCustom = m_pScheme->FindCustomStyleClass(classname);
+
+							if(pCustom)
+								m_Style = *pCustom;
+							else
+								m_Style = *pS;
+						}
+					}
+				}
 			}
+
+			if(pS)
+			{
+				m_pStyle = pS;
+				
+				if(m_bGroup)
+				{
+					tstring sname = _T("Style Group: ");
+					sname += m_Style.name;
+					m_sd.SetStyle(m_Style.FontName.c_str(), m_Style.FontSize, m_Style.ForeColor, m_Style.BackColor, sname.c_str(), m_Style.Bold, m_Style.Italic, m_Style.Underline);
+				}
+				else
+					m_sd.SetStyle(m_Style.FontName.c_str(), m_Style.FontSize, m_Style.ForeColor, m_Style.BackColor, m_Style.name.c_str(), m_Style.Bold, m_Style.Italic, m_Style.Underline);
+
+				m_bold.SetCheck(m_Style.Bold ? BST_CHECKED : BST_UNCHECKED);
+				m_italic.SetCheck(m_Style.Italic ? BST_CHECKED : BST_UNCHECKED);
+				m_underline.SetCheck(m_Style.Underline ? BST_CHECKED : BST_UNCHECKED);
+				m_eolfilled.SetCheck(m_Style.EOLFilled ? BST_CHECKED : BST_UNCHECKED);
+				m_fore.SetColor(m_Style.ForeColor);
+				m_back.SetColor(m_Style.BackColor);
+
+				m_FontCombo.SelectString(-1, m_Style.FontName.c_str());
+				m_SizeCombo.Select(m_Style.FontSize);
+
+				EnableButtons(true);
+			}
+			else
+				EnableButtons(false);
 		}
 		else
 			m_pStyle = NULL;
 	}
+}
+
+void CTabPageStyles::EnableButtons(bool bEnable)
+{
+	m_FontCombo.EnableWindow(bEnable);
+	m_SizeCombo.EnableWindow(bEnable);
+	m_bold.EnableWindow(bEnable);
+	m_italic.EnableWindow(bEnable);
+	m_underline.EnableWindow(bEnable);
+	m_eolfilled.EnableWindow(bEnable);
+	m_fore.EnableWindow(bEnable);
+	m_back.EnableWindow(bEnable);
 }
 
 LRESULT CTabPageStyles::OnBoldClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -649,35 +705,76 @@ LRESULT CTabPageStyles::OnEOLFilledClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	return 0;
 }
 
+void CTabPageStyles::UpdateStyle()
+{
+	if(m_Style != *m_pStyle)
+	{
+		/* The style the user has configured and the original definition version
+			do not match. We need to store the new style in the custom style
+			store. */
+		StyleDetails* existing = m_pScheme->m_customs.GetStyle(m_Style.Key);
+		if(existing)
+		{
+			*existing = m_Style;
+		}
+		else
+		{
+			existing = new StyleDetails;
+			*existing = m_Style;
+			m_pScheme->m_customs.AddStyle(existing);
+		}
+	}
+	else
+	{
+		/* If we have set the style to be like the original, then
+			we can safely remove any custom styles. */
+		m_pScheme->m_customs.RemoveStyle(m_Style.Key);
+	}
+}
+
+void CTabPageStyles::UpdateGroupChildren(StyleDetails* pUpdatedClass, CustomStyleCollection* pColl)
+{
+	// Update child items...
+	if(!pColl)
+	{
+		pColl = reinterpret_cast<CustomStyleCollection*>( m_tree.GetItemData(m_lastTreeItem) );
+	}
+
+	m_pScheme->UpdateGroupedStyles(pColl, pUpdatedClass);
+}
+
+void CTabPageStyles::UpdateGroup()
+{
+	if(m_Style != *m_pStyle)
+	{
+		StyleDetails* pExisting = m_pScheme->FindCustomStyleClass(m_Style.name.c_str());
+		if(pExisting)
+		{
+			*pExisting = m_Style;
+		}
+		else
+		{
+			pExisting = new StyleDetails(m_Style);
+			m_pScheme->AddCustomStyleClass(CString(m_Style.name.c_str()), pExisting);
+		}
+	}
+	else
+	{
+		// We're set to the original class...
+		m_pScheme->RemoveCustomStyleClass(CString(m_Style.name.c_str()));
+	}
+
+	UpdateGroupChildren(&m_Style);
+}
+
 void CTabPageStyles::SetItem()
 {
 	if(m_pStyle)
 	{
-		int mask = 0;
-
-		if(m_Style != *m_pStyle)
-		{
-			/* The style the user has configured and the original definition version
-			   do not match. We need to store the new style in the custom style
-			   store. */
-			StyleDetails* existing = m_pScheme->m_customs.GetStyle(m_Style.Key);
-			if(existing)
-			{
-				*existing = m_Style;
-			}
-			else
-			{
-				existing = new StyleDetails;
-				*existing = m_Style;
-				m_pScheme->m_customs.AddStyle(existing);
-			}
-		}
+		if(m_bGroup)
+			UpdateGroup();
 		else
-		{
-			/* If we have set the style to be like the original, then
-			   we can safely remove any custom styles. */
-			m_pScheme->m_customs.RemoveStyle(m_Style.Key);
-		}
+			UpdateStyle();
 	}
 }
 
@@ -687,11 +784,21 @@ LRESULT CTabPageStyles::OnResetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	{
 		if(m_pStyle)
 		{
-			m_pScheme->m_customs.RemoveStyle(m_pStyle->Key);
+			if(m_bGroup)
+			{
+				m_pScheme->RemoveCustomStyleClass(CString(m_pStyle->name.c_str()));
+			}
+			else
+			{
+				m_pScheme->m_customs.RemoveStyle(m_pStyle->Key);
+			}
 			m_pStyle = NULL;
 		}
 	
 		UpdateSel();
+
+		if(m_bGroup)
+			UpdateGroupChildren(&m_Style);
 	}
 
 	return 0;
@@ -702,7 +809,8 @@ LRESULT CTabPageStyles::OnResetAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	if(m_pScheme)
 	{
 		m_pStyle = NULL;
-		m_pScheme->m_customs.RemoveAll();
+		
+		m_pScheme->ResetAll();
 
 		UpdateSel();
 	}

@@ -90,6 +90,11 @@ void CustomStyleCollection::SetDescription(LPCTSTR description)
 	m_description = description;
 }
 
+void CustomStyleCollection::SetClassName(LPCTSTR classname)
+{
+	m_classname = classname;
+}
+
 LPCTSTR CustomStyleCollection::GetName()
 {
 	return m_name.c_str();
@@ -98,6 +103,11 @@ LPCTSTR CustomStyleCollection::GetName()
 LPCTSTR CustomStyleCollection::GetDescription()
 {
 	return m_description.c_str();
+}
+
+LPCTSTR CustomStyleCollection::GetClassName()
+{
+	return m_classname.c_str();
 }
 
 /////////////////////////////////////////////////////////
@@ -109,12 +119,14 @@ CustomStyleHolder::CustomStyleHolder() : CustomStyleCollection()
 	m_pCurrent = NULL;
 }
 
-void CustomStyleHolder::BeginGroup(LPCTSTR name, LPCTSTR description)
+void CustomStyleHolder::BeginGroup(LPCTSTR name, LPCTSTR description, LPCTSTR classname)
 {
 	CustomStyleCollection* pColl = new CustomStyleCollection;
 	pColl->SetName(name);
 	if(description)
 		pColl->SetDescription(description);
+	if(classname)
+		pColl->SetClassName(classname);
 
 	pColl->SetNext(m_pNext);
 	m_pNext = pColl;
@@ -132,6 +144,86 @@ void CustomStyleHolder::AddStyle(StyleDetails* pStyle)
 		m_pCurrent->AddStyle(pStyle);
 	else
 		CustomStyleCollection::AddStyle(pStyle);
+}
+
+/////////////////////////////////////////////////////////
+// SchemeConfig
+/////////////////////////////////////////////////////////
+
+StyleDetails* SchemeConfig::FindStyleClass(LPCTSTR name)
+{
+	return FindStyleClass(CString(name));
+}
+
+StyleDetails* SchemeConfig::FindStyleClass(const CString& name)
+{
+	return m_pOwner->GetStyleClasses().GetStyle(name);
+}
+
+StyleDetails* SchemeConfig::FindCustomStyleClass(LPCTSTR name)
+{
+	return FindCustomStyleClass(CString(name));
+}
+
+StyleDetails* SchemeConfig::FindCustomStyleClass(const CString& name)
+{
+	return m_pOwner->GetCustomClasses().GetStyle(name);
+}
+
+void SchemeConfig::AddCustomStyleClass(const CString& name, StyleDetails* pCustom)
+{
+	m_pOwner->GetCustomClasses().AddStyle(name, pCustom);
+}
+
+void SchemeConfig::RemoveCustomStyleClass(const CString& name)
+{
+	m_pOwner->GetCustomClasses().DeleteStyle(name);
+}
+
+void SchemeConfig::UpdateGroupedStyles(CustomStyleCollection* pColl, StyleDetails* pUpdatedClass)
+{
+	for(SL_IT i = pColl->m_Styles.begin(); i != pColl->m_Styles.end(); ++i)
+	{
+		StyleDetails* pStyle = (*i);
+
+		StyleDetails* pCustom = m_customs.GetStyle(pStyle->Key);
+		if(pCustom)
+		{
+			// set the ->values property with the differences mask.
+			pCustom->compareTo(*pStyle);
+			
+			// We don't want to change anything that the original style 
+			// or the custom style changes, combine their mask.
+			pCustom->values |= pStyle->values;
+
+			pCustom->updateUnmasked(*pUpdatedClass);
+		}
+		
+		pStyle->updateUnmasked(*pUpdatedClass);
+	}
+
+}
+
+void SchemeConfig::ResetAll()
+{
+	// Remove all custom styles
+	m_customs.RemoveAll();
+
+	// Remove all custom style class explicitly linked to groups, assuming we don't have one.
+	CustomStyleCollection* pColl = m_pNext;
+	while(pColl)
+	{
+		CString classname = pColl->GetClassName();
+		if(classname.GetLength() != 0)
+		{
+			RemoveCustomStyleClass(classname);
+			StyleDetails* pStyleClass = FindStyleClass(classname);
+			if(pStyleClass) //safety chex
+				UpdateGroupedStyles(pColl, pStyleClass);
+		}
+
+		pColl = pColl->GetNext();
+	}
 }
 
 /////////////////////////////////////////////////////////
@@ -413,7 +505,7 @@ void SchemeConfigParser::onLanguage(LPCTSTR name, LPCTSTR title, int foldflags)
 {
 	PNASSERT(m_pCurrent == NULL);
 
-	m_pCurrent = new SchemeConfig;
+	m_pCurrent = new SchemeConfig(this);
 	m_pCurrent->m_Name = name;
 	m_pCurrent->m_Title = title;
 	m_pCurrent->m_foldflags = foldflags;
@@ -425,14 +517,14 @@ void SchemeConfigParser::onLanguageEnd()
 	m_pCurrent = NULL;
 }
 
-void SchemeConfigParser::onStyleGroup(XMLAttributes& att)
+void SchemeConfigParser::onStyleGroup(XMLAttributes& att, StyleDetails* pClass)
 {
 	PNASSERT(m_pCurrent != NULL);
 
 	LPCTSTR name = att.getValue(_T("name"));
 	if(name)
 	{
-		m_pCurrent->BeginGroup(name, att.getValue(_T("description")));
+		m_pCurrent->BeginGroup(name, att.getValue(_T("description")), (pClass ? pClass->name.c_str() : NULL) );
 	}
 }
 
