@@ -258,16 +258,18 @@
 			<style name="CDATA" key="17" fore="800000" back="FFF0F0" eolfilled="true"/>
 			<style name="Question" key="18" fore="800000"/>
 			<style name="Unquoted Value" key="19" fore="608060"/>
-			<style name="SGML tags &lt;! ... &gt;" key="21" class="sgml" fore="000080"/>
-			<style name="SGML command" key="22" class="sgml" fore="000080" bold="true"/>
-			<style name="SGML 1st param" key="23" class="sgml" fore="006600"/>
-			<style name="SGML double string" key="24" class="sgml" fore="800000"/>
-			<style name="SGML single string" key="25" class="sgml" fore="993300"/>
-			<style name="SGML error" key="26" class="sgml" fore="800000" back="FF6666"/>
-			<style name="SGML special (#xxxx type)" key="27" class="sgml" fore="3366FF"/>
-			<style name="SGML entity" key="28" class="sgml" fore="333333"/>
-			<style name="SGML comment" key="29" class="sgml" fore="808000"/>
-			<style name="SGML block" key="31" class="sgml" fore="000066" back="CCCCE0"/>
+			<group name="SGML" description="JavaScript embedded within an ASP file.">
+				<style name="Tags &lt;! ... &gt;" key="21" class="sgml" fore="000080"/>
+				<style name="Command" key="22" class="sgml" fore="000080" bold="true"/>
+				<style name="1st param" key="23" class="sgml" fore="006600"/>
+				<style name="Double string" key="24" class="sgml" fore="800000"/>
+				<style name="Single string" key="25" class="sgml" fore="993300"/>
+				<style name="Error" key="26" class="sgml" fore="800000" back="FF6666"/>
+				<style name="Special (#xxxx type)" key="27" class="sgml" fore="3366FF"/>
+				<style name="Entity" key="28" class="sgml" fore="333333"/>
+				<style name="Comment" key="29" class="sgml" fore="808000"/>
+				<style name="Block" key="31" class="sgml" fore="000066" back="CCCCE0"/>
+			</group>
 		</use-styles>
 	</language>
 	<language name="css" title="CSS" folding="false" foldcomments="false" foldcompact="false">
