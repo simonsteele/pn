@@ -37,6 +37,10 @@ public:
 	void SetScheme(CScheme* pScheme)
 	{
 		pScheme->Load(*this);
+		EnsureRangeVisible(0, GetLength());
+		ClearDocumentStyle();
+		Colourise(0, -1);
+
 		m_pLastScheme = pScheme;
 	}
 
@@ -73,8 +77,7 @@ public:
 			if(ext.size() > 0)
 			{
 				CScheme* sch = theApp.GetSchemes().SchemeForExt(ext.c_str());
-				sch->Load(*this);
-				m_pLastScheme = sch;
+				SetScheme(sch);
 			}
 		}
 	}
@@ -85,16 +88,15 @@ public:
 		{
 			if(m_pLastScheme != NULL)
 			{
-				m_pLastScheme->Load(*this);				
+				SetScheme(m_pLastScheme);
 			}
 		}
 		else
 		{
 			SetLexer(0);
+			ClearDocumentStyle();
+			Colourise(0, -1);
 		}
-
-		ClearDocumentStyle();
-		Colourise(0, -1);
 	}
 
 	virtual int HandleNotify(LPARAM lParam)
