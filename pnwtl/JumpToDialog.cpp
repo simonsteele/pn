@@ -130,6 +130,7 @@ void CJumpToDialog::OnFound(int count, LPMETHODINFO methodInfo)
 {
 	LVITEM lvi;
 	memset(&lvi, 0, sizeof(LVITEM));
+	lvi.iItem = list.GetItemCount();
 	lvi.mask = LVIF_TEXT | LVIF_IMAGE;
 	lvi.pszText = (TCHAR*)methodInfo->methodName;
 	if(methodInfo->type <= TAG_MAX)

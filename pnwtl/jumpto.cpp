@@ -6,6 +6,7 @@
 #include "jumpto.h"
 
 #include "include/filefinder.h"
+#include "include/tempfile.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // JumpToPlugin
@@ -60,12 +61,12 @@ tstring JumpToPlugin::GetSchemesSupported()
 	return tstring(CW2T(buffer));
 }
 
-bool JumpToPlugin::GetMethods(const wchar_t* filename, HWND editorWnd, FP_CALLBACK callback, int mask, LPVOID cookie)
+bool JumpToPlugin::GetMethods(const wchar_t* filename, HWND editorWnd, FP_CALLBACK callback, int mask, const wchar_t* scheme, LPVOID cookie)
 {
 	if(!Valid())
 		return false;
 
-	return pfnGetMethods(filename, editorWnd, callback, mask, cookie);
+	return pfnGetMethods(filename, editorWnd, callback, mask, scheme, cookie);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -126,6 +127,8 @@ void JumpToHandler::LoadHandler(LPCTSTR path, LPCTSTR filename)
 
 void JumpToHandler::DoJumpTo(CChildFrame* pChildFrame, IJumpToFindSink* pNotifySink)
 {
+	USES_CONVERSION;
+
 	// First let's find out what scheme it is...
 	CScheme* pScheme = pChildFrame->GetTextView()->GetCurrentScheme();
 	tstring schemeName = pScheme->GetName();
@@ -141,15 +144,45 @@ void JumpToHandler::DoJumpTo(CChildFrame* pChildFrame, IJumpToFindSink* pNotifyS
 	if(!pPlugin)
 		return;
 
-	tstring fn = pChildFrame->GetFileName();
+	tstring fn;
+	const wchar_t* pFN = NULL;
+	TempFileName* tfn = NULL;
+
+	if(pChildFrame->GetModified() || !pChildFrame->CanSave())
+	{
+		if(pChildFrame->CanSave())
+		{
+			tfn = new TempFileName(pChildFrame->GetFileName().c_str(), NULL, true, true);
+			pFN = tfn->w_str();
+		}
+		else
+		{
+			tfn = new TempFileName(NULL, _T(".tmp"), true);
+			pFN = tfn->w_str();
+		}
+
+		pChildFrame->GetTextView()->SaveFile(tfn->t_str());
+	}
+	else
+	{
+		fn = pChildFrame->GetFileName();
+		pFN = CT2CW(fn.c_str());
+	}
+
+	const wchar_t* pSN = CT2CW(pChildFrame->GetTextView()->GetCurrentScheme()->GetName());
 
 	sink = pNotifySink;
+	
+	if(!pPlugin->GetMethods(pFN, pChildFrame->m_hWnd, &JumpToHandler::callback, TAGM_ALL, pSN, (LPVOID)this))
+	{
+		g_Context.m_frame->SetStatusText(_T("Failed to run tagger."));
+	}
 
-	USES_CONVERSION;
-
-	const wchar_t* pFN = CT2CW(fn.c_str());
-
-	pPlugin->GetMethods(pFN, pChildFrame->m_hWnd, &JumpToHandler::callback, TAGM_ALL, (LPVOID)this);
+	if(tfn != NULL)
+	{
+		tfn->erase();
+		delete tfn;
+	}
 }
 
 void __stdcall JumpToHandler::callback(int dataCount, LPMETHODINFO methodInfo, LPVOID cookie)

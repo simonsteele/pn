@@ -1,0 +1,6 @@
+LIBRARY	ctagsnavigator
+
+EXPORTS
+	PNGetCapabilities
+	PNFPGetSchemesSupported
+	PNFPGetMethods
