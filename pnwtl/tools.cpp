@@ -725,7 +725,6 @@ int ToolRunner::Execute()
 	if(!m_pTool->bCaptureOutput)
 	{
 		Run_ShellExecute(m_pCopyDef->Command.c_str(), m_pCopyDef->Params.c_str(), m_pCopyDef->Folder.c_str());
-		delete m_pCopyDef;
 	}
 	else
 	{
