@@ -18,7 +18,7 @@
 #define CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
-
+#define DEBUG_NEW  new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
 #endif
 
 #include <atlbase.h>
