@@ -28,10 +28,10 @@ class ATL_NO_VTABLE CDockingFrameImplBase : public TBase
 	typedef CDockingFrameImplBase<T,TBase,TWinTraits>	thisClass;
 	typedef TBase										baseClass;
 	typedef TWinTraits									CTraits; 
-	typedef CTraits::CSplitterBar						CSplitterBar;
+	typedef typename CTraits::CSplitterBar						CSplitterBar;
 	typedef CPackageWindowFrame<CTraits>				CPackageFrame; 
 	typedef CSubWndFramesPackage<CPackageFrame,CTraits>	CWndPackage;
-	typedef CDWSettings::CStyle							CStyle; 
+	typedef typename CDWSettings::CStyle							CStyle; 
 	struct  CDockOrientationFlag  
 	{
 		enum{hor=0x80000000,ver=0};

@@ -100,7 +100,7 @@ class ATL_NO_VTABLE CDockingWindowBaseImpl : public CWindowImpl< T, TBase, TWinT
 {
     typedef CWindowImpl< T, TBase, TWinTraits >   baseClass;
     typedef CDockingWindowBaseImpl< T, TBase, TWinTraits >       thisClass;
-	typedef TWinTraits::CDocker	CDocker;
+	typedef typename TWinTraits::CDocker	CDocker;
 protected:
 	class CGhostMoveTracker : public CDDTrackerBaseT<CGhostMoveTracker>
 	{
@@ -677,7 +677,7 @@ class ATL_NO_VTABLE CTitleDockingWindowBaseImpl :
     typedef CDockingWindowBaseImpl< T, TBase, TDockingWinTraits >		baseClass;
     typedef CTitleDockingWindowBaseImpl< T, TBase, TDockingWinTraits >	thisClass;
 protected:
-	typedef TDockingWinTraits::CCaption	CCaption;
+	typedef typename TDockingWinTraits::CCaption	CCaption;
 public:
 	LRESULT NcHitTest(const CPoint& pt)
 	{

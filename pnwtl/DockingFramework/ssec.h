@@ -80,14 +80,14 @@ class ssection
 
 	typedef std::deque<separator_t>	separators_t;
 public:
-	typedef traits::position						position;
-	typedef traits::distance						distance;
+	typedef typename traits::position						position;
+	typedef typename traits::distance						distance;
 	typedef bounds_type<position,distance>			bounds_t;
-	typedef separators_t::size_type					size_type;
-	typedef separators_t::iterator			iterator;
-	typedef separators_t::reverse_iterator	reverse_iterator;
-	typedef separators_t::const_iterator			const_iterator;
-	typedef separators_t::const_reverse_iterator	const_reverse_iterator;
+	typedef typename separators_t::size_type					size_type;
+	typedef typename separators_t::iterator			iterator;
+	typedef typename separators_t::reverse_iterator	reverse_iterator;
+	typedef typename separators_t::const_iterator			const_iterator;
+	typedef typename separators_t::const_reverse_iterator	const_reverse_iterator;
 protected:
 	static distance add_distance_limit(distance d,const T& x)
 	{

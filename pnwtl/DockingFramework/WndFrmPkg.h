@@ -123,14 +123,14 @@ class CWndFramesPackageBase
 {
 	typedef TFrame CFrame;
 	typedef TTraits CTraits;
-	typedef CTraits::CSplitterBar	CSplitterBar;
+	typedef typename CTraits::CSplitterBar	CSplitterBar;
 	typedef CWndFramesPackageBase<CFrame,TTraits> thisClass;
 protected:
 	enum {splitterSize=CSplitterBar::sbThickness};
-	typedef CFrame::position	position;
+	typedef typename CFrame::position	position;
 
-	template<class T,const T::distance TMinDist=0>
-	struct CWndFrameTraits : ssec::spraits<T, T::position, T::distance/*,TMinDist*/>
+	template<class T,const typename T::distance TMinDist=0>
+	struct CWndFrameTraits : ssec::spraits<T, typename T::position, typename T::distance/*,TMinDist*/>
 	{
 		typedef ssec::spraits<T,position,position/*,TMinDist*/> baseClass;
 		static distance min_distance(const T& x)
@@ -143,10 +143,10 @@ protected:
 	typedef CWndFrameTraits<CFrame,splitterSize> CFrameTraits;
 	typedef ssec::ssection<CFrame,CFrameTraits> CFrames;
 
-	typedef CFrames::iterator				iterator;
-	typedef CFrames::reverse_iterator		reverse_iterator;
-	typedef CFrames::const_iterator			const_iterator;
-	typedef CFrames::const_reverse_iterator	const_reverse_iterator;
+	typedef typename CFrames::iterator				iterator;
+	typedef typename CFrames::reverse_iterator		reverse_iterator;
+	typedef typename CFrames::const_iterator			const_iterator;
+	typedef typename CFrames::const_reverse_iterator	const_reverse_iterator;
 
 	typedef ssec::bounds_type<position> CBounds;
 protected:
@@ -613,7 +613,7 @@ class CWndFramesPackage : public CWndFramesPackageBase<CWndFrame,TTraits >
 {
 	typedef CWndFrame CFrame;
 	typedef TTraits CTraits;
-	typedef CTraits::CSplitterBar	CSplitterBar;
+	typedef typename CTraits::CSplitterBar	CSplitterBar;
 	typedef CWndFramesPackage<TTraits> thisClass;
 	typedef CWndFramesPackageBase<CFrame,TTraits > baseClass;
 public:
@@ -730,8 +730,8 @@ class CPtrFrame
 {
 	typedef CPtrFrame<T> thisClass;
 public:
-	typedef T::position position;
-	typedef T::distance distance;
+	typedef typename T::position position;
+	typedef typename T::distance distance;
 
 	class CCmp
 	{
@@ -881,7 +881,7 @@ class CSubWndFramesPackage :
 {
 	typedef CPtrFrame<IFrame> CFrame;
 	typedef TTraits CTraits;
-	typedef CTraits::CSplitterBar	CSplitterBar;
+	typedef typename CTraits::CSplitterBar	CSplitterBar;
 	typedef CSubWndFramesPackage<TPackageFrame,TTraits> thisClass;
 	typedef CWndFramesPackageBase<CFrame,TTraits >		baseClass;
 	typedef TPackageFrame	CPackageFrame;

@@ -350,7 +350,7 @@ class ATL_NO_VTABLE CBoxedDockingWindowImpl :
     typedef CBoxedDockingWindowBaseImpl< T, TBase, TDockingWinTraits >	baseClass;
     typedef CBoxedDockingWindowImpl< T, TBase, TDockingWinTraits >		thisClass;
 protected:
-	typedef	TDockingWinTraits::CBox	CBox;
+	typedef	typename TDockingWinTraits::CBox	CBox;
 public:
 	BOOL IsWindowVisible() const
 	{

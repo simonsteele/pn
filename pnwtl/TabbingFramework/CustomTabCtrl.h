@@ -2762,7 +2762,7 @@ public:
 	//   just after nStart (like with LVM_FINDITEM).
 	//  If a matching item is found, its index is returned.
 	//   Otherwise -1 is returned.
-	int FindItem(TItem* pFindItem, TItem::FieldFlags eFlags, int nStart = -1) const
+	int FindItem(TItem* pFindItem, typename TItem::FieldFlags eFlags, int nStart = -1) const
 	{
 		if(nStart < 0)
 		{

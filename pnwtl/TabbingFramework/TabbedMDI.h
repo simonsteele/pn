@@ -251,7 +251,7 @@ public:
 	// Expose the type of MDI client
 	typedef TClient TClient;
 	// Expose the type of tab control
-	typedef TClient::TTabCtrl TTabCtrl;
+	typedef typename TClient::TTabCtrl TTabCtrl;
 	
 // Member variables
 protected:

@@ -43,13 +43,14 @@ public:
 #endif
 	class CImpl : public CStateBase<IState>
 	{
-	protected:
+	public:
 		struct CRestPos : dockwins::DFDOCKPOSEX
 		{
 			DWORD	weight;
 			ID		id;
 		};
 
+	protected:
 		struct weighter : std::binary_function<CRestPos, CRestPos, bool> 
 		{
 			bool operator()(const CRestPos& x, const CRestPos& y) const
