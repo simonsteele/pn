@@ -12,8 +12,8 @@
 #define CHILDFRM_H__INCLUDED
 
 #if _MSC_VER >= 1000
-#pragma once
-#endif // _MSC_VER >= 1000
+	#pragma once
+#endif
 
 #define MINI_BAR_HEIGHT 15
 
@@ -65,6 +65,11 @@ public:
 		COMMAND_ID_HANDLER(ID_FILE_SAVE, OnSave)
 
 		COMMAND_ID_HANDLER(ID_EDIT_GOTO, OnGoto)
+
+		COMMAND_ID_HANDLER(ID_TOOLS_LECRLF, OnLineEndingsToggle)
+		COMMAND_ID_HANDLER(ID_TOOLS_LELF, OnLineEndingsToggle)
+		COMMAND_ID_HANDLER(ID_TOOLS_LECR, OnLineEndingsToggle)
+		COMMAND_ID_HANDLER(ID_TOOLS_LECONVERT, OnLineEndingsConvert)
 
 		// For ::FromHandle
 		IMPLEMENT_FROMHANDLE()
@@ -165,8 +170,6 @@ public:
 		button.fsState = TBSTATE_ENABLED;
 
 		toolbar.AddButtons(1, &button);
-		
-		//button.fsStyle = TBSTYLE_SEP;
 
 		m_hWndToolBar = toolbar.Detach();
 	}
@@ -245,6 +248,8 @@ public:
 
 		SetupToolbar();
 		SetupMenu();
+
+		UpdateMenu();
 
 		bHandled = FALSE;
 		return 1;
@@ -407,10 +412,33 @@ public:
 		return 0;
 	}
 
+	LRESULT OnLineEndingsToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		if(wID == ID_TOOLS_LECRLF)
+			m_view.SetEOLMode((int)PNSF_Windows);
+		else if(wID == ID_TOOLS_LELF)
+			m_view.SetEOLMode((int)PNSF_Unix);
+		else
+			m_view.SetEOLMode((int)PNSF_Mac);
+		UpdateMenu();
+		return 0;
+	}
+
+	LRESULT OnLineEndingsConvert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		if(MessageBox(_T("Are you sure you wish to convert the line endings\nin this file to the currently selected type?"), 
+			_T("Programmers Notepad 2"), MB_YESNO | MB_ICONQUESTION) == IDYES)
+		{
+			m_view.ConvertEOLs(m_view.GetEOLMode());
+		}
+
+		return 0;
+	}
+
 	void OnSchemeChange(LPVOID pVoid)
 	{
 		m_view.SetScheme(static_cast<CScheme*>(pVoid));
-		/*theApp.GetSchemes().GetSwitcher()->*/s_Switcher.SetActiveScheme(m_hMenu, m_view.GetCurrentScheme());
+		s_Switcher.SetActiveScheme(m_hMenu, m_view.GetCurrentScheme());
 	}
 
 	////////////////////////////////////////////////////
@@ -469,7 +497,7 @@ public:
 			EPNSaveFormat format = dlgSave.GetSaveFormat();
 			if(format != PNSF_NoChange)
 			{
-				//ChangeFormat(format);
+				ChangeFormat(format);
 			}
 			SaveFile(dlgSave.m_ofn.lpstrFile);
 		}
@@ -479,6 +507,14 @@ public:
 		}
 
 		return bRet;
+	}
+
+	void ChangeFormat(EPNSaveFormat format)
+	{
+		m_view.SetEOLMode( (int)format );
+		m_view.ConvertEOLs( (int)format );
+		//@todo Update menu item...
+		UpdateMenu();
 	}
 
 	void Save()
@@ -514,6 +550,17 @@ public:
 	void SetScheme(CScheme* pScheme)
 	{
 		m_view.SetScheme(pScheme);
+	}
+
+	void UpdateMenu()
+	{
+		CSMenuHandle menu(m_hMenu);
+
+		EPNSaveFormat f = (EPNSaveFormat)m_view.GetEOLMode();
+		
+		menu.CheckMenuItem(ID_TOOLS_LECRLF, f == PNSF_Windows);
+		menu.CheckMenuItem(ID_TOOLS_LECR, f == PNSF_Mac);
+		menu.CheckMenuItem(ID_TOOLS_LELF, f == PNSF_Unix);
 	}
 
 protected:

@@ -12,7 +12,6 @@
 #include "ssmenus.h"
 
 menu_id_range menu_id_range1 = {20000,21000,0};
-//menu_id_range menu_id_range2 = {6,8,0};
 
 // NULL is important here for counting the available IDs.
 menu_id_range* CSMenuManager::s_IDs[] = {&menu_id_range1, NULL};
@@ -95,11 +94,6 @@ int CSMenuManager::GetNextID()
 	return ret;
 }
 
-/*void CSMenuManager::UnRegisterCallback(int iID)
-{
-	m_Handlers.erase(iID);
-}*/
-
 bool CSMenuManager::HandleCommand(int iID)
 {
 	bool bHandled = false;
@@ -177,7 +171,6 @@ HMENU CSPopupMenu::GetHandle()
 
 int CSPopupMenu::TrackPopupMenu(LPPOINT pt, HWND hWnd)
 {
-	//theApp.GetContextMenuManager()->ShowPopupMenu(GetHandle(), pt->x, pt->y, pWnd/*, BOOL bOwnMessage=FALSE,BOOL bAutoDestroy=TRUE*/);
 	::TrackPopupMenu(SafeGetHandle(), 0, pt->x, pt->y, 0, hWnd, NULL);
 	return 0;
 }

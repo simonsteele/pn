@@ -1,9 +1,15 @@
-// aboutdlg.h : interface of the CAboutDlg class
-//
-/////////////////////////////////////////////////////////////////////////////
+/**
+ * @file aboutdlg.h
+ * @brief interface of the CAboutDlg class
+ * @author Simon Steele
+ * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 
-#if !defined(AFX_ABOUTDLG_H__FF63B4C5_C24D_403B_B046_08BBD06988F5__INCLUDED_)
-#define AFX_ABOUTDLG_H__FF63B4C5_C24D_403B_B046_08BBD06988F5__INCLUDED_
+#ifndef aboutdlg_h__included
+#define aboutdlg_h__included
 
 class CAboutDlg : public CDialogImpl<CAboutDlg>
 {
@@ -29,4 +35,4 @@ public:
 	}
 };
 
-#endif // !defined(AFX_ABOUTDLG_H__FF63B4C5_C24D_403B_B046_08BBD06988F5__INCLUDED_)
+#endif // #ifndef aboutdlg_h__included

@@ -1,3 +1,13 @@
+/**
+ * @file ssreg.h
+ * @brief CSRegistry windows registry functionality wrapper implementation...
+ * @author Simon Steele
+ * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #include "stdafx.h"
 #include "ssreg.h"
 

@@ -8,12 +8,11 @@
  * the conditions under which this source may be modified / distributed.
  */
 
-#ifndef __SchemeManager_H__
-#define __SchemeManager_H__
+#ifndef schemes_h__included
+#define schemes_h__included
 
 #include "Scintillaif.h"
 #include "Files.h"
-#include "IniFile.h"
 #include "SchemeCompiler.h"
 #include "ssmenus.h"
 #include <list>
@@ -168,6 +167,4 @@ class CSchemeManager
 		CDefaultScheme	m_DefaultScheme;
 };
 
-//CheckMenuItem
-
-#endif
+#endif //#ifndef schemes_h__included

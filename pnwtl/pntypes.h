@@ -11,6 +11,8 @@
 #ifndef pntypes_h__included
 #define pntypes_h__included
 
+#include "scintilla.h"
+
 typedef struct tagFindOptions
 {
 	CString FindText;
@@ -36,6 +38,6 @@ typedef struct tagCloseStruct
 	bool	bCanClose;
 } SCloseStruct;
 
-typedef enum { PNSF_NoChange, PNSF_Windows, PNSF_Unix} EPNSaveFormat;
+typedef enum { PNSF_Windows = SC_EOL_CRLF, PNSF_Unix = SC_EOL_LF, PNSF_Mac = SC_EOL_CR, PNSF_NoChange} EPNSaveFormat;
 
 #endif

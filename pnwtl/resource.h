@@ -45,6 +45,10 @@
 #define IDC_DIRECTION_GROUP             21207
 #define ID_EDIT_FINDNEXT                32773
 #define ID_EDIT_GOTO                    32774
+#define ID_TOOLS_LECRLF                 32777
+#define ID_TOOLS_LELF                   32778
+#define ID_TOOLS_LECR                   32779
+#define ID_TOOLS_LECONVERT              32780
 #define ID_VIEW_VIEWTABS                32825
 #define ID_TAB_CLOSE                    32835
 #define ID_VIEW_TABS_TOP                32836
@@ -70,7 +74,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        205
-#define _APS_NEXT_COMMAND_VALUE         32777
+#define _APS_NEXT_COMMAND_VALUE         32781
 #define _APS_NEXT_CONTROL_VALUE         1006
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

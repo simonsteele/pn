@@ -135,6 +135,17 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Change &Scheme",              65535
     END
+    POPUP "&Tools"
+    BEGIN
+        POPUP "&Line Endings"
+        BEGIN
+            MENUITEM "&Windows (CRLF)",             ID_TOOLS_LECRLF
+            MENUITEM "&Unix (LF)",                  ID_TOOLS_LELF
+            MENUITEM "&Macintosh (CR)",             ID_TOOLS_LECR
+            MENUITEM SEPARATOR
+            MENUITEM "&Convert...",                 ID_TOOLS_LECONVERT
+        END
+    END
     POPUP "&Window"
     BEGIN
         MENUITEM "&Cascade",                    ID_WINDOW_CASCADE

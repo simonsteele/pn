@@ -156,6 +156,11 @@ class CSMenuT
 			return iID;
 		}
 
+		void CheckMenuItem(int uIDCheckItem, bool bChecked)
+		{
+			::CheckMenuItem(GetHandle(), uIDCheckItem, mfchecked[bChecked]);
+		}
+
 		virtual HMENU GetHandle()
 		{
 			if(m_hMenu == NULL)

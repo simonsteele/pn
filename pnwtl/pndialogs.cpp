@@ -46,9 +46,10 @@ LRESULT CPNSaveDialog::OnInitDialog (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	SetWindowPos( NULL, 0, 0, rectDlg.Width(), rectDlg.Height(),
 		SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER );
 
-	m_SaveTypeCombo.AddString(_T("Leave it alone, junior."));
+	m_SaveTypeCombo.AddString(_T("No change to the file format."));
 	m_SaveTypeCombo.AddString(_T("Ensure Windows Format (CR+LF)"));
 	m_SaveTypeCombo.AddString(_T("Ensure Unix Format (LF)"));
+	m_SaveTypeCombo.AddString(_T("Ensure Macintosh Format (CR)"));
 
 	m_SaveTypeCombo.SetCurSel(0);
 	

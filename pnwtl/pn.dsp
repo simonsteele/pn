@@ -95,10 +95,6 @@ SOURCE=.\Files.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\IniFile.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\OptionsManager.cpp
 # End Source File
 # Begin Source File
