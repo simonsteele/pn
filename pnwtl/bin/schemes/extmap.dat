@@ -32,4 +32,5 @@
 .pod=perl
 .schemedef=xml
 .tcl=tcl
+.java=java
 makefile=makefile
