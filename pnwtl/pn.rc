@@ -344,12 +344,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele (Echo Software)"
             VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.4.16"
+            VALUE "FileVersion", "2.0.4.17"
             VALUE "InternalName", "PNWTL"
             VALUE "LegalCopyright", "Copyright © 2002-2003 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"
             VALUE "ProductName", "Programmers Notepad"
-            VALUE "ProductVersion", "2.0.4.1"
+            VALUE "ProductVersion", "2.0.4.2"
         END
     END
     BLOCK "VarFileInfo"
@@ -873,17 +873,22 @@ BEGIN
     CONTROL         "Show Indentation Guides",IDC_OPT_INDENTGUIDESCHECK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,6,168,12
     CONTROL         "Show Line Numbers",IDC_OPT_LINENOSCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,6,24,138,12
+                    BS_AUTOCHECKBOX | WS_TABSTOP,18,78,138,12
     CONTROL         "Use the tab character for indentation",
                     IDC_OPT_USETABSCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,6,48,168,12
-    LTEXT           "Default tab width:",IDC_STATIC,6,66,66,12
-    EDITTEXT        IDC_OPT_TABWIDTHEDIT,72,66,40,14,ES_AUTOHSCROLL
-    LTEXT           "Default Line Endings:",IDC_STATIC,6,90,72,12
-    COMBOBOX        IDC_OPT_LECOMBO,78,90,102,66,CBS_DROPDOWNLIST | CBS_SORT | 
+                    WS_TABSTOP,18,120,168,12
+    LTEXT           "Tab Width:",IDC_STATIC,18,138,48,12
+    EDITTEXT        IDC_OPT_TABWIDTHEDIT,66,138,40,14,ES_AUTOHSCROLL
+    LTEXT           "Line Endings:",IDC_STATIC,18,96,48,12
+    COMBOBOX        IDC_OPT_LECOMBO,66,96,102,66,CBS_DROPDOWNLIST | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
     CONTROL         "Maximise new document windows",IDC_OPT_MAXCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,6,114,150,12
+                    BS_AUTOCHECKBOX | WS_TABSTOP,6,24,150,12
+    LTEXT           "Defaults:",IDC_STATIC,6,66,66,12
+    LTEXT           "",IDC_STATIC,42,70,252,2,SS_SUNKEN
+    CONTROL         "Show full file path in document windows",
+                    IDC_OPT_FULLPATHCHECK,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,6,42,156,12
 END
 
 IDD_PAGE_NEWFILES DIALOGEX 0, 0, 299, 200

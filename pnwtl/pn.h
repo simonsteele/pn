@@ -10,7 +10,7 @@
  * Thanks to the author of kPad for the g_Context here!
  */
 
-//#define PN_INITIALISEFRAME	(WM_USER+35)
+#define PN_INITIALISEFRAME	(WM_USER+35)
 #define PN_NOTIFY			(WM_USER+36)
 #define PN_CHECKAGE			(WM_USER+37)
 #define PN_OPTIONSUPDATED	(WM_USER+38)

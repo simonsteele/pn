@@ -352,19 +352,6 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	AddMRUMenu(CSMenuHandle(m_hMenu));
 	AddNewMenu(CSMenuHandle(m_hMenu));
 
-	// Process cmdline params... __argv and __argc in VC++
-	for(int i = 1; i < __argc; i++)
-	{
-		if(__argv[i][0] == _T('/') || __argv[i][0] == _T('-'))
-		{
-			// special params, none yet...
-		}
-		else
-		{
-			OpenFile(__argv[i]);
-		}
-	}
-
 	// Create docking windows...
 	DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 	CRect rcBar(0, 0, 200, 70);
@@ -374,7 +361,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	DockWindow(*m_pOutputWnd, dockwins::CDockingSide::sBottom, 0, 1, 200, 80);
 
 	InitGUIState();
-	//PostMessage(PN_INITIALISEFRAME);
+	PostMessage(PN_INITIALISEFRAME);
 
 	return 0;
 }
@@ -460,12 +447,23 @@ LRESULT CMainFrame::OnEscapePressed(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	return FALSE;
 }
 
-//LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-//{
-//	InitGUIState();
-//
-//	return 0;
-//}
+LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	// Process cmdline params... __argv and __argc in VC++
+	for(int i = 1; i < __argc; i++)
+	{
+		if(__argv[i][0] == _T('/') || __argv[i][0] == _T('-'))
+		{
+			// special params, none yet...
+		}
+		else
+		{
+			OpenFile(__argv[i]);
+		}
+	}
+
+	return 0;
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Command Handlers...
@@ -1062,11 +1060,15 @@ void CMainFrame::ToggleOutputWindow(bool bSetValue, bool bShowing)
 	if(bSetValue)
 	{
 		if(bShowing)
+		{
 			if( !m_pOutputWnd->IsWindowVisible() )
 				m_pOutputWnd->Show();
+		}
 		else
+		{
 			if( m_pOutputWnd->IsWindowVisible() )
 				m_pOutputWnd->Hide();
+		}
 	}
 	else
 		m_pOutputWnd->Toggle();

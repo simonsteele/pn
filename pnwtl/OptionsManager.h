@@ -51,6 +51,7 @@ class COptionsManager
 		bool ShowIndentGuides;
 		bool LineNumbers;
 		bool MaximiseNew;
+		bool ShowFullPath;
 		EPNSaveFormat LineEndings;
 		EAlreadyOpenAction AlreadyOpenAction;
 

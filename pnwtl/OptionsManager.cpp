@@ -41,7 +41,12 @@ void COptionsManager::Load()
 	UseTabs = reg.ReadBool(_T("UseTabs"), true);
 	LineNumbers = reg.ReadBool(_T("LineNumbers"), false);
 	AlreadyOpenAction = (EAlreadyOpenAction)reg.ReadInt(_T("AlreadyOpenAction"), eSwitch);
+	
+	// Interface Settings -------------------
+	cs = root + PNSK_INTERFACE;
+	reg.OpenKey(cs.c_str(), true);
 	MaximiseNew = reg.ReadBool(_T("MaximiseNew"), false);
+	ShowFullPath = reg.ReadBool(_T("ShowFullPath"), false);
 
 	// Find and Replace Settings ------------
 
@@ -53,9 +58,6 @@ void COptionsManager::Load()
 	m_ReplaceOptions.Loop = true;
 	m_ReplaceOptions.FindText = _T("");
 	m_ReplaceOptions.ReplaceText = _T("");
-
-	//cs = root + PNSK_INTERFACE
-	//reg.OpenKey(cs, true);
 }
 
 void COptionsManager::Save()
@@ -73,10 +75,12 @@ void COptionsManager::Save()
 	reg.WriteBool(_T("UseTabs"), UseTabs);
 	reg.WriteBool(_T("LineNumbers"), LineNumbers);
 	reg.WriteInt(_T("AlreadyOpenAction"), AlreadyOpenAction);
-	reg.WriteBool(_T("MaximiseNew"), MaximiseNew);
 	
-	//cs = root + _T("Interface Settings");
-	//reg.OpenKey(cs, true);
+	// Interface Settings -------------------
+	cs = root + PNSK_INTERFACE;
+	reg.OpenKey(cs.c_str(), true);
+	reg.WriteBool(_T("MaximiseNew"), MaximiseNew);
+	reg.WriteBool(_T("ShowFullPath"), ShowFullPath);
 }
 
 bool COptionsManager::Get(LPCTSTR subkey, LPCTSTR value, bool bDefault)

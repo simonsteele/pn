@@ -1,25 +1,19 @@
 ========================================
-Release Name: 2.0.4.1
-Build: 2.0.4.14, Version Label: (none)
+Release Name: 2.0.4.2
+Build: 2.0.4.15, Version Label: (none)
 ========================================
-
-Bug Fixes:
-----------
-
-1) Global output window flickers when text is added (SF Bugs #760349 and #752839).
-2) Tool editor dialog output window selector combo fixed (SF Bug #752826).
-3) Line Number display related corruption fixed (SF Bugs #752847 and #753457).
-4) Minor UI bug in tool editor (SF Bug #760347).
-5) Tools order up button doesn't work correctly (SF Bugs #752831 and #752834).
-6) click error in output window and PN2 always opens file (SF Bug #760351).
 
 What's new?
 -----------
 
-1) Select All menu item to show availability (SF RFE #754417).
-2) Folding keyboard shortcuts shown in menu (SF Bug #760346).
+1) Re-organised general options page to clarify.
+2) Show full path in title bar option.
 
-Please let me know about any problems with this release: ss@pnotepad.org.
+Bug Fixes:
+----------
+
+1) Global output window not toggled properly by running a tool.
+2) SF Bug #763393 - files opened at startup do not get tabs.
 
 If you find a bug:
 ------------------

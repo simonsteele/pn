@@ -219,17 +219,48 @@ void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 ////////////////////////////////////////////////////
 // Document Entries
 
-void CChildFrame::SetTitle(LPCTSTR sFileName, bool bModified)
+//void CChildFrame::SetTitle(LPCTSTR sFileName, bool bModified)
+void CChildFrame::SetTitle(LPCTSTR sFullPath, LPCTSTR sFilePart, bool bModified)
 {
-	CString buf = sFileName;
-	
+	tstring filepart;
+	tstring buf;
+	tstring tabbuf;
+
+	if( sFilePart == NULL )
+	{
+		if( _tcschr(sFullPath, _T('\\')) != NULL )
+		{
+			CFileName fn(sFullPath);
+			filepart = fn.GetFileName();
+		}
+		else
+			filepart = sFullPath;
+	}
+	else
+		filepart = sFilePart;
+
+	if( COptionsManager::GetInstance()->ShowFullPath )
+	{
+		buf = sFullPath;
+		tabbuf = filepart;
+	}
+	else
+	{
+		buf = filepart;
+		tabbuf = filepart;
+	}
+
 	if(bModified)
+	{
 		buf += " *";
+		tabbuf += " *";
+	}
+
+	SetWindowText(buf.c_str());
+	SetTabText(tabbuf.c_str());
+	SetTabToolTip(sFullPath);
 	
-	SetWindowText(buf);
-	SetTabText(buf);
-	
-	m_Title = sFileName;
+	m_Title = filepart.c_str();
 
 	MDIRefreshMenu();
 }
@@ -437,11 +468,11 @@ LRESULT CChildFrame::OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 {
 	if(lParam == SCN_SAVEPOINTREACHED)
 	{
-		SetTitle(m_Title, false);
+		SetTitle(m_Title, NULL, false);
 	}
 	else if(lParam == SCN_SAVEPOINTLEFT)
 	{
-		SetTitle(m_Title, true);
+		SetTitle(m_Title, NULL, true);
 	}
 	else
 	{
@@ -895,7 +926,7 @@ void CChildFrame::PNOpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pSchem
 	if(m_view.Load(pathname, pScheme))
 	{
 		m_FileAge = FileAge(pathname);
-		SetTitle(filename);
+		SetTitle(pathname, filename);
 		m_FileName = pathname;
 	}
 	else
