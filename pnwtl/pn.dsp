@@ -111,6 +111,10 @@ SOURCE=.\pndialogs.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\pnutils.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\SchemeCompiler.cpp
 # End Source File
 # Begin Source File
@@ -185,6 +189,10 @@ SOURCE=.\pndialogs.h
 # Begin Source File
 
 SOURCE=.\pntypes.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\pnutils.h
 # End Source File
 # Begin Source File
 

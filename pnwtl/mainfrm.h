@@ -17,6 +17,8 @@
 
 #include "files.h"
 
+#include "pnutils.h"
+
 /**
  * @class CPNMDIClient
  * @brief Add extra MDI plumbing to the TabbedMDIClient Framework.
@@ -78,7 +80,7 @@ public:
 
 	typedef CTabbedMDIFrameWindowImpl<CMainFrame, CPNMDIClient> myClass;
 
-	CMainFrame()
+	CMainFrame() : m_wndMDIClient(this, 2)
 	{
 		m_FindDialog = NULL;
 		m_ReplaceDialog = NULL;
@@ -88,22 +90,8 @@ public:
 
 	~CMainFrame()
 	{
-		if(m_FindDialog)
-		{
-			///@todo record search box choices...
-			if(::IsWindow(m_FindDialog->m_hWnd))
-				if(m_FindDialog->IsWindowVisible())
-					m_FindDialog->PostMessage(WM_CLOSE);
-			delete m_FindDialog;
-		}
-
-		if(m_ReplaceDialog)
-		{
-			if(::IsWindow(m_ReplaceDialog->m_hWnd))
-				if(m_ReplaceDialog->IsWindowVisible())
-					m_ReplaceDialog->PostMessage(WM_CLOSE);
-			delete m_ReplaceDialog;
-		}
+		CloseAndFreeDlg(m_FindDialog);
+		CloseAndFreeDlg(m_ReplaceDialog);
 	}
 
     CTabbedMDICommandBarCtrl m_CmdBar;
@@ -156,6 +144,8 @@ public:
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
 		CHAIN_MSG_MAP(myClass)
+	ALT_MSG_MAP(2)
+		MESSAGE_HANDLER(WM_MDISETMENU, OnMDIClientMDISetMenu)
 	END_MSG_MAP()
 
 	BEGIN_UPDATE_UI_MAP(CMainFrame)
@@ -211,6 +201,7 @@ public:
 		DragAcceptFiles(TRUE);
 
 		CreateMDIClient();
+		m_wndMDIClient.SubclassWindow(m_hWndMDIClient);
 		m_CmdBar.SetMDIClient(m_hWndMDIClient);
 
 		UIAddToolBar(hWndToolBar);
@@ -224,6 +215,8 @@ public:
 		pLoop->AddIdleHandler(this);
 
 		ConfigureNewMenu();
+
+		ConfigureMRUMenus();
 
 		return 0;
 	}
@@ -258,6 +251,17 @@ public:
 			bHandled = FALSE;
 		
 		return 0;
+	}
+
+	/**
+	 * Here we can update any dynamically generated parts of the menus 
+	 * used by the MDI children. Thanks to Nenad Stefanovic for the
+	 * hint he posted in the WTL User Group (Yahoo Group: WTL).
+	 */
+	LRESULT OnMDIClientMDISetMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		bHandled = FALSE;
+		return 1;
 	}
 
 	/**
@@ -507,15 +511,54 @@ public:
 			sm.Detach();
 		}
 
+		void ConfigureMRUMenus()
+		{
+			/*MRUManager m(ID_MRUFILE_BASE, 4);
+			m.AddFile("c:\\test.dat");
+			m.AddFile("c:\\simon\\desktop\\projects\\echo\\programmers notepad\\cheese.bmp");
+			m.AddFile("c:\\source\\pnwtl\\mainfrm.h");
+			m.AddFile("c:\\source\\pnwtl\\banana.cpp");
+			m.AddFile("c:\\source\\pnwtl\\cheese.h");
+
+			CSMenuHandle cs(m_hMenu);
+
+			CSMenuHandle file = cs.GetSubMenu(0);
+			
+			CSPopupMenu sm;
+			m.UpdateMenu(sm.GetHandle());
+			::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_BYCOMMAND | MF_POPUP, (UINT)sm.GetHandle(), _T("&Recent Files"));
+			::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_SEPARATOR, 0, NULL);
+
+			sm.Detach();
+		
+			cs.Detach();
+			*/
+			
+		}
+
 	protected:
 		CFindDlg*				m_FindDialog;
 		CReplaceDlg*			m_ReplaceDialog;
 		CScintilla				m_Dummy;			///< Scintilla often doesn't like unloading and reloading.
 
 		CMultiPaneStatusBarCtrl	m_StatusBar;
+		
+		// We must subclass the MDI client area to pick up WM_MDISETMENU messages.
+		CContainedWindow		m_wndMDIClient;
 
 		HWND					hFindWnd;
 		HWND					hReplWnd;
+
+		void CloseAndFreeDlg(CDialogImplBase* pD)
+		{
+			if(pD)
+			{
+				if(::IsWindow(pD->m_hWnd))
+					if(pD->IsWindowVisible())
+						pD->PostMessage(WM_CLOSE);
+				delete pD;
+			}
+		}
 };
 
 BOOL CALLBACK CloseChildEnumProc(HWND hWnd, LPARAM lParam)
@@ -532,8 +575,6 @@ BOOL CALLBACK CloseChildEnumProc(HWND hWnd, LPARAM lParam)
 
 		if(!pMF->OnEditorClosing(pChild))
 			s->bCanClose = false;
-
-		//SendMessage(GetParent(hWnd), WM_MDIDESTROY, (WPARAM)hWnd, 0);
 	}
 	
 	return TRUE;

@@ -114,10 +114,6 @@ void CScheme::CheckName()
 		// Convert into a unicode string...	
 		SetName(A2T(&hdr.Name[0]));
 		SetTitle(A2T(&hdr.Title[0]));
-		/*TCHAR conv = new TCHAR[strlen(&hdr.Name[0])+1];
-		mbstowcs(conv, &hdr.Name[0], strlen(&hdr.Name[0]));
-		SetName(conv);
-		delete [] conv;*/
 		#else
 		// Otherwise just copy the string.	
 		SetName(&hdr.Name[0]);
@@ -239,7 +235,7 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 		// process...
 		SetupScintilla(sc);
 
-		if(hdr.Folding & fldEnabled == fldEnabled)
+		if(hdr.Folding & fldEnabled)
 		{
 			///@todo obviously these details need to come from settings somewhere...
 			sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold"), (LPARAM)_T("1"));
@@ -250,12 +246,12 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 			sc.SPerform(SCI_SETFOLDFLAGS, 16, 0);
 			sc.SetFoldingMargins(efsVSNet);
 
-			sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.compact"), (LPARAM)((hdr.Folding & fldCompact != 0) ? _T("1") : _T("0")));
+			sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.compact"), (LPARAM)((hdr.Folding & fldCompact) ? _T("1") : _T("0")));
 			
-			if(hdr.Folding & fldComments != 0)
+			if(hdr.Folding & fldComments)
 				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.comment"), (LPARAM)_T("1"));
 
-			if(hdr.Folding & fldPreProc != 0)
+			if(hdr.Folding & fldPreProc)
 				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.preprocessor"), (LPARAM)_T("1"));
 		}
 
@@ -482,19 +478,18 @@ void CSchemeManager::Load()
 
 		while(found)
 		{
+			CScheme sch;
+			csi = m_Schemes.insert(m_Schemes.end(), sch);
+			cs = &(*csi);
+
+			cs->SetSchemeManager(this);
+			
 			to_open = m_CompiledPath;
 			to_open += FindFileData.cFileName;
 
-			csi = m_Schemes.insert(m_Schemes.end());
-			cs = &(*csi);
-			cs->SetSchemeManager(this);
 			cs->SetFileName(to_open.c_str());
 			cs->CheckName();
 
-			//cs = new CScheme(this, to_open.c_str());
-			//m_Schemes.insert(m_Schemes.end(), cs);
-
-			///@todo replace this with something less lower-case un-friendly
 			SchemeName = cs->GetName();
 			TCHAR *tcs = new TCHAR[SchemeName.size()+1];
 			_tcscpy(tcs, SchemeName.c_str());

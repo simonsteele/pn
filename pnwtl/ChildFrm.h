@@ -63,6 +63,7 @@ public:
 
 		COMMAND_ID_HANDLER(ID_FILE_SAVE_AS, OnSaveAs)
 		COMMAND_ID_HANDLER(ID_FILE_SAVE, OnSave)
+		COMMAND_ID_HANDLER(ID_FILE_CLOSE, OnClose)
 
 		COMMAND_ID_HANDLER(ID_EDIT_GOTO, OnGoto)
 
@@ -255,7 +256,7 @@ public:
 		return 1;
 	}
 
-	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		// Paint a background for the toolbar.
 		PAINTSTRUCT ps;
@@ -273,7 +274,7 @@ public:
 		return 0;		
 	}
 
-	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		// Need to do this so the toolbar is drawn...
 		return 0;
@@ -385,6 +386,13 @@ public:
 		return 0;
 	}
 
+	LRESULT OnClose(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		PostMessage(WM_CLOSE, 0, 0);
+		return 0;
+	}
+
+
 	LRESULT OnWordWrapToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		CToolBarCtrl toolbar(m_hWndToolBar);
@@ -397,7 +405,6 @@ public:
 		CToolBarCtrl toolbar(m_hWndToolBar);
 		m_view.EnableHighlighting(toolbar.IsButtonChecked(wID) != 0);
 		
-
 		return 0;
 	}
 

@@ -156,6 +156,11 @@ class CSMenuT
 			return iID;
 		}
 
+		void AddSeparator()
+		{
+			::AppendMenu(GetHandle(), MF_SEPARATOR, 0, NULL);
+		}
+
 		void CheckMenuItem(int uIDCheckItem, bool bChecked)
 		{
 			::CheckMenuItem(GetHandle(), uIDCheckItem, mfchecked[bChecked]);

@@ -1,7 +1,8 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by pn.rc
 //
+#define ID_RECENTFILES_BLANKER          0
 #define IDC_REPLACE_BUTTON              4
 #define IDC_REPLACEALL_BUTTON           5
 #define IDC_REPLACEINSEL_BUTTON         6
@@ -29,6 +30,7 @@
 #define IDR_IMAGES                      201
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
+#define ID_MRUFILE_BASE                 205
 #define IDD_PNSAVE                      423
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
@@ -73,7 +75,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        205
+#define _APS_NEXT_RESOURCE_VALUE        221
 #define _APS_NEXT_COMMAND_VALUE         32781
 #define _APS_NEXT_CONTROL_VALUE         1006
 #define _APS_NEXT_SYMED_VALUE           104
