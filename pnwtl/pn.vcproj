@@ -543,10 +543,43 @@
 			Name="Include"
 			Filter="">
 			<File
+				RelativePath=".\include\genx\charProps.c">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="include\ColorButton.cpp">
 			</File>
 			<File
 				RelativePath=".\include\encoding.h">
+			</File>
+			<File
+				RelativePath=".\include\genx\genx.c">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\include\genx\genx.h">
 			</File>
 			<File
 				RelativePath="include\OptionsDialog.h">

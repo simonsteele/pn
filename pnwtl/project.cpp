@@ -11,9 +11,9 @@
 #include "stdafx.h"
 #include "project.h"
 #include "include/filefinder.h"
+#include "include/genx/genx.h"
 
-#include <sstream>
-#include <fstream>
+#define u(x) (utf8)x
 
 namespace Projects
 {
@@ -52,6 +52,13 @@ namespace Projects
 		else \
 			str = "error"; \
 	}
+
+typedef struct tagProjectWriter
+{
+	genxElement eFile;
+	genxAttribute aFilePath;
+	genxWriter w;
+} SProjectWriter;
 
 //////////////////////////////////////////////////////////////////////////////
 // ProjectType
@@ -158,9 +165,11 @@ bool File::Rename(LPCTSTR newFilePart)
 	return false;
 }
 
-void File::WriteDefinition(ofstream& definition)
+void File::WriteDefinition(SProjectWriter* definition)
 {
-	definition << "<File path=\"" << relPath << "\" />\n";
+	genxStartElement(definition->eFile);
+	genxAddAttribute(definition->aFilePath, (const utf8)relPath.c_str());
+	genxEndElement(definition->w);
 }
 
 void File::setDirty()
@@ -397,16 +406,17 @@ Folder* Folder::GetParent()
 	return parent;
 }
 
-void Folder::WriteDefinition(ofstream& definition)
+void Folder::WriteDefinition(SProjectWriter* definition)
 {
-	definition << "<Folder name=\"" << name << "\">\n";
+	genxStartElementLiteral(definition->w, NULL, u("Folder"));
+	genxAddAttributeLiteral(definition->w, NULL, u("name"), u(name.c_str()));
 	
 	writeContents(definition);
 
-	definition << "</Folder>\n";
+	genxEndElement(definition->w);
 }
 
-void Folder::writeContents(ofstream& definition)
+void Folder::writeContents(SProjectWriter* definition)
 {
 	for(FOLDER_LIST::const_iterator i = children.begin();
 		i != children.end();
@@ -476,12 +486,32 @@ bool Project::Exists()
 
 void Project::Save()
 {
-	ofstream str;
-	str.open(fileName.c_str(), ios_base::out);
-	
-	writeDefinition(str);
+	//ofstream str;
+	//str.open(fileName.c_str(), ios_base::out);
 
-	str.close();
+	SProjectWriter writer;
+
+	writer.w = genxNew(NULL, NULL, NULL);
+	genxStatus s;
+	
+	writer.eFile = genxDeclareElement(writer.w, NULL, u("File"), &s);
+	writer.aFilePath = genxDeclareAttribute(writer.w, NULL, u("path"), &s);
+
+	FILE* hFile = _tfopen(fileName.c_str(), "wb");
+
+	genxStartDocFile(writer.w, hFile);
+	
+	writeDefinition(&writer);
+
+	if (genxEndDocument(writer.w))
+	{
+		// error...
+	}
+
+	fclose(hFile);
+
+	genxDispose(writer.w);
+	
 	bDirty = false;
 }
 
@@ -578,14 +608,14 @@ void Project::endElement(LPCTSTR name)
 	}
 }
 
-void Project::writeDefinition(ofstream& definition)
+void Project::writeDefinition(SProjectWriter* definition)
 {
-	definition << "<?xml version=\"1.0\"?>\n";
-	definition << "<Project name=\"" << name << "\">\n";
+	genxStartElementLiteral(definition->w, NULL, u("Project"));
+	genxAddAttributeLiteral(definition->w, NULL, u("name"), u(name.c_str()));
 
 	writeContents(definition);
 
-	definition << "</Project>";
+	genxEndElement(definition->w);
 }
 
 void Project::processProject(XMLAttributes& atts)
@@ -707,11 +737,13 @@ bool Workspace::CanSave()
 
 void Workspace::Save()
 {
-	ofstream str;
-	str.open(fileName.c_str(), ios_base::out);
+	FILE* hFile = _tfopen(fileName.c_str(), _T("wb"));
 
-	str << "<?xml version=\"1.0\"?>\n";
-	str << "<Workspace name=\"" << name << "\">\n";
+	genxWriter w = genxNew(NULL, NULL, NULL);
+
+	genxStartDocFile(w, hFile);
+	genxStartElementLiteral(w, NULL, u("Workspace"));
+	genxAddAttributeLiteral(w, NULL, u("name"), u(name.c_str()));
 
 	CFileName wspFN(fileName.c_str());
 	tstring wspPath = wspFN.GetPath();
@@ -725,12 +757,16 @@ void Workspace::Save()
 		CFileName pfn(p->GetFileName().c_str());
 		tstring relpath = pfn.GetRelativePath(wspPath.c_str());
 
-		str << "\t<Project path=\"" << relpath << "\" />\n";
+		genxStartElementLiteral(w, NULL, u("Project"));
+		genxAddAttributeLiteral(w, NULL, u("path"), u(relpath.c_str()));
+		genxEndElement(w);
 	}
 
-	str << "</Workspace>";
+	genxEndElement(w);
+	genxDispose(w);
 
-	str.close();
+	fclose(hFile);
+
 	ClearDirty();
 }
 

@@ -18,6 +18,7 @@ namespace Projects
 
 #include "xmlparser.h"
 
+typedef struct tagProjectWriter* ProjectWriter;
 
 class Folder;
 class File;
@@ -61,7 +62,7 @@ class File : public ProjectType
 
 		bool Rename(LPCTSTR newFilePart);
 
-		void WriteDefinition(ofstream& definition);
+		void WriteDefinition(ProjectWriter definition);
 
 	protected:
 		void setDirty();
@@ -106,11 +107,11 @@ class Folder : public ProjectType
 		void SetParent(Folder* folder);
 		Folder* GetParent();
 
-		void WriteDefinition(ofstream& definition);
+		void WriteDefinition(ProjectWriter definition);
 
 	protected:
 		void Clear();
-		void writeContents(ofstream& definition);
+		void writeContents(ProjectWriter definition);
 
 		virtual void setDirty();
 
@@ -151,7 +152,7 @@ class Project : public Folder, XMLParseState
 	protected:
 		Project();
 
-		void writeDefinition(ofstream& definition);	
+		void writeDefinition(ProjectWriter definition);	
 
 		void processProject(XMLAttributes& atts);
 		void processFolder(XMLAttributes& atts);
