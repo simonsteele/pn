@@ -120,7 +120,7 @@
 	
 	<language base="cppbase" name="idl" title="IDL" folding="true">
 		<use-keywords>
-			<keyword key="0" name="Keywords" />
+			<keyword key="0" name="Keywords" class="idl" />
 		</use-keywords>
 	</language>
 

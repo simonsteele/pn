@@ -2,7 +2,7 @@
  * @file optionspages.cpp
  * @brief Options Dialog Pages (1) for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -1202,8 +1202,9 @@ LRESULT COptionsPageTools::OnUpClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	{
 		ToolDefinition* pDef = reinterpret_cast<ToolDefinition*>(m_list.GetItemData(iSelIndex));
 		GetTools()->MoveUp(pDef);
-		ListCtrlMoveOneData mod = {reinterpret_cast<LPARAM>(pDef), 0, 0};
-		m_list.SortItems(ListCtrlMoveOneCompareFunc, reinterpret_cast<LPARAM>(&mod));
+		//ListCtrlMoveOneData mod = {reinterpret_cast<LPARAM>(pDef), 0, 0};
+		//m_list.SortItems(ListCtrlMoveOneCompareFunc, reinterpret_cast<LPARAM>(&mod));
+		m_list.MoveItemUp(iSelIndex);
 	}
 	EnableButtons();
 	return 0;
@@ -1216,8 +1217,9 @@ LRESULT COptionsPageTools::OnDownClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	{
 		ToolDefinition* pDef = reinterpret_cast<ToolDefinition*>(m_list.GetItemData(iSelIndex));
 		GetTools()->MoveDown(pDef);
-		ListCtrlMoveOneData mod = {reinterpret_cast<LPARAM>(pDef), 1, 0};
-		m_list.SortItems(ListCtrlMoveOneCompareFunc, reinterpret_cast<LPARAM>(&mod));
+		//ListCtrlMoveOneData mod = {reinterpret_cast<LPARAM>(pDef), 1, 0};
+		//m_list.SortItems(ListCtrlMoveOneCompareFunc, reinterpret_cast<LPARAM>(&mod));
+		m_list.MoveItemDown(iSelIndex);
 	}
 	EnableButtons();
 	return 0;

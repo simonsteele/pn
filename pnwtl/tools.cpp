@@ -503,6 +503,7 @@ void ToolRunner::Run()
 {
 	m_RetCode = Run_CreateProcess(m_pWrapper->Command.c_str(), m_pWrapper->Params.c_str(), m_pWrapper->Folder.c_str());
 	PostRun();
+	m_pWrapper->SetRunning(false);
 	m_pWrapper->OnFinished();
 	ToolOwner::GetInstance()->MarkToolForDeletion(this);
 }
@@ -903,7 +904,7 @@ bool ToolOwner::HaveRunningTools(ToolOwnerID OwnerID)
 		i != m_RunningTools.end();
 		++i)
 	{
-		if(OwnerID == 0 || (*i).OwnerID == OwnerID)
+		if((OwnerID == 0 || (*i).OwnerID == OwnerID) && (*i).pWrapper->IsRunning())
 		{
 			return true;
 		}

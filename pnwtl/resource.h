@@ -83,6 +83,8 @@
 #define ID_VIEW_FOLDING                 270
 #define ID_COLLAPSEALLFOLDS_TOGGLEFOLD  271
 #define ID_VIEW_TOGGLEFOLD              272
+#define ID_EDIT_SELECTALL               273
+#define ID_FOLDING_COLLAPSEALLFOLDS     274
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -223,7 +225,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        273
+#define _APS_NEXT_RESOURCE_VALUE        275
 #define _APS_NEXT_COMMAND_VALUE         32872
 #define _APS_NEXT_CONTROL_VALUE         1062
 #define _APS_NEXT_SYMED_VALUE           104

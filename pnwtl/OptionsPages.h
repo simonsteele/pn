@@ -2,7 +2,7 @@
  * @file optionspages.h
  * @brief Options Dialog Pages (1) for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -11,6 +11,7 @@
 #define optionspages_h__included
 
 #include "include/optionsdialog.h"
+#include "include/sslistctrl.h"
 #include "optionscontrols.h"
 #include "SchemeConfig.h"
 #include "tools.h"
@@ -290,7 +291,8 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 	protected:
 		bool				m_bChanging;
 		CSchemeCombo		m_combo;
-		CListViewCtrl		m_list;
+		//CListViewCtrl		m_list;
+		CSSListCtrl		m_list;
 		SchemeConfigParser* m_pSchemes;
 		SchemeConfig*		m_pScheme;
 		SchemeTools*		m_pCurrent;

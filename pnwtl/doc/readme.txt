@@ -1,43 +1,22 @@
 ========================================
-Release Name: 2.0.4-miles
-Build: 2.0.4.14, Version Label: miles
+Release Name: 2.0.4.1
+Build: 2.0.4.14, Version Label: (none)
 ========================================
+
+Bug Fixes:
+----------
+
+1) Global output window flickers when text is added (SF Bugs #760349 and #752839).
+2) Tool editor dialog output window selector combo fixed (SF Bug #752826).
+3) Line Number display related corruption fixed (SF Bugs #752847 and #753457).
+4) Minor UI bug in tool editor (SF Bug #760347).
+5) Tools order up button doesn't work correctly (SF Bug #752831).
 
 What's new?
 -----------
 
-1) Groups of scheme settings can now be configured using their style group head item.
-
-example: To change the background for all PHP styles, simply change the background
-on the main PHP item that contains the styles below it. This will not override any
-custom backgrounds already set on those items - those will need to be reset.
-
-2) User-Schemes
-
-Define your own schemes using simple XML - can support a large number of languages. 
-See the included vhdl.schemedef sample. There will be documentation for this soon.
-
-3) Tool output parsing for a number of built-in types.
-4) Output parsing for user-defined output strings.
-5) Matched output jumps to the correct position in the correct file when clicked.
-6) Tool editor dialog re-designed (a bit)
-7) Docking global output window.
-8) Clipboard Swap (Ctrl-Shift-C)
-
-paste clipboard into selection and place selection on the clipboard.
-
-9) Options dialog more keyboard accessible.
-10) Maximise on opening.
-11) PN remembers its window positioning between loads.
-12) Perl scheme.
-13) Better pascal scheme.
-14) Folding keyboard shortcuts: 
-
-Ctrl-Alt-+ Expand All, Ctrl-Alt-- Collapse All, Ctrl+* toggle current fold block
-
-15) Copy as RTF and export RTF.
-
-16-ish) A Modula-2 scheme will be released separately in a week or two. Some code changes were made to Scintilla for this.
+1) Select All menu item to show availability (SF RFE #754417).
+2) Folding keyboard shortcuts shown in menu (SF Bug #760346).
 
 Please let me know about any problems with this release: ss@pnotepad.org.
 

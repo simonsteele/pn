@@ -143,6 +143,8 @@ BEGIN
         MENUITEM "Copy as RTF",                 ID_EDIT_COPYRTF
         MENUITEM "Clipboard &Swap\tCtrl+Shift+C", ID_EDIT_CLIPBOARDSWAP
         MENUITEM SEPARATOR
+        MENUITEM "&Select All\tCtrl+A",         ID_EDIT_SELECTALL
+        MENUITEM SEPARATOR
         MENUITEM "&Find\tCtrl+F",               ID_EDIT_FIND
         MENUITEM "Find &Next\tF3",              ID_EDIT_FINDNEXT
         MENUITEM "R&eplace\tCtrl+R",            ID_EDIT_REPLACE
@@ -166,9 +168,11 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "Folding"
         BEGIN
-            MENUITEM "Toggle Fold",                 ID_VIEW_TOGGLEFOLD
-            MENUITEM "Collapse All Folds",          65535
-            MENUITEM "Expand All Folds",            ID_VIEW_EXPANDALLFOLDS
+            MENUITEM "Toggle Fold\tCtrl+*",         ID_VIEW_TOGGLEFOLD
+            MENUITEM "Collapse All Folds\tCtrl+Alt+-", 
+                                                    ID_FOLDING_COLLAPSEALLFOLDS
+
+            MENUITEM "Expand All Folds\tCtrl+Alt++", ID_VIEW_EXPANDALLFOLDS
         END
         MENUITEM SEPARATOR
         MENUITEM "Schemes",                     ID_VIEW_CHANGESCHEME
@@ -322,8 +326,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,4,14
- PRODUCTVERSION 2,0,4,0
+ FILEVERSION 2,0,4,15
+ PRODUCTVERSION 2,0,4,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -340,12 +344,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele (Echo Software)"
             VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.4.14"
+            VALUE "FileVersion", "2.0.4.15"
             VALUE "InternalName", "PNWTL"
             VALUE "LegalCopyright", "Copyright © 2002-2003 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"
             VALUE "ProductName", "Programmers Notepad"
-            VALUE "ProductVersion", "2.0.4-miles"
+            VALUE "ProductVersion", "2.0.4.1"
         END
     END
     BLOCK "VarFileInfo"
@@ -369,7 +373,7 @@ BEGIN
     ID_EDITOR_LINENOS       "Toggle line numbers display"
     IDS_ABOUTVERSIONSTRING  "Programmers Notepad 2\nv%s\n\nCopyright (c) 2002-2003 Simon Steele"
     IDS_TOOLFORMATSTRINGS   "%f: File Name\n%n: File Name (no ext)\n%l: Current Line Number\n%?: Ask for parameters|%d: Path of File\n%c: Column\n%%: Percent Symbol"
-    IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c Column"
+    IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c: Column"
 END
 
 STRINGTABLE 
@@ -836,7 +840,7 @@ BEGIN
                     12,126,150,12
     CONTROL         "Capture output?",IDC_TE_CAPTURECHECK,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,234,18,84,12
-    COMBOBOX        IDC_TE_OUTPUTCOMBO,234,36,144,12,CBS_DROPDOWNLIST | 
+    COMBOBOX        IDC_TE_OUTPUTCOMBO,234,36,144,37,CBS_DROPDOWNLIST | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Clear output before running?",IDC_TE_CLEARCHECK,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,234,54,144,12

@@ -409,6 +409,8 @@ void CScheme::SetupScintilla(CScintilla& sc)
 
 	sc.DefineBookmarks();
 	sc.DefineNumberedBookmarks();
+
+	sc.SPerform(SCI_SETMARGINWIDTHN, 1, 16/*margin ? marginWidth : 0*/);
 	
 	// Default windows edit control behaviour... This needs to be optional.
 	///@todo allow default scintilla coloured selection...

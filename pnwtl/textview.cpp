@@ -350,17 +350,17 @@ int CTextView::HandleNotify(LPARAM lParam)
 	else if(msg == SCN_UPDATEUI)
 	{
 		SendMessage(GetParent(), PN_NOTIFY, 0, SCN_UPDATEUI);
-		
-		if( m_bLineNos )
-		{
-			SetLineNumberChars();
-		}
 	}
 	else if(msg == SCN_CHARADDED)
 	{
 		if(m_bSmartStart)
 			if(SmartStart::GetInstance()->OnChar(this) != SmartStart::eContinue)
 				m_bSmartStart = false;
+	}
+	else if(msg == SCN_MODIFIED)
+	{
+		if( ( reinterpret_cast<SCNotification*>(lParam))->linesAdded != 0 && m_bLineNos )
+			SetLineNumberChars();
 	}
 	
 	return msg;
@@ -419,6 +419,12 @@ LRESULT CTextView::OnIndent(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 LRESULT CTextView::OnUnindent(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	BackTab();
+	return 0;
+}
+
+LRESULT CTextView::OnSelectAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	SelectAll();
 	return 0;
 }
 

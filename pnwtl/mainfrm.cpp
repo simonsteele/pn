@@ -1062,9 +1062,11 @@ void CMainFrame::ToggleOutputWindow(bool bSetValue, bool bShowing)
 	if(bSetValue)
 	{
 		if(bShowing)
-			m_pOutputWnd->Show();
+			if( !m_pOutputWnd->IsWindowVisible() )
+				m_pOutputWnd->Show();
 		else
-			m_pOutputWnd->Hide();
+			if( m_pOutputWnd->IsWindowVisible() )
+				m_pOutputWnd->Hide();
 	}
 	else
 		m_pOutputWnd->Toggle();

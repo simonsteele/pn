@@ -167,9 +167,15 @@ class ToolWrapper : public ToolDefinition
 			m_hNotifyWnd = NULL;
 			m_pActiveChild = pActiveChild;
 			ToolDefinition::_copy(definition);
+
+			::InitializeCriticalSection(&m_csStatusLock);
+			SetRunning(true);
 		}
 
-		virtual ~ToolWrapper(){}
+		virtual ~ToolWrapper()
+		{
+			::DeleteCriticalSection(&m_csStatusLock);
+		}
 
 		CChildFrame* GetActiveChild()
 		{
@@ -188,6 +194,18 @@ class ToolWrapper : public ToolDefinition
 				::PostMessage(m_hNotifyWnd, PN_TOOLFINISHED, 0, 0);
 			}
 		}
+
+		void SetRunning(bool bRunning)
+		{
+			CSSCritLock lock(&m_csStatusLock);
+			m_bRunning = bRunning;
+		}
+
+		bool IsRunning()
+		{
+			CSSCritLock lock(&m_csStatusLock);
+			return m_bRunning;
+		}
 		
 		virtual void Revert() = 0;
 		virtual void ShowOutputWindow() = 0;
@@ -197,8 +215,10 @@ class ToolWrapper : public ToolDefinition
 		virtual void ClearOutput() = 0;
 
 	protected:
-		CChildFrame*	m_pActiveChild;
-		HWND			m_hNotifyWnd;
+		CChildFrame*		m_pActiveChild;
+		CRITICAL_SECTION	m_csStatusLock;
+		HWND				m_hNotifyWnd;
+		bool				m_bRunning;
 };
 
 /**
@@ -213,8 +233,6 @@ public:
 	int Execute();
 
 	bool GetThreadedExecution();
-
-	//const ToolDefinition* GetToolDef();
 
 	ToolRunner* m_pNext;
 
@@ -231,7 +249,6 @@ protected:
 protected:
 	ToolWrapper*		m_pWrapper;
 	int					m_RetCode;
-	//ToolDefinition*		m_pCopyDef;
 	IToolOutputSink*	m_pOutputter;
 };
 
