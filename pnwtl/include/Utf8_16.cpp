@@ -138,8 +138,10 @@ size_t Utf8_16_Write::fwrite(const void* p, size_t _size) {
 	}
 
 	if (m_eEncoding == eUtf8) {
-		if (m_bFirstWrite)
+		if (m_bFirstWrite) {
 			::fwrite(k_Boms[m_eEncoding], 3, 1, m_pFile);
+			m_bFirstWrite = false;
+		}
 		return ::fwrite(p, _size, 1, m_pFile);
 	}
 
