@@ -17,9 +17,9 @@
 
 CPNSaveDialog::CPNSaveDialog(LPCTSTR szFilter) : baseClass(FALSE, _T(".txt"), NULL, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter)
 {
+	m_Format = PNSF_NoChange;
 	m_ofn.Flags |= OFN_ENABLETEMPLATE;
 	m_ofn.lpTemplateName = MAKEINTRESOURCE (IDD_PNSAVE);
-	//m_ofn.lpstrFilter = _T ("UOAM Map File (*.map)\0*.map\0");
 }
 
 LRESULT CPNSaveDialog::OnInitDialog (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL &bHandled)
@@ -46,6 +46,12 @@ LRESULT CPNSaveDialog::OnInitDialog (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	SetWindowPos( NULL, 0, 0, rectDlg.Width(), rectDlg.Height(),
 		SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER );
 
+	m_SaveTypeCombo.AddString(_T("Leave it alone, junior."));
+	m_SaveTypeCombo.AddString(_T("Ensure Windows Format (CR+LF)"));
+	m_SaveTypeCombo.AddString(_T("Ensure Unix Format (LF)"));
+
+	m_SaveTypeCombo.SetCurSel(0);
+	
 	RepositionControls();
 	return TRUE;
 }
@@ -60,8 +66,14 @@ LRESULT CPNSaveDialog::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 LRESULT CPNSaveDialog::OnComboSelChange(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	// Store the new selection in here...
+	m_Format = (EPNSaveFormat)m_SaveTypeCombo.GetCurSel();
 
 	return TRUE;
+}
+
+EPNSaveFormat CPNSaveDialog::GetSaveFormat()
+{
+	return m_Format;
 }
 
 void CPNSaveDialog::RepositionControls()

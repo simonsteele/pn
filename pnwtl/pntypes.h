@@ -36,4 +36,6 @@ typedef struct tagCloseStruct
 	bool	bCanClose;
 } SCloseStruct;
 
+typedef enum { PNSF_NoChange, PNSF_Windows, PNSF_Unix} EPNSaveFormat;
+
 #endif

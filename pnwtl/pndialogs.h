@@ -99,6 +99,8 @@ class CPNSaveDialog : public CPNFileDialogImpl<CPNSaveDialog>
 			CHAIN_MSG_MAP (baseClass);
 		END_MSG_MAP ()
 
+		EPNSaveFormat GetSaveFormat();
+
 	protected:
 		LRESULT OnComboSelChange(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnSize (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL &bHandled);
@@ -108,8 +110,9 @@ class CPNSaveDialog : public CPNFileDialogImpl<CPNSaveDialog>
 		void RepositionControl(CWindow &wnd, UINT nID, bool fSize);
 		void RepositionPlacesBar(CWindow &bottomwnd);
 
-		CComboBox	m_SaveTypeCombo;
-		CStatic		m_SaveTypeLabel;
+		CComboBox		m_SaveTypeCombo;
+		CStatic			m_SaveTypeLabel;
+		EPNSaveFormat	m_Format;
 };
 
 class CGotoDialog : public CDialogImpl<CGotoDialog>

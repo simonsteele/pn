@@ -181,7 +181,7 @@ FONT 8, "MS Shell Dlg"
 BEGIN
     LTEXT           "File Format:",IDC_PNSAVE_SAVEASSTATIC,8,2,39,8
     COMBOBOX        IDC_PNSAVE_TYPECOMBO,70,0,90,122,CBS_DROPDOWNLIST | 
-                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
+                    WS_VSCROLL | WS_TABSTOP
 END
 
 

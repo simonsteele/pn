@@ -110,7 +110,6 @@ public:
 			{
 				// Size of mini bar controlled here...
 				::SetWindowPos(m_hWndToolBar, HWND_TOP, rect.left, rect.bottom - MINI_BAR_HEIGHT, rect.right-rect.left, MINI_BAR_HEIGHT, SWP_NOACTIVATE | SWP_NOZORDER);
-				//::SendMessage(m_hWndToolBar, WM_SIZE, 0, 0);
 			}
 			RECT rectTB;
 			::GetWindowRect(m_hWndToolBar, &rectTB);
@@ -199,10 +198,8 @@ public:
 
 		CSPopupMenu sm;
 
-		//theApp.GetSchemes().BuildMenu(sm.GetHandle(), this, MENUMESSAGE_CHANGESCHEME);
-
-		/*theApp.GetSchemes().GetSwitcher()->*/s_Switcher.AddMenu(sm.GetHandle(), MENUMESSAGE_CHANGESCHEME);
-		/*theApp.GetSchemes().GetSwitcher()->*/s_Switcher.SetActiveScheme(m_hMenu, NULL);
+		s_Switcher.AddMenu(sm.GetHandle(), MENUMESSAGE_CHANGESCHEME);
+		s_Switcher.SetActiveScheme(m_hMenu, NULL);
 
 		::ModifyMenu(view.GetHandle(), 3, MF_BYPOSITION | MF_POPUP, (UINT)sm.GetHandle(), _T("Change &Scheme"));
 
@@ -464,11 +461,16 @@ public:
 
 	bool SaveAs()
 	{
-		CPNSaveDialog dlgSave(_T("All Files (*.*)|*.*"));
-		bool			bRet = true;
+		CPNSaveDialog dlgSave(_T("All Files (*.*)|*.*|"));
+		bool bRet = true;
 
 		if(dlgSave.DoModal() == IDOK)
 		{
+			EPNSaveFormat format = dlgSave.GetSaveFormat();
+			if(format != PNSF_NoChange)
+			{
+				//ChangeFormat(format);
+			}
 			SaveFile(dlgSave.m_ofn.lpstrFile);
 		}
 		else
