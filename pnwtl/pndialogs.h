@@ -431,6 +431,17 @@ class CStyleDisplay : public CWindowImpl<CStyleDisplay>
 		}
 };
 
+class CKeywordsTabPage : public CPropertyPageImpl<CKeywordsTabPage>
+{
+	public:
+		enum {IDD = IDD_TAB_KEYWORDS};
+
+		BEGIN_MSG_MAP(CKeywordsTabPage)
+			CHAIN_MSG_MAP(CPropertyPageImpl<CKeywordsTabPage>)
+			REFLECT_NOTIFICATIONS()
+		END_MSG_MAP()
+};
+
 #include "Include/ColorButton.h"
 
 class CStylesTabDialog : public CPropertyPageImpl<CStylesTabDialog>
@@ -753,7 +764,10 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 			GetDlgItem(IDC_PS_PLACEHOLDER).GetWindowRect(rcPH);
 			ScreenToClient(rcPH);
 			m_stylestab.SetTitle(_T("Styles"));
+			m_keywordstab.SetTitle(_T("Keywords"));
 			m_props.AddPage(m_stylestab);
+			m_props.AddPage(m_keywordstab);
+			
 			m_props.Create(m_hWnd, 0, rcPH);
 
 			return 0;
@@ -786,6 +800,7 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 		CContainedPropSheet	m_props;
 		SchemeConfigParser* m_pSchemes;
 		CStylesTabDialog	m_stylestab;
+		CKeywordsTabPage	m_keywordstab;
 };
 
 #endif

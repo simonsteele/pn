@@ -59,6 +59,8 @@
 #define IDD_TAB_STYLES                  250
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
+#define IDD_TAB_STYLES1                 425
+#define IDD_TAB_KEYWORDS                425
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_GOTOEDIT                    1004
@@ -129,9 +131,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        251
+#define _APS_NEXT_RESOURCE_VALUE        252
 #define _APS_NEXT_COMMAND_VALUE         32790
-#define _APS_NEXT_CONTROL_VALUE         1034
+#define _APS_NEXT_CONTROL_VALUE         1036
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif
