@@ -215,6 +215,7 @@ class SchemeParser
 		void processKeywordClass(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processGlobal(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void customiseStyle(StyleDetails* style, StyleDetails* custom);
+		void sendBaseScheme(CSchemeLoaderState* pState, BaseScheme* pBase);
 
 	protected:
 		virtual void onLexer(LPCTSTR name, int styleBits) = 0;

@@ -245,6 +245,12 @@ CSchemeLoaderState::~CSchemeLoaderState()
 	{
 		delete (*j).second;
 	}
+
+	for(CNM_IT i = m_BaseSchemes.begin(); i != m_BaseSchemes.end(); ++i)
+	{
+		BaseScheme* pS = static_cast<BaseScheme*>( (*i).second );
+		delete pS;
+	}
 }
 
 ////////////////////////////////////////////////////////////
@@ -857,8 +863,12 @@ void SchemeParser::processLanguageStyleGroup(CSchemeLoaderState* pState, XMLAttr
 	{
 		StyleDetails* pGroupMarker = new StyleDetails;
 		pGroupMarker->values = edvGroupStart;
-		pGroupMarker->classname = pszClass;
+		if(pszClass)
+			pGroupMarker->classname = pszClass;
 		pState->m_pBase->AddStyle(pGroupMarker);
+		LPCTSTR name = atts.getValue(_T("name"));
+		LPCTSTR description = atts.getValue(_T("description"));
+		pState->m_pBase->AddGroupDetails(name, description);
 	}
 }
 
@@ -1013,21 +1023,40 @@ void SchemeParser::processLanguageKeywords(CSchemeLoaderState* pState, XMLAttrib
 	}
 }
 
+/**
+ * @brief Process some XML element related to the "language" block of a schemes file.
+ */
 void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts)
 {
 	LPCTSTR t = NULL;
+	int flags = 0;
+	BaseScheme* pBase = NULL;
 
 	if(pState->m_State == DOING_LANGUAGE && 
-		(_tcscmp(name, _T("language")) == 0 || _tcscmp(name, _T("schemedef")) == 0))
+		(_tcscmp(name, _T("language")) == 0 || _tcscmp(name, _T("schemedef")) == 0 || 
+		_tcscmp(name, _T("base-language")) == 0) )
 	{
 		LPCTSTR scheme = atts.getValue(_T("name"));
 		LPCTSTR title = atts.getValue(_T("title"));
 		if(scheme != NULL)
 		{
+			pState->m_csLangName = scheme;
+
+			LPCTSTR base = atts.getValue(_T("base"));
+			if(base != NULL)
+			{
+				// The language has a base-language reference.
+				CNM_IT iBase = pState->m_BaseSchemes.find(CString(base));
+				if( iBase != pState->m_BaseSchemes.end() )
+				{
+					pBase = static_cast<BaseScheme*>( (*iBase).second );
+					flags = pBase->flags;
+				}
+			}
+
 			// Only look for customisations if this is an actual scheme.
 			if(!pState->m_bBaseParse)
 			{
-				pState->m_csLangName = scheme;
 				CNM_IT custom = pState->m_CustomSchemes.find(pState->m_csLangName);
 				if(custom != pState->m_CustomSchemes.end())
 				{
@@ -1040,8 +1069,6 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 			}
 			else
 				pState->m_pCustom = NULL;
-			
-			int flags = 0;
 			
 			t = atts.getValue(_T("folding"));
 			if(t != NULL && PNStringToBool(t))
@@ -1071,10 +1098,22 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 				flags |= schInternal;
 
 			if(!pState->m_bBaseParse)
+			{
+				// Signal the implementing class that there's a language (scheme) coming.
 				onLanguage(scheme, title, flags);
+
+				if( pBase )
+				{
+					sendBaseScheme(pState, pBase);
+				}
+			}
 			else
+			{
+				pState->m_pBase = new BaseScheme;
+				pState->m_BaseSchemes.insert(pState->m_BaseSchemes.end(), CUSTOMISED_NAMEMAP::value_type(pState->m_csLangName, pState->m_pBase));
 				pState->m_pBase->flags = flags;
-			
+			}
+
 			pState->m_State = DOING_LANGUAGE_DETAILS;
 		}
 	}
@@ -1120,6 +1159,9 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 	}
 }
 
+/**
+ * @brief Add a specific file to the list of files to be processed.
+ */
 void SchemeParser::specifyImportFile(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
 	LPCTSTR name = atts.getValue(_T("name"));
@@ -1135,6 +1177,102 @@ void SchemeParser::specifyImportFile(CSchemeLoaderState* pState, XMLAttributes& 
 	}
 }
 
+void SchemeParser::sendBaseScheme(CSchemeLoaderState* pState, BaseScheme* pBase)
+{
+	GroupDetails_t* pGroupDetails = pBase->pGroupDetails;
+
+	if( (pBase->valuesSet & ebvLexer) != 0 )
+	{
+		onLexer(pBase->lexer.c_str(), pBase->styleBits);
+	}
+
+	for(SL_CIT i = pBase->StylesBegin(); i != pBase->StylesEnd(); ++i)
+	{
+		StyleDetails* pS = (*i);
+		if( (pS->values & edvGroupStart) != 0 )
+		{
+			StyleDetails* pClass = NULL;
+			
+			if( pS->classname.length() != 0 )
+			{
+				pClass = pState->m_StyleClasses.GetStyle(pS->classname.c_str());
+				if( pClass )
+					pState->m_pGroupClass = pClass;
+			}
+
+			if( pGroupDetails != NULL )
+			{
+				LPCTSTR attstr[5];
+				attstr[0] = _T("name");
+				attstr[1] = pGroupDetails->name;
+				attstr[2] = _T("description");
+				attstr[3] = pGroupDetails->description;
+				attstr[4] = NULL;
+				XMLAttributes atts(&attstr[0]);
+
+				onStyleGroup(atts, pClass);
+
+				pGroupDetails = pGroupDetails->pNext;
+			}
+		}
+		else if( (pS->values & edvGroupEnd) != 0 )
+		{
+			onStyleGroupEnd();
+			pState->m_pGroupClass = NULL;
+		}
+		else
+		{
+			StyleDetails* pCustom = NULL;
+			StyleDetails* pBase = NULL;
+			CString classname;
+			int key = pS->Key;
+
+			if(pState->m_pCustom)
+			{
+				pCustom = pState->m_pCustom->GetStyle(key);
+				if(pCustom)
+				{
+					if((pCustom->values & edvClass) != 0)
+						classname = pCustom->classname.c_str();
+				}
+			}
+
+			// No customised style class, is there a group class?
+			if(classname.GetLength() == 0)
+			{
+				if(pState->m_pGroupClass != NULL)
+				{
+					// There is a class associated with a group of styles.
+					// We also don't need to find the style, it will already
+					// be the m_pGroupClass member of pState.
+					pBase = pState->m_pGroupClass;
+				}
+				else
+				{
+					classname = pS->classname.c_str();
+				}
+			}
+
+			// We've not found a class yet, but if we do have a class name, we try to find that.
+			if(!pBase && (classname.GetLength() > 0) && (classname != _T("default")))
+			{
+				pBase = pState->m_StyleClasses.GetStyle(classname);
+			}
+
+			StyleDetails Style(*pS);
+
+			// If we didn't find a class, we base the style on the default style...
+			if( pBase )
+				customiseStyle(&Style, pBase);
+
+			onStyle(&Style, pCustom);
+		}
+	}
+}
+
+/**
+ * @brief Take an import fileset specification and add the relevant files to be processed.
+ */
 void SchemeParser::specifyImportSet(CSchemeLoaderState* pState, XMLAttributes& atts)
 {
 	LPCTSTR pattern = atts.getValue(_T("pattern"));
@@ -1277,7 +1415,7 @@ void SchemeParser::startElement(void *userData, LPCTSTR name, XMLAttributes& att
 		stattext = _T("Processing Import Specs\r\n");
 		pState->m_State = DOING_IMPORTS;
 	}
-	else if(_tcscmp(name, _T("language-base")) == 0)
+	else if(_tcscmp(name, _T("base-language")) == 0)
 	{
 		stattext = _T("Processing Base Class\r\n");
 		pState->m_State = DOING_LANGUAGE;
@@ -1371,6 +1509,8 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 		}
 		else if(_tcscmp(name, _T("base-language")) == 0)
 		{
+			pS->m_pBase = NULL;
+
 			pS->m_State = 0;
 		}
 	}
@@ -1384,10 +1524,14 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 		{
 			// Remove any custom group class we had assigned.
 			pS->m_pGroupClass = NULL;
+			
 			if(!pS->m_bBaseParse)
+			{
 				onStyleGroupEnd();
+			}
 			else
 			{
+				// Add a dummy style to mark the end of the group.
 				StyleDetails* pGroupEndMarker = new StyleDetails;
 				pGroupEndMarker->values = edvGroupEnd;
 				pS->m_pBase->AddStyle(pGroupEndMarker);
