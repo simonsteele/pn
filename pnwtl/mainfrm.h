@@ -59,6 +59,9 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_FIND, OnFind)
 		COMMAND_ID_HANDLER(ID_EDIT_REPLACE, OnReplace)
 		COMMAND_ID_HANDLER(ID_TOOLS_OPTIONS, OnOptions)
+		COMMAND_ID_HANDLER(ID_HELP_WEB_PN, OnWebPNHome)
+		COMMAND_ID_HANDLER(ID_HELP_WEB_SF, OnWebSFPage)
+		COMMAND_ID_HANDLER(ID_HELP_WEB_SB, OnWebSFBug)
 		COMMAND_RANGE_HANDLER(ID_MRUFILE_BASE, (ID_MRUFILE_BASE+15), OnMRUSelected)
 		ROUTE_MENUCOMMANDS()
 		CHAIN_MDI_CHILD_COMMANDS()
@@ -111,6 +114,10 @@ public:
 	LRESULT OnFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnReplace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+	LRESULT OnWebPNHome(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnWebSFPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnWebSFBug(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	void PNOpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme = NULL);
 	void PNOpenFile(LPCTSTR pathname, CScheme* pScheme);

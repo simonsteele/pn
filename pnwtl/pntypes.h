@@ -38,6 +38,13 @@ typedef struct tagCloseStruct
 	bool	bCanClose;
 } SCloseStruct;
 
+typedef struct tagPrintOptions
+{
+	HGLOBAL hDevMode;
+	HGLOBAL hDevNames;
+	RECT	rcMargins;
+} SPrintOptions;
+
 typedef enum { PNSF_Windows = SC_EOL_CRLF, PNSF_Unix = SC_EOL_LF, PNSF_Mac = SC_EOL_CR, PNSF_NoChange} EPNSaveFormat;
 
 #endif

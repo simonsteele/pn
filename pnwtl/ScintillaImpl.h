@@ -13,13 +13,6 @@
 
 #include "scintillaif.h"
 
-typedef struct tagPrintOptions
-{
-	HGLOBAL hDevMode;
-	HGLOBAL hDevNames;
-	RECT	rcMargins;
-} SPrintOptions;
-
 /**
  * @class CScintillaImpl
  * @brief Implement useful Scintilla functionality...

@@ -98,6 +98,11 @@ BEGIN
     END
     POPUP "&Help"
     BEGIN
+        MENUITEM "PN &HomePage",                ID_HELP_WEB_PN
+        MENUITEM "PN on &Sourceforge",          252
+        MENUITEM SEPARATOR
+        MENUITEM "Report a bug...",             253
+        MENUITEM SEPARATOR
         MENUITEM "&About pn...",                ID_APP_ABOUT
     END
 END
@@ -169,6 +174,11 @@ BEGIN
     END
     POPUP "&Help"
     BEGIN
+        MENUITEM "PN &HomePage",                251
+        MENUITEM "PN on &Sourceforge",          252
+        MENUITEM SEPARATOR
+        MENUITEM "Report a bug...",             253
+        MENUITEM SEPARATOR
         MENUITEM "&About pn...",                ID_APP_ABOUT
     END
 END
@@ -275,8 +285,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,1,32
- PRODUCTVERSION 2,0,1,32
+ FILEVERSION 2,0,2,27
+ PRODUCTVERSION 2,0,2,27
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -293,12 +303,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele (Echo Software)"
             VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.1.32"
+            VALUE "FileVersion", "2.0.2.27"
             VALUE "InternalName", "PNWTL"
             VALUE "LegalCopyright", "Copyright © 2002 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"
             VALUE "ProductName", "Programmers Notepad"
-            VALUE "ProductVersion", "2.0.1.32"
+            VALUE "ProductVersion", "2.0.2.27"
         END
     END
     BLOCK "VarFileInfo"

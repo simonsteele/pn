@@ -15,6 +15,7 @@ static const TCHAR* pnregroot = _T("Software\\Echo Software\\PN2\\");
 static const TCHAR* pnmrukey = _T("MRU");
 static const TCHAR* PNSK_INTERFACE = _T("Interface Settings");
 static const TCHAR* PNSK_EDITOR = _T("Editor Settings");
+static const TCHAR* PNSK_PRINT = _T("Print Settings");
 
 typedef enum {leCRLF, leCR, leLF} ELineEndings;
 
@@ -51,6 +52,9 @@ class COptionsManager
 
 		bool Get(LPCTSTR subkey, LPCTSTR value, bool bDefault);
 		int Get(LPCTSTR subkey, LPCTSTR value, int iDefault);
+
+		void SavePrintSettings(SPrintOptions* pSettings);
+		void LoadPrintSettings(SPrintOptions* pSettings);
 		
 		void GetSchemesPaths(ctcString& path, ctcString& compiledPath);
 		

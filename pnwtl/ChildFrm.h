@@ -212,7 +212,8 @@ public:
 
 		m_po.hDevMode = 0;
 		m_po.hDevNames = 0;
-		memset(&m_po.rcMargins, 0, sizeof(RECT));
+		//memset(&m_po.rcMargins, 0, sizeof(RECT));
+		COptionsManager::GetInstance()->LoadPrintSettings(&m_po);
 
 		InitUpdateUI();
 	}
@@ -840,6 +841,8 @@ public:
 
 			m_po.hDevMode = pdlg.hDevMode;
 			m_po.hDevNames = pdlg.hDevNames;
+
+			COptionsManager::GetInstance()->SavePrintSettings(&m_po);
 		}
 
 protected:
@@ -849,6 +852,7 @@ protected:
 	CString m_FileName;
 	long m_FileAge;
 
+	///@todo move this into COptionsManager
 	SPrintOptions	m_po;
 
 	_PoorMansUIEntry* m_pUIData;

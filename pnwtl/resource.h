@@ -4,9 +4,9 @@
 //
 #define ID_RECENTFILES_BLANKER          0
 #define IDC_REPLACE_BUTTON              4
-#define IDR_TBR_EDIT                    4
-#define IDC_REPLACEALL_BUTTON           5
-#define IDC_REPLACEINSEL_BUTTON         6
+#define IDR_TBR_EDIT                    5
+#define IDC_REPLACEALL_BUTTON           6
+#define IDC_REPLACEINSEL_BUTTON         7
 #define IDD_ABOUTBOX                    100
 #define IDC_FINDTEXT_COMBO              102
 #define IDC_FINDNEXT_BUTTON             103
@@ -57,6 +57,10 @@
 #define ID_TOOLS_OPTIONS246             246
 #define IDB_TRUETYPE_FONTTYPE           248
 #define IDD_TAB_STYLES                  250
+#define ID_HELP_WEB_PN                  251
+#define ID_HELP_WEB_SF                  252
+#define ID_HELP_WEB_SB                  253
+#define ID_HELP_REPORTABUG              254
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -137,7 +141,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        252
+#define _APS_NEXT_RESOURCE_VALUE        255
 #define _APS_NEXT_COMMAND_VALUE         32790
 #define _APS_NEXT_CONTROL_VALUE         1040
 #define _APS_NEXT_SYMED_VALUE           104

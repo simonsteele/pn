@@ -111,6 +111,36 @@ void COptionsManager::Set(LPCTSTR subkey, LPCTSTR value, int iVal)
 	reg.WriteInt(value, iVal);
 }
 
+void COptionsManager::SavePrintSettings(SPrintOptions* pSettings)
+{
+	CSRegistry reg;
+	ctcString root(pnregroot);
+	root += PNSK_PRINT;
+
+	if ( reg.OpenKey(root.c_str()) )
+	{
+		reg.WriteInt(_T("LeftMargin"), pSettings->rcMargins.left);
+		reg.WriteInt(_T("TopMargin"), pSettings->rcMargins.top);
+		reg.WriteInt(_T("RightMargin"), pSettings->rcMargins.right);
+		reg.WriteInt(_T("BottomMargin"), pSettings->rcMargins.bottom);
+	}
+}
+
+void COptionsManager::LoadPrintSettings(SPrintOptions* pSettings)
+{
+	CSRegistry reg;
+	ctcString root(pnregroot);
+	root += PNSK_PRINT;
+
+	if ( reg.OpenKey(root.c_str()) )
+	{
+		pSettings->rcMargins.left = reg.ReadInt(_T("LeftMargin"), 10);
+		pSettings->rcMargins.top = reg.ReadInt(_T("TopMargin"), 10);
+		pSettings->rcMargins.right = reg.ReadInt(_T("RightMargin"), 10);
+		pSettings->rcMargins.bottom = reg.ReadInt(_T("BottomMargin"), 10);
+	}
+}
+
 COptionsManager* COptionsManager::GetInstance()
 {
 	if(!s_pInstance)

@@ -2,6 +2,9 @@ Registry Settings:
 
 PN2
 
+PN2\AutoComplete\Find : Misc Values
+PN2\AutoComplete\Replace : Misc Values
+
 PN2\Interface Settings
 int MRUSize						// MRU list length
 int LineNumbersWidth			// magnitude of line numbers to show
@@ -14,3 +17,12 @@ int selectionBack				// non-default sel back (int->COLORREF)
 bool IndentationMarkers
 int DefaultLineEndings			// CRLF, LF, CR
 int TabWidth
+
+PN2\Print Settings
+int LeftMargin
+int RightMargin
+int TopMargin
+int BottomMargin
+
+PN2\MRU : Misc Values
+PN2\SchemeDates : Last Scheme Compile Dates
