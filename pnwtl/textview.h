@@ -3,7 +3,11 @@
  * @brief Interface Definition for CTextView, the Scintilla based text-editor view.
  * @author Simon Steele
  * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
  */
+
 #if !defined(AFX_PNVIEW_H__1F3B4A2C_A836_4C30_A47B_6E5A13ED33F2__INCLUDED_)
 #define AFX_PNVIEW_H__1F3B4A2C_A836_4C30_A47B_6E5A13ED33F2__INCLUDED_
 
@@ -119,6 +123,12 @@ public:
 	}
 
 protected:
+
+	virtual void OnFirstShow()
+	{
+		theApp.GetSchemes().GetDefaultScheme()->Load(*this);
+	}
+
 	CScheme* m_pLastScheme;
 };
 

@@ -1,3 +1,12 @@
+/**
+ * @file Schemes.h
+ * @brief Implement CScheme and CSchemeManager.
+ * @author Simon Steele
+ * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #include "stdafx.h"
 
 #include "Schemes.h"
@@ -251,6 +260,21 @@ void CScheme::SetupScintilla(CScintilla& sc)
 	}
 
 	sc.SPerform(SCI_SETTABWIDTH, options.TabWidth);
+
+	sc.SPerform(SCI_STYLERESETDEFAULT);
+	sc.SPerform(SCI_STYLESETFORE, STYLE_DEFAULT, ::GetSysColor(COLOR_WINDOWTEXT));
+	sc.SPerform(SCI_STYLESETBACK, STYLE_DEFAULT, ::GetSysColor(COLOR_WINDOW));
+	sc.SPerform(SCI_STYLECLEARALL);
+	
+	// Default windows edit control behaviour... This needs to be optional.
+	///@todo allow default scintilla coloured selection...
+	sc.SPerform(SCI_SETSELFORE, 1, ::GetSysColor(COLOR_HIGHLIGHTTEXT));
+	sc.SPerform(SCI_SETSELBACK, 1, ::GetSysColor(COLOR_HIGHLIGHT));
+}
+
+void CDefaultScheme::Load(CScintilla& sc, LPCTSTR filename)
+{
+	SetupScintilla(sc);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

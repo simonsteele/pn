@@ -1,6 +1,3 @@
-#if !defined(AFX_MAINFRM_H__85E923EF_A349_4B64_9C2B_E2B92DF32D46__INCLUDED_)
-#define AFX_MAINFRM_H__85E923EF_A349_4B64_9C2B_E2B92DF32D46__INCLUDED_
-
 /**
  * @file mainfrm.h
  * @brief Main Window for Programmers Notepad 2
@@ -10,6 +7,9 @@
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
+
+#if !defined(MAINFRM_H__INCLUDED)
+#define MAINFRM_H__INCLUDED
 
 #if _MSC_VER >= 1000
 #pragma once
@@ -503,4 +503,4 @@ BOOL CALLBACK CloseChildEnumProc(HWND hWnd, LPARAM lParam)
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_MAINFRM_H__85E923EF_A349_4B64_9C2B_E2B92DF32D46__INCLUDED_)
+#endif // !defined(MAINFRM_H__INCLUDED)

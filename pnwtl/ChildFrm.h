@@ -1,9 +1,15 @@
-// ChildFrm.h : interface of the CChildFrame class
-//
-/////////////////////////////////////////////////////////////////////////////
+/**
+ * @file ChildFrm.h
+ * @brief Interface Definition for CChildFrame, the MDI Child window.
+ * @author Simon Steele
+ * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 
-#if !defined(AFX_CHILDFRM_H__BFA3A78E_A739_4C3E_8C42_C7DE9EB3827F__INCLUDED_)
-#define AFX_CHILDFRM_H__BFA3A78E_A739_4C3E_8C42_C7DE9EB3827F__INCLUDED_
+#if !defined(CHILDFRM_H__INCLUDED)
+#define CHILDFRM_H__INCLUDED
 
 #if _MSC_VER >= 1000
 #pragma once
@@ -440,4 +446,4 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_CHILDFRM_H__BFA3A78E_A739_4C3E_8C42_C7DE9EB3827F__INCLUDED_)
+#endif // !defined(CHILDFRM_H__INCLUDED)

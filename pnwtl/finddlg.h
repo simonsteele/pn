@@ -1,14 +1,14 @@
 /**
  * @file finddlg.h
  * @brief Find and Replace dialogs for PN WTL
+ * @author Simon Steele
+ * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
  *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ * 
  * Note that the dialogs multiply inherit from CWinDataExchange,
- * this adds WTLs DDX support.
- *
- * To do: Implemented a GetClass message for CChildFrame but still
- *        have to keep a pointer to the mainframe. Implement some
- *        kind of global context thing which includes a pointer to
- *        an interface which includes a GetCurrentEditor method.
+ * this adds WTL DDX support.
  */
 
 #ifndef finddlg_h__included

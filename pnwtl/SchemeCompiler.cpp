@@ -393,12 +393,17 @@ void SchemeCompiler::sendStyle(StyleDetails* s, SchemeRecorder* compiler)
 {
 	compiler->StyleSetFont(s->Key, s->FontName.c_str());
 	compiler->StyleSetSize(s->Key, s->FontSize);
-	compiler->StyleSetFore(s->Key, s->ForeColor);
-	compiler->StyleSetBack(s->Key, s->BackColor);
+	if(s->ForeColor != -1)
+		compiler->StyleSetFore(s->Key, s->ForeColor);
+	if(s->BackColor != -1)
+		compiler->StyleSetBack(s->Key, s->BackColor);
 	compiler->StyleSetBold(s->Key, s->Bold);
 	compiler->StyleSetItalic(s->Key, s->Italic);
 	compiler->StyleSetUnderline(s->Key, s->Underline);
 	compiler->StyleSetEOLFilled(s->Key, s->EOLFilled);
+
+	if(s->Key == STYLE_DEFAULT)
+		compiler->StyleClearAll();
 }
 
 void SchemeCompiler::processStyleClass(CSchemeLoaderState* pState, XMLAttributes& atts)

@@ -1,7 +1,8 @@
 /**
  * @file fromhandle.h
  * @brief ::FromHandle mixin implementation for WTL
- * @author Simon Steele <s.steele@pnotepad.org>
+ * @author Simon Steele
+ * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
  *
  * Simply inherit from CFromHandle< CMyWndClass > and add 
  * IMPLEMENT_FROMHANDLE() to your message map. To get a pointer to 

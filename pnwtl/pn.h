@@ -1,4 +1,12 @@
-// pn.h
+/**
+ * @file pn.h
+ * @brief Main Header File for Programmers Notepad 2, defines the application object.
+ * @author Simon Steele
+ * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 
 #include "pntypes.h"
 #include "schemes.h"

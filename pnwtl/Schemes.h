@@ -1,3 +1,12 @@
+/**
+ * @file Schemes.h
+ * @brief Define CScheme and CSchemeManager.
+ * @author Simon Steele
+ * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 
 #ifndef __SchemeManager_H__
 #define __SchemeManager_H__
@@ -52,7 +61,7 @@ class CDefaultScheme : public CScheme
 	public:
 		CDefaultScheme(){}
 
-		virtual void Load(CScintilla& sc, LPCTSTR filename = NULL){SetupScintilla(sc);}
+		virtual void Load(CScintilla& sc, LPCTSTR filename = NULL);
 
 		// Can't set name, it's always "Default"
 		virtual void SetName(LPCTSTR name){}
@@ -88,6 +97,7 @@ public:
 	
 	CScheme* SchemeForExt(LPCTSTR ext);
 	CScheme* SchemeByName(LPCTSTR name);
+	CScheme* GetDefaultScheme(){return &m_DefaultScheme;}
 
 protected:
 	TCHAR*			m_SchemePath;

@@ -91,10 +91,8 @@ class StyleDetails
 			Key = 0;
 			FontName = "Courier New";
 			FontSize = 10;
-			ForeColor = RGB(0,0,0);
-			FCString = "000000";
-			BackColor = RGB(255,255,255);
-			BCString = "ffffff";
+			ForeColor = -1;
+			BackColor = -1;
 			Bold = false;
 			Italic = false;
 			Underline = false;
@@ -112,9 +110,7 @@ class StyleDetails
 			FontName = copy.FontName;
 			FontSize = copy.FontSize;
 			ForeColor = copy.ForeColor;
-			FCString = copy.FCString;
 			BackColor = copy.BackColor;
-			BCString = copy.BCString;
 			Bold = copy.Bold;
 			Italic = copy.Italic;
 			Underline = copy.Underline;
@@ -127,9 +123,7 @@ class StyleDetails
 		std::string FontName;
 		int FontSize;
 		COLORREF ForeColor;
-		std::string FCString;
 		COLORREF BackColor;
-		std::string BCString;
 		bool Bold;
 		bool Italic;
 		bool Underline;

@@ -11,8 +11,8 @@
 		<value name="colour.operator">000000</value>
 	</globals>
 	<style-classes>
-		<!-- All styles inherit the default style. -->
-		<style-class name="default" fore="000000" back="FFFFFF" size="10" font="Lucida Console"/>
+		<!-- All styles inherit the default style. Font fore and back colours are not specified - this way we inherit the system defaults -->
+		<style-class name="default" size="10" font="Lucida Console"/>
 		<!-- the bold style adds bold=true to the parent -->
 		<style-class name="comment" font="Comic Sans" size="9" fore="font.comment"/>
 		<style-class name="commentdoc" inherit-style="comment" fore="3f703f"/>
