@@ -31,8 +31,11 @@ public:
 
 	BEGIN_MSG_MAP(CProjectTreeCtrl)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
 		REFLECTED_NOTIFY_CODE_HANDLER(TVN_ENDLABELEDIT, OnEndLabelEdit)
 		REFLECTED_NOTIFY_CODE_HANDLER(NM_RCLICK, OnRightClick)
+		//REFLECTED_NOTIFY_CODE_HANDLER(NM_CLICK, OnClick)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
 		COMMAND_ID_HANDLER(ID_PROJECT_OPEN, OnOpenFile)
 		COMMAND_ID_HANDLER(ID_PROJECT_ADDFILES, OnAddFiles)
 		COMMAND_ID_HANDLER(ID_PROJECT_ADDFOLDER, OnAddFolder)
@@ -42,11 +45,10 @@ public:
 		COMMAND_ID_HANDLER(ID_PROJECT_SETACTIVEPROJECT, OnSetActiveProject)
 		COMMAND_ID_HANDLER(ID_WORKSPACE_NEWPROJECT, OnNewProject)
 		COMMAND_ID_HANDLER(ID_WORKSPACE_ADDPROJECT, OnAddProject)
+		
 		CHAIN_MSG_MAP(baseClass)
 		REFLECTED_NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnSelChanged)
 	END_MSG_MAP()
-
-
 
 	HWND Create(HWND hWndParent, _U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
 			DWORD dwStyle = 0, DWORD dwExStyle = 0,
@@ -75,6 +77,7 @@ protected:
 	HTREEITEM	AddFolderNode(Projects::Folder* folder, HTREEITEM hParent, HTREEITEM hInsertAfter);
 
 	LRESULT		OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	//LRESULT		OnClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT		OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT		OnEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
@@ -90,8 +93,15 @@ protected:
 	LRESULT OnAddProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	void handleDrop(HDROP hDrop, HTREEITEM hDropItem, Projects::Folder* pFolder);
+
+	void handleRemove();
+	//void handleRightClick();
+	void handleRightClick(LPPOINT pt);
+	void doContextMenu(LPPOINT pt);
 
 protected:
 	HTREEITEM				hLastItem;

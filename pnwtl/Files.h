@@ -129,7 +129,7 @@ public:
 	bool IsSubElementOf(LPCTSTR path);					///< Return true if this file is below path in the file system.
 	bool PathIsParentElementOf(LPCTSTR path);			///< Return true if the path is below us in the file system.
 	
-
+	void SetForwardSlashes();							///< Switch to forward slashes...
 	/**
 	 * GetFileAge returns the integer dos date of the
 	 * file represented by this class. If the file does
@@ -157,6 +157,9 @@ class CPathName : public CFileName
 {
 public:
 	CPathName(LPCTSTR path);
+	CPathName(const tstring& copy){*this = copy;}
+
+	CPathName& operator = (const tstring& filename);	///< Set the filename to "filename".
 };
 
 int FileAge(LPCTSTR FileName);

@@ -70,8 +70,8 @@ void COptionsPageEditDefaults::OnOK()
 	CComboBox cb(GetDlgItem(IDC_OPT_LECOMBO));
 	m_SaveFormat = (EPNSaveFormat)cb.GetItemData(cb.GetCurSel());
 
-	cb.Attach(GetDlgItem(IDC_OPT_CPCOMBO));
-	m_CodePage = (ECodePage)cb.GetItemData(cb.GetCurSel());
+	CComboBox cb2(GetDlgItem(IDC_OPT_CPCOMBO));
+	m_CodePage = (ECodePage)cb2.GetItemData(cb2.GetCurSel());
 
 	COptionsManager& options = COptionsManager::GetInstanceRef();
 	options.UseTabs = m_bUseTabs != FALSE;

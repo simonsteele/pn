@@ -20,6 +20,8 @@ What's new?
 11) Upgraded to Scintilla 1.59
 12) Project files now written using Genx.
 13) Project files keep most unknown XML elements between load and save.
+14) Dialog cleanup by Bjoern Graf.
+15) Press "del" to remove project files.
 
 Bug Fixes:
 ----------
@@ -38,6 +40,7 @@ Bug Fixes:
 12) Projects window renames too readily.
 13) Auto-indent empty line. (SF Bug #879950).
 14) Can't export a file that isn't saved to disk. (SF Bug #911381).
+15) Can't bring up project context menus with the keyboard. 
 
 If you find a bug:
 ------------------

@@ -548,6 +548,21 @@ bool CFileName::PathIsParentElementOf(LPCTSTR path)
 	return (_tcsnicmp(path, myPath.c_str(), myPath.length()) == 0);
 }
 
+void CFileName::SetForwardSlashes()
+{
+	LPTSTR p = tcsnewdup(m_FileName.c_str());
+
+	LPTSTR pSlash = _tcschr(p, _T('\\'));
+	while(pSlash)
+	{
+		*pSlash = _T('/');
+		pSlash = _tcschr(pSlash, _T('\\'));
+	}
+
+	m_FileName = p;
+	delete [] p;
+}
+
 TCHAR hexcharval(TCHAR inp)
 {
 	int Result = 0;
@@ -781,4 +796,10 @@ CPathName::CPathName(LPCTSTR path)
 	char cLast = m_FileName[m_FileName.length() - 1];
 	if(cLast != _T('\\') && cLast != _T('/'))
 		m_FileName += _T("\\");
+}
+
+CPathName& CPathName::operator = (const tstring& filename)
+{
+	m_FileName = filename;
+	return *this;
 }

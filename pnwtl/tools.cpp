@@ -254,7 +254,12 @@ void CToolCommandString::OnFormatChar(TCHAR thechar)
 			break;
 
 		case _T('d'):
-			m_string += pChild->GetFileName(FN_PATH);
+			{
+				CPathName pn(pChild->GetFileName(FN_PATH));
+				if(reversePathSeps)
+					pn.SetForwardSlashes();
+				m_string += pn;
+			}
 			break;
 
 		case _T('n'):
@@ -284,7 +289,12 @@ void CToolCommandString::OnFormatChar(TCHAR thechar)
 					Projects::Project* pProject = pWorkspace->GetActiveProject();
 					
 					if(pProject != NULL && pProject->Exists())
-						m_string += pProject->GetFileName();
+					{
+						CFileName fn(pProject->GetFileName());
+						if(reversePathSeps)
+							fn.SetForwardSlashes();
+						m_string += fn;
+					}
 				}
 			}
 			break;
@@ -295,7 +305,10 @@ void CToolCommandString::OnFormatChar(TCHAR thechar)
 				Projects::Workspace* pWorkspace = GetWorkspace();
 				if(pWorkspace != NULL && pWorkspace->CanSave())
 				{
-					m_string += pWorkspace->GetFileName();
+					CFileName fn(pWorkspace->GetFileName());
+					if(reversePathSeps)
+						fn.SetForwardSlashes();
+					m_string += fn;
 				}
 			}
 			break;
@@ -324,6 +337,8 @@ void CToolCommandString::OnFormatKey(LPCTSTR key)
 		if(pP)
 		{
 			CFileName fn(pP->GetFileName());
+			if(reversePathSeps)
+				fn.SetForwardSlashes();
 			m_string += fn.GetPath();
 		}
 	}
@@ -333,6 +348,8 @@ void CToolCommandString::OnFormatKey(LPCTSTR key)
 		if(pWorkspace != NULL && pWorkspace->CanSave())
 		{
 			CFileName fn(pWorkspace->GetFileName());
+			if(reversePathSeps)
+				fn.SetForwardSlashes();
 			m_string += fn.GetPath();
 		}
 	}
@@ -1015,6 +1032,7 @@ int ToolRunner::Run_NoCapture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 int ToolRunner::Execute()
 {
 	CToolCommandString builder;
+	builder.reversePathSeps = m_pWrapper->ShouldUseForwardSlashes();
 	builder.pChild = m_pWrapper->GetActiveChild();
 	
 	m_pWrapper->Command = builder.Build(m_pWrapper->Command.c_str());

@@ -150,6 +150,7 @@ class CToolCommandString : public CustomFormatStringBuilder<CToolCommandString>
 		void OnFormatKey(LPCTSTR key);
 
 		CChildFrame* pChild;
+		bool reversePathSeps;
 
 	protected:
 		TCHAR itosbuf[100];

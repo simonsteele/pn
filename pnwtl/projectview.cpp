@@ -76,6 +76,17 @@ LRESULT CProjectTreeCtrl::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	return 0;
 }
 
+LRESULT CProjectTreeCtrl::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	if(wParam == VK_DELETE)
+	{
+		handleRemove();
+	}
+	else bHandled = FALSE;
+
+	return 0;
+}
+
 void CProjectTreeCtrl::AddProject(Projects::Project* project)
 {
 	workspace->AddProject(project);
@@ -241,134 +252,46 @@ LRESULT CProjectTreeCtrl::OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	LPNMTREEVIEW n = (LPNMTREEVIEW)pnmh;
 
 	ProjectType* pt = reinterpret_cast<ProjectType*>( GetItemData( n->itemNew.hItem ) );
+	
 	if(!pt)
+	{
+		hLastItem = NULL;
+		lastItem = NULL;
 		return 0;
+	}
+	
+	hLastItem = n->itemNew.hItem;
+	lastItem = pt;
 
 	setStatus(pt);
 
 	return 0;
 }
 
+LRESULT CProjectTreeCtrl::OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	// If this is from a keyboard press...
+	if(GET_X_LPARAM(lParam) == -1 && GET_Y_LPARAM(lParam) == -1)
+	{
+		CRect rc;
+		GetItemRect(hLastItem, &rc, TRUE);
+		CPoint pt(rc.right, rc.top);
+		ClientToScreen(&pt);
+		doContextMenu(&pt);
+	}
+	else
+	{
+		CPoint pt(GetMessagePos());
+		handleRightClick(&pt);
+	}
+
+	return 0;
+}
+
 LRESULT CProjectTreeCtrl::OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-	TV_HITTESTINFO	tvhti;
-	memset(&tvhti, 0, sizeof(TV_HITTESTINFO));
-
 	CPoint pt(GetMessagePos());
-	CPoint pt2(pt);
-
-	// Keyboard right-click...
-	if(pt.x == -1)
-		return 0;
-		
-	ScreenToClient(&pt2);
-
-	tvhti.pt = pt2;
-    HitTest(&tvhti);
-
-	lastItem = NULL;
-	hLastItem = NULL;
-
-	if(tvhti.hItem != NULL)
-	{
-		if (tvhti.flags & (TVHT_ONITEMLABEL|TVHT_ONITEMICON))
-		{
-
-			ProjectType* ptype = reinterpret_cast<ProjectType*>( GetItemData(tvhti.hItem) );
-			hLastItem = tvhti.hItem;
-			lastItem = ptype;
-
-			if(!ptype)
-				return 0;
-
-			if(GetSelectedCount() > 1)
-			{
-				// We have a multiple-selection thing going on. Check that all items
-				// are of the same type.
-				
-				HTREEITEM sel = GetFirstSelectedItem();
-				while(sel)
-				{
-					// If any items do not match the main type, we bail.
-					ProjectType* ptypeCheck = reinterpret_cast<ProjectType*>( GetItemData(sel) );
-					if( !ptypeCheck )
-						return 0;
-					if( !(ptype->GetType() == ptypeCheck->GetType()) )
-						return 0;
-
-					sel = GetNextSelectedItem(sel);
-				}
-
-				multipleSelection = true;
-			}
-			else
-				multipleSelection = false;
-
-			switch(ptype->GetType())
-			{
-				case ptFile:
-				{
-					CSPopupMenu popup(IDR_POPUP_PROJECTFILE);
-
-					CMenuItemInfo mii;
-					mii.fMask = MIIM_STATE;
-					mii.fState = MFS_ENABLED | MFS_DEFAULT;
-					
-					///@todo This doesn't work, but I'll leave it in to remind me to try
-					// and fix it sometime. Stupid menus.
-					::SetMenuItemInfo(popup, ID_PROJECT_OPEN, FALSE, &mii);
-					
-					g_Context.m_frame->TrackPopupMenu(popup, 0, pt.x, pt.y, NULL, m_hWnd);
-				}
-				break;
-
-				case ptFolder:
-				{
-					CSPopupMenu popup(IDR_POPUP_PROJECTFOLDER);
-					g_Context.m_frame->TrackPopupMenu(popup, 0, pt.x, pt.y, NULL, m_hWnd);
-				}
-				break;
-
-				case ptProject:
-				{
-					Projects::Project* project = static_cast<Projects::Project*>(ptype);
-
-					if(project->Exists())
-					{
-						CSPopupMenu popup(IDR_POPUP_PROJECT);
-
-						if(multipleSelection)
-						{
-							CMenuItemInfo mii;
-							mii.fMask = MIIM_STATE;
-							mii.fState = MFS_DISABLED | MFS_GRAYED;
-
-							::SetMenuItemInfo(popup, ID_PROJECT_SETACTIVEPROJECT, FALSE, &mii);
-						}
-						else if(workspace->GetActiveProject() == project)
-						{
-							CMenuItemInfo mii;
-							mii.fMask = MIIM_STATE | MIIM_STRING;
-							mii.fState = MFS_ENABLED | MFS_CHECKED;
-							mii.dwTypeData = _T("Active Project");
-
-							::SetMenuItemInfo(popup, ID_PROJECT_SETACTIVEPROJECT, FALSE, &mii);
-						}
-
-						g_Context.m_frame->TrackPopupMenu(popup, 0, pt.x, pt.y, NULL, m_hWnd);
-					}
-				}
-				break;
-
-				case ptWorkspace:
-				{
-					CSPopupMenu popup(IDR_POPUP_WORKSPACE);
-					g_Context.m_frame->TrackPopupMenu(popup, 0, pt.x, pt.y, NULL, m_hWnd);
-				}
-				break;
-			}
-		}
-	}
+	handleRightClick(&pt);
 
 	return 0;
 }
@@ -569,63 +492,7 @@ LRESULT CProjectTreeCtrl::OnRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	if(lastItem == NULL)
 		return 0;
 
-	// We can't delete lots of items and still be in the middle of using the
-	// GetFirst/GetNextSelectedItem loop because the current selection will
-	// change. 
-	std::list<HTREEITEM> selectedItems;
-	HTREEITEM sel = GetFirstSelectedItem();
-	while(sel)
-	{
-		selectedItems.push_front(sel);
-		sel = GetNextSelectedItem(sel);
-	}
-
-	std::list<HTREEITEM>::iterator i = selectedItems.begin();
-
-	// just to be safe we cache the selected list and
-	// clear the selection to be safe.
-	//ClearSelection();
-
-	switch(lastItem->GetType())
-	{
-		case ptFile:
-		{
-			// Remove a file from a folder.
-			for(;i != selectedItems.end(); ++i)
-			{
-				File* pF = reinterpret_cast<File*>( GetItemData((*i)) );
-				Projects::Folder* pFolder = pF->GetFolder();
-				pFolder->RemoveFile(pF);
-				DeleteItem((*i));
-			}
-		}
-		break;
-
-		case ptFolder:
-		{
-			// Remove a folder from a folder (or a project).
-			for(;i != selectedItems.end(); ++i)
-			{
-				Projects::Folder* pFolder = reinterpret_cast<Projects::Folder*>( GetItemData((*i)) );
-				Projects::Folder* pParent = pFolder->GetParent();
-				pParent->RemoveChild(pFolder);
-				DeleteItem((*i));
-			}
-		}
-		break;
-
-		case ptProject:
-		{
-			// All projects belong to single workspace (at the moment).
-			for(;i != selectedItems.end(); ++i)
-			{
-				Project* pProject = reinterpret_cast<Projects::Project*>( GetItemData((*i)) );
-				workspace->RemoveProject(pProject);
-				DeleteItem((*i));
-			}
-		}
-		break;
-	}
+	handleRemove();
 
 	return 0;
 }
@@ -895,6 +762,200 @@ void CProjectTreeCtrl::handleDrop(HDROP hDrop, HTREEITEM hDropItem, Projects::Fo
 	}
 
 	TreeView_SortChildren(m_hWnd, hDropItem, true);
+}
+
+void CProjectTreeCtrl::handleRemove()
+{
+	if(lastItem == NULL)
+		return;
+
+	// We can't delete lots of items and still be in the middle of using the
+	// GetFirst/GetNextSelectedItem loop because the current selection will
+	// change. 
+	std::list<HTREEITEM> selectedItems;
+	HTREEITEM sel = GetFirstSelectedItem();
+	while(sel)
+	{
+		selectedItems.push_front(sel);
+		sel = GetNextSelectedItem(sel);
+	}
+
+	std::list<HTREEITEM>::iterator i = selectedItems.begin();
+
+	// just to be safe we cache the selected list and
+	// clear the selection to be safe.
+	//ClearSelection();
+
+	switch(lastItem->GetType())
+	{
+		case ptFile:
+		{
+			// Remove a file from a folder.
+			for(;i != selectedItems.end(); ++i)
+			{
+				File* pF = reinterpret_cast<File*>( GetItemData((*i)) );
+				Projects::Folder* pFolder = pF->GetFolder();
+				pFolder->RemoveFile(pF);
+				DeleteItem((*i));
+			}
+		}
+		break;
+
+		case ptFolder:
+		{
+			// Remove a folder from a folder (or a project).
+			for(;i != selectedItems.end(); ++i)
+			{
+				Projects::Folder* pFolder = reinterpret_cast<Projects::Folder*>( GetItemData((*i)) );
+				Projects::Folder* pParent = pFolder->GetParent();
+				pParent->RemoveChild(pFolder);
+				DeleteItem((*i));
+			}
+		}
+		break;
+
+		case ptProject:
+		{
+			// All projects belong to single workspace (at the moment).
+			for(;i != selectedItems.end(); ++i)
+			{
+				Project* pProject = reinterpret_cast<Projects::Project*>( GetItemData((*i)) );
+				workspace->RemoveProject(pProject);
+				DeleteItem((*i));
+			}
+		}
+		break;
+	}	
+}
+
+void CProjectTreeCtrl::doContextMenu(LPPOINT pt)
+{
+	if(hLastItem != NULL && lastItem != NULL)
+	{
+		if(GetSelectedCount() > 1)
+		{
+			// We have a multiple-selection thing going on. Check that all items
+			// are of the same type.
+			
+			HTREEITEM sel = GetFirstSelectedItem();
+			while(sel)
+			{
+				// If any items do not match the main type, we bail.
+				ProjectType* ptypeCheck = reinterpret_cast<ProjectType*>( GetItemData(sel) );
+				if( !ptypeCheck )
+					return;
+				if( !(lastItem->GetType() == ptypeCheck->GetType()) )
+					return;
+
+				sel = GetNextSelectedItem(sel);
+			}
+
+			multipleSelection = true;
+		}
+		else
+			multipleSelection = false;
+
+		switch(lastItem->GetType())
+		{
+			case ptFile:
+			{
+				CSPopupMenu popup(IDR_POPUP_PROJECTFILE);
+
+				CMenuItemInfo mii;
+				mii.fMask = MIIM_STATE;
+				mii.fState = MFS_ENABLED | MFS_DEFAULT;
+				
+				///@todo This doesn't work, but I'll leave it in to remind me to try
+				// and fix it sometime. Stupid menus.
+				::SetMenuItemInfo(popup, ID_PROJECT_OPEN, FALSE, &mii);
+				
+				g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
+			}
+			break;
+
+			case ptFolder:
+			{
+				CSPopupMenu popup(IDR_POPUP_PROJECTFOLDER);
+				g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
+			}
+			break;
+
+			case ptProject:
+			{
+				Projects::Project* project = static_cast<Projects::Project*>(lastItem);
+
+				if(project->Exists())
+				{
+					CSPopupMenu popup(IDR_POPUP_PROJECT);
+
+					if(multipleSelection)
+					{
+						CMenuItemInfo mii;
+						mii.fMask = MIIM_STATE;
+						mii.fState = MFS_DISABLED | MFS_GRAYED;
+
+						::SetMenuItemInfo(popup, ID_PROJECT_SETACTIVEPROJECT, FALSE, &mii);
+					}
+					else if(workspace->GetActiveProject() == project)
+					{
+						CMenuItemInfo mii;
+						mii.fMask = MIIM_STATE | MIIM_STRING;
+						mii.fState = MFS_ENABLED | MFS_CHECKED;
+						mii.dwTypeData = _T("Active Project");
+
+						::SetMenuItemInfo(popup, ID_PROJECT_SETACTIVEPROJECT, FALSE, &mii);
+					}
+
+					g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
+				}
+			}
+			break;
+
+			case ptWorkspace:
+			{
+				CSPopupMenu popup(IDR_POPUP_WORKSPACE);
+				g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
+			}
+			break;
+		}
+	}
+}
+
+void CProjectTreeCtrl::handleRightClick(LPPOINT pt)
+{
+	//CPoint pt(GetMessagePos());
+	CPoint pt2(*pt);
+
+	// Test for keyboard right-click...
+	if(pt->x != -1)
+	{
+		ScreenToClient(&pt2);
+
+		TVHITTESTINFO tvhti;
+		memset(&tvhti, 0, sizeof(TV_HITTESTINFO));
+		
+		tvhti.pt = pt2;
+		HitTest(&tvhti);
+
+		lastItem = NULL;
+		hLastItem = NULL;
+
+		if(tvhti.hItem != NULL)
+		{
+			if (tvhti.flags & (TVHT_ONITEM|TVHT_ONITEMRIGHT))
+			{
+
+				ProjectType* ptype = reinterpret_cast<ProjectType*>( GetItemData(tvhti.hItem) );
+				hLastItem = tvhti.hItem;
+				lastItem = ptype;
+
+				if(!ptype)
+					return;
+			}
+		}
+	}
+
+	doContextMenu(pt);
 }
 
 //////////////////////////////////////////////////////////////////////////////

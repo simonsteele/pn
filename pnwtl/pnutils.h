@@ -552,6 +552,13 @@ class CNumberCombo : public CComboBox
 	typedef std::ostream tstream;
 #endif
 
+static TCHAR* tcsnewdup(LPCTSTR strin)
+{
+	TCHAR* ret = new TCHAR[_tcslen(strin)+1];
+	_tcscpy(ret, strin);
+	return ret;
+}
+
 static tstring IntToTString(int x)
 {
 	TCHAR _buffer[32];
