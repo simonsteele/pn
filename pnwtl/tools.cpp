@@ -448,24 +448,14 @@ void SchemeToolsManager::endElement(LPCTSTR name)
 ToolRunner::ToolRunner(ToolWrapper* pWrapper)
 {
 	m_pWrapper = pWrapper;
-	
+	m_RetCode = 0;
 	m_pNext = NULL;
-
-	//m_pTool = pWrapper->pToolDefinition;
-	//m_pChild = pActiveChild;
-	//m_pWrapper = pOutputSink;
 }
 
 ToolRunner::~ToolRunner()
 {
 
 }
-
-/// Only works if m_pCopyDef has been created.
-//const ToolDefinition* ToolRunner::GetToolDef()
-//{
-	//return m_pCopyDef;
-//}
 
 bool ToolRunner::GetThreadedExecution()
 {
@@ -483,14 +473,15 @@ int ToolRunner::GetExitCode()
 }
 
 /**
- * Thread Run Function, calls Run_CreateProcess
+ * Thread Run Function, calls Run_CreateProcess and notifies all 
+ * interested parties on completion.
  */
 void ToolRunner::Run()
 {
 	m_RetCode = Run_CreateProcess(m_pWrapper->Command.c_str(), m_pWrapper->Params.c_str(), m_pWrapper->Folder.c_str());
+	PostRun();
 	m_pWrapper->OnFinished();
 	ToolOwner::GetInstance()->MarkToolForDeletion(this);
-	//::PostMessage(m_pChild->m_hWnd, PN_TOOLFINISHED, 0, reinterpret_cast<LPARAM>(this));
 }
 
 void ToolRunner::OnException()
@@ -534,7 +525,7 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
     if( ! ::CreatePipe(&hReadPipe, &hWritePipe, &sa, 0) )
 	{
 		CLastErrorInfo lei;
-		m_pWrapper->_AddToolOutput("\n>Failed to create StdOut and StdErr Pipe: ");
+		m_pWrapper->_AddToolOutput("\n> Failed to create StdOut and StdErr Pipe: ");
 		m_pWrapper->_AddToolOutput((LPCTSTR)lei);
 
 		return lei.GetErrorCode();
@@ -546,7 +537,7 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	{
 		CLastErrorInfo lei;
 
-		m_pWrapper->_AddToolOutput("\n>Failed to create StdIn Pipe: ");
+		m_pWrapper->_AddToolOutput("\n> Failed to create StdIn Pipe: ");
 		m_pWrapper->_AddToolOutput((LPCTSTR)lei);
 
 		return lei.GetErrorCode();
@@ -589,7 +580,7 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 		::CloseHandle(hStdInWrite);
 
 		CLastErrorInfo lei;
-		m_pWrapper->_AddToolOutput("\n>Failed to create process: ");
+		m_pWrapper->_AddToolOutput("\n> Failed to create process: ");
 		m_pWrapper->_AddToolOutput((LPCTSTR)lei);
 
 		return lei.GetErrorCode();
@@ -679,7 +670,7 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 
 	if (WAIT_OBJECT_0 != ::WaitForSingleObject(pi.hProcess, 1000)) 
 	{
-		m_pWrapper->_AddToolOutput("\n>Process failed to respond; forcing abrupt termination...");
+		m_pWrapper->_AddToolOutput("\n> Process failed to respond; forcing abrupt termination...");
 		::TerminateProcess(pi.hProcess, 2);
 	}
 
@@ -753,6 +744,8 @@ int ToolRunner::Run_ShellExecute(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 		::MessageBox(m_pWrapper->GetActiveChild()->m_hWnd, errmsg.str().c_str(), _T("Programmers Notepad"), MB_ICONWARNING | MB_OK);
 	}
 
+	PostRun();
+
 	return result;
 }
 
@@ -788,12 +781,6 @@ void ToolRunner::PostRun()
 {
 	if( m_pWrapper->CaptureOutput() )
 	{
-		///@todo
-		/*
-		IToolOutputSink* pSink = t->GlobalOutput() ? 
-			GetGlobalOutputSink() : pT;
-		*/
-
 		tstring exitcode(_T("\n> Process Exit Code: "));
 		exitcode += IntToTString(GetExitCode());
 		exitcode += _T("\n");

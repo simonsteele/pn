@@ -1,0 +1,6 @@
+LIBRARY CustomScheme
+EXPORTS 
+       GetLexerCount
+	   GetLexerName
+	   Lex
+	   Fold

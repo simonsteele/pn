@@ -39,6 +39,7 @@
 	</keyword-classes>
 	<imports>
 		<set pattern="*.scheme"/>
+		<set pattern="*.schemedef"/>
 		<!--<file name="userSettings.xml"/>-->
 	</imports>
 </Scheme>

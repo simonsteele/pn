@@ -19,7 +19,6 @@ class CChildFrame;
 class CFindDlg;
 class CReplaceDlg;
 class CDockingOutputWindow;
-class CSampleDockingWindow;
 struct tagEnumChildrenStruct;
 
 typedef void(__stdcall CMainFrame::*lpChildEnumFn)(CChildFrame* pFrame, tagEnumChildrenStruct* pStruct);
@@ -74,6 +73,7 @@ public:
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		MESSAGE_HANDLER(WM_ACTIVATE, OnActivate)
 		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnDblClick)
+		MESSAGE_HANDLER(PN_ESCAPEPRESSED, OnEscapePressed)
 		//MESSAGE_HANDLER(PN_INITIALISEFRAME, OnInitialiseFrame)
 		
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
@@ -135,6 +135,7 @@ public:
 	LRESULT OnChildNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnInitMenuPopup(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnEscapePressed(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	//LRESULT OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -191,7 +192,7 @@ public:
 	virtual ToolWrapper* MakeGlobalOutputWrapper(ToolDefinition* pDefinition);
 	virtual void AddMRUEntry(LPCTSTR lpszFile);
 	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme);
-	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL);
+	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL, HWND hWndCaller = NULL);
 	virtual void SetStatusText(LPCTSTR text);
 	virtual void SaveAll();
 	virtual void OpenFile(LPCTSTR pathname);

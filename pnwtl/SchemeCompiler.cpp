@@ -1017,7 +1017,8 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 {
 	LPCTSTR t = NULL;
 
-	if(pState->m_State == DOING_LANGUAGE && _tcscmp(name, _T("language")) == 0)
+	if(pState->m_State == DOING_LANGUAGE && 
+		(_tcscmp(name, _T("language")) == 0 || _tcscmp(name, _T("schemedef")) == 0))
 	{
 		LPCTSTR scheme = atts.getValue(_T("name"));
 		LPCTSTR title = atts.getValue(_T("title"));
@@ -1264,7 +1265,7 @@ void SchemeParser::startElement(void *userData, LPCTSTR name, XMLAttributes& att
 		stattext = _T("Processing Style Classes\r\n");
 		pState->m_State = DOING_STYLECS;
 	}
-	else if(_tcscmp(name, _T("language")) == 0)
+	else if(_tcscmp(name, _T("language")) == 0 || _tcscmp(name, _T("schemedef")) == 0)
 	{
 		stattext = _T("Processing Language\r\n");
 		pState->m_State = DOING_LANGUAGE;
@@ -1362,7 +1363,7 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 	else if(state == DOING_LANGUAGE || state == DOING_LANGUAGE_DETAILS)
 	{
 		// Only come out of language mode if we're really out...
-		if(_tcscmp(name, _T("language")) == 0)
+		if(_tcscmp(name, _T("language")) == 0 || _tcscmp(name, _T("schemedef")) == 0)
 		{
 			onLanguageEnd();
 			
@@ -1396,6 +1397,11 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 	else if(state == DOING_KEYWORDCOMBINE)
 	{
 		pS->m_State = DOING_KEYWORDS;
+	}
+	else if(state == DOING_IMPORTS)
+	{
+		if( _tcscmp(name, _T("imports")) == 0 )
+			pS->m_State = 0;
 	}
 	else
 	{

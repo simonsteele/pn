@@ -260,6 +260,7 @@
 		</use-keywords>
 		<use-styles>
 			<style name="Default" key="32" class="default"/>
+			<style name="Text" key="0" class="default"/>
 			<style name="Tags" key="1" fore="000080"/>
 			<style name="Unknown Tags" key="2" fore="000080"/>
 			<style name="Attributes" key="3" fore="008080"/>
@@ -299,7 +300,7 @@
 		</use-keywords>
 		<use-styles>
 			<style name="Default" key="32" class="default"/>
-			<!--<style name="White Space" key-->
+			<style name="Text" key="0" class="default"/>
 			<style name="Selector (HTML tag)" key="1" class="keyword"/>
 			<style name="Class selector" key="2"/>
 			<style name="Psuedo class" key="3" fore="800000"/>

@@ -40,11 +40,18 @@ void CTextView::SetScheme(CScheme* pScheme)
 {
 	if(pScheme != CSchemeManager::GetInstance()->GetDefaultScheme())
 		m_bSmartStart = false;
-	pScheme->Load(*this);
+	
 	EnsureRangeVisible(0, GetLength());
-	ClearDocumentStyle();
+	ClearDocumentStyle(); // zero all style bytes
+	
+	pScheme->Load(*this);
+	
+	//EnsureRangeVisible(0, GetLength());
+	//ClearDocumentStyle();
+	
 	Colourise(0, -1);
-
+	InvalidateRect(NULL, FALSE);
+	
 	m_pLastScheme = pScheme;
 
 	::SendMessage(GetParent(), PN_SCHEMECHANGED, 0, reinterpret_cast<LPARAM>(pScheme));

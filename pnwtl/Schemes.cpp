@@ -563,38 +563,43 @@ void CSchemeManager::Load()
 	HANDLE hFind;
 	WIN32_FIND_DATA FindFileData;
 
-	tstring sPattern(m_SchemePath);
+	tstring sPattern;
 	
 	tstring SchemeName(_T(""));
 
-	sPattern += _T("*.scheme");
+	//sPattern += _T("*.scheme");
 
 	BOOL found = TRUE;
 	tstring to_open;
 
 	if(!bCompile)
 	{
-
-		hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
-		if (hFind != INVALID_HANDLE_VALUE) 
+		for(int type = 0; type < 2; type++)
 		{
-			while (found)
-			{
-				///@todo Do we really need to keep a list of Schemes and a map?
-				// to_open is a scheme file
-				to_open = m_SchemePath;
-				to_open += FindFileData.cFileName;
+			sPattern = m_SchemePath;
+			sPattern += (type == 0 ? _T("*.scheme") : _T("*.schemedef"));
 
-				if( reg.ReadInt(FindFileData.cFileName, 0) != FileAge(to_open.c_str()) )
+			hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
+			if (hFind != INVALID_HANDLE_VALUE) 
+			{
+				while (found)
 				{
-					bCompile = true;
-					break;
+					///@todo Do we really need to keep a list of Schemes and a map?
+					// to_open is a scheme file
+					to_open = m_SchemePath;
+					to_open += FindFileData.cFileName;
+
+					if( reg.ReadInt(FindFileData.cFileName, 0) != FileAge(to_open.c_str()) )
+					{
+						bCompile = true;
+						break;
+					}
+
+					found = FindNextFile(hFind, &FindFileData);
 				}
 
-				found = FindNextFile(hFind, &FindFileData);
+				FindClose(hFind);
 			}
-
-			FindClose(hFind);
 		}
 	}
 

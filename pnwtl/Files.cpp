@@ -103,7 +103,7 @@ CFile::~CFile()
 
 bool CFile::Open(LPCTSTR filename, UINT flags)
 {
-	CString mode;
+	tstring mode;
 
 	if(flags != 0)
 	{
@@ -122,7 +122,7 @@ bool CFile::Open(LPCTSTR filename, UINT flags)
 		mode = _T("rb");
 		
 
-	m_file = _tfopen(filename, mode);
+	m_file = _tfopen(filename, mode.c_str());
 	
 	return (m_file != NULL);
 }
@@ -225,12 +225,15 @@ int CFile::ShowError(LPCTSTR filename, bool bOpen)
 			fstr = CFILE_CouldNotSaveError;
 	}
 
-	CString str;
-	str.Format(fstr, filename);
+	int bs = _tcslen(fstr) + _tcslen(filename) + 10;
+	TCHAR* buffer = new TCHAR[bs];
+	_sntprintf(buffer, bs, fstr, filename);
 	if(bOpen)
-		return ::MessageBox(NULL, (LPCTSTR)str, _T("Programmers Notepad 2"), MB_OK);
+		return ::MessageBox(NULL, (LPCTSTR)buffer, _T("Programmers Notepad 2"), MB_OK);
 	else
-		return ::MessageBox(NULL, (LPCTSTR)str, _T("Programmers Notepad 2"), MB_YESNOCANCEL);
+		return ::MessageBox(NULL, (LPCTSTR)buffer, _T("Programmers Notepad 2"), MB_YESNOCANCEL);
+
+	delete [] buffer;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -238,6 +241,7 @@ int CFile::ShowError(LPCTSTR filename, bool bOpen)
 ///////////////////////////////////////////////////////////////////////////
 
 // basically taken from MFC's CStdioString...
+#ifndef PN_NO_CSTRING
 bool CTextFile::ReadLine(CString& line)
 {
 	line = _T("");
@@ -276,6 +280,7 @@ bool CTextFile::ReadLine(CString& line)
 
 	return lpszResult != NULL;
 }
+#endif
 
 bool CTextFile::WriteLine(LPCTSTR line)
 {
@@ -487,7 +492,7 @@ int CFileName::GetFileAge()
 
 const tstring& CFileName::ToLower()
 {
-	transform (m_FileName.begin(), m_FileName.end(),    // source
+	std::transform (m_FileName.begin(), m_FileName.end(),    // source
                m_FileName.begin(),             // destination
                tolower);
 

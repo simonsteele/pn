@@ -5,7 +5,7 @@
 #include <string>
 
 #ifndef tstring
-	typedef basic_string<TCHAR> tstring;
+	typedef std::basic_string<TCHAR> tstring;
 #endif
 
 #define CFILE_CouldNotSaveError _T("%s could not be saved in the specified location.\nThis could be due to an absent disk, a broken network connection, or a full disk.\nDo you want to save in another location?")
@@ -73,7 +73,9 @@ class CTextFile : public CFile
 		CTextFile() : CFile() {}
 		virtual ~CTextFile() {}
 
+#ifndef PN_NO_CSTRING
 		bool ReadLine(CString& line);
+#endif
 		bool WriteLine(LPCTSTR line);
 };
 

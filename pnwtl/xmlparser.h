@@ -30,13 +30,13 @@ class XMLAttributes
 	public:
 		XMLAttributes(LPCTSTR * atts);
 
-		LPCTSTR getName(int index);
+		LPCTSTR getName(int index) const;
 		
-		LPCTSTR getValue(int index);
-		LPCTSTR getValue(LPCTSTR name);
-		LPCTSTR operator [] (int index);
+		LPCTSTR getValue(int index) const;
+		LPCTSTR getValue(LPCTSTR name) const;
+		LPCTSTR operator [] (int index) const;
 
-		int getCount();
+		int getCount() const;
 
 	protected:
 		LPCTSTR * m_atts;

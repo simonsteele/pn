@@ -398,7 +398,7 @@ int COutputView::HandleNotify(LPARAM lParam)
 void COutputView::DoContextMenu(CPoint* point)
 {
 	CSPopupMenu popup(IDR_POPUP_OUTPUT);
-	g_Context.m_frame->TrackPopupMenu(popup, 0, point->x, point->y, NULL);
+	g_Context.m_frame->TrackPopupMenu(popup, 0, point->x, point->y, NULL, m_hWnd);
 }
 
 void COutputView::SafeAppendText(LPCSTR s, int len)
@@ -458,6 +458,26 @@ void COutputView::ClearOutput()
 LRESULT COutputView::OnClear(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	ClearAll();
+
+	return 0;
+}
+
+LRESULT COutputView::OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	::SendMessage(GetParent(), WM_COMMAND, ID_OUTPUT_HIDE, NULL);
+	return 0;
+}
+
+LRESULT COutputView::OnCut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	SendMessage(WM_CUT, 0, 0);
+
+	return 0;
+}
+
+LRESULT COutputView::OnCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	SendMessage(WM_COPY, 0, 0);
 
 	return 0;
 }
@@ -543,6 +563,13 @@ LRESULT CDockingOutputWindow::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPar
 	}
 
 	bHandled = FALSE;
+
+	return 0;
+}
+
+LRESULT CDockingOutputWindow::OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	Hide();
 
 	return 0;
 }

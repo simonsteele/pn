@@ -320,7 +320,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,4,10
+ FILEVERSION 2,0,4,12
  PRODUCTVERSION 2,0,4,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -338,7 +338,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele (Echo Software)"
             VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.4.10"
+            VALUE "FileVersion", "2.0.4.12"
             VALUE "InternalName", "PNWTL"
             VALUE "LegalCopyright", "Copyright © 2002-2003 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"
@@ -797,8 +797,8 @@ BEGIN
     COMBOBOX        IDC_SCHEMECOMBO,108,36,185,64,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | 
-                    LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | 
-                    WS_TABSTOP,0,54,276,96
+                    LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | 
+                    WS_BORDER | WS_TABSTOP,0,54,276,96
     PUSHBUTTON      "&Add",IDC_TOOLS_ADDBUTTON,108,156,48,18
     PUSHBUTTON      "&Edit",IDC_TOOLS_EDITBUTTON,162,156,48,18
     PUSHBUTTON      "&Remove",IDC_TOOLS_REMOVEBUTTON,228,156,48,18

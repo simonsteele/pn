@@ -251,6 +251,8 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 			COMMAND_HANDLER(IDC_TOOLS_EDITBUTTON, BN_CLICKED, OnEditClicked)
 			COMMAND_HANDLER(IDC_TOOLS_REMOVEBUTTON, BN_CLICKED, OnRemoveClicked)
 			COMMAND_HANDLER(IDC_TOOLS_ADDBUTTON, BN_CLICKED, OnAddClicked)
+			COMMAND_HANDLER(IDC_TOOLS_MOVEUPBUTTON, BN_CLICKED, OnUpClicked)
+			COMMAND_HANDLER(IDC_TOOLS_MOVEDOWNBUTTON, BN_CLICKED, OnDownClicked)
 			NOTIFY_HANDLER(IDC_LIST, LVN_KEYDOWN, OnListKeyDown);
 			NOTIFY_HANDLER(IDC_LIST, NM_CLICK, OnListClicked)
 			NOTIFY_HANDLER(IDC_LIST, NM_DBLCLK, OnListDblClicked)
@@ -277,6 +279,9 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 		LRESULT OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+		LRESULT OnUpClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnDownClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 		LRESULT OnListKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 		LRESULT OnListClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);

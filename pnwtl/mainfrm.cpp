@@ -204,7 +204,8 @@ BOOL CMainFrame::OnIdle()
 	// Because it's complicated to handle the case directly when a docking window
 	// is closed by the user by clicking on its X button, we do it in OnIdle() - a bit
 	// messy but hey!
-	UISetCheck(ID_EDITOR_OUTPUTWND, m_pOutputWnd->IsWindowVisible());
+	if(m_pOutputWnd != NULL)
+		UISetCheck(ID_EDITOR_OUTPUTWND, m_pOutputWnd->IsWindowVisible());
 
 	return FALSE;
 }
@@ -446,6 +447,17 @@ LRESULT CMainFrame::OnDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 			OutputDebugString(_T("PN2: Unknown MDI Double-Click Action Code"));
 	}
 	return 0;
+}
+
+LRESULT CMainFrame::OnEscapePressed(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	if( m_pOutputWnd->IsWindowVisible() )
+	{
+		m_pOutputWnd->Hide();
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 //LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -971,9 +983,17 @@ void CMainFrame::SetActiveScheme(HWND notifier, LPVOID pScheme)
 	}
 }
 
-BOOL CMainFrame::TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams)
+BOOL CMainFrame::TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams, HWND hWndCaller)
 {
-	return m_CmdBar.TrackPopupMenu(hMenu, uFlags, x, y, lpParams);
+	if( hWndCaller != NULL )
+		uFlags |= TPM_RETURNCMD;
+	
+	BOOL bRet = m_CmdBar.TrackPopupMenu(hMenu, uFlags, x, y, lpParams);
+
+	if( hWndCaller != NULL && bRet != 0 )
+		::SendMessage(hWndCaller, WM_COMMAND, bRet, NULL);
+
+	return bRet;
 }
 
 void CMainFrame::SetStatusText(LPCTSTR text)

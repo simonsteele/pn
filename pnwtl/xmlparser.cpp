@@ -60,31 +60,31 @@ XMLAttributes::XMLAttributes(LPCTSTR * atts)
 		m_count++;
 }
 
-LPCTSTR XMLAttributes::operator [] (int index)
+LPCTSTR XMLAttributes::operator [] (int index) const
 {
 	return getValue(index);
 }
 
-LPCTSTR XMLAttributes::getName(int index)
+LPCTSTR XMLAttributes::getName(int index) const
 {
 	ATLASSERT(index < m_count);
 
 	return m_atts[index*2];
 }
 
-LPCTSTR XMLAttributes::getValue(int index)
+LPCTSTR XMLAttributes::getValue(int index) const
 {
 	ATLASSERT(index < m_count);
 	
 	return m_atts[(index*2)+1];
 }
 
-int XMLAttributes::getCount()
+int XMLAttributes::getCount() const
 {
 	return m_count;
 }
 
-LPCTSTR XMLAttributes::getValue(LPCTSTR name)
+LPCTSTR XMLAttributes::getValue(LPCTSTR name) const
 {
 	LPCTSTR key = NULL;
 	LPCTSTR val = NULL;

@@ -1175,6 +1175,57 @@ LRESULT COptionsPageTools::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	return 0;
 }
 
+struct ListCtrlMoveOneData
+{
+	LPARAM ItemData;
+    bool bMoveDown;
+	bool bDoneOne;
+};
+
+int CALLBACK ListCtrlMoveOneCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	ListCtrlMoveOneData* pD = reinterpret_cast<ListCtrlMoveOneData*>(lParamSort);
+	LPARAM lpCompare = pD->bMoveDown ? lParam1 : lParam2;
+	if( !pD->bDoneOne && lpCompare == pD->ItemData )
+	{
+		((ListCtrlMoveOneData*)lParamSort)->bDoneOne = true;
+		
+		return 1;
+	}
+	return 0;
+}
+
+/*int CALLBACK ListCtrlMoveDownCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	if(lParam1 == ((ListCtrlMoveOneData*)lParamSort)->ItemData)
+		return 1;
+	return 0;
+}*/
+
+LRESULT COptionsPageTools::OnUpClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int iSelIndex = m_list.GetSelectedIndex();
+	if( iSelIndex != -1 )
+	{
+		ListCtrlMoveOneData mod = {m_list.GetItemData(iSelIndex), 0, 0};
+		m_list.SortItems(ListCtrlMoveOneCompareFunc, reinterpret_cast<LPARAM>(&mod));
+	}
+	EnableButtons();
+	return 0;
+}
+
+LRESULT COptionsPageTools::OnDownClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int iSelIndex = m_list.GetSelectedIndex();
+	if( iSelIndex != -1 )
+	{
+		ListCtrlMoveOneData mod = {m_list.GetItemData(iSelIndex), 1, 0};
+		m_list.SortItems(ListCtrlMoveOneCompareFunc, reinterpret_cast<LPARAM>(&mod));
+	}
+	EnableButtons();
+	return 0;
+}
+
 LRESULT COptionsPageTools::OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	Update();

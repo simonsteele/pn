@@ -18,6 +18,7 @@
 #define PN_TOOLFINISHED		(WM_USER+40)
 #define PN_SCHEMECHANGED	(WM_USER+41)
 #define PN_HANDLEHSCLICK	(WM_USER+42)
+#define PN_ESCAPEPRESSED	(WM_USER+43)
 
 #define PN_MDIACTIVATE		0x1
 #define TOOLS_RUNTOOL		0x2
@@ -34,7 +35,7 @@ struct IMainFrame
 	virtual ToolWrapper* MakeGlobalOutputWrapper(ToolDefinition* pDefinition) = 0;
 	virtual void AddMRUEntry(LPCTSTR lpszFile) = 0;
 	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme) = 0;
-	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL) = 0;
+	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL, HWND hWndCaller = NULL) = 0;
 	virtual void SetStatusText(LPCTSTR text) = 0;
 	virtual void SaveAll() = 0;
 	virtual void OpenFile(LPCTSTR lpszFilename) = 0;

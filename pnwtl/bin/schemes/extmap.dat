@@ -30,4 +30,5 @@
 .pm=perl
 .cgi=perl
 .pod=perl
+.schemedef=xml
 makefile=makefile

@@ -1099,6 +1099,8 @@ BOOL CChildFrame::OnEscapePressed()
         ToggleOutputWindow();
 		return TRUE;
 	}
+	else
+		return ::SendMessage(GetTopLevelParent(), PN_ESCAPEPRESSED, 0, 0);
 
 	return FALSE;
 }

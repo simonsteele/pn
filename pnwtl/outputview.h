@@ -35,8 +35,10 @@ public:
 
 	BEGIN_MSG_MAP(COutputView)
 		COMMAND_ID_HANDLER(ID_OUTPUT_CLEAR, OnClear)
+		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHide)
+		COMMAND_ID_HANDLER(ID_EDIT_CUT, OnCut)
+		COMMAND_ID_HANDLER(ID_EDIT_COPY, OnCopy)
 		MESSAGE_HANDLER(PN_HANDLEHSCLICK, OnHotSpotClicked)
-		//MESSAGE_HANDLER(WM_SYSKEYDOWN, OnSysKeyDown)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -73,6 +75,9 @@ protected:
 	void HandleStyleNeeded(ScintillaAccessor& styler, int startPos, int length);
 
 	LRESULT OnClear(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	virtual void OnFirstShow();
 
@@ -109,6 +114,7 @@ public:
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
+		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHide)
 		REFLECT_NOTIFICATIONS()
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
@@ -118,6 +124,7 @@ public:
 protected:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 protected:
 	COutputView m_view;
