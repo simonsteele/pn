@@ -182,7 +182,7 @@ void COptionsManager::GetSchemesPaths(ctcString& path, ctcString& compiledPath)
 			compiledPath += _T('\\');
 		}
 
-		compiledPath += _T("Echo Software\\Programmers Notepad\\Schemes\\");
+		compiledPath += _T("Echo Software\\PN2\\");
 
 		CreateDirectoryRecursive(compiledPath.c_str());
 	}

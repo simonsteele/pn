@@ -65,6 +65,7 @@
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
 #define IDD_TAB_KEYWORDS                425
+#define IDD_PAGE_TOOLS                  426
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_GOTOEDIT                    1004
@@ -77,7 +78,9 @@
 #define IDC_STYLE_FOREBUTTON            1010
 #define IDC_EDIT1                       1011
 #define IDC_KEYWORDS_KEYWORDTEXT        1011
+#define IDC_BUTTON3                     1011
 #define IDC_FONT_COMBO                  1012
+#define IDC_BUTTON4                     1012
 #define IDC_FONTSIZE_COMBO              1013
 #define IDC_SCHEMECOMBO                 1016
 #define IDC_SCHEMELABEL                 1017
@@ -93,8 +96,8 @@
 #define IDC_BUTTON2                     1033
 #define IDC_STYLE_BACKBUTTON            1033
 #define IDC_KEYWORDS_RESETBUTTON        1033
-#define IDC_KEYWORDS_RESETBUTTON2       1034
 #define IDC_KEYWORDS_SORTBUTTON         1034
+#define IDC_BUTTON5                     1034
 #define IDC_STYLE_RESETBTN              1036
 #define IDC_STYLE_RESETALLBTN           1037
 #define IDC_LIST1                       1039

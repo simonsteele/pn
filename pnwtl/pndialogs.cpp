@@ -324,6 +324,10 @@ void CTabPageKeywords::DoSetScheme()
 {
 	m_bChanging = true;
 
+	SetItem();
+
+	m_list.DeleteAllItems();
+
 	CustomKeywordSet* pSet = m_pScheme->GetFirstKeywordSet();
 	
 	int iPos = 0;
@@ -339,7 +343,11 @@ void CTabPageKeywords::DoSetScheme()
 		pSet = pSet->pNext;
 	}
 
+	m_list.SelectItem(0);
+
 	m_bChanging = false;
+
+	UpdateSel();
 }
 
 void CTabPageKeywords::SetItem()
@@ -427,14 +435,14 @@ void CTabPageKeywords::UpdateSel()
 
 void CTabPageKeywords::EnableControls(BOOL bEnable)
 {
-	//m_Text.EnableWindow(bEnable);
 	m_ResetBtn.EnableWindow(bEnable);
+	m_SortBtn.EnableWindow(bEnable);
 }
 
 LRESULT CTabPageKeywords::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	//m_Text.Attach(GetDlgItem(IDC_KEYWORDS_KEYWORDTEXT));
 	m_ResetBtn.Attach(GetDlgItem(IDC_KEYWORDS_RESETBUTTON));
+	m_SortBtn.Attach(GetDlgItem(IDC_KEYWORDS_SORTBUTTON));
 	m_list.Attach(GetDlgItem(IDC_KEYWORDS_LIST));
 
 	CRect rcScintilla;
@@ -1014,4 +1022,58 @@ void COptionsPageSchemes::Update()
 	SchemeConfig* pScheme = static_cast<SchemeConfig*>(m_combo.GetItemDataPtr(i));
 	m_stylestab.SetScheme(pScheme);
 	m_keywordstab.SetScheme(pScheme);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// COptionsPageTools
+//////////////////////////////////////////////////////////////////////////////
+
+COptionsPageTools::COptionsPageTools(SchemeConfigParser* pSchemes)
+{
+	m_pSchemes = pSchemes;
+}
+
+LRESULT COptionsPageTools::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	CWindow label;
+	CSize s;
+	CRect rc;
+
+	label.Attach(GetDlgItem(IDC_SCHEMELABEL));
+	
+	CDC dc(label.GetDC());
+	dc.GetTextExtent(_T("Scheme:"), 7, &s);
+	
+	label.GetWindowRect(rc);
+	ScreenToClient(rc);
+	rc.right = rc.left + s.cx;
+	label.SetWindowPos(HWND_TOP, &rc, 0);
+
+	CRect rcCombo;
+
+	m_combo.Attach(GetDlgItem(IDC_SCHEMECOMBO));
+
+	m_combo.GetWindowRect(rcCombo);
+	ScreenToClient(rcCombo);
+	rcCombo.left = rc.right + 5;
+	m_combo.SetWindowPos(HWND_TOP, &rcCombo, 0);
+
+	return 0;
+}
+
+LRESULT COptionsPageTools::OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+
+	return 0;
+}
+
+LPCTSTR COptionsPageTools::GetTreePosition()
+{
+	return _T("Tools");
+}
+LRESULT COptionsPageStyle::OnBnClickedStyleUnderlinecheck(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	// TODO: Add your control notification handler code here
+
+	return 0;
 }

@@ -15,6 +15,42 @@
 	#pragma once
 #endif
 
+class CToolCommandString : public CustomFormatStringBuilder<CToolCommandString>
+{
+	public:
+		void OnFormatChar(TCHAR thechar)
+		{
+			switch(thechar)
+			{
+				case _T('f'):
+					m_string += pChild->GetFileName(FN_FILE);
+					break;
+
+				case _T('d'):
+					m_string += pChild->GetFileName(FN_PATH);
+					break;
+
+				case _T('n'):
+					m_string += pChild->GetFileName(FN_FILEPART);
+					break;
+
+				case _T('l'):
+					_itoa(pChild->GetPosition(EP_LINE), itosbuf, 10);
+					m_string += itosbuf;
+					break;
+
+				case _T('c'):
+					_itoa(pChild->GetPosition(EP_COL), itosbuf, 10);
+					m_string += itosbuf;
+					break;
+			}		
+		}
+
+	protected:
+		TCHAR itosbuf[100];
+		CChildFrame* pChild;
+};
+
 /**
  * @class CMainFrame
  * @brief PN (WTL Edition) Main MDI Frame

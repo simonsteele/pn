@@ -506,12 +506,14 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	SchemeConfigParser		schemeconfig;
 	COptionsPageStyle		page(&schemeconfig);
 	COptionsPageSchemes		page2(&schemeconfig);
+	COptionsPageTools		page3(&schemeconfig);
 
 	schemeconfig.LoadConfig(pSM->GetPath(), pSM->GetCompiledPath());
 
 	COptionsDialog options;
 	options.AddPage(&page);
 	options.AddPage(&page2);
+	options.AddPage(&page3);
 	options.DoModal();
 
 	return 0;

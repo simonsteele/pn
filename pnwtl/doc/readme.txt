@@ -3,16 +3,31 @@ Release Name: 2.0.3-coltrane
 Build: 2.0.3.27, Version Label: coltrane
 ========================================
 
+Breaking Change Notices:
+------------------------
+User configuration files have moved from:
+%usersettings%\Echo Software\Programmers Notepad\Schemes\
+to:
+%usersettings%\Echo Software\PN2\
+
+this will lose any scheme colouring changes you have made. 
+You can simply move all files from the previous version into
+the new correct location to fix this. Sorry for any 
+inconvenience...
+
 What's new?
 -----------
 
 1) Configurable scheme keywords.
 2) Now opens filenames from the command-line (or explorer associations).
 
-Printing note: This feature is experimental, and we have experienced the odd problem after printing. Please experiment and let us know how you get on.
 
-Config note: There are probably bugs with these features, please let us know if you find any. You can help by providing us with a copy of the file:
-%usersettings%\Echo Software\Programmers Notepad\UserSettings.xml
+If you find a bug:
+------------------
+There are quite possibly bugs with these features (or others), 
+please let us know if you find any. You can help by providing 
+us with a copy of the file:
+%usersettings%\Echo Software\PN2\UserSettings.xml
 
 Known things:
 -------------

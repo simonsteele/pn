@@ -26,6 +26,9 @@
 
 #include "fromhandle.h"
 
+typedef enum {FN_FULL, FN_FILE, FN_PATH, FN_FILEPART} EGFNType;
+typedef enum {EP_LINE, EP_COL} EGPType;
+
 class CChildFrame : public CTabbedMDIChildWindowImpl<CChildFrame>, 
 	public CFromHandle<CChildFrame>, public CSMenuEventHandler
 {
@@ -801,6 +804,40 @@ public:
 		menu.CheckMenuItem(ID_TOOLS_LELF, f == PNSF_Unix);
 
 		g_Context.m_frame->SetActiveScheme(m_hWnd, m_view.GetCurrentScheme());
+	}
+
+	tstring GetFileName(EGFNType type = FN_FULL)
+	{
+		CFileName fn(m_FileName);
+		tstring s;
+
+		switch(type)
+		{
+			case FN_FULL:
+				return fn;
+
+			case FN_FILE:
+				fn.GetFileName(s);
+				break;
+
+			case FN_FILEPART:
+				fn.GetFileName_NoExt(s);
+				break;
+
+			case FN_PATH:
+				fn.GetPath(s);
+				break;
+		};
+		
+		return s;
+	}
+
+	int GetPosition(EGPType type)
+	{
+		if(type == EP_LINE)
+			return m_view.LineFromPosition(m_view.GetCurrentPos());
+		else
+			return m_view.GetColumn(m_view.GetCurrentPos());
 	}
 
 	protected:

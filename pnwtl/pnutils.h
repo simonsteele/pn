@@ -457,6 +457,9 @@ class CNumberCombo : public CComboBox
 #include <vector>
 using std::vector;
 
+#include <string>
+typedef basic_string<TCHAR> tstring;
+
 template <typename TStringType>
 static void StringTokenise(const TStringType& str,
                       vector<TStringType>& tokens,
@@ -477,5 +480,64 @@ static void StringTokenise(const TStringType& str,
         pos = str.find_first_of(delimiters, lastPos);
     }
 }
+
+template <class T>
+class CustomFormatStringBuilder
+{
+	public:
+		const tstring& Build(LPCTSTR str)
+		{
+			T* pT = static_cast<T*>(this);
+			int len = _tcslen(formatstr);
+
+			for(int i = 0; i < len; i++)
+			{
+				if(str[i] != _T('%'))
+				{
+					m_string += str[i];
+				}
+				else
+				{
+					TCHAR next = SafeGetNextChar(str, i, len);
+					
+					if(i == NULL)
+					{
+						m_string += str[i];
+					}
+					else if(next == _T('%'))
+					{
+						m_string += next;
+						// Push past the next %
+						i++;
+					}
+					else
+					{
+						pT->OnFormatChar(next);
+						i++;
+					}
+				}
+			}
+
+			return m_string;
+		}
+
+		void OnFormatChar(TCHAR thechar){}
+		
+		//void OnFormatComplex(LPCTSTR complex){}
+
+	protected:
+		TCHAR SafeGetNextChar(LPCTSTR str, int i, int len)
+		{
+			PNASSERT(i < len);
+			PNASSERT(i > 0);
+
+			if(i = (len-1))
+				return NULL;
+            
+			return str[i+1];
+		}
+
+		tstring	m_string;
+};
 
 #endif //#ifndef pnutils_h__included

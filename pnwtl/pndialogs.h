@@ -168,6 +168,7 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 		BEGIN_MSG_MAP(COptionsPageStyle)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			REFLECT_NOTIFICATIONS()
+			COMMAND_HANDLER(IDC_STYLE_UNDERLINECHECK, BN_CLICKED, OnBnClickedStyleUnderlinecheck)
 		END_MSG_MAP()
 		enum { IDD = IDD_PAGE_STYLE };
 
@@ -192,6 +193,8 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 		CButton			m_underline;
 
 		SchemeConfigParser* m_pSchemes;
+public:
+	LRESULT OnBnClickedStyleUnderlinecheck(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 };
 
 class CStyleDisplay : public CWindowImpl<CStyleDisplay>
@@ -263,6 +266,7 @@ class CTabPageKeywords : public CPropertyPageImpl<CTabPageKeywords>
 	protected:
 		CEdit				m_Text;
 		CButton				m_ResetBtn;
+		CButton				m_SortBtn;
 		bool				m_bChanging;
 		SchemeConfig*		m_pScheme;
 		CustomKeywordSet*	m_pSet;
@@ -363,6 +367,31 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 		SchemeConfigParser* m_pSchemes;
 		CTabPageStyles		m_stylestab;
 		CTabPageKeywords	m_keywordstab;
+};
+
+class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
+{
+	public:
+		enum {IDD = IDD_PAGE_TOOLS};
+
+		COptionsPageTools(SchemeConfigParser* pSchemes);
+
+		BEGIN_MSG_MAP(COptionsPageTools)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			COMMAND_HANDLER(IDC_SCHEMECOMBO, CBN_SELCHANGE, OnComboChange)
+			REFLECT_NOTIFICATIONS()
+		END_MSG_MAP()
+
+		virtual LPCTSTR GetTreePosition();
+
+	protected:
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		LRESULT OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+	protected:
+		CComboBox			m_combo;
+		CListViewCtrl		m_list;
+		SchemeConfigParser* m_pSchemes;
 };
 
 #endif

@@ -4,17 +4,11 @@
 
 #include <string>
 
-#ifndef cfnString
-	#ifdef ctcString
-		#define cfnString ctcString
-	#else
-		#ifdef UNICODE
-			#define cfnString std::wstring
-		#else
-			#define cfnString std::string
-		#endif
-	#endif
+#ifndef tstring
+	typedef basic_string<TCHAR> tstring;
 #endif
+
+typedef tstring cfnString;
 
 #define CFILE_CouldNotSaveError _T("%s could not be saved in the specified location.\nThis could be due to an absent disk, a broken network connection, or a full disk.\nDo you want to save in another location?")
 
@@ -124,7 +118,9 @@ public:
 	int GetFileAge();									///< Get the age of the file.
 
 	int	GetLength();
-	const TCHAR* c_str();
+	LPCTSTR c_str();
+
+	operator tstring() {return m_FileName;}
 
 };
 

@@ -102,7 +102,7 @@ void CScheme::CheckName()
 			{
 				// Not the right version, and compiling didn't help:
 				cfile.Close();
-				throw "Not the right kinda file...";
+				::OutputDebugString(_T("PN2: Compiled Scheme Header invalid or corrupt after compile."));
 				return;
 			}	
 		}
