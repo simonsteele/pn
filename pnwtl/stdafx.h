@@ -33,6 +33,8 @@ extern CAppModule _Module;
 	#endif
 #endif
 
+#define PNASSERT ATLASSERT
+
 #include "pn.h"
 
 extern CPNAppState theApp;
