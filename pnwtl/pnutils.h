@@ -739,6 +739,7 @@ public:
 	MultipleInstanceManager(LPCTSTR pszKey);
 	~MultipleInstanceManager();
 
+	void ActivateOther();
 	bool AlreadyActive();
 	void SendParameters();
 

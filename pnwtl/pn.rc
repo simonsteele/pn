@@ -989,26 +989,29 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "Show Line Numbers",IDC_OPT_LINENOSCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,18,91,138,12
+                    BS_AUTOCHECKBOX | WS_TABSTOP,18,109,138,12
     CONTROL         "Use the tab character for indentation",
                     IDC_OPT_USETABSCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,18,132,168,12
-    LTEXT           "Tab Width:",IDC_STATIC,18,150,48,12
-    EDITTEXT        IDC_OPT_TABWIDTHEDIT,66,150,30,14,ES_AUTOHSCROLL
-    LTEXT           "Line Endings:",IDC_STATIC,18,108,48,12
-    COMBOBOX        IDC_OPT_LECOMBO,66,108,102,66,CBS_DROPDOWNLIST | 
+                    WS_TABSTOP,18,150,168,12
+    LTEXT           "Tab Width:",IDC_STATIC,18,168,48,12
+    EDITTEXT        IDC_OPT_TABWIDTHEDIT,66,168,30,14,ES_AUTOHSCROLL
+    LTEXT           "Line Endings:",IDC_STATIC,18,126,48,12
+    COMBOBOX        IDC_OPT_LECOMBO,66,126,102,66,CBS_DROPDOWNLIST | 
                     CBS_SORT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Maximise new document windows",IDC_OPT_MAXCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,6,6,150,12
-    LTEXT           "Defaults:",IDC_STATIC,6,78,66,12
-    LTEXT           "",IDC_STATIC,42,83,252,2,SS_SUNKEN
+                    BS_AUTOCHECKBOX | WS_TABSTOP,6,24,150,12
+    LTEXT           "Defaults:",IDC_STATIC,6,96,66,12
+    LTEXT           "",IDC_STATIC,42,101,252,2,SS_SUNKEN
     CONTROL         "Show full file path in document windows",
                     IDC_OPT_FULLPATHCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,6,25,156,12
-    LTEXT           "Files in the most recently used list:",IDC_STATIC,6,48,
+                    WS_TABSTOP,6,43,156,12
+    LTEXT           "Files in the most recently used list:",IDC_STATIC,6,66,
                     120,12
-    EDITTEXT        IDC_OPT_MRUCOUNT,126,48,30,12,ES_AUTOHSCROLL
-    LTEXT           "(1 to 50)",IDC_STATIC,162,48,42,12
+    EDITTEXT        IDC_OPT_MRUCOUNT,126,66,30,12,ES_AUTOHSCROLL
+    LTEXT           "(1 to 50)",IDC_STATIC,162,66,42,12
+    CONTROL         "Allow multiple instances of Programmers Notepad to start",
+                    IDC_MULTIINSTANCECHECK,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,6,6,228,12
 END
 
 IDD_PAGE_NEWFILES DIALOGEX 0, 0, 299, 200

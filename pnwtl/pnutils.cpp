@@ -386,6 +386,17 @@ MultipleInstanceManager::~MultipleInstanceManager()
 	::CloseHandle(m_hMutex);
 }
 
+void MultipleInstanceManager::ActivateOther()
+{
+	DWORD dwRecipients = BSM_APPLICATIONS;
+	long res = ::BroadcastSystemMessage(
+		BSF_ALLOWSFW | BSF_FORCEIFHUNG | BSF_IGNORECURRENTTASK,
+		&dwRecipients, 
+		m_uiMessage,
+		MIM_ACTIVATE,
+		0);
+}
+
 bool MultipleInstanceManager::AlreadyActive()
 {
 	return m_bAlreadyActive;
@@ -429,7 +440,12 @@ void MultipleInstanceManager::ReleaseSharedData(BYTE* buffer, HANDLE hMappedFile
 void MultipleInstanceManager::SendParameters()
 {
 	if(__argc < 2)
+	{
+		// If there are no arguments to send, then
+		// we simply activate the other instance.
+		ActivateOther();
 		return;
+	}
 
 	// Build a null separated list of parameters, store in shared memory 
 	// and broadcast that it's there.

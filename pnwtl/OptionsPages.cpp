@@ -42,6 +42,7 @@ void COptionsPageGeneral::OnOK()
 	// Ensure MRU size <= 50 && >= 1
 	m_iMRUSize = ( m_iMRUSize > 50 ? 50 : ( m_iMRUSize < 1 ? 1 : m_iMRUSize ) );
 	options.Set(PNSK_INTERFACE, _T("MRUSize"), (int)m_iMRUSize);
+	options.Set(PNSK_INTERFACE, _T("AllowMultiInstance"), (bool)(m_bMultiInstanceOk  != FALSE));
 }
 
 void COptionsPageGeneral::OnInitialise()
@@ -54,6 +55,7 @@ void COptionsPageGeneral::OnInitialise()
 	m_bMaximise = options.MaximiseNew;
 	m_bFullPath = options.ShowFullPath;
 	m_iMRUSize = options.Get(PNSK_INTERFACE, _T("MRUSize"), 4);
+	m_bMultiInstanceOk = options.Get(PNSK_INTERFACE, _T("AllowMultiInstance"), false);
 
 	CComboBox cb(GetDlgItem(IDC_OPT_LECOMBO));
 	for(int i = 0; i < cb.GetCount(); i++)

@@ -221,6 +221,7 @@
 #define IDC_COMBO1                      1053
 #define IDC_NEW_SCHEMECOMBO             1053
 #define IDC_TE_OUTPUTCOMBO              1053
+#define IDC_MULTIINSTANCECHECK          1053
 #define IDC_OPT_LECOMBO                 1054
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_OPT_MAXCHECK                1056
@@ -245,6 +246,7 @@
 #define IDC_STATIC_TC                   1072
 #define IDC_STYLE_CURCOLBUTTON          1073
 #define IDC_STYLE_SELUSEFORE            1074
+#define IDC_CHECK2                      1075
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -302,7 +304,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        314
 #define _APS_NEXT_COMMAND_VALUE         32879
-#define _APS_NEXT_CONTROL_VALUE         1075
+#define _APS_NEXT_CONTROL_VALUE         1076
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

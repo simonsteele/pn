@@ -27,12 +27,13 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 		enum { IDD = IDD_PAGE_GENERAL };
 
 		BEGIN_DDX_MAP(COptionsPageGeneral)
-			DDX_CHECK(IDC_OPT_USETABSCHECK, m_bUseTabs)
-			DDX_CHECK(IDC_OPT_LINENOSCHECK, m_bLineNos)
-			DDX_UINT(IDC_OPT_TABWIDTHEDIT, m_iTabWidth)
-			DDX_UINT(IDC_OPT_MRUCOUNT, m_iMRUSize)
-			DDX_CHECK(IDC_OPT_MAXCHECK, m_bMaximise)
-			DDX_CHECK(IDC_OPT_FULLPATHCHECK, m_bFullPath)
+			DDX_CHECK(IDC_OPT_USETABSCHECK,		m_bUseTabs)
+			DDX_CHECK(IDC_OPT_LINENOSCHECK,		m_bLineNos)
+			DDX_UINT(IDC_OPT_TABWIDTHEDIT,		m_iTabWidth)
+			DDX_UINT(IDC_OPT_MRUCOUNT,			m_iMRUSize)
+			DDX_CHECK(IDC_OPT_MAXCHECK,			m_bMaximise)
+			DDX_CHECK(IDC_OPT_FULLPATHCHECK,	m_bFullPath)
+			DDX_CHECK(IDC_MULTIINSTANCECHECK,	m_bMultiInstanceOk)
 		END_DDX_MAP()
 
 		virtual void OnOK();
@@ -46,6 +47,7 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 		BOOL m_bLineNos;
 		BOOL m_bMaximise;
 		BOOL m_bFullPath;
+		BOOL m_bMultiInstanceOk;
 		UINT m_iTabWidth;
 		UINT m_iMRUSize;
 		EPNSaveFormat m_SaveFormat;
