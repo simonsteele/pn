@@ -106,7 +106,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 #if (_WIN32_IE >= 0x0300)
 	INITCOMMONCONTROLSEX iccx;
 	iccx.dwSize = sizeof(iccx);
-	iccx.dwICC = ICC_COOL_CLASSES | ICC_BAR_CLASSES;
+	iccx.dwICC = ICC_COOL_CLASSES | ICC_BAR_CLASSES | ICC_USEREX_CLASSES;
 	BOOL bRet = ::InitCommonControlsEx(&iccx);
 	bRet;
 	ATLASSERT(bRet);
