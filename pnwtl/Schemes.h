@@ -15,39 +15,66 @@
 #include "Files.h"
 #include "IniFile.h"
 #include "SchemeCompiler.h"
+#include "ssmenus.h"
 #include <list>
 #include <map>
+
+#define SCHEMEMANAGER_SELECTSCHEME	0x01
+
+using namespace std;
 
 class CSchemeManager;
 
 ///@todo Add a m_CompiledFile member to save repeatedly changing the file extension and path.
 class CScheme
 {
-	protected:
-		TCHAR* m_SchemeFile;
-		TCHAR* m_Name;
-		CSchemeManager* m_pManager;
-		CScheme();
-
-		void SetupScintilla(CScintilla& sc);
-
 	public:
+		CScheme();
 		CScheme(CSchemeManager* pManager);
 		CScheme(CSchemeManager* pManager, LPCTSTR filename);
+
+		CScheme(const CScheme& copy){Init(); *this = copy;}
+
 		~CScheme();
 
 		virtual void Load(CScintilla& sc, LPCTSTR filename = NULL);
 
 		virtual void SetName(LPCTSTR name);
+		virtual void SetTitle(LPCTSTR title);
+		
+		void SetFileName(LPCTSTR filename);
 
 		virtual void CheckName();
 
-		virtual LPCTSTR GetName()
+		virtual LPCTSTR GetName() const
 		{
-			if(!m_Name)
-				CheckName();
 			return m_Name;
 		}
+
+		virtual LPCTSTR GetTitle() const
+		{
+			return m_Title;
+		}
+
+		virtual LPCTSTR GetFileName() const
+		{
+			return m_SchemeFile;
+		}
+
+		void SetSchemeManager(CSchemeManager* pManager);
+
+		bool operator < (const CScheme& compare) const;
+		bool operator > (const CScheme& compare) const;
+		const CScheme& operator = (const CScheme& copy);
+
+	protected:
+		TCHAR* m_SchemeFile;
+		TCHAR* m_Name;
+		TCHAR* m_Title;
+		CSchemeManager* m_pManager;
+
+		void SetupScintilla(CScintilla& sc);
+		void Init();
 };
 
 /**
@@ -71,8 +98,8 @@ class CDefaultScheme : public CScheme
 		virtual LPCTSTR GetName(){return _T("Default");}
 };
 
-typedef std::list<CScheme*>				SCHEME_LIST;
-typedef SCHEME_LIST::iterator			scit;	 
+typedef std::list<CScheme>				SCHEME_LIST;
+typedef SCHEME_LIST::iterator			SCIT;	 
 typedef std::map<ctcString, CScheme*>	SCHEME_MAP;
 typedef SCHEME_MAP::iterator			SCHEME_MAPIT;
 typedef SCHEME_MAP::value_type			SCMITEM;
@@ -83,6 +110,8 @@ public:
 	CSchemeManager() : m_SchemePath(NULL), m_CompiledPath(NULL){}
 	CSchemeManager(LPCTSTR schemepath, LPCTSTR compiledpath=NULL);
 	~CSchemeManager();
+
+	HMENU GetSchemeMenu();
 	
 	void SetPath(LPCTSTR schemepath);
 	void SetCompiledPath(LPCTSTR compiledpath);
@@ -98,6 +127,8 @@ public:
 	CScheme* SchemeForExt(LPCTSTR ext);
 	CScheme* SchemeByName(LPCTSTR name);
 	CScheme* GetDefaultScheme(){return &m_DefaultScheme;}
+
+	void BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCommand = SCHEMEMANAGER_SELECTSCHEME);
 
 protected:
 	TCHAR*			m_SchemePath;

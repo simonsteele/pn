@@ -36,11 +36,13 @@ typedef struct
 	int	Version;
 } CompiledHdrRec;
 
-#define SC_HDR_NAMESIZE 40
+#define SC_HDR_NAMESIZE 11
+#define SC_HDR_TITLESIZE 40
 
 typedef struct
 {
 	char Name[SC_HDR_NAMESIZE];
+	char Title[SC_HDR_TITLESIZE];
 	int Folding;
 } SchemeHdrRec;
 
@@ -80,7 +82,7 @@ typedef enum {fldEnabled = 1, fldCompact = 2, fldComments = 4} eFoldFlags;
 #define DOING_KEYWORDCOMBINE	12
 
 // File Content Defines
-#define CompileVersion 0x02
+#define CompileVersion 0x03
 #define FileID "Caffeine.Scheme"
 
 class StyleDetails
@@ -172,7 +174,7 @@ class SchemeRecorder : public CScintilla
 	public:
 		SchemeRecorder();
 	
-		bool StartRecording(LPCTSTR scheme, LPCTSTR outfile, int FoldFlags);
+		bool StartRecording(LPCTSTR scheme, LPCTSTR title, LPCTSTR outfile, int FoldFlags);
 		bool EndRecording();
 		bool IsRecording(){return m_out != NULL;}
 
@@ -185,7 +187,7 @@ class SchemeRecorder : public CScintilla
 	protected:
 		bool CheckNecessary(long Msg, WPARAM wParam, LPARAM lParam);
 
-		void WriteHeader(LPCTSTR schemename, int FoldFlags);
+		void WriteHeader(LPCTSTR schemename, LPCTSTR schemetitle, int FoldFlags);
 
 		StyleDetails	m_DefStyle;
 		eNextRec		m_next;

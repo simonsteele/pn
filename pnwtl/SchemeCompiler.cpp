@@ -88,9 +88,9 @@ SchemeRecorder::SchemeRecorder() : CScintilla()
 	m_next = nrMsgRec;
 }
 
-bool SchemeRecorder::StartRecording(LPCTSTR scheme, LPCTSTR outfile, int FoldFlags)
+bool SchemeRecorder::StartRecording(LPCTSTR scheme, LPCTSTR title, LPCTSTR outfile, int FoldFlags)
 {
-	ATLASSERT(m_out == NULL);
+	PNASSERT(m_out == NULL);
 
 	m_out = _tfopen(outfile, _T("wb"));
 
@@ -100,16 +100,12 @@ bool SchemeRecorder::StartRecording(LPCTSTR scheme, LPCTSTR outfile, int FoldFla
 	strcpy(&hdr.Magic[0], FileID);
 	fwrite(&hdr, sizeof(CompiledHdrRec), 1, m_out);
 
-	WriteHeader(scheme, FoldFlags);
-
-	//BeginParse();
-
-	//NormaliseFileTimes(filename, outfile);
+	WriteHeader(scheme, title, FoldFlags);
 	
 	return true;
 }
 
-void SchemeRecorder::WriteHeader(LPCTSTR schemename, int FoldFlags)
+void SchemeRecorder::WriteHeader(LPCTSTR schemename, LPCTSTR schemetitle, int FoldFlags)
 {
 	USES_CONVERSION;
 
@@ -117,6 +113,12 @@ void SchemeRecorder::WriteHeader(LPCTSTR schemename, int FoldFlags)
 
 	memset(&scHdr.Name[0], 0, SC_HDR_NAMESIZE);
 	strcpy(&scHdr.Name[0], T2CA(schemename));
+
+	if(schemetitle != NULL)
+	{
+		memset(&scHdr.Title[0], 0, SC_HDR_TITLESIZE);
+		strcpy(&scHdr.Title[0], T2CA(schemetitle));
+	}
 
 	scHdr.Folding = FoldFlags;
 
@@ -514,6 +516,7 @@ void SchemeCompiler::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR 
 	if(pState->m_State == DOING_LANGUAGE && _tcscmp(name, _T("language")) == 0)
 	{
 		LPCTSTR scheme = atts.getValue(_T("name"));
+		LPCTSTR title = atts.getValue(_T("title"));
 		if(scheme != NULL)
 		{
 			CString filename(pState->m_csOutPath);
@@ -537,7 +540,7 @@ void SchemeCompiler::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR 
 					foldflags |= fldComments;
 			}
 
-			m_Recorder.StartRecording(scheme, filename, foldflags);
+			m_Recorder.StartRecording(scheme, title, filename, foldflags);
 			
 			m_Recorder.SetDefStyle(&pState->m_Default);
 			pState->m_State = DOING_LANGUAGE_DETAILS;

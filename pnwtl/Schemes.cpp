@@ -19,28 +19,31 @@ using namespace ssreg;
 
 CScheme::CScheme()
 {
-	// This is a protected constructor, it can't be used
-	// unless in a sub-class. Schemes shouldn't be instantiated
-	// as stack member objects.
-
-	m_SchemeFile = NULL;
-	m_Name = NULL;
-	m_pManager = NULL;
+	Init();
 }
 
 CScheme::CScheme(CSchemeManager* pManager)
 {
-	m_SchemeFile = NULL;
-	m_Name = NULL;
+	Init();
+
 	m_pManager = pManager;
 }
 
 CScheme::CScheme(CSchemeManager* pManager, LPCTSTR filename)
 {
-	m_Name = NULL;
+	Init();
+
 	m_SchemeFile = new TCHAR[_tcslen(filename)+1];
 	_tcscpy(m_SchemeFile, filename);
 	m_pManager = pManager;
+}
+
+void CScheme::Init()
+{
+	m_SchemeFile = NULL;
+	m_Name = NULL;
+	m_Title = NULL;
+	m_pManager = NULL;
 }
 
 CScheme::~CScheme()
@@ -55,6 +58,11 @@ CScheme::~CScheme()
 	{
 		delete [] m_Name;
 		m_Name = NULL;
+	}
+
+	if(m_Title)
+	{
+		delete [] m_Title;
 	}
 }
 
@@ -100,14 +108,20 @@ void CScheme::CheckName()
 		cfile.Read(&hdr, sizeof(SchemeHdrRec));
 		
 		#ifdef UNICODE
+
+		USES_CONVERSION;
+
 		// Convert into a unicode string...	
-		TCHAR conv = new TCHAR[strlen(&hdr.Name[0])+1];
+		SetName(A2T(&hdr.Name[0]));
+		SetTitle(A2T(&hdr.Title[0]));
+		/*TCHAR conv = new TCHAR[strlen(&hdr.Name[0])+1];
 		mbstowcs(conv, &hdr.Name[0], strlen(&hdr.Name[0]));
 		SetName(conv);
-		delete [] conv;
+		delete [] conv;*/
 		#else
 		// Otherwise just copy the string.	
 		SetName(&hdr.Name[0]);
+		SetTitle(&hdr.Title[0]);
 		#endif
 
 		// Close the file...
@@ -117,10 +131,43 @@ void CScheme::CheckName()
 
 void CScheme::SetName(LPCTSTR name)
 {
-	if(m_Name)
-		delete [] m_Name;
-	m_Name = new TCHAR[_tcslen(name)+1];
-	_tcscpy(m_Name, name);
+	if(name)
+	{
+		if(m_Name)
+			delete [] m_Name;
+		m_Name = new TCHAR[_tcslen(name)+1];
+		_tcscpy(m_Name, name);
+	}
+}
+
+void CScheme::SetTitle(LPCTSTR title)
+{
+	if(title)
+	{
+		if(m_Title)
+			delete [] m_Title;
+
+		m_Title = new TCHAR[_tcslen(title)+1];
+		_tcscpy(m_Title, title);
+	}
+}
+
+void CScheme::SetFileName(LPCTSTR filename)
+{
+	if(filename)
+	{
+		if(m_SchemeFile != NULL)
+			delete [] m_SchemeFile;
+
+		m_SchemeFile = new TCHAR[_tcslen(filename)+1];
+		_tcscpy(m_SchemeFile, filename);
+	}
+}
+
+
+void CScheme::SetSchemeManager(CSchemeManager* pManager)
+{
+	m_pManager = pManager;
 }
 
 void CScheme::Load(CScintilla& sc, LPCTSTR filename)
@@ -176,13 +223,16 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 		
 		#ifdef UNICODE
 		// Convert into a unicode string...	
-		TCHAR conv = new TCHAR[strlen(&hdr.Name[0])+1];
-		mbstowcs(conv, &hdr.Name[0], strlen(&hdr.Name[0]));
-		SetName(conv);
-		delete [] conv;
+		USES_CONVERSION;
+
+		SetName(A2T(&hdr.Name[0]));
+		SetTitle(A2T(&hdr.Title[0]));
+		
 		#else
 		// Otherwise just copy the string.	
 		SetName(&hdr.Name[0]);
+		SetTitle(&hdr.Title[0]);
+		
 		#endif
 
 		// Set the defaults - these may be changed by the scheme loading
@@ -276,6 +326,29 @@ void CScheme::SetupScintilla(CScintilla& sc)
 	sc.SPerform(SCI_SETSELBACK, 1, ::GetSysColor(COLOR_HIGHLIGHT));
 }
 
+bool CScheme::operator < (const CScheme& compare) const 
+{
+	return _tcsicmp(GetTitle(), compare.GetTitle()) < 0;
+}
+
+bool CScheme::operator > (const CScheme& compare) const
+{
+	return _tcsicmp(GetTitle(), compare.GetTitle()) > 0;
+}
+
+const CScheme& CScheme::operator = (const CScheme& copy)
+{
+	m_pManager = copy.m_pManager;
+
+	SetName(copy.GetName());
+	SetTitle(copy.GetTitle());
+	SetFileName(copy.GetFileName());
+
+	return *this;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
 void CDefaultScheme::Load(CScintilla& sc, LPCTSTR filename)
 {
 	SetupScintilla(sc);
@@ -308,10 +381,10 @@ CSchemeManager::~CSchemeManager()
 	if(m_CompiledPath)
 		delete [] m_CompiledPath;
 
-	for(scit i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
+	/*for(SCIT i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
 	{
 		delete (*i);
-	}
+	}*/
 	m_Schemes.clear();
 
 	m_SchemeNameMap.clear();
@@ -394,21 +467,30 @@ void CSchemeManager::Load()
 		Compile();
 	}
 
-	CScheme *cs = NULL;
-
 	sPattern = m_CompiledPath;
 	sPattern += _T("*.cscheme");
+	
 	hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
 	if (hFind != INVALID_HANDLE_VALUE)
 	{
 		found = TRUE;
+
+		CScheme *cs = NULL;
+		SCIT csi;
+
 		while(found)
 		{
 			to_open = m_CompiledPath;
 			to_open += FindFileData.cFileName;
 
-			cs = new CScheme(this, to_open.c_str());
-			m_Schemes.insert(m_Schemes.end(), cs);
+			csi = m_Schemes.insert(m_Schemes.end());
+			cs = &(*csi);
+			cs->SetSchemeManager(this);
+			cs->SetFileName(to_open.c_str());
+			cs->CheckName();
+
+			//cs = new CScheme(this, to_open.c_str());
+			//m_Schemes.insert(m_Schemes.end(), cs);
 
 			///@todo replace this with something less lower-case un-friendly
 			SchemeName = cs->GetName();
@@ -425,6 +507,8 @@ void CSchemeManager::Load()
 
 		FindClose(hFind);
 	}
+
+	m_Schemes.sort();
 
 	LoadExtMap(m_CompiledPath);
 }
@@ -526,4 +610,19 @@ void CSchemeManager::Compile()
 
 	SchemeCompiler sc;
 	sc.Compile(m_SchemePath, m_CompiledPath, _T("master.scheme"));
+}
+
+void CSchemeManager::BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCommand)
+{
+	CSMenuHandle m(menu);
+	
+	m.AddItem(_T("&Default\tCtrl+N"), ID_FILE_NEW);
+
+	int id;
+
+	for(SCIT i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
+	{
+		id = CSMenuManager::GetInstance()->RegisterCallback(pHandler, iCommand, (LPVOID)&(*i));
+		m.AddItem( (*i).GetTitle(), id);
+	}
 }
