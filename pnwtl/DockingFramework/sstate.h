@@ -589,11 +589,15 @@ protected:
 				REBARBANDINFO rbi;
 				ZeroMemory(&rbi,sizeof(REBARBANDINFO));
 				rbi.cbSize = sizeof(REBARBANDINFO);
-				rbi.fMask = RBBIM_ID | RBBIM_COLORS |									
+				rbi.fMask = RBBIM_ID | 
 							RBBIM_SIZE | RBBIM_STYLE
-							#if (_WIN32_IE >= 0x0400)
-								| RBBIM_HEADERSIZE | RBBIM_IDEALSIZE
-							#endif	
+							// The following causes the app to remember rebar colors,
+							// breaking windows theme changes.
+							//RBBIM_COLORS |
+							// The following causes the rebars to shift left on restore.
+							//#if (_WIN32_IE >= 0x0400)
+							//	| RBBIM_HEADERSIZE | RBBIM_IDEALSIZE
+							//#endif	
 								;
 				m_rebar.GetBandInfo(i, &rbi);
 				::RegSetValueEx(key,sstrKey.str().c_str(),NULL,REG_BINARY,

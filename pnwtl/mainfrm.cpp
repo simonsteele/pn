@@ -366,6 +366,8 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_pOutputWnd->Create(m_hWnd, rcBar, _T("Output"), dwStyle, WS_EX_TOOLWINDOW);
 	DockWindow(*m_pOutputWnd, dockwins::CDockingSide::sBottom, 0, 1, 200, 80);
 
+	m_pOutputWnd->GetView()->SetToolParser(false, "%f:%l: .*");
+
 	InitGUIState();
 	//PostMessage(PN_INITIALISEFRAME);
 

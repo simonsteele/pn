@@ -71,6 +71,10 @@
 				<style name="message (---)" key="13" fore="7f0000" />
 			</group>
 			<style name="PHP error" key="14" fore="ff0000" hotspot="true" />
+			
+			<!-- this is the style used by the container-based error lexer. It may in the future
+			clash with that used by scintilla so will need updating then. -->
+			<style name="Custom error" key="20" fore="800080" hotspot="true" />
 		</use-styles>
 	</language>
 </Scheme>

@@ -14,14 +14,25 @@
 #include "ScintillaImpl.h"
 #include "ScintillaWTL.h"
 
+#define SCE_CUSTOM_ERROR	20
+
+class ScintillaAccessor;
+
+namespace PCRE {
+	class RegExp;
+}
+
 /**
  * Scintilla window with special output handling.
  */
 class COutputView : public CScintillaWindowImpl< COutputView, CScintillaImpl >, 
 	public IToolOutputSink
 {
+typedef CScintillaWindowImpl< COutputView, CScintillaImpl > baseClass;
+
 public:
-	typedef CScintillaWindowImpl< COutputView, CScintillaImpl > baseClass;
+	COutputView();
+	~COutputView();
 
 	BEGIN_MSG_MAP(COutputView)
 		COMMAND_ID_HANDLER(ID_OUTPUT_CLEAR, OnClear)
@@ -38,18 +49,43 @@ public:
 // Implement IToolOutputSink
 public:
 	virtual void _AddToolOutput(LPCTSTR output, int nLength = -1);
+	virtual void SetToolBasePath(LPCTSTR path);
+	virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL);
 
 protected:
 	LRESULT OnHotSpotClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	void ExtendStyleRange(int startPos, int style, TextRange* tr);
 	void HandleGCCError(int style, int position);
+	void HandleCustomError(int style, int position);
 
-	void HandleREError(int style, int position, const char* reDef);
+	void HandleREError(PCRE::RegExp& re, int style, int position);
+	void BuildAndHandleREError(int style, int position, const char* reDef);
+
+	void CustomColouriseLine(ScintillaAccessor& styler, char *lineBuffer, int length, int endLine);
+	void HandleStyleNeeded(ScintillaAccessor& styler, int startPos, int length);
 
 	LRESULT OnClear(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	virtual void OnFirstShow();
+
+	void SetOutputLexer();
+	void SetCustomLexer();
+
+protected:
+	bool			m_bCustom;
+	tstring			m_basepath;
+	tstring			m_customre;
+	PCRE::RegExp*	m_pRE;
+};
+
+/**
+ * @brief Build regular expressions for tool output matching.
+ */
+class CToolREBuilder : public CustomFormatStringBuilder<CToolREBuilder>
+{
+	public:
+		void OnFormatChar(TCHAR thechar);
 };
 
 /**

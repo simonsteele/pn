@@ -239,6 +239,10 @@ class ToolOwner : public IToolOutputSink
 			pT->AddToolOutput(outputstring, nLength);
 		}
 
+		// Default implementation while the framework evolves.
+		virtual void SetToolBasePath(LPCTSTR path){};
+		virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL){};
+
 		void AddRunningTool(ToolRunner* pRunner)
 		{
 			T* pT = static_cast<T*>(this);

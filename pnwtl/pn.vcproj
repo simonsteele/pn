@@ -186,6 +186,9 @@
 				RelativePath=".\pnutils.cpp">
 			</File>
 			<File
+				RelativePath="scaccessor.cpp">
+			</File>
+			<File
 				RelativePath=".\scintillaif.cpp">
 			</File>
 			<File

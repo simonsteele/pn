@@ -80,6 +80,11 @@ bool RegExp::Match(const char* str, int offset)
 	return match(str, strlen(str), offset, 0);
 }
 
+bool RegExp::Match(const char* str, int length, int offset)
+{
+	return match(str, length, offset, 0);
+}
+
 bool RegExp::GetNamedMatch(const char* name, tstring& str)
 {
 	const char* buf;

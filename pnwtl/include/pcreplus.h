@@ -39,6 +39,7 @@ class RegExp
 		void Study();
 		
 		bool Match(const char* str, int offset = 0);
+		bool Match(const char* str, int length, int offset);
 
 		bool GetNamedMatch(const char* name, tstring& str);
 
