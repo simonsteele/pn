@@ -78,6 +78,7 @@ class CSMenuManager
 		void UnRegisterCallbacks(int iID);
 
 		bool HandleCommand(int iID);
+		bool LocalHandleCommand(int iID, int iCommand, CSMenuEventHandler* pHandler);
 
 	protected:
 		CSMenuManager();
@@ -192,6 +193,11 @@ class CSMenuT
 			m_hMenu = copy.m_hMenu;
 			return *this;
 		}
+
+		operator HMENU ()
+		{
+			return m_hMenu;
+		}
 	
 	protected:
 		HMENU m_hMenu;
@@ -221,17 +227,25 @@ class CSPopupMenu : public CSMenu
 		HMENU m_hSubMenu;
 };
 
-#define CALLBACK_COMMAND_HANDLER() \
+#define ROUTE_MENUCOMMANDS() \
 	if(uMsg == WM_COMMAND) \
 	{ \
 		bHandled = TRUE; \
-		if(CSMenuManager::GetInstance()->HandleCommand(LOWORD(wParam))) \
+		if( CSMenuManager::GetInstance()->HandleCommand(LOWORD(wParam)) ) \
 			return TRUE; \
 		else \
 			bHandled = FALSE; \
 	}
 
-#endif
+#define LOCAL_MENUCOMMAND(id) \
+	if(uMsg == WM_COMMAND) \
+	{ \
+		bHandled = TRUE; \
+		if( CSMenuManager::GetInstance()->LocalHandleCommand(LOWORD(wParam), id, this) ) \
+			return TRUE; \
+		else \
+			bHandled = FALSE; \
+	}
 
 #define BEGIN_MENU_HANDLER_MAP() \
 	void SHandleMenuCommand(int iCommand, LPVOID data) \
@@ -247,3 +261,5 @@ class CSPopupMenu : public CSMenu
 
 #define END_MENU_HANDLER_MAP() \
 	}
+
+#endif

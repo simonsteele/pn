@@ -108,10 +108,30 @@ bool CSMenuManager::HandleCommand(int iID)
 	if(i != m_Handlers.end())
 	{
 		menu_event_handler* pRecord = (*i).second;
+		if(pRecord->pHandler)
+		{
+			pRecord->pHandler->SHandleMenuCommand(pRecord->iID, pRecord->data);
+			bHandled = true;
+		}
+	}
 
-		pRecord->pHandler->SHandleMenuCommand(pRecord->iID, pRecord->data);
+	return bHandled;
+}
 
-		bHandled = true;
+bool CSMenuManager::LocalHandleCommand(int iID, int iCommand, CSMenuEventHandler* pHandler)
+{
+	bool bHandled = false;
+
+	MH_CI i = m_Handlers.find(iID);
+	if(i != m_Handlers.end())
+	{
+		menu_event_handler* pRecord = (*i).second;
+		if(pRecord->iID == iCommand)
+		{
+			pHandler->SHandleMenuCommand(pRecord->iID, pRecord->data);
+
+			bHandled = true;
+		}
 	}
 
 	return bHandled;

@@ -95,7 +95,9 @@ class CDefaultScheme : public CScheme
 
 		virtual void CheckName(LPCTSTR filename = NULL){}
 
-		virtual LPCTSTR GetName(){return _T("Default");}
+		virtual LPCTSTR GetName() const {return _T("Default");}
+
+		virtual LPCTSTR GetTitle() const {return _T("Plain Text");}
 };
 
 typedef std::list<CScheme>				SCHEME_LIST;
@@ -104,41 +106,68 @@ typedef std::map<ctcString, CScheme*>	SCHEME_MAP;
 typedef SCHEME_MAP::iterator			SCHEME_MAPIT;
 typedef SCHEME_MAP::value_type			SCMITEM;
 
+typedef struct 
+{
+	CScheme* pScheme;
+	int iCommand;
+} menuid_scheme_pair;
+
+typedef list<menuid_scheme_pair> MISCHEMELIST;
+
+class CSchemeSwitcher
+{
+	public:
+		CSchemeSwitcher();
+		~CSchemeSwitcher();
+
+		void Reset();
+
+		void AddMenu(HMENU hMenu, int iCommand = SCHEMEMANAGER_SELECTSCHEME);
+		void SetActiveScheme(HMENU hMenu, CScheme* pCurrent);
+
+	protected:
+		void BuildMenu(HMENU hMenu, int iCommand);
+
+		MISCHEMELIST		m_list;
+};
+
 class CSchemeManager
 {
-public:
-	CSchemeManager() : m_SchemePath(NULL), m_CompiledPath(NULL){}
-	CSchemeManager(LPCTSTR schemepath, LPCTSTR compiledpath=NULL);
-	~CSchemeManager();
+	public:
+		CSchemeManager() : m_SchemePath(NULL), m_CompiledPath(NULL){}
+		CSchemeManager(LPCTSTR schemepath, LPCTSTR compiledpath=NULL);
+		~CSchemeManager();
+		
+		void SetPath(LPCTSTR schemepath);
+		void SetCompiledPath(LPCTSTR compiledpath);
 
-	HMENU GetSchemeMenu();
-	
-	void SetPath(LPCTSTR schemepath);
-	void SetCompiledPath(LPCTSTR compiledpath);
+		void GetPath(ctcString& csPath){if(m_SchemePath) csPath = m_SchemePath;}
+		LPCTSTR GetCompiledPath(){return m_CompiledPath;}
+		void GetCompiledPath(ctcString& csPath){if(m_CompiledPath) csPath = m_CompiledPath;}
 
-	void GetPath(ctcString& csPath){if(m_SchemePath) csPath = m_SchemePath;}
-	LPCTSTR GetCompiledPath(){return m_CompiledPath;}
-	void GetCompiledPath(ctcString& csPath){if(m_CompiledPath) csPath = m_CompiledPath;}
+		void Load();
+		void Compile();
+		void LoadExtMap(LPCTSTR folder);
+		
+		CScheme* SchemeForExt(LPCTSTR ext);
+		CScheme* SchemeByName(LPCTSTR name);
+		CScheme* GetDefaultScheme(){return &m_DefaultScheme;}
 
-	void Load();
-	void Compile();
-	void LoadExtMap(LPCTSTR folder);
-	
-	CScheme* SchemeForExt(LPCTSTR ext);
-	CScheme* SchemeByName(LPCTSTR name);
-	CScheme* GetDefaultScheme(){return &m_DefaultScheme;}
+		SCHEME_LIST* GetSchemesList(){return &m_Schemes;}
 
-	void BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCommand = SCHEMEMANAGER_SELECTSCHEME);
+		void BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCommand = SCHEMEMANAGER_SELECTSCHEME, bool bNewMenu = true);
 
-protected:
-	TCHAR*			m_SchemePath;
-	TCHAR*			m_CompiledPath;
-	SCHEME_LIST		m_Schemes;
+	protected:
+		TCHAR*			m_SchemePath;
+		TCHAR*			m_CompiledPath;
+		SCHEME_LIST		m_Schemes;
 
-	SCHEME_MAP		m_SchemeNameMap;
-	SCHEME_MAP		m_SchemeExtMap;
+		SCHEME_MAP		m_SchemeNameMap;
+		SCHEME_MAP		m_SchemeExtMap;
 
-	CDefaultScheme	m_DefaultScheme;
+		CDefaultScheme	m_DefaultScheme;
 };
+
+//CheckMenuItem
 
 #endif

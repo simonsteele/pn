@@ -136,6 +136,11 @@ public:
 		stat.SetPaneText(ID_POS_PANE, tvstatbuf);
 	}
 
+	CScheme* GetCurrentScheme()
+	{
+		return m_pLastScheme;
+	}
+
 protected:
 
 	virtual void OnFirstShow()

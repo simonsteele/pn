@@ -68,6 +68,9 @@ public:
 
 		// For ::FromHandle
 		IMPLEMENT_FROMHANDLE()
+
+		LOCAL_MENUCOMMAND(MENUMESSAGE_CHANGESCHEME)
+		//ROUTE_MENUCOMMANDS()
 		
 		// Chaining
 		CHAIN_MSG_MAP(baseClass)
@@ -196,7 +199,10 @@ public:
 
 		CSPopupMenu sm;
 
-		theApp.GetSchemes().BuildMenu(sm.GetHandle(), this, MENUMESSAGE_CHANGESCHEME);
+		//theApp.GetSchemes().BuildMenu(sm.GetHandle(), this, MENUMESSAGE_CHANGESCHEME);
+
+		/*theApp.GetSchemes().GetSwitcher()->*/s_Switcher.AddMenu(sm.GetHandle(), MENUMESSAGE_CHANGESCHEME);
+		/*theApp.GetSchemes().GetSwitcher()->*/s_Switcher.SetActiveScheme(m_hMenu, NULL);
 
 		::ModifyMenu(view.GetHandle(), 3, MF_BYPOSITION | MF_POPUP, (UINT)sm.GetHandle(), _T("Change &Scheme"));
 
@@ -407,6 +413,7 @@ public:
 	void OnSchemeChange(LPVOID pVoid)
 	{
 		m_view.SetScheme(static_cast<CScheme*>(pVoid));
+		/*theApp.GetSchemes().GetSwitcher()->*/s_Switcher.SetActiveScheme(m_hMenu, m_view.GetCurrentScheme());
 	}
 
 	////////////////////////////////////////////////////
@@ -493,7 +500,11 @@ public:
 protected:
 	HIMAGELIST m_hImgList;
 	int m_lastLexer;
+
+	static CSchemeSwitcher s_Switcher;
 };
+
+CSchemeSwitcher CChildFrame::s_Switcher;
 
 /////////////////////////////////////////////////////////////////////////////
 

@@ -612,17 +612,88 @@ void CSchemeManager::Compile()
 	sc.Compile(m_SchemePath, m_CompiledPath, _T("master.scheme"));
 }
 
-void CSchemeManager::BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCommand)
+void CSchemeManager::BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCommand, bool bNewMenu)
 {
 	CSMenuHandle m(menu);
-	
-	m.AddItem(_T("&Default\tCtrl+N"), ID_FILE_NEW);
-
 	int id;
+	
+	if(bNewMenu)
+	{
+		m.AddItem(_T("&Default\tCtrl+N"), ID_FILE_NEW);
+	}
+	else
+	{
+		id = CSMenuManager::GetInstance()->RegisterCallback(pHandler, iCommand, (LPVOID)theApp.GetSchemes().GetDefaultScheme());
+		m.AddItem(_T("Plain Text"), id);
+	}
 
 	for(SCIT i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
 	{
 		id = CSMenuManager::GetInstance()->RegisterCallback(pHandler, iCommand, (LPVOID)&(*i));
 		m.AddItem( (*i).GetTitle(), id);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+CSchemeSwitcher::CSchemeSwitcher()
+{
+	
+}
+
+CSchemeSwitcher::~CSchemeSwitcher()
+{
+	m_list.clear();
+}
+
+void CSchemeSwitcher::AddMenu(HMENU hMenu, int iCommand)
+{
+	CSMenuHandle m(hMenu);
+
+	if(m_list.size() == 0)
+	{
+		BuildMenu(hMenu, iCommand);
+	}
+	
+	for(MISCHEMELIST::iterator i = m_list.begin(); i != m_list.end(); ++i)
+	{
+		m.AddItem( (*i).pScheme->GetTitle(), (*i).iCommand);
+	}
+}
+
+void CSchemeSwitcher::BuildMenu(HMENU hMenu, int iCommand)
+{
+	if(m_list.size() == 0)
+	{
+		menuid_scheme_pair x;
+		
+		x.pScheme = theApp.GetSchemes().GetDefaultScheme();
+		x.iCommand = CSMenuManager::GetInstance()->RegisterCallback(NULL, iCommand, (LPVOID)x.pScheme);
+		m_list.insert(m_list.end(), x);
+		
+		SCHEME_LIST* pSchemes = theApp.GetSchemes().GetSchemesList();
+
+		for(SCIT i = pSchemes->begin(); i != pSchemes->end(); ++i)
+		{
+			x.pScheme = &(*i);
+			x.iCommand = CSMenuManager::GetInstance()->RegisterCallback(NULL, iCommand, (LPVOID)x.pScheme);
+			m_list.insert(m_list.end(), x);
+		}
+	}
+}
+
+void CSchemeSwitcher::Reset()
+{
+	throw "Not Yet Implemented";
+}
+
+void CSchemeSwitcher::SetActiveScheme(HMENU hMenu, CScheme* pCurrent)
+{
+	for(MISCHEMELIST::iterator i = m_list.begin(); i != m_list.end(); ++i)
+	{
+		if((*i).pScheme == pCurrent)
+			::CheckMenuItem((HMENU)hMenu, (*i).iCommand, MF_BYCOMMAND | MF_CHECKED);
+		else
+			::CheckMenuItem((HMENU)hMenu, (*i).iCommand, MF_BYCOMMAND | MF_UNCHECKED);
 	}
 }

@@ -169,7 +169,7 @@ CAPTION "About"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,130,81,50,14
-    CTEXT           "Programmers Notepad 2\nv0.0.1 poptart\n\nCopyright (c) 2002 Simon Steele",
+    CTEXT           "Programmers Notepad 2\nv0.1 poptart\n\nCopyright (c) 2002 Simon Steele",
                     IDC_STATIC,13,57,103,32
     ICON            IDR_MAINFRAME,IDC_STATIC,55,26,20,20
     GROUPBOX        "",IDC_STATIC,7,7,115,88
@@ -230,8 +230,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,13
- PRODUCTVERSION 1,0,0,13
+ FILEVERSION 2,0,1,13
+ PRODUCTVERSION 2,0,1,13
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -248,8 +248,8 @@ BEGIN
         BEGIN
             VALUE "Comments", "\0"
             VALUE "CompanyName", "Simon Steele (Echo Software)\0"
-            VALUE "FileDescription", "Programmers Notepad (WTL Test Edition)\0"
-            VALUE "FileVersion", "1.0.0.13\0"
+            VALUE "FileDescription", "Programmers Notepad 2\0"
+            VALUE "FileVersion", "2.0.1.13\0"
             VALUE "InternalName", "WTLPN\0"
             VALUE "LegalCopyright", "Copyright © 2002 Simon Steele (Echo Software)\0"
             VALUE "LegalTrademarks", "\0"
@@ -257,7 +257,7 @@ BEGIN
             VALUE "OriginalFilename", "pn.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "Programmers Notepad\0"
-            VALUE "ProductVersion", "1.0.0.13\0"
+            VALUE "ProductVersion", "2.0.1.13\0"
             VALUE "SpecialBuild", "\0"
         END
     END
