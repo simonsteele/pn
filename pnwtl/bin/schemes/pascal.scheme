@@ -2,20 +2,23 @@
 <Scheme>
 	<keyword-classes>
 		<keyword-class name="pascal">
-			program const type var begin end array set record string if then else
+			program const type var begin end array set packed record string if then else
 			while for to downto do with repeat until case of goto exit label procedure
 			function nil file and or not xor div mod unit uses implementation interface
 			external asm inline object constructor destructor virtual far assembler near
 			inherited stdcall cdecl library export exports end.
-			class private public protected ansistring raise try except on
-			property read write override overload resourcestring
-			false true initialization index name finally
+			class ansistring raise try except on index name finally
+			resourcestring false true initialization finalization 
+		</keyword-class>
+		<keyword-class name="pascal_inclass">
+			read write override overload public protected private property published default
 		</keyword-class>
 	</keyword-classes>
 	<language name="pascal" title="Pascal" folding="true" foldcomments="true" foldcompact="false">
 		<lexer name="pascal" />
 		<use-keywords>
 			<keyword key="0" class="pascal"/>
+			<keyword key="1" class="pascal_inclass"/>
 		</use-keywords>
 		<use-styles>
 			<style name="DEFAULT" key="32" />
@@ -30,6 +33,7 @@
 			<style name="Symbols" key="8" />
 			<style name="PreProcessor" key="9" fore="colour.preproc"/>
 			<style name="Operators" key="10" bold="true"/>
+			<style name="Class Definition Words" key="16" class="keyword"/>
 			<style name="Brace Match" key="34" bold="true" fore="0000ff"/>
 			<style name="Brace MisMatch" key="35" bold="true" fore="ff0000"/>
 		</use-styles>
