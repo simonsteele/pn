@@ -1,0 +1,21 @@
+!NAME=Simple HTML
+!IMAGE=html.bmp
+!TEXT=Plain Page
+<html>
+<head>
+  <boo>
+  <title>|</title>
+</head>
+<body bgcolor="#ffffff" text="#000000">
+
+</body>
+</html>
+!
+!TEXT=2x2 Table
+<table border="1">
+ <tr>
+   <td>|</td>
+   <td></td>
+ </tr>
+</table>
+!

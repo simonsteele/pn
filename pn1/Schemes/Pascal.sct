@@ -1,0 +1,114 @@
+[arrayc | array declaration (const)]
+array[0..|] of = ();
+[arrayd | array declaration (var)]
+array[0..|] of ;
+[casee | case statement (with else)]
+case | of
+  : ;
+  : ;
+else ;
+end;
+  
+[cases | case statement]
+case | of
+  : ;
+  : ;
+end;
+  
+[classc | class declaration (with Create/Destroy overrides)]
+T| = class(T)
+private
+
+protected
+
+public
+  constructor Create; override;
+  destructor Destroy; override;
+published 
+
+end;
+[classd | class declaration (no parts)]
+T| = class(T)
+
+end;
+[classf | class declaration (all parts)]
+T| = class(T)
+private
+
+protected
+
+public
+
+published 
+
+end;
+[forb | for statement]
+for | :=  to  do
+begin
+
+end;
+[fors | for (no begin/end)]
+for | :=  to  do
+[function | function declaration]
+function |(): ;
+begin
+
+end;
+[ifb | if statement]
+if | then
+begin
+
+end;
+[ife | if then (no begin/end) else (no begin/end)]
+if | then
+
+else
+[ifeb | if then else]
+if | then
+begin
+
+end
+else
+begin
+
+end;
+[ifs | if (no begin/end)]
+if | then
+[procedure | procedure declaration]
+procedure |();
+begin
+
+end;
+[trycf | try finally (with Create/Free)]
+|variable := typename.Create; 
+try
+
+finally
+  variable.Free;
+end;
+[trye | try except]
+try
+  | 
+except
+
+end;
+[tryf | try finally]
+try
+  | 
+finally
+
+end;
+[whileb | while statement]
+while | do
+begin
+
+end;
+[whiles | while (no begin)]
+while | do
+[withb | with statement]
+with | do
+begin
+
+end;
+[withs | with (no begin)]
+with | do

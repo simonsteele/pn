@@ -1,0 +1,79 @@
+!NAME=Pascal Class Helpers
+!Text=Class
+type | = class
+private
+  // insert private members here
+public
+  // insert public members here
+protected
+  // insert protected members here
+published
+  // insert published members here
+end;
+!
+!Text=Class Unit
+unit |;
+
+{***************************************************************
+ *
+ * Unit Name: 
+ * Purpose  : 
+ * Author   : 
+ * Copyright: This Source Code is Copyright © 
+ * History  : 
+ *
+ **************************************************************}
+
+interface
+
+uses Classes;
+
+type 
+  tNewClass = class
+  private
+    // insert private members here
+  public
+    // insert public members here
+  protected
+    // insert protected members here
+  published
+    // insert published members here
+  end;
+
+implementation
+
+end.
+!
+!Text=TObject Descendant
+type | = class(TObject)
+private
+  // insert private members here
+public
+  // insert public members here
+protected
+  // insert protected members here
+published
+  // insert published members here
+end;
+!
+!Text=TWinControl Descendant
+type | = class(TWinControl)
+private
+  // insert private members here
+public
+  // insert public members here
+protected
+  // insert protected members here
+published
+  // insert published members here
+end;
+!Text=Component Registration
+procedure Register;
+begin
+   // Remember to include this function in your interface section
+   // above, and to change the values below!
+   // You can replace 'Samples' with the name of the page on
+   // which to insert your component by default...
+   RegisterComponents( 'Samples', [ | ] );
+end;
+!

@@ -1,0 +1,58 @@
+[{%name} | Environment Variable]
+{%NAME|}
+[{\\} | Backslash]
+{\}
+[{app} | Application directory]
+{app}
+[{cf} | Common Files Directory]
+{cf}
+[{commondesktop} | Common Desktop]
+{commondesktop}
+[{commonprograms} | All Users Programs Folder]
+{commonprograms}
+[{commonstartmenu} | Common Start Menu]
+{commonstartmenu}
+[{commonstartup} | All Users Startup Folder]
+{commonstartup}
+[{computername} | GetComputerName]
+{computername}
+[{dao} | DAO Directory]
+{dao}
+[{fonts} | Fonts Directory]
+{fonts}
+[{group} | Program Group]
+{group}
+[{groupname} | Program Group Name Only]
+{groupname}
+[{hwnd} | Handle of Setup's Window]
+{hwnd}
+[{pf} | Program Files Directory]
+{pf}
+[{sd} | System Drive]
+{sd}
+[{sendto} | Current Users Send To Folder]
+{sendto}
+[{src} | Source Directory]
+{src}
+[{srcexe} | Path to Setup Program]
+{srcexe}
+[{sys} | System Directory]
+{sys}
+[{tmp} | Temporary Directory]
+{tmp}
+[{userappdata} | Users Application Data Folder]
+{userappdata}
+[{userdesktop} | Current User Desktop]
+{userdesktop}
+[{userdocs} | Users My Documents Folder]
+{userdocs}
+[{userprograms} | Current Users Programs Folder]
+{userprograms}
+[{userstartmenu} | Current User Start Menu]
+{userstartmenu}
+[{userstartup} | Current Users Startup Folder]
+{userstartup}
+[{win} | Windows Directory]
+{win}
+[arrayc | array declaration (const)]
+array[0..|] of = ();

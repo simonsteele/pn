@@ -1,0 +1,202 @@
+[addl | MsgAddLine( line )]
+MsgAddLine("|")
+[addrof | AddressOf( string )]
+AddressOf("|")
+[appfile | AppendFile( string )]
+AppendFile("|")
+[calldf | CallDLLFunction( params )]
+CallDLLFunction("|", "", "", )
+[calls | CallScript( script )]
+CallScript("|")
+[cfile | CloseFile( handle )]
+CloseFile(|)
+[cj | CJ( params )]
+CJ("|", , "")
+[console | ConsoleMenuCommand( command )]
+ConsoleMenuCommand("|")
+[crfile | CreateFile( handle )]
+CreateFile("|")
+[dbdel | DBDeleteRecord( params )]
+DBDeleteRecord("|", "")
+[dblist | DBListRecords( db )]
+DBListRecords("|")
+[dbr | DBRead( params )]
+DBRead("|", "", "")
+[dbre | DBRecordExists( db, rec )]
+DBRecordExists("|", "")
+[dbw | DBWrite( params )]
+DBWrite("|","","", "")
+[def | Define( function )]
+
+Define("|",
+Do(
+    
+)
+)
+[delh | DeleteHeader( header )]
+DeleteHeader("|")
+[dell | MsgDeleteLine( num )]
+MsgDeleteLine(|)
+[dfile | DeleteFile( handle )]
+DeleteFile("|")
+[do | Do( functions )]
+Do(
+|
+)
+[dtreal | DateTimeToReal( DateTime )]
+DateTimeToReal("|")
+[eof | EOF( handle )]
+EOF(|)
+[exe | Execute( file, params )]
+Execute("|", "")
+[exeas | ExecuteAsync( file, params )]
+ExecuteAsync("|", "")
+[for | For with Single Command]
+For(|, "", )
+[ford | For with Do]
+For(|, "",
+Do(
+    
+)
+)
+[formd | FormatDate( params )]
+FormatDate("|", )
+[formdt | FormatDateTime( params )]
+FormatDateTime("|", )
+[formt | FormatTime( params )]
+FormatTime("|", )
+[getdir | GetDirectory( dir )]
+GetDirectory("|")
+[getdirf | GetDirField( params )]
+GetDirField("|", "", "")
+[getfdir | GetFieldOfDirectory( params )]
+GetFieldOfDirectory("|", "", "")
+[getl | MsgGetLine( num )]
+MsgGetLine(|)
+[getlc | MsgGetLineCount()]
+MsgGetLineCount()|
+[getmb | GetMailboxes()]
+GetMailboxes()|
+[getmg | GetMailGroups()]
+GetMailGroups()|
+[getms | GetMailSlots()]
+GetMailSlots()
+[getr | MsgGetRcpts()]
+MsgGetRcpts()|
+[gets | MsgGetSender()]
+MsgGetSender()|
+[getsub | GetSubscribers( list )]
+GetSubscribers("|")
+[getsys | GetSystemVar( var )]
+GetSystemVar("|")
+[head | Header( header )]
+Header("|")
+[hof | HostOf( address )]
+HostOf("|")
+[if | If( cond, statement )]
+If(|,
+  
+)
+[ifd | If with Do()]
+If(|,
+Do(
+      
+)
+)
+[insl | MsgInsertLine( params )]
+MsgInsertLine(|, "")
+[len | Length( string )]
+Length("|")
+[lh | LoadHeader( params )]
+LoadHeader("|",
+  
+)
+[listc | ListCount( list )]
+ListCount("|")
+[listi | ListItem( list, item )]
+ListItem("|", )
+[lj | LJ( params )]
+LJ("", , "")
+[lm | LoadMessage( params )]
+LoadMessage("|",
+  
+)
+[locusr | IsUserLocal( user )]
+IsUserLocal("|")
+[match | WildcardMatch( params )]
+WildcardMatch("|", "")
+[matchr | WildcardMatchReplace( params )]
+WildcardMatchReplace("|", "", "")
+[mbody | MessageBody( params )]
+MessageBody(|, )
+[name | NameOf( address )]
+NameOf("|")
+[not | Not( cond )]
+Not(|)
+[now | now()]
+Now()|
+[ofile | OpenFile( handle )]
+OpenFile("|")
+[orgm | OriginalMessage( msg )]
+OriginalMessage(|)
+[parm | Params( params )]
+Params("|", "", )
+[post | PostMessage( params )]
+PostMessage("|", "",
+  
+)
+[read | Read( params )]
+Read(|)
+[realdt | RealToDateTime( real )]
+RealToDateTime(|)
+[rep | Repeat( params )]
+Repeat( |, )
+[repd | Repeat with Do()]
+Repeat(
+Do(
+|
+),
+  
+)
+[rfile | RenameFile( from, to )]
+RenameFile("|", "")
+[rj | RJ( params )]
+RJ("|", , "")
+[saddr | SameAddress( one, two )]
+SameAddress("|", "")
+[selin | SelectInMessage()]
+SelectInMessage()|
+[selout | SelectOutMessage()]
+SelectOutMessage()|
+[sethead | SetHeader( head, string )]
+SetHeader("|", "")
+[setr | MsgSetRcpts( rcpts )]
+MsgSetRcpts("|")
+[setsys | SetSystemVar( params )]
+SetSystemVar("", "")
+[shellex | ShellExecute( params )]
+ShellExecute("|", "")
+[showfrm | ShowForm( params )]
+ShowForm(|, , "", )
+[showfrmd | ShowForm with Do]
+ShowForm(|, , "",
+Do(
+    
+)
+)
+[subs | SubStr( params )]
+SubStr("|", , )
+[uniqs | UniqueString()]
+UniqueString()|
+[usrof | UserOf( address )]
+UserOf("|")
+[whl | While( params )]
+While(|, )
+[whld | While with Do]
+While(|,
+Do(
+    
+)
+)
+[write | Write( params )]
+Write(|, "")

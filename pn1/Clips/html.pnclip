@@ -1,0 +1,43 @@
+!NAME=HTML Tags
+!Text=<html>
+<html>
+|
+</html>
+!
+!Text=<head>
+<head>
+|
+</head>
+!
+!Text=<title>
+<TITLE>|</title>
+!
+!Text=<body>
+<body>
+|
+</body>
+!
+!Text=<p>
+<p>|</p>
+!
+!Text=<font face>
+<font face="|"></font>
+!
+!Text=<font size>
+<font size="|"></font>
+!
+!Text=<b>
+<b>|</b>
+!
+!Text=<i>
+<i>|</i>
+!
+!Text=<u>
+<u>|</u>
+!
+!Text=<hr>
+<hr>|
+!
+!Text=<br>
+<br>|
+!
