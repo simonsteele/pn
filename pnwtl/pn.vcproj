@@ -362,7 +362,13 @@
 				RelativePath="project.cpp">
 			</File>
 			<File
+				RelativePath=".\projectprops.cpp">
+			</File>
+			<File
 				RelativePath="projectview.cpp">
+			</File>
+			<File
+				RelativePath=".\projpropsview.cpp">
 			</File>
 			<File
 				RelativePath="scaccessor.cpp">
@@ -534,7 +540,13 @@
 				RelativePath=".\project.h">
 			</File>
 			<File
+				RelativePath=".\projectprops.h">
+			</File>
+			<File
 				RelativePath=".\projectwriter.h">
+			</File>
+			<File
+				RelativePath=".\projpropsview.h">
 			</File>
 			<File
 				RelativePath=".\resource.h">
@@ -741,6 +753,9 @@
 			</File>
 			<File
 				RelativePath=".\res\pn.rc2">
+			</File>
+			<File
+				RelativePath=".\include\proplist\PropertyList.h">
 			</File>
 			<File
 				RelativePath="include\Utf8_16.cpp">

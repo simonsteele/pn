@@ -524,6 +524,8 @@ BEGIN
         MENUITEM "&Remove Project",             ID_PROJECT_REMOVE
         MENUITEM "&Delete Project",             ID_PROJECT_DELETEPROJECT
         , GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "&Properties",                 ID_PROJECT_PROPERTIES
     END
 END
 
@@ -1202,6 +1204,18 @@ BEGIN
                     ES_AUTOHSCROLL
 END
 
+IDD_PROJPROPS DIALOGEX 0, 0, 257, 177
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Project Properties"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,200,156,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,144,156,50,14
+    LISTBOX         IDC_LISTPROPS,7,7,243,146,LBS_OWNERDRAWVARIABLE | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1391,6 +1405,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 151
     END
+
+    IDD_PROJPROPS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 250
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 170
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -1484,6 +1506,7 @@ BEGIN
     ID_FILE_NEW_WORKSPACE   "Create a new workspace."
     IDS_SAVEREADONLY        "The file ""%s"" could not be saved because it is write-protected.\n\nYou can either save in a different location or PN can attempt to remove the protection and overwrite the file in its current location."
     IDS_SAVEREADONLYFAIL    "PN could not remove the write-protection from ""%s"".\n\n Would you like to save with a different name?"
+    IDS_PROPSTITLE          "%s Properties"
 END
 
 STRINGTABLE 

@@ -2,7 +2,7 @@
  * @file projectview.cpp
  * @brief View to display project trees.
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2004 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -16,6 +16,9 @@
 #include "include/shellicons.h"
 #include "include/filefinder.h"
 #include "MagicFolderWiz.h"
+
+#include "projectprops.h"
+#include "projpropsview.h"
 
 using namespace Projects;
 
@@ -1000,6 +1003,32 @@ LRESULT CProjectTreeCtrl::OnSortFolders(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 		return 0;
 
 	sort(hLastItem, true);
+
+	return 0;
+}
+
+LRESULT	CProjectTreeCtrl::OnProjectProperties(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CProjPropsView view;
+	//view.DoModal();
+	
+	ProjectTemplate t(_T("test"), _T("blah"));
+	
+	PropGroupList groups;
+	PropGroup* pPropGroup = new PropGroup(_T("Test"));
+	PropCategory* pPropCat = new PropCategory(_T("Cat"));
+	pPropGroup->Add(pPropCat);
+	pPropCat->Add(new ProjectProp(_T("str"), ptString));
+	pPropCat->Add(new ProjectProp(_T("longstr"), ptLongString));
+	pPropCat->Add(new ProjectProp(_T("int"), ptInt));
+	pPropCat->Add(new ProjectProp(_T("bool"), ptBool));
+	pPropCat->Add(new ProjectProp(_T("choice"), ptChoice));
+
+	groups.insert(groups.end(), pPropGroup);
+
+	t.AddProperties(ptProject, NULL, groups);
+
+	view.DisplayFor(lastItem, &t);
 
 	return 0;
 }

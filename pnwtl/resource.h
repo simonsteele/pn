@@ -37,6 +37,7 @@
 #define ID_FILE_NEW_WORKSPACE           137
 #define IDS_SAVEREADONLY                138
 #define IDS_SAVEREADONLYFAIL            139
+#define IDS_PROPSTITLE                  140
 #define IDI_TEXTCLIPS                   167
 #define IDD_FIND                        168
 #define IDR_TABS_POPUP                  169
@@ -148,6 +149,7 @@
 #define IDD_PAGE_FILEASSO               329
 #define IDD_FILEASSOC_INFO              330
 #define IDD_PNOPEN                      331
+#define IDD_PROJPROPS                   332
 #define ID_MRUPROJECT_MAX               340
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
@@ -232,6 +234,7 @@
 #define IDC_SMARTSTART_LIST             1039
 #define IDC_JUMPTOLIST                  1039
 #define IDC_FILEASSO_LIST               1039
+#define IDC_LISTPROPS                   1039
 #define IDC_TE_CMDEDIT                  1040
 #define IDC_TE_FOLDEREDIT               1041
 #define IDC_REPLACETEXT_LABEL           1042
@@ -401,6 +404,7 @@
 #define ID_PROJECT_ADDMAGICFOLDER       32917
 #define ID_PROJECT_MAGICADDFOLDER       32918
 #define ID_FILE_CLOSEALL                32920
+#define ID_PROJECT_PROPERTIES           32924
 #define IDC_FINDTEXT_LABEL              65535
 
 // Next default values for new objects
@@ -408,8 +412,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        332
-#define _APS_NEXT_COMMAND_VALUE         32922
+#define _APS_NEXT_RESOURCE_VALUE        333
+#define _APS_NEXT_COMMAND_VALUE         32925
 #define _APS_NEXT_CONTROL_VALUE         1102
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

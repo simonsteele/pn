@@ -57,6 +57,7 @@ public:
 		COMMAND_ID_HANDLER(ID_PROJECT_SORTFOLDERS, OnSortFolders)
 		COMMAND_ID_HANDLER(ID_WORKSPACE_NEWPROJECT, OnNewProject)
 		COMMAND_ID_HANDLER(ID_WORKSPACE_ADDPROJECT, OnAddProject)
+		COMMAND_ID_HANDLER(ID_PROJECT_PROPERTIES, OnProjectProperties)
 		
 		CHAIN_MSG_MAP(baseClass)
 		
@@ -130,6 +131,7 @@ protected:
 	LRESULT		OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnSetActiveProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnSortFolders(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT		OnProjectProperties(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	// Drag and Drop Handlers
 	LRESULT		OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
