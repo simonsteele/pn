@@ -39,7 +39,7 @@
 			<style name="String" key="6" fore="colour.string"/>
 			<style name="Character" key="7" fore="colour.char"/>
 			<style name="UUID" key="8" fore="804080"/>
-			<style name="Preprocessor" key="9" fore="colour.preproc"/>
+			<style name="Preprocessor" key="9" class="preprocessor"/>
 			<style name="Operator" key="10" bold="true"/>
 			<style name="Identifier" key="11" />
 			<style name="End of line string" key="12" fore="000000" font="font.monospace" back="e0c0e0" eolfilled="true"/>

@@ -25,8 +25,8 @@
  * @class CScintillaWindow
  * @brief WTL Window implementation for Scintilla...
  */
-template <class TBase = CScintilla>
-class CScintillaWindow : public CWindowImpl< CScintillaWindow >, public TBase
+template <class T, class TBase = CScintilla>
+class CScintillaWindowImpl : public CWindowImpl< CScintillaWindowImpl >, public TBase
 {
 public:
 
@@ -38,8 +38,9 @@ public:
 		return FALSE;
 	}
 
-	BEGIN_MSG_MAP(CScintillaWindow)
+	BEGIN_MSG_MAP(CScintillaWindowImpl)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
 		MESSAGE_HANDLER(WM_SHOWWINDOW, OnShowWindow)
 		MESSAGE_HANDLER(OCM_NOTIFY, OnNotify)
 	END_MSG_MAP()
@@ -86,9 +87,54 @@ public:
 		return m_hWnd;
 	}
 
+	LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+	{
+		T* pT = static_cast<T*>(this);
+
+		CPoint pt(LOWORD(lParam), HIWORD(lParam));
+
+		if ((pt.x == -1) && (pt.y == -1)) 
+		{
+			// Caused by keyboard so display menu near caret
+			int position = GetCurrentPos();
+
+			pt.x = PointXFromPosition(position);
+			pt.y = PointYFromPosition(position);
+
+			ClientToScreen(&pt);
+
+			pT->DoContextMenu(&pt);
+		} 
+		else 
+		{
+			CRect rcEditor;
+			GetWindowRect(rcEditor);
+
+			if (!rcEditor.PtInRect(pt)) 
+			{
+				bHandled = FALSE;
+			}
+			else
+			{
+				pT->DoContextMenu(&pt);
+			}
+		}
+		
+		return 0;
+	}
+
+	void DoContextMenu(CPoint* point)
+	{
+		// User Implementable...
+	}
+
 protected:
 	virtual void OnFirstShow(){}
 };
 
+template <class TBase = CScintilla>
+class CScintillaWindow : public CScintillaWindowImpl<CScintillaWindow, TBase>
+{
+};
 
 #endif

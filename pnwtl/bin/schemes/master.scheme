@@ -12,16 +12,20 @@
 		<value name="colour.comment">007f00</value>
 	</globals>
 	<style-classes>
-		<!-- All styles inherit the default style. Font fore and back colours are not specified - this way we inherit the system defaults -->
+		<!-- All styles inherit the default style. Font fore and back colours are 
+		not specified - this way we inherit the system defaults -->
 		<style-class name="default" size="10" font="Lucida Console"/>
-		<!-- comment: font="font.comment" size="9" -->
+		
 		<style-class name="comment" fore="colour.comment"/>
-		<style-class name="commentdoc" inherit-style="comment" fore="3f703f"/>
-		<style-class name="commentline" inherit-style="comment"/>
-		<style-class name="commentbox" inherit-style="comment"/>
 		<style-class name="keyword" fore="colour.keyword" bold="true"/>
 		<style-class name="string" fore="colour.string" />
 		<style-class name="number" fore="colour.number" />
+		<style-class name="operator" />
+		<style-class name="preprocessor" fore="colour.preproc" />
+		<style-class name="error" fore="ffff00" back="ff0000" />
+		<style-class name="commentdoc" inherit-style="comment" fore="3f703f"/>
+		<style-class name="commentline" inherit-style="comment"/>
+		<style-class name="commentbox" inherit-style="comment"/>
 	</style-classes>
 	<keyword-classes>
 		<keyword-class name="javascript">

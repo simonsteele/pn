@@ -10,12 +10,14 @@
 
 #include "stdafx.h"
 #include "childfrm.h"
+#include "outputview.h"
 
 CChildFrame::CChildFrame()
 {
 	m_onClose = NULL;
 	m_hImgList = NULL;
 	m_pSplitter = NULL;
+	m_pOutputView = NULL;
 	
 	m_FileAge = -1;
 	
@@ -37,6 +39,9 @@ CChildFrame::~CChildFrame()
 
 	if(m_pSplitter)
 		delete m_pSplitter;
+
+	if(m_pOutputView)
+		delete m_pOutputView;
 
 	if(m_pUIData)
 		delete [] m_pUIData;
@@ -164,10 +169,11 @@ void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 		CRect rc2(rc);
 		rc2.top += (rc.Height() / 4) * 3;
 
-		m_outputView.Create(m_hWnd, rc2, _T("Output"), 0, 0);
+		m_pOutputView = new COutputView;
+		m_pOutputView->Create(m_hWnd, rc2, _T("Output"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
 
 		m_pSplitter->Create(m_hWnd, rc, _T("Splitter"), 0, 0);
-		m_pSplitter->SetPanes((HWND)m_view, (HWND)m_outputView);
+		m_pSplitter->SetPanes((HWND)m_view, m_pOutputView->m_hWnd);
 		m_pSplitter->ProportionSplit();
 	}
 }
@@ -186,6 +192,32 @@ void CChildFrame::SetTitle(LPCTSTR sFileName, bool bModified)
 	SetTabText(buf);
 	
 	m_Title = sFileName;
+}
+
+tstring CChildFrame::GetFileName(EGFNType type)
+{
+	CFileName fn(m_FileName);
+	tstring s;
+
+	switch(type)
+	{
+		case FN_FULL:
+			return fn;
+
+		case FN_FILE:
+			fn.GetFileName(s);
+			break;
+
+		case FN_FILEPART:
+			fn.GetFileName_NoExt(s);
+			break;
+
+		case FN_PATH:
+			fn.GetPath(s);
+			break;
+	};
+	
+	return s;
 }
 
 LPCTSTR CChildFrame::GetTitle()
@@ -227,9 +259,15 @@ LRESULT CChildFrame::OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	return 0;
 }
 
-LRESULT CChildFrame::OnCheckAge(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	CheckAge();
+	bHandled = FALSE;
+	if(m_onClose)
+	{
+		// Ok, so maybe this OnClose handling should be moved into this class :(
+		if( ! (*m_onClose)((CChildFrame*)this) )
+			bHandled = TRUE; // cancel close.
+	}
 
 	return 0;
 }
@@ -268,15 +306,9 @@ LRESULT CChildFrame::OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 	return m_view.PreTranslateMessage(pMsg);
 }
 
-LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT CChildFrame::OnCheckAge(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	bHandled = FALSE;
-	if(m_onClose)
-	{
-		// Ok, so maybe this OnClose handling should be moved into this class :(
-		if( ! (*m_onClose)((CChildFrame*)this) )
-			bHandled = TRUE; // cancel close.
-	}
+	CheckAge();
 
 	return 0;
 }
@@ -298,6 +330,9 @@ LRESULT CChildFrame::OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 
 	return TRUE;
 }
+
+////////////////////////////////////////////////////
+// Command Handlers
 
 LRESULT CChildFrame::OnPrint(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
@@ -364,39 +399,16 @@ LRESULT CChildFrame::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	return TRUE;
 }
 
-LRESULT CChildFrame::OnGetInfoTip(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+LRESULT CChildFrame::OnSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	LPNMTBGETINFOTIP pS = (LPNMTBGETINFOTIP)pnmh;
-
-	switch(pS->iItem)
-	{
-		case ID_EDITOR_COLOURISE:
-			_tcsncpy(pS->pszText, _T("Toggle Highlighting"), pS->cchTextMax);
-			break;
-		case ID_EDITOR_WORDWRAP:
-			_tcsncpy(pS->pszText, _T("Toggle Word-Wrap"), pS->cchTextMax);
-			break;
-		case ID_EDITOR_LINENOS:
-			_tcsncpy(pS->pszText, _T("Toggle Line Numbers"), pS->cchTextMax);
-			break;
-	}
+	Save();
 
 	return 0;
 }
-
-////////////////////////////////////////////////////
-// Command Handlers
 
 LRESULT CChildFrame::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	SaveAs();
-
-	return 0;
-}
-
-LRESULT CChildFrame::OnSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	Save();
 
 	return 0;
 }
@@ -470,9 +482,27 @@ LRESULT CChildFrame::OnLineEndingsConvert(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	return 0;
 }
 
-void CChildFrame::OnSchemeChange(LPVOID pVoid)
+////////////////////////////////////////////////////
+// Notify Handlers
+
+LRESULT CChildFrame::OnGetInfoTip(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
-	SetScheme(static_cast<CScheme*>(pVoid));
+	LPNMTBGETINFOTIP pS = (LPNMTBGETINFOTIP)pnmh;
+
+	switch(pS->iItem)
+	{
+		case ID_EDITOR_COLOURISE:
+			_tcsncpy(pS->pszText, _T("Toggle Highlighting"), pS->cchTextMax);
+			break;
+		case ID_EDITOR_WORDWRAP:
+			_tcsncpy(pS->pszText, _T("Toggle Word-Wrap"), pS->cchTextMax);
+			break;
+		case ID_EDITOR_LINENOS:
+			_tcsncpy(pS->pszText, _T("Toggle Line Numbers"), pS->cchTextMax);
+			break;
+	}
+
+	return 0;
 }
 
 ////////////////////////////////////////////////////
@@ -632,15 +662,34 @@ void CChildFrame::HighlightAll(SFindOptions* options)
 	m_view.HighlightAll(options);
 }
 
+int CChildFrame::GetPosition(EGPType type)
+{
+	if(type == EP_LINE)
+		return m_view.LineFromPosition(m_view.GetCurrentPos());
+	else
+		return m_view.GetColumn(m_view.GetCurrentPos());
+}
+
 void CChildFrame::SetPosStatus(CMultiPaneStatusBarCtrl&	stat)
 {
 	m_view.SetPosStatus(stat);
 }
 
+void CChildFrame::OnSchemeChange(LPVOID pVoid)
+{
+	SetScheme(static_cast<CScheme*>(pVoid));
+}
+
 void CChildFrame::SetScheme(CScheme* pScheme)
 {
 	m_view.SetScheme(pScheme);
+	UpdateTools();
 	g_Context.m_frame->SetActiveScheme(m_hWnd, static_cast<LPVOID>(pScheme));
+}
+
+void CChildFrame::UpdateTools()
+{
+	
 }
 
 void CChildFrame::UpdateMenu()
@@ -654,40 +703,6 @@ void CChildFrame::UpdateMenu()
 	menu.CheckMenuItem(ID_TOOLS_LELF, f == PNSF_Unix);
 
 	g_Context.m_frame->SetActiveScheme(m_hWnd, m_view.GetCurrentScheme());
-}
-
-tstring CChildFrame::GetFileName(EGFNType type)
-{
-	CFileName fn(m_FileName);
-	tstring s;
-
-	switch(type)
-	{
-		case FN_FULL:
-			return fn;
-
-		case FN_FILE:
-			fn.GetFileName(s);
-			break;
-
-		case FN_FILEPART:
-			fn.GetFileName_NoExt(s);
-			break;
-
-		case FN_PATH:
-			fn.GetPath(s);
-			break;
-	};
-	
-	return s;
-}
-
-int CChildFrame::GetPosition(EGPType type)
-{
-	if(type == EP_LINE)
-		return m_view.LineFromPosition(m_view.GetCurrentPos());
-	else
-		return m_view.GetColumn(m_view.GetCurrentPos());
 }
 
 void CChildFrame::PrintSetup()

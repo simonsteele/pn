@@ -2,14 +2,14 @@
  * @file TextView.h
  * @brief Interface Definition for CTextView, the Scintilla based text-editor view.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
-#if !defined(AFX_PNVIEW_H__1F3B4A2C_A836_4C30_A47B_6E5A13ED33F2__INCLUDED_)
-#define AFX_PNVIEW_H__1F3B4A2C_A836_4C30_A47B_6E5A13ED33F2__INCLUDED_
+#ifndef textview_h__included
+#define textview_h__included
 
 #if _MSC_VER >= 1000
 #pragma once
@@ -21,34 +21,16 @@
 #include "schemes.h"
 #include "pntypes.h"
 
-class CTextView : public CScintillaWindow< CScintillaImpl >
+class CTextView : public CScintillaWindowImpl< CTextView, CScintillaImpl >
 {
 public:
+	typedef CScintillaWindowImpl< CTextView, CScintillaImpl > baseClass;
 
-	typedef CScintillaWindow< CScintillaImpl > baseClass;
+	CTextView();
 
-	CTextView() : CScintillaWindow< CScintillaImpl >()
-	{
-		m_pLastScheme = NULL;
-		m_waitOnBookmarkNo = FALSE;
-	}
-
-	BOOL PreTranslateMessage(MSG* pMsg)
-	{
-		if(m_waitOnBookmarkNo && pMsg->message == WM_KEYDOWN)
-		{
-			if((pMsg->wParam >= 0x30) && (pMsg->wParam <= 0x39))
-			{
-				ProcessNumberedBookmark(pMsg->wParam - 0x30);
-				return TRUE;
-			}
-			m_waitOnBookmarkNo = FALSE;
-		}
-		return FALSE;
-	}
+	BOOL PreTranslateMessage(MSG* pMsg);
 
 	BEGIN_MSG_MAP(CTextView)
-		MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
 		COMMAND_ID_HANDLER(ID_EDIT_INDENT, OnIndent)
 		COMMAND_ID_HANDLER(ID_EDIT_UNINDENT, OnUnindent)
 		COMMAND_ID_HANDLER(ID_BOOKMARKS_NUMBERED_SET, OnSetNumberedBookmark)
@@ -58,307 +40,39 @@ public:
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
-	void SetScheme(CScheme* pScheme)
-	{
-		pScheme->Load(*this);
-		EnsureRangeVisible(0, GetLength());
-		ClearDocumentStyle();
-		Colourise(0, -1);
+	void SetScheme(CScheme* pScheme);
+	CScheme* GetCurrentScheme();
 
-		m_pLastScheme = pScheme;
-	}
+	bool Load(LPCTSTR filename, CScheme* pScheme = NULL);
+	bool Save(LPCTSTR filename, bool bSetScheme = true);
 
-	virtual bool OpenFile(LPCTSTR filename)
-	{
-		CFile file;		
-		if ( file.Open(filename, CFile::modeRead | CFile::modeBinary) ) 
-		{
-			SPerform(SCI_CLEARALL);
-			// Disable UNDO
-			SPerform(SCI_SETUNDOCOLLECTION, 0);
-			char data[blockSize];
-			int lenFile = file.Read(data, sizeof(data));
-			while (lenFile > 0) 
-			{
-				SPerform(SCI_ADDTEXT, lenFile, (long)data);
-				lenFile = file.Read(data, sizeof(data));
-			}
-			file.Close();
-			SPerform(SCI_SETSEL, 0, 0);
-			// Re-Enable UNDO
-			SPerform(SCI_SETUNDOCOLLECTION, 1);
-			SPerform(SCI_SETSAVEPOINT);
-			return true;
-		}
-		else
-			return false;
-	}
+	void EnableHighlighting(bool bEnable);
+	void ShowLineNumbers(bool bShow);
 
-	bool Load(LPCTSTR filename, CScheme* pScheme = NULL)
-	{
-		if( OpenFile(filename) )
-		{
+	void SetPosStatus(CMultiPaneStatusBarCtrl& stat);
+	
+	////////////////////////////////////////////////////////////////
+	// Overrides from CScintillaImpl / CScintillaWindowImpl
+	
+	virtual bool OpenFile(LPCTSTR filename);
+	virtual bool SaveFile(LPCTSTR filename);
 
-			CFileName cfn(filename);
-			
-			if(NULL == pScheme)
-			{
-				ctcString ext;
-				ext = cfn.GetExtension();
-
-				CScheme* sch = CSchemeManager::GetInstance()->SchemeForExt(ext.c_str());
-				SetScheme(sch);
-			}
-			else
-			{
-				SetScheme(pScheme);
-			}
-			return true;
-		}
-		else
-			return false;
-	}
-
-	virtual bool SaveFile(LPCTSTR filename)
-	{
-		CFile file;
-		if( file.Open(filename, CFile::modeWrite | CFile::modeBinary) )
-		{
-			char data[blockSize + 1];
-			int lengthDoc = SPerform(SCI_GETLENGTH);
-			for (int i = 0; i < lengthDoc; i += blockSize) 
-			{
-				int grabSize = lengthDoc - i;
-				if (grabSize > blockSize)
-					grabSize = blockSize;
-				GetRange(i, i + grabSize, data);
-				
-				/*if (props.GetInt("strip.trailing.spaces"))
-					grabSize = StripTrailingSpaces(
-								   data, grabSize, grabSize != blockSize);*/
-				
-				file.Write(data, grabSize);
-			}
-			file.Close();
-			SPerform(SCI_SETSAVEPOINT);
-			return true;
-		}
-		else
-			return false;
-	}
-
-	bool Save(LPCTSTR filename, bool bSetScheme = true)
-	{
-		if( SaveFile(filename) )
-		{
-
-			if(bSetScheme)
-			{
-				// Re-Apply Scheme:
-				CFileName cfn(filename);
-				ctcString ext;
-				ext = cfn.GetExtension();
-				if(ext.size() > 0)
-				{
-					CScheme* sch = CSchemeManager::GetInstance()->SchemeForExt(ext.c_str());
-					SetScheme(sch);
-				}
-			}
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	void EnableHighlighting(bool bEnable)
-	{
-		if (bEnable)
-		{
-			if(m_pLastScheme != NULL)
-			{
-				SetScheme(m_pLastScheme);
-			}
-		}
-		else
-		{
-			SetLexer(0);
-			EnsureRangeVisible(0, GetLength());
-			ClearDocumentStyle();
-			Colourise(0, -1);
-			StyleClearAll();
-		}
-	}
-
-	void ShowLineNumbers(bool bShow)
-	{
-		int w = COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("LineNumbersWidth"), 4);
-		int pixelWidth = 4 + w * SPerform(SCI_TEXTWIDTH, STYLE_LINENUMBER, (LPARAM)"9");
-		SPerform(SCI_SETMARGINWIDTHN, 0, bShow ? pixelWidth : 0);
-	}
-
-	virtual int HandleNotify(LPARAM lParam)
-	{
-		int msg = baseClass::HandleNotify(lParam);
-		
-		if(msg == SCN_SAVEPOINTREACHED)
-		{
-			SendMessage(GetParent(), PN_NOTIFY, 0, SCN_SAVEPOINTREACHED);
-			m_Modified = false;
-		}
-		else if(msg == SCN_SAVEPOINTLEFT)
-		{
-			SendMessage(GetParent(), PN_NOTIFY, 0, SCN_SAVEPOINTLEFT);
-			m_Modified = true;
-		}
-		else if(msg == SCN_UPDATEUI)
-		{
-			SendMessage(GetParent(), PN_NOTIFY, 0, SCN_UPDATEUI);
-		}
-		
-		return msg;
-	}
-
-	void SetPosStatus(CMultiPaneStatusBarCtrl& stat)
-	{
-		TCHAR tvstatbuf[50];
-		
-		long pos = GetCurrentPos();
-
-		_stprintf(tvstatbuf, _T("[%d:%d] : %d"), 
-			(LineFromPosition(pos) + 1),	/* row    */
-			(GetColumn(pos) + 1),			/* column */
-			GetLineCount()					/* lines  */
-		);
-
-		stat.SetPaneText(ID_POS_PANE, tvstatbuf);
-		
-		if(GetSelLength() > 0)
-		{
-			if(SelectionIsRectangle())
-			{
-				_tcscpy(tvstatbuf, _T("Rectangular Selection."));
-			}
-			else
-			{
-				_stprintf(tvstatbuf, _T("%d character(s) selected."), GetSelLength());
-			}
-			g_Context.m_frame->SetStatusText(tvstatbuf);
-		}
-		else
-			g_Context.m_frame->SetStatusText(NULL);
-	}
-
-	CScheme* GetCurrentScheme()
-	{
-		return m_pLastScheme;
-	}
-
-	LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
-	{
-		CPoint pt(LOWORD(lParam), HIWORD(lParam));
-
-		if ((pt.x == -1) && (pt.y == -1)) 
-		{
-			// Caused by keyboard so display menu near caret
-			int position = GetCurrentPos();
-
-			pt.x = PointXFromPosition(position);
-			pt.y = PointYFromPosition(position);
-
-			ClientToScreen(&pt);
-
-			//POINT spt = {pt.x, pt.y};
-			//::ClientToScreen(static_cast<HWND>(w.GetID()), &spt);
-			//pt = Point(spt.x, spt.y);
-			DoContextMenu(&pt);
-		} 
-		else 
-		{
-			CRect rcEditor;
-			GetWindowRect(rcEditor);
-
-			if (!rcEditor.PtInRect(pt)) 
-			{
-				bHandled = FALSE;
-			}
-			else
-			{
-				DoContextMenu(&pt);
-			}
-		}
-		
-		return 0;
-	}
-
-	void DoContextMenu(CPoint* point)
-	{
-		CSPopupMenu popup(IDR_POPUP_EDITOR);
-		
-		//popup.TrackPopupMenu((LPPOINT)point, g_Context.m_frame->GetWindow()->m_hWnd);
-
-		g_Context.m_frame->TrackPopupMenu(popup, 0, point->x, point->y, NULL);
-	}
+	void DoContextMenu(CPoint* point);
+	virtual int HandleNotify(LPARAM lParam);
 
 	////////////////////////////////////////////////////////////////
 	// Command Handlers
 
-	LRESULT OnIndent(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-	{
-		Tab();
-		return 0;
-	}
-
-	LRESULT OnUnindent(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-	{
-		BackTab();
-		return 0;
-	}
-
-	LRESULT OnSetNumberedBookmark(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-	{
-		m_waitOnBookmarkNo = 1;
-		return 0;
-	}
-
-	LRESULT OnNumberedBookmarkJump(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-	{
-		m_waitOnBookmarkNo = 2;
-		return 0;
-	}
-
-	LRESULT OnToggleBookmark(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-	{
-		ToggleBookmark();
-		return 0;
-	}
-
-	LRESULT OnNextBookmark(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-	{
-		NextBookmark();
-		return 0;
-	}
-
-	void ProcessNumberedBookmark(int n)
-	{
-		switch(m_waitOnBookmarkNo)
-		{
-			case 1:
-				ToggleNumberedBookmark(n);
-				break;
-
-			case 2:
-				JumpToNumberedBookmark(n);
-				break;
-		}
-	}
+	LRESULT OnIndent(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnUnindent(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnSetNumberedBookmark(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnNumberedBookmarkJump(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnToggleBookmark(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnNextBookmark(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 protected:
-	virtual void OnFirstShow()
-	{
-		CSchemeManager::GetInstance()->GetDefaultScheme()->Load(*this);
-	}
+	void ProcessNumberedBookmark(int n);
+	virtual void OnFirstShow();
 
 	BOOL m_waitOnBookmarkNo;
 	CScheme* m_pLastScheme;
@@ -369,4 +83,4 @@ protected:
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
-#endif // !defined(AFX_PNVIEW_H__1F3B4A2C_A836_4C30_A47B_6E5A13ED33F2__INCLUDED_)
+#endif //#ifndef textview_h__included

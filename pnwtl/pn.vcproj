@@ -199,6 +199,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="textview.cpp">
+			</File>
+			<File
 				RelativePath=".\xmlparser.cpp">
 			</File>
 		</Filter>
@@ -249,6 +252,9 @@
 			</File>
 			<File
 				RelativePath=".\mainfrm.h">
+			</File>
+			<File
+				RelativePath="outputview.h">
 			</File>
 			<File
 				RelativePath=".\pn.h">

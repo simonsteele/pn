@@ -30,6 +30,8 @@
 typedef enum {FN_FULL, FN_FILE, FN_PATH, FN_FILEPART} EGFNType;
 typedef enum {EP_LINE, EP_COL} EGPType;
 
+class COutputView;
+
 class CChildFrame : public CTabbedMDIChildWindowImpl<CChildFrame>, 
 	public CFromHandle<CChildFrame>, public CSMenuEventHandler
 {
@@ -213,6 +215,7 @@ protected:
 
 protected:
 	void PrintSetup();
+	void UpdateTools();
 
 protected:
 	HIMAGELIST		m_hImgList;
@@ -222,7 +225,7 @@ protected:
 	long			m_FileAge;
 
 	CCFSplitter*	m_pSplitter;
-	CTextView		m_outputView;
+	COutputView*	m_pOutputView;
 
 	///@todo move this into COptionsManager
 	SPrintOptions	m_po;
