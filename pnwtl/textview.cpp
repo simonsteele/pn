@@ -11,10 +11,13 @@
 #include "stdafx.h"
 #include "textview.h"
 
+#include "include/utf8_16.h"
+
 CTextView::CTextView() : baseClass()
 {
 	m_pLastScheme = NULL;
 	m_waitOnBookmarkNo = FALSE;
+	m_encType = eUnknown;
 }
 
 BOOL CTextView::PreTranslateMessage(MSG* pMsg)
@@ -39,6 +42,91 @@ void CTextView::SetScheme(CScheme* pScheme)
 	Colourise(0, -1);
 
 	m_pLastScheme = pScheme;
+
+	::SendMessage(GetParent(), PN_SCHEMECHANGED, 0, reinterpret_cast<LPARAM>(pScheme));
+}
+
+static string ExtractLine(const char *buf, size_t length) {
+	unsigned int endl = 0;
+	if (length > 0) {
+		while ((endl < length) && (buf[endl] != '\r') && (buf[endl] != '\n')) {
+			endl++;
+		}
+		if (((endl+1) < length) && (buf[endl] == '\r') && (buf[endl+1] == '\n')) {
+			endl++;
+		}
+		if (endl < length) {
+			endl++;
+		}
+	}
+	return string(buf, 0, endl);
+}
+
+int determineEncoding(unsigned char* pBuf, int nLen, EPNEncoding& eEncoding) {
+	eEncoding = eUnknown;
+
+	int nRet = 0;
+
+	if (nLen > 1) {
+		if (pBuf[0] == Utf8_16::k_Boms[eUtf16BigEndian][0] && pBuf[1] == Utf8_16::k_Boms[eUtf16BigEndian][1]) {
+			eEncoding = eUtf16BigEndian;
+			nRet = 2;
+		} else if (pBuf[0] == Utf8_16::k_Boms[eUtf16LittleEndian][0] && pBuf[1] == Utf8_16::k_Boms[eUtf16LittleEndian][1]) {
+			eEncoding = eUtf16LittleEndian;
+			nRet = 2;
+		} else if (nLen > 2 && pBuf[0] == Utf8_16::k_Boms[eUtf8][0] && pBuf[1] == Utf8_16::k_Boms[eUtf8][1] && pBuf[2] == Utf8_16::k_Boms[eUtf8][2]) {
+			eEncoding = eUtf8;
+			nRet = 3;
+		}
+	}
+
+	return nRet;
+}
+
+EPNSaveFormat determineLineEndings(char* pBuf, int nLen)
+{
+	char c, n, p;
+	int linesCRLF, linesCR, linesLF;
+	
+	linesCRLF = linesCR = linesLF = 0;
+	p = NULL;
+	
+	for(int i = 0; i < nLen; i++)
+	{
+		c = pBuf[i];
+		n = ((i < nLen) ? pBuf[i] : NULL);
+
+        if (c == '\r') 
+		{
+			if (n == '\n')
+			{
+				linesCRLF++;
+				// Skip the next character (\n).
+				n++;
+				p = '\n';
+				continue;
+			}
+			else
+				linesCR++;
+		} 
+		else if (c == '\n') 
+		{
+			linesLF++;
+		}
+		
+		p = c;
+	}
+
+	if (((linesLF >= linesCR) && (linesLF > linesCRLF)) || ((linesLF > linesCR) && (linesLF >= linesCRLF)))
+		return PNSF_Unix;
+	else if (((linesCR >= linesLF) && (linesCR > linesCRLF)) || ((linesCR > linesLF) && (linesCR >= linesCRLF)))
+		return PNSF_Mac;
+	
+	else if (((linesCRLF >= linesLF) && (linesCRLF > linesCR)) || ((linesCRLF > linesLF) && (linesCRLF >= linesCR)))
+		return PNSF_Windows;
+
+	// Default
+	return COptionsManager::GetInstance()->LineEndings;
 }
 
 bool CTextView::OpenFile(LPCTSTR filename)
@@ -51,13 +139,38 @@ bool CTextView::OpenFile(LPCTSTR filename)
 		SPerform(SCI_SETUNDOCOLLECTION, 0);
 		char data[blockSize];
 		int lenFile = file.Read(data, sizeof(data));
-		while (lenFile > 0) 
+
+		EPNSaveFormat endings = determineLineEndings(data, lenFile);
+
+		///@todo otherwise set user's code page... (int bomLength =)
+        determineEncoding(reinterpret_cast<unsigned char*>(data), lenFile, m_encType);
+		if(m_encType != eUnknown)
 		{
-			SPerform(SCI_ADDTEXT, lenFile, (long)data);
-			lenFile = file.Read(data, sizeof(data));
+			// We do a Unicode-friendly read for unicode files...
+			SetCodePage(SC_CP_UTF8);
+			Utf8_16_Read converter;
+
+			while (lenFile > 0)
+			{
+				lenFile = converter.convert(data, lenFile);
+				SPerform(SCI_ADDTEXT, lenFile, (long)converter.getNewBuf());
+				lenFile = file.Read(data, sizeof(data));
+			}
+		}
+		else
+		{
+			// Otherwise we do a simple read.
+			while (lenFile > 0) 
+			{
+				SPerform(SCI_ADDTEXT, lenFile, (long)data);
+				lenFile = file.Read(data, sizeof(data));
+			}
 		}
 		file.Close();
 		SPerform(SCI_SETSEL, 0, 0);
+		
+		SetEOLMode(endings);
+		
 		// Re-Enable UNDO
 		SPerform(SCI_SETUNDOCOLLECTION, 1);
 		SPerform(SCI_SETSAVEPOINT);
@@ -71,7 +184,6 @@ bool CTextView::Load(LPCTSTR filename, CScheme* pScheme)
 {
 	if( OpenFile(filename) )
 	{
-
 		CFileName cfn(filename);
 		
 		if(NULL == pScheme)
@@ -79,8 +191,10 @@ bool CTextView::Load(LPCTSTR filename, CScheme* pScheme)
 			ctcString ext;
 			ext = cfn.GetExtension();
 
+			EPNSaveFormat mode = static_cast<EPNSaveFormat>( GetEOLMode() );
 			CScheme* sch = CSchemeManager::GetInstance()->SchemeForExt(ext.c_str());
 			SetScheme(sch);
+			mode = static_cast<EPNSaveFormat>( GetEOLMode() );
 		}
 		else
 		{

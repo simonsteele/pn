@@ -301,7 +301,8 @@ void CScheme::SetupScintilla(CScintilla& sc)
 {
 	COptionsManager& options = COptionsManager::GetInstanceRef();
 
-	sc.SPerform(SCI_SETEOLMODE, options.LineEndings);
+	//ss 16/02/2003 Now performed by document...
+	//sc.SPerform(SCI_SETEOLMODE, options.LineEndings);
 
 	// Line Indentation...
 	if (options.ShowIndentGuides)

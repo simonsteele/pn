@@ -24,8 +24,15 @@ public:
 
 	void DoContextMenu(CPoint* point)
 	{
-		CSPopupMenu popup(IDR_POPUP_EDITOR);
+		CSPopupMenu popup(IDR_POPUP_OUTPUT);
 		g_Context.m_frame->TrackPopupMenu(popup, 0, point->x, point->y, NULL);
+	}
+
+	void SafeAppendText(LPCSTR s, int len = -1)
+	{
+		if(len == -1)
+			len = strlen(s);
+		SendMessage(SCI_APPENDTEXT, len, reinterpret_cast<LPARAM>(s));
 	}
 
 protected:

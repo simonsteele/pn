@@ -12,6 +12,10 @@
 
 typedef std::list<SToolDefinition*> TOOLDEFS_LIST;
 
+#include "include/ssthreads.h"
+
+#define TOOLS_BUFFER_SIZE 16384
+
 /**
  * @brief Collection class representing tools associated with one scheme
  */
@@ -124,21 +128,74 @@ class CToolCommandString : public CustomFormatStringBuilder<CToolCommandString>
 };
 
 /**
+ * Class which formats GetLastError information into a useful string.
+ */
+class CLastErrorInfo
+{
+	public:
+		CLastErrorInfo()
+		{
+			DWORD m_nRetCode = ::GetLastError();
+			m_lpMsgBuf = NULL;
+			::FormatMessage(
+				FORMAT_MESSAGE_ALLOCATE_BUFFER |
+				FORMAT_MESSAGE_FROM_SYSTEM |
+				FORMAT_MESSAGE_IGNORE_INSERTS,
+				NULL,
+				m_nRetCode,
+				MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),   // Default language
+				reinterpret_cast<LPTSTR>(&m_lpMsgBuf),
+				0,
+				NULL
+			);
+		}
+
+		~CLastErrorInfo()
+		{
+			if(m_lpMsgBuf)
+				::LocalFree(m_lpMsgBuf);
+		}
+
+		operator LPCTSTR ()
+		{
+			return reinterpret_cast<LPCTSTR>(&m_lpMsgBuf);
+		}
+
+		int GetErrorCode()
+		{
+			return m_nRetCode;
+		}
+
+	protected:
+		LPVOID	m_lpMsgBuf;
+		int		m_nRetCode;
+};
+
+/**
  * Class to run external tools.
  */
-class ToolRunner
+class ToolRunner : public CSSThread
 {
 public:
 	ToolRunner(CChildFrame* pChild, SToolDefinition* pDef);
 	
 	int Execute();
 
-protected:
-	int Run_ShellExecute(LPCTSTR command, LPCTSTR params, LPCTSTR dir);
+	bool GetThreadedExecution();
+
+	ToolRunner* m_pNext;
 
 protected:
-	CChildFrame* m_pChild;
-	SToolDefinition* m_pTool;
+	int Run_ShellExecute(LPCTSTR command, LPCTSTR params, LPCTSTR dir);
+	int Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir);
+
+	virtual void Run();
+
+protected:
+	CChildFrame*		m_pChild;
+	SToolDefinition*	m_pTool;
+	int					m_RetCode;
+	SToolDefinition*	m_pCopyDef;
 };
 
 #endif

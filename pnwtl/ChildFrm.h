@@ -18,8 +18,12 @@
 #define MINI_BAR_HEIGHT 15
 
 #define MENUMESSAGE_CHANGESCHEME 0xa
-#define PN_CHECKAGE WM_USER+32
-#define PN_OPTIONSUPDATED WM_USER+33
+
+#define PN_CHECKAGE			(WM_USER+37)
+#define PN_OPTIONSUPDATED	(WM_USER+38)
+#define PN_TOGGLEOUTPUT		(WM_USER+39)
+#define PN_TOOLFINISHED		(WM_USER+40)
+#define PN_SCHEMECHANGED	(WM_USER+41)
 
 #define PMUI_MINIBAR	0x0001
 #define PMUI_MENU		0x0002
@@ -32,6 +36,7 @@ typedef enum {FN_FULL, FN_FILE, FN_PATH, FN_FILEPART} EGFNType;
 typedef enum {EP_LINE, EP_COL} EGPType;
 
 class COutputView;
+class ToolRunner;
 
 class CChildFrame : public CTabbedMDIChildWindowImpl<CChildFrame>, 
 	public CFromHandle<CChildFrame>, public CSMenuEventHandler
@@ -54,6 +59,9 @@ public:
 		MESSAGE_HANDLER(PN_NOTIFY, OnViewNotify)
 		MESSAGE_HANDLER(PN_CHECKAGE, OnCheckAge)
 		MESSAGE_HANDLER(PN_OPTIONSUPDATED, OnOptionsUpdate)
+		MESSAGE_HANDLER(PN_TOGGLEOUTPUT, OnToggleOutput)
+		MESSAGE_HANDLER(PN_TOOLFINISHED, OnToolFinished)
+		MESSAGE_HANDLER(PN_SCHEMECHANGED, OnSchemeChanged)
 
 		COMMAND_ID_HANDLER(ID_EDIT_CUT, OnCut)
 		COMMAND_ID_HANDLER(ID_EDIT_COPY, OnCopy)
@@ -68,6 +76,8 @@ public:
 		COMMAND_ID_HANDLER(ID_EDITOR_COLOURISE, OnColouriseToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_LINENOS, OnLineNoToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_OUTPUTWND, OnOutputWindowToggle)
+
+		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHideOutput)
 
 		COMMAND_ID_HANDLER(ID_FILE_SAVE_AS, OnSaveAs)
 		COMMAND_ID_HANDLER(ID_FILE_SAVE, OnSave)
@@ -147,6 +157,9 @@ public:
 	LRESULT OnCheckAge(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnOptionsUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnToggleOutput(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnToolFinished(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnSchemeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	
 	////////////////////////////////////////////////////
 	// Command Handlers
@@ -167,6 +180,7 @@ public:
 	LRESULT OnColouriseToggle(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/);
 	LRESULT OnLineNoToggle(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/);
 	LRESULT OnOutputWindowToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnHideOutput(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLineEndingsToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLineEndingsConvert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -198,10 +212,12 @@ public:
 	int GetPosition(EGPType type);
 	void SetPosStatus(CMultiPaneStatusBarCtrl&	stat);
 	void OnSchemeChange(LPVOID pVoid);
+	
 	void SetScheme(CScheme* pScheme);
 	void UpdateMenu();
 
 	void OnRunTool(LPVOID pVoid);
+	void AddOutput(LPCSTR outputstring, int nLength = -1);
 
 	CallbackBase2<bool, CChildFrame*>* m_onClose;
 
@@ -222,24 +238,31 @@ protected:
 
 protected:
 	void PrintSetup();
+	void SchemeChanged(CScheme* pScheme);
+	void AddRunningTool(ToolRunner* pRunner);
+	void ToolFinished(ToolRunner* pRunner);
 	void UpdateTools(CScheme* pScheme);
+	void KillTools(bool bFriendlyKill = true);
 
 protected:
-	HIMAGELIST		m_hImgList;
-	CTextView		m_view;
-	CString			m_Title;
-	CString			m_FileName;
-	long			m_FileAge;
+	HIMAGELIST			m_hImgList;
+	CTextView			m_view;
+	CString				m_Title;
+	CString				m_FileName;
+	long				m_FileAge;
 	
-	int				iFirstToolCmd;
+	int					iFirstToolCmd;
 
-	CCFSplitter*	m_pSplitter;
-	COutputView*	m_pOutputView;
+	CRITICAL_SECTION	m_crRunningTools;
+	ToolRunner*			m_pFirstTool;
+
+	CCFSplitter*		m_pSplitter;
+	COutputView*		m_pOutputView;
 
 	///@todo move this into COptionsManager
-	SPrintOptions	m_po;
+	SPrintOptions		m_po;
 
-	_PoorMansUIEntry* m_pUIData;
+	_PoorMansUIEntry*	m_pUIData;
 };
 
 /////////////////////////////////////////////////////////////////////////////

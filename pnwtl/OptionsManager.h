@@ -21,8 +21,6 @@ static const TCHAR* PNSK_PRINT = _T("Print Settings");
 #define	PNPATH_SCHEMES			1
 #define	PNPATH_USERSETTINGS		2
 
-typedef enum {leCRLF, leCR, leLF} ELineEndings;
-
 /**
  * This class represents all of the major
  * options that each editor may wish to check at any
@@ -49,7 +47,7 @@ class COptionsManager
 	public:
 		int TabWidth;
 		bool ShowIndentGuides;
-		ELineEndings LineEndings;
+		EPNSaveFormat LineEndings;
 
 		void Set(LPCTSTR subkey, LPCTSTR value, bool bVal);
 		void Set(LPCTSTR subkey, LPCTSTR value, int iVal);

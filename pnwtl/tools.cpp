@@ -287,6 +287,205 @@ ToolRunner::ToolRunner(CChildFrame* pActiveChild, SToolDefinition* pDef)
 {
 	m_pTool = pDef;
 	m_pChild = pActiveChild;
+	m_pNext = NULL;
+}
+
+bool ToolRunner::GetThreadedExecution()
+{
+	if(m_pTool)
+	{
+		return m_pTool->bCaptureOutput;
+	}
+
+	return false;
+}
+
+/**
+ * Thread Run Function, calls Run_CreateProcess
+ */
+void ToolRunner::Run()
+{
+	m_RetCode = Run_CreateProcess(m_pCopyDef->Command.c_str(), m_pCopyDef->Params.c_str(), m_pCopyDef->Folder.c_str());
+	delete m_pCopyDef;
+	::PostMessage(m_pChild->m_hWnd, PN_TOOLFINISHED, 0, reinterpret_cast<LPARAM>(this));
+}
+
+int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
+{
+	tstring tempstr(_T("\"\" "));
+	tempstr.insert(1, command);
+	tempstr += params;
+
+	TCHAR* commandBuf = new TCHAR[tempstr.size() + 1];
+	_tcscpy(commandBuf, tempstr.c_str());
+
+	OSVERSIONINFO osv = {sizeof(OSVERSIONINFO), 0, 0, 0, 0, ""};
+
+	::GetVersionEx(&osv);
+	bool bWin9x = osv.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS;
+	
+	SECURITY_ATTRIBUTES sa = {sizeof(SECURITY_ATTRIBUTES), 0, 0};
+	sa.bInheritHandle = TRUE;
+	sa.lpSecurityDescriptor = NULL;
+
+	SECURITY_DESCRIPTOR sd;
+	if(!bWin9x)
+	{
+		// On NT we can have a proper security descriptor...
+		::InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
+		::SetSecurityDescriptorDacl(&sd, TRUE, NULL, FALSE);
+		sa.nLength = sizeof(SECURITY_ATTRIBUTES);
+		sa.lpSecurityDescriptor = &sd;
+	}
+
+	HANDLE hWritePipe, hReadPipe;
+
+    if( ! ::CreatePipe(&hReadPipe, &hWritePipe, &sa, 0) )
+	{
+		CLastErrorInfo lei;
+		::MessageBox(NULL, lei, _T("Error Running Tool:"), MB_OK | MB_ICONERROR);
+		return lei.GetErrorCode();
+	}
+
+	::SetHandleInformation(hReadPipe, HANDLE_FLAG_INHERIT, 0);
+
+	STARTUPINFO si;
+	memset(&si, 0, sizeof(STARTUPINFO));
+	si.cb = sizeof(STARTUPINFO);
+	si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
+	si.wShowWindow = SW_HIDE;
+	si.hStdInput = NULL;
+	si.hStdOutput = hWritePipe;
+	si.hStdError = hWritePipe;
+
+	PROCESS_INFORMATION pi = {0, 0, 0, 0};
+
+	bool bCreated = ::CreateProcess(
+		NULL, 
+		commandBuf, 
+		NULL, /*LPSECURITY_ATTRIBUTES lpProcessAttributes*/
+		NULL, /*LPSECURITYATTRIBUTES lpThreadAttributes*/
+		TRUE, /*BOOL bInheritHandles*/ 
+		CREATE_NEW_PROCESS_GROUP, /*DWORD dwCreationFlags*/
+		NULL, /*LPVOID lpEnvironment*/
+		dir, /*LPCTSTR lpWorkingDir*/
+		&si, /*LPSTARTUPINFO lpStartupInfo*/
+		&pi /*LPPROCESS_INFORMATION lpProcessInformation*/ 
+	) != 0;
+
+	delete [] commandBuf;
+
+	if(!bCreated)
+	{
+		CLastErrorInfo lei;
+		::MessageBox(NULL, lei, _T("Error Running Tool:"), MB_OK | MB_ICONERROR);
+
+		::CloseHandle(hReadPipe);
+		::CloseHandle(hWritePipe);
+
+		return lei.GetErrorCode();
+	}
+
+	DWORD dwBytesAvail, dwBytesRead, exitCode, timeDeathDetected;
+	dwBytesAvail = dwBytesRead = exitCode = timeDeathDetected = 0;
+	bool bCompleted = false;
+	char buffer[TOOLS_BUFFER_SIZE];
+
+	while(!bCompleted)
+	{
+		Sleep(50);
+
+		//The PeekNamedPipe function copies data from a named or 
+		// anonymous pipe into a buffer without removing it from the pipe.
+		if(! ::PeekNamedPipe(hReadPipe, NULL, 0, NULL, &dwBytesAvail, NULL) )
+		{
+			dwBytesAvail = 0;
+		}
+
+		if(dwBytesAvail > 0)
+		{
+			BOOL bRead = ::ReadFile(hReadPipe, buffer, sizeof(buffer), &dwBytesRead, NULL);
+
+			if(bRead && dwBytesRead)
+			{
+				m_pChild->AddOutput(buffer, dwBytesRead);
+			}
+			else
+			{
+				// Couldn't read from the pipe, must be finished...
+				bCompleted = true;
+			}
+		}
+		else
+		{
+			exitCode = STILL_ACTIVE;
+
+			// No data from the process, is it still active?
+			::GetExitCodeProcess(pi.hProcess, &exitCode);
+			if(STILL_ACTIVE != exitCode)
+			{
+				if(bWin9x)
+				{
+					// If we're running on Windows 9x then we give the
+					// process some time to return the remainder of its data.
+					// We wait until a pre-set amount of time has elapsed and
+					// then exit.
+
+					if(timeDeathDetected == 0)
+					{
+						timeDeathDetected = ::GetTickCount();
+					}
+					else
+					{
+						///@todo Get this value from the registry...
+						if((::GetTickCount() - timeDeathDetected) > 500)
+						{
+							bCompleted = true;
+						}
+					}
+				}
+				else
+				{
+					// If NT, then the process is already dead.
+					bCompleted = true;
+				}
+			}
+		}
+
+		// While we're here, we check to see if we've been told to close.
+		if(!GetCanRun())
+		{
+			if (WAIT_OBJECT_0 != ::WaitForSingleObject(pi.hProcess, 500)) 
+			{
+				// We should do this only if the GUI process is stuck and
+				// don't answer to a normal termination command.
+				// This function is dangerous: dependant DLLs don't know the process
+				// is terminated, and memory isn't released.
+				m_pChild->AddOutput("\n>Process failed to respond; forcing abrupt termination...\n");
+				::TerminateProcess(pi.hProcess, 1);
+			}
+			bCompleted = true;
+		}
+	} // while (!bCompleted)
+
+	if (WAIT_OBJECT_0 != ::WaitForSingleObject(pi.hProcess, 1000)) 
+	{
+		m_pChild->AddOutput("\n>Process failed to respond; forcing abrupt termination...");
+		::TerminateProcess(pi.hProcess, 2);
+	}
+
+	::GetExitCodeProcess(pi.hProcess, &exitCode);
+
+	m_RetCode = exitCode;
+
+	::CloseHandle(pi.hProcess);
+	::CloseHandle(pi.hThread);
+	::CloseHandle(hReadPipe);
+	::CloseHandle(hWritePipe);
+
+	// Signal child window that we're done...
+
+	return m_RetCode;
 }
 
 struct ShellErr 
@@ -297,7 +496,7 @@ struct ShellErr
 
 int ToolRunner::Run_ShellExecute(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 {
-	UINT result = reinterpret_cast<UINT>(::ShellExecute(NULL, _T("open"), command, params, dir, SW_SHOW));
+	DWORD result = reinterpret_cast<DWORD>(::ShellExecute(NULL, _T("open"), command, params, dir, SW_SHOW));
 
 	if(! (result > 32)) // ShellExecute failed...
 	{
@@ -345,7 +544,7 @@ int ToolRunner::Run_ShellExecute(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 		::MessageBox(m_pChild->m_hWnd, errmsg.str().c_str(), _T("Programmers Notepad"), MB_ICONWARNING | MB_OK);
 	}
 
-	return 0;
+	return result;
 }
 
 int ToolRunner::Execute()
@@ -353,14 +552,11 @@ int ToolRunner::Execute()
 	CToolCommandString builder;
 	builder.pChild = m_pChild;
 	
-	tstring command;
-	command = builder.Build(m_pTool->Command.c_str());
-    
-	tstring params;
-	params = builder.Build(m_pTool->Params.c_str());
+	m_pCopyDef = new SToolDefinition;
 
-	tstring workingdir;
-	workingdir = builder.Build(m_pTool->Folder.c_str());
+	m_pCopyDef->Command = builder.Build(m_pTool->Command.c_str());
+	m_pCopyDef->Params = builder.Build(m_pTool->Params.c_str());
+	m_pCopyDef->Folder = builder.Build(m_pTool->Folder.c_str());
 
 	#if 0
 	::CreateProcess(command.c_str(), params.c_str(), 
@@ -375,7 +571,16 @@ int ToolRunner::Execute()
 	);
 	#endif
 
-	Run_ShellExecute(command.c_str(), params.c_str(), workingdir.c_str());
+	if(0)
+	{
+		Run_ShellExecute(m_pCopyDef->Command.c_str(), m_pCopyDef->Params.c_str(), m_pCopyDef->Folder.c_str());
+		delete m_pCopyDef;
+	}
+	else
+	{
+		// Launch the thread which will run the CreateProcess stuff...
+		Start();
+	}
 
 	return 0;
 }

@@ -111,14 +111,13 @@ class CWTLSplitter : public CWindowImpl<CWTLSplitter>
 		
 		void DisableSinglePaneMode(bool bUpdate = true)
 		{
-			m_singlePane = SPLITTER_NORMAL;
-
-			if(bUpdate)
-				UpdateLayout();
+			SetSinglePaneMode(SPLITTER_NORMAL, bUpdate);
 		}
 
 		void ProportionSplit(float proportion = 0.75, bool bUpdate = true)
 		{
+			m_bProportional = true;
+
 			CRect rc;
 			static_cast<T*>(this)->GetOwnerClientRect(m_hwOwner, rc);
 			if(m_bHorz)
@@ -129,6 +128,8 @@ class CWTLSplitter : public CWindowImpl<CWTLSplitter>
 			{
 				m_nSplitterPos = rc.left + (int)((float)rc.Width() * proportion) - m_halfSize;
 			}
+
+			m_fProportion = proportion;
 
 			if(bUpdate)
 				UpdateLayout();
@@ -152,14 +153,43 @@ class CWTLSplitter : public CWindowImpl<CWTLSplitter>
 				UpdateLayout();
 		}
 
-		void UpdateLayout()
+		void UpdateLayout(bool bExternal = false)
 		{
 			T* pT = static_cast<T*>(this);
-			pT->LayoutWindows();
+			pT->LayoutWindows(bExternal);
 		}
 		
 	protected:
-		void LayoutWindows()
+
+		void NormaliseSplit(CRect& rect)
+		{
+			if(m_bProportional)
+			{
+				if(m_bHorz)
+				{
+					m_nSplitterPos = (int)((float)rect.Height() * m_fProportion);
+				}
+				else
+				{
+					m_nSplitterPos = (int)((float)rect.Width() * m_fProportion);
+				}
+			}
+			else
+			{
+				if(m_bHorz)
+				{
+					if (m_nSplitterPos > rect.Height())
+						m_nSplitterPos = rect.bottom - (2*m_splitterSize);
+				}
+				else
+				{
+					if(m_nSplitterPos > rect.Width())
+						m_nSplitterPos = rect.right - (2*m_splitterSize);
+				}
+			}
+		}
+
+		void LayoutWindows(bool bExternal)
 		{
 			CRect rc;
 			static_cast<T*>(this)->GetOwnerClientRect(m_hwOwner, rc);
@@ -170,6 +200,9 @@ class CWTLSplitter : public CWindowImpl<CWTLSplitter>
 				MoveWindow(-1, -1, 0, 0);
 				return;
 			}
+
+			if(bExternal)
+				NormaliseSplit(rc);
 
 			CRect rc2(rc);
 
@@ -410,6 +443,7 @@ class CWTLSplitter : public CWindowImpl<CWTLSplitter>
 						//convert the splitter position back to screen coords.
 						(static_cast<T*>(this))->InternalReAdjustPoint(&pt);
 						m_nSplitterPos = pt.y;
+						m_fProportion = (float)m_nSplitterPos / (float)(rect.bottom - rect.top);
 						UpdateLayout();
 					}
 				}
@@ -431,6 +465,7 @@ class CWTLSplitter : public CWindowImpl<CWTLSplitter>
 					{
 						(static_cast<T*>(this))->InternalReAdjustPoint(&pt);
 						m_nSplitterPos = pt.x;
+						m_fProportion = (float)m_nSplitterPos / (float)(rect.right - rect.left);
 						UpdateLayout();
 					}
 				}
@@ -467,6 +502,7 @@ class CWTLSplitter : public CWindowImpl<CWTLSplitter>
 		HWND	panes[2];
 		bool	bSinglePane;
 
+		float	m_fProportion;
 		int		m_singlePane;
 		int		m_halfSize;
 		int		m_splitterSize;
@@ -476,6 +512,7 @@ class CWTLSplitter : public CWindowImpl<CWTLSplitter>
 		bool	m_bDragging;
 		bool	m_bHorz;
 		bool	m_bFullDrag;
+		bool	m_bProportional;
 };
 
 class CSimpleSplitter : public CWTLSplitter<CSimpleSplitter> {};

@@ -301,6 +301,9 @@
 			<File
 				RelativePath="tools.h">
 			</File>
+			<File
+				RelativePath="version.h">
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -341,6 +344,9 @@
 			</File>
 			<File
 				RelativePath="include\OptionsDialog.h">
+			</File>
+			<File
+				RelativePath="include\Utf8_16.cpp">
 			</File>
 		</Filter>
 		<File

@@ -11,6 +11,8 @@
 #ifndef aboutdlg_h__included
 #define aboutdlg_h__included
 
+#include "version.h"
+
 class CAboutDlg : public CDialogImpl<CAboutDlg>
 {
 public:
@@ -25,6 +27,15 @@ public:
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		CenterWindow(GetParent());
+
+		CString strTemp;
+		CString strVersion;
+		strTemp.LoadString(IDS_ABOUTVERSIONSTRING);
+		
+		strVersion.Format(strTemp, PN_VERSION);
+
+		::SetWindowText( GetDlgItem(IDC_VERSIONSTATIC), (LPCTSTR)strVersion);
+
 		return TRUE;
 	}
 

@@ -24,6 +24,7 @@
 #define ID_EDITOR_COLOURISE             131
 #define ID_EDITOR_LINENOS               132
 #define ID_EDITOR_OUTPUTWND             133
+#define IDS_ABOUTVERSIONSTRING          133
 #define IDS_TOOLFORMATSTRINGS           134
 #define IDD_FIND                        168
 #define IDR_TABS_POPUP                  169
@@ -65,6 +66,11 @@
 #define ID_HELP_REPORTABUG              254
 #define IDD_TOOLEDITOR                  255
 #define ID_VIEW_OUTPUT                  256
+#define IDR_MENU1                       257
+#define IDR_POPUP_OUTPUT                257
+#define ID_DUMMY_PASTE                  258
+#define ID_OUTPUT_CLEAR                 259
+#define ID_OUTPUT_HIDE                  260
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -121,8 +127,8 @@
 #define IDC_BACKSLASH_CHECK             1043
 #define IDC_TE_SHORTCUTEDIT             1043
 #define IDC_TE_INFOLABEL                1044
-#define IDC_QUERY                       1045
 #define IDC_TEXTTITLE                   1045
+#define IDC_VERSIONSTATIC               1046
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_PNSAVE_TYPECOMBO            1057
 #define IDC_MARKALL_BUTTON              21199
@@ -167,9 +173,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        257
+#define _APS_NEXT_RESOURCE_VALUE        261
 #define _APS_NEXT_COMMAND_VALUE         32791
-#define _APS_NEXT_CONTROL_VALUE         1046
+#define _APS_NEXT_CONTROL_VALUE         1047
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

@@ -36,7 +36,7 @@ void COptionsManager::Load()
 	cs += PNSK_EDITOR;
 	reg.OpenKey(cs.c_str(), true);
 	ShowIndentGuides = reg.ReadBool(_T("IndentationMarkers"), true);
-	LineEndings = (ELineEndings)reg.ReadInt(_T("DefaultLineEndings"), leCRLF);
+	LineEndings = (EPNSaveFormat)reg.ReadInt(_T("DefaultLineEndings"), PNSF_Windows);
 	TabWidth = reg.ReadInt(_T("TabWidth"), 4);
 
 	// Find and Replace Settings ------------

@@ -204,16 +204,15 @@ IDR_MDICHILD            ICON                    "res\\pnDoc.ico"
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 187, 102
+IDD_ABOUTBOX DIALOGEX 0, 0, 187, 84
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,130,81,50,14
-    CTEXT           "Programmers Notepad 2\nv0.3-devel\n\nCopyright (c) 2002 Simon Steele",
-                    IDC_STATIC,13,57,103,32
-    ICON            IDR_MAINFRAME,IDC_STATIC,55,26,20,20
-    GROUPBOX        "",IDC_STATIC,7,7,115,88
+    DEFPUSHBUTTON   "OK",IDOK,132,66,50,14
+    CTEXT           "",IDC_VERSIONSTATIC,42,18,132,32
+    ICON            IDR_MAINFRAME,IDC_STATIC,12,18,21,20
+    GROUPBOX        "",IDC_STATIC,7,7,173,53
 END
 
 IDD_PNSAVE DIALOG  0, 0, 230, 14
@@ -240,7 +239,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 180
         TOPMARGIN, 7
-        BOTTOMMARGIN, 95
+        BOTTOMMARGIN, 77
     END
 
     IDD_PNSAVE, DIALOG
@@ -335,6 +334,7 @@ BEGIN
     ID_EDITOR_WORDWRAP      "Toggle word wrap"
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
     ID_EDITOR_LINENOS       "Toggle line numbers display"
+    IDS_ABOUTVERSIONSTRING  "Programmers Notepad 2\nv%s\n\nCopyright (c) 2002-2003 Simon Steele"
     IDS_TOOLFORMATSTRINGS   "%f: File Name\n%n: File Name (no ext)\n%l: Current Line Number|%d: Path of File\n%c: Caret Column\n%%: Percent Symbol"
 END
 
@@ -546,6 +546,19 @@ BEGIN
     END
 END
 
+IDR_POPUP_OUTPUT MENU 
+BEGIN
+    POPUP "DUMMY"
+    BEGIN
+        MENUITEM "Cu&t",                        57635
+        MENUITEM "&Copy",                       57634
+        MENUITEM SEPARATOR
+        MENUITEM "C&lear",                      ID_OUTPUT_CLEAR
+        MENUITEM SEPARATOR
+        MENUITEM "&Hide",                       ID_OUTPUT_HIDE
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -648,8 +661,8 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION |
 CAPTION "Options"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,354,210,50,18
-    PUSHBUTTON      "Cancel",IDCANCEL,300,210,50,18
+    DEFPUSHBUTTON   "OK",IDOK,294,210,50,18
+    PUSHBUTTON      "Cancel",IDCANCEL,348,210,50,18
     PUSHBUTTON      "&Help",IDC_HELPBTN,6,210,54,18,WS_DISABLED
     CONTROL         "",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | 
                     TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_NOSCROLL | 

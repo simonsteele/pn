@@ -15,10 +15,13 @@
 
 CChildFrame::CChildFrame()
 {
+	::InitializeCriticalSection(&m_crRunningTools);
+
 	m_onClose = NULL;
 	m_hImgList = NULL;
 	m_pSplitter = NULL;
 	m_pOutputView = NULL;
+	m_pFirstTool = NULL;
 	
 	m_FileAge = -1;
 	
@@ -34,6 +37,11 @@ CChildFrame::CChildFrame()
 
 CChildFrame::~CChildFrame()
 {
+	if(m_pFirstTool)
+		KillTools(false);
+
+	::DeleteCriticalSection(&m_crRunningTools);
+
 	if(m_hImgList)
 		::ImageList_Destroy(m_hImgList);
 
@@ -71,9 +79,11 @@ void CChildFrame::UpdateLayout(BOOL bResizeBars)
 	// resize client window
 	if(m_pSplitter)
 	{
-		m_pSplitter->UpdateLayout();
+		m_pSplitter->UpdateLayout(true);
+		return;
 	}
-	else if(m_hWndClient != NULL)
+
+	if(m_hWndClient != NULL)
 		::SetWindowPos(m_hWndClient, NULL, rect.left, rect.top,
 			rect.right - rect.left, rect.bottom - rect.top,
 			SWP_NOZORDER | SWP_NOACTIVATE);
@@ -159,25 +169,36 @@ void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 	else
 		bShow = !bVisible;
 
-	if(bShow && !m_pSplitter)
+	if(bShow && !bVisible)
 	{
-		m_pSplitter = new CCFSplitter(this);
-		
-		m_pSplitter->SetHorizontal( COptionsManager::GetInstance()->Get(PNSK_EDITOR, _T("OutputSplitHorizontal"), true) );
+		if(!m_pSplitter)
+		{
+			m_pSplitter = new CCFSplitter(this);
+			
+			m_pSplitter->SetHorizontal( COptionsManager::GetInstance()->Get(PNSK_EDITOR, _T("OutputSplitHorizontal"), true) );
 
-		CRect rc;
-		GetClientRect(rc);
-		UpdateBarsPosition(rc, FALSE);
+			CRect rc;
+			GetClientRect(rc);
+			UpdateBarsPosition(rc, FALSE);
 
-		CRect rc2(rc);
-		rc2.top += (rc.Height() / 4) * 3;
+			CRect rc2(rc);
+			rc2.top += (rc.Height() / 4) * 3;
 
-		m_pOutputView = new COutputView;
-		m_pOutputView->Create(m_hWnd, rc2, _T("Output"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
+			m_pOutputView = new COutputView;
+			m_pOutputView->Create(m_hWnd, rc2, _T("Output"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
 
-		m_pSplitter->Create(m_hWnd, rc, _T("Splitter"), 0, 0);
-		m_pSplitter->SetPanes((HWND)m_view, m_pOutputView->m_hWnd);
-		m_pSplitter->ProportionSplit();
+			m_pSplitter->Create(m_hWnd, rc, _T("Splitter"), 0, 0);
+			m_pSplitter->SetPanes((HWND)m_view, m_pOutputView->m_hWnd);
+			m_pSplitter->ProportionSplit();
+		}
+		else 
+		{
+			m_pSplitter->DisableSinglePaneMode();
+		}
+	}
+	else if(!bShow && bVisible)
+	{
+		m_pSplitter->SetSinglePaneMode(SPLITTER_TOP);
 	}
 }
 
@@ -264,6 +285,8 @@ LRESULT CChildFrame::OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
+	KillTools();
+	
 	bHandled = FALSE;
 	if(m_onClose)
 	{
@@ -338,6 +361,24 @@ LRESULT CChildFrame::OnOptionsUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 {
 	UpdateTools(m_view.GetCurrentScheme());
 	UpdateMenu();
+	return 0;
+}
+
+LRESULT CChildFrame::OnToggleOutput(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	ToggleOutputWindow(wParam != 0, lParam != 0);
+	return 0;
+}
+
+LRESULT CChildFrame::OnToolFinished(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	ToolFinished(reinterpret_cast<ToolRunner*>(lParam));
+	return 0;
+}
+
+LRESULT CChildFrame::OnSchemeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	SchemeChanged(reinterpret_cast<CScheme*>(lParam));
 	return 0;
 }
 
@@ -458,6 +499,12 @@ LRESULT CChildFrame::OnOutputWindowToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	return 0;
 }
 
+LRESULT CChildFrame::OnHideOutput(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	ToggleOutputWindow(true, false);
+	return 0;
+}
+
 LRESULT CChildFrame::OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CGotoDialog g;
@@ -561,6 +608,10 @@ void CChildFrame::PNOpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pSchem
 		CFile err;
 		err.ShowError(pathname);
 	}
+	
+	// Loading a file may have changed the line endings/text encoding of the
+	// document, so we update the menu...
+	UpdateMenu();
 }
 
 void CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMRU)
@@ -617,6 +668,9 @@ bool CChildFrame::SaveAs()
 	{
 		bRet = false;
 	}
+
+	// We may have changed the line endings format, so update the menu.
+	UpdateMenu();
 
 	return bRet;
 }
@@ -692,9 +746,7 @@ void CChildFrame::OnSchemeChange(LPVOID pVoid)
 
 void CChildFrame::SetScheme(CScheme* pScheme)
 {
-	m_view.SetScheme(pScheme);
-	UpdateTools(pScheme);
-	g_Context.m_frame->SetActiveScheme(m_hWnd, static_cast<LPVOID>(pScheme));
+    m_view.SetScheme(pScheme);
 }
 
 void CChildFrame::UpdateTools(CScheme* pScheme)
@@ -734,6 +786,12 @@ void CChildFrame::UpdateTools(CScheme* pScheme)
 		::RemoveMenu(m, ID_TOOLS_DUMMY, MF_BYCOMMAND);
 }
 
+void CChildFrame::SchemeChanged(CScheme* pScheme)
+{
+	UpdateTools(pScheme);
+	g_Context.m_frame->SetActiveScheme(m_hWnd, static_cast<LPVOID>(pScheme));
+}
+
 void CChildFrame::UpdateMenu()
 {
 	CSMenuHandle menu(m_hMenu);
@@ -749,8 +807,95 @@ void CChildFrame::UpdateMenu()
 
 void CChildFrame::OnRunTool(LPVOID pVoid)
 {
-	ToolRunner r(this, reinterpret_cast<SToolDefinition*>(pVoid));
-	r.Execute();
+	ToolRunner *r = new ToolRunner(this, reinterpret_cast<SToolDefinition*>(pVoid));
+	bool bThreaded = r->GetThreadedExecution();
+	if(bThreaded)
+		AddRunningTool(r);
+	r->Execute();
+	if(!bThreaded)
+		delete r;
+}
+
+void CChildFrame::AddOutput(LPCSTR outputstring, int nLength)
+{
+	// We do a sendmessage so that the windows are created in the 
+	// window thread, and not in any calling thread.
+	SendMessage(PN_TOGGLEOUTPUT, 1, 1);
+
+	m_pOutputView->SafeAppendText(outputstring, nLength);
+}
+
+void CChildFrame::AddRunningTool(ToolRunner* pRunner)
+{
+	CSSCritLock lock(&m_crRunningTools);
+
+    if(m_pFirstTool)
+		pRunner->m_pNext = m_pFirstTool;
+
+	m_pFirstTool = pRunner;
+}
+
+void CChildFrame::ToolFinished(ToolRunner* pRunner)
+{
+	CSSCritLock lock(&m_crRunningTools);
+
+	if(m_pFirstTool)
+	{
+		ToolRunner* pT = m_pFirstTool;
+		ToolRunner* pP = NULL;
+
+		while(pT != NULL && pT != pRunner)
+		{
+			pP = pT;
+			pT = pT->m_pNext;
+		}
+
+		if(pT)
+		{
+			if(pP)
+				pP->m_pNext = pT->m_pNext;
+
+			if(m_pFirstTool == pT)
+				m_pFirstTool = pT->m_pNext;
+		}
+
+		while(!pRunner->GetStopped(20));
+
+		delete pRunner;
+	}
+}
+
+void CChildFrame::KillTools(bool bFriendlyKill)
+{
+	int iLoopCount = 0;
+
+	while(m_pFirstTool)
+	{
+		// Scope to enter and exit critical section.
+		{
+			CSSCritLock lock(&m_crRunningTools);
+
+			ToolRunner* pT = m_pFirstTool;
+			while(pT)
+			{
+				pT->Stop();
+				pT = pT->m_pNext;
+			}
+		}
+
+		if(bFriendlyKill)
+		{
+			// Normally, we give all the tools a chance to exit before continuing...
+			Sleep(100);
+			iLoopCount++;
+
+			// Don't tolerate more than 5 seconds of waiting...
+			if(iLoopCount > 50)
+				break;
+		}
+		else
+			break;
+	}
 }
 
 void CChildFrame::PrintSetup()
