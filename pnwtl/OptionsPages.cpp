@@ -1195,19 +1195,14 @@ int CALLBACK ListCtrlMoveOneCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM l
 	return 0;
 }
 
-/*int CALLBACK ListCtrlMoveDownCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
-{
-	if(lParam1 == ((ListCtrlMoveOneData*)lParamSort)->ItemData)
-		return 1;
-	return 0;
-}*/
-
 LRESULT COptionsPageTools::OnUpClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	int iSelIndex = m_list.GetSelectedIndex();
 	if( iSelIndex != -1 )
 	{
-		ListCtrlMoveOneData mod = {m_list.GetItemData(iSelIndex), 0, 0};
+		ToolDefinition* pDef = reinterpret_cast<ToolDefinition*>(m_list.GetItemData(iSelIndex));
+		GetTools()->MoveUp(pDef);
+		ListCtrlMoveOneData mod = {reinterpret_cast<LPARAM>(pDef), 0, 0};
 		m_list.SortItems(ListCtrlMoveOneCompareFunc, reinterpret_cast<LPARAM>(&mod));
 	}
 	EnableButtons();
@@ -1219,7 +1214,9 @@ LRESULT COptionsPageTools::OnDownClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	int iSelIndex = m_list.GetSelectedIndex();
 	if( iSelIndex != -1 )
 	{
-		ListCtrlMoveOneData mod = {m_list.GetItemData(iSelIndex), 1, 0};
+		ToolDefinition* pDef = reinterpret_cast<ToolDefinition*>(m_list.GetItemData(iSelIndex));
+		GetTools()->MoveDown(pDef);
+		ListCtrlMoveOneData mod = {reinterpret_cast<LPARAM>(pDef), 1, 0};
 		m_list.SortItems(ListCtrlMoveOneCompareFunc, reinterpret_cast<LPARAM>(&mod));
 	}
 	EnableButtons();
