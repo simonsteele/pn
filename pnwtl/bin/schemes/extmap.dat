@@ -16,11 +16,12 @@
 .cxx=cpp
 .def=modula2
 .dfm=pascal
+.diff=diff
 .dob=vb
 .dpr=pascal
 .dsm=vbscript
 .dsr=vb
-.diff=diff
+.dtd=xml
 .frm=vb
 .h=cpp
 .hpp=cpp
@@ -41,6 +42,7 @@
 .pod=perl
 .properties=Properties
 .py=python
+.rng=xml
 .scheme=xml
 .schemedef=xml
 .tcl=tcl
@@ -48,6 +50,6 @@
 .vbs=vbscript
 .xhtml=Web
 .xml=xml
+.xsd=xml
 .xsl=xml
-.rng=xml
 makefile=makefile
