@@ -53,7 +53,7 @@
 	<language name="output" title="Output" internal="true">
 		<lexer name="errorlist" />
 		<use-styles>
-			<style name="Default" key="32" fore="b06000" />
+			<style name="Default" key="32" size="9"/>
 			<style name="Whitespace" key="0" fore="000000" />
 			<style name="Python error" key="1" fore="ff0000" />
 			<style name="gcc error" key="2" fore="800080" />

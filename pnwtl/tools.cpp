@@ -387,22 +387,38 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	}
 
 	HANDLE hWritePipe, hReadPipe;
-
+	HANDLE hStdInWrite, hStdInRead;
+	
     if( ! ::CreatePipe(&hReadPipe, &hWritePipe, &sa, 0) )
 	{
 		CLastErrorInfo lei;
-		::MessageBox(NULL, (LPCTSTR)lei, _T("Error Running Tool:"), MB_OK | MB_ICONERROR);
+		m_pChild->AddOutput("\n>Failed to create StdOut and StdErr Pipe: ");
+		m_pChild->AddOutput((LPCTSTR)lei);
+
+		return lei.GetErrorCode();
+	}
+
+	// read handle, write handle, security attributes,  number of bytes reserved for pipe - 0 default
+	
+	if( ! ::CreatePipe(&hStdInRead, &hStdInWrite, &sa, 0) )
+	{
+		CLastErrorInfo lei;
+
+		m_pChild->AddOutput("\n>Failed to create StdIn Pipe: ");
+		m_pChild->AddOutput((LPCTSTR)lei);
+
 		return lei.GetErrorCode();
 	}
 
 	::SetHandleInformation(hReadPipe, HANDLE_FLAG_INHERIT, 0);
+	::SetHandleInformation(hStdInWrite, HANDLE_FLAG_INHERIT, 0);
 
 	STARTUPINFO si;
 	memset(&si, 0, sizeof(STARTUPINFO));
 	si.cb = sizeof(STARTUPINFO);
 	si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
 	si.wShowWindow = SW_HIDE;
-	si.hStdInput = NULL;
+	si.hStdInput = hStdInRead;
 	si.hStdOutput = hWritePipe;
 	si.hStdError = hWritePipe;
 
@@ -425,11 +441,14 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 
 	if(!bCreated)
 	{
-		CLastErrorInfo lei;
-		::MessageBox(NULL, (LPCTSTR)lei, _T("Error Running Tool:"), MB_OK | MB_ICONERROR);
-
 		::CloseHandle(hReadPipe);
 		::CloseHandle(hWritePipe);
+		::CloseHandle(hStdInRead);
+		::CloseHandle(hStdInWrite);
+
+		CLastErrorInfo lei;
+		m_pChild->AddOutput("\n>Failed to create process: ");
+		m_pChild->AddOutput((LPCTSTR)lei);
 
 		return lei.GetErrorCode();
 	}
@@ -530,8 +549,8 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	::CloseHandle(pi.hThread);
 	::CloseHandle(hReadPipe);
 	::CloseHandle(hWritePipe);
-
-	// Signal child window that we're done...
+	::CloseHandle(hStdInRead);
+	::CloseHandle(hStdInWrite);
 
 	return m_RetCode;
 }
