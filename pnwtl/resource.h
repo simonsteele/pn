@@ -139,6 +139,8 @@
 #define IDB_ABOUT                       319
 #define IDD_FILEPROPERTIES              320
 #define ID_MRUPROJECT_BASE              321
+#define IDD_DIALOG1                     321
+#define IDD_JUMPTO                      321
 #define ID_MRUPROJECT_MAX               340
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
@@ -180,6 +182,7 @@
 #define IDC_STYLE_SELFOREBUTTON         1011
 #define IDC_AFILE_STARTTEXT             1011
 #define IDC_FILEPROP_TABWIDTH           1011
+#define IDC_JUMPTOTEXT                  1011
 #define IDC_FONT_COMBO                  1012
 #define IDC_TOOLS_REMOVEBUTTON          1012
 #define IDC_TE_BROWSEBUTTON             1012
@@ -216,6 +219,7 @@
 #define IDC_KEYWORDS_LIST               1039
 #define IDC_LIST                        1039
 #define IDC_SMARTSTART_LIST             1039
+#define IDC_JUMPTOLIST                  1039
 #define IDC_TE_CMDEDIT                  1040
 #define IDC_TE_FOLDEREDIT               1041
 #define IDC_REPLACETEXT_LABEL           1042
@@ -358,8 +362,8 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        321
-#define _APS_NEXT_COMMAND_VALUE         32906
+#define _APS_NEXT_RESOURCE_VALUE        322
+#define _APS_NEXT_COMMAND_VALUE         32908
 #define _APS_NEXT_CONTROL_VALUE         1092
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

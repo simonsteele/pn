@@ -124,7 +124,7 @@ void JumpToHandler::LoadHandler(LPCTSTR path, LPCTSTR filename)
 		delete pPlugin;
 }
 
-void JumpToHandler::DoJumpTo(CChildFrame* pChildFrame)
+void JumpToHandler::DoJumpTo(CChildFrame* pChildFrame, IJumpToFindSink* pNotifySink)
 {
 	// First let's find out what scheme it is...
 	CScheme* pScheme = pChildFrame->GetTextView()->GetCurrentScheme();
@@ -144,6 +144,7 @@ void JumpToHandler::DoJumpTo(CChildFrame* pChildFrame)
 	tstring fn = pChildFrame->GetFileName();
 
 	outputWindow = pChildFrame->GetOutputWindow();
+	sink = pNotifySink;
 
 	USES_CONVERSION;
 
@@ -156,4 +157,5 @@ void __stdcall JumpToHandler::callback(int dataCount, LPMETHODINFO methodInfo)
 {
 	JumpToHandler::GetInstance()->outputWindow->AddToolOutput(methodInfo->methodName);
 	JumpToHandler::GetInstance()->outputWindow->AddToolOutput(_T("\n"));
+	JumpToHandler::GetInstance()->sink->OnFound(dataCount, methodInfo);
 }

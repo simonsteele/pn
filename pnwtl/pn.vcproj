@@ -240,6 +240,9 @@
 				RelativePath=".\jumpto.cpp">
 			</File>
 			<File
+				RelativePath=".\JumpToDialog.cpp">
+			</File>
+			<File
 				RelativePath="mainfrm.cpp">
 			</File>
 			<File
@@ -371,6 +374,9 @@
 			</File>
 			<File
 				RelativePath=".\jumpto.h">
+			</File>
+			<File
+				RelativePath=".\JumpToDialog.h">
 			</File>
 			<File
 				RelativePath=".\mainfrm.h">

@@ -18,6 +18,7 @@
 #include "docprops.h"
 #include "include/pagesetupdialog.h"
 #include "jumpto.h"
+#include "jumptodialog.h"
 
 #if defined (_DEBUG)
 #define new DEBUG_NEW
@@ -740,7 +741,9 @@ LRESULT CChildFrame::OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 LRESULT CChildFrame::OnJumpTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	JumpToHandler::GetInstance()->DoJumpTo(this);
+	CJumpToDialog dlg(this);
+	dlg.DoModal();
+
 	return 0;
 }
 

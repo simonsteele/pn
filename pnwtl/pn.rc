@@ -1286,6 +1286,20 @@ BEGIN
     LTEXT           "When an open file is dropped:",IDC_STATIC,6,24,108,12
 END
 
+IDD_JUMPTO DIALOGEX 0, 0, 285, 161
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Jump To..."
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,228,6,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,228,24,50,14
+    RTEXT           "Jump to:",IDC_STATIC,6,6,36,12
+    EDITTEXT        IDC_JUMPTOTEXT,48,6,174,12,ES_AUTOHSCROLL
+    CONTROL         "",IDC_JUMPTOLIST,"SysListView32",LVS_REPORT | 
+                    LVS_ALIGNLEFT | WS_TABSTOP,6,24,216,132,WS_EX_CLIENTEDGE
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1435,6 +1449,14 @@ BEGIN
         RIGHTMARGIN, 296
         TOPMARGIN, 3
         BOTTOMMARGIN, 198
+    END
+
+    IDD_JUMPTO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 278
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 154
     END
 END
 #endif    // APSTUDIO_INVOKED

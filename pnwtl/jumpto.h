@@ -23,6 +23,15 @@ typedef struct tagMethodInfo
 #include "include/plugin.h"
 #include <map>
 
+class CChildFrame;
+class COutputView;
+
+class IJumpToFindSink
+{
+	public:
+		virtual void OnFound(int count, LPMETHODINFO methodInfo) = 0;
+};
+
 class JumpToPlugin : Plugin
 {
 	public:
@@ -53,7 +62,7 @@ class JumpToHandler : public Singleton<JumpToHandler, true>
 	friend class Singleton<JumpToHandler, true>;
 
 	public:
-		void DoJumpTo(CChildFrame* pChildFrame);
+		void DoJumpTo(CChildFrame* pChildFrame, IJumpToFindSink* pNotifySink);
 		void LoadHandler(LPCTSTR path, LPCTSTR filename);
 
 	protected:
@@ -66,6 +75,7 @@ class JumpToHandler : public Singleton<JumpToHandler, true>
 		PLUGINS_LIST plugins;
 
 		COutputView* outputWindow;
+		IJumpToFindSink* sink;
 };
 
 #endif
