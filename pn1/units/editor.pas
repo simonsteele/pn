@@ -280,9 +280,11 @@ var
   i : Integer;
   MStream : TMemoryStream;
   FStream : TFileStream;
+  DesperateLoad : Boolean;
   s : String;
 begin
   Result := True;
+  DesperateLoad := False;
   if (UpperCase(Ext) <> '.DFM') then
   begin
     synMDI.Lines.BeginUpdate;
@@ -329,11 +331,12 @@ begin
         MStream.Position := 0;
         synMDI.LoadFromStream(MStream);
       except
-        synMDI.LoadFromFile(FileName);
+        DesperateLoad := True;
       end;
     finally
       FStream.Free;
       MStream.Free;
+      synMDI.LoadFromFile(FileName);
     end;
   end;
 end;
