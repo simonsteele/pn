@@ -1,6 +1,6 @@
 ========================================
-Release Name: 2.0.5.5
-Build: 2.0.5.32, Version Label: herbie
+Release Name: 2.0.5.6
+Build: 2.0.5.33, Version Label: 
 ========================================
 
 What's new?
@@ -62,9 +62,12 @@ Bug Fixes:
 22) Pseudo misspelt in CSS scheme (SF Bug #969586).
 23) Regular Expression replace (SF Bug #957788).
 24) Global keyboard shortcuts don't work (SF Bug #960000).
-
-26) Fixed infinite loop when working with magic folders containing ".files".
-27) Fixed word-wrap default preference.
+25) Fixed file associations case comparison.
+26) Text clips line endings (SF Bug #995845).
+27) Crash after options dialog (SF Bug #995786).
+28) Crash when search string is empty (SF Bug #995783).
+29) Fixed infinite loop when working with magic folders containing ".files".
+30) Fixed word-wrap default preference.
 
 If you find a bug:
 ------------------
