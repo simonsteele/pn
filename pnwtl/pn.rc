@@ -489,6 +489,12 @@ BEGIN
     ID_FILE_REVERT          "Revert this document to the current saved state\nRevert"
 END
 
+STRINGTABLE 
+BEGIN
+    ID_EDIT_FINDINFILES     "Find text in files\nFind in Files"
+    ID_FINDTYPE_BUTTON      "Find (drop down for other find types)"
+END
+
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -668,7 +674,7 @@ BEGIN
     POPUP "DUMMY"
     BEGIN
         MENUITEM "&Add Files",                  288
-        MENUITEM "&Add Folder",                 ID_PROJECT_ADDFOLDER
+        MENUITEM "&Add New Folder",             ID_PROJECT_ADDFOLDER
         MENUITEM SEPARATOR
         MENUITEM "&Open All Files",             299
         MENUITEM SEPARATOR
@@ -681,7 +687,7 @@ BEGIN
     POPUP "PROJECT"
     BEGIN
         MENUITEM "&Add Files",                  288
-        MENUITEM "&Add Folder",                 293
+        MENUITEM "&Add New Folder",             293
         MENUITEM SEPARATOR
         MENUITEM "&Open All Files",             ID_PROJECT_OPENALLFILES
         MENUITEM SEPARATOR

@@ -50,7 +50,7 @@ typedef struct tagWorkspaceCloseStruct : public tagCloseStruct
 {
 	Projects::Workspace* pWorkspace;
 	std::list<CChildFrame*> FoundWindows;
-} SWorkspaceCloseStruct;
+} SWorkspaceWindowsStruct;
 
 typedef struct tagIsOpenStruct : public tagEnumChildrenStruct
 {
@@ -248,6 +248,7 @@ public:
 
 	void __stdcall ChildCloseNotify(CChildFrame* pChild, SChildEnumStruct* pES);
 	void __stdcall WorkspaceChildCloseNotify(CChildFrame* pChild, SChildEnumStruct* pES);
+	void __stdcall WorkspaceChildEnumNotify(CChildFrame* pChild, SChildEnumStruct* pES);
 	void __stdcall ChildOptionsUpdateNotify(CChildFrame* pChild, SChildEnumStruct* pES);
 	void __stdcall ChildSaveNotify(CChildFrame* pChild, SChildEnumStruct* pES);
 	void __stdcall FileOpenNotify(CChildFrame* pChild, SChildEnumStruct* pES);
@@ -265,6 +266,7 @@ public:
 	virtual void SaveAll();
 	virtual void OpenFile(LPCTSTR pathname, bool bAddMRU = false);
 	virtual bool CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction = COptionsManager::GetInstance()->AlreadyOpenAction);
+	virtual Projects::Workspace* GetActiveWorkspace();
 
 	////////////////////////////////////////////////////////////////
 	// IToolOutputSink Implementation
@@ -301,6 +303,7 @@ protected:
 	bool SaveWorkspaceAs(Projects::Workspace* pWorkspace);
 	bool CloseWorkspace(bool bAllowCloseFiles = false);
 	bool CloseWorkspaceFiles(Projects::Workspace* pWorkspace);
+	bool EnumWorkspaceWindows(SWorkspaceWindowsStruct* pWWS);
 
 protected:
 	CFindDlg*				m_FindDialog;

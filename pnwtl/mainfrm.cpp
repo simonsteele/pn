@@ -142,9 +142,20 @@ void __stdcall CMainFrame::ChildCloseNotify(CChildFrame* pChild, SChildEnumStruc
 		s->bCanClose = false;
 }
 
+void __stdcall CMainFrame::WorkspaceChildEnumNotify(CChildFrame* pChild, SChildEnumStruct* pES)
+{
+	SWorkspaceWindowsStruct* s = static_cast<SWorkspaceWindowsStruct*>(pES);
+
+	tstring filename = pChild->GetFileName().c_str();
+	Projects::File* pFile = s->pWorkspace->FindFile(filename.c_str());
+
+	if(pFile)
+		s->FoundWindows.push_back(pChild);
+}
+
 void __stdcall CMainFrame::WorkspaceChildCloseNotify(CChildFrame* pChild, SChildEnumStruct* pES)
 {
-	SWorkspaceCloseStruct* s = static_cast<SWorkspaceCloseStruct*>(pES);
+	SWorkspaceWindowsStruct* s = static_cast<SWorkspaceWindowsStruct*>(pES);
 
 	tstring filename = pChild->GetFileName().c_str();
 	Projects::File* pFile = s->pWorkspace->FindFile(filename.c_str());
@@ -1284,6 +1295,17 @@ bool CMainFrame::CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction action)
 	return s.bFound;
 }
 
+/**
+ * Workspace accessor for the entire system.
+ */
+Projects::Workspace* CMainFrame::GetActiveWorkspace()
+{
+	if(m_pProjectsWnd == NULL)
+		RETURN_UNEXPECTED(_T("No Projects Window."), NULL); // bail.
+
+	return m_pProjectsWnd->GetWorkspace();
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Menu code...
 
@@ -1609,9 +1631,11 @@ void CMainFrame::OpenProject(LPCTSTR projectPath)
 	workspace->ClearDirty();
 }
 
-void CMainFrame::OpenWorkspace(LPCTSTR workspace)
+void CMainFrame::OpenWorkspace(LPCTSTR workspacePath)
 {
-
+	Projects::Workspace* workspace = new Projects::Workspace(wsfile);
+	m_pProjectsWnd->SetWorkspace(workspace);
+	workspace->ClearDirty();
 }
 
 bool CMainFrame::SaveWorkspaceAs(Projects::Workspace* pWorkspace)
@@ -1696,7 +1720,7 @@ bool CMainFrame::SaveProjects(Projects::Workspace* pWorkspace)
  */
 bool CMainFrame::CloseWorkspaceFiles(Projects::Workspace* pWorkspace)
 {
-	SWorkspaceCloseStruct s;
+	SWorkspaceWindowsStruct s;
 	s.pFunction = WorkspaceChildCloseNotify; 
 	s.bCanClose = true;
 	s.pWorkspace = pWorkspace;
@@ -1715,6 +1739,18 @@ bool CMainFrame::CloseWorkspaceFiles(Projects::Workspace* pWorkspace)
 }
 
 /**
+ * @return True if there are any windows in the workspace.
+ */
+bool CMainFrame::EnumWorkspaceWindows(SWorkspaceWindowsStruct* pWWS)
+{
+	pWWS->pFunction = WorkspaceChildEnumNotify;
+
+	PerformChildEnum(pWWS);
+
+	return(pWWS->FoundWindows.size() > 0);
+}
+
+/**
  * @return False if the user hits cancel at any point, true otherwise.
  */
 bool CMainFrame::CloseWorkspace(bool bAllowCloseFiles)
@@ -1729,8 +1765,9 @@ bool CMainFrame::CloseWorkspace(bool bAllowCloseFiles)
 	if(bAllowCloseFiles)
 	{
 		// No point in asking if there are no files open.
-		HWND hWndEditor = GetCurrentEditor();
-		if(hWndEditor != NULL)
+		SWorkspaceWindowsStruct wws;
+		wws.pWorkspace = workspace;
+		if(EnumWorkspaceWindows(&wws))
 		{
 			DWORD dwRes = ::MessageBox(m_hWnd, _T("Close all files in the workspace?"), _T("Programmers Notepad"), MB_YESNOCANCEL | MB_ICONQUESTION);
 

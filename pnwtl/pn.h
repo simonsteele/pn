@@ -26,6 +26,9 @@
 #include "pntypes.h"
 
 class ToolWrapper;
+namespace Projects {
+	class Workspace;
+}
 
 struct IMainFrame
 {
@@ -38,6 +41,7 @@ struct IMainFrame
 	virtual void SaveAll() = 0;
 	virtual void OpenFile(LPCTSTR lpszFilename, bool bAddMRU = false) = 0;
 	virtual bool CheckAlreadyOpen(LPCTSTR lpszFilename, EAlreadyOpenAction action) = 0;
+	virtual Projects::Workspace* GetActiveWorkspace() = 0;
 };
 
 struct _Context 

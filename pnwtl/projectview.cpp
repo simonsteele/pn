@@ -155,11 +155,7 @@ HTREEITEM CProjectTreeCtrl::buildFiles(HTREEITEM hParentNode, HTREEITEM hInsertA
 
 	for(FILE_LIST::const_iterator i = files.begin(); i != files.end(); ++i)
 	{
-		hFile = InsertItem( (*i)->GetDisplayName(), 0, 0, hParentNode, hFile );
-		SetItemData(hFile, reinterpret_cast<DWORD_PTR>( (*i) ));
-
-		int index = shellImages->IndexForFile( (*i)->GetFileName() );
-		SetItemImage(hFile, index, index);
+		hFile = AddFileNode((*i), hParentNode, hFile);
 	}
 
 	return hFile;
@@ -551,6 +547,10 @@ HTREEITEM CProjectTreeCtrl::AddFileNode(File* file, HTREEITEM hParent, HTREEITEM
 {
 	HTREEITEM hFile = InsertItem( file->GetDisplayName(), 0, 0, hParent, hInsertAfter );
 	SetItemData(hFile, reinterpret_cast<DWORD_PTR>( file ));
+
+	int index = shellImages->IndexForFile( file->GetFileName() );
+	SetItemImage(hFile, index, index);
+
 	return hFile;
 }
 
