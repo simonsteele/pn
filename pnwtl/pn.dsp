@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "TabbingFramework" /I "DockingFramework" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "STRICT" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MT /W3 /GX /O2 /I "TabbingFramework" /I "DockingFramework" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "STRICT" /Yu"stdafx.h" /FD /Zm200 /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x809 /d "NDEBUG"
@@ -95,6 +95,10 @@ SOURCE=.\childfrm.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\exporters.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\Files.cpp
 # End Source File
 # Begin Source File
@@ -132,6 +136,10 @@ SOURCE=.\pndialogs.cpp
 # Begin Source File
 
 SOURCE=.\pnutils.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\scaccessor.cpp
 # End Source File
 # Begin Source File
 
@@ -317,6 +325,10 @@ SOURCE=.\res\toolbar1.bmp
 # Begin Source File
 
 SOURCE=.\include\ColorButton.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\include\pcreplus.cpp
 # End Source File
 # Begin Source File
 

@@ -436,7 +436,9 @@ LRESULT CDockingOutputWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	//		IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
 	//SetIcon(hIconSmall, FALSE);
 
-	m_view.Create(m_hWnd, NULL, _T("GlobalOutput"));
+	RECT rc;
+	GetClientRect(&rc);
+	m_view.Create(m_hWnd, rc, _T("GlobalOutput"));
 
 	return 0;
 }

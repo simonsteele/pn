@@ -230,7 +230,7 @@ int CFile::ShowError(LPCTSTR filename, bool bOpen)
 	if(bOpen)
 		return ::MessageBox(NULL, (LPCTSTR)str, _T("Programmers Notepad 2"), MB_OK);
 	else
-		return ::MessageBox(NULL, (LPCTSTR)str, _T("Programmers Notepad 2"), MB_YESNO);
+		return ::MessageBox(NULL, (LPCTSTR)str, _T("Programmers Notepad 2"), MB_YESNOCANCEL);
 }
 
 ///////////////////////////////////////////////////////////////////////////
