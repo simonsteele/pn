@@ -180,6 +180,10 @@ SOURCE=.\resource.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\Scintilla.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\scintillaif.h
 # End Source File
 # Begin Source File

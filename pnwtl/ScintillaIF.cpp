@@ -17,7 +17,7 @@ CScintilla::CScintilla()
 #ifndef STATIC_SCILEXER
 	if(!scidll)
 	{
-		scidll = LoadLibrary("SciLexer.dll");
+		scidll = LoadLibrary(_T("SciLexer.dll"));
 	}
 #else
 	if(!refs)
@@ -49,15 +49,19 @@ CScintilla::~CScintilla()
 
 HWND CScintilla::Create(HWND hParent, HINSTANCE hInst)
 {
-	m_scihWnd = ::CreateWindow("Scintilla",
-		      "Source",
-		      WS_CHILD | WS_VSCROLL | WS_HSCROLL | WS_CLIPCHILDREN,
-		      0, 0,
-		      100, 100,
-		      hParent,
-		      0,
-		      hInst,
-		      0);
+	const int style = WS_CHILD | WS_VSCROLL | WS_HSCROLL | WS_CLIPCHILDREN;
+	const int exstyle = 0;
+
+	m_scihWnd = ::CreateWindowEx(exstyle,
+			_T("Scintilla"),
+			_T("Source"),
+			style,
+			0, 0,
+			100, 100,
+			hParent,
+			0,
+			hInst,
+			0);
 
 	m_Pointer = (void *)SPerform(SCI_GETDIRECTPOINTER);
 	Perform = (scmsgfn)SPerform(SCI_GETDIRECTFUNCTION);

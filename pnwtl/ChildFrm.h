@@ -18,6 +18,8 @@ class CChildFrame : public CTabbedMDIChildWindowImpl<CChildFrame>, public CFromH
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MDICHILD)
 
+	typedef CTabbedMDIChildWindowImpl<CChildFrame> baseClass;
+
 	CTextView m_view;
 	CallbackBase2<bool, CChildFrame*>* m_onClose;
 	
@@ -36,6 +38,9 @@ public:
 
 		MESSAGE_HANDLER(PN_NOTIFY, OnViewNotify)
 
+		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
+		MESSAGE_HANDLER(WM_PAINT, OnPaint)
+
 		// Global Cut, Copy, Paste and Undo handling....
 		COMMAND_ID_HANDLER(ID_EDIT_CUT, OnCut)
 		COMMAND_ID_HANDLER(ID_EDIT_COPY, OnCopy)
@@ -53,7 +58,7 @@ public:
 		IMPLEMENT_FROMHANDLE()
 		
 		// Chaining
-		CHAIN_MSG_MAP(CTabbedMDIChildWindowImpl<CChildFrame>)
+		CHAIN_MSG_MAP(baseClass)
 		CHAIN_CLIENT_COMMANDS ()
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
@@ -117,8 +122,8 @@ public:
 		rc.top = rc.bottom - MINI_BAR_HEIGHT;
 
 		// We fix the size of the mini toolbar to make it suitably small (see MINI_BAR_HEIGHT).
-		DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | CCS_BOTTOM | 
-						CCS_NODIVIDER | TBSTYLE_TOOLTIPS | CCS_NORESIZE /*| TBSTYLE_FLAT*/;
+		DWORD dwStyle = WS_CHILD | WS_VISIBLE | /*WS_CLIPCHILDREN | WS_CLIPSIBLINGS |*/ CCS_BOTTOM | 
+						CCS_NODIVIDER | TBSTYLE_TOOLTIPS | CCS_NORESIZE | TBSTYLE_FLAT;
 
 		toolbar.Create(m_hWnd, rc, NULL, dwStyle);
 		
@@ -186,6 +191,30 @@ public:
 
 		bHandled = FALSE;
 		return 1;
+	}
+
+	LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		// Paint a background for the toolbar.
+		PAINTSTRUCT ps;
+		CDC cdc(BeginPaint(&ps));
+		
+		CRect rectTB;
+		::GetWindowRect(m_hWndToolBar, &rectTB);
+		CBrush brush;
+		brush.CreateSysColorBrush(COLOR_3DFACE);
+
+		cdc.FillRect(rectTB, brush);
+
+		EndPaint(&ps);
+
+		return 0;		
+	}
+
+	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		// Need to do this so the toolbar is drawn...
+		return 0;
 	}
 
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)

@@ -23,6 +23,8 @@ class CTextView : public CScintillaWindow< CScintillaImpl >
 {
 public:
 
+	typedef CScintillaWindow< CScintillaImpl > baseClass;
+
 	CTextView() : CScintillaWindow< CScintillaImpl >()
 	{
 		m_pLastScheme = NULL;
@@ -81,25 +83,20 @@ public:
 
 	virtual int HandleNotify(LPARAM lParam)
 	{
-		SCNotification *scn = (SCNotification*)lParam;
-		switch (scn->nmhdr.code)
+		int msg = baseClass::HandleNotify(lParam);
+		
+		if(msg == SCN_SAVEPOINTREACHED)
 		{
-			case SCN_SAVEPOINTREACHED :
-				SendMessage(GetParent(), PN_NOTIFY, 0, SCN_SAVEPOINTREACHED);
-				m_Modified = false;
-				break;
-
-			case SCN_SAVEPOINTLEFT :
-				SendMessage(GetParent(), PN_NOTIFY, 0, SCN_SAVEPOINTLEFT);
-				m_Modified = true;
-				break;
-
-			default:
-				return CScintilla::HandleNotify(lParam);
+			SendMessage(GetParent(), PN_NOTIFY, 0, SCN_SAVEPOINTREACHED);
+			m_Modified = false;
 		}
-			
-
-		return scn->nmhdr.code;
+		else if(msg == SCN_SAVEPOINTLEFT)
+		{
+			SendMessage(GetParent(), PN_NOTIFY, 0, SCN_SAVEPOINTLEFT);
+			m_Modified = true;
+		}
+		
+		return msg;
 	}
 
 protected:

@@ -2,9 +2,7 @@
 #include "ScintillaImpl.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-// Search and Replace Code
-// Some of this should maybe be moved into a support file to clean this up 
-// a bit.
+// Search and Replace Support Code (please move this)
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -148,6 +146,162 @@ static int UnSlashAsNeeded(CString& s, bool escapes, bool regularExpression)
 	return len;
 }
 
+////////////////////////////////////////////////////////////
+// Manage all of the functionality in this class...
+////////////////////////////////////////////////////////////
+
+int CScintillaImpl::HandleNotify(LPARAM lParam)
+{
+	int msg = CScintilla::HandleNotify(lParam);
+	if(msg == SCN_CHARADDED)
+	{
+		DumbIndent( ((SCNotification*)lParam)->ch );
+	}
+	else if(msg == SCN_UPDATEUI)
+	{
+		ManageBraceMatch();
+	}
+
+	return msg;
+}
+
+////////////////////////////////////////////////////////////
+// Indentation Code
+////////////////////////////////////////////////////////////
+
+int CScintillaImpl::GetIndentLevel(int line)
+{
+	return GetLineIndentation(line);
+}
+
+void CScintillaImpl::DumbIndent(char ch)
+{
+	//CharacterRange cr;
+	//GetSel(cr);
+	int curLine = GetCurrentPos();
+	curLine = LineFromPosition(curLine);
+
+	if(ch == '\r' || ch == '\n')
+	{
+		int previousIndent = GetIndentLevel(curLine-1);
+		IndentLine(curLine, previousIndent);
+	}
+}
+
+void CScintillaImpl::IndentLine(int line, int indent)
+{
+	if (indent < 0)
+		return;
+	
+	CharacterRange crange;
+	GetSel(crange);
+
+	int posBefore = GetLineIndentPosition(line);
+	
+	SetLineIndentation(line, indent);
+	
+	int posAfter = GetLineIndentPosition(line);
+	int posDifference =  posAfter - posBefore;
+	
+	if (posAfter > posBefore) 
+	{
+		// Move selection on
+		if (crange.cpMin >= posBefore) 
+		{
+			crange.cpMin += posDifference; 
+		}
+
+		if (crange.cpMax >= posBefore) 
+		{
+			crange.cpMax += posDifference; 
+		}
+	} 
+	else if (posAfter < posBefore) 
+	{
+		// Move selection back
+		if (crange.cpMin >= posAfter) 
+		{
+			if (crange.cpMin >= posBefore)
+				crange.cpMin += posDifference; 
+			else 
+				crange.cpMin = posAfter; 
+		}
+		if (crange.cpMax >= posAfter) 
+		{
+			if (crange.cpMax >= posBefore)
+				crange.cpMax += posDifference; 
+			else 
+				crange.cpMax = posAfter; 
+		}
+	}
+	SetSel(crange.cpMin, crange.cpMax);
+}
+
+
+////////////////////////////////////////////////////////////
+// Brace Matching Code
+////////////////////////////////////////////////////////////
+
+/**
+ * @return true if we're inside the braces...
+ */
+bool CScintillaImpl::FindMatchingBraces(int& CaretBrace, int& OtherBrace)
+{
+	///@todo Move to the properties? And should this be scheme-overridable.
+	const char* braceset = "{[()]}";
+	
+	int Caret = GetCurrentPos();
+	bool After = true;	// caret after brackets...
+	
+	CaretBrace = -1;
+
+	if(Caret > 0)
+	{
+		// brace could be before the caret.
+		char Before = GetCharAt(Caret-1);
+		if(Before != NULL && strchr(braceset, Before))
+			CaretBrace = Caret-1;
+	}
+
+	if(CaretBrace < 0)
+	{
+		// Look the other side of the caret...
+		char After = GetCharAt(Caret);
+		if(After != NULL && strchr(braceset, After))
+		{
+			CaretBrace = Caret;
+			After = false;
+		}
+	}
+
+	OtherBrace = BraceMatch(CaretBrace);
+
+	return (OtherBrace > CaretBrace) ? After : !After;
+}
+
+void CScintillaImpl::ManageBraceMatch()
+{
+	int brace1, brace2 = -1;
+	FindMatchingBraces(brace1, brace2);
+	
+	if(brace1 > -1 && brace2 == -1)
+	{
+		BraceBadLight(brace1);
+		SetHighlightGuide(0);
+	}
+	else
+	{
+		BraceHighlight(brace1, brace2);
+		int col1 = GetColumn(brace1);
+		int col2 = GetColumn(brace2);
+		SetHighlightGuide(min(col1, col2));
+	}
+}
+
+////////////////////////////////////////////////////////////
+// Search and Replace code
+////////////////////////////////////////////////////////////
+
 bool CScintillaImpl::FindNext(SFindOptions* pOptions)
 {
 	TextToFind		ft;
@@ -260,7 +414,7 @@ void CScintillaImpl::HighlightAll(SFindOptions* pOptions)
 	if ((posFind != -1) && (posFind <= endPosition)) 
 	{
 		int lastMatch = posFind;
-		//sci.BeginUndoAction();
+		//BeginUndoAction();
 
 		while (posFind != -1) 
 		{
@@ -280,7 +434,7 @@ void CScintillaImpl::HighlightAll(SFindOptions* pOptions)
 			posFind = SearchInTarget(findLen, (LPCTSTR)findTarget);
 		}
 		
-		//sci.EndUndoAction();
+		//EndUndoAction();
 	}
 }
 
