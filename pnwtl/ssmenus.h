@@ -30,7 +30,7 @@ const long mfdefault[] = {0, MFS_DEFAULT};
 #include <map>
 using namespace std;
 
-#include "callback.h"
+//#include "callback.h"
 #include "include/sscontainers.h"
 
 typedef struct

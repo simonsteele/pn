@@ -136,6 +136,9 @@ LPCTSTR COptionsPageGeneral::GetTreePosition()
 
 void COptionsPageGeneral::OnOK()
 {
+	if(!m_bCreated)
+		return;
+
 	DoDataExchange(TRUE);
 
 	COptionsManager& options = COptionsManager::GetInstanceRef();
@@ -183,10 +186,20 @@ void CTabPageKeywords::DoSetScheme()
 	SetItem();
 
 	m_list.DeleteAllItems();
+	m_scintilla.ClearAll();
+	m_scintilla.EmptyUndoBuffer();
 
 	CustomKeywordSet* pSet = m_pScheme->GetFirstKeywordSet();
 	
 	int iPos = 0;
+
+	if(!pSet)
+	{
+		m_scintilla.EnableWindow(FALSE);
+		m_scintilla.SetText("There are no keywords for this scheme");
+	}
+	else
+		m_scintilla.EnableWindow(TRUE);
 
 	while(pSet)
 	{
@@ -304,7 +317,8 @@ LRESULT CTabPageKeywords::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	CRect rcScintilla;
 	::GetWindowRect(GetDlgItem(IDC_PLACEHOLDER), rcScintilla);
 	ScreenToClient(rcScintilla);
-	m_scintilla.Create(m_hWnd, rcScintilla, "Keywords", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS);
+	m_scintilla.Create(m_hWnd, rcScintilla, "Keywords", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_TABSTOP);
+	::SetWindowPos(m_scintilla, GetDlgItem(IDC_PLACEHOLDER), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 	m_scintilla.SetWrapMode(SC_WRAP_WORD);
 	m_scintilla.AssignCmdKey(SCK_HOME, SCI_HOMEDISPLAY);
 	m_scintilla.AssignCmdKey(SCK_END, SCI_LINEENDDISPLAY);
@@ -798,6 +812,10 @@ COptionsPageSchemes::COptionsPageSchemes(SchemeConfigParser* pSchemes) : COption
 {
 	m_pSchemes = pSchemes;
 }
+
+// Dialog Message Hook stuff...
+//#include "include/dialogmessagehook.h"
+//CDialogMessageHook::InstallHook(m_props.m_hWnd);
 
 LRESULT COptionsPageSchemes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -1300,8 +1318,8 @@ LRESULT CToolEditorDialog::OnBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 {	
 	DoDataExchange(TRUE);
 
-	CFolderDialog dlg;
-	dlg.m_bi.ulFlags |= BIF_USENEWUI;
+	LPCTSTR pInit = ( (m_csFolder.Find(_T('%')) == -1) ? (LPCTSTR)m_csFolder : NULL );
+	CPNFolderDialog dlg(NULL, pInit, _T("Select the working folder for the tool:"));
 	
 	if( dlg.DoModal() == IDOK )
 	{
@@ -1328,12 +1346,13 @@ LRESULT CToolEditorDialog::OnBrowseCommand(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 void CToolEditorDialog::GetValues(SToolDefinition* pDefinition)
 {
-	pDefinition->Name		= m_csName;
-	pDefinition->Command	= m_csCommand;
-	pDefinition->Folder		= m_csFolder;
-	pDefinition->Params		= m_csParams;
-	pDefinition->Shortcut	= m_csShortcut;
+	pDefinition->Name			= m_csName;
+	pDefinition->Command		= m_csCommand;
+	pDefinition->Folder			= m_csFolder;
+	pDefinition->Params			= m_csParams;
+	pDefinition->Shortcut		= m_csShortcut;
 	pDefinition->bCaptureOutput = m_bCapture != 0;
+	pDefinition->bIsFilter		= m_bFilter != 0;
 }
 
 void CToolEditorDialog::SetValues(SToolDefinition* pDefinition)
@@ -1344,6 +1363,7 @@ void CToolEditorDialog::SetValues(SToolDefinition* pDefinition)
 	m_csParams		= pDefinition->Params.c_str();
 	m_csShortcut	= pDefinition->Shortcut.c_str();
 	m_bCapture		= pDefinition->bCaptureOutput;
+	m_bFilter		= pDefinition->bIsFilter;
 }
 
 void CToolEditorDialog::SetTitle(LPCTSTR title)

@@ -57,6 +57,7 @@ typedef struct tagToolDefinition
 	tstring Shortcut;
 	int		CommandID;
 	bool	bCaptureOutput;
+	bool	bIsFilter;
 } SToolDefinition;
 
 typedef enum { PNSF_Windows = SC_EOL_CRLF, PNSF_Unix = SC_EOL_LF, PNSF_Mac = SC_EOL_CR, PNSF_NoChange} EPNSaveFormat;

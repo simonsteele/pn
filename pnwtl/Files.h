@@ -8,8 +8,6 @@
 	typedef basic_string<TCHAR> tstring;
 #endif
 
-typedef tstring cfnString;
-
 #define CFILE_CouldNotSaveError _T("%s could not be saved in the specified location.\nThis could be due to an absent disk, a broken network connection, or a full disk.\nDo you want to save in another location?")
 
 #define CFILE_CouldNotLoadError _T("%s could not be opened .\nThis could be because the file no longer exists, a disk is absent or due to a broken network connection.")
@@ -85,12 +83,6 @@ class CTextFile : public CFile
  */
 class CFileName
 {
-private:
-	cfnString	m_FileName;
-
-	int GetLastSlashPos();
-	int GetLastDotPos(cfnString* str=NULL);
-
 public:
 	CFileName() : m_FileName(""){}
 	CFileName(const CFileName& copy){*this = copy;}
@@ -105,10 +97,11 @@ public:
 	void ChangeExtensionTo(LPCTSTR newext);				///< Change the extension of the filename.
 	void ChangePathTo(LPCTSTR newpath);					///< Change the path of the filename to newpath.
 	
-	cfnString GetExtension();
-	void GetPath(cfnString& buf);						///< Return c:\temp\ of c:\temp\dat.dat
-	void GetFileName_NoExt(cfnString& buf);				///< Return the filename part of c:\temp\filename.dat
-	void GetFileName(cfnString& buf);					///< Return the filename.dat part of c:\temp\filename.dat
+	tstring GetExtension();
+	tstring GetFileName();
+	void GetPath(tstring& buf);							///< Return c:\temp\ of c:\temp\dat.dat
+	void GetFileName_NoExt(tstring& buf);				///< Return the filename part of c:\temp\filename.dat
+	void GetFileName(tstring& buf);						///< Return the filename.dat part of c:\temp\filename.dat
 
 	/**
 	 * GetFileAge returns the integer dos date of the
@@ -120,8 +113,15 @@ public:
 	int	GetLength();
 	LPCTSTR c_str();
 
+	const tstring& ToLower();
+
 	operator tstring() {return m_FileName;}
 
+protected:
+	tstring	m_FileName;
+
+	int GetLastSlashPos();
+	int GetLastDotPos(tstring* str=NULL);
 };
 
 int FileAge(LPCTSTR FileName);

@@ -10,7 +10,7 @@
 	<language name="python" title="Python" folding="true" foldcomments="true" foldcompact="false">
 		<lexer name="python" />
 		<use-keywords>
-			<keyword key="0" class="python"/>
+			<keyword key="0" name="Keywords" class="python"/>
 		</use-keywords>
 		<use-styles>
 			<style name="Default" key="32" />

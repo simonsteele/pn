@@ -47,7 +47,7 @@ CChildFrame* CMainFrame::NewEditor()
 
 	pChild->CreateEx(m_hWndMDIClient);
 
-	pChild->m_onClose = new CallbackClassPtr<CMainFrame, CChildFrame*, bool>(*this, OnEditorClosing);
+	//pChild->m_onClose = new CallbackClassPtr<CMainFrame, CChildFrame*, bool>(*this, OnEditorClosing);
 
 	return pChild;
 }
@@ -118,40 +118,11 @@ void CMainFrame::OnMDISetMenu(HMENU hOld, HMENU hNew)
 	MoveNewMenu(r, a);
 }
 
-bool CMainFrame::OnEditorClosing(CChildFrame* pChild)
-{
-	bool bRet = true;
-
-	if(pChild->GetModified())
-	{
-		CString title;
-		title.Format(_T("Would you like to save changes to:\n%s?"), pChild->GetTitle());
-		int res = MessageBox(title, "Programmers Notepad", MB_YESNOCANCEL | MB_ICONQUESTION);
-		switch (res)
-		{
-			case IDYES:
-			{
-				if( pChild->CanSave() )
-				{
-					pChild->Save();
-				}
-				else
-				{
-					return pChild->SaveAs();
-				}
-			}
-			break;
-			case IDCANCEL:
-			{
-				return false;
-			}
-		} // switch (res)
-
-	}
-
-	return bRet;
-}
-
+/* Notes: This function could be completely removed by doing the following:
+ *  1. Get Find and Replace dialogs to register themselves as message filters.
+ *  2. Get child windows to register as message filters.
+ * What are the (dis)advantages of doing this I wonder?
+ */
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 {
 	if(baseClass::PreTranslateMessage(pMsg))
@@ -532,6 +503,8 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	options.AddPage(&page);
 	options.AddPage(&page2);
 	options.AddPage(&page3);
+
+	options.SetInitialPage(&general);
 	
 	bool bOK = options.DoModal() == IDOK;
 
@@ -718,9 +691,8 @@ BOOL CALLBACK CMainFrame::CloseChildEnumProc(HWND hWnd, LPARAM lParam)
 	if(pChild != NULL)
 	{
 		SCloseStruct* s = reinterpret_cast<SCloseStruct*>(lParam);
-		CMainFrame *pMF = static_cast<CMainFrame*>(s->pMainFrm);
 
-		if(!pMF->OnEditorClosing(pChild))
+		if(!pChild->CanClose())
 			s->bCanClose = false;
 	}
 	

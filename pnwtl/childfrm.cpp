@@ -24,7 +24,7 @@ CChildFrame::CChildFrame()
 {
 	::InitializeCriticalSection(&m_crRunningTools);
 
-	m_onClose = NULL;
+//	m_onClose = NULL;
 	m_hImgList = NULL;
 	m_pSplitter = NULL;
 	m_pOutputView = NULL;
@@ -45,15 +45,15 @@ CChildFrame::CChildFrame()
 CChildFrame::~CChildFrame()
 {
 	if(m_pFirstTool)
-		KillTools(false);
+		KillTools(false); // Can't afford to wait, no "completed" events will get through...
 
 	::DeleteCriticalSection(&m_crRunningTools);
 
 	if(m_hImgList)
 		::ImageList_Destroy(m_hImgList);
 
-	if(m_onClose)
-		delete m_onClose;
+	//if(m_onClose)
+	//	delete m_onClose;
 
 	if(m_pSplitter)
 		delete m_pSplitter;
@@ -207,6 +207,8 @@ void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 	{
 		m_pSplitter->SetSinglePaneMode(SPLITTER_TOP);
 	}
+
+	UISetChecked(ID_EDITOR_OUTPUTWND, bShow);
 }
 
 ////////////////////////////////////////////////////
@@ -261,6 +263,39 @@ bool CChildFrame::GetModified()
 	return m_view.GetModified();
 }
 
+bool CChildFrame::CanClose()
+{
+	bool bRet = true;
+
+	if(GetModified())
+	{
+		CString title;
+		title.Format(_T("Would you like to save changes to:\n%s?"), GetTitle());
+		int res = MessageBox(title, "Programmers Notepad", MB_YESNOCANCEL | MB_ICONQUESTION);
+		switch (res)
+		{
+			case IDYES:
+			{
+				if( CanSave() )
+				{
+					Save();
+				}
+				else
+				{
+					return SaveAs();
+				}
+			}
+			break;
+
+			case IDCANCEL:
+			{
+				return false;
+			}
+		} // switch (res)
+	}
+	return bRet;
+}
+
 ////////////////////////////////////////////////////
 // Message Handlers
 
@@ -292,15 +327,21 @@ LRESULT CChildFrame::OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	KillTools();
-	
 	bHandled = FALSE;
-	if(m_onClose)
+	
+	if(!CanClose())
+	{
+		KillTools(true);
+
+		bHandled = TRUE;
+	}
+	
+	/*if(m_onClose)
 	{
 		// Ok, so maybe this OnClose handling should be moved into this class :(
 		if( ! (*m_onClose)((CChildFrame*)this) )
 			bHandled = TRUE; // cancel close.
-	}
+	}*/
 
 	return 0;
 }
@@ -331,10 +372,14 @@ LRESULT CChildFrame::OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 LRESULT CChildFrame::OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	LPMSG pMsg = (LPMSG)lParam;
+	LPMSG pMsg = reinterpret_cast<LPMSG>(lParam);
 
 	if(CTabbedMDIChildWindowImpl<CChildFrame>::PreTranslateMessage(pMsg))
 		return TRUE;
+
+	if(pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE && GetFocus() == m_view.m_hWnd)
+		if(OnEscapePressed())
+			return TRUE;
 
 	return m_view.PreTranslateMessage(pMsg);
 }
@@ -368,11 +413,12 @@ LRESULT CChildFrame::OnOptionsUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 {
 	CScheme* pS = m_view.GetCurrentScheme();
 	UpdateTools(pS);
-	UpdateMenu();
 
-	// Cheesy way of re-loading the compiled scheme...
+	// re-load the compiled scheme...
 	if(pS)
 		m_view.SetScheme(pS);
+
+	UpdateMenu();
 
 	return 0;
 }
@@ -512,6 +558,22 @@ LRESULT CChildFrame::OnOutputWindowToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	return 0;
 }
 
+LRESULT CChildFrame::OnMarkWhiteSpaceToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	bool bShow = UIInvertCheck(wID);
+	
+	m_view.SetViewWS((bShow ? SCWS_VISIBLEALWAYS : SCWS_INVISIBLE));
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnEOLMarkerToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	m_view.SetViewEOL(UIInvertCheck(wID));
+
+	return 0;
+}
+
 LRESULT CChildFrame::OnHideOutput(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	ToggleOutputWindow(true, false);
@@ -554,7 +616,16 @@ LRESULT CChildFrame::OnLineEndingsConvert(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT CChildFrame::OnStopTools(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	KillTools();
+	// Don't need to wait, we'll assume the user is still using the document.
+	KillTools(false); 
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnUseTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	m_view.SetUseTabs(!m_view.GetUseTabs());
+	UpdateMenu();
 
 	return 0;
 }
@@ -822,6 +893,7 @@ void CChildFrame::UpdateMenu()
 	menu.CheckMenuItem(ID_TOOLS_LECRLF, f == PNSF_Windows);
 	menu.CheckMenuItem(ID_TOOLS_LECR, f == PNSF_Mac);
 	menu.CheckMenuItem(ID_TOOLS_LELF, f == PNSF_Unix);
+	menu.CheckMenuItem(ID_TOOLS_USETABS, m_view.GetUseTabs());
 	
 	{
 		// Scope to restrict lock scope.
@@ -834,13 +906,19 @@ void CChildFrame::UpdateMenu()
 
 void CChildFrame::OnRunTool(LPVOID pVoid)
 {
-	ToolRunner *r = new ToolRunner(this, reinterpret_cast<SToolDefinition*>(pVoid));
+	SToolDefinition* pTool = reinterpret_cast<SToolDefinition*>(pVoid);
+	ToolRunner *r = new ToolRunner(this, pTool);
 	bool bThreaded = r->GetThreadedExecution();
 	if(bThreaded)
 		AddRunningTool(r);
 	r->Execute();
 	if(!bThreaded)
+	{
+		if(pTool->bIsFilter)
+			Revert();
+
 		delete r;
+	}
 }
 
 void CChildFrame::AddOutput(LPCSTR outputstring, int nLength)
@@ -896,6 +974,11 @@ void CChildFrame::ToolFinished(ToolRunner* pRunner)
 		exitcode += IntToTString(pRunner->GetExitCode());
 		exitcode += _T("\n");
 		AddOutput(exitcode.c_str());
+		if(pRunner->GetToolDef())
+		{
+			if(pRunner->GetToolDef()->bIsFilter)
+				Revert();
+		}
 
 		delete pRunner;
 
@@ -903,37 +986,57 @@ void CChildFrame::ToolFinished(ToolRunner* pRunner)
 	}
 }
 
-void CChildFrame::KillTools(bool bFriendlyKill)
+void CChildFrame::KillTools(bool bWaitForKill)
 {
 	int iLoopCount = 0;
 
-	while(m_pFirstTool)
+	// Signal to all tools to exit, scope to enter and exit critical section
 	{
-		// Scope to enter and exit critical section.
+		CSSCritLock lock(&m_crRunningTools);
+
+		ToolRunner* pT = m_pFirstTool;
+		while(pT)
+		{
+			pT->SetCanRun(false);
+			pT = pT->m_pNext;
+		}
+	}
+
+	while(bWaitForKill)
+	{
+		// Normally, we give all the tools a chance to exit before continuing...
+		Sleep(100);
+		iLoopCount++;
+
+		// Don't tolerate more than 5 seconds of waiting...
+		if(iLoopCount > 50)
+			break;
+
 		{
 			CSSCritLock lock(&m_crRunningTools);
-
-			ToolRunner* pT = m_pFirstTool;
-			while(pT)
-			{
-				pT->SetCanRun(false);
-				pT = pT->m_pNext;
-			}
-		}
-
-		if(bFriendlyKill)
-		{
-			// Normally, we give all the tools a chance to exit before continuing...
-			Sleep(100);
-			iLoopCount++;
-
-			// Don't tolerate more than 5 seconds of waiting...
-			if(iLoopCount > 50)
+			if(!m_pFirstTool)
 				break;
 		}
-		else
-			break;
 	}
+}
+
+bool CChildFrame::IsOutputVisible()
+{
+	return ((m_pSplitter != NULL) ? m_pSplitter->GetSinglePaneMode() == SPLITTER_NORMAL : false);
+}
+
+/**
+ * In here we should kill off any windowy things showing like output windows etc.
+ */
+BOOL CChildFrame::OnEscapePressed()
+{
+	if(IsOutputVisible())
+	{
+        ToggleOutputWindow();
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 void CChildFrame::PrintSetup()
@@ -996,6 +1099,9 @@ CChildFrame::_PoorMansUIEntry* CChildFrame::GetDefaultUIMap()
 		{ID_EDITOR_WORDWRAP, PMUI_MINIBAR | PMUI_MENU},
 		{ID_EDITOR_COLOURISE, PMUI_MINIBAR | PMUI_MENU},
 		{ID_EDITOR_LINENOS, PMUI_MINIBAR | PMUI_MENU},
+		{ID_EDITOR_WHITESPACE, PMUI_MENU},
+		{ID_EDITOR_EOLCHARS, PMUI_MENU},
+		{ID_EDITOR_OUTPUTWND, PMUI_MENU},
 		// note: This one must be at the end.
 		{-1, 0}
 	};
@@ -1083,7 +1189,7 @@ bool CChildFrame::UIInvertCheck(UINT uID)
 void CChildFrame::InitUpdateUI()
 {
 	CChildFrame::_PoorMansUIEntry* pMap = GetDefaultUIMap();
-	int so = sizeof(pMap);
+	int so = sizeof(*pMap);
 	m_pUIData = new CChildFrame::_PoorMansUIEntry[so];
 	memcpy(m_pUIData, pMap, sizeof(_PoorMansUIEntry) * so);
 }

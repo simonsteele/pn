@@ -120,6 +120,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Print...\tCtrl+P",           ID_FILE_PRINT
         MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW
+        , INACTIVE
         MENUITEM "P&rint Setup...",             ID_FILE_PRINT_SETUP
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
@@ -148,13 +149,15 @@ BEGIN
         END
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM SEPARATOR
+        MENUITEM "Line End Markers",            32792
         MENUITEM "Line Numbers",                ID_EDITOR_LINENOS
+        MENUITEM "Mark WhiteSpace",             ID_EDITOR_WHITESPACE
         MENUITEM "Syntax Highlighting",         131
         MENUITEM "Word Wrap",                   130
         MENUITEM SEPARATOR
         MENUITEM "Schemes",                     ID_VIEW_CHANGESCHEME
         MENUITEM SEPARATOR
-        MENUITEM "&Output",                     133
+        MENUITEM "&Output\tF8",                 133
     END
     POPUP "&Tools"
     BEGIN
@@ -166,6 +169,7 @@ BEGIN
             MENUITEM SEPARATOR
             MENUITEM "&Convert...",                 ID_TOOLS_LECONVERT
         END
+        MENUITEM "Use &Tabs",                   ID_TOOLS_USETABS
         MENUITEM SEPARATOR
         MENUITEM "Add Tools...",                ID_TOOLS_DUMMY
         MENUITEM "&Stop Tools",                 ID_TOOLS_STOPTOOLS, GRAYED
@@ -281,6 +285,7 @@ BEGIN
     "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
     VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
     VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
+    VK_F8,          ID_EDITOR_OUTPUTWND,    VIRTKEY, NOINVERT
 END
 
 
@@ -290,7 +295,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,3,1
+ FILEVERSION 2,0,3,21
  PRODUCTVERSION 2,0,3,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -308,12 +313,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele (Echo Software)"
             VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.3.1"
+            VALUE "FileVersion", "2.0.3.21"
             VALUE "InternalName", "PNWTL"
-            VALUE "LegalCopyright", "Copyright © 2002 Simon Steele (Echo Software)"
+            VALUE "LegalCopyright", "Copyright © 2002-2003 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"
             VALUE "ProductName", "Programmers Notepad"
-            VALUE "ProductVersion", "2.0.3-devel"
+            VALUE "ProductVersion", "2.0.3-rc2"
         END
     END
     BLOCK "VarFileInfo"
@@ -746,11 +751,11 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    PUSHBUTTON      "&Reset",IDC_KEYWORDS_RESETBUTTON,79,141,54,18
     CONTROL         "",IDC_KEYWORDS_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
                     LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,2,4,73,155
     LTEXT           "Static",IDC_PLACEHOLDER,79,4,208,132,NOT WS_VISIBLE
+    PUSHBUTTON      "&Reset",IDC_KEYWORDS_RESETBUTTON,79,141,54,18
     PUSHBUTTON      "&Sort",IDC_KEYWORDS_SORTBUTTON,138,141,54,18
 END
 
@@ -765,10 +770,10 @@ BEGIN
                     LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | 
                     WS_TABSTOP,0,54,276,96
     PUSHBUTTON      "&Add",IDC_TOOLS_ADDBUTTON,174,156,48,18
-    PUSHBUTTON      "&Edit",IDC_TOOLS_EDITBUTTON,102,156,48,18
-    PUSHBUTTON      "&Remove",IDC_TOOLS_REMOVEBUTTON,228,156,48,18
-    PUSHBUTTON      "Button2",IDC_TOOLS_MOVEUPBUTTON,282,54,12,12
-    PUSHBUTTON      "Button2",IDC_TOOLS_MOVEDOWNBUTTON,282,138,12,12
+    PUSHBUTTON      "&Edit",IDC_TOOLS_EDITBUTTON,228,156,48,18
+    PUSHBUTTON      "&Remove",IDC_TOOLS_REMOVEBUTTON,90,156,48,18
+    PUSHBUTTON      "",IDC_TOOLS_MOVEUPBUTTON,282,54,12,12
+    PUSHBUTTON      "",IDC_TOOLS_MOVEDOWNBUTTON,282,138,12,12
     LTEXT           "In many cases it may be useful to set up external tools such as compilers or syntax checkers. You can set these tools up here.",
                     IDC_STATIC,36,6,258,24
     LTEXT           "note: The first item in any list will be the default tool.",
@@ -799,8 +804,11 @@ BEGIN
     RTEXT           "Parameters:",IDC_STATIC,6,60,42,8
     RTEXT           "Shortcut:",IDC_STATIC,6,78,42,12
     LTEXT           "Static",IDC_TE_INFOLABEL,6,114,276,42
-    CONTROL         "Capture output",IDC_TE_CAPTURECHECK,"Button",
+    CONTROL         "Capture output?",IDC_TE_CAPTURECHECK,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,6,96,84,12
+    CONTROL         "This tool will modify the current file.",
+                    IDC_TE_FILTERCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    90,96,150,12
 END
 
 IDD_PAGE_GENERAL DIALOGEX 0, 0, 299, 168
@@ -808,12 +816,12 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "Show Indentation Guides",IDC_OPT_INDENTGUIDESCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,24,168,12
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,6,168,12
     CONTROL         "Use the tab character for indentation",
                     IDC_OPT_USETABSCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,6,42,168,12
-    LTEXT           "Default tab width:",IDC_STATIC,6,60,66,12
-    EDITTEXT        IDC_OPT_TABWIDTHEDIT,72,60,40,14,ES_AUTOHSCROLL
+                    WS_TABSTOP,6,24,168,12
+    LTEXT           "Default tab width:",IDC_STATIC,6,42,66,12
+    EDITTEXT        IDC_OPT_TABWIDTHEDIT,72,42,40,14,ES_AUTOHSCROLL
 END
 
 

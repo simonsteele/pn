@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "Files.h"
 
+#include <algorithm>
+
 /**
  * @brief Get the dos file time of a file.
  * @param FileName fully qualified path.
@@ -302,7 +304,7 @@ int CFileName::GetLastSlashPos()
 	return ++pos;
 }
 
-int CFileName::GetLastDotPos(cfnString* str)
+int CFileName::GetLastDotPos(tstring* str)
 {
 	if(!str)
 	{
@@ -322,7 +324,7 @@ int CFileName::GetLastDotPos(cfnString* str)
 	}
 }
 
-void CFileName::GetPath(cfnString& buf)
+void CFileName::GetPath(tstring& buf)
 {
 	int pos = GetLastSlashPos();
 	if (pos != m_FileName.npos)
@@ -335,22 +337,23 @@ void CFileName::GetPath(cfnString& buf)
 	}
 }
 
-void CFileName::GetFileName(cfnString& buf)
+void CFileName::GetFileName(tstring& buf)
+{
+	buf = GetFileName();
+}
+
+tstring CFileName::GetFileName()
 {
 	int pos = GetLastSlashPos();
 
 	if (pos != m_FileName.npos)
-	{
-		buf = m_FileName.substr(pos);
-	}
+		return m_FileName.substr(pos);
 	else
-	{
-		buf = m_FileName;
-	}
+		return m_FileName;
 }
 
 ///@todo this crashes if the file has no extension!!!
-cfnString CFileName::GetExtension()
+tstring CFileName::GetExtension()
 {
 	int pos = GetLastDotPos(&m_FileName);
 	if(pos != m_FileName.npos)
@@ -358,12 +361,12 @@ cfnString CFileName::GetExtension()
 		return m_FileName.substr(pos-1);
 	}
 	else
-		return cfnString("");
+		return tstring("");
 }
 
-void CFileName::GetFileName_NoExt(cfnString& buf)
+void CFileName::GetFileName_NoExt(tstring& buf)
 {
-	cfnString work;
+	tstring work;
 	
 	int pos = GetLastSlashPos();
 	
@@ -387,8 +390,8 @@ void CFileName::GetFileName_NoExt(cfnString& buf)
 
 void CFileName::ChangeExtensionTo(LPCTSTR newext)
 {
-	cfnString	str;
-	cfnString	buf;
+	tstring	str;
+	tstring	buf;
 	GetPath(buf);
 	str = buf;
 	GetFileName_NoExt(buf);
@@ -399,7 +402,7 @@ void CFileName::ChangeExtensionTo(LPCTSTR newext)
 
 void CFileName::ChangePathTo(LPCTSTR newpath)
 {
-	cfnString str;
+	tstring str;
 	GetFileName(str);
 	str = newpath + str;
 	m_FileName = str;
@@ -418,4 +421,13 @@ int CFileName::GetLength()
 int CFileName::GetFileAge()
 {
 	return FileAge(m_FileName.c_str());
+}
+
+const tstring& CFileName::ToLower()
+{
+	transform (m_FileName.begin(), m_FileName.end(),    // source
+               m_FileName.begin(),             // destination
+               tolower);
+
+	return m_FileName;
 }

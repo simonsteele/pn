@@ -173,6 +173,17 @@ class CPNSaveDialog : public CPNFileDialogImpl<CPNSaveDialog>
 		EPNSaveFormat	m_Format;
 };
 
+class CPNFolderDialog : public CFolderDialogImpl<CPNFolderDialog>
+{
+	public:
+		CPNFolderDialog(HWND hWndParent = NULL, LPCTSTR lpstrInitial = NULL, LPCTSTR lpstrTitle = NULL, UINT uFlags = BIF_RETURNONLYFSDIRS | BIF_USENEWUI);
+
+		void OnInitialized();
+
+	protected:
+		CString		m_csInitialDir;
+};
+
 /**
  * Base class for input dialogs - can't believe there's no InputBox() function!!!
  */

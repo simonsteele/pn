@@ -184,15 +184,10 @@ bool CTextView::Load(LPCTSTR filename, CScheme* pScheme)
 {
 	if( OpenFile(filename) )
 	{
-		CFileName cfn(filename);
-		
 		if(NULL == pScheme)
 		{
-			ctcString ext;
-			ext = cfn.GetExtension();
-
 			EPNSaveFormat mode = static_cast<EPNSaveFormat>( GetEOLMode() );
-			CScheme* sch = CSchemeManager::GetInstance()->SchemeForExt(ext.c_str());
+			CScheme* sch = CSchemeManager::GetInstance()->SchemeForFile(filename);
 			SetScheme(sch);
 			mode = static_cast<EPNSaveFormat>( GetEOLMode() );
 		}
@@ -241,14 +236,8 @@ bool CTextView::Save(LPCTSTR filename, bool bSetScheme)
 		if(bSetScheme)
 		{
 			// Re-Apply Scheme:
-			CFileName cfn(filename);
-			ctcString ext;
-			ext = cfn.GetExtension();
-			if(ext.size() > 0)
-			{
-				CScheme* sch = CSchemeManager::GetInstance()->SchemeForExt(ext.c_str());
-				SetScheme(sch);
-			}
+			CScheme* sch = CSchemeManager::GetInstance()->SchemeForFile(filename);
+			SetScheme(sch);
 		}
 		return true;
 	}

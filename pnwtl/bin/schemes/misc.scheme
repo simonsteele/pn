@@ -14,7 +14,7 @@
 			<keyword key="0" name="Keywords" class="dosbatch"/>
 		</use-keywords>
 		<use-styles>
-			<!--<style name="Default" key="32" />-->
+			<style name="Default" key="32" />
 			<style name="Whitespace" key="0" />
 			<style name="Comment" key="1" class="comment" />
 			<style name="Keyword" key="2" class="keyword" />
@@ -27,11 +27,8 @@
 	</language>
 	<language name="makefile" title="Make" usetabs="true">
 		<lexer name="makefile" />
-		<!--<use-keywords>
-			<keyword key="0" name="Keywords" class="dosbatch"/>
-		</use-keywords>-->
 		<use-styles>
-			<!--<style name="Default" key="32" />-->
+			<style name="Default" key="32" />
 			<style name="Whitespace" key="0" />
 			<style name="Comment" key="1" class="comment" />
 			<style name="Pre-Processor" key="2" class="preprocessor" />

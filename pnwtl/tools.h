@@ -15,6 +15,8 @@ typedef std::list<SToolDefinition*> TOOLDEFS_LIST;
 #include "include/ssthreads.h"
 
 #define TOOLS_BUFFER_SIZE 16384
+#define TOOL_CAPTURE	0x01
+#define TOOL_ISFILTER	0x02
 
 /**
  * @brief Collection class representing tools associated with one scheme
@@ -181,10 +183,13 @@ class ToolRunner : public CSSThread
 {
 public:
 	ToolRunner(CChildFrame* pChild, SToolDefinition* pDef);
+	~ToolRunner();
 	
 	int Execute();
 
 	bool GetThreadedExecution();
+
+	const SToolDefinition* GetToolDef();
 
 	ToolRunner* m_pNext;
 

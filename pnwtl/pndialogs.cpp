@@ -366,6 +366,24 @@ void CPNSaveDialog::RepositionControl(CWindow &wnd, UINT nID, bool fSize)
 }
 
 //////////////////////////////////////////////////////////////////////////////
+// CPNFolderDialog
+//////////////////////////////////////////////////////////////////////////////
+
+CPNFolderDialog::CPNFolderDialog(HWND hWndParent, LPCTSTR lpstrInitial, 
+								 LPCTSTR lpstrTitle, UINT uFlags)
+	: CFolderDialogImpl<CPNFolderDialog>(hWndParent, lpstrTitle, uFlags)
+{
+	if(lpstrInitial)
+		m_csInitialDir = lpstrInitial;
+}
+
+void CPNFolderDialog::OnInitialized()
+{
+	if(m_csInitialDir.GetLength() != 0)
+		SetSelection(static_cast<LPCTSTR>(m_csInitialDir));
+}
+
+//////////////////////////////////////////////////////////////////////////////
 // CGotoDialog
 //////////////////////////////////////////////////////////////////////////////
 

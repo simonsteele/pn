@@ -31,6 +31,7 @@
  */
 class CContainedPropSheet : public CPropertySheetImpl<CContainedPropSheet>
 {
+public:
 	BEGIN_MSG_MAP(CContainedPropSheet)
 		NOTIFY_CODE_HANDLER(TCN_SELCHANGE, OnSelChange)
 		CHAIN_MSG_MAP(CPropertySheetImpl<CContainedPropSheet>)
@@ -74,6 +75,7 @@ class CContainedPropSheet : public CPropertySheetImpl<CContainedPropSheet>
 		}
 
 		SetActivePage(nStartPage);
+
 		return hWnd;
 	}
 

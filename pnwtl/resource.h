@@ -71,6 +71,7 @@
 #define ID_DUMMY_PASTE                  258
 #define ID_OUTPUT_CLEAR                 259
 #define ID_OUTPUT_HIDE                  260
+#define ID_TOOLS_USETABS                261
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -94,7 +95,6 @@
 #define IDC_KEYWORDS_KEYWORDTEXT        1011
 #define IDC_TOOLS_EDITBUTTON            1011
 #define IDC_TE_NAMEEDIT                 1011
-#define IDC_EDIT_TABWIDTH               1011
 #define IDC_OPT_TABWIDTHEDIT            1011
 #define IDC_FONT_COMBO                  1012
 #define IDC_TOOLS_REMOVEBUTTON          1012
@@ -135,6 +135,7 @@
 #define IDC_VERSIONSTATIC               1046
 #define IDC_TE_CAPTURECHECK             1047
 #define IDC_OPT_INDENTGUIDESCHECK       1048
+#define IDC_TE_FILTERCHECK              1048
 #define IDC_OPT_USETABSCHECK            1049
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_PNSAVE_TYPECOMBO            1057
@@ -157,6 +158,9 @@
 #define ID_TOOLS_DUMMY                  32788
 #define ID_TOOLS_STOPTOOLS              32789
 #define ID_RECENTFILES_BLANKER          32790
+#define ID_EDITOR_WHITESPACE            32791
+#define ID_EDITOR_EOLCHARS              32792
+#define ID_ACCELERATOR32794             32794
 #define ID_VIEW_VIEWTABS                32825
 #define ID_TAB_CLOSE                    32835
 #define ID_VIEW_TABS_TOP                32836
@@ -181,8 +185,8 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        261
-#define _APS_NEXT_COMMAND_VALUE         32791
+#define _APS_NEXT_RESOURCE_VALUE        262
+#define _APS_NEXT_COMMAND_VALUE         32796
 #define _APS_NEXT_CONTROL_VALUE         1051
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

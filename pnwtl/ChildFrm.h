@@ -76,6 +76,8 @@ public:
 		COMMAND_ID_HANDLER(ID_EDITOR_COLOURISE, OnColouriseToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_LINENOS, OnLineNoToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_OUTPUTWND, OnOutputWindowToggle)
+		COMMAND_ID_HANDLER(ID_EDITOR_WHITESPACE, OnMarkWhiteSpaceToggle)
+		COMMAND_ID_HANDLER(ID_EDITOR_EOLCHARS, OnEOLMarkerToggle)
 
 		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHideOutput)
 
@@ -90,6 +92,7 @@ public:
 		COMMAND_ID_HANDLER(ID_TOOLS_LECR, OnLineEndingsToggle)
 		COMMAND_ID_HANDLER(ID_TOOLS_LECONVERT, OnLineEndingsConvert)
 		COMMAND_ID_HANDLER(ID_TOOLS_STOPTOOLS, OnStopTools)
+		COMMAND_ID_HANDLER(ID_TOOLS_USETABS, OnUseTabs)
 
 		NOTIFY_CODE_HANDLER(TBN_GETINFOTIP, OnGetInfoTip)
 
@@ -125,7 +128,7 @@ public:
 
 	struct _PoorMansUIEntry
 	{
-		UINT nID;
+		int nID;
 		WORD wState;
 	};
 
@@ -145,6 +148,8 @@ public:
 	tstring GetFileName(EGFNType type = FN_FULL);
 	LPCTSTR GetTitle();
 	bool GetModified();
+
+	bool CanClose();
 
 	////////////////////////////////////////////////////
 	// Message Handlers
@@ -181,11 +186,14 @@ public:
 	LRESULT OnColouriseToggle(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/);
 	LRESULT OnLineNoToggle(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/);
 	LRESULT OnOutputWindowToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnMarkWhiteSpaceToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnEOLMarkerToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnHideOutput(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLineEndingsToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLineEndingsConvert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnStopTools(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnUseTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	////////////////////////////////////////////////////
 	// Notify Handlers
@@ -221,7 +229,7 @@ public:
 	void OnRunTool(LPVOID pVoid);
 	void AddOutput(LPCSTR outputstring, int nLength = -1);
 
-	CallbackBase2<bool, CChildFrame*>* m_onClose;
+	//CallbackBase2<bool, CChildFrame*>* m_onClose;
 
 protected:
 
@@ -244,7 +252,9 @@ protected:
 	void AddRunningTool(ToolRunner* pRunner);
 	void ToolFinished(ToolRunner* pRunner);
 	void UpdateTools(CScheme* pScheme);
-	void KillTools(bool bFriendlyKill = true);
+	void KillTools(bool bWaitForKill);
+	bool IsOutputVisible();
+	BOOL OnEscapePressed();
 
 protected:
 	HIMAGELIST			m_hImgList;

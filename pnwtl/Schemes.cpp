@@ -454,7 +454,7 @@ void CSchemeManager::Load()
 
 	bool bCompile = false;
 	
-	ctcString usersettings = m_CompiledPath;
+	tstring usersettings = m_CompiledPath;
 	usersettings += _T("UserSettings.xml");
 	int us_age = reg.ReadInt(_T("UserSettings"), 0);
 	if(FileExists(usersettings.c_str()))
@@ -478,14 +478,14 @@ void CSchemeManager::Load()
 	HANDLE hFind;
 	WIN32_FIND_DATA FindFileData;
 
-	ctcString sPattern(m_SchemePath);
+	tstring sPattern(m_SchemePath);
 	
-	ctcString SchemeName(_T(""));
+	tstring SchemeName(_T(""));
 
 	sPattern += _T("*.scheme");
 
 	BOOL found = TRUE;
-	ctcString to_open;
+	tstring to_open;
 
 	if(!bCompile)
 	{
@@ -600,13 +600,10 @@ void CSchemeManager::LoadExtMap()
 		
 	if(bOK)
 	{
-
 		CString buf;
 		
-		// The strings currently used for the rest of the scheme management
-		// system are std::strings typedef'd to ctcString.
-		ctcString ext;
-		ctcString scheme;
+		tstring ext;
+		tstring scheme;
 		
 		CScheme* sch;
 		int pos;
@@ -618,10 +615,31 @@ void CSchemeManager::LoadExtMap()
 			scheme = buf.Mid(pos+1);
 
 			sch = SchemeByName(scheme.c_str());
-			m_SchemeExtMap.insert(m_SchemeExtMap.end(), SCMITEM(ext, sch));
+			if(ext[0] != _T('.'))
+				m_SchemeFileNameMap.insert(m_SchemeFileNameMap.end(), SCMITEM(ext, sch));
+			else
+				m_SchemeExtMap.insert(m_SchemeExtMap.end(), SCMITEM(ext, sch));
 		}
 		file.Close();
 	}
+}
+
+CScheme* CSchemeManager::InternalSchemeForFileName(const tstring& filename)
+{
+	SCHEME_MAPIT i = m_SchemeFileNameMap.find(filename);
+	
+	if(i != m_SchemeFileNameMap.end())
+		return (*i).second;
+	return NULL;
+}
+
+CScheme* CSchemeManager::InternalSchemeForExt(const tstring& extension)
+{
+	SCHEME_MAPIT i = m_SchemeExtMap.find(extension);
+	
+	if(i != m_SchemeExtMap.end())
+		return (*i).second;
+	return NULL;
 }
 
 /**
@@ -633,16 +651,36 @@ CScheme* CSchemeManager::SchemeForExt(LPCTSTR ext)
 	_tcscpy(e, ext);
 	e = CharLower(e);
 
-	SCHEME_MAPIT i = m_SchemeExtMap.find(ctcString(e));
+	CScheme* pRet = InternalSchemeForExt( tstring(e) );
 
 	delete [] e;
-	
-	if(i != m_SchemeExtMap.end())
-	{
-		return SCMITEM(*i).second;
-	}
-	else
+
+	if(pRet == NULL)
 		return &m_DefaultScheme;
+
+	return pRet;
+}
+
+/**
+ * @return whatever scheme is appropriate for the filename passed in.
+ */
+CScheme* CSchemeManager::SchemeForFile(LPCTSTR filename)
+{
+	CFileName fn(filename);
+	fn.ToLower();
+
+	CScheme* pScheme = InternalSchemeForExt( fn.GetExtension() );
+	if(!pScheme)
+	{
+		// See if we can match on a simple filename basis.
+		// This is basically for makefiles etc.
+		pScheme = InternalSchemeForFileName( fn.GetFileName() );
+	}
+
+	if(!pScheme)
+		return &m_DefaultScheme;
+	
+	return pScheme;
 }
 
 /**
@@ -654,7 +692,7 @@ CScheme* CSchemeManager::SchemeByName(LPCTSTR name)
 	_tcscpy(e, name);
 	e = CharLower(e);
 
-	SCHEME_MAPIT i = m_SchemeNameMap.find(ctcString(e));
+	SCHEME_MAPIT i = m_SchemeNameMap.find(tstring(e));
 
 	delete [] e;
 

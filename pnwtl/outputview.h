@@ -19,6 +19,7 @@ public:
 	typedef CScintillaWindowImpl< COutputView, CScintillaImpl > baseClass;
 
 	BEGIN_MSG_MAP(COutputView)
+		COMMAND_ID_HANDLER(ID_OUTPUT_CLEAR, OnClear)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -41,6 +42,14 @@ public:
 	}
 
 protected:
+
+	LRESULT OnClear(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		ClearAll();
+
+		return 0;
+	}
+
 	virtual void OnFirstShow()
 	{
 		CSchemeManager::GetInstance()->SchemeByName("output")->Load(*this);

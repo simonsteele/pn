@@ -86,7 +86,7 @@ public:
 
 	void OnSchemeNew(LPVOID data);
 	void OnMDISetMenu(HMENU hOld, HMENU hNew);
-	bool OnEditorClosing(CChildFrame* pChild);
+	//bool OnEditorClosing(CChildFrame* pChild);
 
 	LRESULT OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

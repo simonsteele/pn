@@ -123,7 +123,21 @@ class CStyleDisplay : public CWindowImpl<CStyleDisplay>
 
 #include "ScintillaWTL.h"
 
-typedef CScintillaWindow<CScintilla>	CScintillaWnd;
+class CScintillaDialogWnd : public CScintillaWindowImpl< CScintillaDialogWnd, CScintilla>
+{
+public:
+	typedef CScintillaWindowImpl< CScintillaDialogWnd, CScintilla> baseClass;
+	BEGIN_MSG_MAP(CScintillaDialogWnd)
+		MESSAGE_HANDLER(WM_GETDLGCODE, OnGetDlgCode)
+		CHAIN_MSG_MAP(baseClass)
+	END_MSG_MAP()
+
+	LRESULT OnGetDlgCode(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+	{
+		return DLGC_HASSETSEL | DLGC_WANTARROWS;
+		//return 0;
+	}
+};
 
 class CTabPageKeywords : public CPropertyPageImpl<CTabPageKeywords>
 {
@@ -164,7 +178,7 @@ class CTabPageKeywords : public CPropertyPageImpl<CTabPageKeywords>
 		SchemeConfig*		m_pScheme;
 		CustomKeywordSet*	m_pSet;
 		CListViewCtrl		m_list;
-		CScintillaWnd		m_scintilla;
+		CScintillaDialogWnd	m_scintilla;
 };
 
 class CTabPageStyles : public CPropertyPageImpl<CTabPageStyles>
@@ -348,6 +362,7 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 			DDX_TEXT(IDC_TE_PARAMSEDIT,		m_csParams)
 			DDX_TEXT(IDC_TE_SHORTCUTEDIT,	m_csShortcut)
 			DDX_CHECK(IDC_TE_CAPTURECHECK,	m_bCapture)
+			DDX_CHECK(IDC_TE_FILTERCHECK,	m_bFilter)
 			
 			//DDX_CHECK(IDC_MATCHCASE_CHECK, m_bMatchCase)
 			//DDX_RADIO(IDC_UP_RADIO, m_Direction)
@@ -395,6 +410,7 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 		CString	m_csShortcut;
 
 		BOOL	m_bCapture;
+		BOOL	m_bFilter;
 
 		CInfoLabel m_infolabel;
 };

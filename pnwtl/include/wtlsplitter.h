@@ -264,6 +264,13 @@ class CWTLSplitter : public CWindowImpl<CWTLSplitter>
 			m_bFullDrag = b != 0;
 		}
 
+		void UpdateCursor()
+		{
+			SetClassLong(m_hWnd, GCL_HCURSOR, 
+				(LONG) ::LoadCursor(NULL, (m_bHorz ? IDC_SIZENS : IDC_SIZEWE))
+			);
+		}
+
 	// Message Handlers:
 	protected:
 		void GetOwnerClientRect(HWND hOwner, LPRECT lpRect)
@@ -321,6 +328,8 @@ class CWTLSplitter : public CWindowImpl<CWTLSplitter>
 		LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 		{
 			m_hwOwner = GetParent();
+			
+			UpdateCursor();
 			return 0;
 		}
 

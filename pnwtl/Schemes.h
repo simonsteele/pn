@@ -151,6 +151,7 @@ class CSchemeManager
 		void Compile();
 		void LoadExtMap();
 		
+		CScheme* SchemeForFile(LPCTSTR filename);
 		CScheme* SchemeForExt(LPCTSTR ext);
 		CScheme* SchemeByName(LPCTSTR name);
 		CScheme* GetDefaultScheme(){return &m_DefaultScheme;}
@@ -170,10 +171,14 @@ class CSchemeManager
 
 		SCHEME_MAP		m_SchemeNameMap;
 		SCHEME_MAP		m_SchemeExtMap;
+		SCHEME_MAP		m_SchemeFileNameMap;
 
 		CDefaultScheme	m_DefaultScheme;
 
 		static CSchemeManager* s_pInstance;
+
+		CScheme* InternalSchemeForFileName(const tstring& filename);
+		CScheme* InternalSchemeForExt(const tstring& extension);
 };
 
 #endif //#ifndef schemes_h__included

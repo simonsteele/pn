@@ -18,6 +18,7 @@
  *    Root\Child
  *    AnotheerRoot\Folder\Child
  *    ARootNode
+ *
  * The options dialog will deal with organising the items for each page in the
  * tree. The items are not currently sorted, so the order can be controlled
  * by order of addition.
@@ -115,6 +116,11 @@ class COptionsDialog : public CDialogImpl<COptionsDialog>
 		{
 			m_Pages.insert(m_Pages.end(), pPage);
 		}
+	
+		void SetInitialPage(COptionsPage* pPage)
+		{
+			m_pInitialPage = pPage;
+		}
 
 	protected:
 
@@ -153,6 +159,11 @@ class COptionsDialog : public CDialogImpl<COptionsDialog>
 			InitialisePages();
 				
 			CenterWindow(GetParent());
+
+			if(m_pInitialPage)
+			{
+				m_tree.SelectItem(m_hInitialItem);
+			}
 			
 			return TRUE;
 		}
@@ -182,6 +193,9 @@ class COptionsDialog : public CDialogImpl<COptionsDialog>
 				// Add Tree Item
 				HTREEITEM item = AddTreeEntry(pNext, ti);
 				m_tree.SetItemData(item, reinterpret_cast<DWORD_PTR>(*i));
+
+				if((*i) == m_pInitialPage)
+					m_hInitialItem = item;
 			}
 		}
 
@@ -275,6 +289,8 @@ class COptionsDialog : public CDialogImpl<COptionsDialog>
 	protected:
 		PAGEPTRLIST		m_Pages;
 		COptionsPage*	m_pCurrentPage;
+		COptionsPage*	m_pInitialPage;
+		HTREEITEM		m_hInitialItem;
 		CTreeViewCtrl	m_tree;
 };
 

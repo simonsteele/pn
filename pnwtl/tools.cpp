@@ -112,7 +112,8 @@ void SchemeTools::WriteDefinition(ofstream& stream)
 		for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
 		{
 			int flags = 0;
-			flags |= ((*i)->bCaptureOutput ? 0x1 : 0);
+			flags |= ((*i)->bCaptureOutput ? TOOL_CAPTURE : 0);
+			flags |= ((*i)->bIsFilter ? TOOL_ISFILTER : 0);
 			stream << "\t\t<tool name=\"" << FormatXML((*i)->Name) << "\" ";
 			stream << "command=\"" << FormatXML((*i)->Command) << "\" ";
 			stream << "folder=\"" << FormatXML((*i)->Folder) << "\" ";
@@ -275,7 +276,8 @@ void SchemeToolsManager::processTool(XMLAttributes& atts)
 			else if(_tcscmp(attr, _T("flags")) == 0)
 			{
 				int flags = _ttoi(val);
-				pDef->bCaptureOutput = flags & 0x1;
+				pDef->bCaptureOutput = flags & TOOL_CAPTURE;
+				pDef->bIsFilter = (flags & TOOL_ISFILTER) != 0;
 			}
 		}
 
@@ -301,11 +303,28 @@ void SchemeToolsManager::endElement(LPCTSTR name)
 		m_pCur = NULL;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// ToolRunner
+//////////////////////////////////////////////////////////////////////////////
+
 ToolRunner::ToolRunner(CChildFrame* pActiveChild, SToolDefinition* pDef)
 {
 	m_pTool = pDef;
 	m_pChild = pActiveChild;
+	m_pCopyDef = NULL;
 	m_pNext = NULL;
+}
+
+ToolRunner::~ToolRunner()
+{
+	if(m_pCopyDef)
+		delete m_pCopyDef;
+}
+
+/// Only works if m_pCopyDef has been created.
+const SToolDefinition* ToolRunner::GetToolDef()
+{
+	return m_pCopyDef;
 }
 
 bool ToolRunner::GetThreadedExecution()
@@ -329,7 +348,6 @@ int ToolRunner::GetExitCode()
 void ToolRunner::Run()
 {
 	m_RetCode = Run_CreateProcess(m_pCopyDef->Command.c_str(), m_pCopyDef->Params.c_str(), m_pCopyDef->Folder.c_str());
-	delete m_pCopyDef;
 	::PostMessage(m_pChild->m_hWnd, PN_TOOLFINISHED, 0, reinterpret_cast<LPARAM>(this));
 }
 
@@ -347,6 +365,9 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	TCHAR* commandBuf = new TCHAR[tempstr.size() + 1];
 	_tcscpy(commandBuf, tempstr.c_str());
 
+	if(_tcslen(dir) == 0)
+		dir = NULL;
+
 	OSVERSIONINFO osv = {sizeof(OSVERSIONINFO), 0, 0, 0, 0, ""};
 
 	::GetVersionEx(&osv);
@@ -362,7 +383,6 @@ int ToolRunner::Run_CreateProcess(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 		// On NT we can have a proper security descriptor...
 		::InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
 		::SetSecurityDescriptorDacl(&sd, TRUE, NULL, FALSE);
-		sa.nLength = sizeof(SECURITY_ATTRIBUTES);
 		sa.lpSecurityDescriptor = &sd;
 	}
 
