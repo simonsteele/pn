@@ -490,6 +490,14 @@ class CNumberCombo : public CComboBox
 
 ///@todo this should probably go in a pnstrings.h file or something similar...
 
+const tstring IntToTString(int x)
+{
+	TCHAR _buffer[32];
+	_sntprintf(_buffer, 32, "%0d", x);
+	
+	return tstring(_buffer);
+}
+
 #include <vector>
 using std::vector;
 

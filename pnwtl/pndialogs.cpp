@@ -140,31 +140,11 @@ void CPNSaveDialog::RepositionControl(CWindow &wnd, UINT nID, bool fSize)
 // CGotoDialog
 //////////////////////////////////////////////////////////////////////////////
 
-LRESULT CGotoDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CGotoDialog::OK(WORD wID)
 {
-	CenterWindow(GetParent());
-	return TRUE;
-}
+	CInputDialogImpl<CGotoDialog>::OK(wID);
+	lineno = _ttoi(m_inputText);
 
-LRESULT CGotoDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	HWND hEdit = GetDlgItem(IDC_GOTOEDIT);
-	int i = ::GetWindowTextLength(hEdit);
-	i++;
-	TCHAR *t = new TCHAR[i];
-	::GetWindowText(hEdit, t, i);
-	lineno = _ttoi(t);
-	delete [] t;
-
-	EndDialog(wID);
-
-	return TRUE;
-}
-
-LRESULT CGotoDialog::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	EndDialog(wID);
-	
 	return TRUE;
 }
 

@@ -73,6 +73,9 @@ class SchemeToolsManager : public Singleton<SchemeToolsManager>, public XMLParse
 		SCHEMETOOLS_MAP m_toolSets;
 };
 
+/**
+ * Format string builder class to build up command-line parameters for a tool.
+ */
 class CToolCommandString : public CustomFormatStringBuilder<CToolCommandString>
 {
 	public:
@@ -101,6 +104,16 @@ class CToolCommandString : public CustomFormatStringBuilder<CToolCommandString>
 					_itoa(pChild->GetPosition(EP_COL), itosbuf, 10);
 					m_string += itosbuf;
 					break;
+
+				case _T('?'):
+					{
+						CInputDialog dlg(_T("Tool Parameters"), _T("Parameters:"));
+						if( dlg.DoModal() == IDOK )
+						{
+							m_string += dlg.GetInput();
+						}
+					}
+					break;
 			}		
 		}
 
@@ -110,6 +123,22 @@ class CToolCommandString : public CustomFormatStringBuilder<CToolCommandString>
 		TCHAR itosbuf[100];
 };
 
-void ExecuteTool(CChildFrame* pActiveChild, SToolDefinition* pDef);
+/**
+ * Class to run external tools.
+ */
+class ToolRunner
+{
+public:
+	ToolRunner(CChildFrame* pChild, SToolDefinition* pDef);
+	
+	int Execute();
+
+protected:
+	int Run_ShellExecute(LPCTSTR command, LPCTSTR params, LPCTSTR dir);
+
+protected:
+	CChildFrame* m_pChild;
+	SToolDefinition* m_pTool;
+};
 
 #endif

@@ -749,7 +749,8 @@ void CChildFrame::UpdateMenu()
 
 void CChildFrame::OnRunTool(LPVOID pVoid)
 {
-	ExecuteTool(this, reinterpret_cast<SToolDefinition*>(pVoid));
+	ToolRunner r(this, reinterpret_cast<SToolDefinition*>(pVoid));
+	r.Execute();
 }
 
 void CChildFrame::PrintSetup()

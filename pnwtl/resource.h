@@ -32,6 +32,7 @@
 #define IDR_POPUP_EDITOR                173
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
+#define IDD_INPUTBOX                    204
 #define ID_MRUFILE_BASE                 205
 #define ID_VIEW_CHANGESCHEME            221
 #define ID_VIEW_SCHEMES                 222
@@ -72,6 +73,7 @@
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_GOTOEDIT                    1004
+#define IDC_THEEDIT                     1004
 #define IDC_PNSCOMBO                    1005
 #define IDC_HELPBTN                     1006
 #define IDC_TREE                        1007
@@ -119,6 +121,8 @@
 #define IDC_BACKSLASH_CHECK             1043
 #define IDC_TE_SHORTCUTEDIT             1043
 #define IDC_TE_INFOLABEL                1044
+#define IDC_QUERY                       1045
+#define IDC_TEXTTITLE                   1045
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_PNSAVE_TYPECOMBO            1057
 #define IDC_MARKALL_BUTTON              21199
@@ -165,7 +169,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        257
 #define _APS_NEXT_COMMAND_VALUE         32791
-#define _APS_NEXT_CONTROL_VALUE         1045
+#define _APS_NEXT_CONTROL_VALUE         1046
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

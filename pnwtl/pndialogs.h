@@ -2,7 +2,7 @@
  * @file pndialogs.h
  * @brief Assorted Dialogs for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -118,22 +118,92 @@ class CPNSaveDialog : public CPNFileDialogImpl<CPNSaveDialog>
 		EPNSaveFormat	m_Format;
 };
 
-class CGotoDialog : public CDialogImpl<CGotoDialog>
+/**
+ * Base class for input dialogs - can't believe there's no InputBox() function!!!
+ */
+template <class T>
+class CInputDialogImpl : public CDialogImpl<CInputDialogImpl>
 {
 	public:
-		enum { IDD = IDD_GOTO };
+		CInputDialogImpl() : m_title(_T("Input")), m_caption(_T("Input:")){}
+		CInputDialogImpl(LPCTSTR title, LPCTSTR caption) : m_title(title), m_caption(caption){}
 
-		BEGIN_MSG_MAP(CGotoDialog)
+		enum { IDD = IDD_INPUTBOX };
+
+		BEGIN_MSG_MAP(CInputDialog)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			COMMAND_ID_HANDLER(IDOK, OnOK)
 			COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
 		END_MSG_MAP()
 
-		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-		
-		LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LPCTSTR GetInput()
+		{
+			return m_inputText;
+		}
 
-		LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	protected:
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+		{
+			static_cast<T*>(this)->InitDialog();
+			return TRUE;
+		}
+
+		LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+		{
+			return static_cast<T*>(this)->OK(wID);
+		}
+
+		LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+		{
+			return static_cast<T*>(this)->Cancel(wID);
+		}
+
+		LRESULT OK(WORD wID)
+		{
+			HWND hEdit = GetDlgItem(IDC_THEEDIT);
+			int i = ::GetWindowTextLength(hEdit) + 1;
+			LPTSTR buf = m_inputText.GetBuffer(i);
+			::GetWindowText(hEdit, buf, i);
+			m_inputText.ReleaseBuffer();
+
+			EndDialog(wID);
+
+			return TRUE;
+		}
+
+		LRESULT Cancel(WORD wID)
+		{
+			EndDialog(wID);
+			return TRUE;
+		}
+
+		LRESULT InitDialog()
+		{
+			CenterWindow(GetParent());
+			::SetWindowText(GetDlgItem(IDC_TEXTTITLE), m_caption);
+			SetWindowText(m_title);
+
+			return TRUE;
+		}
+
+	protected:
+		CString m_title;
+		CString m_caption;
+		CString m_inputText;
+};
+
+class CInputDialog : public CInputDialogImpl<CInputDialog>
+{
+	public:
+		CInputDialog(LPCTSTR title, LPCTSTR caption) : 
+		  CInputDialogImpl<CInputDialog>(title, caption){}
+};
+
+class CGotoDialog : public CInputDialogImpl<CGotoDialog>
+{
+	public:
+		CGotoDialog() : CInputDialogImpl<CGotoDialog>(_T("Go To"), _T("Go To:")) {}
+		LRESULT OK(WORD wID);
 
 		int GetLineNo();
 	

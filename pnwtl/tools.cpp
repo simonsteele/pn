@@ -11,6 +11,7 @@
 #include "stdafx.h"
 #include "tools.h"
 
+#include <sstream>
 #include <fstream>
 
 //////////////////////////////////////////////////////////////////////////////
@@ -282,19 +283,99 @@ void SchemeToolsManager::endElement(LPCTSTR name)
 		m_pCur = NULL;
 }
 
-void ExecuteTool(CChildFrame* pActiveChild, SToolDefinition* pDef)
+ToolRunner::ToolRunner(CChildFrame* pActiveChild, SToolDefinition* pDef)
+{
+	m_pTool = pDef;
+	m_pChild = pActiveChild;
+}
+
+struct ShellErr 
+{
+	DWORD code;
+	LPCTSTR description;
+};
+
+int ToolRunner::Run_ShellExecute(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
+{
+	UINT result = reinterpret_cast<UINT>(::ShellExecute(NULL, _T("open"), command, params, dir, SW_SHOW));
+
+	if(! (result > 32)) // ShellExecute failed...
+	{
+		// This section shamelessly copied from SciTE
+		const int numErrcodes = 15;
+		static const ShellErr field[numErrcodes] = 
+		{
+			{ 0, _T("The operating system is out of memory or resources.") },
+			{ ERROR_FILE_NOT_FOUND, _T("The specified file was not found.") },
+			{ ERROR_PATH_NOT_FOUND, _T("The specified path was not found.") },
+			{ ERROR_BAD_FORMAT, _T("The .exe file is invalid (non-Win32\256 .exe or error in .exe image).") },
+			{ SE_ERR_ACCESSDENIED, _T("The operating system denied access to the specified file.") },
+			{ SE_ERR_ASSOCINCOMPLETE, _T("The file name association is incomplete or invalid.") },
+			{ SE_ERR_DDEBUSY, _T("The DDE transaction could not be completed because other DDE transactions were being processed.") },
+			{ SE_ERR_DDEFAIL, _T("The DDE transaction failed.") },
+			{ SE_ERR_DDETIMEOUT, _T("The DDE transaction could not be completed because the request timed out.") },
+			{ SE_ERR_DLLNOTFOUND, _T("The specified dynamic-link library was not found.") },
+			{ SE_ERR_FNF, _T("The specified file was not found.") },
+			{ SE_ERR_NOASSOC, _T("There is no application associated with the given file name extension.") },
+			{ SE_ERR_OOM, _T("There was not enough memory to complete the operation.") },
+			{ SE_ERR_PNF, _T("The specified path was not found.") },
+			{ SE_ERR_SHARE, _T("A sharing violation occurred.") },
+		};
+
+		for (int i = 0; i < numErrcodes; ++i) 
+		{
+			if (field[i].code == result)
+				break;
+		}
+
+		basic_ostringstream<TCHAR> errmsg;
+
+		errmsg << _T("Could not run tool: \nCommand: ") << command << 
+			_T("\n\nMessage: ");
+
+		if(i < numErrcodes)
+		{
+			errmsg << field[i].description;
+		}
+		else
+		{
+			errmsg << _T("Unknown error code (") << result << _T(").");
+		}
+
+		::MessageBox(m_pChild->m_hWnd, errmsg.str().c_str(), _T("Programmers Notepad"), MB_ICONWARNING | MB_OK);
+	}
+
+	return 0;
+}
+
+int ToolRunner::Execute()
 {
 	CToolCommandString builder;
-	builder.pChild = pActiveChild;
+	builder.pChild = m_pChild;
 	
 	tstring command;
-	command = builder.Build(pDef->Command.c_str());
+	command = builder.Build(m_pTool->Command.c_str());
     
 	tstring params;
-	params = builder.Build(pDef->Params.c_str());
+	params = builder.Build(m_pTool->Params.c_str());
 
 	tstring workingdir;
-	workingdir = builder.Build(pDef->Folder.c_str());
+	workingdir = builder.Build(m_pTool->Folder.c_str());
 
-	::ShellExecute(NULL, _T("open"), command.c_str(), params.c_str(), workingdir.c_str(), SW_SHOW);
+	#if 0
+	::CreateProcess(command.c_str(), params.c_str(), 
+		lpProcessAttributes, /*LPSECURITY_ATTRIBUTES lpProcessAttributes*/
+		lpThreadAttributes, /*LPSECURITYATTRIBUTES lpThreadAttributes*/
+		bInheritHandles, /*BOOL bInheritHandles*/ 
+		dwCreationFlags, /*DWORD dwCreationFlags*/
+		lpEnvironment, /*LPVOID lpEnvironment*/
+		workingdir.c_str(), /*LPCTSTR lpWorkingDir*/
+		lpStartupInfo, /*LPSTARTUPINFO lpStartupInfo*/
+		lpProcessInformation /*LPPROCESS_INFORMATION lpProcessInformation*/ 
+	);
+	#endif
+
+	Run_ShellExecute(command.c_str(), params.c_str(), workingdir.c_str());
+
+	return 0;
 }
