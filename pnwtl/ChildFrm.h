@@ -11,6 +11,8 @@
 #if !defined(CHILDFRM_H__INCLUDED)
 #define CHILDFRM_H__INCLUDED
 
+#include "include/wtlsplitter.h"
+
 #if _MSC_VER >= 1000
 	#pragma once
 #endif
@@ -883,11 +885,14 @@ public:
 		}
 
 protected:
-	HIMAGELIST m_hImgList;
-	CTextView m_view;
-	CString m_Title;
-	CString m_FileName;
-	long m_FileAge;
+	HIMAGELIST		m_hImgList;
+	CTextView		m_view;
+	CString			m_Title;
+	CString			m_FileName;
+	long			m_FileAge;
+
+	CSimpleSplitter	m_splitter;
+	CTextView		m_outputview;
 
 	///@todo move this into COptionsManager
 	SPrintOptions	m_po;
