@@ -29,7 +29,7 @@ class IOutput
 /**
  * Class implementing printf for IOutput conduit classes
  */
-class PrintfConduit
+class PrintfConduit : public IOutput
 {
 	public:
 		virtual void printf(const char* format, ...);

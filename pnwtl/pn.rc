@@ -134,6 +134,7 @@ BEGIN
         MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
         MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
         MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
+        MENUITEM "Copy as RTF",                 ID_EDIT_COPYRTF
         MENUITEM SEPARATOR
         MENUITEM "&Find\tCtrl+F",               ID_EDIT_FIND
         MENUITEM "Find &Next\tF3",              ID_EDIT_FINDNEXT
@@ -790,7 +791,7 @@ BEGIN
     ICON            IDR_MDICHILD,IDC_STATIC,6,6,20,20
 END
 
-IDD_TOOLEDITOR DIALOGEX 0, 0, 286, 174
+IDD_TOOLEDITOR DIALOGEX 0, 0, 286, 180
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "Tool Editor"
@@ -805,6 +806,15 @@ BEGIN
     EDITTEXT        IDC_TE_SHORTCUTEDIT,54,78,150,12,ES_AUTOHSCROLL | 
                     WS_DISABLED
     PUSHBUTTON      "c",IDC_TE_CLEARBUTTON,209,78,13,12,WS_DISABLED
+    CONTROL         "Save all before running this tool?",IDC_TE_SAVEALLCHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,96,126,12
+    CONTROL         "This tool will modify the current file.",
+                    IDC_TE_FILTERCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
+                    132,96,150,12
+    CONTROL         "Capture output?",IDC_TE_CAPTURECHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,6,114,84,12
+    COMBOBOX        IDC_TE_OUTPUTCOMBO,84,114,144,12,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
     DEFPUSHBUTTON   "OK",IDOK,234,6,48,14
     PUSHBUTTON      "Cancel",IDCANCEL,234,24,48,14
     RTEXT           "Name:",IDC_STATIC,6,6,42,12
@@ -812,14 +822,7 @@ BEGIN
     RTEXT           "Folder:",IDC_STATIC,6,42,42,12
     RTEXT           "Parameters:",IDC_STATIC,6,60,42,8
     RTEXT           "Shortcut:",IDC_STATIC,6,78,42,12
-    LTEXT           "Static",IDC_TE_INFOLABEL,6,126,276,42
-    CONTROL         "Capture output?",IDC_TE_CAPTURECHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,6,96,84,12
-    CONTROL         "This tool will modify the current file.",
-                    IDC_TE_FILTERCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,
-                    90,96,150,12
-    CONTROL         "Save all before running this tool?",IDC_TE_SAVEALLCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,6,111,126,12
+    LTEXT           "Static",IDC_TE_INFOLABEL,6,132,276,42
 END
 
 IDD_PAGE_GENERAL DIALOGEX 0, 0, 299, 168
@@ -955,7 +958,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 279
         TOPMARGIN, 7
-        BOTTOMMARGIN, 167
+        BOTTOMMARGIN, 173
     END
 
     IDD_PAGE_GENERAL, DIALOG

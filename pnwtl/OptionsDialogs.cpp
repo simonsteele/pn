@@ -143,6 +143,14 @@ LRESULT CToolEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 	m_infolabel.SubclassWindow(GetDlgItem(IDC_TE_INFOLABEL));
 
+	m_outputcombo.Attach(GetDlgItem(IDC_TE_OUTPUTCOMBO));
+	m_outputcombo.AddString(_T("Use the main output window."));
+	m_outputcombo.AddString(_T("Use an individual output window."));
+
+	m_outputcombo.SetCurSel(m_bGlobal ? 0 : 1);
+
+	m_outputcombo.EnableWindow(m_bCapture);
+
 	DoDataExchange();
 
 	return 0;
@@ -151,6 +159,9 @@ LRESULT CToolEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 LRESULT CToolEditorDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	DoDataExchange(TRUE);
+	
+	m_bGlobal = (m_outputcombo.GetCurSel() == 0);
+
 	EndDialog(wID);
 
 	return 0;
@@ -193,6 +204,15 @@ LRESULT CToolEditorDialog::OnBrowseCommand(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	return 0;
 }
 
+LRESULT CToolEditorDialog::OnCaptureChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	DoDataExchange(TRUE);
+
+	m_outputcombo.EnableWindow(m_bCapture);
+
+	return 0;
+}
+
 void CToolEditorDialog::GetValues(ToolDefinition* pDefinition)
 {
 	pDefinition->Name			= m_csName;
@@ -204,7 +224,8 @@ void CToolEditorDialog::GetValues(ToolDefinition* pDefinition)
 	pDefinition->iFlags = 
 		(m_bCapture	? TOOL_CAPTURE	: 0) |
 		(m_bFilter	? TOOL_ISFILTER : 0) |
-		(m_bSaveAll	? TOOL_SAVEALL	: 0);
+		(m_bSaveAll	? TOOL_SAVEALL	: 0) | 
+		(m_bGlobal	? TOOL_GLOBALOUTPUT : 0);
 }
 
 void CToolEditorDialog::SetValues(ToolDefinition* pDefinition)
@@ -217,6 +238,7 @@ void CToolEditorDialog::SetValues(ToolDefinition* pDefinition)
 	m_bCapture		= pDefinition->CaptureOutput();
 	m_bFilter		= pDefinition->IsFilter();
 	m_bSaveAll		= pDefinition->SaveAll();
+	m_bGlobal		= pDefinition->GlobalOutput();
 }
 
 void CToolEditorDialog::SetTitle(LPCTSTR title)

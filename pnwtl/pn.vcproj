@@ -21,6 +21,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="TabbingFramework, DockingFramework"
 				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,STRICT"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -84,6 +85,7 @@
 				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
 				OptimizeForWindowsApplication="TRUE"
+				AdditionalIncludeDirectories="TabbingFramework, DockingFramework"
 				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,STRICT"
 				StringPooling="TRUE"
 				RuntimeLibrary="0"

@@ -15,7 +15,11 @@
 	#pragma once
 #endif
 
+#include "pndocking.h"
+
+// Pre-declarations...
 class CMainFrame;
+class CDockingOutputWindow;
 struct tagEnumChildrenStruct;
 
 typedef void(__stdcall CMainFrame::*lpChildEnumFn)(CChildFrame* pFrame, tagEnumChildrenStruct* pStruct);
@@ -42,13 +46,13 @@ typedef struct tagIsOpenStruct : public tagEnumChildrenStruct
  * @class CMainFrame
  * @brief PN (WTL Edition) Main MDI Frame
  */
-class CMainFrame : public CTabbedMDIFrameWindowImpl<CMainFrame, CPNMDIClient>, public IMainFrame, public CUpdateUI<CMainFrame>,
-		public CMessageFilter, public CIdleHandler, public CSMenuEventHandler
+class CMainFrame : public CPNDockingTabbedMDIFrameWindow<CMainFrame>, public IMainFrame, public CUpdateUI<CMainFrame>,
+		public CMessageFilter, public CIdleHandler, public CSMenuEventHandler, public IToolOutputSink
 {
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
 
-	typedef CTabbedMDIFrameWindowImpl<CMainFrame, CPNMDIClient> baseClass;
+	typedef CPNDockingTabbedMDIFrameWindow<CMainFrame> baseClass;
 
 	////////////////////////////////////////////////////////////////
 	// CMainFrame Implementation
@@ -165,6 +169,7 @@ public:
 
 public:
 	virtual CWindow* GetWindow();
+	virtual IToolOutputSink* GetGlobalOutputSink();
 	virtual void AddMRUEntry(LPCTSTR lpszFile);
 	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme);
 	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL);
@@ -172,6 +177,12 @@ public:
 	virtual void SaveAll();
 	virtual void OpenFile(LPCTSTR pathname);
 	virtual bool CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction = COptionsManager::GetInstance()->AlreadyOpenAction);
+
+	////////////////////////////////////////////////////////////////
+	// IToolOutputSink Implementation
+
+public:
+	virtual void AddToolOutput(LPCSTR outputstring, int nLength = -1);
 
 protected:
 	void AddNewMenu(CSMenuHandle& menu);
@@ -189,6 +200,8 @@ protected:
 protected:
 	CFindDlg*				m_FindDialog;
 	CReplaceDlg*			m_ReplaceDialog;
+	CDockingOutputWindow*	m_pOutputWnd;
+	
 	CScintilla				m_Dummy;			///< Scintilla often doesn't like unloading and reloading.
 
 	CSPopupMenu				m_NewMenu;

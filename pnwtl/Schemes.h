@@ -38,7 +38,7 @@ class CScheme
 
 		virtual void Load(CScintilla& sc, LPCTSTR filename = NULL);
 		
-		virtual STYLES_LIST* CreateStylesList();
+		virtual StylesList* CreateStylesList();
 
 		virtual void SetName(LPCTSTR name);
 		virtual void SetTitle(LPCTSTR title);

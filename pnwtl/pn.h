@@ -16,6 +16,7 @@
 #define PN_TOGGLEOUTPUT		(WM_USER+39)
 #define PN_TOOLFINISHED		(WM_USER+40)
 #define PN_SCHEMECHANGED	(WM_USER+41)
+#define PN_HANDLEHSCLICK	(WM_USER+42)
 
 #define PN_MDIACTIVATE		0x1
 #define TOOLS_RUNTOOL		0x2
@@ -27,6 +28,7 @@
 struct IMainFrame
 {
 	virtual CWindow* GetWindow() = 0;
+	virtual IToolOutputSink* GetGlobalOutputSink() = 0;
 	virtual void AddMRUEntry(LPCTSTR lpszFile) = 0;
 	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme) = 0;
 	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL) = 0;

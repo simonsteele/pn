@@ -8,3 +8,5 @@
 #include <atlimpl.cpp>
 #endif
 #endif
+
+#include "DockingFramework/DockImpl.cpp"

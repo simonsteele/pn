@@ -10,8 +10,9 @@
 
 #include "stdafx.h"
 #include "childfrm.h"
-#include "outputview.h"
 #include "tools.h"
+#include "outputview.h"
+#include "exporters.h"
 
 #if defined (_DEBUG)
 #define new DEBUG_NEW
@@ -544,6 +545,18 @@ LRESULT CChildFrame::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	return TRUE;
 }
 
+LRESULT CChildFrame::OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	StringOutput so(m_view.GetSelLength() * 2);
+	StylesList* pStyles = m_view.GetCurrentScheme()->CreateStylesList();
+	RTFExporter rtf(&so, pStyles, &m_view);
+	rtf.Export(m_view.GetSelectionStart(), m_view.GetSelectionEnd());
+	delete pStyles;
+	so.c_str();
+
+	return 0;
+}
+
 LRESULT CChildFrame::OnRevert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	Revert();
@@ -1001,7 +1014,7 @@ void CChildFrame::UpdateMenu()
 void CChildFrame::OnRunTool(LPVOID pVoid)
 {
 	ToolDefinition* pTool = reinterpret_cast<ToolDefinition*>(pVoid);
-	ToolRunner *r = new ToolRunner(this, pTool);
+	ToolRunner *r = new ToolRunner(this, pTool, pTool->GlobalOutput() ? g_Context.m_frame->GetGlobalOutputSink() : this );
 	
 	bool bThreaded = r->GetThreadedExecution();
 	if(bThreaded)
@@ -1021,7 +1034,7 @@ void CChildFrame::OnRunTool(LPVOID pVoid)
 	}
 }
 
-void CChildFrame::AddOutput(LPCSTR outputstring, int nLength)
+void CChildFrame::AddToolOutput(LPCSTR outputstring, int nLength)
 {
 	// We do a sendmessage so that the windows are created in the 
 	// window thread, and not in any calling thread.
@@ -1073,7 +1086,11 @@ void CChildFrame::ToolFinished(ToolRunner* pRunner)
 		tstring exitcode(_T("\n> Process Exit Code: "));
 		exitcode += IntToTString(pRunner->GetExitCode());
 		exitcode += _T("\n");
-		AddOutput(exitcode.c_str());
+		IToolOutputSink* pSink = 
+			pRunner->GetToolDef()->GlobalOutput() ? 
+				g_Context.m_frame->GetGlobalOutputSink()
+				: this;
+		pSink->AddToolOutput(exitcode.c_str());
 		if(pRunner->GetToolDef())
 		{
 			if(pRunner->GetToolDef()->IsFilter())

@@ -15,6 +15,7 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 			COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
 			COMMAND_ID_HANDLER(IDC_TE_COMMANDBUTTON, OnBrowseCommand);
 			COMMAND_ID_HANDLER(IDC_TE_DIRBUTTON, OnBrowseDir);
+			COMMAND_ID_HANDLER(IDC_TE_CAPTURECHECK, OnCaptureChanged);
 		END_MSG_MAP()
 
 		BEGIN_DDX_MAP(CToolEditorDialog)
@@ -60,6 +61,7 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 		LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnBrowseCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnCaptureChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	protected:
 		CString	m_csName;
@@ -72,7 +74,10 @@ class CToolEditorDialog : public CDialogImpl<CToolEditorDialog>,
 		BOOL	m_bFilter;
 		BOOL	m_bSaveAll;
 
-		CInfoLabel m_infolabel;
+		bool	m_bGlobal;
+
+		CInfoLabel	m_infolabel;
+		CComboBox	m_outputcombo;
 };
 
 // pre-declare SchemeConfig.

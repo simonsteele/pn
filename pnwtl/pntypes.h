@@ -42,10 +42,14 @@ typedef struct tagPrintOptions
 	RECT	rcMargins;
 } SPrintOptions;
 
-#define TOOL_CAPTURE	0x01
-#define TOOL_ISFILTER	0x02
-#define TOOL_SAVEALL	0x04
+#define TOOL_CAPTURE		0x01
+#define TOOL_ISFILTER		0x02
+#define TOOL_SAVEALL		0x04
+#define TOOL_GLOBALOUTPUT	0x08
 
+/**
+ * @brief Defines a single external tool.
+ */
 class ToolDefinition
 {
 public:
@@ -77,6 +81,16 @@ public:
 	bool CaptureOutput() const { return (iFlags & TOOL_CAPTURE) != 0; }
 	bool IsFilter() const { return (iFlags & TOOL_ISFILTER) != 0; }
 	bool SaveAll() const { return (iFlags & TOOL_SAVEALL) != 0; }
+	bool GlobalOutput() const { return (iFlags & TOOL_GLOBALOUTPUT) != 0; }
+};
+
+/**
+ * @brief This defines a simple interface used to send tool output to a window.
+ */
+class IToolOutputSink
+{
+public:
+	virtual void AddToolOutput(LPCTSTR output, int nLength = -1) = 0;
 };
 
 typedef enum { PNSF_Windows = SC_EOL_CRLF, PNSF_Unix = SC_EOL_LF, PNSF_Mac = SC_EOL_CR, PNSF_NoChange} EPNSaveFormat;

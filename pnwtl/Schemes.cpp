@@ -195,7 +195,7 @@ bool CScheme::OpenCompiledFile(CFile& file, LPCTSTR filename)
  * the settings used by this scheme. The caller must free the list
  * and the items contained within.
  */
-STYLES_LIST* CScheme::CreateStylesList()
+StylesList* CScheme::CreateStylesList()
 {
 	CFile			cfile;
 	CompiledHdrRec	Header;
@@ -225,11 +225,11 @@ STYLES_LIST* CScheme::CreateStylesList()
 
 		long posFirstStyle = cfile.GetPosition();
 
-		STYLES_LIST* pList = new STYLES_LIST;
+		StylesList* pList = new StylesList;
 		StyleDetails* pDefault = new StyleDetails;
 		StyleDetails* pS = NULL;
 		pDefault->Key = STYLE_DEFAULT;
-		pList->insert(pList->end(), pDefault);
+		pList->AddStyle(pDefault);
 		int curStyle = -1;
 
 		// Find the default style...
@@ -256,7 +256,7 @@ STYLES_LIST* CScheme::CreateStylesList()
 							{
 								pS = new StyleDetails(*pDefault);
 								pS->Key = Msg.wParam;
-								pList->insert(pList->end(), pS);
+								pList->AddStyle(pS);
 							}
 							curStyle = Msg.wParam;
 						}
@@ -304,7 +304,7 @@ STYLES_LIST* CScheme::CreateStylesList()
 							{
 								pS = new StyleDetails(*pDefault);
 								pS->Key = Txt.wParam;
-								pList->insert(pList->end(), pS);
+								pList->AddStyle(pS);
 							}
 							curStyle = Txt.wParam;
 						}

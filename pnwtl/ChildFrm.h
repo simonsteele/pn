@@ -37,7 +37,8 @@ class ToolRunner;
 		::SendMessage(m_hWndOutput, uMsg, wParam, lParam);
 
 class CChildFrame : public CTabbedMDIChildWindowImpl<CChildFrame>, 
-	public CFromHandle<CChildFrame>, public CSMenuEventHandler
+	public CFromHandle<CChildFrame>, public CSMenuEventHandler,
+	public IToolOutputSink
 {
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MDICHILD)
@@ -69,6 +70,7 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_DELETE, OnDelete)
 		COMMAND_ID_HANDLER(ID_EDIT_GOTO, OnGoto)
 		COMMAND_ID_HANDLER(ID_EDIT_FINDNEXT, OnFindNext)
+		COMMAND_ID_HANDLER(ID_EDIT_COPYRTF, OnCopyRTF)
 		
 		COMMAND_ID_HANDLER(ID_EDITOR_WORDWRAP, OnWordWrapToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_COLOURISE, OnColouriseToggle)
@@ -181,6 +183,7 @@ public:
 	LRESULT OnRedo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnRevert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -231,7 +234,9 @@ public:
 	void UpdateMenu();
 
 	void OnRunTool(LPVOID pVoid);
-	void AddOutput(LPCSTR outputstring, int nLength = -1);
+
+	// IToolOutputSink
+	virtual void AddToolOutput(LPCSTR outputstring, int nLength = -1);
 
 	CTextView* GetTextView();
 

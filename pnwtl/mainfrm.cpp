@@ -20,6 +20,8 @@
 
 #include "OptionsPages.h"
 
+#include "outputview.h"
+
 #if defined (_DEBUG)
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -305,6 +307,8 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	UISetCheck(ID_VIEW_TOOLBAR, 1);
 	UISetCheck(ID_VIEW_TOOLBAR_EDIT, 1);
 	UISetCheck(ID_VIEW_STATUS_BAR, 1);
+
+	InitializeDockingFrame();
 	
 	// register object for message filtering and idle updates
 	CMessageLoop* pLoop = _Module.GetMessageLoop();
@@ -338,6 +342,11 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 			OpenFile(__argv[i]);
 		}
 	}
+
+	CRect rcBar(0, 0, 200, 80);
+	m_pOutputWnd = new CDockingOutputWindow;
+	m_pOutputWnd->Create(m_hWnd, rcBar, _T("Output"));
+	DockWindow(*m_pOutputWnd, dockwins::CDockingSide::sBottom, 0, 1, 200, 80);
 
 	return 0;
 }
@@ -782,6 +791,11 @@ CWindow* CMainFrame::GetWindow()
 	return static_cast<CWindow*>(this);
 }
 
+IToolOutputSink* CMainFrame::GetGlobalOutputSink()
+{
+	return static_cast<IToolOutputSink*>(this);
+}
+
 void CMainFrame::AddMRUEntry(LPCTSTR lpszFile)
 {
 	m_RecentFiles.AddEntry(lpszFile);
@@ -859,4 +873,11 @@ void CMainFrame::_setWindowText(LPCTSTR lpszNew)
 	}
 
 	#undef _countof
+}
+void CMainFrame::AddToolOutput(LPCSTR outputstring, int nLength)
+{
+	if(m_pOutputWnd)
+	{
+		m_pOutputWnd->GetView()->SafeAppendText(outputstring, nLength);
+	}
 }

@@ -2,6 +2,7 @@
 // Microsoft Visual C++ generated include file.
 // Used by pn.rc
 //
+#define ID_EDIT_COPYRTF                 0
 #define IDC_REPLACE_BUTTON              4
 #define IDR_TBR_EDIT                    5
 #define IDC_REPLACEALL_BUTTON           6
@@ -152,9 +153,9 @@
 #define IDC_TE_SAVEALLCHECK             1052
 #define IDC_COMBO1                      1053
 #define IDC_NEW_SCHEMECOMBO             1053
+#define IDC_TE_OUTPUTCOMBO              1053
 #define IDC_OPT_LECOMBO                 1054
 #define IDC_PNSAVE_SAVEASSTATIC         1056
-#define IDC_CHECK2                      1056
 #define IDC_OPT_MAXCHECK                1056
 #define IDC_PNSAVE_TYPECOMBO            1057
 #define IDC_MARKALL_BUTTON              21199

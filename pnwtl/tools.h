@@ -197,7 +197,7 @@ class CLastErrorInfo
 class ToolRunner : public CSSThread
 {
 public:
-	ToolRunner(CChildFrame* pChild, ToolDefinition* pDef);
+	ToolRunner(CChildFrame* pChild, ToolDefinition* pDef, IToolOutputSink* pOutputSink);
 	~ToolRunner();
 	
 	int Execute();
@@ -222,6 +222,7 @@ protected:
 	ToolDefinition*		m_pTool;
 	int					m_RetCode;
 	ToolDefinition*		m_pCopyDef;
+	IToolOutputSink*	m_pOutputter;
 };
 
 #endif

@@ -13,7 +13,7 @@
 
 #include "ScintillaWTL.h"
 
-#define PN_HANDLEHSCLICK	(WM_USER+20)
+#include "pndocking.h"
 
 class COutputView : public CScintillaWindowImpl< COutputView, CScintillaImpl >
 {
@@ -26,23 +26,9 @@ public:
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
-	void DoContextMenu(CPoint* point)
-	{
-		CSPopupMenu popup(IDR_POPUP_OUTPUT);
-		g_Context.m_frame->TrackPopupMenu(popup, 0, point->x, point->y, NULL);
-	}
+	void DoContextMenu(CPoint* point);
 
-	void SafeAppendText(LPCSTR s, int len = -1)
-	{
-		if(len == -1)
-			len = strlen(s);
-		SendMessage(SCI_APPENDTEXT, len, reinterpret_cast<LPARAM>(s));
-
-		int line = SendMessage(SCI_GETLENGTH, 0, 0);
-		line = SendMessage(SCI_LINEFROMPOSITION, line, 0);
-		SendMessage(SCI_ENSUREVISIBLEENFORCEPOLICY, line);
-		SendMessage(SCI_GOTOLINE, line);
-	}
+	void SafeAppendText(LPCSTR s, int len = -1);
 
 	virtual int HandleNotify(LPARAM lParam);
 
@@ -52,17 +38,34 @@ protected:
 	void ExtendStyleRange(int startPos, int style, TextRange* tr);
 	void HandleGCCError(int style, int position);
 
-	LRESULT OnClear(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-	{
-		ClearAll();
+	LRESULT OnClear(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-		return 0;
-	}
+	virtual void OnFirstShow();
+};
 
-	virtual void OnFirstShow()
-	{
-		CSchemeManager::GetInstance()->SchemeByName("output")->Load(*this);
-	}
+class CDockingOutputWindow : public CPNDockingWindow<CDockingOutputWindow>
+{
+	typedef CDockingOutputWindow thisClass;
+	typedef CPNDockingWindow<CDockingOutputWindow> baseClass;
+
+public:
+	DECLARE_WND_CLASS(_T("CDockingOutputWindow"))
+
+	BEGIN_MSG_MAP(thisClass)
+		MESSAGE_HANDLER(WM_CREATE, OnCreate)
+		MESSAGE_HANDLER(WM_SIZE, OnSize)
+		REFLECT_NOTIFICATIONS()
+		CHAIN_MSG_MAP(baseClass)
+	END_MSG_MAP()
+
+	COutputView* GetView();
+
+protected:
+	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+
+protected:
+	COutputView m_view;
 };
 
 #endif

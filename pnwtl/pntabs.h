@@ -5,11 +5,11 @@
 	#include <atlcoll.h>
 #endif
 
-#include "TabbingFramework\atlgdix.h"
-#include "TabbingFramework\CustomTabCtrl.h"
-#include "TabbingFramework\DotNetTabCtrl.h"
-#include "TabbingFramework\TabbedFrame.h"
-#include "TabbingFramework\TabbedMDI.h"
+#include <atlgdix.h>
+#include <CustomTabCtrl.h>
+#include <DotNetTabCtrl.h>
+#include <TabbedFrame.h>
+#include <TabbedMDI.h>
 
 /**
  * @class CPNMDIClient
@@ -79,6 +79,12 @@ public:
 
 };
 
+/**
+ * @brief Special MDI command bar control for PN2 implementing special functionality.
+ *
+ * The reason for this class is to get a chance to capture WM_MDISETMENU so
+ * that PN can change menus when MDI children are activated etc.
+ */
 template<class TPNFrame>
 class CPNTabbedMDICommandBarCtrl : public CTabbedMDICommandBarCtrlImpl<CPNTabbedMDICommandBarCtrl>
 {

@@ -130,3 +130,57 @@ int COutputView::HandleNotify(LPARAM lParam)
 	else
 		return baseClass::HandleNotify(lParam);
 }
+
+void COutputView::DoContextMenu(CPoint* point)
+{
+	CSPopupMenu popup(IDR_POPUP_OUTPUT);
+	g_Context.m_frame->TrackPopupMenu(popup, 0, point->x, point->y, NULL);
+}
+
+void COutputView::SafeAppendText(LPCSTR s, int len)
+{
+	if(len == -1)
+		len = strlen(s);
+	SendMessage(SCI_APPENDTEXT, len, reinterpret_cast<LPARAM>(s));
+
+	int line = SendMessage(SCI_GETLENGTH, 0, 0);
+	line = SendMessage(SCI_LINEFROMPOSITION, line, 0);
+	SendMessage(SCI_ENSUREVISIBLEENFORCEPOLICY, line);
+	SendMessage(SCI_GOTOLINE, line);
+}
+
+LRESULT COutputView::OnClear(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	ClearAll();
+
+	return 0;
+}
+
+void COutputView::OnFirstShow()
+{
+	CSchemeManager::GetInstance()->SchemeByName("output")->Load(*this);
+}
+
+
+
+LRESULT CDockingOutputWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	CRect rc(0, 0, 0, 0);
+	m_view.Create(m_hWnd, rc, _T("GlobalOutput"));
+	return 0;
+}
+
+LRESULT CDockingOutputWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	int w = LOWORD(lParam);
+	int h = HIWORD(lParam);
+
+	m_view.MoveWindow(0, 0, w, h);
+
+	return 0;
+}
+
+COutputView* CDockingOutputWindow::GetView()
+{
+	return &m_view;
+}
