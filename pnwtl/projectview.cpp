@@ -589,6 +589,9 @@ LRESULT	CProjectTreeCtrl::OnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 {
 	LPNMTREEVIEW lpnmtv = (LPNMTREEVIEW)pnmh;
 
+	// Clear out values that will be used in the drag and drop stuff...
+	hDropTargetItem = NULL;
+
 	// Cache the selected items for use elsewhere in the drag and drop procedure...
 	dropSelectedItems.clear();
 	HTREEITEM sel = GetFirstSelectedItem();
@@ -704,7 +707,8 @@ LRESULT CProjectTreeCtrl::OnAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 		dlgOpen.SetTitle(_T("Add Files"));
 		if(dlgOpen.DoModal() == IDOK)
 		{
-			HTREEITEM hLastInsert = NULL;
+			HTREEITEM hLastInsert = getLastFolderItem(hParent);
+
 			for(CPNOpenDialog::const_iterator i = dlgOpen.begin(); 
 				i != dlgOpen.end();
 				++i)
@@ -1361,12 +1365,17 @@ bool CProjectTreeCtrl::canDrag()
 bool CProjectTreeCtrl::canDrop()
 {
 	//hDropTargetItem is the one the mouse is over.
+	if(hDropTargetItem == NULL)
+		return false;
 
 	//1) Check if the item is selected - can't drop an item on itself.
 	if( GetItemState(hDropTargetItem, TVIS_SELECTED) == TVIS_SELECTED )
 		return false;
 
 	ProjectType* ptype = reinterpret_cast<ProjectType*>( GetItemData(hDropTargetItem) );
+
+	if(ptype == NULL)
+		return false;
 
 	//2) Can't drop an item on itself.
 	if(dropSelectionContainsItem(hDropTargetItem))
@@ -1410,7 +1419,7 @@ bool CProjectTreeCtrl::canDrop()
 			}
 			break;
 
-		//4) If it's a file, check that it's only files being dropped.
+		//4.4) If it's a file, check that it's only files being dropped.
 		//   Also, only support re-ordering files in the same folder.
 		// TODO: In fact, for now we don't support re-ordering...
 		case ptFile:
