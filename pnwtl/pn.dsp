@@ -111,6 +111,10 @@ SOURCE=.\pn.rc
 # End Source File
 # Begin Source File
 
+SOURCE=.\pndialogs.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\SchemeCompiler.cpp
 # End Source File
 # Begin Source File
@@ -213,10 +217,6 @@ SOURCE=.\scintillaimpl.h
 # Begin Source File
 
 SOURCE=.\ScintillaWTL.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\ssfiledialog.h
 # End Source File
 # Begin Source File
 

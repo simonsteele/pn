@@ -12,8 +12,6 @@
 #include "resource.h"
 
 #include <atlframe.h>
-#include <atlctrls.h>
-#include <atldlgs.h>
 #include <atlctrlw.h>
 #include <atlctrlx.h>
 
@@ -25,7 +23,6 @@
 // Utility Classes and Definitions:
 #include "pntypes.h"
 #include "callback.h"
-#include "ssfiledialog.h"
 
 #include "pndialogs.h"
 
