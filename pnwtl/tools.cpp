@@ -257,6 +257,8 @@ int SchemeToolsManager::UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, 
 
 	if(m_pGlobalTools)
 		iFirstToolCmd = m_pGlobalTools->GetMenu(tools, iDummyID);
+	else
+		iFirstToolCmd = iDummyID;
 	if(schemename)
 	{
 		int iNextFirst = GetMenuFor(schemename, tools, iDummyID);
