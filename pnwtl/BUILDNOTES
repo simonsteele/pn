@@ -1,0 +1,33 @@
+PN2 Build Instructions:
+
+For PN2 to work correctly, check that these are satisfied:
+
+WTL:
+====
+
+PN2 uses the Windows Template Library, make sure you have this!
+If you don't know what it is, or don't have it, see:
+
+http://www.pnotepad.org/articles/wtljoys.html
+
+Expat:
+======
+
+PN2 currently requires a separate expat download:
+http://expat.sourceforge.net/
+
+PN uses the .lib and .dll files built by the expat 
+workspace available from this website. If you download the
+win32 binary .exe file it contains these ready built.
+
+In the pn2 (or pnwtl) /lib directory you must have:
+libexpat.lib
+and / or 
+libexpatw.lib (unicode).
+	
+In the pn2/bin directory, you must have:
+libexpat.dll
+and / or
+libexpatw.dll (unicode)
+
+Good Luck!
