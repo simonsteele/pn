@@ -421,22 +421,39 @@ public:
 
 	void PNOpenFile(LPCTSTR pathname, LPCTSTR filename, CScheme* pScheme = NULL)
 	{
-		m_view.Load(pathname, pScheme);
-		SetTitle(filename);
-		m_FileName = pathname;
+		if(m_view.Load(pathname, pScheme))
+		{
+			SetTitle(filename);
+			m_FileName = pathname;
+		}
+		else
+		{
+			CFile err;
+			err.ShowError(pathname);
+		}
 	}
 
 	void SaveFile(LPCTSTR pathname, bool bStoreFilename = true)
 	{
-		m_view.Save(pathname, bStoreFilename);
-		if(bStoreFilename)
+		if(m_view.Save(pathname, bStoreFilename))
 		{
-			ctcString fn;
-			CFileName(pathname).GetFileName(fn);
+			if(bStoreFilename)
+			{
+				ctcString fn;
+				CFileName(pathname).GetFileName(fn);
 
-			SetTitle(fn.c_str());
+				SetTitle(fn.c_str());
 
-			m_FileName = pathname;
+				m_FileName = pathname;
+			}
+		}
+		else
+		{
+			CFile err;
+			if ( err.ShowError(pathname, false) == IDYES )
+			{
+				SaveAs();
+			}
 		}
 	}
 

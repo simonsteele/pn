@@ -16,6 +16,24 @@
 	#endif
 #endif
 
+#define CFILE_CouldNotSaveError _T("%s could not be saved in the specified location.\nThis could be due to an absent disk, a broken network connection, or a full disk.\nDo you want to save in another location?")
+
+#define CFILE_CouldNotLoadError _T("%s could not be opened .\nThis could be because the file no longer exists, a disk is absent or due to a broken network connection.")
+
+#define CFILE_SaveAccessDenied _T("%s could not be saved because access was denied.\nThis could be due to the file being marked read-only, or the disk being write-protected.\nDo you want to save in another location?")
+
+#define CFILE_LoadAccessDenied _T("%s could not be opened because access was denied.\nThis could be because you do not have sufficient rights\nto open this file.")
+
+#define CFILE_SaveDiskFullError _T("%s could not be saved because the disk is full.\nDo you want to save in another location?")
+
+#define CFILE_SaveShareViolation _T("%s could not be saved because another program or user is\nusing the same file.\nDo you want to save in another location?")
+
+#define CFILE_LoadShareViolation _T("%s could not be opened because another program or user is\nusing the same file.")
+
+#define CFILE_NetSaveError _T("%s could not be saved because of a network error. This\ncould be because of a broken network\nconnection or because the network was too busy.\nDo you want to save in another location?")
+
+#define CFILE_NetLoadError _T("%s could not be opened because of a network error. This\ncould be because of a broken network\nconnection or because the network was too busy.")
+
 /**
  * @Author Simon Steele
  * @Date 25.03.2002
@@ -38,7 +56,10 @@ class CFile
 		
 		bool Open(LPCTSTR filename, UINT flags = 0);
 		int Read(void* lpBuf, UINT nCount);
+		int Write(void* lpBuf, UINT nCount);
 		void Close();
+
+		int ShowError(LPCTSTR filename, bool bOpen = true);
 
 		long GetPosition() const;
 		long GetLength();

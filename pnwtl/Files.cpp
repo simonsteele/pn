@@ -65,13 +65,19 @@ bool CFile::Open(LPCTSTR filename, UINT flags)
 		mode = _T("rb");
 		
 
-	m_file = fopen(filename, mode);
+	m_file = _tfopen(filename, mode);
+	
 	return (m_file != NULL);
 }
 
 int CFile::Read(void* lpBuf, UINT nCount)
 {
 	return (int)fread(lpBuf, 1, nCount, m_file);
+}
+
+int CFile::Write(void* lpBuf, UINT nCount)
+{
+	return (int)fwrite(lpBuf, nCount, 1, m_file);
 }
 
 void CFile::Close()
@@ -105,6 +111,63 @@ long CFile::GetLength()
 	}
 	else
 		return -1;
+}
+
+int CFile::ShowError(LPCTSTR filename, bool bOpen)
+{
+	int err = GetLastError();
+	
+	TCHAR* fstr;
+	
+	switch(err)
+	{
+	case ERROR_ACCESS_DENIED:
+	case ERROR_NOT_DOS_DISK:
+	case ERROR_WRITE_PROTECT:
+		if (bOpen )
+			fstr = CFILE_LoadAccessDenied;
+		else
+			fstr = CFILE_SaveAccessDenied;
+		break;
+		
+	case ERROR_DISK_FULL:
+	case ERROR_HANDLE_DISK_FULL:
+		if (bOpen)
+			fstr = CFILE_CouldNotLoadError;
+		else
+			fstr = CFILE_SaveDiskFullError;
+		break;
+		
+	case ERROR_SHARING_VIOLATION:
+	case ERROR_LOCK_VIOLATION:
+		if (bOpen)
+			fstr = CFILE_LoadShareViolation;
+		else
+			fstr = CFILE_SaveShareViolation;
+		break;
+		
+	case ERROR_DEV_NOT_EXIST:
+	case ERROR_BAD_NETPATH:
+	case ERROR_NETWORK_BUSY:
+		if (bOpen)
+			fstr = CFILE_NetLoadError;
+		else
+			fstr = CFILE_NetSaveError;
+		break;
+		
+	default:
+		if (bOpen)
+			fstr = CFILE_CouldNotLoadError;
+		else
+			fstr = CFILE_CouldNotSaveError;
+	}
+
+	CString str;
+	str.Format(fstr, filename);
+	if(bOpen)
+		return ::MessageBox(NULL, (LPCTSTR)str, _T("Programmers Notepad 2"), MB_OK);
+	else
+		return ::MessageBox(NULL, (LPCTSTR)str, _T("Programmers Notepad 2"), MB_YESNO);
 }
 
 ///////////////////////////////////////////////////////////////////////////

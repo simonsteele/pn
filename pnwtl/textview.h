@@ -44,41 +44,109 @@ public:
 		m_pLastScheme = pScheme;
 	}
 
-	void Load(LPCTSTR filename, CScheme* pScheme = NULL)
+	virtual bool OpenFile(LPCTSTR filename)
 	{
-		CScintilla::OpenFile(filename);
-
-		CFileName cfn(filename);
-		
-		if(NULL == pScheme)
+		CFile file;		
+		if ( file.Open(filename, CFile::modeRead | CFile::modeBinary) ) 
 		{
-			ctcString ext;
-			ext = cfn.GetExtension();
+			//fileModTime = GetModTime(fullPath);
 
-			CScheme* sch = theApp.GetSchemes().SchemeForExt(ext.c_str());
-			SetScheme(sch);
+			SPerform(SCI_CLEARALL);
+			// Disable UNDO
+			SPerform(SCI_SETUNDOCOLLECTION, 0);
+			char data[blockSize];
+			int lenFile = file.Read(data, sizeof(data));
+			while (lenFile > 0) 
+			{
+				SPerform(SCI_ADDTEXT, lenFile, (long)data);
+				lenFile = file.Read(data, sizeof(data)); //fread(data, 1, sizeof(data), fp);
+			}
+			file.Close();
+			SPerform(SCI_SETSEL, 0, 0);
+			// Re-Enable UNDO
+			SPerform(SCI_SETUNDOCOLLECTION, 1);
+			SPerform(SCI_SETSAVEPOINT);
+			return true;
 		}
 		else
-		{
-			SetScheme(pScheme);
-		}
+			return false;
 	}
 
-	void Save(LPCTSTR filename, bool bSetScheme = true)
+	bool Load(LPCTSTR filename, CScheme* pScheme = NULL)
 	{
-		CScintilla::SaveFile(filename);
-
-		if(bSetScheme)
+		if( OpenFile(filename) )
 		{
-			// Re-Apply Scheme:
+
 			CFileName cfn(filename);
-			ctcString ext;
-			ext = cfn.GetExtension();
-			if(ext.size() > 0)
+			
+			if(NULL == pScheme)
 			{
+				ctcString ext;
+				ext = cfn.GetExtension();
+
 				CScheme* sch = theApp.GetSchemes().SchemeForExt(ext.c_str());
 				SetScheme(sch);
 			}
+			else
+			{
+				SetScheme(pScheme);
+			}
+			return true;
+		}
+		else
+			return false;
+	}
+
+	virtual bool SaveFile(LPCTSTR filename)
+	{
+		CFile file;
+		if( file.Open(filename, CFile::modeWrite | CFile::modeBinary) )
+		{
+			char data[blockSize + 1];
+			int lengthDoc = SPerform(SCI_GETLENGTH);
+			for (int i = 0; i < lengthDoc; i += blockSize) 
+			{
+				int grabSize = lengthDoc - i;
+				if (grabSize > blockSize)
+					grabSize = blockSize;
+				GetRange(i, i + grabSize, data);
+				
+				/*if (props.GetInt("strip.trailing.spaces"))
+					grabSize = StripTrailingSpaces(
+								   data, grabSize, grabSize != blockSize);*/
+				
+				file.Write(data, grabSize);
+			}
+			file.Close();
+			SPerform(SCI_SETSAVEPOINT);
+			return true;
+		}
+		else
+			return false;
+	}
+
+	bool Save(LPCTSTR filename, bool bSetScheme = true)
+	{
+		if( SaveFile(filename) )
+		{
+
+			if(bSetScheme)
+			{
+				// Re-Apply Scheme:
+				CFileName cfn(filename);
+				ctcString ext;
+				ext = cfn.GetExtension();
+				if(ext.size() > 0)
+				{
+					CScheme* sch = theApp.GetSchemes().SchemeForExt(ext.c_str());
+					SetScheme(sch);
+				}
+			}
+			return true;
+		}
+		else
+		{
+			return false;
 		}
 	}
 

@@ -79,10 +79,10 @@ class CScintilla
 		}
 
 		/// Load a file from "filename".
-		bool OpenFile(LPCTSTR filename);
+		virtual bool OpenFile(LPCTSTR filename);
 
 		/// Save the contents of the control to "filename".
-		bool SaveFile(LPCTSTR filename);
+		virtual bool SaveFile(LPCTSTR filename);
 
 
 		void SetInitialTabWidth(int ts){m_TabWidth = ts;}
