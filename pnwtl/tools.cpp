@@ -428,6 +428,7 @@ void SchemeToolsManager::ReLoad(bool bWantMenuResources)
 	XMLParser parser;
 	parser.SetParseState(this);
 
+	/// Try and load the user tools file.
 	tstring uspath;
 	COptionsManager::GetInstance()->GetPNPath(uspath, PNPATH_USERTOOLS);
 	uspath += _T("UserTools.xml");
@@ -451,6 +452,7 @@ void SchemeToolsManager::ReLoad(bool bWantMenuResources)
 
 	}
 
+	// Now we try and find any pre-shipped tool configurations.
 	COptionsManager::GetInstance()->GetPNPath(uspath, PNPATH_TOOLS);
 	tstring pattern(uspath);
 	tstring to_open;
@@ -458,14 +460,12 @@ void SchemeToolsManager::ReLoad(bool bWantMenuResources)
 	pattern += "*.xml";
 
 	WIN32_FIND_DATA FindFileData;
-	HANDLE hFind = FindFirstFile(pattern.c_str(), &FindFileData);
+	HANDLE hFind = ::FindFirstFile(pattern.c_str(), &FindFileData);
 	if(hFind != INVALID_HANDLE_VALUE)
 	{
 		BOOL found = TRUE;
 		while (found)
 		{
-			///@todo Do we really need to keep a list of Schemes and a map?
-			// to_open is a scheme file
 			to_open = uspath;
 			to_open += FindFileData.cFileName;
 
@@ -486,15 +486,16 @@ void SchemeToolsManager::ReLoad(bool bWantMenuResources)
 				UNEXPECTED(str.c_str());
 			}
 
-			found = FindNextFile(hFind, &FindFileData);
+			found = ::FindNextFile(hFind, &FindFileData);
 		}
 
-		FindClose(hFind);
+		::FindClose(hFind);
 	}
 }
 
 void SchemeToolsManager::Save()
 {
+	// Save all the source files.
 	for(SOURCES_LIST::iterator i = m_toolSources.begin(); i != m_toolSources.end(); ++i)
 	{
 		ofstream str;
@@ -520,6 +521,7 @@ void SchemeToolsManager::processScheme(XMLAttributes& atts)
 	LPCTSTR schemename = atts.getValue(_T("name"));
 	if(schemename)
 	{
+		// Only ever one SchemeTools object per named scheme, independent of source files.
 		SchemeTools* old = GetToolsFor(schemename);
 		if(old)
 			m_pCur = old;
