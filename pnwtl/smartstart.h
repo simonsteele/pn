@@ -8,7 +8,7 @@ typedef STRING_MAP::iterator SM_IT;
 class SmartStart : public Singleton<SmartStart, SINGLETON_AUTO_DELETE>, XMLParseState
 {
 public:
-	friend class Singleton;
+	friend class Singleton<SmartStart, SINGLETON_AUTO_DELETE>;
 	typedef enum {eContinue, eMatched, eGiveUp} EContinueState;
 
 	virtual ~SmartStart();

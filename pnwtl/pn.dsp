@@ -147,6 +147,10 @@ SOURCE=.\ScintillaImpl.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\smartstart.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ssmenus.cpp
 # End Source File
 # Begin Source File
@@ -253,6 +257,10 @@ SOURCE=.\scintillaimpl.h
 # Begin Source File
 
 SOURCE=.\ScintillaWTL.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\smartstart.h
 # End Source File
 # Begin Source File
 
