@@ -71,7 +71,7 @@ bool CFile::Open(LPCTSTR filename, UINT flags)
 
 int CFile::Read(void* lpBuf, UINT nCount)
 {
-	return (int)fread(lpBuf, nCount, 1, m_file);
+	return (int)fread(lpBuf, 1, nCount, m_file);
 }
 
 void CFile::Close()

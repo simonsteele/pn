@@ -107,4 +107,6 @@ public:
 
 };
 
+int FileAge(LPCTSTR FileName);
+
 #endif
