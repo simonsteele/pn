@@ -24,7 +24,7 @@ What's new?
 15) Added Uppercase/Lowercase
 16) Bjoern Graf tidied the Options dialog plus some others.
 17) Keyboard works in the projects tree (inc. "del" to remove project files).
-18) Options can now be saved to a .ini file instead of the registry.
+18) Added error parsing for microsoft error messages.
 19) Middle-click mouse on the document tab to close a document.
 20) Allow specification of default character set (includes Shift-JIS and UTF-8).
 21) Optimised file loading - significantly reduces load time for large files.
@@ -34,7 +34,6 @@ What's new?
 25) Optional new, empty file on startup.
 26) Magic Folders in projects - folders that reflect real directory contents.
 27) Now open the "open file" dialog in the same directory as the current file.
-28) Added error parsing for microsoft error messages.
 
 Bug Fixes:
 ----------

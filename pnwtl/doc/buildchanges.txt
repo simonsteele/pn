@@ -1,7 +1,17 @@
 | Working towards 0.6 :: Ella
 ---------------------------------------
 
-Since 
+Since 02/07/2004:
+
+Fixes:
+Project contained file nodes not sorted.
+Fixed global output window clicking.
+Changed tool editor default to global output window.
+Fixed a bug in the long-line calculation code.
+Fixed the jump to dialog resizing.
+Fixed command-prompt project opening.
+Fixed magic folder writing.
+Temporarily disabled "Add Folder" on magic folders for release build.
 
 Since 27/04/2004:
 

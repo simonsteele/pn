@@ -118,6 +118,10 @@ void MagicFolder::WriteDefinition(SProjectWriter* definition)
 	genxStartElementLiteral(definition->w, NULL, u("MagicFolder"));
 	genxAddAttributeLiteral(definition->w, NULL, u("name"), u(name.c_str()));
 	
+	CFileName cfn( basePath.c_str() );
+	tstring relPath = cfn.GetRelativePath( GetParent()->GetBasePath() );
+	genxAddAttributeLiteral(definition->w, NULL, u("path"), u(relPath.c_str()));
+
 	writeContents(definition);
 
 	genxEndElement(definition->w);

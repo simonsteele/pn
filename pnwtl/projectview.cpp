@@ -170,6 +170,8 @@ HTREEITEM CProjectTreeCtrl::buildProject(HTREEITEM hParentNode, Projects::Projec
 			hLastChild = buildFolders(hProject, folders, state);
 
 		buildFiles(hProject, hLastChild, pj->GetFiles());
+
+		sort(hProject);
 	}
 	else
 	{

@@ -147,7 +147,7 @@ CToolEditorDialog::CToolEditorDialog() :
 
 	m_bCapture = true;
 	m_bClear = true;
-	m_bGlobal = false;
+	m_bGlobal = true;
 
 	m_iSaveStyle = 0;
 

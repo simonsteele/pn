@@ -63,6 +63,8 @@ class CJumpToDialog : public CDialogImpl<CJumpToDialog>, IJumpToFindSink
 		CListViewCtrl	list;
 		CImageList		images;
 		int				buttonGap;
+		int				buttonWidth;
+		int				buttonGapX;
 		SIZE			listGaps;
 		TCHAR			itoabuf[20];
 		int				line;

@@ -32,7 +32,7 @@ public:
 		CString strVersion;
 		strTemp.LoadString(IDS_ABOUTVERSIONSTRING);
 		
-		strVersion.Format(strTemp, PN_VERSION);
+		strVersion.Format(strTemp, PN_VERSION_FULL);
 
 		CStatic sName;
 		sName.Attach(GetDlgItem(IDC_NAME));

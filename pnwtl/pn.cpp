@@ -73,7 +73,10 @@ void Shutdown()
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
 //#ifdef _DEBUG
-	MiniDumper dumper(_T("PN2"));
+	tstring str(_T("PN2_"));
+	str += PN_VERSTRING;
+
+	MiniDumper dumper(str.c_str());
 //#endif
 	
 	ZeroMemory(&g_Context.OSVersion, sizeof(OSVERSIONINFO));

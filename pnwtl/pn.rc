@@ -261,7 +261,7 @@ BEGIN
     CONTROL         319,IDC_ABOUTIMAGE,"Static",SS_BITMAP | SS_CENTERIMAGE,7,
                     7,64,154
     DEFPUSHBUTTON   "OK",IDOK,198,147,50,14
-    LTEXT           "",IDC_VERSIONSTATIC,78,24,153,30
+    LTEXT           "",IDC_VERSIONSTATIC,78,24,153,79
     CONTROL         "",IDC_TOPSTATIC,"Static",SS_ETCHEDHORZ,7,7,65,1
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDVERT,7,7,1,155
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,8,160,65,1
@@ -555,6 +555,7 @@ BEGIN
     POPUP "DUMMY"
     BEGIN
         MENUITEM "&Add New Folder",             ID_PROJECT_MAGICADDFOLDER
+        , INACTIVE
         MENUITEM SEPARATOR
         MENUITEM "&Open All Files",             299
         MENUITEM "&Sort Folders",               ID_PROJECT_SORTFOLDERS
@@ -1388,7 +1389,7 @@ BEGIN
     ID_EDITOR_WORDWRAP      "Toggle word wrap"
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
     ID_EDITOR_LINENOS       "Toggle line numbers display"
-    IDS_ABOUTVERSIONSTRING  "Version: v%s\nCopyright: Copyright © 2002-2004 Simon Steele"
+    IDS_ABOUTVERSIONSTRING  "Version: v%s\nCopyright: Copyright © 2002-2004 Simon Steele\n\nProgrammers Notepad uses Scintilla, WTL, GenX, Expat, and PCRE. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmers Notepad."
     IDS_TOOLFORMATSTRINGS   "%f: File Name\n%n: File Name (no ext)\n%l: Current Line Number\n%?: Ask for parameters\n%p: Current Project File|%d: Path of File\n%c: Column\n%%: Percent Symbol\n%w: Current word\n%g: Project Group File"
     IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c: Column"
     ID_FILE_NEW_PROJECT     "Create a new project."

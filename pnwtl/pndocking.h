@@ -115,6 +115,7 @@ class /*ATL_NO_VTABLE*/ CPNDockingWindowT : public dockwins::CBoxedDockingWindow
 		BEGIN_MSG_MAP(thisClass)
 			MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
 			CHAIN_MSG_MAP(baseClass)
+			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 
 	protected:

@@ -324,6 +324,8 @@ protected:
 
 	void loadImages(USHORT id, HIMAGELIST* images, USHORT disId = 0, HIMAGELIST* disImages = NULL);
 
+	void openFileCheckType(LPCTSTR filename);
+
 protected:
 
 	typedef enum {

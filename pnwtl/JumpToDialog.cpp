@@ -65,7 +65,7 @@ LRESULT CJumpToDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	list.SetExtendedListViewStyle( LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT );
 
-	CRect rc, rcList, rcBtn;
+	CRect rc, rcList, rcBtn, rcCancel;
 	GetClientRect(&rc);
 	list.GetWindowRect(&rcList);
 	ScreenToClient(&rcList);
@@ -73,8 +73,12 @@ LRESULT CJumpToDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	listGaps.cy = rc.Height() - rcList.bottom;
 	
 	btnOk.GetWindowRect(&rcBtn);
+	btnCancel.GetWindowRect(&rcCancel);
 	ScreenToClient(&rcBtn);
-	buttonGap = rcBtn.left - rcList.right;
+	ScreenToClient(&rcCancel);
+	buttonGap = rcBtn.top - rcList.bottom;
+	buttonWidth = rcBtn.Width();
+	buttonGapX = rcCancel.left - rcBtn.right;
 
 	JumpToHandler::GetInstance()->DoJumpTo(m_pChild, this);
 
@@ -86,7 +90,7 @@ LRESULT CJumpToDialog::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 	int width = LOWORD(lParam);
 	int height = HIWORD(lParam);
 
-    CRect rc, rc2;
+    CRect rc, rc2, rc3;
 	
 	// Size the list control
 	list.GetWindowRect(&rc);
@@ -101,17 +105,19 @@ LRESULT CJumpToDialog::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 	rc2.right = rc.right;
 	edtTag.SetWindowPos(HWND_TOP, &rc2, SWP_NOMOVE | SWP_NOZORDER);
 
+	// Cancel button
+	btnCancel.GetWindowRect(&rc3);
+	ScreenToClient(&rc3);
+	rc3.MoveToX(rc.right - buttonWidth);
+	rc3.MoveToY(rc.bottom + buttonGap);
+	btnCancel.SetWindowPos(HWND_TOP, &rc3, SWP_NOSIZE | SWP_NOZORDER);
+
 	// Ok button
 	btnOk.GetWindowRect(&rc2);
 	ScreenToClient(&rc2);
-	rc2.MoveToX(rc.right + buttonGap);
-	btnOk.SetWindowPos(HWND_TOP, &rc2, SWP_NOSIZE | SWP_NOZORDER);
-
-	// Cancel button
-	btnCancel.GetWindowRect(&rc2);
-	ScreenToClient(&rc2);
-	rc2.MoveToX(rc.right + buttonGap);
-	btnCancel.SetWindowPos(HWND_TOP, &rc2, SWP_NOSIZE | SWP_NOZORDER);
+	rc2.MoveToX(rc3.left - buttonGapX - buttonWidth);
+	rc2.MoveToY(rc.bottom + buttonGap);
+	btnOk.SetWindowPos(HWND_TOP, &rc2, SWP_NOSIZE | SWP_NOZORDER);	
 
 	// Now size the tag column to fit.
 	list.GetClientRect(&rc);	

@@ -915,7 +915,7 @@ LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 		}
 		else
 		{
-			OpenFile(__argv[i]);
+			openFileCheckType(__argv[i]);
 		}
 	}
 
@@ -984,11 +984,13 @@ LRESULT CMainFrame::OnMultiInstanceMsg(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
 			else
 			{
 				if( !CheckAlreadyOpen( (*i).c_str() ) )
-					OpenFile( (*i).c_str() );
+					openFileCheckType( (*i).c_str() );
 			}
 		}
 	}
 
+	if(IsIconic())
+		ShowWindow(SW_RESTORE);
 	::SetForegroundWindow(m_hWnd);
 
 	return 0;
@@ -2158,6 +2160,13 @@ void CMainFrame::OpenProject(LPCTSTR projectPath)
 			getDocker(DW_PROJECTS)->Toggle();
 	}
 
+	// Check if a project is already open...
+	if(m_pProjectsWnd->GetWorkspace() != NULL)
+	{
+		if(!CloseWorkspace(true, true))
+			return;
+	}
+
 	if(!FileExists(projectPath))
 	{
 		DWORD dwRes = ::MessageBox(m_hWnd, _T("The specified project does not exist,\n would you like to create it?"), _T("Project Not Found"), MB_YESNO);
@@ -2433,4 +2442,22 @@ bool CMainFrame::getProjectsModified(ITabbedMDIChildModifiedList* pModifiedList)
 	}
 
 	return bRet;
+}
+
+void CMainFrame::openFileCheckType(LPCTSTR filename)
+{
+	CFileName fn(filename);
+	fn.ToLower();
+	if(fn.GetExtension() == _T(".pnproj"))
+	{
+		OpenProject(filename);
+	}
+	else if(fn.GetExtension() == _T(".ppg"))
+	{
+		OpenWorkspace(filename);
+	}
+	else
+	{
+		OpenFile(filename);
+	}
 }

@@ -722,7 +722,7 @@ UINT __stdcall CTextView::RunMeasureThread(void* pThis)
 	}
 
 	// ensure we stay below the absolute maximum...
-	maxLength = max(maxLength, absMaxLength);
+	maxLength = min(maxLength, absMaxLength);
 
 	TCHAR buf[50];
 	_stprintf(buf, _T("Max line length: %d"), maxLength);
