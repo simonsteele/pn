@@ -103,8 +103,8 @@ class StyleDetails
 			Key = 0;
 			FontName = "Courier New";
 			FontSize = 10;
-			ForeColor = -1;
-			BackColor = -1;
+			ForeColor = RGB(0,0,0);
+			BackColor = RGB(255,255,255);
 			Bold = false;
 			Italic = false;
 			Underline = false;
