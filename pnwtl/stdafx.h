@@ -57,6 +57,8 @@ extern CAppModule _Module;
 
 #define PNASSERT ATLASSERT
 
+#define _NO_COPY(x) private: x(x&){;} x& operator = (x& copy){;}
+
 #include "pn.h"
 
 //{{AFX_INSERT_LOCATION}}

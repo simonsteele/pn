@@ -127,6 +127,8 @@ class StyleDetails
 			Italic = copy.Italic;
 			Underline = copy.Underline;
 			EOLFilled = copy.EOLFilled;
+			values = copy.values;
+			classname = copy.classname;
 			return *this;
 		}
 

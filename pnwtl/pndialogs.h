@@ -293,4 +293,63 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 		CComboBox	m_SizeCombo;
 };
 
+class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
+{
+	public:
+		BEGIN_MSG_MAP(COptionsPageSchemes)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			REFLECT_NOTIFICATIONS()
+		END_MSG_MAP()
+		enum {IDD = IDD_PAGE_SCHEMES};
+
+
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+		{
+			CTabCtrlT<CWindow> tabs;
+			tabs.Attach(GetDlgItem(IDC_TAB));
+
+			TCITEM tci;
+			tci.mask = TCIF_TEXT | TCIF_IMAGE;
+
+			tci.pszText = _T("Styles");
+			tci.iImage = 0;
+			tabs.InsertItem(0, &tci);
+			
+			tci.pszText = _T("Keywords");
+			tci.iImage = 1;
+			tabs.InsertItem(1, &tci);
+
+			CWindow label;
+			CSize s;
+			CRect rc;
+
+			label.Attach(GetDlgItem(IDC_SCHEMELABEL));
+			
+			CDC dc(label.GetDC());
+			dc.GetTextExtent(_T("Scheme:"), 7, &s);
+			
+			label.GetWindowRect(rc);
+			ScreenToClient(rc);
+			rc.right = rc.left + s.cx;
+			label.SetWindowPos(HWND_TOP, &rc, 0);
+
+			CWindow combo;
+			CRect rcCombo;
+
+			combo.Attach(GetDlgItem(IDC_SCHEMECOMBO));
+
+			combo.GetWindowRect(rcCombo);
+			ScreenToClient(rcCombo);
+			rcCombo.left = rc.right + 5;
+			combo.SetWindowPos(HWND_TOP, &rcCombo, 0);
+
+			return 0;
+		}
+
+		virtual LPCTSTR GetTreePosition()
+		{
+			return _T("Style\\Schemes");
+		}
+};
+
 #endif

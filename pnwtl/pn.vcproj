@@ -145,6 +145,9 @@
 				RelativePath=".\SchemeCompiler.cpp">
 			</File>
 			<File
+				RelativePath="SchemeConfig.cpp">
+			</File>
+			<File
 				RelativePath=".\Schemes.cpp">
 			</File>
 			<File
@@ -204,6 +207,9 @@
 			</File>
 			<File
 				RelativePath=".\SchemeCompiler.h">
+			</File>
+			<File
+				RelativePath="SchemeConfig.h">
 			</File>
 			<File
 				RelativePath=".\Schemes.h">
