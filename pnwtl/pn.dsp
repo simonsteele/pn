@@ -127,6 +127,10 @@ SOURCE=.\ScintillaImpl.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\ssmenus.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ssreg.cpp
 # End Source File
 # Begin Source File
@@ -213,6 +217,10 @@ SOURCE=.\ScintillaWTL.h
 # Begin Source File
 
 SOURCE=.\ssfiledialog.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\ssmenus.h
 # End Source File
 # Begin Source File
 
