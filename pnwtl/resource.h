@@ -155,6 +155,8 @@
 #define IDD_FILEASSOC_INFO              330
 #define IDD_PNOPEN                      331
 #define IDD_PROJPROPS                   332
+#define IDD_DIALOG1                     333
+#define IDD_TOOLCONSOLEIOPAGE           333
 #define ID_MRUPROJECT_MAX               340
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
@@ -350,6 +352,7 @@
 #define IDC_CLOSEONFINDNEXTCHECK        1115
 #define IDC_FINDALPHACHECK              1116
 #define IDC_TREE1                       1117
+#define IDC_VAR_LIST                    1118
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -446,9 +449,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        333
+#define _APS_NEXT_RESOURCE_VALUE        334
 #define _APS_NEXT_COMMAND_VALUE         32928
-#define _APS_NEXT_CONTROL_VALUE         1118
+#define _APS_NEXT_CONTROL_VALUE         1119
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

@@ -696,19 +696,48 @@ void COptionsPageTools::AddDefinition(ToolDefinition* pDef)
 	m_list.SetItem(&lvi);
 }
 
+bool doToolEditDlg(LPCTSTR title, HWND hWndOwner, ToolDefinition* in, ToolDefinition* out)
+{
+	CPropertySheet sheet( title, 0, hWndOwner );
+	sheet.m_psh.dwFlags |= (PSH_NOAPPLYNOW | PSH_PROPTITLE | PSH_USEICONID);
+	sheet.m_psh.pszIcon = MAKEINTRESOURCE(IDR_MDICHILD);
+	
+	CToolEditorDialog toolPage(_T("Properties"));
+	CToolConsoleIOPage consolePage(_T("Console I/O"));
+
+	if(in)
+	{
+		toolPage.SetValues(in);
+		consolePage.SetValues(out);
+	}
+
+	sheet.AddPage(toolPage);
+	sheet.AddPage(consolePage);
+	if(sheet.DoModal() == IDOK)
+	{
+		toolPage.GetValues(out);
+		consolePage.GetValues(out);
+		
+		return true;
+	}
+
+	return false;
+}
+
 LRESULT COptionsPageTools::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CToolEditorDialog dlg;
-	
-	if (dlg.DoModal() == IDOK)
+	SourcedToolDefinition* pDef = new SourcedToolDefinition(m_toolstore.GetDefaultToolStore());
+
+	if (doToolEditDlg(_T("New Tool"), m_hWnd, NULL, pDef))
 	{
 		//@todo check if the name is valid...
-
-		SourcedToolDefinition* pDef = new SourcedToolDefinition(m_toolstore.GetDefaultToolStore());
 		GetTools()->Add(pDef);
-		dlg.GetValues(pDef);
 
 		AddDefinition(pDef);
+	}
+	else
+	{
+		delete pDef;
 	}
 
 	return 0;
@@ -723,13 +752,9 @@ LRESULT COptionsPageTools::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 		ToolDefinition* pDef = reinterpret_cast<ToolDefinition*>(m_list.GetItemData(iSelIndex));
 		if(pDef != NULL)
 		{
-			CToolEditorDialog dlg;
-			dlg.SetValues(pDef);
-			dlg.SetTitle(_T("Edit Tool"));
-
-			if(dlg.DoModal())
+			if(doToolEditDlg( _T("Edit Tool"), m_hWnd, pDef, pDef))
 			{
-				dlg.GetValues(pDef);
+				//dlg.GetValues(pDef);
 
 				LVITEM lvi;
 				lvi.mask = LVIF_TEXT;

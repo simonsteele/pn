@@ -13,12 +13,14 @@
 #include "OptionsDialogs.h"
 #include "SchemeConfig.h"
 #include "pndialogs.h"
+//#include "tools.h"
+//#include "childfrm.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // CToolEditorDialog
 //////////////////////////////////////////////////////////////////////////////
 
-CToolEditorDialog::CInfoLabel::CInfoLabel(LPCTSTR title, DWORD StringID)
+CInfoLabel::CInfoLabel(LPCTSTR title, DWORD StringID)
 {
 	m_pTitleFont = /*m_pBodyFont =*/ NULL;
 	m_title = title;
@@ -27,7 +29,7 @@ CToolEditorDialog::CInfoLabel::CInfoLabel(LPCTSTR title, DWORD StringID)
 	LoadString(NULL, StringID, strbuf, 200);
 }
 
-CToolEditorDialog::CInfoLabel::~CInfoLabel()
+CInfoLabel::~CInfoLabel()
 {
 	if(m_pTitleFont)
 	{
@@ -36,7 +38,7 @@ CToolEditorDialog::CInfoLabel::~CInfoLabel()
 	}
 }
 
-void CToolEditorDialog::CInfoLabel::MakeFonts(HDC hDC)
+void CInfoLabel::MakeFonts(HDC hDC)
 {
 	if(!m_pTitleFont)
 	{
@@ -56,7 +58,7 @@ void CToolEditorDialog::CInfoLabel::MakeFonts(HDC hDC)
 	//m_pBodyFont->CreateFontIndirect(&lf);
 }
 
-LRESULT CToolEditorDialog::CInfoLabel::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CInfoLabel::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	PAINTSTRUCT ps;
 	::BeginPaint(m_hWnd, &ps);
@@ -135,45 +137,28 @@ LRESULT CToolEditorDialog::CInfoLabel::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/,
 	return 0;
 }
 
-CToolEditorDialog::CToolEditorDialog() : 
-	m_infolabel(_T("Special Symbols:"), IDS_TOOLFORMATSTRINGS), 
-	m_infolabel2(_T("Pattern Symbols:"), IDS_PATTERNFORMATSTRINGS)
+CToolEditorDialog::CToolEditorDialog(LPCTSTR title) : 
+	CPropertyPageImpl<CToolEditorDialog>(title)
 {
 	m_csName = _T("");
 	m_csCommand = _T("");
 	m_csFolder = _T("");
 	m_csParams = _T("");
-	m_csCustomPattern = _T("");
-
-	m_bCapture = true;
-	m_bClear = true;
-	m_bGlobal = true;
 
 	m_iSaveStyle = 0;
 
 	m_wHotKey = 0;
 
-	m_iBuiltIn = 0;
-
 	m_csDisplayTitle = _T("New Tool");
 }
+
+const LPCTSTR toolvarstrs = _T("%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectPath),Path of Project,c:\\source\\pn2\\,$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\");
 
 LRESULT CToolEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	CenterWindow(GetParent());
 
 	SetWindowText(m_csDisplayTitle);
-
-	m_infolabel.SubclassWindow(GetDlgItem(IDC_TE_INFOLABEL));
-	m_infolabel2.SubclassWindow(GetDlgItem(IDC_TE_CUSTOMINFO));
-
-	m_outputcombo.Attach(GetDlgItem(IDC_TE_OUTPUTCOMBO));
-	m_outputcombo.AddString(_T("Use the main output window."));
-	m_outputcombo.AddString(_T("Use an individual output window."));
-
-	m_outputcombo.SetCurSel(m_bGlobal ? 0 : 1);
-
-	m_outputcombo.EnableWindow(m_bCapture);
 
 	m_saveCombo.Attach(GetDlgItem(IDC_TE_SAVECOMBO));
 	m_saveCombo.AddString(_T("None"));
@@ -192,34 +177,54 @@ LRESULT CToolEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 	m_paramHelper.SubclassWindow( GetDlgItem(IDC_OPTHELPER_BUTTON) );
 
-	DoDataExchange();
+	m_VarList.Attach(GetDlgItem(IDC_VAR_LIST));
+	m_VarList.InsertColumn(0, _T("Text"), LVCFMT_LEFT, 100, -1);
+	m_VarList.InsertColumn(1, _T("Meaning"), LVCFMT_LEFT, 105, -1);
+	m_VarList.InsertColumn(2, _T("Example"), LVCFMT_LEFT, 105, -1);
 
-	EnableButtons();
+	tstring delimiters = _T(",");
+	tstring varstr = toolvarstrs;
+	std::vector<tstring> toks;
+
+	StringTokenise(varstr, toks, delimiters);
+
+	int index = 0;
+	for(std::vector<tstring>::iterator i = toks.begin(); i != toks.end(); ++i)
+	{
+		LVITEM lvi = {0};
+		lvi.mask = LVIF_TEXT;
+		lvi.iItem = index++;
+		lvi.pszText = (LPTSTR)(*i).c_str();
+		m_VarList.InsertItem(&lvi);
+		
+		++i;
+
+		lvi.iSubItem = 1;
+		lvi.pszText = (LPTSTR)(*i).c_str();
+		m_VarList.SetItem(&lvi);
+
+		++i;
+
+		lvi.iSubItem = 2;
+		lvi.pszText = (LPTSTR)(*i).c_str();
+		m_VarList.SetItem(&lvi);
+	}
+
+	DoDataExchange();
 
 	return 0;
 }
 
-LRESULT CToolEditorDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+BOOL CToolEditorDialog::OnApply()
 {
 	DoDataExchange(TRUE);
 	
-	m_bGlobal = (m_outputcombo.GetCurSel() == 0);
-
 	m_wHotKey = (WORD)m_HotKeyCtrl.GetHotKey();
 
 	int saveSel = m_saveCombo.GetCurSel();
 	m_iSaveStyle = (saveSel == 2 ? TOOL_SAVEALL : (saveSel == 1 ? TOOL_SAVEONE : 0));
 
-	EndDialog(wID);
-
-	return 0;
-}
-
-LRESULT CToolEditorDialog::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	EndDialog(wID);
-
-	return 0;
+	return TRUE;
 }
 
 LRESULT CToolEditorDialog::OnBrowseDir(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -252,30 +257,6 @@ LRESULT CToolEditorDialog::OnBrowseCommand(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	return 0;
 }
 
-LRESULT CToolEditorDialog::OnCaptureChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	EnableButtons();
-
-	return 0;
-}
-
-LRESULT CToolEditorDialog::OnAboutBuiltin(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	MessageBox(
-		_T("Programmers Notepad 2 provides built-in support\nfor parsing output from the following tools:\n\nBorland C++\nMicrosoft Compilers\nGCC\nlcc-win32\nPython\nPerl\nand other similar tools."), 
-		_T("Information"),
-		MB_OK | MB_ICONINFORMATION);
-
-	return 0;
-}
-
-LRESULT CToolEditorDialog::OnWindowStateChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	EnableButtons();
-
-	return 0;
-}
-
 LRESULT CToolEditorDialog::OnClearShortcut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	m_HotKeyCtrl.SetHotKey(0,0);
@@ -298,17 +279,8 @@ void CToolEditorDialog::GetValues(ToolDefinition* pDefinition)
 	pDefinition->Shortcut		= m_wHotKey;
 	
 	pDefinition->iFlags = 
-		(m_bCapture	? TOOL_CAPTURE	: 0) |
 		(m_bFilter	? TOOL_ISFILTER : 0) |
-		(m_bGlobal	? TOOL_GLOBALOUTPUT : 0) |
-		(m_bClear	? TOOL_CLEAROUTPUT : 0) |
-		(m_iBuiltIn * TOOL_CUSTOMPARSER) | 
 		m_iSaveStyle;
-
-	if(m_iBuiltIn)
-	{
-		pDefinition->CustomParsePattern = m_csCustomPattern;
-	}
 }
 
 void CToolEditorDialog::SetValues(ToolDefinition* pDefinition)
@@ -318,12 +290,7 @@ void CToolEditorDialog::SetValues(ToolDefinition* pDefinition)
 	m_csFolder		= pDefinition->Folder.c_str();
 	m_csParams		= pDefinition->Params.c_str();
 	m_wHotKey		= pDefinition->Shortcut;
-	m_bCapture		= pDefinition->CaptureOutput();
 	m_bFilter		= pDefinition->IsFilter();
-	m_bGlobal		= pDefinition->GlobalOutput();
-	m_bClear		= pDefinition->ShouldClearOutput();
-	m_iBuiltIn		= pDefinition->UseCustomParser() ? 1 : 0;
-	m_csCustomPattern = pDefinition->CustomParsePattern.c_str();
 
 	m_iSaveStyle = pDefinition->iFlags & (TOOL_SAVEALL | TOOL_SAVEONE);
 }
@@ -333,7 +300,97 @@ void CToolEditorDialog::SetTitle(LPCTSTR title)
 	m_csDisplayTitle = title;
 }
 
-void CToolEditorDialog::EnableButtons()
+//////////////////////////////////////////////////////////////////////////////
+// CToolConsoleIOPage
+//////////////////////////////////////////////////////////////////////////////
+
+CToolConsoleIOPage::CToolConsoleIOPage(LPCTSTR title) : 
+	CPropertyPageImpl<CToolConsoleIOPage>(title),
+	m_infolabel2(_T("Pattern Symbols:"), IDS_PATTERNFORMATSTRINGS)
+{
+	m_csCustomPattern = _T("");
+
+	m_bCapture = true;
+	m_bClear = true;
+	m_bGlobal = true;
+	m_iBuiltIn = 0;
+}
+
+BOOL CToolConsoleIOPage::OnApply()
+{
+	DoDataExchange(TRUE);
+	m_bGlobal = (m_outputcombo.GetCurSel() == 0);
+	
+	return TRUE;
+}
+
+void CToolConsoleIOPage::GetValues(ToolDefinition* pDefinition)
+{
+	pDefinition->iFlags |= 
+		(m_bCapture	? TOOL_CAPTURE	: 0) |
+		(m_bGlobal	? TOOL_GLOBALOUTPUT : 0) |
+		(m_bClear	? TOOL_CLEAROUTPUT : 0) |
+		(m_iBuiltIn * TOOL_CUSTOMPARSER);
+
+	if(m_iBuiltIn)
+	{
+		pDefinition->CustomParsePattern = m_csCustomPattern;
+	}
+}
+
+void CToolConsoleIOPage::SetValues(ToolDefinition* pDefinition)
+{
+	m_bCapture			= pDefinition->CaptureOutput();
+	m_bGlobal			= pDefinition->GlobalOutput();
+	m_bClear			= pDefinition->ShouldClearOutput();
+	m_iBuiltIn			= pDefinition->UseCustomParser() ? 1 : 0;
+	m_csCustomPattern	= pDefinition->CustomParsePattern.c_str();
+}
+
+LRESULT CToolConsoleIOPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	m_infolabel2.SubclassWindow(GetDlgItem(IDC_TE_CUSTOMINFO));
+
+	m_outputcombo.Attach(GetDlgItem(IDC_TE_OUTPUTCOMBO));
+	m_outputcombo.AddString(_T("Use the main output window."));
+	m_outputcombo.AddString(_T("Use an individual output window."));
+
+	m_outputcombo.SetCurSel(m_bGlobal ? 0 : 1);
+
+	m_outputcombo.EnableWindow(m_bCapture);
+
+	DoDataExchange();
+
+	enableButtons();
+
+	return 0;
+}
+
+LRESULT CToolConsoleIOPage::OnCaptureChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	enableButtons();
+
+	return 0;
+}
+
+LRESULT CToolConsoleIOPage::OnAboutBuiltin(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	MessageBox(
+		_T("Programmers Notepad 2 provides built-in support\nfor parsing output from the following tools:\n\nBorland C++\nMicrosoft Compilers\nGCC\nlcc-win32\nPython\nPerl\nand other similar tools."), 
+		_T("Information"),
+		MB_OK | MB_ICONINFORMATION);
+
+	return 0;
+}
+
+LRESULT CToolConsoleIOPage::OnWindowStateChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	enableButtons();
+
+	return 0;
+}
+
+void CToolConsoleIOPage::enableButtons()
 {
 	CButton capture(GetDlgItem(IDC_TE_CAPTURECHECK));
 	BOOL bCapture = capture.GetCheck();

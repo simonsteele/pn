@@ -274,7 +274,6 @@ void CChildFrame::SetTitle( bool bModified )
 tstring CChildFrame::GetFileName(EGFNType type)
 {
 	CFileName fn(m_FileName);
-	//tstring s;
 
 	switch(type)
 	{
