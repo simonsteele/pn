@@ -542,7 +542,7 @@ bool CScintillaImpl::ReplaceOnce(SReplaceOptions* pOptions)
 	{
 		///@todo this....
 		CString replaceTarget(pOptions->ReplaceText);
-		int replaceLen = UnSlashAsNeeded(replaceTarget, /*pOptions->UnSlash*/false, pOptions->UseRegExp);
+		int replaceLen = UnSlashAsNeeded(replaceTarget, pOptions->UseSlashes, pOptions->UseRegExp);
 		
 		CharacterRange cr;
 		GetSel(cr);
@@ -570,7 +570,7 @@ int CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 
 	CString findTarget(pOptions->FindText);
 
-	int findLen = UnSlashAsNeeded(findTarget, /*pOptions->UnSlash*/false, pOptions->UseRegExp);
+	int findLen = UnSlashAsNeeded(findTarget, pOptions->UseSlashes, pOptions->UseRegExp);
 	if (findLen == 0) 
 	{
 		/*SString msg = LocaliseMessage(
