@@ -68,6 +68,8 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4)
 	m_CmdBar.SetCallback(this, OnMDISetMenu);
 
 	m_hToolAccel = NULL;
+
+	m_uiMIMessageID = g_Context.m_miManager->GetMessageID();
 }
 
 CMainFrame::~CMainFrame()
@@ -751,6 +753,35 @@ LRESULT CMainFrame::OnMenuSelect(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 	}
 
 	return 1;
+}
+
+LRESULT CMainFrame::OnMultiInstanceMsg(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	if(wParam == MultipleInstanceManager::MIM_PARAMETER_ARRAY)
+	{
+		std::list<tstring> parameters;
+		g_Context.m_miManager->GetParameters(parameters, lParam);
+
+		for(std::list<tstring>::iterator i = parameters.begin();
+			i != parameters.end();
+			++i)
+		{
+			TCHAR ch = (*i)[0];
+			if( ch == _T('/') || ch == _T('-') )
+			{
+				// handle special param...
+			}
+			else
+			{
+				if( !CheckAlreadyOpen( (*i).c_str() ) )
+					OpenFile( (*i).c_str() );
+			}
+		}
+	}
+
+	::SetForegroundWindow(m_hWnd);
+
+	return 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -94,6 +94,7 @@ public:
 		MESSAGE_HANDLER(PN_ESCAPEPRESSED, OnEscapePressed)
 		MESSAGE_HANDLER(PN_INITIALISEFRAME, OnInitialiseFrame)
 		MESSAGE_HANDLER(WM_MENUSELECT, OnMenuSelect)
+		MESSAGE_HANDLER(m_uiMIMessageID, OnMultiInstanceMsg)
 		
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
@@ -182,6 +183,8 @@ public:
 	LRESULT OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	LRESULT OnMenuSelect(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
+	LRESULT OnMultiInstanceMsg(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
 	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
@@ -342,6 +345,8 @@ protected:
 
 	HWND					hFindWnd;
 	HWND					hReplWnd;
+
+	UINT					m_uiMIMessageID;
 
 	HACCEL					m_hToolAccel;
 

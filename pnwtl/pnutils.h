@@ -19,6 +19,7 @@
 #define pnutils_h__included
 
 #include "ssmenus.h"
+#include <list>
 
 class CWindowText
 {
@@ -730,6 +731,36 @@ class Singleton : public DelObject
 
 	protected:
 		static T* s_pTheInstance;
+};
+
+class MultipleInstanceManager
+{
+public:
+	MultipleInstanceManager(LPCTSTR pszKey);
+	~MultipleInstanceManager();
+
+	bool AlreadyActive();
+	void SendParameters();
+
+	bool GetParameters(std::list<tstring>& params, DWORD size);
+
+	UINT GetMessageID();
+
+	enum EMIEvents
+	{
+		MIM_ACTIVATE = 0,
+		MIM_PARAMETER_ARRAY = 1,
+	};
+
+protected:
+	bool CreateSharedData(BYTE** buffer, HANDLE* hMappedFile, size_t size);
+	void ReleaseSharedData(BYTE* buffer, HANDLE hMappedFile);
+
+protected:
+	HANDLE	m_hMutex;
+	bool	m_bAlreadyActive;
+	tstring	m_sKey;
+	UINT	m_uiMessage;
 };
 
 #define SINGLETON_AUTO_DELETE true

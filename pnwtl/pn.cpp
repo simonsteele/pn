@@ -66,6 +66,21 @@ void Shutdown()
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
+	MultipleInstanceManager checkMI( _T("{FCA6FB45-3224-497a-AC73-C30E498E9ADA}") );
+	g_Context.m_miManager = &checkMI;
+
+	bool bAllowMulti = COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("AllowMultiInstance"), true);
+	if(!bAllowMulti)
+	{
+		if(checkMI.AlreadyActive())
+		{
+			//GetAsyncKeyState() - use to see if shift is down.
+			checkMI.SendParameters();
+
+			return 0;
+		}
+	}
+
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
 

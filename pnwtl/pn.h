@@ -44,9 +44,12 @@ struct IMainFrame
 	virtual Projects::Workspace* GetActiveWorkspace() = 0;
 };
 
+#include "pnutils.h"
+
 struct _Context 
 {
 	IMainFrame *m_frame;
+	MultipleInstanceManager *m_miManager;
 };
 
 extern __declspec( thread ) _Context g_Context;
@@ -65,8 +68,6 @@ void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message);
 #include "ScintillaWTL.h"
 
 #include "schemes.h"
-
-#include "pnutils.h"
 
 //#if defined(DEBUG_)
 	#define UNEXPECTED(message) \

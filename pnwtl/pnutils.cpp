@@ -14,6 +14,8 @@
 #include "ssreg.h"
 using namespace ssreg;
 
+#include "include/sscontainers.h"
+
 ///////////////////////////////////////////////////////////////
 // CMRUList
 ///////////////////////////////////////////////////////////////
@@ -289,6 +291,10 @@ void XMLSafeString(tstring& str)
 	delete [] buffer;
 }
 
+///////////////////////////////////////////////////////////////
+// DeletionManager
+///////////////////////////////////////////////////////////////
+
 /**
  * Register an instance of a DelObject derived class for deletion.
  */
@@ -358,3 +364,138 @@ void DeletionManager::DeleteAll()
 
 DelObject* DeletionManager::s_pFirst = NULL;
 DelObject* DeletionManager::s_pLast = NULL;
+
+///////////////////////////////////////////////////////////////
+// MultipleInstanceManager
+///////////////////////////////////////////////////////////////
+
+MultipleInstanceManager::MultipleInstanceManager(LPCTSTR pszKey)
+{
+	m_hMutex = ::CreateMutex(NULL, FALSE, pszKey);
+	m_bAlreadyActive = (::GetLastError() == ERROR_ALREADY_EXISTS);
+	
+	PNASSERT(m_hMutex != NULL);
+
+	m_sKey = pszKey;
+
+	m_uiMessage = ::RegisterWindowMessage(pszKey);
+}
+
+MultipleInstanceManager::~MultipleInstanceManager()
+{
+	::CloseHandle(m_hMutex);
+}
+
+bool MultipleInstanceManager::AlreadyActive()
+{
+	return m_bAlreadyActive;
+}
+
+bool MultipleInstanceManager::CreateSharedData(BYTE** buffer, HANDLE* hMappedFile, size_t size)
+{
+	tstring strName = _T("PN.");
+	strName += m_sKey;
+
+	HANDLE hMapping = ::CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, size, strName.c_str());
+	if(hMapping == NULL)
+		return false;
+
+	BYTE *buf = (BYTE*)::MapViewOfFile(hMapping, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+	if (buf == NULL)
+	{
+		CloseHandle(hMapping);
+		return false;
+	}
+	
+	*hMappedFile = hMapping;
+	*buffer = buf;
+
+	return true;
+}
+
+void MultipleInstanceManager::ReleaseSharedData(BYTE* buffer, HANDLE hMappedFile)
+{
+	if(buffer)
+	{
+		::UnmapViewOfFile(buffer);
+	}
+
+	if(hMappedFile)
+	{
+		::CloseHandle(hMappedFile);
+	}
+}
+
+void MultipleInstanceManager::SendParameters()
+{
+	if(__argc < 2)
+		return;
+
+	// Build a null separated list of parameters, store in shared memory 
+	// and broadcast that it's there.
+
+	GArray<TCHAR> parmarray;
+	int size = 0;
+	int paSize = 0;
+	for(int i = 1; i < __argc; i++)
+	{
+		paSize = _tcslen(__argv[i]);
+		
+		parmarray.grow( size + paSize + 1);
+
+		_tcscpy(&parmarray[size], __argv[i]);
+
+		size += (paSize + 1);
+	}
+
+	// Append another NULL.
+	parmarray.grow(size+1);
+	parmarray[size] = _T('\0');
+
+	HANDLE	hMappedFile;
+	BYTE*	buffer;
+
+	if( !CreateSharedData(&buffer, &hMappedFile, parmarray.size()) )
+		return;
+
+	// Copy the big buffer into the other big buffer :)
+	memcpy(buffer, &parmarray[0], parmarray.size());
+
+	DWORD dwRecipients = BSM_APPLICATIONS;
+	long res = ::BroadcastSystemMessage(
+		BSF_ALLOWSFW | BSF_FORCEIFHUNG | BSF_IGNORECURRENTTASK,
+		&dwRecipients, 
+		m_uiMessage,
+		MIM_PARAMETER_ARRAY,
+		parmarray.size());
+
+	PNASSERT(res != -1);
+
+	ReleaseSharedData(buffer, hMappedFile);
+}
+
+bool MultipleInstanceManager::GetParameters(std::list<tstring>& params, DWORD size)
+{
+	HANDLE hMappedFile;
+	BYTE* buffer;
+
+	if( !CreateSharedData(&buffer, &hMappedFile, size) )
+		return false;
+
+	TCHAR* pParam = reinterpret_cast<TCHAR*>( buffer );
+	while( *pParam )
+	{
+		params.push_back( tstring(pParam) );
+
+		pParam += (_tcslen(pParam) + 1);
+	}
+
+	ReleaseSharedData(buffer, hMappedFile);
+
+	return true;
+}
+
+UINT MultipleInstanceManager::GetMessageID()
+{
+	return m_uiMessage;
+}
