@@ -1,27 +1,31 @@
 /////////////////////////////////////////////////////////////////////////////
 // TabbedFrame.h - Base template class for supporting a frame
 //   window with multiple views that you switch between using
-//   a "CoolTabCtrl" (such as CDotNetTabCtrl)
+//   a "CustomTabCtrl" (such as CDotNetTabCtrl)
 //
 // Written by Daniel Bowen (dbowen@es.com)
 // Copyright (c) 2002 Daniel Bowen.
 //
-// Depends on CoolTabCtrls.h written by Bjarke Viksoe (bjarke@viksoe.dk)
+// Depends on CustomTabCtrl.h written by Bjarke Viksoe (bjarke@viksoe.dk),
+//  with the modifications by Daniel Bowen
 //
-// CTabbedFrameImpl -
-//   Base template to derive your specialized class from to get
-//   a frame window with multiple "view" child windows that you
-//   switch between using a "CoolTabCtrl" (such as CDotNetTabCtrl).
-//   CTabbedPopupFrame is an example of a simple popup tool window
-//   frame derived from CTabbedFrameImpl.
-// CCoolTabOwnerImpl -
-//   Helps implement the parent of the actual tab window.
+// CCustomTabOwnerImpl -
+//   MI class that helps implement the parent of the actual custom tab control window.
 //   The class doesn't have a message map itself, and is meant
 //   to be inherited from along-side a CWindowImpl derived class.
-//   The class inheriting from this should be sure to reflect
-//   notifications (since that's what the tab window expects).
 //   This class handles creation of the tab window as well as
 //   adding, removing, switching and renaming tabs based on an HWND.
+// CTabbedFrameImpl -
+//   Base template to derive your specialized frame window class from to get
+//   a frame window with multiple "view" child windows that you
+//   switch between using a custom tab control (such as CDotNetTabCtrl).
+// CTabbedPopupFrame -
+//   Simple class deriving from CTabbedFrameImpl that is suitable
+//   for implementing a tabbed "popup frame" tool window, with one or more views.
+// CTabbedChildWindow -
+//   Simple class deriving from CTabbedFrameImpl that is suitable
+//   for implementing a tabbed child window, with one or more views.
+//
 //   
 //
 // This code may be used in compiled form in any way you desire. This
@@ -39,58 +43,45 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
-// 2002/04/23: Daniel Bowen (DDB)
-// - New "CCoolTabItem" class used instead of TCITEM.
-//   See "CoolTabCtrls.h" for an explanation.
-// - New CCoolTabOwnerImpl::UpdateTabToolTip
-// - New CCoolTabOwnerImpl::UpdateTabImage
-// - ATL 7 compatibility issues pointed out to me by
-//   Ramon Casellas [casellas@infres.enst.fr]
+// 2002/09/19: Daniel Bowen
+// - CTabbedFrameImpl -
+//   * Expose "SetTabStyles" and "GetTabStyles" so that you can change
+//     the tab related styles to something different than the default
+// - CTabbedPopupFrame -
+//   * Expose "SetCloseCommand" and "GetCloseCommand" so that
+//     instead of destroying the window when the close button
+//     on the popup frame is pushed, a command ID of your choice
+//     is sent to the parent (such as a menu ID that corresponds
+//     to toggling the visibility of the popup frame)
 //
-// 2002/04/22: Daniel Bowen (DDB)
-// - CCoolTabOwnerImpl: Add several more methods for getting an image
-//   into the image list and associated with a tab.  With the updates,
-//   you can now more easily add images independant of adding a tab.
-//   IMPORTANT: If you've used this code in the past, its important
-//    to use "AddTabWithIcon" instead of "AddTab" if you are adding
-//    a tab with a resource identifier of an icon.
-// - CTabbedFrameImpl: Make the tab area height dependant on
-//   the same metrics that the font of the tabs depends on.
-//
-// 2002/04/05: Daniel Bowen (DDB)
-// - Update CTabbedFrameImpl::OnSetFocus to not check for
-//   IsWindowVisible(m_hWndActive).  When the frame is maximized,
-//   ::IsWindowVisible(m_hWndActive) will return FALSE,
-//   which results in the focus not being forwarded
-//   to the active tab window.
-//   See http://www.codeproject.com/useritems/WTLMDIChildMax.asp
-//   for an explanation.
-
-// 2002/03/13: Daniel Bowen (DDB)
-// - Remove notification handler for NM_RCLICK from CTabbedFrameImpl.
-//   The implementation is correct when a tree view is the active child,
-//   but not necessarily for other windows (most notibly a list view).
-//   Since notifications are getting reflected back anyway, let the
-//   child deal with NM_RCLICK as appropriate
-
-// 2002/03/11: Daniel Bowen (DDB)
-// - CTabbedFrameImpl:
-//   * Added handler for WM_SETFOCUS to set focus to active child
-//     (similar to how CFrameWindowImplBase::OnSetFocus does it
-//      in the normal case when there's a child/client window)
-//   * For key messages, if the baseClass message map hasn't
-//      handled it, re-send the message to the active child window
-
-// 2002/02/07: Daniel Bowen (DDB)
-// - New CCoolTabOwnerImpl MI class resulting from
-//   refactoring due to commonality that existed between
-//   CTabbedFrameImpl and CMDITabOwner.  Use this
-//   class to help implement a windowing class that
-//   will contain a CoolTabCtrl.
-// 
-// 2002/01/31: Daniel Bowen (DDB)
-// - Original Release
-//
+// 2002/06/26: Daniel Bowen
+// - New "CTabbedChildWindow" that derives from CTabbedFrameImpl.
+//   You can use this class when you want a child window to
+//   use a tab control to switch between multiple views
+// - Provide "PreTranslateMessage" function in CTabbedPopupFrame
+//   (and the new CTabbedChildWindow)
+// - CCustomTabOwnerImpl -
+//   * Rename "GetTabs" method to "GetTabCtrl"
+//   * Rename member "m_tabs" to "m_TabCtrl"
+//   * Rename template argument "TTab" to "TTabCtrl"
+//   * Rename "ShowTabs" and "HideTabs" overrideables to "OnAddFirstTab" and "OnRemoveLastTab",
+//     and change the place that calls these to live up to those new names
+//   * Remove GetCurSel (just call GetTabCtrl().GetCurSel() instead)
+//   * DisplayTab - 
+//     + Add new parameter that says whether to use the window's icon.
+//       If TRUE, the icon is requested first by sending the window WM_GETICON
+//       looking for the "small" icon, then asking the window class for a small icon.
+//       If no small icon is found, the same procedure is used to look for the
+//       "big" icon.
+//     + Call "SetCurSel" even if the tab to display has the same index
+//       as the current selection
+//     + Call "OnAddFirstTab" (which was "ShowTabs") only when the count
+//       of tabs goes from 0 to 1.
+//  
+// 2002/06/12: Daniel Bowen
+// - Publish codeproject article.  For history prior
+//   to the release of the article, please see the article
+//   and the section "Note to previous users"
 
 #ifndef __WTL_TABBED_FRAME_H__
 #define __WTL_TABBED_FRAME_H__
@@ -113,97 +104,138 @@
 	#error TabbedFrame.h requires atlframe.h to be included first
 #endif
 
-#ifndef __COOLTABCTRLS_H__
-	#error TabbedFrame.h requires CoolTabCtrls.h to be included first
+#ifndef __CUSTOMTABCTRL_H__
+	#error TabbedFrame.h requires CustomTabCtrl.h to be included first
 #endif
 
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// CCoolTabOwnerImpl
-//  an MI template to help implement the owner window that uses CoolTabs
+// CCustomTabOwnerImpl
+//  an MI template to help implement the owner window that uses CustomTabCtrl
 //  to switch between windows / views
 //
 /////////////////////////////////////////////////////////////////////////////
 
-template <class T, class TTab>
-class CCoolTabOwnerImpl
+template <class T, class TTabCtrl>
+class CCustomTabOwnerImpl
 {
 // Member variables
 protected:
-	TTab m_tabs;
+	TTabCtrl m_TabCtrl;
 	WTL::CImageList m_ImageList;
-	bool m_bTabAreaOnTop;
 	int m_cxImage, m_cyImage;
+	int m_nTabAreaHeight;
 
 // Constructors
 public:
-	CCoolTabOwnerImpl() :
-		m_bTabAreaOnTop(true),
+	CCustomTabOwnerImpl() :
 		m_cxImage(16),
-		m_cyImage(16)
+		m_cyImage(16),
+		m_nTabAreaHeight(24)
 	{
 	}
 
 // Overrideables
 public:
 
-	void ShowTabs()
+	void OnAddFirstTab()
 	{
 	}
 
-	void HideTabs()
+	void OnRemoveLastTab()
 	{
+	}
+
+	void SetTabAreaHeight(int nNewTabAreaHeight)
+	{
+		if(m_nTabAreaHeight != nNewTabAreaHeight)
+		{
+			m_nTabAreaHeight = nForceTabAreaHeight;
+
+			/*
+			T* pT = static_cast<T*>(this);
+			pT->UpdateLayout();
+			Invalidate();
+			*/
+		}
+	}
+
+	// A derived class might not need to override this although they can.
+	// (but they will probably need to specialize SetTabAreaHeight)
+	void CalcTabAreaHeight(void)
+	{
+		// Dynamically figure out a reasonable tab area height
+		// based on the tab's font metrics
+
+		const int nNominalHeight = 24;
+		const int nNominalFontLogicalUnits = 11;	// 8 point Tahoma with 96 DPI
+
+		// Initialize nFontLogicalUnits to the typical case
+		// appropriate for CDotNetTabCtrl
+		LOGFONT lfIcon = { 0 };
+		::SystemParametersInfo(SPI_GETICONTITLELOGFONT, sizeof(lfIcon), &lfIcon, 0);
+		int nFontLogicalUnits = -lfIcon.lfHeight;
+
+		// Use the actual font of the tab control
+		TTabCtrl& TabCtrl = this->GetTabCtrl();
+		if(TabCtrl.IsWindow())
+		{
+			HFONT hFont = TabCtrl.GetFont();
+			if(hFont != NULL)
+			{
+				CDC dc = TabCtrl.GetDC();
+				CFontHandle hFontOld = dc.SelectFont(hFont);
+				TEXTMETRIC tm = {0};
+				dc.GetTextMetrics(&tm);
+				nFontLogicalUnits = tm.tmAscent;
+				dc.SelectFont(hFontOld);
+			}
+		}
+
+		int nNewTabAreaHeight = nNominalHeight + ( ::MulDiv(nNominalHeight, nFontLogicalUnits, nNominalFontLogicalUnits) - nNominalHeight ) / 2;
+
+		T* pT = static_cast<T*>(this);
+		pT->SetTabAreaHeight(nNewTabAreaHeight);
 	}
 
 // Methods
 public:
-	TTab& GetTabs()
+	TTabCtrl& GetTabCtrl(void)
 	{
-		return m_tabs;
+		return m_TabCtrl;
 	}
 
-	void SetTabAreaOnTop(bool bTabsOnTop = true)
+	int GetTabAreaHeight(void) const
 	{
-		m_bTabAreaOnTop = bTabsOnTop;
+		return m_nTabAreaHeight;
 	}
 
-	bool IsTabAreaOnTop() const
+	void CreateTabWindow(HWND hWndTabParent, RECT rcTab, DWORD dwOtherStyles = CTCS_TOOLTIPS)
 	{
-		return m_bTabAreaOnTop;
-	}
-
-	void CreateTabWindow(HWND hWndTabParent, RECT rcTab)
-	{
-		if(m_tabs.IsWindow())
+		if(m_TabCtrl.IsWindow())
 		{
-			m_tabs.DestroyWindow();
+			m_TabCtrl.DestroyWindow();
 		}
 
 		BOOL bCreate = FALSE;
 		bCreate = m_ImageList.Create(m_cxImage, m_cyImage, ILC_COLOR32 | ILC_MASK, 4, 4);
 		if(bCreate)
 		{
-			m_tabs.SetImageList(m_ImageList);
+			m_TabCtrl.SetImageList(m_ImageList);
 		}
 
-		DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | TCS_TOOLTIPS;
-		if(!m_bTabAreaOnTop)
-		{
-			dwStyle |= TCS_BOTTOM;
-		}
+		DWORD dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | dwOtherStyles;
 
-		m_tabs.Create(hWndTabParent, rcTab, NULL, dwStyle);
+		m_TabCtrl.Create(hWndTabParent, rcTab, NULL, dwStyle);
+
+		T* pT = static_cast<T*>(this);
+		pT->CalcTabAreaHeight();
 	}
 
 	BOOL DestroyTabWindow()
 	{
 		return m_ImageList.Destroy();
-	}
-
-	int GetCurSel() const
-	{
-		return m_tabs.GetCurSel();
 	}
 
 	// AddBitmap (with a couple of overloaded versions)
@@ -332,18 +364,33 @@ public:
 			return -1;
 		}
 
-		return m_tabs.InsertItem(m_tabs.GetItemCount(), sTabText, nImageIndex, hWnd);
+		TTabCtrl::TItem* pItem = m_TabCtrl.CreateNewItem();
+		if(pItem)
+		{
+			pItem->SetText(sTabText);
+			pItem->SetImageIndex(nImageIndex);
+			// NOTE: You must use a tab item class derived off of CCustomTabCtrl
+			//  that tracks a view HWND, such as CTabViewTabItem
+			pItem->SetTabView(hWnd);
+
+			// The tab control takes ownership of the new item
+			return m_TabCtrl.InsertItem(m_TabCtrl.GetItemCount(), pItem);
+		}
+
+		return -1;
 	}
 
-	int DisplayTab(HWND hWnd, BOOL bAddIfNotFound = TRUE)
+	int DisplayTab(HWND hWnd, BOOL bAddIfNotFound = TRUE, BOOL bUseIcon = FALSE)
 	{
 		int nTab = -1;
 		if(hWnd)
 		{
-			CCoolTabItem tcItem;
+			size_t nOldCount = m_TabCtrl.GetItemCount();
+
+			TTabCtrl::TItem tcItem;
 			tcItem.SetTabView(hWnd);
 
-			nTab = m_tabs.FindItem(&tcItem, CCoolTabItem::eCoolTabItem_TabView);
+			nTab = m_TabCtrl.FindItem(&tcItem, TTabCtrl::TItem::eCustomTabItem_TabView);
 			if((bAddIfNotFound == TRUE) && (nTab < 0))
 			{
 				// The corresponding tab doesn't exist yet. Create it.
@@ -357,15 +404,37 @@ public:
 					{
 						::GetWindowText(hWnd, sWindowText, cchWindowText+1);
 
-						nTab = AddTab(hWnd, sWindowText);
+						HICON hIcon = NULL;
+						if(bUseIcon)
+						{
+							if(hIcon == NULL)
+							{
+								hIcon = (HICON) ::SendMessage(hWnd, WM_GETICON, ICON_SMALL, 0);
+							}
+							if(hIcon == NULL)
+							{
+								hIcon = (HICON) ::GetClassLong(hWnd, GCL_HICONSM);
+							}
+							if(hIcon == NULL)
+							{
+								hIcon = (HICON) ::SendMessage(hWnd, WM_GETICON, ICON_BIG, 0);
+							}
+							if(hIcon == NULL)
+							{
+								hIcon = (HICON) ::GetClassLong(hWnd, GCL_HICON);
+							}
+						}
+
+						if(hIcon == NULL)
+						{
+							nTab = AddTab(hWnd, sWindowText);
+						}
+						else
+						{
+							nTab = AddTabWithIcon(hWnd, sWindowText, hIcon);
+						}
 
 						delete [] sWindowText;
-
-						if(nTab >= 0)
-						{
-							T* pT = static_cast<T*>(this);
-							pT->ShowTabs();
-						}
 					}
 				}
 
@@ -375,16 +444,18 @@ public:
 					// TODO: What should we put for the text and/or icon
 					//  in this case?
 					ATLASSERT(0 && "Adding a tab where no name was provided");
-					nTab = AddTab(hWnd, _T("Document"));
+					nTab = AddTab(hWnd, _T("Untitled"));
 				}
 			}
 
-
 			if(nTab >= 0)
 			{
-				if(m_tabs.GetCurSel() != nTab)
+				m_TabCtrl.SetCurSel(nTab);
+
+				if((nOldCount == 0) && (m_TabCtrl.GetItemCount() == 1))
 				{
-					m_tabs.SetCurSel(nTab);
+					T* pT = static_cast<T*>(this);
+					pT->OnAddFirstTab();
 				}
 			}
 
@@ -397,18 +468,18 @@ public:
 	{
 		BOOL bSuccess = FALSE;
 
-		CCoolTabItem tcItem;
+		TTabCtrl::TItem tcItem;
 		tcItem.SetTabView(hWnd);
 
-		int nTab = m_tabs.FindItem(&tcItem, CCoolTabItem::eCoolTabItem_TabView);
+		int nTab = m_TabCtrl.FindItem(&tcItem, TTabCtrl::TItem::eCustomTabItem_TabView);
 		if(nTab >= 0)
 		{
-			bSuccess = m_tabs.DeleteItem(nTab);
+			bSuccess = m_TabCtrl.DeleteItem(nTab);
 
-			if(m_tabs.GetItemCount() < 1)
+			if(m_TabCtrl.GetItemCount() < 1)
 			{
 				T* pT = static_cast<T*>(this);
-				pT->HideTabs();
+				pT->OnRemoveLastTab();
 			}
 		}
 
@@ -419,13 +490,13 @@ public:
 	{
 		BOOL bSuccess = FALSE;
 
-		CCoolTabItem tcItem;
+		TTabCtrl::TItem tcItem;
 		tcItem.SetTabView(hWnd);
 
-		int nTab = m_tabs.FindItem(&tcItem, CCoolTabItem::eCoolTabItem_TabView);
+		int nTab = m_TabCtrl.FindItem(&tcItem, TTabCtrl::TItem::eCustomTabItem_TabView);
 		if(nTab >= 0)
 		{
-			CCoolTabItem* pItem = m_tabs.GetItem(nTab);
+			TTabCtrl::TItem* pItem = m_TabCtrl.GetItem(nTab);
 			CString sCurrentTabText = pItem->GetText();
 
 			if(sText != NULL)
@@ -433,8 +504,8 @@ public:
 				if(sCurrentTabText != sText)
 				{
 					bSuccess = pItem->SetText(sText);
-					m_tabs.UpdateLayout();
-					m_tabs.Invalidate();
+					m_TabCtrl.UpdateLayout();
+					m_TabCtrl.Invalidate();
 				}
 			}
 			else
@@ -452,8 +523,8 @@ public:
 							sCurrentTabText != sWindowText)
 						{
 							bSuccess = pItem->SetText(sWindowText);
-							m_tabs.UpdateLayout();
-							m_tabs.Invalidate();
+							m_TabCtrl.UpdateLayout();
+							m_TabCtrl.Invalidate();
 						}
 
 						delete [] sWindowText;
@@ -469,19 +540,19 @@ public:
 	{
 		BOOL bSuccess = FALSE;
 
-		CCoolTabItem tcItem;
+		TTabCtrl::TItem tcItem;
 		tcItem.SetTabView(hWnd);
 
-		int nTab = m_tabs.FindItem(&tcItem, CCoolTabItem::eCoolTabItem_TabView);
+		int nTab = m_TabCtrl.FindItem(&tcItem, TTabCtrl::TItem::eCustomTabItem_TabView);
 		if(nTab >= 0)
 		{
-			CCoolTabItem* pItem = m_tabs.GetItem(nTab);
+			TTabCtrl::TItem* pItem = m_TabCtrl.GetItem(nTab);
 			int nCurrentImageIndex = pItem->GetImageIndex();
 			if(nCurrentImageIndex != nImageIndex)
 			{
 				bSuccess = pItem->SetImageIndex(nImageIndex);
-				m_tabs.UpdateLayout();
-				m_tabs.Invalidate();
+				m_TabCtrl.UpdateLayout();
+				m_TabCtrl.Invalidate();
 			}
 		}
 
@@ -492,13 +563,13 @@ public:
 	{
 		BOOL bSuccess = FALSE;
 
-		CCoolTabItem tcItem;
+		TTabCtrl::TItem tcItem;
 		tcItem.SetTabView(hWnd);
 
-		int nTab = m_tabs.FindItem(&tcItem, CCoolTabItem::eCoolTabItem_TabView);
+		int nTab = m_TabCtrl.FindItem(&tcItem, TTabCtrl::TItem::eCustomTabItem_TabView);
 		if(nTab >= 0)
 		{
-			CCoolTabItem* pItem = m_tabs.GetItem(nTab);
+			TTabCtrl::TItem* pItem = m_TabCtrl.GetItem(nTab);
 			CString sCurrentToolTip = pItem->GetToolTip();
 			if(sCurrentToolTip != sToolTip)
 			{
@@ -518,67 +589,52 @@ public:
 
 template <
 	class T,
-	class TTab = CDotNetTabCtrl,
+	class TTabCtrl = CDotNetTabCtrl<CTabViewTabItem>,
 	class TBase = CFrameWindowImpl<T, CWindow, CFrameWinTraits> >
 class CTabbedFrameImpl :
 	public TBase,
-	public CCoolTabOwnerImpl< CTabbedFrameImpl<T, TTab, TBase>, TTab>
+	public CCustomTabOwnerImpl< CTabbedFrameImpl<T, TTabCtrl, TBase>, TTabCtrl>
 {
 protected:
-	typedef CTabbedFrameImpl<T, TTab, TBase> thisClass;
+	typedef CTabbedFrameImpl<T, TTabCtrl, TBase> thisClass;
 	typedef TBase baseClass;
+	typedef CCustomTabOwnerImpl< CTabbedFrameImpl<T, TTabCtrl, TBase>, TTabCtrl> customTabOwnerClass;
 
 // Member variables
 protected:
+	bool m_bReflectNotifications;
+	DWORD m_nTabStyles;
 	HWND m_hWndActive;
-	BYTE m_nTabAreaHeight;
 
 // Constructors
 public:
-	CTabbedFrameImpl() :
-		m_hWndActive(NULL),
-		m_nTabAreaHeight(24)
+	CTabbedFrameImpl(bool bReflectNotifications = false) :
+		m_bReflectNotifications(bReflectNotifications),
+		m_nTabStyles(CTCS_BOTTOM | CTCS_TOOLTIPS),
+		m_hWndActive(NULL)
 	{
-		// Initialize members from CCoolTabOwnerImpl
-		m_bTabAreaOnTop = false;
-		//m_tabs.SetBoldSelectedTab(false);
 	}
 
 // Methods
 public:
-	void UpdateTabAreaHeight()
+	void SetReflectNotifications(bool bReflectNotifications = true)
 	{
-		const int nNominalHeight = 24;
-		const int nNominalFontLogicalUnits = 11;	// 8 point Tahoma with 96 DPI
+		m_bReflectNotifications = bReflectNotifications;
+	}
 
-		// Initialize nFontLogicalUnits to the typical case
-		// appropriate for CDotNetTabCtrl
-		LOGFONT lfIcon = { 0 };
-		::SystemParametersInfo(SPI_GETICONTITLELOGFONT, sizeof(lfIcon), &lfIcon, 0);
-		int nFontLogicalUnits = -lfIcon.lfHeight;
+	bool GetReflectNotifications(void) const
+	{
+		return m_bReflectNotifications;
+	}
 
-		// Use the actual font of the tab control
-		TTab& tabs = this->GetTabs();
-		if(tabs.IsWindow())
-		{
-			HFONT hFont = tabs.GetFont();
-			if(hFont != NULL)
-			{
-				CDC dc = tabs.GetDC();
-				CFontHandle hFontOld = dc.SelectFont(hFont);
-				TEXTMETRIC tm = {0};
-				dc.GetTextMetrics(&tm);
-				nFontLogicalUnits = tm.tmAscent;
-				dc.SelectFont(hFontOld);
-			}
-		}
+	void SetTabStyles(DWORD nTabStyles)
+	{
+		m_nTabStyles = nTabStyles;
+	}
 
-		BYTE nOldTabAreaHeight = m_nTabAreaHeight;
-		m_nTabAreaHeight = (BYTE)(nNominalHeight + (nNominalHeight * ((double)nFontLogicalUnits / (double)nNominalFontLogicalUnits) - nNominalHeight) / 2);
-		if(nOldTabAreaHeight != m_nTabAreaHeight)
-		{
-			Invalidate();
-		}
+	bool GetTabStyles(void) const
+	{
+		return m_nTabStyles;
 	}
 
 	virtual void OnFinalMessage(HWND /*hWnd*/)
@@ -601,11 +657,11 @@ public:
 		MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
-//		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
+		MESSAGE_HANDLER(WM_FORWARDMSG, OnForwardMsg)
 
-		NOTIFY_CODE_HANDLER(TCN_DELETEITEM, OnDeleteItem)
-		NOTIFY_CODE_HANDLER(TCN_SELCHANGING, OnSelChanging)
-		NOTIFY_CODE_HANDLER(TCN_SELCHANGE, OnSelChange)
+		NOTIFY_CODE_HANDLER(CTCN_DELETEITEM, OnDeleteItem)
+		NOTIFY_CODE_HANDLER(CTCN_SELCHANGING, OnSelChanging)
+		NOTIFY_CODE_HANDLER(CTCN_SELCHANGE, OnSelChange)
 
 		CHAIN_MSG_MAP(baseClass)
 
@@ -620,9 +676,11 @@ public:
 				return TRUE;
 			}
 		}
-		
 
-		REFLECT_NOTIFICATIONS()
+		if(m_bReflectNotifications)
+		{
+			REFLECT_NOTIFICATIONS()
+		}
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -631,9 +689,8 @@ public:
 		LRESULT lRet = DefWindowProc(uMsg, wParam, lParam);
 		bHandled = TRUE;
 
-		CreateTabWindow(m_hWnd, rcDefault);
+		CreateTabWindow(m_hWnd, rcDefault, m_nTabStyles);
 
-		UpdateTabAreaHeight();
 		return 0;
 	}
 
@@ -649,7 +706,13 @@ public:
 
 	LRESULT OnSettingChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
-		UpdateTabAreaHeight();
+		// Be sure tab gets message before we recalculate the tab area height,
+		//  so that it can adjust its font metrics first.
+		// NOTE: This causes the tab to get the WM_SETTINGCHANGE message twice,
+		//  but that's OK.
+		m_TabCtrl.SendMessage(uMsg, wParam, lParam);
+
+		CalcTabAreaHeight();
 
 		bHandled = FALSE;
 		return 0;
@@ -675,17 +738,17 @@ public:
 		return 1;
 	}
 
-// TODO: Call PreTranslateMessage for the active view,
-//    or maybe just send it WM_FORWARDMSG
-//	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
-//	{
-//		LPMSG pMsg = (LPMSG)lParam;
-//
-//		if(baseClass::PreTranslateMessage(pMsg))
-//			return TRUE;
-//
-//		return m_view.PreTranslateMessage(pMsg);
-//	}
+	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+		//LPMSG pMsg = (LPMSG)lParam;
+		//
+		//if(PreTranslateMessage(pMsg))
+		//	return TRUE;
+		//
+		//return m_view.PreTranslateMessage(pMsg);
+
+		return ::SendMessage(m_hWndActive, WM_FORWARDMSG, 0, lParam);
+	}
 
 	LRESULT OnDeleteItem(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHandled)
 	{
@@ -701,11 +764,11 @@ public:
 
 	LRESULT OnSelChange(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHandled)
 	{
-		int nNewTab = m_tabs.GetCurSel();
+		int nNewTab = m_TabCtrl.GetCurSel();
 
 		if(nNewTab >= 0)
 		{
-			CCoolTabItem* pItem = m_tabs.GetItem(nNewTab);
+			TTabCtrl::TItem* pItem = m_TabCtrl.GetItem(nNewTab);
 			if(pItem->UsingTabView())
 			{
 				HWND hWndNew = pItem->GetTabView();
@@ -734,8 +797,24 @@ public:
 		return 0;
 	}
 
+// Overrides from CCustomTabOwnerImpl
+public:
+
+	void SetTabAreaHeight(int nNewTabAreaHeight)
+	{
+		if(m_nTabAreaHeight != nNewTabAreaHeight)
+		{
+			m_nTabAreaHeight = nNewTabAreaHeight;
+
+			T* pT = static_cast<T*>(this);
+			pT->UpdateLayout();
+			Invalidate();
+		}
+	}
+
 // Overrides from TBase
 public:
+
 	void UpdateLayout(BOOL bResizeBars = TRUE)
 	{
 		RECT rect;
@@ -754,21 +833,20 @@ public:
 		*/
 
 		int nWindowPosCount=0;
-		if(m_tabs) nWindowPosCount++;
+		if(m_TabCtrl) nWindowPosCount++;
 		if(m_hWndActive) nWindowPosCount++;
 
 		if(nWindowPosCount > 0)
 		{
 			HDWP hdwp = BeginDeferWindowPos(nWindowPosCount);
-			DWORD dwStyle = (DWORD)m_tabs.GetWindowLong(GWL_STYLE);
-			BOOL bHasBottomStyle = dwStyle & TCS_BOTTOM;
-			if(bHasBottomStyle)
+			DWORD dwStyle = (DWORD)m_TabCtrl.GetWindowLong(GWL_STYLE);
+			if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
 			{
-				if(m_tabs)
+				if(m_TabCtrl)
 				{
 					::DeferWindowPos(
 						hdwp,
-						m_tabs,
+						m_TabCtrl,
 						NULL,
 						rect.left, rect.bottom - m_nTabAreaHeight,
 						rect.right - rect.left, m_nTabAreaHeight,
@@ -787,11 +865,11 @@ public:
 			}
 			else
 			{
-				if(m_tabs)
+				if(m_TabCtrl)
 				{
 					::DeferWindowPos(
 						hdwp,
-						m_tabs,
+						m_TabCtrl,
 						NULL,
 						rect.left, rect.top,
 						rect.right-rect.left, m_nTabAreaHeight,
@@ -812,7 +890,7 @@ public:
 			EndDeferWindowPos(hdwp);
 		}
 
-		m_tabs.UpdateLayout();
+		m_TabCtrl.UpdateLayout();
 	}
 };
 
@@ -824,29 +902,172 @@ public:
 
 typedef CWinTraits<WS_POPUP | WS_CAPTION | WS_VISIBLE | WS_SYSMENU | WS_THICKFRAME, WS_EX_TOOLWINDOW> TabbedPopupFrameWinTraits;
 
-template <class TTab = CDotNetTabCtrl, bool _Top = true>
+template <class TTabCtrl = CDotNetTabCtrl<CTabViewTabItem> >
 class CTabbedPopupFrame :
-	public CTabbedFrameImpl<CTabbedPopupFrame, TTab, CFrameWindowImpl<CTabbedPopupFrame, CWindow, TabbedPopupFrameWinTraits> >
+	public CTabbedFrameImpl<CTabbedPopupFrame, TTabCtrl, CFrameWindowImpl<CTabbedPopupFrame, CWindow, TabbedPopupFrameWinTraits> >
 {
 protected:
-	typedef CTabbedPopupFrame<TTab, _Top> thisClass;
-	typedef CTabbedFrameImpl<CTabbedPopupFrame, TTab, CFrameWindowImpl<CTabbedPopupFrame, CWindow, TabbedPopupFrameWinTraits> > baseClass;
+	typedef CTabbedPopupFrame<TTabCtrl> thisClass;
+	typedef CTabbedFrameImpl<CTabbedPopupFrame, TTabCtrl, CFrameWindowImpl<CTabbedPopupFrame, CWindow, TabbedPopupFrameWinTraits> > baseClass;
+
+// Members:
+protected:
+	// NOTE: If the "Close Command" is 0, than we really
+	//  just let the default frame handling of "closing"
+	//  happen, otherwise, we send the specified command to the parent
+	WORD m_nCloseCommand;
 
 // Constructors
 public:
-	CTabbedPopupFrame()
+	CTabbedPopupFrame(bool bReflectNotifications = false) :
+		baseClass(bReflectNotifications),
+		m_nCloseCommand(0U)
 	{
-		m_bTabAreaOnTop = _Top;
+	}
+
+// Accessors
+public:
+	WORD GetCloseCommand(void) const
+	{
+		return m_nCloseCommand;
+	}
+
+	void SetCloseCommand(WORD nCloseCommand)
+	{
+		m_nCloseCommand = nCloseCommand;
 	}
 
 // Message Handling
 public:
 	DECLARE_FRAME_WND_CLASS(_T("TabbedPopupFrame"), 0)
 
+	BOOL PreTranslateMessage(MSG* pMsg)
+	{
+		if(baseClass::PreTranslateMessage(pMsg))
+			return TRUE;
+
+		//return m_view.PreTranslateMessage(pMsg);
+
+		HWND hWndFocus = ::GetFocus();
+		if(m_hWndActive != NULL && ::IsWindow(m_hWndActive) &&
+			(m_hWndActive == hWndFocus || ::IsChild(m_hWndActive, hWndFocus)))
+		{
+			//active.PreTranslateMessage(pMsg);
+			if(::SendMessage(m_hWndActive, WM_FORWARDMSG, 0, (LPARAM)pMsg))
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+	}
+
 	BEGIN_MSG_MAP(thisClass)
+		if(m_nCloseCommand != 0)
+		{
+			if(uMsg == WM_SYSCOMMAND && wParam == SC_CLOSE)
+			{
+				bHandled = TRUE;
+				lResult = ::SendMessage(this->GetParent(), WM_COMMAND, MAKEWPARAM(m_nCloseCommand, 0), 0);
+
+				return TRUE;
+			}
+		}
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 };
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// CTabbedChildWindow
+//
+/////////////////////////////////////////////////////////////////////////////
+
+// We need CTabbedChildWindowBase because of how CTabbedFrameImpl is currently implemented -
+// It's expecting that the "base" class to usually be derived from CFrameWindowImpl.
+// We'll have this special class for CTabbedChildWindow to
+// inherit from instead of CWindowImpl, so that we provide
+// the couple of extra things that CTabbedFrameImpl would
+// like to be able to depend on (currently - a message map that
+// at least handles WM_SIZE and overrideable methods
+// "UpdateLayout" and "UpdateBarsPosition")
+
+typedef CWinTraits<WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE> TabbedChildWindowWinTraits;
+
+template <class T, class TBase = CWindow, class TWinTraits = TabbedChildWindowWinTraits>
+class ATL_NO_VTABLE CTabbedChildWindowBase : public CWindowImpl< T, TBase, TWinTraits >
+{
+	typedef CTabbedChildWindowBase< T, TBase, TWinTraits >	thisClass;
+	BEGIN_MSG_MAP(thisClass)
+		MESSAGE_HANDLER(WM_SIZE, OnSize)
+	END_MSG_MAP()
+
+	LRESULT OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+	{
+		if(wParam != SIZE_MINIMIZED)
+		{
+			T* pT = static_cast<T*>(this);
+			pT->UpdateLayout();
+		}
+		bHandled = FALSE;
+		return 1;
+	}
+
+// Overrideables
+public:
+	void UpdateLayout(BOOL bResizeBars = TRUE)
+	{
+	}
+
+	void UpdateBarsPosition(RECT& rect, BOOL bResizeBars = TRUE)
+	{
+	}
+};
+
+template <class TTabCtrl = CDotNetTabCtrl<CTabViewTabItem> >
+class CTabbedChildWindow :
+public CTabbedFrameImpl<CTabbedChildWindow, TTabCtrl, CTabbedChildWindowBase<CTabbedChildWindow, CWindow, TabbedChildWindowWinTraits> >
+{
+protected:
+	typedef CTabbedChildWindow<TTabCtrl> thisClass;
+	typedef CTabbedFrameImpl<CTabbedChildWindow, TTabCtrl, CTabbedChildWindowBase<CTabbedChildWindow, CWindow, TabbedChildWindowWinTraits> > baseClass;
+
+// Constructors
+public:
+	CTabbedChildWindow(bool bReflectNotifications = false) :
+		baseClass(bReflectNotifications)
+	{
+	}
+
+// Message Handling
+public:
+	DECLARE_WND_CLASS(_T("TabbedChildWindow"))
+
+	BOOL PreTranslateMessage(MSG* pMsg)
+	{
+		//if(baseClass::PreTranslateMessage(pMsg))
+		//	return TRUE;
+
+		//return m_view.PreTranslateMessage(pMsg);
+
+		HWND hWndFocus = ::GetFocus();
+		if(m_hWndActive != NULL && ::IsWindow(m_hWndActive) &&
+			(m_hWndActive == hWndFocus || ::IsChild(m_hWndActive, hWndFocus)))
+		{
+			//active.PreTranslateMessage(pMsg);
+			if(::SendMessage(m_hWndActive, WM_FORWARDMSG, 0, (LPARAM)pMsg))
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+	}
+
+
+	BEGIN_MSG_MAP(thisClass)
+		CHAIN_MSG_MAP(baseClass)
+	END_MSG_MAP()
+};
 
 #endif // __WTL_TABBED_FRAME_H__

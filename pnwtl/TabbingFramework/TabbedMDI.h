@@ -4,7 +4,7 @@
 // Classes:
 //   CTabbedMDIFrameWindowImpl - 
 //      Instead of having CMainFrame inherit from
-//      CMDIFrameWindowImpl, have it inherit from
+//      CMDIFrameWindowImpl, you can have it inherit from
 //      CTabbedMDIFrameWindowImpl. For an out-of-the box WTL MDI
 //      application, there are 3 instances of CMDIFrameWindowImpl
 //      to replace with CTabbedMDIFrameWindowImpl.
@@ -19,27 +19,36 @@
 //      It handles sizing/positioning the tab window,
 //      calling the appropriate Display, Remove, UpdateText
 //      for the tabs with the HWND of the active child,
-//      etc.
+//      etc.  You can use CTabbedMDIClient without using
+//      CTabbedMDIFrameWindowImpl. To do so, simply call
+//      SetTabOwnerParent(m_hWnd) then SubclassWindow(m_hWndMDIClient)
+//      on a CTabbedMDIClient member variable after calling
+//      CreateMDIClient in your main frame class.
 //   CMDITabOwner -
 //      The MDITabOwner is the parent of the actual tab window
-//      (CDotNetTabCtrl), and sibling to the "MDI Client" window.
-//      The tab window expects its parent to reflect notifications,
-//      so the MDITabOwner does.  The tab owner also handles
-//      displaying a context menu appropriate for the tab,
-//      as well as changing the active MDI child when the
+//      (such as CDotNetTabCtrl), and sibling to the "MDI Client" window.
+//      The tab owner tells the MDI child when to display a context
+//      menu for the tab (the default menu is the window's system menu).
+//      The tab owner changes the active MDI child when the
 //      active tab changes.  It also does the real work of
 //      hiding and showing the tabs.  It also handles adding,
 //      removing, and renaming tabs based on an HWND.
-//   CTabbedMDICommandBarCtrl -
+//   CTabbedMDICommandBarCtrl/CTabbedMDICommandBarCtrlImpl -
 //      In your MDI application, instead of using CMDICommandBarCtrl,
-//      use CTabbedMDICommandBarCtrl.
+//      use CTabbedMDICommandBarCtrl.  It addresses a couple of bugs
+//      in WTL 7.0's CMDICommandBarCtrl, and allows you to enable
+//      or disable whether you want to see the document icon
+//      and min/max/close button in the command bar when the
+//      child is maximized.  To add additional functionality,
+//      derive your own class from CTabbedMDICommandBarCtrlImpl.
 //      
 //     
 //
 // Written by Daniel Bowen (dbowen@es.com)
 // Copyright (c) 2002 Daniel Bowen.
 //
-// Depends on CoolTabCtrls.h written by Bjarke Viksoe (bjarke@viksoe.dk)
+// Depends on CustomTabCtrl.h written by Bjarke Viksoe (bjarke@viksoe.dk)
+//  with the modifications by Daniel Bowen
 //
 // This code may be used in compiled form in any way you desire. This
 // file may be redistributed by any means PROVIDING it is 
@@ -56,155 +65,55 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
-// 2002/04/24: Daniel Bowen (DDB)
-// - Rename:
-//    UWM_MDICHILDTOOLTIPCHANGE => UWM_MDICHILDTABTOOLTIPCHANGE
-//    UWM_MDICHILDTITLECHANGE => UWM_MDICHILDTABTEXTCHANGE
-// - Ramon Casellas [casellas@infres.enst.fr] suggested
-//    that the caption / window text / title of the MDI child
-//    might not always be exactly what you want for the
-//    corresponding tab's text.  I like that idea, so the
-//    caption and tab text are no longer tied at the hip.
-//    Changes to accomodate this:
-//     * The tab text still starts out life with the
-//       caption / window text of the frame (but it doesn't
-//       have to stay that way).
-//     * New "SetTabText" that the deriving MDI child can
-//       call at anytime to update the text of the corresponding
-//       MDI tab.
-//     * SetTitle now takes an additional BOOL argument of
-//       whether to update the tab text as well as set
-//       the title / caption / window text
-//     * CTabbedMDIChildWindowImpl::OnSetText doesn't send
-//       UWM_MDICHILDTABTEXTCHANGE (UWM_MDICHILDTITLECHANGE) anymore.
-//       You have to call SetTitle(text, TRUE) or SetTabText
-//        explicitly now.
-// - New "UWM_MDICHILDSHOWTABCONTEXTMENU" message sent to
-//    the MDI *child* to request that the tab context menu be shown.
-//    The default handler in CTabbedMDIChildWindowImpl simply
-//    shows the "system menu" (GetSystemMenu).
+// 2002/09/19: Daniel Bowen
+// - CTabbedMDICommandBarCtrl -
+//   * Break out CTabbedMDICommandBarCtrl into CTabbedMDICommandBarCtrlImpl
+//     and CTabbedMDICommandBarCtrl (just like CMDICommandBarCtrlImpl
+//     and CMDICommandBarCtrl).
+//     You can derive from CTabbedMDICommandBarCtrlImpl
+//     if you would like to extend functionality (such as providing
+//     your own handling of WM_MDISETMENU).  See the commented out
+//     sample class after CTabbedMDICommandBarCtrl.
+// - CMDITabOwner -
+//   * Expose "SetTabStyles" and "GetTabStyles" so that you can change
+//     the tab related styles to something different than the default
+// - UWM_MDI... messages -
+//   * These messages use RegisteredWindowMessage to guarantee their
+//     uniqueness.  The variables are static variables in this header
+//     file.  However, in release mode, these static variables aren't
+//     getting initialized in VC6.  We now guarantee they get registered
+//     by doing it in the constructor of each class that references them.
+//     If you have a class that does not derive from one of these classes
+//     and wants to reference one of these variables, it's safest to
+//     register them yourself using ENSURE_TABBEDMDI_REGISTERED_MESSAGES()
+//     Visual  C++ 7 *does* initialize the static variables appropropriately
+//     for both debug and release.
+//     The biggest drawback to having them defined in this header file
+//     is that in reality we get multiple versions of these static
+//     variables.  A better thing would be to "extern" them here in
+//     this header, and have a .cpp that you include in stdafx.cpp
+//     that actually defines the values.
 //
-// 2002/04/23: Daniel Bowen (DDB)
-// - Tooltips:
-//    * New UWM_MDICHILDTOOLTIPCHANGE message from MDI child to MDI client
-//    * New "SetTabToolTip" for MDI child
-// - New "CCoolTabItem" class used instead of TCITEM.
-//   See "CoolTabCtrls.h" for an explanation.
-// - ATL 7 compatibility issues pointed out to me by
-//   Ramon Casellas [casellas@infres.enst.fr]
+// 2002/08/26: Daniel Bowen
+// - CTabbedMDIClient -
+//   * Add new template parameter "TTabOwner" to allow easily
+//     changing the tab owner class used
 //
-// 2002/04/22: Daniel Bowen (DDB)
-// - Make the tab area height of the MDI tabs dependant on
-//   the same metrics that the font of the tabs depends on.
-// - Simon Steele (Simon Steele [s.steele@pnotepad.org]) made
-//   an excellent suggestion about not hardcoding "CTabbedMDIClient"
-//   in CTabbedMDIFrameWindowImpl.  Its now a template parameter.
-// - CTabbedMDIClient and CMDITabOwner are now also templatized,
-//   with a single template parameter specifying the the Tab Control type
-//
-// 2002/04/16: Daniel Bowen (DDB)
-// - Enhanced CTabbedMDICommandBarCtrl. 
-//   CTabbedMDICommandBarCtrl now gives you the option of whether
-//   to use the "Document Icon" and frame caption buttons (min, close, etc,)
-//   or not.  Simple call the cleverly named 
-//   "UseMaxChildDocIconAndFrameCaptionButtons" method before calling
-//   "SetMDIClient".
-//      Background: In WTL 3.1, there wasn't any CMDICommandBarCtrl,
-//   there was just CCommandBarCtrl.  With CCommandBarCtrl,
-//   when the MDI child was maximized there was no document icon
-//   in the menu or min/restore/close frame caption buttons in the
-//   command bar on the right.  If you used this tabbed MDI stuff,
-//   that was fine, because you could use the context menu for the
-//   MDI tab to restore, minimize, etc.
-//   With WTL 7.0, it forcefully asserts that you can't use
-//   CCommandBarCtrl in an MDI application like you could in
-///  WTL 3.1, and tells you to use CMDICommandBarCtrl.
-//   CMDICommandBarCtrl adds the document icon and min/restore/close
-//   buttons for maximized children.  CTabbedMDICommandBarCtrl
-//   now gives you the choice of which style you want.
-
-// 2002/04/15: Daniel Bowen (DDB)
-// - CTabbedMDICommandBarCtrl
-//    In case the frame window is living in a different image
-//    (such as another DLL), instead of:
-//      ::GetClassInfoEx(_Module.GetModuleInstance(), szClass, &wc);
-//    use
-//		m_hIconChildMaximized = (HICON) ::GetClassLong(wnd, GCL_HICONSM);
-//    or
-//		m_hIconChildMaximized = (HICON) ::GetClassLong(wnd, GCL_HICON);
-// - Update comment at top of this file to mention CTabbedMDIChildWindowImpl
-//    and CTabbedMDICommandBarCtrl.
-// - Comment out a couple ATLTRACE statements
-//
-// 2002/04/10: Daniel Bowen (DDB)
-// - Context Menu for MDI tab:
-//     Now uses "GetSystemMenu" to get the window menu for the MDI child.
-//     This is the same approach that CMDICommandBarCtrl::OnNcLButtonDown
-//     uses when the MDI child is maximized and the user has clicked
-//     on the document icon to the left of the menus.
-//     If you run the application on Windows 2000 or 98 or greater,
-//     there will be bitmaps in the menu.
-//
-//     Also note that when running on NT 4 or Win 95,
-//     CMDICommandBarCtrl::OnNcLButtonDown will fail to show the
-//     system menu at all because it doesn't like what it thinks is an
-//     unknown flag - TPM_VERPOSANIMATION. To avoid that problem,
-//     we won't even try to use TPM_VERPOSANIMATION.
-//
-// 2002/04/05: Daniel Bowen (DDB)
-// - Updates related to WTL 7.0.
-//   * WTL 7.0 wants you to use CMDICommandBarCtrl instead
-//     of CCommandBarCtrl for MDI applications.
-//     CMDICommandBarCtrl is decent, but there's some
-//     anomolies even when its used in a plain vanilla app
-//     (such as when the document icon doesn't update
-//      depending on the active child).
-//     Because we're subclassing the MDIClient and requiring
-//     the MDI child frames to inherit from a special class,
-//     there is now a "CTabbedMDICommandBarCtrl" that you
-//     should use instead of CMDICommandBarCtrl.
-// - CTabbedMDIChildWindowImpl:
-//   * Add more messages from MDI child to MDI client:
-//      UWM_MDICHILDMAXIMIZED
-//      UWM_MDICHILDUNMAXIMIZED
-//   * Override Create so that when a new child is created,
-//     if the previous child was maximized, have the new
-//     child be maximized as well (and prevent seeing a flickering
-//     glimpse of the restored state of the new child)
-//     See http://www.codeproject.com/useritems/WTLMDIChildMax.asp
-//     for an explanation.
-//   * Handle WM_SETFOCUS instead of depending on how
-//     CFrameWindowImplBase handles it.  When the child is
-//     maximized, ::IsWindowVisible(m_hWndClient) will return FALSE,
-//     which results in the focus not being forwarded
-//     to the "view" window.
-//     See http://www.codeproject.com/useritems/WTLMDIChildMax.asp
-//     for an explanation.
-//
-// 2002/02/07: Daniel Bowen (DDB)
-// - New CCoolTabOwnerImpl MI class resulting from
-//   refactoring due to commonality that existed between
-//   CTabbedFrameImpl and CMDITabOwner.  Use this
-//   class to help implement a windowing class that
-//   will contain a CoolTabCtrl. This class lives in
-//   TabbedFrame.h for now (see the header for more
-//   or a description).
-// - MDI child windows are now responsible for
-//   a couple of things.  To have your MDI child windows
-//   show up with corresponding tabs, be sure to
-//   inherit from CTabbedMDIChildWindowImpl
-//   instead of CMDIChildWindowImpl.
-// - Redo a couple of implementation details of
-//   how the MDI client keeps the MDI tabs and the
-//   MDI child windows in synch.  See
-//     OnMDIDestroy
-//     OnChildActivationChange
-//     OnChildTabTextChange
-//   for details
+// 2002/06/26: Daniel Bowen
+// - CTabbedMDIFrameWindowImpl - Expose "TClient" and "TTabCtrl".
+// - CMDITabOwner - Expose "TTabCtrl".
+// - CTabbedMDIClient -
+//   * Expose "TTabCtrl"
+//   * New method "GetTabOwner" to get a reference to the C++ class
+//     instance implementing the MDI tab owner window.
+//   * New method "UseMDIChildIcon" to specify that you want the MDI
+//     tabs to include the document icon for the MDI child on the
+//     corresponding tab
 // 
-// 2002/01/31: Daniel Bowen (DDB)
-// - Original Release
-//
+// 2002/06/12: Daniel Bowen
+// - Publish codeproject article.  For history prior
+//   to the release of the article, please see the article
+//   and the section "Note to previous users"
 
 #ifndef __WTL_TABBED_MDI_H__
 #define __WTL_TABBED_MDI_H__
@@ -227,8 +136,8 @@
 	#error TabbedFrame.h requires atlframe.h to be included first
 #endif
 
-#ifndef __COOLTABCTRLS_H__
-	#error TabbedMDI.h requires CoolTabCtrls.h to be included first
+#ifndef __CUSTOMTABCTRL_H__
+	#error TabbedMDI.h requires CustomTabCtrl.h to be included first
 #endif
 
 #ifndef __WTL_TABBED_FRAME_H__
@@ -246,17 +155,52 @@
 #define UWM_MDICHILDUNMAXIMIZED_MSG _T("UWM_MDICHILDUNMAXIMIZED_MSG-5DAD28E9-C961-11d5-8BDA-00500477589F")
 #define UWM_MDICHILDSHOWTABCONTEXTMENU_MSG _T("UWM_MDICHILDSHOWTABCONTEXTMENU_MSG-5DAD28EB-C961-11d5-8BDA-00500477589F")
 
-// NOTE: In release mode, these static variables aren't
-//  getting initialized by the following.  We'll guarantee they
-//  get registered by doing it in the constructor of
-//  CTabbedMDIChildWindowImpl if this initialization doesn't work
-//  (at least in release mode it initializes it to 0)
 static UINT UWM_MDICHILDTABTEXTCHANGE = ::RegisterWindowMessage(UWM_MDICHILDTABTEXTCHANGE_MSG);
 static UINT UWM_MDICHILDTABTOOLTIPCHANGE = ::RegisterWindowMessage(UWM_MDICHILDTABTOOLTIPCHANGE_MSG);
 static UINT UWM_MDICHILDACTIVATIONCHANGE = ::RegisterWindowMessage(UWM_MDICHILDACTIVATIONCHANGE_MSG);
 static UINT UWM_MDICHILDMAXIMIZED = ::RegisterWindowMessage(UWM_MDICHILDMAXIMIZED_MSG);
 static UINT UWM_MDICHILDUNMAXIMIZED = ::RegisterWindowMessage(UWM_MDICHILDUNMAXIMIZED_MSG);
 static UINT UWM_MDICHILDSHOWTABCONTEXTMENU = ::RegisterWindowMessage(UWM_MDICHILDSHOWTABCONTEXTMENU_MSG);
+
+// NOTE: In release mode, these static variables aren't
+//  getting initialized by the above in VC6.  We'll guarantee
+//  they get registered by doing it in the constructor of
+//  of each class that references them if this initialization
+//  doesn't work (at least in release mode it initializes it to 0)
+// Visual  C++ 7 (which happens to be version 13 of Microsoft's C/C++ compiler)
+//  *does* initialize the static variables appropropriately
+//  for both debug and release
+#if (_MSC_VER >= 1300)
+	// Visual C++ 7 or later will properly deal with initializing
+	// these static variables in both debug and release builds
+	#define ENSURE_TABBEDMDI_REGISTERED_MESSAGES()
+#else
+	#define ENSURE_TABBEDMDI_REGISTERED_MESSAGES() \
+		if(UWM_MDICHILDTABTEXTCHANGE == 0) \
+		{ \
+			UWM_MDICHILDTABTEXTCHANGE = ::RegisterWindowMessage(UWM_MDICHILDTABTEXTCHANGE_MSG); \
+		} \
+		if(UWM_MDICHILDTABTOOLTIPCHANGE == 0) \
+		{ \
+			UWM_MDICHILDTABTOOLTIPCHANGE = ::RegisterWindowMessage(UWM_MDICHILDTABTOOLTIPCHANGE_MSG); \
+		} \
+		if(UWM_MDICHILDACTIVATIONCHANGE == 0) \
+		{ \
+			UWM_MDICHILDACTIVATIONCHANGE = ::RegisterWindowMessage(UWM_MDICHILDACTIVATIONCHANGE_MSG); \
+		} \
+		if(UWM_MDICHILDMAXIMIZED == 0) \
+		{ \
+			UWM_MDICHILDMAXIMIZED = ::RegisterWindowMessage(UWM_MDICHILDMAXIMIZED_MSG); \
+		} \
+		if(UWM_MDICHILDUNMAXIMIZED == 0) \
+		{ \
+			UWM_MDICHILDUNMAXIMIZED = ::RegisterWindowMessage(UWM_MDICHILDUNMAXIMIZED_MSG); \
+		} \
+		if(UWM_MDICHILDSHOWTABCONTEXTMENU == 0) \
+		{ \
+			UWM_MDICHILDSHOWTABCONTEXTMENU = ::RegisterWindowMessage(UWM_MDICHILDSHOWTABCONTEXTMENU_MSG); \
+		} 
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -266,12 +210,18 @@ static UINT UWM_MDICHILDSHOWTABCONTEXTMENU = ::RegisterWindowMessage(UWM_MDICHIL
 
 template <
 	class T,
-	class TClient = CTabbedMDIClient< CDotNetTabCtrl >,
+	class TClient = CTabbedMDIClient< CDotNetTabCtrl<CTabViewTabItem> >,
 	class TBase = CMDIWindow,
 	class TWinTraits = CFrameWinTraits>
 class ATL_NO_VTABLE CTabbedMDIFrameWindowImpl :
 	public CMDIFrameWindowImpl<T, TBase, TWinTraits >
 {
+public:
+	// Expose the type of MDI client
+	typedef TClient TClient;
+	// Expose the type of tab control
+	typedef TClient::TTabCtrl TTabCtrl;
+	
 // Member variables
 protected:
 	TClient m_tabbedClient;
@@ -328,35 +278,7 @@ public:
 	CTabbedMDIChildWindowImpl() :
 		m_bMaximized(false)
 	{
-		// NOTE: In release mode, these static variables aren't
-		//  getting initialized.  We'll guarantee they get registered
-		//  by doing it here if they weren't properly initialized.
-		//  (at least in release mode it initializes it to 0)
-
-		if(UWM_MDICHILDTABTEXTCHANGE == 0)
-		{
-			UWM_MDICHILDTABTEXTCHANGE = ::RegisterWindowMessage(UWM_MDICHILDTABTEXTCHANGE_MSG);
-		}
-		if(UWM_MDICHILDTABTOOLTIPCHANGE == 0)
-		{
-			UWM_MDICHILDTABTOOLTIPCHANGE = ::RegisterWindowMessage(UWM_MDICHILDTABTOOLTIPCHANGE_MSG);
-		}
-		if(UWM_MDICHILDACTIVATIONCHANGE == 0)
-		{
-			UWM_MDICHILDACTIVATIONCHANGE = ::RegisterWindowMessage(UWM_MDICHILDACTIVATIONCHANGE_MSG);
-		}
-		if(UWM_MDICHILDMAXIMIZED == 0)
-		{
-			UWM_MDICHILDMAXIMIZED = ::RegisterWindowMessage(UWM_MDICHILDMAXIMIZED_MSG);
-		}
-		if(UWM_MDICHILDUNMAXIMIZED == 0)
-		{
-			UWM_MDICHILDUNMAXIMIZED = ::RegisterWindowMessage(UWM_MDICHILDUNMAXIMIZED_MSG);
-		}
-		if(UWM_MDICHILDSHOWTABCONTEXTMENU == 0)
-		{
-			UWM_MDICHILDSHOWTABCONTEXTMENU = ::RegisterWindowMessage(UWM_MDICHILDSHOWTABCONTEXTMENU_MSG);
-		}
+		ENSURE_TABBEDMDI_REGISTERED_MESSAGES()
 	}
 
 // Overrides ofCMDIChildWindowImpl
@@ -370,17 +292,29 @@ public:
 		// NOTE: hWndParent is going to become m_hWndMDIClient
 		//  in CMDIChildWindowImpl::Create
 		ATLASSERT(::IsWindow(hWndParent));
-		BOOL bMaximized = FALSE;
-		HWND hWndOld = (HWND)::SendMessage(hWndParent, WM_MDIGETACTIVE, 0, (LPARAM)&bMaximized);
 
-		if(bMaximized == TRUE)
+		BOOL bMaximizeNewChild = (WS_MAXIMIZE == (T::GetWndStyle(dwStyle) & WS_MAXIMIZE));
+		if(bMaximizeNewChild == FALSE)
+		{
+			// If WS_MAXIMIZE wasn't requested, check if the currently
+			//  active MDI child (if there is one) is maximized.  If so,
+			//  maximize the new child window to match.
+			::SendMessage(hWndParent, WM_MDIGETACTIVE, 0, (LPARAM)&bMaximizeNewChild);
+		}
+
+		if(bMaximizeNewChild == TRUE)
 		{
 			::SendMessage(hWndParent, WM_SETREDRAW, FALSE, 0);
+
+			// We'll ShowWindow(SW_SHOWMAXIMIZED) instead of using
+			//  WS_MAXIMIZE (which would cause visual anomolies in some cases)
+			dwStyle = (T::GetWndStyle(dwStyle) & ~WS_MAXIMIZE);
 		}
+
 
 		HWND hWnd = baseClass::Create(hWndParent, rect, szWindowName, dwStyle, dwExStyle, nMenuID, lpCreateParam);
 
-		if(bMaximized == TRUE)
+		if(bMaximizeNewChild == TRUE)
 		{
 			::ShowWindow(hWnd, SW_SHOWMAXIMIZED);
 
@@ -493,7 +427,6 @@ public:
 		//  It can do whatever it wants.  This is just the "fall through"
 		//  implementation if you don't want to specialize.
 
-		CPoint ptPopup(lParam);
 		// NOTE: The sender of the message has already handled the case
 		//  when launching the context menu from the keyboard
 		//  (translating -1,-1 into a usable position)
@@ -509,7 +442,7 @@ public:
 		CMenuHandle menu = this->GetSystemMenu(FALSE);
 
 		UINT uRet = (UINT)menu.TrackPopupMenu(TPM_LEFTBUTTON | TPM_VERTICAL | TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD, 
-			ptPopup.x, ptPopup.y, m_hWnd);
+			GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), m_hWnd);
 
 		// See MSDN about "GetSystemMenu".  Returns codes greater than
 		//  0xF000 (which happens to be SC_SIZE) are sent with WM_SYSCOMMAND
@@ -529,23 +462,27 @@ public:
 //
 /////////////////////////////////////////////////////////////////////////////
 
-template< class TTab >
+template< class TTabCtrl >
 class CMDITabOwner :
 	public CWindowImpl<CMDITabOwner>,
-	public CCoolTabOwnerImpl<CMDITabOwner, TTab>
+	public CCustomTabOwnerImpl<CMDITabOwner, TTabCtrl>
 {
+public:
+	// Expose the type of tab control
+	typedef TTabCtrl TTabCtrl;
+
 // Member variables
 protected:
 	HWND m_hWndMDIClient;
+	DWORD m_nTabStyles;
 
 // Constructors
 public:
 	CMDITabOwner() :
-		m_hWndMDIClient(NULL)
+		m_hWndMDIClient(NULL),
+		m_nTabStyles(CTCS_TOOLTIPS | CTCS_BOLDSELECTEDTAB | CTCS_SCROLL | CTCS_CLOSEBUTTON)
 	{
-		// Initialize members from CCoolTabOwnerImpl
-		m_bTabAreaOnTop = true;
-		m_tabs.SetBoldSelectedTab(true);
+		ENSURE_TABBEDMDI_REGISTERED_MESSAGES()
 	}
 
 // Methods
@@ -553,6 +490,16 @@ public:
 	void SetMDIClient(HWND hWndMDIClient)
 	{
 		m_hWndMDIClient = hWndMDIClient;
+	}
+
+	void SetTabStyles(DWORD nTabStyles)
+	{
+		m_nTabStyles = nTabStyles;
+	}
+
+	bool GetTabStyles(void) const
+	{
+		return m_nTabStyles;
 	}
 
 // Message Handling
@@ -565,10 +512,14 @@ public:
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
-		NOTIFY_CODE_HANDLER(TCN_DELETEITEM, OnDeleteItem)
-		NOTIFY_CODE_HANDLER(TCN_SELCHANGING, OnSelChanging)
-		NOTIFY_CODE_HANDLER(TCN_SELCHANGE, OnSelChange)
-		REFLECT_NOTIFICATIONS()
+		NOTIFY_CODE_HANDLER(CTCN_DELETEITEM, OnDeleteItem)
+		NOTIFY_CODE_HANDLER(CTCN_SELCHANGING, OnSelChanging)
+		NOTIFY_CODE_HANDLER(CTCN_SELCHANGE, OnSelChange)
+		NOTIFY_CODE_HANDLER(CTCN_CLOSE, OnTabClose)
+
+		// NOTE: CCustomTabCtrl derived classes no longer
+		//  need notifications reflected.
+		// REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -577,7 +528,7 @@ public:
 		LRESULT lRet = DefWindowProc(uMsg, wParam, lParam);
 		bHandled = TRUE;
 
-		CreateTabWindow(m_hWnd, rcDefault);
+		CreateTabWindow(m_hWnd, rcDefault, m_nTabStyles);
 
 		return 0;
 	}
@@ -594,7 +545,7 @@ public:
 
 	LRESULT OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
-		if(m_tabs)
+		if(m_TabCtrl)
 		{
 			// Let the tabs do all the drawing as flicker-free as possible
 			return 1;
@@ -609,8 +560,8 @@ public:
 		RECT rect = {0};
 		GetClientRect(&rect);
 
-		m_tabs.SetWindowPos(NULL, &rect, SWP_NOZORDER | SWP_NOACTIVATE);
-		m_tabs.UpdateLayout();
+		m_TabCtrl.SetWindowPos(NULL, &rect, SWP_NOZORDER | SWP_NOACTIVATE);
+		m_TabCtrl.UpdateLayout();
 
 		bHandled = TRUE;
 
@@ -623,34 +574,34 @@ public:
 
 		int nIndex = -1;
 
-		CPoint ptPopup(lParam);
+		POINT ptPopup = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
 		if(ptPopup.x == -1 && ptPopup.y == -1)
 		{
-			nIndex = m_tabs.GetCurSel();
+			nIndex = m_TabCtrl.GetCurSel();
 			RECT rect = {0};
 			if(nIndex >= 0)
 			{
 				// If there is a selected item, popup the menu under the node,
 				// if not, pop it up in the top left of the tree view
-				m_tabs.GetItemRect(nIndex, &rect);
+				m_TabCtrl.GetItemRect(nIndex, &rect);
 			}
-			this->ClientToScreen(&rect);
+			::MapWindowPoints(m_hWnd, NULL, (LPPOINT)&rect, 2);
 			ptPopup.x = rect.left;
 			ptPopup.y = rect.bottom;
 		}
 		else
 		{
-			CPoint ptClient(ptPopup);
-			this->ScreenToClient(&ptClient);
-			TCHITTESTINFO tchti = { 0 };
+			POINT ptClient = ptPopup;
+			::MapWindowPoints(NULL, m_hWnd, &ptClient, 1);
+			CTCHITTESTINFO tchti = { 0 };
 			tchti.pt = ptClient;
 			//If we become templated, pT->HitTest(&tchti);
-			nIndex = m_tabs.HitTest(&tchti);
+			nIndex = m_TabCtrl.HitTest(&tchti);
 		}
 
 		if( nIndex >= 0 )
 		{
-			CCoolTabItem* pItem = m_tabs.GetItem(nIndex);
+			TTabCtrl::TItem* pItem = m_TabCtrl.GetItem(nIndex);
 
 			HWND hWndChild = pItem->GetTabView();
 			if(hWndChild != NULL)
@@ -676,11 +627,11 @@ public:
 
 	LRESULT OnSelChange(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHandled)
 	{
-		int nNewTab = m_tabs.GetCurSel();
+		int nNewTab = m_TabCtrl.GetCurSel();
 
 		if(nNewTab >= 0)
 		{
-			CCoolTabItem* pItem = m_tabs.GetItem(nNewTab);
+			TTabCtrl::TItem* pItem = m_TabCtrl.GetItem(nNewTab);
 			if(pItem->UsingTabView())
 			{
 				HWND hWndNew = pItem->GetTabView();
@@ -737,45 +688,60 @@ public:
 		return 0;
 	}
 
-// Overrides from CCoolTabOwnerImpl
+	LRESULT OnTabClose(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
+	{
+		LPNMCTCITEM pnmCustomTab = (LPNMCTCITEM)pnmh;
+		if(pnmCustomTab)
+		{
+			if(pnmCustomTab->iItem >= 0)
+			{
+				TTabCtrl::TItem* pItem = m_TabCtrl.GetItem(pnmCustomTab->iItem);
+				if(pItem)
+				{
+					::PostMessage(pItem->GetTabView(), WM_SYSCOMMAND, SC_CLOSE, 0L);
+				}
+			}
+		}
+		bHandled = FALSE;
+		return 0;
+	}
+
+// Overrides from CCustomTabOwnerImpl
 public:
 
-	void ShowTabs()
+	void OnAddFirstTab()
 	{
 		if(this->IsWindowVisible() == FALSE)
 		{
-			CRect rect;
-			::GetWindowRect(m_hWndMDIClient, &rect);
+			RECT rcMDIClient;
+			::GetWindowRect(m_hWndMDIClient, &rcMDIClient);
+			::MapWindowPoints(NULL, ::GetParent(m_hWndMDIClient), (LPPOINT)&rcMDIClient, 2);
 
 			this->ShowWindow(SW_SHOW);
-
-			CPoint topLeft(rect.left, rect.top);
-			::ScreenToClient(::GetParent(m_hWndMDIClient), &topLeft);
-
 
 			// the MDI client resizes and shows our window when
 			//  handling messages related to SetWindowPos
 			::SetWindowPos(
 				m_hWndMDIClient, NULL,
-				topLeft.x,topLeft.y,
-				rect.Width(),rect.Height(),
+				rcMDIClient.left, rcMDIClient.top,
+				(rcMDIClient.right - rcMDIClient.left),(rcMDIClient.bottom - rcMDIClient.top),
 				SWP_NOZORDER);
 		}
 	}
 
-	void HideTabs()
+	void OnRemoveLastTab()
 	{
 		if(this->IsWindowVisible() == TRUE)
 		{
-			CRect rcTabs;
-			m_tabs.GetClientRect(&rcTabs);
+			RECT rcTabs;
+			m_TabCtrl.GetWindowRect(&rcTabs);
+			::MapWindowPoints(NULL, m_TabCtrl.GetParent(), (LPPOINT)&rcTabs, 2);
 
 			this->ShowWindow(SW_HIDE);
 
-			CRect rect;
-			::GetWindowRect(m_hWndMDIClient, &rect);
-			CPoint topLeft(rect.left, rect.top);
-			::ScreenToClient(::GetParent(m_hWndMDIClient), &topLeft);
+			RECT rcMDIClient;
+			::GetWindowRect(m_hWndMDIClient, &rcMDIClient);
+			::MapWindowPoints(NULL, ::GetParent(m_hWndMDIClient), (LPPOINT)&rcMDIClient, 2);
 
 			// the MDI client resizes and shows our window when
 			//  handling messages related to SetWindowPos
@@ -784,21 +750,60 @@ public:
 			//  We're basically hiding the tabs and
 			//  resizing the MDI client area to "cover up"
 			//  where the tabs were
-			if(m_bTabAreaOnTop)
+			DWORD dwStyle = m_TabCtrl.GetStyle();
+			if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
 			{
 				::SetWindowPos(
 					m_hWndMDIClient, NULL,
-					topLeft.x, topLeft.y - rcTabs.Height(),
-					rect.Width(), rect.Height() + rcTabs.Height(),
+					rcMDIClient.left, rcMDIClient.top,
+					(rcMDIClient.right - rcMDIClient.left),
+					(rcMDIClient.bottom - rcMDIClient.top) + (rcTabs.bottom - rcTabs.top),
 					SWP_NOZORDER);
 			}
 			else
 			{
 				::SetWindowPos(
 					m_hWndMDIClient, NULL,
-					topLeft.x, topLeft.y,
-					rect.Width(), rect.Height() + rcTabs.Height(),
+					rcMDIClient.left, rcMDIClient.top - (rcTabs.bottom - rcTabs.top),
+					(rcMDIClient.right - rcMDIClient.left),
+					(rcMDIClient.bottom - rcMDIClient.top) + (rcTabs.bottom - rcTabs.top),
 					SWP_NOZORDER);
+			}
+		}
+	}
+
+	void SetTabAreaHeight(int nNewTabAreaHeight)
+	{
+		if(m_nTabAreaHeight != nNewTabAreaHeight)
+		{
+			int nOldTabAreaHeight = m_nTabAreaHeight;
+
+			m_nTabAreaHeight = nNewTabAreaHeight;
+
+			//T* pT = static_cast<T*>(this);
+			//pT->UpdateLayout();
+			//Invalidate();
+
+			if(this->IsWindowVisible() == TRUE)
+			{
+
+				RECT rcMDIClient;
+				::GetWindowRect(m_hWndMDIClient, &rcMDIClient);
+				::MapWindowPoints(NULL, this->GetParent(), (LPPOINT)&rcMDIClient, 2);
+
+				// Don't ask me why these two lines are necessary.
+				// Take these lines out if you want to
+				// convince yourself that they are :-)
+				rcMDIClient.top -= nOldTabAreaHeight;
+				rcMDIClient.bottom += nOldTabAreaHeight;
+
+				// The tab resize/reposition logic happens when handling WM_WINDOWPOSCHANGING.
+				// If that ever changes, make the appropriate change here.
+				::SetWindowPos(
+					m_hWndMDIClient, NULL,
+					rcMDIClient.left, rcMDIClient.top,
+					(rcMDIClient.right - rcMDIClient.left),(rcMDIClient.bottom - rcMDIClient.top),
+					SWP_NOZORDER | SWP_NOACTIVATE);
 			}
 		}
 	}
@@ -811,27 +816,43 @@ public:
 //
 /////////////////////////////////////////////////////////////////////////////
 
-template< class TTab = CDotNetTabCtrl >
+template< class TTabCtrl = CDotNetTabCtrl<CTabViewTabItem>, class TTabOwner = CMDITabOwner<TTabCtrl> >
 class CTabbedMDIClient : public CWindowImpl<CTabbedMDIClient, CWindow>
 {
+public:
+	// Expose the type of tab control and tab owner
+	typedef TTabCtrl TTabCtrl;
+	typedef TTabOwner TTabOwner;
+
 protected:
 	typedef CWindowImpl<CTabbedMDIClient, CWindow> baseClass;
+	typedef CTabbedMDIClient< TTabCtrl, TTabOwner > thisClass;
 
 // Member variables
 protected:
 	HWND m_hWndTabOwnerParent;
-	CMDITabOwner<TTab> m_MdiTabOwner;
-	CRect m_rectTabs;
+	TTabOwner m_MdiTabOwner;
+	BOOL m_bUseMDIChildIcon;
+	bool m_bSubclassed;
 	bool m_bDrawFlat;
-	BYTE m_nTabAreaHeight;
 
 // Constructors
 public:
 	CTabbedMDIClient() :
 		m_hWndTabOwnerParent(NULL),
-		m_bDrawFlat(false),
-		m_nTabAreaHeight(24)
+		m_bUseMDIChildIcon(FALSE),
+		m_bSubclassed(false),
+		m_bDrawFlat(false)
 	{
+		ENSURE_TABBEDMDI_REGISTERED_MESSAGES()
+	}
+
+	virtual ~CTabbedMDIClient()
+	{
+		if(this->IsWindow() && m_bSubclassed)
+		{
+			this->UnsubclassWindow(TRUE);
+		}
 	}
 
 // Methods
@@ -841,55 +862,39 @@ public:
 		m_hWndTabOwnerParent = hWndTabOwnerParent;
 	}
 
-	HWND GetTabOwnerParent() const
+	HWND GetTabOwnerParent(void) const
 	{
 		return m_hWndTabOwnerParent;
 	}
 
-	void UpdateTabAreaHeight()
+	TTabOwner& GetTabOwner(void)
 	{
-		const int nNominalHeight = 24;
-		const int nNominalFontLogicalUnits = 11;	// 8 point Tahoma with 96 DPI
+		return m_MdiTabOwner;
+	}
 
-		// Initialize nFontLogicalUnits to the typical case
-		// appropriate for CDotNetTabCtrl
-		LOGFONT lfIcon = { 0 };
-		::SystemParametersInfo(SPI_GETICONTITLELOGFONT, sizeof(lfIcon), &lfIcon, 0);
-		int nFontLogicalUnits = -lfIcon.lfHeight;
-
-		// Use the actual font of the tab control
-		TTab& tabs = m_MdiTabOwner.GetTabs();
-		if(tabs.IsWindow())
-		{
-			HFONT hFont = tabs.GetFont();
-			if(hFont != NULL)
-			{
-				CDC dc = tabs.GetDC();
-				CFontHandle hFontOld = dc.SelectFont(hFont);
-				TEXTMETRIC tm = {0};
-				dc.GetTextMetrics(&tm);
-				nFontLogicalUnits = tm.tmAscent;
-				dc.SelectFont(hFontOld);
-			}
-		}
-
-		BYTE nOldTabAreaHeight = m_nTabAreaHeight;
-		m_nTabAreaHeight = (BYTE)(nNominalHeight + (nNominalHeight * ((double)nFontLogicalUnits / (double)nNominalFontLogicalUnits) - nNominalHeight) / 2);
-		if(nOldTabAreaHeight != m_nTabAreaHeight)
-		{
-			Invalidate();
-		}
+	void UseMDIChildIcon(BOOL bUseMDIChildIcon = TRUE)
+	{
+		m_bUseMDIChildIcon = bUseMDIChildIcon;
 	}
 
 	BOOL SubclassWindow(HWND hWnd)
 	{
 		BOOL bSuccess = baseClass::SubclassWindow(hWnd);
 
+		m_bSubclassed = true;
+
 		InitTabs();
 
-		UpdateTabAreaHeight();
+		m_MdiTabOwner.CalcTabAreaHeight();
 
 		return bSuccess;
+	}
+
+	HWND UnsubclassWindow(BOOL bForce = FALSE)
+	{
+		m_bSubclassed = false;
+
+		return baseClass::UnsubclassWindow(bForce);
 	}
 
 protected:
@@ -940,7 +945,7 @@ public:
 
 		InitTabs();
 
-		UpdateTabAreaHeight();
+		m_MdiTabOwner.CalcTabAreaHeight();
 
 		return lRet;
 	}
@@ -955,7 +960,13 @@ public:
 
 	LRESULT OnSettingChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
-		UpdateTabAreaHeight();
+		// Be sure tab gets message before we recalculate the tab area height
+		//  so that it can adjust its font metrics first.
+		// NOTE: This causes the tab to get the WM_SETTINGCHANGE message twice,
+		//  but that's OK.
+		m_MdiTabOwner.GetTabCtrl().SendMessage(uMsg, wParam, lParam);
+
+		m_MdiTabOwner.CalcTabAreaHeight();
 
 		bHandled = FALSE;
 		return 0;
@@ -969,9 +980,24 @@ public:
 			if( m_MdiTabOwner.IsWindow() )
 			{
 				//ATLTRACE(_T("Resizing MDI tab and MDI client\n"));
-				int nTabAreaHeight = (m_MdiTabOwner.IsWindowVisible()) ? m_nTabAreaHeight : 0;
+				int nTabAreaHeight = (m_MdiTabOwner.IsWindowVisible()) ? m_MdiTabOwner.GetTabAreaHeight() : 0;
 
-				if(m_MdiTabOwner.IsTabAreaOnTop())
+				TTabCtrl& TabCtrl = m_MdiTabOwner.GetTabCtrl();
+				DWORD dwStyle = TabCtrl.GetStyle();
+				if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
+				{
+					m_MdiTabOwner.SetWindowPos(
+						NULL,
+						pWinPos->x, pWinPos->y + (pWinPos->cy - nTabAreaHeight),
+						pWinPos->cx, nTabAreaHeight,
+						(pWinPos->flags & SWP_NOMOVE) | (pWinPos->flags & SWP_NOSIZE) | SWP_NOZORDER | SWP_NOACTIVATE);
+
+					if((pWinPos->flags & SWP_NOSIZE) == 0)
+					{
+						pWinPos->cy -= nTabAreaHeight;
+					}
+				}
+				else
 				{
 					m_MdiTabOwner.SetWindowPos(
 						NULL,
@@ -983,19 +1009,6 @@ public:
 					{
 						pWinPos->y += nTabAreaHeight;
 					}
-					if((pWinPos->flags & SWP_NOSIZE) == 0)
-					{
-						pWinPos->cy -= nTabAreaHeight;
-					}
-				}
-				else
-				{
-					m_MdiTabOwner.SetWindowPos(
-						NULL,
-						pWinPos->x, pWinPos->y + (pWinPos->cy - nTabAreaHeight),
-						pWinPos->cx, nTabAreaHeight,
-						(pWinPos->flags & SWP_NOMOVE) | (pWinPos->flags & SWP_NOSIZE) | SWP_NOZORDER | SWP_NOACTIVATE);
-
 					if((pWinPos->flags & SWP_NOSIZE) == 0)
 					{
 						pWinPos->cy -= nTabAreaHeight;
@@ -1025,12 +1038,12 @@ public:
 			CDC dc(this->GetWindowDC());
 			if(dc)
 			{
-				CRect rect;
-				this->GetWindowRect(&rect);
-				rect.OffsetRect(-rect.left, -rect.top);
-				dc.FrameRect(&rect, GetSysColorBrush(COLOR_BTNSHADOW));
-				rect.InflateRect(-1, -1);
-				dc.FrameRect(&rect, GetSysColorBrush(COLOR_BTNFACE));
+				RECT rcWindow;
+				this->GetWindowRect(&rcWindow);
+				::OffsetRect(&rcWindow, -rcWindow.left, -rcWindow.top);
+				dc.FrameRect(&rcWindow, GetSysColorBrush(COLOR_BTNSHADOW));
+				::InflateRect(&rcWindow, -1, -1);
+				dc.FrameRect(&rcWindow, GetSysColorBrush(COLOR_BTNFACE));
 			}
 
 			/*
@@ -1045,7 +1058,7 @@ public:
 			CDC dc(this->GetDCEx(rgn, DCX_WINDOW|DCX_INTERSECTRGN | 0x10000));
 			if(dc)
 			{
-				CRect rc;
+				RECT rc;
 				rgn.GetRgnBox(&rc);
 				dc.FillSolidRect(&rc, RGB(255,0,0));//GetSysColor(COLOR_BTNFACE));
 			}
@@ -1141,7 +1154,7 @@ public:
 
 		if(wParam != NULL)
 		{
-			m_MdiTabOwner.DisplayTab((HWND)wParam);
+			m_MdiTabOwner.DisplayTab((HWND)wParam, TRUE, m_bUseMDIChildIcon);
 		}
 
 		return 0;
@@ -1178,12 +1191,13 @@ public:
 };
 
 
-class CTabbedMDICommandBarCtrl : public CMDICommandBarCtrlImpl<CTabbedMDICommandBarCtrl>
+template <class T, class TBase = CCommandBarCtrlBase, class TWinTraits = CControlWinTraits>
+class ATL_NO_VTABLE CTabbedMDICommandBarCtrlImpl : public CMDICommandBarCtrlImpl<T, TBase, TWinTraits>
 {
 protected:
-	typedef CTabbedMDICommandBarCtrl thisClass;
-	typedef CMDICommandBarCtrlImpl<CTabbedMDICommandBarCtrl> baseClass;
-	typedef CCommandBarCtrlImpl<CTabbedMDICommandBarCtrl> grandparentClass;
+	typedef CTabbedMDICommandBarCtrlImpl thisClass;
+	typedef CMDICommandBarCtrlImpl<T, TBase, TWinTraits> baseClass;
+	typedef CCommandBarCtrlImpl<T, TBase, TWinTraits> grandparentClass;
 
 // Extended data
 protected:
@@ -1191,9 +1205,10 @@ protected:
 
 // Constructors
 public:
-	CTabbedMDICommandBarCtrl() :
+	CTabbedMDICommandBarCtrlImpl() :
 		m_bUseMaxChildDocIconAndFrameCaptionButtons(true)
 	{
+		ENSURE_TABBEDMDI_REGISTERED_MESSAGES()
 	}
 
 // Public methods
@@ -1213,8 +1228,6 @@ public:
 
 // Message Handling
 public:
-	DECLARE_WND_SUPERCLASS(_T("WTL_TabbedMDICommandBar"), baseClass::GetWndClassName())
-
 	BEGIN_MSG_MAP(thisClass)
 
 		if(m_bUseMaxChildDocIconAndFrameCaptionButtons)
@@ -1398,5 +1411,51 @@ public:
 		}
 	}
 };
+
+class CTabbedMDICommandBarCtrl : public CTabbedMDICommandBarCtrlImpl<CTabbedMDICommandBarCtrl>
+{
+public:
+	DECLARE_WND_SUPERCLASS(_T("WTL_TabbedMDICommandBar"), GetWndClassName())
+};
+
+/*
+class CAnotherTabbedMDICommandBarCtrl : public CTabbedMDICommandBarCtrlImpl<CAnotherTabbedMDICommandBarCtrl>
+{
+protected:
+	typedef CAnotherTabbedMDICommandBarCtrl thisClass;
+	typedef CTabbedMDICommandBarCtrlImpl<CAnotherTabbedMDICommandBarCtrl> baseClass;
+
+public:
+	DECLARE_WND_SUPERCLASS(_T("WTL_AnotherTabbedMDICommandBar"), GetWndClassName())
+
+	BEGIN_MSG_MAP(thisClass)
+		CHAIN_MSG_MAP(baseClass)
+
+	ALT_MSG_MAP(1)		// Parent window messages
+		CHAIN_MSG_MAP_ALT(baseClass, 1)
+
+	ALT_MSG_MAP(2)		// MDI client window messages
+		MESSAGE_HANDLER(WM_MDISETMENU, OnMDISetMenu)
+		CHAIN_MSG_MAP_ALT(baseClass, 2)
+
+	ALT_MSG_MAP(3)		// Message hook messages
+		CHAIN_MSG_MAP_ALT(baseClass, 3)
+	END_MSG_MAP()
+
+	LRESULT OnMDISetMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		bHandled = TRUE;
+		m_wndMDIClient.DefWindowProc(uMsg, NULL, lParam);
+		HMENU hOldMenu = GetMenu();
+		BOOL bRet = AttachMenu((HMENU)wParam);
+
+		// Other stuff
+
+		bRet;
+		ATLASSERT(bRet);
+		return (LRESULT)hOldMenu;
+	}
+};
+*/
 
 #endif // __WTL_TABBED_MDI_H__
