@@ -13,8 +13,8 @@ LRESULT CJumpToDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	CenterWindow(GetParent());
 
 	list.Attach(GetDlgItem(IDC_JUMPTOLIST));
-	list.InsertColumn(0, _T("Parent"), LVCFMT_LEFT, 80, 0);
-	list.InsertColumn(1, _T("Tag"), LVCFMT_LEFT, 140, 0);
+	list.InsertColumn(0, _T("Tag"), LVCFMT_LEFT, 140, 0);
+	list.InsertColumn(1, _T("Parent"), LVCFMT_LEFT, 80, 0);
 	list.InsertColumn(2, _T("Line"), LVCFMT_LEFT, 60, 0);
 
 	int colOrder[3] = {1, 0, 2};

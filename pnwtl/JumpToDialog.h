@@ -1,3 +1,12 @@
+/**
+ * @file tools.h
+ * @brief Jump To Dialog
+ * @author Simon Steele
+ * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #ifndef jumptodialog_h__included
 #define jumptodialog_h__included
 

@@ -379,6 +379,9 @@
 				RelativePath=".\JumpToDialog.h">
 			</File>
 			<File
+				RelativePath=".\jumptointerface.h">
+			</File>
+			<File
 				RelativePath=".\mainfrm.h">
 			</File>
 			<File
