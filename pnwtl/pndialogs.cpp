@@ -879,7 +879,7 @@ LRESULT COptionsPageSchemes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 	m_stylestab.SetTitle(_T("Styles"));
 	m_keywordstab.SetTitle(_T("Keywords"));
 	m_props.AddPage(m_stylestab);
-	//m_props.AddPage(m_keywordstab);
+	m_props.AddPage(m_keywordstab);
 	
 	m_props.Create(m_hWnd, 0, rcPH);
 
@@ -904,7 +904,7 @@ void COptionsPageSchemes::OnInitialise()
 void COptionsPageSchemes::OnOK()
 {
 	m_stylestab.Finalise();
-	//m_keywordstab.Finalise();
+	m_keywordstab.Finalise();
 	m_pSchemes->SaveConfig();
 }
 
@@ -924,5 +924,5 @@ void COptionsPageSchemes::Update()
 	int i = m_combo.GetCurSel();
 	SchemeConfig* pScheme = static_cast<SchemeConfig*>(m_combo.GetItemDataPtr(i));
 	m_stylestab.SetScheme(pScheme);
-	//m_keywordstab.SetScheme(pScheme);
+	m_keywordstab.SetScheme(pScheme);
 }
