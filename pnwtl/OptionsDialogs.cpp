@@ -415,3 +415,53 @@ void CSmartStartEditorDialog::SetValues(LPCTSTR startPhrase, LPCTSTR schemeName)
 	m_startPhrase = startPhrase;
 	m_schemeName = schemeName;
 }
+
+//////////////////////////////////////////////////////////////////////////////
+// CAFileEditorDialog
+//////////////////////////////////////////////////////////////////////////////
+
+LRESULT CAFileEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	CenterWindow( GetParent() );
+
+	CEdit edt = GetDlgItem( IDC_AFILE_STARTTEXT );
+	edt.SetWindowText( setFrom.c_str() );
+	
+	edt = GetDlgItem( IDC_AFILE_OTHERTEXT );
+	edt.SetWindowText( setTo.c_str() );
+
+	return 0;
+}
+
+
+LRESULT CAFileEditorDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CWindowText wtFrom( GetDlgItem( IDC_AFILE_STARTTEXT ) );
+	setFrom = (LPCTSTR)wtFrom;
+
+	CWindowText wtTo( GetDlgItem( IDC_AFILE_OTHERTEXT ) );
+	setTo = (LPCTSTR)wtTo;
+
+	EndDialog(wID);
+
+	return 0;
+}
+
+LRESULT CAFileEditorDialog::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	EndDialog(wID);
+
+	return 0;
+}
+
+void CAFileEditorDialog::GetValues(tstring& set1, tstring& set2)
+{
+	set1 = setFrom;
+	set2 = setTo;
+}
+
+void CAFileEditorDialog::SetValues(LPCTSTR set1, LPCTSTR set2)
+{
+	setFrom = set1;
+	setTo = set2;
+}

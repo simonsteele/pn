@@ -439,4 +439,43 @@ class COptionsPageNewFiles : public COptionsPageImpl<COptionsPageNewFiles>
 		CButton				m_ssCheck;
 };
 
+class SetsList;
+class AlternateFileSet;
+
+class COptionsPageAFiles : public COptionsPageImpl<COptionsPageAFiles>
+{
+	public:
+		COptionsPageAFiles();
+		~COptionsPageAFiles();
+
+		enum {IDD = IDD_PAGE_AFILES};
+
+		BEGIN_MSG_MAP(COptionsPageAFiles)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+
+			COMMAND_HANDLER(IDC_AFILES_ADDBUTTON, BN_CLICKED, OnAddClicked)
+			COMMAND_HANDLER(IDC_AFILES_EDITBUTTON, BN_CLICKED, OnEditClicked)
+			COMMAND_HANDLER(IDC_AFILES_REMOVEBUTTON, BN_CLICKED, OnRemoveClicked)
+		END_MSG_MAP()
+
+		virtual void OnInitialise();
+		virtual void OnOK();
+		virtual void OnCancel();
+		virtual LPCTSTR GetTreePosition();
+
+	protected:
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+		LRESULT OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+		void addItem(LPCTSTR set1, LPCTSTR set2, AlternateFileSet* lpData);
+
+	protected:
+		CListViewCtrl	m_list;
+		SetsList*		sets;
+		bool			m_bDirty;
+};
+
 #endif

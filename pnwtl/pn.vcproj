@@ -222,6 +222,9 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
 			<File
+				RelativePath=".\afiles.cpp">
+			</File>
+			<File
 				RelativePath="childfrm.cpp">
 			</File>
 			<File
@@ -335,6 +338,9 @@
 			Filter="h;hpp;hxx;hm;inl">
 			<File
 				RelativePath=".\aboutdlg.h">
+			</File>
+			<File
+				RelativePath=".\afiles.h">
 			</File>
 			<File
 				RelativePath=".\ChildFrm.h">
@@ -462,6 +468,9 @@
 			</File>
 			<File
 				RelativePath="res\font_tru.bmp">
+			</File>
+			<File
+				RelativePath=".\res\infoicon.ico">
 			</File>
 			<File
 				RelativePath="res\noproject.ico">

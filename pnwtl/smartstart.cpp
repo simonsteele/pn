@@ -44,7 +44,7 @@ SmartStart::SmartStart()
 		}
 		catch (XMLParserException& ex)
 		{
-			tstring stat = _T("Error loading SmartStart.xml: ");
+			tstring stat = _T("Error loading UserSmartStart.xml: ");
 			stat += ex.GetMessage();
 			g_Context.m_frame->SetStatusText(stat.c_str());
 		}

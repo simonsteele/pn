@@ -1114,7 +1114,7 @@ LRESULT CMainFrame::OnReplace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 }
 
 LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{		
+{
 	CSchemeManager* pSM = CSchemeManager::GetInstance();
 	LPCTSTR currentScheme = NULL;
 
@@ -1134,6 +1134,8 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsPageNewFiles	pageNewFiles(&schemeconfig);
 	COptionsPageTools		pageTools(&schemeconfig);
 
+	COptionsPageAFiles		pageAFiles;
+
 	schemeconfig.LoadConfig(pSM->GetPath(), pSM->GetCompiledPath());
 
 	COptionsDialog options;
@@ -1143,6 +1145,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	options.AddPage(&pageSchemes);
 	options.AddPage(&pageNewFiles);
 	options.AddPage(&pageTools);
+	options.AddPage(&pageAFiles);
 
 	if( wID != ID_TOOLS_DUMMY )
 		options.SetInitialPage(&general);

@@ -139,4 +139,31 @@ class CSmartStartEditorDialog : public CDialogImpl<CSmartStartEditorDialog>
 		tstring				m_schemeName;
 };
 
+class CAFileEditorDialog : public CDialogImpl<CAFileEditorDialog>
+{
+	public:
+		CAFileEditorDialog(){}
+
+		enum {IDD = IDD_AFILEEDITOR};
+
+		BEGIN_MSG_MAP(CAFileEditorDialog)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			COMMAND_ID_HANDLER(IDOK, OnOK)
+			COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
+			
+		END_MSG_MAP()
+
+		void GetValues(tstring& set1, tstring& set2);
+		void SetValues(LPCTSTR set1, LPCTSTR set2);
+
+	protected:
+		LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+	protected:
+		tstring setFrom;
+		tstring setTo;
+};
+
 #endif

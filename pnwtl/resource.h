@@ -143,6 +143,8 @@
 #define IDD_PAGE_NEWFILES               428
 #define IDD_PAGE_VISUALHELP             429
 #define IDD_TAB_MISC                    430
+#define IDD_PAGE_AFILES                 431
+#define IDD_AFILEEDITOR                 432
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_GOTOEDIT                    1004
@@ -167,11 +169,14 @@
 #define IDC_PHRASEEDIT                  1011
 #define IDC_OPT_LLCOLUMNEDIT            1011
 #define IDC_STYLE_SELFOREBUTTON         1011
+#define IDC_AFILE_STARTTEXT             1011
 #define IDC_FONT_COMBO                  1012
 #define IDC_TOOLS_REMOVEBUTTON          1012
 #define IDC_TE_BROWSEBUTTON             1012
 #define IDC_TE_DIRBUTTON                1012
 #define IDC_STYLE_SELBACKBUTTON         1012
+#define IDC_AFILE_STARTTEXT2            1012
+#define IDC_AFILE_OTHERTEXT             1012
 #define IDC_FONTSIZE_COMBO              1013
 #define IDC_STYLE_IGCOLBUTTON           1013
 #define IDC_SCHEMECOMBO                 1016
@@ -248,6 +253,10 @@
 #define IDC_STYLE_CURCOLBUTTON          1073
 #define IDC_STYLE_SELUSEFORE            1074
 #define IDC_PSHELPER_BUTTON             1076
+#define IDC_AFILES_LIST                 1077
+#define IDC_AFILES_ADDBUTTON            1078
+#define IDC_AFILES_EDITBUTTON           1079
+#define IDC_AFILES_REMOVEBUTTON         1080
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -255,6 +264,7 @@
 #define IDC_PSHELPER2_BUTTON            21205
 #define IDC_DIRECTION_GROUP             21207
 #define IDC_FINDCOMBO                   21208
+#define IDI_INFOICON                    32516
 #define ID_EDIT_FINDNEXT                32773
 #define ID_EDIT_GOTO                    32774
 #define ID_TOOLS_LECRLF                 32777
@@ -312,9 +322,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        315
+#define _APS_NEXT_RESOURCE_VALUE        316
 #define _APS_NEXT_COMMAND_VALUE         32889
-#define _APS_NEXT_CONTROL_VALUE         1077
+#define _APS_NEXT_CONTROL_VALUE         1081
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

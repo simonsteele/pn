@@ -741,6 +741,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
+IDI_INFOICON            ICON                    "res\\infoicon.ico"
 IDI_TEXTCLIPS           ICON                    "res\\textclips.ico"
 IDI_PROJECTS            ICON                    "res\\projects.ico"
 IDI_PROJECTFOLDER       ICON                    "res\\projectfolder.ico"
@@ -1165,6 +1166,39 @@ BEGIN
                     WS_TABSTOP,219,153,9,11,0,HIDC_PSHELPER2_BUTTON
 END
 
+IDD_PAGE_AFILES DIALOGEX 0, 0, 299, 200
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_AFILES_LIST,"SysListView32",LVS_REPORT | 
+                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
+                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,0,49,294,84
+    PUSHBUTTON      "&Add",IDC_AFILES_ADDBUTTON,126,138,48,18
+    PUSHBUTTON      "&Edit",IDC_AFILES_EDITBUTTON,180,138,48,18
+    PUSHBUTTON      "&Remove",IDC_AFILES_REMOVEBUTTON,246,138,48,18
+    LTEXT           "In many languages one file has an alternate counterpart file - like .cpp and .h. Configure file pairs using this options page so that you can jump between them with a single command.",
+                    IDC_STATIC,24,6,270,26
+    ICON            IDR_MDICHILD,IDC_STATIC,0,6,20,20
+    LTEXT           "Alternate File Pairs:",IDC_STATIC,0,38,74,9
+END
+
+IDD_AFILEEDITOR DIALOGEX 0, 0, 266, 114
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Edit Alternate File Pair"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,209,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,209,24,50,14
+    RTEXT           "Start Extensions:",IDC_STATIC,7,7,72,12
+    EDITTEXT        IDC_AFILE_STARTTEXT,83,7,118,14,ES_AUTOHSCROLL
+    RTEXT           "Alternate Extensions:",IDC_STATIC,1,26,78,12
+    EDITTEXT        IDC_AFILE_OTHERTEXT,83,26,118,14,ES_AUTOHSCROLL
+    LTEXT           "File extensions should be entered including the '.' dot character, separated by semi-colons, in order of precedence. e.g. \n\nStart: .cpp;.cxx;.c;.cc\nAlternate: .h;.hpp",
+                    IDC_STATIC,36,52,223,45
+    ICON            IDI_INFOICON,IDC_STATIC,7,53,21,20
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1274,6 +1308,22 @@ BEGIN
         RIGHTMARGIN, 296
         TOPMARGIN, 3
         BOTTOMMARGIN, 198
+    END
+
+    IDD_PAGE_AFILES, DIALOG
+    BEGIN
+        LEFTMARGIN, 2
+        RIGHTMARGIN, 296
+        TOPMARGIN, 3
+        BOTTOMMARGIN, 198
+    END
+
+    IDD_AFILEEDITOR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 259
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 107
     END
 END
 #endif    // APSTUDIO_INVOKED

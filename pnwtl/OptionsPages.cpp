@@ -1611,7 +1611,7 @@ void COptionsPageNewFiles::OnCancel()
 
 LPCTSTR COptionsPageNewFiles::GetTreePosition()
 {
-	return _T("New Files");
+	return _T("Files\\New Files");
 }
 
 LRESULT COptionsPageNewFiles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -1727,4 +1727,185 @@ LRESULT COptionsPageNewFiles::OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOO
 	OnEditClicked(0, 0, 0, b);
 
 	return 0;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// COptionsPageAFiles
+//////////////////////////////////////////////////////////////////////////////
+
+#include "afiles.h"
+
+class SetsList : public AFILES_LIST
+{
+};
+
+COptionsPageAFiles::COptionsPageAFiles()
+{
+	sets = NULL;
+	m_bDirty = false;
+}
+
+COptionsPageAFiles::~COptionsPageAFiles()
+{
+	if(sets)
+	{
+		AFILES_IT i;
+		for(i = sets->begin(); i != sets->end(); ++i)
+		{
+			delete (*i);
+		}
+		sets->clear();
+		delete sets;
+	}
+}
+
+void COptionsPageAFiles::OnInitialise()
+{
+	sets = new SetsList;
+
+	AlternateFiles* afiles = AlternateFiles::GetInstance();
+	const AFILES_LIST& theSets = afiles->GetSets();
+	for(AFILES_CIT i = theSets.begin(); i != theSets.end(); ++i)
+	{
+		AlternateFileSet* aFS = new AlternateFileSet( *(*i) );
+		sets->push_back( aFS );
+		
+		tstring temp1, temp2;
+		aFS->GetSet1String(temp1);
+		aFS->GetSet2String(temp2);
+
+		addItem(temp1.c_str(), temp2.c_str(), aFS);
+	}
+}
+
+void COptionsPageAFiles::OnOK()
+{
+	if(m_bDirty)
+	{
+		AlternateFiles* afiles = AlternateFiles::GetInstance();
+		afiles->Clear();
+		
+		// We orphan our AlternateFileSet instances into the AlternateFiles container.
+		afiles->SetSets(*sets);
+		afiles->Save();
+		
+		// Make sure we don't delete the orphaned items.
+		sets->clear();
+	}
+}
+
+void COptionsPageAFiles::OnCancel()
+{
+
+}
+
+LPCTSTR COptionsPageAFiles::GetTreePosition()
+{
+	return _T("Files\\Alternate Files");
+}
+
+LRESULT COptionsPageAFiles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	m_list.Attach(GetDlgItem(IDC_AFILES_LIST));
+	CRect rc;
+	m_list.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	m_list.GetClientRect(rc);
+	m_list.InsertColumn(0, _T("Extensions"), LVCFMT_LEFT, (rc.Width() / 2) - 10, 0);
+	m_list.InsertColumn(1, _T("Alternate Extensions"), LVCFMT_LEFT, (rc.Width() / 2) - 10, 0);
+
+	return 0;
+}
+
+LRESULT COptionsPageAFiles::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CAFileEditorDialog dlg;
+	if(dlg.DoModal() == IDOK)
+	{
+		tstring set1;
+		tstring set2;
+		dlg.GetValues(set1, set2);
+		AlternateFileSet* pSet = new AlternateFileSet(set1.c_str(), set2.c_str());
+		sets->push_back(pSet);
+
+		addItem(set1.c_str(), set2.c_str(), pSet);
+
+		m_bDirty = true;
+	}
+
+	return 0;
+}
+
+LRESULT COptionsPageAFiles::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int i = m_list.GetSelectedIndex();
+	if(i == -1)
+		return 0;
+
+	AlternateFileSet* set = reinterpret_cast<AlternateFileSet*>( m_list.GetItemData( i ) );
+
+	tstring temp1, temp2;
+
+	set->GetSet1String(temp1);
+	set->GetSet2String(temp2);
+
+	CAFileEditorDialog dlg;
+	dlg.SetValues(temp1.c_str(), temp2.c_str());
+
+	if(dlg.DoModal() == IDOK)
+	{
+		dlg.GetValues(temp1, temp2);
+
+		LVITEM lvi;
+		lvi.mask = LVIF_TEXT;
+		lvi.iItem  = i;
+		lvi.iSubItem = 0;
+		lvi.pszText = const_cast<LPTSTR>(temp1.c_str());
+		m_list.SetItem(&lvi);
+
+		lvi.iSubItem = 1;
+		lvi.pszText = const_cast<LPTSTR>(temp2.c_str());
+		m_list.SetItem(&lvi);
+
+		set->Set(temp1.c_str(), temp2.c_str());
+
+		m_bDirty = true;
+	}
+
+	return 0;
+}
+
+LRESULT COptionsPageAFiles::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int i = m_list.GetSelectedIndex();
+	if(i == -1)
+		return 0;
+
+	AlternateFileSet* set = reinterpret_cast<AlternateFileSet*>( m_list.GetItemData( i ) );
+
+	sets->remove(set);
+    
+	delete set;
+
+    m_list.DeleteItem(i);
+
+	return 0;
+}
+
+void COptionsPageAFiles::addItem(LPCTSTR set1, LPCTSTR set2, AlternateFileSet* lpData)
+{
+	LVITEM lvi;
+	lvi.mask = LVIF_TEXT | LVIF_PARAM;
+	lvi.pszText = const_cast<LPTSTR>(set1);
+	lvi.lParam = reinterpret_cast<LPARAM>(lpData);
+	lvi.iItem = m_list.GetItemCount();
+	lvi.iSubItem = 0;
+
+	int index = m_list.InsertItem(&lvi);
+
+	lvi.mask = LVIF_TEXT;
+	lvi.pszText = const_cast<LPTSTR>(set2);
+	lvi.iItem = index;
+	lvi.iSubItem = 1;
+
+	m_list.SetItem(&lvi);
 }
