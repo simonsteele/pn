@@ -66,7 +66,16 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		return 0;
 	}
 
-	wndMain.ShowWindow(nCmdShow);
+	// Using nCmdShow here stops us from setting the window to
+	// maximised in the Create function. This does break externally
+	// specifying maximised state, though.
+
+	STARTUPINFO si;
+	GetStartupInfo(&si);
+	if( (si.wShowWindow & SW_MAXIMIZE) == SW_MAXIMIZE )
+		wndMain.ShowWindow(SW_MAXIMIZE);
+	else
+		wndMain.ShowWindow(SW_SHOW/*nCmdShow*/);
 
 	int nRet = theLoop.Run();
 
