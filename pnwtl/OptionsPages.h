@@ -112,6 +112,32 @@ class COptionsPageVisual : public COptionsPageImpl<COptionsPageVisual>,
 		CPNColorButton	m_btnLLCol;
 };
 
+class COptionsPageConf : public COptionsPageImpl<COptionsPageConf>,
+							public CWinDataExchange<COptionsPageConf>
+{
+	public:
+		BEGIN_MSG_MAP(COptionsPageConf)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			REFLECT_NOTIFICATIONS()
+		END_MSG_MAP()
+		enum { IDD = IDD_PAGE_CONF };
+
+		BEGIN_DDX_MAP(COptionsPageConf)
+			DDX_RADIO(IDC_REOPEN_DOIT, m_iReOpen)
+			DDX_RADIO(IDC_REDROP_DOIT, m_iReDrop)
+		END_DDX_MAP()
+
+		virtual void OnOK();
+		virtual void OnInitialise();
+		virtual LPCTSTR GetTreePosition();
+
+	protected:
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+		int m_iReOpen;
+		int m_iReDrop;
+};
+
 class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 {
 	public:

@@ -138,8 +138,8 @@
 #define IDR_TBR_PROJECTS                316
 #define IDB_ABOUT                       319
 #define IDD_FILEPROPERTIES              320
-#define ID_MRUPROJECT_BASE				321
-#define ID_MRUPROJECT_MAX				340
+#define ID_MRUPROJECT_BASE              321
+#define ID_MRUPROJECT_MAX               340
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -153,6 +153,7 @@
 #define IDD_PAGE_AFILES                 431
 #define IDD_AFILEEDITOR                 432
 #define IDD_PAGE_EDITDEFS               433
+#define IDD_PAGE_CONF                   434
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_GOTOEDIT                    1004
@@ -277,6 +278,13 @@
 #define IDC_FILEPROP_CHARS              1086
 #define IDC_FILEPROP_WORDS              1087
 #define IDC_FILEPROP_FILENAME           1088
+#define IDC_REOPEN_SWITCH               1089
+#define IDC_REOPEN_DOIT                 1090
+#define IDC_REOPEN_ASKME                1091
+#define IDC_REDROP_SWITCH               1092
+#define IDC_REDROP_DOIT                 1093
+#define IDC_RADIO6                      1094
+#define IDC_REDROP_ASKME                1094
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -352,7 +360,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        321
 #define _APS_NEXT_COMMAND_VALUE         32905
-#define _APS_NEXT_CONTROL_VALUE         1089
+#define _APS_NEXT_CONTROL_VALUE         1092
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

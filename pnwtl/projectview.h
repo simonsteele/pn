@@ -146,29 +146,10 @@ public:
 	void			SetWorkspace(Projects::Workspace* ws);	
 
 protected:
-	HRESULT OnDragEnter(LPDATAOBJECT /*pDataObject*/, DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/)
-	{
-		::OutputDebugString(_T("OnDragEnter"));
-		return E_NOTIMPL;
-	}
-
-	HRESULT OnDragOver(DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/)
-	{
-		::OutputDebugString(_T("OnDragOver"));
-		return E_NOTIMPL;
-	}
-
-	HRESULT OnDragLeave(void)
-	{
-		::OutputDebugString(_T("OnDragLeave"));
-		return E_NOTIMPL;
-	}
-
-	HRESULT OnDrop(LPDATAOBJECT /*pDataObject*/, DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/)
-	{
-		::OutputDebugString(_T("OnDrop"));
-		return E_NOTIMPL;
-	}
+	HRESULT OnDragEnter(LPDATAOBJECT /*pDataObject*/, DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/);
+	HRESULT OnDragOver(DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/);
+	HRESULT OnDragLeave(void);
+	HRESULT OnDrop(LPDATAOBJECT /*pDataObject*/, DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/);
 
 protected:
 	void		buildTree();
@@ -198,6 +179,8 @@ protected:
 	LRESULT OnAddProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+	void handleDrop(HDROP hDrop, HTREEITEM hDropItem, Projects::Folder* pFolder);
 
 protected:
 	HTREEITEM				hLastItem;

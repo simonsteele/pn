@@ -15,19 +15,21 @@ What's new?
 6) Look in projects for relative file names in the output window.
 7) Look in the current directory for relative file names in the output window.
 8) Added current project path to the tool variables.
+9) New (fairly empty) confirmations options page.
 
 Bug Fixes:
 ----------
 
-1) Empty search on google causes crash (SF Bug #870649).
-2) Change line endings in Save-As dialog doesn't work (SF Bug #885586).
-3) Tools run without capture don't show (SF Bug #896269).
-4) Conflict in shortcut assignment (SF Bug #891208).
-5) Crash if mouse over 'Recent Files'->(empty) (SF Bug #900929).
-6) PN doesn't become active after clicking Output window (SF Bug #760362).
-7) HTML export doubles the '&' (SF Bug #899079).
-8) HTML export leaves open the last span tag (SF Bug #904149).
-9) Fixed HTML export to use full style range (previously stopped at 31).
+1)  Empty search on google causes crash (SF Bug #870649).
+2)  Change line endings in Save-As dialog doesn't work (SF Bug #885586).
+3)  Tools run without capture don't show (SF Bug #896269).
+4)  Conflict in shortcut assignment (SF Bug #891208).
+5)  Crash if mouse over 'Recent Files'->(empty) (SF Bug #900929).
+6)  PN doesn't become active after clicking Output window (SF Bug #760362).
+7)  HTML export doubles the '&' (SF Bug #899079).
+8)  HTML export leaves open the last span tag (SF Bug #904149).
+9)  Fixed HTML export to use full style range (previously stopped at 31).
+10) Dropped files always open new windows. (SF Bug #873386).
 
 If you find a bug:
 ------------------

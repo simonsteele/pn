@@ -195,6 +195,42 @@ LRESULT COptionsPageVisual::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 }
 
 //////////////////////////////////////////////////////////////////////////////
+// COptionsPageConf
+//////////////////////////////////////////////////////////////////////////////
+
+void COptionsPageConf::OnOK()
+{
+	DoDataExchange(TRUE);
+
+	COptionsManager* pOM = COptionsManager::GetInstance();
+
+	pOM->AlreadyOpenAction = (EAlreadyOpenAction)m_iReOpen;
+	pOM->AlreadyOpenDropAction = (EAlreadyOpenAction)m_iReDrop;
+}
+
+void COptionsPageConf::OnInitialise()
+{
+	COptionsManager* pOM = COptionsManager::GetInstance();
+
+	 m_iReOpen = (int)pOM->AlreadyOpenAction;
+	 m_iReDrop = (int)pOM->AlreadyOpenDropAction;
+
+	 DoDataExchange();
+}
+
+LPCTSTR COptionsPageConf::GetTreePosition()
+{
+	return _T("General\\Confirmations");
+}
+
+LRESULT COptionsPageConf::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+		
+	return 0;
+}
+
+
+//////////////////////////////////////////////////////////////////////////////
 // CTabPageKeywords
 //////////////////////////////////////////////////////////////////////////////
 

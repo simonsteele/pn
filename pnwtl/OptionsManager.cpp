@@ -48,7 +48,6 @@ void COptionsManager::Load()
 	TabWidth = reg.ReadInt(_T("TabWidth"), 4);
 	UseTabs = reg.ReadBool(_T("UseTabs"), true);
 	LineNumbers = reg.ReadBool(_T("LineNumbers"), false);
-	AlreadyOpenAction = (EAlreadyOpenAction)reg.ReadInt(_T("AlreadyOpenAction"), eSwitch);
 	LineHighlight = reg.ReadBool(_T("LineHighlight"), false);
 	LineHighlightColour = reg.ReadInt(_T("LineHighlightColour"), RGB(255, 255, 224));
 	RightGuide = reg.ReadInt(_T("RightGuide"), 0);
@@ -62,6 +61,8 @@ void COptionsManager::Load()
 	reg.OpenKey(cs.c_str(), true);
 	MaximiseNew = reg.ReadBool(_T("MaximiseNew"), false);
 	ShowFullPath = reg.ReadBool(_T("ShowFullPath"), false);
+	AlreadyOpenAction = (EAlreadyOpenAction)reg.ReadInt(_T("AlreadyOpenAction"), eSwitch);
+	AlreadyOpenDropAction = (EAlreadyOpenAction)reg.ReadInt(_T("AlreadyOpenDropAction"), eSwitch);
 
 	// Find and Replace Settings ------------
 	cs = root + PNSK_FIND;
@@ -102,7 +103,6 @@ void COptionsManager::Save()
 	reg.WriteInt(_T("TabWidth"), TabWidth);
 	reg.WriteBool(_T("UseTabs"), UseTabs);
 	reg.WriteBool(_T("LineNumbers"), LineNumbers);
-	reg.WriteInt(_T("AlreadyOpenAction"), AlreadyOpenAction);
 	reg.WriteBool(_T("LineHighlight"), LineHighlight);
 	reg.WriteInt(_T("LineHighlightColour"), LineHighlightColour);
 	reg.WriteInt(_T("RightGuide"), RightGuide);
@@ -116,6 +116,8 @@ void COptionsManager::Save()
 	reg.OpenKey(cs.c_str(), true);
 	reg.WriteBool(_T("MaximiseNew"), MaximiseNew);
 	reg.WriteBool(_T("ShowFullPath"), ShowFullPath);
+	reg.WriteInt(_T("AlreadyOpenAction"), AlreadyOpenAction);
+	reg.WriteInt(_T("AlreadyOpenDropAction"), AlreadyOpenDropAction);
 
 	// Find and Replace Settings ------------
 	cs = root + PNSK_FIND;

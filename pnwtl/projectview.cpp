@@ -729,6 +729,163 @@ HTREEITEM CProjectTreeCtrl::AddFolderNode(Projects::Folder* folder, HTREEITEM hP
 	return hFolder;
 }
 
+HRESULT CProjectTreeCtrl::OnDragEnter(LPDATAOBJECT pDataObject, DWORD /*dwKeyState*/, POINTL pt, LPDWORD pdwEffect)
+{
+	IEnumFORMATETC* pFormats = NULL;
+
+	*pdwEffect = DROPEFFECT_NONE;
+
+	if( !SUCCEEDED(pDataObject->EnumFormatEtc( DATADIR_GET, &pFormats )) )
+		return E_FAIL;
+
+	FORMATETC etcDetails[3];
+
+	ULONG fetched = 0;
+	bool found = false;
+	
+	do
+	{
+		pFormats->Next( 3, &etcDetails[0], &fetched);
+
+		for(unsigned int i = 0; i < fetched; i++)
+		{
+			if(etcDetails[i].cfFormat == CF_HDROP)
+			{
+				found = true;
+				break;
+			}
+		}
+		
+	} while(fetched > 0 && !found);
+
+	pFormats->Release();
+
+	if(found)
+	{
+		CPoint pt2(pt.x, pt.y);
+		ScreenToClient(&pt2);
+
+		TVHITTESTINFO hti;
+		memset(&hti, 0, sizeof(TVHITTESTINFO));
+		hti.pt.x = pt2.x;
+		hti.pt.y = pt2.y;
+		TreeView_HitTest(m_hWnd, &hti);
+
+		if(hti.flags != TVHT_NOWHERE)
+		{
+			*pdwEffect = DROPEFFECT_LINK;
+		}
+	}
+	
+	return S_OK;
+}
+
+
+HRESULT CProjectTreeCtrl::OnDragOver(DWORD /*dwKeyState*/, POINTL pt, LPDWORD pdwEffect)
+{
+	CPoint pt2(pt.x, pt.y);
+	ScreenToClient(&pt2);
+
+	TVHITTESTINFO hti;
+	memset(&hti, 0, sizeof(TVHITTESTINFO));
+	hti.pt.x = pt2.x;
+	hti.pt.y = pt2.y;
+	TreeView_HitTest(m_hWnd, &hti);
+	
+
+	if(hti.flags != TVHT_NOWHERE)
+	{
+		*pdwEffect = DROPEFFECT_LINK;
+		TreeView_SelectDropTarget(m_hWnd, hti.hItem);
+	}
+	else
+		*pdwEffect = DROPEFFECT_NONE;
+
+	::OutputDebugString(_T("OnDragOver"));
+	return S_OK;
+}
+
+HRESULT CProjectTreeCtrl::OnDragLeave(void)
+{
+	TreeView_SelectDropTarget(m_hWnd, NULL);
+	::OutputDebugString(_T("OnDragLeave"));
+	return S_OK;
+}
+
+
+HRESULT CProjectTreeCtrl::OnDrop(LPDATAOBJECT pDataObject, DWORD /*dwKeyState*/, POINTL pt, LPDWORD pdwEffect)
+{
+	*pdwEffect = DROPEFFECT_NONE;
+
+	CPoint pt2(pt.x, pt.y);
+	ScreenToClient(&pt2);
+
+	TVHITTESTINFO hti;
+	memset(&hti, 0, sizeof(TVHITTESTINFO));
+	hti.pt.x = pt2.x;
+	hti.pt.y = pt2.y;
+	TreeView_HitTest(m_hWnd, &hti);
+
+	HRESULT hret = S_OK;
+
+	if(hti.flags != TVHT_NOWHERE && hti.hItem != NULL)
+	{
+		ProjectType* ptype = reinterpret_cast<ProjectType*>( GetItemData(hti.hItem) );
+		if(ptype != NULL && ptype->GetType() == ptFolder)
+		{
+			FORMATETC fmtetc;
+			fmtetc.cfFormat = CF_HDROP;
+			fmtetc.ptd = NULL;
+			fmtetc.dwAspect = DVASPECT_CONTENT;
+			fmtetc.lindex = -1;
+			fmtetc.tymed = TYMED_HGLOBAL;
+
+			// get the CF_HDROP data from drag source
+			STGMEDIUM medium;
+			HRESULT hr = pDataObject->GetData(&fmtetc, &medium);
+
+			if (!FAILED(hr))
+			{
+				// call the helper routine which will notify the Form
+				// of the drop
+				handleDrop((HDROP)medium.hGlobal, hti.hItem, static_cast<Projects::Folder*>( ptype ));
+
+				if (medium.pUnkForRelease)
+					ReleaseStgMedium(&medium);
+				else
+					GlobalFree(medium.hGlobal);
+
+				*pdwEffect = DROPEFFECT_LINK;
+			}
+			else
+				hret = hr;
+		}		
+	}
+
+	TreeView_SelectDropTarget(m_hWnd, NULL);
+
+	::OutputDebugString(_T("OnDrop"));
+	return hret;
+}
+
+void CProjectTreeCtrl::handleDrop(HDROP hDrop, HTREEITEM hDropItem, Projects::Folder* pFolder)
+{
+	TCHAR	buf[MAX_PATH+1];
+	
+	int files = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+	for(int i = 0; i < files; i++)
+	{
+		DragQueryFile(hDrop, i, buf, MAX_PATH);
+	
+		///@todo: Handle directories dropped - need a IsDirectory style thing.
+
+		File* pAdded = pFolder->AddFile(buf);
+		AddFileNode(pAdded, hDropItem, NULL);
+	}
+
+	//DragFinish(hDrop);
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // CProjectDocker
 //////////////////////////////////////////////////////////////////////////////

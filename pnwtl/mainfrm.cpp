@@ -771,8 +771,12 @@ LRESULT CMainFrame::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	for(int i = 0; i < files; i++)
 	{
 		DragQueryFile(hDrop, i, buf, MAX_PATH);
-		OpenFile(buf);
-		AddMRUEntry(buf);
+		
+		if( !CheckAlreadyOpen(buf, COptionsManager::GetInstance()->AlreadyOpenDropAction) )
+		{
+			OpenFile(buf);
+			AddMRUEntry(buf);
+		}
 	}
 
 	DragFinish(hDrop);
@@ -1228,6 +1232,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsPageGeneral			general;
 	COptionsPageEditDefaults	editDefs;
 	COptionsPageVisual			visual;
+	COptionsPageConf			confirmations;
 
 	COptionsPageStyle			pageStyle(&schemeconfig);
 	COptionsPageSchemes			pageSchemes(&schemeconfig);
@@ -1242,6 +1247,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	options.AddPage(&general);
 	options.AddPage(&editDefs);
 	options.AddPage(&visual);
+	options.AddPage(&confirmations);
 	options.AddPage(&pageStyle);
 	options.AddPage(&pageSchemes);
 	options.AddPage(&pageNewFiles);
@@ -1427,12 +1433,13 @@ bool CMainFrame::CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction action)
 				{
 					CString str;
 					str.Format(_T("Do you want to open another copy of %s?"), filename);
-					if( MessageBox(str, _T("Programmers Notepad 2"), MB_YESNO) == IDYES )
+					DWORD dwRes = MessageBox(str, _T("Programmers Notepad 2"), MB_YESNOCANCEL);
+					if( dwRes == IDYES )
 					{
 						// Just claim the file wasn't open...
 						s.bFound = false;
 					}
-					else
+					else if(dwRes == IDNO )
 						s.pMatch->BringWindowToTop();
 				}
 				break;

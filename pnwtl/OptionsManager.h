@@ -65,6 +65,7 @@ class COptionsManager
 		COLORREF LineHighlightColour;
 		COLORREF RightGuideColour;
 		EPNSaveFormat LineEndings;
+		EAlreadyOpenAction AlreadyOpenDropAction;
 		EAlreadyOpenAction AlreadyOpenAction;
 		ECodePage DefaultCodePage;
 
