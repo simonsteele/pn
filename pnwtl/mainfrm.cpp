@@ -20,6 +20,12 @@
 
 #include "OptionsPages.h"
 
+#if defined (_DEBUG)
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4)
 {
 	m_FindDialog = NULL;
