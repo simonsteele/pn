@@ -564,6 +564,19 @@ LRESULT CChildFrame::OnChildIsModified(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 		return FALSE;
 }
 
+LRESULT CChildFrame::OnChildSaveModified(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	if( CanSave() )
+	{
+		Save();
+		return 0;
+	}
+	else
+	{
+		return SaveAs() ? 0 : -1;
+	}
+}
+
 ////////////////////////////////////////////////////
 // Command Handlers
 

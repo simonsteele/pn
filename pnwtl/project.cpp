@@ -1091,6 +1091,9 @@ bool Workspace::CanSave()
 
 void Workspace::Save()
 {
+	if(fileName.size() == 0)
+		return;
+
 	FILE* hFile = _tfopen(fileName.c_str(), _T("wb"));
 
 	genxWriter w = genxNew(NULL, NULL, NULL);

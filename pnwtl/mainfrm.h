@@ -95,6 +95,7 @@ public:
 		MESSAGE_HANDLER(PN_INITIALISEFRAME, OnInitialiseFrame)
 		MESSAGE_HANDLER(WM_MENUSELECT, OnMenuSelect)
 		MESSAGE_HANDLER(m_uiMIMessageID, OnMultiInstanceMsg)
+		MESSAGE_HANDLER(UWM_MDICHILDSAVEMODIFIED, OnSaveModifiedItem)
 		
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
@@ -104,6 +105,7 @@ public:
 		COMMAND_ID_HANDLER(ID_FILE_SAVEALL, OnFileSaveAll)
 		COMMAND_ID_HANDLER(ID_FILE_OPENPROJECT, OnFileOpenProject)
 		COMMAND_ID_HANDLER(ID_FILE_CLOSEWORKSPACE, OnFileCloseWorkspace)
+		COMMAND_ID_HANDLER(ID_FILE_CLOSEALL, OnFileCloseAll)
 		
 		// Global edit action handlers - simply to map accelerators to action...
 		COMMAND_ID_HANDLER(ID_EDIT_CUT, OnCut)
@@ -185,6 +187,8 @@ public:
 
 	LRESULT OnMultiInstanceMsg(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
+	LRESULT OnSaveModifiedItem(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
 	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -197,6 +201,7 @@ public:
 	LRESULT OnMRUProjectSelected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileOpenProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileCloseWorkspace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFileCloseAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	// Edit
 	LRESULT OnCut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -259,6 +264,7 @@ public:
 	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL, HWND hWndCaller = NULL);
 	virtual void SetStatusText(LPCTSTR text, bool bLongLife = true);
 	virtual void SaveAll();
+	virtual bool CloseAll();
 	virtual bool Open(LPCTSTR pathname, bool bAddMRU = false);
 	virtual bool CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction action = (EAlreadyOpenAction)OPTIONS->GetCached(Options::OAlreadyOpenAction));
 	virtual Projects::Workspace* GetActiveWorkspace();

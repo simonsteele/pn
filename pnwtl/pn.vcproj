@@ -716,6 +716,9 @@
 				RelativePath="include\pcreplus.cpp">
 			</File>
 			<File
+				RelativePath=".\res\pn.rc2">
+			</File>
+			<File
 				RelativePath="include\Utf8_16.cpp">
 			</File>
 			<File

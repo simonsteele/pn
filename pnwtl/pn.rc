@@ -13,6 +13,7 @@
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include "atlres.h"
+#include "res/pn.rc2"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -40,6 +41,7 @@ END
 2 TEXTINCLUDE 
 BEGIN
     "#include ""atlres.h""\r\n"
+	"#include ""res/pn.rc2""\r\n"
     "\0"
 END
 
@@ -126,6 +128,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Close\tCtrl+F4",             ID_FILE_CLOSE
         MENUITEM "Close Proje&ct(s)",           301
+        MENUITEM "Close All",                   ID_FILE_CLOSEALL
         MENUITEM SEPARATOR
         MENUITEM "&Print...\tCtrl+P",           ID_FILE_PRINT
         MENUITEM "Print Set&up...",             ID_FILE_PRINT_SETUP
@@ -250,18 +253,20 @@ IDR_MDICHILD            ICON                    "res\\pnDoc.ico"
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 169, 129
+IDD_ABOUTBOX DIALOGEX 0, 0, 255, 171
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    CONTROL         319,IDC_ABOUTIMAGE,"Static",SS_BITMAP,8,7,153,55
-    DEFPUSHBUTTON   "OK",IDOK,112,108,50,14
-    CTEXT           "",IDC_VERSIONSTATIC,7,70,153,32
-    CONTROL         "",IDC_TOPSTATIC,"Static",SS_ETCHEDHORZ,7,6,156,1
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDVERT,7,7,1,57
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,7,62,156,1
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDVERT,161,6,1,58
+    CONTROL         319,IDC_ABOUTIMAGE,"Static",SS_BITMAP | SS_CENTERIMAGE,7,
+                    7,64,159
+    DEFPUSHBUTTON   "OK",IDOK,198,152,50,14
+    LTEXT           "",IDC_VERSIONSTATIC,78,24,153,30
+    CONTROL         "",IDC_TOPSTATIC,"Static",SS_ETCHEDHORZ,7,7,65,1
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDVERT,7,7,1,159
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,8,165,65,1
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDVERT,71,7,1,159
+    LTEXT           "Programmers Notepad 2",IDC_NAME,77,10,146,12
 END
 
 IDD_PNSAVE DIALOG  0, 0, 230, 14
@@ -286,9 +291,9 @@ BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 162
+        RIGHTMARGIN, 248
         TOPMARGIN, 7
-        BOTTOMMARGIN, 122
+        BOTTOMMARGIN, 166
     END
 
     IDD_PNSAVE, DIALOG
@@ -1353,45 +1358,6 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Version
-//
-
-VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,5,29
- PRODUCTVERSION 2,0,5,29
- FILEFLAGSMASK 0x3fL
-#ifdef _DEBUG
- FILEFLAGS 0x1L
-#else
- FILEFLAGS 0x0L
-#endif
- FILEOS 0x4L
- FILETYPE 0x2L
- FILESUBTYPE 0x0L
-BEGIN
-    BLOCK "StringFileInfo"
-    BEGIN
-        BLOCK "040904b0"
-        BEGIN
-            VALUE "CompanyName", "Simon Steele (Echo Software)"
-            VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.5.29"
-            VALUE "InternalName", "PNWTL"
-            VALUE "LegalCopyright", "Copyright © 2002-2004 Simon Steele (Echo Software)"
-            VALUE "OriginalFilename", "pn.exe"
-            VALUE "ProductName", "Programmers Notepad"
-            VALUE "ProductVersion", "2.0.5.29-devel"
-        END
-    END
-    BLOCK "VarFileInfo"
-    BEGIN
-        VALUE "Translation", 0x409, 1200
-    END
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // RT_MANIFEST
 //
 
@@ -1409,7 +1375,7 @@ BEGIN
     ID_EDITOR_WORDWRAP      "Toggle word wrap"
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
     ID_EDITOR_LINENOS       "Toggle line numbers display"
-    IDS_ABOUTVERSIONSTRING  "Programmers Notepad 2\nv%s\n\nCopyright (c) 2002-2004 Simon Steele"
+    IDS_ABOUTVERSIONSTRING  "Version: v%s\nCopyright: Copyright © 2002-2004 Simon Steele"
     IDS_TOOLFORMATSTRINGS   "%f: File Name\n%n: File Name (no ext)\n%l: Current Line Number\n%?: Ask for parameters\n%p: Current Project File|%d: Path of File\n%c: Column\n%%: Percent Symbol\n%w: Current word\n%g: Project Group File"
     IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c: Column"
     ID_FILE_NEW_PROJECT     "Create a new project."

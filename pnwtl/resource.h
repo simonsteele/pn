@@ -291,8 +291,8 @@
 #define IDC_REDROP_DOIT                 1093
 #define IDC_REDROP_ASKME                1094
 #define IDC_TAB1                        1096
-#define IDC_TREE1                       1097
 #define IDC_SHELLTREE                   1097
+#define IDC_NAME                        1098
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -376,6 +376,7 @@
 #define ID_PROJECT_SORTFOLDERS          32916
 #define ID_PROJECT_ADDMAGICFOLDER       32917
 #define ID_PROJECT_MAGICADDFOLDER       32918
+#define ID_FILE_CLOSEALL                32920
 #define IDC_FINDTEXT_LABEL              65535
 
 // Next default values for new objects
@@ -383,8 +384,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        325
-#define _APS_NEXT_COMMAND_VALUE         32920
-#define _APS_NEXT_CONTROL_VALUE         1098
+#define _APS_NEXT_COMMAND_VALUE         32921
+#define _APS_NEXT_CONTROL_VALUE         1099
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

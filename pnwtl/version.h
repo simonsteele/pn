@@ -1,1 +1,10 @@
-#define PN_VERSION	_T("2.0.5.29-devel")
+#define PN_MAJOR			2
+#define PN_MINOR			0
+#define PN_REVISION			5
+#define PN_BUILD			31
+#define PN_VERSTRING		"2.0.5.31"
+
+#define PN_VIVERSION		PN_MAJOR,PN_MINOR,0,0
+#define PN_VIVERSION_FILE	PN_MAJOR,PN_MINOR,PN_REVISION,PN_BUILD
+#define PN_VERSION			PN_VERSTRING
+#define PN_VERSION_FULL		PN_VERSTRING "-devel"

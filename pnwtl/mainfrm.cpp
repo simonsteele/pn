@@ -34,6 +34,8 @@
 #include "SchemeConfig.h"	// Scheme Configuration
 #include <dbstate.h>		// Docking window state stuff...
 
+#include "projectholder.h"
+
 #if defined (_DEBUG)
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -205,6 +207,58 @@ void __stdcall CMainFrame::FileOpenNotify(CChildFrame* pChild, SChildEnumStruct*
 	}
 }
 
+bool CMainFrame::CloseAll()
+{
+	bool bRet = false;
+
+	CComPtr<ITabbedMDIChildModifiedList> modifiedItems;
+	long modifiedCount = 0;
+
+	// Find any children that report they're modified...
+	m_tabbedClient.FindModified(&modifiedItems);
+	
+	if(modifiedItems == NULL)
+	{
+		::CreateTabbedMDIChildModifiedList(&modifiedItems);
+	}
+	
+	// Now add any modified projects items...
+	getProjectsModified(modifiedItems);
+
+	// Display the "save modified items" dialog with
+	// checkboxes for each item if there's anything modified.
+	modifiedItems->get_Count(&modifiedCount);
+	if(modifiedCount > 0)
+	{
+		//  There's at least one modified item
+		CSaveModifiedItemsDialog dialog(modifiedItems, true);
+
+		INT_PTR response = dialog.DoModal();
+
+		switch(response)
+		{
+		case IDYES:
+			// The dialog will update the list and remove
+			// any items that the user unchecked
+			m_tabbedClient.SaveModified(modifiedItems);
+			bRet = true;
+			break;
+
+		case IDNO:
+			bRet = true;
+			break;
+
+		case IDCANCEL:
+			// Do nothing...
+			break;
+		}
+	}
+	else
+		bRet = true;
+
+	return bRet;
+}
+
 void CMainFrame::OnSchemeNew(LPVOID data)
 {	
 	CChildFrame* pChild = NewEditor();
@@ -364,53 +418,10 @@ LRESULT CMainFrame::OnChildNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 
 LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	CComPtr<ITabbedMDIChildModifiedList> modifiedItems;
-	long modifiedCount = 0;
-
-	// Find any children that report they're modified...
-	m_tabbedClient.FindModified(&modifiedItems);
-	
-	if(modifiedItems == NULL)
+	if(CloseAll())
 	{
-		::CreateTabbedMDIChildModifiedList(&modifiedItems);
-	}
-	
-	// Now add any modified projects items...
-	getProjectsModified(modifiedItems);
-
-	// Display the "save modified items" dialog with
-	// checkboxes for each item if there's anything modified.
-	modifiedItems->get_Count(&modifiedCount);
-	if(modifiedCount > 0)
-	{
-		//  There's at least one modified item
-		CSaveModifiedItemsDialog dialog(modifiedItems, true);
-
-		INT_PTR response = dialog.DoModal();
-
-		switch(response)
-		{
-		case IDYES:
-			// The dialog will update the list and remove
-			// any items that the user unchecked
-			m_tabbedClient.SaveModified(modifiedItems);
-			bHandled = FALSE;
-			break;
-
-		case IDNO:
-			bHandled = FALSE;
-			break;
-
-		case IDCANCEL:
-			// Do nothing...
-			break;
-		}
-	}
-	else
 		bHandled = FALSE;
 
-	if(FALSE == bHandled)
-	{
 		// Still going to close...
 		SaveGUIState();
 
@@ -418,7 +429,7 @@ LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		CloseAndFreeDlg(m_ReplaceDialog);
 		m_FindDialog = NULL;
 		m_ReplaceDialog = NULL;
-	}
+	}		
 
 	return 0;
 }
@@ -967,6 +978,79 @@ LRESULT CMainFrame::OnMultiInstanceMsg(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
 	return 0;
 }
 
+/**
+ * This is the handler for the tabbing framework's modified file saving
+ * stuff. This handler deals with the project group and any modified projects.
+ */
+LRESULT CMainFrame::OnSaveModifiedItem(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+{
+	ITabbedMDIChildModifiedItem* pMI = reinterpret_cast<ITabbedMDIChildModifiedItem*>( lParam );
+
+	CComPtr<IUnknown> pi;
+	CComPtr<IProjectHolder> ph;
+
+	// See if we have any user data in this item. If we do, then
+	// it's probably a project group. This is held in an IProjectHolder.
+	pMI->get_UserData(&pi);
+	if(pi)
+		pi->QueryInterface(&ph);
+
+	if(ph)
+	{
+		// It's gonna be a project group.
+		Projects::Workspace* projectGroup;
+		ph->get_ProjectGroup(&projectGroup);
+		if(projectGroup != NULL)
+		{
+			if(SaveWorkspace(projectGroup, false) == IDCANCEL)
+				return 1;
+		}
+	}
+	else
+	{
+		// No project group, we see if there are any sub items of
+		// the item - if so they're projects.
+		CComPtr<ITabbedMDIChildModifiedList> subItems;
+		pMI->get_SubItems(&subItems);
+
+		long count;
+		subItems->get_Count(&count);
+		
+		if(count == 0)
+		{
+			// nope, carry on.
+			bHandled = FALSE;
+			return 0;
+		}
+
+		// yep, let's iterate 'em and save 'em.
+		for(long i = 0; i < count; i++)
+		{
+			CComPtr<ITabbedMDIChildModifiedItem> mi;
+			if(FAILED(subItems->get_Item(i, &mi)))
+				RETURN_UNEXPECTED( _T("A project modified item did not contain an IProjectHolder instance."), 1);
+
+			mi->get_UserData(&pi);
+			if(pi)
+				pi->QueryInterface(&ph);
+			else
+				continue;
+
+			if(ph)
+			{	
+				Projects::Project* project;
+				ph->get_Project(&project);
+				if(project != NULL)
+				{
+					project->Save();
+				}
+			}
+		}
+	}
+
+	return 0;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Command Handlers...
 
@@ -1146,6 +1230,13 @@ LRESULT CMainFrame::OnFileOpenProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 LRESULT CMainFrame::OnFileCloseWorkspace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CloseWorkspace(true);
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnFileCloseAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CloseAll();
 
 	return 0;
 }
@@ -2193,12 +2284,18 @@ bool CMainFrame::getProjectsModified(ITabbedMDIChildModifiedList* pModifiedList)
 			// No, the workspace is dirty itself...
 			CComPtr<ITabbedMDIChildModifiedItem> wsmod;
 			::CreateTabbedMDIChildModifiedItem(m_hWnd, L"Project Group", CT2CW(workspace->GetName()), L"Project Group", 0, ::LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_WORKSPACE)), &wsmod);
+			
+			CComPtr<IProjectHolder> ph;
+			::CreateProjectHolder(NULL, workspace, &ph);
+			wsmod->putref_UserData(ph);
+
 			pModifiedList->Insert(-1, wsmod);
 			bRet = true;
 		}
 
         CComPtr<ITabbedMDIChildModifiedItem> wsitem;
 		::CreateTabbedMDIChildModifiedItem(m_hWnd, L"Projects", CT2CW(workspace->GetName()), L"Projects", 0, ::LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_WORKSPACE)), &wsitem);
+		
 		CComPtr<ITabbedMDIChildModifiedList> subitems;
 		wsitem->get_SubItems(&subitems);
 
@@ -2211,8 +2308,14 @@ bool CMainFrame::getProjectsModified(ITabbedMDIChildModifiedList* pModifiedList)
 		{
 			if((*i)->IsDirty())
 			{
-				ITabbedMDIChildModifiedItem* pitem;
+				CComPtr<ITabbedMDIChildModifiedItem> pitem;
+				//ITabbedMDIChildModifiedItem* pitem;
 				::CreateTabbedMDIChildModifiedItem(m_hWnd, L"Project", CT2CW((*i)->GetName()), L"Project", 0, ::LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_PROJECTFOLDER)), &pitem);
+				
+				CComPtr<IProjectHolder> ph;
+				::CreateProjectHolder((*i), NULL, &ph);
+				pitem->putref_UserData(ph);
+
 				subitems->Insert(-1, pitem);
 				addCount++;
 			}

@@ -62,6 +62,7 @@ public:
 		MESSAGE_HANDLER(PN_TOOLRUNUPDATE, OnToolFinished)
 		MESSAGE_HANDLER(PN_SCHEMECHANGED, OnSchemeChanged)
 		MESSAGE_HANDLER(UWM_MDICHILDISMODIFIED, OnChildIsModified)
+		MESSAGE_HANDLER(UWM_MDICHILDSAVEMODIFIED, OnChildSaveModified)
 
 		//Now handled globally: Cut, Copy, Paste, Undo
 		//Still handled locally: Redo...
@@ -186,6 +187,7 @@ public:
 	LRESULT OnToolFinished(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSchemeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnChildIsModified(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnChildSaveModified(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	
 	////////////////////////////////////////////////////
 	// Command Handlers

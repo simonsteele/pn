@@ -34,6 +34,29 @@ public:
 		
 		strVersion.Format(strTemp, PN_VERSION);
 
+		CStatic sName;
+		sName.Attach(GetDlgItem(IDC_NAME));
+		
+		//fnTitle.CreatePointFont(12, _T("MS Shell Dlg 2"));
+		fnTitle.CreateFont(
+			14,                        // nHeight
+			0,                         // nWidth
+			0,                         // nEscapement
+			0,                         // nOrientation
+			FW_SEMIBOLD,               // nWeight
+			FALSE,                     // bItalic
+			FALSE,                     // bUnderline
+			0,                         // cStrikeOut
+			ANSI_CHARSET,              // nCharSet
+			OUT_DEFAULT_PRECIS,        // nOutPrecision
+			CLIP_DEFAULT_PRECIS,       // nClipPrecision
+			DEFAULT_QUALITY,           // nQuality
+			DEFAULT_PITCH | FF_SWISS,  // nPitchAndFamily
+			_T("MS Shell Dlg"));     // lpszFacename
+
+
+		sName.SetFont(fnTitle);
+
 		::SetWindowText( GetDlgItem(IDC_VERSIONSTATIC), (LPCTSTR)strVersion);
 
 		return TRUE;
@@ -44,6 +67,8 @@ public:
 		EndDialog(wID);
 		return 0;
 	}
+
+	CFont fnTitle;
 };
 
 #endif // #ifndef aboutdlg_h__included
