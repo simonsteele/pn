@@ -11,6 +11,8 @@
 #ifndef pngenx_h__included
 #define pngenx_h__included
 
+#include "encoding.h"
+
 /**
  * Wraps up the details of starting and stopping writing an XML file using genx.
  */
@@ -23,7 +25,7 @@ public:
 		
 		m_writer = genxNew(NULL, NULL, NULL);
 
-		initXmlBits();
+		m_bInited = false;
 	}
 
 	~GenxXMLWriter()
@@ -36,6 +38,11 @@ public:
 
 	void Start(LPCTSTR filename)
 	{
+		if(!m_bInited)
+			initXmlBits();
+
+		m_bInited = true;
+
 		m_hFile = _tfopen(filename, "wb");
 
 		if(m_hFile == NULL)
@@ -68,6 +75,12 @@ public:
 		return m_writer;
 	}
 
+	void addAttributeConvertUTF8(genxAttribute a, LPCSTR str)
+	{
+		Windows1252_Utf8 conv(str);
+		genxAddAttribute(a, conv);
+	}
+
 protected:
 
 	/**
@@ -87,6 +100,7 @@ protected:
 protected:
 	genxWriter	m_writer;
 	FILE*		m_hFile;
+	bool		m_bInited;
 };
 
 #define PREDECLARE_ATTRIBUTES() \

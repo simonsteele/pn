@@ -389,7 +389,7 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 						char* buf2 = new char[Prp.ValueLength + 1];
 						cfile.Read(buf2, Prp.ValueLength*sizeof(char));
 						buf2[Prp.ValueLength] = '\0';
-						sc.SPerform(SCI_SETPROPERTY, (long)buf, (long)buf);
+						sc.SPerform(SCI_SETPROPERTY, (long)buf, (long)buf2);
 						delete [] buf;
 						delete [] buf2;
 						buf = NULL;

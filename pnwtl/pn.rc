@@ -210,7 +210,7 @@ BEGIN
         MENUITEM "Use &Tabs",                   ID_TOOLS_USETABS
         MENUITEM SEPARATOR
         MENUITEM "Add Tools...",                ID_TOOLS_DUMMY
-        MENUITEM "&Stop Tools",                 ID_TOOLS_STOPTOOLS, GRAYED
+        MENUITEM "&Stop Tools\tCtrl+Shift+K",   ID_TOOLS_STOPTOOLS, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "&Options",                    245
     END
@@ -345,7 +345,6 @@ BEGIN
     "R",            ID_EDIT_REPLACE,        VIRTKEY, CONTROL, NOINVERT
     VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
     "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
-    VK_F8,          ID_VIEW_OUTPUT,         VIRTKEY, NOINVERT
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
     "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
@@ -357,7 +356,10 @@ BEGIN
     VK_ADD,         ID_VIEW_EXPANDALLFOLDS, VIRTKEY, CONTROL, ALT, NOINVERT
     VK_RETURN,      ID_VIEW_FILEPROPERTIES, VIRTKEY, ALT, NOINVERT
     VK_F8,          ID_VIEW_INDIVIDUALOUTPUT, VIRTKEY, SHIFT, NOINVERT
+    VK_F8,          ID_VIEW_OUTPUT,         VIRTKEY, NOINVERT
     VK_MULTIPLY,    ID_VIEW_TOGGLEFOLD,     VIRTKEY, CONTROL, NOINVERT
+    "K",            ID_TOOLS_STOPTOOLS,     VIRTKEY, SHIFT, CONTROL, 
+                                                    NOINVERT
 END
 
 #endif    // English (U.S.) resources

@@ -30,13 +30,13 @@ public:
 	{
 		int flags = tool->iFlags;
 		genxStartElement(m_eTool);
-		genxAddAttribute(m_aName, u(tool->Name.c_str()));
-		genxAddAttribute(m_aCommand, u(tool->Command.c_str()));
-		genxAddAttribute(m_aFolder, u(tool->Folder.c_str()));
-		genxAddAttribute(m_aParams, u(tool->Params.c_str()));
-		genxAddAttribute(m_aShortcut, u(IntToTString(tool->Shortcut).c_str()));
-		genxAddAttribute(m_aParsePattern, u(tool->CustomParsePattern.c_str()));
-		genxAddAttribute(m_aFlags, u(IntToTString(flags).c_str()));
+		addAttributeConvertUTF8(m_aName, tool->Name.c_str());
+		addAttributeConvertUTF8(m_aCommand, tool->Command.c_str());
+		addAttributeConvertUTF8(m_aFolder, tool->Folder.c_str());
+		addAttributeConvertUTF8(m_aParams, tool->Params.c_str());
+		addAttributeConvertUTF8(m_aShortcut, IntToTString(tool->Shortcut).c_str());
+		addAttributeConvertUTF8(m_aParsePattern, tool->CustomParsePattern.c_str());
+		addAttributeConvertUTF8(m_aFlags, IntToTString(flags).c_str());
 		genxEndElement(m_writer);
 	}
 
@@ -763,6 +763,8 @@ void SchemeToolsManager::Save()
 
 		if(writer.IsValid())
 		{
+			writer.beginSchemeTools();
+
 			if(m_pGlobalTools)
 				m_pGlobalTools->WriteDefinition(writer, (*i));
 
@@ -823,13 +825,13 @@ void SchemeToolsManager::processTool(XMLAttributes& atts)
 			if(_tcscmp(attr, _T("command")) == 0)
 				pDef->Command = val;
 			else if(_tcscmp(attr, _T("params")) == 0)
-				pDef->Params = val;
+				pDef->Params = Utf8_Windows1252(val);
 			else if(_tcscmp(attr, _T("folder")) == 0)
-				pDef->Folder = val;
+				pDef->Folder = Utf8_Windows1252(val);
 			else if(_tcscmp(attr, _T("shortcut")) == 0)
 				pDef->Shortcut = _ttoi(val);
 			else if(_tcscmp(attr, _T("parsepattern")) == 0)
-				pDef->CustomParsePattern = val;
+				pDef->CustomParsePattern = Utf8_Windows1252(val);
 			else if(_tcscmp(attr, _T("flags")) == 0)
 				pDef->iFlags = _ttoi(val);
 		}

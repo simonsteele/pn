@@ -269,8 +269,10 @@ public:
 	}
 
 protected:
-	bool convert(const char* instr)
+	bool convert(const char* instring)
 	{
+		const unsigned char* instr = (const unsigned char*)instring;
+
 		/*All characters in the range of 0-127 (hex 00 through 7F), are represented 
 		identically in both encodings.  This covers the entire range of the original 
 		ASCII characters. 
@@ -282,7 +284,7 @@ protected:
 		also need to have 64 (hex 40) subtracted from the iso-8859-1 character value. 
 		Thanks to: http://intertwingly.net/stories/2004/04/14/i18n.html*/
 
-		size_t length = strlen(instr);
+		size_t length = strlen(instring);
 		decoded = new unsigned char[(length*2)+1];
 		unsigned char* pD = decoded;
 
