@@ -8,6 +8,12 @@
 #include "stdafx.h"
 #include "scintillaif.h"
 
+#define SCINTILLA_PIXMAPS
+
+#ifdef SCINTILLA_PIXMAPS
+#include "ScintillaPixmaps.h"
+#endif
+
 // Initialise no Scintilla dll on startup...
 HMODULE CScintilla::scidll = NULL;
 int CScintilla::refs = 0;
@@ -192,6 +198,12 @@ void CScintilla::DefineMarker(int marker, int markerType, COLORREF fore, COLORRE
 
 void CScintilla::DefineNumberedBookmarks(int base, bool SetDefaultColours)
 {
+#ifdef SCINTILLA_PIXMAPS
+	for(int i = 0; i < 10; i++)
+	{
+		SPerform(SCI_MARKERDEFINEPIXMAP, base + i, (LPARAM)scpixmap_bookmarks[i]);
+	}
+#else
 	COLORREF fore;
 	COLORREF back;
 
@@ -211,13 +223,18 @@ void CScintilla::DefineNumberedBookmarks(int base, bool SetDefaultColours)
 			SPerform(SCI_MARKERSETBACK, base+i, back);
 		}
 	}
+#endif
 }
 
 void CScintilla::DefineBookmarks()
 {
+#ifndef SCINTILLA_PIXMAPS
 	MarkerSetFore(SC_BOOKMARK, ::GetSysColor(COLOR_HIGHLIGHT));
 	MarkerSetBack(SC_BOOKMARK, ::GetSysColor(COLOR_HOTLIGHT));
 	MarkerDefine(SC_BOOKMARK, SC_MARK_CIRCLE);
+#else
+	SPerform(SCI_MARKERDEFINEPIXMAP, SC_BOOKMARK, (LPARAM)scpixmap_bookmark);
+#endif
 }
 
 void CScintilla::ToggleBookmark(int marker)
@@ -2034,7 +2051,7 @@ int CScintilla::SearchPrev(int flags, const char* text)
 
 void CScintilla::SetCaretPolicy(int caretPolicy, int caretSlop)
 {
-	SPerform(SCI_SETCARETPOLICY, (long)caretPolicy, (long)caretSlop);
+//	SPerform(SCI_SETCARETPOLICY, (long)caretPolicy, (long)caretSlop);
 }
 
 int CScintilla::LinesOnScreen()
