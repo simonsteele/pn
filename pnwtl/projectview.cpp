@@ -813,7 +813,7 @@ LRESULT CProjectTreeCtrl::OnAddMagicFolder(WORD /*wNotifyCode*/, WORD /*wID*/, H
 		if(fd.DoModal() == IDOK)
 		{
 			Projects::Folder* folder = static_cast<Projects::Folder*>(lastItem);
-			Projects::MagicFolder* newFolder = new Projects::MagicFolder(fd.GetFolderDisplayName(), fd.GetFolderPath(), folder->GetBasePath());
+			Projects::MagicFolder* newFolder = new Projects::MagicFolder(fd.GetFolderDisplayName(), fd.GetFolderPath()/*, folder->GetBasePath()*/);
 			
 			folder->AddChild(newFolder);
 			

@@ -914,7 +914,8 @@ void Project::processFile(XMLAttributes& atts)
 
 void Project::processMagicFolder(XMLAttributes& atts)
 {
-	MagicFolder* mf = new MagicFolder(ATTVAL(_T("name")), ATTVAL(_T("path")), basePath.c_str());
+	// TODO: Combine basePath with ATTVAL(_T("path")) to get the new basePath
+	MagicFolder* mf = new MagicFolder(ATTVAL(_T("name")), ATTVAL(_T("path"))/*, basePath.c_str()*/);
 	currentFolder->AddChild(mf);
 	
 	// This will pass over the XML Parsing to the MagicFolder

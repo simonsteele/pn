@@ -425,6 +425,9 @@ MultipleInstanceManager::~MultipleInstanceManager()
 
 void MultipleInstanceManager::ActivateOther()
 {
+	if(m_pfnBSM == NULL)
+		return;
+
 	DWORD dwRecipients = BSM_APPLICATIONS;
 	long res = m_pfnBSM(
 		BSF_ALLOWSFW | BSF_FORCEIFHUNG | BSF_IGNORECURRENTTASK,
@@ -476,6 +479,9 @@ void MultipleInstanceManager::ReleaseSharedData(BYTE* buffer, HANDLE hMappedFile
 
 void MultipleInstanceManager::SendParameters()
 {
+	if(m_pfnBSM == NULL)
+		return;
+
 	if(__argc < 2)
 	{
 		// If there are no arguments to send, then
@@ -515,7 +521,7 @@ void MultipleInstanceManager::SendParameters()
 	memcpy(buffer, &parmarray[0], parmarray.size());
 
 	DWORD dwRecipients = BSM_APPLICATIONS;
-	long res = ::BroadcastSystemMessage(
+	long res = m_pfnBSM(
 		BSF_ALLOWSFW | BSF_FORCEIFHUNG | BSF_IGNORECURRENTTASK,
 		&dwRecipients, 
 		m_uiMessage,

@@ -112,7 +112,7 @@ protected:
 	{
 		CPathName fn(path);
 		tstring dirName = fn.GetDirectoryName();
-		MagicFolder* mf = new MagicFolder(dirName.c_str(), path, lpszBasePath);
+		MagicFolder* mf = new MagicFolder(dirName.c_str(), path/*, lpszBasePath*/);
 		mf->SetGotContents(true);
 		return mf;
 	}

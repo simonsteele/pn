@@ -226,7 +226,7 @@ class MagicFolder : public Folder
 	friend class Project;
 
 	public:
-		MagicFolder(LPCTSTR name_, LPCTSTR path, LPCTSTR basePath);
+		MagicFolder(LPCTSTR name_, /*LPCTSTR path,*/ LPCTSTR basePath);
 		virtual ~MagicFolder();
 
 		virtual const FOLDER_LIST&	GetFolders();
@@ -253,7 +253,7 @@ class MagicFolder : public Folder
 		static tstring getMagicFolderPath(MagicFolder* last);
 
 	protected:
-		tstring				path;
+		//tstring				path;
 		tstring				filter;
 		bool				read;
 		MagicFolderCache*	cache;

@@ -60,7 +60,7 @@ namespace Projects
 // MagicFolder
 //////////////////////////////////////////////////////////////////////////////
 
-MagicFolder::MagicFolder(LPCTSTR name_, LPCTSTR path_, LPCTSTR base_)
+MagicFolder::MagicFolder(LPCTSTR name_, /*LPCTSTR path_, */LPCTSTR base_)
 {
 	type = ptMagicFolder;
 
@@ -68,11 +68,8 @@ MagicFolder::MagicFolder(LPCTSTR name_, LPCTSTR path_, LPCTSTR base_)
 	name = name_;
 	
 	// Using CPathName ensures we get trailing slashes...
-	CPathName pathname(path_);
 	CPathName basepath(base_);
-	
 	basePath = basepath.c_str();
-	path = pathname.c_str();
 	
 	read = false;
 	
@@ -109,7 +106,9 @@ const FILE_LIST& MagicFolder::GetFiles()
 void MagicFolder::Refresh()
 {
 	MagicFolderAdder mfa;
-	mfa.BuildFolder(this, path.c_str(), _T("*.*"), basePath.c_str(), true);
+	
+	//TODO: remove parameter duplication here...
+	mfa.BuildFolder(this, basePath.c_str(), _T("*.*"), basePath.c_str(), true);
 
 	read = true;
 }
@@ -118,12 +117,6 @@ void MagicFolder::WriteDefinition(SProjectWriter* definition)
 {
 	genxStartElementLiteral(definition->w, NULL, u("MagicFolder"));
 	genxAddAttributeLiteral(definition->w, NULL, u("name"), u(name.c_str()));
-	
-	// We write a relative path to the file if possible
-	CPathName p(path);
-	tstring relPath = p.GetRelativePath(basePath.c_str());
-
-	genxAddAttributeLiteral(definition->w, NULL, u("path"), u(relPath.c_str()));
 	
 	writeContents(definition);
 
@@ -146,8 +139,8 @@ tstring MagicFolder::getMagicFolderPath(MagicFolder* last)
 	{
 		MagicFolder* pParent = reinterpret_cast<MagicFolder*>( last->GetParent() );
 		tstring s = getMagicFolderPath(pParent);
-		s += '\\';
 		s += last->GetName();
+		s += '\\';
 		return s;
 	}
 }
@@ -165,7 +158,7 @@ tstring MagicFolder::GetFolderCachePath()
 
 LPCTSTR MagicFolder::GetFullPath() const
 {
-	return path.c_str();
+	return basePath.c_str();
 }
 
 LPCTSTR MagicFolder::GetFilter() const
@@ -180,12 +173,12 @@ void MagicFolder::SetFilter(LPCTSTR szFilter)
 
 bool MagicFolder::RenameFolder(LPCTSTR newName)
 {
-	CPathName fp(path);
+	CPathName fp(basePath);
 	fp.ChangeLastElement(newName);
 	
-	if(::MoveFile(path.c_str(), fp.c_str()) != 0)
+	if(::MoveFile(basePath.c_str(), fp.c_str()) != 0)
 	{
-		path = fp.c_str();
+		basePath = fp.c_str();
 		return true;
 	}
 
