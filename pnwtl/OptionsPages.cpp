@@ -40,6 +40,7 @@ void COptionsPageGeneral::OnOK()
 	options.MaximiseNew = m_bMaximise != FALSE;
 	options.ShowFullPath = m_bFullPath != FALSE;
 	options.Set(PNSK_INTERFACE, _T("MRUSize"), (int)m_iMRUSize);
+	options.Set(PNSK_INTERFACE, _T("MRUMaxLength"), (int)m_iMRULength);
 }
 
 void COptionsPageGeneral::OnInitialise()
@@ -52,6 +53,7 @@ void COptionsPageGeneral::OnInitialise()
 	m_bMaximise = options.MaximiseNew;
 	m_bFullPath = options.ShowFullPath;
 	m_iMRUSize = options.Get(PNSK_INTERFACE, _T("MRUSize"), 4);
+	m_iMRULength = options.Get(PNSK_INTERFACE, _T("MRUMaxLength"), 50);
 
 	CComboBox cb(GetDlgItem(IDC_OPT_LECOMBO));
 	for(int i = 0; i < cb.GetCount(); i++)

@@ -56,6 +56,21 @@ class CPNFileDialogImpl : public CFileDialogImpl<T>
 				delete [] m_szFilter;
 		}
 
+		LPCTSTR GetSingleFileName()
+		{
+			return m_ofn.lpstrFile;
+		}
+
+		void SetTitle(LPCTSTR title)
+		{
+			m_ofn.lpstrTitle = title;
+		}
+
+		void SetDefaultExtension(LPCTSTR defext)
+		{
+			m_ofn.lpstrDefExt = defext;
+		}
+
 		BEGIN_MSG_MAP(CPNFileDialogImpl)
 			CHAIN_MSG_MAP(baseClass)
 		END_MSG_MAP()
@@ -113,8 +128,6 @@ class CPNOpenDialog : public CPNFileDialogImpl<CPNOpenDialog>
 		const_iterator begin();
 		const_iterator end();
 
-		LPCTSTR GetSingleFileName();
-
 	protected:
 		TCHAR*	m_szFilesBuffer;
 		TCHAR*	m_szFolder;
@@ -134,6 +147,17 @@ class CPNOpenDialog : public CPNFileDialogImpl<CPNOpenDialog>
 	END_MSG_MAP()
 };
 
+class CPNSaveDialog : public CPNFileDialogImpl<CPNSaveDialog>
+{
+	typedef CPNFileDialogImpl<CPNSaveDialog> baseClass;
+	public:
+		CPNSaveDialog(LPCTSTR szFilter, LPCTSTR szPath = NULL, LPCTSTR szDefaultExt = NULL);
+
+	BEGIN_MSG_MAP(CPNSaveDialog)
+		CHAIN_MSG_MAP(baseClass)
+	END_MSG_MAP()
+};
+
 /**
  * @class CPNSaveDialog
  * @brief Save dialog with added controls for save type (e.g. LF, CRLF, etc.)
@@ -142,13 +166,13 @@ class CPNOpenDialog : public CPNFileDialogImpl<CPNOpenDialog>
  * how to do this without tearing my hair out.
  * link: http://www.codeproject.com/useritems/uoth.asp
  */
-class CPNSaveDialog : public CPNFileDialogImpl<CPNSaveDialog>
+class CPNSaveDialogEx : public CPNFileDialogImpl<CPNSaveDialogEx>
 {
-	typedef CPNFileDialogImpl<CPNSaveDialog> baseClass;
+	typedef CPNFileDialogImpl<CPNSaveDialogEx> baseClass;
 	public:
-		CPNSaveDialog(LPCTSTR szFilter, LPCTSTR szPath = NULL);
+		CPNSaveDialogEx(LPCTSTR szFilter, LPCTSTR szPath = NULL);
 
-		BEGIN_MSG_MAP (CPNSaveDialog)
+		BEGIN_MSG_MAP (CPNSaveDialogEx)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			MESSAGE_HANDLER(WM_SIZE, OnSize)
 

@@ -60,8 +60,14 @@ typedef struct
 	long wParam;
 } MsgRec;
 
+typedef struct
+{
+	unsigned long NameLength;
+	unsigned long ValueLength;
+} PropRec;
+
 typedef enum {ttFontName, ttKeywords, ttLexerLanguage} eTextType;
-typedef enum {nrMsgRec, nrTextRec} eNextRec;
+typedef enum {nrMsgRec, nrTextRec, nrPropRec} eNextRec;
 typedef enum {fldEnabled = 0x01, fldCompact = 0x02, fldComments = 0x04, fldPreProc = 0x08} eFoldFlags;
 typedef enum {schUseTabs = 0x10, schInternal = 0x20} eSchemeFlags;
 //typedef enum {ovrTabWidth = 1, ovrIndentGuides = 2} eOverrideFlags;
@@ -89,7 +95,7 @@ typedef enum {schUseTabs = 0x10, schInternal = 0x20} eSchemeFlags;
 #define US_CLASS				7
 
 // File Content Defines
-#define CompileVersion 0x03
+#define CompileVersion 0x04
 #define FileID "Caffeine.Scheme"
 
 class CSchemeLoaderState
@@ -214,6 +220,7 @@ class SchemeParser
 		void sendStyle(StyleDetails* s, SchemeRecorder* compiler);
 		void processKeywordClass(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processGlobal(CSchemeLoaderState* pState, XMLAttributes& atts);
+		void processProperty(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void customiseStyle(StyleDetails* style, StyleDetails* custom);
 		void sendBaseScheme(CSchemeLoaderState* pState, BaseScheme* pBase);
 
@@ -225,6 +232,7 @@ class SchemeParser
 		virtual void onStyle(StyleDetails* pStyle, StyleDetails* pCustom) = 0;
 		virtual void onStyleGroupEnd() = 0;
 		virtual void onStyleClass(StyleDetails* pClass, StyleDetails* pCustom) = 0;
+		virtual void onProperty(LPCTSTR name, LPCTSTR value) = 0;
 		virtual void onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom) = 0;
 		virtual void onFile(LPCTSTR filename) = 0;
 };
@@ -249,6 +257,7 @@ class SchemeCompiler : public SchemeParser
 		virtual void onStyle(StyleDetails* pStyle, StyleDetails* pCustom);
 		virtual void onStyleGroupEnd(){}
 		virtual void onStyleClass(StyleDetails* pClass, StyleDetails* pCustom);
+		virtual void onProperty(LPCTSTR name, LPCTSTR value);
 		virtual void onFile(LPCTSTR filename);
 		virtual void onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom);
 		virtual void onLexer(LPCTSTR name, int styleBits);

@@ -13,6 +13,8 @@
 #include "optionsmanager.h"
 #include "files.h"
 
+#include "resource.h"
+
 #include "ssreg.h"
 using namespace ssreg;
 
@@ -112,16 +114,20 @@ bool CScheme::InitialLoad(CFile& file, SchemeHdrRec& hdr)
 	return true;
 }
 
-void CScheme::CheckName()
+bool CScheme::CheckName()
 {
 	CFile cfile;
+
+	bool bRet = false;
 	
 	if( cfile.Open(m_SchemeFile) )
 	{
 		SchemeHdrRec hdr;
-		InitialLoad(cfile, hdr);
+		bRet = InitialLoad(cfile, hdr);
 		cfile.Close();
 	}
+
+	return bRet;
 }
 
 void CScheme::SetName(LPCTSTR name)
@@ -306,6 +312,7 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 	SchemeHdrRec hdr;
 	MsgRec Msg;
 	TextRec Txt;
+	PropRec Prp;
 	char *buf = NULL;
 	char Next2;
 
@@ -370,6 +377,21 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 								break;
 						}
 						delete [] buf;
+						buf = NULL;
+					}
+					break;
+				case nrPropRec:
+					{
+						cfile.Read(&Prp, sizeof(PropRec));
+						buf = new char[Prp.NameLength + 1];
+						cfile.Read(buf, Prp.NameLength*sizeof(char));
+						buf[Prp.NameLength] = '\0';
+						char* buf2 = new char[Prp.ValueLength + 1];
+						cfile.Read(buf2, Prp.ValueLength*sizeof(char));
+						buf2[Prp.ValueLength] = '\0';
+						sc.SPerform(SCI_SETPROPERTY, (long)buf, (long)buf);
+						delete [] buf;
+						delete [] buf2;
 						buf = NULL;
 					}
 					break;
@@ -442,8 +464,6 @@ void CScheme::SetupScintilla(CScintilla& sc)
 		c = (COLORREF)options.Get(PNSK_EDITOR, _T("SelectionBack"), (int)::GetSysColor(COLOR_HIGHLIGHT));
 		sc.SPerform(SCI_SETSELBACK, 1, c);
 	}
-
-	sc.SPerform(SCI_SETPROPERTY, (WPARAM)"asp.default.language", (LPARAM)"2");
 }
 
 bool CScheme::operator < (const CScheme& compare) const 
@@ -650,16 +670,24 @@ void CSchemeManager::Load()
 				to_open += FindFileData.cFileName;
 
 				cs->SetFileName(to_open.c_str());
-				cs->CheckName();
+				if(!cs->CheckName())
+				{
+					tstring dbgout = _T("Skipping bad scheme: ");
+					dbgout += FindFileData.cFileName;
+					m_Schemes.erase(csi);
+					::OutputDebugString(dbgout.c_str());
+				}
+				else
+				{
+					SchemeName = cs->GetName();
+					TCHAR *tcs = new TCHAR[SchemeName.size()+1];
+					_tcscpy(tcs, SchemeName.c_str());
+					tcs = CharLower(tcs);
+					SchemeName = tcs;
+					delete [] tcs;
 
-				SchemeName = cs->GetName();
-				TCHAR *tcs = new TCHAR[SchemeName.size()+1];
-				_tcscpy(tcs, SchemeName.c_str());
-				tcs = CharLower(tcs);
-				SchemeName = tcs;
-				delete [] tcs;
-
-				m_SchemeNameMap.insert(m_SchemeNameMap.end(), SCMITEM(SchemeName, cs));
+					m_SchemeNameMap.insert(m_SchemeNameMap.end(), SCMITEM(SchemeName, cs));
+				}
 			}
 
 			found = FindNextFile(hFind, &FindFileData);
@@ -824,6 +852,9 @@ void CSchemeManager::BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCo
 	if(bNewMenu)
 	{
 		m.AddItem(_T("&Default\tCtrl+N"), ID_FILE_NEW);
+		m.AddItem(_T("&Project"), ID_FILE_NEW_PROJECT);
+		m.AddItem(_T("&Workspace"), ID_FILE_NEW_WORKSPACE);
+		m.AddItem(_T(""));
 	}
 	
 	id = CSMenuManager::GetInstance()->RegisterCallback(pHandler, iCommand, (LPVOID)GetDefaultScheme());

@@ -15,6 +15,7 @@ What's new?
 7) Sanitise file names from output window to better find files.
 8) Text clips browser.
 9) Projects/Workspaces.
+10) Change MRU text length. (SF Feature #760660)
 
 Bug Fixes:
 ----------

@@ -46,6 +46,12 @@ typedef struct tagCloseStruct : public tagEnumChildrenStruct
 	bool	bCanClose;
 } SCloseStruct;
 
+typedef struct tagWorkspaceCloseStruct : public tagCloseStruct
+{
+	Projects::Workspace* pWorkspace;
+	std::list<CChildFrame*> FoundWindows;
+} SWorkspaceCloseStruct;
+
 typedef struct tagIsOpenStruct : public tagEnumChildrenStruct
 {
 	bool bFound;
@@ -99,6 +105,8 @@ public:
 		
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
+		COMMAND_ID_HANDLER(ID_FILE_NEW_PROJECT, OnFileNewProject)
+		COMMAND_ID_HANDLER(ID_FILE_NEW_WORKSPACE, OnFileNewWorkspace)
 		COMMAND_ID_HANDLER(ID_FILE_OPEN, OnFileOpen)
 		COMMAND_ID_HANDLER(ID_FILE_SAVEALL, OnFileSaveAll)
 		COMMAND_ID_HANDLER(ID_FILE_OPENPROJECT, OnFileOpenProject)
@@ -117,6 +125,8 @@ public:
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBARS_FIND, OnViewFindBar)
 		COMMAND_ID_HANDLER(ID_VIEW_STATUS_BAR, OnViewStatusBar)
 		COMMAND_ID_HANDLER(ID_EDITOR_OUTPUTWND, OnOutputWindowToggle)
+		COMMAND_ID_HANDLER(ID_VIEW_WINDOWS_PROJECT, OnViewProjectWindow)
+		COMMAND_ID_HANDLER(ID_VIEW_WINDOWS_TEXTCLIPS, OnViewTextClipsWindow)
 		COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
 		COMMAND_ID_HANDLER(ID_WINDOW_CASCADE, OnWindowCascade)
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTile)
@@ -156,6 +166,7 @@ public:
 		UPDATE_ELEMENT(ID_VIEW_WINDOWS_PROJECT, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_FILE_SAVE, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
 		UPDATE_ELEMENT(ID_FILE_CLOSE, UPDUI_TOOLBAR)
+		UPDATE_ELEMENT(ID_FILE_CLOSEWORKSPACE, UPDUI_MENUPOPUP)
 	END_UPDATE_UI_MAP()
 
 	BEGIN_MENU_HANDLER_MAP()
@@ -181,6 +192,8 @@ public:
 	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFileNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFileNewWorkspace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileSaveAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -200,6 +213,8 @@ public:
 	LRESULT OnViewFindBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnOutputWindowToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnViewProjectWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnViewTextClipsWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	// MDI Window Arrangement
 	LRESULT OnWindowCascade(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -232,6 +247,7 @@ public:
 	static BOOL CALLBACK ChildEnumProc(HWND hWnd, LPARAM lParam);
 
 	void __stdcall ChildCloseNotify(CChildFrame* pChild, SChildEnumStruct* pES);
+	void __stdcall WorkspaceChildCloseNotify(CChildFrame* pChild, SChildEnumStruct* pES);
 	void __stdcall ChildOptionsUpdateNotify(CChildFrame* pChild, SChildEnumStruct* pES);
 	void __stdcall ChildSaveNotify(CChildFrame* pChild, SChildEnumStruct* pES);
 	void __stdcall FileOpenNotify(CChildFrame* pChild, SChildEnumStruct* pES);
@@ -283,7 +299,8 @@ protected:
 	bool SaveProjects(Projects::Workspace* pWorkspace);
 	DWORD SaveWorkspace(Projects::Workspace* pWorkspace, bool bAsk);
 	bool SaveWorkspaceAs(Projects::Workspace* pWorkspace);
-	void CloseWorkspace();
+	bool CloseWorkspace(bool bAllowCloseFiles = false);
+	bool CloseWorkspaceFiles(Projects::Workspace* pWorkspace);
 
 protected:
 	CFindDlg*				m_FindDialog;

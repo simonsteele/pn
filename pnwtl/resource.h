@@ -27,6 +27,8 @@
 #define IDS_ABOUTVERSIONSTRING          133
 #define IDS_TOOLFORMATSTRINGS           134
 #define IDS_PATTERNFORMATSTRINGS        135
+#define ID_FILE_NEW_PROJECT             136
+#define ID_FILE_NEW_WORKSPACE           137
 #define IDI_TEXTCLIPS                   167
 #define IDD_FIND                        168
 #define IDR_TABS_POPUP                  169
@@ -121,6 +123,9 @@
 #define ID_VIEW_WINDOWS                 304
 #define ID_VIEW_WINDOWS_PROJECT         305
 #define ID_VIEW_WINDOWS_TEXTCLIPS       306
+#define IDR_POPUP_WORKSPACE             307
+#define ID_WORKSPACE_NEWPROJECT         308
+#define ID_WORKSPACE_ADDPROJECT         309
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -221,6 +226,8 @@
 #define IDC_TE_SAVECOMBO                1063
 #define IDC_EDIT2                       1064
 #define IDC_OPT_MRUCOUNT                1064
+#define IDC_OPT_MRUCOUNT2               1065
+#define IDC_OPT_MRUTEXTLENGTH           1065
 #define IDC_OPT_LINELIGHTCHECK          1066
 #define IDC_OPT_NOLLHELPRADIO           1067
 #define IDC_OPT_LLHIGHLIGHTRADIO        1068
@@ -279,9 +286,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        307
+#define _APS_NEXT_RESOURCE_VALUE        310
 #define _APS_NEXT_COMMAND_VALUE         32877
-#define _APS_NEXT_CONTROL_VALUE         1070
+#define _APS_NEXT_CONTROL_VALUE         1071
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

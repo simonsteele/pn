@@ -25,6 +25,13 @@ CProjectTreeCtrl::CProjectTreeCtrl()
 	lastItem = NULL;
 }
 
+void CProjectTreeCtrl::AddProject(Projects::Project* project)
+{
+	workspace->AddProject(project);
+	buildProject(GetRootItem(), project);
+	Expand(GetRootItem());
+}
+
 void CProjectTreeCtrl::SetWorkspace(Projects::Workspace* ws)
 {
 	workspace = ws;
@@ -68,6 +75,7 @@ void CProjectTreeCtrl::buildTree()
 		}
 
 		Expand(hTopItem);
+		Select(hTopItem, TVGN_CARET);
 	}
 	catch(...)
 	{
@@ -84,9 +92,13 @@ void CProjectTreeCtrl::buildProject(HTREEITEM hParentNode, Projects::Project* pj
 
 	if(pj->Exists())
 	{
+		HTREEITEM hLastChild = NULL;
+
 		const FOLDER_LIST& folders = pj->GetFolders();
 		if( folders.size() > 0 )
-			buildFolders(hProject, folders);
+			hLastChild = buildFolders(hProject, folders);
+
+		buildFiles(hProject, hLastChild, pj->GetFiles());
 	}
 	else
 	{
@@ -244,6 +256,13 @@ LRESULT CProjectTreeCtrl::OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 					g_Context.m_frame->TrackPopupMenu(popup, 0, pt.x, pt.y, NULL, m_hWnd);
 				}
 				break;
+
+				case ptWorkspace:
+				{
+					CSPopupMenu popup(IDR_POPUP_WORKSPACE);
+					g_Context.m_frame->TrackPopupMenu(popup, 0, pt.x, pt.y, NULL, m_hWnd);
+				}
+				break;
 			}
 		}
 	}
@@ -334,6 +353,7 @@ LRESULT CProjectTreeCtrl::OnAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 
 		CPNOpenDialog dlgOpen(_T("All Files (*.*)|*.*|"));
 		dlgOpen.m_ofn.Flags |= OFN_ALLOWMULTISELECT;
+		dlgOpen.SetTitle(_T("Add Files"));
 		if(dlgOpen.DoModal() == IDOK)
 		{
 			for(CPNOpenDialog::const_iterator i = dlgOpen.begin(); 
@@ -359,7 +379,7 @@ LRESULT CProjectTreeCtrl::OnAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	if(lastItem->GetType() == ptFolder || lastItem->GetType() == ptProject)
 	{
 		Projects::Folder* folder = static_cast<Projects::Folder*>(lastItem);
-		Projects::Folder* newFolder = new Projects::Folder(_T("NewFolder"), folder->GetBasePath());
+		Projects::Folder* newFolder = new Projects::Folder(_T("New Folder"), folder->GetBasePath());
 
 		folder->AddChild(newFolder);
 
@@ -484,6 +504,28 @@ LRESULT CProjectTreeCtrl::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	return 0;
 }
 
+LRESULT CProjectTreeCtrl::OnNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	g_Context.m_frame->GetWindow()->PostMessage(WM_COMMAND, ID_FILE_NEW_PROJECT, NULL);
+	return 0;
+}
+
+LRESULT CProjectTreeCtrl::OnAddProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CPNOpenDialog dlgOpen(_T("Project Files (*.pnproj)|*.pnproj|"));
+	dlgOpen.SetTitle(_T("Open Project"));
+
+	if(dlgOpen.DoModal() == IDOK)
+	{
+		Project* pProject = new Project(dlgOpen.GetSingleFileName());
+		workspace->AddProject(pProject);
+		buildProject(GetRootItem(), pProject);
+		Expand(GetRootItem());
+	}
+	
+	return 0;
+}
+
 HTREEITEM CProjectTreeCtrl::AddFileNode(File* file, HTREEITEM hParent, HTREEITEM hInsertAfter)
 {
 	HTREEITEM hFile = InsertItem( file->GetDisplayName(), 0, 0, hParent, hInsertAfter );
@@ -555,6 +597,11 @@ void CProjectDocker::SetWorkspace(Projects::Workspace* ws)
 	workspace = ws;
 
 	m_view.SetWorkspace(ws);
+}
+
+void CProjectDocker::AddProject(Projects::Project* project)
+{
+	m_view.AddProject(project);
 }
 
 Projects::Workspace* CProjectDocker::GetWorkspace()

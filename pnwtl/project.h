@@ -96,6 +96,8 @@ class Folder : public ProjectType
 		const FOLDER_LIST&	GetFolders();
 		const FILE_LIST&	GetFiles();
 
+		File* FindFile(LPCTSTR filename);
+
 		void RemoveChild(Folder* folder);
 		void RemoveFile(File* file);
 
@@ -124,40 +126,44 @@ class Folder : public ProjectType
  */
 class Project : public Folder, XMLParseState
 {
-public:
-	Project(LPCTSTR projectFile);
+	public:
+		Project(LPCTSTR projectFile);
 
-	bool Exists();
+		bool Exists();
 
-	void Save();
+		void Save();
 
-	void SetFileName(LPCTSTR filename);
+		void SetFileName(LPCTSTR filename);
 
-	bool IsDirty();
+		bool IsDirty();
 
-//Implement XMLParseState
-protected:
-	virtual void startElement(LPCTSTR name, XMLAttributes& atts);
-	virtual void endElement(LPCTSTR name);
-	virtual void characterData(LPCTSTR data, int len){};
+		static bool CreateEmptyProject(LPCTSTR projectname, LPCTSTR filename);
 
-protected:
-	void writeDefinition(ofstream& definition);	
+	//Implement XMLParseState
+	protected:
+		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
+		virtual void endElement(LPCTSTR name);
+		virtual void characterData(LPCTSTR data, int len){};
 
-	void processProject(XMLAttributes& atts);
-	void processFolder(XMLAttributes& atts);
-	void processFile(XMLAttributes& atts);
+	protected:
+		Project();
 
-	virtual void setDirty();
-	
-	void parse();
+		void writeDefinition(ofstream& definition);	
 
-	Folder*	currentFolder;
-	tstring fileName;
-	bool	bExists;
-	bool	bDirty;
-	int		parseState;
-	int		nestingLevel;
+		void processProject(XMLAttributes& atts);
+		void processFolder(XMLAttributes& atts);
+		void processFile(XMLAttributes& atts);
+
+		virtual void setDirty();
+		
+		void parse();
+
+		Folder*	currentFolder;
+		tstring fileName;
+		bool	bExists;
+		bool	bDirty;
+		int		parseState;
+		int		nestingLevel;
 };
 
 typedef std::list<Project*>		PROJECT_LIST;
@@ -167,7 +173,7 @@ typedef PROJECT_LIST::const_iterator	PL_CIT;
 /**
  * @brief Represents a collection of Projects.
  */
-class Workspace : public ProjectType
+class Workspace : public ProjectType, XMLParseState
 {
 	public:
 		Workspace();
@@ -192,10 +198,20 @@ class Workspace : public ProjectType
 		void ClearDirty();
 		bool IsDirty(bool bRecurse = true);
 
+		File* FindFile(LPCTSTR filename);
+
+	//Implement XMLParseState
 	protected:
+		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
+		virtual void endElement(LPCTSTR name);
+		virtual void characterData(LPCTSTR data, int len){};
+
+	protected:
+		void parse();
 		void Clear();
 
 	protected:
+		int				parseState;
 		PROJECT_LIST	projects;
 		tstring			name;
 		tstring			fileName;

@@ -49,7 +49,7 @@ class CScheme
 		
 		void SetFileName(LPCTSTR filename);
 
-		virtual void CheckName();
+		virtual bool CheckName();
 
 		virtual LPCTSTR GetName() const
 		{

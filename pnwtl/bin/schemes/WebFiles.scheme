@@ -101,6 +101,7 @@
 	
 	<language name="web" title="Hypertext" folding="false" foldcomments="false" foldcompact="false">
 		<lexer name="hypertext" stylebits="7" />
+		<property name="asp.default.language" value="2" />
 		<use-keywords>
 			<keyword key="0" name="Hypertext" class="hypertext"/>
 			<keyword key="1" name="Javascript" class="javascript"/>

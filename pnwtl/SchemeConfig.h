@@ -155,6 +155,7 @@ class SchemeConfigParser : public SchemeParser
 		virtual void onStyle(StyleDetails* pStyle, StyleDetails* pCustom);
 		virtual void onStyleGroupEnd();
 		virtual void onStyleClass(StyleDetails* pClass, StyleDetails* pCustom);
+		virtual void onProperty(LPCTSTR name, LPCTSTR value){}
 		virtual void onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom);
 		virtual void onFile(LPCTSTR filename);	
 };

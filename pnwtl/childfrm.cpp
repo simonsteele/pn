@@ -412,18 +412,22 @@ LRESULT CChildFrame::OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	return 0;
 }
 
-LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
 	
-	if(!CanClose())
+	// 253 is a special value that means "don't ask the user first". Normally for
+	// use if we've already asked the user.
+	if((lParam != 253) && !CanClose())
+	{
+		bHandled = TRUE;
+	}
+	else
 	{
 		if( ToolOwner::HasInstance() )
 		{
 			ToolOwner::GetInstance()->KillTools(true, this);
 		}
-
-		bHandled = TRUE;
 	}
 
 	return 0;
@@ -992,7 +996,7 @@ bool CChildFrame::SaveAs()
 		saPath = m_FileName;
 	}
 
-	CPNSaveDialog dlgSave(_T("All Files (*.*)|*.*|"), saPath);
+	CPNSaveDialogEx dlgSave(_T("All Files (*.*)|*.*|"), saPath);
 	bool bRet = true;
 
 	if(dlgSave.DoModal() == IDOK)

@@ -48,6 +48,7 @@ struct _Context
 extern __declspec( thread ) _Context g_Context;
 
 HWND GetCurrentEditor();
+void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message);
 
 // Utility Classes and Definitions:
 #include "pntabs.h"
@@ -62,3 +63,19 @@ HWND GetCurrentEditor();
 #include "schemes.h"
 
 #include "pnutils.h"
+
+//#if defined(DEBUG_)
+	#define UNEXPECTED(message) \
+	{ \
+		pn__Unexpected(__FILE__, __LINE__, message); \
+	}
+
+	#define RETURN_UNEXPECTED(message, ret) \
+	{ \
+		pn__Unexpected(__FILE__, __LINE__, message); \
+		return ret; \
+	}
+/*#else
+	#define UNEXPECTED(message) ;
+	#define RETURN_UNEXPECTED(message, ret) return ret;
+#endif*/

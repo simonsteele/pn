@@ -343,7 +343,7 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,5,2
+ FILEVERSION 2,0,5,8
  PRODUCTVERSION 2,0,5,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -361,7 +361,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele (Echo Software)"
             VALUE "FileDescription", "Programmers Notepad 2"
-            VALUE "FileVersion", "2.0.5.7"
+            VALUE "FileVersion", "2.0.5.8"
             VALUE "InternalName", "PNWTL"
             VALUE "LegalCopyright", "Copyright © 2002-2003 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"
@@ -391,6 +391,8 @@ BEGIN
     IDS_ABOUTVERSIONSTRING  "Programmers Notepad 2\nv%s\n\nCopyright (c) 2002-2003 Simon Steele"
     IDS_TOOLFORMATSTRINGS   "%f: File Name\n%n: File Name (no ext)\n%l: Current Line Number\n%?: Ask for parameters|%d: Path of File\n%c: Column\n%%: Percent Symbol\n%w: Current word"
     IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c: Column"
+    ID_FILE_NEW_PROJECT     "Create a new project."
+    ID_FILE_NEW_WORKSPACE   "Create a new workspace."
 END
 
 STRINGTABLE 
@@ -684,6 +686,15 @@ BEGIN
     END
 END
 
+IDR_POPUP_WORKSPACE MENU 
+BEGIN
+    POPUP "WORKSPACE"
+    BEGIN
+        MENUITEM "Add &New Project",            ID_WORKSPACE_NEWPROJECT
+        MENUITEM "Add &Existing Project...",    ID_WORKSPACE_ADDPROJECT
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -964,25 +975,30 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "Show Line Numbers",IDC_OPT_LINENOSCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,18,73,138,12
+                    BS_AUTOCHECKBOX | WS_TABSTOP,18,91,138,12
     CONTROL         "Use the tab character for indentation",
                     IDC_OPT_USETABSCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,18,114,168,12
-    LTEXT           "Tab Width:",IDC_STATIC,18,132,48,12
-    EDITTEXT        IDC_OPT_TABWIDTHEDIT,66,132,30,14,ES_AUTOHSCROLL
-    LTEXT           "Line Endings:",IDC_STATIC,18,90,48,12
-    COMBOBOX        IDC_OPT_LECOMBO,66,90,102,66,CBS_DROPDOWNLIST | CBS_SORT | 
-                    WS_VSCROLL | WS_TABSTOP
+                    WS_TABSTOP,18,132,168,12
+    LTEXT           "Tab Width:",IDC_STATIC,18,150,48,12
+    EDITTEXT        IDC_OPT_TABWIDTHEDIT,66,150,30,14,ES_AUTOHSCROLL
+    LTEXT           "Line Endings:",IDC_STATIC,18,108,48,12
+    COMBOBOX        IDC_OPT_LECOMBO,66,108,102,66,CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Maximise new document windows",IDC_OPT_MAXCHECK,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,6,6,150,12
-    LTEXT           "Defaults:",IDC_STATIC,6,60,66,12
-    LTEXT           "",IDC_STATIC,42,65,252,2,SS_SUNKEN
+    LTEXT           "Defaults:",IDC_STATIC,6,78,66,12
+    LTEXT           "",IDC_STATIC,42,83,252,2,SS_SUNKEN
     CONTROL         "Show full file path in document windows",
                     IDC_OPT_FULLPATHCHECK,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,6,25,156,12
     LTEXT           "Files in the most recently used list:",IDC_STATIC,6,42,
                     120,12
     EDITTEXT        IDC_OPT_MRUCOUNT,126,42,30,12,ES_AUTOHSCROLL
+    LTEXT           "MRU list maximum display length:",IDC_STATIC,6,60,120,
+                    12
+    EDITTEXT        IDC_OPT_MRUTEXTLENGTH,126,60,30,12,ES_AUTOHSCROLL
+    LTEXT           "(0 displays paths of any length.)",IDC_STATIC,162,60,
+                    108,12
 END
 
 IDD_PAGE_NEWFILES DIALOGEX 0, 0, 299, 200

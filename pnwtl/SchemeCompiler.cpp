@@ -152,13 +152,17 @@ long SchemeRecorder::SPerform(long Msg, WPARAM wParam, LPARAM lParam)
 		m_next = nrTextRec;
 		m_tType = ttKeywords;
 	}
+	else if(Msg == SCI_SETPROPERTY)
+	{
+		m_next = nrPropRec;
+	}
+
 	Record(Msg, wParam, lParam);
 	return 0;
 }
 
 bool SchemeRecorder::CheckNecessary(long Msg, WPARAM wParam, LPARAM lParam)
 {
-	//bool res = false;
 	bool res = true;
 	bool nOther = false;
 	switch (Msg)
@@ -214,7 +218,7 @@ void SchemeRecorder::Record(long Msg, WPARAM wParam, LPARAM lParam)
 			msgr.wParam = wParam;
 			fwrite(&msgr, sizeof(MsgRec), 1, m_out);
 		}
-		else
+		else if(m_next == nrTextRec)
 		{
 			TextRec txtr;
 			txtr.TextType = m_tType;
@@ -223,6 +227,15 @@ void SchemeRecorder::Record(long Msg, WPARAM wParam, LPARAM lParam)
 			txtr.MsgNum = Msg;
 			txtr.TextLength = strlen((const char*)lParam);
 			fwrite(&txtr, sizeof(TextRec), 1, m_out);
+			fwrite((const char*)lParam, sizeof(char), strlen((const char*)lParam), m_out);
+		}
+		else
+		{
+			PropRec propr;
+			propr.NameLength = strlen((const char*)wParam);
+			propr.ValueLength = strlen((const char*)lParam);
+			fwrite(&propr, sizeof(PropRec), 1, m_out);
+			fwrite((const char*)wParam, sizeof(char), strlen((const char*)wParam), m_out);
 			fwrite((const char*)lParam, sizeof(char), strlen((const char*)lParam), m_out);
 		}
 
@@ -543,6 +556,13 @@ void SchemeCompiler::onStyleClass(StyleDetails* pClass, StyleDetails* pCustom)
 		customiseStyle(pClass, pCustom);
 }
 
+void SchemeCompiler::onProperty(LPCTSTR name, LPCTSTR value)
+{
+	USES_CONVERSION;
+
+	m_Recorder.SetProperty(CT2CA(name), CT2CA(value));
+}
+
 void SchemeCompiler::sendStyle(StyleDetails* s, SchemeRecorder* compiler)
 {
 	compiler->StyleSetFont(s->Key, s->FontName.c_str());
@@ -660,6 +680,17 @@ void SchemeParser::processGlobal(CSchemeLoaderState* pState, XMLAttributes& atts
 			pState->m_csCData = _T("");
 			break;
 		}
+	}
+}
+
+void SchemeParser::processProperty(CSchemeLoaderState* pState, XMLAttributes& atts)
+{
+	LPCTSTR name = atts.getValue(_T("name"));
+	LPCTSTR value = atts.getValue(_T("value"));
+
+	if(name != NULL && value != NULL)
+	{
+		onProperty(name, value);
 	}
 }
 
@@ -1146,6 +1177,17 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 				pState->m_pBase->styleBits = sbits;
 				pState->m_pBase->lexer = lexer;
 				pState->m_pBase->valuesSet |= ebvLexer;
+			}
+		}
+		else if(_tcscmp(name, _T("property")) == 0)
+		{
+			if(!pState->m_bBaseParse)
+			{
+				processProperty(pState, atts);
+			}
+			else
+			{
+				::OutputDebugString(_T("property element not supported in base languages."));
 			}
 		}
 		else if(_tcscmp(name, _T("use-keywords")) == 0)

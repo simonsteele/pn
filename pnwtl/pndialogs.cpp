@@ -152,11 +152,6 @@ CPNOpenDialog::const_iterator CPNOpenDialog::end()
 	return m_files.end();
 }
 
-LPCTSTR CPNOpenDialog::GetSingleFileName()
-{
-	return m_ofn.lpstrFile;
-}
-
 /**
  * This function processes either our own buffer (m_szFilesBuffer) or
  * the standard one and adds each filename found to a list<tstring>.
@@ -250,14 +245,25 @@ void CPNOpenDialog::PreProcess()
 // CPNSaveDialog
 //////////////////////////////////////////////////////////////////////////////
 
-CPNSaveDialog::CPNSaveDialog(LPCTSTR szFilter, LPCTSTR szPath) : baseClass(FALSE, /*_T(".txt")*/NULL, szPath, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter)
+CPNSaveDialog::CPNSaveDialog(LPCTSTR szFilter, LPCTSTR szPath, LPCTSTR szDefaultExt)
+	: baseClass(FALSE, szDefaultExt, szPath, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter)
+{
+
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// CPNSaveDialogEx
+//////////////////////////////////////////////////////////////////////////////
+
+CPNSaveDialogEx::CPNSaveDialogEx(LPCTSTR szFilter, LPCTSTR szPath) 
+	: baseClass(FALSE, /*_T(".txt")*/NULL, szPath, OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT, szFilter)
 {
 	m_Format = PNSF_NoChange;
 	m_ofn.Flags |= OFN_ENABLETEMPLATE;
 	m_ofn.lpTemplateName = MAKEINTRESOURCE (IDD_PNSAVE);
 }
 
-LRESULT CPNSaveDialog::OnInitDialog (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL &bHandled)
+LRESULT CPNSaveDialogEx::OnInitDialog (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL &bHandled)
 {
 	m_SaveTypeCombo = GetDlgItem(IDC_PNSAVE_TYPECOMBO);
 	m_SaveTypeLabel = GetDlgItem(IDC_PNSAVE_SAVEASSTATIC);
@@ -292,14 +298,14 @@ LRESULT CPNSaveDialog::OnInitDialog (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	return TRUE;
 }
 
-LRESULT CPNSaveDialog::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL &bHandled)
+LRESULT CPNSaveDialogEx::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL &bHandled)
 {
 	RepositionControls();
 	bHandled = FALSE;
 	return FALSE;
 }
 
-LRESULT CPNSaveDialog::OnComboSelChange(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CPNSaveDialogEx::OnComboSelChange(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	// Store the new selection in here...
 	m_Format = (EPNSaveFormat)m_SaveTypeCombo.GetCurSel();
@@ -307,12 +313,12 @@ LRESULT CPNSaveDialog::OnComboSelChange(WORD /*wNotifyCode*/, WORD wID, HWND /*h
 	return TRUE;
 }
 
-EPNSaveFormat CPNSaveDialog::GetSaveFormat()
+EPNSaveFormat CPNSaveDialogEx::GetSaveFormat()
 {
 	return m_Format;
 }
 
-void CPNSaveDialog::RepositionControls()
+void CPNSaveDialogEx::RepositionControls()
 {
 	RepositionControl( m_SaveTypeCombo, cmb1, true );
 	RepositionControl( m_SaveTypeLabel, stc2, false );
@@ -320,7 +326,7 @@ void CPNSaveDialog::RepositionControls()
 	RepositionPlacesBar( m_SaveTypeCombo );
 }
 
-void CPNSaveDialog::RepositionPlacesBar(CWindow &bottomwnd)
+void CPNSaveDialogEx::RepositionPlacesBar(CWindow &bottomwnd)
 {
 	CRect rc, rc2;
 	CWindow wndParent = GetParent();
@@ -342,7 +348,7 @@ void CPNSaveDialog::RepositionPlacesBar(CWindow &bottomwnd)
  * @param nID ID of the control used for positioning
  * @param fSize If true, adjust the width of the control
  */
-void CPNSaveDialog::RepositionControl(CWindow &wnd, UINT nID, bool fSize)
+void CPNSaveDialogEx::RepositionControl(CWindow &wnd, UINT nID, bool fSize)
 {
 	// Get the window rect in the client area of the 
 	// control we are interested in.

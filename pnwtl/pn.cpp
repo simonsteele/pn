@@ -12,7 +12,7 @@
 #include "resource.h"
 
 //#include "callback.h"
-
+#include "version.h"
 #include "pnutils.h"
 
 //#include "tools.h"
@@ -22,6 +22,20 @@
 CAppModule _Module;
 
 __declspec( thread ) _Context g_Context = {0};
+
+void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message)
+{
+	tstring msg = _T("Unexpected error in file: ");
+	msg += file;
+	msg += _T(", line: ");
+	msg += IntToTString(line);
+	msg += _T(", version: ");
+	msg += PN_VERSION;
+	msg += _T(".\n");
+	msg += message;
+	msg += _T("\n\nPlease e-mail this information to ss@pnotepad.org.");
+	::MessageBox(NULL, msg.c_str(), _T("Programmers Notepad 2"), MB_OK | MB_ICONWARNING);
+}
 
 HWND GetCurrentEditor()
 {

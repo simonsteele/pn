@@ -108,6 +108,7 @@ public:
 	
 	tstring GetExtension();
 	tstring GetFileName();
+	tstring GetFileName_NoExt();
 	tstring GetPath();
 	void GetPath(tstring& buf);							///< Return c:\temp\ of c:\temp\dat.dat
 	void GetFileName_NoExt(tstring& buf);				///< Return the filename part of c:\temp\filename.dat

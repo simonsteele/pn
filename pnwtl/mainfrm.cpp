@@ -140,6 +140,23 @@ void __stdcall CMainFrame::ChildCloseNotify(CChildFrame* pChild, SChildEnumStruc
 		s->bCanClose = false;
 }
 
+void __stdcall CMainFrame::WorkspaceChildCloseNotify(CChildFrame* pChild, SChildEnumStruct* pES)
+{
+	SWorkspaceCloseStruct* s = static_cast<SWorkspaceCloseStruct*>(pES);
+
+	tstring filename = pChild->GetFileName().c_str();
+	Projects::File* pFile = s->pWorkspace->FindFile(filename.c_str());
+
+	if(pFile)
+	{
+		s->FoundWindows.push_back(pChild);
+
+		// check bCanClose first to see if we've already decided not to close.
+		if(s->bCanClose && !pChild->CanClose())
+			s->bCanClose = false;
+	}
+}
+
 void CMainFrame::ChildOptionsUpdateNotify(CChildFrame* pChild, SChildEnumStruct* pES)
 {
 	pChild->SendMessage(PN_OPTIONSUPDATED);
@@ -243,6 +260,12 @@ BOOL CMainFrame::OnIdle()
 	UIEnable(ID_FILE_CLOSE, bChild);
 	UIEnable(ID_FILE_SAVE, bCanSave);
 
+	if(m_pProjectsWnd != NULL)
+	{
+		Projects::Workspace* pWorkspace = m_pProjectsWnd->GetWorkspace();
+		UIEnable(ID_FILE_CLOSEWORKSPACE, (pWorkspace != NULL));
+	}
+
 	UIUpdateToolBar();
 
 	return FALSE;
@@ -303,6 +326,12 @@ LRESULT CMainFrame::OnChildNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 
 LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
+	// Check we want to close the workspace...
+	if(!CloseWorkspace())
+	{
+		return 0;
+	}
+
 	// Check that all of the child windows are ready to close...
 	SCloseStruct s;
 	s.pFunction = ChildCloseNotify; 
@@ -693,6 +722,61 @@ LRESULT CMainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	return 0;
 }
 
+LRESULT CMainFrame::OnFileNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(m_pProjectsWnd == NULL)
+		RETURN_UNEXPECTED(_T("No Projects Window."), 0); // bail.
+
+	Projects::Workspace* workspace = m_pProjectsWnd->GetWorkspace();
+
+	CPNSaveDialog dlg(_T("Project Files (*.pnproj)|*.pnproj|"), NULL, _T("pnproj"));
+	dlg.SetTitle(_T("Project Location"));
+	
+	if( !(dlg.DoModal() == IDOK) )
+		return 0; // bail.
+
+	CFileName fn(dlg.GetSingleFileName());
+	tstring projname = fn.GetFileName_NoExt();
+
+	if( !Projects::Project::CreateEmptyProject(projname.c_str(), dlg.GetSingleFileName()) )
+		RETURN_UNEXPECTED(_T("Failed to create project template file."), 0); // bail.
+
+	Projects::Project* project = new Projects::Project(dlg.GetSingleFileName());	
+
+	if( workspace == NULL )
+	{
+		// No workspace currently open, create a blank one to store the project in.
+		workspace = new Projects::Workspace;
+		workspace->SetName(_T("New Workspace"));
+		workspace->AddProject(project);
+		m_pProjectsWnd->SetWorkspace(workspace);
+		workspace->ClearDirty();
+	}
+	else
+	{
+		// Add this project to the current workspace. Yes this should be an option.
+		m_pProjectsWnd->AddProject(project);
+	}
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnFileNewWorkspace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(m_pProjectsWnd == NULL)
+		RETURN_UNEXPECTED(_T("No Projects Window."), 0);
+
+	if(!CloseWorkspace())
+		return 0;
+
+	Projects::Workspace* workspace = new Projects::Workspace;
+	workspace->SetName(_T("New Workspace"));
+	m_pProjectsWnd->SetWorkspace(workspace);
+	workspace->ClearDirty();
+
+	return 0;
+}
+
 LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CPNOpenDialog dlgOpen(_T("All Files (*.*)|*.*|"));
@@ -701,8 +785,26 @@ LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	if (dlgOpen.DoModal() == IDOK)
 	{
 		EAlreadyOpenAction action = COptionsManager::GetInstanceRef().AlreadyOpenAction;
+		bool bOnlyOne = dlgOpen.GetCount() == 1;
 		for(CPNOpenDialog::const_iterator i = dlgOpen.begin(); i != dlgOpen.end(); ++i)
 		{
+			if(bOnlyOne)
+			{
+				// If we're only opening one file, check to see if it's a project.
+				CFileName fn((*i).c_str());
+				fn.ToLower();
+				if(fn.GetExtension() == _T(".pnproj"))
+				{
+					OpenProject((*i).c_str());
+					break;
+				}
+				else if(fn.GetExtension() == _T(".pnwsp"))
+				{
+					OpenWorkspace((*i).c_str());
+					break;
+				}
+			}
+
 			if( !CheckAlreadyOpen((*i).c_str(), action) )
 			{
 				OpenFile((*i).c_str());
@@ -753,7 +855,7 @@ LRESULT CMainFrame::OnFileOpenProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 LRESULT CMainFrame::OnFileCloseWorkspace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CloseWorkspace();
+	CloseWorkspace(true);
 
 	return 0;
 }
@@ -845,8 +947,33 @@ LRESULT CMainFrame::OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 LRESULT CMainFrame::OnOutputWindowToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	if(m_pOutputWnd == NULL)
+		RETURN_UNEXPECTED(_T("No Projects Window."), 0);
+
 	m_pOutputWnd->Toggle();
 	UISetCheck(ID_EDITOR_OUTPUTWND, m_pOutputWnd->IsWindowVisible());
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnViewProjectWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(m_pProjectsWnd == NULL)
+		RETURN_UNEXPECTED(_T("No Projects Window."), 0);
+
+	m_pProjectsWnd->Toggle();
+	UISetCheck(ID_VIEW_WINDOWS_PROJECT, m_pProjectsWnd->IsWindowVisible());
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnViewTextClipsWindow(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(m_pClipsWnd == NULL)
+		RETURN_UNEXPECTED(_T("No Clips Window."), 0);
+
+	m_pClipsWnd->Toggle();
+	UISetCheck(ID_VIEW_WINDOWS_PROJECT, m_pClipsWnd->IsWindowVisible());
 
 	return 0;
 }
@@ -1546,14 +1673,56 @@ bool CMainFrame::SaveProjects(Projects::Workspace* pWorkspace)
 	return true;
 }
 
-void CMainFrame::CloseWorkspace()
+/**
+ * @return False if the user hits cancel at any point, true otherwise.
+ */
+bool CMainFrame::CloseWorkspaceFiles(Projects::Workspace* pWorkspace)
+{
+	SWorkspaceCloseStruct s;
+	s.pFunction = WorkspaceChildCloseNotify; 
+	s.bCanClose = true;
+	s.pWorkspace = pWorkspace;
+
+	PerformChildEnum(&s);
+
+	if(s.bCanClose)
+		for(std::list<CChildFrame*>::iterator i = s.FoundWindows.begin();
+			i != s.FoundWindows.end(); 
+			++i)
+		{
+			::PostMessage((*i)->m_hWnd, WM_CLOSE, 0, 253);
+		}
+
+	return s.bCanClose;
+}
+
+/**
+ * @return False if the user hits cancel at any point, true otherwise.
+ */
+bool CMainFrame::CloseWorkspace(bool bAllowCloseFiles)
 {
 	if( !m_pProjectsWnd )
-		return;
+		return true;
 	
 	Projects::Workspace* workspace = m_pProjectsWnd->GetWorkspace();
 	if( !workspace )
-		return;
+		return true;
+
+	if(bAllowCloseFiles)
+	{
+		// No point in asking if there are no files open.
+		HWND hWndEditor = GetCurrentEditor();
+		if(hWndEditor != NULL)
+		{
+			DWORD dwRes = ::MessageBox(m_hWnd, _T("Close all files in the workspace?"), _T("Programmers Notepad"), MB_YESNOCANCEL | MB_ICONQUESTION);
+
+			if( dwRes == IDCANCEL )
+				return false;
+			else if( dwRes == IDYES )
+				if(!CloseWorkspaceFiles(workspace))
+					return false;
+		}
+	}
 
 	if( workspace->IsDirty() )
 	{
@@ -1570,22 +1739,24 @@ void CMainFrame::CloseWorkspace()
 				// see if the user wants to save it.
 				DWORD dwRes = SaveWorkspace(workspace, true);
 				if( dwRes == IDCANCEL )
-					return;
+					return false;
 
 				if( dwRes == IDNO )
 				{
 					if( !SaveProjects(workspace) )
-						return;
+						return false;
 				}	
 			}
 			else
 			{
 				if( !SaveProjects(workspace) )
-					return;
+					return false;
 			}
 		}
 	}
 	
 	m_pProjectsWnd->SetWorkspace(NULL);
 	delete workspace;
+
+	return true;
 }

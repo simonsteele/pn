@@ -603,19 +603,7 @@ tstring CFileName::GetFileName()
 		return m_FileName;
 }
 
-///@todo this crashes if the file has no extension!!!
-tstring CFileName::GetExtension()
-{
-	int pos = GetLastDotPos(&m_FileName);
-	if(pos != m_FileName.npos)
-	{
-		return m_FileName.substr(pos-1);
-	}
-	else
-		return tstring("");
-}
-
-void CFileName::GetFileName_NoExt(tstring& buf)
+tstring CFileName::GetFileName_NoExt()
 {
 	tstring work;
 	
@@ -636,7 +624,24 @@ void CFileName::GetFileName_NoExt(tstring& buf)
 		work = work.substr(0, pos-1);
 	}
 
-	buf = work;
+	return work;
+}
+
+///@todo this crashes if the file has no extension!!!
+tstring CFileName::GetExtension()
+{
+	int pos = GetLastDotPos(&m_FileName);
+	if(pos != m_FileName.npos)
+	{
+		return m_FileName.substr(pos-1);
+	}
+	else
+		return tstring("");
+}
+
+void CFileName::GetFileName_NoExt(tstring& buf)
+{
+	buf = GetFileName_NoExt();
 }
 
 void CFileName::ChangeExtensionTo(LPCTSTR newext)

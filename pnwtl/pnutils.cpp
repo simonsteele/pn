@@ -144,12 +144,19 @@ CMRUMenu::~CMRUMenu()
 void CMRUMenu::UpdateMenu()
 {
 	CSMenuHandle m = m_Menu.GetHandle();
-	TCHAR szBuf[50];
-	TCHAR szItemText[50+6]; // add space for &, 2 digits, and a space
+	TCHAR* pszBuf = NULL;
+	TCHAR* pszItemText = NULL;
 
 	UINT id;
 	int insertPoint = 0;
 	int offset = 0;
+
+	UINT maxChars = (UINT)COptionsManager::GetInstance()->Get(PNSK_INTERFACE, _T("MRUMaxLength"), 50);
+	if(maxChars > 0)
+	{
+		TCHAR* pszBuf = new TCHAR[maxChars];
+		TCHAR* pszItemText = new TCHAR[maxChars+6]; // add space for &, 2 digits, and a space
+	}
 
 	int num = m.GetCount();
 	if(num != 0)
@@ -178,9 +185,22 @@ void CMRUMenu::UpdateMenu()
 		{
 			int co = nSize - 1 - offset;
 			_entry& e = m_entries[co];
-			AtlCompactPath(szBuf, e.pszData, 40);
-			wsprintf(szItemText, _T("&%i %s"), offset + 1, szBuf);
-			::InsertMenu(m, insertPoint + offset, MF_BYPOSITION | MF_STRING, m_iBase + co, szItemText);
+			if(pszBuf)
+			{
+				// Fixed length strings...
+				AtlCompactPath(pszBuf, e.pszData, maxChars);
+				wsprintf(pszItemText, _T("&%i %s"), offset + 1, pszBuf);
+				::InsertMenu(m, insertPoint + offset, MF_BYPOSITION | MF_STRING, m_iBase + co, pszItemText);
+			}
+			else
+			{
+				// Anything goes...
+				tstring sCaption = _T("&");
+				sCaption += IntToTString(offset+1);
+				sCaption += _T(" ");
+				sCaption += e.pszData;
+				::InsertMenu(m, insertPoint + offset, MF_BYPOSITION | MF_STRING, m_iBase + co, sCaption.c_str());
+			}
 		}
 	}
 	else
@@ -190,6 +210,12 @@ void CMRUMenu::UpdateMenu()
 		offset += 1;
 	}
 	::DeleteMenu(m, insertPoint + offset, MF_BYPOSITION);
+
+	if(pszBuf)
+		delete [] pszBuf;
+
+	if(pszItemText)
+		delete [] pszItemText;
 }
 
 CMRUMenu::operator HMENU()

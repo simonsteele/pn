@@ -53,6 +53,10 @@ File::File(LPCTSTR basePath, LPCTSTR path, Projects::Folder* parent) : ProjectTy
 			// giving up and returning the full path if it's unreasonable to make one.
 			relPath = fn.GetRelativePath(basePath);
 		}
+		else
+		{
+			relPath = fn.GetFileName();
+		}
 	}
 	
 	displayName = fn.GetFileName();
@@ -174,6 +178,31 @@ const FILE_LIST& Folder::GetFiles()
 	return files;
 }
 
+File* Folder::FindFile(LPCTSTR filename)
+{
+	CFileName cfn1(filename);
+	const tstring& fn1 = cfn1.ToLower();
+
+	for(FILE_IT i = files.begin(); i != files.end(); ++i)
+	{
+		CFileName cfn2((*i)->GetFileName());
+
+		if(fn1 == cfn2.ToLower())
+			return (*i);
+	}
+
+	File* pF = NULL;
+
+	for(FL_IT i = children.begin(); i != children.end(); ++i)
+	{
+		pF = (*i)->FindFile(filename);
+		if(pF)
+			return pF;
+	}
+	
+	return pF;
+}
+
 void Folder::AddChild(Folder* folder)
 {
 	folder->SetParent(this);
@@ -273,6 +302,25 @@ void Folder::setDirty()
 #define PS_START	0x1
 #define PS_PROJECT	0x2
 #define PS_FOLDER	0x3
+
+bool Project::CreateEmptyProject(LPCTSTR projectname, LPCTSTR filename)
+{
+	Project Fake;
+	Fake.basePath = CFileName(filename).GetPath();
+	Fake.SetName(projectname);
+	Fake.fileName = filename;
+	Fake.Save();
+
+	return FileExists(filename);
+}
+
+Project::Project()
+{
+	type = ptProject;
+
+	bDirty = true;
+	bExists = true;
+}
 
 Project::Project(LPCTSTR projectFile) : Folder()
 {
@@ -451,9 +499,10 @@ Workspace::Workspace() : ProjectType(ptWorkspace)
 
 Workspace::Workspace(LPCTSTR projectFile) : ProjectType(ptWorkspace)
 {
-	// TO DO:
+	// TODO:
 	// 1. Parse XML Workspace File, collect project file names.
 	// 2. Parse individual projects.
+	fileName = projectFile;
 }
 
 Workspace::~Workspace()
@@ -495,14 +544,6 @@ LPCTSTR Workspace::GetName()
 	return name.c_str();
 }
 
-void Workspace::Clear()
-{
-	for(PL_IT i = projects.begin(); i != projects.end(); ++i)
-	{
-		delete (*i);
-	}
-}
-
 bool Workspace::CanSave()
 {
 	return (fileName != _T(""));
@@ -533,6 +574,54 @@ bool Workspace::IsDirty(bool bRecurse)
 	}
 
 	return false;
+}
+
+File* Workspace::FindFile(LPCTSTR filename)
+{
+	File* pF = NULL;
+	
+	for(PL_IT i = projects.begin(); i != projects.end(); ++i)
+	{
+		pF = (*i)->FindFile(filename);
+		if(pF)
+			return pF;
+	}
+
+	return pF;
+}
+
+void Workspace::startElement(LPCTSTR name, XMLAttributes& atts)
+{
+
+}
+
+void Workspace::endElement(LPCTSTR name)
+{
+
+}
+
+void Workspace::Clear()
+{
+	for(PL_IT i = projects.begin(); i != projects.end(); ++i)
+	{
+		delete (*i);
+	}
+}
+
+void Workspace::parse()
+{
+	parseState = PS_START;
+	
+	XMLParser parser;
+	parser.SetParseState(this);
+	try
+	{
+		parser.LoadFile(fileName.c_str());
+	}
+	catch (XMLParserException& ex)
+	{
+		::OutputDebugString(ex.GetMessage());
+	}
 }
 
 } // namespace Projects
