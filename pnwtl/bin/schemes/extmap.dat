@@ -13,3 +13,4 @@
 .conf=Properties
 .cf=Properties
 .xml=xml
+.py=python

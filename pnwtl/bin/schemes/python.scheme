@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="python">
+			and assert break class continue def del elif
+			else except exec finally for from global if import in is lambda None
+			not or pass print raise return try while yield
+		</keyword-class>
+	</keyword-classes>
+	<language name="python" title="Python" folding="true" foldcomments="true" foldcompact="false">
+		<lexer name="python" />
+		<use-keywords>
+			<keyword key="0" class="python"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="Whitespace" key="0" />
+			<style name="Comment" key="1" class="comment"/>
+			<style name="Number" key="2" class="number"/>
+			<style name="String" key="3" class="string"/>
+			<style name="Single-Quoted String" key="4" class="string"/>
+			<style name="Keyword" key="5" class="keyword"/>
+			<style name="Triple Quotes" key="6" fore="7f0000"/>
+			<style name="Triple Double Quotes" key="7" fore="7f0000"/>
+			<style name="Class name" key="8" fore="0000ff" bold="true"/>
+			<style name="Function or method name" key="9" fore="007f7f" bold="true"/>
+			<style name="Operators" key="10" bold="true"/>
+			<style name="Identifiers" key="11"/>
+			<style name="Comment block" key="12" fore="7f7f7f" />
+			<style name="Unclosed string" key="13" class="string" back="e0c0e0" eolfilled="true" />
+			<style name="Brace Match" key="34" bold="true" fore="0000ff"/>
+			<style name="Brace MisMatch" key="35" bold="true" fore="ff0000"/>
+		</use-styles>
+	</language>
+</Scheme>

@@ -19,6 +19,8 @@
 		<style-class name="commentline" inherit-style="comment"/>
 		<style-class name="commentbox" inherit-style="comment"/>
 		<style-class name="keyword" fore="colour.keyword" bold="true"/>
+		<style-class name="string" fore="colour.string" />
+		<style-class name="number" fore="colour.number" />
 	</style-classes>
 	<keyword-classes>
 		<keyword-class name="javascript">
