@@ -360,7 +360,7 @@ class COptionsPageNewFiles : public COptionsPageImpl<COptionsPageNewFiles>
 
 		BEGIN_MSG_MAP(COptionsPageNewFiles)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			//COMMAND_HANDLER(IDC_SCHEMECOMBO, CBN_SELCHANGE, OnComboChange)
+			COMMAND_HANDLER(IDC_NEW_SCHEMECOMBO, CBN_SELCHANGE, OnComboChange)
 			COMMAND_HANDLER(IDC_SMARTSTART_EDITBUTTON, BN_CLICKED, OnEditClicked)
 			COMMAND_HANDLER(IDC_SMARTSTART_REMOVEBUTTON, BN_CLICKED, OnRemoveClicked)
 			COMMAND_HANDLER(IDC_SMARTSTART_ADDBUTTON, BN_CLICKED, OnAddClicked)
@@ -380,6 +380,7 @@ class COptionsPageNewFiles : public COptionsPageImpl<COptionsPageNewFiles>
 		LRESULT OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnListKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 		LRESULT OnListClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 		LRESULT OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);

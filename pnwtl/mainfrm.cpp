@@ -418,7 +418,12 @@ LRESULT CMainFrame::OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 LRESULT CMainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CChildFrame* pChild = NewEditor();
-	pChild->SetScheme(CSchemeManager::GetInstance()->GetDefaultScheme());
+	tstring newscheme =	COptionsManager::GetInstance()->Get(PNSK_EDITOR, _T("NewScheme"), _T(""));
+	if(newscheme.length() > 0)
+        pChild->SetScheme(CSchemeManager::GetInstance()->SchemeByName(newscheme.c_str()));
+	else
+		pChild->SetScheme(CSchemeManager::GetInstance()->GetDefaultScheme());
+		
 	
 	return 0;
 }

@@ -675,4 +675,36 @@ class Singleton : public DelObject
 
 #define SINGLETON_AUTO_DELETE true
 
+class CWindowText
+{
+	public:
+		CWindowText(HWND hWnd)
+		{
+			PNASSERT(::IsWindow(hWnd));
+			m_buffer = NULL;
+
+			int len = ::GetWindowTextLength(hWnd);
+			if(len > 0)
+			{
+				len++;
+				m_buffer = new TCHAR[len];
+				::GetWindowText(hWnd, m_buffer, len);
+			}
+		}
+
+		~CWindowText()
+		{
+			if(m_buffer)
+				delete [] m_buffer;
+		}
+
+		operator LPCTSTR ()
+		{
+			return m_buffer;
+		}
+
+	protected:
+		TCHAR* m_buffer;
+};
+
 #endif //#ifndef pnutils_h__included

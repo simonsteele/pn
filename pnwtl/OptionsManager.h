@@ -54,9 +54,11 @@ class COptionsManager
 
 		void Set(LPCTSTR subkey, LPCTSTR value, bool bVal);
 		void Set(LPCTSTR subkey, LPCTSTR value, int iVal);
+		void Set(LPCTSTR subkey, LPCTSTR value, LPCTSTR szVal);
 
 		bool Get(LPCTSTR subkey, LPCTSTR value, bool bDefault);
 		int Get(LPCTSTR subkey, LPCTSTR value, int iDefault);
+		tstring Get(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault);
 
 		void SavePrintSettings(SPrintOptions* pSettings);
 		void LoadPrintSettings(SPrintOptions* pSettings);

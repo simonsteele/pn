@@ -97,6 +97,19 @@ int COptionsManager::Get(LPCTSTR subkey, LPCTSTR value, int iDefault)
 	return reg.ReadInt(value, iDefault);
 }
 
+tstring COptionsManager::Get(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
+{
+	CSRegistry reg;
+	tstring root(pnregroot);
+	root += subkey;
+
+	reg.OpenKey(root.c_str());
+	tstring str;
+	if(!reg.ReadString(value, str))
+		str = szDefault;
+	return str;
+}
+
 void COptionsManager::Set(LPCTSTR subkey, LPCTSTR value, bool bVal)
 {
 	CSRegistry reg;
@@ -115,6 +128,16 @@ void COptionsManager::Set(LPCTSTR subkey, LPCTSTR value, int iVal)
 
 	reg.OpenKey(root.c_str());
 	reg.WriteInt(value, iVal);
+}
+
+void COptionsManager::Set(LPCTSTR subkey, LPCTSTR value, LPCTSTR szVal)
+{
+	CSRegistry reg;
+	tstring root(pnregroot);
+	root += subkey;
+
+	reg.OpenKey(root.c_str());
+	reg.WriteString(value, szVal);
 }
 
 void COptionsManager::SavePrintSettings(SPrintOptions* pSettings)

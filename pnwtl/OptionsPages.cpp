@@ -1377,18 +1377,24 @@ void COptionsPageNewFiles::FreeResources()
 
 void COptionsPageNewFiles::OnInitialise()
 {
+	tstring strNewScheme = COptionsManager::GetInstance()->Get(PNSK_EDITOR, _T("NewScheme"), _T("Plain Text"));
+
 	// Populate and initialise schemes combo.
 	int index = m_combo.AddString(_T("Plain Text"));
+	int selIndex = index;
 	m_combo.SetItemDataPtr(index, NULL);
 	for(SCF_IT i = m_pSchemes->GetSchemes().begin(); i != m_pSchemes->GetSchemes().end(); ++i)
 	{
 		index = m_combo.AddString((*i)->m_Title);
 		m_combo.SetItemDataPtr(index, (*i));
+		
+		if((*i)->m_Name == strNewScheme.c_str())
+			selIndex = index;
 	}
 	
 	if(m_combo.GetCount() > 0)
 	{
-		m_combo.SetCurSel(0);
+		m_combo.SetCurSel(selIndex);
 	}
 
 	// Populate SmartStart list.
@@ -1404,33 +1410,47 @@ void COptionsPageNewFiles::OnInitialise()
 
 void COptionsPageNewFiles::OnOK()
 {
-	// Copy all items into smartstart manager...
-	if(m_bDirty && m_bCreated)
+	if(m_bCreated)
 	{
-		SmartStart* pSS = SmartStart::GetInstance();
-		STRING_MAP& smap = pSS->GetMap();
-		smap.clear();
-
-		CString strBuf;
-		TCHAR* pStoredName;
-
-		int count = m_list.GetItemCount();
-		for(int i = 0; i < count; i++)
+		if(m_bDirty)
 		{
-			m_list.GetItemText(i, 0, strBuf);
-			pStoredName = reinterpret_cast<TCHAR*>( m_list.GetItemData(i) );
-			smap.insert(SM_VT(tstring(strBuf), tstring(pStoredName)));
+			// Copy all items into smartstart manager...
+			SmartStart* pSS = SmartStart::GetInstance();
+			STRING_MAP& smap = pSS->GetMap();
+			smap.clear();
+
+			CString strBuf;
+			TCHAR* pStoredName;
+
+			int count = m_list.GetItemCount();
+			for(int i = 0; i < count; i++)
+			{
+				m_list.GetItemText(i, 0, strBuf);
+				pStoredName = reinterpret_cast<TCHAR*>( m_list.GetItemData(i) );
+				smap.insert(SM_VT(tstring(strBuf), tstring(pStoredName)));
+			}
+
+			pSS->Save();
+
+			// Set the default new-scheme.
+			int selIndex = m_combo.GetCurSel();
+			LPCTSTR wt = NULL;
+			SchemeConfig* pS = static_cast<SchemeConfig*>(m_combo.GetItemDataPtr(selIndex));
+			if(pS)
+				wt = pS->m_Name;
+			else
+				wt = _T("Plain Text");
+			COptionsManager::GetInstance()->Set(PNSK_EDITOR, _T("NewScheme"), wt);
 		}
 
-		pSS->Save();
+		FreeResources();
 	}
-
-	FreeResources();
 }
 
 void COptionsPageNewFiles::OnCancel()
 {
-	FreeResources();
+	if(m_bCreated)
+		FreeResources();
 }
 
 LPCTSTR COptionsPageNewFiles::GetTreePosition()
@@ -1513,6 +1533,12 @@ LRESULT COptionsPageNewFiles::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/
 		}
 		m_bDirty = true;
 	}
+	return 0;
+}
+
+LRESULT COptionsPageNewFiles::OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	m_bDirty = true;
 	return 0;
 }
 
