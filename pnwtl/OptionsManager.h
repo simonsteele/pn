@@ -49,6 +49,7 @@ class COptionsManager
 		int TabWidth;
 		bool ShowIndentGuides;
 		bool LineNumbers;
+		bool MaximiseNew;
 		EPNSaveFormat LineEndings;
 		EAlreadyOpenAction AlreadyOpenAction;
 

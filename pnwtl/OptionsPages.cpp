@@ -151,6 +151,7 @@ void COptionsPageGeneral::OnOK()
 	options.TabWidth = m_iTabWidth;
 	options.LineNumbers = m_bLineNos != FALSE;
 	options.LineEndings = m_SaveFormat;
+	options.MaximiseNew = m_bMaximise != FALSE;
 }
 
 void COptionsPageGeneral::OnInitialise()
@@ -161,6 +162,7 @@ void COptionsPageGeneral::OnInitialise()
 	m_iTabWidth = options.TabWidth;
 	m_bLineNos = options.LineNumbers;
 	m_SaveFormat = options.LineEndings;
+	m_bMaximise = options.MaximiseNew;
 
 	CComboBox cb(GetDlgItem(IDC_OPT_LECOMBO));
 	for(int i = 0; i < cb.GetCount(); i++)

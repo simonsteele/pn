@@ -41,6 +41,7 @@ void COptionsManager::Load()
 	UseTabs = reg.ReadBool(_T("UseTabs"), true);
 	LineNumbers = reg.ReadBool(_T("LineNumbers"), false);
 	AlreadyOpenAction = (EAlreadyOpenAction)reg.ReadInt(_T("AlreadyOpenAction"), eSwitch);
+	MaximiseNew = reg.ReadBool(_T("MaximiseNew"), false);
 
 	// Find and Replace Settings ------------
 
@@ -72,6 +73,7 @@ void COptionsManager::Save()
 	reg.WriteBool(_T("UseTabs"), UseTabs);
 	reg.WriteBool(_T("LineNumbers"), LineNumbers);
 	reg.WriteInt(_T("AlreadyOpenAction"), AlreadyOpenAction);
+	reg.WriteBool(_T("MaximiseNew"), MaximiseNew);
 	
 	//cs = root + _T("Interface Settings");
 	//reg.OpenKey(cs, true);

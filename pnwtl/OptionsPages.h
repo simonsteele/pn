@@ -44,6 +44,7 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 			DDX_CHECK(IDC_OPT_USETABSCHECK, m_bUseTabs)
 			DDX_CHECK(IDC_OPT_LINENOSCHECK, m_bLineNos)
 			DDX_UINT(IDC_OPT_TABWIDTHEDIT, m_iTabWidth)
+			DDX_CHECK(IDC_OPT_MAXCHECK, m_bMaximise)
 		END_DDX_MAP()
 
 		virtual void OnOK();
@@ -56,6 +57,7 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 		BOOL m_bUseTabs;
 		BOOL m_bIndentGuides;
 		BOOL m_bLineNos;
+		BOOL m_bMaximise;
 		UINT m_iTabWidth;
 		EPNSaveFormat m_SaveFormat;
 };

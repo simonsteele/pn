@@ -838,6 +838,8 @@ BEGIN
     LTEXT           "Default Line Endings:",IDC_STATIC,6,90,72,12
     COMBOBOX        IDC_OPT_LECOMBO,78,90,102,66,CBS_DROPDOWNLIST | CBS_SORT | 
                     WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Maximise new document windows",IDC_OPT_MAXCHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,6,114,150,12
 END
 
 IDD_PAGE_NEWFILES DIALOGEX 0, 0, 299, 200

@@ -53,7 +53,9 @@ CChildFrame* CMainFrame::NewEditor()
 	CChildFrame* pChild = new CChildFrame;
 	ATLASSERT(pChild != NULL);
 
-	pChild->CreateEx(m_hWndMDIClient);
+	// Give the user the option to always maximise new windows.
+	bool bMax = COptionsManager::GetInstance()->MaximiseNew;
+	pChild->CreateEx(m_hWndMDIClient, 0, 0, bMax ? WS_MAXIMIZE : 0);
 
 	return pChild;
 }
