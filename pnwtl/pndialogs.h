@@ -166,7 +166,7 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-		StyleDetails* GetDefault(bool& bIsCustom, bool bAllowCustom = true);
+		StyleDetails* GetDefault(bool& bIsCustom);
 	
 	protected:
 		CFontCombo		m_FontCombo;

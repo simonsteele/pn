@@ -151,12 +151,6 @@ SchemeConfigParser::~SchemeConfigParser()
 		delete (*i);
 	}
 	m_Schemes.clear();
-
-	for(SDNM_IT j = m_customclasses.begin(); j != m_customclasses.end(); ++j)
-	{
-		delete (*j).second;
-	}
-	m_customclasses.clear();
 }
 
 LIST_SCHEMECONFIGS& SchemeConfigParser::GetSchemes()
@@ -164,9 +158,14 @@ LIST_SCHEMECONFIGS& SchemeConfigParser::GetSchemes()
 	return m_Schemes;
 }
 
-STYLEDETAILS_NAMEMAP& SchemeConfigParser::GetStyleClasses()
+StylesMap& SchemeConfigParser::GetStyleClasses()
 {
-	return m_LoadState.m_StyleClasses;
+	return m_originalclasses;
+}
+
+StylesMap& SchemeConfigParser::GetCustomClasses()
+{
+	return m_customclasses;
 }
 
 StyleDetails* SchemeConfigParser::GetDefaultStyle()
@@ -180,6 +179,13 @@ void SchemeConfigParser::LoadConfig(LPCTSTR path, LPCTSTR compiledpath)
 	m_Path += _T("UserSettings.xml");
 
 	Parse(path, _T("master.scheme"), (LPCTSTR)m_Path);
+	
+	/* The classes used while building up the styles are not the original
+	classes as seen in the config files. Those are stored in our own 
+	m_originalclasses member. We don't need the LoadState ones any more. */
+	m_LoadState.m_StyleClasses.Clear();
+	m_LoadState.m_CustomClasses.Clear();
+
 	Sort();
 }
 
@@ -291,31 +297,30 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 
 	CFile file;
 	CString s;
+	StyleDetails* pStyle = NULL;
+	StyleDetails* pOrig = NULL;
+	
 	file.Open(filename, CFile::modeWrite | CFile::modeBinary);
 
 	// Write file header, and begin Schemes section.
 	file.Write(USERSETTINGS_START, strlen(USERSETTINGS_START));
 
 	// Style Classes
-	if(m_customclasses.size() != 0)
+	if(GetCustomClasses().GetCount() != 0)
 	{
         file.Write(USERSETTINGS_CLASSES_START, strlen(USERSETTINGS_CLASSES_START));
 
 		ctcString name;
-		for(SDNM_IT j = m_customclasses.begin(); j != m_customclasses.end(); ++j)
+		STYLEDETAILS_NAMEMAP& map = GetCustomClasses().GetMap();
+		for(SDNM_IT j = map.begin(); j != map.end(); ++j)
 		{
-			name = (*j).second->name;
-			if(name == _T("default"))
+			pStyle = (*j).second;
+			name = pStyle->name;
 			{
-				(*j).second->compareTo(*this->GetDefaultStyle());
-			}
-			else
-			{
-				SDNM_IT origit = GetStyleClasses().find(CString(name.c_str()));
-				if(origit != GetStyleClasses().end())
-				{
-					StyleDetails& pStyle = * (*origit).second;
-					(*j).second->compareTo(pStyle);
+				pOrig = GetStyleClasses().GetStyle(name.c_str());
+				if(pOrig)
+				{					
+					pStyle->compareTo(*pOrig);
 				}
 				else
 					(*j).second->values = ~ 0;
@@ -418,6 +423,21 @@ void SchemeConfigParser::onStyle(StyleDetails* pStyle, StyleDetails* pCustom)
 		StyleDetails* pC = new StyleDetails(*pStyle);
 		customiseStyle(pC, pCustom);
 		m_pCurrent->m_customs.AddStyle(pC);
+	}
+}
+
+void SchemeConfigParser::onStyleClass(StyleDetails* pClass, StyleDetails* pCustom)
+{
+	StyleDetails* pStore = new StyleDetails(*pClass);
+	
+	m_originalclasses.AddStyle(pStore->name.c_str(), pStore);
+
+    if(pCustom)
+	{
+		customiseStyle(pClass, pCustom);
+
+		StyleDetails* pC = new StyleDetails(*pClass);
+		m_customclasses.AddStyle(pC->name.c_str(), pC);
 	}
 }
 

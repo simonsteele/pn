@@ -631,10 +631,8 @@ void COptionsPageStyle::OnOK()
 	if(m_bCreated)
 	{
 		bool bIsCustom;
-		StyleDetails* pDefault = GetDefault(bIsCustom);
-
-		StyleDetails* pS = new StyleDetails;
-		*pS = *pDefault;
+		StyleDetails* pCurrent = GetDefault(bIsCustom);
+		StyleDetails* pS = new StyleDetails(*pCurrent);
 		
 		int i = m_FontCombo.GetCurSel();
 		CString str;
@@ -648,26 +646,23 @@ void COptionsPageStyle::OnOK()
 		pS->Italic = (m_italic.GetCheck() == BST_CHECKED);
 		pS->Underline = (m_underline.GetCheck() == BST_CHECKED);
 
-		if(*pS != *pDefault)
+		if(*pS != *pCurrent)
 		{
+			// the new style is not the same as the current style...
+			
 			if(bIsCustom)
 			{
-				StyleDetails* pOrig = GetDefault(bIsCustom, false);
+				// the current style is already a custom one.
+				StyleDetails* pOrig = m_pSchemes->GetStyleClasses().GetStyle(_T("default"));
 				if(*pOrig == *pS)
 				{
 					// The user has reverted to the original style.
-					SDNM_IT i = m_pSchemes->m_customclasses.find(CString(_T("default")));
-					if(i != m_pSchemes->m_customclasses.end())
-					{
-						StyleDetails* pStemp = (*i).second;
-						m_pSchemes->m_customclasses.erase(i);
-						delete pStemp;
-					}
+					m_pSchemes->GetCustomClasses().DeleteStyle(_T("default"));
 				}
 				else
 				{
-					// We just save the details into the original StyleDetails.
-					*pDefault = *pS;
+					// pCurrent is already in the "Custom" classes collection. Update it.
+					*pCurrent = *pS;
 				}
 
 				/* If there was already a custom version of this style then one
@@ -677,9 +672,12 @@ void COptionsPageStyle::OnOK()
 			else
 			{
 				// There isn't already a custom style for this class, so we add one.
-				m_pSchemes->m_customclasses.insert(m_pSchemes->m_customclasses.end(), 
-					STYLEDETAILS_NAMEMAP::value_type(CString(_T("default")), pS));
+				m_pSchemes->GetCustomClasses().AddStyle(_T("default"), pS);
 			}
+		}
+		else
+		{
+			delete pS;
 		}
 	}
 }
@@ -693,21 +691,17 @@ LPCTSTR COptionsPageStyle::GetTreePosition()
 	return _T("Style");
 }
 
-StyleDetails* COptionsPageStyle::GetDefault(bool& bIsCustom, bool bAllowCustom)
+StyleDetails* COptionsPageStyle::GetDefault(bool& bIsCustom)
 {
-	SDNM_IT i;
-
-	if(bAllowCustom)
+	bIsCustom = false;
+	
+	StyleDetails* pCustom = m_pSchemes->GetCustomClasses().GetStyle(_T("default"));
+	if(pCustom)
 	{
-		i = m_pSchemes->m_customclasses.find(CString(_T("default")));
-		if(i != m_pSchemes->m_customclasses.end())
-		{
-			bIsCustom = true;
-			return (*i).second;
-		}
+		bIsCustom = true;
+		return pCustom;
 	}
 	
-	bIsCustom = false;
 	return m_pSchemes->GetDefaultStyle();
 }
 

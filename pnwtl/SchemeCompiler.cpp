@@ -241,19 +241,9 @@ void SchemeRecorder::SetDefStyle(StyleDetails* defaults)
 
 CSchemeLoaderState::~CSchemeLoaderState()
 {
-	for(SDNM_IT i = m_StyleClasses.begin(); i != m_StyleClasses.end(); ++i)
-	{
-		delete (*i).second;
-	}
-
 	for(CNM_IT j = m_CustomSchemes.begin(); j != m_CustomSchemes.end(); ++j)
 	{
 		delete (*j).second;
-	}
-
-	for(SDNM_IT k = m_CustomClasses.begin(); k != m_CustomClasses.end(); ++k)
-	{
-		delete (*k).second;
 	}
 }
 
@@ -482,8 +472,7 @@ void UserSettingsParser::processClassElement(CSchemeLoaderState* pState, LPCTSTR
 		StyleDetails* pStyle = new StyleDetails;
 		DefineStyle(pStyle, atts);
 		
-		pState->m_CustomClasses.insert(pState->m_CustomClasses.end(), 
-			STYLEDETAILS_NAMEMAP::value_type(CString(pStyle->name.c_str()), pStyle));
+		pState->m_CustomClasses.AddStyle(pStyle->name.c_str(), pStyle);
 	}
 }
 
@@ -585,6 +574,12 @@ void SchemeCompiler::onStyle(StyleDetails* pStyle, StyleDetails* pCustom)
 	}
 
 	sendStyle(pStyle, &m_Recorder);	
+}
+
+void SchemeCompiler::onStyleClass(StyleDetails* pClass, StyleDetails* pCustom)
+{
+	if(pCustom)
+		customiseStyle(pClass, pCustom);
 }
 
 void SchemeCompiler::sendStyle(StyleDetails* s, SchemeRecorder* compiler)
@@ -835,27 +830,24 @@ void SchemeParser::processStyleClass(CSchemeLoaderState* pState, XMLAttributes& 
 		else
 		{
 			pStyle = new StyleDetails(pState->m_Default);
-			pState->m_StyleClasses.insert(pState->m_StyleClasses.end(), STYLEDETAILS_NAMEMAP::value_type(name, pStyle));
+			pState->m_StyleClasses.AddStyle(name, pStyle);
 		}
 
 		t = atts.getValue(_T("inherit-style"));
 		if(t != NULL)
 		{
 			CString inh(t);
-			SDNM_IT i = pState->m_StyleClasses.find(inh);
-			if(i != pState->m_StyleClasses.end())
-				*pStyle = *((*i).second);
+			StyleDetails* pE = pState->m_StyleClasses.GetStyle(inh);
+			if(pE)
+				*pStyle = *pE;
 		}
 
 		parseStyle(pState, atts, pStyle);
 
-        StyleDetails* pCustom = NULL;
-		SDNM_IT found;
-		if(pState->m_CustomClasses.end() != (found = pState->m_CustomClasses.find(name)))
-		{
-			pCustom = (*found).second;
-			customiseStyle(pStyle, pCustom);
-		}
+        // NULL if not found.
+		StyleDetails* pCustom = pState->m_CustomClasses.GetStyle(name);;
+
+		onStyleClass(pStyle, pCustom);
 	}
 }
 
@@ -890,9 +882,9 @@ void SchemeParser::processLanguageStyle(CSchemeLoaderState* pState, XMLAttribute
 
 	if((classname.GetLength() > 0) && (classname != _T("default")))
 	{
-		SDNM_IT i = pState->m_StyleClasses.find(classname);
-		if(i != pState->m_StyleClasses.end())
-			pBase = (*i).second;
+		StyleDetails* pFound = pState->m_StyleClasses.GetStyle(classname);
+		if(pFound)
+			pBase = pFound;
 	}
 
 	StyleDetails Style(*pBase);

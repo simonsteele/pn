@@ -16,12 +16,10 @@
 #define schemecompiler_h__included
 
 #include "scintillaif.h"
-#include <string>
-#include <list>
-#include <map>
 
-using std::list;
-using std::map;
+// Including styles.h we also get <list> <map> and <string>
+#include "styles.h"
+
 
 typedef map<CString, CString> CSTRING_MAP;
 typedef list<CString> CSTRING_LIST;
@@ -67,10 +65,6 @@ typedef enum {nrMsgRec, nrTextRec} eNextRec;
 typedef enum {fldEnabled = 1, fldCompact = 2, fldComments = 4, fldPreProc = 8} eFoldFlags;
 //typedef enum {ovrTabWidth = 1, ovrIndentGuides = 2} eOverrideFlags;
 
-typedef enum {edvFontName = 0x0001,	edvFontSize = 0x0002, edvForeColor = 0x0004, edvBackColor = 0x0008,
-				edvBold = 0x0010, edvItalic = 0x0020, edvUnderline = 0x0040, edvEOLFilled = 0x0080, 
-				edvClass = 0x0100} EValuesSet;
-
 // Parser State Defines
 #define DOING_GLOBALS			1
 #define DOING_GLOBAL			2
@@ -97,212 +91,17 @@ typedef enum {edvFontName = 0x0001,	edvFontSize = 0x0002, edvForeColor = 0x0004,
 #define CompileVersion 0x03
 #define FileID "Caffeine.Scheme"
 
-class StyleDetails
-{
-	public:
-		StyleDetails()
-		{
-			Key = 0;
-			FontName = "Courier New";
-			FontSize = 10;
-			ForeColor = RGB(0,0,0);
-			BackColor = RGB(255,255,255);
-			Bold = false;
-			Italic = false;
-			Underline = false;
-			EOLFilled = false;
-			values = 0;
-		}
-
-		StyleDetails(const StyleDetails& copy)
-		{
-			*this = copy;
-		}
-
-		StyleDetails& operator = (const StyleDetails& copy)
-		{
-			Key = copy.Key;
-			FontName = copy.FontName;
-			FontSize = copy.FontSize;
-			ForeColor = copy.ForeColor;
-			BackColor = copy.BackColor;
-			Bold = copy.Bold;
-			Italic = copy.Italic;
-			Underline = copy.Underline;
-			EOLFilled = copy.EOLFilled;
-			values = copy.values;
-			classname = copy.classname;
-			name = copy.name;
-			return *this;
-		}
-
-		bool operator == (const StyleDetails& compare)
-		{
-			return (
-				Key == compare.Key &&
-				FontName == compare.FontName &&
-				FontSize == compare.FontSize &&
-				ForeColor == compare.ForeColor &&
-				BackColor == compare.BackColor &&
-				Bold == compare.Bold &&
-				Italic == compare.Italic &&
-				Underline == compare.Underline &&
-				EOLFilled == compare.EOLFilled &&
-				//values == copy.values &&
-				classname == compare.classname //&&
-				//name == compare.name
-				);
-		}
-
-		bool operator != (const StyleDetails& compare)
-		{
-			return !(*this == compare);
-		}
-
-		/**
-		 * This function sets the "values" bit mask with
-		 * all the values that are different from those in compare.
-		 */
-		void compareTo(StyleDetails& compare)
-		{
-			values = 0 |
-				((FontName == compare.FontName) ? 0 : edvFontName) |
-				((FontSize == compare.FontSize) ? 0 : edvFontSize) |
-				((ForeColor == compare.ForeColor) ? 0 : edvForeColor) |
-				((BackColor == compare.BackColor) ? 0 : edvBackColor) |
-				((Bold == compare.Bold) ? 0 : edvBold) |
-				((Italic == compare.Italic) ? 0 : edvItalic) |
-				((Underline == compare.Underline) ? 0 : edvUnderline) |
-				((EOLFilled == compare.EOLFilled) ? 0 : edvEOLFilled) |
-				((classname == compare.classname) ? 0 : edvClass)//&&
-				//values == copy.values &&
-				//name == compare.name;
-				;
-		}
-
-		int Key;
-		
-		std::string FontName;
-		int FontSize;
-		COLORREF ForeColor;
-		COLORREF BackColor;
-		bool Bold;
-		bool Italic;
-		bool Underline;
-		bool EOLFilled;
-
-		std::string name;
-		std::string classname;
-		int values;
-};
-
-typedef list<StyleDetails*>	STYLES_LIST;
-typedef STYLES_LIST::iterator SL_IT;
-
-struct CustomKeywordSet
-{
-	int		key;
-	TCHAR*	pWords;
-	CustomKeywordSet* pNext;
-};
-
-class CustomKeywordHolder
-{
-	public:
-		CustomKeywordHolder()
-		{
-			pKeywordSets = NULL;
-			pLast = NULL;
-		}
-
-		~CustomKeywordHolder()
-		{
-			CustomKeywordSet* pSet = pKeywordSets;
-			CustomKeywordSet* pDel;
-			while(pSet)
-			{
-				pDel = pSet;
-				pSet = pSet->pNext;
-				if(pDel->pWords)
-					delete [] pDel->pWords;
-				delete pDel;
-			}
-
-			pKeywordSets = NULL;
-		}
-
-		void AddKeywordSet(CustomKeywordSet* pSet)
-		{
-			if(pLast)
-			{
-				pLast->pNext = pSet;
-				pLast = pSet;
-			}
-			else
-			{
-				pKeywordSets = pLast = pSet;
-			}
-			pLast->pNext = NULL;
-		}
-
-		CustomKeywordSet* FindKeywordSet(int key)
-		{
-			CustomKeywordSet* pSet = pKeywordSets;
-			while(pSet)
-			{
-				if(pSet->key == key)
-					break;
-				pSet = pSet->pNext;
-			}
-			return pSet;
-		}
-
-	protected:
-		CustomKeywordSet* pKeywordSets;
-		CustomKeywordSet* pLast;
-};
-
-class CustomisedScheme : public CustomKeywordHolder
-{
-public:
-	~CustomisedScheme()
-	{
-		for(SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
-		{
-			delete (*i);
-		}
-		m_Styles.clear();
-	}
-
-	StyleDetails* FindStyle(int key)
-	{
-		for(SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
-		{
-			if((*i)->Key == key)
-				return *i;
-		}
-		return NULL;
-	}
-
-	STYLES_LIST	m_Styles;
-};
-
-typedef map<CString, CustomisedScheme*> CUSTOMISED_NAMEMAP;
-typedef CUSTOMISED_NAMEMAP::iterator CNM_IT;
-typedef map<CString, StyleDetails*> STYLEDETAILS_NAMEMAP;
-typedef STYLEDETAILS_NAMEMAP::iterator SDNM_IT;
-
 class CSchemeLoaderState
 {
 	public:
 		~CSchemeLoaderState();
 		CSTRING_MAP				m_Globals;
 		CSTRING_MAP				m_Keywords;
-		STYLEDETAILS_NAMEMAP	m_StyleClasses;
+		StylesMap				m_StyleClasses;
 		StyleDetails			m_Default;
 
 		CUSTOMISED_NAMEMAP		m_CustomSchemes;
-		STYLEDETAILS_NAMEMAP	m_CustomClasses;
+		StylesMap				m_CustomClasses;
 		CustomisedScheme*		m_pCustom;
 
 		XMLParser*				m_pParser;
@@ -417,6 +216,7 @@ class SchemeParser
 		virtual void onStyleGroup(XMLAttributes& atts) = 0;
 		virtual void onStyle(StyleDetails* pStyle, StyleDetails* pCustom) = 0;
 		virtual void onStyleGroupEnd() = 0;
+		virtual void onStyleClass(StyleDetails* pClass, StyleDetails* pCustom) = 0;
 		virtual void onKeywords(int key, LPCTSTR keywords) = 0;
 		virtual void onFile(LPCTSTR filename) = 0;
 };
@@ -440,6 +240,7 @@ class SchemeCompiler : public SchemeParser
 		virtual void onStyleGroup(XMLAttributes& atts){}
 		virtual void onStyle(StyleDetails* pStyle, StyleDetails* pCustom);
 		virtual void onStyleGroupEnd(){}
+		virtual void onStyleClass(StyleDetails* pClass, StyleDetails* pCustom);
 		virtual void onFile(LPCTSTR filename);
 		virtual void onKeywords(int key, LPCTSTR keywords);
 		virtual void onLexer(LPCTSTR name, int styleBits);

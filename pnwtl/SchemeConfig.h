@@ -75,10 +75,12 @@ class SchemeConfigParser : public SchemeParser
 		void SaveConfig();
 
 		LIST_SCHEMECONFIGS&		GetSchemes();
-		STYLEDETAILS_NAMEMAP&	GetStyleClasses();
+		StylesMap&				GetStyleClasses();
+		StylesMap&				GetCustomClasses();
 		StyleDetails*			GetDefaultStyle();
 
-		STYLEDETAILS_NAMEMAP	m_customclasses;
+		StylesMap				m_originalclasses;
+		StylesMap				m_customclasses;
 
 	protected:
 		void Sort();
@@ -100,6 +102,7 @@ class SchemeConfigParser : public SchemeParser
 		virtual void onStyleGroup(XMLAttributes& att);
 		virtual void onStyle(StyleDetails* pStyle, StyleDetails* pCustom);
 		virtual void onStyleGroupEnd();
+		virtual void onStyleClass(StyleDetails* pClass, StyleDetails* pCustom);
 		virtual void onKeywords(int key, LPCTSTR keywords);
 		virtual void onFile(LPCTSTR filename);
 

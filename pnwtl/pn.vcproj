@@ -272,6 +272,9 @@
 				RelativePath=".\stdafx.h">
 			</File>
 			<File
+				RelativePath="styles.h">
+			</File>
+			<File
 				RelativePath=".\textview.h">
 			</File>
 		</Filter>
