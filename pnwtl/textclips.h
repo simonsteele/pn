@@ -11,6 +11,8 @@
 #ifndef textclips_h__included
 #define textclips_h__included
 
+#include <list>
+
 namespace TextClips {
 
 /**
@@ -23,6 +25,8 @@ class Clip
 		tstring Text;
 };
 
+typedef std::list<Clip*>	LIST_CLIPS;
+
 /**
  * Represents a file full of text clips.
  */
@@ -30,15 +34,21 @@ class TextClipSet : public XMLParseState
 {
 	public:
 		TextClipSet(LPCTSTR filename);
+		~TextClipSet();
+
+		const LIST_CLIPS& GetClips();
 
 	//XMLParseState
 	public:
 		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
-		virtual void endElement(LPCTSTR name){}
+		virtual void endElement(LPCTSTR name);
 		virtual void characterData(LPCTSTR data, int len);
 
 	protected:
+		void clear();
 		void parse(LPCTSTR filename);
+
+		LIST_CLIPS	clips;
 
 	protected:
 		int	parseState;

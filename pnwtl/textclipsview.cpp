@@ -32,10 +32,18 @@ LRESULT CClipsDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	m_view.InsertColumn(0, _T("Name"), LVCFMT_LEFT, rc.right - rc.left, 0);
 
-	TextClips::Clip* tc = new TextClips::Clip;
-	tc->Name = "Test";
-	tc->Text = "Test | Text";
-	AddClip(tc);
+	tstring s;
+	COptionsManager::GetInstance()->GetPNPath(s);
+	s += _T("clips\\docbook.clips");
+	TextClips::TextClipSet set(s.c_str());
+	const TextClips::LIST_CLIPS& clips = set.GetClips();
+	
+	int index;
+	for(TextClips::LIST_CLIPS::const_iterator i = clips.begin(); i != clips.end(); ++i)
+	{
+		index = m_view.InsertItem(m_view.GetItemCount(), (*i)->Name.c_str());
+		m_view.SetItemData(index, reinterpret_cast<DWORD_PTR>( (*i) ));
+	}
 
 	return 0;
 }

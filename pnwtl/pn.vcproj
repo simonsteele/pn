@@ -227,6 +227,9 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="textclips.cpp">
+			</File>
+			<File
 				RelativePath="textclipsview.cpp">
 			</File>
 			<File
@@ -331,6 +334,9 @@
 			</File>
 			<File
 				RelativePath="styles.h">
+			</File>
+			<File
+				RelativePath="textclips.h">
 			</File>
 			<File
 				RelativePath="textclipsview.h">

@@ -22,9 +22,42 @@ TextClipSet::TextClipSet(LPCTSTR filename)
 	parse(filename);
 }
 
+TextClipSet::~TextClipSet()
+{
+	clear();
+}
+
+const LIST_CLIPS& TextClipSet::GetClips()
+{
+	return clips;
+}
+
+void TextClipSet::clear()
+{
+	for(LIST_CLIPS::iterator i = clips.begin(); i != clips.end(); ++i)
+	{
+		delete (*i);
+	}
+
+	clips.clear();
+}
+
 void TextClipSet::parse(LPCTSTR filename)
 {
+	XMLParser parser;
+	parser.SetParseState(this);
+	
+	clear();
 	parseState = 0;
+	
+	try
+	{
+		parser.LoadFile(filename);
+	}
+	catch( XMLParserException& ex )
+	{
+		::OutputDebugString(ex.GetMessage());
+	}
 }
 
 #define TCPS_START	0
@@ -42,7 +75,7 @@ void TextClipSet::parse(LPCTSTR filename)
 
 void TextClipSet::startElement(LPCTSTR name, XMLAttributes& atts)
 {
-	if IN_STATE(TCPS_START)
+	if( IN_STATE(TCPS_START) )
 	{
 		MATCH_ELEMENT(_T("clips"))
 		{
@@ -50,7 +83,7 @@ void TextClipSet::startElement(LPCTSTR name, XMLAttributes& atts)
 			SET_STATE(TCPS_CLIPS);
 		}
 	}
-	else if IN_STATE(TCPS_CLIPS)
+	else if( IN_STATE(TCPS_CLIPS) )
 	{
 		MATCH_ELEMENT(_T("clip"))
 		{
@@ -63,19 +96,19 @@ void TextClipSet::startElement(LPCTSTR name, XMLAttributes& atts)
 
 void TextClipSet::endElement(LPCTSTR name)
 {
-	if IN_STATE(TCPS_CLIP)
+	if( IN_STATE(TCPS_CLIP) )
 	{
 		// Create new clip - name = curName, content = cData;
-		Clip* clip = new TextClip;
+		Clip* clip = new Clip;
 		clip->Name = curName;
 		clip->Text = cData;
 
 		///@todo implement this, and remove the delete.
-		delete clip;
+		clips.insert(clips.end(), clip);
 
 		SET_STATE(TCPS_CLIPS);
 	}
-	else if IN_STATE(TCPS_CLIPS)
+	else if( IN_STATE(TCPS_CLIPS) )
 	{
 		SET_STATE(TCPS_START);
 	}
@@ -85,7 +118,7 @@ void TextClipSet::endElement(LPCTSTR name)
 
 void TextClipSet::characterData(LPCTSTR data, int len)
 {
-	if IN_STATE(TCPS_CLIP)
+	if( IN_STATE(TCPS_CLIP) )
 	{
 		CString cdata;
 		TCHAR* buf = cdata.GetBuffer(len+1);
