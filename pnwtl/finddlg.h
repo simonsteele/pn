@@ -180,13 +180,9 @@ public:
 
 		m_ReHelperBtn.Attach(GetDlgItem(IDC_REHELPER_BUTTON));
 		
-		m_fAC = new CCustomAutoComplete();
+		m_fAC = new CCustomAutoComplete( HKEY_CURRENT_USER, _T("Software\\Echo Software\\PN2\\AutoComplete\\Find")  );
 
 		m_fAC->Bind(m_FindTextCombo.GetEditCtrl(), ACO_UPDOWNKEYDROPSLIST | ACO_AUTOSUGGEST | ACO_AUTOAPPEND);
-		m_fAC->AddItem(_T("Test String 1"));
-		m_fAC->AddItem(_T("FindText"));
-		m_fAC->AddItem(_T("Find Test"));
-		m_fAC->AddItem(_T("Funky"));
 
 		CenterWindow(GetParent());
 		return TRUE;
@@ -214,7 +210,11 @@ public:
 	
 		if(editor != NULL)
 		{
-			if( editor->FindNext(GetFindOptions()) )
+			SFindOptions* pOptions = GetFindOptions();
+			
+			m_fAC->AddItem( pOptions->FindText );
+
+			if( editor->FindNext(pOptions) )
 			{
 				// Default Visual C++, old PN and others behaviour:
 				///@todo implement window stays open behaviour as well...
@@ -318,6 +318,7 @@ public:
 		COMMAND_HANDLER(IDC_RHELPER_BUTTON, BN_CLICKED, OnReHelper2Clicked)
 		COMMAND_RANGE_HANDLER(ID_REGEXP_ANYCHARACTER, ID_REGEXP_GROUP, OnReHelperMenuItemClicked)
 		MESSAGE_HANDLER(WM_SHOWWINDOW, OnShowWindow)
+		MESSAGE_HANDLER(WM_CLOSE, OnCloseWindow)
 		COMMAND_HANDLER(IDC_FINDNEXT_BUTTON, BN_CLICKED, OnFindNextClicked)
 		COMMAND_HANDLER(IDC_REPLACE_BUTTON, BN_CLICKED, OnReplaceClicked)
 		COMMAND_HANDLER(IDC_REPLACEALL_BUTTON, BN_CLICKED, OnReplaceAllClicked)
@@ -377,7 +378,7 @@ public:
 		m_FindTextCombo.Create(m_hWnd, rc, _T("RFINDTEXTCOMBO"), CBS_DROPDOWN | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO);
 		m_FindTextCombo.SetWindowPos(GetDlgItem(IDC_FINDTEXT_DUMMY), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
-		m_pFAC = new CCustomAutoComplete;
+		m_pFAC = new CCustomAutoComplete(HKEY_CURRENT_USER, _T("Software\\Echo Software\\PN2\\AutoComplete\\Find"));;
 		m_pFAC->Bind(m_FindTextCombo.GetEditCtrl(), ACO_UPDOWNKEYDROPSLIST | ACO_AUTOSUGGEST | ACO_AUTOAPPEND);
 		
 		::GetWindowRect(GetDlgItem(IDC_REPLACETEXT_DUMMY), rc);
@@ -385,7 +386,7 @@ public:
 		m_ReplaceTextCombo.Create(m_hWnd, rc, _T("REPLACETEXTCOMBO"), CBS_DROPDOWN | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_REPLACETEXT_COMBO);
 		m_ReplaceTextCombo.SetWindowPos(GetDlgItem(IDC_REPLACETEXT_DUMMY), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 		
-		m_pRAC = new CCustomAutoComplete;
+		m_pRAC = new CCustomAutoComplete( HKEY_CURRENT_USER, _T("Software\\Echo Software\\PN2\\AutoComplete\\Replace"));
 		m_pRAC->Bind(m_ReplaceTextCombo.GetEditCtrl(), ACO_UPDOWNKEYDROPSLIST | ACO_AUTOSUGGEST | ACO_AUTOAPPEND);		
 
 		CenterWindow(GetParent());
@@ -451,12 +452,25 @@ public:
 		return 0;
 	}
 
+	LRESULT OnCloseWindow(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+	{
+		m_pRAC->Unbind();
+		m_pFAC->Unbind();
+		bHandled = FALSE;
+
+		return 0;
+	}
+
 	LRESULT OnFindNextClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		CChildFrame* pEditor = GetCurrentEditorWnd();
 
+		SReplaceOptions* pOptions = GetOptions();
+			
+		m_pFAC->AddItem( pOptions->FindText );
+
 		if(pEditor)
-			pEditor->FindNext(GetOptions());
+			pEditor->FindNext(pOptions);
 
 		return 0;
 	}
@@ -464,17 +478,27 @@ public:
 	{
 		CChildFrame* pEditor = GetCurrentEditorWnd();
 		
+		SReplaceOptions* pOptions = GetOptions();
+			
+		m_pFAC->AddItem( pOptions->FindText );
+		m_pRAC->AddItem( pOptions->ReplaceText );
+
 		if(pEditor)
-			pEditor->Replace(GetOptions());
+			pEditor->Replace(pOptions);
 
 		return 0;
 	}
 	LRESULT OnReplaceAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		CChildFrame* pEditor = GetCurrentEditorWnd();
+
+		SReplaceOptions* pOptions = GetOptions();
+			
+		m_pFAC->AddItem( pOptions->FindText );
+		m_pRAC->AddItem( pOptions->ReplaceText );
 		
 		if(pEditor)
-			pEditor->ReplaceAll(GetOptions());
+			pEditor->ReplaceAll(pOptions);
 
 		return 0;
 	}
@@ -484,8 +508,11 @@ public:
 
 		if(pEditor)
 		{
-			SReplaceOptions* pOptions = theApp.GetReplaceOptions();
+			SReplaceOptions* pOptions = GetOptions();
 			pOptions->InSelection = true;
+
+			m_pFAC->AddItem( pOptions->FindText );
+			m_pRAC->AddItem( pOptions->ReplaceText );
 
 			pEditor->ReplaceAll(pOptions);
 		}
