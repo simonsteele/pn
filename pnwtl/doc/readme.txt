@@ -14,7 +14,8 @@ What's new?
 Bug Fixes:
 ----------
 
-1) 
+1) Show Full Path turns off after a revert. (SF Bug #773608)
+2) Stop Tools doesn't work. (SF Bug #773294)
 
 If you find a bug:
 ------------------

@@ -159,6 +159,9 @@ class CLastErrorInfo
 		int		m_nRetCode;
 };
 
+/**
+ * Provide functionality needed for a tool when running.
+ */
 class ToolWrapper : public ToolDefinition
 {
 	public:
@@ -187,11 +190,19 @@ class ToolWrapper : public ToolDefinition
 			m_hNotifyWnd = hWnd;
 		}
 
+		virtual void OnStart()
+		{
+			if(m_hNotifyWnd)
+			{
+				::PostMessage(m_hNotifyWnd, PN_TOOLRUNUPDATE, 0, 0);
+			}
+		}
+
 		virtual void OnFinished()
 		{
 			if(m_hNotifyWnd)
 			{
-				::PostMessage(m_hNotifyWnd, PN_TOOLFINISHED, 0, 0);
+				::PostMessage(m_hNotifyWnd, PN_TOOLRUNUPDATE, 0, 0);
 			}
 		}
 
@@ -252,6 +263,9 @@ protected:
 	IToolOutputSink*	m_pOutputter;
 };
 
+/**
+ * Template version of @see ToolWrapper. Simplifies use in different situations.
+ */
 template <class TWindowOwner, class TOutputSink>
 class ToolWrapperT : public ToolWrapper
 {
@@ -338,19 +352,10 @@ class ToolOwner : public Singleton<ToolOwner, SINGLETON_AUTO_DELETE>
 
 		void cleanup();
 
-		//void UpdateTools(CScheme* pScheme);
-
-		//IMPLEMENT THESE:
-		//void ToggleOutputWindow(bool bSetValue = false, bool bSetShowing = true);
-		//void UpdateRunningTools();
-
 	protected:
 		CRITICAL_SECTION	m_crRunningTools;
 		RTOOLS_LIST			m_RunningTools;
 		ToolRunner*			m_pFirstTool;
 };
-
-#define IMPLEMENT_TOOLOWNER() \
-	MESSAGE_HANDLER(PN_TOGGLEOUTPUT, OnToggleOutputWindow)
 
 #endif

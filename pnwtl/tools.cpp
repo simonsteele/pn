@@ -509,6 +509,7 @@ int ToolRunner::GetExitCode()
  */
 void ToolRunner::Run()
 {
+	m_pWrapper->OnStart();
 	m_RetCode = Run_CreateProcess(m_pWrapper->Command.c_str(), m_pWrapper->Params.c_str(), m_pWrapper->Folder.c_str());
 	PostRun();
 	m_pWrapper->SetRunning(false);
