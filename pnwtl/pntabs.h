@@ -70,7 +70,9 @@ public:
 
 	LRESULT OnChildTabTextChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
-		SendMessage(GetParent(), PN_NOTIFY, 0, SCN_UPDATEUI);
+		//ss - causing a crash when updates are requested in the middle of a scintilla op.
+		//also doesn't seem to have actually served a purpose.
+		//SendMessage(GetParent(), PN_NOTIFY, 0, SCN_UPDATEUI);
 
 		bHandled = FALSE;
 
