@@ -51,7 +51,7 @@ class SchemeTools
 	public:
 		SchemeTools();
 		SchemeTools(LPCTSTR schemename);
-		~SchemeTools();
+		virtual ~SchemeTools();
 
 		TOOLDEFS_LIST&	GetTools();
 		//int				GetMenu(CSMenuHandle& menu, int iInsertAfter, int iCommand = TOOLS_RUNTOOL);
@@ -62,7 +62,7 @@ class SchemeTools
 		void			MoveUp(ToolDefinition* pDef);
 		void			MoveDown(ToolDefinition* pDef);
 
-		void			WriteDefinition(ToolsXMLWriter& writer, ToolSource* source);
+		virtual void	WriteDefinition(ToolsXMLWriter& writer, ToolSource* source);
 
 		// You only need to do the following if you can't call GetMenu.
 		void			AllocateMenuResources(int iCommand = TOOLS_RUNTOOL);
@@ -93,7 +93,7 @@ class ProjectTools : public SchemeTools
 	public:
 		ProjectTools(LPCTSTR id);
 
-		void WriteDefinition(ToolsXMLWriter& writer, ToolSource* source);
+		 virtual void WriteDefinition(ToolsXMLWriter& writer, ToolSource* source);
 	
 	protected:
 		tstring	m_ProjectID;
@@ -102,13 +102,13 @@ class ProjectTools : public SchemeTools
 /**
  * @brief Class can be used both standalone and as a singleton.
  */
-class SchemeToolsManager : 
-	public Singleton<SchemeToolsManager, SINGLETON_AUTO_DELETE>, 
+class ToolsManager : 
+	public Singleton<ToolsManager, SINGLETON_AUTO_DELETE>, 
 	public XMLParseState
 {
 	public:
-		SchemeToolsManager();
-		virtual ~SchemeToolsManager();
+		ToolsManager();
+		virtual ~ToolsManager();
 
 		SchemeTools* GetGlobalTools();
 
@@ -119,7 +119,7 @@ class SchemeToolsManager :
 		void ReLoad(bool bWantMenuResources = false);
 		void Save();
 
-		int UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, int iDummyID, LPCSTR schemename);
+		int UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, int iDummyID, LPCSTR schemename, LPCTSTR projectId);
 
 		const ToolSource* GetDefaultToolStore();
 

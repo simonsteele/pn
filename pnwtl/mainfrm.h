@@ -353,6 +353,8 @@ protected:
 
 	void handleCommandLine(std::list<tstring>& parameters);
 
+	void setupToolsMenu();
+
 protected:
 	inline CPNDockingWindow* getDocker(EDocker window) const;
 
@@ -415,6 +417,7 @@ protected:
 	bool					m_bShowingDefaultStatus;
 	bool					m_bIsXPOrLater;
 	short					m_statusResetCounter;
+	int						m_iFirstToolCmd;
 
 	/* Can't free dialogs via the base class or destructors don't get
 	called. Use a template function to free any dialog class */

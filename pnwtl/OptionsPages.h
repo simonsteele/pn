@@ -430,7 +430,7 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 	public:
 		enum {IDD = IDD_PAGE_TOOLS};
 
-		COptionsPageTools(SchemeConfigParser* pSchemes, SchemeToolsManager* pToolManager);
+		COptionsPageTools(SchemeConfigParser* pSchemes, ToolsManager* pToolManager);
 		~COptionsPageTools();
 
 		BEGIN_MSG_MAP(COptionsPageTools)
@@ -452,7 +452,7 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 		virtual LPCTSTR GetTreePosition();
 
 	protected:
-		COptionsPageTools(SchemeToolsManager* pToolManager);
+		COptionsPageTools(ToolsManager* pToolManager);
 
 		void AddDefinition(ToolDefinition* pDef);
 
@@ -490,7 +490,7 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 		SchemeConfig*		m_pScheme;
 		SchemeTools*		m_pCurrent;
 
-		SchemeToolsManager*	m_toolstore;
+		ToolsManager*		m_toolstore;
 
 		CArrowButton		m_btnMoveUp;
 		CArrowButton		m_btnMoveDown;
@@ -499,7 +499,7 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 class COptionsPageProjectTools : public COptionsPageTools
 {
 	public:
-		COptionsPageProjectTools(SchemeToolsManager* pToolManager);
+		COptionsPageProjectTools(ToolsManager* pToolManager);
 		~COptionsPageProjectTools();
 
 		BEGIN_MSG_MAP(COptionsPageProjectTools)

@@ -77,7 +77,9 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(I
 
 	m_uiMIMessageID = g_Context.m_miManager->GetMessageID();
 
-	SchemeTools* pSchemeTools = SchemeToolsManager::GetInstance()->GetGlobalTools();
+	m_iFirstToolCmd = ID_TOOLS_DUMMY;
+
+	SchemeTools* pSchemeTools = ToolsManager::GetInstance()->GetGlobalTools();
 	pSchemeTools->AllocateMenuResources();
 	m_hGlobalToolAccel = pSchemeTools->GetAcceleratorTable();
 }
@@ -876,6 +878,8 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	CreateDockingWindows();
 	InitGUIState();
 
+	setupToolsMenu();
+
 	PostMessage(PN_INITIALISEFRAME);
 
 	return 0;
@@ -1581,7 +1585,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	}
 
 	SchemeConfigParser		schemeconfig(currentScheme);
-	SchemeToolsManager		toolsmanager;
+	ToolsManager			toolsmanager;
 	
 	COptionsPageGeneral			general;
 	COptionsPageEditDefaults	editDefs;
@@ -1625,7 +1629,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 		toolsmanager.Save();
 
 		// and then re-load them into the main manager...
-		SchemeToolsManager* pSTM = SchemeToolsManager::GetInstance();
+		ToolsManager* pSTM = ToolsManager::GetInstance();
 		pSTM->ReLoad(true); // pass in true to cache menu resources.
 
 		///@todo more dirty checking...
@@ -1639,6 +1643,8 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 		m_RecentFiles.UpdateMenu();
 
 		m_RecentProjects.SetSize( OPTIONS->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4) );
+
+		setupToolsMenu();
 
 		pSTM->GetGlobalTools()->AllocateMenuResources();
 		m_hGlobalToolAccel = pSTM->GetGlobalTools()->GetAcceleratorTable();
@@ -1983,6 +1989,32 @@ void CMainFrame::AddMRUProjectsEntry(LPCTSTR lpszFile)
 			}
 		}
 	}
+}
+
+void CMainFrame::setupToolsMenu()
+{
+	CSMenuHandle menu(m_hMenu);
+	CSMenuHandle tools( menu.GetSubMenu(2) );
+
+	tstring projid;
+
+	Projects::Workspace* pAW = g_Context.m_frame->GetActiveWorkspace();
+	if(pAW)
+	{
+		Projects::Project* pAP = pAW->GetActiveProject();
+		if(pAP)
+		{
+			Projects::ProjectTemplate* pT = pAP->GetTemplate();
+			if(pT)
+			{
+				projid = pT->GetID();
+			}
+		}
+	}
+	
+	m_iFirstToolCmd = ToolsManager::GetInstance()->UpdateToolsMenu(
+		tools, m_iFirstToolCmd, ID_TOOLS_DUMMY, NULL, projid.size() > 0 ? projid.c_str() : NULL
+	);
 }
 
 /**

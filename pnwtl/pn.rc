@@ -81,6 +81,9 @@ BEGIN
     END
     POPUP "&Tools"
     BEGIN
+        MENUITEM "Add Tools...",                32788
+        MENUITEM "&Stop Tools\tCtrl+Shift+K",   32789, GRAYED
+        MENUITEM SEPARATOR
         MENUITEM "&Options",                    ID_TOOLS_OPTIONS
     END
     POPUP "&Help"

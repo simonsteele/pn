@@ -524,7 +524,7 @@ void COptionsPageSchemes::Update()
 // COptionsPageTools
 //////////////////////////////////////////////////////////////////////////////
 
-COptionsPageTools::COptionsPageTools(SchemeConfigParser* pSchemes, SchemeToolsManager* pToolManager)
+COptionsPageTools::COptionsPageTools(SchemeConfigParser* pSchemes, ToolsManager* pToolManager)
 {
 	m_pSchemes = pSchemes;
 	m_pScheme = NULL;
@@ -532,7 +532,7 @@ COptionsPageTools::COptionsPageTools(SchemeConfigParser* pSchemes, SchemeToolsMa
 	m_toolstore = pToolManager;
 }
 
-COptionsPageTools::COptionsPageTools(SchemeToolsManager* pToolManager) /*protected*/
+COptionsPageTools::COptionsPageTools(ToolsManager* pToolManager) /*protected*/
 {
 	m_pSchemes = NULL;
 	m_pScheme = NULL;
@@ -901,7 +901,7 @@ LRESULT COptionsPageTools::OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& 
 #include "projectprops.h"
 #include "projectregistry.h"
 
-COptionsPageProjectTools::COptionsPageProjectTools(SchemeToolsManager* pToolManager) : COptionsPageTools(pToolManager)
+COptionsPageProjectTools::COptionsPageProjectTools(ToolsManager* pToolManager) : COptionsPageTools(pToolManager)
 {
 	
 }

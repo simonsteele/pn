@@ -526,10 +526,10 @@ Projects::Project* CToolCommandString::GetActiveProject()
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// SchemeToolsManager
+// ToolsManager
 //////////////////////////////////////////////////////////////////////////////
 
-SchemeToolsManager::SchemeToolsManager()
+ToolsManager::ToolsManager()
 {
 	m_pCur = NULL;
 	m_pGlobalTools = NULL;
@@ -537,18 +537,25 @@ SchemeToolsManager::SchemeToolsManager()
 	ReLoad();
 }
 
-SchemeToolsManager::~SchemeToolsManager()
+ToolsManager::~ToolsManager()
 {
 	Clear();
 }
 
-void SchemeToolsManager::Clear(bool bWantMenuResources)
+void ToolsManager::Clear(bool bWantMenuResources)
 {
 	for(SCHEMETOOLS_MAP::iterator i = m_toolSets.begin(); i != m_toolSets.end(); ++i)
 	{
 		if(bWantMenuResources)
 			(*i).second->ReleaseMenuResources();
 		delete (*i).second;
+	}
+
+	for(SCHEMETOOLS_MAP::iterator k = m_projectTools.begin(); k != m_projectTools.end(); ++k)
+	{
+		if(bWantMenuResources)
+			(*k).second->ReleaseMenuResources();
+		delete (*k).second;
 	}
 
 	for(SOURCES_LIST::iterator j = m_toolSources.begin(); j != m_toolSources.end(); ++j)
@@ -558,6 +565,7 @@ void SchemeToolsManager::Clear(bool bWantMenuResources)
 	}
 
 	m_toolSets.clear();
+	m_projectTools.clear();
 	m_toolSources.clear();
 
 	if(m_pGlobalTools)
@@ -569,7 +577,7 @@ void SchemeToolsManager::Clear(bool bWantMenuResources)
 	}
 }
 
-SchemeTools* SchemeToolsManager::GetGlobalTools()
+SchemeTools* ToolsManager::GetGlobalTools()
 {
 	if(!m_pGlobalTools)
 		m_pGlobalTools = new GlobalTools;
@@ -577,7 +585,7 @@ SchemeTools* SchemeToolsManager::GetGlobalTools()
 	return m_pGlobalTools;
 }
 
-SchemeTools* SchemeToolsManager::GetToolsFor(LPCTSTR scheme)
+SchemeTools* ToolsManager::GetToolsFor(LPCTSTR scheme)
 {
 	SchemeTools* tools = find(scheme, m_toolSets);
 	if(!tools)
@@ -590,7 +598,7 @@ SchemeTools* SchemeToolsManager::GetToolsFor(LPCTSTR scheme)
 	return tools;
 }
 
-ProjectTools* SchemeToolsManager::GetToolsForProject(LPCTSTR id)
+ProjectTools* ToolsManager::GetToolsForProject(LPCTSTR id)
 {
 	ProjectTools* tools = static_cast<ProjectTools*>( find(id, m_projectTools) );
 	if(!tools)
@@ -603,7 +611,7 @@ ProjectTools* SchemeToolsManager::GetToolsForProject(LPCTSTR id)
 	return tools;
 }
 
-SchemeTools* SchemeToolsManager::find(LPCTSTR id, SCHEMETOOLS_MAP& col)
+SchemeTools* ToolsManager::find(LPCTSTR id, SCHEMETOOLS_MAP& col)
 {
 	tstring stofind(id);
 	SCHEMETOOLS_MAP::iterator i = col.find(id);
@@ -618,7 +626,7 @@ SchemeTools* SchemeToolsManager::find(LPCTSTR id, SCHEMETOOLS_MAP& col)
 	return pRet;
 }
 
-int SchemeToolsManager::UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, int iDummyID, LPCSTR schemename)
+int ToolsManager::UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, int iDummyID, LPCSTR schemename, LPCTSTR projectId)
 {
 	HMENU m = tools;
 	
@@ -661,6 +669,12 @@ int SchemeToolsManager::UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, 
 		theTools.insert(theTools.end(), pS->GetTools().begin(), pS->GetTools().end());
 	}
 
+	if(projectId)
+	{
+		ProjectTools* pS = GetToolsForProject(projectId);
+		theTools.insert(theTools.end(), pS->GetTools().begin(), pS->GetTools().end());
+	}
+
 	if(theTools.size() > 0)
 	{
 		iFirstToolCmd = BuildMenu(theTools, tools, iDummyID);
@@ -677,7 +691,7 @@ int SchemeToolsManager::UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, 
 /**
  * @return ID of last command added...
  */
-int SchemeToolsManager::BuildMenu(TOOLDEFS_LIST& tools, CSMenuHandle& menu, int iInsertBefore, int iCommand)
+int ToolsManager::BuildMenu(TOOLDEFS_LIST& tools, CSMenuHandle& menu, int iInsertBefore, int iCommand)
 {
 	int iLastCommand = iInsertBefore;
 	if(tools.size() != 0)
@@ -710,12 +724,12 @@ int SchemeToolsManager::BuildMenu(TOOLDEFS_LIST& tools, CSMenuHandle& menu, int 
 	return iLastCommand;	
 }
 
-const ToolSource* SchemeToolsManager::GetDefaultToolStore()
+const ToolSource* ToolsManager::GetDefaultToolStore()
 {
 	return &m_DefaultToolsSource;
 }
 
-void SchemeToolsManager::ReLoad(bool bWantMenuResources)
+void ToolsManager::ReLoad(bool bWantMenuResources)
 {
 	Clear(bWantMenuResources);
 
@@ -787,7 +801,7 @@ void SchemeToolsManager::ReLoad(bool bWantMenuResources)
 	}
 }
 
-void SchemeToolsManager::Save()
+void ToolsManager::Save()
 {
 	// Save all the source files.
 	for(SOURCES_LIST::iterator i = m_toolSources.begin(); i != m_toolSources.end(); ++i)
@@ -818,7 +832,7 @@ void SchemeToolsManager::Save()
 	}
 }
 
-void SchemeToolsManager::processScheme(XMLAttributes& atts)
+void ToolsManager::processScheme(XMLAttributes& atts)
 {
 	LPCTSTR schemename = atts.getValue(_T("name"));
 	if(schemename)
@@ -830,7 +844,7 @@ void SchemeToolsManager::processScheme(XMLAttributes& atts)
 	}
 }
 
-void SchemeToolsManager::processProject(XMLAttributes& atts)
+void ToolsManager::processProject(XMLAttributes& atts)
 {
 	LPCTSTR projectid = atts.getValue(_T("projectid"));
 	if(projectid)
@@ -842,14 +856,14 @@ void SchemeToolsManager::processProject(XMLAttributes& atts)
 	}
 }
 
-void SchemeToolsManager::processGlobal(XMLAttributes& atts)
+void ToolsManager::processGlobal(XMLAttributes& atts)
 {
 	if(!m_pGlobalTools)
 		m_pGlobalTools = new GlobalTools;
 	m_pCur = m_pGlobalTools;
 }
 
-void SchemeToolsManager::processTool(XMLAttributes& atts)
+void ToolsManager::processTool(XMLAttributes& atts)
 {
 	LPCTSTR toolname = atts.getValue(_T("name"));
 	if(m_pCur && toolname)
@@ -886,7 +900,7 @@ void SchemeToolsManager::processTool(XMLAttributes& atts)
 	}
 }
 
-void SchemeToolsManager::startElement(LPCTSTR name, XMLAttributes& atts)
+void ToolsManager::startElement(LPCTSTR name, XMLAttributes& atts)
 {
 	if(_tcscmp(name, _T("scheme")) == 0)
 	{
@@ -911,7 +925,7 @@ bool CompareToolDefinitions(ToolDefinition* t1, ToolDefinition* t2)
 	return (t1->Index < t2->Index);
 }
 
-void SchemeToolsManager::endElement(LPCTSTR name)
+void ToolsManager::endElement(LPCTSTR name)
 {
 	if(_tcscmp(name, _T("scheme")) == 0 || _tcscmp(name, _T("global")) == 0 || _tcscmp(name, _T("project")) == 0)
 	{

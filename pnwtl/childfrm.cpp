@@ -1371,13 +1371,32 @@ void CChildFrame::SetScheme(CScheme* pScheme)
     m_view.SetScheme(pScheme);
 }
 
+#include "project.h"
+#include "projectprops.h"
+
 void CChildFrame::UpdateTools(CScheme* pScheme)
 {
 	CSMenuHandle menu(m_hMenu);
 	CSMenuHandle tools( menu.GetSubMenu(3) );
+
+	tstring projid;
+
+	Projects::Workspace* pAW = g_Context.m_frame->GetActiveWorkspace();
+	if(pAW)
+	{
+		Projects::Project* pAP = pAW->GetActiveProject();
+		if(pAP)
+		{
+			Projects::ProjectTemplate* pT = pAP->GetTemplate();
+			if(pT)
+			{
+				projid = pT->GetID();
+			}
+		}
+	}
 	
-	m_iFirstToolCmd = SchemeToolsManager::GetInstance()->UpdateToolsMenu(
-		tools, m_iFirstToolCmd, ID_TOOLS_DUMMY, pScheme->GetName()
+	m_iFirstToolCmd = ToolsManager::GetInstance()->UpdateToolsMenu(
+		tools, m_iFirstToolCmd, ID_TOOLS_DUMMY, pScheme->GetName(), projid.size() > 0 ? projid.c_str() : NULL
 	);
 }
 
@@ -1548,7 +1567,7 @@ COutputView* CChildFrame::GetOutputWindow()
 
 HACCEL CChildFrame::GetToolAccelerators()
 {
-	SchemeTools* pTools = SchemeToolsManager::GetInstance()->GetToolsFor( m_view.GetCurrentScheme()->GetName() );
+	SchemeTools* pTools = ToolsManager::GetInstance()->GetToolsFor( m_view.GetCurrentScheme()->GetName() );
 	return pTools->GetAcceleratorTable();
 }
 
