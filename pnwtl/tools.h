@@ -56,7 +56,7 @@ class SchemeTools
 		TOOLDEFS_LIST&	GetTools();
 		//int				GetMenu(CSMenuHandle& menu, int iInsertAfter, int iCommand = TOOLS_RUNTOOL);
 
-		void			Add(SourcedToolDefinition* pDef);
+		virtual void	Add(SourcedToolDefinition* pDef);
 		void			Delete(ToolDefinition* pDef);
 
 		void			MoveUp(ToolDefinition* pDef);
@@ -93,7 +93,8 @@ class ProjectTools : public SchemeTools
 	public:
 		ProjectTools(LPCTSTR id);
 
-		 virtual void WriteDefinition(ToolsXMLWriter& writer, ToolSource* source);
+		virtual void Add(SourcedToolDefinition* pDef);
+		virtual void WriteDefinition(ToolsXMLWriter& writer, ToolSource* source);
 	
 	protected:
 		tstring	m_ProjectID;

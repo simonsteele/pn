@@ -373,6 +373,12 @@ ProjectTools::ProjectTools(LPCTSTR id)
 	m_ProjectID = id;
 }
 
+void ProjectTools::Add(SourcedToolDefinition* pDef)
+{
+	pDef->iFlags |= TOOL_ISPROJECTTOOL;
+	SchemeTools::Add(pDef);
+}
+
 void ProjectTools::WriteDefinition(ToolsXMLWriter& writer, ToolSource* source)
 {
 	if(ToolsInSource(source))
@@ -392,34 +398,46 @@ void CToolCommandString::OnFormatChar(TCHAR thechar)
 	switch(thechar)
 	{
 		case _T('f'):
-			m_string += pChild->GetFileName(FN_FILE);
+			if(pChild)
+                m_string += pChild->GetFileName(FN_FILE);
 			break;
 
 		case _T('d'):
 			{
-				CPathName pn(pChild->GetFileName(FN_PATH));
-				if(reversePathSeps)
-					pn.SetForwardSlashes();
-				m_string += pn;
+				if(pChild)
+				{
+					CPathName pn(pChild->GetFileName(FN_PATH));
+					if(reversePathSeps)
+						pn.SetForwardSlashes();
+					m_string += pn;
+				}
 			}
 			break;
 
 		case _T('n'):
-			m_string += pChild->GetFileName(FN_FILEPART);
+			if(pChild)
+				m_string += pChild->GetFileName(FN_FILEPART);
 			break;
 
 		case _T('l'):
-			_itot(pChild->GetPosition(EP_LINE), itosbuf, 10);
-			m_string += itosbuf;
+			if(pChild)
+			{
+				_itot(pChild->GetPosition(EP_LINE), itosbuf, 10);
+				m_string += itosbuf;
+			}
 			break;
 
 		case _T('c'):
-			_itot(pChild->GetPosition(EP_COL), itosbuf, 10);
-			m_string += itosbuf;
+			if(pChild)
+			{
+				_itot(pChild->GetPosition(EP_COL), itosbuf, 10);
+				m_string += itosbuf;
+			}
 			break;
 
 		case _T('w'):
-			m_string += pChild->GetTextView()->GetCurrentWord();
+			if(pChild)
+				m_string += pChild->GetTextView()->GetCurrentWord();
 			break;
 
 		// current project file.
