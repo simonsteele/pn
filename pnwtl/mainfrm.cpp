@@ -729,6 +729,13 @@ LRESULT CMainFrame::OnFileOpenProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	return 0;
 }
 
+LRESULT CMainFrame::OnFileCloseWorkspace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CloseWorkspace();
+
+	return 0;
+}
+
 LRESULT CMainFrame::OnCut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	::PostMessage(::GetFocus(), WM_CUT, 0, 0);
@@ -1403,9 +1410,132 @@ void CMainFrame::OpenProject(LPCTSTR projectPath)
 	workspace->AddProject(project);
 
 	m_pProjectsWnd->SetWorkspace(workspace);
+	
+	workspace->ClearDirty();
 }
 
 void CMainFrame::OpenWorkspace(LPCTSTR workspace)
 {
 
+}
+
+bool CMainFrame::SaveWorkspaceAs(Projects::Workspace* pWorkspace)
+{
+	LPCTSTR path = NULL;
+				
+	// See if there's a sensible path to save the workspace in.
+	const Projects::PROJECT_LIST& projects = pWorkspace->GetProjects();
+	if(projects.size() > 0)
+		path = (*projects.begin())->GetBasePath();
+	
+	CPNSaveDialog save(_T("Workspace Files (*.pnwsp)|*.pnwsp|"), path);
+	save.m_ofn.lpstrTitle = _T("Save Workspace");
+
+	if(save.DoModal() == IDOK)
+	{
+		pWorkspace->SetFileName(save.m_ofn.lpstrFile);
+		return true;
+	}
+	else
+		return false;
+}
+
+DWORD CMainFrame::SaveWorkspace(Projects::Workspace* pWorkspace, bool bAsk)
+{
+	if(bAsk)
+	{
+		DWORD dwRes = ::MessageBox(m_hWnd, _T("Do you want to save your changes to the workspace?"), _T("Programmers Notepad"), MB_YESNOCANCEL | MB_ICONQUESTION);
+		if ( dwRes == IDCANCEL || dwRes == IDNO )
+		{
+			return dwRes;
+		}
+	}
+
+	if( pWorkspace->CanSave() )
+	{
+		pWorkspace->Save();
+	}
+	else
+	{
+		if( SaveWorkspaceAs(pWorkspace) )
+			pWorkspace->Save();
+		else
+			return IDCANCEL;
+	}
+
+	return IDOK;
+}
+
+bool CMainFrame::SaveProjects(Projects::Workspace* pWorkspace)
+{
+	// It's not a real workspace, just a holder for a 
+	// project, so we'll just save projects.
+	Projects::PROJECT_LIST projects = pWorkspace->GetProjects();
+	for(Projects::PL_CIT i = projects.begin();
+		i != projects.end();
+		++i)
+	{
+		if((*i)->IsDirty())
+		{
+			tstring msg = _T("Do you want to save changes to the project: ");
+			msg += (*i)->GetName();
+			msg += _T("?");
+			DWORD dwRes = ::MessageBox(m_hWnd, msg.c_str(), _T("Programmers Notepad"), MB_YESNOCANCEL | MB_ICONQUESTION);
+			
+			if ( dwRes == IDCANCEL )
+			{
+				return false;
+			}
+			else if( dwRes == IDYES )
+			{
+				(*i)->Save();
+			}
+		}
+	}
+	
+	return true;
+}
+
+void CMainFrame::CloseWorkspace()
+{
+	if( !m_pProjectsWnd )
+		return;
+	
+	Projects::Workspace* workspace = m_pProjectsWnd->GetWorkspace();
+	if( !workspace )
+		return;
+
+	if( workspace->IsDirty() )
+	{
+		if(workspace->CanSave())
+		{
+			workspace->Save();
+		}
+		else
+		{
+			// This is a blank workspace with no file.
+			if(workspace->IsDirty(false))
+			{
+				// Something about the workspace has changed, 
+				// see if the user wants to save it.
+				DWORD dwRes = SaveWorkspace(workspace, true);
+				if( dwRes == IDCANCEL )
+					return;
+
+				if( dwRes == IDNO )
+				{
+					if( !SaveProjects(workspace) )
+						return;
+				}	
+			}
+			else
+			{
+				if( !SaveProjects(workspace) )
+					return;
+			}
+		}
+	}
+	
+	m_pProjectsWnd->SetWorkspace(NULL);
+	delete workspace;
 }

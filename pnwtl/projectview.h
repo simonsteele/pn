@@ -83,6 +83,7 @@ public:
 	END_MSG_MAP()
 
 	void SetWorkspace(Projects::Workspace* ws);
+	Projects::Workspace* GetWorkspace();
 
 protected:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

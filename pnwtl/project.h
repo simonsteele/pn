@@ -33,8 +33,18 @@ typedef enum {ptFile, ptFolder, ptProject, ptWorkspace} PROJECT_TYPE;
 class ProjectType
 {
 public:
+	
 	ProjectType(PROJECT_TYPE);
-	PROJECT_TYPE GetType();
+	
+	/*
+	Note, this function doesn't need to be
+	virtual, but if it isn't then it breaks the
+	type-casting for any of the sub-classes which
+	do have a virtual function table due to the
+	fact that the offset to GetType() is different.
+	*/
+	virtual PROJECT_TYPE GetType();
+
 protected:
 	PROJECT_TYPE type;
 };
@@ -51,6 +61,11 @@ class File : public ProjectType
 
 		bool Rename(LPCTSTR newFilePart);
 
+		void WriteDefinition(ofstream& definition);
+
+	protected:
+		void setDirty();
+
 	protected:
 		tstring displayName;
 		tstring fullPath;
@@ -63,6 +78,8 @@ class File : public ProjectType
  */
 class Folder : public ProjectType
 {
+	friend class File;
+
 	public:
 		Folder();
 		Folder(LPCTSTR name_, LPCTSTR basepath);
@@ -85,8 +102,13 @@ class Folder : public ProjectType
 		void SetParent(Folder* folder);
 		Folder* GetParent();
 
+		void WriteDefinition(ofstream& definition);
+
 	protected:
 		void Clear();
+		void writeContents(ofstream& definition);
+
+		virtual void setDirty();
 
 	protected:
 		tstring		name;
@@ -107,29 +129,40 @@ public:
 
 	bool Exists();
 
+	void Save();
+
+	void SetFileName(LPCTSTR filename);
+
+	bool IsDirty();
+
 //Implement XMLParseState
 protected:
 	virtual void startElement(LPCTSTR name, XMLAttributes& atts);
 	virtual void endElement(LPCTSTR name);
 	virtual void characterData(LPCTSTR data, int len){};
 
+protected:
+	void writeDefinition(ofstream& definition);	
+
 	void processProject(XMLAttributes& atts);
 	void processFolder(XMLAttributes& atts);
 	void processFile(XMLAttributes& atts);
 
-protected:
+	virtual void setDirty();
 	
 	void parse();
 
 	Folder*	currentFolder;
 	tstring fileName;
 	bool	bExists;
+	bool	bDirty;
 	int		parseState;
 	int		nestingLevel;
 };
 
 typedef std::list<Project*>		PROJECT_LIST;
 typedef PROJECT_LIST::iterator	PL_IT;
+typedef PROJECT_LIST::const_iterator	PL_CIT;
 
 /**
  * @brief Represents a collection of Projects.
@@ -146,12 +179,18 @@ class Workspace : public ProjectType
 		void RemoveProject(Project* project);
 
 		void SetName(LPCTSTR name_);
+		void SetFileName(LPCTSTR filename_);
 
 		LPCTSTR GetName();
 
 		const PROJECT_LIST	GetProjects();
 
 		bool CanSave();
+
+		void Save();
+
+		void ClearDirty();
+		bool IsDirty(bool bRecurse = true);
 
 	protected:
 		void Clear();
@@ -160,6 +199,7 @@ class Workspace : public ProjectType
 		PROJECT_LIST	projects;
 		tstring			name;
 		tstring			fileName;
+		bool			bDirty;
 };
 
 }

@@ -30,7 +30,9 @@ void CProjectTreeCtrl::SetWorkspace(Projects::Workspace* ws)
 	workspace = ws;
 
 	clearTree();
-	buildTree();
+
+	if(workspace != NULL)
+		buildTree();
 }
 
 File* CProjectTreeCtrl::GetSelectedFile()
@@ -525,6 +527,11 @@ void CProjectDocker::SetWorkspace(Projects::Workspace* ws)
 	workspace = ws;
 
 	m_view.SetWorkspace(ws);
+}
+
+Projects::Workspace* CProjectDocker::GetWorkspace()
+{
+	return workspace;
 }
 
 LRESULT CProjectDocker::OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)

@@ -11,6 +11,9 @@
 #include "stdafx.h"
 #include "project.h"
 
+#include <sstream>
+#include <fstream>
+
 namespace Projects
 {
 
@@ -90,6 +93,20 @@ bool File::Rename(LPCTSTR newFilePart)
 		{
 			fullPath = fn2;
 			displayName = newFilePart;
+
+			CFileName fnRel(relPath.c_str());
+			if(fnRel.IsRelativePath())
+			{
+				relPath = fnRel.GetPath();
+				relPath += fnRel.GetFileName();
+			}
+			else
+			{
+				relPath = fullPath;
+			}
+
+			setDirty();
+
 			return true;
 		}
 		else
@@ -99,6 +116,16 @@ bool File::Rename(LPCTSTR newFilePart)
 	}
 
 	return false;
+}
+
+void File::WriteDefinition(ofstream& definition)
+{
+	definition << "<File path=\"" << relPath << "\" />\n";
+}
+
+void File::setDirty()
+{
+	parentFolder->setDirty();
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -149,25 +176,30 @@ const FILE_LIST& Folder::GetFiles()
 
 void Folder::AddChild(Folder* folder)
 {
-	children.insert(children.begin(), folder);
+	folder->SetParent(this);
+	children.insert(children.end(), folder);
+	setDirty();
 }
 
 File* Folder::AddFile(LPCTSTR file)
 {
 	File* pFile = new File(basePath.c_str(), file, this);
 	files.insert(files.begin(), pFile);
+	setDirty();
 	return pFile;
 }
 
 void Folder::RemoveFile(File* file)
 {
 	files.remove(file);
+	setDirty();
 	delete file;
 }
 
 void Folder::RemoveChild(Folder* folder)
 {
 	children.remove(folder);
+	setDirty();
 	delete folder;
 }
 
@@ -198,9 +230,49 @@ Folder* Folder::GetParent()
 	return parent;
 }
 
+void Folder::WriteDefinition(ofstream& definition)
+{
+	definition << "<Folder name=\"" << name << "\">\n";
+	
+	writeContents(definition);
+
+	definition << "</Folder>\n";
+}
+
+void Folder::writeContents(ofstream& definition)
+{
+	for(FOLDER_LIST::const_iterator i = children.begin();
+		i != children.end();
+		++i)
+	{
+		(*i)->WriteDefinition(definition);
+	}
+
+	for(FILE_LIST::const_iterator j = files.begin(); 
+		j != files.end(); 
+		++j)
+	{
+		(*j)->WriteDefinition(definition);
+	}
+}
+
+void Folder::setDirty()
+{
+	if(parent)
+		parent->setDirty();
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // Project
 //////////////////////////////////////////////////////////////////////////////
+
+#define FILENODE	_T("File")
+#define FOLDERNODE	_T("Folder")
+#define PROJECTNODE	_T("Project")
+
+#define PS_START	0x1
+#define PS_PROJECT	0x2
+#define PS_FOLDER	0x3
 
 Project::Project(LPCTSTR projectFile) : Folder()
 {
@@ -208,12 +280,15 @@ Project::Project(LPCTSTR projectFile) : Folder()
 
 	fileName = projectFile;
 	bExists = FileExists(projectFile);
-	CFileName(projectFile).GetPath(basePath);
+		
+	basePath = CFileName(projectFile).GetPath();
 
 	if(bExists)
 	{
 		parse();
 	}
+
+	bDirty = !bExists;
 }
 
 bool Project::Exists()
@@ -221,13 +296,26 @@ bool Project::Exists()
 	return bExists;
 }
 
-#define PS_START	0x1
-#define PS_PROJECT	0x2
-#define PS_FOLDER	0x3
+void Project::Save()
+{
+	ofstream str;
+	str.open(fileName.c_str(), ios_base::out);
+	
+	writeDefinition(str);
 
-#define FILENODE	_T("File")
-#define FOLDERNODE	_T("Folder")
-#define PROJECTNODE	_T("Project")
+	str.close();
+	bDirty = false;
+}
+
+void Project::SetFileName(LPCTSTR filename)
+{
+	fileName = filename;
+}
+
+bool Project::IsDirty()
+{
+	return bDirty;
+}
 
 void Project::parse()
 {
@@ -319,6 +407,16 @@ void Project::endElement(LPCTSTR name)
 	}
 }
 
+void Project::writeDefinition(ofstream& definition)
+{
+	definition << "<?xml version=\"1.0\"?>\n";
+	definition << "<Project name=\"" << name << "\">\n";
+
+	writeContents(definition);
+
+	definition << "</Project>";
+}
+
 void Project::processProject(XMLAttributes& atts)
 {
 	name = ATTVAL(_T("name"));
@@ -327,7 +425,6 @@ void Project::processProject(XMLAttributes& atts)
 void Project::processFolder(XMLAttributes& atts)
 {
 	Folder* folder = new Folder(ATTVAL(_T("name")), basePath.c_str());
-	folder->SetParent(currentFolder);
 	currentFolder->AddChild(folder);
 	currentFolder = folder;
 }
@@ -337,6 +434,11 @@ void Project::processFile(XMLAttributes& atts)
 	currentFolder->AddFile(ATTVAL(_T("path")));
 }
 
+void Project::setDirty()
+{
+	bDirty = true;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // Workspace
 //////////////////////////////////////////////////////////////////////////////
@@ -344,6 +446,7 @@ void Project::processFile(XMLAttributes& atts)
 Workspace::Workspace() : ProjectType(ptWorkspace)
 {
 	fileName = _T("");
+	bDirty = false;
 }
 
 Workspace::Workspace(LPCTSTR projectFile) : ProjectType(ptWorkspace)
@@ -361,12 +464,14 @@ Workspace::~Workspace()
 void Workspace::AddProject(Project* project)
 {
 	projects.insert(projects.begin(), project);
+	bDirty = true;
 }
 
 void Workspace::RemoveProject(Project* project)
 {
 	projects.remove(project);
 	delete project;
+	bDirty = true;
 }
 
 const PROJECT_LIST Workspace::GetProjects()
@@ -376,7 +481,13 @@ const PROJECT_LIST Workspace::GetProjects()
 
 void Workspace::SetName(LPCTSTR name_)
 {
+	bDirty = true;
 	name = name_;
+}
+
+void Workspace::SetFileName(LPCTSTR filename_)
+{
+	fileName = filename_;
 }
 
 LPCTSTR Workspace::GetName()
@@ -395,6 +506,33 @@ void Workspace::Clear()
 bool Workspace::CanSave()
 {
 	return (fileName != _T(""));
+}
+
+void Workspace::Save()
+{
+	//TODO: Implement Workspace Saving.
+}
+
+void Workspace::ClearDirty()
+{
+	bDirty = false;
+}
+
+bool Workspace::IsDirty(bool bRecurse)
+{
+	if(bDirty)
+		return true;
+
+	if(bRecurse)
+	{
+		for(PROJECT_LIST::const_iterator i = projects.begin(); i != projects.end(); ++i)
+		{
+			if((*i)->IsDirty())
+				return true;
+		}
+	}
+
+	return false;
 }
 
 } // namespace Projects
