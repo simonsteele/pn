@@ -1,8 +1,25 @@
+/**
+ * @file findinfilesview.cpp
+ * @brief Find In Files View
+ * @author Simon Steele
+ * @note Copyright (c) 2005 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #include "stdafx.h"
 #include "resource.h"
 #include "findinfiles.h"
 #include "findinfilesview.h"
 #include "childfrm.h"
+
+#if defined (_DEBUG)
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
 
 CFindInFilesView::CFindInFilesView()
 {
@@ -97,6 +114,23 @@ LRESULT CFindInFilesView::OnListDblClk(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	return 0;
 }
 
+LRESULT CFindInFilesView::OnFIFMatch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	FIFMatch* pMatch = (FIFMatch*)lParam;
+	AddResult(pMatch->FileName, pMatch->Line, pMatch->Buf);
+	delete pMatch;
+	return 0;
+}
+
+LRESULT CFindInFilesView::OnFIFFinish(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	DWORD dwTicksTaken = GetTickCount() - m_dwStartTicks;
+	TCHAR buf[4096];
+	_sntprintf(buf, 4096, _T("Search complete: %d matching lines found in %d files, taking %d milliseconds.\n"), lParam, wParam, dwTicksTaken);
+	g_Context.m_frame->SetStatusText(buf);
+	return 0;
+}
+
 void CFindInFilesView::OnBeginSearch(LPCTSTR stringLookingFor, bool bIsRegex)
 {
 	g_Context.m_frame->ToggleDockingWindow(PNDW_FINDRESULTS, true, true);
@@ -107,14 +141,43 @@ void CFindInFilesView::OnBeginSearch(LPCTSTR stringLookingFor, bool bIsRegex)
 
 void CFindInFilesView::OnEndSearch(int nFound, int nFiles)
 {
-	DWORD dwTicksTaken = GetTickCount() - m_dwStartTicks;
-	TCHAR buf[4096];
-	_sntprintf(buf, 4096, _T("Search complete: %d matching lines found in %d files, taking %d milliseconds.\n"), nFound, nFiles, dwTicksTaken);
-	
-	g_Context.m_frame->SetStatusText(buf);
+	::PostMessage(m_hWnd, PN_FIFFINISH, nFiles, nFound);
 }
 
 void CFindInFilesView::OnFoundString(LPCTSTR stringFound, LPCTSTR szFilename, int line, LPCTSTR buf)
 {
-	AddResult(szFilename, line, buf);
+	// Post a match result to ourselves and respond to it on the window thread.
+	FIFMatch* match = new FIFMatch(szFilename, line, buf);
+	::PostMessage(m_hWnd, PN_FIFMATCH, 0, (LPARAM)match);
+}
+
+CFindInFilesView::FIFMatch::FIFMatch(LPCTSTR szFileName, int line, LPCTSTR szBuf)
+{
+	if(szFileName)
+	{
+		FileName = new TCHAR[_tcslen(szFileName)+1];
+		_tcscpy(FileName, szFileName);
+	}
+	else
+	{
+		FileName = NULL;
+	}
+
+	if(szBuf)
+	{
+		Buf = new TCHAR[_tcslen(szBuf)+1];
+		_tcscpy(Buf, szBuf);
+	}
+	else
+		Buf = NULL;
+
+	Line = line;
+}
+
+CFindInFilesView::FIFMatch::~FIFMatch()
+{
+	if(FileName != NULL)
+		delete [] FileName;
+	if(Buf != NULL)
+		delete [] Buf;
 }

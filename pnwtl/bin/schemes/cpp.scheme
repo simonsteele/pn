@@ -96,7 +96,7 @@
 		</use-styles>
 	</base-language>
 	
-	<language base="cppbase" name="cpp" title="C / C++" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+	<language base="cppbase" name="cpp" title="C / C++" folding="true" foldcomments="true" foldcompact="false" foldpreproc="true">
 		<lexer name="cpp" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="cpp"/>

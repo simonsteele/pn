@@ -17,11 +17,13 @@ class FIFThread : public CSSThread
 {
 	public:
 		FIFThread();
-		~FIFThread();
+		virtual ~FIFThread();
 
 		void Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRecurse, bool bCaseSensitive, FIFSink* pSink);
 
 		void OnFoundFile(LPCTSTR path, LPCTSTR filename);
+
+		void ManageStop();
 
 	protected:
 		virtual void Run();

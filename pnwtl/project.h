@@ -279,6 +279,7 @@ class Project : public Folder, XMLParseState
 {
 	public:
 		Project(LPCTSTR projectFile);
+		~Project();
 
 		bool Exists();
 

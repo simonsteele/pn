@@ -26,6 +26,7 @@
 				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,STRICT"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
+				BufferSecurityCheck="TRUE"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdafx.h"
 				PrecompiledHeaderFile=".\Debug/pn.pch"
@@ -775,6 +776,92 @@
 			<File
 				RelativePath=".\include\wtltreems.h">
 			</File>
+			<Filter
+				Name="TabbingFramework"
+				Filter="">
+				<File
+					RelativePath=".\TabbingFramework\atlgdix.h">
+				</File>
+				<File
+					RelativePath=".\TabbingFramework\CustomTabCtrl.h">
+				</File>
+				<File
+					RelativePath=".\TabbingFramework\DotNetTabCtrl.h">
+				</File>
+				<File
+					RelativePath=".\TabbingFramework\DynamicDialogTemplate.h">
+				</File>
+				<File
+					RelativePath=".\TabbingFramework\TabbedDockingWindow.h">
+				</File>
+				<File
+					RelativePath=".\TabbingFramework\TabbedFrame.h">
+				</File>
+				<File
+					RelativePath=".\TabbingFramework\TabbedMDI.h">
+				</File>
+				<File
+					RelativePath=".\TabbingFramework\TabbedMDISave.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="DockingFramework"
+				Filter="">
+				<File
+					RelativePath=".\DockingFramework\dbstate.h">
+				</File>
+				<File
+					RelativePath=".\DockingFramework\DDTracker.h">
+				</File>
+				<File
+					RelativePath=".\DockingFramework\DockingBox.h">
+				</File>
+				<File
+					RelativePath=".\DockingFramework\DockingFocus.h">
+				</File>
+				<File
+					RelativePath=".\DockingFramework\DockingFrame.h">
+				</File>
+				<File
+					RelativePath=".\DockingFramework\DockingWindow.h">
+				</File>
+				<File
+					RelativePath=".\DockingFramework\DockMisc.h">
+				</File>
+				<File
+					RelativePath=".\DockingFramework\DWAutoHide.h">
+				</File>
+				<File
+					RelativePath=".\DockingFramework\dwstate.h">
+				</File>
+				<File
+					RelativePath=".\DockingFramework\ExtDockingWindow.h">
+				</File>
+				<File
+					RelativePath=".\DockingFramework\FlyingTabs.h">
+				</File>
+				<File
+					RelativePath=".\DockingFramework\PackageWindow.h">
+				</File>
+				<File
+					RelativePath=".\DockingFramework\SimpleSplitterBar.h">
+				</File>
+				<File
+					RelativePath=".\DockingFramework\ssec.h">
+				</File>
+				<File
+					RelativePath=".\DockingFramework\sstate.h">
+				</File>
+				<File
+					RelativePath=".\DockingFramework\TabDockingBox.h">
+				</File>
+				<File
+					RelativePath=".\DockingFramework\VC7LikeCaption.h">
+				</File>
+				<File
+					RelativePath=".\DockingFramework\WndFrmPkg.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Exporters"

@@ -28,7 +28,7 @@ template <class T,
           class TWinTraits = CControlWinTraits>
 class ATL_NO_VTABLE CPackageWindowImpl : public CWindowImpl< T, TBase, TWinTraits >
 {
-	typedef TWndPackage			CWndPackage;
+	//typedef TWndPackage			CWndPackage;
 	typedef	CPackageWindowImpl<T,TWndPackage,TBase,TWinTraits>	thisClass;
 public:
 	CPackageWindowImpl()
@@ -246,7 +246,7 @@ protected:
 		return lRes;
 	}
 protected:
-	CWndPackage		m_package;
+	TWndPackage		m_package;
 };
 
 template<class TTraits = CDockingFrameTraits >

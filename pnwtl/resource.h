@@ -49,6 +49,10 @@
 #define IDS_FINDLOOPED                  143
 #define IDS_BROWSEFINDROOT              144
 #define IDS_GLOBALOUTPUT                145
+#define IDS_RECENTFILES                 146
+#define IDS_RECENTPROJECTS              147
+#define IDS_CHANGESTRING                148
+#define IDS_CHANGESCHEME                149
 #define IDI_TEXTCLIPS                   167
 #define IDR_POPUP_REGEXP                170
 #define IDR_POPUP_EDITOR                173

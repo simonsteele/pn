@@ -357,6 +357,7 @@ BEGIN
     "G",            ID_EDIT_JUMPTO,         VIRTKEY, ALT, NOINVERT
     "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
     VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
+    "H",            ID_EDIT_REPLACE,        VIRTKEY, CONTROL, NOINVERT
     "R",            ID_EDIT_REPLACE,        VIRTKEY, CONTROL, NOINVERT
     VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
     "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
@@ -375,7 +376,7 @@ BEGIN
     VK_F8,          ID_VIEW_INDIVIDUALOUTPUT, VIRTKEY, SHIFT, NOINVERT
     VK_F8,          ID_VIEW_OUTPUT,         VIRTKEY, NOINVERT
     VK_MULTIPLY,    ID_VIEW_TOGGLEFOLD,     VIRTKEY, CONTROL, NOINVERT
-    "H",            ID_EDIT_REPLACE,        VIRTKEY, CONTROL, NOINVERT
+    "W",            ID_FILE_CLOSE,          VIRTKEY, CONTROL, NOINVERT
 END
 
 #endif    // English (U.S.) resources
@@ -1168,29 +1169,25 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     LTEXT           "Static",IDC_FINDTEXT_DUMMY,56,26,145,12,NOT WS_VISIBLE
     CONTROL         "",IDC_REHELPER_BUTTON,"Button",BS_OWNERDRAW | 
-                    WS_TABSTOP,207,26,9,11,0,0x81b452d4
+                    WS_TABSTOP,207,26,9,11
     LTEXT           "Static",IDC_REPLACETEXT_DUMMY,56,43,145,12,NOT 
                     WS_VISIBLE
-    PUSHBUTTON      "",IDC_RHELPER_BUTTON,207,43,9,11,0,0,0x81b452d5
+    PUSHBUTTON      "",IDC_RHELPER_BUTTON,207,43,9,11
     LTEXT           "Static",IDC_FINDWHERE_DUMMY,56,60,145,12,NOT WS_VISIBLE
     LTEXT           "Static",IDC_FINDTYPE_DUMMY,56,77,145,12,NOT WS_VISIBLE
     CONTROL         "Match &whole word only",IDC_MATCHWHOLE_CHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,101,103,10,0,
-                    0x81b40068
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,101,103,10
     CONTROL         "Match &case",IDC_MATCHCASE_CHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,113,65,10,0,
-                    0x81b40069
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,113,65,10
     CONTROL         "Regular &expression",IDC_REGEXP_CHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,125,98,10,0,
-                    0x81b4006b
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,125,98,10
     CONTROL         "Allow backslash expressions",IDC_BACKSLASHES_CHECK,
                     "Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,137,
-                    109,11,0,0x81b40415
+                    109,11
     CONTROL         "Search &up",IDC_SEARCHUP_CHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_GROUP | WS_TABSTOP,7,149,51,11,0,0x81b40417
+                    WS_GROUP | WS_TABSTOP,7,149,51,11
     CONTROL         "Search &subdirectories",IDC_SUBDIRS_CHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,161,109,11,0,
-                    0x81b40416
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,161,109,11
     CONTROL         "Current document",IDC_CURRENTDOC_RADIO,"Button",
                     BS_AUTORADIOBUTTON | WS_GROUP,124,114,91,10,
                     WS_EX_TRANSPARENT
@@ -1203,28 +1200,23 @@ BEGIN
     CONTROL         "In selection",IDC_INSELECTION_RADIO,"Button",
                     BS_AUTORADIOBUTTON | WS_DISABLED,124,150,91,10,
                     WS_EX_TRANSPARENT
-    DEFPUSHBUTTON   "&Find Next",IDC_FINDNEXT_BUTTON,228,26,53,14,WS_GROUP,0,
-                    0x81b40067
+    DEFPUSHBUTTON   "&Find Next",IDC_FINDNEXT_BUTTON,228,26,53,14,WS_GROUP
     PUSHBUTTON      "&Mark All",IDC_MARKALL_BUTTON,228,43,53,14,WS_DISABLED | 
-                    WS_GROUP,0,0x81b452cf
+                    WS_GROUP
     PUSHBUTTON      "&Replace",IDC_REPLACE_BUTTON,228,60,53,14,WS_GROUP
     PUSHBUTTON      "Replace &All",IDC_REPLACEALL_BUTTON,228,77,53,14,
                     WS_GROUP
     PUSHBUTTON      "Cancel",IDCANCEL,228,94,53,14,WS_GROUP
     LTEXT           "Tabs go here.",IDC_FINDEXTABS_PLACEHOLDER,7,2,274,12,
                     NOT WS_VISIBLE,WS_EX_TRANSPARENT
-    RTEXT           "Fi&nd what:",IDC_FINDTEXT_LABEL,12,28,40,10,0,0,
-                    0x81b40456
+    RTEXT           "Fi&nd what:",IDC_FINDTEXT_LABEL,12,28,40,10
     CONTROL         "",IDC_FINDEX_LINE,"Static",SS_ETCHEDHORZ,1,16,287,1
-    LTEXT           "Replace with:",IDC_REPLACETEXT_LABEL,7,46,45,10,0,0,
-                    0x81b40412
-    RTEXT           "File types:",IDC_FINDTYPE_LABEL,7,80,45,10,0,0,
-                    0x81b40413
-    RTEXT           "Find where:",IDC_FINDWHERE_LABEL,7,63,45,10,0,0,
-                    0x81b40414
+    LTEXT           "Replace with:",IDC_REPLACETEXT_LABEL,7,46,45,10
+    RTEXT           "File types:",IDC_FINDTYPE_LABEL,7,80,45,10
+    RTEXT           "Find where:",IDC_FINDWHERE_LABEL,7,63,45,10
     GROUPBOX        "Search",IDC_SEARCHIN_GROUP,117,101,106,67,0,
                     WS_EX_TRANSPARENT
-    PUSHBUTTON      "...",IDC_BROWSE_BUTTON,207,43,12,12,0,0,0x81b452d6
+    PUSHBUTTON      "...",IDC_BROWSE_BUTTON,207,43,12,12
 END
 
 IDD_PAGE_DIALOGS DIALOGEX 0, 0, 300, 200
@@ -1705,6 +1697,9 @@ STRINGTABLE
 BEGIN
     IDS_BROWSEFINDROOT      "Select the root folder for the search:"
     IDS_GLOBALOUTPUT        "Use the main output window."
+    IDS_RECENTFILES         "&Recent Files"
+    IDS_RECENTPROJECTS      "Recent Pro&jects"
+    IDS_CHANGESCHEME        "&Change Scheme"
 END
 
 STRINGTABLE 

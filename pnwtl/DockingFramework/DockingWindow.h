@@ -21,22 +21,30 @@
 
 namespace dockwins{
 
+/**
+ * @brief Basic Docking CWindow Implementation
+ *
+ * Provides lots of methods to send WMDF_DOCK
+ */
 class CDocker : protected CWindow
 {
 public:
 	explicit CDocker(HWND hWnd=NULL) : CWindow(hWnd)
 	{
 	}
+	
 	bool AdjustDragRect(DFDOCKRECT* pHdr) const
 	{
 		pHdr->hdr.code=DC_ADJUSTDRAGRECT;
 		return (::SendMessage(m_hWnd,WMDF_DOCK,NULL,reinterpret_cast<LPARAM>(pHdr))!=FALSE);
 	}
+	
 	bool AcceptDock(DFDOCKRECT* pHdr) const
 	{
 		pHdr->hdr.code=DC_ACCEPT;
 		return (::SendMessage(m_hWnd,WMDF_DOCK,NULL,reinterpret_cast<LPARAM>(pHdr))!=FALSE);
 	}
+	
 	bool Dock(DFDOCKRECT* pHdr) const
 	{
 		pHdr->hdr.code=DC_DOCK;
@@ -69,6 +77,7 @@ public:
 		return (::SendMessage(m_hWnd,WMDF_DOCK,NULL,reinterpret_cast<LPARAM>(pHdr))!=FALSE);
 	}
 //#ifdef DF_AUTO_HIDE_FEATURES
+	
 	bool PinUp(DFPINUP* pHdr) const
 	{
 		pHdr->hdr.code=DC_PINUP;
@@ -81,6 +90,7 @@ public:
 		return (::SendMessage(m_hWnd,WMDF_DOCK,NULL,reinterpret_cast<LPARAM>(pHdr))!=FALSE);
 	}
 //#endif
+	
 	operator HWND ()
 	{
 		return m_hWnd;

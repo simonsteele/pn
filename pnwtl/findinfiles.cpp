@@ -25,7 +25,14 @@ public:
 
 	bool shouldContinue()
 	{
-		_ASSERT(owner != NULL);
+		PNASSERT(owner != NULL);
+		/*LOG("CHECK\n");
+		bool canRun = owner->GetCanRun();
+		if(canRun)
+			LOG("CAN\n");
+		else
+			LOG("EXIT EXIT EXIT EXIT EXIT EXIT EXIT EXIT\n");
+		return canRun;*/
 		return owner->GetCanRun();
 	}
 };
@@ -75,11 +82,13 @@ void FIFThread::Run()
 	finder.FindMatching(m_path.c_str(), m_bRecurse);
 
 	m_pSink->OnEndSearch(m_nLines, m_nFiles);
+
+	int a = 0;
 }
 
 void FIFThread::OnException()
 {
-	::OutputDebugString(_T("PN2: Exception whilst doing a find in files.\n"));
+	LOG(_T("PN2: Exception whilst doing a find in files.\n"));
 }
 
 #define FIFBUFFERSIZE 4096
@@ -135,7 +144,13 @@ void FIFThread::OnFoundFile(LPCTSTR path, LPCTSTR filename)
 		}
 
 		fclose(file);
+		Sleep(0);
 	}
+}
+
+void FIFThread::ManageStop()
+{
+	Stop();
 }
 
 /**
@@ -173,5 +188,5 @@ void FindInFiles::Start(
 
 void FindInFiles::Stop()
 {
-	m_thread.Stop();
+	m_thread.ManageStop();
 }

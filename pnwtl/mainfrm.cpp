@@ -479,6 +479,8 @@ LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 		// Still going to close...
 		SaveGUIState();
 
+		FindInFiles::GetInstance()->Stop();
+
 		::ImageList_Destroy( m_hILMain );
 		::ImageList_Destroy( m_hILMainD );
 		::ImageList_Destroy( m_hILEdit );
@@ -1955,17 +1957,26 @@ void CMainFrame::AddNewMenu(CSMenuHandle& menu)
 
 void CMainFrame::AddMRUMenu(CSMenuHandle& menu)
 {
+	CString str;
 	CSMenuHandle file(menu.GetSubMenu(0));
-	::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_BYCOMMAND | MF_POPUP, (UINT)(HMENU)m_RecentFiles, _T("&Recent Files"));
+	
+	str.LoadString(IDS_RECENTFILES);
+	::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_BYCOMMAND | MF_POPUP, (UINT)(HMENU)m_RecentFiles, str);
+	
+	str.LoadString(IDS_RECENTPROJECTS);
 	if(m_RecentProjects.GetCount() > 0)
-		::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_BYCOMMAND | MF_POPUP, (UINT)(HMENU)m_RecentProjects, _T("Recent P&rojects"));
+		::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_BYCOMMAND | MF_POPUP, (UINT)(HMENU)m_RecentProjects, str);
+	
 	::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_BYCOMMAND | MF_SEPARATOR, 0, NULL);
 }
 
 void CMainFrame::AddLanguageMenu(CSMenuHandle& menu)
 {
+	CString str;
 	CSMenuHandle view(menu.GetSubMenu(2));
-	::ModifyMenu(view.GetHandle(), ID_VIEW_CHANGESCHEME, MF_BYCOMMAND | MF_POPUP, (UINT)(HMENU)m_Switcher, _T("&Change Scheme"));
+	
+	str.LoadString(IDS_CHANGESCHEME);
+	::ModifyMenu(view.GetHandle(), ID_VIEW_CHANGESCHEME, MF_BYCOMMAND | MF_POPUP, (UINT)(HMENU)m_Switcher, str);
 }
 
 void CMainFrame::MoveMRU(CSMenuHandle& r, CSMenuHandle& a)

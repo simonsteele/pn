@@ -201,11 +201,9 @@ class CSSThread
 		{
 			if (bStopped)
 			{
-				::EnterCriticalSection(&m_csInternal);
-
+				CSSCritLock lock(&m_csInternal);
+				
 				::SetEvent(m_evtStopped);
-
-				::LeaveCriticalSection(&m_csInternal);
 			}
 			else
 				::ResetEvent(m_evtStopped);

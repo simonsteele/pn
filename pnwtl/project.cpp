@@ -593,6 +593,14 @@ Project::Project(LPCTSTR projectFile) : Folder()
 	bDirty = false;
 }
 
+Project::~Project()
+{
+	if(m_viewState != NULL)
+	{
+		delete m_viewState;
+	}
+}
+
 bool Project::Exists()
 {
 	return bExists;

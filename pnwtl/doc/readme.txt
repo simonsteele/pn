@@ -17,6 +17,11 @@ What's new?
 9) Stack Based Ctrl-Tab Ordering (SF RFE #995790).
 10) Browse for folder in find in files dialog.
 11) Support for vbc compiler output (SF Bug #1168477).
+12) Docbook Scheme
+13) Scintilla version 1.6.3
+14) CSS-2 Support in CSS lexer
+15) Projects remember folder expansion state.
+16) Added Ctrl-W to close the current file (as well as Ctrl-F4) (SF RFE #1169428).
 
 Bug Fixes:
 ----------
@@ -27,6 +32,10 @@ Bug Fixes:
 4) Find Next replaces selection in find text box when text not found.
 5) Switching tabs causes "re-maximization" (SF Bug #1169434).
 6) Launch Search Dialog With No Document (SF Bug #1168100).
+7) "Allow backslash expressions" does not work in search.
+8) Crash on Running Find in Files With Operation in Progress (SF Bug #1168101).
+9) code-folding works not correct (SF Bug #1050483).
+10) HTML export uses wrong CSS syntax (SF Bug #1074120).
 
 If you find a bug:
 ------------------

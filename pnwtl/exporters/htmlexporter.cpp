@@ -19,10 +19,14 @@
 #define HTML_CSSFORECOLOR   "\tcolor: "
 #define HTML_CSSBKGNDCOLOR  "\tbackground: "
 // name, style, weight, size
-#define HTML_CSSFONT        "\tfont: "
-#define HTML_CSSFONTITALIC  "italic"
-#define HTML_CSSFONTBOLD    "bold"
+#define HTML_CSSFONTSHORT	"\tfont: "
+#define HTML_CSSFONT		"\tfont-family: \""
+#define HTML_CSSENDFONT		"\";\n"
+#define HTML_CSSFONTSIZE	"\tfont-size: "
+#define HTML_CSSFONTBOLD	"\tfont-weight: bold;\n"
+#define HTML_CSSFONTITALIC	"\tfont-style: italic;\n"
 #define HTML_CSSUNDERLINE   "\ttext-decoration: underline;\n"
+
 #define HTML_CSSPROPERTYEND ";\n"
 #define HTML_CSSSTYLECLOSE  "'"
 #define HTML_CSSCLASSCLOSE  "}\n"
@@ -111,20 +115,28 @@ void HTMLExporter::InternalExport(int start, int end)
 		m_out->puts(strTemp);
 		m_out->puts(HTML_CSSPROPERTYEND);
 
-		m_out->puts(HTML_CSSFONT);
-		if(pDefStyle->FontName.length())
-		{
-			m_out->puts(pDefStyle->FontName.c_str());
-			m_out->puts(_T(","));
-		}
-
-		strTemp.Format(_T("%dpt"), pDefStyle->FontSize ? pDefStyle->FontSize : fontSize);
-		m_out->puts(strTemp);
+		// SF Bug #107412 points to http://www.w3.org/TR/REC-CSS2/fonts.html#font-shorthand
+		// defining the (simplified) use of font shorthand as: 
+		//    style weight size font-family
+		
+		m_out->puts(HTML_CSSFONTSHORT);
+		
+		if(pDefStyle->Italic)
+			m_out->puts("italic ");
 
 		if(pDefStyle->Bold)
-			m_out->puts(_T(",") HTML_CSSFONTBOLD);
-		if(pDefStyle->Italic)
-			m_out->puts(_T(",") HTML_CSSFONTITALIC);
+			m_out->puts("bold ");
+
+		strTemp.Format(_T("%dpt "), pDefStyle->FontSize ? pDefStyle->FontSize : fontSize);
+		m_out->puts(strTemp);
+
+		m_out->putc('"');
+		if(pDefStyle->FontName.length())
+			m_out->puts(pDefStyle->FontName.c_str());
+		else
+			m_out->puts(HTML_FONTFACE);
+		m_out->putc('"');
+
 		m_out->puts(HTML_CSSPROPERTYEND);
 
 		if(pDefStyle->Underline)
@@ -173,42 +185,34 @@ void HTMLExporter::InternalExport(int start, int end)
 				m_out->puts(HTML_CSSPROPERTYEND);
 			}
 
-			CString strFont;
+			//CString strFont;
 			if(pStyle->FontName.length() &&
 				(!pDefStyle || pStyle->FontName != pDefStyle->FontName))
 			{
-				strFont = pStyle->FontName.c_str();
+				m_out->puts(HTML_CSSFONT);
+				m_out->puts(pStyle->FontName.c_str());
+				m_out->puts(HTML_CSSENDFONT);
 			}
 
 			if(pStyle->FontSize > 0 &&
 				(!pDefStyle || pDefStyle->FontSize != pStyle->FontSize))
 			{
-				if(strFont.GetLength())
-					strFont += _T(", ");
+				m_out->puts(HTML_CSSFONTSIZE);
 				strTemp.Format(_T("%dpt"), pStyle->FontSize);
-				strFont += strTemp;
+				m_out->puts(strTemp);
+				m_out->puts(HTML_CSSPROPERTYEND);
 			}
 
 			if(pStyle->Bold &&
 				(!pDefStyle || pDefStyle->Bold != pStyle->Bold))
 			{
-				if(strFont.GetLength())
-					strFont += _T(", ");
-				strFont += HTML_CSSFONTBOLD;
+				m_out->puts(HTML_CSSFONTBOLD);
 			}
+
 			if(pStyle->Italic &&
 				(!pDefStyle || pDefStyle->Italic != pStyle->Italic))
 			{
-				if(strFont.GetLength())
-					strFont += _T(", ");
-				strFont += HTML_CSSFONTITALIC;
-			}
-
-			if(strFont.GetLength())
-			{
-				m_out->puts(HTML_CSSFONT);
-				m_out->puts(strFont);
-				m_out->puts(HTML_CSSPROPERTYEND);
+				m_out->puts(HTML_CSSFONTITALIC);
 			}
 
 			if(pStyle->Underline &&
