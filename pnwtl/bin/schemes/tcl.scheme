@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="tcl">
+			after append array auto_execok auto_import auto_load
+			auto_load_index auto_qualify beep binary break case catch cd clock
+			close concat continue dde default echo else elseif encoding eof
+			error eval exec exit expr fblocked fconfigure fcopy file
+			fileevent flush for foreach format gets glob global history if
+			incr info interp join lappend lindex linsert list llength load
+			lrange lreplace lsearch lsort namespace open package pid
+			pkg_mkIndex proc puts pwd read regexp regsub rename resource
+			return scan seek set socket source split string subst switch
+			tclLog tclMacPkgSearch tclPkgSetup tclPkgUnknown tell time
+			trace unknown unset update uplevel upvar variable vwait while
+		</keyword-class>
+		<keyword-class name="tk">
+			bell bind bindtags button canvas checkbutton console
+			destroy entry event focus font frame grab grid image label listbox menu
+			menubutton message pack place radiobutton raise scale scrollbar
+			text tk tkwait toplevel winfo wm
+		</keyword-class>
+		<keyword-class name="itcl">
+			@scope body class code common component configbody
+			constructor define destructor hull import inherit itcl itk itk_component
+			itk_initialize itk_interior itk_option iwidgets keep method
+			private protected public
+		</keyword-class>
+		<keyword-class name="TkCommands">
+			tkButtonDown tkButtonEnter tkButtonInvoke
+			tkButtonLeave tkButtonUp tkCancelRepeat tkCheckRadioInvoke tkDarken
+			tkEntryAutoScan 	tkEntryBackspace tkEntryButton1 tkEntryClosestGap
+			tkEntryInsert tkEntryKeySelect tkEntryMouseSelect tkEntryNextWord
+			tkEntryPaste tkEntryPreviousWord tkEntrySeeInsert tkEntrySetCursor
+			tkEntryTranspose tkEventMotifBindings tkFDGetFileTypes tkFirstMenu
+			tkFocusGroup_Destroy tkFocusGroup_In tkFocusGroup_Out tkFocusOK
+			tkListboxAutoScan tkListboxBeginExtend tkListboxBeginSelect
+			tkListboxBeginToggle tkListboxCancel tkListboxDataExtend
+			tkListboxExtendUpDown tkListboxMotion tkListboxSelectAll
+			tkListboxUpDown tkMbButtonUp tkMbEnter tkMbLeave tkMbMotion
+			tkMbPost tkMenuButtonDown tkMenuDownArrow tkMenuDup tkMenuEscape
+			tkMenuFind tkMenuFindName tkMenuFirstEntry tkMenuInvoke tkMenuLeave
+			tkMenuLeftArrow tkMenuMotion tkMenuNextEntry tkMenuNextMenu
+			tkMenuRightArrow tkMenuUnpost tkMenuUpArrow tkMessageBox
+			tkPostOverPoint tkRecolorTree tkRestoreOldGrab tkSaveGrabInfo
+			tkScaleActivate tkScaleButton2Down tkScaleButtonDown
+			tkScaleControlPress tkScaleDrag tkScaleEndDrag tkScaleIncrement
+			tkScreenChanged tkScrollButton2Down tkScrollButtonDown
+			tkScrollButtonUp tkScrollByPages tkScrollByUnits tkScrollDrag
+			tkScrollEndDrag tkScrollSelect tkScrollStartDrag tkScrollToPos 
+			tkScrollTopBottom tkTabToWindow tkTearOffMenu tkTextAutoScan
+			tkTextButton1 tkTextClosestGap tkTextInsert tkTextKeyExtend
+			tkTextKeySelect tkTextNextPara tkTextNextPos tkTextNextWord
+			tkTextPaste tkTextPrevPara tkTextPrevPos tkTextResetAnchor
+			tkTextScrollPages tkTextSelectTo tkTextSetCursor tkTextTranspose
+			tkTextUpDownLine tkTraverseToMenu tkTraverseWithinMenu tk_bisque
+			tk_chooseColor tk_dialog tk_focusFollowsMouse tk_focusNext
+			tk_focusPrev tk_getOpenFile tk_getSaveFile tk_messageBox
+			tk_optionMenu tk_popup tk_setPalette tk_textCopy tk_textCut
+			tk_textPaste
+		</keyword-class>
+		<keyword-class name="fulltcl">
+			<include-class name="tcl"/>
+			<include-class name="tk"/>
+			<include-class name="TkCommands"/>
+		</keyword-class>
+	</keyword-classes>
+	
+	<!-- base scheme for C++ style languages -->
+	<language name="tcl" title="TCL" folding="true" foldcomments="true">
+		<lexer name="tcl" />
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="fulltcl"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="Whitespace" key="0" />
+			<style name="Comment" key="1" class="comment"/>
+			<style name="Number" key="2" class="number"/>
+			<style name="String" key="3" class="string"/>
+			<style name="Single-quoted String" key="4" class="string"/>
+			<style name="Keyword" key="5" class="keyword"/>
+			<style name="Triple quotes" key="6" fore="7f0000"/>
+			<style name="Triple double quotes" key="7" fore="7f0000"/>
+			<style name="Class name definition" key="8" fore="0000ff" bold="true"/>
+			<style name="Function or method definition" key="9" fore="007f7f" bold="true"/>
+			<style name="Operator" key="10" class="operator"/>
+			<style name="Identifier" key="11" />
+			
+			<style name="Comment-blocks" key="12" class="comment" />
+			<style name="Unclosed string" key="13" class="string" back="e0c0e0" eolfilled="true"/>
+			
+			<style name="Brace Match" key="34" fore="0000ee" bold="true"/>
+			<style name="Brace Mismatch" key="35" fore="ee0000" bold="true"/>
+		</use-styles>
+	</language>
+</Scheme>

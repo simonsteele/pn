@@ -31,4 +31,5 @@
 .cgi=perl
 .pod=perl
 .schemedef=xml
+.tcl=tcl
 makefile=makefile
