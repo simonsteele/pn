@@ -1619,6 +1619,28 @@ BEGIN
     ID_FINDTYPE_BUTTON      "Find (drop down for other find types)"
 END
 
+STRINGTABLE 
+BEGIN
+    ID_EDITOR_WHITESPACE    "Toggle visible whitespace characters"
+    ID_EDITOR_EOLCHARS      "Toggle visible line-end characters"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_VIEW_OUTPUT          "Output"
+    ID_VIEW_WINDOWS_PROJECT "Projects"
+    ID_VIEW_WINDOWS_TEXTCLIPS "Text Clips"
+    ID_VIEW_WINDOWS_FINDRESULTS "Find Results"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_OPENANOTHER         "Do you want to open another copy of %s?"
+    IDS_PROJECTDOESNOTEXIST "The specified project does not exist,\n would you like to create it?"
+    IDS_PROJSAVECHANGES     "Do you want to save changes to the project: %s?"
+    IDS_PROJCLOSEFILES      "Close all project files?"
+END
+
 #endif    // English (U.K.) resources
 /////////////////////////////////////////////////////////////////////////////
 

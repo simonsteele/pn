@@ -22,8 +22,8 @@ pn -l 49 -c 14 --scheme cpp test.dat
    specification of file and folder filters for magic folders.
 5) Trying to save a readonly file will now allow you to attempt to overwrite
    that file.
-7) New Find dialog, encompassing Find, Replace and Find in Files.
-6) Find in Files (in case you missed it on the above line)!
+6) New Find dialog, encompassing Find, Replace and Find in Files.
+7) Find in Files (in case you missed it on the above line)!
 
 Bug Fixes:
 ----------

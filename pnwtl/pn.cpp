@@ -78,6 +78,10 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 	MiniDumper dumper(str.c_str());
 //#endif
+
+	CString appTitle;
+	appTitle.LoadString(_Module.m_hInst, IDR_MAINFRAME);
+	g_Context.AppTitle = appTitle;
 	
 	ZeroMemory(&g_Context.OSVersion, sizeof(OSVERSIONINFO));
 	g_Context.OSVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);

@@ -331,7 +331,6 @@ XmlNode* UserData::GetGroupNode(LPCTSTR ns, LPCTSTR group)
 
 XmlNode* UserData::lookUp(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value)
 {
-	
 	XmlNode* pCatNode = GetCategoryNode(ns, group, category);
 
 	if(!pCatNode)

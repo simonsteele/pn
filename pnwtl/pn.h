@@ -83,6 +83,7 @@ struct _Context
 	MultipleInstanceManager *m_miManager;
 	Options					*options;
 	OSVERSIONINFO			OSVersion;
+	LPCTSTR					AppTitle;
 };
 
 /// This is the global application context.

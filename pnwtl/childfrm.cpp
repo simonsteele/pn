@@ -131,6 +131,15 @@ void CChildFrame::UpdateBarsPosition(RECT& rect, BOOL bResizeBars)
 	}
 }
 
+TBBUTTON MINI_BAR_BUTTONS[5] = 
+{
+	{ 1, ID_EDITOR_COLOURISE, TBSTATE_ENABLED | TBSTATE_CHECKED, TBSTYLE_CHECK, 0, 0, 0 },
+	{ 0, ID_EDITOR_WORDWRAP, TBSTATE_ENABLED, TBSTYLE_CHECK, 0, 0, 0 },
+	{ 2, ID_EDITOR_LINENOS, TBSTATE_ENABLED, TBSTYLE_CHECK, 0, 0, 0 },
+	{ 3, ID_EDITOR_WHITESPACE, TBSTATE_ENABLED, TBSTYLE_CHECK, 0, 0, 0 },
+	{ 4, ID_EDITOR_EOLCHARS, TBSTATE_ENABLED, TBSTYLE_CHECK, 0, 0, 0 }
+};
+
 void CChildFrame::SetupToolbar()
 {
 	CToolBarCtrl toolbar;
@@ -152,31 +161,8 @@ void CChildFrame::SetupToolbar()
 	toolbar.SetBitmapSize(CSize(9,9));
 	toolbar.SetButtonSize(CSize(16, 15));
 	toolbar.SetImageList(m_hImgList);
-
-	TBBUTTON button;
-	memset(&button, 0, sizeof(TBBUTTON));
-	button.iBitmap = 1;
-	button.fsState = TBSTATE_ENABLED | TBSTATE_CHECKED;
-	button.fsStyle = TBSTYLE_CHECK;
-	button.idCommand = ID_EDITOR_COLOURISE;
-
-	toolbar.AddButtons(1, &button);
-
-	button.iBitmap = 0;
-	button.idCommand = ID_EDITOR_WORDWRAP;
-	button.fsState = TBSTATE_ENABLED;
-
-	toolbar.AddButtons(1, &button);
-
-	button.iBitmap = 2;
-	button.idCommand = ID_EDITOR_LINENOS;
-
-	toolbar.AddButtons(1, &button);
-
-	button.iBitmap = 3;
-	button.idCommand = ID_EDITOR_WHITESPACE;
-
-	toolbar.AddButtons(1, &button);
+	
+	toolbar.AddButtons(5, &MINI_BAR_BUTTONS[0]);
 
 	m_hWndToolBar = toolbar.Detach();
 }
@@ -999,7 +985,9 @@ LRESULT CChildFrame::OnGetInfoTip(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
 	LPNMTBGETINFOTIP pS = (LPNMTBGETINFOTIP)pnmh;
 
-	switch(pS->iItem)
+	::LoadString(_Module.m_hInst, pS->iItem, pS->pszText, pS->cchTextMax);
+
+	/*switch(pS->iItem)
 	{
 		case ID_EDITOR_COLOURISE:
 			_tcsncpy(pS->pszText, _T("Toggle Highlighting"), pS->cchTextMax);
@@ -1010,7 +998,7 @@ LRESULT CChildFrame::OnGetInfoTip(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 		case ID_EDITOR_LINENOS:
 			_tcsncpy(pS->pszText, _T("Toggle Line Numbers"), pS->cchTextMax);
 			break;
-	}
+	}*/
 
 	return 0;
 }
@@ -1565,7 +1553,7 @@ CChildFrame::_PoorMansUIEntry* CChildFrame::GetDefaultUIMap()
 		{ID_EDITOR_COLOURISE, PMUI_MINIBAR | PMUI_MENU},
 		{ID_EDITOR_LINENOS, PMUI_MINIBAR | PMUI_MENU},
 		{ID_EDITOR_WHITESPACE, PMUI_MINIBAR | PMUI_MENU},
-		{ID_EDITOR_EOLCHARS, PMUI_MENU},
+		{ID_EDITOR_EOLCHARS, PMUI_MINIBAR | PMUI_MENU},
 		{ID_VIEW_INDIVIDUALOUTPUT, PMUI_MENU},
 		{ID_TOOLS_LECONVERT, PMUI_MENU},
 		// note: This one must be at the end.

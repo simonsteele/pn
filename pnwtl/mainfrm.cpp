@@ -2,7 +2,7 @@
  * @file mainfrm.cpp
  * @brief Main Window for Programmers Notepad 2 (Implementation)
  * @author Simon Steele
- * @note Copyright (c) 2002-2004 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -136,6 +136,31 @@ bool CMainFrame::Open(LPCTSTR pathname, bool bAddMRU)
 	return bRet;
 }
 
+/**
+typedef enum {
+	eUnknown,
+	eUtf16BigEndian,
+	eUtf16LittleEndian,  // Default on Windows
+	eUtf8,
+	eLast
+} EPNEncoding;
+*/
+
+LPCTSTR encodingNames[] = 
+{
+	_T("ANSI"),
+	_T("UTF-16 BE"),
+	_T("UTF-16 LE"),
+	_T("UTF-8")
+};
+
+LPCTSTR lineEndingNames[] = 
+{
+	_T("CR+LF"),
+	_T("CR"),
+	_T("LF")
+};
+
 void CMainFrame::UpdateStatusBar()
 {
 	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
@@ -143,6 +168,9 @@ void CMainFrame::UpdateStatusBar()
 	if(pChild)
 	{
 		m_StatusBar.SetPaneText(ID_MOD_PANE, pChild->GetModified() ? _T("Modified") : _T(""));
+		m_StatusBar.SetPaneText(ID_ENC_PANE, encodingNames[pChild->GetTextView()->GetEncoding()]);
+		m_StatusBar.SetPaneText(ID_LINEENDS_PANE, lineEndingNames[pChild->GetTextView()->GetEOLMode()]);
+		m_StatusBar.SetPaneText(ID_INS_PANE, pChild->GetTextView()->GetOvertype() ? _T("OVR") : _T("INS"));
 		pChild->SetPosStatus(m_StatusBar);
 	}
 	else
@@ -566,19 +594,24 @@ void CMainFrame::CreateDockingWindows()
 	CRect rcLeft(0,0,200,400);
 	CRect rcBottom(0,0,400,200);
 	
-	m_pOutputWnd = CreateDocker<COutputView>(_T("Output"), rcBottom, this, 
+	CString s;
+	s.LoadString(_Module.m_hInst, ID_VIEW_OUTPUT);
+	m_pOutputWnd = CreateDocker<COutputView>(s, rcBottom, this, 
 		m_dockingWindows, ID_VIEW_OUTPUT - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sBottom);
 
-	m_pFindResultsWnd = CreateDocker<CFindInFilesView>(_T("Find Results"), rcBottom, this,
+	s.LoadString(_Module.m_hInst, ID_VIEW_WINDOWS_FINDRESULTS);
+	m_pFindResultsWnd = CreateDocker<CFindInFilesView>(s, rcBottom, this,
 		m_dockingWindows, ID_VIEW_WINDOWS_FINDRESULTS - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sBottom);
 
-	m_pClipsWnd = CreateDocker<CClipsDocker>(_T("Text-Clips"), rcLeft, this,
+	s.LoadString(_Module.m_hInst, ID_VIEW_WINDOWS_TEXTCLIPS);
+	m_pClipsWnd = CreateDocker<CClipsDocker>(s, rcLeft, this,
 		m_dockingWindows, ID_VIEW_WINDOWS_TEXTCLIPS - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sLeft);
 
-	m_pProjectsWnd = CreateDocker<CProjectDocker>(_T("Projects"), rcLeft, this, 
+	s.LoadString(_Module.m_hInst, ID_VIEW_WINDOWS_PROJECT);
+	m_pProjectsWnd = CreateDocker<CProjectDocker>(s, rcLeft, this, 
 		m_dockingWindows, ID_VIEW_WINDOWS_PROJECT - ID_VIEW_FIRSTDOCKER,
 		false);
 
@@ -767,6 +800,8 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	{
 		ID_POS_PANE,
 		ID_MOD_PANE,
+		ID_ENC_PANE,
+		ID_LINEENDS_PANE,
 		ID_INS_PANE,
 		ID_DEFAULT_PANE
 	};
@@ -775,7 +810,9 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_StatusBar.SetPanes(statusBarPanes, sizeof(statusBarPanes) / sizeof(int), false);
 	m_StatusBar.SetPaneWidth(ID_POS_PANE, 120);
 	m_StatusBar.SetPaneWidth(ID_MOD_PANE, 70);
-	m_StatusBar.SetPaneWidth(ID_INS_PANE, 80);
+	m_StatusBar.SetPaneWidth(ID_ENC_PANE, 70);
+	m_StatusBar.SetPaneWidth(ID_LINEENDS_PANE, 50);
+	m_StatusBar.SetPaneWidth(ID_INS_PANE, 30);
 
 	bool bStatusBar = OPTIONS->Get(PNSK_INTERFACE, _T("StatusBarVisible"), true);
 	UISetCheck(ID_VIEW_STATUS_BAR, bStatusBar);
@@ -847,8 +884,6 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	CreateDockingWindows();
 	InitGUIState();
-
-	//m_pFIFSink = new CFindInFilesSink(this, m_pFindResultsWnd);
 
 	PostMessage(PN_INITIALISEFRAME);
 
@@ -1727,8 +1762,8 @@ bool CMainFrame::CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction action)
 			case eWarnOpen:
 				{
 					CString str;
-					str.Format(_T("Do you want to open another copy of %s?"), filename);
-					DWORD dwRes = MessageBox(str, _T("Programmers Notepad 2"), MB_YESNOCANCEL);
+					str.Format(IDS_OPENANOTHER, filename);
+					DWORD dwRes = MessageBox(str, g_Context.AppTitle, MB_YESNOCANCEL);
 					if( dwRes == IDYES )
 					{
 						// Just claim the file wasn't open...
@@ -2304,7 +2339,9 @@ void CMainFrame::OpenProject(LPCTSTR projectPath)
 
 	if(!FileExists(projectPath))
 	{
-		DWORD dwRes = ::MessageBox(m_hWnd, _T("The specified project does not exist,\n would you like to create it?"), _T("Project Not Found"), MB_YESNO);
+		CString str;
+		str.LoadString(IDS_PROJECTDOESNOTEXIST);
+		DWORD dwRes = ::MessageBox(m_hWnd, str, _T("Project Not Found"), MB_YESNO);
 		if(dwRes == IDYES)
 		{
 			NewProject(projectPath);
@@ -2417,10 +2454,10 @@ bool CMainFrame::SaveProjects(Projects::Workspace* pWorkspace)
 	{
 		if((*i)->IsDirty())
 		{
-			tstring msg = _T("Do you want to save changes to the project: ");
-			msg += (*i)->GetName();
-			msg += _T("?");
-			DWORD dwRes = ::MessageBox(m_hWnd, msg.c_str(), _T("Programmers Notepad"), MB_YESNOCANCEL | MB_ICONQUESTION);
+			
+			CString str;
+			str.Format(IDS_PROJSAVECHANGES, (*i)->GetName());
+			DWORD dwRes = ::MessageBox(m_hWnd, str, g_Context.AppTitle, MB_YESNOCANCEL | MB_ICONQUESTION);
 			
 			if ( dwRes == IDCANCEL )
 			{
@@ -2498,7 +2535,9 @@ bool CMainFrame::CloseWorkspace(bool bAllowCloseFiles, bool bAsk)
 		wws.pWorkspace = workspace;
 		if(EnumWorkspaceWindows(&wws))
 		{
-			DWORD dwRes = ::MessageBox(m_hWnd, _T("Close all project files?"), _T("Programmers Notepad"), MB_YESNOCANCEL | MB_ICONQUESTION);
+			CString str;
+			str.LoadString(_Module.m_hInst, IDS_PROJCLOSEFILES);
+			DWORD dwRes = ::MessageBox(m_hWnd, str, g_Context.AppTitle, MB_YESNOCANCEL | MB_ICONQUESTION);
 
 			if( dwRes == IDCANCEL )
 				return false;

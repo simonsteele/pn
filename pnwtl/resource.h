@@ -26,6 +26,8 @@
 #define ID_POS_PANE                     115
 #define ID_MOD_PANE                     116
 #define ID_INS_PANE                     117
+#define ID_ENC_PANE                     118
+#define ID_LINEENDS_PANE                119
 #define IDR_MAINFRAME                   128
 #define IDR_MDICHILD                    129
 #define ID_EDITOR_WORDWRAP              130
@@ -362,6 +364,10 @@
 #define ID_VIEW_WINDOWS_TEXTCLIPS       32702
 #define ID_VIEW_WINDOWS_FINDRESULTS     32703
 #define ID_VIEW_LASTDOCKER              32703
+#define IDS_OPENANOTHER                 32704
+#define IDS_PROJECTDOESNOTEXIST         32705
+#define IDS_PROJSAVECHANGES             32706
+#define IDS_PROJCLOSEFILES              32707
 #define ID_EDIT_FINDNEXT                32773
 #define ID_EDIT_GOTO                    32774
 #define ID_TOOLS_LECRLF                 32777
