@@ -292,7 +292,7 @@ void CToolCommandString::OnFormatChar(TCHAR thechar)
 		// current project group (workspace) file.
 		case _T('g'):
 			{
-				Projects::Workspace* pWorkspace = g_Context.m_frame->GetActiveWorkspace();
+				Projects::Workspace* pWorkspace = GetWorkspace();
 				if(pWorkspace != NULL && pWorkspace->CanSave())
 				{
 					m_string += pWorkspace->GetFileName();
@@ -311,6 +311,59 @@ void CToolCommandString::OnFormatChar(TCHAR thechar)
 			}
 			break;
 	}		
+}
+
+#define MATCH(s) \
+	(_tcscmp(key, s) == 0)
+
+void CToolCommandString::OnFormatKey(LPCTSTR key)
+{
+	if(MATCH(_T("ProjectPath")))
+	{
+		Projects::Project* pP = GetActiveProject();
+		if(pP)
+		{
+			CFileName fn(pP->GetFileName());
+			m_string += fn.GetPath();
+		}
+	}
+	else if(MATCH(_T("ProjectGroupPath")))
+	{
+		Projects::Workspace* pWorkspace = GetWorkspace();
+		if(pWorkspace != NULL && pWorkspace->CanSave())
+		{
+			CFileName fn(pWorkspace->GetFileName());
+			m_string += fn.GetPath();
+		}
+	}
+	else
+	{
+		tstring s = _T("Unknown constant: $(");
+		s += key;
+		s += ").";
+		g_Context.m_frame->SetStatusText(s.c_str());
+	}
+}
+
+#undef MATCH
+
+Projects::Workspace* CToolCommandString::GetWorkspace()
+{
+	Projects::Workspace* pWorkspace = g_Context.m_frame->GetActiveWorkspace();
+	return pWorkspace;
+}
+
+Projects::Project* CToolCommandString::GetActiveProject()
+{
+	Projects::Workspace* pWorkspace = GetWorkspace();
+	if(pWorkspace != NULL)
+	{
+		Projects::Project* pProject = pWorkspace->GetActiveProject();
+		
+		if(pProject != NULL && pProject->Exists())
+			return pProject;
+	}
+	return NULL;
 }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -815,7 +815,11 @@ LRESULT CProjectDocker::OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandle
 		if(file != NULL)
 		{
 			if( !g_Context.m_frame->CheckAlreadyOpen(file->GetFileName(), eSwitch) )
+			{
 				g_Context.m_frame->Open(file->GetFileName(), true);
+				HWND hWndEditor = GetCurrentEditor();
+				::SetFocus(hWndEditor);
+			}
 		}
 	}
 	else

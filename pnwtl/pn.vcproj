@@ -543,6 +543,16 @@
 				RelativePath=".\include\wtltreems.h">
 			</File>
 		</Filter>
+		<Filter
+			Name="Exporters"
+			Filter="">
+			<File
+				RelativePath=".\exporters\htmlexporter.cpp">
+			</File>
+			<File
+				RelativePath=".\exporters\rtfexporter.cpp">
+			</File>
+		</Filter>
 		<File
 			RelativePath="pn.exe.manifest">
 		</File>

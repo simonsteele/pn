@@ -96,10 +96,12 @@ public:
 	CFileName() : m_FileName(_T("")){}
 	CFileName(const CFileName& copy){*this = copy;}
 	CFileName(LPCTSTR filename){m_FileName = filename;}
+	CFileName(const tstring& copy){*this = copy;}
 	
 	// Operators
 	
 	CFileName& operator = (LPCTSTR filename);			///< Set the filename to "filename".
+	CFileName& operator = (const tstring& filename);	///< Set the filename to "filename".
 	CFileName& operator = (const CFileName& filename);	///< Change to filename.filename.
 	
 	// Operations

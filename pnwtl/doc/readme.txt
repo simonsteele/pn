@@ -10,6 +10,11 @@ What's new?
 2) Editor Defaults options page.
 3) Default word-wrap option.
 4) Most Recently Used Projects menu.
+5) HTML export now names the styles by scheme, allowing you to easily 
+   combine exported code.
+6) Look in projects for relative file names in the output window.
+7) Look in the current directory for relative file names in the output window.
+8) Added current project path to the tool variables.
 
 Bug Fixes:
 ----------
@@ -21,6 +26,8 @@ Bug Fixes:
 5) Crash if mouse over 'Recent Files'->(empty) (SF Bug #900929).
 6) PN doesn't become active after clicking Output window (SF Bug #760362).
 7) HTML export doubles the '&' (SF Bug #899079).
+8) HTML export leaves open the last span tag (SF Bug #904149).
+9) Fixed HTML export to use full style range (previously stopped at 31).
 
 If you find a bug:
 ------------------

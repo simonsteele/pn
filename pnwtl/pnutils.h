@@ -584,6 +584,12 @@ static void StringTokenise(const TStringType& str,
     }
 }
 
+/**
+ * This class builds strings using custom format specifiers. It
+ * supports both %x style format strings and also $(var) style
+ * strings. The user must implement at least one of OnFormatChar
+ * or OnFormatKey and add text to m_string.
+ */
 template <class T>
 class CustomFormatStringBuilder
 {
@@ -598,11 +604,7 @@ class CustomFormatStringBuilder
 
 			for(int i = 0; i < len; i++)
 			{
-				if(str[i] != _T('%'))
-				{
-					m_string += str[i];
-				}
-				else
+				if(str[i] == _T('%'))
 				{
 					next = SafeGetNextChar(str, i, len);
 					
@@ -622,14 +624,59 @@ class CustomFormatStringBuilder
 						i++;
 					}
 				}
+				else if(str[i] == _T('$') && (i != (len-1)))
+				{
+					if( str[i+1] == _T('$') )
+					{
+						// If we are seeing a $$( then it means we want the $ sign.
+						if(SafeGetNextChar(str, i+1, len) == _T('('))
+						{
+							m_string += str[i];
+							// Skip the next dollar sign as well.
+							i += 1;
+							continue;
+						}
+					}
+					else if( str[i+1] != _T('(') )
+					{
+						m_string += str[i];
+						continue;
+					}
+
+					// we matched a $(x) property...
+					LPCTSTR pProp = &str[i+2];
+					LPCTSTR endProp = _tcschr(pProp, _T(')'));
+					if(endProp != NULL)
+					{
+						int keylen = (endProp - pProp) / sizeof(TCHAR);
+						TCHAR* buf = new TCHAR[keylen+1];
+
+						try
+						{
+							_tcsncpy(buf, pProp, keylen);
+							buf[keylen] = _T('\0');
+							pT->OnFormatKey(buf);
+						}
+						catch(...)
+						{
+						}
+
+						i += (2 + keylen); // skip ( + len + )
+
+						delete [] buf;
+					}
+				}
+				else
+				{
+					m_string += str[i];
+				}				
 			}
 
 			return m_string;
 		}
 
 		void OnFormatChar(TCHAR thechar){}
-		
-		//void OnFormatComplex(LPCTSTR complex){}
+		void OnFormatKey(LPCTSTR key){}
 
 	protected:
 		TCHAR SafeGetNextChar(LPCTSTR str, int i, int len)

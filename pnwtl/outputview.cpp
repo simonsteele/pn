@@ -15,6 +15,7 @@
 #include "childfrm.h"
 #include "scilexer.h"
 #include "scaccessor.h"
+#include "project.h"
 #include "include/pcreplus.h"
 
 //////////////////////////////////////////////////////////////////////////////
@@ -125,16 +126,46 @@ bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 		::OutputDebugString(dbgout.c_str());
 #endif
 
-		if( fn.IsRelativePath() && m_basepath.length() != 0 )
+		if( fn.IsRelativePath() )
 		{
-			fn.Root( m_basepath.c_str() );
-			filename = fn.c_str();
+			if(m_basepath.length() != 0)
+			{
+				fn.Root( m_basepath.c_str() );
+				filename = fn.c_str();
 #ifdef _DEBUG
-			dbgout = _T("Rooted path to: ");
-			dbgout += filename;
-			dbgout += _T("\n");
-			::OutputDebugString(dbgout.c_str());
+				dbgout = _T("Rooted path to: ");
+				dbgout += filename;
+				dbgout += _T("\n");
+				::OutputDebugString(dbgout.c_str());
 #endif
+			}
+			else
+			{
+				// There is no base directory, and the filename is relative.
+				// Only a couple of options left.
+				
+				// 1. See if we can open from the project.
+				tstring fullname;
+				if( LocateInProjects(fn.c_str(), fullname) )
+				{
+					fn = fullname;
+				}
+				else
+				{
+					// 2) See if we can open from the current directory.
+					// Attach the filename to the current directory so that it's
+					// at least a full path.
+					TCHAR dirbuf[MAX_PATH+1];
+					memset(dirbuf, 0, (MAX_PATH + 1)*sizeof(TCHAR));
+					GetCurrentDirectory(MAX_PATH, dirbuf);
+					
+					if( _tcslen(dirbuf) > 0 )
+					{
+						CFileName fn2 = fn;
+						fn2.Root( dirbuf );	
+					}
+				}
+			}
 		}
 
 		if(FileExists(fn.c_str()))
@@ -163,6 +194,12 @@ bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 				}
 			}
 		}
+		else
+		{
+			tstring msg = _T("Could not locate ") + filename;
+			msg += _T(". If the file exists, see help under \"Output\" to fix this.");
+			g_Context.m_frame->SetStatusText(msg.c_str());
+		}
 
 		bRet = true;
 	}
@@ -170,6 +207,46 @@ bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 	delete [] tr.lpstrText;
 
 	return bRet;
+}
+
+/**
+ * @brief Try to locate a partial filename in the projects.
+ */
+bool COutputView::LocateInProjects(LPCTSTR part, tstring& full)
+{
+	Projects::Workspace* pWs = g_Context.m_frame->GetActiveWorkspace();
+	if(pWs)
+	{
+		// Try the active project first.
+		Projects::Project* pActive = pWs->GetActiveProject();
+		Projects::File* pFile = pActive->FindRelativeFile(part);
+
+		// If we didn't find it in the active project, look in the rest.
+		if(!pFile)
+		{
+			for(Projects::PL_CIT i = pWs->GetProjects().begin();
+				i != pWs->GetProjects().end();
+				++i)
+			{
+				// try anything but the active project again.
+				if((*i) != pActive)
+				{
+					pFile = (*i)->FindRelativeFile(part);
+					if(pFile)
+						break;
+				}
+			}
+		}
+
+		// if we found one, return the full file name.
+		if(pFile)
+		{
+			full = pFile->GetFileName();
+			return true;
+		}
+	}
+	
+	return false;
 }
 
 /**

@@ -238,6 +238,38 @@ File* Folder::FindFile(LPCTSTR filename)
 	return pF;
 }
 
+/**
+ * Find a file purely by it's filename part, ignore all path.
+ */
+File* Folder::FindRelativeFile(LPCTSTR filename)
+{
+	CFileName cfn1(filename);
+	cfn1.ToLower();
+	const tstring& fn1 = cfn1.GetFileName();
+
+	tstring tmp;
+
+	for(FILE_IT i = files.begin(); i != files.end(); ++i)
+	{
+		CFileName cfn2((*i)->GetFileName());
+		cfn2.ToLower();
+
+		if(fn1 == cfn2.GetFileName())
+			return (*i);
+	}
+
+	File* pF = NULL;
+
+	for(FL_IT j = children.begin(); j != children.end(); ++j)
+	{
+		pF = (*j)->FindRelativeFile(filename);
+		if(pF)
+			return pF;
+	}
+
+	return pF;
+}
+
 void Folder::AddChild(Folder* folder)
 {
 	folder->SetParent(this);

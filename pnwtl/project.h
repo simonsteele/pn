@@ -97,6 +97,7 @@ class Folder : public ProjectType
 		const FILE_LIST&	GetFiles();
 
 		File* FindFile(LPCTSTR filename);
+		File* FindRelativeFile(LPCTSTR filename);
 
 		void RemoveChild(Folder* folder);
 		void RemoveFile(File* file);

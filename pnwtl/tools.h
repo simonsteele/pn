@@ -134,6 +134,12 @@ class SchemeToolsManager :
 
 //#include "aboutdlg.h"
 
+namespace Projects
+{
+	class Workspace;
+	class Project;
+}
+
 /**
  * Format string builder class to build up command-line parameters for a tool.
  */
@@ -141,11 +147,15 @@ class CToolCommandString : public CustomFormatStringBuilder<CToolCommandString>
 {
 	public:
 		void OnFormatChar(TCHAR thechar);
+		void OnFormatKey(LPCTSTR key);
 
 		CChildFrame* pChild;
 
 	protected:
 		TCHAR itosbuf[100];
+
+		Projects::Workspace* GetWorkspace();
+		Projects::Project* GetActiveProject();
 };
 
 /**

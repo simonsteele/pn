@@ -311,6 +311,12 @@ CFileName& CFileName::operator = (const CFileName& filename)
 	return *this;
 }
 
+CFileName& CFileName::operator = (const tstring& filename)
+{
+	m_FileName = filename;
+	return *this;
+}
+
 int CFileName::GetLastSlashPos()
 {
 	int pos = m_FileName.rfind(_T('\\'));

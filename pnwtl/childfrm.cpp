@@ -587,7 +587,7 @@ LRESULT CChildFrame::OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 {
 	StringOutput so(m_view.GetSelLength() * 2);
 	StylesList* pStyles = m_view.GetCurrentScheme()->CreateStylesList();
-	RTFExporter rtf(&so, pStyles, &m_view);
+	RTFExporter rtf(&so, m_view.GetCurrentScheme()->GetName(), pStyles, &m_view);
 	rtf.Export(m_view.GetSelectionStart(), m_view.GetSelectionEnd());
 	delete pStyles;
 	
@@ -1176,7 +1176,7 @@ void CChildFrame::Export(int type)
 	StylesList* pStyles = m_view.GetCurrentScheme()->CreateStylesList();
 	BaseExporter* pExp = ExporterFactory::GetExporter(
 		(ExporterFactory::EExporterType)type, 
-		&fout, pStyles, &m_view);
+		&fout, m_view.GetCurrentScheme()->GetName(), pStyles, &m_view);
 	
 	if(pExp)
 	{
