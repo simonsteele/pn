@@ -316,7 +316,7 @@ void CScheme::SetupScintilla(CScintilla& sc)
 	// Set even treatment of left and right caret positioning, and sloppy behaviour. 
 	// Use 3 lines as the jump when scrolling up and down.
 	sc.SPerform(SCI_SETXCARETPOLICY, CARET_SLOP | CARET_EVEN, 3);
-	sc.SPerform(SCI_SETYCARETPOLICY, CARET_SLOP, 3);
+	sc.SPerform(SCI_SETYCARETPOLICY, CARET_SLOP | CARET_EVEN, 3);
 
 	sc.SPerform(SCI_STYLERESETDEFAULT);
 	sc.SPerform(SCI_STYLESETFORE, STYLE_DEFAULT, ::GetSysColor(COLOR_WINDOWTEXT));

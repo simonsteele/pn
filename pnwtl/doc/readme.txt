@@ -1,6 +1,6 @@
 ========================================
 Release Name: 2.0.3-coltrane
-Build: 2.0.3.27, Version Label: coltrane
+Build: 2.0.3.29, Version Label: coltrane
 ========================================
 
 Breaking Change Notices:
@@ -20,16 +20,14 @@ What's new?
 
 1) Configurable scheme keywords.
 2) Now opens filenames from the command-line (or explorer associations).
-3) Basic Tools functionality. Configure from Options->Tools.
+3) Tools functionality. Configure from Options->Tools.
 4) CSS Scheme now works.
 5) Colourised output capturing in tools (configurable in Options->Schemes).
 6) C#, JavaScript, Batch, Diff and makefile schemes.
 7) Double-click on MDI area to open file.
-8) General options page - Use Tabs & Show Indent Guides & Tab Width options.
+8) General options page - default editor options.
 
-Please hammer the tools stuff, it uses threads and I'm worried 
-about a couple of the synchronisation bits. Please let me know 
-about any problems with it: ss@pnotepad.org.
+Please let me know about any problems with this release: ss@pnotepad.org.
 
 If you find a bug:
 ------------------
@@ -73,4 +71,4 @@ So what is good?
 10) Scoping / Folding / Outlining (Open a C++ or Pascal file to see this, it's lovely).
 11) Word-wrap.
 12) Schemes configuration.
-13) Tools with output capturing, running a separate process. Much better than PN1.
+13) Tools with output capturing, running in a separate thread. Much better than PN1.
