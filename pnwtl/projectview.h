@@ -11,6 +11,8 @@
 #ifndef projectview_h__included
 #define projectview_h__included
 
+class ShellImageList;
+
 class CProjectTreeCtrl : public CWindowImpl<CProjectTreeCtrl, CTreeViewCtrl>
 {
 	typedef CWindowImpl<CProjectTreeCtrl, CTreeViewCtrl> baseClass;
@@ -18,6 +20,7 @@ public:
 	DECLARE_WND_CLASS(_T("ProjectTree"))
 
 	CProjectTreeCtrl();
+	~CProjectTreeCtrl();
 
 	BEGIN_MSG_MAP(CProjectTreeCtrl)
 		REFLECTED_NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnSelChanged)
@@ -30,9 +33,12 @@ public:
 		COMMAND_ID_HANDLER(ID_PROJECT_REMOVE, OnRemove)
 		COMMAND_ID_HANDLER(ID_PROJECT_DELETE, OnDelete)
 		COMMAND_ID_HANDLER(ID_WORKSPACE_NEWPROJECT, OnNewProject)
-		COMMAND_ID_HANDLER(ID_WORKSPACE_ADDPROJECT, OnAddProject)
-		
+		COMMAND_ID_HANDLER(ID_WORKSPACE_ADDPROJECT, OnAddProject)		
 	END_MSG_MAP()
+
+	HWND Create(HWND hWndParent, WTL::_U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
+			DWORD dwStyle = 0, DWORD dwExStyle = 0,
+			WTL::_U_MENUorID MenuOrID = 0U, LPVOID lpCreateParam = NULL);
 
 	void			AddProject(Projects::Project* project);
 	Projects::File* GetSelectedFile();
@@ -66,8 +72,10 @@ protected:
 
 protected:
 	HTREEITEM				hLastItem;
+	ShellImageList*			shellImages;
 	Projects::ProjectType*	lastItem;
 	Projects::Workspace*	workspace;
+
 };
 
 class CProjectDocker : public CPNDockingWindow<CProjectDocker>
@@ -84,6 +92,7 @@ public:
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
+		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHide)
 		NOTIFY_ID_HANDLER(100, OnTreeNotify)
 		REFLECT_NOTIFICATIONS()
@@ -99,6 +108,7 @@ protected:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	LRESULT OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 

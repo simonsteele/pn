@@ -13,6 +13,7 @@
 #include "project.h"
 #include "projectview.h"
 #include "pndialogs.h"
+#include "include/shellicons.h"
 
 using namespace Projects;
 
@@ -23,6 +24,23 @@ using namespace Projects;
 CProjectTreeCtrl::CProjectTreeCtrl()
 {
 	lastItem = NULL;
+	shellImages = new ShellImageList();
+}
+
+CProjectTreeCtrl::~CProjectTreeCtrl()
+{
+	delete shellImages;
+}
+
+HWND CProjectTreeCtrl::Create(HWND hWndParent, WTL::_U_RECT rect, LPCTSTR szWindowName ,
+		DWORD dwStyle, DWORD dwExStyle,
+		WTL::_U_MENUorID MenuOrID, LPVOID lpCreateParam)
+{
+	HWND hWndRet = baseClass::Create(hWndParent, rect.m_lpRect, szWindowName, dwStyle, dwExStyle, MenuOrID.m_hMenu, lpCreateParam);
+
+	SetImageList(shellImages->GetImageList(), TVSIL_NORMAL);
+
+	return hWndRet;
 }
 
 void CProjectTreeCtrl::AddProject(Projects::Project* project)
@@ -139,6 +157,9 @@ HTREEITEM CProjectTreeCtrl::buildFiles(HTREEITEM hParentNode, HTREEITEM hInsertA
 	{
 		hFile = InsertItem( (*i)->GetDisplayName(), 0, 0, hParentNode, hFile );
 		SetItemData(hFile, reinterpret_cast<DWORD_PTR>( (*i) ));
+
+		int index = shellImages->IndexForFile( (*i)->GetFileName() );
+		SetItemImage(hFile, index, index);
 	}
 
 	return hFile;
@@ -556,6 +577,8 @@ CProjectDocker::~CProjectDocker()
 		delete workspace;
 		workspace = NULL;
 	}
+	
+	//m_view.DestroyWindow();
 }
 
 LRESULT CProjectDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -588,6 +611,14 @@ LRESULT CProjectDocker::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 LRESULT CProjectDocker::OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	Hide();
+
+	return 0;
+}
+
+LRESULT CProjectDocker::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+
+	bHandled = FALSE;
 
 	return 0;
 }
