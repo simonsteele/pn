@@ -441,6 +441,13 @@ class CustomisedScheme : public CustomKeywordHolder, public StylesList
 
 typedef enum {ebvLexer = 0x01} EBaseSet;
 
+struct GroupDetails_t
+{
+	TCHAR* name;
+	TCHAR* description;
+	GroupDetails_t* pNext;
+};
+
 class BaseScheme : public CustomisedScheme
 {
 	public:
@@ -450,6 +457,22 @@ class BaseScheme : public CustomisedScheme
 			styleBits	= 0;
 			valuesSet	= 0;
 			flags		= 0;
+			pGroupDetails = NULL;
+			pLastGroupDetails = NULL;
+		}
+
+		~BaseScheme()
+		{
+			GroupDetails_t* pD = pGroupDetails;
+			GroupDetails_t* pN = NULL;
+			while(pD)
+			{
+				pN = pD->pNext;
+				delete pD->name;
+				delete pD->description;
+				delete pD;
+				pD = pN;
+			}
 		}
 
 		tstring lexer;
@@ -457,6 +480,29 @@ class BaseScheme : public CustomisedScheme
 		int		flags;
 
 		int		valuesSet;
+
+		void AddGroupDetails(LPCTSTR name, LPCTSTR description)
+		{
+			GroupDetails_t* pDetails = new GroupDetails_t;
+			pDetails->name = new TCHAR[_tcslen(name)+1];
+			_tcscpy(pDetails->name, name);
+			pDetails->description = new TCHAR[_tcslen(description)+1];
+			_tcscpy(pDetails->description, description);
+			pDetails->pNext = NULL;
+
+			if( !pGroupDetails )
+			{
+				pGroupDetails = pLastGroupDetails = pDetails;
+			}
+			else
+			{
+				pLastGroupDetails->pNext = pDetails;
+				pLastGroupDetails = pDetails;
+			}
+		}
+
+		GroupDetails_t*	pGroupDetails;
+		GroupDetails_t* pLastGroupDetails;
 };
 
 typedef map<CString, CustomisedScheme*> CUSTOMISED_NAMEMAP;
