@@ -11,6 +11,7 @@
 #include "stdafx.h"
 #include "childfrm.h"
 #include "outputview.h"
+#include "tools.h"
 
 CChildFrame::CChildFrame()
 {
@@ -27,6 +28,8 @@ CChildFrame::CChildFrame()
 	COptionsManager::GetInstance()->LoadPrintSettings(&m_po);
 
 	InitUpdateUI();
+
+	iFirstToolCmd = ID_TOOLS_DUMMY;
 }
 
 CChildFrame::~CChildFrame()
@@ -329,6 +332,13 @@ LRESULT CChildFrame::OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 	}
 
 	return TRUE;
+}
+
+LRESULT CChildFrame::OnOptionsUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	UpdateTools(m_view.GetCurrentScheme());
+	UpdateMenu();
+	return 0;
 }
 
 ////////////////////////////////////////////////////
@@ -683,13 +693,45 @@ void CChildFrame::OnSchemeChange(LPVOID pVoid)
 void CChildFrame::SetScheme(CScheme* pScheme)
 {
 	m_view.SetScheme(pScheme);
-	UpdateTools();
+	UpdateTools(pScheme);
 	g_Context.m_frame->SetActiveScheme(m_hWnd, static_cast<LPVOID>(pScheme));
 }
 
-void CChildFrame::UpdateTools()
+void CChildFrame::UpdateTools(CScheme* pScheme)
 {
+	CSMenuHandle menu(m_hMenu);
+	CSMenuHandle tools( menu.GetSubMenu(3) );
+	HMENU m = tools;
 	
+	//First we ensure there's a marker item...
+	if(iFirstToolCmd != ID_TOOLS_DUMMY)
+	{
+		bool bDeleting = false;
+		int iCount = tools.GetCount();
+		int id;
+		for(int i = iCount - 1; i >= 0; i--)
+		{
+			id = ::GetMenuItemID(m, i);
+			if(id == iFirstToolCmd)
+			{
+				::InsertMenu(m, i+1, MF_BYPOSITION | MF_STRING, ID_TOOLS_DUMMY, _T("Add Tools..."));
+				bDeleting = true;
+			}
+
+			if(bDeleting)
+			{
+				if(id == 0) // found separator
+					bDeleting = false;
+				else
+					::RemoveMenu(m, id, MF_BYCOMMAND);
+			}
+		}
+	}
+
+ 	iFirstToolCmd = SchemeToolsManager::GetInstance()->GetMenuFor(pScheme->GetName(), tools, ID_TOOLS_DUMMY);
+
+	if(iFirstToolCmd != ID_TOOLS_DUMMY)
+		::RemoveMenu(m, ID_TOOLS_DUMMY, MF_BYCOMMAND);
 }
 
 void CChildFrame::UpdateMenu()

@@ -31,6 +31,7 @@ const long mfdefault[] = {0, MFS_DEFAULT};
 using namespace std;
 
 #include "callback.h"
+#include "include/sscontainers.h"
 
 typedef struct
 {
@@ -63,6 +64,24 @@ typedef MAP_HANDLERS::iterator MH_IT;
 typedef MAP_HANDLERS::const_iterator MH_CI;
 
 /**
+ * @brief Stack for command IDs.
+ */
+class MenuCommandCache
+{
+	public:
+		MenuCommandCache(int initialStack);
+
+	public:
+		void push(int iCommand);
+		bool canPop();
+		int pop();
+
+	protected:
+		int				m_index;
+		GArray<DWORD>	m_stack;
+};
+
+/**
  * @class CSMenuManager
  * @brief This class basically manages resource ID allocation.
  */
@@ -75,7 +94,10 @@ class CSMenuManager
 		static void ReleaseInstance();
 
 		int RegisterCallback(CSMenuEventHandler* pHandler, int iCommand, LPVOID data = NULL);
-		void UnRegisterCallbacks(int iID);
+		int RegisterCallback(int iRealCommand, CSMenuEventHandler* pHandler, int iMappedCommand, LPVOID data = NULL);
+		void UnRegisterCallback(int iID);
+
+		int GetNextID();
 
 		bool HandleCommand(int iID);
 		bool LocalHandleCommand(int iID, int iCommand, CSMenuEventHandler* pHandler);
@@ -91,9 +113,8 @@ class CSMenuManager
 		int m_iRanges;
 		menu_id_range* m_pRange;
 
+		MenuCommandCache	m_IDCache;
 		MAP_HANDLERS m_Handlers;
-
-		int GetNextID();
 };
 
 template <bool t_bManaged> class CSMenuT;

@@ -14,6 +14,8 @@
 
 #include "pnutils.h"
 
+#include "tools.h"
+
 #include "MainFrm.h"
 
 CAppModule _Module;
@@ -43,6 +45,7 @@ void Shutdown()
 	CSchemeManager::DeleteInstance();
 	COptionsManager::DeleteInstance();
 	CSMenuManager::ReleaseInstance();
+	SchemeToolsManager::ReleaseInstance();
 }
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)

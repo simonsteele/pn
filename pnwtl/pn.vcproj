@@ -202,6 +202,9 @@
 				RelativePath="textview.cpp">
 			</File>
 			<File
+				RelativePath="tools.cpp">
+			</File>
+			<File
 				RelativePath=".\xmlparser.cpp">
 			</File>
 		</Filter>
@@ -294,6 +297,9 @@
 			</File>
 			<File
 				RelativePath=".\textview.h">
+			</File>
+			<File
+				RelativePath="tools.h">
 			</File>
 		</Filter>
 		<Filter

@@ -573,4 +573,34 @@ class CustomFormatStringBuilder
 		tstring	m_string;
 };
 
+template <class T>
+class Singleton
+{
+	public:
+		static T* GetInstance()
+		{
+			if(!s_pTheInstance)
+				s_pTheInstance = new T;
+
+			return s_pTheInstance;
+		}
+
+		static T& GetInstanceRef()
+		{
+			return *GetInstance();
+		}
+
+		static void ReleaseInstance()
+		{
+			if(s_pTheInstance)
+			{
+				delete s_pTheInstance;
+				s_pTheInstance = NULL;
+			}
+		}
+
+	protected:
+		static T* s_pTheInstance;
+};
+
 #endif //#ifndef pnutils_h__included

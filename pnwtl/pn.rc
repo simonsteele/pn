@@ -166,6 +166,9 @@ BEGIN
             MENUITEM SEPARATOR
             MENUITEM "&Convert...",                 ID_TOOLS_LECONVERT
         END
+        MENUITEM SEPARATOR
+        MENUITEM "Add Tools...",                ID_TOOLS_DUMMY
+        MENUITEM SEPARATOR
         MENUITEM "&Options",                    245
     END
     POPUP "&Window"

@@ -19,6 +19,7 @@
 
 #define MENUMESSAGE_CHANGESCHEME 0xa
 #define PN_CHECKAGE WM_USER+32
+#define PN_OPTIONSUPDATED WM_USER+33
 
 #define PMUI_MINIBAR	0x0001
 #define PMUI_MENU		0x0002
@@ -52,6 +53,7 @@ public:
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(PN_NOTIFY, OnViewNotify)
 		MESSAGE_HANDLER(PN_CHECKAGE, OnCheckAge)
+		MESSAGE_HANDLER(PN_OPTIONSUPDATED, OnOptionsUpdate)
 
 		COMMAND_ID_HANDLER(ID_EDIT_CUT, OnCut)
 		COMMAND_ID_HANDLER(ID_EDIT_COPY, OnCopy)
@@ -142,6 +144,7 @@ public:
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnCheckAge(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnOptionsUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	
 	////////////////////////////////////////////////////
 	// Command Handlers
@@ -215,7 +218,7 @@ protected:
 
 protected:
 	void PrintSetup();
-	void UpdateTools();
+	void UpdateTools(CScheme* pScheme);
 
 protected:
 	HIMAGELIST		m_hImgList;
@@ -223,6 +226,8 @@ protected:
 	CString			m_Title;
 	CString			m_FileName;
 	long			m_FileAge;
+	
+	int				iFirstToolCmd;
 
 	CCFSplitter*	m_pSplitter;
 	COutputView*	m_pOutputView;

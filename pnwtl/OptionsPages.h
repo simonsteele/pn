@@ -15,8 +15,7 @@
 #include "include/ColorButton.h"
 
 #include "SchemeConfig.h"
-
-#include <fstream>
+#include "tools.h"
 
 class CPNColorButton : public CColorButton
 {
@@ -237,62 +236,6 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 		SchemeConfigParser* m_pSchemes;
 		CTabPageStyles		m_stylestab;
 		CTabPageKeywords	m_keywordstab;
-};
-
-typedef std::list<SToolDefinition*> TOOLDEFS_LIST;
-
-/**
- * @brief Collection class representing tools associated with one scheme
- */
-class SchemeTools
-{
-	public:
-		SchemeTools(LPCTSTR schemename);
-		~SchemeTools();
-
-		TOOLDEFS_LIST&	GetTools();
-
-		void			Add(SToolDefinition* pDef);
-		void			Delete(SToolDefinition* pDef);
-
-		void			WriteDefinition(ofstream& stream);
-
-		/*void			Load();
-		void			Save();*/
-
-	protected:
-		TOOLDEFS_LIST	m_Tools;
-		tstring			m_Scheme;
-};
-
-class SchemeToolsManager : public XMLParseState
-{
-	public:
-		SchemeToolsManager();
-		~SchemeToolsManager();
-		
-		SchemeTools* GetToolsFor(LPCTSTR scheme);
-
-		void ReLoad();
-		void Save();
-
-	protected:
-		void Clear();
-
-		// Scheme & Tool Creation
-		void processScheme(XMLAttributes& atts);
-		void processTool(XMLAttributes& atts);
-
-		// XML Parsing
-		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
-		virtual void endElement(LPCTSTR name);
-		virtual void characterData(LPCTSTR data, int len){}
-
-	protected:
-		typedef std::map<tstring, SchemeTools*> SCHEMETOOLS_MAP;
-
-		SchemeTools*	m_pCur;
-		SCHEMETOOLS_MAP m_toolSets;
 };
 
 /**

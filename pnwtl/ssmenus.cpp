@@ -18,7 +18,47 @@ menu_id_range* CSMenuManager::s_IDs[] = {&menu_id_range1, NULL};
 
 CSMenuManager* CSMenuManager::s_pTheInstance = NULL;
 
-CSMenuManager::CSMenuManager()
+///////////////////////////////////////////////////////////////
+// MenuCommandCache
+///////////////////////////////////////////////////////////////
+
+MenuCommandCache::MenuCommandCache(int initialStack)
+{
+	m_index = 0;
+	m_stack.grow(initialStack);
+}
+
+void MenuCommandCache::push(int iCommand)
+{
+	if(m_index == m_stack.size())
+		m_stack.grow((m_stack.size() + 1) * 2); // add one incase size is 0.
+
+	m_stack[m_index] = iCommand;
+
+	m_index++;
+}
+
+bool MenuCommandCache::canPop()
+{
+	return (m_index > 0);
+}
+
+int MenuCommandCache::pop()
+{
+	if(m_index > 0)
+	{
+		m_index--;
+		return m_stack[m_index];
+	}
+	else
+		return 0;
+}
+
+///////////////////////////////////////////////////////////////
+// CSMenuManager
+///////////////////////////////////////////////////////////////
+
+CSMenuManager::CSMenuManager() : m_IDCache(10)
 {
 	int nRanges = 0;
 
@@ -33,7 +73,10 @@ CSMenuManager::CSMenuManager()
 
 CSMenuManager::~CSMenuManager()
 {
-
+	for(MH_IT i = m_Handlers.begin(); i != m_Handlers.end(); ++i)
+	{
+		delete (*i).second;
+	}
 }
 
 CSMenuManager* CSMenuManager::GetInstance()
@@ -50,11 +93,6 @@ void CSMenuManager::ReleaseInstance()
 {
 	if(s_pTheInstance)
 	{
-		for(MH_IT i = s_pTheInstance->m_Handlers.begin(); i != s_pTheInstance->m_Handlers.end(); ++i)
-		{
-			delete (*i).second;
-		}
-
 		delete s_pTheInstance;
 		s_pTheInstance = NULL;
 	}
@@ -65,20 +103,44 @@ void CSMenuManager::ReleaseInstance()
  */
 int CSMenuManager::RegisterCallback(CSMenuEventHandler *pHandler, int iCommand, LPVOID data)
 {
-	int iID = GetNextID();
+	return RegisterCallback(-1, pHandler, iCommand, data);
+}
+
+/**
+ * @return int The actual ID of the registered command
+ * @param iRealCommand set to -1 to generate a command id.
+ */
+int CSMenuManager::RegisterCallback(int iRealCommand, CSMenuEventHandler* pHandler, int iMappedCommand, LPVOID data)
+{
+	if(iRealCommand == -1)
+		iRealCommand = GetNextID();
 
 	menu_event_handler* pRecord = new menu_event_handler;
-	pRecord->iID = iCommand;
+	pRecord->iID = iMappedCommand;
 	pRecord->pHandler = pHandler;
 	pRecord->data = data;
 
-	m_Handlers.insert(m_Handlers.begin(), MH_VT(iID, pRecord));
+	m_Handlers.insert(m_Handlers.begin(), MH_VT(iRealCommand, pRecord));
 
-	return iID;
+	return iRealCommand;
+}
+
+void CSMenuManager::UnRegisterCallback(int iID)
+{
+	MH_IT i = m_Handlers.find(iID);
+	if(i != m_Handlers.end())
+	{
+		delete (*i).second;
+		m_Handlers.erase(i);
+		m_IDCache.push(iID);
+	}
 }
 
 int CSMenuManager::GetNextID()
 {
+	if(m_IDCache.canPop())
+		return m_IDCache.pop();
+
 	if(m_pRange->current == 0)
 	{
 		m_pRange->current = m_pRange->start;
@@ -94,6 +156,9 @@ int CSMenuManager::GetNextID()
 	return ret;
 }
 
+/**
+ * This method calls the predefined handler for a command.
+ */
 bool CSMenuManager::HandleCommand(int iID)
 {
 	bool bHandled = false;
@@ -112,6 +177,10 @@ bool CSMenuManager::HandleCommand(int iID)
 	return bHandled;
 }
 
+/**
+ * This method specifies the handler for the command in the call, 
+ * and doesn't look it up from the handler map.
+ */
 bool CSMenuManager::LocalHandleCommand(int iID, int iCommand, CSMenuEventHandler* pHandler)
 {
 	bool bHandled = false;

@@ -505,8 +505,25 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	options.AddPage(&page);
 	options.AddPage(&page2);
 	options.AddPage(&page3);
-	options.DoModal();
+	bool bOK = options.DoModal() == IDOK;
 
+	if(bOK)
+	{
+		// pass in true to cache menu resources.
+		SchemeToolsManager::GetInstance()->ReLoad(true);
+
+		//PN_OPTIONSUPDATED
+		EnumChildWindows(m_hWndMDIClient, OptionsUpdatedChildEnumProc, 0);
+	}
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnToolsDummy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	BOOL b;
+	MessageBox(_T("You can add external tools to this menu using the Tools\n section of the options dialog.\n\nThis dialog will open now so that you can do so."), _T("Programmers Notepad"), MB_OK);
+	OnOptions(0,0,0, b);
 	return 0;
 }
 
@@ -677,5 +694,17 @@ BOOL CALLBACK CMainFrame::CloseChildEnumProc(HWND hWnd, LPARAM lParam)
 			s->bCanClose = false;
 	}
 	
+	return TRUE;
+}
+
+BOOL CALLBACK CMainFrame::OptionsUpdatedChildEnumProc(HWND hWnd, LPARAM lParam)
+{
+	if(::GetWindow(hWnd, GW_OWNER))
+		return TRUE;
+
+	CChildFrame* pChild = CChildFrame::FromHandle(hWnd);
+	if(pChild)
+		pChild->SendMessage(PN_OPTIONSUPDATED);
+
 	return TRUE;
 }
