@@ -26,9 +26,25 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2005/03/15: Daniel Bowen
+// - CSaveModifiedItemsDialog -
+//   Handle the case when no display name is set for an item - have it show "(New)".
+//
+// 2005/01/14: Daniel Bowen
+// - Fix AutoHideUnusedColumns so that it doesn't try to hide the name column
+//
+// 2004/08/26: Daniel Bowen
+// - Break out checkbox image creation
+// - Have CDynamicDialogImpl automatically call ConstructDialogResource
+//   after the constructor, but before the dialog is created
+//
+// 2004/06/28: Daniel Bowen
+// - Support hiding the description and/or last modified columns
+//   in the "save modified items" dialog.
+// - Clean up warnings on level 4
+//
 // 2004/04/29: Daniel Bowen
 // - Original implementation
-//#include "stdafx.h"
 
 #define WTL_TABBED_MDI_SAVE_IMPLEMENTATION
 #include "TabbedMDISave.h"
@@ -42,6 +58,7 @@
 #endif
 
 #include <atlcomtime.h>
+#include "ImageUtil.h"
 
 /////////////////////////////////////////////////////////////////////////////
 // CTabbedMDIChildModifiedList
@@ -610,15 +627,41 @@ CSaveModifiedItemsDialog::CSaveModifiedItemsDialog(ITabbedMDIChildModifiedList* 
 	m_imageChecked(-1),
 	m_imageIndeterminate(-1),
 	m_trackColumnWidth(0),
-	m_trackColumnIndex(-1)
+	m_trackColumnIndex(-1),
+	m_lastVisibleColumn(eColumn_Last)
 {
-	this->ConstructDialogResource();
+	for(int i=0; i<eColumn_Count; ++i)
+	{
+		m_showColumn[i] = true;
+	}
 }
 
 CSaveModifiedItemsDialog::~CSaveModifiedItemsDialog()
 {
 }
 
+bool CSaveModifiedItemsDialog::HideColumn(ColumnIndex column)
+{
+	ATLASSERT(((!m_header.IsWindow()) || (m_header.IsWindow() && m_header.GetItemCount() < 1)) &&
+		"Please call this before InitializeColumns().");
+	if(column < 0 || column > eColumn_Last || column == eColumn_Name)
+	{
+		ATLASSERT(0 && "Invalid column index");
+		return false;
+	}
+
+	m_showColumn[column] = false;
+
+	if(column == m_lastVisibleColumn)
+	{
+		// Find the new last visible column
+		while((m_lastVisibleColumn > 0) && !m_showColumn[m_lastVisibleColumn])
+		{
+			m_lastVisibleColumn = (ColumnIndex)((int)m_lastVisibleColumn-1);
+		}
+	}
+	return true;
+}
 
 LRESULT CSaveModifiedItemsDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -723,7 +766,7 @@ LRESULT CSaveModifiedItemsDialog::OnEndDialog(WORD /*wNotifyCode*/, WORD wID, HW
 	return 0;
 }
 
-LRESULT CSaveModifiedItemsDialog::OnListViewInsertItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+LRESULT CSaveModifiedItemsDialog::OnListViewInsertItem(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 {
 	bHandled = TRUE;
 	LPNMLISTVIEW pnmLV = (LPNMLISTVIEW)pnmh;
@@ -747,7 +790,7 @@ LRESULT CSaveModifiedItemsDialog::OnListViewInsertItem(int idCtrl, LPNMHDR pnmh,
 	return 0;
 }
 
-LRESULT CSaveModifiedItemsDialog::OnListViewDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+LRESULT CSaveModifiedItemsDialog::OnListViewDeleteItem(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 {
 	bHandled = TRUE;
 	LPNMLISTVIEW pnmLV = (LPNMLISTVIEW)pnmh;
@@ -763,7 +806,7 @@ LRESULT CSaveModifiedItemsDialog::OnListViewDeleteItem(int idCtrl, LPNMHDR pnmh,
 	return 0;
 }
 
-LRESULT CSaveModifiedItemsDialog::OnListViewKeyDownToToggleCheck(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+LRESULT CSaveModifiedItemsDialog::OnListViewKeyDownToToggleCheck(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 {
 	NMLVKEYDOWN* keyDown = (NMLVKEYDOWN*)pnmh;
 	if(keyDown && keyDown->wVKey == VK_SPACE)
@@ -778,7 +821,7 @@ LRESULT CSaveModifiedItemsDialog::OnListViewKeyDownToToggleCheck(int idCtrl, LPN
 	return 0;
 }
 
-LRESULT CSaveModifiedItemsDialog::OnListViewClickToToggleCheck(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+LRESULT CSaveModifiedItemsDialog::OnListViewClickToToggleCheck(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 {
 	NMITEMACTIVATE* itemActivate = (NMITEMACTIVATE*)pnmh;
 	if(itemActivate)
@@ -794,13 +837,13 @@ LRESULT CSaveModifiedItemsDialog::OnListViewClickToToggleCheck(int idCtrl, LPNMH
 	return 0;
 }
 
-LRESULT CSaveModifiedItemsDialog::OnListViewEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CSaveModifiedItemsDialog::OnListViewEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	// Erase the background in OnListViewPaint
 	return 1;
 }
 
-LRESULT CSaveModifiedItemsDialog::OnListViewPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CSaveModifiedItemsDialog::OnListViewPaint(UINT uMsg, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	if(wParam != NULL)
 	{
@@ -854,7 +897,7 @@ LRESULT CSaveModifiedItemsDialog::OnListViewPaint(UINT uMsg, WPARAM wParam, LPAR
 //	return 0;
 //}
 
-LRESULT CSaveModifiedItemsDialog::OnHeaderBeginTrack(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+LRESULT CSaveModifiedItemsDialog::OnHeaderBeginTrack(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 {
 	NMHEADER* headerInfo = (NMHEADER*)pnmh;
 	if(headerInfo)
@@ -862,9 +905,12 @@ LRESULT CSaveModifiedItemsDialog::OnHeaderBeginTrack(int idCtrl, LPNMHDR pnmh, B
 		m_trackColumnIndex = headerInfo->iItem;
 		m_trackColumnWidth = m_list.GetColumnWidth(m_trackColumnIndex);
 
-		if(m_trackColumnIndex >= (m_header.GetItemCount() -1))
+		if(	(m_trackColumnIndex < 0) ||
+			(m_trackColumnIndex >= m_lastVisibleColumn) ||
+			!m_showColumn[m_trackColumnIndex])
 		{
-			// Don't allow resizing on the last column
+			// Don't allow resizing on the last column,
+			// or on a column we are hiding
 			m_trackColumnIndex = -1;
 			bHandled = TRUE;
 			return TRUE;
@@ -874,7 +920,7 @@ LRESULT CSaveModifiedItemsDialog::OnHeaderBeginTrack(int idCtrl, LPNMHDR pnmh, B
 	return 0;
 }
 
-LRESULT CSaveModifiedItemsDialog::OnHeaderTrack(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+LRESULT CSaveModifiedItemsDialog::OnHeaderTrack(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHandled)
 {
 	// NOTE: See http://support.microsoft.com/?kbid=183258
 	//  "INFO: HDN_TRACK Notifications and Full Window Drag Style"
@@ -890,7 +936,7 @@ LRESULT CSaveModifiedItemsDialog::OnHeaderTrack(int idCtrl, LPNMHDR pnmh, BOOL& 
 	return 0;
 }
 
-LRESULT CSaveModifiedItemsDialog::OnHeaderEndTrack(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+LRESULT CSaveModifiedItemsDialog::OnHeaderEndTrack(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 {
 	if((m_header.GetStyle() & HDS_FULLDRAG) == 0)
 	{
@@ -904,7 +950,13 @@ LRESULT CSaveModifiedItemsDialog::OnHeaderEndTrack(int idCtrl, LPNMHDR pnmh, BOO
 			if(m_trackColumnIndex == headerInfo->iItem)
 			{
 				int columnRight = headerInfo->iItem + 1;
-				if(columnRight < m_header.GetItemCount())
+				// Find the first column to the right that isn't being hidden.
+				while((columnRight < m_lastVisibleColumn) && !m_showColumn[columnRight])
+				{
+					++columnRight;
+				}
+
+				if(columnRight <= m_lastVisibleColumn)
 				{
 					int widthLeft = headerInfo->pitem->cxy;
 					int widthRight = m_list.GetColumnWidth(columnRight);
@@ -935,7 +987,7 @@ LRESULT CSaveModifiedItemsDialog::OnHeaderEndTrack(int idCtrl, LPNMHDR pnmh, BOO
 	return 0;
 }
 
-LRESULT CSaveModifiedItemsDialog::OnHeaderItemChanging(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+LRESULT CSaveModifiedItemsDialog::OnHeaderItemChanging(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 {
 	if((m_header.GetStyle() & HDS_FULLDRAG) == HDS_FULLDRAG)
 	{
@@ -949,7 +1001,13 @@ LRESULT CSaveModifiedItemsDialog::OnHeaderItemChanging(int idCtrl, LPNMHDR pnmh,
 			if(m_trackColumnIndex == headerInfo->iItem)
 			{
 				int columnRight = headerInfo->iItem + 1;
-				if(columnRight < m_header.GetItemCount())
+				// Find the first column to the right that isn't being hidden.
+				while((columnRight < m_lastVisibleColumn) && !m_showColumn[columnRight])
+				{
+					++columnRight;
+				}
+
+				if(columnRight <= m_lastVisibleColumn)
 				{
 					int widthLeft = headerInfo->pitem->cxy;
 					int widthRight = m_list.GetColumnWidth(columnRight);
@@ -977,7 +1035,7 @@ LRESULT CSaveModifiedItemsDialog::OnHeaderItemChanging(int idCtrl, LPNMHDR pnmh,
 	return 0;
 }
 
-LRESULT CSaveModifiedItemsDialog::OnHeaderDividerDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+LRESULT CSaveModifiedItemsDialog::OnHeaderDividerDoubleClick(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHandled)
 {
 	// TODO: Deal with this (and with Ctrl + NumPad+)
 	bHandled = FALSE;
@@ -1005,16 +1063,27 @@ void CSaveModifiedItemsDialog::DlgResize_UpdateLayout(int cxWidth, int cyHeight)
 		int difference = (rcList.Width() - columnWidths);
 		if(difference != 0)
 		{
-			// Make up the difference by resizing the description column
-			int descriptionWidth = m_list.GetColumnWidth(eColumn_Description);
-			descriptionWidth += difference;
-			if(descriptionWidth > eMinimumColumnWidth)
+			// Make up the difference by resizing the description column (if its visible).
+			// If the description column isn't visible, make up the difference with the name column.
+			int columnIndexToMakeUpDifference = eColumn_Description;
+			if(m_showColumn[eColumn_Description])
 			{
-				m_list.SetColumnWidth(eColumn_Description, descriptionWidth);
+				columnIndexToMakeUpDifference = eColumn_Description;
 			}
 			else
 			{
-				m_list.SetColumnWidth(eColumn_Description, eMinimumColumnWidth);
+				columnIndexToMakeUpDifference = eColumn_Name;
+			}
+
+			int columnWidth = m_list.GetColumnWidth(columnIndexToMakeUpDifference);
+			columnWidth += difference;
+			if(columnWidth > eMinimumColumnWidth)
+			{
+				m_list.SetColumnWidth(columnIndexToMakeUpDifference, columnWidth);
+			}
+			else
+			{
+				m_list.SetColumnWidth(columnIndexToMakeUpDifference, eMinimumColumnWidth);
 			}
 
 			// TODO: When resizing the dialog smaller, the scroll bars
@@ -1091,7 +1160,7 @@ bool CSaveModifiedItemsDialog::ConstructDialogResource(void)
 		// Header text
 		m_dynamicDialogTemplate.AddStaticControl(
 			(WS_CHILD | WS_VISIBLE | WS_GROUP | SS_LEFT), 0,
-			7,7,180,8, IDC_STATIC, L"Do you want to save changes to these modified items?");
+			7,7,180,8, (WORD)IDC_STATIC, L"Do you want to save changes to these modified items?");
 
 		// List of items
 		m_dynamicDialogTemplate.AddControl(
@@ -1147,6 +1216,8 @@ bool CSaveModifiedItemsDialog::InitializeControls(void)
 	m_list.SetImageList(m_stateImages, LVSIL_STATE);
 	this->CreateDefaultStateImages();
 
+	this->AutoHideUnusedColumns();
+
 	this->InitializeColumns();
 
 	return true;
@@ -1166,9 +1237,31 @@ bool CSaveModifiedItemsDialog::InitializeColumns(void)
 	CRect rcList;
 	m_list.GetClientRect(&rcList);
 
-	int nameWidth = ::MulDiv(rcList.Width(), 30, 100);
-	int descriptionWidth = ::MulDiv(rcList.Width(), 45, 100);
-	int lastModifiedWidth = rcList.Width() - (nameWidth + descriptionWidth);
+	int nameWidth = 0;
+	int descriptionWidth = 0;
+	int lastModifiedWidth = 0;
+
+	if(!m_showColumn[eColumn_Description] && !m_showColumn[eColumn_LastModified])
+	{
+		nameWidth = rcList.Width();
+	}
+	else if(!m_showColumn[eColumn_Description])
+	{
+		nameWidth = ::MulDiv(rcList.Width(), 75, 100);
+		lastModifiedWidth = rcList.Width() - nameWidth;
+	}
+	else if(!m_showColumn[eColumn_LastModified])
+	{
+		nameWidth = ::MulDiv(rcList.Width(), 35, 100);
+		descriptionWidth = rcList.Width() - nameWidth;
+	}
+	else
+	{
+		nameWidth = ::MulDiv(rcList.Width(), 30, 100);
+		descriptionWidth = ::MulDiv(rcList.Width(), 45, 100);
+		lastModifiedWidth = rcList.Width() - (nameWidth + descriptionWidth);
+	}
+
 
 	LVCOLUMN lvColumn = {0};
 	lvColumn.mask = (LVCF_FMT | LVCF_WIDTH | LVCF_TEXT);
@@ -1190,6 +1283,81 @@ bool CSaveModifiedItemsDialog::InitializeColumns(void)
 	m_list.InsertColumn(eColumn_LastModified, &lvColumn);
 
 	return true;
+}
+
+int CSaveModifiedItemsDialog::AutoHideUnusedColumns(void)
+{
+	int columnsHidden = 0;
+	int columnUseCount[eColumn_Count] = {0};
+
+	this->FindUsedColumns(m_modifiedList, columnUseCount);
+	for(int i=0; i<eColumn_Count; ++i)
+	{
+		if(columnUseCount[i] == 0 && i != (int)eColumn_Name)
+		{
+			++columnsHidden;
+			this->HideColumn((ColumnIndex)i);
+		}
+	}
+
+	return columnsHidden;
+}
+
+bool CSaveModifiedItemsDialog::FindUsedColumns(ITabbedMDIChildModifiedList* list, int columnUseCount[eColumn_Count])
+{
+	if(list == NULL)
+	{
+		return false;
+	}
+
+	bool success = true;
+
+	long count = 0;
+	list->get_Count(&count);
+	for(long i=0; i<count; ++i)
+	{
+		CComPtr<ITabbedMDIChildModifiedItem> item;
+		list->get_Item(i, &item);
+		if(item)
+		{
+			if(m_showColumn[eColumn_Name])
+			{
+				CComBSTR displayName;
+				item->get_DisplayName(&displayName);
+				if(displayName.Length() > 0)
+				{
+					columnUseCount[eColumn_Name] += 1;
+				}
+			}
+			if(m_showColumn[eColumn_Description])
+			{
+				CComBSTR description;
+				item->get_Description(&description);
+				if(description.Length() > 0)
+				{
+					columnUseCount[eColumn_Description] += 1;
+				}
+			}
+			if(m_showColumn[eColumn_LastModified])
+			{
+				DATE lastModified = 0;
+				item->get_LastModifiedUTC(&lastModified);
+				if(lastModified != 0)
+				{
+					columnUseCount[eColumn_LastModified] += 1;
+				}
+			}
+
+			CComPtr<ITabbedMDIChildModifiedList> subItems;
+			item->get_SubItems(&subItems);
+			if(subItems)
+			{
+				this->FindUsedColumns(subItems, columnUseCount);
+			}
+		}
+	}
+
+	return success;
 }
 
 bool CSaveModifiedItemsDialog::AddItems(ITabbedMDIChildModifiedList* list, int indent)
@@ -1219,6 +1387,11 @@ bool CSaveModifiedItemsDialog::AddItems(ITabbedMDIChildModifiedList* list, int i
 			CString displayNameForItem(displayName);
 			CString descriptionForItem(description);
 			CString lastModifiedForItem = this->FormatLastModifiedDateString(lastModified);
+
+			if(displayNameForItem.GetLength() < 1)
+			{
+				displayNameForItem = _T("(New)");
+			}
 
 			int imageIndex = 0;
 			HICON hIcon = NULL;
@@ -1615,69 +1788,28 @@ void CSaveModifiedItemsDialog::CreateDefaultStateImages(void)
 
 int CSaveModifiedItemsDialog::AddCheckStateImage(HDC dcScreen, int cx, int cy, enum CheckState checkState)
 {
+	ImageUtil::eCheckbox type = ImageUtil::eCheckboxChecked;
+	switch(checkState)
+	{
+	case eCheckState_Unchecked:
+		type = ImageUtil::eCheckboxUnchecked;
+		break;
+	case eCheckState_Checked:
+		type = ImageUtil::eCheckboxChecked;
+		break;
+	case eCheckState_Indeterminate:
+		type = ImageUtil::eCheckboxIndeterminate;
+		break;
+	default:
+		ATLASSERT(0 && "Invalid checkbox type!");
+		break;
+	}
+
 	int index = -1;
 
-#ifdef __ATLTHEME_H__
-	UINT stateDTB = CBS_CHECKEDNORMAL;
-	UINT stateDFC = (DFCS_BUTTONCHECK | DFCS_CHECKED | DFCS_FLAT);
-	switch(checkState)
+	CBitmap bitmap = ImageUtil::CreateCheckboxImage(dcScreen, type, cx, cy, RGB(255,0,0), m_list);
+	if(!bitmap.IsNull())
 	{
-	case eCheckState_Unchecked:
-		stateDTB = CBS_UNCHECKEDNORMAL;
-		stateDFC = (DFCS_BUTTONCHECK | DFCS_FLAT);
-		break;
-	case eCheckState_Checked:
-		stateDTB = CBS_CHECKEDNORMAL;
-		stateDFC = (DFCS_BUTTONCHECK | DFCS_CHECKED | DFCS_FLAT);
-		break;
-	case eCheckState_Indeterminate:
-		stateDTB = CBS_MIXEDNORMAL;
-		stateDFC = (DFCS_BUTTONCHECK | DFCS_CHECKED | DFCS_INACTIVE | DFCS_FLAT);
-		break;
-	}
-#else
-	UINT stateDFC = (DFCS_BUTTONCHECK | DFCS_CHECKED | DFCS_FLAT);
-	switch(checkState)
-	{
-	case eCheckState_Unchecked:
-		stateDFC = (DFCS_BUTTONCHECK | DFCS_FLAT);
-		break;
-	case eCheckState_Checked:
-		stateDFC = (DFCS_BUTTONCHECK | DFCS_CHECKED | DFCS_FLAT);
-		break;
-	case eCheckState_Indeterminate:
-		stateDFC = (DFCS_BUTTONCHECK | DFCS_CHECKED | DFCS_INACTIVE | DFCS_FLAT);
-		break;
-	}
-#endif
-
-	CDC dc;
-	dc.CreateCompatibleDC(dcScreen);
-	if(!dc.IsNull())
-	{
-		CRect rcImage(0,0,cx,cy);
-
-		CBitmap bitmap;
-		bitmap.CreateCompatibleBitmap(dcScreen, rcImage.Width(), rcImage.Height());
-		CBitmapHandle hOldBitmap = dc.SelectBitmap(bitmap);
-
-		dc.FillSolidRect(&rcImage, RGB(255,0,0));
-		rcImage.DeflateRect(1,1);
-#ifdef __ATLTHEME_H__
-		CTheme theme;
-		if(theme.OpenThemeData(m_list, L"Button"))
-		{
-			theme.DrawThemeBackground(dc, BP_CHECKBOX, stateDTB, &rcImage);
-		}
-		else
-		{
-			dc.DrawFrameControl(&rcImage, DFC_BUTTON, stateDFC);
-		}
-#else
-		dc.DrawFrameControl(&rcImage, DFC_BUTTON, stateDFC);
-#endif
-		dc.SelectBitmap(hOldBitmap);
-
 		index = m_stateImages.Add(bitmap, RGB(255,0,0));
 	}
 

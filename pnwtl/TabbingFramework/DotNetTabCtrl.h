@@ -28,6 +28,15 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2005/03/14: Daniel Bowen
+// - Fix warnings when compiling for 64-bit.
+//
+// 2004/06/28: Daniel Bowen:
+// - Clean up warnings on level 4
+//
+// 2004/06/21: Peter Carlson:
+// - "CanClose" for items.
+//
 // 2004/04/29: Daniel Bowen
 // - Update CDotNetTabCtrlImpl::OnSettingChange so that
 //   if the color depth is not greater than 8bpp
@@ -471,7 +480,7 @@ public:
 
 		bool bHighlighted = (CDIS_MARKED == (lpNMCustomDraw->nmcd.uItemState & CDIS_MARKED));
 
-		int nItem = lpNMCustomDraw->nmcd.dwItemSpec;
+		int nItem = (int)lpNMCustomDraw->nmcd.dwItemSpec;
 		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
 
 		if(bHighlighted)
@@ -517,13 +526,13 @@ public:
 		}
 	}
 
-	void DrawItem_ImageAndText(DWORD dwStyle, LPNMCTCCUSTOMDRAW lpNMCustomDraw, int nIconVerticalCenter, RECT& rcTab, RECT& rcText)
+	void DrawItem_ImageAndText(DWORD /*dwStyle*/, LPNMCTCCUSTOMDRAW lpNMCustomDraw, int nIconVerticalCenter, RECT& rcTab, RECT& rcText)
 	{
 		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
 		bool bHighlighted = (CDIS_MARKED == (lpNMCustomDraw->nmcd.uItemState & CDIS_MARKED));
 		bool bSelected = (CDIS_SELECTED == (lpNMCustomDraw->nmcd.uItemState & CDIS_SELECTED));
 		bool bHot = (CDIS_HOT == (lpNMCustomDraw->nmcd.uItemState & CDIS_HOT));
-		int nItem = lpNMCustomDraw->nmcd.dwItemSpec;
+		int nItem = (int)lpNMCustomDraw->nmcd.dwItemSpec;
 
 		TItem* pItem = this->GetItem(nItem);
 
@@ -760,7 +769,7 @@ public:
 
 	void InitializeDrawStruct(LPNMCTCCUSTOMDRAW lpNMCustomDraw)
 	{
-		DWORD dwStyle = this->GetStyle();
+		//DWORD dwStyle = this->GetStyle();
 
 		lpNMCustomDraw->hFontInactive = m_font;
 		lpNMCustomDraw->hFontSelected = m_fontSel;
@@ -829,7 +838,15 @@ public:
 		// Close Button
 		if(CTCS_CLOSEBUTTON == (dwStyle & CTCS_CLOSEBUTTON))
 		{
-			pT->DrawCloseButton(lpNMCustomDraw);
+			if( (m_iCurSel >= 0) && ((size_t)m_iCurSel < m_Items.GetCount()) )
+			{
+				TItem* pItem = m_Items[m_iCurSel];
+				ATLASSERT(pItem != NULL);
+				if((pItem != NULL) && pItem->CanClose())
+				{
+					pT->DrawCloseButton(lpNMCustomDraw);
+				}
+			}
 		}
 
 		// Scroll Buttons
@@ -917,7 +934,7 @@ public:
 
 		if(m_tooltip.IsWindow())
 		{
-			m_tooltip.SetToolRect(m_hWnd, ectcToolTip_Close, &m_rcCloseButton);
+			m_tooltip.SetToolRect(m_hWnd, (UINT)ectcToolTip_Close, &m_rcCloseButton);
 		}
 
 		// Adjust the tab area
@@ -974,8 +991,8 @@ public:
 
 		if(m_tooltip.IsWindow())
 		{
-			m_tooltip.SetToolRect(m_hWnd, ectcToolTip_ScrollRight, &m_rcScrollRight);
-			m_tooltip.SetToolRect(m_hWnd, ectcToolTip_ScrollLeft, &m_rcScrollLeft);
+			m_tooltip.SetToolRect(m_hWnd, (UINT)ectcToolTip_ScrollRight, &m_rcScrollRight);
+			m_tooltip.SetToolRect(m_hWnd, (UINT)ectcToolTip_ScrollLeft, &m_rcScrollLeft);
 		}
 
 		// Adjust the tab area
@@ -988,7 +1005,7 @@ public:
 		long nMinInactiveWidth = 0x7FFFFFFF;
 		long nMaxInactiveWidth = 0;
 
-		DWORD dwStyle = this->GetStyle();
+		//DWORD dwStyle = this->GetStyle();
 
 		CClientDC dc(m_hWnd);
 		//HFONT hOldFont = dc.SelectFont(lpNMCustomDraw->hFontInactive);
@@ -1015,6 +1032,7 @@ public:
 			}
 
 			TItem* pItem = m_Items[i];
+			ATLASSERT(pItem != NULL);
 			rcItem.left = rcItem.right = xpos;
 			//rcItem.right += ((bSelected ? m_settings.iSelMargin : m_settings.iMargin));
 			rcItem.right += m_settings.iMargin;
@@ -1086,9 +1104,10 @@ public:
 				bool bMakeInactiveSameSize = ((nMinInactiveWidth * nRatioWithSelectionFullSize) < nInactiveSameSizeWidth);
 
 				xpos = m_settings.iIndent;
-				for(i=0; i<nCount; ++i )
+				for(size_t i=0; i<nCount; ++i )
 				{
 					TItem* pItem = m_Items[i];
+					ATLASSERT(pItem != NULL);
 					RECT rcItemDesired = pItem->GetRect();
 					rcItem.left = rcItem.right = xpos;
 					if((int)i == m_iCurSel)
@@ -1117,7 +1136,7 @@ public:
 
 				xpos = m_settings.iIndent;
 
-				for(i=0; i<nCount; ++i)
+				for(size_t i=0; i<nCount; ++i)
 				{
 					rcItem.left = rcItem.right = xpos;
 					rcItem.right += cxItem;
@@ -1132,7 +1151,7 @@ public:
 
 	void UpdateLayout_ScrollToFit(RECT rcTabItemArea)
 	{
-		DWORD dwStyle = this->GetStyle();
+		//DWORD dwStyle = this->GetStyle();
 
 		// When we scroll to fit, we ignore what's passed in for the
 		// tab item area rect, and use the client rect instead
@@ -1162,6 +1181,7 @@ public:
 			}
 
 			TItem* pItem = m_Items[i];
+			ATLASSERT(pItem != NULL);
 			rcItem.left = rcItem.right = xpos;
 			//rcItem.right += ((bSelected ? m_settings.iSelMargin : m_settings.iMargin));
 			rcItem.right += m_settings.iMargin;
@@ -1206,11 +1226,11 @@ public:
 
 template <class TItem = CCustomTabItem>
 class CDotNetTabCtrl :
-	public CDotNetTabCtrlImpl<CDotNetTabCtrl, TItem>
+	public CDotNetTabCtrlImpl<CDotNetTabCtrl<TItem>, TItem>
 {
 protected:
 	typedef CDotNetTabCtrl thisClass;
-	typedef CDotNetTabCtrlImpl<CDotNetTabCtrl, TItem> baseClass;
+	typedef CDotNetTabCtrlImpl<CDotNetTabCtrl<TItem>, TItem> baseClass;
 
 // Constructors:
 public:
@@ -1321,7 +1341,7 @@ public:
 // Overrides for painting from CDotNetTabCtrlImpl
 public:
 
-	void DrawBackground(RECT rcClient, LPNMCTCCUSTOMDRAW lpNMCustomDraw)
+	void DrawBackground(RECT /*rcClient*/, LPNMCTCCUSTOMDRAW lpNMCustomDraw)
 	{
 		CDCHandle dc( lpNMCustomDraw->nmcd.hdc );
 
@@ -1348,14 +1368,14 @@ public:
 		dc.SelectBrush(hOldBrush);
 	}
 
-	void DrawItem_InitBounds(DWORD dwStyle, RECT rcItem, RECT& rcTab, RECT& rcText, int& nIconVerticalCenter)
+	void DrawItem_InitBounds(DWORD /*dwStyle*/, RECT /*rcItem*/, RECT& rcTab, RECT& /*rcText*/, int& nIconVerticalCenter)
 	{
 		rcTab.top += 3;
 		rcTab.bottom -= 3;
 		nIconVerticalCenter = (rcTab.bottom + rcTab.top) / 2;
 	}
 
-	void DrawItem_TabSelected(DWORD dwStyle, LPNMCTCCUSTOMDRAW lpNMCustomDraw, RECT& rcTab)
+	void DrawItem_TabSelected(DWORD /*dwStyle*/, LPNMCTCCUSTOMDRAW lpNMCustomDraw, RECT& rcTab)
 	{
 		// Tab is selected, so paint as select
 

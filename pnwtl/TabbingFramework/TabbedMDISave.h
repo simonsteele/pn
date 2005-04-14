@@ -30,6 +30,15 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2004/08/26: Daniel Bowen
+// - Break out checkbox image creation
+// - Have CDynamicDialogImpl automatically call ConstructDialogResource
+//   after the constructor, but before the dialog is created
+//
+// 2004/06/28: Daniel Bowen
+// - Support hiding the description and/or last modified columns
+//   in the "save modified items" dialog.
+//
 // 2004/04/29: Daniel Bowen
 // - Original implementation
 
@@ -388,6 +397,9 @@ public:
 		eColumn_Name         = 0,
 		eColumn_Description  = 1,
 		eColumn_LastModified = 2,
+
+		eColumn_Last         = eColumn_LastModified,
+		eColumn_Count        = eColumn_Last + 1,
 	};
 
 	enum Constants
@@ -399,6 +411,10 @@ public:
 public:
 	CSaveModifiedItemsDialog(ITabbedMDIChildModifiedList* list = NULL, bool canCancel = true);
 	virtual ~CSaveModifiedItemsDialog();
+
+// Public Methods (Call before DoModal)
+public:
+	bool HideColumn(ColumnIndex column);
 
 // Message Handling
 public:
@@ -477,11 +493,16 @@ public:
 public:
 	void DlgResize_UpdateLayout(int cxWidth, int cyHeight);
 
-protected:
+// CDynamicDialogImpl overrides
+public:
 	bool ConstructDialogResource(void);
+
+protected:
 	bool InitializeControls(void);
 	bool InitializeValues(void);
 	bool InitializeColumns(void);
+	int AutoHideUnusedColumns(void);
+	bool FindUsedColumns(ITabbedMDIChildModifiedList* list, int columnUseCount[eColumn_Count]);
 	bool AddItems(ITabbedMDIChildModifiedList* list, int indent);
 	CString FormatLastModifiedDateString(DATE lastModifiedUTC);
 	IUnknown* GetIUnknownForItem(int index);
@@ -513,6 +534,9 @@ protected:
 
 	int m_trackColumnWidth;
 	int m_trackColumnIndex;
+	ColumnIndex m_lastVisibleColumn;
+
+	bool m_showColumn[eColumn_Count];
 
 };
 

@@ -26,6 +26,23 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2005/03/14: Daniel Bowen
+// - Fix warnings when compiling for 64-bit.
+//
+// 2004/06/28: Daniel Bowen
+// - More ATLASSERTs
+// - Clean up warnings on level 4
+// - Fix "FindItem" so you can search on more than 1 criteria at a time
+//   (like it was intended to work).  Use #define for flags now
+//   instead of enumeration (CTFI_TABVIEW instead of eCustomTabItem_TabView).
+//
+// 2004/06/21: Peter Carlson
+// - "CanClose" for items.
+// - HighlightItem - "SetHighlighted" on item, then InvalidateRect for the item
+//
+// 2004/05/10: Peter Carlson
+// - Middle mouse button notifications
+//
 // 2004/04/29: Daniel Bowen
 // - Suport for a new CTCS_DRAGREARRANGE style.  If you set this style,
 //   a tab item can be dragged to another position within the
@@ -234,8 +251,8 @@
 #define CTCN_BEGINITEMDRAG      (TCN_FIRST - 21)
 #define CTCN_ACCEPTITEMDRAG     (TCN_FIRST - 22)
 #define CTCN_CANCELITEMDRAG     (TCN_FIRST - 23)
-#define CTCN_MCLICK				(TCN_FIRST - 24)
-#define CTCN_MDBLCLK			(TCN_FIRST - 25)
+#define CTCN_MCLICK             (TCN_FIRST - 24)
+#define CTCN_MDBLCLK            (TCN_FIRST - 25)
 
 // Hit Test codes
 #define CTCHT_NOWHERE            0x0001             // TCHT_NOWHERE
@@ -245,6 +262,18 @@
 #define CTCHT_ONCLOSEBTN         0x0010
 #define CTCHT_ONSCROLLRIGHTBTN   0x0020
 #define CTCHT_ONSCROLLLEFTBTN    0x0040
+
+// Find Item flags
+#define CTFI_NONE                0x0000
+#define CTFI_RECT                0x0001
+#define CTFI_IMAGE               0x0002
+#define CTFI_TEXT                0x0004
+#define CTFI_TOOLTIP             0x0008
+#define CTFI_TABVIEW             0x0010
+#define CTFI_HIGHLIGHTED         0x0020
+#define CTFI_CANCLOSE            0x0040
+#define CTFI_LAST                CTFI_CANCLOSE
+#define CTFI_ALL                 0xFFFF
 
 // Number of milliseconds for scroll repeat
 #ifndef CTCSR_NONE
@@ -324,26 +353,36 @@ protected:
 	CString m_sText;
 	CString m_sToolTip;
 	bool m_bHighlighted;
+	bool m_bCanClose;
 
 public:
+	// NOTE: These are here for backwards compatibility.
+	//  Use the new CTFI_NONE, CTFI_RECT, etc.
 	typedef enum FieldFlags
 	{
-		eCustomTabItem_None = 0x0000,
-		eCustomTabItem_Rect = 0x0001,
-		eCustomTabItem_Image = 0x0002,
-		eCustomTabItem_Text = 0x0004,
-		eCustomTabItem_ToolTip = 0x0008,
-		//eCustomTabItem_Reserved1 = 0x0010,
-		//eCustomTabItem_Reserved2 = 0x0020,
-		//eCustomTabItem_Reserved3 = 0x0040,
-		eCustomTabItem_All = 0x00FF,
+		eCustomTabItem_None    = CTFI_NONE,
+		eCustomTabItem_Rect    = CTFI_RECT,
+		eCustomTabItem_Image   = CTFI_IMAGE,
+		eCustomTabItem_Text    = CTFI_TEXT,
+		eCustomTabItem_ToolTip = CTFI_TOOLTIP,
+		eCustomTabItem_All     = CTFI_ALL,
 	};
+
+#if (_MSC_VER >= 1300)
+	#pragma deprecated(eCustomTabItem_None)
+	#pragma deprecated(eCustomTabItem_Rect)
+	#pragma deprecated(eCustomTabItem_Image)
+	#pragma deprecated(eCustomTabItem_Text)
+	#pragma deprecated(eCustomTabItem_ToolTip)
+	#pragma deprecated(eCustomTabItem_All)
+#endif
 
 // Constructors/Destructors
 public:
 	CCustomTabItem() :
 		m_nImage(-1),
-		m_bHighlighted(false)
+		m_bHighlighted(false),
+		m_bCanClose(true)
 	{
 		::SetRectEmpty(&m_rcItem);
 	}
@@ -361,10 +400,12 @@ public:
 	{
 		if(&rhs != this)
 		{
-			m_rcItem		= rhs.m_rcItem;
-			m_nImage		= rhs.m_nImage;
-			m_sText			= rhs.m_sText;
-			m_sToolTip		= rhs.m_sToolTip;
+			m_rcItem        = rhs.m_rcItem;
+			m_nImage        = rhs.m_nImage;
+			m_sText         = rhs.m_sText;
+			m_sToolTip      = rhs.m_sToolTip;
+			m_bHighlighted  = rhs.m_bHighlighted;
+			m_bCanClose     = rhs.m_bCanClose;
 		}
 		return *this;
 	}
@@ -433,6 +474,16 @@ public:
 		m_bHighlighted = bHighlighted;
 		return true;
 	}
+
+	bool CanClose() const
+	{
+		return m_bCanClose;
+	}
+	bool SetCanClose(bool bCanClose)
+	{
+		m_bCanClose = bCanClose;
+		return true;
+	}
 	
 
 // Methods:
@@ -455,24 +506,32 @@ public:
 		return ::InflateRect(&m_rcItem, dx, dy);
 	}
 
-	bool MatchItem(CCustomTabItem* pItem, FieldFlags eFlags) const
+	bool MatchItem(CCustomTabItem* pItem, DWORD eFlags) const
 	{
 		bool bMatch = true;
-		if(bMatch && (eFlags & eCustomTabItem_Rect) == eCustomTabItem_Rect)
+		if(bMatch && (eFlags & CTFI_RECT) == CTFI_RECT)
 		{
 			bMatch = (TRUE == ::EqualRect(&m_rcItem, &pItem->m_rcItem));
 		}
-		if(bMatch && (eFlags & eCustomTabItem_Image) == eCustomTabItem_Image)
+		if(bMatch && (eFlags & CTFI_IMAGE) == CTFI_IMAGE)
 		{
 			bMatch = (m_nImage == pItem->m_nImage);
 		}
-		if(bMatch && (eFlags & eCustomTabItem_Text) == eCustomTabItem_Text)
+		if(bMatch && (eFlags & CTFI_TEXT) == CTFI_TEXT)
 		{
 			bMatch = (m_sText == pItem->m_sText);
 		}
-		if(bMatch && (eFlags & eCustomTabItem_ToolTip) == eCustomTabItem_ToolTip)
+		if(bMatch && (eFlags & CTFI_TOOLTIP) == CTFI_TOOLTIP)
 		{
 			bMatch = (m_sToolTip == pItem->m_sToolTip);
+		}
+		if(bMatch && (eFlags & CTFI_HIGHLIGHTED) == CTFI_HIGHLIGHTED)
+		{
+			bMatch = (m_bHighlighted == pItem->m_bHighlighted);
+		}
+		if(bMatch && (eFlags & CTFI_CANCLOSE) == CTFI_CANCLOSE)
+		{
+			bMatch = (m_bCanClose == pItem->m_bCanClose);
 		}
 
 		if(bMatch)
@@ -495,18 +554,17 @@ protected:
 	HWND m_hWndTabView;
 
 public:
+	// NOTE: This is here for backwards compatibility.
+	//  Use the new CTFI_TABVIEW instead
 	typedef enum FieldFlags
 	{
-		eCustomTabItem_None = 0x0000,
-		eCustomTabItem_Rect = 0x0001,
-		eCustomTabItem_Text = 0x0002,
-		eCustomTabItem_Image = 0x0004,
-		eCustomTabItem_ToolTip = 0x0008,
-		eCustomTabItem_TabView = 0x0010,
-		//eCustomTabItem_Reserved2 = 0x0020,
-		//eCustomTabItem_Reserved3 = 0x0040,
-		eCustomTabItem_All = 0x00FF,
+		eCustomTabItem_TabView = CTFI_TABVIEW,
 	};
+
+// Use CTFI_TABVIEW instead
+#if (_MSC_VER >= 1300)
+	#pragma deprecated(eCustomTabItem_TabView)
+#endif
 
 // Constructors/Destructors
 public:
@@ -528,11 +586,13 @@ public:
 	{
 		if(&rhs != this)
 		{
-			m_rcItem		= rhs.m_rcItem;
-			m_nImage		= rhs.m_nImage;
-			m_sText			= rhs.m_sText;
-			m_sToolTip		= rhs.m_sToolTip;
-			m_hWndTabView	= rhs.m_hWndTabView;
+			m_rcItem        = rhs.m_rcItem;
+			m_nImage        = rhs.m_nImage;
+			m_sText         = rhs.m_sText;
+			m_sToolTip      = rhs.m_sToolTip;
+			m_bHighlighted  = rhs.m_bHighlighted;
+			m_bCanClose     = rhs.m_bCanClose;
+			m_hWndTabView   = rhs.m_hWndTabView;
 		}
 		return *this;
 	}
@@ -557,28 +617,23 @@ public:
 		return (m_hWndTabView != NULL);
 	}
 
-	bool MatchItem(CTabViewTabItem* pItem, FieldFlags eFlags) const
+	bool MatchItem(CTabViewTabItem* pItem, DWORD eFlags) const
 	{
 		bool bMatch = true;
-		if(bMatch && (eFlags & eCustomTabItem_Rect) == eCustomTabItem_Rect)
+		if(eFlags == CTFI_TABVIEW)
 		{
-			bMatch = (TRUE == ::EqualRect(&m_rcItem, &pItem->m_rcItem));
-		}
-		if(bMatch && (eFlags & eCustomTabItem_Image) == eCustomTabItem_Image)
-		{
-			bMatch = (m_nImage == pItem->m_nImage);
-		}
-		if(bMatch && (eFlags & eCustomTabItem_Text) == eCustomTabItem_Text)
-		{
-			bMatch = (m_sText == pItem->m_sText);
-		}
-		if(bMatch && (eFlags & eCustomTabItem_ToolTip) == eCustomTabItem_ToolTip)
-		{
-			bMatch = (m_sToolTip == pItem->m_sToolTip);
-		}
-		if(bMatch && (eFlags & eCustomTabItem_TabView) == eCustomTabItem_TabView)
-		{
+			// Make the common case a little faster
+			// (searching only for a match to the "tab view" HWND)
 			bMatch = (m_hWndTabView == pItem->m_hWndTabView);
+		}
+		else
+		{
+			// Do an extensive comparison
+			bMatch = baseClass::MatchItem(pItem, eFlags);
+			if(bMatch && (eFlags & CTFI_TABVIEW) == CTFI_TABVIEW)
+			{
+				bMatch = (m_hWndTabView == pItem->m_hWndTabView);
+			}
 		}
 
 		if(bMatch)
@@ -1064,7 +1119,12 @@ public:
 			m_dwState &= ~ectcDraggingItem;
 
 			// Restore the default cursor
+// need conditional code because types don't match in winuser.h
+#ifdef _WIN64
 			::SetCursor((HCURSOR)::GetClassLongPtr(m_hWnd, GCLP_HCURSOR));
+#else
+			::SetCursor((HCURSOR)LongToHandle(::GetClassLongPtr(m_hWnd, GCLP_HCURSOR)));
+#endif
 
 			if(m_hCursorMove != NULL)
 			{
@@ -1299,7 +1359,7 @@ public:
 		return 1;
 	}
 
-	LRESULT OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 	{
 		bHandled = FALSE;
 
@@ -1454,8 +1514,6 @@ public:
 				{
 					this->ClearCurrentHotTracking(true);
 
-					// TODO: The current HitTest code isn't very efficient.
-					//        See if it can be improved.
 					CTCHITTESTINFO tchti = { 0 };
 					tchti.pt = ptCursor;
 					int nIndex = pT->HitTest(&tchti);
@@ -1487,7 +1545,7 @@ public:
 		return 1;
 	}
 
-	LRESULT OnMouseLeave(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnMouseLeave(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		T* pT = static_cast<T*>(this);
 
@@ -1641,7 +1699,7 @@ public:
 				ectcMouseOver_CloseButton == (dwState & ectcMouseOver))
 			{
 				// Close Button
-				NMCTCITEM nmh = {{ m_hWnd, this->GetDlgCtrlID(), CTCN_CLOSE }, this->GetCurSel(), {ptCursor.x, ptCursor.y}};
+				NMCTCITEM nmh = {{ m_hWnd, this->GetDlgCtrlID(), CTCN_CLOSE }, m_iCurSel, {ptCursor.x, ptCursor.y}};
 				::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM)&nmh);
 			}
 
@@ -1703,7 +1761,7 @@ public:
 		return 0;
 	}
 
-	LRESULT OnRButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnRButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		bHandled = FALSE;
 		return 0;
@@ -1759,7 +1817,7 @@ public:
 		return 0;
 	}
 
-	LRESULT OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		bHandled = FALSE;
 		return 0;
@@ -1796,13 +1854,13 @@ public:
 		switch( wParam )
 		{
 		case VK_LEFT:
-			if( m_iCurSel>0 )
+			if( m_iCurSel > 0 )
 			{
 				pT->SetCurSel(m_iCurSel-1);
 			}
 			return 0;
 		case VK_RIGHT:
-			if( m_iCurSel<(int)m_Items.GetCount()-1 )
+			if( m_iCurSel < (int)m_Items.GetCount()-1 )
 			{
 				pT->SetCurSel(m_iCurSel+1);
 			}
@@ -1881,8 +1939,8 @@ public:
 				{
 					if(m_tooltip.IsWindow())
 					{
-						m_tooltip.AddTool(m_hWnd, _T("Scroll Right"), &rcDefault, ectcToolTip_ScrollRight);
-						m_tooltip.AddTool(m_hWnd, _T("Scroll Left"), &rcDefault, ectcToolTip_ScrollLeft);
+						m_tooltip.AddTool(m_hWnd, _T("Scroll Right"), &rcDefault, (UINT)ectcToolTip_ScrollRight);
+						m_tooltip.AddTool(m_hWnd, _T("Scroll Left"), &rcDefault, (UINT)ectcToolTip_ScrollLeft);
 					}
 
 					//pT->UpdateLayout();
@@ -1893,8 +1951,8 @@ public:
 				{
 					if(m_tooltip.IsWindow())
 					{
-						m_tooltip.DelTool(m_hWnd, ectcToolTip_ScrollRight);
-						m_tooltip.DelTool(m_hWnd, ectcToolTip_ScrollLeft);
+						m_tooltip.DelTool(m_hWnd, (UINT)ectcToolTip_ScrollRight);
+						m_tooltip.DelTool(m_hWnd, (UINT)ectcToolTip_ScrollLeft);
 					}
 
 					m_iScrollOffset = 0;
@@ -1908,7 +1966,7 @@ public:
 				{
 					if(m_tooltip.IsWindow())
 					{
-						m_tooltip.AddTool(m_hWnd, _T("Close"), &rcDefault, ectcToolTip_Close);
+						m_tooltip.AddTool(m_hWnd, _T("Close"), &rcDefault, (UINT)ectcToolTip_Close);
 					}
 
 					//pT->UpdateLayout();
@@ -1919,7 +1977,7 @@ public:
 				{
 					if(m_tooltip.IsWindow())
 					{
-						m_tooltip.DelTool(m_hWnd, ectcToolTip_Close);
+						m_tooltip.DelTool(m_hWnd, (UINT)ectcToolTip_Close);
 					}
 
 					//pT->UpdateLayout();
@@ -2056,10 +2114,11 @@ public:
 			// tool ID = tab index + 1	(to avoid 0 as an ID)
 			//
 			// We supply the RECT elsewhere and the text here
-			UINT id = pToolTipInfo->hdr.idFrom;
+			UINT_PTR id = pToolTipInfo->hdr.idFrom;
 			if(id > 0 && id <= m_Items.GetCount())
 			{
 				TItem* pItem = m_Items[id-1];
+				ATLASSERT(pItem != NULL);
 				if(pItem)
 				{
 					if(pItem->UsingToolTip())
@@ -2099,8 +2158,8 @@ public:
 		{
 			if(m_tooltip.IsWindow())
 			{
-				m_tooltip.AddTool(m_hWnd, _T("Scroll Right"), &rcDefault, ectcToolTip_ScrollRight);
-				m_tooltip.AddTool(m_hWnd, _T("Scroll Left"), &rcDefault, ectcToolTip_ScrollLeft);
+				m_tooltip.AddTool(m_hWnd, _T("Scroll Right"), &rcDefault, (UINT)ectcToolTip_ScrollRight);
+				m_tooltip.AddTool(m_hWnd, _T("Scroll Left"), &rcDefault, (UINT)ectcToolTip_ScrollLeft);
 			}
 		}
 
@@ -2108,7 +2167,7 @@ public:
 		{
 			if(m_tooltip.IsWindow())
 			{
-				m_tooltip.AddTool(m_hWnd, _T("Close"), &rcDefault, ectcToolTip_Close);
+				m_tooltip.AddTool(m_hWnd, _T("Close"), &rcDefault, (UINT)ectcToolTip_Close);
 			}
 		}
 	}
@@ -2123,13 +2182,13 @@ public:
 		{
 			if(CTCS_SCROLL == (dwStyle & CTCS_SCROLL))
 			{
-				m_tooltip.DelTool(m_hWnd, ectcToolTip_ScrollRight);
-				m_tooltip.DelTool(m_hWnd, ectcToolTip_ScrollLeft);
+				m_tooltip.DelTool(m_hWnd, (UINT)ectcToolTip_ScrollRight);
+				m_tooltip.DelTool(m_hWnd, (UINT)ectcToolTip_ScrollLeft);
 			}
 
 			if(CTCS_CLOSEBUTTON == (dwStyle & CTCS_CLOSEBUTTON))
 			{
-				m_tooltip.DelTool(m_hWnd, ectcToolTip_Close);
+				m_tooltip.DelTool(m_hWnd, (UINT)ectcToolTip_Close);
 			}
 		}
 
@@ -2189,7 +2248,15 @@ public:
 
 		if(CTCS_CLOSEBUTTON == (dwStyle & CTCS_CLOSEBUTTON))
 		{
-			pT->CalcSize_CloseButton(&m_rcTabItemArea);
+			if( (m_iCurSel >= 0) && ((size_t)m_iCurSel < m_Items.GetCount()) )
+			{
+				TItem* pItem = m_Items[m_iCurSel];
+				ATLASSERT(pItem != NULL);
+				if((pItem != NULL) && pItem->CanClose())
+				{
+					pT->CalcSize_CloseButton(&m_rcTabItemArea);
+				}
+			}
 		}
 
 		if(CTCS_SCROLL == (dwStyle & CTCS_SCROLL))
@@ -2236,20 +2303,29 @@ public:
 		for( size_t i=0; i<nCount; ++i )
 		{
 			TItem* pItem = m_Items[i];
-			RECT rc = {xpos, 0, xpos, height};
-			if( pItem->UsingText() )
+			ATLASSERT(pItem != NULL);
+			if(pItem)
 			{
-				RECT rcText = { 0 };
-				CString sText = pItem->GetText();
-				dc.DrawText(sText, sText.GetLength(), &rcText, DT_SINGLELINE | DT_CALCRECT);
-				rc.right += (rcText.right-rcText.left) + (m_settings.iPadding*2);
+				RECT rc = {xpos, 0, xpos, height};
+				if( pItem->UsingText() )
+				{
+					RECT rcText = { 0 };
+					CString sText = pItem->GetText();
+					dc.DrawText(sText, sText.GetLength(), &rcText, DT_SINGLELINE | DT_CALCRECT);
+					rc.right += (rcText.right-rcText.left) + (m_settings.iPadding*2);
+				}
+				pItem->SetRect(rc);
+				xpos += (rc.right-rc.left) + m_settings.iMargin;
 			}
-			pItem->SetRect(rc);
-			xpos += (rc.right-rc.left) + m_settings.iMargin;
 		}
-		if( m_iCurSel >=0 && (size_t)m_iCurSel < nCount )
+		if( (m_iCurSel >= 0) && ((size_t)m_iCurSel < nCount) )
 		{
-			m_Items[m_iCurSel]->InflateRect(m_settings.iSelMargin, 0);
+			TItem* pItem = m_Items[m_iCurSel];
+			ATLASSERT(pItem != NULL);
+			if(pItem)
+			{
+				pItem->InflateRect(m_settings.iSelMargin, 0);
+			}
 		}
 
 		dc.SelectFont(hOldFont);
@@ -2278,7 +2354,7 @@ public:
 				// don't intersect at all, we still need
 				// to update the tool rect, or we'll get the wrong
 				// tooltip in some cases.
-				m_tooltip.SetToolRect(m_hWnd, i+1, &rcIntersect);
+				m_tooltip.SetToolRect(m_hWnd, (UINT)i+1, &rcIntersect);
 			}
 		}
 	}
@@ -2348,7 +2424,7 @@ public:
 	{
 		// Save current DC selections
 		int nSave = dc.SaveDC();
-		ATLASSERT(nSave!=0);
+		ATLASSERT(nSave != 0);
 
 		DWORD dwStyle = this->GetStyle();
 
@@ -2409,53 +2485,63 @@ public:
 			RECT rcIntersect = {0};
 			for( size_t i=0; i<nCount; ++i )
 			{
-				if( (int)i!=m_iCurSel )
+				if( (int)i != m_iCurSel )
+				{
+					TItem* pItem = m_Items[i];
+					ATLASSERT(pItem != NULL);
+					if(pItem)
+					{
+						RECT rcItemLP = {0}, rcItemDP = {0};
+						rcItemLP = pItem->GetRect();
+
+						::CopyRect(&rcItemDP, &rcItemLP);
+						::OffsetRect(&rcItemDP, m_iScrollOffset, 0);
+
+						if( ::IntersectRect(&rcIntersect, &rcItemDP, &rcClip) )
+						{
+							pnmcd->dwItemSpec = i;
+							pnmcd->uItemState = 0;
+							if(bHotTrackStyle && ((DWORD)m_iHotItem == i))
+							{
+								pnmcd->uItemState |= CDIS_HOT;
+							}
+							if(pItem->IsHighlighted())
+							{
+								pnmcd->uItemState |= CDIS_MARKED;
+							}
+							pnmcd->rc = rcItemLP;
+							pT->ProcessItem(lResCustom, &nmc);
+						}
+					}
+				}
+			}
+			if( m_iCurSel >=0 && (size_t)m_iCurSel < nCount )
+			{
+				TItem* pItem = m_Items[m_iCurSel];
+				ATLASSERT(pItem != NULL);
+				if(pItem)
 				{
 					RECT rcItemLP = {0}, rcItemDP = {0};
-					rcItemLP = m_Items[i]->GetRect();
+					rcItemLP = pItem->GetRect();
 
 					::CopyRect(&rcItemDP, &rcItemLP);
 					::OffsetRect(&rcItemDP, m_iScrollOffset, 0);
 
 					if( ::IntersectRect(&rcIntersect, &rcItemDP, &rcClip) )
 					{
-						pnmcd->dwItemSpec = i;
-						pnmcd->uItemState = 0;
-						if(bHotTrackStyle && ((DWORD)m_iHotItem == i))
+						pnmcd->dwItemSpec = m_iCurSel;
+						pnmcd->uItemState = CDIS_SELECTED;
+						if(bHotTrackStyle && (m_iHotItem == m_iCurSel))
 						{
 							pnmcd->uItemState |= CDIS_HOT;
 						}
-						if(m_Items[i]->IsHighlighted())
+						if(pItem->IsHighlighted())
 						{
 							pnmcd->uItemState |= CDIS_MARKED;
 						}
 						pnmcd->rc = rcItemLP;
 						pT->ProcessItem(lResCustom, &nmc);
 					}
-				}
-			}
-			if( m_iCurSel >=0 && (size_t)m_iCurSel < nCount )
-			{
-				RECT rcItemLP = {0}, rcItemDP = {0};
-				rcItemLP = m_Items[m_iCurSel]->GetRect();
-
-				::CopyRect(&rcItemDP, &rcItemLP);
-				::OffsetRect(&rcItemDP, m_iScrollOffset, 0);
-
-				if( ::IntersectRect(&rcIntersect, &rcItemDP, &rcClip) )
-				{
-					pnmcd->dwItemSpec = m_iCurSel;
-					pnmcd->uItemState = CDIS_SELECTED;
-					if(bHotTrackStyle && (m_iHotItem == m_iCurSel))
-					{
-						pnmcd->uItemState |= CDIS_HOT;
-					}
-					if(m_Items[m_iCurSel]->IsHighlighted())
-					{
-						pnmcd->uItemState |= CDIS_MARKED;
-					}
-					pnmcd->rc = rcItemLP;
-					pT->ProcessItem(lResCustom, &nmc);
 				}
 			}
 			pnmcd->uItemState = 0;
@@ -2654,7 +2740,7 @@ public:
 
 		ATLASSERT(::IsWindow(m_hWnd));
 		ATLASSERT(pItem);
-		ATLASSERT(nItem >=0 && nItem <= (int)m_Items.GetCount());
+		ATLASSERT(nItem >= 0 && nItem <= (int)m_Items.GetCount());
 		if(!::IsWindow(m_hWnd) || pItem == NULL)
 		{
 			return -1;
@@ -2664,7 +2750,7 @@ public:
 
 		if( nItem < 0 || nItem > (int)nOldCount )
 		{
-			nItem = nOldCount;
+			nItem = (int)nOldCount;
 		}
 
 		m_Items.InsertAt((size_t)nItem, pItem);
@@ -2692,7 +2778,7 @@ public:
 		// We supply the RECT and text elsewhere.
 		if(m_tooltip.IsWindow())
 		{
-			m_tooltip.AddTool(m_hWnd, LPSTR_TEXTCALLBACK, &rcDefault, nNewCount);
+			m_tooltip.AddTool(m_hWnd, LPSTR_TEXTCALLBACK, &rcDefault, (UINT)nNewCount);
 		}
 
 		pT->UpdateLayout();
@@ -2714,6 +2800,7 @@ public:
 		}
 
 		TItem* pFromItem = m_Items[nFromIndex];
+		ATLASSERT(pFromItem != NULL);
 		m_Items.RemoveAt(nFromIndex);
 		m_Items.InsertAt(nToIndex, pFromItem);
 
@@ -2723,13 +2810,13 @@ public:
 		{
 			if(nFromIndex == (size_t)m_iCurSel)
 			{
-				pT->SetCurSel(nToIndex);
+				pT->SetCurSel((int)nToIndex);
 			}
 		}
 
 		if(bNotify)
 		{
-			NMCTC2ITEMS nmh = {{ m_hWnd, this->GetDlgCtrlID(), CTCN_MOVEITEM }, nFromIndex, nToIndex, {-1,-1}};
+			NMCTC2ITEMS nmh = {{ m_hWnd, this->GetDlgCtrlID(), CTCN_MOVEITEM }, (int)nFromIndex, (int)nToIndex, {-1,-1}};
 			::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM)&nmh);
 		}
 
@@ -2751,6 +2838,8 @@ public:
 
 		TItem* pFromItem = m_Items[nFromIndex];
 		TItem* pToItem = m_Items[nToIndex];
+		ATLASSERT(pFromItem != NULL);
+		ATLASSERT(pToItem != NULL);
 		m_Items[nFromIndex] = pToItem;
 		m_Items[nToIndex] = pFromItem;
 
@@ -2760,17 +2849,17 @@ public:
 		{
 			if(nFromIndex == (size_t)m_iCurSel)
 			{
-				pT->SetCurSel(nToIndex);
+				pT->SetCurSel((int)nToIndex);
 			}
 			else if(nToIndex == (size_t)m_iCurSel)
 			{
-				pT->SetCurSel(nFromIndex);
+				pT->SetCurSel((int)nFromIndex);
 			}
 		}
 
 		if(bNotify)
 		{
-			NMCTC2ITEMS nmh = {{ m_hWnd, this->GetDlgCtrlID(), CTCN_SWAPITEMPOSITIONS }, nFromIndex, nToIndex, {-1,-1}};
+			NMCTC2ITEMS nmh = {{ m_hWnd, this->GetDlgCtrlID(), CTCN_SWAPITEMPOSITIONS }, (int)nFromIndex, (int)nToIndex, {-1,-1}};
 			::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM)&nmh);
 		}
 
@@ -2791,7 +2880,7 @@ public:
 		if(bNotify)
 		{
 			// Returning TRUE tells us not to delete the item
-			NMCTCITEM nmh = {{ m_hWnd, this->GetDlgCtrlID(), CTCN_DELETEITEM }, nItem, {-1,-1}};
+			NMCTCITEM nmh = {{ m_hWnd, this->GetDlgCtrlID(), CTCN_DELETEITEM }, (int)nItem, {-1,-1}};
 			if( TRUE == ::SendMessage(GetParent(), WM_NOTIFY, nmh.hdr.idFrom, (LPARAM)&nmh) )
 			{
 				// Cancel the attempt
@@ -2894,10 +2983,11 @@ public:
 		// We supply the RECT and text elsewhere.
 		if(m_tooltip.IsWindow())
 		{
-			m_tooltip.DelTool(m_hWnd, m_Items.GetCount());
+			m_tooltip.DelTool(m_hWnd, (UINT)m_Items.GetCount());
 		}
 
 		TItem* pItem = m_Items[nItem];
+		ATLASSERT(pItem != NULL);
 		m_Items.RemoveAt(nItem);
 
 		pT->DeleteItem(pItem);
@@ -2978,8 +3068,8 @@ public:
 
 	TItem* GetItem(size_t nItem) const
 	{
-		ATLASSERT(nItem<(int)m_Items.GetCount());
-		if( nItem >= (int)m_Items.GetCount() )
+		ATLASSERT(nItem < m_Items.GetCount());
+		if( nItem >= m_Items.GetCount() )
 		{
 			return NULL;
 		}
@@ -3074,7 +3164,7 @@ public:
 				{
 					// TODO: check for ONITEMLABEL, ONITEMICON
 					pHitTestInfo->flags = CTCHT_ONITEM;
-					return i;
+					return (int)i;
 				}
 			}
 		}
@@ -3160,8 +3250,8 @@ public:
 	DWORD SetItemSize(size_t nItem, int cx, int cy)
 	{
 		ATLASSERT(::IsWindow(m_hWnd));
-		ATLASSERT(nItem<(int)m_Items.GetCount());
-		if( nItem >= (int)m_Items.GetCount() )
+		ATLASSERT(nItem < m_Items.GetCount());
+		if( nItem >= m_Items.GetCount() )
 		{
 			return 0;
 		}
@@ -3171,6 +3261,7 @@ public:
 		//  (unless the caller is iterating through all of the items)
 
 		TItem* pItem = m_Items[nItem];
+		ATLASSERT(pItem != NULL);
 
 		RECT rcOld = pItem->GetRect();
 		RECT rcNew = { rcOld.left, rcOld.top, rcOld.left + cx, rcOld.top cy };
@@ -3184,19 +3275,49 @@ public:
 	BOOL GetItemRect(size_t nItem, RECT *prcItem) const
 	{
 		ATLASSERT(prcItem);
-		if( prcItem==NULL ) return FALSE;
+		if( prcItem == NULL ) return FALSE;
 		if( nItem >= m_Items.GetCount() )
 		{
 			::SetRectEmpty(prcItem);
 			return FALSE;
 		}
-		*prcItem = m_Items[nItem]->GetRect();
+		TItem* pItem = m_Items[nItem];
+		ATLASSERT(pItem != NULL);
+		if(pItem)
+		{
+			*prcItem = pItem->GetRect();
+		}
 
 		// Adjust for any scroll, so that the caller
 		// gets the RECT in device coordinates
 		// instead of logical coordinates
 		::OffsetRect(prcItem, m_iScrollOffset, 0);
 
+		return TRUE;
+	}
+
+	BOOL HighlightItem(size_t nItem, bool bHighlight = true)
+	{
+		ATLASSERT(nItem < m_Items.GetCount());
+		if(nItem >= m_Items.GetCount())
+		{
+			return FALSE;
+		}
+
+		TItem* pItem = m_Items[nItem];
+		ATLASSERT(pItem != NULL);
+		if(pItem)
+		{
+			bool bCurrentHighlight = pItem->IsHighlighted();
+			if(bCurrentHighlight != bHighlight)
+			{
+				pItem->SetHighlighted(bHighlight);
+
+				RECT rcItem = {0};
+				this->GetItemRect(nItem, &rcItem);
+				this->InvalidateRect(&rcItem);
+			}
+		}
 		return TRUE;
 	}
 
@@ -3214,16 +3335,16 @@ public:
 	//              since there are no comparable messages or functions
 	//              for a tab control
 	//
-	//  pFindInfo should specify a mask of things to check for,
-	//   and have the corresponding fields set (used in the check).
-	//   For example, set the mask to TCIF_PARAM and set .lParam to
-	//   what you want to find.
+	//  eFlags should specify a mask of things to check for,
+	//   and have the corresponding fields set in pFindItem.
+	//   For example, set the flags to eCustomTabItem_TabView and set the
+	//   tab view on pFindItem to search for a tab with a particular HWND.
 	//  If nStart is -1, the search begins from the beginning.
 	//   If nStart is not -1, the search begins with the item
 	//   just after nStart (like with LVM_FINDITEM).
 	//  If a matching item is found, its index is returned.
 	//   Otherwise -1 is returned.
-	int FindItem(TItem* pFindItem, typename TItem::FieldFlags eFlags, int nStart = -1) const
+	int FindItem(TItem* pFindItem, DWORD eFlags, int nStart = -1) const
 	{
 		if(nStart < 0)
 		{
@@ -3236,13 +3357,12 @@ public:
 		{
 			if(m_Items[i]->MatchItem(pFindItem, eFlags))
 			{
-				return i;
+				return (int)i;
 			}
 		}
 
 		return -1;
 	}
-
 };
 
 #endif // __CUSTOMTABCTRL_H__
