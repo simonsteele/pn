@@ -344,7 +344,7 @@ protected:
 
 	void _setWindowText(LPCTSTR newText);
 
-	void NewProject(LPCTSTR project);
+	void NewProject(LPCTSTR projectPath, LPCTSTR name = NULL, LPCTSTR templateGuid = NULL);
 	void OpenProject(LPCTSTR project);
 	void OpenWorkspace(LPCTSTR workspace);
 	bool SaveProjects(Projects::Workspace* pWorkspace);

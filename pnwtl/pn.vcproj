@@ -336,6 +336,9 @@
 				RelativePath="mainfrm.cpp">
 			</File>
 			<File
+				RelativePath=".\NewProjectDialog.cpp">
+			</File>
+			<File
 				RelativePath="optionscontrols.cpp">
 			</File>
 			<File
@@ -512,6 +515,9 @@
 			</File>
 			<File
 				RelativePath=".\mainfrm.h">
+			</File>
+			<File
+				RelativePath=".\NewProjectDialog.h">
 			</File>
 			<File
 				RelativePath="OptionsDialogs.h">
@@ -927,5 +933,8 @@
 		</File>
 	</Files>
 	<Globals>
+		<Global
+			Name="RESOURCE_FILE"
+			Value="pn.rc"/>
 	</Globals>
 </VisualStudioProject>

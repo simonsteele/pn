@@ -547,12 +547,18 @@ void Folder::notify(PROJECT_CHANGE_TYPE changeType, Folder* changeContainer, Pro
 // Project
 //////////////////////////////////////////////////////////////////////////////
 
-bool Project::CreateEmptyProject(LPCTSTR projectname, LPCTSTR filename)
+bool Project::CreateEmptyProject(LPCTSTR projectname, LPCTSTR filename, LPCTSTR templateGuid)
 {
 	Project Fake;
 	Fake.basePath = CFileName(filename).GetPath();
 	Fake.SetName(projectname);
 	Fake.fileName = filename;
+
+	if(templateGuid)
+	{
+		Fake.typeID = templateGuid;
+	}
+
 	Fake.Save();
 
 	return FileExists(filename);

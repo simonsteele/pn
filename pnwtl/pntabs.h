@@ -33,7 +33,7 @@ public:
 		//We want middle-click to signal a close.
 		NMCTCITEM* pHdr = (NMCTCITEM*)lParam;
 		
-		NMCTCITEM nmh = {{ m_hWnd, GetDlgCtrlID(), CTCN_CLOSE }, pHdr->iItem, {pHdr->pt.x, pHdr->pt.y}};
+		NMCTCITEM nmh = {{ m_TabCtrl, GetDlgCtrlID(), CTCN_CLOSE }, pHdr->iItem, {pHdr->pt.x, pHdr->pt.y}};
 		SendMessage(WM_NOTIFY, nmh.hdr.idFrom, (LPARAM)&nmh);
 
 		return 0;

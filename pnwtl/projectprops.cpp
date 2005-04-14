@@ -275,6 +275,15 @@ ProjectTemplate::ProjectTemplate(LPCTSTR id, LPCTSTR name, LPCTSTR ns)
 	m_namespace = ns;
 }
 
+ProjectTemplate::ProjectTemplate(LPCTSTR id, LPCTSTR name, LPCTSTR ns, LPCTSTR icon)
+{
+	m_id = id;
+	m_name = name;
+	m_namespace = ns;
+	if(icon)
+		m_imagepath = icon;
+}
+
 ProjectTemplate::~ProjectTemplate()
 {
 	for(PropSetList::const_iterator i = m_propsets.begin(); i != m_propsets.end(); ++i)
@@ -297,6 +306,11 @@ LPCTSTR ProjectTemplate::GetName() const
 LPCTSTR ProjectTemplate::GetNamespace() const
 {
 	return m_namespace.c_str();
+}
+
+LPCTSTR ProjectTemplate::GetImagePath() const
+{
+	return m_imagepath.c_str();
 }
 
 PropSet* ProjectTemplate::GetProperties(PROJECT_TYPE type) const
@@ -510,7 +524,8 @@ void TemplateLoader::onProjectConfig(XMLAttributes& atts)
 	LPCTSTR id = ATTVAL(_T("id"));
 	if(id == NULL)
 		id = _T("error");
-	m_pTemplate = new ProjectTemplate(id, name, ns);
+	LPCTSTR icon = ATTVAL(_T("icon"));
+	m_pTemplate = new ProjectTemplate(id, name, ns, icon);
 }
 
 void TemplateLoader::onSet(XMLAttributes& atts)

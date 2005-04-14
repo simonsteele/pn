@@ -290,7 +290,7 @@ class Project : public Folder, XMLParseState
 
 		bool IsDirty();
 
-		static bool CreateEmptyProject(LPCTSTR projectname, LPCTSTR filename);
+		static bool CreateEmptyProject(LPCTSTR projectname, LPCTSTR filename, LPCTSTR templateGuid = NULL);
 
 		virtual void SetDirty();
 

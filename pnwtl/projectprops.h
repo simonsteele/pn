@@ -167,11 +167,13 @@ class ProjectTemplate
 {
 public:
 	ProjectTemplate(LPCTSTR id, LPCTSTR name, LPCTSTR nameSpace);
+	ProjectTemplate(LPCTSTR id, LPCTSTR name, LPCTSTR nameSpace, LPCTSTR icon);
 	~ProjectTemplate();
 
 	LPCTSTR GetID() const;
 	LPCTSTR GetName() const;
 	LPCTSTR GetNamespace() const;
+	LPCTSTR	GetImagePath() const;
 
 	PropSet* GetProperties(PROJECT_TYPE type) const;
 
@@ -182,6 +184,7 @@ protected:
 	tstring		m_id;
 	tstring		m_name;
 	tstring		m_namespace;
+	tstring		m_imagepath;
 };
 
 class TemplateLoader : XMLParseState

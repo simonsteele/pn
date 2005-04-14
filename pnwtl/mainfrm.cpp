@@ -15,27 +15,28 @@
 #include "resource.h"
 
 // Needed because we derive from it.
-#include "tools.h"			// External Tools
-#include "pndocking.h"		// Docking Window Stuff
+#include "tools.h"				// External Tools
+#include "pndocking.h"			// Docking Window Stuff
 
 // Windows and Dialogs
-#include "mainfrm.h"		// This Window
-#include "outputview.h"		// Output window
-#include "childfrm.h"		// MDI Child
-#include "OptionsPages.h"	// Options Pages
-#include "aboutdlg.h"		// About Dialog
-#include "pndialogs.h"		// Misc Dialogs.
-#include "textclipsview.h"	// Text-Clips Docker...
-#include "project.h"		// Projects
-#include "projectprops.h"	// Project Properties
-#include "projectview.h"	// Projects Docker...
-#include "findex.h"			// Find Dialog
-#include "findinfiles.h"	// Find in Files
-#include "findinfilesview.h"// Find in Files view...
+#include "mainfrm.h"			// This Window
+#include "outputview.h"			// Output window
+#include "childfrm.h"			// MDI Child
+#include "OptionsPages.h"		// Options Pages
+#include "aboutdlg.h"			// About Dialog
+#include "pndialogs.h"			// Misc Dialogs.
+#include "textclipsview.h"		// Text-Clips Docker...
+#include "project.h"			// Projects
+#include "projectprops.h"		// Project Properties
+#include "projectview.h"		// Projects Docker...
+#include "findex.h"				// Find Dialog
+#include "findinfiles.h"		// Find in Files
+#include "findinfilesview.h"	// Find in Files view...
+#include "newprojectdialog.h"	// New Projects Dialog
 
 // Other stuff
-#include "SchemeConfig.h"	// Scheme Configuration
-#include <dbstate.h>		// Docking window state stuff...
+#include "SchemeConfig.h"		// Scheme Configuration
+#include <dbstate.h>			// Docking window state stuff...
 
 #include <htmlhelp.h>
 
@@ -1296,13 +1297,18 @@ LRESULT CMainFrame::OnFileNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	if(m_pProjectsWnd == NULL)
 		RETURN_UNEXPECTED(_T("No Projects Window."), 0); // bail.
 
-	CPNSaveDialog dlg(_T("Project Files (*.pnproj)|*.pnproj|"), NULL, _T("pnproj"));
-	dlg.SetTitle(_T("Project Location"));
+	CNewProjectDialog dlg;
 	
 	if( !(dlg.DoModal() == IDOK) )
 		return 0; // bail.
 
-	NewProject(dlg.GetSingleFileName());
+	tstring folder = dlg.GetFolder();
+	
+	CFileName fn(dlg.GetName());
+	fn.ChangeExtensionTo(".pnproj");
+	fn.Root(folder.c_str());
+	
+	NewProject(fn.c_str(), dlg.GetName(), dlg.GetTemplateGUID());
 
 	return 0;
 }
@@ -2453,7 +2459,7 @@ void CMainFrame::ToggleDockingWindow(EDocker window, bool bSetValue, bool bShowi
 		dw->Toggle();
 }
 
-void CMainFrame::NewProject(LPCTSTR szProjectFile)
+void CMainFrame::NewProject(LPCTSTR szProjectFile, LPCTSTR name, LPCTSTR templateGuid)
 {
 	if(!m_pProjectsWnd)
 	{
@@ -2471,7 +2477,12 @@ void CMainFrame::NewProject(LPCTSTR szProjectFile)
 	CFileName fn(szProjectFile);
 	tstring projname = fn.GetFileName_NoExt();
 
-	if( !Projects::Project::CreateEmptyProject(projname.c_str(), szProjectFile) )
+	if(name == NULL)
+	{
+		name = projname.c_str();
+	}
+
+	if( !Projects::Project::CreateEmptyProject(projname.c_str(), szProjectFile, templateGuid) )
 	{
 		UNEXPECTED(_T("Failed to create project template file.")); 
 		return; // bail.

@@ -51,7 +51,7 @@
 #define IDS_GLOBALOUTPUT                145
 #define IDS_RECENTFILES                 146
 #define IDS_RECENTPROJECTS              147
-#define IDS_CHANGESTRING                148
+#define IDS_PROJECTS_DEFAULTTEMPLATE    148
 #define IDS_CHANGESCHEME                149
 #define IDI_TEXTCLIPS                   167
 #define IDR_POPUP_REGEXP                170
@@ -166,6 +166,7 @@
 #define IDD_TOOLCONSOLEIOPAGE           333
 #define IDS_INDIVIDUALOUTPUT            335
 #define IDS_OUTPUTSUPPORT               336
+#define IDD_NEWPROJECT                  336
 #define IDS_TOOLS_VARSTRINGS            337
 #define IDS_TOOLS_SELWORKINGFOLDER      338
 #define ID_MRUPROJECT_MAX               340
@@ -206,6 +207,7 @@
 #define IDC_SMARTSTART_REMOVEBUTTON     1010
 #define IDC_OPT_LINELIGHTBUTTON         1010
 #define IDC_ADD                         1010
+#define IDC_BROWSE                      1010
 #define IDC_EDIT1                       1011
 #define IDC_KEYWORDS_KEYWORDTEXT        1011
 #define IDC_TOOLS_EDITBUTTON            1011
@@ -218,6 +220,7 @@
 #define IDC_FILEPROP_TABWIDTH           1011
 #define IDC_JUMPTOTEXT                  1011
 #define IDC_EXTENSION                   1011
+#define IDC_PROJNAMEEDIT                1011
 #define IDC_FONT_COMBO                  1012
 #define IDC_TOOLS_REMOVEBUTTON          1012
 #define IDC_TE_BROWSEBUTTON             1012
@@ -258,6 +261,7 @@
 #define IDC_JUMPTOLIST                  1039
 #define IDC_FILEASSO_LIST               1039
 #define IDC_LISTPROPS                   1039
+#define IDC_LISTPROJECTS                1039
 #define IDC_TE_CMDEDIT                  1040
 #define IDC_TE_FOLDEREDIT               1041
 #define IDC_REPLACETEXT_LABEL           1042
@@ -289,6 +293,7 @@
 #define IDC_MULTIINSTANCECHECK          1053
 #define IDC_FILEPROP_LINEENDINGS        1053
 #define IDC_FILEASSO_METHOD             1053
+#define IDC_FOLDER_COMBO                1053
 #define IDC_OPT_LECOMBO                 1054
 #define IDC_FILEPROP_ENCODING           1054
 #define IDC_OPT_SHOWTABSCHECK           1054
@@ -474,8 +479,8 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        336
-#define _APS_NEXT_COMMAND_VALUE         32944
+#define _APS_NEXT_RESOURCE_VALUE        337
+#define _APS_NEXT_COMMAND_VALUE         32946
 #define _APS_NEXT_CONTROL_VALUE         1128
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

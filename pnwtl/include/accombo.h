@@ -142,6 +142,14 @@ public:
 		return bRet;
 	}
 
+	BOOL SubclassWindow(HWND hWnd)
+	{
+		BOOL bRet = baseClass::SubclassWindow(hWnd);
+		if(bRet)
+			InitFileAC();
+		return bRet;
+	}
+
 	// These 2 provide for registry-based AutoComplete.
 	HWND Create(HWND hWndParent, _U_RECT rect, LPCTSTR szWindowName,
 			DWORD dwStyle, DWORD dwExStyle, _U_MENUorID MenuOrID,
@@ -315,7 +323,7 @@ CoCreateInstance(clsidSource,
 
 			if (SUCCEEDED(punkSource->QueryInterface(IID_IACList2, (LPVOID*)&pal2)))
 			{
-				pal2->SetOptions(ACLO_FILESYSONLY);
+				pal2->SetOptions(ACLO_FILESYSDIRS | ACLO_FILESYSONLY);
 				pal2->Release();
 			}
 
