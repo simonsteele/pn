@@ -22,6 +22,7 @@ What's new?
 14) CSS-2 Support in CSS lexer
 15) Projects remember folder expansion state.
 16) Added Ctrl-W to close the current file (as well as Ctrl-F4) (SF RFE #1169428).
+17) New Project dialog.
 
 Bug Fixes:
 ----------
