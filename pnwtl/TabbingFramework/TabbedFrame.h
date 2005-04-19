@@ -43,6 +43,12 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2005/04/12: Daniel Bowen
+// - CCustomTabOwnerImpl::CalcTabAreaHeight - 
+//   * CDC dc = TabCtrl.GetDC();
+//       should be
+//     CClientDC dc(TabCtrl);
+//
 // 2005/04/08: Daniel Bowen
 // - Generalize support for having the tab control automatically hidden
 //   if the number of tabs is below a certain count.
@@ -335,7 +341,7 @@ public:
 			HFONT hFont = TabCtrl.GetFont();
 			if(hFont != NULL)
 			{
-				CDC dc = TabCtrl.GetDC();
+				CClientDC dc(TabCtrl);
 				CFontHandle hFontOld = dc.SelectFont(hFont);
 				TEXTMETRIC tm = {0};
 				dc.GetTextMetrics(&tm);

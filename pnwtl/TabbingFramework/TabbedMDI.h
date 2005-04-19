@@ -65,6 +65,12 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2005/04/12: Daniel Bowen
+// - CTabbedMDIClient::OnNcPaint - 
+//   * CDC dc(this->GetWindowDC());
+//       should be
+//     CWindowDC dc(this->m_hWnd);
+//
 // 2005/04/08: Daniel Bowen
 // - Generalize support for having the tab control automatically hidden
 //   if the number of tabs is below a certain count.
@@ -1648,7 +1654,7 @@ public:
 			// NOTE: If WS_EX_CLIENTEDGE ever takes up more than 2 pixels
 			// on each edge, update the drawing code.
 
-			CDC dc(this->GetWindowDC());
+			CWindowDC dc(this->m_hWnd);
 			if(dc)
 			{
 				RECT rcWindow;
