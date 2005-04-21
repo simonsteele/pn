@@ -166,7 +166,7 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseDebug|Win32"
-			OutputDirectory="$(ConfigurationName)"
+			OutputDirectory="..\bin\schemes"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2">
