@@ -419,6 +419,9 @@ Folder* Folder::GetParent()
 
 Project* Folder::GetProject()
 {
+	if(parent == NULL && type == ptProject)
+		return static_cast<Projects::Project*>(this);
+
 	Folder* pParent = parent;
 	while(pParent != NULL && pParent->GetType() != ptProject)
 	{

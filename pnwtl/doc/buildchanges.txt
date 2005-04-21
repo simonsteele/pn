@@ -1,11 +1,13 @@
 | Working towards 0.6 :: Ella
 ---------------------------------------
 
-Since 0.5.48:
+Since 0.5.57:
 
-
+Fixed file properties where file is a direct child of project.
 
 Since 0.5.46:
+
+== See readme.txt ==
 
 Added Set and Next bookmark menu items.
 Fixed SF Bug #1087242 - Command line params don't work once PN is open.
