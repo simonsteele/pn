@@ -919,6 +919,9 @@
 				RelativePath="projectview.cpp">
 			</File>
 			<File
+				RelativePath=".\projectview.h">
+			</File>
+			<File
 				RelativePath=".\projectwriter.h">
 			</File>
 			<File

@@ -19,8 +19,8 @@
 					<value description="Dynamic Library (.dll)" value="3" />
 					<value description="Static Library (.lib)" value="4" />
 				</optionlist>
-				<option name="browseinfo" description="Build Browser Information" helpid="1026"/>
-				<text name="testname" description="Project Name" default="some text here"/>
+				<option name="browseinfo" description="Build Browser Information" helpid="2"/>
+				<text name="testname" description="Project Name" default="some text here" helpid="1"/>
 			</category>
 		</group>
 	</set>

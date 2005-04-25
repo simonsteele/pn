@@ -84,6 +84,11 @@ PropType ProjectProp::GetType() const
 	return m_type;
 }
 
+int ProjectProp::GetHelpId() const
+{
+	return m_helpid;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // ListProp
 //////////////////////////////////////////////////////////////////////////////
@@ -350,6 +355,11 @@ LPCTSTR ProjectTemplate::GetNamespace() const
 LPCTSTR ProjectTemplate::GetImagePath() const
 {
 	return m_imagepath.c_str();
+}
+
+LPCTSTR ProjectTemplate::GetHelpFile() const
+{
+	return m_helpfile.c_str();
 }
 
 PropSet* ProjectTemplate::GetProperties(PROJECT_TYPE type) const

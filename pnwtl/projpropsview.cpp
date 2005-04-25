@@ -15,18 +15,26 @@
 #include "projpropsview.h"
 #include "pndialogs.h"
 
+#include <htmlhelp.h>
+
 using namespace ProjPropsInternal;
 
 PropViewSet::PropViewSet(Projects::UserData* userData)
 {
 	m_userData = *userData;
 	m_realUserData = userData;
+	m_pTemplate = NULL;
 }
 
 PropViewSet::PropViewSet(Projects::ProjectTemplate* theTemplate, Projects::ProjectType* lastItem)
 {
+	PNASSERT(lastItem != NULL);
+
+	m_pTemplate = theTemplate;
+
 	m_userData = lastItem->GetUserData();
 	m_realUserData = &lastItem->GetUserData();
+	
 	if(theTemplate)
 	{
 		PropNamespace = theTemplate->GetNamespace();
@@ -48,7 +56,12 @@ Projects::UserData* PropViewSet::GetUserData()
 	return &m_userData;
 }
 
-bool PropViewSet::IsValid()
+Projects::ProjectTemplate* PropViewSet::GetTemplate() const
+{
+	return m_pTemplate;
+}
+
+bool PropViewSet::IsValid() const
 {
 	return (PropertyGroups != NULL && m_realUserData != NULL && PropertyGroups->size() > 0);
 }
@@ -94,6 +107,51 @@ LRESULT CProjPropsView::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 
 	CenterWindow(GetParent());
 
+	CButton(GetDlgItem(IDHELP)).EnableWindow(FALSE);
+
+	DlgResize_Init();
+
+	return 0;
+}
+
+LRESULT CProjPropsView::OnHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	LPHELPINFO lphi = (LPHELPINFO)lParam;
+	if(lphi->iContextType == HELPINFO_WINDOW)
+	{
+		// Help on a window control...
+		int idCtrl = 0;
+		HWND hWndParent = (HWND)lphi->hItemHandle;
+		
+		// Seek either the properties window or the dialog (in which case who knows
+		// what control it was).
+		while(hWndParent != m_props.m_hWnd && hWndParent != m_hWnd)
+			hWndParent = ::GetParent(hWndParent);
+
+		if(hWndParent == m_props.m_hWnd)
+			idCtrl = IDC_LISTPROPS;
+		else
+			idCtrl = lphi->iCtrlId;
+
+		switch(idCtrl)
+		{
+		case IDC_TREE:
+			{
+				::MessageBox(m_hWnd, _T("The Tree"), _T("Help for..."), MB_OK);
+			}
+			break;
+		case IDC_LISTPROPS:
+			{
+				// F1 pressed on the property list...
+				int iSelIndex = m_props.GetCurSel();
+				HPROPERTY hProp = m_props.GetProperty(iSelIndex);
+				Projects::ProjectProp* pProp = reinterpret_cast<Projects::ProjectProp*>( hProp->GetItemData() );
+				showHelpFor(pProp, &lphi->MousePos );
+			}
+			break;
+		}
+	}
+
 	return 0;
 }
 
@@ -115,6 +173,11 @@ LRESULT CProjPropsView::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, B
 LRESULT CProjPropsView::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	EndDialog(wID);
+	return 0;
+}
+
+LRESULT CProjPropsView::OnHelp(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
 	return 0;
 }
 
@@ -327,7 +390,34 @@ void CProjPropsView::selectGroup(ProjPropsInternal::DisplayGroup* group)
 	m_namespace = group->ViewSet->PropNamespace;
 
 	displayCategories(group->Group->GetName(), group->Group->GetCategories());
-	m_pCurGroup = group->Group;
+	m_pCurGroup = group;
+}
+
+void CProjPropsView::showHelpFor(Projects::ProjectProp* prop, LPPOINT pt)
+{
+	PNASSERT(prop != NULL);
+	int iID = prop->GetHelpId();
+	if(iID != 0)
+	{
+		Projects::ProjectTemplate* pTemplate = m_pCurGroup->ViewSet->GetTemplate();
+		if(pTemplate != NULL)
+		{
+			LPCTSTR hf = pTemplate->GetHelpFile();
+			if(hf != NULL)
+			{
+				// Combine help filename with projecttemplates path.
+				tstring path;
+				OPTIONS->GetPNPath(path, PNPATH_PROJECTTEMPLATES);
+				CFileName fn(hf);
+				fn.Root(path.c_str());
+				path = fn.c_str();
+
+				// Show that help!
+				HH_POPUP popup = {sizeof(HH_POPUP), 0, iID, 0, {pt->x, pt->y}, -1, -1, {-1,-1,-1,-1}, NULL};
+				::HtmlHelp(m_hWnd, path.c_str(), HH_DISPLAY_TEXT_POPUP, (DWORD_PTR)&popup);
+			}
+		}
+	}
 }
 
 void CProjPropsView::transferOptions()
@@ -355,7 +445,7 @@ void CProjPropsView::transferOptions()
 		hDispProp->GetValue(&var);
 		
 		LPCTSTR catName = currentCat.c_str();
-		LPCTSTR groupName = m_pCurGroup->GetName();
+		LPCTSTR groupName = m_pCurGroup->Group->GetName();
 
 		switch(prop->GetType())
 		{

@@ -714,6 +714,14 @@ void COptionsPageTools::EnableButtons()
 		return;
 
 	bool bEnable = (m_pScheme != NULL || getCombo()->GetCurSel() == 0);
+	enableButtons(bEnable);
+}
+
+void COptionsPageTools::enableButtons(bool bEnable)
+{
+	if(m_bChanging)
+		return;
+
 	int iSelIndex = m_list.GetSelectedIndex();
 
 	::EnableWindow(GetDlgItem(IDC_TOOLS_ADDBUTTON), bEnable);
@@ -987,6 +995,15 @@ LRESULT COptionsPageProjectTools::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
 	EnableButtons();
 
 	return 0;
+}
+
+void COptionsPageProjectTools::EnableButtons()
+{
+	if(m_bChanging)
+		return;
+
+	bool bEnable = (m_pCurrent != NULL);
+	enableButtons(bEnable);
 }
 
 SchemeTools* COptionsPageProjectTools::GetTools()

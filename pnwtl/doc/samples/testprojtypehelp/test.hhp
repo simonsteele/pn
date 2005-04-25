@@ -1,0 +1,14 @@
+[OPTIONS]
+
+[FILES]
+
+[MAP]
+#include cshelp.h
+
+[TEXT POPUPS]
+cshelp.h
+cshelp.txt
+
+[FILES]
+cshelp.h
+cshelp.txt

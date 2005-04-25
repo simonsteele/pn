@@ -36,6 +36,7 @@ public:
 	int GetDefaultAsInt() const;
 	bool GetDefaultAsBool() const;
 	PropType GetType() const;
+	int GetHelpId() const;
 
 protected:
 	PropType	m_type;
@@ -180,6 +181,7 @@ public:
 	LPCTSTR GetName() const;
 	LPCTSTR GetNamespace() const;
 	LPCTSTR	GetImagePath() const;
+	LPCTSTR GetHelpFile() const;
 
 	PropSet* GetProperties(PROJECT_TYPE type) const;
 

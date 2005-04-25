@@ -463,7 +463,7 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 
 		void AddDefinition(ToolDefinition* pDef);
 
-		void EnableButtons();
+		virtual void EnableButtons();
 		void Update();
 		void SetItem();
 
@@ -472,6 +472,7 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 		bool doToolEditDlg(ToolDefinition* in, ToolDefinition* out);
 
 		virtual CComboBox* getCombo();
+		void enableButtons(bool bEnable);
 		virtual void updateFromSel(int iSel);
 	
 	protected:
@@ -519,6 +520,8 @@ class COptionsPageProjectTools : public COptionsPageTools
 		virtual LPCTSTR GetTreePosition();
 
 	protected:
+		virtual void EnableButtons();
+
 		virtual SchemeTools* GetTools();
 
 		virtual CComboBox* getCombo();

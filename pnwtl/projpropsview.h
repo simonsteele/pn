@@ -22,9 +22,11 @@ class PropViewSet
 public:
 	PropViewSet(Projects::UserData* UserData);
 	PropViewSet(Projects::ProjectTemplate* theTemplate, Projects::ProjectType* item);
-	Projects::UserData* GetUserData();
 	
-	bool IsValid();
+	Projects::UserData* GetUserData();
+	Projects::ProjectTemplate* GetTemplate() const;
+	
+	bool IsValid() const;
 	void TransferSettings();
 
 	Projects::PropGroupList* PropertyGroups;
@@ -33,15 +35,19 @@ public:
 protected:
 	Projects::UserData m_userData;
 	Projects::UserData* m_realUserData;
+	Projects::ProjectTemplate* m_pTemplate;
 };
 
 namespace ProjPropsInternal
 {
+	/**
+	 * @brief Map a displayed property group to its source PropViewSet instance.
+	 */
 	class DisplayGroup
 	{
 	public:
 		DisplayGroup(PropViewSet* viewSet, Projects::PropGroup* propGroup) :
-		ViewSet(viewSet), Group(propGroup){}
+			ViewSet(viewSet), Group(propGroup){}
 		
 		PropViewSet* ViewSet;
 		Projects::PropGroup* Group;
@@ -50,7 +56,11 @@ namespace ProjPropsInternal
 	typedef std::list<DisplayGroup*> DG_LIST;
 }
 
-class CProjPropsView : public CDialogImpl<CProjPropsView>
+/**
+ * @brief Project Properties Dialog
+ */
+class CProjPropsView : public CDialogImpl<CProjPropsView>, 
+						public CDialogResize<CProjPropsView>
 {
 public:
 	CProjPropsView();
@@ -60,20 +70,35 @@ public:
 
 	BEGIN_MSG_MAP(CProjPropsView)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+		MESSAGE_HANDLER(WM_HELP, OnHelp)
 		COMMAND_ID_HANDLER(IDOK, OnOK)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
+		COMMAND_ID_HANDLER(IDHELP, OnHelp)
 		NOTIFY_HANDLER(IDC_LISTPROPS, PIN_BROWSE, OnBrowse)
 		NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnTreeSelChanged)
 		REFLECT_NOTIFICATIONS()
+		CHAIN_MSG_MAP( CDialogResize<CProjPropsView> )
 	END_MSG_MAP()
+
+	BEGIN_DLGRESIZE_MAP(CProjPropsView)
+		BEGIN_DLGRESIZE_GROUP()
+			DLGRESIZE_CONTROL(IDC_LISTPROPS, DLSZ_SIZE_X | DLSZ_SIZE_Y)
+			DLGRESIZE_CONTROL(IDC_TREE, DLSZ_SIZE_X | DLSZ_SIZE_Y)
+		END_DLGRESIZE_GROUP()
+		DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X | DLSZ_MOVE_Y)
+		DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X | DLSZ_MOVE_Y)
+    END_DLGRESIZE_MAP()
 
 	void SetExtraSet(PropViewSet* viewSet);
 	bool DisplayFor(PropViewSet* viewSet);
 
 protected:
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnHelp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	
 	LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnHelp(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnTreeSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT OnBrowse(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
@@ -87,6 +112,7 @@ protected:
 
 	void clear();
 	void selectGroup(ProjPropsInternal::DisplayGroup* group);
+	void showHelpFor(Projects::ProjectProp* prop, LPPOINT pt);
 	void transferOptions();
 
 protected:
@@ -96,11 +122,11 @@ protected:
 	PropViewSet*			m_pExtraSet;
 	PropViewSet*			m_pMainSet;
 	
-	Projects::PropGroup*	m_pCurGroup;
 	Projects::UserData*		m_pNodeData;
 	tstring					m_namespace;
 
-	ProjPropsInternal::DG_LIST	m_dglist;
+	ProjPropsInternal::DG_LIST			m_dglist;
+	ProjPropsInternal::DisplayGroup*	m_pCurGroup;
 };
 
 #endif // #ifndef projpropsview_h__included

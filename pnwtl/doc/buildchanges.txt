@@ -1,6 +1,12 @@
 | Working towards 0.6 :: Ella
 ---------------------------------------
 
+Since 0.5.59:
+
+Project properties dialog can now be resized.
+Context-sensitive help now works for project properties (with supporting help file!)
+Fixed the project tools properties dialog to enable buttons properly.
+
 Since 0.5.57:
 
 Fixed file properties where file is a direct child of project.
