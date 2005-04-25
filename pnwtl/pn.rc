@@ -523,12 +523,14 @@ BEGIN
     POPUP "PROJECT"
     BEGIN
         MENUITEM "&Add Files",                  288
-        MENUITEM "&Add New Folder",             293
-        MENUITEM "Add Magic Folder...",         ID_PROJECT_ADDMAGICFOLDER
+        MENUITEM "Add New &Folder",             293
+        MENUITEM "Add &Magic Folder...",        ID_PROJECT_ADDMAGICFOLDER
         MENUITEM SEPARATOR
         MENUITEM "&Open All Files",             ID_PROJECT_OPENALLFILES
         MENUITEM SEPARATOR
         MENUITEM "&Set Active Project",         ID_PROJECT_SETACTIVEPROJECT
+        MENUITEM SEPARATOR
+        MENUITEM "Sa&ve Project",               ID_PROJECT_SAVEPROJECT
         MENUITEM SEPARATOR
         MENUITEM "&Remove Project",             ID_PROJECT_REMOVE
         MENUITEM "&Delete Project",             ID_PROJECT_DELETEPROJECT
@@ -576,13 +578,15 @@ END
 
 IDR_POPUP_PROJECTMFOLDER MENU 
 BEGIN
-    POPUP "DUMMY"
+    POPUP "PROJECT"
     BEGIN
         MENUITEM "&Add New Folder",             ID_PROJECT_MAGICADDFOLDER
         , INACTIVE
         MENUITEM SEPARATOR
         MENUITEM "&Open All Files",             299
         MENUITEM "&Sort Folders",               ID_PROJECT_SORTFOLDERS
+        MENUITEM SEPARATOR
+        MENUITEM "Re&fresh",                    ID_PROJECT_REFRESH
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     ID_PROJECT_REMOVE
         MENUITEM "&Delete",                     ID_PROJECT_DELETE
@@ -1156,8 +1160,8 @@ BEGIN
     LISTBOX         IDC_LISTPROPS,104,7,213,146,LBS_OWNERDRAWVARIABLE | 
                     LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | 
-                    TVS_HASLINES | TVS_SHOWSELALWAYS | TVS_NOSCROLL | 
-                    WS_BORDER | WS_TABSTOP,7,7,94,146
+                    TVS_HASLINES | TVS_SHOWSELALWAYS | WS_BORDER | 
+                    WS_TABSTOP,7,7,94,146
 END
 
 IDD_FINDEX DIALOGEX 0, 0, 288, 180

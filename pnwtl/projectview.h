@@ -58,6 +58,8 @@ public:
 		COMMAND_ID_HANDLER(ID_WORKSPACE_NEWPROJECT, OnNewProject)
 		COMMAND_ID_HANDLER(ID_WORKSPACE_ADDPROJECT, OnAddProject)
 		COMMAND_ID_HANDLER(ID_PROJECT_PROPERTIES, OnProjectProperties)
+		COMMAND_ID_HANDLER(ID_PROJECT_SAVEPROJECT, OnSaveProject)
+		COMMAND_ID_HANDLER(ID_PROJECT_REFRESH, OnRefresh)
 		
 		CHAIN_MSG_MAP(baseClass)
 		
@@ -92,6 +94,7 @@ protected:
 	void		handleRemove();
 	void		handleRightClick(LPPOINT pt);
 	void		openAll(Projects::Folder* folder);
+	void		refreshMagicFolder(Projects::MagicFolder* folder, HTREEITEM hNode);
 	void		setMagicFolderProps(Projects::UserData& ud, Projects::MagicFolder* folder);
 	void		setStatus(Projects::ProjectType* selection);
 	void		sort(HTREEITEM hFolderNode, bool bSortFolders = false, bool bRecurse = false);
@@ -141,6 +144,8 @@ protected:
 	LRESULT		OnSetActiveProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnSortFolders(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnProjectProperties(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT		OnSaveProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT		OnRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	// Drag and Drop Handlers
 	LRESULT		OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

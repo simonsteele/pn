@@ -225,15 +225,14 @@ HPROPERTY CProjPropsView::createPropertyItem(
 
 	case Projects::propBool:
 		{
-			//ret = m_props.AddItem( PropCreateSimple(prop->GetDescription(), false) );
-			bool bVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), false);
+			bool bVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), prop->GetDefaultAsBool());
 			ret = PropCreateCheckButton(prop->GetDescription(), bVal);
 		}
 		break;
 
 	case Projects::propInt:
 		{
-			int iVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), 0);
+			int iVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), prop->GetDefaultAsInt());
 			ret = PropCreateSimple(prop->GetDescription(), iVal);
 		}
 		break;
@@ -242,8 +241,8 @@ HPROPERTY CProjPropsView::createPropertyItem(
 		{
 			CPropertyListItem* pListItem = new CPropertyListItem(prop->GetDescription(), 0);
 
-			LPCTSTR szVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
-			LPCTSTR szSetVal = NULL; //TODO: Need to do the default here.
+			LPCTSTR szVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), prop->GetDefault());
+			LPCTSTR szSetVal = NULL;
 
 			const Projects::ValueList& values = static_cast<Projects::ListProp*>(prop)->GetValues();
 			
@@ -269,28 +268,28 @@ HPROPERTY CProjPropsView::createPropertyItem(
 
 	case Projects::propString:
 		{
-			LPCTSTR szVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
+			LPCTSTR szVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), prop->GetDefault());
 			ret = PropCreateSimple(prop->GetDescription(), szVal != NULL ? szVal : _T(""));
 		}
 		break;
 
 	case Projects::propLongString:
 		{
-			LPCTSTR szVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
+			LPCTSTR szVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), prop->GetDefault());
 			ret = PropCreateSimple(prop->GetDescription(), szVal != NULL ? szVal : _T(""));
 		}
 		break;
 
 	case Projects::propFile:
 		{
-			LPCTSTR szVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
+			LPCTSTR szVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), prop->GetDefault());
 			ret = PropCreateFileName(prop->GetDescription(), szVal != NULL ? szVal : _T(""));
 		}
 		break;
 
 	case Projects::propFolder:
 		{
-			LPCTSTR szVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), _T(""));
+			LPCTSTR szVal = m_pNodeData->Lookup(m_namespace.c_str(), groupName, catName, prop->GetName(), prop->GetDefault());
 			ret = PropCreatePathName(prop->GetDescription(), szVal != NULL ? szVal : _T(""));
 		}
 		break;

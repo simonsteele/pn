@@ -610,6 +610,34 @@ void CProjectTreeCtrl::openAll(Projects::Folder* folder)
 	}
 }
 
+void CProjectTreeCtrl::refreshMagicFolder(Projects::MagicFolder* folder, HTREEITEM hFolderNode)
+{
+	// Tell the magic folder that we've not got it's contents any more.
+	folder->SetGotContents(false);
+
+	clearNode(hFolderNode);
+
+	// Use for expansion state etc.
+	ProjectViewState state;
+
+	processNotifications = false;
+
+	HTREEITEM hLastChild = NULL;
+
+	const FOLDER_LIST& folders2 = folder->GetFolders();
+	if( folders2.size() > 0 )
+		hLastChild = buildFolders(hFolderNode, folders2, state);
+
+	const FILE_LIST& files = folder->GetFiles();
+	hLastChild = buildFiles(hFolderNode, hLastChild, files);
+
+	sort(hFolderNode);
+
+	Expand(hFolderNode);
+
+	processNotifications = true;	
+}
+
 void CProjectTreeCtrl::handleRightClick(LPPOINT pt)
 {
 	//CPoint pt(GetMessagePos());
@@ -668,25 +696,7 @@ void CProjectTreeCtrl::setMagicFolderProps(Projects::UserData& ud, Projects::Mag
 			// Path may have changed...
 			folder->SetFullPath(path.c_str());
 
-			clearNode(hFolder);
-
-			// Use for expansion state etc.
-			ProjectViewState state;
-
-			processNotifications = false;
-
-			HTREEITEM hLastChild;
-
-			const FOLDER_LIST& folders2 = folder->GetFolders();
-			if( folders2.size() > 0 )
-				hLastChild = buildFolders(hFolder, folders2, state);
-
-			const FILE_LIST& files = folder->GetFiles();
-			hLastChild = buildFiles(hFolder, hLastChild, files);
-
-			sort(hFolder);
-
-			processNotifications = true;
+			refreshMagicFolder(folder, hFolder);
 		}
 	}
 }
@@ -1313,6 +1323,29 @@ LRESULT	CProjectTreeCtrl::OnProjectProperties(WORD /*wNotifyCode*/, WORD /*wID*/
 	for(PropGroupList::const_iterator i = groups.begin(); i != groups.end(); ++i)
 	{
 		delete (*i);
+	}
+
+	return 0;
+}
+
+LRESULT	CProjectTreeCtrl::OnSaveProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(lastItem->GetType() == ptProject)
+	{
+		Projects::Project* proj = static_cast<Projects::Project*>(lastItem);
+		proj->Save();
+	}
+
+	return 0;
+}
+
+LRESULT CProjectTreeCtrl::OnRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(lastItem->GetType() == ptMagicFolder)
+	{
+		Projects::MagicFolder* mf = static_cast<Projects::MagicFolder*>(lastItem);
+
+		refreshMagicFolder(mf, hLastItem);
 	}
 
 	return 0;

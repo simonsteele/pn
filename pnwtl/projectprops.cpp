@@ -23,6 +23,7 @@ ProjectProp::ProjectProp(LPCTSTR name, LPCTSTR description)
 {
 	m_name = name;
 	m_description = description;
+	m_helpid = 0;
 }
 
 ProjectProp::ProjectProp(LPCTSTR name, LPCTSTR description, PropType type)
@@ -30,6 +31,16 @@ ProjectProp::ProjectProp(LPCTSTR name, LPCTSTR description, PropType type)
 	m_name = name;
 	m_description = description;
 	m_type = type;
+	m_helpid = 0;
+}
+
+ProjectProp::ProjectProp(LPCTSTR name, LPCTSTR description, LPCTSTR defval, int helpid, PropType type)
+{
+	m_name = name;
+	m_description = description;
+	m_type = type;
+	m_default = defval;
+	m_helpid = helpid;
 }
 
 LPCTSTR ProjectProp::GetName() const
@@ -42,6 +53,32 @@ LPCTSTR ProjectProp::GetDescription() const
 	return m_description.c_str();
 }
 
+LPCTSTR ProjectProp::GetDefault() const
+{
+	return m_default.c_str();
+}
+
+int ProjectProp::GetDefaultAsInt() const
+{
+	if(m_default.size() > 0)
+		return _ttoi(m_default.c_str());
+	else
+		return 0;
+}
+
+bool ProjectProp::GetDefaultAsBool() const
+{
+	if(m_default.size() >= 4)
+	{
+		if(m_default[0] == _T('t') || m_default[0] == _T('T')) // dirty
+		{
+			return true;
+		}
+	}
+	
+	return false;
+}
+
 PropType ProjectProp::GetType() const
 {
 	return m_type;
@@ -51,7 +88,7 @@ PropType ProjectProp::GetType() const
 // ListProp
 //////////////////////////////////////////////////////////////////////////////
 
-ListProp::ListProp(LPCTSTR name, LPCTSTR description) : ProjectProp(name, description, propChoice)
+ListProp::ListProp(LPCTSTR name, LPCTSTR description, LPCTSTR defval, int helpid) : ProjectProp(name, description, defval, helpid, propChoice)
 {
 }
 
@@ -275,13 +312,15 @@ ProjectTemplate::ProjectTemplate(LPCTSTR id, LPCTSTR name, LPCTSTR ns)
 	m_namespace = ns;
 }
 
-ProjectTemplate::ProjectTemplate(LPCTSTR id, LPCTSTR name, LPCTSTR ns, LPCTSTR icon)
+ProjectTemplate::ProjectTemplate(LPCTSTR id, LPCTSTR name, LPCTSTR ns, LPCTSTR icon, LPCTSTR helpfile)
 {
 	m_id = id;
 	m_name = name;
 	m_namespace = ns;
 	if(icon)
 		m_imagepath = icon;
+	if(helpfile)
+		m_helpfile = helpfile;
 }
 
 ProjectTemplate::~ProjectTemplate()
@@ -525,7 +564,8 @@ void TemplateLoader::onProjectConfig(XMLAttributes& atts)
 	if(id == NULL)
 		id = _T("error");
 	LPCTSTR icon = ATTVAL(_T("icon"));
-	m_pTemplate = new ProjectTemplate(id, name, ns, icon);
+	LPCTSTR helpfile = ATTVAL(_T("helpfile"));
+	m_pTemplate = new ProjectTemplate(id, name, ns, icon, helpfile);
 }
 
 void TemplateLoader::onSet(XMLAttributes& atts)
@@ -692,22 +732,30 @@ void TemplateLoader::makeProp(XMLAttributes& atts, PropType type)
 
 	LPCTSTR name = ATTVAL(_T("name"));
 	LPCTSTR desc = ATTVAL(_T("description"));
+	LPCTSTR def = ATTVAL(_T("default"));
+	LPCTSTR szHelpid = ATTVAL(_T("helpid"));
+	int helpid = 0;
+
 	if(name == NULL)
 		return;
 	if(desc == NULL)
 		desc = _T("ERROR");
+	if(def == NULL)
+		def = _T("");
+	if(szHelpid != NULL)
+		helpid = _ttoi(szHelpid);
 
 	ProjectProp* pProp;
 
 	if(type == propChoice)
 	{
-		ListProp* pListProp = new ListProp(name, desc);
+		ListProp* pListProp = new ListProp(name, desc, def, helpid);
 		pProp = static_cast<ProjectProp*>(pListProp);
 		m_pCurrentListProp = pListProp;
 	}
 	else
 	{
-		pProp = new ProjectProp(name, desc, type);
+		pProp = new ProjectProp(name, desc, def, helpid, type);
 	}
 
 	m_pCurrentCat->Add(pProp);

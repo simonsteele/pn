@@ -27,16 +27,22 @@ class ProjectProp
 public:
 	ProjectProp(LPCTSTR name, LPCTSTR description);
 	ProjectProp(LPCTSTR name, LPCTSTR description, PropType type);
+	ProjectProp(LPCTSTR name, LPCTSTR description, LPCTSTR defval, int helpid, PropType type);
 	virtual ~ProjectProp(){}
 
 	LPCTSTR GetName() const;
 	LPCTSTR GetDescription() const;
+	LPCTSTR GetDefault() const;
+	int GetDefaultAsInt() const;
+	bool GetDefaultAsBool() const;
 	PropType GetType() const;
 
 protected:
 	PropType	m_type;
 	tstring		m_name;
 	tstring		m_description;
+	tstring		m_default;
+	int			m_helpid;
 };
 
 class Choice
@@ -51,7 +57,7 @@ typedef std::list<Choice*> ValueList;
 class ListProp : public ProjectProp
 {
 public:
-	ListProp(LPCTSTR name, LPCTSTR description);
+	ListProp(LPCTSTR name, LPCTSTR description, LPCTSTR defval, int helpid);
 	virtual ~ListProp();
 
 	void Add(Choice* value);
@@ -167,7 +173,7 @@ class ProjectTemplate
 {
 public:
 	ProjectTemplate(LPCTSTR id, LPCTSTR name, LPCTSTR nameSpace);
-	ProjectTemplate(LPCTSTR id, LPCTSTR name, LPCTSTR nameSpace, LPCTSTR icon);
+	ProjectTemplate(LPCTSTR id, LPCTSTR name, LPCTSTR nameSpace, LPCTSTR icon, LPCTSTR helpfile);
 	~ProjectTemplate();
 
 	LPCTSTR GetID() const;
@@ -185,6 +191,7 @@ protected:
 	tstring		m_name;
 	tstring		m_namespace;
 	tstring		m_imagepath;
+	tstring		m_helpfile;
 };
 
 class TemplateLoader : XMLParseState

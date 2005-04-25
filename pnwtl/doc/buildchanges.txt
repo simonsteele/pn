@@ -4,6 +4,13 @@
 Since 0.5.57:
 
 Fixed file properties where file is a direct child of project.
+Fixed (implemented) proper default values.
+Read in helpid for project properties.
+Added helpfile parameter to ProjectProperties tag.
+Added Refresh to right-click menu for magic folders.
+Added Save to right-click menu for projects.
+Enabled scrolling in the project properties tree.
+Use scintilla build without VC7 runtime dll requirement.
 
 Since 0.5.46:
 

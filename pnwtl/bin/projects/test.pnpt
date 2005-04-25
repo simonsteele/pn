@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<projectConfig name="test" id="{087F8071-E230-4d0f-9B49-4C29BBE2D7A8}" ns="urn:test" icon="test.ico">
+<projectConfig name="test" id="{087F8071-E230-4d0f-9B49-4C29BBE2D7A8}" ns="urn:test" icon="test.ico" helpfile="test.chm">
 	<set type="project">
 		<group name="test" description="Project Options">
 			<category name="general" description="General Options">

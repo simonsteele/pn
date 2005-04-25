@@ -23,6 +23,8 @@ What's new?
 15) Projects remember folder expansion state.
 16) Added Ctrl-W to close the current file (as well as Ctrl-F4) (SF RFE #1169428).
 17) New Project dialog.
+18) Save project from context menu.
+19) Refresh magic folder from context menu.
 
 Bug Fixes:
 ----------
