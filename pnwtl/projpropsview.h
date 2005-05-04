@@ -25,6 +25,7 @@ public:
 	
 	Projects::UserData* GetUserData();
 	Projects::ProjectTemplate* GetTemplate() const;
+	Projects::PROJECT_TYPE GetItemType() const;
 	
 	bool IsValid() const;
 	void TransferSettings();
@@ -33,6 +34,7 @@ public:
 	tstring PropNamespace;
 
 protected:
+	Projects::PROJECT_TYPE m_type;
 	Projects::UserData m_userData;
 	Projects::UserData* m_realUserData;
 	Projects::ProjectTemplate* m_pTemplate;
@@ -87,6 +89,7 @@ public:
 		END_DLGRESIZE_GROUP()
 		DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X | DLSZ_MOVE_Y)
 		DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X | DLSZ_MOVE_Y)
+		DLGRESIZE_CONTROL(IDHELP, DLSZ_MOVE_Y)
     END_DLGRESIZE_MAP()
 
 	void SetExtraSet(PropViewSet* viewSet);

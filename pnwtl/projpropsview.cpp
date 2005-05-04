@@ -30,6 +30,8 @@ PropViewSet::PropViewSet(Projects::ProjectTemplate* theTemplate, Projects::Proje
 {
 	PNASSERT(lastItem != NULL);
 
+	m_type = lastItem->GetType();
+
 	m_pTemplate = theTemplate;
 
 	m_userData = lastItem->GetUserData();
@@ -59,6 +61,11 @@ Projects::UserData* PropViewSet::GetUserData()
 Projects::ProjectTemplate* PropViewSet::GetTemplate() const
 {
 	return m_pTemplate;
+}
+
+Projects::PROJECT_TYPE PropViewSet::GetItemType() const
+{
+	return m_type;
 }
 
 bool PropViewSet::IsValid() const
@@ -102,7 +109,24 @@ LRESULT CProjPropsView::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	m_tree.SelectItem( m_tree.GetRootItem() );
 
 	CString s;
-	s.Format(IDS_PROPSTITLE, _T("Project"));
+
+	switch(m_pMainSet->GetItemType())
+	{
+	case Projects::ptProject:
+		s.Format(IDS_PROPSTITLE, _T("Project"));
+		break;
+	case Projects::ptWorkspace:
+		s.Format(IDS_PROPSTITLE, _T("Project Group"));
+		break;
+	case Projects::ptMagicFolder:
+	case Projects::ptFolder:
+		s.Format(IDS_PROPSTITLE, _T("Folder"));
+		break;
+	case Projects::ptFile:
+		s.Format(IDS_PROPSTITLE, _T("File"));
+		break;
+	}
+	
 	SetWindowText(s);
 
 	CenterWindow(GetParent());
