@@ -475,6 +475,7 @@
 #define ID_HELP_CONTENTS                32943
 #define ID_PROJECT_SAVEPROJECT          32946
 #define ID_PROJECT_REFRESH              32947
+#define ID_EDIT_GOTOBRACE               32948
 
 // Next default values for new objects
 // 
@@ -482,7 +483,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        337
-#define _APS_NEXT_COMMAND_VALUE         32948
+#define _APS_NEXT_COMMAND_VALUE         32950
 #define _APS_NEXT_CONTROL_VALUE         1128
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

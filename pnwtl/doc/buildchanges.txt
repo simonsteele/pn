@@ -1,6 +1,12 @@
 | Working towards 0.6 :: Ella
 ---------------------------------------
 
+Since 0.5.60:
+
+Ctrl+[ jumps to matching or nearest brace.
+Project Properties dialog resizing fixes.
+Project Properties dialog title set properly.
+
 Since 0.5.59:
 
 Project properties dialog can now be resized.

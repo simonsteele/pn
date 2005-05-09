@@ -11,6 +11,7 @@
 #include "stdafx.h"
 #include "resource.h"
 #include "textview.h"
+#include "scaccessor.h"
 #include "smartstart.h"
 #include "include/utf8_16.h"
 
@@ -689,6 +690,119 @@ LRESULT CTextView::OnToggleFold(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	return 0;
 }
 
+LRESULT CTextView::OnGotoBrace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int posBrace = -1;
+	if(caretAtBrace(posBrace))
+	{
+		// Switch to the other, matching brace
+		posBrace = BraceMatch(posBrace);
+	}
+	else
+	{
+		posBrace = seekBrace();
+	}
+	
+	if(posBrace != -1)
+		GotoPos(posBrace);
+
+	return 0;
+}
+
+bool CTextView::caretAtBrace(int& posBrace)
+{
+	///@todo Move to the properties? And should this be scheme-overridable.
+	const char* braceset = "{[()]}";
+	
+	int caret = GetCurrentPos();
+	
+	posBrace = -1;
+
+	if(caret > 0)
+	{
+		// brace could be before the caret.
+		char before = GetCharAt(caret-1);
+		if(before != NULL && strchr(braceset, before))
+			posBrace = caret-1;
+	}
+
+	if(posBrace < 0)
+	{
+		// Look the other side of the caret...
+		char after = GetCharAt(caret);
+		if(after != NULL && strchr(braceset, after))
+		{
+			posBrace = caret;
+			//after = false;
+		}
+	}
+
+	//OtherBrace = BraceMatch(CaretBrace);
+
+	//return (OtherBrace > CaretBrace) ? After : !After;
+	return posBrace != -1;
+}
+
+int CTextView::seekBrace()
+{
+	// Look forwards, and then backwards if unsuccessful.
+	int theBrace = seekBrace(true);
+	if(theBrace == -1)
+		theBrace = seekBrace(false);
+	return theBrace;
+}
+
+int CTextView::seekBrace(bool forwards)
+{
+	int direction = forwards ? 1 : -1;
+
+	const char* openset = "{[(";
+	const char* closeset = ")]}";
+
+	const char* pOpenSet = forwards ? openset : closeset;
+	const char* pCloseSet = forwards ? closeset : openset;
+
+	ScintillaAccessor doc(this);
+
+	// Find out where we are...
+	int position = GetCurrentPos() + direction;
+
+	// Limit the seek
+	int maxSeek = min(position+25000, doc.Length());
+	int minSeek = max(0, position-25000);
+
+	// See comment below for why this isn't necessary atm.
+	/*int stylingBits = GetStyleBits();
+	int stylingBitsMask = 0;
+	for (int bit = 0; bit < stylingBits; bit++) {
+		stylingBitsMask <<= 1;
+		stylingBitsMask |= 1;
+	}*/
+
+	// Code from Scintilla's BraceMatch;
+	int depth = 1;
+	while ((position >= minSeek) && (position < maxSeek))
+	{
+		char chAtPos = doc[position];
+		
+		// Can't check the brace styling as we don't know what style they should be
+		// in. This is one to add to the lexer configuration to make this work better.
+		/*char styAtPos = static_cast<char>(doc.StyleAt(position) & stylingBitsMask);
+		if ((position > GetEndStyled()) || (styAtPos == styBrace))*/
+		
+		{
+			if (strchr(pOpenSet, chAtPos))
+				depth++;
+			if (strchr(pCloseSet, chAtPos))
+				depth--;
+			if (depth == 0)
+				return position;
+		}
+		position = position + direction;
+	}
+	return -1;
+}
+
 void CTextView::ProcessNumberedBookmark(int n)
 {
 	switch(m_waitOnBookmarkNo)
@@ -793,7 +907,7 @@ UINT __stdcall CTextView::RunMeasureThread(void* pThis)
 
 	TCHAR buf[50];
 	_stprintf(buf, _T("Max line length: %d"), maxLength);
-	::OutputDebugString(buf);
+	LOG(buf);
 
 	pTextView->SetScrollWidth(maxLength + 10);
 

@@ -25,6 +25,7 @@ What's new?
 17) New Project dialog.
 18) Save project from context menu.
 19) Refresh magic folder from context menu.
+20) Ctrl+[ jumps to matching or nearest brace.
 
 Bug Fixes:
 ----------
