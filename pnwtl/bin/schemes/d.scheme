@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<Scheme>
+	<!-- Scheme for the D language, see www.digitalmars.com -->
+	<!-- Note that there are things to do to fully support D:
+	   1. Add support for /+ +/ comments to the Scintilla cpp lexer.
+	   2. Add support for literal strings to the Scintilla cpp lexer 
+	      (like C# @ strings).
+	   3. Add support for backtick strings to the Scintilla cpp lexer.
+    -->
+	<keyword-classes>
+		<keyword-class name="d">
+			abstract alias align asm assert auto bit body
+			break byte  case cast catch cent char class cfloat cdouble 
+			creal const continue dchar debug default delegate delete 
+			deprecated do double else enum export extern false final 
+			finally float for foreach function goto idouble if ifloat 
+			import in inout int interface invariant ireal is long module
+			new null out override pragma private protected public real 
+			return short static struct super switch synchronized template 
+			this throw true try typedef typeof ubyte ucent uint ulong 
+			union unittest ushort version void volatile wchar while with
+		</keyword-class>
+		<keyword-class name="ddoxygen">
+			a addindex addtogroup anchor arg attention
+			author b brief bug c class code date def defgroup deprecated dontinclude
+			e em endcode endhtmlonly endif endlatexonly endlink endverbatim enum example exception
+			f$ f[ f] file fn hideinitializer htmlinclude htmlonly
+			if image include ingroup internal invariant interface latexonly li line link
+			mainpage name namespace nosubgrouping note overload
+			p page par param post pre ref relates remarks return retval
+			sa section see showinitializer since skip skipline struct subsection
+			test throw todo typedef union until
+			var verbatim verbinclude version warning weakgroup $ @ \ &amp; &lt; &gt; # { }
+		</keyword-class>
+	</keyword-classes>
+
+	<!-- base scheme for C++ style languages -->
+	<language name="d" title="D" folding="true" foldcomments="true" foldcompact="false" foldpreproc="true">
+		<lexer name="cpp" />
+		
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="d"/>
+			<!-- Comment doc: is this needed??? -->
+			<keyword key="2" name="Doxygen Keywords" class="ddoxygen"/>
+		</use-keywords>
+		
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="Whitespace" key="0" />
+			<style name="Comment" key="1" class="commentbox"/>
+			<style name="Comment Line" key="2" class="commentline"/>
+			
+			<style name="Number" key="4" class="number"/>
+			<style name="Keyword" key="5" class="keyword"/>
+			<style name="String" key="6" class="string"/>
+			<style name="Character" key="7" fore="colour.char"/>
+			
+			<style name="Preprocessor" key="9" class="preprocessor"/>
+			
+			<style name="Operator" key="10" class="operator"/>
+			<style name="Identifier" key="11" />
+			<style name="End of line string" key="12" fore="000000" font="font.monospace" back="e0c0e0" eolfilled="true"/>
+
+			<!-- Comment doc: is this needed??? -->
+			<style name="Doc Comments" key="3" class="commentdoc"/>
+			<style name="Comment Line Doc" key="15" class="commentdoc"/>
+			<style name="Comment Doc Keyword" key="17" class="commentdoc" fore="3060a0"/>
+			<style name="Unknown Comment Doc Keyword" key="18" class="commentdoc" fore="804020"/>
+			
+		</use-styles>
+	</language>
+
+</Scheme>

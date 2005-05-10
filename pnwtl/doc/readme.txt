@@ -26,6 +26,7 @@ What's new?
 18) Save project from context menu.
 19) Refresh magic folder from context menu.
 20) Ctrl+[ jumps to matching or nearest brace.
+21) Ruby scheme
 
 Bug Fixes:
 ----------

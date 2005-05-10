@@ -37,6 +37,7 @@ CChildFrame::CChildFrame()
 	m_hImgList = NULL;
 	m_pSplitter = NULL;
 	m_pOutputView = NULL;
+	m_bClosing = false;
 	
 	m_FileAge = -1;
 	
@@ -418,6 +419,8 @@ LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 	}
 	else
 	{
+		m_bClosing = true;
+
 		if( ToolOwner::HasInstance() )
 		{
 			ToolOwner::GetInstance()->KillTools(true, this);
@@ -467,7 +470,8 @@ LRESULT CChildFrame::OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 
 LRESULT CChildFrame::OnCheckAge(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	CheckAge();
+	if(!m_bClosing)
+		CheckAge();
 
 	return 0;
 }

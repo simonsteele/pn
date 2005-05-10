@@ -314,6 +314,7 @@ protected:
 	CString				m_FileName;
 	long				m_FileAge;
 	bool				m_bModifiedOverride;
+	bool				m_bClosing;
 	
 	int					m_iFirstToolCmd;
 

@@ -8,6 +8,17 @@
 			rmdir rd shift time type ver verify vol com con lpt nul
 		</keyword-class>
 	</keyword-classes>
+	<language name="properties" title="Properties">
+		<lexer name="props"/>
+		<use-styles>
+			<style name="Default" key="32" size="9" />
+			<style name="Whitespace" key="0" fore="000000" />
+			<style name="Comment" key="1" class="comment" />
+			<style name="Section" key="2" fore="0000f0" back="e0f0f0" bold="true" eolfilled="true"/>
+			<style name="Assignment" key="3" class="operator"/>
+			<style name="Default Value" key="4" class="preprocessor"/>
+		</use-styles>
+	</language>
 	<language name="batch" title="Batch Files">
 		<lexer name="batch" />
 		<use-keywords>
