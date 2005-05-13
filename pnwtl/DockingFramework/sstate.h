@@ -25,6 +25,7 @@ const	TCHAR ctxtMainWindow[]	=_T("Main Window");
 const	TCHAR ctxtVisible[]		=_T("visible");
 const	TCHAR ctxtBand[]		=_T("band");
 const	TCHAR ctxtStoreVer[]	=_T("version");
+const	TCHAR ctxtRect[]		=_T("disprect");
 
 typedef std::basic_string<TCHAR> tstring;
 typedef unsigned long ID;
@@ -329,52 +330,74 @@ protected:
             m_hWnd=hWnd;
             m_nDefCmdShow=nDefCmdShow;
         }
+
+		/**
+		 * Save the window state of a window
+		 */
 		virtual bool Store(IMainState* pMState,CRegKey& key)
 		{
 			assert(IsWindow(m_hWnd));
 
             WINDOWPLACEMENT wp;
             wp.length = sizeof(WINDOWPLACEMENT);
-            bool bRes=false;
-            if (::GetWindowPlacement(m_hWnd,&wp))
+
+            bool bRes = false;
+            
+			if( ::GetWindowPlacement(m_hWnd, &wp) )
             {
-                wp.flags = 0;
-                if(::IsZoomed(m_hWnd))
-					wp.flags |= WPF_RESTORETOMAXIMIZED;
-				if(wp.showCmd==SW_SHOWMINIMIZED)
-					wp.showCmd=SW_SHOWNORMAL;					
-                bRes=(::RegSetValueEx(key,ctxtPlacement,NULL,REG_BINARY,
-										reinterpret_cast<CONST BYTE *>(&wp),
-										sizeof(WINDOWPLACEMENT))==ERROR_SUCCESS);
+				bRes=(::RegSetValueEx(key, ctxtRect, NULL, REG_BINARY, (const BYTE*)&wp.rcNormalPosition, sizeof(RECT)) == ERROR_SUCCESS);
+				BYTE bMaximized = ::IsZoomed(m_hWnd) ? 1 : 0;
+				bRes=(::RegSetValueEx(key, _T("Maximised"), NULL, REG_DWORD, &bMaximized, sizeof(BYTE)) == ERROR_SUCCESS);
             }
+
+			// Save all the other window positioning info.
 			return baseClass::Store(pMState,key);
 		}
+
+		/**
+		 * Restore a window position from the registry
+		 */
 		virtual bool Restore(IMainState* pMState,CRegKey& key)
 		{
 			assert(IsWindow(m_hWnd));
-            WINDOWPLACEMENT wp;
             DWORD dwType;
-            DWORD cbData=sizeof(WINDOWPLACEMENT);
+			RECT rcWnd;
+			DWORD cbData = sizeof(RECT);
+			BYTE bMaximised = 0;
 
-            bool bRes=(::RegQueryValueEx(key,ctxtPlacement,NULL,&dwType,
-											reinterpret_cast<LPBYTE>(&wp),&cbData)==ERROR_SUCCESS)
-											&&(dwType==REG_BINARY);
+			bool bRes = (::RegQueryValueEx(key, ctxtRect, NULL, &dwType, 
+				(LPBYTE)&rcWnd, &cbData) == ERROR_SUCCESS) && 
+				(dwType == REG_BINARY);
+
+			if(bRes)
+			{
+				bRes = ::RegQueryValueEx(key, _T("Maximised"), NULL, &dwType, 
+					&bMaximised, &cbData) == ERROR_SUCCESS &&
+					(dwType == REG_DWORD);
+			}
+
+			// Check to see if startup info mandates maximised.
+			STARTUPINFO si;
+			GetStartupInfo(&si);
+			if( (si.wShowWindow & SW_MAXIMIZE) == SW_MAXIMIZE )
+				bMaximised = true;	
+
             if(bRes)
 			{
-				UINT nCmdShow=wp.showCmd;
-//				LockWindowUpdate(m_hWnd);
-				if(wp.showCmd==SW_MAXIMIZE)
-					::ShowWindow(m_hWnd,nCmdShow);
-				wp.showCmd=SW_HIDE;
-                ::SetWindowPlacement(m_hWnd,&wp);
-				bRes=baseClass::Restore(pMState,key);
-				::ShowWindow(m_hWnd,nCmdShow);
-//				LockWindowUpdate(NULL);
+				// Set up the window position...
+				::SetWindowPos(m_hWnd, NULL, rcWnd.left, rcWnd.top, rcWnd.right - rcWnd.left, rcWnd.bottom - rcWnd.top, SWP_NOACTIVATE);
+				
+				// Restore the child window posisions...
+				bRes = baseClass::Restore(pMState,key);
+
+				::ShowWindow(m_hWnd, bMaximised == 1 ? SW_SHOWMAXIMIZED : SW_SHOWNORMAL);
 			}
 			else
-				bRes=baseClass::RestoreDefault();
+				bRes = baseClass::RestoreDefault();
+
 			return bRes;
 		}
+
 		virtual bool RestoreDefault()
 		{
 			assert(IsWindow(m_hWnd));

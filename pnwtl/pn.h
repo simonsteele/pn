@@ -30,6 +30,26 @@
 #define PNID_SAVEAS			14
 #define PNID_OVERWRITE		15
 
+//#if defined(DEBUG_)
+	#define UNEXPECTED(message) \
+	{ \
+		pn__Unexpected(__FILE__, __LINE__, message); \
+	}
+
+	#define RETURN_UNEXPECTED(message, ret) \
+	{ \
+		pn__Unexpected(__FILE__, __LINE__, message); \
+		return ret; \
+	}
+/*#else
+	#define UNEXPECTED(message) ;
+	#define RETURN_UNEXPECTED(message, ret) return ret;
+#endif*/
+
+#define LOG(message) \
+	::OutputDebugString(message)
+
+
 #include "pntypes.h"
 
 // Pre-declarations...
@@ -79,6 +99,29 @@ struct IMainFrame
 #include "pnstrings.h"
 #include "include/singleton.h"
 
+static void LogWndPos(LPCTSTR codeLoc, HWND hWnd)
+{
+	WINDOWPLACEMENT wp;
+    wp.length = sizeof(WINDOWPLACEMENT);
+    bool bRes=false;
+    if (::GetWindowPlacement(hWnd,&wp))
+    {
+		TCHAR buf[2000];
+		_stprintf(buf, _T("%s: %dx%d at %dx%d\n"), 
+			codeLoc,
+			wp.rcNormalPosition.right - wp.rcNormalPosition.left,
+			wp.rcNormalPosition.bottom - wp.rcNormalPosition.top,
+			wp.rcNormalPosition.left,
+			wp.rcNormalPosition.top);
+		LOG(buf);
+	}
+}
+
+static void LogWndPos(HWND hWnd)
+{
+	LogWndPos(_T("Unknown"), hWnd);
+}
+
 struct _Context 
 {
 	IMainFrame				*m_frame;
@@ -111,22 +154,3 @@ void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message);
 
 #define OPTIONS \
 	g_Context.options
-
-//#if defined(DEBUG_)
-	#define UNEXPECTED(message) \
-	{ \
-		pn__Unexpected(__FILE__, __LINE__, message); \
-	}
-
-	#define RETURN_UNEXPECTED(message, ret) \
-	{ \
-		pn__Unexpected(__FILE__, __LINE__, message); \
-		return ret; \
-	}
-/*#else
-	#define UNEXPECTED(message) ;
-	#define RETURN_UNEXPECTED(message, ret) return ret;
-#endif*/
-
-#define LOG(message) \
-	::OutputDebugString(message)

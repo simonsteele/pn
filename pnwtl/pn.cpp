@@ -147,12 +147,13 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	// maximised in the Create function. This does break externally
 	// specifying maximised state, though.
 
-	STARTUPINFO si;
-	GetStartupInfo(&si);
-	if( (si.wShowWindow & SW_MAXIMIZE) == SW_MAXIMIZE )
-		wndMain.ShowWindow(SW_MAXIMIZE);
-	else
-		wndMain.ShowWindow(SW_SHOW/*nCmdShow*/);
+	// Don't show here, we'll show in the OnInitialiseFrame message of the main wnd.
+	//STARTUPINFO si;
+	//GetStartupInfo(&si);
+	//if( (si.wShowWindow & SW_MAXIMIZE) == SW_MAXIMIZE )
+	//	wndMain.ShowWindow(SW_MAXIMIZE);
+	//else
+	//	wndMain.ShowWindow(SW_SHOW/*nCmdShow*/);
 
 	int nRet = theLoop.Run();
 

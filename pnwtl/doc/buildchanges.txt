@@ -6,6 +6,10 @@ Since 0.5.60:
 Ctrl+[ jumps to matching or nearest brace.
 Project Properties dialog resizing fixes.
 Project Properties dialog title set properly.
+Normal Search does not work with UTF-8 (Unicode) chars > 127 (SF Bug #1200456).
+Relative paths don't work from command-line with single-instance PN (SF Bug #1161783).
+PN does not correctly remember the normal window size when closed maximised.
+Ruby scheme
 
 Since 0.5.59:
 

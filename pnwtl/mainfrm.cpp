@@ -1094,6 +1094,8 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 
 LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	LoadGUIState();
+
 	bool bHaveLine = false;
 	bool bHaveCol = false;
 	bool bHaveScheme = false;
@@ -1104,10 +1106,34 @@ LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 
 	std::list<tstring> params;
 
+	TCHAR curDir[MAX_PATH+1];
+	::GetCurrentDirectory(MAX_PATH+1, curDir);
+
 	// Process cmdline params... __argv and __argc in VC++
 	for(int i = 1; i < __argc; i++)
 	{
-		params.insert(params.end(), tstring(__argv[i]));
+		LPTSTR arg = __argv[i];
+		bool bOwn = false;
+
+		if(arg[0] != _T('/') && arg[0] != _T('-'))
+		{
+			CFileName fn(arg);
+			
+			// If it's a relative path, root it and
+			// make arg point to it.
+			if(fn.IsRelativePath())
+			{
+				fn.Root(curDir);
+				arg = new TCHAR[_tcslen(fn.c_str())+1];
+				_tcscpy(arg, fn.c_str());
+				bOwn = true;
+			}
+		}
+
+		params.insert(params.end(), tstring(arg));
+
+		if(bOwn)
+			delete [] arg;
 	}
 
 	handleCommandLine(params);
@@ -2186,7 +2212,7 @@ void CMainFrame::InitGUIState()
 	m_GUIState.Add(sstate::CRebarStateAdapter(m_hWndToolBar, REBAR_SAVESTATE_VERSION));
 	m_GUIState.Add(dockers);
 
-	LoadGUIState();
+	//LoadGUIState();
 
 	UISetCheck( GetRebarBarCmd( TBR_FILE   ), GetToolbarShowing( TBR_FILE   ));
 	UISetCheck( GetRebarBarCmd( TBR_EDIT   ), GetToolbarShowing( TBR_EDIT   ));

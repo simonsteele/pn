@@ -577,20 +577,46 @@ void MultipleInstanceManager::SendParameters()
 	}
 
 	// Build a null separated list of parameters, store in shared memory 
-	// and broadcast that it's there.
+	// and broadcast that it's there. We also pad out any filenames to include
+	// a path if they're relative.
+	TCHAR curDir[MAX_PATH+1];
+	::GetCurrentDirectory(MAX_PATH+1, curDir);
 
 	GArray<TCHAR> parmarray;
 	int size = 0;
 	int paSize = 0;
 	for(int i = 1; i < __argc; i++)
 	{
-		paSize = _tcslen(__argv[i]);
+		LPTSTR arg = __argv[i];
+		bool bOwn = false;
+
+		if(arg[0] != _T('/') && arg[0] != _T('-'))
+		{
+			CFileName fn(arg);
+			
+			// If it's a relative path, root it and
+			// make arg point to it.
+			if(fn.IsRelativePath())
+			{
+				fn.Root(curDir);
+				arg = new TCHAR[_tcslen(fn.c_str())+1];
+				_tcscpy(arg, fn.c_str());
+				bOwn = true;
+			}
+		}
+
+		paSize = _tcslen(arg);
 		
 		parmarray.grow( size + paSize + 1);
 
-		_tcscpy(&parmarray[size], __argv[i]);
+		_tcscpy(&parmarray[size], arg);
 
 		size += (paSize + 1);
+
+		if(bOwn)
+		{
+			delete [] arg;
+		}
 	}
 
 	// Append another NULL.

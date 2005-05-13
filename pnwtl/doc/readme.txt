@@ -27,6 +27,7 @@ What's new?
 19) Refresh magic folder from context menu.
 20) Ctrl+[ jumps to matching or nearest brace.
 21) Ruby scheme
+22) Better behaviour with files opened using relative paths.
 
 Bug Fixes:
 ----------
@@ -41,6 +42,9 @@ Bug Fixes:
 8) Crash on Running Find in Files With Operation in Progress (SF Bug #1168101).
 9) code-folding works not correct (SF Bug #1050483).
 10) HTML export uses wrong CSS syntax (SF Bug #1074120).
+11) Normal Search does not work with UTF-8 (Unicode) chars > 127 (SF Bug #1200456).
+12) Relative paths don't work from command-line with single-instance PN (SF Bug #1161783).
+13) PN does not correctly remember the normal window size when closed maximised.
 
 If you find a bug:
 ------------------
