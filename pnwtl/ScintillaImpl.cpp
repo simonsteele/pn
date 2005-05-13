@@ -9,6 +9,7 @@
  */
 #include "stdafx.h"
 #include "ScintillaImpl.h"
+#include "include/encoding.h"
 
 CScintillaImpl::CScintillaImpl()
 {
@@ -433,6 +434,16 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 	bool			checkFoundPos = true;
 
 	CString localFindText = pOptions->FindText;
+
+	// If we're in UTF-8 mode we have a go at making the correct find string
+	// so that Windows characters get converted into UTF-8.
+	if(GetCodePage() == SC_CP_UTF8)
+	{
+		// TODO provide a 16-bit encoding to UTF-8 conversion in unicode mode.
+		Windows1252_Utf8 conv((LPCTSTR)localFindText);
+		localFindText = (const char*)(const unsigned char*)conv;
+	}
+
 	int lenFind = UnSlashAsNeeded(localFindText, pOptions->UseSlashes, pOptions->UseRegExp);
 	
 	if(lenFind == 0)
