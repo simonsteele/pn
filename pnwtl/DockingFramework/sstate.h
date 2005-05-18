@@ -389,11 +389,11 @@ protected:
 				
 				// Restore the child window posisions...
 				bRes = baseClass::Restore(pMState,key);
-
-				::ShowWindow(m_hWnd, bMaximised == 1 ? SW_SHOWMAXIMIZED : SW_SHOWNORMAL);
 			}
 			else
 				bRes = baseClass::RestoreDefault();
+
+			::ShowWindow(m_hWnd, bMaximised == 1 ? SW_SHOWMAXIMIZED : SW_SHOWNORMAL);
 
 			return bRes;
 		}

@@ -28,6 +28,7 @@ What's new?
 20) Ctrl+[ jumps to matching or nearest brace.
 21) Ruby scheme
 22) Better behaviour with files opened using relative paths.
+23) Wrap text clips around selected text (SF RFE #1199676).
 
 Bug Fixes:
 ----------
@@ -44,7 +45,7 @@ Bug Fixes:
 10) HTML export uses wrong CSS syntax (SF Bug #1074120).
 11) Normal Search does not work with UTF-8 (Unicode) chars > 127 (SF Bug #1200456).
 12) Relative paths don't work from command-line with single-instance PN (SF Bug #1161783).
-13) PN does not correctly remember the normal window size when closed maximised.
+13) Window Dimensions After Un-Maximizing (SF Bug #1167299).
 
 If you find a bug:
 ------------------

@@ -189,9 +189,30 @@ LRESULT CClipsDocker::OnClipSelected(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 		
 		int curPos = pS->GetCurrentPos();
 	
+		int length = pS->GetSelLength();
+		if(length != 0)
+		{
+			// Get the selected text from Scintilla.
+			char* selData = new char[length+1];
+			int rxlen = pS->GetSelText(selData);
+			PNASSERT(rxlen == length+1);
+			
+			// Insert the text into the buffer.
+			clipstr.insert(offset, selData);
+			delete [] selData;
+			
+			// Adjust the offset to place the cursor after the selected text.
+			offset += length;
+		}
+
+		// Wrap everything in an undo block.
+		pS->BeginUndoAction();
+		if(length)
+			pS->DeleteBack(); // kill the selection text, we're inserting it again.
 		pS->InsertText(curPos, clipstr.c_str());
 		pS->SetCurrentPos(curPos + offset);
 		pS->SetSel(curPos + offset, curPos + offset);
+		pS->EndUndoAction();
 		::SetFocus(pS->m_hWnd);
 	}
 
