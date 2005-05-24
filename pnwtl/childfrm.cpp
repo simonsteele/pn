@@ -794,6 +794,8 @@ LRESULT CChildFrame::OnWordWrapToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 LRESULT CChildFrame::OnColouriseToggle(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/)
 {
 	m_view.EnableHighlighting(UIInvertCheck(wID));
+
+	UpdateMenu();
 	
 	return 0;
 }
@@ -1409,6 +1411,7 @@ void CChildFrame::UpdateTools(CScheme* pScheme)
 void CChildFrame::SchemeChanged(CScheme* pScheme)
 {
 	UpdateTools(pScheme);
+	UpdateMenu();
 	g_Context.m_frame->SetActiveScheme(m_hWnd, static_cast<LPVOID>(pScheme));
 	
 	::PostMessage(GetMDIFrame(), PN_NOTIFY, 0, PN_SCHEMECHANGED);

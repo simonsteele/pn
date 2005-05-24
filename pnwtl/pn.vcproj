@@ -447,6 +447,9 @@
 				RelativePath="tools.cpp">
 			</File>
 			<File
+				RelativePath=".\WorkspaceState.cpp">
+			</File>
+			<File
 				RelativePath=".\xmlparser.cpp">
 			</File>
 		</Filter>
@@ -626,6 +629,9 @@
 			</File>
 			<File
 				RelativePath="version.h">
+			</File>
+			<File
+				RelativePath=".\WorkspaceState.h">
 			</File>
 		</Filter>
 		<Filter
