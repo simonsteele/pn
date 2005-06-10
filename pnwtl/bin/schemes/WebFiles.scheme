@@ -294,8 +294,9 @@
 			</group>
 		</use-styles>
 	</language>
-	<language name="xml" title="XML" folding="false" foldcomments="false" foldcompact="false">
+	<language name="xml" title="XML" folding="true" foldcomments="false" foldcompact="false">
 		<lexer name="xml" stylebits="7"/>
+		<property name="fold.html" value="1" />
 		<use-keywords>
 			<keyword key="5" name="DTD keywords" class="dtd"/>
 		</use-keywords>

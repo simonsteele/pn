@@ -396,6 +396,7 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 				while(pKeywordSet)
 				{
 					writer.writeKeywords(pKeywordSet->key, pKeywordSet->pWords);
+					pKeywordSet = pKeywordSet->pNext;
 				}
 				writer.endOverrideKeywords();
 			}
