@@ -49,7 +49,6 @@
 #define LOG(message) \
 	::OutputDebugString(message)
 
-
 #include "pntypes.h"
 
 // Pre-declarations...
@@ -67,9 +66,17 @@ typedef enum {
 	PNDW_FINDRESULTS = 3,
 } EDockingWindow;
 
+#include "pnutils.h"
+#include "pnstrings.h"
+#include "include/singleton.h"
+
+#include "Document.h"
+typedef boost::shared_ptr<Document> DocumentPtr;
+typedef std::list< DocumentPtr > DocumentList;
+
 struct IMainFrame
 {
-	// Window Accessor
+	// Window Accessors
 	virtual CWindow* GetWindow() = 0;
 	
 	// Global UI
@@ -85,6 +92,10 @@ struct IMainFrame
 	virtual bool CheckAlreadyOpen(LPCTSTR lpszFilename, EAlreadyOpenAction action) = 0;
 	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme) = 0;
 
+	// Document Management Operations
+	virtual void GetOpenDocuments(DocumentList& list) = 0;
+	virtual void GetOpenWorkspaceDocuments(DocumentList& list) = 0;
+
 	// Projects
 	virtual Projects::Workspace* GetActiveWorkspace() = 0;
 	
@@ -94,10 +105,6 @@ struct IMainFrame
 	// Search
 	virtual void FindInFiles(SearchOptions* options) = 0;
 };
-
-#include "pnutils.h"
-#include "pnstrings.h"
-#include "include/singleton.h"
 
 static void LogWndPos(LPCTSTR codeLoc, HWND hWnd)
 {

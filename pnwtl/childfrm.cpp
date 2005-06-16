@@ -31,7 +31,7 @@ static char THIS_FILE[] = __FILE__;
 
 bool CChildFrame::s_bFirstChild = true;
 
-CChildFrame::CChildFrame()
+CChildFrame::CChildFrame(DocumentPtr doc) : m_spDocument(doc)
 {
 	m_hWndOutput = NULL;
 	m_hImgList = NULL;
@@ -220,6 +220,11 @@ void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 ////////////////////////////////////////////////////
 // Document Entries
 
+DocumentPtr CChildFrame::GetDocument() const
+{
+	return m_spDocument;
+}
+
 void CChildFrame::SetTitle( bool bModified )
 {
 	LPCTSTR sFullPath = m_FileName;
@@ -384,6 +389,13 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	m_FileName = _T("<new>");
 	SetTitle();
 
+	/*CSPopupMenu newMenu;
+	CSchemeManager::GetInstance()->BuildMenu((HMENU)newMenu, this);
+	CSMenuHandle menu = m_hMenu;
+	CSMenuHandle file = menu.GetSubMenu(0);
+	::ModifyMenu(file.GetHandle(), 0, MF_BYPOSITION | MF_POPUP, (UINT)(HMENU)newMenu, _T("&New"));
+	newMenu.Detach();*/
+
 	SetupToolbar();
 
 	UISetChecked(ID_EDITOR_COLOURISE, true);
@@ -420,6 +432,8 @@ LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 	else
 	{
 		m_bClosing = true;
+
+		m_spDocument->SetValid(false);
 
 		if( ToolOwner::HasInstance() )
 		{

@@ -64,6 +64,10 @@ extern CAppModule _Module;
 #include <string>
 typedef std::basic_string<TCHAR> tstring;
 
+//Boosty Goodness
+#include <boost/config.hpp>
+#include <boost/shared_ptr.hpp>
+
 #define PNASSERT ATLASSERT
 
 #ifdef _DEBUG

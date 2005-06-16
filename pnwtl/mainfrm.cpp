@@ -108,7 +108,8 @@ CMainFrame::~CMainFrame()
  */
 CChildFrame* CMainFrame::NewEditor()
 {
-	CChildFrame* pChild = new CChildFrame;
+	DocumentPtr pD(new Document());
+	CChildFrame* pChild = new CChildFrame(pD);
 	PNASSERT(pChild != NULL);
 
 	// Give the user the option to always maximise new windows.
@@ -190,11 +191,18 @@ void __stdcall CMainFrame::WorkspaceChildEnumNotify(CChildFrame* pChild, SChildE
 {
 	SWorkspaceWindowsStruct* s = static_cast<SWorkspaceWindowsStruct*>(pES);
 
-	tstring filename = pChild->GetFileName().c_str();
-	Projects::File* pFile = s->pWorkspace->FindFile(filename.c_str());
+	if(s->bInProjectGroupOnly)
+	{
+		tstring filename = pChild->GetFileName().c_str();
+		Projects::File* pFile = s->pWorkspace->FindFile(filename.c_str());
 
-	if(pFile)
+		if(pFile)
+			s->FoundWindows.push_back(pChild);
+	}
+	else
+	{
 		s->FoundWindows.push_back(pChild);
+	}
 }
 
 void __stdcall CMainFrame::WorkspaceChildCloseNotify(CChildFrame* pChild, SChildEnumStruct* pES)
@@ -302,9 +310,9 @@ void CMainFrame::OnMDISetMenu(HMENU hOld, HMENU hNew)
 	CSMenuHandle r(hOld);
 	CSMenuHandle a(hNew);
 
+	MoveNewMenu(r, a);
 	MoveMRU(r, a);
 	MoveLanguage(r, a);
-	MoveNewMenu(r, a);
 }
 
 BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
@@ -1983,8 +1991,12 @@ void CMainFrame::ToggleDockingWindow(EDockingWindow window, bool bSetValue, bool
 
 void CMainFrame::AddNewMenu(CSMenuHandle& menu)
 {
+	PNASSERT(::IsMenu(m_NewMenu));
+	
 	CSMenuHandle file = menu.GetSubMenu(0);
-	::ModifyMenu(file.GetHandle(), 0, MF_BYPOSITION | MF_POPUP, (UINT)(HMENU)m_NewMenu, _T("&New"));
+	CString str;
+	str.LoadString(IDS_NEW);
+	::InsertMenu(file, 0, MF_BYPOSITION | MF_POPUP, (UINT)(HMENU)m_NewMenu, str);
 }
 
 void CMainFrame::AddMRUMenu(CSMenuHandle& menu)
@@ -1992,6 +2004,9 @@ void CMainFrame::AddMRUMenu(CSMenuHandle& menu)
 	CString str;
 	CSMenuHandle file(menu.GetSubMenu(0));
 	
+	PNASSERT(::IsMenu(m_RecentFiles));
+	PNASSERT(::IsMenu(m_RecentProjects));
+
 	str.LoadString(IDS_RECENTFILES);
 	::InsertMenu(file.GetHandle(), ID_APP_EXIT, MF_BYCOMMAND | MF_POPUP, (UINT)(HMENU)m_RecentFiles, str);
 	
@@ -2007,8 +2022,17 @@ void CMainFrame::AddLanguageMenu(CSMenuHandle& menu)
 	CString str;
 	CSMenuHandle view(menu.GetSubMenu(2));
 	
+	PNASSERT(::IsMenu(m_Switcher));
 	str.LoadString(IDS_CHANGESCHEME);
 	::ModifyMenu(view.GetHandle(), ID_VIEW_CHANGESCHEME, MF_BYCOMMAND | MF_POPUP, (UINT)(HMENU)m_Switcher, str);
+}
+
+void CMainFrame::MoveNewMenu(CSMenuHandle& remove, CSMenuHandle& add)
+{
+	CSMenuHandle file( remove.GetSubMenu(0) );
+	::RemoveMenu(file, 0, MF_BYPOSITION);
+	
+	AddNewMenu(add);
 }
 
 void CMainFrame::MoveMRU(CSMenuHandle& r, CSMenuHandle& a)
@@ -2058,13 +2082,6 @@ void CMainFrame::MoveMRU(CSMenuHandle& r, CSMenuHandle& a)
 	AddMRUMenu(a);
 }
 
-void CMainFrame::MoveNewMenu(CSMenuHandle& remove, CSMenuHandle& add)
-{
-	CSMenuHandle file( remove.GetSubMenu(0) );
-	::ModifyMenu(file, 0, MF_BYPOSITION | MF_STRING, ID_FILE_NEW, _T("n"));
-	AddNewMenu(add);
-}
-
 void CMainFrame::MoveLanguage(CSMenuHandle& remove, CSMenuHandle& add)
 {
 	CSMenuHandle view = remove.GetSubMenu(2);
@@ -2082,7 +2099,9 @@ void CMainFrame::MoveLanguage(CSMenuHandle& remove, CSMenuHandle& add)
 
 				if(mii.hSubMenu == (HMENU)m_Switcher)
 				{
-					::ModifyMenu(view, i, MF_BYPOSITION | MF_STRING, ID_VIEW_CHANGESCHEME, _T("s"));
+					//::ModifyMenu(view, i, MF_BYPOSITION | MF_STRING, ID_VIEW_CHANGESCHEME, _T("s")); - destroys menu.
+					::RemoveMenu(view, i, MF_BYPOSITION);
+					::InsertMenu(view, i, MF_BYPOSITION | MF_STRING, ID_VIEW_CHANGESCHEME, _T("s"));					
 				}
 			}
 		}
@@ -2327,6 +2346,43 @@ void CMainFrame::SetActiveScheme(HWND notifier, LPVOID pScheme)
 	if(notifier == MDIGetActive())
 	{
 		m_Switcher.SetActiveScheme(static_cast<CScheme*>(pScheme));
+	}
+}
+
+void CMainFrame::GetOpenDocuments(DocumentList& list)
+{
+	SWorkspaceWindowsStruct s;
+	s.bInProjectGroupOnly = false;
+	s.pFunction = WorkspaceChildEnumNotify;
+	s.pWorkspace = NULL;
+
+	PerformChildEnum(&s);
+
+	for(std::list<CChildFrame*>::iterator i = s.FoundWindows.begin();
+		i != s.FoundWindows.end(); 
+		++i)
+	{
+		list.push_back((*i)->GetDocument());
+	}
+}
+
+void CMainFrame::GetOpenWorkspaceDocuments(DocumentList& list)
+{
+	if(GetActiveWorkspace() == NULL)
+		return;
+
+	SWorkspaceWindowsStruct s;
+	s.bInProjectGroupOnly = true;
+	s.pFunction = WorkspaceChildEnumNotify;
+	s.pWorkspace = GetActiveWorkspace();
+
+	PerformChildEnum(&s);
+
+	for(std::list<CChildFrame*>::iterator i = s.FoundWindows.begin();
+		i != s.FoundWindows.end(); 
+		++i)
+	{
+		list.push_back((*i)->GetDocument());
 	}
 }
 
@@ -2694,6 +2750,7 @@ bool CMainFrame::SaveProjects(Projects::Workspace* pWorkspace)
 bool CMainFrame::CloseWorkspaceFiles(Projects::Workspace* pWorkspace)
 {
 	SWorkspaceWindowsStruct s;
+	s.bInProjectGroupOnly = true;
 	s.pFunction = WorkspaceChildCloseNotify; 
 	s.bCanClose = true;
 	s.pWorkspace = pWorkspace;
@@ -2747,6 +2804,7 @@ bool CMainFrame::CloseWorkspace(bool bAllowCloseFiles, bool bAsk)
 	{
 		// No point in asking if there are no files open.
 		SWorkspaceWindowsStruct wws;
+		wws.bInProjectGroupOnly = true;
 		wws.pWorkspace = workspace;
 		if(EnumWorkspaceWindows(&wws))
 		{

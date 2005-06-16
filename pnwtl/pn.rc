@@ -53,7 +53,6 @@ IDR_MAINFRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
         MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
         MENUITEM "Open Project(s)...",          ID_FILE_OPENPROJECT
         MENUITEM "Close Project(s)",            ID_FILE_CLOSEWORKSPACE
@@ -102,7 +101,6 @@ IDR_MDICHILD MENU
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
         MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
         MENUITEM "Open Pro&ject(s)...",         289
         MENUITEM "Re&vert",                     ID_FILE_REVERT
@@ -1738,6 +1736,7 @@ BEGIN
     IDS_RECENTPROJECTS      "Recent Pro&jects"
     IDS_PROJECTS_DEFAULTTEMPLATE "Empty Project"
     IDS_CHANGESCHEME        "&Change Scheme"
+    IDS_NEW                 "&New"
 END
 
 STRINGTABLE 

@@ -51,6 +51,7 @@ typedef struct tagCloseStruct : public tagEnumChildrenStruct
 
 typedef struct tagWorkspaceCloseStruct : public tagCloseStruct
 {
+	bool bInProjectGroupOnly;
 	Projects::Workspace* pWorkspace;
 	std::list<CChildFrame*> FoundWindows;
 } SWorkspaceWindowsStruct;
@@ -283,18 +284,27 @@ public:
 
 public:
 	virtual CWindow* GetWindow();
-	virtual ToolWrapper* MakeGlobalOutputWrapper(ToolDefinition* pDefinition);
+	
 	virtual void AddMRUEntry(LPCTSTR lpszFile);
-	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme);
-	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL, HWND hWndCaller = NULL);
 	virtual void SetStatusText(LPCTSTR text, bool bLongLife = true);
-	virtual bool SaveAll(bool ask = false);
+	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL, HWND hWndCaller = NULL);
+	virtual void ToggleDockingWindow(EDockingWindow window, bool bSetValue = false, bool bShowing = true);
+	
 	virtual bool CloseAll();
+	virtual bool SaveAll(bool ask = false);
 	virtual bool Open(LPCTSTR pathname, bool bAddMRU = false);
 	virtual bool CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction action = (EAlreadyOpenAction)OPTIONS->GetCached(Options::OAlreadyOpenAction));
+	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme);
+
+	virtual void GetOpenDocuments(DocumentList& list);
+	virtual void GetOpenWorkspaceDocuments(DocumentList& list);
+
+	virtual ToolWrapper* MakeGlobalOutputWrapper(ToolDefinition* pDefinition);
+	
 	virtual Projects::Workspace* GetActiveWorkspace();
+	
 	virtual void FindInFiles(SearchOptions* options);
-	virtual void ToggleDockingWindow(EDockingWindow window, bool bSetValue = false, bool bShowing = true);
+	
 
 	////////////////////////////////////////////////////////////////
 	// IToolOutputSink Implementation

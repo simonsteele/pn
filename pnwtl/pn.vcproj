@@ -309,6 +309,9 @@
 				RelativePath=".\docprops.cpp">
 			</File>
 			<File
+				RelativePath=".\Document.cpp">
+			</File>
+			<File
 				RelativePath="exporters.cpp">
 			</File>
 			<File
@@ -476,6 +479,9 @@
 			</File>
 			<File
 				RelativePath=".\docprops.h">
+			</File>
+			<File
+				RelativePath=".\Document.h">
 			</File>
 			<File
 				RelativePath="exporters.h">

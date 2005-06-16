@@ -2,6 +2,7 @@
 #include "include/genx/genx.h"
 #include "include/pngenx.h"
 #include "WorkspaceState.h"
+#include "project.h"
 
 //
 // <Workspace>
@@ -77,19 +78,97 @@ protected:
 // WorkspaceState
 //////////////////////////////////////////////////////////////////////////////
 
-void WorkspaceState::Load()
+void WorkspaceState::Load(LPCTSTR szPath)
 {
-	
+	if(szPath == NULL)
+	{
+		tstring path;
+		getDefaultPath(path);
+		load(path.c_str());
+	}
+	else
+	{
+		load(szPath);
+	}
 }
 
-void WorkspaceState::Save()
+void WorkspaceState::Save(LPCTSTR szPath)
+{
+	if(szPath == NULL)
+	{
+		tstring path;
+		getDefaultPath(path);
+		save(path.c_str());
+	}
+	else
+	{
+		save(szPath);
+	}
+}
+
+void WorkspaceState::getDefaultPath(tstring& str) const
+{
+	OPTIONS->GetPNPath(str, PNPATH_USERSETTINGS);
+	CFileName fn(_T("workspace.pnws"));
+	fn.Root(str.c_str());
+	str = fn.c_str();
+}
+
+void WorkspaceState::load(LPCTSTR filename)
+{
+	XMLParser parser;
+	parser.SetParseState(this);
+	try
+	{
+		parser.LoadFile(filename);
+	}
+	catch(XMLParserException& ex)
+	{
+		CString err;
+		err.Format(_T("Error Parsing Workspace XML: %s\n (file: %s, line: %d, column %d)"), 
+			XML_ErrorString(ex.GetErrorCode()), ex.GetFileName(), ex.GetLine(), ex.GetColumn());
+
+		g_Context.m_frame->SetStatusText(err);
+	}
+}
+
+void WorkspaceState::save(LPCTSTR filename)
 {
 	WSWriter writer;
-	tstring path;
-	OPTIONS->GetPNPath(path, PNPATH_USERSETTINGS);
-	CFileName fn(_T("workspace.pnws"));
-	fn.Root(path.c_str());
-	writer.Start(fn.c_str());
+	writer.Start(filename);
+
+	writer.BeginWorkspace();
+
+	DocumentList list;
+	g_Context.m_frame->GetOpenDocuments(list);
+	
+	// TODO - perhaps save project open files in project state, and
+	// then remove them from the list of open files to save.
+
+	for(DocumentList::iterator i = list.begin(); i != list.end(); ++i)
+	{
+		writer.WriteFile( (*i)->GetFileName(FN_FULL).c_str() );
+	}
+
+	Projects::Workspace* ws = g_Context.m_frame->GetActiveWorkspace();
+	if(ws)
+	{
+		if(ws->CanSave())
+		{
+			// We can write ProjectGroup information
+			writer.WriteProjectGroup(ws->GetFileName());
+		}
+		else
+		{
+			const Projects::PROJECT_LIST& projects = ws->GetProjects();
+			for(Projects::PROJECT_LIST::const_iterator j = projects.begin(); j != projects.end(); ++j)
+			{
+				writer.WriteProject( (*j)->GetFileName().c_str() );
+			}
+		}
+	}
+
+	writer.EndWorkspace();
 
 	writer.Close();
 }

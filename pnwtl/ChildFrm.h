@@ -26,7 +26,6 @@
 #include "textview.h"
 #include "tools.h"
 
-typedef enum {FN_FULL, FN_FILE, FN_PATH, FN_FILEPART} EGFNType;
 typedef enum {EP_LINE, EP_COL} EGPType;
 
 class COutputView;
@@ -45,7 +44,7 @@ public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MDICHILD)
 	typedef CTabbedMDIChildWindowImpl<CChildFrame> baseClass;
 
-	CChildFrame();
+	CChildFrame(DocumentPtr doc);
 	~CChildFrame();
 	virtual void OnFinalMessage(HWND /*hWnd*/);
 
@@ -167,6 +166,8 @@ public:
 
 	////////////////////////////////////////////////////
 	// Document Entries
+
+	DocumentPtr GetDocument() const;
 
 	void SetTitle(bool bModified = false);
 	tstring GetFileName(EGFNType type = FN_FULL);
@@ -306,6 +307,7 @@ protected:
 	bool attemptOverwrite(LPCTSTR filename);
 
 protected:
+	DocumentPtr			m_spDocument;
 	static bool			s_bFirstChild;
 	HWND				m_hWndOutput;
 	HIMAGELIST			m_hImgList;

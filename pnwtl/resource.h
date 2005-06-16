@@ -53,6 +53,7 @@
 #define IDS_RECENTPROJECTS              147
 #define IDS_PROJECTS_DEFAULTTEMPLATE    148
 #define IDS_CHANGESCHEME                149
+#define IDS_NEW                         150
 #define IDI_TEXTCLIPS                   167
 #define IDR_POPUP_REGEXP                170
 #define IDR_POPUP_EDITOR                173
