@@ -54,7 +54,7 @@ void Init()
 	OPTIONS->GetPNPath(path, PNPATH_SCHEMES);
 	OPTIONS->GetPNPath(cpath, PNPATH_COMPILEDSCHEMES);
 
-	CSchemeManager& SM = CSchemeManager::GetInstanceRef();
+	SchemeManager& SM = SchemeManager::GetInstanceRef();
 	SM.SetPath(path.c_str());
 	SM.SetCompiledPath(cpath.c_str());
 	SM.Load();
@@ -62,7 +62,6 @@ void Init()
 
 void Shutdown()
 {
-	CSchemeManager::DeleteInstance();
 	CSMenuManager::ReleaseInstance();
 
 	DeletionManager::DeleteAll();

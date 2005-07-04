@@ -1,6 +1,6 @@
 /**
  * @file Schemes.h
- * @brief Define CScheme and CSchemeManager.
+ * @brief Define CScheme and SchemeManager.
  * @author Simon Steele
  * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
@@ -99,7 +99,7 @@ typedef enum {schUseTabs = 0x10, schInternal = 0x20, schOverrideTabs = 0x40, sch
 
 using namespace std;
 
-class CSchemeManager;
+class SchemeManager;
 class CFile;
 
 ///@todo Add a m_CompiledFile member to save repeatedly changing the file extension and path.
@@ -107,8 +107,8 @@ class CScheme
 {
 	public:
 		CScheme();
-		CScheme(CSchemeManager* pManager);
-		CScheme(CSchemeManager* pManager, LPCTSTR filename);
+		CScheme(SchemeManager* pManager);
+		CScheme(SchemeManager* pManager, LPCTSTR filename);
 		
 		CScheme(const CScheme& copy)
 		{
@@ -146,7 +146,7 @@ class CScheme
 
 		bool IsInternal() const;
 
-		void SetSchemeManager(CSchemeManager* pManager);
+		void SetSchemeManager(SchemeManager* pManager);
 
 		bool operator < (const CScheme& compare) const;
 		bool operator > (const CScheme& compare) const;
@@ -157,11 +157,7 @@ class CScheme
 		TCHAR*			m_Name;
 		TCHAR*			m_Title;
 		bool			m_bInternal;
-		/*bool			m_bOverrideUseTabs;
-		bool			m_bOverrideTabWidth;
-		bool			m_bUseTabs;
-		short			m_tabWidth;*/
-		CSchemeManager*	m_pManager;
+		SchemeManager*	m_pManager;
 
 		bool InitialLoad(CFile& file, SchemeHdrRec& hdr);
 
@@ -225,12 +221,12 @@ class CSchemeSwitcher
 		CSPopupMenu		m_menu;
 };
 
-class CSchemeManager
+class SchemeManager : public Singleton<SchemeManager, true>
 {
 	public:
-		CSchemeManager() : m_SchemePath(NULL), m_CompiledPath(NULL){}
-		CSchemeManager(LPCTSTR schemepath, LPCTSTR compiledpath=NULL);
-		~CSchemeManager();
+		SchemeManager() : m_SchemePath(NULL), m_CompiledPath(NULL){}
+		SchemeManager(LPCTSTR schemepath, LPCTSTR compiledpath=NULL);
+		~SchemeManager();
 		
 		void SetPath(LPCTSTR schemepath);
 		void SetCompiledPath(LPCTSTR compiledpath);
@@ -258,11 +254,9 @@ class CSchemeManager
 
 		void SaveExtMap();
 
-		static CSchemeManager * GetInstance();
-		static CSchemeManager & GetInstanceRef();
-		static void DeleteInstance();
-
 	protected:
+		CScheme* internalSchemeForFileName(const tstring& filename);
+		CScheme* internalSchemeForExt(const tstring& extension);
 		void internalLoadExtMap(LPCTSTR filename, SCHEME_MAP& extMap, SCHEME_MAP& fnMap);
 
 	protected:
@@ -275,11 +269,6 @@ class CSchemeManager
 		SCHEME_MAP		m_SchemeFileNameMap;
 
 		CDefaultScheme	m_DefaultScheme;
-
-		static CSchemeManager* s_pInstance;
-
-		CScheme* InternalSchemeForFileName(const tstring& filename);
-		CScheme* InternalSchemeForExt(const tstring& extension);
 };
 
 #endif //#ifndef schemes_h__included

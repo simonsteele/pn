@@ -1,6 +1,18 @@
 | Working towards 0.6 :: Ella
 ---------------------------------------
 
+Since 0.5.61:
+
+Don't exit if save is cancelled for a previously unsaved item.
+Escape key closes find results if no output windows are open.
+Optionally save workspace between runs ("Remember open files and projects between sessions" in General options).
+Use SmartStart when files are opened.
+Ctrl+Shift+S for Save All
+
+Code:
+CSchemeManager renamed to SchemeManager, gradually working towards coding standards.
+Filename and basic document functions for childframe moved to new Document class, this will be available to plugins.
+
 Since 0.5.60:
 
 Ctrl+[ jumps to matching or nearest brace.
@@ -11,9 +23,6 @@ Relative paths don't work from command-line with single-instance PN (SF Bug #116
 PN does not correctly remember the normal window size when closed maximised.
 Ruby scheme
 Text clips wrap selected text.
-Don't exit if save is cancelled for a previously unsaved item.
-Escape key closes find results if no output windows are open.
-Optionally save workspace between runs ("Remember open files and projects between sessions" in General options).
 
 Since 0.5.59:
 

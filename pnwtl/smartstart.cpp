@@ -2,7 +2,7 @@
  * @file smartstart.cpp
  * @brief Implementation of SmartStart
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -13,8 +13,6 @@
 #include "textview.h"
 #include "xmlparser.h"
 #include "smartstart.h"
-
-//SmartStart* SmartStart::s_pTheInstance = NULL;
 
 /// protected singleton constructor...
 SmartStart::SmartStart()
@@ -113,14 +111,10 @@ SmartStart::EContinueState SmartStart::OnChar(CTextView* pView)
 	if(found != m_Map.end())
 	{
 		// We did find that text, so we can map it to a scheme to select:
-		CScheme* pScheme = CSchemeManager::GetInstance()->SchemeByName((*found).second.c_str());
+		CScheme* pScheme = SchemeManager::GetInstance()->SchemeByName((*found).second.c_str());
 		if(pScheme)
 		{
-			// Apply the scheme, and notify the user by setting the status...
-			pView->SetScheme(pScheme);
-			tstring stat = _T("SmartStart selected the scheme: ");
-			stat += pScheme->GetTitle();
-			g_Context.m_frame->SetStatusText(stat.c_str());
+			applyScheme(pView, pScheme);
 		}
 		return eMatched;
 	}
@@ -134,9 +128,43 @@ SmartStart::EContinueState SmartStart::OnChar(CTextView* pView)
 		return eContinue;
 }
 
+void SmartStart::Scan(CTextView* pView)
+{
+	pView->GetText(m_max, m_buffer);
+	
+	int length = _tcslen(m_buffer);
+	
+	while(length > 0)
+	{
+		tstring str(m_buffer, 0, length);
+
+		SM_IT found = m_Map.find(tstring(m_buffer));
+		if(found != m_Map.end())
+		{
+			CScheme* pScheme = SchemeManager::GetInstance()->SchemeByName((*found).second.c_str());
+			if(pScheme)
+			{
+				applyScheme(pView, pScheme);
+				break;
+			}
+		}
+
+		length--;
+	}
+}
+
 STRING_MAP& SmartStart::GetMap()
 {
 	return m_Map;
+}
+
+/// Apply the scheme, and notify the user by setting the status...
+void SmartStart::applyScheme(CTextView* pView, CScheme* pScheme)
+{
+	pView->SetScheme(pScheme);
+	tstring stat = _T("SmartStart selected the scheme: ");
+	stat += pScheme->GetTitle();
+	g_Context.m_frame->SetStatusText(stat.c_str());
 }
 
 // XMLParseState Implementation:

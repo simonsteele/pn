@@ -20,6 +20,7 @@ HTML Export configuration, inline HTML export.
 [95%] Basic Build Management - see http://www.pnotepad.org/articles/pn2projects.html
 [complete] Tab order management.
 [complete] Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
+[complete] File-type to scheme mapping editor.
 [complete-BjoernGraf]File Association Editor
 
 0.8 Basie

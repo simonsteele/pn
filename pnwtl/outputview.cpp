@@ -497,7 +497,7 @@ void COutputView::OnFirstShow()
 
 void COutputView::SetOutputLexer()
 {
-	CScheme* pScheme = CSchemeManager::GetInstance()->SchemeByName("output");
+	CScheme* pScheme = SchemeManager::GetInstance()->SchemeByName("output");
 	if(pScheme && ::IsWindow(m_hWnd))
 	{
 		pScheme->Load( *(static_cast<CScintilla*>(this)) );

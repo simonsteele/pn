@@ -176,7 +176,10 @@ void CMainFrame::UpdateStatusBar()
 	else
 	{
 		m_StatusBar.SetPaneText(ID_MOD_PANE, _T(""));
+		m_StatusBar.SetPaneText(ID_ENC_PANE, _T(""));
+		m_StatusBar.SetPaneText(ID_LINEENDS_PANE, _T(""));
 		m_StatusBar.SetPaneText(ID_POS_PANE, _T(""));
+		m_StatusBar.SetPaneText(ID_INS_PANE, _T(""));
 		//SetStatusText(NULL);
 	}
 }
@@ -631,7 +634,7 @@ HWND CMainFrame::CreateSchemeToolbar()
 	m_SchemeCombo.SetParent(hWnd); 
 	m_SchemeCombo.SetFont((HFONT)GetStockObject( DEFAULT_GUI_FONT ));
 
-	CSchemeManager* pM = CSchemeManager::GetInstance();
+	SchemeManager* pM = SchemeManager::GetInstance();
 	SCHEME_LIST* pSchemes = pM->GetSchemesList();
 
 	int index = m_SchemeCombo.AddString( pM->GetDefaultScheme()->GetTitle() );
@@ -944,7 +947,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	// Initialise our popup menus.
 	m_Switcher.Reset(MENUMESSAGE_CHANGESCHEME);
-	CSchemeManager::GetInstance()->BuildMenu((HMENU)m_NewMenu, this);
+	SchemeManager::GetInstance()->BuildMenu((HMENU)m_NewMenu, this);
 
 	CString mrukey;
 	mrukey = pnregroot;
@@ -1076,7 +1079,7 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 				}
 				else if(_tcsicmp(&parm[1], _T("s")) == 0 || _tcsicmp(&parm[1], _T("-scheme")) == 0)
 				{
-					CSchemeManager* pSM = CSchemeManager::GetInstance();
+					SchemeManager* pSM = SchemeManager::GetInstance();
 					pScheme = pSM->SchemeByName(nextArg);
 					if(pScheme != NULL && pScheme != pSM->GetDefaultScheme())
 					{
@@ -1347,9 +1350,9 @@ LRESULT CMainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	CChildFrame* pChild = NewEditor();
 	tstring newscheme =	OPTIONS->Get(PNSK_EDITOR, _T("NewScheme"), _T(""));
 	if(newscheme.length() > 0)
-        pChild->SetScheme(CSchemeManager::GetInstance()->SchemeByName(newscheme.c_str()));
+        pChild->SetScheme(SchemeManager::GetInstance()->SchemeByName(newscheme.c_str()));
 	else
-		pChild->SetScheme(CSchemeManager::GetInstance()->GetDefaultScheme());
+		pChild->SetScheme(SchemeManager::GetInstance()->GetDefaultScheme());
 		
 	
 	return 0;
@@ -1681,7 +1684,7 @@ LRESULT CMainFrame::OnFindInFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CSchemeManager* pSM = CSchemeManager::GetInstance();
+	SchemeManager* pSM = SchemeManager::GetInstance();
 	LPCTSTR currentScheme = NULL;
 
 	CChildFrame* pFrame = CChildFrame::FromHandle(GetCurrentEditor());
@@ -1743,7 +1746,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 		///@todo more dirty checking...
 
 		if( pageStyle.IsDirty() || pageSchemes.IsDirty() )
-            CSchemeManager::GetInstance()->Compile();
+            SchemeManager::GetInstance()->Compile();
 
 		PerformChildEnum(ChildOptionsUpdateNotify);
 

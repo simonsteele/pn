@@ -1,6 +1,6 @@
 /**
  * @file Schemes.cpp
- * @brief Implement CScheme and CSchemeManager.
+ * @brief Implement CScheme and SchemeManager.
  * @author Simon Steele
  * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
@@ -29,14 +29,14 @@ CScheme::CScheme()
 	Init();
 }
 
-CScheme::CScheme(CSchemeManager* pManager)
+CScheme::CScheme(SchemeManager* pManager)
 {
 	Init();
 
 	m_pManager = pManager;
 }
 
-CScheme::CScheme(CSchemeManager* pManager, LPCTSTR filename)
+CScheme::CScheme(SchemeManager* pManager, LPCTSTR filename)
 {
 	Init();
 
@@ -176,7 +176,7 @@ bool CScheme::IsInternal() const
 	return m_bInternal;
 }
 
-void CScheme::SetSchemeManager(CSchemeManager* pManager)
+void CScheme::SetSchemeManager(SchemeManager* pManager)
 {
 	m_pManager = pManager;
 }
@@ -523,11 +523,11 @@ void CDefaultScheme::Load(CScintilla& sc, LPCTSTR filename)
 }
 
 ///////////////////////////////////////////////////////////
-// CSchemeManager
+// SchemeManager
 ///////////////////////////////////////////////////////////
 
 
-CSchemeManager::CSchemeManager(LPCTSTR schemepath, LPCTSTR compiledpath)
+SchemeManager::SchemeManager(LPCTSTR schemepath, LPCTSTR compiledpath)
 {
 	SetPath(schemepath);
 	
@@ -543,7 +543,7 @@ CSchemeManager::CSchemeManager(LPCTSTR schemepath, LPCTSTR compiledpath)
 	Load();
 }
 
-CSchemeManager::~CSchemeManager()
+SchemeManager::~SchemeManager()
 {
 	if(m_SchemePath)
 		delete [] m_SchemePath;
@@ -573,17 +573,17 @@ void SetSMString(TCHAR*& str, LPCTSTR newpath)
 		_tcscat(str, _T("\\"));
 }
 
-void CSchemeManager::SetCompiledPath(LPCTSTR compiledpath)
+void SchemeManager::SetCompiledPath(LPCTSTR compiledpath)
 {
 	SetSMString(m_CompiledPath, compiledpath);
 }
 
-void CSchemeManager::SetPath(LPCTSTR schemepath)
+void SchemeManager::SetPath(LPCTSTR schemepath)
 {
 	SetSMString(m_SchemePath, schemepath);
 }
 
-void CSchemeManager::Load()
+void SchemeManager::Load()
 {
 	PNASSERT(m_SchemePath != NULL);
 	PNASSERT(m_CompiledPath != NULL);
@@ -730,27 +730,27 @@ void CSchemeManager::Load()
  * properties style key=value file. The file must be formatted:
  * .extension=schemename\r\n
  */
-void CSchemeManager::LoadExtMap(SCHEME_MAP& extMap, SCHEME_MAP& fnMap, bool noUserMap)
+void SchemeManager::LoadExtMap(SCHEME_MAP& extMap, SCHEME_MAP& fnMap, bool noUserMap)
 {
 	PNASSERT(m_SchemePath != NULL);
 	PNASSERT(m_CompiledPath != NULL);
 	
-	CString fn;
+	tstring fn;
 	
 	if(!noUserMap)
 	{
 		fn = m_CompiledPath;
 		fn += _T("extmap.dat");
 
-		internalLoadExtMap(fn, extMap, fnMap);
+		internalLoadExtMap(fn.c_str(), extMap, fnMap);
 	}
 	
 	fn = m_SchemePath;
 	fn += _T("extmap.dat");
-	internalLoadExtMap(fn, extMap, fnMap);
+	internalLoadExtMap(fn.c_str(), extMap, fnMap);
 }
 
-CScheme* CSchemeManager::InternalSchemeForFileName(const tstring& filename)
+CScheme* SchemeManager::internalSchemeForFileName(const tstring& filename)
 {
 	SCHEME_MAPIT i = m_SchemeFileNameMap.find(filename);
 	
@@ -759,7 +759,7 @@ CScheme* CSchemeManager::InternalSchemeForFileName(const tstring& filename)
 	return NULL;
 }
 
-CScheme* CSchemeManager::InternalSchemeForExt(const tstring& extension)
+CScheme* SchemeManager::internalSchemeForExt(const tstring& extension)
 {
 	SCHEME_MAPIT i = m_SchemeExtMap.find(extension);
 	
@@ -771,13 +771,13 @@ CScheme* CSchemeManager::InternalSchemeForExt(const tstring& extension)
 /**
  * @return The scheme for extension "ext" e.g. .pas
  */
-CScheme* CSchemeManager::SchemeForExt(LPCTSTR ext)
+CScheme* SchemeManager::SchemeForExt(LPCTSTR ext)
 {
 	TCHAR *e = new TCHAR[_tcslen(ext)+1];
 	_tcscpy(e, ext);
 	e = CharLower(e);
 
-	CScheme* pRet = InternalSchemeForExt( tstring(e) );
+	CScheme* pRet = internalSchemeForExt( tstring(e) );
 
 	delete [] e;
 
@@ -790,17 +790,17 @@ CScheme* CSchemeManager::SchemeForExt(LPCTSTR ext)
 /**
  * @return whatever scheme is appropriate for the filename passed in.
  */
-CScheme* CSchemeManager::SchemeForFile(LPCTSTR filename)
+CScheme* SchemeManager::SchemeForFile(LPCTSTR filename)
 {
 	CFileName fn(filename);
 	fn.ToLower();
 
-	CScheme* pScheme = InternalSchemeForExt( fn.GetExtension() );
+	CScheme* pScheme = internalSchemeForExt( fn.GetExtension() );
 	if(!pScheme)
 	{
 		// See if we can match on a simple filename basis.
 		// This is basically for makefiles etc.
-		pScheme = InternalSchemeForFileName( fn.GetFileName() );
+		pScheme = internalSchemeForFileName( fn.GetFileName() );
 	}
 
 	if(!pScheme)
@@ -812,7 +812,7 @@ CScheme* CSchemeManager::SchemeForFile(LPCTSTR filename)
 /**
  * @return CScheme* identified by "name"
  */
-CScheme* CSchemeManager::SchemeByName(LPCTSTR name)
+CScheme* SchemeManager::SchemeByName(LPCTSTR name)
 {
 	TCHAR *e = new TCHAR[_tcslen(name)+1];
 	_tcscpy(e, name);
@@ -833,7 +833,7 @@ CScheme* CSchemeManager::SchemeByName(LPCTSTR name)
 /**
  * Compile all available schemes
  */
-void CSchemeManager::Compile()
+void SchemeManager::Compile()
 {
 	PNASSERT(m_SchemePath != NULL);
 	PNASSERT(m_CompiledPath != NULL);
@@ -842,7 +842,7 @@ void CSchemeManager::Compile()
 	sc.Compile(m_SchemePath, m_CompiledPath, _T("master.scheme"));
 }
 
-void CSchemeManager::BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCommand, bool bNewMenu)
+void SchemeManager::BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCommand, bool bNewMenu)
 {
 	CSMenuHandle m(menu);
 	int id;
@@ -868,11 +868,21 @@ void CSchemeManager::BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCo
 	}
 }
 
-void CSchemeManager::SaveExtMap()
+void SchemeManager::SaveExtMap()
 {
 	// Keep a map around to see if we're actually different from the originals.
 	SCHEME_MAP origExts;
 	LoadExtMap(origExts, origExts, true);
+	
+	// Get the file...
+	tstring fn;
+	fn = m_CompiledPath;
+	fn += _T("extmap.dat");
+	CTextFile file;
+	if(!file.Open(fn.c_str(), CFile::modeWrite | CFile::modeText))
+		return;
+
+	tstring line;
 
 	for(SCHEME_MAP::const_iterator i = m_SchemeExtMap.begin(); i != m_SchemeExtMap.end(); ++i)
 	{
@@ -884,9 +894,13 @@ void CSchemeManager::SaveExtMap()
 		}
 
 		// write
+		line = (*i).first + "=";
+		line += (*i).second->GetName();
+		line += "\n";
+		file.WriteLine(line.c_str());
 	}
 
-	for(SCHEME_MAP::const_iterator j = m_SchemeFileNameMap.begin(); j != m_SchemeFileNameMap.end(); ++i)
+	for(SCHEME_MAP::const_iterator j = m_SchemeFileNameMap.begin(); j != m_SchemeFileNameMap.end(); ++j)
 	{
 		SCHEME_MAP::const_iterator match = origExts.find((*j).first);
 		if(match != origExts.end())
@@ -896,10 +910,16 @@ void CSchemeManager::SaveExtMap()
 		}
 
 		// write
+		line = (*j).first + "=";
+		line += (*j).second->GetName();
+		line += "\n";
+		file.WriteLine(line.c_str());
 	}
+
+	file.Close();
 }
 
-void CSchemeManager::internalLoadExtMap(LPCTSTR filename, SCHEME_MAP& extMap, SCHEME_MAP& fnMap)
+void SchemeManager::internalLoadExtMap(LPCTSTR filename, SCHEME_MAP& extMap, SCHEME_MAP& fnMap)
 {
 	CTextFile file;
 	bool bOK = file.Open(filename, CFile::modeText);
@@ -930,34 +950,6 @@ void CSchemeManager::internalLoadExtMap(LPCTSTR filename, SCHEME_MAP& extMap, SC
 	}	
 }
 
-CSchemeManager * CSchemeManager::GetInstance()
-{
-	if(!s_pInstance)
-		s_pInstance = new CSchemeManager;
-
-	return s_pInstance;
-}
-
-CSchemeManager & CSchemeManager::GetInstanceRef()
-{
-	return *GetInstance();
-}
-
-void CSchemeManager::DeleteInstance()
-{
-	if(s_pInstance)
-	{
-		delete s_pInstance;
-		s_pInstance = NULL;
-	}
-}
-
-///////////////////////////////////////////////////////////
-// CSchemeManager statics
-///////////////////////////////////////////////////////////
-
-CSchemeManager* CSchemeManager::s_pInstance = NULL;
-
 ///////////////////////////////////////////////////////////
 // CSchemeSwitcher
 ///////////////////////////////////////////////////////////
@@ -975,7 +967,7 @@ CSchemeSwitcher::~CSchemeSwitcher()
 void CSchemeSwitcher::BuildMenu(int iCommand)
 {
 	menuid_scheme_pair x;
-	CSchemeManager& sm = CSchemeManager::GetInstanceRef();
+	SchemeManager& sm = SchemeManager::GetInstanceRef();
 	SCHEME_LIST* pSchemes = sm.GetSchemesList();
 	CSMenuManager& mm = *CSMenuManager::GetInstance();
 	

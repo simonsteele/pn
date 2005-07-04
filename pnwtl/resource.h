@@ -63,6 +63,8 @@
 #define IDS_PROJECTGROUPFILES           157
 #define IDS_ALLFILES                    158
 #define IDS_ALLPROJECTFILES             159
+#define IDS_SELLENGTH                   160
+#define IDS_RECTSEL                     161
 #define IDI_TEXTCLIPS                   167
 #define IDR_POPUP_REGEXP                170
 #define IDR_POPUP_EDITOR                173
@@ -507,7 +509,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        340
-#define _APS_NEXT_COMMAND_VALUE         32951
+#define _APS_NEXT_COMMAND_VALUE         32953
 #define _APS_NEXT_CONTROL_VALUE         1132
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

@@ -1068,7 +1068,7 @@ void COptionsPageNewFiles::AddItem(LPCTSTR key, LPCTSTR schemename)
 {
 	LVITEM lvi;
 
-	CScheme* pScheme = CSchemeManager::GetInstance()->SchemeByName(schemename);
+	CScheme* pScheme = SchemeManager::GetInstance()->SchemeByName(schemename);
 	if(pScheme)
 	{
 
@@ -1946,8 +1946,8 @@ void COptionsPageFileTypes::addItem(int n, LPCTSTR ext, CScheme* pScheme, bool i
 
 void COptionsPageFileTypes::OnInitialise()
 {
-	m_pExtMap = CSchemeManager::GetInstance()->GetExtensionMap();
-	m_pFilenameMap = CSchemeManager::GetInstance()->GetFilenameMap();
+	m_pExtMap = SchemeManager::GetInstance()->GetExtensionMap();
+	m_pFilenameMap = SchemeManager::GetInstance()->GetFilenameMap();
 
 
 	int n = 0;
@@ -1970,7 +1970,7 @@ void COptionsPageFileTypes::OnOK()
 	m_pExtMap->clear();
 	m_pFilenameMap->clear();
 
-	CSchemeManager* pSM = CSchemeManager::GetInstance();
+	SchemeManager* pSM = SchemeManager::GetInstance();
 
 	for(int i = 0; i < m_list.GetItemCount(); i++)
 	{
@@ -2033,6 +2033,8 @@ LRESULT COptionsPageFileTypes::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, 
 		{
 			addItem(-1, fn.c_str(), pScheme, true);
 		}
+
+		m_bDirty = true;
 	}
 	return 0;
 }
@@ -2080,6 +2082,8 @@ LRESULT COptionsPageFileTypes::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/,
 		pDetails->ext = match;
 
 		m_list.SortItems(&FileTypeAlphaAscendCompare, NULL);
+
+		m_bDirty = true;
 	}
 
 	return 0;

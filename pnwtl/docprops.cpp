@@ -41,7 +41,7 @@ LRESULT DocumentPropSheet::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	
 	CComboBox schemes(GetDlgItem(IDC_FILEPROP_SCHEME));
 	
-	CSchemeManager* pM = CSchemeManager::GetInstance();
+	SchemeManager* pM = SchemeManager::GetInstance();
 	SCHEME_LIST* pSchemes = pM->GetSchemesList();
 
 	CScheme* pDefScheme = pM->GetDefaultScheme();

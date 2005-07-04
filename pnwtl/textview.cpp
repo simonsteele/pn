@@ -2,7 +2,7 @@
  * @file TextView.cpp
  * @brief Implementation of CTextView, the Scintilla based text-editor view.
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -57,7 +57,7 @@ BOOL CTextView::PreTranslateMessage(MSG* pMsg)
 
 void CTextView::SetScheme(CScheme* pScheme)
 {
-	if(pScheme != CSchemeManager::GetInstance()->GetDefaultScheme())
+	if(pScheme != SchemeManager::GetInstance()->GetDefaultScheme())
 		m_bSmartStart = false;
 	
 	EnsureRangeVisible(0, GetLength());
@@ -248,11 +248,6 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 		::OutputDebugString(outstr);
 #endif
 
-		if(OPTIONS->Get(PNSK_EDITOR, _T("EnableLongLineThread"), true))
-		{
-			checkLineLength();
-		}
-
 		return true;
 	}
 	else
@@ -263,17 +258,35 @@ bool CTextView::Load(LPCTSTR filename, CScheme* pScheme, EPNEncoding encoding)
 {
 	if( OpenFile(filename, encoding) )
 	{
-		if(NULL == pScheme)
+		CScheme* sch = pScheme;
+		
+		if(NULL == sch)
 		{
-			EPNSaveFormat mode = static_cast<EPNSaveFormat>( GetEOLMode() );
-			CScheme* sch = CSchemeManager::GetInstance()->SchemeForFile(filename);
-			SetScheme(sch);
-			mode = static_cast<EPNSaveFormat>( GetEOLMode() );
+			sch = SchemeManager::GetInstance()->SchemeForFile(filename);
 		}
 		else
 		{
-			SetScheme(pScheme);
+			sch = pScheme;	
 		}
+
+		//EPNSaveFormat mode = static_cast<EPNSaveFormat>( GetEOLMode() ); // not sure what this was here for.
+
+		SetScheme(sch);
+
+		//mode = static_cast<EPNSaveFormat>( GetEOLMode() ); // not sure what this was here for.
+
+		if( (sch == SchemeManager::GetInstance()->GetDefaultScheme()) && OPTIONS->Get(PNSK_EDITOR, _T("SmartStart"), true) )
+		{
+			// SmartStart is enabled, we'll use it to try and get a scheme if our scheme
+			// is the default one...
+			SmartStart::GetInstance()->Scan(this);
+		}
+
+		if(OPTIONS->Get(PNSK_EDITOR, _T("EnableLongLineThread"), true))
+		{
+			checkLineLength();
+		}
+
 		return true;
 	}
 	else
@@ -306,6 +319,11 @@ void CTextView::Revert(LPCTSTR filename)
 			int lineTop = VisibleFromDocLine( scrollPos );
 			LineScroll(0, lineTop - curTop);
 			Invalidate();
+		}
+
+		if(OPTIONS->Get(PNSK_EDITOR, _T("EnableLongLineThread"), true))
+		{
+			checkLineLength();
 		}
 	}
 }
@@ -374,7 +392,7 @@ bool CTextView::Save(LPCTSTR filename, bool bSetScheme)
 		if(bSetScheme)
 		{
 			// Re-Apply Scheme:
-			CScheme* sch = CSchemeManager::GetInstance()->SchemeForFile(filename);
+			CScheme* sch = SchemeManager::GetInstance()->SchemeForFile(filename);
 			SetScheme(sch);
 		}
 		return true;
@@ -483,11 +501,11 @@ void CTextView::SetPosStatus(CMultiPaneStatusBarCtrl& stat)
 	{
 		if(SelectionIsRectangle())
 		{
-			_tcscpy(tvstatbuf, _T("Rectangular Selection."));
+			_tcscpy(tvstatbuf, LS(IDS_RECTSEL));
 		}
 		else
 		{
-			_stprintf(tvstatbuf, _T("%d character(s) selected."), GetSelLength());
+			_stprintf(tvstatbuf, LS(IDS_SELLENGTH), GetSelLength());
 		}
 		g_Context.m_frame->SetStatusText(tvstatbuf, false);
 	}
@@ -819,7 +837,7 @@ void CTextView::ProcessNumberedBookmark(int n)
 
 void CTextView::OnFirstShow()
 {
-	m_pLastScheme = CSchemeManager::GetInstance()->GetDefaultScheme();
+	m_pLastScheme = SchemeManager::GetInstance()->GetDefaultScheme();
 	m_pLastScheme->Load(*this);
 	SetEOLMode( OPTIONS->GetCached(Options::OLineEndings) );
 }

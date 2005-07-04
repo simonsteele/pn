@@ -557,7 +557,7 @@ LRESULT CFileTypeEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 {
 	m_combo.Attach(GetDlgItem(IDC_SCHEME_COMBO));
 	
-	CSchemeManager* pSM = CSchemeManager::GetInstance();
+	SchemeManager* pSM = SchemeManager::GetInstance();
 	SCHEME_LIST* pSchemes = pSM->GetSchemesList();
 
 	for(SCHEME_LIST::const_iterator i = pSchemes->begin(); i != pSchemes->end(); ++i)

@@ -107,7 +107,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
         MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
-        MENUITEM "Save A&ll",                   ID_FILE_SAVEALL
+        MENUITEM "Save A&ll\tCtrl+Shift+S",     ID_FILE_SAVEALL
         MENUITEM "Save &Workspace As...",       ID_FILE_SAVEWORKSPACEAS
         POPUP "Enco&ding"
         BEGIN
@@ -377,6 +377,8 @@ BEGIN
     VK_F8,          ID_VIEW_INDIVIDUALOUTPUT, VIRTKEY, SHIFT, NOINVERT
     VK_F8,          ID_VIEW_OUTPUT,         VIRTKEY, NOINVERT
     VK_MULTIPLY,    ID_VIEW_TOGGLEFOLD,     VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVEALL,        VIRTKEY, SHIFT, CONTROL, 
+                                                    NOINVERT
 END
 
 #endif    // English (U.S.) resources
@@ -1812,6 +1814,12 @@ BEGIN
     IDS_DEFAULTSTATUS       "Ready"
     IDS_FIND                "Find"
     IDS_MODIFIED            "Modified"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_SELLENGTH           "%d character(s) selected."
+    IDS_RECTSEL             "Rectangular Selection."
 END
 
 #endif    // English (U.K.) resources

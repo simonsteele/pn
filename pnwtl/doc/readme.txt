@@ -32,6 +32,7 @@ What's new?
 24) Escape key closes find results if no output windows are open.
 25) Optionally save workspace between runs ("Remember open files and projects between sessions" in General options).
 26) Open to save workspace files from File menu, opening a .pnws file opens the saved workspace.
+27) SmartStart applied to opened files.
 
 Bug Fixes:
 ----------
