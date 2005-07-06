@@ -1,6 +1,6 @@
 PN2 Build Instructions:
 
-PN2 can only be built using Microsoft Visual C++ at the moment.
+PN2 can only be built using Microsoft Visual C++ 2003+ at the moment.
 
 For PN2 to work correctly, check that these are satisfied:
 
@@ -12,42 +12,26 @@ If you don't know what it is, or don't have it, see:
 
 http://www.pnotepad.org/articles/wtljoys.html
 
+Get WTL from:
+
+http://wtl.sf.net/
+
 You will also probably need to install the Microsoft Platform SDK.
 
 Expat:
 ======
 
-PN2 currently requires a separate expat download:
-http://expat.sourceforge.net/
-
-PN uses the .lib and .dll files built by the expat 
-workspace available from this website. If you download the
-win32 binary .exe file it contains these ready built.
-
-In the pn2 (or pnwtl) /lib directory you must have:
-libexpat.lib
-and / or 
-libexpatw.lib (unicode).
-	
-In the pn2/bin directory, you must have:
-libexpat.dll
-and / or
-libexpatw.dll (unicode)
+PN2 source has pre-compiled expat binaries.
 
 PCRE:
 =====
 
-PN2 currently requires a separate PCRE download:
-http://pcre.sourceforge.net/
+PN2 source has pre-compiled PCRE libs.
 
-PN uses PCRE (by default) as a static lib. You need to manually configure
-PCRE to build a static lib called libpcre.lib. We define SUPPORT_UTF8 when
-building.
+Boost:
+======
 
-In the pn2 /lib directory you must have:
-libpcre.lib
-
-We will release a VC7 project or NAnt buildfile to build the lib in the future.
+PN2 requires that you have boost installed and configured in your VC include directories.
 
 Additional Notes:
 =================

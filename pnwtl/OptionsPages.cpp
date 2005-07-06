@@ -1964,8 +1964,14 @@ void COptionsPageFileTypes::OnInitialise()
 
 void COptionsPageFileTypes::OnOK()
 {
-	if(!m_bCreated || !m_bDirty)
+	if(!m_bCreated)
 		return;
+
+	if(!m_bDirty)
+	{
+		clear();
+		return;
+	}
 
 	m_pExtMap->clear();
 	m_pFilenameMap->clear();
@@ -1996,6 +2002,9 @@ void COptionsPageFileTypes::OnOK()
 
 void COptionsPageFileTypes::OnCancel()
 {
+	if(!m_bCreated)
+		return;
+	
 	clear();
 }
 

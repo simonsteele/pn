@@ -52,6 +52,7 @@ Bug Fixes:
 13) Window Dimensions After Un-Maximizing (SF Bug #1167299).
 14) File -> New Broken (SF Bug #1221755).
 15) Don't exit if save is cancelled for a previously unsaved item.
+16) Selecting the XML lexer after another does not correctly style.
 
 If you find a bug:
 ------------------

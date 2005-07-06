@@ -1,6 +1,11 @@
 | Working towards 0.6 :: Ella
 ---------------------------------------
 
+Since 0.5.63:
+
+Selecting the XML lexer after another does not correctly style.
+Fixed error on cancelling the options dialog without visiting "Files".
+
 Since 0.5.61:
 
 Don't exit if save is cancelled for a previously unsaved item.

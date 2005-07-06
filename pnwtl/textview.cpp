@@ -62,6 +62,12 @@ void CTextView::SetScheme(CScheme* pScheme)
 	
 	EnsureRangeVisible(0, GetLength());
 	ClearDocumentStyle(); // zero all style bytes
+
+	// Clear out the keywords or they get carried over.
+	for(int i = 0; i < KEYWORDSET_MAX; i++)
+	{
+		SetKeyWords(i, "");
+	}
 	
 	pScheme->Load(*this);
 	
