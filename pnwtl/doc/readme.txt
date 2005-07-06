@@ -53,6 +53,8 @@ Bug Fixes:
 14) File -> New Broken (SF Bug #1221755).
 15) Don't exit if save is cancelled for a previously unsaved item.
 16) Selecting the XML lexer after another does not correctly style.
+17) No code-folding for XML (SF Bug #1212335).
+18) Keyword customisation causes hang (SF Bug #1209962).
 
 If you find a bug:
 ------------------

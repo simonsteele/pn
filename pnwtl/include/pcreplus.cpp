@@ -112,11 +112,13 @@ void RegExp::clear()
 	if(m_pRE)
 	{
 		pcre_free(m_pRE);
+		m_pRE = NULL;
 	}
 	
 	if(m_pStudyData)
 	{
 		pcre_free(m_pStudyData);
+		m_pStudyData = NULL;
 	}
 	
 	if(m_pSubStringVector)

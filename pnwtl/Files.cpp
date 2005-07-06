@@ -91,17 +91,17 @@ bool CreateDirectoryRecursive(LPCTSTR pszDirectory, LPSECURITY_ATTRIBUTES lpSA)
 	{
 		if(szDir[0] == _T('\\') && szDir[1] == _T('\\'))
 		{
-			pNext = strchr(&szDir[2], _T('\\'));
+			pNext = _tcschr(&szDir[2], _T('\\'));
 		}
 	}
 
 	if(!pNext)
-		pNext = strchr(szDir, '\\');
+		pNext = _tcschr(szDir, '\\');
 
 	if (pNext)
 	{
 		pNext++;
-		while ( *pNext && ( p = strchr(pNext, '\\') ) != 0 )
+		while ( *pNext && ( p = _tcschr(pNext, '\\') ) != 0 )
 		{
 			*p = NULL;
 			if (GetFileAttributes(szDir) == -1)

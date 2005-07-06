@@ -25,15 +25,10 @@
 COutputView::COutputView()
 {
 	m_bCustom = false;
-	m_pRE = NULL;
 }
 
 COutputView::~COutputView()
 {
-	if(m_pRE)
-	{
-		delete m_pRE;
-	}
 }
 
 /**
@@ -445,8 +440,8 @@ void COutputView::SetToolParser(bool bBuiltIn, LPCTSTR customExpression)
 {
 	if(!bBuiltIn && customExpression != NULL)
 	{
+		m_bCustom = true;
 		SetRE(customExpression, false);
-		SetCustomLexer();
 	}
 	else
 	{

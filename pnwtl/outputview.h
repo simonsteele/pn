@@ -78,8 +78,6 @@ protected:
 protected:
 	bool			m_bCustom;
 	tstring			m_basepath;
-	tstring			m_customre;
-	PCRE::RegExp*	m_pRE;
 };
 
 #endif
