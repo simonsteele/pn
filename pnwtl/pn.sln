@@ -1,6 +1,7 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pn", "pn.vcproj", "{09E60CEB-F210-4524-89CC-D73EBCA224A1}"
 	ProjectSection(ProjectDependencies) = postProject
+		{07437657-980A-430D-AB7B-415770E0D505} = {07437657-980A-430D-AB7B-415770E0D505}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "customscheme", "CustomScheme\CustomScheme.vcproj", "{A7E621BE-65CC-446A-A5A1-4C20D117D344}"
@@ -8,6 +9,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "customscheme", "CustomSchem
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ctagsnavigator", "taggers\ctagsnavigator\ctagsnavigator.vcproj", "{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pcre", "include\pcre\pcre.vcproj", "{07437657-980A-430D-AB7B-415770E0D505}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
@@ -43,6 +48,14 @@ Global
 		{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}.Release.Build.0 = Release|Win32
 		{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}.ReleaseDebug.ActiveCfg = ReleaseDebug|Win32
 		{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}.ReleaseDebug.Build.0 = ReleaseDebug|Win32
+		{07437657-980A-430D-AB7B-415770E0D505}.Debug.ActiveCfg = Debug|Win32
+		{07437657-980A-430D-AB7B-415770E0D505}.Debug.Build.0 = Debug|Win32
+		{07437657-980A-430D-AB7B-415770E0D505}.DebugUnicode.ActiveCfg = Debug|Win32
+		{07437657-980A-430D-AB7B-415770E0D505}.DebugUnicode.Build.0 = Debug|Win32
+		{07437657-980A-430D-AB7B-415770E0D505}.Release.ActiveCfg = Release|Win32
+		{07437657-980A-430D-AB7B-415770E0D505}.Release.Build.0 = Release|Win32
+		{07437657-980A-430D-AB7B-415770E0D505}.ReleaseDebug.ActiveCfg = Release|Win32
+		{07437657-980A-430D-AB7B-415770E0D505}.ReleaseDebug.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

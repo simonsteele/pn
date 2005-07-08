@@ -16,7 +16,7 @@
 #define PCRE_STATIC
 
 //extern "C" {
-	#include "pcre.h"
+	#include "pcre/pcre.h"
 //}
 
 #ifndef PCRE_DEFAULT_FLAGS

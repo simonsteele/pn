@@ -13,10 +13,10 @@
 #include "stdafx.h"
 #include "pcreplus.h"
 
-#ifdef PCRE_STATIC
+/*#ifdef PCRE_STATIC
 	#pragma comment(lib, "libpcre.lib") 
 	#pragma message("Automatically linking with libpcre.lib")
-#endif
+#endif*/
 
 namespace PCRE
 {

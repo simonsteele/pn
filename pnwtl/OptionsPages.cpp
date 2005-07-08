@@ -2019,8 +2019,8 @@ LRESULT COptionsPageFileTypes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 
 	m_list.SetExtendedListViewStyle( LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT );
 
-	m_list.InsertColumn(0, _T("Match"), LVCFMT_LEFT, 120);
-	m_list.InsertColumn(1, _T("Scheme"), LVCFMT_LEFT, 200);
+	m_list.InsertColumn(0, _T("Match"), LVCFMT_LEFT, 120, -1);
+	m_list.InsertColumn(1, _T("Scheme"), LVCFMT_LEFT, 200, -1);
 
 	return 0;
 }
