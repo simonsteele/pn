@@ -70,3 +70,6 @@ Filename: {app}\pn.exe; Description: Launch Programmers Notepad; Flags: nowait p
 [_ISTool]
 EnableISX=false
 UseAbsolutePaths=false
+[Registry]
+Root: HKCU; SubKey: Software\Classes\SystemFileAssociations\text\shell\edit.PN2; ValueType: string; Flags: uninsdeletekey dontcreatekey
+Root: HKCU; SubKey: Software\Classes\SystemFileAssociations\text\OpenWithList\pn.exe; ValueType: string; Flags: uninsdeletekey dontcreatekey
