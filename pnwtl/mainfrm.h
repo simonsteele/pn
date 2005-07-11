@@ -2,7 +2,7 @@
  * @file mainfrm.h
  * @brief Main Window for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -16,8 +16,6 @@
 // Pre-declarations...
 class CMainFrame;
 class CChildFrame;
-//class CFindDlg;
-//class CReplaceDlg;
 class CFindExDialog;
 class COutputView;
 class CClipsDocker;

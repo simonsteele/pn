@@ -366,6 +366,8 @@ BEGIN
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
     "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
     "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVEALL,        VIRTKEY, SHIFT, CONTROL, 
+                                                    NOINVERT
     VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
     VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
     "K",            ID_TOOLS_STOPTOOLS,     VIRTKEY, SHIFT, CONTROL, 
@@ -377,8 +379,9 @@ BEGIN
     VK_F8,          ID_VIEW_INDIVIDUALOUTPUT, VIRTKEY, SHIFT, NOINVERT
     VK_F8,          ID_VIEW_OUTPUT,         VIRTKEY, NOINVERT
     VK_MULTIPLY,    ID_VIEW_TOGGLEFOLD,     VIRTKEY, CONTROL, NOINVERT
-    "S",            ID_FILE_SAVEALL,        VIRTKEY, SHIFT, CONTROL, 
+    "L",            ID_EDIT_DELETELINE,     VIRTKEY, SHIFT, CONTROL, 
                                                     NOINVERT
+    "L",            ID_EDIT_CUTLINE,        VIRTKEY, CONTROL, NOINVERT
 END
 
 #endif    // English (U.S.) resources

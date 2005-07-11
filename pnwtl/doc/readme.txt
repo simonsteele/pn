@@ -55,6 +55,7 @@ Bug Fixes:
 16) Selecting the XML lexer after another does not correctly style.
 17) No code-folding for XML (SF Bug #1212335).
 18) Keyword customisation causes hang (SF Bug #1209962).
+19) Delete Line same as Cut Line (SF Bug #1234653).
 
 If you find a bug:
 ------------------
