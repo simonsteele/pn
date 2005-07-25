@@ -96,6 +96,8 @@ public:
 
 	const FileAssocs& GetAssociations() const;
 
+	void CheckOpenWith();
+
 private:
 	bool RegisterOpenWith();
 	bool RegisterOpenWithForPerceivedType();

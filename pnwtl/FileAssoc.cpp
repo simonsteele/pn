@@ -585,14 +585,7 @@ FileAssocManager::FileAssocManager()
 {
 	Load();
 
-	bool isXPOrLater =
-		(g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
-		( (g_Context.OSVersion.dwMajorVersion > 4) && (g_Context.OSVersion.dwMinorVersion > 0) );
-
-	if(isXPOrLater)
-		RegisterOpenWithForPerceivedType();
-	else
-		RegisterOpenWith();
+	CheckOpenWith();
 }
 
 bool FileAssocManager::CheckAssociations()
@@ -619,6 +612,18 @@ bool FileAssocManager::CheckAssociations()
 	}
 
 	return res;
+}
+
+void FileAssocManager::CheckOpenWith()
+{
+	bool isXPOrLater =
+		(g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
+		( (g_Context.OSVersion.dwMajorVersion > 4) && (g_Context.OSVersion.dwMinorVersion > 0) );
+
+	if(isXPOrLater)
+		RegisterOpenWithForPerceivedType();
+	else
+		RegisterOpenWith();
 }
 
 void FileAssocManager::UpdateAssociations()
@@ -807,7 +812,11 @@ bool FileAssocManager::RegisterOpenWithForPerceivedType()
 		//TODO: should this be an option?
 		// Each extension with a PerceivedType=text will have an "Edit with PN2"
 		// menu item now.
-		res = key.Create(shellKey, EDIT_WITH_VERB);
+		
+		// Removed because this is annoying for users, would have to be an option
+		// and will soon be replaced with a shell extension anyway.
+
+		/*res = key.Create(shellKey, EDIT_WITH_VERB);
 		if(res == ERROR_SUCCESS)
 		{
 			key.SetStringValue(NULL, EDIT_WITH_MENU_TEXT);
@@ -817,7 +826,7 @@ bool FileAssocManager::RegisterOpenWithForPerceivedType()
 			{
 				res = key.SetStringValue(NULL, appCmd);
 			}
-		}
+		}*/
 	}
 
 	return result;
