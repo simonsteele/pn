@@ -112,7 +112,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="delayimp.lib lib\libpcre.lib version.lib htmlhelp.lib"
+				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
