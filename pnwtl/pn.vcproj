@@ -499,6 +499,9 @@
 				RelativePath=".\Files.h">
 			</File>
 			<File
+				RelativePath=".\findbar.h">
+			</File>
+			<File
 				RelativePath=".\findex.h">
 			</File>
 			<File

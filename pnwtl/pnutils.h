@@ -261,6 +261,22 @@ class CXPButton : public CWindowImpl <T>,  public CThemeImpl <CXPButton>
 			m_hTheme = NULL;
 		}
 
+		HWND Create(HWND hWndParent, _U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
+			DWORD dwStyle = 0, DWORD dwExStyle = 0,
+			_U_MENUorID MenuOrID = 0U, LPVOID lpCreateParam = NULL)
+		{
+			dwStyle |= BS_OWNERDRAW;
+			HWND hWndResult = CWindowImpl<T>::Create(hWndParent, rect, szWindowName, dwStyle,
+				dwExStyle, MenuOrID, lpCreateParam);
+			
+			if(hWndResult)
+			{
+				OpenThemeData (L"Button");
+			}
+
+			return hWndResult;
+		}
+
 		BOOL SubclassWindow (HWND hWnd)
 		{
 			CWindowImpl <T>::SubclassWindow (hWnd);
@@ -302,6 +318,12 @@ class CXPButton : public CWindowImpl <T>,  public CThemeImpl <CXPButton>
 		}
 
 		LRESULT OnDrawItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
+		{
+			T* pT = static_cast<T*>(this);
+			return pT->DrawItem(uMsg, wParam, lParam, bHandled);
+		}
+
+		LRESULT DrawItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL &bHandled)
 		{
 			LPDRAWITEMSTRUCT lpItem = (LPDRAWITEMSTRUCT) lParam;
 			CDCHandle dc (lpItem ->hDC);

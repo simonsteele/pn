@@ -1,9 +1,16 @@
 #include "stdafx.h"
 #include "pntabs.h"
+#include "findbar.h"
 
 CPNMDIClient::CPNMDIClient()
 {
+	m_findBar = new CFindBar();
 	m_bMoving = false;
+}
+
+CPNMDIClient::~CPNMDIClient()
+{
+	delete m_findBar;
 }
 
 /**
@@ -16,6 +23,14 @@ BOOL CPNMDIClient::SubclassWindow(HWND hWnd)
 	if(bSuccess)
 		SetClassLong(m_hWnd, GCL_STYLE,
 			GetClassLong(m_hWnd, GCL_STYLE) | CS_DBLCLKS);	
+
+	if(bSuccess)
+	{
+		CRect rcFB(0,0,100,100);
+		m_findBar->SetControllingHWND(m_hWnd);
+		m_findBar->Create(GetParent(), rcFB, "FindBar", WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS);
+		m_findBar->ShowWindow(SW_SHOW);
+	}
 
 	return bSuccess;
 }
@@ -128,5 +143,91 @@ LRESULT CPNMDIClient::OnDblClick(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 {
 	// Forward the message
 	SendMessage(GetParent(), WM_LBUTTONDBLCLK, wParam, lParam);
+	return 0;
+}
+
+LRESULT CPNMDIClient::OnWindowPosChanging(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	LPWINDOWPOS pWinPos = reinterpret_cast<LPWINDOWPOS>(lParam);
+	if(pWinPos)
+	{
+		if( m_MdiTabOwner.IsWindow() )
+		{
+			//ATLTRACE(_T("Resizing MDI tab and MDI client\n"));
+			int nTabAreaHeight = (m_MdiTabOwner.IsWindowVisible()) ? m_MdiTabOwner.GetTabAreaHeight() : 0;
+			int nBottomAreaHeight = (m_findBar->IsWindow() && m_findBar->IsWindowVisible()) ? m_findBar->GetDesiredHeight() : 0;
+
+			TTabCtrl& TabCtrl = m_MdiTabOwner.GetTabCtrl();
+			DWORD dwStyle = TabCtrl.GetStyle();
+			if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
+			{
+				m_MdiTabOwner.SetWindowPos(
+					NULL,
+					pWinPos->x, pWinPos->y + (pWinPos->cy - nTabAreaHeight),
+					pWinPos->cx, nTabAreaHeight,
+					(pWinPos->flags & SWP_NOMOVE) | (pWinPos->flags & SWP_NOSIZE) | SWP_NOZORDER | SWP_NOACTIVATE);
+
+				if((pWinPos->flags & SWP_NOSIZE) == 0)
+				{
+					pWinPos->cy -= nTabAreaHeight;
+				}
+			}
+			else
+			{
+				m_MdiTabOwner.SetWindowPos(
+					NULL,
+					pWinPos->x, pWinPos->y,
+					pWinPos->cx, nTabAreaHeight,
+					(pWinPos->flags & SWP_NOMOVE) | (pWinPos->flags & SWP_NOSIZE) | SWP_NOZORDER | SWP_NOACTIVATE);
+
+				if((pWinPos->flags & SWP_NOMOVE) == 0)
+				{
+					pWinPos->y += nTabAreaHeight;
+				}
+				if((pWinPos->flags & SWP_NOSIZE) == 0)
+				{
+					pWinPos->cy -= nTabAreaHeight;
+					pWinPos->cy -= nBottomAreaHeight; //Leave room for our bottom thing.
+				}
+
+				if(m_findBar->IsWindow())
+					m_findBar->SetWindowPos(NULL, pWinPos->x, pWinPos->y + pWinPos->cy, pWinPos->cx, nBottomAreaHeight, (pWinPos->flags & SWP_NOMOVE) | (pWinPos->flags & SWP_NOSIZE) | SWP_NOZORDER | SWP_NOACTIVATE);
+			}
+		}
+	}
+
+	// "base::OnWindowPosChanging()"
+	LRESULT lRet = this->DefWindowProc(uMsg, wParam, lParam);
+	bHandled = TRUE;
+
+	return lRet;
+}
+
+LRESULT CPNMDIClient::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	bHandled = FALSE;
+
+	return 0;
+}
+
+LRESULT CPNMDIClient::OnPNNotify(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if(lParam == PN_HIDEFINDBAR)
+	{
+		m_findBar->ShowWindow(SW_HIDE);
+		
+		RECT rcMDIClient;
+		::GetWindowRect(m_hWnd, &rcMDIClient);
+
+		//::MapWindowPoints(NULL, GetParent(), (LPPOINT)&rcMDIClient, 2); No Need with SWP_NOMOVE
+
+		// Adjust for size of tab bar (not sure why, just do it!)
+		int tah = m_MdiTabOwner.GetTabAreaHeight();
+		rcMDIClient.top -= tah;
+		rcMDIClient.bottom += tah;
+
+		::SetWindowPos(m_hWnd, NULL, 0, 0, rcMDIClient.right - rcMDIClient.left, rcMDIClient.bottom - rcMDIClient.top, SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOMOVE);
+	}
+
 	return 0;
 }

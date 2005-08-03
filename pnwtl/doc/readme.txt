@@ -56,6 +56,7 @@ Bug Fixes:
 17) No code-folding for XML (SF Bug #1212335).
 18) Keyword customisation causes hang (SF Bug #1209962).
 19) Delete Line same as Cut Line (SF Bug #1234653).
+20) "Search Up" box not visible for replace.
 
 If you find a bug:
 ------------------

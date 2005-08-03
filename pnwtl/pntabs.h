@@ -14,6 +14,8 @@
 #include <TabbedMDISave.h>
 #include <TabbedMDI.h>
 
+class CFindBar;
+
 template< class TTabCtrl >
 class CPNMDITabOwner :
 	public CMDITabOwnerImpl<CPNMDITabOwner, TTabCtrl>
@@ -64,16 +66,21 @@ class CPNMDIClient : public CTabbedMDIClient< CDotNetTabCtrl<CTabViewTabItem>,
 
 public:
 	CPNMDIClient();
+	~CPNMDIClient();
 
 	BEGIN_MSG_MAP(CPNMDIClient)
-		MESSAGE_HANDLER(WM_CREATE, OnCreate)
+		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(UWM_MDICHILDACTIVATIONCHANGE, OnChildActivationChange)
 		MESSAGE_HANDLER(UWM_MDICHILDTABTEXTCHANGE, OnChildTabTextChange)
 		MESSAGE_HANDLER(WM_MDIDESTROY, OnMDIDestroy)
 		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnDblClick)
+		MESSAGE_HANDLER(WM_WINDOWPOSCHANGING, OnWindowPosChanging)
 		
 		MESSAGE_HANDLER(WM_MDIACTIVATE, OnMDIActivate)
 		MESSAGE_HANDLER(WM_MDINEXT, OnMDINext)
+
+		MESSAGE_HANDLER(PN_NOTIFY, OnPNNotify)
+
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -81,19 +88,24 @@ public:
 
 	void ControlUp();
 
+	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnMDINext(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnMDIDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnChildActivationChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnChildTabTextChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT OnWindowPosChanging(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	LRESULT OnDblClick(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
+
+	LRESULT OnPNNotify(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 protected:
 	typedef std::list<HWND> CHILD_STACK;
 	bool					m_bMoving;
 	CHILD_STACK				m_children;
 	CHILD_STACK::iterator	m_moveIt;
+	CFindBar*				m_findBar;
 };
 
 /**
