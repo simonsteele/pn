@@ -2,6 +2,69 @@
 
 #define PN_HIDEFINDBAR 1045
 
+class CFindBarText : public CWindowImpl<CFindBarText>
+{
+public:
+	CFindBarText()
+	{
+		m_brNormalBk.CreateSolidBrush( ::GetSysColor(COLOR_WINDOW) );
+		m_brRedBk.CreateSolidBrush( RGB(200,0,0) );
+		m_bDoRed = false;
+	}
+
+	DECLARE_WND_SUPERCLASS("PN_FINDBAREDIT", "EDIT");
+
+	BEGIN_MSG_MAP(CFindBarText)
+		MESSAGE_HANDLER(OCM_CTLCOLOREDIT, OnCtlColorEdit)
+		MESSAGE_HANDLER(OCM_CTLCOLORMSGBOX, OnCtlColorEdit)
+		MESSAGE_HANDLER(OCM_CTLCOLORSTATIC, OnCtlColorStatic)
+		DEFAULT_REFLECTION_HANDLER()
+	END_MSG_MAP()
+
+	LRESULT OnCtlColorEdit(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+	{
+		CDCHandle dc( (HDC) wParam );
+		
+		dc.SetBkMode(TRANSPARENT);
+		
+		if(m_bDoRed)
+		{
+			dc.SetTextColor( RGB(255,255,255) );
+			dc.SetBkColor( RGB(200, 0, 0) );
+			return (LRESULT) (HBRUSH) m_brRedBk;
+		}
+		else
+		{
+			dc.SetTextColor( ::GetSysColor(COLOR_WINDOWTEXT) );
+			dc.SetBkColor( ::GetSysColor(COLOR_WINDOW) );
+			return (LRESULT) (HBRUSH) m_brNormalBk;
+		}
+	}
+
+   LRESULT OnCtlColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+   {
+		// Microsoft Q130952 explains why we also need this
+		CDCHandle dc( (HDC) wParam );
+		dc.SetBkMode(TRANSPARENT);
+
+		ATLASSERT(GetStyle() & ES_READONLY);
+		dc.SetTextColor( ::GetSysColor(COLOR_GRAYTEXT) );
+		dc.SetBkColor( ::GetSysColor(COLOR_WINDOW) );
+		return (LRESULT) (HBRUSH) m_brNormalBk;
+	}
+
+   void SetDoRed(bool bDoRed)
+   {
+	   m_bDoRed = bDoRed;
+	   Invalidate();
+   }
+
+protected:
+	bool m_bDoRed;
+	CBrush m_brNormalBk;
+	CBrush m_brRedBk;
+};
+
 class CXButton : public CXPButton<CXButton>
 {
 public:
@@ -58,16 +121,21 @@ class CFindBar : public CWindowImpl<CFindBar>
 	typedef CWindowImpl<CFindBar> baseClass;
 public:
 	enum {
-		IDC_FBCLOSE = 100,
+		IDC_FBTEXT = 400,
 	};
 
 	BEGIN_MSG_MAP(CFindBar)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
-		COMMAND_HANDLER(IDC_FBCLOSE, BN_CLICKED, OnCloseClicked)
+		COMMAND_HANDLER(IDC_FBTEXT, EN_CHANGE, OnTextChanged)
+		COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnCloseClicked)
 
 		REFLECT_NOTIFICATIONS_MSG_FILTERED(WM_DRAWITEM)
+		REFLECT_NOTIFICATIONS_MSG_ID_FILTERED(WM_CTLCOLOREDIT, IDC_FBTEXT)
+		REFLECT_NOTIFICATIONS_MSG_ID_FILTERED(WM_CTLCOLORMSGBOX, IDC_FBTEXT)
+		//REFLECT_NOTIFICATIONS_MSG_ID_FILTERED(WM_CTLCOLORSTATIC, IDC_FBTEXT)
+
 	END_MSG_MAP()
 
 	void SetControllingHWND(HWND hWnd)
@@ -81,6 +149,7 @@ public:
 	}
 
 protected:
+	LRESULT OnTextChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
@@ -88,10 +157,10 @@ protected:
 		CRect rcTextBox(55, 5, 250, 25);
 		CRect rcFindNext(260, 5, 260+80, 24);
 		CRect rcFindPrev(345, 5, 345+80, 24);
-		m_xbutton.Create(m_hWnd, rcCloseButton, "x", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 0, 100);
+		m_xbutton.Create(m_hWnd, rcCloseButton, "x", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 0, IDCANCEL);
 		m_findNext.Create(m_hWnd, rcFindNext, "Find Next", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 0, 200);
 		m_findPrev.Create(m_hWnd, rcFindPrev, "Find Previous", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 0, 300);
-		m_txtbox.Create(m_hWnd, rcTextBox, "", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, WS_EX_CLIENTEDGE);
+		m_txtbox.Create(m_hWnd, rcTextBox, "", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, WS_EX_CLIENTEDGE, IDC_FBTEXT);
 		HFONT fn = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
 		SetFont(fn);
 		m_xbutton.SetFont(fn);
@@ -133,10 +202,11 @@ protected:
 		return 0;
 	}
 
+
 protected:
 	CXButton m_xbutton;
 	CButton m_findNext;
 	CButton m_findPrev;
-	CEdit m_txtbox;
+	CFindBarText m_txtbox;
 	HWND m_controller;
 };

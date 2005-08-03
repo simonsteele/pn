@@ -249,7 +249,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="delayimp.lib lib\libpcre.lib version.lib htmlhelp.lib"
+				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -319,6 +319,9 @@
 			</File>
 			<File
 				RelativePath=".\Files.cpp">
+			</File>
+			<File
+				RelativePath=".\findbar.cpp">
 			</File>
 			<File
 				RelativePath=".\findex.cpp">

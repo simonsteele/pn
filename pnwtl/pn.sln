@@ -54,8 +54,8 @@ Global
 		{07437657-980A-430D-AB7B-415770E0D505}.DebugUnicode.Build.0 = Debug|Win32
 		{07437657-980A-430D-AB7B-415770E0D505}.Release.ActiveCfg = Release|Win32
 		{07437657-980A-430D-AB7B-415770E0D505}.Release.Build.0 = Release|Win32
-		{07437657-980A-430D-AB7B-415770E0D505}.ReleaseDebug.ActiveCfg = Release|Win32
-		{07437657-980A-430D-AB7B-415770E0D505}.ReleaseDebug.Build.0 = Release|Win32
+		{07437657-980A-430D-AB7B-415770E0D505}.ReleaseDebug.ActiveCfg = ReleaseDebug|Win32
+		{07437657-980A-430D-AB7B-415770E0D505}.ReleaseDebug.Build.0 = ReleaseDebug|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
