@@ -1563,6 +1563,12 @@ LRESULT CMainFrame::OnUndo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 	return TRUE;
 }
 
+LRESULT CMainFrame::OnQuickFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	m_tabbedClient.ShowFindBar(true);
+	return TRUE;
+}
+
 LRESULT CMainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	ToggleToolbar(TBR_FILE);
@@ -1584,6 +1590,7 @@ LRESULT CMainFrame::OnViewSchemesBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 LRESULT CMainFrame::OnViewFindBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	ToggleToolbar(TBR_FIND);
+	m_tabbedClient.ShowFindBar(true);
 	return 0;
 }
 

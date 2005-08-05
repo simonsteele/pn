@@ -2,22 +2,23 @@
 
 #define PN_HIDEFINDBAR 1045
 
-class CFindBarText : public CWindowImpl<CFindBarText>
+class CFindBarEdit : public CWindowImpl<CFindBarEdit>
 {
 public:
-	CFindBarText()
+	DECLARE_WND_SUPERCLASS("PN_FINDBAREDIT", "EDIT");
+
+	CFindBarEdit()
 	{
 		m_brNormalBk.CreateSolidBrush( ::GetSysColor(COLOR_WINDOW) );
 		m_brRedBk.CreateSolidBrush( RGB(200,0,0) );
 		m_bDoRed = false;
 	}
 
-	DECLARE_WND_SUPERCLASS("PN_FINDBAREDIT", "EDIT");
-
-	BEGIN_MSG_MAP(CFindBarText)
+	BEGIN_MSG_MAP(CFindBarEdit)
 		MESSAGE_HANDLER(OCM_CTLCOLOREDIT, OnCtlColorEdit)
 		MESSAGE_HANDLER(OCM_CTLCOLORMSGBOX, OnCtlColorEdit)
 		MESSAGE_HANDLER(OCM_CTLCOLORSTATIC, OnCtlColorStatic)
+		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
 		DEFAULT_REFLECTION_HANDLER()
 	END_MSG_MAP()
 
@@ -25,7 +26,7 @@ public:
 	{
 		CDCHandle dc( (HDC) wParam );
 		
-		dc.SetBkMode(TRANSPARENT);
+		//dc.SetBkMode(TRANSPARENT);
 		
 		if(m_bDoRed)
 		{
@@ -41,8 +42,8 @@ public:
 		}
 	}
 
-   LRESULT OnCtlColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-   {
+	LRESULT OnCtlColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+	{
 		// Microsoft Q130952 explains why we also need this
 		CDCHandle dc( (HDC) wParam );
 		dc.SetBkMode(TRANSPARENT);
@@ -53,11 +54,25 @@ public:
 		return (LRESULT) (HBRUSH) m_brNormalBk;
 	}
 
-   void SetDoRed(bool bDoRed)
-   {
-	   m_bDoRed = bDoRed;
-	   Invalidate();
-   }
+	void SetDoRed(bool bDoRed)
+	{
+		m_bDoRed = bDoRed;
+		Invalidate();
+	}
+
+	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+	{
+		if(wParam == VK_ESCAPE && GetFocus() == m_hWnd)
+		{
+			::SendMessage(GetParent(), PN_ESCAPEPRESSED, 0, 0);
+		}
+		else
+		{
+			bHandled = FALSE;
+		}
+
+		return 0;
+	}
 
 protected:
 	bool m_bDoRed;
@@ -128,6 +143,9 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
+		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
+		MESSAGE_HANDLER(PN_ESCAPEPRESSED, OnEscapePressed)
+
 		COMMAND_HANDLER(IDC_FBTEXT, EN_CHANGE, OnTextChanged)
 		COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnCloseClicked)
 
@@ -196,6 +214,17 @@ protected:
 		return 0;
 	}
 
+	LRESULT OnSetFocus(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		m_txtbox.SetFocus();
+		return 0;
+	}
+
+	LRESULT OnEscapePressed(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+		return ::SendMessage(m_controller, PN_ESCAPEPRESSED, 0, 0);
+	}
+
 	LRESULT OnCloseClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 	{
 		::SendMessage(m_controller, PN_NOTIFY, 0, PN_HIDEFINDBAR);
@@ -207,6 +236,6 @@ protected:
 	CXButton m_xbutton;
 	CButton m_findNext;
 	CButton m_findPrev;
-	CFindBarText m_txtbox;
+	CFindBarEdit m_txtbox;
 	HWND m_controller;
 };

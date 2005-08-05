@@ -119,6 +119,8 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_UNDO, OnUndo)
 		//COMMAND_ID_HANDLER(ID_EDIT_REDO, OnRedo)
 
+		COMMAND_ID_HANDLER(ID_EDIT_QUICKFIND, OnQuickFind)
+
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR_EDIT, OnViewEditBar)
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBARS_SCHEMES, OnViewSchemesBar)
@@ -229,6 +231,8 @@ public:
 	LRESULT OnCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnPaste(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnUndo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+	LRESULT OnQuickFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	// View
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

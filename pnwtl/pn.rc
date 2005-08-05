@@ -159,6 +159,7 @@ BEGIN
         MENUITEM "Find &Next\tF3",              ID_EDIT_FINDNEXT
         MENUITEM "R&eplace\tCtrl+R",            ID_EDIT_REPLACE
         MENUITEM "F&ind in Files\tCtrl+Shift+F", ID_EDIT_FINDINFILES
+        MENUITEM "&Quick Find\tCtrl+/",         ID_EDIT_QUICKFIND
         MENUITEM SEPARATOR
         MENUITEM "&Goto\tCtrl+G",               ID_EDIT_GOTO
         MENUITEM "&Jump To...\tAlt+G",          ID_EDIT_JUMPTO
@@ -346,6 +347,9 @@ BEGIN
     VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
     VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
     "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
+    "L",            ID_EDIT_CUTLINE,        VIRTKEY, CONTROL, NOINVERT
+    "L",            ID_EDIT_DELETELINE,     VIRTKEY, SHIFT, CONTROL, 
+                                                    NOINVERT
     "F",            ID_EDIT_FIND,           VIRTKEY, CONTROL, NOINVERT
     "F",            ID_EDIT_FINDINFILES,    VIRTKEY, SHIFT, CONTROL, 
                                                     NOINVERT
@@ -379,9 +383,7 @@ BEGIN
     VK_F8,          ID_VIEW_INDIVIDUALOUTPUT, VIRTKEY, SHIFT, NOINVERT
     VK_F8,          ID_VIEW_OUTPUT,         VIRTKEY, NOINVERT
     VK_MULTIPLY,    ID_VIEW_TOGGLEFOLD,     VIRTKEY, CONTROL, NOINVERT
-    "L",            ID_EDIT_DELETELINE,     VIRTKEY, SHIFT, CONTROL, 
-                                                    NOINVERT
-    "L",            ID_EDIT_CUTLINE,        VIRTKEY, CONTROL, NOINVERT
+    VK_OEM_2,       ID_EDIT_QUICKFIND,      VIRTKEY, CONTROL, NOINVERT
 END
 
 #endif    // English (U.S.) resources
