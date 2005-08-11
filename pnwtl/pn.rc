@@ -1634,6 +1634,7 @@ IDR_TBR_PROJECTS        BITMAP                  "res\\tbrProjects.bmp"
 IDB_ABOUT               BITMAP                  "res\\about.bmp"
 IDB_TAGTYPES            BITMAP                  "res\\tagtypes.bmp"
 IDB_TBMAINDIS           BITMAP                  "res\\toolbardisabled.bmp"
+IDB_REDCLOSE            BITMAP                  "res\\redclose.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

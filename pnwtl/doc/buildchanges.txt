@@ -5,6 +5,9 @@ Since 0.5.63:
 
 Selecting the XML lexer after another does not correctly style.
 Fixed error on cancelling the options dialog without visiting "Files".
+Fixed error in text clips combo box drawing.
+Added firefox-esque incremental find bar, press Ctrl+/ to show and Escape to cancel.
+Now saves file extension mapping configuration (Options|Files).
 
 Since 0.5.61:
 

@@ -104,9 +104,22 @@ LRESULT CClipsDocker::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BO
  * For some reason the WM_CTLCOLORLISTBOX message from the combo is not getting
  * a satisfactory result somewhere resulting in a black background. This fixes that.
  */
-LRESULT CClipsDocker::OnCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT CClipsDocker::OnCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	/*COMBOBOXINFO cbi;
+	cbi.cbSize = sizeof(COMBOBOXINFO);
+	m_combo.GetComboBoxInfo(&cbi);
+	if((HWND)lParam == cbi.hwndList)*/
+	
+	CDCHandle dc( (HDC) wParam );
+
+	dc.SetTextColor( ::GetSysColor(COLOR_WINDOWTEXT) );
+	dc.SetBkColor( ::GetSysColor(COLOR_WINDOW) );
+	
 	return (LRESULT)::GetSysColorBrush( COLOR_WINDOW );
+
+	/*bHandled = FALSE;
+	return 0;*/
 }
 
 LRESULT CClipsDocker::OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

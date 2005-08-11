@@ -33,6 +33,8 @@ What's new?
 25) Optionally save workspace between runs ("Remember open files and projects between sessions" in General options).
 26) Open to save workspace files from File menu, opening a .pnws file opens the saved workspace.
 27) SmartStart applied to opened files.
+28) New Incremental FindBar (Press Ctrl+/ and start typing, escape to cancel).
+29) Customisable scheme mappings (choose schemes for file types - Options|Files).
 
 Bug Fixes:
 ----------
@@ -57,6 +59,7 @@ Bug Fixes:
 18) Keyword customisation causes hang (SF Bug #1209962).
 19) Delete Line same as Cut Line (SF Bug #1234653).
 20) "Search Up" box not visible for replace.
+21) Bad coloring in Text Clips combo box with non-white window colors (SF Bug #1065666).
 
 If you find a bug:
 ------------------

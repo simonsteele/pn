@@ -358,15 +358,6 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 	if(baseClass::PreTranslateMessage(pMsg))
 		return TRUE;
 
-	// We have to do the following two to get the modeless dialogs
-	// to work. An alternative is to spawn a thread for each and to
-	// call DoModal from that thread. 
-	/*if(::IsDialogMessage(hFindWnd, pMsg))
-		return TRUE;
-
-	if(::IsDialogMessage(hReplWnd, pMsg))
-		return TRUE;*/
-
 	HWND hWnd = MDIGetActive();
 	if(hWnd != NULL)
 		return (BOOL)::SendMessage(hWnd, WM_FORWARDMSG, 0, (LPARAM)pMsg);

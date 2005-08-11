@@ -186,6 +186,8 @@
 #define IDS_PROJECT                     340
 #define IDS_DEFAULTSTATUS               341
 #define IDS_FIND                        342
+#define IDB_BITMAP1                     342
+#define IDB_REDCLOSE                    342
 #define IDS_MODIFIED                    343
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
@@ -509,7 +511,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        340
+#define _APS_NEXT_RESOURCE_VALUE        343
 #define _APS_NEXT_COMMAND_VALUE         32956
 #define _APS_NEXT_CONTROL_VALUE         1132
 #define _APS_NEXT_SYMED_VALUE           104

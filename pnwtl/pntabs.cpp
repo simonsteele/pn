@@ -157,6 +157,9 @@ LRESULT CPNMDIClient::OnChildActivationChange(UINT /*uMsg*/, WPARAM wParam, LPAR
 		m_children.push_front((HWND)wParam);
 	}
 
+	// Cancel the find bar now
+	ShowFindBar(false);
+
 	bHandled = FALSE;
 	
 	return 0;
