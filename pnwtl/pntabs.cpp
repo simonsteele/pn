@@ -45,6 +45,10 @@ void CPNMDIClient::ShowFindBar(bool bShow)
 	int offset = 0;
 	if(bShow)
 	{
+		// Don't bother doing all this if we're already visible.
+		if(m_findBar->IsWindowVisible())
+			return;
+
 		m_findBar->ShowWindow(SW_SHOW);
 		m_findBar->SetFocus();
 	}
@@ -67,18 +71,16 @@ void CPNMDIClient::ShowFindBar(bool bShow)
 		if(tabsOnTop)
 		{
 			// Adjust for the fact that the tab bar is at the top
-			// We're not moving, but need the height of the window
-			// to be correct for calculations.
 			rcMDIClient.top -= tah;
 		}
 	}
 
-	char buf[200];
+	/*char buf[200];
 	char num[34];
 	strcpy(buf, "\nbefore: ");
 	_itoa(rcMDIClient.bottom - rcMDIClient.top, num, 10);
 	strcat(buf, num);
-	LOG(buf);
+	LOG(buf);*/
 
 	::SetWindowPos(m_hWnd, NULL, rcMDIClient.left, rcMDIClient.top, rcMDIClient.right - rcMDIClient.left, rcMDIClient.bottom - rcMDIClient.top, SWP_NOZORDER | SWP_NOACTIVATE /*| SWP_NOMOVE*/);
 }
