@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+<!ENTITY __about SYSTEM "about.xml">
+<!ENTITY __navigation SYSTEM "navigation.xml">
+]>
+<book lang="en">
+  <title>PN2 Help</title>
+  
+  &__about;
+  &__navigation;
+</book>

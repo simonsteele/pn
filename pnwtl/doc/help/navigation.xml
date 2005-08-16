@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter>
+	<title>Navigation</title>
+	<section>
+		<?dbhh topicname="IDH_keyboard_shortcuts" topicid="2"?>
+		<title>Keyboard Shortcuts</title>
+	
+		<para>This help describes some of the default keyboard shortcuts used
+		by PN2.</para>
+		
+		<section>
+			<title>The Escape Key</title>
+			<para>The escape key can often be used to get you out of dialogs
+			- it generally represents the pressing of the cancel button in 
+			these cases. The escape button can also be used to hide any 
+			output, find in files or find bar windows that are visible. So 
+			if you run a compile which shows you some output, and then you 
+			don't want to see the output window any more then just press 
+			escape until it goes away!</para>
+		</section>
+		
+		<section>
+			<title>Window Navigation</title>
+			<para>To go to the next window, you can use either Ctrl-Tab or 
+			Ctrl-F6. Depending on your options, this will either navigate
+			through documents in Windows' own recent window order, or will
+			use a Visual-Studio window stack system. Note that you 
+			can hold down the Shift key with either of these combinations 
+			to traverse in the opposite direction.</para>
+		</section>
+
+		<section>
+			<title>Output Window</title>
+			<para>There are two types of output window (from 0.4 onwards). 
+			The global output window (dockable) can be toggled with F8, and 
+			individual output windows can be toggled with Shift-F8.</para>
+		</section>
+
+		<section>
+			<title>Indent Unindent</title>
+			<para>Select a block of text over a line and use the Tab key to
+			indent (by either tab characters or spaces depending on your 
+			settings). Use Shift-Tab to unindent.</para>
+		</section>
+
+		<section>
+			<title>More Shortcuts</title>
+			<informaltable frame='all'>
+				<tgroup cols="2">
+				<!--<colspec colname="c1"/>-->
+				<thead>
+				<row><entry>Shortcut</entry><entry>Command</entry></row>
+				</thead>
+				<tbody>
+				<row><entry>Alt-Enter</entry><entry>Show Document Properties</entry></row>
+			
+				<row><entry>Alt-G</entry><entry>Jump To</entry></row>
+				
+				<row><entry>Ctrl-/</entry><entry>Show Find Bar</entry></row>
+				
+				<row><entry>Ctrl-A</entry><entry>Select All</entry></row>
+				<row><entry>Ctrl-C</entry><entry>Copy</entry></row>
+				<row><entry>Ctrl-D</entry><entry>Duplicate Line</entry></row>
+				<row><entry>Ctrl-F</entry><entry>Find Dialog</entry></row>
+				<row><entry>Ctrl-G</entry><entry>Goto</entry></row>
+				<row><entry>Ctrl-H</entry><entry>Replace Dialog</entry></row>
+				<row><entry>Ctrl-L</entry><entry>Cut Line</entry></row>
+				<row><entry>Ctrl-N</entry><entry>New File</entry></row>
+				<row><entry>Ctrl-O</entry><entry>Open File</entry></row>
+				<row><entry>Ctrl-P</entry><entry>Print</entry></row>
+				<row><entry>Ctrl-R</entry><entry>Replace Dialog</entry></row>
+				<row><entry>Ctrl-S</entry><entry>Save</entry></row>
+				<row><entry>Ctrl-T</entry><entry>Transpose Lines</entry></row>
+				<row><entry>Ctrl-U</entry><entry>Lowercase</entry></row>
+				<row><entry>Ctrl-V</entry><entry>Paste</entry></row>
+				<row><entry>Ctrl-X</entry><entry>Cut</entry></row>
+				<row><entry>Ctrl-Y</entry><entry>Redo</entry></row>
+				<row><entry>Ctrl-Z</entry><entry>Undo</entry></row>
+				
+				<row><entry>Ctrl-Shift-C</entry><entry>Clipboard Swap</entry></row>
+				<row><entry>Ctrl-Shift-F</entry><entry>Find in Files Dialog</entry></row>
+				<row><entry>Ctrl-Shift-L</entry><entry>Delete Line</entry></row>
+				<row><entry>Ctrl-Shift-S</entry><entry>Save All</entry></row>
+				<row><entry>Ctrl-Shift-T</entry><entry>Copy Line</entry></row>
+				<row><entry>Ctrl-Shift-U</entry><entry>Uppercase</entry></row>
+				
+				<row><entry>Shift-Delete</entry><entry>Cut</entry></row>
+				<row><entry>Shift-Insert</entry><entry>Insert</entry></row>
+				<row><entry>Ctrl-Insert</entry><entry>Copy</entry></row>
+				</tbody>
+				<tbody>
+				<row><entry>F2</entry><entry>Next Bookmark</entry></row>
+				<row><entry>Ctrl-F2</entry><entry>Set Bookmark</entry></row>
+				<row><entry>F3</entry><entry>Find Next</entry></row>
+				<row><entry>Ctrl-F4</entry><entry>Close Document</entry></row>
+				<row><entry>F8</entry><entry>Toggle Output Window</entry></row>
+				<row><entry>Shift-F8</entry><entry>Toggle Individual Output Window</entry></row>
+				</tbody>
+				</tgroup>
+			</informaltable>
+		</section>
+	</section>
+	
+	<section>
+		<?dbhh topicname="IDH_bookmarks" topicid="3"?>
+		<title>Bookmarks</title>
+		
+		<para>PN2 supports two types of bookmarking. The first of these is 
+		"simple" bookmarks. These are the type found in Visual Studio, where 
+		you can set as many bookmarks as you like, and one key jumps from 
+		one to the next:</para>
+
+		<para>To set a simple bookmark: Ctrl-F2
+		To jump to the next simple bookmark: F2</para>
+
+		<para>PN2 also supports numbered bookmarks from 0 to 9. These are 
+		set and reached by pressing a key combination followed by the number
+		of the bookmark:</para>
+
+		<para>To set a numbered bookmark: Ctrl-K, x
+		To jump to a numbered bookmark: Ctrl-Q, x</para>
+		
+		<para>where x is the number of the bookmark you wish to use. 
+		Bookmarks are shown in the margin of the text editor, the picture 
+		below shows both a simple bookmark and two numbered ones:</para>
+		
+		<!--<mediaobject>
+			<imageobject>
+				<imagedata fileref="images/bookmarks.png" format="PNG" />
+			</imageobject>
+		</mediaobject>-->
+		<graphic fileref="images/bookmarks.png"></graphic>
+
+	</section>
+</chapter>
