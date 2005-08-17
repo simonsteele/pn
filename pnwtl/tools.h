@@ -100,6 +100,13 @@ class ProjectTools : public SchemeTools
 		tstring	m_ProjectID;
 };
 
+class GlobalProjectTools : public ProjectTools
+{
+	public:
+		GlobalProjectTools();
+		virtual void WriteDefinition(ToolsXMLWriter& writer, ToolSource* source);
+};
+
 /**
  * @brief Class can be used both standalone and as a singleton.
  */
@@ -112,6 +119,7 @@ class ToolsManager :
 		virtual ~ToolsManager();
 
 		SchemeTools* GetGlobalTools();
+		SchemeTools* GetGlobalProjectTools();
 
 		SchemeTools* GetToolsFor(LPCTSTR scheme);
 		ProjectTools* GetToolsForProject(LPCTSTR id);
@@ -134,6 +142,7 @@ class ToolsManager :
 		void processGlobal(XMLAttributes& atts);
 		void processProject(XMLAttributes& atts);
 		void processTool(XMLAttributes& atts);
+		void processAllProjects(XMLAttributes& atts);
 
 		// XML Parsing
 		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
@@ -146,13 +155,14 @@ class ToolsManager :
 
 		SchemeTools* find(LPCTSTR id, SCHEMETOOLS_MAP& col);
 
-		ToolSource		m_DefaultToolsSource;
-		SchemeTools*	m_pCur;
-		GlobalTools*	m_pGlobalTools;
-		ToolSource*		m_pCurSource;
-		SCHEMETOOLS_MAP m_toolSets;
-		SCHEMETOOLS_MAP	m_projectTools;
-		SOURCES_LIST	m_toolSources;
+		ToolSource			m_DefaultToolsSource;
+		SchemeTools*		m_pCur;
+		GlobalTools*		m_pGlobalTools;
+		GlobalProjectTools*	m_pGlobalProjectTools;
+		ToolSource*			m_pCurSource;
+		SCHEMETOOLS_MAP		m_toolSets;
+		SCHEMETOOLS_MAP		m_projectTools;
+		SOURCES_LIST		m_toolSources;
 };
 
 namespace Projects

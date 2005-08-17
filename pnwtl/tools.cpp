@@ -71,6 +71,16 @@ public:
 		pop();
 	}
 
+	void beginAllProjects()
+	{
+		genxStartElementLiteral(m_writer, NULL, u("allProjects"));
+	}
+
+	void endAllProjects()
+	{
+		pop();
+	}
+
 	void beginProject(LPCTSTR id)
 	{
 		genxStartElement(m_eProject);
@@ -390,6 +400,25 @@ void ProjectTools::WriteDefinition(ToolsXMLWriter& writer, ToolSource* source)
 }
 
 //////////////////////////////////////////////////////////////////////////////
+// GlobalProjectTools
+//////////////////////////////////////////////////////////////////////////////
+
+GlobalProjectTools::GlobalProjectTools() : ProjectTools("")
+{
+
+}
+
+void GlobalProjectTools::WriteDefinition(ToolsXMLWriter& writer, ToolSource* source)
+{
+	if(ToolsInSource(source))
+	{
+		writer.beginAllProjects();
+		InternalWriteDefinition(writer, source);
+		writer.endAllProjects();
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////
 // CToolCommandString
 //////////////////////////////////////////////////////////////////////////////
 
@@ -551,6 +580,7 @@ ToolsManager::ToolsManager()
 {
 	m_pCur = NULL;
 	m_pGlobalTools = NULL;
+	m_pGlobalProjectTools = NULL;
 
 	ReLoad();
 }
@@ -593,6 +623,14 @@ void ToolsManager::Clear(bool bWantMenuResources)
 		delete m_pGlobalTools;
 		m_pGlobalTools = NULL;
 	}
+
+	if(m_pGlobalProjectTools)
+	{
+		if(bWantMenuResources)
+			m_pGlobalProjectTools->ReleaseMenuResources();
+		delete m_pGlobalProjectTools;
+		m_pGlobalProjectTools = NULL;
+	}
 }
 
 SchemeTools* ToolsManager::GetGlobalTools()
@@ -601,6 +639,14 @@ SchemeTools* ToolsManager::GetGlobalTools()
 		m_pGlobalTools = new GlobalTools;
 
 	return m_pGlobalTools;
+}
+
+SchemeTools* ToolsManager::GetGlobalProjectTools()
+{
+	if(!m_pGlobalProjectTools)
+		m_pGlobalProjectTools = new GlobalProjectTools();
+	
+	return m_pGlobalProjectTools;
 }
 
 SchemeTools* ToolsManager::GetToolsFor(LPCTSTR scheme)
@@ -685,6 +731,15 @@ int ToolsManager::UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, int iD
 	{
 		SchemeTools* pS = GetToolsFor(schemename);
 		theTools.insert(theTools.end(), pS->GetTools().begin(), pS->GetTools().end());
+	}
+
+	if(m_pGlobalProjectTools)
+	{
+		if(g_Context.m_frame->GetActiveWorkspace() != NULL)
+		{
+			TOOLDEFS_LIST& gt = m_pGlobalProjectTools->GetTools();
+			theTools.insert(theTools.end(), gt.begin(), gt.end());
+		}
 	}
 
 	if(projectId)
@@ -834,6 +889,9 @@ void ToolsManager::Save()
 			if(m_pGlobalTools)
 				m_pGlobalTools->WriteDefinition(writer, (*i));
 
+			if(m_pGlobalProjectTools)
+				m_pGlobalProjectTools->WriteDefinition(writer, (*i));
+
 			for(SCHEMETOOLS_MAP::const_iterator j = m_toolSets.begin(); j != m_toolSets.end(); ++j)
 			{
 				(*j).second->WriteDefinition(writer, (*i));
@@ -879,6 +937,13 @@ void ToolsManager::processGlobal(XMLAttributes& atts)
 	if(!m_pGlobalTools)
 		m_pGlobalTools = new GlobalTools;
 	m_pCur = m_pGlobalTools;
+}
+
+void ToolsManager::processAllProjects(XMLAttributes& atts)
+{
+	if(!m_pGlobalProjectTools)
+		m_pGlobalProjectTools = new GlobalProjectTools;
+	m_pCur = m_pGlobalProjectTools;
 }
 
 void ToolsManager::processTool(XMLAttributes& atts)
@@ -936,6 +1001,10 @@ void ToolsManager::startElement(LPCTSTR name, XMLAttributes& atts)
 	{
 		processTool(atts);
 	}
+	else if(_tcscmp(name, _T("allProjects")) == 0)
+	{
+		processAllProjects(atts);
+	}
 }
 
 bool CompareToolDefinitions(ToolDefinition* t1, ToolDefinition* t2)
@@ -945,7 +1014,7 @@ bool CompareToolDefinitions(ToolDefinition* t1, ToolDefinition* t2)
 
 void ToolsManager::endElement(LPCTSTR name)
 {
-	if(_tcscmp(name, _T("scheme")) == 0 || _tcscmp(name, _T("global")) == 0 || _tcscmp(name, _T("project")) == 0)
+	if(_tcscmp(name, _T("scheme")) == 0 || _tcscmp(name, _T("global")) == 0 || _tcscmp(name, _T("project")) == 0 || _tcscmp(name, _T("allProjects")) == 0)
 	{
 		if(m_pCur != NULL)
 			m_pCur->GetTools().sort(CompareToolDefinitions);
