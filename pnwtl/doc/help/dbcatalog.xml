@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE catalog PUBLIC "-//OASIS//DTD Entity Resolution XML Catalog V1.0//EN" "http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd">
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+  <public publicId="-//OASIS//DTD DocBook XML V4.2//EN" uri="file:///c:/utils/docbook/dtd/docbookx.dtd"/>
+  <public publicId="-//OASIS//DTD DocBook XML V4.3//EN" uri="file:///c:/utils/docbook/dtd/docbookx.dtd"/>
+  
+    <!-- map URLs to local files -->
+  <rewriteURI uriStartString="http://db2latex.sourceforge.net/xsl/"
+    rewritePrefix="file:///c:/utils/db2latex/xsl/"/>
+  <rewriteURI uriStartString="http://docbook.sourceforge.net/release/xsl/current/"
+    rewritePrefix="file:///c:/utils/db2latex/xsl/"/>
+</catalog>

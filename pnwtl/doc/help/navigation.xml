@@ -57,6 +57,8 @@
 				<row><entry>Alt-G</entry><entry>Jump To</entry></row>
 				
 				<row><entry>Ctrl-/</entry><entry>Show Find Bar</entry></row>
+				<row><entry>Ctrl-Tab</entry><entry>Next Window</entry></row>
+				<row><entry>Ctrl-Shift-Tab</entry><entry>Previous Window</entry></row>
 				
 				<row><entry>Ctrl-A</entry><entry>Select All</entry></row>
 				<row><entry>Ctrl-C</entry><entry>Copy</entry></row>
@@ -73,6 +75,7 @@
 				<row><entry>Ctrl-T</entry><entry>Transpose Lines</entry></row>
 				<row><entry>Ctrl-U</entry><entry>Lowercase</entry></row>
 				<row><entry>Ctrl-V</entry><entry>Paste</entry></row>
+				<row><entry>Ctrl-W</entry><entry>Close Window</entry></row>
 				<row><entry>Ctrl-X</entry><entry>Cut</entry></row>
 				<row><entry>Ctrl-Y</entry><entry>Redo</entry></row>
 				<row><entry>Ctrl-Z</entry><entry>Undo</entry></row>
@@ -87,12 +90,13 @@
 				<row><entry>Shift-Delete</entry><entry>Cut</entry></row>
 				<row><entry>Shift-Insert</entry><entry>Insert</entry></row>
 				<row><entry>Ctrl-Insert</entry><entry>Copy</entry></row>
-				</tbody>
-				<tbody>
+
 				<row><entry>F2</entry><entry>Next Bookmark</entry></row>
 				<row><entry>Ctrl-F2</entry><entry>Set Bookmark</entry></row>
 				<row><entry>F3</entry><entry>Find Next</entry></row>
-				<row><entry>Ctrl-F4</entry><entry>Close Document</entry></row>
+				<row><entry>Ctrl-F4</entry><entry>Close Window</entry></row>
+				<row><entry>Ctrl-F6</entry><entry>Next Window</entry></row>
+				<row><entry>Ctrl-Shift-F6</entry><entry>Previous Window</entry></row>
 				<row><entry>F8</entry><entry>Toggle Output Window</entry></row>
 				<row><entry>Shift-F8</entry><entry>Toggle Individual Output Window</entry></row>
 				</tbody>

@@ -48,6 +48,7 @@ Source: ..\bin\clips\*.clips; DestDir: {app}\clips
 
 Source: ..\bin\taggers\ctagsnavigator.dll; DestDir: {app}\taggers; Flags: ignoreversion
 Source: ..\bin\ctags.exe; DestDir: {app}; Flags: ignoreversion
+Source: ..\doc\help\pn2.chm; DestDir: {app}
 
 Source: ..\doc\readme.txt; DestDir: {app}; Flags: isreadme
 Source: ..\doc\license.txt; DestDir: {app}

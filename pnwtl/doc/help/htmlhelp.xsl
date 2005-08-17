@@ -7,8 +7,10 @@
 	<xsl:param name="htmlhelp.hhc.binary" select="0"/>
 	<xsl:param name="htmlhelp.hhc.folders.instead.books" select="0"/>
 	<xsl:param name="toc.section.depth" select="3"/>
-	<xsl:param name="chunk.section.depth" select="3"/>
+	<xsl:param name="chunk.section.depth" select="2"/>
 	<!--<xsl:param name="chunk.tocs.and.lots" select="1"/>-->
 	<xsl:param name="chunk.first.sections" select="1"/>
-	
+	<xsl:param name="base.dir" select="'htmlhelp/'"/>
+	<xsl:param name="html.stylesheet" select="'htmlhelp.css'"/>
+	<xsl:param name="chapter.autolabel" select="0"/>
 </xsl:stylesheet>

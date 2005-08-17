@@ -1876,7 +1876,7 @@ LRESULT CMainFrame::OnHelpContents(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	CFileName fn("pn2.chm");
 	fn.Root(path.c_str());
 	path = fn.c_str();
-	path += "::/index.html";
+	path += "::/htmlhelp/index.html";
 	::HtmlHelp(m_hWnd,
          path.c_str(),
          HH_DISPLAY_TOC,
