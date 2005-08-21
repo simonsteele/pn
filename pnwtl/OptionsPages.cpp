@@ -972,20 +972,20 @@ LRESULT COptionsPageProjectTools::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
 	m_combo.Attach(GetDlgItem(IDC_SCHEMECOMBO));
 	m_combo.GetWindowRect(rcCombo);
 
+	int index = m_combo.AddString(_T("(None - All Projects)"));
+	m_combo.SetItemDataPtr(index, NULL);
+
 	const Projects::TEMPLATE_MAP& templates = Projects::Registry::GetInstance()->GetTemplates();
 	for(Projects::TEMPLATE_MAP::const_iterator i = templates.begin();
 		i != templates.end(); 
 		++i)
 	{
-		int index = m_combo.AddString((*i).second->GetName());
+		index = m_combo.AddString((*i).second->GetName());
 		m_combo.SetItemDataPtr(index, (*i).second);
 	}
 
-	if(m_combo.GetCount() > 0)
-	{
-		m_combo.SetCurSel(0);
-	}
-
+	m_combo.SetCurSel(0);
+	
 	ScreenToClient(rcCombo);
 	rcCombo.left = rc.right + 5;
 	//m_combo.SetWindowPos(HWND_TOP, &rcCombo, 0);
@@ -1021,6 +1021,8 @@ SchemeTools* COptionsPageProjectTools::GetTools()
 	{
 		if(m_pTemplate)
 			m_pCurrent = m_toolstore->GetToolsForProject(m_pTemplate->GetID());
+		else
+			m_pCurrent = m_toolstore->GetGlobalProjectTools();
 	}
 		
 	return m_pCurrent;
@@ -1035,18 +1037,16 @@ void COptionsPageProjectTools::updateFromSel(int iSel)
 {
 	if (iSel != -1)
 	{
-		m_pTemplate = reinterpret_cast<Projects::ProjectTemplate*>(m_combo.GetItemData(iSel));
-		
-		/*if(iSel != 0)
+		if(iSel != 0)
 		{	
-
+			m_pTemplate = reinterpret_cast<Projects::ProjectTemplate*>(m_combo.GetItemData(iSel));
 		}
 		else
 		{
 			// Global Tools
 			m_pTemplate = NULL;
-			m_pCurrent = m_toolstore.GetGlobalTools();
-		}*/
+			m_pCurrent = m_toolstore->GetGlobalProjectTools();
+		}
 	}
 	else
 		m_pTemplate = NULL;
