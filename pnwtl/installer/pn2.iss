@@ -26,7 +26,7 @@ AppID={{52CF142B-7B0E-41E7-98F5-B834122523E7}
 AppReadmeFile={app}\readme.txt
 UninstallDisplayIcon={app}\pn.exe
 UninstallDisplayName=Programmers Notepad 2
-WizardSmallImageFile=C:\Source\pnwtl\installer\small.bmp
+WizardSmallImageFile=small.bmp
 Compression=lzma/ultra
 
 [Tasks]
