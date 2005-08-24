@@ -1414,12 +1414,14 @@ LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 				// If we're only opening one file, check to see if it's a project.
 				openFileCheckType((*i).c_str(), dlgOpen.GetEncoding());
 			}
-
-			if( !CheckAlreadyOpen((*i).c_str(), action) )
+			else
 			{
-				if(OpenFile((*i).c_str(), NULL, dlgOpen.GetEncoding()))
+				if( !CheckAlreadyOpen((*i).c_str(), action) )
 				{
-					AddMRUEntry((*i).c_str());
+					if(OpenFile((*i).c_str(), NULL, dlgOpen.GetEncoding()))
+					{
+						AddMRUEntry((*i).c_str());
+					}
 				}
 			}
 		}

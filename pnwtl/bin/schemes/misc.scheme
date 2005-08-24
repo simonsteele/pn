@@ -11,7 +11,7 @@
 	<language name="properties" title="Properties">
 		<lexer name="props"/>
 		<use-styles>
-			<style name="Default" key="32" size="9" />
+			<style name="Default" key="32" />
 			<style name="Whitespace" key="0" fore="000000" />
 			<style name="Comment" key="1" class="comment" />
 			<style name="Section" key="2" fore="0000f0" back="e0f0f0" bold="true" eolfilled="true"/>

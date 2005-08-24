@@ -60,6 +60,7 @@ Bug Fixes:
 19) Delete Line same as Cut Line (SF Bug #1234653).
 20) "Search Up" box not visible for replace.
 21) Bad coloring in Text Clips combo box with non-white window colors (SF Bug #1065666).
+22) Tried to open a file twice when that file was not found.
 
 If you find a bug:
 ------------------
