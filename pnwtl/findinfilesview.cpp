@@ -131,11 +131,24 @@ LRESULT CFindInFilesView::OnFIFFinish(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 	return 0;
 }
 
+LRESULT CFindInFilesView::OnFIFStart(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	tstring sstartstr("Searching for: ");
+	sstartstr += m_lookingFor;
+	g_Context.m_frame->SetStatusText(sstartstr.c_str());
+	
+	return 0;
+}
+
 void CFindInFilesView::OnBeginSearch(LPCTSTR stringLookingFor, bool bIsRegex)
 {
 	g_Context.m_frame->ToggleDockingWindow(PNDW_FINDRESULTS, true, true);
 	
 	m_dwStartTicks = GetTickCount();
+
+	m_lookingFor = stringLookingFor;
+	::PostMessage(m_hWnd, PN_FIFSTART, 0, 0);
+
 	Clear();
 }
 

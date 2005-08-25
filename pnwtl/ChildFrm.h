@@ -72,6 +72,7 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_GOTO, OnGoto)
 		COMMAND_ID_HANDLER(ID_EDIT_JUMPTO, OnJumpTo)
 		COMMAND_ID_HANDLER(ID_EDIT_FINDNEXT, OnFindNext)
+		COMMAND_ID_HANDLER(ID_EDIT_FINDPREVIOUS, OnFindPrevious)
 		COMMAND_ID_HANDLER(ID_EDIT_COPYRTF, OnCopyRTF)
 		COMMAND_ID_HANDLER(ID_EDIT_CLIPBOARDSWAP, OnClipboardSwap)
 		COMMAND_ID_HANDLER(ID_EDIT_DUPLICATELINE, OnDuplicateLine)
@@ -205,6 +206,7 @@ public:
 	LRESULT OnRedo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFindPrevious(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnClipboardSwap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnDuplicateLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

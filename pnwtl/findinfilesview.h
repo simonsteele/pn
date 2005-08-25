@@ -12,6 +12,7 @@
 #define findinfilesview_h__included_33B3B680_2120_4038_97EA_A109AAE08AB0
 
 #define PN_FIFFINISH	(PN_FIFMATCH+1)
+#define PN_FIFSTART		(PN_FIFMATCH+2)
 
 class CFindInFilesView : public CWindowImpl<CFindInFilesView>, public FIFSink
 {
@@ -27,6 +28,7 @@ public:
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(PN_FIFMATCH, OnFIFMatch)
 		MESSAGE_HANDLER(PN_FIFFINISH, OnFIFFinish)
+		MESSAGE_HANDLER(PN_FIFSTART, OnFIFStart)
 		NOTIFY_HANDLER(IDC_FIF_LIST, NM_DBLCLK, OnListDblClk)
 	END_MSG_MAP()
 
@@ -56,6 +58,7 @@ protected:
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnFIFMatch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnFIFFinish(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnFIFStart(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	LRESULT OnListDblClk(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
@@ -63,6 +66,7 @@ protected:
 	CListViewCtrl	m_list;
 	int				m_nItems;
 	DWORD			m_dwStartTicks;
+	tstring			m_lookingFor;
 	TCHAR			m_NCBuf[40];
 };
 

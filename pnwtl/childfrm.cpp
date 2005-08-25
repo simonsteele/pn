@@ -640,6 +640,26 @@ LRESULT CChildFrame::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	return TRUE;
 }
 
+LRESULT CChildFrame::OnFindPrevious(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	SFindOptions* pOptions = OPTIONS->GetSearchOptions();
+	if( pOptions->FindText != _T("") )
+	{
+		pOptions->Direction = !pOptions->Direction;
+
+		if( !/*m_view.*/FindNext(pOptions) )
+		{
+			CString cs;
+			cs.Format(IDS_FINDNOTFOUND, pOptions->FindText);
+			MessageBox(cs, LS(IDR_MAINFRAME), MB_OK);
+		}
+
+		pOptions->Direction = !pOptions->Direction;
+	}
+	
+	return TRUE;
+}
+
 LRESULT CChildFrame::OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	StringOutput so(m_view.GetSelLength() * 2);

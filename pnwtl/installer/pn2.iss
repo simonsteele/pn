@@ -59,6 +59,8 @@ Source: ..\doc\pcre-license.txt; DestDir: {app}
 Source: ..\doc\ctags_README; DestDir: {app}
 Source: ..\doc\ctags_COPYING; DestDir: {app}
 
+Source: ..\userschemes\*.schemedef; DestDir: {app}\schemes
+
 [Icons]
 Name: {group}\Programmers Notepad 2; Filename: {app}\pn.exe
 Name: {group}\License; Filename: {app}\license.html
@@ -71,6 +73,7 @@ Filename: {app}\pn.exe; Description: Launch Programmers Notepad; Flags: nowait p
 [_ISTool]
 EnableISX=false
 UseAbsolutePaths=false
+
 [Registry]
 Root: HKCU; SubKey: Software\Classes\SystemFileAssociations\text\shell\edit.PN2; ValueType: string; Flags: uninsdeletekey dontcreatekey
 Root: HKCU; SubKey: Software\Classes\SystemFileAssociations\text\OpenWithList\pn.exe; ValueType: string; Flags: uninsdeletekey dontcreatekey

@@ -35,6 +35,8 @@ What's new?
 27) SmartStart applied to opened files.
 28) New Incremental FindBar (Press Ctrl+/ and start typing, escape to cancel).
 29) Customisable scheme mappings (choose schemes for file types - Options|Files).
+30) Find Previous - Shift+F3
+31) Support for Java properties files (SF RFE #1267017).
 
 Bug Fixes:
 ----------
@@ -61,6 +63,8 @@ Bug Fixes:
 20) "Search Up" box not visible for replace.
 21) Bad coloring in Text Clips combo box with non-white window colors (SF Bug #1065666).
 22) Tried to open a file twice when that file was not found.
+23) VHDL Syntax file inclusion (SF Bug #1165830).
+24) Crash when adding a project tool (SF Bug #1195786).
 
 If you find a bug:
 ------------------

@@ -157,6 +157,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Find\tCtrl+F",               ID_EDIT_FIND
         MENUITEM "Find &Next\tF3",              ID_EDIT_FINDNEXT
+        MENUITEM "Find Pre&vious\tShift-F3",    ID_EDIT_FINDPREVIOUS
         MENUITEM "R&eplace\tCtrl+R",            ID_EDIT_REPLACE
         MENUITEM "F&ind in Files\tCtrl+Shift+F", ID_EDIT_FINDINFILES
         MENUITEM "&Quick Find\tCtrl+/",         ID_EDIT_QUICKFIND
@@ -361,6 +362,7 @@ BEGIN
     "G",            ID_EDIT_JUMPTO,         VIRTKEY, ALT, NOINVERT
     "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
     VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
+    VK_OEM_2,       ID_EDIT_QUICKFIND,      VIRTKEY, CONTROL, NOINVERT
     "H",            ID_EDIT_REPLACE,        VIRTKEY, CONTROL, NOINVERT
     "R",            ID_EDIT_REPLACE,        VIRTKEY, CONTROL, NOINVERT
     VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
@@ -383,7 +385,7 @@ BEGIN
     VK_F8,          ID_VIEW_INDIVIDUALOUTPUT, VIRTKEY, SHIFT, NOINVERT
     VK_F8,          ID_VIEW_OUTPUT,         VIRTKEY, NOINVERT
     VK_MULTIPLY,    ID_VIEW_TOGGLEFOLD,     VIRTKEY, CONTROL, NOINVERT
-    VK_OEM_2,       ID_EDIT_QUICKFIND,      VIRTKEY, CONTROL, NOINVERT
+    VK_F3,          ID_EDIT_FINDPREVIOUS,   VIRTKEY, SHIFT, NOINVERT
 END
 
 #endif    // English (U.S.) resources

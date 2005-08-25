@@ -443,7 +443,7 @@ LRESULT CFindExDialog::OnBrowseClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	strTitle.LoadString(IDS_BROWSEFINDROOT);
 
 	CPNFolderDialog fd(m_hWnd, (LPCTSTR)str, strTitle);
-	if(fd.DoModal())
+	if(fd.DoModal() == IDOK)
 	{
 		m_FindWhereCombo.SetWindowText( fd.GetFolderPath() );
 	}
