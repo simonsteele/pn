@@ -18,7 +18,7 @@ What's new?
 10) Browse for folder in find in files dialog.
 11) Support for vbc compiler output (SF Bug #1168477).
 12) Docbook Scheme
-13) Scintilla version 1.6.3
+13) Scintilla version 1.6.6
 14) CSS-2 Support in CSS lexer
 15) Projects remember folder expansion state.
 16) Added Ctrl-W to close the current file (as well as Ctrl-F4) (SF RFE #1169428).

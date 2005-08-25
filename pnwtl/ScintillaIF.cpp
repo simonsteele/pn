@@ -574,7 +574,9 @@ void CScintilla::FoldChanged(int line, int levelNow, int levelPrev)
 	{
 		if (!(levelPrev & SC_FOLDLEVELHEADERFLAG)) 
 		{
+			// Adding a fold point.
 			SetFoldExpanded(line, 1);
+			Expand(line, true, false, 0, levelPrev);
 		}
 	} 
 	else if (levelPrev & SC_FOLDLEVELHEADERFLAG) 
@@ -584,7 +586,22 @@ void CScintilla::FoldChanged(int line, int levelNow, int levelPrev)
 		{
 			// Removing the fold from one that has been contracted so should expand
 			// otherwise lines are left invisible with no way to make them visible
+			SetFoldExpanded(line, 1);
 			Expand(line, true, false, 0, levelPrev);
+		}
+	}
+	else if (!(levelNow & SC_FOLDLEVELWHITEFLAG) && 
+		((levelPrev & SC_FOLDLEVELNUMBERMASK) > (levelNow & SC_FOLDLEVELNUMBERMASK)))
+	{
+		// See if should still be hidden
+		int parentLine = GetFoldParent(line);
+		if (parentLine < 0)
+		{
+			ShowLines(line, line);
+		}
+		else if (GetFoldExpanded(parentLine) && GetLineVisible(parentLine))
+		{
+			ShowLines(line, line);
 		}
 	}
 }
