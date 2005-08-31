@@ -1015,7 +1015,7 @@ bool CFindExDialog::selectionIsWholeLine(CTextView* textView)
 				if(cr.cpMin <= (firstNonWSChar + posLineStart))
 				{
 					int lastNonWSChar = strLastNonWSChar(lineBuf, lineLength);
-					if(cr.cpMax >= lastNonWSChar)
+					if(cr.cpMax >= (lastNonWSChar + posLineStart))
 						bShouldReplaceInSel = true;
 				}
 
