@@ -996,24 +996,149 @@ public:
 	{}
 };
 
+class TextFilterSink
+{
+public:
+	void AddToolOutput(LPCTSTR output, int nLength = -1)
+	{
+		if(nLength == -1)
+			buffer.append(output);
+		else
+			buffer.append(output, output+nLength);
+	}
+
+	void SetToolBasePath(LPCTSTR path)
+	{
+	}
+
+	void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL)
+	{
+	}
+
+	void ClearOutput()
+	{
+	}
+
+	const char* GetBuffer() const
+	{
+		return buffer.c_str();
+	}
+
+private:
+	std::string buffer;
+};
+
+class ChildTextFilterWrapper : public ToolWrapperT<CChildFrame, TextFilterSink>
+{
+	typedef ToolWrapperT<CChildFrame, TextFilterSink> baseClass;
+	
+public:
+	ChildTextFilterWrapper(CChildFrame* pOwner, TextFilterSink* pSink, CChildFrame* pActiveChild, const ToolDefinition& definition)
+		: baseClass(pOwner, pSink, pActiveChild, definition)
+	{
+		m_hFinishedEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
+	}
+
+	virtual ~ChildTextFilterWrapper()
+	{
+		::CloseHandle(m_hFinishedEvent);
+	}
+
+	HANDLE GetFinishEventHandle() const
+	{
+		return m_hFinishedEvent;
+	}
+
+	virtual void ShowOutputWindow()
+	{
+	}
+
+	virtual void OnFinished()
+	{
+		::SetEvent(m_hFinishedEvent);
+
+		baseClass::OnFinished();
+	}
+
+private:
+	HANDLE m_hFinishedEvent;
+};
+
 bool CChildFrame::OnRunTool(LPVOID pTool)
 {
 	ToolDefinition* pToolDef = static_cast<ToolDefinition*>(pTool);
-	ToolWrapper* pWrapper = NULL;
+	//ToolWrapper* pWrapper = NULL;
+	ToolWrapperPtr pWrapper;
+	boost::shared_ptr<TextFilterSink> filter_sink;
 	if(	pToolDef->GlobalOutput() )
 	{
-		pWrapper = g_Context.m_frame->MakeGlobalOutputWrapper(pToolDef);
+		pWrapper.reset( g_Context.m_frame->MakeGlobalOutputWrapper(pToolDef) );
+	}
+	else if( pToolDef->IsTextFilter() )
+	{
+		filter_sink.reset(new TextFilterSink());
+		pWrapper.reset( new ChildTextFilterWrapper(this, filter_sink.get(), this, *pToolDef) );
 	}
 	else
 	{
 		if(pToolDef->CaptureOutput())
 			EnsureOutputWindow();
-		pWrapper = new ChildOutputWrapper(this, m_pOutputView, this, *pToolDef);
+		pWrapper.reset( new ChildOutputWrapper(this, m_pOutputView, this, *pToolDef) );
 	}
 
 	pWrapper->SetNotifyWindow(m_hWnd);
 
+	if( pToolDef->WantStdIn() )
+	{
+		TextRange tr;
+
+		// We want to pass our selection/whole document to StdIn.
+		if(m_view.GetSelLength() > 0)
+		{
+			// Selection...
+			tr.chrg.cpMin = m_view.GetSelectionStart();
+			tr.chrg.cpMax = m_view.GetSelectionEnd();
+		}
+		else
+		{
+			// Whole Document
+			tr.chrg.cpMin = 0;
+			tr.chrg.cpMax = m_view.GetLength();
+		}
+
+		int buflength = (tr.chrg.cpMax - tr.chrg.cpMin) + 1;
+		if(buflength)
+		{
+			tr.lpstrText = (char*)new unsigned char[buflength];
+			m_view.GetTextRange(&tr);
+			pWrapper->SetStdIOBuffer((unsigned char*)tr.lpstrText, buflength);
+		}
+	}
+
 	ToolOwner::GetInstance()->RunTool(pWrapper, this);
+
+	if( pToolDef->IsTextFilter() )
+	{
+		ChildTextFilterWrapper* pWaitWrapper = static_cast<ChildTextFilterWrapper*>(pWrapper.get());
+		HANDLE hWait = pWaitWrapper->GetFinishEventHandle();
+		bool bAbort = false;
+		while(::WaitForSingleObject(hWait, 10000) == WAIT_TIMEOUT)
+		{
+			if(::MessageBox(m_hWnd, "This text filter is taking a long time to complete,\ndo you want to wait longer?", LS(IDR_MAINFRAME), MB_YESNO) == IDNO)
+			{
+				bAbort = true;
+				break;
+			}
+		}
+
+		if(!bAbort)
+		{
+			// We finished running...
+			if(m_view.GetSelLength() == 0)
+				m_view.ClearAll();
+			m_view.ReplaceSel( filter_sink->GetBuffer() );
+		}
+	}
 
 	return true;
 }

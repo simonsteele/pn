@@ -70,6 +70,8 @@ typedef struct tagPrintOptions
 #define TOOL_SAVEONE		0x040
 #define TOOL_REVERSESLASHES	0x080
 #define TOOL_ISPROJECTTOOL	0x100
+#define TOOL_ISTEXTFILTER	0x200
+#define TOOL_WANTSTDIN		0x400
 
 /**
  * @brief Defines a single external tool.
@@ -109,6 +111,8 @@ public:
 	bool ShouldClearOutput() const { return (iFlags & TOOL_CLEAROUTPUT) != 0; }
 	bool ShouldUseForwardSlashes() const { return (iFlags & TOOL_REVERSESLASHES) != 0; }
 	bool IsProjectTool() const { return (iFlags & TOOL_ISPROJECTTOOL) != 0; }
+	bool WantStdIn() const { return (iFlags & TOOL_WANTSTDIN) != 0; }
+	bool IsTextFilter() const { return (iFlags & TOOL_ISTEXTFILTER) != 0; }
 
 protected:
 	void _copy(const ToolDefinition& copy)

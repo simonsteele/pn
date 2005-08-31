@@ -14,6 +14,7 @@
 #include "SchemeConfig.h"
 #include "pndialogs.h"
 #include "include/pcreplus.h"
+#include "l10n.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // CToolEditorDialog
@@ -205,6 +206,7 @@ BOOL CToolConsoleIOPage::OnApply()
 {
 	DoDataExchange(TRUE);
 	m_bGlobal = (m_outputcombo.GetCurSel() == 0);
+	m_bTextFilter = (m_outputcombo.GetCurSel() == 2);
 	
 	return TRUE;
 }
@@ -212,9 +214,11 @@ BOOL CToolConsoleIOPage::OnApply()
 void CToolConsoleIOPage::GetValues(ToolDefinition* pDefinition)
 {
 	pDefinition->iFlags |= 
-		(m_bCapture	? TOOL_CAPTURE	: 0) |
-		(m_bGlobal	? TOOL_GLOBALOUTPUT : 0) |
-		(m_bClear	? TOOL_CLEAROUTPUT : 0) |
+		(m_bCapture	  ? TOOL_CAPTURE	: 0) |
+		(m_bGlobal	  ? TOOL_GLOBALOUTPUT : 0) |
+		(m_bClear	  ? TOOL_CLEAROUTPUT : 0) |
+		(m_bWantStdIn ? TOOL_WANTSTDIN : 0) |
+		(m_bTextFilter? TOOL_ISTEXTFILTER : 0) |
 		(m_iBuiltIn * TOOL_CUSTOMPARSER);
 
 	if(m_iBuiltIn)
@@ -230,18 +234,24 @@ void CToolConsoleIOPage::SetValues(ToolDefinition* pDefinition)
 	m_bClear			= pDefinition->ShouldClearOutput();
 	m_iBuiltIn			= pDefinition->UseCustomParser() ? 1 : 0;
 	m_csCustomPattern	= pDefinition->CustomParsePattern.c_str();
+	m_bWantStdIn		= pDefinition->WantStdIn();
+	m_bTextFilter		= pDefinition->IsTextFilter();
 }
 
 LRESULT CToolConsoleIOPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	m_outputcombo.Attach(GetDlgItem(IDC_TE_OUTPUTCOMBO));
-	CString str;
-	str.LoadString(IDS_GLOBALOUTPUT);
-	m_outputcombo.AddString(str);
-	str.LoadString(IDS_INDIVIDUALOUTPUT);
-	m_outputcombo.AddString(str);
+	
+	m_outputcombo.AddString(LS(IDS_GLOBALOUTPUT));
+	m_outputcombo.AddString(LS(IDS_INDIVIDUALOUTPUT));
+	m_outputcombo.AddString(LS(IDS_FILTERSELECTION));
 
-	m_outputcombo.SetCurSel(m_bGlobal ? 0 : 1);
+	int sel = 1;
+	if(m_bGlobal)
+		sel = 0;
+	else if(m_bTextFilter)
+		sel = 2;
+	m_outputcombo.SetCurSel(sel);
 
 	m_outputcombo.EnableWindow(m_bCapture);
 
@@ -367,16 +377,20 @@ LRESULT CToolConsoleIOPage::OnTextChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 void CToolConsoleIOPage::enableButtons()
 {
 	CButton capture(GetDlgItem(IDC_TE_CAPTURECHECK));
+	CButton textFilter(GetDlgItem(IDC_TE_TEXTFILTERCHECK));
 	BOOL bCapture = capture.GetCheck();
+	BOOL bTextFilter = textFilter.GetCheck();
 
+	// These items are always enabled if we are capturing output...
 	m_outputcombo.EnableWindow(bCapture);
-	::EnableWindow(GetDlgItem(IDC_TE_BUILTIN), bCapture);
-	::EnableWindow(GetDlgItem(IDC_TE_ABOUTBUILTIN), bCapture);
 	::EnableWindow(GetDlgItem(IDC_TE_CLEARCHECK), bCapture);
 
+	::EnableWindow(GetDlgItem(IDC_TE_BUILTIN), bCapture && !bTextFilter);
+	::EnableWindow(GetDlgItem(IDC_TE_ABOUTBUILTIN), bCapture && !bTextFilter);
+
 	CButton customParse(GetDlgItem(IDC_TE_CUSTOMPARSE));
-	customParse.EnableWindow(bCapture);
-	BOOL bCustom = customParse.GetCheck();
+	customParse.EnableWindow(bCapture && !bTextFilter);
+	BOOL bCustom = customParse.GetCheck() && customParse.IsWindowEnabled();
 	
 	::EnableWindow(GetDlgItem(IDC_TE_CUSTOMTEXT), bCustom && bCapture);
 

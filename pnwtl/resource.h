@@ -65,6 +65,9 @@
 #define IDS_ALLPROJECTFILES             159
 #define IDS_SELLENGTH                   160
 #define IDS_RECTSEL                     161
+#define IDS_FILTERSELECTION             162
+#define IDS_TOOL_EXITCODE               163
+#define IDS_TOOL_TIMETAKEN              164
 #define IDI_TEXTCLIPS                   167
 #define IDR_POPUP_REGEXP                170
 #define IDR_POPUP_EDITOR                173
@@ -405,6 +408,7 @@
 #define IDC_FILETYPES_EDITBUTTON        1129
 #define IDC_FILETYPES_REMOVEBUTTON      1130
 #define IDC_SCHEME_COMBO                1131
+#define IDC_TE_TEXTFILTERCHECK          1133
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -514,7 +518,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        343
 #define _APS_NEXT_COMMAND_VALUE         32957
-#define _APS_NEXT_CONTROL_VALUE         1132
+#define _APS_NEXT_CONTROL_VALUE         1134
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

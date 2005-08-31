@@ -98,16 +98,18 @@ class CToolConsoleIOPage : public CPropertyPageImpl<CToolConsoleIOPage>,
 			COMMAND_ID_HANDLER(IDC_TE_ABOUTBUILTIN, OnAboutBuiltin)
 			COMMAND_ID_HANDLER(IDC_TE_BUILTIN, OnWindowStateChanged)
 			COMMAND_ID_HANDLER(IDC_TE_CUSTOMPARSE, OnWindowStateChanged)
+			COMMAND_ID_HANDLER(IDC_TE_TEXTFILTERCHECK, OnWindowStateChanged)
 			COMMAND_HANDLER(IDC_TE_CUSTOMTEXT, EN_CHANGE, OnTextChange)
 			CHAIN_MSG_MAP(baseClass)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 
 		BEGIN_DDX_MAP(CToolConsoleIOPage)
-			DDX_TEXT(IDC_TE_CUSTOMTEXT,		m_csCustomPattern)
-			DDX_CHECK(IDC_TE_CAPTURECHECK,	m_bCapture)
-			DDX_RADIO(IDC_TE_BUILTIN,		m_iBuiltIn)
-			DDX_CHECK(IDC_TE_CLEARCHECK,	m_bClear)
+			DDX_TEXT(IDC_TE_CUSTOMTEXT,		  m_csCustomPattern)
+			DDX_CHECK(IDC_TE_CAPTURECHECK,	  m_bCapture)
+			DDX_RADIO(IDC_TE_BUILTIN,		  m_iBuiltIn)
+			DDX_CHECK(IDC_TE_CLEARCHECK,	  m_bClear)
+			DDX_CHECK(IDC_TE_TEXTFILTERCHECK, m_bWantStdIn)
 		END_DDX_MAP()
 
 	// CPropertyPageImpl...
@@ -130,9 +132,11 @@ class CToolConsoleIOPage : public CPropertyPageImpl<CToolConsoleIOPage>,
 
 		CString		m_csCustomPattern;
 		BOOL		m_bCapture;
+		BOOL		m_bWantStdIn;
 		int			m_iBuiltIn;
 		BOOL		m_bClear;
 		bool		m_bGlobal;
+		bool		m_bTextFilter;
 		
 		CScintillaREDialogWnd	m_scintilla;
 };

@@ -303,10 +303,10 @@ bool CMainFrame::OnRunTool(LPVOID pTool)
 	if(curEditor != NULL && !pToolDef->IsProjectTool())
 		return false;
 
-	ToolWrapper* pWrapper = NULL;
+	ToolWrapperPtr pWrapper;
 	if(	pToolDef->GlobalOutput() )
 	{
-		pWrapper = MakeGlobalOutputWrapper(pToolDef);
+		pWrapper.reset( MakeGlobalOutputWrapper(pToolDef) );
 	}
 	else
 	{

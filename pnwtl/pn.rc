@@ -1260,33 +1260,36 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "Capture output?",IDC_TE_CAPTURECHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,8,20,84,10
-    COMBOBOX        IDC_TE_OUTPUTCOMBO,8,33,141,37,CBS_DROPDOWNLIST | 
+                    BS_AUTOCHECKBOX | WS_TABSTOP,8,41,84,10
+    COMBOBOX        IDC_TE_OUTPUTCOMBO,8,54,141,37,CBS_DROPDOWNLIST | 
                     WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Clear output before running?",IDC_TE_CLEARCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,8,50,144,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,8,71,144,10
     CONTROL         "Use the built-in error parser.",IDC_TE_BUILTIN,"Button",
-                    BS_AUTORADIOBUTTON | WS_DISABLED | WS_GROUP,8,90,102,10
+                    BS_AUTORADIOBUTTON | WS_DISABLED | WS_GROUP,8,111,102,10
     CONTROL         "Look for a custom pattern:",IDC_TE_CUSTOMPARSE,"Button",
-                    BS_AUTORADIOBUTTON | WS_DISABLED,8,103,114,10
-    EDITTEXT        IDC_TE_CUSTOMTEXT,51,128,114,14,ES_AUTOHSCROLL | 
+                    BS_AUTORADIOBUTTON | WS_DISABLED,8,124,114,10
+    EDITTEXT        IDC_TE_CUSTOMTEXT,51,149,114,14,ES_AUTOHSCROLL | 
                     WS_DISABLED
-    LTEXT           "Static",IDC_PLACEHOLDER,14,169,214,32,SS_SUNKEN | NOT 
+    LTEXT           "Static",IDC_PLACEHOLDER,14,190,214,32,SS_SUNKEN | NOT 
                     WS_VISIBLE
-    PUSHBUTTON      "?",IDC_TE_ABOUTBUILTIN,132,90,12,12,WS_DISABLED
+    PUSHBUTTON      "?",IDC_TE_ABOUTBUILTIN,132,111,12,12,WS_DISABLED
     LTEXT           "%f: Filename, %l: Line Number, %c: Column",
-                    IDC_TE_CUSTOMINFO,52,146,148,9
-    LTEXT           "example: %f:%l: ",IDC_STATIC,169,129,63,12
+                    IDC_TE_CUSTOMINFO,52,167,148,9
+    LTEXT           "example: %f:%l: ",IDC_STATIC,169,150,63,12
     LTEXT           "(enter text and click above to test)",
-                    IDC_TE_CLICKRESULTSSTATIC,14,202,214,9
-    LTEXT           "Testing:",IDC_STATIC,14,159,27,8
-    GROUPBOX        "Custom Output Parsing",IDC_TE_OUTPUTGROUP,8,116,225,97
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,81,235,1
-    LTEXT           "Output Parsing:",IDC_STATIC,4,77,52,8
+                    IDC_TE_CLICKRESULTSSTATIC,14,223,214,9
+    LTEXT           "Testing:",IDC_STATIC,14,180,27,8
+    GROUPBOX        "Custom Output Parsing",IDC_TE_OUTPUTGROUP,8,137,225,97
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,102,235,1
+    LTEXT           "Output Parsing:",IDC_STATIC,4,98,52,8
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,4,12,235,1
     LTEXT           "Standard Input and Output:",IDC_STATIC,4,8,91,8
-    RTEXT           "Pattern:",IDC_STATIC,11,128,37,12
-    RTEXT           "Shortcuts:",IDC_STATIC,11,146,37,12
+    RTEXT           "Pattern:",IDC_STATIC,11,149,37,12
+    RTEXT           "Shortcuts:",IDC_STATIC,11,167,37,12
+    CONTROL         "Pass my selection to this tool using Standard Input",
+                    IDC_TE_TEXTFILTERCHECK,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,8,21,189,10
 END
 
 IDD_NEWPROJECT DIALOGEX 0, 0, 247, 201
@@ -1828,6 +1831,9 @@ STRINGTABLE
 BEGIN
     IDS_SELLENGTH           "%d character(s) selected."
     IDS_RECTSEL             "Rectangular Selection."
+    IDS_FILTERSELECTION     "Replace my selection."
+    IDS_TOOL_EXITCODE       "\n> Process Exit Code: "
+    IDS_TOOL_TIMETAKEN      "\n> Time Taken: "
 END
 
 #endif    // English (U.K.) resources

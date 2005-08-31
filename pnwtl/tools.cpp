@@ -23,6 +23,10 @@
 #include "include/genx/genx.h"
 #include "include/pngenx.h"
 
+#include <time.h>
+#include <sys/timeb.h>
+
+
 class ToolsXMLWriter : public GenxXMLWriter
 {
 public:
@@ -1059,6 +1063,7 @@ int ToolRunner::GetExitCode()
  */
 void ToolRunner::Run()
 {
+	time(&m_starttime);
 	m_pWrapper->OnStart();
 	m_RetCode = Run_Capture(m_pWrapper->Command.c_str(), m_pWrapper->Params.c_str(), m_pWrapper->Folder.c_str());
 	PostRun();
@@ -1081,9 +1086,12 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	TCHAR* commandBuf = new TCHAR[tempstr.size() + 1];
 	_tcscpy(commandBuf, tempstr.c_str());
 
-	tempstr.insert(0, _T("> "));
-	tempstr += _T("\n");
-	m_pWrapper->_AddToolOutput(tempstr.c_str());
+	if(!m_pWrapper->IsTextFilter())
+	{
+		tempstr.insert(0, _T("> "));
+		tempstr += _T("\n");
+		m_pWrapper->_AddToolOutput(tempstr.c_str());
+	}
 
 	if(_tcslen(dir) == 0)
 		dir = NULL;
@@ -1173,14 +1181,38 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 		return lei.GetErrorCode();
 	}
 
+	unsigned int dwBytesToWrite;
+	unsigned char* stdinbuf;
+	stdinbuf = m_pWrapper->GetStdIOBuffer(dwBytesToWrite);
+	if(!dwBytesToWrite)
+		stdinbuf = NULL;
+
 	DWORD dwBytesAvail, dwBytesRead, exitCode, timeDeathDetected;
 	dwBytesAvail = dwBytesRead = exitCode = timeDeathDetected = 0;
+	DWORD dwBytesWritten = 0;
 	bool bCompleted = false;
 	char buffer[TOOLS_BUFFER_SIZE];
 
 	while(!bCompleted)
 	{
 		Sleep(50);
+
+		if(dwBytesToWrite > 0)
+		{
+			// We have a filter (we think), so write the filter data into the stdin
+			// of the process we started.
+			DWORD dwWrote;
+			::WriteFile(hStdInWrite, stdinbuf+dwBytesWritten, dwBytesToWrite, &dwWrote, NULL);
+			dwBytesWritten += dwWrote;
+			dwBytesToWrite -= dwWrote;
+			
+			if(dwBytesToWrite == 0)
+			{
+				// Now close stdin so that the filter doesn't wait forever for more data.
+				::CloseHandle(hStdInWrite);
+				hStdInWrite = NULL;
+			}
+		}
 
 		//The PeekNamedPipe function copies data from a named or 
 		// anonymous pipe into a buffer without removing it from the pipe.
@@ -1270,7 +1302,9 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	::CloseHandle(hReadPipe);
 	::CloseHandle(hWritePipe);
 	::CloseHandle(hStdInRead);
-	::CloseHandle(hStdInWrite);
+	
+	if(hStdInWrite) // might already be closed
+		::CloseHandle(hStdInWrite);
 
 	return m_RetCode;
 }
@@ -1384,10 +1418,19 @@ int ToolRunner::Execute()
 
 void ToolRunner::PostRun()
 {
-	if( m_pWrapper->CaptureOutput() )
+	if( m_pWrapper->CaptureOutput() && !m_pWrapper->IsTextFilter() )
 	{
-		tstring exitcode(_T("\n> Process Exit Code: "));
+		tstring exitcode(LS(IDS_TOOL_EXITCODE));
 		exitcode += IntToTString(GetExitCode());
+		exitcode += LS(IDS_TOOL_TIMETAKEN);
+		time_t endtime;
+		time(&endtime);
+		endtime -= m_starttime;
+		
+		char buf[100];
+		strftime(buf, 100, "%M:%S", gmtime(&endtime));
+		exitcode += buf;
+		
 		exitcode += _T("\n");
 
 		m_pWrapper->_AddToolOutput(exitcode.c_str());
@@ -1415,12 +1458,12 @@ ToolOwner::~ToolOwner()
  * @param pTool ToolWrapper instance to be orphaned to ToolOwner.
  * @param OwnerID Unique Identifier for the owning object - use "this".
  */
-void ToolOwner::RunTool(ToolWrapper* pTool, ToolOwnerID OwnerID)
+void ToolOwner::RunTool(ToolWrapperPtr& pTool, ToolOwnerID OwnerID)
 {
 	_ToolWrapper _wrapper = {0};
 	_wrapper.OwnerID = OwnerID;
 	_wrapper.pWrapper = pTool;
-	_wrapper.pRunner = new ToolRunner( pTool );
+	_wrapper.pRunner = new ToolRunner( pTool.get() );
 
 	bool bThreaded = _wrapper.pRunner->GetThreadedExecution();
 	
@@ -1449,7 +1492,8 @@ void ToolOwner::RunTool(ToolWrapper* pTool, ToolOwnerID OwnerID)
 	if( !bThreaded )
 	{
 		delete _wrapper.pRunner;
-		delete _wrapper.pWrapper;
+		//delete _wrapper.pWrapper;
+		_wrapper.pWrapper.reset();
 	}
 
 	///@todo
@@ -1516,7 +1560,7 @@ void ToolOwner::cleanup()
 		if(tool.bDelete)
 		{
 			delete tool.pRunner;
-			delete tool.pWrapper;
+			tool.pWrapper.reset();
 			RTOOLS_LIST::iterator del = i;
 			++i;
 			m_RunningTools.erase(del);

@@ -242,6 +242,8 @@ class ToolWrapper : public ToolDefinition
 	public:
 		ToolWrapper(CChildFrame* pActiveChild, const ToolDefinition& definition)
 		{
+			m_pStdIOBuffer = NULL;
+			m_StdIOBufferSize = NULL;
 			m_hNotifyWnd = NULL;
 			m_pActiveChild = pActiveChild;
 			ToolDefinition::_copy(definition);
@@ -252,6 +254,8 @@ class ToolWrapper : public ToolDefinition
 
 		virtual ~ToolWrapper()
 		{
+			if(m_pStdIOBuffer != NULL)
+				delete [] m_pStdIOBuffer;
 			::DeleteCriticalSection(&m_csStatusLock);
 		}
 
@@ -292,7 +296,20 @@ class ToolWrapper : public ToolDefinition
 			CSSCritLock lock(&m_csStatusLock);
 			return m_bRunning;
 		}
-		
+
+		/// Orphan a buffer of data off to this class
+		void SetStdIOBuffer(unsigned char* buffer, unsigned int size)
+		{
+			m_pStdIOBuffer = buffer;
+			m_StdIOBufferSize = size;
+		}
+
+		unsigned char* GetStdIOBuffer(unsigned int& size) const
+		{
+			size = m_StdIOBufferSize;
+			return m_pStdIOBuffer;
+		}
+
 		virtual void Revert() = 0;
 		virtual void ShowOutputWindow() = 0;
 		virtual void _AddToolOutput(LPCTSTR output, int nLength = -1) = 0;
@@ -301,6 +318,8 @@ class ToolWrapper : public ToolDefinition
 		virtual void ClearOutput() = 0;
 
 	protected:
+		unsigned char*		m_pStdIOBuffer;
+		unsigned int		m_StdIOBufferSize;
 		CChildFrame*		m_pActiveChild;
 		CRITICAL_SECTION	m_csStatusLock;
 		HWND				m_hNotifyWnd;
@@ -336,6 +355,7 @@ protected:
 	ToolWrapper*		m_pWrapper;
 	int					m_RetCode;
 	IToolOutputSink*	m_pOutputter;
+	time_t				m_starttime;
 };
 
 /**
@@ -393,6 +413,8 @@ class ToolWrapperT : public ToolWrapper
 
 typedef void* ToolOwnerID;
 
+typedef boost::shared_ptr<ToolWrapper> ToolWrapperPtr;
+
 /**
  * To run a tool, the caller must orphan a ToolWrapper instance to the
  * ToolOwner class. This class is then used to provide access to the 
@@ -403,7 +425,7 @@ class ToolOwner : public Singleton<ToolOwner, SINGLETON_AUTO_DELETE>
 	friend class Singleton<ToolOwner, SINGLETON_AUTO_DELETE>;
 
 	public:
-		void RunTool(ToolWrapper* pTool, ToolOwnerID OwnerID);
+		void RunTool(ToolWrapperPtr& pTool, ToolOwnerID OwnerID);
 
 		void KillTools(bool bWaitForKill, ToolOwnerID OwnerID = 0);
 
@@ -418,9 +440,10 @@ class ToolOwner : public Singleton<ToolOwner, SINGLETON_AUTO_DELETE>
 		struct _ToolWrapper
 		{
 			ToolOwnerID		OwnerID;
-			ToolWrapper*	pWrapper;
 			ToolRunner*		pRunner;
 			bool			bDelete;
+
+			ToolWrapperPtr pWrapper;
 		};
 
 		typedef std::list<_ToolWrapper>	RTOOLS_LIST;
