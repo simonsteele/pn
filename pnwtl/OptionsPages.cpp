@@ -613,12 +613,11 @@ void COptionsPageTools::OnInitialise()
 void COptionsPageTools::OnOK()
 {
 	//m_toolstore.Save();
+	UpdateIndexes();
 }
 
-void COptionsPageTools::Update()
+void COptionsPageTools::UpdateIndexes()
 {
-	m_bChanging = true;
-
 	// We re-number the tools here so that they can be displayed properly in the menu.
 	if(m_pCurrent != NULL)
 	{
@@ -632,6 +631,13 @@ void COptionsPageTools::Update()
 			}
 		}
 	}
+}
+
+void COptionsPageTools::Update()
+{
+	m_bChanging = true;
+
+	UpdateIndexes();
 
 	m_pCurrent = NULL;
 	m_list.DeleteAllItems();

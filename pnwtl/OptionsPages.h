@@ -467,6 +467,7 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 
 		virtual void EnableButtons();
 		void Update();
+		void UpdateIndexes();
 		void SetItem();
 
 		virtual SchemeTools* GetTools();
