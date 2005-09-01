@@ -1134,9 +1134,11 @@ bool CChildFrame::OnRunTool(LPVOID pTool)
 		if(!bAbort)
 		{
 			// We finished running...
+			m_view.BeginUndoAction();
 			if(m_view.GetSelLength() == 0)
 				m_view.ClearAll();
 			m_view.ReplaceSel( filter_sink->GetBuffer() );
+			m_view.EndUndoAction();
 		}
 	}
 
