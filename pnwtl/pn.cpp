@@ -113,17 +113,23 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	// Finally load the cached or default cached options
 	OPTIONS->LoadCache();
 
-	// See if we allow multiple instances...
-	bool bAllowMulti = OPTIONS->Get(PNSK_INTERFACE, _T("AllowMultiInstance"), true);
+	// See if we allow multiple instances
+	bool bAllowMulti = OPTIONS->Get(PNSK_INTERFACE, _T("AllowMultiInstance"), false);
 	if(!bAllowMulti)
 	{
+		LOG( _T("PN2 should only run one instance") );
 		if(checkMI.AlreadyActive())
 		{
+			LOG( _T("PN2 has an instance already, sending parameters and exiting") );
 			//GetAsyncKeyState() - use to see if shift is down.
 			checkMI.SendParameters();
 
 			return 0;
 		}
+	}
+	else
+	{
+		LOG( _T("PN2 is allowed multiple instances") );
 	}
 
 	// Now we initialise any l10n stuff...

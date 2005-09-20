@@ -464,6 +464,8 @@ MultipleInstanceManager::MultipleInstanceManager(LPCTSTR pszKey)
 	m_hMutex = ::CreateMutex(NULL, FALSE, pszKey);
 	m_bAlreadyActive = (::GetLastError() == ERROR_ALREADY_EXISTS);
 	
+	LOG( m_bAlreadyActive ? _T("PN2 is already running") : _T("First PN2 Instance") );
+	
 	PNASSERT(m_hMutex != NULL);
 
 	m_sKey = pszKey;
@@ -480,6 +482,7 @@ MultipleInstanceManager::MultipleInstanceManager(LPCTSTR pszKey)
 
 		if(bWin95)
 		{
+			LOG( _T("PN2 believes it is running on Windows 95") );
 			m_pfnBSM = (PFNBroadcastSystemMessage)::GetProcAddress(m_hUser32, "BroadcastSystemMessage");
 		}
 		else
@@ -493,6 +496,7 @@ MultipleInstanceManager::MultipleInstanceManager(LPCTSTR pszKey)
 	}
 	else
 	{
+		LOG( _T("PN2 was unable to locate the BroadcastSystemMessage* function in User32.dll") );
 		m_hUser32 = NULL;
 		m_pfnBSM = NULL;
 	}
