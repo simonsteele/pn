@@ -46,7 +46,7 @@ FIFThread::FIFThread()
 	m_pBM = new BoyerMoore();
 }
 
-void FIFThread::Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRecurse, bool bCaseSensitive, FIFSink* pSink)
+void FIFThread::Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRecurse, bool bCaseSensitive, bool bIncludeHidden, FIFSink* pSink)
 {
 	PNASSERT(findstr != NULL);
 	PNASSERT(pSink != NULL);
@@ -55,11 +55,12 @@ void FIFThread::Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRec
 
 	m_pBM->SetSearchString(findstr);
 	m_pBM->SetCaseMode(bCaseSensitive);
+	m_pBM->SetIncludeHidden(bIncludeHidden);
 	m_pSink = pSink;
 	m_fileExts = fileTypes;
 	m_path = CPathName(path).c_str();
 	m_bRecurse = bRecurse;
-
+	m_bIncludeHidden = bIncludeHidden;
 	Start();
 }
 
@@ -79,7 +80,7 @@ void FIFThread::Run()
 	if(m_pSink)
 		m_pSink->OnBeginSearch(m_pBM->GetSearchString(), false);
 
-	finder.FindMatching(m_path.c_str(), m_bRecurse);
+	finder.FindMatching(m_path.c_str(), m_bRecurse, m_bIncludeHidden);
 
 	m_pSink->OnEndSearch(m_nLines, m_nFiles);
 
@@ -181,9 +182,10 @@ void FindInFiles::Start(
 						LPCTSTR fileTypes, 
 						bool bRecurse, 
 						bool bCaseSensitive, 
+						bool bIncludeHidden,
 						FIFSink* pSink)
 {
-	m_thread.Find(findstr, path, fileTypes, bRecurse, bCaseSensitive, pSink);
+	m_thread.Find(findstr, path, fileTypes, bRecurse, bCaseSensitive, bIncludeHidden, pSink);
 }
 
 void FindInFiles::Stop()

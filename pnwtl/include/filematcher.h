@@ -168,10 +168,10 @@ class RegExFileFinderImpl : protected FileFinderImpl<T, TOwner>
 			ClearFilters();
 		}
 
-		bool FindMatching(LPCTSTR path, bool bRecurse = false)
+		bool FindMatching(LPCTSTR path, bool bRecurse = false, bool bIncludeHidden = true)
 		{			
 			// Get the baseclass to find everything, and we filter in shouldMatch...
-			return baseClass::Find(path, _T("*.*"), bRecurse);
+			return baseClass::Find(path, _T("*.*"), bRecurse, bIncludeHidden);
 		}
 
 #define SETFILTER(filter, theMatcher) \

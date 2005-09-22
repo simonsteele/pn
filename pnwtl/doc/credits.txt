@@ -7,6 +7,7 @@ Code Contributors:
 ------------------
 Bjoern Graf
 Klaus Kurzawa
+Mike Ditum
 
 Libraries:
 ----------
@@ -29,3 +30,8 @@ Eric Weddington
 David Symons
 John Hawkins
 Richard Mansfield
+Jim Brooks
+Harold Krueger VI
+Sam Collett
+Will McCutchen
+Tadas Vizbaras

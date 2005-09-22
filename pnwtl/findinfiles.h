@@ -19,7 +19,7 @@ class FIFThread : public CSSThread
 		FIFThread();
 		virtual ~FIFThread();
 
-		void Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRecurse, bool bCaseSensitive, FIFSink* pSink);
+		void Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRecurse, bool bCaseSensitive, bool bIncludeHidden, FIFSink* pSink);
 
 		void OnFoundFile(LPCTSTR path, LPCTSTR filename);
 
@@ -39,6 +39,7 @@ class FIFThread : public CSSThread
 		tstring		m_path;
 		tstring		m_fileExts;
 		bool		m_bRecurse;
+		bool		m_bIncludeHidden;
 };
 
 class FindInFiles : public Singleton<FindInFiles, SINGLETON_AUTO_DELETE>
@@ -48,7 +49,7 @@ class FindInFiles : public Singleton<FindInFiles, SINGLETON_AUTO_DELETE>
 public:
 	~FindInFiles();
 	bool IsRunning();
-	void Start(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRecurse, bool bCaseSensitive, FIFSink* pSink);
+	void Start(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRecurse, bool bCaseSensitive, bool bIncludeHidden, FIFSink* pSink);
 	void Stop();
 
 protected:

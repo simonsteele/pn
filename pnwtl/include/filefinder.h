@@ -39,7 +39,7 @@ public:
 		fFinishDir = func;
 	}
 
-	bool Find(LPCTSTR path, LPCTSTR filespec, bool bRecurse = false)
+	bool Find(LPCTSTR path, LPCTSTR filespec, bool bRecurse = false, bool bIncludeHidden = true)
 	{
 		HANDLE hFind;
 		WIN32_FIND_DATA FindFileData;
@@ -54,27 +54,31 @@ public:
 			T* pT = static_cast<T*>(this);
 
 			while (found && pT->shouldContinue())
-			{
-				if( bRecurse && ((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) )
+			{	
+				//if we are not including hidden files/directories and this one is hidden skip checking
+				if( !( !bIncludeHidden && ((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) != 0) ) )
 				{
-					if( pT->shouldRecurse(path, FindFileData.cFileName) )
+					if( bRecurse && ((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) )
 					{
-						tstring path2(path);
-						path2 += FindFileData.cFileName;
-						path2 += _T('\\');
-						if(fDirChange)
-							(owner->*fDirChange)(path2.c_str());
-						Find(path2.c_str(), filespec, bRecurse);
-						if(fFinishDir)
-							(owner->*fFinishDir)(path2.c_str());
+						if( pT->shouldRecurse(path, FindFileData.cFileName) )
+						{
+							tstring path2(path);
+							path2 += FindFileData.cFileName;
+							path2 += _T('\\');
+							if(fDirChange)
+								(owner->*fDirChange)(path2.c_str());
+							Find(path2.c_str(), filespec, bRecurse, bIncludeHidden);
+							if(fFinishDir)
+								(owner->*fFinishDir)(path2.c_str());
+						}
 					}
-				}
-				else
-				{
-					// Call owner class with found data...
-					if( pT->shouldMatch(FindFileData.cFileName) )
+					else
 					{
-						(owner->*f)(path, FindFileData.cFileName);
+						// Call owner class with found data...
+						if( pT->shouldMatch(FindFileData.cFileName) )
+						{
+							(owner->*f)(path, FindFileData.cFileName);
+						}
 					}
 				}
 

@@ -24,7 +24,8 @@ const UINT CHECKBOX_CONTROL_IDS [] = {
 	IDC_REGEXP_CHECK, 
 	IDC_BACKSLASHES_CHECK,
 	IDC_SEARCHUP_CHECK,
-	IDC_SUBDIRS_CHECK
+	IDC_SUBDIRS_CHECK,
+	IDC_INCLUDEHIDDEN_CHECK
 };
 
 const UINT RADIO_CONTROL_IDS [] = {
@@ -34,7 +35,7 @@ const UINT RADIO_CONTROL_IDS [] = {
 	IDC_INSELECTION_RADIO
 };
 
-const int CHECKBOX_CONTROL_COUNT = 6;
+const int CHECKBOX_CONTROL_COUNT = 7;
 
 const UINT FIND_CHECKBOXES [] = {
 	IDC_MATCHWHOLE_CHECK, 
@@ -62,10 +63,11 @@ const UINT FINDINFILES_CHECKBOXES [] = {
 	//IDC_REGEXP_CHECK, 
 	//IDC_SEARCHUP_CHECK, 
 	//IDC_BACKSLASHES_CHECK
-	IDC_SUBDIRS_CHECK
+	IDC_SUBDIRS_CHECK,
+	IDC_INCLUDEHIDDEN_CHECK
 };
 
-int nFINDINFILES_CHECKBOXES = 2;
+int nFINDINFILES_CHECKBOXES = 3;
 
 class ATL_NO_VTABLE ClientRect : public CRect
 {
@@ -292,6 +294,7 @@ LRESULT CFindExDialog::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 		m_bRegExp = pOptions->UseRegExp;
 		m_bUseSlashes = pOptions->UseSlashes;
 		m_bSearchSubdirs = pOptions->Recurse;
+		m_bIncludeHidden = pOptions->IncludeHidden;
 
 		//m_bSearchAll = pOptions->SearchAll;
 		
@@ -715,6 +718,7 @@ SReplaceOptions* CFindExDialog::getOptions()
 	pOptions->InSelection		= (where == elwSelection);
 	pOptions->SearchAll			= (where == elwAllDocs);
 	pOptions->Recurse			= (m_bSearchSubdirs == TRUE);
+	pOptions->IncludeHidden		= (m_bIncludeHidden == TRUE);
 	
 	///@todo Add a user interface counterpart for the loop search option.
 	pOptions->Loop				= true;
@@ -912,8 +916,6 @@ void CFindExDialog::updateLayout()
 		{
 			checkboxes = FINDINFILES_CHECKBOXES;
 			nCheckboxes = nFINDINFILES_CHECKBOXES;
-
-			int nCheckboxes = 2;
 
 			CStatic(GetDlgItem(IDC_REPLACETEXT_LABEL)).ShowWindow(SW_HIDE);
 			m_ReplaceTextCombo.ShowWindow(SW_HIDE);

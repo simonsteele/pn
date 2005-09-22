@@ -27,6 +27,7 @@ public:
 	
 	void SetSearchString( LPCSTR pszSearchString );
 	void SetCaseMode( BOOL bCase = TRUE );
+	void SetIncludeHidden( BOOL bIncludeHidden = TRUE );
 
 	LPCTSTR GetSearchString() const;
 	bool GetCaseSensitive() const;
@@ -42,6 +43,7 @@ protected:
 	// Data.
 	tstring	m_strSearchString;
 	BOOL	m_bCaseOn;
+	BOOL	m_bIncludeHidden;
 	int		m_aDeltas[ 256 ];
 	int		m_aBackDeltas[ 256 ];
 };

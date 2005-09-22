@@ -75,6 +75,7 @@ protected:
 		DDX_CHECK(IDC_REGEXP_CHECK, m_bRegExp)
 		DDX_CHECK(IDC_BACKSLASHES_CHECK, m_bUseSlashes)
 		DDX_CHECK(IDC_SUBDIRS_CHECK, m_bSearchSubdirs)
+		DDX_CHECK(IDC_INCLUDEHIDDEN_CHECK, m_bIncludeHidden)
 		DDX_RADIO(IDC_CURRENTDOC_RADIO, m_SearchWhere)
 		DDX_CHECK(IDC_SEARCHUP_CHECK, m_bSearchUp)
 		//DDX_CHECK(IDC_SEARCHALL_CHECK, m_bSearchAll)
@@ -170,6 +171,7 @@ protected:
 	BOOL		m_bRegExp;
 	BOOL		m_bUseSlashes;
 	BOOL		m_bSearchSubdirs;
+	BOOL		m_bIncludeHidden;
 	BOOL		m_bSearchUp;
 
 	PFNSetLayeredWindowAttributes	m_pFnSLWA;

@@ -254,6 +254,12 @@ void BoyerMoore::SetCaseMode( BOOL bCase )
 	SetSearchString(); 
 }
 
+void BoyerMoore::SetIncludeHidden( BOOL bIncludeHidden ) 
+{ 
+	m_bIncludeHidden = bIncludeHidden; 
+	SetSearchString(); 
+}
+
 LPCTSTR BoyerMoore::GetSearchString() const
 {
 	return m_strSearchString.c_str();

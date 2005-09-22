@@ -117,23 +117,6 @@ void Options::loadCache()
 
 	// Find and Replace Settings ------------
 	group(PNSK_FIND);
-	
-	/*m_FindOptions.Direction			= (BOOL)Get(NULL, _T("Find Direction"), true);
-	m_FindOptions.FindText			= Get(NULL, _T("Find FindText"), _T("")).c_str();
-	m_FindOptions.Loop				= (BOOL)Get(NULL, _T("Find Loop"), true);
-	m_FindOptions.MatchCase			= (BOOL)Get(NULL, _T("Find MatchCase"), false);
-	m_FindOptions.MatchWholeWord	= (BOOL)Get(NULL, _T("Find MatchWholeWord"), false);
-	m_FindOptions.UseRegExp			= (BOOL)Get(NULL, _T("Find UseRegExp"), false);
-	m_FindOptions.UseSlashes		= (BOOL)Get(NULL, _T("Find UseSlashes"), false);
-
-	m_ReplaceOptions.Direction		= (BOOL)Get(NULL, _T("Replace Direction"), true);
-	m_ReplaceOptions.FindText		= Get(NULL, _T("Replace FindText"), _T("")).c_str();
-	m_ReplaceOptions.ReplaceText	= Get(NULL, _T("Replace ReplaceText"), _T("")).c_str();
-	m_ReplaceOptions.Loop			= (BOOL)Get(NULL, _T("Replace Loop"), true);
-	m_ReplaceOptions.MatchCase		= (BOOL)Get(NULL, _T("Replace MatchCase"), false);
-	m_ReplaceOptions.MatchWholeWord = (BOOL)Get(NULL, _T("Replace MatchWholeWord"), false);
-	m_ReplaceOptions.UseRegExp		= (BOOL)Get(NULL, _T("Replace UseRegExp"), false);
-	m_ReplaceOptions.UseSlashes		= (BOOL)Get(NULL, _T("Replace UseSlashes"), false);*/
 
 	// New Search Options...
 	m_SearchOptions.FindText		= Get(NULL, _T("FindText"), _T("")).c_str();
@@ -146,6 +129,7 @@ void Options::loadCache()
 	m_SearchOptions.MatchCase		= (BOOL)Get(NULL, _T("MatchCase"), false);
 	m_SearchOptions.MatchWholeWord	= (BOOL)Get(NULL, _T("MatchWholeWord"), false);
 	m_SearchOptions.Recurse			= (BOOL)Get(NULL, _T("Recurse"), true);
+	m_SearchOptions.IncludeHidden	= (BOOL)Get(NULL, _T("IncludeHidden"), true);
 	m_SearchOptions.UseRegExp		= (BOOL)Get(NULL, _T("UseRegExp"), false);
 	m_SearchOptions.UseSlashes		= (BOOL)Get(NULL, _T("UseSlashes"), false);	
 
@@ -220,6 +204,7 @@ void Options::saveCache()
 	Set(NULL, _T("MatchCase"),				m_SearchOptions.MatchCase);
 	Set(NULL, _T("MatchWholeWord"),			m_SearchOptions.MatchWholeWord);
 	Set(NULL, _T("Recurse"),				m_SearchOptions.Recurse);
+	Set(NULL, _T("IncludeHidden"),			m_SearchOptions.IncludeHidden);
 	Set(NULL, _T("UseRegExp"),				m_SearchOptions.UseRegExp);
 	Set(NULL, _T("UseSlashes"),				m_SearchOptions.UseSlashes);
 

@@ -37,6 +37,7 @@ What's new?
 29) Customisable scheme mappings (choose schemes for file types - Options|Files).
 30) Find Previous - Shift+F3
 31) Support for Java properties files (SF RFE #1267017).
+32) Find in Files can ignore hidden files.
 
 Bug Fixes:
 ----------

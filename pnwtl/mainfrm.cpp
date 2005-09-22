@@ -2025,6 +2025,7 @@ void CMainFrame::FindInFiles(SearchOptions* options)
 		options->FileExts,
 		options->Recurse,
 		options->MatchCase,
+		options->IncludeHidden,
 		m_pFindResultsWnd);
 }
 

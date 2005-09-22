@@ -409,6 +409,7 @@
 #define IDC_FILETYPES_REMOVEBUTTON      1130
 #define IDC_SCHEME_COMBO                1131
 #define IDC_TE_TEXTFILTERCHECK          1133
+#define IDC_INCLUDEHIDDEN_CHECK			1134
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -518,7 +519,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        343
 #define _APS_NEXT_COMMAND_VALUE         32957
-#define _APS_NEXT_CONTROL_VALUE         1134
+#define _APS_NEXT_CONTROL_VALUE         1135
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

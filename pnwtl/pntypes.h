@@ -39,6 +39,7 @@ typedef struct tagSearchOptions : tagFindOptions
 	CString	FileExts;
 	CString Path;
 	bool Recurse;
+	bool IncludeHidden;
 } SearchOptions;
 
 typedef SearchOptions SReplaceOptions;
