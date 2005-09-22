@@ -276,7 +276,7 @@ namespace Schemes
 				m_eStyleClass = genxDeclareElement(m_writer, NULL, u("style-class"), &s);
 				m_eKeywords = genxDeclareElement(m_writer, NULL, u("keywords"), &s);
 				m_eOvStyles = genxDeclareElement(m_writer, NULL, u("override-styles"), &s);
-				m_eOvKeywords = genxDeclareElement(m_writer, NULL, u("override-styles"), &s);
+				m_eOvKeywords = genxDeclareElement(m_writer, NULL, u("override-keywords"), &s);
 				m_eOvClasses = genxDeclareElement(m_writer, NULL, u("override-classes"), &s);
 				m_eColours = genxDeclareElement(m_writer, NULL, u("colours"), &s);
 
