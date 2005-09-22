@@ -118,7 +118,7 @@ class CScheme
 
 		~CScheme();
 
-		virtual void Load(CScintilla& sc, LPCTSTR filename = NULL);
+		virtual void Load(CScintilla& sc, bool allSettings = true, LPCTSTR filename = NULL);
 		
 		virtual StylesList* CreateStylesList();
 
@@ -161,7 +161,7 @@ class CScheme
 
 		bool InitialLoad(CFile& file, SchemeHdrRec& hdr);
 
-		void SetupScintilla(CScintilla& sc);
+		void SetupScintilla(CScintilla& sc, bool allSettings = true);
 		void Init();
 };
 

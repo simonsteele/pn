@@ -3,5 +3,12 @@
 	<?dbhh topicname="IDH_about_pn2" topicid="1"?>
 	<title>Programmers Notepad 2</title>
 
-	<para>Programmers Notepad is a free, open source, text editor with special features for coders</para>
+	<para>Programmers Notepad is a free, open source, text editor with special features for coders.</para>
+	
+	<para>You can <ulink url="http://www.pnotepad.org/donate.html">donate</ulink> to support the project.</para>
+	
+	<para>This documentation is a work in progress. All contributions are 
+	welcome, if you know how to do something with PN that is not documented 
+	here, please consider spending a few moments of your time writing a 
+	quick bit of documentation for it - anyone can help!</para>
 </chapter>

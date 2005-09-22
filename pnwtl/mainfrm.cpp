@@ -85,9 +85,11 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(I
 
 	m_iFirstToolCmd = ID_TOOLS_DUMMY;
 
-	SchemeTools* pSchemeTools = ToolsManager::GetInstance()->GetGlobalTools();
-	pSchemeTools->AllocateMenuResources();
-	m_hGlobalToolAccel = pSchemeTools->GetAcceleratorTable();
+	m_hProjAccel = NULL;
+
+	SchemeTools* pGlobalTools = ToolsManager::GetInstance()->GetGlobalTools();
+	pGlobalTools->AllocateMenuResources();
+	m_hGlobalToolAccel = pGlobalTools->GetAcceleratorTable();
 }
 
 CMainFrame::~CMainFrame()
@@ -1736,12 +1738,19 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 
 	if( options.DoModal() == IDOK )
 	{
+		DWORD dwTimeNow = ::GetTickCount();
+
 		// Save the modified tool sets...
 		toolsmanager.Save();
 
 		// and then re-load them into the main manager...
 		ToolsManager* pSTM = ToolsManager::GetInstance();
 		pSTM->ReLoad(true); // pass in true to cache menu resources.
+
+		dwTimeNow = ::GetTickCount() - dwTimeNow;
+		char buf[55];
+		sprintf(buf, "Took: %dms", dwTimeNow);
+		LOG(buf);
 
 		///@todo more dirty checking...
 
@@ -1754,6 +1763,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 		m_RecentFiles.UpdateMenu();
 
 		m_RecentProjects.SetSize( OPTIONS->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4) );
+		m_RecentProjects.UpdateMenu();
 
 		setupToolsUI();
 
@@ -1895,7 +1905,7 @@ LRESULT CMainFrame::OnSchemeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	{
 		CChildFrame* pEditor = CChildFrame::FromHandle( GetCurrentEditor() );
 		if( pEditor != NULL )
-			pEditor->SetScheme( pScheme );
+			pEditor->SetScheme( pScheme, false );
 	}
 	return 0;
 }

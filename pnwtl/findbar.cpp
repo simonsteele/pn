@@ -130,6 +130,7 @@ CFindBar::CFindBar()
 {
 	m_pLastFrame = NULL;
 	
+	so.Loop = true;
 	so.UseRegExp = false;
 	so.MatchCase = false;
 	so.MatchWholeWord = false;

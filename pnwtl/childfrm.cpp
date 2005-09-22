@@ -495,6 +495,8 @@ LRESULT CChildFrame::OnOptionsUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	if(pS)
 		m_view.SetScheme(pS);
 
+	m_view.ShowLineNumbers(OPTIONS->GetCached(Options::OLineNumbers) != 0);
+
 	UpdateMenu();
 
 	SetTitle(GetModified());
@@ -1517,14 +1519,14 @@ void CChildFrame::SetPosStatus(CMultiPaneStatusBarCtrl&	stat)
 
 bool CChildFrame::OnSchemeChange(LPVOID pVoid)
 {
-	SetScheme(static_cast<CScheme*>(pVoid));
+	SetScheme(static_cast<CScheme*>(pVoid), false);
 
 	return true;
 }
 
-void CChildFrame::SetScheme(CScheme* pScheme)
+void CChildFrame::SetScheme(CScheme* pScheme, bool allSettings)
 {
-    m_view.SetScheme(pScheme);
+    m_view.SetScheme(pScheme, allSettings);
 }
 
 #include "project.h"

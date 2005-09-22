@@ -37,10 +37,12 @@ public:
 		addAttributeConvertUTF8(m_aCommand, tool->Command.c_str());
 		addAttributeConvertUTF8(m_aFolder, tool->Folder.c_str());
 		addAttributeConvertUTF8(m_aParams, tool->Params.c_str());
-		addAttributeConvertUTF8(m_aShortcut, IntToTString(tool->Shortcut).c_str());
 		addAttributeConvertUTF8(m_aParsePattern, tool->CustomParsePattern.c_str());
-		addAttributeConvertUTF8(m_aFlags, IntToTString(tool->iFlags).c_str());
-		addAttributeConvertUTF8(m_aIndex, IntToTString(tool->Index).c_str());
+		
+		// No UTF-8 Here...
+		genxAddAttribute(m_aShortcut, (utf8)IntToTString(tool->Shortcut).c_str());
+		genxAddAttribute(m_aFlags, (utf8)IntToTString(tool->iFlags).c_str());
+		genxAddAttribute(m_aIndex, (utf8)IntToTString(tool->Index).c_str());
 		genxEndElement(m_writer);
 	}
 
@@ -178,40 +180,6 @@ TOOLDEFS_LIST& SchemeTools::GetTools()
 {
 	return m_Tools;
 }
-
-///@return ID of last command added...
-/*int SchemeTools::GetMenu(CSMenuHandle& menu, int iInsertBefore, int iCommand)
-{
-	int iLastCommand = iInsertBefore;
-	if(m_Tools.size() != 0)
-	{
-		CSMenuManager* pMan = CSMenuManager::GetInstance();
-		
-		for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
-		{
-			ToolDefinition* pT = (*i);
-			
-            if(pT->CommandID == -1)
-				pT->CommandID = pMan->RegisterCallback(pT->CommandID, NULL, iCommand, (LPVOID)pT);
-
-			tstring str = pT->Name;
-			if(pT->Shortcut != 0)
-			{
-				tstring sc = GetShortcutText(LOBYTE(pT->Shortcut), HIBYTE(pT->Shortcut));
-				if(sc.length() > 0)
-				{
-					str += "\t";
-					str += sc;
-				}
-			}
-
-			::InsertMenu(menu, iInsertBefore, MF_BYCOMMAND | MF_STRING, pT->CommandID, str.c_str());
-			iLastCommand = pT->CommandID;
-		}
-	}
-
-	return iLastCommand;
-}*/
 
 void SchemeTools::AllocateMenuResources(int iCommand)
 {
@@ -880,10 +848,11 @@ void ToolsManager::ReLoad(bool bWantMenuResources)
 
 void ToolsManager::Save()
 {
+	ToolsXMLWriter writer;
+
 	// Save all the source files.
 	for(SOURCES_LIST::iterator i = m_toolSources.begin(); i != m_toolSources.end(); ++i)
 	{
-		ToolsXMLWriter writer;
 		writer.Start((*i)->FileName.c_str());
 
 		if(writer.IsValid())

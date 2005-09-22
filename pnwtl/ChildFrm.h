@@ -267,7 +267,7 @@ public:
 	void SetPosStatus(CMultiPaneStatusBarCtrl&	stat);
 	bool OnSchemeChange(LPVOID pVoid);
 	
-	void SetScheme(CScheme* pScheme);
+	void SetScheme(CScheme* pScheme, bool allSettings = true);
 	void UpdateMenu();
 
 	CTextView* GetTextView();

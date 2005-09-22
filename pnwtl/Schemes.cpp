@@ -312,7 +312,7 @@ StylesList* CScheme::CreateStylesList()
 	return NULL;
 }
 
-void CScheme::Load(CScintilla& sc, LPCTSTR filename)
+void CScheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 {
 	CFile cfile;
 	SchemeHdrRec hdr;
@@ -333,7 +333,7 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 		InitialLoad(cfile, hdr);
 
 		// Set the defaults - these may be changed by the load.
-		SetupScintilla(sc);
+		SetupScintilla(sc, allSettings);
 
 		if(hdr.Flags & fldEnabled)
 		{
@@ -422,7 +422,7 @@ void CScheme::Load(CScintilla& sc, LPCTSTR filename)
 	}
 }
 
-void CScheme::SetupScintilla(CScintilla& sc)
+void CScheme::SetupScintilla(CScintilla& sc, bool allSettings)
 {
 	Options& options = *OPTIONS;
 
@@ -430,7 +430,6 @@ void CScheme::SetupScintilla(CScintilla& sc)
 	//sc.SPerform(SCI_SETEOLMODE, options.LineEndings);
 
 	// Line Indentation...
-	sc.SPerform(SCI_SETINDENTATIONGUIDES, (options.GetCached(Options::OShowIndentGuides) ? 1 : 0));
 	sc.SPerform(SCI_SETUSETABS, options.GetCached(Options::OUseTabs) ? 1 : 0);
 	sc.SPerform(SCI_SETTABWIDTH, options.GetCached(Options::OTabWidth));
 	if( options.GetCached(Options::OLineHighlight) )
@@ -442,10 +441,13 @@ void CScheme::SetupScintilla(CScintilla& sc)
 	sc.SPerform(SCI_SETEDGECOLUMN, options.GetCached(Options::ORightColumn));
 	sc.SPerform(SCI_SETEDGECOLOUR, options.GetCached(Options::ORightGuideColour));
 
-	sc.SPerform(SCI_SETWRAPMODE, options.GetCached(Options::OWordWrap) ? SC_WRAP_WORD : SC_WRAP_NONE);
-
-	sc.SetViewWS((options.GetCached(Options::OVisibleWhiteSpace) ? SCWS_VISIBLEALWAYS : SCWS_INVISIBLE));
-	sc.SetViewEOL(options.GetCached(Options::OVisibleLineEndings) != FALSE);
+	if(allSettings)
+	{
+		sc.SPerform(SCI_SETINDENTATIONGUIDES, (options.GetCached(Options::OShowIndentGuides) ? 1 : 0));
+		sc.SPerform(SCI_SETWRAPMODE, options.GetCached(Options::OWordWrap) ? SC_WRAP_WORD : SC_WRAP_NONE);
+		sc.SetViewWS((options.GetCached(Options::OVisibleWhiteSpace) ? SCWS_VISIBLEALWAYS : SCWS_INVISIBLE));
+		sc.SetViewEOL(options.GetCached(Options::OVisibleLineEndings) != FALSE);
+	}
 
 	// Set even treatment of left and right caret positioning, and sloppy behaviour. 
 	// Use 3 lines as the jump when scrolling up and down.

@@ -55,7 +55,7 @@ BOOL CTextView::PreTranslateMessage(MSG* pMsg)
 	return FALSE;
 }
 
-void CTextView::SetScheme(CScheme* pScheme)
+void CTextView::SetScheme(CScheme* pScheme, bool allSettings)
 {
 	if(pScheme != SchemeManager::GetInstance()->GetDefaultScheme())
 		m_bSmartStart = false;
@@ -69,7 +69,7 @@ void CTextView::SetScheme(CScheme* pScheme)
 		SetKeyWords(i, "");
 	}
 	
-	pScheme->Load(*this);
+	pScheme->Load(*this, allSettings);
 	
 	//EnsureRangeVisible(0, GetLength());
 	//ClearDocumentStyle();

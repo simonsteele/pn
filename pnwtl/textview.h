@@ -46,7 +46,7 @@ public:
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
-	void SetScheme(CScheme* pScheme);
+	void SetScheme(CScheme* pScheme, bool allSettings = true);
 	CScheme* GetCurrentScheme();
 
 	bool Load(LPCTSTR filename, CScheme* pScheme = NULL, EPNEncoding encoding = eUnknown);
