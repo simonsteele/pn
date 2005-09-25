@@ -152,16 +152,23 @@ LRESULT CFindBar::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 	CRect rcTextBox(55, 5, 250, 25);
 	CRect rcFindNext(260, 5, 260+80, 24);
 	CRect rcFindPrev(345, 5, 345+80, 24);
+	CRect rcMatchCase(440, 5, 440+90, 24);
+	CRect rcWrapLabel(550, 5, 550+100, 24);
+	
 	m_xbutton.Create(m_hWnd, rcCloseButton, "x", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 0, IDCANCEL);
 	m_findNext.Create(m_hWnd, rcFindNext, "Find &Next", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 0, IDC_FBFINDNEXTBUTTON);
 	m_findPrev.Create(m_hWnd, rcFindPrev, "Find &Previous", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 0, IDC_FBFINDPREVBUTTON);
 	m_txtbox.Create(m_hWnd, rcTextBox, "", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, WS_EX_CLIENTEDGE, IDC_FBTEXT);
+	m_matchCase.Create(m_hWnd, rcMatchCase, "Match Case", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | BS_AUTOCHECKBOX, 0, IDC_FBMATCHCASECHECK);
+	m_wrappedLabel.Create(m_hWnd, rcWrapLabel, "Reached end of document, continue from top", WS_CHILD | WS_CLIPSIBLINGS | BS_AUTOCHECKBOX, 0, IDC_FBWRAPLABEL);
+	
 	HFONT fn = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
 	SetFont(fn);
 	m_xbutton.SetFont(fn);
 	m_txtbox.SetFont(fn);
 	m_findNext.SetFont(fn);
 	m_findPrev.SetFont(fn);
+	m_matchCase.SetFont(fn);
 
 	return 0;
 }
@@ -246,6 +253,18 @@ LRESULT CFindBar::OnFindPrevClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	return 0;
 }
 
+LRESULT CFindBar::OnMatchCaseClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	so.MatchCase = m_matchCase.GetCheck() == BST_CHECKED;
+
+	if(!m_lasttext.empty())
+	{
+		findNext(NULL, false);
+	}
+
+	return 0;
+}
+
 void CFindBar::findNext(LPCTSTR text, bool searchUp)
 {
 	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
@@ -286,11 +305,12 @@ void CFindBar::findNext(LPCTSTR text, bool searchUp)
 			// Searching for the same thing, it's a find next.
 			if(searchUp)
 				pTV->SetSel(cr.cpMin, cr.cpMin);
-			else
-				pTV->SetSel(cr.cpMax, cr.cpMax);
+			//else
+			//	pTV->SetSel(cr.cpMax, cr.cpMax);
 		}
 
-		if(pChild->FindNext(&so) == CScintillaImpl::FindNextResults::fnNotFound)
+		int result = pTV->FindNext(&so);
+		if(result == CScintillaImpl::FindNextResults::fnNotFound)
 		{
 			pTV->SetSel(cr.cpMin, cr.cpMax);
 			OPTIONS->GetSearchOptions()->Found = false;
@@ -300,6 +320,10 @@ void CFindBar::findNext(LPCTSTR text, bool searchUp)
 		{
 			OPTIONS->GetSearchOptions()->Found = true;
 			m_txtbox.SetDoRed(false);
+
+			bool showWrap = (result == CScintillaImpl::FindNextResults::fnReachedStart);
+			m_wrappedLabel.ShowWindow(showWrap ? SW_SHOW : SW_HIDE);
+				
 		}
 
 		// Store text in main search options, and in our stored one.

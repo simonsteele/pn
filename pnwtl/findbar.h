@@ -65,6 +65,8 @@ public:
 		IDC_FBFINDNEXTBUTTON = 200,
 		IDC_FBFINDPREVBUTTON = 300,
 		IDC_FBTEXT = 400,
+		IDC_FBMATCHCASECHECK = 500,
+		IDC_FBWRAPLABEL = 600,
 	};
 
 	CFindBar();
@@ -81,6 +83,7 @@ public:
 		COMMAND_HANDLER(IDC_FBFINDNEXTBUTTON, BN_CLICKED, OnFindNextClicked)
 		COMMAND_HANDLER(IDC_FBFINDPREVBUTTON, BN_CLICKED, OnFindPrevClicked)
 		COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnCloseClicked)
+		COMMAND_HANDLER(IDC_FBMATCHCASECHECK, BN_CLICKED, OnMatchCaseClicked)
 
 		REFLECT_NOTIFICATIONS_MSG_FILTERED(WM_DRAWITEM)
 		REFLECT_NOTIFICATIONS_MSG_ID_FILTERED(WM_CTLCOLOREDIT, IDC_FBTEXT)
@@ -106,6 +109,7 @@ protected:
 	LRESULT OnCloseClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFindNextClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFindPrevClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnMatchCaseClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	void findNext(LPCTSTR text, bool searchUp);
 
@@ -115,6 +119,8 @@ protected:
 	CXButton m_xbutton;
 	CButton m_findNext;
 	CButton m_findPrev;
+	CButton m_matchCase;
+	CStatic m_wrappedLabel;
 	CFindBarEdit m_txtbox;
 	HWND m_controller;
 	tstring m_lasttext;
