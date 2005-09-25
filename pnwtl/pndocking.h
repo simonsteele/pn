@@ -93,6 +93,17 @@ class /*ATL_NO_VTABLE*/ CPNDockingWindowT : public dockwins::CBoxedDockingWindow
 			m_hWndClient = NULL;
 		}
 
+		HWND Create(HWND hDockingFrameWnd, RECT& rcPos, LPCTSTR szWindowName = NULL,
+			DWORD dwStyle = 0, DWORD dwExStyle = 0,
+			UINT nID = 0, LPVOID lpCreateParam = NULL)
+		{
+			// Set up a default size
+			m_rcUndock.CopyRect(&rcPos);
+
+			return baseClass::Create(hDockingFrameWnd, rcPos, szWindowName, 
+				dwStyle, dwExStyle, nID, lpCreateParam);
+		}
+
 		// Prevent Hide from de-activating the current window. This is a bit kludgy.
 		virtual bool Hide()
 		{
