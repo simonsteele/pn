@@ -122,6 +122,14 @@ LRESULT CClipsDocker::OnCtlColor(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 	return 0;*/
 }
 
+LRESULT CClipsDocker::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	LPMINMAXINFO mmi = reinterpret_cast<LPMINMAXINFO>(lParam);
+	mmi->ptMinTrackSize.x = 80;
+	mmi->ptMinTrackSize.y = 100;
+	return 0;
+}
+
 LRESULT CClipsDocker::OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	//Hide();

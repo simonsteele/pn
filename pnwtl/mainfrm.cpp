@@ -651,7 +651,7 @@ TWnd* CreateDocker(LPCTSTR title, CRect& rect, CMainFrame* owner, CPNDockingWind
 	CRect rcBar(0, 0, 200, 70);
 
 	TWnd* pWnd = new TWnd;
-	CPNDockingWindow* pDocker = new CPNDockingWindow();
+	CPNDockingWindow* pDocker = new CPNDockingWindow(title);
 	pDocker->Create(owner->m_hWnd, rect, title, dwStyle, WS_EX_TOOLWINDOW);
 
 	pWnd->Create(pDocker->m_hWnd, rect, title);

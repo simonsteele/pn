@@ -88,16 +88,17 @@ class /*ATL_NO_VTABLE*/ CPNDockingWindowT : public dockwins::CBoxedDockingWindow
 	typedef CPNDockingWindowT<T> thisClass;
 
 	public:
-		CPNDockingWindowT()
+		CPNDockingWindowT(LPCTSTR name)
 		{
 			m_hWndClient = NULL;
+			m_name = name;
 		}
 
 		HWND Create(HWND hDockingFrameWnd, RECT& rcPos, LPCTSTR szWindowName = NULL,
 			DWORD dwStyle = 0, DWORD dwExStyle = 0,
 			UINT nID = 0, LPVOID lpCreateParam = NULL)
 		{
-			// Set up a default size
+			// Set up a default size, thus fixing bug #1065665
 			m_rcUndock.CopyRect(&rcPos);
 
 			return baseClass::Create(hDockingFrameWnd, rcPos, szWindowName, 
@@ -147,6 +148,7 @@ class /*ATL_NO_VTABLE*/ CPNDockingWindowT : public dockwins::CBoxedDockingWindow
 		}
 
 		HWND m_hWndClient;
+		tstring m_name;
 };
 
 // Get a slightly slimmer splitter - much nicer.

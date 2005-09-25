@@ -68,6 +68,10 @@ Bug Fixes:
 24) Crash when adding a project tool (SF Bug #1195786).
 25) Show Lines Numbers" setting does not affect open files (SF Bug #1212355).
 26) Toggling syntax highlighting looses word wrap (SF Bug #1151704).
+27) Undo/Redo in folded area does not unfold (SF Bug #1286210).
+28) PN2 is confused by relative path names (SF Bug #1232939).
+29) Docking windows resize to tiny (SF Bug #1018105).
+30) Sub-windows initialization issue (SF Bug #1065665).
 
 If you find a bug:
 ------------------

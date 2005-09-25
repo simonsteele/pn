@@ -39,6 +39,7 @@ public:
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_CTLCOLORLISTBOX, OnCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, OnCtlColor)
+		MESSAGE_HANDLER(WM_GETMINMAXINFO, OnGetMinMaxInfo)
 		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHide)
 		COMMAND_HANDLER(IDC_CLIPSCOMBO, CBN_SELCHANGE, OnComboSelChange)
 		NOTIFY_HANDLER(IDC_CLIPSLIST, NM_DBLCLK, OnClipSelected);
@@ -50,6 +51,7 @@ protected:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	LRESULT OnComboSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

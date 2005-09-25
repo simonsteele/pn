@@ -1,9 +1,9 @@
 #define PN_MAJOR			2
 #define PN_MINOR			0
 #define PN_REVISION			5
-#define PN_BUILD			67
-#define PN_VERSTRING		"2.0.5.67"
-#define PN_VERNAME			"-rc2"
+#define PN_BUILD			68
+#define PN_VERSTRING		"2.0.5.68"
+#define PN_VERNAME			"-rc3"
 
 #define PN_VIVERSION		PN_MAJOR,PN_MINOR,0,0
 #define PN_VIVERSION_FILE	PN_MAJOR,PN_MINOR,PN_REVISION,PN_BUILD

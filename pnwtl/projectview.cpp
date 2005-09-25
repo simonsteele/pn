@@ -2256,6 +2256,14 @@ LRESULT CProjectDocker::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 	return 0;
 }
 
+LRESULT CProjectDocker::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	LPMINMAXINFO mmi = reinterpret_cast<LPMINMAXINFO>(lParam);
+	mmi->ptMinTrackSize.x = 80;
+	mmi->ptMinTrackSize.y = 100;
+	return 0;
+}
+
 void CProjectDocker::SetWorkspace(Projects::Workspace* ws)
 {
 	workspace = ws;

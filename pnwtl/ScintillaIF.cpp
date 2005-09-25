@@ -195,6 +195,11 @@ int CScintilla::HandleNotify(LPARAM lParam)
 				m_SelLength = SPerform(SCI_GETSELECTIONEND) - SPerform(SCI_GETSELECTIONSTART);
 			}
 			break;
+		case SCN_NEEDSHOWN:
+			{
+				EnsureRangeVisible(scn->position, scn->position + scn->length/*, false*/);
+			}
+			break;
 	}
 	return scn->nmhdr.code;
 }

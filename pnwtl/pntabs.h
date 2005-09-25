@@ -6,6 +6,7 @@
 #endif
 
 #define WTL_TABBED_MDI_SAVE_IMPLEMENTATION
+#define USE_BOOST
 
 #include <atlgdix.h>
 #include <CustomTabCtrl.h>

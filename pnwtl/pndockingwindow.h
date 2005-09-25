@@ -5,6 +5,9 @@ class CPNDockingWindow : public CPNDockingWindowT<CPNDockingWindow>
 {
 	typedef CPNDockingWindowT<CPNDockingWindow> baseClass;
 public:
+	CPNDockingWindow(LPCTSTR title) : baseClass(title)
+	{}
+
 	DECLARE_WND_CLASS_EX(_T("PNDockingWindow"), CS_DBLCLKS, COLOR_APPWORKSPACE)
 
 	BEGIN_MSG_MAP(CPNDockingWindow)
