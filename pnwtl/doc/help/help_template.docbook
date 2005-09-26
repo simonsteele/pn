@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter>
+	<title>Help Topic Title</title>
+	<section>
+		<?dbhh topicname="IDH_arbitrary_topic_name" topicid="2"?>
+		<title>Sub-Title</title>
+	
+		<!-- All paragraphs surrounded with <para> and </para> -->
+		<para>Some Text Here</para>
+		
+		<!-- Optional sub-sections can be nested and titled: -->
+		<section>
+			<title>Sub-section title</title>
+			<para>Some text in a sub-section</para>
+		</section>
+		
+		<!-- To be fancy and include an image: -->
+		<graphic fileref="somepicture.png"></graphic>
+
+	</section>
+</chapter>
