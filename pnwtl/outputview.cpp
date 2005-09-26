@@ -258,7 +258,7 @@ bool COutputView::BuildAndHandleREError(int style, int position, const char* reD
 	}
 	catch (PCRE::REException& ex)
 	{
-		::MessageBox(NULL, ex.GetMessage(), "PN2 - Regular Expression Error", MB_OK);
+		::MessageBox(m_hWnd, ex.GetMessage(), "PN2 - Regular Expression Error", MB_OK);
 	}
 
 	return false;
