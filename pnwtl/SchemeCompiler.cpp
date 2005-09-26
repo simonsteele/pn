@@ -1062,7 +1062,7 @@ void SchemeParser::processLanguageKeywords(CSchemeLoaderState* pState, XMLAttrib
 			custom = pCustom->pWords;
 	}
 
-	if(kw != _T("") && key != -1)
+	if(/*kw != _T("") && */key != -1) // We want empty keyword sets for customisation.
 	{
 		if(!pState->m_bBaseParse)
 		{

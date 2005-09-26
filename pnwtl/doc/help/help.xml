@@ -2,7 +2,7 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
 "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
 <!ENTITY __about SYSTEM "about.xml">
-<!ENTITY __howto SYSTEM "howto.xml">
+<!ENTITY __howto SYSTEM "howto.docbook">
 <!ENTITY __navigation SYSTEM "navigation.xml">
 <!ENTITY __advanced SYSTEM "advanced.docbook">
 ]>

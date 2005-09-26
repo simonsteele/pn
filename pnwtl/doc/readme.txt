@@ -38,6 +38,7 @@ What's new?
 30) Find Previous - Shift+F3
 31) Support for Java properties files (SF RFE #1267017).
 32) Find in Files can ignore hidden files.
+33) Remember Selected Text Clips Set (SF RFE #1279158).
 
 Bug Fixes:
 ----------
