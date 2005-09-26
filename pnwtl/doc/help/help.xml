@@ -4,6 +4,7 @@
 <!ENTITY __about SYSTEM "about.xml">
 <!ENTITY __howto SYSTEM "howto.xml">
 <!ENTITY __navigation SYSTEM "navigation.xml">
+<!ENTITY __advanced SYSTEM "advanced.docbook">
 ]>
 <book lang="en">
   <title>PN2 Help</title>
@@ -11,4 +12,5 @@
   &__about;
   &__howto;
   &__navigation;
+  &__advanced;
 </book>

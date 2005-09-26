@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter>
+	<title>Advanced</title>
+	<section>
+		<?dbhh topicname="IDH_project_templates" topicid="2"?>
+		<title>Creating Project Templates</title>
+	
+		<para>This topic has not been filled in yet!</para>
+	</section>
+	<section>
+		<?dbhh topicname="IDH_text_clips" topicid="2"?>
+		<title>Creating Text Clips Files</title>
+	
+		<para>This topic has not been filled in yet!</para>
+	</section>
+	<section>
+		<?dbhh topicname="IDH_user_schemes" topicid="2"?>
+		<title>Creating User Schemes</title>
+	
+		<para>This topic has not been filled in yet!</para>
+	</section>
+</chapter>
