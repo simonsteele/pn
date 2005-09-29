@@ -52,7 +52,7 @@ LRESULT CClipsDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 	m_view.Create(m_hWnd, rc, _T("ClipsList"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | LVS_REPORT | LVS_NOCOLUMNHEADER | LVS_SINGLESEL, 0, IDC_CLIPSLIST);
 	m_view.ShowWindow(SW_SHOW);
-	m_view.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+	m_view.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
 
 	m_view.InsertColumn(0, _T("Name"), LVCFMT_LEFT, rc.right - rc.left, 0);
 
@@ -180,80 +180,53 @@ LRESULT CClipsDocker::OnClipSelected(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 
 	TextClips::Clip* clip = reinterpret_cast<TextClips::Clip*>( m_view.GetItemData(((LPNMITEMACTIVATE)pnmh)->iItem));
 	
-	CChildFrame* pChild = CChildFrame::FromHandle( GetCurrentEditor() );
-	
-	if(pChild)
+	if(clip)
+		InsertClip(clip);
+
+	return 0;
+}
+
+LRESULT CClipsDocker::OnClipEnterPressed(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	int selIndex = m_view.GetSelectedIndex();
+	if(selIndex >= 0)
 	{
-		CTextView* pS = pChild->GetTextView();
-		if(!pS)
-			return 0;
-
-		tstring clipstr;
-		// clip->Text is in Unix EOL mode (LF only), convert it to target EOL mode
-		switch(pS->GetEOLMode())
-		{
-		case PNSF_Unix:
-			// no conversion needed, just copy
-			clipstr = clip->Text;
-			break;
-
-		case PNSF_Windows:
-			{
-				// heuristically reserve size for the target string
-				// and copy the string by inserting '\r' where appropriate
-				clipstr.reserve(clip->Text.size() + (clip->Text.size() / 16));
-				tstring::const_iterator it = clip->Text.begin();
-				tstring::const_iterator end = clip->Text.end();
-				for(; it != end; ++it)
-				{
-					if(*it == '\n')
-						clipstr += '\r';
-					clipstr += *it;
-				}
-			}
-			break;
-
-		case PNSF_Mac:
-			// reserve size for the target string and use standard algorithm
-			clipstr.reserve(clip->Text.size());
-			std::replace_copy(clip->Text.begin(), clip->Text.end(),
-				std::back_inserter(clipstr), '\n', '\r');
-			break;
-		}
+		TextClips::Clip* clip = reinterpret_cast<TextClips::Clip*>( m_view.GetItemData(selIndex) );
 		
-		size_t offset = clipstr.find(_T('|'));
-		if(offset != clipstr.npos)
-			clipstr.erase(offset, 1);
-		else
-			offset = 0;
-		
-		int curPos = pS->GetCurrentPos();
+		if(clip)
+			InsertClip(clip);
+	}
+
+	return 0;
+}
+
+LRESULT CClipsDocker::OnClipGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	LPNMLVGETINFOTIP pGetInfoTip = (LPNMLVGETINFOTIP)pnmh;
+	//pGetInfoTip->
 	
-		int length = pS->GetSelLength();
-		if(length != 0)
+	TextClips::Clip* clip = reinterpret_cast<TextClips::Clip*>( m_view.GetItemData(pGetInfoTip->iItem) );
+	if(clip)
+	{
+		tstring str;
+		if(pGetInfoTip->dwFlags == 0)
 		{
-			// Get the selected text from Scintilla.
-			char* selData = new char[length+1];
-			int rxlen = pS->GetSelText(selData);
-			PNASSERT(rxlen == length+1);
-			
-			// Insert the text into the buffer.
-			clipstr.insert(offset, selData);
-			delete [] selData;
-			
-			// Adjust the offset to place the cursor after the selected text.
-			offset += length;
+			str = pGetInfoTip->pszText;
+			str += _T(":\n");
+			str += clip->Text;
+		}
+		else
+		{
+			str = clip->Text;
 		}
 
-		// Wrap everything in an undo block.
-		pS->BeginUndoAction();
-		if(length)
-			pS->DeleteBack(); // kill the selection text, we're inserting it again.
-		pS->InsertText(curPos, clipstr.c_str());
-		pS->SetCurrentPos(curPos + offset);
-		pS->SetSel(curPos + offset, curPos + offset);
-		pS->EndUndoAction();
-		::SetFocus(pS->m_hWnd);
+		if( str.size() >= (size_t)(pGetInfoTip->cchTextMax - 3) )
+		{
+			str.resize(pGetInfoTip->cchTextMax-4);
+			str += _T("...");
+		}
+		
+		strcpy(pGetInfoTip->pszText, str.c_str());
 	}
 
 	return 0;
@@ -275,4 +248,20 @@ inline void CClipsDocker::AddClip(TextClips::Clip* tc)
 {
 	int iIndex = m_view.InsertItem(m_view.GetItemCount(), tc->Name.c_str());
 	m_view.SetItemData(iIndex, reinterpret_cast<DWORD_PTR>(tc));
+}
+
+void CClipsDocker::InsertClip(TextClips::Clip* tc)
+{
+	CChildFrame* pChild = CChildFrame::FromHandle( GetCurrentEditor() );
+	
+	if(pChild)
+	{
+		CTextView* pS = pChild->GetTextView();
+		if(!pS)
+			return;
+
+		tc->Insert(pS);
+		
+		::SetFocus(pS->m_hWnd);
+	}
 }

@@ -44,6 +44,8 @@ public:
 		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHide)
 		COMMAND_HANDLER(IDC_CLIPSCOMBO, CBN_SELCHANGE, OnComboSelChange)
 		NOTIFY_HANDLER(IDC_CLIPSLIST, NM_DBLCLK, OnClipSelected);
+		NOTIFY_HANDLER(IDC_CLIPSLIST, NM_RETURN, OnClipEnterPressed);
+		NOTIFY_HANDLER(IDC_CLIPSLIST, LVN_GETINFOTIP, OnClipGetInfoTip);
 		REFLECT_NOTIFICATIONS()
 		//CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
@@ -59,8 +61,11 @@ protected:
 	LRESULT OnComboSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnClipSelected(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT OnClipEnterPressed(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT OnClipGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	void AddClip(TextClips::Clip* tc);
+	void InsertClip(TextClips::Clip* tc);
 	void LoadSet(TextClips::TextClipSet* set);
 
 	CListViewCtrl	m_view;

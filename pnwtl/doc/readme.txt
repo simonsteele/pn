@@ -39,6 +39,9 @@ What's new?
 31) Support for Java properties files (SF RFE #1267017).
 32) Find in Files can ignore hidden files.
 33) Remember Selected Text Clips Set (SF RFE #1279158).
+34) Press Enter to insert a text clip (SF RFE #1259865).
+35) Show textclips in tool tip text (SF RFE #1116510).
+36) Add Assembly Scheme (SF RFE #1290453).
 
 Bug Fixes:
 ----------
@@ -73,6 +76,7 @@ Bug Fixes:
 28) PN2 is confused by relative path names (SF Bug #1232939).
 29) Docking windows resize to tiny (SF Bug #1018105).
 30) Sub-windows initialization issue (SF Bug #1065665).
+31) Fixed a bug with default styles and the Plain Text scheme.
 
 If you find a bug:
 ------------------

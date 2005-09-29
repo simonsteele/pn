@@ -16,6 +16,80 @@
 namespace TextClips {
 
 //////////////////////////////////////////////////////////////////////////////
+// Clip
+//////////////////////////////////////////////////////////////////////////////
+
+void Clip::Insert(CScintilla *scintilla)
+{
+	tstring clipstr;
+	
+	// Text is in Unix EOL mode (LF only), convert it to target EOL mode
+	switch(scintilla->GetEOLMode())
+	{
+	case PNSF_Unix:
+		// no conversion needed, just copy
+		clipstr = Text;
+		break;
+
+	case PNSF_Windows:
+		{
+			// heuristically reserve size for the target string
+			// and copy the string by inserting '\r' where appropriate
+			clipstr.reserve(Text.size() + (Text.size() / 16));
+			tstring::const_iterator it = Text.begin();
+			tstring::const_iterator end = Text.end();
+			for(; it != end; ++it)
+			{
+				if(*it == '\n')
+					clipstr += '\r';
+				clipstr += *it;
+			}
+		}
+		break;
+
+	case PNSF_Mac:
+		// reserve size for the target string and use standard algorithm
+		clipstr.reserve(Text.size());
+		std::replace_copy(Text.begin(), Text.end(),
+			std::back_inserter(clipstr), '\n', '\r');
+		break;
+	}
+	
+	size_t offset = clipstr.find(_T('|'));
+	if(offset != clipstr.npos)
+		clipstr.erase(offset, 1);
+	else
+		offset = 0;
+	
+	int curPos = scintilla->GetCurrentPos();
+
+	int length = scintilla->GetSelLength();
+	if(length != 0)
+	{
+		// Get the selected text from Scintilla.
+		char* selData = new char[length+1];
+		int rxlen = scintilla->GetSelText(selData);
+		PNASSERT(rxlen == length+1);
+		
+		// Insert the text into the buffer.
+		clipstr.insert(offset, selData);
+		delete [] selData;
+		
+		// Adjust the offset to place the cursor after the selected text.
+		offset += length;
+	}
+
+	// Wrap everything in an undo block.
+	scintilla->BeginUndoAction();
+	if(length)
+		scintilla->DeleteBack(); // kill the selection text, we're inserting it again.
+	scintilla->InsertText(curPos, clipstr.c_str());
+	scintilla->SetCurrentPos(curPos + offset);
+	scintilla->SetSel(curPos + offset, curPos + offset);
+	scintilla->EndUndoAction();
+}
+
+//////////////////////////////////////////////////////////////////////////////
 // TextClipSet
 //////////////////////////////////////////////////////////////////////////////
 

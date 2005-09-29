@@ -23,6 +23,8 @@ class Clip
 	public:
 		tstring Name;
 		tstring Text;
+
+		void Insert(CScintilla* scintilla);
 };
 
 typedef std::list<Clip*>	LIST_CLIPS;

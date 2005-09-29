@@ -504,10 +504,11 @@ void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 	// It has only one style (0) and default.
 	m_Recorder.StartRecording(_T("default"), _T("default"), filename, 0);
 	m_Recorder.SetLexer(0);
-	StyleDetails* pDefault = m_LoadState.m_CustomClasses.GetStyle(_T("default"));
-	if(!pDefault)
-		pDefault = &m_LoadState.m_Default;
+	StyleDetails* pCustom = m_LoadState.m_CustomClasses.GetStyle(_T("default"));
+	StyleDetails* pDefault = &m_LoadState.m_Default;
 	StyleDetails temp(*pDefault);
+	if(pCustom)
+		customiseStyle(&temp, pCustom);
 	temp.Key = STYLE_DEFAULT;
 	m_Recorder.SetDefStyle(&temp);
 	sendStyle(&temp, &m_Recorder);
