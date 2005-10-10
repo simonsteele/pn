@@ -1,3 +1,13 @@
+/**
+ * @file findbar.h
+ * @brief Incremental find bar
+ * @author Simon Steele
+ * @note Copyright (c) 2005 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #pragma once
 
 #define PN_HIDEFINDBAR 1045
