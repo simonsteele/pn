@@ -10,6 +10,11 @@
 		</keyword-class>
 	</keyword-classes>
 	
+	<style-classes>
+		<style-class name="rubyHERE" fore="7f007f" back="ddd0dd" eolfilled="true"/>
+		<style-class name="rubySTDIO" back="ff8080" />
+	</style-classes>
+	
 	<language name="ruby" title="Ruby">
 		<lexer name="ruby" />
 		<use-keywords>
@@ -18,18 +23,44 @@
 		<use-styles>
 			<style name="Default" key="32" />
 			<style name="Whitespace" key="0" />
-			<style name="Comment" key="1" class="commentline"/>
-			<style name="Number" key="2" class="number"/>
-			<style name="String" key="3" class="string"/>
-			<style name="Single-Quoted String" key="4" class="string"/>
-			<style name="Keyword" key="5" class="keyword"/>
-			<style name="Triple Double-Quotes" key="7" fore="7f0000"/>
-			<style name="Class Definition" key="8" fore="0000ff"/>
-			<style name="Function Definition" key="9" fore="007f7f"/>
-			<style name="Operator" key="10" class="operator"/>
-			<style name="Identifier" key="11" fore="7f7f7f"/>
-			<style name="Comment Block" key="12" class="commentbox"/>
-			<style name="Un-closed String" key="13" fore="000000" back="e0c0e0" eolfilled="true"/>
+			<style name="Error" key="1" back="FF0000"/>
+			<style name="Comment line" key="2" class="comment"/>
+			<style name="POD" key="3" fore="004000" back="C0FFC0" eolfilled="true"/>
+			<style name="Number" key="4" class="number"/>
+			<style name="Word" key="5" class="keyword"/>
+			<style name="String" key="6" class="string"/>
+			<style name="Character" key="7" class="string"/>
+			<style name="Class name" key="8" fore="0000FF" bold="true"/>
+			<style name="Def name" key="9" fore="007F7F" bold="true"/>
+			<style name="Operator" key="10" bold="true"/>
+			<style name="Identifier" key="11" class="identifier"/>
+			<style name="Regex" key="12" back="A0FFA0"/>
+			<style name="Global" key="13" fore="800080"/>
+			<style name="Symbol" key="14" fore="C0A030"/>
+			<style name="MODULE_NAME" key="15" fore="A000A0" bold="true"/>
+			<style name="INSTANCE_VAR" key="16" fore="B00080"/>
+			<style name="CLASS_VAR" key="17" fore="8000B0" />
+			<style name="BACKTICKS" key="18" fore="FFFF00" back="A08080"/>
+			<style name="DATASECTION" key="19" fore="600000" back="FFF0D8" eolfilled="true"/>
+			<group name="HERE" description="HERE" class="rubyHERE">
+				<style name="DELIM" key="20" fore="000000" back="DDD0DD"/>
+				<style name="Q" key="21" bold="false"/>
+				<style name="QQ" key="22" bold="true" />
+				<style name="QX" key="23" italics="true"/>
+			</group>
+			<group name="STRING" description="STRING">
+				<style name="Q" key="24" fore="7F007F" bold="false"/>
+				<style name="QQ" key="25" class="string"/>
+				<style name="QX" key="26" fore="FFFF00" back="A08080"/>
+				<style name="QR" key="27" fore="000000" back="A0FFA0"/>
+				<style name="QW" key="28" fore="000000" back="FFFFE0"/>
+			</group>
+			<group name="STDIO" description="Standard Input/Output">
+				<style name="STDIN" key="30"/>
+				<style name="STDOUT" key="31"/>
+				<style name="STDERR" key="40"/>
+			</group>
+			<style name="Demoted Keyword" key="29" class="keyword"/>
 		</use-styles>
 	</language>
 </Scheme>
