@@ -8,24 +8,24 @@ Active CVS development branches are denoted with {branch-name}.
 Work completed or in-progress is shown with [proportion-developer] or [complete-developer],
 where no developer name is given it's Simon.
 
-last updated: 18/08/2005
+last updated: 06/10/2005
 
 0.6 Ella
 ========
 
-[75%] Start help file.
-[95%] Basic Build Management - see http://www.pnotepad.org/articles/pn2projects.html
+[complete] Start help file.
+[good-enough] Basic Build Management - see http://www.pnotepad.org/articles/pn2projects.html
 [complete] Tab order management.
 [complete] Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
 [complete] File-type to scheme mapping editor.
-[complete-BjoernGraf]File Association Editor
+[complete-BjoernGraf] File Association Editor
 
 0.8 Basie
 =========
 
-HTML Export configuration, inline HTML export.
-Hex editor.
 Scripting/Extensions.
+Hex editor.
+HTML Export configuration, inline HTML export.
 
 0.10 Dizzy
 ==========

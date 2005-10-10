@@ -4,6 +4,7 @@
 <!ENTITY __about SYSTEM "about.xml">
 <!ENTITY __howto SYSTEM "howto.docbook">
 <!ENTITY __navigation SYSTEM "navigation.xml">
+<!ENTITY __search SYSTEM "search.docbook">
 <!ENTITY __advanced SYSTEM "advanced.docbook">
 ]>
 <book lang="en">
@@ -12,5 +13,6 @@
   &__about;
   &__howto;
   &__navigation;
+  &__search;
   &__advanced;
 </book>
