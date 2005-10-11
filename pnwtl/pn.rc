@@ -362,6 +362,8 @@ BEGIN
                                                     NOINVERT
     "G",            ID_EDIT_JUMPTO,         VIRTKEY, ALT, NOINVERT
     "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_EDIT_PASTE,          VIRTKEY, SHIFT, CONTROL, 
+                                                    NOINVERT
     VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
     VK_OEM_2,       ID_EDIT_QUICKFIND,      VIRTKEY, CONTROL, NOINVERT
     "H",            ID_EDIT_REPLACE,        VIRTKEY, CONTROL, NOINVERT
@@ -386,7 +388,7 @@ BEGIN
     VK_F8,          ID_VIEW_INDIVIDUALOUTPUT, VIRTKEY, SHIFT, NOINVERT
     VK_F8,          ID_VIEW_OUTPUT,         VIRTKEY, NOINVERT
     VK_MULTIPLY,    ID_VIEW_TOGGLEFOLD,     VIRTKEY, CONTROL, NOINVERT
-    "V",            ID_EDIT_PASTE,          VIRTKEY, SHIFT, CONTROL, 
+    "X",            ID_EDIT_CUT,            VIRTKEY, SHIFT, CONTROL, 
                                                     NOINVERT
 END
 

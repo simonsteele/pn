@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter>
+	<title>Search and Replace</title>
+	<section>
+		<?dbhh topicname="IDH_regular_expressions" topicid="11"?>
+		<title>Regular Expressions</title>
+		
+		<section><title>Search Patterns</title>
+			<informaltable frame='all'>
+				<tgroup cols="2">
+				<!--<colspec colname="c1"/>-->
+				<thead>
+				<row><entry>Pattern</entry><entry>Meaning</entry></row>
+				</thead>
+				<tbody>
+					<row><entry>. </entry><entry>Matches any character</entry></row>
+					<row><entry>\( </entry><entry>This marks the start of a region for tagging a match.</entry></row>
+					<row><entry>\) </entry><entry>This marks the end of a tagged region.</entry></row>
+					<row><entry>\n </entry><entry>Where n is 1 through 9 refers to the first through ninth tagged region when replacing. For example, if the search string was Fred\([1-9]\)XXX and the replace string was Sam\1YYY, when applied to Fred2XXX this would generate Sam2YYY.</entry></row>
+					<row><entry>\&lt; </entry><entry>This matches the start of a word using Scintilla's definitions of words.</entry></row>
+					<row><entry>\&gt; </entry><entry>This matches the end of a word using Scintilla's definition of words.</entry></row>
+					<row><entry>\x </entry><entry>This allows you to use a character x that would otherwise have a special meaning. For example, \[ would be interpreted as [ and not as the start of a character set.</entry></row>
+					<row><entry>[...] </entry><entry>This indicates a set of characters, for example, [abc] means any of the characters a, b or c. You can also use ranges, for example [a-z] for any lower case character.</entry></row>
+					<row><entry>[^...] </entry><entry>The complement of the characters in the set. For example, [^A-Za-z] means any character except an alphabetic character.</entry></row>
+					<row><entry>^ </entry><entry>This matches the start of a line (unless used inside a set, see above).</entry></row>
+					<row><entry>$ </entry><entry>This matches the end of a line.</entry></row>
+					<row><entry>* </entry><entry>This matches 0 or more times. For example, Sa*m matches Sm, Sam, Saam, Saaam and so on.</entry></row>
+					<row><entry>+ </entry><entry>This matches 1 or more times. For example, Sa+m matches Sam, Saam, Saaam and so on.</entry></row>
+				</tbody>
+				</tgroup>
+			</informaltable>
+		</section>
+		
+		<section><title>Replacing</title>
+		<para>To use text from regular expressions in your replace string you
+		need to use tagged expressions. To include the text of the first 
+		tagged expression in your replace text simply include <code>\1</code>. 
+		The next tagged expression is <code>\2</code> and you can use nine
+		tagged expressions in total.</para>
+		</section>
+		
+		<section><title>Restrictions</title>
+		<para>Support for regular expressions in PN2 is currently limited,
+		the supported patterns and syntax are a very small subset of the 
+		powerful expressions supported by perl. The biggest restriction is 
+		that regular expressions match only within a single line, you cannot
+		use multi-line regular expressions.</para>
+		<para>There are plans to improve this support by using the PCRE
+		library (used elsewhere in PN2) to provide document searching. If
+		you're interested in helping please make yourself known to the 
+		pn-discuss mailing list: <ulink url="http://www.pnotepad.org/lists.html">PN Mailing Lists</ulink>.
+		</para>
+		</section>
+	
+		<para>This documentation needs improving, <ulink url="mailto:ss@pnotepad.org?subject=documentation%20help">perhaps you can help?</ulink></para>
+	</section>
+</chapter>

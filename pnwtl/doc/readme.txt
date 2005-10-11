@@ -1,6 +1,6 @@
 ========================================
 Release Name: 2.0.6.0
-Build: 2.0.6.??, Version Label: 
+Build: 2.0.6.0, Version Label: ella
 ========================================
 
 What's new?
@@ -42,6 +42,8 @@ What's new?
 34) Press Enter to insert a text clip (SF RFE #1259865).
 35) Show textclips in tool tip text (SF RFE #1116510).
 36) Add Assembly Scheme (SF RFE #1290453).
+37) No more default comic sans for comments in web schemes!
+38) Support Ctrl+Shift+[X|V] for VNC cut-paste with caps lock support, Ctrl+Shift+C already taken for clipboard swap.
 
 Bug Fixes:
 ----------

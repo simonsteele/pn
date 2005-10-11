@@ -18,7 +18,6 @@ Neil Hodgson + Community (Scintilla)
 
 Schemes:
 --------
-
 Steve Baer (Modula-2)
 
 Testers:

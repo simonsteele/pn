@@ -1,5 +1,8 @@
 PN2 Build Instructions:
 
+Requirements:
+=============
+
 PN2 can only be built using Microsoft Visual C++ 2003+ at the moment.
 
 For PN2 to work correctly, check that these are satisfied:
@@ -18,31 +21,9 @@ http://wtl.sf.net/
 
 You will also probably need to install the Microsoft Platform SDK.
 
-Expat:
-======
-
-PN2 source has pre-compiled expat binaries.
-
-PCRE:
-=====
-
-PN2 source has pre-compiled PCRE libs.
-
 Boost:
 ======
 
 PN2 requires that you have boost installed and configured in your VC include directories.
-
-Additional Notes:
-=================
-
-SchemeConfig.cpp has a function which works only with the ATL in VC7. 
-This will need fixing to provide a VC6 version too, although I'm not 
-too worried for now. For now, it is #ifdefd away.
-
-Due to the extensive use of templates in PN2, VC6 can have problems 
-with its stack size - you need to allow it to use more space which is 
-probably in project options or something. You could also try using the 
-latest VC6 service pack.
 
 Good Luck!
