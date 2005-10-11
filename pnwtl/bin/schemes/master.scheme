@@ -2,7 +2,6 @@
 <Scheme>
 	<globals>
 		<value name="font.monospace">Courier New</value>
-		<value name="font.comment">Comic Sans</value>
 		<value name="colour.preproc">7f7f00</value>
 		<value name="colour.string">7f007f</value>
 		<value name="colour.char">7f007f</value>

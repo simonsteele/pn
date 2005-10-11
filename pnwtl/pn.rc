@@ -355,6 +355,7 @@ BEGIN
     "F",            ID_EDIT_FINDINFILES,    VIRTKEY, SHIFT, CONTROL, 
                                                     NOINVERT
     VK_F3,          ID_EDIT_FINDNEXT,       VIRTKEY, NOINVERT
+    VK_F3,          ID_EDIT_FINDPREVIOUS,   VIRTKEY, SHIFT, NOINVERT
     "G",            ID_EDIT_GOTO,           VIRTKEY, CONTROL, NOINVERT
     VK_OEM_4,       ID_EDIT_GOTOBRACE,      VIRTKEY, CONTROL, NOINVERT
     "H",            ID_EDIT_HEADERSWITCH,   VIRTKEY, SHIFT, CONTROL, 
@@ -385,7 +386,8 @@ BEGIN
     VK_F8,          ID_VIEW_INDIVIDUALOUTPUT, VIRTKEY, SHIFT, NOINVERT
     VK_F8,          ID_VIEW_OUTPUT,         VIRTKEY, NOINVERT
     VK_MULTIPLY,    ID_VIEW_TOGGLEFOLD,     VIRTKEY, CONTROL, NOINVERT
-    VK_F3,          ID_EDIT_FINDPREVIOUS,   VIRTKEY, SHIFT, NOINVERT
+    "V",            ID_EDIT_PASTE,          VIRTKEY, SHIFT, CONTROL, 
+                                                    NOINVERT
 END
 
 #endif    // English (U.S.) resources
