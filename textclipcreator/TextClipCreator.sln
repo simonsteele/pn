@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextClipCreator", "TextClipCreator.csproj", "{7B98DC70-DA9A-4ACD-8D3F-4BC8B9769C93}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{7B98DC70-DA9A-4ACD-8D3F-4BC8B9769C93}.Debug.ActiveCfg = Debug|.NET
+		{7B98DC70-DA9A-4ACD-8D3F-4BC8B9769C93}.Debug.Build.0 = Debug|.NET
+		{7B98DC70-DA9A-4ACD-8D3F-4BC8B9769C93}.Release.ActiveCfg = Release|.NET
+		{7B98DC70-DA9A-4ACD-8D3F-4BC8B9769C93}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
