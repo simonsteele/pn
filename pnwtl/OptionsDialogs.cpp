@@ -165,9 +165,9 @@ void CToolSettingsPage::GetValues(ToolDefinition* pDefinition)
 	pDefinition->Params			= m_csParams;
 	pDefinition->Shortcut		= m_wHotKey;
 	
-	pDefinition->iFlags = 
+	pDefinition->SetFlags(
 		(m_bFilter	? TOOL_ISFILTER : 0) |
-		m_iSaveStyle;
+		m_iSaveStyle );
 }
 
 void CToolSettingsPage::SetValues(ToolDefinition* pDefinition)
@@ -179,7 +179,7 @@ void CToolSettingsPage::SetValues(ToolDefinition* pDefinition)
 	m_wHotKey		= pDefinition->Shortcut;
 	m_bFilter		= pDefinition->IsFilter();
 
-	m_iSaveStyle = pDefinition->iFlags & (TOOL_SAVEALL | TOOL_SAVEONE);
+	m_iSaveStyle = pDefinition->GetFlags() & (TOOL_SAVEALL | TOOL_SAVEONE);
 }
 
 void CToolSettingsPage::SetTitle(LPCTSTR title)
@@ -199,6 +199,8 @@ CToolConsoleIOPage::CToolConsoleIOPage(LPCTSTR title) :
 	m_bCapture = true;
 	m_bClear = true;
 	m_bGlobal = true;
+	m_bTextFilter = false;
+	m_bWantStdIn = false;
 	m_iBuiltIn = 0;
 }
 
@@ -213,13 +215,13 @@ BOOL CToolConsoleIOPage::OnApply()
 
 void CToolConsoleIOPage::GetValues(ToolDefinition* pDefinition)
 {
-	pDefinition->iFlags |= 
+	pDefinition->SetFlags( pDefinition->GetFlags() | 
 		(m_bCapture	  ? TOOL_CAPTURE	: 0) |
 		(m_bGlobal	  ? TOOL_GLOBALOUTPUT : 0) |
 		(m_bClear	  ? TOOL_CLEAROUTPUT : 0) |
 		(m_bWantStdIn ? TOOL_WANTSTDIN : 0) |
 		(m_bTextFilter? TOOL_ISTEXTFILTER : 0) |
-		(m_iBuiltIn * TOOL_CUSTOMPARSER);
+		(m_iBuiltIn   ? TOOL_CUSTOMPARSER : 0) );
 
 	if(m_iBuiltIn)
 	{

@@ -8,6 +8,7 @@
 .cgi=perl
 .cf=properties
 .cfg=properties
+.clips=xml
 .cls=vb
 .cmd=batch
 .ctl=vb

@@ -41,7 +41,7 @@ public:
 		
 		// No UTF-8 Here...
 		genxAddAttribute(m_aShortcut, (utf8)IntToTString(tool->Shortcut).c_str());
-		genxAddAttribute(m_aFlags, (utf8)IntToTString(tool->iFlags).c_str());
+		genxAddAttribute(m_aFlags, (utf8)IntToTString(tool->GetFlags()).c_str());
 		genxAddAttribute(m_aIndex, (utf8)IntToTString(tool->Index).c_str());
 		genxEndElement(m_writer);
 	}
@@ -357,7 +357,7 @@ ProjectTools::ProjectTools(LPCTSTR id)
 
 void ProjectTools::Add(SourcedToolDefinition* pDef)
 {
-	pDef->iFlags |= TOOL_ISPROJECTTOOL;
+	pDef->SetFlags(pDef->GetFlags() | TOOL_ISPROJECTTOOL);
 	SchemeTools::Add(pDef);
 }
 
@@ -947,7 +947,10 @@ void ToolsManager::processTool(XMLAttributes& atts)
 			else if(_tcscmp(attr, _T("parsepattern")) == 0)
 				pDef->CustomParsePattern = Utf8_Windows1252(val);
 			else if(_tcscmp(attr, _T("flags")) == 0)
-				pDef->iFlags = _ttoi(val);
+			{
+				LPTSTR end;
+				pDef->SetFlags( strtoul(val, &end, 10) );
+			}
 			else if(_tcscmp(attr, _T("index")) == 0)
 				pDef->Index = _ttoi(val);
 		}

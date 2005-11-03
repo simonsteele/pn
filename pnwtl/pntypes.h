@@ -93,6 +93,16 @@ public:
 		_copy(copy);
 	}
 
+	void SetFlags(unsigned long flags)
+	{
+		iFlags = flags;
+	}
+
+	unsigned long GetFlags() const
+	{
+		return iFlags;
+	}
+
 	tstring	Name;
 	tstring Command;
 	tstring	Folder;
@@ -100,7 +110,6 @@ public:
 	WORD	Shortcut;
 	tstring CustomParsePattern;
 	int		CommandID;
-	int		iFlags;
 	int		Index;
 
 	bool CaptureOutput() const { return (iFlags & TOOL_CAPTURE) != 0; }
@@ -129,6 +138,8 @@ protected:
 		Index = copy.Index;
 	}
 
+private:
+	unsigned long iFlags;
 };
 
 /**

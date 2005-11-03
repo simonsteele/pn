@@ -140,8 +140,8 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
         MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
+        MENUITEM "Copy as RTF\tCtrl+Alt+C",     ID_EDIT_COPYRTF
         MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
-        MENUITEM "Copy as RTF",                 ID_EDIT_COPYRTF
         MENUITEM "Clipboard S&wap\tCtrl+Shift+C", ID_EDIT_CLIPBOARDSWAP
         MENUITEM SEPARATOR
         MENUITEM "Cut &Line\tCtrl+L",           ID_EDIT_CUTLINE
@@ -348,6 +348,8 @@ BEGIN
     VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
     VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
     "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
+    "X",            ID_EDIT_CUT,            VIRTKEY, SHIFT, CONTROL, 
+                                                    NOINVERT
     "L",            ID_EDIT_CUTLINE,        VIRTKEY, CONTROL, NOINVERT
     "L",            ID_EDIT_DELETELINE,     VIRTKEY, SHIFT, CONTROL, 
                                                     NOINVERT
@@ -388,8 +390,7 @@ BEGIN
     VK_F8,          ID_VIEW_INDIVIDUALOUTPUT, VIRTKEY, SHIFT, NOINVERT
     VK_F8,          ID_VIEW_OUTPUT,         VIRTKEY, NOINVERT
     VK_MULTIPLY,    ID_VIEW_TOGGLEFOLD,     VIRTKEY, CONTROL, NOINVERT
-    "X",            ID_EDIT_CUT,            VIRTKEY, SHIFT, CONTROL, 
-                                                    NOINVERT
+    "C",            ID_EDIT_COPYRTF,        VIRTKEY, CONTROL, ALT, NOINVERT
 END
 
 #endif    // English (U.S.) resources
