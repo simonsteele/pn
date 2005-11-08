@@ -82,7 +82,10 @@ void Clip::Insert(CScintilla *scintilla)
 	// Wrap everything in an undo block.
 	scintilla->BeginUndoAction();
 	if(length)
+	{
 		scintilla->DeleteBack(); // kill the selection text, we're inserting it again.
+		curPos = scintilla->GetCurrentPos();
+	}
 	scintilla->InsertText(curPos, clipstr.c_str());
 	scintilla->SetCurrentPos(curPos + offset);
 	scintilla->SetSel(curPos + offset, curPos + offset);
