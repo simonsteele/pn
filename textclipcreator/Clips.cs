@@ -12,6 +12,7 @@ namespace TextClipCreator
 	{
 		string _name = "";
 		ArrayList _clips = new ArrayList();
+		bool _modified = false;
 
 		public Clips()
 		{
@@ -29,6 +30,12 @@ namespace TextClipCreator
 		{
 			get { return _clips; }
 			set { _clips = value; }
+		}
+
+		public bool Modified
+		{
+			get { return _modified; }
+			set { _modified = value; }
 		}
 
 	}
@@ -96,15 +103,10 @@ namespace TextClipCreator
 				Clips clips = (Clips)s_ser.Deserialize(xtw);
 				return clips;
 			}
-			catch(Exception)
-			{
-			}
 			finally
 			{
 				xtw.Close();
 			}
-
-			return null;
 		}
 
 		public void Save(Clips clips, string filename)

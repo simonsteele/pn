@@ -14,33 +14,33 @@ namespace TextClipCreator
 		private System.Windows.Forms.OpenFileDialog openFileDialog;
 		private System.Windows.Forms.ListBox lstClips;
 		private System.Windows.Forms.TextBox txtClipText;
-		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.TextBox txtClipName;
-		private System.Windows.Forms.Button btnOK;
-		private System.Windows.Forms.Button btnCancel;
+		private System.Windows.Forms.Button btnUpdate;
+		private System.Windows.Forms.Button btnDiscard;
 		/// <summary>Required designer variable.</summary>
 		private System.ComponentModel.Container components = null;
 		private System.Windows.Forms.ErrorProvider errorProvider;
 		private System.Windows.Forms.MainMenu mainMenu1;
+		private System.Windows.Forms.MenuItem itmNew;
+		private System.Windows.Forms.MenuItem itmOpen;
+		private System.Windows.Forms.MenuItem itmSave;
+		private System.Windows.Forms.MenuItem itmSaveAs;
 		private System.Windows.Forms.MenuItem menuItem1;
-		private System.Windows.Forms.MenuItem menuItem2;
+		private System.Windows.Forms.MenuItem menuItem3;
+		private System.Windows.Forms.MenuItem menuItem5;
+		private System.Windows.Forms.MenuItem itmExit;
 		private System.Windows.Forms.Button btnAdd;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox setName;
 		private System.Windows.Forms.GroupBox groupBox1;
-		private System.Windows.Forms.MenuItem itmSaveAs;
 		private System.Windows.Forms.SaveFileDialog saveFileDialog;
-		private System.Windows.Forms.MenuItem menuItem3;
-		private System.Windows.Forms.MenuItem itmExit;
+		private System.Windows.Forms.Label lblClipName;
+		private System.Windows.Forms.Button btnRemove;
 		
 		bool _changing = false;
 		Clips _clips = null;
 		ClipStorage _cs = new ClipStorage();
-		private System.Windows.Forms.Button btnRemove;
 		string _filename = null;
-		private System.Windows.Forms.MenuItem itmSave;
-		private System.Windows.Forms.MenuItem itmNew;
-		private System.Windows.Forms.MenuItem menuItem5;
 		bool _editing = false;
 
 		public MainForm()
@@ -76,25 +76,25 @@ namespace TextClipCreator
 			this.btnAdd = new System.Windows.Forms.Button();
 			this.lstClips = new System.Windows.Forms.ListBox();
 			this.txtClipText = new System.Windows.Forms.TextBox();
-			this.btnOK = new System.Windows.Forms.Button();
-			this.btnCancel = new System.Windows.Forms.Button();
-			this.label1 = new System.Windows.Forms.Label();
+			this.btnUpdate = new System.Windows.Forms.Button();
+			this.btnDiscard = new System.Windows.Forms.Button();
+			this.lblClipName = new System.Windows.Forms.Label();
 			this.txtClipName = new System.Windows.Forms.TextBox();
 			this.errorProvider = new System.Windows.Forms.ErrorProvider();
 			this.mainMenu1 = new System.Windows.Forms.MainMenu();
 			this.menuItem1 = new System.Windows.Forms.MenuItem();
-			this.menuItem2 = new System.Windows.Forms.MenuItem();
+			this.itmNew = new System.Windows.Forms.MenuItem();
+			this.menuItem5 = new System.Windows.Forms.MenuItem();
+			this.itmOpen = new System.Windows.Forms.MenuItem();
+			this.itmSave = new System.Windows.Forms.MenuItem();
+			this.itmSaveAs = new System.Windows.Forms.MenuItem();
+			this.menuItem3 = new System.Windows.Forms.MenuItem();
+			this.itmExit = new System.Windows.Forms.MenuItem();
 			this.label2 = new System.Windows.Forms.Label();
 			this.setName = new System.Windows.Forms.TextBox();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.itmSaveAs = new System.Windows.Forms.MenuItem();
 			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-			this.menuItem3 = new System.Windows.Forms.MenuItem();
-			this.itmExit = new System.Windows.Forms.MenuItem();
 			this.btnRemove = new System.Windows.Forms.Button();
-			this.itmSave = new System.Windows.Forms.MenuItem();
-			this.itmNew = new System.Windows.Forms.MenuItem();
-			this.menuItem5 = new System.Windows.Forms.MenuItem();
 			this.SuspendLayout();
 			// 
 			// openFileDialog
@@ -105,10 +105,10 @@ namespace TextClipCreator
 			// 
 			this.btnAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.btnAdd.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.btnAdd.Location = new System.Drawing.Point(8, 264);
+			this.btnAdd.Location = new System.Drawing.Point(8, 288);
 			this.btnAdd.Name = "btnAdd";
 			this.btnAdd.Size = new System.Drawing.Size(72, 24);
-			this.btnAdd.TabIndex = 1;
+			this.btnAdd.TabIndex = 4;
 			this.btnAdd.Text = "&Add";
 			this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
 			// 
@@ -116,10 +116,11 @@ namespace TextClipCreator
 			// 
 			this.lstClips.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
 				| System.Windows.Forms.AnchorStyles.Left)));
-			this.lstClips.Location = new System.Drawing.Point(8, 48);
+			this.lstClips.IntegralHeight = false;
+			this.lstClips.Location = new System.Drawing.Point(8, 40);
 			this.lstClips.Name = "lstClips";
-			this.lstClips.Size = new System.Drawing.Size(160, 212);
-			this.lstClips.TabIndex = 2;
+			this.lstClips.Size = new System.Drawing.Size(152, 240);
+			this.lstClips.TabIndex = 3;
 			this.lstClips.SelectedValueChanged += new System.EventHandler(this.lstClips_SelectedValueChanged);
 			// 
 			// txtClipText
@@ -130,56 +131,56 @@ namespace TextClipCreator
 				| System.Windows.Forms.AnchorStyles.Left) 
 				| System.Windows.Forms.AnchorStyles.Right)));
 			this.txtClipText.Font = new System.Drawing.Font("Courier New", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
-			this.txtClipText.Location = new System.Drawing.Point(176, 72);
+			this.txtClipText.Location = new System.Drawing.Point(176, 69);
 			this.txtClipText.Multiline = true;
 			this.txtClipText.Name = "txtClipText";
 			this.txtClipText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
 			this.txtClipText.Size = new System.Drawing.Size(424, 211);
-			this.txtClipText.TabIndex = 4;
+			this.txtClipText.TabIndex = 8;
 			this.txtClipText.Text = "";
 			this.txtClipText.WordWrap = false;
 			this.txtClipText.TextChanged += new System.EventHandler(this.txtClipName_TextChanged);
 			// 
-			// btnOK
+			// btnUpdate
 			// 
-			this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnOK.Enabled = false;
-			this.btnOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.btnOK.Location = new System.Drawing.Point(528, 288);
-			this.btnOK.Name = "btnOK";
-			this.btnOK.Size = new System.Drawing.Size(72, 24);
-			this.btnOK.TabIndex = 5;
-			this.btnOK.Text = "&OK";
-			this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
+			this.btnUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnUpdate.Enabled = false;
+			this.btnUpdate.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.btnUpdate.Location = new System.Drawing.Point(448, 289);
+			this.btnUpdate.Name = "btnUpdate";
+			this.btnUpdate.Size = new System.Drawing.Size(72, 24);
+			this.btnUpdate.TabIndex = 9;
+			this.btnUpdate.Text = "&Update";
+			this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
 			// 
-			// btnCancel
+			// btnDiscard
 			// 
-			this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnCancel.Enabled = false;
-			this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.btnCancel.Location = new System.Drawing.Point(448, 288);
-			this.btnCancel.Name = "btnCancel";
-			this.btnCancel.Size = new System.Drawing.Size(72, 24);
-			this.btnCancel.TabIndex = 6;
-			this.btnCancel.Text = "&Cancel";
+			this.btnDiscard.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnDiscard.Enabled = false;
+			this.btnDiscard.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.btnDiscard.Location = new System.Drawing.Point(527, 289);
+			this.btnDiscard.Name = "btnDiscard";
+			this.btnDiscard.Size = new System.Drawing.Size(72, 24);
+			this.btnDiscard.TabIndex = 10;
+			this.btnDiscard.Text = "&Discard";
+			this.btnDiscard.Click += new System.EventHandler(this.btnDiscard_Click);
 			// 
-			// label1
+			// lblClipName
 			// 
-			this.label1.Location = new System.Drawing.Point(176, 48);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(64, 16);
-			this.label1.TabIndex = 6;
-			this.label1.Text = "Clip Name:";
-			this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.lblClipName.Location = new System.Drawing.Point(176, 43);
+			this.lblClipName.Name = "lblClipName";
+			this.lblClipName.Size = new System.Drawing.Size(64, 16);
+			this.lblClipName.TabIndex = 6;
+			this.lblClipName.Text = "&Clip Name:";
 			// 
 			// txtClipName
 			// 
 			this.txtClipName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
 				| System.Windows.Forms.AnchorStyles.Right)));
-			this.txtClipName.Location = new System.Drawing.Point(248, 48);
+			this.txtClipName.Location = new System.Drawing.Point(248, 40);
 			this.txtClipName.Name = "txtClipName";
 			this.txtClipName.Size = new System.Drawing.Size(352, 20);
-			this.txtClipName.TabIndex = 3;
+			this.txtClipName.TabIndex = 7;
 			this.txtClipName.Text = "";
 			this.txtClipName.TextChanged += new System.EventHandler(this.txtClipName_TextChanged);
 			// 
@@ -198,34 +199,70 @@ namespace TextClipCreator
 			this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
 																					  this.itmNew,
 																					  this.menuItem5,
-																					  this.menuItem2,
+																					  this.itmOpen,
 																					  this.itmSave,
 																					  this.itmSaveAs,
 																					  this.menuItem3,
 																					  this.itmExit});
 			this.menuItem1.Text = "&File";
 			// 
-			// menuItem2
+			// itmNew
 			// 
-			this.menuItem2.Index = 2;
-			this.menuItem2.Shortcut = System.Windows.Forms.Shortcut.CtrlO;
-			this.menuItem2.Text = "&Open";
-			this.menuItem2.Click += new System.EventHandler(this.menuItem2_Click);
+			this.itmNew.Index = 0;
+			this.itmNew.Text = "&New";
+			this.itmNew.Click += new System.EventHandler(this.itmNew_Click);
+			// 
+			// menuItem5
+			// 
+			this.menuItem5.Index = 1;
+			this.menuItem5.Text = "-";
+			// 
+			// itmOpen
+			// 
+			this.itmOpen.Index = 2;
+			this.itmOpen.Shortcut = System.Windows.Forms.Shortcut.CtrlO;
+			this.itmOpen.Text = "&Open";
+			this.itmOpen.Click += new System.EventHandler(this.itmOpen_Click);
+			// 
+			// itmSave
+			// 
+			this.itmSave.Enabled = false;
+			this.itmSave.Index = 3;
+			this.itmSave.Shortcut = System.Windows.Forms.Shortcut.CtrlS;
+			this.itmSave.Text = "&Save";
+			this.itmSave.Click += new System.EventHandler(this.itmSave_Click);
+			// 
+			// itmSaveAs
+			// 
+			this.itmSaveAs.Index = 4;
+			this.itmSaveAs.Text = "Save &As...";
+			this.itmSaveAs.Click += new System.EventHandler(this.itmSaveAs_Click);
+			// 
+			// menuItem3
+			// 
+			this.menuItem3.Index = 5;
+			this.menuItem3.Text = "-";
+			// 
+			// itmExit
+			// 
+			this.itmExit.Index = 6;
+			this.itmExit.Text = "E&xit";
+			this.itmExit.Click += new System.EventHandler(this.itmExit_Click);
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(8, 8);
+			this.label2.Location = new System.Drawing.Point(8, 10);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(64, 16);
-			this.label2.TabIndex = 7;
-			this.label2.Text = "Set Name:";
+			this.label2.TabIndex = 1;
+			this.label2.Text = "&Set Name:";
 			// 
 			// setName
 			// 
-			this.setName.Location = new System.Drawing.Point(72, 8);
+			this.setName.Location = new System.Drawing.Point(72, 7);
 			this.setName.Name = "setName";
 			this.setName.Size = new System.Drawing.Size(160, 20);
-			this.setName.TabIndex = 8;
+			this.setName.TabIndex = 2;
 			this.setName.Text = "";
 			this.setName.TextChanged += new System.EventHandler(this.setName_TextChanged);
 			// 
@@ -239,77 +276,42 @@ namespace TextClipCreator
 			this.groupBox1.TabIndex = 9;
 			this.groupBox1.TabStop = false;
 			// 
-			// itmSaveAs
-			// 
-			this.itmSaveAs.Index = 4;
-			this.itmSaveAs.Text = "Save &As...";
-			this.itmSaveAs.Click += new System.EventHandler(this.itmSaveAs_Click);
-			// 
 			// saveFileDialog
 			// 
 			this.saveFileDialog.Filter = "Text Clip Files|*.clips|All Files|*.*";
-			// 
-			// menuItem3
-			// 
-			this.menuItem3.Index = 5;
-			this.menuItem3.Text = "-";
-			// 
-			// itmExit
-			// 
-			this.itmExit.Index = 6;
-			this.itmExit.Text = "E&xit";
-			this.itmExit.Click += new System.EventHandler(this.itmExit_Click);
 			// 
 			// btnRemove
 			// 
 			this.btnRemove.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.btnRemove.Enabled = false;
 			this.btnRemove.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.btnRemove.Location = new System.Drawing.Point(96, 264);
+			this.btnRemove.Location = new System.Drawing.Point(88, 288);
 			this.btnRemove.Name = "btnRemove";
 			this.btnRemove.Size = new System.Drawing.Size(72, 24);
-			this.btnRemove.TabIndex = 10;
+			this.btnRemove.TabIndex = 5;
 			this.btnRemove.Text = "&Remove";
 			this.btnRemove.Click += new System.EventHandler(this.btnRemove_Click);
 			// 
-			// itmSave
-			// 
-			this.itmSave.Enabled = false;
-			this.itmSave.Index = 3;
-			this.itmSave.Shortcut = System.Windows.Forms.Shortcut.CtrlS;
-			this.itmSave.Text = "&Save";
-			this.itmSave.Click += new System.EventHandler(this.itmSave_Click);
-			// 
-			// itmNew
-			// 
-			this.itmNew.Index = 0;
-			this.itmNew.Text = "&New";
-			this.itmNew.Click += new System.EventHandler(this.itmNew_Click);
-			// 
-			// menuItem5
-			// 
-			this.menuItem5.Index = 1;
-			this.menuItem5.Text = "-";
-			// 
 			// MainForm
 			// 
-			this.AcceptButton = this.btnOK;
+			this.AcceptButton = this.btnUpdate;
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(608, 321);
 			this.Controls.Add(this.btnRemove);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.setName);
-			this.Controls.Add(this.label2);
 			this.Controls.Add(this.txtClipName);
-			this.Controls.Add(this.label1);
-			this.Controls.Add(this.btnCancel);
-			this.Controls.Add(this.btnOK);
 			this.Controls.Add(this.txtClipText);
+			this.Controls.Add(this.label2);
+			this.Controls.Add(this.lblClipName);
+			this.Controls.Add(this.btnDiscard);
+			this.Controls.Add(this.btnUpdate);
 			this.Controls.Add(this.lstClips);
 			this.Controls.Add(this.btnAdd);
 			this.Menu = this.mainMenu1;
 			this.Name = "MainForm";
 			this.Text = "PN2 Text Clip Creator";
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.MainForm_Closing);
 			this.ResumeLayout(false);
 
 		}
@@ -324,6 +326,11 @@ namespace TextClipCreator
 			Application.EnableVisualStyles();
 			Application.DoEvents();
 			Application.Run(new MainForm());
+		}
+
+		private void MainForm_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			e.Cancel = CheckModified() == false;
 		}
 
 		private void lstClips_SelectedValueChanged(object sender, System.EventArgs e)
@@ -353,7 +360,7 @@ namespace TextClipCreator
 			}
 		}
 
-		private void btnOK_Click(object sender, System.EventArgs e)
+		private void btnUpdate_Click(object sender, System.EventArgs e)
 		{
 			if(lstClips.SelectedItem != null && !lstClips.Enabled)
 			{
@@ -378,24 +385,47 @@ namespace TextClipCreator
 
 				// Force reset of clip data...
 				lstClips.Items[lstClips.SelectedIndex] = theClip;
+
+				_clips.Modified = true;
 			}
 		}
 
-		private void menuItem2_Click(object sender, System.EventArgs e)
+		private void btnDiscard_Click(object sender, System.EventArgs e)
 		{
-			_changing = true;
-			lstClips.Items.Clear();
-			enableButtons(false);
-			txtClipName.Text = "";
-			txtClipText.Text = "";
-			setName.Text = "";
-			_filename = "";
-			_clips = null;
-
-			if(openFileDialog.ShowDialog(this) == DialogResult.OK)
+			if(lstClips.SelectedItem != null && !lstClips.Enabled)
 			{
-				Clips clips = _cs.Load(openFileDialog.FileName);
-				
+				_changing = true;
+				Clip theClip = (Clip)lstClips.SelectedItem;
+				txtClipText.Text = theClip.Content;
+				txtClipName.Text = theClip.Name;
+				enableButtons(false);
+				_changing = false;
+			}
+		}
+
+		private void itmOpen_Click(object sender, System.EventArgs e)
+		{
+			if (CheckModified() == true &&
+				openFileDialog.ShowDialog(this) == DialogResult.OK)
+			{
+				_changing = true;
+				lstClips.Items.Clear();
+				enableButtons(false);
+				txtClipName.Text = "";
+				txtClipText.Text = "";
+				setName.Text = "";
+				_filename = "";
+				_clips = null;
+
+				Clips clips = null;
+				try
+				{
+					clips = _cs.Load(openFileDialog.FileName);
+				}
+				catch(Exception)
+				{
+				}
+
 				if(clips != null)
 				{
 					_clips = clips;
@@ -408,11 +438,11 @@ namespace TextClipCreator
 
 					_filename = openFileDialog.FileName;
 				}				
+
+				_changing = false;
+
+				enableButtons(false);
 			}
-
-			_changing = false;
-
-			enableButtons(false);
 		}
 
 		bool haveClip(string name)
@@ -466,9 +496,9 @@ namespace TextClipCreator
 
 		private void itmSaveAs_Click(object sender, System.EventArgs e)
 		{
-			if(saveFileDialog.ShowDialog(this) == DialogResult.OK)
+			if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
 			{
-				_cs.Save(_clips, saveFileDialog.FileName);
+				Save(false);
 			}
 		}
 
@@ -494,33 +524,114 @@ namespace TextClipCreator
 			btnAdd.Enabled = !editing;
 			btnRemove.Enabled = !editing && lstClips.SelectedItem != null;
 
-			btnOK.Enabled = editing;
-			btnCancel.Enabled = editing;
+			btnUpdate.Enabled = editing;
+			btnDiscard.Enabled = editing;
 
 			itmSaveAs.Enabled = _clips != null && !_editing;
 			itmSave.Enabled = !_editing && _clips != null && _filename != "" && _filename != null;
+
+			if (editing == true)
+			{
+				txtClipText.Focus();
+			}
+			else
+			{
+				lstClips.Focus();
+			}
 		}
 
 		private void itmSave_Click(object sender, System.EventArgs e)
 		{
 			if(_filename != "" && _filename != null && _clips != null)
 			{
-				_cs.Save(_clips, _filename);
+				Save(false);
 			}
 		}
 
 		private void itmNew_Click(object sender, System.EventArgs e)
 		{
-			_changing = true;
-			lstClips.Items.Clear();
-			txtClipName.Text = "";
-			txtClipText.Text = "";
-			setName.Text = "";
-			_filename = "";
-			_clips = null;
-			_changing = false;
+			if (CheckModified() == true)
+			{
+				_changing = true;
+				lstClips.Items.Clear();
+				txtClipName.Text = "";
+				txtClipText.Text = "";
+				setName.Text = "";
+				_filename = "";
+				_clips = null;
+				_changing = false;
 
-			enableButtons(false);
+				enableButtons(false);
+			}
+		}
+
+		private bool CheckModified()
+		{
+			bool res = true;
+			if (_clips != null && _clips.Modified == true)
+			{
+				DialogResult dr = MessageBox.Show(this,
+					String.Format("Save changes to {0}?", _filename),
+					this.Text, MessageBoxButtons.YesNoCancel,
+					MessageBoxIcon.Question,
+					MessageBoxDefaultButton.Button1);
+				if (dr == DialogResult.Yes)
+				{
+					res = Save(false);
+				}
+				else if (dr == DialogResult.Cancel)
+				{
+					res = false;
+				}
+			}
+			return res;
+		}
+
+		private bool Save(bool forceSaveAs)
+		{
+			if ((_filename != "" && _filename != null) || forceSaveAs == true)
+			{
+				if (_filename.StartsWith("<") == true || forceSaveAs == true)
+				{
+					if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
+					{
+						_filename = saveFileDialog.FileName;
+					}
+					else
+					{
+						return false;
+					}
+				}
+
+				try
+				{
+					_cs.Save(_clips, _filename);
+					_clips.Modified = false;
+				}
+				catch (Exception e)
+				{
+					//TODO: Check for read-only files
+					// file:///P:/Tools/Vista%20UX%20Guide/Windows/DialogBoxes/DialogBoxesPatterns.htm#QuestionDialogsLinks
+					MessageBoxExResult res = MessageBoxEx.Show(
+						this,
+						this.Text,
+						"An error occured while saving.",
+						e.Message,
+						"Save as...",
+						"Retry",
+						MessageBoxIcon.Error);
+					if (res == MessageBoxExResult.Commit1)
+					{
+						Save(true);
+					}
+					else if (res == MessageBoxExResult.Commit2)
+					{
+						Save(false);
+					}
+					return res != MessageBoxExResult.Cancel;
+				}
+			}
+			return true;
 		}
 	}
 }
