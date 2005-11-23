@@ -1255,6 +1255,10 @@ LRESULT COptionsPageNewFiles::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, 
 				edit.GetValues(startPhrase, schemeName);
 				m_list.SetItemText(iSelIndex, 0, startPhrase.c_str());
 				
+				CScheme* pScheme = SchemeManager::GetInstance()->SchemeByName(schemeName.c_str());
+				if(pScheme)
+					m_list.SetItemText(iSelIndex, 1, pScheme->GetTitle());
+				
 				delete [] pStoredData;
 				pStoredData = new TCHAR[schemeName.length()+1];
 				_tcscpy(pStoredData, schemeName.c_str());

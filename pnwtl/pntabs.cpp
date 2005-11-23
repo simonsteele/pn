@@ -73,6 +73,13 @@ void CPNMDIClient::ShowFindBar(bool bShow)
 			// Adjust for the fact that the tab bar is at the top
 			rcMDIClient.top -= tah;
 		}
+		else
+		{
+			// Adjust for the fact that the tab bar is at the bottom...
+			rcMDIClient.bottom += tah; // cancel out adjustment in the function...
+			if(bShow)
+				rcMDIClient.bottom -= fbh;
+		}
 	}
 
 	/*char buf[200];
@@ -224,6 +231,9 @@ LRESULT CPNMDIClient::OnWindowPosChanging(UINT uMsg, WPARAM wParam, LPARAM lPara
 				{
 					pWinPos->cy -= nTabAreaHeight;
 				}
+
+				if(m_findBar->IsWindow())
+					m_findBar->SetWindowPos(NULL, pWinPos->x, pWinPos->y + pWinPos->cy + nTabAreaHeight, pWinPos->cx, nBottomAreaHeight, (pWinPos->flags & SWP_NOMOVE) | (pWinPos->flags & SWP_NOSIZE) | SWP_NOZORDER | SWP_NOACTIVATE);
 			}
 			else
 			{

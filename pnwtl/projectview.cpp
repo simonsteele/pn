@@ -160,8 +160,15 @@ void CProjectTreeCtrl::OnProjectItemChange(PROJECT_CHANGE_TYPE changeType, Proje
 
 				if(hParent != NULL)
 				{
-					addFolderNode(static_cast<Projects::Folder*>( changeItem ), hParent, hLastFolder);
-					SortChildren(hParent);
+					Projects::Folder* folder = static_cast<Projects::Folder*>( changeItem );
+					//addFolderNode(folder, hParent, hLastFolder);
+					//SortChildren(hParent);
+					FOLDER_LIST fl;
+					fl.push_back(folder);
+
+					ProjectViewState state;
+					buildFolders(hParent, fl, state);
+
 					Expand(hParent);
 				}
 			}
@@ -206,6 +213,21 @@ void CProjectTreeCtrl::OnProjectItemChange(PROJECT_CHANGE_TYPE changeType, Proje
 		case pcActive:
 		{
 			::SendMessage(g_Context.m_frame->GetWindow()->m_hWnd, PN_PROJECTNOTIFY, (WPARAM)changeItem, pcActive);
+		}
+		break;
+
+		case pcRemove:
+		{
+			if(changeItem->GetType() == ptFile)
+			{
+				// Removed a file.
+				PNASSERT(changeContainer != NULL);
+				HTREEITEM hParent = findFolder(changeContainer);
+				PNASSERT(hParent != NULL);
+
+				HTREEITEM hItem = findItem(changeItem, hParent);
+				DeleteItem( hItem );
+			}
 		}
 		break;
 	}
@@ -563,7 +585,7 @@ void CProjectTreeCtrl::handleRemove()
 				File* pF = reinterpret_cast<File*>( GetItemData((*i)) );
 				Projects::Folder* pFolder = pF->GetFolder();
 				pFolder->RemoveFile(pF);
-				DeleteItem((*i));
+				//DeleteItem((*i)); - now an event...
 			}
 		}
 		break;
@@ -942,8 +964,8 @@ LRESULT CProjectTreeCtrl::OnAddProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	{
 		Project* pProject = new Project(dlgOpen.GetSingleFileName());
 		workspace->AddProject(pProject);
-		buildProject(GetRootItem(), pProject);
-		Expand(GetRootItem());
+		//buildProject(GetRootItem(), pProject); - now handled by the event?
+		//Expand(GetRootItem());
 	}
 	
 	return 0;
@@ -2076,9 +2098,9 @@ bool CProjectTreeCtrl::handleFolderDrop(Projects::Folder* target)
 			File* pTheFile = static_cast<File*>( ptSelItem );
 			Projects::Folder::MoveFile(pTheFile, target);
 
-			// Move the tree item...
-			DeleteItem( (*i) );
-			addFileNode(pTheFile, hDropTargetItem, NULL);
+			// Remove the old tree item (is this necessary?)...
+			//DeleteItem( (*i) );
+			//addFileNode(pTheFile, hDropTargetItem, NULL);
 		}
 		else if(ptSelItem->GetType() == ptFolder)
 		{
@@ -2107,12 +2129,12 @@ bool CProjectTreeCtrl::handleFolderDrop(Projects::Folder* target)
 
 			// Add the folder to a list of folders to re-add in a moment, and store 
 			// a view state.
-			folders.insert(folders.end(), pFolder);
-			viewState.SetExpand(pFolder, bExpanded);
+			//folders.insert(folders.end(), pFolder);
+			//viewState.SetExpand(pFolder, bExpanded);
 		}
 	}
 
-	buildFolders(hDropTargetItem, folders, viewState);
+	//buildFolders(hDropTargetItem, folders, viewState);
 
 	Expand( hDropTargetItem, TVE_EXPAND );
 
