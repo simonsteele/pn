@@ -26,7 +26,7 @@ class CTextView : public CScintillaWindowImpl< CTextView, CScintillaImpl >
 public:
 	typedef CScintillaWindowImpl< CTextView, CScintillaImpl > baseClass;
 
-	CTextView();
+	CTextView(DocumentPtr document);
 	~CTextView();
 
 	BOOL PreTranslateMessage(MSG* pMsg);
@@ -104,6 +104,7 @@ protected:
 	EPNEncoding m_encType;
 	bool m_bSmartStart;
 	bool m_bLineNos;
+	DocumentPtr m_pDoc;
 
 	bool m_bMeasureCanRun;
 	CRITICAL_SECTION m_csMeasure;

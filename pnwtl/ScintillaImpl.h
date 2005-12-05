@@ -20,6 +20,8 @@
 class CScintillaImpl : public CScintilla
 {
 public:
+	typedef enum {fnNotFound, fnFound, fnReachedStart} FindNextResults;
+
 	CScintillaImpl();
 
 	int FindNext(SFindOptions* pOptions);
@@ -35,9 +37,11 @@ public:
 
 	virtual int HandleNotify(LPARAM lParam);
 
-	typedef enum {fnNotFound, fnFound, fnReachedStart} FindNextResults;
-
 	int GetWordCount();
+
+	void IndentLine(int line, int indent);
+	
+	bool FindMatchingBraces(int& CaretBrace, int& OtherBrace);
 
 protected:
 	struct tagLastFindDetails
@@ -49,12 +53,8 @@ protected:
 		int     result;
 	} lastFindDetails;
 
-	void IndentLine(int line, int indent);
-	int GetIndentLevel(int line);
-	
 	void DumbIndent(char ch);
 
-	bool FindMatchingBraces(int& CaretBrace, int& OtherBrace);
 	void ManageBraceMatch();
 
 	virtual LPCTSTR GetDocTitle(){return _T("");}

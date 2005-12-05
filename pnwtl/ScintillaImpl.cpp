@@ -292,22 +292,18 @@ void CScintillaImpl::UnFoldAll()
 // Indentation Code
 ////////////////////////////////////////////////////////////
 
-int CScintillaImpl::GetIndentLevel(int line)
-{
-	return GetLineIndentation(line);
-}
-
 void CScintillaImpl::DumbIndent(char ch)
 {
 	//CharacterRange cr;
 	//GetSel(cr);
-	int curLine = GetCurrentPos();
-	curLine = LineFromPosition(curLine);
 
 	if(ch == '\r' || ch == '\n')
 	{
-		int previousIndent = GetIndentLevel(curLine-1);
-		if( previousIndent && GetIndentLevel(curLine) == 0 )
+		int curLine = GetCurrentPos();
+		curLine = LineFromPosition(curLine);
+
+		int previousIndent = GetLineIndentation(curLine-1);
+		if( previousIndent && GetLineIndentation(curLine) == 0 )
 			IndentLine(curLine, previousIndent);
 	}
 }

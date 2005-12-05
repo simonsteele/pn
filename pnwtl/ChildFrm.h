@@ -64,6 +64,7 @@ public:
 		MESSAGE_HANDLER(UWM_MDICHILDISMODIFIED, OnChildIsModified)
 		MESSAGE_HANDLER(UWM_MDICHILDSAVEMODIFIED, OnChildSaveModified)
 		MESSAGE_HANDLER(UWM_MDICHILDSHOWTABCONTEXTMENU, OnShowTabContextMenu)
+		MESSAGE_HANDLER(UWM_MDICHILDCLOSEWITHNOPROMPT, OnCloseNoPrompt)
 
 		//Now handled globally: Cut, Copy, Paste, Undo
 		//Still handled locally: Redo...
@@ -183,6 +184,7 @@ public:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);	
 	LRESULT OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT OnCloseNoPrompt(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);

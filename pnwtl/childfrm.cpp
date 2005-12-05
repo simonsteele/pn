@@ -24,14 +24,14 @@
 #include "tabbingframework/TabbedMDISave.h"
 
 #if defined (_DEBUG)
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
+	#define new DEBUG_NEW
+	#undef THIS_FILE
+	static char THIS_FILE[] = __FILE__;
 #endif
 
 bool CChildFrame::s_bFirstChild = true;
 
-CChildFrame::CChildFrame(DocumentPtr doc) : m_spDocument(doc)
+CChildFrame::CChildFrame(DocumentPtr doc) : m_spDocument(doc), m_view(doc)
 {
 	m_hWndOutput = NULL;
 	m_hImgList = NULL;
@@ -421,7 +421,27 @@ LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 		{
 			ToolOwner::GetInstance()->KillTools(true, this);
 		}
+
+		m_spDocument->OnDocClosing();
 	}
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnCloseNoPrompt(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	bHandled = FALSE;
+
+	m_bClosing = true;
+
+	m_spDocument->SetValid(false);
+
+	if( ToolOwner::HasInstance() )
+	{
+		ToolOwner::GetInstance()->KillTools(true, this);
+	}
+
+	m_spDocument->OnDocClosing();
 
 	return 0;
 }
@@ -588,7 +608,7 @@ LRESULT CChildFrame::OnShowTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 
 LRESULT CChildFrame::OnPrint(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	m_po.Filename = m_spDocument->GetFileName().c_str();
+	m_po.Filename = m_spDocument->GetFileName(FN_FULL).c_str();
 	m_view.PrintDocument(&m_po, true);
 
 	return TRUE;
@@ -1069,7 +1089,7 @@ private:
 bool CChildFrame::OnRunTool(LPVOID pTool)
 {
 	ToolDefinition* pToolDef = static_cast<ToolDefinition*>(pTool);
-	//ToolWrapper* pWrapper = NULL;
+
 	ToolWrapperPtr pWrapper;
 	boost::shared_ptr<TextFilterSink> filter_sink;
 	if(	pToolDef->GlobalOutput() )
@@ -1160,19 +1180,6 @@ LRESULT CChildFrame::OnGetInfoTip(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 
 	::LoadString(_Module.m_hInst, pS->iItem, pS->pszText, pS->cchTextMax);
 
-	/*switch(pS->iItem)
-	{
-		case ID_EDITOR_COLOURISE:
-			_tcsncpy(pS->pszText, _T("Toggle Highlighting"), pS->cchTextMax);
-			break;
-		case ID_EDITOR_WORDWRAP:
-			_tcsncpy(pS->pszText, _T("Toggle Word-Wrap"), pS->cchTextMax);
-			break;
-		case ID_EDITOR_LINENOS:
-			_tcsncpy(pS->pszText, _T("Toggle Line Numbers"), pS->cchTextMax);
-			break;
-	}*/
-
 	return 0;
 }
 
@@ -1185,13 +1192,13 @@ void CChildFrame::CheckAge()
 {
 	if(CanSave())
 	{
-		long age = m_spDocument->GetFileAge();// FileAge(m_FileName);
+		long age = m_spDocument->GetFileAge();
 		if(age != m_FileAge)
 		{
 			if(m_spDocument->FileExists())
 			{
 				CString msg;
-				msg.Format(IDS_MODIFIEDELSEWHERE, m_spDocument->GetFileName().c_str());
+				msg.Format(IDS_MODIFIEDELSEWHERE, m_spDocument->GetFileName(FN_FULL).c_str());
 				if ( AtlMessageBoxCheckNet(m_hWnd, (LPCTSTR)msg, _T("File Changed"), MB_YESNO | MB_FORCESYSMENU) == IDYES )
 				{
 					Revert();
@@ -1205,7 +1212,7 @@ void CChildFrame::CheckAge()
 			else
 			{
 				CString msg;
-				msg.Format(IDS_FILENOLONGEREXISTS, m_spDocument->GetFileName().c_str());
+				msg.Format(IDS_FILENOLONGEREXISTS, m_spDocument->GetFileName(FN_FULL).c_str());
 				g_Context.m_frame->SetStatusText((LPCTSTR)msg);
 				SetModifiedOverride(true);
 			}
@@ -1218,7 +1225,7 @@ void CChildFrame::Revert()
 	// Check that we have a valid filename first...
 	if(CanSave())
 	{
-		m_view.Revert(m_spDocument->GetFileName().c_str());
+		m_view.Revert(m_spDocument->GetFileName(FN_FULL).c_str());
 		m_FileAge = m_spDocument->GetFileAge();
 		SetModifiedOverride(false);
 	}
@@ -1303,7 +1310,7 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 
 		if(bUpdateMRU)
 		{
-			g_Context.m_frame->AddMRUEntry(m_spDocument->GetFileName().c_str());
+			g_Context.m_frame->AddMRUEntry(m_spDocument->GetFileName(FN_FULL).c_str());
 		}
 	}
 
@@ -1459,7 +1466,7 @@ bool CChildFrame::Save()
 {
 	if(CanSave())
 	{
-		bool bResult = SaveFile(m_spDocument->GetFileName().c_str(), false);
+		bool bResult = SaveFile(m_spDocument->GetFileName(FN_FULL).c_str(), false);
 		
 		m_FileAge = m_spDocument->GetFileAge();
 		SetModifiedOverride(false);
@@ -1563,6 +1570,8 @@ void CChildFrame::SchemeChanged(CScheme* pScheme)
 	UpdateTools(pScheme);
 	UpdateMenu();
 	g_Context.m_frame->SetActiveScheme(m_hWnd, static_cast<LPVOID>(pScheme));
+
+	m_spDocument->OnSchemeChange(pScheme->GetName());
 	
 	::PostMessage(GetMDIFrame(), PN_NOTIFY, 0, PN_SCHEMECHANGED);
 }

@@ -19,13 +19,21 @@
 #include "pndocking.h"
 #include "MainFrm.h"
 
+#include "extension.h"
+
 //#ifdef _DEBUG
 	#include "include/mdump.h"
 //#endif
 
+#if defined (_DEBUG)
+	#define new DEBUG_NEW
+	#undef THIS_FILE
+	static char THIS_FILE[] = __FILE__;
+#endif
+
 CAppModule _Module;
 
-/*__declspec( thread )*/ _Context g_Context = {0};
+/*__declspec( thread )*/ _Context g_Context /*= {0}*/;
 
 void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message)
 {
@@ -46,6 +54,8 @@ HWND GetCurrentEditor()
 	return static_cast<CMDIWindow*>(g_Context.m_frame->GetWindow())->MDIGetActive();
 }
 
+static extensions::Extension *pypn = NULL;
+
 void Init()
 {
 	// Where are the Schemes stored?
@@ -58,6 +68,9 @@ void Init()
 	SM.SetPath(path.c_str());
 	SM.SetCompiledPath(cpath.c_str());
 	SM.Load();
+
+	// Load us a python extension!
+	//pypn = new extensions::Extension("pypn.dll");
 }
 
 void Shutdown()
@@ -69,6 +82,8 @@ void Shutdown()
 	// Free up the options object, thus storing the options.
 	OptionsFactory::Release(g_Context.options);
 	g_Context.options = NULL;
+
+	//delete pypn;
 }
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)

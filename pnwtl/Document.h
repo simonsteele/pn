@@ -12,25 +12,49 @@
 
 class CChildFrame;
 
-class Document
+class Document : public extensions::IDocument, public extensions::ITextEditorEventSink
 {
 	friend class CChildFrame;
 
+	typedef std::list<extensions::IDocumentEventSinkPtr> EventSinks;
+
 	public:
 		Document(LPCTSTR filename = NULL);
+		virtual ~Document();
 
 		void AddChildFrame(CChildFrame* pFrame);
-
-		bool IsValid() const;
 
 		bool FileExists() const;
 
 		long GetFileAge() const;
-		tstring GetFileName(EGFNType type = FN_FULL) const;
+		tstring GetFileName(EGFNType type) const;
 		CChildFrame* GetFrame() const;
 		bool HasFile() const;
 
 		void SetFileName(LPCTSTR filename);
+
+		void OnDocClosing();
+
+// IDocument members
+	public:
+		virtual const char* GetTitle() const;
+		virtual const char* GetFileName() const;
+		virtual const char* GetCurrentScheme() const;
+
+		virtual HWND GetScintillaHWND() const;
+
+		virtual LRESULT SendEditorMessage(UINT msg, WPARAM wParam, LPARAM lParam);
+		virtual LRESULT SendEditorMessage(UINT msg, WPARAM wParam, const char* strParam);
+
+		virtual bool IsValid() const;
+
+		virtual void AddEventSink(extensions::IDocumentEventSinkPtr sink);
+		virtual void RemoveEventSink(extensions::IDocumentEventSinkPtr sink);
+
+// ITextEditorEventSink members
+	public:
+		virtual void OnSchemeChange(const char* scheme);
+		virtual void OnCharAdded(char c);
 
 // Protected members for friend classes...
 	protected:
@@ -40,6 +64,7 @@ class Document
 		CChildFrame*	m_pFrame;
 		bool			m_bIsValid;
 		tstring			m_sFilename;
+		EventSinks		m_sinks;
 };
 
 #endif // #ifndef document_h__included_D464731B_1039_49da_A86C_5CB5F08CDD47

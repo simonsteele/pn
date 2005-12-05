@@ -46,9 +46,9 @@
 using namespace L10N;
 
 #if defined (_DEBUG)
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
+	#define new DEBUG_NEW
+	#undef THIS_FILE
+	static char THIS_FILE[] = __FILE__;
 #endif
 
 const DWORD ToolbarCmds[4] = {
@@ -116,10 +116,13 @@ CChildFrame* CMainFrame::NewEditor()
 	DocumentPtr pD(new Document());
 	CChildFrame* pChild = new CChildFrame(pD);
 	PNASSERT(pChild != NULL);
+	pD->AddChildFrame(pChild);
 
 	// Give the user the option to always maximise new windows.
 	bool bMax = OPTIONS->GetCached(Options::OMaximiseNew) != 0;
 	pChild->CreateEx(m_hWndMDIClient, 0, 0, bMax ? WS_MAXIMIZE : 0);
+
+	g_Context.ExtApp.OnNewDocument( pD );
 
 	return pChild;
 }
@@ -1137,8 +1140,7 @@ LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 	// Process cmdline params... __argv and __argc in VC++
 	for(int i = 1; i < __argc; i++)
 	{
-		LPTSTR arg = __argv[i];
-		bool bOwn = false;
+		tstring arg = __argv[i]; 
 
 		if(arg[0] != _T('/') && arg[0] != _T('-'))
 		{
@@ -1149,16 +1151,23 @@ LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 			if(fn.IsRelativePath())
 			{
 				fn.Root(curDir);
-				arg = new TCHAR[_tcslen(fn.c_str())+1];
-				_tcscpy(arg, fn.c_str());
-				bOwn = true;
+				arg = fn.c_str();
+			}
+
+			params.insert(params.end(), arg);
+		}
+		else
+		{
+			// It's a parameter, we don't want to turn it into
+			// a rooted filename
+			params.insert(params.end(), arg);
+
+			if(i < (__argc-1))
+			{
+				arg = __argv[++i];
+				params.insert(params.end(), arg);
 			}
 		}
-
-		params.insert(params.end(), tstring(arg));
-
-		if(bOwn)
-			delete [] arg;
 	}
 
 	handleCommandLine(params);

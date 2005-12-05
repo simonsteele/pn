@@ -12,6 +12,12 @@
 #include "ChildFrm.h"
 #include "Document.h"
 
+#if defined (_DEBUG)
+	#define new DEBUG_NEW
+	#undef THIS_FILE
+	static char THIS_FILE[] = __FILE__;
+#endif
+
 Document::Document(LPCTSTR filename)
 {
 	m_pFrame = NULL;
@@ -20,6 +26,11 @@ Document::Document(LPCTSTR filename)
         m_sFilename = filename;
 	else
 		m_sFilename = "<new>";
+}
+
+Document::~Document()
+{
+
 }
 
 void Document::AddChildFrame(CChildFrame* pFrame)
@@ -86,4 +97,68 @@ void Document::SetValid(bool bValid)
 bool Document::IsValid() const
 {
 	return m_bIsValid;
+}
+
+const char* Document::GetTitle() const
+{
+	return m_sFilename.c_str();
+}
+
+const char* Document::GetFileName() const
+{
+	return m_sFilename.c_str();
+}
+
+const char* Document::GetCurrentScheme() const
+{
+	return m_pFrame->GetTextView()->GetCurrentScheme()->GetName();
+}
+
+HWND Document::GetScintillaHWND() const
+{
+	return m_pFrame->GetTextView()->m_hWnd;
+}
+
+LRESULT Document::SendEditorMessage(UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	return m_pFrame->GetTextView()->SendMessage(msg, wParam, lParam);
+}
+
+LRESULT Document::SendEditorMessage(UINT msg, WPARAM wParam, const char* strParam)
+{
+	return m_pFrame->GetTextView()->SendMessage(msg, wParam, (LPARAM)strParam);
+}
+
+void Document::OnCharAdded(char c)
+{
+	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	{
+		(*i)->OnCharAdded(c);
+	}
+}
+
+void Document::OnSchemeChange(const char* scheme)
+{
+	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	{
+		(*i)->OnSchemeChange(scheme);
+	}
+}
+
+void Document::OnDocClosing()
+{
+	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	{
+		(*i)->OnDocClosing();
+	}
+}
+
+void Document::AddEventSink(extensions::IDocumentEventSinkPtr sink)
+{
+	m_sinks.push_back(sink);
+}
+
+void Document::RemoveEventSink(extensions::IDocumentEventSinkPtr sink)
+{
+	m_sinks.remove(sink);
 }

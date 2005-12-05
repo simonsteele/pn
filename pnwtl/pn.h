@@ -49,7 +49,10 @@
 #define LOG(message) \
 	::OutputDebugString(message)
 
+#include "version.h"
 #include "pntypes.h"
+#include "extiface.h"
+#include "extapp.h"
 
 // Pre-declarations...
 
@@ -139,6 +142,7 @@ struct _Context
 	Options					*options;
 	OSVERSIONINFO			OSVersion;
 	LPCTSTR					AppTitle;
+	extensions::App			ExtApp;
 };
 
 /// This is the global application context.

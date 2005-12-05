@@ -15,8 +15,16 @@
 #include "smartstart.h"
 #include "include/utf8_16.h"
 
-CTextView::CTextView() : baseClass()
+#if defined (_DEBUG)
+	#define new DEBUG_NEW
+	#undef THIS_FILE
+	static char THIS_FILE[] = __FILE__;
+#endif
+
+CTextView::CTextView(DocumentPtr document) : baseClass()
 {
+	m_pDoc = document;
+
 	m_pLastScheme = NULL;
 	m_waitOnBookmarkNo = FALSE;
 	m_encType = eUnknown;
@@ -479,6 +487,8 @@ int CTextView::HandleNotify(LPARAM lParam)
 		if(m_bSmartStart)
 			if(SmartStart::GetInstance()->OnChar(this) != SmartStart::eContinue)
 				m_bSmartStart = false;
+
+		m_pDoc->OnCharAdded( ( reinterpret_cast<SCNotification*>(lParam))->ch );
 	}
 	else if(msg == SCN_MODIFIED)
 	{

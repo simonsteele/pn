@@ -20,16 +20,20 @@ int CScintilla::refs = 0;
 
 CScintilla::CScintilla()
 {
-#ifndef STATIC_SCILEXER
-	if(!scidll)
-	{
-		scidll = LoadLibrary(_T("SciLexer.dll"));
-	}
-#else
-	if(!refs)
-		Scintilla_RegisterClasses(GetModuleHandle(NULL));
-#endif
-	refs++;
+	#ifndef SCI_NOLOAD
+		#ifndef STATIC_SCILEXER
+			if(!scidll)
+			{
+				scidll = LoadLibrary(_T("SciLexer.dll"));
+			}
+		#else
+			if(!refs)
+				Scintilla_RegisterClasses(GetModuleHandle(NULL));
+		#endif
+		
+		refs++;
+	#endif
+
 	m_Modified = false;
 	Perform = NULL;
 	StoredPerform = NULL;
@@ -39,17 +43,19 @@ CScintilla::CScintilla()
 
 CScintilla::~CScintilla()
 {
+	#ifndef SCI_NOLOAD
 	refs--;
-#ifndef STATIC_SCILEXER
-	if(!refs)
-	{
-		FreeLibrary(scidll);
-		scidll = NULL;
-	}
-#else
-	if(!refs)
-		Scintilla_ReleaseResources();
-#endif
+		#ifndef STATIC_SCILEXER
+			if(!refs)
+			{
+				FreeLibrary(scidll);
+				scidll = NULL;
+			}
+		#else
+			if(!refs)
+				Scintilla_ReleaseResources();
+		#endif
+	#endif
 }
 
 #ifndef WTL_SCINTILLA

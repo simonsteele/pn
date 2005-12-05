@@ -27,6 +27,7 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				BufferSecurityCheck="TRUE"
+				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="3"
 				PrecompiledHeaderThrough="stdafx.h"
 				PrecompiledHeaderFile=".\Debug/pn.pch"
@@ -493,6 +494,9 @@
 				RelativePath="exporters.h">
 			</File>
 			<File
+				RelativePath=".\extension.h">
+			</File>
+			<File
 				RelativePath=".\FileAssoc.h">
 			</File>
 			<File
@@ -798,6 +802,9 @@
 				RelativePath="include\pcreplus.cpp">
 			</File>
 			<File
+				RelativePath=".\include\plugin.h">
+			</File>
+			<File
 				RelativePath=".\res\pn.rc2">
 			</File>
 			<File
@@ -956,6 +963,16 @@
 			</File>
 			<File
 				RelativePath=".\projpropsview.h">
+			</File>
+		</Filter>
+		<Filter
+			Name="Extensions"
+			Filter="">
+			<File
+				RelativePath=".\extapp.h">
+			</File>
+			<File
+				RelativePath=".\extiface.h">
 			</File>
 		</Filter>
 		<File
