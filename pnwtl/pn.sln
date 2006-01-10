@@ -16,6 +16,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pcre", "include\pcre\pcre.v
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pypn", "pypn\pypn.vcproj", "{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -56,6 +60,14 @@ Global
 		{07437657-980A-430D-AB7B-415770E0D505}.Release.Build.0 = Release|Win32
 		{07437657-980A-430D-AB7B-415770E0D505}.ReleaseDebug.ActiveCfg = ReleaseDebug|Win32
 		{07437657-980A-430D-AB7B-415770E0D505}.ReleaseDebug.Build.0 = ReleaseDebug|Win32
+		{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}.Debug.ActiveCfg = Debug|Win32
+		{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}.Debug.Build.0 = Debug|Win32
+		{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}.DebugUnicode.ActiveCfg = Debug|Win32
+		{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}.DebugUnicode.Build.0 = Debug|Win32
+		{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}.Release.ActiveCfg = Release|Win32
+		{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}.Release.Build.0 = Release|Win32
+		{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}.ReleaseDebug.ActiveCfg = Release|Win32
+		{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}.ReleaseDebug.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

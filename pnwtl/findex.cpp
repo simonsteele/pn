@@ -160,6 +160,13 @@ void CFindExDialog::Show(EFindDialogType type, LPCTSTR findText)
 			m_FindText = findText;
 	}
 
+	if(IsWindowVisible())
+	{
+		// We do this to update the find text when the window is 
+		// re-activated without being closed first.
+		DoDataExchange(FALSE);
+	}
+	
 	ShowWindow(SW_SHOW);
 	
 	m_FindTextCombo.SetFocus();

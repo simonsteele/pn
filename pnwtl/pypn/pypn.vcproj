@@ -44,7 +44,8 @@
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy c:\projects\boost_1_32_0\stage\lib\boost_python.dll $(TargetDir)"/>
+				CommandLine="copy ..\..\boost_1_32_0\stage\lib\boost_python.dll $(TargetDir)
+copy scripts\init.py $(TargetDir)"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool

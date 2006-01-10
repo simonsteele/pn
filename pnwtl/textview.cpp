@@ -186,7 +186,8 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 	if ( file.Open(filename, CFile::modeRead | CFile::modeBinary) ) 
 	{
 		// Disable UNDO
-		SPerform(SCI_SETUNDOCOLLECTION, 0);
+		//SPerform(SCI_SETUNDOCOLLECTION, 0);
+		SPerform(SCI_BEGINUNDOACTION);
 
 		SPerform(SCI_CLEARALL);
 
@@ -247,10 +248,11 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 		file.Close();
 		SPerform(SCI_SETSEL, 0, 0);
 		
-		SetEOLMode(endings);
-		
-		// Re-Enable UNDO
+		// Re-Enable UNDO (if necessary)
+		SPerform(SCI_ENDUNDOACTION);
 		SPerform(SCI_SETUNDOCOLLECTION, 1);
+
+		SetEOLMode(endings);
 		SPerform(SCI_SETSAVEPOINT);
 
 		SetLineNumberChars();
@@ -272,6 +274,9 @@ bool CTextView::Load(LPCTSTR filename, CScheme* pScheme, EPNEncoding encoding)
 {
 	if( OpenFile(filename, encoding) )
 	{
+		// Clear the UNDO buffer
+		EmptyUndoBuffer();
+
 		CScheme* sch = pScheme;
 		
 		if(NULL == sch)

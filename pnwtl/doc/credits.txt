@@ -8,6 +8,7 @@ Code Contributors:
 Bjoern Graf
 Klaus Kurzawa
 Mike Ditum
+Vassili Bourdo
 
 Libraries:
 ----------

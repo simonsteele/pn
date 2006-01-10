@@ -1524,6 +1524,7 @@ COptionsPageFileAssoc::COptionsPageFileAssoc()
 	: m_bDirty(false)
 	, m_mode(ModeNone)
 	, m_fam()
+	, m_bKeyChange(false)
 {}
 
 LPCTSTR COptionsPageFileAssoc::GetTreePosition()
@@ -1661,7 +1662,9 @@ LRESULT COptionsPageFileAssoc::OnExtensionChange(WORD /*wNotifyCode*/, WORD /*wI
 			CString method;
 			m_list.GetItemText(extIndex, ColMethod, method);
 			m_combo.SelectString(0, method);
+			m_bKeyChange = true;
 			m_list.SelectItem(extIndex);
+			m_bKeyChange = false;
 			SetMode(ModeEdit, false);
 		}
 		else
@@ -1778,7 +1781,7 @@ LRESULT COptionsPageFileAssoc::OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, B
 			m_list.GetItemText(plv->iItem, ColExtension, ext);
 			m_list.GetItemText(plv->iItem, ColMethod, method);
 			//NOTE: setting the extension edit after clearing it in SetMode results in the item being deselected again
-			SetMode(ModeEdit, true, ext);
+			SetMode(ModeEdit, !m_bKeyChange, ext);
 			m_combo.SelectString(0, method);
 		}
 		else

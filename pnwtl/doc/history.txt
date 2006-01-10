@@ -1,4 +1,86 @@
 ========================================
+Release Name: 2.0.6.0
+Build: 2.0.6.0, Version Label: ella
+========================================
+
+What's new?
+-----------
+
+1) Project Properties
+2) Editable Magic Folder Properties
+3) Ctrl+H for Replace.
+4) Right-Click on a file to add to a project.
+5) Selected text insertion into find dialog is more selective (no pun intended).
+6) Project changed indicator (appends * to name).
+7) Project tools.
+8) Tab usage option per scheme (SF RFE #1050938).
+9) Stack Based Ctrl-Tab Ordering (SF RFE #995790).
+10) Browse for folder in find in files dialog.
+11) Support for vbc compiler output (SF Bug #1168477).
+12) Docbook Scheme
+13) Scintilla version 1.6.6
+14) CSS-2 Support in CSS lexer
+15) Projects remember folder expansion state.
+16) Added Ctrl-W to close the current file (as well as Ctrl-F4) (SF RFE #1169428).
+17) New Project dialog.
+18) Save project from context menu.
+19) Refresh magic folder from context menu.
+20) Ctrl+[ jumps to matching or nearest brace.
+21) Ruby scheme
+22) Better behaviour with files opened using relative paths.
+23) Wrap text clips around selected text (SF RFE #1199676).
+24) Escape key closes find results if no output windows are open.
+25) Optionally save workspace between runs ("Remember open files and projects between sessions" in General options).
+26) Open to save workspace files from File menu, opening a .pnws file opens the saved workspace.
+27) SmartStart applied to opened files.
+28) New Incremental FindBar (Press Ctrl+/ and start typing, escape to cancel).
+29) Customisable scheme mappings (choose schemes for file types - Options|Files).
+30) Find Previous - Shift+F3
+31) Support for Java properties files (SF RFE #1267017).
+32) Find in Files can ignore hidden files.
+33) Remember Selected Text Clips Set (SF RFE #1279158).
+34) Press Enter to insert a text clip (SF RFE #1259865).
+35) Show textclips in tool tip text (SF RFE #1116510).
+36) Add Assembly Scheme (SF RFE #1290453).
+37) No more default comic sans for comments in web schemes!
+38) Support Ctrl+Shift+[X|V] for VNC cut-paste with caps lock support, Ctrl+Shift+C already taken for clipboard swap.
+
+Bug Fixes:
+----------
+
+1) Find in Files gets selected text.
+2) Find in selection fixed.
+3) Find Next and Replace One no longer supported in "in selection" mode.
+4) Find Next replaces selection in find text box when text not found.
+5) Switching tabs causes "re-maximization" (SF Bug #1169434).
+6) Launch Search Dialog With No Document (SF Bug #1168100).
+7) "Allow backslash expressions" does not work in search.
+8) Crash on Running Find in Files With Operation in Progress (SF Bug #1168101).
+9) code-folding works not correct (SF Bug #1050483).
+10) HTML export uses wrong CSS syntax (SF Bug #1074120).
+11) Normal Search does not work with UTF-8 (Unicode) chars > 127 (SF Bug #1200456).
+12) Relative paths don't work from command-line with single-instance PN (SF Bug #1161783).
+13) Window Dimensions After Un-Maximizing (SF Bug #1167299).
+14) File -> New Broken (SF Bug #1221755).
+15) Don't exit if save is cancelled for a previously unsaved item.
+16) Selecting the XML lexer after another does not correctly style.
+17) No code-folding for XML (SF Bug #1212335).
+18) Keyword customisation causes hang (SF Bug #1209962).
+19) Delete Line same as Cut Line (SF Bug #1234653).
+20) "Search Up" box not visible for replace.
+21) Bad coloring in Text Clips combo box with non-white window colors (SF Bug #1065666).
+22) Tried to open a file twice when that file was not found.
+23) VHDL Syntax file inclusion (SF Bug #1165830).
+24) Crash when adding a project tool (SF Bug #1195786).
+25) Show Lines Numbers" setting does not affect open files (SF Bug #1212355).
+26) Toggling syntax highlighting looses word wrap (SF Bug #1151704).
+27) Undo/Redo in folded area does not unfold (SF Bug #1286210).
+28) PN2 is confused by relative path names (SF Bug #1232939).
+29) Docking windows resize to tiny (SF Bug #1018105).
+30) Sub-windows initialization issue (SF Bug #1065665).
+31) Fixed a bug with default styles and the Plain Text scheme.
+
+========================================
 Release Name: 2.0.5.6
 Build: 2.0.5.34, Version Label: 
 ========================================

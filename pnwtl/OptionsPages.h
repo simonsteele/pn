@@ -696,6 +696,7 @@ class COptionsPageFileAssoc : public COptionsPageImpl<COptionsPageFileAssoc>,
 		void RemoveExtension(int index);
 
 		bool			m_bDirty;
+		bool			m_bKeyChange;
 		Mode			m_mode;
 		CComboBox		m_combo;
 		CButton			m_buttonAddEdit;
