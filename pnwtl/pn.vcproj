@@ -406,6 +406,9 @@
 				RelativePath=".\ScintillaImpl.cpp">
 			</File>
 			<File
+				RelativePath=".\ScriptRegistry.cpp">
+			</File>
+			<File
 				RelativePath="smartstart.cpp">
 			</File>
 			<File
@@ -615,6 +618,9 @@
 			</File>
 			<File
 				RelativePath=".\ScintillaWTL.h">
+			</File>
+			<File
+				RelativePath=".\scriptregistry.h">
 			</File>
 			<File
 				RelativePath=".\include\singleton.h">
@@ -969,10 +975,19 @@
 			Name="Extensions"
 			Filter="">
 			<File
+				RelativePath=".\extapp.cpp">
+			</File>
+			<File
 				RelativePath=".\extapp.h">
 			</File>
 			<File
 				RelativePath=".\extiface.h">
+			</File>
+			<File
+				RelativePath=".\scriptview.cpp">
+			</File>
+			<File
+				RelativePath=".\scriptview.h">
 			</File>
 		</Filter>
 		<File

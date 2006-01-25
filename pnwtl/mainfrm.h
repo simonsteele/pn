@@ -22,6 +22,7 @@ class CClipsDocker;
 class CProjectDocker;
 class CFindInFilesSink;
 class CFindInFilesView;
+class CScriptDocker;
 
 namespace Projects
 {
@@ -324,6 +325,7 @@ public:
 		DW_TEXTCLIPS = ID_VIEW_WINDOWS_TEXTCLIPS,
 		DW_PROJECTS = ID_VIEW_WINDOWS_PROJECT,
 		DW_FINDRESULTS = ID_VIEW_WINDOWS_FINDRESULTS,
+		DW_SCRIPTS = ID_VIEW_WINDOWS_SCRIPTS
 	} EDocker;
 
 	void ToggleDockingWindow(EDocker window, bool bSetValue = false, bool bShowing = true);
@@ -416,6 +418,7 @@ protected:
 	CProjectDocker*			m_pProjectsWnd;
 	CFindExDialog*			m_pFindEx;
 	CFindInFilesSink*		m_pFIFSink;
+	CScriptDocker*			m_pScriptsWnd;
 	
 	CScintilla				m_Dummy;			///< Scintilla often doesn't like unloading and reloading.
 

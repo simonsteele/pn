@@ -10,6 +10,7 @@ class IPN;
 class IDocument;
 class IAppEventSink;
 class IDocumentEventSink;
+class IScriptRegistry;
 
 typedef boost::shared_ptr<IDocument> IDocumentPtr;
 typedef boost::shared_ptr<IDocumentEventSink> IDocumentEventSinkPtr;
@@ -25,6 +26,8 @@ public:
 	
 	virtual void AddEventSink(IAppEventSinkPtr sink) = 0;
 	virtual void RemoveEventSink(IAppEventSinkPtr sink) = 0;
+
+	virtual IScriptRegistry* GetScriptRegistry() = 0;
 };
 
 class IDocument
@@ -70,6 +73,29 @@ public:
 
 	virtual void OnSchemeChange(const char* scheme) = 0;
 	virtual void OnDocClosing() = 0;
+};
+
+/**
+ * Interface for something that can run scripts from the 
+ * script manager
+ */
+class IScriptRunner
+{
+public:
+	virtual void RunScript(const char* name) = 0;
+};
+
+/**
+ * Interface for the script registry
+ */
+class IScriptRegistry
+{
+public:
+	virtual void Add(const char* group, const char* name, const char* scriptref) = 0;
+
+	virtual void RegisterRunner(const char* id, extensions::IScriptRunner* runner) = 0;
+	virtual void RemoveRunner(const char* id) = 0;
+	virtual extensions::IScriptRunner* GetRunner(const char* id) = 0;
 };
 
 // Make sure you export a function that looks like this:

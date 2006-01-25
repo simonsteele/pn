@@ -409,7 +409,7 @@
 #define IDC_FILETYPES_REMOVEBUTTON      1130
 #define IDC_SCHEME_COMBO                1131
 #define IDC_TE_TEXTFILTERCHECK          1133
-#define IDC_INCLUDEHIDDEN_CHECK			1134
+#define IDC_INCLUDEHIDDEN_CHECK         1134
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -424,11 +424,12 @@
 #define ID_VIEW_WINDOWS_PROJECT         32701
 #define ID_VIEW_WINDOWS_TEXTCLIPS       32702
 #define ID_VIEW_WINDOWS_FINDRESULTS     32703
-#define ID_VIEW_LASTDOCKER              32703
-#define IDS_OPENANOTHER                 32704
+#define ID_VIEW_WINDOWS_SCRIPTS         32704
+#define ID_VIEW_LASTDOCKER              32704
 #define IDS_PROJECTDOESNOTEXIST         32705
 #define IDS_PROJSAVECHANGES             32706
 #define IDS_PROJCLOSEFILES              32707
+#define IDS_OPENANOTHER                 32708
 #define ID_EDIT_FINDNEXT                32773
 #define ID_EDIT_GOTO                    32774
 #define ID_TOOLS_LECRLF                 32777
@@ -518,7 +519,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        343
-#define _APS_NEXT_COMMAND_VALUE         32957
+#define _APS_NEXT_COMMAND_VALUE         32959
 #define _APS_NEXT_CONTROL_VALUE         1135
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

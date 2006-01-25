@@ -180,6 +180,7 @@ BEGIN
             MENUITEM "&Text Clips",                 ID_VIEW_WINDOWS_TEXTCLIPS
 
             MENUITEM "&Find Results",               32703
+            MENUITEM "&Scripts",                    ID_VIEW_WINDOWS_SCRIPTS
         END
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM SEPARATOR
@@ -1791,10 +1792,11 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_OPENANOTHER         "Do you want to open another copy of %s?"
+    ID_VIEW_WINDOWS_SCRIPTS "Scripts"
     IDS_PROJECTDOESNOTEXIST "The specified project does not exist,\n would you like to create it?"
     IDS_PROJSAVECHANGES     "Do you want to save changes to the project: %s?"
     IDS_PROJCLOSEFILES      "Close all project files?"
+    IDS_OPENANOTHER         "Do you want to open another copy of %s?"
 END
 
 STRINGTABLE 

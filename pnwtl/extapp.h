@@ -28,6 +28,8 @@ public:
 		m_sinks.remove(sink);
 	}
 
+	virtual IScriptRegistry* GetScriptRegistry();
+
 // Stuff to signal event sinks...
 public:
 	void OnNewDocument(IDocumentPtr doc)

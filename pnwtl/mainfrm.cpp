@@ -34,6 +34,7 @@
 #include "findinfilesview.h"	// Find in Files view...
 #include "newprojectdialog.h"	// New Projects Dialog
 #include "workspacestate.h"		// Save Workspace State
+#include "scriptview.h"			// Scripts Docker
 
 // Other stuff
 #include "SchemeConfig.h"		// Scheme Configuration
@@ -105,6 +106,9 @@ CMainFrame::~CMainFrame()
 
 	if(m_pProjectsWnd)
 		delete m_pProjectsWnd;
+
+	if(m_pScriptsWnd)
+		delete m_pScriptsWnd;
 }
 
 /**
@@ -693,6 +697,10 @@ void CMainFrame::CreateDockingWindows()
 	m_pProjectsWnd = CreateDocker<CProjectDocker>(LS(ID_VIEW_WINDOWS_PROJECT), rcLeft, this, 
 		m_dockingWindows, ID_VIEW_WINDOWS_PROJECT - ID_VIEW_FIRSTDOCKER,
 		false);
+
+	m_pScriptsWnd = CreateDocker<CScriptDocker>(LS(ID_VIEW_WINDOWS_SCRIPTS), rcLeft, this, 
+		m_dockingWindows, ID_VIEW_WINDOWS_SCRIPTS - ID_VIEW_FIRSTDOCKER,
+		true, dockwins::CDockingSide::sRight);
 
 	getDocker(DW_PROJECTS)->DockTo( getDocker(DW_TEXTCLIPS)->m_hWnd, 0 );
 }
