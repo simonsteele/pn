@@ -31,6 +31,8 @@ public:
 
 	virtual IScriptRegistry* GetScriptRegistry() = 0;
 	virtual IOptions* GetOptionsManager() = 0;
+
+	virtual IDocumentPtr GetCurrentDocument() = 0;
 };
 
 class IDocument

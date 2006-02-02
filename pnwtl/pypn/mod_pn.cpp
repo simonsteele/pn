@@ -10,12 +10,26 @@ void RegisterScript(const char* scriptname, const char* group, const char* name)
 	g_app->RegisterScript(scriptname, group, name);
 }
 
+boost::shared_ptr<IDocument> CurrentDoc()
+{
+	return g_app->GetPN()->GetCurrentDocument();
+}
+
+std::string GetPNPath()
+{
+	std::string str;
+	g_app->GetPN()->GetOptionsManager()->GetPNPath(str);
+	return str;
+}
+
 BOOST_PYTHON_MODULE(pn)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Expose Useful Bits
 
+	def("CurrentDoc", &CurrentDoc);
 	def("RegisterScript", &RegisterScript);
+	def("AppPath", &GetPNPath);
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Expose IDocument
@@ -35,8 +49,6 @@ BOOST_PYTHON_MODULE(pn)
 		.def("IsValid", &IDocument::IsValid)
     ;
 
-	//
-
 	try
 	{
 		register_ptr_to_python< boost::shared_ptr<IDocument> >();
@@ -46,15 +58,4 @@ BOOST_PYTHON_MODULE(pn)
 		std::string s = getPythonErrorString();
 		OutputDebugString(s.c_str());
 	}
-
-	/*
-	Tried and failed:
-	// Temporary code for smart pointers
-		objects::class_value_wrapper< 
-		boost::shared_ptr< IDocument >, objects::make_ptr_instance< 
-			IDocument, objects::pointer_holder< 
-			boost::shared_ptr< IDocument >, IDocument >
-		>
-		>();
-	*/
 }

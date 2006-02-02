@@ -1,46 +1,42 @@
+# Standard PN Builtins
 import pn, scintilla, debug
 
-schemes = {}
+# Set-up paths...
+#import sys
+#sys.path.append(pn.AppPath())
+#sys.path.append(pn.AppPath() + "scripts")
 
-class SchemeMapping:
-	def __init__(self, name):
-		self.name = name
+# Import the rest of the pypn stuff
+from pypn import *
+from pypn.decorators import *
 
-def onCharAdded(c, doc):
-	if not (c == '\n' or c == '\r'):
-		return
-	
-	if not schemes.has_key(doc.GetCurrentScheme()):
-		return
-		
-	scheme = schemes[doc.GetCurrentScheme()]
-	
-	if scheme and scheme.indenter:
-		scheme.indenter(c, doc)
-
-def getSchemeConfig(name):
-	if not schemes.has_key(name):
-		schemes[name] = SchemeMapping(name)
-	return schemes[name]
+debug.OutputDebugString(repr(dir()))
 
 ######################################################
-## Experimental decorator things...
-def indenter(scheme):
-	def decorator(f):
-		s = getSchemeConfig(scheme)
-		s.indenter = f
-		return f
-	return decorator
+## Bring on the scripts!
 
-def script(name=None, group="Python"):
-	def decorator(f):
-		if name == None:
-			scriptName = f.func_name
-		else:
-			scriptName = name
-		pn.RegisterScript(f.func_name, group, scriptName)
-		return f
-	return decorator
+#from scripts import *
+
+import os
+
+def import_libs(dir):
+    """ Imports the libs, returns a list of the libraries. 
+    Pass in dir to scan """
+    
+    library_list = [] 
+    
+    print os.listdir(os.path.abspath(dir))
+    for f in os.listdir(os.path.abspath(dir)):       
+        
+        module_name, ext = os.path.splitext(f) # Handles no-extension files, etc.
+        if ext == '.py': # Important, ignore .pyc/other files.
+            print 'imported module: %s' % (module_name)
+            module = __import__(module_name)
+            library_list.append(module)
+ 
+    return library_list
+
+import_libs(pn.AppPath() + "scripts")
 
 ######################################################
 ## Individual functions (eventually to be split into 

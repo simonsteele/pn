@@ -16,6 +16,8 @@ public:
 	virtual IScriptRegistry* GetScriptRegistry();
 	virtual IOptions* GetOptionsManager();
 
+	virtual IDocumentPtr GetCurrentDocument();
+
 // Stuff to signal event sinks...
 public:
 	void OnNewDocument(IDocumentPtr doc);

@@ -8,11 +8,11 @@
 
 using namespace boost::python;
 
-#if defined (_DEBUG)
-	#define new DEBUG_NEW
-	#undef THIS_FILE
-	static char THIS_FILE[] = __FILE__;
-#endif
+//#if defined (_DEBUG)
+//	#define new DEBUG_NEW
+//	#undef THIS_FILE
+//	static char THIS_FILE[] = __FILE__;
+//#endif
 
 extensions::IAppEventSinkPtr g_appsink;
 App *g_app = NULL;

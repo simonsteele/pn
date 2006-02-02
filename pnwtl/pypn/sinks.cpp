@@ -30,7 +30,7 @@ void DocSink::OnCharAdded(char c)
 {
 	try
 	{
-		boost::python::call_method<void>(g_app->PyModule().ptr(), "onCharAdded", c, (m_doc));
+		boost::python::call_method<void>(g_app->PyPnGlue().ptr(), "onCharAdded", c, (m_doc));
 		/*g_app->main_namespace. = c;
 		g_app->main_namespace.attr("doc") = m_doc;
 

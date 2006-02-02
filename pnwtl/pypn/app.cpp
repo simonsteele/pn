@@ -29,6 +29,20 @@ App::~App()
 
 void App::Initialise()
 {
+	// Before we do anything else, make sure python can find our files!
+	std::string s;
+	m_app->GetOptionsManager()->GetPNPath(s);
+	if((s[s.length()-1]) == '\\')
+	{
+		s.erase(s.length()-1);
+	}
+
+	std::string setuppaths("import sys\nsys.path.append(r'" + s + "')\nsys.path.append(r'" + s + "\\scripts')\n\n");
+	OutputDebugString(setuppaths.c_str());
+	if(PyRun_String(setuppaths.c_str(), Py_file_input, main_namespace.ptr(),main_namespace.ptr()) != 0)
+		OutputDebugString(getPythonErrorString().c_str());
+
+	// Now run the init.py file
 	loadInitScript();
 }
 
@@ -37,6 +51,19 @@ void App::RegisterScript(const char* scriptname, const char* group, const char* 
 	std::string scriptref("python:");
 	scriptref += scriptname;
 	m_registry->Add(group, name, scriptref.c_str());
+}
+
+void App::RunScript(const char* name)
+{
+	try
+	{
+		boost::python::call_method<void>(m_glue.ptr(), "runScript", name);
+	}
+	catch(boost::python::error_already_set&)
+	{
+		std::string s = getPythonErrorString();
+		OutputDebugString(s.c_str());
+	}
 }
 
 void App::loadInitScript()
@@ -51,6 +78,8 @@ void App::loadInitScript()
 	::PathAppend(szpath, "init.py");
 
 	runFile(szpath);
+
+	m_glue = main_module.attr("glue");
 }
 
 void App::runFile(const char* szpath)

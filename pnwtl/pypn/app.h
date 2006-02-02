@@ -18,13 +18,7 @@ public:
 		doc->AddEventSink(p);
 	}
 
-	virtual void RunScript(const char* name)
-	{
-		std::string s("RunScript: ");
-		s += name;
-		s += "\n";
-		::OutputDebugString(s.c_str());
-	}
+	virtual void RunScript(const char* name);
 
 	extensions::IPN* GetPN() const
 	{
@@ -38,7 +32,12 @@ public:
 
 	boost::python::object& PyNamespace()
 	{
-		return main_module;
+		return main_namespace;
+	}
+
+	boost::python::object& PyPnGlue()
+	{
+		return m_glue;
 	}
 
 	void RegisterScript(const char* scriptname, const char* group, const char* name);
@@ -52,6 +51,7 @@ private:
 	extensions::IPN* m_app;
 	boost::python::object main_module;
 	boost::python::object main_namespace;
+	boost::python::object m_glue;
 };
 
 extern App* g_app;

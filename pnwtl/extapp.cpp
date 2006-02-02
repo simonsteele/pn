@@ -4,6 +4,9 @@
 
 #include "scriptregistry.h"
 
+#include "resource.h"
+#include "childfrm.h"
+
 namespace extensions {
 
 unsigned int App::get_iface_version() const
@@ -42,6 +45,17 @@ void App::OnNewDocument(IDocumentPtr doc)
 	{
 		(*i)->on_new_document(doc);
 	}
+}
+
+IDocumentPtr App::GetCurrentDocument()
+{
+	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
+	if(pChild)
+	{
+		return pChild->GetDocument();
+	}
+	
+	return IDocumentPtr();
 }
 
 }
