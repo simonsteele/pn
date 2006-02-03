@@ -1,0 +1,36 @@
+// pnse.idl : IDL source for pnse
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (pnse.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	object,
+	uuid(477E3096-DB86-431F-BAED-B3C7EA1481B0),
+	dual,
+	nonextensible,
+	helpstring("IPNExt Interface"),
+	pointer_default(unique)
+]
+interface IPNExt : IDispatch{
+};
+[
+	uuid(84675AE3-84A5-4EB2-9DFA-E8EFEDE2762C),
+	version(1.0),
+	helpstring("pnse 1.0 Type Library")
+]
+library pnseLib
+{
+	importlib("stdole2.tlb");
+	[
+		uuid(0206741E-CAF7-40C3-969C-AFC82468D216),
+		helpstring("PNExt Class")
+	]
+	coclass PNExt
+	{
+		[default] interface IPNExt;
+	};
+};

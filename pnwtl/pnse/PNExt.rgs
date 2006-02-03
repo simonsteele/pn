@@ -1,0 +1,47 @@
+HKCR
+{
+	pnse.PNExt.1 = s 'PNExt Class'
+	{
+		CLSID = s '{0206741E-CAF7-40C3-969C-AFC82468D216}'
+	}
+	pnse.PNExt = s 'PNExt Class'
+	{
+		CLSID = s '{0206741E-CAF7-40C3-969C-AFC82468D216}'
+		CurVer = s 'pnse.PNExt.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {0206741E-CAF7-40C3-969C-AFC82468D216} = s 'PNExt Class'
+		{
+			ProgID = s 'pnse.PNExt.1'
+			VersionIndependentProgID = s 'pnse.PNExt'
+			ForceRemove 'Programmable'
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			val AppID = s '%APPID%'
+			'TypeLib' = s '{84675AE3-84A5-4EB2-9DFA-E8EFEDE2762C}'
+		}
+	}
+    NoRemove txtfile
+    {
+        NoRemove ShellEx
+        {
+            NoRemove ContextMenuHandlers
+            {
+                ForceRemove PNExt = s '{0206741E-CAF7-40C3-969C-AFC82468D216}'
+            }
+        }
+    }
+    NoRemove *
+    {
+        NoRemove shellex
+        {
+            NoRemove ContextMenuHandlers
+            {
+                ForceRemove PNExt = s '{0206741E-CAF7-40C3-969C-AFC82468D216}'
+            }
+        }
+    }
+}
