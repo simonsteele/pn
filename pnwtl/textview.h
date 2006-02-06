@@ -11,9 +11,7 @@
 #ifndef textview_h__included
 #define textview_h__included
 
-#if _MSC_VER >= 1000
 #pragma once
-#endif // _MSC_VER >= 1000
 
 #include "ScintillaImpl.h"
 #include "ScintillaWTL.h"

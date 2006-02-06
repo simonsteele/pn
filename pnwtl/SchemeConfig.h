@@ -137,6 +137,7 @@ class SchemeConfigParser : public SchemeParser
 		StylesMap&				GetStyleClasses();
 		StylesMap&				GetCustomClasses();
 		StyleDetails*			GetDefaultStyle();
+		EditorColours*			GetDefaultColours();
 
 		SchemeConfig*			GetPlainTextScheme();
 

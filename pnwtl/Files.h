@@ -58,7 +58,7 @@ class CFile
 		void Close();
 		void Seek(UINT offset, EFrom from = begin);
 
-		int ShowError(LPCTSTR filename, bool bOpen = true);
+		int ShowError(LPCTSTR filename, LPCTSTR app, bool bOpen = true);
 
 		long GetPosition() const;
 		long GetLength();

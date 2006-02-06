@@ -1,3 +1,12 @@
+/**
+ * @file sinks.cpp
+ * @brief Defines miscellaneous sinks used to register for events
+ * @author Simon Steele
+ * @note Copyright (c) 2006 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #include "stdafx.h"
 #include "sinks.h"
 #include "app.h"
@@ -31,14 +40,6 @@ void DocSink::OnCharAdded(char c)
 	try
 	{
 		boost::python::call_method<void>(g_app->PyPnGlue().ptr(), "onCharAdded", c, (m_doc));
-		/*g_app->main_namespace. = c;
-		g_app->main_namespace.attr("doc") = m_doc;
-
-		handle<> ignored(PyRun_String("onCharAdded(c, doc)",
-			Py_file_input, 
-			g_app->main_namespace.ptr(),
-			g_app->main_namespace.ptr()
-		));*/
 	}
 	catch(error_already_set&)
 	{

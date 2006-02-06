@@ -2,7 +2,7 @@
  * @file usersettingswriter.h
  * @brief Write out the UserSettings file.
  * @author Simon Steele
- * @note Copyright (c) 2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2005-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -10,6 +10,10 @@
 
 #ifndef usersettingswriter_h__included
 #define usersettingswriter_h__included
+
+#ifdef _MSC_VER
+	#pragma once
+#endif
 
 /////////////////////////////////////////////////////////
 // Writer
@@ -119,15 +123,7 @@ namespace Schemes
 					return;
 	
 				genxStartElement(m_eColours);
-				COLORREF colour;
-				if(colours->GetColour(EditorColours::ecSelFore, colour))
-					addColourAtt(m_aSelFore, colour);
-				if(colours->GetColour(EditorColours::ecSelBack, colour))
-					addColourAtt(m_aSelBack, colour);
-				if(colours->GetColour(EditorColours::ecCaret, colour))
-					addColourAtt(m_aCaret, colour);
-				if(colours->GetColour(EditorColours::ecIndentG, colour))
-					addColourAtt(m_aIndentGuides, colour);
+				writeColours(colours);
 				pop();
 			}
 
@@ -228,6 +224,29 @@ namespace Schemes
 				pop();
 			}
 
+			void writeOverrideColours(EditorColours* colours)
+			{
+				if(!colours->HasColours())
+					return;
+
+				genxStartElement(m_eOvColours);
+				writeColours(colours);
+				pop();
+			}
+
+			void writeColours(EditorColours* colours)
+			{
+				COLORREF colour;
+				if(colours->GetColour(EditorColours::ecSelFore, colour))
+					addColourAtt(m_aSelFore, colour);
+				if(colours->GetColour(EditorColours::ecSelBack, colour))
+					addColourAtt(m_aSelBack, colour);
+				if(colours->GetColour(EditorColours::ecCaret, colour))
+					addColourAtt(m_aCaret, colour);
+				if(colours->GetColour(EditorColours::ecIndentG, colour))
+					addColourAtt(m_aIndentGuides, colour);
+			}
+
 		protected:
 			void writeStyle(const StyleDetails& style, bool bIsClass)
 			{
@@ -279,6 +298,7 @@ namespace Schemes
 				m_eOvKeywords = genxDeclareElement(m_writer, NULL, u("override-keywords"), &s);
 				m_eOvClasses = genxDeclareElement(m_writer, NULL, u("override-classes"), &s);
 				m_eColours = genxDeclareElement(m_writer, NULL, u("colours"), &s);
+				m_eOvColours = genxDeclareElement(m_writer, NULL, u("override-colours"), &s);
 
 				PREDECLARE_ATTRIBUTES()
 					ATT("key", m_aKey);
@@ -311,6 +331,7 @@ namespace Schemes
 			genxElement m_eOvKeywords;
 			genxElement m_eOvClasses;
 			genxElement m_eColours;
+			genxElement m_eOvColours;
 			
 			genxAttribute m_aKey;
 			genxAttribute m_aFont;

@@ -263,7 +263,7 @@ void Options::LoadPrintSettings(SPrintOptions* pSettings)
 	pSettings->rcMargins.right	= Get(NULL, _T("RightMargin"), 1000);
 	pSettings->rcMargins.bottom = Get(NULL, _T("BottomMargin"), 1000);
 
-	pSettings->Header = Get(NULL, _T("Header"), _T("Programmers Notepad - %f")).c_str();
+	pSettings->Header = Get(NULL, _T("Header"), _T("Programmer's Notepad - %f")).c_str();
 	pSettings->Footer = Get(NULL, _T("Footer"), _T("Page %p, %c - %t")).c_str();
 
 	ungroup();

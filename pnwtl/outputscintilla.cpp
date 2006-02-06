@@ -46,8 +46,25 @@ void REScintilla::SetRE(LPCTSTR regex, bool bClearStyling)
 		m_pRE = new PCRE::RegExp;
 	}
 
-	m_pRE->Compile(m_customre.c_str());
-	m_pRE->Study();
+	try
+	{
+		m_pRE->Compile(m_customre.c_str());
+		m_pRE->Study();
+	}
+	catch(PCRE::REException& ex)
+	{
+		if(ex.GetMessage())
+		{
+			size_t len = strlen(ex.GetMessage()) + m_customre.size() + 90;
+			char* buf = new char[len];
+			sprintf(buf, "Custom Parser Error at %d (%s): %s", ex.GetOffset(), ex.GetMessage(), m_customre.c_str());
+			g_Context.m_frame->SetStatusText(buf);
+			delete [] buf;
+		}
+
+		delete m_pRE;
+		m_pRE = NULL;
+	}
 
 	if(!schemeLoaded)
 	{

@@ -2,7 +2,7 @@
  * @file optionspages.h
  * @brief Options Dialog Pages (1) for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -220,6 +220,11 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 		CButton			m_bold;
 		CButton			m_italic;
 		CButton			m_underline;
+
+		CPNColorButton	m_cur;
+		CPNColorButton	m_indentGuides;
+		CPNColorButton	m_selFore;
+		CPNColorButton	m_selBack;
 
 		bool			m_bDirty;
 

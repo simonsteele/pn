@@ -2,7 +2,7 @@
  * @file optionspages.cpp
  * @brief Options Dialog Pages (1) for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -313,6 +313,12 @@ LRESULT COptionsPageStyle::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	m_fore.SubclassWindow(GetDlgItem(IDC_STYLE_FOREBUTTON));
 	m_back.SubclassWindow(GetDlgItem(IDC_STYLE_BACKBUTTON));
 
+	m_cur.SubclassWindow(GetDlgItem(IDC_STYLE_CURCOLBUTTON));
+	m_indentGuides.SubclassWindow(GetDlgItem(IDC_STYLE_IGCOLBUTTON2));
+	m_selFore.SubclassWindow(GetDlgItem(IDC_STYLE_SELFOREBUTTON));
+	m_selBack.SubclassWindow(GetDlgItem(IDC_STYLE_SELBACKBUTTON2));
+
+
 	m_bold.Attach(GetDlgItem(IDC_STYLE_BOLDCHECK));
 	m_italic.Attach(GetDlgItem(IDC_STYLE_ITALICCHECK));
 	m_underline.Attach(GetDlgItem(IDC_STYLE_UNDERLINECHECK));
@@ -346,6 +352,30 @@ void COptionsPageStyle::OnInitialise()
 		m_bold.SetCheck(pStyle->Bold ? BST_CHECKED : BST_UNCHECKED);
 		m_italic.SetCheck(pStyle->Italic ? BST_CHECKED : BST_UNCHECKED);
 		m_underline.SetCheck(pStyle->Underline ? BST_CHECKED : BST_UNCHECKED);
+
+		EditorColours* ec = m_pSchemes->GetDefaultColours();
+		
+		m_selFore.SetDefaultColor(::GetSysColor(COLOR_HIGHLIGHTTEXT));
+		m_selBack.SetDefaultColor(::GetSysColor(COLOR_HIGHLIGHT));
+		m_cur.SetDefaultColor(::GetSysColor(COLOR_WINDOWTEXT));
+		m_indentGuides.SetDefaultColor(RGB(0,0,0));
+
+		COLORREF c;
+		if(ec->GetColour(EditorColours::ecSelFore, c))
+		{
+			if(c == (COLORREF)-1)
+			{
+				CButton(GetDlgItem(IDC_STYLE_SELUSEFORE)).SetCheck(BST_CHECKED);
+			}
+			else
+                m_selFore.SetColor( c );
+		}
+		if(ec->GetColour(EditorColours::ecSelBack, c))
+			m_selBack.SetColor( c );
+		if(ec->GetColour(EditorColours::ecCaret, c))
+			m_cur.SetColor( c );
+		if(ec->GetColour(EditorColours::ecIndentG, c))
+			m_indentGuides.SetColor( c );
 
 		// Simple dirty checking - if the page is shown we rebuild.
 		m_bDirty = true;
@@ -405,6 +435,33 @@ void COptionsPageStyle::OnOK()
 		{
 			delete pS;
 		}
+
+		// Clear all existing colour customisations
+		EditorColours* ec = m_pSchemes->GetDefaultColours();
+		ec->Clear();
+
+		COLORREF c;
+		c = m_cur.GetColor();
+		
+		if( CButton(GetDlgItem(IDC_STYLE_SELUSEFORE)).GetCheck() == BST_CHECKED )
+			c = CLR_NONE;
+		else
+			c = m_selFore.GetColor();
+
+		if(c != CLR_DEFAULT)
+			ec->SetColour( EditorColours::ecSelFore, c);
+		
+		c = m_selBack.GetColor();
+		if(c != CLR_DEFAULT)
+			ec->SetColour( EditorColours::ecSelBack, c);
+
+		c = m_cur.GetColor();
+		if(c != CLR_DEFAULT)
+			ec->SetColour( EditorColours::ecCaret, c);
+
+		c = m_indentGuides.GetColor();
+		if(c != CLR_DEFAULT)
+			ec->SetColour( EditorColours::ecIndentG, c);
 	}
 }
 

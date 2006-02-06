@@ -2,7 +2,7 @@
  * @file SchemeCompiler.cpp
  * @brief Implement scheme reader and compiler classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -328,6 +328,10 @@ void UserSettingsParser::startElement(void *userData, LPCTSTR name, XMLAttribute
 	{
 		pState->m_State = US_CLASSES;
 	}
+	else if(_tcscmp(name, _T("override-colours")) == 0)
+	{
+		processGlobalColours(pState, atts);
+	}
 }
 
 void UserSettingsParser::endElement(void *userData, LPCTSTR name)
@@ -479,9 +483,14 @@ void UserSettingsParser::processScheme(CSchemeLoaderState* pState, XMLAttributes
 #ifdef _DEBUG
 	else
 	{
-		::OutputDebugStr(_T("UserSettingsParser::processScheme(): Scheme section without name attribute.\n"));
+		LOG(_T("UserSettingsParser::processScheme(): Scheme section without name attribute.\n"));
 	}
 #endif
+}
+
+void UserSettingsParser::processGlobalColours(CSchemeLoaderState* pState, XMLAttributes& atts)
+{
+	pState->m_DefaultColours.SetFromXml(atts);
 }
 
 ////////////////////////////////////////////////////////////
@@ -501,7 +510,7 @@ void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 	filename += _T("default.cscheme");
 
 	// Now we record a default scheme for use when no Scheme is selected. 
-	// It has only one style (0) and default.
+	// It has only one style (0) and defaults.
 	m_Recorder.StartRecording(_T("default"), _T("default"), filename, 0);
 	m_Recorder.SetLexer(0);
 	StyleDetails* pCustom = m_LoadState.m_CustomClasses.GetStyle(_T("default"));
@@ -514,6 +523,7 @@ void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 	sendStyle(&temp, &m_Recorder);
 	temp.Key = 0;
 	sendStyle(&temp, &m_Recorder);
+	m_LoadState.m_DefaultColours.SendColours(&m_Recorder);
 	m_Recorder.EndRecording();
 }
 
@@ -1660,9 +1670,16 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 			// out by the clearall which is sent after the default style.
 			sendBaseStyles(pS);
 
+			// Get the default editor colours
+			EditorColours ec = pS->m_DefaultColours;
+
+			// See if there's any customised editor colours
 			if(pS->m_pCustom)
 				if(pS->m_pCustom->m_editorColours.HasColours())
-					onColours(&pS->m_pCustom->m_editorColours);
+					ec.Combine(&pS->m_pCustom->m_editorColours);
+
+			// Set those colours!
+			onColours(&ec);
 
 			onLanguageEnd();
 

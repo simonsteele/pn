@@ -1,6 +1,19 @@
+/**
+ * @file app.h
+ * @brief Plugin Main Implementation
+ * @author Simon Steele
+ * @note Copyright (c) 2006 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #ifndef app_h__included
 #define app_h__included
 
+/**
+ * This class manages the environment for the plugin, storing
+ * the links to IPN and acting as the main event sink.
+ */
 class App : 
 	public extensions::IAppEventSink,
 	public extensions::IScriptRunner
@@ -12,37 +25,23 @@ public:
 
 	void Initialise();
 
-	virtual void on_new_document(extensions::IDocumentPtr doc)
-	{
-		extensions::IDocumentEventSinkPtr p(new DocSink(doc));
-		doc->AddEventSink(p);
-	}
-
+// IAppEventSink
+	virtual void OnNewDocument(extensions::IDocumentPtr doc);
+	
+// IScriptRunner
 	virtual void RunScript(const char* name);
+	virtual void RunDocScript(extensions::IDocumentPtr doc);
 
-	extensions::IPN* GetPN() const
-	{
-		return m_app;
-	}
-
-	boost::python::object& PyModule()
-	{
-		return main_module;
-	}
-
-	boost::python::object& PyNamespace()
-	{
-		return main_namespace;
-	}
-
-	boost::python::object& PyPnGlue()
-	{
-		return m_glue;
-	}
-
+// Other
 	void RegisterScript(const char* scriptname, const char* group, const char* name);
 
-protected:
+	extensions::IPN* GetPN() const;
+	
+	boost::python::object& PyModule();
+	boost::python::object& PyNamespace();
+	boost::python::object& PyPnGlue();
+
+private:
 	void loadInitScript();
 	void runFile(const char* filename);
 	

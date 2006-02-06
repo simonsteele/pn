@@ -68,6 +68,7 @@
 #define IDS_FILTERSELECTION             162
 #define IDS_TOOL_EXITCODE               163
 #define IDS_TOOL_TIMETAKEN              164
+#define IDS_SAVE_CHANGES                165
 #define IDI_TEXTCLIPS                   167
 #define IDR_POPUP_REGEXP                170
 #define IDR_POPUP_EDITOR                173
@@ -255,6 +256,8 @@
 #define IDC_FILETYPE_MATCH              1012
 #define IDC_FONTSIZE_COMBO              1013
 #define IDC_STYLE_IGCOLBUTTON           1013
+#define IDC_STYLE_SELBACKBUTTON2        1014
+#define IDC_STYLE_IGCOLBUTTON2          1015
 #define IDC_SCHEMECOMBO                 1016
 #define IDC_SCHEMELABEL                 1017
 #define IDC_STYLES_TREE                 1020
@@ -512,6 +515,7 @@
 #define ID_FILE_SAVEWORKSPACEAS         32950
 #define ID_EDIT_QUICKFIND               32953
 #define ID_EDIT_FINDPREVIOUS            32956
+#define ID_EDITOR_USEASSCRIPT           32960
 
 // Next default values for new objects
 // 
@@ -519,7 +523,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        343
-#define _APS_NEXT_COMMAND_VALUE         32959
+#define _APS_NEXT_COMMAND_VALUE         32961
 #define _APS_NEXT_CONTROL_VALUE         1135
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

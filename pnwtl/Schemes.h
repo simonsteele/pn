@@ -11,6 +11,10 @@
 #ifndef schemes_h__included
 #define schemes_h__included
 
+#ifdef _MSC_VER
+	#pragma once
+#endif
+
 #include "Scintillaif.h"
 
 // Including styles.h we also get <list> <map> and <string>

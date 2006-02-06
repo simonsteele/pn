@@ -20,6 +20,10 @@
 #ifndef pnutils_h__included
 #define pnutils_h__included
 
+#ifdef _MSC_VER
+	#pragma once
+#endif
+
 #include "ssmenus.h"
 #include <list>
 

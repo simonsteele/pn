@@ -2,7 +2,7 @@
  * @file ChildFrm.h
  * @brief Interface Definition for CChildFrame, the MDI Child window.
  * @author Simon Steele
- * @note Copyright (c) 2002-2004 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -29,6 +29,7 @@
 typedef enum {EP_LINE, EP_COL} EGPType;
 
 class COutputView;
+class DocScript;
 
 #define CHAIN_OUTPUT_COMMANDS() \
 	if(uMsg == WM_COMMAND && m_hWndOutput != NULL) \
@@ -89,6 +90,8 @@ public:
 		COMMAND_ID_HANDLER(ID_EDITOR_LINENOS, OnLineNoToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_WHITESPACE, OnMarkWhiteSpaceToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_EOLCHARS, OnEOLMarkerToggle)
+
+		COMMAND_ID_HANDLER(ID_EDITOR_USEASSCRIPT, OnUseAsScript)
 
 		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHideOutput)
 
@@ -228,6 +231,7 @@ public:
 	LRESULT OnIndividualOutputToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnMarkWhiteSpaceToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnEOLMarkerToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnUseAsScript(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnHideOutput(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnJumpTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -325,6 +329,7 @@ protected:
 
 	CCFSplitter*		m_pSplitter;
 	COutputView*		m_pOutputView;
+	DocScript*			m_pScript;
 
 	///@todo move this into COptionsManager
 	SPrintOptions		m_po;

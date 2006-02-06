@@ -91,9 +91,11 @@ public:
 	{
 		T* pT = static_cast<T*>(this);
 
-		CPoint pt(LOWORD(lParam), HIWORD(lParam));
+		CPoint pt;
+		pt.x = GET_X_LPARAM(lParam);
+		pt.y = GET_Y_LPARAM(lParam); 
 
-		if ((pt.x == -1) && (pt.y == -1)) 
+		if ((pt.x == (LONG)-1) && (pt.y == (LONG)-1)) 
 		{
 			// Caused by keyboard so display menu near caret
 			int position = GetCurrentPos();

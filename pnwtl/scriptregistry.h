@@ -1,3 +1,13 @@
+/**
+ * @file scriptregistry.h
+ * @brief Define the script registry and related classes
+ * @author Simon Steele
+ * @note Copyright (c) 2006 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #ifndef scriptregistry_h__included
 #define scriptregistry_h__included
 
@@ -12,6 +22,7 @@ class IScriptRegistryEventSink
 {
 public:
 	virtual void OnScriptAdded(ScriptGroup* group, Script* script) = 0;
+	virtual void OnScriptRemoved(ScriptGroup* group, Script* script) = 0;
 };
 
 /**
@@ -26,11 +37,26 @@ public:
 
 	const group_list_t& GetGroups();
 
-	virtual void Add(LPCTSTR group, LPCTSTR name, LPCTSTR scriptref);
+	void Add(const char* group, Script* script);
+	void Remove(const char* group, Script* script);
 
-	virtual void RegisterRunner(LPCTSTR id, extensions::IScriptRunner* runner);
-	virtual void RemoveRunner(LPCTSTR id);
+	virtual void Add(const char* group, const char* name, const char* scriptref);
+
+	virtual void RegisterRunner(const char* id, extensions::IScriptRunner* runner);
+	virtual void RemoveRunner(const char* id);
 	virtual extensions::IScriptRunner* GetRunner(LPCTSTR id);
+
+	/**
+	 * Enable scheme scripts for a given scheme via this runner.
+	 */
+	virtual void EnableSchemeScripts(const char* scheme, const char* runnerId);
+
+	/**
+	 * Find out if a particular scheme has a registered script runner.
+	 * If it does, then open documents can be run as scripts by that runner.
+	 */
+	bool SchemeScriptsEnabled(const char* scheme);
+	bool SchemeScriptsEnabled(const char* scheme, tstring& runner);
 
 	void SetEventSink(IScriptRegistryEventSink* sink);
 
@@ -40,25 +66,30 @@ protected:
 
 	void clear();
 
+	ScriptGroup* getOrMakeGroup(const char* group);
+
 protected:
 	IScriptRegistryEventSink* m_sink;
 	group_list_t m_groups;
 	s_runner_map m_runners;
+	std::map<tstring, tstring> m_scriptableSchemes;
 };
 
 class ScriptGroup
 {
 public:
-	ScriptGroup(LPCTSTR name);
+	ScriptGroup(const char* name);
 	~ScriptGroup();
 
-	Script* Add(LPCTSTR name, LPCTSTR scriptref);
+	Script* Add(const char* name, const char* scriptref);
+	void Add(Script* script);
+	void Remove(Script* script);
 
 	void Clear();
 
 	const script_list_t& GetScripts();
 
-	LPCTSTR GetName() const;
+	const char* GetName() const;
 
 protected:
 	void clear();
@@ -70,7 +101,7 @@ protected:
 class Script
 {
 public:
-	Script(LPCTSTR name, LPCTSTR scriptref) : Name(name), ScriptRef(scriptref){}
+	Script(const char* name, const char* scriptref) : Name(name), ScriptRef(scriptref){}
 
 	Script(const Script& copy)
 	{
@@ -87,7 +118,31 @@ public:
 	tstring Name;
 	tstring ScriptRef;
 
-	void Run();
+	virtual void Run();
+};
+
+class DocScript : public Script
+{
+public:
+	DocScript(const char* name, const char* runner, DocumentPtr& doc) 
+		: Script(name, ""), m_runner(runner), m_doc(doc){}
+
+	virtual void Run();
+
+private:
+	DocScript(const DocScript& copy) : Script(copy)
+	{
+		PNASSERT(false);
+	}
+
+	DocScript& operator = (const DocScript& copy)
+	{
+		PNASSERT(false);
+		return *this;
+	}
+
+	tstring m_runner;
+	DocumentPtr m_doc;
 };
 
 #endif

@@ -2,7 +2,7 @@
  * @file OptionsDialogs.cpp
  * @brief Dialogs used to edit settings from the Options dialog.
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -381,7 +381,7 @@ void CToolConsoleIOPage::enableButtons()
 	CButton capture(GetDlgItem(IDC_TE_CAPTURECHECK));
 	CButton textFilter(GetDlgItem(IDC_TE_TEXTFILTERCHECK));
 	BOOL bCapture = capture.GetCheck();
-	BOOL bTextFilter = textFilter.GetCheck();
+	BOOL bTextFilter = m_outputcombo.GetCurSel() == 2;
 
 	// These items are always enabled if we are capturing output...
 	m_outputcombo.EnableWindow(bCapture);

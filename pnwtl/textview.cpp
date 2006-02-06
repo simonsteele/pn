@@ -14,6 +14,7 @@
 #include "scaccessor.h"
 #include "smartstart.h"
 #include "include/utf8_16.h"
+#include "scriptregistry.h"
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -628,6 +629,11 @@ void CTextView::DoContextMenu(CPoint* point)
 			::InsertMenu(popup.GetHandle(), popup.GetCount()-1, MF_BYPOSITION | MF_POPUP, (UINT)(HMENU)popupProjects.GetHandle(), _T("Add to Project"));
 			::InsertMenu(popup.GetHandle(), popup.GetCount()-1, MF_BYPOSITION | MF_SEPARATOR, 0, _T(""));
 		}
+	}
+
+	if(!(m_pLastScheme && ScriptRegistry::GetInstanceRef().SchemeScriptsEnabled(m_pLastScheme->GetName())))
+	{
+		popup.EnableMenuItem(ID_EDITOR_USEASSCRIPT, false);
 	}
 
 	BOOL mnuResult = g_Context.m_frame->TrackPopupMenu(popup, TPM_RETURNCMD, point->x, point->y, NULL);

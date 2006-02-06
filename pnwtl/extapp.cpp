@@ -1,3 +1,13 @@
+/**
+ * @file extapp.cpp
+ * @brief Implement IPN
+ * @author Simon Steele
+ * @note Copyright (c) 2006 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #include "stdafx.h"
 #include "extiface.h"
 #include "extapp.h"
@@ -43,7 +53,7 @@ void App::OnNewDocument(IDocumentPtr doc)
 {
 	for(EventSinkList::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
 	{
-		(*i)->on_new_document(doc);
+		(*i)->OnNewDocument(doc);
 	}
 }
 

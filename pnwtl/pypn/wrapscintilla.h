@@ -1,5 +1,18 @@
+/**
+ * @file wrapscintilla.h
+ * @brief A scintilla wrapper for use outside PN, derives from the main PN one.
+ * @author Simon Steele
+ * @note Copyright (c) 2006 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+#ifndef pypnwrapscintilla_h__included
+#define pypnwrapscintilla_h__included
 
-#pragma once
+#ifdef _MSC_VER
+	#pragma once
+#endif
 
 #include "../scintillaif.h"
 
@@ -67,3 +80,5 @@ public:
 		SetSel(crange.cpMin, crange.cpMax);
 	}
 };
+
+#endif //#ifndef pypnwrapscintilla_h__included

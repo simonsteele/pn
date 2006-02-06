@@ -2,7 +2,7 @@
  * @file ChildFrm.cpp
  * @brief Implementation of CChildFrame, the MDI Child window.
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -20,6 +20,7 @@
 #include "jumpto.h"
 #include "jumptodialog.h"
 #include "afiles.h"
+#include "scriptregistry.h"
 
 #include "tabbingframework/TabbedMDISave.h"
 
@@ -38,6 +39,7 @@ CChildFrame::CChildFrame(DocumentPtr doc) : m_spDocument(doc), m_view(doc)
 	m_pSplitter = NULL;
 	m_pOutputView = NULL;
 	m_bClosing = false;
+	m_pScript = NULL;
 	
 	m_FileAge = -1;
 	
@@ -300,8 +302,8 @@ bool CChildFrame::CanClose()
 	if(GetModified())
 	{
 		CString title;
-		title.Format(_T("Would you like to save changes to:\n%s?"), GetTitle());
-		int res = MessageBox(title, "Programmers Notepad", MB_YESNOCANCEL | MB_ICONQUESTION);
+		title.Format(IDS_SAVE_CHANGES, GetTitle());
+		int res = MessageBox(title, LS(IDR_MAINFRAME), MB_YESNOCANCEL | MB_ICONQUESTION);
 		switch (res)
 		{
 			case IDYES:
@@ -420,6 +422,13 @@ LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 		if( ToolOwner::HasInstance() )
 		{
 			ToolOwner::GetInstance()->KillTools(true, this);
+		}
+
+		if(m_pScript)
+		{
+			ScriptRegistry::GetInstance()->Remove("User Scripts", m_pScript);
+			delete m_pScript;
+			m_pScript = NULL;
 		}
 
 		m_spDocument->OnDocClosing();
@@ -864,6 +873,21 @@ LRESULT CChildFrame::OnMarkWhiteSpaceToggle(WORD /*wNotifyCode*/, WORD wID, HWND
 LRESULT CChildFrame::OnEOLMarkerToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	m_view.SetViewEOL(UIInvertCheck(wID));
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnUseAsScript(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(m_pScript != NULL)
+		return 0;
+
+	tstring runner;
+	if(ScriptRegistry::GetInstanceRef().SchemeScriptsEnabled(m_view.GetCurrentScheme()->GetName(), runner))
+	{
+		m_pScript = new DocScript(GetFileName(FN_FILE).c_str(), runner.c_str(), m_spDocument);
+		ScriptRegistry::GetInstance()->Add("User Scripts", m_pScript);
+	}
 
 	return 0;
 }
@@ -1487,7 +1511,7 @@ int CChildFrame::FindNext(SFindOptions* options)
 	{
 		CString msg;
 		msg.LoadString(IDS_FINDLOOPED);
-		MessageBox(msg,	_T("Programmers Notepad"), MB_OK | MB_ICONINFORMATION);
+		MessageBox(msg,	LS(IDR_MAINFRAME), MB_OK | MB_ICONINFORMATION);
 	}
 	return result;
 }

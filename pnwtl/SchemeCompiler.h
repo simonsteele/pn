@@ -23,6 +23,7 @@ class CSchemeLoaderState
 		CSTRING_MAP				m_Keywords;
 		StylesMap				m_StyleClasses;
 		StyleDetails			m_Default;
+		EditorColours			m_DefaultColours;
 
 		StylesList				m_BaseStyles;
 
@@ -109,6 +110,7 @@ class UserSettingsParser
 		void processScheme(CSchemeLoaderState* pState, XMLAttributes& atts);
 		void processSchemeElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts);
 		void processClassElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts);
+		void processGlobalColours(CSchemeLoaderState* pState, XMLAttributes& atts);
 
 		//void DefineStyle(StyleDetails* pStyle, XMLAttributes atts);
 };

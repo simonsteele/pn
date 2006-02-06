@@ -85,9 +85,9 @@ BEGIN
             VALUE "FileDescription", "CTags Tagger for PN2"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "ctagsnavigator"
-            VALUE "LegalCopyright", "Copyright (c) 2004 Simon Steele"
+            VALUE "LegalCopyright", "Copyright (c) 2004-2006 Simon Steele"
             VALUE "OriginalFilename", "ctagsnavigator.dll"
-            VALUE "ProductName", "Programmers Notepad 2"
+            VALUE "ProductName", "Programmer's Notepad 2"
             VALUE "ProductVersion", "1.0.0.1"
         END
     END

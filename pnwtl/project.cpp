@@ -2,13 +2,14 @@
  * @file project.cpp
  * @brief Projects
  * @author Simon Steele
- * @note Copyright (c) 2003-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2003-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
 #include "stdafx.h"
+#include "resource.h"
 #include "project.h"
 
 #include "include/genx/genx.h"
@@ -1069,7 +1070,7 @@ void Workspace::DetachProject(Project* project)
 		tstring msg = _T("Do you want to save changes to the project: ");
 		msg += project->GetName();
 		msg += _T("?");
-		DWORD dwRes = ::MessageBox(g_Context.m_frame->GetWindow()->m_hWnd, msg.c_str(), _T("Programmers Notepad"), MB_YESNOCANCEL | MB_ICONQUESTION);
+		DWORD dwRes = ::MessageBox(g_Context.m_frame->GetWindow()->m_hWnd, msg.c_str(), LS(IDR_MAINFRAME), MB_YESNOCANCEL | MB_ICONQUESTION);
 
 		if ( dwRes == IDCANCEL )
 		{

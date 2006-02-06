@@ -15,6 +15,10 @@
 #if !defined(pn2_stdafx_h__included)
 #define pn2_stdafx_h__included
 
+#ifdef _MSC_VER
+	#pragma once
+#endif
+
 // Change these values to use different versions
 #define WINVER			0x0500	// Changed to allow CDotNetTabCtrl to compile with COLOR_HOTLIGHT
 #define _WIN32_WINNT	0x0501

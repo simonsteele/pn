@@ -23,12 +23,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName", "Simon Steele (Echo Software)"
-            VALUE "FileDescription", "Programmers Notepad 2"
+            VALUE "FileDescription", "Programmer's Notepad 2"
             VALUE "FileVersion", PN_VERSION
             VALUE "InternalName", "PNWTL"
-            VALUE "LegalCopyright", "Copyright © 2002-2004 Simon Steele (Echo Software)"
+            VALUE "LegalCopyright", "Copyright © 2002-2006 Simon Steele (Echo Software)"
             VALUE "OriginalFilename", "pn.exe"
-            VALUE "ProductName", "Programmers Notepad"
+            VALUE "ProductName", "Programmer's Notepad"
             VALUE "ProductVersion", PN_VERSION_FULL
         END
     END

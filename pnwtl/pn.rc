@@ -277,7 +277,7 @@ BEGIN
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDVERT,7,7,1,155
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,8,160,65,1
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDVERT,71,7,1,155
-    LTEXT           "Programmers Notepad 2",IDC_NAME,77,10,146,12
+    LTEXT           "Programmer's Notepad 2",IDC_NAME,77,10,146,12
 END
 
 IDD_PNSAVE DIALOG  0, 0, 230, 14
@@ -459,6 +459,8 @@ BEGIN
             MENUITEM "&Indent",                     ID_EDIT_INDENT
             MENUITEM "&Unindent",                   ID_EDIT_UNINDENT
         END
+        MENUITEM SEPARATOR
+        MENUITEM "Use As &Script",              ID_EDITOR_USEASSCRIPT
         MENUITEM SEPARATOR
         MENUITEM "Cl&ose",                      ID_FILE_CLOSE
     END
@@ -693,9 +695,20 @@ BEGIN
     CONTROL         "&Italic",IDC_STYLE_ITALICCHECK,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,90,81,48,10,WS_EX_TRANSPARENT
     CONTROL         "&Underline",IDC_STYLE_UNDERLINECHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,17,93,60,10,
+                    BS_AUTOCHECKBOX | WS_TABSTOP,17,95,60,10,
                     WS_EX_TRANSPARENT
     GROUPBOX        "Font Style",IDC_STATIC,10,70,140,38
+    PUSHBUTTON      "Button1",IDC_STYLE_CURCOLBUTTON,10,127,50,14
+    PUSHBUTTON      "Button1",IDC_STYLE_SELFOREBUTTON,90,127,50,14
+    PUSHBUTTON      "Button1",IDC_STYLE_SELBACKBUTTON2,90,156,50,14
+    PUSHBUTTON      "Button1",IDC_STYLE_IGCOLBUTTON2,10,156,50,14
+    LTEXT           "Selection Foreground:",IDC_STATIC,90,116,84,8
+    LTEXT           "Cursor Colour:",IDC_STATIC,10,116,73,8
+    LTEXT           "Selection Background:",IDC_STATIC,90,146,84,8
+    LTEXT           "Indentation Guides:",IDC_STATIC,10,146,74,8
+    CONTROL         "Don't change the foreground.",IDC_STYLE_SELUSEFORE,
+                    "Button",BS_AUTOCHECKBOX | BS_NOTIFY | WS_TABSTOP,144,
+                    128,108,10
 END
 
 IDD_PAGE_SCHEMES DIALOGEX 0, 0, 300, 200
@@ -818,7 +831,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,4,299,1
     LTEXT           "Settings",IDC_STATIC,0,0,27,8
-    CONTROL         "&Allow multiple instances of Programmers Notepad to start",
+    CONTROL         "&Allow multiple instances of Programmer's Notepad to start",
                     IDC_MULTIINSTANCECHECK,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,10,12,228,10
     CONTROL         "&Maximise new document windows",IDC_OPT_MAXCHECK,"Button",
@@ -1663,12 +1676,12 @@ IDB_REDCLOSE            BITMAP                  "res\\redclose.bmp"
 
 STRINGTABLE 
 BEGIN
-    IDR_MAINFRAME           "Programmers Notepad 2"
+    IDR_MAINFRAME           "Programmer's Notepad 2"
     IDR_MDICHILD            "Document"
     ID_EDITOR_WORDWRAP      "Toggle word wrap"
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
     ID_EDITOR_LINENOS       "Toggle line numbers display"
-    IDS_ABOUTVERSIONSTRING  "Version: v%s\nCopyright: Copyright © 2002-2005 Simon Steele\n\nProgrammers Notepad uses Scintilla, WTL, GenX, Expat, and PCRE. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmers Notepad."
+    IDS_ABOUTVERSIONSTRING  "Version: v%s\nCopyright: Copyright © 2002-2006 Simon Steele\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, and PCRE. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
     IDS_PROJECTNOPROPS      "This project has no properties."
     IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c: Column"
     ID_FILE_NEW_PROJECT     "Create a new project."
@@ -1811,7 +1824,7 @@ BEGIN
     IDS_NEWPROJECTGROUP     "New Project Group"
     IDS_OPENPROJECTDLGTITLE "Open Project/Project Group"
     IDS_SAVESOMETHING       "Save "
-    IDS_MODIFIEDELSEWHERE   "%s\n\nThe above file has been modified outside of Programmers Notepad, do\nyou want to refresh and lose changes?"
+    IDS_MODIFIEDELSEWHERE   "%s\n\nThe above file has been modified outside of Programmer's Notepad, do\nyou want to refresh and lose changes?"
     IDS_FILENOLONGEREXISTS  "Warning: the file %s does not exist any more."
     IDS_WORKSPACEFILES      "Workspace Files (*.pnws)|*.pnws|"
     IDS_PROJECTGROUPFILES   "Project Group Files (*.ppg)|*.ppg|"
@@ -1826,7 +1839,7 @@ END
 
 STRINGTABLE 
 BEGIN
-    IDS_OUTPUTSUPPORT       "Programmers Notepad 2 provides built-in support\nfor parsing output from the following tools:\n\nBorland C++\nMicrosoft Compilers\nGCC\nlcc-win32\nPython\nPerl\nand other similar tools."
+    IDS_OUTPUTSUPPORT       "Programmer's Notepad 2 provides built-in support\nfor parsing output from the following tools:\n\nBorland C++\nMicrosoft Compilers\nGCC\nlcc-win32\nPython\nPerl\nand other similar tools."
     IDS_TOOLS_VARSTRINGS    "%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectPath),Path of Project,c:\\source\\pn2\\,$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\"
     IDS_TOOLS_SELWORKINGFOLDER "Select the working folder for the tool:"
     IDS_PROJECTGROUP        "Project Group"
@@ -1843,6 +1856,7 @@ BEGIN
     IDS_FILTERSELECTION     "Replace my selection."
     IDS_TOOL_EXITCODE       "\n> Process Exit Code: "
     IDS_TOOL_TIMETAKEN      "\n> Time Taken: "
+    IDS_SAVE_CHANGES        "Would you like to save changes to:\n%s?"
 END
 
 #endif    // English (U.K.) resources

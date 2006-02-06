@@ -1,3 +1,12 @@
+/**
+ * @file scriptview.h
+ * @brief Scripts Docker
+ * @author Simon Steele
+ * @note Copyright (c) 2006 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #ifndef scriptview_h__included
 #define scriptview_h__included
 
@@ -24,12 +33,14 @@ public:
 	END_MSG_MAP()
 
 	virtual void OnScriptAdded(ScriptGroup* group, Script* script);
+	virtual void OnScriptRemoved(ScriptGroup* group, Script* script);
 
 protected:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnTreeDblClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
+	HTREEITEM findScript(LPCTSTR group, LPCTSTR name);
 	HTREEITEM findGroup(LPCTSTR name);
 	HTREEITEM addGroup(LPCTSTR name);
 	HTREEITEM addScript(HTREEITEM group, Script* script);

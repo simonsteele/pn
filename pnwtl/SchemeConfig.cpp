@@ -2,7 +2,7 @@
  * @file SchemeConfig.cpp
  * @brief Scheme configuration classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -269,6 +269,12 @@ StyleDetails* SchemeConfigParser::GetDefaultStyle()
 {
 	return &m_LoadState.m_Default;
 }
+
+EditorColours* SchemeConfigParser::GetDefaultColours()
+{
+	return &m_LoadState.m_DefaultColours;
+}
+
 SchemeConfig* SchemeConfigParser::GetPlainTextScheme()
 {
 	return &m_DefaultScheme;
@@ -342,6 +348,9 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 	
 	writer.Start(filename);
 	writer.beginDoc();
+
+	// Colour Overrides
+	writer.writeOverrideColours( GetDefaultColours() );
 
 	// Style Classes
 	if(GetCustomClasses().GetCount() != 0)

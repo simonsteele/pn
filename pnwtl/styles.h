@@ -140,6 +140,9 @@ public:
 		return (values != 0);
 	}
 
+	/**
+	 * @return True if colour configured, false otherwise
+	 */
 	bool GetColour(Colours colour, COLORREF& theColour) const
 	{
 		if( (values & colour) == 0)
@@ -211,6 +214,21 @@ public:
 		
 		if((values & ecIndentG) != 0)
 			pSc->SPerform(SCI_STYLESETFORE, STYLE_INDENTGUIDE, crIG);
+	}
+
+	/**
+	 * This applies any colours in other to this object.
+	 */
+	void Combine(EditorColours* other)
+	{
+		if(other->values & ecSelFore)
+			SetColour(ecSelFore, other->crSelFore);
+		if(other->values & ecSelBack)
+			SetColour(ecSelBack, other->crSelBack);
+		if(other->values & ecCaret)
+			SetColour(ecCaret, other->crCaret);
+		if(other->values & ecIndentG)
+			SetColour(ecIndentG, other->crIG);
 	}
 
 	void Clear()

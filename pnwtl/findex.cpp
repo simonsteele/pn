@@ -381,7 +381,7 @@ LRESULT CFindExDialog::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			strTextToFind = _T("(empty)");
 
 		strMsg.Format(IDS_FINDNOTFOUND, strTextToFind);
-		MessageBox((LPCTSTR)strMsg, _T("Programmers Notepad"), MB_OK | MB_ICONINFORMATION);
+		MessageBox((LPCTSTR)strMsg, LS(IDR_MAINFRAME), MB_OK | MB_ICONINFORMATION);
 
 		m_FindTextCombo.SetFocus();
 	}

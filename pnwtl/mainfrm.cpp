@@ -1427,22 +1427,13 @@ LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	if (dlgOpen.DoModal() == IDOK)
 	{
 		EAlreadyOpenAction action = (EAlreadyOpenAction)OPTIONS->GetCached(Options::OAlreadyOpenAction);
-		bool bOnlyOne = dlgOpen.GetCount() == 1;
 		for(CPNOpenDialog::const_iterator i = dlgOpen.begin(); i != dlgOpen.end(); ++i)
 		{
-			if(bOnlyOne)
+			if( !CheckAlreadyOpen((*i).c_str(), action) )
 			{
-				// If we're only opening one file, check to see if it's a project.
-				openFileCheckType((*i).c_str(), dlgOpen.GetEncoding());
-			}
-			else
-			{
-				if( !CheckAlreadyOpen((*i).c_str(), action) )
+				if(OpenFile((*i).c_str(), NULL, dlgOpen.GetEncoding()))
 				{
-					if(OpenFile((*i).c_str(), NULL, dlgOpen.GetEncoding()))
-					{
-						AddMRUEntry((*i).c_str());
-					}
+					AddMRUEntry((*i).c_str());
 				}
 			}
 		}

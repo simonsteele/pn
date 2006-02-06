@@ -1,7 +1,17 @@
+/**
+ * @file outputscintilla.h
+ * @brief Simple RegEx based output lexer wrapped in a scintilla.
+ * @author Simon Steele
+ * @note Copyright (c) 2005 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #include "StdAfx.h"
 #include "Files.h"
 #include "shellapi.h"
 #include <algorithm>
+#include "resource.h"
 
 #ifndef pnutils_h__included
 static TCHAR* tcsnewdup(LPCTSTR strin)
@@ -243,7 +253,7 @@ long CFile::GetLength()
 		return -1;
 }
 
-int CFile::ShowError(LPCTSTR filename, bool bOpen)
+int CFile::ShowError(LPCTSTR filename, LPCTSTR app, bool bOpen)
 {
 	int err = GetLastError();
 	int ret = 0;
@@ -297,9 +307,9 @@ int CFile::ShowError(LPCTSTR filename, bool bOpen)
 	TCHAR* buffer = new TCHAR[bs];
 	_sntprintf(buffer, bs, fstr, filename);
 	if(bOpen)
-		ret = ::MessageBox(NULL, (LPCTSTR)buffer, _T("Programmers Notepad 2"), MB_OK);
+		ret = ::MessageBox(NULL, (LPCTSTR)buffer, app, MB_OK);
 	else
-		ret = ::MessageBox(NULL, (LPCTSTR)buffer, _T("Programmers Notepad 2"), MB_YESNOCANCEL);
+		ret = ::MessageBox(NULL, (LPCTSTR)buffer, app, MB_YESNOCANCEL);
 
 	delete [] buffer;
 	return ret;

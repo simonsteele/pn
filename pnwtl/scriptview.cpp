@@ -1,4 +1,14 @@
+/**
+ * @file scriptview.cpp
+ * @brief Scripts Docker
+ * @author Simon Steele
+ * @note Copyright (c) 2006 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #include "stdafx.h"
+#include "document.h"
 #include "scriptregistry.h"
 #include "scriptview.h"
 
@@ -62,6 +72,13 @@ void CScriptDocker::OnScriptAdded(ScriptGroup* group, Script* script)
 	addScript(ti_group, script);
 }
 
+void CScriptDocker::OnScriptRemoved(ScriptGroup* group, Script* script)
+{
+	HTREEITEM tiScript = findScript(group->GetName(), script->Name.c_str());
+	if(tiScript)
+		m_view.DeleteItem(tiScript);
+}
+
 HTREEITEM CScriptDocker::addScript(HTREEITEM group, Script* script)
 {
 	HTREEITEM item = m_view.InsertItem(script->Name.c_str(), group, NULL);
@@ -69,6 +86,25 @@ HTREEITEM CScriptDocker::addScript(HTREEITEM group, Script* script)
 	m_view.Expand(group);
 
 	return item;
+}
+
+HTREEITEM CScriptDocker::findScript(LPCTSTR group, LPCTSTR name)
+{
+	HTREEITEM tiGroup = findGroup(group);
+	if(!tiGroup)
+		return NULL;
+
+	HTREEITEM snode = m_view.GetChildItem(tiGroup);
+	while(snode)
+	{
+		CString csName;
+		m_view.GetItemText(snode, csName);
+		if(csName.Compare(name) == 0)
+			return snode;
+		snode = m_view.GetNextSiblingItem(snode);
+	}
+	
+	return NULL;
 }
 
 HTREEITEM CScriptDocker::findGroup(LPCTSTR name)

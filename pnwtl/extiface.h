@@ -1,3 +1,13 @@
+/**
+ * @file extiface.h
+ * @brief PN Extensions Interface
+ * @author Simon Steele
+ * @note Copyright (c) 2006 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #ifndef extiface_h__included_670F47C6_1FF6_4605_9F74_6EC70FD85C26
 #define extiface_h__included_670F47C6_1FF6_4605_9F74_6EC70FD85C26
 
@@ -18,6 +28,11 @@ typedef boost::shared_ptr<IDocument> IDocumentPtr;
 typedef boost::shared_ptr<IDocumentEventSink> IDocumentEventSinkPtr;
 typedef boost::shared_ptr<IAppEventSink> IAppEventSinkPtr;
 
+/**
+ * The main PN interface class. This is your interface to PN allowing
+ * you access to the options system, script registry and most importantly
+ * documents. It also allows you to register for events.
+ */
 class IPN
 {
 public:
@@ -35,6 +50,10 @@ public:
 	virtual IDocumentPtr GetCurrentDocument() = 0;
 };
 
+/**
+ * The document interface. This allows you to control a given document,
+ * get information about it and register for events.
+ */
 class IDocument
 {
 public:
@@ -55,14 +74,20 @@ public:
 	virtual void RemoveEventSink(IDocumentEventSinkPtr sink) = 0;
 };
 
+/**
+ * Event sink interface for application events.
+ */
 class IAppEventSink
 {
 public:
 	virtual ~IAppEventSink(){}
 
-	virtual void on_new_document(IDocumentPtr doc) = 0;
+	virtual void OnNewDocument(IDocumentPtr doc) = 0;
 };
 
+/**
+ * Text editor event sink
+ */
 class ITextEditorEventSink
 {
 public:
@@ -71,6 +96,9 @@ public:
     virtual void OnCharAdded(char c) = 0;
 };
 
+/**
+ * Document event sink
+ */
 class IDocumentEventSink : public ITextEditorEventSink
 {
 public:
@@ -87,20 +115,58 @@ public:
 class IScriptRunner
 {
 public:
+	/**
+	 * This method requests that a runner runs a named
+	 * script that it has previously registered with the
+	 * registry.
+	 */
 	virtual void RunScript(const char* name) = 0;
+	
+	/**
+	 * This method requests that a runner runs the text
+	 * of a given document as a script.
+	 */
+	virtual void RunDocScript(IDocumentPtr doc) = 0;
 };
 
 /**
- * Interface for the script registry
+ * Interface for the script registry. The script registry maps scripts to
+ * runners (@see IScriptRunner).
  */
 class IScriptRegistry
 {
 public:
+	/**
+	 * Add a named script to the registry.
+	 * @param group Name of a group to insert the script in
+	 * @param name Friendly name for the script
+	 * @param scriptref Reference for the script, in the form "runnerId:scriptId"
+	 */
 	virtual void Add(const char* group, const char* name, const char* scriptref) = 0;
 
+	/**
+	 * Register a script runner using a unique runner ID
+	 */
 	virtual void RegisterRunner(const char* id, extensions::IScriptRunner* runner) = 0;
+	
+	/**
+	 * Remove a runner by ID
+	 */
 	virtual void RemoveRunner(const char* id) = 0;
+	
+	/**
+	 * Get a runner for a given ID
+	 */
 	virtual extensions::IScriptRunner* GetRunner(const char* id) = 0;
+
+	/**
+	 * Enable scripts for a given scheme id. The runner id is used by PN to
+	 * find the right runner to run the script.
+	 *
+	 * e.g. EnableSchemeScripts("python", "python") means that PN allows the
+	 * user to set python files as scripts at run-time.
+	 */
+	virtual void EnableSchemeScripts(const char* scheme, const char* runnerId) = 0;
 };
 
 // Make sure you export a function that looks like this:

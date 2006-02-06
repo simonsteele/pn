@@ -47,7 +47,7 @@ void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message)
 	msg += _T(".\n");
 	msg += message;
 	msg += _T("\n\nPlease e-mail this information to ss@pnotepad.org.");
-	::MessageBox(NULL, msg.c_str(), _T("Programmers Notepad 2"), MB_OK | MB_ICONWARNING);
+	::MessageBox(NULL, msg.c_str(), LS(IDR_MAINFRAME), MB_OK | MB_ICONWARNING);
 }
 
 HWND GetCurrentEditor()

@@ -1,5 +1,17 @@
+/**
+ * @file ScriptRegistry.cpp
+ * @brief Script Registry
+ * @author Simon Steele
+ * @note Copyright (c) 2006 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #include "stdafx.h"
 #include "scriptregistry.h"
+
+typedef std::map<tstring, tstring> tstringmap;
 
 ScriptRegistry::ScriptRegistry()
 {
@@ -11,7 +23,34 @@ ScriptRegistry::~ScriptRegistry()
 	clear();
 }
 
-void ScriptRegistry::Add(LPCTSTR group, LPCTSTR name, LPCTSTR scriptref)
+void ScriptRegistry::Add(const char* group, Script* script)
+{
+	ScriptGroup* pGroup = getOrMakeGroup(group);
+	pGroup->Add(script);
+
+	if(m_sink)
+		m_sink->OnScriptAdded(pGroup, script);
+}
+
+void ScriptRegistry::Remove(const char* group, Script* script)
+{
+	ScriptGroup* pGroup = getOrMakeGroup(group);
+	pGroup->Remove(script);
+
+	if(m_sink)
+		m_sink->OnScriptRemoved(pGroup, script);
+}
+
+void ScriptRegistry::Add(const char* group, const char* name, const char* scriptref)
+{
+	ScriptGroup* pGroup = getOrMakeGroup(group);
+	Script* theScript = pGroup->Add(name, scriptref);
+
+	if(m_sink)
+		m_sink->OnScriptAdded(pGroup, theScript);
+}
+
+ScriptGroup* ScriptRegistry::getOrMakeGroup(const char* group)
 {
 	ScriptGroup* pGroup(NULL);
 
@@ -30,10 +69,7 @@ void ScriptRegistry::Add(LPCTSTR group, LPCTSTR name, LPCTSTR scriptref)
 		m_groups.push_back(pGroup);
 	}
 
-	Script* theScript = pGroup->Add(name, scriptref);
-
-	if(m_sink)
-		m_sink->OnScriptAdded(pGroup, theScript);
+	return pGroup;
 }
 
 void ScriptRegistry::Clear()
@@ -46,19 +82,19 @@ const group_list_t& ScriptRegistry::GetGroups()
 	return m_groups;
 }
 
-void ScriptRegistry::RegisterRunner(LPCTSTR id, extensions::IScriptRunner* runner)
+void ScriptRegistry::RegisterRunner(const char* id, extensions::IScriptRunner* runner)
 {
 	m_runners.insert(s_runner_map::value_type(tstring(id), runner));
 }
 
-void ScriptRegistry::RemoveRunner(LPCTSTR id)
+void ScriptRegistry::RemoveRunner(const char* id)
 {
 	s_runner_map::iterator i = m_runners.find(tstring(id));
 	if(i != m_runners.end())
 		m_runners.erase(i);
 }
 
-extensions::IScriptRunner* ScriptRegistry::GetRunner(LPCTSTR id)
+extensions::IScriptRunner* ScriptRegistry::GetRunner(const char* id)
 {
 	s_runner_map::const_iterator i = m_runners.find(tstring(id));
 	if(i != m_runners.end())
@@ -67,6 +103,27 @@ extensions::IScriptRunner* ScriptRegistry::GetRunner(LPCTSTR id)
 	}
 	else
 		return NULL;
+}
+
+void ScriptRegistry::EnableSchemeScripts(const char* scheme, const char* runnerId)
+{
+	m_scriptableSchemes.insert(tstringmap::value_type(tstring(scheme), tstring(runnerId)));
+}
+
+bool ScriptRegistry::SchemeScriptsEnabled(const char* scheme)
+{
+	return m_scriptableSchemes.find(tstring(scheme)) != m_scriptableSchemes.end();
+}
+
+bool ScriptRegistry::SchemeScriptsEnabled(const char* scheme, tstring& runner)
+{
+	tstringmap::const_iterator i = m_scriptableSchemes.find(tstring(scheme));
+	if(i != m_scriptableSchemes.end())
+	{
+		runner = (*i).second;
+		return true;
+	}
+	return false;
 }
 
 void ScriptRegistry::SetEventSink(IScriptRegistryEventSink* sink)
@@ -97,11 +154,21 @@ ScriptGroup::~ScriptGroup()
 	clear();
 }
 
-Script* ScriptGroup::Add(LPCTSTR name, LPCTSTR scriptref)
+Script* ScriptGroup::Add(const char* name, const char* scriptref)
 {
 	Script* pScript = new Script(name, scriptref);
-	m_scripts.push_back(pScript);
+	Add(pScript);
 	return pScript;
+}
+
+void ScriptGroup::Add(Script* script)
+{
+	m_scripts.push_back(script);
+}
+
+void ScriptGroup::Remove(Script* script)
+{
+	m_scripts.remove(script);
 }
 
 void ScriptGroup::Clear()
@@ -149,4 +216,20 @@ void Script::Run()
 
 	tstring script = str.substr(rindex+1);
 	runner->RunScript(script.c_str());
+}
+
+//////////////////////////////////////////////////////////////////////////
+// DocScript
+//////////////////////////////////////////////////////////////////////////
+
+void DocScript::Run()
+{
+	extensions::IScriptRunner* runner = ScriptRegistry::GetInstanceRef().GetRunner(m_runner.c_str());
+	if(!runner)
+	{
+		UNEXPECTED("No ScriptRunner for this script type!");
+		return;
+	}
+
+	runner->RunDocScript(m_doc);
 }

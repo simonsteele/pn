@@ -860,7 +860,7 @@ LRESULT CProjectTreeCtrl::OnEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 		{
 			Projects::MagicFolder* pF = static_cast<Projects::MagicFolder*>(type);
 			
-			if(::MessageBox(m_hWnd, _T("Are you sure you wish to rename this magic folder?\nThis will have the effect of renaming the actual folder on the disk."), _T("Programmers Notepad"), MB_YESNOCANCEL | MB_ICONQUESTION) == IDYES)
+			if(::MessageBox(m_hWnd, _T("Are you sure you wish to rename this magic folder?\nThis will have the effect of renaming the actual folder on the disk."), LS(IDR_MAINFRAME), MB_YESNOCANCEL | MB_ICONQUESTION) == IDYES)
 			{
 				if(	pF->RenameFolder(ptvdi->item.pszText) )
 				{
