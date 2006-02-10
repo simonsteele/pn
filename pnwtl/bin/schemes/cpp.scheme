@@ -74,6 +74,9 @@
 			uidefault union unique unsigned user_marshal usesgetlasterror uuid
 			v1_enum vararg version void wchar_t wire_marshal
 		</keyword-class>
+		<keyword-class name="jsunsure">
+			undefined
+		</keyword-class>
 	</keyword-classes>
 	
 	<!-- base scheme for C++ style languages -->
@@ -124,7 +127,11 @@
 	<language base="cppbase" name="javascript" title="JavaScript" folding="true" foldcomments="true" foldcompact="true">
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="javascript"/>
+			<keyword key="1" name="Keywords 2" class="jsunsure"/>
 		</use-keywords>
+		<use-styles>
+			<style name="Keywords 2" key="16" fore="b00040"/>
+		</use-styles>
 	</language>
 
 	<language base="cppbase" name="csharp" title="C#" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
