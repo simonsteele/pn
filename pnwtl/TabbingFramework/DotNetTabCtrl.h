@@ -610,7 +610,7 @@ public:
 			::InflateRect(&rcText, -m_settings.iPadding, 0);
 
 			CString sText = pItem->GetText();
-			dc.DrawText(sText, sText.GetLength(), &rcText, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_PATH_ELLIPSIS);
+			dc.DrawText(sText, sText.GetLength(), &rcText, DT_LEFT | DT_VCENTER | DT_SINGLELINE | DT_PATH_ELLIPSIS | DT_NOPREFIX);
 		}
 
 		dc.SetTextColor(crPrevious);
@@ -1047,7 +1047,7 @@ public:
 			{
 				RECT rcText = {0};
 				CString sText = pItem->GetText();
-				dc.DrawText(sText, sText.GetLength(), &rcText, DT_SINGLELINE | DT_CALCRECT);
+				dc.DrawText(sText, sText.GetLength(), &rcText, DT_SINGLELINE | DT_CALCRECT | DT_NOPREFIX);
 				rcItem.right += (rcText.right - rcText.left) + (m_settings.iPadding * 2);
 			}
 			rcItem.right += m_settings.iMargin;
@@ -1196,7 +1196,7 @@ public:
 			{
 				RECT rcText = {0};
 				CString sText = pItem->GetText();
-				dc.DrawText(sText, sText.GetLength(), &rcText, DT_SINGLELINE | DT_CALCRECT);
+				dc.DrawText(sText, sText.GetLength(), &rcText, DT_SINGLELINE | DT_CALCRECT | DT_NOPREFIX);
 				rcItem.right += (rcText.right - rcText.left) + (m_settings.iPadding * 2);
 			}
 			rcItem.right += m_settings.iMargin;

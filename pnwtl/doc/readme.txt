@@ -1,11 +1,12 @@
 ========================================
-Release Name: 2.0.6.x
-Build: 2.0.6.x, Version Label: 
+Release Name: 2.0.7.x
+Build: 2.0.7.x, Version Label: 
 ========================================
 
 What's new?
 -----------
 
+1) Scripting interface and Python scripting implementation
 
 Bug Fixes:
 ----------
@@ -15,6 +16,7 @@ Bug Fixes:
 3) Crash on undo after file revert (SF Bug #1371138)
 4) Drop down lists too small (SF Bug #1373484)
 5) Extension Editbox input error (SF Bug #1358022)
+6) Filenames with ampersand (&) (SF Bug #1241368)
 
 If you find a bug:
 ------------------
