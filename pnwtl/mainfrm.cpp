@@ -162,7 +162,8 @@ LPCTSTR encodingNames[] =
 	_T("ANSI"),
 	_T("UTF-16 BE"),
 	_T("UTF-16 LE"),
-	_T("UTF-8")
+	_T("UTF-8"),
+	_T("UTF-8 ?")
 };
 
 LPCTSTR lineEndingNames[] = 

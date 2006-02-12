@@ -107,6 +107,9 @@ static string ExtractLine(const char *buf, size_t length) {
 	return string(buf, 0, endl);
 }
 
+/**
+ * @return number of bytes to skip for BOM
+ */
 int determineEncoding(unsigned char* pBuf, int nLen, EPNEncoding& eEncoding) {
 	eEncoding = eUnknown;
 
@@ -122,6 +125,40 @@ int determineEncoding(unsigned char* pBuf, int nLen, EPNEncoding& eEncoding) {
 		} else if (nLen > 2 && pBuf[0] == Utf8_16::k_Boms[eUtf8][0] && pBuf[1] == Utf8_16::k_Boms[eUtf8][1] && pBuf[2] == Utf8_16::k_Boms[eUtf8][2]) {
 			eEncoding = eUtf8;
 			nRet = 3;
+		} else {
+			int good_cnt = 0;
+			int escaped = 0;
+			for (int i = 0; i < nLen; ++i)
+			{
+				unsigned char c = pBuf[i];
+
+				if (((escaped == 1) && !(c >= 0x80 && c <= 0xBF)) ||
+					((escaped == 0) && (c >= 0x80 && c <= 0xBF)))
+				{
+					// "Dead" combination ocuried - it is not UTF8
+					good_cnt = -1;
+					break;
+				}	
+
+				if (c >= 0xC0 && c <= 0xFD)
+				{	
+					escaped = 1;
+				}
+				if (c <= 0x7F)
+				{
+					escaped = 0;
+				}
+				if (c >= 0x80 && c <= 0xBF)
+				{
+					escaped++;
+					good_cnt++;
+				}
+			}
+			if (good_cnt > 0)
+			{
+				eEncoding = eUtf8NoBOM;
+				nRet = 0; // special case for auto UTF8 - no BOM
+			}
 		}
 	}
 
@@ -226,10 +263,14 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 			// We do a Unicode-friendly read for unicode files...
 			SPerform(SCI_SETCODEPAGE, SC_CP_UTF8);
 			Utf8_16_Read converter;
+			
+			// Converter doesn't understand UTF-8 with no BOM
+			Utf8_16::encodingType convEncType = (m_encType == eUtf8NoBOM) ? Utf8_16::eUtf8 : (Utf8_16::encodingType)m_encType;
+			int nBomSkipBytes( BOMLengthLookup[m_encType] );
 
 			while (lenFile > 0)
 			{
-				lenFile = converter.convert(data, lenFile);
+				lenFile = converter.convert(data, lenFile, convEncType, nBomSkipBytes);
 				SPerform(SCI_ADDTEXT, lenFile, (long)converter.getNewBuf());
 				lenFile = file.Read(data, useBlockSize);
 			}
@@ -381,7 +422,8 @@ bool CTextView::SaveFile(LPCTSTR filename)
 	{
 		// Deal with writing unicode formats here...
 		Utf8_16_Write converter;
-		converter.setEncoding( static_cast<Utf8_16::encodingType>(m_encType) );
+		Utf8_16::encodingType convEncType = (m_encType == eUtf8NoBOM) ? Utf8_16::eUtf8 : static_cast<Utf8_16::encodingType>(m_encType);
+		converter.setEncoding( convEncType );
 
 		FILE* fp = converter.fopen(filename, _T("wb"));
 		if(fp != NULL)
@@ -591,6 +633,13 @@ EPNEncoding CTextView::GetEncoding()
 void CTextView::SetEncoding(EPNEncoding encoding)
 {
 	m_encType = encoding;
+	
+	if(m_encType != eUnknown)
+	{
+		// Experimental, 2006-02-12
+		// Set the code page to UTF-8 if we're going to do unicode editing.
+		SetCodePage(SC_CP_UTF8);
+	}
 }
 
 CScheme* CTextView::GetCurrentScheme()

@@ -424,6 +424,8 @@ LRESULT CPNOpenDialogEx::OnInitDialog (UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	m_EncodingCombo.SetItemData(index, eUtf16BigEndian);
 	index = m_EncodingCombo.AddString(_T("UTF-16 Little Endian"));
 	m_EncodingCombo.SetItemData(index, eUtf16LittleEndian);
+	index = m_EncodingCombo.AddString(_T("UTF-8 No BOM"));
+	m_EncodingCombo.SetItemData(index, eUtf8NoBOM);
 
 	m_EncodingCombo.SetCurSel(0);
 	

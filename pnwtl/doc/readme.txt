@@ -7,6 +7,8 @@ What's new?
 -----------
 
 1) Scripting interface and Python scripting implementation
+2) Detection of UTF-8 without a Byte Order Mark, also an encoding option (parts by Oleg Gerasimov)
+3) Sets unicode character set automatically when a unicode file encoding is selected.
 
 Bug Fixes:
 ----------
@@ -17,6 +19,8 @@ Bug Fixes:
 4) Drop down lists too small (SF Bug #1373484)
 5) Extension Editbox input error (SF Bug #1358022)
 6) Filenames with ampersand (&) (SF Bug #1241368)
+7) Sanitise relative path strings in output parser (Oleg Gerasimov)
+8) <Enter> key in project window open selected file (Oleg Gerasimov)
 
 If you find a bug:
 ------------------

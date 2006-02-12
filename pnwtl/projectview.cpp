@@ -2306,7 +2306,7 @@ Projects::Workspace* CProjectDocker::GetWorkspace()
 LRESULT CProjectDocker::OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 {
 	LPNMTREEVIEW pN = reinterpret_cast<LPNMTREEVIEW>(pnmh);
-	if(pnmh->code == NM_DBLCLK)
+	if(pnmh->code == NM_DBLCLK || pnmh->code == NM_RETURN)
 	{
 		File* file = m_view.GetSelectedFile();
 		if(file != NULL)

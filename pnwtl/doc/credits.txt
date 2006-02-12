@@ -9,6 +9,7 @@ Bjoern Graf
 Klaus Kurzawa
 Mike Ditum
 Vassili Bourdo
+Oleg Gerasimov
 
 Libraries:
 ----------

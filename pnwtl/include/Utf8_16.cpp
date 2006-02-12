@@ -37,13 +37,19 @@ Utf8_16_Read::~Utf8_16_Read() {
 	}
 }
 
-size_t Utf8_16_Read::convert(char* buf, size_t len) {
+size_t Utf8_16_Read::convert(char* buf, size_t len, encodingType enc_type, int skip_bytes) {
 	m_pBuf = reinterpret_cast<ubyte*>(buf);
 	m_nLen = len;
 
 	int nSkip = 0;
+	
 	if (m_bFirstRead) {
-		nSkip = determineEncoding();
+		if(enc_type == eUnknown) {
+			nSkip = determineEncoding();
+		} else {
+			nSkip = skip_bytes;
+			m_eEncoding = enc_type;
+		}
 		m_bFirstRead = false;
 	}
 

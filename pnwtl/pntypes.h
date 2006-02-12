@@ -160,8 +160,17 @@ typedef enum {
 	eUtf16BigEndian,
 	eUtf16LittleEndian,  // Default on Windows
 	eUtf8,
+	eUtf8NoBOM,
 	eLast
 } EPNEncoding;
+
+static const unsigned char BOMLengthLookup [eLast] = {
+	0,
+	2,
+	2,
+	3,
+	0
+};
 
 typedef enum {
 	eOpenAgain,

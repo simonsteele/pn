@@ -88,6 +88,8 @@ LRESULT DocumentPropSheet::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	encoding.SetItemData(index, eUtf16LittleEndian);
 	index = encoding.InsertString(3, _T("UTF-8"));
 	encoding.SetItemData(index, eUtf8);
+	index = encoding.InsertString(4, _T("UTF-8 No BOM"));
+	encoding.SetItemData(index, eUtf8NoBOM);
 
 	for(int k = 0; k < encoding.GetCount(); k++)
 	{

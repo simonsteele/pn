@@ -145,6 +145,7 @@ bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 			if( fn.IsRelativePath() )
 			{
 				ExpandMatchedPath(fn);
+				fn.Sanitise();
 			}
 
 			if(FileExists(fn.c_str()))
