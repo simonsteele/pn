@@ -115,6 +115,7 @@ BEGIN
             MENUITEM "UTF-8",                       ID_ENCODING_UTF8
             MENUITEM "UTF-16 Big Endian",           ID_ENCODING_UTF16BE
             MENUITEM "UTF-16 Little Endian",        ID_ENCODING_UTF16LE
+            MENUITEM "UTF-8 No Mark",               ID_ENCODING_UTF8NOBOM
         END
         POPUP "&Export"
         BEGIN

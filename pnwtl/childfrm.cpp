@@ -1617,6 +1617,7 @@ void CChildFrame::UpdateMenu()
 	menu.CheckMenuItem(ID_ENCODING_UTF8, e == eUtf8);
 	menu.CheckMenuItem(ID_ENCODING_UTF16BE, e == eUtf16BigEndian);
 	menu.CheckMenuItem(ID_ENCODING_UTF16LE, e == eUtf16LittleEndian);
+	menu.CheckMenuItem(ID_ENCODING_UTF8NOBOM, e == eUtf8NoBOM);
 
 	UISetChecked(ID_EDITOR_WORDWRAP, m_view.GetWrapMode() == SC_WRAP_WORD);
 	UISetChecked(ID_EDITOR_EOLCHARS, m_view.GetViewEOL());

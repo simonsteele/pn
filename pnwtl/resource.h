@@ -489,6 +489,7 @@
 #define ID_ENCODING_UTF16BE             32891
 #define ID_ENCODING_UTF16LE             32892
 #define ID_ENCODING_UTF8                32893
+#define ID_ENCODING_UTF8NOBOM           32894
 #define ID_PROJECT_SETACTIVEPROJECT     32897
 #define ID_BUTTON32901                  32901
 #define ID_VIEW_FILEPROPERTIES          32902
@@ -523,7 +524,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        343
-#define _APS_NEXT_COMMAND_VALUE         32961
+#define _APS_NEXT_COMMAND_VALUE         32962
 #define _APS_NEXT_CONTROL_VALUE         1135
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
