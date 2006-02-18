@@ -783,12 +783,6 @@ void SchemeParser::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, S
 			pStyle->Key = _ttoi(t);
 			continue;
 		}
-		else if(_tcscmp(nm, _T("message")) == 0)
-		{
-			pStyle->Key = _ttoi(t);
-			pStyle->KeyIsMessage = true;
-			continue;
-		}
 
 		if(bExpandGlobals)
 		{
@@ -858,29 +852,7 @@ void SchemeParser::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, S
 
 void SchemeParser::customiseStyle(StyleDetails* style, StyleDetails* custom)
 {
-	if(custom->values & edvFontName)
-		style->FontName = custom->FontName;
-	
-	if(custom->values & edvFontSize)
-		style->FontSize = custom->FontSize;
-
-	if(custom->values & edvForeColor)
-		style->ForeColor = custom->ForeColor;
-
-	if(custom->values & edvBackColor)
-		style->BackColor = custom->BackColor;
-
-	if(custom->values & edvBold)
-		style->Bold = custom->Bold;
-
-	if(custom->values & edvItalic)
-		style->Italic = custom->Italic;
-
-	if(custom->values & edvUnderline)
-		style->Underline = custom->Underline;
-
-	if(custom->values & edvEOLFilled)
-		style->EOLFilled = custom->EOLFilled;
+	style->layer(*custom);
 }
 
 void SchemeParser::processStyleClass(CSchemeLoaderState* pState, XMLAttributes& atts)
@@ -975,7 +947,7 @@ void SchemeParser::processLanguageStyle(CSchemeLoaderState* pState, XMLAttribute
 	{
 
 		// Custom styles first (storing any custom version for later)...
-		if(pState->m_pCustom)
+		/*if(pState->m_pCustom)
 		{
 			pCustom = pState->m_pCustom->GetStyle(key);
 			if(pCustom)
@@ -983,29 +955,29 @@ void SchemeParser::processLanguageStyle(CSchemeLoaderState* pState, XMLAttribute
 				if((pCustom->values & edvClass) != 0)
 					classname = pCustom->classname.c_str();
 			}
-		}
+		}*/
 
 		// No customised style class, is there a group class?
-		if(classname.GetLength() == 0)
+		//if(classname.GetLength() == 0)
+		//{
+		if(pState->m_pGroupClass != NULL)
 		{
-			if(pState->m_pGroupClass != NULL)
-			{
-				// There is a class associated with a group of styles.
-				// We also don't need to find the style, it will already
-				// be the m_pGroupClass member of pState.
-				pBase = pState->m_pGroupClass;
-			}
-			else
-			{
-				classname = atts.getValue(_T("class"));
-			}
+			// There is a class associated with a group of styles.
+			// We also don't need to find the style, it will already
+			// be the m_pGroupClass member of pState.
+			pBase = pState->m_pGroupClass;
 		}
+		else
+		{
+			classname = atts.getValue(_T("class"));
 
-		// We've not found a class yet, but if we do have a class name, we try to find that.
-		if(!pBase && (classname.GetLength() > 0) && (classname != _T("default")))
-		{
-			pBase = pState->m_StyleClasses.GetStyle(classname);
+			// We've not found a class yet, but if we do have a class name, we try to find that.
+			if((classname.GetLength() > 0) && (classname != _T("default")))
+			{
+				pBase = pState->m_StyleClasses.GetStyle(classname);
+			}
 		}
+		//}
 	}
 
 	// If we didn't find a class, we base the style on the default style...

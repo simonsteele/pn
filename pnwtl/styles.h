@@ -2,7 +2,7 @@
  * @file Styles.h
  * @brief Define style and style-containing classes.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -270,8 +270,6 @@ class StyleDetails
 			Underline = false;
 			EOLFilled = false;
 			Hotspot = false;
-			//ColourOnly = false;
-			KeyIsMessage = false;
 			values = 0;
 		}
 
@@ -292,8 +290,6 @@ class StyleDetails
 			Underline = copy.Underline;
 			EOLFilled = copy.EOLFilled;
 			Hotspot = copy.Hotspot;
-			//ColourOnly = copy.ColourOnly;
-			KeyIsMessage = copy.KeyIsMessage;
 
 			values = copy.values;
 			classname = copy.classname;
@@ -388,6 +384,8 @@ class StyleDetails
 				classname = update.classname;
 		}
 
+		void layer(StyleDetails& other);
+
 		int Key;
 		
 		string FontName;
@@ -400,15 +398,23 @@ class StyleDetails
 		bool EOLFilled;
 		bool Hotspot;
 
-		///ColourOnly == true means that this style is only a colour setting.
-		//bool ColourOnly;
-		
-		///KeyIsMessage == true means that the key is a scintilla message number.
-		bool KeyIsMessage;
-
 		string name;
 		string classname;
 		int values;
+};
+
+class FullStyleDetails
+{
+public:
+	FullStyleDetails();
+
+	void Combine(const StyleDetails* defStyle, StyleDetails& into);
+
+	StyleDetails* Class;		// Style Class
+	StyleDetails* CustomClass;	// Customised Style Class
+	StyleDetails* GroupClass;	// Group Style Class (grouped styles)
+	StyleDetails* Style;		// *The* Style (as in the .scheme file)
+	StyleDetails* CustomStyle;	// Customised Style
 };
 
 typedef list<StyleDetails*>	STYLES_LIST;
