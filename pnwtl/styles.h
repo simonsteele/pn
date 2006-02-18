@@ -219,7 +219,7 @@ public:
 	/**
 	 * This applies any colours in other to this object.
 	 */
-	void Combine(EditorColours* other)
+	void Combine(const EditorColours* other)
 	{
 		if(other->values & ecSelFore)
 			SetColour(ecSelFore, other->crSelFore);

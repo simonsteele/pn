@@ -619,9 +619,13 @@ void SchemeCompiler::onLexer(LPCTSTR name, int styleBits)
 	m_Recorder.SetStyleBits(styleBits);
 }
 
-void SchemeCompiler::onColours(const EditorColours* colours)
+void SchemeCompiler::onColours(const EditorColours* defCols, const EditorColours* colours)
 {
-	colours->SendColours(&m_Recorder);
+	// Combine the defaults and the custom colours and send on...
+	EditorColours combine = *defCols;
+	if(colours)
+		combine.Combine(colours);
+	combine.SendColours(&m_Recorder);
 }
 
 void SchemeCompiler::onError(XMLParserException& ex)
@@ -1671,15 +1675,16 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 			sendBaseStyles(pS);
 
 			// Get the default editor colours
-			EditorColours ec = pS->m_DefaultColours;
+			EditorColours* ec = &pS->m_DefaultColours;
+			EditorColours* ecCust = NULL;
 
 			// See if there's any customised editor colours
 			if(pS->m_pCustom)
 				if(pS->m_pCustom->m_editorColours.HasColours())
-					ec.Combine(&pS->m_pCustom->m_editorColours);
+					ecCust = &pS->m_pCustom->m_editorColours;
 
 			// Set those colours!
-			onColours(&ec);
+			onColours(ec, ecCust);
 
 			onLanguageEnd();
 

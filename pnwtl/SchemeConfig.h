@@ -170,7 +170,7 @@ class SchemeConfigParser : public SchemeParser
 		virtual void onProperty(LPCTSTR name, LPCTSTR value){}
 		virtual void onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom);
 		virtual void onFile(LPCTSTR filename);
-		virtual void onColours(const EditorColours* colours);
+		virtual void onColours(const EditorColours* defCols, const EditorColours* colours);
 		virtual void onError(XMLParserException& ex){}
 };
 

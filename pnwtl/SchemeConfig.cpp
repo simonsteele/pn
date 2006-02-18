@@ -539,9 +539,11 @@ void SchemeConfigParser::onFile(LPCTSTR /*filename*/)
 
 }
 
-void SchemeConfigParser::onColours(const EditorColours* colours)
+void SchemeConfigParser::onColours(const EditorColours* defCols, const EditorColours* colours)
 {
-	m_pCurrent->m_editorColours = *colours;
+	// We ignore the defaults here, we're only interested in any differences...
+	if(colours)
+		m_pCurrent->m_editorColours = *colours;
 }
 
 bool SortSchemes(SchemeConfig* p1, SchemeConfig* p2)
