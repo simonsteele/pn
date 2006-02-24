@@ -583,7 +583,7 @@ LRESULT COptionsPageSchemes::OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, H
 void COptionsPageSchemes::Update()
 {
 	int i = m_combo.GetCurSel();
-	SchemeConfig* pScheme = m_combo.GetItemScheme(i);
+	SchemeDetails* pScheme = m_combo.GetItemScheme(i);
 	m_stylestab.SetScheme(pScheme);
 	m_keywordstab.SetScheme(pScheme);
 	m_misctab.SetScheme(pScheme);
@@ -745,7 +745,7 @@ SchemeTools* COptionsPageTools::GetTools()
 {
 	if(!m_pCurrent)
 	{
-		m_pCurrent = m_toolstore->GetToolsFor(m_pScheme->m_Name);
+		m_pCurrent = m_toolstore->GetToolsFor(m_pScheme->Name.c_str());
 	}
 		
 	return m_pCurrent;
@@ -1232,9 +1232,9 @@ void COptionsPageNewFiles::OnOK()
 			// Set the default new-scheme.
 			int selIndex = m_combo.GetCurSel();
 			LPCTSTR wt = NULL;
-			SchemeConfig* pS = m_combo.GetItemScheme(selIndex);
+			SchemeDetails* pS = m_combo.GetItemScheme(selIndex);
 			if(pS)
-				wt = pS->m_Name;
+				wt = pS->Name.c_str();
 			else
 				wt = _T("Plain Text");
 			OPTIONS->Set(PNSK_EDITOR, _T("NewScheme"), wt);

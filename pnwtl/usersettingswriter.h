@@ -44,20 +44,20 @@ namespace Schemes
 				pop();
 			}
 
-			void beginScheme(SchemeConfig* scheme)
+			void beginScheme(SchemeDetails* scheme)
 			{
 				genxStartElement(m_eScheme);
-				genxAddAttribute(m_aName, u((LPCTSTR)scheme->m_Name));
+				genxAddAttribute(m_aName, u((LPCTSTR)scheme->Name.c_str()));
 
-				if((scheme->m_foldflags & USETABFOLDFLAGSMASK) != (scheme->m_origfoldflags & USETABFOLDFLAGSMASK))
+				if((scheme->CustomFlags & USETABFOLDFLAGSMASK) != (scheme->Flags & USETABFOLDFLAGSMASK))
 				{
-					genxAddAttribute(m_aOverrideTabs, (scheme->m_foldflags & schOverrideTabs) ? u("true") : u("false"));
-					genxAddAttribute(m_aUseTabs, (scheme->m_foldflags & schUseTabs) ? u("true") : u("false"));
+					genxAddAttribute(m_aOverrideTabs, (scheme->CustomFlags & schOverrideTabs) ? u("true") : u("false"));
+					genxAddAttribute(m_aUseTabs, (scheme->CustomFlags & schUseTabs) ? u("true") : u("false"));
 				}
 
-				if(scheme->m_foldflags & schOverrideTabSize)
+				if(scheme->CustomFlags & schOverrideTabSize)
 				{
-					genxAddAttribute(m_aTabWidth, u(IntToTString(scheme->m_tabwidth).c_str()));
+					genxAddAttribute(m_aTabWidth, u(IntToTString(scheme->CustomTabWidth).c_str()));
 				}
 			}
 

@@ -11,73 +11,14 @@
 #ifndef styles_h__included
 #define styles_h__included
 
-#include <string>
-#include <list>
-#include <map>
-
-using std::string;
-using std::list;
-using std::map;
-
 ////////////////////////////////////////////////////////////
 // Useful Functions
 ////////////////////////////////////////////////////////////
 
-static int chartoval(TCHAR inp)
-{
-	int Result = 0;
-	
-	if (inp >= '0' && inp <= '9') 
-	{
-		Result = inp - 48;
-	}
-	else if (inp >= 'a' && inp <= 'f')
-	{
-		Result = inp - 87;
-	}
-	else if (inp >= 'A' && inp <= 'F') 
-	{
-		Result = inp - 55;
-	}
-  
-	return Result;
-}
-
-static COLORREF PNStringToColor(LPCTSTR input)
-{
-  	LPCTSTR	Part;
-	int		res;
-
-	//b,g,r - output format in hex $bbggrr
-	//r,g,b - input format in string, rr,gg,bb
-	// Default colour
-	res = ::GetSysColor(COLOR_WINDOWTEXT);
-	// only works for xxxxxx colours...
-	if (_tcslen(input) != 6)
-	{
-		return res;
-	}
-	
-	Part = input;
-	res = (0x10 * chartoval(Part[0]));
-	if (Part[1] != _T('0'))
-	{
-		res = res + (chartoval(Part[1]));
-	}
-	Part += 2;
-	res += (0x1000 * chartoval(Part[0]));
-	res += (0x100 * chartoval(Part[1]));
-	Part += 2;
-	res += (0x100000 * chartoval(Part[0]));
-	res += (0x10000 * chartoval(Part[1]));
-
-	return res;
-}
-
-static bool PNStringToBool(LPCTSTR input)
-{
-	return (input[0] == 'T' || input[0] == 't');
-}
+int chartoval(TCHAR inp);
+COLORREF PNStringToColor(LPCTSTR input);
+bool PNStringToBool(LPCTSTR input);
+tstring NormaliseKeywords(tstring& in);
 
 ////////////////////////////////////////////////////////////
 // EditorColours
@@ -93,148 +34,31 @@ public:
 		ecIndentG	= 0x08,
 	} Colours;
 
-	EditorColours()
-	{
-		values = 0;
-	}
+	EditorColours();
 
-	const EditorColours& operator = (const EditorColours& copy)
-	{
-		values = copy.values;
-		crSelFore = copy.crSelFore;
-		crSelBack = copy.crSelBack;
-		crCaret = copy.crCaret;
-		crIG = copy.crIG;
+	const EditorColours& operator = (const EditorColours& copy);
 
-		return *this;
-	}
+	void SetColour(Colours colour, COLORREF setColour);
 
-	void SetColour(Colours colour, COLORREF setColour)
-	{
-		switch(colour)
-		{
-		case ecSelFore:
-			crSelFore = setColour;
-			break;
-		case ecSelBack:
-			crSelBack = setColour;
-			break;
-		case ecCaret:
-			crCaret = setColour;
-			break;
-		case ecIndentG:
-			crIG = setColour;
-			break;
-		}
+	bool HasColour(Colours colour) const;
 
-		values |= colour;
-	}
-
-	bool HasColour(Colours colour) const
-	{
-		return (values & colour) != 0;
-	}
-
-	bool HasColours() const
-	{
-		return (values != 0);
-	}
+	bool HasColours() const;
 
 	/**
 	 * @return True if colour configured, false otherwise
 	 */
-	bool GetColour(Colours colour, COLORREF& theColour) const
-	{
-		if( (values & colour) == 0)
-			return false;
-		
-		switch(colour)
-		{
-			case ecSelFore:
-				theColour = crSelFore;
-				return true;
-			case ecSelBack:
-				theColour = crSelBack;
-				return true;
-			case ecCaret:
-				theColour = crCaret;
-				return true;
-			case ecIndentG:
-				theColour = crIG;
-				return true;
-		}
-			
-		return false;
-	}
+	bool GetColour(Colours colour, COLORREF& theColour) const;
 
-	void SetFromXml(XMLAttributes& atts)
-	{
-		LPCTSTR szKey, szValue;
-		int val;
-		for(int i = 0; i < atts.getCount(); i++)
-		{
-			szKey = atts.getName(i);
-			szValue = atts.getValue(i);
-			val = (szValue[0] == _T('-') ? CLR_NONE : PNStringToColor(szValue));
+	void SetFromXml(XMLAttributes& atts);
 
-			if(_tcscmp(szKey, _T("selFore")) == 0)
-			{
-				SetColour(ecSelFore, (DWORD)val);
-			}
-			else if(_tcscmp(szKey, _T("selBack")) == 0)
-			{
-				SetColour(ecSelBack, (DWORD)val);
-			}
-			else if(_tcscmp(szKey, _T("caret")) == 0)
-			{
-				SetColour(ecCaret, (DWORD)val);
-			}
-			else if(_tcscmp(szKey, _T("indentGuides")) == 0)
-			{
-				SetColour(ecIndentG, (DWORD)val);
-			}
-		}
-	}
-
-	void SendColours(CScintilla* pSc) const
-	{
-		if((values & ecSelFore) != 0)
-		{
-			if((int)crSelFore == CLR_NONE)
-				pSc->SPerform(SCI_SETSELFORE, false, 0);
-			else
-				pSc->SPerform(SCI_SETSELFORE, true, crSelFore);
-		}
-		
-		if((values & ecSelBack) != 0)
-			pSc->SPerform(SCI_SETSELBACK, true, crSelBack);
-		
-		if((values & ecCaret) != 0)
-			pSc->SPerform(SCI_SETCARETFORE, crCaret);
-		
-		if((values & ecIndentG) != 0)
-			pSc->SPerform(SCI_STYLESETFORE, STYLE_INDENTGUIDE, crIG);
-	}
+	void SendColours(CScintilla* pSc) const;
 
 	/**
 	 * This applies any colours in other to this object.
 	 */
-	void Combine(const EditorColours* other)
-	{
-		if(other->values & ecSelFore)
-			SetColour(ecSelFore, other->crSelFore);
-		if(other->values & ecSelBack)
-			SetColour(ecSelBack, other->crSelBack);
-		if(other->values & ecCaret)
-			SetColour(ecCaret, other->crCaret);
-		if(other->values & ecIndentG)
-			SetColour(ecIndentG, other->crIG);
-	}
+	void Combine(const EditorColours* other);
 
-	void Clear()
-	{
-		values = 0;
-	}
+	void Clear();
 
 protected:
 	COLORREF	crSelFore;
@@ -258,72 +82,17 @@ typedef enum {edvFontName = 0x0001,	edvFontSize = 0x0002, edvForeColor = 0x0004,
 class StyleDetails
 {
 	public:
-		StyleDetails()
-		{
-			Key = 0;
-			FontName = "Courier New";
-			FontSize = 10;
-			ForeColor = RGB(0,0,0);
-			BackColor = RGB(255,255,255);
-			Bold = false;
-			Italic = false;
-			Underline = false;
-			EOLFilled = false;
-			Hotspot = false;
-			values = 0;
-		}
-
-		StyleDetails(const StyleDetails& copy)
-		{
-			*this = copy;
-		}
-
-		StyleDetails& operator = (const StyleDetails& copy)
-		{
-			Key = copy.Key;
-			FontName = copy.FontName;
-			FontSize = copy.FontSize;
-			ForeColor = copy.ForeColor;
-			BackColor = copy.BackColor;
-			Bold = copy.Bold;
-			Italic = copy.Italic;
-			Underline = copy.Underline;
-			EOLFilled = copy.EOLFilled;
-			Hotspot = copy.Hotspot;
-
-			values = copy.values;
-			classname = copy.classname;
-			name = copy.name;
-			
-			return *this;
-		}
+		StyleDetails();
+		StyleDetails(const StyleDetails& copy);
+		StyleDetails& operator = (const StyleDetails& copy);
 
 		/**
 		 * This method should only compare parts of the style that
 		 * users can change - others need not be compared.
 		 */
-		bool operator == (const StyleDetails& compare)
-		{
-			return (
-				Key == compare.Key &&
-				FontName == compare.FontName &&
-				FontSize == compare.FontSize &&
-				ForeColor == compare.ForeColor &&
-				BackColor == compare.BackColor &&
-				Bold == compare.Bold &&
-				Italic == compare.Italic &&
-				Underline == compare.Underline &&
-				EOLFilled == compare.EOLFilled &&
-				//values == copy.values &&
-				classname == compare.classname //&&
-				//name == compare.name
-				);
-		}
+		bool operator == (const StyleDetails& compare) const;
 
-		bool operator != (const StyleDetails& compare)
-		{
-			return !(*this == compare);
-		}
+		bool operator != (const StyleDetails& compare) const;;
 
 		/**
 		 * This function sets the "values" bit mask with
@@ -331,22 +100,7 @@ class StyleDetails
 		 * This only takes into account values that the user may
 		 * change - not hotspots for example.
 		 */
-		void compareTo(StyleDetails& compare)
-		{
-			values = 0 |
-				((FontName == compare.FontName) ? 0 : edvFontName) |
-				((FontSize == compare.FontSize) ? 0 : edvFontSize) |
-				((ForeColor == compare.ForeColor) ? 0 : edvForeColor) |
-				((BackColor == compare.BackColor) ? 0 : edvBackColor) |
-				((Bold == compare.Bold) ? 0 : edvBold) |
-				((Italic == compare.Italic) ? 0 : edvItalic) |
-				((Underline == compare.Underline) ? 0 : edvUnderline) |
-				((EOLFilled == compare.EOLFilled) ? 0 : edvEOLFilled) |
-				((classname == compare.classname) ? 0 : edvClass)//&&
-				//values == copy.values &&
-				//name == compare.name;
-				;
-		}
+		void compareTo(const StyleDetails& compare);
 
 		/**
 		 * This sets any values that are not included in the values bitmask
@@ -354,37 +108,9 @@ class StyleDetails
 		 *
 		 * @param update source of the values to be copied.
 		 */
-		void updateUnmasked(StyleDetails& update)
-		{
-			if((values & edvFontName) == 0)
-				FontName = update.FontName;
+		void updateUnmasked(const StyleDetails& update);
 
-			if((values & edvFontSize) == 0)
-				FontSize = update.FontSize;
-
-			if((values & edvForeColor) == 0)
-				ForeColor = update.ForeColor;
-
-			if((values & edvBackColor) == 0)
-				BackColor = update.BackColor;
-
-			if((values & edvBold) == 0)
-				Bold = update.Bold;
-
-			if((values & edvItalic) == 0)
-				Italic = update.Italic;
-
-			if((values & edvUnderline) == 0)
-				Underline = update.Underline;
-
-			if((values & edvEOLFilled) == 0)
-				EOLFilled = update.EOLFilled;
-
-			if((values & edvClass) == 0)
-				classname = update.classname;
-		}
-
-		void layer(StyleDetails& other);
+		void layer(const StyleDetails& other);
 
 		int Key;
 		
@@ -403,23 +129,57 @@ class StyleDetails
 		int values;
 };
 
+class FullStyleDetails;
+typedef ::boost::shared_ptr<FullStyleDetails> StylePtr;
+
 class FullStyleDetails
 {
 public:
-	FullStyleDetails();
+	FullStyleDetails(int key);
+	FullStyleDetails(const FullStyleDetails& copy);
+	~FullStyleDetails();
 
-	void Combine(const StyleDetails* defStyle, StyleDetails& into);
+	int GetKey() const;
 
-	StyleDetails* Class;		// Style Class
-	StyleDetails* CustomClass;	// Customised Style Class
-	StyleDetails* GroupClass;	// Group Style Class (grouped styles)
+	/**
+	 * Combine all the details we know about into the definitive final
+	 * style.
+	 */
+	void Combine(const StyleDetails* defStyle, StyleDetails& into) const;
+
+	void CombineNoCustom(const StyleDetails* defStyle, StyleDetails& into) const;
+
+	// Pointed at StyleDetails Instances:
+	//StyleDetails* Class;		// Style Class
+	//StyleDetails* CustomClass;	// Customised Style Class
+	StylePtr	  Class;
+	StylePtr	  GroupClass;	// Group Style Class (grouped styles)
+	
+	// Owned StyleDetails Instances:
 	StyleDetails* Style;		// *The* Style (as in the .scheme file)
 	StyleDetails* CustomStyle;	// Customised Style
+
+private:
+	int m_key;
 };
 
 typedef list<StyleDetails*>	STYLES_LIST;
 typedef STYLES_LIST::iterator SL_IT;
 typedef STYLES_LIST::const_iterator SL_CIT;
+
+typedef std::list<StylePtr> StylePtrList;
+typedef std::map<tstring, StylePtr> StylePtrMap;
+
+static StylePtr GetStyle(StylePtrList& lst, int key)
+{
+	for(StylePtrList::const_iterator i = lst.begin(); i != lst.end(); ++i)
+	{
+		if((*i)->GetKey() == key)
+			return (*i);
+	}
+
+	return StylePtr();
+}
 
 /**
  * Simple wrapper class for a list of StyleDetails objects. The class
@@ -552,10 +312,6 @@ class CustomKeywordSet
 			
 			pName = new TCHAR[_tcslen(copy.pName)+1];
 			_tcscpy(pName, copy.pName);
-			
-			// We rarely construct to copy the words...
-			//pWords = new TCHAR[_tcslen(copy->pWords)+1];
-			//_tcscpy(pWords, copy->pWords);
 		}
 
 	public:
@@ -670,93 +426,84 @@ class CustomKeywordHolder
 		CustomKeywordSet* pLast;
 };
 
-/**
- * Aggregating class for keywords and styles - represents all the settings
- * for a customised scheme when loaded from the user settings file.
- */
-class CustomisedScheme : public CustomKeywordHolder, public StylesList
+struct GroupDetails_t
 {
-public:
-	CustomisedScheme()
-	{
-		flags = 0;
-		hasflags = 0;
-	}
-
-	int				flags;
-	int				hasflags;
-	int				m_tabwidth;
-	EditorColours	m_editorColours;
+	tstring name;
+	tstring description;
+	tstring classname;
 };
 
+typedef std::list<GroupDetails_t> GroupDetailsList;
+
+/*typedef struct tagStyleGroup
+{
+	tstring Name;
+	StylePtrList Styles;
+} StyleGroup;
+
+typedef std::list<StyleGroup> StyleGroupList;*/
+
+/**
+ * Flat storage of a tree of grouped styles.
+ */
+class SchemeDetails
+{
+public:
+	SchemeDetails(LPCTSTR name);
+	
+	StylePtr GetStyle(int key);
+
+	bool IsCustomised() const;
+	bool IsInternal() const;
+
+	void ResetAll();
+
+	void BeginStyleGroup(LPCTSTR name, LPCTSTR description, LPCTSTR classname);
+	void EndStyleGroup();
+
+	tstring				Name;
+	tstring				Title;
+	StylePtrList		Styles;
+	
+	GroupDetailsList	GroupDetails;
+
+	EditorColours		Colours;
+
+	EditorColours		CustomColours;
+	
+	CustomKeywordHolder Keywords;
+
+	CustomKeywordHolder CustomKeywords;
+
+	int                 Flags;
+
+	int					CustomFlags;
+	int					CustomFlagFlags;
+	int					CustomTabWidth;
+};
+
+typedef std::list<SchemeDetails*> SchemeDetailsList;
+typedef std::map<tstring, SchemeDetails*> SchemeDetailsMap;
 
 typedef enum {ebvLexer = 0x01} EBaseSet;
 
-struct GroupDetails_t
-{
-	TCHAR* name;
-	TCHAR* description;
-	GroupDetails_t* pNext;
-};
-
-class BaseScheme : public CustomisedScheme
+class BaseScheme : public SchemeDetails
 {
 	public:
-		BaseScheme()
+		BaseScheme(LPCTSTR name) : SchemeDetails(name)
 		{
 			lexer		= _T("");
 			styleBits	= 0;
 			valuesSet	= 0;
 			flags		= 0;
-			pGroupDetails = NULL;
-			pLastGroupDetails = NULL;
 		}
 
-		~BaseScheme()
-		{
-			GroupDetails_t* pD = pGroupDetails;
-			GroupDetails_t* pN = NULL;
-			while(pD)
-			{
-				pN = pD->pNext;
-				delete pD->name;
-				delete pD->description;
-				delete pD;
-				pD = pN;
-			}
-		}
-
-		tstring lexer;
-		int		styleBits;
-
-		int		valuesSet;
-
-		void AddGroupDetails(LPCTSTR name, LPCTSTR description)
-		{
-			GroupDetails_t* pDetails = new GroupDetails_t;
-			pDetails->name = new TCHAR[_tcslen(name)+1];
-			_tcscpy(pDetails->name, name);
-			pDetails->description = new TCHAR[_tcslen(description)+1];
-			_tcscpy(pDetails->description, description);
-			pDetails->pNext = NULL;
-
-			if( !pGroupDetails )
-			{
-				pGroupDetails = pLastGroupDetails = pDetails;
-			}
-			else
-			{
-				pLastGroupDetails->pNext = pDetails;
-				pLastGroupDetails = pDetails;
-			}
-		}
-
-		GroupDetails_t*	pGroupDetails;
-		GroupDetails_t* pLastGroupDetails;
+		int					flags;
+		int					valuesSet;
+		tstring				lexer;
+		int					styleBits;
 };
 
-typedef map<CString, CustomisedScheme*> CUSTOMISED_NAMEMAP;
-typedef CUSTOMISED_NAMEMAP::iterator CNM_IT;
 typedef map<tstring, StyleDetails*> STYLEDETAILS_NAMEMAP;
 typedef STYLEDETAILS_NAMEMAP::iterator SDNM_IT;
 
@@ -787,7 +534,6 @@ class StylesMap
 				STYLEDETAILS_NAMEMAP::value_type(name, pStyle));
 		}
 
-		// at the moment, this just uses a CString to call the above fn.
 		void AddStyle(LPCTSTR name, StyleDetails* pStyle)
 		{
 			AddStyle(tstring(name), pStyle);
@@ -817,7 +563,6 @@ class StylesMap
 				return NULL;
 		}
 
-		// at the moment, this just uses a CString to call the above fn.
 		StyleDetails* GetStyle(LPCTSTR name)
 		{
 			return GetStyle(tstring(name));

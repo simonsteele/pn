@@ -15,12 +15,12 @@
 		not specified - this way we inherit the system defaults -->
 		<style-class name="default" size="10" font="Lucida Console"/>
 		
-		<style-class name="comment" fore="colour.comment"/>
-		<style-class name="keyword" fore="colour.keyword" bold="true"/>
-		<style-class name="string" fore="colour.string" />
-		<style-class name="number" fore="colour.number" />
+		<style-class name="comment" fore="007f00"/>
+		<style-class name="keyword" fore="00007f" bold="true"/>
+		<style-class name="string" fore="7f007f" />
+		<style-class name="number" fore="007f7f" />
 		<style-class name="operator" />
-		<style-class name="preprocessor" fore="colour.preproc" />
+		<style-class name="preprocessor" fore="7f7f00" />
 		<style-class name="error" fore="ffff00" back="ff0000" />
 		<style-class name="commentdoc" inherit-style="comment" fore="3f703f"/>
 		<style-class name="commentline" inherit-style="comment"/>

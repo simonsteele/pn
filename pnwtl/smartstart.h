@@ -11,7 +11,6 @@
 #ifndef smartstart_h__included
 #define smartstart_h__included
 
-typedef std::map<tstring, tstring> STRING_MAP;
 typedef STRING_MAP::value_type SM_VT;
 typedef STRING_MAP::iterator SM_IT;
 

@@ -248,7 +248,7 @@ class CTabPageKeywords : public CPropertyPageImpl<CTabPageKeywords>
 			CHAIN_MSG_MAP(CPropertyPageImpl<CTabPageKeywords>)
 		END_MSG_MAP()
 
-	void SetScheme(SchemeConfig* pScheme);
+	void SetScheme(SchemeDetails* pScheme);
 	void Finalise();
 
 	protected:
@@ -267,7 +267,7 @@ class CTabPageKeywords : public CPropertyPageImpl<CTabPageKeywords>
 		CButton				m_ResetBtn;
 		CButton				m_SortBtn;
 		bool				m_bChanging;
-		SchemeConfig*		m_pScheme;
+		SchemeDetails*		m_pScheme;
 		CustomKeywordSet*	m_pSet;
 		CListViewCtrl		m_list;
 		CScintillaDialogWnd	m_scintilla;
@@ -298,7 +298,7 @@ class CTabPageStyles : public CPropertyPageImpl<CTabPageStyles>
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 
-		void SetScheme(SchemeConfig* pScheme);
+		void SetScheme(SchemeDetails* pScheme);
 		void Finalise();
 
 	protected:
@@ -320,16 +320,17 @@ class CTabPageStyles : public CPropertyPageImpl<CTabPageStyles>
 		void SetItem();
 		void EnableButtons(bool bEnable);
 		void UpdateGroup();
-		void UpdateGroupChildren(StyleDetails* pUpdatedClass, CustomStyleCollection* pColl = NULL);
+		//void UpdateGroupChildren(StyleDetails* pUpdatedClass, CustomStyleCollection* pColl = NULL);
 		void UpdateStyle();
 		void DisableNonColourItems();
 
 	protected:
 		StyleDetails	m_Style;
-		StyleDetails*	m_pStyle;
-		SchemeConfig*	m_pScheme;
+		SchemeDetails*	m_pScheme;
 		CTreeViewCtrl	m_tree;
 		CStyleDisplay	m_sd;
+
+		FullStyleDetails*	m_pStyle;
 
 		CFontCombo		m_FontCombo;
 		CNumberCombo	m_SizeCombo;
@@ -375,7 +376,7 @@ class CTabPageMisc : public CPropertyPageImpl<CTabPageMisc>, CWinDataExchange<CT
 
 		bool IsDirty();
 
-		void SetScheme(SchemeConfig* pScheme);
+		void SetScheme(SchemeDetails* pScheme);
 		void Finalise();
 
 	protected:
@@ -389,7 +390,7 @@ class CTabPageMisc : public CPropertyPageImpl<CTabPageMisc>, CWinDataExchange<CT
 		void UpdateDisplay();
 
 	protected:
-		SchemeConfig*	m_pScheme;
+		SchemeDetails*	m_pScheme;
 		
 		CPNColorButton	m_selFore;
 		CPNColorButton	m_selBack;
@@ -503,7 +504,7 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 		CSchemeCombo		m_combo;
 		CSSListCtrl			m_list;
 		SchemeConfigParser* m_pSchemes;
-		SchemeConfig*		m_pScheme;
+		SchemeDetails*		m_pScheme;
 		SchemeTools*		m_pCurrent;
 
 		ToolsManager*		m_toolstore;

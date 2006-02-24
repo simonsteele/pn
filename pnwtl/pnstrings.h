@@ -14,11 +14,15 @@
 #ifndef pnstrings_h__included
 #define pnstrings_h__included
 
+#include <vector>
+
 #if defined(UNICODE)
 	typedef std::wostream tstream;
 #else
 	typedef std::ostream tstream;
 #endif
+
+typedef std::map<tstring, tstring> STRING_MAP;
 
 static TCHAR* tcsnewdup(LPCTSTR strin)
 {
@@ -65,12 +69,9 @@ static int strLastNonWSChar(const char* lineBuf, int lineLength)
 	return i;
 }
 
-#include <vector>
-using std::vector;
-
 template <typename TStringType>
 static void StringTokenise(const TStringType& str,
-                      vector<TStringType>& tokens,
+						   std::vector<TStringType>& tokens,
                       const TStringType& delimiters/* = _T(" ")*/)
 {
     // Skip delimiters at beginning.

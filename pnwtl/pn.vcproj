@@ -447,6 +447,9 @@
 				RelativePath=".\styles.cpp">
 			</File>
 			<File
+				RelativePath=".\StylesUserSettings.cpp">
+			</File>
+			<File
 				RelativePath=".\StyleTabPages.cpp">
 			</File>
 			<File

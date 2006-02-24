@@ -15,7 +15,7 @@
 #include "outputscintilla.h"
 #include "ScintillaWTL.h"
 
-class SchemeConfig;
+class SchemeDetails;
 class SchemeConfigParser;
 
 namespace PCRE {
@@ -119,13 +119,13 @@ class CSchemeCombo : public CComboBox
 {
 	public:
 		/// Add a scheme to the combo box
-		int AddScheme(LPCTSTR title, SchemeConfig* pScheme);
+		int AddScheme(LPCTSTR title, SchemeDetails* pScheme);
 		
 		/// Load schemes from a SchemeConfigParser instance into the combo box.
 		void Load(SchemeConfigParser* pConfig, LPCTSTR selectScheme = NULL, bool bIncludePlainText = true, bool bIncludeInternal = false);
 		
 		/// Return a SchemeConfig* for the item 'index'.
-		SchemeConfig* GetItemScheme(int index);
+		SchemeDetails* GetItemScheme(int index);
 };
 
 #endif

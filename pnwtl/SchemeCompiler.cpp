@@ -6,8 +6,6 @@
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
- *
- * Unicode Status: Unicode Ready (untested).
  */
 
 #include "stdafx.h"
@@ -29,13 +27,13 @@
 #define DOING_KEYWORDCOMBINE	12
 #define DOING_BASE_OPTIONS		13
 
-#define US_SCHEMES				1
-#define US_SCHEME				2
-#define US_KEYWORD_OVERRIDES	3
-#define US_STYLE_OVERRIDES		4
-#define US_KEYWORDS				5
-#define US_CLASSES				6
-#define US_CLASS				7
+StylePtr SchemeLoaderState::GetClass(LPCTSTR name)
+{
+	StylePtrMap::const_iterator iC = m_Classes.find(tstring(name));
+	if(iC != m_Classes.end())
+		return (*iC).second;
+	return StylePtr();
+}
 
 ////////////////////////////////////////////////////////////
 // SchemeRecorder Implementation
@@ -213,284 +211,26 @@ void SchemeRecorder::SetDefStyle(StyleDetails* defaults)
 }
 
 ////////////////////////////////////////////////////////////
-// CSchemeLoaderState Implementation
+// SchemeLoaderState Implementation
 ////////////////////////////////////////////////////////////
 
-CSchemeLoaderState::~CSchemeLoaderState()
+SchemeLoaderState::~SchemeLoaderState()
 {
-	for(CNM_IT j = m_CustomSchemes.begin(); j != m_CustomSchemes.end(); ++j)
-	{
-		delete (*j).second;
-	}
-
-	for(CNM_IT i = m_BaseSchemes.begin(); i != m_BaseSchemes.end(); ++i)
+	/*for(CNM_IT i = m_BaseSchemes.begin(); i != m_BaseSchemes.end(); ++i)
 	{
 		BaseScheme* pS = static_cast<BaseScheme*>( (*i).second );
 		delete pS;
-	}
-}
+	}*/
 
-////////////////////////////////////////////////////////////
-// UserSettingsParser Implementation
-////////////////////////////////////////////////////////////
-
-UserSettingsParser::UserSettingsParser()
-{
-	pScheme = NULL;
-}
-
-void UserSettingsParser::Parse(LPCTSTR path, CSchemeLoaderState* pState)
-{
-	ssreg::CSRegistry reg;
-	reg.OpenKey(_T("Software\\Echo Software\\PN2\\SchemeDates"), true);
-	
-	if(FileExists(path))
+	for(SchemeDetailsMap::const_iterator i = m_SchemeDetails.begin(); i != m_SchemeDetails.end(); ++i)
 	{
-		reg.WriteInt(_T("UserSettings"),  FileAge(path));
+		delete (*i).second;
 	}
-	else
+
+	for(SchemeDetailsMap::const_iterator i = m_BaseSchemeDetails.begin(); i != m_BaseSchemeDetails.end(); ++i)
 	{
-		reg.DeleteValue(_T("UserSettings"));
-		return;
+		delete (*i).second;
 	}
-
-	XMLParserCallback<UserSettingsParser> callback(*this, &UserSettingsParser::startElement, &UserSettingsParser::endElement, &UserSettingsParser::characterData);
-
-	XMLParser parser;
-	parser.SetParseState(&callback);
-	
-	callback.SetUserData((void*)pState);
-
-	pState->m_pParser = &parser;
-
-	pState->m_State = 0;
-
-	try
-	{
-		parser.LoadFile(path);
-	}
-	catch (CSchemeParserException& E)
-	{
-		CString err;
-		err.Format(_T("Error Parsing Scheme UserSettings XML: %s\n (file: %s, line: %d, column %d)"), 
-			E.GetMessage(), E.GetFileName(), E.GetLine(), E.GetColumn());
-		
-		LOG(err);
-	}
-	catch (XMLParserException& E)
-	{
-		CString err;
-		err.Format(_T("Error Parsing Scheme UserSettings XML: %s\n (file: %s, line: %d, column %d)"), 
-			XML_ErrorString(E.GetErrorCode()), E.GetFileName(), E.GetLine(), E.GetColumn());
-		
-		LOG(err);
-	}
-}
-
-void UserSettingsParser::characterData(void* userData, LPCTSTR data, int len)
-{
-	CSchemeLoaderState* pState = static_cast<CSchemeLoaderState*>(userData);
-
-	if(pState->m_State == US_KEYWORDS)
-	{
-		CString cdata;
-		TCHAR* buf = cdata.GetBuffer(len+1);
-		_tcsncpy(buf, data, len);
-		buf[len] = 0;
-		cdata.ReleaseBuffer();
-
-		pState->m_csCData += cdata;
-	}
-}
-
-void UserSettingsParser::startElement(void *userData, LPCTSTR name, XMLAttributes& atts)
-{
-	CSchemeLoaderState* pState = static_cast<CSchemeLoaderState*>(userData);
-	int state = pState->m_State;
-
-	if(state == US_SCHEMES && (_tcscmp(name, _T("scheme")) == 0))
-	{
-		processScheme(pState, atts);
-	}
-	else if(state == US_SCHEME || state == US_KEYWORD_OVERRIDES || state == US_STYLE_OVERRIDES)
-	{
-		processSchemeElement(pState, name, atts);
-	}
-	else if(state == US_CLASSES)
-	{
-		processClassElement(pState, name, atts);
-	}
-	else if(_tcscmp(name, _T("schemes")) == 0)
-	{
-		pState->m_State = US_SCHEMES;
-	}
-	else if(_tcscmp(name, _T("override-classes")) == 0)
-	{
-		pState->m_State = US_CLASSES;
-	}
-	else if(_tcscmp(name, _T("override-colours")) == 0)
-	{
-		processGlobalColours(pState, atts);
-	}
-}
-
-void UserSettingsParser::endElement(void *userData, LPCTSTR name)
-{
-	CSchemeLoaderState* pState = static_cast<CSchemeLoaderState*>(userData);
-	int state = pState->m_State;
-
-	if(state == US_KEYWORDS && (_tcscmp(name, _T("keywords")) == 0))
-	{
-		pState->m_csCData.Replace(_T("\r"), _T(""));
-		pState->m_csCData.Replace(_T("\n"), _T(" "));
-		pState->m_csCData.Replace(_T("\t"), _T(" "));
-		while (pState->m_csCData.Replace(_T("  "), _T(" ")));
-		pState->m_csCData.TrimLeft(_T(' '));
-		pState->m_csCData.TrimRight(_T(' '));
-
-		if(pState->m_csCData.GetLength() > 0)
-		{
-			CustomKeywordSet* pSet = new CustomKeywordSet;
-			pSet->key = m_idval;
-			pSet->pName = NULL;
-			pSet->pWords = new TCHAR[pState->m_csCData.GetLength()+1];
-			_tcscpy(pSet->pWords, (LPCTSTR)pState->m_csCData);
-			pScheme->AddKeywordSet(pSet);
-		}
-
-		pState->m_State = US_KEYWORD_OVERRIDES;
-	}
-	else if(state == US_SCHEME && (_tcscmp(name, _T("scheme")) == 0))
-	{
-		pState->m_CustomSchemes.insert(pState->m_CustomSchemes.begin(), CUSTOMISED_NAMEMAP::value_type(m_SchemeName, pScheme));
-		pScheme = NULL;
-
-		pState->m_State = US_SCHEMES;
-	}
-	else if(state == US_SCHEMES && (_tcscmp(name, _T("schemes")) == 0))
-	{
-		pState->m_State = 0;
-	}
-	else if(state == US_KEYWORD_OVERRIDES && (_tcscmp(name, _T("override-keywords")) == 0))
-	{
-		pState->m_State = US_SCHEME;
-	}
-	else if(state == US_STYLE_OVERRIDES && (_tcscmp(name, _T("override-styles")) == 0))
-	{
-		pState->m_State = US_SCHEME;
-	}
-	else if(state == US_CLASSES && (_tcscmp(name, _T("override-classes")) == 0))
-	{
-		pState->m_State = 0;
-	}
-
-	pState->m_csCData = _T("");
-}
-
-void UserSettingsParser::processClassElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts)
-{
-	if(_tcscmp(name, _T("style-class")) == 0)
-	{
-		StyleDetails* pStyle = new StyleDetails;
-		SchemeParser::parseStyle(pState, atts, pStyle, false);
-		
-		pState->m_CustomClasses.AddStyle(pStyle->name.c_str(), pStyle);
-	}
-}
-
-void UserSettingsParser::processSchemeElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts)
-{
-	if(pState->m_State == US_STYLE_OVERRIDES)
-	{
-		if(_tcscmp(name, _T("style")) == 0)
-		{
-			StyleDetails* pStyle = new StyleDetails;
-			SchemeParser::parseStyle(pState, atts, pStyle, false);
-
-			pScheme->AddStyle(pStyle);
-		}
-	}
-	else if (pState->m_State == US_KEYWORD_OVERRIDES)
-	{
-		if(_tcscmp(name, _T("keywords")) == 0)
-		{
-			LPCTSTR key = atts.getValue(_T("key"));
-			m_idval = _ttoi(key);
-
-			pState->m_csCData = _T("");
-
-			pState->m_State = US_KEYWORDS;
-		}
-	}
-	else if(pState->m_State == US_SCHEME)
-	{
-		if(_tcscmp(name, _T("override-keywords")) == 0)
-		{
-			pState->m_State = US_KEYWORD_OVERRIDES;
-		}
-		else if(_tcscmp(name, _T("override-styles")) == 0)
-		{
-			pState->m_State = US_STYLE_OVERRIDES;
-		}
-		else if(_tcscmp(name, _T("colours")) == 0)
-		{
-			pScheme->m_editorColours.SetFromXml(atts);
-		}
-	}
-}
-
-#define SZTRUE(s) \
-	(s[0] == 't')
-
-void UserSettingsParser::processScheme(CSchemeLoaderState* pState, XMLAttributes& atts)
-{
-	LPCTSTR pName =  atts.getValue(_T("name"));
-
-	if(pName && ((int)_tcslen(pName) > 0))
-	{
-		pScheme = new CustomisedScheme;
-		m_SchemeName = pName;
-		pState->m_State = US_SCHEME;
-
-		LPCTSTR temp = atts.getValue("ovtabs");
-		if(temp != NULL && _tcslen(temp) > 0)
-		{
-			pScheme->hasflags |= schOverrideTabs;
-
-			if(SZTRUE(temp))
-				// Signal that we definitely want to override the tab use.
-				pScheme->flags |= schOverrideTabs;
-		
-			temp = atts.getValue("usetabs");
-			if(temp != NULL && _tcslen(temp) > 0)
-			{
-				pScheme->hasflags |= schUseTabs;
-				if(SZTRUE(temp))
-					pScheme->flags |= schUseTabs;
-			}
-
-		}
-
-		temp = atts.getValue("tabwidth");
-		if(temp != NULL && _tcslen(temp) > 0)
-		{
-			pScheme->hasflags |= schOverrideTabSize;
-			pScheme->flags |= schOverrideTabSize;
-
-			pScheme->m_tabwidth = _ttoi(temp);
-		}
-	}
-#ifdef _DEBUG
-	else
-	{
-		LOG(_T("UserSettingsParser::processScheme(): Scheme section without name attribute.\n"));
-	}
-#endif
-}
-
-void UserSettingsParser::processGlobalColours(CSchemeLoaderState* pState, XMLAttributes& atts)
-{
-	pState->m_DefaultColours.SetFromXml(atts);
 }
 
 ////////////////////////////////////////////////////////////
@@ -502,38 +242,43 @@ void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 	CString UserSettingsFile = outpath;
 	UserSettingsFile += _T("UserSettings.xml");
 
-	m_LoadState.m_csOutPath = outpath;
+	m_LoadState.m_outputPath = outpath;
 
 	SchemeParser::Parse(path, mainfile, (LPCTSTR)UserSettingsFile);
 
-	CString filename(m_LoadState.m_csOutPath);
+	tstring filename(m_LoadState.m_outputPath);
 	filename += _T("default.cscheme");
 
 	// Now we record a default scheme for use when no Scheme is selected. 
 	// It has only one style (0) and defaults.
-	m_Recorder.StartRecording(_T("default"), _T("default"), filename, 0);
+	m_Recorder.StartRecording(_T("default"), _T("default"), filename.c_str(), 0);
 	m_Recorder.SetLexer(0);
-	StyleDetails* pCustom = m_LoadState.m_CustomClasses.GetStyle(_T("default"));
-	StyleDetails* pDefault = &m_LoadState.m_Default;
-	StyleDetails temp(*pDefault);
-	if(pCustom)
-		customiseStyle(&temp, pCustom);
+	
+	StylePtr pS( new FullStyleDetails(STYLE_DEFAULT) );
+	pS->Style = new StyleDetails(m_LoadState.m_Default);
+	pS->Class = m_LoadState.GetClass(_T("default"));
+	
+	StyleDetails temp;
+	pS->Combine(&m_LoadState.m_Default, temp);
 	temp.Key = STYLE_DEFAULT;
 	m_Recorder.SetDefStyle(&temp);
 	sendStyle(&temp, &m_Recorder);
+	
 	temp.Key = 0;
 	sendStyle(&temp, &m_Recorder);
+
 	m_LoadState.m_DefaultColours.SendColours(&m_Recorder);
+
 	m_Recorder.EndRecording();
 }
 
 void SchemeCompiler::onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int /*ncfoldflags*/)
 {
-	CString filename(m_LoadState.m_csOutPath);
+	tstring filename(m_LoadState.m_outputPath);
 	filename += name;
 	filename += _T(".cscheme");
 
-	m_Recorder.StartRecording(name, title, filename, foldflags);
+	m_Recorder.StartRecording(name, title, filename.c_str(), foldflags);
 	
 	m_Recorder.SetDefStyle(&m_LoadState.m_Default);
 }
@@ -544,23 +289,24 @@ void SchemeCompiler::onLanguageEnd()
 		m_Recorder.EndRecording();
 }
 
-void SchemeCompiler::onStyle(StyleDetails* pStyle, StyleDetails* pCustom)
+void SchemeCompiler::onStyle(const StylePtr& details)
 {
-	if(pCustom)
-		customiseStyle(pStyle, pCustom);
+	StyleDetails full;
+	details->Combine(&m_LoadState.m_Default, full);
+	full.Key = details->GetKey();
+	//if(pCustom)
+	//	customiseStyle(pStyle, pCustom);
 
-	if(pStyle->Key == STYLE_DEFAULT)
+	if(full.Key == STYLE_DEFAULT)
 	{
 		m_Recorder.SetDefStyle(&m_LoadState.m_Default);
 	}
 
-	sendStyle(pStyle, &m_Recorder);
+	sendStyle(&full, &m_Recorder);
 }
 
-void SchemeCompiler::onStyleClass(StyleDetails* pClass, StyleDetails* pCustom)
+void SchemeCompiler::onStyleClass(const StylePtr& details)
 {
-	if(pCustom)
-		customiseStyle(pClass, pCustom);
 }
 
 void SchemeCompiler::onProperty(LPCTSTR name, LPCTSTR value)
@@ -652,9 +398,9 @@ void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
 	
 	callback.SetUserData((void*)&m_LoadState);
 
-	m_LoadState.m_pGroupClass = NULL;
+	//m_LoadState.m_pGroupClass = NULL;
 	m_LoadState.m_pParser = &parser;
-	m_LoadState.m_csBasePath = path;
+	m_LoadState.m_basePath = path;
 
 	CString csFile = path;
 	csFile += mainfile;
@@ -671,7 +417,7 @@ void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
 			
 			onFile(file);
 		}
-		catch (CSchemeParserException& E)
+		catch (SchemeParserException& E)
 		{
 			CString err;
 			err.Format(_T("Error Parsing Scheme XML: %s\n (file: %s, line: %d, column %d)"), 
@@ -704,32 +450,18 @@ void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
 /**
  * A base style is a style that every scheme reflects.
  */
-void SchemeParser::processBaseStyle(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processBaseStyle(SchemeLoaderState* pState, XMLAttributes& atts)
 {
 	// Create a style with no default settings, the defaults will be applied
 	// later as the base style is used for each scheme.
-	StyleDetails* pS = new StyleDetails( );
+	StyleDetails* pS = new StyleDetails;
 	
 	parseStyle(pState, atts, pS);
 
 	pState->m_BaseStyles.AddStyle(pS);
 }
 
-void SchemeParser::processGlobal(CSchemeLoaderState* pState, XMLAttributes& atts)
-{
-	for(int i = 0; i < atts.getCount(); i++)
-	{
-		if(_tcscmp(atts.getName(i), _T("name")) == 0)
-		{
-			pState->m_csGName = atts.getValue(i);
-			pState->m_State = DOING_GLOBAL;
-			pState->m_csCData = _T("");
-			break;
-		}
-	}
-}
-
-void SchemeParser::processProperty(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processProperty(SchemeLoaderState* pState, XMLAttributes& atts)
 {
 	LPCTSTR name = atts.getValue(_T("name"));
 	LPCTSTR value = atts.getValue(_T("value"));
@@ -740,27 +472,26 @@ void SchemeParser::processProperty(CSchemeLoaderState* pState, XMLAttributes& at
 	}
 }
 
-void SchemeParser::processKeywordClass(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processKeywordClass(SchemeLoaderState* pState, XMLAttributes& atts)
 {
 	for(int i = 0; i < atts.getCount(); i++)
 	{
 		if(_tcscmp(atts.getName(i), _T("name")) == 0)
 		{
-			pState->m_csGName = atts.getValue(i);
+			pState->m_storedName = atts.getValue(i);
 			pState->m_State = DOING_KEYWORDS;
-			pState->m_csCData = _T("");
+			pState->m_CDATA = _T("");
 			break;
 		}
 	}
 }
 
-void SchemeParser::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, StyleDetails* pStyle, bool bExpandGlobals)
+void SchemeParser::parseStyle(SchemeLoaderState* pState, XMLAttributes& atts, StyleDetails* pStyle)
 {
 	LPCTSTR nm;
 	LPCTSTR t;
 	int c = atts.getCount();
 
-	// need to add global substitution.
 	for(int i = 0; i < c; i++)
 	{
 		nm = atts.getName(i);
@@ -783,24 +514,7 @@ void SchemeParser::parseStyle(CSchemeLoaderState* pState, XMLAttributes& atts, S
 			pStyle->Key = _ttoi(t);
 			continue;
 		}
-
-		if(bExpandGlobals)
-		{
-			CSTRING_MAP::iterator it = pState->m_Globals.find(CString(t));
-			if(it != pState->m_Globals.end())
-			{
-				t = (*it).second;
-			}
-#ifdef _DEBUG
-			else
-			{
-				CString todebug;
-				todebug.Format(_T("No match for: %s=%s\n"), nm, t);
-				LOG(todebug);
-			}
-#endif
-		}
-
+		
 		if(_tcscmp(nm, _T("fore")) == 0)
 		{
 			pStyle->ForeColor = PNStringToColor(t);
@@ -855,7 +569,7 @@ void SchemeParser::customiseStyle(StyleDetails* style, StyleDetails* custom)
 	style->layer(*custom);
 }
 
-void SchemeParser::processStyleClass(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processStyleClass(SchemeLoaderState* pState, XMLAttributes& atts)
 {
 	//<style-class name="comment" inherit-style="bold" fore="comment-color"/>
 	// fore, back, font, size, italics, bold, underline, eolfilled
@@ -863,10 +577,13 @@ void SchemeParser::processStyleClass(CSchemeLoaderState* pState, XMLAttributes& 
 	pState->m_State = DOING_STYLEC;
 
 	LPCTSTR t = atts.getValue(_T("name"));
+	
+	StylePtr pS;
 	StyleDetails* pStyle = NULL;
+
 	if(t != NULL)
 	{
-		CString name(t);
+		std::string name;
 		if(name == _T("default"))
 		{
 			//special case default class...
@@ -874,39 +591,48 @@ void SchemeParser::processStyleClass(CSchemeLoaderState* pState, XMLAttributes& 
 		}
 		else
 		{
-			pStyle = new StyleDetails(pState->m_Default);
-			pState->m_StyleClasses.AddStyle(name, pStyle);
+			pS = pState->GetClass(name.c_str());
+
+			if(!pS.get())
+			{
+				pS.reset(new FullStyleDetails(-1));
+				pState->m_Classes.insert( StylePtrMap::value_type(name, pS));
+			}
+
+			if(!pS->Style)
+			{
+				pS->Style = new StyleDetails(pState->m_Default);
+			}
+			
+			pStyle = pS->Style;
 		}
 
 		t = atts.getValue(_T("inherit-style"));
 		if(t != NULL)
 		{
-			CString inh(t);
-			StyleDetails* pE = pState->m_StyleClasses.GetStyle(inh);
-			if(pE)
-				*pStyle = *pE;
+			StylePtr pE = pState->GetClass(t);
+			if(pE.get() && pE->Style != NULL)
+				*pStyle = *pE->Style;
 		}
 
 		parseStyle(pState, atts, pStyle);
 
-        // NULL if not found.
-		StyleDetails* pCustom = pState->m_CustomClasses.GetStyle(name);;
-
-		onStyleClass(pStyle, pCustom);
+		if(pS.get())
+			onStyleClass(pS);
 	}
 }
 
-void SchemeParser::processLanguageStyleGroup(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processLanguageStyleGroup(SchemeLoaderState* pState, XMLAttributes& atts)
 {
-	StyleDetails* pClass = NULL;
+	StylePtr pClass;
 	LPCTSTR pszClass = atts.getValue(_T("class"));
 
 	if(!pState->m_bBaseParse)
 	{
 		if(pszClass)
 		{
-			pClass = pState->m_StyleClasses.GetStyle(pszClass);
-			if(pClass)
+			pClass = pState->GetClass(pszClass);
+			if(pClass.get())
 				pState->m_pGroupClass = pClass;
 		}
 
@@ -914,14 +640,7 @@ void SchemeParser::processLanguageStyleGroup(CSchemeLoaderState* pState, XMLAttr
 	}
 	else
 	{
-		StyleDetails* pGroupMarker = new StyleDetails;
-		pGroupMarker->values = edvGroupStart;
-		if(pszClass)
-			pGroupMarker->classname = pszClass;
-		pState->m_pBase->AddStyle(pGroupMarker);
-		LPCTSTR name = atts.getValue(_T("name"));
-		LPCTSTR description = atts.getValue(_T("description"));
-		pState->m_pBase->AddGroupDetails(name, description);
+		pState->m_pBase->BeginStyleGroup( atts.getValue(_T("name")), atts.getValue(_T("description")), NULL );
 	}
 }
 
@@ -932,88 +651,59 @@ void SchemeParser::processLanguageStyleGroup(CSchemeLoaderState* pState, XMLAttr
  * 3) Class in the current style class attribute.
  * 4) Default style.
  */
-void SchemeParser::processLanguageStyle(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processLanguageStyle(SchemeLoaderState* pState, XMLAttributes& atts)
 {
-	CString classname;
-	StyleDetails* pCustom = NULL;
-	StyleDetails* pBase = NULL;
+	LPCTSTR classname;
 
 	LPCTSTR skey = atts.getValue(_T("key"));
 	int key = _ttoi(skey);
 
-	// If we're parsing a base-style, we will re-do this process later
-	// so we don't bother now.
-	if(!pState->m_bBaseParse)
+	StylePtr style = pState->m_pCurScheme->GetStyle(key);
+
+	if(pState->m_pGroupClass != NULL)
 	{
-
-		// Custom styles first (storing any custom version for later)...
-		/*if(pState->m_pCustom)
-		{
-			pCustom = pState->m_pCustom->GetStyle(key);
-			if(pCustom)
-			{
-				if((pCustom->values & edvClass) != 0)
-					classname = pCustom->classname.c_str();
-			}
-		}*/
-
-		// No customised style class, is there a group class?
-		//if(classname.GetLength() == 0)
-		//{
-		if(pState->m_pGroupClass != NULL)
-		{
-			// There is a class associated with a group of styles.
-			// We also don't need to find the style, it will already
-			// be the m_pGroupClass member of pState.
-			pBase = pState->m_pGroupClass;
-		}
-		else
-		{
-			classname = atts.getValue(_T("class"));
-
-			// We've not found a class yet, but if we do have a class name, we try to find that.
-			if((classname.GetLength() > 0) && (classname != _T("default")))
-			{
-				pBase = pState->m_StyleClasses.GetStyle(classname);
-			}
-		}
-		//}
-	}
-
-	// If we didn't find a class, we base the style on the default style...
-	if(!pBase)
-		pBase = &pState->m_Default;
-
-	// Create a new style based on either the class or the default style.
-	StyleDetails Style(*pBase);
-	
-	// we reset this, so that parseStyle will tell us what has been changed.
-	Style.values = 0;
-
-	// Read the details into it from it's attributes.
-	parseStyle(pState, atts, &Style);
-
-	Style.Key = key;
-
-	if(!pState->m_bBaseParse)
-	{
-		// Pass it to whatever wants to know about it.
-		onStyle(&Style, pCustom);
+		// There is a class associated with a group of styles.
+		// We also don't need to find the style, it will already
+		// be the m_pGroupClass member of pState.
+		style->GroupClass = pState->m_pGroupClass;
 	}
 	else
 	{
-		StyleDetails* pStored = new StyleDetails(Style);
-		pState->m_pBase->AddStyle(pStored);
+		classname = atts.getValue(_T("class"));
+
+		// We've not found a class yet, but if we do have a class name, we try to find that.
+		if(classname && (_tcslen(classname) > 0) && (_tcscmp(classname, _T("default")) != 0))
+		{
+			style->Class = pState->GetClass(classname);
+		}
 	}
+
+	style->Style = new StyleDetails;
+	
+	// Read the details into it from it's attributes.
+	parseStyle(pState, atts, style->Style);
+	
+	if(!pState->m_bBaseParse)
+	{
+		// Pass it to whatever wants to know about it.
+		onStyle(style);//&Style, pCustom);
+	}
+	/*else
+	{
+		// I think that if base schemes use the SchemeDetails then we can
+		// just store the styles there like usual and pull them later.
+		StyleDetails* pStored = new StyleDetails(*style->Style);
+		pState->m_pBase->AddStyle(pStored);
+	}*/
 }
 
-void SchemeParser::processLanguageKeywords(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processLanguageKeywords(SchemeLoaderState* pState, XMLAttributes& atts)
 {
 	 //<keyword key="0" class="hypertext"/>
 	int x = atts.getCount();
 	CString name = _T("");
-	CString val = _T("");
-	CString kw = _T("");
+	LPCTSTR val = NULL;
+	tstring kw = _T("");
 	CString namestr = _T("");
 	int key = -1;
 
@@ -1028,7 +718,7 @@ void SchemeParser::processLanguageKeywords(CSchemeLoaderState* pState, XMLAttrib
 		}
 		else if(name == _T("class"))
 		{
-			CSTRING_MAP::iterator z = pState->m_Keywords.find(val);
+			STRING_MAP::iterator z = pState->m_Keywords.find(tstring(val));
 			if(z != pState->m_Keywords.end())
 			{
 				// we have some keywords...
@@ -1042,18 +732,15 @@ void SchemeParser::processLanguageKeywords(CSchemeLoaderState* pState, XMLAttrib
 	}
 
 	LPCTSTR custom = NULL;
-	if(pState->m_pCustom)
-	{
-		CustomKeywordSet* pCustom = pState->m_pCustom->FindKeywordSet(key);
-		if(pCustom)
-			custom = pCustom->pWords;
-	}
+	CustomKeywordSet* pCustom = pState->m_pCurScheme->CustomKeywords.FindKeywordSet(key);
+	if(pCustom)
+		custom = pCustom->pWords;
 
 	if(/*kw != _T("") && */key != -1) // We want empty keyword sets for customisation.
 	{
 		if(!pState->m_bBaseParse)
 		{
-            onKeywords(key, kw, namestr, custom);
+			onKeywords(key, kw.c_str(), namestr, custom);
 		}
 		else
 		{
@@ -1065,21 +752,51 @@ void SchemeParser::processLanguageKeywords(CSchemeLoaderState* pState, XMLAttrib
 				pSet->pName = new TCHAR[sLen + 1];
 				_tcscpy(pSet->pName, namestr);
 			}
-			sLen = _tcslen(kw);
+			sLen = kw.length();
 			if(sLen != 0)
 			{
                 pSet->pWords = new TCHAR[sLen + 1];
-				_tcscpy(pSet->pWords, kw);
+				_tcscpy(pSet->pWords, kw.c_str());
 			}
-			pState->m_pBase->AddKeywordSet(pSet);
+			pState->m_pBase->Keywords.AddKeywordSet(pSet);
 		}
+	}
+}
+
+SchemeDetails* ensureSchemeDetails(SchemeDetailsMap& map, tstring& name)
+{
+	SchemeDetailsMap::const_iterator i = map.find( name );
+	if( i != map.end() )
+	{
+		return (*i).second;
+	}
+	else
+	{
+		SchemeDetails* n = new SchemeDetails( name.c_str() );
+		map.insert( SchemeDetailsMap::value_type( name, n ) );
+		return n;
+	}
+}
+
+SchemeDetails* ensureBaseSchemeDetails(SchemeDetailsMap& map, tstring& name)
+{
+	SchemeDetailsMap::const_iterator i = map.find( name );
+	if( i != map.end() )
+	{
+		return (*i).second;
+	}
+	else
+	{
+		SchemeDetails* n = new BaseScheme( name.c_str() );
+		map.insert( SchemeDetailsMap::value_type( name, n ) );
+		return n;
 	}
 }
 
 /**
  * @brief Process some XML element related to the "language" block of a schemes file.
  */
-void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts)
+void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts)
 {
 	LPCTSTR t = NULL;
 	int flags = 0;
@@ -1096,14 +813,27 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 		{
 			pState->m_StartLang = ::GetTickCount(); // diags.
 
-			pState->m_csLangName = scheme;
+			pState->m_langName = scheme;
+
+			if(!pState->m_bBaseParse)
+			{
+				pState->m_pCurScheme = ensureSchemeDetails(
+					pState->m_SchemeDetails, 
+					pState->m_langName);
+			}
+			else
+			{
+				pState->m_pCurScheme = ensureBaseSchemeDetails(
+					pState->m_BaseSchemeDetails,
+					pState->m_langName);
+			}
 
 			LPCTSTR base = atts.getValue(_T("base"));
 			if(base != NULL)
 			{
 				// The language has a base-language reference.
-				CNM_IT iBase = pState->m_BaseSchemes.find(CString(base));
-				if( iBase != pState->m_BaseSchemes.end() )
+				SchemeDetailsMap::iterator iBase = pState->m_BaseSchemeDetails.find(tstring(base));
+				if( iBase != pState->m_BaseSchemeDetails.end() )
 				{
 					pBase = static_cast<BaseScheme*>( (*iBase).second );
 					flags = pBase->flags;
@@ -1151,31 +881,19 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 			// Only look for customisations if this is an actual scheme.
 			if(!pState->m_bBaseParse)
 			{
-				CNM_IT custom = pState->m_CustomSchemes.find(pState->m_csLangName);
-				if(custom != pState->m_CustomSchemes.end())
+				// Final flags stage, see if the user has removed some.
+				if(pState->m_pCurScheme->CustomFlagFlags & schOverrideTabs)
 				{
-					pState->m_pCustom = (*custom).second;
-
-					// Final flags stage, see if the user has removed some.
-					if(pState->m_pCustom->hasflags & schOverrideTabs)
-					{
-						flags &= ~(schOverrideTabs|schUseTabs);
-						flags |= (pState->m_pCustom->flags & (schOverrideTabs|schUseTabs));
-					}
-					
-					if(pState->m_pCustom->hasflags & schOverrideTabSize)
-					{
-						flags &= ~(schOverrideTabSize);
-						flags |= (pState->m_pCustom->flags & schOverrideTabSize);
-					}
+					flags &= ~(schOverrideTabs|schUseTabs);
+					flags |= (pState->m_pCurScheme->CustomFlags & (schOverrideTabs|schUseTabs));
 				}
-				else
+				
+				if(pState->m_pCurScheme->CustomFlagFlags & schOverrideTabSize)
 				{
-					pState->m_pCustom = NULL;
+					flags &= ~(schOverrideTabSize);
+					flags |= (pState->m_pCurScheme->CustomFlags & schOverrideTabSize);
 				}
 			}
-			else
-				pState->m_pCustom = NULL;
 
 			if(!pState->m_bBaseParse)
 			{
@@ -1184,13 +902,12 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 
 				if( pBase )
 				{
-					sendBaseScheme(pState, pBase);
+					sendBaseScheme(pState, pBase, base);
 				}
 			}
 			else
 			{
-				pState->m_pBase = new BaseScheme;
-				pState->m_BaseSchemes.insert(pState->m_BaseSchemes.end(), CUSTOMISED_NAMEMAP::value_type(pState->m_csLangName, pState->m_pBase));
+				pState->m_pBase = static_cast<BaseScheme*>( pState->m_pCurScheme );
 				pState->m_pBase->flags = flags;
 			}
 
@@ -1213,7 +930,7 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 				sbits = _ttoi(t);
 				if(sbits == 0)
 				{
-					//throw CSchemeParserException(pState->m_pParser, _T("Style Bits value not valid (0 or non-numeric)"));
+					//throw SchemeParserException(pState->m_pParser, _T("Style Bits value not valid (0 or non-numeric)"));
 					LOG(_T("Style Bits value not valid (0 or non-numeric)"));
 					sbits = 5;
 				}
@@ -1253,77 +970,25 @@ void SchemeParser::processLanguageElement(CSchemeLoaderState* pState, LPCTSTR na
 /**
  * @brief Add a specific file to the list of files to be processed.
  */
-void SchemeParser::specifyImportFile(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::specifyImportFile(SchemeLoaderState* pState, XMLAttributes& atts)
 {
 	LPCTSTR name = atts.getValue(_T("name"));
 	if(name != NULL)
 	{
-		CString filename = pState->m_csBasePath;
+		tstring filename = pState->m_basePath;
 		filename += name;
-		pState->m_IncludeFiles.insert(pState->m_IncludeFiles.end(), filename);
+		pState->m_IncludeFiles.insert(pState->m_IncludeFiles.end(), filename.c_str());
 	}
 	else
 	{
-		throw CSchemeParserException(pState->m_pParser, _T("Import element with no name attribute."));
+		throw SchemeParserException(pState->m_pParser, _T("Import element with no name attribute."));
 	}
-}
-
-void SchemeParser::sendBaseStyle(CSchemeLoaderState* pState, StyleDetails* pS)
-{
-	StyleDetails* pCustom = NULL;
-	StyleDetails* pBase = NULL;
-	CString classname;
-	int key = pS->Key;
-
-	if(pState->m_pCustom)
-	{
-		pCustom = pState->m_pCustom->GetStyle(key);
-		if(pCustom)
-		{
-			if((pCustom->values & edvClass) != 0)
-				classname = pCustom->classname.c_str();
-		}
-	}
-
-	// No customised style class, is there a group class?
-	if(classname.GetLength() == 0)
-	{
-		if(pState->m_pGroupClass != NULL)
-		{
-			// There is a class associated with a group of styles.
-			// We also don't need to find the style, it will already
-			// be the m_pGroupClass member of pState.
-			pBase = pState->m_pGroupClass;
-		}
-		else
-		{
-			classname = pS->classname.c_str();
-		}
-	}
-
-	// We've not found a class yet, but if we do have a class name, we try to find that.
-	if(!pBase && (classname.GetLength() > 0) && (classname != _T("default")))
-	{
-		pBase = pState->m_StyleClasses.GetStyle(classname);
-	}
-	else
-	{
-		// If we didn't find a class, we base the style on the default style...
-		pBase = &pState->m_Default;
-	}
-
-	StyleDetails Style(*pS);
-	
-	if( pBase )
-		customiseStyle(&Style, pBase);
-
-	onStyle(&Style, pCustom);
 }
 
 /**
  * Send all of the base styles for the current scheme.
  */
-void SchemeParser::sendBaseStyles(CSchemeLoaderState* pState)
+void SchemeParser::sendBaseStyles(SchemeLoaderState* pState)
 {
 	LPCTSTR attstr[5];
 	attstr[0] = _T("name");
@@ -1333,64 +998,79 @@ void SchemeParser::sendBaseStyles(CSchemeLoaderState* pState)
 	attstr[4] = NULL;
 	XMLAttributes atts(&attstr[0]);
 
-	onStyleGroup(atts, NULL);
+	onStyleGroup(atts, StylePtr());
 	
 	for(SL_CIT i = pState->m_BaseStyles.StylesBegin();
 		i != pState->m_BaseStyles.StylesEnd();
 		++i)
 	{
-		sendBaseStyle(pState, (*i));
+		StylePtr p = pState->m_pCurScheme->GetStyle( (*i)->Key );
+		p->Style = new StyleDetails( *(*i) );
+		
+		onStyle(p);
 	}
 
 	onStyleGroupEnd();
 }
 
-void SchemeParser::sendBaseScheme(CSchemeLoaderState* pState, BaseScheme* pBase)
+void SchemeParser::sendBaseScheme(SchemeLoaderState* pState, BaseScheme* pBase, LPCTSTR baseName)
 {
-	GroupDetails_t* pGroupDetails = pBase->pGroupDetails;
+	GroupDetailsList::const_iterator iGroup = pBase->GroupDetails.begin();
 
 	if( (pBase->valuesSet & ebvLexer) != 0 )
 	{
 		onLexer(pBase->lexer.c_str(), pBase->styleBits);
 	}
 
-	for(SL_CIT i = pBase->StylesBegin(); i != pBase->StylesEnd(); ++i)
+	SchemeDetailsMap::const_iterator i = pState->m_BaseSchemeDetails.find( tstring(baseName) );
+	if(i != pState->m_BaseSchemeDetails.end())
 	{
-		StyleDetails* pS = (*i);
-		if( (pS->values & edvGroupStart) != 0 )
+		SchemeDetails* sd = (*i).second;
+
+		for(StylePtrList::const_iterator i = sd->Styles.begin(); i != sd->Styles.end(); ++i)
 		{
-			StyleDetails* pClass = NULL;
+			StyleDetails* pS = (*i)->Style;
 			
-			if( pS->classname.length() != 0 )
+			// See if this is a dummy style to mark a group start...
+			if( (pS->values & edvGroupStart) != 0 )
 			{
-				pClass = pState->m_StyleClasses.GetStyle(pS->classname.c_str());
-				if( pClass )
-					pState->m_pGroupClass = pClass;
-			}
+				StylePtr pClass;
+				
+				if( pS->classname.length() != 0 )
+				{
+					pClass = pState->GetClass(pS->classname.c_str());
+					if( pClass.get() )
+						pState->m_pGroupClass = pClass;
+				}
 
-			if( pGroupDetails != NULL )
+				if( iGroup != pBase->GroupDetails.end() )
+				{
+					LPCTSTR attstr[5];
+					attstr[0] = _T("name");
+					attstr[1] = (*iGroup).name.c_str();
+					attstr[2] = _T("description");
+					attstr[3] = (*iGroup).description.c_str();
+					attstr[4] = NULL;
+					XMLAttributes atts(&attstr[0]);
+
+					onStyleGroup(atts, pClass);
+
+					++iGroup;
+				}
+			}
+			// or a dummy style to mark a group end
+			else if( (pS->values & edvGroupEnd) != 0 )
 			{
-				LPCTSTR attstr[5];
-				attstr[0] = _T("name");
-				attstr[1] = pGroupDetails->name;
-				attstr[2] = _T("description");
-				attstr[3] = pGroupDetails->description;
-				attstr[4] = NULL;
-				XMLAttributes atts(&attstr[0]);
-
-				onStyleGroup(atts, pClass);
-
-				pGroupDetails = pGroupDetails->pNext;
+				onStyleGroupEnd();
+				pState->m_pGroupClass.reset();
 			}
-		}
-		else if( (pS->values & edvGroupEnd) != 0 )
-		{
-			onStyleGroupEnd();
-			pState->m_pGroupClass = NULL;
-		}
-		else
-		{
-			sendBaseStyle(pState, pS);
+			// otherwise it's a bonafide style
+			else
+			{
+				// Copy the base style to customise for this instance:
+				StylePtr pFS( new FullStyleDetails( *(*i) ) );
+				onStyle((*i));
+			}
 		}
 	}
 }
@@ -1398,7 +1078,7 @@ void SchemeParser::sendBaseScheme(CSchemeLoaderState* pState, BaseScheme* pBase)
 /**
  * @brief Take an import fileset specification and add the relevant files to be processed.
  */
-void SchemeParser::specifyImportSet(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::specifyImportSet(SchemeLoaderState* pState, XMLAttributes& atts)
 {
 	LPCTSTR pattern = atts.getValue(_T("pattern"));
 
@@ -1407,25 +1087,25 @@ void SchemeParser::specifyImportSet(CSchemeLoaderState* pState, XMLAttributes& a
 		HANDLE hFind;
 		WIN32_FIND_DATA FindFileData;
 
-		CString sPattern = pState->m_csBasePath;
+		tstring sPattern = pState->m_basePath;
 		sPattern += pattern;
 		
-		CString toAdd;
+		tstring toAdd;
 
-		hFind = FindFirstFile(sPattern, &FindFileData);
+		hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
 		if (hFind != INVALID_HANDLE_VALUE) 
 		{
 			BOOL found = TRUE;
-			CString filename;
+			tstring filename;
 
 			while (found)
 			{
 				if(_tcsicmp(FindFileData.cFileName, _T("master.scheme")) != 0)
 				{
-					toAdd = pState->m_csBasePath;
+					toAdd = pState->m_basePath;
 					toAdd += FindFileData.cFileName;
 
-					pState->m_IncludeFiles.insert(pState->m_IncludeFiles.end(), toAdd);
+					pState->m_IncludeFiles.insert(pState->m_IncludeFiles.end(), toAdd.c_str());
 				}
 
 				found = FindNextFile(hFind, &FindFileData);
@@ -1436,45 +1116,41 @@ void SchemeParser::specifyImportSet(CSchemeLoaderState* pState, XMLAttributes& a
 	}
 	else
 	{
-		throw CSchemeParserException(pState->m_pParser, _T("Set element with no pattern attribute."));
+		throw SchemeParserException(pState->m_pParser, _T("Set element with no pattern attribute."));
 	}
 }
 
-void SchemeParser::processKeywordCombine(CSchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processKeywordCombine(SchemeLoaderState* pState, XMLAttributes& atts)
 {
 	pState->m_State = DOING_KEYWORDCOMBINE;
 
 	LPCTSTR name = atts.getValue(_T("name"));
 	if(name != NULL)
 	{
-		CSTRING_MAP::iterator z = pState->m_Keywords.find(CString(name));
+		STRING_MAP::iterator z = pState->m_Keywords.find(tstring(name));
 		if(z != pState->m_Keywords.end())
 		{
-			pState->m_csCData += (*z).second;
+			pState->m_CDATA += (*z).second.c_str();
 		}
 		else
 		{
-			throw CSchemeParserException(pState->m_pParser, _T("Unmatched keyword class inclusion."));
+			throw SchemeParserException(pState->m_pParser, _T("Unmatched keyword class inclusion."));
 		}
 	}
 	else
 	{
-		throw CSchemeParserException(pState->m_pParser, _T("include-class element with no name attribute"));
+		throw SchemeParserException(pState->m_pParser, _T("include-class element with no name attribute"));
 	}
 }
 
 void SchemeParser::startElement(void *userData, LPCTSTR name, XMLAttributes& atts)
 {
-	CSchemeLoaderState* pState = static_cast<CSchemeLoaderState*>(userData);
+	SchemeLoaderState* pState = static_cast<SchemeLoaderState*>(userData);
 	int state = pState->m_State;
 
 	CString stattext;
 
-	if(state == DOING_GLOBALS && _tcscmp(name, _T("value")) == 0)
-	{
-		processGlobal(pState, atts);
-	}
-	else if(state == DOING_KEYWORDC && _tcscmp(name, _T("keyword-class")) == 0)
+	if(state == DOING_KEYWORDC && _tcscmp(name, _T("keyword-class")) == 0)
 	{
 		processKeywordClass(pState, atts);
 	}
@@ -1513,18 +1189,9 @@ void SchemeParser::startElement(void *userData, LPCTSTR name, XMLAttributes& att
 			specifyImportFile(pState, atts);
 		}
 	}
-	/*else if(state == DOING_BASE_OPTIONS && _tcscmp(name, _T("colour")) == 0)
-	{
-		processBaseColour(pState, atts);
-	}*/
 	else if(state == DOING_BASE_OPTIONS && _tcscmp(name, _T("style")) == 0)
 	{
 		processBaseStyle(pState, atts);
-	}
-	else if(_tcscmp(name, _T("globals")) == 0)
-	{		
-		stattext = _T("Processing Globals\r\n");
-		pState->m_State = DOING_GLOBALS;
 	}
 	else if(_tcscmp(name, _T("keyword-classes")) == 0)
 	{
@@ -1571,65 +1238,26 @@ void SchemeParser::startElement(void *userData, LPCTSTR name, XMLAttributes& att
 
 void SchemeParser::endElement(void *userData, LPCTSTR name)
 {
-	CSchemeLoaderState* pS = static_cast<CSchemeLoaderState*>(userData);
+	SchemeLoaderState* pS = static_cast<SchemeLoaderState*>(userData);
 	
 	int state = pS->m_State;
 
 	CString stattext;
 
-	if(state == DOING_GLOBAL)
-	{
-		// Add a global...
-		if(pS->m_csCData.GetLength() > 0)
-		{
-			CString global = pS->m_csCData;
-
-			// Now to match global back in with the globals...
-			CSTRING_MAP::iterator it = pS->m_Globals.find(global);
-			if(it != pS->m_Globals.end())
-			{
-				global = (*it).second;
-			}
-#ifdef _DEBUG
-			else
-			{
-				CString todebug;
-				todebug.Format(_T("No match for: %s\n"), global);
-				LOG(todebug);
-			}
-
-			stattext.Format(_T("Added Global: %s = %s\r\n"), pS->m_csGName, global);
-			LOG(stattext);
-#endif
-			pS->m_Globals.insert(pS->m_Globals.end(), CSTRING_MAP::value_type(pS->m_csGName, global));
-		}
-
-		pS->m_State = DOING_GLOBALS;
-	}
-	else if(state == DOING_STYLEC)
+	if(state == DOING_STYLEC)
 	{
 		pS->m_State = DOING_STYLECS;
 	}
 	else if(state == DOING_KEYWORDS)
 	{
-		if(pS->m_csCData.GetLength() > 0)
+		if(pS->m_CDATA.length() > 0)
 		{
-			// 1: Remove #13.
-			// 2: Replace #10 with " ".
-			// 3: Replace #9 with " ".
-			// 4: Compress Spaces.
-			// 5: Trim left and right.
-			pS->m_csCData.Replace(_T("\r"), _T(""));
-			pS->m_csCData.Replace(_T("\n"), _T(" "));
-			pS->m_csCData.Replace(_T("\t"), _T(" "));
-			while (pS->m_csCData.Replace(_T("  "), _T(" ")));
-			pS->m_csCData.TrimLeft(_T(' '));
-			pS->m_csCData.TrimRight(_T(' '));
+			tstring kw = NormaliseKeywords( tstring(pS->m_CDATA) );
 
-			pS->m_Keywords.insert(pS->m_Keywords.end(), CSTRING_MAP::value_type(pS->m_csGName, pS->m_csCData));
+			pS->m_Keywords.insert(pS->m_Keywords.end(), STRING_MAP::value_type(pS->m_storedName, kw));
 
 #ifdef _DEBUG
-			stattext.Format(_T("Added Keyword Class: %s\r\n"), pS->m_csGName);
+			stattext.Format(_T("Added Keyword Class: %s\r\n"), pS->m_storedName.c_str());
 			LOG(stattext);
 #endif
 		}
@@ -1651,9 +1279,8 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 			EditorColours* ecCust = NULL;
 
 			// See if there's any customised editor colours
-			if(pS->m_pCustom)
-				if(pS->m_pCustom->m_editorColours.HasColours())
-					ecCust = &pS->m_pCustom->m_editorColours;
+			if( pS->m_pCurScheme->CustomColours.HasColours() )
+				ecCust = &pS->m_pCurScheme->CustomColours;
 
 			// Set those colours!
 			onColours(ec, ecCust);
@@ -1662,10 +1289,12 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 
 			DWORD dwTimeDiff = ::GetTickCount() - pS->m_StartLang;
 			TCHAR buf[300];
-			_sntprintf(buf, 300, _T("Language Load (%s): %dms\n"), pS->m_csLangName, dwTimeDiff);
+			_sntprintf(buf, 300, _T("Language Load (%s): %dms\n"), pS->m_langName.c_str(), dwTimeDiff);
 			LOG(buf);
 			
 			pS->m_State = 0;
+
+			pS->m_pCurScheme = NULL;
 		}
 		else if(_tcscmp(name, _T("base-language")) == 0)
 		{
@@ -1683,7 +1312,7 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 		else if(_tcscmp(name, _T("group")) == 0)
 		{
 			// Remove any custom group class we had assigned.
-			pS->m_pGroupClass = NULL;
+			pS->m_pGroupClass.reset();
 			
 			if(!pS->m_bBaseParse)
 			{
@@ -1692,9 +1321,10 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 			else
 			{
 				// Add a dummy style to mark the end of the group.
-				StyleDetails* pGroupEndMarker = new StyleDetails;
-				pGroupEndMarker->values = edvGroupEnd;
-				pS->m_pBase->AddStyle(pGroupEndMarker);
+				StylePtr pStyle(new FullStyleDetails(-1));
+				pStyle->Style = new StyleDetails;
+				pStyle->Style->values = edvGroupEnd;
+				pS->m_pBase->Styles.push_back(pStyle);
 			}
 		}
 	}
@@ -1721,13 +1351,13 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 	
 	// Clear character data after every tag end...
 	if(state != DOING_KEYWORDCOMBINE)
-		pS->m_csCData = _T("");
+		pS->m_CDATA = _T("");
 }
 
 ///@todo perhaps change this to use strncat and go straight into the CData buffer...
 void SchemeParser::characterData(void* userData, LPCTSTR data, int len)
 {
-	CSchemeLoaderState* pState = static_cast<CSchemeLoaderState*>(userData);
+	SchemeLoaderState* pState = static_cast<SchemeLoaderState*>(userData);
 
 	CString cdata;
 	TCHAR* buf = cdata.GetBuffer(len+1);
@@ -1735,5 +1365,5 @@ void SchemeParser::characterData(void* userData, LPCTSTR data, int len)
 	buf[len] = 0;
 	cdata.ReleaseBuffer();
 
-	pState->m_csCData += cdata;
+	pState->m_CDATA += cdata;
 }

@@ -53,13 +53,13 @@
 			<style name="Number" key="4" class="number"/>
 			<style name="Keyword" key="5" class="keyword"/>
 			<style name="String" key="6" class="string"/>
-			<style name="Character" key="7" fore="colour.char"/>
+			<style name="Character" key="7" class="string"/>
 			
 			<style name="Preprocessor" key="9" class="preprocessor"/>
 			
 			<style name="Operator" key="10" class="operator"/>
 			<style name="Identifier" key="11" />
-			<style name="End of line string" key="12" fore="000000" font="font.monospace" back="e0c0e0" eolfilled="true"/>
+			<style name="End of line string" key="12" fore="000000" back="e0c0e0" eolfilled="true"/>
 
 			<!-- Comment doc: is this needed??? -->
 			<style name="Doc Comments" key="3" class="commentdoc"/>

@@ -251,8 +251,8 @@
 				<style name="Default" key="91" fore="808080"/>
 				<style name="Comment" key="92" class="comment" fore="007F00"/>
 				<style name="Number" key="93" fore="007F7F"/>
-				<style name="String" key="94" fore="7F007F" font="font.monospace"/>
-				<style name="Single quoted string" key="95" fore="7F007F" font="font.monospace"/>
+				<style name="String" key="94" fore="7F007F" />
+				<style name="Single quoted string" key="95" fore="7F007F" />
 				<style name="Keyword" key="96" fore="00007F" bold="true"/>
 				<style name="Triple quotes" key="97" fore="7F0000"/>
 				<style name="Triple double quotes" key="98" fore="7F0000"/>
@@ -268,8 +268,8 @@
 				<style name="ASP Python" key="106" fore="808080"/>
 				<style name="Comment" key="107" class="comment" fore="007F00" />
 				<style name="Number" key="108" fore="007F7F"/>
-				<style name="String" key="109" fore="7F007F" font="font.monospace"/>
-				<style name="Single quoted string" key="110" fore="7F007F" font="font.monospace"/>
+				<style name="String" key="109" fore="7F007F" />
+				<style name="Single quoted string" key="110" fore="7F007F" />
 				<style name="Keyword" key="111" fore="00007F" bold="true"/>
 				<style name="Triple quotes" key="112" fore="7F0000"/>
 				<style name="Triple double quotes" key="113" fore="7F0000"/>
@@ -307,9 +307,9 @@
 			<style name="Unknown Tags" key="2" fore="000080"/>
 			<style name="Attributes" key="3" fore="008080"/>
 			<style name="Unknown Attributes" key="4" fore="008080"/>
-			<style name="Numbers" key="5" fore="colour.number"/>
-			<style name="Double quoted strings" key="6" fore="colour.string"/>
-			<style name="Single quoted strings" key="7" fore="colour.string"/>
+			<style name="Numbers" key="5" class="number"/>
+			<style name="Double quoted strings" key="6" class="string"/>
+			<style name="Single quoted strings" key="7" class="string"/>
 			<style name="Other inside tag" key="8" fore="800080"/>
 			<style name="Comment" key="9" fore="808000"/>
 			<style name="Entities" key="10" fore="800080"/>

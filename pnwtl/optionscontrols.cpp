@@ -164,7 +164,7 @@ int CScintillaREDialogWnd::HandleNotify(LPARAM lParam)
 // CSchemeCombo
 //////////////////////////////////////////////////////////////////////////////
 
-int CSchemeCombo::AddScheme(LPCTSTR title, SchemeConfig* pScheme)
+int CSchemeCombo::AddScheme(LPCTSTR title, SchemeDetails* pScheme)
 {
 	int index = AddString(title);
 	SetItemDataPtr(index, pScheme);
@@ -185,15 +185,15 @@ void CSchemeCombo::Load(SchemeConfigParser* pConfig, LPCTSTR selectScheme, bool 
 		SetItemDataPtr(index, pConfig->GetPlainTextScheme());
 	}
 
-	for(SCF_IT i = pConfig->GetSchemes().begin(); i != pConfig->GetSchemes().end(); ++i)
+	for(SchemeDetailsList::const_iterator i = pConfig->GetSchemes().begin(); i != pConfig->GetSchemes().end(); ++i)
 	{
 		// Skip internal (special) schemes?
 		if( !bIncludeInternal && (*i)->IsInternal() )
 			continue;
 
-		index = AddString((*i)->m_Title);
+		index = AddString((*i)->Title.c_str());
 		SetItemDataPtr(index, (*i));
-		if(_tcscmp((*i)->m_Name, schemeToSelect) == 0)
+		if((*i)->Name == schemeToSelect)
 			selIndex = index;
 	}
 	
@@ -203,7 +203,7 @@ void CSchemeCombo::Load(SchemeConfigParser* pConfig, LPCTSTR selectScheme, bool 
 	}
 }
 
-SchemeConfig* CSchemeCombo::GetItemScheme(int index)
+SchemeDetails* CSchemeCombo::GetItemScheme(int index)
 {
-	return static_cast<SchemeConfig*>(GetItemDataPtr(index));
+	return static_cast<SchemeDetails*>(GetItemDataPtr(index));
 }

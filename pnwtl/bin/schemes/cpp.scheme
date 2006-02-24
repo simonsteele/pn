@@ -88,14 +88,14 @@
 			<style name="Comment" key="1" class="commentbox"/>
 			<style name="Comment Line" key="2" class="commentline"/>
 			
-			<style name="Number" key="4" fore="colour.number"/>
+			<style name="Number" key="4" class="number"/>
 			<style name="Keyword" key="5" class="keyword"/>
-			<style name="String" key="6" fore="colour.string"/>
-			<style name="Character" key="7" fore="colour.char"/>
+			<style name="String" key="6" class="string"/>
+			<style name="Character" key="7" class="string"/>
 			
 			<style name="Operator" key="10" bold="true"/>
 			<style name="Identifier" key="11" />
-			<style name="End of line string" key="12" fore="000000" font="font.monospace" back="e0c0e0" eolfilled="true"/>
+			<style name="End of line string" key="12" fore="000000" back="e0c0e0" eolfilled="true"/>
 		</use-styles>
 	</base-language>
 	
@@ -109,8 +109,8 @@
 			<style name="Doc Comments" key="3" class="commentdoc"/>
 			<style name="UUID" key="8" fore="804080"/>
 			<style name="Preprocessor" key="9" class="preprocessor"/>
-			<style name="Verbatim" key="13" fore="007f00" font="font.monospace" back="e0ffe0" eolfilled="true"/>
-			<style name="RegEx" key="14" fore="3f7f3f" font="font.monospace" back="e0f0ff" eolfilled="true"/>
+			<style name="Verbatim" key="13" fore="007f00" back="e0ffe0" eolfilled="true"/>
+			<style name="RegEx" key="14" fore="3f7f3f" back="e0f0ff" eolfilled="true"/>
 			<style name="Comment Line Doc" key="15" class="commentdoc"/>
 			<style name="Keywords 2" key="16" fore="b00040"/>
 			<style name="Comment Doc Keyword" key="17" class="commentdoc" fore="3060a0"/>
@@ -142,8 +142,8 @@
 			<style name="Doc Comments" key="3" class="commentdoc"/>
 			<style name="UUID" key="8" fore="804080"/>
 			<style name="Preprocessor" key="9" class="preprocessor"/>
-			<style name="Verbatim" key="13" fore="007f00" font="font.monospace" back="e0ffe0" eolfilled="true"/>
-			<style name="RegEx" key="14" fore="3f7f3f" font="font.monospace" back="e0f0ff" eolfilled="true"/>
+			<style name="Verbatim" key="13" fore="007f00" back="e0ffe0" eolfilled="true"/>
+			<style name="RegEx" key="14" fore="3f7f3f" back="e0f0ff" eolfilled="true"/>
 			<style name="Comment Line Doc" key="15" class="commentdoc"/>
 			<style name="Keywords 2" key="16" fore="b00040"/>
 			

@@ -412,10 +412,10 @@ CSmartStartEditorDialog::CSmartStartEditorDialog(SchemeConfigParser* pSchemes)
 LRESULT CSmartStartEditorDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CComboBox combo(GetDlgItem(IDC_SCHEMECOMBO));
-	SchemeConfig* pScheme = reinterpret_cast<SchemeConfig*>( combo.GetItemData(combo.GetCurSel()) );
+	SchemeDetails* pScheme = reinterpret_cast<SchemeDetails*>( combo.GetItemData(combo.GetCurSel()) );
 	if(pScheme)
 	{
-		m_schemeName = (LPCTSTR)pScheme->m_Name;
+		m_schemeName = pScheme->Name.c_str();
 	}
 	else
 		m_schemeName = _T("default");
@@ -448,10 +448,10 @@ LRESULT CSmartStartEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, 
 	int selindex = 0;
 	int index = combo.AddString(_T("Plain Text"));
 	combo.SetItemDataPtr(index, NULL);
-	for(SCF_IT i = m_pSchemes->GetSchemes().begin(); i != m_pSchemes->GetSchemes().end(); ++i)
+	for(SchemeDetailsList::const_iterator i = m_pSchemes->GetSchemes().begin(); i != m_pSchemes->GetSchemes().end(); ++i)
 	{
-		index = combo.AddString((*i)->m_Title);
-		if((*i)->m_Name == m_schemeName.c_str())
+		index = combo.AddString((*i)->Title.c_str());
+		if((*i)->Name == m_schemeName)
 			selindex = index;
 		combo.SetItemDataPtr(index, (*i));
 	}

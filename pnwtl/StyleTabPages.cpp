@@ -23,7 +23,7 @@ CTabPageKeywords::CTabPageKeywords()
 	m_bChanging = false;
 }
 
-void CTabPageKeywords::SetScheme(SchemeConfig* pScheme)
+void CTabPageKeywords::SetScheme(SchemeDetails* pScheme)
 {
 	m_pSet = NULL;
 	m_pScheme = pScheme;
@@ -45,7 +45,7 @@ void CTabPageKeywords::DoSetScheme()
 	m_scintilla.ClearAll();
 	m_scintilla.EmptyUndoBuffer();
 
-	CustomKeywordSet* pSet = m_pScheme->GetFirstKeywordSet();
+	CustomKeywordSet* pSet = m_pScheme->Keywords.GetFirstKeywordSet();
 	
 	int iPos = 0;
 
@@ -87,7 +87,7 @@ void CTabPageKeywords::SetItem()
 		
 		if(_tcscmp(m_pSet->pWords, pCS) != 0)
 		{
-			CustomKeywordSet* pCustomSet = m_pScheme->m_cKeywords.FindKeywordSet(m_pSet->key);
+			CustomKeywordSet* pCustomSet = m_pScheme->CustomKeywords.FindKeywordSet(m_pSet->key);
 
 			if(pCustomSet)
 			{
@@ -100,14 +100,14 @@ void CTabPageKeywords::SetItem()
 				CustomKeywordSet* pNewSet = new CustomKeywordSet(*m_pSet);
 				pNewSet->pWords = pCS;
 				pCS = NULL;
-				m_pScheme->m_cKeywords.AddKeywordSet(pNewSet);
+				m_pScheme->CustomKeywords.AddKeywordSet(pNewSet);
 			}
 		}
 		else
 		{
-			CustomKeywordSet* pCustomSet = m_pScheme->m_cKeywords.FindKeywordSet(m_pSet->key);
+			CustomKeywordSet* pCustomSet = m_pScheme->CustomKeywords.FindKeywordSet(m_pSet->key);
 			if(pCustomSet)
-				m_pScheme->m_cKeywords.DeleteKeywordSet(pCustomSet);
+				m_pScheme->CustomKeywords.DeleteKeywordSet(pCustomSet);
 		}
 
 		if(pCS)
@@ -137,7 +137,7 @@ void CTabPageKeywords::UpdateSel()
 				m_pSet = pRealSet;
 
 				CustomKeywordSet* pS = pRealSet;
-				CustomKeywordSet* pCustomSet = m_pScheme->m_cKeywords.FindKeywordSet(m_pSet->key);
+				CustomKeywordSet* pCustomSet = m_pScheme->CustomKeywords.FindKeywordSet(m_pSet->key);
 
 				if(pCustomSet)
 					pS = pCustomSet;
@@ -258,7 +258,7 @@ CTabPageStyles::CTabPageStyles()
 	m_bChanging = false;
 }
 
-void CTabPageStyles::SetScheme(SchemeConfig* pScheme)
+void CTabPageStyles::SetScheme(SchemeDetails* pScheme)
 {
 	// Store any changes
 	Finalise();
@@ -269,25 +269,30 @@ void CTabPageStyles::SetScheme(SchemeConfig* pScheme)
 
 	m_tree.DeleteAllItems();
 
-	CustomStyleCollection* pColl = static_cast<CustomStyleCollection*>(pScheme);
 	HTREEITEM insertunder = TVI_ROOT;
+
+	GroupDetailsList::const_iterator iGD = pScheme->GroupDetails.begin();
 	
-	while(pColl)
+	for(StylePtrList::const_iterator i = pScheme->Styles.begin(); i != pScheme->Styles.end(); ++i)
 	{
-		for(SL_CIT i = pColl->StylesBegin(); i != pColl->StylesEnd(); ++i)
+		if( (*i)->Style->values & edvGroupStart )
 		{
-			HTREEITEM hi = m_tree.InsertItem((*i)->name.c_str(), insertunder, TVI_LAST);
-			m_tree.SetItemData(hi, reinterpret_cast<DWORD_PTR>(*i));
+			insertunder = m_tree.InsertItem( (*iGD).name.c_str(), NULL, NULL );
+			m_tree.SetItemData(insertunder, reinterpret_cast<DWORD_PTR>(&(*iGD)));
+			++iGD;
 		}
+		else if( (*i)->Style->values & edvGroupEnd )
+		{
+			insertunder = TVI_ROOT;
+		}
+		else
+		{
+			HTREEITEM hi = m_tree.InsertItem((*i)->Style->name.c_str(), insertunder, TVI_LAST);
+			m_tree.SetItemData(hi, reinterpret_cast<DWORD_PTR>((*i).get()));
+		}
+		
 		if(insertunder != TVI_ROOT)
 			m_tree.Expand(insertunder, TVE_EXPAND);
-
-		pColl = pColl->GetNext();
-		if(pColl)
-		{
-			insertunder = m_tree.InsertItem(pColl->GetName(), NULL, NULL);
-			m_tree.SetItemData(insertunder, reinterpret_cast<DWORD_PTR>(pColl));
-		}
 	}
 
 	m_tree.EnsureVisible(m_tree.GetRootItem());
@@ -397,19 +402,17 @@ void CTabPageStyles::UpdateSel()
 
 		if(item)
 		{
-			StyleDetails* pS = NULL;
+			FullStyleDetails* pS = NULL;
 			m_bGroup = false;
 
 			if(m_tree.GetChildItem(item) == NULL)
 			{
-				pS = reinterpret_cast<StyleDetails*>(m_tree.GetItemData(item));
+				pS = reinterpret_cast<FullStyleDetails*>(m_tree.GetItemData(item));
 				if(pS)
 				{
-					StyleDetails* existing = m_pScheme->m_customs.GetStyle(pS->Key);
-					if(existing)
-						m_Style = *existing;
-					else
-						m_Style = *pS;
+					//TODO Get Default Here
+					StyleDetails NASTYHACK;
+					pS->Combine( &NASTYHACK, m_Style );
 				}
 			}
 			else
@@ -418,23 +421,20 @@ void CTabPageStyles::UpdateSel()
 				// so then we let the user customise it. Else we disable the controls.
 				m_bGroup = true;
 				
-				CustomStyleCollection* pColl = reinterpret_cast<CustomStyleCollection*>( m_tree.GetItemData(item) );
-				if(pColl)
+				GroupDetails_t* pGD = reinterpret_cast<GroupDetails_t*>( m_tree.GetItemData(item) );
+				if(pGD)
 				{
 					// CStrings used for indexing the style maps (at the moment)
-					CString classname = pColl->GetClassName();
-					if(classname.GetLength() != 0)
+					if(pGD->classname.length() != 0)
 					{
-						pS = m_pScheme->FindStyleClass(classname);
+						//TODO Style Class Here
+						pS = NULL;//m_pScheme->FindStyleClass(pGD->classname);
 
 						if(pS)
 						{
-							StyleDetails* pCustom = m_pScheme->FindCustomStyleClass(classname);
-
-							if(pCustom)
-								m_Style = *pCustom;
-							else
-								m_Style = *pS;
+							//TODO Get Default Here
+							StyleDetails NASTYHACK;
+							pS->Combine( &NASTYHACK, m_Style );
 						}
 					}
 				}
@@ -453,28 +453,19 @@ void CTabPageStyles::UpdateSel()
 				else
 					m_sd.SetStyle(m_Style.FontName.c_str(), m_Style.FontSize, m_Style.ForeColor, m_Style.BackColor, m_Style.name.c_str(), m_Style.Bold, m_Style.Italic, m_Style.Underline);
 
-				/*if(!pS->ColourOnly)*/
-				{
-					m_bold.SetCheck(m_Style.Bold ? BST_CHECKED : BST_UNCHECKED);
-					m_italic.SetCheck(m_Style.Italic ? BST_CHECKED : BST_UNCHECKED);
-					m_underline.SetCheck(m_Style.Underline ? BST_CHECKED : BST_UNCHECKED);
-					m_eolfilled.SetCheck(m_Style.EOLFilled ? BST_CHECKED : BST_UNCHECKED);
-					m_fore.SetColor(m_Style.ForeColor);
-					m_back.SetColor(m_Style.BackColor);
+				m_bold.SetCheck(m_Style.Bold ? BST_CHECKED : BST_UNCHECKED);
+				m_italic.SetCheck(m_Style.Italic ? BST_CHECKED : BST_UNCHECKED);
+				m_underline.SetCheck(m_Style.Underline ? BST_CHECKED : BST_UNCHECKED);
+				m_eolfilled.SetCheck(m_Style.EOLFilled ? BST_CHECKED : BST_UNCHECKED);
+				m_fore.SetColor(m_Style.ForeColor);
+				m_back.SetColor(m_Style.BackColor);
 
-					m_FontCombo.SelectString(-1, m_Style.FontName.c_str());
-					m_SizeCombo.Select(m_Style.FontSize);
+				m_FontCombo.SelectString(-1, m_Style.FontName.c_str());
+				m_SizeCombo.Select(m_Style.FontSize);
 
-					::SetWindowText(GetDlgItem(IDC_STATIC_TC), _T("Text Colour: "));
+				::SetWindowText(GetDlgItem(IDC_STATIC_TC), _T("Text Colour: "));
 
-					EnableButtons(true);
-				}
-				/*else
-				{
-					m_fore.SetColor(m_Style.ForeColor);
-					::SetWindowText(GetDlgItem(IDC_STATIC_TC), _T("Colour: "));
-					DisableNonColourItems();
-				}*/
+				EnableButtons(true);
 			}
 			else
 				EnableButtons(false);
@@ -555,32 +546,40 @@ LRESULT CTabPageStyles::OnEOLFilledClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 void CTabPageStyles::UpdateStyle()
 {
-	if(m_Style != *m_pStyle)
+	StyleDetails NASTYHACK;
+	StyleDetails BaseStyle;
+	m_pStyle->CombineNoCustom(&NASTYHACK, BaseStyle);
+
+	if(m_Style != BaseStyle)
 	{
 		/* The style the user has configured and the original definition version
 			do not match. We need to store the new style in the custom style
 			store. */
-		StyleDetails* existing = m_pScheme->m_customs.GetStyle(m_Style.Key);
-		if(existing)
+
+		if( m_pStyle->CustomStyle )
 		{
-			*existing = m_Style;
+			*m_pStyle->CustomStyle = m_Style;
 		}
 		else
 		{
-			existing = new StyleDetails;
-			*existing = m_Style;
-			m_pScheme->m_customs.AddStyle(existing);
+			m_pStyle->CustomStyle = new StyleDetails( m_Style );
 		}
+		
+		m_pStyle->CustomStyle->compareTo( BaseStyle );
 	}
 	else
 	{
 		/* If we have set the style to be like the original, then
 			we can safely remove any custom styles. */
-		m_pScheme->m_customs.DeleteStyle(m_Style.Key);
+		if(m_pStyle->CustomStyle)
+		{
+			delete m_pStyle->CustomStyle;
+			m_pStyle->CustomStyle = NULL;
+		}
 	}
 }
 
-void CTabPageStyles::UpdateGroupChildren(StyleDetails* pUpdatedClass, CustomStyleCollection* pColl)
+/*void CTabPageStyles::UpdateGroupChildren(StyleDetails* pUpdatedClass, CustomStyleCollection* pColl)
 {
 	// Update child items...
 	if(!pColl)
@@ -589,30 +588,32 @@ void CTabPageStyles::UpdateGroupChildren(StyleDetails* pUpdatedClass, CustomStyl
 	}
 
 	m_pScheme->UpdateGroupedStyles(pColl, pUpdatedClass);
-}
+}*/
 
 void CTabPageStyles::UpdateGroup()
 {
-	if(m_Style != *m_pStyle)
+	if(m_Style != *m_pStyle->Style)
 	{
-		StyleDetails* pExisting = m_pScheme->FindCustomStyleClass(m_Style.name.c_str());
-		if(pExisting)
+		if(m_pStyle->CustomStyle)
 		{
-			*pExisting = m_Style;
+			*m_pStyle->CustomStyle = m_Style;
 		}
 		else
 		{
-			pExisting = new StyleDetails(m_Style);
-			m_pScheme->AddCustomStyleClass(CString(m_Style.name.c_str()), pExisting);
+			m_pStyle->CustomStyle = new StyleDetails(m_Style);
 		}
+
+		m_pStyle->CustomStyle->compareTo(*m_pStyle->Style);
 	}
 	else
 	{
 		// We're set to the original class...
-		m_pScheme->RemoveCustomStyleClass(CString(m_Style.name.c_str()));
+		if( m_pStyle->CustomStyle )
+		{
+			delete m_pStyle->CustomStyle;
+			m_pStyle->CustomStyle = NULL;
+		}
 	}
-
-	UpdateGroupChildren(&m_Style);
 }
 
 void CTabPageStyles::SetItem()
@@ -632,21 +633,16 @@ LRESULT CTabPageStyles::OnResetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	{
 		if(m_pStyle)
 		{
-			if(m_bGroup)
+			if(m_pStyle->CustomStyle != NULL)
 			{
-				m_pScheme->RemoveCustomStyleClass(CString(m_pStyle->name.c_str()));
+				delete m_pStyle->CustomStyle;
+				m_pStyle->CustomStyle = NULL;
 			}
-			else
-			{
-				m_pScheme->m_customs.DeleteStyle(m_pStyle->Key);
-			}
+			
 			m_pStyle = NULL;
 		}
 	
 		UpdateSel();
-
-		if(m_bGroup)
-			UpdateGroupChildren(&m_Style);
 	}
 
 	return 0;
@@ -682,7 +678,7 @@ bool CTabPageMisc::IsDirty()
 	return m_bDirty;
 }
 
-void CTabPageMisc::SetScheme(SchemeConfig* pScheme)
+void CTabPageMisc::SetScheme(SchemeDetails* pScheme)
 {
 	SetValues();
 
@@ -700,7 +696,7 @@ void CTabPageMisc::SetValues()
 		COLORREF theColour;
 
 		// Clear existing customisations.
-		m_pScheme->m_editorColours.Clear();
+		m_pScheme->CustomColours.Clear();
 		
 		if( m_selUseExistingFore.GetCheck() == BST_CHECKED )
 			theColour = CLR_NONE;
@@ -708,38 +704,38 @@ void CTabPageMisc::SetValues()
 			theColour = m_selFore.GetColor();
 		
 		if(theColour != CLR_DEFAULT)
-			m_pScheme->m_editorColours.SetColour( EditorColours::ecSelFore, theColour);
+			m_pScheme->CustomColours.SetColour( EditorColours::ecSelFore, theColour);
 		
 		theColour = m_selBack.GetColor();
 		if(theColour != CLR_DEFAULT)
-			m_pScheme->m_editorColours.SetColour( EditorColours::ecSelBack, theColour);
+			m_pScheme->CustomColours.SetColour( EditorColours::ecSelBack, theColour);
 
 		theColour = m_cursorCol.GetColor();
 		if(theColour != CLR_DEFAULT)
-			m_pScheme->m_editorColours.SetColour( EditorColours::ecCaret, theColour);
+			m_pScheme->CustomColours.SetColour( EditorColours::ecCaret, theColour);
 
 		theColour = m_igCol.GetColor();
 		if(theColour != CLR_DEFAULT)
-			m_pScheme->m_editorColours.SetColour( EditorColours::ecIndentG, theColour);
+			m_pScheme->CustomColours.SetColour( EditorColours::ecIndentG, theColour);
 
 		switch(m_iTabOverride)
 		{
 		case 0:
 			{
-				m_pScheme->m_foldflags &= ~(schOverrideTabs|schUseTabs);
+				m_pScheme->CustomFlags &= ~(schOverrideTabs|schUseTabs);
 			}
 			break;
 
 		case 1:
 			{
-				m_pScheme->m_foldflags |= (schOverrideTabs | schUseTabs);
+				m_pScheme->CustomFlags |= (schOverrideTabs | schUseTabs);
 			}
 			break;
 
 		case 2:
 			{
-				m_pScheme->m_foldflags |= schOverrideTabs;
-				m_pScheme->m_foldflags &= ~schUseTabs;
+				m_pScheme->CustomFlags |= schOverrideTabs;
+				m_pScheme->CustomFlags &= ~schUseTabs;
 			}
 			break;
 		}
@@ -799,7 +795,7 @@ void CTabPageMisc::UpdateDisplay()
 	if( ::IsWindow(m_hWnd) && (m_pScheme != NULL) )
 	{
 		COLORREF theColour;
-		if(	m_pScheme->m_editorColours.GetColour( EditorColours::ecSelFore, theColour) )
+		if(	m_pScheme->Colours.GetColour( EditorColours::ecSelFore, theColour) )
 		{
 			if(theColour == -1)
 				m_selUseExistingFore.SetCheck(BST_CHECKED);
@@ -812,22 +808,22 @@ void CTabPageMisc::UpdateDisplay()
 			m_selUseExistingFore.SetCheck(BST_UNCHECKED);
 		}
 
-		if( m_pScheme->m_editorColours.GetColour( EditorColours::ecSelBack, theColour) )
+		if( m_pScheme->CustomColours.GetColour( EditorColours::ecSelBack, theColour) )
 			m_selBack.SetColor( theColour );
 		else
 			m_selBack.SetColor( CLR_DEFAULT );
 
-		if( m_pScheme->m_editorColours.GetColour( EditorColours::ecCaret, theColour) )
+		if( m_pScheme->CustomColours.GetColour( EditorColours::ecCaret, theColour) )
 			m_cursorCol.SetColor( theColour );
 		else
 			m_cursorCol.SetColor( CLR_DEFAULT );
 	    
-		if( m_pScheme->m_editorColours.GetColour( EditorColours::ecIndentG, theColour) )
+		if( m_pScheme->CustomColours.GetColour( EditorColours::ecIndentG, theColour) )
 			m_igCol.SetColor( theColour );
 		else
 			m_igCol.SetColor( CLR_DEFAULT );
 
-		switch(m_pScheme->m_foldflags & (schOverrideTabs | schUseTabs))
+		switch(m_pScheme->CustomFlags & (schOverrideTabs | schUseTabs))
 		{
 		case 0:
 			m_iTabOverride = 0;

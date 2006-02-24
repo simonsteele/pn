@@ -86,15 +86,15 @@ year zone
 			<style name="Comment" key="1" class="commentbox"/>
 			<style name="Comment Line" key="2" class="commentline"/>
 			<style name="Doc Comment" key="3" class="commentdoc"/>
-			<style name="Number" key="4" fore="colour.number"/>
+			<style name="Number" key="4" class="number"/>
 			<style name="Keyword" key="5" class="keyword"/>
-			<style name="Double-Quoted String" key="6" fore="colour.string"/>
-			<style name="Single-Quoted String" key="7" fore="colour.char"/>
+			<style name="Double-Quoted String" key="6" class="string"/>
+			<style name="Single-Quoted String" key="7" class="string"/>
 			<style name="Symbols" key="8" fore="007f7f"/>
 			<style name="Preprocessor" key="9" class="preprocessor"/>
 			<style name="Operator" key="10" bold="true"/>
 			<style name="Identifier" key="11" />
-			<style name="End of line string" key="12" fore="000000" font="font.monospace" back="e0c0e0" eolfilled="true"/>
+			<style name="End of line string" key="12" fore="000000" back="e0c0e0" eolfilled="true"/>
 			<!-- braces.sql.style=10 -->
 		</use-styles>
 	</base-language>
