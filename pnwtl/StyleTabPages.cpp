@@ -2,7 +2,7 @@
  * @file StyleTabPages.cpp
  * @brief Style Tab Pages for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2004 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -10,8 +10,8 @@
 
 #include "stdafx.h"
 #include "resource.h"
-#include "OptionsPages.h"
 #include "OptionsDialogs.h"
+#include "StyleTabPages.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // CTabPageKeywords
@@ -252,10 +252,11 @@ LRESULT CTabPageKeywords::OnListSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /
 // CTabPageStyles
 //////////////////////////////////////////////////////////////////////////////
 
-CTabPageStyles::CTabPageStyles()
+CTabPageStyles::CTabPageStyles(SchemeConfigParser* pSchemes)
 {
 	m_pStyle = NULL;
 	m_bChanging = false;
+	m_pSchemes = pSchemes;
 }
 
 void CTabPageStyles::SetScheme(SchemeDetails* pScheme)
@@ -397,6 +398,8 @@ void CTabPageStyles::UpdateSel()
 	{
 		SetItem();
 
+		m_pStyle = NULL;
+
 		HTREEITEM item = m_tree.GetSelectedItem();
 		m_lastTreeItem = item;
 
@@ -410,9 +413,7 @@ void CTabPageStyles::UpdateSel()
 				pS = reinterpret_cast<FullStyleDetails*>(m_tree.GetItemData(item));
 				if(pS)
 				{
-					//TODO Get Default Here
-					StyleDetails NASTYHACK;
-					pS->Combine( &NASTYHACK, m_Style );
+					pS->Combine( m_pSchemes->GetDefaultStyle(), m_Style );
 				}
 			}
 			else
@@ -424,17 +425,13 @@ void CTabPageStyles::UpdateSel()
 				GroupDetails_t* pGD = reinterpret_cast<GroupDetails_t*>( m_tree.GetItemData(item) );
 				if(pGD)
 				{
-					// CStrings used for indexing the style maps (at the moment)
 					if(pGD->classname.length() != 0)
 					{
-						//TODO Style Class Here
-						pS = NULL;//m_pScheme->FindStyleClass(pGD->classname);
+						pS = m_pSchemes->GetClass(pGD->classname.c_str()).get();
 
 						if(pS)
 						{
-							//TODO Get Default Here
-							StyleDetails NASTYHACK;
-							pS->Combine( &NASTYHACK, m_Style );
+							pS->Combine( m_pSchemes->GetDefaultStyle(), m_Style );
 						}
 					}
 				}
@@ -468,10 +465,10 @@ void CTabPageStyles::UpdateSel()
 				EnableButtons(true);
 			}
 			else
+			{
 				EnableButtons(false);
+			}
 		}
-		else
-			m_pStyle = NULL;
 	}
 }
 
@@ -546,9 +543,8 @@ LRESULT CTabPageStyles::OnEOLFilledClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 void CTabPageStyles::UpdateStyle()
 {
-	StyleDetails NASTYHACK;
 	StyleDetails BaseStyle;
-	m_pStyle->CombineNoCustom(&NASTYHACK, BaseStyle);
+	m_pStyle->CombineNoCustom(m_pSchemes->GetDefaultStyle(), BaseStyle);
 
 	if(m_Style != BaseStyle)
 	{
@@ -564,31 +560,16 @@ void CTabPageStyles::UpdateStyle()
 		{
 			m_pStyle->CustomStyle = new StyleDetails( m_Style );
 		}
-		
+		m_pStyle->CustomStyle->Key = m_pStyle->GetKey();
 		m_pStyle->CustomStyle->compareTo( BaseStyle );
 	}
 	else
 	{
 		/* If we have set the style to be like the original, then
 			we can safely remove any custom styles. */
-		if(m_pStyle->CustomStyle)
-		{
-			delete m_pStyle->CustomStyle;
-			m_pStyle->CustomStyle = NULL;
-		}
+		m_pStyle->Reset();
 	}
 }
-
-/*void CTabPageStyles::UpdateGroupChildren(StyleDetails* pUpdatedClass, CustomStyleCollection* pColl)
-{
-	// Update child items...
-	if(!pColl)
-	{
-		pColl = reinterpret_cast<CustomStyleCollection*>( m_tree.GetItemData(m_lastTreeItem) );
-	}
-
-	m_pScheme->UpdateGroupedStyles(pColl, pUpdatedClass);
-}*/
 
 void CTabPageStyles::UpdateGroup()
 {
@@ -608,11 +589,7 @@ void CTabPageStyles::UpdateGroup()
 	else
 	{
 		// We're set to the original class...
-		if( m_pStyle->CustomStyle )
-		{
-			delete m_pStyle->CustomStyle;
-			m_pStyle->CustomStyle = NULL;
-		}
+		m_pStyle->Reset();
 	}
 }
 

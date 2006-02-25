@@ -32,11 +32,7 @@ SchemeConfigParser::SchemeConfigParser(LPCTSTR currentScheme)
 
 SchemeConfigParser::~SchemeConfigParser()
 {
-	SchemeDetailsList::iterator i;
-	for(i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
-	{
-		delete (*i);
-	}
+	// The schemes are owned by the SchemeLoaderState object, don't free them.
 	m_Schemes.clear();
 }
 
@@ -45,14 +41,9 @@ SchemeDetailsList& SchemeConfigParser::GetSchemes()
 	return m_Schemes;
 }
 
-StylesMap& SchemeConfigParser::GetStyleClasses()
+StylePtr SchemeConfigParser::GetClass(LPCTSTR name)
 {
-	return m_originalclasses;
-}
-
-StylesMap& SchemeConfigParser::GetCustomClasses()
-{
-	return m_customclasses;
+	return m_LoadState.GetClass(name);
 }
 
 StyleDetails* SchemeConfigParser::GetDefaultStyle()
@@ -110,30 +101,25 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 	writer.writeOverrideColours( GetDefaultColours() );
 
 	// Style Classes
-	if(GetCustomClasses().GetCount() != 0)
+	bool beganClasses(false);
+	for(StylePtrMap::const_iterator i = m_LoadState.m_Classes.begin();
+		i != m_LoadState.m_Classes.end();
+		++i)
 	{
-		writer.beginOverrideClasses();
+		const StylePtr& s = (*i).second;
 
-		tstring name;
-		STYLEDETAILS_NAMEMAP& map = GetCustomClasses().GetMap();
-		for(SDNM_IT j = map.begin(); j != map.end(); ++j)
+		if(!s->CustomStyle)
+			continue;
+
+		if(!beganClasses)
 		{
-			pStyle = (*j).second;
-			{
-				pOrig = GetStyleClasses().GetStyle(pStyle->name.c_str());
-				if(pOrig)
-				{					
-					pStyle->compareTo(*pOrig);
-				}
-				else
-					(*j).second->values = ~ 0;
-			}
-
-			writer.writeStyleClass(* (*j).second);
+			beganClasses = true;
+			writer.beginOverrideClasses();
 		}
-
-		writer.endOverrideClasses();
+		writer.writeStyleClass(*s->CustomStyle);
 	}
+	if(beganClasses)
+		writer.endOverrideClasses();
 
 	// Schemes
 	if(m_Schemes.size() != 0)
@@ -233,7 +219,7 @@ void SchemeConfigParser::onStyle(const StylePtr& style)
 {
 	PNASSERT(m_pCurrent != NULL);
 
-	m_pCurrent->Styles.push_back(style);
+	//m_pCurrent->Styles.push_back(style);
 }
 
 void SchemeConfigParser::onStyleClass(const StylePtr& style)
@@ -257,13 +243,14 @@ void SchemeConfigParser::onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPC
 	_tcscpy(pSet->pName, name);
 	m_pCurrent->Keywords.AddKeywordSet(pSet);
 
+	/* - Custom already stored by the user settings loader now
 	if(custom)
 	{
 		CustomKeywordSet* pCustomSet = new CustomKeywordSet(*pSet);
 		pCustomSet->pWords = new TCHAR[_tcslen(custom)+1];
 		_tcscpy(pCustomSet->pWords, custom);
 		m_pCurrent->CustomKeywords.AddKeywordSet(pCustomSet);
-	}
+	}*/
 }
 
 void SchemeConfigParser::onFile(LPCTSTR /*filename*/)

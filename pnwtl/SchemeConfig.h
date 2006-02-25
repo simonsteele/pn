@@ -34,16 +34,13 @@ class SchemeConfigParser : public SchemeParser
 
 		LPCTSTR GetCurrentScheme();
 
-		SchemeDetailsList&		GetSchemes();
-		StylesMap&				GetStyleClasses();
-		StylesMap&				GetCustomClasses();
-		StyleDetails*			GetDefaultStyle();
-		EditorColours*			GetDefaultColours();
+		SchemeDetailsList&	GetSchemes();
+		StyleDetails*		GetDefaultStyle();
+		EditorColours*		GetDefaultColours();
 
-		SchemeDetails*			GetPlainTextScheme();
+		SchemeDetails*		GetPlainTextScheme();
 
-		StylesMap				m_originalclasses;
-		StylesMap				m_customclasses;
+		StylePtr			GetClass(LPCTSTR name);
 
 	protected:
 		void Sort();

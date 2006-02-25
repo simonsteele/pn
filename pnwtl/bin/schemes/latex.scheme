@@ -12,9 +12,6 @@
 			<style name="Tag" key="2" fore="880088" bold="true" />
 			<style name="Math" key="3" fore="0000ff" />
 			<style name="Comment" key="4" class="comment" />
-			
-			<style name="Brace Match" key="34" bold="true" fore="0000ff" />
-			<style name="Brace MisMatch" key="35" bold="true" fore="ff0000" />
 		</use-styles>
 	</language>
 </Scheme>

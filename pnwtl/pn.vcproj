@@ -643,6 +643,9 @@
 				RelativePath="styles.h">
 			</File>
 			<File
+				RelativePath=".\StyleTabPages.h">
+			</File>
+			<File
 				RelativePath="textclips.h">
 			</File>
 			<File

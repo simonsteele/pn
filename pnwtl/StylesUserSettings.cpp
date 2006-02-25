@@ -179,7 +179,7 @@ void UserSettingsParser::processClassElement(SchemeLoaderState* pState, LPCTSTR 
 	if(_tcscmp(name, _T("style-class")) == 0)
 	{
 		StylePtr p( new FullStyleDetails(-1) );
-		p->Style = new StyleDetails;
+		p->CustomStyle = new StyleDetails;
 		SchemeParser::parseStyle(pState, atts, p->CustomStyle);
 		
 		pState->m_Classes.insert( StylePtrMap::value_type(p->CustomStyle->name, p) );
@@ -196,10 +196,9 @@ void UserSettingsParser::processSchemeElement(SchemeLoaderState* pState, LPCTSTR
 			SchemeParser::parseStyle(pState, atts, pStyle);
 
 			// Hand off the style to the master style
-			StylePtr p = m_pCurScheme->GetStyle(pStyle->Key);
+			StylePtr p( new FullStyleDetails(pStyle->Key) );
 			p->CustomStyle = pStyle;
-
-			//pScheme->AddStyle(pStyle);
+			m_pCurScheme->PreLoadCustomisedStyle( p );
 		}
 	}
 	else if (pState->m_State == US_KEYWORD_OVERRIDES)

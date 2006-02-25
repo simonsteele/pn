@@ -336,133 +336,124 @@ LRESULT COptionsPageStyle::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 void COptionsPageStyle::OnInitialise()
 {
-	if(m_pSchemes)
+	if(!m_pSchemes)
+		return;
+
+	m_defclass = m_pSchemes->GetClass(_T("default"));
+	StyleDetails style;
+	m_defclass->Combine(NULL, style);
+	
+	m_FontCombo.SelectString(-1, style.FontName.c_str());
+	m_SizeCombo.Select(style.FontSize);
+	
+	m_fore.SetColor(style.ForeColor);
+	m_fore.SetDefaultColor(RGB(0,0,0));
+	
+	m_back.SetColor(style.BackColor);
+	m_back.SetDefaultColor(RGB(255,255,255));
+
+	m_bold.SetCheck(style.Bold ? BST_CHECKED : BST_UNCHECKED);
+	m_italic.SetCheck(style.Italic ? BST_CHECKED : BST_UNCHECKED);
+	m_underline.SetCheck(style.Underline ? BST_CHECKED : BST_UNCHECKED);
+
+	EditorColours* ec = m_pSchemes->GetDefaultColours();
+	
+	m_selFore.SetDefaultColor(::GetSysColor(COLOR_HIGHLIGHTTEXT));
+	m_selBack.SetDefaultColor(::GetSysColor(COLOR_HIGHLIGHT));
+	m_cur.SetDefaultColor(::GetSysColor(COLOR_WINDOWTEXT));
+	m_indentGuides.SetDefaultColor(RGB(0,0,0));
+
+	COLORREF c;
+	if(ec->GetColour(EditorColours::ecSelFore, c))
 	{
-		StyleDetails* pStyle = m_pSchemes->GetDefaultStyle();
-		
-		m_FontCombo.SelectString(-1, pStyle->FontName.c_str());
-		m_SizeCombo.Select(pStyle->FontSize);
-		
-		m_fore.SetColor(pStyle->ForeColor);
-		m_fore.SetDefaultColor(RGB(0,0,0));
-		
-		m_back.SetColor(pStyle->BackColor);
-		m_back.SetDefaultColor(RGB(255,255,255));
-
-		m_bold.SetCheck(pStyle->Bold ? BST_CHECKED : BST_UNCHECKED);
-		m_italic.SetCheck(pStyle->Italic ? BST_CHECKED : BST_UNCHECKED);
-		m_underline.SetCheck(pStyle->Underline ? BST_CHECKED : BST_UNCHECKED);
-
-		EditorColours* ec = m_pSchemes->GetDefaultColours();
-		
-		m_selFore.SetDefaultColor(::GetSysColor(COLOR_HIGHLIGHTTEXT));
-		m_selBack.SetDefaultColor(::GetSysColor(COLOR_HIGHLIGHT));
-		m_cur.SetDefaultColor(::GetSysColor(COLOR_WINDOWTEXT));
-		m_indentGuides.SetDefaultColor(RGB(0,0,0));
-
-		COLORREF c;
-		if(ec->GetColour(EditorColours::ecSelFore, c))
+		if(c == (COLORREF)-1)
 		{
-			if(c == (COLORREF)-1)
-			{
-				CButton(GetDlgItem(IDC_STYLE_SELUSEFORE)).SetCheck(BST_CHECKED);
-			}
-			else
-                m_selFore.SetColor( c );
+			CButton(GetDlgItem(IDC_STYLE_SELUSEFORE)).SetCheck(BST_CHECKED);
 		}
-		if(ec->GetColour(EditorColours::ecSelBack, c))
-			m_selBack.SetColor( c );
-		if(ec->GetColour(EditorColours::ecCaret, c))
-			m_cur.SetColor( c );
-		if(ec->GetColour(EditorColours::ecIndentG, c))
-			m_indentGuides.SetColor( c );
-
-		// Simple dirty checking - if the page is shown we rebuild.
-		m_bDirty = true;
+		else
+            m_selFore.SetColor( c );
 	}
+	if(ec->GetColour(EditorColours::ecSelBack, c))
+		m_selBack.SetColor( c );
+	if(ec->GetColour(EditorColours::ecCaret, c))
+		m_cur.SetColor( c );
+	if(ec->GetColour(EditorColours::ecIndentG, c))
+		m_indentGuides.SetColor( c );
+
+	// Simple dirty checking - if the page is shown we rebuild.
+	m_bDirty = true;
 }
 
 void COptionsPageStyle::OnOK()
 {
-	if(m_bCreated)
+	if(!m_bCreated)
+		return;
+
+	StyleDetails display;
+	StyleDetails current;
+	m_defclass->Combine(NULL, current);
+		
+	int i = m_FontCombo.GetCurSel();
+	CString str;
+	m_FontCombo.GetLBText(i, str);
+
+	display.FontName	= str;
+	display.FontSize	= GetDlgItemInt(IDC_FONTSIZE_COMBO);
+	display.ForeColor	= m_fore.SafeGetColor();
+	display.BackColor	= m_back.SafeGetColor();
+	display.Bold		= (m_bold.GetCheck() == BST_CHECKED);
+	display.Italic		= (m_italic.GetCheck() == BST_CHECKED);
+	display.Underline	= (m_underline.GetCheck() == BST_CHECKED);
+	display.name		= _T("default");
+
+	if(display != current)
 	{
-		bool bIsCustom;
-		StyleDetails* pCurrent = GetDefault(bIsCustom);
-		StyleDetails* pS = new StyleDetails(*pCurrent);
-		
-		int i = m_FontCombo.GetCurSel();
-		CString str;
-		m_FontCombo.GetLBText(i, str);
+		// the new style is not the same as the current style:
 
-		pS->FontName = str;
-		pS->FontSize = GetDlgItemInt(IDC_FONTSIZE_COMBO);
-		pS->ForeColor = m_fore.SafeGetColor();
-		pS->BackColor = m_back.SafeGetColor();
-		pS->Bold = (m_bold.GetCheck() == BST_CHECKED);
-		pS->Italic = (m_italic.GetCheck() == BST_CHECKED);
-		pS->Underline = (m_underline.GetCheck() == BST_CHECKED);
+		// work out what the differences are
+		StyleDetails therealdefault( *m_defclass->Style );
+		display.compareTo(therealdefault);
 
-		if(*pS != *pCurrent)
+		if(display.values == 0)
 		{
-			// the new style is not the same as the current style...
-			
-			if(bIsCustom)
-			{
-				// the current style is already a custom one.
-				StyleDetails* pOrig = m_pSchemes->GetStyleClasses().GetStyle(_T("default"));
-				if(*pOrig == *pS)
-				{
-					// The user has reverted to the original style.
-					m_pSchemes->GetCustomClasses().DeleteStyle(_T("default"));
-				}
-				else
-				{
-					// pCurrent is already in the "Custom" classes collection. Update it.
-					*pCurrent = *pS;
-				}
-
-				/* If there was already a custom version of this style then one
-				way or another, there is no need for our temporary one any more. */
-				delete pS;
-			}
+			// Not custom any more...
+			m_defclass->Reset();
+		}
+		else
+		{
+			if(m_defclass->CustomStyle)
+				*m_defclass->CustomStyle = display;
 			else
-			{
-				// There isn't already a custom style for this class, so we add one.
-				m_pSchemes->GetCustomClasses().AddStyle(_T("default"), pS);
-			}
+				m_defclass->CustomStyle = new StyleDetails(display);
 		}
-		else
-		{
-			delete pS;
-		}
-
-		// Clear all existing colour customisations
-		EditorColours* ec = m_pSchemes->GetDefaultColours();
-		ec->Clear();
-
-		COLORREF c;
-		c = m_cur.GetColor();
-		
-		if( CButton(GetDlgItem(IDC_STYLE_SELUSEFORE)).GetCheck() == BST_CHECKED )
-			c = CLR_NONE;
-		else
-			c = m_selFore.GetColor();
-
-		if(c != CLR_DEFAULT)
-			ec->SetColour( EditorColours::ecSelFore, c);
-		
-		c = m_selBack.GetColor();
-		if(c != CLR_DEFAULT)
-			ec->SetColour( EditorColours::ecSelBack, c);
-
-		c = m_cur.GetColor();
-		if(c != CLR_DEFAULT)
-			ec->SetColour( EditorColours::ecCaret, c);
-
-		c = m_indentGuides.GetColor();
-		if(c != CLR_DEFAULT)
-			ec->SetColour( EditorColours::ecIndentG, c);
 	}
+	
+	// Clear all existing colour customisations
+	EditorColours* ec = m_pSchemes->GetDefaultColours();
+	ec->Clear();
+
+	COLORREF c;
+	c = m_cur.GetColor();
+	
+	if( CButton(GetDlgItem(IDC_STYLE_SELUSEFORE)).GetCheck() == BST_CHECKED )
+		c = CLR_NONE;
+	else
+		c = m_selFore.GetColor();
+
+	if(c != CLR_DEFAULT)
+		ec->SetColour( EditorColours::ecSelFore, c);
+	
+	c = m_selBack.GetColor();
+	if(c != CLR_DEFAULT)
+		ec->SetColour( EditorColours::ecSelBack, c);
+
+	c = m_cur.GetColor();
+	if(c != CLR_DEFAULT)
+		ec->SetColour( EditorColours::ecCaret, c);
+
+	c = m_indentGuides.GetColor();
+	if(c != CLR_DEFAULT)
+		ec->SetColour( EditorColours::ecIndentG, c);
 }
 
 void COptionsPageStyle::OnCancel()
@@ -474,25 +465,13 @@ LPCTSTR COptionsPageStyle::GetTreePosition()
 	return _T("Style");
 }
 
-StyleDetails* COptionsPageStyle::GetDefault(bool& bIsCustom)
-{
-	bIsCustom = false;
-	
-	StyleDetails* pCustom = m_pSchemes->GetCustomClasses().GetStyle(_T("default"));
-	if(pCustom)
-	{
-		bIsCustom = true;
-		return pCustom;
-	}
-	
-	return m_pSchemes->GetDefaultStyle();
-}
-
 //////////////////////////////////////////////////////////////////////////////
 // COptionsPageSchemes
 //////////////////////////////////////////////////////////////////////////////
 
-COptionsPageSchemes::COptionsPageSchemes(SchemeConfigParser* pSchemes) : COptionsPageImpl<COptionsPageSchemes>()
+COptionsPageSchemes::COptionsPageSchemes(SchemeConfigParser* pSchemes) 
+	: COptionsPageImpl<COptionsPageSchemes>()
+	, m_stylestab(pSchemes)
 {
 	m_pSchemes = pSchemes;
 	m_bDirty = false;

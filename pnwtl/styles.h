@@ -149,9 +149,9 @@ public:
 
 	void CombineNoCustom(const StyleDetails* defStyle, StyleDetails& into) const;
 
+	void Reset();
+
 	// Pointed at StyleDetails Instances:
-	//StyleDetails* Class;		// Style Class
-	//StyleDetails* CustomClass;	// Customised Style Class
 	StylePtr	  Class;
 	StylePtr	  GroupClass;	// Group Style Class (grouped styles)
 	
@@ -162,10 +162,6 @@ public:
 private:
 	int m_key;
 };
-
-typedef list<StyleDetails*>	STYLES_LIST;
-typedef STYLES_LIST::iterator SL_IT;
-typedef STYLES_LIST::const_iterator SL_CIT;
 
 typedef std::list<StylePtr> StylePtrList;
 typedef std::map<tstring, StylePtr> StylePtrMap;
@@ -189,6 +185,10 @@ static StylePtr GetStyle(StylePtrList& lst, int key)
 class StylesList
 {
 public:
+	typedef list<StyleDetails*>	STYLES_LIST;
+	typedef STYLES_LIST::iterator SL_IT;
+	typedef STYLES_LIST::const_iterator SL_CIT;
+
 	~StylesList()
 	{
 		ClearStyles();
@@ -295,24 +295,10 @@ public:
 class CustomKeywordSet
 {
 	public:
-		CustomKeywordSet()
-		{
-			key = 0;
-			pWords = 0;
-			pName = 0;
-			pNext = 0;
-		}
-		
-		CustomKeywordSet(const CustomKeywordSet& copy)
-		{
-			pNext = NULL;
-			pWords = NULL;
+		CustomKeywordSet();
+		CustomKeywordSet(const CustomKeywordSet& copy);
 
-			key = copy.key;
-			
-			pName = new TCHAR[_tcslen(copy.pName)+1];
-			_tcscpy(pName, copy.pName);
-		}
+		~CustomKeywordSet();
 
 	public:
 		int		key;
@@ -327,101 +313,16 @@ class CustomKeywordSet
 class CustomKeywordHolder
 {
 	public:
-		CustomKeywordHolder()
-		{
-			pKeywordSets = NULL;
-			pLast = NULL;
-		}
+		CustomKeywordHolder();
+		~CustomKeywordHolder();
 
-		~CustomKeywordHolder()
-		{
-			CustomKeywordSet* pSet = pKeywordSets;
-			CustomKeywordSet* pDel;
-			while(pSet)
-			{
-				pDel = pSet;
-				pSet = pSet->pNext;
-				InternalDeleteSet(pDel);
-			}
+		void AddKeywordSet(CustomKeywordSet* pSet);
+		void DeleteKeywordSet(CustomKeywordSet* pSet);
 
-			pKeywordSets = NULL;
-		}
+		CustomKeywordSet* FindKeywordSet(int key);
+		CustomKeywordSet* GetFirstKeywordSet() const;
 
-		void AddKeywordSet(CustomKeywordSet* pSet)
-		{
-			if(pLast)
-			{
-				pLast->pNext = pSet;
-				pLast = pSet;
-			}
-			else
-			{
-				pKeywordSets = pLast = pSet;
-			}
-			pLast->pNext = NULL;
-		}
-
-		void DeleteKeywordSet(CustomKeywordSet* pSet)
-		{
-			if(!pSet)
-				return;
-
-			CustomKeywordSet* pPrev = NULL;
-
-			if(pSet == pKeywordSets)
-			{
-				pKeywordSets = pSet->pNext;
-			}
-			else
-			{
-				// Not the first item, something must point to it.
-				CustomKeywordSet* pS = pKeywordSets;
-				while(pS)
-				{
-					if(pS->pNext == pSet)
-					{
-						pPrev = pS;
-						pS->pNext = pSet->pNext;
-						break;
-					}
-
-					pS = pS->pNext;
-				}
-			}
-
-			if(pSet == pLast)
-				pLast = pPrev;
-
-			InternalDeleteSet(pSet);
-		}
-
-		CustomKeywordSet* FindKeywordSet(int key)
-		{
-			CustomKeywordSet* pSet = pKeywordSets;
-			while(pSet)
-			{
-				if(pSet->key == key)
-					break;
-				pSet = pSet->pNext;
-			}
-			return pSet;
-		}
-
-		CustomKeywordSet* GetFirstKeywordSet() const
-		{
-			return pKeywordSets;
-		}
-
-	protected:
-		inline void InternalDeleteSet(CustomKeywordSet* pDel)
-		{
-			if(pDel->pWords)
-				delete [] pDel->pWords;
-			if(pDel->pName)
-				delete [] pDel->pName;
-			delete pDel;
-		}
-
+	private:
 		CustomKeywordSet* pKeywordSets;
 		CustomKeywordSet* pLast;
 };
@@ -435,14 +336,6 @@ struct GroupDetails_t
 
 typedef std::list<GroupDetails_t> GroupDetailsList;
 
-/*typedef struct tagStyleGroup
-{
-	tstring Name;
-	StylePtrList Styles;
-} StyleGroup;
-
-typedef std::list<StyleGroup> StyleGroupList;*/
-
 /**
  * Flat storage of a tree of grouped styles.
  */
@@ -450,8 +343,11 @@ class SchemeDetails
 {
 public:
 	SchemeDetails(LPCTSTR name);
+	virtual ~SchemeDetails();
 	
 	StylePtr GetStyle(int key);
+
+	void PreLoadCustomisedStyle(StylePtr& ptr);
 
 	bool IsCustomised() const;
 	bool IsInternal() const;
@@ -480,6 +376,9 @@ public:
 	int					CustomFlags;
 	int					CustomFlagFlags;
 	int					CustomTabWidth;
+
+private:
+	StylePtrList		m_customStyles;
 };
 
 typedef std::list<SchemeDetails*> SchemeDetailsList;

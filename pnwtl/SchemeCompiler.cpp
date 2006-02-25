@@ -216,12 +216,6 @@ void SchemeRecorder::SetDefStyle(StyleDetails* defaults)
 
 SchemeLoaderState::~SchemeLoaderState()
 {
-	/*for(CNM_IT i = m_BaseSchemes.begin(); i != m_BaseSchemes.end(); ++i)
-	{
-		BaseScheme* pS = static_cast<BaseScheme*>( (*i).second );
-		delete pS;
-	}*/
-
 	for(SchemeDetailsMap::const_iterator i = m_SchemeDetails.begin(); i != m_SchemeDetails.end(); ++i)
 	{
 		delete (*i).second;
@@ -254,12 +248,7 @@ void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 	m_Recorder.StartRecording(_T("default"), _T("default"), filename.c_str(), 0);
 	m_Recorder.SetLexer(0);
 	
-	StylePtr pS( new FullStyleDetails(STYLE_DEFAULT) );
-	pS->Style = new StyleDetails(m_LoadState.m_Default);
-	pS->Class = m_LoadState.GetClass(_T("default"));
-	
-	StyleDetails temp;
-	pS->Combine(&m_LoadState.m_Default, temp);
+	StyleDetails temp(m_LoadState.m_Default);
 	temp.Key = STYLE_DEFAULT;
 	m_Recorder.SetDefStyle(&temp);
 	sendStyle(&temp, &m_Recorder);
@@ -583,29 +572,22 @@ void SchemeParser::processStyleClass(SchemeLoaderState* pState, XMLAttributes& a
 
 	if(t != NULL)
 	{
-		std::string name;
-		if(name == _T("default"))
-		{
-			//special case default class...
-			pStyle = &pState->m_Default;
-		}
-		else
-		{
-			pS = pState->GetClass(name.c_str());
+		std::string name = t;
+		
+		pS = pState->GetClass(name.c_str());
 
-			if(!pS.get())
-			{
-				pS.reset(new FullStyleDetails(-1));
-				pState->m_Classes.insert( StylePtrMap::value_type(name, pS));
-			}
-
-			if(!pS->Style)
-			{
-				pS->Style = new StyleDetails(pState->m_Default);
-			}
-			
-			pStyle = pS->Style;
+		if(!pS.get())
+		{
+			pS.reset(new FullStyleDetails(-1));
+			pState->m_Classes.insert( StylePtrMap::value_type(name, pS));
 		}
+
+		if(!pS->Style)
+		{
+			pS->Style = new StyleDetails(pState->m_Default);
+		}
+		
+		pStyle = pS->Style;
 
 		t = atts.getValue(_T("inherit-style"));
 		if(t != NULL)
@@ -617,8 +599,13 @@ void SchemeParser::processStyleClass(SchemeLoaderState* pState, XMLAttributes& a
 
 		parseStyle(pState, atts, pStyle);
 
-		if(pS.get())
-			onStyleClass(pS);
+		onStyleClass(pS);
+
+		if(name == _T("default"))
+		{
+			//special case default class...
+			pS->Combine(NULL, pState->m_Default);
+		}
 	}
 }
 
@@ -1000,7 +987,7 @@ void SchemeParser::sendBaseStyles(SchemeLoaderState* pState)
 
 	onStyleGroup(atts, StylePtr());
 	
-	for(SL_CIT i = pState->m_BaseStyles.StylesBegin();
+	for(StylesList::SL_CIT i = pState->m_BaseStyles.StylesBegin();
 		i != pState->m_BaseStyles.StylesEnd();
 		++i)
 	{

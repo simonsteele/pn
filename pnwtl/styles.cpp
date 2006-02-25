@@ -482,7 +482,7 @@ void FullStyleDetails::CombineNoCustom(const StyleDetails* defStyle, StyleDetail
 	{
 		GroupClass->Combine(defStyle, into);
 	}
-	else
+	else if(defStyle)
 		into = *defStyle;
 	
 	// Now we layer on the actual style settings
@@ -490,11 +490,139 @@ void FullStyleDetails::CombineNoCustom(const StyleDetails* defStyle, StyleDetail
 
 	// Reset values...
 	into.values = 0;
+	into.name = Style->name;
 }
 
 int FullStyleDetails::GetKey() const
 {
 	return m_key;
+}
+
+void FullStyleDetails::Reset()
+{
+	if(CustomStyle)
+	{
+		delete CustomStyle;
+		CustomStyle = NULL;
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+// CustomKeywordSet
+
+CustomKeywordSet::CustomKeywordSet()
+{
+	key = 0;
+	pWords = 0;
+	pName = 0;
+	pNext = 0;
+}
+
+CustomKeywordSet::CustomKeywordSet(const CustomKeywordSet& copy)
+{
+	pNext = NULL;
+	pWords = NULL;
+
+	key = copy.key;
+	
+	pName = new TCHAR[_tcslen(copy.pName)+1];
+	_tcscpy(pName, copy.pName);
+}
+
+CustomKeywordSet::~CustomKeywordSet()
+{
+	if(pWords)
+		delete [] pWords;
+	if(pName)
+		delete [] pName;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+// CustomKeywordHolder
+
+CustomKeywordHolder::CustomKeywordHolder()
+{
+	pKeywordSets = NULL;
+	pLast = NULL;
+}
+
+CustomKeywordHolder::~CustomKeywordHolder()
+{
+	CustomKeywordSet* pSet = pKeywordSets;
+	CustomKeywordSet* pDel;
+	while(pSet)
+	{
+		pDel = pSet;
+		pSet = pSet->pNext;
+		delete pDel;
+	}
+
+	pKeywordSets = NULL;
+}
+
+void CustomKeywordHolder::AddKeywordSet(CustomKeywordSet* pSet)
+{
+	if(pLast)
+	{
+		pLast->pNext = pSet;
+		pLast = pSet;
+	}
+	else
+	{
+		pKeywordSets = pLast = pSet;
+	}
+	pLast->pNext = NULL;
+}
+
+void CustomKeywordHolder::DeleteKeywordSet(CustomKeywordSet* pSet)
+{
+	if(!pSet)
+		return;
+
+	CustomKeywordSet* pPrev = NULL;
+
+	if(pSet == pKeywordSets)
+	{
+		pKeywordSets = pSet->pNext;
+	}
+	else
+	{
+		// Not the first item, something must point to it.
+		CustomKeywordSet* pS = pKeywordSets;
+		while(pS)
+		{
+			if(pS->pNext == pSet)
+			{
+				pPrev = pS;
+				pS->pNext = pSet->pNext;
+				break;
+			}
+
+			pS = pS->pNext;
+		}
+	}
+
+	if(pSet == pLast)
+		pLast = pPrev;
+
+	delete pSet;
+}
+
+CustomKeywordSet* CustomKeywordHolder::FindKeywordSet(int key)
+{
+	CustomKeywordSet* pSet = pKeywordSets;
+	while(pSet)
+	{
+		if(pSet->key == key)
+			break;
+		pSet = pSet->pNext;
+	}
+	return pSet;
+}
+
+CustomKeywordSet* CustomKeywordHolder::GetFirstKeywordSet() const
+{
+	return pKeywordSets;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -509,15 +637,32 @@ SchemeDetails::SchemeDetails(LPCTSTR name)
 	CustomTabWidth = 0;
 }
 
+SchemeDetails::~SchemeDetails()
+{
+}
+
 StylePtr SchemeDetails::GetStyle(int key)
 {
 	StylePtr p = ::GetStyle(Styles, key);
 	if(!p.get())
 	{
-		p.reset( new FullStyleDetails(key) );
+		p = ::GetStyle(m_customStyles, key);
+		if(p.get())
+		{
+			m_customStyles.remove(p);
+		}
+		else
+		{
+			p.reset( new FullStyleDetails(key) );
+		}
 		Styles.push_back(p);
 	}
 	return p;
+}
+
+void SchemeDetails::PreLoadCustomisedStyle(StylePtr& ptr)
+{
+	m_customStyles.push_back(ptr);
 }
 
 bool SchemeDetails::IsCustomised() const
@@ -545,7 +690,10 @@ bool SchemeDetails::IsInternal() const
 
 void SchemeDetails::ResetAll()
 {
-	throw "Not Yet Implemented";
+	for(StylePtrList::iterator i = Styles.begin(); i != Styles.end(); ++i)
+	{
+		(*i)->Reset();
+	}
 }
 
 void SchemeDetails::BeginStyleGroup(LPCTSTR name, LPCTSTR description, LPCTSTR classname)
@@ -554,14 +702,15 @@ void SchemeDetails::BeginStyleGroup(LPCTSTR name, LPCTSTR description, LPCTSTR c
 	StylePtr pDummy( new FullStyleDetails(-1) );
 	pDummy->Style = new StyleDetails;
 	pDummy->Style->values = edvGroupStart;
-	if(classname)
-		pDummy->Style->classname = classname;
 	Styles.push_back(pDummy);
 	
 	// Add information about the group for sending later.
 	GroupDetails_t gd;
 	gd.name = name;
-	gd.description = description;
+	if(description)
+		gd.description = description;
+	if(classname)
+		gd.classname = classname;
 	GroupDetails.push_back(gd);
 }
 

@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme>
-	<globals>
-		<value name="font.monospace">Courier New</value>
-		<value name="colour.preproc">7f7f00</value>
-		<value name="colour.string">7f007f</value>
-		<value name="colour.char">7f007f</value>
-		<value name="colour.number">007f7f</value>
-		<value name="colour.keyword">00007f</value>
-		<value name="colour.operator">000000</value>
-		<value name="colour.comment">007f00</value>
-	</globals>
 	<style-classes>
 		<!-- All styles inherit the default style. Font fore and back colours are 
 		not specified - this way we inherit the system defaults -->
