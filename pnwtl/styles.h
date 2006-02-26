@@ -39,14 +39,9 @@ public:
 	const EditorColours& operator = (const EditorColours& copy);
 
 	void SetColour(Colours colour, COLORREF setColour);
-
 	bool HasColour(Colours colour) const;
-
 	bool HasColours() const;
-
-	/**
-	 * @return True if colour configured, false otherwise
-	 */
+	///@return True if colour configured, false otherwise
 	bool GetColour(Colours colour, COLORREF& theColour) const;
 
 	void SetFromXml(XMLAttributes& atts);
@@ -91,7 +86,6 @@ class StyleDetails
 		 * users can change - others need not be compared.
 		 */
 		bool operator == (const StyleDetails& compare) const;
-
 		bool operator != (const StyleDetails& compare) const;;
 
 		/**
@@ -189,104 +183,32 @@ public:
 	typedef STYLES_LIST::iterator SL_IT;
 	typedef STYLES_LIST::const_iterator SL_CIT;
 
-	~StylesList()
-	{
-		ClearStyles();
-	}
+	~StylesList();
 
-	/**
-	 * Orphan a StyleDetails object into the list.
-	 */
-	void AddStyle(StyleDetails* pStyle)
-	{
-		m_Styles.push_back(pStyle);
-	}
+	///Orphan a StyleDetails object into the list.
+	void AddStyle(StyleDetails* pStyle);
+	/// Find a StyleDetails given its style number (key)
+	StyleDetails* GetStyle(int key);
+	/// Removes pStyle from the list, also @see DetachStyle
+	void RemoveStyle(StyleDetails* pStyle);
+	/// Removes any style from the list with the style number "key".
+	StyleDetails* RemoveStyle(int key);
+	/// Deletes pStyle from the list.
+	void DeleteStyle(StyleDetails* pStyle);
+	///Deletes a style with the style number "key" from the list.
+	void DeleteStyle(int key);
 
-	/**
-	 * Removes pStyle from the list, also @see DetachStyle
-	 */
-	void RemoveStyle(StyleDetails* pStyle)
-	{
-		m_Styles.remove(pStyle);
-	}
+	/// Deletes all stored styles.
+	void DeleteAllStyles();
 
-	/**
-	 * Removes any style from the list with the style number "key".
-	 */
-	StyleDetails* RemoveStyle(int key)
-	{
-		StyleDetails* pS = GetStyle(key);
-		if(pS)
-			RemoveStyle(pS);
-		return pS;
-	}
+	SL_CIT StylesBegin();
+	SL_CIT StylesEnd();
 
-	/**
-	 * Deletes pStyle from the list.
-	 */
-	void DeleteStyle(StyleDetails* pStyle)
-	{
-		RemoveStyle(pStyle);
-		delete pStyle;
-	}
+	size_t StylesCount() const;
 
-	/**
-	 * Deletes a style with the style number "key" from the list.
-	 */
-	void DeleteStyle(int key)
-	{
-		StyleDetails* pS = RemoveStyle(key);
-		if(pS)
-			delete pS;
-	}
-
-	/**
-	 * Deletes all stored styles.
-	 */
-	void DeleteAllStyles()
-	{
-		ClearStyles();
-	}
-
-	/**
-	 * Find a StyleDetails given its style number (key)
-	 */
-	StyleDetails* GetStyle(int key)
-	{
-		for(SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
-		{
-			if((*i)->Key == key)
-				return *i;
-		}
-		return NULL;
-	}
-
-	SL_CIT StylesBegin()
-	{
-		return m_Styles.begin();
-	}
-
-	inline SL_CIT StylesEnd()
-	{
-		return m_Styles.end();
-	}
-
-	size_t StylesCount() const
-	{
-		return m_Styles.size();
-	}
-
-	protected:
-		void ClearStyles()
-		{
-			for(SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
-			{
-				delete (*i);
-			}
-			m_Styles.clear();
-		}
-
-		STYLES_LIST	m_Styles;
+private:
+	void ClearStyles();
+	STYLES_LIST	m_Styles;
 };
 
 /**

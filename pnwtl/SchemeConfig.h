@@ -2,7 +2,7 @@
  * @file SchemeConfig.h
  * @brief Scheme configuration classes.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -15,10 +15,7 @@
 
 class SchemeConfigParser;
 
-namespace Schemes
-{
-	class Writer;
-}
+namespace Schemes {	class Writer; }
 
 /**
  * @brief Sub-Class of the Scheme file parser, specifically for configuration...

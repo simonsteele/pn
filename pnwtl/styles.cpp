@@ -1,3 +1,13 @@
+/**
+ * @file styles.cpp
+ * @brief Define style and style-containing classes.
+ * @author Simon Steele
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #include "stdafx.h"
 #include "styles.h"
 
@@ -721,4 +731,103 @@ void SchemeDetails::EndStyleGroup()
 	pStyle->Style = new StyleDetails;
 	pStyle->Style->values = edvGroupEnd;
 	Styles.push_back(pStyle);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////
+// StylesList
+
+StylesList::~StylesList()
+{
+	ClearStyles();
+}
+
+/**
+ * Orphan a StyleDetails object into the list.
+ */
+void StylesList::AddStyle(StyleDetails* pStyle)
+{
+	m_Styles.push_back(pStyle);
+}
+
+/**
+ * Removes pStyle from the list, also @see DetachStyle
+ */
+void StylesList::RemoveStyle(StyleDetails* pStyle)
+{
+	m_Styles.remove(pStyle);
+}
+
+/**
+ * Removes any style from the list with the style number "key".
+ */
+StyleDetails* StylesList::RemoveStyle(int key)
+{
+	StyleDetails* pS = GetStyle(key);
+	if(pS)
+		RemoveStyle(pS);
+	return pS;
+}
+
+/**
+ * Deletes pStyle from the list.
+ */
+void StylesList::DeleteStyle(StyleDetails* pStyle)
+{
+	RemoveStyle(pStyle);
+	delete pStyle;
+}
+
+/**
+ * Deletes a style with the style number "key" from the list.
+ */
+void StylesList::DeleteStyle(int key)
+{
+	StyleDetails* pS = RemoveStyle(key);
+	if(pS)
+		delete pS;
+}
+
+/**
+ * Deletes all stored styles.
+ */
+void StylesList::DeleteAllStyles()
+{
+	ClearStyles();
+}
+
+/**
+ * Find a StyleDetails given its style number (key)
+ */
+StyleDetails* StylesList::GetStyle(int key)
+{
+	for(StylesList::SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
+	{
+		if((*i)->Key == key)
+			return *i;
+	}
+	return NULL;
+}
+
+StylesList::SL_CIT StylesList::StylesBegin()
+{
+	return m_Styles.begin();
+}
+
+StylesList::SL_CIT StylesList::StylesEnd()
+{
+	return m_Styles.end();
+}
+
+size_t StylesList::StylesCount() const
+{
+	return m_Styles.size();
+}
+
+void StylesList::ClearStyles()
+{
+	for(StylesList::SL_IT i = m_Styles.begin(); i != m_Styles.end(); ++i)
+	{
+		delete (*i);
+	}
+	m_Styles.clear();
 }
