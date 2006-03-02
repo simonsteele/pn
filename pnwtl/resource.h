@@ -69,7 +69,9 @@
 #define IDS_TOOL_EXITCODE               163
 #define IDS_TOOL_TIMETAKEN              164
 #define IDS_SAVE_CHANGES                165
+#define IDS_PATHNOTINMAGICFOLDER        166
 #define IDI_TEXTCLIPS                   167
+#define IDS_CANTCREATEFILE              167
 #define IDR_POPUP_REGEXP                170
 #define IDR_POPUP_EDITOR                173
 #define IDB_EDITOR                      203
@@ -517,6 +519,7 @@
 #define ID_EDIT_QUICKFIND               32953
 #define ID_EDIT_FINDPREVIOUS            32956
 #define ID_EDITOR_USEASSCRIPT           32960
+#define ID_PROJECT_MAGICADDFILE         32963
 
 // Next default values for new objects
 // 
@@ -524,7 +527,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        343
-#define _APS_NEXT_COMMAND_VALUE         32962
+#define _APS_NEXT_COMMAND_VALUE         32964
 #define _APS_NEXT_CONTROL_VALUE         1135
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

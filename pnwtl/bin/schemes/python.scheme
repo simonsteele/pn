@@ -29,6 +29,8 @@
 			<style name="Identifiers" key="11"/>
 			<style name="Comment block" key="12" fore="7f7f7f" />
 			<style name="Unclosed string" key="13" class="string" back="e0c0e0" eolfilled="true" />
+			<style name="Highlighted Identifiers" key="14" fore="407090" />
+			<style name="Decorators" key="15" fore="805080" />
 		</use-styles>
 	</language>
 </Scheme>

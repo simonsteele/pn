@@ -60,6 +60,7 @@ public:
 		COMMAND_ID_HANDLER(ID_PROJECT_PROPERTIES, OnProjectProperties)
 		COMMAND_ID_HANDLER(ID_PROJECT_SAVEPROJECT, OnSaveProject)
 		COMMAND_ID_HANDLER(ID_PROJECT_REFRESH, OnRefresh)
+		COMMAND_ID_HANDLER(ID_PROJECT_MAGICADDFILE, OnMagicAddFile)
 		
 		CHAIN_MSG_MAP(baseClass)
 		
@@ -146,6 +147,7 @@ protected:
 	LRESULT		OnProjectProperties(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnSaveProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT		OnMagicAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	// Drag and Drop Handlers
 	LRESULT		OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

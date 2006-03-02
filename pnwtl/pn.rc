@@ -600,6 +600,7 @@ BEGIN
     BEGIN
         MENUITEM "&Add New Folder",             ID_PROJECT_MAGICADDFOLDER
         , INACTIVE
+        MENUITEM "&Add New File...",            ID_PROJECT_MAGICADDFILE
         MENUITEM SEPARATOR
         MENUITEM "&Open All Files",             299
         MENUITEM "&Sort Folders",               ID_PROJECT_SORTFOLDERS
@@ -1858,6 +1859,9 @@ BEGIN
     IDS_TOOL_EXITCODE       "\n> Process Exit Code: "
     IDS_TOOL_TIMETAKEN      "\n> Time Taken: "
     IDS_SAVE_CHANGES        "Would you like to save changes to:\n%s?"
+    IDS_PATHNOTINMAGICFOLDER 
+                            "The file must be placed inside this magic folder directory."
+    IDS_CANTCREATEFILE      "Could not create file"
 END
 
 #endif    // English (U.K.) resources

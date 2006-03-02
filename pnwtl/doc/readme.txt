@@ -9,6 +9,8 @@ What's new?
 1) Scripting interface and Python scripting implementation
 2) Detection of UTF-8 without a Byte Order Mark, also an encoding option (parts by Oleg Gerasimov)
 3) Sets unicode character set automatically when a unicode file encoding is selected.
+4) Decorators in Python scheme
+5) Add New File in Magic Folders context menu
 
 Bug Fixes:
 ----------

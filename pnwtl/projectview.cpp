@@ -1377,6 +1377,45 @@ LRESULT CProjectTreeCtrl::OnRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	return 0;
 }
 
+LRESULT	CProjectTreeCtrl::OnMagicAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(lastItem->GetType() != ptMagicFolder)
+		return 0;
+
+	Projects::MagicFolder* mf = static_cast<Projects::MagicFolder*>(lastItem);
+	tstring path = mf->GetFullPath();
+
+	CPNSaveDialog sd("All Files (*.*)|*.*|", NULL);
+	sd.SetTitle("New File Name...");
+	sd.SetInitialPath( path.c_str() );
+	
+	if(sd.DoModal() == IDOK)
+	{
+		CFileName fn(sd.GetSingleFileName());
+		fn.ToLower();
+		tstring newPath;
+		fn.GetPath(newPath);
+		if(newPath != path)
+			::MessageBox(m_hWnd, LS(IDS_PATHNOTINMAGICFOLDER), LS(IDR_MAINFRAME), MB_ICONWARNING | MB_OK);
+		else
+		{
+			// Make and blank the file...
+			FILE* theFile = fopen(fn.c_str(), "wb");
+			if(theFile)
+			{
+				mf->AddFile(fn.c_str());
+				fclose(theFile);
+			}
+			else
+			{
+				::MessageBox(m_hWnd, LS(IDS_CANTCREATEFILE), LS(IDR_MAINFRAME), MB_ICONWARNING | MB_OK);
+			}
+		}
+	}
+
+	return 0;
+}
+
 class ImageListDragShowNoLock
 {
 public:
