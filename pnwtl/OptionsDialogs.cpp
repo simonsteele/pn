@@ -535,13 +535,13 @@ CFileTypeEditorDialog::CFileTypeEditorDialog()
 	m_pScheme = NULL;
 }
 
-void CFileTypeEditorDialog::GetValues(tstring& match, CScheme*& scheme)
+void CFileTypeEditorDialog::GetValues(tstring& match, Scheme*& scheme)
 {
 	match = m_match;
 	scheme = m_pScheme;
 }
 
-void CFileTypeEditorDialog::SetValues(LPCTSTR match, CScheme* scheme)
+void CFileTypeEditorDialog::SetValues(LPCTSTR match, Scheme* scheme)
 {
 	m_match = match;
 	m_pScheme = scheme;
@@ -555,7 +555,7 @@ LRESULT CFileTypeEditorDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 		return 0;
 
 	m_match = (LPCTSTR)wt;
-	m_pScheme = static_cast<CScheme*>( m_combo.GetItemDataPtr( m_combo.GetCurSel() ) );
+	m_pScheme = static_cast<Scheme*>( m_combo.GetItemDataPtr( m_combo.GetCurSel() ) );
 
 	EndDialog(wID);
 

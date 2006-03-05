@@ -1,6 +1,6 @@
 /**
  * @file Schemes.cpp
- * @brief Implement CScheme and SchemeManager.
+ * @brief Implement Scheme and SchemeManager.
  * @author Simon Steele
  * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
  *
@@ -21,22 +21,22 @@
 using namespace ssreg;
 
 ///////////////////////////////////////////////////////////
-// CScheme
+// Scheme
 ///////////////////////////////////////////////////////////
 
-CScheme::CScheme()
+Scheme::Scheme()
 {
 	Init();
 }
 
-CScheme::CScheme(SchemeManager* pManager)
+Scheme::Scheme(SchemeManager* pManager)
 {
 	Init();
 
 	m_pManager = pManager;
 }
 
-CScheme::CScheme(SchemeManager* pManager, LPCTSTR filename)
+Scheme::Scheme(SchemeManager* pManager, LPCTSTR filename)
 {
 	Init();
 
@@ -45,7 +45,13 @@ CScheme::CScheme(SchemeManager* pManager, LPCTSTR filename)
 	m_pManager = pManager;
 }
 
-void CScheme::Init()
+Scheme::Scheme(const Scheme& copy)
+{
+	Init();
+	*this = copy;
+}
+
+void Scheme::Init()
 {
 	m_SchemeFile = NULL;
 	m_Name = NULL;
@@ -58,7 +64,7 @@ void CScheme::Init()
 	m_tabWidth = 4;*/
 }
 
-CScheme::~CScheme()
+Scheme::~Scheme()
 {
 	if(m_SchemeFile)
 	{
@@ -78,7 +84,7 @@ CScheme::~CScheme()
 	}
 }
 
-bool CScheme::InitialLoad(CFile& file, SchemeHdrRec& hdr)
+bool Scheme::InitialLoad(CFile& file, SchemeHdrRec& hdr)
 {
 	CompiledHdrRec Header;
 	file.Read(&Header, sizeof(CompiledHdrRec));
@@ -120,7 +126,7 @@ bool CScheme::InitialLoad(CFile& file, SchemeHdrRec& hdr)
 	return true;
 }
 
-bool CScheme::CheckName()
+bool Scheme::CheckName()
 {
 	CFile cfile;
 
@@ -136,7 +142,22 @@ bool CScheme::CheckName()
 	return bRet;
 }
 
-void CScheme::SetName(LPCTSTR name)
+LPCTSTR Scheme::GetName() const
+{
+	return m_Name;
+}
+
+LPCTSTR Scheme::GetTitle() const
+{
+	return m_Title;
+}
+
+LPCTSTR Scheme::GetFileName() const
+{
+	return m_SchemeFile;
+}
+
+void Scheme::SetName(LPCTSTR name)
 {
 	if(name)
 	{
@@ -147,7 +168,7 @@ void CScheme::SetName(LPCTSTR name)
 	}
 }
 
-void CScheme::SetTitle(LPCTSTR title)
+void Scheme::SetTitle(LPCTSTR title)
 {
 	if(title)
 	{
@@ -159,7 +180,7 @@ void CScheme::SetTitle(LPCTSTR title)
 	}
 }
 
-void CScheme::SetFileName(LPCTSTR filename)
+void Scheme::SetFileName(LPCTSTR filename)
 {
 	if(filename)
 	{
@@ -171,12 +192,12 @@ void CScheme::SetFileName(LPCTSTR filename)
 	}
 }
 
-bool CScheme::IsInternal() const
+bool Scheme::IsInternal() const
 {
 	return m_bInternal;
 }
 
-void CScheme::SetSchemeManager(SchemeManager* pManager)
+void Scheme::SetSchemeManager(SchemeManager* pManager)
 {
 	m_pManager = pManager;
 }
@@ -186,7 +207,7 @@ void CScheme::SetSchemeManager(SchemeManager* pManager)
  * the settings used by this scheme. The caller must free the list
  * and the items contained within.
  */
-StylesList* CScheme::CreateStylesList()
+StylesList* Scheme::CreateStylesList()
 {
 	CFile			cfile;
 	SchemeHdrRec	hdr;
@@ -312,7 +333,7 @@ StylesList* CScheme::CreateStylesList()
 	return NULL;
 }
 
-void CScheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
+void Scheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 {
 	CFile cfile;
 	SchemeHdrRec hdr;
@@ -422,7 +443,7 @@ void CScheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 	}
 }
 
-void CScheme::SetupScintilla(CScintilla& sc, bool allSettings)
+void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 {
 	Options& options = *OPTIONS;
 
@@ -492,17 +513,17 @@ void CScheme::SetupScintilla(CScintilla& sc, bool allSettings)
 	options.EndGroupOperation();
 }
 
-bool CScheme::operator < (const CScheme& compare) const 
+bool Scheme::operator < (const Scheme& compare) const 
 {
 	return _tcsicmp(GetTitle(), compare.GetTitle()) < 0;
 }
 
-bool CScheme::operator > (const CScheme& compare) const
+bool Scheme::operator > (const Scheme& compare) const
 {
 	return _tcsicmp(GetTitle(), compare.GetTitle()) > 0;
 }
 
-const CScheme& CScheme::operator = (const CScheme& copy)
+const Scheme& Scheme::operator = (const Scheme& copy)
 {
 	m_pManager = copy.m_pManager;
 
@@ -515,13 +536,13 @@ const CScheme& CScheme::operator = (const CScheme& copy)
 }
 
 ///////////////////////////////////////////////////////////
-// CDefaultScheme
+// DefaultScheme
 ///////////////////////////////////////////////////////////
 
-void CDefaultScheme::Load(CScintilla& sc, LPCTSTR filename)
+void DefaultScheme::Load(CScintilla& sc, LPCTSTR filename)
 {
 	//SetupScintilla(sc);
-	CScheme::Load(sc);
+	Scheme::Load(sc);
 }
 
 ///////////////////////////////////////////////////////////
@@ -678,7 +699,7 @@ void SchemeManager::Load()
 	{
 		found = TRUE;
 
-		CScheme *cs = NULL;
+		Scheme *cs = NULL;
 		SCIT csi;
 
 		while(found)
@@ -686,7 +707,7 @@ void SchemeManager::Load()
 			if(_tcscmp(_T("default.cscheme"), FindFileData.cFileName) != 0)
 			{
 				
-				CScheme sch;
+				Scheme sch;
 				csi = m_Schemes.insert(m_Schemes.end(), sch);
 				cs = &(*csi);
 
@@ -752,7 +773,7 @@ void SchemeManager::LoadExtMap(SCHEME_MAP& extMap, SCHEME_MAP& fnMap, bool noUse
 	internalLoadExtMap(fn.c_str(), extMap, fnMap);
 }
 
-CScheme* SchemeManager::internalSchemeForFileName(const tstring& filename)
+Scheme* SchemeManager::internalSchemeForFileName(const tstring& filename)
 {
 	SCHEME_MAPIT i = m_SchemeFileNameMap.find(filename);
 	
@@ -761,7 +782,7 @@ CScheme* SchemeManager::internalSchemeForFileName(const tstring& filename)
 	return NULL;
 }
 
-CScheme* SchemeManager::internalSchemeForExt(const tstring& extension)
+Scheme* SchemeManager::internalSchemeForExt(const tstring& extension)
 {
 	SCHEME_MAPIT i = m_SchemeExtMap.find(extension);
 	
@@ -773,13 +794,13 @@ CScheme* SchemeManager::internalSchemeForExt(const tstring& extension)
 /**
  * @return The scheme for extension "ext" e.g. .pas
  */
-CScheme* SchemeManager::SchemeForExt(LPCTSTR ext)
+Scheme* SchemeManager::SchemeForExt(LPCTSTR ext)
 {
 	TCHAR *e = new TCHAR[_tcslen(ext)+1];
 	_tcscpy(e, ext);
 	e = CharLower(e);
 
-	CScheme* pRet = internalSchemeForExt( tstring(e) );
+	Scheme* pRet = internalSchemeForExt( tstring(e) );
 
 	delete [] e;
 
@@ -792,12 +813,12 @@ CScheme* SchemeManager::SchemeForExt(LPCTSTR ext)
 /**
  * @return whatever scheme is appropriate for the filename passed in.
  */
-CScheme* SchemeManager::SchemeForFile(LPCTSTR filename)
+Scheme* SchemeManager::SchemeForFile(LPCTSTR filename)
 {
 	CFileName fn(filename);
 	fn.ToLower();
 
-	CScheme* pScheme = internalSchemeForExt( fn.GetExtension() );
+	Scheme* pScheme = internalSchemeForExt( fn.GetExtension() );
 	if(!pScheme)
 	{
 		// See if we can match on a simple filename basis.
@@ -812,9 +833,9 @@ CScheme* SchemeManager::SchemeForFile(LPCTSTR filename)
 }
 
 /**
- * @return CScheme* identified by "name"
+ * @return Scheme* identified by "name"
  */
-CScheme* SchemeManager::SchemeByName(LPCTSTR name)
+Scheme* SchemeManager::SchemeByName(LPCTSTR name)
 {
 	TCHAR *e = new TCHAR[_tcslen(name)+1];
 	_tcscpy(e, name);
@@ -933,7 +954,7 @@ void SchemeManager::internalLoadExtMap(LPCTSTR filename, SCHEME_MAP& extMap, SCH
 		tstring ext;
 		tstring scheme;
 		
-		CScheme* sch;
+		Scheme* sch;
 		int pos;
 
 		while(file.ReadLine(buf))
@@ -994,7 +1015,7 @@ void CSchemeSwitcher::Reset(int iCommand)
 	BuildMenu(iCommand);
 }
 
-void CSchemeSwitcher::SetActiveScheme(CScheme* pCurrent)
+void CSchemeSwitcher::SetActiveScheme(Scheme* pCurrent)
 {
 	for(MISCHEMELIST::iterator i = m_list.begin(); i != m_list.end(); ++i)
 	{

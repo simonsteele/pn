@@ -133,7 +133,7 @@ CChildFrame* CMainFrame::NewEditor()
 	return pChild;
 }
 
-bool CMainFrame::OpenFile(LPCTSTR pathname, CScheme* pScheme, EPNEncoding encoding)
+bool CMainFrame::OpenFile(LPCTSTR pathname, Scheme* pScheme, EPNEncoding encoding)
 {
 	bool bRet = false;
 
@@ -299,7 +299,7 @@ bool CMainFrame::closeAll(bool shuttingDown)
 bool CMainFrame::OnSchemeNew(LPVOID data)
 {	
 	CChildFrame* pChild = NewEditor();
-	pChild->SetScheme((CScheme*)data);
+	pChild->SetScheme((Scheme*)data);
 
 	return true; // we handled it.
 }
@@ -467,10 +467,10 @@ LRESULT CMainFrame::OnChildNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 			CChildFrame* pChild = CChildFrame::FromHandle(hMDIChild);
 			if(pChild != NULL)
 			{
-				CScheme* pScheme = pChild->GetTextView()->GetCurrentScheme();
+				Scheme* pScheme = pChild->GetTextView()->GetCurrentScheme();
 				for(int i = 0; i < m_SchemeCombo.GetCount(); i++)
 				{
-					if( pScheme == static_cast<CScheme*>( m_SchemeCombo.GetItemDataPtr(i) ) )
+					if( pScheme == static_cast<Scheme*>( m_SchemeCombo.GetItemDataPtr(i) ) )
 					{
 						m_SchemeCombo.SetCurSel(i);
 						break;
@@ -1047,7 +1047,7 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 	bool bHaveCol = false;
 	bool bHaveScheme = false;
 	int iLine = 0, iCol = 0;
-	CScheme* pScheme = NULL;
+	Scheme* pScheme = NULL;
 	
 	if(parameters.size() < 1)
 		return;
@@ -1139,7 +1139,7 @@ LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 	bool bHaveCol = false;
 	bool bHaveScheme = false;
 	int iLine = 0, iCol = 0;
-	CScheme* pScheme = NULL;
+	Scheme* pScheme = NULL;
 
 	int lastArg = __argc - 1;
 
@@ -1911,7 +1911,7 @@ LRESULT CMainFrame::OnHelpContents(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 LRESULT CMainFrame::OnSchemeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	int iSel = m_SchemeCombo.GetCurSel();
-	CScheme* pScheme = static_cast<CScheme*>( m_SchemeCombo.GetItemDataPtr( iSel ) );
+	Scheme* pScheme = static_cast<Scheme*>( m_SchemeCombo.GetItemDataPtr( iSel ) );
 	if( pScheme != NULL )
 	{
 		CChildFrame* pEditor = CChildFrame::FromHandle( GetCurrentEditor() );
@@ -2404,7 +2404,7 @@ void CMainFrame::SetActiveScheme(HWND notifier, LPVOID pScheme)
 {
 	if(notifier == MDIGetActive())
 	{
-		m_Switcher.SetActiveScheme(static_cast<CScheme*>(pScheme));
+		m_Switcher.SetActiveScheme(static_cast<Scheme*>(pScheme));
 	}
 }
 

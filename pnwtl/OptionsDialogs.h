@@ -213,8 +213,8 @@ class CFileTypeEditorDialog : public CDialogImpl<CFileTypeEditorDialog>
 			
 		END_MSG_MAP()
 
-		void GetValues(tstring& match, CScheme*& scheme);
-		void SetValues(LPCTSTR match, CScheme* scheme);
+		void GetValues(tstring& match, Scheme*& scheme);
+		void SetValues(LPCTSTR match, Scheme* scheme);
 
 	protected:
 		LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -224,7 +224,7 @@ class CFileTypeEditorDialog : public CDialogImpl<CFileTypeEditorDialog>
 	protected:
 		CComboBox		m_combo;
 		tstring			m_match;
-		CScheme*		m_pScheme;
+		Scheme*		m_pScheme;
 };
 
 #endif

@@ -256,7 +256,7 @@ public:
 	
 	void CheckAge();
 	void Revert();
-	bool PNOpenFile(LPCTSTR pathname, CScheme* pScheme = NULL, EPNEncoding encoding = eUnknown);
+	bool PNOpenFile(LPCTSTR pathname, Scheme* pScheme = NULL, EPNEncoding encoding = eUnknown);
 	bool SaveFile(LPCTSTR pathname, bool bStoreFilename = true, bool bUpdateMRU = true);
 	bool CanSave();
 	bool SaveAs();
@@ -273,7 +273,7 @@ public:
 	void SetPosStatus(CMultiPaneStatusBarCtrl&	stat);
 	bool OnSchemeChange(LPVOID pVoid);
 	
-	void SetScheme(CScheme* pScheme, bool allSettings = true);
+	void SetScheme(Scheme* pScheme, bool allSettings = true);
 	void UpdateMenu();
 
 	CTextView* GetTextView();
@@ -305,8 +305,8 @@ protected:
 protected:
 	void LoadExternalLexers();
 	void PrintSetup();
-	void SchemeChanged(CScheme* pScheme);
-	void UpdateTools(CScheme* pScheme);
+	void SchemeChanged(Scheme* pScheme);
+	void UpdateTools(Scheme* pScheme);
 	bool IsOutputVisible();
 	BOOL OnEscapePressed();
 	void Export(int type);

@@ -34,7 +34,7 @@ bool DocumentPropSheet::ModifiedDocument()
 
 LRESULT DocumentPropSheet::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	CScheme* pCurScheme;
+	Scheme* pCurScheme;
 
 	CTextView* pView = m_pChild->GetTextView();
 	pCurScheme = pView->GetCurrentScheme();
@@ -44,7 +44,7 @@ LRESULT DocumentPropSheet::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	SchemeManager* pM = SchemeManager::GetInstance();
 	SCHEME_LIST* pSchemes = pM->GetSchemesList();
 
-	CScheme* pDefScheme = pM->GetDefaultScheme();
+	Scheme* pDefScheme = pM->GetDefaultScheme();
 	int index = schemes.AddString( pDefScheme->GetTitle() );
 	schemes.SetItemDataPtr( index, pDefScheme );
 	if( pCurScheme == pDefScheme )
@@ -128,7 +128,7 @@ BOOL DocumentPropSheet::OnApply()
 	CComboBox lineEndings(GetDlgItem(IDC_FILEPROP_LINEENDINGS));
 	CComboBox encoding(GetDlgItem(IDC_FILEPROP_ENCODING));
 
-	CScheme* pScheme = reinterpret_cast<CScheme*>( schemes.GetItemData( schemes.GetCurSel() ) );
+	Scheme* pScheme = reinterpret_cast<Scheme*>( schemes.GetItemData( schemes.GetCurSel() ) );
 
 	if( pScheme != pView->GetCurrentScheme() )
 		m_pChild->SetScheme( pScheme );

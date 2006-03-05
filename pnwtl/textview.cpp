@@ -64,7 +64,7 @@ BOOL CTextView::PreTranslateMessage(MSG* pMsg)
 	return FALSE;
 }
 
-void CTextView::SetScheme(CScheme* pScheme, bool allSettings)
+void CTextView::SetScheme(Scheme* pScheme, bool allSettings)
 {
 	if(pScheme != SchemeManager::GetInstance()->GetDefaultScheme())
 		m_bSmartStart = false;
@@ -312,14 +312,14 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 		return false;
 }
 
-bool CTextView::Load(LPCTSTR filename, CScheme* pScheme, EPNEncoding encoding)
+bool CTextView::Load(LPCTSTR filename, Scheme* pScheme, EPNEncoding encoding)
 {
 	if( OpenFile(filename, encoding) )
 	{
 		// Clear the UNDO buffer
 		EmptyUndoBuffer();
 
-		CScheme* sch = pScheme;
+		Scheme* sch = pScheme;
 		
 		if(NULL == sch)
 		{
@@ -454,7 +454,7 @@ bool CTextView::Save(LPCTSTR filename, bool bSetScheme)
 		if(bSetScheme)
 		{
 			// Re-Apply Scheme:
-			CScheme* sch = SchemeManager::GetInstance()->SchemeForFile(filename);
+			Scheme* sch = SchemeManager::GetInstance()->SchemeForFile(filename);
 			SetScheme(sch);
 		}
 		return true;
@@ -642,7 +642,7 @@ void CTextView::SetEncoding(EPNEncoding encoding)
 	}
 }
 
-CScheme* CTextView::GetCurrentScheme()
+Scheme* CTextView::GetCurrentScheme()
 {
 	return m_pLastScheme;
 }

@@ -1110,7 +1110,7 @@ void COptionsPageNewFiles::AddItem(LPCTSTR key, LPCTSTR schemename)
 {
 	LVITEM lvi;
 
-	CScheme* pScheme = SchemeManager::GetInstance()->SchemeByName(schemename);
+	Scheme* pScheme = SchemeManager::GetInstance()->SchemeByName(schemename);
 	if(pScheme)
 	{
 
@@ -1291,7 +1291,7 @@ LRESULT COptionsPageNewFiles::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, 
 				edit.GetValues(startPhrase, schemeName);
 				m_list.SetItemText(iSelIndex, 0, startPhrase.c_str());
 				
-				CScheme* pScheme = SchemeManager::GetInstance()->SchemeByName(schemeName.c_str());
+				Scheme* pScheme = SchemeManager::GetInstance()->SchemeByName(schemeName.c_str());
 				if(pScheme)
 					m_list.SetItemText(iSelIndex, 1, pScheme->GetTitle());
 				
@@ -1948,7 +1948,7 @@ void COptionsPageFileAssoc::RemoveExtension(int index)
 typedef struct tagFTDetails
 {
 	bool isFilename;
-	CScheme* pScheme;
+	Scheme* pScheme;
 	tstring ext;
 } SFTDetails;
 
@@ -1970,7 +1970,7 @@ COptionsPageFileTypes::~COptionsPageFileTypes()
 	
 }
 
-void COptionsPageFileTypes::addItem(int n, LPCTSTR ext, CScheme* pScheme, bool isFilename)
+void COptionsPageFileTypes::addItem(int n, LPCTSTR ext, Scheme* pScheme, bool isFilename)
 {
 	LVITEM lvi;
 	lvi.mask = LVIF_TEXT;
@@ -2080,7 +2080,7 @@ LRESULT COptionsPageFileTypes::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	if(dlg.DoModal(m_hWnd) == IDOK)
 	{
 		tstring fn;
-		CScheme* pScheme;
+		Scheme* pScheme;
 		dlg.GetValues(fn, pScheme);
 
 		if(fn[0] == _T('.'))
@@ -2131,7 +2131,7 @@ LRESULT COptionsPageFileTypes::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/,
 	if(dlg.DoModal(m_hWnd) == IDOK)
 	{
 		tstring match;
-		CScheme* pScheme;
+		Scheme* pScheme;
 		dlg.GetValues(match, pScheme);
 
 		m_list.SetItemText(i, 0, match.c_str());

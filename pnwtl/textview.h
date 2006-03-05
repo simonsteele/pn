@@ -2,7 +2,7 @@
  * @file TextView.h
  * @brief Interface Definition for CTextView, the Scintilla based text-editor view.
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -44,10 +44,10 @@ public:
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
-	void SetScheme(CScheme* pScheme, bool allSettings = true);
-	CScheme* GetCurrentScheme();
+	void SetScheme(Scheme* pScheme, bool allSettings = true);
+	Scheme* GetCurrentScheme();
 
-	bool Load(LPCTSTR filename, CScheme* pScheme = NULL, EPNEncoding encoding = eUnknown);
+	bool Load(LPCTSTR filename, Scheme* pScheme = NULL, EPNEncoding encoding = eUnknown);
 	bool Save(LPCTSTR filename, bool bSetScheme = true);
 
 	void Revert(LPCTSTR filename);
@@ -98,7 +98,7 @@ protected:
 	virtual void OnFirstShow();
 
 	BOOL m_waitOnBookmarkNo;
-	CScheme* m_pLastScheme;
+	Scheme* m_pLastScheme;
 	EPNEncoding m_encType;
 	bool m_bSmartStart;
 	bool m_bLineNos;

@@ -233,12 +233,12 @@ SchemeLoaderState::~SchemeLoaderState()
 
 void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 {
-	CString UserSettingsFile = outpath;
+	tstring UserSettingsFile = outpath;
 	UserSettingsFile += _T("UserSettings.xml");
 
 	m_LoadState.m_outputPath = outpath;
 
-	SchemeParser::Parse(path, mainfile, (LPCTSTR)UserSettingsFile);
+	SchemeParser::Parse(path, mainfile, UserSettingsFile.c_str());
 
 	tstring filename(m_LoadState.m_outputPath);
 	filename += _T("default.cscheme");
@@ -391,20 +391,20 @@ void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
 	m_LoadState.m_pParser = &parser;
 	m_LoadState.m_basePath = path;
 
-	CString csFile = path;
-	csFile += mainfile;
-	m_LoadState.m_IncludeFiles.insert(m_LoadState.m_IncludeFiles.end(), csFile);
+	tstring incfile = path;
+	incfile += mainfile;
+	m_LoadState.m_IncludeFiles.push_back(incfile);
 	
-	for(CSTRING_LIST::iterator i = m_LoadState.m_IncludeFiles.begin(); i != m_LoadState.m_IncludeFiles.end(); ++i)
+	for(std::list<tstring>::const_iterator i = m_LoadState.m_IncludeFiles.begin(); i != m_LoadState.m_IncludeFiles.end(); ++i)
 	{
 		m_LoadState.m_State = 0;
-		CString& file = (*i);
+		const tstring& file = (*i);
 
 		try
 		{
-			parser.LoadFile(file);
+			parser.LoadFile(file.c_str());
 			
-			onFile(file);
+			onFile(file.c_str());
 		}
 		catch (SchemeParserException& E)
 		{
@@ -688,10 +688,10 @@ void SchemeParser::processLanguageKeywords(SchemeLoaderState* pState, XMLAttribu
 {
 	 //<keyword key="0" class="hypertext"/>
 	int x = atts.getCount();
-	CString name = _T("");
+	tstring name;
 	LPCTSTR val = NULL;
 	tstring kw = _T("");
-	CString namestr = _T("");
+	tstring namestr;
 	int key = -1;
 
 	for(int i = 0; i < x; i++)
@@ -727,17 +727,17 @@ void SchemeParser::processLanguageKeywords(SchemeLoaderState* pState, XMLAttribu
 	{
 		if(!pState->m_bBaseParse)
 		{
-			onKeywords(key, kw.c_str(), namestr, custom);
+			onKeywords(key, kw.c_str(), namestr.c_str(), custom);
 		}
 		else
 		{
 			CustomKeywordSet* pSet = new CustomKeywordSet;
 			pSet->key = key;
-			int sLen = _tcslen(namestr);
+			int sLen = namestr.length();
 			if(sLen != 0)
 			{
 				pSet->pName = new TCHAR[sLen + 1];
-				_tcscpy(pSet->pName, namestr);
+				_tcscpy(pSet->pName, namestr.c_str());
 			}
 			sLen = kw.length();
 			if(sLen != 0)
@@ -1135,7 +1135,7 @@ void SchemeParser::startElement(void *userData, LPCTSTR name, XMLAttributes& att
 	SchemeLoaderState* pState = static_cast<SchemeLoaderState*>(userData);
 	int state = pState->m_State;
 
-	CString stattext;
+	tstring stattext;
 
 	if(state == DOING_KEYWORDC && _tcscmp(name, _T("keyword-class")) == 0)
 	{
@@ -1216,11 +1216,12 @@ void SchemeParser::startElement(void *userData, LPCTSTR name, XMLAttributes& att
 	}
 	else
 	{
-		stattext.Format(_T("Start Element: %s (%d attributes)\r\n"), name, atts.getCount());
+		stattext = _T("Unknown Start Element: ");
+		stattext += name;
 	}
 
-	if(stattext.GetLength() > 0)
-		LOG(stattext);
+	if(!stattext.empty())
+		LOG(stattext.c_str());
 }
 
 void SchemeParser::endElement(void *userData, LPCTSTR name)
@@ -1229,7 +1230,7 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 	
 	int state = pS->m_State;
 
-	CString stattext;
+	tstring stattext;
 
 	if(state == DOING_STYLEC)
 	{
@@ -1244,8 +1245,9 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 			pS->m_Keywords.insert(pS->m_Keywords.end(), STRING_MAP::value_type(pS->m_storedName, kw));
 
 #ifdef _DEBUG
-			stattext.Format(_T("Added Keyword Class: %s\r\n"), pS->m_storedName.c_str());
-			LOG(stattext);
+			stattext = _T("Added Keyword Class: ");
+			stattext += pS->m_storedName.c_str();
+			LOG(stattext.c_str());
 #endif
 		}
 
@@ -1346,11 +1348,6 @@ void SchemeParser::characterData(void* userData, LPCTSTR data, int len)
 {
 	SchemeLoaderState* pState = static_cast<SchemeLoaderState*>(userData);
 
-	CString cdata;
-	TCHAR* buf = cdata.GetBuffer(len+1);
-	_tcsncpy(buf, data, len);
-	buf[len] = 0;
-	cdata.ReleaseBuffer();
-
+	tstring cdata(data, len);
 	pState->m_CDATA += cdata;
 }

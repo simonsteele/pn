@@ -22,16 +22,13 @@ class SchemeLoaderState
 
 		tstring					m_basePath;
 		tstring					m_outputPath;
-		CSTRING_LIST			m_IncludeFiles;
+		std::list<tstring>		m_IncludeFiles;
 
 		// Defaults:
 		StyleDetails			m_Default;
 		EditorColours			m_DefaultColours;
 
 		// Style Classes:
-		//StylesMap				m_StyleClasses;
-		//StylesMap				m_CustomClasses;
-
 		StylePtrMap				m_Classes;
 
 		// Styles:

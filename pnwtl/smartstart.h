@@ -43,7 +43,7 @@ public:
 protected:
 	SmartStart();
 
-	void applyScheme(CTextView* pView, CScheme* pScheme);
+	void applyScheme(CTextView* pView, Scheme* pScheme);
 
 protected:
 	CTextView*	m_pView;

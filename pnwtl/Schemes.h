@@ -1,8 +1,8 @@
 /**
  * @file Schemes.h
- * @brief Define CScheme and SchemeManager.
+ * @brief Define Scheme and SchemeManager.
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -16,12 +16,7 @@
 #endif
 
 #include "Scintillaif.h"
-
-// Including styles.h we also get <list> <map> and <string>
 #include "styles.h"
-
-typedef map<CString, CString> CSTRING_MAP;
-typedef list<CString> CSTRING_LIST;
 
 /**********************************************
  * Stuff for compiled scheme files
@@ -107,20 +102,16 @@ class SchemeManager;
 class CFile;
 
 ///@todo Add a m_CompiledFile member to save repeatedly changing the file extension and path.
-class CScheme
+class Scheme
 {
 	public:
-		CScheme();
-		CScheme(SchemeManager* pManager);
-		CScheme(SchemeManager* pManager, LPCTSTR filename);
+		Scheme();
+		Scheme(SchemeManager* pManager);
+		Scheme(SchemeManager* pManager, LPCTSTR filename);
 		
-		CScheme(const CScheme& copy)
-		{
-			Init();
-			*this = copy;
-		}
+		Scheme(const Scheme& copy);
 
-		~CScheme();
+		~Scheme();
 
 		virtual void Load(CScintilla& sc, bool allSettings = true, LPCTSTR filename = NULL);
 		
@@ -133,28 +124,17 @@ class CScheme
 
 		virtual bool CheckName();
 
-		virtual LPCTSTR GetName() const
-		{
-			return m_Name;
-		}
-
-		virtual LPCTSTR GetTitle() const
-		{
-			return m_Title;
-		}
-
-		virtual LPCTSTR GetFileName() const
-		{
-			return m_SchemeFile;
-		}
+		virtual LPCTSTR GetName() const;
+		virtual LPCTSTR GetTitle() const;
+		virtual LPCTSTR GetFileName() const;
 
 		bool IsInternal() const;
 
 		void SetSchemeManager(SchemeManager* pManager);
 
-		bool operator < (const CScheme& compare) const;
-		bool operator > (const CScheme& compare) const;
-		const CScheme& operator = (const CScheme& copy);
+		bool operator < (const Scheme& compare) const;
+		bool operator > (const Scheme& compare) const;
+		const Scheme& operator = (const Scheme& copy);
 
 	protected:
 		TCHAR*			m_SchemeFile;
@@ -170,15 +150,15 @@ class CScheme
 };
 
 /**
- * CDefaultScheme is a special case because it must always
+ * DefaultScheme is a special case because it must always
  * be available - even if no other schemes are. Therefore,
  * while it *may* eventually be able to load settings from
  * a file, it will always exist and provide default settings.
  */
-class CDefaultScheme : public CScheme
+class DefaultScheme : public Scheme
 {
 	public:
-		CDefaultScheme(){}
+		DefaultScheme(){}
 
 		virtual void Load(CScintilla& sc, LPCTSTR filename = NULL);
 
@@ -192,15 +172,15 @@ class CDefaultScheme : public CScheme
 		virtual LPCTSTR GetTitle() const {return _T("Plain Text");}
 };
 
-typedef std::list<CScheme>				SCHEME_LIST;
+typedef std::list<Scheme>				SCHEME_LIST;
 typedef SCHEME_LIST::iterator			SCIT;	 
-typedef std::map<tstring, CScheme*>		SCHEME_MAP;
+typedef std::map<tstring, Scheme*>		SCHEME_MAP;
 typedef SCHEME_MAP::iterator			SCHEME_MAPIT;
 typedef SCHEME_MAP::value_type			SCMITEM;
 
 typedef struct 
 {
-	CScheme* pScheme;
+	Scheme* pScheme;
 	int iCommand;
 } menuid_scheme_pair;
 
@@ -214,7 +194,7 @@ class CSchemeSwitcher
 
 		void Reset(int iCommand = SCHEMEMANAGER_SELECTSCHEME);
 
-		void SetActiveScheme(CScheme* pCurrent);
+		void SetActiveScheme(Scheme* pCurrent);
 
 		operator HMENU ();
 
@@ -244,10 +224,10 @@ class SchemeManager : public Singleton<SchemeManager, true>
 		void Compile();
 		void LoadExtMap(SCHEME_MAP& extMap, SCHEME_MAP& fnMap, bool noUserMap = false);
 		
-		CScheme* SchemeForFile(LPCTSTR filename);
-		CScheme* SchemeForExt(LPCTSTR ext);
-		CScheme* SchemeByName(LPCTSTR name);
-		CScheme* GetDefaultScheme() {return &m_DefaultScheme;}
+		Scheme* SchemeForFile(LPCTSTR filename);
+		Scheme* SchemeForExt(LPCTSTR ext);
+		Scheme* SchemeByName(LPCTSTR name);
+		Scheme* GetDefaultScheme() {return &m_DefaultScheme;}
 
 		SCHEME_LIST* GetSchemesList() {return &m_Schemes;}
 
@@ -259,8 +239,8 @@ class SchemeManager : public Singleton<SchemeManager, true>
 		void SaveExtMap();
 
 	protected:
-		CScheme* internalSchemeForFileName(const tstring& filename);
-		CScheme* internalSchemeForExt(const tstring& extension);
+		Scheme* internalSchemeForFileName(const tstring& filename);
+		Scheme* internalSchemeForExt(const tstring& extension);
 		void internalLoadExtMap(LPCTSTR filename, SCHEME_MAP& extMap, SCHEME_MAP& fnMap);
 
 	protected:
@@ -272,7 +252,7 @@ class SchemeManager : public Singleton<SchemeManager, true>
 		SCHEME_MAP		m_SchemeExtMap;
 		SCHEME_MAP		m_SchemeFileNameMap;
 
-		CDefaultScheme	m_DefaultScheme;
+		DefaultScheme	m_DefaultScheme;
 };
 
 #endif //#ifndef schemes_h__included

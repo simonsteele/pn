@@ -517,7 +517,7 @@ LRESULT CChildFrame::OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 
 LRESULT CChildFrame::OnOptionsUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	CScheme* pS = m_view.GetCurrentScheme();
+	Scheme* pS = m_view.GetCurrentScheme();
 	UpdateTools(pS);
 
 	// re-load the compiled scheme...
@@ -548,7 +548,7 @@ LRESULT CChildFrame::OnToolFinished(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 
 LRESULT CChildFrame::OnSchemeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	SchemeChanged(reinterpret_cast<CScheme*>(lParam));
+	SchemeChanged(reinterpret_cast<Scheme*>(lParam));
 	return 0;
 }
 
@@ -1255,7 +1255,7 @@ void CChildFrame::Revert()
 	}
 }
 
-bool CChildFrame::PNOpenFile(LPCTSTR pathname, CScheme* pScheme, EPNEncoding encoding)
+bool CChildFrame::PNOpenFile(LPCTSTR pathname, Scheme* pScheme, EPNEncoding encoding)
 {
 	bool bRet = false;
 
@@ -1550,12 +1550,12 @@ void CChildFrame::SetPosStatus(CMultiPaneStatusBarCtrl&	stat)
 
 bool CChildFrame::OnSchemeChange(LPVOID pVoid)
 {
-	SetScheme(static_cast<CScheme*>(pVoid), false);
+	SetScheme(static_cast<Scheme*>(pVoid), false);
 
 	return true;
 }
 
-void CChildFrame::SetScheme(CScheme* pScheme, bool allSettings)
+void CChildFrame::SetScheme(Scheme* pScheme, bool allSettings)
 {
     m_view.SetScheme(pScheme, allSettings);
 }
@@ -1563,7 +1563,7 @@ void CChildFrame::SetScheme(CScheme* pScheme, bool allSettings)
 #include "project.h"
 #include "projectprops.h"
 
-void CChildFrame::UpdateTools(CScheme* pScheme)
+void CChildFrame::UpdateTools(Scheme* pScheme)
 {
 	CSMenuHandle menu(m_hMenu);
 	CSMenuHandle tools( menu.GetSubMenu(3) );
@@ -1589,7 +1589,7 @@ void CChildFrame::UpdateTools(CScheme* pScheme)
 	);
 }
 
-void CChildFrame::SchemeChanged(CScheme* pScheme)
+void CChildFrame::SchemeChanged(Scheme* pScheme)
 {
 	UpdateTools(pScheme);
 	UpdateMenu();

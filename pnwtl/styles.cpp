@@ -421,6 +421,8 @@ void StyleDetails::layer(const StyleDetails& other)
 
 	if((other.values & edvClass))
 		classname = other.classname;
+
+	Hotspot |= other.Hotspot;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////

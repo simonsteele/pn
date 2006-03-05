@@ -130,7 +130,7 @@ void JumpToHandler::DoJumpTo(CChildFrame* pChildFrame, IJumpToFindSink* pNotifyS
 	USES_CONVERSION;
 
 	// First let's find out what scheme it is...
-	CScheme* pScheme = pChildFrame->GetTextView()->GetCurrentScheme();
+	Scheme* pScheme = pChildFrame->GetTextView()->GetCurrentScheme();
 	tstring schemeName = pScheme->GetName();
 	
 	JumpToPlugin* pPlugin = NULL;

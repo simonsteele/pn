@@ -69,7 +69,7 @@ void REScintilla::SetRE(LPCTSTR regex, bool bClearStyling)
 	if(!schemeLoaded)
 	{
 		// Now turn Scintilla into custom lex mode, first get styles from the output scheme.
-		CScheme* pScheme = SchemeManager::GetInstance()->SchemeByName("output");
+		Scheme* pScheme = SchemeManager::GetInstance()->SchemeByName("output");
 		if(pScheme && ::IsWindow(this->m_scihWnd))
 		{
 			pScheme->Load( *(static_cast<CScintilla*>(this)) );

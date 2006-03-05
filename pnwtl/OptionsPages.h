@@ -575,7 +575,7 @@ class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
 		LRESULT OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	protected:
-		void addItem(int index, LPCTSTR ext, CScheme* pScheme, bool isFilename);
+		void addItem(int index, LPCTSTR ext, Scheme* pScheme, bool isFilename);
 		void clear();
 
 	protected:

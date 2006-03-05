@@ -111,7 +111,7 @@ SmartStart::EContinueState SmartStart::OnChar(CTextView* pView)
 	if(found != m_Map.end())
 	{
 		// We did find that text, so we can map it to a scheme to select:
-		CScheme* pScheme = SchemeManager::GetInstance()->SchemeByName((*found).second.c_str());
+		Scheme* pScheme = SchemeManager::GetInstance()->SchemeByName((*found).second.c_str());
 		if(pScheme)
 		{
 			applyScheme(pView, pScheme);
@@ -141,7 +141,7 @@ void SmartStart::Scan(CTextView* pView)
 		SM_IT found = m_Map.find(tstring(m_buffer));
 		if(found != m_Map.end())
 		{
-			CScheme* pScheme = SchemeManager::GetInstance()->SchemeByName((*found).second.c_str());
+			Scheme* pScheme = SchemeManager::GetInstance()->SchemeByName((*found).second.c_str());
 			if(pScheme)
 			{
 				applyScheme(pView, pScheme);
@@ -159,7 +159,7 @@ STRING_MAP& SmartStart::GetMap()
 }
 
 /// Apply the scheme, and notify the user by setting the status...
-void SmartStart::applyScheme(CTextView* pView, CScheme* pScheme)
+void SmartStart::applyScheme(CTextView* pView, Scheme* pScheme)
 {
 	pView->SetScheme(pScheme);
 	tstring stat = _T("SmartStart selected the scheme: ");
