@@ -24,6 +24,7 @@
 #include "fromhandle.h"
 #include "include/wtlsplitter.h"
 #include "textview.h"
+#include "jumpview.h"
 #include "tools.h"
 
 typedef enum {EP_LINE, EP_COL} EGPType;
@@ -61,7 +62,7 @@ public:
 		MESSAGE_HANDLER(PN_OPTIONSUPDATED, OnOptionsUpdate)
 		MESSAGE_HANDLER(PN_TOOLRUNUPDATE, OnToolFinished)
 		MESSAGE_HANDLER(PN_SCHEMECHANGED, OnSchemeChanged)
-		
+		MESSAGE_HANDLER(PN_GOTOLINE, OnGotoLine)	
 		MESSAGE_HANDLER(UWM_MDICHILDISMODIFIED, OnChildIsModified)
 		MESSAGE_HANDLER(UWM_MDICHILDSAVEMODIFIED, OnChildSaveModified)
 		MESSAGE_HANDLER(UWM_MDICHILDSHOWTABCONTEXTMENU, OnShowTabContextMenu)
@@ -72,7 +73,6 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_REDO, OnRedo)
 		COMMAND_ID_HANDLER(ID_EDIT_DELETE, OnDelete)
 		COMMAND_ID_HANDLER(ID_EDIT_GOTO, OnGoto)
-		COMMAND_ID_HANDLER(ID_EDIT_JUMPTO, OnJumpTo)
 		COMMAND_ID_HANDLER(ID_EDIT_FINDNEXT, OnFindNext)
 		COMMAND_ID_HANDLER(ID_EDIT_FINDPREVIOUS, OnFindPrevious)
 		COMMAND_ID_HANDLER(ID_EDIT_COPYRTF, OnCopyRTF)
@@ -200,6 +200,7 @@ public:
 	LRESULT OnChildIsModified(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnChildSaveModified(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnShowTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnGotoLine(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam/**/, BOOL& /*bHandled*/);
 	
 	////////////////////////////////////////////////////
 	// Command Handlers
@@ -234,7 +235,6 @@ public:
 	LRESULT OnUseAsScript(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnHideOutput(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnJumpTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLineEndingsToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLineEndingsConvert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnStopTools(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

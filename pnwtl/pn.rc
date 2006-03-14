@@ -180,7 +180,8 @@ BEGIN
             MENUITEM "&Project",                    ID_VIEW_WINDOWS_PROJECT
             MENUITEM "&Text Clips",                 ID_VIEW_WINDOWS_TEXTCLIPS
 
-            MENUITEM "&Find Results",               32703
+            MENUITEM "&Find Results",               ID_VIEW_WINDOWS_CTAGS
+            MENUITEM "&CTags",                      ID_VIEW_WINDOWS_CTAGS
             MENUITEM "&Scripts",                    ID_VIEW_WINDOWS_SCRIPTS
         END
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
@@ -245,6 +246,15 @@ BEGIN
         MENUITEM "Request a &feature...",       ID_HELP_WEB_SR
         MENUITEM SEPARATOR
         MENUITEM "&About Programmers Notepad...", ID_APP_ABOUT
+    END
+END
+
+IDR_POPUP_CTAGS MENU 
+BEGIN
+    POPUP "CTAGS"
+    BEGIN
+        MENUITEM "&Collaps all",                ID_CTAGS_COLLAPSALL
+        MENUITEM "&Expand all",                 ID_CTAGS_EXPANDALL
     END
 END
 
@@ -364,7 +374,7 @@ BEGIN
     VK_OEM_4,       ID_EDIT_GOTOBRACE,      VIRTKEY, CONTROL, NOINVERT
     "H",            ID_EDIT_HEADERSWITCH,   VIRTKEY, SHIFT, CONTROL, 
                                                     NOINVERT
-    "G",            ID_EDIT_JUMPTO,         VIRTKEY, ALT, NOINVERT
+    "G",            ID_VIEW_WINDOWS_CTAGS,  VIRTKEY, ALT, NOINVERT
     "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
     "V",            ID_EDIT_PASTE,          VIRTKEY, SHIFT, CONTROL, 
                                                     NOINVERT
@@ -641,6 +651,7 @@ IDI_PROJECTFOLDER       ICON                    "res\\projectfolder.ico"
 IDI_WORKSPACE           ICON                    "res\\workspace.ico"
 IDI_BADPROJECT          ICON                    "res\\noproject.ico"
 IDI_MAGICFOLDER         ICON                    "res\\magicfolder.ico"
+IDI_CTAGS               ICON                    "res\\ctags.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1802,11 +1813,12 @@ BEGIN
     ID_VIEW_OUTPUT          "Output"
     ID_VIEW_WINDOWS_PROJECT "Projects"
     ID_VIEW_WINDOWS_TEXTCLIPS "Text Clips"
-    ID_VIEW_WINDOWS_FINDRESULTS "Find Results"
+    ID_VIEW_WINDOWS_CTAGS   "Tags"
 END
 
 STRINGTABLE 
 BEGIN
+    ID_VIEW_WINDOWS_FINDRESULTS "Find Results"
     ID_VIEW_WINDOWS_SCRIPTS "Scripts"
     IDS_PROJECTDOESNOTEXIST "The specified project does not exist,\n would you like to create it?"
     IDS_PROJSAVECHANGES     "Do you want to save changes to the project: %s?"

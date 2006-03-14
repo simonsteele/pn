@@ -26,6 +26,7 @@
 #include "aboutdlg.h"			// About Dialog
 #include "pndialogs.h"			// Misc Dialogs.
 #include "textclipsview.h"		// Text-Clips Docker...
+#include "jumpview.h"			// Tags Docker
 #include "project.h"			// Projects
 #include "projectprops.h"		// Project Properties
 #include "projectview.h"		// Projects Docker...
@@ -74,6 +75,7 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(I
 	m_pOutputWnd = NULL;
 	m_pFindResultsWnd = NULL;
 	m_pClipsWnd = NULL;
+	m_pCtagsWnd = NULL;
 	m_pProjectsWnd = NULL;
 	hFindWnd = NULL;
 
@@ -108,6 +110,9 @@ CMainFrame::~CMainFrame()
 
 	if(m_pProjectsWnd)
 		delete m_pProjectsWnd;
+
+	if(m_pCtagsWnd)
+		delete m_pCtagsWnd;
 
 	if(m_pScriptsWnd)
 		delete m_pScriptsWnd;
@@ -700,6 +705,11 @@ void CMainFrame::CreateDockingWindows()
 	m_pProjectsWnd = CreateDocker<CProjectDocker>(LS(ID_VIEW_WINDOWS_PROJECT), rcLeft, this, 
 		m_dockingWindows, ID_VIEW_WINDOWS_PROJECT - ID_VIEW_FIRSTDOCKER,
 		false);
+
+	m_pCtagsWnd = CreateDocker<CJumpDocker>(LS(ID_VIEW_WINDOWS_CTAGS), rcLeft, this, 
+		m_dockingWindows, ID_VIEW_WINDOWS_CTAGS - ID_VIEW_FIRSTDOCKER,
+		false);
+	hCTagsWnd=m_pCtagsWnd->getHandle();
 
 	m_pScriptsWnd = CreateDocker<CScriptDocker>(LS(ID_VIEW_WINDOWS_SCRIPTS), rcLeft, this, 
 		m_dockingWindows, ID_VIEW_WINDOWS_SCRIPTS - ID_VIEW_FIRSTDOCKER,

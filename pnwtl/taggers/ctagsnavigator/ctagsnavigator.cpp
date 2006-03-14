@@ -43,11 +43,12 @@ BOOL APIENTRY DllMain( HANDLE /*hModule*/,
 typedef struct tagMethodInfo
 {
 	int			type;			// i.e. PNMETHOD_FUNCTION, PNMETHOD_PROCEDURE, PNMETHOD_CLASS etc.
-	const char* methodName;		// i.e. Tag
-	const char* parentName;		// i.e. class name, package name etc.
-	const char* fullText;		// i.e. void myfunction(string, banana);
+	char*		methodName;		// i.e. Tag
+	char*		parentName;		// i.e. class name, package name etc.
+	char*		fullText;		// i.e. void myfunction(string, banana);
 	long		lineNumber;		// line number of method in file.
 	short		image;			// i.e. PNMETHODIMAGE_FUNCTION, PNMETHODIMAGE_...
+	void* 		userData;		// from where
 } METHODINFO, * LPMETHODINFO;
 
 typedef void (__stdcall *FP_CALLBACK)(int dataCount, LPMETHODINFO methodInfo, LPVOID cookie);
@@ -121,7 +122,7 @@ bool canParse(char* buffer, DWORD dwLength)
 
 #define TAB "\t"
 
-void parseData(LPPARSESTATE state, DWORD dwBytesRead, int mask, LPVOID cookie)
+void parseData(LPPARSESTATE state, DWORD dwBytesRead, int mask, LPVOID cookie, void* userData)
 {
 	METHODINFO mi;
 
@@ -150,6 +151,7 @@ void parseData(LPPARSESTATE state, DWORD dwBytesRead, int mask, LPVOID cookie)
 			mi.methodName = NULL;
 			mi.parentName = NULL;
 			mi.fullText = NULL;
+			mi.userData = userData;
 
 			// terminate the string at the end of this line...
 			pLineEnd = strchr(p, 13);
@@ -259,7 +261,8 @@ void parseData(LPPARSESTATE state, DWORD dwBytesRead, int mask, LPVOID cookie)
  */
 bool CPPNAVIGATOR_API PNFPGetMethods(
 		const wchar_t* filename, 
-		HWND /*editorWnd*/, 
+		void*		   userData,
+//		HWND /*editorWnd*/, 
 		FP_CALLBACK callback, 
 		int mask,
 		const wchar_t* scheme,
@@ -400,7 +403,7 @@ bool CPPNAVIGATOR_API PNFPGetMethods(
 #ifdef _DEBUG
 				fwrite(buffer, dwBytesRead, 1, fDump);
 #endif
-				parseData(&state, dwBytesRead, mask, cookie);
+				parseData(&state, dwBytesRead, mask, cookie, userData);
 			}
 			else
 			{

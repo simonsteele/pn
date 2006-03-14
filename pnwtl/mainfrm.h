@@ -19,8 +19,10 @@ class CChildFrame;
 class CFindExDialog;
 class COutputView;
 class CClipsDocker;
+class CJumpDocker;
 class CProjectDocker;
 class CFindInFilesSink;
+class CMSTreeViewCtrl;
 class CFindInFilesView;
 class CScriptDocker;
 
@@ -175,6 +177,7 @@ public:
 		UPDATE_ELEMENT(ID_VIEW_TOOLBARS_FIND, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_OUTPUT, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_WINDOWS_TEXTCLIPS, UPDUI_MENUPOPUP)
+		UPDATE_ELEMENT(ID_VIEW_WINDOWS_CTAGS, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_WINDOWS_PROJECT, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_WINDOWS_FINDRESULTS, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_FILE_SAVE, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
@@ -312,6 +315,7 @@ public:
 	
 	virtual void FindInFiles(SearchOptions* options);
 	
+	HWND GetJumpViewHandle(){return hCTagsWnd;}
 
 	////////////////////////////////////////////////////////////////
 	// IToolOutputSink Implementation
@@ -324,6 +328,7 @@ public:
 		DW_OUTPUT = ID_VIEW_OUTPUT,
 		DW_TEXTCLIPS = ID_VIEW_WINDOWS_TEXTCLIPS,
 		DW_PROJECTS = ID_VIEW_WINDOWS_PROJECT,
+		DW_CTAGS = ID_VIEW_WINDOWS_CTAGS,
 		DW_FINDRESULTS = ID_VIEW_WINDOWS_FINDRESULTS,
 		DW_SCRIPTS = ID_VIEW_WINDOWS_SCRIPTS
 	} EDocker;
@@ -416,6 +421,7 @@ protected:
 	CFindInFilesView*		m_pFindResultsWnd;
 	CClipsDocker*			m_pClipsWnd;
 	CProjectDocker*			m_pProjectsWnd;
+	CJumpDocker*			m_pCtagsWnd; 
 	CFindExDialog*			m_pFindEx;
 	CFindInFilesSink*		m_pFIFSink;
 	CScriptDocker*			m_pScriptsWnd;
@@ -437,6 +443,7 @@ protected:
 
 	HWND					hFindWnd;
 	//HWND					hReplWnd;
+	HWND					hCTagsWnd;
 
 	UINT					m_uiMIMessageID;
 

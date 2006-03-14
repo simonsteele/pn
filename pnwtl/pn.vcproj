@@ -309,6 +309,9 @@
 				RelativePath="childfrm.cpp">
 			</File>
 			<File
+				RelativePath=".\commands.cpp">
+			</File>
+			<File
 				RelativePath=".\docprops.cpp">
 			</File>
 			<File
@@ -340,6 +343,9 @@
 			</File>
 			<File
 				RelativePath=".\JumpToDialog.cpp">
+			</File>
+			<File
+				RelativePath=".\jumpview.cpp">
 			</File>
 			<File
 				RelativePath=".\l10n.cpp">
@@ -490,6 +496,9 @@
 				RelativePath=".\ChildFrm.h">
 			</File>
 			<File
+				RelativePath=".\commands.h">
+			</File>
+			<File
 				RelativePath=".\CustomAutoComplete.h">
 			</File>
 			<File
@@ -542,6 +551,9 @@
 			</File>
 			<File
 				RelativePath=".\jumptointerface.h">
+			</File>
+			<File
+				RelativePath=".\jumpview.h">
 			</File>
 			<File
 				RelativePath=".\l10n.h">
@@ -675,6 +687,9 @@
 			</File>
 			<File
 				RelativePath="res\bitmap1.bmp">
+			</File>
+			<File
+				RelativePath=".\res\ctags.ico">
 			</File>
 			<File
 				RelativePath="res\dropdown.bmp">

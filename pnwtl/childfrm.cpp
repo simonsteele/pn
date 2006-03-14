@@ -18,7 +18,7 @@
 #include "docprops.h"
 #include "include/pagesetupdialog.h"
 #include "jumpto.h"
-#include "jumptodialog.h"
+#include "jumpview.h"
 #include "afiles.h"
 #include "scriptregistry.h"
 
@@ -395,8 +395,15 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	return 1;
 }
 
-LRESULT CChildFrame::OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+LRESULT CChildFrame::OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
+	if (m_hWnd==(HWND)lParam)
+	{
+		// Activate
+		::PostMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_ACTIVATE, (LPARAM)this);
+	}
+	//else // Deactivate
+	
 	UpdateMenu();
 	::PostMessage(m_hWnd, PN_CHECKAGE, 0, 0);
 	bHandled = FALSE;
@@ -433,6 +440,8 @@ LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 
 		m_spDocument->OnDocClosing();
 	}
+	// NO PostMessage !!
+	SendMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_CLOSE, (LPARAM)this);
 
 	return 0;
 }
@@ -549,6 +558,8 @@ LRESULT CChildFrame::OnToolFinished(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 LRESULT CChildFrame::OnSchemeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
 	SchemeChanged(reinterpret_cast<Scheme*>(lParam));
+	SendMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_CLOSE, (LPARAM)this);
+	::PostMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_ADD, (LPARAM)this);
 	return 0;
 }
 
@@ -911,21 +922,18 @@ LRESULT CChildFrame::OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	return 0;
 }
 
-LRESULT CChildFrame::OnJumpTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CChildFrame::OnGotoLine(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam/**/, BOOL& /*bHandled*/)
 {
-	CJumpToDialog dlg(this);
-	if(dlg.DoModal() == IDOK)
-	{		
-		m_view.GotoLine(dlg.GetLine() - 1);
-		m_view.EnsureVisibleEnforcePolicy(dlg.GetLine()-1);
+		int line=(int)lParam-1;
+		m_view.GotoLine(line);
+		m_view.EnsureVisibleEnforcePolicy(line);
 
 		int offset = m_view.GetFirstVisibleLine();
 		
 		// Put the line we jump to two off the top of the screen...
-		offset = ((dlg.GetLine()-1) - offset) - 2;
+		offset = (line - offset) - 2;
 		m_view.LineScroll(0, offset);
-	}
-
+		::SetFocus(m_hWnd);
 	return 0;
 }
 
@@ -1330,6 +1338,10 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 			m_spDocument->SetFileName(pathname);
 
 			SetTitle();			
+		} else {
+			//save
+			SendMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_CLOSE, (LPARAM)this);
+			::PostMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_ADD, (LPARAM)this);
 		}
 
 		if(bUpdateMRU)

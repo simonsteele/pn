@@ -22,6 +22,7 @@
 #define PN_UPDATEFINDTEXT	(WM_USER+44)
 #define PN_PROJECTNOTIFY	(WM_USER+45)
 #define PN_FIFMATCH			(WM_USER+46)
+#define PN_GOTOLINE			(WM_USER+47)
 
 #define PN_MDIACTIVATE		0x1
 #define TOOLS_RUNTOOL		0x2
@@ -66,7 +67,8 @@ typedef enum {
 	PNDW_OUTPUT = 0,
 	PNDW_PROJECTS = 1,
 	PNDW_TEXTCLIPS = 2,
-	PNDW_FINDRESULTS = 3,
+	PNDW_CTAGS = 3,
+	PNDW_FINDRESULTS = 4,
 } EDockingWindow;
 
 #include "pnutils.h"
@@ -104,6 +106,7 @@ struct IMainFrame
 
 	// Projects
 	virtual Projects::Workspace* GetActiveWorkspace() = 0;
+	virtual HWND GetJumpViewHandle() = 0;
 	
 	// Tools
 	virtual ToolWrapper* MakeGlobalOutputWrapper(ToolDefinition* pDefinition) = 0;

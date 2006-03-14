@@ -46,6 +46,16 @@ LRESULT CScriptDocker::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 	return 0;
 }
 
+/**
+ * For some reason the WM_CTLCOLOR* messages do not get to the child
+ * controls with the docking windows (todo with reflection). This returns
+ * the proper result.
+ */
+LRESULT CScriptDocker::OnCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	return (LRESULT)::GetSysColorBrush( COLOR_WINDOW );
+}
+
 LRESULT CScriptDocker::OnTreeDblClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 	HTREEITEM hSel = m_view.GetSelectedItem();

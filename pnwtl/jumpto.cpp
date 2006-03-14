@@ -61,12 +61,12 @@ tstring JumpToPlugin::GetSchemesSupported()
 	return tstring(CW2T(buffer));
 }
 
-bool JumpToPlugin::GetMethods(const wchar_t* filename, HWND editorWnd, FP_CALLBACK callback, int mask, const wchar_t* scheme, LPVOID cookie)
+bool JumpToPlugin::GetMethods(const wchar_t* filename, void* userData, FP_CALLBACK callback, int mask, const wchar_t* scheme, LPVOID cookie)
 {
 	if(!Valid())
 		return false;
 
-	return pfnGetMethods(filename, editorWnd, callback, mask, scheme, cookie);
+	return pfnGetMethods(filename, userData, callback, mask, scheme, cookie);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -175,7 +175,7 @@ void JumpToHandler::DoJumpTo(CChildFrame* pChildFrame, IJumpToFindSink* pNotifyS
 
 	sink = pNotifySink;
 	
-	if(!pPlugin->GetMethods(fnstr.c_str(), pChildFrame->m_hWnd, &JumpToHandler::callback, TAGM_ALL, pSN, (LPVOID)this))
+	if(!pPlugin->GetMethods(fnstr.c_str(), static_cast<void*>(pChildFrame), &JumpToHandler::callback, TAGM_ALL, pSN, (LPVOID)this))
 	{
 		g_Context.m_frame->SetStatusText(_T("Failed to run tagger."));
 	}

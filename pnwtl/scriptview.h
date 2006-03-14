@@ -28,6 +28,7 @@ public:
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
+		MESSAGE_HANDLER(WM_CTLCOLOREDIT, OnCtlColor)
 		NOTIFY_HANDLER(IDC_SCRIPTSLIST, NM_DBLCLK, OnTreeDblClick)
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
@@ -38,6 +39,7 @@ public:
 protected:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT OnCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnTreeDblClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	HTREEITEM findScript(LPCTSTR group, LPCTSTR name);

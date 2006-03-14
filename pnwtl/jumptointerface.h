@@ -13,11 +13,12 @@
 typedef struct tagMethodInfo
 {
 	int			type;			// i.e. PNMETHOD_FUNCTION, PNMETHOD_PROCEDURE, PNMETHOD_CLASS etc.
-	const char* methodName;		// i.e. Tag
-	const char* parentName;		// i.e. class name, package name etc.
-	const char* fullText;		// i.e. void myfunction(string, banana);
+	char*		methodName;		// i.e. Tag
+	char*		parentName;		// i.e. class name, package name etc.
+	char*		fullText;		// i.e. void myfunction(string, banana);
 	long		lineNumber;		// line number of method in file.
 	short		image;			// i.e. PNMETHODIMAGE_FUNCTION, PNMETHODIMAGE_...
+	void* 		userData;		// from where
 } METHODINFO, * LPMETHODINFO;
 
 #define TAG_UNKNOWN			0
@@ -35,7 +36,7 @@ typedef struct tagMethodInfo
 #define TAG_UNION			12
 #define TAG_VARIABLE		13
 
-#define TAG_MAX				13
+#define TAG_MAX				41
 
 #define TAGM_UNKNOWN		1
 #define TAGM_FUNCTION		1 << 1

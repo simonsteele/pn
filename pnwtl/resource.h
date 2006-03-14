@@ -195,6 +195,9 @@
 #define IDB_BITMAP1                     342
 #define IDB_REDCLOSE                    342
 #define IDS_MODIFIED                    343
+#define IDI_CTAGS                       345
+#define IDR_POPUP_CTAGS                 346
+#define IDR_POPUP_FINDRESULT            347
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -428,13 +431,14 @@
 #define ID_VIEW_OUTPUT                  32700
 #define ID_VIEW_WINDOWS_PROJECT         32701
 #define ID_VIEW_WINDOWS_TEXTCLIPS       32702
-#define ID_VIEW_WINDOWS_FINDRESULTS     32703
-#define ID_VIEW_WINDOWS_SCRIPTS         32704
-#define ID_VIEW_LASTDOCKER              32704
-#define IDS_PROJECTDOESNOTEXIST         32705
-#define IDS_PROJSAVECHANGES             32706
-#define IDS_PROJCLOSEFILES              32707
-#define IDS_OPENANOTHER                 32708
+#define ID_VIEW_WINDOWS_CTAGS           32703
+#define ID_VIEW_WINDOWS_FINDRESULTS     32704
+#define ID_VIEW_WINDOWS_SCRIPTS         32705
+#define ID_VIEW_LASTDOCKER              32705
+#define IDS_PROJECTDOESNOTEXIST         32706
+#define IDS_PROJSAVECHANGES             32707
+#define IDS_PROJCLOSEFILES              32708
+#define IDS_OPENANOTHER                 32709
 #define ID_EDIT_FINDNEXT                32773
 #define ID_EDIT_GOTO                    32774
 #define ID_TOOLS_LECRLF                 32777
@@ -518,6 +522,8 @@
 #define ID_FILE_SAVEWORKSPACEAS         32950
 #define ID_EDIT_QUICKFIND               32953
 #define ID_EDIT_FINDPREVIOUS            32956
+#define ID_CTAGS_COLLAPSALL             32962
+#define ID_CTAGS_EXPANDALL              32963
 #define ID_EDITOR_USEASSCRIPT           32960
 #define ID_PROJECT_MAGICADDFILE         32963
 
