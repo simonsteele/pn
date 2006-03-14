@@ -30,7 +30,7 @@
 			<style name="Identifier" key="2" />
 			<style name="Number" key="3" class="number"/>
 			<style name="Operator" key="4" class="operator"/>
-			<style name="Character" key="5" fore="colour.char"/>
+			<style name="Character" key="5" class="string"/>
 			<style name="Un-Closed Character" key="6" back="e0c0e0" eolfilled="true"/>
 			<style name="String" key="7" class="string"/>
 			<style name="Un-Closed String" key="8" back="e0c0e0" eolfilled="true"/>

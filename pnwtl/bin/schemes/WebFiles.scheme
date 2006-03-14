@@ -191,15 +191,15 @@
 			<group name="JavaScript" description="Embedded JavaScript" class="embeddedjs">
 				<style name="Start" key="40" fore="7f7f00"/>
 				<style name="Default" key="41" fore="000000" bold="true" eolfilled="true"/>
-				<style name="Comment" key="42" fore="colour.commentbox" eolfilled="true"/>
-				<style name="Line Comment" key="43" fore="colour.comment"/>
-				<style name="Doc comment" key="44" fore="colour.comment" eolfilled="true"/>
-				<style name="Number" key="45" fore="colour.number" />
+				<style name="Comment" key="42" class="comment" eolfilled="true"/>
+				<style name="Line Comment" key="43" class="comment"/>
+				<style name="Doc comment" key="44" class="comment" eolfilled="true"/>
+				<style name="Number" key="45" class="number" />
 				<style name="Word" key="46" fore="000000"/>
-				<style name="Keyword" key="47" fore="colour.keyword" bold="true"/>
-				<style name="Double quoted string" key="48" fore="colour.string"/>
-				<style name="Single quoted string" key="49" fore="colour.string"/>
-				<style name="Symbols " key="50" fore="colour.operator" bold="true"/>
+				<style name="Keyword" key="47" class="keyword" bold="true"/>
+				<style name="Double quoted string" key="48" class="string"/>
+				<style name="Single quoted string" key="49" class="string"/>
+				<style name="Symbols " key="50" class="operator"/>
 				<style name="EOL" key="51" back="bfbbb0" eolfilled="true"/>
 				<style name="Regular Expression" key="52" back="ffbbb0"/>
 			</group>
@@ -354,7 +354,7 @@
 			<style name="Comment" key="9" class="comment"/>
 			<style name="ID selector (#IdSel)" key="10" class="number"/>
 			<style name="Important" key="11" fore="ff8000" bold="true"/>
-			<style name="At-rule (@)" key="12" fore="colour.preproc" bold="true"/>
+			<style name="At-rule (@)" key="12" class="preprocessor" />
 			<style name="Double-Quoted Strings" key="13" class="string"/>
 			<style name="Single-Quoted Strings" key="14" class="string"/>
 			<style name="CSS 2 Property" key="15" fore="00a0e0"/>

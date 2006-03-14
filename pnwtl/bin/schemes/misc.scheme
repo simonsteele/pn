@@ -31,7 +31,7 @@
 			<style name="Keyword" key="2" class="keyword" />
 			<style name="Label" key="3" fore="ffff00" back="606060" eolfilled="true" />
 			<style name="Hide command char '@'" key="4" class="preprocessor" />
-			<style name="External commands" key="5" bold="true" fore="colour.keyword" />
+			<style name="External commands" key="5" class="keyword" />
 			<style name="Variable (%x)" key="6" back="ffffe0" />
 			<style name="Operator" key="7" class="operator" />
 		</use-styles>

@@ -165,8 +165,8 @@
 			<style name="Unknown Comment Doc Keyword" key="18" class="commentdoc" fore="804020"/>
 			
 			<!--<style name="Preprocessor" key="9" class="preprocessor"/>
-			<style name="Verbatim" key="13" fore="007f00" font="font.monospace" back="e0ffe0" eolfilled="true"/>
-			<style name="RegEx" key="14" fore="3f7f3f" font="font.monospace" back="e0f0ff" eolfilled="true"/>-->
+			<style name="Verbatim" key="13" fore="007f00" back="e0ffe0" eolfilled="true"/>
+			<style name="RegEx" key="14" fore="3f7f3f" back="e0f0ff" eolfilled="true"/>-->
 		</use-styles>
 	</language>
 </Scheme>

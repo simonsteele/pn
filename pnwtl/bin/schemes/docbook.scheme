@@ -88,9 +88,9 @@ status label endterm linkend space width
 			<style name="Unknown Tags" key="2" fore="ff0000"/>
 			<style name="Attributes" key="3" fore="008080"/>
 			<style name="Unknown Attributes" key="4" fore="ff0000"/>
-			<style name="Numbers" key="5" fore="colour.number"/>
-			<style name="Double quoted strings" key="6" fore="colour.string"/>
-			<style name="Single quoted strings" key="7" fore="colour.string"/>
+			<style name="Numbers" key="5" class="number"/>
+			<style name="Double quoted strings" key="6" class="string"/>
+			<style name="Single quoted strings" key="7" class="string"/>
 			<style name="Other inside tag" key="8" fore="800080"/>
 			<style name="Comment" key="9" fore="808000"/>
 			<style name="Entities" key="10" fore="800080"/>

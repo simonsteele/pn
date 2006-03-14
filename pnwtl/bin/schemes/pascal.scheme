@@ -30,13 +30,13 @@
 			<style name="Comment" key="1" class="comment"/>
 			<style name="Line Comment" key="2" class="commentline"/>
 			<style name="Doc Comment" key="3" class="commentdoc"/>
-			<style name="Number" key="4" fore="colour.number"/>
+			<style name="Number" key="4" class="number"/>
 			<style name="Keyword" key="5" class="keyword"/>
-			<style name="Double-Quoted String" key="6" /><!-- fore="colour.string" -->
-			<style name="Single-Quoted String" key="7" fore="colour.string"/>
+			<style name="Double-Quoted String" key="6" class="string"/><!-- fore="colour.string" -->
+			<style name="Single-Quoted String" key="7" class="string"/>
 			<style name="Symbols" key="8" />
-			<style name="PreProcessor" key="9" fore="colour.preproc"/>
-			<style name="Operators" key="10" bold="true"/>
+			<style name="PreProcessor" key="9" class="preprocessor"/>
+			<style name="Operators" key="10" class="operator"/>
 			<style name="Class Definition Words" key="16" class="keyword"/>
 		</use-styles>
 	</language>
