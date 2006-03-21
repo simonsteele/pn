@@ -87,6 +87,8 @@ BEGIN
     END
     POPUP "&Help"
     BEGIN
+        MENUITEM "&Contents",                   32943
+        MENUITEM SEPARATOR
         MENUITEM "PN &HomePage",                ID_HELP_WEB_PN
         MENUITEM "PN on &Sourceforge",          252
         MENUITEM SEPARATOR
