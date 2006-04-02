@@ -15,39 +15,27 @@
 #ifndef __WTL_DW__DOCKINGFRAME_H__
 #define __WTL_DW__DOCKINGFRAME_H__
 
-#pragma once
-
 #include <atlframe.h>
-#include "DockMisc.h"
-#include "PackageWindow.h"
-#include "DockingFocus.h"
+#include <DockMisc.h>
+#include <PackageWindow.h>
 
 namespace dockwins{
 /////////////////CDockingFrameImplBase
 
-#ifdef DF_AUTO_HIDE_FEATURES
-template <	class T,
-			class TBase,
-			class TWinTraits = CDockingFrameTraits,
-			class TAutoHidePaneTraits = COutlookLikeAutoHidePaneTraits >
-class ATL_NO_VTABLE CDockingFrameImplBase : public TBase
-{
-	typedef CDockingFrameImplBase<T,TBase,TWinTraits,TAutoHidePaneTraits>	thisClass;
-#else
-template <	class T,
-			class TBase,
-			class TWinTraits = CDockingFrameTraits >
+template <class T, class TBase,class TWinTraits = CDockingFrameTraits >
 class ATL_NO_VTABLE CDockingFrameImplBase : public TBase
 {
 	typedef CDockingFrameImplBase<T,TBase,TWinTraits>	thisClass;
-#endif
-	typedef typename TBase								baseClass;
-	typedef typename TWinTraits							CTraits; 
+	typedef TBase										baseClass;
+	typedef TWinTraits									CTraits;
 	typedef typename CTraits::CSplitterBar				CSplitterBar;
-	typedef CPackageWindowFrame<CTraits>				CPackageFrame; 
+	typedef CPackageWindowFrame<CTraits>				CPackageFrame;
 	typedef CSubWndFramesPackage<CPackageFrame,CTraits>	CWndPackage;
-	typedef typename CDWSettings::CStyle				CStyle; 
-	struct  CDockOrientationFlag  
+	typedef typename CDWSettings::CStyle				CStyle;
+#ifdef DF_AUTO_HIDE_FEATURES
+	typedef CAutoHideManager<typename CTraits::CAutoHidePaneTraits>	CAHManager;
+#endif
+	struct  CDockOrientationFlag
 	{
 		enum{hor=0x80000000,ver=0};
 		static void SetVertical(DWORD& flag)
@@ -112,13 +100,19 @@ public:
 
 	void GetMinMaxInfo(LPMINMAXINFO pMinMaxInfo) const
 	{
-		CRect rc;
-		GetWindowRect(&rc);
 		pMinMaxInfo->ptMinTrackSize.x=0;
 		pMinMaxInfo->ptMinTrackSize.y=0;
 		m_vPackage.GetMinMaxInfo(pMinMaxInfo);
-		pMinMaxInfo->ptMinTrackSize.x+=rc.Width()-m_vPackage.Width();
-		pMinMaxInfo->ptMinTrackSize.y+=rc.Height()-m_vPackage.Height();
+		CRect rc;
+		GetWindowRect(&rc);
+		if(rc.top<=m_vPackage.top
+			&&(rc.bottom>=m_vPackage.bottom)
+				&&(rc.left<=m_vPackage.left)
+					&&(rc.right>=m_vPackage.right))
+		{
+			pMinMaxInfo->ptMinTrackSize.x+=rc.Width()-m_vPackage.Width();
+			pMinMaxInfo->ptMinTrackSize.y+=rc.Height()-m_vPackage.Height();
+		}
 #ifdef DF_AUTO_HIDE_FEATURES
 		pMinMaxInfo->ptMinTrackSize.x+=m_ahManager.Width();
 		pMinMaxInfo->ptMinTrackSize.y+=m_ahManager.Height();
@@ -324,7 +318,7 @@ protected:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
-		MESSAGE_HANDLER(WM_SYSCOLORCHANGE, OnSysColorChange)
+		MESSAGE_HANDLER(WM_SYSCOLORCHANGE, OnSettingChange/*OnSysColorChange*/)
 		MESSAGE_HANDLER(WM_PAINT, OnPaint)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
 		MESSAGE_HANDLER(WM_SETCURSOR,OnSetCursor)
@@ -352,7 +346,7 @@ protected:
 
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
-		bHandled = FALSE;
+		bHandled = false;
 #ifdef DF_FOCUS_FEATURES
 		m_focusHandler.RemoveHook(m_hWnd);
 #endif
@@ -367,13 +361,10 @@ protected:
 		return 0;
 	}
 
-	LRESULT OnSysColorChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-	{
-		T* pThis=static_cast<T*>(this);
-		pThis->ApplySystemSettings();
-//		pThis->UpdateLayout();
-		return 0;
-	}
+//	LRESULT OnSysColorChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+//	{
+//		return 0;
+//	}
 
 	LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
@@ -479,7 +470,7 @@ protected:
 	CWndPackage	m_hPackage;
 	CRect		m_rcClient;
 #ifdef DF_AUTO_HIDE_FEATURES
-	CAutoHideManager<TAutoHidePaneTraits> m_ahManager;
+	CAHManager  m_ahManager;
 #endif
 #ifdef DF_FOCUS_FEATURES
 	CDockingFocusHandler m_focusHandler;

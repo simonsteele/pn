@@ -687,8 +687,8 @@ TWnd* CreateDocker(LPCTSTR title, CRect& rect, CMainFrame* owner, CPNDockingWind
 void CMainFrame::CreateDockingWindows()
 {
 	// Create docking windows...
-	CRect rcLeft(0,0,200,400);
-	CRect rcBottom(0,0,400,100);
+	CRect rcLeft(0,0,180,400);
+	CRect rcBottom(0,0,150,100);
 	
 	m_pOutputWnd = CreateDocker<COutputView>(LS(ID_VIEW_OUTPUT), rcBottom, this, 
 		m_dockingWindows, ID_VIEW_OUTPUT - ID_VIEW_FIRSTDOCKER,
@@ -704,18 +704,20 @@ void CMainFrame::CreateDockingWindows()
 
 	m_pProjectsWnd = CreateDocker<CProjectDocker>(LS(ID_VIEW_WINDOWS_PROJECT), rcLeft, this, 
 		m_dockingWindows, ID_VIEW_WINDOWS_PROJECT - ID_VIEW_FIRSTDOCKER,
-		false);
+		true, dockwins::CDockingSide::sLeft);
 
 	m_pCtagsWnd = CreateDocker<CJumpDocker>(LS(ID_VIEW_WINDOWS_CTAGS), rcLeft, this, 
 		m_dockingWindows, ID_VIEW_WINDOWS_CTAGS - ID_VIEW_FIRSTDOCKER,
-		false);
+		true, dockwins::CDockingSide::sLeft);
 	hCTagsWnd=m_pCtagsWnd->getHandle();
 
 	m_pScriptsWnd = CreateDocker<CScriptDocker>(LS(ID_VIEW_WINDOWS_SCRIPTS), rcLeft, this, 
 		m_dockingWindows, ID_VIEW_WINDOWS_SCRIPTS - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sRight);
 
-	getDocker(DW_PROJECTS)->DockTo( getDocker(DW_TEXTCLIPS)->m_hWnd, 0 );
+	getDocker(DW_FINDRESULTS)->DockTo( getDocker(DW_OUTPUT)->m_hWnd, 0 );
+	getDocker(DW_CTAGS)->DockTo( getDocker(DW_PROJECTS)->m_hWnd, 0 );
+	getDocker(DW_TEXTCLIPS)->DockTo( getDocker(DW_PROJECTS)->m_hWnd, 0 );
 }
 
 /**
@@ -2298,7 +2300,7 @@ void CMainFrame::InitGUIState()
 	statekey += PNSK_DEFGUI;
 
 	m_GUIState.Initialize(statekey.c_str(), m_hWnd/*, SW_SHOWMAXIMIZED*/);
-	m_GUIState.Add(sstate::CRebarStateAdapter(m_hWndToolBar, REBAR_SAVESTATE_VERSION));
+	m_GUIState.Add(sstate::CRebarStateAdapter(m_hWndToolBar/*, REBAR_SAVESTATE_VERSION*/));
 	m_GUIState.Add(dockers);
 
 	//LoadGUIState();
@@ -2323,7 +2325,8 @@ void CMainFrame::LoadGUIState(LPCTSTR stateName)
 		*pConfigName += stateName;
 	}
 
-	if( !m_GUIState.Restore(pConfigName) )
+	CPNWindowStateStorage storage;
+	if( !m_GUIState.Restore(storage) )
 	{
 		SetDefaultGUIState();
 	}
@@ -2342,19 +2345,14 @@ void CMainFrame::LoadGUIState(LPCTSTR stateName)
  */
 void CMainFrame::SaveGUIState(LPCTSTR stateName)
 {
-	tstring* pConfigName = NULL;
+	tstring configName = "";
 	if(stateName)
 	{
-		pConfigName = new tstring(pnregroot);
-		*pConfigName += PNSK_INTERFACE;
-		*pConfigName += _T('\\');
-		*pConfigName += stateName;
+		configName = stateName;
 	}
 
-	m_GUIState.Store(pConfigName);
-	
-	if(pConfigName)
-		delete pConfigName;
+	CPNWindowStateStorage storage(configName);
+	m_GUIState.Store(storage);
 }
 
 /**

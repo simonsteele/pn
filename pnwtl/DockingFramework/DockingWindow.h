@@ -15,9 +15,8 @@
 #ifndef __WTL_DW__DOCKINGWINDOW_H__
 #define __WTL_DW__DOCKINGWINDOW_H__
 
-#pragma once
-
-#include "DDTracker.h"
+#include <DockMisc.h>
+#include <DDTracker.h>
 
 namespace dockwins{
 
@@ -271,7 +270,12 @@ public:
 			bRes=GetDockingPosition(&(pHdr->dockPos));
 		}
 		else
-			GetWindowRect(&pHdr->rect);
+		{
+			if(IsWindowVisible())
+				GetWindowRect(&pHdr->rect);
+			else
+				::CopyRect(&pHdr->rect,&m_rcUndock);
+		}
 		return bRes;
 	}
 	bool SetDockingPosition(DFDOCKPOS* pHdr)
@@ -816,13 +820,13 @@ protected:
 			MESSAGE_HANDLER(WM_NCLBUTTONDBLCLK,OnNcLButtonDblClk)
 			MESSAGE_HANDLER(WM_THEMECHANGED,OnThemeChanged)
 #ifdef DF_FOCUS_FEATURES
-			ATLASSERT(CDockingFocusHandler::This());
+			assert(CDockingFocusHandler::This());
 			CHAIN_MSG_MAP_ALT_MEMBER((*CDockingFocusHandler::This()),0)
 #endif
 		}
 		MESSAGE_HANDLER(WM_GETMINMAXINFO,OnGetMinMaxInfo)
 		MESSAGE_HANDLER(WM_SETTINGCHANGE,OnSettingChange)
-		MESSAGE_HANDLER(WM_SYSCOLORCHANGE,OnSysColorChange)
+		MESSAGE_HANDLER(WM_SYSCOLORCHANGE,OnSettingChange)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -865,39 +869,12 @@ protected:
 		bHandled = FALSE;
 		return 1;
 	}
-
+/*
 	LRESULT OnSysColorChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
-		if(!IsDocking())
-		{
-			// If we're floating, we're a top level window.
-			// We might be getting this message before the main frame
-			// (which is also a top-level window).
-			// The main frame handles this message, and refreshes
-			// system settings cached in CDWSettings.  In case we
-			// are getting this message before the main frame,
-			// update these cached settings (so that when we update
-			// our caption's settings that depend on them,
-			// its using the latest).
-			CDWSettings settings;
-			settings.Update();
-
-			// In addition, because we are a top-level window,
-			// we should be sure to send this message to all our descendants
-			// in case there are common controls and other windows that
-			// depend on cached system metrics.
-			this->SendMessageToDescendants(uMsg, wParam, lParam, TRUE);
-		}
-
-		m_caption.UpdateMetrics();
-
-		T* pThis=static_cast<T*>(this);
-		pThis->SetWindowPos(NULL,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
-
-		bHandled = FALSE;
-		return 1;
+		return 0;
 	}
-
+*/
 	LRESULT OnWindowPosChanging(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		return NULL;
@@ -1059,7 +1036,10 @@ public:
 	{
 		bool bRes=(static_cast<T*>(this)->IsWindowVisible()!=FALSE);
 		if(bRes)
+		{
 			Hide();
+			::SetFocus(::GetParent (m_hWnd));
+		}
 		else
 			Show();
 		return bRes;
@@ -1068,9 +1048,9 @@ public:
 	{
 		bool bRes=baseClass::GetDockingWindowPlacement(pHdr);
 		pHdr->bVisible=static_cast<const T*>(this)->IsWindowVisible();
-		if((!pHdr->bDocking)
-			&& (!pHdr->bVisible)
-				&& (m_pos.hdr.hBar!=HNONDOCKBAR))
+		if( (!pHdr->bDocking
+			  || (!pHdr->bVisible) )
+			  /*&& (m_pos.hdr.hBar!=HNONDOCKBAR)*/)
 			::CopyMemory(&pHdr->dockPos,&m_pos,sizeof(DFDOCKPOS));
 		return bRes;
 	}
@@ -1084,23 +1064,11 @@ public:
 		else
 		{
 			if(IsDocking())
-				Undock();
+						Undock();
 			::CopyRect(&m_rcUndock,&pHdr->rect);
-			bRes=(SetWindowPos(NULL,&m_rcUndock,
-					SWP_NOZORDER | SWP_HIDEWINDOW |	SWP_NOACTIVATE )!=FALSE);
+			bRes=(SetWindowPos(NULL,&m_rcUndock,SWP_NOZORDER | SWP_HIDEWINDOW |
+													SWP_NOACTIVATE )!=FALSE);
 		}
-
-#ifdef DF_AUTO_HIDE_FEATURES
-		// Update from Peter Carlson.
-		//  A fix for the pin restore problem.
-        /*
-		CDockingSide side(pHdr->dockPos.dwDockSide);
-		if (side.IsPinned())
-			PinUp(side, (side.IsHorizontal() ? pHdr->dockPos.nHeight : pHdr->dockPos.nWidth));
-        */
-		//
-#endif
-
 		return bRes;
 	}
 

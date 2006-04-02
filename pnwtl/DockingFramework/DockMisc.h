@@ -15,14 +15,12 @@
 #ifndef __WTL_DW__DOCKMISC_H__
 #define __WTL_DW__DOCKMISC_H__
 
-#pragma once
-
 #ifndef __ATLMISC_H__
         #error dockmisk.h requires atlmisc.h to be included first
 #endif
 
 #include <cassert>
-#include "SimpleSplitterBar.h"
+#include <SimpleSplitterBar.h>
 
 namespace dockwins{
 
@@ -151,12 +149,6 @@ typedef struct tagDFPINBTNPRESS
 
 #define DFPU_VISUALIZE	(1)
 
-/**
- * @brief Provide useful operations for a bit of side information
- *
- * @remarks side seems to include more than just the side, also
- * containing flags for "single", "active", "pinned" and "invalid".
- */
 class CDockingSide
 {
 	enum
@@ -175,11 +167,9 @@ public:
 		sActive=16,
 		sPinned=32
 	};
-
-	CDockingSide(DWORD side = sInvalid) : m_side(side)
+	CDockingSide(DWORD side=sInvalid):m_side(side)
 	{
 	}
-
 	bool IsHorizontal() const
 	{
 		assert(IsValid());
@@ -190,40 +180,40 @@ public:
 	bool IsTop() const
 	{
 		assert(IsValid());
-		return ((m_side & mskTop) != 0 );
+		return ((m_side&mskTop)!=0);
 	}
 
 	///@returns the side we represent
 	DWORD Side() const
 	{
 		assert(IsValid());
-		return m_side & mskSide;
+		return m_side&mskSide;
 	}
 
 	///@returns if we're single (who knows what that means)
 	bool IsSingle() const
 	{
 		assert(IsValid());
-		return ((m_side & sSingle) != 0);
+		return ((m_side&sSingle)!=0);
 	}
 
 	///@returns if this position is pinned.
 	bool IsPinned() const
 	{
 		assert(IsValid());
-		return ((m_side & sPinned) != 0);
+		return ((m_side&sPinned)!=0);
 	}
 	
 	///@returns status of "active" flag.
 	bool IsActive() const
 	{
-		return ((m_side & sActive) !=0 );
+		return ((m_side&sActive)!=0);
 	}
 	
 	///@returns whether this is an invalid side.
 	bool IsValid() const
 	{
-		return ((m_side & sInvalid) == 0);
+		return ((m_side&sInvalid)==0);
 	}
 	
 	///@Sets the invalid bit on this side.
@@ -231,17 +221,14 @@ public:
 	{
 		Invalidate(m_side);
 	}
-	
 	static void Invalidate(DWORD& side)
 	{
-		side |= sInvalid;
+		side|=sInvalid;
 	}
-	
 	operator DWORD() const
 	{
 		return m_side;
 	}
-
 protected:
 	DWORD m_side;
 };
@@ -256,32 +243,26 @@ protected:
 class COrientedRect : public CRect
 {
 public:
-	COrientedRect(bool bHorizontal, unsigned long thickness) : 
-	  m_thickness(thickness), m_bHorizontal(bHorizontal)
+	COrientedRect(bool bHorizontal,unsigned long thickness)
+		:m_thickness(thickness),m_bHorizontal(bHorizontal)
 	{
-		SetRectEmpty();
 	}
-
 	void SetOrientation(bool bHorizontal)
 	{
 		m_bHorizontal=bHorizontal;
 	}
-
 	bool GetOrientation() const
 	{
 		return m_bHorizontal;
 	}
-
 	bool IsHorizontal() const
 	{
 		return m_bHorizontal;
 	}
-
 	long GetThickness() const
 	{
 		return m_thickness;
 	}
-
 	bool CalculateRect(CRect& rc,bool bTop)
 	{
 		CopyRect(rc);
@@ -301,7 +282,6 @@ public:
 		}
 		return true;
 	}
-
 protected:
 	bool			m_bHorizontal;
 	unsigned long	m_thickness;
@@ -330,40 +310,33 @@ public:
 		sAnimation=mskAnimation,
 		sNoAnimation=0
 	};
-
 	CDWStyle(DWORD style=0)
 		:m_style(style)
 	{
 	}
-
 	bool IgnoreSystemSettings() const
 	{
 		return ((m_style&mskIgnoreSysSettings)!=0);
 	}
-
 	bool GhostDrag() const
 	{
 		return ((m_style&mskGhostDrag)!=0);
 	}
-
 	bool IsAnimationEnabled() const
 	{
 		return ((m_style&mskAnimation)!=0);
 	}
-
 	CDWStyle Set(const CDWStyle& style)
 	{
 		m_style=style;
 		return *this;
 	}
-
 	CDWStyle Set(DWORD mask,const CDWStyle& style)
 	{
 		m_style&=(~mask);
 		m_style|=style;
 		return *this;
 	}
-
 	CDWStyle Toggle(DWORD mask)
 	{
 		DWORD imask=~mask;
@@ -371,7 +344,6 @@ public:
 		m_style=(m_style&imask)|tmask;
 		return *this;
 	}
-
 	operator DWORD() const
 	{
 		return m_style;
@@ -380,13 +352,6 @@ protected:
 	DWORD m_style;
 };
 
-/**
- * @remarks 
- * REFACTOR Seems to be lots of senseless renaming of CDWStyle to CStyle
- * throughout this class. One to get rid of. What's more, this class seems
- * to be implemented once as an inner class (CSettings) and then provides
- * accessors for all the read settings in the outer class. Why?
- */
 class CDWSettings
 {
 protected:
@@ -431,6 +396,7 @@ protected:
 				m_vfont.Attach( ::CreateFontIndirect(&lf) );
 				assert(m_vfont.m_hFont);
 			}
+			::ZeroMemory(&m_ncm, sizeof(m_ncm));
 			m_ncm.cbSize = sizeof(m_ncm);
 			if(::SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(m_ncm), &m_ncm, 0))
 			{
@@ -464,10 +430,9 @@ protected:
 
 			return RGB(red, green, blue);
 		}
-
-		//I stole the code for background brush color from the cool Daniel Bowen's(dbowen@es.com)
-		//class CDotNetTabCtrlImpl(DotNetTabCtrl.h) to make background of the auto-hide bars and
-		//the tab controls identically.
+//I stole the code for background brush color from the cool Daniel Bowen's(dbowen@es.com)
+//class CDotNetTabCtrlImpl(DotNetTabCtrl.h) to make background of the auto-hide bars and
+//the tab controls identically.
 		static COLORREF CreateCoolCtrlBackgroundColor()
 		{
 			COLORREF clrBtnFace = ::GetSysColor(COLOR_BTNFACE);
@@ -505,135 +470,110 @@ protected:
 
 			return RGB(nRed, nGreen, nBlue);
 		}
-
 		CStyle SetStyle(const CStyle& style)
 		{
 			m_style=style;
 			return m_style;
 		}
-
 		CStyle GetStyle() const
 		{
 			return m_style;
 		}
-
 		bool IgnoreSystemSettings() const
 		{
 			return m_style.IgnoreSystemSettings();
 		}
-
 		bool GhostDrag() const
 		{
 			return m_style.GhostDrag();
 		}
-
 		bool IsAnimationEnabled() const
 		{
 			return m_style.IsAnimationEnabled();
 		}
-
 		HFONT HSysFont() const
 		{
 			return m_hfont;
 		}
-
 		HFONT VSysFont() const
 		{
 			return m_vfont;
 		}
-
 		HFONT HSmCaptionFont() const
 		{
 			return m_hfontSmCaption;
 		}
-
 		HFONT VSmCaptionFont() const
 		{
 			return m_vfontSmCaption;
 		}
-
 		long CXMinIcon() const
 		{
 			return ::GetSystemMetrics(SM_CXSMICON);
 		}
-
 		long CYMinIcon() const
 		{
 			return ::GetSystemMetrics(SM_CYSMICON);
 		}
-
 		int CXSmCaption() const
 		{
 			return m_ncm.iSmCaptionWidth;
 		}
-
 		int CYSmCaption() const
 		{
 			return m_ncm.iSmCaptionHeight;
 		}
-
 		COLORREF AutoHideBarTextColor() const
 		{
 			return m_colorAutoHideBarText;
 		}
-
 		COLORREF CoolCtrlBackgroundColor() const
 		{
 			return m_colorCoolCtrlBackground;
 		}
-
 		HCURSOR	HResizeCursor() const
 		{
 			return m_hHResizeCursor;
 		}
-
 		HCURSOR	VResizeCursor() const
 		{
 			return m_hVResizeCursor;
 		}
-
 	protected:
-		COLORREF	m_colorCoolCtrlBackground;
-		COLORREF	m_colorAutoHideBarText;
-		CStyle		m_style;
-		CFont		m_vfont;
-		CFontHandle m_hfont;
-		CFont		m_hfontSmCaption;
-		CFont		m_vfontSmCaption;
-		HCURSOR		m_hHResizeCursor;
-		HCURSOR		m_hVResizeCursor;
-		NONCLIENTMETRICS m_ncm;
+		COLORREF			m_colorCoolCtrlBackground;
+		COLORREF			m_colorAutoHideBarText;
+		CStyle				m_style;
+		CFont				m_vfont;
+		CFontHandle			m_hfont;
+		CFont				m_hfontSmCaption;
+		CFont				m_vfontSmCaption;
+		HCURSOR				m_hHResizeCursor;
+		HCURSOR				m_hVResizeCursor;
+		NONCLIENTMETRICS	m_ncm;
 
 	};
-
 public:
 	typedef CSettings::CStyle CStyle;
-	
 	void Update() const
 	{
 		settings.Update();
 	}
-	
 	CStyle SetStyle(const CStyle& style) const
 	{
 		return settings.SetStyle(style);
 	}
-	
 	CStyle GetStyle() const
 	{
 		return settings.GetStyle();
 	}
-	
 	bool IgnoreSystemSettings() const
 	{
 		return settings.IgnoreSystemSettings();
 	}
-	
 	bool GhostDrag() const
 	{
 		return settings.GhostDrag();
 	}
-	
 	bool IsAnimationEnabled() const
 	{
 		return settings.IsAnimationEnabled();
@@ -643,57 +583,46 @@ public:
 	{
 		return settings.HSysFont();
 	}
-	
 	HFONT VSysFont() const
 	{
 		return settings.VSysFont();
 	}
-	
 	HFONT HSmCaptionFont() const
 	{
 		return settings.HSmCaptionFont();
 	}
-	
 	HFONT VSmCaptionFont() const
 	{
 		return settings.VSmCaptionFont();
 	}
-	
 	long CXMinIcon() const
 	{
 		return settings.CXMinIcon();
 	}
-	
 	long CYMinIcon() const
 	{
 		return settings.CYMinIcon();
 	}
-	
 	int CXSmCaption() const
 	{
 		return settings.CXSmCaption();
 	}
-	
 	int CYSmCaption() const
 	{
 		return settings.CYSmCaption();
 	}
-	
 	COLORREF AutoHideBarTextColor() const
 	{
 		return settings.AutoHideBarTextColor();
 	}
-	
 	COLORREF CoolCtrlBackgroundColor() const
 	{
 		return settings.CoolCtrlBackgroundColor();
 	}
-	
 	HCURSOR	HResizeCursor() const
 	{
 		return settings.HResizeCursor();
 	}
-	
 	HCURSOR	VResizeCursor() const
 	{
 		return settings.VResizeCursor();

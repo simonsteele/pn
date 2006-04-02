@@ -12,9 +12,11 @@
 #define pndocking_h__included
 
 #include <DockMisc.h>
+#include <DockingFocus.h>
 #include <DockingFrame.h>
 #include <DockingBox.h>
 #include <TabDockingBox.h>
+#include <stg.h>
 
 //#include <VC7LikeCaption.h>
 //typedef dockwins::CVC7LikeBoxedDockingWindowTraits	CPNBoxedDockingWindowTraits;
@@ -23,19 +25,101 @@ typedef dockwins::COutlookLikeBoxedDockingWindowTraits	CPNBoxedDockingWindowTrai
 // These includes are to enable the state manager stuff.
 #include <sstate.h>
 
+class CPNWindowStateStorage : public sstate::IStorge
+{
+public:
+	CPNWindowStateStorage()
+	{
+		m_path = PNSK_INTERFACE;
+		m_path += PNSK_DEFGUI;
+	}
+
+	CPNWindowStateStorage(const tstring& configName)
+	{
+		m_path = PNSK_INTERFACE;
+		if(configName.size())
+		{
+			m_path += _T("\\");
+			m_path += configName;
+		}
+		else
+		{
+			m_path += PNSK_DEFGUI;
+		}
+	}
+
+	virtual ~CPNWindowStateStorage(void)
+	{
+	}
+
+	virtual long Create(IStorge& parent, LPCTSTR name, Modes mode)
+	{
+		m_path = static_cast<CPNWindowStateStorage&>(parent).m_path + "\\";
+		m_path += name;
+		return ERROR_SUCCESS;
+	}
+
+	virtual long Open(IStorge& parent,LPCTSTR name,Modes mode)
+	{
+		m_path = static_cast<CPNWindowStateStorage&>(parent).m_path + "\\";
+		m_path += name;
+		return ERROR_SUCCESS;
+	}
+
+	virtual long SetString(LPCTSTR name,LPCTSTR data)
+	{
+		assert(data);
+		OPTIONS->Set(m_path.c_str(), name, data);
+		return ERROR_SUCCESS;
+	}
+
+	virtual long GetString(LPCTSTR name, LPTSTR data, size_t& size)
+	{
+		if(size == 0)
+		{
+			tstring val = OPTIONS->Get(m_path.c_str(), name, _T(""));
+			if(val.size())
+			{
+				size = val.size();
+				return ERROR_MORE_DATA;
+			}
+			else
+			{
+				return ERROR_NO_DATA;
+			}
+		}
+		else
+		{
+			tstring val = OPTIONS->Get(m_path.c_str(), name, _T(""));
+			_tcsncpy(data, val.c_str(), size);
+			data[size-1] = _T('\0');
+			
+			return ERROR_SUCCESS;
+		}
+	}
+
+private:
+	CPNWindowStateStorage(const CPNWindowStateStorage&);
+	CPNWindowStateStorage& operator=(const CPNWindowStateStorage&);
+private:
+	//HKEY m_key;
+	tstring m_path;
+};
+
+
 /**
  * @brief Customised CWindowStateMgr allowing named configs.
  */
-class CPNStateManager : public sstate::CWindowStateMgr
+class CPNStateManager : public sstate::CWindowStateMgr<CPNWindowStateStorage>
 {
 	public:	
 		void Initialize(const tstring& strMainKey, HWND hWnd, int nDefCmdShow = SW_SHOWNOACTIVATE)
 		{
 			m_pImpl->SetWindow(hWnd, nDefCmdShow);
-			m_strMainKey = strMainKey;
+			//m_strMainKey = strMainKey;
 		}
 
-		void Store(const tstring* strKey = NULL)
+		/*void Store(const tstring* strKey = NULL)
 		{
 			sstate::CMainState mstate(strKey ? *strKey : m_strMainKey);
 			if(mstate.Store())
@@ -49,9 +133,6 @@ class CPNStateManager : public sstate::CWindowStateMgr
 			}
 		}
 
-		/**
-		 * Need to return a success value as well as allow named configs.
-		 */
 		bool Restore(const tstring* strKey = NULL)
 		{
 			sstate::CMainState mstate(strKey ? *strKey : m_strMainKey);
@@ -68,6 +149,7 @@ class CPNStateManager : public sstate::CWindowStateMgr
 				return false;
 			}
 		}
+		*/
 };
 
 // 1 

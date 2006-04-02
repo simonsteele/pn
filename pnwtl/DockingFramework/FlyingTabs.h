@@ -4,27 +4,24 @@
 #ifndef __WTL_DW__FLYING_TABS_H__
 #define __WTL_DW__FLYING_TABS_H__
 
-#pragma once
-
 #include <cassert>
 #include <vector>
 #include <queue>
 #include <algorithm>
 #include <functional>
 
-#include "DDTracker.h"
-
-//#include <atlgdix.h>
-#ifndef __ATLGDIX_H__
-	#error FlyingTabs.h requires atlgdix.h to be included first
-#endif
+#include <DDTracker.h>
 
 // NOTE: See CustomTabCtrl.h and DotNetTabCtrl.h for copyright information.
 // Please download the latest versions of these files from from The Codeproject article
 // "Custom Tab Controls, Tabbed Frame and Tabbed MDI" by Daniel Bowen (dbowen@es.com)
 // http://www.codeproject.com/wtl/TabbingFramework.asp
-//#include <CustomTabCtrl.h>
-//#include <DotNetTabCtrl.h>
+#include <atlgdix.h>
+#include <CustomTabCtrl.h>
+#include <DotNetTabCtrl.h>
+#ifndef __ATLGDIX_H__
+	#error FlyingTabs.h requires atlgdix.h to be included first
+#endif
 #ifndef __CUSTOMTABCTRL_H__
 	#error FlyingTabs.h requires CustomTabCtrl.h to be included first
 #endif

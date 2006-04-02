@@ -15,15 +15,13 @@
 #ifndef __WTL_DW__WNDFRMPKG_H__
 #define __WTL_DW__WNDFRMPKG_H__
 
-#pragma once
-
 #ifndef __ATLMISC_H__
         #error WndFrmPkg.h requires atlmisc.h to be included first
 #endif
 
 #include <memory>
-#include "ssec.h"
-#include "DDTracker.h"
+#include <ssec.h>
+#include <DDTracker.h>
 #ifdef USE_BOOST
 #include<boost/smart_ptr.hpp>
 #endif
@@ -134,10 +132,10 @@ protected:
 template< class TFrame = CWndFrame , class TTraits = CDockingFrameTraits>
 class CWndFramesPackageBase
 {
-	typedef typename TFrame CFrame;
-	typedef typename TTraits CTraits;
-	typedef typename CTraits::CSplitterBar	CSplitterBar;
-	typedef CWndFramesPackageBase<CFrame,TTraits> thisClass;
+	typedef TFrame CFrame;
+	typedef TTraits CTraits;
+	typedef typename CTraits::CSplitterBar			CSplitterBar;
+	typedef CWndFramesPackageBase<CFrame,TTraits>	thisClass;
 protected:
 	enum {splitterSize=CSplitterBar::sbThickness};
 	typedef typename CFrame::position	position;
@@ -145,7 +143,7 @@ protected:
 #if _MSC_VER >= 1310
 	template<class T,const typename T::distance TMinDist=0>
 #else
-	template<class T,const T::distance TMinDist=0>
+		const typename T::distance TMinDist=0>
 #endif
 	struct CWndFrameTraits : ssec::spraits<T, typename T::position, typename T::distance/*,TMinDist*/>
 	{
@@ -160,8 +158,8 @@ protected:
 	typedef CWndFrameTraits<CFrame,splitterSize> CFrameTraits;
 	typedef ssec::ssection<CFrame,CFrameTraits> CFrames;
 
-	typedef typename CFrames::iterator				iterator;
-	typedef typename CFrames::reverse_iterator		reverse_iterator;
+	typedef typename CFrames::iterator					iterator;
+	typedef typename CFrames::reverse_iterator			reverse_iterator;
 	typedef typename CFrames::const_iterator			const_iterator;
 	typedef typename CFrames::const_reverse_iterator	const_reverse_iterator;
 
@@ -634,14 +632,15 @@ template< class TTraits = CDockingFrameTraits >
 class CWndFramesPackage : public CWndFramesPackageBase<CWndFrame,TTraits >,
     public CThemeImpl <CWndFramesPackage>
 {
-	typedef typename CWndFrame CFrame;
-	typedef typename TTraits CTraits;
-	typedef typename CTraits::CSplitterBar	CSplitterBar;
-	typedef CWndFramesPackage<TTraits> thisClass;
-	typedef CWndFramesPackageBase<CFrame,TTraits > baseClass;
+	typedef CWndFrame CFrame;
+	typedef TTraits CTraits;
+	typedef typename CTraits::CSplitterBar			CSplitterBar;
+	typedef CWndFramesPackage<TTraits>				thisClass;
+	typedef CWndFramesPackageBase<CFrame,TTraits >	baseClass;
 public:
 	CWndFramesPackage(bool bHorizontal):baseClass(bHorizontal)
-	{ }
+	{
+	}
 	void PrepareForDocking(CWindow wnd,HDOCKBAR bar)
 	{
 		wnd.ShowWindow(SW_HIDE);
@@ -919,7 +918,7 @@ class CSubWndFramesPackage :
 	typedef typename CTraits::CSplitterBar	CSplitterBar;
 	typedef CSubWndFramesPackage<TPackageFrame,TTraits> thisClass;
 	typedef CWndFramesPackageBase<CFrame,TTraits >		baseClass;
-	typedef typename TPackageFrame	CPackageFrame;
+	typedef TPackageFrame	CPackageFrame;
 	enum {controlledLen=(15+CSplitterBar::sbThickness)};
 	struct  CDockOrientationFlag
 	{

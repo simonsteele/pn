@@ -12,8 +12,8 @@
 // the source code in  this file is used in any commercial application
 // then a simple email woulod be nice.
 
-#include "DockMisc.h"
-#include "DockingBox.h"
+#include <DockMisc.h>
+#include <DockingBox.h>
 
 namespace dockwins{
 
@@ -39,7 +39,7 @@ void DrawEllipsisText(CDC& dc,LPCTSTR sText,int n,LPRECT prc,bool bHorizontal)
 	if(width<size.cx)
 	{
 		LPCTSTR sEllipsis=_T("...");
-		const ellipsisLen=sizeof(sEllipsis)-1;
+		const size_t ellipsisLen=sizeof(sEllipsis)-1;
 		sTmp=new TCHAR[ellipsisLen+n];
 		_tcscpy(sTmp,_T("..."));
 		_tcsncpy(sTmp+ellipsisLen,sText,n);

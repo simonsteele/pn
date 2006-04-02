@@ -95,7 +95,7 @@ BEGIN
         MENUITEM "Report a &bug...",            253
         MENUITEM "Request a &feature...",       ID_HELP_WEB_SR
         MENUITEM SEPARATOR
-        MENUITEM "&About Programmers Notepad...", ID_APP_ABOUT
+        MENUITEM "&About Programmer's Notepad...", ID_APP_ABOUT
     END
 END
 
@@ -247,7 +247,7 @@ BEGIN
         MENUITEM "Report a &bug...",            253
         MENUITEM "Request a &feature...",       ID_HELP_WEB_SR
         MENUITEM SEPARATOR
-        MENUITEM "&About Programmers Notepad...", ID_APP_ABOUT
+        MENUITEM "&About Programmer's Notepad...", ID_APP_ABOUT
     END
 END
 

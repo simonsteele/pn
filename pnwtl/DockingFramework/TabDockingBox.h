@@ -15,17 +15,15 @@
 #ifndef __WTL_DW__TABDOCKINGBOX_H__
 #define __WTL_DW__TABDOCKINGBOX_H__
 
-#pragma once
-
-#include "DockingBox.h"
-#include "FlyingTabs.h"
+#include <DockingBox.h>
+#include <FlyingTabs.h>
 
 namespace dockwins{
-	
+
 
 template<class TTraits=COutlookLikeDockingBoxTraits>
 class CTabDockingBox :
-			public  CDockingBoxBaseImpl<CTabDockingBox,CWindow,TTraits>
+			public  CDockingBoxBaseImpl<CTabDockingBox<TTraits>,CWindow,TTraits>
 {
 	typedef	CDockingBoxBaseImpl<CTabDockingBox,CWindow,TTraits> baseClass;
 	typedef CTabDockingBox  thisClass;

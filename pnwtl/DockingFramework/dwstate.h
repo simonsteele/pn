@@ -15,12 +15,10 @@
 #ifndef __WTL_DW__DWSTATE_H__
 #define __WTL_DW__DWSTATE_H__
 
-#pragma once
-
 #include <cassert>
 #include <queue>
-#include "sstate.h"
-#include "DockMisc.h"
+#include <sstate.h>
+#include <DockMisc.h>
 
 
 namespace sstate{
@@ -30,10 +28,10 @@ namespace sstate{
 struct IDockWndState : public IState
 {
 	virtual void Reset()=0;
-	virtual bool Store(IMainState* /*pMState*/,CRegKey& /*key*/)=0;
-	virtual bool Restore(IMainState* /*pMState*/,CRegKey& /*key*/)=0;
-	virtual bool Store(IMainState* /*pMState*/,dockwins::DFDOCKPOSEX* /*pDocPos*/)=0;
-	virtual bool Restore(IMainState* /*pMState*/,dockwins::DFDOCKPOSEX* /*pDocPos*/)=0;
+	virtual bool Store(IStorge& /*stg*/)=0;
+	virtual bool Restore(IStorge& stg,float /*xratio*/,float /*yratio*/)=0;
+	virtual bool Store(dockwins::DFDOCKPOSEX* /*pDocPos*/)=0;
+	virtual bool Restore(dockwins::DFDOCKPOSEX* /*pDocPos*/,float /*xratio*/,float /*yratio*/)=0;
 };
 
 class CDockWndMgr
@@ -71,46 +69,55 @@ protected:
 		class CStorer
 		{
 		public:
-			CStorer(IMainState* pMState,CRegKey& keyTop)
-					:m_pMState(pMState),m_keyTop(keyTop)
+			CStorer(IStorge& stgTop)
+					:m_stgTop(stgTop)
 			{
 			}
 			void operator() (std::pair<const ID,CItem>& x) const
 			{
 				dockwins::DFDOCKPOSEX dpos={0};
-				if(x.second->Store(m_pMState,&dpos))
+				if(x.second->Store(&dpos))
 				{
-					std::basic_stringstream<TCHAR> sstrKey;
+					std::basic_ostringstream<TCHAR> sstrKey;
 					sstrKey.flags(std::ios::hex | std::ios::showbase );
-					sstrKey<<x.first;
+					sstrKey<<ctxtWndPrefix<<x.first;
+/*
 					::RegSetValueEx(m_keyTop,sstrKey.str().c_str(),NULL,REG_BINARY,
 										reinterpret_cast<CONST BYTE *>(&dpos),
 										sizeof(dockwins::DFDOCKPOSEX));
+*/
+					m_stgTop.SetBinary(sstrKey.str().c_str(),&dpos,sizeof(dockwins::DFDOCKPOSEX));
 				}
 			}
 		 protected:
-			IMainState*	m_pMState;
-			CRegKey&	m_keyTop;
+			IStorge& m_stgTop;
 		};
 		class CQLoader
 		{
 		public:
-			CQLoader(CRestQueue& q,IMainState* pMState,CRegKey& keyTop)
-					:m_queue(q),m_pMState(pMState),m_keyTop(keyTop)
+			CQLoader(CRestQueue& q,IStorge& stgTop,float xratio,float yratio)
+					:m_queue(q),m_stgTop(stgTop)
+					,m_xratio(xratio),m_yratio(yratio)
 			{
 			}
 			void operator() (std::pair<const ID,CItem>& x) const
 			{
 				CRestPos dpos;
-				std::basic_stringstream<TCHAR> sstrKey;
+				std::basic_ostringstream<TCHAR> sstrKey;
 				sstrKey.flags(std::ios::hex | std::ios::showbase );
-				sstrKey<<x.first;
+				sstrKey<<ctxtWndPrefix<<x.first;
+				dockwins::DFDOCKPOSEX* ptr=static_cast<dockwins::DFDOCKPOSEX*>(&dpos);
+/*
 				DWORD dwType;
 				DWORD cbData=sizeof(dockwins::DFDOCKPOSEX);
-				dockwins::DFDOCKPOSEX* ptr=static_cast<dockwins::DFDOCKPOSEX*>(&dpos);
 				if((::RegQueryValueEx(m_keyTop,sstrKey.str().c_str(),NULL,&dwType,
 									 reinterpret_cast<LPBYTE>(ptr),&cbData)==ERROR_SUCCESS)
 									 &&(dwType==REG_BINARY))
+*/
+				size_t size=sizeof(dockwins::DFDOCKPOSEX);
+				bool restored=(m_stgTop.GetBinary(sstrKey.str().c_str(),ptr,size)==ERROR_SUCCESS
+											&& (size==sizeof(dockwins::DFDOCKPOSEX)));
+				if(restored)
 				{
 					if(dpos.bDocking)
 					{
@@ -125,16 +132,17 @@ protected:
 						m_queue.push(dpos);
 					}
 					else
-						x.second->Restore(m_pMState,&dpos);
+						restored=x.second->Restore(&dpos,m_xratio,m_yratio);
 				}
-				else
+				if(!restored)
 					x.second->RestoreDefault();
 
 			}
 		protected:
 			CRestQueue& m_queue;
-			IMainState*	m_pMState;
-			CRegKey&	m_keyTop;
+			IStorge&	m_stgTop;
+			float		m_xratio;
+			float		m_yratio;
 		};
 		struct CDefRestorer
 		{
@@ -158,21 +166,21 @@ protected:
 		{
 			return m_nextFreeID--;
 		}
-		virtual bool Store(IMainState* pMState,CRegKey& key)
+		virtual bool Store(IStorge& stg)
 		{
-			std::for_each(m_bunch.begin(),m_bunch.end(),CStorer(pMState,key));
+			std::for_each(m_bunch.begin(),m_bunch.end(),CStorer(stg));
 			return true;
 		}
-		virtual bool Restore(IMainState* pMState,CRegKey& key)
+		virtual bool Restore(IStorge& stg,float xratio,float yratio)
 		{
 			std::for_each(m_bunch.begin(),m_bunch.end(),CResetter());
-			std::for_each(m_bunch.begin(),m_bunch.end(),CQLoader(m_queue,pMState,key));
+			std::for_each(m_bunch.begin(),m_bunch.end(),CQLoader(m_queue,stg,xratio,yratio));
 			while(!m_queue.empty())
 			{
 //				 CRestPos& dpos=const_cast<CRestPos&>(m_queue.top());
 				 CRestPos dpos=m_queue.top();
 				 assert(m_bunch.find(dpos.id)!=m_bunch.end());
-				 m_bunch[dpos.id]->Restore(pMState,&dpos);
+				 m_bunch[dpos.id]->Restore(&dpos,xratio,yratio);
 				 m_queue.pop();
 			}
 			return true;
@@ -255,53 +263,63 @@ public:
 			::ZeroMemory(&m_pos, sizeof(dockwins::DFDOCKPOSEX));
 			m_pos.dockPos.hdr.hWnd=NULL;
         }
-		virtual void Reset()
+		virtual void Reset(void)
 		{
 			if(m_dockWnd.GetDockingWindowPlacement(&m_pos))
 				m_dockWnd.Hide();
 			else
 				m_pos.dockPos.hdr.hWnd=NULL;
 		}
-		virtual bool Store(IMainState* pMState,CRegKey& key)
+		virtual bool Store(IStorge& stg)
 		{
-			dockwins::DFDOCKPOSEX dpos={0};
+			dockwins::DFDOCKPOSEX dpos;
 			ZeroMemory(&dpos,sizeof(dockwins::DFDOCKPOSEX));
-			bool bRes=Store(pMState,&dpos);
+			bool bRes=Store(&dpos);
 			if(bRes)
+				bRes=(stg.SetBinary(ctxtPlacement,&dpos,sizeof(dockwins::DFDOCKPOSEX))==ERROR_SUCCESS);
+/*
 				bRes=(::RegSetValueEx(key,ctxtPlacement,NULL,REG_BINARY,
 										reinterpret_cast<CONST BYTE *>(&dpos),
 										sizeof(dockwins::DFDOCKPOSEX))==ERROR_SUCCESS);
+*/
 			return bRes;
 		}
-		virtual bool Restore(IMainState* pMState,CRegKey& key)
+		virtual bool Restore(IStorge& stg,float xratio,float yratio)
 		{
 			dockwins::DFDOCKPOSEX dpos={0};
+/*
 			DWORD dwType;
 			DWORD cbData=sizeof(dockwins::DFDOCKPOSEX);
             bool bRes=(::RegQueryValueEx(key,ctxtPlacement,NULL,&dwType,
 							reinterpret_cast<LPBYTE>(&dpos),&cbData)==ERROR_SUCCESS)
 							&&(dwType==REG_BINARY);
+*/
+			size_t size=sizeof(dockwins::DFDOCKPOSEX);
+			bool bRes=(stg.GetBinary(ctxtPlacement,&dpos,size)==ERROR_SUCCESS
+										&& (size==sizeof(dockwins::DFDOCKPOSEX)));
 			if(bRes)
-				bRes=Restore(pMState,&dpos);
+				bRes=Restore(&dpos,xratio,yratio);
 			return bRes;
 		}
-		virtual bool RestoreDefault()
+		virtual bool RestoreDefault(void)
 		{
 			assert( (m_pos.dockPos.hdr.hWnd==NULL) || (m_pos.dockPos.hdr.hWnd==m_dockWnd.m_hWnd) );
 			bool bRes=(m_pos.dockPos.hdr.hWnd!=NULL);
 			if(bRes)
 				bRes=m_dockWnd.SetDockingWindowPlacement(&m_pos);
+/*
 			if(!bRes
 				&&!m_dockWnd.IsWindowVisible()
 					&& !m_dockWnd.IsDocking())
 				m_dockWnd.ShowWindow(m_nDefCmdShow);
+*/
             return true;
 		}
-		virtual bool Store(IMainState* /*pMState*/,dockwins::DFDOCKPOSEX* pDocPos)
+		virtual bool Store(dockwins::DFDOCKPOSEX* pDocPos)
 		{
 			return m_dockWnd.GetDockingWindowPlacement(pDocPos);
 		}
-		virtual bool Restore(IMainState* pMState,dockwins::DFDOCKPOSEX* pDocPos)
+		virtual bool Restore(dockwins::DFDOCKPOSEX* pDocPos,float xratio,float yratio)
 		{
             if(pDocPos->bDocking)
             {
@@ -310,20 +328,20 @@ public:
 				{
 					if(dside.IsHorizontal())
 					{
-						pDocPos->dockPos.nWidth=unsigned long(pDocPos->dockPos.nWidth*pMState->YRatio());
-						pDocPos->dockPos.nHeight=unsigned long(pDocPos->dockPos.nHeight*pMState->XRatio());
+						pDocPos->dockPos.nWidth=unsigned long(pDocPos->dockPos.nWidth*yratio);
+						pDocPos->dockPos.nHeight=unsigned long(pDocPos->dockPos.nHeight*xratio);
 					}
 					else
 					{
-						pDocPos->dockPos.nWidth=unsigned long(pDocPos->dockPos.nWidth*pMState->XRatio());
-						pDocPos->dockPos.nHeight=unsigned long(pDocPos->dockPos.nHeight*pMState->YRatio());
+						pDocPos->dockPos.nWidth=unsigned long(pDocPos->dockPos.nWidth*xratio);
+						pDocPos->dockPos.nHeight=unsigned long(pDocPos->dockPos.nHeight*yratio);
 					}
 				}
             }
-            pDocPos->rect.left=LONG(pDocPos->rect.left*pMState->XRatio());
-            pDocPos->rect.right=LONG(pDocPos->rect.right*pMState->XRatio());
-            pDocPos->rect.top=LONG(pDocPos->rect.top*pMState->YRatio());
-            pDocPos->rect.bottom=LONG(pDocPos->rect.bottom*pMState->YRatio());
+            pDocPos->rect.left=LONG(pDocPos->rect.left*xratio);
+            pDocPos->rect.right=LONG(pDocPos->rect.right*xratio);
+            pDocPos->rect.top=LONG(pDocPos->rect.top*yratio);
+            pDocPos->rect.bottom=LONG(pDocPos->rect.bottom*yratio);
 
 			return m_dockWnd.SetDockingWindowPlacement(pDocPos);
 		}

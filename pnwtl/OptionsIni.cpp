@@ -17,15 +17,15 @@
 
 #if (_ATL_VER >= 0x0700)
 	#include <hash_map>
-	class KeyMap : public std::hash_map<tstring, tstring>{};
+	class IniKeyMap : public std::hash_map<tstring, tstring>{};
 #else
 	#include <map>
-	class KeyMap : public std::map<tstring, tstring>{};
+	class IniKeyMap : public std::map<tstring, tstring>{};
 #endif
 
 IniOptions::IniOptions()
 {
-	keyMap = new KeyMap();
+	keyMap = new IniKeyMap();
 
 	_filename = NULL;
 	
@@ -97,7 +97,7 @@ int IniOptions::Get(LPCTSTR subkey, LPCTSTR value, int iDefault)
 {
 	if(groupLocked)
 	{
-		KeyMap::const_iterator i = keyMap->find(tstring(value));
+		IniKeyMap::const_iterator i = keyMap->find(tstring(value));
 		if(i != keyMap->end())
 			return _ttoi((*i).second.c_str());
 		else
@@ -133,7 +133,7 @@ void IniOptions::group(LPCTSTR location)
 		comma = _tcschr(p, _T('='));
 		*comma = NULL;
 		comma++;
-		keyMap->insert(KeyMap::value_type(tstring(p), tstring(comma)));
+		keyMap->insert(IniKeyMap::value_type(tstring(p), tstring(comma)));
 		p = comma + _tcslen(comma) + 1;
 	}
 

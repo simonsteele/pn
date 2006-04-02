@@ -15,10 +15,8 @@
 #ifndef __WTL_DW__PACKAGEWINDOW_H__
 #define __WTL_DW__PACKAGEWINDOW_H__
 
-#pragma once
-
-#include "DockMisc.h"
-#include "WndFrmPkg.h"
+#include <DockMisc.h>
+#include <WndFrmPkg.h>
 
 namespace dockwins{
 
@@ -28,7 +26,7 @@ template <class T,
           class TWinTraits = CControlWinTraits>
 class ATL_NO_VTABLE CPackageWindowImpl : public CWindowImpl< T, TBase, TWinTraits >
 {
-	//typedef TWndPackage			CWndPackage;
+	typedef TWndPackage			CWndPackage;
 	typedef	CPackageWindowImpl<T,TWndPackage,TBase,TWinTraits>	thisClass;
 public:
 	CPackageWindowImpl()
@@ -246,7 +244,7 @@ protected:
 		return lRes;
 	}
 protected:
-	TWndPackage		m_package;
+	CWndPackage		m_package;
 };
 
 template<class TTraits = CDockingFrameTraits >
@@ -256,7 +254,8 @@ class CPackageWindowFrame : public IFrame
 	typedef TTraits	CTraits;
 protected:
 	template<class TTraits >
-	struct CPackageWindowT : CPackageWindowImpl<CPackageWindowT, CWndFramesPackage<TTraits> >
+	struct CPackageWindowT 
+		: CPackageWindowImpl<CPackageWindowT<TTraits>, CWndFramesPackage<TTraits> >
 	{
 	public:
 		DECLARE_WND_CLASS(_T("CPackageWindowFrame::CPackageWindow"))

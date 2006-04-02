@@ -4,8 +4,6 @@
 #ifndef __WTL_DW__DDTRACKER_H__
 #define __WTL_DW__DDTRACKER_H__
 
-#pragma once
-
 #include<cassert>
 
 class IDDTracker

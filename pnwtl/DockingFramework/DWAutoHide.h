@@ -16,15 +16,13 @@
 #ifndef __WTL_DW__DWAUTOHIDE_H__
 #define __WTL_DW__DWAUTOHIDE_H__
 
-#pragma once
-
 #define DF_AUTO_HIDE_FEATURES
 
 #include <queue>
 #include <deque>
-#include "ssec.h"
-#include "DockMisc.h"
-#include "ExtDockingWindow.h"
+#include <ssec.h>
+#include <DockMisc.h>
+#include <ExtDockingWindow.h>
 
 
 namespace dockwins{
@@ -908,8 +906,8 @@ protected:
 #define HTSPLITTERV HTTOP
 
 template <class T,
-          class TBase = CWindow,
-          class TAutoHidePaneTraits = COutlookLikeAutoHidePaneTraits>
+          class TBase,
+          class TAutoHidePaneTraits>
 class ATL_NO_VTABLE CAutoHidePaneImpl :
 	 public CWindowImpl< T, TBase, TAutoHidePaneTraits >
 {
@@ -946,7 +944,7 @@ protected:
 public:
 	CAutoHidePaneImpl()
 	{
-		m_caption.SetPinButtonState(CPinIcons::States::sUnPinned/*CCaption::PinButtonStates::sPinned*/);
+		m_caption.SetPinButtonState(CPinIcons::sUnPinned);
 	}
 protected:
     CSide Orientation() const
@@ -1015,7 +1013,7 @@ public:
 		PostMessage(WM_CLOSE);
 		return false;
 	}
-	bool PinBtnPress(bool bVisualize=true)
+	bool PinBtnPress()
 	{
 		return true;
 	}
@@ -1115,7 +1113,7 @@ protected:
 		MESSAGE_HANDLER(WM_NCLBUTTONDBLCLK,OnNcLButtonDblClk)
 		MESSAGE_HANDLER(WM_CLOSE, OnClose)
 		MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
-		MESSAGE_HANDLER(WM_SYSCOLORCHANGE, OnSysColorChange)
+		MESSAGE_HANDLER(WM_SYSCOLORCHANGE, OnSettingChange /*OnSysColorChange*/)
 	END_MSG_MAP()
 
 	LRESULT OnGetMinMaxInfo(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -1260,13 +1258,14 @@ protected:
 	CSide			m_side;
 };
 
-template <class TAutoHidePaneTraits = COutlookLikeAutoHidePaneTraits>
-class CAutoHideManager : public CAutoHidePaneImpl<CAutoHideManager,CWindow,TAutoHidePaneTraits>
+template<class TAutoHidePaneTraits>
+class CAutoHideManager
+	: public CAutoHidePaneImpl<CAutoHideManager<TAutoHidePaneTraits>,CWindow,TAutoHidePaneTraits>
 {
-	typedef CAutoHidePaneImpl<CAutoHideManager,CWindow,TAutoHidePaneTraits>	baseClass;
-	typedef CAutoHideManager<TAutoHidePaneTraits>					thisClass;
+	typedef CAutoHidePaneImpl<CAutoHideManager<TAutoHidePaneTraits>,CWindow,TAutoHidePaneTraits>	baseClass;
+	typedef CAutoHideManager																		thisClass;
 protected:
-	typedef CAutoHideBar::CSide		CSide;
+	typedef typename CAutoHideBar::CSide		CSide;
 	enum{ tmID=1,tmTimeout=1300};
 	enum{ animateTimeout=100};
 	enum{ hoverTimeout=50/*HOVER_DEFAULT*/};
@@ -1381,7 +1380,7 @@ protected:
 		long			m_spOffset;
 	};
 public:
-	CAutoHideManager() 
+	CAutoHideManager()
 		: m_barThickness(0),m_pActive(0),m_pTracked(0)
 	{
 		m_rcBound.SetRectEmpty();

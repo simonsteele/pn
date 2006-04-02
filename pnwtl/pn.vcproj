@@ -342,9 +342,6 @@
 				RelativePath=".\jumpto.cpp">
 			</File>
 			<File
-				RelativePath=".\JumpToDialog.cpp">
-			</File>
-			<File
 				RelativePath=".\jumpview.cpp">
 			</File>
 			<File

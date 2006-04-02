@@ -4,8 +4,6 @@
 #ifndef __WTL_DW__SSTATE_H__
 #define __WTL_DW__SSTATE_H__
 
-#pragma once
-
 #include<memory>
 #include<utility>
 #include<algorithm>
@@ -14,6 +12,7 @@
 #include<limits>
 #include<string>
 #include<sstream>
+#include<stg.h>
 
 namespace sstate{
 
@@ -21,32 +20,23 @@ const	TCHAR ctxtGeneral[]		= _T("General");
 const	TCHAR ctxtCXScreen[]	=_T("SM_CXSCREEN");
 const	TCHAR ctxtCYScreen[]	=_T("SM_CYSCREEN");
 const	TCHAR ctxtPlacement[]	=_T("placement");
-const	TCHAR ctxtMainWindow[]	=_T("Main Window");
+const	TCHAR ctxtMainWindow[]	=_T("MainWindow");
 const	TCHAR ctxtVisible[]		=_T("visible");
 const	TCHAR ctxtBand[]		=_T("band");
-const	TCHAR ctxtStoreVer[]	=_T("version");
-const	TCHAR ctxtRect[]		=_T("disprect");
-
+const	TCHAR ctxtWndPrefix[]	=_T("Wnd-");
 typedef std::basic_string<TCHAR> tstring;
 typedef unsigned long ID;
+//typedef tstring ID;
 
-//i'll replace CRegKey with a abstract interface later ;) 
-
-struct IMainState
-{
-	virtual float XRatio() const = 0;
-	virtual float YRatio() const = 0;
-	virtual CRegKey& MainKey()=0;
-};
 
 struct IState
 {
-	virtual ~IState(){}
-	virtual bool Store(IMainState* /*pMState*/,CRegKey& /*key*/)=0;
-	virtual bool Restore(IMainState* /*pMState*/,CRegKey& /*key*/)=0;
-	virtual bool RestoreDefault()=0;
-	virtual void AddRef()=0;
-	virtual void Release()=0;
+	virtual ~IState(void){}
+	virtual bool Store(IStorge& /*stg*/)=0;
+	virtual bool Restore(IStorge& /*stg*/,float /*xratio*/,float /*yratio*/)=0;
+	virtual bool RestoreDefault(void)=0;
+	virtual void AddRef(void)=0;
+	virtual void Release(void)=0;
 };
 
 template<class T>
@@ -56,19 +46,22 @@ public:
 	CStateBase():m_ref(1)
 	{
 	}
-	virtual void AddRef()
+	virtual void AddRef(void)
 	{
 		m_ref++;
 	}
-	virtual void Release()
+	virtual void Release(void)
 	{
 		if(--m_ref==0)
 			delete this;
 	}
-	virtual ~CStateBase()
+	virtual ~CStateBase(void)
 	{
 		assert(m_ref==0);
 	}
+private:
+	CStateBase(const CStateBase& );
+	const CStateBase& operator=(const CStateBase& );
 protected:
 	unsigned long m_ref;
 };
@@ -78,7 +71,8 @@ class CStateHolder
 {
 	typedef CStateHolder<T> thisClass;
 public:
-	CStateHolder():m_pState(0)
+	CStateHolder(void)
+		:m_pState(0)
 	{
 	}
 	CStateHolder(T* pState)
@@ -97,7 +91,7 @@ public:
 			m_pState->AddRef();
 		return *this;
 	}
-	~CStateHolder()
+	~CStateHolder(void)
 	{
 		if(m_pState!=0)
 			m_pState->Release();
@@ -114,103 +108,9 @@ protected:
 	T* m_pState;
 };
 
-class CMainState : public IMainState
-{
-public:
-    CMainState()
-    {
-    }
-    CMainState(LPCTSTR lpszKeyName):m_strMainKey(lpszKeyName)
-    {
-    }
-    CMainState(const tstring& strKeyName):m_strMainKey(strKeyName)
-    {
-    }
-    virtual CRegKey& MainKey()
-    {
-        assert(m_keyMain.m_hKey);
-        return m_keyMain;
-    }
-    virtual float XRatio() const
-    {
-		return m_xratio;
-    }
-    virtual float YRatio() const
-    {
-		return m_yratio;
-    }
-    bool Store()
-    {
-        DWORD dwDisposition;
-        assert(!m_strMainKey.empty());
-        bool bRes=(m_keyMain.Create(HKEY_CURRENT_USER,m_strMainKey.c_str(),REG_NONE,
-                                    REG_OPTION_NON_VOLATILE, KEY_WRITE|KEY_READ,
-                                    NULL,&dwDisposition)==ERROR_SUCCESS);
-        if(bRes)
-        {
-            CRegKey keyGeneral;
-            bRes=(keyGeneral.Create(m_keyMain,ctxtGeneral,REG_NONE,
-                                    REG_OPTION_NON_VOLATILE, KEY_WRITE|KEY_READ,
-                                    NULL,&dwDisposition)==ERROR_SUCCESS);
-            if(bRes)
-            {
-
-				DWORD val=::GetSystemMetrics(SM_CXSCREEN);
-				::RegSetValueEx(keyGeneral, ctxtCXScreen, NULL, REG_DWORD,
-								reinterpret_cast<BYTE*>(&val), sizeof(DWORD));
-				val=::GetSystemMetrics(SM_CYSCREEN);
-				::RegSetValueEx(keyGeneral, ctxtCYScreen, NULL, REG_DWORD,
-								reinterpret_cast<BYTE*>(&val), sizeof(DWORD));
-/*
-				keyGeneral.SetValue(::GetSystemMetrics(SM_CXSCREEN),ctxtCXScreen);
-				keyGeneral.SetValue(::GetSystemMetrics(SM_CYSCREEN),ctxtCYScreen);
-*/
-            }
-        }
-        return bRes;
-    }
-    bool Restore()
-    {
-        assert(!m_strMainKey.empty());
-        bool bRes=(m_keyMain.Open(HKEY_CURRENT_USER,m_strMainKey.c_str(),KEY_READ)==ERROR_SUCCESS);
-        if(bRes)
-        {
-            CRegKey keyGeneral;
-            bRes=(keyGeneral.Open(m_keyMain,ctxtGeneral,KEY_READ)==ERROR_SUCCESS);
-            {
-                SIZE szScreen;
-				DWORD dwCount = sizeof(DWORD);
-				m_xratio=(::RegQueryValueEx(keyGeneral,ctxtCXScreen,NULL,NULL,
-								reinterpret_cast<LPBYTE>(&szScreen.cx),&dwCount) ==ERROR_SUCCESS
-								  && (dwCount == sizeof(DWORD)))
-                                                ?float(::GetSystemMetrics(SM_CXSCREEN))/szScreen.cx
-                                                :float(1.0);
-				dwCount = sizeof(DWORD);
-				m_yratio=(::RegQueryValueEx(keyGeneral,ctxtCYScreen,NULL,NULL,
-								reinterpret_cast<LPBYTE>(&szScreen.cy),&dwCount) ==ERROR_SUCCESS
-								  &&(dwCount == sizeof(DWORD)))
-                                                ?float(::GetSystemMetrics(SM_CYSCREEN))/szScreen.cy
-                                                :float(1.0);
-/*
-                m_xratio=(keyGeneral.QueryValue(reinterpret_cast<DWORD&>(szScreen.cx),ctxtCXScreen)==ERROR_SUCCESS)
-                                                ?float(::GetSystemMetrics(SM_CXSCREEN))/szScreen.cx
-                                                :float(1.0);
-                m_yratio=(keyGeneral.QueryValue(reinterpret_cast<DWORD&>(szScreen.cy),ctxtCYScreen)==ERROR_SUCCESS)
-                                                ?float(::GetSystemMetrics(SM_CYSCREEN))/szScreen.cy
-                                                :float(1.0);
-*/
-            }
-        }
-        return bRes;
-    }
-public:
-    CRegKey m_keyMain;
-    tstring m_strMainKey;
-    float   m_xratio;
-    float   m_yratio;
-};
-
-class CContainerImpl : public CStateBase<IState>
+template<class TStorage>
+class CContainerImpl
+	: public CStateBase<IState>
 {
 protected:
 	typedef CStateHolder<IState> CItem;
@@ -218,49 +118,63 @@ protected:
     class CStorer
     {
     public:
-		CStorer(IMainState* pMState,CRegKey& keyTop)
-				:m_pMState(pMState),m_keyTop(keyTop)
+		CStorer(IStorge& stgTop)
+				:m_stgTop(stgTop)
         {
         }
         void operator() (std::pair<const ID,CItem>& x) const
         {
-            std::basic_stringstream<TCHAR> sstrKey;
+            std::basic_ostringstream<TCHAR> sstrKey;
             sstrKey.flags(std::ios::hex | std::ios::showbase );
-            sstrKey<<x.first;
+			sstrKey<<ctxtWndPrefix<<x.first;
+/*
             CRegKey key;
             DWORD dwDisposition;
             LONG lRes = key.Create(m_keyTop,sstrKey.str().c_str(),REG_NONE,
                                     REG_OPTION_NON_VOLATILE, KEY_WRITE|KEY_READ,
                                     NULL,&dwDisposition);
             if(lRes==ERROR_SUCCESS)
-                    x.second->Store(m_pMState,key);
+				x.second->Store(key);
+*/
+			TStorage stg;
+			if(stg.Create(m_stgTop,sstrKey.str().c_str(),IStorge::ReadWrite)==ERROR_SUCCESS)
+                x.second->Store(stg);
         }
     protected:
-		IMainState*	m_pMState;
-		CRegKey&	m_keyTop;
+		IStorge& m_stgTop;
     };
+
 	class CRestorer
 	{
 	public:
-		CRestorer(IMainState* pMState,CRegKey& keyTop)
-				:m_pMState(pMState),m_keyTop(keyTop)
+		CRestorer(IStorge& stgTop,float xratio,float yratio)
+				:m_stgTop(stgTop)
+				,m_xratio(xratio)
+				,m_yratio(yratio)
 		{
 		}
 		void operator() (std::pair<const ID,CItem>& x) const
 		{
-            std::basic_stringstream<TCHAR> sstrKey;
+            std::basic_ostringstream<TCHAR> sstrKey;
             sstrKey.flags(std::ios::hex | std::ios::showbase );
-            sstrKey<<x.first;
+			sstrKey<<ctxtWndPrefix<<x.first;
+/*
             CRegKey key;
             LONG lRes = key.Open(m_keyTop,sstrKey.str().c_str(),KEY_READ);
             if(lRes==ERROR_SUCCESS)
-                x.second->Restore(m_pMState,key);
+                x.second->Restore(key,m_xratio,m_yratio);
 			else
 				x.second->RestoreDefault();
+*/
+			TStorage stg;
+			if(stg.Open(m_stgTop,sstrKey.str().c_str(),IStorge::Read)!=ERROR_SUCCESS
+				|| !x.second->Restore(stg,m_xratio,m_yratio))
+					x.second->RestoreDefault();
 		}
 	protected:
-		IMainState*	m_pMState;
-		CRegKey&	m_keyTop;
+		IStorge& m_stgTop;
+		float	m_xratio;
+		float	m_yratio;
 	};
     struct CDefRestorer
     {
@@ -270,24 +184,25 @@ protected:
         }
     };
 public:
-	CContainerImpl():m_nextFreeID(/*std::numeric_limits<ID>::max()*/ULONG_MAX)
+	CContainerImpl(void)
+		:m_nextFreeID(/*std::numeric_limits<ID>::max()*/ULONG_MAX)
 	{
 	}
-	ID GetUniqueID() const
+	ID GetUniqueID(void) const
 	{
 		return m_nextFreeID--;
 	}
-	virtual bool Store(IMainState* pMState,CRegKey& key)
+	virtual bool Store(IStorge& stg)
 	{
-        std::for_each(m_bunch.begin(),m_bunch.end(),CStorer(pMState,key));
+        std::for_each(m_bunch.begin(),m_bunch.end(),CStorer(stg));
 		return true;
 	}
-	virtual bool Restore(IMainState* pMState,CRegKey& key)
+	virtual bool Restore(IStorge& stg,float xratio,float yratio)
 	{
-        std::for_each(m_bunch.begin(),m_bunch.end(),CRestorer(pMState,key));
+        std::for_each(m_bunch.begin(),m_bunch.end(),CRestorer(stg,xratio,yratio));
 		return true;
 	}
-	virtual bool RestoreDefault()
+	virtual bool RestoreDefault(void)
 	{
         std::for_each(m_bunch.begin(),m_bunch.end(),CDefRestorer());
 		return true;
@@ -313,92 +228,79 @@ protected:
 	CBunch m_bunch;
 };
 
+template<class TStorage>
 class CWindowStateMgr
 {
 protected:
-	class CImpl : public CContainerImpl
+	class CImpl 
+		: public CContainerImpl<TStorage>
 	{
-		typedef CContainerImpl baseClass;
+		typedef CContainerImpl<TStorage> baseClass;
 	public:
-		CImpl(HWND hWnd=NULL,int nDefCmdShow=SW_SHOWNOACTIVATE)
+		CImpl(HWND hWnd=NULL,int nDefCmdShow=SW_SHOWDEFAULT)
 			:m_hWnd(hWnd),m_nDefCmdShow(nDefCmdShow)
 		{
 		}
-        void SetWindow(HWND hWnd=NULL,int nDefCmdShow=SW_SHOWNOACTIVATE)
+        void SetWindow(HWND hWnd=NULL,int nDefCmdShow=SW_SHOWDEFAULT)
         {
             assert(::IsWindow(hWnd));
             m_hWnd=hWnd;
             m_nDefCmdShow=nDefCmdShow;
         }
-
-		/**
-		 * Save the window state of a window
-		 */
-		virtual bool Store(IMainState* pMState,CRegKey& key)
+		virtual bool Store(IStorge& stg)
 		{
 			assert(IsWindow(m_hWnd));
 
             WINDOWPLACEMENT wp;
             wp.length = sizeof(WINDOWPLACEMENT);
-
-            bool bRes = false;
-            
-			if( ::GetWindowPlacement(m_hWnd, &wp) )
+            bool bRes=false;
+            if (::GetWindowPlacement(m_hWnd,&wp))
             {
-				bRes=(::RegSetValueEx(key, ctxtRect, NULL, REG_BINARY, (const BYTE*)&wp.rcNormalPosition, sizeof(RECT)) == ERROR_SUCCESS);
-				BYTE bMaximized = ::IsZoomed(m_hWnd) ? 1 : 0;
-				bRes=(::RegSetValueEx(key, _T("Maximised"), NULL, REG_DWORD, &bMaximized, sizeof(BYTE)) == ERROR_SUCCESS);
+                wp.flags = 0;
+                if(::IsZoomed(m_hWnd))
+					wp.flags |= WPF_RESTORETOMAXIMIZED;
+				if(wp.showCmd==SW_SHOWMINIMIZED)
+					wp.showCmd=SW_SHOWNORMAL;				
+				bRes=(stg.SetBinary(ctxtPlacement,&wp,sizeof(WINDOWPLACEMENT))==ERROR_SUCCESS);
+/*
+                bRes=(::RegSetValueEx(key,ctxtPlacement,NULL,REG_BINARY,
+										reinterpret_cast<CONST BYTE *>(&wp),
+										sizeof(WINDOWPLACEMENT))==ERROR_SUCCESS);
+*/
             }
-
-			// Save all the other window positioning info.
-			return baseClass::Store(pMState,key);
+			return baseClass::Store(stg);
 		}
-
-		/**
-		 * Restore a window position from the registry
-		 */
-		virtual bool Restore(IMainState* pMState,CRegKey& key)
+		virtual bool Restore(IStorge& stg,float xratio,float yratio)
 		{
 			assert(IsWindow(m_hWnd));
+            WINDOWPLACEMENT wp;
+/*
             DWORD dwType;
-			RECT rcWnd;
-			DWORD cbData = sizeof(RECT);
-			BYTE bMaximised = 0;
-
-			bool bRes = (::RegQueryValueEx(key, ctxtRect, NULL, &dwType, 
-				(LPBYTE)&rcWnd, &cbData) == ERROR_SUCCESS) && 
-				(dwType == REG_BINARY);
-
-			if(bRes)
-			{
-				bRes = ::RegQueryValueEx(key, _T("Maximised"), NULL, &dwType, 
-					&bMaximised, &cbData) == ERROR_SUCCESS &&
-					(dwType == REG_DWORD);
-			}
-
-			// Check to see if startup info mandates maximised.
-			STARTUPINFO si;
-			GetStartupInfo(&si);
-			if( (si.wShowWindow & SW_MAXIMIZE) == SW_MAXIMIZE )
-				bMaximised = true;	
-
+            DWORD cbData=sizeof(WINDOWPLACEMENT);
+            bool bRes=(::RegQueryValueEx(key,ctxtPlacement,NULL,&dwType,
+											reinterpret_cast<LPBYTE>(&wp),&cbData)==ERROR_SUCCESS)
+											&&(dwType==REG_BINARY);
+*/
+			size_t size=sizeof(WINDOWPLACEMENT);
+			bool bRes=(stg.GetBinary(ctxtPlacement,&wp,size)==ERROR_SUCCESS
+							&& (size==sizeof(WINDOWPLACEMENT)));
             if(bRes)
 			{
-				// Set up the window position...
-				::SetWindowPos(m_hWnd, NULL, rcWnd.left, rcWnd.top, rcWnd.right - rcWnd.left, rcWnd.bottom - rcWnd.top, SWP_NOACTIVATE);
-				
-				// Restore the child window posisions...
-				bRes = baseClass::Restore(pMState,key);
+				UINT nCmdShow=wp.showCmd;
+//				LockWindowUpdate(m_hWnd);
+				if(wp.showCmd==SW_MAXIMIZE)
+					::ShowWindow(m_hWnd,nCmdShow);
+				wp.showCmd=SW_HIDE;
+                ::SetWindowPlacement(m_hWnd,&wp);
+				bRes=baseClass::Restore(stg,xratio,yratio);
+				::ShowWindow(m_hWnd,nCmdShow);
+//				LockWindowUpdate(NULL);
 			}
 			else
-				bRes = baseClass::RestoreDefault();
-
-			::ShowWindow(m_hWnd, bMaximised == 1 ? SW_SHOWMAXIMIZED : SW_SHOWNORMAL);
-
+				bRes=/*baseClass::*/RestoreDefault();
 			return bRes;
 		}
-
-		virtual bool RestoreDefault()
+		virtual bool RestoreDefault(void)
 		{
 			assert(IsWindow(m_hWnd));
 			bool bRes=baseClass::RestoreDefault();
@@ -410,16 +312,16 @@ protected:
 		int		m_nDefCmdShow;
 	};
 public:
-	CWindowStateMgr(HWND hWnd=NULL,int nDefCmdShow=SW_SHOWNOACTIVATE)
+	CWindowStateMgr(HWND hWnd=NULL,int nDefCmdShow=SW_SHOWDEFAULT)
 	{
 		m_pImpl=new CImpl(hWnd,nDefCmdShow);
 	}
-	~CWindowStateMgr()
+	~CWindowStateMgr(void)
 	{
 		assert(m_pImpl);
 		m_pImpl->Release();
 	}
-	operator IState* ()
+	operator IState* (void)
 	{
 		return m_pImpl;
 	}
@@ -435,36 +337,126 @@ public:
 	{
 		m_pImpl->Remove(id);
 	}
-    void Initialize(const tstring& strMainKey,HWND hWnd,int nDefCmdShow=SW_SHOWNOACTIVATE)
+
+    void Initialize(HWND hWnd,int nDefCmdShow=SW_SHOWDEFAULT)
     {
 		m_pImpl->SetWindow(hWnd,nDefCmdShow);
-		m_strMainKey=strMainKey;
     }
-    void Store()
+
+    bool Store(TStorage& stgMain)
     {
-        CMainState mstate(m_strMainKey);
-        if(mstate.Store())
-        {
-            CRegKey key;
-            DWORD dwDisposition;
-            if(key.Create(mstate.MainKey(),ctxtMainWindow,REG_NONE,
-							REG_OPTION_NON_VOLATILE, KEY_WRITE|KEY_READ,
-							NULL,&dwDisposition)==ERROR_SUCCESS)
-					m_pImpl->Store(&mstate,key);
-        }
+		TStorage general;
+		if(general.Create(stgMain,ctxtGeneral,IStorge::ReadWrite)==ERROR_SUCCESS)
+		{
+			DWORD val=::GetSystemMetrics(SM_CXSCREEN);
+			general.SetBinary(ctxtCXScreen,&val,sizeof(DWORD));
+			val=::GetSystemMetrics(SM_CYSCREEN);
+			general.SetBinary(ctxtCYScreen,&val,sizeof(DWORD));
+		}
+
+		TStorage stg;
+		bool bRes=(stg.Create(stgMain,ctxtMainWindow,IStorge::ReadWrite)==ERROR_SUCCESS);
+		if(bRes)
+			bRes=m_pImpl->Store(stg);
+
+//         DWORD dwDisposition;
+// 		CRegKey keyMain;
+//         if(keyMain.Create(HKEY_CURRENT_USER,m_strMainKey.c_str(),REG_NONE,
+//                                     REG_OPTION_NON_VOLATILE, KEY_WRITE|KEY_READ,
+//                                     NULL,&dwDisposition)==ERROR_SUCCESS)
+//         {
+//             CRegKey keyGeneral;
+//             if(keyGeneral.Create(keyMain,ctxtGeneral,REG_NONE,
+// 										REG_OPTION_NON_VOLATILE, KEY_WRITE|KEY_READ,
+// 										NULL,&dwDisposition)==ERROR_SUCCESS)
+//             {
+// 
+// 				DWORD val=::GetSystemMetrics(SM_CXSCREEN);
+// 				::RegSetValueEx(keyGeneral, ctxtCXScreen, NULL, REG_DWORD,
+// 								reinterpret_cast<BYTE*>(&val), sizeof(DWORD));
+// 				val=::GetSystemMetrics(SM_CYSCREEN);
+// 				::RegSetValueEx(keyGeneral, ctxtCYScreen, NULL, REG_DWORD,
+// 								reinterpret_cast<BYTE*>(&val), sizeof(DWORD));
+// /*
+// 				keyGeneral.SetValue(::GetSystemMetrics(SM_CXSCREEN),ctxtCXScreen);
+// 				keyGeneral.SetValue(::GetSystemMetrics(SM_CYSCREEN),ctxtCYScreen);
+// */
+//             }
+//             CRegKey key;
+//             if(key.Create(keyMain,ctxtMainWindow,REG_NONE,
+// 							REG_OPTION_NON_VOLATILE, KEY_WRITE|KEY_READ,
+// 							NULL,&dwDisposition)==ERROR_SUCCESS)
+// 									m_pImpl->Store(key);
+//         }
+		return bRes;
     }
-    void Restore()
+
+    bool Restore(TStorage& stgMain)
     {
-        CMainState mstate(m_strMainKey);
-        CRegKey key;
-        if(mstate.Restore()&&
-            (key.Open(mstate.MainKey(),ctxtMainWindow,KEY_READ)==ERROR_SUCCESS))
-                    m_pImpl->Restore(&mstate,key);
-        else
-			m_pImpl->RestoreDefault();
+		TStorage general;
+		bool bRes=(general.Open(stgMain,ctxtGeneral,IStorge::Read)==ERROR_SUCCESS);
+		if(bRes)
+		{
+            SIZE szScreen;
+			size_t size = sizeof(DWORD);
+			float xratio=(general.GetBinary(ctxtCXScreen,&szScreen.cx,size)==ERROR_SUCCESS
+							 && (size == sizeof(DWORD))
+                                            ?float(::GetSystemMetrics(SM_CXSCREEN))/szScreen.cx
+                                            :float(1.0));
+				
+			size = sizeof(DWORD);
+			float yratio=(general.GetBinary(ctxtCYScreen,&szScreen.cy,size)==ERROR_SUCCESS
+							&& (size == sizeof(DWORD))
+                                            ?float(::GetSystemMetrics(SM_CYSCREEN))/szScreen.cy
+                                            :float(1.0));
+
+			TStorage stg;
+			bRes=(stg.Open(stgMain,ctxtMainWindow,IStorge::Read)==ERROR_SUCCESS
+							&& m_pImpl->Restore(stg,xratio,yratio));
+		}
+
+// 		CRegKey keyMain;
+//         CRegKey keyGeneral;
+// 		bool bRes=keyMain.Open(HKEY_CURRENT_USER,m_strMainKey.c_str(),KEY_READ)==ERROR_SUCCESS
+// 									&& (keyGeneral.Open(keyMain,ctxtGeneral,KEY_READ)==ERROR_SUCCESS);
+//         if(bRes)
+//         {
+//             SIZE szScreen;
+// 			DWORD dwCount = sizeof(DWORD);
+// 			float xratio=(::RegQueryValueEx(keyGeneral,ctxtCXScreen,NULL,NULL,
+// 							reinterpret_cast<LPBYTE>(&szScreen.cx),&dwCount) ==ERROR_SUCCESS
+// 								&& (dwCount == sizeof(DWORD)))
+//                                             ?float(::GetSystemMetrics(SM_CXSCREEN))/szScreen.cx
+//                                             :float(1.0);
+// 			dwCount = sizeof(DWORD);
+// 			float yratio=(::RegQueryValueEx(keyGeneral,ctxtCYScreen,NULL,NULL,
+// 							reinterpret_cast<LPBYTE>(&szScreen.cy),&dwCount) ==ERROR_SUCCESS
+// 								&&(dwCount == sizeof(DWORD)))
+//                                             ?float(::GetSystemMetrics(SM_CYSCREEN))/szScreen.cy
+//                                             :float(1.0);
+// /*
+//             xratio=(keyGeneral.QueryValue(reinterpret_cast<DWORD&>(szScreen.cx),ctxtCXScreen)==ERROR_SUCCESS)
+//                                             ?float(::GetSystemMetrics(SM_CXSCREEN))/szScreen.cx
+//                                             :float(1.0);
+//             yratio=(keyGeneral.QueryValue(reinterpret_cast<DWORD&>(szScreen.cy),ctxtCYScreen)==ERROR_SUCCESS)
+//                                             ?float(::GetSystemMetrics(SM_CYSCREEN))/szScreen.cy
+//                                             :float(1.0);
+// */
+// 			CRegKey key;
+// 			bRes=key.Open(keyMain,ctxtMainWindow,KEY_READ)==ERROR_SUCCESS
+// 					&&	m_pImpl->Restore(key,xratio,yratio);
+// 
+//         }
+
+		if(!bRes)
+			bRes=m_pImpl->RestoreDefault();
+        return bRes;
     }
+	bool RestoreDefault(void)
+	{
+		return m_pImpl->RestoreDefault();
+	}
 protected:
-    tstring	m_strMainKey;
 	CImpl*	m_pImpl;
 };
 
@@ -479,7 +471,7 @@ protected:
 		{
 			assert(::IsWindow(hWnd));
 		}
-		virtual bool Store(IMainState* /*pMState*/,CRegKey& key)
+		virtual bool Store(IStorge& stg)
 		{
             WINDOWPLACEMENT wp;
             wp.length = sizeof(WINDOWPLACEMENT);
@@ -490,26 +482,34 @@ protected:
                 wp.flags = 0;
                 if (::IsZoomed(m_hWnd))
                         wp.flags |= WPF_RESTORETOMAXIMIZED;
+/*
                 bRes=(::RegSetValueEx(key,ctxtPlacement,NULL,REG_BINARY,
 										reinterpret_cast<CONST BYTE *>(&wp),
 										sizeof(WINDOWPLACEMENT))==ERROR_SUCCESS);
+*/
+				bRes=(stg.SetBinary(ctxtPlacement,&wp,sizeof(WINDOWPLACEMENT))==ERROR_SUCCESS);
             }
 			return bRes;
 		}
-		virtual bool Restore(IMainState* /*pMState*/,CRegKey& key)
+		virtual bool Restore(IStorge& stg,float /*xratio*/,float /*yratio*/)
 		{
             assert(::IsWindow(m_hWnd));
             WINDOWPLACEMENT wp;
+/*
             DWORD dwType;
             DWORD cbData=sizeof(WINDOWPLACEMENT);
             bool bRes=(::RegQueryValueEx(key,ctxtPlacement,NULL,&dwType,
 											reinterpret_cast<LPBYTE>(&wp),&cbData)==ERROR_SUCCESS)
 											&&(dwType==REG_BINARY);
+*/
+            size_t size=sizeof(WINDOWPLACEMENT);
+			bool bRes=(stg.GetBinary(ctxtPlacement,&wp,size)==ERROR_SUCCESS
+						&& (size == sizeof(WINDOWPLACEMENT) ) );
             if(bRes)
                     bRes=(::SetWindowPlacement(m_hWnd,&wp)!=FALSE);
             return bRes;
 		}
-		virtual bool RestoreDefault()
+		virtual bool RestoreDefault(void)
 		{
 			::ShowWindow(m_hWnd,m_nDefCmdShow);
 			return true;
@@ -523,12 +523,12 @@ public:
     {
 		m_pImpl = new CImpl(hWnd,nDefCmdShow);
     }
-	~CWindowStateAdapter()
+	~CWindowStateAdapter(void)
 	{
 		assert(m_pImpl);
 		m_pImpl->Release();
 	}
-	operator IState* ()
+	operator IState* (void)
 	{
 		return m_pImpl;
 	}
@@ -547,28 +547,36 @@ protected:
 		{
 			assert(::IsWindow(hWnd));
 		}
-		virtual bool Store(IMainState* /*pMState*/,CRegKey& key)
+		virtual bool Store(IStorge& stg)
 		{
             DWORD visible=::IsWindowVisible(m_hWnd);
+/*
 			return (::RegSetValueEx(key, ctxtVisible, NULL, REG_DWORD,
 								reinterpret_cast<BYTE*>(&visible), sizeof(DWORD))==ERROR_SUCCESS);
 //            return (key.SetValue(visible,ctxtVisible)==ERROR_SUCCESS);
+*/
+			return (stg.SetBinary(ctxtVisible,&visible,sizeof(DWORD))==ERROR_SUCCESS);
 		}
-		virtual bool Restore(IMainState* /*pMState*/,CRegKey& key)
+		virtual bool Restore(IStorge& stg,float /*xratio*/,float /*yratio*/)
 		{
             DWORD visible;
 //          bool bRes=(key.QueryValue(visible,ctxtVisible)==ERROR_SUCCESS);
+/*
 			DWORD dwCount = sizeof(DWORD);
 			bool bRes=(::RegQueryValueEx(key,ctxtVisible,NULL,NULL,
 								reinterpret_cast<LPBYTE>(&visible),&dwCount)==ERROR_SUCCESS
 									 && (dwCount == sizeof(DWORD)));
+*/
+			size_t size=sizeof(DWORD);
+			bool bRes=(stg.GetBinary(ctxtVisible,&visible,size)==ERROR_SUCCESS
+							&& (size==sizeof(DWORD)));
             if(bRes)
                     ::ShowWindow(m_hWnd, (visible!=0) ? SW_SHOWNA : SW_HIDE);
             else
                     RestoreDefault();
             return bRes;
 		}
-		virtual bool RestoreDefault()
+		virtual bool RestoreDefault(void)
 		{
             ::ShowWindow(m_hWnd,m_nDefCmdShow);
             return true;
@@ -582,95 +590,79 @@ public:
     {
 		m_pImpl = new CImpl(hWnd,nDefCmdShow);
     }
-	~CToggleWindowAdapter()
+	~CToggleWindowAdapter(void)
 	{
 		assert(m_pImpl);
 		m_pImpl->Release();
 	}
-	operator IState* ()
+	operator IState* (void)
 	{
 		return m_pImpl;
 	}
 protected:
 	CImpl* m_pImpl;
 };
+
 class CRebarStateAdapter
 {
 protected:
 	class CImpl : public CStateBase<IState>
 	{
 	public:
-		CImpl(HWND hWnd, int storeVersion)
-			:m_rebar(hWnd), m_storageVersion(storeVersion)
+		CImpl(HWND hWnd)
+			:m_rebar(hWnd)
 		{
 			assert(::IsWindow(hWnd));
 		}
 
-		virtual bool Store(IMainState* /*pMState*/,CRegKey& key)
+		virtual bool Store(IStorge& stg)
 		{
 			assert(m_rebar.IsWindow());
-			::RegSetValueEx(key,ctxtStoreVer, NULL, REG_DWORD, (LPBYTE)&m_storageVersion, sizeof(DWORD));
-			
 			unsigned int bandCount=m_rebar.GetBandCount();
 			for(unsigned int i=0;i<bandCount;i++)
 			{
-				std::basic_stringstream<TCHAR> sstrKey;
+				std::basic_ostringstream<TCHAR> sstrKey;
 				sstrKey<<ctxtBand<<i;
 				REBARBANDINFO rbi;
 				ZeroMemory(&rbi,sizeof(REBARBANDINFO));
 				rbi.cbSize = sizeof(REBARBANDINFO);
-				rbi.fMask = RBBIM_ID | 
+				rbi.fMask = RBBIM_ID | RBBIM_COLORS |
 							RBBIM_SIZE | RBBIM_STYLE
-							// The following causes the app to remember rebar colors,
-							// breaking windows theme changes.
-							//RBBIM_COLORS |
-							// The following causes the rebars to shift left on restore.
+							| RBBIM_CHILDSIZE
 							#if (_WIN32_IE >= 0x0400)
 								| /*RBBIM_HEADERSIZE |*/ RBBIM_IDEALSIZE
-							#endif	
+							#endif
 								;
 				m_rebar.GetBandInfo(i, &rbi);
+/*
 				::RegSetValueEx(key,sstrKey.str().c_str(),NULL,REG_BINARY,
 								reinterpret_cast<CONST BYTE *>(&rbi),
 								rbi.cbSize);
+*/
+				stg.SetBinary(sstrKey.str().c_str(),&rbi,size_t(rbi.cbSize));
 			}
 			return true;
 		}
 
-		virtual bool Restore(IMainState* /*pMState*/,CRegKey& key)
+		virtual bool Restore(IStorge& stg,float /*xratio*/,float /*yratio*/)
 		{
-			DWORD dwType;
-			DWORD dwVal;
-			DWORD cbData = sizeof(DWORD);
-
-			if( ::RegQueryValueEx(key, ctxtStoreVer, NULL, &dwType,
-				(LPBYTE)&dwVal, &cbData) == ERROR_SUCCESS && (dwType == REG_DWORD) )
-			{
-				// If the versions aren't the same, then we don't bother to
-				// restore - we'll probably brake the ReBars by doing so.
-				if( dwVal != m_storageVersion )
-					return false;
-			}
-			else
-			{
-				// If we couldn't query that key, then we never wrote a version
-				// number before, so it must be an old version.
-				return false;
-			}
-
 			unsigned int bandCount=m_rebar.GetBandCount();
 			for(unsigned int i=0;i<bandCount;i++)
 			{
-				std::basic_stringstream<TCHAR> sstrKey;
+				std::basic_ostringstream<TCHAR> sstrKey;
 				sstrKey<<ctxtBand<<i;
-				CRegKey keyBand;
 				REBARBANDINFO rbi;
 				//ZeroMemory(&rbi,sizeof(REBARBANDINFO));
-				
-				cbData=sizeof(REBARBANDINFO);
+/*
+				DWORD dwType;
+				DWORD cbData=sizeof(REBARBANDINFO);
 	            if((::RegQueryValueEx(key,sstrKey.str().c_str(),NULL,&dwType,
 							reinterpret_cast<LPBYTE>(&rbi),&cbData)==ERROR_SUCCESS)
 							&&(dwType==REG_BINARY))
+*/
+				size_t size=sizeof(REBARBANDINFO);
+				if(stg.GetBinary(sstrKey.str().c_str(),&rbi,size)==ERROR_SUCCESS
+					&& (size==sizeof(REBARBANDINFO)))
 				{
 					m_rebar.MoveBand(m_rebar.IdToIndex(rbi.wID), i);
 					m_rebar.SetBandInfo(i, &rbi);
@@ -679,25 +671,24 @@ protected:
 			return true;
 
 		}
-		virtual bool RestoreDefault()
+		virtual bool RestoreDefault(void)
 		{
 			return true;
 		}
 	protected:
-		CReBarCtrl	m_rebar;
-		int			m_storageVersion;
+		CReBarCtrl m_rebar;
 	};
 public:
-    CRebarStateAdapter(HWND hWnd, int storeVersion = 0)
+    CRebarStateAdapter(HWND hWnd)
     {
-		m_pImpl = new CImpl(hWnd, storeVersion);
+		m_pImpl = new CImpl(hWnd);
     }
-	~CRebarStateAdapter()
+	~CRebarStateAdapter(void)
 	{
 		assert(m_pImpl);
 		m_pImpl->Release();
 	}
-	operator IState* ()
+	operator IState* (void)
 	{
 		return m_pImpl;
 	}

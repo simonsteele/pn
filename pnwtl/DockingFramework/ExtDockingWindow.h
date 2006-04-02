@@ -15,10 +15,7 @@
 #ifndef __WTL_DW__EXTDOCKINGWINDOW_H__
 #define __WTL_DW__EXTDOCKINGWINDOW_H__
 
-#pragma once
-
-#include "DockingWindow.h"
-#include "DockingFocus.h"
+#include <DockingWindow.h>
 
 namespace dockwins{
 
@@ -195,7 +192,7 @@ protected:
 #endif
 
             HPEN hPenOld = dc.SelectPen(pen);
-			const sp=5;
+			const int sp=5;
             dc.MoveTo(left+sp, top+sp);
             dc.LineTo(right-sp, bottom-sp);
             dc.MoveTo(left + sp+1, top+sp);
@@ -272,15 +269,23 @@ public:
 
 	void UpdateMetrics()
 	{
+		m_thickness=23;
 		CDWSettings settings;
 		HFONT hFont = IsHorizontal() ? settings.HSysFont() : settings.VSysFont();
 		assert(hFont);
-		CDC dc(::GetDC(NULL));
-		HFONT hOldFont = dc.SelectFont(hFont);
-		TEXTMETRIC tm;
-		dc.GetTextMetrics(&tm);
-		dc.SelectFont(hOldFont);
-		m_thickness=tm.tmHeight+fntSpace;
+		HDC dc=::GetDC(NULL);
+		if(dc!=NULL)
+		{
+			HFONT hOldFont = reinterpret_cast<HFONT>(::SelectObject(dc,hFont));
+			if(hOldFont!=NULL)
+			{
+				TEXTMETRIC tm;
+				if(::GetTextMetrics(dc, &tm))
+					m_thickness=tm.tmHeight+fntSpace;
+				::SelectObject(dc,hOldFont);
+			}
+			::ReleaseDC(NULL,dc);
+		}
 	}
 
     void SetOrientation(bool bHorizontal)
@@ -378,29 +383,18 @@ public:
 				 hFont = settings.VSysFont();
 			}
 #ifdef DF_FOCUS_FEATURES
-    		dc.SetTextColor(cf.GetCaptionTextColor());
+			dc.SetTextColor(cf.GetCaptionTextColor());
 #else
-    		dc.SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
+			dc.SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
 #endif
-    		dc.SetBkMode(TRANSPARENT);
+			dc.SetBkMode(TRANSPARENT);
             HFONT hFontOld;
             if(m_themeFont)
         		hFontOld = dc.SelectFont(m_themeFont);
             else
         		hFontOld = dc.SelectFont(hFont);
-            /*
-            if(m_Theme.IsThemingSupported())
-            {
-                USES_CONVERSION;
-                m_Theme.DrawThemeText(dc, EBP_SPECIALGROUPHEAD, CWindow(hWnd).IsChild(GetFocus()) ? CS_ACTIVE : CS_INACTIVE,
-                    T2OLE(sText), -1, DT_END_ELLIPSIS | DT_VCENTER | DT_SINGLELINE, 0, &rc);
-            }
-            else
-            {
-            */
     			if( (rc.left<rc.right) && (rc.top<rc.bottom))
     				DrawEllipsisText(dc,sText,_tcslen(sText),&rc,IsHorizontal());
-            //}
     		dc.SelectFont(hFontOld);
 		}
 		m_btnClose.Draw(dc);
@@ -540,7 +534,7 @@ protected:
 #endif
 
             HPEN hPenOld = dc.SelectPen(pen);
-			const sp=3;
+			const int sp=3;
             dc.MoveTo(left+sp, top+sp);
             dc.LineTo(right-sp, bottom-sp);
             dc.MoveTo(left + sp+1, top+sp);

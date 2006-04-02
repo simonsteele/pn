@@ -15,13 +15,13 @@
 #ifndef __WTL_DW__DBSTATE_H__
 #define __WTL_DW__DBSTATE_H__
 
-#pragma once
-
 #include <list>
-#include "dwstate.h"
-#include "TabDockingBox.h"
+#include <dwstate.h>
+#include <DockingBox.h>
+
 
 namespace sstate{
+
 
 class CDockWndMgrEx: public CDockWndMgr
 {
@@ -34,22 +34,29 @@ protected:
 		protected:
 			typedef CDockWndMgr::CImpl::CRestPos CRestPos;
 		public:
-			CQLoader(CRestQueue& q,IMainState* pMState,CRegKey& keyTop)
-					:m_queue(q),m_pMState(pMState),m_keyTop(keyTop)
+			CQLoader(CRestQueue& q,IStorge& stgTop,float xratio,float yratio)
+					:m_queue(q),m_stgTop(stgTop)
+					,m_xratio(xratio),m_yratio(yratio)
 			{
 			}
 			void operator() (std::pair<const ID,CItem>& x) const
 			{
 				CRestPos dpos;
-				std::basic_stringstream<TCHAR> sstrKey;
+				std::basic_ostringstream<TCHAR> sstrKey;
 				sstrKey.flags(std::ios::hex | std::ios::showbase );
-				sstrKey<<x.first;
+				sstrKey<<ctxtWndPrefix<<x.first;
+				dockwins::DFDOCKPOSEX* ptr=static_cast<dockwins::DFDOCKPOSEX*>(&dpos);
+/*
 				DWORD dwType;
 				DWORD cbData=sizeof(dockwins::DFDOCKPOSEX);
-				dockwins::DFDOCKPOSEX* ptr=static_cast<dockwins::DFDOCKPOSEX*>(&dpos);
 				if((::RegQueryValueEx(m_keyTop,sstrKey.str().c_str(),NULL,&dwType,
 									 reinterpret_cast<LPBYTE>(ptr),&cbData)==ERROR_SUCCESS)
 									 &&(dwType==REG_BINARY))
+*/
+				size_t size=sizeof(dockwins::DFDOCKPOSEX);
+				bool restored=(m_stgTop.GetBinary(sstrKey.str().c_str(),ptr,size)==ERROR_SUCCESS
+																&& (size==sizeof(dockwins::DFDOCKPOSEX)));
+				if(restored)
 				{
 					if(dpos.bDocking)
 					{
@@ -71,16 +78,17 @@ protected:
 						m_queue.push(dpos);
 					}
 					else
-						x.second->Restore(m_pMState,&dpos);
+						restored=x.second->Restore(&dpos,m_xratio,m_yratio);
 				}
-				else
-					x.second->RestoreDefault();
 
+				if(!restored)
+					x.second->RestoreDefault();
 			}
 		protected:
 			CRestQueue& m_queue;
-			IMainState*	m_pMState;
-			CRegKey&	m_keyTop;
+			IStorge&	m_stgTop;
+			float		m_xratio;
+			float		m_yratio;
 		};
 
 		class CPinner
@@ -163,11 +171,11 @@ protected:
 			:m_docker(hDockingFrameWnd)
 		{
 		}
-		virtual bool Restore(IMainState* pMState,CRegKey& key)
+		virtual bool Restore(IStorge& stg,float xratio,float yratio)
 		{
 //bad style, probably I'll fix it later
 			std::for_each(m_bunch.begin(),m_bunch.end(),CResetter());
-			std::for_each(m_bunch.begin(),m_bunch.end(),CQLoader(m_queue,pMState,key));
+			std::for_each(m_bunch.begin(),m_bunch.end(),CQLoader(m_queue,stg,xratio,yratio));
 			DWORD weight=0;
 			HDOCKBAR hBar=HNONDOCKBAR;
 			BOOL bVisible=TRUE;
@@ -182,7 +190,7 @@ protected:
 				if(side.IsValid() && side.IsPinned())
 				{
 					CPinner::PrepareForRestoring(dpos);
-					m_bunch[dpos.id]->Restore(pMState,&dpos);
+					m_bunch[dpos.id]->Restore(&dpos,xratio,yratio);
 					pinner.PinUp(dpos);
 				}
 				else
@@ -208,7 +216,7 @@ protected:
 					bVisible=dpos.bVisible;
 					dpos.bVisible=TRUE;
 					dpos.dockPos.hdr.hBar=hBar;
-					m_bunch[dpos.id]->Restore(pMState,&dpos);
+					m_bunch[dpos.id]->Restore(&dpos,xratio,yratio);
 
 					if(side.IsActive())
 						hActiveWnd=dpos.dockPos.hdr.hWnd;

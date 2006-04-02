@@ -15,11 +15,8 @@
 #ifndef __WTL_DW__DOCKINGBOX_H__
 #define __WTL_DW__DOCKINGBOX_H__
 
-#pragma once
-
 #include <sstream>
-#include "ExtDockingWindow.h"
-#include "DockMisc.h"
+#include <ExtDockingWindow.h>
 
 namespace dockwins{
 
@@ -28,7 +25,7 @@ class CDockingBoxMessage
 public:
 	CDockingBoxMessage()
 	{
-		std::basic_stringstream<TCHAR> smessage;
+		std::basic_ostringstream<TCHAR> smessage;
 		smessage<<_T("DockingBoxMessage-")<<GetCurrentProcessId();
 		m_message=RegisterWindowMessage(smessage.str().c_str());
 		assert(m_message);

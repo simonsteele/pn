@@ -11,7 +11,7 @@
 #ifndef inioptions_h__included
 #define inioptions_h__included
 
-class KeyMap;
+class IniKeyMap;
 
 class IniOptions : public Options
 {
@@ -37,7 +37,7 @@ protected:
 	virtual void ungroup();
 
 	bool groupLocked;
-	KeyMap* keyMap;
+	IniKeyMap* keyMap;
 	TCHAR*	_filename;
 	LPCTSTR _group;
 };
