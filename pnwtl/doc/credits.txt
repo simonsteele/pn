@@ -18,6 +18,10 @@ Sergey Klimov (Docking Framework)
 Philip Hazel (PCRE)
 Neil Hodgson + Community (Scintilla)
 
+Artwork:
+--------
+Some icons from the famfamfam.com Silk icons set (http://www.famfamfam.com/lab/icons/silk/).
+
 Schemes:
 --------
 Steve Baer (Modula-2)

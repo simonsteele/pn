@@ -701,6 +701,9 @@
 				RelativePath="res\findbarbmps.bmp">
 			</File>
 			<File
+				RelativePath=".\res\folder_find.ico">
+			</File>
+			<File
 				RelativePath="res\font_tru.bmp">
 			</File>
 			<File
@@ -711,6 +714,9 @@
 			</File>
 			<File
 				RelativePath="res\noproject.ico">
+			</File>
+			<File
+				RelativePath=".\res\page_white_text.ico">
 			</File>
 			<File
 				RelativePath=".\res\pn.ico">

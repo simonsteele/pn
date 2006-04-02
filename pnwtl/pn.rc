@@ -89,7 +89,7 @@ BEGIN
     BEGIN
         MENUITEM "&Contents",                   32943
         MENUITEM SEPARATOR
-        MENUITEM "PN &HomePage",                ID_HELP_WEB_PN
+        MENUITEM "PN &Home Page",               ID_HELP_WEB_PN
         MENUITEM "PN on &Sourceforge",          252
         MENUITEM SEPARATOR
         MENUITEM "Report a &bug...",            253
@@ -654,6 +654,8 @@ IDI_WORKSPACE           ICON                    "res\\workspace.ico"
 IDI_BADPROJECT          ICON                    "res\\noproject.ico"
 IDI_MAGICFOLDER         ICON                    "res\\magicfolder.ico"
 IDI_CTAGS               ICON                    "res\\ctags.ico"
+IDI_OUTPUT              ICON                    "res\\page_white_text.ico"
+IDI_FINDINFILES         ICON                    "res\\folder_find.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

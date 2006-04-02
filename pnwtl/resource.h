@@ -195,6 +195,9 @@
 #define IDB_BITMAP1                     342
 #define IDB_REDCLOSE                    342
 #define IDS_MODIFIED                    343
+#define IDI_OUTPUT                      343
+#define IDI_ICON4                       344
+#define IDI_FINDINFILES                 344
 #define IDI_CTAGS                       345
 #define IDR_POPUP_CTAGS                 346
 #define IDR_POPUP_FINDRESULT            347
@@ -522,9 +525,9 @@
 #define ID_FILE_SAVEWORKSPACEAS         32950
 #define ID_EDIT_QUICKFIND               32953
 #define ID_EDIT_FINDPREVIOUS            32956
+#define ID_EDITOR_USEASSCRIPT           32960
 #define ID_CTAGS_COLLAPSALL             32962
 #define ID_CTAGS_EXPANDALL              32963
-#define ID_EDITOR_USEASSCRIPT           32960
 #define ID_PROJECT_MAGICADDFILE         32963
 
 // Next default values for new objects
@@ -532,7 +535,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        343
+#define _APS_NEXT_RESOURCE_VALUE        345
 #define _APS_NEXT_COMMAND_VALUE         32964
 #define _APS_NEXT_CONTROL_VALUE         1135
 #define _APS_NEXT_SYMED_VALUE           104

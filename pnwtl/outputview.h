@@ -31,6 +31,7 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_CUT, OnCut)
 		COMMAND_ID_HANDLER(ID_EDIT_COPY, OnCopy)
 		MESSAGE_HANDLER(PN_HANDLEHSCLICK, OnHotSpotClicked)
+		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -48,6 +49,7 @@ public:
 	virtual void ClearOutput();
 
 protected:
+	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnHotSpotClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	// Built-in error handlers...
