@@ -1,19 +1,19 @@
 [Setup]
-AppName=Programmers Notepad
-AppVerName=Programmers Notepad {#PNVersion}
+AppName=Programmer's Notepad
+AppVerName=Programmer's Notepad {#PNVersion}
 AppPublisher=Simon Steele
 AppPublisherURL=http://www.pnotepad.org/
 AppSupportURL=http://www.pnotepad.org/
 AppUpdatesURL=http://www.pnotepad.org/
-DefaultDirName={pf}\Programmers Notepad
-DefaultGroupName=Programmers Notepad
+DefaultDirName={pf}\Programmer's Notepad
+DefaultGroupName=Programmer's Notepad
 LicenseFile=..\doc\license.txt
 OutputDir=output
 InternalCompressLevel=ultra
 SolidCompression=true
 VersionInfoVersion={#PNVersion}
 VersionInfoCompany=Echo Software (Simon Steele)
-VersionInfoDescription=Programmers Notepad {#PNVersion} Setup
+VersionInfoDescription=Programmer's Notepad {#PNVersion} Setup
 VersionInfoTextVersion={#PNVersion}
 AppCopyright=Simon Steele
 InfoBeforeFile=..\doc\readme.txt
@@ -25,7 +25,7 @@ AppVersion={#PNVersion}
 AppID={{52CF142B-7B0E-41E7-98F5-B834122523E7}
 AppReadmeFile={app}\readme.txt
 UninstallDisplayIcon={app}\pn.exe
-UninstallDisplayName=Programmers Notepad 2
+UninstallDisplayName=Programmer's Notepad 2
 WizardSmallImageFile=small.bmp
 Compression=lzma/ultra
 
@@ -36,6 +36,8 @@ Name: quicklaunchicon; Description: Create a &Quick Launch icon; GroupDescriptio
 [Files]
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 Source: ..\bin\pn.exe; DestDir: {app}; Flags: ignoreversion
+
+Source: ..\bin\pnse.dll; DestDir: {app}; Flags: ignoreversion restartreplace uninsrestartdelete; Tasks: 
 
 Source: ..\bin\dbghelp.dll; DestDir: {app}
 Source: ..\bin\libexpat.dll; DestDir: {app}; Flags: ignoreversion
@@ -62,13 +64,13 @@ Source: ..\doc\ctags_COPYING; DestDir: {app}
 Source: ..\userschemes\*.schemedef; DestDir: {app}\schemes
 
 [Icons]
-Name: {group}\Programmers Notepad 2; Filename: {app}\pn.exe
+Name: {group}\Programmer's Notepad 2; Filename: {app}\pn.exe
 Name: {group}\License; Filename: {app}\license.html
-Name: {userdesktop}\Programmers Notepad; Filename: {app}\pn.exe; Tasks: desktopicon
-Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Programmers Notepad; Filename: {app}\pn.exe; Tasks: quicklaunchicon
+Name: {userdesktop}\Programmer's Notepad; Filename: {app}\pn.exe; Tasks: desktopicon
+Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Programmer's Notepad; Filename: {app}\pn.exe; Tasks: quicklaunchicon
 
 [Run]
-Filename: {app}\pn.exe; Description: Launch Programmers Notepad; Flags: nowait postinstall skipifsilent
+Filename: {app}\pn.exe; Description: Launch Programmer's Notepad; Flags: nowait postinstall skipifsilent
 
 [_ISTool]
 EnableISX=false

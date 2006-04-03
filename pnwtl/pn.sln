@@ -78,8 +78,8 @@ Global
 		{188B3F1D-5109-49FD-9DAF-9802AE63763B}.DebugUnicode.Build.0 = Debug|Win32
 		{188B3F1D-5109-49FD-9DAF-9802AE63763B}.Release.ActiveCfg = Release|Win32
 		{188B3F1D-5109-49FD-9DAF-9802AE63763B}.Release.Build.0 = Release|Win32
-		{188B3F1D-5109-49FD-9DAF-9802AE63763B}.ReleaseDebug.ActiveCfg = Release|Win32
-		{188B3F1D-5109-49FD-9DAF-9802AE63763B}.ReleaseDebug.Build.0 = Release|Win32
+		{188B3F1D-5109-49FD-9DAF-9802AE63763B}.ReleaseDebug.ActiveCfg = ReleaseDebug|Win32
+		{188B3F1D-5109-49FD-9DAF-9802AE63763B}.ReleaseDebug.Build.0 = ReleaseDebug|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

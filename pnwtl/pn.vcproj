@@ -309,9 +309,6 @@
 				RelativePath="childfrm.cpp">
 			</File>
 			<File
-				RelativePath=".\commands.cpp">
-			</File>
-			<File
 				RelativePath=".\docprops.cpp">
 			</File>
 			<File
