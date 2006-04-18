@@ -689,13 +689,13 @@ void CMainFrame::CreateDockingWindows()
 	// Create docking windows...
 	CRect rcLeft(0,0,180,400);
 	CRect rcBottom(0,0,150,100);
-	
-	m_pOutputWnd = CreateDocker<COutputView>(LS(ID_VIEW_OUTPUT), rcBottom, this, 
-		m_dockingWindows, ID_VIEW_OUTPUT - ID_VIEW_FIRSTDOCKER,
-		true, dockwins::CDockingSide::sBottom);
 
 	m_pFindResultsWnd = CreateDocker<CFindInFilesView>(LS(ID_VIEW_WINDOWS_FINDRESULTS), rcBottom, this,
 		m_dockingWindows, ID_VIEW_WINDOWS_FINDRESULTS - ID_VIEW_FIRSTDOCKER,
+		true, dockwins::CDockingSide::sBottom);
+
+	m_pOutputWnd = CreateDocker< COutputView >(LS(ID_VIEW_OUTPUT), rcBottom, this, 
+		m_dockingWindows, ID_VIEW_OUTPUT - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sBottom);
 
 	m_pClipsWnd = CreateDocker<CClipsDocker>(LS(ID_VIEW_WINDOWS_TEXTCLIPS), rcLeft, this,

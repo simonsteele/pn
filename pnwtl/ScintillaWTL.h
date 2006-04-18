@@ -30,7 +30,7 @@ class CScintillaWindowImpl : public CWindowImpl< CScintillaWindowImpl >, public 
 {
 public:
 
-	DECLARE_WND_SUPERCLASS(NULL, "Scintilla")
+	DECLARE_WND_SUPERCLASS("ScintillaWindowImpl", "Scintilla")
 
 	BOOL PreTranslateMessage(MSG* pMsg)
 	{
