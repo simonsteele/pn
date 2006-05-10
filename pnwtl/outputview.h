@@ -17,7 +17,7 @@
 /**
  * Scintilla window with special output handling.
  */
-class COutputView : public CScintillaWindowImpl< COutputView, REScintilla >
+class COutputView : public CScintillaWindowImpl< COutputView, REScintilla >, public extensions::ITextOutput
 {
 typedef CScintillaWindowImpl< COutputView, REScintilla > baseClass;
 
@@ -41,7 +41,7 @@ public:
 
 	virtual int HandleNotify(LPARAM lParam);
 
-// Implement IToolOutputSink
+	// Implement ITextOutput
 public:
 	virtual void AddToolOutput(LPCTSTR output, int nLength = -1);
 	virtual void SetToolBasePath(LPCTSTR path);

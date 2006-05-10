@@ -220,6 +220,8 @@
 #define IDD_PAGE_DIALOGS                437
 #define IDD_PAGE_FILETYPES              438
 #define IDD_FILETYPEEDITOR              439
+#define IDD_PAGE_DIALOGS1               440
+#define IDD_PAGE_KEYBOARD               440
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_FINDTYPE_DUMMY              1003
@@ -298,6 +300,7 @@
 #define IDC_FILEASSO_LIST               1039
 #define IDC_LISTPROPS                   1039
 #define IDC_LISTPROJECTS                1039
+#define IDC_KB_COMMANDS                 1039
 #define IDC_TE_CMDEDIT                  1040
 #define IDC_TE_FOLDEREDIT               1041
 #define IDC_REPLACETEXT_LABEL           1042

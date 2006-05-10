@@ -69,7 +69,7 @@ typedef struct tagIsOpenStruct : public tagEnumChildrenStruct
  * @brief PN (WTL Edition) Main MDI Frame
  */
 class CMainFrame : public CPNDockingTabbedMDIFrameWindow<CMainFrame>, public IMainFrame, public CUpdateUI<CMainFrame>,
-		public CMessageFilter, public CIdleHandler, public CSMenuEventHandler
+		public CMessageFilter, public CIdleHandler, public CommandEventHandler
 {
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MAINFRAME)
@@ -83,6 +83,8 @@ public:
 	CMainFrame();
 
 	~CMainFrame();
+
+	HWND CreateEx(HWND hWndParent = NULL, ATL::_U_RECT rect = NULL, DWORD dwStyle = 0, DWORD dwExStyle = 0, LPVOID lpCreateParam = NULL);
 
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 
@@ -317,8 +319,7 @@ public:
 	
 	HWND GetJumpViewHandle(){return hCTagsWnd;}
 
-	////////////////////////////////////////////////////////////////
-	// IToolOutputSink Implementation
+	virtual extensions::ITextOutput* GetGlobalOutputWindow();
 
 public:
 	void ToggleOutputWindow(bool bSetValue = false, bool bShowing = true);

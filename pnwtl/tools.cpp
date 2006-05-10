@@ -185,7 +185,7 @@ void SchemeTools::AllocateMenuResources(int iCommand)
 {
 	if(m_Tools.size() != 0)
 	{
-		CSMenuManager* pMan = CSMenuManager::GetInstance();
+		CommandDispatch* pMan = CommandDispatch::GetInstance();
 		for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
 		{
 			ToolDefinition* pT = (*i);
@@ -205,7 +205,7 @@ void SchemeTools::ReleaseMenuResources()
 	if(m_Tools.size() != 0)
 	{
 		ToolDefinition* pT = NULL;
-		CSMenuManager* pMan = CSMenuManager::GetInstance();
+		CommandDispatch* pMan = CommandDispatch::GetInstance();
 
 		for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
 		{
@@ -741,7 +741,7 @@ int ToolsManager::BuildMenu(TOOLDEFS_LIST& tools, CSMenuHandle& menu, int iInser
 	int iLastCommand = iInsertBefore;
 	if(tools.size() != 0)
 	{
-		CSMenuManager* pMan = CSMenuManager::GetInstance();
+		CommandDispatch* pMan = CommandDispatch::GetInstance();
 		
 		for(TOOLDEFS_LIST::const_iterator i = tools.begin(); i != tools.end(); ++i)
 		{

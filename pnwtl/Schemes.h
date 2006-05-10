@@ -234,7 +234,7 @@ class SchemeManager : public Singleton<SchemeManager, true>
 		SCHEME_MAP* GetExtensionMap() { return &m_SchemeExtMap; }
 		SCHEME_MAP* GetFilenameMap() { return &m_SchemeFileNameMap; }
 
-		void BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCommand = SCHEMEMANAGER_SELECTSCHEME, bool bNewMenu = true);
+		void BuildMenu(HMENU menu, CommandEventHandler* pHandler, int iCommand = SCHEMEMANAGER_SELECTSCHEME, bool bNewMenu = true);
 
 		void SaveExtMap();
 

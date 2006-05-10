@@ -315,7 +315,6 @@ bool CMainFrame::OnRunTool(LPVOID pTool)
 
 	// If there's an editor open, and the tool is not for a project,
 	// let the child frame handle it...
-	//@todo check if it's a project tool.
 	HWND curEditor = GetCurrentEditor();
 	if(curEditor != NULL && !pToolDef->IsProjectTool())
 		return false;
@@ -851,6 +850,25 @@ void CMainFrame::loadImages(USHORT id, HIMAGELIST* images, USHORT disId, HIMAGEL
 	}
 }
 
+HWND CMainFrame::CreateEx(HWND hWndParent, ATL::_U_RECT rect, DWORD dwStyle, DWORD dwExStyle, LPVOID lpCreateParam)
+{
+	const int cchName = 256;
+	TCHAR szWindowName[cchName];
+	szWindowName[0] = 0;
+
+	::LoadString(ATL::_AtlBaseModule.GetResourceInstance(), GetWndClassInfo().m_uCommonResourceID, szWindowName, cchName);
+	HMENU hMenu = ::LoadMenu(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(GetWndClassInfo().m_uCommonResourceID));
+
+	HWND hWnd = Create(hWndParent, rect, szWindowName, dwStyle, dwExStyle, hMenu, lpCreateParam);
+
+	//if(hWnd != NULL)
+	//	m_hAccel = ::LoadAccelerators(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(T::GetWndClassInfo().m_uCommonResourceID));
+	// Load our own accelerator table...
+	m_hAccel = CommandDispatch::GetInstance()->GetAccelerators();
+
+	return hWnd;
+}
+
 LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	// create command bar window
@@ -866,27 +884,28 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_CmdBar.m_clrMask = RGB(255,0,255);
 	
 	// load command bar images
-	//m_CmdBar.LoadImages(IDR_MAINFRAME);
- 	//m_CmdBar.LoadImages(IDR_TBR_EDIT);
+	m_CmdBar.LoadImages(IDR_MAINFRAME);
+ 	m_CmdBar.LoadImages(IDR_TBR_EDIT);
 
 	HWND hWndToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
 	HWND hWndEdtToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_TBR_EDIT, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
 	HWND hWndSchemeToolBar = CreateSchemeToolbar();
 	HWND hWndFindToolBar = CreateFindToolbar();
 
-	// High colour tb images:
-	loadImages(IDR_MAINFRAME, &m_hILMain, IDB_TBMAINDIS, &m_hILMainD);
-	loadImages(IDR_TBR_EDIT, &m_hILEdit);
+	// 24-bit tb images, this needs re-instating for Non-XP display.
+	//loadImages(IDR_MAINFRAME, &m_hILMain, IDB_TBMAINDIS, &m_hILMainD);
+	//loadImages(IDR_TBR_EDIT, &m_hILEdit);
 
-	// Load some images from a toolbar that's not used.
+	// Load some images from a non-used toolbar for projects context menu images.
 	m_CmdBar.LoadImages(IDR_TBR_PROJECTS);
 
 	// Set the mask back...
 	m_CmdBar.m_clrMask = clrOld;
 
-	::SendMessage(hWndToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILMain);
-	::SendMessage(hWndToolBar, TB_SETDISABLEDIMAGELIST, 0, (LPARAM)m_hILMainD);
-	::SendMessage(hWndEdtToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILEdit);
+	// Again, this code is used for Non-XP images.
+	//::SendMessage(hWndToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILMain);
+	//::SendMessage(hWndToolBar, TB_SETDISABLEDIMAGELIST, 0, (LPARAM)m_hILMainD);
+	//::SendMessage(hWndEdtToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILEdit);
 
 	CreateSimpleReBar(PN_REBAR_STYLE);
 	AddReBarBand(hWndCmdBar, NULL, FALSE, true);
@@ -1736,6 +1755,8 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsPageFileTypes		pageFiles;
 	COptionsPageAFiles			pageAFiles;
 	COptionsPageFileAssoc		pageFileAssoc;
+	
+	COptionsPageKeyboard		pageKeyboard(m_hMenu, CommandDispatch::GetInstance()->GetCurrentKeyMap());
 
 	schemeconfig.LoadConfig(pSM->GetPath(), pSM->GetCompiledPath());
 
@@ -1753,6 +1774,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	options.AddPage(&pageTools);
 	options.AddPage(&pageProjectTools);
 	options.AddPage(&pageAFiles);
+	options.AddPage(&pageKeyboard);
 
 	if( wID != ID_TOOLS_DUMMY )
 		options.SetInitialPage(&general);
@@ -2923,6 +2945,11 @@ bool CMainFrame::CloseWorkspace(bool bAllowCloseFiles, bool bAsk)
 	delete workspace;
 
 	return true;
+}
+
+extensions::ITextOutput* CMainFrame::GetGlobalOutputWindow()
+{
+	return m_pOutputWnd;
 }
 
 bool CMainFrame::getProjectsModified(ITabbedMDIChildModifiedList* pModifiedList)

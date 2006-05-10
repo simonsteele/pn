@@ -21,7 +21,7 @@ namespace L10N
 		virtual ~StringLoader(){}
 
 		static tstring Get(UINT dwStringID);
-		static wstring GetW(UINT dwStringID);
+		static std::wstring GetW(UINT dwStringID);
 
 		static void InitResourceLoader();
 

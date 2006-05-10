@@ -354,7 +354,6 @@ protected:
 protected:
 	ToolWrapper*		m_pWrapper;
 	int					m_RetCode;
-	IToolOutputSink*	m_pOutputter;
 	time_t				m_starttime;
 };
 

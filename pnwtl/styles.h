@@ -108,7 +108,7 @@ class StyleDetails
 
 		int Key;
 		
-		string FontName;
+		std::string FontName;
 		int FontSize;
 		COLORREF ForeColor;
 		COLORREF BackColor;
@@ -118,8 +118,8 @@ class StyleDetails
 		bool EOLFilled;
 		bool Hotspot;
 
-		string name;
-		string classname;
+		std::string name;
+		std::string classname;
 		int values;
 };
 
@@ -179,8 +179,8 @@ static StylePtr GetStyle(StylePtrList& lst, int key)
 class StylesList
 {
 public:
-	typedef list<StyleDetails*>	STYLES_LIST;
-	typedef STYLES_LIST::iterator SL_IT;
+	typedef std::list<StyleDetails*>	STYLES_LIST;
+	typedef STYLES_LIST::iterator		SL_IT;
 	typedef STYLES_LIST::const_iterator SL_CIT;
 
 	~StylesList();
@@ -325,7 +325,7 @@ class BaseScheme : public SchemeDetails
 		int					styleBits;
 };
 
-typedef map<tstring, StyleDetails*> STYLEDETAILS_NAMEMAP;
+typedef std::map<tstring, StyleDetails*> STYLEDETAILS_NAMEMAP;
 typedef STYLEDETAILS_NAMEMAP::iterator SDNM_IT;
 
 /**

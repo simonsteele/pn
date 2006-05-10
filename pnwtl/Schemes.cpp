@@ -2,7 +2,7 @@
  * @file Schemes.cpp
  * @brief Implement Scheme and SchemeManager.
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -865,7 +865,7 @@ void SchemeManager::Compile()
 	sc.Compile(m_SchemePath, m_CompiledPath, _T("master.scheme"));
 }
 
-void SchemeManager::BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCommand, bool bNewMenu)
+void SchemeManager::BuildMenu(HMENU menu, CommandEventHandler* pHandler, int iCommand, bool bNewMenu)
 {
 	CSMenuHandle m(menu);
 	int id;
@@ -878,14 +878,14 @@ void SchemeManager::BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCom
 		m.AddItem(_T(""));
 	}
 	
-	id = CSMenuManager::GetInstance()->RegisterCallback(pHandler, iCommand, (LPVOID)GetDefaultScheme());
+	id = CommandDispatch::GetInstance()->RegisterCallback(pHandler, iCommand, (LPVOID)GetDefaultScheme());
 	m.AddItem(_T("Plain Text"), id);
 
 	for(SCIT i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
 	{
 		if( !(*i).IsInternal() )
 		{
-			id = CSMenuManager::GetInstance()->RegisterCallback(pHandler, iCommand, (LPVOID)&(*i));
+			id = CommandDispatch::GetInstance()->RegisterCallback(pHandler, iCommand, (LPVOID)&(*i));
 			m.AddItem( (*i).GetTitle(), id);
 		}
 	}
@@ -992,7 +992,7 @@ void CSchemeSwitcher::BuildMenu(int iCommand)
 	menuid_scheme_pair x;
 	SchemeManager& sm = SchemeManager::GetInstanceRef();
 	SCHEME_LIST* pSchemes = sm.GetSchemesList();
-	CSMenuManager& mm = *CSMenuManager::GetInstance();
+	CommandDispatch& mm = CommandDispatch::GetInstanceRef();
 	
 	m_menu.AddItem( sm.GetDefaultScheme()->GetTitle(), mm.RegisterCallback(NULL, iCommand, (LPVOID)sm.GetDefaultScheme()) );
 
@@ -1001,7 +1001,7 @@ void CSchemeSwitcher::BuildMenu(int iCommand)
 		if( !(*i).IsInternal() )
 		{
 			x.pScheme = &(*i);
-			x.iCommand = CSMenuManager::GetInstance()->RegisterCallback(NULL, iCommand, (LPVOID)x.pScheme);
+			x.iCommand = mm.RegisterCallback(NULL, iCommand, (LPVOID)x.pScheme);
 
 			m_menu.AddItem( x.pScheme->GetTitle(), x.iCommand );
 			m_list.insert(m_list.end(), x);

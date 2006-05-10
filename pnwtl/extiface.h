@@ -23,6 +23,7 @@ class IDocument;
 class IAppEventSink;
 class IDocumentEventSink;
 class IScriptRegistry;
+class ITextOutput;
 
 typedef boost::shared_ptr<IDocument> IDocumentPtr;
 typedef boost::shared_ptr<IDocumentEventSink> IDocumentEventSinkPtr;
@@ -48,6 +49,8 @@ public:
 	virtual IOptions* GetOptionsManager() = 0;
 
 	virtual IDocumentPtr GetCurrentDocument() = 0;
+
+	virtual ITextOutput* GetGlobalOutputWindow() = 0;
 };
 
 /**
@@ -167,6 +170,15 @@ public:
 	 * user to set python files as scripts at run-time.
 	 */
 	virtual void EnableSchemeScripts(const char* scheme, const char* runnerId) = 0;
+};
+
+class ITextOutput
+{
+public:
+	virtual void AddToolOutput(LPCTSTR output, int nLength = -1) = 0;
+	virtual void SetToolBasePath(LPCTSTR path) = 0;
+	virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL) = 0;
+	virtual void ClearOutput() = 0;
 };
 
 // Make sure you export a function that looks like this:

@@ -14,8 +14,6 @@
 #ifndef pnstrings_h__included
 #define pnstrings_h__included
 
-#include <vector>
-
 #if defined(UNICODE)
 	typedef std::wostream tstream;
 #else

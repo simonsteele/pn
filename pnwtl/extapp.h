@@ -18,6 +18,8 @@ public:
 
 	virtual IDocumentPtr GetCurrentDocument();
 
+	virtual ITextOutput* GetGlobalOutputWindow();
+
 // Stuff to signal event sinks...
 public:
 	void OnNewDocument(IDocumentPtr doc);

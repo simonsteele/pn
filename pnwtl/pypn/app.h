@@ -41,11 +41,14 @@ public:
 	boost::python::object& PyNamespace();
 	boost::python::object& PyPnGlue();
 
+	void AddOutput(const char* text, int length = -1);
+
 private:
 	void loadInitScript();
 	void runFile(const char* filename);
 	
 private:
+	extensions::ITextOutput* m_output;
 	extensions::IScriptRegistry* m_registry;
 	extensions::IPN* m_app;
 	boost::python::object main_module;

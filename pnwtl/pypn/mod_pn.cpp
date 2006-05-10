@@ -22,6 +22,11 @@ std::string GetPNPath()
 	return str;
 }
 
+void AddOutput(const char* text)
+{
+	g_app->AddOutput(text);
+}
+
 BOOST_PYTHON_MODULE(pn)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,6 +35,8 @@ BOOST_PYTHON_MODULE(pn)
 	def("CurrentDoc", &CurrentDoc);
 	def("RegisterScript", &RegisterScript);
 	def("AppPath", &GetPNPath);
+
+	def("AddOutput", &AddOutput);
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Expose IDocument

@@ -78,8 +78,6 @@ void Init()
 
 void Shutdown()
 {
-	CSMenuManager::ReleaseInstance();
-
 	DeletionManager::DeleteAll();
 
 	// Free up the options object, thus storing the options.

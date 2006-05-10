@@ -36,6 +36,8 @@ App::App(boost::python::handle<>& obj, extensions::IPN* app) : m_app(app), main_
 	m_registry->Add("test", "Test Script", "python:testScript");
 
 	main_namespace = main_module.attr("__dict__");
+
+	m_output = NULL;
 }
 
 App::~App()
@@ -66,7 +68,7 @@ void App::Initialise()
 	catch(boost::python::error_already_set&)
 	{
 		std::string s = getPythonErrorString();
-		OutputDebugString(s.c_str());
+		AddOutput(s.c_str());
 	}
 
 	// Now run the init.py file
@@ -91,7 +93,7 @@ void App::RunScript(const char* name)
 	catch(boost::python::error_already_set&)
 	{
 		std::string s = getPythonErrorString();
-		OutputDebugString(s.c_str());
+		AddOutput(s.c_str());
 	}
 }
 
@@ -167,7 +169,7 @@ void App::RunDocScript(extensions::IDocumentPtr doc)
 		catch(boost::python::error_already_set&)
 		{
 			std::string s = PyTracebackToString();
-			OutputDebugString(s.c_str());
+			AddOutput(s.c_str());
 		}
 
 		delete [] buffer;
@@ -202,6 +204,14 @@ boost::python::object& App::PyNamespace()
 boost::python::object& App::PyPnGlue()
 {
 	return m_glue;
+}
+
+void App::AddOutput(const char* text, int length)
+{
+	if(m_output == NULL)
+		m_output = m_app->GetGlobalOutputWindow();
+	if(m_output)
+		m_output->AddToolOutput(text, length);
 }
 
 /**
@@ -257,7 +267,7 @@ void App::runFile(const char* szpath)
 			catch(boost::python::error_already_set&)
 			{
 				std::string s = PyTracebackToString();
-				OutputDebugString(s.c_str());
+				AddOutput(s.c_str());
 			}
 
 			delete [] buf;

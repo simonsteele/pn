@@ -108,7 +108,8 @@ struct IMainFrame
 	virtual Projects::Workspace* GetActiveWorkspace() = 0;
 	virtual HWND GetJumpViewHandle() = 0;
 	
-	// Tools
+	// Tools/Output
+	virtual extensions::ITextOutput* GetGlobalOutputWindow() = 0;
 	virtual ToolWrapper* MakeGlobalOutputWrapper(ToolDefinition* pDefinition) = 0;
 	
 	// Search
@@ -161,6 +162,7 @@ void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message);
 // Utility Classes and Definitions:
 #include "pntabs.h"
 #include "xmlparser.h"
+#include "commands.h"
 #include "ssmenus.h"
 
 #include "optionsmanager.h"

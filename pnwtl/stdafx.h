@@ -66,6 +66,10 @@ extern CAppModule _Module;
 
 #include <list>
 #include <string>
+#include <map>
+#include <vector>
+#include <stack>
+
 typedef std::basic_string<TCHAR> tstring;
 
 //Boosty Goodness

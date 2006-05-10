@@ -652,6 +652,8 @@ Scheme* CTextView::GetCurrentScheme()
 
 void CTextView::DoContextMenu(CPoint* point)
 {
+	CommandDispatch& dispatch = CommandDispatch::GetInstanceRef();
+
 	CSPopupMenu popup(IDR_POPUP_EDITOR);
 	CSPopupMenu popupProjects;
 
@@ -667,7 +669,7 @@ void CTextView::DoContextMenu(CPoint* point)
 		int index = 0;
 		for(Projects::PL_CIT i = projects.begin(); i != projects.end(); ++i)
 		{
-			int iCmd = CSMenuManager::GetInstance()->GetNextID();
+			int iCmd = dispatch.GetNextID();
 			popupProjects.AddItem((*i)->GetName(), iCmd);
 			menuIDs.push_back(iCmd);
 			index++;
@@ -717,7 +719,7 @@ void CTextView::DoContextMenu(CPoint* point)
 
 	for(std::vector<int>::iterator i = menuIDs.begin(); i != menuIDs.end(); ++i)
 	{
-		CSMenuManager::GetInstance()->ReturnID((*i));
+		dispatch.ReturnID((*i));
 	}
 }
 

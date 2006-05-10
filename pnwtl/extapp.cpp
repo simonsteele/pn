@@ -68,4 +68,9 @@ IDocumentPtr App::GetCurrentDocument()
 	return IDocumentPtr();
 }
 
+ITextOutput* App::GetGlobalOutputWindow()
+{
+	return g_Context.m_frame->GetGlobalOutputWindow();
+}
+
 }

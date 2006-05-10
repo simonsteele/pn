@@ -1381,6 +1381,16 @@ BEGIN
     ICON            IDI_INFOICON,IDC_STATIC,7,64,20,20
 END
 
+IDD_PAGE_KEYBOARD DIALOGEX 0, 0, 300, 200
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",-1,"Static",SS_ETCHEDHORZ,0,4,299,1
+    LTEXT           "Keyboard Shortcuts",-1,0,0,64,8
+    CONTROL         "",IDC_KB_COMMANDS,"SysListView32",LVS_ALIGNLEFT | 
+                    WS_BORDER | WS_TABSTOP,10,17,279,128
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1611,6 +1621,12 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 98
     END
+
+    IDD_PAGE_KEYBOARD, DIALOG
+    BEGIN
+        RIGHTMARGIN, 299
+        VERTGUIDE, 10
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -1626,6 +1642,7 @@ BEGIN
     BUTTON      ID_FILE_OPEN
     SEPARATOR
     BUTTON      ID_FILE_SAVE
+    BUTTON      ID_FILE_SAVEALL
     SEPARATOR
     BUTTON      ID_FILE_CLOSE
 END

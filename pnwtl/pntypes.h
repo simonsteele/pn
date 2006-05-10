@@ -13,9 +13,6 @@
 
 #include "scintilla.h"
 
-#include <string>
-typedef std::basic_string<TCHAR> tstring;
-
 typedef struct tagFindOptions
 {
 	CString FindText;
@@ -140,17 +137,6 @@ protected:
 
 private:
 	unsigned long iFlags;
-};
-
-/**
- * @brief This defines a simple interface used to send tool output to a window.
- */
-class IToolOutputSink
-{
-public:
-	virtual void _AddToolOutput(LPCTSTR output, int nLength = -1) = 0;
-	virtual void SetToolBasePath(LPCTSTR path) = 0;
-	virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL) = 0;
 };
 
 typedef enum { PNSF_Windows = SC_EOL_CRLF, PNSF_Mac = SC_EOL_CR, PNSF_Unix = SC_EOL_LF, PNSF_NoChange} EPNSaveFormat;

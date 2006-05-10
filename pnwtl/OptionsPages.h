@@ -585,4 +585,44 @@ class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
 		bool				m_bDirty;
 };
 
+class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
+								public CWinDataExchange<COptionsPageKeyboard>
+{
+	public:
+		COptionsPageKeyboard(HMENU cmdSource, KeyMap* keyMap);
+
+		BEGIN_MSG_MAP(COptionsPageKeyboard)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			REFLECT_NOTIFICATIONS()
+		END_MSG_MAP()
+		enum { IDD = IDD_PAGE_KEYBOARD };
+
+		BEGIN_DDX_MAP(COptionsPageKeyboard)
+			
+		END_DDX_MAP()
+
+		virtual void OnOK();
+		virtual void OnInitialise();
+		virtual LPCTSTR GetTreePosition();
+		virtual void OnCancel();
+
+	protected:
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+		int addItems(CSMenuHandle& menu, const char* group, int count = 0);
+
+		HMENU			m_hPrimaryCmdSource;
+		KeyMap*			m_pKeyMap;
+		CListViewCtrl	m_list;
+
+		/*BOOL			m_bUseTabs;
+		BOOL			m_bLineNos;
+		BOOL			m_bWrap;
+		BOOL			m_bLineEndings;
+		BOOL			m_bWhiteSpace;
+		UINT			m_iTabWidth;
+		EPNSaveFormat	m_SaveFormat;
+		ECodePage		m_CodePage;*/
+};
+
 #endif

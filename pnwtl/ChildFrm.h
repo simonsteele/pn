@@ -40,7 +40,7 @@ class DocScript;
  * @brief Programmers Notepad 2 MDI Child window.
  */
 class CChildFrame : public CTabbedMDIChildWindowImpl<CChildFrame>, 
-	public CFromHandle<CChildFrame>, public CSMenuEventHandler
+	public CFromHandle<CChildFrame>, public CommandEventHandler
 {
 public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MDICHILD)

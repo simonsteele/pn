@@ -309,6 +309,9 @@
 				RelativePath="childfrm.cpp">
 			</File>
 			<File
+				RelativePath=".\commands.cpp">
+			</File>
+			<File
 				RelativePath=".\docprops.cpp">
 			</File>
 			<File
@@ -351,19 +354,10 @@
 				RelativePath=".\NewProjectDialog.cpp">
 			</File>
 			<File
-				RelativePath="optionscontrols.cpp">
-			</File>
-			<File
-				RelativePath="OptionsDialogs.cpp">
-			</File>
-			<File
 				RelativePath=".\OptionsIni.cpp">
 			</File>
 			<File
 				RelativePath=".\OptionsManager.cpp">
-			</File>
-			<File
-				RelativePath="OptionsPages.cpp">
 			</File>
 			<File
 				RelativePath=".\OptionsRegistry.cpp">
@@ -559,16 +553,10 @@
 				RelativePath=".\NewProjectDialog.h">
 			</File>
 			<File
-				RelativePath="OptionsDialogs.h">
-			</File>
-			<File
 				RelativePath=".\OptionsIni.h">
 			</File>
 			<File
 				RelativePath="OptionsManager.h">
-			</File>
-			<File
-				RelativePath="OptionsPages.h">
 			</File>
 			<File
 				RelativePath=".\OptionsRegistry.h">
@@ -1017,6 +1005,28 @@
 			</File>
 			<File
 				RelativePath=".\scriptview.h">
+			</File>
+		</Filter>
+		<Filter
+			Name="Options Dialog"
+			Filter="">
+			<File
+				RelativePath="optionscontrols.cpp">
+			</File>
+			<File
+				RelativePath="OptionsDialogs.cpp">
+			</File>
+			<File
+				RelativePath="OptionsDialogs.h">
+			</File>
+			<File
+				RelativePath=".\OptionsPageKeyboard.cpp">
+			</File>
+			<File
+				RelativePath="OptionsPages.cpp">
+			</File>
+			<File
+				RelativePath="OptionsPages.h">
 			</File>
 		</Filter>
 		<File

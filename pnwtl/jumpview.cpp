@@ -402,7 +402,7 @@ CJumpDocker::~CJumpDocker()
 ::OutputDebugString(_T("CJumpDocker::~CJumpDocker\n"));
 }
 
-LRESULT CJumpDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CJumpDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	HICON hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_CTAGS), 
 			IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
@@ -411,6 +411,8 @@ LRESULT CJumpDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	RECT rc;
 	GetClientRect(&rc);
 	m_hWndClient = m_view.Create(m_hWnd, rc, _T("CtagsTree"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_HASLINES | TVS_EDITLABELS | TVS_SHOWSELALWAYS, 0, IDC_JUMPVIEW);
+
+	bHandled = FALSE;
 
 	return 0;
 }
