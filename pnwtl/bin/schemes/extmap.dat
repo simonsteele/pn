@@ -62,6 +62,7 @@
 .url=properties
 .vb=vb
 .vbs=vbscript
+.vhd=vhdl
 .xhtml=Web
 .xml=xml
 .xsd=xml

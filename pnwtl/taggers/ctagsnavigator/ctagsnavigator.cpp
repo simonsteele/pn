@@ -67,7 +67,7 @@ int CPPNAVIGATOR_API PNGetCapabilities()
  */
 void CPPNAVIGATOR_API PNFPGetSchemesSupported(wchar_t* schemesBuffer, int cchBuffer)
 {
-	wcsncpy(schemesBuffer, L"assembler;cobol;cpp;csharp;eiffel;erlang;java;javascript;lisp;lua;makefile;pascal;perl;plsql;python;ruby;shell;tcl;verilog;vim;yacc;web", cchBuffer);
+	wcsncpy(schemesBuffer, L"assembler;cobol;cpp;csharp;eiffel;erlang;java;javascript;lisp;lua;makefile;pascal;perl;plsql;python;ruby;shell;tcl;verilog;vhdl;vim;yacc;web", cchBuffer);
 }
 
 #define CTAGSOPTS	L" --fields=+n -f - " // must start and end with a space.
@@ -122,7 +122,7 @@ bool canParse(char* buffer, DWORD dwLength)
 
 #define TAB "\t"
 
-void parseData(LPPARSESTATE state, DWORD dwBytesRead, int mask, LPVOID cookie, void* userData)
+void parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT mask, LPVOID cookie, void* userData, int* ltypes, int* utypes)
 {
 	METHODINFO mi;
 
@@ -137,10 +137,6 @@ void parseData(LPPARSESTATE state, DWORD dwBytesRead, int mask, LPVOID cookie, v
 	// add the carry-over to the bytes read for the available data length.
 	int bytesTotal = dwBytesRead + state->extra;
 	int bytesLeft = bytesTotal;
-
-	int* ltypes;
-	int* utypes;
-	getTables(L"", &ltypes, &utypes);
 
 	memset(&mi, 0, sizeof(METHODINFO));
 
@@ -166,6 +162,10 @@ void parseData(LPPARSESTATE state, DWORD dwBytesRead, int mask, LPVOID cookie, v
 				
 				// skip filename token...
 				p = strtok(NULL, TAB);
+				if (p==NULL){
+					// no TAB found --> return
+					return;
+				}
 				p += strlen(p) + 1;
 
 				// skip /^ - now in expression to find function (i.e. declaration)
@@ -232,7 +232,7 @@ void parseData(LPPARSESTATE state, DWORD dwBytesRead, int mask, LPVOID cookie, v
 				p++;
 
 			// send method.
-			if((maskVals[mi.type] & mask) != 0)
+			if ( ((maskVals[mi.type].mask1 & mask.mask1) != 0) || ((maskVals[mi.type].mask2 & mask.mask2) != 0) )
 				state->callback(1, &mi, cookie);
 
 			bytesLeft = bytesTotal - (p - pStart);
@@ -264,11 +264,15 @@ bool CPPNAVIGATOR_API PNFPGetMethods(
 		void*		   userData,
 //		HWND /*editorWnd*/, 
 		FP_CALLBACK callback, 
-		int mask,
+		MASKSTRUCT mask,
 		const wchar_t* scheme,
 		LPVOID cookie)
 {
 	bool bRet = true;
+
+	int* ltypes;
+	int* utypes;
+	getTables(scheme, &ltypes, &utypes);
 
 	PARSESTATE state;
 	memset(&state, 0, sizeof(PARSESTATE));
@@ -403,7 +407,8 @@ bool CPPNAVIGATOR_API PNFPGetMethods(
 #ifdef _DEBUG
 				fwrite(buffer, dwBytesRead, 1, fDump);
 #endif
-				parseData(&state, dwBytesRead, mask, cookie, userData);
+				// Parse the CTAGS data:
+				parseData(&state, dwBytesRead, mask, cookie, userData, ltypes, utypes);
 			}
 			else
 			{

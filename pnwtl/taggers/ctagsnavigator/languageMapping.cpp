@@ -64,6 +64,8 @@ LPCWSTR GetLanguage(LPCWSTR filename, LPCWSTR scheme)
 		return L"Vim";
 	else if(wcscmp(L"yacc", scheme) == 0)
 		return L"YACC";
+	else if(wcscmp(L"vhdl", scheme) == 0)
+		return L"Vhdl";
 
 	return NULL;
 }

@@ -34,10 +34,10 @@ class JumpToPlugin : Plugin
 		virtual bool Valid();
 
 		tstring GetSchemesSupported();
-		bool GetMethods(const wchar_t* filename, void* userData, FP_CALLBACK callback, int mask, const wchar_t* scheme, LPVOID cookie);
+		bool GetMethods(const wchar_t* filename, void* userData, FP_CALLBACK callback, MASKSTRUCT mask, const wchar_t* scheme, LPVOID cookie);
 
 	protected:
-		typedef bool (__stdcall *LPFnGetMethods)(const wchar_t* filename, void* userData, FP_CALLBACK callback, int mask, const wchar_t* scheme, LPVOID cookie);
+		typedef bool (__stdcall *LPFnGetMethods)(const wchar_t* filename, void* userData, FP_CALLBACK callback, MASKSTRUCT mask, const wchar_t* scheme, LPVOID cookie);
 		typedef void (__stdcall *LPFnGetSchemesSupported)(wchar_t* schemesBuffer, int cchBuffer);
 		typedef int (__stdcall *LPFnGetCapabilities)();
 

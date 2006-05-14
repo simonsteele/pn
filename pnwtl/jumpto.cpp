@@ -61,7 +61,7 @@ tstring JumpToPlugin::GetSchemesSupported()
 	return tstring(CW2T(buffer));
 }
 
-bool JumpToPlugin::GetMethods(const wchar_t* filename, void* userData, FP_CALLBACK callback, int mask, const wchar_t* scheme, LPVOID cookie)
+bool JumpToPlugin::GetMethods(const wchar_t* filename, void* userData, FP_CALLBACK callback, MASKSTRUCT mask, const wchar_t* scheme, LPVOID cookie)
 {
 	if(!Valid())
 		return false;
@@ -128,6 +128,7 @@ void JumpToHandler::LoadHandler(LPCTSTR path, LPCTSTR filename)
 void JumpToHandler::DoJumpTo(CChildFrame* pChildFrame, IJumpToFindSink* pNotifySink)
 {
 	USES_CONVERSION;
+	MASKSTRUCT		tagMaskAll={~0,~0};
 
 	// First let's find out what scheme it is...
 	Scheme* pScheme = pChildFrame->GetTextView()->GetCurrentScheme();
@@ -175,7 +176,7 @@ void JumpToHandler::DoJumpTo(CChildFrame* pChildFrame, IJumpToFindSink* pNotifyS
 
 	sink = pNotifySink;
 	
-	if(!pPlugin->GetMethods(fnstr.c_str(), static_cast<void*>(pChildFrame), &JumpToHandler::callback, TAGM_ALL, pSN, (LPVOID)this))
+	if(!pPlugin->GetMethods(fnstr.c_str(), static_cast<void*>(pChildFrame), &JumpToHandler::callback, tagMaskAll, pSN, (LPVOID)this))
 	{
 		g_Context.m_frame->SetStatusText(_T("Failed to run tagger."));
 	}

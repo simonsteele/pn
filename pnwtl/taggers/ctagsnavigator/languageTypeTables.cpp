@@ -315,6 +315,37 @@ int lVerilogTypes[26] = {
 	/*y*/ 0,			/*z*/ 0
 };
 
+/*static kindOption VhdlKinds [] = {
+ { TRUE, 'c', "constant",     "constants" },
+ { TRUE, 't', "type",         "types" },
+ { TRUE, 'v', "variable",     "variables" },
+ { TRUE, 'a', "attribute",    "attributes" },
+ { TRUE, 's', "signal",       "signals" },
+ { TRUE, 'f', "function",     "functions" },
+ { TRUE, 'p', "procedure",    "procedure" },
+ { TRUE, 'k', "component",    "components" },
+ { TRUE, 'l', "package",      "packages" },
+ { TRUE, 'm', "process",      "process" },
+ { TRUE, 'n', "entity",       "entity" },
+ { TRUE, 'o', "architecture", "architecture" },
+ { TRUE, 'u', "port",         "ports" }
+};*/
+
+int lVhdlTypes[26] = {
+	/*a*/ TAG_ATTRIBUTE,	/*b*/ 0,
+	/*c*/ TAG_CONSTANT,		/*d*/ 0,
+	/*e*/ 0,				/*f*/ TAG_FUNCTION,
+	/*g*/ 0,				/*h*/ 0,
+	/*i*/ 0,				/*j*/ 0,
+	/*k*/ TAG_COMPONENT,	/*l*/ TAG_PACKAGE,
+	/*m*/ TAG_PROCESS,		/*n*/ TAG_ENTITY,
+	/*o*/ TAG_ARCHITECTURE, /*p*/ TAG_PROCEDURE,
+	/*q*/ 0,				/*r*/ 0,
+	/*s*/ TAG_NET,			/*t*/ TAG_TYPEDEF,
+	/*u*/ TAG_PORT,			/*v*/ TAG_VARIABLE,
+	/*w*/ 0,				/*x*/ 0, 
+	/*y*/ 0,				/*z*/ 0
+};
 /*
 the following are satisfied by the c defaults:
 php, python, tcl
@@ -355,6 +386,10 @@ void getTables(LPCWSTR schemeName, int** lcTypes, int** ucTypes)
 	else if(wcscmp(schemeName, L"verilog") == 0)
 	{
 		*lcTypes = lVerilogTypes;
+	}
+	else if(wcscmp(schemeName, L"vhdl") == 0)
+	{
+		*lcTypes = lVhdlTypes;
 	}
 	else
 	{
