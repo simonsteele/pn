@@ -452,7 +452,7 @@ LRESULT CFindExDialog::OnBrowseClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	CString strTitle;
 	strTitle.LoadString(IDS_BROWSEFINDROOT);
 
-	CPNFolderDialog fd(m_hWnd, (LPCTSTR)str, strTitle);
+	CPNFolderDialog fd(m_hWnd, (LPCTSTR)str, strTitle, BIF_RETURNONLYFSDIRS | BIF_USENEWUI | BIF_NONEWFOLDERBUTTON);
 	if(fd.DoModal() == IDOK)
 	{
 		m_FindWhereCombo.SetWindowText( fd.GetFolderPath() );

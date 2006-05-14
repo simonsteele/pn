@@ -1259,7 +1259,7 @@ LRESULT CMainFrame::OnMenuSelect(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 				LPCTSTR fn = m_RecentFiles.GetEntry(wID - m_RecentFiles.base());
 				::SendMessage(m_hWndStatusBar, SB_SIMPLE, TRUE, 0L);
 				::SendMessage(m_hWndStatusBar, SB_SETTEXT, (255 | SBT_NOBORDERS), (LPARAM)fn);
-				::OutputDebugString(fn);
+				//::OutputDebugString(fn);
 				bHandled = true;
 			}
 			else if(wID >= m_RecentProjects.base() && wID <= m_RecentProjects.last() && m_RecentProjects.GetCount() > 0)
@@ -1267,7 +1267,7 @@ LRESULT CMainFrame::OnMenuSelect(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 				LPCTSTR fn = m_RecentProjects.GetEntry(wID - m_RecentProjects.base());
 				::SendMessage(m_hWndStatusBar, SB_SIMPLE, TRUE, 0L);
 				::SendMessage(m_hWndStatusBar, SB_SETTEXT, (255 | SBT_NOBORDERS), (LPARAM)fn);
-				::OutputDebugString(fn);
+				//::OutputDebugString(fn);
 				bHandled = true;
 			}
 		}
@@ -1484,16 +1484,22 @@ LRESULT CMainFrame::OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 {
 	LPCTSTR filename = m_RecentFiles.GetEntry(wID - ID_MRUFILE_BASE);
 
+	if(!::FileExists( filename ))
+	{
+		tstring err = LS(IDS_CANTOPENFILE);
+		int bs = err.length() + _tcslen(filename) + 10;
+		TCHAR* buffer = new TCHAR[bs];
+		_sntprintf(buffer, bs, err.c_str(), filename);
+		::MessageBox(m_hWnd, buffer, LS(IDR_MAINFRAME), MB_ICONWARNING | MB_OK);
+		delete [] buffer;
+
+		m_RecentFiles.RemoveEntry(wID - ID_MRUFILE_BASE);
+		return 0;
+	}
+
 	if( OpenFile(filename) )
 	{
 		m_RecentFiles.MoveToTop(wID - ID_MRUFILE_BASE);
-	}
-	else
-	{
-		// Ask to create? Remove from list?
-		// As we abused OpenFile() for the error message the later might be
-		// a bad choice...
-		//m_RecentFiles.RemoveFromList(wID - ID_MRUFILE_BASE);
 	}
 
 	return 0;

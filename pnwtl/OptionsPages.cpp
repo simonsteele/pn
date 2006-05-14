@@ -1808,7 +1808,7 @@ LRESULT COptionsPageFileAssoc::OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, B
 	// mode and in the last to none.
 
 	NMLISTVIEW* plv = (LPNMLISTVIEW)pnmh;
-	if(m_mode != ModeAdd && plv->uChanged == LVIF_STATE)
+	if(/*m_mode != ModeAdd && */plv->uChanged == LVIF_STATE)
 	{
 		if((plv->uNewState & LVIS_SELECTED) != 0)
 		{
@@ -1912,7 +1912,7 @@ void COptionsPageFileAssoc::SetMode(Mode mode, bool setExt /*= true*/, LPCTSTR e
 	}
 	m_buttonAddEdit.SetWindowText(mode == ModeAdd ? _T("&Add") : _T("&Edit"));
 	m_buttonAddEdit.EnableWindow(mode != ModeNone);
-	m_buttonRemove.EnableWindow(mode == ModeEdit);
+	m_buttonRemove.EnableWindow(m_list.GetSelectedIndex() > -1);
 
 	if(mode != ModeEdit && m_list.GetSelectedIndex() > -1)
 	{

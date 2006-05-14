@@ -11,6 +11,10 @@ What's new?
 3) Sets unicode character set automatically when a unicode file encoding is selected.
 4) Decorators in Python scheme
 5) Add New File in Magic Folders context menu
+6) Tag browser window (Klaus)
+7) Full VHDL scheme instead of user scheme (Klaus)
+8) VHDL tag support (Klaus)
+9) Remove non-existant MRU entries when selected (SF RFE #1469296)
 
 Bug Fixes:
 ----------
@@ -23,6 +27,9 @@ Bug Fixes:
 6) Filenames with ampersand (&) (SF Bug #1241368)
 7) Sanitise relative path strings in output parser (Oleg Gerasimov)
 8) <Enter> key in project window open selected file (Oleg Gerasimov)
+9) Opening non-existant file from recent menu, opens new file (SF Bug #1471053)
+10) Browse for folder inappriopriately shows New Folder button (SF Bug #1471056)
+11) Can't remove file association if text is entered (SF Bug #1463848)
 
 If you find a bug:
 ------------------

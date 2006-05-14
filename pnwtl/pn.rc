@@ -1724,7 +1724,7 @@ BEGIN
     IDS_SAVEREADONLYFAIL    "PN could not remove the write-protection from ""%s"".\n\n Would you like to save with a different name?"
     IDS_PROPSTITLE          "%s Properties"
     IDS_FINDNOTFOUND        "The specified text '%s' was not found."
-    IDS_NREPLACEMENTS       "%d occurrance(s) replaced."
+    IDS_NREPLACEMENTS       "%d occurrence(s) replaced."
     IDS_FINDLOOPED          "Find reached the starting point of the search."
 END
 
@@ -1895,6 +1895,7 @@ BEGIN
     IDS_PATHNOTINMAGICFOLDER 
                             "The file must be placed inside this magic folder directory."
     IDS_CANTCREATEFILE      "Could not create file"
+    IDS_CANTOPENFILE        "%s could not be opened.\nThis could be because the file no longer exists, a disk is absent or due to a broken network connection."
 END
 
 #endif    // English (U.K.) resources

@@ -72,6 +72,8 @@
 #define IDS_PATHNOTINMAGICFOLDER        166
 #define IDI_TEXTCLIPS                   167
 #define IDS_CANTCREATEFILE              167
+#define IDS_STRING168                   168
+#define IDS_CANTOPENFILE                168
 #define IDR_POPUP_REGEXP                170
 #define IDR_POPUP_EDITOR                173
 #define IDB_EDITOR                      203
@@ -220,7 +222,6 @@
 #define IDD_PAGE_DIALOGS                437
 #define IDD_PAGE_FILETYPES              438
 #define IDD_FILETYPEEDITOR              439
-#define IDD_PAGE_DIALOGS1               440
 #define IDD_PAGE_KEYBOARD               440
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
