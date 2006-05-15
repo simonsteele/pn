@@ -5,10 +5,16 @@
 
 #pragma once
 
+#include <map>
+#include <vector>
+#include <string>
+
+#define PNASSERT ATLASSERT
 
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
-// Windows Header Files:
 #include <windows.h>
+
+typedef std::basic_string<TCHAR> tstring;
 
 #include <boost/shared_ptr.hpp>
 #include <boost/python.hpp>
@@ -16,6 +22,7 @@
 #include <atlstr.h>
 
 #include "../extiface.h"
+#include "../pnstrings.h"
 #include "../pntypes.h"
 
 //bool __declspec(dllexport) __stdcall init_pn_extension(int iface_version, extensions::IPN* pn);
