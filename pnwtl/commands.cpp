@@ -25,7 +25,7 @@ void AccelFromCode(ACCEL& accel, KeyToCommand* cmd)
 	//PNASSERT(hotkey != 0);
 	accel.cmd = cmd->msg;
 	accel.key = cmd->key;
-	accel.fVirt = FVIRTKEY | FNOINVERT | cmd->modifiers;
+	accel.fVirt = FVIRTKEY | cmd->modifiers;
 }
 
 KeyMap::KeyMap() : kmap(0), len(0), alloc(0) {
@@ -82,6 +82,11 @@ unsigned int KeyMap::Find(int key, int modifiers) {
 int KeyMap::GetCount() const
 {
 	return len;
+}
+
+const KeyToCommand* KeyMap::GetMappings() const
+{
+	return kmap;
 }
 
 int KeyMap::MakeAccelerators(ACCEL* buffer) const
@@ -305,21 +310,18 @@ KeyToCommand DefaultKeyMap[] = {
 	{K_CTRL,		'K',		ID_BOOKMARKS_NUMBERED_SET},
 	{K_CTRL,		'Q',		ID_BOOKMARKS_NUMBERED_JUMP},
 
-	// Folding
-	{K_CTRL,		'*',		ID_VIEW_TOGGLEFOLD},
-	{K_CTRLALT,		'-',		ID_VIEW_COLLAPSEALLFOLDS},
-	{K_CTRLALT,		'+',		ID_VIEW_EXPANDALLFOLDS},
-
 	// View
 	{0,				VK_F8,		ID_VIEW_OUTPUT},
 	{K_SHIFT,		VK_F8,		ID_VIEW_INDIVIDUALOUTPUT},
 	{0,				VK_F6,		ID_NEXT_PANE},
 	{K_SHIFT,		VK_F6,		ID_PREV_PANE},
+	{K_ALT,			VK_RETURN,	ID_VIEW_FILEPROPERTIES},
+	{K_ALT,			'G',		ID_VIEW_WINDOWS_CTAGS},
+
+	// View | Folding
 	{K_CTRLALT,		VK_SUBTRACT,ID_VIEW_COLLAPSEALLFOLDS},
 	{K_CTRLALT,		VK_ADD,		ID_VIEW_EXPANDALLFOLDS},
-	{K_ALT,			VK_RETURN,	ID_VIEW_FILEPROPERTIES},
 	{K_CTRL,		VK_MULTIPLY,ID_VIEW_TOGGLEFOLD},
-	{K_ALT,			'G',		ID_VIEW_WINDOWS_CTAGS},
 
 	// Tools
 	{K_CTRLSHIFT,	'K',		ID_TOOLS_STOPTOOLS},

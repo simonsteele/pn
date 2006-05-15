@@ -8,6 +8,23 @@ COptionsPageKeyboard::COptionsPageKeyboard(HMENU cmdSource, KeyMap* keyMap)
 	m_hPrimaryCmdSource = cmdSource;
 }
 
+void COptionsPageKeyboard::OnOK()
+{
+}
+void COptionsPageKeyboard::OnInitialise()
+{
+}
+
+LPCTSTR COptionsPageKeyboard::GetTreePosition()
+{
+	return _T("General\\Keyboard");
+}
+
+void COptionsPageKeyboard::OnCancel()
+{
+
+}
+
 LRESULT COptionsPageKeyboard::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	CSMenu menu(::LoadMenu(_Module.m_hInst, MAKEINTRESOURCE(IDR_MDICHILD)));
@@ -19,6 +36,31 @@ LRESULT COptionsPageKeyboard::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 	m_list.SetColumnWidth(1, 300);
 	
 	addItems(CSMenuHandle(menu), "", 0);
+
+	m_shortcutlist.Attach(GetDlgItem(IDC_KB_ASSIGNEDLIST));
+	m_hotkey.Attach(GetDlgItem(IDC_KB_HOTKEY));
+
+	return 0;
+}
+
+LRESULT COptionsPageKeyboard::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	return 0;
+}
+
+LRESULT COptionsPageKeyboard::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	return 0;
+}
+
+LRESULT COptionsPageKeyboard::OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	NMLISTVIEW* plv = (LPNMLISTVIEW)pnmh;
+	if(plv->uChanged == LVIF_STATE && (plv->uNewState & LVIS_SELECTED) )
+	{
+		//Selection changed...
+		updateSelection();
+	}
 
 	return 0;
 }
@@ -50,7 +92,7 @@ int COptionsPageKeyboard::addItems(CSMenuHandle& menu, const char* group, int co
 	MENUITEMINFO mii;
 	memset(&mii, 0, sizeof(MENUITEMINFO));
 	mii.cbSize = sizeof(MENUITEMINFO);
-	mii.fMask = MIIM_STRING | MIIM_SUBMENU | MIIM_FTYPE;
+	mii.fMask = MIIM_STRING | MIIM_SUBMENU | MIIM_FTYPE | MIIM_ID;
 	mii.dwTypeData = buffer;
 
 	for(int i(0); i < menu.GetCount(); ++i)
@@ -76,25 +118,42 @@ int COptionsPageKeyboard::addItems(CSMenuHandle& menu, const char* group, int co
 			fixText(buffer, displayBuffer);
 			int ixItem = m_list.AddItem(count++, 0, group);
 			m_list.SetItemText(ixItem, 1, displayBuffer);
+			m_list.SetItemData(ixItem, mii.wID);
 		}
 	}
 	
 	return count;
 }
 
-void COptionsPageKeyboard::OnOK()
+void COptionsPageKeyboard::clear()
 {
-}
-void COptionsPageKeyboard::OnInitialise()
-{
-}
-
-LPCTSTR COptionsPageKeyboard::GetTreePosition()
-{
-	return _T("General\\Keyboard");
+	m_shortcutlist.ResetContent();
+	m_hotkey.SetHotKey(0,0);
 }
 
-void COptionsPageKeyboard::OnCancel()
+void COptionsPageKeyboard::updateSelection()
 {
+	clear();
 
+	int sel = m_list.GetSelectedIndex();
+	if(sel == -1)
+		return;
+
+	DWORD id = m_list.GetItemData(sel);
+	size_t noof_mappings = m_pKeyMap->GetCount();
+	const KeyToCommand* mappings = m_pKeyMap->GetMappings();
+
+	for(size_t ixMap(0); ixMap < noof_mappings; ++ixMap)
+	{
+		if(mappings[ixMap].msg == id)
+		{
+			int hkmods(0);
+			if( mappings[ixMap].modifiers & FALT ) hkmods |= HOTKEYF_ALT;
+			if( mappings[ixMap].modifiers & FCONTROL ) hkmods |= HOTKEYF_CONTROL;
+			if( mappings[ixMap].modifiers & FSHIFT ) hkmods |= HOTKEYF_SHIFT;
+			tstring sc = CSMenu::GetShortcutText(mappings[ixMap].key, hkmods);
+			int ixLI = m_shortcutlist.AddString(sc.c_str());
+			m_shortcutlist.SetItemData(ixLI, ixMap);
+		}
+	}
 }

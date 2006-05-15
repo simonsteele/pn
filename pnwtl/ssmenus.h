@@ -19,6 +19,8 @@ template <bool t_bManaged> class CSMenuT;
 typedef CSMenuT<true> CSMenu;
 typedef CSMenuT<false> CSMenuHandle;
 
+#include "include/sscontainers.h"
+
 /** 
  * @class CSMenu
  * @brief Class to ease working with menus
@@ -169,6 +171,21 @@ class CSMenuT
 					strKeyName += _T("+");
 				}
 
+				switch(wCode) {
+					// Keys which are "extended" (except for Return which is Numeric Enter as extended)
+					case VK_INSERT:
+					case VK_DELETE:
+					case VK_HOME:
+					case VK_END:
+					case VK_NEXT:  // Page down
+					case VK_PRIOR: // Page up
+					case VK_LEFT:
+					case VK_RIGHT:
+					case VK_UP:
+					case VK_DOWN:
+						wModifiers |= HOTKEYF_EXT; // Add extended bit
+				}	
+
 				strKeyName += GetKeyName(wCode, (wModifiers & HOTKEYF_EXT) != 0);
 			}
 
@@ -177,7 +194,7 @@ class CSMenuT
 
 		static tstring GetKeyName(UINT vk, bool extended)
 		{
-			LONG lScan = MapVirtualKey(vk, 0) << 16;
+			LONG lScan = MapVirtualKeyEx(vk, 0, GetKeyboardLayout(0)) << 16;
 
 			// if it's an extended key, add the extended flag
 			if (extended)

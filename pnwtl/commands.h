@@ -36,6 +36,7 @@ public:
 	void AssignCmdKey(int key, int modifiers, unsigned int msg);
 	unsigned int Find(int key, int modifiers);	// 0 returned on failure
 	int GetCount() const;
+	const KeyToCommand* GetMappings() const;
 	int MakeAccelerators(ACCEL* buffer) const;
 private:
 	KeyToCommand *kmap;

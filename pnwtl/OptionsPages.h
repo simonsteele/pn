@@ -593,6 +593,12 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 
 		BEGIN_MSG_MAP(COptionsPageKeyboard)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			
+			COMMAND_HANDLER(IDC_KB_ADD, BN_CLICKED, OnAddClicked)
+			COMMAND_HANDLER(IDC_KB_REMOVE, BN_CLICKED, OnRemoveClicked)
+
+			NOTIFY_HANDLER(IDC_KB_COMMANDS, LVN_ITEMCHANGED, OnListItemChanged)
+			
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 		enum { IDD = IDD_PAGE_KEYBOARD };
@@ -609,11 +615,20 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
+		LRESULT OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+
 		int addItems(CSMenuHandle& menu, const char* group, int count = 0);
+		void clear();
+		void updateSelection();
+
 
 		HMENU			m_hPrimaryCmdSource;
 		KeyMap*			m_pKeyMap;
 		CListViewCtrl	m_list;
+		CListBox		m_shortcutlist;
+		CHotKeyCtrl		m_hotkey;
 
 		/*BOOL			m_bUseTabs;
 		BOOL			m_bLineNos;
