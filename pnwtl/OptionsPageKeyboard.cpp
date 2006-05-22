@@ -53,6 +53,41 @@ LRESULT COptionsPageKeyboard::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/
 	return 0;
 }
 
+LRESULT COptionsPageKeyboard::OnHotKeyChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	WORD keycode, modifiers, real_modifiers(0);
+	m_hotkey.GetHotKey(keycode, modifiers);
+
+	if( modifiers & HOTKEYF_ALT ) real_modifiers |= FALT;
+	if( modifiers & HOTKEYF_CONTROL ) real_modifiers |= FCONTROL;
+	if( modifiers & HOTKEYF_SHIFT) real_modifiers |= FSHIFT;
+
+	// Look for commands with this key assigned...
+	const KeyToCommand* mappings = m_pKeyMap->GetMappings();
+	size_t noof_mappings(m_pKeyMap->GetCount());
+
+	for(size_t ixMap(0); ixMap < noof_mappings; ++ixMap)
+	{
+		if(mappings[ixMap].key == keycode && mappings[ixMap].modifiers == real_modifiers)
+		{
+			// We found a command with this key combination assigned, so now we have a command
+			// we need to find the name of that command... :(
+			std::string command_name = findCommandName(mappings[ixMap].msg);
+			if(command_name.size())
+			{
+				command_name = "Currently assigned to: " + command_name;
+				GetDlgItem(IDC_KB_SHORTCUTINUSELABEL).SetWindowText(command_name.c_str());
+				GetDlgItem(IDC_KB_SHORTCUTINUSELABEL).ShowWindow(SW_SHOW);
+			}
+			return 0;
+		}
+	}
+
+	GetDlgItem(IDC_KB_SHORTCUTINUSELABEL).ShowWindow(SW_HIDE);
+
+	return 0;
+}
+
 LRESULT COptionsPageKeyboard::OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 	NMLISTVIEW* plv = (LPNMLISTVIEW)pnmh;
@@ -60,6 +95,8 @@ LRESULT COptionsPageKeyboard::OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BO
 	{
 		//Selection changed...
 		updateSelection();
+		m_hotkey.SetHotKey(0, 0);
+		GetDlgItem(IDC_KB_SHORTCUTINUSELABEL).ShowWindow(SW_HIDE);
 	}
 
 	return 0;
@@ -129,6 +166,28 @@ void COptionsPageKeyboard::clear()
 {
 	m_shortcutlist.ResetContent();
 	m_hotkey.SetHotKey(0,0);
+}
+
+std::string COptionsPageKeyboard::findCommandName(DWORD command)
+{
+	for(int ix(0); ix < m_list.GetItemCount(); ++ix)
+	{
+		DWORD data = m_list.GetItemData(ix);
+		if(data == command)
+		{
+			std::string res;
+			CString s;
+			m_list.GetItemText(ix, 0, s);
+			res = s;
+			res += ".";
+			m_list.GetItemText(ix, 1, s);
+			res += s;
+			
+			return res;
+		}
+	}
+
+	return "";
 }
 
 void COptionsPageKeyboard::updateSelection()

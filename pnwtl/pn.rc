@@ -1389,15 +1389,16 @@ BEGIN
     LTEXT           "Keyboard Shortcuts",IDC_STATIC,0,0,64,8
     CONTROL         "",IDC_KB_COMMANDS,"SysListView32",LVS_SINGLESEL | 
                     LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | 
-                    WS_TABSTOP,10,13,279,128
-    LISTBOX         IDC_KB_ASSIGNEDLIST,10,160,93,36,LBS_SORT | 
+                    WS_TABSTOP,10,13,279,117
+    LISTBOX         IDC_KB_ASSIGNEDLIST,10,147,93,36,LBS_SORT | 
                     LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "&Remove",IDC_KB_REMOVE,105,182,50,14
+    PUSHBUTTON      "&Remove",IDC_KB_REMOVE,105,169,50,14
     CONTROL         "",IDC_KB_HOTKEY,"msctls_hotkey32",WS_BORDER | 
-                    WS_TABSTOP,169,160,120,13
-    PUSHBUTTON      "&Add",IDC_KB_ADD,239,182,50,14
-    LTEXT           "Assign Shortcuts:",IDC_STATIC,169,147,110,10
-    LTEXT           "Current Shortcuts:",IDC_STATIC,12,147,109,10
+                    WS_TABSTOP,169,147,120,13
+    PUSHBUTTON      "&Add",IDC_KB_ADD,239,169,50,14
+    LTEXT           "Assign Shortcuts:",IDC_STATIC,169,134,110,10
+    LTEXT           "Current Shortcuts:",IDC_STATIC,12,134,109,10
+    LTEXT           "",IDC_KB_SHORTCUTINUSELABEL,10,187,289,10
 END
 
 

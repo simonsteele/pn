@@ -258,7 +258,6 @@
 #define IDC_JUMPTOTEXT                  1011
 #define IDC_EXTENSION                   1011
 #define IDC_PROJNAMEEDIT                1011
-#define IDC_BUTTON3                     1011
 #define IDC_KB_ADD                      1011
 #define IDC_FONT_COMBO                  1012
 #define IDC_TOOLS_REMOVEBUTTON          1012
@@ -430,6 +429,8 @@
 #define IDC_INCLUDEHIDDEN_CHECK         1134
 #define IDC_KB_ASSIGNEDLIST             1135
 #define IDC_KB_HOTKEY                   1136
+#define IDC_KB_SHORTCUTINUSE            1137
+#define IDC_KB_SHORTCUTINUSELABEL       1137
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -546,7 +547,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        345
 #define _APS_NEXT_COMMAND_VALUE         32964
-#define _APS_NEXT_CONTROL_VALUE         1137
+#define _APS_NEXT_CONTROL_VALUE         1138
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

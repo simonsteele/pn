@@ -22,6 +22,9 @@ typedef std::basic_string<TCHAR> tstring;
 
 #define PN_NO_CSTRING
 
+// Disable the CRT deprecation warnings in VS 2005
+#define _CRT_SECURE_NO_DEPRECATE
+
 #ifdef CUSTOMSCHEME_EXPORTS
 #define EXPORT __declspec(dllexport)
 #else

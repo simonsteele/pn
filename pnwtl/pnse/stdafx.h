@@ -34,6 +34,8 @@
 // turns off ATL's hiding of some common and often safely ignored warning messages
 #define _ATL_ALL_WARNINGS
 
+// Disable the CRT deprecation warnings in VS 2005
+#define _CRT_SECURE_NO_DEPRECATE
 
 #include "resource.h"
 #include <atlbase.h>

@@ -596,6 +596,7 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 			
 			COMMAND_HANDLER(IDC_KB_ADD, BN_CLICKED, OnAddClicked)
 			COMMAND_HANDLER(IDC_KB_REMOVE, BN_CLICKED, OnRemoveClicked)
+			COMMAND_HANDLER(IDC_KB_HOTKEY, EN_CHANGE, OnHotKeyChanged)
 
 			NOTIFY_HANDLER(IDC_KB_COMMANDS, LVN_ITEMCHANGED, OnListItemChanged)
 			
@@ -617,10 +618,12 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 
 		LRESULT OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnHotKeyChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 		int addItems(CSMenuHandle& menu, const char* group, int count = 0);
 		void clear();
+		std::string findCommandName(DWORD command);
 		void updateSelection();
 
 

@@ -28,6 +28,9 @@
 // Disable the "unreferenced formal parameter" warning. I see no reason for it.
 #pragma warning( disable: 4100 )
 
+// Disable the CRT deprecation warnings in VS 2005
+#define _CRT_SECURE_NO_DEPRECATE
+
 // Implement debug mode memory allocation checking.
 #ifdef _DEBUG
 	#define CRTDBG_MAP_ALLOC
