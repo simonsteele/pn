@@ -113,10 +113,7 @@ CMRUList::CMRUList(int size)
 
 CMRUList::~CMRUList()
 {
-	if(m_regkey.GetLength() > 0)
-	{
-		SaveToRegistry();
-	}
+	
 }
 
 void CMRUList::SetSize(int size)
@@ -179,54 +176,39 @@ void CMRUList::Resize()
 	}
 }
 
-void CMRUList::SetRegistryKey(LPCTSTR key, bool load)
+void CMRUList::Save(extensions::IOptions* options, LPCTSTR key)
 {
-	m_regkey = key;
-	if(load)
-		LoadFromRegistry();
+	options->BeginGroupOperation(key);
+	
+	TCHAR		buf[3];
+	int size = m_entries.GetSize();
+	
+	options->Set(NULL, _T("Number"), size);
+
+	for(int i = 0; i < size; i++)
+	{
+		_itot(i, buf, 10);
+		options->Set(NULL, buf, m_entries[i].pszData);
+	}
+
+	options->EndGroupOperation();
 }
 
-void CMRUList::SaveToRegistry()
+void CMRUList::Load(extensions::IOptions* options, LPCTSTR key)
 {
-	ATLASSERT(m_regkey.GetLength() != 0);
+	options->BeginGroupOperation(key);
 
-	if(m_regkey.GetLength() > 0)
+	TCHAR		buf[3];
+	tstring		valbuf;
+
+	int size = options->Get(NULL, _T("Number"), 0);
+	for(int i = 0; i < size; i++)
 	{
-		CSRegistry	reg;
-		TCHAR		buf[3];
-		int size = m_entries.GetSize();
-		
-		reg.OpenKey(m_regkey);
-		reg.WriteInt(_T("Number"), size);
-
-		for(int i = 0; i < size; i++)
-		{
-			_itot(i, buf, 10);
-			reg.WriteString(buf, m_entries[i].pszData);
-		}
+		_itot(i, buf, 10);
+		AddEntry( options->Get(NULL, buf, _T("")).c_str() );
 	}
-}
 
-void CMRUList::LoadFromRegistry()
-{
-	ATLASSERT(m_regkey.GetLength() != 0);
-
-	if(m_regkey.GetLength() > 0)
-	{
-		CSRegistry	reg;
-		TCHAR		buf[3];
-		tstring		valbuf;
-
-		reg.OpenKey(m_regkey);
-
-		int size = reg.ReadInt(_T("Number"));
-		for(int i = 0; i < size; i++)
-		{
-			_itot(i, buf, 10);
-			reg.ReadString(buf, valbuf);
-			AddEntry(valbuf.c_str());
-		}
-	}
+	options->EndGroupOperation();
 }
 
 int CMRUList::GetCount()
@@ -464,7 +446,9 @@ MultipleInstanceManager::MultipleInstanceManager(LPCTSTR pszKey)
 	m_hMutex = ::CreateMutex(NULL, FALSE, pszKey);
 	m_bAlreadyActive = (::GetLastError() == ERROR_ALREADY_EXISTS);
 	
+#ifdef _DEBUG
 	LOG( m_bAlreadyActive ? _T("PN2 is already running") : _T("First PN2 Instance") );
+#endif
 	
 	PNASSERT(m_hMutex != NULL);
 
@@ -482,7 +466,9 @@ MultipleInstanceManager::MultipleInstanceManager(LPCTSTR pszKey)
 
 		if(bWin95)
 		{
+#ifdef _DEBUG
 			LOG( _T("PN2 believes it is running on Windows 95") );
+#endif
 			m_pfnBSM = (PFNBroadcastSystemMessage)::GetProcAddress(m_hUser32, "BroadcastSystemMessage");
 		}
 		else
@@ -496,7 +482,9 @@ MultipleInstanceManager::MultipleInstanceManager(LPCTSTR pszKey)
 	}
 	else
 	{
+#ifdef _DEBUG
 		LOG( _T("PN2 was unable to locate the BroadcastSystemMessage* function in User32.dll") );
+#endif
 		m_hUser32 = NULL;
 		m_pfnBSM = NULL;
 	}

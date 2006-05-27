@@ -18,26 +18,54 @@
 #define K_CTRLSHIFT	(K_SHIFT | K_CTRL)
 #define K_ALTSHIFT	(K_SHIFT | K_ALT)
 
+WORD HKToAccelMod(WORD modifiers);
+WORD AccelToHKMod(WORD modifiers);
+
 /**
+ * Simple keyboard command struct
  */
-struct KeyToCommand {
+struct KeyToCommand
+{
 	unsigned char modifiers;
 	unsigned char key;
 	unsigned int msg;
 };
 
 /**
+ * Keyboard settings file header
+ */
+struct KeyboardFileHeader
+{
+	unsigned char magic[7];
+	unsigned int version;
+	unsigned int commands;
+	unsigned int extensions;
+};
+
+#define KEYBOARD_FILE_VERSION	1
+
+/**
+ * Simple keyboard command map
  */
 class KeyMap {
 public:
-	KeyMap();
+	KeyMap(KeyToCommand* commands);
+	KeyMap(const KeyMap& copy);
 	~KeyMap();
+
 	void Clear();
+	
 	void AssignCmdKey(int key, int modifiers, unsigned int msg);
+	void RemoveCmdKey(int key, int modifiers, unsigned int msg);
+	
 	unsigned int Find(int key, int modifiers);	// 0 returned on failure
+	
 	int GetCount() const;
+	
 	const KeyToCommand* GetMappings() const;
+	
 	int MakeAccelerators(ACCEL* buffer) const;
+
 private:
 	KeyToCommand *kmap;
 	int len;
@@ -76,14 +104,19 @@ typedef MAP_HANDLERS::value_type MH_VT;
 typedef MAP_HANDLERS::iterator MH_IT;
 typedef MAP_HANDLERS::const_iterator MH_CI;
 
-class CommandDispatch : public Singleton<CommandDispatch, true>
+class CommandDispatch
 {
-	friend class Singleton<CommandDispatch, true>;
-
 	public:
+		CommandDispatch();
+		CommandDispatch(LPCTSTR kbfile);
 		~CommandDispatch();
 
 		HACCEL GetAccelerators();
+
+		void UpdateMenuShortcuts(HMENU menu);
+
+		tstring GetShortcutText(int wCode, int wModifiers);
+		tstring GetKeyName(UINT vk, bool extended);
 
 		int RegisterCallback(CommandEventHandler* pHandler, int iCommand, LPVOID data = NULL);
 		int RegisterCallback(int iRealCommand, CommandEventHandler* pHandler, int iMappedCommand, LPVOID data = NULL);
@@ -95,10 +128,14 @@ class CommandDispatch : public Singleton<CommandDispatch, true>
 		bool HandleCommand(int iID);
 		bool LocalHandleCommand(int iID, int iCommand, CommandEventHandler* pHandler);
 
+		void SetCurrentKeyMap(const KeyMap* keyMap);
 		KeyMap* GetCurrentKeyMap() const;
 
+		bool Load(LPCTSTR filename);
+		void Save(LPCTSTR filename) const;
+
 	private:
-		CommandDispatch();
+		void init();
 
 		static CmdIDRange* s_IDs[];
 		
@@ -109,6 +146,10 @@ class CommandDispatch : public Singleton<CommandDispatch, true>
 		IDStack		m_freeIds;
 
 		MAP_HANDLERS m_Handlers;
+
+		tstring		m_keyNameCtrl;
+		tstring		m_keyNameAlt;
+		tstring		m_keyNameShift;
 };
 
 
@@ -116,7 +157,7 @@ class CommandDispatch : public Singleton<CommandDispatch, true>
 	if(uMsg == WM_COMMAND) \
 	{ \
 		bHandled = TRUE; \
-		if( CommandDispatch::GetInstance()->HandleCommand(LOWORD(wParam)) ) \
+		if( m_pCmdDispatch->HandleCommand(LOWORD(wParam)) ) \
 			return TRUE; \
 		else \
 			bHandled = FALSE; \
@@ -126,7 +167,7 @@ class CommandDispatch : public Singleton<CommandDispatch, true>
 	if(uMsg == WM_COMMAND) \
 	{ \
 		bHandled = TRUE; \
-		if( CommandDispatch::GetInstance()->LocalHandleCommand(LOWORD(wParam), id, this) ) \
+		if( m_pCmdDispatch->LocalHandleCommand(LOWORD(wParam), id, this) ) \
 			return TRUE; \
 		else \
 			bHandled = FALSE; \

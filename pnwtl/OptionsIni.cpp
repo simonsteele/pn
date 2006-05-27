@@ -111,7 +111,30 @@ int IniOptions::Get(LPCTSTR subkey, LPCTSTR value, int iDefault)
 
 tstring IniOptions::Get(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
 {
-	return tstring(_T(""));
+	if(groupLocked)
+	{
+		IniKeyMap::const_iterator i = keyMap->find(tstring(value));
+		if(i != keyMap->end())
+			return (*i).second;
+		else
+			return tstring(szDefault);
+	}
+	else
+	{
+		GArray<TCHAR> tcbuf;
+	
+		int nBufferLen = 64;
+		int nLen;
+		do
+		{
+			nBufferLen *= 2;
+			tcbuf.grow(nBufferLen);
+			nLen = ::GetPrivateProfileString(subkey, value, szDefault, &tcbuf[0], nBufferLen, _filename);
+		}
+		while (nLen == nBufferLen-1);
+
+		return tstring(&tcbuf[0]);
+	}
 }
 
 void IniOptions::group(LPCTSTR location)

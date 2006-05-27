@@ -28,26 +28,69 @@ void AccelFromCode(ACCEL& accel, KeyToCommand* cmd)
 	accel.fVirt = FVIRTKEY | cmd->modifiers;
 }
 
-KeyMap::KeyMap() : kmap(0), len(0), alloc(0) {
-	for (int i = 0; DefaultKeyMap[i].key; i++) {
-		AssignCmdKey(DefaultKeyMap[i].key,
-			DefaultKeyMap[i].modifiers,
-			DefaultKeyMap[i].msg);
+WORD HKToAccelMod(WORD modifiers)
+{
+	WORD real_modifiers(0);
+
+	if( modifiers & HOTKEYF_ALT ) real_modifiers |= FALT;
+	if( modifiers & HOTKEYF_CONTROL ) real_modifiers |= FCONTROL;
+	if( modifiers & HOTKEYF_SHIFT) real_modifiers |= FSHIFT;
+
+	return real_modifiers;
+}
+
+WORD AccelToHKMod(WORD modifiers)
+{
+	WORD real_modifiers(0);
+
+	if( modifiers & FALT ) real_modifiers |= HOTKEYF_ALT;
+	if( modifiers & FCONTROL ) real_modifiers |= HOTKEYF_CONTROL;
+	if( modifiers & FSHIFT ) real_modifiers |= HOTKEYF_SHIFT;
+	
+	return real_modifiers;
+}
+
+KeyMap::KeyMap(KeyToCommand* commands) : kmap(0), len(0), alloc(0)
+{
+	for (int i = 0; commands[i].key; i++)
+	{
+		AssignCmdKey(commands[i].key,
+			commands[i].modifiers,
+			commands[i].msg);
 	}
 }
 
-KeyMap::~KeyMap() {
+KeyMap::KeyMap(const KeyMap& copy) : kmap(0), len(0), alloc(0)
+{
+	len = copy.len;
+	if(len)
+	{
+		KeyToCommand* kNew = new KeyToCommand[copy.len+5];
+		if(!kNew)
+			return;
+		for (int k = 0; k < len; k++)
+			kNew[k] = copy.kmap[k];
+		
+		alloc = copy.len+5;
+		kmap = kNew;
+	}
+}
+
+KeyMap::~KeyMap()
+{
 	Clear();
 }
 
-void KeyMap::Clear() {
+void KeyMap::Clear()
+{
 	delete []kmap;
 	kmap = 0;
 	len = 0;
 	alloc = 0;
 }
 
-void KeyMap::AssignCmdKey(int key, int modifiers, unsigned int msg) {
+void KeyMap::AssignCmdKey(int key, int modifiers, unsigned int msg)
+{
 	if ((len+1) >= alloc) {
 		KeyToCommand *ktcNew = new KeyToCommand[alloc + 5];
 		if (!ktcNew)
@@ -58,8 +101,10 @@ void KeyMap::AssignCmdKey(int key, int modifiers, unsigned int msg) {
 		delete []kmap;
 		kmap = ktcNew;
 	}
-	for (int keyIndex = 0; keyIndex < len; keyIndex++) {
-		if ((key == kmap[keyIndex].key) && (modifiers == kmap[keyIndex].modifiers)) {
+	for (int keyIndex = 0; keyIndex < len; keyIndex++)
+	{
+		if ((key == kmap[keyIndex].key) && (modifiers == kmap[keyIndex].modifiers))
+		{
 			kmap[keyIndex].msg = msg;
 			return;
 		}
@@ -70,9 +115,31 @@ void KeyMap::AssignCmdKey(int key, int modifiers, unsigned int msg) {
 	len++;
 }
 
-unsigned int KeyMap::Find(int key, int modifiers) {
-	for (int i = 0; i < len; i++) {
-		if ((key == kmap[i].key) && (modifiers == kmap[i].modifiers)) {
+void KeyMap::RemoveCmdKey(int key, int modifiers, unsigned int msg)
+{
+	bool found = false;
+	for(int ixArr(0); ixArr < len; ++ixArr)
+	{
+		if(!found && kmap[ixArr].key == key && kmap[ixArr].modifiers == modifiers && kmap[ixArr].msg == msg)
+		{
+			found = true;
+		}
+		if(found && ixArr != len-1)
+		{
+			kmap[ixArr] = kmap[ixArr+1];
+		}
+	}
+	
+	if(found)
+		len--;
+}
+
+unsigned int KeyMap::Find(int key, int modifiers)
+{
+	for (int i = 0; i < len; i++)
+	{
+		if ((key == kmap[i].key) && (modifiers == kmap[i].modifiers))
+		{
 			return kmap[i].msg;
 		}
 	}
@@ -102,19 +169,26 @@ int KeyMap::MakeAccelerators(ACCEL* buffer) const
 /////////////////////////////////////////////////////////////////////////////
 // CommandDispatch
 
+std::string properCase(std::string instr)
+{
+	std::string::iterator i = instr.begin();
+	i++;
+	std::transform(i, instr.end(), i, tolower);
+	return instr;
+}
+
 CommandDispatch::CommandDispatch()
 {
-	int nRanges = 0;
+	init();
+	m_keyMap = new KeyMap(DefaultKeyMap);
+}
 
-	while(s_IDs[nRanges] != NULL)
-	{
-		nRanges++;
-	}
-	
-	m_iRanges	= nRanges;
-	m_pRange	= s_IDs[0];
-
-	m_keyMap = new KeyMap();
+CommandDispatch::CommandDispatch(LPCTSTR kbfile)
+{
+	init();
+	m_keyMap = NULL;
+	if(!Load(kbfile))
+		m_keyMap = new KeyMap(DefaultKeyMap);
 }
 
 CommandDispatch::~CommandDispatch()
@@ -141,6 +215,120 @@ HACCEL CommandDispatch::GetAccelerators()
 	delete [] accelerators;
 
 	return table;
+}
+
+void CommandDispatch::UpdateMenuShortcuts(HMENU theMenu)
+{
+	CSMenuHandle menu(theMenu);
+
+	TCHAR buffer[255];
+
+	CMenuItemInfo mii;
+	mii.fMask = MIIM_ID | MIIM_STRING;
+	mii.dwTypeData = buffer;
+	mii.cch = 255;
+
+	DWORD ticksPre = ::GetTickCount();
+
+	KeyMap* theKeys = GetCurrentKeyMap();
+	const KeyToCommand* keyArr = theKeys->GetMappings();
+	for(int i(0); i < theKeys->GetCount(); i++)
+	{
+		mii.cch = 255;
+		menu.GetItemInfo(keyArr[i].msg, &mii, FALSE);
+		if(mii.wID == keyArr[i].msg)
+		{
+			// Remove any previous accelerator
+			TCHAR* tabpos = _tcschr(buffer, _T('\t'));
+			if(tabpos)
+				*tabpos = NULL;
+
+			// Set the new one
+			tstring shortcut = _T('\t') + GetShortcutText(keyArr[i].key, ::AccelToHKMod(keyArr[i].modifiers));
+			_tcscat(mii.dwTypeData, shortcut.c_str());
+			::SetMenuItemInfo(menu, mii.wID, FALSE, &mii);
+		}
+	}
+
+	DWORD ticksTaken = ::GetTickCount() - ticksPre;
+	_stprintf(buffer, _T("%dms to setup the menu\n"), ticksTaken);
+	LOG(buffer);
+}
+
+tstring CommandDispatch::GetShortcutText(int wCode, int wModifiers)
+{
+	tstring strKeyName;
+
+	if (wCode != 0 || wModifiers != 0)
+	{
+		if (wModifiers & HOTKEYF_CONTROL)
+		{
+			strKeyName += m_keyNameCtrl;
+			strKeyName += _T("+");
+		}
+
+		if (wModifiers & HOTKEYF_SHIFT)
+		{
+			strKeyName += m_keyNameShift;
+			strKeyName += _T("+");
+		}
+
+		if (wModifiers & HOTKEYF_ALT)
+		{
+			strKeyName += m_keyNameAlt;
+			strKeyName += _T("+");
+		}
+
+		switch(wCode) {
+			// Keys which are "extended" (except for Return which is Numeric Enter as extended)
+			case VK_INSERT:
+			case VK_DELETE:
+			case VK_HOME:
+			case VK_END:
+			case VK_NEXT:  // Page down
+			case VK_PRIOR: // Page up
+			case VK_LEFT:
+			case VK_RIGHT:
+			case VK_UP:
+			case VK_DOWN:
+				wModifiers |= HOTKEYF_EXT; // Add extended bit
+		}	
+
+		strKeyName += GetKeyName(wCode, (wModifiers & HOTKEYF_EXT) != 0);
+	}
+
+	return strKeyName;
+}
+
+tstring CommandDispatch::GetKeyName(UINT vk, bool extended)
+{
+	LONG lScan = MapVirtualKeyEx(vk, 0, GetKeyboardLayout(0)) << 16;
+
+	// if it's an extended key, add the extended flag
+	if (extended)
+		lScan |= 0x01000000L;
+
+	tstring str;
+	GArray<TCHAR> tcbuf;
+	
+	int nBufferLen = 64;
+	int nLen;
+	do
+	{
+		nBufferLen *= 2;
+		tcbuf.grow(nBufferLen);
+		nLen = ::GetKeyNameText(lScan, &tcbuf[0], nBufferLen + 1);
+	}
+	while (nLen == nBufferLen);
+
+	if(nLen > 1)
+	{
+		return properCase(tstring(&tcbuf[0]));
+	}
+	else
+	{
+		return tstring(&tcbuf[0]);
+	}
 }
 
 /**
@@ -251,9 +439,102 @@ bool CommandDispatch::LocalHandleCommand(int iID, int iCommand, CommandEventHand
 	return bHandled;
 }
 
+void CommandDispatch::SetCurrentKeyMap(const KeyMap* keyMap)
+{
+	delete m_keyMap;
+	m_keyMap = new KeyMap(*keyMap);
+}
+
 KeyMap* CommandDispatch::GetCurrentKeyMap() const
 {
 	return m_keyMap;
+}
+
+bool CommandDispatch::Load(LPCTSTR filename)
+{
+	FILE* kbfile = fopen(filename, "rb");
+	if(!kbfile)
+		return false;
+
+	KeyboardFileHeader hdr = {0};
+	if(fread(&hdr, sizeof(KeyboardFileHeader), 1, kbfile) != 1 
+		|| memcmp(hdr.magic, "PNKEYS", 7) != 0
+		|| hdr.commands < 1)
+	{
+		//The magic is bad...
+		UNEXPECTED("Keyboard mappings file seems to be corrupt.");
+		fclose(kbfile);
+		return false;
+	}
+
+	KeyToCommand* loadedcmds = new KeyToCommand[hdr.commands+1];
+	if(fread(loadedcmds, sizeof(KeyToCommand), hdr.commands, kbfile) != hdr.commands)
+	{
+		UNEXPECTED("Failed to load the correct number of commands from the keyboard mappings file.");
+		fclose(kbfile);
+		delete loadedcmds;
+		return false;
+	}
+
+	//TODO: Read other mappings...
+
+	fclose(kbfile);
+	
+	// Set up the end marker
+	loadedcmds[hdr.commands].key = 0;
+	loadedcmds[hdr.commands].modifiers = 0;
+	loadedcmds[hdr.commands].msg = 0;
+
+	if(m_keyMap != NULL)
+		delete m_keyMap;
+	m_keyMap = new KeyMap(loadedcmds);
+
+	return true;
+}
+
+void CommandDispatch::Save(LPCTSTR filename) const
+{
+	FILE* kbfile = fopen(filename, "wb");
+	if(!kbfile)
+	{
+		UNEXPECTED("Failed to open keyboard shortcut configuration file for writing");
+		return;
+	}
+
+	KeyboardFileHeader hdr = {0};
+	memcpy(hdr.magic, "PNKEYS", 7);
+	hdr.version = KEYBOARD_FILE_VERSION;
+	hdr.commands = m_keyMap->GetCount();
+
+	fwrite(&hdr, sizeof(KeyboardFileHeader), 1, kbfile);
+
+	const KeyToCommand* mappings = m_keyMap->GetMappings();
+
+	fwrite(mappings, sizeof(KeyToCommand), hdr.commands, kbfile);
+
+	//TODO: Write shortcuts for scripts etc. here
+
+	fclose(kbfile);
+}
+
+void CommandDispatch::init()
+{
+	int nRanges = 0;
+
+	while(s_IDs[nRanges] != NULL)
+	{
+		nRanges++;
+	}
+	
+	m_iRanges	= nRanges;
+	m_pRange	= s_IDs[0];
+
+	// We don't like Windows' ugly default names, but that's ok because
+	// GetKeyName proper cases them. However, to avoid the cost of doing
+	// that all the time for these common cases we cache them.
+	m_keyNameCtrl = GetKeyName(VK_CONTROL, false);
+	m_keyNameAlt = GetKeyName(VK_MENU, false);
+	m_keyNameShift = GetKeyName(VK_SHIFT, false);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -266,23 +547,23 @@ KeyToCommand DefaultKeyMap[] = {
 	{K_CTRL,		'S',		ID_FILE_SAVE},
 	{K_CTRLSHIFT,	'S',		ID_FILE_SAVEALL},
 	{K_ALT,			VK_RETURN,	ID_VIEW_FILEPROPERTIES},
-	{K_CTRL,		VK_F4,		ID_FILE_CLOSE},
 	{K_CTRL,		'W',		ID_FILE_CLOSE},
+	{K_CTRL,		VK_F4,		ID_FILE_CLOSE},
 	{K_CTRL,		'P',		ID_FILE_PRINT},
 
 	//Edit
-	{K_CTRL,		'Z',		ID_EDIT_UNDO},
 	{K_ALT,			VK_BACK,	ID_EDIT_UNDO},
+	{K_CTRL,		'Z',		ID_EDIT_UNDO},
 	{K_CTRL,		'Y',		ID_EDIT_REDO},
-	{K_CTRL,		'X',		ID_EDIT_CUT},
 	{K_CTRLSHIFT,	'X',		ID_EDIT_CUT},
 	{K_SHIFT,	    VK_DELETE,	ID_EDIT_CUT},
-	{K_CTRL,		'C',		ID_EDIT_COPY},
+	{K_CTRL,		'X',		ID_EDIT_CUT},
 	{K_CTRL,		VK_INSERT,	ID_EDIT_COPY},
+	{K_CTRL,		'C',		ID_EDIT_COPY},
 	{K_CTRLALT,		'C',		ID_EDIT_COPYRTF},
-	{K_CTRL,		'V',		ID_EDIT_PASTE},
 	{K_CTRLSHIFT,	'V',		ID_EDIT_PASTE},
 	{K_SHIFT,		VK_INSERT,	ID_EDIT_PASTE},
+	{K_CTRL,		'V',		ID_EDIT_PASTE},
 	{K_CTRLSHIFT,	'C',		ID_EDIT_CLIPBOARDSWAP},
 	{K_CTRL,		'L',		ID_EDIT_CUTLINE},
 	{K_CTRLSHIFT,	'T',		ID_EDIT_COPYLINE},
@@ -316,7 +597,12 @@ KeyToCommand DefaultKeyMap[] = {
 	{0,				VK_F6,		ID_NEXT_PANE},
 	{K_SHIFT,		VK_F6,		ID_PREV_PANE},
 	{K_ALT,			VK_RETURN,	ID_VIEW_FILEPROPERTIES},
-	{K_ALT,			'G',		ID_VIEW_WINDOWS_CTAGS},
+	{K_ALT,			VK_F6,		ID_VIEW_WINDOWS_PROJECT},
+	{K_ALT,			VK_F7,		ID_VIEW_WINDOWS_TEXTCLIPS},
+	{K_ALT,			VK_F8,		ID_VIEW_WINDOWS_FINDRESULTS},
+	{K_ALT,			VK_F9,		ID_VIEW_WINDOWS_CTAGS},
+	{K_ALT,			VK_F10,		ID_VIEW_WINDOWS_SCRIPTS},
+	//{K_ALT,			'G',		ID_VIEW_WINDOWS_CTAGS}, - Alt G to go back to Jump To!
 
 	// View | Folding
 	{K_CTRLALT,		VK_SUBTRACT,ID_VIEW_COLLAPSEALLFOLDS},

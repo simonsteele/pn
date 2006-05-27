@@ -54,8 +54,8 @@ class Options : public extensions::IOptions
 		//SReplaceOptions*	GetReplaceOptions()		{return &m_ReplaceOptions;}
 		SearchOptions*		GetSearchOptions()		{return &m_SearchOptions;}
 
-		void BeginGroupOperation(LPCTSTR subkey);
-		void EndGroupOperation();
+		virtual void BeginGroupOperation(LPCTSTR subkey);
+		virtual void EndGroupOperation();
 
 		// Used for a very special case of getting PN's Path at startup before
 		// there is an options manager.

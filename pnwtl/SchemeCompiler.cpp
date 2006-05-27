@@ -325,14 +325,7 @@ void SchemeCompiler::sendStyle(StyleDetails* s, SchemeRecorder* compiler)
 
 void SchemeCompiler::onFile(LPCTSTR filename)
 {
-	ssreg::CSRegistry reg;
-	reg.OpenKey(_T("Software\\Echo Software\\PN2\\SchemeDates"), true);
-
-	tstring filepart;
-	CFileName fn(filename);
-	fn.GetFileName(filepart);
-
-	reg.WriteInt(filepart.c_str(), FileAge(filename));
+	
 }
 
 void SchemeCompiler::onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom)

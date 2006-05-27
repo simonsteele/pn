@@ -32,16 +32,8 @@ UserSettingsParser::UserSettingsParser()
 
 void UserSettingsParser::Parse(LPCTSTR path, SchemeLoaderState* pState)
 {
-	ssreg::CSRegistry reg;
-	reg.OpenKey(_T("Software\\Echo Software\\PN2\\SchemeDates"), true);
-	
-	if(FileExists(path))
+	if(!FileExists(path))
 	{
-		reg.WriteInt(_T("UserSettings"),  FileAge(path));
-	}
-	else
-	{
-		reg.DeleteValue(_T("UserSettings"));
 		return;
 	}
 

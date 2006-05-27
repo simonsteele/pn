@@ -80,7 +80,7 @@ public:
 	////////////////////////////////////////////////////////////////
 	// CMainFrame Implementation
 
-	CMainFrame();
+	CMainFrame(CommandDispatch* commands);
 
 	~CMainFrame();
 
@@ -391,6 +391,7 @@ protected:
 
 	void handleCommandLine(std::list<tstring>& parameters);
 
+	void setupAccelerators(HMENU mainMenu);
 	void setupToolsUI();
 
 protected:
@@ -413,10 +414,8 @@ protected:
 		TBR_FILE = 103,
 	};
 
-protected:
-	//CFindDlg*				m_FindDialog;
-	//CReplaceDlg*			m_ReplaceDialog;
-	//CDockingOutputWindow*	m_pOutputWnd;
+private:
+	CommandDispatch*		m_pCmdDispatch;
 	COutputView*			m_pOutputWnd;
 	//COutputView*			m_pFindResultsWnd;
 	CFindInFilesView*		m_pFindResultsWnd;

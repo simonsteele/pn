@@ -14,6 +14,7 @@
 #include "scaccessor.h"
 #include "smartstart.h"
 #include "include/utf8_16.h"
+#include "include/lineendings.h"
 #include "scriptregistry.h"
 
 #if defined (_DEBUG)
@@ -22,9 +23,10 @@
 	static char THIS_FILE[] = __FILE__;
 #endif
 
-CTextView::CTextView(DocumentPtr document) : baseClass()
+CTextView::CTextView(DocumentPtr document, CommandDispatch* commands) : baseClass()
 {
 	m_pDoc = document;
+	m_pCmdDispatch = commands;
 
 	m_pLastScheme = NULL;
 	m_waitOnBookmarkNo = FALSE;
@@ -165,52 +167,6 @@ int determineEncoding(unsigned char* pBuf, int nLen, EPNEncoding& eEncoding) {
 	return nRet;
 }
 
-EPNSaveFormat determineLineEndings(char* pBuf, int nLen)
-{
-	char c, n, p;
-	int linesCRLF, linesCR, linesLF;
-	
-	linesCRLF = linesCR = linesLF = 0;
-	p = NULL;
-	
-	for(int i = 0; i < nLen; i++)
-	{
-		c = pBuf[i];
-		n = ((i < nLen) ? pBuf[i+1] : NULL);
-
-        if (c == '\r') 
-		{
-			if (n == '\n')
-			{
-				linesCRLF++;
-				// Skip the next character (\n).
-				i++;
-				p = '\n';
-				continue;
-			}
-			else
-				linesCR++;
-		} 
-		else if (c == '\n') 
-		{
-			linesLF++;
-		}
-		
-		p = c;
-	}
-
-	if (((linesLF >= linesCR) && (linesLF > linesCRLF)) || ((linesLF > linesCR) && (linesLF >= linesCRLF)))
-		return PNSF_Unix;
-	else if (((linesCR >= linesLF) && (linesCR > linesCRLF)) || ((linesCR > linesLF) && (linesCR >= linesCRLF)))
-		return PNSF_Mac;
-	
-	else if (((linesCRLF >= linesLF) && (linesCRLF > linesCR)) || ((linesCRLF > linesLF) && (linesCRLF >= linesCR)))
-		return PNSF_Windows;
-
-	// Default
-	return (EPNSaveFormat)OPTIONS->GetCached(Options::OLineEndings);
-}
-
 bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 {
 	// We don't want smart start if we're opening a file...
@@ -250,13 +206,13 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 		char* data = new char[useBlockSize];
 		int lenFile = file.Read(data, useBlockSize);
 
-		EPNSaveFormat endings = determineLineEndings(data, lenFile);
-
 		///See if there's an encoding specified or not...
         if(encoding == eUnknown)
 			determineEncoding(reinterpret_cast<unsigned char*>(data), lenFile, m_encType);
 		else
 			m_encType = encoding;
+
+		EPNSaveFormat endings = determineLineEndings(reinterpret_cast<unsigned char*>(data), lenFile, m_encType);
 
 		if(m_encType != eUnknown)
 		{
@@ -652,8 +608,6 @@ Scheme* CTextView::GetCurrentScheme()
 
 void CTextView::DoContextMenu(CPoint* point)
 {
-	CommandDispatch& dispatch = CommandDispatch::GetInstanceRef();
-
 	CSPopupMenu popup(IDR_POPUP_EDITOR);
 	CSPopupMenu popupProjects;
 
@@ -669,7 +623,7 @@ void CTextView::DoContextMenu(CPoint* point)
 		int index = 0;
 		for(Projects::PL_CIT i = projects.begin(); i != projects.end(); ++i)
 		{
-			int iCmd = dispatch.GetNextID();
+			int iCmd = m_pCmdDispatch->GetNextID();
 			popupProjects.AddItem((*i)->GetName(), iCmd);
 			menuIDs.push_back(iCmd);
 			index++;
@@ -719,7 +673,7 @@ void CTextView::DoContextMenu(CPoint* point)
 
 	for(std::vector<int>::iterator i = menuIDs.begin(); i != menuIDs.end(); ++i)
 	{
-		dispatch.ReturnID((*i));
+		m_pCmdDispatch->ReturnID((*i));
 	}
 }
 

@@ -58,10 +58,6 @@ void Scheme::Init()
 	m_Title = NULL;
 	m_pManager = NULL;
 	m_bInternal = false;
-	/*m_bOverrideUseTabs = false;
-	m_bOverrideTabWidth = false;
-	m_bUseTabs = false;
-	m_tabWidth = 4;*/
 }
 
 Scheme::~Scheme()
@@ -541,7 +537,6 @@ const Scheme& Scheme::operator = (const Scheme& copy)
 
 void DefaultScheme::Load(CScintilla& sc, LPCTSTR filename)
 {
-	//SetupScintilla(sc);
 	Scheme::Load(sc);
 }
 
@@ -606,97 +601,71 @@ void SchemeManager::SetPath(LPCTSTR schemepath)
 	SetSMString(m_SchemePath, schemepath);
 }
 
+#define BAD_CSCHEME_FILE 0x01
+
 void SchemeManager::Load()
+{
+	try
+	{
+		internalLoad(false);
+	}
+	catch(int& error)
+	{
+		if(error == BAD_CSCHEME_FILE)
+		{
+			internalLoad(true);
+		}
+	}
+}
+
+class FindMinder
+{
+public:
+	FindMinder(HANDLE hf) : _hf(hf){}
+	~FindMinder() { ::FindClose(_hf); }
+private:
+	HANDLE _hf;
+};
+
+void SchemeManager::internalLoad(bool forceCompile)
 {
 	PNASSERT(m_SchemePath != NULL);
 	PNASSERT(m_CompiledPath != NULL);
-
-	CSRegistry reg;
-	reg.OpenKey(_T("Software\\Echo Software\\PN2\\SchemeDates"), true);
-
-	bool bCompile = false;
 	
+	tstring sPattern = m_CompiledPath;
+	sPattern += _T("*.cscheme");
+
 	tstring usersettings = m_CompiledPath;
 	usersettings += _T("UserSettings.xml");
-	int us_age = reg.ReadInt(_T("UserSettings"), 0);
-	if(FileExists(usersettings.c_str()))
-	{
-		if(FileAge(usersettings.c_str()) != us_age)
-			bCompile = true;
-	}
-	else
-	{
-		if(us_age != 0)
-			bCompile = true;
-	}
-
+	
 	tstring defaultPath = m_CompiledPath;
 	defaultPath += _T("default.cscheme");
+
 	m_DefaultScheme.SetFileName(defaultPath.c_str());
-	if(!FileExists(defaultPath.c_str()))
-		bCompile = true;
 
-	// Find the scheme def files one by one...
-	HANDLE hFind;
-	WIN32_FIND_DATA FindFileData;
-
-	tstring sPattern;
-	
-	tstring SchemeName(_T(""));
-
-	//sPattern += _T("*.scheme");
-
-	BOOL found = TRUE;
-	tstring to_open;
-
-	if(!bCompile)
-	{
-		for(int type = 0; type < 2; type++)
-		{
-			sPattern = m_SchemePath;
-			sPattern += (type == 0 ? _T("*.scheme") : _T("*.schemedef"));
-
-			hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
-			if (hFind != INVALID_HANDLE_VALUE) 
-			{
-				while (found)
-				{
-					///@todo Do we really need to keep a list of Schemes and a map?
-					// to_open is a scheme file
-					to_open = m_SchemePath;
-					to_open += FindFileData.cFileName;
-
-					if( reg.ReadInt(FindFileData.cFileName, 0) != FileAge(to_open.c_str()) )
-					{
-						bCompile = true;
-						break;
-					}
-
-					found = FindNextFile(hFind, &FindFileData);
-				}
-
-				FindClose(hFind);
-			}
-		}
-	}
-
-	if(bCompile)
+	if(forceCompile || !FileExists(defaultPath.c_str()))
 	{
 		Compile();
 	}
 
-	sPattern = m_CompiledPath;
-	sPattern += _T("*.cscheme");
+	tstring SchemeName;
+	tstring to_open;
 	
-	hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
+	WIN32_FIND_DATA FindFileData;
+	BOOL found;
+	HANDLE hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
+
 	if(hFind == INVALID_HANDLE_VALUE)
 	{
 		// The compiled schemes directory may have been moved, re-compile.
 		Compile();
 		hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
 	}
+
 	if (hFind != INVALID_HANDLE_VALUE)
 	{
+		FindMinder minder(hFind);
+
 		found = TRUE;
 
 		Scheme *cs = NULL;
@@ -706,7 +675,6 @@ void SchemeManager::Load()
 		{
 			if(_tcscmp(_T("default.cscheme"), FindFileData.cFileName) != 0)
 			{
-				
 				Scheme sch;
 				csi = m_Schemes.insert(m_Schemes.end(), sch);
 				cs = &(*csi);
@@ -722,7 +690,15 @@ void SchemeManager::Load()
 					tstring dbgout = _T("Skipping bad scheme: ");
 					dbgout += FindFileData.cFileName;
 					m_Schemes.erase(csi);
-					::OutputDebugString(dbgout.c_str());
+					LOG(dbgout.c_str());
+
+					// If this is our first time around, we throw an exception
+					// to cause the outer function to force us to try a recompile...
+					if(!forceCompile)
+					{
+						m_Schemes.clear();
+						throw BAD_CSCHEME_FILE;
+					}
 				}
 				else
 				{
@@ -739,8 +715,6 @@ void SchemeManager::Load()
 
 			found = FindNextFile(hFind, &FindFileData);
 		}
-
-		FindClose(hFind);
 	}
 
 	m_Schemes.sort();
@@ -865,7 +839,7 @@ void SchemeManager::Compile()
 	sc.Compile(m_SchemePath, m_CompiledPath, _T("master.scheme"));
 }
 
-void SchemeManager::BuildMenu(HMENU menu, CommandEventHandler* pHandler, int iCommand, bool bNewMenu)
+void SchemeManager::BuildMenu(HMENU menu, CommandDispatch* pDispatch, CommandEventHandler* pHandler, int iCommand, bool bNewMenu)
 {
 	CSMenuHandle m(menu);
 	int id;
@@ -878,14 +852,14 @@ void SchemeManager::BuildMenu(HMENU menu, CommandEventHandler* pHandler, int iCo
 		m.AddItem(_T(""));
 	}
 	
-	id = CommandDispatch::GetInstance()->RegisterCallback(pHandler, iCommand, (LPVOID)GetDefaultScheme());
+	id = pDispatch->RegisterCallback(pHandler, iCommand, (LPVOID)GetDefaultScheme());
 	m.AddItem(_T("Plain Text"), id);
 
 	for(SCIT i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
 	{
 		if( !(*i).IsInternal() )
 		{
-			id = CommandDispatch::GetInstance()->RegisterCallback(pHandler, iCommand, (LPVOID)&(*i));
+			id = pDispatch->RegisterCallback(pHandler, iCommand, (LPVOID)&(*i));
 			m.AddItem( (*i).GetTitle(), id);
 		}
 	}
@@ -987,21 +961,20 @@ CSchemeSwitcher::~CSchemeSwitcher()
 
 }
 
-void CSchemeSwitcher::BuildMenu(int iCommand)
+void CSchemeSwitcher::BuildMenu(int iCommand, CommandDispatch* dispatch)
 {
 	menuid_scheme_pair x;
 	SchemeManager& sm = SchemeManager::GetInstanceRef();
 	SCHEME_LIST* pSchemes = sm.GetSchemesList();
-	CommandDispatch& mm = CommandDispatch::GetInstanceRef();
 	
-	m_menu.AddItem( sm.GetDefaultScheme()->GetTitle(), mm.RegisterCallback(NULL, iCommand, (LPVOID)sm.GetDefaultScheme()) );
+	m_menu.AddItem( sm.GetDefaultScheme()->GetTitle(), dispatch->RegisterCallback(NULL, iCommand, (LPVOID)sm.GetDefaultScheme()) );
 
 	for(SCIT i = pSchemes->begin(); i != pSchemes->end(); ++i)
 	{
 		if( !(*i).IsInternal() )
 		{
 			x.pScheme = &(*i);
-			x.iCommand = mm.RegisterCallback(NULL, iCommand, (LPVOID)x.pScheme);
+			x.iCommand = dispatch->RegisterCallback(NULL, iCommand, (LPVOID)x.pScheme);
 
 			m_menu.AddItem( x.pScheme->GetTitle(), x.iCommand );
 			m_list.insert(m_list.end(), x);
@@ -1009,10 +982,10 @@ void CSchemeSwitcher::BuildMenu(int iCommand)
 	}
 }
 
-void CSchemeSwitcher::Reset(int iCommand)
+void CSchemeSwitcher::Reset(CommandDispatch* pDispatch, int iCommand)
 {
 	m_list.clear();
-	BuildMenu(iCommand);
+	BuildMenu(iCommand, pDispatch);
 }
 
 void CSchemeSwitcher::SetActiveScheme(Scheme* pCurrent)

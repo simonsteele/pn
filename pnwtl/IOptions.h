@@ -69,6 +69,9 @@ public:
 		virtual std::basic_string<TCHAR> Get(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault) = 0;
 
 		virtual void GetPNPath(std::basic_string<TCHAR>& path, int pathtype = PNPATH_PN) = 0;
+
+		virtual void BeginGroupOperation(LPCTSTR subkey) = 0;
+		virtual void EndGroupOperation() = 0;
 };
 
 } //namespace extensions

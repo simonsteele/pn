@@ -807,6 +807,9 @@
 				RelativePath=".\include\genx\genx.h">
 			</File>
 			<File
+				RelativePath=".\include\lineendings.h">
+			</File>
+			<File
 				RelativePath=".\include\mdump.cpp">
 			</File>
 			<File

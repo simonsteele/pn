@@ -5,6 +5,7 @@
 // Predeclarations:
 namespace extensions { class Extension; }
 class AppSettings;
+class CommandDispatch;
 ////////////////////////
 
 /**
@@ -22,6 +23,7 @@ public:
 
 	void Init();
 
+	CommandDispatch& GetCommandDispatch();
 	const AppSettings& GetSettings();
 
 // Implement IPN:
@@ -60,6 +62,7 @@ private:
 	EventSinkList	m_sinks;
 	ExtensionList	m_exts;
 	AppSettings*	m_settings;
+	CommandDispatch*m_dispatch;
 };
 
 #endif

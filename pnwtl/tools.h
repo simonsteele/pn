@@ -64,9 +64,9 @@ class SchemeTools
 
 		virtual void	WriteDefinition(ToolsXMLWriter& writer, ToolSource* source);
 
-		// You only need to do the following if you can't call GetMenu.
-		void			AllocateMenuResources(int iCommand = TOOLS_RUNTOOL);
-		void			ReleaseMenuResources();
+		// You only need to do the following if you can't call GetMenu on the manager...
+		void			AllocateMenuResources(CommandDispatch* dispatcher, int iCommand = TOOLS_RUNTOOL);
+		void			ReleaseMenuResources(CommandDispatch* dispatcher);
 
 		HACCEL			GetAcceleratorTable();
 
@@ -125,17 +125,17 @@ class ToolsManager :
 		ProjectTools* GetToolsForProject(LPCTSTR id);
 		//int GetMenuFor(LPCTSTR scheme, CSMenuHandle& menu, int iInsertBefore);
 
-		void ReLoad(bool bWantMenuResources = false);
+		void ReLoad(CommandDispatch* pDispatch = NULL);
 		void Save();
 
-		int UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, int iDummyID, LPCSTR schemename, LPCTSTR projectId);
+		int UpdateToolsMenu(CSMenuHandle& tools, CommandDispatch* dispatcher, int iFirstToolCmd, int iDummyID, LPCSTR schemename, LPCTSTR projectId);
 
 		const ToolSource* GetDefaultToolStore();
 
 	protected:
-		void Clear(bool bWantMenuResources = false);
+		void Clear(CommandDispatch* pDispatch = NULL);
 
-		int BuildMenu(TOOLDEFS_LIST& list, CSMenuHandle& menu, int iInsertBefore, int iCommand = TOOLS_RUNTOOL);
+		int BuildMenu(TOOLDEFS_LIST& list, CommandDispatch* dispatcher, CSMenuHandle& menu, int iInsertBefore, int iCommand = TOOLS_RUNTOOL);
 
 		// Scheme & Tool Creation
 		void processScheme(XMLAttributes& atts);

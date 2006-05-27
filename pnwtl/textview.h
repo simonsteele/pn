@@ -24,7 +24,7 @@ class CTextView : public CScintillaWindowImpl< CTextView, CScintillaImpl >
 public:
 	typedef CScintillaWindowImpl< CTextView, CScintillaImpl > baseClass;
 
-	CTextView(DocumentPtr document);
+	CTextView(DocumentPtr document, CommandDispatch* commands);
 	~CTextView();
 
 	BOOL PreTranslateMessage(MSG* pMsg);
@@ -89,7 +89,7 @@ public:
 
 	void checkLineLength();
 
-protected:
+private:
 	bool caretAtBrace(int& posBrace);
 	int seekBrace();
 	int seekBrace(bool forwards);
@@ -97,6 +97,7 @@ protected:
 	void ProcessNumberedBookmark(int n);
 	virtual void OnFirstShow();
 
+	CommandDispatch* m_pCmdDispatch;
 	BOOL m_waitOnBookmarkNo;
 	Scheme* m_pLastScheme;
 	EPNEncoding m_encType;

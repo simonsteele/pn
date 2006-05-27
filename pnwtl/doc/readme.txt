@@ -18,6 +18,7 @@ What's new?
 10) Python scripting extension (pypn)
 11) New lovely toolbar images courtesy of famfamfam.com
 12) Save All toolbar button
+13) Keyboard customisation
 
 Bug Fixes:
 ----------
@@ -37,7 +38,10 @@ Bug Fixes:
 13) Drag & drop file into project folder: appears twice (SF Bug #1490889)
 14) Bugs with projects window (SF Bug #1330960)
 15) "Recent Files" List Not Updated (SF Bug #1377909)
-16) Project tools keyboard shortcut doesn't work (SF Bug #1422790)
+16) Project tools keyboard shortcuts don't work (SF Bug #1422790)
+17) Line endings detection didn't work properly for UTF-16 (SF Bug #1480945)
+18) Using INI file settings did not store re-load options properly
+19) UI settings not stored in INI file when using INI storage
 
 If you find a bug:
 ------------------

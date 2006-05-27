@@ -20,7 +20,7 @@
 #include "resource.h"
 #include "childfrm.h"
 
-App::App()
+App::App() : m_dispatch(NULL)
 {
 	// Now we initialise any l10n stuff...
 	//TODO: Make this check settings in AppSettings to work out what to do. Note that some
@@ -56,15 +56,28 @@ void App::Init()
 	// Where are the Schemes stored?
 	tstring path;
 	tstring cpath;
+	tstring keypath;
 	OPTIONS->GetPNPath(path, PNPATH_SCHEMES);
 	OPTIONS->GetPNPath(cpath, PNPATH_COMPILEDSCHEMES);
+	OPTIONS->GetPNPath(keypath, PNPATH_USERSETTINGS);
+	keypath += _T("keymap.dat");
 
+	// Sort out the schemes...
 	SchemeManager& SM = SchemeManager::GetInstanceRef();
 	SM.SetPath(path.c_str());
 	SM.SetCompiledPath(cpath.c_str());
 	SM.Load();
 
+	// Create the command dispatcher
+	m_dispatch = new CommandDispatch(keypath.c_str());
+
+	// Load our extensions
 	loadExtensions();
+}
+
+CommandDispatch& App::GetCommandDispatch()
+{
+	return *m_dispatch;
 }
 
 const AppSettings& App::GetSettings()
@@ -83,6 +96,8 @@ void App::deinit()
 	// Free up the options object, thus storing the options.
 	OptionsFactory::Release(g_Context.options);
 	g_Context.options = NULL;
+
+	delete m_dispatch;
 }
 
 void App::loadExtensions()

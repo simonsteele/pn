@@ -32,8 +32,9 @@
 
 bool CChildFrame::s_bFirstChild = true;
 
-CChildFrame::CChildFrame(DocumentPtr doc) : m_spDocument(doc), m_view(doc)
+CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands) : m_spDocument(doc), m_view(doc, commands)
 {
+	m_pCmdDispatch = commands;
 	m_hWndOutput = NULL;
 	m_hImgList = NULL;
 	m_pSplitter = NULL;
@@ -372,15 +373,8 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	}
 
 	SetTitle();
-
-	/*CSPopupMenu newMenu;
-	CSchemeManager::GetInstance()->BuildMenu((HMENU)newMenu, this);
-	CSMenuHandle menu = m_hMenu;
-	CSMenuHandle file = menu.GetSubMenu(0);
-	::ModifyMenu(file.GetHandle(), 0, MF_BYPOSITION | MF_POPUP, (UINT)(HMENU)newMenu, _T("&New"));
-	newMenu.Detach();*/
-
 	SetupToolbar();
+	m_pCmdDispatch->UpdateMenuShortcuts(m_hMenu);
 
 	UISetChecked(ID_EDITOR_COLOURISE, true);
 	UISetChecked(ID_EDITOR_WORDWRAP, false);
@@ -538,6 +532,8 @@ LRESULT CChildFrame::OnOptionsUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	UpdateMenu();
 
 	SetTitle(GetModified());
+
+	m_pCmdDispatch->UpdateMenuShortcuts(m_hMenu);
 
 	return 0;
 }
@@ -1597,7 +1593,7 @@ void CChildFrame::UpdateTools(Scheme* pScheme)
 	}
 	
 	m_iFirstToolCmd = ToolsManager::GetInstance()->UpdateToolsMenu(
-		tools, m_iFirstToolCmd, ID_TOOLS_DUMMY, pScheme->GetName(), projid.size() > 0 ? projid.c_str() : NULL
+		tools, m_pCmdDispatch, m_iFirstToolCmd, ID_TOOLS_DUMMY, pScheme->GetName(), projid.size() > 0 ? projid.c_str() : NULL
 	);
 }
 

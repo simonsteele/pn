@@ -11,6 +11,8 @@
 #ifndef schemes_h__included
 #define schemes_h__included
 
+class CommandDispatch;
+
 #ifdef _MSC_VER
 	#pragma once
 #endif
@@ -192,14 +194,14 @@ class CSchemeSwitcher
 		CSchemeSwitcher();
 		~CSchemeSwitcher();
 
-		void Reset(int iCommand = SCHEMEMANAGER_SELECTSCHEME);
+		void Reset(CommandDispatch* pDispatch, int iCommand = SCHEMEMANAGER_SELECTSCHEME);
 
 		void SetActiveScheme(Scheme* pCurrent);
 
 		operator HMENU ();
 
 	protected:
-		void BuildMenu(int iCommand);
+		void BuildMenu(int iCommand, CommandDispatch* dispatch);
 
 		MISCHEMELIST	m_list;
 		CSPopupMenu		m_menu;
@@ -234,16 +236,17 @@ class SchemeManager : public Singleton<SchemeManager, true>
 		SCHEME_MAP* GetExtensionMap() { return &m_SchemeExtMap; }
 		SCHEME_MAP* GetFilenameMap() { return &m_SchemeFileNameMap; }
 
-		void BuildMenu(HMENU menu, CommandEventHandler* pHandler, int iCommand = SCHEMEMANAGER_SELECTSCHEME, bool bNewMenu = true);
+		void BuildMenu(HMENU menu, CommandDispatch* pDispatch, CommandEventHandler* pHandler, int iCommand = SCHEMEMANAGER_SELECTSCHEME, bool bNewMenu = true);
 
 		void SaveExtMap();
 
-	protected:
+	private:
 		Scheme* internalSchemeForFileName(const tstring& filename);
 		Scheme* internalSchemeForExt(const tstring& extension);
 		void internalLoadExtMap(LPCTSTR filename, SCHEME_MAP& extMap, SCHEME_MAP& fnMap);
+		void internalLoad(bool forceCompile);
 
-	protected:
+	private:
 		TCHAR*			m_SchemePath;
 		TCHAR*			m_CompiledPath;
 		SCHEME_LIST		m_Schemes;

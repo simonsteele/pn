@@ -46,7 +46,7 @@ public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MDICHILD)
 	typedef CTabbedMDIChildWindowImpl<CChildFrame> baseClass;
 
-	CChildFrame(DocumentPtr doc);
+	CChildFrame(DocumentPtr doc, CommandDispatch* commands);
 	~CChildFrame();
 	virtual void OnFinalMessage(HWND /*hWnd*/);
 
@@ -314,7 +314,8 @@ protected:
 	int HandleFailedFileOp(LPCSTR filename, bool bOpening);
 	bool attemptOverwrite(LPCTSTR filename);
 
-protected:
+private:
+	CommandDispatch*	m_pCmdDispatch;
 	DocumentPtr			m_spDocument;
 	static bool			s_bFirstChild;
 	HWND				m_hWndOutput;

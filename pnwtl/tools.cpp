@@ -181,17 +181,16 @@ TOOLDEFS_LIST& SchemeTools::GetTools()
 	return m_Tools;
 }
 
-void SchemeTools::AllocateMenuResources(int iCommand)
+void SchemeTools::AllocateMenuResources(CommandDispatch* dispatcher, int iCommand)
 {
 	if(m_Tools.size() != 0)
 	{
-		CommandDispatch* pMan = CommandDispatch::GetInstance();
 		for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
 		{
 			ToolDefinition* pT = (*i);
 			
 			if(pT->CommandID == -1)
-				pT->CommandID = pMan->RegisterCallback(pT->CommandID, NULL, iCommand, (LPVOID)pT);
+				pT->CommandID = dispatcher->RegisterCallback(pT->CommandID, NULL, iCommand, (LPVOID)pT);
 		}
 	}
 }
@@ -200,19 +199,18 @@ void SchemeTools::AllocateMenuResources(int iCommand)
  * This function should be called before this class is deleted if the 
  * menu command IDs used by it are to be made available again.
  */
-void SchemeTools::ReleaseMenuResources()
+void SchemeTools::ReleaseMenuResources(CommandDispatch* dispatcher)
 {
 	if(m_Tools.size() != 0)
 	{
 		ToolDefinition* pT = NULL;
-		CommandDispatch* pMan = CommandDispatch::GetInstance();
 
 		for(TOOLDEFS_LIST::const_iterator i = m_Tools.begin(); i != m_Tools.end(); ++i)
 		{
 			pT = (*i);
 			if(pT->CommandID != -1)
 			{
-				pMan->UnRegisterCallback(pT->CommandID);
+				dispatcher->UnRegisterCallback(pT->CommandID);
 				pT->CommandID = -1;
 			}
 		}
@@ -562,19 +560,19 @@ ToolsManager::~ToolsManager()
 	Clear();
 }
 
-void ToolsManager::Clear(bool bWantMenuResources)
+void ToolsManager::Clear(CommandDispatch* pDispatch)
 {
 	for(SCHEMETOOLS_MAP::iterator i = m_toolSets.begin(); i != m_toolSets.end(); ++i)
 	{
-		if(bWantMenuResources)
-			(*i).second->ReleaseMenuResources();
+		if(pDispatch)
+			(*i).second->ReleaseMenuResources(pDispatch);
 		delete (*i).second;
 	}
 
 	for(SCHEMETOOLS_MAP::iterator k = m_projectTools.begin(); k != m_projectTools.end(); ++k)
 	{
-		if(bWantMenuResources)
-			(*k).second->ReleaseMenuResources();
+		if(pDispatch)
+			(*k).second->ReleaseMenuResources(pDispatch);
 		delete (*k).second;
 	}
 
@@ -590,16 +588,16 @@ void ToolsManager::Clear(bool bWantMenuResources)
 
 	if(m_pGlobalTools)
 	{
-		if(bWantMenuResources)
-			m_pGlobalTools->ReleaseMenuResources();
+		if(pDispatch)
+			m_pGlobalTools->ReleaseMenuResources(pDispatch);
 		delete m_pGlobalTools;
 		m_pGlobalTools = NULL;
 	}
 
 	if(m_pGlobalProjectTools)
 	{
-		if(bWantMenuResources)
-			m_pGlobalProjectTools->ReleaseMenuResources();
+		if(pDispatch)
+			m_pGlobalProjectTools->ReleaseMenuResources(pDispatch);
 		delete m_pGlobalProjectTools;
 		m_pGlobalProjectTools = NULL;
 	}
@@ -662,7 +660,7 @@ SchemeTools* ToolsManager::find(LPCTSTR id, SCHEMETOOLS_MAP& col)
 	return pRet;
 }
 
-int ToolsManager::UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, int iDummyID, LPCSTR schemename, LPCTSTR projectId)
+int ToolsManager::UpdateToolsMenu(CSMenuHandle& tools, CommandDispatch* dispatcher, int iFirstToolCmd, int iDummyID, LPCSTR schemename, LPCTSTR projectId)
 {
 	HMENU m = tools;
 	
@@ -722,7 +720,7 @@ int ToolsManager::UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, int iD
 
 	if(theTools.size() > 0)
 	{
-		iFirstToolCmd = BuildMenu(theTools, tools, iDummyID);
+		iFirstToolCmd = BuildMenu(theTools, dispatcher, tools, iDummyID);
 	}
 	else
 		iFirstToolCmd = iDummyID;
@@ -736,24 +734,22 @@ int ToolsManager::UpdateToolsMenu(CSMenuHandle& tools, int iFirstToolCmd, int iD
 /**
  * @return ID of last command added...
  */
-int ToolsManager::BuildMenu(TOOLDEFS_LIST& tools, CSMenuHandle& menu, int iInsertBefore, int iCommand)
+int ToolsManager::BuildMenu(TOOLDEFS_LIST& tools, CommandDispatch* dispatcher, CSMenuHandle& menu, int iInsertBefore, int iCommand)
 {
 	int iLastCommand = iInsertBefore;
 	if(tools.size() != 0)
-	{
-		CommandDispatch* pMan = CommandDispatch::GetInstance();
-		
+	{		
 		for(TOOLDEFS_LIST::const_iterator i = tools.begin(); i != tools.end(); ++i)
 		{
 			ToolDefinition* pT = (*i);
 			
             if(pT->CommandID == -1)
-				pT->CommandID = pMan->RegisterCallback(pT->CommandID, NULL, iCommand, (LPVOID)pT);
+				pT->CommandID = dispatcher->RegisterCallback(pT->CommandID, NULL, iCommand, (LPVOID)pT);
 
 			tstring str = pT->Name;
 			if(pT->Shortcut != 0)
 			{
-				tstring sc = CSMenu::GetShortcutText(LOBYTE(pT->Shortcut), HIBYTE(pT->Shortcut));
+				tstring sc = dispatcher->GetShortcutText(LOBYTE(pT->Shortcut), HIBYTE(pT->Shortcut));
 				if(sc.length() > 0)
 				{
 					str += "\t";
@@ -774,9 +770,9 @@ const ToolSource* ToolsManager::GetDefaultToolStore()
 	return &m_DefaultToolsSource;
 }
 
-void ToolsManager::ReLoad(bool bWantMenuResources)
+void ToolsManager::ReLoad(CommandDispatch* pDispatch)
 {
-	Clear(bWantMenuResources);
+	Clear(pDispatch);
 
 	XMLParser parser;
 	parser.SetParseState(this);

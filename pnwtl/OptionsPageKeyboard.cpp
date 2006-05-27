@@ -2,15 +2,24 @@
 #include "resource.h"
 #include "OptionsPages.h"
 
-COptionsPageKeyboard::COptionsPageKeyboard(HMENU cmdSource, KeyMap* keyMap)
+COptionsPageKeyboard::COptionsPageKeyboard(CommandDispatch* dispatcher)
 {
-	m_pKeyMap = keyMap;
-	m_hPrimaryCmdSource = cmdSource;
+	m_pDispatch = dispatcher;
+	m_pKeyMap = new KeyMap(*dispatcher->GetCurrentKeyMap());
+	m_bDirty = false;
+}
+
+COptionsPageKeyboard::~COptionsPageKeyboard()
+{
+	delete m_pKeyMap;
 }
 
 void COptionsPageKeyboard::OnOK()
 {
+	if(m_bDirty)
+		m_pDispatch->SetCurrentKeyMap(m_pKeyMap);
 }
+
 void COptionsPageKeyboard::OnInitialise()
 {
 }
@@ -20,6 +29,11 @@ LPCTSTR COptionsPageKeyboard::GetTreePosition()
 	return _T("General\\Keyboard");
 }
 
+bool COptionsPageKeyboard::IsDirty() const
+{
+	return m_bDirty;
+}
+
 void COptionsPageKeyboard::OnCancel()
 {
 
@@ -27,29 +41,51 @@ void COptionsPageKeyboard::OnCancel()
 
 LRESULT COptionsPageKeyboard::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	CSMenu menu(::LoadMenu(_Module.m_hInst, MAKEINTRESOURCE(IDR_MDICHILD)));
 	m_list.Attach(GetDlgItem(IDC_KB_COMMANDS));
 	m_list.SetViewType(LVS_REPORT);
 	m_list.AddColumn(_T("Group"), 0);
 	m_list.AddColumn(_T("Command"), 1);
 	m_list.SetColumnWidth(0, 80);
 	m_list.SetColumnWidth(1, 300);
-	
+	m_list.SetExtendedListViewStyle( LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT );
+
+	CSMenu menu(::LoadMenu(_Module.m_hInst, MAKEINTRESOURCE(IDR_MDICHILD)));
 	addItems(CSMenuHandle(menu), "", 0);
 
 	m_shortcutlist.Attach(GetDlgItem(IDC_KB_ASSIGNEDLIST));
 	m_hotkey.Attach(GetDlgItem(IDC_KB_HOTKEY));
+
+	enableButtons();
 
 	return 0;
 }
 
 LRESULT COptionsPageKeyboard::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	WORD keycode, modifiers;
+	m_hotkey.GetHotKey(keycode, modifiers);
+	if(keycode == 0)
+		return 0;
+
+	modifiers = HKToAccelMod(modifiers);
+
+	int sel = m_list.GetSelectedIndex();
+	DWORD id = m_list.GetItemData(sel);
+	m_pKeyMap->AssignCmdKey(keycode, modifiers, id);
+
+	m_bDirty = true;
+
+	updateSelection();
+
 	return 0;
 }
 
 LRESULT COptionsPageKeyboard::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	m_bDirty = true;
+
+	updateSelection();
+
 	return 0;
 }
 
@@ -58,9 +94,7 @@ LRESULT COptionsPageKeyboard::OnHotKeyChanged(WORD /*wNotifyCode*/, WORD /*wID*/
 	WORD keycode, modifiers, real_modifiers(0);
 	m_hotkey.GetHotKey(keycode, modifiers);
 
-	if( modifiers & HOTKEYF_ALT ) real_modifiers |= FALT;
-	if( modifiers & HOTKEYF_CONTROL ) real_modifiers |= FCONTROL;
-	if( modifiers & HOTKEYF_SHIFT) real_modifiers |= FSHIFT;
+	real_modifiers = HKToAccelMod(modifiers);
 
 	// Look for commands with this key assigned...
 	const KeyToCommand* mappings = m_pKeyMap->GetMappings();
@@ -168,6 +202,16 @@ void COptionsPageKeyboard::clear()
 	m_hotkey.SetHotKey(0,0);
 }
 
+void COptionsPageKeyboard::enableButtons()
+{
+	int sel = m_list.GetSelectedIndex();
+	m_hotkey.EnableWindow( sel != -1 );
+	GetDlgItem(IDC_KB_ADD).EnableWindow( sel != -1 );
+	
+	int kbsel = m_shortcutlist.GetCurSel();
+	GetDlgItem(IDC_KB_REMOVE).EnableWindow( kbsel != LB_ERR );
+}
+
 std::string COptionsPageKeyboard::findCommandName(DWORD command)
 {
 	for(int ix(0); ix < m_list.GetItemCount(); ++ix)
@@ -195,24 +239,26 @@ void COptionsPageKeyboard::updateSelection()
 	clear();
 
 	int sel = m_list.GetSelectedIndex();
-	if(sel == -1)
-		return;
-
-	DWORD id = m_list.GetItemData(sel);
-	size_t noof_mappings = m_pKeyMap->GetCount();
-	const KeyToCommand* mappings = m_pKeyMap->GetMappings();
-
-	for(size_t ixMap(0); ixMap < noof_mappings; ++ixMap)
+	if(sel != -1)
 	{
-		if(mappings[ixMap].msg == id)
+		DWORD id = m_list.GetItemData(sel);
+		size_t noof_mappings = m_pKeyMap->GetCount();
+		const KeyToCommand* mappings = m_pKeyMap->GetMappings();
+
+		for(size_t ixMap(0); ixMap < noof_mappings; ++ixMap)
 		{
-			int hkmods(0);
-			if( mappings[ixMap].modifiers & FALT ) hkmods |= HOTKEYF_ALT;
-			if( mappings[ixMap].modifiers & FCONTROL ) hkmods |= HOTKEYF_CONTROL;
-			if( mappings[ixMap].modifiers & FSHIFT ) hkmods |= HOTKEYF_SHIFT;
-			tstring sc = CSMenu::GetShortcutText(mappings[ixMap].key, hkmods);
-			int ixLI = m_shortcutlist.AddString(sc.c_str());
-			m_shortcutlist.SetItemData(ixLI, ixMap);
+			if(mappings[ixMap].msg == id)
+			{
+				int hkmods(0);
+				if( mappings[ixMap].modifiers & FALT ) hkmods |= HOTKEYF_ALT;
+				if( mappings[ixMap].modifiers & FCONTROL ) hkmods |= HOTKEYF_CONTROL;
+				if( mappings[ixMap].modifiers & FSHIFT ) hkmods |= HOTKEYF_SHIFT;
+				tstring sc = m_pDispatch->GetShortcutText(mappings[ixMap].key, hkmods);
+				int ixLI = m_shortcutlist.AddString(sc.c_str());
+				m_shortcutlist.SetItemData(ixLI, ixMap);
+			}
 		}
 	}
+
+	enableButtons();
 }

@@ -589,7 +589,8 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 								public CWinDataExchange<COptionsPageKeyboard>
 {
 	public:
-		COptionsPageKeyboard(HMENU cmdSource, KeyMap* keyMap);
+		COptionsPageKeyboard(CommandDispatch* dispatcher);
+		~COptionsPageKeyboard();
 
 		BEGIN_MSG_MAP(COptionsPageKeyboard)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -612,6 +613,8 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 		virtual void OnInitialise();
 		virtual LPCTSTR GetTreePosition();
 		virtual void OnCancel();
+		
+		bool IsDirty() const;
 
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -623,15 +626,16 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 
 		int addItems(CSMenuHandle& menu, const char* group, int count = 0);
 		void clear();
+		void enableButtons();
 		std::string findCommandName(DWORD command);
 		void updateSelection();
 
-
-		HMENU			m_hPrimaryCmdSource;
 		KeyMap*			m_pKeyMap;
+		CommandDispatch*m_pDispatch;
 		CListViewCtrl	m_list;
 		CListBox		m_shortcutlist;
 		CHotKeyCtrl		m_hotkey;
+		bool			m_bDirty;
 
 		/*BOOL			m_bUseTabs;
 		BOOL			m_bLineNos;

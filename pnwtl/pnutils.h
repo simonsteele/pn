@@ -208,16 +208,13 @@ class CMRUList
 
 		LPCTSTR GetEntry(int index);
 
-		void SetRegistryKey(LPCTSTR key, bool load = true);
-
-		void SaveToRegistry();
-		void LoadFromRegistry();
+		void Save(extensions::IOptions* options, LPCTSTR key);
+		void Load(extensions::IOptions* options, LPCTSTR key);
 
 	protected:		
 		void Resize();
 
 		CSimpleArray<_entry>	m_entries;
-		CString					m_regkey;
 		int						m_iMaxSize;
 };
 

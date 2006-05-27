@@ -69,8 +69,9 @@ const DWORD ToolbarIds[4] = {
 	ATL_IDW_BAND_FIRST + 1,
 };
 
-CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(ID_MRUPROJECT_BASE, 4)
+CMainFrame::CMainFrame(CommandDispatch* commands) : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(ID_MRUPROJECT_BASE, 4)
 {
+	m_pCmdDispatch = commands;
 	m_pFindEx = NULL;
 	m_pOutputWnd = NULL;
 	m_pFindResultsWnd = NULL;
@@ -93,7 +94,7 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(I
 	m_hProjAccel = NULL;
 
 	SchemeTools* pGlobalTools = ToolsManager::GetInstance()->GetGlobalTools();
-	pGlobalTools->AllocateMenuResources();
+	pGlobalTools->AllocateMenuResources(m_pCmdDispatch);
 	m_hGlobalToolAccel = pGlobalTools->GetAcceleratorTable();
 
 	m_hILMain = NULL;
@@ -129,7 +130,7 @@ CMainFrame::~CMainFrame()
 CChildFrame* CMainFrame::NewEditor()
 {
 	DocumentPtr pD(new Document());
-	CChildFrame* pChild = new CChildFrame(pD);
+	CChildFrame* pChild = new CChildFrame(pD, m_pCmdDispatch);
 	PNASSERT(pChild != NULL);
 	pD->AddChildFrame(pChild);
 
@@ -721,6 +722,13 @@ void CMainFrame::CreateDockingWindows()
 	getDocker(DW_FINDRESULTS)->DockTo( getDocker(DW_OUTPUT)->m_hWnd, 0 );
 	getDocker(DW_CTAGS)->DockTo( getDocker(DW_PROJECTS)->m_hWnd, 0 );
 	getDocker(DW_TEXTCLIPS)->DockTo( getDocker(DW_PROJECTS)->m_hWnd, 0 );
+
+	// Register icons for menu niceness...
+	m_CmdBar.AddIcon(getDocker(DW_FINDRESULTS)->GetIcon(FALSE), ID_VIEW_WINDOWS_FINDRESULTS);
+	m_CmdBar.AddIcon(getDocker(DW_PROJECTS)->GetIcon(FALSE), ID_VIEW_WINDOWS_PROJECT);
+	m_CmdBar.AddIcon(getDocker(DW_SCRIPTS)->GetIcon(FALSE), ID_VIEW_WINDOWS_SCRIPTS);
+	m_CmdBar.AddIcon(getDocker(DW_TEXTCLIPS)->GetIcon(FALSE), ID_VIEW_WINDOWS_TEXTCLIPS);
+	m_CmdBar.AddIcon(getDocker(DW_OUTPUT)->GetIcon(FALSE), ID_VIEW_OUTPUT);
 }
 
 /**
@@ -868,7 +876,7 @@ HWND CMainFrame::CreateEx(HWND hWndParent, ATL::_U_RECT rect, DWORD dwStyle, DWO
 	//if(hWnd != NULL)
 	//	m_hAccel = ::LoadAccelerators(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(T::GetWndClassInfo().m_uCommonResourceID));
 	// Load our own accelerator table...
-	m_hAccel = CommandDispatch::GetInstance()->GetAccelerators();
+	setupAccelerators(m_hMenu);
 
 	return hWnd;
 }
@@ -988,20 +996,20 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	pLoop->AddIdleHandler(this);
 
 	// Initialise our popup menus.
-	m_Switcher.Reset(MENUMESSAGE_CHANGESCHEME);
-	SchemeManager::GetInstance()->BuildMenu((HMENU)m_NewMenu, this);
+	m_Switcher.Reset(m_pCmdDispatch, MENUMESSAGE_CHANGESCHEME);
+	SchemeManager::GetInstance()->BuildMenu((HMENU)m_NewMenu, m_pCmdDispatch, this);
 
-	CString mrukey;
+	tstring mrukey;
 	mrukey = pnregroot;
 	mrukey += PNSK_MRU;
 	m_RecentFiles.SetSize(OPTIONS->Get(PNSK_INTERFACE, _T("MRUSize"), 4));
-	m_RecentFiles.SetRegistryKey(mrukey);
+	m_RecentFiles.Load(OPTIONS, mrukey.c_str());
 	m_RecentFiles.UpdateMenu();
 
 	mrukey = pnregroot;
 	mrukey += PNSK_MRUP;
 	m_RecentProjects.SetSize(OPTIONS->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4));
-	m_RecentProjects.SetRegistryKey(mrukey);
+	m_RecentProjects.Load(OPTIONS, mrukey.c_str());
 	m_RecentProjects.UpdateMenu();
 	
 	AddMRUMenu(CSMenuHandle(m_hMenu));
@@ -1770,7 +1778,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsPageAFiles			pageAFiles;
 	COptionsPageFileAssoc		pageFileAssoc;
 	
-	COptionsPageKeyboard		pageKeyboard(m_hMenu, CommandDispatch::GetInstance()->GetCurrentKeyMap());
+	COptionsPageKeyboard		pageKeyboard(m_pCmdDispatch);
 
 	schemeconfig.LoadConfig(pSM->GetPath(), pSM->GetCompiledPath());
 
@@ -1804,11 +1812,11 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 
 		// and then re-load them into the main manager...
 		ToolsManager* pSTM = ToolsManager::GetInstance();
-		pSTM->ReLoad(true); // pass in true to cache menu resources.
+		pSTM->ReLoad(m_pCmdDispatch); // pass in true to cache menu resources.
 
 		dwTimeNow = ::GetTickCount() - dwTimeNow;
 		char buf[55];
-		sprintf(buf, "Took: %dms", dwTimeNow);
+		sprintf(buf, "Took %dms to save tools\n", dwTimeNow);
 		LOG(buf);
 
 		///@todo more dirty checking...
@@ -1816,17 +1824,28 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 		if( pageStyle.IsDirty() || pageSchemes.IsDirty() )
             SchemeManager::GetInstance()->Compile();
 
-		PerformChildEnum(ChildOptionsUpdateNotify);
-
 		m_RecentFiles.SetSize( OPTIONS->Get(PNSK_INTERFACE, _T("MRUSize"), 4) );
 		m_RecentFiles.UpdateMenu();
 
 		m_RecentProjects.SetSize( OPTIONS->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4) );
 		m_RecentProjects.UpdateMenu();
 
+		if(pageKeyboard.IsDirty())
+		{			
+			tstring kmfile;
+			OPTIONS->GetPNPath(kmfile, PNPATH_USERSETTINGS);
+			kmfile += _T("keymap.dat");
+			m_pCmdDispatch->Save(kmfile.c_str());
+			
+			setupAccelerators(m_hMenu);
+			
+		}
+
+		PerformChildEnum(ChildOptionsUpdateNotify);
+
 		setupToolsUI();
 
-		pSTM->GetGlobalTools()->AllocateMenuResources();
+		pSTM->GetGlobalTools()->AllocateMenuResources(m_pCmdDispatch);
 		m_hGlobalToolAccel = pSTM->GetGlobalTools()->GetAcceleratorTable();
 	}
 
@@ -2240,6 +2259,12 @@ void CMainFrame::AddMRUProjectsEntry(LPCTSTR lpszFile)
 	}
 }
 
+void CMainFrame::setupAccelerators(HMENU mainMenu)
+{
+	m_hAccel = m_pCmdDispatch->GetAccelerators();
+	m_pCmdDispatch->UpdateMenuShortcuts(mainMenu);
+}
+
 void CMainFrame::setupToolsUI()
 {
 	CSMenuHandle menu(m_hMenu);
@@ -2263,7 +2288,7 @@ void CMainFrame::setupToolsUI()
 	}
 	
 	m_iFirstToolCmd = pTM->UpdateToolsMenu(
-		tools, m_iFirstToolCmd, ID_TOOLS_DUMMY, NULL, projid.size() > 0 ? projid.c_str() : NULL
+		tools, m_pCmdDispatch, m_iFirstToolCmd, ID_TOOLS_DUMMY, NULL, projid.size() > 0 ? projid.c_str() : NULL
 	);
 
 	m_hProjAccel = NULL;
@@ -2279,7 +2304,7 @@ void CMainFrame::setupToolsUI()
 		if(m_hProjAccel == NULL)
 		{
 			SchemeTools* pTools = pTM->GetGlobalProjectTools();
-			pTools->AllocateMenuResources();
+			pTools->AllocateMenuResources(m_pCmdDispatch);
 			m_hProjAccel = pTools->GetAcceleratorTable();
 		}
 	}
@@ -2399,6 +2424,15 @@ void CMainFrame::SaveGUIState(LPCTSTR stateName)
 
 	CPNWindowStateStorage storage(configName);
 	m_GUIState.Store(storage);
+
+	tstring mrukey;
+	mrukey = pnregroot;
+	mrukey += PNSK_MRU;
+	m_RecentFiles.Save(OPTIONS, mrukey.c_str());
+
+	mrukey = pnregroot;
+	mrukey += PNSK_MRUP;
+	m_RecentProjects.Save(OPTIONS, mrukey.c_str());
 }
 
 /**

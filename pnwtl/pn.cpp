@@ -12,7 +12,6 @@
 #include "resource.h"
 
 #include "version.h"
-#include "pnutils.h"
 
 #include "pndocking.h"
 #include "MainFrm.h"
@@ -96,12 +95,12 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
 
-	// Set up the main window for the app.
-	CMainFrame wndMain;
-	g_Context.m_frame = static_cast<IMainFrame*>(&wndMain);
-
 	// Load scheme types and do other pre-run init.
 	theApp->Init();
+
+	// Set up the main window for the app.
+	CMainFrame wndMain(&theApp->GetCommandDispatch());
+	g_Context.m_frame = static_cast<IMainFrame*>(&wndMain);
 
 	if(wndMain.CreateEx() == NULL)
 	{
