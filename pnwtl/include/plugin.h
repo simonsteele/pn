@@ -11,7 +11,7 @@ class Plugin
 
 		~Plugin()
 		{
-			unload();
+			Unload();
 		}
 
 		FARPROC FindFunction(LPCSTR fnName)
@@ -27,7 +27,7 @@ class Plugin
 			return hModule != NULL;
 		}
 
-		void Unload()
+		virtual void Unload()
 		{
 			unload();
 		}

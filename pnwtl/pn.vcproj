@@ -321,6 +321,9 @@
 				RelativePath="exporters.cpp">
 			</File>
 			<File
+				RelativePath=".\extapp.cpp">
+			</File>
+			<File
 				RelativePath=".\FileAssoc.cpp">
 			</File>
 			<File
@@ -497,6 +500,9 @@
 			</File>
 			<File
 				RelativePath="exporters.h">
+			</File>
+			<File
+				RelativePath=".\extapp.h">
 			</File>
 			<File
 				RelativePath=".\FileAssoc.h">
@@ -982,12 +988,6 @@
 		<Filter
 			Name="Extensions"
 			Filter="">
-			<File
-				RelativePath=".\extapp.cpp">
-			</File>
-			<File
-				RelativePath=".\extapp.h">
-			</File>
 			<File
 				RelativePath=".\extension.h">
 			</File>

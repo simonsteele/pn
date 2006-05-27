@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <list>
 
 #define PNASSERT ATLASSERT
 

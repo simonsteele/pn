@@ -86,6 +86,7 @@ public:
 	virtual ~IAppEventSink(){}
 
 	virtual void OnNewDocument(IDocumentPtr doc) = 0;
+	virtual void OnAppClose() = 0;
 };
 
 /**

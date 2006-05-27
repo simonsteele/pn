@@ -15,6 +15,7 @@ AppSettings::AppSettings()
 {
 	m_bUseIni = false;
 	m_userPath = _T("");
+	Options::StaticGetPNPath(m_pnpath);
 
 	load();
 }
@@ -34,10 +35,21 @@ bool AppSettings::HaveUserPath() const
 	return m_userPath.size() > 0;
 }
 
-/*AppSettings::~AppSettings()
+const tstring_list& AppSettings::GetExtensions() const
 {
+	return m_extensions;
+}
 
-}*/
+Options* AppSettings::MakeOptions() const
+{
+	Options* options = OptionsFactory::GetOptions(GetOptionsType());
+	
+	// See if there's a custom user settings dir.
+	if(HaveUserPath())
+		options->SetUserSettingsPath(GetUserPath());
+
+	return options;
+}
 
 #define MATCH(ename) \
 	(_tcscmp(name, ename) == 0)
@@ -116,12 +128,10 @@ bool AppSettings::HaveUserPath() const
 
 void AppSettings::load()
 {
-	tstring path;
-	Options::StaticGetPNPath(path);
 	CFileName fn(_T("config.xml"));
-	fn.Root(path.c_str());
+	fn.Root(m_pnpath.c_str());
 	
-	if(!FileExists(fn.c_str()))
+	if(!::FileExists(fn.c_str()))
 		return;
 
 	XMLParser parser;
@@ -151,6 +161,7 @@ void AppSettings::startElement(LPCTSTR name, XMLAttributes& atts)
 		BEGIN_STATE(AS_CONFIG)
 			HANDLE(_T("userSettings"), onUserSettingsPath)
 			HANDLE(_T("storeType"), onStoreType)
+			HANDLE(_T("extension"), onExtension)
 		END_STATE()
 	END_HANDLERS()
 }
@@ -174,7 +185,13 @@ void AppSettings::onUserSettingsPath(XMLAttributes& atts)
 	LPCTSTR szPath = atts.getValue(_T("path"));
 	if(szPath != NULL)
 	{
-		m_userPath = szPath;
+		// Check for relative paths
+		CPathName path(szPath);
+		if(path.IsRelativePath())
+		{
+			path.Root( m_pnpath.c_str() );
+		}
+		m_userPath = path.c_str();
 	}
 }
 
@@ -189,4 +206,44 @@ void AppSettings::onStoreType(XMLAttributes& atts)
 			m_bUseIni = true;
 		}
 	}
+}
+
+/**
+ * Handle an extension element.
+ */
+void AppSettings::onExtension(XMLAttributes& atts)
+{
+	LPCTSTR path = atts.getValue(_T("path"));
+	LPCTSTR disabled = atts.getValue(_T("disabled"));
+	if(path == NULL || path[0] == NULL)
+	{
+		LOG("Found extension element with no \"path\" attribute, ignoring.");
+		return;
+	}
+
+	// Check for relative paths
+	CFileName fn(path);
+	if(fn.IsRelativePath())
+	{
+		fn.Root(m_pnpath.c_str());
+	}
+
+	tstring ext = fn.c_str();
+	
+	// If the extension does not exist we prepend an exclamation mark.
+	if( !::FileExists( ext.c_str() ) )
+	{
+		ext = _T("!") + ext;
+	}
+	// If the extension is disabled we prepend a hash.
+	else if(disabled != NULL && disabled[0] != NULL)
+	{
+		if(disabled[0] == 't') //rue
+		{
+			ext = _T("#") + ext;
+		}
+	}
+
+	// Store the extension path.
+	m_extensions.push_back(ext);
 }

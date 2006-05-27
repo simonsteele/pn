@@ -2,7 +2,7 @@
  * @file pn.cpp
  * @brief Main Source File for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -13,8 +13,6 @@
 
 #include "version.h"
 #include "pnutils.h"
-
-#include "appsettings.h"
 
 #include "pndocking.h"
 #include "MainFrm.h"
@@ -55,40 +53,6 @@ HWND GetCurrentEditor()
 	return static_cast<CMDIWindow*>(g_Context.m_frame->GetWindow())->MDIGetActive();
 }
 
-static extensions::Extension *pypn = NULL;
-
-void Init()
-{
-	g_Context.ExtApp = new extensions::App;
-
-	// Where are the Schemes stored?
-	tstring path;
-	tstring cpath;
-	OPTIONS->GetPNPath(path, PNPATH_SCHEMES);
-	OPTIONS->GetPNPath(cpath, PNPATH_COMPILEDSCHEMES);
-
-	SchemeManager& SM = SchemeManager::GetInstanceRef();
-	SM.SetPath(path.c_str());
-	SM.SetCompiledPath(cpath.c_str());
-	SM.Load();
-
-	// Load us a python extension!
-	pypn = new extensions::Extension("pypn.dll");
-}
-
-void Shutdown()
-{
-	DeletionManager::DeleteAll();
-
-	// Free up the options object, thus storing the options.
-	OptionsFactory::Release(g_Context.options);
-	g_Context.options = NULL;
-
-	delete pypn;
-
-	delete g_Context.ExtApp;
-}
-
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
 //#ifdef _DEBUG
@@ -97,10 +61,6 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 	MiniDumper dumper(str.c_str());
 //#endif
-
-	CString appTitle;
-	appTitle.LoadString(_Module.m_hInst, IDR_MAINFRAME);
-	g_Context.AppTitle = appTitle;
 	
 	ZeroMemory(&g_Context.OSVersion, sizeof(OSVERSIONINFO));
 	g_Context.OSVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
@@ -110,26 +70,9 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	MultipleInstanceManager checkMI( _T("{FCA6FB45-3224-497a-AC73-C30E498E9ADA}") );
 	g_Context.m_miManager = &checkMI;
 
-	// This loads some global app settings, including what to
-	// use as the options store and where user settings files are
-	// to be stored.
-	AppSettings as;
-
-	// This is our options object.
-	g_Context.options = OptionsFactory::GetOptions(as.GetOptionsType());
-	
-	// See if there's a custom user settings dir.
-	if(as.HaveUserPath())
-		g_Context.options->SetUserSettingsPath(as.GetUserPath());
-
-	// Now ensure the user settings directory is available!
-	tstring usPath;
-	OPTIONS->GetPNPath(usPath, PNPATH_USERSETTINGS);
-	if(!CreateDirectoryRecursive(usPath.c_str()))
-		UNEXPECTED(_T("Could not create user settings folder"));
-
-	// Finally load the cached or default cached options
-	OPTIONS->LoadCache();
+	// Create the App object thus initialising options and extension interfaces, amongst other bits
+	App* theApp = new App();
+	g_Context.ExtApp = theApp;
 
 	// See if we allow multiple instances
 	bool bAllowMulti = OPTIONS->Get(PNSK_INTERFACE, _T("AllowMultiInstance"), false);
@@ -150,10 +93,6 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		LOG( _T("PN2 is allowed multiple instances") );
 	}
 
-	// Now we initialise any l10n stuff...
-	//TODO: Make this check settings in AppSettings to work out what to do.
-	L10N::StringLoader::InitResourceLoader();
-
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
 
@@ -162,7 +101,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	g_Context.m_frame = static_cast<IMainFrame*>(&wndMain);
 
 	// Load scheme types and do other pre-run init.
-	Init();
+	theApp->Init();
 
 	if(wndMain.CreateEx() == NULL)
 	{
@@ -184,7 +123,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 	int nRet = theLoop.Run();
 
-	Shutdown();
+	delete theApp;
 
 	_Module.RemoveMessageLoop();
 

@@ -21,6 +21,7 @@
 #endif
 
 typedef std::map<tstring, tstring> STRING_MAP;
+typedef std::list<tstring> tstring_list;
 
 static TCHAR* tcsnewdup(LPCTSTR strin)
 {

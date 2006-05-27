@@ -1,6 +1,6 @@
 /**
  * @file extapp.cpp
- * @brief Implement IPN
+ * @brief Implement IPN and the basic App services
  * @author Simon Steele
  * @note Copyright (c) 2006 Simon Steele <s.steele@pnotepad.org>
  *
@@ -10,6 +10,9 @@
 
 #include "stdafx.h"
 #include "extiface.h"
+#include "appsettings.h"
+#include "extension.h"
+
 #include "extapp.h"
 
 #include "scriptregistry.h"
@@ -17,7 +20,110 @@
 #include "resource.h"
 #include "childfrm.h"
 
-namespace extensions {
+App::App()
+{
+	// Now we initialise any l10n stuff...
+	//TODO: Make this check settings in AppSettings to work out what to do. Note that some
+	//error checking stuff in AppSettings will make use of StringLoader so there is a cyclic
+	//dependancy to cope with.
+	L10N::StringLoader::InitResourceLoader();
+
+	// This loads some global app settings, including what to
+	// use as the options store and where user settings files are
+	// to be stored.
+	m_settings = new AppSettings();
+
+	// Now we have the most important settings, we can make the options object...
+	g_Context.options = m_settings->MakeOptions();
+
+	// Now ensure the user settings directory is available!
+	tstring usPath;
+	OPTIONS->GetPNPath(usPath, PNPATH_USERSETTINGS);
+	if(!CreateDirectoryRecursive(usPath.c_str()))
+		UNEXPECTED(_T("Could not create user settings folder"));
+
+	// Finally load the cached or default cached options
+	OPTIONS->LoadCache();
+}
+
+App::~App()
+{
+	deinit();
+}
+
+void App::Init()
+{
+	// Where are the Schemes stored?
+	tstring path;
+	tstring cpath;
+	OPTIONS->GetPNPath(path, PNPATH_SCHEMES);
+	OPTIONS->GetPNPath(cpath, PNPATH_COMPILEDSCHEMES);
+
+	SchemeManager& SM = SchemeManager::GetInstanceRef();
+	SM.SetPath(path.c_str());
+	SM.SetCompiledPath(cpath.c_str());
+	SM.Load();
+
+	loadExtensions();
+}
+
+const AppSettings& App::GetSettings()
+{
+	return *m_settings;
+}
+
+void App::deinit()
+{
+	unloadExtensions();
+
+	delete m_settings;
+	
+	DeletionManager::DeleteAll();
+
+	// Free up the options object, thus storing the options.
+	OptionsFactory::Release(g_Context.options);
+	g_Context.options = NULL;
+}
+
+void App::loadExtensions()
+{
+	const tstring_list& extensions = m_settings->GetExtensions();
+
+	for(tstring_list::const_iterator i = extensions.begin();
+		i != extensions.end();
+		++i)
+	{
+		const tstring& path = (*i);
+		if(path[0] != '#' && path[0] != '!')
+		{
+			extensions::Extension* ext = new extensions::Extension((*i).c_str(), this);
+			if(ext->Valid())
+			{
+				m_exts.push_back(ext);
+			}
+			else
+			{
+				tstring msg(_T("Failed to load extension: "));
+				msg += path;
+				LOG(msg.c_str());
+			}
+		}
+	}
+}
+
+void App::unloadExtensions()
+{
+	for(EventSinkList::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	{
+		(*i)->OnAppClose();
+	}
+
+	for(ExtensionList::const_iterator i = m_exts.begin(); i != m_exts.end(); ++i)
+	{
+		(*i)->Unload();
+	}
+	m_exts.clear();
+}
 
 unsigned int App::get_iface_version() const
 {
@@ -29,27 +135,27 @@ const char* App::get_version() const
 	return PN_VERSTRING;
 }
 
-void App::AddEventSink(IAppEventSinkPtr sink)
+void App::AddEventSink(extensions::IAppEventSinkPtr sink)
 {
 	m_sinks.push_back(sink);
 }
 
-void App::RemoveEventSink(IAppEventSinkPtr sink)
+void App::RemoveEventSink(extensions::IAppEventSinkPtr sink)
 {
 	m_sinks.remove(sink);
 }
 
-IScriptRegistry* App::GetScriptRegistry()
+extensions::IScriptRegistry* App::GetScriptRegistry()
 {
 	return ScriptRegistry::GetInstance();
 }
 
-IOptions* App::GetOptionsManager()
+extensions::IOptions* App::GetOptionsManager()
 {
 	return OPTIONS;
 }
 
-void App::OnNewDocument(IDocumentPtr doc)
+void App::OnNewDocument(extensions::IDocumentPtr doc)
 {
 	for(EventSinkList::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
 	{
@@ -57,7 +163,7 @@ void App::OnNewDocument(IDocumentPtr doc)
 	}
 }
 
-IDocumentPtr App::GetCurrentDocument()
+extensions::IDocumentPtr App::GetCurrentDocument()
 {
 	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
 	if(pChild)
@@ -65,12 +171,10 @@ IDocumentPtr App::GetCurrentDocument()
 		return pChild->GetDocument();
 	}
 	
-	return IDocumentPtr();
+	return extensions::IDocumentPtr();
 }
 
-ITextOutput* App::GetGlobalOutputWindow()
+extensions::ITextOutput* App::GetGlobalOutputWindow()
 {
 	return g_Context.m_frame->GetGlobalOutputWindow();
-}
-
 }

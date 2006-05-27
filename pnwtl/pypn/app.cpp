@@ -81,6 +81,11 @@ void App::OnNewDocument(extensions::IDocumentPtr doc)
 	doc->AddEventSink(p);
 }
 
+void App::OnAppClose()
+{
+	
+}
+
 /**
  * Run a script that we registered
  */

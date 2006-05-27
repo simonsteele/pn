@@ -95,6 +95,10 @@ CMainFrame::CMainFrame() : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(I
 	SchemeTools* pGlobalTools = ToolsManager::GetInstance()->GetGlobalTools();
 	pGlobalTools->AllocateMenuResources();
 	m_hGlobalToolAccel = pGlobalTools->GetAcceleratorTable();
+
+	m_hILMain = NULL;
+	m_hILMainD = NULL;
+	m_hILEdit = NULL;
 }
 
 CMainFrame::~CMainFrame()
@@ -2036,7 +2040,7 @@ bool CMainFrame::CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction action)
 				{
 					CString str;
 					str.Format(IDS_OPENANOTHER, filename);
-					DWORD dwRes = MessageBox(str, g_Context.AppTitle, MB_YESNOCANCEL);
+					DWORD dwRes = MessageBox(str, LS(IDR_MAINFRAME), MB_YESNOCANCEL);
 					if( dwRes == IDYES )
 					{
 						// Just claim the file wasn't open...
@@ -2855,7 +2859,7 @@ bool CMainFrame::SaveProjects(Projects::Workspace* pWorkspace)
 			
 			CString str;
 			str.Format(IDS_PROJSAVECHANGES, (*i)->GetName());
-			DWORD dwRes = ::MessageBox(m_hWnd, str, g_Context.AppTitle, MB_YESNOCANCEL | MB_ICONQUESTION);
+			DWORD dwRes = ::MessageBox(m_hWnd, str, LS(IDR_MAINFRAME), MB_YESNOCANCEL | MB_ICONQUESTION);
 			
 			if ( dwRes == IDCANCEL )
 			{
@@ -2937,7 +2941,7 @@ bool CMainFrame::CloseWorkspace(bool bAllowCloseFiles, bool bAsk)
 		{
 			CString str;
 			str.LoadString(_Module.m_hInst, IDS_PROJCLOSEFILES);
-			DWORD dwRes = ::MessageBox(m_hWnd, str, g_Context.AppTitle, MB_YESNOCANCEL | MB_ICONQUESTION);
+			DWORD dwRes = ::MessageBox(m_hWnd, str, LS(IDR_MAINFRAME), MB_YESNOCANCEL | MB_ICONQUESTION);
 
 			if( dwRes == IDCANCEL )
 				return false;

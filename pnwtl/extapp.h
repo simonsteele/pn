@@ -1,33 +1,65 @@
 #ifndef extapp_h__included
 #define extapp_h__included
 
-namespace extensions
-{
+////////////////////////
+// Predeclarations:
+namespace extensions { class Extension; }
+class AppSettings;
+////////////////////////
 
-class App : public IPN
+/**
+ * The core App object implementing IPN. This manages extensions
+ * and provides the basic interface that extensions use.
+ */
+class App : public extensions::IPN
 {
-	typedef std::list<IAppEventSinkPtr> EventSinkList;
+	typedef std::list<extensions::IAppEventSinkPtr> EventSinkList;
+	typedef std::list<extensions::Extension*> ExtensionList;
+
 public:
+	App();
+	~App();
+
+	void Init();
+
+	const AppSettings& GetSettings();
+
+// Implement IPN:
+public:
+	/// Get the extension interface version
 	virtual unsigned int get_iface_version() const;
+	/// Get the PN version
 	virtual const char* get_version() const;
 	
-	virtual void AddEventSink(IAppEventSinkPtr sink);
-	virtual void RemoveEventSink(IAppEventSinkPtr sink);
-	virtual IScriptRegistry* GetScriptRegistry();
-	virtual IOptions* GetOptionsManager();
+	/// Add an application event sink
+	virtual void AddEventSink(extensions::IAppEventSinkPtr sink);
+	/// Remove an application event sink
+	virtual void RemoveEventSink(extensions::IAppEventSinkPtr sink);
+	
+	/// Get the script registry
+	virtual extensions::IScriptRegistry* GetScriptRegistry();
+	/// Get the options manager
+	virtual extensions::IOptions* GetOptionsManager();
 
-	virtual IDocumentPtr GetCurrentDocument();
+	/// Get the current active document
+	virtual extensions::IDocumentPtr GetCurrentDocument();
 
-	virtual ITextOutput* GetGlobalOutputWindow();
+	/// Get the global output window
+	virtual extensions::ITextOutput* GetGlobalOutputWindow();
 
 // Stuff to signal event sinks...
 public:
-	void OnNewDocument(IDocumentPtr doc);
+	void OnNewDocument(extensions::IDocumentPtr doc);
 
 private:
-	 EventSinkList m_sinks;
-};
+	void deinit();
 
-}
+	void loadExtensions();
+	void unloadExtensions();
+
+	EventSinkList	m_sinks;
+	ExtensionList	m_exts;
+	AppSettings*	m_settings;
+};
 
 #endif

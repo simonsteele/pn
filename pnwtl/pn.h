@@ -2,7 +2,7 @@
  * @file pn.h
  * @brief Main Header File for Programmers Notepad 2, defines the application level services.
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -53,7 +53,6 @@
 #include "version.h"
 #include "pntypes.h"
 #include "extiface.h"
-//#include "extapp.h"
 
 // Pre-declarations...
 
@@ -139,7 +138,7 @@ static void LogWndPos(HWND hWnd)
 	LogWndPos(_T("Unknown"), hWnd);
 }
 
-namespace extensions { class App; }
+class App;
 
 struct _Context 
 {
@@ -147,8 +146,7 @@ struct _Context
 	MultipleInstanceManager *m_miManager;
 	Options					*options;
 	OSVERSIONINFO			OSVersion;
-	LPCTSTR					AppTitle;
-	extensions::App			*ExtApp;
+	App						*ExtApp;
 };
 
 /// This is the global application context.
