@@ -23,7 +23,8 @@ last updated: 06/10/2005
 0.8 Basie
 =========
 
-Scripting/Extensions.
+[80% complete] Scripting/Extensions.
+[60% complete] Keyboard shortcut configuration
 Hex editor.
 HTML Export configuration, inline HTML export.
 

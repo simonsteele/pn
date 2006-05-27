@@ -171,6 +171,25 @@ LRESULT CNewProjectDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/
 
 	if(strName.GetLength() > 0 && strFolder.GetLength() > 0)
 	{
+		if(!::DirExists(strFolder))
+		{
+			CString str;
+			str.Format(IDS_CREATEPROJECTFOLDER, strFolder);
+			switch(::MessageBox(m_hWnd, str, LS(IDR_MAINFRAME), MB_YESNOCANCEL | MB_ICONQUESTION))
+			{
+			case IDYES:
+				if(!CreateDirectoryRecursive(strFolder))
+				{
+					str.Format(IDS_CREATEPROJECTFOLDERFAILED, strFolder);
+					::MessageBox(m_hWnd, str, LS(IDR_MAINFRAME), MB_OK | MB_ICONWARNING);
+					return 0;
+				}
+				break;
+			case IDNO:
+			case IDCANCEL:
+				return 0;
+			}
+		}
 		m_name = strName;
 		m_folder = strFolder;
 		if(pTemplate != NULL)

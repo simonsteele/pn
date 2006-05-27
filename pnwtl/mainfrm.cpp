@@ -1345,6 +1345,10 @@ LRESULT CMainFrame::OnSaveModifiedItem(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 		// yep, let's iterate 'em and save 'em.
 		for(long i = 0; i < count; i++)
 		{
+			// Reset pointers
+			pi.Release();
+			ph.Release();
+
 			CComPtr<ITabbedMDIChildModifiedItem> mi;
 			if(FAILED(subItems->get_Item(i, &mi)))
 				RETURN_UNEXPECTED( _T("A project modified item did not contain an IProjectHolder instance."), 1);
@@ -2262,13 +2266,23 @@ void CMainFrame::setupToolsUI()
 		tools, m_iFirstToolCmd, ID_TOOLS_DUMMY, NULL, projid.size() > 0 ? projid.c_str() : NULL
 	);
 
-	if(projid.size() > 0)
+	m_hProjAccel = NULL;
+
+	if(pAW)
 	{
-		ProjectTools* pTools = pTM->GetToolsForProject(projid.c_str());
-		m_hProjAccel = pTools != NULL ? pTools->GetAcceleratorTable() : NULL;
+		if(projid.size() > 0)
+		{
+			ProjectTools* pTools = pTM->GetToolsForProject(projid.c_str());
+			m_hProjAccel = pTools != NULL ? pTools->GetAcceleratorTable() : NULL;
+		}
+		
+		if(m_hProjAccel == NULL)
+		{
+			SchemeTools* pTools = pTM->GetGlobalProjectTools();
+			pTools->AllocateMenuResources();
+			m_hProjAccel = pTools->GetAcceleratorTable();
+		}
 	}
-	else
-		m_hProjAccel = NULL;
 }
 
 /**
@@ -2628,8 +2642,8 @@ void CMainFrame::ToggleDockingWindow(EDocker window, bool bSetValue, bool bShowi
 	{
 		if(bShowing)
 		{
-			if( !dw->IsWindowVisible() )
-				dw->Show();
+			//if( !dw->IsWindowVisible() )
+			dw->Show();
 		}
 		else
 		{
@@ -2650,8 +2664,8 @@ void CMainFrame::NewProject(LPCTSTR szProjectFile, LPCTSTR name, LPCTSTR templat
 	}
 	else
 	{
-		if(!getDocker(DW_PROJECTS)->IsWindowVisible())
-			getDocker(DW_PROJECTS)->Toggle();
+		getDocker(DW_PROJECTS)->Show();
+		::SetFocus(getDocker(DW_PROJECTS)->GetClient());
 	}
 
 	Projects::Workspace* workspace = m_pProjectsWnd->GetWorkspace();
@@ -2672,10 +2686,10 @@ void CMainFrame::NewProject(LPCTSTR szProjectFile, LPCTSTR name, LPCTSTR templat
 
 	Projects::Project* project = new Projects::Project(szProjectFile);
 
+	AddMRUProjectsEntry(szProjectFile);
+
 	if( workspace == NULL )
 	{
-		AddMRUProjectsEntry(szProjectFile);
-
 		// No workspace currently open, create a blank one to store the project in.
 		workspace = new Projects::Workspace;
 		workspace->SetName(LS(IDS_NEWPROJECTGROUP));
@@ -2696,8 +2710,10 @@ void CMainFrame::OpenProject(LPCTSTR projectPath, bool intoExistingGroup)
 		UNEXPECTED(_T("No projects window!"))
 	else
 	{
-		if(!getDocker(DW_PROJECTS)->IsWindowVisible())
-			getDocker(DW_PROJECTS)->Toggle();
+		/*if(!getDocker(DW_PROJECTS)->IsWindowVisible())
+			getDocker(DW_PROJECTS)->Toggle();*/
+		getDocker(DW_PROJECTS)->Show();
+		::SetFocus(getDocker(DW_PROJECTS)->GetClient());
 	}
 
 	// Check if a project is already open...
@@ -2752,8 +2768,8 @@ void CMainFrame::OpenWorkspace(LPCTSTR workspacePath)
 		UNEXPECTED(_T("No projects window!"))
 	else
 	{
-		if(!getDocker(DW_PROJECTS)->IsWindowVisible())
-			getDocker(DW_PROJECTS)->Toggle();
+		getDocker(DW_PROJECTS)->Show();
+		::SetFocus(getDocker(DW_PROJECTS)->GetClient());
 	}
 
 	// Check if a project is already open...
@@ -2765,6 +2781,7 @@ void CMainFrame::OpenWorkspace(LPCTSTR workspacePath)
 
 	Projects::Workspace* workspace = new Projects::Workspace(workspacePath);
 	m_pProjectsWnd->SetWorkspace(workspace);
+	AddMRUProjectsEntry(workspacePath);
 }
 
 bool CMainFrame::SaveWorkspaceAs(Projects::Workspace* pWorkspace)
@@ -2787,6 +2804,7 @@ bool CMainFrame::SaveWorkspaceAs(Projects::Workspace* pWorkspace)
 	if(dlg.DoModal() == IDOK)
 	{
 		pWorkspace->SetFileName(dlg.m_ofn.lpstrFile);
+		AddMRUProjectsEntry(dlg.m_ofn.lpstrFile);
 		return true;
 	}
 	else
@@ -3050,6 +3068,9 @@ void CMainFrame::openFileCheckType(LPCTSTR filename, EPNEncoding encoding)
 	else
 	{
 		if(!CheckAlreadyOpen(filename))
-			OpenFile(filename, NULL, encoding);
+		{
+            OpenFile(filename, NULL, encoding);
+			AddMRUEntry(filename);
+		}
 	}
 }

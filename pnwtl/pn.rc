@@ -1174,9 +1174,9 @@ BEGIN
     PUSHBUTTON      "No",IDNO,243,177,50,14
     CONTROL         "",IDC_LIST,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | 
                     LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,20,286,139
-    LTEXT           "Programmers Notepad 2 is not the handler for these extensions:",
+    LTEXT           "Programmer's Notepad 2 is not the handler for these extensions:",
                     IDC_STATIC,7,7,286,8
-    LTEXT           "Do you want to associate these extensions with Programmers Notepad 2 now?",
+    LTEXT           "Do you want to associate these extensions with Programmer's Notepad 2 now?",
                     IDC_STATIC,7,164,286,8
     CONTROL         "Do not &ask me again",IDC_CHECK1,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,7,180,176,10
@@ -1906,6 +1906,9 @@ BEGIN
                             "The file must be placed inside this magic folder directory."
     IDS_CANTCREATEFILE      "Could not create file"
     IDS_CANTOPENFILE        "%s could not be opened.\nThis could be because the file no longer exists, a disk is absent or due to a broken network connection."
+    IDS_CREATEPROJECTFOLDER "The folder %s does not exist, do you want to create it?"
+    IDS_CREATEPROJECTFOLDERFAILED 
+                            "The folder %s could not be created, check that the path is valid."
 END
 
 #endif    // English (U.K.) resources

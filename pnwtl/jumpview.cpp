@@ -394,12 +394,12 @@ LRESULT CJumpTreeCtrl::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
 CJumpDocker::CJumpDocker()
 {
-::OutputDebugString(_T("CJumpDocker::CJumpDocker\n"));
+
 }
 
 CJumpDocker::~CJumpDocker()
 {
-::OutputDebugString(_T("CJumpDocker::~CJumpDocker\n"));
+
 }
 
 LRESULT CJumpDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -419,7 +419,6 @@ LRESULT CJumpDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 LRESULT CJumpDocker::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
-::OutputDebugString(_T("CJumpDocker::OnSize\n"));
 	if(wParam != SIZE_MINIMIZED )
 	{
 		RECT rc;
@@ -441,8 +440,6 @@ LRESULT CJumpDocker::OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 LRESULT CJumpDocker::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-::OutputDebugString(_T("CJumpDocker::OnDestroy\n"));
-
 	bHandled = FALSE;
 
 	return 0;
@@ -460,13 +457,11 @@ LRESULT CJumpDocker::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 LRESULT CJumpDocker::OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 {
 	LPNMTREEVIEW pN = reinterpret_cast<LPNMTREEVIEW>(pnmh);
-::OutputDebugString(_T("CJumpDocker::OnTreeNotify\n"));
 
 	if(pnmh->code == NM_DBLCLK)
 	{
 #if 0
 		File* file = m_view.GetSelectedFile();
-::OutputDebugString(_T("CJumpDocker::OnTreeNotify1\n"));
 		if(file != NULL)
 		{
 			if( !g_Context.m_frame->CheckAlreadyOpen(file->GetFileName(), eSwitch) )

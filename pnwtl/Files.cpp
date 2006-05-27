@@ -61,7 +61,7 @@ bool FileExists(LPCTSTR FileName)
 	HANDLE h;
 	WIN32_FIND_DATA FindData;
 
-	h = FindFirstFile(FileName, &FindData);
+	h = ::FindFirstFile(FileName, &FindData);
 	FindClose(h);
 	
 	return h != INVALID_HANDLE_VALUE;

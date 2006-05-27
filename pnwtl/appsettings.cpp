@@ -2,7 +2,7 @@
  * @file appsettings.cpp
  * @brief Loading of core application settings
  * @author Simon Steele
- * @note Copyright (c) 2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2005-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -183,7 +183,7 @@ void AppSettings::characterData(LPCTSTR /*data*/, int /*len*/)
 void AppSettings::onUserSettingsPath(XMLAttributes& atts)
 {
 	LPCTSTR szPath = atts.getValue(_T("path"));
-	if(szPath != NULL)
+	if(szPath != NULL && szPath[0] != NULL)
 	{
 		// Check for relative paths
 		CPathName path(szPath);
@@ -198,7 +198,7 @@ void AppSettings::onUserSettingsPath(XMLAttributes& atts)
 void AppSettings::onStoreType(XMLAttributes& atts)
 {
 	LPCTSTR value = atts.getValue(_T("value"));
-	if(value != NULL)
+	if(value != NULL && value[0] != NULL)
 	{
 		// bit kludgy, but quick.
 		if(value[0] == _T('I'))

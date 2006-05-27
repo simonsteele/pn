@@ -5,7 +5,8 @@
 		<?dbhh topicname="IDH_text_clips" topicid="11"?>
 		<title>Creating Text Clips Files</title>
 	
-		<para>This documentation is still to be written, <ulink url="mailto:ss@pnotepad.org?subject=documentation%20help">perhaps you can help?</ulink></para>
+		<para>To create a text clips file use the <ulink url="http://www.pnotepad.org/files/textclipcreator.zip">Text Clip Creator</ulink> application.</para>
+		<para>Click the link above to download this useful tool. Note that it requires the Microsoft .NET Framework to run.</para>
 	</section>
 	<section>
 		<?dbhh topicname="IDH_user_schemes" topicid="12"?>
@@ -18,5 +19,34 @@
 		<title>Creating Project Templates</title>
 	
 		<para>This documentation is still to be written, <ulink url="mailto:ss@pnotepad.org?subject=documentation%20help">perhaps you can help?</ulink></para>
+	</section>
+	<section>
+		<?dbhh topicname="IDH_config_xml" topicid="14"?>
+		<title>config.xml</title>
+		
+		<para>config.xml stores some advanced configuration options for PN.</para>
+		<section>
+			<title>User Settings Path</title>
+			<para>The &lt;userSettings&gt; element defines where PN should store the settings 
+			files it creates to store user options. By default this element is not defined, but it can
+			be used to make PN portable (i.e. not store settings in the normal system "Documents and Settings" folder).</para>
+			<para>If you wanted, for example, to store settings in the "settings" folder on the memory stick you are
+			running PN from, you can use this element like so:</para>
+			<para><code>&lt;userSettings path="settings"/&gt;</code></para>
+		</section>
+		<section>
+			<title>Settings Storage</title>
+			<para>By default, PN stores a number of settings in the registry for fast access. If you
+			want to use an INI file instead, then you can use the &lt;storeType&gt; element to 
+			choose this:</para>
+			<para><code>&lt;storeType value="Ini"/&gt;</code></para>
+		</section>
+		<section>
+			<title>Extension Registration</title>
+			<para>Each extension is registered with PN using an &lt;extension&gt; element. This
+			element can specify either a fully-qualified path or a relative one to point to the dll
+			to be loaded:</para>
+			<para><code>&lt;extension path="pypn.dll"/&gt;</code></para>
+		</section>
 	</section>
 </chapter>

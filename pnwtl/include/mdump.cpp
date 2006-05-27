@@ -59,7 +59,7 @@ LONG MiniDumper::TopLevelFilter( struct _EXCEPTION_POINTERS *pExceptionInfo )
 			_tcscat( szDumpPath, ".dmp" );
 
 			// ask the user if they want to save a dump file
-			if (::MessageBox( NULL, "Programmers Notepad 2 has experienced an unexpected problem and is going to close, we apologise for this inconvenience.\n\n Would you like to save a diagnostic file to aid the development team in fixing this problem?", m_szAppName, MB_YESNO )==IDYES)
+			if (::MessageBox( NULL, "Programmer's Notepad 2 has experienced an unexpected problem and is going to close, we apologise for this inconvenience.\n\n Would you like to save a diagnostic file to aid the development team in fixing this problem?", m_szAppName, MB_YESNO )==IDYES)
 			{
 				// create the file
 				HANDLE hFile = ::CreateFile( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,

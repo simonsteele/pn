@@ -74,7 +74,9 @@
 #define IDS_CANTCREATEFILE              167
 #define IDS_STRING168                   168
 #define IDS_CANTOPENFILE                168
+#define IDS_CREATEPROJECTFOLDER         169
 #define IDR_POPUP_REGEXP                170
+#define IDS_CREATEPROJECTFOLDERFAILED   170
 #define IDR_POPUP_EDITOR                173
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204

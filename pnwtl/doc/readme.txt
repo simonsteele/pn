@@ -6,7 +6,7 @@ Build: 2.0.7.x, Version Label:
 What's new?
 -----------
 
-1) Scripting interface and Python scripting implementation
+1) Extensions interface
 2) Detection of UTF-8 without a Byte Order Mark, also an encoding option (parts by Oleg Gerasimov)
 3) Sets unicode character set automatically when a unicode file encoding is selected.
 4) Decorators in Python scheme
@@ -15,6 +15,9 @@ What's new?
 7) Full VHDL scheme instead of user scheme (Klaus)
 8) VHDL tag support (Klaus)
 9) Remove non-existant MRU entries when selected (SF RFE #1469296)
+10) Python scripting extension (pypn)
+11) New lovely toolbar images courtesy of famfamfam.com
+12) Save All toolbar button
 
 Bug Fixes:
 ----------
@@ -30,6 +33,11 @@ Bug Fixes:
 9) Opening non-existant file from recent menu, opens new file (SF Bug #1471053)
 10) Browse for folder inappriopriately shows New Folder button (SF Bug #1471056)
 11) Can't remove file association if text is entered (SF Bug #1463848)
+12) Can't use a relative directory path to store PN settings (see config.xml)
+13) Drag & drop file into project folder: appears twice (SF Bug #1490889)
+14) Bugs with projects window (SF Bug #1330960)
+15) "Recent Files" List Not Updated (SF Bug #1377909)
+16) Project tools keyboard shortcut doesn't work (SF Bug #1422790)
 
 If you find a bug:
 ------------------

@@ -2,7 +2,7 @@
  * @file projectview.cpp
  * @brief View to display project trees.
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -161,8 +161,7 @@ void CProjectTreeCtrl::OnProjectItemChange(PROJECT_CHANGE_TYPE changeType, Proje
 				if(hParent != NULL)
 				{
 					Projects::Folder* folder = static_cast<Projects::Folder*>( changeItem );
-					//addFolderNode(folder, hParent, hLastFolder);
-					//SortChildren(hParent);
+					
 					FOLDER_LIST fl;
 					fl.push_back(folder);
 
@@ -538,16 +537,13 @@ void CProjectTreeCtrl::getMagicFolderProps(Projects::UserData& ud, Projects::Mag
 	ud.Set(_T(""), _T("Folder"), _T("Filters"), _T("ExcludeFolders"), mf->GetFolderFilter());
 	
 	PropCategory* cat = new PropCategory(_T("Folder"), _T("Magic Folders"));
-	ProjectProp* prop = new ProjectProp(_T("Name"), _T("Display Name"), propString);
-	cat->Add(prop);
-	prop = new ProjectProp(_T("Path"), _T("Folder Path"), propFolder);
-	cat->Add(prop);
+	cat->Add( new ProjectProp(_T("Name"), _T("Display Name"), propString) );
+	cat->Add( new ProjectProp(_T("Path"), _T("Folder Path"), propFolder) );
 	extrasGroup->Add(cat);
+
 	cat = new PropCategory(_T("Filters"), _T("Filters"));
-	prop = new ProjectProp(_T("IncludeFiles"), _T("Include Files"), propString);
-	cat->Add(prop);
-	prop = new ProjectProp(_T("ExcludeFolders"), _T("Exclude Folders"), propString);
-	cat->Add(prop);
+	cat->Add( new ProjectProp(_T("IncludeFiles"), _T("Include Files"), propString) );
+	cat->Add( new ProjectProp(_T("ExcludeFolders"), _T("Exclude Folders"), propString) );
 	extrasGroup->Add(cat);
 
 	groups.insert(groups.end(), extrasGroup);	
@@ -585,7 +581,6 @@ void CProjectTreeCtrl::handleRemove()
 				File* pF = reinterpret_cast<File*>( GetItemData((*i)) );
 				Projects::Folder* pFolder = pF->GetFolder();
 				pFolder->RemoveFile(pF);
-				//DeleteItem((*i)); - now an event...
 			}
 		}
 		break;
@@ -935,7 +930,6 @@ LRESULT	CProjectTreeCtrl::OnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 	if(ImageList_BeginDrag(hImageList, 0, 0, 0) == 0)
 		::OutputDebugString(_T("Failed BeginDrag\n"));
 
-	//ImageList_DragEnter(m_hWnd, rcItem.left - dwIndent, rcItem.top);
 	ImageList_DragEnter(m_hWnd, lpnmtv->ptDrag.x, lpnmtv->ptDrag.y);
 
 	//ShowCursor(FALSE);
@@ -943,8 +937,6 @@ LRESULT	CProjectTreeCtrl::OnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 	dragTimer = SetTimer(TCEX_DRAGTIMER, 25, NULL);
 
 	dragging = true;
-
-	::OutputDebugString(_T("Dragging\n"));
 
 	return 0;
 }
@@ -964,8 +956,6 @@ LRESULT CProjectTreeCtrl::OnAddProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	{
 		Project* pProject = new Project(dlgOpen.GetSingleFileName());
 		workspace->AddProject(pProject);
-		//buildProject(GetRootItem(), pProject); - now handled by the event?
-		//Expand(GetRootItem());
 	}
 	
 	return 0;
@@ -1177,8 +1167,6 @@ LRESULT CProjectTreeCtrl::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 				selectedItems.push_front(sel);
 				sel = GetNextSelectedItem(sel);
 			}
-
-			//std::list<HTREEITEM>::iterator i = selectedItems.begin();
 
 			for(std::list<HTREEITEM>::iterator i = selectedItems.begin();
 				i != selectedItems.end(); ++i)
@@ -1631,10 +1619,6 @@ LRESULT CProjectTreeCtrl::OnTimer(UINT /*uMsg*/, WPARAM nIDEvent, LPARAM /*lPara
 		}
 	}
 
-	//m_pDragImgList->DragMove(point);
-
-//}
-
 	return 0;
 }
 
@@ -1822,37 +1806,20 @@ void CProjectTreeCtrl::handleDrop(HDROP hDrop, HTREEITEM hDropItem, Projects::Fo
 {
 	TCHAR	buf[MAX_PATH+1];
 	
-	int files = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+	int files = ::DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
 	for(int i = 0; i < files; i++)
 	{
-		DragQueryFile(hDrop, i, buf, MAX_PATH);
+		::DragQueryFile(hDrop, i, buf, MAX_PATH);
 	
-		if(IsDirectory(buf))
+		if(::IsDirectory(buf))
 		{
-			Projects::Folder* pAdded = pFolder->AddFolder(buf, _T("*.*"), true);
-			
-			HTREEITEM hInsertAfter = getLastFolderItem(hDropItem);
-			HTREEITEM hFolder = addFolderNode(pAdded, hDropItem, hInsertAfter);
-
-			HTREEITEM hLastChild = NULL;
-
-			if( pAdded->GetFolders().size() > 0 )
-			{
-				ProjectViewState viewState;
-				hLastChild = buildFolders(hFolder, pAdded->GetFolders(), viewState);
-			}
-
-			buildFiles(hFolder, hLastChild, pAdded->GetFiles());
+			pFolder->AddFolder(buf, _T("*.*"), true);
 		}
 		else
 		{
-			File* pAdded = pFolder->AddFile(buf);
-			addFileNode(pAdded, hDropItem, NULL);
+			pFolder->AddFile(buf);
 		}
 	}
-
-	//sort(hDropItem, true, true);
-	//TreeView_SortChildren(m_hWnd, hDropItem, true);
 }
 
 /**
@@ -2106,7 +2073,7 @@ bool CProjectTreeCtrl::handleProjectDrop(Projects::Project* target)
 		// Then re-add them, and move them in the projects list at the same time.
 		for(PROJECT_LIST::iterator j = projects.begin(); j != projects.end(); ++j)
 		{
-			hInsertAfter = buildProject(hParent, (*j), hInsertAfter);
+			//hInsertAfter = buildProject(hParent, (*j), hInsertAfter);
 			
 			workspace->MoveProject((*j), pLast);
 			pLast = (*j);
@@ -2136,10 +2103,6 @@ bool CProjectTreeCtrl::handleFolderDrop(Projects::Folder* target)
 			// Move the file object...
 			File* pTheFile = static_cast<File*>( ptSelItem );
 			Projects::Folder::MoveFile(pTheFile, target);
-
-			// Remove the old tree item (is this necessary?)...
-			//DeleteItem( (*i) );
-			//addFileNode(pTheFile, hDropTargetItem, NULL);
 		}
 		else if(ptSelItem->GetType() == ptFolder)
 		{
@@ -2165,15 +2128,8 @@ bool CProjectTreeCtrl::handleFolderDrop(Projects::Folder* target)
 
 			// Move the tree item(s)...
 			DeleteItem( (*i) );
-
-			// Add the folder to a list of folders to re-add in a moment, and store 
-			// a view state.
-			//folders.insert(folders.end(), pFolder);
-			//viewState.SetExpand(pFolder, bExpanded);
 		}
 	}
-
-	//buildFolders(hDropTargetItem, folders, viewState);
 
 	Expand( hDropTargetItem, TVE_EXPAND );
 
