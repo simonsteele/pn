@@ -725,6 +725,9 @@
 				RelativePath=".\res\redclose.bmp">
 			</File>
 			<File
+				RelativePath=".\res\scripts.ico">
+			</File>
+			<File
 				RelativePath=".\res\tagtypes.bmp">
 			</File>
 			<File

@@ -8,6 +8,7 @@
  * the conditions under which this source may be modified / distributed.
  */
 #include "stdafx.h"
+#include "resource.h"
 #include "document.h"
 #include "scriptregistry.h"
 #include "scriptview.h"
@@ -18,6 +19,10 @@ CScriptDocker::CScriptDocker()
 
 LRESULT CScriptDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	HICON hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_SCRIPTS), 
+			IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
+	SetIcon(hIconSmall, FALSE);
+
 	CRect rc;
 	GetClientRect(&rc);
 

@@ -1,7 +1,7 @@
 #define PN_MAJOR			2
 #define PN_MINOR			0
 #define PN_REVISION			7
-#define PN_BUILD			0
+#define PN_BUILD			596
 #define PN_VERSTRING		"2.0.7.0"
 #define PN_VERNAME			"-devel"
 

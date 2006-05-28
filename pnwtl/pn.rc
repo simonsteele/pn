@@ -656,6 +656,7 @@ IDI_MAGICFOLDER         ICON                    "res\\magicfolder.ico"
 IDI_CTAGS               ICON                    "res\\ctags.ico"
 IDI_OUTPUT              ICON                    "res\\page_white_text.ico"
 IDI_FINDINFILES         ICON                    "res\\folder_find.ico"
+IDI_SCRIPTS             ICON                    "res\\scripts.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

@@ -578,12 +578,12 @@ HWND CMainFrame::CreateFindToolbar()
 	rc.left += 1; // slight offset from previous and next buttons.
 	rc.right -= 1;
 
-	m_FindImages.Create(16, 16, ILC_COLOR32 | ILC_MASK, 3, 1);
-	CBitmap bmp;
-	bmp.LoadBitmap(IDB_FINDTOOLBAR);
-	m_FindImages.Add(bmp, RGB(255, 0, 255));
+	//m_FindImages.Create(16, 16, ILC_COLOR32 | ILC_MASK, 3, 1);
+	//CBitmap bmp;
+	//bmp.LoadBitmap(IDB_FINDTOOLBAR);
+	//m_FindImages.Add(bmp, RGB(255, 0, 255));
 
-	fToolbar.SetImageList(m_FindImages.m_hImageList);
+	//fToolbar.SetImageList(m_FindImages.m_hImageList);
 
 	HWND hWndCombo = m_FindCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), 
 		CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL,
@@ -898,6 +898,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	// load command bar images
 	m_CmdBar.LoadImages(IDR_MAINFRAME);
  	m_CmdBar.LoadImages(IDR_TBR_EDIT);
+	m_CmdBar.LoadImages(IDR_TBR_FIND);
 
 	HWND hWndToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
 	HWND hWndEdtToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_TBR_EDIT, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
