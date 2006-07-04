@@ -57,7 +57,8 @@ public:
 			OVisibleLineEndings			= 19,
 			OVisibleWhiteSpace			= 20,
 			OManageTabOrder				= 21,
-			OPTION_COUNT				= 22
+			OConvertLinesOnPaste		= 22,
+			OPTION_COUNT				= 23
 		} ECachedOption;
 
 		virtual void Set(LPCTSTR subkey, LPCTSTR value, bool bVal) = 0;

@@ -12,11 +12,14 @@
 
 LPCWSTR GetLanguage(LPCWSTR filename, LPCWSTR scheme)
 {
-	/* Unsupported so far: Awk, BETA, REXX, Scheme, SLang, SML, Vera*/
+/* Unsupported so far: Awk, BETA, REXX, Scheme, SLang, SML, Vera*/
 
 	wchar_t* ext = wcsrchr(filename, L'.');
-	if(wcsnicmp(ext, L".tmp", 4) != 0)
-		return NULL;
+	if(ext != 0)
+	{
+		if(wcsnicmp(ext, L".tmp", 4) != 0)
+			return NULL;
+	}
 
 	if(wcscmp(L"cpp", scheme) == 0)
 		return L"C++";

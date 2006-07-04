@@ -175,6 +175,8 @@ void parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT mask, LPVOID co
 					
 					// find $/
 					pEndDecl = strchr(p, '$');
+					if (pEndDecl == NULL)
+						return;
 					*pEndDecl = '\0';
 					
 					mi.fullText = p;
@@ -185,6 +187,8 @@ void parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT mask, LPVOID co
 				else
 				{
 					pEndDecl = strchr(p, ';');
+					if (pEndDecl == NULL)
+						return;
 					p = pEndDecl + 3;
 				}
 

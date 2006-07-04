@@ -243,7 +243,11 @@ LRESULT CTabPageKeywords::OnSortClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 
 LRESULT CTabPageKeywords::OnListSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-	UpdateSel();
+	NMLISTVIEW* plv = (LPNMLISTVIEW)pnmh;
+	if(plv->uChanged == LVIF_STATE && (plv->uNewState & LVIS_SELECTED) )
+	{
+		UpdateSel();
+	}
 
 	return 0;
 }

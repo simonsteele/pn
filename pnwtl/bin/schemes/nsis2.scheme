@@ -2,81 +2,377 @@
 <Scheme>
 	<keyword-classes>
 		<keyword-class name="NSIS">
-		; Function FunctionEnd Section SectionEnd SectionIn SubSection SubSectionEnd
-		Page UninstPage AddBrandingImage AllowRootDirInstall AutoCloseWindow
-		BGGradient BrandingText ChangeUI CheckBitmap CompletedText ComponentText
-		CRCCheck DetailsButtonText DirShow DirText FileErrorText InstallButtonText
-		InstallColors InstallDir InstallDirRegKey InstProgressFlags InstType
-		LicenseBkColor LicenseData LicenseText MiscButtonText SetFont ShowInstDetails
-		ShowUninstDetails SilentInstall SilentUnInstall SpaceTexts SubCaption
-		UninstallButtonText UninstallCaption UninstallIcon UninstallSubCaption
-		UninstallText WindowIcon XPStyle SetCompress SetCompressor SetDatablockOptimize
-		SetDateSave SetOverwrite SetPluginUnload AddSize OutFile Name Caption
-		Icon LicenseForceSelection Var VIAddVersionKey VIProductVersion PageEx
-		PageExEnd PageCallbacks DirVar FileBufSize LicenseLangString LoadLanguageFile
-		LangString LangStringUP AllowSkipFiles File Exec ExecWait ExecShell Rename
-		Delete RMDir WriteRegStr WriteRegExpandStr WriteRegDWORD WriteRegBin
-		WriteINIStr ReadRegStr ReadRegDWORD ReadEnvStr ExpandEnvStrings DeleteRegValue
-		DeleteRegKey EnumRegKey EnumRegValue DeleteINISec DeleteINIStr CreateDirectory
-		CopyFiles SetFileAttributes CreateShortCut GetFullPathName SearchPath
-		GetTempFileName CallInstDLL RegDLL UnRegDLL GetDLLVersion GetDLLVersionLocal
-		GetFileTime GetFileTimeLocal Goto Call Return IfErrors ClearErrors SetErrors
-		FindWindow SendMessage IsWindow IfFileExists MessageBox StrCmp IntCmp IntCmpU
-		Abort Quit GetFunctionAddress GetLabelAddress GetCurrentAddress FindFirst
-		FindNext FindClose FileOpen FileClose FileRead FileWrite FileReadByte
-		FileWriteByte FileSeek SetDetailsView SetDetailsPrint SetAutoClose
-		DetailPrint Sleep BringToFront HideWindow SetShellVarContext StrCpy
-		StrLen Push Pop Exch IntOp IntFmt Reboot IfRebootFlag SetRebootFlag
-		WriteUninstaller LogSet LogText SectionSetFlags SectionGetFlags SectionSetText
-		SectionGetText GetDlgItem SetBrandingImage CreateFont ReserveFile
-		GetWindowText ShowWindow FlushINI SectionSetInstTypes SectionGetInstTypes
-		InitPluginsDir ReadIniStr IfAbort SectionSetSize SectionGetSize SetCurInstType
-		GetCurInstType InstTypeSetText InstTypeGetText Nop EnableWindow SetCtlColors
-		IfSilent SetSilent SetOutPath LockWindow 
-		<!--Directive-->
-		!system !include !cd !packhdr !define !undef !ifdef !ifndef !endif !else !macro
-		!macroend !insertmacro !verbose !warning !error !echo !addIncludeDir
-		!addplugindir 
+			;
+			Abort
+			AddBrandingImage
+			AddSize
+			AllowRootDirInstall
+			AllowSkipFiles
+			AutoCloseWindow
+			BGGradient
+			BrandingText
+			BringToFront
+			Call
+			CallInstDLL
+			Caption
+			ChangeUI
+			CheckBitmap
+			ClearErrors
+			CompletedText
+			ComponentText
+			CopyFiles
+			CRCCheck
+			CreateDirectory
+			CreateFont
+			CreateShortCut
+			Delete
+			DeleteINISec
+			DeleteINIStr
+			DeleteRegKey
+			DeleteRegValue
+			DetailPrint
+			DetailsButtonText
+			DirShow
+			DirText
+			DirVar
+			EnableWindow
+			EnumRegKey
+			EnumRegValue
+			Exch
+			Exec
+			ExecShell
+			ExecWait
+			ExpandEnvStrings
+			File
+			FileBufSize
+			FileClose
+			FileErrorText
+			FileOpen
+			FileRead
+			FileReadByte
+			FileSeek
+			FileWrite
+			FileWriteByte
+			FindClose
+			FindFirst
+			FindNext
+			FindWindow
+			FlushINI
+			Function
+			FunctionEnd
+			GetCurInstType
+			GetCurrentAddress
+			GetDlgItem
+			GetDLLVersion
+			GetDLLVersionLocal
+			GetFileTime
+			GetFileTimeLocal
+			GetFullPathName
+			GetFunctionAddress
+			GetLabelAddress
+			GetTempFileName
+			GetWindowText
+			Goto
+			HideWindow
+			Icon
+			IfAbort
+			IfErrors
+			IfFileExists
+			IfRebootFlag
+			IfSilent
+			InitPluginsDir
+			InstallButtonText
+			InstallColors
+			InstallDir
+			InstallDirRegKey
+			InstProgressFlags
+			InstType
+			InstTypeGetText
+			InstTypeSetText
+			IntCmp
+			IntCmpU
+			IntFmt
+			IntOp
+			IsWindow
+			LangString
+			LangStringUP
+			LicenseBkColor
+			LicenseData
+			LicenseForceSelection
+			LicenseLangString
+			LicenseText
+			LoadLanguageFile
+			LockWindow
+			LogSet
+			LogText
+			MessageBox
+			MiscButtonText
+			Name
+			Nop
+			OutFile
+			Page
+			PageCallbacks
+			PageEx
+			PageExEnd
+			Pop
+			Push
+			Quit
+			ReadEnvStr
+			ReadIniStr
+			ReadRegDWORD
+			ReadRegStr
+			Reboot
+			RegDLL
+			Rename
+			ReserveFile
+			Return
+			RMDir
+			SearchPath
+			Section
+			SectionEnd
+			SectionGetFlags
+			SectionGetInstTypes
+			SectionGetSize
+			SectionGetText
+			SectionIn
+			SectionSetFlags
+			SectionSetInstTypes
+			SectionSetSize
+			SectionSetText
+			SendMessage
+			SetAutoClose
+			SetBrandingImage
+			SetCompress
+			SetCompressor
+			SetCtlColors
+			SetCurInstType
+			SetDatablockOptimize
+			SetDateSave
+			SetDetailsPrint
+			SetDetailsView
+			SetErrors
+			SetFileAttributes
+			SetFont
+			SetOutPath
+			SetOverwrite
+			SetPluginUnload
+			SetRebootFlag
+			SetShellVarContext
+			SetSilent
+			ShowInstDetails
+			ShowUninstDetails
+			ShowWindow
+			SilentInstall
+			SilentUnInstall
+			Sleep
+			SpaceTexts
+			StrCmp
+			StrCpy
+			StrLen
+			SubCaption
+			SubSection
+			SubSectionEnd
+			UninstallButtonText
+			UninstallCaption
+			UninstallIcon
+			UninstallSubCaption
+			UninstallText
+			UninstPage
+			UnRegDLL
+			Var
+			VIAddVersionKey
+			VIProductVersion
+			WindowIcon
+			WriteINIStr
+			WriteRegBin
+			WriteRegDWORD
+			WriteRegExpandStr
+			WriteRegStr
+			WriteUninstaller
+			XPStyle
 
-		<!--ParameterWSlash-->
-		/lang /TRIMLEFT /TRIMRIGHT /TRIMCENTER /windows /NOCUSTOM
-		/CUSTOMSTRING /COMPONENTSONLYONCUSTOM /e /REBOOTOK /nonfatal
-		/a /r /oname /ifempty /NOUNLOAD /FILESONLY /SHORT /ITALIC
-		/UNDERLINE /STRIKE /TIMEOUT /IMGID /RESIZETOFIT /components
-		/silent
-		<!--callback function-->
-		.onGUIInit .onInit .onGUIEnd .onInstFailed .onInstSuccess .onMouseOverSection
-		.onSelChange .onUserAbort .onVerifyInstDir un.onGUIInit un.onGUIEnd
-		un.onInit un.onUninstFailed un.onUninstSuccess un.onUserAbort 
+			<!--Directives-->
+			!system
+			!include
+			!cd
+			!packhdr
+			!define
+			!undef
+			!ifdef
+			!ifndef
+			!endif
+			!else
+			!macro
+			!macroend
+			!insertmacro
+			!verbose
+			!warning
+			!error
+			!echo
+			!addIncludeDir
+			!addplugindir
+
+			<!--ParameterWSlash-->
+			/a
+			/components
+			/COMPONENTSONLYONCUSTOM
+			/CUSTOMSTRING
+			/e
+			/FILESONLY
+			/ifempty
+			/IMGID
+			/ITALIC
+			/lang
+			/NOCUSTOM
+			/nonfatal
+			/NOUNLOAD
+			/oname
+			/r
+			/REBOOTOK
+			/RESIZETOFIT
+			/SHORT
+			/silent
+			/STRIKE
+			/TIMEOUT
+			/TRIMCENTER
+			/TRIMLEFT
+			/TRIMRIGHT
+			/UNDERLINE
+			/windows
+
+			<!--Callback functions-->
+			.onGUIEnd
+			.onGUIInit
+			.onInit
+			.onInstFailed
+			.onInstSuccess
+			.onMouseOverSection
+			.onSelChange
+			.onUserAbort
+			.onVerifyInstDir
+			un.onGUIEnd
+			un.onGUIInit
+			un.onInit
+			un.onUninstFailed
+			un.onUninstSuccess
+			un.onUserAbort
 		</keyword-class>
 		<keyword-class name="NSISVars">
-		<!--Variables-->
-		$0 $1 $2 $3 $4 $5 $6 $7 $8 $9 $R0 $R1 $R2 $R3 $R4 $R5 $R6 $R7
-		$R8 $R9 $INSTDIR $OUTDIR $CMDLINE $PROGRAMFILES $DESKTOP $EXEDIR
-		$WINDIR $SYSDIR $TEMP $STARTMENU $SMPROGRAMS $SMSTARTUP $QUICKLAUNCH
-		$HWNDPARENT $LANGUAGE $PLUGINSDIR 
+			<!--Variables-->
+			$0 $1 $2 $3 $4 $5 $6 $7 $8 $9
+			$R0 $R1 $R2 $R3 $R4 $R5 $R6 $R7 $R8 $R9
+
+			$CMDLINE
+			$DESKTOP
+			$EXEDIR
+			$HWNDPARENT
+			$INSTDIR
+			$LANGUAGE
+			$OUTDIR
+			$PLUGINSDIR
+			$PROGRAMFILES
+			$QUICKLAUNCH
+			$SMPROGRAMS
+			$SMSTARTUP
+			$STARTMENU
+			$SYSDIR
+			$TEMP
+			$WINDIR
 		</keyword-class>
 		<keyword-class name="NSISParams">
-		<!--Parameter-->
-		custom license components directory instfiles uninstConfirm true
-		false on off force show hide nevershow normal silent silentlog
-		auto zlib bzip2 try ifnewer manual alwaysoff RO SW_SHOWNORMAL
-		SW_SHOWMAXIMIZED SW_SHOWMINIMIZED HKCR HKEY_CLASSES_ROOT HKLM
-		HKEY_LOCAL_MACHINE HKCU HKEY_CURRENT_USER HKU HKEY_USERS HKCC
-		HKEY_CURRENT_CONFIG HKDD HKEY_DYN_DATA HKPD HKEY_PERFORMANCE_DATA
-		FILE_ATTRIBUTE_NORMAL ARCHIVE FILE_ATTRIBUTE_ARCHIVE HIDDEN
-		FILE_ATTRIBUTE_HIDDEN OFFLINE FILE_ATTRIBUTE_OFFLINE READONLY
-		FILE_ATTRIBUTE_READONLY SYSTEM FILE_ATTRIBUTE_SYSTEM TEMPORARY
-		FILE_ATTRIBUTE_TEMPORARY MB_OK MB_OKCANCEL MB_ABORTRETRYIGNORE
-		MB_RETRYCANCEL MB_YESNO MB_YESNOCANCEL MB_ICONEXCLAMATION
-		MB_ICONINFORMATION MB_ICONQUESTION MB_ICONSTOP MB_TOPMOST
-		MB_SETFOREGROUND MB_RIGHT MB_DEFBUTTON1 MB_DEFBUTTON2 MB_DEFBUTTON3
-		MB_DEFBUTTON4 IDABORT IDCANCEL IDIGNORE IDNO IDOK IDRETRY IDYES
-		current all none listonly textonly both lastused checkbox
-		radiobuttons ifdiff
+			<!--Parameter-->
+			all
+			alwaysoff
+			ARCHIVE
+			auto
+			both
+			bzip2
+			checkbox
+			components
+			current
+			custom
+			directory
+			false
+			FILE_ATTRIBUTE_ARCHIVE
+			FILE_ATTRIBUTE_HIDDEN
+			FILE_ATTRIBUTE_NORMAL
+			FILE_ATTRIBUTE_OFFLINE
+			FILE_ATTRIBUTE_READONLY
+			FILE_ATTRIBUTE_SYSTEM
+			FILE_ATTRIBUTE_TEMPORARY
+			force
+			HIDDEN
+			hide
+			HKCC
+			HKCR
+			HKCU
+			HKDD
+			HKEY_CLASSES_ROOT
+			HKEY_CURRENT_CONFIG
+			HKEY_CURRENT_USER
+			HKEY_DYN_DATA
+			HKEY_LOCAL_MACHINE
+			HKEY_PERFORMANCE_DATA
+			HKEY_USERS
+			HKLM
+			HKPD
+			HKU
+			IDABORT
+			IDCANCEL
+			IDIGNORE
+			IDNO
+			IDOK
+			IDRETRY
+			IDYES
+			ifdiff
+			ifnewer
+			instfiles
+			lastused
+			license
+			listonly
+			manual
+			MB_ABORTRETRYIGNORE
+			MB_DEFBUTTON1
+			MB_DEFBUTTON2
+			MB_DEFBUTTON3
+			MB_DEFBUTTON4
+			MB_ICONEXCLAMATION
+			MB_ICONINFORMATION
+			MB_ICONQUESTION
+			MB_ICONSTOP
+			MB_OK
+			MB_OKCANCEL
+			MB_RETRYCANCEL
+			MB_RIGHT
+			MB_SETFOREGROUND
+			MB_TOPMOST
+			MB_YESNO
+			MB_YESNOCANCEL
+			nevershow
+			none
+			normal
+			off
+			OFFLINE
+			on
+			radiobuttons
+			READONLY
+			RO
+			show
+			silent
+			silentlog
+			SW_SHOWMAXIMIZED
+			SW_SHOWMINIMIZED
+			SW_SHOWNORMAL
+			SYSTEM
+			TEMPORARY
+			textonly
+			true
+			try
+			uninstConfirm
+			zlib
 		</keyword-class>
 	</keyword-classes>
-	<language name="NSIS" title="NSIS2 Installer" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true" >
+	<language name="NSIS" title="NSIS2 Installer" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
 		<lexer name="nsis"/>
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="NSIS"/>
@@ -84,22 +380,26 @@
 			<keyword key="1" name="Parameters" class="NSISParams"/>
 		</use-keywords>
 		<use-styles>
-			<style name="Default" key="32" />
-			<style name="Whitespace" key="0" />
-			<style name="Comment" key="1" class="comment" />
-			<style name="String double quote" key="2" class="string" />
-			<style name="String left quote" key="3" class="string" />
+			<style name="Default" key="32"/>
+			<style name="Whitespace" key="0"/>
+			<style name="Comment" key="1" class="comment"/>
+			<style name="String double quote" key="2" class="string"/>
+			<style name="String left quote" key="3" class="string"/>
 			<style name="String right quote" key="4" class="string"/>
-			<style name="Keyword" key="5" class="keyword"/>
+			<style name="Keyword" key="5" fore="00007F" bold="true"/>
 			<style name="Variable" key="6" fore="cc3300"/>
-			<style name="Parameter" key="7" fore="ff9900"/>
+			<style name="Label" key="7" fore="ff9900"/>
 			<style name="User Keywords" key="8" class="keyword"/>
-			<style name="Section" key="9" fore="0033cc" bold="true"/>
-			<style name="Sub Section" key="10" fore="0033cc" bold="true"/>
+			<style name="Section" key="9" fore="00007F" bold="true"/>
+			<style name="Sub Section" key="10" fore="00007F" bold="true"/>
 			<style name="PreProcessor" key="11" class="preprocessor"/>
 			<style name="Macro Definition" key="12" class="preprocessor"/>
 			<style name="Variable in String" key="13" fore="cc3300" back="eeeeee"/>
+			<style name="Numbers" key="14" fore="007F7F"/>
+			<style name="Section Group" key="15" fore="00007F" bold="true"/>
+			<style name="Page Ex" key="16" fore="00007F" bold="true"/>
+			<style name="Function" key="17" fore="00007F" bold="true"/>
+			<style name="Comment Box" key="18" fore="007F00" bold="true" class="comment"/>
 		</use-styles>
 	</language>
-
 </Scheme>

@@ -447,9 +447,6 @@
 				RelativePath=".\StylesUserSettings.cpp">
 			</File>
 			<File
-				RelativePath=".\StyleTabPages.cpp">
-			</File>
-			<File
 				RelativePath="textclips.cpp">
 			</File>
 			<File
@@ -641,9 +638,6 @@
 			</File>
 			<File
 				RelativePath="styles.h">
-			</File>
-			<File
-				RelativePath=".\StyleTabPages.h">
 			</File>
 			<File
 				RelativePath="textclips.h">
@@ -1033,6 +1027,12 @@
 			</File>
 			<File
 				RelativePath="OptionsPages.h">
+			</File>
+			<File
+				RelativePath=".\StyleTabPages.cpp">
+			</File>
+			<File
+				RelativePath=".\StyleTabPages.h">
 			</File>
 		</Filter>
 		<File

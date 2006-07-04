@@ -41,15 +41,7 @@ BOOL PNGetSpecialFolderPath (LPTSTR path, int folder)
 
 Options::Options()
 {
-	// Initialisation
-	/*m_FindOptions.Found = false;
-	m_ReplaceOptions.Found = false;
-	m_ReplaceOptions.FindText = _T("");
-	m_ReplaceOptions.ReplaceText = _T("");
-	m_FindOptions.FindText = _T("");*/
-	/*m_SearchOptions.FindText = _T("");
-	m_SearchOptions.ReplaceText = _T("");*/
-	
+	// Initialisation	
 	m_SearchOptions.Found = false;
 	m_UserSettingsPath = _T("");
 }
@@ -103,6 +95,7 @@ void Options::loadCache()
 	cache[ODefaultScintillaCache]	= Get(NULL, _T("LayoutCacheMode"), SC_CACHE_CARET);
 	cache[OVisibleLineEndings]		= Get(NULL, _T("VisibleLineEndings"), FALSE);
 	cache[OVisibleWhiteSpace]		= Get(NULL, _T("VisibleWhiteSpace"), FALSE);
+	cache[OConvertLinesOnPaste]		= Get(NULL, _T("ConvertLineEndingsOnPaste"), TRUE);
 	ungroup();
 	
 	// Interface Settings -------------------
@@ -159,6 +152,7 @@ void Options::saveCache()
 	Set(NULL, _T("DefaultScintillaCache"),	cache[ODefaultScintillaCache]);
 	Set(NULL, _T("VisibleLineEndings"),		cache[OVisibleLineEndings]);
 	Set(NULL, _T("VisibleWhiteSpace"),		cache[OVisibleWhiteSpace]);
+	Set(NULL, _T("ConvertLineEndingsOnPaste"), cache[OConvertLinesOnPaste]);
 
 	ungroup();
 	
@@ -175,23 +169,6 @@ void Options::saveCache()
 
 	// Find and Replace Settings ------------
 	group(PNSK_FIND);
-	
-	/*Set(NULL, _T("Find Direction"),			m_FindOptions.Direction);
-	Set(NULL, _T("Find FindText"),			m_FindOptions.FindText);
-	Set(NULL, _T("Find Loop"),				m_FindOptions.Loop);
-	Set(NULL, _T("Find MatchCase"),			m_FindOptions.MatchCase);
-	Set(NULL, _T("Find MatchWholeWord"),	m_FindOptions.MatchWholeWord);
-	Set(NULL, _T("Find UseRegExp"),			m_FindOptions.UseRegExp);
-	Set(NULL, _T("Find UseSlashes"),		m_FindOptions.UseSlashes);
-
-	Set(NULL, _T("Replace Direction"),		m_ReplaceOptions.Direction);
-	Set(NULL, _T("Replace FindText"),		m_ReplaceOptions.FindText);
-	Set(NULL, _T("Replace ReplaceText"),	m_ReplaceOptions.ReplaceText);
-	Set(NULL, _T("Replace Loop"),			m_ReplaceOptions.Loop);
-	Set(NULL, _T("Replace MatchCase"),		m_ReplaceOptions.MatchCase);
-	Set(NULL, _T("Replace MatchWholeWord"), m_ReplaceOptions.MatchWholeWord);
-	Set(NULL, _T("Replace UseRegExp"),		m_ReplaceOptions.UseRegExp);
-	Set(NULL, _T("Replace UseSlashes"),		m_ReplaceOptions.UseSlashes);*/
 
 	// New search options
 	Set(NULL, _T("FindText"),				m_SearchOptions.FindText);

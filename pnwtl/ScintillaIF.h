@@ -1910,7 +1910,7 @@ class CScintilla
 		/**
 		 * Enable/Disable convert-on-paste for line endings
 		 */
-		void SetPasteConvertEndings();
+		void SetPasteConvertEndings(bool convert);
 		/**
 		 * Get convert-on-paste setting
 		 */

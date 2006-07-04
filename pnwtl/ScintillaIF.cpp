@@ -2660,9 +2660,9 @@ void CScintilla::LoadLexerLibrary(const char* path)
 	SPerform(SCI_LOADLEXERLIBRARY, 0, (long)path);
 }
 
-void CScintilla::SetPasteConvertEndings()
+void CScintilla::SetPasteConvertEndings(bool convert)
 {
-	SPerform(SCI_SETPASTECONVERTENDINGS, 0, 0);
+	SPerform(SCI_SETPASTECONVERTENDINGS, (long)convert, 0);
 }
 
 bool CScintilla::GetPasteConvertEndings()

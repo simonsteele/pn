@@ -1830,6 +1830,7 @@ END
 
 STRINGTABLE 
 BEGIN
+    ID_FILE_SAVEALL         "Save all open documents\nSave All"
     ID_EDIT_FINDINFILES     "Find text in files\nFind in Files"
     ID_FINDTYPE_BUTTON      "Find (drop down for other find types)"
 END

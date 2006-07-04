@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+    <keyword-classes>
+        <keyword-class name="matlab_keywords">
+            break case catch continue else elseif end for function global
+            if otherwise persistent return switch try while
+        </keyword-class>
+        <keyword-class name="octave_keywords">
+            <include-class name="matlab_keywords" />
+            do end_unwind_protect endfor endif endswitch endfunction until 
+            unwind_protect unwind_protect_cleanup
+        </keyword-class>
+        </keyword-classes>
+    
+    <base-language name="matlabbase">
+        <use-styles>
+            <style name="Default" key="32" />
+            <style name="Whitespace" key="0" />
+            <style name="Comment" key="1" class="comment" />
+            <style name="Command" key="2" class="command" />
+            <style name="Number" key="3" class="number" />
+            <style name="Keyword" key="4" class="keyword" />
+            <style name="String" key="5" class="string" />
+            <style name="Operator" key="6" class="operator" fore="800000"/>
+            <style name="Identifier" key="7" class="identifier" />
+            <style name="Double Quote String" key="8" class="doublequotestring" />
+        </use-styles>
+    </base-language>
+    
+    <language base="matlabbase" name="matlab" title="Matlab" folding="true" casesensitive="true">
+        <lexer name="matlab" />
+        <use-keywords>
+            <keyword key="0" name="Keyword" class="matlab_keywords"/>
+        </use-keywords>
+    </language>
+    
+    <language base="matlabbase" name="octave" title="Octave" folding="true" casesensitive="true">
+        <lexer name="octave" />
+        <use-keywords>
+            <keyword key="0" name="Keywords" class="octave_keywords"/>
+        </use-keywords>
+    </language>
+</Scheme>

@@ -464,6 +464,7 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 		sc.SPerform(SCI_SETWRAPMODE, options.GetCached(Options::OWordWrap) ? SC_WRAP_WORD : SC_WRAP_NONE);
 		sc.SetViewWS((options.GetCached(Options::OVisibleWhiteSpace) ? SCWS_VISIBLEALWAYS : SCWS_INVISIBLE));
 		sc.SetViewEOL(options.GetCached(Options::OVisibleLineEndings) != FALSE);
+		sc.SPerform(SCI_SETPASTECONVERTENDINGS, options.GetCached(Options::OConvertLinesOnPaste));
 	}
 
 	// Set even treatment of left and right caret positioning, and sloppy behaviour. 
