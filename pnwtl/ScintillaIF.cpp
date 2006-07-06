@@ -39,6 +39,12 @@ CScintilla::CScintilla()
 	StoredPerform = NULL;
 	m_TabWidth = 4;
 	m_SelLength = 0;
+
+	// initialise numbered bookmarks...
+	for(int i = 0; i < 10; i++)
+	{
+		m_numberedBookmarks[i] = -1;
+	}
 }
 
 CScintilla::~CScintilla()
@@ -291,6 +297,22 @@ void CScintilla::NextBookmark()
 	}
 }
 
+void debugBookmarkLines(int* handles)
+{
+#ifdef DEBUG_NUMBERED_BOOKMARKS
+	std::string dbgout;
+	char buf[40];
+	for(int i = 0; i < 10; ++i)
+	{
+		_itoa(handles[i], buf, 10);
+		dbgout += buf;
+		dbgout += ",";
+	}
+	dbgout += "\n";
+	LOG(dbgout.c_str());
+#endif //#ifdef DEBUG_NUMBERED_BOOKMARKS
+}
+
 void CScintilla::ToggleNumberedBookmark(int number, int base)
 {
 	if(number >= 0 && number <= 9)
@@ -302,6 +324,7 @@ void CScintilla::ToggleNumberedBookmark(int number, int base)
 		{
 			oldline = MarkerLineFromHandle(m_numberedBookmarks[number]);
 			MarkerDeleteHandle(m_numberedBookmarks[number]);
+			m_numberedBookmarks[number] = -1;
 		}
 
 		int markers = MarkerGet(line);
@@ -310,7 +333,7 @@ void CScintilla::ToggleNumberedBookmark(int number, int base)
 			if(markers & (1 << (base + i)))
 			{
 				MarkerDelete(line, base + i);
-				m_numberedBookmarks[base+i] = -1;
+				m_numberedBookmarks[i] = -1;
 			}
 		}
 
@@ -319,6 +342,8 @@ void CScintilla::ToggleNumberedBookmark(int number, int base)
 			m_numberedBookmarks[number] = MarkerAdd(line, base + number);
 		}
 	}
+
+	debugBookmarkLines(m_numberedBookmarks);
 }
 
 void CScintilla::JumpToNumberedBookmark(int number, int base)
@@ -328,6 +353,8 @@ void CScintilla::JumpToNumberedBookmark(int number, int base)
 		int line = MarkerLineFromHandle(m_numberedBookmarks[number]);
 		GotoLineEnsureVisible(line);
 	}
+
+	debugBookmarkLines(m_numberedBookmarks);
 }
 
 void CScintilla::GetSel(CharacterRange& cr)

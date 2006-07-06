@@ -42,6 +42,9 @@ Bug Fixes:
 17) Line endings detection didn't work properly for UTF-16 (SF Bug #1480945)
 18) Using INI file settings did not store re-load options properly
 19) UI settings not stored in INI file when using INI storage
+20) Searching back and forward broken (SF Bug #1451538)
+21) PN crashes when trying to access non-existent project (SF Bug #1496940)
+22) Numbered bookmarks don't work properly (SF Bug #1326469)
 
 If you find a bug:
 ------------------

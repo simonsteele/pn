@@ -89,7 +89,7 @@ File* CProjectTreeCtrl::GetSelectedFile()
 	if(sel != NULL)
 	{
 		ProjectType* pt = reinterpret_cast<ProjectType*>( GetItemData(sel) );
-		if(pt->GetType() == ptFile)
+		if(pt != NULL && pt->GetType() == ptFile)
 		{
 			File* file = static_cast<File*>( pt );
 			return file;
@@ -461,6 +461,12 @@ void CProjectTreeCtrl::doContextMenu(LPPOINT pt)
 
 						::SetMenuItemInfo(popup, ID_PROJECT_SETACTIVEPROJECT, FALSE, &mii);
 					}
+
+					g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
+				}
+				else
+				{
+					CSPopupMenu popup(IDR_POPUP_REMOVEPROJECT);
 
 					g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
 				}

@@ -204,9 +204,10 @@
 #define IDI_FINDINFILES                 344
 #define IDI_CTAGS                       345
 #define IDR_POPUP_CTAGS                 346
-#define IDI_ICON5                       346
 #define IDI_SCRIPTS                     346
 #define IDR_POPUP_FINDRESULT            347
+#define IDR_MENU2                       347
+#define IDR_POPUP_REMOVEPROJECT         347
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -549,7 +550,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        347
+#define _APS_NEXT_RESOURCE_VALUE        348
 #define _APS_NEXT_COMMAND_VALUE         32964
 #define _APS_NEXT_CONTROL_VALUE         1138
 #define _APS_NEXT_SYMED_VALUE           104

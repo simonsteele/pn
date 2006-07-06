@@ -2,7 +2,7 @@
  * @file ScintillaImpl.cpp
  * @brief Implement further functionality for a scintilla wrapper.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -15,6 +15,7 @@ CScintillaImpl::CScintillaImpl()
 {
 	lastFindDetails.findPhrase = _T("");
 	lastFindDetails.startPos = 0;
+	lastFindDetails.direction = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -456,7 +457,8 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 
 	///@todo set find pos on selchange/edit update
 	if( pOptions->FindText.Compare( lastFindDetails.findPhrase.c_str() ) != 0 ||
-		flags != lastFindDetails.flags)
+		flags != lastFindDetails.flags ||
+		pOptions->Direction != lastFindDetails.direction )
 	{
 		// Find text has changed, set the startPos value, 
 		// and don't check to see if we wrapped this time.
@@ -465,6 +467,7 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 		lastFindDetails.flags = flags;
 		lastFindDetails.result = fnNotFound;
 		lastFindDetails.lastPos = -1;
+		lastFindDetails.direction = pOptions->Direction;
 		checkFoundPos = false;
 	}
 	else

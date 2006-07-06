@@ -638,6 +638,14 @@ BEGIN
     END
 END
 
+IDR_POPUP_REMOVEPROJECT MENU 
+BEGIN
+    POPUP "PROJECT"
+    BEGIN
+        MENUITEM "&Remove Project",             286
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
