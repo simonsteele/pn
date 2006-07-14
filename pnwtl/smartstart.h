@@ -44,6 +44,7 @@ protected:
 	SmartStart();
 
 	void applyScheme(CTextView* pView, Scheme* pScheme);
+	void update();
 
 protected:
 	CTextView*	m_pView;

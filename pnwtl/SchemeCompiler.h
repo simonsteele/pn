@@ -158,7 +158,7 @@ class SchemeParser
 		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int ncfoldflags) = 0;
 		virtual void onLanguageEnd() = 0;
 		virtual void onStyleGroup(XMLAttributes& atts, const StylePtr& pClass) = 0;
-		virtual void onStyle(const StylePtr& details) = 0;
+		virtual void onStyle(const StylePtr& details, bool isBaseStyle) = 0;
 		virtual void onStyleGroupEnd() = 0;
 		virtual void onStyleClass(const StylePtr& details) = 0;
 		virtual void onProperty(LPCTSTR name, LPCTSTR value) = 0;
@@ -185,7 +185,7 @@ class SchemeCompiler : public SchemeParser
 		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int ncfoldflags);
 		virtual void onLanguageEnd();
 		virtual void onStyleGroup(XMLAttributes& atts, const StylePtr& pClass){}
-		virtual void onStyle(const StylePtr& details);
+		virtual void onStyle(const StylePtr& details, bool isBaseStyle);
 		virtual void onStyleGroupEnd(){}
 		virtual void onStyleClass(const StylePtr& details);
 		virtual void onProperty(LPCTSTR name, LPCTSTR value);

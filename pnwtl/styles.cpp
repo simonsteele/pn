@@ -672,6 +672,11 @@ StylePtr SchemeDetails::GetStyle(int key)
 	return p;
 }
 
+StylePtr SchemeDetails::GetCustomStyle(int key)
+{
+	return ::GetStyle(m_customStyles, key);
+}
+
 void SchemeDetails::PreLoadCustomisedStyle(StylePtr& ptr)
 {
 	m_customStyles.push_back(ptr);

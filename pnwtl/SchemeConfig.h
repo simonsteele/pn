@@ -55,7 +55,7 @@ class SchemeConfigParser : public SchemeParser
 		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int ncfoldflags);
 		virtual void onLanguageEnd();
 		virtual void onStyleGroup(XMLAttributes& att, const StylePtr& pClass);
-		virtual void onStyle(const StylePtr& style);
+		virtual void onStyle(const StylePtr& style, bool isBaseStyle);
 		virtual void onStyleGroupEnd();
 		virtual void onStyleClass(const StylePtr& style);
 		virtual void onProperty(LPCTSTR name, LPCTSTR value){}

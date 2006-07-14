@@ -268,6 +268,7 @@ public:
 	virtual ~SchemeDetails();
 	
 	StylePtr GetStyle(int key);
+	StylePtr GetCustomStyle(int key);
 
 	void PreLoadCustomisedStyle(StylePtr& ptr);
 

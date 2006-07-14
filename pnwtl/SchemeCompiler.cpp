@@ -278,7 +278,7 @@ void SchemeCompiler::onLanguageEnd()
 		m_Recorder.EndRecording();
 }
 
-void SchemeCompiler::onStyle(const StylePtr& details)
+void SchemeCompiler::onStyle(const StylePtr& details, bool)
 {
 	StyleDetails full;
 	details->Combine(&m_LoadState.m_Default, full);
@@ -666,7 +666,7 @@ void SchemeParser::processLanguageStyle(SchemeLoaderState* pState, XMLAttributes
 	if(!pState->m_bBaseParse)
 	{
 		// Pass it to whatever wants to know about it.
-		onStyle(style);//&Style, pCustom);
+		onStyle(style, false);//&Style, pCustom);
 	}
 	/*else
 	{
@@ -987,7 +987,7 @@ void SchemeParser::sendBaseStyles(SchemeLoaderState* pState)
 		StylePtr p = pState->m_pCurScheme->GetStyle( (*i)->Key );
 		p->Style = new StyleDetails( *(*i) );
 		
-		onStyle(p);
+		onStyle(p, false);
 	}
 
 	onStyleGroupEnd();
@@ -1048,8 +1048,18 @@ void SchemeParser::sendBaseScheme(SchemeLoaderState* pState, BaseScheme* pBase, 
 			else
 			{
 				// Copy the base style to customise for this instance:
-				StylePtr pFS( new FullStyleDetails( *(*i) ) );
-				onStyle((*i));
+				
+				StylePtr p = pState->m_pCurScheme->GetCustomStyle(pS->Key);
+				if(!p)
+				{
+					p.reset(new FullStyleDetails( *(*i) ));
+				}
+				else
+				{
+					p->Style = new StyleDetails(*pS);
+				}
+
+				onStyle(p, true);
 			}
 		}
 	}

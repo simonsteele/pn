@@ -2,7 +2,7 @@
  * @file smartstart.cpp
  * @brief Implementation of SmartStart
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -48,17 +48,8 @@ SmartStart::SmartStart()
 		}
 	}
 
-	m_max = 0;
-
-	for(SM_IT i = m_Map.begin(); i != m_Map.end(); ++i)
-	{
-		m_max = ((*i).first.size() > m_max ? (*i).first.size() : m_max);
-	}
-
-	m_max++;
-
-	m_buffer = new TCHAR[m_max];
-	memset(m_buffer, 0, m_max * sizeof(TCHAR));
+	m_buffer = NULL;
+	update();
 }
 
 SmartStart::~SmartStart()
@@ -99,6 +90,10 @@ void SmartStart::Save()
 
 		f.Close();
 	}
+
+	// When save is called we've probably changed our word list so
+	// reconfigure...
+	update();
 }
 
 /// Called by CTextView on character addition until it returns !eContinue
@@ -156,6 +151,24 @@ void SmartStart::Scan(CTextView* pView)
 STRING_MAP& SmartStart::GetMap()
 {
 	return m_Map;
+}
+
+void SmartStart::update()
+{
+	m_max = 0;
+
+	for(SM_IT i = m_Map.begin(); i != m_Map.end(); ++i)
+	{
+		m_max = ((*i).first.size() > m_max ? (*i).first.size() : m_max);
+	}
+
+	m_max++;
+
+	if(m_buffer)
+		delete [] m_buffer;
+
+	m_buffer = new TCHAR[m_max];
+	memset(m_buffer, 0, m_max * sizeof(TCHAR));
 }
 
 /// Apply the scheme, and notify the user by setting the status...

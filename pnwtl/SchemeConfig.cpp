@@ -215,11 +215,17 @@ void SchemeConfigParser::onStyleGroup(XMLAttributes& att, const StylePtr& pClass
 	}
 }
 
-void SchemeConfigParser::onStyle(const StylePtr& style)
+void SchemeConfigParser::onStyle(const StylePtr& style, bool isBaseStyle)
 {
 	PNASSERT(m_pCurrent != NULL);
 
-	//m_pCurrent->Styles.push_back(style);
+	
+	if(isBaseStyle)
+	{
+		// Not already stored in the current one...
+        StylePtr p(new FullStyleDetails(*style.get()));
+		m_pCurrent->Styles.push_back(p);
+	}
 }
 
 void SchemeConfigParser::onStyleClass(const StylePtr& style)
