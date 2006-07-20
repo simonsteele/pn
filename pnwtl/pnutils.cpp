@@ -205,7 +205,9 @@ void CMRUList::Load(extensions::IOptions* options, LPCTSTR key)
 	for(int i = 0; i < size; i++)
 	{
 		_itot(i, buf, 10);
-		AddEntry( options->Get(NULL, buf, _T("")).c_str() );
+		const TCHAR* opt = options->GetS(NULL, buf, _T(""));
+		AddEntry( opt );
+		delete [] opt;
 	}
 
 	options->EndGroupOperation();

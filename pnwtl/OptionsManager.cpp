@@ -96,6 +96,7 @@ void Options::loadCache()
 	cache[OVisibleLineEndings]		= Get(NULL, _T("VisibleLineEndings"), FALSE);
 	cache[OVisibleWhiteSpace]		= Get(NULL, _T("VisibleWhiteSpace"), FALSE);
 	cache[OConvertLinesOnPaste]		= Get(NULL, _T("ConvertLineEndingsOnPaste"), TRUE);
+	cache[ODefaultCharSet]			= Get(NULL, _T("DefaultCharSet"), SC_CHARSET_DEFAULT);
 	ungroup();
 	
 	// Interface Settings -------------------
@@ -153,6 +154,7 @@ void Options::saveCache()
 	Set(NULL, _T("VisibleLineEndings"),		cache[OVisibleLineEndings]);
 	Set(NULL, _T("VisibleWhiteSpace"),		cache[OVisibleWhiteSpace]);
 	Set(NULL, _T("ConvertLineEndingsOnPaste"), cache[OConvertLinesOnPaste]);
+	Set(NULL, _T("DefaultCharSet"),			cache[ODefaultCharSet]);
 
 	ungroup();
 	
@@ -324,6 +326,23 @@ void Options::SetUserSettingsPath(LPCTSTR path)
 {
 	CPathName usPath(path);
 	m_UserSettingsPath = usPath.c_str();
+}
+
+const TCHAR* Options::GetPNPath(int pathtype)
+{
+	tstring s;
+	GetPNPath(s, pathtype);
+	TCHAR* ret = new TCHAR[s.size()+1];
+	_tcscpy(ret, s.c_str());
+	return ret;
+}
+
+const TCHAR* Options::GetS(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
+{
+	tstring s = Get(subkey, value, szDefault);
+	TCHAR* ret = new TCHAR[s.size()+1];
+	_tcscpy(ret, s.c_str());
+	return ret;
 }
 
 //////////////////////////////////////////////////////////////////////////////

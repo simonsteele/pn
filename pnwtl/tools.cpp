@@ -488,6 +488,9 @@ void CToolCommandString::OnFormatChar(TCHAR thechar)
 #define MATCH(s) \
 	(_tcscmp(key, s) == 0)
 
+#define MATCH_START(s) \
+	((_tcslen(key) > _tcslen(s)) && (_tcsnicmp(s, key, _tcslen(s)) == 0))
+
 void CToolCommandString::OnFormatKey(LPCTSTR key)
 {
 	if(MATCH(_T("ProjectPath")))
@@ -511,6 +514,13 @@ void CToolCommandString::OnFormatKey(LPCTSTR key)
 				fn.SetForwardSlashes();
 			m_string += fn.GetPath();
 		}
+	}
+	else if(MATCH_START(_T("ProjectProp:")))
+	{
+		Projects::Project* pP = GetActiveProject();
+		if(!pP)
+			return;
+		
 	}
 	else
 	{

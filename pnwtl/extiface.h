@@ -68,10 +68,10 @@ public:
 
 	/// Retrieve the version of the interface being used, 
 	/// if this doesn't match you shouldn't do anything.
-	virtual unsigned int get_iface_version() const = 0;
+	virtual unsigned int GetIFaceVersion() const = 0;
 	
 	/// Get the version of PN loading the extension
-	virtual const char* get_version() const = 0;
+	virtual const char* GetVersion() const = 0;
 	
 	/// Add an event sink for application events
 	virtual void AddEventSink(IAppEventSinkPtr sink) = 0;
@@ -89,6 +89,9 @@ public:
 
 	/// Get the output window
 	virtual ITextOutput* GetGlobalOutputWindow() = 0;
+
+	/// Utility function to safely free strings given to you by PN
+	virtual void ReleaseString(const TCHAR* str) = 0;
 };
 
 /**

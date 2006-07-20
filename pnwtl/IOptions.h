@@ -58,7 +58,8 @@ public:
 			OVisibleWhiteSpace			= 20,
 			OManageTabOrder				= 21,
 			OConvertLinesOnPaste		= 22,
-			OPTION_COUNT				= 23
+			ODefaultCharSet				= 23,
+			OPTION_COUNT				= 24
 		} ECachedOption;
 
 		virtual void Set(LPCTSTR subkey, LPCTSTR value, bool bVal) = 0;
@@ -67,9 +68,12 @@ public:
 
 		virtual bool Get(LPCTSTR subkey, LPCTSTR value, bool bDefault) = 0;
 		virtual int Get(LPCTSTR subkey, LPCTSTR value, int iDefault) = 0;
-		virtual std::basic_string<TCHAR> Get(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault) = 0;
+		
+		// Get a string (note, you should free this using IPN::ReleaseString from an extension)
+		virtual const char* GetS(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault) = 0;
 
-		virtual void GetPNPath(std::basic_string<TCHAR>& path, int pathtype = PNPATH_PN) = 0;
+		// Get a PN path (note, you should free this using IPN::ReleaseString from an extension)
+		virtual const char* GetPNPath(int pathtype = PNPATH_PN) = 0;
 
 		virtual void BeginGroupOperation(LPCTSTR subkey) = 0;
 		virtual void EndGroupOperation() = 0;

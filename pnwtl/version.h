@@ -1,8 +1,8 @@
 #define PN_MAJOR			2
 #define PN_MINOR			0
 #define PN_REVISION			7
-#define PN_BUILD			598
-#define PN_VERSTRING		"2.0.7.0"
+#define PN_BUILD			600
+#define PN_VERSTRING		"2.0.7.600"
 #define PN_VERNAME			"-devel"
 
 #define PN_VIVERSION		PN_MAJOR,PN_MINOR,0,0

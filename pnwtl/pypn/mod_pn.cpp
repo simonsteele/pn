@@ -18,7 +18,9 @@ boost::shared_ptr<IDocument> CurrentDoc()
 std::string GetPNPath()
 {
 	std::string str;
-	g_app->GetPN()->GetOptionsManager()->GetPNPath(str);
+	const TCHAR* szstr = g_app->GetPN()->GetOptionsManager()->GetPNPath();
+	str = szstr;
+	g_app->GetPN()->ReleaseString(szstr);
 	return str;
 }
 

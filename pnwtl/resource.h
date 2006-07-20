@@ -206,7 +206,6 @@
 #define IDR_POPUP_CTAGS                 346
 #define IDI_SCRIPTS                     346
 #define IDR_POPUP_FINDRESULT            347
-#define IDR_MENU2                       347
 #define IDR_POPUP_REMOVEPROJECT         347
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
@@ -349,6 +348,8 @@
 #define IDC_OPT_TABSBOTTOMCHECK         1055
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_OPT_MAXCHECK                1056
+#define IDC_OPT_CPCOMBO2                1056
+#define IDC_OPT_CSCOMBO                 1056
 #define IDC_PNSAVE_TYPECOMBO            1057
 #define IDC_TE_BUILTIN                  1057
 #define IDC_OPT_HIDEONETABCHECK         1057

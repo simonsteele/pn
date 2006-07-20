@@ -164,10 +164,20 @@ typedef enum {
 	eSwitch
 } EAlreadyOpenAction;
 
+/*
+On Windows, code page can be set to 932 (Japanese Shift-JIS), 
+936 (Simplified Chinese GBK), 949 (Korean Unified Hangul Code), 
+950 (Traditional Chinese Big5), or 1361 (Korean Johab) although 
+these may require installation of language specific support.
+*/
 typedef enum {
 	PNCP_Default = 0,
 	PNCP_Unicode = SC_CP_UTF8,
-	PNCP_ShiftJIS = 932
+	PNCP_ShiftJIS = 932,
+	PNCP_ChineseGBK = 936,
+	PNCP_KoreanHangul = 949,
+	PNCP_ChineseBig5 = 950,
+	PNCP_KoreanJohab = 1361
 } ECodePage;
 
 typedef enum { eftFind, eftReplace, eftFindInFiles, eftInvalid } EFindDialogType;

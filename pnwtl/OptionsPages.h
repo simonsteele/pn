@@ -89,7 +89,7 @@ class COptionsPageEditDefaults : public COptionsPageImpl<COptionsPageEditDefault
 		virtual void OnInitialise();
 		virtual LPCTSTR GetTreePosition();
 
-	protected:
+	private:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 		BOOL			m_bUseTabs;
@@ -100,6 +100,7 @@ class COptionsPageEditDefaults : public COptionsPageImpl<COptionsPageEditDefault
 		UINT			m_iTabWidth;
 		EPNSaveFormat	m_SaveFormat;
 		ECodePage		m_CodePage;
+		int				m_CharSet;
 };
 
 class COptionsPageVisual : public COptionsPageImpl<COptionsPageVisual>,

@@ -369,6 +369,7 @@ class ToolWrapperT : public ToolWrapper
 		{
 			m_pWindowOwner = pWindowOwner;
 			m_pOutputSink = pOutputSink;
+			m_bOutputShown = false;
 		}
 
 		virtual ~ToolWrapperT(){}
@@ -386,7 +387,11 @@ class ToolWrapperT : public ToolWrapper
 
 		virtual void _AddToolOutput(LPCTSTR output, int nLength = -1)
 		{
-			ShowOutputWindow();
+			if(!m_bOutputShown)
+			{
+				ShowOutputWindow();
+				m_bOutputShown = true;
+			}
 			m_pOutputSink->AddToolOutput(output, nLength);
 		}
 
@@ -406,6 +411,7 @@ class ToolWrapperT : public ToolWrapper
 		}
 
 	protected:
+		bool			m_bOutputShown;
 		TWindowOwner*	m_pWindowOwner;
 		TOutputSink*	m_pOutputSink;
 };

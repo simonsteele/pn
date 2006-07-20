@@ -84,7 +84,7 @@ LRESULT MagicFolderWizard2::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 	CEdit fileFilter(GetDlgItem(IDC_MAGICFOLDER_FILEFILTER));
 	CEdit folderFilter(GetDlgItem(IDC_MAGICFOLDER_FOLDERFILTER));
 
-	fileFilter.SetWindowText("*.*");
+	fileFilter.SetWindowText("*");
 	folderFilter.SetWindowText("CVS;.svn");
 
 	return 0;

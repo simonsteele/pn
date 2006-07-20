@@ -19,6 +19,8 @@ What's new?
 11) New lovely toolbar images courtesy of famfamfam.com
 12) Save All toolbar button
 13) Keyboard customisation
+14) Text clips maintain current indentation (SF Bug #1412316)
+15) Default Character Set option for non-unicode language support (experimental)
 
 Bug Fixes:
 ----------
@@ -45,6 +47,9 @@ Bug Fixes:
 20) Searching back and forward broken (SF Bug #1451538)
 21) PN crashes when trying to access non-existent project (SF Bug #1496940)
 22) Numbered bookmarks don't work properly (SF Bug #1326469)
+23) Global output window flickers when output being added
+24) New default magic folder file filter (SF Bug #1371183)
+25) Numbered bookmarks don't work properly (SF Bug #1326469)
 
 If you find a bug:
 ------------------

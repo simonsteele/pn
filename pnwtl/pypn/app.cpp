@@ -52,7 +52,10 @@ void App::Initialise()
 	// Before we do anything else, make sure python can find our files!
 	// Find Me
 	std::string s;
-	m_app->GetOptionsManager()->GetPNPath(s);
+	const TCHAR* path = m_app->GetOptionsManager()->GetPNPath();
+	s = path;
+	m_app->ReleaseString(path);
+
 	if((s[s.length()-1]) == '\\')
 	{
 		s.erase(s.length()-1);
@@ -225,11 +228,13 @@ void App::AddOutput(const char* text, int length)
 void App::loadInitScript()
 {
 	extensions::IOptions* opts = m_app->GetOptionsManager();
-	tstring path;
-	opts->GetPNPath(path);
+	
+	const TCHAR* szpnpath = opts->GetPNPath();
 
 	TCHAR szpath[MAX_PATH+1];
-	_tcscpy(szpath, path.c_str());
+	_tcscpy(szpath, szpnpath);
+	
+	m_app->ReleaseString(szpnpath);
 
 	::PathAppend(szpath, "init.py");
 

@@ -1076,6 +1076,9 @@ BEGIN
                     BS_AUTOCHECKBOX | WS_TABSTOP,10,36,84,10
     CONTROL         "Visible &Whitespace Characters",IDC_OPT_WHITESPACECHECK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,48,111,10
+    LTEXT           "Character Se&t:",IDC_STATIC,10,148,48,8
+    COMBOBOX        IDC_OPT_CSCOMBO,10,157,102,66,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
 END
 
 IDD_FILEPROPERTIES DIALOGEX 0, 0, 194, 204

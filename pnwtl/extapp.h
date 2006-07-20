@@ -29,9 +29,9 @@ public:
 // Implement IPN:
 public:
 	/// Get the extension interface version
-	virtual unsigned int get_iface_version() const;
+	virtual unsigned int GetIFaceVersion() const;
 	/// Get the PN version
-	virtual const char* get_version() const;
+	virtual const char* GetVersion() const;
 	
 	/// Add an application event sink
 	virtual void AddEventSink(extensions::IAppEventSinkPtr sink);
@@ -48,6 +48,9 @@ public:
 
 	/// Get the global output window
 	virtual extensions::ITextOutput* GetGlobalOutputWindow();
+
+	/// Utility function to safely free strings given to you by PN
+	virtual void ReleaseString(const TCHAR* str);
 
 // Stuff to signal event sinks...
 public:

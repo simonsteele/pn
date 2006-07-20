@@ -61,6 +61,10 @@ class Options : public extensions::IOptions
 		// there is an options manager.
 		static void StaticGetPNPath(tstring& path);
 
+		// IOptions Specials::
+		virtual const TCHAR* GetPNPath(int pathtype = PNPATH_PN);
+		virtual const TCHAR* GetS(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault);
+
 	protected:
 		Options();
 

@@ -22,22 +22,53 @@ namespace TextClips {
 void Clip::Insert(CScintilla *scintilla)
 {
 	tstring clipstr;
+	tstring theText(Text);
+	tstring theIndent;
+
+	// Indentation:
+	int indentation = scintilla->GetLineIndentation(scintilla->LineFromPosition(scintilla->GetCurrentPos()));
+	
+	// Work out tabs and spaces combination to get the indentation right
+	// according to user's settings.
+	bool useTabs = scintilla->GetUseTabs();
+	int tabSize = scintilla->GetTabWidth();
+	int tabs = useTabs ? (indentation / tabSize) : 0;
+	int spaces = useTabs ? (indentation % tabSize) : indentation;
+
+	for(int j = 0; j < tabs; ++j)
+	{
+		theIndent += "\t";
+	}
+
+	for(int j = 0; j < spaces; ++j)
+	{
+		theIndent += " ";
+	}
+
+	for(size_t i = 0; i < theText.size(); i++)
+	{
+		if(theText[i] == '\n')
+		{
+			theText.insert(i+1, theIndent);
+			i += theIndent.size();
+		}
+	}
 	
 	// Text is in Unix EOL mode (LF only), convert it to target EOL mode
 	switch(scintilla->GetEOLMode())
 	{
 	case PNSF_Unix:
 		// no conversion needed, just copy
-		clipstr = Text;
+		clipstr = theText;
 		break;
 
 	case PNSF_Windows:
 		{
 			// heuristically reserve size for the target string
 			// and copy the string by inserting '\r' where appropriate
-			clipstr.reserve(Text.size() + (Text.size() / 16));
-			tstring::const_iterator it = Text.begin();
-			tstring::const_iterator end = Text.end();
+			clipstr.reserve(theText.size() + (theText.size() / 16));
+			tstring::const_iterator it = theText.begin();
+			tstring::const_iterator end = theText.end();
 			for(; it != end; ++it)
 			{
 				if(*it == '\n')
@@ -49,8 +80,8 @@ void Clip::Insert(CScintilla *scintilla)
 
 	case PNSF_Mac:
 		// reserve size for the target string and use standard algorithm
-		clipstr.reserve(Text.size());
-		std::replace_copy(Text.begin(), Text.end(),
+		clipstr.reserve(theText.size());
+		std::replace_copy(theText.begin(), theText.end(),
 			std::back_inserter(clipstr), '\n', '\r');
 		break;
 	}

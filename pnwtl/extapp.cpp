@@ -140,12 +140,12 @@ void App::unloadExtensions()
 	m_exts.clear();
 }
 
-unsigned int App::get_iface_version() const
+unsigned int App::GetIFaceVersion() const
 {
 	return PN_EXT_IFACE_VERSION;
 }
 
-const char* App::get_version() const
+const char* App::GetVersion() const
 {
 	return PN_VERSTRING;
 }
@@ -192,4 +192,9 @@ extensions::IDocumentPtr App::GetCurrentDocument()
 extensions::ITextOutput* App::GetGlobalOutputWindow()
 {
 	return g_Context.m_frame->GetGlobalOutputWindow();
+}
+
+void App::ReleaseString(const TCHAR* str)
+{
+	delete [] str;
 }

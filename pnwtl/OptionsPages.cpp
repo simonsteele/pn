@@ -95,6 +95,9 @@ void COptionsPageEditDefaults::OnOK()
 	CComboBox cb2(GetDlgItem(IDC_OPT_CPCOMBO));
 	m_CodePage = (ECodePage)cb2.GetItemData(cb2.GetCurSel());
 
+	CComboBox cb3(GetDlgItem(IDC_OPT_CSCOMBO));
+	m_CharSet = (int)cb2.GetItemData(cb3.GetCurSel());
+
 	Options& options = *OPTIONS;
 	options.SetCached(Options::OUseTabs, m_bUseTabs != FALSE);
 	options.SetCached(Options::OTabWidth, m_iTabWidth);
@@ -104,6 +107,7 @@ void COptionsPageEditDefaults::OnOK()
 	options.SetCached(Options::OWordWrap, m_bWrap != FALSE);
 	options.SetCached(Options::OVisibleLineEndings, m_bLineEndings);
 	options.SetCached(Options::OVisibleWhiteSpace, m_bWhiteSpace);
+	options.SetCached(Options::ODefaultCharSet, m_CharSet);
 }
 
 void COptionsPageEditDefaults::OnInitialise()
@@ -116,6 +120,7 @@ void COptionsPageEditDefaults::OnInitialise()
 	m_CodePage		= (ECodePage)OPTIONS->GetCached(Options::ODefaultCodePage);
 	m_bLineEndings  = OPTIONS->GetCached(Options::OVisibleLineEndings);
 	m_bWhiteSpace	= OPTIONS->GetCached(Options::OVisibleWhiteSpace);
+	m_CharSet		= OPTIONS->GetCached(Options::ODefaultCharSet);
 
 	CComboBox cb(GetDlgItem(IDC_OPT_LECOMBO));
 	for(int i = 0; i < cb.GetCount(); i++)
@@ -132,6 +137,17 @@ void COptionsPageEditDefaults::OnInitialise()
 	for(int i = 0; i < cb.GetCount(); i++)
 	{
 		if(cb.GetItemData(i) == m_CodePage)
+		{
+			cb.SetCurSel(i);
+			break;
+		}
+	}
+
+	cb.Detach();
+	cb.Attach(GetDlgItem(IDC_OPT_CSCOMBO));
+	for(int i = 0; i < cb.GetCount(); i++)
+	{
+		if(cb.GetItemData(i) == m_CharSet)
 		{
 			cb.SetCurSel(i);
 			break;
@@ -167,6 +183,56 @@ LRESULT COptionsPageEditDefaults::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
 	cb.SetItemData(idx, PNCP_Unicode);
 	idx = cb.InsertString(2, _T("Shift-JIS"));
 	cb.SetItemData(idx, PNCP_ShiftJIS);
+	idx = cb.InsertString(3, _T("Simple Chinese GBK"));
+	cb.SetItemData(idx, PNCP_ChineseGBK);
+	idx = cb.InsertString(4, _T("Korean Unified Hangul"));
+	cb.SetItemData(idx, PNCP_KoreanHangul);
+	idx = cb.InsertString(5, _T("Simple Chinese Big5"));
+	cb.SetItemData(idx, PNCP_ChineseBig5);
+	idx = cb.InsertString(6, _T("Korean Johab"));
+	cb.SetItemData(idx, PNCP_KoreanJohab);
+
+	cb.Detach();
+	cb.Attach(GetDlgItem(IDC_OPT_CSCOMBO));
+	idx = cb.InsertString(0, _T("Default"));
+	cb.SetItemData(idx, SC_CHARSET_DEFAULT);
+	//SC_CHARSET_ANSI, SC_CHARSET_ARABIC, SC_CHARSET_BALTIC, SC_CHARSET_CHINESEBIG5, SC_CHARSET_DEFAULT, SC_CHARSET_EASTEUROPE, SC_CHARSET_GB2312, SC_CHARSET_GREEK, SC_CHARSET_HANGUL, SC_CHARSET_HEBREW, SC_CHARSET_JOHAB, SC_CHARSET_MAC, SC_CHARSET_OEM, SC_CHARSET_RUSSIAN (code page 1251), SC_CHARSET_SHIFTJIS, SC_CHARSET_SYMBOL, SC_CHARSET_THAI, SC_CHARSET_TURKISH, and SC_CHARSET_VIETNAMESE
+	idx = cb.InsertString(1, _T("ANSI"));
+	cb.SetItemData(idx, SC_CHARSET_ANSI);
+	idx = cb.InsertString(2, _T("Arabic"));
+	cb.SetItemData(idx, SC_CHARSET_ARABIC);
+	idx = cb.InsertString(3, _T("Baltic"));
+	cb.SetItemData(idx, SC_CHARSET_BALTIC);
+	idx = cb.InsertString(4, _T("Chinese Big5"));
+	cb.SetItemData(idx, SC_CHARSET_CHINESEBIG5);
+	idx = cb.InsertString(5, _T("East European"));
+	cb.SetItemData(idx, SC_CHARSET_EASTEUROPE);
+	idx = cb.InsertString(6, _T("GB 2312"));
+	cb.SetItemData(idx, SC_CHARSET_GB2312);
+	idx = cb.InsertString(7, _T("Greek"));
+	cb.SetItemData(idx, SC_CHARSET_GREEK);
+	idx = cb.InsertString(8, _T("Hangul"));
+	cb.SetItemData(idx, SC_CHARSET_HANGUL);
+	idx = cb.InsertString(9, _T("Hebrew"));
+	cb.SetItemData(idx, SC_CHARSET_HEBREW);
+	idx = cb.InsertString(10, _T("Johab"));
+	cb.SetItemData(idx, SC_CHARSET_JOHAB);
+	idx = cb.InsertString(11, _T("MAC"));
+	cb.SetItemData(idx, SC_CHARSET_MAC);
+	idx = cb.InsertString(12, _T("OEM"));
+	cb.SetItemData(idx, SC_CHARSET_OEM);
+	idx = cb.InsertString(13, _T("Russian"));
+	cb.SetItemData(idx, SC_CHARSET_RUSSIAN);
+	idx = cb.InsertString(14, _T("Shift-JIS"));
+	cb.SetItemData(idx, SC_CHARSET_SHIFTJIS);
+	idx = cb.InsertString(15, _T("Symbol"));
+	cb.SetItemData(idx, SC_CHARSET_SYMBOL);
+	idx = cb.InsertString(16, _T("Thai"));
+	cb.SetItemData(idx, SC_CHARSET_THAI);
+	idx = cb.InsertString(17, _T("Turkish"));
+	cb.SetItemData(idx, SC_CHARSET_TURKISH);
+	idx = cb.InsertString(18, _T("Vietnamese"));
+	cb.SetItemData(idx, SC_CHARSET_VIETNAMESE);
 
 	return 0;
 }
