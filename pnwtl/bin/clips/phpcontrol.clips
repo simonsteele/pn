@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<clips name="PHP Control">
+
+<clip name="Open/Close PHP Tags"><![CDATA[
+<?php
+
+|
+
+?>
+]]></clip>
+
+<clip name="For Loop"><![CDATA[
+for ( $i = 0; $i <= |; $i++ ) {
+    
+    }
+]]></clip>
+
+<clip name="Foreach Loop (array)"><![CDATA[
+foreach ( $array as $value ) {
+    |
+    }
+]]></clip>
+
+<clip name="Foreach Loop (hash)"><![CDATA[
+foreach ( $array as $key => $value ) {
+    |
+    }
+]]></clip>
+
+<clip name="While Loop"><![CDATA[
+while ( | ) {
+    
+    }
+]]></clip>
+
+<clip name="Do...While Loop"><![CDATA[
+do {
+   |
+   } while ( expr );
+]]></clip>
+
+<clip name="If..Else If Loop"><![CDATA[
+if ( | ) {
+     
+     }
+else if ( expr ) {
+     
+     }
+else {
+     
+     }
+]]></clip>
+
+<clip name="Switch (Case)"><![CDATA[
+switch ($i) {
+    case |:
+         
+        break;
+    case value:
+        
+        break;
+    default:
+        
+}
+]]></clip>
+
+<clip name="Require"><![CDATA[
+require( '|' );
+]]></clip>
+
+<clip name="Include"><![CDATA[
+include( '|' );
+]]></clip>
+</clips>

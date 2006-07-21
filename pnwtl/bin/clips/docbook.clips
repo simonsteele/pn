@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<clips name="Docbook">
+	<clip name="book"><![CDATA[
+	<?xml version="1.0"?>
+	
+	<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+		"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+	
+	<book>
+		<title>|</title>
+		<titleabbrev></titleabbrev>
+		
+		<bookinfo>
+			<legalnotice>
+				<para>    
+				Copyright (c) Company. 2003-200, see <ulink url="http://www.myurl.com/">www.myurl.com</ulink>.
+				</para>
+			</legalnotice>
+			<author>
+				<firstname>Joe</firstname>
+				<surname>Bloggs</surname>
+			</author>
+			<copyright>
+				<year>2003</year>
+				<year>2004</year>
+				<holder>Company.</holder>
+			</copyright>
+		</bookinfo>
+		
+		<preface>
+			<title>Introduction</title>
+			<para>
+			Welcome to the book.
+			</para>
+		</preface>
+	]]>
+	</clip>
+	<clip name="part"><![CDATA[
+	<part>
+		<title>|</title>
+		<partintro>
+			<para>
+			Introduction to this part.
+			</para>
+		</partintro>
+		
+	</part>
+	]]>
+	</clip>
+	<clip name="chapter"><![CDATA[
+<chapter>
+	<title>|</title>
+</chapter>]]>
+	</clip>
+	<clip name="PN Help Topic"><![CDATA[
+	<section>
+		<?dbhh topicname="IDH_project_templates" topicid="13"?>
+		<title>Creating Project Templates</title>
+	
+		<para>This documentation is still to be written, <ulink url="mailto:ss@pnotepad.org?subject=documentation%20help">perhaps you can help?</ulink></para>
+	</section>
+	]]>
+	</clip>
+	<clip name="link"><![CDATA[<link linkend="|"></link>]]></clip>
+	<clip name="keycombo"><![CDATA[<keycombo>|</keycombo>]]></clip>
+	<clip name="htmlhelp topic"><![CDATA[<?dbhh topicname="|" topicid="number"?>]]></clip>
+</clips>
