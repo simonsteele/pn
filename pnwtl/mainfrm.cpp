@@ -1001,14 +1001,12 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	SchemeManager::GetInstance()->BuildMenu((HMENU)m_NewMenu, m_pCmdDispatch, this);
 
 	tstring mrukey;
-	mrukey = pnregroot;
-	mrukey += PNSK_MRU;
+	mrukey = PNSK_MRU;
 	m_RecentFiles.SetSize(OPTIONS->Get(PNSK_INTERFACE, _T("MRUSize"), 4));
 	m_RecentFiles.Load(OPTIONS, mrukey.c_str());
 	m_RecentFiles.UpdateMenu();
 
-	mrukey = pnregroot;
-	mrukey += PNSK_MRUP;
+	mrukey = PNSK_MRUP;
 	m_RecentProjects.SetSize(OPTIONS->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4));
 	m_RecentProjects.Load(OPTIONS, mrukey.c_str());
 	m_RecentProjects.UpdateMenu();
@@ -2427,12 +2425,10 @@ void CMainFrame::SaveGUIState(LPCTSTR stateName)
 	m_GUIState.Store(storage);
 
 	tstring mrukey;
-	mrukey = pnregroot;
-	mrukey += PNSK_MRU;
+	mrukey = PNSK_MRU;
 	m_RecentFiles.Save(OPTIONS, mrukey.c_str());
 
-	mrukey = pnregroot;
-	mrukey += PNSK_MRUP;
+	mrukey = PNSK_MRUP;
 	m_RecentProjects.Save(OPTIONS, mrukey.c_str());
 }
 
