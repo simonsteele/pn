@@ -7,8 +7,11 @@
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  *
+ * @namespace extensions 
+ * @brief The PN 2 Extensions Interface
+ * 
  * To make an extension:
- * ---------------------
+ * 
  * 1. Create a DLL using C++
  * 2. Export functions that look like this:
  * 
@@ -16,9 +19,11 @@
  *  - return false if your iface_version does not match and you will
  *    be safely unloaded.
  *  - The IPN instance given to you is your gateway to the rest of PN.
+ *  - @see init_pn_extension
  *
  * void exit_pn_extension();
  *  - Unhook all of your event sinks, you're being unloaded.
+ *  - @see exit_pn_extension
  *
  * Maybe later: get_extension_info()...
  */
@@ -57,6 +62,8 @@ typedef boost::shared_ptr<IAppEventSink> IAppEventSinkPtr;
 //-------------------------------------------------------------------------
 
 /**
+ * @brief Main Interface to PN
+ * 
  * The main PN interface class. This is your interface to PN allowing
  * you access to the options system, script registry and most importantly
  * documents. It also allows you to register for events.
@@ -95,6 +102,8 @@ public:
 };
 
 /**
+ * @brief The Document Interface
+ * 
  * The document interface. This allows you to control a given document,
  * get information about it and register for events.
  */
@@ -130,7 +139,9 @@ public:
 };
 
 /**
- * Event sink interface for application events.
+ * @brief Application Event Interface
+ * 
+ * Event sink interface for application events, register using @see IPN
  */
 class IAppEventSink
 {
@@ -144,7 +155,9 @@ public:
 };
 
 /**
- * Text editor event sink
+ * @brief Text Editor Event Interface
+ * 
+ * Text editor event sink, see also @see IDocumentEventSink
  */
 class ITextEditorEventSink
 {
@@ -156,7 +169,11 @@ public:
 };
 
 /**
- * Document event sink
+ * @brief Document Event Interface
+ * 
+ * This event sink is used on a per-document basis to fire
+ * events related to that document, including events from the 
+ * @see ITextEditorEventSink interface.
  */
 class IDocumentEventSink : public ITextEditorEventSink
 {
@@ -170,8 +187,11 @@ public:
 };
 
 /**
+ * @brief Script Runner Interface - for Script Engine Implementors
+ * 
  * Interface for something that can run scripts from the 
- * script manager
+ * script manager, this is how PN tells you to run a script whether
+ * it be a file or a document.
  */
 class IScriptRunner
 {
@@ -191,8 +211,10 @@ public:
 };
 
 /**
+ * @brief The Script Registry
+ * 
  * Interface for the script registry. The script registry maps scripts to
- * runners (@see IScriptRunner).
+ * runners (@see IScriptRunner) using a unique identifier (e.g. "python", "tcl").
  */
 class IScriptRegistry
 {
@@ -231,13 +253,15 @@ public:
 };
 
 /**
+ * @brief Interface to output windows
+ * 
  * Interface implemented by something that can show some text output,
  * like the Output window.
  */
 class ITextOutput
 {
 public:
-	/// Add some text to the window, @param nLength to use a fixed length or -1 to calculate
+	/// Add some text to the window, @param nLength to use a fixed length or -1 to calculate, @param output The text to output
 	virtual void AddToolOutput(LPCTSTR output, int nLength = -1) = 0;
 	/// Set the base directory for messages being placed in the output window (for error matching)
 	virtual void SetToolBasePath(LPCTSTR path) = 0;
@@ -247,7 +271,23 @@ public:
 	virtual void ClearOutput() = 0;
 };
 
+/**
+ * @brief Plugin Initialisation Function
+ * 
+ * Implement and export a function with this prototype called "init_pn_extension" to 
+ * have PN recognise your DLL as a plugin and load it successfully.
+ *
+ * @param iface_version The interface version PN was compiled with, if this does not
+ * match your version you should return false and refuse to load.
+ * @param pn The pointer to an IPN instance giving you access to PN to do your stuff!
+ */
 typedef bool (__stdcall *pn_ext_init_fn)(int iface_version, IPN* pn);
+
+/**
+ * @brief Plugin Unload Function
+ *
+ * Called by PN when it is about to unload your plugin.
+ */
 typedef void (__stdcall *pn_ext_exit_fn)();
 
 } // namespace extensions

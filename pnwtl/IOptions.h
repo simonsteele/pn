@@ -1,3 +1,12 @@
+/**
+ * @file IOptions.h
+ * @brief PN Options Manager Interface
+ * @author Simon Steele
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #ifndef ioptions_h__included
 #define ioptions_h__included
 
@@ -27,8 +36,10 @@ static const TCHAR* PNSK_FIND = _T("Find");
 namespace extensions {
 
 /**
- * Pure virtual base class for options implementations, used to spread
- * the love across dll boundaries
+ * @brief Options Manager Interface
+ * 
+ * Base class (pure virtual) for all options implementations, used to spread
+ * the love across dll boundaries.
  */
 class IOptions
 {
