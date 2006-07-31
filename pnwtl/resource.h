@@ -348,7 +348,6 @@
 #define IDC_OPT_TABSBOTTOMCHECK         1055
 #define IDC_PNSAVE_SAVEASSTATIC         1056
 #define IDC_OPT_MAXCHECK                1056
-#define IDC_OPT_CPCOMBO2                1056
 #define IDC_OPT_CSCOMBO                 1056
 #define IDC_PNSAVE_TYPECOMBO            1057
 #define IDC_TE_BUILTIN                  1057
@@ -545,6 +544,10 @@
 #define ID_CTAGS_COLLAPSALL             32962
 #define ID_CTAGS_EXPANDALL              32963
 #define ID_PROJECT_MAGICADDFILE         32963
+#define ID_EDIT_COMMENTS                32964
+#define ID_COMMENTS_STREAM              32966
+#define ID_COMMENTS_BLOCK               32967
+#define ID_COMMENTS_LINE                32968
 
 // Next default values for new objects
 // 
@@ -552,7 +555,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        348
-#define _APS_NEXT_COMMAND_VALUE         32964
+#define _APS_NEXT_COMMAND_VALUE         32969
 #define _APS_NEXT_CONTROL_VALUE         1138
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

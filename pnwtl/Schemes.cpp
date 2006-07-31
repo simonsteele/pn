@@ -150,6 +150,11 @@ LPCTSTR Scheme::GetFileName() const
 	return m_SchemeFile;
 }
 
+const CommentSpecRec& Scheme::GetCommentSpec() const
+{
+	return m_CommentSpec;
+}
+
 void Scheme::SetName(LPCTSTR name)
 {
 	if(name)
@@ -315,6 +320,13 @@ StylesList* Scheme::CreateStylesList()
 						cfile.Seek(Txt.TextLength * sizeof(char), CFile::current);
 				}
 				break;
+
+				case nrCommentRec:
+				{
+					// skip here...
+					cfile.Seek(sizeof(CommentSpecRec), CFile::current);
+				}
+				break;
 			}
 		}
 
@@ -335,6 +347,8 @@ void Scheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 	PropRec Prp;
 	char *buf = NULL;
 	char Next2;
+
+	memset(&m_CommentSpec, 0, sizeof(CommentSpecRec));
 
 	if( filename )
 	{
@@ -411,20 +425,26 @@ void Scheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 					}
 					break;
 				case nrPropRec:
-					{
-						cfile.Read(&Prp, sizeof(PropRec));
-						buf = new char[Prp.NameLength + 1];
-						cfile.Read(buf, Prp.NameLength*sizeof(char));
-						buf[Prp.NameLength] = '\0';
-						char* buf2 = new char[Prp.ValueLength + 1];
-						cfile.Read(buf2, Prp.ValueLength*sizeof(char));
-						buf2[Prp.ValueLength] = '\0';
-						sc.SPerform(SCI_SETPROPERTY, (long)buf, (long)buf2);
-						delete [] buf;
-						delete [] buf2;
-						buf = NULL;
-					}
-					break;
+				{
+					cfile.Read(&Prp, sizeof(PropRec));
+					buf = new char[Prp.NameLength + 1];
+					cfile.Read(buf, Prp.NameLength*sizeof(char));
+					buf[Prp.NameLength] = '\0';
+					char* buf2 = new char[Prp.ValueLength + 1];
+					cfile.Read(buf2, Prp.ValueLength*sizeof(char));
+					buf2[Prp.ValueLength] = '\0';
+					sc.SPerform(SCI_SETPROPERTY, (long)buf, (long)buf2);
+					delete [] buf;
+					delete [] buf2;
+					buf = NULL;
+				}
+				break;
+				case nrCommentRec:
+				{
+					// skip here...
+					cfile.Read(&m_CommentSpec, sizeof(CommentSpecRec));
+				}
+				break;
 			}
 		}
 

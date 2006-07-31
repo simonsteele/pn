@@ -101,6 +101,7 @@
 	
 	<language base="cppbase" name="cpp" title="C / C++" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
 		<lexer name="cpp" />
+		<comments line="//" streamStart="/*" streamEnd="*/" blockStart="/**" blockLine=" *" blockEnd=" */" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="cpp"/>
 			<keyword key="2" name="Doxygen Keywords" class="doxygen"/>

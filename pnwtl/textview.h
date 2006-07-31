@@ -41,6 +41,7 @@ public:
 		COMMAND_ID_HANDLER(ID_VIEW_EXPANDALLFOLDS, OnExpandAll)
 		COMMAND_ID_HANDLER(ID_VIEW_TOGGLEFOLD, OnToggleFold)
 		COMMAND_ID_HANDLER(ID_EDIT_GOTOBRACE, OnGotoBrace)
+		COMMAND_ID_HANDLER(ID_COMMENTS_LINE, OnCommentLine)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -86,6 +87,7 @@ public:
 	LRESULT OnExpandAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnToggleFold(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnGotoBrace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCommentLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	void checkLineLength();
 
@@ -93,6 +95,8 @@ private:
 	bool caretAtBrace(int& posBrace);
 	int seekBrace();
 	int seekBrace(bool forwards);
+
+	int leastIndentedLine(int startLine, int endLine);
 
 	void ProcessNumberedBookmark(int n);
 	virtual void OnFirstShow();

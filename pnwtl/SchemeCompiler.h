@@ -76,6 +76,8 @@ class SchemeRecorder : public CScintilla
 		SchemeRecorder();
 	
 		bool StartRecording(LPCTSTR scheme, LPCTSTR title, LPCTSTR outfile, int FoldFlags);
+		void WriteCommentBlock(const char* linecomment, const char* streamcommentstart, const char* streamcommentend, 
+			const char* commentblockstart, const char* commentblockend, const char* commentblockline);
 		bool EndRecording();
 		bool IsRecording(){return m_out != NULL;}
 
@@ -152,10 +154,13 @@ class SchemeParser
 		void customiseStyle(StyleDetails* style, StyleDetails* custom);
 		void sendBaseScheme(SchemeLoaderState* pState, BaseScheme* pBase, LPCTSTR baseName);
 		void sendBaseStyles(SchemeLoaderState* pState);
+		void processComments(SchemeLoaderState* pState, XMLAttributes& atts);
 
 	protected:
 		virtual void onLexer(LPCTSTR name, int styleBits) = 0;
 		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int ncfoldflags) = 0;
+		virtual void onCommentSpec(const char* linecomment, const char* streamcommentstart, const char* streamcommentend, 
+			const char* commentblockstart, const char* commentblockend, const char* commentblockline) = 0;
 		virtual void onLanguageEnd() = 0;
 		virtual void onStyleGroup(XMLAttributes& atts, const StylePtr& pClass) = 0;
 		virtual void onStyle(const StylePtr& details, bool isBaseStyle) = 0;
@@ -183,6 +188,8 @@ class SchemeCompiler : public SchemeParser
 	// Implement SchemeParser
 	protected:
 		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int ncfoldflags);
+		virtual void onCommentSpec(const char* linecomment, const char* streamcommentstart, const char* streamcommentend, 
+			const char* commentblockstart, const char* commentblockend, const char* commentblockline);
 		virtual void onLanguageEnd();
 		virtual void onStyleGroup(XMLAttributes& atts, const StylePtr& pClass){}
 		virtual void onStyle(const StylePtr& details, bool isBaseStyle);

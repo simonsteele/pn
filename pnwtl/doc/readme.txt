@@ -21,6 +21,7 @@ What's new?
 13) Keyboard customisation
 14) Text clips maintain current indentation (SF Bug #1412316)
 15) Default Character Set option for non-unicode language support (experimental)
+16) Comment text automatically (scheme support dependant)
 
 Bug Fixes:
 ----------

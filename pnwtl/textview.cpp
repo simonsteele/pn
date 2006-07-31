@@ -2,7 +2,7 @@
  * @file TextView.cpp
  * @brief Implementation of CTextView, the Scintilla based text-editor view.
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -755,6 +755,60 @@ LRESULT CTextView::OnGotoBrace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	
 	if(posBrace != -1)
 		GotoPos(posBrace);
+
+	return 0;
+}
+
+int CTextView::leastIndentedLine(int startLine, int endLine)
+{
+	unsigned int indent = 0xFFFFFFFF;
+	int line = startLine;
+	for(int i = startLine; i < endLine; ++i)
+	{
+		long lineIndent = GetLineIndentPosition(line);
+		if(lineIndent < indent)
+		{
+			indent = lineIndent;
+			line = i;
+		}
+	}
+
+	return line;
+}
+
+LRESULT CTextView::OnCommentLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	Scheme* scheme = GetCurrentScheme();
+	const CommentSpecRec& comments = scheme->GetCommentSpec();
+
+	if( GetSelLength() && comments.CommentLineText[0] != NULL)
+	{
+		// Find the selection
+		CharacterRange cr;
+		GetSel(cr);
+		int selStartLine = LineFromPosition( cr.cpMin );
+		int selEndLine = LineFromPosition( cr.cpMax );
+
+		// Calculate where the left-most bit of line is, and comment
+		// vertically from there.
+		int leftmostline = leastIndentedLine(selStartLine, selEndLine);
+		int leastindent = GetLineIndentation(leftmostline);
+		if(GetUseTabs())
+		{
+			int tabs = leastindent / GetTabWidth();
+			leastindent = tabs + (leastindent % GetTabWidth());
+		}
+
+		// Comment those lines!
+		for(int i = selStartLine; i <= selEndLine; ++i)
+		{
+			int linestart = PositionFromLine(i);
+			linestart += leastindent;
+			SetTargetStart(linestart);
+			SetTargetEnd(linestart);
+			ReplaceTarget(strlen(comments.CommentLineText), comments.CommentLineText);
+		}
+	}
 
 	return 0;
 }

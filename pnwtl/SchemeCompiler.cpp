@@ -66,6 +66,30 @@ bool SchemeRecorder::StartRecording(LPCTSTR scheme, LPCTSTR title, LPCTSTR outfi
 	return true;
 }
 
+void SchemeRecorder::WriteCommentBlock(const char* linecomment, const char* streamcommentstart, const char* streamcommentend, 
+			const char* commentblockstart, const char* commentblockend, const char* commentblockline)
+{
+	CommentSpecRec csr;
+	memset(&csr, 0, sizeof(CommentSpecRec));
+	if(linecomment)
+		strncpy(csr.CommentLineText, linecomment, SC_HDR_COMMENTTEXTSIZE);
+	if(streamcommentstart)
+		strncpy(csr.CommentStreamStart, streamcommentstart, SC_HDR_COMMENTTEXTSIZE);
+	if(streamcommentend)
+		strncpy(csr.CommentStreamEnd, streamcommentend, SC_HDR_COMMENTTEXTSIZE);
+	if(commentblockstart)
+		strncpy(csr.CommentBlockStart, commentblockstart, SC_HDR_COMMENTBLOCKTEXTSIZE);
+	if(commentblockend)
+		strncpy(csr.CommentBlockEnd, commentblockend, SC_HDR_COMMENTBLOCKTEXTSIZE);
+	if(commentblockline)
+		strncpy(csr.CommentBlockLine, commentblockline, SC_HDR_COMMENTTEXTSIZE);
+	
+	char type = nrCommentRec;
+	fwrite(&type, sizeof(char), 1, m_out);
+	fwrite(&csr, sizeof(CommentSpecRec), 1, m_out);
+
+}
+
 void SchemeRecorder::WriteHeader(LPCTSTR schemename, LPCTSTR schemetitle, int FoldFlags)
 {
 	USES_CONVERSION;
@@ -270,6 +294,12 @@ void SchemeCompiler::onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int 
 	m_Recorder.StartRecording(name, title, filename.c_str(), foldflags);
 	
 	m_Recorder.SetDefStyle(&m_LoadState.m_Default);
+}
+
+void SchemeCompiler::onCommentSpec(const char* linecomment, const char* streamcommentstart, const char* streamcommentend, 
+			const char* commentblockstart, const char* commentblockend, const char* commentblockline)
+{
+	m_Recorder.WriteCommentBlock(linecomment, streamcommentstart, streamcommentend, commentblockstart, commentblockend, commentblockline);
 }
 
 void SchemeCompiler::onLanguageEnd()
@@ -896,7 +926,7 @@ void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR nam
 	}
 	else
 	{
-		ATLASSERT(pState->m_State == DOING_LANGUAGE_DETAILS);
+		PNASSERT(pState->m_State == DOING_LANGUAGE_DETAILS);
 
 		if(_tcscmp(name, _T("lexer")) == 0)
 		{
@@ -944,6 +974,10 @@ void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR nam
 		{
 			pState->m_State = DOING_LANGUAGE_STYLES;
 		}
+		else if(_tcscmp(name, _T("comments")) == 0)
+		{
+			processComments(pState, atts);
+		}
 	}
 }
 
@@ -963,34 +997,6 @@ void SchemeParser::specifyImportFile(SchemeLoaderState* pState, XMLAttributes& a
 	{
 		throw SchemeParserException(pState->m_pParser, _T("Import element with no name attribute."));
 	}
-}
-
-/**
- * Send all of the base styles for the current scheme.
- */
-void SchemeParser::sendBaseStyles(SchemeLoaderState* pState)
-{
-	LPCTSTR attstr[5];
-	attstr[0] = _T("name");
-	attstr[1] = _T("Common");
-	attstr[2] = _T("description");
-	attstr[3] = _T("Common styles and colours.");
-	attstr[4] = NULL;
-	XMLAttributes atts(&attstr[0]);
-
-	onStyleGroup(atts, StylePtr());
-	
-	for(StylesList::SL_CIT i = pState->m_BaseStyles.StylesBegin();
-		i != pState->m_BaseStyles.StylesEnd();
-		++i)
-	{
-		StylePtr p = pState->m_pCurScheme->GetStyle( (*i)->Key );
-		p->Style = new StyleDetails( *(*i) );
-		
-		onStyle(p, false);
-	}
-
-	onStyleGroupEnd();
 }
 
 void SchemeParser::sendBaseScheme(SchemeLoaderState* pState, BaseScheme* pBase, LPCTSTR baseName)
@@ -1063,6 +1069,53 @@ void SchemeParser::sendBaseScheme(SchemeLoaderState* pState, BaseScheme* pBase, 
 			}
 		}
 	}
+}
+
+/**
+ * Send all of the base styles for the current scheme.
+ */
+void SchemeParser::sendBaseStyles(SchemeLoaderState* pState)
+{
+	LPCTSTR attstr[5];
+	attstr[0] = _T("name");
+	attstr[1] = _T("Common");
+	attstr[2] = _T("description");
+	attstr[3] = _T("Common styles and colours.");
+	attstr[4] = NULL;
+	XMLAttributes atts(&attstr[0]);
+
+	onStyleGroup(atts, StylePtr());
+	
+	for(StylesList::SL_CIT i = pState->m_BaseStyles.StylesBegin();
+		i != pState->m_BaseStyles.StylesEnd();
+		++i)
+	{
+		StylePtr p = pState->m_pCurScheme->GetStyle( (*i)->Key );
+		p->Style = new StyleDetails( *(*i) );
+		
+		onStyle(p, false);
+	}
+
+	onStyleGroupEnd();
+}
+
+void SchemeParser::processComments(SchemeLoaderState* pState, XMLAttributes& atts)
+{
+	LPCTSTR lineComment(NULL);
+	LPCTSTR startComment(NULL);
+	LPCTSTR endComment(NULL);
+	LPCTSTR startBlock(NULL);
+	LPCTSTR endBlock(NULL);
+	LPCTSTR blockLine(NULL);
+
+	lineComment = atts.getValue("line");
+	startComment = atts.getValue("streamStart");
+	endComment = atts.getValue("streamEnd");
+	startBlock = atts.getValue("blockStart");
+	endBlock = atts.getValue("blockEnd");
+	blockLine = atts.getValue("blockLine");
+
+	onCommentSpec(lineComment, startComment, endComment, startBlock, endBlock, blockLine);
 }
 
 /**

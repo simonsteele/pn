@@ -25,7 +25,7 @@ class CommandDispatch;
  **********************************************/
 
 // File Content Defines
-#define CompileVersion 0x05
+#define CompileVersion 0x06
 #define FileID "Caffeine.Scheme"
 
 typedef struct tagCompiledSchemeHdr
@@ -36,6 +36,8 @@ typedef struct tagCompiledSchemeHdr
 
 #define SC_HDR_NAMESIZE 11
 #define SC_HDR_TITLESIZE 40
+#define SC_HDR_COMMENTTEXTSIZE 11
+#define SC_HDR_COMMENTBLOCKTEXTSIZE 81
 
 /**
  * File header for compiled scheme files
@@ -47,6 +49,16 @@ typedef struct tagSchemeHdr
 	UINT Flags;
 	short TabWidth;
 } SchemeHdrRec;
+
+typedef struct tagCommentSpecRec
+{
+	char CommentLineText[SC_HDR_COMMENTTEXTSIZE];
+	char CommentStreamStart[SC_HDR_COMMENTTEXTSIZE];
+	char CommentStreamEnd[SC_HDR_COMMENTTEXTSIZE];
+	char CommentBlockStart[SC_HDR_COMMENTBLOCKTEXTSIZE];
+	char CommentBlockEnd[SC_HDR_COMMENTBLOCKTEXTSIZE];
+	char CommentBlockLine[SC_HDR_COMMENTTEXTSIZE];
+} CommentSpecRec;
 
 /**
  * Define some text that will follow, used
@@ -86,7 +98,7 @@ typedef struct tagSchemeProp
 typedef enum {ttFontName, ttKeywords, ttLexerLanguage} eTextType;
 
 /// Used to store what the next thing to expect is
-typedef enum {nrMsgRec, nrTextRec, nrPropRec} eNextRec;
+typedef enum {nrMsgRec, nrTextRec, nrPropRec, nrCommentRec} eNextRec;
 
 /// Flags for folding
 typedef enum {fldEnabled = 0x01, fldCompact = 0x02, fldComments = 0x04, fldPreProc = 0x08} eFoldFlags;
@@ -130,6 +142,8 @@ class Scheme
 		virtual LPCTSTR GetTitle() const;
 		virtual LPCTSTR GetFileName() const;
 
+		const CommentSpecRec& GetCommentSpec() const;
+
 		bool IsInternal() const;
 
 		void SetSchemeManager(SchemeManager* pManager);
@@ -144,6 +158,7 @@ class Scheme
 		TCHAR*			m_Title;
 		bool			m_bInternal;
 		SchemeManager*	m_pManager;
+		CommentSpecRec	m_CommentSpec;
 
 		bool InitialLoad(CFile& file, SchemeHdrRec& hdr);
 

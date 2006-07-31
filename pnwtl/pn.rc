@@ -165,6 +165,13 @@ BEGIN
         MENUITEM "F&ind in Files",              ID_EDIT_FINDINFILES
         MENUITEM "&Quick Find",                 ID_EDIT_QUICKFIND
         MENUITEM SEPARATOR
+        POPUP "Com&ments"
+        BEGIN
+            MENUITEM "&Line",                       ID_COMMENTS_LINE
+            MENUITEM "&Stream",                     ID_COMMENTS_STREAM
+            MENUITEM "&Block",                      ID_COMMENTS_BLOCK
+        END
+        MENUITEM SEPARATOR
         MENUITEM "&Goto",                       ID_EDIT_GOTO
         MENUITEM "&Jump To...",                 ID_EDIT_JUMPTO
     END
