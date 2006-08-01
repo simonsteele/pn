@@ -73,6 +73,9 @@ BEGIN
             MENUITEM "&Projects",                   ID_VIEW_WINDOWS_PROJECT
             MENUITEM "&Text Clips",                 ID_VIEW_WINDOWS_TEXTCLIPS
 
+            MENUITEM "&Find Results",               32704
+            MENUITEM "&CTags",                      32703
+            MENUITEM "&Scripts",                    32705
         END
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM SEPARATOR

@@ -763,9 +763,9 @@ int CTextView::leastIndentedLine(int startLine, int endLine)
 {
 	unsigned int indent = 0xFFFFFFFF;
 	int line = startLine;
-	for(int i = startLine; i < endLine; ++i)
+	for(int i = startLine; i <= endLine; ++i)
 	{
-		long lineIndent = GetLineIndentPosition(line);
+		unsigned int lineIndent = (unsigned int)GetLineIndentPosition(line);
 		if(lineIndent < indent)
 		{
 			indent = lineIndent;
@@ -776,6 +776,18 @@ int CTextView::leastIndentedLine(int startLine, int endLine)
 	return line;
 }
 
+int CTextView::lineTextStartPosition(int line)
+{
+	int indent = GetLineIndentation(line);
+	if(GetUseTabs())
+	{
+		int tabs = indent / GetTabWidth();
+		indent = tabs + (indent % GetTabWidth());
+	}
+
+	return indent;
+}
+
 LRESULT CTextView::OnCommentLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	Scheme* scheme = GetCurrentScheme();
@@ -783,6 +795,9 @@ LRESULT CTextView::OnCommentLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 	if( GetSelLength() && comments.CommentLineText[0] != NULL)
 	{
+		// Comment a block out using line comments
+		BeginUndoAction();
+
 		// Find the selection
 		CharacterRange cr;
 		GetSel(cr);
@@ -792,12 +807,7 @@ LRESULT CTextView::OnCommentLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 		// Calculate where the left-most bit of line is, and comment
 		// vertically from there.
 		int leftmostline = leastIndentedLine(selStartLine, selEndLine);
-		int leastindent = GetLineIndentation(leftmostline);
-		if(GetUseTabs())
-		{
-			int tabs = leastindent / GetTabWidth();
-			leastindent = tabs + (leastindent % GetTabWidth());
-		}
+		int leastindent = lineTextStartPosition(leftmostline);
 
 		// Comment those lines!
 		for(int i = selStartLine; i <= selEndLine; ++i)
@@ -808,6 +818,55 @@ LRESULT CTextView::OnCommentLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 			SetTargetEnd(linestart);
 			ReplaceTarget(strlen(comments.CommentLineText), comments.CommentLineText);
 		}
+
+		EndUndoAction();
+	}
+	else if( comments.CommentLineText[0] != NULL )
+	{
+		// Comment the current line out...
+		BeginUndoAction();
+
+		int commentLine = LineFromPosition( GetCurrentPos() );
+		int commentAt = PositionFromLine( commentLine ) + lineTextStartPosition( commentLine );
+		SetTargetStart(commentAt);
+		SetTargetEnd(commentAt);
+		ReplaceTarget(strlen(comments.CommentLineText), comments.CommentLineText);
+
+		EndUndoAction();
+	}
+
+	return 0;
+}
+
+LRESULT CTextView::OnCommentStream(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	Scheme* scheme = GetCurrentScheme();
+	const CommentSpecRec& comments = scheme->GetCommentSpec();
+
+	if( GetSelLength() && comments.CommentStreamStart[0] != NULL && comments.CommentStreamEnd[0] != NULL )
+	{
+		BeginUndoAction();
+		
+		// Find selection
+		CharacterRange cr;
+		GetSel(cr);
+		
+		// Insert start of stream comment...
+		SetTargetStart(cr.cpMin);
+		SetTargetEnd(cr.cpMin);
+		ReplaceTarget(strlen(comments.CommentStreamStart), comments.CommentStreamStart);
+		cr.cpMax += strlen(comments.CommentStreamStart);
+
+		// Insert end of stream comment...
+		SetTargetStart(cr.cpMax);
+		SetTargetEnd(cr.cpMax);
+		ReplaceTarget(strlen(comments.CommentStreamEnd), comments.CommentStreamEnd);
+		cr.cpMax += strlen(comments.CommentStreamEnd);
+
+		// Expand the selection to include the comment chars...
+		SetSel(cr.cpMin, cr.cpMax);
+
+		EndUndoAction();
 	}
 
 	return 0;

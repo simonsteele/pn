@@ -22,6 +22,8 @@ What's new?
 14) Text clips maintain current indentation (SF Bug #1412316)
 15) Default Character Set option for non-unicode language support (experimental)
 16) Comment text automatically (scheme support dependant)
+17) New tool parameter: ${PNPath} - the path PN is installed in
+18) Comment-out code: Edit|Comments|Line or Stream or Block - depending on language support
 
 Bug Fixes:
 ----------

@@ -522,6 +522,12 @@ void CToolCommandString::OnFormatKey(LPCTSTR key)
 			return;
 		
 	}
+	else if(MATCH(_T("PNPath")))
+	{
+		std::string pn;
+		OPTIONS->GetPNPath(pn);
+		m_string += pn;
+	}
 	else
 	{
 		tstring s = _T("Unknown constant: $(");
