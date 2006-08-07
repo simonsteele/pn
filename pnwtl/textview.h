@@ -43,6 +43,8 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_GOTOBRACE, OnGotoBrace)
 		COMMAND_ID_HANDLER(ID_COMMENTS_LINE, OnCommentLine)
 		COMMAND_ID_HANDLER(ID_COMMENTS_STREAM, OnCommentStream)
+		COMMAND_ID_HANDLER(ID_COMMENTS_BLOCK, OnCommentBlock)
+		COMMAND_ID_HANDLER(ID_COMMENTS_UNCOMMENT, OnUncomment)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -90,6 +92,8 @@ public:
 	LRESULT OnGotoBrace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCommentLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCommentStream(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCommentBlock(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnUncomment(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	void checkLineLength();
 

@@ -30,20 +30,7 @@ void Clip::Insert(CScintilla *scintilla)
 	
 	// Work out tabs and spaces combination to get the indentation right
 	// according to user's settings.
-	bool useTabs = scintilla->GetUseTabs();
-	int tabSize = scintilla->GetTabWidth();
-	int tabs = useTabs ? (indentation / tabSize) : 0;
-	int spaces = useTabs ? (indentation % tabSize) : indentation;
-
-	for(int j = 0; j < tabs; ++j)
-	{
-		theIndent += "\t";
-	}
-
-	for(int j = 0; j < spaces; ++j)
-	{
-		theIndent += " ";
-	}
+	theIndent = MakeIndentText( indentation, scintilla->GetUseTabs(), scintilla->GetTabWidth() );
 
 	for(size_t i = 0; i < theText.size(); i++)
 	{

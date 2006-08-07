@@ -173,6 +173,7 @@ BEGIN
             MENUITEM "&Line",                       ID_COMMENTS_LINE
             MENUITEM "&Stream",                     ID_COMMENTS_STREAM
             MENUITEM "&Block",                      ID_COMMENTS_BLOCK
+            MENUITEM "&Uncomment",                  ID_COMMENTS_UNCOMMENT
         END
         MENUITEM SEPARATOR
         MENUITEM "&Goto",                       ID_EDIT_GOTO

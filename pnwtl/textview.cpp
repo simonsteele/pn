@@ -872,6 +872,100 @@ LRESULT CTextView::OnCommentStream(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	return 0;
 }
 
+LRESULT CTextView::OnCommentBlock(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	Scheme* scheme = GetCurrentScheme();
+	const CommentSpecRec& comments = scheme->GetCommentSpec();
+
+	if( comments.CommentBlockStart[0] != NULL && comments.CommentBlockEnd[0] != NULL &&
+		comments.CommentBlockLine[0] != NULL )
+	{
+		BeginUndoAction();
+
+		CharacterRange cr;
+		GetSel(cr);
+
+		int selStartLine = LineFromPosition( cr.cpMin );
+		int selEndLine = LineFromPosition( cr.cpMax );
+
+		// Calculate where the left-most bit of line is, and comment
+		// vertically from there.
+		int leftmostline = leastIndentedLine(selStartLine, selEndLine);
+		int leastindent = lineTextStartPosition(leftmostline);
+
+		// Insert block start...
+		SetTargetStart(PositionFromLine(selStartLine));
+		SetTargetEnd(PositionFromLine(selStartLine));
+
+		tstring indent = MakeIndentText( GetLineIndentation( leftmostline ), GetUseTabs(), GetTabWidth() );
+		tstring startline(indent);
+		startline += comments.CommentBlockStart;
+        startline += "\r\n";
+
+		ReplaceTarget(startline.size(), startline.c_str());
+
+		for(int i = selStartLine+1; i <= selEndLine+1; ++i)
+		{
+			int linestart = PositionFromLine(i);
+			linestart += leastindent;
+			SetTargetStart(linestart);
+			SetTargetEnd(linestart);
+			ReplaceTarget(strlen(comments.CommentBlockLine), comments.CommentBlockLine);
+		}
+		
+		tstring endline("\r\n");
+		endline += indent;
+		endline += comments.CommentBlockEnd;
+		endline += "\r\n";
+
+		GetSel(cr);
+		SetTargetStart(cr.cpMax);
+		SetTargetEnd(cr.cpMax);
+		ReplaceTarget(endline.size(), endline.c_str());
+
+		EndUndoAction();
+	}
+	
+	return 0;
+}
+
+LRESULT CTextView::OnUncomment(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	Scheme* scheme = GetCurrentScheme();
+	const CommentSpecRec& comments = scheme->GetCommentSpec();
+
+	// 1. See if there's no selection, in which case it's a line comment
+	// 2. Check start->end and intermediate to see if we have a comment block
+	// 3. Else check start->end to see if we have a comment stream
+	// 4. Try to un-line-comment the selection...
+
+	CharacterRange cr;
+	GetSel(cr);
+
+	int startLine = LineFromPosition(cr.cpMin);
+	int endLine = LineFromPosition(cr.cpMax);
+
+	if((cr.cpMin == cr.cpMax || startLine == endLine) && comments.CommentLineText[0] != NULL)
+	{
+		if( UnCommentLine(comments) )
+			return 0;
+	}
+
+	if(cr.cpMin == cr.cpMax)
+		return 0; // nothing else to do here, we can't uncomment this...
+
+	//TODO: Uncomment block...
+
+	// Uncomment stream...
+	if(comments.CommentStreamStart[0] != NULL && comments.CommentStreamEnd[0] != NULL)
+	{
+		if( UnCommentStream(comments) )
+			return 0;
+	}
+
+	return 0;
+}
+
 bool CTextView::caretAtBrace(int& posBrace)
 {
 	///@todo Move to the properties? And should this be scheme-overridable.

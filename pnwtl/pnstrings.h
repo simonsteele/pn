@@ -212,4 +212,23 @@ struct FormatXML {
    }
 };
 
+static std::string MakeIndentText(int indentation, bool useTabs, int tabSize)
+{
+	tstring theIndent;
+	int tabs = useTabs ? (indentation / tabSize) : 0;
+	int spaces = useTabs ? (indentation % tabSize) : indentation;
+
+	for(int j = 0; j < tabs; ++j)
+	{
+		theIndent += "\t";
+	}
+
+	for(int j = 0; j < spaces; ++j)
+	{
+		theIndent += " ";
+	}
+
+	return theIndent;
+}
+
 #endif // #ifndef pnstrings_h__included

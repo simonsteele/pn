@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "ScintillaImpl.h"
 #include "include/encoding.h"
+#include "scaccessor.h"
 
 CScintillaImpl::CScintillaImpl()
 {
@@ -1164,4 +1165,95 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 	if (fontFooter) {
 		::DeleteObject(fontFooter);
 	}
+}
+
+bool CScintillaImpl::UnCommentLine(const CommentSpecRec& comments)
+{
+	CharacterRange cr;
+	GetSel(cr);
+
+	int indentPos = GetLineIndentPosition(LineFromPosition(cr.cpMin));
+	ScintillaAccessor sa(this);
+	bool match(true);
+
+	for(size_t i(0); i < strlen(comments.CommentLineText); ++i)
+	{
+		if(sa.SafeGetCharAt(indentPos+i, '\0') != comments.CommentLineText[i])
+		{
+			match = false;
+			break;
+		}
+	}
+
+	if(match)
+	{
+		BeginUndoAction();
+
+		// The line starts with a comment line bit, uncomment it...
+		SetTargetStart(indentPos);
+		SetTargetEnd(indentPos + strlen(comments.CommentLineText));
+		ReplaceTarget(0, NULL);
+
+		EndUndoAction();
+
+		return true;
+	}
+
+	return false;
+}
+
+bool CScintillaImpl::UnCommentStream(const CommentSpecRec& comments)
+{
+	CharacterRange cr;
+	GetSel(cr);
+
+	// Sanity checks...
+	if(cr.cpMin + (int)strlen(comments.CommentStreamStart) > cr.cpMax)
+		return false;
+	if(cr.cpMin + (int)strlen(comments.CommentStreamStart) + (int)strlen(comments.CommentStreamEnd) > cr.cpMax)
+		return false;
+
+	bool match = true;
+
+	ScintillaAccessor sa(this);
+	for(size_t i(0); i < strlen(comments.CommentStreamStart); ++i)
+	{
+		if(sa.SafeGetCharAt(cr.cpMin+i, '\0') != comments.CommentStreamStart[i])
+		{
+			match = false;
+			break;
+		}
+	}
+
+	if(!match)
+		return false;
+
+	size_t endstart = cr.cpMax - strlen(comments.CommentStreamEnd);
+	for(size_t i(0); i < strlen(comments.CommentStreamEnd); ++i)
+	{
+		if(sa.SafeGetCharAt(endstart + i, '\0') != comments.CommentStreamEnd[i])
+		{
+			match = false;
+			break;
+		}
+	}
+
+	if(!match)
+		return false;
+
+	// We've matched a comment stream...
+	BeginUndoAction();
+
+	SetTargetStart(cr.cpMin);
+	SetTargetEnd(cr.cpMin + strlen(comments.CommentStreamStart));
+	ReplaceTarget(0, NULL);
+
+	cr.cpMax -= strlen(comments.CommentStreamStart);
+	SetTargetStart(cr.cpMax-strlen(comments.CommentStreamEnd));
+	SetTargetEnd(cr.cpMax);
+	ReplaceTarget(0, NULL);
+
+	EndUndoAction();
+
+	return true;
 }

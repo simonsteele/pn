@@ -548,6 +548,7 @@
 #define ID_COMMENTS_STREAM              32966
 #define ID_COMMENTS_BLOCK               32967
 #define ID_COMMENTS_LINE                32968
+#define ID_COMMENTS_UNCOMMENT           32969
 
 // Next default values for new objects
 // 
@@ -555,7 +556,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        348
-#define _APS_NEXT_COMMAND_VALUE         32969
+#define _APS_NEXT_COMMAND_VALUE         32970
 #define _APS_NEXT_CONTROL_VALUE         1138
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
