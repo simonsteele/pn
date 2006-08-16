@@ -33,7 +33,7 @@ App::App(boost::python::handle<>& obj, extensions::IPN* app) : m_app(app), main_
 		m_registry->EnableSchemeScripts("python", "python");
 	}
 
-	m_registry->Add("test", "Test Script", "python:testScript");
+	//m_registry->Add("test", "Test Script", "python:testScript");
 
 	main_namespace = main_module.attr("__dict__");
 
@@ -63,7 +63,7 @@ void App::Initialise()
 
 	// Run some Python...
 	std::string setuppaths("import sys\nsys.path.append(r'" + s + "')\nsys.path.append(r'" + s + "\\scripts')\n\n");
-	OutputDebugString(setuppaths.c_str());
+	//OutputDebugString(setuppaths.c_str());
 	try
 	{
 		boost::python::handle<> ignored(PyRun_String(setuppaths.c_str(), Py_file_input, main_namespace.ptr(),main_namespace.ptr()));

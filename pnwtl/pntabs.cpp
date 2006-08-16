@@ -210,7 +210,7 @@ static int runs = 0;
 
 LRESULT CPNMDIClient::OnWindowPosChanging(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	char buf[80];
+	//char buf[80];
 	
 	LPWINDOWPOS pWinPos = reinterpret_cast<LPWINDOWPOS>(lParam);
 	if(pWinPos)
@@ -222,8 +222,8 @@ LRESULT CPNMDIClient::OnWindowPosChanging(UINT uMsg, WPARAM wParam, LPARAM lPara
 			int nTabAreaHeight = (m_MdiTabOwner.IsWindowVisible()) ? m_MdiTabOwner.GetTabAreaHeight() : 0;
 			int nBottomAreaHeight = (m_findBar->IsWindow() && m_findBar->IsWindowVisible()) ? m_findBar->GetDesiredHeight() : 0;
 
-			sprintf(buf, "Before OnWindowPosChanging[%d] tabs %d bottom %d height %d, NOMOVE %d NOSIZE %d\n", runs, nTabAreaHeight, nBottomAreaHeight, pWinPos->cy, pWinPos->flags & SWP_NOMOVE, pWinPos->flags & SWP_NOSIZE);
-			LOG(buf);
+			//sprintf(buf, "Before OnWindowPosChanging[%d] tabs %d bottom %d height %d, NOMOVE %d NOSIZE %d\n", runs, nTabAreaHeight, nBottomAreaHeight, pWinPos->cy, pWinPos->flags & SWP_NOMOVE, pWinPos->flags & SWP_NOSIZE);
+			//LOG(buf);
 
 			TTabCtrl& TabCtrl = m_MdiTabOwner.GetTabCtrl();
 			DWORD dwStyle = TabCtrl.GetStyle();
@@ -269,8 +269,8 @@ LRESULT CPNMDIClient::OnWindowPosChanging(UINT uMsg, WPARAM wParam, LPARAM lPara
 					m_findBar->SetWindowPos(NULL, pWinPos->x, pWinPos->y + pWinPos->cy, pWinPos->cx, nBottomAreaHeight, (pWinPos->flags & SWP_NOMOVE) | (pWinPos->flags & SWP_NOSIZE) | SWP_NOZORDER | SWP_NOACTIVATE);
 			}
 
-			sprintf(buf, "After OnWindowPosChanging[%d] tabs %d bottom %d height %d\n", runs++, nTabAreaHeight, nBottomAreaHeight, pWinPos->cy);
-			LOG(buf);
+			//sprintf(buf, "After OnWindowPosChanging[%d] tabs %d bottom %d height %d\n", runs++, nTabAreaHeight, nBottomAreaHeight, pWinPos->cy);
+			//LOG(buf);
 		}
 	}
 

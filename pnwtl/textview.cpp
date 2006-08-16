@@ -1162,9 +1162,11 @@ UINT __stdcall CTextView::RunMeasureThread(void* pThis)
 	// ensure we stay below the absolute maximum...
 	maxLength = min(maxLength, absMaxLength);
 
+#ifdef _DEBUG
 	TCHAR buf[50];
-	_stprintf(buf, _T("Max line length: %d"), maxLength);
+	_stprintf(buf, _T("PN: Max line length: %d"), maxLength);
 	LOG(buf);
+#endif
 
 	pTextView->SetScrollWidth(maxLength + 10);
 

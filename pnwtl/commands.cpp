@@ -250,9 +250,11 @@ void CommandDispatch::UpdateMenuShortcuts(HMENU theMenu)
 		}
 	}
 
+#ifdef _DEBUG
 	DWORD ticksTaken = ::GetTickCount() - ticksPre;
 	_stprintf(buffer, _T("%dms to setup the menu\n"), ticksTaken);
 	LOG(buffer);
+#endif
 }
 
 tstring CommandDispatch::GetShortcutText(int wCode, int wModifiers)

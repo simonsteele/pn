@@ -10,8 +10,12 @@ scripts = {}
 class SchemeMapping:
 	def __init__(self, name):
 		self.name = name
+		self.on_char_added = None
+		self.indenter = None
 
 def registerScript(f, group, scriptName):
+	debug.OutputDebugString("group: " + str(group))
+	debug.OutputDebugString("name: " + str(scriptName))
 	scripts[f.func_name] = f
 	pn.RegisterScript(f.func_name, group, scriptName)
 
@@ -23,15 +27,18 @@ def runScript(name):
 		pass
 
 def onCharAdded(c, doc):
+	if not schemes.has_key(doc.GetCurrentScheme()):
+		return
+		
+	scheme = schemes[doc.GetCurrentScheme()]
+	
+	if scheme and scheme.on_char_added != None:
+		scheme.on_char_added(c, doc)
+		
 	if not (c == '\n' or c == '\r'):
 		return
 	
-	if not schemes.has_key(doc.GetCurrentScheme()):
-		return
-	
-	scheme = schemes[doc.GetCurrentScheme()]
-	
-	if scheme and scheme.indenter:
+	if scheme and scheme.indenter != None:
 		scheme.indenter(c, doc)
 
 def getSchemeConfig(name):

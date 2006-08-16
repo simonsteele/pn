@@ -1,21 +1,14 @@
 # Standard PN Builtins
 import pn, scintilla, debug
 
-# Set-up paths...
-#import sys
-#sys.path.append(pn.AppPath())
-#sys.path.append(pn.AppPath() + "scripts")
-
 # Import the rest of the pypn stuff
 from pypn import *
 from pypn.decorators import *
 
-debug.OutputDebugString(repr(dir()))
+#debug.OutputDebugString(repr(dir()))
 
 ######################################################
 ## Bring on the scripts!
-
-#from scripts import *
 
 import os
 
@@ -25,13 +18,13 @@ def import_libs(dir):
     
     library_list = [] 
     
-    print os.listdir(os.path.abspath(dir))
+    #debug.OutputDebugString(str(os.listdir(os.path.abspath(dir))))
     for f in os.listdir(os.path.abspath(dir)):       
         
         module_name, ext = os.path.splitext(f) # Handles no-extension files, etc.
         if ext == '.py': # Important, ignore .pyc/other files.
-            print 'imported module: %s' % (module_name)
-            module = __import__(module_name)
+            module = __import__("scripts." + module_name, globals(), locals(), [])
+            #debug.OutputDebugString( 'imported module: %s' % (module_name) )
             library_list.append(module)
  
     return library_list
@@ -70,11 +63,3 @@ def python_indent(c, doc):
 			if indent == previndent or indent == 0:
 				indent += 4
 				sci.IndentLine( line, indent )
-
-@script()
-def testScript():
-	debug.OutputDebugString("Hello Monkeys!")
-
-# Hook up the python indenter.
-# s = getSchemeConfig("python")
-# s.indenter = python_indent

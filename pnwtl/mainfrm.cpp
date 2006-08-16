@@ -1813,10 +1813,12 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 		ToolsManager* pSTM = ToolsManager::GetInstance();
 		pSTM->ReLoad(m_pCmdDispatch); // pass in true to cache menu resources.
 
+#if _DEBUG
 		dwTimeNow = ::GetTickCount() - dwTimeNow;
 		char buf[55];
 		sprintf(buf, "Took %dms to save tools\n", dwTimeNow);
 		LOG(buf);
+#endif
 
 		///@todo more dirty checking...
 
