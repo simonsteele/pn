@@ -53,6 +53,8 @@ Bug Fixes:
 23) Global output window flickers when output being added
 24) New default magic folder file filter (SF Bug #1371183)
 25) Numbered bookmarks don't work properly (SF Bug #1326469)
+26) Quick Find Textbox Border Color Problem (SF Bug #1465805)
+27) Find bar corruption after documents closed (SF Bug #1361852)
 
 If you find a bug:
 ------------------

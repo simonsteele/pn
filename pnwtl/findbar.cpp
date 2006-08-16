@@ -2,7 +2,7 @@
  * @file findbar.cpp
  * @brief Incremental find bar implementation
  * @author Simon Steele
- * @note Copyright (c) 2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2005-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -29,17 +29,16 @@ void CFindBarEdit::SetDoRed(bool bDoRed)
 	Invalidate();
 }
 
-LRESULT CFindBarEdit::OnCtlColorEdit(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CFindBarEdit::OnCtlColorEdit(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
 	CDCHandle dc( (HDC) wParam );
-	
-	//dc.SetBkMode(TRANSPARENT);
 	
 	if(m_bDoRed)
 	{
 		dc.SetTextColor( RGB(255,255,255) );
 		dc.SetBkColor( RGB(200, 0, 0) );
-		return (LRESULT) (HBRUSH) m_brRedBk;
+		//return (LRESULT) (HBRUSH) m_brRedBk;
+		return (LRESULT)GetSysColorBrush(COLOR_3DHILIGHT);
 	}
 	else
 	{

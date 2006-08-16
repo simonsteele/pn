@@ -206,16 +206,24 @@ LRESULT CPNMDIClient::OnDblClick(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 	return 0;
 }
 
+static int runs = 0;
+
 LRESULT CPNMDIClient::OnWindowPosChanging(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+	char buf[80];
+	
 	LPWINDOWPOS pWinPos = reinterpret_cast<LPWINDOWPOS>(lParam);
 	if(pWinPos)
 	{
 		if( m_MdiTabOwner.IsWindow() )
 		{
 			//ATLTRACE(_T("Resizing MDI tab and MDI client\n"));
+
 			int nTabAreaHeight = (m_MdiTabOwner.IsWindowVisible()) ? m_MdiTabOwner.GetTabAreaHeight() : 0;
 			int nBottomAreaHeight = (m_findBar->IsWindow() && m_findBar->IsWindowVisible()) ? m_findBar->GetDesiredHeight() : 0;
+
+			sprintf(buf, "Before OnWindowPosChanging[%d] tabs %d bottom %d height %d, NOMOVE %d NOSIZE %d\n", runs, nTabAreaHeight, nBottomAreaHeight, pWinPos->cy, pWinPos->flags & SWP_NOMOVE, pWinPos->flags & SWP_NOSIZE);
+			LOG(buf);
 
 			TTabCtrl& TabCtrl = m_MdiTabOwner.GetTabCtrl();
 			DWORD dwStyle = TabCtrl.GetStyle();
@@ -237,30 +245,37 @@ LRESULT CPNMDIClient::OnWindowPosChanging(UINT uMsg, WPARAM wParam, LPARAM lPara
 			}
 			else
 			{
+				// Position the Tab bar
 				m_MdiTabOwner.SetWindowPos(
 					NULL,
 					pWinPos->x, pWinPos->y,
 					pWinPos->cx, nTabAreaHeight,
 					(pWinPos->flags & SWP_NOMOVE) | (pWinPos->flags & SWP_NOSIZE) | SWP_NOZORDER | SWP_NOACTIVATE);
 
+				// See if we need to adjust for movement?
 				if((pWinPos->flags & SWP_NOMOVE) == 0)
 				{
 					pWinPos->y += nTabAreaHeight;
 				}
+				// Adjust for sizing?
 				if((pWinPos->flags & SWP_NOSIZE) == 0)
 				{
 					pWinPos->cy -= nTabAreaHeight;
 					pWinPos->cy -= nBottomAreaHeight; //Leave room for our bottom thing.
 				}
 
+				// Move the find bar...
 				if(m_findBar->IsWindow())
 					m_findBar->SetWindowPos(NULL, pWinPos->x, pWinPos->y + pWinPos->cy, pWinPos->cx, nBottomAreaHeight, (pWinPos->flags & SWP_NOMOVE) | (pWinPos->flags & SWP_NOSIZE) | SWP_NOZORDER | SWP_NOACTIVATE);
 			}
+
+			sprintf(buf, "After OnWindowPosChanging[%d] tabs %d bottom %d height %d\n", runs++, nTabAreaHeight, nBottomAreaHeight, pWinPos->cy);
+			LOG(buf);
 		}
 	}
 
 	// "base::OnWindowPosChanging()"
-	LRESULT lRet = this->DefWindowProc(uMsg, wParam, lParam);
+	LRESULT lRet = DefWindowProc(uMsg, wParam, lParam);
 	bHandled = TRUE;
 
 	return lRet;
@@ -270,6 +285,41 @@ LRESULT CPNMDIClient::OnEscapePressed(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 {
 	ShowFindBar(false);
 	::SetFocus(GetCurrentEditor());
+	return 0;
+}
+
+/**
+ * This method returns the rect that the MDIClient would be if no tab bar or
+ * find bar were visible, this is the rect that should be passed to OnWindowPosChanging
+ */
+LRESULT CPNMDIClient::OnGetMdiClientRect(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	RECT* lpRect = reinterpret_cast<RECT*>( lParam );
+	GetWindowRect(lpRect);
+	::MapWindowPoints(NULL, GetParent(), (LPPOINT)lpRect, 2);
+	
+	TTabCtrl& TabCtrl = m_MdiTabOwner.GetTabCtrl();
+	DWORD dwStyle = TabCtrl.GetStyle();
+	
+	// Add the height of the tab area
+	int nTabAreaHeight = (m_MdiTabOwner.IsWindowVisible()) ? m_MdiTabOwner.GetTabAreaHeight() : 0;
+	if(nTabAreaHeight)
+	{
+		if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
+		{
+			lpRect->bottom += nTabAreaHeight;
+		}
+		else
+		{
+			lpRect->top -= nTabAreaHeight;
+			lpRect->bottom += nTabAreaHeight;
+		}
+	}
+	
+	// Add the find bar...
+	int nBottomAreaHeight = (m_findBar->IsWindow() && m_findBar->IsWindowVisible()) ? m_findBar->GetDesiredHeight() : 0;
+	lpRect->bottom += nBottomAreaHeight;
+
 	return 0;
 }
 

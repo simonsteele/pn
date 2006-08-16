@@ -49,6 +49,50 @@ public:
 		::LockWindowUpdate(NULL);
 		return ret;
 	}
+
+	void ForceHideMDITabControl()
+	{
+		if(m_hWnd && this->IsWindowVisible())
+		{
+			RECT rcTabs;
+			m_TabCtrl.GetWindowRect(&rcTabs);
+			::MapWindowPoints(NULL, m_TabCtrl.GetParent(), (LPPOINT)&rcTabs, 2);
+
+			this->ShowWindow(SW_HIDE);
+
+			// Get the position of the MDI Client including the size of the find bar
+			// if it's visible, translated into the correct window co-ordinates.
+			RECT rcMDIClient;
+			::SendMessage(m_hWndMDIClient, PN_GETMDICLIENTRECT, 0, (LPARAM)&rcMDIClient);
+
+			// the MDI client resizes and shows our window when
+			//  handling messages related to SetWindowPos
+
+			// TODO: Is there a better way to do this?
+			//  We're basically hiding the tabs and
+			//  resizing the MDI client area to "cover up"
+			//  where the tabs were
+			DWORD dwStyle = m_TabCtrl.GetStyle();
+			if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
+			{
+				::SetWindowPos(
+					m_hWndMDIClient, NULL,
+					rcMDIClient.left, rcMDIClient.top,
+					(rcMDIClient.right - rcMDIClient.left),
+					(rcMDIClient.bottom - rcMDIClient.top) + (rcTabs.bottom - rcTabs.top),
+					SWP_NOZORDER);
+			}
+			else
+			{
+				::SetWindowPos(
+					m_hWndMDIClient, NULL,
+					rcMDIClient.left, rcMDIClient.top - (rcTabs.bottom - rcTabs.top),
+					(rcMDIClient.right - rcMDIClient.left),
+					(rcMDIClient.bottom - rcMDIClient.top) + (rcTabs.bottom - rcTabs.top),
+					SWP_NOZORDER);
+			}
+		}
+	}
 };
 
 /**
@@ -77,6 +121,7 @@ public:
 		MESSAGE_HANDLER(WM_LBUTTONDBLCLK, OnDblClick)
 		MESSAGE_HANDLER(WM_WINDOWPOSCHANGING, OnWindowPosChanging)
 		MESSAGE_HANDLER(PN_ESCAPEPRESSED, OnEscapePressed)
+		MESSAGE_HANDLER(PN_GETMDICLIENTRECT, OnGetMdiClientRect)
 		
 		MESSAGE_HANDLER(WM_MDIACTIVATE, OnMDIActivate)
 		MESSAGE_HANDLER(WM_MDINEXT, OnMDINext)
@@ -101,6 +146,7 @@ protected:
 	LRESULT OnChildTabTextChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	LRESULT OnWindowPosChanging(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnEscapePressed(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnGetMdiClientRect(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	LRESULT OnDblClick(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
