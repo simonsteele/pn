@@ -25,6 +25,8 @@ public:
 
 	CommandDispatch& GetCommandDispatch();
 	const AppSettings& GetSettings();
+	
+	void LoadExtensions();
 
 // Implement IPN:
 public:
@@ -59,7 +61,6 @@ public:
 private:
 	void deinit();
 
-	void loadExtensions();
 	void unloadExtensions();
 
 	EventSinkList	m_sinks;

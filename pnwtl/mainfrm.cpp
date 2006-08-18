@@ -1019,6 +1019,9 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	setupToolsUI();
 
+	// Load extensions...
+	g_Context.ExtApp->LoadExtensions();
+
 	PostMessage(PN_INITIALISEFRAME);
 
 	return 0;

@@ -71,8 +71,8 @@ void App::Init()
 	// Create the command dispatcher
 	m_dispatch = new CommandDispatch(keypath.c_str());
 
-	// Load our extensions
-	loadExtensions();
+	// Load our extensions - done from outside
+	//loadExtensions();
 }
 
 CommandDispatch& App::GetCommandDispatch()
@@ -100,7 +100,7 @@ void App::deinit()
 	delete m_dispatch;
 }
 
-void App::loadExtensions()
+void App::LoadExtensions()
 {
 	const tstring_list& extensions = m_settings->GetExtensions();
 
