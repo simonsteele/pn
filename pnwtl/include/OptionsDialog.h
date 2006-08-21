@@ -87,7 +87,7 @@ class COptionsPageImpl : public CDialogImpl<T>, public COptionsPage
 
 class COptionsDialog : public CDialogImpl<COptionsDialog>
 {
-	typedef list<COptionsPage*> PAGEPTRLIST;
+	typedef std::list<COptionsPage*> PAGEPTRLIST;
 	typedef CDialogImpl<COptionsDialog> baseClass;
 
 	public:

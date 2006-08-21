@@ -630,7 +630,7 @@ protected:
 
 template< class TTraits = CDockingFrameTraits >
 class CWndFramesPackage : public CWndFramesPackageBase<CWndFrame,TTraits >,
-    public CThemeImpl <CWndFramesPackage>
+    public CThemeImpl < CWndFramesPackage<TTraits> >
 {
 	typedef CWndFrame CFrame;
 	typedef TTraits CTraits;

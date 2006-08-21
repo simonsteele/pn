@@ -61,7 +61,7 @@ void Registry::loadCache()
 	OPTIONS->GetPNPath(templatePath, PNPATH_PROJECTTEMPLATES);
 	PNASSERT(templatePath.size() > 0);
 
-	FileFinder<Registry> finder(this, _onFoundFile);
+	FileFinder<Registry> finder(this, &Registry::_onFoundFile);
 
 	// Find all *.pnpt files in the project template directory, don't recurse.
 	finder.Find(templatePath.c_str(), _T("*.pnpt"), false);

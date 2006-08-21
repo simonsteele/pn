@@ -211,7 +211,7 @@ LRESULT CTabPageKeywords::OnResetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 
 LRESULT CTabPageKeywords::OnSortClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	string str;
+	std::string str;
 
 	int len = m_scintilla.GetTextLength();
 	TCHAR* pCS = new TCHAR[len+1];
@@ -220,16 +220,16 @@ LRESULT CTabPageKeywords::OnSortClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	str = pCS;
 	delete [] pCS;
 
-	vector<string> tokens;
+	std::vector<std::string> tokens;
 
-	StringTokenise(str, tokens, string(" "));
+	StringTokenise(str, tokens, std::string(" "));
 	
 	std::sort(tokens.begin(), tokens.end());
 
-	string strout;
+	std::string strout;
 	strout.reserve(len+1);
 
-	for(vector<string>::iterator i = tokens.begin(); i != tokens.end(); ++i)
+	for(std::vector<std::string>::const_iterator i = tokens.begin(); i != tokens.end(); ++i)
 	{
 		if(i != tokens.begin())
 			strout += _T(" ");

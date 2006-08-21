@@ -44,7 +44,7 @@ JumpToPlugin::JumpToPlugin(LPCTSTR filename) : Plugin(filename)
 
 bool JumpToPlugin::Valid()
 {
-	bool valid = Plugin::Valid;
+	bool valid = Plugin::Valid();
 
 	return valid && (pfnGetMethods != NULL);
 }

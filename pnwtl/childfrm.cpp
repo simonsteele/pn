@@ -567,7 +567,7 @@ LRESULT CChildFrame::OnChildIsModified(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 		
 		USES_CONVERSION;
 		
-		wstring wstr = T2CW(GetFileName(FN_FILE).c_str());
+		std::wstring wstr = T2CW(GetFileName(FN_FILE).c_str());
 		pMI->put_DisplayName( wstr.c_str() );
 		
 		if( CanSave() )

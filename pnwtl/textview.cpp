@@ -93,7 +93,7 @@ void CTextView::SetScheme(Scheme* pScheme, bool allSettings)
 	::SendMessage(GetParent(), PN_SCHEMECHANGED, 0, reinterpret_cast<LPARAM>(pScheme));
 }
 
-static string ExtractLine(const char *buf, size_t length) {
+static std::string ExtractLine(const char *buf, size_t length) {
 	unsigned int endl = 0;
 	if (length > 0) {
 		while ((endl < length) && (buf[endl] != '\r') && (buf[endl] != '\n')) {
@@ -106,7 +106,7 @@ static string ExtractLine(const char *buf, size_t length) {
 			endl++;
 		}
 	}
-	return string(buf, 0, endl);
+	return std::string(buf, 0, endl);
 }
 
 /**
@@ -451,7 +451,7 @@ void CTextView::SetLineNumberChars(bool bSet)
 		
 		long lines = SPerform(SCI_GETLINECOUNT);
 		char lnbuf[40];
-		itoa(lines, lnbuf, 10);
+		_itoa(lines, lnbuf, 10);
 		w = max(w, (int)strlen(lnbuf));
 		
 		int pixelWidth = 4 + w * SPerform(SCI_TEXTWIDTH, STYLE_LINENUMBER, (LPARAM)"9");

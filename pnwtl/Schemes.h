@@ -110,8 +110,6 @@ typedef enum {schUseTabs = 0x10, schInternal = 0x20, schOverrideTabs = 0x40, sch
 
 #define SCHEMEMANAGER_SELECTSCHEME	0x01
 
-using namespace std;
-
 class SchemeManager;
 class CFile;
 
@@ -201,7 +199,7 @@ typedef struct
 	int iCommand;
 } menuid_scheme_pair;
 
-typedef list<menuid_scheme_pair> MISCHEMELIST;
+typedef std::list<menuid_scheme_pair> MISCHEMELIST;
 
 class CSchemeSwitcher
 {

@@ -82,7 +82,7 @@ CMainFrame::CMainFrame(CommandDispatch* commands) : m_RecentFiles(ID_MRUFILE_BAS
 
 	m_statusResetCounter = 0;
 
-	m_CmdBar.SetCallback(this, OnMDISetMenu);
+	m_CmdBar.SetCallback(this, &CMainFrame::OnMDISetMenu);
 
 	m_hToolAccel = NULL;
 	m_hGlobalToolAccel = NULL;
@@ -1845,7 +1845,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 			
 		}
 
-		PerformChildEnum(ChildOptionsUpdateNotify);
+		PerformChildEnum(&CMainFrame::ChildOptionsUpdateNotify);
 
 		setupToolsUI();
 
@@ -2047,7 +2047,7 @@ bool CMainFrame::CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction action)
 	GetShortPathName(filename, shortForm, MAX_PATH+1);
 	
 	SIsOpen s;
-	s.pFunction = FileOpenNotify;
+	s.pFunction = &CMainFrame::FileOpenNotify;
 	s.pszFilename = shortForm;
 	s.bFound = false; // not found
 	s.pMatch = NULL;
@@ -2503,7 +2503,7 @@ void CMainFrame::GetOpenDocuments(DocumentList& list)
 {
 	SWorkspaceWindowsStruct s;
 	s.bInProjectGroupOnly = false;
-	s.pFunction = WorkspaceChildEnumNotify;
+	s.pFunction = &CMainFrame::WorkspaceChildEnumNotify;
 	s.pWorkspace = NULL;
 
 	PerformChildEnum(&s);
@@ -2523,7 +2523,7 @@ void CMainFrame::GetOpenWorkspaceDocuments(DocumentList& list)
 
 	SWorkspaceWindowsStruct s;
 	s.bInProjectGroupOnly = true;
-	s.pFunction = WorkspaceChildEnumNotify;
+	s.pFunction = &CMainFrame::WorkspaceChildEnumNotify;
 	s.pWorkspace = GetActiveWorkspace();
 
 	PerformChildEnum(&s);
@@ -2936,7 +2936,7 @@ bool CMainFrame::CloseWorkspaceFiles(Projects::Workspace* pWorkspace)
 {
 	SWorkspaceWindowsStruct s;
 	s.bInProjectGroupOnly = true;
-	s.pFunction = WorkspaceChildCloseNotify; 
+	s.pFunction = &CMainFrame::WorkspaceChildCloseNotify; 
 	s.bCanClose = true;
 	s.pWorkspace = pWorkspace;
 
@@ -2958,7 +2958,7 @@ bool CMainFrame::CloseWorkspaceFiles(Projects::Workspace* pWorkspace)
  */
 bool CMainFrame::EnumWorkspaceWindows(SWorkspaceWindowsStruct* pWWS)
 {
-	pWWS->pFunction = WorkspaceChildEnumNotify;
+	pWWS->pFunction = &CMainFrame::WorkspaceChildEnumNotify;
 
 	PerformChildEnum(pWWS);
 

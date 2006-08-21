@@ -217,7 +217,7 @@ bool MagicFolder::RenameFolder(LPCTSTR newName)
 // MagicFolderCache::FolderMap
 //////////////////////////////////////////////////////////////////////////////
 
-class MagicFolderCache::FolderMap : public hash_map<tstring, Folder*>
+class MagicFolderCache::FolderMap : public stdext::hash_map<tstring, Folder*>
 {
 	public:
 		typedef MagicFolderCache::FolderMap thisClass;

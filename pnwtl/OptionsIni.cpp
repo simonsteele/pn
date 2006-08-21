@@ -17,7 +17,7 @@
 
 #if (_ATL_VER >= 0x0700)
 	#include <hash_map>
-	class IniKeyMap : public std::hash_map<tstring, tstring>{};
+	class IniKeyMap : public stdext::hash_map<tstring, tstring>{};
 #else
 	#include <map>
 	class IniKeyMap : public std::map<tstring, tstring>{};

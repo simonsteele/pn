@@ -5,6 +5,9 @@
 
 #pragma once
 
+// Disable the CRT deprecation warnings in VS 2005
+#define _CRT_SECURE_NO_DEPRECATE
+
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 
 #define _WIN32_IE 0x0501
@@ -21,9 +24,6 @@
 typedef std::basic_string<TCHAR> tstring;
 
 #define PN_NO_CSTRING
-
-// Disable the CRT deprecation warnings in VS 2005
-#define _CRT_SECURE_NO_DEPRECATE
 
 #ifdef CUSTOMSCHEME_EXPORTS
 #define EXPORT __declspec(dllexport)

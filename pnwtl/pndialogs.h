@@ -306,7 +306,7 @@ class CPNFolderDialog : public CFolderDialogImpl<CPNFolderDialog>
  * Base class for input dialogs - can't believe there's no InputBox() function!!!
  */
 template <class T>
-class CInputDialogImpl : public CDialogImpl<CInputDialogImpl>
+class CInputDialogImpl : public CDialogImpl< CInputDialogImpl<T> >
 {
 	public:
 		CInputDialogImpl() : m_title(_T("Input")), m_caption(_T("Input:")){}

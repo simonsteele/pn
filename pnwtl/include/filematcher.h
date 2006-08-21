@@ -46,9 +46,9 @@ public:
 	}
 
 protected:
-	string sPatterns;
+	std::string sPatterns;
 	RegExp* re;
-	string error;
+	std::string error;
 
 	void build(LPCTSTR filterstr)
 	{
@@ -62,7 +62,7 @@ protected:
 			if(pSemi)
 				*pSemi = NULL;
 
-			string pattern = convertMask(p);
+			std::string pattern = convertMask(p);
 			if(sPatterns.length() > 0)
 				sPatterns += '|';
 			sPatterns += pattern;
@@ -90,9 +90,9 @@ protected:
 		}
 	}
 
-	string convertMask(LPCTSTR sIn)
+	std::string convertMask(LPCTSTR sIn)
 	{
-		string sOut = "(";
+		std::string sOut = "(";
 
 		size_t i = 0;
 		while ( i < _tcslen(sIn) )
@@ -226,7 +226,7 @@ class RegExFileFinderImpl : protected FileFinderImpl<T, TOwner>
 };
 
 template <class TOwner>
-class RegExFileFinder : public RegExFileFinderImpl<RegExFileFinder, TOwner>
+class RegExFileFinder : public RegExFileFinderImpl<RegExFileFinder<TOwner>, TOwner>
 {
 	typedef RegExFileFinderImpl<RegExFileFinder, TOwner> baseClass;
 public:

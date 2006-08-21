@@ -216,7 +216,8 @@ void FileAssoc::Disassociate()
 		keyName.Format(_T("%s\\shell"), progId);
 		TCHAR name[256];
 		res = reg.Open(regClasses, keyName);
-		for(int i = 0; res == ERROR_SUCCESS; i++)
+		int i;
+		for(i = 0; res == ERROR_SUCCESS; i++)
 		{
 			DWORD size = 256;
 			res = reg.EnumKey(i, name, &size);

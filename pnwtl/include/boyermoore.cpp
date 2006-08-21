@@ -99,7 +99,7 @@ int BoyerMoore::FindForward( char *pData, int nLength )
 			while ( 1 )
 			{
 				// Found string?
-				if (( tolower( *pcEndString ) == tolower( *pcTextPtr )) && ( ! strnicmp( pcString, pcTextPtr - nStrLen, nStrLen )))
+				if (( tolower( *pcEndString ) == tolower( *pcTextPtr )) && ( ! _strnicmp( pcString, pcTextPtr - nStrLen, nStrLen )))
 					// Yes. Return the offset.
 					return ( int )(( pcTextPtr - pData ) - nStrLen );
 
@@ -167,7 +167,7 @@ int BoyerMoore::FindBackward( char *pData, int nLength )
 			while ( 1 )
 			{
 				// Found the string?
-				if (( tolower( *pcString ) == tolower( *pcTextPtr )) && ( ! strnicmp( pcString + 1, pcTextPtr + 1, nStrLen )))
+				if (( tolower( *pcString ) == tolower( *pcTextPtr )) && ( ! _strnicmp( pcString + 1, pcTextPtr + 1, nStrLen )))
 					// Return the index.
 					return ( int )( pData - pcTextPtr );
 
@@ -217,7 +217,8 @@ void BoyerMoore::SetSearchString()
 	int nLength = m_strSearchString.length();
 
 	// Preset skip table values.
-	for ( int i = 0; i <= 0xFF; i++ )
+	int i;
+	for ( i = 0; i <= 0xFF; i++ )
 	{
 		m_aDeltas[ i ] = nLength;
 		m_aBackDeltas[ i ] = nLength;

@@ -122,7 +122,7 @@ protected:
  * @brief Basic implementation of the FileFinderImpl class.
  */
 template <class TOwner>
-class FileFinder : public FileFinderImpl<FileFinder, TOwner>
+class FileFinder : public FileFinderImpl<FileFinder<TOwner>, TOwner>
 {
 	typedef FileFinderImpl<FileFinder, TOwner> baseClass;
 public:

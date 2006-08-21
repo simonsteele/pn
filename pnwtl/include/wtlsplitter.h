@@ -19,7 +19,7 @@
 #define SPLITTER_BOTTOM	SPLITTER_PANE2
 
 template <class T>
-class CWTLSplitter : public CWindowImpl<CWTLSplitter>
+class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 {
 	public:
 		CWTLSplitter()

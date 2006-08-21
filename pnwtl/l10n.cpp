@@ -21,7 +21,7 @@ tstring StringLoader::Get(UINT dwStringID)
 	return s_pTheInstance->load(dwStringID);
 }
 
-wstring StringLoader::GetW(UINT dwStringID)
+std::wstring StringLoader::GetW(UINT dwStringID)
 {
 	USES_CONVERSION;
 	tstring s = Get(dwStringID);

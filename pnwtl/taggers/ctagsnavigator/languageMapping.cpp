@@ -14,10 +14,10 @@ LPCWSTR GetLanguage(LPCWSTR filename, LPCWSTR scheme)
 {
 /* Unsupported so far: Awk, BETA, REXX, Scheme, SLang, SML, Vera*/
 
-	wchar_t* ext = wcsrchr(filename, L'.');
+	const wchar_t* ext = wcsrchr(filename, L'.');
 	if(ext != 0)
 	{
-		if(wcsnicmp(ext, L".tmp", 4) != 0)
+		if(_wcsnicmp(ext, L".tmp", 4) != 0)
 			return NULL;
 	}
 

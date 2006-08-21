@@ -1318,7 +1318,7 @@ void Workspace::parse()
 //////////////////////////////////////////////////////////////////////////////
 
 #if (_ATL_VER >= 0x0700)
-	class ProjectViewState::ExpandCache : public std::hash_map<tstring, bool>{};
+	class ProjectViewState::ExpandCache : public stdext::hash_map<tstring, bool>{};
 #else
 	class ProjectViewState::ExpandCache : public std::map<tstring, bool>{};
 #endif

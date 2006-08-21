@@ -245,7 +245,7 @@ class CMRUMenu : public CMRUList
 };
 
 template <class T>
-class CXPButton : public CWindowImpl <T>,  public CThemeImpl <CXPButton>
+class CXPButton : public CWindowImpl <T>,  public CThemeImpl < CXPButton<T> >
 {
 	typedef CXPButton<T> thisClass;
 	public:

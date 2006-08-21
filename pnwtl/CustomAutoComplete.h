@@ -392,7 +392,8 @@ public:
 		if (!celt)
 			celt = 1;
 
-		for (ULONG i = 0; i < celt; i++)
+		ULONG i;
+		for (i = 0; i < celt; i++)
 		{
 
 			USES_CONVERSION;

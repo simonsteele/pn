@@ -32,7 +32,7 @@ XmlNode::XmlNode(LPCTSTR lpszNamespace, LPCTSTR lpszName)
 
 XmlNode::XmlNode(LPCTSTR qualifiedName)
 {
-	TCHAR* pSep = _tcsrchr(qualifiedName, _T(':'));
+	LPCTSTR pSep = _tcsrchr(qualifiedName, _T(':'));
 
 	if(pSep != NULL)
 	{
@@ -89,7 +89,7 @@ XmlNode& XmlNode::operator = (const XmlNode& copy)
 
 void XmlNode::AddAttributes(XMLAttributes& atts)
 {
-	TCHAR* pSep;
+	LPCTSTR pSep;
 	for(int i = 0; i < atts.getCount(); i++)
 	{
 		XmlAttribute* a;

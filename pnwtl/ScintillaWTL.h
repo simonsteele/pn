@@ -26,7 +26,7 @@
  * @brief WTL Window implementation for Scintilla...
  */
 template <class T, class TBase = CScintilla>
-class CScintillaWindowImpl : public CWindowImpl< CScintillaWindowImpl >, public TBase
+class CScintillaWindowImpl : public CWindowImpl< CScintillaWindowImpl<T,TBase> >, public TBase
 {
 public:
 
@@ -135,7 +135,7 @@ protected:
 };
 
 template <class TBase = CScintilla>
-class CScintillaWindow : public CScintillaWindowImpl<CScintillaWindow, TBase>
+class CScintillaWindow : public CScintillaWindowImpl<CScintillaWindow<TBase>, TBase>
 {
 };
 

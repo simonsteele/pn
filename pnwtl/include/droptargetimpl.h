@@ -70,7 +70,7 @@ public:
  */
 template<class TCallbackTarget>
 class DropTargetImpl : public CComObjectRoot,
-	public IDropTargetImpl<DropTargetImpl>
+	public IDropTargetImpl< DropTargetImpl<TCallbackTarget> >
 {	
 
 	/**

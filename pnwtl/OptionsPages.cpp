@@ -1749,7 +1749,8 @@ LRESULT COptionsPageFileAssoc::OnExtensionChange(WORD /*wNotifyCode*/, WORD /*wI
 
 		// ListViewCtrl::FindItem does not work here because the extension is
 		// in a subitem.
-		for(int extIndex = 0; extIndex < m_list.GetItemCount(); extIndex++)
+		int extIndex;
+		for(extIndex = 0; extIndex < m_list.GetItemCount(); extIndex++)
 		{
 			CString ext;
 			m_list.GetItemText(extIndex, 1, ext);

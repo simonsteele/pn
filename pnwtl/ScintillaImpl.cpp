@@ -189,7 +189,7 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 #include "include/wordcounter.h"
 
 template <int TBlockSize = 131072>
-class ScintillaWordCounter : public WordCounter<ScintillaWordCounter>
+class ScintillaWordCounter : public WordCounter< ScintillaWordCounter<TBlockSize> >
 {
 	friend class WordCounter<ScintillaWordCounter>;
 

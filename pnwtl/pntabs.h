@@ -19,7 +19,7 @@ class CFindBar;
 
 template< class TTabCtrl >
 class CPNMDITabOwner :
-	public CMDITabOwnerImpl<CPNMDITabOwner, TTabCtrl>
+	public CMDITabOwnerImpl<CPNMDITabOwner<TTabCtrl>, TTabCtrl>
 {
 	typedef CMDITabOwnerImpl<CPNMDITabOwner, TTabCtrl> baseClass;
 
@@ -167,7 +167,7 @@ protected:
  * that PN can change menus when MDI children are activated etc.
  */
 template<class TPNFrame>
-class CPNTabbedMDICommandBarCtrl : public CTabbedMDICommandBarCtrlImpl<CPNTabbedMDICommandBarCtrl>
+class CPNTabbedMDICommandBarCtrl : public CTabbedMDICommandBarCtrlImpl< CPNTabbedMDICommandBarCtrl<TPNFrame> >
 {
 	protected:
 		typedef CPNTabbedMDICommandBarCtrl thisClass;
