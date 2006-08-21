@@ -62,7 +62,7 @@ void App::Initialise()
 	}
 
 	// Run some Python...
-	std::string setuppaths("import sys\nsys.path.append(r'" + s + "')\nsys.path.append(r'" + s + "\\scripts')\n\n");
+	std::string setuppaths("import sys\nsys.path.append(r\"" + s + "\")\nsys.path.append(r\"" + s + "\\scripts\")\n\n");
 	//OutputDebugString(setuppaths.c_str());
 	try
 	{

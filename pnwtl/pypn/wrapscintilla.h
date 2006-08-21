@@ -79,6 +79,34 @@ public:
 		}
 		SetSel(crange.cpMin, crange.cpMax);
 	}
+
+	std::string GetSelTextAsString()
+	{
+		std::string buf;
+		buf.resize(GetSelectionEnd()-GetSelectionStart()+1);
+		size_t size = GetSelText(&buf[0]);
+		buf.resize(size);
+
+		return buf;
+	}
+
+	std::string GetTextAsString(int start, int end)
+	{
+		std::string buf;
+
+		if(end <= start)
+			return buf;
+
+		buf.resize(end-start+1);
+		TextRange tr;
+		tr.chrg.cpMin = start;
+		tr.chrg.cpMax = end;
+		tr.lpstrText = &buf[0];
+		size_t size = GetTextRange(&tr);
+		buf.resize(size);
+		
+		return buf;
+	}
 };
 
 #endif //#ifndef pypnwrapscintilla_h__included

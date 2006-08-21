@@ -29,6 +29,19 @@ void AddOutput(const char* text)
 	g_app->AddOutput(text);
 }
 
+int PNMessageBox(const char* text, const char* title, int type)
+{
+	// TODO: Get PN Main Window Handle
+	HWND hw = NULL;
+	IDocumentPtr ptr = g_app->GetPN()->GetCurrentDocument();
+	if(ptr.get())
+		hw = ptr->GetScintillaHWND();
+
+	return ::MessageBox(hw, text, title, type);
+}
+
+#define CONSTANT(x) scope().attr(#x) = x
+
 BOOST_PYTHON_MODULE(pn)
 {
 	///////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,6 +52,18 @@ BOOST_PYTHON_MODULE(pn)
 	def("AppPath", &GetPNPath);
 
 	def("AddOutput", &AddOutput);
+
+	def("MessageBox", &PNMessageBox);
+
+	CONSTANT(IDOK);
+	CONSTANT(IDCANCEL);
+	CONSTANT(MB_OK);
+	CONSTANT(MB_YESNO);
+	CONSTANT(MB_OKCANCEL);
+	CONSTANT(MB_YESNOCANCEL);
+	CONSTANT(MB_ICONINFORMATION);
+	CONSTANT(MB_ICONQUESTION);
+	CONSTANT(MB_ICONERROR);
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Expose IDocument
