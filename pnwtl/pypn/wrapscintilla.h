@@ -107,6 +107,18 @@ public:
 		
 		return buf;
 	}
+
+	boost::python::object FindTextString(int start, int end, const char* string_to_find, int flags)
+	{
+		TextToFind f;	
+		f.lpstrText = (char*)string_to_find;
+		f.chrg.cpMin = start;
+		f.chrg.cpMax = end;
+		long result = FindText(flags, &f);
+		if(result == -1)
+			return boost::python::object(false);
+		return boost::python::make_tuple(f.chrgText.cpMin, f.chrgText.cpMax);
+	}
 };
 
 #endif //#ifndef pypnwrapscintilla_h__included
