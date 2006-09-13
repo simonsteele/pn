@@ -43,8 +43,13 @@ public:
 	boost::python::object& PyPnGlue();
 
 	void AddOutput(const char* text, int length = -1);
+	void ClearOutput();
+	void SetOutputRegEx(const char* regex);
+	void SetOutputDefaultParser();
+	void SetOutputBasePath(const char* path);
 
 private:
+	bool ensureOutput();
 	void loadInitScript();
 	void runFile(const char* filename);
 	

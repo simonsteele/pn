@@ -216,10 +216,49 @@ boost::python::object& App::PyPnGlue()
 
 void App::AddOutput(const char* text, int length)
 {
-	if(m_output == NULL)
-		m_output = m_app->GetGlobalOutputWindow();
+	
 	if(m_output)
 		m_output->AddToolOutput(text, length);
+}
+
+void App::ClearOutput()
+{
+	if(ensureOutput())
+	{
+		m_output->ClearOutput();
+	}
+}
+
+void App::SetOutputRegEx(const char* regex)
+{
+	if(ensureOutput())
+	{
+		m_output->SetToolParser(false, regex);
+	}
+}
+
+void App::SetOutputDefaultParser()
+{
+	if(ensureOutput())
+	{
+		m_output->SetToolParser(true);
+	}
+}
+
+void App::SetOutputBasePath(const char* path)
+{
+	if(ensureOutput())
+	{
+		m_output->SetToolBasePath(path);
+	}
+}
+
+bool App::ensureOutput()
+{
+	if(m_output == NULL)
+		m_output = m_app->GetGlobalOutputWindow();
+	
+	return m_output != NULL;
 }
 
 /**

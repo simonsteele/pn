@@ -30,7 +30,7 @@ WizardSmallImageFile=small.bmp
 Compression=lzma/ultra
 
 [Tasks]
-Name: desktopicon; Description: Create a &desktop icon; GroupDescription: Additional icons:
+Name: desktopicon; Description: Create a &Desktop icon; GroupDescription: Additional icons:
 Name: quicklaunchicon; Description: Create a &Quick Launch icon; GroupDescription: Additional icons:; Flags: unchecked
 
 [Files]

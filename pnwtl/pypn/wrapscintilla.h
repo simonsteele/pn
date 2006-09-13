@@ -85,7 +85,8 @@ public:
 		std::string buf;
 		buf.resize(GetSelectionEnd()-GetSelectionStart()+1);
 		size_t size = GetSelText(&buf[0]);
-		buf.resize(size);
+		// size includes the NULL terminator
+		buf.resize(size-1);
 
 		return buf;
 	}

@@ -29,6 +29,26 @@ void AddOutput(const char* text)
 	g_app->AddOutput(text);
 }
 
+void ClearOutput()
+{
+	g_app->ClearOutput();
+}
+
+void SetOutputRegEx(const char* regex)
+{
+	g_app->SetOutputRegEx(regex);
+}
+
+void SetOutputDefaultParser()
+{
+	g_app->SetOutputDefaultParser();
+}
+
+void SetOutputBasePath(const char* path)
+{
+	g_app->SetOutputBasePath(path);
+}
+
 int PNMessageBox(const char* text, const char* title, int type)
 {
 	// TODO: Get PN Main Window Handle
@@ -52,11 +72,17 @@ BOOST_PYTHON_MODULE(pn)
 	def("AppPath", &GetPNPath);
 
 	def("AddOutput", &AddOutput);
+	def("ClearOutput", &ClearOutput);
+	def("SetOutputRegEx", &SetOutputRegEx);
+	def("SetOutputDefaultParser", &SetOutputDefaultParser);
+	def("SetOutputBasePath", &SetOutputBasePath);
 
 	def("MessageBox", &PNMessageBox);
 
 	CONSTANT(IDOK);
 	CONSTANT(IDCANCEL);
+	CONSTANT(IDYES);
+	CONSTANT(IDNO);
 	CONSTANT(MB_OK);
 	CONSTANT(MB_YESNO);
 	CONSTANT(MB_OKCANCEL);
