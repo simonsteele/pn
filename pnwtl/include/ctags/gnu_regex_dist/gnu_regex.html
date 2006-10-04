@@ -1,0 +1,96 @@
+<HEAD><TITLE>Notes about the WIN32 port of GNU REGEX
+      </TITLE>
+<BODY>
+<H1>Notes about the WIN32 port of GNU REGEX</H1>
+
+<P>This library provides a POSIX style regular expression
+compilation and execution facility suitable for
+use with C and C++ programs. See also
+<a href="winregex.h">winregex.h</a> for other libraries.
+
+<P>Download
+<a href="gnu_regex.exe">gnu_regex.exe</a> (218k,
+a self-extracting 
+<a href="http://quest.jpl.nasa.gov/Info-ZIP/">info-zip</a>
+archive) to
+obtain all source code, project make files,
+and some already compiled binaries.
+Includes the h and lib files needed by
+developers who compile against and link with the 
+gnu_regex.lib library. The file regex.doc provides
+documentation. At runtime of your application
+the gnu_regex.dll is the only required component.
+The test_gnu_regex.mak file can be used with
+Microsoft Developer's Studio (VC++) to recompile
+from sources.
+
+<P>The original GNU sources are here:
+<a href="ftp://gatekeeper.dec.com/GNU/regex-0.12.tar.gz">gatekeeper.dec.com</a>,
+and this pointer satisfies the FSF license agreement
+requirement to make a copy of the source code 
+and the FSF Copyright statement available to recipients
+of executable versions. 
+
+<P>Here is the gnu regex documentation formatted as
+html <a href="http://www.math.utah.edu/docs/info/regex_toc.html">regex_toc.html</a>.
+
+<P>
+After searching a few places on the internet I
+could not find a WIN32 port of any kind of REGEX.
+Therefore I obtained the GNU REGEX and did the port
+myself and have made the binaries and some additional
+sources available on the web. The resulting gnu_regex.dll
+is useful with my scheme interpreter 
+<a href="http://people.delphi.com/gjc/siod.html">SIOD</a>
+and other purposes in general.
+If there are better implementations of regular
+expression facilities available please let me know.
+I also ported the Henry Spencer regex and found it
+satisfactory, faster in some cases, slower in others,
+see <a href="hs_regex.html">hs_regex.html</a>.
+
+<BLOCKQUOTE>
+-George J. Carrette, 13-MAR-97
+</BLOCKQUOTE>
+
+<OL>
+<LI>I used gnu regex-0.12.tar.gz, extracting the files
+    regex.h and regex.c.
+<LI>I used Microsoft Developer Studio Standard Edition
+    version 4.0
+<LI>The main project is a console application, 
+    test_gnu_regex
+    which includes gnu_regex dll as a subproject. 
+	General project settings must
+	be edited to make sure that all the intermediate
+	files (for both project and subproject) go into
+	the same directories. Establishing project/subproject
+	relationships is tricky but well worth the effort
+	in terms of convenience later.
+<LI>Insert the files gnu_regex.def and regex.c into
+    the gnu_regex.dll project. Insert test_regex.c into
+	the test_gnu_regex.exe project.
+<LI>Project C/CC+ settings must include the following
+    preprocessor defintions: REGEX_MALLOC,STDC_HEADERS,
+	in all build configurations of gnu_regex.
+<LI>There are dozens of compiler warnings, including
+signed/unsigned mismatch, const qualifier differences,
+and pointer mismatches. None of which seem to matter, at least
+on the intel platform. No modifications to the FSF
+supplied sources regex.c or regex.h are required
+if you are willing to ignore the compiler warnings.
+<LI>The file release.bat creates the compressed tar
+files which make up the distribution I have posted
+to the web.
+</OL>
+
+<P>
+This file is &copy; Copyright 1997 by 
+<a href="http://people.delphi.com/gjc/">George J. Carrette</a>.
+<P>
+<A href="http://people.delphi.com/gjc/gnu_regex.html">http://people.delphi.com/gjc/gnu_regex.html</a>
+
+
+</BODY>
+
+

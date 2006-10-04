@@ -1,0 +1,9 @@
+LIBRARY GNU_REGEX
+
+EXPORTS
+	regcomp
+	regexec
+	regfree
+	regerror
+    re_search_2
+	re_compile_pattern

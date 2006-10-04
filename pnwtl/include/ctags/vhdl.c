@@ -198,7 +198,6 @@ static boolean readIdentifier (vString *const name, int c)
 
 static void tagNameList (const vhdlKind kind, int c)
 {
-    boolean repeat;
     Assert (isIdentifierCharacter (c));
 	if (isIdentifierCharacter (c))
 	{
@@ -210,7 +209,7 @@ static void tagNameList (const vhdlKind kind, int c)
 
 static void findTag (vString *const name)
 {
-	int c;
+	int c = 0;
 	vhdlKind kind;
     vStringCopyToLower (Keyword, name);
     kind = (vhdlKind)lookupKeyword (vStringValue (Keyword), Lang_vhdl);

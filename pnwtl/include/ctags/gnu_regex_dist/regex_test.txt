@@ -1,0 +1,43 @@
+#!/usr/local/bin/test_gnu_regex
+# name: test_regex.txt
+# purpose: some regular expression benchmark test cases.
+
+# set loop count high enough for clock precision.
+100
+
+# simple string compare
+^foobar$
+
+foobar
+this is foobar my man.
+quit
+
+# string search
+foobar
+
+foobar
+this is foobar my man.
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxfoobarxxxxxxxxxxx
+quit
+
+# simple pattern
+foo(.*)bar
+
+foobar
+this is foobar my man.
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxfoobarxxxxxxxxxxx
+this is xxxxxxxxxxfoo and also maybe, perhaps bar and baz.
+quit
+
+# recognize ftp response line
+^([0-9]+)(\-| |$)(.*)$
+
+100- this is a line of ftp response which is continued
+100- again to the next line
+100 to the end
+quit
+
+# end of test
+quit
+
+
