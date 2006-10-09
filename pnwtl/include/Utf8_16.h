@@ -127,14 +127,17 @@ public:
 	~Utf8_16_Write();
 
 	void setEncoding(encodingType eType);
+	void setWriteBOM(bool writeBOM);
 
 	FILE * fopen(const char *_name, const char *_type);
 	size_t fwrite(const void* p, size_t _size);
 	void fclose();
+
 protected:
 	encodingType m_eEncoding;
 	FILE* m_pFile;
 	utf16* m_pBuf;
 	size_t m_nBufSize;
 	bool m_bFirstWrite;
+	bool m_bWriteBOM;
 };

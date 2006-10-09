@@ -380,6 +380,7 @@ bool CTextView::SaveFile(LPCTSTR filename)
 		Utf8_16_Write converter;
 		Utf8_16::encodingType convEncType = (m_encType == eUtf8NoBOM) ? Utf8_16::eUtf8 : static_cast<Utf8_16::encodingType>(m_encType);
 		converter.setEncoding( convEncType );
+		converter.setWriteBOM( m_encType != eUtf8NoBOM );
 
 		FILE* fp = converter.fopen(filename, _T("wb"));
 		if(fp != NULL)

@@ -117,6 +117,7 @@ Utf8_16_Write::Utf8_16_Write() {
 	m_pBuf = NULL;
 	m_bFirstWrite = true;
 	m_nBufSize = 0;
+	m_bWriteBOM = true;
 }
 
 Utf8_16_Write::~Utf8_16_Write() {
@@ -145,7 +146,8 @@ size_t Utf8_16_Write::fwrite(const void* p, size_t _size) {
 
 	if (m_eEncoding == eUtf8) {
 		if (m_bFirstWrite) {
-			::fwrite(k_Boms[m_eEncoding], 3, 1, m_pFile);
+			if(m_bWriteBOM)
+				::fwrite(k_Boms[m_eEncoding], 3, 1, m_pFile);
 			m_bFirstWrite = false;
 		}
 		return ::fwrite(p, _size, 1, m_pFile);
@@ -159,7 +161,7 @@ size_t Utf8_16_Write::fwrite(const void* p, size_t _size) {
 	}
 
 	if (m_bFirstWrite) {
-		if (m_eEncoding == eUtf16BigEndian || m_eEncoding == eUtf16LittleEndian) {
+		if (m_bWriteBOM && (m_eEncoding == eUtf16BigEndian || m_eEncoding == eUtf16LittleEndian)) {
 			// Write the BOM
 			::fwrite(k_Boms[m_eEncoding], 2, 1, m_pFile);
 		}
@@ -193,6 +195,10 @@ void Utf8_16_Write::fclose() {
 
 void Utf8_16_Write::setEncoding(Utf8_16::encodingType eType) {
 	m_eEncoding = eType;
+}
+
+void Utf8_16_Write::setWriteBOM(bool writeBOM) {
+	m_bWriteBOM = writeBOM;
 }
 
 //=================================================================
