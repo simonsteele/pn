@@ -2,7 +2,7 @@
  * @file findinfilesview.cpp
  * @brief Find In Files View
  * @author Simon Steele
- * @note Copyright (c) 2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2005-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -85,35 +85,15 @@ LRESULT CFindInFilesView::OnListDblClk(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	if( lpnm->iItem == -1 )
 		return 0;
 
-	CString str;
-	m_list.GetItemText(lpnm->iItem, 0, str);
+	handleUserSelection( lpnm->iItem );
+	
 
-	if( FileExists(str) )
-	{
-		// If the file's already open, just switch to it, otherwise open it.
-		if( !g_Context.m_frame->CheckAlreadyOpen(str, eSwitch) )
-			g_Context.m_frame->Open(str);
+	return 0;
+}
 
-		m_list.GetItemText(lpnm->iItem, 1, str);
-
-		CChildFrame* pWnd = CChildFrame::FromHandle(GetCurrentEditor());
-		CTextView* pView = pWnd->GetTextView();
-		
-		if(pView)
-		{
-			int line = atoi(str);
-
-			::SetFocus(pView->m_hWnd);
-		
-			pView->GotoLine(line-1);
-		}
-	}
-	else
-	{
-		tstring msg = _T("Could not locate ") + str;
-		msg += _T(".");
-		g_Context.m_frame->SetStatusText(msg.c_str());
-	}
+LRESULT CFindInFilesView::OnReturn(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	handleUserSelection( m_list.GetSelectedIndex() );
 
 	return 0;
 }
@@ -167,6 +147,42 @@ void CFindInFilesView::OnFoundString(LPCTSTR stringFound, LPCTSTR szFilename, in
 	FIFMatch* match = new FIFMatch(szFilename, line, buf);
 	::PostMessage(m_hWnd, PN_FIFMATCH, 0, (LPARAM)match);
 }
+
+void CFindInFilesView::handleUserSelection(int index)
+{
+	CString str;
+	m_list.GetItemText(index, 0, str);
+
+	if( FileExists(str) )
+	{
+		// If the file's already open, just switch to it, otherwise open it.
+		if( !g_Context.m_frame->CheckAlreadyOpen(str, eSwitch) )
+			g_Context.m_frame->Open(str);
+
+		m_list.GetItemText(index, 1, str);
+
+		CChildFrame* pWnd = CChildFrame::FromHandle(GetCurrentEditor());
+		CTextView* pView = pWnd->GetTextView();
+		
+		if(pView)
+		{
+			int line = atoi(str);
+
+			::SetFocus(pView->m_hWnd);
+		
+			pView->GotoLine(line-1);
+		}
+	}
+	else
+	{
+		tstring msg = _T("Could not locate ") + str;
+		msg += _T(".");
+		g_Context.m_frame->SetStatusText(msg.c_str());
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// class CFindInFilesView::FIFMatch
 
 CFindInFilesView::FIFMatch::FIFMatch(LPCTSTR szFileName, int line, LPCTSTR szBuf)
 {

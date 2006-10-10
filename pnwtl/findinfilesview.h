@@ -2,7 +2,7 @@
  * @file findinfilesview.cpp
  * @brief Find In Files View
  * @author Simon Steele
- * @note Copyright (c) 2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2005-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -30,6 +30,7 @@ public:
 		MESSAGE_HANDLER(PN_FIFFINISH, OnFIFFinish)
 		MESSAGE_HANDLER(PN_FIFSTART, OnFIFStart)
 		NOTIFY_HANDLER(IDC_FIF_LIST, NM_DBLCLK, OnListDblClk)
+		NOTIFY_HANDLER(IDC_FIF_LIST, NM_RETURN, OnReturn)
 	END_MSG_MAP()
 
 	void AddResult(LPCTSTR file, int line, LPCTSTR str);
@@ -41,7 +42,19 @@ public:
 	virtual void OnEndSearch(int nFound, int nFiles);
 	virtual void OnFoundString(LPCTSTR stringFound, LPCTSTR szFilename, int line, LPCTSTR buf);
 
-protected:
+private:
+	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnFIFMatch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnFIFFinish(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnFIFStart(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+	LRESULT OnListDblClk(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT OnReturn(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+
+	void handleUserSelection(int index);
+
+private:
 	class FIFMatch
 	{
 	public:
@@ -53,16 +66,6 @@ protected:
 		TCHAR*	Buf;
 	};
 
-protected:
-	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnFIFMatch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnFIFFinish(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT OnFIFStart(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-
-	LRESULT OnListDblClk(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
-
-protected:
 	CListViewCtrl	m_list;
 	int				m_nItems;
 	DWORD			m_dwStartTicks;

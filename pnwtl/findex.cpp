@@ -986,6 +986,9 @@ void CFindExDialog::updateLayout()
 
 	// Put settings back normalizing radio selections...
 	DoDataExchange();
+
+	// Make sure the right buttons are enabled
+	enableButtons();
 }
 
 bool CFindExDialog::selectionIsWholeLine(CTextView* textView)
