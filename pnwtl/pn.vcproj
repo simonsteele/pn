@@ -989,6 +989,9 @@
 			Name="Extensions"
 			Filter="">
 			<File
+				RelativePath=".\extension.cpp">
+			</File>
+			<File
 				RelativePath=".\extension.h">
 			</File>
 			<File
@@ -1021,6 +1024,9 @@
 			</File>
 			<File
 				RelativePath=".\OptionsPageKeyboard.cpp">
+			</File>
+			<File
+				RelativePath=".\OptionsPageKeyboard.h">
 			</File>
 			<File
 				RelativePath="OptionsPages.cpp">

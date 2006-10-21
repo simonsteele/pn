@@ -25,9 +25,11 @@
 #define PN_GOTOLINE			(WM_USER+47)
 #define PN_GETMDICLIENTRECT (WM_USER+48)
 
+// Command IDs used around the place...
 #define PN_MDIACTIVATE		0x1
 #define TOOLS_RUNTOOL		0x2
 #define PN_MDIDESTROY		0x3
+#define COMMANDS_RUNEXT		0x4
 
 #define PNID_SAVEAS			14
 #define PNID_OVERWRITE		15

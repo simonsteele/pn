@@ -50,18 +50,18 @@ void ScriptRegistry::Add(const char* group, const char* name, const char* script
 		m_sink->OnScriptAdded(pGroup, theScript);
 }
 
+Script* ScriptRegistry::FindScript(const char* group, const char* name)
+{
+	ScriptGroup* pGroup = getGroup(group);
+	if(!pGroup)
+		return NULL;
+
+	return pGroup->Get(name);
+}
+
 ScriptGroup* ScriptRegistry::getOrMakeGroup(const char* group)
 {
-	ScriptGroup* pGroup(NULL);
-
-	for(group_list_t::iterator i = m_groups.begin(); i != m_groups.end(); ++i)
-	{
-		if(_tcsicmp((*i)->GetName(), group) == 0)
-		{
-			pGroup = (*i);
-			break;
-		}
-	}
+	ScriptGroup* pGroup( getGroup(group) );
 
 	if(!pGroup)
 	{
@@ -70,6 +70,19 @@ ScriptGroup* ScriptRegistry::getOrMakeGroup(const char* group)
 	}
 
 	return pGroup;
+}
+
+ScriptGroup* ScriptRegistry::getGroup(const char* group)
+{
+	for(group_list_t::iterator i = m_groups.begin(); i != m_groups.end(); ++i)
+	{
+		if(_tcsicmp((*i)->GetName(), group) == 0)
+		{
+			return (*i);
+		}
+	}
+
+	return NULL;
 }
 
 void ScriptRegistry::Clear()
@@ -169,6 +182,17 @@ void ScriptGroup::Add(Script* script)
 void ScriptGroup::Remove(Script* script)
 {
 	m_scripts.remove(script);
+}
+
+Script* ScriptGroup::Get(const char* name)
+{
+	for(script_list_t::const_iterator i = m_scripts.begin(); i != m_scripts.end(); ++i)
+	{
+		if( (*i)->Name == name )
+			return (*i);
+	}
+
+	return NULL;
 }
 
 void ScriptGroup::Clear()

@@ -126,6 +126,36 @@ void App::LoadExtensions()
 	}
 }
 
+/**
+ * An extension command has a type and a command, examples are:
+ * ext:RegisteredExtensionCommand
+ * python:PythonScriptRef
+ * tcl:SomeTCLCommand
+ *
+ * The "ext" type is reserved for future use for extensions that
+ * register commands. Any other type can be registered by extensions
+ * for use in running scripts.
+ */
+void App::RunExtensionCommand(const char* command)
+{
+	tstring str(command);
+	size_t rindex = str.find(':');
+	if(rindex == -1)
+		return;
+
+	tstring runner_id = str.substr(0, rindex);
+	if(runner_id == "ext")
+	{
+		UNEXPECTED("Not Yet Implemented");
+	}
+	else
+	{
+		// Let Script run this!
+		Script s("", command);
+		s.Run();
+	}
+}
+
 void App::unloadExtensions()
 {
 	for(EventSinkList::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)

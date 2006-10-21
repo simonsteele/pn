@@ -42,6 +42,8 @@ public:
 
 	virtual void Add(const char* group, const char* name, const char* scriptref);
 
+	Script* FindScript(const char* group, const char* name);
+
 	virtual void RegisterRunner(const char* id, extensions::IScriptRunner* runner);
 	virtual void RemoveRunner(const char* id);
 	virtual extensions::IScriptRunner* GetRunner(LPCTSTR id);
@@ -67,6 +69,7 @@ protected:
 	void clear();
 
 	ScriptGroup* getOrMakeGroup(const char* group);
+	ScriptGroup* getGroup(const char* group);
 
 protected:
 	IScriptRegistryEventSink* m_sink;
@@ -84,6 +87,7 @@ public:
 	Script* Add(const char* name, const char* scriptref);
 	void Add(Script* script);
 	void Remove(Script* script);
+	Script* Get(const char* name);
 
 	void Clear();
 

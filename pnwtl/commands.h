@@ -32,6 +32,27 @@ struct KeyToCommand
 };
 
 /**
+ * extension command for storage in the keyboard file
+ */
+struct StoredExtensionCommand
+{
+	unsigned char modifiers;
+	unsigned char key;
+	char command[150];
+};
+
+/**
+ * This is for commands that have a command string (like scripts)
+ */
+class ExtensionCommand : public KeyToCommand
+{
+public:
+	std::string command;
+};
+
+typedef std::map<unsigned short, ExtensionCommand> ExtensionCommands;
+
+/**
  * Keyboard settings file header
  */
 struct KeyboardFileHeader
@@ -43,6 +64,8 @@ struct KeyboardFileHeader
 };
 
 #define KEYBOARD_FILE_VERSION	1
+
+class CommandDispatch;
 
 /**
  * Simple keyboard command map
@@ -57,17 +80,27 @@ public:
 	
 	void AssignCmdKey(int key, int modifiers, unsigned int msg);
 	void RemoveCmdKey(int key, int modifiers, unsigned int msg);
+
+	void AddExtended(const ExtensionCommand& command);
+	void RemoveExtended(unsigned char key, unsigned char modifiers);
 	
 	unsigned int Find(int key, int modifiers);	// 0 returned on failure
+	const ExtensionCommand* FindExtended(unsigned char key, unsigned char modifiers);
 	
-	int GetCount() const;
+	size_t GetCount() const;
+	size_t GetExtendedCount() const;
 	
 	const KeyToCommand* GetMappings() const;
+	const ExtensionCommands& GetExtendedMappings() const;
 	
-	int MakeAccelerators(ACCEL* buffer) const;
+	int MakeAccelerators(ACCEL* buffer, CommandDispatch* dispatcher);
 
 private:
+	void internalAssign(int key, int modifiers, unsigned int msg);
+
 	KeyToCommand *kmap;
+	CommandDispatch *lastdispatcher;
+	ExtensionCommands extkmap;
 	int len;
 	int alloc;
 	static const KeyToCommand MapDefault[];
@@ -104,7 +137,7 @@ typedef MAP_HANDLERS::value_type MH_VT;
 typedef MAP_HANDLERS::iterator MH_IT;
 typedef MAP_HANDLERS::const_iterator MH_CI;
 
-class CommandDispatch
+class CommandDispatch : public CommandEventHandler
 {
 	public:
 		CommandDispatch();
@@ -133,6 +166,10 @@ class CommandDispatch
 
 		bool Load(LPCTSTR filename);
 		void Save(LPCTSTR filename) const;
+
+// CommandEventHandler
+	public:
+		virtual bool SHandleDispatchedCommand(int iCommand, LPVOID data);
 
 	private:
 		void init();

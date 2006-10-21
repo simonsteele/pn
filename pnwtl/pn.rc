@@ -1414,7 +1414,8 @@ BEGIN
                     LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | 
                     WS_TABSTOP,10,13,279,117
     LISTBOX         IDC_KB_ASSIGNEDLIST,10,147,93,36,LBS_SORT | 
-                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+                    LBS_MULTIPLESEL | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | 
+                    WS_TABSTOP
     PUSHBUTTON      "&Remove",IDC_KB_REMOVE,105,169,50,14
     CONTROL         "",IDC_KB_HOTKEY,"msctls_hotkey32",WS_BORDER | 
                     WS_TABSTOP,169,147,120,13

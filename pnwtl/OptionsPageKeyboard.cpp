@@ -1,12 +1,24 @@
+/**
+ * @file optionspagekeyboard.cpp
+ * @brief Options Dialog Keyboard Page for Programmers Notepad 2
+ * @author Simon Steele
+ * @note Copyright (c) 2006 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #include "stdafx.h"
 #include "resource.h"
-#include "OptionsPages.h"
+#include "OptionsPageKeyboard.h"
+#include "ExtApp.h"
+#include "ScriptRegistry.h"
 
 COptionsPageKeyboard::COptionsPageKeyboard(CommandDispatch* dispatcher)
 {
 	m_pDispatch = dispatcher;
 	m_pKeyMap = new KeyMap(*dispatcher->GetCurrentKeyMap());
 	m_bDirty = false;
+	m_pCurrent = NULL;
 }
 
 COptionsPageKeyboard::~COptionsPageKeyboard()
@@ -18,6 +30,11 @@ void COptionsPageKeyboard::OnOK()
 {
 	if(m_bDirty)
 		m_pDispatch->SetCurrentKeyMap(m_pKeyMap);
+
+	if(!m_bCreated)
+		return;
+
+	cleanUp();
 }
 
 void COptionsPageKeyboard::OnInitialise()
@@ -36,7 +53,8 @@ bool COptionsPageKeyboard::IsDirty() const
 
 void COptionsPageKeyboard::OnCancel()
 {
-
+	if(m_bCreated)
+		cleanUp();
 }
 
 LRESULT COptionsPageKeyboard::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -51,6 +69,7 @@ LRESULT COptionsPageKeyboard::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 
 	CSMenu menu(::LoadMenu(_Module.m_hInst, MAKEINTRESOURCE(IDR_MDICHILD)));
 	addItems(CSMenuHandle(menu), "", 0);
+	addExtensions();
 
 	m_shortcutlist.Attach(GetDlgItem(IDC_KB_ASSIGNEDLIST));
 	m_hotkey.Attach(GetDlgItem(IDC_KB_HOTKEY));
@@ -62,6 +81,9 @@ LRESULT COptionsPageKeyboard::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 
 LRESULT COptionsPageKeyboard::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	if(!m_pCurrent)
+		return 0;
+
 	WORD keycode, modifiers;
 	m_hotkey.GetHotKey(keycode, modifiers);
 	if(keycode == 0)
@@ -69,9 +91,25 @@ LRESULT COptionsPageKeyboard::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 	modifiers = HKToAccelMod(modifiers);
 
-	int sel = m_list.GetSelectedIndex();
-	DWORD id = m_list.GetItemData(sel);
-	m_pKeyMap->AssignCmdKey(keycode, modifiers, id);
+	if(currentIsExtended())
+	{
+		// Find the script command...
+		ScriptRegistry* registry = static_cast<ScriptRegistry*>( g_Context.ExtApp->GetScriptRegistry() );
+		ExtendedCommandDetails* cd = static_cast<ExtendedCommandDetails*>(m_pCurrent);
+		Script* script = registry->FindScript(cd->group.c_str(), cd->name.c_str());
+
+		// Add the extension command details...
+		ExtensionCommand cmd;
+		cmd.command = script->ScriptRef;
+		cmd.key = (unsigned char)keycode;
+		cmd.modifiers = (unsigned char)modifiers;
+		cmd.msg = 0;
+		m_pKeyMap->AddExtended(cmd);
+	}
+	else
+	{
+		m_pKeyMap->AssignCmdKey(keycode, modifiers, m_pCurrent->command);
+	}
 
 	m_bDirty = true;
 
@@ -82,6 +120,31 @@ LRESULT COptionsPageKeyboard::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 LRESULT COptionsPageKeyboard::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	if(m_pCurrent == NULL)
+		return 0;
+
+	if(m_shortcutlist.GetSelCount() == 0)
+		return 0;
+
+	for(int i = 0; i < m_shortcutlist.GetCount(); ++i)
+	{
+		if(m_shortcutlist.GetSel(i))
+		{
+			int data = m_shortcutlist.GetItemData(i);
+			if(currentIsExtended())
+			{
+				m_pKeyMap->RemoveExtended( data & 0x00ff, (data & 0xff00) >> 8 );
+			}
+			else
+			{
+				m_pKeyMap->RemoveCmdKey(
+					m_pKeyMap->GetMappings()[data].key,
+					m_pKeyMap->GetMappings()[data].modifiers,
+					m_pKeyMap->GetMappings()[data].msg);
+			}
+		}
+	}
+
 	m_bDirty = true;
 
 	updateSelection();
@@ -100,21 +163,31 @@ LRESULT COptionsPageKeyboard::OnHotKeyChanged(WORD /*wNotifyCode*/, WORD /*wID*/
 	const KeyToCommand* mappings = m_pKeyMap->GetMappings();
 	size_t noof_mappings(m_pKeyMap->GetCount());
 
-	for(size_t ixMap(0); ixMap < noof_mappings; ++ixMap)
+	std::string command_name;
+
+	int command = m_pKeyMap->Find(keycode, real_modifiers);
+	if(command != 0)
 	{
-		if(mappings[ixMap].key == keycode && mappings[ixMap].modifiers == real_modifiers)
+		// We found a command with this key combination assigned, so now we have a command
+		// we need to find the name of that command... :(
+		command_name = findCommandName(command);
+	}
+	else
+	{
+		// Is there an extended command registered instead?
+		const ExtensionCommand* cmd = m_pKeyMap->FindExtended((unsigned char)keycode, (unsigned char)real_modifiers);
+		if(cmd != NULL)
 		{
-			// We found a command with this key combination assigned, so now we have a command
-			// we need to find the name of that command... :(
-			std::string command_name = findCommandName(mappings[ixMap].msg);
-			if(command_name.size())
-			{
-				command_name = "Currently assigned to: " + command_name;
-				GetDlgItem(IDC_KB_SHORTCUTINUSELABEL).SetWindowText(command_name.c_str());
-				GetDlgItem(IDC_KB_SHORTCUTINUSELABEL).ShowWindow(SW_SHOW);
-			}
-			return 0;
+			command_name = findCommandName( cmd->command );
 		}
+	}
+
+	if(command_name.size())
+	{
+		command_name = "Currently assigned to " + command_name;
+		GetDlgItem(IDC_KB_SHORTCUTINUSELABEL).SetWindowText(command_name.c_str());
+		GetDlgItem(IDC_KB_SHORTCUTINUSELABEL).ShowWindow(SW_SHOW);
+		return 0;
 	}
 
 	GetDlgItem(IDC_KB_SHORTCUTINUSELABEL).ShowWindow(SW_HIDE);
@@ -133,6 +206,12 @@ LRESULT COptionsPageKeyboard::OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BO
 		GetDlgItem(IDC_KB_SHORTCUTINUSELABEL).ShowWindow(SW_HIDE);
 	}
 
+	return 0;
+}
+
+LRESULT COptionsPageKeyboard::OnKeySelChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	enableButtons();
 	return 0;
 }
 
@@ -189,17 +268,49 @@ int COptionsPageKeyboard::addItems(CSMenuHandle& menu, const char* group, int co
 			fixText(buffer, displayBuffer);
 			int ixItem = m_list.AddItem(count++, 0, group);
 			m_list.SetItemText(ixItem, 1, displayBuffer);
-			m_list.SetItemData(ixItem, mii.wID);
+			
+			// Store info about the command...
+			CommandDetails* cd = new CommandDetails;
+			cd->type = cdtCommand;
+			cd->command = mii.wID;
+			m_list.SetItemData(ixItem, reinterpret_cast<DWORD_PTR>(cd));
 		}
 	}
 	
 	return count;
 }
 
+void COptionsPageKeyboard::addExtensions()
+{
+	ScriptRegistry* registry = static_cast<ScriptRegistry*>( g_Context.ExtApp->GetScriptRegistry() );
+	const group_list_t& groups = registry->GetGroups();
+	int count = m_list.GetItemCount();
+	for(group_list_t::const_iterator i = groups.begin(); i != groups.end(); ++i)
+	{
+		std::string group("Scripts.");
+		group += (*i)->GetName();
+		for(script_list_t::const_iterator j = (*i)->GetScripts().begin();
+			j != (*i)->GetScripts().end(); ++j)
+		{
+			int ixItem = m_list.AddItem(count++, 0, group.c_str());
+			m_list.SetItemText(ixItem, 1, (*j)->Name.c_str());
+			
+			// Store the details of this command
+			ExtendedCommandDetails* ecd = new ExtendedCommandDetails;
+			ecd->type = cdtExtended;
+			ecd->group = (*i)->GetName();
+			ecd->name = (*j)->Name;
+			m_list.SetItemData(ixItem, reinterpret_cast<DWORD_PTR>(ecd));
+		}
+	}
+}
+
 void COptionsPageKeyboard::clear()
 {
 	m_shortcutlist.ResetContent();
 	m_hotkey.SetHotKey(0,0);
+	BOOL b;
+	OnHotKeyChanged(0,0,0,b);
 }
 
 void COptionsPageKeyboard::enableButtons()
@@ -208,16 +319,21 @@ void COptionsPageKeyboard::enableButtons()
 	m_hotkey.EnableWindow( sel != -1 );
 	GetDlgItem(IDC_KB_ADD).EnableWindow( sel != -1 );
 	
-	int kbsel = m_shortcutlist.GetCurSel();
-	GetDlgItem(IDC_KB_REMOVE).EnableWindow( kbsel != LB_ERR );
+	int kbsel = m_shortcutlist.GetSelCount();
+	GetDlgItem(IDC_KB_REMOVE).EnableWindow( kbsel != 0 );
 }
 
+/**
+ * Given a command with an associated combination, this method
+ * returns the textual name of that command - used for 
+ * "already assigned to: %s"
+ */
 std::string COptionsPageKeyboard::findCommandName(DWORD command)
 {
 	for(int ix(0); ix < m_list.GetItemCount(); ++ix)
 	{
-		DWORD data = m_list.GetItemData(ix);
-		if(data == command)
+		CommandDetails* cd = reinterpret_cast<CommandDetails*>( m_list.GetItemData(ix) );
+		if(cd->type == cdtCommand && cd->command == command)
 		{
 			std::string res;
 			CString s;
@@ -234,6 +350,33 @@ std::string COptionsPageKeyboard::findCommandName(DWORD command)
 	return "";
 }
 
+/**
+ * Given an extension command string (e.g. python:Script) what's the friendly
+ * name?
+ */
+std::string COptionsPageKeyboard::findCommandName(const std::string& extcommand)
+{
+	ScriptRegistry* registry = static_cast<ScriptRegistry*>( g_Context.ExtApp->GetScriptRegistry() );
+
+	for(int ix(0); ix < m_list.GetItemCount(); ++ix)
+	{
+		CommandDetails* cd = reinterpret_cast<CommandDetails*>( m_list.GetItemData(ix) );
+		if(cd->type == cdtExtended)
+		{
+			ExtendedCommandDetails* ecd = static_cast<ExtendedCommandDetails*>( cd );
+			Script* script = registry->FindScript(ecd->group.c_str(), ecd->name.c_str());
+			if(script != NULL && script->ScriptRef == extcommand)
+			{
+				std::string result("extension: ");
+				result += ecd->name;
+				return result;
+			}
+		}
+	}
+	
+	return "";
+}
+
 void COptionsPageKeyboard::updateSelection()
 {
 	clear();
@@ -241,24 +384,76 @@ void COptionsPageKeyboard::updateSelection()
 	int sel = m_list.GetSelectedIndex();
 	if(sel != -1)
 	{
-		DWORD id = m_list.GetItemData(sel);
-		size_t noof_mappings = m_pKeyMap->GetCount();
-		const KeyToCommand* mappings = m_pKeyMap->GetMappings();
-
-		for(size_t ixMap(0); ixMap < noof_mappings; ++ixMap)
+		CommandDetails* cd = reinterpret_cast<CommandDetails*>( m_list.GetItemData(sel) );
+		switch(cd->type)
 		{
-			if(mappings[ixMap].msg == id)
-			{
-				int hkmods(0);
-				if( mappings[ixMap].modifiers & FALT ) hkmods |= HOTKEYF_ALT;
-				if( mappings[ixMap].modifiers & FCONTROL ) hkmods |= HOTKEYF_CONTROL;
-				if( mappings[ixMap].modifiers & FSHIFT ) hkmods |= HOTKEYF_SHIFT;
-				tstring sc = m_pDispatch->GetShortcutText(mappings[ixMap].key, hkmods);
-				int ixLI = m_shortcutlist.AddString(sc.c_str());
-				m_shortcutlist.SetItemData(ixLI, ixMap);
-			}
+		case cdtCommand:
+			showCommandSelection(cd);
+			break;
+		case cdtExtended:
+			showExtendedSelection(static_cast<ExtendedCommandDetails*>( cd ));
 		}
+		m_pCurrent = cd;
+	}
+	else
+	{
+		m_pCurrent = NULL;
 	}
 
 	enableButtons();
+}
+
+void COptionsPageKeyboard::showCommandSelection(CommandDetails* cd)
+{
+	size_t noof_mappings = m_pKeyMap->GetCount();
+	const KeyToCommand* mappings = m_pKeyMap->GetMappings();
+
+	for(size_t ixMap(0); ixMap < noof_mappings; ++ixMap)
+	{
+		if(mappings[ixMap].msg == cd->command)
+		{
+			int hkmods(0);
+			if( mappings[ixMap].modifiers & FALT ) hkmods |= HOTKEYF_ALT;
+			if( mappings[ixMap].modifiers & FCONTROL ) hkmods |= HOTKEYF_CONTROL;
+			if( mappings[ixMap].modifiers & FSHIFT ) hkmods |= HOTKEYF_SHIFT;
+			tstring sc = m_pDispatch->GetShortcutText(mappings[ixMap].key, hkmods);
+			int ixLI = m_shortcutlist.AddString(sc.c_str());
+			m_shortcutlist.SetItemData(ixLI, ixMap);
+		}
+	}
+}
+
+void COptionsPageKeyboard::showExtendedSelection(ExtendedCommandDetails* cd)
+{
+	const ExtensionCommands& cmds = m_pKeyMap->GetExtendedMappings();
+	
+	ScriptRegistry* registry = static_cast<ScriptRegistry*>( g_Context.ExtApp->GetScriptRegistry() );
+	Script* script = registry->FindScript(cd->group.c_str(), cd->name.c_str());
+	for(ExtensionCommands::const_iterator i = cmds.begin(); i != cmds.end(); ++i)
+	{
+		if( (*i).second.command == script->ScriptRef )
+		{
+			tstring sc = m_pDispatch->GetShortcutText( (*i).second.key, AccelToHKMod( (*i).second.modifiers ) );
+			int ixLI = m_shortcutlist.AddString(sc.c_str());
+			m_shortcutlist.SetItemData(ixLI, (*i).first);
+		}
+	}
+}
+
+void COptionsPageKeyboard::cleanUp()
+{
+	// Free up...
+	for(int i = 0; i < m_list.GetItemCount(); ++i)
+	{
+		CommandDetails* cd = reinterpret_cast<CommandDetails*>( m_list.GetItemData(i) );
+		delete cd;
+	}
+	m_list.DeleteAllItems();
+}
+
+bool COptionsPageKeyboard::currentIsExtended()
+{
+	if(m_pCurrent != NULL)
+		return m_pCurrent->type == cdtExtended;
+	return false;
 }

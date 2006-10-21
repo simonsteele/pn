@@ -11,6 +11,7 @@
 #include "stdafx.h"
 #include "resource.h"
 #include "commands.h"
+#include "extapp.h"
 
 // Default Keyboard Mapping (predec)
 KeyToCommand DefaultKeyMap[];
@@ -19,7 +20,7 @@ KeyToCommand DefaultKeyMap[];
 CmdIDRange IDRange1 = {20000, 21000, 0};
 CmdIDRange* CommandDispatch::s_IDs[] = {&IDRange1, NULL};
 
-void AccelFromCode(ACCEL& accel, KeyToCommand* cmd)
+void AccelFromCode(ACCEL& accel, const KeyToCommand* cmd)
 {
 	PNASSERT(cmd != 0);
 	//PNASSERT(hotkey != 0);
@@ -50,17 +51,17 @@ WORD AccelToHKMod(WORD modifiers)
 	return real_modifiers;
 }
 
-KeyMap::KeyMap(KeyToCommand* commands) : kmap(0), len(0), alloc(0)
+KeyMap::KeyMap(KeyToCommand* commands) : kmap(0), len(0), alloc(0), lastdispatcher(0)
 {
 	for (int i = 0; commands[i].key; i++)
 	{
-		AssignCmdKey(commands[i].key,
+		internalAssign(commands[i].key,
 			commands[i].modifiers,
 			commands[i].msg);
 	}
 }
 
-KeyMap::KeyMap(const KeyMap& copy) : kmap(0), len(0), alloc(0)
+KeyMap::KeyMap(const KeyMap& copy) : kmap(0), len(0), alloc(0), lastdispatcher(0)
 {
 	len = copy.len;
 	if(len)
@@ -73,6 +74,14 @@ KeyMap::KeyMap(const KeyMap& copy) : kmap(0), len(0), alloc(0)
 		
 		alloc = copy.len+5;
 		kmap = kNew;
+	}
+	
+	// Copy extension commands
+	extkmap = copy.extkmap;
+	for(ExtensionCommands::iterator i = extkmap.begin(); i != extkmap.end(); ++i)
+	{
+		// Clear out any commands - we haven't registered them yet!
+		(*i).second.msg = 0;
 	}
 }
 
@@ -87,9 +96,126 @@ void KeyMap::Clear()
 	kmap = 0;
 	len = 0;
 	alloc = 0;
+	
+	// Release command IDs.
+	if(lastdispatcher != NULL)
+	{
+		for(ExtensionCommands::const_iterator i = extkmap.begin(); i != extkmap.end(); ++i)
+		{
+			if((*i).second.msg != 0)
+				lastdispatcher->UnRegisterCallback((*i).second.msg);
+		}
+	}
 }
 
 void KeyMap::AssignCmdKey(int key, int modifiers, unsigned int msg)
+{
+	// Check there's no extended command with this setup...
+	RemoveExtended(key, modifiers);
+	// ...and assign
+	internalAssign(key, modifiers, msg);
+}
+
+void KeyMap::RemoveCmdKey(int key, int modifiers, unsigned int msg)
+{
+	bool found = false;
+	for(int ixArr(0); ixArr < len; ++ixArr)
+	{
+		if(!found && kmap[ixArr].key == key && kmap[ixArr].modifiers == modifiers && kmap[ixArr].msg == msg)
+		{
+			found = true;
+		}
+		if(found && ixArr != len-1)
+		{
+			kmap[ixArr] = kmap[ixArr+1];
+		}
+	}
+	
+	if(found)
+		len--;
+}
+
+void KeyMap::AddExtended(const ExtensionCommand& command)
+{
+	// Make sure there's no classic command on this id already.
+	unsigned int cmd = Find(command.key, command.modifiers);
+	if(cmd != 0)
+		RemoveCmdKey(command.key, command.modifiers, cmd);
+
+	// Insert it
+	extkmap.insert( ExtensionCommands::value_type( command.key | (command.modifiers << 8), command ) );
+}
+
+void KeyMap::RemoveExtended(unsigned char key, unsigned char modifiers)
+{
+	ExtensionCommands::iterator i = extkmap.find( key | (modifiers << 8) );
+	if(i != extkmap.end())
+		extkmap.erase( i );
+}
+
+unsigned int KeyMap::Find(int key, int modifiers)
+{
+	for (int i = 0; i < len; i++)
+	{
+		if ((key == kmap[i].key) && (modifiers == kmap[i].modifiers))
+		{
+			return kmap[i].msg;
+		}
+	}
+	return 0;
+}
+
+const ExtensionCommand* KeyMap::FindExtended(unsigned char key, unsigned char modifiers)
+{
+	ExtensionCommands::const_iterator i = extkmap.find( key | (modifiers << 8) );
+	if( i != extkmap.end() )
+		return &(*i).second;
+	return NULL;
+}
+
+size_t KeyMap::GetCount() const
+{
+	return len;
+}
+
+size_t KeyMap::GetExtendedCount() const
+{
+	return extkmap.size();
+}
+
+const KeyToCommand* KeyMap::GetMappings() const
+{
+	return kmap;
+}
+
+const ExtensionCommands& KeyMap::GetExtendedMappings() const
+{
+	return extkmap;
+}
+
+int KeyMap::MakeAccelerators(ACCEL* buffer, CommandDispatch* dispatcher)
+{
+	size_t i(0);
+	for(; i < (size_t)len; ++i)
+	{
+		AccelFromCode(buffer[i], &kmap[i]);
+	}
+
+	for(ExtensionCommands::iterator j = extkmap.begin();
+		j != extkmap.end(); ++j)
+	{
+		if( (*j).second.msg == 0 )
+		{
+			(*j).second.msg = dispatcher->RegisterCallback(NULL, dispatcher, COMMANDS_RUNEXT, reinterpret_cast<LPVOID>( (*j).first ) );
+		}
+
+		AccelFromCode(buffer[i++], &((*j).second));
+	}
+
+	return i;
+}
+
+void KeyMap::internalAssign(int key, int modifiers, unsigned int msg)
 {
 	if ((len+1) >= alloc) {
 		KeyToCommand *ktcNew = new KeyToCommand[alloc + 5];
@@ -113,57 +239,6 @@ void KeyMap::AssignCmdKey(int key, int modifiers, unsigned int msg)
 	kmap[len].modifiers = modifiers;
 	kmap[len].msg = msg;
 	len++;
-}
-
-void KeyMap::RemoveCmdKey(int key, int modifiers, unsigned int msg)
-{
-	bool found = false;
-	for(int ixArr(0); ixArr < len; ++ixArr)
-	{
-		if(!found && kmap[ixArr].key == key && kmap[ixArr].modifiers == modifiers && kmap[ixArr].msg == msg)
-		{
-			found = true;
-		}
-		if(found && ixArr != len-1)
-		{
-			kmap[ixArr] = kmap[ixArr+1];
-		}
-	}
-	
-	if(found)
-		len--;
-}
-
-unsigned int KeyMap::Find(int key, int modifiers)
-{
-	for (int i = 0; i < len; i++)
-	{
-		if ((key == kmap[i].key) && (modifiers == kmap[i].modifiers))
-		{
-			return kmap[i].msg;
-		}
-	}
-	return 0;
-}
-
-int KeyMap::GetCount() const
-{
-	return len;
-}
-
-const KeyToCommand* KeyMap::GetMappings() const
-{
-	return kmap;
-}
-
-int KeyMap::MakeAccelerators(ACCEL* buffer) const
-{
-	for(int i = 0; i < len; ++i)
-	{
-		AccelFromCode(buffer[i], &kmap[i]);
-	}
-
-	return len;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -204,11 +279,11 @@ CommandDispatch::~CommandDispatch()
 
 HACCEL CommandDispatch::GetAccelerators()
 {
-	int required = m_keyMap->GetCount();
+	size_t required = m_keyMap->GetCount() + m_keyMap->GetExtendedCount();
 	ACCEL* accelerators = new ACCEL[required];
 	
 	// Get the accelerators from the standard command table...
-	int offset = m_keyMap->MakeAccelerators(accelerators);
+	m_keyMap->MakeAccelerators(accelerators, this);
 
 	HACCEL table = ::CreateAcceleratorTable(accelerators, required);
 
@@ -228,11 +303,9 @@ void CommandDispatch::UpdateMenuShortcuts(HMENU theMenu)
 	mii.dwTypeData = buffer;
 	mii.cch = 255;
 
-	DWORD ticksPre = ::GetTickCount();
-
 	KeyMap* theKeys = GetCurrentKeyMap();
 	const KeyToCommand* keyArr = theKeys->GetMappings();
-	for(int i(0); i < theKeys->GetCount(); i++)
+	for(size_t i(0); i < theKeys->GetCount(); i++)
 	{
 		mii.cch = 255;
 		menu.GetItemInfo(keyArr[i].msg, &mii, FALSE);
@@ -249,12 +322,6 @@ void CommandDispatch::UpdateMenuShortcuts(HMENU theMenu)
 			::SetMenuItemInfo(menu, mii.wID, FALSE, &mii);
 		}
 	}
-
-#ifdef _DEBUG
-	DWORD ticksTaken = ::GetTickCount() - ticksPre;
-	_stprintf(buffer, _T("%dms to setup the menu\n"), ticksTaken);
-	LOG(buffer);
-#endif
 }
 
 tstring CommandDispatch::GetShortcutText(int wCode, int wModifiers)
@@ -478,7 +545,16 @@ bool CommandDispatch::Load(LPCTSTR filename)
 		return false;
 	}
 
-	//TODO: Read other mappings...
+	StoredExtensionCommand* storedexts(NULL);
+	if(hdr.extensions > 0)
+	{
+		storedexts = new StoredExtensionCommand[hdr.extensions];
+		if(fread(storedexts, sizeof(StoredExtensionCommand), hdr.extensions, kbfile) != hdr.extensions)
+		{
+			UNEXPECTED("Failed to load the correct number of extension commands from the keyboard mappings file.");
+			delete storedexts;
+		}
+	}
 
 	fclose(kbfile);
 	
@@ -487,9 +563,27 @@ bool CommandDispatch::Load(LPCTSTR filename)
 	loadedcmds[hdr.commands].modifiers = 0;
 	loadedcmds[hdr.commands].msg = 0;
 
+	// Load up the key map
 	if(m_keyMap != NULL)
 		delete m_keyMap;
 	m_keyMap = new KeyMap(loadedcmds);
+
+	// Add the extension commands
+	if(storedexts)
+	{
+		for(size_t i = 0; i < hdr.extensions; ++i)
+		{
+			ExtensionCommand cmd;
+			cmd.command = storedexts[i].command;
+			cmd.key = storedexts[i].key;
+			cmd.modifiers = storedexts[i].modifiers;
+			cmd.msg = 0;
+
+			m_keyMap->AddExtended(cmd);
+		}
+
+		delete [] storedexts;
+	}
 
 	return true;
 }
@@ -507,6 +601,7 @@ void CommandDispatch::Save(LPCTSTR filename) const
 	memcpy(hdr.magic, "PNKEYS", 7);
 	hdr.version = KEYBOARD_FILE_VERSION;
 	hdr.commands = m_keyMap->GetCount();
+	hdr.extensions = m_keyMap->GetExtendedCount();
 
 	fwrite(&hdr, sizeof(KeyboardFileHeader), 1, kbfile);
 
@@ -514,9 +609,35 @@ void CommandDispatch::Save(LPCTSTR filename) const
 
 	fwrite(mappings, sizeof(KeyToCommand), hdr.commands, kbfile);
 
-	//TODO: Write shortcuts for scripts etc. here
+	//Write shortcuts for scripts etc.
+	const ExtensionCommands& extcmds = m_keyMap->GetExtendedMappings();
+	for(ExtensionCommands::const_iterator i = extcmds.begin();
+		i != extcmds.end();
+		++i)
+	{
+		StoredExtensionCommand sec = { (*i).second.modifiers, (*i).second.key, 0 };
+		strncpy(sec.command, (*i).second.command.c_str(), 149);
+		fwrite(&sec, sizeof(StoredExtensionCommand), 1, kbfile);
+	}
 
 	fclose(kbfile);
+}
+
+bool CommandDispatch::SHandleDispatchedCommand(int iCommand, LPVOID data)
+{
+	if(iCommand == COMMANDS_RUNEXT)
+	{
+		// We've got a keyboard-shortcut event for an extension command:
+		int keycmd = reinterpret_cast<int>(data);
+		const ExtensionCommand* cmd = m_keyMap->FindExtended(keycmd & 0x00ff, (keycmd & 0xff00) >> 8);
+		
+		// Run the command...
+		g_Context.ExtApp->RunExtensionCommand( cmd->command.c_str() );
+
+		return true;
+	}
+	
+	return false;
 }
 
 void CommandDispatch::init()

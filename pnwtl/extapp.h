@@ -28,6 +28,8 @@ public:
 	
 	void LoadExtensions();
 
+	void RunExtensionCommand(const char* command);
+
 // Implement IPN:
 public:
 	/// Get the extension interface version

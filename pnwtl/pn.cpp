@@ -77,7 +77,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	bool bAllowMulti = OPTIONS->Get(PNSK_INTERFACE, _T("AllowMultiInstance"), false);
 	if(!bAllowMulti)
 	{
-		LOG( _T("PN2 should only run one instance") );
+		//LOG( _T("PN2 should only run one instance") );
 		if(checkMI.AlreadyActive())
 		{
 			LOG( _T("PN2 has an instance already, sending parameters and exiting") );
@@ -89,7 +89,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	}
 	else
 	{
-		LOG( _T("PN2 is allowed multiple instances") );
+		//LOG( _T("PN2 is allowed multiple instances") );
 	}
 
 	CMessageLoop theLoop;
