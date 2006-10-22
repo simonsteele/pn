@@ -67,7 +67,7 @@ int CPPNAVIGATOR_API PNGetCapabilities()
  */
 void CPPNAVIGATOR_API PNFPGetSchemesSupported(wchar_t* schemesBuffer, int cchBuffer)
 {
-	wcsncpy(schemesBuffer, L"assembler;cobol;cpp;csharp;eiffel;erlang;java;javascript;lisp;lua;makefile;pascal;perl;plsql;python;ruby;shell;tcl;verilog;vhdl;vim;yacc;web", cchBuffer);
+	wcsncpy(schemesBuffer, L"assembler;cobol;cpp;csharp;eiffel;erlang;java;javascript;lisp;lua;makefile;pascal;perl;plsql;python;ruby;shell;tcl;vb;verilog;vhdl;vim;yacc;web", cchBuffer);
 }
 
 #define CTAGSOPTS	L" --fields=+n -f - " // must start and end with a space.

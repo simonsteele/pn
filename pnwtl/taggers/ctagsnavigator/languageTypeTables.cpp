@@ -315,6 +315,32 @@ int lVerilogTypes[26] = {
 	/*y*/ 0,			/*z*/ 0
 };
 
+/*
+static kindOption VBKinds [] = {
+{ TRUE, 'c', "class", "classes" },
+{ TRUE, 'd', "dim", "variables" },
+{ TRUE, 'f', "function", "functions" },
+{ TRUE, 'k', "const", "constants" },
+{ TRUE, 'm', "module", "modules" },
+{ TRUE, 's', "sub", "procedures" },
+};*/
+
+int lVBTypes[26] = {
+	/*a*/ 0,			/*b*/ 0,
+	/*c*/ TAG_CLASS,	/*d*/ TAG_FIELD,
+	/*e*/ 0,			/*f*/ TAG_FUNCTION,
+	/*g*/ 0,			/*h*/ 0,
+	/*i*/ 0,			/*j*/ 0,
+	/*k*/ TAG_CONSTANT,	/*l*/ 0,
+	/*m*/ TAG_MODULE,	/*n*/ 0,
+	/*o*/ 0,			/*p*/ TAG_PROCEDURE,
+	/*q*/ 0,			/*r*/ 0,
+	/*s*/ 0,			/*t*/ 0,
+	/*u*/ 0,			/*v*/ 0,
+	/*w*/ 0,			/*x*/ 0, 
+	/*y*/ 0,			/*z*/ 0
+};
+
 /*static kindOption VhdlKinds [] = {
  { TRUE, 'c', "constant",     "constants" },
  { TRUE, 't', "type",         "types" },
@@ -382,6 +408,10 @@ void getTables(LPCWSTR schemeName, int** lcTypes, int** ucTypes)
 	{
 		*lcTypes = lSQLTypes;
 		*ucTypes = uSQLTypes;
+	}
+	else if(wcscmp(schemeName, L"vb") == 0)
+	{
+		*lcTypes = lVBTypes;
 	}
 	else if(wcscmp(schemeName, L"verilog") == 0)
 	{
