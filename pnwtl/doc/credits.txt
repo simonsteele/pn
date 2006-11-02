@@ -10,6 +10,8 @@ Klaus Kurzawa
 Mike Ditum
 Vassili Bourdo
 Oleg Gerasimov
+Vambola Kotkas
+Manuel Sandoval
 
 Libraries:
 ----------

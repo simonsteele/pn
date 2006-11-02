@@ -399,6 +399,12 @@ BOOL CMainFrame::OnIdle()
 
 	bool bChild = false;
 	bool bCanSave = false;
+	
+	DWORD wStartPos;
+	DWORD wEndPos;
+	LRESULT lResult = ::SendMessage(::GetFocus(), EM_GETSEL, (WPARAM)&wStartPos, (LPARAM)&wEndPos);
+
+	bool bHasSel = lResult && (wStartPos != wEndPos);
 
 	if(hWnd != NULL)
 	{
@@ -407,6 +413,12 @@ BOOL CMainFrame::OnIdle()
 		{
 			bChild = true;
 			bCanSave = pChild->GetModified();
+
+			CTextView* pTV = pChild->GetTextView();
+			if(pTV)
+			{
+				bHasSel = pTV->GetSelLength() > 0;
+			}
 		}
 	}
 	else
@@ -417,6 +429,23 @@ BOOL CMainFrame::OnIdle()
 	
 	UIEnable(ID_FILE_CLOSE, bChild);
 	UIEnable(ID_FILE_SAVE, bCanSave);
+	UIEnable(ID_EDIT_CUT, bHasSel);
+	UIEnable(ID_EDIT_COPY, bHasSel);
+
+	lResult = ::SendMessage(::GetFocus(), EM_CANUNDO, 0, 0);
+	UIEnable(ID_EDIT_UNDO, lResult);
+	lResult = ::SendMessage(::GetFocus(), SCI_CANREDO, 0, 0);
+	UIEnable(ID_EDIT_REDO, lResult);
+
+	if (::OpenClipboard(NULL))
+	{
+		UIEnable(ID_EDIT_PASTE, ::IsClipboardFormatAvailable(CF_TEXT) || ::IsClipboardFormatAvailable(CF_UNICODETEXT));
+		::CloseClipboard();
+	}
+	else 
+	{
+		UIEnable(ID_EDIT_PASTE,FALSE);
+	}
 
 	if(m_pProjectsWnd != NULL)
 	{
