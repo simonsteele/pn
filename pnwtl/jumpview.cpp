@@ -292,6 +292,22 @@ void CJumpTreeCtrl::OnFound(int count, LPMETHODINFO methodInfo)
 		strcpy(methodInfoItem->fullText,methodInfo->fullText);
 	}
 	SetItemData(hChildItem,reinterpret_cast<DWORD_PTR>( methodInfoItem ));
+	//Manuel Sandoval: Add the new method to ScintillaImpl autocomplete list:
+	//AddToAutoComplete should know how to remove other info than item name and parameters.
+	switch(methodInfo->type)
+	{
+		case 1://TAG_FUNCTION
+		case 2://TAG_PROCEDURE
+		case 4://TAG_MACRO
+		case 8://TAG_MEMBER
+		case 13://TAG_VARIABLE
+		case 15://TAG_METHOD
+		case 16://TAG_EVENT
+		case 18: //TAG_PROPERTY
+		case 20://TAG_CONSTANT	
+		pChildFrame->GetTextView()->AddToAutoComplete(methodInfo->fullText,methodInfo->methodName);
+	};	
+
 }
 
 

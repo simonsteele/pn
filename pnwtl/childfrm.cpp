@@ -1340,6 +1340,9 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 		} else {
 			//save
 			::SendMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_CLOSE, (LPARAM)this);
+			//Manuel Sandoval: clear ScintillaImpl autocomplete list for adding new methods:
+			this->GetTextView()->ResetAutoComplete();
+
 			::PostMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_ADD, (LPARAM)this);
 		}
 

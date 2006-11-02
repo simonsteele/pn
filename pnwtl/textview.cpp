@@ -91,6 +91,8 @@ void CTextView::SetScheme(Scheme* pScheme, bool allSettings)
 	m_pLastScheme = pScheme;
 
 	::SendMessage(GetParent(), PN_SCHEMECHANGED, 0, reinterpret_cast<LPARAM>(pScheme));
+
+	InitAutoComplete(pScheme); //Manuel Sandoval: Pass document parameter to base class to set initial words for autocomplete from doc scheme
 }
 
 static std::string ExtractLine(const char *buf, size_t length) {
