@@ -206,7 +206,7 @@ int KeyMap::MakeAccelerators(ACCEL* buffer, CommandDispatch* dispatcher)
 	{
 		if( (*j).second.msg == 0 )
 		{
-			(*j).second.msg = dispatcher->RegisterCallback(NULL, dispatcher, COMMANDS_RUNEXT, reinterpret_cast<LPVOID>( (*j).first ) );
+			(*j).second.msg = dispatcher->RegisterCallback(-1, dispatcher, COMMANDS_RUNEXT, reinterpret_cast<LPVOID>( (*j).first ) );
 		}
 
 		AccelFromCode(buffer[i++], &((*j).second));

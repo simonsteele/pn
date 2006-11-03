@@ -485,12 +485,35 @@ void Folder::SetDirty()
 
 bool Folder::MoveFile(File* file, Folder* into)
 {
-	Folder* from = file->GetFolder();
 	if(into == NULL)
 		return false;
 
+	Folder* from = file->GetFolder();
+	
 	if(from != NULL)
-		from->DetachFile(file);
+	{
+		if(from->GetType() == ptMagicFolder)
+		{
+			// We can't *move* from a magic folder to a normal folder,
+			// so we copy instead:
+
+			//TODO: We *could* move from a magic folder to another magic
+			// folder, thus doing a real file move. Can't be bothered right now.
+
+			File* newfile = new File(into->GetBasePath(), file->GetFileName(), into);
+			// Copy any user data
+			newfile->GetUserData() = file->GetUserData();
+			
+			into->AddFile(newfile);
+			return true;
+		}
+		else
+		{
+			// Remove the current instance from this folder...
+			from->DetachFile(file);
+		}
+	}
+
 	into->AddFile(file);
 
 	return true;
