@@ -58,6 +58,7 @@ public:
 			_U_MENUorID MenuOrID = 0U, LPVOID lpCreateParam = NULL);
 
 	virtual void OnFound(int count, LPMETHODINFO methodInfo);
+	HTREEITEM RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInfo);//Manuel Sandoval: Function defined for recursive insertion into tree
 	LRESULT OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
 protected:

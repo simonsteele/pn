@@ -70,10 +70,12 @@ protected:
 	//*****************************************************************************
 
 public:
-	typedef CSimpleArray<CString> CStringArray;
+	typedef std::vector<tstring> CStringArray;
 	void AddToAutoComplete(CString FullTag, CString TagName);  //Called in: CJumpTreeCtrl::OnFound: Add new defined autocomplete tags
 	void ResetAutoComplete();           //Called in: CChildFrame::SaveFile: Clear new defined autocomplete tags
 	void InitAutoComplete(Scheme *sch); //Called in: CTextView::SetScheme: Initialize default autocomplete tags
+
+	virtual void SetKeyWords(int keywordSet, const char* keyWords);
 
 protected:	
 	bool StartAutoComplete();
@@ -81,16 +83,16 @@ protected:
 	int GetCaretInLine();
 	CharacterRange GetSelection();
 	void InsertChar(long nPos, char nChar);
-	CString GetLineText(int nLine=-1);
+	tstring GetLineText(int nLine=-1);
 	void SmartTag();
-	CString GetSelText2();
+	tstring GetSelText2();
 	bool StartCallTip();
 	void SetLineNumberWidth();
 	void RangeExtendAndGrab(char *sel, int len, int &selStart, int &selEnd, int lengthDoc, bool (*ischarforsel)(char ch), bool stripEol = true);
 	void ContinueCallTip();
 	void FillFunctionDefinition(int pos = -1);
-	const char *GetNearestWord(CStringArray arr, const char *wordStart, int searchLen, bool ignoreCase = false, CString wordCharacters = "/0", int wordIndex = -1);
-	CString GetNearestWords(CStringArray  arr,const char *wordStart,int searchLen,bool ignoreCase= false,char otherSeparator='\0',bool exactLen=false);
+	tstring GetNearestWord(CStringArray& arr, const char *wordStart, int searchLen, bool ignoreCase = false, const char* wordCharacters = "/0", int wordIndex = -1);
+	tstring GetNearestWords(CStringArray&  arr,const char *wordStart,int searchLen,bool ignoreCase= false,char otherSeparator='\0',bool exactLen=false);
 
 	CStringArray  m_Api,m_KW;
 	CString m_functionDefinition;

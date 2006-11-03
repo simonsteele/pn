@@ -415,7 +415,7 @@ void Scheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 						{
 							case ttFontName : sc.SPerform(SCI_STYLESETFONT, Txt.wParam, (long)buf);
 								break;
-							case ttKeywords : sc.SPerform(SCI_SETKEYWORDS, Txt.wParam, (long)buf);
+							case ttKeywords : sc.SetKeyWords(Txt.wParam, buf);
 								break;
 							case ttLexerLanguage : sc.SPerform(SCI_SETLEXERLANGUAGE, 0, (long)buf);
 								break;

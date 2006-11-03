@@ -234,66 +234,24 @@ void CJumpTreeCtrl::deleteFileItem(HTREEITEM hRoot)
 	}
 	DeleteItem(hRoot);
 }
- 
+	
+//Manuel Sandoval: Rewrote OnFound for ScintillaImpl can feature autocompleting.
+//Also now uses recursion, so items can added inside owner classes.
+
 void CJumpTreeCtrl::OnFound(int count, LPMETHODINFO methodInfo)
 {
-	int imagesNumber;
+	HTREEITEM hRoot= GetRootItem();		
 	CChildFrame* pChildFrame;
-	HTREEITEM hRoot,hChildItem;
-	LPMETHODINFO methodInfoItem;
- 	hRoot = GetRootItem();
-	while (hRoot) {
+	//Find the root node, which is the frame of the file that contains the method
+	//The root node was inserted by addFileTree. So it must exist.
+	while (hRoot) 
+	{
 		pChildFrame = reinterpret_cast<CChildFrame*>(GetItemData(hRoot));
-		if (pChildFrame==static_cast<CChildFrame*>(methodInfo->userData)){
-			break;
-		}
+		if (pChildFrame==static_cast<CChildFrame*>(methodInfo->userData))break;					
 		hRoot=GetNextItem(hRoot, TVGN_NEXT );
 	}
-	if (!hRoot) 
-		return;
-	hChildItem = GetChildItem(hRoot);
-	while (hChildItem) {
-		methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hChildItem));
-		if (methodInfoItem->type==methodInfo->type){
-			break;
-		}
-		hChildItem=GetNextItem(hChildItem, TVGN_NEXT );
-	}
-	imagesNumber=jumpToTagImages[methodInfo->type].imagesNumber;
-	if (!hChildItem){
-		if (methodInfo->type <= TAG_MAX){
-			hChildItem = InsertItem( jumpToTagImages[methodInfo->type].imageName, 0, 0, hRoot, TVI_LAST );
-			methodInfoItem = new METHODINFO;
-			memcpy(methodInfoItem, methodInfo, sizeof(METHODINFO));
-			methodInfoItem->methodName=0;
-			methodInfoItem->parentName=0;
-			methodInfoItem->fullText=0;
-			SetItemData(hChildItem,reinterpret_cast<DWORD_PTR>( methodInfoItem ));
-			SetItemImage(hChildItem, imagesNumber, imagesNumber);
-
-		} else {
-			return;
-		}
-
-	}
-	hChildItem = InsertItem( methodInfo->methodName, imagesNumber, imagesNumber, hChildItem, TVI_LAST );
-	methodInfoItem = new METHODINFO;
-	memcpy(methodInfoItem, methodInfo, sizeof(METHODINFO));
-	if (methodInfo->methodName){
-		methodInfoItem->methodName=new char[strlen(methodInfo->methodName)+1];
-		strcpy(methodInfoItem->methodName,methodInfo->methodName);
-	}
-	if (methodInfo->parentName){
-		methodInfoItem->parentName=new char[strlen(methodInfo->parentName)+1];
-		strcpy(methodInfoItem->parentName,methodInfo->parentName);
-	}
-	if (methodInfo->fullText){
-		methodInfoItem->fullText=new char[strlen(methodInfo->fullText)+1];
-		strcpy(methodInfoItem->fullText,methodInfo->fullText);
-	}
-	SetItemData(hChildItem,reinterpret_cast<DWORD_PTR>( methodInfoItem ));
-	//Manuel Sandoval: Add the new method to ScintillaImpl autocomplete list:
-	//AddToAutoComplete should know how to remove other info than item name and parameters.
+	if (!hRoot) return;
+	RecursiveInsert(hRoot, methodInfo);
 	switch(methodInfo->type)
 	{
 		case 1://TAG_FUNCTION
@@ -303,11 +261,139 @@ void CJumpTreeCtrl::OnFound(int count, LPMETHODINFO methodInfo)
 		case 13://TAG_VARIABLE
 		case 15://TAG_METHOD
 		case 16://TAG_EVENT
-		case 18: //TAG_PROPERTY
+		case 18://TAG_PROPERTY
 		case 20://TAG_CONSTANT	
 		pChildFrame->GetTextView()->AddToAutoComplete(methodInfo->fullText,methodInfo->methodName);
 	};	
-
+}
+//Manuel Sandoval: This function adds new items to tag tree using recursivity:
+#define tag_class 3
+HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInfo)
+ {
+	//hRoot must not be null.If it's and comes from a recursive call, it means methodInfo.type>TAG_MAX
+	ATLASSERT(hRoot); 
+//	_RPT4(_CRT_WARN,"\n--Insert: %i, %s, %s, %i", hRoot, methodInfo->methodName, methodInfo->parentName, methodInfo->type);
+	HTREEITEM ret=0;
+	if(methodInfo->parentName)  		
+	{
+		//When an item has parentName, it's assumed to be owned by a class.
+		//first find the "class" node in root. "
+		LPMETHODINFO methodInfoItem;
+		HTREEITEM hChildItem = GetChildItem(hRoot);
+		while (hChildItem) 
+		{
+			methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hChildItem));
+			if (methodInfoItem->type == tag_class)break;			
+			hChildItem=GetNextItem(hChildItem, TVGN_NEXT );
+		}
+		if(!hChildItem)
+		{
+			//If "class" node still doesn't exist, we have to create one
+			//This is achieved trying to insert the class item into the current hroot:
+			hChildItem=hRoot;
+		}
+		//Now find the owner class. 
+		HTREEITEM hClassNode = GetChildItem(hChildItem);
+		while (hClassNode) 
+		{
+			methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hClassNode));
+			if(methodInfoItem->methodName)
+			{
+				if (!strncmp(methodInfoItem->methodName,methodInfo->parentName,strlen(methodInfo->parentName) ))break;	
+			}
+			hClassNode=GetNextItem(hClassNode, TVGN_NEXT );
+		}
+		if(!hClassNode)
+		{
+			//If owner class node still doesn't exist, we have to add it
+			METHODINFO *mi=new METHODINFO;
+			mi->type=tag_class;
+			mi->userData=methodInfo->userData;
+			mi->lineNumber=-1; //we don't know where class begins, so we put this. When it is defined by ctags, this is updated.
+			mi->fullText=methodInfo->parentName;
+			mi->methodName=methodInfo->parentName;
+			mi->image=jumpToTagImages[tag_class].imagesNumber;
+			mi->parentName=0; //Not needed, it's hChildItem
+			hClassNode=RecursiveInsert(hChildItem, mi);
+		}
+		//This will make end recursive call
+		char* tmp=methodInfo->parentName;
+		methodInfo->parentName=0;
+		ret=RecursiveInsert(hClassNode, methodInfo);//Insert in class
+		methodInfo->parentName=tmp;
+	}
+	else
+	{
+	   //find the corresponding  "type" node in root, (root is a file node)			
+		LPMETHODINFO methodInfoItem;
+		HTREEITEM hChildItem = GetChildItem(hRoot);		
+		while (hChildItem) 
+		{
+			methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hChildItem));
+			if (methodInfoItem->type==methodInfo->type)break;			
+			hChildItem=GetNextItem(hChildItem, TVGN_NEXT );
+		}
+		//if the "type" node doesn't exist, create it
+		int imagesNumber=jumpToTagImages[methodInfo->type].imagesNumber;
+		if (!hChildItem)
+		{
+			if (methodInfo->type <= TAG_MAX)
+			{
+				hChildItem = InsertItem( jumpToTagImages[methodInfo->type].imageName, 0, 0, hRoot, TVI_LAST );
+				methodInfoItem = new METHODINFO;
+				memcpy(methodInfoItem, methodInfo, sizeof(METHODINFO));
+				methodInfoItem->methodName=0;
+				methodInfoItem->parentName=0;
+				methodInfoItem->fullText=0;
+				SetItemData(hChildItem,reinterpret_cast<DWORD_PTR>( methodInfoItem ));
+				SetItemImage(hChildItem, imagesNumber, imagesNumber);
+			} 
+			else return 0; //This tag is undefined. Can't be inserted.
+		}
+		//If new item is a class, check it is not repeated:
+		HTREEITEM checkNode = 0;
+		if(methodInfo->type==tag_class)
+		{
+			checkNode=GetChildItem(hChildItem);
+			while (checkNode) 
+			{
+				methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(checkNode));
+				if(methodInfoItem->methodName)
+				{
+					if (!strncmp(methodInfoItem->methodName,methodInfo->methodName ,strlen(methodInfo->methodName) ))break;	
+				}
+				checkNode=GetNextItem(checkNode, TVGN_NEXT );
+			}
+			if(!checkNode)hChildItem = InsertItem( methodInfo->methodName, imagesNumber, imagesNumber, hChildItem, TVI_LAST );
+			else hChildItem=checkNode;
+		}
+		else			
+		{	//Insert new item in its type-node:						
+			hChildItem = InsertItem( methodInfo->methodName, imagesNumber, imagesNumber, hChildItem, TVI_LAST );
+		}		
+		methodInfoItem = new METHODINFO;
+		//If new item is a class we already inserted, update it's info (like the line where it is defined.)
+		memcpy(methodInfoItem, methodInfo, sizeof(METHODINFO));
+		if (methodInfo->methodName)
+		{
+			methodInfoItem->methodName=new char[strlen(methodInfo->methodName)+1];
+			strcpy(methodInfoItem->methodName,methodInfo->methodName);
+		}
+		if (methodInfo->parentName)
+		{
+			methodInfoItem->parentName=new char[strlen(methodInfo->parentName)+1];
+			strcpy(methodInfoItem->parentName,methodInfo->parentName);
+		}
+		if (methodInfo->fullText)
+		{
+			methodInfoItem->fullText=new char[strlen(methodInfo->fullText)+1];
+			strcpy(methodInfoItem->fullText,methodInfo->fullText);
+		}
+		SetItemData(hChildItem,reinterpret_cast<DWORD_PTR>( methodInfoItem ));
+_RPT3(_CRT_WARN,"\n%s.%s=%i,",methodInfoItem->parentName,methodInfoItem->methodName,methodInfo->lineNumber);
+		ret=hChildItem;
+	}
+	return ret;
 }
 
 
@@ -426,7 +512,7 @@ LRESULT CJumpDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	RECT rc;
 	GetClientRect(&rc);
-	m_hWndClient = m_view.Create(m_hWnd, rc, _T("CtagsTree"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_HASLINES | TVS_EDITLABELS | TVS_SHOWSELALWAYS, 0, IDC_JUMPVIEW);
+	m_hWndClient = m_view.Create(m_hWnd, rc, _T("CtagsTree"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | TVS_HASBUTTONS | TVS_HASLINES | /*TVS_EDITLABELS | */TVS_SHOWSELALWAYS, 0, IDC_JUMPVIEW);
 
 	bHandled = FALSE;
 

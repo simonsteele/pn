@@ -1897,8 +1897,9 @@ class CScintilla
 		void SetProperty(const char* key, const char* value);
 		/**
 		 * Set up the key words used by the lexer.
+		 * PN: virtual for use in storing keywords for autocompletion
 		 */
-		void SetKeyWords(int keywordSet, const char* keyWords);
+		virtual void SetKeyWords(int keywordSet, const char* keyWords);
 		/**
 		 * Set the lexing language of the document based on string name.
 		 */
