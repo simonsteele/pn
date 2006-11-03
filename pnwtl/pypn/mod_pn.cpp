@@ -60,6 +60,16 @@ int PNMessageBox(const char* text, const char* title, int type)
 	return ::MessageBox(hw, text, title, type);
 }
 
+std::string PNInputBox(const char* title, const char* caption)
+{
+	char* result = g_app->GetPN()->InputBox(title, caption);
+	if(result == NULL)
+		return "";
+	std::string r(result);
+	g_app->GetPN()->ReleaseString(result);
+	return r;
+}
+
 #define CONSTANT(x) scope().attr(#x) = x
 
 BOOST_PYTHON_MODULE(pn)
@@ -78,6 +88,8 @@ BOOST_PYTHON_MODULE(pn)
 	def("SetOutputBasePath", &SetOutputBasePath);
 
 	def("MessageBox", &PNMessageBox);
+
+	def("InputBox", &PNInputBox);
 
 	CONSTANT(IDOK);
 	CONSTANT(IDCANCEL);

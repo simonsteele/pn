@@ -37,6 +37,7 @@ App::App(boost::python::handle<>& obj, extensions::IPN* app) : m_app(app), main_
 
 	main_namespace = main_module.attr("__dict__");
 
+	m_outputShown = false;
 	m_output = NULL;
 }
 
@@ -96,6 +97,7 @@ void App::RunScript(const char* name)
 {
 	try
 	{
+		m_outputShown = false;
 		boost::python::call_method<void>(m_glue.ptr(), "runScript", name);
 	}
 	catch(boost::python::error_already_set&)
@@ -216,9 +218,10 @@ boost::python::object& App::PyPnGlue()
 
 void App::AddOutput(const char* text, int length)
 {
-	
-	if(m_output)
+	if(ensureOutput())
+	{
 		m_output->AddToolOutput(text, length);
+	}
 }
 
 void App::ClearOutput()
@@ -257,6 +260,13 @@ bool App::ensureOutput()
 {
 	if(m_output == NULL)
 		m_output = m_app->GetGlobalOutputWindow();
+
+	// We want to show the output only once per script run to avoid flashing...
+	if(m_output != NULL && !m_outputShown)
+	{
+		m_outputShown = true;
+		m_output->ShowOutput();
+	}
 	
 	return m_output != NULL;
 }

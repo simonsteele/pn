@@ -20,6 +20,8 @@
 #include "resource.h"
 #include "childfrm.h"
 
+#include "pndialogs.h"
+
 App::App() : m_dispatch(NULL)
 {
 	// Now we initialise any l10n stuff...
@@ -222,6 +224,23 @@ extensions::IDocumentPtr App::GetCurrentDocument()
 extensions::ITextOutput* App::GetGlobalOutputWindow()
 {
 	return g_Context.m_frame->GetGlobalOutputWindow();
+}
+
+char* App::InputBox(const char* title, const char* caption)
+{
+	CInputDialog ib(title, caption);
+
+	if(ib.DoModal() == IDOK)
+	{
+		if(ib.GetInput() != NULL)
+		{
+			char* result = new char[_tcslen(ib.GetInput())+1];
+			strcpy(result, ib.GetInput());
+			return result;
+		}	
+	}
+
+	return NULL;
 }
 
 void App::ReleaseString(const TCHAR* str)

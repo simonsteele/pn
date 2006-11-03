@@ -36,7 +36,7 @@
 namespace extensions
 {
 
-#define PN_EXT_IFACE_VERSION	1
+#define PN_EXT_IFACE_VERSION	2
 
 /////////////////////////////////////////////////////////////////////////////
 // Predeclare types
@@ -96,6 +96,9 @@ public:
 
 	/// Get the output window
 	virtual ITextOutput* GetGlobalOutputWindow() = 0;
+
+	/// Get some input from the user
+	virtual char* InputBox(const char* title, const char* caption) = 0;
 
 	/// Utility function to safely free strings given to you by PN
 	virtual void ReleaseString(const TCHAR* str) = 0;
@@ -269,6 +272,10 @@ public:
 	virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL) = 0;
 	/// Clear the output window
 	virtual void ClearOutput() = 0;
+	/// Show the output window
+	virtual void ShowOutput() = 0;
+	/// Hide the output window
+	virtual void HideOutput() = 0;
 };
 
 /**

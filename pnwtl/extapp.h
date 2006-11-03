@@ -53,6 +53,8 @@ public:
 	/// Get the global output window
 	virtual extensions::ITextOutput* GetGlobalOutputWindow();
 
+	virtual char* InputBox(const char* title, const char* caption);
+
 	/// Utility function to safely free strings given to you by PN
 	virtual void ReleaseString(const TCHAR* str);
 

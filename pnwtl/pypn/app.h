@@ -60,6 +60,7 @@ private:
 	boost::python::object main_module;
 	boost::python::object main_namespace;
 	boost::python::object m_glue;
+	bool m_outputShown;
 };
 
 extern App* g_app;
