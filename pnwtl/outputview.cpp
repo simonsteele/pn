@@ -456,6 +456,16 @@ void COutputView::ClearOutput()
 	ClearAll();
 }
 
+void COutputView::ShowOutput()
+{
+	g_Context.m_frame->ToggleDockingWindow(PNDW_OUTPUT, true, true);
+}
+
+void COutputView::HideOutput()
+{
+	g_Context.m_frame->ToggleDockingWindow(PNDW_OUTPUT, true, false);
+}
+
 LRESULT COutputView::OnClear(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	ClearAll();

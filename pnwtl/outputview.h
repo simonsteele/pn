@@ -47,6 +47,8 @@ public:
 	virtual void SetToolBasePath(LPCTSTR path);
 	virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL);
 	virtual void ClearOutput();
+	virtual void ShowOutput();
+	virtual void HideOutput();
 
 protected:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
