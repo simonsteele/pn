@@ -11,7 +11,7 @@ What's new?
 3) Sets unicode character set automatically when a unicode file encoding is selected.
 4) Decorators in Python scheme
 5) Add New File in Magic Folders context menu
-6) Tag browser window (Klaus)
+6) Tag browser window (Klaus, Manuel)
 7) Full VHDL scheme instead of user scheme (Klaus)
 8) VHDL tag support (Klaus)
 9) Remove non-existant MRU entries when selected (SF RFE #1469296)
@@ -24,6 +24,8 @@ What's new?
 16) Comment text automatically (scheme support dependant)
 17) New tool parameter: ${PNPath} - the path PN is installed in
 18) Comment-out code: Edit|Comments|Line or Stream or Block - depending on language support
+19) Keyword and tags based autocomplete (Manuel)
+20) Cut, copy, paste, undo, redo buttons enabled only when available
 
 Bug Fixes:
 ----------
@@ -56,6 +58,7 @@ Bug Fixes:
 26) Quick Find Textbox Border Color Problem (SF Bug #1465805)
 27) Find bar corruption after documents closed (SF Bug #1361852)
 28) BOM present even when 'UTF-8 No mark' selected as encoding (SF Bug #1545264)
+29) Can't copy file from magic folder to project properly (SF Bug #1576076)
 
 If you find a bug:
 ------------------
@@ -73,32 +76,3 @@ E-mail: ss at pnotepad dot org with your reports, or use the handy
 sourceforge bug tracker.
 
 Thanks for testing!
-
-
-Known things:
--------------
-
-Please don't moan about the following, they are all quite obvious to us already:
-
-1) Missing schemes from pn1.
-2) Toolbars aren't dockable.
-3) No Hex Editor.
-
-So what is good?
-----------------
-
-1) New editing engine (The excellent Scintilla: http://www.scintilla.org/).
-2) Now written in C++ using the Windows Template Library.
-3) Fast. Really Fast - compare opening times for large files with PN1.
-4) Four (count-em!) toolbars.
-5) Lovely XP-Style tabs.
-6) Save-As dialog contains a "File Format" feature.
-7) Support for C++, HTML, XML and Object Pascal. More schemes coming soon.
-8) Highly configurable XML backend for scheme configuration.
-9) The minibar from pn1 is here (see at the bottom of the edit windows).
-10) Scoping / Folding / Outlining (Open a C++, Pascal or Java file to see this, it's cool!).
-11) Word-wrap.
-12) Schemes configuration.
-13) Tools with output capturing, running in a separate thread. Much better than PN1.
-14) Smart-Start.
-15) Projects much more powerful - more like those in Visual Studio.

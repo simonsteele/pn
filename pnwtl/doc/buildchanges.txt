@@ -1,7 +1,14 @@
 | Working towards 0.8 :: Basie
 ---------------------------------------
 
+Since 0.7.619:
+
+Fixed keyboard shortcuts for scripts!
+
 Since 0.7.0:
 
 Fixed Close All not removing items from Tags window
-
+Implemented keyboard shortcuts for scripts
+Switched to Scintilla 1.71
+Keyword and tags based autocomplete (Manuel)
+Cut, copy, paste, undo, redo buttons enabled only when available

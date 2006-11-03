@@ -28,6 +28,7 @@ UninstallDisplayIcon={app}\pn.exe
 UninstallDisplayName=Programmer's Notepad 2
 WizardSmallImageFile=small.bmp
 Compression=lzma/ultra
+OutputBaseFilename=pnsetup
 
 [Tasks]
 Name: desktopicon; Description: Create a &Desktop icon; GroupDescription: Additional icons:
