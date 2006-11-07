@@ -172,7 +172,9 @@ void JumpToHandler::DoJumpTo(CChildFrame* pChildFrame, IJumpToFindSink* pNotifyS
 		fnstr = CT2CW(fn.c_str());
 	}
 
-	const wchar_t* pSN = CT2CW(pChildFrame->GetTextView()->GetCurrentScheme()->GetName());
+//	const wchar_t* pSN = CT2CW(pChildFrame->GetTextView()->GetCurrentScheme()->GetName());//Manuel Sandoval: CT2CW returns an invalid pointer
+	CT2CW tmpStr(pChildFrame->GetTextView()->GetCurrentScheme()->GetName());
+	const wchar_t* pSN = tmpStr.m_szBuffer;
 
 	sink = pNotifySink;
 	

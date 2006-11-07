@@ -12,6 +12,7 @@
 #include "resource.h"
 #include "childfrm.h"
 #include "tools.h"
+#include "toolsmanager.h"
 #include "outputview.h"
 #include "exporters.h"
 #include "pndialogs.h"

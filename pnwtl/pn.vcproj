@@ -456,7 +456,13 @@
 				RelativePath="textview.cpp">
 			</File>
 			<File
+				RelativePath=".\toolrunner.cpp">
+			</File>
+			<File
 				RelativePath="tools.cpp">
+			</File>
+			<File
+				RelativePath=".\toolsmanager.cpp">
 			</File>
 			<File
 				RelativePath=".\WorkspaceState.cpp">
@@ -649,7 +655,16 @@
 				RelativePath=".\textview.h">
 			</File>
 			<File
+				RelativePath=".\toolrunner.h">
+			</File>
+			<File
 				RelativePath="tools.h">
+			</File>
+			<File
+				RelativePath=".\toolsmanager.h">
+			</File>
+			<File
+				RelativePath=".\toolsxmlwriter.h">
 			</File>
 			<File
 				RelativePath=".\usersettingswriter.h">

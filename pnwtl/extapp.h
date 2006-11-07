@@ -1,3 +1,13 @@
+/**
+ * @file extapp.h
+ * @brief Define App, the basic application services
+ * @author Simon Steele
+ * @note Copyright (c) 2006 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #ifndef extapp_h__included
 #define extapp_h__included
 
@@ -53,6 +63,10 @@ public:
 	/// Get the global output window
 	virtual extensions::ITextOutput* GetGlobalOutputWindow();
 
+	/// Get the main application window
+	virtual HWND GetMainWindow();
+
+	/// Get some text from the user
 	virtual char* InputBox(const char* title, const char* caption);
 
 	/// Utility function to safely free strings given to you by PN

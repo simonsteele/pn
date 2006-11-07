@@ -26,6 +26,7 @@ What's new?
 18) Comment-out code: Edit|Comments|Line or Stream or Block - depending on language support
 19) Keyword and tags based autocomplete (Manuel)
 20) Cut, copy, paste, undo, redo buttons enabled only when available
+21) $(ProjectName) for tools - the active project name (SF RFE #1482915))
 
 Bug Fixes:
 ----------

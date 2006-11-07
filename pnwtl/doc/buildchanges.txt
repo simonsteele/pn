@@ -12,3 +12,6 @@ Implemented keyboard shortcuts for scripts
 Switched to Scintilla 1.71
 Keyword and tags based autocomplete (Manuel)
 Cut, copy, paste, undo, redo buttons enabled only when available
+Comments definitions for more c-type languages, vb and pascal
+Better tag support, methods placed under owner types
+[ 1482915 ] $(ProjectName)

@@ -37,6 +37,7 @@
 #include "workspacestate.h"		// Save Workspace State
 #include "ScriptRegistry.h"		// Scripts Registry
 #include "scriptview.h"			// Scripts Docker
+#include "toolsmanager.h"		// Tools Manager
 #include "extapp.h"
 
 // Other stuff

@@ -22,6 +22,12 @@
 
 #include "pndialogs.h"
 
+#include "pndocking.h"
+#include "mainfrm.h"
+
+/**
+ * Constructor - stuff that happens when PN starts
+ */
 App::App() : m_dispatch(NULL)
 {
 	// Now we initialise any l10n stuff...
@@ -48,11 +54,17 @@ App::App() : m_dispatch(NULL)
 	OPTIONS->LoadCache();
 }
 
+/**
+ * Destructor
+ */
 App::~App()
 {
 	deinit();
 }
 
+/**
+ * Init PN
+ */
 void App::Init()
 {
 	// Where are the Schemes stored?
@@ -87,6 +99,9 @@ const AppSettings& App::GetSettings()
 	return *m_settings;
 }
 
+/**
+ * Shutdown the app
+ */
 void App::deinit()
 {
 	unloadExtensions();
@@ -102,6 +117,9 @@ void App::deinit()
 	delete m_dispatch;
 }
 
+/**
+ * Load configured extensions, configuration is retrieved from AppSettings
+ */
 void App::LoadExtensions()
 {
 	const tstring_list& extensions = m_settings->GetExtensions();
@@ -158,6 +176,9 @@ void App::RunExtensionCommand(const char* command)
 	}
 }
 
+/**
+ * Unload all the extensions, signalling OnAppClose along the way
+ */
 void App::unloadExtensions()
 {
 	for(EventSinkList::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
@@ -192,16 +213,25 @@ void App::RemoveEventSink(extensions::IAppEventSinkPtr sink)
 	m_sinks.remove(sink);
 }
 
+/**
+ * Get the current script registry interface
+ */
 extensions::IScriptRegistry* App::GetScriptRegistry()
 {
 	return ScriptRegistry::GetInstance();
 }
 
+/**
+ * Get the options manager instance in use
+ */
 extensions::IOptions* App::GetOptionsManager()
 {
 	return OPTIONS;
 }
 
+/**
+ * Notify event consumers of a new document
+ */
 void App::OnNewDocument(extensions::IDocumentPtr doc)
 {
 	for(EventSinkList::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
@@ -210,6 +240,9 @@ void App::OnNewDocument(extensions::IDocumentPtr doc)
 	}
 }
 
+/**
+ * Get the current document (if there is one)
+ */
 extensions::IDocumentPtr App::GetCurrentDocument()
 {
 	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
@@ -221,11 +254,25 @@ extensions::IDocumentPtr App::GetCurrentDocument()
 	return extensions::IDocumentPtr();
 }
 
+/**
+ * Get a pointer to the global output window
+ */
 extensions::ITextOutput* App::GetGlobalOutputWindow()
 {
 	return g_Context.m_frame->GetGlobalOutputWindow();
 }
 
+/**
+ * Get a pointer to the mainframe window
+ */
+HWND App::GetMainWindow()
+{
+	return static_cast<CMainFrame*>(g_Context.m_frame)->m_hWnd;
+}
+
+/**
+ * Present an InputBox to get input from the user
+ */
 char* App::InputBox(const char* title, const char* caption)
 {
 	CInputDialog ib(title, caption);
@@ -243,6 +290,9 @@ char* App::InputBox(const char* title, const char* caption)
 	return NULL;
 }
 
+/**
+ * Release a C string allocated by PN
+ */
 void App::ReleaseString(const TCHAR* str)
 {
 	delete [] str;

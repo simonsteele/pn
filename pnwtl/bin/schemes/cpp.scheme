@@ -126,6 +126,7 @@
 	</language>
 
 	<language base="cppbase" name="javascript" title="JavaScript" folding="true" foldcomments="true" foldcompact="true">
+		<comments line="//" streamStart="/*" streamEnd="*/" blockStart="/**" blockLine=" *" blockEnd=" */" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="javascript"/>
 			<keyword key="1" name="Keywords 2" class="jsunsure"/>
@@ -136,6 +137,7 @@
 	</language>
 
 	<language base="cppbase" name="csharp" title="C#" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<comments line="//" streamStart="/*" streamEnd="*/" blockStart="/**" blockLine=" *" blockEnd=" */" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="csharp"/>
 		</use-keywords>
@@ -154,6 +156,7 @@
 	</language>
 	
 	<language base="cppbase" name="java" title="Java" folding="true" foldcomments="true" foldcompact="true">
+		<comments line="//" streamStart="/*" streamEnd="*/" blockStart="/**" blockLine=" *" blockEnd=" */" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="java"/>
 		</use-keywords>

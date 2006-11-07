@@ -12,6 +12,7 @@
 #include "resource.h"
 #include "OptionsPages.h"
 #include "OptionsDialogs.h"
+#include "toolsmanager.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // COptionsPageGeneral

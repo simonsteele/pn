@@ -97,6 +97,9 @@ public:
 	/// Get the output window
 	virtual ITextOutput* GetGlobalOutputWindow() = 0;
 
+	/// Get the main application window
+	virtual HWND GetMainWindow() = 0;
+
 	/// Get some input from the user
 	virtual char* InputBox(const char* title, const char* caption) = 0;
 

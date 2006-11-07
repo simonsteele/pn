@@ -1274,7 +1274,12 @@ bool CScintillaImpl::UnCommentStream(const CommentSpecRec& comments)
 int m_iAutoIndent=0; //Should set according PN Standards
 void AutoIndentIn(char ch){;} //Should implement according PN Standards
 void AutoIndentOut(char ch){;}//Should implement according PN Standards	
-
+int CompareNoCase(tstring &a, tstring b)
+{
+	const char* A=a.c_str();
+	const char* B=b.c_str();
+	return _stricmp(A,B);
+}
 void AddSorting(CScintillaImpl::CStringArray &arr, tstring& w)
 {
 	//TODO: w.Trim();
@@ -1286,7 +1291,7 @@ void AddSorting(CScintillaImpl::CStringArray &arr, tstring& w)
 	{
 		arr.push_back(w);
 	}
-	else if(w > arr.back())//.Compare(arr[arr.GetSize()-1]) > 0)
+	else if(CompareNoCase(w, arr.back())>0)//.Compare(arr[arr.GetSize()-1]) > 0)
 	{
 		arr.push_back(w);
 	}
@@ -1296,21 +1301,19 @@ void AddSorting(CScintillaImpl::CStringArray &arr, tstring& w)
 		CScintillaImpl::CStringArray::iterator i = arr.begin();
 		while(i != arr.end())
 		{
-			if((*i) > w)
+			if(CompareNoCase((*i) , w)>0)
 			{
 				arr.insert(i, w);
+				/*if(arr.size()>65) //For debugging
+				{				
+					for(int i=0;i<arr.size();i++)_RPT1(_CRT_WARN,"%s,",arr[i].c_str());
+					_RPT0(_CRT_WARN,"\n");
+				}//End debugging*/
 				return;
 			}
 			++i;
 		}
 	}
-/*
-if(arr.GetSize()>65)
-{
-	for(int i=0;i<arr.GetSize();i++)_RPT1(_CRT_WARN,"%s,",arr[i]);
-	_RPT0(_CRT_WARN,"\n");
-}
-*/
 }
 
 void CScintillaImpl::InitAutoComplete(Scheme* sch)
@@ -1327,9 +1330,7 @@ void CScintillaImpl::InitAutoComplete(Scheme* sch)
 	m_nMaxCallTips=256;
 	m_currentCallTipWord="";	
 	m_functionDefinition="";	
-	m_KW.clear();
-	m_Api.clear();
-
+	
 	/*These parameters are adjusted to most languages but might be necessary to set them to
 	 *Specific languages - I don't knwo which, but Schema info should be enough!*/
 	m_calltipEndDefinition="";
@@ -1387,7 +1388,7 @@ void CScintillaImpl::AddToAutoComplete(CString FullTag, CString TagName)
 		debugS = TagName+FullTag.Mid(startP,endP-startP+1);
 		
 		tstring tag(TagName);
-		tag += FullTag.Mid(startP,endP-startP);
+		tag += FullTag.Mid(startP,endP-startP+1);
 		AddSorting(m_Api, tag);
 	}	
 	else

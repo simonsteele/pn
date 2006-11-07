@@ -18,6 +18,7 @@
 		</keyword-class>
 	</keyword-classes>
 	<language name="pascal" title="Pascal" folding="true" foldcomments="true" foldcompact="false">
+    <comments line="//" streamStart="{" streamEnd="}" blockStart="{*" blockLine=" *" blockEnd=" }" />
 		<lexer name="pascal" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="pascal"/>

@@ -22,6 +22,8 @@ namespace Projects
 	class ProjectTemplate;
 }
 
+class ToolsManager;
+
 class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 							public CWinDataExchange<COptionsPageGeneral>
 {

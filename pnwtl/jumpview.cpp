@@ -268,129 +268,172 @@ void CJumpTreeCtrl::OnFound(int count, LPMETHODINFO methodInfo)
 }
 //Manuel Sandoval: This function adds new items to tag tree using recursivity:
 #define tag_class 3
+#define tag_struct 10
+#define tag_union 12
+#define tag_typedef 11
+
 HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInfo)
- {
-	//hRoot must not be null.If it's and comes from a recursive call, it means methodInfo.type>TAG_MAX
+{
+	//hRoot must not be null.
+	//If it's null and comes from a recursive call, it means that either:
+	//methodInfo.type>TAG_MAX or owner is anonimous class.
 	ATLASSERT(hRoot); 
-//	_RPT4(_CRT_WARN,"\n--Insert: %i, %s, %s, %i", hRoot, methodInfo->methodName, methodInfo->parentName, methodInfo->type);
 	HTREEITEM ret=0;
 	if(methodInfo->parentName)  		
 	{
-		//When an item has parentName, it's assumed to be owned by a class.
+		//For now we don't know what to do with anonomous classes/structs:
+		if(!strncmp(methodInfo->parentName,"__",2))return 0;
+
+		//When an item has parentName, it's assumed to be owned by a class/struct.
+		//An owner can be in the form class1.class2...classn. So first find class1:
+		//I assume structs and classes can't have repeated names (?)
+		char FirstAncestor[256];
+		memset(FirstAncestor,0,sizeof(FirstAncestor));
+		int i=0;
+		while((methodInfo->parentName[i]!='.')&&(methodInfo->parentName[i]))
+		{
+			FirstAncestor[i]=methodInfo->parentName[i];
+			i++;			
+			//I don't think there is a class name longer than 256!
+			//But anyway: it's MANDATORY that strings are null terminated.
+			//So we must warrant there is enough room for it
+			if(i>=sizeof(FirstAncestor)-2){ATLASSERT(false);break;}
+		}				
 		//first find the "class" node in root. "
 		LPMETHODINFO methodInfoItem;
-		HTREEITEM hChildItem = GetChildItem(hRoot);
-		while (hChildItem) 
+		HTREEITEM hClassNode= 0;
+		HTREEITEM hClassContainer= GetChildItem(hRoot);		
+		bool found=false;
+		while (hClassContainer) 
 		{
-			methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hChildItem));
-			if (methodInfoItem->type == tag_class)break;			
-			hChildItem=GetNextItem(hChildItem, TVGN_NEXT );
-		}
-		if(!hChildItem)
-		{
-			//If "class" node still doesn't exist, we have to create one
-			//This is achieved trying to insert the class item into the current hroot:
-			hChildItem=hRoot;
-		}
-		//Now find the owner class. 
-		HTREEITEM hClassNode = GetChildItem(hChildItem);
-		while (hClassNode) 
-		{
-			methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hClassNode));
-			if(methodInfoItem->methodName)
-			{
-				if (!strncmp(methodInfoItem->methodName,methodInfo->parentName,strlen(methodInfo->parentName) ))break;	
+			methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hClassContainer));
+			//If we have "class"/"struct" node, try to find the owner class/struct in it:
+			if((methodInfoItem->type==tag_class)
+			|| (methodInfoItem->type==tag_struct)
+			|| (methodInfoItem->type==tag_union)
+			|| (methodInfoItem->type==tag_typedef))
+			{						
+				hClassNode = GetChildItem(hClassContainer);			
+				while (hClassNode) 
+				{
+					methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hClassNode));
+					if(methodInfoItem->methodName)
+					{				
+						if (!strcmp(methodInfoItem->methodName,FirstAncestor)){found=true;break;}
+					}
+					hClassNode=GetNextItem(hClassNode, TVGN_NEXT );
+				}				
 			}
-			hClassNode=GetNextItem(hClassNode, TVGN_NEXT );
-		}
-		if(!hClassNode)
-		{
-			//If owner class node still doesn't exist, we have to add it
+			if(!found)hClassContainer=GetNextItem(hClassContainer, TVGN_NEXT );
+			else break;
+		}		
+			
+		//If "class"/"struct" node still doesn't exist, or owner class/struct doesn't exist, create them:
+		if(!hClassContainer || !hClassNode)
+		{		
+			//hClassNode=hRoot; //Insert in current node
 			METHODINFO *mi=new METHODINFO;
-			mi->type=tag_class;
+			if(methodInfo->parentName[0]=='_')
+				mi->type=tag_struct;
+			else 
+				mi->type=tag_class;			
+			/*when should we use tag_union and tag_typedef? 
+			If you solve it, you have to remove the restriction:
+			if(!strncmp(methodInfo->parentName,"__",2))return 0;
+			at the begining of this function.
+			*/
+
 			mi->userData=methodInfo->userData;
 			mi->lineNumber=-1; //we don't know where class begins, so we put this. When it is defined by ctags, this is updated.
-			mi->fullText=methodInfo->parentName;
-			mi->methodName=methodInfo->parentName;
-			mi->image=jumpToTagImages[tag_class].imagesNumber;
-			mi->parentName=0; //Not needed, it's hChildItem
-			hClassNode=RecursiveInsert(hChildItem, mi);
+			mi->fullText=FirstAncestor;
+			mi->methodName=mi->fullText;
+			mi->image=jumpToTagImages[mi->type].imagesNumber;
+			mi->parentName=0;//NULL, to terminate recursion. Name is obtained from hRoot
+			//Returned value is the owner class:
+			hClassNode=RecursiveInsert(hRoot, mi);			
 		}
-		//This will make end recursive call
-		char* tmp=methodInfo->parentName;
-		methodInfo->parentName=0;
-		ret=RecursiveInsert(hClassNode, methodInfo);//Insert in class
+		//Now insert item in its owner class. To avoid an infinite recursion, we remove
+		//first ancestor from parentName, until at some time it becomes ""
+		char*tmp=methodInfo->parentName;
+		if(!strcmp(FirstAncestor,methodInfo->parentName))
+		{
+			methodInfo->parentName=0; //This ends recursion
+		}
+		else
+		{
+			char NextAncestor[sizeof(FirstAncestor)];
+			memset(NextAncestor,0,sizeof(NextAncestor));
+			strcpy(NextAncestor,&(methodInfo->parentName[strlen(FirstAncestor)+1]));				
+			methodInfo->parentName=NextAncestor;
+		}		
+		ret=RecursiveInsert(hClassNode, methodInfo);
 		methodInfo->parentName=tmp;
 	}
 	else
 	{
-	   //find the corresponding  "type" node in root, (root is a file node)			
+		//find the corresponding  "type" node in root, (root is a file node)			
 		LPMETHODINFO methodInfoItem;
-		HTREEITEM hChildItem = GetChildItem(hRoot);		
-		while (hChildItem) 
+		HTREEITEM hTypeContainer = GetChildItem(hRoot);		
+		while (hTypeContainer) 
 		{
-			methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hChildItem));
+			methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hTypeContainer));
 			if (methodInfoItem->type==methodInfo->type)break;			
-			hChildItem=GetNextItem(hChildItem, TVGN_NEXT );
+			hTypeContainer=GetNextItem(hTypeContainer, TVGN_NEXT );
 		}
 		//if the "type" node doesn't exist, create it
 		int imagesNumber=jumpToTagImages[methodInfo->type].imagesNumber;
-		if (!hChildItem)
+		if (!hTypeContainer)
 		{
 			if (methodInfo->type <= TAG_MAX)
 			{
-				hChildItem = InsertItem( jumpToTagImages[methodInfo->type].imageName, 0, 0, hRoot, TVI_LAST );
+				hTypeContainer = InsertItem( jumpToTagImages[methodInfo->type].imageName, 0, 0, hRoot, TVI_LAST );
 				methodInfoItem = new METHODINFO;
 				memcpy(methodInfoItem, methodInfo, sizeof(METHODINFO));
-				methodInfoItem->methodName=0;
+				methodInfoItem->methodName=new char[strlen(jumpToTagImages[methodInfo->type].imageName)+1];
+				strcpy(methodInfoItem->methodName,jumpToTagImages[methodInfo->type].imageName);
 				methodInfoItem->parentName=0;
-				methodInfoItem->fullText=0;
-				SetItemData(hChildItem,reinterpret_cast<DWORD_PTR>( methodInfoItem ));
-				SetItemImage(hChildItem, imagesNumber, imagesNumber);
+				methodInfoItem->fullText=methodInfoItem->methodName;
+				SetItemData(hTypeContainer,reinterpret_cast<DWORD_PTR>( methodInfoItem ));
+				SetItemImage(hTypeContainer, imagesNumber, imagesNumber);
 			} 
 			else return 0; //This tag is undefined. Can't be inserted.
 		}
-		//If new item is a class, check it is not repeated:
-		HTREEITEM checkNode = 0;
-		if(methodInfo->type==tag_class)
+		//check new item is not repeated:
+		HTREEITEM hChildItem=0;
+		HTREEITEM checkNode=GetChildItem(hTypeContainer);
+		while (checkNode) 
 		{
-			checkNode=GetChildItem(hChildItem);
-			while (checkNode) 
-			{
-				methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(checkNode));
-				if(methodInfoItem->methodName)
-				{
-					if (!strncmp(methodInfoItem->methodName,methodInfo->methodName ,strlen(methodInfo->methodName) ))break;	
-				}
-				checkNode=GetNextItem(checkNode, TVGN_NEXT );
+			methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(checkNode));
+			if(methodInfoItem->methodName)
+			{					
+				if (!strncmp(methodInfo->methodName,methodInfoItem->methodName ,strlen(methodInfo->methodName) ))break;					
 			}
-			if(!checkNode)hChildItem = InsertItem( methodInfo->methodName, imagesNumber, imagesNumber, hChildItem, TVI_LAST );
-			else hChildItem=checkNode;
+			checkNode=GetNextItem(checkNode, TVGN_NEXT );		
 		}
-		else			
-		{	//Insert new item in its type-node:						
-			hChildItem = InsertItem( methodInfo->methodName, imagesNumber, imagesNumber, hChildItem, TVI_LAST );
-		}		
+		if(!checkNode)hChildItem = InsertItem( methodInfo->methodName, imagesNumber, imagesNumber, hTypeContainer, TVI_LAST );
+		else hChildItem=checkNode;
+				
 		methodInfoItem = new METHODINFO;
-		//If new item is a class we already inserted, update it's info (like the line where it is defined.)
+		//If new item is already inserted, update it's info (like the line where it is defined.)
 		memcpy(methodInfoItem, methodInfo, sizeof(METHODINFO));
+		
+		LPMETHODINFO parentInfo=reinterpret_cast<LPMETHODINFO>(GetItemData(hRoot));	
+		//char* pName= parentInfo->methodName;
+		//methodInfoItem->parentName=new char[strlen(pName)+1];			
+		//strcpy(methodInfoItem->parentName,pName);
+_RPT2(_CRT_WARN,"\nInsert %s in %s", methodInfo->methodName,methodInfo->parentName);
 		if (methodInfo->methodName)
 		{
 			methodInfoItem->methodName=new char[strlen(methodInfo->methodName)+1];
 			strcpy(methodInfoItem->methodName,methodInfo->methodName);
 		}
-		if (methodInfo->parentName)
-		{
-			methodInfoItem->parentName=new char[strlen(methodInfo->parentName)+1];
-			strcpy(methodInfoItem->parentName,methodInfo->parentName);
-		}
+								
 		if (methodInfo->fullText)
 		{
 			methodInfoItem->fullText=new char[strlen(methodInfo->fullText)+1];
 			strcpy(methodInfoItem->fullText,methodInfo->fullText);
 		}
 		SetItemData(hChildItem,reinterpret_cast<DWORD_PTR>( methodInfoItem ));
-_RPT3(_CRT_WARN,"\n%s.%s=%i,",methodInfoItem->parentName,methodInfoItem->methodName,methodInfo->lineNumber);
 		ret=hChildItem;
 	}
 	return ret;
