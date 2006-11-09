@@ -69,6 +69,9 @@ public:
 	/// Get some text from the user
 	virtual char* InputBox(const char* title, const char* caption);
 
+	/// Open a document
+	virtual extensions::IDocumentPtr OpenDocument(const char* filepath, const char* scheme);
+
 	/// Utility function to safely free strings given to you by PN
 	virtual void ReleaseString(const TCHAR* str);
 

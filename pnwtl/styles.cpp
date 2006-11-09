@@ -56,7 +56,7 @@ tstring NormaliseKeywords(tstring& in)
 		p++;
 	}
 
-	if(response[response.length()-1] == ' ')
+	if(response.length() && response[response.length()-1] == ' ')
 		response.erase(response.length()-1);
 
 	return response;

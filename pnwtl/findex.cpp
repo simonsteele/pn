@@ -287,7 +287,7 @@ LRESULT CFindExDialog::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 {
 	if((BOOL)wParam)
 	{
-		SReplaceOptions* pOptions = OPTIONS->GetSearchOptions();
+		SearchOptions* pOptions = reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() );
 		//SetFindText(m_FindText);
 		if(m_FindText.GetLength() == 0 && pOptions->FindText.GetLength())
 			m_FindText = pOptions->FindText;
@@ -699,12 +699,11 @@ CSize CFindExDialog::getGUIFontSize()
 	return CSize( tm.tmAveCharWidth, tm.tmHeight + tm.tmExternalLeading);
 }
 
-SReplaceOptions* CFindExDialog::getOptions()
+SearchOptions* CFindExDialog::getOptions()
 {
 	DoDataExchange(TRUE);
 
-	//SFindOptions* pOptions = OPTIONS->GetFindOptions();
-	SReplaceOptions* pOptions = OPTIONS->GetSearchOptions();
+	SearchOptions* pOptions = reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() );
 
 	// If the user has changed to a different scintilla window
 	// then Found is no longer necessarily true.

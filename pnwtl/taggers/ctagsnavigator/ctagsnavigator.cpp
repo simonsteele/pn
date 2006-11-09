@@ -210,6 +210,14 @@ void parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT mask, LPVOID co
 						{
 							mi.parentName = pDelim;
 						}
+						else if(strcmp(p, "struct") == 0)
+						{
+							mi.parentName = pDelim;
+						}
+						else if(strcmp(p, "union") == 0)
+						{
+							mi.parentName = pDelim;
+						}
 						else if(strcmp(p, "file") == 0)
 						{
 							// who cares!

@@ -35,6 +35,8 @@ static const TCHAR* PNSK_FIND = _T("Find");
 
 namespace extensions {
 
+class ISearchOptions;
+
 /**
  * @brief Options Manager Interface
  * 
@@ -73,21 +75,41 @@ public:
 			OPTION_COUNT				= 24
 		} ECachedOption;
 
+		/// Set a bool value
 		virtual void Set(LPCTSTR subkey, LPCTSTR value, bool bVal) = 0;
+		
+		/// Set an int value
 		virtual void Set(LPCTSTR subkey, LPCTSTR value, int iVal) = 0;
+		
+		/// Set a string value
 		virtual void Set(LPCTSTR subkey, LPCTSTR value, LPCTSTR szVal) = 0;
 
+		/// Get a bool value
 		virtual bool Get(LPCTSTR subkey, LPCTSTR value, bool bDefault) = 0;
+		
+		/// Get an int value
 		virtual int Get(LPCTSTR subkey, LPCTSTR value, int iDefault) = 0;
 		
-		// Get a string (note, you should free this using IPN::ReleaseString from an extension)
+		/// Get a string (note, you should free this using IPN::ReleaseString from an extension)
 		virtual const char* GetS(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault) = 0;
 
-		// Get a PN path (note, you should free this using IPN::ReleaseString from an extension)
+		/// Get a PN path (note, you should free this using IPN::ReleaseString from an extension)
 		virtual const char* GetPNPath(int pathtype = PNPATH_PN) = 0;
 
+		/// Get a cached option
+		virtual int GetCached(ECachedOption option) = 0;
+		
+		/// Set a cached option
+		virtual void SetCached(ECachedOption option, int value) = 0;
+
+		/// Start a group options operation
 		virtual void BeginGroupOperation(LPCTSTR subkey) = 0;
+		
+		/// End a group options operation
 		virtual void EndGroupOperation() = 0;
+
+		/// Get the global search options cache
+		virtual ISearchOptions*	GetSearchOptions() = 0;
 };
 
 } //namespace extensions

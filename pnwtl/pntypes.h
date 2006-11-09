@@ -37,9 +37,63 @@ typedef struct tagSearchOptions : tagFindOptions
 	CString Path;
 	bool Recurse;
 	bool IncludeHidden;
-} SearchOptions;
+} BasicSearchOptions;
 
-typedef SearchOptions SReplaceOptions;
+typedef BasicSearchOptions SReplaceOptions;
+
+/**
+ * Safe external version of SearchOptions
+ */
+class SearchOptions : public BasicSearchOptions, public extensions::ISearchOptions
+{
+public:
+	// Basic Options:
+	virtual const char* GetFindText() const;
+	virtual void SetFindText(const char* findText);
+	
+	virtual bool GetMatchWholeWord() const;
+	virtual void SetMatchWholeWord(bool matchWholeWord);
+	
+	virtual bool GetMatchCase() const;
+	virtual void SetMatchCase(bool matchCase);
+	
+	virtual bool GetUseRegExp() const;
+	virtual void SetUseRegExp(bool useRegExp);
+	
+	//bool SearchAll;
+	
+	virtual bool GetSearchBackwards() const;
+	virtual void SetSearchBackwards(bool backwards);
+	
+	virtual bool GetLoopOK() const;
+	virtual void SetLoopOK(bool loop);
+	
+	virtual bool GetUseSlashes() const;
+	virtual void SetUseSlashes(bool slashes);
+
+	// Replace Options:
+	virtual const char* GetReplaceText() const;
+	virtual void SetReplaceText(const char* text);
+	
+	virtual bool GetReplaceInSelection() const;
+	virtual void SetReplaceInSelection(bool inSelection);
+
+	// Find In Files Options:
+	virtual const char* GetFileExts() const;
+	virtual void SetFileExts(const char* extensions);
+	
+	virtual const char* GetSearchPath() const;
+	virtual void SetSearchPath(const char* path);
+	
+	virtual bool GetRecurse() const;
+	virtual void SetRecurse(bool recurse);
+
+	virtual bool GetIncludeHidden() const;
+	virtual void SetIncludeHidden(bool hidden);
+	
+	// Result:
+	virtual bool GetFound() const;
+};
 
 typedef struct tagPrintOptions
 {

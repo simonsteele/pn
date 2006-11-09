@@ -333,9 +333,9 @@ int lVBTypes[26] = {
 	/*i*/ 0,			/*j*/ 0,
 	/*k*/ TAG_CONSTANT,	/*l*/ 0,
 	/*m*/ TAG_MODULE,	/*n*/ 0,
-	/*o*/ 0,			/*p*/ TAG_PROCEDURE,
+	/*o*/ 0,			/*p*/ 0,
 	/*q*/ 0,			/*r*/ 0,
-	/*s*/ 0,			/*t*/ 0,
+	/*s*/ TAG_PROCEDURE,/*t*/ 0,
 	/*u*/ 0,			/*v*/ 0,
 	/*w*/ 0,			/*x*/ 0, 
 	/*y*/ 0,			/*z*/ 0

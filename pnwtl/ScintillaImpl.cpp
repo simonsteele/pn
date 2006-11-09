@@ -1715,9 +1715,9 @@ void CScintillaImpl::FillFunctionDefinition(int pos)
 }
 tstring CScintillaImpl::GetNearestWord(CStringArray& arr, const char *wordStart, int searchLen, bool ignoreCase /*= false*/, const char* wordCharacters /*='/0' */, int wordIndex /*= -1 */) 
 {
-	int start = 0; // lower bound of the api array block to search
-	int end = arr.size() - 1; // upper bound of the api array block to search
-	int pivot; // index of api array element just being compared
+	size_t start = 0; // lower bound of the api array block to search
+	size_t end = arr.size() - 1; // upper bound of the api array block to search
+	size_t pivot; // index of api array element just being compared
 	int cond; // comparison result (in the sense of strcmp() result)
 	tstring word; // api array element just being compared
 

@@ -1416,8 +1416,8 @@ LRESULT CMainFrame::OnSaveModifiedItem(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
 LRESULT CMainFrame::OnUpdateFindText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	SearchOptions* so = OPTIONS->GetSearchOptions();
-	m_FindCombo.SetWindowText((LPCTSTR)so->FindText);
+	extensions::ISearchOptions* so = OPTIONS->GetSearchOptions();
+	m_FindCombo.SetWindowText(so->GetFindText());
 	return 0;
 }
 
@@ -2030,7 +2030,7 @@ LRESULT CMainFrame::OnFindComboEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	CChildFrame* pEditor = CChildFrame::FromHandle( GetCurrentEditor() );
 	if( pEditor != NULL && lstrlen((LPCTSTR)wt) > 0 )
 	{
-		SFindOptions* pFindOptions = OPTIONS->GetSearchOptions();
+		SearchOptions* pFindOptions = reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() );
 		if(pFindOptions->FindText != (LPCTSTR)wt)
 		{
 			pFindOptions->Found = false;

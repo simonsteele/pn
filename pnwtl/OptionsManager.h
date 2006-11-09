@@ -43,16 +43,14 @@ class Options : public extensions::IOptions
 		virtual void SavePrintSettings(SPrintOptions* pSettings);
 		virtual void LoadPrintSettings(SPrintOptions* pSettings);
 
-		int GetCached(ECachedOption option);
-		void SetCached(ECachedOption option, int value);
+		virtual int GetCached(ECachedOption option);
+		virtual void SetCached(ECachedOption option, int value);
 
 		void GetPNPath(tstring& path, int pathtype = PNPATH_PN);
 
 		virtual void SetUserSettingsPath(LPCTSTR path);
 		
-		//SFindOptions*		GetFindOptions()		{return &m_FindOptions;}
-		//SReplaceOptions*	GetReplaceOptions()		{return &m_ReplaceOptions;}
-		SearchOptions*		GetSearchOptions()		{return &m_SearchOptions;}
+		virtual extensions::ISearchOptions*	GetSearchOptions();
 
 		virtual void BeginGroupOperation(LPCTSTR subkey);
 		virtual void EndGroupOperation();

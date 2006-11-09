@@ -328,6 +328,11 @@ void Options::SetUserSettingsPath(LPCTSTR path)
 	m_UserSettingsPath = usPath.c_str();
 }
 
+extensions::ISearchOptions* Options::GetSearchOptions()
+{
+	return &m_SearchOptions;
+}
+
 const TCHAR* Options::GetPNPath(int pathtype)
 {
 	tstring s;

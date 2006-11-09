@@ -405,6 +405,9 @@
 				RelativePath=".\ScintillaImpl.cpp">
 			</File>
 			<File
+				RelativePath=".\searchoptions.cpp">
+			</File>
+			<File
 				RelativePath="smartstart.cpp">
 			</File>
 			<File

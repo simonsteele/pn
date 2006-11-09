@@ -291,6 +291,28 @@ char* App::InputBox(const char* title, const char* caption)
 }
 
 /**
+ * Open a file, optionally specify a scheme name to open the file
+ * using or specify NULL to use the default.
+ */
+extensions::IDocumentPtr App::OpenDocument(const char* filepath, const char* scheme)
+{
+	Scheme* pScheme(NULL);
+	if(scheme != NULL)
+	{
+		pScheme = SchemeManager::GetInstance()->SchemeByName(scheme);
+	}
+
+	bool opened = static_cast<CMainFrame*>(g_Context.m_frame)->OpenFile(filepath, pScheme);
+	if(opened)
+	{
+		extensions::IDocumentPtr doc = GetCurrentDocument();
+		return doc;
+	}
+
+	return extensions::IDocumentPtr();
+}
+
+/**
  * Release a C string allocated by PN
  */
 void App::ReleaseString(const TCHAR* str)

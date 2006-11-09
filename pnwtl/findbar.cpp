@@ -323,12 +323,12 @@ void CFindBar::findNext(LPCTSTR text, bool searchUp)
 		if(result == CScintillaImpl::fnNotFound)
 		{
 			pTV->SetSel(cr.cpMin, cr.cpMax);
-			OPTIONS->GetSearchOptions()->Found = false;
+			reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() )->Found = false;
 			m_txtbox.SetDoRed(true);
 		}
 		else
 		{
-			OPTIONS->GetSearchOptions()->Found = true;
+			reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() )->Found = true;
 			m_txtbox.SetDoRed(false);
 
 			bool showWrap = (result == CScintillaImpl::fnReachedStart);
@@ -337,7 +337,7 @@ void CFindBar::findNext(LPCTSTR text, bool searchUp)
 		}
 
 		// Store text in main search options, and in our stored one.
-		OPTIONS->GetSearchOptions()->FindText = so.FindText;
+		OPTIONS->GetSearchOptions()->SetFindText( so.FindText );
 		m_lasttext = so.FindText;
 	}
 }

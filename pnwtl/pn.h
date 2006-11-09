@@ -54,8 +54,8 @@
 	::OutputDebugString(message)
 
 #include "version.h"
-#include "pntypes.h"
 #include "extiface.h"
+#include "pntypes.h"
 
 // Pre-declarations...
 

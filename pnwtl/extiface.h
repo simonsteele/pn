@@ -47,6 +47,7 @@ class IAppEventSink;
 class IDocumentEventSink;
 class IScriptRegistry;
 class ITextOutput;
+class ISearchOptions;
 /////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////
@@ -102,6 +103,9 @@ public:
 
 	/// Get some input from the user
 	virtual char* InputBox(const char* title, const char* caption) = 0;
+
+	/// Open a document
+	virtual IDocumentPtr OpenDocument(const char* filepath, const char* scheme) = 0;
 
 	/// Utility function to safely free strings given to you by PN
 	virtual void ReleaseString(const TCHAR* str) = 0;
@@ -279,6 +283,60 @@ public:
 	virtual void ShowOutput() = 0;
 	/// Hide the output window
 	virtual void HideOutput() = 0;
+};
+
+/**
+ * @brief Interface to search options
+ */
+class ISearchOptions
+{
+public:
+	// Basic Options:
+	virtual const char* GetFindText() const = 0;
+	virtual void SetFindText(const char* findText) = 0;
+	
+	virtual bool GetMatchWholeWord() const = 0;
+	virtual void SetMatchWholeWord(bool matchWholeWord) = 0;
+	
+	virtual bool GetMatchCase() const = 0;
+	virtual void SetMatchCase(bool matchCase) = 0;
+	
+	virtual bool GetUseRegExp() const = 0;
+	virtual void SetUseRegExp(bool useRegExp) = 0;
+	
+	//bool SearchAll;
+	
+	virtual bool GetSearchBackwards() const = 0;
+	virtual void SetSearchBackwards(bool backwards) = 0;
+	
+	virtual bool GetLoopOK() const = 0;
+	virtual void SetLoopOK(bool loop) = 0;
+	
+	virtual bool GetUseSlashes() const = 0;
+	virtual void SetUseSlashes(bool slashes) = 0;
+
+	// Replace Options:
+	virtual const char* GetReplaceText() const = 0;
+	virtual void SetReplaceText(const char* text) = 0;
+	
+	virtual bool GetReplaceInSelection() const = 0;
+	virtual void SetReplaceInSelection(bool inSelection) = 0;
+
+	// Find In Files Options:
+	virtual const char* GetFileExts() const = 0;
+	virtual void SetFileExts(const char* extensions) = 0;
+	
+	virtual const char* GetSearchPath() const = 0;
+	virtual void SetSearchPath(const char* path) = 0;
+	
+	virtual bool GetRecurse() const = 0;
+	virtual void SetRecurse(bool recurse) = 0;
+
+	virtual bool GetIncludeHidden() const = 0;
+	virtual void SetIncludeHidden(bool hidden) = 0;
+	
+	// Result:
+	virtual bool GetFound() const = 0;
 };
 
 /**
