@@ -53,7 +53,6 @@
 #define LOG(message) \
 	::OutputDebugString(message)
 
-#include "version.h"
 #include "extiface.h"
 #include "pntypes.h"
 

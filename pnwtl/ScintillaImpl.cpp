@@ -1319,7 +1319,7 @@ void AddSorting(CScintillaImpl::CStringArray &arr, tstring& w)
 void CScintillaImpl::InitAutoComplete(Scheme* sch)
 {					
 	/*General Settings Initialization*/	
-	pScheme=sch;	
+	m_pScheme = sch;
 	m_bAutoCompletion=true;
 	m_bSmartTag=true;	
 	m_bSmartInsert=true;
@@ -1374,7 +1374,7 @@ void CScintillaImpl::SetKeyWords(int keywordSet, const char* keyWords)
 void CScintillaImpl::AddToAutoComplete(CString FullTag, CString TagName)
 {	
 	//If more info is needed, like parameters delimiter, try to get it from
-	//pScheme  or pSchemeDetails
+	//m_pScheme  or m_pSchemeDetails
 	CString debugS="";
 	int startP=FullTag.Find('(');
 	if(startP>=0)
@@ -1501,13 +1501,23 @@ void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>
 	long lCurrentPos = GetCurrentPos();
 	// If it was an empty tag we don't have a closing tag.
 	if( '/' == GetCharAt( lCurrentPos - 2 ) ) return;
-	
+	int balanced=0; //Manuel Sandoval: Added this var to control balanced <> tags: for example:
+	//<applet><parameter></parameter></applet> is balanced
+	//<applet>><parameter></parameter></applet> is NOT balanced
+	//balanced ++ when finding <; balanced-- when finding >
 	long lPos = lCurrentPos - 1;
 	while( lPos >= 0 )
 	{
-		if( '<' != GetCharAt( lPos ) )-- lPos;
+		int cChar=GetCharAt( lPos );
+		if( '<' != cChar )
+		{	-- lPos; 		
+			if (cChar=='>')balanced--;//Manuel Sandoval: Balance <>:
+		}
 		else 
 		{
+			balanced++;//Manuel Sandoval: Balance <>:
+			if(balanced!=0)break; //Manuel Sandoval: only continue when paired <>
+			
 			// If this is a closing tag or xml declaration skip this action.
 			if( '/' == GetCharAt( lPos + 1 ) || '?' == GetCharAt( lPos + 1 ) ) break;			
 			if( lCurrentPos - lPos < 1024 )
@@ -1534,7 +1544,8 @@ void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>
 				SetSel(lCurrentPos,lCurrentPos);
 				EndUndoAction();
 				break;
-			}
+			}						
+			else break; //Manuel Sandoval: Added this: when the buffer is too long (>1024), don't do insertion.			
 		}		
 	}
 }

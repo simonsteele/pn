@@ -92,7 +92,8 @@ void CTextView::SetScheme(Scheme* pScheme, bool allSettings)
 
 	::SendMessage(GetParent(), PN_SCHEMECHANGED, 0, reinterpret_cast<LPARAM>(pScheme));
 
-	InitAutoComplete(pScheme); //Manuel Sandoval: Pass document parameter to base class to set initial words for autocomplete from doc scheme
+	//Pass scheme to base class to set initial words for autocomplete
+	InitAutoComplete(pScheme);
 }
 
 static std::string ExtractLine(const char *buf, size_t length) {
@@ -288,11 +289,7 @@ bool CTextView::Load(LPCTSTR filename, Scheme* pScheme, EPNEncoding encoding)
 			sch = pScheme;	
 		}
 
-		//EPNSaveFormat mode = static_cast<EPNSaveFormat>( GetEOLMode() ); // not sure what this was here for.
-
 		SetScheme(sch);
-
-		//mode = static_cast<EPNSaveFormat>( GetEOLMode() ); // not sure what this was here for.
 
 		if( (sch == SchemeManager::GetInstance()->GetDefaultScheme()) && OPTIONS->Get(PNSK_EDITOR, _T("SmartStart"), true) )
 		{

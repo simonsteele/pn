@@ -115,8 +115,8 @@ protected:
 	int m_nCurrentCallTip;
 	int m_nMaxCallTips;
 	int m_nBraceCount;
-	Scheme *pScheme;
-	SchemeDetails *pSchemeDetails;
+	Scheme *m_pScheme;
+	SchemeDetails *m_pSchemeDetails;
 	
 	//*****************************************************************************
 };

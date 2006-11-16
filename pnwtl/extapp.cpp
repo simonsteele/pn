@@ -25,6 +25,8 @@
 #include "pndocking.h"
 #include "mainfrm.h"
 
+#include "version.h"
+
 /**
  * Constructor - stuff that happens when PN starts
  */

@@ -1,178 +1,116 @@
 <?xml version="1.0"?>
 <clips name="XHTML Tags">
-<clip name="a"><![CDATA[<a href="|"
-target=""></a>]]></clip>
-<clip name="area"><![CDATA[<area shape="" coords=""
-href="|" alt="" />]]></clip>
-<clip
-name="abbr"><![CDATA[<abbr>|</abbr>]]></clip>
-<clip
-name="acronym"><![CDATA[<acronym>|</acronym>]]></clip>
-<clip
-name="address"><![CDATA[<address>|</address>]]></clip>
-<clip name="base"><![CDATA[<base href="|"
-/>]]></clip>
-<clip name="bdo"><![CDATA[<bdo
-dir="ltr">|</bdo>]]></clip>
-<clip
-name="blockquote"><![CDATA[<blockquote>|</blockquote>]]></clip>
+<clip name="------ DOCTYPEs ------"></clip>
+<clip name="XHTML 1.0 transitional"><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">|]]></clip>
+<clip name="XHTML 1.0 strict"><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">|]]></clip>
+<clip name="XHTML 1.1"><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">|]]></clip>
+<clip name="------ Tags ------"></clip>
+<clip name="a"><![CDATA[<a href="|" target=""></a>]]></clip>
+<clip name="area"><![CDATA[<area shape="" coords="" href="|" alt="" />]]></clip>
+<clip name="abbr"><![CDATA[<abbr>|</abbr>]]></clip>
+<clip name="acronym"><![CDATA[<acronym>|</acronym>]]></clip>
+<clip name="address"><![CDATA[<address>|</address>]]></clip>
+<clip name="base"><![CDATA[<base href="|" />]]></clip>
+<clip name="bdo"><![CDATA[<bdo dir="ltr">|</bdo>]]></clip>
+<clip name="blockquote"><![CDATA[<blockquote>|</blockquote>]]></clip>
 <clip name="body"><![CDATA[<body>
 |
 </body>]]></clip>
-<clip name="br"><![CDATA[<br />]]></clip>
-<clip name="button"><![CDATA[<button onclick="|"
-/>]]></clip>
-<clip
-name="caption"><![CDATA[<caption>|</caption>]]></clip>
-<clip name="cite"><![CDATA[<cite
-title="">|</cite>]]></clip>
-<clip
-name="code"><![CDATA[<code>|</code>]]></clip>
+<clip name="br"><![CDATA[<br />|]]></clip>
+<clip name="button"><![CDATA[<button onclick="|" />]]></clip>
+<clip name="caption"><![CDATA[<caption>|</caption>]]></clip>
+<clip name="cite"><![CDATA[<cite title="">|</cite>]]></clip>
+<clip name="code"><![CDATA[<code>|</code>]]></clip>
 <clip name="col"><![CDATA[<col />]]></clip>
-<clip
-name="colgroup"><![CDATA[<colgroup>|</colgroup>]]></clip>
-<clip
-name="del"><![CDATA[<del>|</del>]]></clip>
-<clip
-name="dd"><![CDATA[<dd>|</dd>]]></clip>
-<clip
-name="dfn"><![CDATA[<dfn>|</dfn>]]></clip>
-<clip
-name="div"><![CDATA[<div>|</div>]]></clip>
-<clip
-name="dl"><![CDATA[<dl>|</dl>]]></clip>
-<clip
-name="dt"><![CDATA[<dt>|</dt>]]></clip>
-<clip
-name="em"><![CDATA[<em>|</em>]]></clip>
-<clip name="form"><![CDATA[<form action="|"
-method="post"></form>]]></clip>
-<clip
-name="fieldset"><![CDATA[<fieldset>|</fieldset>]]></clip>
-<clip
-name="h1"><![CDATA[<h1>|</h1>]]></clip>
-<clip
-name="h2"><![CDATA[<h2>|</h2>]]></clip>
-<clip
-name="h3"><![CDATA[<h3>|</h3>]]></clip>
-<clip
-name="h4"><![CDATA[<h4>|</h4>]]></clip>
-<clip
-name="h5"><![CDATA[<h5>|</h5>]]></clip>
-<clip
-name="h6"><![CDATA[<h6>|</h6>]]></clip>
+<clip name="colgroup"><![CDATA[<colgroup>|</colgroup>]]></clip>
+<clip name="del"><![CDATA[<del>|</del>]]></clip>
+<clip name="dd"><![CDATA[<dd>|</dd>]]></clip>
+<clip name="dfn"><![CDATA[<dfn>|</dfn>]]></clip>
+<clip name="div"><![CDATA[<div>|</div>]]></clip>
+<clip name="dl"><![CDATA[<dl>|</dl>]]></clip>
+<clip name="dt"><![CDATA[<dt>|</dt>]]></clip>
+<clip name="em"><![CDATA[<em>|</em>]]></clip>
+<clip name="form"><![CDATA[<form action="|" method="post"></form>]]></clip>
+<clip name="fieldset"><![CDATA[<fieldset>|</fieldset>]]></clip>
+<clip name="h1"><![CDATA[<h1>|</h1>]]></clip>
+<clip name="h2"><![CDATA[<h2>|</h2>]]></clip>
+<clip name="h3"><![CDATA[<h3>|</h3>]]></clip>
+<clip name="h4"><![CDATA[<h4>|</h4>]]></clip>
+<clip name="h5"><![CDATA[<h5>|</h5>]]></clip>
+<clip name="h6"><![CDATA[<h6>|</h6>]]></clip>
 <clip name="head"><![CDATA[<head>
 |
 </head>]]></clip>
 <clip name="html"><![CDATA[<html>
 |
 </html>]]></clip>
+<clip name="html (strict)"><![CDATA[<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+|
+</html>]]></clip>
 <clip name="hr"><![CDATA[<hr />]]></clip>
-<clip name="input (button)"><![CDATA[<input type="button"
-name="|" />]]></clip>
-<clip name="input (checkbox)"><![CDATA[<input
-type="checkbox" name="|" />]]></clip>
-<clip name="input (file)"><![CDATA[<input type="file"
-name="|" />]]></clip>
-<clip name="input (hidden)"><![CDATA[<input type="hidden"
-name="|" />]]></clip>
-<clip name="input (image)"><![CDATA[<input type="image"
-name="|" />]]></clip>
-<clip name="input (password)"><![CDATA[<input
-type="password" name="|" />]]></clip>
-<clip name="input (radio)"><![CDATA[<input type="radio"
-name="|" />]]></clip>
-<clip name="input (reset)"><![CDATA[<input type="reset"
-name="|" />]]></clip>
-<clip name="input (submit)"><![CDATA[<input type="submit"
-name="|" />]]></clip>
-<clip name="input (text)"><![CDATA[<input type="text"
-name="|" />]]></clip>
-<clip name="img"><![CDATA[<img src="|" width="" height=""
-title="" alt="" />]]></clip>
-<clip
-name="ins"><![CDATA[<ins>|</ins>]]></clip>
-<clip
-name="kbd"><![CDATA[<kbd>|</kbd>]]></clip>
-<clip
-name="label"><![CDATA[<label>|</label>]]></clip>
-<clip
-name="legend"><![CDATA[<legend>|</legend>]]></clip>
-<clip
-name="li"><![CDATA[<li></li>]]></clip>
-<clip name="link"><![CDATA[<link href="|" rel="" type=""
-title="" />]]></clip>
-<clip name="link (stylesheet)"><![CDATA[<link
-rel="stylesheet" type="text/css" media="screen" href="|"
-/>]]></clip>
-<clip name="map"><![CDATA[<map name=""
-id="|"></map>]]></clip>
-<clip name="meta"><![CDATA[<meta name="" content=""
-/>]]></clip>
-<clip name="meta (charset=iso-8859-1)"><![CDATA[<meta
-http-equiv="Content-Type" content="text/html; charset=iso-8859-1"
-/>]]></clip>
-<clip name="meta (charset=utf-8)"><![CDATA[<meta
-http-equiv="Content-Type" content="text/html; charset=utf-8"
-/>]]></clip>
-<clip
-name="noscript"><![CDATA[<noscript>|</noscript>]]></clip>
-<clip name="object"><![CDATA[<object
-classid="|"></object>]]></clip>
-<clip
-name="ol"><![CDATA[<ol>|</ol>]]></clip>
-<clip
-name="optgroup"><![CDATA[<optgroup>|</optgroup>]]></clip>
-<clip
-name="option"><![CDATA[<option>|</option>]]></clip>
-<clip
-name="p"><![CDATA[<p>|</p>]]></clip>
-<clip name="param"><![CDATA[<param name=""
-value="">|</param>]]></clip>
-<clip
-name="pre"><![CDATA[<pre>|</pre>]]></clip>
-<clip
-name="q"><![CDATA[<q>|</q>]]></clip>
-<clip
-name="samp"><![CDATA[<samp></samp>]]></clip>
-<clip name="script"><![CDATA[<script
-type="text/javascript">
+<clip name="input (button)"><![CDATA[<input type="button" name="|" />]]></clip>
+<clip name="input (checkbox)"><![CDATA[<input type="checkbox" name="|" />]]></clip>
+<clip name="input (file)"><![CDATA[<input type="file" name="|" />]]></clip>
+<clip name="input (hidden)"><![CDATA[<input type="hidden" name="|" />]]></clip>
+<clip name="input (image)"><![CDATA[<input type="image" name="|" />]]></clip>
+<clip name="input (password)"><![CDATA[<input type="password" name="|" />]]></clip>
+<clip name="input (radio)"><![CDATA[<input type="radio" name="|" />]]></clip>
+<clip name="input (reset)"><![CDATA[<input type="reset" name="|" />]]></clip>
+<clip name="input (submit)"><![CDATA[<input type="submit" name="|" />]]></clip>
+<clip name="input (text)"><![CDATA[<input type="text" name="|" />]]></clip>
+<clip name="img"><![CDATA[<img src="|" width="" height="" title="" alt="" />]]></clip>
+<clip name="ins"><![CDATA[<ins>|</ins>]]></clip>
+<clip name="kbd"><![CDATA[<kbd>|</kbd>]]></clip>
+<clip name="label"><![CDATA[<label>|</label>]]></clip>
+<clip name="legend"><![CDATA[<legend>|</legend>]]></clip>
+<clip name="li"><![CDATA[<li>|</li>]]></clip>
+<clip name="link"><![CDATA[<link href="|" rel="" type="" title="" />]]></clip>
+<clip name="link (stylesheet)"><![CDATA[<link rel="stylesheet" type="text/css" media="screen" href="|" />]]></clip>
+<clip name="map"><![CDATA[<map name="" id="|"></map>]]></clip>
+<clip name="meta"><![CDATA[<meta name="|" content="" />]]></clip>
+<clip name="meta (charset=iso-8859-1)"><![CDATA[<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />]]></clip>
+<clip name="meta (charset=utf-8)"><![CDATA[<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />]]></clip>
+<clip name="noscript"><![CDATA[<noscript>|</noscript>]]></clip>
+<clip name="object"><![CDATA[<object classid="|"></object>]]></clip>
+<clip name="ol"><![CDATA[<ol>|</ol>]]></clip>
+<clip name="optgroup"><![CDATA[<optgroup>|</optgroup>]]></clip>
+<clip name="option"><![CDATA[<option>|</option>]]></clip>
+<clip name="p"><![CDATA[<p>|</p>]]></clip>
+<clip name="param"><![CDATA[<param name="" value="">|</param>]]></clip>
+<clip name="pre"><![CDATA[<pre>|</pre>]]></clip>
+<clip name="q"><![CDATA[<q>|</q>]]></clip>
+<clip name="samp"><![CDATA[<samp>|</samp>]]></clip>
+<clip name="script"><![CDATA[<script type="text/javascript">
 <!--
 |
 //-->
 </script>]]></clip>
+<clip name="script src="><![CDATA[<script type="text/javascript" src="|"></script>]]></clip>
 <clip name="select"><![CDATA[<select name="">
 |
 </select>]]></clip>
-<clip
-name="span"><![CDATA[<span>|</span>]]></clip>
-<clip
-name="strong"><![CDATA[<strong>|</strong>]]></clip>
+<clip name="span"><![CDATA[<span>|</span>]]></clip>
+<clip name="strong"><![CDATA[<strong>|</strong>]]></clip>
 <clip name="style"><![CDATA[<style type="text/css">
 <!--
 |
 //-->
 </style>]]></clip>
-<clip
-name="table"><![CDATA[<table>|</table>]]></clip>
-<clip
-name="tbody"><![CDATA[<tbody>|</tbody>]]></clip>
-<clip
-name="td"><![CDATA[<td>|</td>]]></clip>
-<clip name="textarea"><![CDATA[<textarea name="" rows=""
-cols="">|</textarea>]]></clip>
-<clip
-name="tfoot"><![CDATA[<tfoot>|</tfoot>]]></clip>
-<clip
-name="th"><![CDATA[<th>|</th>]]></clip>
-<clip
-name="thead"><![CDATA[<thead>|</thead>]]></clip>
-<clip
-name="tr"><![CDATA[<tr>|</tr>]]></clip>
-<clip
-name="title"><![CDATA[<title>|</title>]]></clip>
-<clip
-name="tt"><![CDATA[<tt>|</tt>]]></clip>
-<clip
-name="ul"><![CDATA[<ul>|</ul>]]></clip>
+
+<clip name="style @import"><![CDATA[<style type="text/css">
+<!--
+	@import "|";
+//-->
+</style>]]></clip>
+<clip name="table"><![CDATA[<table>|</table>]]></clip>
+<clip name="tbody"><![CDATA[<tbody>|</tbody>]]></clip>
+<clip name="td"><![CDATA[<td>|</td>]]></clip>
+<clip name="textarea"><![CDATA[<textarea name="" rows="" cols="">|</textarea>]]></clip>
+<clip name="tfoot"><![CDATA[<tfoot>|</tfoot>]]></clip>
+<clip name="th"><![CDATA[<th>|</th>]]></clip>
+<clip name="thead"><![CDATA[<thead>|</thead>]]></clip>
+<clip name="tr"><![CDATA[<tr>|</tr>]]></clip>
+<clip name="title"><![CDATA[<title>|</title>]]></clip>
+<clip name="tt"><![CDATA[<tt>|</tt>]]></clip>
+<clip name="ul"><![CDATA[<ul>|</ul>]]></clip>
 </clips>

@@ -133,7 +133,7 @@ void SmartStart::Scan(CTextView* pView)
 	{
 		tstring str(m_buffer, 0, length);
 
-		SM_IT found = m_Map.find(tstring(m_buffer));
+		SM_IT found = m_Map.find(str);
 		if(found != m_Map.end())
 		{
 			Scheme* pScheme = SchemeManager::GetInstance()->SchemeByName((*found).second.c_str());
