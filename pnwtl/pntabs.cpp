@@ -323,6 +323,19 @@ LRESULT CPNMDIClient::OnGetMdiClientRect(UINT uMsg, WPARAM wParam, LPARAM lParam
 	return 0;
 }
 
+LRESULT CPNMDIClient::OnThemeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	RECT rcMDIClient;
+	SendMessage(PN_GETMDICLIENTRECT, 0, (LPARAM)&rcMDIClient);
+
+	// This doesn't seem to work - perhaps we need to force the child windows to recalculate sizes first?
+
+	::SetWindowPos(m_hWnd, NULL, rcMDIClient.left, rcMDIClient.top, rcMDIClient.right - rcMDIClient.left, rcMDIClient.bottom - rcMDIClient.top, SWP_NOZORDER | SWP_NOACTIVATE);
+
+	bHandled = FALSE;
+	return 0;
+}
+
 LRESULT CPNMDIClient::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	bHandled = FALSE;

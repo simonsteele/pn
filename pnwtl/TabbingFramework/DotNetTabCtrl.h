@@ -145,6 +145,7 @@ public:
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
 		MESSAGE_HANDLER(WM_SYSCOLORCHANGE, OnSettingChange)
+		MESSAGE_HANDLER(WM_THEMECHANGED, OnSettingChange)
 		CHAIN_MSG_MAP(customTabClass)
 	END_MSG_MAP()
 
@@ -294,6 +295,9 @@ public:
 
 		const int nNominalFontLogicalUnits = 11;	// 8 point Tahoma with 96 DPI
 		m_nFontSizeTextTopOffset = (BYTE)((nHeightLogicalUnits - nNominalFontLogicalUnits) / 2);
+
+		m_clrTextInactiveTab = ::GetSysColor(COLOR_GRAYTEXT);
+		m_clrSelectedTab = ::GetSysColor(COLOR_BTNFACE);
 
 		T* pT = static_cast<T*>(this);
 		pT->UpdateLayout();
@@ -1273,6 +1277,7 @@ public:
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
 		MESSAGE_HANDLER(WM_SYSCOLORCHANGE, OnSettingChange)
+		MESSAGE_HANDLER(WM_THEMECHANGED, OnSettingChange)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 

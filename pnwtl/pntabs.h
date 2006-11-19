@@ -128,6 +128,8 @@ public:
 
 		MESSAGE_HANDLER(PN_NOTIFY, OnPNNotify)
 
+		MESSAGE_HANDLER(WM_THEMECHANGED, OnThemeChanged)
+
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -147,6 +149,7 @@ protected:
 	LRESULT OnWindowPosChanging(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnEscapePressed(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnGetMdiClientRect(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+	LRESULT OnThemeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
 	LRESULT OnDblClick(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
