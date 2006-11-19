@@ -64,6 +64,9 @@ Source: ..\doc\ctags_COPYING; DestDir: {app}
 
 Source: ..\userschemes\*.schemedef; DestDir: {app}\schemes
 
+Source: reqfiles\msvcp71.dll; DestDir: {app}
+Source: reqfiles\msvcr71.dll; DestDir: {app}
+
 [Icons]
 Name: {group}\Programmer's Notepad 2; Filename: {app}\pn.exe
 Name: {group}\License; Filename: {app}\license.html
