@@ -1041,6 +1041,12 @@
 				RelativePath="OptionsDialogs.h">
 			</File>
 			<File
+				RelativePath=".\OptionsPageAutocomplete.cpp">
+			</File>
+			<File
+				RelativePath=".\OptionsPageAutocomplete.h">
+			</File>
+			<File
 				RelativePath=".\OptionsPageKeyboard.cpp">
 			</File>
 			<File

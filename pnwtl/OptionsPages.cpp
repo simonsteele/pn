@@ -97,7 +97,7 @@ void COptionsPageEditDefaults::OnOK()
 	m_CodePage = (ECodePage)cb2.GetItemData(cb2.GetCurSel());
 
 	CComboBox cb3(GetDlgItem(IDC_OPT_CSCOMBO));
-	m_CharSet = (int)cb2.GetItemData(cb3.GetCurSel());
+	m_CharSet = (int)cb3.GetItemData(cb3.GetCurSel());
 
 	Options& options = *OPTIONS;
 	options.SetCached(Options::OUseTabs, m_bUseTabs != FALSE);

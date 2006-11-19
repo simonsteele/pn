@@ -150,6 +150,11 @@ LPCTSTR Scheme::GetFileName() const
 	return m_SchemeFile;
 }
 
+LPCTSTR Scheme::GetLexer() const
+{
+	return m_Lexer.c_str();
+}
+
 const CommentSpecRec& Scheme::GetCommentSpec() const
 {
 	return m_CommentSpec;
@@ -413,11 +418,17 @@ void Scheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 						buf[Txt.TextLength] = '\0';
 						switch(Txt.TextType)
 						{
-							case ttFontName : sc.SPerform(SCI_STYLESETFONT, Txt.wParam, (long)buf);
+							case ttFontName : 
+								sc.SPerform(SCI_STYLESETFONT, Txt.wParam, (long)buf);
 								break;
-							case ttKeywords : sc.SetKeyWords(Txt.wParam, buf);
+							case ttKeywords : 
+								sc.SetKeyWords(Txt.wParam, buf);
 								break;
-							case ttLexerLanguage : sc.SPerform(SCI_SETLEXERLANGUAGE, 0, (long)buf);
+							case ttLexerLanguage : 
+								{
+									sc.SPerform(SCI_SETLEXERLANGUAGE, 0, (long)buf);
+									m_Lexer = buf;
+								}
 								break;
 						}
 						delete [] buf;

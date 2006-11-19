@@ -227,6 +227,7 @@
 #define IDD_PAGE_FILETYPES              438
 #define IDD_FILETYPEEDITOR              439
 #define IDD_PAGE_KEYBOARD               440
+#define IDD_PAGE_AUTOCOMPLETE           441
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_FINDTYPE_DUMMY              1003
@@ -263,6 +264,7 @@
 #define IDC_EXTENSION                   1011
 #define IDC_PROJNAMEEDIT                1011
 #define IDC_KB_ADD                      1011
+#define IDC_AUTOCOMPLETECHARSTEXT       1011
 #define IDC_FONT_COMBO                  1012
 #define IDC_TOOLS_REMOVEBUTTON          1012
 #define IDC_TE_BROWSEBUTTON             1012
@@ -436,6 +438,12 @@
 #define IDC_KB_HOTKEY                   1136
 #define IDC_KB_SHORTCUTINUSE            1137
 #define IDC_KB_SHORTCUTINUSELABEL       1137
+#define IDC_ENABLEAUTOCOMPLETECHECK     1138
+#define IDC_AUTOCOMPLETEKEYWORDSCHECK   1139
+#define IDC_AUTOCOMPLETETAGSCHECK       1140
+#define IDC_CHECK2                      1141
+#define IDC_AUTOCLOSETAGSCHECK          1141
+#define IDC_AUTOCLOSEBRACESCHECK        1142
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -557,7 +565,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        348
 #define _APS_NEXT_COMMAND_VALUE         32970
-#define _APS_NEXT_CONTROL_VALUE         1138
+#define _APS_NEXT_CONTROL_VALUE         1143
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

@@ -72,7 +72,13 @@ public:
 			OManageTabOrder				= 21,
 			OConvertLinesOnPaste		= 22,
 			ODefaultCharSet				= 23,
-			OPTION_COUNT				= 24
+			OAutoComplete				= 24,
+			OAutoCompleteUseKeywords	= 25,
+			OAutoCompleteUseTags		= 26,
+			OAutoCompleteStartChars		= 27,
+			OAutoCompleteBraces			= 28,
+			OAutoCompleteTags			= 29,
+			OPTION_COUNT				= 30
 		} ECachedOption;
 
 		/// Set a bool value

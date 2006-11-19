@@ -79,7 +79,7 @@ public:
 
 protected:	
 	bool StartAutoComplete();
-	int HandleNotify2(LPARAM lParam);
+	void AutoCloseBraces(SCNotification* scn);
 	int GetCaretInLine();
 	CharacterRange GetSelection();
 	void InsertChar(long nPos, char nChar);
@@ -106,6 +106,7 @@ protected:
 	CString m_calltipEndDefinition;
 	bool m_bAutoCompletion;
 	bool m_bAutoCompleteIgnoreCase;	
+	bool m_bAutoCompletionUseTags;
 	bool m_bSmartInsert;
 	bool m_bSmartTag;
 	bool m_bCallTipIgnoreCase;
@@ -115,8 +116,8 @@ protected:
 	int m_nCurrentCallTip;
 	int m_nMaxCallTips;
 	int m_nBraceCount;
+	int m_nMinAutoCompleteChars;
 	Scheme *m_pScheme;
-	SchemeDetails *m_pSchemeDetails;
 	
 	//*****************************************************************************
 };

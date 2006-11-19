@@ -139,6 +139,7 @@ class Scheme
 		virtual LPCTSTR GetName() const;
 		virtual LPCTSTR GetTitle() const;
 		virtual LPCTSTR GetFileName() const;
+		virtual LPCTSTR GetLexer() const;
 
 		const CommentSpecRec& GetCommentSpec() const;
 
@@ -157,6 +158,7 @@ class Scheme
 		bool			m_bInternal;
 		SchemeManager*	m_pManager;
 		CommentSpecRec	m_CommentSpec;
+		tstring			m_Lexer;
 
 		bool InitialLoad(CFile& file, SchemeHdrRec& hdr);
 

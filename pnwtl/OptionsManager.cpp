@@ -97,6 +97,12 @@ void Options::loadCache()
 	cache[OVisibleWhiteSpace]		= Get(NULL, _T("VisibleWhiteSpace"), FALSE);
 	cache[OConvertLinesOnPaste]		= Get(NULL, _T("ConvertLineEndingsOnPaste"), TRUE);
 	cache[ODefaultCharSet]			= Get(NULL, _T("DefaultCharSet"), SC_CHARSET_DEFAULT);
+	cache[OAutoComplete]			= Get(NULL, _T("Autocomplete"), TRUE);
+	cache[OAutoCompleteUseKeywords]	= Get(NULL, _T("AutocompleteUseKeywords"), TRUE);
+	cache[OAutoCompleteUseTags]		= Get(NULL, _T("AutocompleteUseTags"), TRUE);
+	cache[OAutoCompleteStartChars]	= Get(NULL, _T("AutocompleteStartChars"), 2);
+	cache[OAutoCompleteBraces]		= Get(NULL, _T("AutocompleteBraces"), TRUE);
+	cache[OAutoCompleteTags]		= Get(NULL, _T("AutocompleteTags"), TRUE);
 	ungroup();
 	
 	// Interface Settings -------------------
@@ -155,6 +161,12 @@ void Options::saveCache()
 	Set(NULL, _T("VisibleWhiteSpace"),		cache[OVisibleWhiteSpace]);
 	Set(NULL, _T("ConvertLineEndingsOnPaste"), cache[OConvertLinesOnPaste]);
 	Set(NULL, _T("DefaultCharSet"),			cache[ODefaultCharSet]);
+	Set(NULL, _T("Autocomplete"),			cache[OAutoComplete]);
+	Set(NULL, _T("AutocompleteUseKeywords"),cache[OAutoCompleteUseKeywords]);
+	Set(NULL, _T("AutocompleteUseTags"),	cache[OAutoCompleteUseTags]);
+	Set(NULL, _T("AutocompleteStartChars"), cache[OAutoCompleteStartChars]);
+	Set(NULL, _T("AutocompleteBraces"),		cache[OAutoCompleteBraces]);
+	Set(NULL, _T("AutocompleteTags"),		cache[OAutoCompleteTags]);
 
 	ungroup();
 	

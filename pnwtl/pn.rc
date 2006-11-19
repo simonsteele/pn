@@ -1425,6 +1425,27 @@ BEGIN
     LTEXT           "",IDC_KB_SHORTCUTINUSELABEL,10,187,289,10
 END
 
+IDD_PAGE_AUTOCOMPLETE DIALOGEX 0, 0, 300, 200
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "Enable AutoComplete",IDC_ENABLEAUTOCOMPLETECHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,12,85,10
+    CONTROL         "Include Scheme Keywords",IDC_AUTOCOMPLETEKEYWORDSCHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,24,99,10
+    CONTROL         "Include Tags",IDC_AUTOCOMPLETETAGSCHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,36,57,10
+    EDITTEXT        IDC_AUTOCOMPLETECHARSTEXT,88,50,57,15,ES_AUTOHSCROLL
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,4,299,1
+    LTEXT           "AutoComplete Settings",IDC_STATIC,0,0,74,8
+    LTEXT           "AutoComplete After:",IDC_STATIC,10,52,78,9
+    LTEXT           "characters",IDC_STATIC,153,52,78,9
+    CONTROL         "Auto-Close Braces",IDC_AUTOCLOSEBRACESCHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,72,75,10
+    CONTROL         "Auto-Close HTML/XML Tags",IDC_AUTOCLOSETAGSCHECK,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,84,103,10
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1660,6 +1681,13 @@ BEGIN
     BEGIN
         RIGHTMARGIN, 299
         VERTGUIDE, 10
+    END
+
+    IDD_PAGE_AUTOCOMPLETE, DIALOG
+    BEGIN
+        RIGHTMARGIN, 299
+        VERTGUIDE, 10
+        VERTGUIDE, 24
     END
 END
 #endif    // APSTUDIO_INVOKED

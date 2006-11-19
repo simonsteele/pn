@@ -1794,11 +1794,14 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	SchemeConfigParser		schemeconfig(currentScheme);
 	ToolsManager			toolsmanager;
 	
+	// The pages:
 	COptionsPageGeneral			general;
 	COptionsPageEditDefaults	editDefs;
 	COptionsPageVisual			visual;
 	COptionsPageConf			confirmations;
 	COptionsPageDialogs			dialogs;
+	COptionsPageKeyboard		pageKeyboard(m_pCmdDispatch);
+	COptionsPageAutocomplete	pageAutocomplete;
 
 	COptionsPageStyle			pageStyle(&schemeconfig);
 	COptionsPageSchemes			pageSchemes(&schemeconfig);
@@ -1809,11 +1812,11 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsPageFileTypes		pageFiles;
 	COptionsPageAFiles			pageAFiles;
 	COptionsPageFileAssoc		pageFileAssoc;
-	
-	COptionsPageKeyboard		pageKeyboard(m_pCmdDispatch);
 
+	// Lots of pages will use the same schemeconfig:
 	schemeconfig.LoadConfig(pSM->GetPath(), pSM->GetCompiledPath());
 
+	// The dialog, add the pages:
 	COptionsDialog options;
 	options.AddPage(&general);
 	options.AddPage(&editDefs);
@@ -1829,12 +1832,16 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	options.AddPage(&pageProjectTools);
 	options.AddPage(&pageAFiles);
 	options.AddPage(&pageKeyboard);
+	options.AddPage(&pageAutocomplete);
 
+	// If we were launched from the "Add Tools" menu item, 
+	// start on the tools page:
 	if( wID != ID_TOOLS_DUMMY )
 		options.SetInitialPage(&general);
 	else
 		options.SetInitialPage(&pageTools);
 
+	// Show the dialog:
 	if( options.DoModal() == IDOK )
 	{
 		DWORD dwTimeNow = ::GetTickCount();
