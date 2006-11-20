@@ -3,7 +3,7 @@ PN2 Build Instructions:
 Requirements:
 =============
 
-PN2 can only be built using Microsoft Visual C++ 2003+ at the moment.
+PN2 can be built using Microsoft Visual C++ 7, 7.1 or 8.
 
 For PN2 to work correctly, check that these are satisfied:
 
@@ -19,11 +19,17 @@ Get WTL from:
 
 http://wtl.sf.net/
 
-You will also probably need to install the Microsoft Platform SDK.
-
 Boost:
 ======
 
-PN2 requires that you have boost installed and configured in your VC include directories.
+PN2 requires that you have boost installed and configured in your VC include 
+directories, the version currently used is Boost 1.33.1.
+
+To build Boost Python (for the pypn extension if you want it) you should 
+use the following command line from the root of the boost install:
+
+>bjam -sTOOLS=vc-7_1 --with-python --with-python-root=C:\Python24 --with-python-version=2.4 stage
+
+This assumes that your python 2.4 is installed in C:\Python24.
 
 Good Luck!

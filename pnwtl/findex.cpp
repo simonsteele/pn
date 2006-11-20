@@ -413,7 +413,7 @@ LRESULT CFindExDialog::OnReplaceClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 {
 	// Call this before GetCurrentEditorWnd - it will check if the editor
 	// has changed and if so set Found to false.
-	SReplaceOptions* pOptions = getOptions();
+	SearchOptions* pOptions = getOptions();
 
 	CChildFrame* pEditor = getCurrentEditorWnd();		
 		
@@ -425,7 +425,7 @@ LRESULT CFindExDialog::OnReplaceClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 
 LRESULT CFindExDialog::OnReplaceAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	SReplaceOptions* pOptions = getOptions();
+	SearchOptions* pOptions = getOptions();
 
 	CChildFrame* pEditor = getCurrentEditorWnd();
 		
@@ -618,7 +618,7 @@ bool CFindExDialog::findNext()
 
 	if(editor != NULL)
 	{
-		SFindOptions* pOptions = getOptions();
+		SearchOptions* pOptions = getOptions();
 		found = editor->FindNext(pOptions);
 		g_Context.m_frame->GetWindow()->SendMessage(PN_UPDATEFINDTEXT,0,0);
 	}

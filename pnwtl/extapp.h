@@ -66,6 +66,12 @@ public:
 	/// Get the main application window
 	virtual HWND GetMainWindow();
 
+	/// Get the users search options
+	virtual extensions::ISearchOptions* GetUserSearchOptions();
+
+	/// Start a find in files operation
+	virtual void FindInFiles(extensions::ISearchOptions* options);
+
 	/// Get some text from the user
 	virtual char* InputBox(const char* title, const char* caption);
 

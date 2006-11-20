@@ -20,8 +20,6 @@
 class CScintillaImpl : public CScintilla
 {
 public:
-	typedef enum {fnNotFound, fnFound, fnReachedStart} FindNextResults;
-
 	CScintillaImpl();
 
 	int FindNext(SFindOptions* pOptions);

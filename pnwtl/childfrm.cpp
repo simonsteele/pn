@@ -1519,10 +1519,10 @@ bool CChildFrame::Save()
 ////////////////////////////////////////////////////
 // Editor Window Methods	
 
-int CChildFrame::FindNext(SFindOptions* options)
+FindNextResult CChildFrame::FindNext(SearchOptions* options)
 {
-	int result = m_view.FindNext(options);
-	if( result == CScintillaImpl::FindNextResults::fnReachedStart )
+	FindNextResult result = (FindNextResult)m_view.FindNext(options);
+	if( result == fnReachedStart )
 	{
 		CString msg;
 		msg.LoadString(IDS_FINDLOOPED);
@@ -1531,7 +1531,7 @@ int CChildFrame::FindNext(SFindOptions* options)
 	return result;
 }
 
-bool CChildFrame::Replace(SReplaceOptions* options)
+bool CChildFrame::Replace(SearchOptions* options)
 {
 	if(options->Found)
 		return m_view.ReplaceOnce(options);
@@ -1545,7 +1545,7 @@ bool CChildFrame::Replace(SReplaceOptions* options)
 	}
 }
 
-int CChildFrame::ReplaceAll(SReplaceOptions* options)
+int CChildFrame::ReplaceAll(SearchOptions* options)
 {
 	return m_view.ReplaceAll(options);
 }

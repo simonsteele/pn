@@ -272,6 +272,21 @@ HWND App::GetMainWindow()
 	return static_cast<CMainFrame*>(g_Context.m_frame)->m_hWnd;
 }
 
+/// Get the users search options
+extensions::ISearchOptions* App::GetUserSearchOptions()
+{
+	return OPTIONS->GetSearchOptions();
+}
+
+/**
+ * Perform a find in files operation with the options
+ * passed in.
+ */
+void App::FindInFiles(extensions::ISearchOptions* options)
+{
+	g_Context.m_frame->FindInFiles(static_cast<SearchOptions*>(options));
+}
+
 /**
  * Present an InputBox to get input from the user
  */

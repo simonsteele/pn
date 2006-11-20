@@ -51,6 +51,10 @@ class Document : public extensions::IDocument, public extensions::ITextEditorEve
 		virtual void AddEventSink(extensions::IDocumentEventSinkPtr sink);
 		virtual void RemoveEventSink(extensions::IDocumentEventSinkPtr sink);
 
+		virtual FindNextResult FindNext(extensions::ISearchOptions* options);
+		virtual bool Replace(extensions::ISearchOptions* options);
+		virtual int ReplaceAll(extensions::ISearchOptions* options);
+
 // ITextEditorEventSink members
 	public:
 		virtual void OnSchemeChange(const char* scheme);

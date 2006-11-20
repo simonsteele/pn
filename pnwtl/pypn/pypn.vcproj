@@ -31,7 +31,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="boost_python.lib"
+				AdditionalDependencies="boost_python-vc71-mt-gd-1_33_1.lib"
 				OutputFile="$(OutDir)/pypn.dll"
 				LinkIncremental="2"
 				ModuleDefinitionFile="pypn.def"
@@ -83,7 +83,7 @@ copy scripts\init.py $(TargetDir)
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="boost_python.lib"
+				AdditionalDependencies="boost_python-vc71-mt-1_33_1.lib"
 				OutputFile="$(OutDir)/pypn.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile="pypn.def"
@@ -132,7 +132,7 @@ copy scripts\init.py $(TargetDir)
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="boost_python.lib"
+				AdditionalDependencies="boost_python-vc71-mt-1_33_1.lib"
 				OutputFile="$(OutDir)/pypn.dll"
 				LinkIncremental="1"
 				ModuleDefinitionFile="pypn.def"

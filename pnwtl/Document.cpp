@@ -162,3 +162,18 @@ void Document::RemoveEventSink(extensions::IDocumentEventSinkPtr sink)
 {
 	m_sinks.remove(sink);
 }
+
+FindNextResult Document::FindNext(extensions::ISearchOptions* options)
+{
+	return m_pFrame->FindNext(static_cast<SearchOptions*>(options));
+}
+
+bool Document::Replace(extensions::ISearchOptions* options)
+{
+	return m_pFrame->Replace(static_cast<SearchOptions*>(options));
+}
+
+int Document::ReplaceAll(extensions::ISearchOptions* options)
+{
+	return m_pFrame->ReplaceAll(static_cast<SearchOptions*>(options));
+}

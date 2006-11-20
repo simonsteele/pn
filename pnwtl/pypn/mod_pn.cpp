@@ -70,6 +70,11 @@ std::string PNInputBox(const char* title, const char* caption)
 	return r;
 }
 
+ISearchOptions* PNGetUserSearchOptions()
+{
+	return g_app->GetPN()->GetUserSearchOptions();
+}
+
 #define CONSTANT(x) scope().attr(#x) = x
 
 BOOST_PYTHON_MODULE(pn)
@@ -102,6 +107,14 @@ BOOST_PYTHON_MODULE(pn)
 	CONSTANT(MB_ICONINFORMATION);
 	CONSTANT(MB_ICONQUESTION);
 	CONSTANT(MB_ICONERROR);
+	//CONSTANT(fnNotFound);
+	//CONSTANT(fnFound);
+	//CONSTANT(fnReachedStart);
+
+	enum_<FindNextResult>("FindNextResult")
+		.value("fnNotFound", fnNotFound)
+		.value("fnFound", fnFound)
+		.value("fnReachedStart", fnReachedStart);
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Expose IDocument
@@ -119,8 +132,31 @@ BOOST_PYTHON_MODULE(pn)
 		.def("SendMessage", pSendMessage2)
 	
 		.def("IsValid", &IDocument::IsValid)
+
+		.def("FindNext", &IDocument::FindNext)
+		.def("Replace", &IDocument::Replace)
+		.def("ReplaceAll", &IDocument::ReplaceAll)
     ;
 
+	class_<ISearchOptions, boost::noncopyable>("ISearchOptions", no_init)
+		.add_property("FindText", &ISearchOptions::GetFindText, &ISearchOptions::SetFindText)
+		.add_property("MatchWholeWord", &ISearchOptions::GetMatchWholeWord, &ISearchOptions::SetMatchWholeWord)
+		.add_property("MatchCase", &ISearchOptions::GetMatchCase, &ISearchOptions::SetMatchCase)
+		.add_property("UseRegExp", &ISearchOptions::GetUseRegExp, &ISearchOptions::SetUseRegExp)
+		.add_property("SearchBackwards", &ISearchOptions::GetSearchBackwards, &ISearchOptions::SetSearchBackwards)
+		.add_property("LoopOK", &ISearchOptions::GetLoopOK, &ISearchOptions::SetLoopOK)
+		.add_property("UseSlashes", &ISearchOptions::GetUseSlashes, &ISearchOptions::SetUseSlashes)
+		.add_property("ReplaceText", &ISearchOptions::GetReplaceText, &ISearchOptions::SetReplaceText)
+		.add_property("ReplaceInSelection", &ISearchOptions::GetReplaceInSelection, &ISearchOptions::SetReplaceInSelection)
+		.add_property("FileExts", &ISearchOptions::GetFileExts, &ISearchOptions::SetFileExts)
+		.add_property("SearchPath", &ISearchOptions::GetSearchPath, &ISearchOptions::SetSearchPath)
+		.add_property("Recurse", &ISearchOptions::GetRecurse, &ISearchOptions::SetRecurse)
+		.add_property("IncludeHidden", &ISearchOptions::GetIncludeHidden, &ISearchOptions::SetIncludeHidden)
+		.add_property("Found", &ISearchOptions::GetFound)
+	;
+
+	def("GetUserSearchOptions", &PNGetUserSearchOptions, return_value_policy<reference_existing_object>());
+	
 	try
 	{
 		register_ptr_to_python< boost::shared_ptr<IDocument> >();

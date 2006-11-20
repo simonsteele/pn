@@ -266,9 +266,9 @@ public:
 	////////////////////////////////////////////////////
 	// Editor Window Methods
 
-	int FindNext(SFindOptions* options);
-	bool Replace(SReplaceOptions* options);
-	int ReplaceAll(SReplaceOptions* options);
+	FindNextResult FindNext(SearchOptions* options);
+	bool Replace(SearchOptions* options);
+	int ReplaceAll(SearchOptions* options);
 	int GetPosition(EGPType type);
 	void SetPosStatus(CMultiPaneStatusBarCtrl&	stat);
 	bool OnSchemeChange(LPVOID pVoid);

@@ -320,7 +320,7 @@ void CFindBar::findNext(LPCTSTR text, bool searchUp)
 		}
 
 		int result = pTV->FindNext(&so);
-		if(result == CScintillaImpl::fnNotFound)
+		if(result == fnNotFound)
 		{
 			pTV->SetSel(cr.cpMin, cr.cpMax);
 			reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() )->Found = false;
@@ -331,7 +331,7 @@ void CFindBar::findNext(LPCTSTR text, bool searchUp)
 			reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() )->Found = true;
 			m_txtbox.SetDoRed(false);
 
-			bool showWrap = (result == CScintillaImpl::fnReachedStart);
+			bool showWrap = (result == fnReachedStart);
 			m_wrappedLabel.ShowWindow(showWrap ? SW_SHOW : SW_HIDE);
 				
 		}

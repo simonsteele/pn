@@ -33,6 +33,9 @@
 
 #include "IOptions.h"
 
+/// Find Next Result Enum
+typedef enum {fnNotFound, fnFound, fnReachedStart} FindNextResult;
+
 namespace extensions
 {
 
@@ -101,6 +104,12 @@ public:
 	/// Get the main application window
 	virtual HWND GetMainWindow() = 0;
 
+	/// Get the users search options
+	virtual ISearchOptions* GetUserSearchOptions() = 0;
+
+	/// Start a find in files operation
+	virtual void FindInFiles(ISearchOptions* options) = 0;
+
 	/// Get some input from the user
 	virtual char* InputBox(const char* title, const char* caption) = 0;
 
@@ -146,6 +155,21 @@ public:
 	virtual void AddEventSink(IDocumentEventSinkPtr sink) = 0;
 	/// Remove a document event sink
 	virtual void RemoveEventSink(IDocumentEventSinkPtr sink) = 0;
+
+	/// Find Next
+	virtual FindNextResult FindNext(ISearchOptions* options) = 0;
+
+	/**
+	 * Replace
+	 * @remarks You should perform a FindNext first
+	 */
+	virtual bool Replace(ISearchOptions* options) = 0;
+
+	/**
+	 * Replace All
+	 * @returns Replacement Count
+	 */
+	virtual int ReplaceAll(ISearchOptions* options) = 0;
 };
 
 /**

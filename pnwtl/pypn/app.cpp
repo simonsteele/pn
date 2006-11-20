@@ -13,11 +13,11 @@
 #include "utils.h"
 #include "wrapscintilla.h"
 
-#if defined (_DEBUG)
+/*#if defined (_DEBUG)
 	#define new DEBUG_NEW
 	#undef THIS_FILE
 	static char THIS_FILE[] = __FILE__;
-#endif
+#endif*/
 
 typedef std::basic_string<TCHAR> tstring;
 
