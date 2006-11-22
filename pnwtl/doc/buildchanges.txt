@@ -1,9 +1,14 @@
 | Working towards 0.8 :: Basie
 ---------------------------------------
 
+Since 0.7.635:
+
+Fixed autocomplete crash bug
+
 Since 0.7.619:
 
 Fixed keyboard shortcuts for scripts!
+Added autocomplete thanks to Manuel
 
 Since 0.7.0:
 

@@ -1906,6 +1906,7 @@ void CScintillaImpl::FillFunctionDefinition(int pos)
 		}
 	}
 }
+
 tstring CScintillaImpl::GetNearestWord(CStringArray& arr, const char *wordStart, int searchLen, bool ignoreCase /*= false*/, const char* wordCharacters /*='/0' */, int wordIndex /*= -1 */) 
 {
 	size_t start = 0;				// lower bound of the api array block to search
@@ -1913,9 +1914,11 @@ tstring CScintillaImpl::GetNearestWord(CStringArray& arr, const char *wordStart,
 	size_t pivot;					// index of api array element just being compared
 	int cond;						// comparison result (in the sense of strcmp() result)
 	tstring word;					// api array element just being compared
+	tstring empty;					// result if we didn't find anything
+	empty.clear();
 
 	if (0 == arr.size())
-		return _T("");
+		return empty;
 
 	if (ignoreCase) {
 /*		if (!sortedNoCase) {
@@ -1946,11 +1949,11 @@ tstring CScintillaImpl::GetNearestWord(CStringArray& arr, const char *wordStart,
 					const char* w = word.c_str();
 					if (!contains(m_strWordCharacters, w[searchLen])) {
 						if (wordIndex <= 0) // Checks if a specific index was requested
-							return word; // result must not be freed with free()
+							return word;
 						wordIndex--;
 					}
 				}
-				return NULL;
+				return empty;
 			}
 			else if (cond > 0)
 				start = pivot + 1;
@@ -1991,7 +1994,7 @@ tstring CScintillaImpl::GetNearestWord(CStringArray& arr, const char *wordStart,
 					}
 					pivot++;
 				}
-				return NULL;
+				return empty;
 			}
 			else if (cond > 0)
 				start = pivot + 1;
@@ -1999,7 +2002,7 @@ tstring CScintillaImpl::GetNearestWord(CStringArray& arr, const char *wordStart,
 				end = pivot - 1;
 		}
 	}
-	return NULL;
+	return empty;
 }
 
 tstring CScintillaImpl::GetNearestWords(CStringArray& arr, const char *wordStart, int searchLen, bool ignoreCase, char otherSeparator, bool exactLen)	
