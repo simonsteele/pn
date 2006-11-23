@@ -170,6 +170,7 @@ void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message);
 #include "ScintillaWTL.h"
 
 #include "schemes.h"
+#include "schememanager.h"
 
 #include "files.h"
 

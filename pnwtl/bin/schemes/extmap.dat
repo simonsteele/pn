@@ -19,6 +19,7 @@
 .css=css
 .csproj=xml
 .cxx=cpp
+.d=d
 .def=modula2
 .dfm=pascal
 .diff=diff

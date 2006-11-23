@@ -396,6 +396,9 @@
 				RelativePath="SchemeConfig.cpp">
 			</File>
 			<File
+				RelativePath=".\SchemeManager.cpp">
+			</File>
+			<File
 				RelativePath=".\Schemes.cpp">
 			</File>
 			<File
@@ -614,6 +617,9 @@
 			</File>
 			<File
 				RelativePath="SchemeConfig.h">
+			</File>
+			<File
+				RelativePath=".\SchemeManager.h">
 			</File>
 			<File
 				RelativePath=".\Schemes.h">
