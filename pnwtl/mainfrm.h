@@ -460,6 +460,7 @@ private:
 	HIMAGELIST				m_hILMain;
 	HIMAGELIST				m_hILMainD;
 	HIMAGELIST				m_hILEdit;
+	HIMAGELIST				m_hILFind;
 
 	bool					m_bShowingDefaultStatus;
 	bool					m_bIsXPOrLater;

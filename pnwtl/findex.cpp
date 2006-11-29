@@ -15,6 +15,7 @@
 #include "findex.h"
 #include "childfrm.h"
 #include "pndialogs.h"
+#include "project.h"
 
 #define SWP_SIMPLEMOVE (SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE)
 
@@ -183,7 +184,7 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	
 	HBITMAP hBitmap = (HBITMAP)::LoadImage(
 		_Module.m_hInst,
-		MAKEINTRESOURCE(IDB_FINDTOOLBAR),
+		MAKEINTRESOURCE(IDB_TBFIND24),
 		IMAGE_BITMAP, 0, 0, LR_SHARED);
 
 	m_imageList.Add(hBitmap, RGB(255,0,255));
@@ -231,6 +232,13 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	m_FindWhereCombo.Create(m_hWnd, rc, _T("FINDWHERECOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDWHERE_COMBO,
 		IDC_FINDWHERE_DUMMY);
+
+	/*m_FindWhereCombo.InsertString(0, LS(IDS_CURRENTFILE));
+	m_FindWhereCombo.InsertString(1, LS(IDS_CURRENTFOLDER));
+	m_FindWhereCombo.InsertString(2, LS(IDS_CURRENTPROJECTFOLDER));
+	m_FindWhereCombo.SetItemData(0, fwCurrentFile);
+	m_FindWhereCombo.SetItemData(1, fwCurrentFolder);
+	m_FindWhereCombo.SetItemData(2, fwCurrentProjectFolder); - not ready yet */
 
 	rc.set(GetDlgItem(IDC_FINDTYPE_DUMMY), *this);
 	rc.bottom = rc.top + (size.cy * 10);
@@ -632,6 +640,9 @@ void CFindExDialog::findInFiles()
 
 	g_Context.m_frame->FindInFiles(pOptions);
 
+	// Reset the FileExtensions member incase we did find in current file...
+	pOptions->SetFileExts(m_FindTypeText);
+
 	ShowWindow(SW_HIDE);
 }
 
@@ -714,8 +725,6 @@ SearchOptions* CFindExDialog::getOptions()
 
 	pOptions->FindText			= m_FindText;
 	pOptions->ReplaceText		= m_ReplaceText;
-	pOptions->Path				= m_FindWhereText;
-	pOptions->FileExts			= m_FindTypeText;
 	pOptions->Direction			= (m_bSearchUp == FALSE);
 	pOptions->MatchCase			= (m_bMatchCase == TRUE);
 	pOptions->MatchWholeWord	= (m_bMatchWhole == TRUE);
@@ -725,9 +734,62 @@ SearchOptions* CFindExDialog::getOptions()
 	pOptions->SearchAll			= (where == elwAllDocs);
 	pOptions->Recurse			= (m_bSearchSubdirs == TRUE);
 	pOptions->IncludeHidden		= (m_bIncludeHidden == TRUE);
+	pOptions->FileExts			= m_FindTypeText;
 	
 	///@todo Add a user interface counterpart for the loop search option.
 	pOptions->Loop				= true;
+
+	// Where are we going to look?
+	pOptions->SetSearchPath(m_FindWhereText);
+
+	if(m_FindWhereCombo.GetCurSel() != -1)
+	{
+		switch((EFIFWhere)m_FindWhereCombo.GetItemData(m_FindWhereCombo.GetCurSel()))
+		{
+		case fwCurrentFile:
+			{
+				if(m_pLastEditor != NULL && m_pLastEditor->CanSave())
+				{
+					pOptions->SetSearchPath(m_pLastEditor->GetFileName(FN_PATH).c_str());
+					pOptions->SetFileExts(m_pLastEditor->GetFileName(FN_FILE).c_str());
+				}
+				else
+				{
+					// No document! Can't search current file, leave as previous...
+					pOptions->SetSearchPath("");
+				}
+			}
+			break;
+
+		case fwCurrentFolder:
+			{
+				if(m_pLastEditor != NULL && m_pLastEditor->CanSave())
+				{
+					pOptions->SetSearchPath(m_pLastEditor->GetFileName(FN_PATH).c_str());
+				}
+				else
+				{
+					// No document! Can't search current file, leave as previous...
+					pOptions->SetSearchPath("");
+				}
+			}
+			break;
+
+		case fwCurrentProjectFolder:
+			{
+				Projects::Workspace* curWorkspace = g_Context.m_frame->GetActiveWorkspace();
+				if(curWorkspace != NULL)
+				{
+					Projects::Project* curProject = curWorkspace->GetActiveProject();
+					if(curProject != NULL)
+					{
+						pOptions->SetSearchPath(curProject->GetBasePath());
+					}
+				}
+			}
+			break;
+		}
+	}
 
 	return pOptions;
 }

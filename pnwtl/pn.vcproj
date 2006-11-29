@@ -749,7 +749,13 @@
 				RelativePath=".\res\tagtypes.bmp">
 			</File>
 			<File
+				RelativePath=".\res\tbrEdit24.bmp">
+			</File>
+			<File
 				RelativePath="res\tbrFindCombo.bmp">
+			</File>
+			<File
+				RelativePath=".\res\tbrMain24.bmp">
 			</File>
 			<File
 				RelativePath=".\res\tbrProjects.bmp">

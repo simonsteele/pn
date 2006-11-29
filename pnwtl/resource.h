@@ -77,7 +77,10 @@
 #define IDS_CREATEPROJECTFOLDER         169
 #define IDR_POPUP_REGEXP                170
 #define IDS_CREATEPROJECTFOLDERFAILED   170
+#define IDS_CURRENTFILE                 171
+#define IDS_CURRENTFOLDER               172
 #define IDR_POPUP_EDITOR                173
+#define IDS_CURRENTPROJECTFOLDER        173
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define IDD_INPUTBOX                    204
@@ -134,6 +137,7 @@
 #define IDR_TBR_FINDCOMBO               278
 #define IDR_TBR_FIND                    278
 #define IDB_FINDTOOLBAR                 280
+#define IDB_TBFIND24                    280
 #define IDR_FINDBAR_DDMENU              281
 #define IDR_POPUP_FINDBARDD             281
 #define ID_FINDBAR_SEARCHGOOGLE         282
@@ -207,6 +211,8 @@
 #define IDI_SCRIPTS                     346
 #define IDR_POPUP_FINDRESULT            347
 #define IDR_POPUP_REMOVEPROJECT         347
+#define IDB_TBMAIN24                    348
+#define IDB_TBEDIT24                    349
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -441,7 +447,6 @@
 #define IDC_ENABLEAUTOCOMPLETECHECK     1138
 #define IDC_AUTOCOMPLETEKEYWORDSCHECK   1139
 #define IDC_AUTOCOMPLETETAGSCHECK       1140
-#define IDC_CHECK2                      1141
 #define IDC_AUTOCLOSETAGSCHECK          1141
 #define IDC_AUTOCLOSEBRACESCHECK        1142
 #define IDC_MARKALL_BUTTON              21199
@@ -563,7 +568,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        348
+#define _APS_NEXT_RESOURCE_VALUE        350
 #define _APS_NEXT_COMMAND_VALUE         32970
 #define _APS_NEXT_CONTROL_VALUE         1143
 #define _APS_NEXT_SYMED_VALUE           104

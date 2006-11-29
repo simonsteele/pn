@@ -101,6 +101,11 @@ CMainFrame::CMainFrame(CommandDispatch* commands) : m_RecentFiles(ID_MRUFILE_BAS
 	m_hILMain = NULL;
 	m_hILMainD = NULL;
 	m_hILEdit = NULL;
+	m_hILFind = NULL;
+
+	m_bIsXPOrLater = 
+		(g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
+		( (g_Context.OSVersion.dwMajorVersion > 4) && (g_Context.OSVersion.dwMinorVersion > 0) );
 }
 
 CMainFrame::~CMainFrame()
@@ -913,6 +918,9 @@ HWND CMainFrame::CreateEx(HWND hWndParent, ATL::_U_RECT rect, DWORD dwStyle, DWO
 
 LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	//////////////////////////////////////////////////////////////
+	// Command Bar and Toolbars:
+
 	// create command bar window
 	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
 	// attach menu
@@ -921,34 +929,42 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	// remove old menu
 	SetMenu(NULL);
 
-	// Allow us to add images with a pink mask...
-	COLORREF clrOld = m_CmdBar.m_clrMask;
-	m_CmdBar.m_clrMask = RGB(255,0,255);
-	
-	// load command bar images
-	m_CmdBar.LoadImages(IDR_MAINFRAME);
- 	m_CmdBar.LoadImages(IDR_TBR_EDIT);
-	m_CmdBar.LoadImages(IDR_TBR_FIND);
-
 	HWND hWndToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
 	HWND hWndEdtToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_TBR_EDIT, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
 	HWND hWndSchemeToolBar = CreateSchemeToolbar();
 	HWND hWndFindToolBar = CreateFindToolbar();
 
-	// 24-bit tb images, this needs re-instating for Non-XP display.
-	//loadImages(IDR_MAINFRAME, &m_hILMain, IDB_TBMAINDIS, &m_hILMainD);
-	//loadImages(IDR_TBR_EDIT, &m_hILEdit);
+	// Sort out toolbar images etc...
+	if(m_bIsXPOrLater && !OPTIONS->Get(PNSK_INTERFACE, "LowColourToolbars", false))
+	{
+		// XP toolbars...
+		m_CmdBar.LoadImages(IDR_MAINFRAME);
+ 		m_CmdBar.LoadImages(IDR_TBR_EDIT);
+		m_CmdBar.LoadImages(IDR_TBR_FIND);
+	}
+	else
+	{
+		// Allow us to add images with a pink mask...
+		COLORREF clrOld = m_CmdBar.m_clrMask;
+		m_CmdBar.m_clrMask = RGB(255,0,255);
 
-	// Load some images from a non-used toolbar for projects context menu images.
+		// 24-bit tb images, this needs re-instating for Non-XP display.
+		loadImages(IDB_TBMAIN24, &m_hILMain, IDB_TBMAINDIS, &m_hILMainD);
+		loadImages(IDB_TBEDIT24, &m_hILEdit);
+		loadImages(IDB_TBFIND24, &m_hILFind);
+
+		// Again, this code is used for Non-XP images.
+		::SendMessage(hWndToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILMain);
+		::SendMessage(hWndToolBar, TB_SETDISABLEDIMAGELIST, 0, (LPARAM)m_hILMainD);
+		::SendMessage(hWndEdtToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILEdit);
+		::SendMessage(hWndFindToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILFind);
+
+		// Set the mask back...
+		m_CmdBar.m_clrMask = clrOld;
+	}
+
+	// Projects menu
 	m_CmdBar.LoadImages(IDR_TBR_PROJECTS);
-
-	// Set the mask back...
-	m_CmdBar.m_clrMask = clrOld;
-
-	// Again, this code is used for Non-XP images.
-	//::SendMessage(hWndToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILMain);
-	//::SendMessage(hWndToolBar, TB_SETDISABLEDIMAGELIST, 0, (LPARAM)m_hILMainD);
-	//::SendMessage(hWndEdtToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILEdit);
 
 	CreateSimpleReBar(PN_REBAR_STYLE);
 	AddReBarBand(hWndCmdBar, NULL, FALSE, true);
@@ -957,7 +973,19 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	AddReBarBand(hWndSchemeToolBar, NULL, FALSE, true);
 	AddReBarBand(hWndFindToolBar, NULL, FALSE, true);
 	SizeSimpleReBarBands();
+
+	// CmdUI
+	UIAddToolBar(hWndToolBar);
+	UIAddToolBar(hWndEdtToolBar);
+	UIAddToolBar(hWndSchemeToolBar);
+	UISetCheck(ID_VIEW_TOOLBAR, 1);
+	UISetCheck(ID_VIEW_TOOLBAR_EDIT, 1);
+	UISetCheck(ID_VIEW_TOOLBARS_FIND, 1);
+	UISetCheck(ID_VIEW_TOOLBARS_SCHEMES, 1);
 	
+	//////////////////////////////////////////////////////////////
+	// Status Bar:
+
 	CreateSimpleStatusBar(_T(""));
 
 	int statusBarPanes[] =
@@ -986,18 +1014,17 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		m_StatusBar.ShowWindow(SW_HIDE);
 		UpdateLayout();
 	}
-
-	m_bIsXPOrLater = 
-		(g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
-		( (g_Context.OSVersion.dwMajorVersion > 4) && (g_Context.OSVersion.dwMinorVersion > 0) );
 	
 	m_bShowingDefaultStatus = false;
 	SetStatusText(NULL);
-	
-	DragAcceptFiles(TRUE);
+
+	//////////////////////////////////////////////////////////////
+	// Tabs:
 
 	if(!OPTIONS->Get(PNSK_INTERFACE, _T("Tabs"), true))
+	{
 		m_tabbedClient.GetTabOwner().KeepTabsHidden(true);
+	}
 	else
 	{
 		if(OPTIONS->Get(PNSK_INTERFACE, _T("MaximizedTabsOnly"), false))
@@ -1007,16 +1034,12 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 			m_tabbedClient.GetTabOwner().ModifyTabStyles(0, CTCS_BOTTOM);
 	}
 
+	//////////////////////////////////////////////////////////////
+	// Misc:
+
+	
 	CreateMDIClient();
 	m_CmdBar.SetMDIClient(m_hWndMDIClient);
-
-	UIAddToolBar(hWndToolBar);
-	UIAddToolBar(hWndEdtToolBar);
-	UIAddToolBar(hWndSchemeToolBar);
-	UISetCheck(ID_VIEW_TOOLBAR, 1);
-	UISetCheck(ID_VIEW_TOOLBAR_EDIT, 1);
-	UISetCheck(ID_VIEW_TOOLBARS_FIND, 1);
-	UISetCheck(ID_VIEW_TOOLBARS_SCHEMES, 1);
 
 	InitializeDockingFrame();
 	
@@ -1051,6 +1074,8 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	// Load extensions...
 	g_Context.ExtApp->LoadExtensions();
+
+	DragAcceptFiles(TRUE);
 
 	PostMessage(PN_INITIALISEFRAME);
 

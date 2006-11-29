@@ -14,11 +14,11 @@
 using namespace extensions;
 using namespace boost::python;
 
-#if defined (_DEBUG)
+/*#if defined (_DEBUG)
 	#define new DEBUG_NEW
 	#undef THIS_FILE
 	static char THIS_FILE[] = __FILE__;
-#endif
+#endif*/
 
 DocSink::DocSink(IDocumentPtr doc) : m_doc(doc)
 {

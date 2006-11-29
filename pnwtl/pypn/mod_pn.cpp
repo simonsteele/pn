@@ -75,6 +75,11 @@ ISearchOptions* PNGetUserSearchOptions()
 	return g_app->GetPN()->GetUserSearchOptions();
 }
 
+IDocumentPtr PNOpenDocument(const char* filepath, const char* scheme)
+{
+	return g_app->GetPN()->OpenDocument(filepath, scheme);
+}
+
 #define CONSTANT(x) scope().attr(#x) = x
 
 BOOST_PYTHON_MODULE(pn)
@@ -96,6 +101,8 @@ BOOST_PYTHON_MODULE(pn)
 
 	def("InputBox", &PNInputBox);
 
+	def("OpenDocument", &PNOpenDocument);
+
 	CONSTANT(IDOK);
 	CONSTANT(IDCANCEL);
 	CONSTANT(IDYES);
@@ -107,9 +114,6 @@ BOOST_PYTHON_MODULE(pn)
 	CONSTANT(MB_ICONINFORMATION);
 	CONSTANT(MB_ICONQUESTION);
 	CONSTANT(MB_ICONERROR);
-	//CONSTANT(fnNotFound);
-	//CONSTANT(fnFound);
-	//CONSTANT(fnReachedStart);
 
 	enum_<FindNextResult>("FindNextResult")
 		.value("fnNotFound", fnNotFound)

@@ -32,11 +32,11 @@ typedef std::basic_string<TCHAR> tstring;
 //bool __declspec(dllexport) __stdcall init_pn_extension(int iface_version, extensions::IPN* pn);
 //void __declspec(dllexport) __stdcall exit_pn_extension();
 
-#ifdef _DEBUG
+/*#ifdef _DEBUG
 	#define CRTDBG_MAP_ALLOC
 	#include <stdlib.h>
 	#include <crtdbg.h>
 	#define DEBUG_NEW  new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
-#endif // #ifdef _DEBUG
+#endif // #ifdef _DEBUG*/
 
 extern std::string getPythonErrorString();

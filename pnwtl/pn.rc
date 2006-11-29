@@ -1751,12 +1751,14 @@ IDR_TBR_EDIT            BITMAP                  "res\\edittbr.bmp"
 IDB_TRUETYPE_FONTTYPE   BITMAP                  "res\\font_tru.bmp"
 IDR_TBR_SCHEME          BITMAP                  "res\\tbrScheme.bmp"
 IDR_TBR_FIND            BITMAP                  "res\\tbrFindCombo.bmp"
-IDB_FINDTOOLBAR         BITMAP                  "res\\findbarbmps.bmp"
+IDB_TBFIND24            BITMAP                  "res\\findbarbmps.bmp"
 IDR_TBR_PROJECTS        BITMAP                  "res\\tbrProjects.bmp"
 IDB_ABOUT               BITMAP                  "res\\about.bmp"
 IDB_TAGTYPES            BITMAP                  "res\\tagtypes.bmp"
 IDB_TBMAINDIS           BITMAP                  "res\\toolbardisabled.bmp"
 IDB_REDCLOSE            BITMAP                  "res\\redclose.bmp"
+IDB_TBMAIN24            BITMAP                  "res\\tbrMain24.bmp"
+IDB_TBEDIT24            BITMAP                  "res\\tbrEdit24.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1962,6 +1964,9 @@ BEGIN
     IDS_CREATEPROJECTFOLDER "The folder %s does not exist, do you want to create it?"
     IDS_CREATEPROJECTFOLDERFAILED 
                             "The folder %s could not be created, check that the path is valid."
+    IDS_CURRENTFILE         "Current File"
+    IDS_CURRENTFOLDER       "Current Folder"
+    IDS_CURRENTPROJECTFOLDER "Current Project Folder"
 END
 
 #endif    // English (U.K.) resources
