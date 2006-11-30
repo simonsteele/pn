@@ -53,9 +53,9 @@ public:
 	// Message map and handlers
 		typedef CComboBoxEditImpl< T, TBase, TWinTraits >	thisClass;
 		BEGIN_MSG_MAP(thisClass)
-			MESSAGE_HANDLER(EM_GETSEL, OnGetSel)
-			MESSAGE_HANDLER(EM_REPLACESEL, OnReplaceSel)
-			MESSAGE_HANDLER(WM_KILLFOCUS, OnKillFocus)
+			//MESSAGE_HANDLER(EM_GETSEL, OnGetSel)
+			//MESSAGE_HANDLER(EM_REPLACESEL, OnReplaceSel)
+			//MESSAGE_HANDLER(WM_KILLFOCUS, OnKillFocus)
 			MESSAGE_HANDLER(WM_KEYUP, OnKeyUp)
 		END_MSG_MAP()
 
@@ -118,13 +118,10 @@ public:
 		{ }
 	};
 
-	HWND m_hWndOwner; // window that wants enter key-press notifies.
-	CComboBoxEdit m_edit;
-	CCustomAutoComplete*	m_pAC;
-	CComPtr<IAutoComplete>	m_filesAC;
-
 // Constructors
-	CComboBoxACImpl() : m_pAC(NULL), m_hWndOwner(NULL) { }
+	CComboBoxACImpl() : m_pAC(NULL), m_hWndOwner(NULL), m_bAutoAdd(true) { }
+
+	CComboBoxACImpl(bool autoAdd) : m_pAC(NULL), m_hWndOwner(NULL), m_bAutoAdd(autoAdd) { }
 
 	CComboBoxACImpl< TBase >& operator=(HWND hWnd)
 	{
@@ -138,7 +135,7 @@ public:
 	{
 		BOOL bRet = baseClass::SubclassWindow(hWnd);
 		if(bRet)
-			Init(szSubKey);
+			InitUserAC(szSubKey);
 		return bRet;
 	}
 
@@ -160,7 +157,7 @@ public:
 		HWND hWnd = baseClass::Create(hWndParent, *rect.m_lpRect, szWindowName, dwStyle, dwExStyle, (unsigned int)MenuOrID.m_hMenu);
 		if(hWnd)
 		{
-			Init(szSubKey);
+			InitUserAC(szSubKey);
 			SetWindowPos(GetDlgItem(nDummyId), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
 		}
 		return hWnd;
@@ -175,7 +172,7 @@ public:
 		HWND hWnd = baseClass::Create(hWndParent, *rect.m_lpRect, szWindowName, dwStyle, dwExStyle, (unsigned int)MenuOrID.m_hMenu);
 		if(hWnd)
 		{
-			Init(szSubKey);
+			InitUserAC(szSubKey);
 		}
 		return hWnd;
 	}
@@ -237,7 +234,8 @@ public:
 
 	LRESULT OnSetText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 	{
-		AddString((LPCTSTR)lParam);
+		if(m_bAutoAdd)
+			AddString((LPCTSTR)lParam);
 
 		bHandled = FALSE;
 		return 0;
@@ -272,7 +270,10 @@ public:
 		}
 	}
 
-	bool Init(LPCTSTR szSubKey)
+	/**
+	 * Initialise the combobox for user-list autocomplete
+	 */
+	bool InitUserAC(LPCTSTR szSubKey)
 	{
 		SetFont((HFONT)::SendMessage(GetParent(), WM_GETFONT, 0, 0));
 		HWND hWndEdit = GetWindow(GW_CHILD);
@@ -299,6 +300,9 @@ public:
 		return false;
 	}
 
+	/**
+	 * Initialise the combobox for filesystem autocomplete
+	 */
 	bool InitFileAC()
 	{
 		SetFont((HFONT)::SendMessage(GetParent(), WM_GETFONT, 0, 0));
@@ -344,7 +348,20 @@ CoCreateInstance(clsidSource,
 
 		return false;
 	}
+
+	CComboBoxEdit& GetEditCtrl()
+	{
+		return m_edit;
+	}
+
+private:
+	HWND m_hWndOwner; // window that wants enter key-press notifies.
+	CComboBoxEdit m_edit;
+	CCustomAutoComplete*	m_pAC;
+	CComPtr<IAutoComplete>	m_filesAC;
+	bool m_bAutoAdd;
 };
+
 class CComboBoxAC : public CComboBoxACImpl<CComboBoxAC>
 {
 public:
@@ -352,6 +369,10 @@ public:
 
 	CComboBoxAC() : 
 		CComboBoxACImpl<CComboBoxAC>()
+	{ }
+
+	CComboBoxAC(bool autoAdd) : 
+		CComboBoxACImpl<CComboBoxAC>(autoAdd)
 	{ }
 };
 

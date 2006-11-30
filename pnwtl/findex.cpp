@@ -85,7 +85,7 @@ public:
 	}
 };
 
-CFindExDialog::CFindExDialog()
+CFindExDialog::CFindExDialog() : m_FindWhereCombo(false)
 {
 	m_SearchWhere = 0;
 	m_type = eftFind;
@@ -233,12 +233,12 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	m_FindWhereCombo.Create(m_hWnd, rc, _T("FINDWHERECOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDWHERE_COMBO,
 		IDC_FINDWHERE_DUMMY);
 
-	/*m_FindWhereCombo.InsertString(0, LS(IDS_CURRENTFILE));
+	m_FindWhereCombo.InsertString(0, LS(IDS_CURRENTFILE));
 	m_FindWhereCombo.InsertString(1, LS(IDS_CURRENTFOLDER));
 	m_FindWhereCombo.InsertString(2, LS(IDS_CURRENTPROJECTFOLDER));
 	m_FindWhereCombo.SetItemData(0, fwCurrentFile);
 	m_FindWhereCombo.SetItemData(1, fwCurrentFolder);
-	m_FindWhereCombo.SetItemData(2, fwCurrentProjectFolder); - not ready yet */
+	m_FindWhereCombo.SetItemData(2, fwCurrentProjectFolder);
 
 	rc.set(GetDlgItem(IDC_FINDTYPE_DUMMY), *this);
 	rc.bottom = rc.top + (size.cy * 10);
@@ -591,7 +591,7 @@ void CFindExDialog::doRegExpHelperMenu(LPRECT rc, bool bDoMatches)
 
 int CFindExDialog::doRegExpInsert(BXT::CComboBoxAC* pCB, LPCTSTR insert, CString& str, int offset)
 {
-	CEdit cbedit(pCB->m_edit);
+	CEdit cbedit(pCB->GetEditCtrl());
 	DWORD dwSel = cbedit.GetSel();
 	cbedit.ReplaceSel(insert);
 

@@ -1,6 +1,12 @@
 | Working towards 0.8 :: Basie
 ---------------------------------------
 
+Since 0.7.636:
+
+Added find in files location shortcuts to dropdown
+Hopefully fixed vista combobox autocomplete bug - to be confirmed
+Fixed toolbars on pre-XP machines
+
 Since 0.7.635:
 
 Fixed autocomplete crash bug

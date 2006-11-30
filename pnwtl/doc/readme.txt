@@ -27,6 +27,7 @@ What's new?
 19) Keyword and tags based autocomplete (Manuel)
 20) Cut, copy, paste, undo, redo buttons enabled only when available
 21) $(ProjectName) for tools - the active project name (SF RFE #1482915))
+22) Find in files auto-locations in drop-down
 
 Bug Fixes:
 ----------
