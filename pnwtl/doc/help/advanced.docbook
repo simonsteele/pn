@@ -49,4 +49,35 @@
 			<para><code>&lt;extension path="pypn.dll"/&gt;</code></para>
 		</section>
 	</section>
+	<section>
+		<?dbhh topicname="IDH_command_line" topicid="15"?>
+		<title>Command Line Arguments</title>
+		<para>The following command line arguments can be used:</para>
+		
+		<informaltable frame='all'>
+			<tgroup cols="3">
+				<thead>
+					<row><entry>Argument</entry><entry>Short form</entry><entry>Meaning</entry></row>
+				</thead>
+				<tbody>
+					<row><entry>--line x</entry><entry>-l x</entry><entry>Go to line x</entry></row>
+					<row><entry>--col x</entry><entry>-c x</entry><entry>Go to column x</entry></row>
+					<row><entry>--scheme name</entry><entry>-s name</entry><entry>Use the named scheme (look in .scheme files to find the name)</entry></row>
+					
+					<row><entry>--allowmulti</entry><entry></entry><entry>Override configuration and allow multiple instances</entry></row>
+					<row><entry>--checkassoc</entry><entry></entry><entry>Check file associations</entry></row>
+					<row><entry>--exit</entry><entry></entry><entry>Exit (used for spawned processes, listed for completeness)</entry></row>
+					<row><entry>--reset</entry><entry></entry><entry>Reset user settings and interface settings (if your PN has gone wrong!)</entry></row>
+					<row><entry>--safemode</entry><entry></entry><entry>Run PN without loading any extensions</entry></row>
+				</tbody>
+			</tgroup>
+		</informaltable>
+	</section>
+	<section>
+		<?dbhh topicname="IDH_extend_pn" topicid="16"?>
+		<title>Extend PN</title>
+		<para>You can write extensions for PN using C++ or using one of the
+		scripting interfaces (like Python through PyPN).</para>
+		<para>To get started visit the <ulink url="http://www.pnotepad.org/developer/">web site</ulink>.</para>
+	</section>
 </chapter>
