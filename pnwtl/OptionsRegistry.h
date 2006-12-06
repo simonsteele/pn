@@ -31,6 +31,8 @@ public:
 	virtual int Get(LPCTSTR subkey, LPCTSTR value, int iDefault);
 	virtual tstring Get(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault);
 
+	virtual void Clear(LPCTSTR subkey);
+
 protected:
 	RegistryOptions();
 

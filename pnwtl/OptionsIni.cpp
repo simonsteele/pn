@@ -137,6 +137,12 @@ tstring IniOptions::Get(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
 	}
 }
 
+void IniOptions::Clear(LPCTSTR subkey)
+{
+	TCHAR* emptySection = "\0";
+	::WritePrivateProfileSection(subkey, emptySection, _filename);
+}
+
 void IniOptions::group(LPCTSTR location)
 {
 	//The return value specifies the number of characters copied to the buffer, not including the terminating null character. If the buffer is not large enough to contain all the key name and value pairs associated with the named section, the return value is equal to nSize minus two.

@@ -202,7 +202,7 @@ class CAFileEditorDialog : public CDialogImpl<CAFileEditorDialog>
 class CFileTypeEditorDialog : public CDialogImpl<CFileTypeEditorDialog>
 {
 	public:
-		CFileTypeEditorDialog();
+		CFileTypeEditorDialog(SchemeConfigParser* schemes);
 
 		enum {IDD = IDD_FILETYPEEDITOR};
 
@@ -213,8 +213,8 @@ class CFileTypeEditorDialog : public CDialogImpl<CFileTypeEditorDialog>
 			
 		END_MSG_MAP()
 
-		void GetValues(tstring& match, Scheme*& scheme);
-		void SetValues(LPCTSTR match, Scheme* scheme);
+		void GetValues(tstring& match, tstring& scheme);
+		void SetValues(LPCTSTR match, LPCTSTR scheme);
 
 	protected:
 		LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -222,9 +222,10 @@ class CFileTypeEditorDialog : public CDialogImpl<CFileTypeEditorDialog>
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	protected:
-		CComboBox		m_combo;
+		SchemeConfigParser* m_schemes;
+		CSchemeCombo	m_combo;
 		tstring			m_match;
-		Scheme*		m_pScheme;
+		tstring			m_sel;
 };
 
 #endif

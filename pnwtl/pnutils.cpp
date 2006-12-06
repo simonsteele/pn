@@ -664,3 +664,48 @@ UINT MultipleInstanceManager::GetMessageID()
 {
 	return m_uiMessage;
 }
+
+std::list<tstring> GetCommandLineArgs()
+{
+	int lastArg = __argc - 1;
+
+	std::list<tstring> params;
+
+	TCHAR curDir[MAX_PATH+1];
+	::GetCurrentDirectory(MAX_PATH+1, curDir);
+
+	// Process cmdline params... __argv and __argc in VC++
+	for(int i = 1; i < __argc; i++)
+	{
+		tstring arg = __argv[i]; 
+
+		if(arg[0] != _T('/') && arg[0] != _T('-'))
+		{
+			CFileName fn(arg);
+			
+			// If it's a relative path, root it and
+			// make arg point to it.
+			if(fn.IsRelativePath())
+			{
+				fn.Root(curDir);
+				arg = fn.c_str();
+			}
+
+			params.insert(params.end(), arg);
+		}
+		else
+		{
+			// It's a parameter, we don't want to turn it into
+			// a rooted filename
+			params.insert(params.end(), arg);
+
+			if(i < (__argc-1))
+			{
+				arg = __argv[++i];
+				params.insert(params.end(), arg);
+			}
+		}
+	}
+
+	return params;
+}

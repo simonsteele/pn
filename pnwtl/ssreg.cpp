@@ -208,4 +208,9 @@ bool CSRegistry::DeleteValue(LPCTSTR valname)
 	return ::RegDeleteValue(m_hKey, valname) == ERROR_SUCCESS;
 }
 
+bool CSRegistry::DeleteKey(LPCTSTR subkey)
+{
+	return ::SHDeleteKey(m_root, subkey) == ERROR_SUCCESS;
+}
+
 } // namespace ssreg

@@ -28,6 +28,8 @@ What's new?
 20) Cut, copy, paste, undo, redo buttons enabled only when available
 21) $(ProjectName) for tools - the active project name (SF RFE #1482915))
 22) Find in files auto-locations in drop-down
+23) New command-line shortcuts (see help)
+24) Minor master scheme changes
 
 Bug Fixes:
 ----------
@@ -61,6 +63,7 @@ Bug Fixes:
 27) Find bar corruption after documents closed (SF Bug #1361852)
 28) BOM present even when 'UTF-8 No mark' selected as encoding (SF Bug #1545264)
 29) Can't copy file from magic folder to project properly (SF Bug #1576076)
+30) File type edits don't show new value in list.
 
 If you find a bug:
 ------------------

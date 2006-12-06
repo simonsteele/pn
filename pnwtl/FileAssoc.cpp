@@ -1,3 +1,12 @@
+/**
+ * @file FileAssoc.cpp
+ * @brief File Associations Management
+ * @author Bjoern Graf
+ * @note Copyright (c) 2005-2006 Bjoern Graf and Simon Steele
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 
 #include "stdafx.h"
 #include "FileAssoc.h"

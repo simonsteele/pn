@@ -70,7 +70,7 @@ const DWORD ToolbarIds[4] = {
 	ATL_IDW_BAND_FIRST + 1,
 };
 
-CMainFrame::CMainFrame(CommandDispatch* commands) : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(ID_MRUPROJECT_BASE, 4)
+CMainFrame::CMainFrame(CommandDispatch* commands, std::list<tstring>* cmdLineArgs) : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(ID_MRUPROJECT_BASE, 4)
 {
 	m_pCmdDispatch = commands;
 	m_pFindEx = NULL;
@@ -103,9 +103,14 @@ CMainFrame::CMainFrame(CommandDispatch* commands) : m_RecentFiles(ID_MRUFILE_BAS
 	m_hILEdit = NULL;
 	m_hILFind = NULL;
 
+	// If v5 then greater than v5.0 else v6 or better
 	m_bIsXPOrLater = 
 		(g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
-		( (g_Context.OSVersion.dwMajorVersion > 4) && (g_Context.OSVersion.dwMinorVersion > 0) );
+		(( (g_Context.OSVersion.dwMajorVersion == 5) && (g_Context.OSVersion.dwMinorVersion > 0) ) ||
+		 (g_Context.OSVersion.dwMajorVersion >= 6) );
+
+	// Store command-line arguments for use later
+	m_cmdLineArgs = cmdLineArgs;
 }
 
 CMainFrame::~CMainFrame()
@@ -1165,7 +1170,7 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 
 		LPCTSTR parm = (*i).c_str();//__argv[i];
 
-		if(parm[0] == _T('/') || parm[0] == _T('-'))
+		if((parm[0] == _T('/') || parm[0] == _T('-')) && (parm[1] != NULL))
 		{
 			// special params, check there's another parameter for these ones...
 			if(i != iLast)
@@ -1173,6 +1178,7 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 				std::list<tstring>::iterator next = i;
 				next++;
 				LPCTSTR nextArg = (*next).c_str();
+				bool skip(true);
 
 				if(_tcsicmp(&parm[1], _T("l")) == 0 || _tcsicmp(&parm[1], _T("-line")) == 0)
 				{
@@ -1195,9 +1201,16 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 					else
 						pScheme = NULL;
 				}
-
-				i++;
-				continue;
+				else
+				{
+					skip = false;
+				}
+				
+				if(skip)
+				{
+					i++;
+					continue;
+				}
 			}
 		}
 		else
@@ -1241,47 +1254,7 @@ LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 	int iLine = 0, iCol = 0;
 	Scheme* pScheme = NULL;
 
-	int lastArg = __argc - 1;
-
-	std::list<tstring> params;
-
-	TCHAR curDir[MAX_PATH+1];
-	::GetCurrentDirectory(MAX_PATH+1, curDir);
-
-	// Process cmdline params... __argv and __argc in VC++
-	for(int i = 1; i < __argc; i++)
-	{
-		tstring arg = __argv[i]; 
-
-		if(arg[0] != _T('/') && arg[0] != _T('-'))
-		{
-			CFileName fn(arg);
-			
-			// If it's a relative path, root it and
-			// make arg point to it.
-			if(fn.IsRelativePath())
-			{
-				fn.Root(curDir);
-				arg = fn.c_str();
-			}
-
-			params.insert(params.end(), arg);
-		}
-		else
-		{
-			// It's a parameter, we don't want to turn it into
-			// a rooted filename
-			params.insert(params.end(), arg);
-
-			if(i < (__argc-1))
-			{
-				arg = __argv[++i];
-				params.insert(params.end(), arg);
-			}
-		}
-	}
-
-	handleCommandLine(params);
+	handleCommandLine(*m_cmdLineArgs);
 
 	if(OPTIONS->Get(PNSK_INTERFACE, _T("CheckAssocsOnStartup"), false))
 	{
@@ -1292,7 +1265,7 @@ LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 		}
 	}
 
-	if(OPTIONS->Get(PNSK_INTERFACE, _T("SaveWorkspace"), false) && params.size() == 0)
+	if(OPTIONS->Get(PNSK_INTERFACE, _T("SaveWorkspace"), false) && m_cmdLineArgs->size() == 0)
 	{
 		WorkspaceState wss;
 		wss.Load();
@@ -1309,6 +1282,8 @@ LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 		}
 	}
 
+	delete m_cmdLineArgs;
+	m_cmdLineArgs = NULL;
 
 	return 0;
 }
@@ -1834,7 +1809,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsPageTools			pageTools(&schemeconfig, &toolsmanager);
 	COptionsPageProjectTools	pageProjectTools(&toolsmanager);
 
-	COptionsPageFileTypes		pageFiles;
+	COptionsPageFileTypes		pageFiles(&schemeconfig);
 	COptionsPageAFiles			pageAFiles;
 	COptionsPageFileAssoc		pageFileAssoc;
 

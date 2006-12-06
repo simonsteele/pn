@@ -30,7 +30,7 @@
 /**
  * Constructor - stuff that happens when PN starts
  */
-App::App() : m_dispatch(NULL)
+App::App() : m_dispatch(NULL), m_bCanLoadExtensions(true)
 {
 	// Now we initialise any l10n stuff...
 	//TODO: Make this check settings in AppSettings to work out what to do. Note that some
@@ -47,10 +47,7 @@ App::App() : m_dispatch(NULL)
 	g_Context.options = m_settings->MakeOptions();
 
 	// Now ensure the user settings directory is available!
-	tstring usPath;
-	OPTIONS->GetPNPath(usPath, PNPATH_USERSETTINGS);
-	if(!CreateDirectoryRecursive(usPath.c_str()))
-		UNEXPECTED(_T("Could not create user settings folder"));
+	ensureUserSettingsDir();
 
 	// Finally load the cached or default cached options
 	OPTIONS->LoadCache();
@@ -120,10 +117,26 @@ void App::deinit()
 }
 
 /**
+ * Make sure the user settings dir exists
+ */
+void App::ensureUserSettingsDir()
+{
+	// Now ensure the user settings directory is available again!
+	tstring usPath;
+	OPTIONS->GetPNPath(usPath, PNPATH_USERSETTINGS);
+	if(!CreateDirectoryRecursive(usPath.c_str()))
+		UNEXPECTED(_T("Could not create user settings folder"));
+}
+
+/**
  * Load configured extensions, configuration is retrieved from AppSettings
  */
 void App::LoadExtensions()
 {
+	// Allow safe-mode override of loading extensions
+	if(!m_bCanLoadExtensions)
+		return;
+
 	const tstring_list& extensions = m_settings->GetExtensions();
 
 	for(tstring_list::const_iterator i = extensions.begin();
@@ -176,6 +189,39 @@ void App::RunExtensionCommand(const char* command)
 		Script s("", command);
 		s.Run();
 	}
+}
+
+void App::SetCanLoadExtensions(bool canLoad)
+{
+	m_bCanLoadExtensions = canLoad;
+}
+
+/**
+ * This method is provided to clear out the PN user data
+ * store when things go badly wrong. It will also remove
+ * the UI registry settings.
+ *
+ * 1. Remove *.* from PN User Settings folder
+ * 2. Clear the UI settings
+ */
+bool App::ClearUserData()
+{
+	tstring userSettingsDir;
+	OPTIONS->GetPNPath(userSettingsDir, PNPATH_USERSETTINGS);
+	
+	// Go for the hard-core directory deletion approach!
+	if( !DeleteDirectory(userSettingsDir.c_str(), true) )
+	{
+		RETURN_UNEXPECTED("Failed to delete user settings directory!", false);
+	}
+
+	// Now clear out the UI settings
+	OPTIONS->Clear(PNSK_INTERFACE);
+
+	// Re-create the user settings dir
+	ensureUserSettingsDir();
+
+	return true;
 }
 
 /**

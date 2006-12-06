@@ -40,6 +40,15 @@ public:
 
 	void RunExtensionCommand(const char* command);
 
+	void SetCanLoadExtensions(bool canLoad);
+
+	/**
+	 * This method is provided to clear out the PN user data
+	 * store when things go badly wrong. It will also remove
+	 * the UI registry settings.
+	 */
+	bool ClearUserData();
+
 // Implement IPN:
 public:
 	/// Get the extension interface version
@@ -87,9 +96,10 @@ public:
 
 private:
 	void deinit();
-
+	void ensureUserSettingsDir();
 	void unloadExtensions();
 
+	bool			m_bCanLoadExtensions;
 	EventSinkList	m_sinks;
 	ExtensionList	m_exts;
 	AppSettings*	m_settings;

@@ -40,6 +40,8 @@ class Options : public extensions::IOptions
 		virtual int Get(LPCTSTR subkey, LPCTSTR value, int iDefault) = 0;
 		virtual tstring Get(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault) = 0;
 
+		virtual void Clear(LPCTSTR subkey) = 0;
+
 		virtual void SavePrintSettings(SPrintOptions* pSettings);
 		virtual void LoadPrintSettings(SPrintOptions* pSettings);
 

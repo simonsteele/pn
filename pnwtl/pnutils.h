@@ -757,4 +757,6 @@ protected:
 	}
 };
 
+std::list<tstring> GetCommandLineArgs();
+
 #endif //#ifndef pnutils_h__included

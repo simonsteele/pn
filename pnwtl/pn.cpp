@@ -19,6 +19,8 @@
 #include "extension.h"
 #include "extapp.h"
 
+#include "FileAssoc.h"
+
 //#ifdef _DEBUG
 	#include "include/mdump.h"
 //#endif
@@ -29,9 +31,17 @@
 	static char THIS_FILE[] = __FILE__;
 #endif
 
+/**
+ * ATL AppModule
+ */
 CAppModule _Module;
 
-/*__declspec( thread )*/ _Context g_Context /*= {0}*/;
+/**
+ * Global application context object - stores
+ * access for all main app objects like the main
+ * window, options and that sort of thing.
+ */
+_Context g_Context;
 
 void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message)
 {
@@ -61,6 +71,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	MiniDumper dumper(str.c_str());
 //#endif
 	
+	// Store the current OS version
 	ZeroMemory(&g_Context.OSVersion, sizeof(OSVERSIONINFO));
 	g_Context.OSVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 	::GetVersionEx(&g_Context.OSVersion);
@@ -75,6 +86,51 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 	// See if we allow multiple instances
 	bool bAllowMulti = OPTIONS->Get(PNSK_INTERFACE, _T("AllowMultiInstance"), false);
+
+	// Command-line argument parsing:
+	std::list<tstring>* cmdLine = new std::list<tstring>();
+	*cmdLine = GetCommandLineArgs();
+
+	for(std::list<tstring>::const_iterator i = cmdLine->begin();
+		i != cmdLine->end();
+		++i)
+	{
+		const tstring& arg = (*i);
+		if( arg.size() > 2 && ((arg[0] == '-') || (arg[0] == '/')) )
+		{
+			// command-line arg:
+			if(_tcsicmp(&arg.c_str()[1], _T("-reset")) == 0)
+			{
+				// Clear user settings to get around broken schemes or user settings
+				return theApp->ClearUserData() ? 0 : 1;
+			}
+			else if(_tcsicmp(&arg.c_str()[1], _T("-checkassoc")) == 0)
+			{
+				// Check file associations
+				FileAssocManager fam;
+				if(fam.CheckAssociations())
+				{
+					fam.UpdateAssociations();
+				}
+			}
+			else if(_tcsicmp(&arg.c_str()[1], _T("-allowmulti")) == 0)
+			{
+				// Override multiple instance code
+				bAllowMulti = true;
+			}
+			else if(_tcsicmp(&arg.c_str()[1], _T("-exit")) == 0)
+			{
+				// Force exit after running command-line args
+				return 0;
+			}
+			else if(_tcsicmp(&arg.c_str()[1], _T("-safemode")) == 0)
+			{
+				theApp->SetCanLoadExtensions(false);
+			}
+		}
+	}
+
+	// Check multi instances
 	if(!bAllowMulti)
 	{
 		//LOG( _T("PN2 should only run one instance") );
@@ -87,10 +143,6 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 			return 0;
 		}
 	}
-	else
-	{
-		//LOG( _T("PN2 is allowed multiple instances") );
-	}
 
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
@@ -99,7 +151,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	theApp->Init();
 
 	// Set up the main window for the app.
-	CMainFrame wndMain(&theApp->GetCommandDispatch());
+	CMainFrame wndMain(&theApp->GetCommandDispatch(), cmdLine);
 	g_Context.m_frame = static_cast<IMainFrame*>(&wndMain);
 
 	if(wndMain.CreateEx() == NULL)

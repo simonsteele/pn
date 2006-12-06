@@ -80,7 +80,7 @@ public:
 	////////////////////////////////////////////////////////////////
 	// CMainFrame Implementation
 
-	CMainFrame(CommandDispatch* commands);
+	CMainFrame(CommandDispatch* commands, std::list<tstring>* cmdLineArgs);
 
 	~CMainFrame();
 
@@ -466,6 +466,8 @@ private:
 	bool					m_bIsXPOrLater;
 	short					m_statusResetCounter;
 	int						m_iFirstToolCmd;
+
+	std::list<tstring>*		m_cmdLineArgs;
 
 	/* Can't free dialogs via the base class or destructors don't get
 	called. Use a template function to free any dialog class */

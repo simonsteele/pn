@@ -549,7 +549,7 @@ class COptionsPageFileAssoc : public COptionsPageImpl<COptionsPageFileAssoc>,
 class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
 {
 	public:
-		COptionsPageFileTypes();
+		COptionsPageFileTypes(SchemeConfigParser* schemes);
 		~COptionsPageFileTypes();
 
 		enum {IDD = IDD_PAGE_FILETYPES};
@@ -582,6 +582,7 @@ class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
 		void clear();
 
 	protected:
+		SchemeConfigParser* m_schemes;
 		CListViewCtrl		m_list;
 		SCHEME_MAP*			m_pExtMap;
 		SCHEME_MAP*			m_pFilenameMap;

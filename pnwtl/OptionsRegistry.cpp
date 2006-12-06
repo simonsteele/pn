@@ -120,6 +120,13 @@ tstring RegistryOptions::Get(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
 	return str;
 }
 
+void RegistryOptions::Clear(LPCTSTR subkey)
+{
+	tstring root(pnregroot);
+	root += subkey;
+	_preg->DeleteKey(root.c_str());
+}
+
 void RegistryOptions::Set(LPCTSTR subkey, LPCTSTR value, bool bVal)
 {
 	RegAccess a(subkey, this);

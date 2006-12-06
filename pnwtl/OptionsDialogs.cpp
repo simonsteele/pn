@@ -530,23 +530,22 @@ void CAFileEditorDialog::SetValues(LPCTSTR set1, LPCTSTR set2)
 // CFileTypeEditorDialog
 //////////////////////////////////////////////////////////////////////////////
 
-CFileTypeEditorDialog::CFileTypeEditorDialog()
+CFileTypeEditorDialog::CFileTypeEditorDialog(SchemeConfigParser* schemes)
 {
-	m_pScheme = NULL;
+	m_schemes = schemes;
 }
 
-void CFileTypeEditorDialog::GetValues(tstring& match, Scheme*& scheme)
+void CFileTypeEditorDialog::GetValues(tstring& match, tstring& scheme)
 {
 	match = m_match;
-	scheme = m_pScheme;
+	scheme = m_sel;
 }
 
-void CFileTypeEditorDialog::SetValues(LPCTSTR match, Scheme* scheme)
+void CFileTypeEditorDialog::SetValues(LPCTSTR match, LPCTSTR scheme)
 {
 	m_match = match;
-	m_pScheme = scheme;
+	m_sel = scheme;
 }
-
 
 LRESULT CFileTypeEditorDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
@@ -555,7 +554,7 @@ LRESULT CFileTypeEditorDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndC
 		return 0;
 
 	m_match = (LPCTSTR)wt;
-	m_pScheme = static_cast<Scheme*>( m_combo.GetItemDataPtr( m_combo.GetCurSel() ) );
+	m_sel = m_combo.GetItemScheme( m_combo.GetCurSel() )->Name;
 
 	EndDialog(wID);
 
@@ -573,20 +572,7 @@ LRESULT CFileTypeEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 {
 	m_combo.Attach(GetDlgItem(IDC_SCHEME_COMBO));
 	
-	SchemeManager* pSM = SchemeManager::GetInstance();
-	SCHEME_LIST* pSchemes = pSM->GetSchemesList();
-
-	for(SCHEME_LIST::const_iterator i = pSchemes->begin(); i != pSchemes->end(); ++i)
-	{
-		int index = m_combo.AddString((*i).GetTitle());
-		m_combo.SetItemDataPtr(index, (void*)&(*i));
-
-		if(&(*i) == m_pScheme)
-			m_combo.SetCurSel(index);
-	}
-
-	if(m_pScheme == NULL)
-		m_combo.SetCurSel(0);
+	m_combo.Load(m_schemes, m_sel.size() ? m_sel.c_str() : NULL, true, false);
 
 	GetDlgItem(IDC_FILETYPE_MATCH).SetWindowText(m_match.c_str());
 

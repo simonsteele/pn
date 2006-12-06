@@ -2028,8 +2028,9 @@ int CALLBACK FileTypeAlphaAscendCompare(LPARAM lParam1, LPARAM lParam2, LPARAM l
 	return (p1->ext < p2->ext) ? -1 : 1;
 }
 
-COptionsPageFileTypes::COptionsPageFileTypes()
+COptionsPageFileTypes::COptionsPageFileTypes(SchemeConfigParser* schemes)
 {
+	m_schemes = schemes;
 	m_bDirty = false;
 }
 
@@ -2065,7 +2066,6 @@ void COptionsPageFileTypes::OnInitialise()
 {
 	m_pExtMap = SchemeManager::GetInstance()->GetExtensionMap();
 	m_pFilenameMap = SchemeManager::GetInstance()->GetFilenameMap();
-
 
 	int n = 0;
 	for(SCHEME_MAP::const_iterator i = m_pExtMap->begin(); i != m_pExtMap->end(); ++i)
@@ -2144,12 +2144,15 @@ LRESULT COptionsPageFileTypes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 
 LRESULT COptionsPageFileTypes::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CFileTypeEditorDialog dlg;
+	CFileTypeEditorDialog dlg(m_schemes);
 	if(dlg.DoModal(m_hWnd) == IDOK)
 	{
 		tstring fn;
+		tstring scheme;
+		dlg.GetValues(fn, scheme);
+		
 		Scheme* pScheme;
-		dlg.GetValues(fn, pScheme);
+		pScheme = SchemeManager::GetInstance()->SchemeByName(scheme.c_str());
 
 		if(fn[0] == _T('.'))
 		{
@@ -2193,16 +2196,20 @@ LRESULT COptionsPageFileTypes::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/,
 
 	SFTDetails* pDetails = reinterpret_cast<SFTDetails*>( m_list.GetItemData( i ) );
 
-	CFileTypeEditorDialog dlg;
-	dlg.SetValues(ext, pDetails->pScheme);
+	CFileTypeEditorDialog dlg(m_schemes);
+	dlg.SetValues(ext, pDetails->pScheme->GetName());
 
 	if(dlg.DoModal(m_hWnd) == IDOK)
 	{
 		tstring match;
+		tstring scheme;
+		dlg.GetValues(match, scheme);
+		
 		Scheme* pScheme;
-		dlg.GetValues(match, pScheme);
+		pScheme = SchemeManager::GetInstance()->SchemeByName(scheme.c_str());
 
 		m_list.SetItemText(i, 0, match.c_str());
+		m_list.SetItemText(i, 1, pScheme->GetTitle());
 		pDetails->pScheme = pScheme;
 		pDetails->isFilename = match[0] != _T('.');
 		pDetails->ext = match;
