@@ -968,8 +968,16 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		m_CmdBar.m_clrMask = clrOld;
 	}
 
-	// Projects menu
-	m_CmdBar.LoadImages(IDR_TBR_PROJECTS);
+	// Additional Images:
+	{
+		COLORREF clrOld = m_CmdBar.m_clrMask;
+		m_CmdBar.m_clrMask = RGB(255,0,255);
+		
+		// Projects menu
+		m_CmdBar.LoadImages(IDR_TBR_PROJECTS);
+		
+		m_CmdBar.m_clrMask = clrOld;
+	}
 
 	CreateSimpleReBar(PN_REBAR_STYLE);
 	AddReBarBand(hWndCmdBar, NULL, FALSE, true);
