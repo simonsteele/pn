@@ -84,10 +84,10 @@ status label endterm linkend space width
 		<use-styles>
 			<style name="Default" key="32" class="default"/>
 			<style name="Text" key="0" class="default"/>
-			<style name="Tags" key="1" fore="000080"/>
-			<style name="Unknown Tags" key="2" fore="ff0000"/>
-			<style name="Attributes" key="3" fore="008080"/>
-			<style name="Unknown Attributes" key="4" fore="ff0000"/>
+			<style name="Tags" key="1" class="tag"/>
+			<style name="Unknown Tags" key="2" class="unknowntag"/>
+			<style name="Attributes" key="3" class="attribute"/>
+			<style name="Unknown Attributes" key="4" class="unknownattribute"/>
 			<style name="Numbers" key="5" class="number"/>
 			<style name="Double quoted strings" key="6" class="string"/>
 			<style name="Single quoted strings" key="7" class="string"/>

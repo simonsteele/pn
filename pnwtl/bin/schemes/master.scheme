@@ -6,7 +6,7 @@
 		<style-class name="default" size="10" font="Lucida Console"/>
 		
 		<style-class name="comment" fore="007f00"/>
-		<style-class name="keyword" fore="00007f" bold="true"/>
+		<style-class name="keyword" fore="0000ef" />
 		<style-class name="string" fore="7f007f" />
 		<style-class name="number" fore="007f7f" />
 		<style-class name="operator" />
@@ -15,6 +15,10 @@
 		<style-class name="commentdoc" inherit-style="comment" fore="3f703f"/>
 		<style-class name="commentline" inherit-style="comment"/>
 		<style-class name="commentbox" inherit-style="comment"/>
+		<style-class name="tag" fore="000080"/>
+		<style-class name="unknowntag" fore="ff0000"/>
+		<style-class name="attribute" fore="008080"/>
+		<style-class name="unknownattribute" fore="ff0000"/>
 	</style-classes>
 	<base-options>
 		<style name="Line Numbers" key="33" />

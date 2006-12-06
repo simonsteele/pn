@@ -133,9 +133,6 @@
 			below level above higher lower x-slow slow medium fast x-fast faster slower
 			male female child x-low low high x-high code digits continous
 		</keyword-class>
-		<keyword-class name="docbook42">
-			
-		</keyword-class>
 	</keyword-classes>
 	
 	<language name="web" title="Hypertext" folding="true" foldcomments="false" foldcompact="false">
@@ -153,10 +150,10 @@
 		<use-styles>
 			<style name="Default" key="32" class="default"/>
 			<style name="Text" key="0" class="default"/>
-			<style name="Tags" key="1" fore="000080"/>
-			<style name="Unknown Tags" key="2" fore="ff0000"/>
-			<style name="Attributes" key="3" fore="008080"/>
-			<style name="Unknown Attributes" key="4" fore="ff0000"/>
+			<style name="Tags" key="1" class="tag"/>
+			<style name="Unknown Tags" key="2" class="unknowntag"/>
+			<style name="Attributes" key="3" class="attribute"/>
+			<style name="Unknown Attributes" key="4" class="unknownattribute"/>
 			<style name="Numbers" key="5" class="number"/>
 			<style name="Double Quoted Strings" key="6" class="string"/>
 			<style name="Single Quoted Strings" key="7" class="string"/>
@@ -303,10 +300,10 @@
 		<use-styles>
 			<style name="Default" key="32" class="default"/>
 			<style name="Text" key="0" class="default"/>
-			<style name="Tags" key="1" fore="000080"/>
-			<style name="Unknown Tags" key="2" fore="000080"/>
-			<style name="Attributes" key="3" fore="008080"/>
-			<style name="Unknown Attributes" key="4" fore="008080"/>
+			<style name="Tags" key="1" class="tag"/>
+			<style name="Unknown Tags" key="2" class="unknowntag"/>
+			<style name="Attributes" key="3" class="attribute"/>
+			<style name="Unknown Attributes" key="4" class="unknownattribute"/>
 			<style name="Numbers" key="5" class="number"/>
 			<style name="Double quoted strings" key="6" class="string"/>
 			<style name="Single quoted strings" key="7" class="string"/>
