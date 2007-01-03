@@ -1516,6 +1516,9 @@ void CScintillaImpl::SetKeyWords(int keywordSet, const char* keyWords)
 {
 	if(OPTIONS->GetCached(Options::OAutoComplete) && OPTIONS->GetCached(Options::OAutoCompleteUseKeywords))
 	{
+		// Clear the old set
+		m_KW.clear();
+
 		const char* word(keyWords);
 		tstring newWord;
 		while(*word)
@@ -1540,32 +1543,26 @@ void CScintillaImpl::SetKeyWords(int keywordSet, const char* keyWords)
 //This function adds to keywords functions from CTags
 void CScintillaImpl::AddToAutoComplete(CString FullTag, CString TagName)
 {	
-	//If more info is needed, like parameters delimiter, try to get it from
-	//m_pScheme
 	if(!m_bAutoCompletionUseTags)
 		return;
-	CString debugS="";
-	int startP=FullTag.Find('(');
-	if(startP>=0)
+
+	int startP = FullTag.Find('(');
+	if(startP >= 0)
 	{
 		int endP = FullTag.Find(')');	
-		if(endP==-1)
+		if(endP == -1)
 		{
-			endP=FullTag.GetLength();
+			endP = FullTag.GetLength();
 		}
 		
-		debugS = TagName+FullTag.Mid(startP,endP-startP+1);
-		
 		tstring tag(TagName);
-		tag += FullTag.Mid(startP,endP-startP+1);
+		tag += FullTag.Mid(startP, endP-startP+1);
 		AddSorting(m_Api, tag);
 	}	
 	else
 	{
-		debugS = TagName;
-		AddSorting(m_Api,tstring(TagName));
+		AddSorting(m_Api, tstring(TagName));
 	}
-_RPT1(_CRT_WARN,"%s \n",debugS);
 }
 
 //This function cleans CTags Keywords from autocomplete list
@@ -1611,16 +1608,20 @@ tstring CScintillaImpl::GetLineText(int nLine)
 		nLen = GetCurLine(0, 0);
 	else
 		nLen = GetLine(nLine, 0);
+
 	// Allocate buffer
 	strLine.resize(nLen + 1);
 	LPTSTR linebuf = &strLine[0];
+	
 	// And get the line
 	if (nLine < 0)
 		GetCurLine(nLen, linebuf);
 	else 
 		GetLine(nLine, linebuf);
+	
 	linebuf[nLen] = '\0';
 	strLine.resize(nLen);
+	
 	return strLine;
 }
 
@@ -1642,7 +1643,7 @@ void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>
 	if( '/' == GetCharAt( lCurrentPos - 2 ) ) 
 		return;
 	
-	if(m_pScheme)
+	if(m_pScheme != NULL)
 	{
 		LPCTSTR lexer = m_pScheme->GetLexer();
 		if(strcmp(lexer, "xml") != 0 
@@ -1661,18 +1662,23 @@ void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>
 	long lPos = lCurrentPos - 1;
 	while( lPos >= 0 )
 	{
-		int cChar=GetCharAt( lPos );
+		int cChar = GetCharAt( lPos );
 		if( '<' != cChar )
 		{	-- lPos; 		
-			if (cChar=='>')balanced--;//Manuel Sandoval: Balance <>:
+			if (cChar == '>')
+				balanced--;//Manuel Sandoval: Balance <>:
 		}
 		else 
 		{
 			balanced++;//Manuel Sandoval: Balance <>:
-			if(balanced!=0)break; //Manuel Sandoval: only continue when paired <>
+			if(balanced != 0)
+				break; //Manuel Sandoval: only continue when paired <>
 			
-			// If this is a closing tag or xml declaration skip this action.
-			if( '/' == GetCharAt( lPos + 1 ) || '?' == GetCharAt( lPos + 1 ) ) break;			
+			// If this is a closing tag, xml comment, asp tag or processing instruction skip this action.
+			char ch1 = GetCharAt( lPos + 1 );
+			if( '/' == ch1 || '?' == ch1 || '%' == ch1 || '!' == ch1 )
+				break;
+
 			if( lCurrentPos - lPos < 1024 )
 			{
 				SetSel(lPos,lCurrentPos);
@@ -2100,8 +2106,9 @@ bool CScintillaImpl::StartAutoComplete()
 	tstring line = GetLineText();
 	int current = GetCaretInLine();
 	int startword = current;
-	while ((startword > 0) &&(contains(m_calltipWordCharacters, line[startword - 1]) 
-		||contains(m_autoCompleteStartCharacters, line[startword - 1]))) 
+	while ((startword > 0) 
+		&& (contains(m_calltipWordCharacters, line[startword - 1]) 
+		  || contains(m_autoCompleteStartCharacters, line[startword - 1])))
 	{
 		startword--;
 	}
@@ -2184,13 +2191,25 @@ void CScintillaImpl::AutoCloseBraces(SCNotification* scn)
 			// Character to insert (if any)
 			char ch = '\0';
 
-			// Don't bother if we're next to the closing character
-			if( chNext != closer )
+			// Don't do it if we're a single quote next to
+			// an alphanumeric character. This avoids inserting
+			// quotes in words like "don't".
+			if( (*opener == '\'') && (GetCurrentPos() > 1) )
 			{
-				ch = closer;
+				char chPrev = GetCharAt(GetCurrentPos() - 2);
+				if( !isalnum(chPrev) && chNext != closer )
+					ch = closer;
+			}
+			else
+			{
+				// Don't bother if we're next to the closing character
+				if( chNext != closer )
+				{
+					ch = closer;
+				}
 			}
 			
-			if (ch)
+			if( ch )
 			{
 				InsertChar(GetCurrentPos(), ch);
 				return;
@@ -2207,15 +2226,11 @@ void CScintillaImpl::AutoCloseBraces(SCNotification* scn)
 			char chNext = GetCharAt(pos);
 			if(chNext == scn->ch)
 			{
-				// Count brace state from start of line...
-				if(BraceMatch(chNext) == INVALID_POSITION)
-				{
-					LOG("Should Skip");
-				}
-				
+				// Count brace state from start of line...	
 				int p = PositionFromLine( LineFromPosition( pos ) );
 				char c = GetCharAt(p);
 				int braceState = 0;
+
 				if(scn->ch == '"' || scn->ch == '\'')
 				{
 					// We know that the next character is a close quote,
@@ -2246,15 +2261,8 @@ void CScintillaImpl::AutoCloseBraces(SCNotification* scn)
 				}
 				else
 				{
-					while(c && c != '\10' && c != '\13')
-					{
-						// Look up to the end of the line...
-						if( c == opener )
-							braceState++;
-						else if( c == *closer )
-							braceState--;
-						c = GetCharAt(++p);
-					}
+					if(BraceMatch(chNext) == INVALID_POSITION)
+						braceState = -1;
 				}
 				
 				if(braceState <= 0)
