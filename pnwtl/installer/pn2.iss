@@ -69,12 +69,11 @@ Source: reqfiles\msvcr71.dll; DestDir: {app}
 
 [Icons]
 Name: {group}\Programmer's Notepad 2; Filename: {app}\pn.exe
-Name: {group}\License; Filename: {app}\license.html
 Name: {userdesktop}\Programmer's Notepad; Filename: {app}\pn.exe; Tasks: desktopicon
 Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Programmer's Notepad; Filename: {app}\pn.exe; Tasks: quicklaunchicon
 
 [Run]
-Filename: {app}\pn.exe; Description: Launch Programmer's Notepad; Flags: nowait postinstall skipifsilent
+Filename: {app}\pn.exe; Description: Launch Programmer's Notepad; Flags: nowait postinstall skipifsilent; OnlyBelowVersion: 0,6
 
 [_ISTool]
 EnableISX=false
