@@ -63,6 +63,7 @@ public:
 	
 	/// Get the script registry
 	virtual extensions::IScriptRegistry* GetScriptRegistry();
+	
 	/// Get the options manager
 	virtual extensions::IOptions* GetOptionsManager();
 
@@ -83,6 +84,9 @@ public:
 
 	/// Get some text from the user
 	virtual char* InputBox(const char* title, const char* caption);
+
+	/// Make a new document
+	virtual extensions::IDocumentPtr NewDocument(const char* scheme);
 
 	/// Open a document
 	virtual extensions::IDocumentPtr OpenDocument(const char* filepath, const char* scheme);

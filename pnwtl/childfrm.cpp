@@ -409,9 +409,9 @@ LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 {
 	bHandled = FALSE;
 	
-	// 253 is a special value that means "don't ask the user first". Normally for
+	// PNID_DONTASKUSER is a special value that means "don't ask the user first". Normally for
 	// use if we've already asked the user.
-	if((lParam != 253) && !CanClose())
+	if((lParam != PNID_DONTASKUSER) && !CanClose())
 	{
 		bHandled = TRUE;
 		::SendMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_CLOSE, (LPARAM)this);

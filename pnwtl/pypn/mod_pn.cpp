@@ -80,6 +80,11 @@ IDocumentPtr PNOpenDocument(const char* filepath, const char* scheme)
 	return g_app->GetPN()->OpenDocument(filepath, scheme);
 }
 
+IDocumentPtr PNNewDocument(const char* scheme)
+{
+	return g_app->GetPN()->NewDocument(scheme);
+}
+
 #define CONSTANT(x) scope().attr(#x) = x
 
 BOOST_PYTHON_MODULE(pn)
@@ -102,6 +107,8 @@ BOOST_PYTHON_MODULE(pn)
 	def("InputBox", &PNInputBox);
 
 	def("OpenDocument", &PNOpenDocument);
+
+	def("NewDocument", &PNNewDocument);
 
 	CONSTANT(IDOK);
 	CONSTANT(IDCANCEL);
@@ -128,9 +135,11 @@ BOOST_PYTHON_MODULE(pn)
 	LRESULT (IDocument::*pSendMessage2)(UINT msg, WPARAM wParam, const char* strParam) = &IDocument::SendEditorMessage;
 
 	class_<IDocument, /*boost::shared_ptr<IDocument>,*/ boost::noncopyable >("IDocument", no_init)
-		.def("GetTitle", &IDocument::GetTitle)
-		.def("GetFileName", &IDocument::GetFileName)
-		.def("GetCurrentScheme", &IDocument::GetCurrentScheme)
+		.add_property("Title", &IDocument::GetTitle)
+		.add_property("FileName", &IDocument::GetFileName)
+		.add_property("CurrentScheme", &IDocument::GetCurrentScheme)
+		.add_property("Modified", &IDocument::GetModified)
+		.add_property("CanSave", &IDocument::GetCanSave)
 
 		.def("SendMessage", pSendMessage)
 		.def("SendMessage", pSendMessage2)
@@ -140,6 +149,9 @@ BOOST_PYTHON_MODULE(pn)
 		.def("FindNext", &IDocument::FindNext)
 		.def("Replace", &IDocument::Replace)
 		.def("ReplaceAll", &IDocument::ReplaceAll)
+
+		.def("Save", &IDocument::Save)
+		.def("Close", &IDocument::Close)
     ;
 
 	class_<ISearchOptions, boost::noncopyable>("ISearchOptions", no_init)

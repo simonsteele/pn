@@ -40,8 +40,11 @@ class Document : public extensions::IDocument, public extensions::ITextEditorEve
 		virtual const char* GetTitle() const;
 		virtual const char* GetFileName() const;
 		virtual const char* GetCurrentScheme() const;
-
 		virtual HWND GetScintillaHWND() const;
+		virtual bool GetModified() const;
+		virtual bool GetCanSave() const;
+
+		virtual bool Save(const char* filename, bool setFilename);
 
 		virtual LRESULT SendEditorMessage(UINT msg, WPARAM wParam, LPARAM lParam);
 		virtual LRESULT SendEditorMessage(UINT msg, WPARAM wParam, const char* strParam);
@@ -54,6 +57,8 @@ class Document : public extensions::IDocument, public extensions::ITextEditorEve
 		virtual FindNextResult FindNext(extensions::ISearchOptions* options);
 		virtual bool Replace(extensions::ISearchOptions* options);
 		virtual int ReplaceAll(extensions::ISearchOptions* options);
+
+		virtual void Close(bool dontAskUserIfUnsaved);
 
 // ITextEditorEventSink members
 	public:

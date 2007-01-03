@@ -39,7 +39,7 @@ typedef enum {fnNotFound, fnFound, fnReachedStart} FindNextResult;
 namespace extensions
 {
 
-#define PN_EXT_IFACE_VERSION	2
+#define PN_EXT_IFACE_VERSION	3
 
 /////////////////////////////////////////////////////////////////////////////
 // Predeclare types
@@ -113,6 +113,9 @@ public:
 	/// Get some input from the user
 	virtual char* InputBox(const char* title, const char* caption) = 0;
 
+	// Create a new document
+	virtual IDocumentPtr NewDocument(const char* scheme) = 0;
+
 	/// Open a document
 	virtual IDocumentPtr OpenDocument(const char* filepath, const char* scheme) = 0;
 
@@ -143,6 +146,15 @@ public:
 	/// Get the handle of the Scintilla window (or NULL for non-text views)
 	virtual HWND GetScintillaHWND() const = 0;
 
+	/// Is the document modified in memory?
+	virtual bool GetModified() const = 0;
+
+	/// Can this document be saved (does it have a valid filename yet?)
+	virtual bool GetCanSave() const = 0;
+
+	/// Save this file to the filename passed, optionally setting the UI filename
+	virtual bool Save(const char* filename, bool setFilename) = 0;
+
 	/// Send a message to Scintilla
 	virtual LRESULT SendEditorMessage(UINT msg, WPARAM wParam, LPARAM lParam) = 0;
 	/// Send a string format message to Scintilla
@@ -170,6 +182,11 @@ public:
 	 * @returns Replacement Count
 	 */
 	virtual int ReplaceAll(ISearchOptions* options) = 0;
+
+	/**
+	 * Close this document
+	 */
+	virtual void Close(bool dontAskUserIfUnsaved) = 0;
 };
 
 /**

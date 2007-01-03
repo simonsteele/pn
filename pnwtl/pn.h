@@ -34,6 +34,8 @@
 #define PNID_SAVEAS			14
 #define PNID_OVERWRITE		15
 
+#define PNID_DONTASKUSER	253
+
 //#if defined(DEBUG_)
 	#define UNEXPECTED(message) \
 	{ \

@@ -114,9 +114,24 @@ const char* Document::GetCurrentScheme() const
 	return m_pFrame->GetTextView()->GetCurrentScheme()->GetName();
 }
 
+bool Document::GetModified() const
+{
+	return m_pFrame->GetModified();
+}
+
+bool Document::GetCanSave() const
+{
+	return m_pFrame->CanSave();
+}
+
 HWND Document::GetScintillaHWND() const
 {
 	return m_pFrame->GetTextView()->m_hWnd;
+}
+
+bool Document::Save(const char* filename, bool setFilename)
+{
+	return m_pFrame->SaveFile(filename, setFilename, setFilename);
 }
 
 LRESULT Document::SendEditorMessage(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -176,4 +191,16 @@ bool Document::Replace(extensions::ISearchOptions* options)
 int Document::ReplaceAll(extensions::ISearchOptions* options)
 {
 	return m_pFrame->ReplaceAll(static_cast<SearchOptions*>(options));
+}
+
+void Document::Close(bool dontAskUserIfUnsaved)
+{
+	if(dontAskUserIfUnsaved)
+	{
+		m_pFrame->PostMessage(WM_CLOSE, 0, PNID_DONTASKUSER);
+	}
+	else
+	{
+		m_pFrame->PostMessage(WM_CLOSE, 0, 0);
+	}
 }

@@ -376,6 +376,26 @@ extensions::IDocumentPtr App::OpenDocument(const char* filepath, const char* sch
 }
 
 /**
+ * Create a new document, optionally specify a scheme name
+ */
+extensions::IDocumentPtr App::NewDocument(const char* scheme)
+{
+	
+	CChildFrame* pEditor = static_cast<CMainFrame*>(g_Context.m_frame)->NewEditor();
+	
+	if(scheme)
+	{
+		Scheme* pScheme = SchemeManager::GetInstance()->SchemeByName(scheme);
+		if(pScheme)
+		{
+			pEditor->SetScheme( pScheme );
+		}
+	}
+
+	return GetCurrentDocument();
+}
+
+/**
  * Release a C string allocated by PN
  */
 void App::ReleaseString(const TCHAR* str)
