@@ -2,7 +2,7 @@
  * @file findex.cpp
  * @brief Find and Replace dialogs for PN 2
  * @author Simon Steele
- * @note Copyright (c) 2004-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2004-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -90,6 +90,7 @@ CFindExDialog::CFindExDialog() : m_FindWhereCombo(false)
 	m_SearchWhere = 0;
 	m_type = eftFind;
 	m_lastType = eftInvalid;
+	m_lastFifLocation = fwUser;
 
 	m_lastVisibleCB = -1;
 	m_bottom = -1;
@@ -300,8 +301,23 @@ LRESULT CFindExDialog::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 		if(m_FindText.GetLength() == 0 && pOptions->FindText.GetLength())
 			m_FindText = pOptions->FindText;
 		m_ReplaceText = pOptions->ReplaceText;
-		m_FindWhereText = pOptions->Path;
 		m_FindTypeText = pOptions->FileExts;
+
+		switch(m_lastFifLocation)
+		{
+			case fwUser:
+				m_FindWhereText = pOptions->Path;
+				break;
+			case fwCurrentFile:
+				m_FindWhereCombo.SetCurSel(0);
+				break;
+			case fwCurrentFolder:
+				m_FindWhereCombo.SetCurSel(1);
+				break;
+			case fwCurrentProjectFolder:
+				m_FindWhereCombo.SetCurSel(2);
+				break;
+		}
 
 		m_bMatchCase = pOptions->MatchCase;
 		m_bMatchWhole = pOptions->MatchWholeWord;
@@ -790,6 +806,8 @@ SearchOptions* CFindExDialog::getOptions()
 			break;
 		}
 	}
+
+	m_lastFifLocation = (EFIFWhere)m_FindWhereCombo.GetItemData(m_FindWhereCombo.GetCurSel());
 
 	return pOptions;
 }
