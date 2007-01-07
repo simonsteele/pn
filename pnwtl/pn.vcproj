@@ -476,6 +476,9 @@
 			<File
 				RelativePath=".\xmlparser.cpp">
 			</File>
+			<File
+				RelativePath=".\xmltagsuggest.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -683,6 +686,9 @@
 			</File>
 			<File
 				RelativePath=".\WorkspaceState.h">
+			</File>
+			<File
+				RelativePath=".\xmltagsuggest.h">
 			</File>
 		</Filter>
 		<Filter

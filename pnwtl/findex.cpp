@@ -297,7 +297,6 @@ LRESULT CFindExDialog::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 	if((BOOL)wParam)
 	{
 		SearchOptions* pOptions = reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() );
-		//SetFindText(m_FindText);
 		if(m_FindText.GetLength() == 0 && pOptions->FindText.GetLength())
 			m_FindText = pOptions->FindText;
 		m_ReplaceText = pOptions->ReplaceText;

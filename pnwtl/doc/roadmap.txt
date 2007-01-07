@@ -8,38 +8,41 @@ Active CVS development branches are denoted with {branch-name}.
 Work completed or in-progress is shown with [proportion-developer] or [complete-developer],
 where no developer name is given it's Simon.
 
-last updated: 06/10/2005
-
-0.6 Ella
-========
-
-[complete] Start help file.
-[good-enough] Basic Build Management - see http://www.pnotepad.org/articles/pn2projects.html
-[complete] Tab order management.
-[complete] Method Locator - see http://www.pnotepad.org/articles/pn2methodlist.html
-[complete] File-type to scheme mapping editor.
-[complete-BjoernGraf] File Association Editor
+last updated: 05/01/2007
 
 0.8 Basie
 =========
 
 [80% complete] Scripting/Extensions.
-[60% complete] Keyboard shortcut configuration
-Hex editor.
-HTML Export configuration, inline HTML export.
+[90% complete] Keyboard shortcut configuration
+[80% complete] Autocomplete
 
 0.10 Dizzy
 ==========
 
-Preview for scheme configurator.
-Filetype filters - e.g. allow loading of .dfm files.
-PCRE Based Search.
 File browser window.
-HTML preview window (ie+moz) {feature_browser_2-0-5}.
-
+HTML Export configuration, inline HTML export.
+Preview for scheme configurator.
 
 0.12 Ellington
 ==============
 
-Unicode build.
+Hex editor.
 Mini-PN - true notepad-style document-centric PN alternative build.
+
+0.14 Charles
+============
+
+PCRE Based Search.
+
+0.16 Monk
+=========
+
+Filetype filters - e.g. allow loading of .dfm files.
+HTML preview window (ie+moz) {feature_browser_2-0-5}.
+Unicode build.
+
+0.18 Parker
+===========
+
+??
