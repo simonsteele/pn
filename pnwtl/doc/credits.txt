@@ -2,7 +2,6 @@ Author:
 -------
 Simon Steele
 
-
 Code Contributors:
 ------------------
 Bjoern Graf
@@ -12,6 +11,10 @@ Vassili Bourdo
 Oleg Gerasimov
 Vambola Kotkas
 Manuel Sandoval
+
+Documentation:
+--------------
+F. Mark Schiavone
 
 Libraries:
 ----------
