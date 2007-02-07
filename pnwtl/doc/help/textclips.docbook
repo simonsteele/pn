@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter>
+  <title>Text Clips</title>
+
+  <section>
+    <?dbhh topicname="IDH_text_clips_intro" topicid="17"?>
+
+    <title>What are Text Clips?</title>
+
+    <para>Text clips are text fragments that are easily inserted into your
+    code. Programmer's Notepad ships with a variety of text clips representing
+    common programming languages such as C or ASP.NET, or common character
+    sets such as the symbols associated with HTML. Text Clips are easily
+    extensible so you may modify any existing Text Clip library or extend the
+    model to create your own Text Clip files.<note>
+        <para>To create a text clips file use the <ulink
+        url="http://www.pnotepad.org/files/textclipcreator.zip">Text Clip
+        Creator</ulink> application.</para>
+
+        <para>Click the link above to download this useful tool. Note that it
+        requires the Microsoft .NET Framework to run.</para>
+      </note></para>
+	  
+		<para>Text Clips are stored as .clips files. These files are located in
+      the Clips folder beneath the folder where the Programmer's Notepad
+      executable is installed (generally \Program Files\Programmer's Notepad).
+      The files are standard XML documents and may be manipulated using any
+      text or XML editor.</para>
+	  
+		<para>Any properly formatted XML file with a .clips extension which is
+      located in the Clips folder will load into the Text Clips window
+      whenever Programmer's Notepad is started.</para>
+	</section>
+  <section>
+	  <?dbhh topicname="IDH_text_clips_creating" topicid="19"?>
+		<title>Manually Create a Text Clip File</title>
+
+		<para>There are at minimum three steps to create a custom Text
+		Clip.</para>
+
+		<orderedlist>
+			<listitem>
+				<para>Use Programmer's Notepad to create an XML document.</para>
+			</listitem>
+
+			<listitem>
+				<para>Ensure that the document contains the following XML
+				tags:</para>
+			</listitem>
+		</orderedlist>
+
+		<blockquote>
+			<para>&lt;?xml version="1.0"?&gt; &lt;clips name=”Name for custom
+			clips file”&gt; &lt;clip name=”Name of your first text clip”&gt;
+			&lt;![CDATA[ first text clip content ]]&gt; &lt;/clip&gt;
+			&lt;/clips&gt; </para>
+		</blockquote>
+
+		<orderedlist continuation="continues" inheritnum="inherit">
+			<listitem>
+				<para>Save the file and ensure that it has the .clips
+				extension.</para>
+			</listitem>
+
+			<listitem>
+				<para>Restart Programmer's Notepad and test your new Text Clips
+				library.</para>
+			</listitem>
+		</orderedlist>
+	</section>
+
+	<section>
+	  <?dbhh topicname="IDH_text_clips_extending" topicid="18"?>
+		<title>To Extend an Existing Text Clip File</title>
+
+		<para>To add a new clip to an existing library:</para>
+
+		<orderedlist>
+			<listitem>
+				<para>Open the desired Text Clip file in Programmer's Notepad.</para>
+			</listitem>
+
+			<listitem>
+				<para>Create a new line following one of the &lt;/clip&gt; tags.
+				Note that clips appear in the same order in which they exist in the
+				Text Clips file.</para>
+			</listitem>
+
+			<listitem>
+				<para>Insert a new &lt;clip&gt; tag and use the name attribute to
+				identify your new text clip. Example: &lt;clip name=”my first
+				clip”&gt;</para>
+			</listitem>
+
+			<listitem>
+				<para>Although not mandatory, to ensure proper parsing of your clip
+				you should embed your text clip inside a &lt;![CDATA[ ]]&gt; tag.
+				Your text clip is inserted between of the inner square brackets and
+				may include line feeds, tabs, angle brackets, and other formatting
+				characters. Example: &lt;![CDATA[This is my first text
+				clip!]]&gt;</para>
+			</listitem>
+
+			<listitem>
+				<para>Complete the text clip by including the closing &lt;/clip&gt;
+				tag.</para>
+			</listitem>
+
+			<listitem>
+				<para>Save the file. You must restart Programmer's Notepad before
+				your edit will take effect.</para>
+			</listitem>
+		</orderedlist>
+	</section>
+</chapter>

@@ -6,6 +6,7 @@
 <!ENTITY __navigation SYSTEM "navigation.xml">
 <!ENTITY __search SYSTEM "search.docbook">
 <!ENTITY __advanced SYSTEM "advanced.docbook">
+<!ENTITY __textclips SYSTEM "textclips.docbook">
 ]>
 <book lang="en">
   <title>PN2 Help</title>
@@ -14,5 +15,6 @@
   &__howto;
   &__navigation;
   &__search;
+  &__textclips;
   &__advanced;
 </book>
