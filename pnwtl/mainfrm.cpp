@@ -979,6 +979,13 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		m_CmdBar.m_clrMask = clrOld;
 	}
 
+	// Contentious feature time - hidden option to hide SaveAll until 
+	// we have toolbar customisation.
+	if(OPTIONS->Get(PNSK_INTERFACE, "HideSaveAll", false))
+	{
+		::SendMessage(hWndToolBar, TB_DELETEBUTTON, 4, 0);
+	}
+
 	CreateSimpleReBar(PN_REBAR_STYLE);
 	AddReBarBand(hWndCmdBar, NULL, FALSE, true);
 	AddReBarBand(hWndToolBar, NULL, TRUE, true);
@@ -1091,6 +1098,13 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	DragAcceptFiles(TRUE);
 
 	PostMessage(PN_INITIALISEFRAME);
+
+	// simulate a crash, see if we get a minidump:
+	//int a = 5-3;
+	//a-=2;
+	//int b = 47/a;
+	//LOG((LPCTSTR)b);
+	//////////////////////////////////////////////
 
 	return 0;
 }

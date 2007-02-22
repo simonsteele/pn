@@ -449,6 +449,8 @@
 #define IDC_AUTOCOMPLETETAGSCHECK       1140
 #define IDC_AUTOCLOSETAGSCHECK          1141
 #define IDC_AUTOCLOSEBRACESCHECK        1142
+#define IDC_NKEYSRADIO                  1143
+#define IDC_MANUALRADIO                 1144
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -562,6 +564,7 @@
 #define ID_COMMENTS_BLOCK               32967
 #define ID_COMMENTS_LINE                32968
 #define ID_COMMENTS_UNCOMMENT           32969
+#define ID_EDIT_AUTOCOMPLETE            32970
 
 // Next default values for new objects
 // 
@@ -569,8 +572,8 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        350
-#define _APS_NEXT_COMMAND_VALUE         32970
-#define _APS_NEXT_CONTROL_VALUE         1143
+#define _APS_NEXT_COMMAND_VALUE         32971
+#define _APS_NEXT_CONTROL_VALUE         1145
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

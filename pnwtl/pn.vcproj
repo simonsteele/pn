@@ -1,34 +1,59 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8.00"
 	Name="pn"
-	SccProjectName=""
-	SccLocalPath="">
+	ProjectGUID="{09E60CEB-F210-4524-89CC-D73EBCA224A1}"
+	RootNamespace="pn"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\bin"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\bin/pn.tlb"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				OptimizeForWindowsApplication="FALSE"
 				AdditionalIncludeDirectories="TabbingFramework, DockingFramework"
 				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,STRICT"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				BufferSecurityCheck="TRUE"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="3"
+				BufferSecurityCheck="true"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdafx.h"
 				PrecompiledHeaderFile=".\Debug/pn.pch"
 				AssemblerListingLocation=".\Debug/"
@@ -36,128 +61,188 @@
 				ProgramDataBaseFileName=".\Debug/"
 				BrowseInformation="1"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="4"/>
+				SuppressStartupBanner="true"
+				DebugInformationFormat="4"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="2057"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="2"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="lib"
+				AdditionalManifestDependencies="&quot;type=&apos;Win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; processorArchitecture=&apos;X86&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos;&quot;"
 				DelayLoadDLLs="uxtheme.dll"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\bin/pn.pdb"
-				SubSystem="2"/>
+				SubSystem="2"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\bin/pn.tlb"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="2057"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\bin"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
-			WholeProgramOptimization="TRUE">
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\bin/pn.tlb"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
-				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
-				OptimizeForWindowsApplication="TRUE"
 				AdditionalIncludeDirectories="TabbingFramework, DockingFramework, ."
 				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,STRICT"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="3"
+				EnableFunctionLevelLinking="true"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdafx.h"
 				PrecompiledHeaderFile=".\Release/pn.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"/>
+				SuppressStartupBanner="true"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="2057"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="lib"
+				AdditionalManifestDependencies="&quot;type=&apos;Win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; processorArchitecture=&apos;X86&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos;&quot;"
 				DelayLoadDLLs="uxtheme.dll"
 				ProgramDatabaseFile=".\bin/pn.pdb"
-				SubSystem="2"/>
+				SubSystem="2"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\bin/pn.tlb"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="2057"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="DebugUnicode|Win32"
 			OutputDirectory="DebugUnicode"
 			IntermediateDirectory="DebugUnicode"
 			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			CharacterSet="2">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\bin/pn.tlb"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
@@ -165,7 +250,7 @@
 				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,STRICT,UNICODE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				UsePrecompiledHeader="3"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdafx.h"
 				PrecompiledHeaderFile=".\Debug/pn.pch"
 				AssemblerListingLocation=".\Debug/"
@@ -173,121 +258,158 @@
 				ProgramDataBaseFileName=".\Debug/"
 				BrowseInformation="1"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="4"/>
+				SuppressStartupBanner="true"
+				DebugInformationFormat="4"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="2057"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="delayimp.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="2"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="lib"
 				DelayLoadDLLs="uxtheme.dll"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\bin/pn.pdb"
-				SubSystem="2"/>
+				SubSystem="2"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\bin/pn.tlb"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="2057"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="ReleaseDebug|Win32"
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
-			WholeProgramOptimization="TRUE">
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\bin/pn.tlb"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
-				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="1"
-				OptimizeForWindowsApplication="TRUE"
 				AdditionalIncludeDirectories="TabbingFramework, DockingFramework"
 				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,STRICT"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="2"
-				EnableFunctionLevelLinking="TRUE"
-				RuntimeTypeInfo="TRUE"
-				UsePrecompiledHeader="3"
+				EnableFunctionLevelLinking="true"
+				RuntimeTypeInfo="true"
+				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdafx.h"
 				PrecompiledHeaderFile=".\Release/pn.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="3"/>
+				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="2057"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="lib"
+				AdditionalManifestDependencies="&quot;type=&apos;Win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; processorArchitecture=&apos;X86&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos;&quot;"
 				DelayLoadDLLs="uxtheme.dll"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\bin/pn.pdb"
-				SubSystem="2"/>
+				SubSystem="2"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\bin/pn.tlb"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="2057"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -295,801 +417,1088 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat">
+			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+			>
 			<File
-				RelativePath=".\afiles.cpp">
+				RelativePath=".\afiles.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\appsettings.cpp">
+				RelativePath=".\appsettings.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\include\boyermoore.cpp">
+				RelativePath=".\include\boyermoore.cpp"
+				>
 			</File>
 			<File
-				RelativePath="childfrm.cpp">
+				RelativePath="childfrm.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\commands.cpp">
+				RelativePath=".\commands.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\docprops.cpp">
+				RelativePath=".\docprops.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\Document.cpp">
+				RelativePath=".\Document.cpp"
+				>
 			</File>
 			<File
-				RelativePath="exporters.cpp">
+				RelativePath="exporters.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\extapp.cpp">
+				RelativePath=".\extapp.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\FileAssoc.cpp">
+				RelativePath=".\FileAssoc.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\Files.cpp">
+				RelativePath=".\Files.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\findbar.cpp">
+				RelativePath=".\findbar.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\findex.cpp">
+				RelativePath=".\findex.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\findinfiles.cpp">
+				RelativePath=".\findinfiles.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\findinfilesview.cpp">
+				RelativePath=".\findinfilesview.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\jumpto.cpp">
+				RelativePath=".\jumpto.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\jumpview.cpp">
+				RelativePath=".\jumpview.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\l10n.cpp">
+				RelativePath=".\l10n.cpp"
+				>
 			</File>
 			<File
-				RelativePath="mainfrm.cpp">
+				RelativePath="mainfrm.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\NewProjectDialog.cpp">
+				RelativePath=".\NewProjectDialog.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\OptionsIni.cpp">
+				RelativePath=".\OptionsIni.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\OptionsManager.cpp">
+				RelativePath=".\OptionsManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\OptionsRegistry.cpp">
+				RelativePath=".\OptionsRegistry.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\outputscintilla.cpp">
+				RelativePath=".\outputscintilla.cpp"
+				>
 			</File>
 			<File
-				RelativePath="outputview.cpp">
+				RelativePath="outputview.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\pn.cpp">
+				RelativePath=".\pn.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\pn.rc">
+				RelativePath=".\pn.rc"
+				>
 			</File>
 			<File
-				RelativePath=".\pndialogs.cpp">
+				RelativePath=".\pndialogs.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\pntabs.cpp">
+				RelativePath=".\pntabs.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\pnutils.cpp">
+				RelativePath=".\pnutils.cpp"
+				>
 			</File>
 			<File
-				RelativePath="scaccessor.cpp">
+				RelativePath="scaccessor.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\SchemeCompiler.cpp">
+				RelativePath=".\SchemeCompiler.cpp"
+				>
 			</File>
 			<File
-				RelativePath="SchemeConfig.cpp">
+				RelativePath="SchemeConfig.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\SchemeManager.cpp">
+				RelativePath=".\SchemeManager.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\Schemes.cpp">
+				RelativePath=".\Schemes.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\scintillaif.cpp">
+				RelativePath=".\scintillaif.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\ScintillaImpl.cpp">
+				RelativePath=".\ScintillaImpl.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\searchoptions.cpp">
+				RelativePath=".\searchoptions.cpp"
+				>
 			</File>
 			<File
-				RelativePath="smartstart.cpp">
+				RelativePath="smartstart.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\ssmenus.cpp">
+				RelativePath=".\ssmenus.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\ssreg.cpp">
+				RelativePath=".\ssreg.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\stdafx.cpp">
+				RelativePath=".\stdafx.cpp"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
+						UsePrecompiledHeader="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
+						UsePrecompiledHeader="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="DebugUnicode|Win32">
+					Name="DebugUnicode|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
+						UsePrecompiledHeader="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="ReleaseDebug|Win32">
+					Name="ReleaseDebug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"/>
+						UsePrecompiledHeader="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\styles.cpp">
+				RelativePath=".\styles.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\StylesUserSettings.cpp">
+				RelativePath=".\StylesUserSettings.cpp"
+				>
 			</File>
 			<File
-				RelativePath="textclips.cpp">
+				RelativePath="textclips.cpp"
+				>
 			</File>
 			<File
-				RelativePath="textclipsview.cpp">
+				RelativePath="textclipsview.cpp"
+				>
 			</File>
 			<File
-				RelativePath="textview.cpp">
+				RelativePath="textview.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\toolrunner.cpp">
+				RelativePath=".\toolrunner.cpp"
+				>
 			</File>
 			<File
-				RelativePath="tools.cpp">
+				RelativePath="tools.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\toolsmanager.cpp">
+				RelativePath=".\toolsmanager.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\WorkspaceState.cpp">
+				RelativePath=".\WorkspaceState.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\xmlparser.cpp">
+				RelativePath=".\xmlparser.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\xmltagsuggest.cpp">
+				RelativePath=".\xmltagsuggest.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl">
+			Filter="h;hpp;hxx;hm;inl"
+			>
 			<File
-				RelativePath=".\aboutdlg.h">
+				RelativePath=".\aboutdlg.h"
+				>
 			</File>
 			<File
-				RelativePath=".\afiles.h">
+				RelativePath=".\afiles.h"
+				>
 			</File>
 			<File
-				RelativePath=".\appsettings.h">
+				RelativePath=".\appsettings.h"
+				>
 			</File>
 			<File
-				RelativePath=".\include\boyermoore.h">
+				RelativePath=".\include\boyermoore.h"
+				>
 			</File>
 			<File
-				RelativePath=".\ChildFrm.h">
+				RelativePath=".\ChildFrm.h"
+				>
 			</File>
 			<File
-				RelativePath=".\commands.h">
+				RelativePath=".\commands.h"
+				>
 			</File>
 			<File
-				RelativePath=".\CustomAutoComplete.h">
+				RelativePath=".\CustomAutoComplete.h"
+				>
 			</File>
 			<File
-				RelativePath=".\docprops.h">
+				RelativePath=".\docprops.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Document.h">
+				RelativePath=".\Document.h"
+				>
 			</File>
 			<File
-				RelativePath="exporters.h">
+				RelativePath="exporters.h"
+				>
 			</File>
 			<File
-				RelativePath=".\extapp.h">
+				RelativePath=".\extapp.h"
+				>
 			</File>
 			<File
-				RelativePath=".\FileAssoc.h">
+				RelativePath=".\FileAssoc.h"
+				>
 			</File>
 			<File
-				RelativePath=".\FileAssocInfo.h">
+				RelativePath=".\FileAssocInfo.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Files.h">
+				RelativePath=".\Files.h"
+				>
 			</File>
 			<File
-				RelativePath=".\findbar.h">
+				RelativePath=".\findbar.h"
+				>
 			</File>
 			<File
-				RelativePath=".\findex.h">
+				RelativePath=".\findex.h"
+				>
 			</File>
 			<File
-				RelativePath=".\findinfiles.h">
+				RelativePath=".\findinfiles.h"
+				>
 			</File>
 			<File
-				RelativePath=".\findinfilesview.h">
+				RelativePath=".\findinfilesview.h"
+				>
 			</File>
 			<File
-				RelativePath=".\folderadder.h">
+				RelativePath=".\folderadder.h"
+				>
 			</File>
 			<File
-				RelativePath="include\fontcombo.h">
+				RelativePath="include\fontcombo.h"
+				>
 			</File>
 			<File
-				RelativePath=".\fromhandle.h">
+				RelativePath=".\fromhandle.h"
+				>
 			</File>
 			<File
-				RelativePath=".\IOptions.h">
+				RelativePath=".\IOptions.h"
+				>
 			</File>
 			<File
-				RelativePath=".\jumpto.h">
+				RelativePath=".\jumpto.h"
+				>
 			</File>
 			<File
-				RelativePath=".\JumpToDialog.h">
+				RelativePath=".\JumpToDialog.h"
+				>
 			</File>
 			<File
-				RelativePath=".\jumptointerface.h">
+				RelativePath=".\jumptointerface.h"
+				>
 			</File>
 			<File
-				RelativePath=".\jumpview.h">
+				RelativePath=".\jumpview.h"
+				>
 			</File>
 			<File
-				RelativePath=".\l10n.h">
+				RelativePath=".\l10n.h"
+				>
 			</File>
 			<File
-				RelativePath=".\mainfrm.h">
+				RelativePath=".\mainfrm.h"
+				>
 			</File>
 			<File
-				RelativePath=".\NewProjectDialog.h">
+				RelativePath=".\NewProjectDialog.h"
+				>
 			</File>
 			<File
-				RelativePath=".\OptionsIni.h">
+				RelativePath=".\OptionsIni.h"
+				>
 			</File>
 			<File
-				RelativePath="OptionsManager.h">
+				RelativePath="OptionsManager.h"
+				>
 			</File>
 			<File
-				RelativePath=".\OptionsRegistry.h">
+				RelativePath=".\OptionsRegistry.h"
+				>
 			</File>
 			<File
-				RelativePath=".\outputscintilla.h">
+				RelativePath=".\outputscintilla.h"
+				>
 			</File>
 			<File
-				RelativePath="outputview.h">
+				RelativePath="outputview.h"
+				>
 			</File>
 			<File
-				RelativePath=".\plugins.h">
+				RelativePath=".\plugins.h"
+				>
 			</File>
 			<File
-				RelativePath=".\pn.h">
+				RelativePath=".\pn.h"
+				>
 			</File>
 			<File
-				RelativePath=".\pndialogs.h">
+				RelativePath=".\pndialogs.h"
+				>
 			</File>
 			<File
-				RelativePath=".\include\pngenx.h">
+				RelativePath=".\include\pngenx.h"
+				>
 			</File>
 			<File
-				RelativePath=".\pnstrings.h">
+				RelativePath=".\pnstrings.h"
+				>
 			</File>
 			<File
-				RelativePath="pntabs.h">
+				RelativePath="pntabs.h"
+				>
 			</File>
 			<File
-				RelativePath=".\pntypes.h">
+				RelativePath=".\pntypes.h"
+				>
 			</File>
 			<File
-				RelativePath=".\pnutils.h">
+				RelativePath=".\pnutils.h"
+				>
 			</File>
 			<File
-				RelativePath=".\resource.h">
+				RelativePath=".\resource.h"
+				>
 			</File>
 			<File
-				RelativePath=".\resource.hm">
+				RelativePath=".\resource.hm"
+				>
 			</File>
 			<File
-				RelativePath=".\SchemeCompiler.h">
+				RelativePath=".\SchemeCompiler.h"
+				>
 			</File>
 			<File
-				RelativePath="SchemeConfig.h">
+				RelativePath="SchemeConfig.h"
+				>
 			</File>
 			<File
-				RelativePath=".\SchemeManager.h">
+				RelativePath=".\SchemeManager.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Schemes.h">
+				RelativePath=".\Schemes.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Scintilla.h">
+				RelativePath=".\Scintilla.h"
+				>
 			</File>
 			<File
-				RelativePath=".\scintillaif.h">
+				RelativePath=".\scintillaif.h"
+				>
 			</File>
 			<File
-				RelativePath=".\scintillaimpl.h">
+				RelativePath=".\scintillaimpl.h"
+				>
 			</File>
 			<File
-				RelativePath=".\ScintillaWTL.h">
+				RelativePath=".\ScintillaWTL.h"
+				>
 			</File>
 			<File
-				RelativePath=".\include\singleton.h">
+				RelativePath=".\include\singleton.h"
+				>
 			</File>
 			<File
-				RelativePath="smartstart.h">
+				RelativePath="smartstart.h"
+				>
 			</File>
 			<File
-				RelativePath=".\ssmenus.h">
+				RelativePath=".\ssmenus.h"
+				>
 			</File>
 			<File
-				RelativePath=".\ssreg.h">
+				RelativePath=".\ssreg.h"
+				>
 			</File>
 			<File
-				RelativePath=".\stdafx.h">
+				RelativePath=".\stdafx.h"
+				>
 			</File>
 			<File
-				RelativePath="styles.h">
+				RelativePath="styles.h"
+				>
 			</File>
 			<File
-				RelativePath="textclips.h">
+				RelativePath="textclips.h"
+				>
 			</File>
 			<File
-				RelativePath="textclipsview.h">
+				RelativePath="textclipsview.h"
+				>
 			</File>
 			<File
-				RelativePath=".\textview.h">
+				RelativePath=".\textview.h"
+				>
 			</File>
 			<File
-				RelativePath=".\toolrunner.h">
+				RelativePath=".\toolrunner.h"
+				>
 			</File>
 			<File
-				RelativePath="tools.h">
+				RelativePath="tools.h"
+				>
 			</File>
 			<File
-				RelativePath=".\toolsmanager.h">
+				RelativePath=".\toolsmanager.h"
+				>
 			</File>
 			<File
-				RelativePath=".\toolsxmlwriter.h">
+				RelativePath=".\toolsxmlwriter.h"
+				>
 			</File>
 			<File
-				RelativePath=".\usersettingswriter.h">
+				RelativePath=".\usersettingswriter.h"
+				>
 			</File>
 			<File
-				RelativePath="version.h">
+				RelativePath="version.h"
+				>
 			</File>
 			<File
-				RelativePath=".\WorkspaceState.h">
+				RelativePath=".\WorkspaceState.h"
+				>
 			</File>
 			<File
-				RelativePath=".\xmltagsuggest.h">
+				RelativePath=".\xmltagsuggest.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
-			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
+			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
+			>
 			<File
-				RelativePath=".\res\about.bmp">
+				RelativePath=".\res\about.bmp"
+				>
 			</File>
 			<File
-				RelativePath="res\bitmap1.bmp">
+				RelativePath="res\bitmap1.bmp"
+				>
 			</File>
 			<File
-				RelativePath=".\res\ctags.ico">
+				RelativePath=".\res\ctags.ico"
+				>
 			</File>
 			<File
-				RelativePath="res\dropdown.bmp">
+				RelativePath="res\dropdown.bmp"
+				>
 			</File>
 			<File
-				RelativePath=".\res\editor.bmp">
+				RelativePath=".\res\editor.bmp"
+				>
 			</File>
 			<File
-				RelativePath="res\edittbr.bmp">
+				RelativePath="res\edittbr.bmp"
+				>
 			</File>
 			<File
-				RelativePath="res\findbarbmps.bmp">
+				RelativePath="res\findbarbmps.bmp"
+				>
 			</File>
 			<File
-				RelativePath=".\res\folder_find.ico">
+				RelativePath=".\res\folder_find.ico"
+				>
 			</File>
 			<File
-				RelativePath="res\font_tru.bmp">
+				RelativePath="res\font_tru.bmp"
+				>
 			</File>
 			<File
-				RelativePath=".\res\infoicon.ico">
+				RelativePath=".\res\infoicon.ico"
+				>
 			</File>
 			<File
-				RelativePath=".\res\magicfolder.ico">
+				RelativePath=".\res\magicfolder.ico"
+				>
 			</File>
 			<File
-				RelativePath="res\noproject.ico">
+				RelativePath="res\noproject.ico"
+				>
 			</File>
 			<File
-				RelativePath=".\res\page_white_text.ico">
+				RelativePath=".\res\page_white_text.ico"
+				>
 			</File>
 			<File
-				RelativePath=".\res\pn.ico">
+				RelativePath=".\res\pn.ico"
+				>
 			</File>
 			<File
-				RelativePath=".\res\pndoc.ico">
+				RelativePath=".\res\pndoc.ico"
+				>
 			</File>
 			<File
-				RelativePath="res\projectfolder.ico">
+				RelativePath="res\projectfolder.ico"
+				>
 			</File>
 			<File
-				RelativePath="res\projects.ico">
+				RelativePath="res\projects.ico"
+				>
 			</File>
 			<File
-				RelativePath=".\res\redclose.bmp">
+				RelativePath=".\res\redclose.bmp"
+				>
 			</File>
 			<File
-				RelativePath=".\res\scripts.ico">
+				RelativePath=".\res\scripts.ico"
+				>
 			</File>
 			<File
-				RelativePath=".\res\tagtypes.bmp">
+				RelativePath=".\res\tagtypes.bmp"
+				>
 			</File>
 			<File
-				RelativePath=".\res\tbrEdit24.bmp">
+				RelativePath=".\res\tbrEdit24.bmp"
+				>
 			</File>
 			<File
-				RelativePath="res\tbrFindCombo.bmp">
+				RelativePath="res\tbrFindCombo.bmp"
+				>
 			</File>
 			<File
-				RelativePath=".\res\tbrMain24.bmp">
+				RelativePath=".\res\tbrMain24.bmp"
+				>
 			</File>
 			<File
-				RelativePath=".\res\tbrProjects.bmp">
+				RelativePath=".\res\tbrProjects.bmp"
+				>
 			</File>
 			<File
-				RelativePath="res\tbrScheme.bmp">
+				RelativePath="res\tbrScheme.bmp"
+				>
 			</File>
 			<File
-				RelativePath="res\textclips.ico">
+				RelativePath="res\textclips.ico"
+				>
 			</File>
 			<File
-				RelativePath=".\res\toolbar.bmp">
+				RelativePath=".\res\toolbar.bmp"
+				>
 			</File>
 			<File
-				RelativePath=".\res\toolbardisabled.bmp">
+				RelativePath=".\res\toolbardisabled.bmp"
+				>
 			</File>
 			<File
-				RelativePath="res\workspace.ico">
+				RelativePath="res\workspace.ico"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Include"
-			Filter="">
+			>
 			<File
-				RelativePath=".\include\browsetree.h">
+				RelativePath=".\include\browsetree.h"
+				>
 			</File>
 			<File
-				RelativePath=".\include\genx\charProps.c">
+				RelativePath=".\include\genx\charProps.c"
+				>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"/>
+						UsePrecompiledHeader="0"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"/>
+						UsePrecompiledHeader="0"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="ReleaseDebug|Win32">
+					Name="ReleaseDebug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="include\ColorButton.cpp">
-			</File>
-			<File
-				RelativePath=".\include\encoding.h">
-			</File>
-			<File
-				RelativePath=".\include\genx\genx.c">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="ReleaseDebug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"/>
+						UsePrecompiledHeader="0"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\include\genx\genx.h">
+				RelativePath="include\ColorButton.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\include\lineendings.h">
+				RelativePath=".\include\encoding.h"
+				>
 			</File>
 			<File
-				RelativePath=".\include\mdump.cpp">
+				RelativePath=".\include\genx\genx.c"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\include\mdump.h">
+				RelativePath=".\include\genx\genx.h"
+				>
 			</File>
 			<File
-				RelativePath="include\OptionsDialog.h">
+				RelativePath=".\include\lineendings.h"
+				>
 			</File>
 			<File
-				RelativePath=".\include\pagesetupdialog.h">
+				RelativePath=".\include\mdump.cpp"
+				>
 			</File>
 			<File
-				RelativePath="include\pcreplus.cpp">
+				RelativePath=".\include\mdump.h"
+				>
 			</File>
 			<File
-				RelativePath=".\include\plugin.h">
+				RelativePath="include\OptionsDialog.h"
+				>
 			</File>
 			<File
-				RelativePath=".\res\pn.rc2">
+				RelativePath=".\include\pagesetupdialog.h"
+				>
 			</File>
 			<File
-				RelativePath=".\include\proplist\PropertyList.h">
+				RelativePath="include\pcreplus.cpp"
+				>
 			</File>
 			<File
-				RelativePath="include\Utf8_16.cpp">
+				RelativePath=".\include\plugin.h"
+				>
 			</File>
 			<File
-				RelativePath=".\include\wtltreems.h">
+				RelativePath=".\res\pn.rc2"
+				>
+			</File>
+			<File
+				RelativePath=".\include\proplist\PropertyList.h"
+				>
+			</File>
+			<File
+				RelativePath="include\Utf8_16.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\wtltreems.h"
+				>
 			</File>
 			<Filter
 				Name="TabbingFramework"
-				Filter="">
+				>
 				<File
-					RelativePath=".\TabbingFramework\atlgdix.h">
+					RelativePath=".\TabbingFramework\atlgdix.h"
+					>
 				</File>
 				<File
-					RelativePath=".\TabbingFramework\CustomTabCtrl.h">
+					RelativePath=".\TabbingFramework\CustomTabCtrl.h"
+					>
 				</File>
 				<File
-					RelativePath=".\TabbingFramework\DotNetTabCtrl.h">
+					RelativePath=".\TabbingFramework\DotNetTabCtrl.h"
+					>
 				</File>
 				<File
-					RelativePath=".\TabbingFramework\DynamicDialogTemplate.h">
+					RelativePath=".\TabbingFramework\DynamicDialogTemplate.h"
+					>
 				</File>
 				<File
-					RelativePath=".\TabbingFramework\TabbedDockingWindow.h">
+					RelativePath=".\TabbingFramework\TabbedDockingWindow.h"
+					>
 				</File>
 				<File
-					RelativePath=".\TabbingFramework\TabbedFrame.h">
+					RelativePath=".\TabbingFramework\TabbedFrame.h"
+					>
 				</File>
 				<File
-					RelativePath=".\TabbingFramework\TabbedMDI.h">
+					RelativePath=".\TabbingFramework\TabbedMDI.h"
+					>
 				</File>
 				<File
-					RelativePath=".\TabbingFramework\TabbedMDISave.h">
+					RelativePath=".\TabbingFramework\TabbedMDISave.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="DockingFramework"
-				Filter="">
+				>
 				<File
-					RelativePath=".\DockingFramework\dbstate.h">
+					RelativePath=".\DockingFramework\dbstate.h"
+					>
 				</File>
 				<File
-					RelativePath=".\DockingFramework\DDTracker.h">
+					RelativePath=".\DockingFramework\DDTracker.h"
+					>
 				</File>
 				<File
-					RelativePath=".\DockingFramework\DockingBox.h">
+					RelativePath=".\DockingFramework\DockingBox.h"
+					>
 				</File>
 				<File
-					RelativePath=".\DockingFramework\DockingFocus.h">
+					RelativePath=".\DockingFramework\DockingFocus.h"
+					>
 				</File>
 				<File
-					RelativePath=".\DockingFramework\DockingFrame.h">
+					RelativePath=".\DockingFramework\DockingFrame.h"
+					>
 				</File>
 				<File
-					RelativePath=".\DockingFramework\DockingWindow.h">
+					RelativePath=".\DockingFramework\DockingWindow.h"
+					>
 				</File>
 				<File
-					RelativePath=".\DockingFramework\DockMisc.h">
+					RelativePath=".\DockingFramework\DockMisc.h"
+					>
 				</File>
 				<File
-					RelativePath=".\DockingFramework\DWAutoHide.h">
+					RelativePath=".\DockingFramework\DWAutoHide.h"
+					>
 				</File>
 				<File
-					RelativePath=".\DockingFramework\dwstate.h">
+					RelativePath=".\DockingFramework\dwstate.h"
+					>
 				</File>
 				<File
-					RelativePath=".\DockingFramework\ExtDockingWindow.h">
+					RelativePath=".\DockingFramework\ExtDockingWindow.h"
+					>
 				</File>
 				<File
-					RelativePath=".\DockingFramework\FlyingTabs.h">
+					RelativePath=".\DockingFramework\FlyingTabs.h"
+					>
 				</File>
 				<File
-					RelativePath=".\DockingFramework\PackageWindow.h">
+					RelativePath=".\DockingFramework\PackageWindow.h"
+					>
 				</File>
 				<File
-					RelativePath=".\DockingFramework\SimpleSplitterBar.h">
+					RelativePath=".\DockingFramework\SimpleSplitterBar.h"
+					>
 				</File>
 				<File
-					RelativePath=".\DockingFramework\ssec.h">
+					RelativePath=".\DockingFramework\ssec.h"
+					>
 				</File>
 				<File
-					RelativePath=".\DockingFramework\sstate.h">
+					RelativePath=".\DockingFramework\sstate.h"
+					>
 				</File>
 				<File
-					RelativePath=".\DockingFramework\TabDockingBox.h">
+					RelativePath=".\DockingFramework\TabDockingBox.h"
+					>
 				</File>
 				<File
-					RelativePath=".\DockingFramework\VC7LikeCaption.h">
+					RelativePath=".\DockingFramework\VC7LikeCaption.h"
+					>
 				</File>
 				<File
-					RelativePath=".\DockingFramework\WndFrmPkg.h">
+					RelativePath=".\DockingFramework\WndFrmPkg.h"
+					>
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
 			Name="Exporters"
-			Filter="">
+			>
 			<File
-				RelativePath=".\exporters\htmlexporter.cpp">
+				RelativePath=".\exporters\htmlexporter.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\exporters\rtfexporter.cpp">
+				RelativePath=".\exporters\rtfexporter.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Projects"
-			Filter="">
+			>
 			<File
-				RelativePath=".\magicfolder.cpp">
+				RelativePath=".\magicfolder.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\MagicFolderWiz.cpp">
+				RelativePath=".\MagicFolderWiz.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\MagicFolderWiz.h">
+				RelativePath=".\MagicFolderWiz.h"
+				>
 			</File>
 			<File
-				RelativePath="project.cpp">
+				RelativePath="project.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\project.h">
+				RelativePath=".\project.h"
+				>
 			</File>
 			<File
-				RelativePath=".\projectmeta.cpp">
+				RelativePath=".\projectmeta.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\projectmeta.h">
+				RelativePath=".\projectmeta.h"
+				>
 			</File>
 			<File
-				RelativePath=".\projectprops.cpp">
+				RelativePath=".\projectprops.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\projectprops.h">
+				RelativePath=".\projectprops.h"
+				>
 			</File>
 			<File
-				RelativePath=".\projectregistry.cpp">
+				RelativePath=".\projectregistry.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\projectregistry.h">
+				RelativePath=".\projectregistry.h"
+				>
 			</File>
 			<File
-				RelativePath="projectview.cpp">
+				RelativePath="projectview.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\projectview.h">
+				RelativePath=".\projectview.h"
+				>
 			</File>
 			<File
-				RelativePath=".\projectwriter.h">
+				RelativePath=".\projectwriter.h"
+				>
 			</File>
 			<File
-				RelativePath=".\projpropsview.cpp">
+				RelativePath=".\projpropsview.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\projpropsview.h">
+				RelativePath=".\projpropsview.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Extensions"
-			Filter="">
+			>
 			<File
-				RelativePath=".\extension.cpp">
+				RelativePath=".\extension.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\extension.h">
+				RelativePath=".\extension.h"
+				>
 			</File>
 			<File
-				RelativePath=".\extiface.h">
+				RelativePath=".\extiface.h"
+				>
 			</File>
 			<File
-				RelativePath=".\ScriptRegistry.cpp">
+				RelativePath=".\ScriptRegistry.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\scriptregistry.h">
+				RelativePath=".\scriptregistry.h"
+				>
 			</File>
 			<File
-				RelativePath=".\scriptview.cpp">
+				RelativePath=".\scriptview.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\scriptview.h">
+				RelativePath=".\scriptview.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Options Dialog"
-			Filter="">
+			>
 			<File
-				RelativePath="optionscontrols.cpp">
+				RelativePath="optionscontrols.cpp"
+				>
 			</File>
 			<File
-				RelativePath="OptionsDialogs.cpp">
+				RelativePath="OptionsDialogs.cpp"
+				>
 			</File>
 			<File
-				RelativePath="OptionsDialogs.h">
+				RelativePath="OptionsDialogs.h"
+				>
 			</File>
 			<File
-				RelativePath=".\OptionsPageAutocomplete.cpp">
+				RelativePath=".\OptionsPageAutocomplete.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\OptionsPageAutocomplete.h">
+				RelativePath=".\OptionsPageAutocomplete.h"
+				>
 			</File>
 			<File
-				RelativePath=".\OptionsPageKeyboard.cpp">
+				RelativePath=".\OptionsPageKeyboard.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\OptionsPageKeyboard.h">
+				RelativePath=".\OptionsPageKeyboard.h"
+				>
 			</File>
 			<File
-				RelativePath="OptionsPages.cpp">
+				RelativePath="OptionsPages.cpp"
+				>
 			</File>
 			<File
-				RelativePath="OptionsPages.h">
+				RelativePath="OptionsPages.h"
+				>
 			</File>
 			<File
-				RelativePath=".\StyleTabPages.cpp">
+				RelativePath=".\StyleTabPages.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\StyleTabPages.h">
+				RelativePath=".\StyleTabPages.h"
+				>
 			</File>
 		</Filter>
 		<File
-			RelativePath="pn.exe.manifest">
+			RelativePath="pn.exe.manifest"
+			>
+			<FileConfiguration
+				Name="Debug|Win32"
+				ExcludedFromBuild="true"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="Release|Win32"
+				ExcludedFromBuild="true"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="DebugUnicode|Win32"
+				ExcludedFromBuild="true"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+				/>
+			</FileConfiguration>
+			<FileConfiguration
+				Name="ReleaseDebug|Win32"
+				ExcludedFromBuild="true"
+				>
+				<Tool
+					Name="VCCustomBuildTool"
+				/>
+			</FileConfiguration>
 		</File>
 	</Files>
 	<Globals>
 		<Global
 			Name="RESOURCE_FILE"
-			Value="pn.rc"/>
+			Value="pn.rc"
+		/>
 	</Globals>
 </VisualStudioProject>

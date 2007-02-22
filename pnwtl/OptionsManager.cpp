@@ -101,8 +101,8 @@ void Options::loadCache()
 	cache[OAutoCompleteUseKeywords]	= Get(NULL, _T("AutocompleteUseKeywords"), TRUE);
 	cache[OAutoCompleteUseTags]		= Get(NULL, _T("AutocompleteUseTags"), TRUE);
 	cache[OAutoCompleteStartChars]	= Get(NULL, _T("AutocompleteStartChars"), 2);
-	cache[OAutoCompleteBraces]		= Get(NULL, _T("AutocompleteBraces"), TRUE);
 	cache[OAutoCompleteTags]		= Get(NULL, _T("AutocompleteTags"), TRUE);
+	cache[OAutoCompleteActivation]	= Get(NULL, _T("AutocompleteActivation"), eacManual);
 	ungroup();
 	
 	// Interface Settings -------------------
@@ -165,8 +165,8 @@ void Options::saveCache()
 	Set(NULL, _T("AutocompleteUseKeywords"),cache[OAutoCompleteUseKeywords]);
 	Set(NULL, _T("AutocompleteUseTags"),	cache[OAutoCompleteUseTags]);
 	Set(NULL, _T("AutocompleteStartChars"), cache[OAutoCompleteStartChars]);
-	Set(NULL, _T("AutocompleteBraces"),		cache[OAutoCompleteBraces]);
 	Set(NULL, _T("AutocompleteTags"),		cache[OAutoCompleteTags]);
+	Set(NULL, _T("AutocompleteActivation"), cache[OAutoCompleteActivation]);
 
 	ungroup();
 	

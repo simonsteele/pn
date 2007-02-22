@@ -72,8 +72,11 @@ public:
 	void AddToAutoComplete(CString FullTag, CString TagName);  //Called in: CJumpTreeCtrl::OnFound: Add new defined autocomplete tags
 	void ResetAutoComplete();           //Called in: CChildFrame::SaveFile: Clear new defined autocomplete tags
 	void InitAutoComplete(Scheme *sch); //Called in: CTextView::SetScheme: Initialize default autocomplete tags
+	void ClearAutoComplete();
 
 	virtual void SetKeyWords(int keywordSet, const char* keyWords);
+
+	void AttemptAutoComplete();
 
 protected:	
 	bool StartAutoComplete();
@@ -105,9 +108,9 @@ protected:
 	bool m_bAutoCompletion;
 	bool m_bAutoCompleteIgnoreCase;	
 	bool m_bAutoCompletionUseTags;
-	bool m_bSmartInsert;
 	bool m_bSmartTag;
 	bool m_bCallTipIgnoreCase;
+	bool m_bAutoActivate;
 	int m_lastPosCallTip;
 	int m_nStartCalltipWord;
 	int m_iAutoIndent;

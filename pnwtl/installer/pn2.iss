@@ -64,8 +64,16 @@ Source: ..\doc\ctags_COPYING; DestDir: {app}
 
 Source: ..\userschemes\*.schemedef; DestDir: {app}\schemes
 
-Source: reqfiles\msvcp71.dll; DestDir: {app}
-Source: reqfiles\msvcr71.dll; DestDir: {app}
+;Source: reqfiles\msvcp71.dll; DestDir: {app}
+;Source: reqfiles\msvcr71.dll; DestDir: {app}
+
+Source: reqfiles\Microsoft.VC80.CRT\Microsoft.VC80.CRT.manifest; DestDir: {app}\Microsoft.VC80.CRT; MinVersion: 0,5.01.2600
+Source: reqfiles\Microsoft.VC80.CRT\msvcm80.dll; DestDir: {app}\Microsoft.VC80.CRT; MinVersion: 0,5.01.2600
+Source: reqfiles\Microsoft.VC80.CRT\msvcp80.dll; DestDir: {app}\Microsoft.VC80.CRT; MinVersion: 0,5.01.2600
+Source: reqfiles\Microsoft.VC80.CRT\msvcr80.dll; DestDir: {app}\Microsoft.VC80.CRT; MinVersion: 0,5.01.2600
+
+Source: reqfiles\Microsoft.VC80.CRT\msvcp80.dll; DestDir: {app}; OnlyBelowVersion: 0,5.01.2600; Flags: ignoreversion
+Source: reqfiles\Microsoft.VC80.CRT\msvcr80.dll; DestDir: {app}; OnlyBelowVersion: 0,5.01.2600; Flags: ignoreversion
 
 [Icons]
 Name: {group}\Programmer's Notepad 2; Filename: {app}\pn.exe
@@ -82,3 +90,5 @@ UseAbsolutePaths=false
 [Registry]
 Root: HKCU; SubKey: Software\Classes\SystemFileAssociations\text\shell\edit.PN2; ValueType: string; Flags: uninsdeletekey dontcreatekey
 Root: HKCU; SubKey: Software\Classes\SystemFileAssociations\text\OpenWithList\pn.exe; ValueType: string; Flags: uninsdeletekey dontcreatekey
+[Dirs]
+Name: {app}\Microsoft.VC80.CRT

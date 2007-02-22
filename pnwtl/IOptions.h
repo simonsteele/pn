@@ -76,7 +76,7 @@ public:
 			OAutoCompleteUseKeywords	= 25,
 			OAutoCompleteUseTags		= 26,
 			OAutoCompleteStartChars		= 27,
-			OAutoCompleteBraces			= 28,
+			OAutoCompleteActivation		= 28,
 			OAutoCompleteTags			= 29,
 			OPTION_COUNT				= 30
 		} ECachedOption;

@@ -26,8 +26,8 @@ void COptionsPageAutocomplete::OnOK()
 		OPTIONS->SetCached(Options::OAutoCompleteUseKeywords, m_bUseKeywords);
 		OPTIONS->SetCached(Options::OAutoCompleteUseTags, m_bUseTags);
 		OPTIONS->SetCached(Options::OAutoCompleteStartChars, m_iStartAt);
-		OPTIONS->SetCached(Options::OAutoCompleteBraces, m_bCloseBraces);
 		OPTIONS->SetCached(Options::OAutoCompleteTags, m_bCloseTags);
+		OPTIONS->SetCached(Options::OAutoCompleteActivation, m_iActivation);
 	}
 }
 
@@ -37,8 +37,8 @@ void COptionsPageAutocomplete::OnInitialise()
 	m_bUseKeywords = OPTIONS->GetCached(Options::OAutoCompleteUseKeywords);
 	m_bUseTags = OPTIONS->GetCached(Options::OAutoCompleteUseTags);
 	m_iStartAt = OPTIONS->GetCached(Options::OAutoCompleteStartChars);
-	m_bCloseBraces = OPTIONS->GetCached(Options::OAutoCompleteBraces);
 	m_bCloseTags = OPTIONS->GetCached(Options::OAutoCompleteTags);
+	m_iActivation = OPTIONS->GetCached(Options::OAutoCompleteActivation);
 
 	DoDataExchange(FALSE);
 

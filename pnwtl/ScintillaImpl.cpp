@@ -268,10 +268,6 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 		{
 			DumbIndent( ((SCNotification*)lParam)->ch );
 			
-			// Auto Close Braces:
-			if( m_bSmartInsert )
-				AutoCloseBraces( scn );
-			
 			// Auto Close Tags:
 			if( m_bSmartTag && scn->ch == '>' )
 				SmartTag();
@@ -330,7 +326,7 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 				}
 				else
 				{
-					if (contains(m_autoCompleteStartCharacters, scn->ch))
+					if (m_bAutoActivate && contains(m_autoCompleteStartCharacters, scn->ch))
 						StartAutoComplete();
 				}
 			}					
@@ -1480,9 +1476,9 @@ void CScintillaImpl::InitAutoComplete(Scheme* sch)
 	m_pScheme = sch;
 	m_bAutoCompletion = OPTIONS->GetCached(Options::OAutoComplete) != FALSE;
 	m_bSmartTag = OPTIONS->GetCached(Options::OAutoCompleteTags) != FALSE;
-	m_bSmartInsert = OPTIONS->GetCached(Options::OAutoCompleteBraces) != FALSE;
 	m_bAutoCompletionUseTags = OPTIONS->GetCached(Options::OAutoCompleteUseTags) != FALSE;
 	m_nMinAutoCompleteChars = OPTIONS->GetCached(Options::OAutoCompleteStartChars);
+	m_bAutoActivate = OPTIONS->GetCached(Options::OAutoCompleteActivation) == eacTextMatch;
 	m_nBraceCount = 0;
 	m_nStartCalltipWord = 0;
 	m_nCurrentCallTip = 0;
@@ -1517,7 +1513,7 @@ void CScintillaImpl::SetKeyWords(int keywordSet, const char* keyWords)
 	if(OPTIONS->GetCached(Options::OAutoComplete) && OPTIONS->GetCached(Options::OAutoCompleteUseKeywords))
 	{
 		// Clear the old set
-		m_KW.clear();
+		//m_KW.clear();
 
 		const char* word(keyWords);
 		tstring newWord;
@@ -1538,6 +1534,15 @@ void CScintillaImpl::SetKeyWords(int keywordSet, const char* keyWords)
 
 	// Call base class, send those words to Scintilla!
 	CScintilla::SetKeyWords(keywordSet, keyWords);
+}
+
+/**
+ * User wants to try to autocomplete the current phrase
+ */
+void CScintillaImpl::AttemptAutoComplete()
+{
+	if(m_bAutoCompletion)
+		StartAutoComplete();
 }
 
 //This function adds to keywords functions from CTags
@@ -1572,6 +1577,12 @@ void CScintillaImpl::ResetAutoComplete()
 	//for(int i=0;i<m_KW.GetSize();i++)m_Api.Add(m_KW[i]);//m_KW already sorted
 	m_Api.clear();
 	m_Api = m_KW;
+}
+
+void CScintillaImpl::ClearAutoComplete()
+{
+	m_KW.clear();
+	m_Api.clear();
 }
 
 void EliminateDuplicateWords(const char *words)
@@ -2023,11 +2034,11 @@ tstring CScintillaImpl::GetNearestWords(CStringArray& arr, const char *wordStart
 	if (0 == arr.size())
 		return wordsNear; // is empty
 
-	tstring sdebug;
+	/*tstring sdebug;
 	for(CScintillaImpl::CStringArray::const_iterator i = arr.begin();
 		i != arr.end(); ++i)
 		sdebug += (*i) + " ";
-	LOG(sdebug.c_str());
+	LOG(sdebug.c_str());*/
 
 	if (ignoreCase) {
 /*		if (!sortedNoCase) {
@@ -2113,7 +2124,7 @@ bool CScintillaImpl::StartAutoComplete()
 		startword--;
 	}
 
-	if(!(current - startword >= m_nMinAutoCompleteChars))
+	if(m_bAutoActivate && !(current - startword >= m_nMinAutoCompleteChars))
 		return false;
 
 	tstring root = line.substr(startword, current - startword);
@@ -2165,116 +2176,5 @@ void CScintillaImpl::RangeExtendAndGrab(
 			sel[sellen - 2] = '\0';
 		else if (sellen >= 1 && (sel[sellen - 1] == '\r' || sel[sellen - 1] == '\n'))
 			sel[sellen - 1] = '\0';
-	}
-}
-
-/**
- * Provide automatic insertion of matching close braces, and
- * some logic to overtype these when the user types the closing
- * character and we've already inserted it.
- */
-void CScintillaImpl::AutoCloseBraces(SCNotification* scn)
-{
-	const char* openers = "({[\"\'";
-	const char* closers = ")}]\"\'";
-	
-	if(m_bSmartInsert)
-	{
-		char* opener;
-		char* closer;
-		if ( (opener = strchr("({[\"\'", scn->ch)) != 0 ) 
-		{
-			// Get the matching close character
-			char closer = closers[ opener-openers ];
-			// Next character
-			char chNext = GetCharAt(GetCurrentPos());
-			// Character to insert (if any)
-			char ch = '\0';
-
-			// Don't do it if we're a single quote next to
-			// an alphanumeric character. This avoids inserting
-			// quotes in words like "don't".
-			if( (*opener == '\'') && (GetCurrentPos() > 1) )
-			{
-				char chPrev = GetCharAt(GetCurrentPos() - 2);
-				if( !isalnum(chPrev) && chNext != closer )
-					ch = closer;
-			}
-			else
-			{
-				// Don't bother if we're next to the closing character
-				if( chNext != closer )
-				{
-					ch = closer;
-				}
-			}
-			
-			if( ch )
-			{
-				InsertChar(GetCurrentPos(), ch);
-				return;
-			}
-		}
-		if( (closer = strchr(closers, scn->ch)) != 0 )
-		{
-			// Closing brace char, do some magic to allow
-			// overtype of auto-inserted braces...
-			char opener = openers[closer-closers];
-			// note: pos after inserted char
-			int pos = GetCurrentPos(); 
-			// Next character
-			char chNext = GetCharAt(pos);
-			if(chNext == scn->ch)
-			{
-				// Count brace state from start of line...	
-				int p = PositionFromLine( LineFromPosition( pos ) );
-				char c = GetCharAt(p);
-				int braceState = 0;
-
-				if(scn->ch == '"' || scn->ch == '\'')
-				{
-					// We know that the next character is a close quote,
-					// so we want to know if we're in a string...
-					bool inStr(false);
-					char cPrev(NULL);
-					while(p < pos-1)
-					{
-						if(c == scn->ch && cPrev != '\\')
-						{
-							if(inStr)
-							{
-								inStr = false;
-							}
-							else
-							{
-								inStr = true;
-							}
-						}
-						cPrev = c;
-						c = GetCharAt(++p);
-					}
-
-					// For quote characters, we simply want to know if there are
-					// an odd number. If there are, then we'll add another. Otherwise
-					// we'll skip.
-					braceState = (inStr && cPrev != '\\') ? 0 : 1;
-				}
-				else
-				{
-					if(BraceMatch(chNext) == INVALID_POSITION)
-						braceState = -1;
-				}
-				
-				if(braceState <= 0)
-				{
-					// More than enough braces already, don't insert this one...
-					BeginUndoAction();
-					DeleteBack();
-					SetCurrentPos(pos);
-					SetSel(pos, pos);
-					EndUndoAction();
-				}
-			}
-		}
 	}
 }

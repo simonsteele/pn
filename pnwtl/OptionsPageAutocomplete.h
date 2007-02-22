@@ -31,8 +31,8 @@ class COptionsPageAutocomplete : public COptionsPageImpl<COptionsPageAutocomplet
 			DDX_CHECK(IDC_AUTOCOMPLETEKEYWORDSCHECK, m_bUseKeywords);
 			DDX_CHECK(IDC_AUTOCOMPLETETAGSCHECK, m_bUseTags);
 			DDX_INT_RANGE(IDC_AUTOCOMPLETECHARSTEXT, m_iStartAt, 1, 10);
-			DDX_CHECK(IDC_AUTOCLOSEBRACESCHECK, m_bCloseBraces);
 			DDX_CHECK(IDC_AUTOCLOSETAGSCHECK, m_bCloseTags);
+			DDX_RADIO(IDC_MANUALRADIO, m_iActivation);
 		END_DDX_MAP()
 
 		virtual void OnOK();
@@ -45,9 +45,9 @@ class COptionsPageAutocomplete : public COptionsPageImpl<COptionsPageAutocomplet
 		BOOL m_bEnabled;
 		BOOL m_bUseKeywords;
 		BOOL m_bUseTags;
-		BOOL m_bCloseBraces;
 		BOOL m_bCloseTags;
 		int m_iStartAt;
+		int m_iActivation;
 };
 
 #endif // #ifndef optionspageautocomplete_h__included

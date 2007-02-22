@@ -74,6 +74,8 @@ void CTextView::SetScheme(Scheme* pScheme, bool allSettings)
 	EnsureRangeVisible(0, GetLength());
 	ClearDocumentStyle(); // zero all style bytes
 
+	ClearAutoComplete();
+
 	// Clear out the keywords or they get carried over.
 	for(int i = 0; i < KEYWORDSET_MAX; i++)
 	{
@@ -409,9 +411,12 @@ bool CTextView::Save(LPCTSTR filename, bool bSetScheme)
 	{
 		if(bSetScheme)
 		{
-			// Re-Apply Scheme:
+			// Apply scheme if we picked up a filetype
 			Scheme* sch = SchemeManager::GetInstance()->SchemeForFile(filename);
-			SetScheme(sch);
+			if(sch != NULL && sch != SchemeManager::GetInstance()->GetDefaultScheme() && sch != GetCurrentScheme())
+			{
+				SetScheme(sch);
+			}
 		}
 		return true;
 	}

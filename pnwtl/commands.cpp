@@ -707,6 +707,7 @@ KeyToCommand DefaultKeyMap[] = {
 	{K_CTRL,		VK_OEM_4,	ID_EDIT_GOTOBRACE},
 	{K_ALT,			'G',		ID_EDIT_JUMPTO},
 	{K_CTRLSHIFT,	'H',		ID_EDIT_HEADERSWITCH},
+	{K_CTRL,		' ',		ID_EDIT_AUTOCOMPLETE},
 
 	// Bookmarks
 	{K_CTRL,		VK_F2,		ID_BOOKMARKS_TOGGLE},

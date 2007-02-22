@@ -238,4 +238,6 @@ typedef enum { eftFind, eftReplace, eftFindInFiles, eftInvalid } EFindDialogType
 
 typedef enum {FN_FULL, FN_FILE, FN_PATH, FN_FILEPART} EGFNType;
 
+typedef enum { eacManual, eacTextMatch } EACMode;
+
 #endif
