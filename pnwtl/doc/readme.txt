@@ -1,6 +1,6 @@
 ========================================
-Release Name: 2.0.7.x
-Build: 2.0.7.x, Version Label: 
+Release Name: 2.0.7.653
+Build: 2.0.7.653, Version Label: 
 ========================================
 
 What's new?
@@ -65,6 +65,7 @@ Bug Fixes:
 29) Can't copy file from magic folder to project properly (SF Bug #1576076)
 30) File type edits don't show new value in list.
 31) Minor Vista bug fixes
+32) Don't reset scheme when saving files with no extension
 
 If you find a bug:
 ------------------

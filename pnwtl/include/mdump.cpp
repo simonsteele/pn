@@ -9,9 +9,11 @@ MiniDumper::MiniDumper( LPCSTR szAppName )
 	// which is not allowed
 	PNASSERT( m_szAppName==NULL );
 
-	m_szAppName = szAppName ? strdup(szAppName) : "Application";
+	m_szAppName = szAppName ? _strdup(szAppName) : "Application";
 
 	::SetUnhandledExceptionFilter( TopLevelFilter );
+
+	_set_invalid_parameter_handler( InvalidParameterHandler );
 }
 
 LONG MiniDumper::TopLevelFilter( struct _EXCEPTION_POINTERS *pExceptionInfo )
@@ -109,4 +111,21 @@ LONG MiniDumper::TopLevelFilter( struct _EXCEPTION_POINTERS *pExceptionInfo )
 		::MessageBox( NULL, szResult, m_szAppName, MB_OK );
 
 	return retval;
+}
+
+void MiniDumper::InvalidParameterHandler( const wchar_t * expression, const wchar_t * function, const wchar_t * file, unsigned int line, uintptr_t /*pReserved*/)
+{
+#ifdef _DEBUG
+	wchar_t store_expression[255];
+	wchar_t store_function[255];
+	wchar_t store_file[MAX_PATH+1];
+
+	wcsncpy(store_expression, expression, 254);
+	wcsncpy(store_function, function, 254);
+	wcsncpy(store_file, file, MAX_PATH);
+#endif
+
+	// Restore UnhandledExceptionFilter
+	::SetUnhandledExceptionFilter( TopLevelFilter );
+	throw "Invalid Parameter";//std::exception("Invalid Parameter");
 }

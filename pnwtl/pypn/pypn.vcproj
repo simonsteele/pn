@@ -254,6 +254,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy ..\..\..\lib\boost_1_33_1\stage\lib\boost_python-vc80-mt-1_33_1.dll $(TargetDir)&#x0D;&#x0A;copy scripts\init.py $(TargetDir)"
 			/>
 		</Configuration>
 	</Configurations>

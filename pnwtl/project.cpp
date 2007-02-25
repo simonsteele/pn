@@ -104,7 +104,7 @@ File::File(LPCTSTR basePath, LPCTSTR path, Projects::Folder* parent) : ProjectTy
 {
 	CFileName fn(path);
 
-	if(fn.IsRelativePath())
+	if(fn.IsRelativePath() && _tcslen(basePath) > 0)
 	{
 		relPath = path;
 		fn.Root(basePath);

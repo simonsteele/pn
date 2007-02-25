@@ -2707,7 +2707,9 @@ BOOL CALLBACK CMainFrame::ChildEnumProc(HWND hWnd, LPARAM lParam)
 
 void CMainFrame::_setWindowText(LPCTSTR lpszNew)
 {
+#ifndef _countof
 	#define _countof(array) (sizeof(array)/sizeof(array[0]))
+#endif
 
 	int nNewLen = lstrlen(lpszNew);
 	TCHAR szOld[256];

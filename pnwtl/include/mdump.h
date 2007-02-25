@@ -1,4 +1,5 @@
 
+
 #if _MSC_VER < 1300
 #define DECLSPEC_DEPRECATED
 // VC6: change this path to your Platform SDK headers
@@ -21,6 +22,7 @@ private:
 	static LPCSTR m_szAppName;
 
 	static LONG WINAPI TopLevelFilter( struct _EXCEPTION_POINTERS *pExceptionInfo );
+	static void InvalidParameterHandler( const wchar_t * expression, const wchar_t * function, const wchar_t * file, unsigned int line, uintptr_t pReserved);
 
 public:
 	MiniDumper( LPCSTR szAppName );
