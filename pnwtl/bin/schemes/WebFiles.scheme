@@ -136,6 +136,7 @@
 	</keyword-classes>
 	
 	<language name="web" title="Hypertext" folding="true" foldcomments="false" foldcompact="false">
+		<comments streamstart="&lt;!-- " streamend=" --&gt;"/>
 		<lexer name="hypertext" stylebits="7" />
 		<property name="asp.default.language" value="2" />
 		<property name="fold.html" value="1" />
@@ -292,6 +293,7 @@
 		</use-styles>
 	</language>
 	<language name="xml" title="XML" folding="true" foldcomments="false" foldcompact="false">
+		<comments streamstart="&lt;!-- " streamend=" --&gt;"/>
 		<lexer name="xml" stylebits="7"/>
 		<property name="fold.html" value="1" />
 		<use-keywords>
@@ -331,6 +333,7 @@
 		</use-styles>
 	</language>
 	<language name="css" title="CSS" folding="false" foldcomments="false" foldcompact="false">
+		<comments streamstart="/*" streamend="*/"/>
 		<lexer name="css"/>
 		<use-keywords>
 			<keyword key="0" name="CSS 1" class="css"/>

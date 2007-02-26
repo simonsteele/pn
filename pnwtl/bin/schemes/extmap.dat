@@ -29,6 +29,11 @@
 .dsr=vb
 .dtd=xml
 .frm=vb
+.f90=fortran
+.f95=fortran
+.f2k=fortran
+.f=fortran77
+.for=fortran77
 .h=cpp
 .hpp=cpp
 .html=Web
@@ -61,8 +66,10 @@
 .sql=sql
 .tcl=tcl
 .url=properties
+.v=verilog
 .vb=vb
 .vbs=vbscript
+.vh=verilog
 .vhd=vhdl
 .xhtml=Web
 .xml=xml
