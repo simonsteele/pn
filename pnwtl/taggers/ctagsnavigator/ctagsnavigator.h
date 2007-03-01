@@ -2,7 +2,7 @@
  * @file ctagsnavigator.h
  * @brief CTAGS output parser for jump to function implementation.
  * @author Simon Steele
- * @note Copyright (c) 2004 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2004-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -19,3 +19,34 @@
 #else
 #define CPPNAVIGATOR_API __declspec(dllimport) __stdcall
 #endif
+
+#include "../../jumptointerface.h"
+
+using namespace extensions;
+
+#define PARSE_BUFFER_SIZE	16384
+
+typedef struct tagParseState
+{
+	char		buffer[PARSE_BUFFER_SIZE*2];
+	int			extra;
+	ITagSink*	sink;
+} PARSESTATE, * LPPARSESTATE;
+
+class CTagsTagSource : public ITagSource
+{
+public:
+	/**
+	 * Get a list of schemes supported
+	 */
+	virtual const char* GetSchemesSupported();
+	
+	/**
+	 * Enumerate tags
+	 */
+	virtual bool FindTags(ITagSink* sink, const wchar_t* filename, void* userData, MASKSTRUCT mask, const char* scheme);
+
+private:
+	bool canParse(char* buffer, DWORD dwLength);
+	void parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT mask, void* userData, int* ltypes, int* utypes);
+};

@@ -2,7 +2,7 @@
  * @file jumpto.h
  * @brief Jump to method stuff...
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -12,62 +12,30 @@
 #define jumpto_h__included
 
 #include "jumptointerface.h"
-#include "include/plugin.h"
 #include <map>
 
 class CChildFrame;
 class COutputView;
 
-class IJumpToFindSink
-{
-	public:
-		virtual void OnFound(int count, LPMETHODINFO methodInfo) = 0;
-};
+typedef extensions::ITagSink ITagSink;
+typedef extensions::LPMETHODINFO LPMETHODINFO;
 
-class JumpToPlugin : Plugin
-{
-	public:
-		typedef void (__stdcall *FP_CALLBACK)(int dataCount, LPMETHODINFO methodInfo, LPVOID cookie);
-
-		JumpToPlugin(LPCTSTR filename);
-		
-		virtual bool Valid();
-
-		tstring GetSchemesSupported();
-		bool GetMethods(const wchar_t* filename, void* userData, FP_CALLBACK callback, MASKSTRUCT mask, const wchar_t* scheme, LPVOID cookie);
-
-	protected:
-		typedef bool (__stdcall *LPFnGetMethods)(const wchar_t* filename, void* userData, FP_CALLBACK callback, MASKSTRUCT mask, const wchar_t* scheme, LPVOID cookie);
-		typedef void (__stdcall *LPFnGetSchemesSupported)(wchar_t* schemesBuffer, int cchBuffer);
-		typedef int (__stdcall *LPFnGetCapabilities)();
-
-		LPFnGetMethods pfnGetMethods;
-		LPFnGetSchemesSupported pfnGetSchemes;
-		LPFnGetCapabilities pfnGetCaps;
-};
-
-typedef std::map<tstring, JumpToPlugin*> HANDLERS_MAP;
-typedef std::list<JumpToPlugin*> PLUGINS_LIST;
+typedef std::map<tstring, extensions::ITagSource*> HANDLERS_MAP;
 
 class JumpToHandler : public Singleton<JumpToHandler, true>
 {
 	friend class Singleton<JumpToHandler, true>;
 
 	public:
-		void DoJumpTo(CChildFrame* pChildFrame, IJumpToFindSink* pNotifySink);
-		void LoadHandler(LPCTSTR path, LPCTSTR filename);
+		void FindTags(CChildFrame* pChildFrame, ITagSink* pNotifySink);
+		
+		void AddSource(extensions::ITagSource* source);
 
 	protected:
 		JumpToHandler();
 		~JumpToHandler();
 
-		static void __stdcall callback(int dataCount, LPMETHODINFO methodInfo, LPVOID cookie);
-
 		HANDLERS_MAP handlers;
-		PLUGINS_LIST plugins;
-
-		COutputView* outputWindow;
-		IJumpToFindSink* sink;
 };
 
 #endif

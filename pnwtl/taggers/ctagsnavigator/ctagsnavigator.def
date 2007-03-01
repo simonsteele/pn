@@ -1,6 +1,5 @@
 LIBRARY	ctagsnavigator
 
 EXPORTS
-	PNGetCapabilities
-	PNFPGetSchemesSupported
-	PNFPGetMethods
+	init_pn_extension
+	exit_pn_extension

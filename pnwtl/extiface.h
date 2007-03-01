@@ -2,7 +2,7 @@
  * @file extiface.h
  * @brief PN Extensions Interface
  * @author Simon Steele
- * @note Copyright (c) 2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2006-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -51,6 +51,7 @@ class IDocumentEventSink;
 class IScriptRegistry;
 class ITextOutput;
 class ISearchOptions;
+class ITagSource;
 /////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////
@@ -121,6 +122,9 @@ public:
 
 	/// Utility function to safely free strings given to you by PN
 	virtual void ReleaseString(const TCHAR* str) = 0;
+
+	/// Add a tag source (e.g. ctagsnavigator)
+	virtual void AddTagSource(ITagSource* tagSource) = 0;
 };
 
 /**

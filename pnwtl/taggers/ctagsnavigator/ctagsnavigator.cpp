@@ -2,7 +2,7 @@
  * @file ctagsnavigator.cpp
  * @brief CTAGS output parser for jump to function implementation.
  * @author Simon Steele
- * @note Copyright (c) 2004-2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2004-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -20,59 +20,54 @@
 #include <stdio.h>
 #endif
 
+/**
+ * Global instance of the tag source
+ */
+CTagsTagSource g_source;
+
+/**
+ * DllMain
+ */
 BOOL APIENTRY DllMain( HANDLE /*hModule*/, 
-                       DWORD  ul_reason_for_call, 
+                       DWORD  /*ul_reason_for_call*/, 
                        LPVOID /*lpReserved*/
 					 )
 {
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
     return TRUE;
 }
 
-// PN Plugin Capabilities...
-#define PNCAPS_FUNCTIONFINDER		1
-#define PNCAPS_PARSEDIRECT			1 << 1
-
-typedef struct tagMethodInfo
-{
-	int			type;			// i.e. PNMETHOD_FUNCTION, PNMETHOD_PROCEDURE, PNMETHOD_CLASS etc.
-	char*		methodName;		// i.e. Tag
-	char*		parentName;		// i.e. class name, package name etc.
-	char*		fullText;		// i.e. void myfunction(string, banana);
-	long		lineNumber;		// line number of method in file.
-	short		image;			// i.e. PNMETHODIMAGE_FUNCTION, PNMETHODIMAGE_...
-	void* 		userData;		// from where
-} METHODINFO, * LPMETHODINFO;
-
-typedef void (__stdcall *FP_CALLBACK)(int dataCount, LPMETHODINFO methodInfo, LPVOID cookie);
-
 /**
- * Get the capabilities of this plugin - a combination of PNCAPS_ values.
+ * Initialise the extension
  */
-int CPPNAVIGATOR_API PNGetCapabilities()
+bool __stdcall init_pn_extension(int iface_version, extensions::IPN* pn)
 {
-	return PNCAPS_FUNCTIONFINDER;
+	if(iface_version != PN_EXT_IFACE_VERSION)
+		return false;
+
+	pn->AddTagSource(&g_source);
+
+	return true;
 }
 
 /**
- * Copy the semi-colon separated list of scheme names that this
- * plugin supports for definition finding into the buffer provided.
+ * Close the extension
  */
-void CPPNAVIGATOR_API PNFPGetSchemesSupported(wchar_t* schemesBuffer, int cchBuffer)
+void __stdcall exit_pn_extension()
 {
-	wcsncpy(schemesBuffer, L"assembler;cobol;cpp;csharp;eiffel;erlang;java;javascript;lisp;lua;makefile;pascal;perl;plsql;python;ruby;shell;tcl;vb;verilog;vhdl;vim;yacc;web", cchBuffer);
+	// TODO: Cleanup
 }
 
-#define CTAGSOPTS	L" --fields=+n -f - " // must start and end with a space.
-#define CTAGSLANGOPTS L" --language-force="
+/**
+ * Get a list of schemes supported
+ */
+const char* CTagsTagSource::GetSchemesSupported()
+{
+	return "assembler;cobol;cpp;csharp;eiffel;erlang;java;javascript;lisp;lua;makefile;pascal;perl;plsql;python;ruby;shell;tcl;vb;verilog;vhdl;vim;yacc;web";
+}
 
+/**
+ * Simple string buffer helper
+ */
 class TinyString
 {
 public:
@@ -90,17 +85,254 @@ protected:
 	wchar_t* _str;
 };
 
-#define PARSE_BUFFER_SIZE	16384
 
-typedef struct tagParseState
+#define MAX_LANGUAGE	12
+#define CTAGSOPTS	L" --fields=+n -f - " // must start and end with a space.
+#define CTAGSLANGOPTS L" --language-force="
+
+/**
+ * Called by PN when it wants to have methods returned to it.
+ * @param filename the filename of the file to parse. Null if CAPS_PARSEDIRECT is returned in capabilities.
+ * @param editorWnd the HWND for the editor window containing code to parse.
+ * @param callback function pointer for the callback to provide method information with.
+ * @return false if the information cannot be parsed. True otherwise.
+ */
+bool CTagsTagSource::FindTags(ITagSink* sink,
+		const wchar_t*	filename, 
+		void*			userData,
+		MASKSTRUCT		mask,
+		const char*		scheme)
 {
-	char		buffer[PARSE_BUFFER_SIZE*2];
-	int			extra;
-	FP_CALLBACK	callback;
-} PARSESTATE, * LPPARSESTATE;
+	bool bRet = true;
+
+	int* ltypes;
+	int* utypes;
+	getTables(scheme, &ltypes, &utypes);
+
+	PARSESTATE state;
+	memset(&state, 0, sizeof(PARSESTATE));
+	state.sink = sink;
+
+	wchar_t* cmd = L"ctags";
+	wchar_t* dir = NULL;
+	wchar_t* clopts = new wchar_t[wcslen(cmd)+wcslen(CTAGSOPTS)+wcslen(CTAGSLANGOPTS)+MAX_LANGUAGE+wcslen(filename)+3];
+	wcscpy(clopts, cmd);
+
+	LPCWSTR lang = GetLanguage(filename, scheme);
+	if(lang != NULL)
+	{
+		wcscat(clopts, CTAGSLANGOPTS);
+		wcscat(clopts, lang);
+	}
+
+	wcscat(clopts, CTAGSOPTS);
+	wcscat(clopts, L"\"");
+	wcscat(clopts, filename);
+	wcscat(clopts, L"\"");
+
+	TinyString runopts(clopts);
+
+	//::OutputDebugString(clopts);
+	//::OutputDebugString(L"\n");
+
+	OSVERSIONINFO osv = {sizeof(OSVERSIONINFO), 0, 0, 0, 0, L""};
+
+	::GetVersionEx(&osv);
+	bool bWin9x = osv.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS;
+	
+	SECURITY_ATTRIBUTES sa = {sizeof(SECURITY_ATTRIBUTES), 0, 0};
+	sa.bInheritHandle = TRUE;
+	sa.lpSecurityDescriptor = NULL;
+
+	SECURITY_DESCRIPTOR sd;
+	if(!bWin9x)
+	{
+		// On NT we can have a proper security descriptor...
+		::InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
+		::SetSecurityDescriptorDacl(&sd, TRUE, NULL, FALSE);
+		sa.lpSecurityDescriptor = &sd;
+	}
+
+	HANDLE hWritePipe, hReadPipe;
+	HANDLE hStdInWrite, hStdInRead;
+	
+    if( ! ::CreatePipe(&hReadPipe, &hWritePipe, &sa, 0) )
+	{
+		return false;
+	}
+
+	// read handle, write handle, security attributes,  number of bytes reserved for pipe - 0 default
+	
+	if( ! ::CreatePipe(&hStdInRead, &hStdInWrite, &sa, 0) )
+	{
+		::CloseHandle(hReadPipe);
+		::CloseHandle(hWritePipe);
+		return false;
+	}
+
+	::SetHandleInformation(hReadPipe, HANDLE_FLAG_INHERIT, 0);
+	::SetHandleInformation(hStdInWrite, HANDLE_FLAG_INHERIT, 0);
+
+	STARTUPINFO si;
+	memset(&si, 0, sizeof(STARTUPINFO));
+	si.cb = sizeof(STARTUPINFO);
+	si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
+	si.wShowWindow = SW_HIDE;
+	si.hStdInput = hStdInRead;
+	si.hStdOutput = hWritePipe;
+	si.hStdError = hWritePipe;
+
+	PROCESS_INFORMATION pi = {0, 0, 0, 0};
+
+	bool bCreated = ::CreateProcessW(
+		NULL, 
+		clopts, 
+		&sa, /*LPSECURITY_ATTRIBUTES lpProcessAttributes*/
+		NULL, /*LPSECURITYATTRIBUTES lpThreadAttributes*/
+		TRUE, /*BOOL bInheritHandles*/ 
+		CREATE_NEW_PROCESS_GROUP, /*DWORD dwCreationFlags*/
+		NULL, /*LPVOID lpEnvironment*/
+		dir, /*LPCTSTR lpWorkingDir*/
+		&si, /*LPSTARTUPINFO lpStartupInfo*/
+		&pi /*LPPROCESS_INFORMATION lpProcessInformation*/ 
+	) != 0;
+
+	if(!bCreated)
+	{
+		::CloseHandle(hReadPipe);
+		::CloseHandle(hWritePipe);
+		::CloseHandle(hStdInRead);
+		::CloseHandle(hStdInWrite);
+
+		return false;
+	}
+
+	DWORD dwBytesAvail, dwBytesRead, exitCode, timeDeathDetected;
+	dwBytesAvail = dwBytesRead = exitCode = timeDeathDetected = 0;
+	bool bCompleted = false;
+	bool bLastRead = false;
+	
+	// Always read 50% into the buffer. Buffer is 2xPARSE_BUFFER_SIZE for
+	// continuation purposes.
+	char* buffer = &state.buffer[PARSE_BUFFER_SIZE];
+
+#ifdef _DEBUG
+	DWORD ticks = ::GetTickCount();
+	FILE* fDump = fopen("c:\\tagdump.txt", "wb");
+#endif
+
+	while(!bCompleted || bLastRead)
+	{
+		// Give ctags a chance to do some work - we give up our timeslice.
+		Sleep(0);
+
+		//The PeekNamedPipe function copies data from a named or 
+		// anonymous pipe into a buffer without removing it from the pipe.
+		if(! ::PeekNamedPipe(hReadPipe, NULL, 0, NULL, &dwBytesAvail, NULL) )
+		{
+			dwBytesAvail = 0;
+		}
+
+		if(dwBytesAvail > 0)
+		{
+			BOOL bRead = ::ReadFile(hReadPipe, buffer, PARSE_BUFFER_SIZE, &dwBytesRead, NULL);
+
+			if(bRead && dwBytesRead)
+			{
+#ifdef _DEBUG
+				fwrite(buffer, dwBytesRead, 1, fDump);
+#endif
+				// Parse the CTAGS data:
+				parseData(&state, dwBytesRead, mask, userData, ltypes, utypes);
+			}
+			else
+			{
+				// Couldn't read from the pipe, must be finished...
+				bCompleted = true;
+			}
+		}
+		else
+		{
+			exitCode = STILL_ACTIVE;
+
+			if(bCompleted)
+				bLastRead = false;
+
+			// No data from the process, is it still active?
+			::GetExitCodeProcess(pi.hProcess, &exitCode);
+			if(STILL_ACTIVE != exitCode)
+			{
+				if(bWin9x)
+				{
+					// If we're running on Windows 9x then we give the
+					// process some time to return the remainder of its data.
+					// We wait until a pre-set amount of time has elapsed and
+					// then exit.
+
+					if(timeDeathDetected == 0)
+					{
+						timeDeathDetected = ::GetTickCount();
+					}
+					else
+					{
+						///@todo Get this value from the registry...
+						if((::GetTickCount() - timeDeathDetected) > 500)
+						{
+							bCompleted = true;
+						}
+					}
+				}
+				else
+				{
+					// If NT, then the process is already dead.
+					bCompleted = true;
+
+					// Prevent a race condition where the process writes data, and 
+					// then exits between our peek and our dead check.
+					if(! ::PeekNamedPipe(hReadPipe, NULL, 0, NULL, &dwBytesAvail, NULL) )
+					{
+						dwBytesAvail = 0;
+					}
+					else if(dwBytesAvail > 0)
+						bLastRead = true;
+				}
+			}
+		}
+
+		
+	} // while (!bCompleted)
+
+#ifdef _DEBUG
+	ticks = GetTickCount() - ticks;
+	wchar_t timebuf[300];
+	swprintf(timebuf, L"ctagsnavigator time taken: %d\n", ticks);
+	::OutputDebugString(timebuf);
+#endif
+
+	if (WAIT_OBJECT_0 != ::WaitForSingleObject(pi.hProcess, 1000)) 
+	{
+		bRet = false;
+		::TerminateProcess(pi.hProcess, 2);
+	}
+
+	::GetExitCodeProcess(pi.hProcess, &exitCode);
+
+	::CloseHandle(pi.hProcess);
+	::CloseHandle(pi.hThread);
+	::CloseHandle(hReadPipe);
+	::CloseHandle(hWritePipe);
+	::CloseHandle(hStdInRead);
+	::CloseHandle(hStdInWrite);
+
+#ifdef _DEBUG
+	::fclose(fDump);
+#endif
+
+	return bRet;
+}
 
 // check for a CR before the end of the buffer.
-bool canParse(char* buffer, DWORD dwLength)
+bool CTagsTagSource::canParse(char* buffer, DWORD dwLength)
 {
 	if(dwLength <= 2)
 		return false;
@@ -122,7 +354,10 @@ bool canParse(char* buffer, DWORD dwLength)
 
 #define TAB "\t"
 
-void parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT mask, LPVOID cookie, void* userData, int* ltypes, int* utypes)
+/**
+ * Parse a buffer that's been read
+ */
+void CTagsTagSource::parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT mask, void* userData, int* ltypes, int* utypes)
 {
 	METHODINFO mi;
 
@@ -245,7 +480,7 @@ void parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT mask, LPVOID co
 
 			// send method.
 			if ( ((maskVals[mi.type].mask1 & mask.mask1) != 0) || ((maskVals[mi.type].mask2 & mask.mask2) != 0) )
-				state->callback(1, &mi, cookie);
+				state->sink->OnFound(1, &mi);
 
 			bytesLeft = bytesTotal - (p - pStart);
 		}
@@ -260,250 +495,4 @@ void parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT mask, LPVOID co
 	}
 	else
 		state->extra = 0;
-}
-
-#define MAX_LANGUAGE	12
-
-/**
- * Called by PN when it wants to have methods returned to it.
- * @param filename the filename of the file to parse. Null if CAPS_PARSEDIRECT is returned in capabilities.
- * @param editorWnd the HWND for the editor window containing code to parse.
- * @param callback function pointer for the callback to provide method information with.
- * @return false if the information cannot be parsed. True otherwise.
- */
-bool CPPNAVIGATOR_API PNFPGetMethods(
-		const wchar_t* filename, 
-		void*		   userData,
-//		HWND /*editorWnd*/, 
-		FP_CALLBACK callback, 
-		MASKSTRUCT mask,
-		const wchar_t* scheme,
-		LPVOID cookie)
-{
-	bool bRet = true;
-
-	int* ltypes;
-	int* utypes;
-	getTables(scheme, &ltypes, &utypes);
-
-	PARSESTATE state;
-	memset(&state, 0, sizeof(PARSESTATE));
-	state.callback = callback;
-
-	wchar_t* cmd = L"ctags";
-	wchar_t* dir = NULL;
-	wchar_t* clopts = new wchar_t[wcslen(cmd)+wcslen(CTAGSOPTS)+wcslen(CTAGSLANGOPTS)+MAX_LANGUAGE+wcslen(filename)+3];
-	wcscpy(clopts, cmd);
-
-	LPCWSTR lang = GetLanguage(filename, scheme);
-	if(lang != NULL)
-	{
-		wcscat(clopts, CTAGSLANGOPTS);
-		wcscat(clopts, lang);
-	}
-
-	wcscat(clopts, CTAGSOPTS);
-	wcscat(clopts, L"\"");
-	wcscat(clopts, filename);
-	wcscat(clopts, L"\"");
-
-	TinyString runopts(clopts);
-
-	::OutputDebugString(clopts);
-	 ::OutputDebugString(L"\n");
-
-	OSVERSIONINFO osv = {sizeof(OSVERSIONINFO), 0, 0, 0, 0, L""};
-
-	::GetVersionEx(&osv);
-	bool bWin9x = osv.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS;
-	
-	SECURITY_ATTRIBUTES sa = {sizeof(SECURITY_ATTRIBUTES), 0, 0};
-	sa.bInheritHandle = TRUE;
-	sa.lpSecurityDescriptor = NULL;
-
-	SECURITY_DESCRIPTOR sd;
-	if(!bWin9x)
-	{
-		// On NT we can have a proper security descriptor...
-		::InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
-		::SetSecurityDescriptorDacl(&sd, TRUE, NULL, FALSE);
-		sa.lpSecurityDescriptor = &sd;
-	}
-
-	HANDLE hWritePipe, hReadPipe;
-	HANDLE hStdInWrite, hStdInRead;
-	
-    if( ! ::CreatePipe(&hReadPipe, &hWritePipe, &sa, 0) )
-	{
-		return false;
-	}
-
-	// read handle, write handle, security attributes,  number of bytes reserved for pipe - 0 default
-	
-	if( ! ::CreatePipe(&hStdInRead, &hStdInWrite, &sa, 0) )
-	{
-		::CloseHandle(hReadPipe);
-		::CloseHandle(hWritePipe);
-		return false;
-	}
-
-	::SetHandleInformation(hReadPipe, HANDLE_FLAG_INHERIT, 0);
-	::SetHandleInformation(hStdInWrite, HANDLE_FLAG_INHERIT, 0);
-
-	STARTUPINFO si;
-	memset(&si, 0, sizeof(STARTUPINFO));
-	si.cb = sizeof(STARTUPINFO);
-	si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
-	si.wShowWindow = SW_HIDE;
-	si.hStdInput = hStdInRead;
-	si.hStdOutput = hWritePipe;
-	si.hStdError = hWritePipe;
-
-	PROCESS_INFORMATION pi = {0, 0, 0, 0};
-
-	bool bCreated = ::CreateProcessW(
-		NULL, 
-		clopts, 
-		&sa, /*LPSECURITY_ATTRIBUTES lpProcessAttributes*/
-		NULL, /*LPSECURITYATTRIBUTES lpThreadAttributes*/
-		TRUE, /*BOOL bInheritHandles*/ 
-		CREATE_NEW_PROCESS_GROUP, /*DWORD dwCreationFlags*/
-		NULL, /*LPVOID lpEnvironment*/
-		dir, /*LPCTSTR lpWorkingDir*/
-		&si, /*LPSTARTUPINFO lpStartupInfo*/
-		&pi /*LPPROCESS_INFORMATION lpProcessInformation*/ 
-	) != 0;
-
-	if(!bCreated)
-	{
-		::CloseHandle(hReadPipe);
-		::CloseHandle(hWritePipe);
-		::CloseHandle(hStdInRead);
-		::CloseHandle(hStdInWrite);
-
-		return false;
-	}
-
-	DWORD dwBytesAvail, dwBytesRead, exitCode, timeDeathDetected;
-	dwBytesAvail = dwBytesRead = exitCode = timeDeathDetected = 0;
-	bool bCompleted = false;
-	bool bLastRead = false;
-	
-	// Always read 50% into the buffer. Buffer is 2xPARSE_BUFFER_SIZE for
-	// continuation purposes.
-	char* buffer = &state.buffer[PARSE_BUFFER_SIZE];
-
-#ifdef _DEBUG
-	DWORD ticks = ::GetTickCount();
-	FILE* fDump = fopen("c:\\tagdump.txt", "wb");
-#endif
-
-	while(!bCompleted || bLastRead)
-	{
-		// Give ctags a chance to do some work - we give up our timeslice.
-		Sleep(0);
-
-		//The PeekNamedPipe function copies data from a named or 
-		// anonymous pipe into a buffer without removing it from the pipe.
-		if(! ::PeekNamedPipe(hReadPipe, NULL, 0, NULL, &dwBytesAvail, NULL) )
-		{
-			dwBytesAvail = 0;
-		}
-
-		if(dwBytesAvail > 0)
-		{
-			BOOL bRead = ::ReadFile(hReadPipe, buffer, PARSE_BUFFER_SIZE, &dwBytesRead, NULL);
-
-			if(bRead && dwBytesRead)
-			{
-#ifdef _DEBUG
-				fwrite(buffer, dwBytesRead, 1, fDump);
-#endif
-				// Parse the CTAGS data:
-				parseData(&state, dwBytesRead, mask, cookie, userData, ltypes, utypes);
-			}
-			else
-			{
-				// Couldn't read from the pipe, must be finished...
-				bCompleted = true;
-			}
-		}
-		else
-		{
-			exitCode = STILL_ACTIVE;
-
-			if(bCompleted)
-				bLastRead = false;
-
-			// No data from the process, is it still active?
-			::GetExitCodeProcess(pi.hProcess, &exitCode);
-			if(STILL_ACTIVE != exitCode)
-			{
-				if(bWin9x)
-				{
-					// If we're running on Windows 9x then we give the
-					// process some time to return the remainder of its data.
-					// We wait until a pre-set amount of time has elapsed and
-					// then exit.
-
-					if(timeDeathDetected == 0)
-					{
-						timeDeathDetected = ::GetTickCount();
-					}
-					else
-					{
-						///@todo Get this value from the registry...
-						if((::GetTickCount() - timeDeathDetected) > 500)
-						{
-							bCompleted = true;
-						}
-					}
-				}
-				else
-				{
-					// If NT, then the process is already dead.
-					bCompleted = true;
-
-					// Prevent a race condition where the process writes data, and 
-					// then exits between our peek and our dead check.
-					if(! ::PeekNamedPipe(hReadPipe, NULL, 0, NULL, &dwBytesAvail, NULL) )
-					{
-						dwBytesAvail = 0;
-					}
-					else if(dwBytesAvail > 0)
-						bLastRead = true;
-				}
-			}
-		}
-
-		
-	} // while (!bCompleted)
-
-#ifdef _DEBUG
-	ticks = GetTickCount() - ticks;
-	wchar_t timebuf[300];
-	swprintf(timebuf, L"ctagsnavigator time taken: %d\n", ticks);
-	::OutputDebugString(timebuf);
-#endif
-
-	if (WAIT_OBJECT_0 != ::WaitForSingleObject(pi.hProcess, 1000)) 
-	{
-		bRet = false;
-		::TerminateProcess(pi.hProcess, 2);
-	}
-
-	::GetExitCodeProcess(pi.hProcess, &exitCode);
-
-	::CloseHandle(pi.hProcess);
-	::CloseHandle(pi.hThread);
-	::CloseHandle(hReadPipe);
-	::CloseHandle(hWritePipe);
-	::CloseHandle(hStdInRead);
-	::CloseHandle(hStdInWrite);
-
-#ifdef _DEBUG
-	::fclose(fDump);
-#endif
-
-	return bRet;
 }

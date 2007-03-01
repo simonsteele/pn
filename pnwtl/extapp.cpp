@@ -2,7 +2,7 @@
  * @file extapp.cpp
  * @brief Implement IPN and the basic App services
  * @author Simon Steele
- * @note Copyright (c) 2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2006-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -259,6 +259,12 @@ void App::AddEventSink(extensions::IAppEventSinkPtr sink)
 void App::RemoveEventSink(extensions::IAppEventSinkPtr sink)
 {
 	m_sinks.remove(sink);
+}
+
+/// Add a tag source (e.g. ctagsnavigator)
+void App::AddTagSource(extensions::ITagSource* tagSource)
+{
+	JumpToHandler::GetInstance()->AddSource(tagSource);
 }
 
 /**

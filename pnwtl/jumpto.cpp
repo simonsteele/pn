@@ -1,3 +1,12 @@
+/**
+ * @file jumpto.cpp
+ * @brief Tag finding stuff, interfaces for plugins
+ * @author Simon Steele
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #include "stdafx.h"
 #include "resource.h"
 #include "childfrm.h"
@@ -9,123 +18,44 @@
 #include "include/tempfile.h"
 
 //////////////////////////////////////////////////////////////////////////////
-// JumpToPlugin
-//////////////////////////////////////////////////////////////////////////////
-
-JumpToPlugin::JumpToPlugin(LPCTSTR filename) : Plugin(filename)
-{
-	pfnGetCaps = NULL;
-	pfnGetSchemes = NULL;
-	pfnGetMethods = NULL;
-	
-	if(Plugin::Valid())
-	{
-		pfnGetCaps = (LPFnGetCapabilities)FindFunction("PNGetCapabilities");
-
-		if(!pfnGetCaps)
-			return;
-
-		int caps = pfnGetCaps();
-		if((caps & PNCAPS_FUNCTIONFINDER) == 0)
-		{
-			unload();
-			return;
-		}
-
-		pfnGetSchemes = (LPFnGetSchemesSupported)FindFunction("PNFPGetSchemesSupported");
-		pfnGetMethods = (LPFnGetMethods)FindFunction("PNFPGetMethods");
-
-		if(pfnGetMethods == NULL || pfnGetSchemes == NULL)
-		{
-			unload();
-		}
-	}
-}
-
-bool JumpToPlugin::Valid()
-{
-	bool valid = Plugin::Valid();
-
-	return valid && (pfnGetMethods != NULL);
-}
-
-tstring JumpToPlugin::GetSchemesSupported()
-{
-	if(!Valid())
-		return tstring("");
-
-	wchar_t buffer[200];
-	pfnGetSchemes(buffer, 200);
-
-	USES_CONVERSION;
-	return tstring(CW2T(buffer));
-}
-
-bool JumpToPlugin::GetMethods(const wchar_t* filename, void* userData, FP_CALLBACK callback, MASKSTRUCT mask, const wchar_t* scheme, LPVOID cookie)
-{
-	if(!Valid())
-		return false;
-
-	return pfnGetMethods(filename, userData, callback, mask, scheme, cookie);
-}
-
-//////////////////////////////////////////////////////////////////////////////
 // JumpToHandler
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Constructor
+ */
 JumpToHandler::JumpToHandler()
 {
-	FileFinder<JumpToHandler> finder(this, &JumpToHandler::LoadHandler);
 
-	tstring pnpath;
-	OPTIONS->GetPNPath(pnpath, PNPATH_TAGGERS);
-
-	finder.Find(pnpath.c_str(), _T("*.dll"), false);
 }
 
+/**
+ * Destructor
+ */
 JumpToHandler::~JumpToHandler()
 {
-	for(PLUGINS_LIST::iterator i = plugins.begin(); i != plugins.end(); ++i)
-	{
-		delete (*i);
-	}
-	plugins.clear();
 	handlers.clear();
 }
 
-void JumpToHandler::LoadHandler(LPCTSTR path, LPCTSTR filename)
+/**
+ * Add a source
+ */
+void JumpToHandler::AddSource(extensions::ITagSource* source)
 {
-	tstring fn = path;
-	fn += filename;
-
-	JumpToPlugin* pPlugin = new JumpToPlugin(fn.c_str());
-
-	if(pPlugin->Valid())
+	char* schemesstr = _strdup(source->GetSchemesSupported());
+	char* p = _tcstok(schemesstr, _T(";"));
+	while(p)
 	{
-		plugins.insert(plugins.end(), pPlugin);
-		
-		tstring supportedSchemes = pPlugin->GetSchemesSupported();
-		
-		if(supportedSchemes.size())
-		{
-			TCHAR* buf = new TCHAR[supportedSchemes.size()+1];
-			_tcscpy(buf, supportedSchemes.c_str());
-			
-			TCHAR* p = _tcstok(buf, _T(";"));
-			while(p)
-			{
-				handlers.insert(HANDLERS_MAP::value_type(tstring(p), pPlugin));
-				p = _tcstok(NULL, _T(";"));
-			}
-			
-			delete [] buf;
-		}		
+		handlers.insert( HANDLERS_MAP::value_type(tstring(p), source) );
+		p = _tcstok(NULL, _T(";"));
 	}
-	else
-		delete pPlugin;
+	free(schemesstr);
 }
 
-void JumpToHandler::DoJumpTo(CChildFrame* pChildFrame, IJumpToFindSink* pNotifySink)
+/**
+ * Find tags
+ */
+void JumpToHandler::FindTags(CChildFrame* pChildFrame, ITagSink* pNotifySink)
 {
 	USES_CONVERSION;
 	MASKSTRUCT		tagMaskAll={~0,~0};
@@ -134,19 +64,19 @@ void JumpToHandler::DoJumpTo(CChildFrame* pChildFrame, IJumpToFindSink* pNotifyS
 	Scheme* pScheme = pChildFrame->GetTextView()->GetCurrentScheme();
 	tstring schemeName = pScheme->GetName();
 	
-	JumpToPlugin* pPlugin = NULL;
+	extensions::ITagSource* pSource = NULL;
 
 	HANDLERS_MAP::iterator iHandler = handlers.find(schemeName);
 	if(iHandler != handlers.end())
 	{
-		pPlugin = (*iHandler).second;
+		pSource = (*iHandler).second;
 	}
 
-	if(!pPlugin)
+	if(!pSource)
+	{
 		return;
+	}
 
-	tstring fn;
-	//const wchar_t* pFN = NULL;
 	TempFileName* tfn = NULL;
 
 	std::wstring fnstr;
@@ -168,17 +98,10 @@ void JumpToHandler::DoJumpTo(CChildFrame* pChildFrame, IJumpToFindSink* pNotifyS
 	}
 	else
 	{
-		fn = pChildFrame->GetFileName();
-		fnstr = CT2CW(fn.c_str());
+		fnstr = CT2CW(pChildFrame->GetFileName().c_str());
 	}
-
-//	const wchar_t* pSN = CT2CW(pChildFrame->GetTextView()->GetCurrentScheme()->GetName());//Manuel Sandoval: CT2CW returns an invalid pointer
-	CT2CW tmpStr(pChildFrame->GetTextView()->GetCurrentScheme()->GetName());
-	const wchar_t* pSN = tmpStr.m_szBuffer;
-
-	sink = pNotifySink;
 	
-	if(!pPlugin->GetMethods(fnstr.c_str(), static_cast<void*>(pChildFrame), &JumpToHandler::callback, tagMaskAll, pSN, (LPVOID)this))
+	if(!pSource->FindTags(pNotifySink, fnstr.c_str(), static_cast<void*>(pChildFrame), tagMaskAll, schemeName.c_str()))
 	{
 		g_Context.m_frame->SetStatusText(_T("Failed to run tagger."));
 	}
@@ -188,9 +111,4 @@ void JumpToHandler::DoJumpTo(CChildFrame* pChildFrame, IJumpToFindSink* pNotifyS
 		tfn->erase();
 		delete tfn;
 	}
-}
-
-void __stdcall JumpToHandler::callback(int dataCount, LPMETHODINFO methodInfo, LPVOID cookie)
-{
-	static_cast<JumpToHandler*>(cookie)->sink->OnFound(dataCount, methodInfo);
 }

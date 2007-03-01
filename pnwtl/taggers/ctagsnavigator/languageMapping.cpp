@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "languageMapping.h"
 
-LPCWSTR GetLanguage(LPCWSTR filename, LPCWSTR scheme)
+LPCWSTR GetLanguage(LPCWSTR filename, const char* scheme)
 {
 /* Unsupported so far: Awk, BETA, REXX, Scheme, SLang, SML, Vera*/
 
@@ -21,53 +21,53 @@ LPCWSTR GetLanguage(LPCWSTR filename, LPCWSTR scheme)
 			return NULL;
 	}
 
-	if(wcscmp(L"cpp", scheme) == 0)
+	if(strcmp("cpp", scheme) == 0)
 		return L"C++";
-	else if(wcscmp(L"csharp", scheme) == 0)
+	else if(strcmp("csharp", scheme) == 0)
 		return L"C#";
-	else if(wcscmp(L"assembler", scheme) == 0)
+	else if(strcmp("assembler", scheme) == 0)
 		return L"Asm";
-	else if(wcscmp(L"cobol", scheme) == 0)
+	else if(strcmp("cobol", scheme) == 0)
 		return L"Cobol";
-	else if(wcscmp(L"eiffel", scheme) == 0)
+	else if(strcmp("eiffel", scheme) == 0)
 		return L"Eiffel";
-	else if(wcscmp(L"erlang", scheme) == 0)
+	else if(strcmp("erlang", scheme) == 0)
 		return L"Erlang";
-	else if(wcscmp(L"fortran", scheme) == 0)
+	else if(strcmp("fortran", scheme) == 0)
 		return L"Fortran";
-	else if(wcscmp(L"java", scheme) == 0)
+	else if(strcmp("java", scheme) == 0)
 		return L"Java";
-	else if(wcscmp(L"javascript", scheme) == 0)
+	else if(strcmp("javascript", scheme) == 0)
 		return L"JavaScript";
-	else if(wcscmp(L"web", scheme) == 0)
+	else if(strcmp("web", scheme) == 0)
 		return L"PHP"; // hope for the best...
-	else if(wcscmp(L"lisp", scheme) == 0)
+	else if(strcmp("lisp", scheme) == 0)
 		return L"Lisp";
-	else if(wcscmp(L"lua", scheme) == 0)
+	else if(strcmp("lua", scheme) == 0)
 		return L"Lua";
-	else if(wcscmp(L"makefile", scheme) == 0)
+	else if(strcmp("makefile", scheme) == 0)
 		return L"Make";
-	else if(wcscmp(L"pascal", scheme) == 0)
+	else if(strcmp("pascal", scheme) == 0)
 		return L"Pascal";
-	else if(wcscmp(L"perl", scheme) == 0)
+	else if(strcmp("perl", scheme) == 0)
 		return L"Perl";
-	else if(wcscmp(L"python", scheme) == 0)
+	else if(strcmp("python", scheme) == 0)
 		return L"Python";
-	else if(wcscmp(L"plsql", scheme) == 0)
+	else if(strcmp("plsql", scheme) == 0)
 		return L"SQL";
-	else if(wcscmp(L"ruby", scheme) == 0)
+	else if(strcmp("ruby", scheme) == 0)
 		return L"Ruby";
-	else if(wcscmp(L"shell", scheme) == 0)
+	else if(strcmp("shell", scheme) == 0)
 		return L"Sh";
-	else if(wcscmp(L"tcl", scheme) == 0)
+	else if(strcmp("tcl", scheme) == 0)
 		return L"Tcl";
-	else if(wcscmp(L"verilog", scheme) == 0)
+	else if(strcmp("verilog", scheme) == 0)
 		return L"Verilog";
-	else if(wcscmp(L"vim", scheme) == 0)
+	else if(strcmp("vim", scheme) == 0)
 		return L"Vim";
-	else if(wcscmp(L"yacc", scheme) == 0)
+	else if(strcmp("yacc", scheme) == 0)
 		return L"YACC";
-	else if(wcscmp(L"vhdl", scheme) == 0)
+	else if(strcmp("vhdl", scheme) == 0)
 		return L"Vhdl";
 
 	return NULL;

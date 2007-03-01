@@ -2,7 +2,7 @@
  * @file jumpview.cpp
  * @brief View to display ctags trees.
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -154,7 +154,7 @@ CToolTipCtrl pmyToolTip;
 	SetItemData(hFolder,reinterpret_cast<DWORD_PTR>( pChildFrame ));
 	SetItemState(hFolder, TVIS_BOLD, TVIS_BOLD);
 	SetItemState(hFolder, TVIF_DI_SETITEM, TVIF_DI_SETITEM);
-	JumpToHandler::GetInstance()->DoJumpTo(pChildFrame, this);
+	JumpToHandler::GetInstance()->FindTags(pChildFrame, this);
 	if( GetChildItem(hFolder)){
 		SortChildren(hFolder);
 		activateFileTree(pChildFrame);
@@ -282,36 +282,41 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 	if(methodInfo->parentName)  		
 	{
 		//For now we don't know what to do with anonomous classes/structs:
-		if(!strncmp(methodInfo->parentName,"__",2))return 0;
+		if(!strncmp(methodInfo->parentName, "__", 2))
+			return 0;
 
 		//When an item has parentName, it's assumed to be owned by a class/struct.
 		//An owner can be in the form class1.class2...classn. So first find class1:
 		//I assume structs and classes can't have repeated names (?)
 		char FirstAncestor[256];
-		memset(FirstAncestor,0,sizeof(FirstAncestor));
-		int i=0;
-		while((methodInfo->parentName[i]!='.')&&(methodInfo->parentName[i]))
+		memset(FirstAncestor, 0, sizeof(FirstAncestor));
+		int i = 0;
+		while((methodInfo->parentName[i] != '.') && (methodInfo->parentName[i]))
 		{
-			FirstAncestor[i]=methodInfo->parentName[i];
+			FirstAncestor[i] = methodInfo->parentName[i];
 			i++;			
 			//I don't think there is a class name longer than 256!
 			//But anyway: it's MANDATORY that strings are null terminated.
 			//So we must warrant there is enough room for it
-			if(i>=sizeof(FirstAncestor)-2){ATLASSERT(false);break;}
+			if(i >= sizeof(FirstAncestor)-2)
+			{
+				ATLASSERT(false);
+				break;
+			}
 		}				
 		//first find the "class" node in root. "
 		LPMETHODINFO methodInfoItem;
-		HTREEITEM hClassNode= 0;
-		HTREEITEM hClassContainer= GetChildItem(hRoot);		
-		bool found=false;
+		HTREEITEM hClassNode = 0;
+		HTREEITEM hClassContainer = GetChildItem(hRoot);		
+		bool found = false;
 		while (hClassContainer) 
 		{
 			methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hClassContainer));
 			//If we have "class"/"struct" node, try to find the owner class/struct in it:
-			if((methodInfoItem->type==tag_class)
-			|| (methodInfoItem->type==tag_struct)
-			|| (methodInfoItem->type==tag_union)
-			|| (methodInfoItem->type==tag_typedef))
+			if((methodInfoItem->type == tag_class)
+			|| (methodInfoItem->type == tag_struct)
+			|| (methodInfoItem->type == tag_union)
+			|| (methodInfoItem->type == tag_typedef))
 			{						
 				hClassNode = GetChildItem(hClassContainer);			
 				while (hClassNode) 
@@ -321,53 +326,55 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 					{				
 						if (!strcmp(methodInfoItem->methodName,FirstAncestor)){found=true;break;}
 					}
-					hClassNode=GetNextItem(hClassNode, TVGN_NEXT );
+					hClassNode = GetNextItem(hClassNode, TVGN_NEXT );
 				}				
 			}
-			if(!found)hClassContainer=GetNextItem(hClassContainer, TVGN_NEXT );
-			else break;
+			if(!found)
+				hClassContainer = GetNextItem(hClassContainer, TVGN_NEXT );
+			else 
+				break;
 		}		
 			
 		//If "class"/"struct" node still doesn't exist, or owner class/struct doesn't exist, create them:
 		if(!hClassContainer || !hClassNode)
 		{		
 			//hClassNode=hRoot; //Insert in current node
-			METHODINFO *mi=new METHODINFO;
-			if(methodInfo->parentName[0]=='_')
-				mi->type=tag_struct;
+			LPMETHODINFO mi = new extensions::METHODINFO;
+			if(methodInfo->parentName[0] == '_')
+				mi->type = tag_struct;
 			else 
-				mi->type=tag_class;			
+				mi->type = tag_class;			
 			/*when should we use tag_union and tag_typedef? 
 			If you solve it, you have to remove the restriction:
 			if(!strncmp(methodInfo->parentName,"__",2))return 0;
 			at the begining of this function.
 			*/
 
-			mi->userData=methodInfo->userData;
-			mi->lineNumber=-1; //we don't know where class begins, so we put this. When it is defined by ctags, this is updated.
-			mi->fullText=FirstAncestor;
-			mi->methodName=mi->fullText;
-			mi->image=jumpToTagImages[mi->type].imagesNumber;
-			mi->parentName=0;//NULL, to terminate recursion. Name is obtained from hRoot
+			mi->userData = methodInfo->userData;
+			mi->lineNumber = -1; //we don't know where class begins, so we put this. When it is defined by ctags, this is updated.
+			mi->fullText = FirstAncestor;
+			mi->methodName = mi->fullText;
+			mi->image = jumpToTagImages[mi->type].imagesNumber;
+			mi->parentName = 0;//NULL, to terminate recursion. Name is obtained from hRoot
 			//Returned value is the owner class:
-			hClassNode=RecursiveInsert(hRoot, mi);			
+			hClassNode = RecursiveInsert(hRoot, mi);			
 		}
 		//Now insert item in its owner class. To avoid an infinite recursion, we remove
 		//first ancestor from parentName, until at some time it becomes ""
-		char*tmp=methodInfo->parentName;
+		char* tmp = methodInfo->parentName;
 		if(!strcmp(FirstAncestor,methodInfo->parentName))
 		{
-			methodInfo->parentName=0; //This ends recursion
+			methodInfo->parentName = 0; //This ends recursion
 		}
 		else
 		{
 			char NextAncestor[sizeof(FirstAncestor)];
-			memset(NextAncestor,0,sizeof(NextAncestor));
-			strcpy(NextAncestor,&(methodInfo->parentName[strlen(FirstAncestor)+1]));				
-			methodInfo->parentName=NextAncestor;
+			memset(NextAncestor, 0, sizeof(NextAncestor));
+			strcpy(NextAncestor, &(methodInfo->parentName[strlen(FirstAncestor)+1]));				
+			methodInfo->parentName = NextAncestor;
 		}		
-		ret=RecursiveInsert(hClassNode, methodInfo);
-		methodInfo->parentName=tmp;
+		ret = RecursiveInsert(hClassNode, methodInfo);
+		methodInfo->parentName = tmp;
 	}
 	else
 	{
@@ -387,13 +394,13 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 			if (methodInfo->type <= TAG_MAX)
 			{
 				hTypeContainer = InsertItem( jumpToTagImages[methodInfo->type].imageName, 0, 0, hRoot, TVI_LAST );
-				methodInfoItem = new METHODINFO;
-				memcpy(methodInfoItem, methodInfo, sizeof(METHODINFO));
-				methodInfoItem->methodName=new char[strlen(jumpToTagImages[methodInfo->type].imageName)+1];
+				methodInfoItem = new extensions::METHODINFO;
+				memcpy(methodInfoItem, methodInfo, sizeof(extensions::METHODINFO));
+				methodInfoItem->methodName = new char[strlen(jumpToTagImages[methodInfo->type].imageName)+1];
 				strcpy(methodInfoItem->methodName,jumpToTagImages[methodInfo->type].imageName);
-				methodInfoItem->parentName=0;
-				methodInfoItem->fullText=methodInfoItem->methodName;
-				SetItemData(hTypeContainer,reinterpret_cast<DWORD_PTR>( methodInfoItem ));
+				methodInfoItem->parentName = 0;
+				methodInfoItem->fullText = methodInfoItem->methodName;
+				SetItemData(hTypeContainer, reinterpret_cast<DWORD_PTR>( methodInfoItem ));
 				SetItemImage(hTypeContainer, imagesNumber, imagesNumber);
 			} 
 			else return 0; //This tag is undefined. Can't be inserted.
@@ -406,35 +413,45 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 			methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(checkNode));
 			if(methodInfoItem->methodName)
 			{					
-				if (!strncmp(methodInfo->methodName,methodInfoItem->methodName ,strlen(methodInfo->methodName) ))break;					
+				if (!strncmp(methodInfo->methodName, methodInfoItem->methodName, strlen(methodInfo->methodName) ))
+					break;					
 			}
-			checkNode=GetNextItem(checkNode, TVGN_NEXT );		
+			
+			checkNode = GetNextItem(checkNode, TVGN_NEXT );
 		}
-		if(!checkNode)hChildItem = InsertItem( methodInfo->methodName, imagesNumber, imagesNumber, hTypeContainer, TVI_LAST );
-		else hChildItem=checkNode;
+
+		if(!checkNode)
+		{
+			hChildItem = InsertItem( methodInfo->methodName, imagesNumber, imagesNumber, hTypeContainer, TVI_LAST );
+		}
+		else 
+		{
+			hChildItem = checkNode;
+		}
 				
-		methodInfoItem = new METHODINFO;
+		methodInfoItem = new extensions::METHODINFO;
 		//If new item is already inserted, update it's info (like the line where it is defined.)
-		memcpy(methodInfoItem, methodInfo, sizeof(METHODINFO));
+		memcpy(methodInfoItem, methodInfo, sizeof(extensions::METHODINFO));
 		
-		LPMETHODINFO parentInfo=reinterpret_cast<LPMETHODINFO>(GetItemData(hRoot));	
+		LPMETHODINFO parentInfo = reinterpret_cast<LPMETHODINFO>(GetItemData(hRoot));	
 		//char* pName= parentInfo->methodName;
 		//methodInfoItem->parentName=new char[strlen(pName)+1];			
 		//strcpy(methodInfoItem->parentName,pName);
-_RPT2(_CRT_WARN,"\nInsert %s in %s", methodInfo->methodName,methodInfo->parentName);
+_RPT2(_CRT_WARN,"\nInsert %s in %s", methodInfo->methodName, methodInfo->parentName);
 		if (methodInfo->methodName)
 		{
-			methodInfoItem->methodName=new char[strlen(methodInfo->methodName)+1];
-			strcpy(methodInfoItem->methodName,methodInfo->methodName);
+			methodInfoItem->methodName = new char[strlen(methodInfo->methodName)+1];
+			strcpy(methodInfoItem->methodName, methodInfo->methodName);
 		}
 								
 		if (methodInfo->fullText)
 		{
-			methodInfoItem->fullText=new char[strlen(methodInfo->fullText)+1];
-			strcpy(methodInfoItem->fullText,methodInfo->fullText);
+			methodInfoItem->fullText = new char[strlen(methodInfo->fullText)+1];
+			strcpy(methodInfoItem->fullText, methodInfo->fullText);
 		}
-		SetItemData(hChildItem,reinterpret_cast<DWORD_PTR>( methodInfoItem ));
-		ret=hChildItem;
+		
+		SetItemData(hChildItem, reinterpret_cast<DWORD_PTR>( methodInfoItem ));
+		ret = hChildItem;
 	}
 	return ret;
 }
@@ -473,8 +490,8 @@ LRESULT CJumpTreeCtrl::OnCollapsAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	HTREEITEM hRoot;
  	hRoot = GetRootItem();
 	while (hRoot) {
-		Expand(hRoot,TVE_COLLAPSE);		
-		hRoot=GetNextItem(hRoot, TVGN_NEXT );
+		Expand(hRoot, TVE_COLLAPSE);		
+		hRoot = GetNextItem(hRoot, TVGN_NEXT );
 	}
 	return 0;
 }

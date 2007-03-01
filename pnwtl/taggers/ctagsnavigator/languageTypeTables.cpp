@@ -2,7 +2,7 @@
  * @file languageTypeTables.cpp
  * @brief Type mappings.
  * @author Simon Steele
- * @note Copyright (c) 2004-2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2004-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -377,47 +377,47 @@ the following are satisfied by the c defaults:
 php, python, tcl
 */
 
-void getTables(LPCWSTR schemeName, int** lcTypes, int** ucTypes)
+void getTables(const char* schemeName, int** lcTypes, int** ucTypes)
 {
 	// default uppercase - not many use this.
 	*ucTypes = uCTypes;
 
-	if(wcscmp(schemeName, L"csharp") == 0)
+	if(strcmp(schemeName, "csharp") == 0)
 	{
 		*lcTypes = lCSTypes;
 		*ucTypes = uCSTypes;
 	}
-	else if(wcscmp(schemeName, L"java") == 0)
+	else if(strcmp(schemeName, "java") == 0)
 	{
 		*lcTypes = lJTypes;
 	}
-	else if(wcscmp(schemeName, L"pascal") == 0)
+	else if(strcmp(schemeName, "pascal") == 0)
 	{
 		*lcTypes = lPascalTypes;
 	}
-	else if(wcscmp(schemeName, L"perl") == 0)
+	else if(strcmp(schemeName, "perl") == 0)
 	{
 		*lcTypes = lPerlTypes;
 	}
-	else if(wcscmp(schemeName, L"ruby") == 0)
+	else if(strcmp(schemeName, "ruby") == 0)
 	{
 		*lcTypes = lRubyTypes;
 		*ucTypes = uRubyTypes;
 	}
-	else if(wcscmp(schemeName, L"sql") == 0)
+	else if(strcmp(schemeName, "sql") == 0)
 	{
 		*lcTypes = lSQLTypes;
 		*ucTypes = uSQLTypes;
 	}
-	else if(wcscmp(schemeName, L"vb") == 0)
+	else if(strcmp(schemeName, "vb") == 0)
 	{
 		*lcTypes = lVBTypes;
 	}
-	else if(wcscmp(schemeName, L"verilog") == 0)
+	else if(strcmp(schemeName, "verilog") == 0)
 	{
 		*lcTypes = lVerilogTypes;
 	}
-	else if(wcscmp(schemeName, L"vhdl") == 0)
+	else if(strcmp(schemeName, "vhdl") == 0)
 	{
 		*lcTypes = lVhdlTypes;
 	}

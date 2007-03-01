@@ -3,7 +3,7 @@
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
-PROJECT_NAME           = "Programmer's Notepad Extensions"
+PROJECT_NAME           = "Programmer's Notepad Extensions Interface"
 PROJECT_NUMBER         = 2.0.7.653
 OUTPUT_DIRECTORY       = c:/projects/personal/pnotepad/pnwtl/doc/extensions
 CREATE_SUBDIRS         = NO
@@ -84,7 +84,8 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 INPUT                  = C:/projects/personal/pnotepad/pnwtl
 FILE_PATTERNS          = ioptions.h \
-                         extiface.h
+                         extiface.h \
+                         jumptointerface.h
 RECURSIVE              = NO
 EXCLUDE                = 
 EXCLUDE_SYMLINKS       = NO

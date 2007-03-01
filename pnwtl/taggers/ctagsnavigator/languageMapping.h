@@ -11,6 +11,6 @@
 #ifndef languageMapping_h__included
 #define languageMapping_h__included
 
-LPCWSTR GetLanguage(LPCWSTR filename, LPCWSTR scheme);
+LPCWSTR GetLanguage(LPCWSTR filename, const char* scheme);
 
 #endif // #ifndef languageMapping_h__included

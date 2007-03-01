@@ -2,7 +2,7 @@
  * @file extapp.h
  * @brief Define App, the basic application services
  * @author Simon Steele
- * @note Copyright (c) 2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2006-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -60,6 +60,9 @@ public:
 	virtual void AddEventSink(extensions::IAppEventSinkPtr sink);
 	/// Remove an application event sink
 	virtual void RemoveEventSink(extensions::IAppEventSinkPtr sink);
+
+	/// Add a tag source (e.g. ctagsnavigator)
+	virtual void AddTagSource(extensions::ITagSource* tagSource);
 	
 	/// Get the script registry
 	virtual extensions::IScriptRegistry* GetScriptRegistry();

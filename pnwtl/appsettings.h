@@ -31,6 +31,7 @@ public:
 
 protected:
 	void load();
+	void save();
 	void onUserSettingsPath(XMLAttributes& atts);
 	void onStoreType(XMLAttributes& atts);
 	void onExtension(XMLAttributes& atts);

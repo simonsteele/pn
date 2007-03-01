@@ -2,7 +2,7 @@
  * @file appsettings.cpp
  * @brief Loading of core application settings
  * @author Simon Steele
- * @note Copyright (c) 2005-2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2005-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -10,6 +10,60 @@
 
 #include "stdafx.h"
 #include "appsettings.h"
+#include "include/pngenx.h"
+
+class AppSettingsWriter : public GenxXMLWriter
+{
+public:
+	void WriteStoreType(bool ini)
+	{
+		genxStartElementLiteral(m_writer, "", u("storeType"));
+		if(ini)
+		{
+			genxAddAttribute(m_attType, u("ini"));
+		}
+		else
+		{
+			genxAddAttribute(m_attType, u("default"));
+		}
+		genxEndElement();
+	}
+
+	void WriteUserSettingsPath(const char* path)
+	{
+		genxStartElementLiteral(m_writer, "", u("userSettings"));
+		addAttributeConvertUTF8(m_attPath, path);
+		genxEndElement();
+	}
+
+	void WriteExtension(const char* path, bool disabled)
+	{
+		genxStartElementLiteral(m_writer, "", u("extension"));
+		addAttributeConvertUTF8(m_attPath, path);
+		if(disabled)
+		{
+			genxAddAttribute(m_attDisabled, u("true"));
+		}
+		genxEndElement(m_writer);
+	}
+
+protected:
+	virtual void initXmlBits()
+	{
+		PREDECLARE_ATTRIBUTES()
+			ATT("path", m_attPath);
+			ATT("type", m_attType);
+			ATT("value", m_attValue);
+			ATT("disabled", m_attDisabled);
+		END_ATTRIBUTES()
+	}
+
+private:
+	genxAttribute m_attPath;
+	genxAttribute m_attType;
+	genxAttribute m_attValue;
+	genxAttribute m_attDisabled;
+};
 
 AppSettings::AppSettings()
 {
@@ -150,6 +204,16 @@ void AppSettings::load()
 		
 		UNEXPECTED((LPCTSTR)err);
 	}
+}
+
+void AppSettings::save()
+{
+	//TODO: Save out config here
+	//1. Extensions needs expanding to include disabled or not
+	//2. Need a new scan for extensions method
+	//3. Need UI for extensions, and UI for other options
+	//4. Need command-line parameters for setting options and scanning extensions
+	//5. Should we store extensions list in user profile instead of config.xml?
 }
 
 void AppSettings::startElement(LPCTSTR name, XMLAttributes& atts)

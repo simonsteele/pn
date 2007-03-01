@@ -31,6 +31,7 @@
 // Disable the CRT deprecation warnings in VS 2005
 #define _CRT_SECURE_NO_DEPRECATE
 #define _SCL_SECURE_NO_DEPRECATE
+#define _CRT_SECURE_NO_WARNINGS
 
 // Implement debug mode memory allocation checking.
 #ifdef _DEBUG

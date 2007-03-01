@@ -24,7 +24,7 @@
 
 class ShellImageList;
 
-class CJumpTreeCtrl : public CMSTreeViewCtrl ,IJumpToFindSink
+class CJumpTreeCtrl : public CMSTreeViewCtrl ,ITagSink
 {
 	typedef CMSTreeViewCtrl baseClass;
 	
