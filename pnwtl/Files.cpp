@@ -868,9 +868,12 @@ tstring CFileName::GetCurrentDirectory()
 CPathName::CPathName(LPCTSTR path)
 {
 	m_FileName = path;
-	char cLast = m_FileName[m_FileName.length() - 1];
-	if(cLast != _T('\\') && cLast != _T('/'))
-		m_FileName += _T("\\");
+	if(m_FileName.length())
+	{
+		char cLast = m_FileName[m_FileName.length() - 1];
+		if(cLast != _T('\\') && cLast != _T('/'))
+			m_FileName += _T("\\");
+	}
 }
 
 CPathName& CPathName::operator = (const tstring& filename)

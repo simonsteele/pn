@@ -39,6 +39,8 @@ class SchemeConfigParser : public SchemeParser
 
 		StylePtr			GetClass(LPCTSTR name);
 
+		StylePtrMap&		GetClasses();
+
 	protected:
 		void Sort();
 		void Save(LPCTSTR filename);

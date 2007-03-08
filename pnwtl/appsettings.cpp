@@ -10,6 +10,7 @@
 
 #include "stdafx.h"
 #include "appsettings.h"
+#include "include/genx/genx.h"
 #include "include/pngenx.h"
 
 class AppSettingsWriter : public GenxXMLWriter
@@ -17,7 +18,7 @@ class AppSettingsWriter : public GenxXMLWriter
 public:
 	void WriteStoreType(bool ini)
 	{
-		genxStartElementLiteral(m_writer, "", u("storeType"));
+		genxStartElementLiteral(m_writer, u(""), u("storeType"));
 		if(ini)
 		{
 			genxAddAttribute(m_attType, u("ini"));
@@ -26,19 +27,19 @@ public:
 		{
 			genxAddAttribute(m_attType, u("default"));
 		}
-		genxEndElement();
+		genxEndElement(m_writer);
 	}
 
 	void WriteUserSettingsPath(const char* path)
 	{
-		genxStartElementLiteral(m_writer, "", u("userSettings"));
+		genxStartElementLiteral(m_writer, u(""), u("userSettings"));
 		addAttributeConvertUTF8(m_attPath, path);
-		genxEndElement();
+		genxEndElement(m_writer);
 	}
 
 	void WriteExtension(const char* path, bool disabled)
 	{
-		genxStartElementLiteral(m_writer, "", u("extension"));
+		genxStartElementLiteral(m_writer, u(""), u("extension"));
 		addAttributeConvertUTF8(m_attPath, path);
 		if(disabled)
 		{
@@ -50,6 +51,7 @@ public:
 protected:
 	virtual void initXmlBits()
 	{
+		genxStatus s;
 		PREDECLARE_ATTRIBUTES()
 			ATT("path", m_attPath);
 			ATT("type", m_attType);

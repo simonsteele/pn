@@ -46,6 +46,11 @@ StylePtr SchemeConfigParser::GetClass(LPCTSTR name)
 	return m_LoadState.GetClass(name);
 }
 
+StylePtrMap& SchemeConfigParser::GetClasses()
+{
+	return m_LoadState.m_Classes;
+}
+
 StyleDetails* SchemeConfigParser::GetDefaultStyle()
 {
 	return &m_LoadState.m_Default;

@@ -112,6 +112,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy $(ProjectDir)lib\Debug\libexpat.dll $(TargetDir)"
 			/>
 		</Configuration>
 		<Configuration
@@ -379,7 +380,7 @@
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="lib"
+				AdditionalLibraryDirectories="lib\Debug"
 				AdditionalManifestDependencies="&quot;type=&apos;Win32&apos; name=&apos;Microsoft.Windows.Common-Controls&apos; version=&apos;6.0.0.0&apos; processorArchitecture=&apos;X86&apos; publicKeyToken=&apos;6595b64144ccf1df&apos; language=&apos;*&apos;&quot;"
 				DelayLoadDLLs="uxtheme.dll"
 				GenerateDebugInformation="true"
@@ -409,6 +410,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy $(ProjectDir)lib\libexpat.dll $(TargetDir)"
 			/>
 		</Configuration>
 	</Configurations>
@@ -1434,6 +1436,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OptionsPageGlobalStyles.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OptionsPageGlobalStyles.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OptionsPageKeyboard.cpp"
 				>
 			</File>
@@ -1458,6 +1468,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\pn.exe.manifest"
+			>
+		</File>
 	</Files>
 	<Globals>
 		<Global
