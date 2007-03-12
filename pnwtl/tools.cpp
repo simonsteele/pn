@@ -445,6 +445,22 @@ void ToolCommandString::OnFormatKey(LPCTSTR key)
 	}
 }
 
+/**
+ * Support environment variables
+ */
+void ToolCommandString::OnFormatPercentKey(LPCTSTR key)
+{
+	LPTSTR value = new TCHAR[32767]; // Max size for an environment variable
+	
+	if (GetEnvironmentVariable(key, value, 32767) == 0)
+	{
+		value[0] = 0; // Make sure it's an empty string even on error
+	}
+	m_string += value;
+	
+	delete [] value;
+}
+
 #undef MATCH
 #undef MATCH_START
 

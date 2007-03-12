@@ -118,6 +118,7 @@ class ToolCommandString : public CustomFormatStringBuilder<ToolCommandString>
 	public:
 		void OnFormatChar(TCHAR thechar);
 		void OnFormatKey(LPCTSTR key);
+		void OnFormatPercentKey(LPCTSTR key);
 
 		CChildFrame* pChild;
 		bool reversePathSeps;

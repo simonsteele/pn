@@ -124,6 +124,13 @@ class CustomFormatStringBuilder
 						// Push past the next %
 						i++;
 					}
+					else if(next == _T('('))
+					{
+						// we matched a $(x) property...
+						std::string key;
+						i = ExtractProp(key, str, i);
+						pT->OnFormatPercentKey(key.c_str());
+					}
 					else
 					{
 						pT->OnFormatChar(next);
@@ -150,26 +157,16 @@ class CustomFormatStringBuilder
 					}
 
 					// we matched a $(x) property...
-					LPCTSTR pProp = &str[i+2];
-					LPCTSTR endProp = _tcschr(pProp, _T(')'));
-					if(endProp != NULL)
+					std::string key;
+					i = ExtractProp(key, str, i);
+
+					try
 					{
-						int keylen = (endProp - pProp) / sizeof(TCHAR);
-						TCHAR* buf = new TCHAR[keylen+1];
-
-						try
-						{
-							_tcsncpy(buf, pProp, keylen);
-							buf[keylen] = _T('\0');
-							pT->OnFormatKey(buf);
-						}
-						catch(...)
-						{
-						}
-
-						i += (2 + keylen); // skip ( + len + )
-
-						delete [] buf;
+						pT->OnFormatKey(key.c_str());
+					}
+					catch(...)
+					{
+						LOG("OnFormatKey Exception");
 					}
 				}
 				else
@@ -183,6 +180,7 @@ class CustomFormatStringBuilder
 
 		void OnFormatChar(TCHAR thechar){}
 		void OnFormatKey(LPCTSTR key){}
+		void OnFormatPercentKey(LPCTSTR key){}
 
 	protected:
 		TCHAR SafeGetNextChar(LPCTSTR str, int i, int len)
@@ -194,6 +192,25 @@ class CustomFormatStringBuilder
 				return NULL;
             
 			return str[i+1];
+		}
+
+		int ExtractProp(tstring& prop, LPCTSTR source, int pos)
+		{
+			// we matched a $(x) property...
+			LPCTSTR pProp = &source[pos+2];
+			LPCTSTR endProp = _tcschr(pProp, _T(')'));
+			if(endProp != NULL)
+			{
+				int keylen = (endProp - pProp) / sizeof(TCHAR);
+				prop.assign(pProp, keylen);
+				pos += (2 + keylen); // skip ( + len + )
+			}
+			else
+			{
+				pos += 1;
+			}
+
+			return pos;
 		}
 
 		tstring	m_string;
