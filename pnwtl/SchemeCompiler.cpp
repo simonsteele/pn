@@ -2,7 +2,7 @@
  * @file SchemeCompiler.cpp
  * @brief Implement scheme reader and compiler classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -601,7 +601,7 @@ void SchemeParser::processStyleClass(SchemeLoaderState* pState, XMLAttributes& a
 
 		if(!pS.get())
 		{
-			pS.reset(new FullStyleDetails(-1));
+			pS.reset(new NamedStyleDetails(-1));
 			pState->m_Classes.insert( StylePtrMap::value_type(name, pS));
 		}
 
@@ -612,6 +612,15 @@ void SchemeParser::processStyleClass(SchemeLoaderState* pState, XMLAttributes& a
 		
 		pStyle = pS->Style;
 
+		// Global styles can have a description. If they do, they can be
+		// customised in the global styles options pane....
+		t = atts.getValue(_T("description"));
+		if(t != NULL)
+		{
+			static_cast<NamedStyleDetails*>(pS.get())->FriendlyName = t;
+		}
+
+		// We can inherit a style from somewhere else
 		t = atts.getValue(_T("inherit-style"));
 		if(t != NULL)
 		{

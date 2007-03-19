@@ -2,7 +2,7 @@
  * @file Styles.h
  * @brief Define style and style-containing classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -126,6 +126,11 @@ class StyleDetails
 class FullStyleDetails;
 typedef ::boost::shared_ptr<FullStyleDetails> StylePtr;
 
+/**
+ * Contains all the information necessary to represent a style
+ * as its constituent parts, and also the ability to combine
+ * those parts to make the final style information
+ */
 class FullStyleDetails
 {
 public:
@@ -155,6 +160,17 @@ public:
 
 private:
 	int m_key;
+};
+
+/**
+ * Provide a named version of FullStyleDetails for use with
+ * named global style classes
+ */
+class NamedStyleDetails : public FullStyleDetails
+{
+public:
+	NamedStyleDetails(int key) : FullStyleDetails(key){}
+	std::string FriendlyName;
 };
 
 typedef std::list<StylePtr> StylePtrList;

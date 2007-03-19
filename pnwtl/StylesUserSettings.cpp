@@ -170,7 +170,7 @@ void UserSettingsParser::processClassElement(SchemeLoaderState* pState, LPCTSTR 
 {
 	if(_tcscmp(name, _T("style-class")) == 0)
 	{
-		StylePtr p( new FullStyleDetails(-1) );
+		StylePtr p( new NamedStyleDetails(-1) );
 		p->CustomStyle = new StyleDetails;
 		SchemeParser::parseStyle(pState, atts, p->CustomStyle);
 		

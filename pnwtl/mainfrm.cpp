@@ -1824,11 +1824,10 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsPageDialogs			dialogs;
 	COptionsPageKeyboard		pageKeyboard(m_pCmdDispatch);
 	COptionsPageAutocomplete	pageAutocomplete;
-
+	COptionsPageStyle			pageStyle(&schemeconfig);
 #ifdef _DEBUG
 	COptionsPageGlobalStyles	pageGlobalStyles(&schemeconfig);
 #endif
-	COptionsPageStyle			pageStyle(&schemeconfig);
 	COptionsPageSchemes			pageSchemes(&schemeconfig);
 	COptionsPageNewFiles		pageNewFiles(&schemeconfig);
 	COptionsPageTools			pageTools(&schemeconfig, &toolsmanager);

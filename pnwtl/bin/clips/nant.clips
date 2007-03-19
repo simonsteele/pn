@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <clips name="NAnt">
-	<clip name="Project"><![CDATA[
-<?xml version="1.0"?>
+	<clip name="Project"><![CDATA[<?xml version="1.0"?>
 <project name="myproject" default="build" basedir=".">
 	<target name="build">
 		|
@@ -9,10 +8,9 @@
 </project>
 	]]>
 	</clip>
-	<clip name="Target"><![CDATA[
-	<target name="|">
-		
-	</target>]]>
+	<clip name="Target"><![CDATA[<target name="|">
+	
+</target>]]>
 	</clip>
 	<clip name="Call">
 	<![CDATA[<call target="|"/>]]>
@@ -21,15 +19,13 @@
 	<![CDATA[<echo message="|"/>]]>
 	</clip>
 	<clip name="If">
-	<![CDATA[
-		<if test="|">
-			
-		</if>]]>
+	<![CDATA[<if test="|">
+	
+</if>]]>
 	</clip>
-	<clip name="If Not"><![CDATA[
-		<ifnot test="|">
-		
-		</ifnot>]]>
+	<clip name="If Not"><![CDATA[<ifnot test="|">
+	
+</ifnot>]]>
 	</clip>
 	<clip name="Property">
 	<![CDATA[<property name="|" value="" />]]>
@@ -49,33 +45,29 @@
 	<clip name="Make Directory">
 	<![CDATA[<mkdir dir="|"/>]]>
 	</clip>
-	<clip name="Set Copy"><![CDATA[
-		<copy todir="|">
-			<fileset basedir=".">
-				<include name="*.*"/>
-			</fileset>
-		</copy>]]>
+	<clip name="Set Copy"><![CDATA[<copy todir="|">
+	<fileset basedir=".">
+		<include name="*.*"/>
+	</fileset>
+</copy>]]>
 	</clip>
-	<clip name="Set Delete"><![CDATA[
-		<delete>
-			<fileset>
-				<include name="|"/>
-			</fileset>
-	    </delete>]]>
+	<clip name="Set Delete"><![CDATA[<delete>
+	<fileset>
+		<include name="|"/>
+	</fileset>
+</delete>]]>
 	</clip>
-	<clip name="Set Move"><![CDATA[
-		<move todir="|">
-			<fileset basedir=".">
-				<include name="*.*"/>
-			</fileset>
-		</move>]]>
+	<clip name="Set Move"><![CDATA[<move todir="|">
+	<fileset basedir=".">
+		<include name="*.*"/>
+	</fileset>
+</move>]]>
 	</clip>
-	<clip name="Set Zip"><![CDATA[
-		<zip zipfile="|">
-			<fileset basedir=".">
-				<include name="**/*"/>
-			</fileset>
-		</zip>]]>
+	<clip name="Set Zip"><![CDATA[<zip zipfile="|">
+	<fileset basedir=".">
+		<include name="**/*"/>
+	</fileset>
+</zip>]]>
 	</clip>
 	<clip name="Property Exists">
 	<![CDATA[property::exists('|')]]>

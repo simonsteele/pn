@@ -529,7 +529,7 @@ void COptionsPageStyle::OnCancel()
 
 LPCTSTR COptionsPageStyle::GetTreePosition()
 {
-	return _T("Style");
+	return _T("Schemes\\Basic");
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -617,7 +617,7 @@ void COptionsPageSchemes::OnOK()
 
 LPCTSTR COptionsPageSchemes::GetTreePosition()
 {
-	return _T("Style\\Schemes");
+	return _T("Schemes\\Advanced");
 }
 
 LRESULT COptionsPageSchemes::OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
