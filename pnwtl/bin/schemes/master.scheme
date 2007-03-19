@@ -5,20 +5,20 @@
 		not specified - this way we inherit the system defaults -->
 		<style-class name="default" size="10" font="Lucida Console"/>
 		
-		<style-class name="comment" fore="007f00"/>
-		<style-class name="keyword" fore="0000ef" />
-		<style-class name="string" fore="7f007f" />
-		<style-class name="number" fore="007f7f" />
-		<style-class name="operator" />
-		<style-class name="preprocessor" fore="7f7f00" />
-		<style-class name="error" fore="ffff00" back="ff0000" />
-		<style-class name="commentdoc" inherit-style="comment" fore="3f703f"/>
-		<style-class name="commentline" inherit-style="comment"/>
-		<style-class name="commentbox" inherit-style="comment"/>
-		<style-class name="tag" fore="000080"/>
-		<style-class name="unknowntag" fore="ff0000"/>
-		<style-class name="attribute" fore="008080"/>
-		<style-class name="unknownattribute" fore="ff0000"/>
+		<style-class name="comment" description="Comments" fore="007f00"/>
+		<style-class name="keyword" description="Keywords" fore="0000ef" />
+		<style-class name="string" description="Strings" fore="7f007f" />
+		<style-class name="number" description="Numbers" fore="007f7f" />
+		<style-class name="operator" description="Operators" />
+		<style-class name="preprocessor" description="Preprocessor" fore="7f7f00" />
+		<style-class name="error" description="Error Text" fore="ffff00" back="ff0000" />
+		<style-class name="commentdoc" description="Doc Comments" inherit-style="comment" fore="3f703f"/>
+		<style-class name="commentline" description="Line Comments" inherit-style="comment"/>
+		<style-class name="commentbox" description="Box Comments" inherit-style="comment"/>
+		<style-class name="tag" description="Tag" fore="000080"/>
+		<style-class name="unknowntag" description="Unknown Tag" fore="ff0000"/>
+		<style-class name="attribute" description="Attribute" fore="008080"/>
+		<style-class name="unknownattribute" description="Unknown Attribute" fore="ff0000"/>
 	</style-classes>
 	<base-options>
 		<style name="Line Numbers" key="33" />

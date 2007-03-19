@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<Scheme>
+	<style-classes><style-class name="sgml" back="efefff" eolfilled="true"/></style-classes>
+	<keyword-classes><keyword-class name="dtd">
+			ELEMENT DOCTYPE ATTLIST ENTITY NOTATION
+		</keyword-class></keyword-classes>
+	<language name="xml" title="XML" folding="true" foldcomments="false" foldcompact="false">
+		<comments streamStart="&lt;!-- " streamEnd=" --&gt;"/>
+		<lexer name="xml" stylebits="7"/>
+		<property name="fold.html" value="1" />
+		<use-keywords>
+			<keyword key="5" name="DTD keywords" class="dtd"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32" class="default"/>
+			<style name="Text" key="0" class="default"/>
+			<style name="Tags" key="1" class="tag"/>
+			<style name="Unknown Tags" key="2" class="unknowntag"/>
+			<style name="Attributes" key="3" class="attribute"/>
+			<style name="Unknown Attributes" key="4" class="unknownattribute"/>
+			<style name="Numbers" key="5" class="number"/>
+			<style name="Double quoted strings" key="6" class="string"/>
+			<style name="Single quoted strings" key="7" class="string"/>
+			<style name="Other inside tag" key="8" fore="800080"/>
+			<style name="Comment" key="9" fore="808000"/>
+			<style name="Entities" key="10" fore="800080"/>
+			<style name="XML style tag ends '/&gt;'" key="11" fore="000080"/>
+			<style name="XML identifier start '&lt;?'" key="12" fore="800080" bold="true"/>
+			<style name="XML identifier end '?&gt;'" key="13" fore="800080" bold="true"/>
+			<style name="CDATA" key="17" fore="800000" back="FFF0F0" eolfilled="true"/>
+			<style name="Question" key="18" fore="800000"/>
+			<style name="Unquoted Value" key="19" fore="608060"/>
+			<group name="SGML" description="JavaScript embedded within an ASP file." class="sgml" >
+				<style name="Tags &lt;! ... &gt;" key="21" fore="000080"/>
+				<style name="Command" key="22" fore="000080" bold="true"/>
+				<style name="1st param" key="23" fore="006600"/>
+				<style name="Double string" key="24" fore="800000"/>
+				<style name="Single string" key="25" fore="993300"/>
+				<style name="Error" key="26" fore="800000" back="FF6666"/>
+				<style name="Special (#xxxx type)" key="27" fore="3366FF"/>
+				<style name="Entity" key="28" fore="333333"/>
+				<style name="Comment" key="29" fore="808000"/>
+				<style name="Block" key="31" fore="000066" back="CCCCE0"/>
+			</group>
+		</use-styles>
+	</language>
+</Scheme>
