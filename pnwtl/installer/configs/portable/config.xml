@@ -1,0 +1,5 @@
+<config>
+	<userSettings path="settings"/>
+	<storeType value="Ini"/>
+	<extension path="taggers/ctagsnavigator.dll"/>
+</config>
