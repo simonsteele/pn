@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<project name="pn" default="deploy" basedir=".">
+
+	<target name="svnvar">
+		<!-- Retrieve subversion revision number -->
+		<echo message="Retrieving Subversion revision number"/>
+		<property name="svn.revision" value="0"/>
+		<exec
+			program="svn"
+			commandline='log "." --xml --limit 1'
+			output="_revision.xml"
+			failonerror="false"/>
+		<xmlpeek
+			file="_revision.xml"
+			xpath="/log/logentry/@revision"
+			property="svn.revision"
+			failonerror="false"/>
+		<echo message="Using Subversion revision number: ${svn.revision}"/>
+	</target>
+
+	<!-- Deploy PN -->
+	<target name="deploy" depends="svnvar">
+		<property name="deployver" value="${ver}.${svn.revision}"/>
+		<property name="compactver" value="${string::replace(deployver, '.', '')}"/>
+		<property name="distdir" value="dist\${deployver}"/>
+		
+		<echo message="${deployver} (${compactver})"/>
+		
+		<mkdir dir="${distdir}"/>
+		
+		<exec
+			program="c:\program files\inno setup 5\iscc"
+			commandline='pn2.iss /d"PNVersion=${deployver}"'
+			output="_iscc.log"
+			workingdir="installer" />
+			
+		<copy file="installer\output\pnsetup.exe" tofile="${distdir}\pn${compactver}.exe"/>
+			
+		<zip zipfile="${distdir}\pn${compactver}.zip">
+			<fileset basedir="bin">
+				<include name="**/*.dll"/>
+				<include name="**/*.exe"/>
+				<include name="schemes/*.scheme"/>
+				<include name="schemes/*.lexer"/>
+				<include name="schemes/extmap.dat"/>
+				
+				<!-- Make this file pulled from a dist directory instead: -->
+				<include name="config.xml"/>
+				
+				<exclude name="pypn.dll"/>
+				<exclude name="boost_python*.dll"/>
+				<exclude name="libexpatw.dll"/>
+			</fileset>
+			<fileset basedir="doc">
+				<include name="credits.txt"/>
+				<include name="history.txt"/>
+				<include name="license.txt"/>
+				<include name="pcre-license.txt"/>
+				<include name="ctags_README"/>
+				<include name="ctags_COPYING"/>
+				<include name="license.html"/>
+				<include name="help\pn2.chm"/>
+			</fileset>
+			<fileset basedir="bin\clips" prefix="clips">
+				<include name="*.clips"/>
+			</fileset>
+			<fileset basedir="installer\configs\default">
+				<include name="config.xml"/>
+			</fileset>
+		</zip>
+		
+		<zip zipfile="${distdir}\ppn${compactver}.zip">
+			<fileset basedir="bin">
+				<include name="**/*.dll"/>
+				<include name="**/*.exe"/>
+				<include name="schemes/*.scheme"/>
+				<include name="schemes/*.lexer"/>
+				<include name="schemes/extmap.dat"/>
+				
+				<exclude name="pypn.dll"/>
+				<exclude name="boost_python*.dll"/>
+				<exclude name="libexpatw.dll"/>
+			</fileset>
+			<fileset basedir="doc">
+				<include name="credits.txt"/>
+				<include name="history.txt"/>
+				<include name="license.txt"/>
+				<include name="pcre-license.txt"/>
+				<include name="ctags_README"/>
+				<include name="ctags_COPYING"/>
+				<include name="license.html"/>
+				<include name="help\pn2.chm"/>
+			</fileset>
+			<fileset basedir="bin\clips" prefix="clips">
+				<include name="*.clips"/>
+			</fileset>
+			<fileset basedir="installer\configs\portable">
+				<include name="config.xml"/>
+			</fileset>
+		</zip>
+		
+		<zip zipfile="${distdir}\pdb${compactver}.zip">
+			<fileset basedir="bin">
+				<include name="**/*.pdb"/>
+				<exclude name="pypn.pdb"/>
+			</fileset>
+		</zip>
+		
+	</target>
+	
+	<!-- Deploy PyPN -->
+	<target name="pypn" depends="svnvar">
+		<property name="deployver" value="${ver}.${svn.revision}"/>
+		<property name="distdir" value="dist\pypn-${deployver}"/>
+		
+		<mkdir dir="${distdir}"/>
+		
+		<zip zipfile="${distdir}\pypn-${deployver}.zip">
+			<fileset basedir="bin">
+				<include name="pypn.dll"/>
+				<include name="boost_py*.dll"/>
+			</fileset>
+			<fileset basedir="pypn\scripts">
+				<include name="**/*.py"/>
+			</fileset>
+		</zip>
+		
+		<zip zipfile="${distdir}\pdb-${deployver}.zip">
+			<fileset basedir="bin">
+				<include name="**/pypn.pdb"/>
+			</fileset>
+		</zip>
+	</target>
+	
+</project>
