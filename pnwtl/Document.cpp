@@ -160,6 +160,22 @@ void Document::OnSchemeChange(const char* scheme)
 	}
 }
 
+void Document::OnAfterLoad()
+{
+	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	{
+		(*i)->OnAfterLoad();
+	}
+}
+
+void Document::OnBeforeSave(const char* filename)
+{
+	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	{
+		(*i)->OnBeforeSave(filename);
+	}
+}
+
 void Document::OnDocClosing()
 {
 	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)

@@ -33,6 +33,8 @@ class Document : public extensions::IDocument, public extensions::ITextEditorEve
 
 		void SetFileName(LPCTSTR filename);
 
+		void OnAfterLoad();
+		void OnBeforeSave(const char* filename);
 		void OnDocClosing();
 
 // IDocument members

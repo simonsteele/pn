@@ -280,7 +280,23 @@ class COptionsDialog : public CDialogImpl<COptionsDialog>
 			{
 				COptionsPage* pPage = reinterpret_cast<COptionsPage*>(m_tree.GetItemData(pN->itemNew.hItem));
 				if(pPage)
+				{
 					SelectPage(pPage);
+				}
+				else
+				{
+					// If we're a parent with a child and we don't have a page show the child page
+					HTREEITEM child = m_tree.GetChildItem(pN->itemNew.hItem);
+					if(child != NULL)
+					{
+						pPage = reinterpret_cast<COptionsPage*>(m_tree.GetItemData(child));
+						if(pPage)
+						{
+							SelectPage(pPage);
+						}
+					}
+				}
+
 			}
 
 			return 0;

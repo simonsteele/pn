@@ -23,6 +23,8 @@ public:
 	virtual void OnDocClosing();
 	virtual void OnCharAdded(char c);
 	virtual void OnSchemeChange(const char *scheme){}
+	virtual void OnAfterLoad();
+	virtual void OnBeforeSave(const char* filename);
 
 private:
 	extensions::IDocumentPtr m_doc;

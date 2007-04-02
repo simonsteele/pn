@@ -28,8 +28,10 @@ What's new?
 20) Cut, copy, paste, undo, redo buttons enabled only when available
 21) $(ProjectName) for tools - the active project name (SF RFE #1482915))
 22) Find in files auto-locations in drop-down
-23) New command-line shortcuts (see help)
+23) New command-line parameters (see help)
 24) Minor master scheme changes
+25) Allows you to set scheme properties for all languages in one place (global styles)
+26) Scheme changes: Hypertext->HTML, PHP added, PHP Script added
 
 Bug Fixes:
 ----------

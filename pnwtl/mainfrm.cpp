@@ -1802,6 +1802,9 @@ LRESULT CMainFrame::OnFindInFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return 0;
 }
 
+/**
+ * Show the options dialog
+ */
 LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	SchemeManager* pSM = SchemeManager::GetInstance();
@@ -1825,9 +1828,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsPageKeyboard		pageKeyboard(m_pCmdDispatch);
 	COptionsPageAutocomplete	pageAutocomplete;
 	COptionsPageStyle			pageStyle(&schemeconfig);
-#ifdef _DEBUG
 	COptionsPageGlobalStyles	pageGlobalStyles(&schemeconfig);
-#endif
 	COptionsPageSchemes			pageSchemes(&schemeconfig);
 	COptionsPageNewFiles		pageNewFiles(&schemeconfig);
 	COptionsPageTools			pageTools(&schemeconfig, &toolsmanager);
@@ -1847,10 +1848,8 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	options.AddPage(&visual);
 	options.AddPage(&confirmations);
 	options.AddPage(&dialogs);
-#ifdef _DEBUG
-	options.AddPage(&pageGlobalStyles);
-#endif
 	options.AddPage(&pageStyle);
+	options.AddPage(&pageGlobalStyles);
 	options.AddPage(&pageSchemes);
 	options.AddPage(&pageFiles);
 	options.AddPage(&pageNewFiles);
@@ -1889,7 +1888,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 
 		///@todo more dirty checking...
 
-		if( pageStyle.IsDirty() || pageSchemes.IsDirty() )
+		if( pageStyle.IsDirty() || pageSchemes.IsDirty() || pageGlobalStyles.IsDirty() )
             SchemeManager::GetInstance()->Compile();
 
 		m_RecentFiles.SetSize( OPTIONS->Get(PNSK_INTERFACE, _T("MRUSize"), 4) );

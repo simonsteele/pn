@@ -134,7 +134,7 @@
 		</keyword-class>
 	</keyword-classes>
 	
-	<language name="web" title="Hypertext" folding="true" foldcomments="false" foldcompact="false">
+	<language name="web" title="HTML" folding="true" foldcomments="false" foldcompact="false">
 		<comments streamStart="&lt;!-- " streamEnd=" --&gt;"/>
 		<lexer name="hypertext" stylebits="7" />
 		<property name="asp.default.language" value="2" />
@@ -318,6 +318,53 @@
 			<style name="Single-Quoted Strings" key="14" class="string"/>
 			<style name="CSS 2 Property" key="15" fore="00a0e0"/>
 			<style name="Attribute Selection [att='val']" key="16" fore="800000"/>
+		</use-styles>
+	</language>
+	<language name="php" title="PHP" folding="true" foldcomments="false" foldcompact="false">
+		<comments line="//" streamStart="/*" streamEnd="*/"/>
+		<lexer name="hypertext" stylebits="7" />
+		<property name="fold.html" value="1" />
+		<use-keywords>
+			<keyword key="0" name="Hypertext" class="hypertext"/>
+			<keyword key="1" name="Javascript" class="javascript"/>
+			<keyword key="4" name="PHP Keywords" class="php"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32" class="default"/>
+			<style name="Text" key="0" class="default"/>
+		
+			<group name="PHP" description="PHP code" class="php">
+				<style name="Default" key="118" fore="000033" />
+				<style name="Double quoted String" key="119" fore="007F00"/>
+				<style name="Single quoted string" key="120" fore="009F00"/>
+				<style name="Keyword" key="121" fore="7F007F" italic="true"/>
+				<style name="Number" key="122" fore="CC9900"/>
+				<style name="Variable" key="123" fore="00007F" italic="true"/>
+				<style name="Comment" key="124" class="comment" fore="999999" />
+				<style name="Line comment" key="125" class="comment" fore="666666" italic="true" />
+				<style name="String variable" key="126" fore="00007F" italic="true"/>
+				<style name="Operator" key="127" fore="000000"/>
+			</group>
+			
+			<group name="HTML" description="HTML">
+				<style name="Tags" key="1" class="tag"/>
+				<style name="Unknown Tags" key="2" class="unknowntag"/>
+				<style name="Attributes" key="3" class="attribute"/>
+				<style name="Unknown Attributes" key="4" class="unknownattribute"/>
+				<style name="Numbers" key="5" class="number"/>
+				<style name="Double Quoted Strings" key="6" class="string"/>
+				<style name="Single Quoted Strings" key="7" class="string"/>
+				<style name="Other inside tag" key="8" fore="800080"/>
+				<style name="Comment" key="9" class="comment"/>
+				<style name="Entity" key="10" fore="800080"/>
+				<style name="XML style tag ends /&gt;" key="11" fore="000080"/>
+				<style name="XML Identifier start &lt; ?" key="12" fore="0000ff"/>
+				<style name="XML Identifier end ?&gt;" key="13" fore="0000ff"/>
+				<style name="Script" key="14" fore="000080"/>
+				<style name="CDATA" key="17" back="ffdf00"/>
+				<style name="PHP" key="18" fore="0000ff" back="ffefbf"/>
+				<style name="Unquoted Values" key="19" fore="ff00ff" back="ffefff"/>
+			</group>
 		</use-styles>
 	</language>
 </Scheme>

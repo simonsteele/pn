@@ -32,7 +32,8 @@ class SchemeLoaderState
 		StylePtrMap				m_Classes;
 
 		// Styles:
-		StylesList				m_BaseStyles;
+		//StylesList				m_BaseStyles;
+		StylePtrList			m_BaseStyles;
 
 		// Schemes:
 		SchemeDetailsMap		m_BaseSchemeDetails;

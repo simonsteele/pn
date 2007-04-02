@@ -467,10 +467,16 @@ void SchemeParser::processBaseStyle(SchemeLoaderState* pState, XMLAttributes& at
 	// Create a style with no default settings, the defaults will be applied
 	// later as the base style is used for each scheme.
 	StyleDetails* pS = new StyleDetails;
-	
 	parseStyle(pState, atts, pS);
+	StylePtr style(new FullStyleDetails(pS->Key));
+	style->Style = pS;
 
-	pState->m_BaseStyles.AddStyle(pS);
+	if(pS->classname.size())
+	{
+		style->Class = pState->GetClass(pS->classname.c_str());
+	}
+
+	pState->m_BaseStyles.push_back(style);
 }
 
 void SchemeParser::processProperty(SchemeLoaderState* pState, XMLAttributes& atts)
@@ -1095,12 +1101,13 @@ void SchemeParser::sendBaseStyles(SchemeLoaderState* pState)
 
 	onStyleGroup(atts, StylePtr());
 	
-	for(StylesList::SL_CIT i = pState->m_BaseStyles.StylesBegin();
-		i != pState->m_BaseStyles.StylesEnd();
+	for(StylePtrList::const_iterator i = pState->m_BaseStyles.begin();
+		i != pState->m_BaseStyles.end();
 		++i)
 	{
-		StylePtr p = pState->m_pCurScheme->GetStyle( (*i)->Key );
-		p->Style = new StyleDetails( *(*i) );
+		StylePtr p = pState->m_pCurScheme->GetStyle( (*i)->GetKey() );
+		p->Style = new StyleDetails( *(*i)->Style );
+		p->Class = (*i)->Class;
 		
 		onStyle(p, false);
 	}

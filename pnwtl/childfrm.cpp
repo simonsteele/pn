@@ -1278,6 +1278,7 @@ bool CChildFrame::PNOpenFile(LPCTSTR pathname, Scheme* pScheme, EPNEncoding enco
 		m_spDocument->SetFileName(pathname);
 		m_FileAge = m_spDocument->GetFileAge();
 		SetTitle();
+		m_spDocument->OnAfterLoad();
 		bRet = true;
 	}
 	else
@@ -1296,6 +1297,13 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 {
 	bool bSuccess = false;
 
+	// If this is a user-relevant save, notify the extensions:
+	if(bStoreFilename)
+	{
+		m_spDocument->OnBeforeSave(pathname);
+	}
+
+	// Do the save
 	if(m_view.Save(pathname, bStoreFilename))
 	{
 		bSuccess = true;
@@ -1335,6 +1343,7 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 		}
 	}
 
+	// Update state...
 	if(bSuccess)
 	{
 		if(bStoreFilename)

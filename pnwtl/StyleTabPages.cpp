@@ -547,32 +547,7 @@ LRESULT CTabPageStyles::OnEOLFilledClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 void CTabPageStyles::UpdateStyle()
 {
-	StyleDetails BaseStyle;
-	m_pStyle->CombineNoCustom(m_pSchemes->GetDefaultStyle(), BaseStyle);
-
-	if(m_Style != BaseStyle)
-	{
-		/* The style the user has configured and the original definition version
-			do not match. We need to store the new style in the custom style
-			store. */
-
-		if( m_pStyle->CustomStyle )
-		{
-			*m_pStyle->CustomStyle = m_Style;
-		}
-		else
-		{
-			m_pStyle->CustomStyle = new StyleDetails( m_Style );
-		}
-		m_pStyle->CustomStyle->Key = m_pStyle->GetKey();
-		m_pStyle->CustomStyle->compareTo( BaseStyle );
-	}
-	else
-	{
-		/* If we have set the style to be like the original, then
-			we can safely remove any custom styles. */
-		m_pStyle->Reset();
-	}
+	m_pStyle->CheckCustomisation(m_pSchemes->GetDefaultStyle(), m_Style);
 }
 
 void CTabPageStyles::UpdateGroup()

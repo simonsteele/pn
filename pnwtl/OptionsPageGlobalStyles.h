@@ -43,6 +43,8 @@ class COptionsPageGlobalStyles : public COptionsPageImpl<COptionsPageGlobalStyle
 		virtual LPCTSTR GetTreePosition();
 		virtual void OnCancel();
 
+		bool IsDirty();
+
 	private:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnForeChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
@@ -59,8 +61,10 @@ class COptionsPageGlobalStyles : public COptionsPageImpl<COptionsPageGlobalStyle
 
 		LRESULT OnListSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
-		void UpdateSel();
-		void UpdateDisplay();
+		void onChange();
+		void storeChanges();
+		void updateSel();
+		void updateDisplay();
 
 	private:
 		CFontCombo			m_FontCombo;

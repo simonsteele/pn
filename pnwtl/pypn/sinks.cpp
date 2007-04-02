@@ -47,3 +47,29 @@ void DocSink::OnCharAdded(char c)
 		OutputDebugString(s.c_str());
 	}
 }
+
+void DocSink::OnAfterLoad()
+{
+	try
+	{
+		boost::python::call_method<void>(g_app->PyPnGlue().ptr(), "onDocLoad", (m_doc));
+	}
+	catch(error_already_set&)
+	{
+		std::string s = getPythonErrorString();
+		OutputDebugString(s.c_str());
+	}
+}
+
+void DocSink::OnBeforeSave(const char* filename)
+{
+	try
+	{
+		boost::python::call_method<void>(g_app->PyPnGlue().ptr(), "onDocSave", filename, (m_doc));
+	}
+	catch(error_already_set&)
+	{
+		std::string s = getPythonErrorString();
+		OutputDebugString(s.c_str());
+	}
+}

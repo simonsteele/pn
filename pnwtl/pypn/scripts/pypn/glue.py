@@ -14,23 +14,23 @@ class SchemeMapping:
 		self.indenter = None
 
 def registerScript(f, group, scriptName):
-	debug.OutputDebugString("group: " + str(group))
-	debug.OutputDebugString("name: " + str(scriptName))
+	#debug.OutputDebugString("group: " + str(group))
+	#debug.OutputDebugString("name: " + str(scriptName))
 	scripts[f.func_name] = f
 	pn.RegisterScript(f.func_name, group, scriptName)
 
 def runScript(name):
 	try:
-		debug.OutputDebugString( name )
+		#debug.OutputDebugString( name )
 		scripts[name]()
 	except KeyError:
 		pass
 
 def onCharAdded(c, doc):
-	if not schemes.has_key(doc.GetCurrentScheme()):
+	if not schemes.has_key(doc.CurrentScheme):
 		return
 		
-	scheme = schemes[doc.GetCurrentScheme()]
+	scheme = schemes[doc.CurrentScheme]
 	
 	if scheme and scheme.on_char_added != None:
 		scheme.on_char_added(c, doc)
@@ -40,6 +40,12 @@ def onCharAdded(c, doc):
 	
 	if scheme and scheme.indenter != None:
 		scheme.indenter(c, doc)
+	
+def onDocLoad(doc):
+	pass
+	
+def onDocSave(filename, doc):
+	pass
 
 def getSchemeConfig(name):
 	if not schemes.has_key(name):

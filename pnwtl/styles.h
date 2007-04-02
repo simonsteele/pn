@@ -150,6 +150,12 @@ public:
 
 	void Reset();
 
+	/**
+	 * Examine the user-defined style and see if it matches this style. If there
+	 * is a mismatch, update the stored custom style details
+	 */
+	void CheckCustomisation(const StyleDetails* defStyle, const StyleDetails& user);
+
 	// Pointed at StyleDetails Instances:
 	StylePtr	  Class;
 	StylePtr	  GroupClass;	// Group Style Class (grouped styles)

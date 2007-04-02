@@ -19,12 +19,16 @@
 		<style-class name="unknowntag" description="Unknown Tag" fore="ff0000"/>
 		<style-class name="attribute" description="Attribute" fore="008080"/>
 		<style-class name="unknownattribute" description="Unknown Attribute" fore="ff0000"/>
+		<style-class name="bracematch" description="Brace Match" fore="0000ee" bold="true"/>
+		<style-class name="bracemismatch" description="Brace Mismatch" fore="ee0000" bold="true"/>
+		<style-class name="linenumbers" description="Line Numbers" />
+		<style-class name="controlchars" description="Control Characters" fore="808080" />
 	</style-classes>
 	<base-options>
-		<style name="Line Numbers" key="33" />
-		<style name="Brace Match" key="34" fore="0000ee" bold="true" />
-		<style name="Brace Mismatch" key="35" fore="ee0000" bold="true" />
-		<style name="Control Characters" key="36" fore="808080" />
+		<style name="Line Numbers" key="33" class="linenumbers" />
+		<style name="Brace Match" key="34" class="bracematch" />
+		<style name="Brace Mismatch" key="35" class="bracemismatch" />
+		<style name="Control Characters" key="36" class="controlchars" />
 	</base-options>
 	<keyword-classes>
 		<keyword-class name="javascript">

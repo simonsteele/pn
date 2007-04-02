@@ -1694,8 +1694,12 @@ void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>
 			{
 				SetSel(lPos,lCurrentPos);
 				tstring text = GetSelText2();
-				if( text == "<>" ) 
+				if( text == "<>" )
+				{
+					// Reset the selpos...
+					SetSel(lCurrentPos, lCurrentPos);
 					break;
+				}
 				
 				size_t pos = text.find(' ');
 				if( tstring::npos == pos )

@@ -47,7 +47,7 @@
 .pag=vb
 .pas=pascal
 .patch=diff
-.php=Web
+.php=php
 .pl=perl
 .pm=perl
 .pnpt=xml

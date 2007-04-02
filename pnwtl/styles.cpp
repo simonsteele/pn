@@ -519,6 +519,37 @@ void FullStyleDetails::Reset()
 	}
 }
 
+void FullStyleDetails::CheckCustomisation(const StyleDetails* defStyle, const StyleDetails& user)
+{
+	StyleDetails baseStyle;
+	CombineNoCustom(defStyle, baseStyle);
+
+	if(user != baseStyle)
+	{
+		/* The style the user has configured and the original definition version
+			do not match. We need to store the new style in the custom style
+			store. */
+
+		if( CustomStyle )
+		{
+			*CustomStyle = user;
+		}
+		else
+		{
+			CustomStyle = new StyleDetails( user );
+		}
+		
+		CustomStyle->Key = GetKey();
+		CustomStyle->compareTo( baseStyle );
+	}
+	else
+	{
+		/* If we have set the style to be like the original, then
+			we can safely remove any custom styles. */
+		Reset();
+	}
+}
+
 /////////////////////////////////////////////////////////////////////////////////////
 // CustomKeywordSet
 

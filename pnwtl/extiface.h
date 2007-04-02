@@ -39,7 +39,7 @@ typedef enum {fnNotFound, fnFound, fnReachedStart} FindNextResult;
 namespace extensions
 {
 
-#define PN_EXT_IFACE_VERSION	3
+#define PN_EXT_IFACE_VERSION	4
 
 /////////////////////////////////////////////////////////////////////////////
 // Predeclare types
@@ -237,8 +237,15 @@ public:
 
 	/// Called when the scheme changes
 	virtual void OnSchemeChange(const char* scheme) = 0;
+	
 	/// Called when the document closes
 	virtual void OnDocClosing() = 0;
+
+	/// Called after a document is loaded
+	virtual void OnAfterLoad() = 0;
+
+	/// Called before the document is saved
+	virtual void OnBeforeSave(const char* filename) = 0;
 };
 
 /**

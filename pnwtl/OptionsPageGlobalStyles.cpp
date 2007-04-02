@@ -27,6 +27,8 @@ void COptionsPageGlobalStyles::OnInitialise()
 {
 	StylePtrMap& classes = m_pSchemes->GetClasses();
 
+	int items(0);
+
 	for(StylePtrMap::const_iterator i = classes.begin();
 		i != classes.end();
 		++i)
@@ -34,7 +36,7 @@ void COptionsPageGlobalStyles::OnInitialise()
 		NamedStyleDetails* style = static_cast<NamedStyleDetails*>((*i).second.get());
 		if(style->FriendlyName.size())
 		{
-			int item = m_list.AddItem(0, 0, style->FriendlyName.c_str());
+			int item = m_list.AddItem(items++, 0, style->FriendlyName.c_str());
 			m_list.SetItemData(item, reinterpret_cast<DWORD_PTR>(style));
 		}
 	}
@@ -47,6 +49,11 @@ LPCTSTR COptionsPageGlobalStyles::GetTreePosition()
 
 void COptionsPageGlobalStyles::OnCancel()
 {
+}
+
+bool COptionsPageGlobalStyles::IsDirty()
+{
+	return m_dirty;
 }
 
 LRESULT COptionsPageGlobalStyles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -94,8 +101,7 @@ LRESULT COptionsPageGlobalStyles::OnForeChanged(int /*idCtrl*/, LPNMHDR pnmh, BO
 	NMCOLORBUTTON* pN = reinterpret_cast<NMCOLORBUTTON*>(pnmh);
 	COLORREF col = (pN->clr == CLR_DEFAULT ? m_fore.GetDefaultColor() : pN->clr);
 	m_style.ForeColor = col;
-	m_dirty = true;
-	UpdateDisplay();
+	onChange();
 	return 0;
 }
 
@@ -104,8 +110,7 @@ LRESULT COptionsPageGlobalStyles::OnBackChanged(int /*idCtrl*/, LPNMHDR pnmh, BO
 	NMCOLORBUTTON* pN = reinterpret_cast<NMCOLORBUTTON*>(pnmh);
 	COLORREF col = (pN->clr == CLR_DEFAULT ? m_fore.GetDefaultColor() : pN->clr);
 	m_style.BackColor = col;
-	m_dirty = true;
-	UpdateDisplay();
+	onChange();
 	return 0;
 }
 
@@ -117,8 +122,7 @@ LRESULT COptionsPageGlobalStyles::OnFontChanged(WORD /*wNotifyCode*/, WORD /*wID
 		CString str;
 		m_FontCombo.GetLBText(i, str);
 		m_style.FontName = (LPCTSTR)str;
-		m_dirty = true;
-		UpdateDisplay();
+		onChange();
 	}
 
 	return 0;
@@ -129,9 +133,8 @@ LRESULT COptionsPageGlobalStyles::OnSizeChanged(WORD wNotifyCode, WORD /*wID*/, 
 	if(m_pStyle)
 	{
 		int i = m_SizeCombo.GetSelection((wNotifyCode != CBN_SELCHANGE));//GetDlgItemInt(IDC_STYLE_SIZECOMBO);
-		m_dirty = true;
 		m_style.FontSize = i;
-		UpdateDisplay();
+		onChange();
 	}
 
 	return 0;
@@ -143,8 +146,7 @@ LRESULT COptionsPageGlobalStyles::OnBoldClicked(WORD /*wNotifyCode*/, WORD /*wID
 	{
 		bool bC = m_bold.GetCheck() == BST_CHECKED;
 		m_style.Bold = bC;
-		m_dirty = true;
-		UpdateDisplay();
+		onChange();
 	}
 
 	return 0;
@@ -156,8 +158,7 @@ LRESULT COptionsPageGlobalStyles::OnItalicClicked(WORD /*wNotifyCode*/, WORD /*w
 	{
 		bool bC = m_italic.GetCheck() == BST_CHECKED;
 		m_style.Italic = bC;
-		m_dirty = true;
-		UpdateDisplay();
+		onChange();
 	}
 
 	return 0;
@@ -169,8 +170,7 @@ LRESULT COptionsPageGlobalStyles::OnUnderlineClicked(WORD /*wNotifyCode*/, WORD 
 	{
 		bool bC = m_underline.GetCheck() == BST_CHECKED;
 		m_style.Underline = bC;
-		m_dirty = true;
-		UpdateDisplay();
+		onChange();
 	}
 
 	return 0;
@@ -182,8 +182,7 @@ LRESULT COptionsPageGlobalStyles::OnEOLFilledClicked(WORD /*wNotifyCode*/, WORD 
 	{
 		bool bC = m_eolfilled.GetCheck() == BST_CHECKED;
 		m_style.EOLFilled = bC;
-		m_dirty = true;
-		UpdateDisplay();
+		onChange();
 	}
 
 	return 0;
@@ -203,7 +202,7 @@ LRESULT COptionsPageGlobalStyles::OnResetClicked(WORD /*wNotifyCode*/, WORD /*wI
 	}
 
 	m_dirty = true;
-	UpdateSel();
+	updateSel();
 
 	return 0;
 }
@@ -224,28 +223,51 @@ LRESULT COptionsPageGlobalStyles::OnResetAllClicked(WORD /*wNotifyCode*/, WORD /
 	
 	// Re-select whatever we're looking at...
 	m_pStyle = NULL;
-	UpdateSel();
+	updateSel();
 
 	return 0;
 }
 
+/**
+ * List selection has changed, save changes if necessary
+ */
 LRESULT COptionsPageGlobalStyles::OnListSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-	int sel = m_list.GetSelectedIndex();
-	if(sel == -1)
-		return 0;
-
-	NamedStyleDetails* style = reinterpret_cast<NamedStyleDetails*>( m_list.GetItemData( sel ) );
-	style->Combine( m_pSchemes->GetDefaultStyle(), m_style );
-	
-	UpdateDisplay();
+	updateSel();
 
 	return 0;
 }
 
-void COptionsPageGlobalStyles::UpdateSel()
+/**
+ * User has changed something, store it and update the display
+ */
+void COptionsPageGlobalStyles::onChange()
 {
+	m_dirty = true;
+	storeChanges();
+	updateDisplay();
+}
+
+/**
+ * Store changes to the style
+ */
+void COptionsPageGlobalStyles::storeChanges()
+{
+	if(m_pStyle != NULL)
+	{
+		m_pStyle->CheckCustomisation( m_pSchemes->GetDefaultStyle(), m_style );
+	}
+}
+
+/**
+ * Store settings for the previous selection and display the new one
+ */
+void COptionsPageGlobalStyles::updateSel()
+{
+	storeChanges();
+
 	int sel = m_list.GetSelectedIndex();
+	
 	if(sel == -1)
 	{
 		m_pStyle = NULL;
@@ -256,12 +278,17 @@ void COptionsPageGlobalStyles::UpdateSel()
 		m_pStyle->Combine( m_pSchemes->GetDefaultStyle(), m_style );
 	}
 	
-	UpdateDisplay();
+	updateDisplay();
 }
 
-void COptionsPageGlobalStyles::UpdateDisplay()
+void COptionsPageGlobalStyles::updateDisplay()
 {
-	m_sd.SetStyle(m_style.FontName.c_str(), m_style.FontSize, m_style.ForeColor, m_style.BackColor, m_style.name.c_str(), m_style.Bold, m_style.Italic, m_style.Underline);
+	if(!m_pStyle)
+	{
+		return;
+	}
+
+	m_sd.SetStyle(m_style.FontName.c_str(), m_style.FontSize, m_style.ForeColor, m_style.BackColor, m_pStyle->FriendlyName.c_str(), m_style.Bold, m_style.Italic, m_style.Underline);
 
 	m_bold.SetCheck(m_style.Bold ? BST_CHECKED : BST_UNCHECKED);
 	m_italic.SetCheck(m_style.Italic ? BST_CHECKED : BST_UNCHECKED);
