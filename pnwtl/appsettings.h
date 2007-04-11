@@ -11,6 +11,20 @@
 #ifndef appsettings_h__included_DF1DF359_1F19_495a_B4B6_BFECC531AB30
 #define appsettings_h__included_DF1DF359_1F19_495a_B4B6_BFECC531AB30
 
+class ExtDetails
+{
+public:
+	ExtDetails(const char* path, const char* basePath);
+
+	bool Disabled;
+	std::string Path;
+	std::string FullPath;
+
+	bool Exists() const;
+};
+
+typedef std::list<ExtDetails> extlist;
+
 class AppSettings : public XMLParseState
 {
 public:
@@ -19,9 +33,13 @@ public:
 	OptionsFactory::EOptionsType GetOptionsType() const;
 	LPCTSTR GetUserPath() const;
 	bool HaveUserPath() const;
-	const tstring_list& GetExtensions() const;
+	const extlist& GetExtensions() const;
 
 	Options* MakeOptions() const;
+
+	void FindExtensions();
+
+	void Save();
 
 // XMLParseState
 public:
@@ -30,6 +48,7 @@ public:
 	virtual void characterData(LPCTSTR data, int len);
 
 protected:
+	void findExtensionHandler(LPCTSTR path, LPCTSTR filename);
 	void load();
 	void save();
 	void onUserSettingsPath(XMLAttributes& atts);
@@ -37,11 +56,12 @@ protected:
 	void onExtension(XMLAttributes& atts);
 
 protected:
+	bool			m_bHuntingTaggers;
 	bool			m_bUseIni;
 	int				m_parseState;
 	tstring			m_pnpath;
 	tstring			m_userPath;
-	tstring_list	m_extensions;
+	extlist			m_extensions;
 };
 
 #endif // #ifndef appsettings_h__included_DF1DF359_1F19_495a_B4B6_BFECC531AB30

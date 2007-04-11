@@ -131,6 +131,10 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 			{
 				theApp->SetCanLoadExtensions(false);
 			}
+			else if(_tcsicmp(&arg.c_str()[1], _T("-findexts")) == 0)
+			{
+				return theApp->FindExtensions();
+			}
 		}
 	}
 

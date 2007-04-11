@@ -128,6 +128,17 @@ void App::ensureUserSettingsDir()
 		UNEXPECTED(_T("Could not create user settings folder"));
 }
 
+int App::FindExtensions()
+{
+	// Search for extensions:
+	m_settings->FindExtensions();
+	
+	// Store:
+	m_settings->Save();
+	
+	return 0;
+}
+
 /**
  * Load configured extensions, configuration is retrieved from AppSettings
  */
@@ -137,16 +148,16 @@ void App::LoadExtensions()
 	if(!m_bCanLoadExtensions)
 		return;
 
-	const tstring_list& extensions = m_settings->GetExtensions();
+	const extlist& extensions = m_settings->GetExtensions();
 
-	for(tstring_list::const_iterator i = extensions.begin();
+	for(extlist::const_iterator i = extensions.begin();
 		i != extensions.end();
 		++i)
 	{
-		const tstring& path = (*i);
-		if(path[0] != '#' && path[0] != '!')
+		const ExtDetails& details = (*i);
+		if(!details.Disabled && details.Exists())
 		{
-			extensions::Extension* ext = new extensions::Extension((*i).c_str(), this);
+			extensions::Extension* ext = new extensions::Extension(details.FullPath.c_str(), this);
 			if(ext->Valid())
 			{
 				m_exts.push_back(ext);
@@ -154,7 +165,7 @@ void App::LoadExtensions()
 			else
 			{
 				tstring msg(_T("Failed to load extension: "));
-				msg += path;
+				msg += details.Path;
 				LOG(msg.c_str());
 			}
 		}

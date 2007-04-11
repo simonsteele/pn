@@ -10,15 +10,21 @@
 
 #include "stdafx.h"
 #include "appsettings.h"
+#include "extension.h"
 #include "include/genx/genx.h"
 #include "include/pngenx.h"
+
+#include "include/filefinder.h"
+
+//////////////////////////////////////////////////////////////////////////////////
+// AppSettingsWriter
 
 class AppSettingsWriter : public GenxXMLWriter
 {
 public:
 	void WriteStoreType(bool ini)
 	{
-		genxStartElementLiteral(m_writer, u(""), u("storeType"));
+		genxStartElementLiteral(m_writer, NULL, u("storeType"));
 		if(ini)
 		{
 			genxAddAttribute(m_attType, u("ini"));
@@ -32,19 +38,29 @@ public:
 
 	void WriteUserSettingsPath(const char* path)
 	{
-		genxStartElementLiteral(m_writer, u(""), u("userSettings"));
+		genxStartElementLiteral(m_writer, NULL, u("userSettings"));
 		addAttributeConvertUTF8(m_attPath, path);
 		genxEndElement(m_writer);
 	}
 
 	void WriteExtension(const char* path, bool disabled)
 	{
-		genxStartElementLiteral(m_writer, u(""), u("extension"));
+		genxStartElementLiteral(m_writer, NULL, u("extension"));
 		addAttributeConvertUTF8(m_attPath, path);
 		if(disabled)
 		{
 			genxAddAttribute(m_attDisabled, u("true"));
 		}
+		genxEndElement(m_writer);
+	}
+
+	void StartConfig()
+	{
+		genxStartElementLiteral(m_writer, NULL, u("config"));
+	}
+
+	void EndConfig()
+	{
 		genxEndElement(m_writer);
 	}
 
@@ -67,11 +83,38 @@ private:
 	genxAttribute m_attDisabled;
 };
 
+//////////////////////////////////////////////////////////////////////////////////
+// ExtDetails
+
+ExtDetails::ExtDetails(const char* path, const char* basePath)
+{
+	Path = path;
+
+	CFileName fn(path);
+	if(fn.IsRelativePath())
+	{
+		fn.Root(basePath);
+	}
+
+	FullPath = fn;
+
+	Disabled = false;
+}
+
+bool ExtDetails::Exists() const
+{
+	return ::FileExists( FullPath.c_str() );
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// AppSettings
+
 AppSettings::AppSettings()
 {
 	m_bUseIni = false;
 	m_userPath = _T("");
 	Options::StaticGetPNPath(m_pnpath);
+	m_bHuntingTaggers = false;
 
 	load();
 }
@@ -91,7 +134,7 @@ bool AppSettings::HaveUserPath() const
 	return m_userPath.size() > 0;
 }
 
-const tstring_list& AppSettings::GetExtensions() const
+const extlist& AppSettings::GetExtensions() const
 {
 	return m_extensions;
 }
@@ -105,6 +148,59 @@ Options* AppSettings::MakeOptions() const
 		options->SetUserSettingsPath(GetUserPath());
 
 	return options;
+}
+
+void AppSettings::FindExtensions()
+{
+	 FileFinder<AppSettings> finder(this, &AppSettings::findExtensionHandler); 
+	 tstring pnpath;
+
+	 m_bHuntingTaggers = false;
+	 OPTIONS->GetPNPath(pnpath);
+	 finder.Find(pnpath.c_str(), _T("*.dll"), false);
+	 
+	 m_bHuntingTaggers = true;
+	 OPTIONS->GetPNPath(pnpath, PNPATH_TAGGERS);
+	 finder.Find(pnpath.c_str(), _T("*.dll"), false);
+}
+
+void AppSettings::Save()
+{
+	save();
+}
+
+void AppSettings::findExtensionHandler(LPCTSTR path, LPCTSTR filename)
+{
+	tstring fn;
+	if(m_bHuntingTaggers)
+	{
+		fn = "Taggers\\";
+		fn += filename;
+	}
+	else
+	{
+		fn = filename;
+	}
+	
+	ExtDetails details(fn.c_str(), m_pnpath.c_str());
+
+	extensions::Extension test(details.FullPath.c_str(), NULL);
+	if(!test.Valid())
+		return;
+
+	// See if we already know about this extension:
+	for(extlist::const_iterator i = m_extensions.begin();
+		i != m_extensions.end();
+		++i)
+	{
+		if(_tcsicmp(details.Path.c_str(), (*i).Path.c_str()) == 0)
+		{
+			// Already known
+			return;
+		}
+	}
+	
+	m_extensions.push_back(details);
 }
 
 #define MATCH(ename) \
@@ -216,6 +312,33 @@ void AppSettings::save()
 	//3. Need UI for extensions, and UI for other options
 	//4. Need command-line parameters for setting options and scanning extensions
 	//5. Should we store extensions list in user profile instead of config.xml?
+
+	CFileName fn(_T("config.xml"));
+	fn.Root(m_pnpath.c_str());
+
+	AppSettingsWriter writer;
+	writer.Start(fn.c_str());
+	writer.StartConfig();
+
+	if(m_bUseIni)
+	{
+		writer.WriteStoreType(true);
+	}
+
+	if(m_userPath != "")
+	{
+		writer.WriteUserSettingsPath(m_userPath.c_str());
+	}
+
+	for(extlist::const_iterator i = m_extensions.begin();
+		i != m_extensions.end();
+		++i)
+	{
+		writer.WriteExtension( (*i).Path.c_str(), (*i).Disabled );
+	}
+
+	writer.EndConfig();
+	writer.Close();
 }
 
 void AppSettings::startElement(LPCTSTR name, XMLAttributes& atts)
@@ -287,29 +410,17 @@ void AppSettings::onExtension(XMLAttributes& atts)
 		return;
 	}
 
-	// Check for relative paths
-	CFileName fn(path);
-	if(fn.IsRelativePath())
-	{
-		fn.Root(m_pnpath.c_str());
-	}
+	ExtDetails details(path, m_pnpath.c_str());
 
-	tstring ext = fn.c_str();
-	
-	// If the extension does not exist we prepend an exclamation mark.
-	if( !::FileExists( ext.c_str() ) )
-	{
-		ext = _T("!") + ext;
-	}
 	// If the extension is disabled we prepend a hash.
-	else if(disabled != NULL && disabled[0] != NULL)
+	if(disabled != NULL && disabled[0] != NULL)
 	{
 		if(disabled[0] == 't') //rue
 		{
-			ext = _T("#") + ext;
+			details.Disabled = true;
 		}
 	}
 
 	// Store the extension path.
-	m_extensions.push_back(ext);
+	m_extensions.push_back(details);
 }

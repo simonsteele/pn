@@ -35,7 +35,9 @@ public:
 
 	CommandDispatch& GetCommandDispatch();
 	const AppSettings& GetSettings();
-	
+
+	int FindExtensions();
+
 	void LoadExtensions();
 
 	void RunExtensionCommand(const char* command);
