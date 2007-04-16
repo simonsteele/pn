@@ -285,11 +285,19 @@ void App::loadInitScript()
 	
 	m_app->ReleaseString(szpnpath);
 
-	::PathAppend(szpath, "init.py");
+	try
+	{
+		::PathAppend(szpath, "init.py");
 
-	runFile(szpath);
+		runFile(szpath);
 
-	m_glue = main_module.attr("glue");
+		m_glue = main_module.attr("glue");
+	}
+	catch(boost::python::error_already_set&)
+	{
+		std::string s = PyTracebackToString();
+		AddOutput(s.c_str());
+	}
 }
 
 /**
