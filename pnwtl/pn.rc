@@ -1610,7 +1610,7 @@ IDB_TBEDIT24            BITMAP                  "res\\tbrEdit24.bmp"
 
 STRINGTABLE 
 BEGIN
-    IDR_MAINFRAME           "Programmer's Notepad 2"
+    IDR_MAINFRAME           "Programmer's Notepad"
     IDR_MDICHILD            "Document"
     ID_EDITOR_WORDWRAP      "Toggle word wrap"
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
