@@ -112,7 +112,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(ProjectDir)lib\Debug\libexpat.dll $(TargetDir)"
+				CommandLine=""
 			/>
 		</Configuration>
 		<Configuration
@@ -410,7 +410,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(ProjectDir)lib\libexpat.dll $(TargetDir)"
+				CommandLine=""
 			/>
 		</Configuration>
 	</Configurations>
