@@ -16,7 +16,7 @@
 		</use-keywords>
 		<use-styles>
 			<style name="Default" key="32" />
-			<style name="Whitespace" key="0" />
+			<style name="Whitespace" key="0" class="whitespace" />
 			<style name="Comment" key="1" class="comment"/>
 			<style name="Number" key="2" class="number"/>
 			<style name="String" key="3" class="string"/>

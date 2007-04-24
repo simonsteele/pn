@@ -84,7 +84,7 @@
 		<lexer name="cpp" />
 		<use-styles>
 			<style name="Default" key="32" />
-			<style name="Whitespace" key="0" />
+			<style name="Whitespace" key="0" class="whitespace" />
 			<style name="Comment" key="1" class="commentbox"/>
 			<style name="Comment Line" key="2" class="commentline"/>
 			

@@ -308,6 +308,7 @@
 #define IDC_SMARTSTART_ADDBUTTON        1034
 #define IDC_STYLE_RESETBTN              1036
 #define IDC_STYLE_RESETALLBTN           1037
+#define IDC_STYLE_LOADPRESETBUTTON      1038
 #define IDC_LIST1                       1039
 #define IDC_KEYWORDS_LIST               1039
 #define IDC_LIST                        1039
@@ -319,6 +320,7 @@
 #define IDC_KB_COMMANDS                 1039
 #define IDC_STYLES_LIST                 1039
 #define IDC_TE_CMDEDIT                  1040
+#define IDC_STYLE_SAVEPRESETBUTTON      1040
 #define IDC_TE_FOLDEREDIT               1041
 #define IDC_REPLACETEXT_LABEL           1042
 #define IDC_TE_PARAMSEDIT               1042
@@ -350,6 +352,8 @@
 #define IDC_FILEPROP_LINEENDINGS        1053
 #define IDC_FILEASSO_METHOD             1053
 #define IDC_FOLDER_COMBO                1053
+#define IDC_STYLE_PRESETLIST            1053
+#define IDC_STYLE_PRESETCOMBO           1053
 #define IDC_OPT_LECOMBO                 1054
 #define IDC_FILEPROP_ENCODING           1054
 #define IDC_OPT_SHOWTABSCHECK           1054

@@ -1,5 +1,5 @@
 /**
- * @file OptionsPageGlobalStyles.h
+ * @file OptionsPageGlobalStyles.cpp
  * @brief Options Dialog Global Styles Page for Programmers Notepad 2
  * @author Simon Steele
  * @note Copyright (c) 2007 Simon Steele <s.steele@pnotepad.org>

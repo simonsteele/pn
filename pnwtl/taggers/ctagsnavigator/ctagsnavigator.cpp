@@ -62,7 +62,7 @@ void __stdcall exit_pn_extension()
  */
 const char* CTagsTagSource::GetSchemesSupported()
 {
-	return "assembler;cobol;cpp;csharp;eiffel;erlang;java;javascript;lisp;lua;makefile;pascal;perl;plsql;python;ruby;shell;tcl;vb;verilog;vhdl;vim;yacc;web";
+	return "assembler;cobol;cpp;csharp;eiffel;erlang;java;javascript;lisp;lua;makefile;pascal;perl;php;phpscript;plsql;python;ruby;shell;tcl;vb;verilog;vhdl;vim;yacc;web";
 }
 
 /**

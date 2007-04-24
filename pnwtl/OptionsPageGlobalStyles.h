@@ -88,6 +88,8 @@ class COptionsPageGlobalStyles : public COptionsPageImpl<COptionsPageGlobalStyle
 		bool				m_dirty;
 
 		SchemeConfigParser*	m_pSchemes;
+public:
+	LRESULT OnCbnSelchangeCombo1(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 };
 
 #endif

@@ -5,6 +5,8 @@
 		not specified - this way we inherit the system defaults -->
 		<style-class name="default" size="10" font="Lucida Console"/>
 		
+		<style-class name="whitespace" description="Whitespace" fore="a8c5ff" />
+		
 		<style-class name="comment" description="Comments" fore="007f00"/>
 		<style-class name="keyword" description="Keywords" fore="0000ef" />
 		<style-class name="string" description="Strings" fore="7f007f" />
@@ -23,6 +25,7 @@
 		<style-class name="bracemismatch" description="Brace Mismatch" fore="ee0000" bold="true"/>
 		<style-class name="linenumbers" description="Line Numbers" />
 		<style-class name="controlchars" description="Control Characters" fore="808080" />
+                <style-class name="identifier" description="Identifier" />
 	</style-classes>
 	<base-options>
 		<style name="Line Numbers" key="33" class="linenumbers" />

@@ -488,6 +488,15 @@ void FullStyleDetails::CombineNoCustom(const StyleDetails* defStyle, StyleDetail
 	// If there is none, we build from the default style.
 	if(Class.get())
 	{
+		// Catch the case where for some reason the usersettings.xml file
+		// has a style class that doesn't exist in master.scheme - shouldn't be
+		// possible!
+		if(Class->Style == NULL)
+		{
+			UNEXPECTED("Found a style class reference with a custom class but no original class");
+			return;
+		}
+
 		Class->Combine(defStyle, into);
 	}
 	else if(GroupClass.get())

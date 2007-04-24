@@ -41,6 +41,10 @@ LPCWSTR GetLanguage(LPCWSTR filename, const char* scheme)
 		return L"JavaScript";
 	else if(strcmp("web", scheme) == 0)
 		return L"PHP"; // hope for the best...
+	else if(strcmp("php", scheme) == 0)
+		return L"PHP";
+	else if(strcmp("phpscript", scheme) == 0)
+		return L"PHP";
 	else if(strcmp("lisp", scheme) == 0)
 		return L"Lisp";
 	else if(strcmp("lua", scheme) == 0)
