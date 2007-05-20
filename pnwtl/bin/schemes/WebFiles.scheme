@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme>
-	<!-- Some reasonable background colours found in the default Windows palette
-		Off White #FFFBF0    Light green #C0DCC0    Light Blue #A6CAF0 -->
 	<style-classes>
 		<style-class name="embeddedjs" back="fofoff"/>
 		<style-class name="aspjs" fore="000000" back="dfdf7f"/>
@@ -160,9 +158,9 @@
 			<style name="Other inside tag" key="8" fore="800080"/>
 			<style name="Comment" key="9" class="comment"/>
 			<style name="Entity" key="10" fore="800080"/>
-			<style name="XML style tag ends /&gt;" key="11" fore="000080"/>
-			<style name="XML Identifier start &lt; ?" key="12" fore="0000ff"/>
-			<style name="XML Identifier end ?&gt;" key="13" fore="0000ff"/>
+			<style name="XML style tag ends /&gt;" key="11" class="tag"/>
+			<style name="XML Identifier start &lt; ?" key="12" class="tag"/>
+			<style name="XML Identifier end ?&gt;" key="13" class="tag"/>
 			<style name="Script" key="14" fore="000080"/>
 			<style name="ASP &lt;% ... %&gt;" key="15" back="ffff00"/>
 			<style name="ASP &lt;% ... %&gt;" key="16" back="ffdf00"/>
