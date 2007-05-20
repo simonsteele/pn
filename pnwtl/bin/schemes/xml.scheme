@@ -24,13 +24,13 @@
 			<style name="Other inside tag" key="8" fore="800080"/>
 			<style name="Comment" key="9" fore="808000"/>
 			<style name="Entities" key="10" fore="800080"/>
-			<style name="XML style tag ends '/&gt;'" key="11" fore="000080"/>
-			<style name="XML identifier start '&lt;?'" key="12" fore="800080" bold="true"/>
-			<style name="XML identifier end '?&gt;'" key="13" fore="800080" bold="true"/>
+			<style name="XML style tag ends '/&gt;'" key="11" class="tag" />
+			<style name="XML identifier start '&lt;?'" key="12" class="tag" bold="true" />
+			<style name="XML identifier end '?&gt;'" key="13" class="tag" bold="true"/>
 			<style name="CDATA" key="17" fore="800000" back="FFF0F0" eolfilled="true"/>
 			<style name="Question" key="18" fore="800000"/>
 			<style name="Unquoted Value" key="19" fore="608060"/>
-			<group name="SGML" description="JavaScript embedded within an ASP file." class="sgml" >
+			<group name="SGML" description="SGML Elements" class="sgml" >
 				<style name="Tags &lt;! ... &gt;" key="21" fore="000080"/>
 				<style name="Command" key="22" fore="000080" bold="true"/>
 				<style name="1st param" key="23" fore="006600"/>
