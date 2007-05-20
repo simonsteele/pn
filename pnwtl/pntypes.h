@@ -24,6 +24,7 @@ typedef struct tagFindOptions
 	bool Loop;
 	bool Found;
 	bool UseSlashes;
+	bool NoCursorMove;
 } SFindOptions;
 
 typedef struct tagSearchOptions : tagFindOptions
@@ -70,6 +71,9 @@ public:
 	
 	virtual bool GetUseSlashes() const;
 	virtual void SetUseSlashes(bool slashes);
+
+	virtual bool GetNoCursorMove() const;
+	virtual void SetNoCursorMove(bool reposition);
 
 	// Replace Options:
 	virtual const char* GetReplaceText() const;

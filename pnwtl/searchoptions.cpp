@@ -80,6 +80,16 @@ void SearchOptions::SetUseSlashes(bool slashes)
 	UseSlashes = slashes;
 }
 
+bool SearchOptions::GetNoCursorMove() const
+{
+	return NoCursorMove;
+}
+
+void SearchOptions::SetNoCursorMove(bool reposition)
+{
+	NoCursorMove = reposition;
+}
+
 const char* SearchOptions::GetReplaceText() const
 {
 	return (const char*)ReplaceText;

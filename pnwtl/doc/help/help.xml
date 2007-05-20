@@ -9,7 +9,7 @@
 <!ENTITY __textclips SYSTEM "textclips.docbook">
 ]>
 <book lang="en">
-  <title>PN2 Help</title>
+  <title>Programmer's Notepad: Help</title>
   
   &__about;
   &__howto;

@@ -175,6 +175,9 @@ BEGIN
             MENUITEM "&Uncomment",                  ID_COMMENTS_UNCOMMENT
         END
         MENUITEM SEPARATOR
+        MENUITEM "Convert Tabs to Spaces",      ID_TOOLS_CONVERTTABSTOSPACES
+        MENUITEM "Convert Spaces to Tabs",      ID_TOOLS_CONVERTSPACESTOTABS
+        MENUITEM SEPARATOR
         MENUITEM "&Goto",                       ID_EDIT_GOTO
         MENUITEM "&Jump To...",                 ID_EDIT_JUMPTO
         MENUITEM "&Autocomplete",               ID_EDIT_AUTOCOMPLETE
@@ -198,16 +201,16 @@ BEGIN
         END
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM SEPARATOR
-        MENUITEM "Line End Markers",            32792
-        MENUITEM "Line Numbers",                ID_EDITOR_LINENOS
-        MENUITEM "Mark WhiteSpace",             ID_EDITOR_WHITESPACE
-        MENUITEM "Syntax Highlighting",         131
-        MENUITEM "Word Wrap",                   130
+        MENUITEM "Line &End Markers",            32792
+        MENUITEM "Line &Numbers",                ID_EDITOR_LINENOS
+        MENUITEM "&Mark WhiteSpace",             ID_EDITOR_WHITESPACE
+        MENUITEM "Syntax &Highlighting",         131
+        MENUITEM "Word W&rap",                   130
         MENUITEM SEPARATOR
         MENUITEM "Toggle &Bookmark",            ID_BOOKMARKS_TOGGLE
         MENUITEM "Next B&ookmark",              ID_BOOKMARKS_NEXT
         MENUITEM SEPARATOR
-        POPUP "Folding"
+        POPUP "&Folding"
         BEGIN
             MENUITEM "Toggle Fold",                 ID_VIEW_TOGGLEFOLD
             MENUITEM "Collapse All Folds",          ID_VIEW_COLLAPSEALLFOLDS
@@ -216,7 +219,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Schemes",                     ID_VIEW_CHANGESCHEME
         MENUITEM SEPARATOR
-        MENUITEM "Individual Output",           ID_VIEW_INDIVIDUALOUTPUT
+        MENUITEM "&Individual Output",           ID_VIEW_INDIVIDUALOUTPUT
         MENUITEM "&Output",                     ID_VIEW_OUTPUT
     END
     POPUP "&Tools"

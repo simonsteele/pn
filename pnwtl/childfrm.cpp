@@ -2,7 +2,7 @@
  * @file ChildFrm.cpp
  * @brief Implementation of CChildFrame, the MDI Child window.
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -414,7 +414,6 @@ LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 	if((lParam != PNID_DONTASKUSER) && !CanClose())
 	{
 		bHandled = TRUE;
-		::SendMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_CLOSE, (LPARAM)this);
 	}
 	else
 	{
@@ -436,6 +435,7 @@ LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 
 		m_spDocument->OnDocClosing();
 	}
+	
 	// NO PostMessage !!
 	::SendMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_CLOSE, (LPARAM)this);
 
@@ -978,6 +978,80 @@ LRESULT CChildFrame::OnUseTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 {
 	m_view.SetUseTabs(!m_view.GetUseTabs());
 	UpdateMenu();
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnConvertTabsToSpaces(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
+{
+	SearchOptions options;
+	
+	m_view.BeginUndoAction();
+
+	// TODO: The options dialog should not allow a tab width of 0
+	assert( m_view.GetTabWidth() > 0 );
+
+	std::string replaceText = "\\1";
+	for ( int i = 0; i < m_view.GetTabWidth(); i++ )
+		replaceText += " ";
+	
+	// Find all leading groups of spaces, convert to tabs
+	options.SetFindText("^\\( *\\)\t");
+	options.SetReplaceText(replaceText.c_str());
+
+	options.SetIncludeHidden(true);
+	options.SetLoopOK(true);
+	options.SetMatchCase(false);
+	options.SetMatchWholeWord(false);
+	options.SetRecurse(true);
+	options.SetReplaceInSelection( m_view.GetSelLength() != 0 );
+	options.SetSearchBackwards(false);
+	options.SetSearchPath("");
+	options.SetUseRegExp(true);
+	options.SetUseSlashes(false);
+	options.SetNoCursorMove(true);
+	
+	// Repeat until we've replaced all occurances
+	while ( ReplaceAll( &options ) != 0 );
+
+	m_view.EndUndoAction();
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnConvertSpacesToTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
+{
+	SearchOptions options;
+
+	m_view.BeginUndoAction();
+
+	// TODO: The options dialog should not allow a tab width of 0
+	assert( m_view.GetTabWidth() > 0 );
+
+	tstring findText = "^\\(\\t*\\)";
+	for ( int i = 0; i < m_view.GetTabWidth(); i++ )
+		findText += " ";
+	
+	// Find all leading groups of spaces, convert to tabs
+	options.SetFindText(findText.c_str());
+	options.SetReplaceText("\\1\\t");
+
+	options.SetIncludeHidden(true);
+	options.SetLoopOK(true);
+	options.SetMatchCase(false);
+	options.SetMatchWholeWord(false);
+	options.SetRecurse(true);
+	options.SetReplaceInSelection( m_view.GetSelLength() != 0 );
+	options.SetSearchBackwards(false);
+	options.SetSearchPath("");
+	options.SetUseRegExp(true);
+	options.SetUseSlashes(false);
+	options.SetNoCursorMove(true);
+
+	// Repeat until we've replaced all occurances
+	while ( ReplaceAll( &options ) != 0 );
+
+	m_view.EndUndoAction();
 
 	return 0;
 }

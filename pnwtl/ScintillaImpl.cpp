@@ -908,10 +908,13 @@ int CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 			}
 		}
 
-		if (pOptions->InSelection)
-			SetSel(startPosition, endPosition);
-		else
-			SetSel(lastMatch, lastMatch);
+		if(!pOptions->NoCursorMove)
+		{
+			if (pOptions->InSelection)
+				SetSel(startPosition, endPosition);
+			else
+				SetSel(lastMatch, lastMatch);
+		}
 		
 		EndUndoAction();
 	} 

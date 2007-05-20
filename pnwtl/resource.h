@@ -571,6 +571,8 @@
 #define ID_COMMENTS_LINE                32968
 #define ID_COMMENTS_UNCOMMENT           32969
 #define ID_EDIT_AUTOCOMPLETE            32970
+#define ID_TOOLS_CONVERTTABSTOSPACES    32971
+#define ID_TOOLS_CONVERTSPACESTOTABS    32972
 
 // Next default values for new objects
 // 
@@ -578,7 +580,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        350
-#define _APS_NEXT_COMMAND_VALUE         32971
+#define _APS_NEXT_COMMAND_VALUE         32973
 #define _APS_NEXT_CONTROL_VALUE         1145
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

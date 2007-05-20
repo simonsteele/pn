@@ -114,6 +114,8 @@ public:
 		COMMAND_ID_HANDLER(ID_TOOLS_LECONVERT, OnLineEndingsConvert)
 		COMMAND_ID_HANDLER(ID_TOOLS_STOPTOOLS, OnStopTools)
 		COMMAND_ID_HANDLER(ID_TOOLS_USETABS, OnUseTabs)
+		COMMAND_ID_HANDLER(ID_TOOLS_CONVERTTABSTOSPACES, OnConvertTabsToSpaces)
+		COMMAND_ID_HANDLER(ID_TOOLS_CONVERTSPACESTOTABS, OnConvertSpacesToTabs)
 
 		COMMAND_ID_HANDLER(ID_EDIT_HEADERSWITCH, OnHeaderSwitch)
 
@@ -241,6 +243,8 @@ public:
 	LRESULT OnLineEndingsConvert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnStopTools(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnUseTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnConvertTabsToSpaces(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnConvertSpacesToTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnEncodingSelect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewFileProps(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

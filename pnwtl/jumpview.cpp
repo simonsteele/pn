@@ -16,11 +16,6 @@
 #include "plugins.h"
 #include "jumpview.h"
 
-
-using namespace Projects;
-
-#define TCEX_DRAGTIMER	2
-
 //neu
 //#define COLWIDTH_PARENT 90
 //#define COLWIDTH_LINE	60
@@ -107,58 +102,71 @@ HWND CJumpTreeCtrl::Create(HWND hWndParent, _U_RECT rect, LPCTSTR szWindowName ,
 	m_imageList.Add(hBitmap, RGB(255,0,255));
 	SetImageList(m_imageList.m_hImageList, TVSIL_NORMAL);
 
-return hWndRet;
+	return hWndRet;
 }
-
 
 LRESULT CJumpTreeCtrl::OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
 	CChildFrame* pChildFrame= (CChildFrame*)lParam;
-	tstring fn;
-	std::wstring fnstr;
 
 	if(pChildFrame->GetModified() || !pChildFrame->CanSave())
 	{
-		CJumpTreeCtrl::activateFileTree(pChildFrame);
+		activateFileTree(pChildFrame);
 	}
 	else
 	{
 		SetRedraw(FALSE); 
-		if ((int)wParam==JUMPVIEW_FILE_CLOSE){
-			CJumpTreeCtrl::deleteFileTreeItem(pChildFrame);
-		} else if ((int)wParam==JUMPVIEW_FILE_ADD){
-			CJumpTreeCtrl::addFileTree(pChildFrame);
-		} else {
-			CJumpTreeCtrl::activateFileTree(pChildFrame);
+		
+		if ((int)wParam == JUMPVIEW_FILE_CLOSE)
+		{
+			deleteFileTreeItem(pChildFrame);
+		} 
+		else if ((int)wParam == JUMPVIEW_FILE_ADD)
+		{
+			addFileTree(pChildFrame);
+		} 
+		else 
+		{
+			activateFileTree(pChildFrame);
 		}
+		
 		SetRedraw(TRUE); 
 	}
 	return TRUE;
 }
 
-
 void CJumpTreeCtrl::addFileTree(CChildFrame* pChildFrame)
 {
 	tstring fn, filepart;
-CToolTipCtrl pmyToolTip;
-	fn=pChildFrame->GetFileName();
-	LPCTSTR sFullPath = fn.c_str();
-	if( _tcschr(sFullPath, _T('\\')) != NULL )
+
+	fn = pChildFrame->GetFileName();
+	if( _tcschr(fn.c_str(), _T('\\')) != NULL )
 	{
-		CFileName fn(sFullPath);
-		filepart = fn.GetFileName();
+		CFileName cfn(fn.c_str());
+		filepart = cfn.GetFileName();
 	}
 	else
-		filepart = sFullPath;
+	{
+		filepart = fn;
+	}
+
 	HTREEITEM hFolder = InsertItem( filepart.c_str(), 0, 0, TVI_ROOT, TVI_LAST );
 	SetItemData(hFolder,reinterpret_cast<DWORD_PTR>( pChildFrame ));
 	SetItemState(hFolder, TVIS_BOLD, TVIS_BOLD);
-	SetItemState(hFolder, TVIF_DI_SETITEM, TVIF_DI_SETITEM);
+	//SetItemState(hFolder, TVIF_DI_SETITEM, TVIF_DI_SETITEM);
+	
+	// Let the JumpToHandler find us the tags
 	JumpToHandler::GetInstance()->FindTags(pChildFrame, this);
-	if( GetChildItem(hFolder)){
+	
+	// See if we got tags, and if so deal with them...
+	if( GetChildItem(hFolder))
+	{
 		SortChildren(hFolder);
 		activateFileTree(pChildFrame);
-	} else {
+	} 
+	else 
+	{
+		// else remove the file item
 		deleteFileItem(hFolder);
 	}
 }
@@ -168,15 +176,20 @@ void CJumpTreeCtrl::activateFileTree(CChildFrame* pChildFrame)
  	HTREEITEM hRoot;
 	CChildFrame* childFrameItem;
 	hRoot = GetRootItem();
-	while (hRoot) {
+	while (hRoot)
+	{
 		childFrameItem = reinterpret_cast<CChildFrame*>(GetItemData(hRoot));
-		if (childFrameItem==pChildFrame){
+		if (childFrameItem == pChildFrame)
+		{
 			Expand(hRoot,TVE_EXPAND);
 			SelectItem(hRoot);
-		} else {
+		} 
+		else 
+		{
 			Expand(hRoot,TVE_COLLAPSE);		
 		}
-		hRoot=GetNextItem(hRoot, TVGN_NEXT );
+		
+		hRoot = GetNextItem(hRoot, TVGN_NEXT);
 	}
 }
 
@@ -184,9 +197,10 @@ void CJumpTreeCtrl::deleteFileTree()
 {
  	HTREEITEM hRoot;
 	hRoot = GetRootItem();
-	while (hRoot) {
+	while (hRoot)
+	{
 		deleteFileItem(hRoot);
-		hRoot=GetRootItem();
+		hRoot = GetRootItem();
 	}
 }
 
@@ -196,13 +210,15 @@ void CJumpTreeCtrl::deleteFileTreeItem(CChildFrame* pChildFrame)
  	HTREEITEM hRoot;
 	CChildFrame* childFrameItem;
 	hRoot = GetRootItem();
-	while (hRoot) {
+	while (hRoot) 
+	{
 		childFrameItem = reinterpret_cast<CChildFrame*>(GetItemData(hRoot));
-		if (childFrameItem==pChildFrame){
+		if (childFrameItem == pChildFrame)
+		{
 			deleteFileItem(hRoot);
 			break;
 		}
-		hRoot=GetNextItem(hRoot, TVGN_NEXT );
+		hRoot = GetNextItem(hRoot, TVGN_NEXT);
 	}
 }
 
@@ -240,18 +256,24 @@ void CJumpTreeCtrl::deleteFileItem(HTREEITEM hRoot)
 
 void CJumpTreeCtrl::OnFound(int count, LPMETHODINFO methodInfo)
 {
-	HTREEITEM hRoot= GetRootItem();		
+	HTREEITEM hRoot = GetRootItem();		
 	CChildFrame* pChildFrame;
+	
 	//Find the root node, which is the frame of the file that contains the method
 	//The root node was inserted by addFileTree. So it must exist.
 	while (hRoot) 
 	{
 		pChildFrame = reinterpret_cast<CChildFrame*>(GetItemData(hRoot));
-		if (pChildFrame==static_cast<CChildFrame*>(methodInfo->userData))break;					
-		hRoot=GetNextItem(hRoot, TVGN_NEXT );
+		if (pChildFrame == static_cast<CChildFrame*>(methodInfo->userData))
+			break;					
+		hRoot = GetNextItem(hRoot, TVGN_NEXT );
 	}
-	if (!hRoot) return;
+	
+	if (!hRoot) 
+		return;
+	
 	RecursiveInsert(hRoot, methodInfo);
+	
 	switch(methodInfo->type)
 	{
 		case 1://TAG_FUNCTION
@@ -266,6 +288,7 @@ void CJumpTreeCtrl::OnFound(int count, LPMETHODINFO methodInfo)
 		pChildFrame->GetTextView()->AddToAutoComplete(methodInfo->fullText,methodInfo->methodName);
 	};	
 }
+
 //Manuel Sandoval: This function adds new items to tag tree using recursivity:
 #define tag_class 3
 #define tag_struct 10
@@ -294,7 +317,8 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 		while((methodInfo->parentName[i] != '.') && (methodInfo->parentName[i]))
 		{
 			FirstAncestor[i] = methodInfo->parentName[i];
-			i++;			
+			i++;
+
 			//I don't think there is a class name longer than 256!
 			//But anyway: it's MANDATORY that strings are null terminated.
 			//So we must warrant there is enough room for it
@@ -303,7 +327,8 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 				ATLASSERT(false);
 				break;
 			}
-		}				
+		}
+
 		//first find the "class" node in root. "
 		LPMETHODINFO methodInfoItem;
 		HTREEITEM hClassNode = 0;
@@ -324,17 +349,23 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 					methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hClassNode));
 					if(methodInfoItem->methodName)
 					{				
-						if (!strcmp(methodInfoItem->methodName,FirstAncestor)){found=true;break;}
+						if (!strcmp(methodInfoItem->methodName,FirstAncestor))
+						{
+							found=true;
+							break;
+						}
 					}
+					
 					hClassNode = GetNextItem(hClassNode, TVGN_NEXT );
 				}				
 			}
+			
 			if(!found)
 				hClassContainer = GetNextItem(hClassContainer, TVGN_NEXT );
 			else 
 				break;
-		}		
-			
+		}
+		
 		//If "class"/"struct" node still doesn't exist, or owner class/struct doesn't exist, create them:
 		if(!hClassContainer || !hClassNode)
 		{		
@@ -384,11 +415,13 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 		while (hTypeContainer) 
 		{
 			methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hTypeContainer));
-			if (methodInfoItem->type==methodInfo->type)break;			
-			hTypeContainer=GetNextItem(hTypeContainer, TVGN_NEXT );
+			if (methodInfoItem->type == methodInfo->type)
+				break;
+			hTypeContainer=GetNextItem(hTypeContainer, TVGN_NEXT);
 		}
+		
 		//if the "type" node doesn't exist, create it
-		int imagesNumber=jumpToTagImages[methodInfo->type].imagesNumber;
+		int imagesNumber = jumpToTagImages[methodInfo->type].imagesNumber;
 		if (!hTypeContainer)
 		{
 			if (methodInfo->type <= TAG_MAX)
@@ -406,8 +439,8 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 			else return 0; //This tag is undefined. Can't be inserted.
 		}
 		//check new item is not repeated:
-		HTREEITEM hChildItem=0;
-		HTREEITEM checkNode=GetChildItem(hTypeContainer);
+		HTREEITEM hChildItem = 0;
+		HTREEITEM checkNode = GetChildItem(hTypeContainer);
 		while (checkNode) 
 		{
 			methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(checkNode));
@@ -428,7 +461,7 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 		{
 			hChildItem = checkNode;
 		}
-				
+		
 		methodInfoItem = new extensions::METHODINFO;
 		//If new item is already inserted, update it's info (like the line where it is defined.)
 		memcpy(methodInfoItem, methodInfo, sizeof(extensions::METHODINFO));
@@ -453,6 +486,7 @@ _RPT2(_CRT_WARN,"\nInsert %s in %s", methodInfo->methodName, methodInfo->parentN
 		SetItemData(hChildItem, reinterpret_cast<DWORD_PTR>( methodInfoItem ));
 		ret = hChildItem;
 	}
+
 	return ret;
 }
 
@@ -477,7 +511,8 @@ LRESULT CJumpTreeCtrl::OnLButtonDblClick(UINT /*uMsg*/, WPARAM wParam/**/, LPARA
 LRESULT CJumpTreeCtrl::OnRButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	bHandled = false;
-	if (GetRootItem()) {
+	if (GetRootItem()) 
+	{
 		CPoint pt(GetMessagePos());
 		CSPopupMenu popup(IDR_POPUP_CTAGS);
 		g_Context.m_frame->TrackPopupMenu(popup, 0, pt.x, pt.y, NULL, m_hWnd);
@@ -489,9 +524,10 @@ LRESULT CJumpTreeCtrl::OnCollapsAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 {
 	HTREEITEM hRoot;
  	hRoot = GetRootItem();
-	while (hRoot) {
+	while (hRoot)
+	{
 		Expand(hRoot, TVE_COLLAPSE);		
-		hRoot = GetNextItem(hRoot, TVGN_NEXT );
+		hRoot = GetNextItem(hRoot, TVGN_NEXT);
 	}
 	return 0;
 }
@@ -500,9 +536,10 @@ LRESULT CJumpTreeCtrl::OnExpandAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 {
 	HTREEITEM hRoot;
  	hRoot = GetRootItem();
-	while (hRoot) {
-		Expand(hRoot,TVE_EXPAND);
-		hRoot=GetNextItem(hRoot, TVGN_NEXT );
+	while (hRoot)
+	{
+		Expand(hRoot, TVE_EXPAND);
+		hRoot = GetNextItem(hRoot, TVGN_NEXT);
 	}
 	return 0;
 }
@@ -581,7 +618,7 @@ LRESULT CJumpDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 LRESULT CJumpDocker::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	if(wParam != SIZE_MINIMIZED )
+	if(wParam != SIZE_MINIMIZED)
 	{
 		RECT rc;
 		GetClientRect(&rc);
@@ -615,7 +652,6 @@ LRESULT CJumpDocker::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 	return 0;
 }
 
-
 LRESULT CJumpDocker::OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 {
 	LPNMTREEVIEW pN = reinterpret_cast<LPNMTREEVIEW>(pnmh);
@@ -640,11 +676,13 @@ LRESULT CJumpDocker::OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 
 	return 0;
 }
+
 LRESULT CJumpDocker::OnClipGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 	LPNMTVDISPINFO pGetInfoTip = (LPNMTVDISPINFO)pnmh;
 	return 0;
 }
+
 /**
  * For some reason the WM_CTLCOLOR* messages do not get to the child
  * controls with the docking windows (todo with reflection). This returns

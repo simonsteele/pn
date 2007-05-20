@@ -43,6 +43,7 @@ Options::Options()
 {
 	// Initialisation	
 	m_SearchOptions.Found = false;
+	m_SearchOptions.NoCursorMove = false;
 	m_UserSettingsPath = _T("");
 }
 

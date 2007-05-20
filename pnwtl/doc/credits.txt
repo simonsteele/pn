@@ -11,6 +11,7 @@ Vassili Bourdo
 Oleg Gerasimov
 Vambola Kotkas
 Manuel Sandoval
+James Yoneda
 
 Documentation:
 --------------

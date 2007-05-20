@@ -135,6 +135,13 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 			{
 				return theApp->FindExtensions();
 			}
+			else if(_tcscmp(&arg.c_str()[1], _T("-upgrade")) == 0)
+			{
+				theApp->FindExtensions();
+				theApp->Init();
+				SchemeManager::GetInstance()->Compile();
+				return 0;
+			}
 		}
 	}
 

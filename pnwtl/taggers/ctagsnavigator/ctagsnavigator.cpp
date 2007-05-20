@@ -216,10 +216,10 @@ bool CTagsTagSource::FindTags(ITagSink* sink,
 	// continuation purposes.
 	char* buffer = &state.buffer[PARSE_BUFFER_SIZE];
 
-#ifdef _DEBUG
-	DWORD ticks = ::GetTickCount();
-	FILE* fDump = fopen("c:\\tagdump.txt", "wb");
-#endif
+//#ifdef _DEBUG
+//	DWORD ticks = ::GetTickCount();
+//	FILE* fDump = fopen("c:\\tagdump.txt", "wb");
+//#endif
 
 	while(!bCompleted || bLastRead)
 	{
@@ -239,9 +239,9 @@ bool CTagsTagSource::FindTags(ITagSink* sink,
 
 			if(bRead && dwBytesRead)
 			{
-#ifdef _DEBUG
-				fwrite(buffer, dwBytesRead, 1, fDump);
-#endif
+//#ifdef _DEBUG
+//				fwrite(buffer, dwBytesRead, 1, fDump);
+//#endif
 				// Parse the CTAGS data:
 				parseData(&state, dwBytesRead, mask, userData, ltypes, utypes);
 			}
@@ -302,12 +302,12 @@ bool CTagsTagSource::FindTags(ITagSink* sink,
 		
 	} // while (!bCompleted)
 
-#ifdef _DEBUG
-	ticks = GetTickCount() - ticks;
-	wchar_t timebuf[300];
-	swprintf(timebuf, L"ctagsnavigator time taken: %d\n", ticks);
-	::OutputDebugString(timebuf);
-#endif
+//#ifdef _DEBUG
+//	ticks = GetTickCount() - ticks;
+//	wchar_t timebuf[300];
+//	swprintf(timebuf, L"ctagsnavigator time taken: %d\n", ticks);
+//	::OutputDebugString(timebuf);
+//#endif
 
 	if (WAIT_OBJECT_0 != ::WaitForSingleObject(pi.hProcess, 1000)) 
 	{
@@ -324,9 +324,9 @@ bool CTagsTagSource::FindTags(ITagSink* sink,
 	::CloseHandle(hStdInRead);
 	::CloseHandle(hStdInWrite);
 
-#ifdef _DEBUG
-	::fclose(fDump);
-#endif
+//#ifdef _DEBUG
+//	::fclose(fDump);
+//#endif
 
 	return bRet;
 }
