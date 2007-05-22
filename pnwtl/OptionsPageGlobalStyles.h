@@ -32,10 +32,12 @@ class COptionsPageGlobalStyles : public COptionsPageImpl<COptionsPageGlobalStyle
 			COMMAND_HANDLER(IDC_STYLE_SIZECOMBO, CBN_EDITCHANGE, OnSizeChanged)
 			COMMAND_HANDLER(IDC_STYLE_RESETBTN, BN_CLICKED, OnResetClicked)
 			COMMAND_HANDLER(IDC_STYLE_RESETALLBTN, BN_CLICKED, OnResetAllClicked)
+			COMMAND_HANDLER(IDC_STYLE_LOADPRESETBUTTON, BN_CLICKED, OnLoadPresetClicked)
 			NOTIFY_HANDLER(IDC_STYLE_FOREBUTTON, CPN_SELCHANGE, OnForeChanged)
 			NOTIFY_HANDLER(IDC_STYLE_BACKBUTTON, CPN_SELCHANGE, OnBackChanged)
 			NOTIFY_HANDLER(IDC_STYLES_LIST, LVN_ITEMCHANGED, OnListSelChanged)
 			REFLECT_NOTIFICATIONS()
+			
 		END_MSG_MAP()
 
 		virtual void OnOK();
@@ -61,10 +63,16 @@ class COptionsPageGlobalStyles : public COptionsPageImpl<COptionsPageGlobalStyle
 
 		LRESULT OnListSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
+		//LRESULT OnCbnSelchangeCombo1(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnLoadPresetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+		void OnPresetFound(const char* path, const char* file);
+
 		void onChange();
 		void storeChanges();
 		void updateSel();
 		void updateDisplay();
+		void loadPreset(LPCTSTR path);
 
 	private:
 		CFontCombo			m_FontCombo;
@@ -82,14 +90,14 @@ class COptionsPageGlobalStyles : public COptionsPageImpl<COptionsPageGlobalStyle
 
 		CListViewCtrl		m_list;
 
+		CComboBox			m_presets;
+
 		StyleDetails		m_style;
 		NamedStyleDetails*	m_pStyle;
 
 		bool				m_dirty;
 
 		SchemeConfigParser*	m_pSchemes;
-public:
-	LRESULT OnCbnSelchangeCombo1(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 };
 
 #endif

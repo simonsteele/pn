@@ -29,7 +29,11 @@ class SchemeConfigParser : public SchemeParser
 		void LoadConfig(LPCTSTR path, LPCTSTR compiledpath);
 		void SaveConfig();
 
+		void LoadPresets(LPCTSTR path);
+
 		LPCTSTR GetCurrentScheme();
+
+		void ResetClasses();
 
 		SchemeDetailsList&	GetSchemes();
 		StyleDetails*		GetDefaultStyle();
@@ -44,6 +48,7 @@ class SchemeConfigParser : public SchemeParser
 	protected:
 		void Sort();
 		void Save(LPCTSTR filename);
+		bool validateFont(const char* fontName);
 
 		SchemeDetailsList	m_Schemes;
 		SchemeDetails*		m_pCurrent;

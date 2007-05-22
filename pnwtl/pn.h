@@ -30,6 +30,7 @@
 #define TOOLS_RUNTOOL		0x2
 #define PN_MDIDESTROY		0x3
 #define COMMANDS_RUNEXT		0x4
+#define PN_UPDATEDISPLAY	0x5
 
 #define PNID_SAVEAS			14
 #define PNID_OVERWRITE		15

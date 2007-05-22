@@ -201,11 +201,11 @@ BEGIN
         END
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM SEPARATOR
-        MENUITEM "Line &End Markers",            32792
-        MENUITEM "Line &Numbers",                ID_EDITOR_LINENOS
-        MENUITEM "&Mark WhiteSpace",             ID_EDITOR_WHITESPACE
-        MENUITEM "Syntax &Highlighting",         131
-        MENUITEM "Word W&rap",                   130
+        MENUITEM "Line &End Markers",           32792
+        MENUITEM "Line &Numbers",               ID_EDITOR_LINENOS
+        MENUITEM "&Mark WhiteSpace",            ID_EDITOR_WHITESPACE
+        MENUITEM "Syntax &Highlighting",        131
+        MENUITEM "Word W&rap",                  130
         MENUITEM SEPARATOR
         MENUITEM "Toggle &Bookmark",            ID_BOOKMARKS_TOGGLE
         MENUITEM "Next B&ookmark",              ID_BOOKMARKS_NEXT
@@ -219,7 +219,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Schemes",                     ID_VIEW_CHANGESCHEME
         MENUITEM SEPARATOR
-        MENUITEM "&Individual Output",           ID_VIEW_INDIVIDUALOUTPUT
+        MENUITEM "&Individual Output",          ID_VIEW_INDIVIDUALOUTPUT
         MENUITEM "&Output",                     ID_VIEW_OUTPUT
     END
     POPUP "&Tools"
@@ -1282,7 +1282,7 @@ BEGIN
     LTEXT           "Presets",IDC_STATIC,0,167,25,8
     COMBOBOX        IDC_STYLE_PRESETCOMBO,10,181,151,104,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "&Load",IDC_STYLE_LOADPRESETBUTTON,171,181,50,14
-    PUSHBUTTON      "&Save",IDC_STYLE_SAVEPRESETBUTTON,225,181,50,14
+    PUSHBUTTON      "&Save",IDC_STYLE_SAVEPRESETBUTTON,225,181,50,14,NOT WS_VISIBLE
 END
 
 

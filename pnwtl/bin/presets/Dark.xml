@@ -1,0 +1,15 @@
+<UserSettings>
+	<override-colours caret="e6e6fa" indentGuides="282828" />
+	<override-classes>
+		<style-class name="default" font="Monaco" back="000000" fore="fafafa" />
+		<style-class name="comment" fore="d500d5"/>
+		<style-class name="keyword" fore="f47a00" bold="true"/>
+		<style-class name="string" fore="5fff61" />
+		<style-class name="number" fore="fafafa" />
+		<style-class name="identifier" fore="fddf39" />
+		<style-class name="operator" fore="ffffff" />
+		<style-class name="preprocessor" fore="7f7f00" />
+		<style-class name="error" fore="ffff00" back="ff0000" />
+		<style-class name="commentdoc" fore="3f703f"/>
+	</override-classes>
+</UserSettings>

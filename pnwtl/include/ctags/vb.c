@@ -94,12 +94,35 @@ static void findVBTags (void)
 
 		start_pos=strstr((char*)cp,"dim");
 		if(!start_pos)start_pos=strstr((char*)cp,"const");
+		if(!start_pos)start_pos=strstr((char*)cp,"withevents");//ManuelSandoval2 new keyword				
+
+		//ManuelSandoval2 handle end keyword. strstr can get confused with friEND or other
+		//words containing "end".
+		//Must go here, before all the possible subsequent keywords (function/sub/class)
+		if(!start_pos)
+		{
+			char* tmp=strstr((char*)cp,"end ");
+			if(cp==tmp)start_pos=tmp;
+		}
+
 		if(!start_pos)start_pos=strstr((char*)cp,"function");
 		if(!start_pos)start_pos=strstr((char*)cp,"sub");
 		if(!start_pos)start_pos=strstr((char*)cp,"class");
 		if(start_pos)cp=start_pos;
 
-		if (strncmp ((const char*) cp, "dim", (size_t) 3) == 0  && isspace ((int) cp [3]))
+		//ManuelSandoval2 new keyword: withevents
+		if (strncmp ((const char*) cp, "withevents", (size_t) 10) == 0  && isspace ((int) cp [10]))
+		{
+			cp += 10;
+			while (isspace ((int) *cp))	++cp;
+			vStringClear (name);
+			while (isalnum ((int) *cp)  ||  *cp == '_')	{vStringPut (name, (int) *cp);	++cp;	}
+			vStringTerminate (name);
+			if(name->buffer[0]==0){vStringPut (name,'?');vStringTerminate(name);}
+			MyMakeTag (name, VBKinds, K_VARIABLE,0, cc?"class":0, cc);
+			vStringClear (name);
+		} 
+		else if (strncmp ((const char*) cp, "dim", (size_t) 3) == 0  && isspace ((int) cp [3]))
 		{
 			cp += 3;
 			while (isspace ((int) *cp))	++cp;

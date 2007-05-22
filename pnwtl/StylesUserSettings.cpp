@@ -2,9 +2,9 @@
  * @file StylesUserSettings.cpp
  * @brief Implement user customised scheme reading
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -28,6 +28,12 @@ UserSettingsParser::UserSettingsParser()
 {
 	//pScheme = NULL;
 	m_pCurScheme = NULL;
+	m_loadingPreset = false;
+}
+
+void UserSettingsParser::SetPresetLoadMode()
+{
+	m_loadingPreset = true;
 }
 
 void UserSettingsParser::Parse(LPCTSTR path, SchemeLoaderState* pState)
@@ -97,7 +103,10 @@ void UserSettingsParser::startElement(void *userData, LPCTSTR name, XMLAttribute
 	}
 	else if(state == US_SCHEME || state == US_KEYWORD_OVERRIDES || state == US_STYLE_OVERRIDES)
 	{
-		processSchemeElement(pState, name, atts);
+		if(m_pCurScheme != NULL)
+		{
+			processSchemeElement(pState, name, atts);
+		}
 	}
 	else if(state == US_CLASSES)
 	{
@@ -124,24 +133,28 @@ void UserSettingsParser::endElement(void *userData, LPCTSTR name)
 
 	if(state == US_KEYWORDS && (_tcscmp(name, _T("keywords")) == 0))
 	{
-		tstring kw = NormaliseKeywords( tstring(pState->m_CDATA) );
-		
-		if(kw.length() > 0)
+		if(!m_loadingPreset)
 		{
-			CustomKeywordSet* pSet = new CustomKeywordSet;
-			pSet->key = m_idval;
-			pSet->pName = NULL;
-			pSet->pWords = new TCHAR[kw.length()+1];
-			_tcscpy(pSet->pWords, kw.c_str());
-			m_pCurScheme->CustomKeywords.AddKeywordSet(pSet);
+			tstring kw = NormaliseKeywords( tstring(pState->m_CDATA) );
+			
+			if(kw.length() > 0)
+			{
+				CustomKeywordSet* pSet = new CustomKeywordSet;
+				pSet->key = m_idval;
+				pSet->pName = NULL;
+				pSet->pWords = new TCHAR[kw.length()+1];
+				_tcscpy(pSet->pWords, kw.c_str());
+				m_pCurScheme->CustomKeywords.AddKeywordSet(pSet);
+			}
 		}
 
 		pState->m_State = US_KEYWORD_OVERRIDES;
 	}
 	else if(state == US_SCHEME && (_tcscmp(name, _T("scheme")) == 0))
 	{
-		pState->m_SchemeDetails.insert(SchemeDetailsMap::value_type(m_pCurScheme->Name, m_pCurScheme));
-		//pScheme = NULL;
+		if(m_pCurScheme != NULL && !m_loadingPreset)
+			pState->m_SchemeDetails.insert(SchemeDetailsMap::value_type(m_pCurScheme->Name, m_pCurScheme));
+
 		m_pCurScheme = NULL;
 
 		pState->m_State = US_SCHEMES;
@@ -170,11 +183,39 @@ void UserSettingsParser::processClassElement(SchemeLoaderState* pState, LPCTSTR 
 {
 	if(_tcscmp(name, _T("style-class")) == 0)
 	{
-		StylePtr p( new NamedStyleDetails(-1) );
-		p->CustomStyle = new StyleDetails;
-		SchemeParser::parseStyle(pState, atts, p->CustomStyle);
-		
-		pState->m_Classes.insert( StylePtrMap::value_type(p->CustomStyle->name, p) );
+		// Get the style details:
+		StyleDetails* style = new StyleDetails;
+		SchemeParser::parseStyle(pState, atts, style);
+
+		if(!m_loadingPreset)
+		{
+			StylePtr p( new NamedStyleDetails(-1) );
+			p->CustomStyle = style;
+			pState->m_Classes.insert( StylePtrMap::value_type(p->CustomStyle->name, p) );
+		}
+		else
+		{
+			//if(style->name == "default")
+			//{
+			//	// Default style:
+			//	pState->m_Default = *style;
+			//	delete style;
+			//}
+			//else
+			{
+				StylePtrMap::iterator is = pState->m_Classes.find(style->name);
+				if(is == pState->m_Classes.end())
+				{
+					StylePtr p( new NamedStyleDetails(-1) );
+					p->CustomStyle = style;
+					pState->m_Classes.insert( StylePtrMap::value_type(style->name, p));
+				}
+				else
+				{
+					(*is).second->CustomStyle = style;
+				}
+			}
+		}
 	}
 }
 
@@ -187,10 +228,22 @@ void UserSettingsParser::processSchemeElement(SchemeLoaderState* pState, LPCTSTR
 			StyleDetails* pStyle = new StyleDetails;
 			SchemeParser::parseStyle(pState, atts, pStyle);
 
-			// Hand off the style to the master style
-			StylePtr p( new FullStyleDetails(pStyle->Key) );
-			p->CustomStyle = pStyle;
-			m_pCurScheme->PreLoadCustomisedStyle( p );
+			if(!m_loadingPreset)
+			{
+				// Hand off the style to the master style
+				StylePtr p( new FullStyleDetails(pStyle->Key) );
+				p->CustomStyle = pStyle;
+				m_pCurScheme->PreLoadCustomisedStyle( p );
+			}
+			else
+			{
+				// Apply customisation to existing style...
+				StylePtr p = m_pCurScheme->GetStyle(pStyle->Key);
+				if(p != NULL)
+				{
+					p->CustomStyle = pStyle;
+				}
+			}
 		}
 	}
 	else if (pState->m_State == US_KEYWORD_OVERRIDES)
@@ -218,7 +271,6 @@ void UserSettingsParser::processSchemeElement(SchemeLoaderState* pState, LPCTSTR
 		else if(_tcscmp(name, _T("colours")) == 0)
 		{
 			m_pCurScheme->CustomColours.SetFromXml(atts);
-			//pScheme->m_editorColours.SetFromXml(atts);
 		}
 	}
 }
@@ -232,7 +284,25 @@ void UserSettingsParser::processScheme(SchemeLoaderState* pState, XMLAttributes&
 
 	if(pName && ((int)_tcslen(pName) > 0))
 	{
-		m_pCurScheme = new SchemeDetails(pName);
+		if(!m_loadingPreset)
+		{
+			m_pCurScheme = new SchemeDetails(pName);
+		}
+		else
+		{
+			SchemeDetailsMap::iterator iScheme = pState->m_SchemeDetails.find(tstring(pName));
+			if(iScheme != pState->m_SchemeDetails.end())
+			{
+				m_pCurScheme = (*iScheme).second;
+			}
+			else
+			{
+				m_pCurScheme = NULL;
+			}
+		}
+
+		if(m_pCurScheme == NULL)
+			return;
 
 		//pScheme = new CustomisedScheme;
 		m_SchemeName = pName;

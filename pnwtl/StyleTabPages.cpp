@@ -310,6 +310,17 @@ void CTabPageStyles::Finalise()
 	SetItem();
 }
 
+/**
+ * Called because styles have been reset for some reason,
+ * drop any pending customisations and re-display
+ */
+void CTabPageStyles::UpdateDisplay()
+{
+	m_pStyle = NULL;
+
+	UpdateSel();
+}
+
 LRESULT CTabPageStyles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	CRect rc;

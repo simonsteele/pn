@@ -34,36 +34,36 @@ static TAGIMAGES jumpToTagImages [TAG_MAX+1] =
 	{4,_T("class")},		/* TAG_CLASS 		3*/
 	{5,_T("macro")},		/* TAG_MACRO 		4*/
 	{6,_T("enum")},			/* TAG_ENUM 		5*/
-	{1,_T("filename")},		/* TAG_FILENAME 	6*/
+	{0,_T("filename")},		/* TAG_FILENAME 	6*/
 	{2,_T("enumname")},		/* TAG_ENUMNAME 	7*/
 	{7,_T("member")},		/* TAG_MEMBER 		8*/
 	{8,_T("prototype")},	/* TAG_PROTOTYPE 	9*/
 	{9,_T("structure")},	/* TAG_STRUCTURE 	10*/	
-	{10,_T("typedef")},		/* TAG_TYPEDEF 		11*/
-	{1,_T("union")},		/* TAG_UNION 		12*/
+	{9,_T("typedef")},		/* TAG_TYPEDEF 		11*/
+	{9,_T("union")},		/* TAG_UNION 		12*/
 	{11,_T("variable")},	/* TAG_VARIABLE 	13*/
-	{1,_T("namespace")},	/* TAG_NAMESPACE 	14*/
-	{1,_T("method")},		/* TAG_METHOD 		15*/
-	{1,_T("event")},		/* TAG_EVENT 		16*/
-	{1,_T("interface")},	/* TAG_INTERFACE 	17*/
-	{1,_T("property")},		/* TAG_PROPERTY 	18*/
-	{1,_T("program")},		/* TAG_PROGRAM 		19*/
+	{6,_T("namespace")},	/* TAG_NAMESPACE 	14*/
+	{3,_T("method")},		/* TAG_METHOD 		15*/
+	{2,_T("event")},		/* TAG_EVENT 		16*/
+	{4,_T("interface")},	/* TAG_INTERFACE 	17*/
+	{11,_T("property")},		/* TAG_PROPERTY 	18*/
+	{4,_T("program")},		/* TAG_PROGRAM 		19*/
 	{15,_T("constant")},	/* TAG_CONSTANT 	20*/
-	{1,_T("label")},		/* TAG_LABEL 		21*/
-	{1,_T("singleton")},	/* TAG_SINGLETON 	22*/
-	{1,_T("mixin")},		/* TAG_MIXIN 		23*/
-	{1,_T("module")},		/* TAG_MODULE 		24*/
+	{15,_T("label")},		/* TAG_LABEL 		21*/
+	{10,_T("singleton")},	/* TAG_SINGLETON 	22*/
+	{10,_T("mixin")},		/* TAG_MIXIN 		23*/
+	{6,_T("module")},		/* TAG_MODULE 		24*/
 	{12,_T("net")},			/* TAG_NET 			25*/
 	{13,_T("port")},		/* TAG_PORT 		26*/	
 	{14,_T("register")},	/* TAG_REGISTER 	27*/
-	{1,_T("task")},			/* TAG_TASK 		28*/
-	{1,_T("cursor")},		/* TAG_CURSOR 		29*/
-	{1,_T("record")},		/* TAG_RECORD 		30*/
-	{1,_T("subtype")},		/* TAG_SUBTYPE 		31*/
-	{1,_T("trigger")},		/* TAG_TRIGGER 		32*/	
-	{1,_T("set")},			/* TAG_SET 			33*/
-	{1,_T("field")},		/* TAG_FIELD 		34*/
-	{1,_T("table")},		/* TAG_TABLE 		35*/
+	{10,_T("task")},		/* TAG_TASK 		28*/
+	{9,_T("cursor")},		/* TAG_CURSOR 		29*/
+	{9,_T("record")},		/* TAG_RECORD 		30*/
+	{9,_T("subtype")},		/* TAG_SUBTYPE 		31*/
+	{9,_T("trigger")},		/* TAG_TRIGGER 		32*/	
+	{9,_T("set")},			/* TAG_SET 			33*/
+	{11,_T("field")},		/* TAG_FIELD 		34*/
+	{9,_T("table")},		/* TAG_TABLE 		35*/
 	{10,_T("attribute")},	/* TAG_ATTRIBUTE 	36*/
 	{4,_T("component")},	/* TAG_COMPONENT 	37*/
 	{6,_T("package")},		/* TAG_PACKAGE 		38*/

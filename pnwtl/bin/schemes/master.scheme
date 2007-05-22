@@ -25,7 +25,7 @@
 		<style-class name="bracemismatch" description="Brace Mismatch" fore="ee0000" bold="true"/>
 		<style-class name="linenumbers" description="Line Numbers" />
 		<style-class name="controlchars" description="Control Characters" fore="808080" />
-                <style-class name="identifier" description="Identifier" />
+    <style-class name="identifier" description="Identifier" />
 	</style-classes>
 	<base-options>
 		<style name="Line Numbers" key="33" class="linenumbers" />

@@ -84,6 +84,7 @@ class CTabPageStyles : public CPropertyPageImpl<CTabPageStyles>
 
 		void SetScheme(SchemeDetails* pScheme);
 		void Finalise();
+		void UpdateDisplay();
 
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -163,6 +164,7 @@ class CTabPageMisc : public CPropertyPageImpl<CTabPageMisc>, CWinDataExchange<CT
 
 		void SetScheme(SchemeDetails* pScheme);
 		void Finalise();
+		void UpdateDisplay();
 
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -172,7 +174,6 @@ class CTabPageMisc : public CPropertyPageImpl<CTabPageMisc>, CWinDataExchange<CT
 
 		void SetValues();
 		void EnableButtons();
-		void UpdateDisplay();
 
 	protected:
 		SchemeDetails*	m_pScheme;

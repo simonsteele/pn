@@ -51,6 +51,7 @@ public:
 	virtual HWND CreatePage(HWND hOwner, LPRECT rcPos, HWND hInsertAfter = NULL) = 0;
 	virtual void ClosePage() = 0;
 	virtual void ShowPage(int showCmd) = 0;
+	virtual LRESULT ForwardMessage(UINT message, WPARAM wParam, LPARAM lParam) = 0;
 
 protected:
 	bool m_bCreated;
@@ -83,6 +84,11 @@ class COptionsPageImpl : public CDialogImpl<T>, public COptionsPage
 		{
 			ShowWindow(showCmd);
 		}
+
+		virtual LRESULT ForwardMessage(UINT message, WPARAM wParam, LPARAM lParam)
+		{
+			return SendMessage(message, wParam, lParam);
+		}
 };
 
 class COptionsDialog : public CDialogImpl<COptionsDialog>
@@ -101,6 +107,7 @@ class COptionsDialog : public CDialogImpl<COptionsDialog>
 
 		BEGIN_MSG_MAP(COptionsDialog)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			MESSAGE_HANDLER(PN_NOTIFY, OnNotifyPages)
 			COMMAND_ID_HANDLER(IDOK, OnOK)
 			COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
 			NOTIFY_ID_HANDLER(IDC_TREE, OnTreeNotify)
@@ -165,6 +172,21 @@ class COptionsDialog : public CDialogImpl<COptionsDialog>
 				m_tree.SelectItem(m_hInitialItem);
 			}
 			
+			return TRUE;
+		}
+
+		LRESULT OnNotifyPages(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+		{
+			for(PAGEPTRLIST::iterator i = m_Pages.begin();
+				i != m_Pages.end();
+				++i)
+			{
+				if( (*i)->m_bCreated )
+				{
+					(*i)->ForwardMessage(PN_NOTIFY, wParam, lParam);
+				}
+			}
+
 			return TRUE;
 		}
 

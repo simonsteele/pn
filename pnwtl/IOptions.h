@@ -24,6 +24,7 @@ static const TCHAR* PNSK_FIND = _T("Find");
 #define PNPATH_TOOLS			5
 #define PNPATH_TAGGERS			6
 #define PNPATH_PROJECTTEMPLATES	7
+#define PNPATH_PRESETS			8
 
 #define PNPATH_USERMIN			50
 

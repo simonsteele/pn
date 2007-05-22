@@ -2,7 +2,7 @@
  * @file SchemeConfig.cpp
  * @brief Scheme configuration classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -82,6 +82,46 @@ void SchemeConfigParser::LoadConfig(LPCTSTR path, LPCTSTR compiledpath)
 	Sort();
 }
 
+void SchemeConfigParser::LoadPresets(LPCTSTR path)
+{
+	// Reset the current settings:
+	m_LoadState.m_DefaultColours.Clear();
+
+	for(SchemeDetailsList::iterator i = m_Schemes.begin();
+		i != m_Schemes.end();
+		++i)
+	{
+		(*i)->ResetAll();
+	}
+
+	for(StylePtrMap::iterator j = m_LoadState.m_Classes.begin();
+		j != m_LoadState.m_Classes.end();
+		++j)
+	{
+		(*j).second->Reset();
+	}
+
+	// Now load the new...
+	UserSettingsParser usp;
+	usp.SetPresetLoadMode();
+	usp.Parse(path, &m_LoadState);
+
+	StylePtr defcls = GetClass("default");
+
+	// Minor validation (want our default font to look good):
+	if(defcls->CustomStyle != NULL && (defcls->CustomStyle->values & edvFontName))
+	{
+		if(!validateFont(defcls->CustomStyle->FontName.c_str()))
+		{
+			defcls->CustomStyle->FontName = "";
+			defcls->CustomStyle->values ^= edvFontName;
+		}
+	}
+
+	// Now re-set the default style:
+	defcls->Combine(NULL, m_LoadState.m_Default);
+}
+
 void SchemeConfigParser::SaveConfig()
 {
 	Save(m_Path.c_str());
@@ -90,6 +130,20 @@ void SchemeConfigParser::SaveConfig()
 LPCTSTR SchemeConfigParser::GetCurrentScheme()
 {
 	return m_CurrentScheme.c_str();
+}
+
+void SchemeConfigParser::ResetClasses()
+{
+	for(StylePtrMap::iterator i = m_LoadState.m_Classes.begin(); 
+		i != m_LoadState.m_Classes.end();
+		++i)
+	{
+		(*i).second->Reset();
+	}
+
+	// Now re-set the default style:
+	StylePtr defcls = GetClass("default");
+	defcls->Combine(NULL, m_LoadState.m_Default);
 }
 
 void SchemeConfigParser::Save(LPCTSTR filename)
@@ -107,6 +161,7 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 
 	// Style Classes
 	bool beganClasses(false);
+	
 	for(StylePtrMap::const_iterator i = m_LoadState.m_Classes.begin();
 		i != m_LoadState.m_Classes.end();
 		++i)
@@ -123,6 +178,7 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 		}
 		writer.writeStyleClass(*s->CustomStyle);
 	}
+	
 	if(beganClasses)
 		writer.endOverrideClasses();
 
@@ -157,6 +213,7 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 			}
 
 			bool begun(false);
+
 			for(StylePtrList::const_iterator iS = pScheme->Styles.begin(); iS != pScheme->Styles.end(); ++iS)
 			{
 				if( (*iS)->CustomStyle )
@@ -223,7 +280,6 @@ void SchemeConfigParser::onStyleGroup(XMLAttributes& att, const StylePtr& pClass
 void SchemeConfigParser::onStyle(const StylePtr& style, bool isBaseStyle)
 {
 	PNASSERT(m_pCurrent != NULL);
-
 	
 	if(isBaseStyle)
 	{
@@ -287,4 +343,38 @@ void SchemeConfigParser::Sort()
 #if (_ATL_VER >= 0x0700)
 	m_Schemes.sort(SortSchemes);
 #endif
+}
+
+class FontValidationInfo
+{
+public:
+	FontValidationInfo() : Found(false) {}
+	
+	CString Name;
+	bool Found;
+};
+
+int CALLBACK ValidateFontCB( 
+	ENUMLOGFONT FAR *lpelf,    // pointer to logical-font data 
+	NEWTEXTMETRIC FAR *lpntm,  // pointer to physical-font data 
+	int FontType,              // type of font 
+	LPARAM lParam              // pointer to application-defined data 
+	) 
+{
+	FontValidationInfo* info = reinterpret_cast<FontValidationInfo*>(lParam);
+	if( info->Name == lpelf->elfLogFont.lfFaceName )
+	{
+		info->Found = true;
+		return 0;
+	}
+ 
+    return 1; 
+} 
+
+bool SchemeConfigParser::validateFont(const char* fontName)
+{
+	FontValidationInfo fvi;
+	fvi.Name = fontName;
+	EnumFonts(GetDC(NULL), NULL, (FONTENUMPROC)ValidateFontCB, reinterpret_cast<LPARAM>(&fvi));
+	return fvi.Found;
 }

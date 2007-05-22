@@ -2035,7 +2035,7 @@ LRESULT CMainFrame::OnHelpContents(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	path = fn.c_str();
 
 	path += "::/htmlhelp/index.html";
-	::HtmlHelp(NULL,
+	::HtmlHelp(m_hWnd,
          path.c_str(),
          HH_DISPLAY_TOC,
          NULL) ;

@@ -199,6 +199,7 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 
 		BEGIN_MSG_MAP(COptionsPageStyle)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			MESSAGE_HANDLER(PN_NOTIFY, OnNotify)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 		enum { IDD = IDD_PAGE_STYLE };
@@ -212,6 +213,7 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		LRESULT OnNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	
 	protected:
 		CFontCombo		m_FontCombo;
@@ -244,6 +246,7 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 
 		BEGIN_MSG_MAP(COptionsPageSchemes)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			MESSAGE_HANDLER(PN_NOTIFY, OnNotify)
 			COMMAND_HANDLER(IDC_SCHEMECOMBO, CBN_SELCHANGE, OnComboChange)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
@@ -257,6 +260,7 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		void Update();
 
 	protected:

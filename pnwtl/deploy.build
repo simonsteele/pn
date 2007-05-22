@@ -43,6 +43,7 @@
 				<include name="schemes/*.scheme"/>
 				<include name="schemes/*.lexer"/>
 				<include name="schemes/extmap.dat"/>
+				<include name="presets/*.xml"/>
 				
 				<!-- Make this file pulled from a dist directory instead: -->
 				<include name="config.xml"/>
@@ -76,6 +77,7 @@
 				<include name="schemes/*.scheme"/>
 				<include name="schemes/*.lexer"/>
 				<include name="schemes/extmap.dat"/>
+				<include name="presets/*.xml"/>
 				
 				<exclude name="pypn.dll"/>
 				<exclude name="boost_python*.dll"/>

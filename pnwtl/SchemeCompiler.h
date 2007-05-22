@@ -99,18 +99,17 @@ class SchemeRecorder : public CScintilla
 		eTextType		m_tType;
 };
 
+/**
+ * Class to parse UserSettings.xml
+ */
 class UserSettingsParser
 {
 	public:
 		UserSettingsParser();
+		void SetPresetLoadMode();
 		void Parse(LPCTSTR path, SchemeLoaderState*	pState);
 
-	protected:
-		SchemeDetails*		m_pCurScheme;
-		tstring				m_SchemeName;
-		int					m_idval;
-
-	protected:
+	private:
 		void characterData(void* userData, LPCTSTR data, int len);
 		void endElement(void *userData, LPCTSTR name);
 		void startElement(void *userData, LPCTSTR name, XMLAttributes& atts);
@@ -119,6 +118,12 @@ class UserSettingsParser
 		void processSchemeElement(SchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts);
 		void processClassElement(SchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts);
 		void processGlobalColours(SchemeLoaderState* pState, XMLAttributes& atts);
+
+	private:
+		SchemeDetails*		m_pCurScheme;
+		tstring				m_SchemeName;
+		int					m_idval;
+		bool				m_loadingPreset;
 };
 
 /**

@@ -292,6 +292,9 @@ void Options::GetPNPath(tstring& path, int pathtype)
 			case PNPATH_PROJECTTEMPLATES:
 				path += _T("Projects\\");
 				break;
+			case PNPATH_PRESETS:
+				path += _T("Presets\\");
+				break;
 		}
 	}
 	else if(pathtype == PNPATH_USERSETTINGS || pathtype == PNPATH_USERCLIPS)

@@ -451,6 +451,17 @@ void COptionsPageStyle::OnInitialise()
 	m_bDirty = true;
 }
 
+LRESULT COptionsPageStyle::OnNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	if(lParam == PN_UPDATEDISPLAY)
+	{
+		// re-initialise display...
+		OnInitialise();
+	}
+
+	return 0;
+}
+
 void COptionsPageStyle::OnOK()
 {
 	if(!m_bCreated)
@@ -597,6 +608,19 @@ LRESULT COptionsPageSchemes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 
 	return 0;
 }
+
+LRESULT COptionsPageSchemes::OnNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	if(lParam == PN_UPDATEDISPLAY)
+	{
+		// re-initialise display...
+		m_stylestab.UpdateDisplay();
+		m_misctab.UpdateDisplay();
+	}
+
+	return 0;
+}
+
 
 void COptionsPageSchemes::OnInitialise()
 {

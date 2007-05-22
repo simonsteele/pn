@@ -12,6 +12,7 @@
 #include "OptionsDialogs.h"
 #include "OptionsPageGlobalStyles.h"
 #include "SchemeConfig.h"
+#include "include/filefinder.h"
 
 COptionsPageGlobalStyles::COptionsPageGlobalStyles(SchemeConfigParser* pSchemes) : m_pSchemes(pSchemes)
 {
@@ -39,6 +40,17 @@ void COptionsPageGlobalStyles::OnInitialise()
 			int item = m_list.AddItem(items++, 0, style->FriendlyName.c_str());
 			m_list.SetItemData(item, reinterpret_cast<DWORD_PTR>(style));
 		}
+	}
+
+	// Find Preset Files
+	tstring path;
+	OPTIONS->GetPNPath(path, PNPATH_PRESETS);
+	FileFinder<COptionsPageGlobalStyles> finder(this, &COptionsPageGlobalStyles::OnPresetFound);
+	finder.Find(path.c_str(), "*.xml", false, false);
+	
+	if(m_presets.GetCount() > 0)
+	{
+		m_presets.SetCurSel(0);
 	}
 }
 
@@ -92,6 +104,8 @@ LRESULT COptionsPageGlobalStyles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
 	m_italic.Attach(GetDlgItem(IDC_STYLE_ITALICCHECK));
 	m_underline.Attach(GetDlgItem(IDC_STYLE_UNDERLINECHECK));
 	m_eolfilled.Attach(GetDlgItem(IDC_STYLE_EOLFILLEDCHECK));
+
+	m_presets.Attach(GetDlgItem(IDC_STYLE_PRESETCOMBO));
 
 	return 0;
 }
@@ -192,12 +206,7 @@ LRESULT COptionsPageGlobalStyles::OnResetClicked(WORD /*wNotifyCode*/, WORD /*wI
 {
 	if(m_pStyle)
 	{
-		if(m_pStyle->CustomStyle != NULL)
-		{
-			delete m_pStyle->CustomStyle;
-			m_pStyle->CustomStyle = NULL;
-		}
-		
+		m_pStyle->Reset();
 		m_pStyle = NULL;
 	}
 
@@ -209,21 +218,15 @@ LRESULT COptionsPageGlobalStyles::OnResetClicked(WORD /*wNotifyCode*/, WORD /*wI
 
 LRESULT COptionsPageGlobalStyles::OnResetAllClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	for(int i = 0; i < m_list.GetItemCount(); ++i)
-	{
-		NamedStyleDetails* style = reinterpret_cast<NamedStyleDetails*>( m_list.GetItemData(i) );
-		if(style != NULL && style->CustomStyle != NULL)
-		{
-			delete style->CustomStyle;
-			style->CustomStyle = NULL;
-		}
-	}
+	m_pSchemes->ResetClasses();
 
 	m_dirty = true;
 	
 	// Re-select whatever we're looking at...
 	m_pStyle = NULL;
 	updateSel();
+
+	::SendMessage(GetParent(), PN_NOTIFY, 0, PN_UPDATEDISPLAY);
 
 	return 0;
 }
@@ -236,6 +239,23 @@ LRESULT COptionsPageGlobalStyles::OnListSelChanged(int /*idCtrl*/, LPNMHDR pnmh,
 	updateSel();
 
 	return 0;
+}
+
+LRESULT COptionsPageGlobalStyles::OnLoadPresetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CWindowText wt(m_presets.m_hWnd);
+	if((LPCTSTR)wt != NULL)
+	{
+		loadPreset((LPCTSTR)wt);
+	}
+
+	return 0;
+}
+
+void COptionsPageGlobalStyles::OnPresetFound(const char* path, const char* file)
+{
+	CFileName fn(file);
+	m_presets.AddString(fn.GetFileName_NoExt().c_str());
 }
 
 /**
@@ -299,4 +319,23 @@ void COptionsPageGlobalStyles::updateDisplay()
 
 	m_FontCombo.SelectString(-1, m_style.FontName.c_str());
 	m_SizeCombo.Select(m_style.FontSize);
+}
+
+void COptionsPageGlobalStyles::loadPreset(LPCTSTR path)
+{
+	tstring presetPath;
+	OPTIONS->GetPNPath(presetPath, PNPATH_PRESETS);
+
+	CFileName fn(path);
+	fn.ChangeExtensionTo(_T(".xml"));
+	fn.Root( presetPath.c_str() );
+	
+	m_pSchemes->LoadPresets(fn.c_str());
+
+	m_dirty = true;
+
+	// TODO: Need to notify all styles windows to update their displays
+	updateDisplay();
+
+	::SendMessage(GetParent(), PN_NOTIFY, 0, PN_UPDATEDISPLAY);
 }
