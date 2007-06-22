@@ -573,6 +573,15 @@
 #define ID_EDIT_AUTOCOMPLETE            32970
 #define ID_TOOLS_CONVERTTABSTOSPACES    32971
 #define ID_TOOLS_CONVERTSPACESTOTABS    32972
+#define ID_DUMMY_COPYFILEPATH           32973
+#define ID_EDIT_COPYFILEPATH            32974
+#define ID_DUMMY_OPENCONTAININGFOLDER   32975
+#define ID_FILE_OPENCONTAININGFOLDER    32976
+#define ID_PROJECT_OPENFOLDER           32977
+#define ID_DUMMY_SHELLOPEN              32978
+#define ID_PROJECT_SHELLOPEN            32979
+#define ID_DUMMY_SHELLOPEN32980         32980
+#define ID_FILE_SHELLOPEN               32981
 
 // Next default values for new objects
 // 
@@ -580,7 +589,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        350
-#define _APS_NEXT_COMMAND_VALUE         32973
+#define _APS_NEXT_COMMAND_VALUE         32982
 #define _APS_NEXT_CONTROL_VALUE         1145
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

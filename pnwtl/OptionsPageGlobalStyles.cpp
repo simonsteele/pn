@@ -12,6 +12,7 @@
 #include "OptionsDialogs.h"
 #include "OptionsPageGlobalStyles.h"
 #include "SchemeConfig.h"
+#include "pndialogs.h"
 #include "include/filefinder.h"
 
 COptionsPageGlobalStyles::COptionsPageGlobalStyles(SchemeConfigParser* pSchemes) : m_pSchemes(pSchemes)
@@ -252,6 +253,13 @@ LRESULT COptionsPageGlobalStyles::OnLoadPresetClicked(WORD /*wNotifyCode*/, WORD
 	return 0;
 }
 
+LRESULT COptionsPageGlobalStyles::OnSavePresetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	savePreset();
+
+	return 0;
+}
+
 void COptionsPageGlobalStyles::OnPresetFound(const char* path, const char* file)
 {
 	CFileName fn(file);
@@ -338,4 +346,19 @@ void COptionsPageGlobalStyles::loadPreset(LPCTSTR path)
 	updateDisplay();
 
 	::SendMessage(GetParent(), PN_NOTIFY, 0, PN_UPDATEDISPLAY);
+}
+
+void COptionsPageGlobalStyles::savePreset()
+{
+	tstring presetPath;
+	OPTIONS->GetPNPath(presetPath, PNPATH_PRESETS);
+
+	CPNSaveDialog sd("Preset Files (*.xml)|*.xml|All Files (*.*)|*.*|", NULL);
+	sd.SetTitle("Save Preset As...");
+	sd.SetInitialPath( presetPath.c_str() );
+	
+	if(sd.DoModal() == IDOK)
+	{
+		m_pSchemes->SaveConfig( sd.GetSingleFileName() );
+	}
 }

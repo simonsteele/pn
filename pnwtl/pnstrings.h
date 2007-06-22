@@ -2,9 +2,9 @@
  * @file pnstrings.h
  * @brief Utility classes and functions for strings.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  *
  * Classes in this file:
@@ -22,6 +22,7 @@
 
 typedef std::map<tstring, tstring> STRING_MAP;
 typedef std::list<tstring> tstring_list;
+typedef std::vector<tstring> tstring_array;
 typedef std::list<std::string> string_list;
 
 static TCHAR* tcsnewdup(LPCTSTR strin)

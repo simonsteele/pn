@@ -540,7 +540,7 @@ void COptionsPageStyle::OnCancel()
 
 LPCTSTR COptionsPageStyle::GetTreePosition()
 {
-	return _T("Schemes\\Basic");
+	return _T("Schemes");
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -636,7 +636,6 @@ void COptionsPageSchemes::OnOK()
 	m_stylestab.Finalise();
 	m_keywordstab.Finalise();
 	m_misctab.Finalise();
-	m_pSchemes->SaveConfig();
 }
 
 LPCTSTR COptionsPageSchemes::GetTreePosition()

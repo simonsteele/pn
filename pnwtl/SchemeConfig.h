@@ -27,7 +27,7 @@ class SchemeConfigParser : public SchemeParser
 		~SchemeConfigParser();
 
 		void LoadConfig(LPCTSTR path, LPCTSTR compiledpath);
-		void SaveConfig();
+		void SaveConfig(LPCTSTR userSettingsPath);
 
 		void LoadPresets(LPCTSTR path);
 

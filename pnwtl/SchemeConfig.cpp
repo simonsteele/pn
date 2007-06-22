@@ -122,9 +122,9 @@ void SchemeConfigParser::LoadPresets(LPCTSTR path)
 	defcls->Combine(NULL, m_LoadState.m_Default);
 }
 
-void SchemeConfigParser::SaveConfig()
+void SchemeConfigParser::SaveConfig(LPCTSTR userSettingsPath)
 {
-	Save(m_Path.c_str());
+	Save(userSettingsPath);
 }
 
 LPCTSTR SchemeConfigParser::GetCurrentScheme()
@@ -140,6 +140,9 @@ void SchemeConfigParser::ResetClasses()
 	{
 		(*i).second->Reset();
 	}
+
+	// Also going to reset the default colours here:
+	m_LoadState.m_DefaultColours.Clear();
 
 	// Now re-set the default style:
 	StylePtr defcls = GetClass("default");

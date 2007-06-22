@@ -470,7 +470,13 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Use As &Script",              ID_EDITOR_USEASSCRIPT
         MENUITEM SEPARATOR
-        MENUITEM "Cl&ose",                      ID_FILE_CLOSE
+        MENUITEM "Copy &File Path",             ID_EDIT_COPYFILEPATH
+        MENUITEM "Open Con&taining Folder",     ID_FILE_OPENCONTAININGFOLDER
+        MENUITEM "&Open in Default Program",    ID_FILE_SHELLOPEN
+        MENUITEM SEPARATOR
+        MENUITEM "&Properties\tAlt+Enter",      ID_VIEW_FILEPROPERTIES
+        MENUITEM SEPARATOR
+        MENUITEM "Cl&ose\tCtrl-F4",             ID_FILE_CLOSE
     END
 END
 
@@ -517,6 +523,7 @@ BEGIN
     POPUP "DUMMY"
     BEGIN
         MENUITEM "&Open",                       287
+        MENUITEM "Open in De&fault Program",    ID_PROJECT_SHELLOPEN
         MENUITEM SEPARATOR
         MENUITEM "&Add Files...",               ID_PROJECT_ADDFILES
         MENUITEM "&Remove",                     ID_PROJECT_REMOVE
@@ -606,6 +613,8 @@ BEGIN
         MENUITEM "&Remove",                     ID_PROJECT_REMOVE
         MENUITEM "&Delete",                     ID_PROJECT_DELETE
         MENUITEM SEPARATOR
+        MENUITEM "Open &Folder",                ID_PROJECT_OPENFOLDER
+        MENUITEM SEPARATOR
         MENUITEM "&Properties",                 ID_PROJECT_PROPERTIES
     END
 END
@@ -617,6 +626,10 @@ BEGIN
         MENUITEM "&Close",                      ID_FILE_CLOSE
         MENUITEM "Close &All",                  ID_FILE_CLOSEALL
         MENUITEM "Close All &Other",            ID_WINDOW_CLOSEALLOTHER
+        MENUITEM SEPARATOR
+        MENUITEM "Copy &File Path",             ID_EDIT_COPYFILEPATH
+        MENUITEM "Open Con&taining Folder",     ID_FILE_OPENCONTAININGFOLDER
+        MENUITEM "&Open in Default Program",    ID_FILE_SHELLOPEN
         MENUITEM SEPARATOR
         MENUITEM "&Properties\tAlt+Enter",      ID_VIEW_FILEPROPERTIES
     END
@@ -1282,7 +1295,7 @@ BEGIN
     LTEXT           "Presets",IDC_STATIC,0,167,25,8
     COMBOBOX        IDC_STYLE_PRESETCOMBO,10,181,151,104,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "&Load",IDC_STYLE_LOADPRESETBUTTON,171,181,50,14
-    PUSHBUTTON      "&Save",IDC_STYLE_SAVEPRESETBUTTON,225,181,50,14,NOT WS_VISIBLE
+    PUSHBUTTON      "&Save",IDC_STYLE_SAVEPRESETBUTTON,225,181,50,14
 END
 
 

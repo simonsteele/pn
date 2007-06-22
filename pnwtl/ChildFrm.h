@@ -2,7 +2,7 @@
  * @file ChildFrm.h
  * @brief Interface Definition for CChildFrame, the MDI Child window.
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -85,6 +85,7 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_LOWERCASE, OnLowerCase)
 		COMMAND_ID_HANDLER(ID_EDIT_UPPERCASE, OnUpperCase)
 		COMMAND_ID_HANDLER(ID_EDIT_AUTOCOMPLETE, OnAutoComplete)
+		COMMAND_ID_HANDLER(ID_EDIT_COPYFILEPATH, OnCopyFilePath)
 		
 		COMMAND_ID_HANDLER(ID_EDITOR_WORDWRAP, OnWordWrapToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_COLOURISE, OnColouriseToggle)
@@ -104,6 +105,8 @@ public:
 		COMMAND_ID_HANDLER(ID_FILE_CLOSE, OnClose)
 		COMMAND_ID_HANDLER(ID_FILE_PRINT, OnPrint)
 		COMMAND_ID_HANDLER(ID_FILE_PRINT_SETUP, OnPrintSetup)
+		COMMAND_ID_HANDLER(ID_FILE_OPENCONTAININGFOLDER, OnOpenContainingFolder)
+		COMMAND_ID_HANDLER(ID_FILE_SHELLOPEN, OnShellOpen)
 
 		COMMAND_ID_HANDLER(ID_EXPORT_RTF, OnExportRTF)
 		COMMAND_ID_HANDLER(ID_EXPORT_HTML, OnExportHTML)
@@ -210,6 +213,8 @@ public:
 
 	LRESULT OnPrint(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnPrintSetup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnOpenContainingFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnShellOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnExportRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnExportHTML(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnRedo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -249,6 +254,7 @@ public:
 	LRESULT OnEncodingSelect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewFileProps(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnProjectAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	bool OnRunTool(LPVOID pTool);
 

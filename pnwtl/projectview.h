@@ -61,6 +61,8 @@ public:
 		COMMAND_ID_HANDLER(ID_PROJECT_SAVEPROJECT, OnSaveProject)
 		COMMAND_ID_HANDLER(ID_PROJECT_REFRESH, OnRefresh)
 		COMMAND_ID_HANDLER(ID_PROJECT_MAGICADDFILE, OnMagicAddFile)
+		COMMAND_ID_HANDLER(ID_PROJECT_OPENFOLDER, OnMagicOpenFolder)
+		COMMAND_ID_HANDLER(ID_PROJECT_SHELLOPEN, OnShellOpenFile)
 		
 		CHAIN_MSG_MAP(baseClass)
 		
@@ -148,6 +150,8 @@ protected:
 	LRESULT		OnSaveProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnMagicAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT		OnMagicOpenFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT		OnShellOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	// Drag and Drop Handlers
 	LRESULT		OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

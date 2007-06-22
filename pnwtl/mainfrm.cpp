@@ -1886,10 +1886,17 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 		LOG(buf);
 #endif
 
-		///@todo more dirty checking...
-
 		if( pageStyle.IsDirty() || pageSchemes.IsDirty() || pageGlobalStyles.IsDirty() )
-            SchemeManager::GetInstance()->Compile();
+		{
+			CFileName userSettingsPath(_T("UserSettings.xml"));
+			userSettingsPath.Root(pSM->GetCompiledPath());
+
+			// Save user settings...
+			schemeconfig.SaveConfig(userSettingsPath.c_str());
+            
+			// Compile those schemes!
+			SchemeManager::GetInstance()->Compile();
+		}
 
 		m_RecentFiles.SetSize( OPTIONS->Get(PNSK_INTERFACE, _T("MRUSize"), 4) );
 		m_RecentFiles.UpdateMenu();

@@ -33,6 +33,7 @@ class COptionsPageGlobalStyles : public COptionsPageImpl<COptionsPageGlobalStyle
 			COMMAND_HANDLER(IDC_STYLE_RESETBTN, BN_CLICKED, OnResetClicked)
 			COMMAND_HANDLER(IDC_STYLE_RESETALLBTN, BN_CLICKED, OnResetAllClicked)
 			COMMAND_HANDLER(IDC_STYLE_LOADPRESETBUTTON, BN_CLICKED, OnLoadPresetClicked)
+			COMMAND_HANDLER(IDC_STYLE_SAVEPRESETBUTTON, BN_CLICKED, OnSavePresetClicked)
 			NOTIFY_HANDLER(IDC_STYLE_FOREBUTTON, CPN_SELCHANGE, OnForeChanged)
 			NOTIFY_HANDLER(IDC_STYLE_BACKBUTTON, CPN_SELCHANGE, OnBackChanged)
 			NOTIFY_HANDLER(IDC_STYLES_LIST, LVN_ITEMCHANGED, OnListSelChanged)
@@ -63,8 +64,8 @@ class COptionsPageGlobalStyles : public COptionsPageImpl<COptionsPageGlobalStyle
 
 		LRESULT OnListSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
-		//LRESULT OnCbnSelchangeCombo1(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnLoadPresetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnSavePresetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 		void OnPresetFound(const char* path, const char* file);
 
@@ -73,6 +74,7 @@ class COptionsPageGlobalStyles : public COptionsPageImpl<COptionsPageGlobalStyle
 		void updateSel();
 		void updateDisplay();
 		void loadPreset(LPCTSTR path);
+		void savePreset();
 
 	private:
 		CFontCombo			m_FontCombo;

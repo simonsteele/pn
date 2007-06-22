@@ -641,6 +641,27 @@ LRESULT CChildFrame::OnPrintSetup(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	return TRUE;
 }
 
+LRESULT CChildFrame::OnOpenContainingFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(CanSave())
+	{
+		CFileName fn(GetFileName().c_str());
+		::ShellExecute(m_hWnd, NULL, fn.GetPath().c_str(), NULL, NULL, SW_SHOWNORMAL);
+	}
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnShellOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(CanSave())
+	{
+		::ShellExecute(m_hWnd, _T("open"), GetFileName().c_str(), NULL, NULL, SW_SHOWNORMAL);
+	}
+
+	return 0;
+}
+
 LRESULT CChildFrame::OnExportRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	Export(ExporterFactory::RTF);
@@ -812,6 +833,33 @@ LRESULT CChildFrame::OnUpperCase(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 LRESULT CChildFrame::OnAutoComplete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	m_view.AttemptAutoComplete();
+	return 0;
+}
+
+LRESULT CChildFrame::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(::OpenClipboard(m_hWnd))
+	{
+		::EmptyClipboard();
+
+		tstring fn = GetFileName();
+
+		HGLOBAL mem = ::GlobalAlloc(GMEM_MOVEABLE, (fn.length() + 1) * sizeof(TCHAR));
+		if(mem == NULL)
+		{
+			::CloseClipboard();
+			return 0;
+		}
+
+		TCHAR* strbuf = static_cast<TCHAR*>( ::GlobalLock(mem) );
+		_tcscpy(strbuf, fn.c_str());
+		::GlobalUnlock(mem);
+
+		::SetClipboardData(CF_TEXT, mem);
+
+		::CloseClipboard();
+	}
+
 	return 0;
 }
 

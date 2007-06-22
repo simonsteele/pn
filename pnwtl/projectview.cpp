@@ -2,7 +2,7 @@
  * @file projectview.cpp
  * @brief View to display project trees.
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -400,14 +400,6 @@ void CProjectTreeCtrl::doContextMenu(LPPOINT pt)
 			case ptFile:
 			{
 				CSPopupMenu popup(IDR_POPUP_PROJECTFILE);
-
-				CMenuItemInfo mii;
-				mii.fMask = MIIM_STATE;
-				mii.fState = MFS_ENABLED | MFS_DEFAULT;
-				
-				///@todo This doesn't work, but I'll leave it in to remind me to try
-				// and fix it sometime. Stupid menus.
-				::SetMenuItemInfo(popup, ID_PROJECT_OPEN, FALSE, &mii);
 				
 				g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
 			}
@@ -1407,6 +1399,28 @@ LRESULT	CProjectTreeCtrl::OnMagicAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 		}
 	}
 
+	return 0;
+}
+
+LRESULT CProjectTreeCtrl::OnMagicOpenFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(lastItem->GetType() != ptMagicFolder)
+		return 0;
+
+	Projects::MagicFolder* mf = static_cast<Projects::MagicFolder*>(lastItem);
+	::ShellExecute(m_hWnd, NULL, mf->GetFullPath(), NULL, NULL, SW_SHOWNORMAL);
+
+	return 0;
+}
+
+LRESULT CProjectTreeCtrl::OnShellOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(lastItem->GetType() != ptFile)
+		return 0;
+
+	Projects::File* f = static_cast<Projects::File*>(lastItem);
+	::ShellExecute(m_hWnd, _T("open"), f->GetFileName(), NULL, NULL, SW_SHOWNORMAL);
+	
 	return 0;
 }
 

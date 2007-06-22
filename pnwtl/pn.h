@@ -56,6 +56,8 @@
 #define LOG(message) \
 	::OutputDebugString(message)
 
+#include "allocator.h"
+#include "string.h"
 #include "extiface.h"
 #include "pntypes.h"
 

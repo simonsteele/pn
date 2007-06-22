@@ -11,12 +11,23 @@
 #include "ScintillaImpl.h"
 #include "include/encoding.h"
 #include "scaccessor.h"
+#include "autocomplete.h"
 
 CScintillaImpl::CScintillaImpl()
 {
 	lastFindDetails.findPhrase = _T("");
 	lastFindDetails.startPos = 0;
 	lastFindDetails.direction = true;
+
+	m_bAutoCompleteIgnoreCase = false;
+
+	// To be replaced with scheme-based autocomplete:
+	m_autoComplete = new DefaultAutoComplete(m_bAutoCompleteIgnoreCase);
+}
+
+CScintillaImpl::~CScintillaImpl()
+{
+	delete m_autoComplete;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -180,24 +191,6 @@ bool iswordcharforsel(char ch)
 	return !strchr("\t\n\r !\"#$%&'()*+,-./:;<=>?@[\\]^`{|}~", ch);
 }
 
-unsigned int LengthWord(const char *word, char otherSeparator) 
-{
-	// Find a '('. If that fails go to the end of the string.
-	const char *endWord = strchr(word, '(');
-	if (!endWord && otherSeparator) endWord = strchr(word, otherSeparator);
-	if (!endWord) endWord = word + strlen(word);
-	// Last case always succeeds so endWord != 0
-	// Drop any space characters.
-	if (endWord > word) 
-	{
-		endWord--;	// Back from the '(', otherSeparator, or '\0'
-		// Move backwards over any spaces
-//		while ((endWord > word) && (IsASpace(*endWord))) {
-		while ((endWord > word) && (isspace(*endWord))) endWord--;			
-	}
-	return endWord - word;
-}
-
 int CScintillaImpl::HandleNotify(LPARAM lParam)
 {
 	int msg = CScintilla::HandleNotify(lParam);
@@ -314,9 +307,10 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 				else if (!contains(m_strWordCharacters, scn->ch)) 
 				{
 					AutoCCancel();
-					if (contains(m_autoCompleteStartCharacters, scn->ch)) StartAutoComplete();							
+					if (contains(m_autoCompleteStartCharacters, scn->ch))
+						StartAutoComplete();
 				}
-			} 
+			}
 			else 
 			{
 				if (contains(m_calltipParametersStart, scn->ch)) 
@@ -329,7 +323,7 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 					if (m_bAutoActivate && contains(m_autoCompleteStartCharacters, scn->ch))
 						StartAutoComplete();
 				}
-			}					
+			}
 			break;
 		}	
 	}
@@ -1427,47 +1421,9 @@ bool CScintillaImpl::UnCommentStream(const CommentSpecRec& comments)
 
 #include "SchemeConfig.h"
 
-int CompareNoCase(tstring &a, tstring b)
+inline int CompareNoCase(tstring &a, tstring& b)
 {
-	const char* A=a.c_str();
-	const char* B=b.c_str();
-	return _stricmp(A,B);
-}
-
-void AddSorting(CScintillaImpl::CStringArray &arr, tstring& w)
-{
-	//TODO: w.Trim();
-	//w = w.Trim();
-	if(w.empty())
-		return;
-
-	if(arr.empty())
-	{
-		arr.push_back(w);
-	}
-	else if(CompareNoCase(w, arr.back())>0)//.Compare(arr[arr.GetSize()-1]) > 0)
-	{
-		arr.push_back(w);
-	}
-	else
-	{
-		//int i = 0;
-		CScintillaImpl::CStringArray::iterator i = arr.begin();
-		while(i != arr.end())
-		{
-			if(CompareNoCase((*i) , w)>0)
-			{
-				arr.insert(i, w);
-				/*if(arr.size()>65) //For debugging
-				{				
-					for(int i=0;i<arr.size();i++)_RPT1(_CRT_WARN,"%s,",arr[i].c_str());
-					_RPT0(_CRT_WARN,"\n");
-				}//End debugging*/
-				return;
-			}
-			++i;
-		}
-	}
+	return _stricmp(a.c_str(), b.c_str());
 }
 
 /**
@@ -1513,26 +1469,9 @@ void CScintillaImpl::InitAutoComplete(Scheme* sch)
  */
 void CScintillaImpl::SetKeyWords(int keywordSet, const char* keyWords)
 {
-	if(OPTIONS->GetCached(Options::OAutoComplete) && OPTIONS->GetCached(Options::OAutoCompleteUseKeywords))
+	if(OPTIONS->GetCached(Options::OAutoComplete))
 	{
-		// Clear the old set
-		//m_KW.clear();
-
-		const char* word(keyWords);
-		tstring newWord;
-		while(*word)
-		{
-			newWord.clear();
-			while(*word && *word != ' ')
-			{
-				newWord += *word++;
-			}
-			
-			if(*word /*== ' '*/) // we know it's space if it's not NULL
-				word++;
-
-			AddSorting(m_KW, newWord);
-		}
+		m_autoComplete->RegisterKeyWords(keywordSet, keyWords);
 	}
 
 	// Call base class, send those words to Scintilla!
@@ -1554,63 +1493,18 @@ void CScintillaImpl::AddToAutoComplete(CString FullTag, CString TagName)
 	if(!m_bAutoCompletionUseTags)
 		return;
 
-	int startP = FullTag.Find('(');
-	if(startP >= 0)
-	{
-		int endP = FullTag.Find(')');	
-		if(endP == -1)
-		{
-			endP = FullTag.GetLength();
-		}
-		
-		tstring tag(TagName);
-		tag += FullTag.Mid(startP, endP-startP+1);
-		AddSorting(m_Api, tag);
-	}	
-	else
-	{
-		AddSorting(m_Api, tstring(TagName));
-	}
+	m_autoComplete->RegisterTag(FullTag, TagName);
 }
 
 //This function cleans CTags Keywords from autocomplete list
 void CScintillaImpl::ResetAutoComplete()
 {
-	//m_Api.RemoveAll();
-	//for(int i=0;i<m_KW.GetSize();i++)m_Api.Add(m_KW[i]);//m_KW already sorted
-	m_Api.clear();
-	m_Api = m_KW;
+	m_autoComplete->ResetTags();
 }
 
 void CScintillaImpl::ClearAutoComplete()
 {
-	m_KW.clear();
-	m_Api.clear();
-}
-
-void EliminateDuplicateWords(const char *words)
-{
-	char *firstWord = (char *) words;
-	char *firstSpace = strchr(firstWord, ' ');		
-	while (firstSpace) 
-	{
-		int firstLen = firstSpace - firstWord;
-		char *secondWord = firstWord + firstLen + 1;
-		char *secondSpace = strchr(secondWord, ' ');
-		int  secondLen = strlen(secondWord);
-		if (secondSpace)secondLen = secondSpace - secondWord;
-
-		if (firstLen == secondLen && !strncmp(firstWord, secondWord, firstLen)) 
-		{
-			strcpy(firstWord, secondWord);
-			firstSpace = strchr(firstWord, ' ');
-		} 
-		else 
-		{
-			firstWord = secondWord;
-			firstSpace = secondSpace;
-		}
-	}
+	m_autoComplete->Reset();
 }
 
 tstring CScintillaImpl::GetLineText(int nLine)
@@ -1879,6 +1773,112 @@ void CScintillaImpl::ContinueCallTip()
 	CallTipSetHlt(startHighlight, endHighlight);
 }
 
+unsigned int LengthWord(const char *word, char otherSeparator) 
+{
+	// Find a '('. If that fails go to the end of the string.
+	const char *endWord = strchr(word, '(');
+	if (!endWord && otherSeparator) endWord = strchr(word, otherSeparator);
+	if (!endWord) endWord = word + strlen(word);
+	// Last case always succeeds so endWord != 0
+	// Drop any space characters.
+	if (endWord > word) 
+	{
+		endWord--;	// Back from the '(', otherSeparator, or '\0'
+		// Move backwards over any spaces
+//		while ((endWord > word) && (IsASpace(*endWord))) {
+		while ((endWord > word) && (isspace(*endWord))) endWord--;			
+	}
+	return endWord - word;
+}
+
+tstring CScintillaImpl::GetNearestWords(CStringArray& arr, const char *wordStart, int searchLen, bool ignoreCase, char otherSeparator, bool exactLen)	
+{
+	unsigned int wordlen;		// length of the word part (before the '(' brace) of the api array element
+	tstring wordsNear;			// nearest words result
+	int start = 0;				// lower bound of the api array block to search
+	int end = arr.size() - 1;	// upper bound of the api array block to search
+	int pivot;					// index of api array element just being compared
+	int cond;					// comparison result (in the sense of strcmp() result)
+
+	if (0 == arr.size())
+		return wordsNear; // is empty
+
+	/*tstring sdebug;
+	for(CScintillaImpl::CStringArray::const_iterator i = arr.begin();
+		i != arr.end(); ++i)
+		sdebug += (*i) + " ";
+	LOG(sdebug.c_str());*/
+
+	if (ignoreCase) {
+/*		if (!sortedNoCase) {
+			sortedNoCase = true;
+			SortWordListNoCase(wordsNoCase, len);
+		}
+*/
+		while (start <= end) { // Binary searching loop
+			pivot = (start + end) / 2;
+			cond = _strnicmp(wordStart, arr[pivot].c_str(), searchLen);
+			if (!cond) {
+				// Find first match
+				while ((pivot > start) &&
+					(0 == _strnicmp(wordStart, arr[pivot-1].c_str(), searchLen))) {
+					--pivot;
+				}
+				// Grab each match
+				while ((pivot <= end) &&
+					(0 == _strnicmp(wordStart, arr[pivot].c_str(), searchLen))) {
+					wordlen = LengthWord(arr[pivot].c_str(), otherSeparator) + 1;
+					++pivot;
+					if (exactLen && wordlen != LengthWord(wordStart, otherSeparator) + 1)
+						continue;
+					if (!wordsNear.empty())
+						wordsNear += ' ';
+					wordsNear += arr[pivot-1].substr(0, wordlen);// .Left(wordlen);
+				}
+				return wordsNear;
+			} else if (cond < 0) {
+				end = pivot - 1;
+			} else if (cond > 0) {
+				start = pivot + 1;
+			}
+		}
+	} else {	// Preserve the letter case
+/*		if (!sorted) {
+			sorted = true;
+			SortWordList(words, len);
+		}
+*/
+		while (start <= end) { // Binary searching loop
+			pivot = (start + end) / 2;
+			cond = strncmp(wordStart, arr[pivot].c_str(), searchLen);
+			if (!cond) {
+				// Find first match
+				while ((pivot > start) &&
+					(0 == strncmp(wordStart, arr[pivot-1].c_str(), searchLen))) {
+					--pivot;
+				}
+				// Grab each match
+				while ((pivot <= end) &&
+					(0 == strncmp(wordStart, arr[pivot].c_str(), searchLen))) {
+						wordlen = LengthWord(arr[pivot].c_str(), otherSeparator) + 1;
+					++pivot;
+					if (exactLen && wordlen != LengthWord(wordStart, otherSeparator) + 1)
+						continue;
+					if (!wordsNear.empty())
+						wordsNear += ' ';
+					wordsNear += arr[pivot-1].substr(0, wordlen);
+				}
+				return wordsNear;
+			} else if (cond < 0) {
+				end = pivot - 1;
+			} else if (cond > 0) {
+				start = pivot + 1;
+			}
+		}
+	}
+	return wordsNear; // is empty
+}	
+
 void CScintillaImpl::FillFunctionDefinition(int pos)
 {
 	if (pos > 0) {m_lastPosCallTip = pos;}
@@ -2013,7 +2013,7 @@ tstring CScintillaImpl::GetNearestWord(CStringArray& arr, const char *wordStart,
 					const char* w = word.c_str();
 					if (!contains(m_strWordCharacters, w[searchLen])) {
 						if (wordIndex <= 0) // Checks if a specific index was requested
-							return word; // result must not be freed with free()
+							return word;
 						wordIndex--;
 					}
 					pivot++;
@@ -2029,93 +2029,7 @@ tstring CScintillaImpl::GetNearestWord(CStringArray& arr, const char *wordStart,
 	return empty;
 }
 
-tstring CScintillaImpl::GetNearestWords(CStringArray& arr, const char *wordStart, int searchLen, bool ignoreCase, char otherSeparator, bool exactLen)	
-{
-	unsigned int wordlen;		// length of the word part (before the '(' brace) of the api array element
-	tstring wordsNear;			// nearest words result
-	int start = 0;				// lower bound of the api array block to search
-	int end = arr.size() - 1;	// upper bound of the api array block to search
-	int pivot;					// index of api array element just being compared
-	int cond;					// comparison result (in the sense of strcmp() result)
 
-	if (0 == arr.size())
-		return wordsNear; // is empty
-
-	/*tstring sdebug;
-	for(CScintillaImpl::CStringArray::const_iterator i = arr.begin();
-		i != arr.end(); ++i)
-		sdebug += (*i) + " ";
-	LOG(sdebug.c_str());*/
-
-	if (ignoreCase) {
-/*		if (!sortedNoCase) {
-			sortedNoCase = true;
-			SortWordListNoCase(wordsNoCase, len);
-		}
-*/
-		while (start <= end) { // Binary searching loop
-			pivot = (start + end) / 2;
-			cond = _strnicmp(wordStart, arr[pivot].c_str(), searchLen);
-			if (!cond) {
-				// Find first match
-				while ((pivot > start) &&
-					(0 == _strnicmp(wordStart, arr[pivot-1].c_str(), searchLen))) {
-					--pivot;
-				}
-				// Grab each match
-				while ((pivot <= end) &&
-					(0 == _strnicmp(wordStart, arr[pivot].c_str(), searchLen))) {
-					wordlen = LengthWord(arr[pivot].c_str(), otherSeparator) + 1;
-					++pivot;
-					if (exactLen && wordlen != LengthWord(wordStart, otherSeparator) + 1)
-						continue;
-					if (!wordsNear.empty())
-						wordsNear += ' ';
-					wordsNear += arr[pivot-1].substr(0, wordlen);// .Left(wordlen);
-				}
-				return wordsNear;
-			} else if (cond < 0) {
-				end = pivot - 1;
-			} else if (cond > 0) {
-				start = pivot + 1;
-			}
-		}
-	} else {	// Preserve the letter case
-/*		if (!sorted) {
-			sorted = true;
-			SortWordList(words, len);
-		}
-*/
-		while (start <= end) { // Binary searching loop
-			pivot = (start + end) / 2;
-			cond = strncmp(wordStart, arr[pivot].c_str(), searchLen);
-			if (!cond) {
-				// Find first match
-				while ((pivot > start) &&
-					(0 == strncmp(wordStart, arr[pivot-1].c_str(), searchLen))) {
-					--pivot;
-				}
-				// Grab each match
-				while ((pivot <= end) &&
-					(0 == strncmp(wordStart, arr[pivot].c_str(), searchLen))) {
-						wordlen = LengthWord(arr[pivot].c_str(), otherSeparator) + 1;
-					++pivot;
-					if (exactLen && wordlen != LengthWord(wordStart, otherSeparator) + 1)
-						continue;
-					if (!wordsNear.empty())
-						wordsNear += ' ';
-					wordsNear += arr[pivot-1].substr(0, wordlen);
-				}
-				return wordsNear;
-			} else if (cond < 0) {
-				end = pivot - 1;
-			} else if (cond > 0) {
-				start = pivot + 1;
-			}
-		}
-	}
-	return wordsNear; // is empty
-}	
 bool CScintillaImpl::StartAutoComplete()
 {
 	if( !m_bAutoCompletion )
@@ -2135,18 +2049,13 @@ bool CScintillaImpl::StartAutoComplete()
 		return false;
 
 	tstring root = line.substr(startword, current - startword);
-	if ( m_Api.size() > 0)
+	PN::AString autoCompleteList;
+	m_autoComplete->GetWords(autoCompleteList, root.c_str(), root.length());
+	if(autoCompleteList.GetLength())
 	{
-		tstring words = GetNearestWords(m_Api, root.c_str(), root.length(), m_bAutoCompleteIgnoreCase, m_calltipParametersStart[0]);
-		if (!words.empty()) 
-		{
-			TCHAR* cwords = new TCHAR[words.size()+1];
-			_tcscpy(cwords, words.c_str());
-			EliminateDuplicateWords(cwords);
-			AutoCShow(root.length(), cwords);
-			delete [] cwords;
-		}
+		AutoCShow(root.length(), autoCompleteList.Get());
 	}
+
 	return true;
 }
 

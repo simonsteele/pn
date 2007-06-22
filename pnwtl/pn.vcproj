@@ -430,6 +430,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\autocomplete.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\include\boyermoore.cpp"
 				>
 			</File>
@@ -679,7 +683,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\allocator.h"
+				>
+			</File>
+			<File
 				RelativePath=".\appsettings.h"
+				>
+			</File>
+			<File
+				RelativePath=".\autocomplete.h"
 				>
 			</File>
 			<File
@@ -896,6 +908,10 @@
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\string.h"
 				>
 			</File>
 			<File
