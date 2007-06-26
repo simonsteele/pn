@@ -1424,6 +1424,14 @@ LRESULT CProjectTreeCtrl::OnShellOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 	return 0;
 }
 
+LRESULT CProjectTreeCtrl::OnBeginRenameItem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if(hLastItem != NULL)
+		EditLabel(hLastItem);
+
+	return 0;
+}
+
 class ImageListDragShowNoLock
 {
 public:

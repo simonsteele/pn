@@ -2,9 +2,9 @@
  * @file projectview.h
  * @brief View to display project trees.
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -63,6 +63,7 @@ public:
 		COMMAND_ID_HANDLER(ID_PROJECT_MAGICADDFILE, OnMagicAddFile)
 		COMMAND_ID_HANDLER(ID_PROJECT_OPENFOLDER, OnMagicOpenFolder)
 		COMMAND_ID_HANDLER(ID_PROJECT_SHELLOPEN, OnShellOpenFile)
+		COMMAND_ID_HANDLER(ID_PROJECT_RENAME, OnBeginRenameItem)
 		
 		CHAIN_MSG_MAP(baseClass)
 		
@@ -152,6 +153,7 @@ protected:
 	LRESULT		OnMagicAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnMagicOpenFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnShellOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT		OnBeginRenameItem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	// Drag and Drop Handlers
 	LRESULT		OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

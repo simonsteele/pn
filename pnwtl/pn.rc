@@ -528,6 +528,7 @@ BEGIN
         MENUITEM "&Add Files...",               ID_PROJECT_ADDFILES
         MENUITEM "&Remove",                     ID_PROJECT_REMOVE
         MENUITEM "&Delete",                     258
+        MENUITEM "Re&name",                     ID_PROJECT_RENAME
         MENUITEM SEPARATOR
         MENUITEM "&Properties",                 ID_PROJECT_PROPERTIES
     END
@@ -545,6 +546,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     286
         MENUITEM SEPARATOR
+        MENUITEM "Re&name",                     ID_PROJECT_RENAME
         MENUITEM "&Properties",                 ID_PROJECT_PROPERTIES
     END
 END
@@ -566,6 +568,7 @@ BEGIN
         MENUITEM "&Remove Project",             ID_PROJECT_REMOVE
         MENUITEM "&Delete Project",             ID_PROJECT_DELETEPROJECT, GRAYED
         MENUITEM SEPARATOR
+        MENUITEM "Re&name",                     ID_PROJECT_RENAME
         MENUITEM "&Properties",                 ID_PROJECT_PROPERTIES
     END
 END
@@ -576,6 +579,8 @@ BEGIN
     BEGIN
         MENUITEM "Add &New Project",            ID_WORKSPACE_NEWPROJECT
         MENUITEM "Add &Existing Project...",    ID_WORKSPACE_ADDPROJECT
+        MENUITEM SEPARATOR
+        MENUITEM "Re&name",                     ID_PROJECT_RENAME
     END
 END
 
@@ -612,6 +617,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Remove",                     ID_PROJECT_REMOVE
         MENUITEM "&Delete",                     ID_PROJECT_DELETE
+        MENUITEM "Re&name",                     ID_PROJECT_RENAME
         MENUITEM SEPARATOR
         MENUITEM "Open &Folder",                ID_PROJECT_OPENFOLDER
         MENUITEM SEPARATOR
@@ -1798,7 +1804,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_OUTPUTSUPPORT       "Programmer's Notepad 2 provides built-in support\nfor parsing output from the following tools:\n\nBorland C++\nMicrosoft Compilers\nGCC\nlcc-win32\nPython\nPerl\nand other similar tools."
-    IDS_TOOLS_VARSTRINGS    "%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectPath),Path of Project,c:\\source\\pn2\\,$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\,$(PNPath),PN Install Path,c:\\program files\\pn,%(ENV),ENV Environment Variable,ENV value"
+    IDS_TOOLS_VARSTRINGS    "%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectName),Name of Project,Project 1,$(ProjectPath),Path of Project,c:\\source\\pn2\\,$(ProjectGroupName),Name of the Project Group,Project Group 1,$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\,$(PNPath),PN Install Path,c:\\program files\\pn,%(ENV),ENV Environment Variable,ENV value"
     IDS_TOOLS_SELWORKINGFOLDER "Select the working folder for the tool:"
     IDS_PROJECTGROUP        "Project Group"
     IDS_PROJECT             "Project"

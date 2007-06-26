@@ -32,6 +32,8 @@ What's new?
 24) Minor master scheme changes
 25) Allows you to set scheme properties for all languages in one place (global styles)
 26) Scheme changes: Hypertext->HTML, PHP added, PHP Script added
+27) Added $(ProjectGroupName) tools property
+28) Added Rename shortcut to project context menus (you can already rename using the two clicks convention)
 
 Bug Fixes:
 ----------

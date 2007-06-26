@@ -430,6 +430,14 @@ void ToolCommandString::OnFormatKey(LPCTSTR key)
 			m_string += pP->GetName();
 		}
 	}
+	else if(MATCH(_T("ProjectGroupName")))
+	{
+		Projects::Workspace *pW = GetWorkspace();
+		if(pW != NULL)
+		{	
+			m_string += pW->GetName();
+		}
+	}
 	else if(MATCH(_T("PNPath")))
 	{
 		std::string pn;
