@@ -34,6 +34,7 @@ What's new?
 26) Scheme changes: Hypertext->HTML, PHP added, PHP Script added
 27) Added $(ProjectGroupName) tools property
 28) Added Rename shortcut to project context menus (you can already rename using the two clicks convention)
+29) Added $(ProjectProp:*) and $(FileProp:*) tools shortcuts, these retrieve values from project item configurations
 
 Bug Fixes:
 ----------

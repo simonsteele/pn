@@ -2,7 +2,7 @@
  * @file tools.cpp
  * @brief External tools code
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -14,14 +14,15 @@
 #include "childfrm.h"
 #include "pndialogs.h"  // for InputBox...
 #include "project.h"
+#include "projectmeta.h"
+#include "projectprops.h"
 #include "tools.h"
 #include "toolsxmlwriter.h"
 
 #include "include/sscontainers.h"
 #include "include/ssthreads.h"
+#include "include/pcreplus.h"
 
-#include <sstream>
-#include <fstream>
 #include <algorithm>
 
 #if defined (_DEBUG)
@@ -420,7 +421,73 @@ void ToolCommandString::OnFormatKey(LPCTSTR key)
 		Projects::Project* pP = GetActiveProject();
 		if(!pP)
 			return;
+
+		Projects::ProjectTemplate* pTemplate = pP->GetTemplate();
+		if(!pTemplate)
+			return;
+
+		PCRE::RegExp re("ProjectProp:(?P<group>[-_a-zA-Z0-9]+)\\.(?P<cat>[-_a-zA-Z0-9]+)\\.(?P<val>[-_a-zA-Z0-9]+)");
+		if( re.Match(key) )
+		{
+			tstring group;
+			tstring cat;
+			tstring val;
+        
+			// Extract the named matches from the RE, noting if there was a line or column.
+			bool ok = true;
+			ok &= re.GetNamedMatch("group", group);
+			ok &= re.GetNamedMatch("cat", cat);
+			ok &= re.GetNamedMatch("val", val);
+
+			if(!ok)
+				return;
 		
+			LPCTSTR retval = pP->GetUserData().Lookup(pTemplate->GetNamespace(), group.c_str(), cat.c_str(), val.c_str(), _T(""));
+			if(retval != NULL)
+			{
+				m_string += retval;
+			}
+		}
+	}
+	else if(MATCH_START(_T("FileProp:")))
+	{
+		Projects::Project* pP = GetActiveProject();
+		if(!pP)
+			return;
+
+		Projects::ProjectTemplate* pTemplate = pP->GetTemplate();
+		if(!pTemplate)
+			return;
+
+		if(!pChild)
+			return;
+		
+		Projects::File* pFileObj = pP->FindFile( pChild->GetFileName().c_str() );
+		if(!pFileObj)
+			return;
+
+		PCRE::RegExp re("ProjectProp:(?P<group>[-_a-zA-Z0-9]+)\\.(?P<cat>[-_a-zA-Z0-9]+)\\.(?P<val>[-_a-zA-Z0-9]+)");
+		if( re.Match(key) )
+		{
+			tstring group;
+			tstring cat;
+			tstring val;
+        
+			// Extract the named matches from the RE, noting if there was a line or column.
+			bool ok = true;
+			ok &= re.GetNamedMatch("group", group);
+			ok &= re.GetNamedMatch("cat", cat);
+			ok &= re.GetNamedMatch("val", val);
+
+			if(!ok)
+				return;
+		
+			LPCTSTR retval = pFileObj->GetUserData().Lookup(pTemplate->GetNamespace(), group.c_str(), cat.c_str(), val.c_str(), _T(""));
+			if(retval != NULL)
+			{
+				m_string += retval;
+			}
+		}
 	}
 	else if(MATCH(_T("ProjectName")))
 	{
