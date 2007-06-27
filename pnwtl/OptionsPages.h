@@ -136,6 +136,7 @@ class COptionsPageVisual : public COptionsPageImpl<COptionsPageVisual>,
 
 		CPNColorButton	m_btnLineCol;
 		CPNColorButton	m_btnLLCol;
+		CTrackBarCtrl	m_trackerHighlight;
 };
 
 class COptionsPageConf : public COptionsPageImpl<COptionsPageConf>,

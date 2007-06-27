@@ -390,9 +390,12 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 	if(baseClass::PreTranslateMessage(pMsg))
 		return TRUE;
 
-	HWND hWnd = MDIGetActive();
-	if(hWnd != NULL)
-		return (BOOL)::SendMessage(hWnd, WM_FORWARDMSG, 0, (LPARAM)pMsg);
+	if(::IsWindow(m_hWndMDIClient))
+	{
+		HWND hWnd = MDIGetActive();
+		if(hWnd != NULL)
+			return (BOOL)::SendMessage(hWnd, WM_FORWARDMSG, 0, (LPARAM)pMsg);
+	}
 
 	return FALSE;
 }

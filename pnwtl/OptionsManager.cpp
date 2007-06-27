@@ -88,6 +88,7 @@ void Options::loadCache()
 	cache[OLineNumbers]				= Get(NULL, _T("LineNumbers"), false);
 	cache[OLineHighlight]			= Get(NULL, _T("LineHighlight"), false);
 	cache[OLineHighlightColour]		= Get(NULL, _T("LineHighlightColour"), (int)RGB(255, 255, 224));
+	cache[OLineHighlightAlpha]		= Get(NULL, _T("LineHighlightAlpha"), 200);
 	cache[ORightGuide]				= Get(NULL, _T("RightGuide"), 0);
 	cache[ORightColumn]				= Get(NULL, _T("RightColumn"), 76);
 	cache[ORightGuideColour]		= Get(NULL, _T("RightGuideColour"), (int)RGB(215, 215, 215));
@@ -152,6 +153,7 @@ void Options::saveCache()
 	Set(NULL, _T("LineNumbers"),			cache[OLineNumbers]);
 	Set(NULL, _T("LineHighlight"),			cache[OLineHighlight]);
 	Set(NULL, _T("LineHighlightColour"),	cache[OLineHighlightColour]);
+	Set(NULL, _T("LineHighlightAlpha"),		cache[OLineHighlightAlpha]);
 	Set(NULL, _T("RightGuide"),				cache[ORightGuide]);
 	Set(NULL, _T("RightColumn"),			cache[ORightColumn]);
 	Set(NULL, _T("RightGuideColour"),		cache[ORightGuideColour]);

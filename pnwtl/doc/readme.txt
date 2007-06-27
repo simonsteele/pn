@@ -35,6 +35,7 @@ What's new?
 27) Added $(ProjectGroupName) tools property
 28) Added Rename shortcut to project context menus (you can already rename using the two clicks convention)
 29) Added $(ProjectProp:*) and $(FileProp:*) tools shortcuts, these retrieve values from project item configurations
+30) Added alpha settings for line highlight
 
 Bug Fixes:
 ----------
@@ -71,6 +72,7 @@ Bug Fixes:
 30) File type edits don't show new value in list.
 31) Minor Vista bug fixes
 32) Don't reset scheme when saving files with no extension
+33) Occasional failure to save settings on exit (particularly with debug builds)
 
 If you find a bug:
 ------------------

@@ -79,7 +79,8 @@ public:
 			OAutoCompleteStartChars		= 27,
 			OAutoCompleteActivation		= 28,
 			OAutoCompleteTags			= 29,
-			OPTION_COUNT				= 30
+			OLineHighlightAlpha			= 30,
+			OPTION_COUNT				= 31
 		} ECachedOption;
 
 		/// Set a bool value

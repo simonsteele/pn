@@ -457,6 +457,8 @@
 #define IDC_AUTOCLOSEBRACESCHECK        1142
 #define IDC_NKEYSRADIO                  1143
 #define IDC_MANUALRADIO                 1144
+#define IDC_SLIDER1                     1145
+#define IDC_LINEHIGHLIGHTSLIDER         1145
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -595,7 +597,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        350
 #define _APS_NEXT_COMMAND_VALUE         32987
-#define _APS_NEXT_CONTROL_VALUE         1145
+#define _APS_NEXT_CONTROL_VALUE         1146
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

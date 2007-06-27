@@ -2,9 +2,9 @@
  * @file optionspages.cpp
  * @brief Options Dialog Pages (1) for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -261,6 +261,8 @@ void COptionsPageVisual::OnOK()
 	options.SetCached(Options::ORightGuide, m_iLongLineHelp);
 	options.SetCached(Options::ORightColumn, m_iRightColumn);
 	options.SetCached(Options::ORightGuideColour, m_btnLLCol.SafeGetColor());
+
+	OPTIONS->SetCached(Options::OLineHighlightAlpha, m_trackerHighlight.GetPos());
 }
 
 void COptionsPageVisual::OnInitialise()
@@ -274,6 +276,8 @@ void COptionsPageVisual::OnInitialise()
 	m_btnLLCol.SetColor( OPTIONS->GetCached(Options::ORightGuideColour) );
 
 	DoDataExchange();
+
+	m_trackerHighlight.SetPos( OPTIONS->GetCached(Options::OLineHighlightAlpha) );
 }
 
 LRESULT COptionsPageVisual::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -282,6 +286,21 @@ LRESULT COptionsPageVisual::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 	m_btnLineCol.SetDefaultColor(RGB(255, 255, 224));
 	m_btnLLCol.SubclassWindow(GetDlgItem(IDC_OPT_LLCOLORBUTTON));
 	m_btnLLCol.SetDefaultColor(RGB(215,215,215));
+
+	m_trackerHighlight.Attach(GetDlgItem(IDC_LINEHIGHLIGHTSLIDER));
+	m_trackerHighlight.SetRange(0, 255);
+	m_trackerHighlight.SetPageSize(32);
+
+	m_trackerHighlight.ModifyStyle(0, TBS_FIXEDLENGTH);
+
+	int h = m_trackerHighlight.GetThumbLength();
+	h -= 2;
+
+	CRect rc;
+	m_trackerHighlight.GetWindowRect(&rc);
+	rc.bottom += 2;
+	m_trackerHighlight.SetWindowPos(NULL, &rc, SWP_NOZORDER | SWP_NOMOVE);
+	m_trackerHighlight.SetThumbLength(h);
 
 	//TODO: Enable/disable IDC_OPT_LLCOLUMNEDIT, IDC_OPT_LLCOLORBUTTON and the associated static text based on the radio selection
 	//TODO: Enable/disable IDC_OPT_LINELIGHTBUTTON based on the checkbox selection

@@ -471,6 +471,7 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 	{
 		sc.SPerform(SCI_SETCARETLINEVISIBLE, true);
 		sc.SPerform(SCI_SETCARETLINEBACK, options.GetCached(Options::OLineHighlightColour));
+		sc.SPerform(SCI_SETCARETLINEBACKALPHA, options.GetCached(Options::OLineHighlightAlpha));
 	}
 	sc.SPerform(SCI_SETEDGEMODE, options.GetCached(Options::ORightGuide));
 	sc.SPerform(SCI_SETEDGECOLUMN, options.GetCached(Options::ORightColumn));
