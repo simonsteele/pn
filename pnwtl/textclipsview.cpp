@@ -15,14 +15,13 @@
 #include "childfrm.h"
 #include <algorithm>
 
-CClipsDocker::CClipsDocker()
+CClipsDocker::CClipsDocker(TextClips::TextClipsManager* manager)
 {
-	m_pTheClips = new TextClips::TextClipsManager();
+	m_pTheClips = manager;
 }
 
 CClipsDocker::~CClipsDocker()
 {
-	delete m_pTheClips;
 }
 
 LRESULT CClipsDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)

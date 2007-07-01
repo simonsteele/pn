@@ -19,7 +19,7 @@ namespace TextClips {
 // Clip
 //////////////////////////////////////////////////////////////////////////////
 
-void Clip::Insert(CScintilla *scintilla)
+void Clip::Insert(CScintilla *scintilla) const
 {
 	tstring clipstr;
 	tstring theText(Text);
@@ -124,14 +124,60 @@ TextClipSet::~TextClipSet()
 	clear();
 }
 
+bool SortClipsByShortcut(const Clip* p1, const Clip* p2)
+{
+	return (p1->Shortcut < p2->Shortcut);
+}
+
+tstring TextClipSet::BuildSortedClipList() const
+{
+	tstring result;
+	LIST_CLIPS sortedClips = clips;
+	sortedClips.sort(SortClipsByShortcut);
+	for(LIST_CLIPS::const_iterator i = sortedClips.begin();
+		i != sortedClips.end();
+		++i)
+	{
+		if(result.size())
+			result += ",";
+		result += (*i)->Shortcut;
+		result += ": " + (*i)->Name;
+	}
+
+	return result;
+}
+
+const Clip* TextClipSet::FindByShortcut(const tstring& shortcut) const
+{
+
+	for(LIST_CLIPS::const_iterator i = clips.begin();
+		i != clips.end();
+		++i)
+	{
+		if( (*i)->Shortcut == shortcut )
+		{
+			return (*i);
+		}
+	}
+
+	return NULL;
+}
+
 const LIST_CLIPS& TextClipSet::GetClips()
 {
 	return clips;
 }
 
-LPCTSTR TextClipSet::GetName()
+LPCTSTR TextClipSet::GetName() const
 {
 	return name.c_str();
+}
+
+LPCTSTR TextClipSet::GetScheme() const
+{
+	if(scheme.empty())
+		return NULL;
+	return scheme.c_str();
 }
 
 void TextClipSet::clear()
@@ -193,6 +239,10 @@ void TextClipSet::startElement(LPCTSTR name, XMLAttributes& atts)
 			else
 				this->name = _T("(unknown)");
 
+			LPCTSTR szScheme = atts.getValue(_T("scheme"));
+			if(szScheme != NULL)
+				this->scheme = szScheme;
+
 			LPCTSTR szEncoding = atts.getValue(_T("encoding"));
 			if(szEncoding != NULL)
 			{
@@ -214,6 +264,8 @@ void TextClipSet::startElement(LPCTSTR name, XMLAttributes& atts)
 		{
 			LPCTSTR pName = atts.getValue(_T("name"));
 			curName = (pName != NULL ? pName : _T("error"));
+			pName = atts.getValue(_T("shortcut"));
+			curShortcut = (pName != NULL ? pName : _T(""));
 			SET_STATE(TCPS_CLIP);
 		}
 	}
@@ -235,6 +287,8 @@ void TextClipSet::endElement(LPCTSTR name)
 		else
 			clip->Name = curName;
 		
+		clip->Shortcut = curShortcut;
+
 		if(encoding != eNone)
 			decodeData();
 
@@ -307,7 +361,19 @@ TextClipsManager::~TextClipsManager()
 
 const LIST_CLIPSETS& TextClipsManager::GetClipSets()
 {
-	return clipSets;
+	return m_clipSets;
+}
+
+const TextClipSet* TextClipsManager::GetClips(LPCSTR schemeName)
+{
+	MAP_CLIPSETS::const_iterator i = m_schemeClipSets.find(std::string(schemeName));
+	
+	if(i != m_schemeClipSets.end())
+	{
+		return (*i).second;
+	}
+	
+	return NULL;
 }
 
 /**
@@ -339,7 +405,16 @@ void TextClipsManager::OnFound(LPCTSTR path, LPCTSTR filename)
 	tstring fullpath(path);
 	fullpath += filename;
 	TextClipSet* tcs = new TextClipSet(fullpath.c_str());
-	clipSets.insert(clipSets.end(), tcs);
+	
+	// General text clips or schemes based?
+	if(tcs->GetScheme() != NULL)
+	{
+		m_schemeClipSets.insert(MAP_CLIPSETS::value_type(tstring(tcs->GetScheme()), tcs));
+	}
+	else
+	{
+		m_clipSets.insert(m_clipSets.end(), tcs);
+	}
 }
 
 /**
@@ -347,12 +422,19 @@ void TextClipsManager::OnFound(LPCTSTR path, LPCTSTR filename)
  */
 void TextClipsManager::clear()
 {
-	for(LIST_CLIPSETS::iterator i = clipSets.begin(); i != clipSets.end(); ++i)
+	for(LIST_CLIPSETS::iterator i = m_clipSets.begin(); i != m_clipSets.end(); ++i)
 	{
 		delete (*i);
 	}
 
-	clipSets.clear();
+	m_clipSets.clear();
+
+	for(MAP_CLIPSETS::iterator j = m_schemeClipSets.begin(); j != m_schemeClipSets.end(); ++j)
+	{
+		delete (*j).second;
+	}
+
+	m_schemeClipSets.clear();
 }
 
 } // namespace TextClips

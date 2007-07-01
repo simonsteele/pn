@@ -4,7 +4,7 @@
  * @author Simon Steele
  * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -22,6 +22,8 @@
 #include "jumpview.h"
 #include "afiles.h"
 #include "scriptregistry.h"
+#include "textclips.h"
+#include "autocomplete.h"
 
 #include "tabbingframework/TabbedMDISave.h"
 
@@ -33,9 +35,12 @@
 
 bool CChildFrame::s_bFirstChild = true;
 
-CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands) : m_spDocument(doc), m_view(doc, commands)
+#define USERLIST_TEXTCLIPS 1
+
+CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::TextClipsManager* textclips) : m_spDocument(doc), m_view(doc, commands)
 {
 	m_pCmdDispatch = commands;
+	m_pTextClips = textclips;
 	m_hWndOutput = NULL;
 	m_hImgList = NULL;
 	m_pSplitter = NULL;
@@ -219,6 +224,31 @@ void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 	}
 
 	UISetChecked(ID_VIEW_INDIVIDUALOUTPUT, bShow);
+}
+
+////////////////////////////////////////////////////
+// Autocomplete methods
+
+bool CChildFrame::InsertClipCompleted(SCNotification* notification)
+{
+	tstring text = notification->text;
+	int colon = text.find(':');
+	text.resize(colon);
+
+	const TextClips::TextClipSet* set = m_pTextClips->GetClips( m_view.GetCurrentScheme()->GetName() );
+	if(set != NULL)
+	{
+		const TextClips::Clip* clip = set->FindByShortcut(text);
+		if(clip != NULL)
+		{
+			m_view.BeginUndoAction();
+			m_view.DelWordLeft();
+			clip->Insert(&m_view);
+			m_view.EndUndoAction();
+		}
+	}
+
+	return true;
 }
 
 ////////////////////////////////////////////////////
@@ -858,6 +888,41 @@ LRESULT CChildFrame::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 		::SetClipboardData(CF_TEXT, mem);
 
 		::CloseClipboard();
+	}
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	tstring word = m_view.GetCurrentWord();	
+
+	const TextClips::TextClipSet* clips = m_pTextClips->GetClips(m_view.GetCurrentScheme()->GetName());
+	
+	if(clips == NULL)
+	{
+		return 0;
+	}
+
+	const TextClips::Clip* desired = clips->FindByShortcut(word);
+	if(desired != NULL)
+	{
+		m_view.BeginUndoAction();
+		m_view.DelWordLeft();
+		desired->Insert(&m_view);
+		m_view.EndUndoAction();
+	}
+	else
+	{
+		// Now we want to autocomplete a list of clips:
+		AutoCompleteHandlerPtr p(new AutoCompleteAdaptor<CChildFrame>(this, &CChildFrame::InsertClipCompleted));
+		m_view.SetAutoCompleteHandler(p);
+
+		tstring cliptext = clips->BuildSortedClipList();
+		int sep = m_view.AutoCGetSeparator();
+		m_view.AutoCSetSeparator(',');
+		m_view.AutoCShow(word.size(), cliptext.c_str());
+		m_view.AutoCSetSeparator(sep);
 	}
 
 	return 0;

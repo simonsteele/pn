@@ -14,6 +14,8 @@
 #include "scintillaif.h"
 
 class IWordProvider;
+class BaseAutoCompleteHandler;
+typedef boost::shared_ptr<BaseAutoCompleteHandler> AutoCompleteHandlerPtr;
 
 /**
  * @class CScintillaImpl
@@ -81,6 +83,8 @@ public:
 
 	void AttemptAutoComplete();
 
+	void SetAutoCompleteHandler(AutoCompleteHandlerPtr& handler);
+
 protected:	
 	bool StartAutoComplete();
 	void AutoCloseBraces(SCNotification* scn);
@@ -124,6 +128,7 @@ protected:
 	Scheme *m_pScheme;
 
 	IWordProvider* m_autoComplete;
+	AutoCompleteHandlerPtr m_autoCompleteHandler;
 	
 	//*****************************************************************************
 };

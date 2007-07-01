@@ -181,6 +181,7 @@ BEGIN
         MENUITEM "&Goto",                       ID_EDIT_GOTO
         MENUITEM "&Jump To...",                 ID_EDIT_JUMPTO
         MENUITEM "&Autocomplete",               ID_EDIT_AUTOCOMPLETE
+        MENUITEM "Insert Clip",                 ID_EDIT_INSERTCLIP
     END
     POPUP "&View"
     BEGIN

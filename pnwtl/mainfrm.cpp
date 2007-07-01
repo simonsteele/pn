@@ -39,6 +39,7 @@
 #include "scriptview.h"			// Scripts Docker
 #include "toolsmanager.h"		// Tools Manager
 #include "extapp.h"
+#include "textclips.h"			// Text Clips
 
 // Other stuff
 #include "SchemeConfig.h"		// Scheme Configuration
@@ -111,6 +112,9 @@ CMainFrame::CMainFrame(CommandDispatch* commands, std::list<tstring>* cmdLineArg
 
 	// Store command-line arguments for use later
 	m_cmdLineArgs = cmdLineArgs;
+
+	// This text clip manager will be shared by the text clips view and editors
+	m_pTextClips = new TextClips::TextClipsManager;
 }
 
 CMainFrame::~CMainFrame()
@@ -132,6 +136,9 @@ CMainFrame::~CMainFrame()
 
 	if(m_pScriptsWnd)
 		delete m_pScriptsWnd;
+
+	if(m_pTextClips)
+		delete m_pTextClips;
 }
 
 /**
@@ -141,7 +148,7 @@ CMainFrame::~CMainFrame()
 CChildFrame* CMainFrame::NewEditor()
 {
 	DocumentPtr pD(new Document());
-	CChildFrame* pChild = new CChildFrame(pD, m_pCmdDispatch);
+	CChildFrame* pChild = new CChildFrame(pD, m_pCmdDispatch, m_pTextClips);
 	PNASSERT(pChild != NULL);
 	pD->AddChildFrame(pChild);
 
@@ -705,14 +712,13 @@ HWND CMainFrame::CreateSchemeToolbar()
 }
 
 template<class TWnd>
-TWnd* CreateDocker(LPCTSTR title, CRect& rect, CMainFrame* owner, CPNDockingWindow** pArr, int index,
-					bool bDock, dockwins::CDockingSide side = dockwins::CDockingSide::sLeft, 
+TWnd* CreateDockerWindow(TWnd* pWnd, LPCTSTR title, CRect& rect, CMainFrame* owner, CPNDockingWindow** pArr, int index,
+					bool bDock, dockwins::CDockingSide side = dockwins::CDockingSide::sLeft,
 					int nBar = 0, float fPctPos = 0)
 {
 	DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 	CRect rcBar(0, 0, 200, 70);
 
-	TWnd* pWnd = new TWnd;
 	CPNDockingWindow* pDocker = new CPNDockingWindow(title);
 	pDocker->Create(owner->m_hWnd, rect, title, dwStyle, WS_EX_TOOLWINDOW);
 
@@ -731,6 +737,24 @@ TWnd* CreateDocker(LPCTSTR title, CRect& rect, CMainFrame* owner, CPNDockingWind
 	return pWnd;
 }
 
+template<class TWnd>
+TWnd* CreateDocker(LPCTSTR title, CRect& rect, CMainFrame* owner, CPNDockingWindow** pArr, int index,
+					bool bDock, dockwins::CDockingSide side = dockwins::CDockingSide::sLeft,
+					int nBar = 0, float fPctPos = 0)
+{
+	return CreateDockerWindow(new TWnd, title, rect, owner, pArr, index, bDock, side, nBar, fPctPos);
+}
+
+
+template<class TWnd, class TParam>
+TWnd* CreateDocker(TParam* createParam, LPCTSTR title, CRect& rect, CMainFrame* owner, CPNDockingWindow** pArr, int index,
+					bool bDock, dockwins::CDockingSide side = dockwins::CDockingSide::sLeft,
+					int nBar = 0, float fPctPos = 0)
+{
+	TWnd* pWnd = new TWnd(createParam);
+	return CreateDockerWindow(pWnd, title, rect, owner, pArr, index, bDock, side, nBar, fPctPos);
+}
+
 void CMainFrame::CreateDockingWindows()
 {
 	// Create docking windows...
@@ -741,11 +765,11 @@ void CMainFrame::CreateDockingWindows()
 		m_dockingWindows, ID_VIEW_WINDOWS_FINDRESULTS - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sBottom);
 
-	m_pOutputWnd = CreateDocker< COutputView >(LS(ID_VIEW_OUTPUT), rcBottom, this, 
+	m_pOutputWnd = CreateDocker<COutputView>(LS(ID_VIEW_OUTPUT), rcBottom, this, 
 		m_dockingWindows, ID_VIEW_OUTPUT - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sBottom);
 
-	m_pClipsWnd = CreateDocker<CClipsDocker>(LS(ID_VIEW_WINDOWS_TEXTCLIPS), rcLeft, this,
+	m_pClipsWnd = CreateDocker<CClipsDocker, TextClips::TextClipsManager>(m_pTextClips, LS(ID_VIEW_WINDOWS_TEXTCLIPS), rcLeft, this,
 		m_dockingWindows, ID_VIEW_WINDOWS_TEXTCLIPS - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sLeft);
 
@@ -756,7 +780,8 @@ void CMainFrame::CreateDockingWindows()
 	m_pCtagsWnd = CreateDocker<CJumpDocker>(LS(ID_VIEW_WINDOWS_CTAGS), rcLeft, this, 
 		m_dockingWindows, ID_VIEW_WINDOWS_CTAGS - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sLeft);
-	hCTagsWnd=m_pCtagsWnd->getHandle();
+	
+	hCTagsWnd = m_pCtagsWnd->getHandle();
 
 	m_pScriptsWnd = CreateDocker<CScriptDocker>(LS(ID_VIEW_WINDOWS_SCRIPTS), rcLeft, this, 
 		m_dockingWindows, ID_VIEW_WINDOWS_SCRIPTS - ID_VIEW_FIRSTDOCKER,

@@ -457,7 +457,6 @@
 #define IDC_AUTOCLOSEBRACESCHECK        1142
 #define IDC_NKEYSRADIO                  1143
 #define IDC_MANUALRADIO                 1144
-#define IDC_SLIDER1                     1145
 #define IDC_LINEHIGHLIGHTSLIDER         1145
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
@@ -589,6 +588,7 @@
 #define ID_DUMMY_RENAME32984            32984
 #define ID_PROJECT_RENAME32985          32985
 #define ID_WORKSPACE_RENAME             32986
+#define ID_EDIT_INSERTCLIP              32987
 
 // Next default values for new objects
 // 
@@ -596,7 +596,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        350
-#define _APS_NEXT_COMMAND_VALUE         32987
+#define _APS_NEXT_COMMAND_VALUE         32988
 #define _APS_NEXT_CONTROL_VALUE         1146
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

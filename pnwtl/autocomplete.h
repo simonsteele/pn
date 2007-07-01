@@ -90,4 +90,30 @@ private:
 	bool m_ignoreCase;
 };
 
+class BaseAutoCompleteHandler
+{
+public:
+	virtual ~BaseAutoCompleteHandler(){}
+	virtual bool AutoCSelection(SCNotification* notification) = 0;
+};
+
+typedef boost::shared_ptr<BaseAutoCompleteHandler> AutoCompleteHandlerPtr;
+
+template <class T>
+class AutoCompleteAdaptor : public BaseAutoCompleteHandler
+{
+public:
+	typedef bool (T::*TCallback)(SCNotification* notification);
+	AutoCompleteAdaptor(T* pT, TCallback callback) : m_t(pT), m_cb(callback){}
+	virtual ~AutoCompleteAdaptor(){}
+
+	virtual bool AutoCSelection(SCNotification* notification)
+	{
+		return (m_t->*m_cb)(notification);
+	}
+private:
+	TCallback m_cb;
+	T* m_t;
+};
+
 #endif

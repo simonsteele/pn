@@ -2,9 +2,9 @@
  * @file optionsmanager.cpp
  * @brief Configuration functionality.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -87,8 +87,8 @@ void Options::loadCache()
 	cache[OUseTabs]					= Get(NULL, _T("UseTabs"), true);
 	cache[OLineNumbers]				= Get(NULL, _T("LineNumbers"), false);
 	cache[OLineHighlight]			= Get(NULL, _T("LineHighlight"), false);
-	cache[OLineHighlightColour]		= Get(NULL, _T("LineHighlightColour"), (int)RGB(255, 255, 224));
-	cache[OLineHighlightAlpha]		= Get(NULL, _T("LineHighlightAlpha"), 200);
+	cache[OLineHighlightColour]		= Get(NULL, _T("LineHighlightBaseColour"), (int)RGB(0, 0, 0x5e));
+	cache[OLineHighlightAlpha]		= Get(NULL, _T("LineHighlightAlpha"), 30);
 	cache[ORightGuide]				= Get(NULL, _T("RightGuide"), 0);
 	cache[ORightColumn]				= Get(NULL, _T("RightColumn"), 76);
 	cache[ORightGuideColour]		= Get(NULL, _T("RightGuideColour"), (int)RGB(215, 215, 215));
@@ -152,7 +152,7 @@ void Options::saveCache()
 	Set(NULL, _T("UseTabs"),				cache[OUseTabs]);
 	Set(NULL, _T("LineNumbers"),			cache[OLineNumbers]);
 	Set(NULL, _T("LineHighlight"),			cache[OLineHighlight]);
-	Set(NULL, _T("LineHighlightColour"),	cache[OLineHighlightColour]);
+	Set(NULL, _T("LineHighlightBaseColour"),cache[OLineHighlightColour]);
 	Set(NULL, _T("LineHighlightAlpha"),		cache[OLineHighlightAlpha]);
 	Set(NULL, _T("RightGuide"),				cache[ORightGuide]);
 	Set(NULL, _T("RightColumn"),			cache[ORightColumn]);

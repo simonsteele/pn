@@ -2,9 +2,9 @@
  * @file textclips.h
  * @brief Text Clips Classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -22,9 +22,10 @@ class Clip
 {
 	public:
 		tstring Name;
+		tstring Shortcut;
 		tstring Text;
 
-		void Insert(CScintilla* scintilla);
+		void Insert(CScintilla* scintilla) const;
 };
 
 typedef std::list<Clip*>	LIST_CLIPS;
@@ -38,9 +39,21 @@ class TextClipSet : public XMLParseState
 		TextClipSet(LPCTSTR filename);
 		~TextClipSet();
 
+		/**
+		 * Builds a list of clips formatted for scintilla display
+		 */
+		tstring BuildSortedClipList() const;
+
+		const Clip* FindByShortcut(const tstring& shortcut) const;
+
 		const LIST_CLIPS& GetClips();
 
-		LPCTSTR GetName();
+		LPCTSTR GetName() const;
+
+		/**
+		 * Get the scheme name if scheme-tied, NULL otherwise
+		 */
+		LPCTSTR GetScheme() const;
 
 	//XMLParseState
 	public:
@@ -69,9 +82,12 @@ class TextClipSet : public XMLParseState
 		tstring cData;
 		tstring curName;
 		tstring name;
+		tstring scheme;
+		tstring curShortcut;
 };
 
 typedef std::list<TextClipSet*> LIST_CLIPSETS;
+typedef std::map<std::string, TextClipSet*> MAP_CLIPSETS;
 
 /**
  * Represents a set of text clip sets.
@@ -87,11 +103,14 @@ public:
 
 	const LIST_CLIPSETS& GetClipSets();
 
+	const TextClipSet* GetClips(LPCSTR schemeName);
+
 protected:
 	void clear();
 
 protected:
-	LIST_CLIPSETS	clipSets;
+	LIST_CLIPSETS	m_clipSets;
+	MAP_CLIPSETS	m_schemeClipSets;
 };
 
 } // namespace TextClips

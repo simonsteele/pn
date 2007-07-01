@@ -257,6 +257,21 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 			break;
 		}
 
+		case SCN_AUTOCSELECTION:
+		{
+			if( m_autoCompleteHandler.get() )
+			{
+				if( m_autoCompleteHandler->AutoCSelection(scn) )
+				{
+					// Handler has done what they wanted to...
+					AutoCCancel();
+				}
+
+				m_autoCompleteHandler.reset();
+			}
+		}
+		break;
+
 		case SCN_CHARADDED:
 		{
 			DumbIndent( ((SCNotification*)lParam)->ch );
@@ -1485,6 +1500,14 @@ void CScintillaImpl::AttemptAutoComplete()
 {
 	if(m_bAutoCompletion)
 		StartAutoComplete();
+}
+
+/**
+ * Set a handler for the autocompletion stuff
+ */
+void CScintillaImpl::SetAutoCompleteHandler(AutoCompleteHandlerPtr& handler)
+{
+	m_autoCompleteHandler = handler;
 }
 
 //This function adds to keywords functions from CTags

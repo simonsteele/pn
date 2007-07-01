@@ -26,7 +26,7 @@ class CClipsDocker : public CWindowImpl<CClipsDocker>//CPNDockingWindow<CClipsDo
 public:
 	DECLARE_WND_CLASS(_T("CClipsDocker"))
 
-	CClipsDocker();
+	CClipsDocker(TextClips::TextClipsManager* manager);
 	~CClipsDocker();
 
 	enum {

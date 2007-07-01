@@ -31,6 +31,11 @@ namespace Projects
 	class Workspace;
 }
 
+namespace TextClips
+{
+	class TextClipsManager;
+}
+
 struct tagEnumChildrenStruct;
 
 // Auto-complete for the find combo box.
@@ -433,6 +438,8 @@ private:
 	CScriptDocker*			m_pScriptsWnd;
 	
 	CScintilla				m_Dummy;			///< Scintilla often doesn't like unloading and reloading.
+
+	TextClips::TextClipsManager* m_pTextClips;
 
 	CSPopupMenu				m_NewMenu;
 	CMRUMenu				m_RecentFiles;

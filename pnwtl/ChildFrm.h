@@ -4,7 +4,7 @@
  * @author Simon Steele
  * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -32,6 +32,11 @@ typedef enum {EP_LINE, EP_COL} EGPType;
 class COutputView;
 class DocScript;
 
+namespace TextClips
+{
+	class TextClipsManager;
+}
+
 #define CHAIN_OUTPUT_COMMANDS() \
 	if(uMsg == WM_COMMAND && m_hWndOutput != NULL) \
 		::SendMessage(m_hWndOutput, uMsg, wParam, lParam);
@@ -46,7 +51,7 @@ public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MDICHILD)
 	typedef CTabbedMDIChildWindowImpl<CChildFrame> baseClass;
 
-	CChildFrame(DocumentPtr doc, CommandDispatch* commands);
+	CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::TextClipsManager* textclips);
 	~CChildFrame();
 	virtual void OnFinalMessage(HWND /*hWnd*/);
 
@@ -86,6 +91,7 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_UPPERCASE, OnUpperCase)
 		COMMAND_ID_HANDLER(ID_EDIT_AUTOCOMPLETE, OnAutoComplete)
 		COMMAND_ID_HANDLER(ID_EDIT_COPYFILEPATH, OnCopyFilePath)
+		COMMAND_ID_HANDLER(ID_EDIT_INSERTCLIP, OnInsertClip)
 		
 		COMMAND_ID_HANDLER(ID_EDITOR_WORDWRAP, OnWordWrapToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_COLOURISE, OnColouriseToggle)
@@ -255,6 +261,7 @@ public:
 	LRESULT OnViewFileProps(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnProjectAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	bool OnRunTool(LPVOID pTool);
 
@@ -299,6 +306,11 @@ public:
 	void EnsureOutputWindow();
 	void ToggleOutputWindow(bool bSetValue = false, bool bSetShowing = true);
 
+	////////////////////////////////////////////////////
+	// Autocomplete methods
+	
+	bool InsertClipCompleted(SCNotification* notification);
+
 protected:
 
 	/**
@@ -337,6 +349,7 @@ private:
 	long				m_FileAge;
 	bool				m_bModifiedOverride;
 	bool				m_bClosing;
+	TextClips::TextClipsManager*	m_pTextClips;
 	
 	int					m_iFirstToolCmd;
 
