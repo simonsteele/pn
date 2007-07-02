@@ -2,11 +2,12 @@
  * @file IOptions.h
  * @brief PN Options Manager Interface
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
+
 #ifndef ioptions_h__included
 #define ioptions_h__included
 
@@ -80,7 +81,8 @@ public:
 			OAutoCompleteActivation		= 28,
 			OAutoCompleteTags			= 29,
 			OLineHighlightAlpha			= 30,
-			OPTION_COUNT				= 31
+			OFoldingEnabled				= 31,
+			OPTION_COUNT				= 32
 		} ECachedOption;
 
 		/// Set a bool value

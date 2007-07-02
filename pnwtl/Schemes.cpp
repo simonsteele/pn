@@ -2,11 +2,12 @@
  * @file Schemes.cpp
  * @brief Implement Scheme and SchemeManager.
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
+
 #include "stdafx.h"
 
 #include "files.h"
@@ -358,7 +359,7 @@ void Scheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 		// Set the defaults - these may be changed by the load.
 		SetupScintilla(sc, allSettings);
 
-		if(hdr.Flags & fldEnabled)
+		if((hdr.Flags & fldEnabled) && OPTIONS->GetCached(Options::OFoldingEnabled))
 		{
 			///@todo obviously these details need to come from settings somewhere...
 			sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold"), (LPARAM)_T("1"));

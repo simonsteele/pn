@@ -35,7 +35,8 @@ What's new?
 27) Added $(ProjectGroupName) tools property
 28) Added Rename shortcut to project context menus (you can already rename using the two clicks convention)
 29) Added $(ProjectProp:*) and $(FileProp:*) tools shortcuts, these retrieve values from project item configurations
-30) Added alpha settings for line highlight
+30) Added alpha settings for line highlight, new default colour to make use of alpha
+31) Added option to disable folding
 
 Bug Fixes:
 ----------

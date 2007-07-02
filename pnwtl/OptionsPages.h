@@ -2,11 +2,12 @@
  * @file optionspages.h
  * @brief Options Dialog Pages (1) for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
+
 #ifndef optionspages_h__included
 #define optionspages_h__included
 
@@ -117,6 +118,7 @@ class COptionsPageVisual : public COptionsPageImpl<COptionsPageVisual>,
 
 		BEGIN_DDX_MAP(COptionsPageVisual)
 			DDX_CHECK(IDC_OPT_INDENTGUIDESCHECK, m_bIndentGuides)
+			DDX_CHECK(IDC_OPT_FOLDINGCHECK, m_bFolding)
 			DDX_CHECK(IDC_OPT_LINELIGHTCHECK, m_bLineHighlight)
 			DDX_RADIO(IDC_OPT_NOLLHELPRADIO, m_iLongLineHelp)
 			DDX_UINT(IDC_OPT_LLCOLUMNEDIT, m_iRightColumn)
@@ -130,6 +132,7 @@ class COptionsPageVisual : public COptionsPageImpl<COptionsPageVisual>,
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		
 		BOOL m_bIndentGuides;
+		BOOL m_bFolding;
 		BOOL m_bLineHighlight;
 		int m_iLongLineHelp;
 		UINT m_iRightColumn;

@@ -105,6 +105,7 @@ void Options::loadCache()
 	cache[OAutoCompleteStartChars]	= Get(NULL, _T("AutocompleteStartChars"), 2);
 	cache[OAutoCompleteTags]		= Get(NULL, _T("AutocompleteTags"), TRUE);
 	cache[OAutoCompleteActivation]	= Get(NULL, _T("AutocompleteActivation"), eacManual);
+	cache[OFoldingEnabled]			= Get(NULL, _T("Folding"), TRUE);
 	ungroup();
 	
 	// Interface Settings -------------------
@@ -170,6 +171,7 @@ void Options::saveCache()
 	Set(NULL, _T("AutocompleteStartChars"), cache[OAutoCompleteStartChars]);
 	Set(NULL, _T("AutocompleteTags"),		cache[OAutoCompleteTags]);
 	Set(NULL, _T("AutocompleteActivation"), cache[OAutoCompleteActivation]);
+	Set(NULL, _T("Folding"),				cache[OFoldingEnabled]);
 
 	ungroup();
 	

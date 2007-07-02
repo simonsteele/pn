@@ -256,6 +256,7 @@ void COptionsPageVisual::OnOK()
 
 	Options& options = *OPTIONS;
 	options.SetCached(Options::OShowIndentGuides, m_bIndentGuides != FALSE);
+	options.SetCached(Options::OFoldingEnabled, m_bFolding != FALSE);
 	options.SetCached(Options::OLineHighlight, m_bLineHighlight != FALSE);
 	options.SetCached(Options::OLineHighlightColour, m_btnLineCol.SafeGetColor());
 	options.SetCached(Options::ORightGuide, m_iLongLineHelp);
@@ -268,6 +269,7 @@ void COptionsPageVisual::OnOK()
 void COptionsPageVisual::OnInitialise()
 {
 	m_bIndentGuides		= OPTIONS->GetCached(Options::OShowIndentGuides);
+	m_bFolding			= OPTIONS->GetCached(Options::OFoldingEnabled);
 	m_bLineHighlight	= OPTIONS->GetCached(Options::OLineHighlight);
 	m_iLongLineHelp		= OPTIONS->GetCached(Options::ORightGuide);
 	m_iRightColumn		= OPTIONS->GetCached(Options::ORightColumn);
