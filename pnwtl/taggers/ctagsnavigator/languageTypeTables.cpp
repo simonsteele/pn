@@ -1,15 +1,24 @@
 /**
  * @file languageTypeTables.cpp
  * @brief Type mappings.
- * @author Simon Steele
+ * @author Simon Steele, Ryan Mulder
  * @note Copyright (c) 2004-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
+ 
 #include "stdafx.h"
 #include "languageTypeTables.h"
 #include "../tagtypes.h"
+
+#include <map>
+#include <string>
+#include <vector>
+
+// Map for tables loaded from an external file
+typedef std::map< std::string, std::pair< int*, int* > > ExternalTableT;
+static ExternalTableT s_externalTables;
 
 /*
 static kindOption CKinds [] = {
@@ -421,8 +430,129 @@ void getTables(const char* schemeName, int** lcTypes, int** ucTypes)
 	{
 		*lcTypes = lVhdlTypes;
 	}
+	else if(s_externalTables.count( schemeName ) != 0)
+	{
+		ExternalTableT::mapped_type* table = &s_externalTables[schemeName];
+		*lcTypes = table->first;
+		*ucTypes = table->second;
+	}
 	else
 	{
 		*lcTypes = lCTypes;
+	}
+}
+
+// This class is used to automatically clean up dynamically allocated tables
+class TablePtrHolder
+{
+public:
+	std::vector< int* > m_ptrs;
+
+	~TablePtrHolder()
+	{
+		for ( size_t i = 0; i < m_ptrs.size(); ++i )
+		{
+			delete [] m_ptrs[i];
+		}
+	}
+};
+
+static TablePtrHolder s_tablePtrHolder;
+
+/** 
+ * Determines the address of the first character of each string and stores that address into the vector "pointers".
+ * @param	buffer		[IN]	Contains multiple strings separated by NULL, with an extra NULL at the end
+ *  							Example: "Tom\0Bill\0Bob\0Sue\0Jenny\0John\0\0"
+ * @param	pointers	[OUT]	Vector to hold pointers to the individual strings
+ */
+void ParseNullSeparatedStringBuffer( const char* buffer, std::vector< const char* >* pointers)
+{	
+	// Used to store the pointer to the next string
+	const char* nextString = buffer;
+
+	// Used to store the last valid pointer
+	const char* lastString;
+
+	//Fill the array with string pointers
+	while( *nextString != '\0' )
+	{
+		//Store the pointer to the first string
+		(*pointers).push_back( nextString );
+		
+		// Use the starting point and length of the last string 
+		// to determine the start of the next string
+		lastString = (*pointers)[ (*pointers).size() - 1 ];
+		nextString = lastString + strlen( lastString ) + 1;
+	}
+
+	// No More Strings
+	return;
+}
+
+void loadExternalTables(const char* fileName, std::string* moreSchemes)
+{
+	// Get all sections from the .ini file
+	char allSections[2000];
+	::GetPrivateProfileSectionNamesA( allSections, sizeof( allSections ), fileName );
+
+	std::vector< const char* > sections;
+	ParseNullSeparatedStringBuffer( allSections, &sections );
+
+	// used for section data
+	char data[2000];
+	std::vector< const char* > lines;
+	std::vector< const char* >::iterator line;
+
+	std::vector< const char* >::iterator section;
+	for ( section = sections.begin(); section != sections.end(); ++section )
+	{
+		// Get all key/value pairs from section
+		::GetPrivateProfileSectionA( *section, data, sizeof( data ), fileName );
+		ParseNullSeparatedStringBuffer( data, &lines );
+
+		// Tables for language type data
+		int* lTable = new int[26];
+		memset( lTable, 0, 26 * sizeof(int) );
+		
+		int* uTable = new int[26];
+		memset( uTable, 0, 26 * sizeof(int) );
+		
+		for ( line = lines.begin(); line != lines.end(); ++line )
+		{
+			const char* entry = *line;
+
+			if ( strlen( entry ) < 3 )
+			{
+				continue;
+			}
+
+			// Only single letter keys are accepted
+			if ( entry[1] != '=' )
+			{
+				continue;
+			}
+
+			// The key must be in a-z or A-Z
+			char key = entry[0];
+			if ( key >= 'a' && key <= 'z' )
+			{
+				lTable[key - 'a'] = ::atoi( entry + 2 );
+			}
+
+			if ( key >= 'A' && key <= 'Z' )
+			{
+				uTable[key - 'A'] = ::atoi( entry + 2 );
+			}		
+		}
+		
+		lines.clear();
+
+		// Remember pointers to delete later
+		s_tablePtrHolder.m_ptrs.push_back( lTable );
+		s_tablePtrHolder.m_ptrs.push_back( uTable );
+
+		s_externalTables[ *section ] = std::make_pair( lTable, uTable );
+		*moreSchemes += ";";
+		*moreSchemes += *section;
 	}
 }

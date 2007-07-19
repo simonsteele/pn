@@ -1,6 +1,6 @@
 ========================================
-Release Name: 2.0.7.667
-Build: 2.0.7.667, Version Label: 
+Release Name: 2.0.7.680
+Build: 2.0.7.680, Version Label: 
 ========================================
 
 What's new?
@@ -32,11 +32,17 @@ What's new?
 24) Minor master scheme changes
 25) Allows you to set scheme properties for all languages in one place (global styles)
 26) Scheme changes: Hypertext->HTML, PHP added, PHP Script added
-27) Added $(ProjectGroupName) tools property
-28) Added Rename shortcut to project context menus (you can already rename using the two clicks convention)
-29) Added $(ProjectProp:*) and $(FileProp:*) tools shortcuts, these retrieve values from project item configurations
-30) Added alpha settings for line highlight, new default colour to make use of alpha
-31) Added option to disable folding
+27) New extension points for OnBeforeSave and OnAfterLoad
+28) ctags tag provider is now an extension, custom tagger 
+   plugin format removed
+29) Extension discovery method: run "pn -findexts"
+30) Added $(ProjectGroupName) tools property
+31) Added Rename shortcut to project context menus (you can already rename using the two clicks convention)
+32) Added $(ProjectProp:*) and $(FileProp:*) tools shortcuts, these retrieve values from project item configurations
+33) Added alpha settings for line highlight, new default colour to make use of alpha
+34) Added option to disable folding
+35) New Prototype keyword-clips feature (try Edit->Insert Clip in c/C++)
+36) Now supports custom ctags tagger definitions (see in taggers\ctags directory)
 
 Bug Fixes:
 ----------

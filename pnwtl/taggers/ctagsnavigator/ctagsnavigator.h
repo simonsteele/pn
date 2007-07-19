@@ -22,6 +22,8 @@
 
 #include "../../jumptointerface.h"
 
+#include <string>
+
 using namespace extensions;
 
 #define PARSE_BUFFER_SIZE	16384
@@ -36,6 +38,8 @@ typedef struct tagParseState
 class CTagsTagSource : public ITagSource
 {
 public:
+	CTagsTagSource();
+
 	/**
 	 * Get a list of schemes supported
 	 */
@@ -46,7 +50,24 @@ public:
 	 */
 	virtual bool FindTags(ITagSink* sink, const wchar_t* filename, void* userData, MASKSTRUCT mask, const char* scheme);
 
+	/**
+	 * Load externally defined ctags languages.
+	 */
+	void LoadAdditionalLanguages();
+
+	/**
+	 * Set a path to look in for external ctags definitions
+	 */
+	void SetTaggersPath(const char* path);
+
 private:
 	bool canParse(char* buffer, DWORD dwLength);
 	void parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT mask, void* userData, int* ltypes, int* utypes);
+	
+	/**
+	 * Path to taggers directory. Used for external ctags language definitions.
+	 */
+	std::string m_taggersPath;
+	std::string m_schemes;
+	std::wstring m_optionsParam;
 };

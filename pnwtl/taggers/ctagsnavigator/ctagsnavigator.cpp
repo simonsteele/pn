@@ -44,6 +44,14 @@ bool __stdcall init_pn_extension(int iface_version, extensions::IPN* pn)
 	if(iface_version != PN_EXT_IFACE_VERSION)
 		return false;
 
+	// Get Taggers Path
+	extensions::IOptions* options = pn->GetOptionsManager();
+	const char* taggersPath = options->GetPNPath( PNPATH_TAGGERS );
+	g_source.SetTaggersPath(taggersPath);
+	pn->ReleaseString( taggersPath );
+
+	g_source.LoadAdditionalLanguages();
+
 	pn->AddTagSource(&g_source);
 
 	return true;
@@ -57,12 +65,95 @@ void __stdcall exit_pn_extension()
 	// TODO: Cleanup
 }
 
+// Converts wide character to multibyte string
+// result is heap allocated
+wchar_t* ConvertMBtoWC( const char* mbString )
+{
+	if ( NULL == mbString )
+	{
+		return NULL;
+	}
+
+	// Get necessary size for wide string
+	size_t wideSize = ::mbstowcs( NULL, mbString, 0 );
+	if ( (size_t)-1 == wideSize )
+	{
+		return NULL;
+	}
+
+	// Allocate space for a wide string, leave room for NULL terminator
+	wchar_t* wideString = new wchar_t[ wideSize + 1 ];
+	
+	// Convert string
+	size_t resultSize = ::mbstowcs( wideString, mbString, wideSize );
+	if ( (size_t)-1 == resultSize )
+	{
+		delete [] wideString;
+		return NULL;
+	}
+
+	// NULL terminate string
+	wideString[ resultSize ] = '\0';
+
+	return wideString;
+}
+
+/**
+ * Constructor
+ */
+CTagsTagSource::CTagsTagSource() : 
+	ITagSource(),
+	m_schemes( "assembler;cobol;cpp;csharp;eiffel;erlang;java;javascript;lisp;lua;makefile;pascal;perl;php;phpscript;plsql;python;ruby;shell;tcl;vb;verilog;vhdl;vim;yacc;web" )
+{
+}
+
+/**
+ * Load externally defined ctags languages.
+ */
+void CTagsTagSource::LoadAdditionalLanguages()
+{
+	std::string optionsFile = m_taggersPath + "ctags\\additionalLanguages.conf";
+	
+	// Check for file's existence
+	DWORD val = ::GetFileAttributesA( optionsFile.c_str() );
+	if ( INVALID_FILE_ATTRIBUTES != val && ( FILE_ATTRIBUTE_DIRECTORY & val ) == 0 )
+	{
+		wchar_t* path = ConvertMBtoWC( optionsFile.c_str() );
+		if ( path )
+		{
+			m_optionsParam = L" --options=";
+			m_optionsParam += path;
+			m_optionsParam += L" ";
+			delete [] path;
+		}
+	}
+
+	std::string schemesFile = m_taggersPath + "ctags\\additionalSupportedSchemes.ini";
+	val = ::GetFileAttributesA( schemesFile.c_str() );
+	if ( INVALID_FILE_ATTRIBUTES != val && ( FILE_ATTRIBUTE_DIRECTORY & val ) == 0 )
+	{
+		// Load external language type tables and add the supported schemes
+		std::string moreSchemes;
+		loadExternalTables( schemesFile.c_str(), &moreSchemes );
+		m_schemes += moreSchemes;
+	}
+}
+
+/**
+ * Set a path to look in for external ctags definitions
+ */
+void CTagsTagSource::SetTaggersPath(const char* path)
+{
+	m_taggersPath = path;
+}
+
 /**
  * Get a list of schemes supported
  */
 const char* CTagsTagSource::GetSchemesSupported()
 {
-	return "assembler;cobol;cpp;csharp;eiffel;erlang;java;javascript;lisp;lua;makefile;pascal;perl;php;phpscript;plsql;python;ruby;shell;tcl;vb;verilog;vhdl;vim;yacc;web";
+	//return "assembler;cobol;cpp;csharp;eiffel;erlang;java;javascript;lisp;lua;makefile;pascal;perl;php;phpscript;plsql;python;ruby;shell;tcl;vb;verilog;vhdl;vim;yacc;web";
+	return m_schemes.c_str();
 }
 
 /**
@@ -115,8 +206,10 @@ bool CTagsTagSource::FindTags(ITagSink* sink,
 
 	wchar_t* cmd = L"ctags";
 	wchar_t* dir = NULL;
-	wchar_t* clopts = new wchar_t[wcslen(cmd)+wcslen(CTAGSOPTS)+wcslen(CTAGSLANGOPTS)+MAX_LANGUAGE+wcslen(filename)+3];
+	//wchar_t* clopts = new wchar_t[wcslen(cmd)+wcslen(CTAGSOPTS)+wcslen(CTAGSLANGOPTS)+MAX_LANGUAGE+wcslen(filename)+3];
+	wchar_t* clopts = new wchar_t[wcslen(cmd)+m_optionsParam.length()+wcslen(CTAGSOPTS)+wcslen(CTAGSLANGOPTS)+MAX_LANGUAGE+wcslen(filename)+3];
 	wcscpy(clopts, cmd);
+	wcscat(clopts, m_optionsParam.c_str() );
 
 	LPCWSTR lang = GetLanguage(filename, scheme);
 	if(lang != NULL)
@@ -135,9 +228,11 @@ bool CTagsTagSource::FindTags(ITagSink* sink,
 	//::OutputDebugString(clopts);
 	//::OutputDebugString(L"\n");
 
-	OSVERSIONINFO osv = {sizeof(OSVERSIONINFO), 0, 0, 0, 0, L""};
+	//OSVERSIONINFO osv = {sizeof(OSVERSIONINFO), 0, 0, 0, 0, L""};
+	OSVERSIONINFOW osv = {sizeof(OSVERSIONINFOW), 0, 0, 0, 0, L""};
 
-	::GetVersionEx(&osv);
+	//::GetVersionEx(&osv);
+	::GetVersionExW(&osv);
 	bool bWin9x = osv.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS;
 	
 	SECURITY_ATTRIBUTES sa = {sizeof(SECURITY_ATTRIBUTES), 0, 0};
@@ -173,9 +268,9 @@ bool CTagsTagSource::FindTags(ITagSink* sink,
 	::SetHandleInformation(hReadPipe, HANDLE_FLAG_INHERIT, 0);
 	::SetHandleInformation(hStdInWrite, HANDLE_FLAG_INHERIT, 0);
 
-	STARTUPINFO si;
-	memset(&si, 0, sizeof(STARTUPINFO));
-	si.cb = sizeof(STARTUPINFO);
+	STARTUPINFOW si;
+	memset(&si, 0, sizeof(STARTUPINFOW));
+	si.cb = sizeof(STARTUPINFOW);
 	si.dwFlags = STARTF_USESHOWWINDOW | STARTF_USESTDHANDLES;
 	si.wShowWindow = SW_HIDE;
 	si.hStdInput = hStdInRead;

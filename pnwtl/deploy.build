@@ -44,9 +44,7 @@
 				<include name="schemes/*.lexer"/>
 				<include name="schemes/extmap.dat"/>
 				<include name="presets/*.xml"/>
-				
-				<!-- Make this file pulled from a dist directory instead: -->
-				<include name="config.xml"/>
+				<include name="taggers/ctags/*.*"/>
 				
 				<exclude name="pypn.dll"/>
 				<exclude name="boost_python*.dll"/>
@@ -78,6 +76,7 @@
 				<include name="schemes/*.lexer"/>
 				<include name="schemes/extmap.dat"/>
 				<include name="presets/*.xml"/>
+				<include name="taggers/ctags/*.*"/>
 				
 				<exclude name="pypn.dll"/>
 				<exclude name="boost_python*.dll"/>

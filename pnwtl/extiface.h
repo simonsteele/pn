@@ -121,7 +121,7 @@ public:
 	virtual IDocumentPtr OpenDocument(const char* filepath, const char* scheme) = 0;
 
 	/// Utility function to safely free strings given to you by PN
-	virtual void ReleaseString(const TCHAR* str) = 0;
+	virtual void ReleaseString(const char* str) = 0;
 
 	/// Add a tag source (e.g. ctagsnavigator)
 	virtual void AddTagSource(ITagSource* tagSource) = 0;
