@@ -48,7 +48,8 @@ void REScintilla::SetRE(LPCTSTR regex, bool bClearStyling)
 
 	try
 	{
-		m_pRE->Compile(m_customre.c_str());
+		// We pass 0 to disable the default UTF-8 matching, we're in ASCII in output window
+		m_pRE->Compile(m_customre.c_str(), 0);
 		m_pRE->Study();
 	}
 	catch(PCRE::REException& ex)

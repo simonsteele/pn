@@ -192,7 +192,21 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 
 		// Pre-Allocate room for file...
 		int length = file.GetLength();
-		SPerform(SCI_ALLOCATE, length + 1024);
+		try
+		{
+			SPerform(SCI_ALLOCATE, length + 1024);
+		}
+		catch(std::bad_alloc& ba)
+		{
+			TCHAR buf[1024];
+			_sntprintf(buf, 1024, LS(IDS_FILETOOBIG), ba.what());
+			buf[1023] = NULL;
+			tstring msg = L10N::StringLoader::Get(IDS_FILETOOBIG);
+
+			::MessageBox(m_hWnd, buf, LS(IDR_MAINFRAME), MB_ICONERROR | MB_OK);
+			
+			return false;
+		}
 		
 		int useBlockSize = blockSize;
 

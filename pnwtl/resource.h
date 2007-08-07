@@ -81,6 +81,7 @@
 #define IDS_CURRENTFOLDER               172
 #define IDR_POPUP_EDITOR                173
 #define IDS_CURRENTPROJECTFOLDER        173
+#define IDS_FILETOOBIG                  174
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define IDD_INPUTBOX                    204

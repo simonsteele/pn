@@ -1836,6 +1836,7 @@ BEGIN
     IDS_CURRENTFILE         "Current File"
     IDS_CURRENTFOLDER       "Current Folder"
     IDS_CURRENTPROJECTFOLDER "Current Project Folder"
+    IDS_FILETOOBIG          "Sorry, Programmer's Notepad couldn't open this file - most likely because it's too big (actual error: %s). PN needs to have enough free memory to open a file twice to successfully edit it."
 END
 
 #endif    // English (U.K.) resources
