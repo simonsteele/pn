@@ -1043,16 +1043,16 @@ LRESULT CChildFrame::OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 LRESULT CChildFrame::OnGotoLine(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam/**/, BOOL& /*bHandled*/)
 {
-		int line=(int)lParam-1;
-		m_view.GotoLine(line);
-		m_view.EnsureVisibleEnforcePolicy(line);
+	int line= (int)lParam-1;
+	m_view.GotoLine(line);
+	m_view.EnsureVisibleEnforcePolicy(line);
 
-		int offset = m_view.GetFirstVisibleLine();
-		
-		// Put the line we jump to two off the top of the screen...
-		offset = (line - offset) - 2;
-		m_view.LineScroll(0, offset);
-		::SetFocus(m_hWnd);
+	int offset = m_view.GetFirstVisibleLine();
+	
+	// Put the line we jump to two off the top of the screen...
+	offset = (line - offset) - 2;
+	m_view.LineScroll(0, offset);
+	::SetFocus(m_hWnd);
 	return 0;
 }
 
@@ -1839,6 +1839,7 @@ void CChildFrame::UpdateMenu()
 	UISetChecked(ID_EDITOR_WORDWRAP, m_view.GetWrapMode() == SC_WRAP_WORD);
 	UISetChecked(ID_EDITOR_EOLCHARS, m_view.GetViewEOL());
 	UISetChecked(ID_EDITOR_WHITESPACE, m_view.GetViewWS() == SCWS_VISIBLEALWAYS);
+	UISetChecked(ID_EDITOR_LINENOS, m_view.GetMarginWidthN(0) > 0);
 	
 	bool bToolsRunning = false;
 	if( ToolOwner::HasInstance() )

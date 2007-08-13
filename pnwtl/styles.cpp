@@ -737,7 +737,7 @@ bool SchemeDetails::IsCustomised() const
 		}
 	}
 
-	return	customStyle || (pKeywordSet != NULL) || CustomColours.HasColours();
+	return	customStyle || (pKeywordSet != NULL) || CustomColours.HasColours() || (CustomFlags != 0);
 }
 
 bool SchemeDetails::IsInternal() const

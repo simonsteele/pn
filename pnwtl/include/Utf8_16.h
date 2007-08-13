@@ -44,7 +44,8 @@ public:
 		return m_nCur;
 	}
 	void operator++();
-	operator bool() { return m_pRead <= m_pEnd; }
+	//operator bool() { return m_pRead <= m_pEnd; }
+	operator bool() { return m_pRead < m_pEnd; }
 
 protected:
 	void toStart(); // Put to start state, swap bytes if necessary

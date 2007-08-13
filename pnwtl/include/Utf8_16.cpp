@@ -80,9 +80,15 @@ size_t Utf8_16_Read::convert(char* buf, size_t len, encodingType enc_type, int s
 
 	m_Iter16.set(m_pBuf + nSkip, len - nSkip, m_eEncoding);
 
+	// Note the iterator always moves before the call to get,
+	// therefore if we let the loop run for the last time then 
+	// the iterator will read beyond the end of the buffer. Modified
+	// the iterator to stop in the right place, but we need to get
+	// the last character out after:
 	for (; m_Iter16; ++m_Iter16) {
 		*pCur++ = m_Iter16.get();
 	}
+	*pCur++ = m_Iter16.get();
 
 	// Return number of bytes writen out
 	return pCur - m_pNewBuf;

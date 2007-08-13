@@ -80,6 +80,10 @@ Bug Fixes:
 31) Minor Vista bug fixes
 32) Don't reset scheme when saving files with no extension
 33) Occasional failure to save settings on exit (particularly with debug builds)
+34) Line numbers toggle not updated when default (SF Bug #1729577)
+35) File corruption with utf-16 files > 65536 characters (SF Bug #1741342)
+36) Some php keywords only being matched in uppercase
+37) Tabs/Spaces override changes don't save (SF Bug #1632540)
 
 If you find a bug:
 ------------------

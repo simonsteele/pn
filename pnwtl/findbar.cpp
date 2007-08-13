@@ -267,10 +267,12 @@ LRESULT CFindBar::OnMatchCaseClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 {
 	so.MatchCase = m_matchCase.GetCheck() == BST_CHECKED;
 
-	if(!m_lasttext.empty())
+	// Disabled for now, bugs being raised about searching when this is checked.
+	// Could be reintroduced with a check to see if the current selection still matches.
+	/*if(!m_lasttext.empty())
 	{
 		findNext(NULL, false);
-	}
+	}*/
 
 	return 0;
 }

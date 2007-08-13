@@ -1,4 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <Scheme>
+	<keyword-classes>
+		<keyword-class name="php">
+			and argv as argc break case cfunction class continue declare default do
+			die echo else elseif empty enddeclare endfor endforeach endif endswitch
+			endwhile e_all e_parse e_error e_warning eval exit extends false for
+			foreach function global http_cookie_vars http_get_vars http_post_vars
+			http_post_files http_env_vars http_server_vars if include include_once
+			list new not null old_function or parent php_os php_self php_version
+			print require require_once return static switch stdclass this true var
+			xor virtual while __file__ __line__ __sleep __wakeup
+		</keyword-class>
+	</keyword-classes>
 	<language name="phpscript" title="PHP Script" folding="true" foldcomments="false" foldcompact="false">
 		<comments line="//" streamStart="/*" streamEnd="*/"/>
 		<lexer name="phpscript" stylebits="7" />

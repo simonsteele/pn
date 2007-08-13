@@ -734,6 +734,15 @@ LRESULT CTabPageMisc::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	return 0;
 }
 
+LRESULT CTabPageMisc::OnValueChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
+{
+	bHandled = false;
+
+	m_bDirty = true;
+
+	return 0;
+}
+
 LRESULT CTabPageMisc::OnValueChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHandled)
 {
 	bHandled = false;

@@ -152,6 +152,10 @@ class CTabPageMisc : public CPropertyPageImpl<CTabPageMisc>, CWinDataExchange<CT
 
 			COMMAND_HANDLER(IDC_STYLE_SELUSEFORE, BN_CLICKED, OnSelUseForeClicked)
 
+			COMMAND_HANDLER(IDC_TAB_NOORRADIO, BN_CLICKED, OnValueChanged)
+			COMMAND_HANDLER(IDC_TAB_SPACESRADIO, BN_CLICKED, OnValueChanged)
+			COMMAND_HANDLER(IDC_TAB_TABSRADIO, BN_CLICKED, OnValueChanged)
+
 			CHAIN_MSG_MAP(CPropertyPageImpl<CTabPageMisc>)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
@@ -170,6 +174,7 @@ class CTabPageMisc : public CPropertyPageImpl<CTabPageMisc>, CWinDataExchange<CT
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		
 		LRESULT OnValueChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+		LRESULT OnValueChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnSelUseForeClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 		void SetValues();
