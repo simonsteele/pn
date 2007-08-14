@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="lua">
+			if elseif else then end do while nil true false
+			in for and or function local not repeat return until
+		</keyword-class>
+	</keyword-classes>
+	
+	<language name="lua" title="Lua" folding="true" foldcomments="true" foldcompact="false" foldpreproc="true">
+		<lexer name="lua" />
+		<comments line="--" streamStart="--[[" streamEnd="]]" blockStart="--[[" blockLine="--" blockEnd="]]" />
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="lua"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="Whitespace" key="0" />
+			<style name="Comment" key="1" class="comment" />
+			<style name="Comment Line" key="2" class="commentdoc" />
+			<style name="Comment Doc" key="3" class="commentline" />
+			<style name="Number" key="4" class="number" />
+			<style name="Keyword" key="5" class="keyword" />
+			<style name="String" key="6" class="string" />
+			<style name="Character" key="7" class="string" />
+			<style name="String Literal" key="8" class="string" />
+			<style name="Preprocessor" key="9" class="preprocessor" />
+			<style name="Operator" key="10" class="operator" />
+			<style name="Identifier" key="11" class="identifier" />
+			<style name="End of line string" key="12" fore="000000" back="e0c0e0" eolfilled="true"/>
+		</use-styles>
+	</language>
+</Scheme>

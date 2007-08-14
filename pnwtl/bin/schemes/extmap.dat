@@ -3,6 +3,7 @@
 .aut=properties
 .bas=vb
 .bat=batch
+.bsh=bash
 .build=xml
 .c=cpp
 .cgi=perl
@@ -62,6 +63,7 @@
 .s90=asm
 .scheme=xml
 .schemedef=xml
+.sh=bash
 .sln=xml
 .sql=sql
 .tcl=tcl
@@ -75,4 +77,5 @@
 .xml=xml
 .xsd=xml
 .xsl=xml
+configure=bash
 makefile=makefile

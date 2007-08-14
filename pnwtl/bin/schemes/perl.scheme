@@ -30,29 +30,6 @@
 			use utime values vec wait waitpid wantarray warn while write
 			x xor y
 		</keyword-class>
-		<keyword-class name="bash">
-			alias
-			ar asa awk banner basename bash bc bdiff break
-			bunzip2 bzip2 cal calendar case cat cc cd chmod cksum
-			clear cmp col comm compress continue cp cpio crypt
-			csplit ctags cut date dc dd declare deroff dev df diff diff3
-			dircmp dirname do done du echo ed egrep elif else env
-			esac eval ex exec exit expand export expr false fc
-			fgrep fi file find fmt fold for function functions
-			getconf getopt getopts grep gres hash head help
-			history iconv id if in integer jobs join kill local lc
-			let line ln logname look ls m4 mail mailx make
-			man mkdir more mt mv newgrp nl nm nohup ntps od
-			pack paste patch pathchk pax pcat perl pg pr print
-			printf ps pwd read readonly red return rev rm rmdir
-			sed select set sh shift size sleep sort spell
-			split start stop strings strip stty sum suspend
-			sync tail tar tee test then time times touch tr
-			trap true tsort tty type typeset ulimit umask unalias
-			uname uncompress unexpand uniq unpack unset until
-			uudecode uuencode vi vim vpax wait wc whence which
-			while who wpaste wstart xargs zcat
-		</keyword-class>
 	</keyword-classes>
 	<style-classes>
 		<style-class name="heredoc" fore="7f007f" back="ddd0dd" eolfilled="true" />
@@ -65,7 +42,7 @@
 		<use-styles>
 			<style name="Default" key="32" />
 			<style name="Whitespace" key="0" fore="808080" />
-			<style name="Error" key="1" fore="ffffff" />
+			<style name="Error" key="1" class="error" />
 			<style name="Comment" key="2" class="comment" />
 			<style name="POD" key="3" fore="004000" back="e0ffe0" eolfilled="true" />
 			<style name="Number" key="4" class="number" />
@@ -75,8 +52,8 @@
 			<!-- not currently used:
 			<style name="Symbols / Punctuation" key="8" fore="ff0000" bold="true" />
 			<style name="Pre-processor" key="9" fore="ff0000" bold="true" />-->
-			<style name="Operator" key="10" />
-			<style name="Identifier" key="11" />
+			<style name="Operator" key="10" class="operator" />
+			<style name="Identifier" key="11" class="identifier" />
 			<style name="Scalar: $var" key="12" fore="4b0082" />
 			<style name="Array: @var" key="13" fore="00005e" />
 			<style name="Hash: %var" key="14" fore="00008b" />

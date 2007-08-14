@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="bash">
+			alias
+			ar asa awk banner basename bash bc bdiff break
+			bunzip2 bzip2 cal calendar case cat cc cd chmod cksum
+			clear cmp col comm compress continue cp cpio crypt
+			csplit ctags cut date dc dd declare deroff dev df diff diff3
+			dircmp dirname do done du echo ed egrep elif else env
+			esac eval ex exec exit expand export expr false fc
+			fgrep fi file find fmt fold for function functions
+			getconf getopt getopts grep gres hash head help
+			history iconv id if in integer jobs join kill local lc
+			let line ln logname look ls m4 mail mailx make
+			man mkdir more mt mv newgrp nl nm nohup ntps od
+			pack paste patch pathchk pax pcat perl pg pr print
+			printf ps pwd read readonly red return rev rm rmdir
+			sed select set sh shift size sleep sort spell
+			split start stop strings strip stty sum suspend
+			sync tail tar tee test then time times touch tr
+			trap true tsort tty type typeset ulimit umask unalias
+			uname uncompress unexpand uniq unpack unset until
+			uudecode uuencode vi vim vpax wait wc whence which
+			while who wpaste wstart xargs zcat
+		</keyword-class>
+		<keyword-class name="bash-coreutils">
+			chgrp chown chroot dir dircolors
+			factor groups hostid install link md5sum mkfifo
+			mknod nice pinky printenv ptx readlink seq
+			sha1sum shred stat su tac unlink users vdir whoami yes
+		</keyword-class>
+	</keyword-classes>
+	<language name="bash" title="Bash">
+		<lexer name="bash"/>
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="bash"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="Whitespace" key="0" fore="808080" />
+			<style name="Error" key="1" class="error" />
+			<style name="Comment" key="2" class="comment" />
+			<style name="Number" key="3" class="number" />
+			<style name="Keywords" key="4" class="keyword"/>
+			<style name="Double Quotes String" key="5" class="string"/>
+			<style name="Single Quotes String" key="6" class="string"/>
+			<style name="Operators" key="7" class="operator" />
+			<style name="Identifiers" key="8" class="identifier" />
+			<style name="Scalars: $var" key="9" class="identifier" />
+			<style name="Parameter expansion: ${var}" key="10" class="identifier" />
+			<style name="Back Ticks" key="11" fore="ffff00" back="a08080" />
+			<style name="Here-doc (delimiter)" key="12"  fore="000000" back="ddd0dd" />
+		</use-styles>
+	</language>
+</Scheme>
