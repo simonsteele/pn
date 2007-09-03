@@ -236,6 +236,7 @@
 #define IDD_PAGE_KEYBOARD               440
 #define IDD_PAGE_AUTOCOMPLETE           441
 #define IDD_PAGE_STYLECLASSES           442
+#define IDD_PAGE_KEYWORDTEXTCLIPS       443
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_FINDTYPE_DUMMY              1003
@@ -460,6 +461,10 @@
 #define IDC_MANUALRADIO                 1144
 #define IDC_LINEHIGHLIGHTSLIDER         1145
 #define IDC_OPT_FOLDINGCHECK            1146
+#define IDC_CLIPLIST                    1147
+#define IDC_CLIPS_ADDBUTTON             1148
+#define IDC_CLIPS_EDITBUTTON            1149
+#define IDC_CLIPS_REMOVEBUTTON          1150
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -599,7 +604,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        350
 #define _APS_NEXT_COMMAND_VALUE         32988
-#define _APS_NEXT_CONTROL_VALUE         1147
+#define _APS_NEXT_CONTROL_VALUE         1151
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

@@ -33,10 +33,10 @@ typedef std::list<Clip*>	LIST_CLIPS;
 /**
  * Represents a file full of text clips.
  */
-class TextClipSet : public XMLParseState
+class TextClipSet
 {
 	public:
-		TextClipSet(LPCTSTR filename);
+		TextClipSet(LPCTSTR filename, LPCTSTR name, LPCTSTR scheme);
 		~TextClipSet();
 
 		/**
@@ -46,7 +46,7 @@ class TextClipSet : public XMLParseState
 
 		const Clip* FindByShortcut(const tstring& shortcut) const;
 
-		const LIST_CLIPS& GetClips();
+		const LIST_CLIPS& GetClips() const;
 
 		LPCTSTR GetName() const;
 
@@ -55,35 +55,18 @@ class TextClipSet : public XMLParseState
 		 */
 		LPCTSTR GetScheme() const;
 
-	//XMLParseState
-	public:
-		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
-		virtual void endElement(LPCTSTR name);
-		virtual void characterData(LPCTSTR data, int len);
+		void Save();
 
-	protected:
+		void Add(Clip* clip);
+
+	private:
 		void clear();
-		void parse(LPCTSTR filename);
-		void decodeData();
+		
+		LIST_CLIPS	m_clips;
 
-		LIST_CLIPS	clips;
-
-		typedef enum tagEncodings
-		{
-			eNone,
-			eWindows1252,
-			eANSI,
-		} EEncoding;
-
-	protected:
-		EEncoding encoding;
-		bool decodeNames;
-		int	parseState;
-		tstring cData;
-		tstring curName;
-		tstring name;
-		tstring scheme;
-		tstring curShortcut;
+		tstring m_name;
+		tstring m_scheme;
+		tstring m_filename;
 };
 
 typedef std::list<TextClipSet*> LIST_CLIPSETS;
@@ -92,25 +75,51 @@ typedef std::map<std::string, TextClipSet*> MAP_CLIPSETS;
 /**
  * Represents a set of text clip sets.
  */
-class TextClipsManager
+class TextClipsManager : public XMLParseState
 {
-public:
-	TextClipsManager();
-	~TextClipsManager();
+	public:
+		TextClipsManager();
+		~TextClipsManager();
 
-	void FindClips();
-	void OnFound(LPCTSTR path, LPCTSTR filename);
+		void OnFound(LPCTSTR path, LPCTSTR filename);
 
-	const LIST_CLIPSETS& GetClipSets();
+		const LIST_CLIPSETS& GetClipSets();
 
-	const TextClipSet* GetClips(LPCSTR schemeName);
+		const TextClipSet* GetClips(LPCSTR schemeName);
 
-protected:
-	void clear();
+		void Save();
 
-protected:
-	LIST_CLIPSETS	m_clipSets;
-	MAP_CLIPSETS	m_schemeClipSets;
+		//XMLParseState
+	public:
+		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
+		virtual void endElement(LPCTSTR name);
+		virtual void characterData(LPCTSTR data, int len);
+
+	private:
+		typedef enum tagEncodings
+			{
+				eNone,
+				eWindows1252,
+				eANSI,
+			} EEncoding;
+
+		void clear();
+		void decodeData();
+		void findClips();
+		void parse(LPCTSTR filename);
+
+		LIST_CLIPSETS	m_clipSets;
+		MAP_CLIPSETS	m_schemeClipSets;
+
+		// Parse state:
+		bool decodeNames;
+		int	m_parseState;
+		tstring m_cData;
+		tstring m_curName;
+		tstring m_curShortcut;
+		tstring m_curFileName;
+		TextClipSet* m_pCurSet;
+		EEncoding m_curEncoding;
 };
 
 } // namespace TextClips

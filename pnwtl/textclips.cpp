@@ -2,9 +2,9 @@
  * @file textclips.cpp
  * @brief text clips functionality.
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -12,8 +12,90 @@
 #include "textclips.h"
 #include "include/filefinder.h"
 #include "include/encoding.h"
+#include "include/genx/genx.h"
+#include "include/pngenx.h"
 
 namespace TextClips {
+
+//////////////////////////////////////////////////////////////////////////////
+// TextsClipWriter
+//////////////////////////////////////////////////////////////////////////////
+
+class TextClipsWriter : public GenxXMLWriter
+{
+public:
+	void BeginClipSets()
+	{
+		genxStartElement(m_eClipSets);
+	}
+	
+	void EndClipSets()
+	{
+		genxEndElement(m_writer);
+	}
+
+	void WriteClipSet(const TextClipSet* clips)
+	{
+		beginClips(clips->GetName(), clips->GetScheme());
+
+		for(LIST_CLIPS::const_iterator i = clips->GetClips().begin();
+			i != clips->GetClips().end();
+			++i)
+		{
+			writeClip((*i));
+		}
+
+		endClips();
+	}
+
+protected:
+	virtual void initXmlBits()
+	{
+		genxStatus s;
+
+		m_eClipSets = genxDeclareElement(m_writer, NULL, u("clipSets"), &s);
+		m_eClips = genxDeclareElement(m_writer, NULL, u("clips"), &s);
+		m_eClip = genxDeclareElement(m_writer, NULL, u("clip"), &s);
+
+		PREDECLARE_ATTRIBUTES()
+			ATT("name", m_aName);
+			ATT("scheme", m_aScheme);
+			ATT("shortcut", m_aShortcut);
+		END_ATTRIBUTES();
+	}
+
+private:
+	void beginClips(const char* name, const char* scheme)
+	{
+		genxStartElement(m_eClips);
+		addAttributeConvertUTF8(m_aName, name);
+		addAttributeConvertUTF8(m_aScheme, scheme);
+	}
+
+	void endClips()
+	{
+		genxEndElement(m_writer);
+	}
+
+	void writeClip(Clip* clip)
+	{
+		genxStartElement(m_eClip);
+		addAttributeConvertUTF8(m_aName, clip->Name.c_str());
+		addAttributeConvertUTF8(m_aShortcut, clip->Shortcut.c_str());
+		
+		Windows1252_Utf8 conv(clip->Text.c_str());
+		genxAddText(m_writer, conv);
+
+		genxEndElement(m_writer);
+	}
+
+	genxElement m_eClipSets;
+	genxElement m_eClips;
+	genxElement m_eClip;
+	genxAttribute m_aName;
+	genxAttribute m_aScheme;
+	genxAttribute m_aShortcut;
+};
 
 //////////////////////////////////////////////////////////////////////////////
 // Clip
@@ -32,9 +114,9 @@ void Clip::Insert(CScintilla *scintilla) const
 	// according to user's settings.
 	theIndent = MakeIndentText( indentation, scintilla->GetUseTabs(), scintilla->GetTabWidth() );
 
-	for(size_t i = 0; i < theText.size(); i++)
+	for (size_t i = 0; i < theText.size(); i++)
 	{
-		if(theText[i] == '\n')
+		if (theText[i] == '\n')
 		{
 			theText.insert(i+1, theIndent);
 			i += theIndent.size();
@@ -42,7 +124,7 @@ void Clip::Insert(CScintilla *scintilla) const
 	}
 	
 	// Text is in Unix EOL mode (LF only), convert it to target EOL mode
-	switch(scintilla->GetEOLMode())
+	switch (scintilla->GetEOLMode())
 	{
 	case PNSF_Unix:
 		// no conversion needed, just copy
@@ -74,7 +156,7 @@ void Clip::Insert(CScintilla *scintilla) const
 	}
 	
 	size_t offset = clipstr.find(_T('|'));
-	if(offset != clipstr.npos)
+	if (offset != clipstr.npos)
 		clipstr.erase(offset, 1);
 	else
 		offset = 0;
@@ -82,7 +164,7 @@ void Clip::Insert(CScintilla *scintilla) const
 	int curPos = scintilla->GetCurrentPos();
 
 	int length = scintilla->GetSelLength();
-	if(length != 0)
+	if (length != 0)
 	{
 		// Get the selected text from Scintilla.
 		char* selData = new char[length+1];
@@ -99,11 +181,12 @@ void Clip::Insert(CScintilla *scintilla) const
 
 	// Wrap everything in an undo block.
 	scintilla->BeginUndoAction();
-	if(length)
+	if (length)
 	{
 		scintilla->DeleteBack(); // kill the selection text, we're inserting it again.
 		curPos = scintilla->GetCurrentPos();
 	}
+
 	scintilla->InsertText(curPos, clipstr.c_str());
 	scintilla->SetCurrentPos(curPos + offset);
 	scintilla->SetSel(curPos + offset, curPos + offset);
@@ -114,9 +197,15 @@ void Clip::Insert(CScintilla *scintilla) const
 // TextClipSet
 //////////////////////////////////////////////////////////////////////////////
 
-TextClipSet::TextClipSet(LPCTSTR filename)
+TextClipSet::TextClipSet(LPCTSTR filename, LPCTSTR name, LPCTSTR scheme)
 {
-	parse(filename);
+	m_filename = filename;
+	m_name = name;
+	
+	if (scheme != NULL)
+	{
+		m_scheme = scheme;
+	}
 }
 
 TextClipSet::~TextClipSet()
@@ -132,14 +221,17 @@ bool SortClipsByShortcut(const Clip* p1, const Clip* p2)
 tstring TextClipSet::BuildSortedClipList() const
 {
 	tstring result;
-	LIST_CLIPS sortedClips = clips;
+	
+	LIST_CLIPS sortedClips = m_clips;
 	sortedClips.sort(SortClipsByShortcut);
-	for(LIST_CLIPS::const_iterator i = sortedClips.begin();
+	
+	for (LIST_CLIPS::const_iterator i = sortedClips.begin();
 		i != sortedClips.end();
 		++i)
 	{
-		if(result.size())
+		if (result.size())
 			result += ",";
+
 		result += (*i)->Shortcut;
 		result += ": " + (*i)->Name;
 	}
@@ -150,11 +242,11 @@ tstring TextClipSet::BuildSortedClipList() const
 const Clip* TextClipSet::FindByShortcut(const tstring& shortcut) const
 {
 
-	for(LIST_CLIPS::const_iterator i = clips.begin();
-		i != clips.end();
+	for (LIST_CLIPS::const_iterator i = m_clips.begin();
+		i != m_clips.end();
 		++i)
 	{
-		if( (*i)->Shortcut == shortcut )
+		if ( (*i)->Shortcut == shortcut )
 		{
 			return (*i);
 		}
@@ -163,186 +255,44 @@ const Clip* TextClipSet::FindByShortcut(const tstring& shortcut) const
 	return NULL;
 }
 
-const LIST_CLIPS& TextClipSet::GetClips()
+const LIST_CLIPS& TextClipSet::GetClips() const
 {
-	return clips;
+	return m_clips;
 }
 
 LPCTSTR TextClipSet::GetName() const
 {
-	return name.c_str();
+	return m_name.c_str();
 }
 
 LPCTSTR TextClipSet::GetScheme() const
 {
-	if(scheme.empty())
+	if(m_scheme.empty())
 		return NULL;
-	return scheme.c_str();
+	return m_scheme.c_str();
+}
+
+void TextClipSet::Save()
+{
+	TextClipsWriter writer;
+	writer.Start(m_filename.c_str());
+	writer.WriteClipSet(this);
+	writer.Close();
 }
 
 void TextClipSet::clear()
 {
-	encoding = eNone;
-	decodeNames = false;
-
-	for(LIST_CLIPS::iterator i = clips.begin(); i != clips.end(); ++i)
+	for(LIST_CLIPS::iterator i = m_clips.begin(); i != m_clips.end(); ++i)
 	{
 		delete (*i);
 	}
 
-	clips.clear();
+	m_clips.clear();
 }
 
-void TextClipSet::parse(LPCTSTR filename)
+void TextClipSet::Add(Clip* clip)
 {
-	XMLParser parser;
-	parser.SetParseState(this);
-	
-	clear();
-	parseState = 0;
-	
-	try
-	{
-		parser.LoadFile(filename);
-	}
-	catch( XMLParserException& ex )
-	{
-		::OutputDebugString(ex.GetMessage());
-	}
-}
-
-#define TCPS_START	0
-#define TCPS_CLIPS	1
-#define TCPS_CLIP	2
-
-#define MATCH_ELEMENT(ename) \
-	if(_tcscmp(name, ename) == 0)
-
-#define IN_STATE(state) \
-	(parseState == state)
-
-#define SET_STATE(state) \
-	parseState = state
-
-void TextClipSet::startElement(LPCTSTR name, XMLAttributes& atts)
-{
-	if( IN_STATE(TCPS_START) )
-	{
-		MATCH_ELEMENT(_T("clips"))
-		{
-			// get name attribute...
-			SET_STATE(TCPS_CLIPS);
-
-			LPCTSTR szName = atts.getValue(_T("name"));
-			if(szName != NULL)
-				this->name = szName;
-			else
-				this->name = _T("(unknown)");
-
-			LPCTSTR szScheme = atts.getValue(_T("scheme"));
-			if(szScheme != NULL)
-				this->scheme = szScheme;
-
-			LPCTSTR szEncoding = atts.getValue(_T("encoding"));
-			if(szEncoding != NULL)
-			{
-				if(_tcscmp(szEncoding, _T("windows-1252")) == 0)
-					encoding = eWindows1252;
-				else if(_tcscmp(szEncoding, _T("ansi")) == 0)
-					encoding = eANSI;
-			}
-
-			szEncoding = atts.getValue(_T("decodeNames"));
-			if(szEncoding != NULL)
-				if(szEncoding[0] == _T('t') || szEncoding[0] == _T('T'))
-					decodeNames = true;
-		}
-	}
-	else if( IN_STATE(TCPS_CLIPS) )
-	{
-		MATCH_ELEMENT(_T("clip"))
-		{
-			LPCTSTR pName = atts.getValue(_T("name"));
-			curName = (pName != NULL ? pName : _T("error"));
-			pName = atts.getValue(_T("shortcut"));
-			curShortcut = (pName != NULL ? pName : _T(""));
-			SET_STATE(TCPS_CLIP);
-		}
-	}
-}
-
-void TextClipSet::endElement(LPCTSTR name)
-{
-	if( IN_STATE(TCPS_CLIP) )
-	{
-		// Create new clip - name = curName, content = cData;
-		Clip* clip = new Clip;
-		if(decodeNames)
-#ifndef _UNICODE
-			clip->Name = Utf8_Windows1252( curName.c_str() );
-#else
-			//todo 
-			clip->Name = curName;
-#endif
-		else
-			clip->Name = curName;
-		
-		clip->Shortcut = curShortcut;
-
-		if(encoding != eNone)
-			decodeData();
-
-		clip->Text = cData;
-
-		///@todo implement this, and remove the delete.
-		clips.insert(clips.end(), clip);
-
-		SET_STATE(TCPS_CLIPS);
-	}
-	else if( IN_STATE(TCPS_CLIPS) )
-	{
-		SET_STATE(TCPS_START);
-	}
-
-	cData = _T("");
-}
-
-void TextClipSet::characterData(LPCTSTR data, int len)
-{
-	if( IN_STATE(TCPS_CLIP) )
-	{
-		CString cdata;
-		TCHAR* buf = cdata.GetBuffer(len+1);
-		_tcsncpy(buf, data, len);
-		buf[len] = 0;
-		cdata.ReleaseBuffer();
-
-		cData += cdata;
-	}
-}
-
-void TextClipSet::decodeData()
-{
-	// Until we have UTF-16 to 'x' conversion routines these won't work.
-	#ifndef _UNICODE
-	switch(encoding)
-	{
-		case eWindows1252:
-		{
-			Utf8_Windows1252 conv( cData.c_str() );
-			if(conv.IsValid())
-				cData = (const char*)conv;
-		}
-		break;
-		case eANSI:
-		{
-			Utf8_ANSI conv( cData.c_str() );
-			if(conv.IsValid())
-				cData = (const char*)conv;
-		}
-		break;
-	}
-	#endif
+	m_clips.push_back(clip);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -351,7 +301,7 @@ void TextClipSet::decodeData()
 
 TextClipsManager::TextClipsManager()
 {
-	FindClips();
+	findClips();
 }
 
 TextClipsManager::~TextClipsManager()
@@ -368,7 +318,7 @@ const TextClipSet* TextClipsManager::GetClips(LPCSTR schemeName)
 {
 	MAP_CLIPSETS::const_iterator i = m_schemeClipSets.find(std::string(schemeName));
 	
-	if(i != m_schemeClipSets.end())
+	if (i != m_schemeClipSets.end())
 	{
 		return (*i).second;
 	}
@@ -376,24 +326,22 @@ const TextClipSet* TextClipsManager::GetClips(LPCSTR schemeName)
 	return NULL;
 }
 
-/**
- * Uses FileFinder to find the clips files.
- */
-void TextClipsManager::FindClips()
+void TextClipsManager::Save()
 {
-	FileFinder<TextClipsManager> finder(this, &TextClipsManager::OnFound);
+	LIST_CLIPSETS toSave;
 
-	tstring path;
-	
-	// Search distribution clips directory.
-	OPTIONS->GetPNPath(path, PNPATH_CLIPS);
-	if( DirExists(path.c_str()) )
-		finder.Find(path.c_str(), _T("*.clips"));
-	
-	// Search user clips directory.
-	OPTIONS->GetPNPath(path, PNPATH_USERCLIPS);
-	if( DirExists(path.c_str()) )
-		finder.Find(path.c_str(), _T("*.clips"));
+	// TODO: iterate through and store the clips that need saving into a file other
+	// than the cache file in toSave, then save them.
+
+	for (LIST_CLIPSETS::iterator i = m_clipSets.begin(); i != m_clipSets.end(); ++i)
+	{
+		
+	}
+
+	for (MAP_CLIPSETS::iterator j = m_schemeClipSets.begin(); j != m_schemeClipSets.end(); ++j)
+	{
+		
+	}
 }
 
 /**
@@ -404,17 +352,8 @@ void TextClipsManager::OnFound(LPCTSTR path, LPCTSTR filename)
 {
 	tstring fullpath(path);
 	fullpath += filename;
-	TextClipSet* tcs = new TextClipSet(fullpath.c_str());
-	
-	// General text clips or schemes based?
-	if(tcs->GetScheme() != NULL)
-	{
-		m_schemeClipSets.insert(MAP_CLIPSETS::value_type(tstring(tcs->GetScheme()), tcs));
-	}
-	else
-	{
-		m_clipSets.insert(m_clipSets.end(), tcs);
-	}
+	m_curFileName = fullpath;
+	parse(fullpath.c_str());
 }
 
 /**
@@ -422,19 +361,231 @@ void TextClipsManager::OnFound(LPCTSTR path, LPCTSTR filename)
  */
 void TextClipsManager::clear()
 {
-	for(LIST_CLIPSETS::iterator i = m_clipSets.begin(); i != m_clipSets.end(); ++i)
+	for (LIST_CLIPSETS::iterator i = m_clipSets.begin(); i != m_clipSets.end(); ++i)
 	{
 		delete (*i);
 	}
 
 	m_clipSets.clear();
 
-	for(MAP_CLIPSETS::iterator j = m_schemeClipSets.begin(); j != m_schemeClipSets.end(); ++j)
+	for (MAP_CLIPSETS::iterator j = m_schemeClipSets.begin(); j != m_schemeClipSets.end(); ++j)
 	{
 		delete (*j).second;
 	}
 
 	m_schemeClipSets.clear();
+}
+
+/**
+ * Uses FileFinder to find the clips files.
+ */
+void TextClipsManager::findClips()
+{
+	FileFinder<TextClipsManager> finder(this, &TextClipsManager::OnFound);
+
+	tstring path;
+	tstring usPath;
+	
+	// Search distribution clips directory.
+	OPTIONS->GetPNPath(path, PNPATH_CLIPS);
+	OPTIONS->GetPNPath(usPath, PNPATH_USERCLIPS);
+
+	tstring clipcache = usPath + "installClipCache.xml";
+
+	if (!FileExists(clipcache.c_str()))
+	{
+		if( DirExists(path.c_str()) )
+			finder.Find(path.c_str(), _T("*.clips"));
+
+		TextClipsWriter writer;
+		writer.Start(clipcache.c_str());
+		writer.BeginClipSets();
+		for(LIST_CLIPSETS::const_iterator i = m_clipSets.begin();
+			i != m_clipSets.end();
+			++i)
+		{
+			writer.WriteClipSet( (*i) );
+		}
+		writer.EndClipSets();
+		writer.Close();
+	}
+	else
+	{
+		// Read the cache
+		m_curFileName = "";
+		parse(clipcache.c_str());
+	}
+	
+	// Search user clips directory and load those:
+	if( DirExists(usPath.c_str()) )
+		finder.Find(usPath.c_str(), _T("*.clips"));
+}
+
+void TextClipsManager::parse(LPCTSTR filename)
+{
+	XMLParser parser;
+	parser.SetParseState(this);
+	
+	m_parseState = 0;
+	
+	try
+	{
+		parser.LoadFile(filename);
+	}
+	catch( XMLParserException& ex )
+	{
+		LOG(ex.GetMessage());
+	}
+}
+
+#define TCPS_START	0
+#define TCPS_CLIPS	1
+#define TCPS_CLIP	2
+
+#define MATCH_ELEMENT(ename) \
+	if(_tcscmp(name, ename) == 0)
+
+#define IN_STATE(state) \
+	(m_parseState == state)
+
+#define SET_STATE(state) \
+	m_parseState = state
+
+void TextClipsManager::startElement(LPCTSTR name, XMLAttributes& atts)
+{
+	if ( IN_STATE(TCPS_START) )
+	{
+		MATCH_ELEMENT(_T("clips"))
+		{
+			decodeNames = false;
+			m_curShortcut = "";
+			m_cData = "";
+			m_curEncoding = eNone;
+
+			// get name attribute...
+			SET_STATE(TCPS_CLIPS);
+
+			LPCTSTR szName = atts.getValue(_T("name"));
+			if(szName == NULL)
+				szName = _T("(unknown)");
+
+			LPCTSTR szScheme = atts.getValue(_T("scheme"));
+			
+			LPCTSTR szEncoding = atts.getValue(_T("encoding"));
+			if(szEncoding != NULL)
+			{
+				if(_tcscmp(szEncoding, _T("windows-1252")) == 0)
+					m_curEncoding = eWindows1252;
+				else if(_tcscmp(szEncoding, _T("ansi")) == 0)
+					m_curEncoding = eANSI;
+			}
+
+			m_pCurSet = new TextClipSet(m_curFileName.c_str(), szName, szScheme);
+
+			szEncoding = atts.getValue(_T("decodeNames"));
+			if(szEncoding != NULL)
+				if(szEncoding[0] == _T('t') || szEncoding[0] == _T('T'))
+					decodeNames = true;
+		}
+	}
+	else if ( IN_STATE(TCPS_CLIPS) )
+	{
+		MATCH_ELEMENT(_T("clip"))
+		{
+			LPCTSTR pName = atts.getValue(_T("name"));
+			m_curName = (pName != NULL ? pName : _T("error"));
+			pName = atts.getValue(_T("shortcut"));
+			m_curShortcut = (pName != NULL ? pName : _T(""));
+			SET_STATE(TCPS_CLIP);
+		}
+	}
+}
+
+void TextClipsManager::endElement(LPCTSTR name)
+{
+	if ( IN_STATE(TCPS_CLIP) )
+	{
+		// Create new clip - name = m_curName, content = m_cData;
+		Clip* clip = new Clip;
+		if(decodeNames)
+#ifndef _UNICODE
+			clip->Name = Utf8_Windows1252( m_curName.c_str() );
+#else
+			//todo 
+			clip->Name = m_curName;
+#endif
+		else
+			clip->Name = m_curName;
+		
+		clip->Shortcut = m_curShortcut;
+
+		if (m_curEncoding != eNone)
+			decodeData();
+
+		clip->Text = m_cData;
+
+		m_pCurSet->Add( clip );
+
+		SET_STATE(TCPS_CLIPS);
+	}
+	else if ( IN_STATE(TCPS_CLIPS) )
+	{
+		// General text clips or schemes based?
+		if(m_pCurSet->GetScheme() != NULL)
+		{
+			m_schemeClipSets.insert(MAP_CLIPSETS::value_type(tstring(m_pCurSet->GetScheme()), m_pCurSet));
+		}
+		else
+		{
+			m_clipSets.push_back(m_pCurSet);
+			m_pCurSet = NULL;
+		}
+
+		SET_STATE(TCPS_START);
+	}
+
+	m_cData = _T("");
+}
+
+void TextClipsManager::characterData(LPCTSTR data, int len)
+{
+	if ( IN_STATE(TCPS_CLIP) )
+	{
+		TCHAR* buf = new TCHAR[len+1];
+
+		_tcsncpy(buf, data, len);
+		
+		buf[len] = 0;
+
+		m_cData += buf;
+
+		delete [] buf;
+	}
+}
+
+void TextClipsManager::decodeData()
+{
+	// Until we have UTF-16 to 'x' conversion routines these won't work.
+	#ifndef _UNICODE
+	switch (m_curEncoding)
+	{
+		case eWindows1252:
+		{
+			Utf8_Windows1252 conv( m_cData.c_str() );
+			if(conv.IsValid())
+				m_cData = (const char*)conv;
+		}
+		break;
+
+		case eANSI:
+		{
+			Utf8_ANSI conv( m_cData.c_str() );
+			if(conv.IsValid())
+				m_cData = (const char*)conv;
+		}
+		break;
+	}
+	#endif
 }
 
 } // namespace TextClips

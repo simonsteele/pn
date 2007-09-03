@@ -50,6 +50,9 @@
 				<exclude name="boost_python*.dll"/>
 				<exclude name="libexpatw.dll"/>
 			</fileset>
+			<fileset basedir="installer\reqfiles\Microsoft.VC80.CRT" prefix="Microsoft.VC80.CRT">
+				<include name="*"/>
+			</fileset>
 			<fileset basedir="doc">
 				<include name="credits.txt"/>
 				<include name="history.txt"/>
@@ -81,6 +84,9 @@
 				<exclude name="pypn.dll"/>
 				<exclude name="boost_python*.dll"/>
 				<exclude name="libexpatw.dll"/>
+			</fileset>
+			<fileset basedir="installer\reqfiles\Microsoft.VC80.CRT" prefix="Microsoft.VC80.CRT">
+				<include name="*"/>
 			</fileset>
 			<fileset basedir="doc">
 				<include name="credits.txt"/>
