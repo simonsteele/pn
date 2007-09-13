@@ -600,5 +600,6 @@ class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
 #include "OptionsPageKeyboard.h"
 #include "OptionsPageAutocomplete.h"
 #include "OptionsPageGlobalStyles.h"
+#include "OptionsPageClips.h"
 
 #endif

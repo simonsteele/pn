@@ -1,75 +1,56 @@
-<?xml version="1.0"?>
-<clips name="NAnt">
-	<clip name="Project"><![CDATA[<?xml version="1.0"?>
-<project name="myproject" default="build" basedir=".">
-	<target name="build">
+<clips name="NAnt"><clip name="Project" shortcut="">&lt;?xml version="1.0"?&gt;
+&lt;project name="myproject" default="build" basedir="."&gt;
+	&lt;target name="build"&gt;
 		|
-	</target>
-</project>
-	]]>
-	</clip>
-	<clip name="Target"><![CDATA[<target name="|">
+	&lt;/target&gt;
+&lt;/project&gt;
 	
-</target>]]>
-	</clip>
-	<clip name="Call">
-	<![CDATA[<call target="|"/>]]>
-	</clip>
-	<clip name="Echo">
-	<![CDATA[<echo message="|"/>]]>
-	</clip>
-	<clip name="If">
-	<![CDATA[<if test="|">
+	</clip><clip name="Target" shortcut="">&lt;target name="|"&gt;
 	
-</if>]]>
-	</clip>
-	<clip name="If Not"><![CDATA[<ifnot test="|">
+&lt;/target&gt;
+	</clip><clip name="Call" shortcut="">
+	&lt;call target="|"/&gt;
+	</clip><clip name="Echo" shortcut="">
+	&lt;echo message="|"/&gt;
+	</clip><clip name="If" shortcut="">
+	&lt;if test="|"&gt;
 	
-</ifnot>]]>
-	</clip>
-	<clip name="Property">
-	<![CDATA[<property name="|" value="" />]]>
-	</clip>
-	<clip name="Execute">
-	<![CDATA[<exec program="|" workingdir="" commandline='' />]]>
-	</clip>
-	<clip name="Copy">
-	<![CDATA[<copy file="|" tofile="" />]]>
-	</clip>
-	<clip name="Delete">
-	<![CDATA[<delete file="|" failonerror="false" />]]>
-	</clip>
-	<clip name="Move">
-	<![CDATA[<move file="|" tofile="" />]]>
-	</clip>
-	<clip name="Make Directory">
-	<![CDATA[<mkdir dir="|"/>]]>
-	</clip>
-	<clip name="Set Copy"><![CDATA[<copy todir="|">
-	<fileset basedir=".">
-		<include name="*.*"/>
-	</fileset>
-</copy>]]>
-	</clip>
-	<clip name="Set Delete"><![CDATA[<delete>
-	<fileset>
-		<include name="|"/>
-	</fileset>
-</delete>]]>
-	</clip>
-	<clip name="Set Move"><![CDATA[<move todir="|">
-	<fileset basedir=".">
-		<include name="*.*"/>
-	</fileset>
-</move>]]>
-	</clip>
-	<clip name="Set Zip"><![CDATA[<zip zipfile="|">
-	<fileset basedir=".">
-		<include name="**/*"/>
-	</fileset>
-</zip>]]>
-	</clip>
-	<clip name="Property Exists">
-	<![CDATA[property::exists('|')]]>
-	</clip>
-</clips>
+&lt;/if&gt;
+	</clip><clip name="If Not" shortcut="">&lt;ifnot test="|"&gt;
+	
+&lt;/ifnot&gt;
+	</clip><clip name="Property" shortcut="">
+	&lt;property name="|" value="" /&gt;
+	</clip><clip name="Execute" shortcut="">
+	&lt;exec program="|" workingdir="" commandline='' /&gt;
+	</clip><clip name="Copy" shortcut="">
+	&lt;copy file="|" tofile="" /&gt;
+	</clip><clip name="Delete" shortcut="">
+	&lt;delete file="|" failonerror="false" /&gt;
+	</clip><clip name="Move" shortcut="">
+	&lt;move file="|" tofile="" /&gt;
+	</clip><clip name="Make Directory" shortcut="">
+	&lt;mkdir dir="|"/&gt;
+	</clip><clip name="Set Copy" shortcut="">&lt;copy todir="|"&gt;
+	&lt;fileset basedir="."&gt;
+		&lt;include name="*.*"/&gt;
+	&lt;/fileset&gt;
+&lt;/copy&gt;
+	</clip><clip name="Set Delete" shortcut="">&lt;delete&gt;
+	&lt;fileset&gt;
+		&lt;include name="|"/&gt;
+	&lt;/fileset&gt;
+&lt;/delete&gt;
+	</clip><clip name="Set Move" shortcut="">&lt;move todir="|"&gt;
+	&lt;fileset basedir="."&gt;
+		&lt;include name="*.*"/&gt;
+	&lt;/fileset&gt;
+&lt;/move&gt;
+	</clip><clip name="Set Zip" shortcut="">&lt;zip zipfile="|"&gt;
+	&lt;fileset basedir="."&gt;
+		&lt;include name="**/*"/&gt;
+	&lt;/fileset&gt;
+&lt;/zip&gt;
+	</clip><clip name="Property Exists" shortcut="">
+	property::exists('|')
+	</clip></clips>

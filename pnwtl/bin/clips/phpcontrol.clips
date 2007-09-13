@@ -1,45 +1,30 @@
-<?xml version="1.0"?>
-<clips name="PHP Control">
-
-<clip name="Open/Close PHP Tags"><![CDATA[
-<?php
+<clips name="PHP Control"><clip name="Open/Close PHP Tags" shortcut="">
+&lt;?php
 
 |
 
-?>
-]]></clip>
-
-<clip name="For Loop"><![CDATA[
-for ( $i = 0; $i <= |; $i++ ) {
+?&gt;
+</clip><clip name="For Loop" shortcut="">
+for ( $i = 0; $i &lt;= |; $i++ ) {
     
     }
-]]></clip>
-
-<clip name="Foreach Loop (array)"><![CDATA[
+</clip><clip name="Foreach Loop (array)" shortcut="">
 foreach ( $array as $value ) {
     |
     }
-]]></clip>
-
-<clip name="Foreach Loop (hash)"><![CDATA[
-foreach ( $array as $key => $value ) {
+</clip><clip name="Foreach Loop (hash)" shortcut="">
+foreach ( $array as $key =&gt; $value ) {
     |
     }
-]]></clip>
-
-<clip name="While Loop"><![CDATA[
+</clip><clip name="While Loop" shortcut="">
 while ( | ) {
     
     }
-]]></clip>
-
-<clip name="Do...While Loop"><![CDATA[
+</clip><clip name="Do...While Loop" shortcut="">
 do {
    |
    } while ( expr );
-]]></clip>
-
-<clip name="If..Else If Loop"><![CDATA[
+</clip><clip name="If..Else If Loop" shortcut="">
 if ( | ) {
      
      }
@@ -49,9 +34,7 @@ else if ( expr ) {
 else {
      
      }
-]]></clip>
-
-<clip name="Switch (Case)"><![CDATA[
+</clip><clip name="Switch (Case)" shortcut="">
 switch ($i) {
     case |:
          
@@ -62,13 +45,8 @@ switch ($i) {
     default:
         
 }
-]]></clip>
-
-<clip name="Require"><![CDATA[
+</clip><clip name="Require" shortcut="">
 require( '|' );
-]]></clip>
-
-<clip name="Include"><![CDATA[
+</clip><clip name="Include" shortcut="">
 include( '|' );
-]]></clip>
-</clips>
+</clip></clips>

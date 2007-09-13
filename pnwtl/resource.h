@@ -214,6 +214,7 @@
 #define IDR_POPUP_REMOVEPROJECT         347
 #define IDB_TBMAIN24                    348
 #define IDB_TBEDIT24                    349
+#define IDD_TEXTCLIPEDITOR              350
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -282,6 +283,8 @@
 #define IDC_AFILE_STARTTEXT2            1012
 #define IDC_AFILE_OTHERTEXT             1012
 #define IDC_FILETYPE_MATCH              1012
+#define IDC_EDIT3                       1012
+#define IDC_SHORTCUT_EDIT               1012
 #define IDC_FONTSIZE_COMBO              1013
 #define IDC_STYLE_IGCOLBUTTON           1013
 #define IDC_STYLE_SELBACKBUTTON2        1014
@@ -465,6 +468,7 @@
 #define IDC_CLIPS_ADDBUTTON             1148
 #define IDC_CLIPS_EDITBUTTON            1149
 #define IDC_CLIPS_REMOVEBUTTON          1150
+#define IDC_SHORTCUT_STATIC             1151
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -602,9 +606,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        350
+#define _APS_NEXT_RESOURCE_VALUE        351
 #define _APS_NEXT_COMMAND_VALUE         32988
-#define _APS_NEXT_CONTROL_VALUE         1151
+#define _APS_NEXT_CONTROL_VALUE         1152
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

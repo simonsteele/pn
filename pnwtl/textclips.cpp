@@ -69,7 +69,11 @@ private:
 	{
 		genxStartElement(m_eClips);
 		addAttributeConvertUTF8(m_aName, name);
-		addAttributeConvertUTF8(m_aScheme, scheme);
+		
+		if (scheme != NULL)
+		{
+			addAttributeConvertUTF8(m_aScheme, scheme);
+		}
 	}
 
 	void endClips()
@@ -265,9 +269,21 @@ LPCTSTR TextClipSet::GetName() const
 	return m_name.c_str();
 }
 
+LPCTSTR TextClipSet::GetFilename() const
+{
+	if (m_filename.size())
+	{
+		return m_filename.c_str();
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
 LPCTSTR TextClipSet::GetScheme() const
 {
-	if(m_scheme.empty())
+	if (m_scheme.empty())
 		return NULL;
 	return m_scheme.c_str();
 }
@@ -326,21 +342,59 @@ const TextClipSet* TextClipsManager::GetClips(LPCSTR schemeName)
 	return NULL;
 }
 
-void TextClipsManager::Save()
+/**
+ * First save all cached clip sets, then save those in their
+ * own files.
+ */
+void TextClipsManager::Save(bool ignoreFilenames)
 {
 	LIST_CLIPSETS toSave;
 
-	// TODO: iterate through and store the clips that need saving into a file other
+	tstring usPath;
+	OPTIONS->GetPNPath(usPath, PNPATH_USERCLIPS);
+
+	tstring clipcache = usPath + "installClipCache.xml";
+
+	TextClipsWriter writer;
+	writer.Start(clipcache.c_str());
+	writer.BeginClipSets();
+
+	// iterate through and store the clips that need saving into a file other
 	// than the cache file in toSave, then save them.
 
 	for (LIST_CLIPSETS::iterator i = m_clipSets.begin(); i != m_clipSets.end(); ++i)
 	{
-		
+		LPCTSTR filename = (*i)->GetFilename();
+		if (!ignoreFilenames && filename != NULL)
+		{
+			toSave.push_back(*i);
+		}
+		else
+		{
+			writer.WriteClipSet(*i);
+		}
 	}
 
 	for (MAP_CLIPSETS::iterator j = m_schemeClipSets.begin(); j != m_schemeClipSets.end(); ++j)
 	{
-		
+		LPCTSTR filename = (*j).second->GetFilename();
+		if (!ignoreFilenames && filename != NULL)
+		{
+			toSave.push_back((*j).second);
+		}
+		else
+		{
+			writer.WriteClipSet((*j).second);
+		}
+	}
+
+	writer.EndClipSets();
+	writer.Close();
+
+	// Save the clip sets that have their own file
+	for (LIST_CLIPSETS::iterator k = toSave.begin(); k != toSave.end(); ++k)
+	{
+		(*k)->Save();
 	}
 }
 
@@ -397,17 +451,8 @@ void TextClipsManager::findClips()
 		if( DirExists(path.c_str()) )
 			finder.Find(path.c_str(), _T("*.clips"));
 
-		TextClipsWriter writer;
-		writer.Start(clipcache.c_str());
-		writer.BeginClipSets();
-		for(LIST_CLIPSETS::const_iterator i = m_clipSets.begin();
-			i != m_clipSets.end();
-			++i)
-		{
-			writer.WriteClipSet( (*i) );
-		}
-		writer.EndClipSets();
-		writer.Close();
+		// Save the clips we found in the cache
+		Save(true);
 	}
 	else
 	{

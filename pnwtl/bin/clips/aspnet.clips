@@ -1,204 +1,157 @@
-<?xml version="1.0"?>
-<clips name="ASP.NET">
-<clip name="----- Directives ----"></clip>
-<clip name="Assembly"><![CDATA[<%@ Assembly Name="|" %>]]></clip>
-<clip name="Control (C#)"><![CDATA[<%@ Control Language="C#" %>|]]></clip>
-<clip name="Control (VB)"><![CDATA[<%@ Control Language="VB" %>|]]></clip>
-<clip name="Implements"><![CDATA[<%@ Implements Interface="|" %>]]></clip>
-<clip name="Import"><![CDATA[<%@ Import Namespace="|" %>]]></clip>
-<clip name="OutputCache"><![CDATA[<%@ OutputCache Duration="100" VaryByParam="none|" %>]]></clip>
-<clip name="Page (C#)"><![CDATA[<%@ Page Language="C#" ContentType="text/html" ResponseEncoding="iso-8859-1" %>|]]></clip>
-<clip name="Page (VB)"><![CDATA[<%@ Page Language="VB" ContentType="text/html" ResponseEncoding="iso-8859-1" %>|]]></clip>
-<clip name="Reference (Control)"><![CDATA[<%@ Reference Control="|.ascx" %>]]></clip>
-<clip name="Reference (Page)"><![CDATA[<%@ Reference Page="|.aspx" %>]]></clip>
-<clip name="Register"><![CDATA[<%@ Register TagPrefix="|" TagName="" Src="" %>]]></clip>
-<clip name="----- Web Controls ----"></clip>
-<clip name="AdRotator"><![CDATA[<asp:AdRotator id="AdRotator1"
+<clips name="ASP.NET"><clip name="----- Directives ----" shortcut=""></clip><clip name="Assembly" shortcut="">&lt;%@ Assembly Name="|" %&gt;</clip><clip name="Control (C#)" shortcut="">&lt;%@ Control Language="C#" %&gt;|</clip><clip name="Control (VB)" shortcut="">&lt;%@ Control Language="VB" %&gt;|</clip><clip name="Implements" shortcut="">&lt;%@ Implements Interface="|" %&gt;</clip><clip name="Import" shortcut="">&lt;%@ Import Namespace="|" %&gt;</clip><clip name="OutputCache" shortcut="">&lt;%@ OutputCache Duration="100" VaryByParam="none|" %&gt;</clip><clip name="Page (C#)" shortcut="">&lt;%@ Page Language="C#" ContentType="text/html" ResponseEncoding="iso-8859-1" %&gt;|</clip><clip name="Page (VB)" shortcut="">&lt;%@ Page Language="VB" ContentType="text/html" ResponseEncoding="iso-8859-1" %&gt;|</clip><clip name="Reference (Control)" shortcut="">&lt;%@ Reference Control="|.ascx" %&gt;</clip><clip name="Reference (Page)" shortcut="">&lt;%@ Reference Page="|.aspx" %&gt;</clip><clip name="Register" shortcut="">&lt;%@ Register TagPrefix="|" TagName="" Src="" %&gt;</clip><clip name="----- Web Controls ----" shortcut=""></clip><clip name="AdRotator" shortcut="">&lt;asp:AdRotator id="AdRotator1"
 	AdvertisementFile="|.xml"
-	runat="server"/>]]></clip>
-<clip name="Button"><![CDATA[<asp:Button id="Button1"
+	runat="server"/&gt;</clip><clip name="Button" shortcut="">&lt;asp:Button id="Button1"
 	Text="|"
 	OnClick=""
-	runat="server" />]]></clip>
-<clip name="Calendar"><![CDATA[<asp:Calendar id="Calendar1"
-	runat="server">
-</asp:Calendar>]]></clip>
-<clip name="CheckBox"><![CDATA[<asp:CheckBox id="CheckBox1" 
+	runat="server" /&gt;</clip><clip name="Calendar" shortcut="">&lt;asp:Calendar id="Calendar1"
+	runat="server"&gt;
+&lt;/asp:Calendar&gt;</clip><clip name="CheckBox" shortcut="">&lt;asp:CheckBox id="CheckBox1" 
 	Text="|"
-	runat="server" />]]></clip>
-<clip name="CheckBoxList"><![CDATA[<asp:CheckBoxList id="CheckBoxList1"
-	DataSource='<%# | %>'
+	runat="server" /&gt;</clip><clip name="CheckBoxList" shortcut="">&lt;asp:CheckBoxList id="CheckBoxList1"
+	DataSource='&lt;%# | %&gt;'
 	DataTextField=""
 	DataValueField=""
-	runat="server">
-	<asp:ListItem Value="" Selected=""></asp:ListItem>
-</asp:CheckBoxList>]]></clip>
-<clip name="DataGrid"><![CDATA[<asp:DataGrid id="DataGrid1"
-	DataSource='<%# | %>'
-	runat="server">
-</asp:DataGrid>]]></clip>
-<clip name="DataList"><![CDATA[<asp:DataList id="DataList1"
+	runat="server"&gt;
+	&lt;asp:ListItem Value="" Selected=""&gt;&lt;/asp:ListItem&gt;
+&lt;/asp:CheckBoxList&gt;</clip><clip name="DataGrid" shortcut="">&lt;asp:DataGrid id="DataGrid1"
+	DataSource='&lt;%# | %&gt;'
+	runat="server"&gt;
+&lt;/asp:DataGrid&gt;</clip><clip name="DataList" shortcut="">&lt;asp:DataList id="DataList1"
 	DataKeyField=""
-	DataSource='<%# | %>'
-	runat="server">
-</asp:DataList>]]></clip>
-<clip name="DropDownList"><![CDATA[<asp:DropDownList id="DropDownList1"
-	DataSource='<%# | %>'
+	DataSource='&lt;%# | %&gt;'
+	runat="server"&gt;
+&lt;/asp:DataList&gt;</clip><clip name="DropDownList" shortcut="">&lt;asp:DropDownList id="DropDownList1"
+	DataSource='&lt;%# | %&gt;'
 	DataTextField=""
 	DataValueField=""
-	runat="server">
-	<asp:ListItem Value="" Selected=""></asp:ListItem>
-</asp:DropDownList>]]></clip>
-<clip name="HyperLink"><![CDATA[<asp:HyperLink id="HyperLink1"
+	runat="server"&gt;
+	&lt;asp:ListItem Value="" Selected=""&gt;&lt;/asp:ListItem&gt;
+&lt;/asp:DropDownList&gt;</clip><clip name="HyperLink" shortcut="">&lt;asp:HyperLink id="HyperLink1"
 	Text="|"
 	ToolTip=""
 	NavigateUrl=""
-	runat="server" />]]></clip>
-<clip name="Image"><![CDATA[<asp:Image id="Image1"
+	runat="server" /&gt;</clip><clip name="Image" shortcut="">&lt;asp:Image id="Image1"
 	ImageUrl="|"
 	AlternateText=""
 	ImageAlign=""
-	runat="server" />]]></clip>
-<clip name="ImageButton"><![CDATA[<asp:ImageButton id="ImageButton1"
+	runat="server" /&gt;</clip><clip name="ImageButton" shortcut="">&lt;asp:ImageButton id="ImageButton1"
 	ImageUrl="|"
 	OnClick=""
-	runat="server" />]]></clip>
-<clip name="Label"><![CDATA[<asp:Label id="Label1" Text="|" runat="server" />]]></clip>
-<clip name="LinkButton"><![CDATA[<asp:LinkButton id="LinkButton1"
+	runat="server" /&gt;</clip><clip name="Label" shortcut="">&lt;asp:Label id="Label1" Text="|" runat="server" /&gt;</clip><clip name="LinkButton" shortcut="">&lt;asp:LinkButton id="LinkButton1"
 	Text="|"
 	OnClick=""
-	runat="server" />]]></clip>
-<clip name="ListBox"><![CDATA[<asp:ListBox id="ListBox1"
-	DataSource='<%# | %>'
+	runat="server" /&gt;</clip><clip name="ListBox" shortcut="">&lt;asp:ListBox id="ListBox1"
+	DataSource='&lt;%# | %&gt;'
 	DataTextField=""
 	DataValueField=""
-	runat="server">
-	<asp:ListItem Value="" Selected=""></asp:ListItem>
-</asp:ListBox>]]></clip>
-<clip name="Literal"><![CDATA[<asp:Literal id="Literal1" Text="|" runat="server" />]]></clip>
-<clip name="Panel"><![CDATA[<asp:Panel id="Panel1" runat="server">
+	runat="server"&gt;
+	&lt;asp:ListItem Value="" Selected=""&gt;&lt;/asp:ListItem&gt;
+&lt;/asp:ListBox&gt;</clip><clip name="Literal" shortcut="">&lt;asp:Literal id="Literal1" Text="|" runat="server" /&gt;</clip><clip name="Panel" shortcut="">&lt;asp:Panel id="Panel1" runat="server"&gt;
 |
-</asp:Panel>]]></clip>
-<clip name="PlaceHolder"><![CDATA[<asp:PlaceHolder id="PlaceHolder1" runat="server" />]]></clip>
-<clip name="RadioButton"><![CDATA[<asp:RadioButton id="RadioButton1" 
+&lt;/asp:Panel&gt;</clip><clip name="PlaceHolder" shortcut="">&lt;asp:PlaceHolder id="PlaceHolder1" runat="server" /&gt;</clip><clip name="RadioButton" shortcut="">&lt;asp:RadioButton id="RadioButton1" 
 	Checked="|"
 	GroupName=""
 	Text=""
-	runat="server" />]]></clip>
-<clip name="RadioButtonList"><![CDATA[<asp:RadioButtonList id="RadioButtonList1"
-	DataSource='<%# | %>'
+	runat="server" /&gt;</clip><clip name="RadioButtonList" shortcut="">&lt;asp:RadioButtonList id="RadioButtonList1"
+	DataSource='&lt;%# | %&gt;'
 	DataTextField=""
 	DataValueField=""
 	RepeatColumns=""
 	RepeatDirection=""
 	RepeatLayout=""
 	TextAlign=""
-	runat="server">
-	<asp:ListItem Value="" Selected=""></asp:ListItem>
-</asp:RadioButtonList>]]></clip>
-<clip name="Repeater"><![CDATA[<asp:Repeater id="Repeater1"
-	DataSource='<%# | %>'
-	runat="server">
-	<HeaderTemplate>
+	runat="server"&gt;
+	&lt;asp:ListItem Value="" Selected=""&gt;&lt;/asp:ListItem&gt;
+&lt;/asp:RadioButtonList&gt;</clip><clip name="Repeater" shortcut="">&lt;asp:Repeater id="Repeater1"
+	DataSource='&lt;%# | %&gt;'
+	runat="server"&gt;
+	&lt;HeaderTemplate&gt;
 
-	</HeaderTemplate>
-	<ItemTemplate>
+	&lt;/HeaderTemplate&gt;
+	&lt;ItemTemplate&gt;
 
-	</ItemTemplate>
-	<AlternatingItemTemplate>
+	&lt;/ItemTemplate&gt;
+	&lt;AlternatingItemTemplate&gt;
 
-	</AlternatingItemTemplate>
-	<SeparatorTemplate>
+	&lt;/AlternatingItemTemplate&gt;
+	&lt;SeparatorTemplate&gt;
 
-	</SeparatorTemplate>
-	<FooterTemplate>
+	&lt;/SeparatorTemplate&gt;
+	&lt;FooterTemplate&gt;
 
-	</FooterTemplate>
-</asp:Repeater>]]></clip>
-<clip name="Table"><![CDATA[<asp:Table id="Table1"
+	&lt;/FooterTemplate&gt;
+&lt;/asp:Repeater&gt;</clip><clip name="Table" shortcut="">&lt;asp:Table id="Table1"
 	CellSpacing=""
 	CellPadding=""
 	GridLines=""
 	HorizontalAlign=""
-	runat="server">
-	<asp:TableRow>
-		<asp:TableCell>
+	runat="server"&gt;
+	&lt;asp:TableRow&gt;
+		&lt;asp:TableCell&gt;
 			|
-		</asp:TableCell>
-	</asp:TableRow>
-</asp:Table>]]></clip>
-<clip name="TableCell"><![CDATA[<asp:TableCell id="TableCell1"
+		&lt;/asp:TableCell&gt;
+	&lt;/asp:TableRow&gt;
+&lt;/asp:Table&gt;</clip><clip name="TableCell" shortcut="">&lt;asp:TableCell id="TableCell1"
 	ColumnSpan=""
 	RowSpan=""
 	HorizontalAlign=""
 	VerticalAlign=""
 	Wrap=""
-	runat="server">
+	runat="server"&gt;
 	|
-</asp:TableCell>]]></clip>
-<clip name="TableRow"><![CDATA[<asp:TableRow id="TableRow1"
+&lt;/asp:TableCell&gt;</clip><clip name="TableRow" shortcut="">&lt;asp:TableRow id="TableRow1"
 	HorizontalAlign=""
 	VerticalAlign=""
-	runat="server">
-	<asp:TableCell>
+	runat="server"&gt;
+	&lt;asp:TableCell&gt;
 	|
-	</asp:TableCell>
-</asp:TableRow>]]></clip>
-<clip name="TextBox"><![CDATA[<asp:TextBox id="TextBox1"
+	&lt;/asp:TableCell&gt;
+&lt;/asp:TableRow&gt;</clip><clip name="TextBox" shortcut="">&lt;asp:TextBox id="TextBox1"
 	Columns=""
 	MaxLength=""
 	Rows=""
 	Text="|"
 	TextMode=""
 	Wrap=""
-	runat="server" />]]></clip>
-<clip name="Xml"><![CDATA[<asp:Xml id="Xml1"
+	runat="server" /&gt;</clip><clip name="Xml" shortcut="">&lt;asp:Xml id="Xml1"
 	Document=""
 	DocumentContent=""
 	DocumentSource=""
 	Transform=""
 	TransformSource=""
-	runat="server" />]]></clip>
-<clip name="----- Validation Controls -----"></clip>
-<clip name="CompareValidator"><![CDATA[<asp:CompareValidator id="CompareValidator1"
+	runat="server" /&gt;</clip><clip name="----- Validation Controls -----" shortcut=""></clip><clip name="CompareValidator" shortcut="">&lt;asp:CompareValidator id="CompareValidator1"
 	ControlToValidate="|"
 	ValueToCompare=""
 	Type=""
 	Operator=""
 	ErrorMessage=""
-	runat="server">
-</asp:CompareValidator>]]></clip>
-<clip name="CustomValidator"><![CDATA[<asp:CustomValidator id="CustomValidator1"
+	runat="server"&gt;
+&lt;/asp:CompareValidator&gt;</clip><clip name="CustomValidator" shortcut="">&lt;asp:CustomValidator id="CustomValidator1"
 	runat="server"
 	ControlToValidate="|"
 	ClientValidationFunction=""
 	OnServerValidate=""
-	ErrorMessage="">
-</asp:CustomValidator>]]></clip>
-<clip name="RangeValidator"><![CDATA[<asp:RangeValidator id="RangeValidator1"
+	ErrorMessage=""&gt;
+&lt;/asp:CustomValidator&gt;</clip><clip name="RangeValidator" shortcut="">&lt;asp:RangeValidator id="RangeValidator1"
 	ControlToValidate="|"
 	MinimumValue=""
 	Type=""
 	ErrorMessage=""
-	runat="server">
-</asp:RangeValidator>]]></clip>
-<clip name="RegularExpressionValidator"><![CDATA[<asp:RegularExpressionValidator id="RegularExpressionValidator1" 
+	runat="server"&gt;
+&lt;/asp:RangeValidator&gt;</clip><clip name="RegularExpressionValidator" shortcut="">&lt;asp:RegularExpressionValidator id="RegularExpressionValidator1" 
 	ControlToValidate="|"
 	ValidationExpression=""
 	ErrorMessage=""
-	runat="server">
-</asp:RegularExpressionValidator>]]></clip>
-<clip name="RequiredFieldValidator"><![CDATA[<asp:RequiredFieldValidator id="RequiredFieldValidator1"
+	runat="server"&gt;
+&lt;/asp:RegularExpressionValidator&gt;</clip><clip name="RequiredFieldValidator" shortcut="">&lt;asp:RequiredFieldValidator id="RequiredFieldValidator1"
 	ControlToValidate="|"
 	InitialValue=""
 	ErrorMessage=""
-	runat="server">
-</asp:RequiredFieldValidator>]]></clip>
-<clip name="ValidationSummary"><![CDATA[<asp:ValidationSummary id="ValidationSummary1"
+	runat="server"&gt;
+&lt;/asp:RequiredFieldValidator&gt;</clip><clip name="ValidationSummary" shortcut="">&lt;asp:ValidationSummary id="ValidationSummary1"
 	DisplayMode="|"
 	EnableClientScript=""
 	ShowSummary=""
 	ShowMessageBox=""
 	HeaderText=""
-	runat="server" />]]></clip>
-</clips>
+	runat="server" /&gt;</clip></clips>

@@ -1,67 +1,58 @@
-<?xml version="1.0"?>
-<clips name="Docbook">
-	<clip name="book"><![CDATA[
-	<?xml version="1.0"?>
+<clips name="Docbook"><clip name="book" shortcut="">
+	&lt;?xml version="1.0"?&gt;
 	
-	<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-		"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+	&lt;!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+		"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"&gt;
 	
-	<book>
-		<title>|</title>
-		<titleabbrev></titleabbrev>
+	&lt;book&gt;
+		&lt;title&gt;|&lt;/title&gt;
+		&lt;titleabbrev&gt;&lt;/titleabbrev&gt;
 		
-		<bookinfo>
-			<legalnotice>
-				<para>    
-				Copyright (c) Company. 2003-200, see <ulink url="http://www.myurl.com/">www.myurl.com</ulink>.
-				</para>
-			</legalnotice>
-			<author>
-				<firstname>Joe</firstname>
-				<surname>Bloggs</surname>
-			</author>
-			<copyright>
-				<year>2003</year>
-				<year>2004</year>
-				<holder>Company.</holder>
-			</copyright>
-		</bookinfo>
+		&lt;bookinfo&gt;
+			&lt;legalnotice&gt;
+				&lt;para&gt;    
+				Copyright (c) Company. 2003-200, see &lt;ulink url="http://www.myurl.com/"&gt;www.myurl.com&lt;/ulink&gt;.
+				&lt;/para&gt;
+			&lt;/legalnotice&gt;
+			&lt;author&gt;
+				&lt;firstname&gt;Joe&lt;/firstname&gt;
+				&lt;surname&gt;Bloggs&lt;/surname&gt;
+			&lt;/author&gt;
+			&lt;copyright&gt;
+				&lt;year&gt;2003&lt;/year&gt;
+				&lt;year&gt;2004&lt;/year&gt;
+				&lt;holder&gt;Company.&lt;/holder&gt;
+			&lt;/copyright&gt;
+		&lt;/bookinfo&gt;
 		
-		<preface>
-			<title>Introduction</title>
-			<para>
+		&lt;preface&gt;
+			&lt;title&gt;Introduction&lt;/title&gt;
+			&lt;para&gt;
 			Welcome to the book.
-			</para>
-		</preface>
-	]]>
-	</clip>
-	<clip name="part"><![CDATA[
-	<part>
-		<title>|</title>
-		<partintro>
-			<para>
-			Introduction to this part.
-			</para>
-		</partintro>
-		
-	</part>
-	]]>
-	</clip>
-	<clip name="chapter"><![CDATA[
-<chapter>
-	<title>|</title>
-</chapter>]]>
-	</clip>
-	<clip name="PN Help Topic"><![CDATA[
-	<section>
-		<?dbhh topicname="IDH_project_templates" topicid="13"?>
-		<title>Creating Project Templates</title>
+			&lt;/para&gt;
+		&lt;/preface&gt;
 	
-		<para>This documentation is still to be written, <ulink url="mailto:ss@pnotepad.org?subject=documentation%20help">perhaps you can help?</ulink></para>
-	</section>
-	]]>
-	</clip>
-	<clip name="link"><![CDATA[<link linkend="|"></link>]]></clip>
-	<clip name="keycombo"><![CDATA[<keycombo>|</keycombo>]]></clip>
-	<clip name="htmlhelp topic"><![CDATA[<?dbhh topicname="|" topicid="number"?>]]></clip>
-</clips>
+	</clip><clip name="part" shortcut="">
+	&lt;part&gt;
+		&lt;title&gt;|&lt;/title&gt;
+		&lt;partintro&gt;
+			&lt;para&gt;
+			Introduction to this part.
+			&lt;/para&gt;
+		&lt;/partintro&gt;
+		
+	&lt;/part&gt;
+	
+	</clip><clip name="chapter" shortcut="">
+&lt;chapter&gt;
+	&lt;title&gt;|&lt;/title&gt;
+&lt;/chapter&gt;
+	</clip><clip name="PN Help Topic" shortcut="">
+	&lt;section&gt;
+		&lt;?dbhh topicname="IDH_project_templates" topicid="13"?&gt;
+		&lt;title&gt;Creating Project Templates&lt;/title&gt;
+	
+		&lt;para&gt;This documentation is still to be written, &lt;ulink url="mailto:ss@pnotepad.org?subject=documentation%20help"&gt;perhaps you can help?&lt;/ulink&gt;&lt;/para&gt;
+	&lt;/section&gt;
+	
+	</clip><clip name="link" shortcut="">&lt;link linkend="|"&gt;&lt;/link&gt;</clip><clip name="keycombo" shortcut="">&lt;keycombo&gt;|&lt;/keycombo&gt;</clip><clip name="htmlhelp topic" shortcut="">&lt;?dbhh topicname="|" topicid="number"?&gt;</clip></clips>

@@ -1861,6 +1861,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsPageNewFiles		pageNewFiles(&schemeconfig);
 	COptionsPageTools			pageTools(&schemeconfig, &toolsmanager);
 	COptionsPageProjectTools	pageProjectTools(&toolsmanager);
+	COptionsPageClips			pageClips(&schemeconfig, m_pTextClips);
 
 	COptionsPageFileTypes		pageFiles(&schemeconfig);
 	COptionsPageAFiles			pageAFiles;
@@ -1887,6 +1888,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	options.AddPage(&pageAFiles);
 	options.AddPage(&pageKeyboard);
 	options.AddPage(&pageAutocomplete);
+	options.AddPage(&pageClips);
 
 	// If we were launched from the "Add Tools" menu item, 
 	// start on the tools page:
@@ -1940,8 +1942,9 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 			m_pCmdDispatch->Save(kmfile.c_str());
 			
 			setupAccelerators(m_hMenu);
-			
 		}
+
+		// TODO: If clips are dirty then save them here (need to first use a copy of them for options)
 
 		PerformChildEnum(&CMainFrame::ChildOptionsUpdateNotify);
 

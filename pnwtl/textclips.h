@@ -40,24 +40,44 @@ class TextClipSet
 		~TextClipSet();
 
 		/**
+		 * Add a clip
+		 */
+		void Add(Clip* clip);
+
+		/**
 		 * Builds a list of clips formatted for scintilla display
 		 */
 		tstring BuildSortedClipList() const;
 
+		/**
+		 * Find a Clip by its text shortcut
+		 */
 		const Clip* FindByShortcut(const tstring& shortcut) const;
 
+		/**
+		 * Get the clips
+		 */
 		const LIST_CLIPS& GetClips() const;
 
+		/**
+		 * Get the name of this clip set
+		 */
 		LPCTSTR GetName() const;
+
+		/**
+		 * Get the filename that stores these clips, or NULL if in the global store
+		 */
+		LPCTSTR GetFilename() const;
 
 		/**
 		 * Get the scheme name if scheme-tied, NULL otherwise
 		 */
 		LPCTSTR GetScheme() const;
 
+		/**
+		 * Save this clipset to its file
+		 */
 		void Save();
-
-		void Add(Clip* clip);
 
 	private:
 		void clear();
@@ -87,7 +107,7 @@ class TextClipsManager : public XMLParseState
 
 		const TextClipSet* GetClips(LPCSTR schemeName);
 
-		void Save();
+		void Save(bool ignoreFilenames = false);
 
 		//XMLParseState
 	public:

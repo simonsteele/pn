@@ -1491,6 +1491,10 @@
 				RelativePath=".\StyleTabPages.h"
 				>
 			</File>
+			<File
+				RelativePath=".\textclipeditor.h"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\pn.exe.manifest"
