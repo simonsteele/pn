@@ -25,9 +25,9 @@ class CommandDispatch;
 class App : public extensions::IPN
 {
 	typedef std::list<extensions::IAppEventSinkPtr> EventSinkList;
+public:
 	typedef std::list<extensions::Extension*> ExtensionList;
 
-public:
 	App();
 	~App();
 
@@ -43,6 +43,8 @@ public:
 	void RunExtensionCommand(const char* command);
 
 	void SetCanLoadExtensions(bool canLoad);
+
+	ExtensionList& GetExtensions();
 
 	/**
 	 * This method is provided to clear out the PN user data

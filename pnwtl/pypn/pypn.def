@@ -1,5 +1,6 @@
 LIBRARY	pypn
 
 EXPORTS
-	init_pn_extension
-	exit_pn_extension
+	pn_init_extension
+	pn_exit_extension
+	pn_get_extension_info

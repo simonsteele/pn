@@ -21,7 +21,7 @@ App *g_app = NULL;
 	if(PyImport_AppendInittab(#name, init##name) == -1) \
 	throw std::runtime_error("Failed to add " #name " module to builtins");
 
-bool __stdcall init_pn_extension(int iface_version, extensions::IPN* pn)
+bool __stdcall pn_init_extension(int iface_version, extensions::IPN* pn)
 {
 	if(iface_version != PN_EXT_IFACE_VERSION)
 		return false;
@@ -42,7 +42,13 @@ bool __stdcall init_pn_extension(int iface_version, extensions::IPN* pn)
 	return true;
 }
 
-void __declspec(dllexport) __stdcall exit_pn_extension()
+void __declspec(dllexport) __stdcall pn_get_extension_info(PN::BaseString& name, PN::BaseString& version)
+{
+	name = "PyPN";
+	version = "0.5";
+}
+
+void __declspec(dllexport) __stdcall pn_exit_extension()
 {
 	g_app->GetPN()->RemoveEventSink(g_appsink);
 	

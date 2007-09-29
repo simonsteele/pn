@@ -263,7 +263,14 @@ void COptionsPageVisual::OnOK()
 	options.SetCached(Options::ORightColumn, m_iRightColumn);
 	options.SetCached(Options::ORightGuideColour, m_btnLLCol.SafeGetColor());
 
-	OPTIONS->SetCached(Options::OLineHighlightAlpha, m_trackerHighlight.GetPos());
+	if (m_bLineHighlightAlpha)
+	{
+		OPTIONS->SetCached(Options::OLineHighlightAlpha, m_trackerHighlight.GetPos());
+	}
+	else
+	{
+		OPTIONS->SetCached(Options::OLineHighlightAlpha, SC_ALPHA_NOALPHA);
+	}
 }
 
 void COptionsPageVisual::OnInitialise()
@@ -274,12 +281,22 @@ void COptionsPageVisual::OnInitialise()
 	m_iLongLineHelp		= OPTIONS->GetCached(Options::ORightGuide);
 	m_iRightColumn		= OPTIONS->GetCached(Options::ORightColumn);
 	
+	int lineHighlightAlpha = OPTIONS->GetCached(Options::OLineHighlightAlpha);
+	if (lineHighlightAlpha == SC_ALPHA_NOALPHA)
+	{
+		m_bLineHighlightAlpha = FALSE;
+		lineHighlightAlpha = 30;
+	}
+	else
+	{
+		m_bLineHighlightAlpha = TRUE;
+	}
+	
 	m_btnLineCol.SetColor( OPTIONS->GetCached(Options::OLineHighlightColour) );
 	m_btnLLCol.SetColor( OPTIONS->GetCached(Options::ORightGuideColour) );
+	m_trackerHighlight.SetPos( lineHighlightAlpha );
 
 	DoDataExchange();
-
-	m_trackerHighlight.SetPos( OPTIONS->GetCached(Options::OLineHighlightAlpha) );
 }
 
 LRESULT COptionsPageVisual::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)

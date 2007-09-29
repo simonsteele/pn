@@ -50,7 +50,9 @@ public:
 		//CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
-protected:
+	void Reset();
+
+private:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
@@ -67,6 +69,8 @@ protected:
 	void AddClip(TextClips::Clip* tc);
 	void InsertClip(TextClips::Clip* tc);
 	void LoadSet(TextClips::TextClipSet* set);
+	void saveView();
+	void setupView();
 
 	CListViewCtrl	m_view;
 	CComboBox		m_combo;

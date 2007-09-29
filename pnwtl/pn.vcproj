@@ -1460,6 +1460,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OptionsPageExtensions.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OptionsPageExtensions.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OptionsPageGlobalStyles.cpp"
 				>
 			</File>

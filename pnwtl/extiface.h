@@ -15,23 +15,37 @@
  * 1. Create a DLL using C++
  * 2. Export functions that look like this:
  * 
- * bool init_pn_extension(int iface_version, IPN* pn);
+ * bool __stdcall pn_init_extension(int iface_version, IPN* pn);
  *  - return false if your iface_version does not match and you will
  *    be safely unloaded.
  *  - The IPN instance given to you is your gateway to the rest of PN.
  *  - @see init_pn_extension
  *
- * void exit_pn_extension();
+ * void __stdcall pn_exit_extension();
  *  - Unhook all of your event sinks, you're being unloaded.
  *  - @see exit_pn_extension
  *
- * Maybe later: get_extension_info()...
+ * void __stdcall get_extension_info(PN::BaseString& name, PN::BaseString& version);
+ *  - Set name and version to strings representing your plugin name and version!
  */
 
 #ifndef extiface_h__included_670F47C6_1FF6_4605_9F74_6EC70FD85C26
 #define extiface_h__included_670F47C6_1FF6_4605_9F74_6EC70FD85C26
 
+#ifndef PNASSERT
+	#ifndef _DEBUG
+		#define PNASSERT(expr) ((void)0)
+	#else
+		#define PNASSERT(expr) assert(expr)
+	#endif
+#endif
+
 #include "IOptions.h"
+
+// TODO: See if we can abstract the string interface further and avoid
+// exposing the allocator code
+#include "allocator.h"
+#include "string.h"
 
 /// Find Next Result Enum
 typedef enum {fnNotFound, fnFound, fnReachedStart} FindNextResult;
@@ -39,7 +53,7 @@ typedef enum {fnNotFound, fnFound, fnReachedStart} FindNextResult;
 namespace extensions
 {
 
-#define PN_EXT_IFACE_VERSION	4
+#define PN_EXT_IFACE_VERSION	5
 
 /////////////////////////////////////////////////////////////////////////////
 // Predeclare types
@@ -258,6 +272,8 @@ public:
 class IScriptRunner
 {
 public:
+	virtual ~IScriptRunner(){}
+
 	/**
 	 * This method requests that a runner runs a named
 	 * script that it has previously registered with the
@@ -281,6 +297,8 @@ public:
 class IScriptRegistry
 {
 public:
+	virtual ~IScriptRegistry(){}
+
 	/**
 	 * Add a named script to the registry.
 	 * @param group Name of a group to insert the script in
@@ -323,6 +341,8 @@ public:
 class ITextOutput
 {
 public:
+	virtual ~ITextOutput(){}
+
 	/// Add some text to the window, @param nLength to use a fixed length or -1 to calculate, @param output The text to output
 	virtual void AddToolOutput(LPCTSTR output, int nLength = -1) = 0;
 	/// Set the base directory for messages being placed in the output window (for error matching)
@@ -343,6 +363,8 @@ public:
 class ISearchOptions
 {
 public:
+	virtual ~ISearchOptions(){}
+
 	// Basic Options:
 	virtual const char* GetFindText() const = 0;
 	virtual void SetFindText(const char* findText) = 0;
@@ -402,6 +424,17 @@ public:
  * @param pn The pointer to an IPN instance giving you access to PN to do your stuff!
  */
 typedef bool (__stdcall *pn_ext_init_fn)(int iface_version, IPN* pn);
+
+/**
+ * @brief Plugin Information Function
+ * 
+ * Implement and export a function with this prototype called "pn_get_extension_info" to 
+ * have PN read display information from your plugin for use in the options dialog
+ *
+ * @param name Write the name of your plugin into this object
+ * @param version Write the version of your plugin into this object
+ */
+typedef void (__stdcall *pn_ext_info_fn)(PN::BaseString& name, PN::BaseString& version);
 
 /**
  * @brief Plugin Unload Function

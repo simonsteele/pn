@@ -15,6 +15,8 @@ public:
 	virtual void Unload();
 	virtual bool Valid();
 
+	bool GetDetails(PN::BaseString& name, PN::BaseString& version);
+
 private:
 	bool m_bValid;
 };

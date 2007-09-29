@@ -21,6 +21,9 @@ namespace TextClips {
 class Clip
 {
 	public:
+		Clip(){}
+		Clip(const Clip& copy) : Name(copy.Name), Shortcut(copy.Shortcut), Text(copy.Text){}
+
 		tstring Name;
 		tstring Shortcut;
 		tstring Text;
@@ -37,6 +40,7 @@ class TextClipSet
 {
 	public:
 		TextClipSet(LPCTSTR filename, LPCTSTR name, LPCTSTR scheme);
+		TextClipSet(const TextClipSet& copy);
 		~TextClipSet();
 
 		/**
@@ -75,6 +79,11 @@ class TextClipSet
 		LPCTSTR GetScheme() const;
 
 		/**
+		 * Remove a clip
+		 */
+		void Remove(TextClips::Clip* clip);
+
+		/**
 		 * Save this clipset to its file
 		 */
 		void Save();
@@ -99,15 +108,20 @@ class TextClipsManager : public XMLParseState
 {
 	public:
 		TextClipsManager();
+		TextClipsManager(const TextClipsManager& copy);
 		~TextClipsManager();
 
 		void OnFound(LPCTSTR path, LPCTSTR filename);
 
 		const LIST_CLIPSETS& GetClipSets();
 
-		const TextClipSet* GetClips(LPCSTR schemeName);
+		TextClipSet* GetClips(LPCSTR schemeName);
+
+		void Add(TextClipSet* clips);
 
 		void Save(bool ignoreFilenames = false);
+
+		void Reset(const TextClipsManager& copy);
 
 		//XMLParseState
 	public:
@@ -124,6 +138,7 @@ class TextClipsManager : public XMLParseState
 			} EEncoding;
 
 		void clear();
+		void copy(const TextClipsManager& copy);
 		void decodeData();
 		void findClips();
 		void parse(LPCTSTR filename);

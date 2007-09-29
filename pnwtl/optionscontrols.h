@@ -66,16 +66,33 @@ class CStyleDisplay : public CWindowImpl<CStyleDisplay>
 class CScintillaDialogWnd : public CScintillaWindowImpl< CScintillaDialogWnd, CScintilla>
 {
 public:
+	CScintillaDialogWnd() : m_wantall(false){}
+
 	typedef CScintillaWindowImpl< CScintillaDialogWnd, CScintilla> baseClass;
 	BEGIN_MSG_MAP(CScintillaDialogWnd)
 		MESSAGE_HANDLER(WM_GETDLGCODE, OnGetDlgCode)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
+	void SetWantAll(bool value)
+	{
+		m_wantall = value;
+	}
+
 	LRESULT OnGetDlgCode(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
-		return DLGC_HASSETSEL | DLGC_WANTARROWS | DLGC_WANTCHARS;
+		if (m_wantall)
+		{
+			return DLGC_WANTARROWS | DLGC_WANTCHARS | DLGC_WANTALLKEYS | DLGC_WANTTAB;
+		}
+		else
+		{
+			return DLGC_HASSETSEL | DLGC_WANTARROWS | DLGC_WANTCHARS;
+		}
 	}
+
+private:
+	bool m_wantall;
 };
 
 class CScintillaREDialogWnd : public CScintillaWindowImpl< CScintillaREDialogWnd, REScintilla >

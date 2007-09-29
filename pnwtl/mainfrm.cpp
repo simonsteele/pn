@@ -1867,6 +1867,8 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsPageAFiles			pageAFiles;
 	COptionsPageFileAssoc		pageFileAssoc;
 
+	COptionsPageExtensions		pageExtensions;
+
 	// Lots of pages will use the same schemeconfig:
 	schemeconfig.LoadConfig(pSM->GetPath(), pSM->GetCompiledPath());
 
@@ -1889,6 +1891,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	options.AddPage(&pageKeyboard);
 	options.AddPage(&pageAutocomplete);
 	options.AddPage(&pageClips);
+	options.AddPage(&pageExtensions);
 
 	// If we were launched from the "Add Tools" menu item, 
 	// start on the tools page:
@@ -1944,7 +1947,12 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 			setupAccelerators(m_hMenu);
 		}
 
-		// TODO: If clips are dirty then save them here (need to first use a copy of them for options)
+		// If text clips page has changes, then update the text clips view
+		// actually not necessary until we actually edit text clips and not just templates!
+		if (pageClips.IsDirty())
+		{
+			m_pClipsWnd->Reset();
+		}
 
 		PerformChildEnum(&CMainFrame::ChildOptionsUpdateNotify);
 

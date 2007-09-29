@@ -64,7 +64,7 @@ public:
 
 protected:
 	ScriptRegistry();
-	~ScriptRegistry();
+	virtual ~ScriptRegistry();
 
 	void clear();
 

@@ -17,10 +17,11 @@
 class CTextClipEditor : public CDialogImpl<CTextClipEditor>
 {
 public:
-	CTextClipEditor(tstring shortcut, tstring text)
+	CTextClipEditor(tstring shortcut, tstring text, tstring hint)
 	{
 		m_shortcut = shortcut;
 		m_text = text;
+		m_hint = hint;
 	}
 
 	enum {IDD = IDD_TEXTCLIPEDITOR };
@@ -36,20 +37,23 @@ public:
 		CRect rcScintilla;
 		::GetWindowRect(GetDlgItem(IDC_PLACEHOLDER), rcScintilla);
 		ScreenToClient(rcScintilla);
+		m_scintilla.SetWantAll(true);
 		m_scintilla.Create(m_hWnd, rcScintilla, "EditClipText", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_TABSTOP, WS_EX_STATICEDGE);
 		::SetWindowPos(m_scintilla, GetDlgItem(IDC_PLACEHOLDER), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 		m_scintilla.SetWrapMode(SC_WRAP_WORD);
 		m_scintilla.AssignCmdKey(SCK_HOME, SCI_HOMEDISPLAY);
 		m_scintilla.AssignCmdKey(SCK_END, SCI_LINEENDDISPLAY);
 		m_scintilla.SetMarginWidthN(1, 0);
+		m_scintilla.SetEOLMode(SC_EOL_LF);
 		
 		// Stop scintilla from capturing the escape and tab keys...
 		m_scintilla.ClearCmdKey(SCK_ESCAPE);
-		m_scintilla.ClearCmdKey(SCK_TAB);
+		//m_scintilla.ClearCmdKey(SCK_TAB);
 
 		m_scintilla.SetText(m_text.c_str());
 	
 		GetDlgItem(IDC_SHORTCUT_EDIT).SetWindowText(m_shortcut.c_str());
+		GetDlgItem(IDC_HINT_EDIT).SetWindowText(m_hint.c_str());
 
 		return 0;
 	}
@@ -62,6 +66,12 @@ public:
 			if ((LPCTSTR)wt != NULL)
 			{
 				m_shortcut = (LPCTSTR)wt;
+			}
+
+			CWindowText wt2(GetDlgItem(IDC_HINT_EDIT).m_hWnd);
+			if ((LPCTSTR)wt2 != NULL)
+			{
+				m_hint = (LPCTSTR)wt2;
 			}
 
 			int len = m_scintilla.GetTextLength();
@@ -86,10 +96,16 @@ public:
 		return m_text.c_str();
 	}
 
+	LPCTSTR GetHint() const
+	{
+		return m_hint.c_str();
+	}
+
 private:
 	CScintillaDialogWnd m_scintilla;
 	tstring m_shortcut;
 	tstring m_text;
+	tstring m_hint;
 };
 
 #endif // #ifndef textclipeditor_h__included

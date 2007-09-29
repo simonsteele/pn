@@ -48,7 +48,19 @@ void insert_sorted(tstring_array& arr, tstring& w)
 	}
 }
 
+/**
+ * Virtual destructor for IWordProvider
+ */
+IWordProvider::~IWordProvider()
+{
+}
+
 DefaultAutoComplete::DefaultAutoComplete(bool ignoreCase) : m_ignoreCase(ignoreCase)
+{
+}
+
+/// virtual destructor
+DefaultAutoComplete::~DefaultAutoComplete()
 {
 }
 

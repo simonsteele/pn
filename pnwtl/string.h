@@ -63,6 +63,14 @@ public:
 		Set(str);
 	}
 
+	~AsciiString()
+	{
+		if (m_buffer != NULL)
+		{
+			m_allocator.Free(m_buffer);
+		}
+	}
+
 	virtual void Add(const char * str, size_t length = ~0)
 	{
 		PNASSERT(str != NULL);

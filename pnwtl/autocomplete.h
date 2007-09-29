@@ -19,6 +19,7 @@
 class IWordProvider
 {
 public:
+	virtual ~IWordProvider();
 
 	/**
 	 * Called as keywords are loaded into a document
@@ -54,6 +55,7 @@ class DefaultAutoComplete : public IWordProvider
 {
 public:
 	DefaultAutoComplete(bool ignoreCase);
+	virtual ~DefaultAutoComplete();
 
 	/**
 	 * Get the list of words to use

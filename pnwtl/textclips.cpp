@@ -15,6 +15,12 @@
 #include "include/genx/genx.h"
 #include "include/pngenx.h"
 
+#if defined (_DEBUG)
+	#define new DEBUG_NEW
+	#undef THIS_FILE
+	static char THIS_FILE[] = __FILE__;
+#endif
+
 namespace TextClips {
 
 //////////////////////////////////////////////////////////////////////////////
@@ -203,12 +209,33 @@ void Clip::Insert(CScintilla *scintilla) const
 
 TextClipSet::TextClipSet(LPCTSTR filename, LPCTSTR name, LPCTSTR scheme)
 {
-	m_filename = filename;
-	m_name = name;
+	if (filename != NULL)
+	{
+		m_filename = filename;
+	}
+
+	if (name != NULL)
+	{
+		m_name = name;
+	}
 	
 	if (scheme != NULL)
 	{
 		m_scheme = scheme;
+	}
+}
+
+TextClipSet::TextClipSet(const TextClipSet& copy)
+{
+	m_filename = copy.m_filename;
+	m_name = copy.m_name;
+	m_scheme = copy.m_scheme;
+
+	for(LIST_CLIPS::const_iterator i = copy.m_clips.begin();
+		i != copy.m_clips.end();
+		++i)
+	{
+		m_clips.push_back(new Clip(**i));
 	}
 }
 
@@ -288,6 +315,11 @@ LPCTSTR TextClipSet::GetScheme() const
 	return m_scheme.c_str();
 }
 
+void TextClipSet::Remove(TextClips::Clip* clip)
+{
+	m_clips.remove(clip);
+}
+
 void TextClipSet::Save()
 {
 	TextClipsWriter writer;
@@ -320,6 +352,14 @@ TextClipsManager::TextClipsManager()
 	findClips();
 }
 
+/**
+ * Copy constructor - deep copy
+ */
+TextClipsManager::TextClipsManager(const TextClipsManager& other)
+{
+	copy(other);
+}
+
 TextClipsManager::~TextClipsManager()
 {
 	clear();
@@ -330,7 +370,7 @@ const LIST_CLIPSETS& TextClipsManager::GetClipSets()
 	return m_clipSets;
 }
 
-const TextClipSet* TextClipsManager::GetClips(LPCSTR schemeName)
+TextClipSet* TextClipsManager::GetClips(LPCSTR schemeName)
 {
 	MAP_CLIPSETS::const_iterator i = m_schemeClipSets.find(std::string(schemeName));
 	
@@ -340,6 +380,18 @@ const TextClipSet* TextClipsManager::GetClips(LPCSTR schemeName)
 	}
 	
 	return NULL;
+}
+
+void TextClipsManager::Add(TextClipSet* clips)
+{
+	if(clips->GetScheme() != NULL)
+	{
+		m_schemeClipSets.insert(MAP_CLIPSETS::value_type(tstring(clips->GetScheme()), clips));
+	}
+	else
+	{
+		m_clipSets.push_back(clips);
+	}
 }
 
 /**
@@ -398,6 +450,12 @@ void TextClipsManager::Save(bool ignoreFilenames)
 	}
 }
 
+void TextClipsManager::Reset(const TextClipsManager& other)
+{
+	clear();
+	copy(other);
+}
+
 /**
  * Called by the file finder class, creates a new TextClipSet from
  * the given file path.
@@ -428,6 +486,23 @@ void TextClipsManager::clear()
 	}
 
 	m_schemeClipSets.clear();
+}
+
+void TextClipsManager::copy(const TextClipsManager& copy)
+{
+	for(LIST_CLIPSETS::const_iterator i = copy.m_clipSets.begin();
+		i != copy.m_clipSets.end();
+		++i)
+	{
+		m_clipSets.push_back( new TextClipSet(**i) );
+	}
+
+	for(MAP_CLIPSETS::const_iterator j = copy.m_schemeClipSets.begin();
+		j != copy.m_schemeClipSets.end();
+		++j)
+	{
+		m_schemeClipSets.insert(MAP_CLIPSETS::value_type( (*j).first, new TextClipSet(*(*j).second)));
+	}
 }
 
 /**

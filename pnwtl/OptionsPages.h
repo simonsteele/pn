@@ -122,6 +122,7 @@ class COptionsPageVisual : public COptionsPageImpl<COptionsPageVisual>,
 			DDX_CHECK(IDC_OPT_LINELIGHTCHECK, m_bLineHighlight)
 			DDX_RADIO(IDC_OPT_NOLLHELPRADIO, m_iLongLineHelp)
 			DDX_UINT(IDC_OPT_LLCOLUMNEDIT, m_iRightColumn)
+			DDX_CHECK(IDC_OPT_LINELIGHTALPHACHECK, m_bLineHighlightAlpha)
 		END_DDX_MAP()
 
 		virtual void OnOK();
@@ -134,6 +135,7 @@ class COptionsPageVisual : public COptionsPageImpl<COptionsPageVisual>,
 		BOOL m_bIndentGuides;
 		BOOL m_bFolding;
 		BOOL m_bLineHighlight;
+		BOOL m_bLineHighlightAlpha;
 		int m_iLongLineHelp;
 		UINT m_iRightColumn;
 
@@ -601,5 +603,6 @@ class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
 #include "OptionsPageAutocomplete.h"
 #include "OptionsPageGlobalStyles.h"
 #include "OptionsPageClips.h"
+#include "OptionsPageExtensions.h"
 
 #endif

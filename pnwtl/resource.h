@@ -238,6 +238,7 @@
 #define IDD_PAGE_AUTOCOMPLETE           441
 #define IDD_PAGE_STYLECLASSES           442
 #define IDD_PAGE_KEYWORDTEXTCLIPS       443
+#define IDD_PAGE_EXTENSIONS             444
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_FINDTYPE_DUMMY              1003
@@ -283,10 +284,10 @@
 #define IDC_AFILE_STARTTEXT2            1012
 #define IDC_AFILE_OTHERTEXT             1012
 #define IDC_FILETYPE_MATCH              1012
-#define IDC_EDIT3                       1012
 #define IDC_SHORTCUT_EDIT               1012
 #define IDC_FONTSIZE_COMBO              1013
 #define IDC_STYLE_IGCOLBUTTON           1013
+#define IDC_HINT_EDIT                   1013
 #define IDC_STYLE_SELBACKBUTTON2        1014
 #define IDC_STYLE_IGCOLBUTTON2          1015
 #define IDC_SCHEMECOMBO                 1016
@@ -324,6 +325,7 @@
 #define IDC_LISTPROJECTS                1039
 #define IDC_KB_COMMANDS                 1039
 #define IDC_STYLES_LIST                 1039
+#define IDC_EXTENSIONSLIST              1039
 #define IDC_TE_CMDEDIT                  1040
 #define IDC_STYLE_SAVEPRESETBUTTON      1040
 #define IDC_TE_FOLDEREDIT               1041
@@ -468,7 +470,7 @@
 #define IDC_CLIPS_ADDBUTTON             1148
 #define IDC_CLIPS_EDITBUTTON            1149
 #define IDC_CLIPS_REMOVEBUTTON          1150
-#define IDC_SHORTCUT_STATIC             1151
+#define IDC_OPT_LINELIGHTALPHACHECK     1152
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -608,7 +610,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        351
 #define _APS_NEXT_COMMAND_VALUE         32988
-#define _APS_NEXT_CONTROL_VALUE         1152
+#define _APS_NEXT_CONTROL_VALUE         1153
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

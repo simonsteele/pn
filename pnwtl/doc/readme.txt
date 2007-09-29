@@ -41,8 +41,12 @@ What's new?
 32) Added $(ProjectProp:*) and $(FileProp:*) tools shortcuts, these retrieve values from project item configurations
 33) Added alpha settings for line highlight, new default colour to make use of alpha
 34) Added option to disable folding
-35) New Prototype keyword-clips feature (try Edit->Insert Clip in c/C++)
+35) New code templates feature (try typing "if" and then Edit->Insert Template in c/c++)
 36) Now supports custom ctags tagger definitions (see in taggers\ctags directory)
+37) Added Open Containing Folder, Open in Default Folder and Copy File Path to various context menus
+38) Text clips now cached in user settings directory to avoid user needing to change files in install path
+39) New extensions method pn_get_extension_info
+40) New extensions types for passing strings safely with stored allocators
 
 Bug Fixes:
 ----------

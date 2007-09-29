@@ -59,29 +59,7 @@ LRESULT CClipsDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	m_combo.SetFont( static_cast<HFONT> (GetStockObject( DEFAULT_GUI_FONT )) );
 	
 	// Fill the combo box.
-
-	const TextClips::LIST_CLIPSETS& sets = m_pTheClips->GetClipSets();
-	
-	tstring lastSet = OPTIONS->Get(PNSK_INTERFACE, _T("LastClipSet"), _T(""));
-
-	int selindex = 0;
-	int index;
-	for(TextClips::LIST_CLIPSETS::const_iterator i = sets.begin();
-		i != sets.end();
-		++i)
-	{
-		index = m_combo.InsertString(m_combo.GetCount(), (*i)->GetName());
-		m_combo.SetItemDataPtr(index, *i);
-		if(lastSet == (*i)->GetName())
-			selindex = index;
-	}
-
-	if( sets.size() > 0 )
-	{
-		m_combo.SetCurSel(selindex);
-		BOOL unneeded;
-		OnComboSelChange(0, 0, NULL, unneeded);
-	}
+	setupView();
 
 	return 0;
 }
@@ -90,10 +68,7 @@ LRESULT CClipsDocker::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 {
 	bHandled = FALSE;
 
-	CWindowText wt(m_combo.m_hWnd);
-	LPCTSTR sztw = (LPCTSTR)wt;
-	if(sztw && _tcslen(sztw) > 0)
-		OPTIONS->Set(PNSK_INTERFACE, _T("LastClipSet"), sztw);
+	saveView();
 
 	return 0;
 }
@@ -231,6 +206,16 @@ LRESULT CClipsDocker::OnClipGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	return 0;
 }
 
+void CClipsDocker::Reset()
+{
+	saveView();
+
+	m_view.DeleteAllItems();
+	m_combo.Clear();
+
+	setupView();
+}
+
 void CClipsDocker::LoadSet(TextClips::TextClipSet* set)
 {
 	m_view.DeleteAllItems();
@@ -262,5 +247,39 @@ void CClipsDocker::InsertClip(TextClips::Clip* tc)
 		tc->Insert(pS);
 		
 		::SetFocus(pS->m_hWnd);
+	}
+}
+
+void CClipsDocker::saveView()
+{
+	CWindowText wt(m_combo.m_hWnd);
+	LPCTSTR sztw = (LPCTSTR)wt;
+	if(sztw && _tcslen(sztw) > 0)
+		OPTIONS->Set(PNSK_INTERFACE, _T("LastClipSet"), sztw);
+}
+
+void CClipsDocker::setupView()
+{
+	const TextClips::LIST_CLIPSETS& sets = m_pTheClips->GetClipSets();
+	
+	tstring lastSet = OPTIONS->Get(PNSK_INTERFACE, _T("LastClipSet"), _T(""));
+
+	int selindex = 0;
+	int index;
+	for(TextClips::LIST_CLIPSETS::const_iterator i = sets.begin();
+		i != sets.end();
+		++i)
+	{
+		index = m_combo.InsertString(m_combo.GetCount(), (*i)->GetName());
+		m_combo.SetItemDataPtr(index, *i);
+		if(lastSet == (*i)->GetName())
+			selindex = index;
+	}
+
+	if( sets.size() > 0 )
+	{
+		m_combo.SetCurSel(selindex);
+		BOOL unneeded;
+		OnComboSelChange(0, 0, NULL, unneeded);
 	}
 }

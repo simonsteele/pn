@@ -207,6 +207,11 @@ void App::SetCanLoadExtensions(bool canLoad)
 	m_bCanLoadExtensions = canLoad;
 }
 
+App::ExtensionList& App::GetExtensions()
+{
+	return m_exts;
+}
+
 /**
  * This method is provided to clear out the PN user data
  * store when things go badly wrong. It will also remove
@@ -248,7 +253,9 @@ void App::unloadExtensions()
 	for(ExtensionList::const_iterator i = m_exts.begin(); i != m_exts.end(); ++i)
 	{
 		(*i)->Unload();
+		delete (*i);
 	}
+
 	m_exts.clear();
 }
 

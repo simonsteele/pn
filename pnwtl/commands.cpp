@@ -567,6 +567,9 @@ bool CommandDispatch::Load(LPCTSTR filename)
 	if(m_keyMap != NULL)
 		delete m_keyMap;
 	m_keyMap = new KeyMap(loadedcmds);
+	
+	// Don't need the loaded commands any more
+	delete loadedcmds;
 
 	// Add the extension commands
 	if(storedexts)

@@ -39,7 +39,7 @@ BOOL APIENTRY DllMain( HANDLE /*hModule*/,
 /**
  * Initialise the extension
  */
-bool __stdcall init_pn_extension(int iface_version, extensions::IPN* pn)
+bool __stdcall pn_init_extension(int iface_version, extensions::IPN* pn)
 {
 	if(iface_version != PN_EXT_IFACE_VERSION)
 		return false;
@@ -58,9 +58,18 @@ bool __stdcall init_pn_extension(int iface_version, extensions::IPN* pn)
 }
 
 /**
+ * Get display info
+ */
+void __stdcall pn_get_extension_info(PN::BaseString& name, PN::BaseString& version)
+{
+	name = "CTags Tagger";
+	version = "1.2";
+}
+
+/**
  * Close the extension
  */
-void __stdcall exit_pn_extension()
+void __stdcall pn_exit_extension()
 {
 	// TODO: Cleanup
 }
@@ -225,13 +234,8 @@ bool CTagsTagSource::FindTags(ITagSink* sink,
 
 	TinyString runopts(clopts);
 
-	//::OutputDebugString(clopts);
-	//::OutputDebugString(L"\n");
-
-	//OSVERSIONINFO osv = {sizeof(OSVERSIONINFO), 0, 0, 0, 0, L""};
 	OSVERSIONINFOW osv = {sizeof(OSVERSIONINFOW), 0, 0, 0, 0, L""};
 
-	//::GetVersionEx(&osv);
 	::GetVersionExW(&osv);
 	bool bWin9x = osv.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS;
 	
