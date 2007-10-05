@@ -2004,6 +2004,13 @@ LRESULT CMainFrame::OnWebSFRFE(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	return 0;
 }
 
+LRESULT CMainFrame::OnWebPNDoc(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	::ShellExecute(m_hWnd, _T("open"), _T("http://pnotepad.org/docs/"), NULL, NULL, SW_SHOW);
+
+	return 0;
+}
+
 void CMainFrame::launchFind(EFindDialogType findType)
 {
 	HWND hWndCur = GetCurrentEditor();

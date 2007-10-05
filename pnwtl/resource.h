@@ -602,6 +602,8 @@
 #define ID_PROJECT_RENAME32985          32985
 #define ID_WORKSPACE_RENAME             32986
 #define ID_EDIT_INSERTCLIP              32987
+#define ID_HELP_ONLINEHELP              32988
+#define ID_HELP_WEB_DOCS                32989
 
 // Next default values for new objects
 // 
@@ -609,7 +611,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        351
-#define _APS_NEXT_COMMAND_VALUE         32988
+#define _APS_NEXT_COMMAND_VALUE         32990
 #define _APS_NEXT_CONTROL_VALUE         1153
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

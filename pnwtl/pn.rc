@@ -255,6 +255,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "PN &HomePage",                251
         MENUITEM "PN on &Sourceforge",          252
+        MENUITEM "&Online Help",                ID_HELP_WEB_DOCS
         MENUITEM SEPARATOR
         MENUITEM "Report a &bug...",            253
         MENUITEM "Request a &feature...",       ID_HELP_WEB_SR
@@ -1273,7 +1274,7 @@ BEGIN
     CONTROL         "Include Scheme Keywords",IDC_AUTOCOMPLETEKEYWORDSCHECK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,24,99,10
     CONTROL         "Include Tags",IDC_AUTOCOMPLETETAGSCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,36,57,10
-    CONTROL         "Autocomplete when asked",IDC_MANUALRADIO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,10,52,100,10
+    CONTROL         "AutoComplete when asked",IDC_MANUALRADIO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,10,52,101,10
     CONTROL         "AutoComplete After:",IDC_NKEYSRADIO,"Button",BS_AUTORADIOBUTTON,10,66,83,10
     EDITTEXT        IDC_AUTOCOMPLETECHARSTEXT,98,64,57,15,ES_AUTOHSCROLL
     LTEXT           "characters",IDC_STATIC,163,66,78,9
@@ -1342,7 +1343,7 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "",-1,"Static",SS_ETCHEDHORZ,1,4,298,1
-    LTEXT           "Settings",-1,0,0,27,8
+    LTEXT           "Extensions",-1,0,0,36,8
     CONTROL         "",IDC_EXTENSIONSLIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,10,14,279,117
 END
 
@@ -1865,7 +1866,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_OUTPUTSUPPORT       "Programmer's Notepad 2 provides built-in support\nfor parsing output from the following tools:\n\nBorland C++\nMicrosoft Compilers\nGCC\nlcc-win32\nPython\nPerl\nand other similar tools."
-    IDS_TOOLS_VARSTRINGS    "%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectName),Name of Project,Project 1,$(ProjectPath),Path of Project,c:\\source\\pn2\\,$(ProjectGroupName),Name of the Project Group,Project Group 1,$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\,$(PNPath),PN Install Path,c:\\program files\\pn,%(ENV),ENV Environment Variable,ENV value"
+    IDS_TOOLS_VARSTRINGS    "%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectName),Name of Project,Project 1,$(ProjectPath),Path of Project,c:\\source\\pn2\\,$(ProjectGroupName),Name of the Project Group,Project Group 1,$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\,$(PNPath),PN Install Path,c:\\program files\\pn,$(ProjectProp:x),Project Property,value of 'x',$(FileProp:x),File Property,value of 'x',%(ENV),ENV Environment Variable,ENV value"
     IDS_TOOLS_SELWORKINGFOLDER "Select the working folder for the tool:"
     IDS_PROJECTGROUP        "Project Group"
     IDS_PROJECT             "Project"

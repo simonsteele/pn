@@ -63,7 +63,7 @@ bool __stdcall pn_init_extension(int iface_version, extensions::IPN* pn)
 void __stdcall pn_get_extension_info(PN::BaseString& name, PN::BaseString& version)
 {
 	name = "CTags Tagger";
-	version = "1.2";
+	version = "1.3";
 }
 
 /**
@@ -130,9 +130,9 @@ void CTagsTagSource::LoadAdditionalLanguages()
 		wchar_t* path = ConvertMBtoWC( optionsFile.c_str() );
 		if ( path )
 		{
-			m_optionsParam = L" --options=";
+			m_optionsParam = L" --options=\"";
 			m_optionsParam += path;
-			m_optionsParam += L" ";
+			m_optionsParam += L"\" ";
 			delete [] path;
 		}
 	}
