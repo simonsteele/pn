@@ -67,16 +67,15 @@ public:
 	HTREEITEM RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInfo);//Manuel Sandoval: Function defined for recursive insertion into tree
 	LRESULT OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 
-protected:
+private:
 	void		deleteFileTree();
 	void		deleteFileTreeItem(CChildFrame* pChildFrame);
 	void		deleteFileItem(HTREEITEM hRoot);
 	void		addFileTree(CChildFrame* pChildFrame);
 	void 		activateFileTree(CChildFrame* pChildFrame);
-//	BOOL		OnToolTipNotify(UINT id, NMHDR *pNMHDR,LRESULT *pResult);
+	void		deleteMethodInfo(LPMETHODINFO mi);
+	void		recursiveDelete(HTREEITEM hParent);
 	
-
-protected:
 	// Drag and Drop Handlers
 	LRESULT		OnLButtonDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT		OnRButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -86,7 +85,6 @@ protected:
 	LRESULT		OnCollapsAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnExpandAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-protected:
 	HTREEITEM				hLastItem;
 	ShellImageList*			shellImages;
 	CImageList				m_imageList;

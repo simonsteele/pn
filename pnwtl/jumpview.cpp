@@ -16,6 +16,12 @@
 #include "plugins.h"
 #include "jumpview.h"
 
+#if defined (_DEBUG)
+	#define new DEBUG_NEW
+	#undef THIS_FILE
+	static char THIS_FILE[] = __FILE__;
+#endif
+
 //neu
 //#define COLWIDTH_PARENT 90
 //#define COLWIDTH_LINE	60
@@ -213,37 +219,47 @@ void CJumpTreeCtrl::deleteFileTreeItem(CChildFrame* pChildFrame)
 			deleteFileItem(hRoot);
 			break;
 		}
+
 		hRoot = GetNextItem(hRoot, TVGN_NEXT);
 	}
 }
 
 void CJumpTreeCtrl::deleteFileItem(HTREEITEM hRoot)
 {
- 	HTREEITEM hChildItem,hItem;
+	recursiveDelete(hRoot);
+	DeleteItem(hRoot);
+}
+
+void CJumpTreeCtrl::recursiveDelete(HTREEITEM hParent)
+{
+#ifdef _DEBUG
+	char buffer[256];
+#endif
+	HTREEITEM hChildItem, hItem;
 	LPMETHODINFO methodInfoItem;
-	hChildItem = GetChildItem(hRoot);
-	while( hChildItem != NULL)
+	
+	hChildItem = GetChildItem(hParent);
+	while ( hChildItem != NULL)
 	{
 		hItem = GetChildItem(hChildItem);
-		while( hItem != NULL)
-		{ 
-			methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hItem));
-			if (methodInfoItem->methodName)
-				delete methodInfoItem->methodName;
-			if (methodInfoItem->parentName)
-				delete methodInfoItem->parentName;
-			if (methodInfoItem->fullText)
-				delete methodInfoItem->fullText;
-			delete methodInfoItem;
-			DeleteItem(hItem);
-			hItem = GetChildItem(hChildItem);
+		if (hItem != NULL)
+		{
+			recursiveDelete(hChildItem);
 		}
+
+#ifdef _DEBUG
+		GetItemText(hChildItem, &buffer[0], 256);
+#endif
+		
 		methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hChildItem));
-		delete methodInfoItem;
+		if (methodInfoItem != NULL)
+		{
+			deleteMethodInfo(methodInfoItem);
+		}
+
 		DeleteItem(hChildItem);
-		hChildItem = GetChildItem(hRoot);
+		hChildItem = GetChildItem(hParent);
 	}
-	DeleteItem(hRoot);
 }
 	
 //Manuel Sandoval: Rewrote OnFound for ScintillaImpl can feature autocompleting.
@@ -364,31 +380,34 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 		//If "class"/"struct" node still doesn't exist, or owner class/struct doesn't exist, create them:
 		if(!hClassContainer || !hClassNode)
 		{		
-			//hClassNode=hRoot; //Insert in current node
-			LPMETHODINFO mi = new extensions::METHODINFO;
+			// The container or class node does not exist, let's make it by creating a fake methodinfo for it:
+			extensions::METHODINFO mi;
 			if(methodInfo->parentName[0] == '_')
-				mi->type = tag_struct;
+				mi.type = tag_struct;
 			else 
-				mi->type = tag_class;			
+				mi.type = tag_class;
+			
 			/*when should we use tag_union and tag_typedef? 
 			If you solve it, you have to remove the restriction:
 			if(!strncmp(methodInfo->parentName,"__",2))return 0;
 			at the begining of this function.
 			*/
 
-			mi->userData = methodInfo->userData;
-			mi->lineNumber = -1; //we don't know where class begins, so we put this. When it is defined by ctags, this is updated.
-			mi->fullText = FirstAncestor;
-			mi->methodName = mi->fullText;
-			mi->image = jumpToTagImages[mi->type].imagesNumber;
-			mi->parentName = 0;//NULL, to terminate recursion. Name is obtained from hRoot
-			//Returned value is the owner class:
-			hClassNode = RecursiveInsert(hRoot, mi);			
+			mi.userData = methodInfo->userData;
+			mi.lineNumber = -1; //we don't know where the container begins, so we put this. When it is defined by ctags, this is updated.
+			mi.fullText = FirstAncestor;
+			mi.methodName = mi.fullText;
+			mi.image = jumpToTagImages[mi.type].imagesNumber;
+			mi.parentName = 0;//NULL, to terminate recursion. Name is obtained from hRoot
+			
+			// Returned value is the owner class:
+			hClassNode = RecursiveInsert(hRoot, &mi);
 		}
-		//Now insert item in its owner class. To avoid an infinite recursion, we remove
-		//first ancestor from parentName, until at some time it becomes ""
+		
+		// Now insert item in its owner class. To avoid an infinite recursion, we remove
+		// first ancestor from parentName, until at some time it becomes ""
 		char* tmp = methodInfo->parentName;
-		if(!strcmp(FirstAncestor,methodInfo->parentName))
+		if (!strcmp(FirstAncestor, methodInfo->parentName))
 		{
 			methodInfo->parentName = 0; //This ends recursion
 		}
@@ -398,7 +417,8 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 			memset(NextAncestor, 0, sizeof(NextAncestor));
 			strcpy(NextAncestor, &(methodInfo->parentName[strlen(FirstAncestor)+1]));				
 			methodInfo->parentName = NextAncestor;
-		}		
+		}
+
 		ret = RecursiveInsert(hClassNode, methodInfo);
 		methodInfo->parentName = tmp;
 	}
@@ -422,17 +442,19 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 			if (methodInfo->type <= TAG_MAX)
 			{
 				hTypeContainer = InsertItem( jumpToTagImages[methodInfo->type].imageName, 0, 0, hRoot, TVI_LAST );
+				
 				methodInfoItem = new extensions::METHODINFO;
 				memcpy(methodInfoItem, methodInfo, sizeof(extensions::METHODINFO));
-				methodInfoItem->methodName = new char[strlen(jumpToTagImages[methodInfo->type].imageName)+1];
-				strcpy(methodInfoItem->methodName,jumpToTagImages[methodInfo->type].imageName);
+				methodInfoItem->methodName = tcsnewdup(jumpToTagImages[methodInfo->type].imageName);
 				methodInfoItem->parentName = 0;
-				methodInfoItem->fullText = methodInfoItem->methodName;
+				methodInfoItem->fullText = tcsnewdup(methodInfoItem->methodName);
+				
 				SetItemData(hTypeContainer, reinterpret_cast<DWORD_PTR>( methodInfoItem ));
 				SetItemImage(hTypeContainer, imagesNumber, imagesNumber);
 			} 
 			else return 0; //This tag is undefined. Can't be inserted.
 		}
+
 		//check new item is not repeated:
 		HTREEITEM hChildItem = 0;
 		HTREEITEM checkNode = GetChildItem(hTypeContainer);
@@ -448,34 +470,33 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 			checkNode = GetNextItem(checkNode, TVGN_NEXT );
 		}
 
+		methodInfoItem = NULL;
+
 		if(!checkNode)
 		{
 			hChildItem = InsertItem( methodInfo->methodName, imagesNumber, imagesNumber, hTypeContainer, TVI_LAST );
+			methodInfoItem = new extensions::METHODINFO;
 		}
 		else 
 		{
 			hChildItem = checkNode;
+			methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(checkNode));
 		}
 		
-		methodInfoItem = new extensions::METHODINFO;
 		//If new item is already inserted, update it's info (like the line where it is defined.)
 		memcpy(methodInfoItem, methodInfo, sizeof(extensions::METHODINFO));
 		
 		LPMETHODINFO parentInfo = reinterpret_cast<LPMETHODINFO>(GetItemData(hRoot));	
-		//char* pName= parentInfo->methodName;
-		//methodInfoItem->parentName=new char[strlen(pName)+1];			
-		//strcpy(methodInfoItem->parentName,pName);
+		
 _RPT2(_CRT_WARN,"\nInsert %s in %s", methodInfo->methodName, methodInfo->parentName);
 		if (methodInfo->methodName)
 		{
-			methodInfoItem->methodName = new char[strlen(methodInfo->methodName)+1];
-			strcpy(methodInfoItem->methodName, methodInfo->methodName);
+			methodInfoItem->methodName = tcsnewdup(methodInfo->methodName);
 		}
 								
 		if (methodInfo->fullText)
 		{
-			methodInfoItem->fullText = new char[strlen(methodInfo->fullText)+1];
-			strcpy(methodInfoItem->fullText, methodInfo->fullText);
+			methodInfoItem->fullText = tcsnewdup(methodInfo->fullText);
 		}
 		
 		SetItemData(hChildItem, reinterpret_cast<DWORD_PTR>( methodInfoItem ));
@@ -582,6 +603,18 @@ LRESULT CJumpTreeCtrl::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 //	}
 	return 0;
 }
+
+void CJumpTreeCtrl::deleteMethodInfo(LPMETHODINFO methodInfoItem)
+{
+	if (methodInfoItem->methodName)
+		delete [] methodInfoItem->methodName;
+	if (methodInfoItem->parentName)
+		delete [] methodInfoItem->parentName;
+	if (methodInfoItem->fullText)
+		delete [] methodInfoItem->fullText;
+	delete methodInfoItem;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // CJumpDocker
 //////////////////////////////////////////////////////////////////////////////
