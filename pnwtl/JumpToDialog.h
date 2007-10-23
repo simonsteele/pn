@@ -2,7 +2,7 @@
  * @file jumptodialog.h
  * @brief Jump To Dialog
  * @author Simon Steele
- * @note Copyright (c) 2004 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2004-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -13,7 +13,7 @@
 /**
  * @brief Jump to dialog class
  */
-class CJumpToDialog : public CDialogImpl<CJumpToDialog>, IJumpToFindSink
+class CJumpToDialog : public CDialogImpl<CJumpToDialog>, extensions::ITagSink
 {
 	typedef CDialogImpl<CJumpToDialog> baseClass;
 	public:

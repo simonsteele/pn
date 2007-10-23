@@ -11,28 +11,11 @@
 #include "resource.h"
 #include "jumpto.h"
 #include "jumptodialog.h"
+#include "jumpview.h"
 
 #define COLWIDTH_PARENT 90
 #define COLWIDTH_LINE	60
 #define COLWIDTH_TAG	153
-
-static int jumpToTagImages [TAG_MAX+1] = 
-{
-	0,	/* TAG_UNKNOWN */
-	1,	/* TAG_FUNCTION */
-	2,  /* TAG_PROCEDURE */
-	3,	/* TAG_CLASS */
-	4,	/* TAG_DEFINE */
-	5,	/* TAG_ENUM */
-	0,	/* TAG_FILENAME */
-	0,  /* TAG_ENUMNAME */
-	6,	/* TAG_MEMBER */
-	7,	/* TAG_PROTOTYPE */
-	8,	/* TAG_STRUCTURE */
-	9,	/* TAG_TYPEDEF */
-	0,	/* TAG_UNION */
-	10	/* TAG_VARIABLE */
-};
 
 CJumpToDialog::CJumpToDialog(CChildFrame* pChild) : edtTag(this, 1)
 {
@@ -80,7 +63,7 @@ LRESULT CJumpToDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	buttonWidth = rcBtn.Width();
 	buttonGapX = rcCancel.left - rcBtn.right;
 
-	JumpToHandler::GetInstance()->DoJumpTo(m_pChild, this);
+	JumpToHandler::GetInstance()->FindTags(m_pChild, this);
 
 	return 0;
 }
@@ -166,7 +149,7 @@ void CJumpToDialog::OnFound(int count, LPMETHODINFO methodInfo)
 	lvi.mask = LVIF_TEXT | LVIF_IMAGE;
 	lvi.pszText = (TCHAR*)methodInfo->methodName;
 	if(methodInfo->type <= TAG_MAX)
-		lvi.iImage = jumpToTagImages[methodInfo->type];
+		lvi.iImage = jumpToTagImages[methodInfo->type].imagesNumber;
 	else
 		lvi.iImage = 0;
 	int index = list.InsertItem(&lvi);

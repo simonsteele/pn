@@ -21,12 +21,7 @@
 //#define COLWIDTH_LINE	60
 //#define COLWIDTH_TAG	153
 
-typedef struct{
-		int imagesNumber;
-		LPCTSTR imageName;
-}TAGIMAGES;
-
-static TAGIMAGES jumpToTagImages [TAG_MAX+1] = 
+TAGIMAGES jumpToTagImages [TAG_MAX+1] = 
 {
 	{1,_T("unknown")},		/* TAG_UNKNOWN      0*/
 	{2,_T("function")},		/* TAG_FUNCTION 	1*/

@@ -210,7 +210,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	ATLASSERT(SUCCEEDED(hRes));
 
 #ifdef _DEBUG
-	//_CrtSetBreakAlloc(5200);
+	_CrtSetBreakAlloc(5434);
 #endif
 
 #if (_WIN32_IE >= 0x0300)

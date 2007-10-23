@@ -16,7 +16,13 @@
 #include "jumptointerface.h"
 #include "jumpto.h"
 
+typedef struct
+{
+		int imagesNumber;
+		LPCTSTR imageName;
+} TAGIMAGES;
 
+extern TAGIMAGES jumpToTagImages [TAG_MAX+1];
 
 #define JUMPVIEW_FILE_ADD		0x1
 #define JUMPVIEW_FILE_CLOSE		0x2

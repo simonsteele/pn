@@ -19,6 +19,7 @@
 #include "docprops.h"
 #include "include/pagesetupdialog.h"
 #include "jumpto.h"
+#include "JumpToDialog.h"
 #include "jumpview.h"
 #include "afiles.h"
 #include "scriptregistry.h"
@@ -923,6 +924,17 @@ LRESULT CChildFrame::OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		m_view.AutoCSetSeparator(',');
 		m_view.AutoCShow(word.size(), cliptext.c_str());
 		m_view.AutoCSetSeparator(sep);
+	}
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnJumpTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CJumpToDialog dlg(this);
+	if(dlg.DoModal() == IDOK)
+	{
+		PostMessage(PN_GOTOLINE, 0, dlg.GetLine());
 	}
 
 	return 0;
