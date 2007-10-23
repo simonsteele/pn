@@ -20,7 +20,8 @@ CScintillaImpl::CScintillaImpl()
 	lastFindDetails.startPos = 0;
 	lastFindDetails.direction = true;
 
-	m_bAutoCompleteIgnoreCase = false;
+	// Default to case-insensitive...
+	m_bAutoCompleteIgnoreCase = true;
 
 	// To be replaced with scheme-based autocomplete:
 	m_autoComplete = new DefaultAutoComplete(m_bAutoCompleteIgnoreCase);
