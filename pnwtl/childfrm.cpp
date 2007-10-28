@@ -25,6 +25,7 @@
 #include "scriptregistry.h"
 #include "textclips.h"
 #include "autocomplete.h"
+#include "autocompletehandler.h"
 
 #include "tabbingframework/TabbedMDISave.h"
 

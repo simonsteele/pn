@@ -13,6 +13,13 @@
 #include "include/encoding.h"
 #include "scaccessor.h"
 #include "autocomplete.h"
+#include "autocompletehandler.h"
+
+#if defined (_DEBUG)
+	#define new DEBUG_NEW
+	#undef THIS_FILE
+	static char THIS_FILE[] = __FILE__;
+#endif
 
 CScintillaImpl::CScintillaImpl()
 {
@@ -24,7 +31,7 @@ CScintillaImpl::CScintillaImpl()
 	m_bAutoCompleteIgnoreCase = true;
 
 	// To be replaced with scheme-based autocomplete:
-	m_autoComplete = new DefaultAutoComplete(m_bAutoCompleteIgnoreCase);
+	m_autoComplete = new DefaultAutoComplete(m_bAutoCompleteIgnoreCase, OPTIONS->GetCached(extensions::IOptions::OAutoCompleteUseKeywords) == TRUE);
 }
 
 CScintillaImpl::~CScintillaImpl()
@@ -226,7 +233,7 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 				m_nCurrentCallTip--;
 				FillFunctionDefinition();
 			} 
-			else if (scn->position == 0 && m_nCurrentCallTip + 1 < m_nMaxCallTips) 
+			else if (scn->position == 2 && m_nCurrentCallTip + 1 < m_nMaxCallTips) 
 			{
 				m_nCurrentCallTip++;
 				FillFunctionDefinition();
@@ -295,7 +302,7 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 			
 			if (CallTipActive()) 
 			{
-				if (contains(m_calltipParametersEnd, scn->ch)) 
+				if (contains(m_calltipParametersEnd.c_str(), scn->ch)) 
 				{
 					m_nBraceCount--;
 					if (m_nBraceCount < 1)
@@ -303,7 +310,7 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 					else
 						StartCallTip();
 				} 
-				else if (contains(m_calltipParametersStart, scn->ch)) 
+				else if (contains(m_calltipParametersStart.c_str(), scn->ch)) 
 				{
 					m_nBraceCount++;
 					StartCallTip();
@@ -312,32 +319,32 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 			} 
 			else if (AutoCActive()) 
 			{
-				if (contains(m_calltipParametersStart, scn->ch)) 
+				if (contains(m_calltipParametersStart.c_str(), scn->ch)) 
 				{
 					m_nBraceCount++;
 					StartCallTip();
 				} 
-				else if (contains(m_calltipParametersEnd, scn->ch)) 
+				else if (contains(m_calltipParametersEnd.c_str(), scn->ch)) 
 				{
 					m_nBraceCount--;	
 				} 
-				else if (!contains(m_strWordCharacters, scn->ch)) 
+				else if (!contains(m_strWordCharacters.c_str(), scn->ch)) 
 				{
 					AutoCCancel();
-					if (contains(m_autoCompleteStartCharacters, scn->ch))
+					if (contains(m_autoCompleteStartCharacters.c_str(), scn->ch))
 						StartAutoComplete();
 				}
 			}
 			else 
 			{
-				if (contains(m_calltipParametersStart, scn->ch)) 
+				if (contains(m_calltipParametersStart.c_str(), scn->ch)) 
 				{
 					m_nBraceCount = 1;
 					StartCallTip();
 				}
 				else
 				{
-					if (m_bAutoActivate && contains(m_autoCompleteStartCharacters, scn->ch))
+					if (m_bAutoActivate && contains(m_autoCompleteStartCharacters.c_str(), scn->ch))
 						StartAutoComplete();
 				}
 			}
@@ -1465,7 +1472,6 @@ void CScintillaImpl::InitAutoComplete(Scheme* sch)
 	
 	/*These parameters are adjusted to most languages but might be necessary to set them to
 	 *Specific languages - I don't know which, but Schema info should be enough!*/
-	m_calltipEndDefinition = "";
 	m_calltipParametersEnd = ")";
 	m_calltipParametersStart = "(";	
 	m_calltipParametersSeparators = ",;";
@@ -1698,19 +1704,20 @@ void CScintillaImpl::SetLineNumberWidth()
 bool CScintillaImpl::StartCallTip()
 {
 	m_nCurrentCallTip = 0;
-	m_currentCallTipWord.Empty();
+	m_currentCallTipWord.clear();
 	tstring strLine = GetLineText();
 	int current = GetCaretInLine();
 	int pos = GetCurrentPos();
 	int braces;
+	
 	do 
 	{
 		braces = 0;
-		while (current > 0 && (braces || !contains(m_calltipParametersStart, strLine[current - 1]))) 
+		while (current > 0 && (braces || !contains(m_calltipParametersStart.c_str(), strLine[current - 1]))) 
 		{
-			if (contains(m_calltipParametersStart, strLine[current - 1]))
+			if (contains(m_calltipParametersStart.c_str(), strLine[current - 1]))
 				braces--;
-			else if (contains(m_calltipParametersEnd, strLine[current - 1]))
+			else if (contains(m_calltipParametersEnd.c_str(), strLine[current - 1]))
 				braces++;
 			current--;
 			pos--;
@@ -1730,25 +1737,24 @@ bool CScintillaImpl::StartCallTip()
 			pos--;
 		}
 	} 
-
-	// SS BUGCHECK: Potential endless loop:
-	while (current > 0 && !contains(m_calltipWordCharacters, strLine[current - 1]));
+	while (current > 0 && !contains(m_calltipWordCharacters.c_str(), strLine[current - 1]));
 	
 	if (current <= 0)
 		return true;
 
 	m_nStartCalltipWord = current - 1;
 	while (m_nStartCalltipWord > 0 &&
-	        contains(m_calltipWordCharacters, strLine[m_nStartCalltipWord - 1])) 
+	        contains(m_calltipWordCharacters.c_str(), strLine[m_nStartCalltipWord - 1])) 
 	{
 		m_nStartCalltipWord--;
 	}
 
-	strLine.resize(current);//strLine.SetAt(current, '\0');
-	m_currentCallTipWord = strLine.substr(m_nStartCalltipWord).c_str();
-	m_functionDefinition.Empty();
-	//Platform::DebugPrintf("word  is [%s] %d %d %d\n", currentCallTipWord.c_str(), currentCallTipWord.length(), pos, pos - rootlen);
+	strLine.resize(current);
+	m_currentCallTipWord = strLine.substr(m_nStartCalltipWord);
+	m_functionDefinition.clear();
+	
 	FillFunctionDefinition(pos);
+	
 	return true;
 }
 
@@ -1756,46 +1762,47 @@ void CScintillaImpl::ContinueCallTip()
 {
 	tstring strLine = GetLineText();
 	int current = GetCaretInLine();
-	const char* functionDefinition = m_functionDefinition;
+	const char* functionDefinition = m_functionDefinition.c_str();
 
 	int braces = 0;
 	int commas = 0;
 	for (int i = m_nStartCalltipWord; i < current; i++) 
 	{
-		if (contains(m_calltipParametersStart, strLine[i]))	
+		if (contains(m_calltipParametersStart.c_str(), strLine[i]))	
 			braces++;
-		else if (contains(m_calltipParametersEnd, strLine[i]) && braces > 0)
+		else if (contains(m_calltipParametersEnd.c_str(), strLine[i]) && braces > 0)
 			braces--;
-		else if (braces == 1 && contains(m_calltipParametersSeparators, strLine[i]))
+		else if (braces == 1 && contains(m_calltipParametersSeparators.c_str(), strLine[i]))
 			commas++;			
 	}
 
 	int startHighlight = 0;
-	while (functionDefinition[startHighlight] && !contains(m_calltipParametersStart, m_functionDefinition[startHighlight]))
+	while (functionDefinition[startHighlight] && !contains(m_calltipParametersStart.c_str(), m_functionDefinition[startHighlight]))
 		startHighlight++;
 		
-	if (contains(m_calltipParametersStart, functionDefinition[startHighlight]))
+	if (contains(m_calltipParametersStart.c_str(), functionDefinition[startHighlight]))
 		startHighlight++;
 		
 	while (functionDefinition[startHighlight] && commas > 0) 
 	{
-		if (contains(m_calltipParametersSeparators, functionDefinition[startHighlight]))
+		if (contains(m_calltipParametersSeparators.c_str(), functionDefinition[startHighlight]))
 			commas--;
 		// If it reached the end of the argument list it means that the user typed in more
 		// arguments than the ones listed in the calltip
-		if (contains(m_calltipParametersEnd, functionDefinition[startHighlight]))
+		if (contains(m_calltipParametersEnd.c_str(), functionDefinition[startHighlight]))
 			commas = 0;
 		else 
 			startHighlight++;
 	}
-	if (contains(m_calltipParametersSeparators, functionDefinition[startHighlight]))
+	if (contains(m_calltipParametersSeparators.c_str(), functionDefinition[startHighlight]))
 		startHighlight++;
 	int endHighlight = startHighlight;
-	while (functionDefinition[endHighlight] && !contains(m_calltipParametersSeparators, functionDefinition[endHighlight]) && !contains(m_calltipParametersEnd, functionDefinition[endHighlight]))
+	while (functionDefinition[endHighlight] && !contains(m_calltipParametersSeparators.c_str(), functionDefinition[endHighlight]) && !contains(m_calltipParametersEnd.c_str(), functionDefinition[endHighlight]))
 		endHighlight++;
 		
 //	SendEditor(SCI_CALLTIPSETHLT, startHighlight, endHighlight);
 	CallTipSetHlt(startHighlight, endHighlight);
+_RPT2(_CRT_WARN,"---CallTipSetHlt %i, %i\n",startHighlight,endHighlight);
 }
 
 unsigned int LengthWord(const char *word, char otherSeparator) 
@@ -1816,244 +1823,43 @@ unsigned int LengthWord(const char *word, char otherSeparator)
 	return endWord - word;
 }
 
-tstring CScintillaImpl::GetNearestWords(CStringArray& arr, const char *wordStart, int searchLen, bool ignoreCase, char otherSeparator, bool exactLen)	
-{
-	unsigned int wordlen;		// length of the word part (before the '(' brace) of the api array element
-	tstring wordsNear;			// nearest words result
-	int start = 0;				// lower bound of the api array block to search
-	int end = arr.size() - 1;	// upper bound of the api array block to search
-	int pivot;					// index of api array element just being compared
-	int cond;					// comparison result (in the sense of strcmp() result)
-
-	if (0 == arr.size())
-		return wordsNear; // is empty
-
-	/*tstring sdebug;
-	for(CScintillaImpl::CStringArray::const_iterator i = arr.begin();
-		i != arr.end(); ++i)
-		sdebug += (*i) + " ";
-	LOG(sdebug.c_str());*/
-
-	if (ignoreCase) {
-/*		if (!sortedNoCase) {
-			sortedNoCase = true;
-			SortWordListNoCase(wordsNoCase, len);
-		}
-*/
-		while (start <= end) { // Binary searching loop
-			pivot = (start + end) / 2;
-			cond = _strnicmp(wordStart, arr[pivot].c_str(), searchLen);
-			if (!cond) {
-				// Find first match
-				while ((pivot > start) &&
-					(0 == _strnicmp(wordStart, arr[pivot-1].c_str(), searchLen))) {
-					--pivot;
-				}
-				// Grab each match
-				while ((pivot <= end) &&
-					(0 == _strnicmp(wordStart, arr[pivot].c_str(), searchLen))) {
-					wordlen = LengthWord(arr[pivot].c_str(), otherSeparator) + 1;
-					++pivot;
-					if (exactLen && wordlen != LengthWord(wordStart, otherSeparator) + 1)
-						continue;
-					if (!wordsNear.empty())
-						wordsNear += ' ';
-					wordsNear += arr[pivot-1].substr(0, wordlen);// .Left(wordlen);
-				}
-				return wordsNear;
-			} else if (cond < 0) {
-				end = pivot - 1;
-			} else if (cond > 0) {
-				start = pivot + 1;
-			}
-		}
-	} else {	// Preserve the letter case
-/*		if (!sorted) {
-			sorted = true;
-			SortWordList(words, len);
-		}
-*/
-		while (start <= end) { // Binary searching loop
-			pivot = (start + end) / 2;
-			cond = strncmp(wordStart, arr[pivot].c_str(), searchLen);
-			if (!cond) {
-				// Find first match
-				while ((pivot > start) &&
-					(0 == strncmp(wordStart, arr[pivot-1].c_str(), searchLen))) {
-					--pivot;
-				}
-				// Grab each match
-				while ((pivot <= end) &&
-					(0 == strncmp(wordStart, arr[pivot].c_str(), searchLen))) {
-						wordlen = LengthWord(arr[pivot].c_str(), otherSeparator) + 1;
-					++pivot;
-					if (exactLen && wordlen != LengthWord(wordStart, otherSeparator) + 1)
-						continue;
-					if (!wordsNear.empty())
-						wordsNear += ' ';
-					wordsNear += arr[pivot-1].substr(0, wordlen);
-				}
-				return wordsNear;
-			} else if (cond < 0) {
-				end = pivot - 1;
-			} else if (cond > 0) {
-				start = pivot + 1;
-			}
-		}
-	}
-	return wordsNear; // is empty
-}	
-
 void CScintillaImpl::FillFunctionDefinition(int pos)
 {
-	if (pos > 0) {m_lastPosCallTip = pos;}
-	if (m_Api.size() > 0)
+	if (pos > 0)
 	{
-		tstring words = GetNearestWords(m_Api, m_currentCallTipWord, strlen(m_currentCallTipWord), m_bCallTipIgnoreCase, m_calltipParametersStart[0], true);
-		if (words.empty())
-			return;
+		m_lastPosCallTip = pos;
+	}
 
-		// Counts how many call tips
-		const char *spacePos = strchr(words.c_str(), ' ');
-		m_nMaxCallTips = 1;
-		while (spacePos) 
+	PN::AString callTipList;
+	char FNC_SEPARATOR = (char)0x01;
+	tstring seps;
+	seps += FNC_SEPARATOR;
+
+	m_autoComplete->GetPrototypes(callTipList, FNC_SEPARATOR, m_currentCallTipWord.c_str(), m_currentCallTipWord.length());
+
+	m_Api.clear();
+	tstring strCallTipList(callTipList);
+	StringTokenise(strCallTipList, m_Api, seps);
+	
+	if (m_Api.size() > 0 && (m_nCurrentCallTip < m_Api.size()))
+	{
+		m_functionDefinition = "";
+
+		if (m_nMaxCallTips > 1 && m_Api.size() > 1)
 		{
-			m_nMaxCallTips++;
-			spacePos = strchr(spacePos + 1, ' ');
+			char nofnbuf[100];
+			sprintf(nofnbuf, "\001%d of %d\002 ", m_nCurrentCallTip+1, m_Api.size());
+			m_functionDefinition = nofnbuf;
 		}
 
 		// Should get current api definition
-		tstring word = GetNearestWord(m_Api, m_currentCallTipWord, strlen(m_currentCallTipWord), m_bCallTipIgnoreCase, m_calltipWordCharacters, m_nCurrentCallTip);
-		if (word.size()) 
-		{
-			m_functionDefinition = word.c_str();
-			if (m_nMaxCallTips > 1)m_functionDefinition.Insert(0, "\001");							
-			if (! m_calltipEndDefinition.IsEmpty()) 
-			{
-				int posEndDef = m_functionDefinition.Find(m_calltipEndDefinition);
-				if (m_nMaxCallTips > 1) 
-				{
-					if ((posEndDef > 1) &&
-					        ((posEndDef + m_calltipEndDefinition.GetLength()) < m_functionDefinition.GetLength())) 
-					{
-						m_functionDefinition.Insert(posEndDef + m_calltipEndDefinition.GetLength(), "\n\002");
-					} 
-					else
-						m_functionDefinition + "\n\002";					
-				} 
-				else 
-				{
-					if ((posEndDef > 1) &&
-					        ((posEndDef + m_calltipEndDefinition.GetLength()) < m_functionDefinition.GetLength())) 
-					{
-						m_functionDefinition.Insert(posEndDef + m_calltipEndDefinition.GetLength(), "\n");
-					}
-				}
-			}
-			CallTipShow(m_lastPosCallTip - strlen(m_currentCallTipWord), m_functionDefinition);
-			ContinueCallTip();
-		}
+		m_functionDefinition += m_Api[m_nCurrentCallTip];
+
+		CallTipShow(m_lastPosCallTip - m_currentCallTipWord.size(), m_functionDefinition.c_str());
+_RPT2(_CRT_WARN,"2---CallTipShow %i, [%s]\n",m_lastPosCallTip - m_currentCallTipWord.size(), m_functionDefinition);
+		ContinueCallTip();		
 	}
 }
-
-tstring CScintillaImpl::GetNearestWord(CStringArray& arr, const char *wordStart, int searchLen, bool ignoreCase /*= false*/, const char* wordCharacters /*='/0' */, int wordIndex /*= -1 */) 
-{
-	size_t start = 0;				// lower bound of the api array block to search
-	size_t end = arr.size() - 1;	// upper bound of the api array block to search
-	size_t pivot;					// index of api array element just being compared
-	int cond;						// comparison result (in the sense of strcmp() result)
-	tstring word;					// api array element just being compared
-	tstring empty;					// result if we didn't find anything
-	empty.clear();
-
-	if (0 == arr.size())
-		return empty;
-
-	if (ignoreCase) {
-/*		if (!sortedNoCase) {
-			sortedNoCase = true;
-			SortWordListNoCase(wordsNoCase, len);
-		}
-*/
-		while (start <= end) { // binary searching loop
-			pivot = (start + end) >> 1;
-			word = arr[pivot];
-//			cond = CompareNCaseInsensitive(wordStart, word, searchLen);
-			cond = _strnicmp(wordStart, word.c_str(), searchLen);
-			if (!cond) {
-				// find first word
-				start = pivot;
-				while (start > 0 && !_strnicmp(wordStart, arr[start-1].c_str(), searchLen)) {
-					start--;
-				}
-				// find last word
-				end = pivot;
-				while (end < arr.size() - 1 && !_strnicmp(wordStart, arr[end+1].c_str(), searchLen)) {
-					end++;
-				}
-
-				// Finds first word in a series of equal words
-				for (pivot = start; pivot <= end; pivot++) {
-					word = arr[pivot];
-					const char* w = word.c_str();
-					if (!contains(m_strWordCharacters, w[searchLen])) {
-						if (wordIndex <= 0) // Checks if a specific index was requested
-							return word;
-						wordIndex--;
-					}
-				}
-				return empty;
-			}
-			else if (cond > 0)
-				start = pivot + 1;
-			else if (cond < 0)
-				end = pivot - 1;
-		}
-	} else { // preserve the letter case
-/*		if (!sorted) {
-			sorted = true;
-			SortWordList(words, len);
-		}
-*/
-		while (start <= end) { // binary searching loop
-			pivot = (start + end) >> 1;
-			word = arr[pivot];
-			cond = strncmp(wordStart, word.c_str(), searchLen);
-			if (!cond) {
-				// find first word
-				start = pivot;
-				while (start > 0 && !strncmp(wordStart, arr[start-1].c_str(), searchLen)) {
-					start--;
-				}
-				// find last word
-				end = pivot;
-				while (end < arr.size() - 1 && !strncmp(wordStart, arr[end+1].c_str(), searchLen)) {
-					end++;
-				}
-
-				// Finds first word in a series of equal words
-				pivot = start;
-				while (pivot <= end) {
-					word = arr[pivot];
-					const char* w = word.c_str();
-					if (!contains(m_strWordCharacters, w[searchLen])) {
-						if (wordIndex <= 0) // Checks if a specific index was requested
-							return word;
-						wordIndex--;
-					}
-					pivot++;
-				}
-				return empty;
-			}
-			else if (cond > 0)
-				start = pivot + 1;
-			else if (cond < 0)
-				end = pivot - 1;
-		}
-	}
-	return empty;
-}
-
 
 bool CScintillaImpl::StartAutoComplete()
 {
@@ -2064,8 +1870,8 @@ bool CScintillaImpl::StartAutoComplete()
 	int current = GetCaretInLine();
 	int startword = current;
 	while ((startword > 0) 
-		&& (contains(m_calltipWordCharacters, line[startword - 1]) 
-		  || contains(m_autoCompleteStartCharacters, line[startword - 1])))
+		&& (contains(m_calltipWordCharacters.c_str(), line[startword - 1]) 
+		  || contains(m_autoCompleteStartCharacters.c_str(), line[startword - 1])))
 	{
 		startword--;
 	}

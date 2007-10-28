@@ -44,7 +44,11 @@ public:
 	/**
 	 * Get the list of words to use
 	 */
-	virtual void GetWords(PN::BaseString& words, const char* root, int rootLength) = 0;
+	//MSO3: Redefined this function to include also parameters and have a custom token separator
+	virtual void GetWords(PN::BaseString& words, const char* root, int rootLength, bool IncludeParameters=false,char TokenSeparator=' ') = 0;
+
+	// New function to return the correct prototypes for a method
+	virtual void GetPrototypes(PN::BaseString& prototypes, char TokenSeparator, const char* method, int methodLength) = 0;
 };
 
 /**
@@ -54,13 +58,17 @@ public:
 class DefaultAutoComplete : public IWordProvider
 {
 public:
-	DefaultAutoComplete(bool ignoreCase);
+	DefaultAutoComplete(bool ignoreCase, bool useKeywords);
 	virtual ~DefaultAutoComplete();
 
 	/**
 	 * Get the list of words to use
 	 */
-	virtual void GetWords(PN::BaseString& words, const char* root, int rootLength);
+	//MSO3: Redefined this function to include also parameters and have a custom token separator
+	virtual void GetWords(PN::BaseString& words, const char* root, int rootLength, bool IncludeParameters=false, char TokenSeparator=' ');
+
+	// New function to return the correct prototypes for a method
+	virtual void GetPrototypes(PN::BaseString& prototypes, char TokenSeparator, const char* method, int methodLength);
 
 	/**
 	 * Called as keywords are loaded into a document
@@ -84,38 +92,17 @@ public:
 
 private:
 	void eliminateDuplicateWords(PN::BaseString& words);
-	void getNearestWords(PN::BaseString& into, const tstring_array& arr, const char *wordStart, int searchLen, bool ignoreCase, char otherSeparator, bool exactLen);
+	//MSO3: Redefined this function to have a custom token separator:
+	void getNearestWords(PN::BaseString& into, const tstring_array& arr, const char *wordStart, int searchLen, bool ignoreCase, char otherSeparator, bool exactLen, bool IncludeParameters=false, char TokenSeparator=' ');
 	unsigned int lengthWord(const char *word, char otherSeparator);
-	
+
+	typedef int (*fnComparer)(const char*, const char*, size_t);
+	void BinarySearchFor(PN::BaseString& result, const tstring_array& source, const char* wordStart, int searchLen, fnComparer compare, char otherSeparator, bool includeParameters, bool exactLen, char tokenSeparator);
+
 	tstring_array m_api;
 	tstring_array m_keywords;
 	bool m_ignoreCase;
-};
-
-class BaseAutoCompleteHandler
-{
-public:
-	virtual ~BaseAutoCompleteHandler(){}
-	virtual bool AutoCSelection(SCNotification* notification) = 0;
-};
-
-typedef boost::shared_ptr<BaseAutoCompleteHandler> AutoCompleteHandlerPtr;
-
-template <class T>
-class AutoCompleteAdaptor : public BaseAutoCompleteHandler
-{
-public:
-	typedef bool (T::*TCallback)(SCNotification* notification);
-	AutoCompleteAdaptor(T* pT, TCallback callback) : m_t(pT), m_cb(callback){}
-	virtual ~AutoCompleteAdaptor(){}
-
-	virtual bool AutoCSelection(SCNotification* notification)
-	{
-		return (m_t->*m_cb)(notification);
-	}
-private:
-	TCallback m_cb;
-	T* m_t;
+	bool m_useKeywords;
 };
 
 #endif

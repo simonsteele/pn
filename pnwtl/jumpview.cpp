@@ -313,7 +313,7 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 	//methodInfo.type>TAG_MAX or owner is anonimous class.
 	ATLASSERT(hRoot); 
 	HTREEITEM ret=0;
-	if(methodInfo->parentName)  		
+	if (methodInfo->parentName)  		
 	{
 		//For now we don't know what to do with anonomous classes/structs:
 		if(!strncmp(methodInfo->parentName, "__", 2))
@@ -455,19 +455,27 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 			else return 0; //This tag is undefined. Can't be inserted.
 		}
 
-		//check new item is not repeated:
 		HTREEITEM hChildItem = 0;
-		HTREEITEM checkNode = GetChildItem(hTypeContainer);
-		while (checkNode) 
+		HTREEITEM checkNode = NULL;
+
+		// For container types, we might just be filling in details, find the original item: 
+		if((methodInfo->type == tag_class)
+			|| (methodInfo->type == tag_struct)
+			|| (methodInfo->type == tag_union)
+			|| (methodInfo->type == tag_typedef))
 		{
-			methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(checkNode));
-			if(methodInfoItem->methodName)
-			{					
-				if (!strncmp(methodInfo->methodName, methodInfoItem->methodName, strlen(methodInfo->methodName) ))
-					break;					
+			checkNode = GetChildItem(hTypeContainer);
+			while (checkNode) 
+			{
+				methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(checkNode));
+				if(methodInfoItem->methodName)
+				{					
+					if (!strncmp(methodInfo->methodName, methodInfoItem->methodName, strlen(methodInfo->methodName) ))
+						break;					
+				}
+				
+				checkNode = GetNextItem(checkNode, TVGN_NEXT );
 			}
-			
-			checkNode = GetNextItem(checkNode, TVGN_NEXT );
 		}
 
 		methodInfoItem = NULL;

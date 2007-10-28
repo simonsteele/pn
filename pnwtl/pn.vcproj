@@ -1092,6 +1092,10 @@
 			Name="Include"
 			>
 			<File
+				RelativePath=".\AutoCompleteHandler.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\browsetree.h"
 				>
 			</File>

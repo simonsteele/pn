@@ -38,6 +38,7 @@ public:
 	inline const BaseString & operator += (const char * src) { Add(src); return *this; }
 	inline const BaseString & operator = (const BaseString & src) { Set(src); return *this; }
 	inline const BaseString & operator += (const BaseString & src) { Add(src); return *this; }
+	inline const BaseString & operator += (const char src) { Add(&src, 1); return *this; }
 	inline bool operator == (const char* other) const { return strcmp(Get(), other) == 0; }
 	inline bool operator == (const BaseString& other) const { return strcmp(Get(), other.Get()) == 0; }
 	inline bool operator != (const char* other) const { return !(*this == other); }
@@ -120,6 +121,7 @@ public:
 	inline const TThis & operator += (const char * src) { Add(src); return *this; }
 	inline const TThis & operator = (const BaseString & src) { Set(src); return *this; }
 	inline const TThis & operator += (const BaseString & src) { Add(src); return *this; }
+	inline const TThis & operator += (const char src) { Add(&src, 1); return *this; }
 	inline const TThis & operator = (const TThis & src) { Set(src); return *this; }
 	inline const TThis & operator += (const TThis & src) { Add(src); return *this; }
 	
