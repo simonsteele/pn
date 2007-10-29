@@ -3,7 +3,7 @@
  * @author Girish Bharadwaj <mailto:Girish_Bharadwaj@smtpnotes.pictel.com>
  * @author Norm Almond <mailto:nalmond@hotmail.com> 
  * @author Konstantin Boukreev <mailto:konstantin@mail.primorye.ru>
- * @author Simon Steele <mailto:ss@pnotepad.org>
+ * @author Simon Steele <mailto:ss a.t. pnotepad.org>
  *
  * This class is mostly an exact copy from kFontCombo by Konstantin Boukreev, 
  * Norm Almond and Girish Bharadwaj. The reasons for the change are

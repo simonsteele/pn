@@ -2,7 +2,7 @@
  * @file outputscintilla.cpp
  * @brief Simple RegEx based output lexer wrapped in a scintilla.
  * @author Simon Steele
- * @note Copyright (c) 2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2005 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.

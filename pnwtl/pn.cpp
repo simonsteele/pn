@@ -2,7 +2,7 @@
  * @file pn.cpp
  * @brief Main Source File for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -57,7 +57,7 @@ void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message)
 	msg += PN_VERSION;
 	msg += _T(".\n");
 	msg += message;
-	msg += _T("\n\nPlease e-mail this information to ss@pnotepad.org.");
+	msg += _T("\n\nPlease create a bug on sourceforge, e-mail this information to the discussion list, or post it to the forums.");
 	::MessageBox(NULL, msg.c_str(), LS(IDR_MAINFRAME), MB_OK | MB_ICONWARNING);
 }
 

@@ -2,7 +2,7 @@
  * @file ScintillaIF.cpp
  * @brief Implementation of CScintilla
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002 Simon Steele - http://untidy.net/
  */
 
 #include "stdafx.h"

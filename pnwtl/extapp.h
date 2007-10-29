@@ -2,7 +2,7 @@
  * @file extapp.h
  * @brief Define App, the basic application services
  * @author Simon Steele
- * @note Copyright (c) 2006-2007 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2006-2007 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.

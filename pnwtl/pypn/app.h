@@ -2,7 +2,7 @@
  * @file app.h
  * @brief Plugin Main Implementation
  * @author Simon Steele
- * @note Copyright (c) 2006 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2006 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.

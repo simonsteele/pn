@@ -2,7 +2,7 @@
  * @file xmlparser.h
  * @brief Define an XML parser framework using expat (http://expat.sourceforge.net/).
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -111,7 +111,7 @@ class XMLParserCallback : public XMLParseState
 
 /**
  * @class XMLParser
- * @author Simon Steele - s.steele@pnotepad.org
+ * @author Simon Steele - http://untidy.net/
  * @brief Wrapper for an expat XML parser.
  *
  * This class wraps the operations involved in using
@@ -140,7 +140,7 @@ class XMLParser
 
 /**
  * @class XMLParserException
- * @author Simon Steele - s.steele@pnotepad.org
+ * @author Simon Steele - http://untidy.net/
  * @brief Exception object to be thrown by an XML parser
  * 
  * When constructed, this class stores the line and column
