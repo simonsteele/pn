@@ -2,7 +2,7 @@
  * @file SchemeManager.cpp
  * @brief Implement SchemeManager.
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -13,6 +13,17 @@
 #include "Schemes.h"
 #include "SchemeCompiler.h"
 #include "Resource.h"
+#include "include/filefinder.h"
+
+class SMFindData : public FileFinderData
+{
+public:
+	SMFindData() : Newest(0), FoundNewer(false), ForceCompile(false) {}
+
+	uint64_t Newest;
+	bool     FoundNewer;
+	bool	 ForceCompile;
+};
 
 ///////////////////////////////////////////////////////////
 // SchemeManager
@@ -100,36 +111,20 @@ void SchemeManager::GetCompiledPath(tstring& csPath) const
 
 void SchemeManager::Load()
 {
-	try
+	if (!internalLoad(false))
 	{
-		internalLoad(false);
-	}
-	catch(int& error)
-	{
-		if(error == BAD_CSCHEME_FILE)
-		{
-			internalLoad(true);
-		}
+		internalLoad(true);
 	}
 }
 
-class FindMinder
-{
-public:
-	FindMinder(HANDLE hf) : _hf(hf){}
-	~FindMinder() { ::FindClose(_hf); }
-private:
-	HANDLE _hf;
-};
-
-void SchemeManager::internalLoad(bool forceCompile)
+/**
+ * @return true if successful, false if we get an error
+ */
+bool SchemeManager::internalLoad(bool forceCompile)
 {
 	PNASSERT(m_SchemePath != NULL);
 	PNASSERT(m_CompiledPath != NULL);
 	
-	tstring sPattern = m_CompiledPath;
-	sPattern += _T("*.cscheme");
-
 	tstring usersettings = m_CompiledPath;
 	usersettings += _T("UserSettings.xml");
 	
@@ -138,84 +133,90 @@ void SchemeManager::internalLoad(bool forceCompile)
 
 	m_DefaultScheme.SetFileName(defaultPath.c_str());
 
-	if(forceCompile || !FileExists(defaultPath.c_str()))
+	m_ForceCompile = forceCompile;
+
+	if(forceCompile || !FileExists(defaultPath.c_str()) || schemesHaveChanged())
 	{
 		Compile();
 	}
 
-	tstring SchemeName;
-	tstring to_open;
-	
-	WIN32_FIND_DATA FindFileData;
-	BOOL found;
-	HANDLE hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
-
-	if(hFind == INVALID_HANDLE_VALUE)
+	FileFinder<SchemeManager, SMFindData> f(this, &SchemeManager::_compiledFileFound);
+	f.GetFindData().ForceCompile = forceCompile;
+	if (!f.Find(m_CompiledPath, "*.cscheme"))
 	{
-		// The compiled schemes directory may have been moved, re-compile.
-		Compile();
-		hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
-	}
-
-	if (hFind != INVALID_HANDLE_VALUE)
-	{
-		FindMinder minder(hFind);
-
-		found = TRUE;
-
-		Scheme *cs = NULL;
-		SCIT csi;
-
-		while(found)
-		{
-			if(_tcscmp(_T("default.cscheme"), FindFileData.cFileName) != 0)
-			{
-				Scheme sch;
-				csi = m_Schemes.insert(m_Schemes.end(), sch);
-				cs = &(*csi);
-
-				cs->SetSchemeManager(this);
-				
-				to_open = m_CompiledPath;
-				to_open += FindFileData.cFileName;
-
-				cs->SetFileName(to_open.c_str());
-				if(!cs->CheckName())
-				{
-					tstring dbgout = _T("Skipping bad scheme: ");
-					dbgout += FindFileData.cFileName;
-					m_Schemes.erase(csi);
-					LOG(dbgout.c_str());
-
-					// If this is our first time around, we throw an exception
-					// to cause the outer function to force us to try a recompile...
-					if(!forceCompile)
-					{
-						m_Schemes.clear();
-						m_SchemeNameMap.clear();
-						throw BAD_CSCHEME_FILE;
-					}
-				}
-				else
-				{
-					SchemeName = cs->GetName();
-					TCHAR *tcs = new TCHAR[SchemeName.size()+1];
-					_tcscpy(tcs, SchemeName.c_str());
-					tcs = CharLower(tcs);
-					SchemeName = tcs;
-					delete [] tcs;
-
-					m_SchemeNameMap.insert(m_SchemeNameMap.end(), SCMITEM(SchemeName, cs));
-				}
-			}
-
-			found = FindNextFile(hFind, &FindFileData);
-		}
+		m_SchemeNameMap.clear();
+		m_Schemes.clear();
+		return false;
 	}
 
 	m_Schemes.sort();
 
 	LoadExtMap(m_SchemeExtMap, m_SchemeFileNameMap);
+
+	return true;
+}
+
+bool SchemeManager::schemesHaveChanged()
+{
+	FileFinder<SchemeManager, SMFindData> f(this, &SchemeManager::_schemeFileFound);
+	f.GetFindData().Newest = OPTIONS->Get(PNSK_SCHEMES, _T("NewestScheme"), static_cast<uint64_t>(0));
+
+	f.Find(m_SchemePath, _T("*.scheme"));
+	f.Find(m_SchemePath, _T("*.customscheme"));
+	
+	return f.GetFindData().FoundNewer;
+}
+
+void SchemeManager::_schemeFileFound(LPCTSTR path, SMFindData& file, bool& shouldContinue)
+{
+	if (file.GetLastWriteTime() > file.Newest)
+	{
+		file.FoundNewer = true;
+		shouldContinue = false;
+	}
+}
+
+void SchemeManager::_compiledFileFound(LPCTSTR path, SMFindData& file, bool& shouldContinue)
+{
+	if(_tcscmp(_T("default.cscheme"), file.GetFilename()) != 0)
+	{
+		Scheme sch;
+		SCIT csi = m_Schemes.insert(m_Schemes.end(), sch);
+		Scheme* cs = &(*csi);
+
+		cs->SetSchemeManager(this);
+		
+		tstring to_open = m_CompiledPath;
+		to_open += file.GetFilename();
+
+		cs->SetFileName(to_open.c_str());
+
+		if(!cs->CheckName())
+		{
+			tstring dbgout = _T("Skipping bad scheme: ");
+			dbgout += file.GetFilename();
+			m_Schemes.erase(csi);
+			LOG(dbgout.c_str());
+
+			// If this is our first time around, we throw an exception
+			// to cause the outer function to force us to try a recompile...
+			if(!file.ForceCompile)
+			{
+				shouldContinue = false;
+			}
+		}
+		else
+		{
+			tstring SchemeName = cs->GetName();
+			TCHAR *tcs = new TCHAR[SchemeName.size()+1];
+			_tcscpy(tcs, SchemeName.c_str());
+			tcs = CharLower(tcs);
+			SchemeName = tcs;
+			delete [] tcs;
+
+			m_SchemeNameMap.insert(m_SchemeNameMap.end(), SCMITEM(SchemeName, cs));
+		}
+	}
 }
 
 /**
@@ -350,6 +351,8 @@ void SchemeManager::Compile()
 
 	SchemeCompiler sc;
 	sc.Compile(m_SchemePath, m_CompiledPath, _T("master.scheme"));
+
+	OPTIONS->Set(PNSK_SCHEMES, _T("NewestScheme"), sc.GetNewestFileTime());
 }
 
 void SchemeManager::BuildMenu(HMENU menu, CommandDispatch* pDispatch, CommandEventHandler* pHandler, int iCommand, bool bNewMenu)

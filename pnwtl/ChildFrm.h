@@ -348,7 +348,7 @@ private:
 	HIMAGELIST			m_hImgList;
 	CTextView			m_view;
 	CString				m_Title;
-	long				m_FileAge;
+	uint64_t			m_FileAge;
 	bool				m_bModifiedOverride;
 	bool				m_bClosing;
 	TextClips::TextClipsManager*	m_pTextClips;

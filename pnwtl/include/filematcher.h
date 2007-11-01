@@ -149,9 +149,9 @@ protected:
 // matching...
 
 template <class T, class TOwner>
-class RegExFileFinderImpl : protected FileFinderImpl<T, TOwner>
+class RegExFileFinderImpl : protected FileFinderImpl<T, TOwner, FileFinderData>
 {
-	typedef FileFinderImpl<T, TOwner> baseClass;
+	typedef FileFinderImpl<T, TOwner, FileFinderData> baseClass;
 	friend baseClass;
 
 	public:

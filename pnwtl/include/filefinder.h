@@ -2,7 +2,7 @@
  * @file filefinder.h
  * @brief Find files according to a spec.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -11,14 +11,30 @@
 #ifndef filefinder_h__included
 #define filefinder_h__included
 
+class FileFinderData
+{
+public:
+	LPCTSTR GetFilename() const
+	{
+		return m_findData.cFileName;
+	}
+
+	uint64_t GetLastWriteTime() const
+	{
+		return *((uint64_t*)&m_findData.ftLastWriteTime);
+	}
+
+	WIN32_FIND_DATA m_findData;
+};
+
 /**
  * @brief Implementation class for a templated file finding class.
  */
-template <class T, class TOwner>
+template <class T, class TOwner, class TFindData>
 class FileFinderImpl
 {
 public:
-	typedef void (TOwner::*OnFoundFunc)(LPCTSTR path, LPCTSTR filename);
+	typedef void (TOwner::*OnFoundFunc)(LPCTSTR path, TFindData& details, bool& shouldContinue);
 	typedef void (TOwner::*OnDirChange)(LPCTSTR path);
 	FileFinderImpl(TOwner* pOwner, OnFoundFunc func)
 	{
@@ -42,8 +58,10 @@ public:
 	bool Find(LPCTSTR path, LPCTSTR filespec, bool bRecurse = false, bool bIncludeHidden = true)
 	{
 		HANDLE hFind;
-		WIN32_FIND_DATA FindFileData;
 		BOOL found = true;
+		bool shouldContinue = true;
+
+		WIN32_FIND_DATA& FindFileData =  findData.m_findData;
 
 		tstring sPattern(path);
 		sPattern += filespec;
@@ -77,7 +95,12 @@ public:
 						// Call owner class with found data...
 						if( pT->shouldMatch(FindFileData.cFileName) )
 						{
-							(owner->*f)(path, FindFileData.cFileName);
+							(owner->*f)(path, findData, shouldContinue);
+
+							if (!shouldContinue)
+							{
+								break;
+							}
 						}
 					}
 				}
@@ -87,10 +110,15 @@ public:
 
 			FindClose(hFind);
 
-			return true;
+			return shouldContinue;
 		}
 
 		return false;
+	}
+
+	TFindData& GetFindData()
+	{
+		return findData;
 	}
 
 protected:
@@ -115,16 +143,17 @@ protected:
 	OnFoundFunc	f;
 	OnDirChange fDirChange;
 	OnDirChange fFinishDir;
-	TOwner*			owner;
+	TOwner*		owner;
+	TFindData   findData;
 };
 
 /**
  * @brief Basic implementation of the FileFinderImpl class.
  */
-template <class TOwner>
-class FileFinder : public FileFinderImpl<FileFinder<TOwner>, TOwner>
+template <class TOwner, class TFindData = FileFinderData>
+class FileFinder : public FileFinderImpl<FileFinder<TOwner, TFindData>, TOwner, TFindData>
 {
-	typedef FileFinderImpl<FileFinder, TOwner> baseClass;
+	typedef FileFinderImpl<FileFinder<TOwner, TFindData>, TOwner, TFindData> baseClass;
 public:
 	FileFinder(TOwner* pOwner, OnFoundFunc func) : baseClass(pOwner, func){}
 };

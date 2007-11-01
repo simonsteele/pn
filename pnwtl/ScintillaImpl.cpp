@@ -1841,7 +1841,7 @@ void CScintillaImpl::FillFunctionDefinition(int pos)
 	tstring strCallTipList(callTipList);
 	StringTokenise(strCallTipList, m_Api, seps);
 	
-	if (m_Api.size() > 0 && (m_nCurrentCallTip < m_Api.size()))
+	if (m_Api.size() > 0 && (static_cast<size_t>(m_nCurrentCallTip) < m_Api.size()))
 	{
 		m_functionDefinition = "";
 

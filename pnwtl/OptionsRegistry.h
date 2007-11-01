@@ -25,10 +25,12 @@ public:
 
 	virtual void Set(LPCTSTR subkey, LPCTSTR value, bool bVal);
 	virtual void Set(LPCTSTR subkey, LPCTSTR value, int iVal);
+	virtual void Set(LPCTSTR subkey, LPCTSTR value, uint64_t iVal);
 	virtual void Set(LPCTSTR subkey, LPCTSTR value, LPCTSTR szVal);
 
 	virtual bool Get(LPCTSTR subkey, LPCTSTR value, bool bDefault);
 	virtual int Get(LPCTSTR subkey, LPCTSTR value, int iDefault);
+	virtual uint64_t Get(LPCTSTR subkey, LPCTSTR value, uint64_t iDefault);
 	virtual tstring Get(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault);
 
 	virtual void Clear(LPCTSTR subkey);

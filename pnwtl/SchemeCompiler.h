@@ -187,6 +187,8 @@ class SchemeCompiler : public SchemeParser
 	public:
 		void Compile(LPCTSTR path, LPCTSTR output, LPCTSTR mainfile);
 
+		uint64_t GetNewestFileTime() const;
+
 	protected:
 		SchemeRecorder m_Recorder;
 		void sendStyle(StyleDetails* s, SchemeRecorder* compiler);
@@ -207,6 +209,9 @@ class SchemeCompiler : public SchemeParser
 		virtual void onLexer(LPCTSTR name, int styleBits);
 		virtual void onColours(const EditorColours* defCols, const EditorColours* colours);
 		virtual void onError(XMLParserException& ex);
+
+	private:
+		uint64_t	m_newestFile;
 };
 
 SchemeDetails* ensureSchemeDetails(SchemeDetailsMap& map, tstring& name);

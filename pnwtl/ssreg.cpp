@@ -2,7 +2,7 @@
  * @file ssreg.cpp
  * @brief CSRegistry windows registry functionality wrapper implementation...
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -102,25 +102,44 @@ int CSRegistry::ReadInt(LPCTSTR valname, int defaultval)
 	DWORD dwType;
 	DWORD dwCount = sizeof(DWORD);
 
-	if(!m_open) throw "CSRegistry Exception - no open key.";
+	if(!m_open) 
+		throw std::exception("no open key");
 
-	if (
-		RegQueryValueEx(m_hKey,
+	if (RegQueryValueEx(m_hKey,
 			valname, 
 			0, 
 			&dwType,
 			(LPBYTE)&val, 
-			&dwCount) == ERROR_SUCCESS )
+			&dwCount) == ERROR_SUCCESS)
 	{
 		if (dwType == REG_DWORD)
 			return val;
-		else
-			return defaultval;
 	}
-	else
+
+	return defaultval;
+}
+
+void CSRegistry::WriteUInt64(LPCTSTR valname, uint64_t value)
+{
+	RegSetValueEx(m_hKey, valname, 0, REG_QWORD, (LPBYTE)&value, sizeof(uint64_t));
+}
+
+uint64_t CSRegistry::ReadUInt64(LPCTSTR valname, uint64_t defaultval)
+{
+	uint64_t val;
+	DWORD dwType;
+	DWORD dwCount = sizeof(uint64_t);
+
+	if(!m_open) 
+		throw std::exception("no open key");
+
+	if (RegQueryValueEx(m_hKey, valname, 0, &dwType, (LPBYTE)&val, &dwCount) == ERROR_SUCCESS)
 	{
-		return defaultval;
-	}	
+		if (dwType == REG_QWORD)
+			return val;
+	}
+
+	return defaultval;
 }
 
 void CSRegistry::WriteBool(LPCTSTR valname, bool value)

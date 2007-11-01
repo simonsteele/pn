@@ -58,10 +58,10 @@ protected:
 	Folder* pCursor;
 	LPCTSTR lpszBasePath;
 
-	void onFind(LPCTSTR path, LPCTSTR filename)
+	void onFind(LPCTSTR path, FileFinderData& file, bool& /*shouldContinue*/)
 	{
 		tstring fullpath(path);
-		fullpath += filename;
+		fullpath += file.GetFilename();
 		pCursor->AddFile(fullpath.c_str());
 	}
 

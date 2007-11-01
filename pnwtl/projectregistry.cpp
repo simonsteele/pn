@@ -67,11 +67,11 @@ void Registry::loadCache()
 	finder.Find(templatePath.c_str(), _T("*.pnpt"), false);
 }
 
-void Registry::_onFoundFile(LPCTSTR path, LPCTSTR filename)
+void Registry::_onFoundFile(LPCTSTR path, FileFinderData& file, bool& /*shouldContinue*/)
 {
 	TemplateLoader loader;
 	
-	CFileName fn(filename);
+	CFileName fn(file.GetFilename());
 	fn.Root(path);
 
 	Projects::ProjectTemplate* theTemplate = loader.FromFile(fn.c_str());

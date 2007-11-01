@@ -26,7 +26,7 @@ class Document : public extensions::IDocument, public extensions::ITextEditorEve
 
 		bool FileExists() const;
 
-		long GetFileAge() const;
+		uint64_t GetFileAge() const;
 		tstring GetFileName(EGFNType type) const;
 		CChildFrame* GetFrame() const;
 		bool HasFile() const;

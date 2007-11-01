@@ -23,6 +23,8 @@
 
 typedef std::basic_string<TCHAR> tstring;
 
+typedef unsigned __int64 uint64_t;
+
 #define PN_NO_CSTRING
 
 #ifdef CUSTOMSCHEME_EXPORTS

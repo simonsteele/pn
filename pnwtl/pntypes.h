@@ -11,6 +11,9 @@
 #ifndef pntypes_h__included
 #define pntypes_h__included
 
+typedef unsigned __int64	uint64_t;
+typedef __int64				int64_t;
+
 #include "scintilla.h"
 
 typedef struct tagFindOptions

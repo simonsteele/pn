@@ -1430,7 +1430,7 @@ void CChildFrame::CheckAge()
 {
 	if(CanSave())
 	{
-		long age = m_spDocument->GetFileAge();
+		uint64_t age = m_spDocument->GetFileAge();
 		if(age != m_FileAge)
 		{
 			if(m_spDocument->FileExists())

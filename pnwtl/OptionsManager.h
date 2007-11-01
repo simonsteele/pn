@@ -34,10 +34,12 @@ class Options : public extensions::IOptions
 
 		virtual void Set(LPCTSTR subkey, LPCTSTR value, bool bVal) = 0;
 		virtual void Set(LPCTSTR subkey, LPCTSTR value, int iVal) = 0;
+		virtual void Set(LPCTSTR subkey, LPCTSTR value, uint64_t iVal) = 0;
 		virtual void Set(LPCTSTR subkey, LPCTSTR value, LPCTSTR szVal) = 0;
 
 		virtual bool Get(LPCTSTR subkey, LPCTSTR value, bool bDefault) = 0;
 		virtual int Get(LPCTSTR subkey, LPCTSTR value, int iDefault) = 0;
+		virtual uint64_t Get(LPCTSTR subkey, LPCTSTR value, uint64_t iDefault) = 0;
 		virtual tstring Get(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault) = 0;
 
 		virtual void Clear(LPCTSTR subkey) = 0;

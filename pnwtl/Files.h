@@ -1,4 +1,12 @@
-
+/**
+ * @file files.h
+ * @brief File access wrappers
+ * @author Simon Steele
+ * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #ifndef __filenames_h__
 #define __filenames_h__
 
@@ -118,8 +126,6 @@ public:
 	void GetFileName(tstring& buf);						///< Return the filename.dat part of c:\temp\filename.dat
 	
 	tstring& Sanitise();								///< Fix up the filename to standard form.
-	
-	
 
 	bool IsRelativePath();								///< Return true if it's a relative path.
 	tstring GetRelativePath(LPCTSTR path);				///< Return the relative path string required to get to path.
@@ -130,12 +136,13 @@ public:
 	bool PathIsParentElementOf(LPCTSTR path);			///< Return true if the path is below us in the file system.
 	
 	void SetForwardSlashes();							///< Switch to forward slashes...
+	
 	/**
-	 * GetFileAge returns the integer dos date of the
+	 * GetFileAge returns the FILETIME 64-bit date of the
 	 * file represented by this class. If the file does
-	 * not exist, the function returns -1.
+	 * not exist, the function returns ~0.
 	 */
-	int GetFileAge();									///< Get the age of the file.
+	uint64_t GetFileAge();									///< Get the age of the file.
 
 	int	GetLength();
 	LPCTSTR c_str();
@@ -164,7 +171,7 @@ public:
 	void ChangeLastElement(LPCTSTR lastEl);
 };
 
-int FileAge(LPCTSTR FileName);
+uint64_t FileAge(LPCTSTR FileName);
 bool DirExists(LPCTSTR szDir);
 bool IsDirectory(LPCTSTR szDir);
 bool FileExists(LPCTSTR FileName);

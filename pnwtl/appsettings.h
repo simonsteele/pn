@@ -25,6 +25,8 @@ public:
 
 typedef std::list<ExtDetails> extlist;
 
+class FileFinderData;
+
 class AppSettings : public XMLParseState
 {
 public:
@@ -48,7 +50,7 @@ public:
 	virtual void characterData(LPCTSTR data, int len);
 
 protected:
-	void findExtensionHandler(LPCTSTR path, LPCTSTR filename);
+	void findExtensionHandler(LPCTSTR path, FileFinderData& data, bool& /*shouldContinue*/);
 	void load();
 	void save();
 	void onUserSettingsPath(XMLAttributes& atts);

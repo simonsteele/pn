@@ -44,7 +44,7 @@ bool Document::FileExists() const
 	return HasFile() && ::FileExists(m_sFilename.c_str());
 }
 
-long Document::GetFileAge() const
+uint64_t Document::GetFileAge() const
 {
 	return FileAge(m_sFilename.c_str());
 }

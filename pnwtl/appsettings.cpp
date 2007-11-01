@@ -169,17 +169,17 @@ void AppSettings::Save()
 	save();
 }
 
-void AppSettings::findExtensionHandler(LPCTSTR path, LPCTSTR filename)
+void AppSettings::findExtensionHandler(LPCTSTR path, FileFinderData& file, bool& /*shouldContinue*/)
 {
 	tstring fn;
 	if(m_bHuntingTaggers)
 	{
 		fn = "Taggers\\";
-		fn += filename;
+		fn += file.GetFilename();
 	}
 	else
 	{
-		fn = filename;
+		fn = file.GetFilename();
 	}
 	
 	ExtDetails details(fn.c_str(), m_pnpath.c_str());

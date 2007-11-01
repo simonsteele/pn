@@ -1,8 +1,8 @@
 /**
- * @file outputscintilla.h
- * @brief Simple RegEx based output lexer wrapped in a scintilla.
+ * @file files.cpp
+ * @brief File access wrappers
  * @author Simon Steele
- * @note Copyright (c) 2005 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2007 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -26,15 +26,23 @@ static TCHAR* tcsnewdup(LPCTSTR strin)
  * @brief Get the dos file time of a file.
  * @param FileName fully qualified path.
  */
-int FileAge(LPCTSTR FileName)
+uint64_t FileAge(LPCTSTR FileName)
 {
-	HANDLE Handle;
+	WIN32_FILE_ATTRIBUTE_DATA data;
+	if (::GetFileAttributesEx(FileName, GetFileExInfoStandard, &data))
+	{
+		return *((uint64_t*)&data.ftLastWriteTime);
+	}
+	
+	return ~0;
+
+	/*HANDLE Handle;
 	WIN32_FIND_DATA FindData;
 	FILETIME LocalFileTime;
 
 	WORD wHigh;
 	WORD wLow;
-
+	
 	Handle = FindFirstFile(FileName, &FindData);
 	if (Handle != INVALID_HANDLE_VALUE)
 	{
@@ -47,29 +55,24 @@ int FileAge(LPCTSTR FileName)
 				return (int)MAKELONG(wLow, wHigh);
 			}
 		}
-	}
+	}	*/
   return -1;
 }
 
 bool DirExists(LPCTSTR szDir)
 {
-	return (GetFileAttributes(szDir) != INVALID_FILE_ATTRIBUTES);
+	return IsDirectory(szDir);
 }
 
 bool FileExists(LPCTSTR FileName)
 {
-	HANDLE h;
-	WIN32_FIND_DATA FindData;
-
-	h = ::FindFirstFile(FileName, &FindData);
-	FindClose(h);
-	
-	return h != INVALID_HANDLE_VALUE;
+	// Changed to GetFileAttributes, see http://blogs.msdn.com/oldnewthing/archive/2007/10/23/5612082.aspx
+	return ::GetFileAttributes(FileName) != INVALID_FILE_ATTRIBUTES;
 }
 
 bool IsDirectory(LPCTSTR szDir)
 {
-	DWORD fa = GetFileAttributes(szDir);
+	DWORD fa = ::GetFileAttributes(szDir);
 	return (fa != INVALID_FILE_ATTRIBUTES && ((fa & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY));
 }
 
@@ -840,7 +843,7 @@ int CFileName::GetLength()
 	return m_FileName.length();
 }
 
-int CFileName::GetFileAge()
+uint64_t CFileName::GetFileAge()
 {
 	return FileAge(m_FileName.c_str());
 }

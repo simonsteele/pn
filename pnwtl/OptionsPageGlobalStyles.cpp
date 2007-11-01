@@ -260,9 +260,9 @@ LRESULT COptionsPageGlobalStyles::OnSavePresetClicked(WORD /*wNotifyCode*/, WORD
 	return 0;
 }
 
-void COptionsPageGlobalStyles::OnPresetFound(const char* path, const char* file)
+void COptionsPageGlobalStyles::OnPresetFound(const char* path, FileFinderData& file, bool& /*shouldContinue*/)
 {
-	CFileName fn(file);
+	CFileName fn(file.GetFilename());
 	m_presets.AddString(fn.GetFileName_NoExt().c_str());
 }
 

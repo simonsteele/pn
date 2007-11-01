@@ -257,6 +257,8 @@ SchemeLoaderState::~SchemeLoaderState()
 
 void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 {
+	m_newestFile = 0;
+
 	tstring UserSettingsFile = outpath;
 	UserSettingsFile += _T("UserSettings.xml");
 
@@ -283,6 +285,11 @@ void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 	m_LoadState.m_DefaultColours.SendColours(&m_Recorder);
 
 	m_Recorder.EndRecording();
+}
+
+uint64_t SchemeCompiler::GetNewestFileTime() const
+{
+	return m_newestFile;
 }
 
 void SchemeCompiler::onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int /*ncfoldflags*/)
@@ -355,7 +362,7 @@ void SchemeCompiler::sendStyle(StyleDetails* s, SchemeRecorder* compiler)
 
 void SchemeCompiler::onFile(LPCTSTR filename)
 {
-	
+	m_newestFile = max(m_newestFile, FileAge(filename));
 }
 
 void SchemeCompiler::onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom)

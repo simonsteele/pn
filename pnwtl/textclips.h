@@ -111,7 +111,7 @@ class TextClipsManager : public XMLParseState
 		TextClipsManager(const TextClipsManager& copy);
 		~TextClipsManager();
 
-		void OnFound(LPCTSTR path, LPCTSTR filename);
+		void OnFound(LPCTSTR path, FileFinderData& file, bool& /*shouldContinue*/);
 
 		const LIST_CLIPSETS& GetClipSets();
 

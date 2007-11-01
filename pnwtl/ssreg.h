@@ -29,6 +29,9 @@ class CSRegistry
 		void WriteInt(LPCTSTR valname, int value);
 		int ReadInt(LPCTSTR valname, int defaultval = 0);
 
+		void WriteUInt64(LPCTSTR valname, uint64_t value);
+		uint64_t ReadUInt64(LPCTSTR valname, uint64_t defaultval = 0);
+
 		void WriteString(LPCTSTR valname, LPCTSTR value);
 		bool ReadString(LPCTSTR valname, tstring& value);
 

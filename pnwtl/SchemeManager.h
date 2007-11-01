@@ -12,6 +12,8 @@
 #define schememanager_h__included
 
 class Scheme;
+class FileFinderData;
+class SMFindData;
 
 /**
  * @class SchemeManager
@@ -51,11 +53,15 @@ class SchemeManager : public Singleton<SchemeManager, true>
 
 		void SaveExtMap();
 
+		void _compiledFileFound(LPCTSTR path, SMFindData& file, bool& shouldContinue);
+		void _schemeFileFound(LPCTSTR path, SMFindData& file, bool& /*shouldContinue*/);
+
 	private:
 		Scheme* internalSchemeForFileName(const tstring& filename);
 		Scheme* internalSchemeForExt(const tstring& extension);
 		void internalLoadExtMap(LPCTSTR filename, SCHEME_MAP& extMap, SCHEME_MAP& fnMap);
-		void internalLoad(bool forceCompile);
+		bool internalLoad(bool forceCompile);
+		bool schemesHaveChanged();
 
 	private:
 		TCHAR*			m_SchemePath;
@@ -67,6 +73,7 @@ class SchemeManager : public Singleton<SchemeManager, true>
 		SCHEME_MAP		m_SchemeFileNameMap;
 
 		DefaultScheme	m_DefaultScheme;
+		bool			m_ForceCompile;
 };
 
 #endif

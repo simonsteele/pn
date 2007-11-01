@@ -460,10 +460,10 @@ void TextClipsManager::Reset(const TextClipsManager& other)
  * Called by the file finder class, creates a new TextClipSet from
  * the given file path.
  */
-void TextClipsManager::OnFound(LPCTSTR path, LPCTSTR filename)
+void TextClipsManager::OnFound(LPCTSTR path, FileFinderData& file, bool& /*shouldContinue*/)
 {
 	tstring fullpath(path);
-	fullpath += filename;
+	fullpath += file.GetFilename();
 	m_curFileName = fullpath;
 	parse(fullpath.c_str());
 }

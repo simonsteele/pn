@@ -94,9 +94,9 @@ void FIFThread::OnException()
 
 #define FIFBUFFERSIZE 4096
 
-void FIFThread::OnFoundFile(LPCTSTR path, LPCTSTR filename)
+void FIFThread::OnFoundFile(LPCTSTR path, FileFinderData& findData, bool& /*shouldContinue*/)
 {
-	CFileName fn(filename);
+	CFileName fn(findData.GetFilename());
 	fn.Root(path);
 
 	FILE* file = _tfopen(fn.c_str(), _T("r"));

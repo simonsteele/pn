@@ -29,7 +29,7 @@ class Registry : public Singleton<Registry, true>
 public:
 	~Registry();
 
-	void _onFoundFile(LPCTSTR path, LPCTSTR filename);
+	void _onFoundFile(LPCTSTR path, FileFinderData& file, bool& /*shouldContinue*/);
 
 	/// Get a Template for the passed ID. Returns NULL if not found.
 	ProjectTemplate* FromID(LPCTSTR id) const;

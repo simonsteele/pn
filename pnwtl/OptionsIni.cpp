@@ -82,6 +82,13 @@ void IniOptions::Set(LPCTSTR subkey, LPCTSTR value, int iVal)
 	::WritePrivateProfileString(groupLocked ? _group : subkey, value, cbuf, _filename);
 }
 
+void IniOptions::Set(LPCTSTR subkey, LPCTSTR value, uint64_t iVal)
+{
+	TCHAR cbuf[70];
+	_ui64tot(iVal, cbuf, 10);
+	::WritePrivateProfileString(groupLocked ? _group : subkey, value, cbuf, _filename);
+}
+
 void IniOptions::Set(LPCTSTR subkey, LPCTSTR value, LPCTSTR szVal)
 {
 	::WritePrivateProfileString(groupLocked ? _group : subkey, value, szVal, _filename);
@@ -106,6 +113,34 @@ int IniOptions::Get(LPCTSTR subkey, LPCTSTR value, int iDefault)
 	else
 	{
 		return GetPrivateProfileInt(subkey, value, iDefault, _filename);
+	}
+}
+
+uint64_t IniOptions::Get(LPCTSTR subkey, LPCTSTR value, uint64_t iDefault)
+{
+	if(groupLocked)
+	{
+		IniKeyMap::const_iterator i = keyMap->find(tstring(value));
+		if(i != keyMap->end())
+		{
+			TCHAR* end(NULL);
+			return _strtoui64((*i).second.c_str(), &end, 10);
+		}
+		else
+			return iDefault;
+	}
+	else
+	{
+		tstring srep = Get(subkey, value, "");
+		if (srep.size())
+		{
+			TCHAR* end(NULL);
+			return _strtoui64(srep.c_str(), &end, 10);
+		}
+		else
+		{
+			return iDefault;
+		}
 	}
 }
 

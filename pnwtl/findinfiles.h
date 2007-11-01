@@ -12,6 +12,7 @@ class FIFSink
 };
 
 class BoyerMoore;
+class FileFinderData;
 
 class FIFThread : public CSSThread
 {
@@ -21,7 +22,7 @@ class FIFThread : public CSSThread
 
 		void Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRecurse, bool bCaseSensitive, bool bIncludeHidden, FIFSink* pSink);
 
-		void OnFoundFile(LPCTSTR path, LPCTSTR filename);
+		void OnFoundFile(LPCTSTR path, FileFinderData& file, bool& /*shouldContinue*/);
 
 		void ManageStop();
 

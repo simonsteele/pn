@@ -110,6 +110,13 @@ int RegistryOptions::Get(LPCTSTR subkey, LPCTSTR value, int iDefault)
 	return _preg->ReadInt(value, iDefault);
 }
 
+uint64_t RegistryOptions::Get(LPCTSTR subkey, LPCTSTR value, uint64_t iDefault)
+{
+	RegAccess a(subkey, this);
+
+	return _preg->ReadUInt64(value, iDefault);
+}
+
 tstring RegistryOptions::Get(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
 {
 	RegAccess a(subkey, this);
@@ -139,6 +146,13 @@ void RegistryOptions::Set(LPCTSTR subkey, LPCTSTR value, int iVal)
 	RegAccess a(subkey, this);
 
 	_preg->WriteInt(value, iVal);
+}
+
+void RegistryOptions::Set(LPCTSTR subkey, LPCTSTR value, uint64_t iVal)
+{
+	RegAccess a(subkey, this);
+
+	_preg->WriteUInt64(value, iVal);
 }
 
 void RegistryOptions::Set(LPCTSTR subkey, LPCTSTR value, LPCTSTR szVal)

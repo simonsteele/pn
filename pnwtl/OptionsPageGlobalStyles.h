@@ -67,7 +67,7 @@ class COptionsPageGlobalStyles : public COptionsPageImpl<COptionsPageGlobalStyle
 		LRESULT OnLoadPresetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnSavePresetClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-		void OnPresetFound(const char* path, const char* file);
+		void OnPresetFound(const char* path, FileFinderData& file, bool& /*shouldContinue*/);
 
 		void onChange();
 		void storeChanges();
