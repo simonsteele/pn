@@ -844,6 +844,11 @@ public:
    {
    }
 
+   void SetForceMouseOverUpdate(bool bForce = false)
+   {
+      m_fMouseForceUpdate = bForce;
+   }
+
    BEGIN_MSG_MAP(CMouseHover)
       MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
       MESSAGE_HANDLER(WM_MOUSELEAVE, OnMouseLeave)
@@ -854,9 +859,11 @@ public:
       T* pT = static_cast<T*>(this);
       if( !m_fMouseOver )   {
          m_fMouseOver = true;
-         pT->SendMessage(WM_MOUSEENTER, wParam, lParam);
-         pT->Invalidate();
-         if( m_fMouseForceUpdate ) pT->UpdateWindow();
+         pT->SendMessage(WM_MOUSEENTER, wParam, lParam);         
+         if( m_fMouseForceUpdate ) {
+            pT->Invalidate();
+            pT->UpdateWindow();
+         }
          _StartTrackMouseLeave(pT->m_hWnd);
       }
       bHandled = FALSE;
@@ -866,9 +873,11 @@ public:
    {
       T* pT = static_cast<T*>(this);
       if( m_fMouseOver ) {
-         m_fMouseOver = false;
-         pT->Invalidate();
-         if( m_fMouseForceUpdate ) pT->UpdateWindow();
+         m_fMouseOver = false;         
+         if( m_fMouseForceUpdate ) {
+            pT->Invalidate();
+            pT->UpdateWindow();
+         }
       }
       bHandled = FALSE;
       return 0;

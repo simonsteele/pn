@@ -65,6 +65,11 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2005/07/13: Daniel Bowen
+// - Namespace qualify the use of more ATL and WTL classes.
+// - CTabbedMDIFrameWindowImpl:
+//   * Add GetMDITabCtrl
+//
 // 2005/04/12: Daniel Bowen
 // - CTabbedMDIClient::OnNcPaint - 
 //   * CDC dc(this->GetWindowDC());
@@ -360,10 +365,10 @@
 template <
 	class T,
 	class TClient = CTabbedMDIClient< CDotNetTabCtrl<CTabViewTabItem> >,
-	class TBase = CMDIWindow,
-	class TWinTraits = CFrameWinTraits>
+	class TBase = WTL::CMDIWindow,
+	class TWinTraits = ATL::CFrameWinTraits>
 class ATL_NO_VTABLE CTabbedMDIFrameWindowImpl :
-	public CMDIFrameWindowImpl<T, TBase, TWinTraits >
+	public WTL::CMDIFrameWindowImpl<T, TBase, TWinTraits >
 {
 public:
 	// Expose the type of MDI client
@@ -406,17 +411,22 @@ public:
 		return m_tabbedClient.GetTabOwnerParent();
 	}
 
+	TTabCtrl& GetMDITabCtrl()
+	{
+		return m_tabbedClient.GetTabOwner().GetTabCtrl();
+	}
+
 // Message Handling
 public:
 	typedef CTabbedMDIFrameWindowImpl< T, TBase, TWinTraits >	thisClass;
-	typedef CMDIFrameWindowImpl<T, TBase, TWinTraits >	baseClass;
+	typedef WTL::CMDIFrameWindowImpl<T, TBase, TWinTraits >	baseClass;
 	BEGIN_MSG_MAP(thisClass)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 };
 
-template <class T, class TBase = CMDIWindow, class TWinTraits = CMDIChildWinTraits>
-class ATL_NO_VTABLE CTabbedMDIChildWindowImpl : public CMDIChildWindowImpl<T, TBase, TWinTraits>
+template <class T, class TBase = WTL::CMDIWindow, class TWinTraits = ATL::CMDIChildWinTraits>
+class ATL_NO_VTABLE CTabbedMDIChildWindowImpl : public WTL::CMDIChildWindowImpl<T, TBase, TWinTraits>
 {
 // Member variables
 protected:
@@ -505,7 +515,7 @@ public:
 public:
 
 	typedef CTabbedMDIChildWindowImpl< T, TBase, TWinTraits >	thisClass;
-	typedef CMDIChildWindowImpl<T, TBase, TWinTraits >	baseClass;
+	typedef WTL::CMDIChildWindowImpl<T, TBase, TWinTraits >	baseClass;
 	BEGIN_MSG_MAP(thisClass)
 		MESSAGE_HANDLER(WM_MDIACTIVATE, OnMDIActivate)
 		MESSAGE_HANDLER(WM_SETTEXT, OnSetText)
@@ -607,7 +617,7 @@ public:
 		//  will fail to show the system menu at all because it doesn't like
 		//  the real definition of TPM_VERPOSANIMATION.  To avoid that
 		//  problem, we won't even try to use TPM_VERPOSANIMATION.
-		CMenuHandle menu = this->GetSystemMenu(FALSE);
+		WTL::CMenuHandle menu = this->GetSystemMenu(FALSE);
 
 		UINT command = (UINT)menu.TrackPopupMenu(TPM_LEFTBUTTON | TPM_VERTICAL | TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD, 
 			GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), m_hWnd);
@@ -666,7 +676,7 @@ public:
 
 template< class T, class TTabCtrl >
 class CMDITabOwnerImpl :
-	public CWindowImpl<T>,
+	public ATL::CWindowImpl<T>,
 	public CCustomTabOwnerImpl<T, TTabCtrl>
 {
 public:
@@ -675,7 +685,7 @@ public:
 
 protected:
 	typedef CMDITabOwnerImpl<T, TTabCtrl> thisClass;
-	typedef CWindowImpl<T> baseClass;
+	typedef ATL::CWindowImpl<T> baseClass;
 	typedef CCustomTabOwnerImpl<T, TTabCtrl> customTabOwnerClass;
 
 // Member variables
@@ -1225,7 +1235,7 @@ class CMDITabOwner :
 /////////////////////////////////////////////////////////////////////////////
 
 template< class TTabCtrl = CDotNetTabCtrl<CTabViewTabItem>, class TTabOwner = CMDITabOwner<TTabCtrl> >
-class CTabbedMDIClient : public CWindowImpl<CTabbedMDIClient<TTabCtrl, TTabOwner>, CWindow>
+class CTabbedMDIClient : public ATL::CWindowImpl<CTabbedMDIClient<TTabCtrl, TTabOwner>, ATL::CWindow>
 {
 public:
 	// Expose the type of tab control and tab owner
@@ -1233,7 +1243,7 @@ public:
 	typedef typename TTabOwner TTabOwner;
 
 protected:
-	typedef CWindowImpl<CTabbedMDIClient, CWindow> baseClass;
+	typedef ATL::CWindowImpl<CTabbedMDIClient, ATL::CWindow> baseClass;
 	typedef CTabbedMDIClient< TTabCtrl, TTabOwner > thisClass;
 
 // Member variables
@@ -1323,7 +1333,7 @@ public:
 		if(canPrompt)
 		{
 			// Prompt using our "Save modified" dialog
-			CComPtr<ITabbedMDIChildModifiedList> modifiedItems;
+			ATL::CComPtr<ITabbedMDIChildModifiedList> modifiedItems;
 			this->FindModified(&modifiedItems);
 			if(modifiedItems)
 			{
@@ -1373,7 +1383,7 @@ public:
 
 	HRESULT FindModified(ITabbedMDIChildModifiedList** modifiedItemsOut) const
 	{
-		CWaitCursor	waitCursor;
+		WTL::CWaitCursor	waitCursor;
 
 		if(modifiedItemsOut == NULL)
 		{
@@ -1386,7 +1396,7 @@ public:
 		HRESULT hr = S_OK;
 
 		// Build up a list of all the modified documents
-		CComPtr<ITabbedMDIChildModifiedList> modifiedItems;
+		ATL::CComPtr<ITabbedMDIChildModifiedList> modifiedItems;
 		::CreateTabbedMDIChildModifiedList(&modifiedItems);
 
 		if(modifiedItems)
@@ -1394,7 +1404,7 @@ public:
 			HWND hWndChild = ::GetTopWindow(m_hWnd);
 			while(hWndChild != NULL)
 			{
-				CString windowText;
+				_CSTRING_NS::CString windowText;
 				int cchWindowText = ::GetWindowTextLength(hWndChild);
 				LPTSTR pszText = windowText.GetBuffer(cchWindowText+1);
 				cchWindowText = ::GetWindowText(hWndChild, pszText, cchWindowText+1);
@@ -1402,7 +1412,7 @@ public:
 
 				CComBSTR defaultName(windowText);
 
-				CComPtr<ITabbedMDIChildModifiedItem> modifiedItem;
+				ATL::CComPtr<ITabbedMDIChildModifiedItem> modifiedItem;
 				::CreateTabbedMDIChildModifiedItem(hWndChild,
 					defaultName, defaultName, defaultName, 0, NULL, &modifiedItem);
 
@@ -1433,7 +1443,7 @@ public:
 			return E_INVALIDARG;
 		}
 
-		CWaitCursor waitCursor;
+		WTL::CWaitCursor waitCursor;
 
 		HRESULT hr = S_OK;
 
@@ -1441,7 +1451,7 @@ public:
 		modifiedItems->get_Count(&count);
 		for(long i=0; i<count; ++i)
 		{
-			CComPtr<ITabbedMDIChildModifiedItem> modifiedItem;
+			ATL::CComPtr<ITabbedMDIChildModifiedItem> modifiedItem;
 			modifiedItems->get_Item(i, &modifiedItem);
 			if(modifiedItem)
 			{
@@ -1655,7 +1665,7 @@ public:
 			// NOTE: If WS_EX_CLIENTEDGE ever takes up more than 2 pixels
 			// on each edge, update the drawing code.
 
-			CWindowDC dc(this->m_hWnd);
+			WTL::CWindowDC dc(this->m_hWnd);
 			if(dc)
 			{
 				RECT rcWindow;
@@ -1670,13 +1680,15 @@ public:
 			// but that wasn't working.
 			// On http://freespace.virgin.net/james.brown7/tutorials/tips.htm
 			// they mention you also need to OR in the flag "0x10000".
-			CDC dc(this->GetDCEx((HRGN)wParam, DCX_WINDOW|DCX_INTERSECTRGN | 0x10000));
-			if(dc)
+			CDCHandle dc = this->GetDCEx((HRGN)wParam, DCX_WINDOW|DCX_INTERSECTRGN | 0x10000));
+			if(!dc.IsNull())
 			{
 				RECT rcWindow;
 				this->GetWindowRect(&rcWindow);
 				::OffsetRect(&rcWindow, -rcWindow.left, -rcWindow.top);
 				dc.DrawEdge(&rcWindow, EDGE_ETCHED, BF_FLAT|BF_RECT);
+
+				::ReleaseDC(dc);
 			}
 			*/
 			bHandled = TRUE;
@@ -1803,8 +1815,8 @@ public:
 };
 
 
-template <class T, class TBase = CCommandBarCtrlBase, class TWinTraits = CControlWinTraits>
-class ATL_NO_VTABLE CTabbedMDICommandBarCtrlImpl : public CMDICommandBarCtrlImpl<T, TBase, TWinTraits>
+template <class T, class TBase = CCommandBarCtrlBase, class TWinTraits = ATL::CControlWinTraits>
+class ATL_NO_VTABLE CTabbedMDICommandBarCtrlImpl : public WTL::CMDICommandBarCtrlImpl<T, TBase, TWinTraits>
 {
 protected:
 	typedef CTabbedMDICommandBarCtrlImpl thisClass;
@@ -1934,7 +1946,7 @@ public:
 
 		if(m_hWndChildMaximized != hWndChild)
 		{
-			CWindow wnd = m_hWndChildMaximized = hWndChild;
+			ATL::CWindow wnd = m_hWndChildMaximized = hWndChild;
 			m_hIconChildMaximized = wnd.GetIcon(FALSE);
 			if(m_hIconChildMaximized == NULL)	// no icon set with WM_SETICON, get the class one
 			{

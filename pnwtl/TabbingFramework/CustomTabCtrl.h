@@ -26,6 +26,9 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2005/07/13: Daniel Bowen
+// - Namespace qualify the use of more ATL and WTL classes.
+//
 // 2005/03/14: Daniel Bowen
 // - Fix warnings when compiling for 64-bit.
 //
@@ -350,8 +353,8 @@ class CCustomTabItem
 protected:
 	RECT m_rcItem;
 	int m_nImage;
-	CString m_sText;
-	CString m_sToolTip;
+	_CSTRING_NS::CString m_sText;
+	_CSTRING_NS::CString m_sToolTip;
 	bool m_bHighlighted;
 	bool m_bCanClose;
 
@@ -437,7 +440,7 @@ public:
 		return true;
 	}
 
-	CString GetText() const
+	_CSTRING_NS::CString GetText() const
 	{
 		return m_sText;
 	}
@@ -451,7 +454,7 @@ public:
 		return true;
 	}
 
-	CString GetToolTip() const
+	_CSTRING_NS::CString GetToolTip() const
 	{
 		return m_sToolTip;
 	}
@@ -645,21 +648,6 @@ public:
 	}
 };
 
-typedef CWinTraits<WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | CTCS_TOOLTIPS, 0> CCustomTabCtrlWinTraits;
-
-template <class T, class TItem = CCustomTabItem, class TBase = CWindow, class TWinTraits = CCustomTabCtrlWinTraits>
-class ATL_NO_VTABLE CCustomTabCtrl : 
-	public CWindowImpl< T, TBase, TWinTraits >,
-	public COffscreenDrawRect< T >
-{
-public:
-	// Expose the item type (that's a template parameter to this base class)
-	typedef typename TItem TItem;
-
-protected:
-	typedef CWindowImpl< T, TBase, TWinTraits > baseClass;
-	typedef COffscreenDrawRect< T > offscreenDrawClass;
-
 #if (_ATL_VER < 0x0700)
 // With ATL 7, CAtlArray was introduced which is better than
 //  CSimpleArray. Among other things, it supports inserting
@@ -673,12 +661,14 @@ protected:
 //  can't call its versions of functions (so you have
 //  to use the CAtlArray style of functions)
 
+namespace ATL {
+
 template<typename E>
-class CAtlArray : protected CSimpleArray<E>
+class CAtlArray : protected ATL::CSimpleArray<E>
 {
 protected:
 	typedef CAtlArray thisClass;
-	typedef CSimpleArray<E> baseClass;
+	typedef ATL::CSimpleArray<E> baseClass;
 
 public:
 
@@ -737,18 +727,37 @@ public:
 
 };
 
+}; // namespace ATL
+
 #endif // (_ATL_VER < 0x0700)
+
+
+
+typedef ATL::CWinTraits<WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | CTCS_TOOLTIPS, 0> CCustomTabCtrlWinTraits;
+
+template <class T, class TItem = CCustomTabItem, class TBase = ATL::CWindow, class TWinTraits = CCustomTabCtrlWinTraits>
+class ATL_NO_VTABLE CCustomTabCtrl : 
+	public ATL::CWindowImpl< T, TBase, TWinTraits >,
+	public COffscreenDrawRect< T >
+{
+public:
+	// Expose the item type (that's a template parameter to this base class)
+	typedef typename TItem TItem;
+
+protected:
+	typedef ATL::CWindowImpl< T, TBase, TWinTraits > baseClass;
+	typedef COffscreenDrawRect< T > offscreenDrawClass;
 
 // Member variables
 protected:
 	int m_iCurSel;
 	int m_iHotItem;
 	CTCSETTINGS m_settings;
-	CAtlArray< TItem* > m_Items;
-	CFont m_font;
-	CFont m_fontSel;
-	CImageList m_imageList;
-	CToolTipCtrl m_tooltip;
+	ATL::CAtlArray< TItem* > m_Items;
+	WTL::CFont m_font;
+	WTL::CFont m_fontSel;
+	WTL::CImageList m_imageList;
+	WTL::CToolTipCtrl m_tooltip;
 
 	RECT m_rcTabItemArea;
 	RECT m_rcScrollLeft;
@@ -2293,7 +2302,7 @@ public:
 
 	void UpdateLayout_ScrollToFit(RECT rcTabItemArea)
 	{
-		CClientDC dc(m_hWnd);
+		WTL::CClientDC dc(m_hWnd);
 		HFONT hOldFont = dc.SelectFont(this->GetFont());    
 
 		int height = rcTabItemArea.bottom-rcTabItemArea.top;
@@ -2311,7 +2320,7 @@ public:
 				if( pItem->UsingText() )
 				{
 					RECT rcText = { 0 };
-					CString sText = pItem->GetText();
+					_CSTRING_NS::CString sText = pItem->GetText();
 					dc.DrawText(sText, sText.GetLength(), &rcText, DT_SINGLELINE | DT_CALCRECT);
 					rc.right += (rcText.right-rcText.left) + (m_settings.iPadding*2);
 				}
@@ -2625,7 +2634,7 @@ public:
 		// NOTE: Your derived class might be able to do a
 		//  better job of erasing only the necessary area
 		//  (using the clip box, etc.)
-		CDCHandle dc(lpNMCustomDraw->nmcd.hdc);
+		WTL::CDCHandle dc(lpNMCustomDraw->nmcd.hdc);
 
 		HBRUSH hOldBrush = dc.SelectBrush(lpNMCustomDraw->hBrushBackground);
 		dc.PatBlt(rcClient.left, rcClient.top, rcClient.right-rcClient.left, rcClient.bottom-rcClient.top, PATCOPY);
@@ -2670,18 +2679,18 @@ public:
 		return baseClass::UnsubclassWindow(bForce);
 	}
 
-	CImageList SetImageList(HIMAGELIST hImageList)
+	WTL::CImageList SetImageList(HIMAGELIST hImageList)
 	{
 		CImageList imageListOld = m_imageList;
 		m_imageList = hImageList;
 		return imageListOld;
 	}
-	CImageList& GetImageList() const
+	WTL::CImageList& GetImageList() const
 	{
 		return m_imageList;
 	}
 
-	CToolTipCtrl GetTooltips() const
+	WTL::CToolTipCtrl GetTooltips() const
 	{
 		return m_tooltip;
 	}

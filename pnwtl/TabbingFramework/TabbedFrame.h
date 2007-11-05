@@ -43,6 +43,9 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2005/07/13: Daniel Bowen
+// - Namespace qualify the use of more ATL and WTL classes.
+//
 // 2005/04/12: Daniel Bowen
 // - CCustomTabOwnerImpl::CalcTabAreaHeight - 
 //   * CDC dc = TabCtrl.GetDC();
@@ -234,7 +237,7 @@ class CCustomTabOwnerImpl
 // Member variables
 protected:
 	TTabCtrl m_TabCtrl;
-	CImageList m_ImageList;
+	WTL::CImageList m_ImageList;
 	int m_cxImage, m_cyImage;
 	int m_nTabAreaHeight;
 	size_t m_nMinTabCountForVisibleTabs;
@@ -690,7 +693,7 @@ public:
 		if(nTab >= 0)
 		{
 			TTabCtrl::TItem* pItem = m_TabCtrl.GetItem(nTab);
-			CString sCurrentTabText = pItem->GetText();
+			_CSTRING_NS::CString sCurrentTabText = pItem->GetText();
 
 			if(sText != NULL)
 			{
@@ -763,7 +766,7 @@ public:
 		if(nTab >= 0)
 		{
 			TTabCtrl::TItem* pItem = m_TabCtrl.GetItem(nTab);
-			CString sCurrentToolTip = pItem->GetToolTip();
+			_CSTRING_NS::CString sCurrentToolTip = pItem->GetToolTip();
 			if(sCurrentToolTip != sToolTip)
 			{
 				bSuccess = pItem->SetToolTip(sToolTip);
@@ -843,7 +846,7 @@ public:
 template <
 	class T,
 	class TTabCtrl = CDotNetTabCtrl<CTabViewTabItem>,
-	class TBase = CFrameWindowImpl<T, CWindow, CFrameWinTraits> >
+	class TBase = WTL::CFrameWindowImpl<T, ATL::CWindow, ATL::CFrameWinTraits> >
 class CTabbedFrameImpl :
 	public TBase,
 	public CCustomTabOwnerImpl<T, TTabCtrl>
@@ -1320,15 +1323,15 @@ public:
 //
 /////////////////////////////////////////////////////////////////////////////
 
-typedef CWinTraits<WS_POPUP | WS_CAPTION | WS_VISIBLE | WS_SYSMENU | WS_THICKFRAME, WS_EX_TOOLWINDOW> TabbedPopupFrameWinTraits;
+typedef ATL::CWinTraits<WS_POPUP | WS_CAPTION | WS_VISIBLE | WS_SYSMENU | WS_THICKFRAME, WS_EX_TOOLWINDOW> TabbedPopupFrameWinTraits;
 
 template <class TTabCtrl = CDotNetTabCtrl<CTabViewTabItem> >
 class CTabbedPopupFrame :
-	public CTabbedFrameImpl<CTabbedPopupFrame<TTabCtrl>, TTabCtrl, CFrameWindowImpl<CTabbedPopupFrame<TTabCtrl>, CWindow, TabbedPopupFrameWinTraits> >
+	public CTabbedFrameImpl<CTabbedPopupFrame<TTabCtrl>, TTabCtrl, WTL::CFrameWindowImpl<CTabbedPopupFrame<TTabCtrl>, ATL::CWindow, TabbedPopupFrameWinTraits> >
 {
 protected:
 	typedef CTabbedPopupFrame<TTabCtrl> thisClass;
-	typedef CTabbedFrameImpl<CTabbedPopupFrame, TTabCtrl, CFrameWindowImpl<CTabbedPopupFrame, CWindow, TabbedPopupFrameWinTraits> > baseClass;
+	typedef CTabbedFrameImpl<CTabbedPopupFrame, TTabCtrl, WTL::CFrameWindowImpl<CTabbedPopupFrame, ATL::CWindow, TabbedPopupFrameWinTraits> > baseClass;
 
 // Members:
 protected:
@@ -1412,10 +1415,10 @@ public:
 // at least handles WM_SIZE and overrideable methods
 // "UpdateLayout" and "UpdateBarsPosition")
 
-typedef CWinTraits<WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE> TabbedChildWindowWinTraits;
+typedef ATL::CWinTraits<WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE> TabbedChildWindowWinTraits;
 
-template <class T, class TBase = CWindow, class TWinTraits = TabbedChildWindowWinTraits>
-class ATL_NO_VTABLE CTabbedChildWindowBase : public CWindowImpl< T, TBase, TWinTraits >
+template <class T, class TBase = ATL::CWindow, class TWinTraits = TabbedChildWindowWinTraits>
+class ATL_NO_VTABLE CTabbedChildWindowBase : public ATL::CWindowImpl< T, TBase, TWinTraits >
 {
 	typedef CTabbedChildWindowBase< T, TBase, TWinTraits >	thisClass;
 	BEGIN_MSG_MAP(thisClass)
@@ -1447,11 +1450,11 @@ public:
 
 template <class TTabCtrl = CDotNetTabCtrl<CTabViewTabItem> >
 class CTabbedChildWindow :
-public CTabbedFrameImpl<CTabbedChildWindow<TTabCtrl>, TTabCtrl, CTabbedChildWindowBase<CTabbedChildWindow<TTabCtrl>, CWindow, TabbedChildWindowWinTraits> >
+	public CTabbedFrameImpl<CTabbedChildWindow<TTabCtrl>, TTabCtrl, CTabbedChildWindowBase<CTabbedChildWindow<TTabCtrl>, ATL::CWindow, TabbedChildWindowWinTraits> >
 {
 protected:
 	typedef CTabbedChildWindow<TTabCtrl> thisClass;
-	typedef CTabbedFrameImpl<CTabbedChildWindow<TTabCtrl>, TTabCtrl, CTabbedChildWindowBase<CTabbedChildWindow, CWindow, TabbedChildWindowWinTraits> > baseClass;
+	typedef CTabbedFrameImpl<CTabbedChildWindow<TTabCtrl>, TTabCtrl, CTabbedChildWindowBase<CTabbedChildWindow, ATL::CWindow, TabbedChildWindowWinTraits> > baseClass;
 
 // Constructors
 public:

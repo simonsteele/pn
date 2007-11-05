@@ -26,6 +26,13 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2005/07/13: Daniel Bowen
+// - Namespace qualify the use of more ATL and WTL classes.
+//
+// 2005/04/14: Daniel Bowen
+// - CSaveModifiedItemsDialog -
+//   ImageUtil::CreateCheckboxImage now takes an HWND for the list control
+//
 // 2005/03/15: Daniel Bowen
 // - CSaveModifiedItemsDialog -
 //   Handle the case when no display name is set for an item - have it show "(New)".
@@ -107,7 +114,7 @@ STDMETHODIMP CTabbedMDIChildModifiedList::get_Index(ITabbedMDIChildModifiedItem*
 
 	*index = -1;
 
-	CComPtr<IUnknown> punkItemToFind;
+	ATL::CComPtr<IUnknown> punkItemToFind;
 	item->QueryInterface(IID_IUnknown, (void**)&punkItemToFind);
 
 	// If we tracked items by their identity IUnknown*, we could do
@@ -118,7 +125,7 @@ STDMETHODIMP CTabbedMDIChildModifiedList::get_Index(ITabbedMDIChildModifiedItem*
 	POSITION pos = this->GetHeadPosition();
 	while(pos != NULL)
 	{
-		CComPtr<IUnknown> punkItem;
+		ATL::CComPtr<IUnknown> punkItem;
 		this->GetNext(pos)->QueryInterface(IID_IUnknown, (void**)&punkItem);
 		if(punkItemToFind == punkItem)
 		{
@@ -151,8 +158,8 @@ STDMETHODIMP CTabbedMDIChildModifiedList::AddNew(
 {
 	HRESULT hr = E_FAIL;
 
-	CComObject<CTabbedMDIChildModifiedItem>* newItem = NULL;
-	hr = CComObject<CTabbedMDIChildModifiedItem>::CreateInstance(&newItem);
+	ATL::CComObject<CTabbedMDIChildModifiedItem>* newItem = NULL;
+	hr = ATL::CComObject<CTabbedMDIChildModifiedItem>::CreateInstance(&newItem);
 	if(newItem != NULL)
 	{
 		newItem->AddRef();
@@ -166,7 +173,7 @@ STDMETHODIMP CTabbedMDIChildModifiedList::AddNew(
 		hr = newItem->InitNew(window, name, displayName, description, lastModified, icon);
 		if(SUCCEEDED(hr))
 		{
-			CComPtr<ITabbedMDIChildModifiedItem> modifiedItem;
+			ATL::CComPtr<ITabbedMDIChildModifiedItem> modifiedItem;
 			hr = newItem->QueryInterface(&modifiedItem);
 
 			this->AddTail(modifiedItem);
@@ -233,7 +240,7 @@ STDMETHODIMP CTabbedMDIChildModifiedList::InsertList(
 
 	for(long i=0; i<count; ++i)
 	{
-		CComPtr<ITabbedMDIChildModifiedItem> item;
+		ATL::CComPtr<ITabbedMDIChildModifiedItem> item;
 		list->get_Item(i, &item);
 		
 		this->Insert(index + i, item);
@@ -250,7 +257,7 @@ STDMETHODIMP CTabbedMDIChildModifiedList::Remove(
 	POSITION pos = this->FindIndex(index);
 	if(pos != NULL)
 	{
-		CComPtr<ITabbedMDIChildModifiedItem> oldItem(this->GetAt(pos));
+		ATL::CComPtr<ITabbedMDIChildModifiedItem> oldItem(this->GetAt(pos));
 		this->RemoveAt(pos);
 		if(oldItem)
 		{
@@ -270,7 +277,7 @@ STDMETHODIMP CTabbedMDIChildModifiedList::Clear()
 	POSITION pos = this->GetHeadPosition();
 	while(pos != NULL)
 	{
-		CComPtr<ITabbedMDIChildModifiedItem> item(this->GetNext(pos));
+		ATL::CComPtr<ITabbedMDIChildModifiedItem> item(this->GetNext(pos));
 		if(item)
 		{
 			item->putref_ParentList(NULL);
@@ -490,8 +497,8 @@ STDMETHODIMP CTabbedMDIChildModifiedItem::get_SubItems(
 
 	if(m_subItems == NULL)
 	{
-		CComObject<CTabbedMDIChildModifiedList>* newSubItems = NULL;
-		hr = CComObject<CTabbedMDIChildModifiedList>::CreateInstance(&newSubItems);
+		ATL::CComObject<CTabbedMDIChildModifiedList>* newSubItems = NULL;
+		hr = ATL::CComObject<CTabbedMDIChildModifiedList>::CreateInstance(&newSubItems);
 		if(newSubItems != NULL)
 		{
 			newSubItems->AddRef();
@@ -526,7 +533,7 @@ STDMETHODIMP CTabbedMDIChildModifiedItem::CopyTo(
 	// The destination keeps its current parent
 	//destination->putref_ParentList(m_parentList);
 
-	CComPtr<ITabbedMDIChildModifiedList> subItems;
+	ATL::CComPtr<ITabbedMDIChildModifiedList> subItems;
 	destination->get_SubItems(&subItems);
 	if(subItems)
 	{
@@ -564,8 +571,8 @@ HRESULT CreateTabbedMDIChildModifiedList(ITabbedMDIChildModifiedList** list)
 {
 	HRESULT hr = E_NOINTERFACE;
 
-	CComObject<CTabbedMDIChildModifiedList>* newItemList = NULL;
-	hr = CComObject<CTabbedMDIChildModifiedList>::CreateInstance(&newItemList);
+	ATL::CComObject<CTabbedMDIChildModifiedList>* newItemList = NULL;
+	hr = ATL::CComObject<CTabbedMDIChildModifiedList>::CreateInstance(&newItemList);
 	if(newItemList != NULL)
 	{
 		hr = newItemList->QueryInterface(list);
@@ -581,8 +588,8 @@ HRESULT CreateTabbedMDIChildModifiedItem(HWND window,
 {
 	HRESULT hr = E_NOINTERFACE;
 
-	CComObject<CTabbedMDIChildModifiedItem>* newItem = NULL;
-	hr = CComObject<CTabbedMDIChildModifiedItem>::CreateInstance(&newItem);
+	ATL::CComObject<CTabbedMDIChildModifiedItem>* newItem = NULL;
+	hr = ATL::CComObject<CTabbedMDIChildModifiedItem>::CreateInstance(&newItem);
 	if(newItem != NULL)
 	{
 		newItem->AddRef();
@@ -603,8 +610,8 @@ HRESULT CreateEmptyTabbedMDIChildModifiedItem(ITabbedMDIChildModifiedItem** item
 {
 	HRESULT hr = E_NOINTERFACE;
 
-	CComObject<CTabbedMDIChildModifiedItem>* newItem = NULL;
-	hr = CComObject<CTabbedMDIChildModifiedItem>::CreateInstance(&newItem);
+	ATL::CComObject<CTabbedMDIChildModifiedItem>* newItem = NULL;
+	hr = ATL::CComObject<CTabbedMDIChildModifiedItem>::CreateInstance(&newItem);
 	if(newItem != NULL)
 	{
 		hr = newItem->QueryInterface(item);
@@ -737,10 +744,10 @@ LRESULT CSaveModifiedItemsDialog::OnYes(WORD /*wNotifyCode*/, WORD wID, HWND /*h
 			CheckState checkState = this->GetTristateCheckState(i);
 			if(checkState == eCheckState_Unchecked)
 			{
-				CComQIPtr<ITabbedMDIChildModifiedItem> item(this->GetIUnknownForItem(i));
+				ATL::CComQIPtr<ITabbedMDIChildModifiedItem> item(this->GetIUnknownForItem(i));
 				if(item)
 				{
-					CComPtr<ITabbedMDIChildModifiedList> parentList;
+					ATL::CComPtr<ITabbedMDIChildModifiedList> parentList;
 					item->get_ParentList(&parentList);
 					if(parentList)
 					{
@@ -847,7 +854,7 @@ LRESULT CSaveModifiedItemsDialog::OnListViewPaint(UINT uMsg, WPARAM wParam, LPAR
 {
 	if(wParam != NULL)
 	{
-		CMemDC memdc((HDC)wParam, NULL);
+		WTL::CMemDC memdc((HDC)wParam, NULL);
 
 		//memdc.FillSolidRect(&memdc.m_rc, ::GetSysColor(COLOR_WINDOW));
 		m_list.DefWindowProc( WM_ERASEBKGND, (WPARAM)memdc.m_hDC, 0);
@@ -861,8 +868,8 @@ LRESULT CSaveModifiedItemsDialog::OnListViewPaint(UINT uMsg, WPARAM wParam, LPAR
 	}
 	else
 	{
-		CPaintDC dc(m_list);
-		CMemDC memdc(dc.m_hDC, &dc.m_ps.rcPaint);
+		WTL::CPaintDC dc(m_list);
+		WTL::CMemDC memdc(dc.m_hDC, &dc.m_ps.rcPaint);
 
 		//memdc.FillSolidRect(&dc.m_ps.rcPaint, ::GetSysColor(COLOR_WINDOW));
 		m_list.DefWindowProc( WM_ERASEBKGND, (WPARAM)memdc.m_hDC, 0);
@@ -881,15 +888,15 @@ LRESULT CSaveModifiedItemsDialog::OnListViewPaint(UINT uMsg, WPARAM wParam, LPAR
 //{
 //	if( wParam != NULL )
 //	{
-//		CMemDC memdc((HDC)wParam, NULL);
+//		WTL::CMemDC memdc((HDC)wParam, NULL);
 
 //		memdc.FillSolidRect(&memdc.m_rc, ::GetSysColor(COLOR_BTNFACE));
 //		m_header.DefWindowProc( uMsg, (WPARAM)memdc.m_hDC, 0);
 //	}
 //	else
 //	{
-//		CPaintDC dc(m_header);
-//		CMemDC memdc(dc.m_hDC, &dc.m_ps.rcPaint);
+//		WTL::CPaintDC dc(m_header);
+//		WTL::CMemDC memdc(dc.m_hDC, &dc.m_ps.rcPaint);
 
 //		memdc.FillSolidRect(&dc.m_ps.rcPaint, ::GetSysColor(COLOR_BTNFACE));
 //		m_header.DefWindowProc( uMsg, (WPARAM)memdc.m_hDC, 0);
@@ -1132,7 +1139,7 @@ bool CSaveModifiedItemsDialog::ConstructDialogResource(void)
 //    PUSHBUTTON      "Cancel",IDCANCEL,243,129,50,14
 //END
 
-	DynamicDialogItemSize itemSizeYes, itemSizeNo, itemSizeCancel;
+	DynamicDialog::DynamicDialogItemSize itemSizeYes, itemSizeNo, itemSizeCancel;
 	DWORD visibleStyle_Cancel = 0;
 	if(m_canCancel)
 	{
@@ -1316,13 +1323,13 @@ bool CSaveModifiedItemsDialog::FindUsedColumns(ITabbedMDIChildModifiedList* list
 	list->get_Count(&count);
 	for(long i=0; i<count; ++i)
 	{
-		CComPtr<ITabbedMDIChildModifiedItem> item;
+		ATL::CComPtr<ITabbedMDIChildModifiedItem> item;
 		list->get_Item(i, &item);
 		if(item)
 		{
 			if(m_showColumn[eColumn_Name])
 			{
-				CComBSTR displayName;
+				ATL::CComBSTR displayName;
 				item->get_DisplayName(&displayName);
 				if(displayName.Length() > 0)
 				{
@@ -1331,7 +1338,7 @@ bool CSaveModifiedItemsDialog::FindUsedColumns(ITabbedMDIChildModifiedList* list
 			}
 			if(m_showColumn[eColumn_Description])
 			{
-				CComBSTR description;
+				ATL::CComBSTR description;
 				item->get_Description(&description);
 				if(description.Length() > 0)
 				{
@@ -1348,7 +1355,7 @@ bool CSaveModifiedItemsDialog::FindUsedColumns(ITabbedMDIChildModifiedList* list
 				}
 			}
 
-			CComPtr<ITabbedMDIChildModifiedList> subItems;
+			ATL::CComPtr<ITabbedMDIChildModifiedList> subItems;
 			item->get_SubItems(&subItems);
 			if(subItems)
 			{
@@ -1373,20 +1380,20 @@ bool CSaveModifiedItemsDialog::AddItems(ITabbedMDIChildModifiedList* list, int i
 	list->get_Count(&count);
 	for(long i=0; i<count; ++i)
 	{
-		CComPtr<ITabbedMDIChildModifiedItem> item;
+		ATL::CComPtr<ITabbedMDIChildModifiedItem> item;
 		list->get_Item(i, &item);
 		if(item)
 		{
-			CComBSTR displayName, description;
+			ATL::CComBSTR displayName, description;
 			item->get_DisplayName(&displayName);
 			item->get_Description(&description);
 
 			DATE lastModified = 0;
 			item->get_LastModifiedUTC(&lastModified);
 
-			CString displayNameForItem(displayName);
-			CString descriptionForItem(description);
-			CString lastModifiedForItem = this->FormatLastModifiedDateString(lastModified);
+			_CSTRING_NS::CString displayNameForItem(displayName);
+			_CSTRING_NS::CString descriptionForItem(description);
+			_CSTRING_NS::CString lastModifiedForItem = this->FormatLastModifiedDateString(lastModified);
 
 			if(displayNameForItem.GetLength() < 1)
 			{
@@ -1406,7 +1413,7 @@ bool CSaveModifiedItemsDialog::AddItems(ITabbedMDIChildModifiedList* list, int i
 			// to be sure we keep the item reference counted appropriately
 			// no matter where the InsertItem comes from.
 			//IUnknown* punkItem = NULL;
-			CComPtr<IUnknown> punkItem;
+			ATL::CComPtr<IUnknown> punkItem;
 			item->QueryInterface(IID_IUnknown, (void**)&punkItem);
 
 			LVITEM lvItem = {0};
@@ -1431,7 +1438,7 @@ bool CSaveModifiedItemsDialog::AddItems(ITabbedMDIChildModifiedList* list, int i
 				}
 			}
 
-			CComPtr<ITabbedMDIChildModifiedList> subItems;
+			ATL::CComPtr<ITabbedMDIChildModifiedList> subItems;
 			item->get_SubItems(&subItems);
 			if(subItems)
 			{
@@ -1443,9 +1450,9 @@ bool CSaveModifiedItemsDialog::AddItems(ITabbedMDIChildModifiedList* list, int i
 	return success;
 }
 
-CString CSaveModifiedItemsDialog::FormatLastModifiedDateString(DATE lastModifiedUTC)
+_CSTRING_NS::CString CSaveModifiedItemsDialog::FormatLastModifiedDateString(DATE lastModifiedUTC)
 {
-	CString lastModifiedString;
+	_CSTRING_NS::CString lastModifiedString;
 
 	if(lastModifiedUTC != 0)
 	{
@@ -1459,8 +1466,8 @@ CString CSaveModifiedItemsDialog::FormatLastModifiedDateString(DATE lastModified
 		COleDateTime nowLocal(COleDateTime::GetCurrentTime());
 		COleDateTime dateTimeModifiedLocal(lastModifiedLocalFileTime);
 
-		CString fullDateTimeString = dateTimeModifiedLocal.Format(_T("%#m/%#d/%Y %#I:%M %p"));;
-		CString timeString = dateTimeModifiedLocal.Format(_T("%#I:%M %p"));;
+		_CSTRING_NS::CString fullDateTimeString = dateTimeModifiedLocal.Format(_T("%#m/%#d/%Y %#I:%M %p"));;
+		_CSTRING_NS::CString timeString = dateTimeModifiedLocal.Format(_T("%#I:%M %p"));;
 
 		int yearDifference = (nowLocal.GetYear() - dateTimeModifiedLocal.GetYear());
 		int dayOfYearDifference = (nowLocal.GetDayOfYear() - dateTimeModifiedLocal.GetDayOfYear());
@@ -1523,7 +1530,7 @@ int CSaveModifiedItemsDialog::FindItemIndex(ITabbedMDIChildModifiedItem* item)
 		return -1;
 	}
 
-	CComPtr<IUnknown> punkNode;
+	ATL::CComPtr<IUnknown> punkNode;
 	item->QueryInterface(IID_IUnknown, (void**)&punkNode);
 	if(punkNode)
 	{
@@ -1775,7 +1782,7 @@ void CSaveModifiedItemsDialog::CreateDefaultStateImages(void)
 {
 	if(!m_stateImages.IsNull())
 	{
-		CWindowDC dcScreen(NULL);
+		WTL::CWindowDC dcScreen(NULL);
 
 		int cx = ::GetSystemMetrics(SM_CXSMICON);
 		int cy = ::GetSystemMetrics(SM_CYSMICON);
@@ -1807,7 +1814,7 @@ int CSaveModifiedItemsDialog::AddCheckStateImage(HDC dcScreen, int cx, int cy, e
 
 	int index = -1;
 
-	CBitmap bitmap = ImageUtil::CreateCheckboxImage(dcScreen, type, cx, cy, RGB(255,0,0), m_list);
+	WTL::CBitmap bitmap = ImageUtil::CreateCheckboxImage(dcScreen, type, cx, cy, RGB(255,0,0), m_list);
 	if(!bitmap.IsNull())
 	{
 		index = m_stateImages.Add(bitmap, RGB(255,0,0));

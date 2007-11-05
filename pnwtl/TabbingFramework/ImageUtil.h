@@ -71,21 +71,23 @@ namespace ImageUtil
 #endif
 
 		HBITMAP bitmap = NULL;
-		CDC dc;
+		WTL::CDC dc;
 		dc.CreateCompatibleDC(dcScreen);
 		if(!dc.IsNull())
 		{
-			CRect rcImage(0,0,cx,cy);
-			bitmap = ::CreateCompatibleBitmap(dcScreen, rcImage.Width(), rcImage.Height());
-			CBitmapHandle hOldBitmap = dc.SelectBitmap(bitmap);
+			RECT rcImage = {0,0,cx,cy};
+			bitmap = ::CreateCompatibleBitmap(dcScreen, cx, cy);
+			WTL::CBitmapHandle hOldBitmap = dc.SelectBitmap(bitmap);
 
 			dc.FillSolidRect(&rcImage, transparentColor);
-			rcImage.DeflateRect(1,1);
+			::InflateRect(&rcImage, -1, -1);
 #ifdef __ATLTHEME_H__
-			CTheme theme;
+			WTL::CTheme theme;
 			if(theme.OpenThemeData(hWndControl, L"Button"))
 			{
 				theme.DrawThemeBackground(dc, BP_CHECKBOX, stateDTB, &rcImage);
+
+				theme.CloseThemeData();
 			}
 			else
 			{

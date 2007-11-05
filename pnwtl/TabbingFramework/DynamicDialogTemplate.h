@@ -30,6 +30,8 @@
 // To find out more about in-memory dialog templates, see the MSDN library
 // for a description of DLGTEMPLATE and DLGITEMTEMPLATE
 
+namespace DynamicDialog {
+
 struct DynamicDialogItemSize
 {
 public:
@@ -470,8 +472,8 @@ class CDynamicDialogExTemplate
 // Important!  If ATL::CDialogImpl ever changes, reflect those changes here.
 //  We don't inherit from CDialogImpl at all and completely duplicate (and
 //  appropriately modify) everything it does.
-template <class T, class TBase = CWindow, class TDynamicDialogTemplate = CDynamicDialogTemplate>
-class ATL_NO_VTABLE CDynamicDialogImpl : public CDialogImplBaseT< TBase >
+template <class T, class TBase = ATL::CWindow, class TDynamicDialogTemplate = CDynamicDialogTemplate>
+class ATL_NO_VTABLE CDynamicDialogImpl : public ATL::CDialogImplBaseT< TBase >
 {
 protected:
 	TDynamicDialogTemplate m_dynamicDialogTemplate;
@@ -495,7 +497,7 @@ public:
 		pT->ConstructDialogResource();
 
 		ATLASSERT((bool)m_dynamicDialogTemplate);
-		_AtlWinModule.AddCreateWndData(&m_thunk.cd, (CDialogImplBaseT< TBase >*)this);
+		_AtlWinModule.AddCreateWndData(&m_thunk.cd, (ATL::CDialogImplBaseT< TBase >*)this);
 #ifdef _DEBUG
 		m_bModal = true;
 #endif //_DEBUG
@@ -519,7 +521,7 @@ public:
 		pT->ConstructDialogResource();
 
 		ATLASSERT((bool)m_dynamicDialogTemplate);
-		_AtlWinModule.AddCreateWndData(&m_thunk.cd, (CDialogImplBaseT< TBase >*)this);
+		_AtlWinModule.AddCreateWndData(&m_thunk.cd, (ATL::CDialogImplBaseT< TBase >*)this);
 #ifdef _DEBUG
 		m_bModal = false;
 #endif //_DEBUG
@@ -552,11 +554,11 @@ public:
 //  either during a "Create" call, or when there's an implicit or explict cast to PROPSHEETPAGE*
 //  (such as when "AddPage" is called on the sheet with the page as the argument).
 
-template <class T, class TBase = CPropertyPageWindow, class TDynamicDialogTemplate = CDynamicDialogTemplate>
-class ATL_NO_VTABLE CDynamicPropertyPageImpl : public CPropertyPageImpl< T, TBase >
+template <class T, class TBase = WTL::CPropertyPageWindow, class TDynamicDialogTemplate = CDynamicDialogTemplate>
+class ATL_NO_VTABLE CDynamicPropertyPageImpl : public WTL::CPropertyPageImpl< T, TBase >
 {
 protected:
-	typedef CPropertyPageImpl< T, TBase > baseClass;
+	typedef WTL::CPropertyPageImpl< T, TBase > baseClass;
 
 protected:
 	bool m_dialogResourceInitialized;
@@ -636,6 +638,8 @@ public:
 		}
 	}
 };
+
+}; // namespace DynamicDialog
 
 
 #endif //__DynamicDialogTemplate_h__

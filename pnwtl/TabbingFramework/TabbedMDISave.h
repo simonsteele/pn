@@ -30,6 +30,9 @@
 // History (Date/Author/Description):
 // ----------------------------------
 //
+// 2005/07/13: Daniel Bowen
+// - Namespace qualify the use of more ATL and WTL classes.
+//
 // 2004/08/26: Daniel Bowen
 // - Break out checkbox image creation
 // - Have CDynamicDialogImpl automatically call ConstructDialogResource
@@ -215,7 +218,7 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 // CTabbedMDIChildModifiedList
 class CTabbedMDIChildModifiedList :
-	public CComObjectRootEx<CComMultiThreadModel>,
+	public ATL::CComObjectRootEx<ATL::CComMultiThreadModel>,
 	public ITabbedMDIChildModifiedList,
 	public ATL::CInterfaceList<ITabbedMDIChildModifiedItem>
 {
@@ -264,7 +267,7 @@ protected:
 /////////////////////////////////////////////////////////////////////////////
 // CTabbedMDIChildModifiedItem
 class CTabbedMDIChildModifiedItem :
-	public CComObjectRootEx<CComMultiThreadModel>,
+	public ATL::CComObjectRootEx<ATL::CComMultiThreadModel>,
 	public ITabbedMDIChildModifiedItem
 {
 public:
@@ -335,17 +338,17 @@ public:
 
 protected:
 	HWND     m_window;
-	CComBSTR m_name;
-	CComBSTR m_displayName;
-	CComBSTR m_description;
+	ATL::CComBSTR m_name;
+	ATL::CComBSTR m_displayName;
+	ATL::CComBSTR m_description;
 	DATE     m_lastModified;
 	HICON    m_icon;
-	CComPtr<IUnknown> m_userData;
+	ATL::CComPtr<IUnknown> m_userData;
 
 	// We keep a strong reference to the sub item list,
 	// and the sub item list keeps a weak reference to us
 	// (to avoid circular reference)
-	CComPtr<ITabbedMDIChildModifiedList> m_subItems;
+	ATL::CComPtr<ITabbedMDIChildModifiedList> m_subItems;
 
 	// We keep a weak reference to our parent list,
 	// and the parent list keeps a strong reference to us.
@@ -369,14 +372,14 @@ HRESULT CreateEmptyTabbedMDIChildModifiedItem(ITabbedMDIChildModifiedItem** item
 /////////////////////////////////////////////////////////////////////////////
 // CSaveModifiedItemsDialog
 class CSaveModifiedItemsDialog :
-	//public CDialogImpl<CSaveModifiedItemsDialog>,
-	public CDynamicDialogImpl<CSaveModifiedItemsDialog>,
-	public CDialogResize<CSaveModifiedItemsDialog>
+	//public ATL::CDialogImpl<CSaveModifiedItemsDialog>,
+	public DynamicDialog::CDynamicDialogImpl<CSaveModifiedItemsDialog>,
+	public WTL::CDialogResize<CSaveModifiedItemsDialog>
 {
 protected:
-	//typedef CDialogImpl<CSaveModifiedItemsDialog> baseClass;
-	typedef CDynamicDialogImpl<CSaveModifiedItemsDialog> baseClass;
-	typedef CDialogResize<CSaveModifiedItemsDialog> resizeClass;
+	//typedef ATL::CDialogImpl<CSaveModifiedItemsDialog> baseClass;
+	typedef DynamicDialog::CDynamicDialogImpl<CSaveModifiedItemsDialog> baseClass;
+	typedef WTL::CDialogResize<CSaveModifiedItemsDialog> resizeClass;
 
 // Public enumarations
 public:
@@ -493,7 +496,7 @@ public:
 public:
 	void DlgResize_UpdateLayout(int cxWidth, int cyHeight);
 
-// CDynamicDialogImpl overrides
+// DynamicDialog::CDynamicDialogImpl overrides
 public:
 	bool ConstructDialogResource(void);
 
@@ -504,7 +507,7 @@ protected:
 	int AutoHideUnusedColumns(void);
 	bool FindUsedColumns(ITabbedMDIChildModifiedList* list, int columnUseCount[eColumn_Count]);
 	bool AddItems(ITabbedMDIChildModifiedList* list, int indent);
-	CString FormatLastModifiedDateString(DATE lastModifiedUTC);
+	_CSTRING_NS::CString FormatLastModifiedDateString(DATE lastModifiedUTC);
 	IUnknown* GetIUnknownForItem(int index);
 	int FindItemIndex(ITabbedMDIChildModifiedItem* item);
 	int FindParentIndex(int item);
@@ -518,11 +521,11 @@ protected:
 
 // Members
 protected:
-	CComPtr<ITabbedMDIChildModifiedList> m_modifiedList;
+	ATL::CComPtr<ITabbedMDIChildModifiedList> m_modifiedList;
 	bool m_canCancel;
 	bool m_haveAtLeastOneModifiedDate;
 
-	CContainedWindowT<WTL::CListViewCtrl> m_list;
+	ATL::CContainedWindowT<WTL::CListViewCtrl> m_list;
 	WTL::CHeaderCtrl m_header;
 	WTL::CImageList m_images;
 	WTL::CImageList m_stateImages;
