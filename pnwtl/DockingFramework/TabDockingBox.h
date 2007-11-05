@@ -15,8 +15,10 @@
 #ifndef __WTL_DW__TABDOCKINGBOX_H__
 #define __WTL_DW__TABDOCKINGBOX_H__
 
-#include <DockingBox.h>
-#include <FlyingTabs.h>
+#pragma once
+
+#include "DockingBox.h"
+#include "FlyingTabs.h"
 
 namespace dockwins{
 
@@ -25,7 +27,7 @@ template<class TTraits=COutlookLikeDockingBoxTraits>
 class CTabDockingBox :
 			public  CDockingBoxBaseImpl<CTabDockingBox<TTraits>,CWindow,TTraits>
 {
-	typedef	CDockingBoxBaseImpl<CTabDockingBox,CWindow,TTraits> baseClass;
+	typedef	CDockingBoxBaseImpl<CTabDockingBox<TTraits>,CWindow,TTraits> baseClass;
 	typedef CTabDockingBox  thisClass;
 	typedef CFlyingTabCtrl	CTabCtrl;
 protected:
@@ -264,9 +266,9 @@ public:
 	{
          assert(wnd.IsWindow());
 		PrepareForDock(wnd);
-		return InsertWndTab(index,wnd,reinterpret_cast<DWORD>(wnd.m_hWnd));
+		return InsertWndTab(index,wnd,reinterpret_cast<DWORD_PTR>(wnd.m_hWnd));
 	}
-	int InsertWndTab(int index,CWindow wnd,DWORD param)
+	int InsertWndTab(int index,CWindow wnd,DWORD_PTR param)
 	{
 		assert(index>=0);
 		assert(index<=m_tabs.GetItemCount());
@@ -276,8 +278,14 @@ public:
 		wnd.GetWindowText(ptxt,txtLen);
 		int image = -1;
 		HICON hIcon=wnd.GetIcon(FALSE);
+#ifdef _WIN64
 		if(hIcon == NULL)
-			hIcon = (HICON) ::GetClassLong(wnd.m_hWnd, GCL_HICONSM);
+			hIcon = (HICON)::GetClassLongPtr(wnd.m_hWnd, GCLP_HICONSM);
+#else
+		if(hIcon == NULL)
+			hIcon = (HICON)LongToHandle(::GetClassLongPtr(wnd.m_hWnd, GCLP_HICONSM));
+#endif
+
 		if(hIcon)
 			image = m_images.AddIcon(hIcon);
 		index=m_tabs.InsertItem(index,ptxt,image,param);
@@ -358,12 +366,12 @@ public:
 	}
 	bool CanBeClosed(unsigned long param)
 	{
-		int n=m_tabs.GetItemCount();
+		int count=m_tabs.GetItemCount();
 		bool bRes=(param==0);
 		if(!bRes)
 		{
-			bRes=n<2;
-			if(bRes && (n!=0))
+			bRes=count<2;
+			if(bRes && (count!=0))
 			{
 				HWND hWnd=GetItemHWND(0);
 				assert(hWnd);
@@ -393,7 +401,7 @@ public:
 		}
 		else
 		{
-			bRes=n<2;
+			bRes=count<2;
 			if(!bRes)
 			{
 				int curSel=m_tabs.GetCurSel();
@@ -403,6 +411,14 @@ public:
 				if(hWnd)
 				{
 					::PostMessage(hWnd, WM_CLOSE, 0, 0);
+					if(curSel < (count-1))
+					{
+						m_tabs.SetCurSel(curSel+1);
+					}
+					else if(curSel > 0 && count > 1)
+					{
+						m_tabs.SetCurSel(curSel-1);
+					}
 					bRes = false;
 				}
 				else

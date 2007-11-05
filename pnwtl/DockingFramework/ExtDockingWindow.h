@@ -15,7 +15,9 @@
 #ifndef __WTL_DW__EXTDOCKINGWINDOW_H__
 #define __WTL_DW__EXTDOCKINGWINDOW_H__
 
-#include <DockingWindow.h>
+#pragma once
+
+#include "DockingWindow.h"
 
 namespace dockwins{
 
@@ -394,7 +396,7 @@ public:
             else
         		hFontOld = dc.SelectFont(hFont);
     			if( (rc.left<rc.right) && (rc.top<rc.bottom))
-    				DrawEllipsisText(dc,sText,_tcslen(sText),&rc,IsHorizontal());
+				DrawEllipsisText(dc,sText,(int)_tcslen(sText),&rc,IsHorizontal());
     		dc.SelectFont(hFontOld);
 		}
 		m_btnClose.Draw(dc);

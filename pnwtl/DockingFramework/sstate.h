@@ -4,6 +4,8 @@
 #ifndef __WTL_DW__SSTATE_H__
 #define __WTL_DW__SSTATE_H__
 
+#pragma once
+
 #include<memory>
 #include<utility>
 #include<algorithm>

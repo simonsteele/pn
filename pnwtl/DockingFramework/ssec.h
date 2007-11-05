@@ -15,6 +15,8 @@
 #ifndef __SSEC_H__
 #define __SSEC_H__
 
+#pragma once
+
 #include <cassert>
 #include <deque>
 #include <algorithm>

@@ -16,13 +16,15 @@
 #ifndef __WTL_DW__DWAUTOHIDE_H__
 #define __WTL_DW__DWAUTOHIDE_H__
 
+#pragma once
+
 #define DF_AUTO_HIDE_FEATURES
 
 #include <queue>
 #include <deque>
-#include <ssec.h>
-#include <DockMisc.h>
-#include <ExtDockingWindow.h>
+#include "ssec.h"
+#include "DockMisc.h"
+#include "ExtDockingWindow.h"
 
 
 namespace dockwins{
@@ -90,8 +92,14 @@ struct IPinnedLabel
 			m_hWnd=hWnd;
 			m_width=width;
 			m_icon=reinterpret_cast<HICON>(::SendMessage(hWnd, WM_GETICON, FALSE, 0));
+// need conditional code because types don't match in winuser.h
+#ifdef _WIN64
 			if(m_icon == NULL)
-				m_icon = reinterpret_cast<HICON>(::GetClassLong(hWnd, GCL_HICONSM));
+				m_icon = (HICON)::GetClassLongPtr(hWnd, GCLP_HICONSM);
+#else
+			if(m_icon == NULL)
+				m_icon = (HICON)LongToHandle(::GetClassLongPtr(hWnd, GCLP_HICONSM));
+#endif
 			delete [] m_txt;
 			int len=0;
 			try
@@ -176,7 +184,7 @@ struct IPinnedLabel
 					}
 				}
 			}
-			DrawEllipsisText(dc,m_txt,_tcslen(m_txt),&rcOutput,side.IsHorizontal());
+			DrawEllipsisText(dc,m_txt,(int)_tcslen(m_txt),&rcOutput,side.IsHorizontal());
 		}
 	protected:
 		unsigned long	m_width;
@@ -234,6 +242,7 @@ public:
 
 	virtual IPinnedLabel* Remove(HWND hWnd,HDOCKBAR hBar)
 	{
+		hWnd; // avoid warning on level 4
 		assert(IsOwner(hWnd));
 		m_wnd.PrepareForUndock(hBar);
 		return 0;
@@ -263,7 +272,7 @@ public:
 	{
 		SIZE sz;
 		LPCTSTR text=m_wnd.Text();
-		bool bRes=(GetTextExtentPoint32(dc, text,_tcslen(text),&sz)!=FALSE);
+		bool bRes=(GetTextExtentPoint32(dc, text,(int)_tcslen(text),&sz)!=FALSE);
 		assert(bRes);
 		unsigned long width=sz.cx+2*captionPadding;
 		if(m_wnd.Icon()!=NULL)
@@ -281,6 +290,7 @@ public:
 	}
 	virtual CPinnedWindow* FromPoint(long x,bool /*bActivate*/)
 	{
+		x; // avoid warning on level 4
 		assert(x>=0 && x<Width() );
 		return ActivePinnedWindow();
 	}
@@ -341,6 +351,7 @@ public:
 
 	virtual bool UnPin(HWND hWnd,HDOCKBAR hBar,DFDOCKPOS* pHdr)
 	{
+		hWnd; // avoid warning on level 4
 		assert(pHdr->hdr.hWnd==hWnd);
 		GetDockingPosition(pHdr);
 		pHdr->hdr.hWnd=m_tabs[0].Wnd();
@@ -431,7 +442,7 @@ public:
 	{
 		SIZE sz;
 		LPCTSTR text=m_tabs[m_longestTextTab].Text();
-		bool bRes=(GetTextExtentPoint32(dc, text,_tcslen(text),&sz)!=FALSE);
+		bool bRes=(GetTextExtentPoint32(dc, text,(int)_tcslen(text),&sz)!=FALSE);
 		assert(bRes);
 		bRes;
 		long width=sz.cx+2*captionPadding;
@@ -481,7 +492,7 @@ public:
 		else
 		{
 			LPCTSTR text=m_tabs[i].Text();
-			DrawEllipsisText(dc,text,_tcslen(text),&rcOutput,side.IsHorizontal());
+			DrawEllipsisText(dc,text,(int)_tcslen(text),&rcOutput,side.IsHorizontal());
 		}
 	}
 	void DrawActiveTab(unsigned long i,CDC& dc,const CRect& rc,const CSide& side) const
@@ -572,9 +583,13 @@ public:
 	{
 		SetRectEmpty();
 	}
+	static void DestroyPinnedLabel(void *ptr)
+	{
+		delete static_cast< CPinnedLabelPtr >(ptr);
+	}
 	~CAutoHideBar()
 	{
-		void (*pDelete)(void *)=&(operator delete);
+		void (*pDelete)(void *)=&DestroyPinnedLabel;
 		std::for_each(m_bunch.begin(),m_bunch.end(),pDelete);
 	}
 	operator const CRect& () const
@@ -663,7 +678,7 @@ public:
 			width+=labelWidth;
 		}
 		long averageLableWidth=width;
-		long n=m_bunch.size();
+		long n=(long)m_bunch.size();
 		if(n>0 && (width>availableWidth) )
 		{
 			width=availableWidth;
@@ -775,7 +790,7 @@ public:
 			*pLeft+=IPinnedLabel::leftBorder;
 			*pRight-=IPinnedLabel::rightBorder;
 
-			long minSize=m_bunch.size()*IPinnedLabel::labelPadding-IPinnedLabel::labelPadding;
+			long minSize=(long)m_bunch.size()*IPinnedLabel::labelPadding-IPinnedLabel::labelPadding;
 
 			if(minSize<(*pRight-*pLeft))
 			{
@@ -893,7 +908,7 @@ public:
 		{
 			pHdr->dwDockSide=m_side.Side() | CDockingSide::sSingle | CSide::sPinned;
 			(*i)->GetDockingPosition(pHdr);
-			pHdr->nBar=std::distance(m_bunch.begin(),i);
+			pHdr->nBar=(unsigned long)std::distance(m_bunch.begin(),i);
 		}
 		return bRes;
 	}
@@ -906,8 +921,8 @@ protected:
 #define HTSPLITTERV HTTOP
 
 template <class T,
-          class TBase,
-          class TAutoHidePaneTraits>
+          class TBase = CWindow,
+          class TAutoHidePaneTraits = COutlookLikeAutoHidePaneTraits>
 class ATL_NO_VTABLE CAutoHidePaneImpl :
 	 public CWindowImpl< T, TBase, TAutoHidePaneTraits >
 {
@@ -944,7 +959,7 @@ protected:
 public:
 	CAutoHidePaneImpl()
 	{
-		m_caption.SetPinButtonState(CPinIcons::sUnPinned);
+		m_caption.SetPinButtonState(CPinIcons::sUnPinned/*CCaption::PinButtonStates::sPinned*/);
 	}
 protected:
     CSide Orientation() const
@@ -987,7 +1002,7 @@ public:
 			else
 			{
 				if(GetCapture()==NULL)
-					m_caption.HotTrack(m_hWnd,lRes);
+					m_caption.HotTrack(m_hWnd,(unsigned int)lRes);
 			}
 		}
 		return lRes;
@@ -1013,7 +1028,7 @@ public:
 		PostMessage(WM_CLOSE);
 		return false;
 	}
-	bool PinBtnPress()
+	bool PinBtnPress(bool bVisualize=true)
 	{
 		return true;
 	}
@@ -1183,34 +1198,36 @@ protected:
 		if( (wParam==HTSPLITTERH) || (wParam==HTSPLITTERV) )
 			static_cast<T*>(this)->StartResizing(CPoint(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)));
 		else
-			m_caption.OnAction(m_hWnd,wParam);
+			m_caption.OnAction(m_hWnd,(unsigned int)wParam);
         return 0;
 	}
 
 	LRESULT OnNcLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		T* pThis=static_cast<T*>(this);
+		HWND hWndFocus = ::GetFocus();
 		switch(wParam)
 		{
 			case HTCLOSE:
 				bHandled=pThis->CloseBtnPress();
 				break;
 			case HTPIN:
-				{
-					HWND hWndFocus = ::GetFocus();
-					bHandled=pThis->PinBtnPress();
-					if(::IsWindow(hWndFocus) && ::IsWindowVisible(hWndFocus))
-					{
-						::SetFocus(hWndFocus);
-					}
-					else
-					{
-						::SetFocus(this->GetTopLevelParent());
-					}
-				}
+				bHandled=pThis->PinBtnPress();
 				break;
 			default:
 				bHandled=FALSE;
+		}
+
+		if(hWndFocus != ::GetFocus())
+		{
+			if(::IsWindow(hWndFocus) && ::IsWindowVisible(hWndFocus))
+			{
+				::SetFocus(hWndFocus);
+			}
+			else
+			{
+				::SetFocus(this->GetTopLevelParent());
+			}
 		}
         return 0;
 	}
@@ -1240,7 +1257,7 @@ protected:
 		return 1;
 	}
 
-	LRESULT OnSysColorChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnSysColorChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		// Note: We can depend on CDWSettings already being updated
 		//  since we will always be a descendant of the main frame
@@ -1259,14 +1276,13 @@ protected:
 	CSide			m_side;
 };
 
-template<class TAutoHidePaneTraits>
-class CAutoHideManager
-	: public CAutoHidePaneImpl<CAutoHideManager<TAutoHidePaneTraits>,CWindow,TAutoHidePaneTraits>
+template <class TAutoHidePaneTraits = COutlookLikeAutoHidePaneTraits>
+class CAutoHideManager : public CAutoHidePaneImpl<CAutoHideManager<TAutoHidePaneTraits>,CWindow,TAutoHidePaneTraits>
 {
 	typedef CAutoHidePaneImpl<CAutoHideManager<TAutoHidePaneTraits>,CWindow,TAutoHidePaneTraits>	baseClass;
-	typedef CAutoHideManager																		thisClass;
+	typedef CAutoHideManager<TAutoHidePaneTraits>					thisClass;
 protected:
-	typedef typename CAutoHideBar::CSide		CSide;
+	typedef CAutoHideBar::CSide		CSide;
 	enum{ tmID=1,tmTimeout=1300};
 	enum{ animateTimeout=100};
 	enum{ hoverTimeout=50/*HOVER_DEFAULT*/};
@@ -1353,7 +1369,7 @@ protected:
         typedef CSimpleSplitterBarSlider<CSplitterBar> CSlider;
 	public:
 		CSizeTrackerGhost(HWND hWnd,CPoint pt,const CSide& side,CSplitterBar& splitter,const CRect& rcBound)
-			: CSizeTrackerFull(hWnd,pt,side,splitter.GetThickness(),rcBound),m_dc(::GetWindowDC(NULL))
+			: CSizeTrackerFull(hWnd,pt,side,splitter.GetThickness(),rcBound),m_dc(NULL)
 			,m_splitter(splitter),m_slider(splitter)
 		{
 			m_spOffset=m_slider-*m_ppos;
@@ -1375,13 +1391,13 @@ protected:
 			m_splitter.DrawGhostBar(m_dc);
 		}
 	protected:
-		CDC				m_dc;
+		CWindowDC		m_dc;
 		CSplitterBar&	m_splitter;
 		CSlider			m_slider;
 		long			m_spOffset;
 	};
 public:
-	CAutoHideManager()
+	CAutoHideManager() 
 		: m_barThickness(0),m_pActive(0),m_pTracked(0)
 	{
 		m_rcBound.SetRectEmpty();

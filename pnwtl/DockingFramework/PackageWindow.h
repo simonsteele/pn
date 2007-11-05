@@ -15,8 +15,10 @@
 #ifndef __WTL_DW__PACKAGEWINDOW_H__
 #define __WTL_DW__PACKAGEWINDOW_H__
 
-#include <DockMisc.h>
-#include <WndFrmPkg.h>
+#pragma once
+
+#include "DockMisc.h"
+#include "WndFrmPkg.h"
 
 namespace dockwins{
 
@@ -258,7 +260,7 @@ protected:
 		: CPackageWindowImpl<CPackageWindowT<TTraits>, CWndFramesPackage<TTraits> >
 	{
 	public:
-		DECLARE_WND_CLASS(_T("CPackageWindowFrame::CPackageWindow"))
+		DECLARE_WND_CLASS_EX(_T("CPackageWindowFrame::CPackageWindow"), CS_DBLCLKS, COLOR_WINDOW)
         virtual void OnFinalMessage(HWND /*hWnd*/)
         {
             delete this;

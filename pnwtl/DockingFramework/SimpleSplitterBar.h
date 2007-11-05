@@ -15,6 +15,8 @@
 #ifndef __WTL_DW__SIMPLESPLITTERBAR_H__
 #define __WTL_DW__SIMPLESPLITTERBAR_H__
 
+#pragma once
+
 #ifndef __ATLMISC_H__
         #error SimpleSplitterBar.h requires atlmisc.h to be included first
 #endif

@@ -15,10 +15,12 @@
 #ifndef __WTL_DW__DWSTATE_H__
 #define __WTL_DW__DWSTATE_H__
 
+#pragma once
+
 #include <cassert>
 #include <queue>
-#include <sstate.h>
-#include <DockMisc.h>
+#include "sstate.h"
+#include "DockMisc.h"
 
 
 namespace sstate{

@@ -15,6 +15,8 @@
 #ifndef __WTL_DW__DOCKINGFRAME_H__
 #define __WTL_DW__DOCKINGFRAME_H__
 
+#pragma once
+
 #include <atlframe.h>
 #include <DockMisc.h>
 #include <PackageWindow.h>
@@ -281,14 +283,14 @@ public:
 		return bRes;
 	}
 #ifdef DF_AUTO_HIDE_FEATURES
-	bool OnMouseMove(DWORD key,const CPoint& pt)
+	bool OnMouseMove(WPARAM key,const CPoint& pt)
 	{
 		bool bRes=( (key==0) && GetActiveWindow()!=0 );
 		if(bRes)
 			bRes=m_ahManager.MouseEnter(m_hWnd,pt);
 		return bRes;
 	}
-	bool OnMouseHover(DWORD key,const CPoint& pt)
+	bool OnMouseHover(WPARAM key,const CPoint& pt)
 	{
 		if(key==0)
 			m_ahManager.MouseHover(m_hWnd,pt);

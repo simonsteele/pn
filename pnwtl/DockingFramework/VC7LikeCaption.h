@@ -137,7 +137,7 @@ protected:
 				pen.CreatePen(PS_SOLID, 1, ::GetSysColor(bDescendantHasFocus ? COLOR_CAPTIONTEXT : COLOR_BTNTEXT));
 
 				HPEN hPenOld = dc.SelectPen(pen);
-				const sp=2;
+				const int sp=2;
 				dc.MoveTo(left+cxOffset+sp, top+cyOffset+sp +1);
 				dc.LineTo(right+cxOffset-sp -1, bottom+cyOffset-sp);
 				dc.MoveTo(left+cxOffset+sp, bottom+cyOffset - sp-1);
@@ -201,7 +201,7 @@ protected:
 			int nHCenter = left+Width()/2;
 			int nVCenter = top+Height()/2;
 			HPEN hPenOld = dc.SelectPen(pen);
-			if(m_state == CIcons::States::sUnPinned)
+			if(m_state == CPinIcons::sUnPinned)
 			{
 				// Note: there are slight differences in coord. because of our ExtCreatePen
 				int nSegment = (cySmCaption/5);
@@ -385,7 +385,7 @@ public:
 			dc.SetBkMode(TRANSPARENT);
 			HFONT hFontOld = dc.SelectFont(hFont);
 			if( (rc.left<rc.right) && (rc.top<rc.bottom))
-				DrawEllipsisText(dc,sText,_tcslen(sText),&rc,IsHorizontal());
+				DrawEllipsisText(dc,sText,(int)_tcslen(sText),&rc,IsHorizontal());
 			dc.SelectFont(hFontOld);
 		}
 		m_btnClose.Draw(hWnd, dc, CButton::eButtonState_Normal);

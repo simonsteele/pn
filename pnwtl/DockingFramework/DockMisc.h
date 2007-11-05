@@ -15,6 +15,8 @@
 #ifndef __WTL_DW__DOCKMISC_H__
 #define __WTL_DW__DOCKMISC_H__
 
+#pragma once
+
 #ifndef __ATLMISC_H__
         #error dockmisk.h requires atlmisc.h to be included first
 #endif
@@ -246,6 +248,7 @@ public:
 	COrientedRect(bool bHorizontal,unsigned long thickness)
 		:m_thickness(thickness),m_bHorizontal(bHorizontal)
 	{
+		SetRectEmpty();
 	}
 	void SetOrientation(bool bHorizontal)
 	{

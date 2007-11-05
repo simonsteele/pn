@@ -4,24 +4,27 @@
 #ifndef __WTL_DW__FLYING_TABS_H__
 #define __WTL_DW__FLYING_TABS_H__
 
+#pragma once
+
 #include <cassert>
 #include <vector>
 #include <queue>
 #include <algorithm>
 #include <functional>
 
-#include <DDTracker.h>
+#include "DDTracker.h"
+
+//#include <atlgdix.h>
+#ifndef __ATLGDIX_H__
+	#error FlyingTabs.h requires atlgdix.h to be included first
+#endif
 
 // NOTE: See CustomTabCtrl.h and DotNetTabCtrl.h for copyright information.
 // Please download the latest versions of these files from from The Codeproject article
 // "Custom Tab Controls, Tabbed Frame and Tabbed MDI" by Daniel Bowen (dbowen@es.com)
 // http://www.codeproject.com/wtl/TabbingFramework.asp
-#include <atlgdix.h>
-#include <CustomTabCtrl.h>
-#include <DotNetTabCtrl.h>
-#ifndef __ATLGDIX_H__
-	#error FlyingTabs.h requires atlgdix.h to be included first
-#endif
+//#include <CustomTabCtrl.h>
+//#include <DotNetTabCtrl.h>
 #ifndef __CUSTOMTABCTRL_H__
 	#error FlyingTabs.h requires CustomTabCtrl.h to be included first
 #endif
@@ -112,7 +115,7 @@ protected:
         HFONT hFont = GetFont();
         if(hFont != NULL)
         {
-            CDC dc = GetDC();
+            CClientDC dc(this->m_hWnd);
             CFontHandle hFontOld = dc.SelectFont(hFont);
             TEXTMETRIC tm = {0};
             dc.GetTextMetrics(&tm);
@@ -156,7 +159,7 @@ public:
 		return baseClass::InsertItem(nItem, pItem, bSelectItem);
 	}
 */
-	int InsertItem(int index, LPCTSTR ptxt = NULL, int image = -1, DWORD param=0)
+	int InsertItem(int index, LPCTSTR ptxt = NULL, int image = -1, DWORD_PTR param=0)
 	{
 		CTabViewTabItem* pItem = baseClass::CreateNewItem();
 		if(pItem)
@@ -170,9 +173,9 @@ public:
 		}
 		return -1;
 	}
-	DWORD GetItemData(int index) const
+	DWORD_PTR GetItemData(int index) const
 	{
-		return reinterpret_cast<DWORD>(GetItem(index)->GetTabView());
+		return reinterpret_cast<DWORD_PTR>(GetItem(index)->GetTabView());
 	}
 
 	void DeleteItem(CTabViewTabItem* pItem)

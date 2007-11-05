@@ -15,8 +15,9 @@
 #ifndef __WTL_DW__DOCKINGWINDOW_H__
 #define __WTL_DW__DOCKINGWINDOW_H__
 
-#include <DockMisc.h>
-#include <DDTracker.h>
+#pragma once
+
+#include "DDTracker.h"
 
 namespace dockwins{
 
@@ -119,7 +120,7 @@ protected:
         enum{GhostRectSideSize=3};
 	public:
 		CGhostMoveTracker(const CDocker& docker,const POINT& pt,DFDOCKRECT& dockHdr)
-			:m_docker(docker),m_dockHdr(dockHdr),m_dc(::GetWindowDC(NULL))
+			:m_docker(docker),m_dockHdr(dockHdr),m_dc(NULL)
 		{
 			m_offset.cx=m_dockHdr.rect.left-pt.x;
 			m_offset.cy=m_dockHdr.rect.top-pt.y;
@@ -199,7 +200,7 @@ protected:
 		}
 	protected:
 		const CDocker&	m_docker;
-		CDC				m_dc;
+		CWindowDC		m_dc;
 		DFDOCKRECT&		m_dockHdr;
 		SIZE			m_size;
 		SIZE			m_offset;
@@ -675,10 +676,10 @@ public:
 	{
 		// Override in derived class if it depends on system metrics
 	}
-    virtual void ThemeChanged()
-    {
-        // Override to support changed themes message
-    }
+	virtual void ThemeChanged()
+	{
+		// Override to support changed themes message
+	}
 };
 
 
@@ -709,16 +710,16 @@ public:
 		else
 		{
 			if(GetCapture()==NULL)
-				m_caption.HotTrack(m_hWnd,lRes);
+				m_caption.HotTrack(m_hWnd,(unsigned int)lRes);
 		}
 		return lRes;
 	}
 
 	LRESULT ThemeChanged()
 	{
-        m_caption.ThemeChanged();
-        return 0;
-    }
+		m_caption.ThemeChanged();
+		return 0;
+	}
 
 	void GetMinMaxInfo(LPMINMAXINFO pMinMaxInfo) const
 	{
@@ -827,7 +828,7 @@ protected:
 		MESSAGE_HANDLER(WM_GETMINMAXINFO,OnGetMinMaxInfo)
 		MESSAGE_HANDLER(WM_SETTINGCHANGE,OnSettingChange)
 		MESSAGE_HANDLER(WM_THEMECHANGED,OnSettingChange)
-		MESSAGE_HANDLER(WM_SYSCOLORCHANGE,OnSettingChange)
+		MESSAGE_HANDLER(WM_SYSCOLORCHANGE,OnSysColorChange)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -870,12 +871,39 @@ protected:
 		bHandled = FALSE;
 		return 1;
 	}
-/*
+
 	LRESULT OnSysColorChange(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 	{
-		return 0;
+		if(!IsDocking())
+		{
+			// If we're floating, we're a top level window.
+			// We might be getting this message before the main frame
+			// (which is also a top-level window).
+			// The main frame handles this message, and refreshes
+			// system settings cached in CDWSettings.  In case we
+			// are getting this message before the main frame,
+			// update these cached settings (so that when we update
+			// our caption's settings that depend on them,
+			// its using the latest).
+			CDWSettings settings;
+			settings.Update();
+
+			// In addition, because we are a top-level window,
+			// we should be sure to send this message to all our descendants
+			// in case there are common controls and other windows that
+			// depend on cached system metrics.
+			this->SendMessageToDescendants(uMsg, wParam, lParam, TRUE);
+		}
+
+		m_caption.UpdateMetrics();
+
+		T* pThis=static_cast<T*>(this);
+		pThis->SetWindowPos(NULL,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+
+		bHandled = FALSE;
+		return 1;
 	}
-*/
+
 	LRESULT OnWindowPosChanging(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
 		return NULL;
@@ -889,7 +917,7 @@ protected:
 
 	LRESULT OnNcCalcSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 	{
-        T* pThis=static_cast<T*>(this);
+		T* pThis=static_cast<T*>(this);
 		CRect* pRc=reinterpret_cast<CRect*>(lParam);
 		CPoint ptTop(pRc->TopLeft());
 		(*pRc)-=ptTop;
@@ -901,7 +929,7 @@ protected:
 	LRESULT OnNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 	{
 		CPoint pt(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-        T* pThis=static_cast<T*>(this);
+		T* pThis=static_cast<T*>(this);
 		CRect rcWnd;
 		GetWindowRect(&rcWnd);
 		pt.x-=rcWnd.TopLeft().x;
@@ -909,9 +937,9 @@ protected:
 		return pThis->NcHitTest(pt);
 	}
 
-	LRESULT OnThemeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+	LRESULT OnThemeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
-        T* pThis=static_cast<T*>(this);
+		T* pThis=static_cast<T*>(this);
 		return pThis->ThemeChanged();
 	}
 //OnSetIcon
@@ -940,7 +968,7 @@ protected:
 
 	LRESULT OnNcLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 	{
-		bHandled=m_caption.OnAction(m_hWnd,wParam);
+		bHandled=m_caption.OnAction(m_hWnd,(unsigned int)wParam);
 		if(!bHandled && wParam == HTCAPTION)
 			this->SetFocus();
 
@@ -976,7 +1004,7 @@ protected:
 				::SetFocus(this->GetTopLevelParent());
 			}
 		}
-        return 0;
+		return 0;
 	}
 	LRESULT OnNcLButtonDblClk(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
@@ -1049,9 +1077,9 @@ public:
 	{
 		bool bRes=baseClass::GetDockingWindowPlacement(pHdr);
 		pHdr->bVisible=static_cast<const T*>(this)->IsWindowVisible();
-		if( (!pHdr->bDocking
-			  || (!pHdr->bVisible) )
-			  /*&& (m_pos.hdr.hBar!=HNONDOCKBAR)*/)
+		if((!pHdr->bDocking)
+			&& (!pHdr->bVisible)
+				&& (m_pos.hdr.hBar!=HNONDOCKBAR))
 			::CopyMemory(&pHdr->dockPos,&m_pos,sizeof(DFDOCKPOS));
 		return bRes;
 	}
@@ -1070,6 +1098,16 @@ public:
 			bRes=(SetWindowPos(NULL,&m_rcUndock,SWP_NOZORDER | SWP_HIDEWINDOW |
 													SWP_NOACTIVATE )!=FALSE);
 		}
+
+#ifdef DF_AUTO_HIDE_FEATURES
+		// Update from Peter Carlson.
+		//  A fix for the pin restore problem.
+		CDockingSide side(pHdr->dockPos.dwDockSide);
+		if (side.IsPinned())
+			PinUp(side, (side.IsHorizontal() ? pHdr->dockPos.nHeight : pHdr->dockPos.nWidth));
+		//
+#endif
+
 		return bRes;
 	}
 
@@ -1101,7 +1139,7 @@ public:
 
 	LRESULT OnClose(UINT /*uMsg*/, WPARAM wParam, LPARAM/* lParam*/, BOOL& bHandled)
 	{
-		bHandled=!(static_cast<T*>(this)->CanBeClosed(wParam));
+		bHandled=!(static_cast<T*>(this)->CanBeClosed((unsigned long)wParam));
 		return 0;
 	}
 	LRESULT OnNcLButtonDblClk(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)

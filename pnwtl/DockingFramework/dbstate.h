@@ -15,6 +15,8 @@
 #ifndef __WTL_DW__DBSTATE_H__
 #define __WTL_DW__DBSTATE_H__
 
+#pragma once
+
 #include <list>
 #include <dwstate.h>
 #include <DockingBox.h>
@@ -96,7 +98,7 @@ protected:
 		protected:
 			void PinUp()
 			{
-				m_pinHdr.n=m_wnds.size();
+				m_pinHdr.n=(unsigned long)m_wnds.size();
 				if(m_pinHdr.n>0)
 				{
 					try

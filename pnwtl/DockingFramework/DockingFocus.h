@@ -48,7 +48,7 @@ public:
 		return S_OK;
 	}
 
-	HRESULT	RemoveHook(HWND hWnd)
+	HRESULT	RemoveHook(HWND /*hWnd*/)
 	{
 		HRESULT	hr = S_OK;
 		if (!::UnhookWindowsHookEx(m_hHook))
@@ -70,14 +70,14 @@ public:
 		MESSAGE_HANDLER(WM_ACTIVATE, OnActivate)
     END_MSG_MAP()
 
-	LRESULT OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnMouseActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
-//		bHandled = false;
+//		bHandled = FALSE;
 		SetFocusIfWindowFound(m_hwndMSg);
 		return 0;
 	}
 
-	LRESULT OnActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 	{
 		bHandled = false;
 		static HWND hWnd;
@@ -141,6 +141,7 @@ private:
 	LRESULT CALLBACK CBTProc(int nCode, WPARAM wParam, LPARAM lParam)
 	{
 		LPMSG lpMsg	= (LPMSG) lParam;
+		lpMsg;  // avoid warning on level 4
 		if (nCode == HCBT_SETFOCUS)
 		{
 			InvalidateCaption((HWND)wParam);
@@ -167,7 +168,7 @@ private:
 		SetTimer(NULL,0,1,TimerProc);
 	}
 
-	static VOID CALLBACK TimerProc(HWND hWnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime)
+	static VOID CALLBACK TimerProc(HWND hWnd, UINT /*uMsg*/, UINT_PTR idEvent, DWORD /*dwTime*/)
 	{
 		KillTimer(hWnd,idEvent);
 		ATLASSERT(This());
@@ -186,7 +187,7 @@ private:
 		{
 			WNDCLASSEX wc;
 			wc.cbSize = sizeof(wc);
-			aClass = GetClassInfoEx(_Module.GetModuleInstance(),_T("CPackageWindowFrame::CPackageWindow"),&wc);
+			aClass = (ATOM)::GetClassInfoEx(_Module.GetModuleInstance(),_T("CPackageWindowFrame::CPackageWindow"),&wc);
 		}
 		// looks for parent window 2 levels down from m_hWnd, which
 		// was initialized in InitializeDockingFrame.
