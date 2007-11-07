@@ -654,6 +654,13 @@ protected:
 				std::basic_ostringstream<TCHAR> sstrKey;
 				sstrKey<<ctxtBand<<i;
 				REBARBANDINFO rbi;
+				
+				REBARBANDINFO rbiOrig;
+				ZeroMemory(&rbiOrig, sizeof(REBARBANDINFO));
+				rbiOrig.cbSize = sizeof(REBARBANDINFO);
+				rbiOrig.fMask = RBBIM_CHILDSIZE;
+				m_rebar.GetBandInfo(i, &rbiOrig);
+
 				//ZeroMemory(&rbi,sizeof(REBARBANDINFO));
 /*
 				DWORD dwType;
@@ -662,10 +669,15 @@ protected:
 							reinterpret_cast<LPBYTE>(&rbi),&cbData)==ERROR_SUCCESS)
 							&&(dwType==REG_BINARY))
 */
-				size_t size=sizeof(REBARBANDINFO);
-				if(stg.GetBinary(sstrKey.str().c_str(),&rbi,size)==ERROR_SUCCESS
-					&& (size==sizeof(REBARBANDINFO)))
+				// We don't want to reset the vertical size of the rebar
+				// or we'll break vertical font sizing
+				
+				size_t size = sizeof(REBARBANDINFO);
+				if (stg.GetBinary(sstrKey.str().c_str(), &rbi, size) == ERROR_SUCCESS &&
+					(size == sizeof(REBARBANDINFO)))
 				{
+					rbi.cyMinChild = rbiOrig.cyMinChild;
+					rbi.cyMaxChild = rbiOrig.cyMaxChild;
 					m_rebar.MoveBand(m_rebar.IdToIndex(rbi.wID), i);
 					m_rebar.SetBandInfo(i, &rbi);
 				}

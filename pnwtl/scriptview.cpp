@@ -28,6 +28,7 @@ LRESULT CScriptDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 	m_view.Create(m_hWnd, rc, _T("ScriptsList"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | TVS_DISABLEDRAGDROP | TVS_HASLINES | TVS_LINESATROOT, 0, IDC_SCRIPTSLIST);
 	m_view.ShowWindow(SW_SHOW);
+	m_view.SetWindowTheme(L"explorer", NULL);
 
 	buildInitial();
 

@@ -73,6 +73,10 @@ HWND CProjectTreeCtrl::Create(HWND hWndParent, _U_RECT rect, LPCTSTR szWindowNam
 	HRESULT hr = RegisterDragDrop(hWndRet, m_pDropTarget);
 	ATLASSERT(SUCCEEDED(hr));
 
+	// Try to get a Vista style treeview:
+	if(g_Context.OSVersion.dwMajorVersion >= 6) 
+		SetWindowTheme(L"explorer", NULL);
+
 	return hWndRet;
 }
 

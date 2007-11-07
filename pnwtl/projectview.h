@@ -16,7 +16,7 @@
 
 class ShellImageList;
 
-class CProjectTreeCtrl : public CMSTreeViewCtrl, Projects::IProjectWatcher
+class CProjectTreeCtrl : public CMSTreeViewCtrl, Projects::IProjectWatcher, CThemeImpl<CProjectTreeCtrl>
 {
 	typedef CMSTreeViewCtrl baseClass;
 	

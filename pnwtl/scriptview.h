@@ -10,6 +10,10 @@
 #ifndef scriptview_h__included
 #define scriptview_h__included
 
+class CThemedTree : public CTreeViewCtrl, public CThemeImpl<CThemedTree>
+{
+};
+
 class CScriptDocker : public CWindowImpl<CScriptDocker>,
 	public IScriptRegistryEventSink
 {
@@ -50,7 +54,7 @@ protected:
 	void buildInitial();
 
 protected:
-	CTreeViewCtrl	m_view;
+	CThemedTree	m_view;
 };
 
 #endif // #ifndef scriptview_h__included
