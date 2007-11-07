@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<clips name="VBNet">
+	<clip name="----- Block -----"><![CDATA[]]></clip>
+	<clip name="Main body"><![CDATA[
+Imports System
+Class |
+    Shared Sub main()
+        System.Console.WriteLine("HI!")
+        System.Console.ReadLine()        
+    End Sub
+End Class
+]]></clip>
+        <clip name="Function body"><![CDATA[
+  function  | (ByVal Par1 as int16, ByVal Par2 as String) As Int16
+    return 0
+  end function
+]]></clip>
+	<clip name="Procedure body"><![CDATA[ sub |() 
+    
+  end sub
+]]></clip>
+	<clip name="return"><![CDATA[  return
+|]]></clip>
+	<clip name="----- Control -----"><![CDATA[]]></clip>
+	<clip name="if (short)"><![CDATA[  if (|) then
+]]></clip>
+	<clip name="if"><![CDATA[  if (|) then
+  
+  
+    end if
+
+]]></clip>
+	
+	<clip name="if else"><![CDATA[  if (|) then 
+
+  else
+ 
+  end if
+
+]]></clip>
+	<clip name="if else if"><![CDATA[  if |
+
+  else if
+
+  else
+ 
+  end if
+
+]]></clip>
+	
+	<clip name="for"><![CDATA[  Dim i=0: For i = | To   Step 1
+	
+     Next 
+]]></clip>
+		
+	<clip name="----- Other -----"><![CDATA[]]></clip>
+	<clip name="imports"><![CDATA[imports |]]></clip>
+	<clip name="Var declaration "><![CDATA[ Dim | as new Object() ]]></clip>
+	<clip name="Array declaration (size=n) "><![CDATA[ Dim MyArr(n-1) of Object]]></clip>
+	<clip name="Comment "><![CDATA['|]]></clip>	
+</clips>

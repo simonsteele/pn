@@ -45,11 +45,14 @@ LRESULT CToolSettingsPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	m_saveCombo.AddString(_T("None"));
 	m_saveCombo.AddString(_T("Current File"));
 	m_saveCombo.AddString(_T("All Files"));
+	m_saveCombo.AddString(_T("Project Group Files"));
 
 	if(m_iSaveStyle == TOOL_SAVEALL)
 		m_saveCombo.SetCurSel(2);
 	else if(m_iSaveStyle == TOOL_SAVEONE)
 		m_saveCombo.SetCurSel(1);
+	else if(m_iSaveStyle == TOOL_SAVEPROJECTGROUP)
+		m_saveCombo.SetCurSel(3);
 	else
 		m_saveCombo.SetCurSel(0);
 
@@ -106,7 +109,14 @@ BOOL CToolSettingsPage::OnApply()
 	m_wHotKey = (WORD)m_HotKeyCtrl.GetHotKey();
 
 	int saveSel = m_saveCombo.GetCurSel();
-	m_iSaveStyle = (saveSel == 2 ? TOOL_SAVEALL : (saveSel == 1 ? TOOL_SAVEONE : 0));
+
+	switch (saveSel)
+	{
+		case 3:  m_iSaveStyle = TOOL_SAVEPROJECTGROUP; break;
+		case 2:  m_iSaveStyle = TOOL_SAVEALL; break;
+		case 1:  m_iSaveStyle = TOOL_SAVEONE; break;
+		default: m_iSaveStyle = 0; break;
+	}
 
 	return TRUE;
 }
@@ -179,7 +189,7 @@ void CToolSettingsPage::SetValues(ToolDefinition* pDefinition)
 	m_wHotKey		= pDefinition->Shortcut;
 	m_bFilter		= pDefinition->IsFilter();
 
-	m_iSaveStyle = pDefinition->GetFlags() & (TOOL_SAVEALL | TOOL_SAVEONE);
+	m_iSaveStyle = pDefinition->GetFlags() & (TOOL_SAVEALL | TOOL_SAVEONE | TOOL_SAVEPROJECTGROUP);
 }
 
 void CToolSettingsPage::SetTitle(LPCTSTR title)

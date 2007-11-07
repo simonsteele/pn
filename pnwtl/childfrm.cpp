@@ -428,6 +428,7 @@ LRESULT CChildFrame::OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	{
 		// Activate
 		::PostMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_ACTIVATE, (LPARAM)this);
+	
 	}
 	//else // Deactivate
 	
@@ -757,10 +758,22 @@ LRESULT CChildFrame::OnFindPrevious(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 LRESULT CChildFrame::OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	StringOutput so(m_view.GetSelLength() * 2);
+	int selectionLength = m_view.GetSelLength();
+	int rtfStringLength;
+	//If nothing is selected, copy entire file	
+	if(selectionLength == 0)
+		rtfStringLength = m_view.GetTextLength() * 2;
+	else
+		rtfStringLength = m_view.GetSelLength() * 2;
+
+	StringOutput so(rtfStringLength);
 	StylesList* pStyles = m_view.GetCurrentScheme()->CreateStylesList();
 	RTFExporter rtf(&so, m_view.GetCurrentScheme()->GetName(), pStyles, &m_view);
-	rtf.Export(m_view.GetSelectionStart(), m_view.GetSelectionEnd());
+	//If nothing is selected, copy entire file
+	if(selectionLength == 0) 
+		rtf.Export(0,m_view.GetTextLength());
+	else
+		rtf.Export(m_view.GetSelectionStart(), m_view.GetSelectionEnd());
 	delete pStyles;
 	
 	const char* pRTF = so.c_str();

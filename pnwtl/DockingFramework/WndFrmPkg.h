@@ -15,13 +15,15 @@
 #ifndef __WTL_DW__WNDFRMPKG_H__
 #define __WTL_DW__WNDFRMPKG_H__
 
+#pragma once
+
 #ifndef __ATLMISC_H__
-        #error WndFrmPkg.h requires atlmisc.h to be included first
+	#error WndFrmPkg.h requires atlmisc.h to be included first
 #endif
 
 #include <memory>
-#include <ssec.h>
-#include <DDTracker.h>
+#include "ssec.h"
+#include "DDTracker.h"
 #ifdef USE_BOOST
 #include<boost/smart_ptr.hpp>
 #endif
@@ -110,7 +112,7 @@ public:
 		dockHdr.hWnd=m_hWnd;
 		dockHdr.hBar=::GetParent(m_hWnd);
 		assert(::IsWindow(dockHdr.hBar));
-		return ::SendMessage(dockHdr.hBar,WMDF_DOCK,NULL,reinterpret_cast<LPARAM>(&dockHdr));
+		return (distance)::SendMessage(dockHdr.hBar,WMDF_DOCK,NULL,reinterpret_cast<LPARAM>(&dockHdr));
 	}
 protected:
 	double m_pos;
@@ -132,10 +134,10 @@ protected:
 template< class TFrame = CWndFrame , class TTraits = CDockingFrameTraits>
 class CWndFramesPackageBase
 {
-	typedef TFrame CFrame;
-	typedef TTraits CTraits;
-	typedef typename CTraits::CSplitterBar			CSplitterBar;
-	typedef CWndFramesPackageBase<CFrame,TTraits>	thisClass;
+	typedef typename TFrame CFrame;
+	typedef typename TTraits CTraits;
+	typedef typename CTraits::CSplitterBar	CSplitterBar;
+	typedef CWndFramesPackageBase<CFrame,TTraits> thisClass;
 protected:
 	enum {splitterSize=CSplitterBar::sbThickness};
 	typedef typename CFrame::position	position;
@@ -143,7 +145,7 @@ protected:
 #if _MSC_VER >= 1310
 	template<class T,const typename T::distance TMinDist=0>
 #else
-		const typename T::distance TMinDist=0>
+	template<class T,const T::distance TMinDist=0>
 #endif
 	struct CWndFrameTraits : ssec::spraits<T, typename T::position, typename T::distance/*,TMinDist*/>
 	{
@@ -158,8 +160,8 @@ protected:
 	typedef CWndFrameTraits<CFrame,splitterSize> CFrameTraits;
 	typedef ssec::ssection<CFrame,CFrameTraits> CFrames;
 
-	typedef typename CFrames::iterator					iterator;
-	typedef typename CFrames::reverse_iterator			reverse_iterator;
+	typedef typename CFrames::iterator				iterator;
+	typedef typename CFrames::reverse_iterator		reverse_iterator;
 	typedef typename CFrames::const_iterator			const_iterator;
 	typedef typename CFrames::const_reverse_iterator	const_reverse_iterator;
 
@@ -170,20 +172,20 @@ protected:
 		CEmbeddedSplitterBar(bool bHorizontal,position vertex,const CRect& rcClient)
 				:CSplitterBar(bHorizontal)
 		{
-            if(IsHorizontal())
-            {
-                    top=vertex;
-                    bottom=top+GetThickness();
-                    left=rcClient.left;
-                    right=rcClient.right;
-            }
-            else
-            {
-                    left=vertex;
-                    right=left+GetThickness();
-                    top=rcClient.top;
-                    bottom=rcClient.bottom;
-            }
+			if(IsHorizontal())
+			{
+					top=vertex;
+					bottom=top+GetThickness();
+					left=rcClient.left;
+					right=rcClient.right;
+			}
+			else
+			{
+					left=vertex;
+					right=left+GetThickness();
+					top=rcClient.top;
+					bottom=rcClient.bottom;
+			}
 
 		}
 	};
@@ -232,8 +234,8 @@ protected:
 		{
 			return m_i;
 		}
-        void OnMove(long x, long y)
-        {
+		void OnMove(long x, long y)
+		{
 			position pos = m_owner.IsHorizontal() ? x : y;
 			pos=m_bounds.bind(pos-m_offset);
 			if(pos!=m_pos)
@@ -273,12 +275,12 @@ protected:
 	class CSplitterMoveTrackerGhost : public CSplitterMoveTrackerBase
 	{
 		typedef CEmbeddedSplitterBar CSplitterBar;
-        typedef CSimpleSplitterBarSlider<CSplitterBar> CSlider;
+		typedef CSimpleSplitterBarSlider<CSplitterBar> CSlider;
 	public:
 		CSplitterMoveTrackerGhost(HWND hWnd,thisClass& owner,
 									const CPoint& pt,const CRect& rc)
 			:CSplitterMoveTrackerBase(hWnd,owner,pt,rc),
-			  m_dc(::GetWindowDC(NULL)),m_splitter(!owner.IsHorizontal(),m_pos,rc),m_slider(m_splitter)
+			  m_dc(NULL),m_splitter(!owner.IsHorizontal(),m_pos,rc),m_slider(m_splitter)
 		{
 			CPoint point(rc.TopLeft ());
 			::ClientToScreen(hWnd,&point);
@@ -288,16 +290,16 @@ protected:
 									?offset.cx
 									:offset.cy;
 		}
-        void BeginDrag()
-        {
-            m_splitter.DrawGhostBar(m_dc);
-        }
-        void EndDrag(bool bCanceled)
-        {
-            m_splitter.CleanGhostBar(m_dc);
-            if(!bCanceled)
-                SetPosition();
-        }
+		void BeginDrag()
+		{
+			m_splitter.DrawGhostBar(m_dc);
+		}
+		void EndDrag(bool bCanceled)
+		{
+			m_splitter.CleanGhostBar(m_dc);
+			if(!bCanceled)
+				SetPosition();
+		}
 		void Move()
 		{
 			m_splitter.CleanGhostBar(m_dc);
@@ -309,7 +311,7 @@ protected:
 		position		m_ghOffset;
 		CSplitterBar	m_splitter;
 		CSlider			m_slider;
-		CDC				m_dc;
+		CWindowDC		m_dc;
 	};
 	template<long add=0>
 	class CMinMaxInfoAccumulator
@@ -346,75 +348,75 @@ protected:
 		CFunPtr	m_pFun;
 	};
 protected:
-    bool ArrangeH(const CRect& rc)
-    {
-        HDWP hdwp=reinterpret_cast<HDWP>(TRUE);
-        const_iterator begin=m_frames.begin();
-        const_iterator end=m_frames.end();
-        if(begin!=end)
-        {
-            hdwp=BeginDeferWindowPos(m_frames.size());
-            const_iterator next=begin;
-            while((hdwp!=NULL)&&(++next!=end))
-            {
-                long x=(*begin)+splitterSize;
-                hdwp=begin->DeferFramePos(hdwp,
+	bool ArrangeH(const CRect& rc)
+	{
+		HDWP hdwp=reinterpret_cast<HDWP>(TRUE);
+		const_iterator begin=m_frames.begin();
+		const_iterator end=m_frames.end();
+		if(begin!=end)
+		{
+			hdwp=BeginDeferWindowPos((int)m_frames.size());
+			const_iterator next=begin;
+			while((hdwp!=NULL)&&(++next!=end))
+			{
+				long x=(*begin)+splitterSize;
+				hdwp=begin->DeferFramePos(hdwp,
 											x,
 											rc.top,
 											(*next),
 											rc.bottom);
-                begin=next;
-            }
-            if(hdwp!=NULL)
-            {
-                long x=(*begin)+splitterSize;
-                hdwp=begin->DeferFramePos(hdwp,
+				begin=next;
+			}
+			if(hdwp!=NULL)
+			{
+				long x=(*begin)+splitterSize;
+				hdwp=begin->DeferFramePos(hdwp,
 											x,
 											rc.top,
 											rc.right,
 											rc.bottom);
-                if(hdwp)
-					hdwp=reinterpret_cast<HDWP>(EndDeferWindowPos(hdwp));
-            }
-        }
-        return hdwp!=NULL;
-    }
+				if(hdwp)
+					::EndDeferWindowPos(hdwp);
+			}
+		}
+		return hdwp!=NULL;
+	}
 
-    bool ArrangeV(const CRect& rc)
-    {
-        HDWP hdwp=reinterpret_cast<HDWP>(TRUE);
-        const_iterator begin=m_frames.begin();
-        const_iterator end=m_frames.end();
-        if(begin!=end)
-        {
-            hdwp=BeginDeferWindowPos(m_frames.size());
-            const_iterator next=begin;
-            while((hdwp!=NULL)&&(++next!=end))
-            {
-                long y=(*begin)+splitterSize;
-                hdwp=begin->DeferFramePos(hdwp,
+	bool ArrangeV(const CRect& rc)
+	{
+		HDWP hdwp=reinterpret_cast<HDWP>(TRUE);
+		const_iterator begin=m_frames.begin();
+		const_iterator end=m_frames.end();
+		if(begin!=end)
+		{
+			hdwp=BeginDeferWindowPos((int)m_frames.size());
+			const_iterator next=begin;
+			while((hdwp!=NULL)&&(++next!=end))
+			{
+				long y=(*begin)+splitterSize;
+				hdwp=begin->DeferFramePos(hdwp,
 											rc.left,
 											y,
 											rc.right,
 											(*next));
-                begin=next;
-            }
-            if(hdwp!=NULL)
-            {
-                long y=(*begin)+splitterSize;
-                hdwp=begin->DeferFramePos(hdwp,
+				begin=next;
+			}
+			if(hdwp!=NULL)
+			{
+				long y=(*begin)+splitterSize;
+				hdwp=begin->DeferFramePos(hdwp,
 											rc.left,
 											y,
 											rc.right,
 											rc.bottom);
-                if(hdwp)
-					hdwp=reinterpret_cast<HDWP>(EndDeferWindowPos(hdwp));
-            }
-        }
-        return hdwp!=NULL;
-    }
-    bool Arrange(const CRect& rcClient)
-    {
+				if(hdwp)
+					::EndDeferWindowPos(hdwp);
+			}
+		}
+		return hdwp!=NULL;
+	}
+	bool Arrange(const CRect& rcClient)
+	{
 		bool bRes;
 		if(IsHorizontal())
 			bRes=ArrangeH(rcClient);
@@ -502,22 +504,22 @@ public:
 	bool UpdateLayout(const CRect& rc)
 	{
 		CBounds bounds;
-        if(IsHorizontal())
-        {
-                bounds.low=rc.left;
-                bounds.hi=rc.right;
-        }
-        else
-        {
-                bounds.low=rc.top;
-                bounds.hi=rc.bottom;
-        }
+		if(IsHorizontal())
+		{
+				bounds.low=rc.left;
+				bounds.hi=rc.right;
+		}
+		else
+		{
+				bounds.low=rc.top;
+				bounds.hi=rc.bottom;
+		}
 		bounds.low-=splitterSize;
 
 		CBounds::distance_t limit=m_frames.distance_limit();
-        if(bounds.distance()<limit)
-                        bounds.hi=bounds.low+limit;
-        m_frames.set_bounds(bounds);
+		if(bounds.distance()<limit)
+						bounds.hi=bounds.low+limit;
+		m_frames.set_bounds(bounds);
 		return Arrange(rc);
 	}
 
@@ -550,7 +552,7 @@ public:
 	}
 	void Draw(CDC& dc,const CRect& rc) const
 	{
-        if(m_frames.begin()!=m_frames.end())
+		if(m_frames.begin()!=m_frames.end())
 			std::for_each(++m_frames.begin(),m_frames.end(),CEmbeddedSplitterBarPainter(dc,!IsHorizontal(),rc));
 	}
 
@@ -779,6 +781,7 @@ public:
 	}
 	HWND hwnd() const
 	{
+		ATLASSERT(m_ptr.get() != NULL);
 		return m_ptr->operator HWND();
 	}
 
@@ -817,6 +820,7 @@ public:
 
 	HDWP DeferFramePos(HDWP hdwp,long x1,long y1,long x2,long y2) const
 	{
+		ATLASSERT(m_ptr.get() != NULL);
 		return m_ptr->DeferFramePos(hdwp,x1,y1,x2,y2);
 	}
 	T* operator ->() const
@@ -825,10 +829,12 @@ public:
 	}
 	void GetMinMaxInfo(LPMINMAXINFO pMinMaxInfo) const
 	{
+		ATLASSERT(m_ptr.get() != NULL);
 		m_ptr->GetMinMaxInfo(pMinMaxInfo);
 	}
 	distance MinDistance() const
 	{
+		ATLASSERT(m_ptr.get() != NULL);
 		return m_ptr->MinDistance();
 	}
 protected:
@@ -918,7 +924,7 @@ class CSubWndFramesPackage :
 	typedef typename CTraits::CSplitterBar	CSplitterBar;
 	typedef CSubWndFramesPackage<TPackageFrame,TTraits> thisClass;
 	typedef CWndFramesPackageBase<CFrame,TTraits >		baseClass;
-	typedef TPackageFrame	CPackageFrame;
+	typedef typename TPackageFrame	CPackageFrame;
 	enum {controlledLen=(15+CSplitterBar::sbThickness)};
 	struct  CDockOrientationFlag
 	{
@@ -1215,12 +1221,12 @@ public:
 			CFrames::size_type dBWnd=std::distance(m_frames.begin(),i);
 			if(dBWnd>dWnd)
 			{
-				pHdr->nBar=dWnd;
+				pHdr->nBar=(unsigned long)dWnd;
 				pHdr->dwDockSide|=CDockingSide::sTop;
 			}
 			else
 			{
-				pHdr->nBar=m_frames.size()-dWnd-1;
+				pHdr->nBar=(unsigned long)(m_frames.size()-dWnd-1);
 //				pHdr->dwDockSide|=0;
 			}
 			bRes=(::SendMessage(pHdr->hdr.hBar,WMDF_DOCK,NULL,reinterpret_cast<LPARAM>(pHdr))!=FALSE);
@@ -1292,7 +1298,7 @@ public:
 	bool SetDockingPosition(DFDOCKPOS* pHdr)
 	{
 		bool bRes=true;
-		unsigned long limit=GetMinFrameDist(&(pHdr->hdr));
+		unsigned long limit=(unsigned long)GetMinFrameDist(&(pHdr->hdr));
 		if(pHdr->nWidth<limit)
 						pHdr->nWidth=limit;
 		CDockingSide side(pHdr->dwDockSide);

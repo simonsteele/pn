@@ -120,17 +120,18 @@ typedef struct tagPrintOptions
 
 } SPrintOptions;
 
-#define TOOL_CAPTURE		0x001
-#define TOOL_ISFILTER		0x002
-#define TOOL_SAVEALL		0x004
-#define TOOL_GLOBALOUTPUT	0x008
-#define TOOL_CUSTOMPARSER	0x010
-#define TOOL_CLEAROUTPUT	0x020
-#define TOOL_SAVEONE		0x040
-#define TOOL_REVERSESLASHES	0x080
-#define TOOL_ISPROJECTTOOL	0x100
-#define TOOL_ISTEXTFILTER	0x200
-#define TOOL_WANTSTDIN		0x400
+#define TOOL_CAPTURE			0x001
+#define TOOL_ISFILTER			0x002
+#define TOOL_SAVEALL			0x004
+#define TOOL_GLOBALOUTPUT		0x008
+#define TOOL_CUSTOMPARSER		0x010
+#define TOOL_CLEAROUTPUT		0x020
+#define TOOL_SAVEONE			0x040
+#define TOOL_REVERSESLASHES		0x080
+#define TOOL_ISPROJECTTOOL		0x100
+#define TOOL_ISTEXTFILTER		0x200
+#define TOOL_WANTSTDIN			0x400
+#define TOOL_SAVEPROJECTGROUP	0x800
 
 /**
  * @brief Defines a single external tool.
@@ -174,6 +175,7 @@ public:
 	bool IsFilter() const { return (iFlags & TOOL_ISFILTER) != 0; }
 	bool SaveAll() const { return (iFlags & TOOL_SAVEALL) != 0; }
 	bool SaveOne() const { return (iFlags & TOOL_SAVEONE) != 0; }
+	bool SaveProjectGroup() const { return (iFlags & TOOL_SAVEPROJECTGROUP) != 0; }
 	bool GlobalOutput() const { return (iFlags & TOOL_GLOBALOUTPUT) != 0; }
 	bool UseCustomParser() const { return (iFlags & TOOL_CUSTOMPARSER) != 0; }
 	bool ShouldClearOutput() const { return (iFlags & TOOL_CLEAROUTPUT) != 0; }

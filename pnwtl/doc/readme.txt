@@ -88,6 +88,8 @@ Bug Fixes:
 35) File corruption with utf-16 files > 65536 characters (SF Bug #1741342)
 36) Some php keywords only being matched in uppercase
 37) Tabs/Spaces override changes don't save (SF Bug #1632540)
+38) Copy RTF doesn't copy whole file (SF Bug #1802226, Patch #1816866)
+39) Add option to save project files before running tools (SF Bug #1679394)
 
 If you find a bug:
 ------------------

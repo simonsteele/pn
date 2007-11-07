@@ -12,6 +12,8 @@ Oleg Gerasimov
 Vambola Kotkas
 Manuel Sandoval
 James Yoneda
+Prafulla Tekawade
+Murphy McCauley
 
 Documentation:
 --------------

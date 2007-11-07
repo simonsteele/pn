@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<clips name="Pascal/Delphi">
+	<clip name="----- Block -----"><![CDATA[]]></clip>
+	<clip name="Main body"><![CDATA[
+ 
+  begin
+    |;
+  end.
+
+]]></clip>
+	<clip name="Function body"><![CDATA[
+	function |(param1: int):int;
+	var  ;
+	begin
+	end;
+]]></clip>
+	<clip name="Procedure body"><![CDATA[
+	Procedure |();
+	var  ;
+	begin
+	end;
+]]></clip>
+<clip name="exit proc/function"><![CDATA[  exit;
+|]]></clip>
+<clip name="exit program"><![CDATA[  halt(0);
+|]]></clip>
+	<clip name="----- Control -----"><![CDATA[]]></clip>
+	<clip name="if (short)"><![CDATA[  if (|) then ;
+]]></clip>
+	<clip name="if"><![CDATA[  if (|) then
+  begin
+    ;
+  end;
+
+]]></clip>	
+	<clip name="if else"><![CDATA[  if (|) then
+  begin
+    ;
+  end 
+  else begin
+    ;
+  end;
+
+]]></clip>
+	<clip name="if else if"><![CDATA[  if (|) then
+  begin
+    ;
+  end 
+  else begin
+    ;
+  end 
+  else begin
+  end;
+
+]]></clip>
+	<clip name="case (switch)"><![CDATA[ case (|) of
+      :
+      begin
+      end;
+
+      :
+      begin
+      end;
+
+      :
+      begin
+      end;
+
+      else
+      begin
+      end;
+
+end;
+
+]]></clip>	
+	<clip name="for"><![CDATA[  for | to do
+  begin
+    ;    
+  end;
+
+]]></clip>
+	
+	<clip name="repeat"><![CDATA[  repeat 
+  
+    ;
+  until |;
+
+]]></clip>
+	
+	<clip name="do while"><![CDATA[  while (|) do
+  begin
+    ;
+  end;
+
+]]></clip>
+		
+	<clip name="----- Other -----"><![CDATA[]]></clip>
+	<clip name="constant"><![CDATA[const | = ;]]></clip>
+	<clip name="variable section"><![CDATA[var | = ;]]></clip>
+	<clip name="variable assign"><![CDATA[  |:=; ]]></clip>
+	<clip name="use library"><![CDATA[uses "|";]]></clip>
+	<clip name="Comment "><![CDATA[{|}]]></clip>
+	<clip name="Comment //"><![CDATA[//|]]></clip>	
+</clips>

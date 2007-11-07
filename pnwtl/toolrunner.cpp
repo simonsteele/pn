@@ -358,6 +358,17 @@ int ToolRunner::Run_NoCapture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 		&pi /*LPPROCESS_INFORMATION lpProcessInformation*/ 
 	) != 0;
 
+	delete [] commandBuf;
+
+	if(!bCreated)
+	{
+		CLastErrorInfo lei;
+		m_pWrapper->_AddToolOutput("\n> Failed to create process: ");
+		m_pWrapper->_AddToolOutput((LPCTSTR)lei);
+
+		return lei.GetErrorCode();
+	}
+
 	// We're waiting for this one to finish because it's a filter process - 
 	// i.e. it will change the current file.
 	if( m_pWrapper->IsFilter() )
@@ -469,6 +480,20 @@ void ToolOwner::RunTool(ToolWrapperPtr& pTool, ToolOwnerID OwnerID)
 	if( pTool->SaveAll() )
 	{
 		g_Context.m_frame->SaveAll();
+	}
+	else if( pTool->SaveProjectGroup() )
+	{
+		DocumentList list;
+		g_Context.m_frame->GetOpenWorkspaceDocuments(list);
+
+		for(DocumentList::iterator i = list.begin(); i != list.end(); ++i)
+		{
+			CChildFrame* frame = (*i)->GetFrame();
+			if (frame)
+			{
+				frame->Save();
+			}
+		}
 	}
 	else if( pTool->SaveOne() )
 	{

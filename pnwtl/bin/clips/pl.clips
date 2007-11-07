@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+<clips name="Perl">
+  <clip name="----- Block -----" />
+  <clip name="Begin Block">BEGIN {
+
+    |;
+
+}
+
+</clip>
+  <clip name="End Block">END {
+
+    |;
+
+}
+</clip>
+	<clip name="Function"><![CDATA[
+sub |($Par1, $Par2)
+{
+    my($Par1,$Par2)=($_[0],$_[1]);
+    return 0;
+}
+
+]]></clip>
+
+  <clip name="----- Control -----" />
+
+<clip name="if"><![CDATA[
+if (|)
+{
+    ;
+}
+
+]]></clip>
+<clip name="if else"><![CDATA[
+if(|)
+{
+     
+}
+else
+{
+
+}
+
+
+
+]]></clip>
+<clip name="if else if"><![CDATA[
+if(|)
+{
+     
+}
+elsif
+{
+
+}
+else
+{
+
+}
+
+]]></clip>
+  <clip name="unless">unless (|) {
+	
+}
+
+</clip>
+  <clip name="switch">SWITCH: {
+	if (|) { 
+		
+		last SWITCH; }
+	if () {
+		
+		last SWITCH; }
+	if () {
+		
+		last SWITCH; }
+}
+
+</clip>
+  <clip name="for">for(|;;) {
+	
+}
+
+</clip>
+  <clip name="foreach">foreach $x (|) {
+	
+}
+
+</clip>
+  <clip name="while">while(|) {
+	
+}
+
+</clip>
+  <clip name="do while">do {
+	
+} while ();
+
+</clip>
+  <clip name="do until">do {
+	
+} until ();
+
+</clip>
+  <clip name="until">until(|) {
+	
+}
+
+</clip>
+  <clip name="----- Files and Directories -----" />
+  <clip name="Open File for reading">open(FILEREAD, "|/path/to/file")|| die "cannot open: $!";
+</clip>
+  <clip name="Open File for writing (clobber)">open(FILEWRITE, "&gt;|/path/to/file")|| die "cannot open: $!";
+</clip>
+  <clip name="Open File for writing (append)">open(FILEAPPEND, "&gt;&gt;|/path/to/file")|| die "cannot open: $!";
+</clip>
+  <clip name="File Stats">($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,
+ $size,$atime,$mtime,$ctime,$blksize,$blocks) = stat ("|/path/to/file");
+</clip>
+  <clip name="----- Other -----" />
+  <clip name="use">use |;</clip>
+  <clip name="Shebang">#!/usr/bin/perl
+	
+|
+</clip>
+  <clip name="Shebang (warnings)">#!/usr/bin/perl -w
+	
+|
+</clip>
+  <clip name="POD Documentaion">=head1 NAME
+
+|#TODO Insert name of script
+
+=head1 SYNOPSIS
+
+#TODO Overview of script
+
+=head1 DESCRIPTION
+
+#TODO Write detailed description of script
+
+=head1 AUTHOR
+
+#TODO Insert author name
+
+=head1 REVISION HISTORY
+
+
+
+=cut
+
+</clip>
+<clip name="print error statement"><![CDATA[&print("ERROR=".$@."\n");]]></clip>
+<clip name="call function"><![CDATA[&funcName($Var1,$Var2);]></clip>
+<clip name="declare and assign variable"><![CDATA[$VarName="";]]></clip>
+<clip name="declare array"><![CDATA[@MyArr=();]]></clip>
+<clip name="Access n-element in array"><![CDATA[$MyArr[n]=0;]]></clip>
+<clip name="Comment "><![CDATA[#|]]></clip>	
+<clip name="Concatenate 'string' and var "><![CDATA["stringtoconcatenate".$Var]]></clip>	
+<clip name="Compare 2 substrings of length n"><![CDATA[substr($S1,0,$n) eq substr($S2,0,$n)]]></clip>	
+</clips>
