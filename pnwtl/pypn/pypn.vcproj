@@ -64,6 +64,7 @@
 				AdditionalDependencies="boost_python-vc80-mt-gd-1_33_1.lib"
 				OutputFile="$(OutDir)/pypn.dll"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="%PYTHONLIBDIR%;&quot;..\lib\boost-python-2.5&quot;"
 				ModuleDefinitionFile="pypn.def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/pypn.pdb"
@@ -94,7 +95,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\..\boost_1_32_0\stage\lib\boost_python.dll $(TargetDir)&#x0D;&#x0A;copy scripts\init.py $(TargetDir)&#x0D;&#x0A;"
+				CommandLine="copy ..\lib\boost-python-2.5\boost_python-vc80-mt-gd-1_33_1.dll $(TargetDir)&#x0D;&#x0A;copy scripts\init.py $(TargetDir)&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -223,6 +224,7 @@
 				AdditionalDependencies="boost_python-vc80-mt-1_33_1.lib"
 				OutputFile="$(OutDir)/pypn.dll"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="%PYTHONLIBDIR%;&quot;..\lib\boost-python-2.5&quot;"
 				ModuleDefinitionFile="pypn.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -254,7 +256,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\..\..\lib\boost_1_33_1\stage\lib\boost_python-vc80-mt-1_33_1.dll $(TargetDir)&#x0D;&#x0A;copy scripts\init.py $(TargetDir)"
+				CommandLine="copy ..\lib\boost-python-2.5\boost_python-vc80-mt-1_33_1.dll $(TargetDir)&#x0D;&#x0A;copy scripts\init.py $(TargetDir)&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
