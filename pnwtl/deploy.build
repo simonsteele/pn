@@ -17,9 +17,41 @@
 			failonerror="false"/>
 		<echo message="Using Subversion revision number: ${svn.revision}"/>
 	</target>
+	
+	<target name="build">
+		<echo message="pn.sln /Project pcre /ProjectConfig ReleaseDebug /Rebuild"/>
+		<exec
+			program="devenv.com"
+			commandline='pn.sln /Project pcre /ProjectConfig ReleaseDebug /Rebuild'
+			output="build.log"/>
+		
+		<echo message="pn.sln /Project customscheme /ProjectConfig ReleaseDebug /Rebuild"/>
+		<exec 
+			program="devenv.com"
+			commandline='pn.sln /Project customscheme /ProjectConfig ReleaseDebug /Rebuild'
+			output="build.log"/>
+		
+		<echo message="pn.sln /Project ctagsnavigator /ProjectConfig ReleaseDebug /Rebuild"/>
+		<exec
+			program="devenv.com"
+			commandline='pn.sln /Project ctagsnavigator /ProjectConfig ReleaseDebug /Rebuild'
+			output="build.log"/>
+		
+		<echo message="pn.sln /Project pnse /ProjectConfig ReleaseDebug /Rebuild"/>
+		<exec
+			program="devenv.com"
+			commandline='pn.sln /Project pnse /ProjectConfig ReleaseDebug /Rebuild'
+			output="build.log"/>
+		
+		<echo message="pn.sln /Project pn /ProjectConfig ReleaseDebug /Rebuild"/>
+		<exec
+			program="devenv.com"
+			commandline='pn.sln /Project pn /ProjectConfig ReleaseDebug /Rebuild'
+			output="build.log"/>
+	</target>
 
 	<!-- Deploy PN -->
-	<target name="deploy" depends="svnvar">
+	<target name="deploy" depends="svnvar build">
 		<property name="deployver" value="${ver}.${svn.revision}"/>
 		<property name="compactver" value="${string::replace(deployver, '.', '')}"/>
 		<property name="distdir" value="dist\${deployver}"/>
