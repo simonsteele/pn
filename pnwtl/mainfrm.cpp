@@ -71,50 +71,46 @@ const DWORD ToolbarIds[4] = {
 	ATL_IDW_BAND_FIRST + 1,
 };
 
-CMainFrame::CMainFrame(CommandDispatch* commands, std::list<tstring>* cmdLineArgs) : m_RecentFiles(ID_MRUFILE_BASE, 4), m_RecentProjects(ID_MRUPROJECT_BASE, 4)
+CMainFrame::CMainFrame(CommandDispatch* commands, std::list<tstring>* cmdLineArgs) : 
+	m_RecentFiles(ID_MRUFILE_BASE, 4), 
+	m_RecentProjects(ID_MRUPROJECT_BASE, 4),
+	m_pCmdDispatch(commands),
+	m_pFindEx(NULL),
+	m_pOutputWnd(NULL),
+	m_pFindResultsWnd(NULL),
+	m_pClipsWnd(NULL),
+	m_pCtagsWnd(NULL),
+	m_pProjectsWnd(NULL),
+	hFindWnd(NULL),
+	m_statusResetCounter(0),
+	m_hToolAccel(NULL),
+	m_hGlobalToolAccel(NULL),
+	m_iFirstToolCmd(ID_TOOLS_DUMMY),
+	m_hProjAccel(NULL),
+	m_hILMain(NULL),
+	m_hILMainD(NULL),
+	m_hILEdit(NULL),
+	m_hILFind(NULL),
+
+	// Store command-line arguments for use later
+	m_cmdLineArgs(cmdLineArgs),
+
+	// This text clip manager will be shared by the text clips view and editors
+	m_pTextClips(new TextClips::TextClipsManager)
 {
-	m_pCmdDispatch = commands;
-	m_pFindEx = NULL;
-	m_pOutputWnd = NULL;
-	m_pFindResultsWnd = NULL;
-	m_pClipsWnd = NULL;
-	m_pCtagsWnd = NULL;
-	m_pProjectsWnd = NULL;
-	hFindWnd = NULL;
-
-	m_statusResetCounter = 0;
-
 	m_CmdBar.SetCallback(this, &CMainFrame::OnMDISetMenu);
 
-	m_hToolAccel = NULL;
-	m_hGlobalToolAccel = NULL;
-
 	m_uiMIMessageID = g_Context.m_miManager->GetMessageID();
-
-	m_iFirstToolCmd = ID_TOOLS_DUMMY;
-
-	m_hProjAccel = NULL;
 
 	SchemeTools* pGlobalTools = ToolsManager::GetInstance()->GetGlobalTools();
 	pGlobalTools->AllocateMenuResources(m_pCmdDispatch);
 	m_hGlobalToolAccel = pGlobalTools->GetAcceleratorTable();
-
-	m_hILMain = NULL;
-	m_hILMainD = NULL;
-	m_hILEdit = NULL;
-	m_hILFind = NULL;
 
 	// If v5 then greater than v5.0 else v6 or better
 	m_bIsXPOrLater = 
 		(g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
 		(( (g_Context.OSVersion.dwMajorVersion == 5) && (g_Context.OSVersion.dwMinorVersion > 0) ) ||
 		 (g_Context.OSVersion.dwMajorVersion >= 6) );
-
-	// Store command-line arguments for use later
-	m_cmdLineArgs = cmdLineArgs;
-
-	// This text clip manager will be shared by the text clips view and editors
-	m_pTextClips = new TextClips::TextClipsManager;
 }
 
 CMainFrame::~CMainFrame()

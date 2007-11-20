@@ -20,9 +20,10 @@
 // CSPopupMenu
 /////////////////////////////////////////////////////////////////////////////
 
-CSPopupMenu::CSPopupMenu() : CSMenu()
+CSPopupMenu::CSPopupMenu() : 
+	CSMenu(), 
+	m_hSubMenu(NULL)
 {
-	m_hSubMenu = NULL;
 }
 
 CSPopupMenu::CSPopupMenu(int resource, int index) : CSMenu()

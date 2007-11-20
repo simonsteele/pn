@@ -21,7 +21,13 @@ namespace TextClips {
 class Clip
 {
 	public:
-		Clip(){}
+		Clip(const std::string& name, const std::string& shortcut, const std::string& data) : 
+		  Name(name),
+		  Shortcut(shortcut),
+		  Text(data)
+		{
+		}
+
 		Clip(const Clip& copy) : Name(copy.Name), Shortcut(copy.Shortcut), Text(copy.Text){}
 
 		tstring Name;
@@ -39,7 +45,7 @@ typedef std::list<Clip*>	LIST_CLIPS;
 class TextClipSet
 {
 	public:
-		TextClipSet(LPCTSTR filename, LPCTSTR name, LPCTSTR scheme);
+		TextClipSet(LPCTSTR filename, LPCTSTR name, LPCTSTR scheme, bool encodeClipNames);
 		TextClipSet(const TextClipSet& copy);
 		~TextClipSet();
 
@@ -79,6 +85,11 @@ class TextClipSet
 		LPCTSTR GetScheme() const;
 
 		/**
+		 * Should we encode text clip names?
+		 */
+		bool GetEncodeClipNames() const;
+
+		/**
 		 * Remove a clip
 		 */
 		void Remove(TextClips::Clip* clip);
@@ -96,6 +107,7 @@ class TextClipSet
 		tstring m_name;
 		tstring m_scheme;
 		tstring m_filename;
+		bool m_encodeClipNames;
 };
 
 typedef std::list<TextClipSet*> LIST_CLIPSETS;

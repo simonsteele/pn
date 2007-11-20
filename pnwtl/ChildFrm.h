@@ -339,6 +339,7 @@ protected:
 	void SetModifiedOverride(bool bVal);
 	int HandleFailedFileOp(LPCSTR filename, bool bOpening);
 	bool attemptOverwrite(LPCTSTR filename);
+	void handleClose();
 
 private:
 	CommandDispatch*	m_pCmdDispatch;

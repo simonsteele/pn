@@ -42,7 +42,7 @@ public:
 
 	void WriteClipSet(const TextClipSet* clips)
 	{
-		beginClips(clips->GetName(), clips->GetScheme());
+		beginClips(clips->GetName(), clips->GetScheme(), clips->GetEncodeClipNames());
 
 		for(LIST_CLIPS::const_iterator i = clips->GetClips().begin();
 			i != clips->GetClips().end();
@@ -67,11 +67,12 @@ protected:
 			ATT("name", m_aName);
 			ATT("scheme", m_aScheme);
 			ATT("shortcut", m_aShortcut);
+			ATT("decodeNames", m_aDecodeNames);
 		END_ATTRIBUTES();
 	}
 
 private:
-	void beginClips(const char* name, const char* scheme)
+	void beginClips(const char* name, const char* scheme, bool decodeNames)
 	{
 		genxStartElement(m_eClips);
 		addAttributeConvertUTF8(m_aName, name);
@@ -79,6 +80,11 @@ private:
 		if (scheme != NULL)
 		{
 			addAttributeConvertUTF8(m_aScheme, scheme);
+		}
+
+		if (decodeNames)
+		{
+			genxAddAttribute(m_aDecodeNames, u("true"));
 		}
 	}
 
@@ -105,6 +111,7 @@ private:
 	genxAttribute m_aName;
 	genxAttribute m_aScheme;
 	genxAttribute m_aShortcut;
+	genxAttribute m_aDecodeNames;
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -207,7 +214,8 @@ void Clip::Insert(CScintilla *scintilla) const
 // TextClipSet
 //////////////////////////////////////////////////////////////////////////////
 
-TextClipSet::TextClipSet(LPCTSTR filename, LPCTSTR name, LPCTSTR scheme)
+TextClipSet::TextClipSet(LPCTSTR filename, LPCTSTR name, LPCTSTR scheme, bool encodeClipNames) :
+	m_encodeClipNames(encodeClipNames)
 {
 	if (filename != NULL)
 	{
@@ -230,6 +238,7 @@ TextClipSet::TextClipSet(const TextClipSet& copy)
 	m_filename = copy.m_filename;
 	m_name = copy.m_name;
 	m_scheme = copy.m_scheme;
+	m_encodeClipNames = copy.m_encodeClipNames;
 
 	for(LIST_CLIPS::const_iterator i = copy.m_clips.begin();
 		i != copy.m_clips.end();
@@ -313,6 +322,14 @@ LPCTSTR TextClipSet::GetScheme() const
 	if (m_scheme.empty())
 		return NULL;
 	return m_scheme.c_str();
+}
+
+/**
+ * Should we encode text clip names?
+ */
+bool TextClipSet::GetEncodeClipNames() const
+{
+	return m_encodeClipNames;
 }
 
 void TextClipSet::Remove(TextClips::Clip* clip)
@@ -600,12 +617,12 @@ void TextClipsManager::startElement(LPCTSTR name, XMLAttributes& atts)
 					m_curEncoding = eANSI;
 			}
 
-			m_pCurSet = new TextClipSet(m_curFileName.c_str(), szName, szScheme);
-
 			szEncoding = atts.getValue(_T("decodeNames"));
 			if(szEncoding != NULL)
 				if(szEncoding[0] == _T('t') || szEncoding[0] == _T('T'))
 					decodeNames = true;
+			
+			m_pCurSet = new TextClipSet(m_curFileName.c_str(), szName, szScheme, decodeNames);
 		}
 	}
 	else if ( IN_STATE(TCPS_CLIPS) )
@@ -626,23 +643,13 @@ void TextClipsManager::endElement(LPCTSTR name)
 	if ( IN_STATE(TCPS_CLIP) )
 	{
 		// Create new clip - name = m_curName, content = m_cData;
-		Clip* clip = new Clip;
-		if(decodeNames)
-#ifndef _UNICODE
-			clip->Name = Utf8_Windows1252( m_curName.c_str() );
-#else
-			//todo 
-			clip->Name = m_curName;
-#endif
-		else
-			clip->Name = m_curName;
-		
-		clip->Shortcut = m_curShortcut;
-
 		if (m_curEncoding != eNone)
 			decodeData();
 
-		clip->Text = m_cData;
+		if(decodeNames)
+			m_curName = Utf8_Windows1252( m_curName.c_str() );
+
+		Clip* clip = new Clip(m_curName, m_curShortcut, m_cData);
 
 		m_pCurSet->Add( clip );
 

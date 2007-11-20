@@ -35,9 +35,8 @@
 // SourcedToolDefinition
 //////////////////////////////////////////////////////////////////////////////
 
-SourcedToolDefinition::SourcedToolDefinition(const ToolSource* source_) : ToolDefinition()
+SourcedToolDefinition::SourcedToolDefinition(const ToolSource* source_) : ToolDefinition(), source(source_)
 {
-	source = source_;
 }
 
 SourcedToolDefinition::SourcedToolDefinition(const SourcedToolDefinition& copy)
@@ -50,15 +49,15 @@ SourcedToolDefinition::SourcedToolDefinition(const SourcedToolDefinition& copy)
 // SchemeTools
 //////////////////////////////////////////////////////////////////////////////
 
-SchemeTools::SchemeTools()
+SchemeTools::SchemeTools() : 
+	m_hAccel(NULL)
 {
-	m_hAccel = NULL;
 }
 
-SchemeTools::SchemeTools(LPCTSTR schemename)
+SchemeTools::SchemeTools(LPCTSTR schemename) :
+	m_Scheme(schemename),
+	m_hAccel(NULL)
 {
-	m_Scheme = schemename;
-	m_hAccel = NULL;
 }
 
 SchemeTools::~SchemeTools()
@@ -249,9 +248,9 @@ void GlobalTools::WriteDefinition(ToolsXMLWriter& writer, ToolSource* source)
 // ProjectTools
 //////////////////////////////////////////////////////////////////////////////
 
-ProjectTools::ProjectTools(LPCTSTR id)
+ProjectTools::ProjectTools(LPCTSTR id) :
+	m_ProjectID(id)
 {
-	m_ProjectID = id;
 }
 
 void ProjectTools::Add(SourcedToolDefinition* pDef)
@@ -562,12 +561,12 @@ Projects::Project* ToolCommandString::GetActiveProject()
 // ToolWrapper
 //////////////////////////////////////////////////////////////////////////////
 
-ToolWrapper::ToolWrapper(CChildFrame* pActiveChild, const ToolDefinition& definition)
+ToolWrapper::ToolWrapper(CChildFrame* pActiveChild, const ToolDefinition& definition) :
+	m_pStdIOBuffer(NULL),
+	m_StdIOBufferSize(NULL),
+	m_hNotifyWnd(NULL),
+	m_pActiveChild(pActiveChild)
 {
-	m_pStdIOBuffer = NULL;
-	m_StdIOBufferSize = NULL;
-	m_hNotifyWnd = NULL;
-	m_pActiveChild = pActiveChild;
 	ToolDefinition::_copy(definition);
 
 	::InitializeCriticalSection(&m_csStatusLock);

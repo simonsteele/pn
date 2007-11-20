@@ -110,29 +110,42 @@ LRESULT CJumpTreeCtrl::OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 {
 	CChildFrame* pChildFrame= (CChildFrame*)lParam;
 
-	if(pChildFrame->GetModified() || !pChildFrame->CanSave())
+	// Check for weird error condition
+#ifndef _DEBUG
+	if (pChildFrame == NULL)
+		RETURN_UNEXPECTED(_T("OnViewNotify called with NULL"), TRUE);
+#endif
+
+	SetRedraw(FALSE);
+
+	switch(wParam)
 	{
-		activateFileTree(pChildFrame);
-	}
-	else
-	{
-		SetRedraw(FALSE); 
-		
-		if ((int)wParam == JUMPVIEW_FILE_CLOSE)
+		case JUMPVIEW_FILE_CLOSE:
 		{
 			deleteFileTreeItem(pChildFrame);
-		} 
-		else if ((int)wParam == JUMPVIEW_FILE_ADD)
+			break;
+		}
+
+		case JUMPVIEW_FILE_ADD:
 		{
-			addFileTree(pChildFrame);
+			// Not even sure this makes sense yet, why wouldn't we add if it's modified?
+			if(pChildFrame->CanSave())
+			{
+				// Add a new file:
+				addFileTree(pChildFrame);
+			}
+
+			break;
 		} 
-		else 
+		
+		default:
 		{
 			activateFileTree(pChildFrame);
 		}
-		
-		SetRedraw(TRUE); 
 	}
+		
+	SetRedraw(TRUE); 
+
 	return TRUE;
 }
 
@@ -141,7 +154,7 @@ void CJumpTreeCtrl::addFileTree(CChildFrame* pChildFrame)
 	tstring fn, filepart;
 
 	fn = pChildFrame->GetFileName();
-	if( _tcschr(fn.c_str(), _T('\\')) != NULL )
+	if (_tcschr(fn.c_str(), _T('\\')) != NULL)
 	{
 		CFileName cfn(fn.c_str());
 		filepart = cfn.GetFileName();
@@ -154,7 +167,6 @@ void CJumpTreeCtrl::addFileTree(CChildFrame* pChildFrame)
 	HTREEITEM hFolder = InsertItem( filepart.c_str(), 0, 0, TVI_ROOT, TVI_LAST );
 	SetItemData(hFolder,reinterpret_cast<DWORD_PTR>( pChildFrame ));
 	SetItemState(hFolder, TVIS_BOLD, TVIS_BOLD);
-	//SetItemState(hFolder, TVIF_DI_SETITEM, TVIF_DI_SETITEM);
 	
 	// Let the JumpToHandler find us the tags
 	JumpToHandler::GetInstance()->FindTags(pChildFrame, this);

@@ -90,6 +90,8 @@ Bug Fixes:
 37) Tabs/Spaces override changes don't save (SF Bug #1632540)
 38) Copy RTF doesn't copy whole file (SF Bug #1802226, Patch #1816866)
 39) Add option to save project files before running tools (SF Bug #1679394)
+40) Close All leaves tags behind (SF Bug #1834448)
+41) .688 spontaneously closes on close-all (SF Bug #1813319)
 
 If you find a bug:
 ------------------

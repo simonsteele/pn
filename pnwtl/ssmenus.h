@@ -29,14 +29,12 @@ template <bool t_bManaged>
 class CSMenuT
 {
 	public:
-		CSMenuT()
+		CSMenuT() : m_hMenu(NULL)
 		{
-			m_hMenu = NULL;
 		}
 
-		CSMenuT(HMENU hMenu)
+		CSMenuT(HMENU hMenu) : m_hMenu(hMenu)
 		{
-			m_hMenu = hMenu;
 		}
 
 		virtual ~CSMenuT()

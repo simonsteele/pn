@@ -39,29 +39,27 @@ bool CChildFrame::s_bFirstChild = true;
 
 #define USERLIST_TEXTCLIPS 1
 
-CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::TextClipsManager* textclips) : m_spDocument(doc), m_view(doc, commands)
+CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::TextClipsManager* textclips) : 
+	m_spDocument(doc), 
+	m_view(doc, commands),
+	m_pCmdDispatch(commands),
+	m_pTextClips(textclips),
+	m_hWndOutput(NULL),
+	m_hImgList(NULL),
+	m_pSplitter(NULL),
+	m_pOutputView(NULL),
+	m_bClosing(false),
+	m_pScript(NULL),
+	m_FileAge(-1),
+	m_iFirstToolCmd(ID_TOOLS_DUMMY),
+	m_bModifiedOverride(false)
 {
-	m_pCmdDispatch = commands;
-	m_pTextClips = textclips;
-	m_hWndOutput = NULL;
-	m_hImgList = NULL;
-	m_pSplitter = NULL;
-	m_pOutputView = NULL;
-	m_bClosing = false;
-	m_pScript = NULL;
-	
-	m_FileAge = -1;
-	
 	m_po.hDevMode = 0;
 	m_po.hDevNames = 0;
 	memset(&m_po.rcMargins, 0, sizeof(RECT));
 	OPTIONS->LoadPrintSettings(&m_po);
 
 	InitUpdateUI();
-
-	m_iFirstToolCmd = ID_TOOLS_DUMMY;
-
-	m_bModifiedOverride = false;
 }
 
 CChildFrame::~CChildFrame()
@@ -374,12 +372,14 @@ void CChildFrame::LoadExternalLexers()
 	sPattern += "*.lexer";
 
 	hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
-	if (hFind != INVALID_HANDLE_VALUE) {
+	if (hFind != INVALID_HANDLE_VALUE)
+	{
 		//Found the first file...
 		BOOL found = TRUE;
 		tstring to_open;
 
-		while (found) {
+		while (found) 
+		{
 			to_open = sPath;
 			to_open += FindFileData.cFileName;
 			m_view.SPerform(SCI_LOADLEXERLIBRARY, 0, reinterpret_cast<LPARAM>( to_open.c_str()));
@@ -387,7 +387,6 @@ void CChildFrame::LoadExternalLexers()
 		}
 
 		FindClose(hFind);
-
 	}
 }
 
@@ -410,7 +409,7 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	m_pCmdDispatch->UpdateMenuShortcuts(m_hMenu);
 
 	UISetChecked(ID_EDITOR_COLOURISE, true);
-	UISetChecked(ID_EDITOR_WORDWRAP, false);
+	UISetChecked(ID_EDITOR_WORDWRAP, OPTIONS->GetCached(Options::OWordWrap) != 0);
 	UISetChecked(ID_EDITOR_LINENOS, OPTIONS->GetCached(Options::OLineNumbers) != 0);
 	UISetChecked(ID_TOOLS_LECONVERT, true);
 
@@ -441,7 +440,7 @@ LRESULT CChildFrame::OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
-	
+
 	// PNID_DONTASKUSER is a special value that means "don't ask the user first". Normally for
 	// use if we've already asked the user.
 	if((lParam != PNID_DONTASKUSER) && !CanClose())
@@ -450,27 +449,8 @@ LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 	}
 	else
 	{
-		m_bClosing = true;
-
-		m_spDocument->SetValid(false);
-
-		if( ToolOwner::HasInstance() )
-		{
-			ToolOwner::GetInstance()->KillTools(true, this);
-		}
-
-		if(m_pScript)
-		{
-			ScriptRegistry::GetInstance()->Remove("User Scripts", m_pScript);
-			delete m_pScript;
-			m_pScript = NULL;
-		}
-
-		m_spDocument->OnDocClosing();
+		handleClose();
 	}
-	
-	// NO PostMessage !!
-	::SendMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_CLOSE, (LPARAM)this);
 
 	return 0;
 }
@@ -479,18 +459,7 @@ LRESULT CChildFrame::OnCloseNoPrompt(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 {
 	bHandled = FALSE;
 
-	m_bClosing = true;
-
-	m_spDocument->SetValid(false);
-
-	if( ToolOwner::HasInstance() )
-	{
-		ToolOwner::GetInstance()->KillTools(true, this);
-	}
-
-	m_spDocument->OnDocClosing();
-
-	::SendMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_CLOSE, (LPARAM)this);
+	handleClose();
 
 	return 0;
 }
@@ -1561,17 +1530,19 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 	{
 		if(bStoreFilename)
 		{
+			// If bStoreFilename is *not* true it means we were saving the file for
+			// some non-user purpose (saving a copy basically)
+
 			m_FileAge = FileAge(pathname);
 			SetModifiedOverride(false);
 			m_spDocument->SetFileName(pathname);
 
-			SetTitle();			
-		} else {
-			//save
+			SetTitle();
+
+			// Update tags:
 			::SendMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_CLOSE, (LPARAM)this);
 			//Manuel Sandoval: clear ScintillaImpl autocomplete list for adding new methods:
 			this->GetTextView()->ResetAutoComplete();
-
 			::PostMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_ADD, (LPARAM)this);
 		}
 
@@ -1594,6 +1565,30 @@ bool CChildFrame::attemptOverwrite(LPCTSTR filename)
 		return true;
 	}
 	else return false;
+}
+
+void CChildFrame::handleClose()
+{
+	m_bClosing = true;
+
+	// NO PostMessage !!
+	::SendMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_CLOSE, (LPARAM)this);
+
+	if( ToolOwner::HasInstance() )
+	{
+		ToolOwner::GetInstance()->KillTools(true, this);
+	}
+
+	if(m_pScript)
+	{
+		ScriptRegistry::GetInstance()->Remove("User Scripts", m_pScript);
+		delete m_pScript;
+		m_pScript = NULL;
+	}
+
+	m_spDocument->OnDocClosing();
+
+	m_spDocument->SetValid(false);	
 }
 
 //TODO Move all the CFILE_ defines into the string resources.

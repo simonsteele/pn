@@ -116,15 +116,12 @@ LRESULT COptionsPageClips::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	CTextClipEditor editor(tstring(""), tstring(""), tstring(""));
 	if (editor.DoModal() == IDOK)
 	{
-		TextClips::Clip* clip = new TextClips::Clip;
-		clip->Shortcut = editor.GetShortcut();
-		clip->Text = editor.GetText();
-		clip->Name = editor.GetHint();
-
+		TextClips::Clip* clip = new TextClips::Clip(editor.GetHint(), editor.GetShortcut(), editor.GetText());
+		
 		if(m_pCurSet == NULL)
 		{
 			SchemeDetails* sc = m_combo.GetItemScheme( m_combo.GetCurSel() );
-			m_pCurSet = new TextClips::TextClipSet(NULL, _T(""), sc->Name.c_str());
+			m_pCurSet = new TextClips::TextClipSet(NULL, _T(""), sc->Name.c_str(), false);
 			m_pClips->Add(m_pCurSet);
 			//TODO: Check this!
 		}
