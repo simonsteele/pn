@@ -103,7 +103,7 @@
 			</fileset>
 		</zip>
 		
-		<zip zipfile="${distdir}\ppn${compactver}.zip">
+		<zip zipfile="${distdir}\portable-pn${compactver}.zip">
 			<fileset basedir="bin">
 				<include name="**/*.dll"/>
 				<include name="**/*.exe"/>
