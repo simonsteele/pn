@@ -1,6 +1,6 @@
 ========================================
-Release Name: 2.0.7.705
-Build: 2.0.7.705, Version Label: 
+Release Name: 2.0.7.707
+Build: 2.0.7.707, Version Label: 
 ========================================
 
 What's new?
@@ -92,6 +92,8 @@ Bug Fixes:
 39) Add option to save project files before running tools (SF Bug #1679394)
 40) Close All leaves tags behind (SF Bug #1834448)
 41) .688 spontaneously closes on close-all (SF Bug #1813319)
+42) Tags window does not update on save (fix thanks to Klaus)
+43) Modified flag gets reset on using jump to
 
 If you find a bug:
 ------------------

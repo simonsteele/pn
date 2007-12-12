@@ -342,11 +342,11 @@ bool CChildFrame::CanClose()
 			{
 				if( CanSave() )
 				{
-					return Save();
+					return Save(false);
 				}
 				else
 				{
-					return SaveAs();
+					return SaveAs(false);
 				}
 			}
 			break;
@@ -603,13 +603,13 @@ LRESULT CChildFrame::OnChildSaveModified(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 {
 	if( CanSave() )
 	{
-		Save();
+		Save(true); 
 		return 0;
 	}
 	else
 	{
 		// If SaveAs succeeds, we return 0 - we can close. Else return -1, user cancelled.
-		return SaveAs() ? 0 : -1;
+		return SaveAs(true) ? 0 : -1;
 	}
 }
 
@@ -932,14 +932,14 @@ LRESULT CChildFrame::OnRevert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 
 LRESULT CChildFrame::OnSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	Save();
+	Save(true);
 
 	return 0;
 }
 
 LRESULT CChildFrame::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	SaveAs();
+	SaveAs(true);
 
 	return 0;
 }
@@ -1422,6 +1422,11 @@ void CChildFrame::CheckAge()
 				if ( AtlMessageBoxCheckNet(m_hWnd, (LPCTSTR)msg, _T("File Changed"), MB_YESNO | MB_FORCESYSMENU) == IDYES )
 				{
 					Revert();
+					// Update tags:
+					::SendMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_CLOSE, (LPARAM)this);
+					//Manuel Sandoval: clear ScintillaImpl autocomplete list for adding new methods:
+					this->GetTextView()->ResetAutoComplete();
+					::PostMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_ADD, (LPARAM)this);
 				}
 				else
 				{
@@ -1475,7 +1480,7 @@ bool CChildFrame::PNOpenFile(LPCTSTR pathname, Scheme* pScheme, EPNEncoding enco
 	return bRet;
 }
 
-bool CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMRU)
+bool CChildFrame::SaveFile(LPCTSTR pathname, bool ctagsRefresh, bool bStoreFilename, bool bUpdateMRU)
 {
 	bool bSuccess = false;
 
@@ -1490,12 +1495,13 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 	{
 		bSuccess = true;
 	}
-	else
+	else if (bStoreFilename)
 	{
+		// Only present UI if we're doing a user-visible save
 		switch(HandleFailedFileOp(pathname, false))
 		{
 		case PNID_SAVEAS:
-			bSuccess = SaveAs();
+			bSuccess = SaveAs(ctagsRefresh);
 			break;
 		case PNID_OVERWRITE:
 			if(attemptOverwrite(pathname))
@@ -1510,7 +1516,7 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 					CString s;
 					s.Format(IDS_SAVEREADONLYFAIL, pathname);
 					if(AtlMessageBoxCheckNet(m_hWnd, (LPCTSTR)s, IDR_MAINFRAME, MB_YESNOCANCEL | MB_ICONWARNING) == IDYES)
-						bSuccess = SaveAs();
+						bSuccess = SaveAs(ctagsRefresh);
 				}
 			}
 			else
@@ -1519,7 +1525,7 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 				CString s;
 				s.Format(IDS_SAVEREADONLYFAIL, pathname);
 				if(AtlMessageBoxCheckNet(m_hWnd, (LPCTSTR)s, IDR_MAINFRAME, MB_YESNOCANCEL | MB_ICONWARNING) == IDYES)
-					bSuccess = SaveAs();
+					bSuccess = SaveAs(ctagsRefresh);
 			}
 			break;
 		}
@@ -1538,17 +1544,20 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 			m_spDocument->SetFileName(pathname);
 
 			SetTitle();
-
-			// Update tags:
-			::SendMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_CLOSE, (LPARAM)this);
-			//Manuel Sandoval: clear ScintillaImpl autocomplete list for adding new methods:
-			this->GetTextView()->ResetAutoComplete();
-			::PostMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_ADD, (LPARAM)this);
 		}
 
 		if(bUpdateMRU)
 		{
 			g_Context.m_frame->AddMRUEntry(m_spDocument->GetFileName(FN_FULL).c_str());
+		}
+
+		if(ctagsRefresh)
+		{
+			// Update tags:
+			::SendMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_CLOSE, (LPARAM)this);
+			//Manuel Sandoval: clear ScintillaImpl autocomplete list for adding new methods:
+			this->GetTextView()->ResetAutoComplete();
+			::PostMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_ADD, (LPARAM)this);
 		}
 	}
 
@@ -1683,7 +1692,7 @@ bool CChildFrame::CanSave()
 	return m_spDocument->HasFile();
 }
 
-bool CChildFrame::SaveAs()
+bool CChildFrame::SaveAs(bool ctagsRefresh)
 {
 	tstring saPath;
 	if(CanSave())
@@ -1703,7 +1712,7 @@ bool CChildFrame::SaveAs()
 		}
 		if(dlgSave.m_ofn.lpstrFile == NULL)
 			RETURN_UNEXPECTED(_T("SaveAs lpstrFile == NULL"), false);
-		SaveFile(dlgSave.m_ofn.lpstrFile);
+		SaveFile(dlgSave.m_ofn.lpstrFile, ctagsRefresh);
 	}
 	else
 	{
@@ -1724,11 +1733,11 @@ void CChildFrame::ChangeFormat(EPNSaveFormat format)
 	UpdateMenu();
 }
 
-bool CChildFrame::Save()
+bool CChildFrame::Save(bool ctagsRefresh)
 {
 	if(CanSave())
 	{
-		bool bResult = SaveFile(m_spDocument->GetFileName(FN_FULL).c_str(), false);
+		bool bResult = SaveFile(m_spDocument->GetFileName(FN_FULL).c_str(), ctagsRefresh, true);
 		
 		m_FileAge = m_spDocument->GetFileAge();
 		SetModifiedOverride(false);
@@ -1736,7 +1745,7 @@ bool CChildFrame::Save()
 		return bResult;
 	}
 	else
-		return SaveAs();
+		return SaveAs(ctagsRefresh);
 }
 
 ////////////////////////////////////////////////////

@@ -94,7 +94,7 @@ void JumpToHandler::FindTags(CChildFrame* pChildFrame, ITagSink* pNotifySink)
 			fnstr = tfn->w_str();
 		}
 
-		pChildFrame->GetTextView()->SaveFile(tfn->t_str());
+		pChildFrame->GetTextView()->SaveFile(tfn->t_str(), false);
 	}
 	else
 	{

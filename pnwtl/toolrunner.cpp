@@ -491,7 +491,7 @@ void ToolOwner::RunTool(ToolWrapperPtr& pTool, ToolOwnerID OwnerID)
 			CChildFrame* frame = (*i)->GetFrame();
 			if (frame)
 			{
-				frame->Save();
+				frame->Save(true);// save and notify change
 			}
 		}
 	}
@@ -500,7 +500,7 @@ void ToolOwner::RunTool(ToolWrapperPtr& pTool, ToolOwnerID OwnerID)
 		CChildFrame* pChild = pTool->GetActiveChild();
 		if(pChild)
 		{
-			pChild->Save();
+			pChild->Save(true);// save and notify change
 		}
 	}
 

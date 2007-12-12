@@ -272,7 +272,7 @@ void __stdcall CMainFrame::ChildOptionsUpdateNotify(CChildFrame* pChild, SChildE
 void __stdcall CMainFrame::ChildSaveNotify(CChildFrame* pChild, SChildEnumStruct* pES)
 {
 	if(pChild->GetModified())
-		pChild->Save();
+		pChild->Save(true);// save and notify change
 }
 
 void __stdcall CMainFrame::FileOpenNotify(CChildFrame* pChild, SChildEnumStruct* pES)

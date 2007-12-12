@@ -161,7 +161,10 @@
 			program="devenv"
 			commandline='pn.sln /Project pypn /ProjectConfig ReleaseDebug /Rebuild'
 			output="pypn-2.4.log">
-			<environment><variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.4"/></environment>
+			<environment>
+				<variable name="PYTHONINCDIR" value="C:\Python24\include"/>
+				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.4"/>
+			</environment>
 		</exec>
 		<copy file="lib\boost-python-2.4\boost_python-vc80-mt-1_33_1.dll" todir="bin"/>
 		<call target="deploypypn"/>

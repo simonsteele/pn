@@ -360,7 +360,7 @@ void CTextView::Revert(LPCTSTR filename)
 	}
 }
 
-bool CTextView::SaveFile(LPCTSTR filename)
+bool CTextView::SaveFile(LPCTSTR filename, bool setSavePoint)
 {
 	char data[blockSize + 1];
 	int lengthDoc = SPerform(SCI_GETLENGTH);
@@ -414,14 +414,19 @@ bool CTextView::SaveFile(LPCTSTR filename)
 		else
 			return false;
 	}
-	
-	SPerform(SCI_SETSAVEPOINT);
+
+	// We allow saving the file without setting the save point for the UI
+	if(setSavePoint)
+	{
+		SPerform(SCI_SETSAVEPOINT);
+	}
+
 	return true;
 }
 
 bool CTextView::Save(LPCTSTR filename, bool bSetScheme)
 {
-	if( SaveFile(filename) )
+	if( SaveFile(filename, bSetScheme) )
 	{
 		if(bSetScheme)
 		{

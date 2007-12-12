@@ -278,11 +278,11 @@ public:
 	void CheckAge();
 	void Revert();
 	bool PNOpenFile(LPCTSTR pathname, Scheme* pScheme = NULL, EPNEncoding encoding = eUnknown);
-	bool SaveFile(LPCTSTR pathname, bool bStoreFilename = true, bool bUpdateMRU = true);
+	bool SaveFile(LPCTSTR pathname, bool ctagsRefresh = false, bool bStoreFilename = true, bool bUpdateMRU = true);
 	bool CanSave();
-	bool SaveAs();
+	bool SaveAs(bool ctagsRefresh);
 	void ChangeFormat(EPNSaveFormat format);
-	bool Save();
+	bool Save(bool ctagsRefresh);
 
 	////////////////////////////////////////////////////
 	// Editor Window Methods
