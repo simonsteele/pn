@@ -1,0 +1,36 @@
+<clips name="C#" scheme="csharp">
+<clip name="class" shortcut="cl">/// &lt;summary&gt;
+/// 
+/// &lt;/summary&gt;
+public class |
+{
+	
+}</clip><clip name="method" shortcut="m">/// &lt;summary&gt;
+/// 
+/// &lt;/summary&gt;
+public void |()
+{
+	
+}</clip><clip name="property" shortcut="prop">private | x;
+
+/// &lt;summary&gt;
+/// Gets or sets 
+/// &lt;/summary&gt;
+public type X
+{
+	get { return this.x; }
+	set { this.x = value; }
+}</clip><clip name="interface" shortcut="iface">public interface I|
+{
+	
+}</clip><clip name="if" shortcut="if">if (|)
+{
+	
+}</clip><clip name="if else" shortcut="ife">if (|)
+{
+	
+}
+else
+{
+	
+}</clip></clips>

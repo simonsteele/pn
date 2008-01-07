@@ -1,0 +1,1 @@
+<clips name="XML" scheme="xml"><clip name="File Header" shortcut="file">&lt;?xml version="1.0" encoding="utf-8"?&gt;</clip><clip name="Comment" shortcut="co">&lt;!--|--&gt;</clip></clips>

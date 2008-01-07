@@ -153,7 +153,10 @@
 			program="devenv"
 			commandline='pn.sln /Project pypn /ProjectConfig ReleaseDebug /Rebuild'
 			output="pypn-2.5.log">
-			<environment><variable name="PYTHONLIBDIR" value=""/></environment>
+			<environment>
+				<variable name="PYTHONINCDIR" value="C:\Python25\include"/>
+				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.5"/>
+			</environment>
 		</exec>
 		<call target="deploypypn"/>
 		<property name="pyver" value="py24"/>

@@ -1,0 +1,18 @@
+<clips name="Python" scheme="python">
+<clip name="class" shortcut="cl">class |:</clip><clip name="method" shortcut="m">def |():</clip><clip name="xrange" shortcut="xr">for x in xrange(|):</clip><clip name="PyPN Script File" shortcut="pnscriptfile">###############################################################################
+## Script description
+## By: your name here
+
+import pn
+import scintilla
+from pypn.decorators import script
+
+@script()
+def |():
+	""" What this does """
+    pass</clip><clip name="PyPN Script Method" shortcut="pnscript">@script()
+def |():
+	""" What this does """
+    pass</clip><clip name="PyPN Editor" shortcut="pneditor">editor = scintilla.Scintilla(pn.CurrentDoc())</clip><clip name="PyPN Undo Block" shortcut="undoblock">editor.BeginUndoAction()
+|	
+editor.EndUndoAction()</clip><clip name="PyPN Selected Text" shortcut="pnsel">editor.GetText(editor.SelectionStart, editor.SelectionEnd)</clip></clips>
