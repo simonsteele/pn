@@ -205,7 +205,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="%PYTHONINCDIR%"
+				AdditionalIncludeDirectories="$(PYTHONINCDIR);c:\python25\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PYPN_EXPORTS"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="true"
@@ -227,7 +227,7 @@
 				AdditionalDependencies="boost_python-vc80-mt-1_33_1.lib"
 				OutputFile="$(OutDir)/pypn.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="%PYTHONLIBDIR%;&quot;..\lib\boost-python-2.5&quot;"
+				AdditionalLibraryDirectories="$(PYTHONLIBDIR);&quot;..\lib\boost-python-2.5&quot;"
 				ModuleDefinitionFile="pypn.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
