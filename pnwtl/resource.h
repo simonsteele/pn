@@ -215,6 +215,11 @@
 #define IDB_TBMAIN24                    348
 #define IDB_TBEDIT24                    349
 #define IDD_TEXTCLIPEDITOR              350
+#define IDI_TASKDLG_ARROW_HOT           352
+#define IDI_TASKDLG_ARROW_NORMAL        353
+#define IDI_TASKDLG_CHEVRON_LESS        354
+#define IDI_ICON6                       355
+#define IDI_TASKDLG_CHEVRON_MORE        355
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -492,6 +497,12 @@
 #define IDS_PROJSAVECHANGES             32707
 #define IDS_PROJCLOSEFILES              32708
 #define IDS_OPENANOTHER                 32709
+#define IDS_TASKDLG_OK                  32710
+#define IDS_TASKDLG_YES                 32711
+#define IDS_TASKDLG_NO                  32712
+#define IDS_TASKDLG_RETRY               32713
+#define IDS_TASKDLG_CANCEL              32714
+#define IDS_TASKDLG_CLOSE               32715
 #define ID_EDIT_FINDNEXT                32773
 #define ID_EDIT_GOTO                    32774
 #define ID_TOOLS_LECRLF                 32777
@@ -610,7 +621,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        351
+#define _APS_NEXT_RESOURCE_VALUE        356
 #define _APS_NEXT_COMMAND_VALUE         32990
 #define _APS_NEXT_CONTROL_VALUE         1153
 #define _APS_NEXT_SYMED_VALUE           104

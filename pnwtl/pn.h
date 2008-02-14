@@ -179,5 +179,7 @@ void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message);
 
 #include "files.h"
 
+#include "pntaskdialog.h"
+
 #define OPTIONS \
 	g_Context.options

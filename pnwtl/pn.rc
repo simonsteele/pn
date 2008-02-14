@@ -670,6 +670,10 @@ IDI_CTAGS               ICON                    "res\\ctags.ico"
 IDI_OUTPUT              ICON                    "res\\page_white_text.ico"
 IDI_FINDINFILES         ICON                    "res\\folder_find.ico"
 IDI_SCRIPTS             ICON                    "res\\scripts.ico"
+IDI_TASKDLG_ARROW_HOT   ICON                    "res\\TaskDlgArrowHot.ico"
+IDI_TASKDLG_ARROW_NORMAL ICON                    "res\\TaskDlgArrowNormal.ico"
+IDI_TASKDLG_CHEVRON_LESS ICON                    "res\\TaskDlgChevronLess.ico"
+IDI_TASKDLG_CHEVRON_MORE ICON                    "res\\TaskDlgChevronMore.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1836,6 +1840,12 @@ BEGIN
     IDS_PROJSAVECHANGES     "Do you want to save changes to the project: %s?"
     IDS_PROJCLOSEFILES      "Close all project files?"
     IDS_OPENANOTHER         "Do you want to open another copy of %s?"
+    IDS_TASKDLG_OK          "&OK"
+    IDS_TASKDLG_YES         "&Yes"
+    IDS_TASKDLG_NO          "&No"
+    IDS_TASKDLG_RETRY       "&Retry"
+    IDS_TASKDLG_CANCEL      "Cancel"
+    IDS_TASKDLG_CLOSE       "Close"
 END
 
 STRINGTABLE 
@@ -1850,7 +1860,7 @@ BEGIN
     IDS_NEWPROJECTGROUP     "New Project Group"
     IDS_OPENPROJECTDLGTITLE "Open Project/Project Group"
     IDS_SAVESOMETHING       "Save "
-    IDS_MODIFIEDELSEWHERE   "%s\n\nThe above file has been modified outside of Programmer's Notepad, do\nyou want to refresh and lose changes?"
+    IDS_MODIFIEDELSEWHERE   "%s\n\nThe above file has been modified outside of Programmer's Notepad, do you want to refresh and lose changes?"
     IDS_FILENOLONGEREXISTS  "Warning: the file %s does not exist any more."
     IDS_WORKSPACEFILES      "Workspace Files (*.pnws)|*.pnws|"
     IDS_PROJECTGROUPFILES   "Project Group Files (*.ppg)|*.ppg|"

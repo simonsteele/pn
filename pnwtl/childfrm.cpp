@@ -2,7 +2,7 @@
  * @file ChildFrm.cpp
  * @brief Implementation of CChildFrame, the MDI Child window.
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -1406,8 +1406,6 @@ LRESULT CChildFrame::OnGetInfoTip(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 ////////////////////////////////////////////////////
 // File Management Methods
 
-#include "include/atlmsgboxcheck.h"
-
 void CChildFrame::CheckAge()
 {
 	if(CanSave())
@@ -1419,7 +1417,7 @@ void CChildFrame::CheckAge()
 			{
 				CString msg;
 				msg.Format(IDS_MODIFIEDELSEWHERE, m_spDocument->GetFileName(FN_FULL).c_str());
-				if ( AtlMessageBoxCheckNet(m_hWnd, (LPCTSTR)msg, _T("File Changed"), MB_YESNO | MB_FORCESYSMENU) == IDYES )
+				if (PNTaskDialog(m_hWnd, _T("File Changed"), _T(""), (LPCTSTR)msg, TDCBF_YES_BUTTON | TDCBF_NO_BUTTON, TDT_WARNING_ICON) == IDYES)
 				{
 					Revert();
 					// Update tags:
@@ -1515,7 +1513,7 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool ctagsRefresh, bool bStoreFilen
 					// If we thought we'd done the overwrite, but then failed to save again...
 					CString s;
 					s.Format(IDS_SAVEREADONLYFAIL, pathname);
-					if(AtlMessageBoxCheckNet(m_hWnd, (LPCTSTR)s, IDR_MAINFRAME, MB_YESNOCANCEL | MB_ICONWARNING) == IDYES)
+					if(PNTaskDialog(m_hWnd, IDR_MAINFRAME, _T(""), (LPCTSTR)s, TDCBF_YES_BUTTON | TDCBF_NO_BUTTON | TDCBF_CANCEL_BUTTON, TDT_WARNING_ICON) == IDYES)
 						bSuccess = SaveAs(ctagsRefresh);
 				}
 			}
@@ -1524,7 +1522,7 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool ctagsRefresh, bool bStoreFilen
 				// If the attempt to overwrite failed.
 				CString s;
 				s.Format(IDS_SAVEREADONLYFAIL, pathname);
-				if(AtlMessageBoxCheckNet(m_hWnd, (LPCTSTR)s, IDR_MAINFRAME, MB_YESNOCANCEL | MB_ICONWARNING) == IDYES)
+				if(PNTaskDialog(m_hWnd, IDR_MAINFRAME, _T(""), (LPCTSTR)s, TDCBF_YES_BUTTON | TDCBF_NO_BUTTON | TDCBF_CANCEL_BUTTON, TDT_WARNING_ICON) == IDYES)
 					bSuccess = SaveAs(ctagsRefresh);
 			}
 			break;
@@ -1602,23 +1600,29 @@ void CChildFrame::handleClose()
 
 //TODO Move all the CFILE_ defines into the string resources.
 #define PN_CouldNotSaveReadOnly _T("The file \"%s\" could not be saved because it is write-protected.\n\nYou can either save in a different location or PN can attempt to remove the protection and\n overwrite the file in its current location.")
-const WTL::BXT::MBItem SaveReadOnlyButtons [] = {
+/*const WTL::BXT::MBItem SaveReadOnlyButtons [] = {
 	{PNID_SAVEAS, _T("Save &As...")},
 	{PNID_OVERWRITE, _T("&Overwrite")},
 	{IDCANCEL, 0}
-};
-const int SaveReadOnlyButtonsCount = 3;
+};*/
+
+const int SaveReadOnlyButtonsCount = 2;
+
+TASKDIALOG_BUTTON SaveReadOnlyButtons[] = {
+         { PNID_SAVEAS, L"Save &As..." },
+         { PNID_OVERWRITE, L"&Overwrite" },
+      };
 
 int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
 {
 	int err = GetLastError();
-	int ret = 0;
 	
 	TCHAR* fstr;
 
-	int MBStyle = bOpen ? MB_OK : MB_YESNOCANCEL;
-	WTL::BXT::LPCMBItem pItems = NULL;
+	int MBStyle = TDCBF_CANCEL_BUTTON | TDCBF_YES_BUTTON | TDCBF_NO_BUTTON;
+	TASKDIALOG_BUTTON* pItems = NULL;
 	int nItems = 0;
+	int nDefault = IDCANCEL;
 
 	CFileName cfn(filename);
 	tstring fn = cfn.GetFileName();
@@ -1626,65 +1630,106 @@ int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
 	switch(err)
 	{
 	case ERROR_ACCESS_DENIED:
-		if (bOpen )
+		if (bOpen)
+		{
 			fstr = CFILE_LoadAccessDenied;
+		}
 		else
 		{
 			// Special Read-Only handling...
 			fstr = PN_CouldNotSaveReadOnly; //IDS_SAVEREADONLY
-			MBStyle = MB_ICONWARNING | MB_CUSTOMBUTTONS;
+			MBStyle = TDCBF_CANCEL_BUTTON;
 			pItems = &SaveReadOnlyButtons[0];
 			nItems = SaveReadOnlyButtonsCount;
+			nDefault = PNID_SAVEAS;
 		}
 		break;
+
 	case ERROR_NOT_DOS_DISK:
 	case ERROR_WRITE_PROTECT:
 		if (bOpen )
+		{
 			fstr = CFILE_LoadAccessDenied;
+		}
 		else
+		{
 			fstr = CFILE_SaveAccessDenied;
+		}
 		break;
 		
 	case ERROR_DISK_FULL:
 	case ERROR_HANDLE_DISK_FULL:
 		if (bOpen)
+		{
 			fstr = CFILE_CouldNotLoadError;
+		}
 		else
+		{
 			fstr = CFILE_SaveDiskFullError;
+		}
 		break;
 		
 	case ERROR_SHARING_VIOLATION:
 	case ERROR_LOCK_VIOLATION:
 		if (bOpen)
+		{
 			fstr = CFILE_LoadShareViolation;
+		}
 		else
+		{
 			fstr = CFILE_SaveShareViolation;
+		}
 		break;
 		
 	case ERROR_DEV_NOT_EXIST:
 	case ERROR_BAD_NETPATH:
 	case ERROR_NETWORK_BUSY:
 		if (bOpen)
+		{
 			fstr = CFILE_NetLoadError;
+		}
 		else
+		{
 			fstr = CFILE_NetSaveError;
+		}
 		break;
 		
 	default:
 		if (bOpen)
+		{
 			fstr = CFILE_CouldNotLoadError;
+		}
 		else
+		{
 			fstr = CFILE_CouldNotSaveError;
+		}
 	}
 
 	int bs = _tcslen(fstr) + fn.length() + 10;
-	TCHAR* buffer = new TCHAR[bs];
-	_sntprintf(buffer, bs, fstr, fn.c_str());
+	std::string buffer;
+	buffer.reserve(bs);
+	_sntprintf(&buffer[0], bs, fstr, fn.c_str());
 
-	ret = AtlCustomMessageBoxNet(m_hWnd, (LPCTSTR)buffer, IDR_MAINFRAME, pItems, nItems, MBStyle);
+	USES_CONVERSION;
+
+	CT2CW message(buffer.c_str());
+	std::wstring title(LSW(IDR_MAINFRAME));
+
+	//ret = AtlCustomMessageBoxNet(m_hWnd, (LPCTSTR)buffer, IDR_MAINFRAME, pItems, nItems, MBStyle);
+	TASKDIALOGCONFIG cfg = { 0 };
+	cfg.cbSize = sizeof(cfg);
+	cfg.hInstance = _Module.GetResourceInstance();
+	cfg.pszWindowTitle = title.c_str();
+	cfg.pszMainIcon = MAKEINTRESOURCEW(IDR_MAINFRAME);
+	cfg.pszContent = message;
+	cfg.dwCommonButtons = MBStyle;
+	cfg.pButtons = pItems;
+	cfg.cButtons = nItems;
+	cfg.nDefaultButton = PNID_SAVEAS;
+
+	int iRes = PNTaskDialogIndirect(&cfg);
 	
-	delete [] buffer;
-	return ret;	
+	return iRes;
 }
 
 bool CChildFrame::CanSave()

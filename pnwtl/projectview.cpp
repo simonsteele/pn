@@ -2,7 +2,7 @@
  * @file projectview.cpp
  * @brief View to display project trees.
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -16,7 +16,6 @@
 #include "pndialogs.h"
 #include "include/shellicons.h"
 #include "include/filefinder.h"
-#include "include/atlmsgboxcheck.h"
 #include "MagicFolderWiz.h"
 
 #include "projpropsview.h"
@@ -1333,7 +1332,7 @@ LRESULT	CProjectTreeCtrl::OnProjectProperties(WORD /*wNotifyCode*/, WORD /*wID*/
 	}
 	else
 	{
-		AtlMessageBoxCheckNet(m_hWnd, IDS_PROJECTNOPROPS, IDR_MAINFRAME);
+		PNTaskDialog(m_hWnd, IDR_MAINFRAME, IDS_PROJECTNOPROPS, _T(""), TDCBF_OK_BUTTON, TDT_INFORMATION_ICON);
 	}
 
 	for(PropGroupList::const_iterator i = groups.begin(); i != groups.end(); ++i)

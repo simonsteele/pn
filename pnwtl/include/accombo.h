@@ -283,7 +283,7 @@ public:
 			m_edit.SubclassWindow(hWndEdit);
 
 			m_pAC = new CCustomAutoComplete(HKEY_CURRENT_USER, szSubKey);
-			m_pAC->Bind(hWndEdit, /*ACO_UPDOWNKEYDROPSLIST |*/ ACO_AUTOSUGGEST | ACO_AUTOAPPEND);
+			m_pAC->Bind(hWndEdit, /*ACO_UPDOWNKEYDROPSLIST |*/ ACO_AUTOSUGGEST /*| ACO_AUTOAPPEND*/);
 
 			// Fill combobox with the 20 recent entries, assuming AC stores the
 			// strings inorder.

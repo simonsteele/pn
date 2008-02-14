@@ -10,19 +10,13 @@ where no developer name is given it's Simon.
 
 last updated: 05/01/2007
 
-0.8 Basie
-=========
-
-[80% complete] Scripting/Extensions.
-[90% complete] Keyboard shortcut configuration
-[80% complete] Autocomplete
-
 0.10 Dizzy
 ==========
 
 File browser window.
 HTML Export configuration, inline HTML export.
 Preview for scheme configurator.
+Vista UI features
 
 0.12 Ellington
 ==============

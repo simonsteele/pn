@@ -847,6 +847,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\pntaskdialog.h"
+				>
+			</File>
+			<File
 				RelativePath=".\pntypes.h"
 				>
 			</File>
@@ -1052,6 +1056,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\TaskDlgArrowHot.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\TaskDlgArrowNormal.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\TaskDlgChevronLess.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\TaskDlgChevronMore.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\tbrEdit24.bmp"
 				>
 			</File>
@@ -1201,6 +1221,10 @@
 			</File>
 			<File
 				RelativePath=".\include\proplist\PropertyList.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\TaskDialog.h"
 				>
 			</File>
 			<File
