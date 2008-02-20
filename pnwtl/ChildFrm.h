@@ -313,7 +313,6 @@ protected:
 	HIMAGELIST			m_hImgList;
 	CTextView			m_view;
 	CString				m_Title;
-	CString				m_FileName;
 	long				m_FileAge;
 	bool				m_bModifiedOverride;
 	bool				m_bClosing;

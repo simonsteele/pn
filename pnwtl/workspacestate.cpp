@@ -118,6 +118,7 @@ void WorkspaceState::load(LPCTSTR filename)
 {
 	XMLParser parser;
 	parser.SetParseState(this);
+	m_parseState = 0;
 	try
 	{
 		parser.LoadFile(filename);
@@ -147,6 +148,8 @@ void WorkspaceState::save(LPCTSTR filename)
 
 	for(DocumentList::iterator i = list.begin(); i != list.end(); ++i)
 	{
+		if(!(*i)->HasFile())
+			continue;
 		writer.WriteFile( (*i)->GetFileName(FN_FULL).c_str() );
 	}
 
@@ -223,12 +226,20 @@ void WorkspaceState::endElement(LPCTSTR name)
 
 void WorkspaceState::handleProjectGroup(XMLAttributes& atts)
 {
-	
+	LPCTSTR path = atts.getValue(_T("path"));
+	if(path != NULL && _tcslen(path) > 0)
+	{
+		g_Context.m_frame->OpenProjectGroup(path);
+	}
 }
 
 void WorkspaceState::handleProject(XMLAttributes& atts)
 {
-	
+	LPCTSTR path = atts.getValue(_T("path"));
+	if(path != NULL && _tcslen(path) > 0)
+	{
+		g_Context.m_frame->OpenProject(path, true);
+	}
 }
 
 void WorkspaceState::handleFile(XMLAttributes& atts)

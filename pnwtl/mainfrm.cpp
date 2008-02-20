@@ -33,6 +33,7 @@
 #include "findinfiles.h"		// Find in Files
 #include "findinfilesview.h"	// Find in Files view...
 #include "newprojectdialog.h"	// New Projects Dialog
+#include "workspacestate.h"		// Save Workspace State
 
 // Other stuff
 #include "SchemeConfig.h"		// Scheme Configuration
@@ -41,6 +42,8 @@
 #include <htmlhelp.h>
 
 #include "projectholder.h"
+
+using namespace L10N;
 
 #if defined (_DEBUG)
 #define new DEBUG_NEW
@@ -164,7 +167,7 @@ void CMainFrame::UpdateStatusBar()
 	
 	if(pChild)
 	{
-		m_StatusBar.SetPaneText(ID_MOD_PANE, pChild->GetModified() ? _T("Modified") : _T(""));
+		m_StatusBar.SetPaneText(ID_MOD_PANE, pChild->GetModified() ? LS(IDS_MODIFIED) : _T(""));
 		m_StatusBar.SetPaneText(ID_ENC_PANE, encodingNames[pChild->GetTextView()->GetEncoding()]);
 		m_StatusBar.SetPaneText(ID_LINEENDS_PANE, lineEndingNames[pChild->GetTextView()->GetEOLMode()]);
 		m_StatusBar.SetPaneText(ID_INS_PANE, pChild->GetTextView()->GetOvertype() ? _T("OVR") : _T("INS"));
@@ -250,8 +253,22 @@ void __stdcall CMainFrame::FileOpenNotify(CChildFrame* pChild, SChildEnumStruct*
 
 bool CMainFrame::CloseAll()
 {
+	return closeAll(false);
+}
+
+bool CMainFrame::closeAll(bool shuttingDown)
+{
 	if(SaveAll(true))
 	{
+		if(shuttingDown)
+		{
+			if(OPTIONS->Get(PNSK_INTERFACE, _T("SaveWorkspace"), false))
+			{
+				WorkspaceState wss;
+				wss.Save();
+			}
+		}
+
 		// Close workspace, don't ask anything...
 		CloseWorkspace(false, false);
 		
@@ -481,7 +498,7 @@ LRESULT CMainFrame::OnProjectNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 
 LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	if(CloseAll())
+	if(closeAll(true)) // close all, and we're shutting down.
 	{
 		bHandled = FALSE;
 
@@ -566,14 +583,16 @@ HWND CMainFrame::CreateFindToolbar()
 	// Set the drop-down button...
 	int nIndex = fToolbar.CommandToIndex(ID_FINDTYPE_BUTTON);
 	ATLASSERT(nIndex != -1);
-		
+	
+	tstring fs = LS(IDS_FIND);
+
 	// Add drop-down style to the button
 	tbi.dwMask = TBIF_STYLE;
 	fToolbar.GetButtonInfo(ID_FINDTYPE_BUTTON, &tbi);
 	tbi.fsStyle |= BTNS_DROPDOWN;
 	tbi.fsStyle |= BTNS_SHOWTEXT | BTNS_AUTOSIZE;
 	tbi.dwMask |= TBIF_TEXT;
-	tbi.pszText = _T("Find");
+	tbi.pszText = const_cast<LPSTR>(fs.c_str());
 	fToolbar.SetButtonInfo(ID_FINDTYPE_BUTTON, &tbi);
 
 	return hWnd;
@@ -660,24 +679,19 @@ void CMainFrame::CreateDockingWindows()
 	CRect rcLeft(0,0,200,400);
 	CRect rcBottom(0,0,400,100);
 	
-	CString s;
-	s.LoadString(_Module.m_hInst, ID_VIEW_OUTPUT);
-	m_pOutputWnd = CreateDocker<COutputView>(s, rcBottom, this, 
+	m_pOutputWnd = CreateDocker<COutputView>(LS(ID_VIEW_OUTPUT), rcBottom, this, 
 		m_dockingWindows, ID_VIEW_OUTPUT - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sBottom);
 
-	s.LoadString(_Module.m_hInst, ID_VIEW_WINDOWS_FINDRESULTS);
-	m_pFindResultsWnd = CreateDocker<CFindInFilesView>(s, rcBottom, this,
+	m_pFindResultsWnd = CreateDocker<CFindInFilesView>(LS(ID_VIEW_WINDOWS_FINDRESULTS), rcBottom, this,
 		m_dockingWindows, ID_VIEW_WINDOWS_FINDRESULTS - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sBottom);
 
-	s.LoadString(_Module.m_hInst, ID_VIEW_WINDOWS_TEXTCLIPS);
-	m_pClipsWnd = CreateDocker<CClipsDocker>(s, rcLeft, this,
+	m_pClipsWnd = CreateDocker<CClipsDocker>(LS(ID_VIEW_WINDOWS_TEXTCLIPS), rcLeft, this,
 		m_dockingWindows, ID_VIEW_WINDOWS_TEXTCLIPS - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sLeft);
 
-	s.LoadString(_Module.m_hInst, ID_VIEW_WINDOWS_PROJECT);
-	m_pProjectsWnd = CreateDocker<CProjectDocker>(s, rcLeft, this, 
+	m_pProjectsWnd = CreateDocker<CProjectDocker>(LS(ID_VIEW_WINDOWS_PROJECT), rcLeft, this, 
 		m_dockingWindows, ID_VIEW_WINDOWS_PROJECT - ID_VIEW_FIRSTDOCKER,
 		false);
 
@@ -993,7 +1007,7 @@ LRESULT CMainFrame::OnDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 			OnFileNew(0, 0, 0, b);
 			break;
 		default:
-			OutputDebugString(_T("PN2: Unknown MDI Double-Click Action Code"));
+			LOG(_T("PN2: Unknown MDI Double-Click Action Code"));
 	}
 	return 0;
 }
@@ -1003,6 +1017,13 @@ LRESULT CMainFrame::OnEscapePressed(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	if( getDocker(DW_OUTPUT)->IsWindowVisible() )
 	{
 		getDocker(DW_OUTPUT)->Hide();
+
+		return TRUE;
+	}
+
+	if( getDocker(DW_FINDRESULTS)->IsWindowVisible() )
+	{
+		getDocker(DW_FINDRESULTS)->Hide();
 
 		return TRUE;
 	}
@@ -1146,6 +1167,21 @@ LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 
 	handleCommandLine(params);
 
+	if(OPTIONS->Get(PNSK_INTERFACE, _T("CheckAssocsOnStartup"), false))
+	{
+		FileAssocManager fam;
+		if(fam.CheckAssociations())
+		{
+			fam.UpdateAssociations();
+		}
+	}
+
+	if(OPTIONS->Get(PNSK_INTERFACE, _T("SaveWorkspace"), false) && params.size() == 0)
+	{
+		WorkspaceState wss;
+		wss.Load();
+	}
+
 	HWND hWndEditor = GetCurrentEditor();
 	if(hWndEditor == NULL)
 	{
@@ -1157,14 +1193,7 @@ LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 		}
 	}
 
-	if(OPTIONS->Get(PNSK_INTERFACE, _T("CheckAssocsOnStartup"), false))
-	{
-		FileAssocManager fam;
-		if(fam.CheckAssociations())
-		{
-			fam.UpdateAssociations();
-		}
-	}
+
 	return 0;
 }
 
@@ -1356,7 +1385,7 @@ LRESULT CMainFrame::OnFileNewWorkspace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 		return 0;
 
 	Projects::Workspace* workspace = new Projects::Workspace;
-	workspace->SetName(_T("New Project Group"));
+	workspace->SetName(LS(IDS_NEWPROJECTGROUP));
 	m_pProjectsWnd->SetWorkspace(workspace);
 	workspace->ClearDirty();
 
@@ -1365,7 +1394,7 @@ LRESULT CMainFrame::OnFileNewWorkspace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 
 LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CPNOpenDialogEx dlgOpen(_T("All Files (*.*)|*.*|"));
+	CPNOpenDialogEx dlgOpen(LS(IDS_ALLFILES));
 	dlgOpen.m_ofn.Flags |= OFN_ALLOWMULTISELECT;
 
 	tstring path;
@@ -1389,18 +1418,7 @@ LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 			if(bOnlyOne)
 			{
 				// If we're only opening one file, check to see if it's a project.
-				CFileName fn((*i).c_str());
-				fn.ToLower();
-				if(fn.GetExtension() == _T(".pnproj"))
-				{
-					OpenProject((*i).c_str());
-					break;
-				}
-				else if(fn.GetExtension() == _T(".ppg"))
-				{
-					OpenWorkspace((*i).c_str());
-					break;
-				}
+				openFileCheckType((*i).c_str(), dlgOpen.GetEncoding());
 			}
 
 			if( !CheckAlreadyOpen((*i).c_str(), action) )
@@ -1432,7 +1450,7 @@ LRESULT CMainFrame::OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 	}
 	else
 	{
-		// Ask to create? Remove form list?
+		// Ask to create? Remove from list?
 		// As we abused OpenFile() for the error message the later might be
 		// a bad choice...
 		//m_RecentFiles.RemoveFromList(wID - ID_MRUFILE_BASE);
@@ -1469,9 +1487,10 @@ LRESULT CMainFrame::OnMRUProjectSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*
 
 LRESULT CMainFrame::OnFileOpenProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CPNOpenDialog dlgOpen(_T("Projects and Project Groups (*.pnproj, *.ppg)|*.pnproj;*.ppg|"));
+	CPNOpenDialog dlgOpen(LS(IDS_ALLPROJECTFILES));
 	
-	dlgOpen.m_ofn.lpstrTitle = _T("Open Project/Project Group");
+	tstring s = StringLoader::Get(IDS_OPENPROJECTDLGTITLE);
+	dlgOpen.m_ofn.lpstrTitle = s.c_str();
 
 	if(dlgOpen.DoModal() == IDOK)
 	{
@@ -1500,6 +1519,19 @@ LRESULT CMainFrame::OnFileCloseWorkspace(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 LRESULT CMainFrame::OnFileCloseAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CloseAll();
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnFileSaveWorkspaceState(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CPNSaveDialog dlgSave(LS(IDS_WORKSPACEFILES), NULL, _T("pnws"));
+
+	if(dlgSave.DoModal() == IDOK)
+	{
+		WorkspaceState wss;
+		wss.Save(dlgSave.m_ofn.lpstrFile);
+	}
 
 	return 0;
 }
@@ -1673,6 +1705,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsPageTools			pageTools(&schemeconfig, &toolsmanager);
 	COptionsPageProjectTools	pageProjectTools(&toolsmanager);
 
+	COptionsPageFileTypes		pageFiles;
 	COptionsPageAFiles			pageAFiles;
 	COptionsPageFileAssoc		pageFileAssoc;
 
@@ -1686,6 +1719,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	options.AddPage(&dialogs);
 	options.AddPage(&pageStyle);
 	options.AddPage(&pageSchemes);
+	options.AddPage(&pageFiles);
 	options.AddPage(&pageNewFiles);
 	options.AddPage(&pageFileAssoc);
 	options.AddPage(&pageTools);
@@ -2415,7 +2449,7 @@ void CMainFrame::SetStatusText(LPCTSTR text, bool bLongLife)
 				m_statusResetCounter--;
 			else
 			{
-				m_StatusBar.SetPaneText(ID_DEFAULT_PANE, _T("Ready"), (m_bIsXPOrLater ? SBT_NOBORDERS : 0));
+				m_StatusBar.SetPaneText(ID_DEFAULT_PANE, LS(IDS_DEFAULTSTATUS), (m_bIsXPOrLater ? SBT_NOBORDERS : 0));
 				m_bShowingDefaultStatus = true;
 			}
 		}
@@ -2455,8 +2489,8 @@ bool CMainFrame::SaveAll(bool ask)
 			case IDYES:
 				// The dialog will update the list and remove
 				// any items that the user unchecked
-				m_tabbedClient.SaveModified(modifiedItems);
-				bRet = true;
+				if(m_tabbedClient.SaveModified(modifiedItems) != E_ABORT)
+					bRet = true;
 				break;
 
 			case IDNO:
@@ -2470,8 +2504,8 @@ bool CMainFrame::SaveAll(bool ask)
 		}
 		else
 		{
-			m_tabbedClient.SaveModified(modifiedItems);
-			bRet = true;
+			if(m_tabbedClient.SaveModified(modifiedItems) != E_ABORT)
+				bRet = true;
 		}
 	}
 	else
@@ -2578,7 +2612,7 @@ void CMainFrame::NewProject(LPCTSTR szProjectFile, LPCTSTR name, LPCTSTR templat
 
 		// No workspace currently open, create a blank one to store the project in.
 		workspace = new Projects::Workspace;
-		workspace->SetName(_T("New Project Group"));
+		workspace->SetName(LS(IDS_NEWPROJECTGROUP));
 		workspace->AddProject(project);
 		m_pProjectsWnd->SetWorkspace(workspace);
 		workspace->ClearDirty();
@@ -2588,10 +2622,65 @@ void CMainFrame::NewProject(LPCTSTR szProjectFile, LPCTSTR name, LPCTSTR templat
 		// Add this project to the current workspace. Yes this should be an option.
 		m_pProjectsWnd->AddProject(project);
 	}
-
 }
 
-void CMainFrame::OpenProject(LPCTSTR projectPath)
+void CMainFrame::OpenProject(LPCTSTR projectPath, bool intoExistingGroup)
+{
+	if(!m_pProjectsWnd)
+		UNEXPECTED(_T("No projects window!"))
+	else
+	{
+		if(!getDocker(DW_PROJECTS)->IsWindowVisible())
+			getDocker(DW_PROJECTS)->Toggle();
+	}
+
+	// Check if a project is already open...
+	if(!intoExistingGroup && m_pProjectsWnd->GetWorkspace() != NULL)
+	{
+		if(!CloseWorkspace(true, true))
+			return;
+	}
+
+	if(!FileExists(projectPath))
+	{
+		DWORD dwRes = ::MessageBox(m_hWnd, LS(IDS_PROJECTDOESNOTEXIST), LS(IDR_MAINFRAME), MB_YESNO);
+		if(dwRes == IDYES)
+		{
+			NewProject(projectPath);
+		}
+		return;
+	}
+
+	AddMRUProjectsEntry(projectPath);
+
+	Projects::Workspace* workspace = GetActiveWorkspace();
+	bool setActive = false;
+
+	if(!intoExistingGroup || workspace == NULL)
+	{
+		workspace = new Projects::Workspace;
+		workspace->SetName(LS(IDS_NEWPROJECTGROUP));
+		setActive = true;
+	}
+	
+	Projects::Project* project = new Projects::Project(projectPath);
+
+	workspace->AddProject(project);
+
+	if(setActive)
+	{
+		m_pProjectsWnd->SetWorkspace(workspace);
+		
+		workspace->ClearDirty();
+	}
+}
+
+void CMainFrame::OpenProjectGroup(LPCTSTR projectGroup)
+{
+	OpenWorkspace(projectGroup);
+}
+
+void CMainFrame::OpenWorkspace(LPCTSTR workspacePath)
 {
 	if(!m_pProjectsWnd)
 		UNEXPECTED(_T("No projects window!"))
@@ -2608,34 +2697,6 @@ void CMainFrame::OpenProject(LPCTSTR projectPath)
 			return;
 	}
 
-	if(!FileExists(projectPath))
-	{
-		CString str;
-		str.LoadString(IDS_PROJECTDOESNOTEXIST);
-		DWORD dwRes = ::MessageBox(m_hWnd, str, _T("Project Not Found"), MB_YESNO);
-		if(dwRes == IDYES)
-		{
-			NewProject(projectPath);
-		}
-		return;
-	}
-
-	AddMRUProjectsEntry(projectPath);
-
-	Projects::Workspace* workspace = new Projects::Workspace;
-	workspace->SetName(_T("New Project Group"));
-	
-	Projects::Project* project = new Projects::Project(projectPath);
-
-	workspace->AddProject(project);
-
-	m_pProjectsWnd->SetWorkspace(workspace);
-	
-	workspace->ClearDirty();
-}
-
-void CMainFrame::OpenWorkspace(LPCTSTR workspacePath)
-{
 	Projects::Workspace* workspace = new Projects::Workspace(workspacePath);
 	m_pProjectsWnd->SetWorkspace(workspace);
 }
@@ -2649,8 +2710,12 @@ bool CMainFrame::SaveWorkspaceAs(Projects::Workspace* pWorkspace)
 	if(projects.size() > 0)
 		path = (*projects.begin())->GetBasePath();
 	
-	CPNSaveDialog dlg(_T("Project Group Files (*.ppg)|*.ppg|"), NULL, _T("ppg"));
-	dlg.SetTitle(_T("Save Project Group"));
+	CPNSaveDialog dlg(LS(IDS_PROJECTGROUPFILES), NULL, _T("ppg"));
+	
+	tstring st = LS(IDS_SAVESOMETHING);
+	st += LS(IDS_PROJECTGROUP);
+	dlg.SetTitle(st.c_str());
+	
 	dlg.SetInitialPath(path);
 
 	if(dlg.DoModal() == IDOK)
@@ -2841,7 +2906,7 @@ bool CMainFrame::getProjectsModified(ITabbedMDIChildModifiedList* pModifiedList)
 		{
 			// No, the workspace is dirty itself...
 			CComPtr<ITabbedMDIChildModifiedItem> wsmod;
-			::CreateTabbedMDIChildModifiedItem(m_hWnd, L"Project Group", CT2CW(workspace->GetName()), L"Project Group", 0, ::LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_WORKSPACE)), &wsmod);
+			::CreateTabbedMDIChildModifiedItem(m_hWnd, LSW(IDS_PROJECTGROUP), CT2CW(workspace->GetName()), LSW(IDS_PROJECTGROUP), 0, ::LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_WORKSPACE)), &wsmod);
 			
 			CComPtr<IProjectHolder> ph;
 			::CreateProjectHolder(NULL, workspace, &ph);
@@ -2852,7 +2917,7 @@ bool CMainFrame::getProjectsModified(ITabbedMDIChildModifiedList* pModifiedList)
 		}
 
         CComPtr<ITabbedMDIChildModifiedItem> wsitem;
-		::CreateTabbedMDIChildModifiedItem(m_hWnd, L"Projects", CT2CW(workspace->GetName()), L"Projects", 0, ::LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_WORKSPACE)), &wsitem);
+		::CreateTabbedMDIChildModifiedItem(m_hWnd, LSW(ID_VIEW_WINDOWS_PROJECT), CT2CW(workspace->GetName()), LSW(ID_VIEW_WINDOWS_PROJECT), 0, ::LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_WORKSPACE)), &wsitem);
 		
 		CComPtr<ITabbedMDIChildModifiedList> subitems;
 		wsitem->get_SubItems(&subitems);
@@ -2868,7 +2933,7 @@ bool CMainFrame::getProjectsModified(ITabbedMDIChildModifiedList* pModifiedList)
 			{
 				CComPtr<ITabbedMDIChildModifiedItem> pitem;
 				//ITabbedMDIChildModifiedItem* pitem;
-				::CreateTabbedMDIChildModifiedItem(m_hWnd, L"Project", CT2CW((*i)->GetName()), L"Project", 0, ::LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_PROJECTFOLDER)), &pitem);
+				::CreateTabbedMDIChildModifiedItem(m_hWnd, LSW(IDS_PROJECT), CT2CW((*i)->GetName()), LSW(IDS_PROJECT), 0, ::LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_PROJECTFOLDER)), &pitem);
 				
 				CComPtr<IProjectHolder> ph;
 				::CreateProjectHolder((*i), NULL, &ph);
@@ -2891,7 +2956,7 @@ bool CMainFrame::getProjectsModified(ITabbedMDIChildModifiedList* pModifiedList)
 	return bRet;
 }
 
-void CMainFrame::openFileCheckType(LPCTSTR filename)
+void CMainFrame::openFileCheckType(LPCTSTR filename, EPNEncoding encoding)
 {
 	CFileName fn(filename);
 	fn.ToLower();
@@ -2903,8 +2968,17 @@ void CMainFrame::openFileCheckType(LPCTSTR filename)
 	{
 		OpenWorkspace(filename);
 	}
+	else if(fn.GetExtension() == _T(".pnws"))
+	{
+		if(CloseAll())
+		{
+			WorkspaceState wss;
+			wss.Load(filename);
+		}
+	}
 	else
 	{
-		OpenFile(filename);
+		if(!CheckAlreadyOpen(filename))
+			OpenFile(filename, NULL, encoding);
 	}
 }

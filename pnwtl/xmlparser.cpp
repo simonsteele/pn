@@ -159,7 +159,8 @@ bool XMLParser::LoadFile(LPCTSTR filename)
 	_tcscpy(m_szFilename, filename);
 
 	CFile file;
-	file.Open(m_szFilename, 0);
+	if(!file.Open(m_szFilename, 0))
+		return false;
 
 	char buf[4096];
 	int done = 0;

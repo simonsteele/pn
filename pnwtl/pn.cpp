@@ -127,6 +127,10 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		}
 	}
 
+	// Now we initialise any l10n stuff...
+	//TODO: Make this check settings in AppSettings to work out what to do.
+	L10N::StringLoader::InitResourceLoader();
+
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
 

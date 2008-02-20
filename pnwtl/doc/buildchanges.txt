@@ -11,6 +11,9 @@ Relative paths don't work from command-line with single-instance PN (SF Bug #116
 PN does not correctly remember the normal window size when closed maximised.
 Ruby scheme
 Text clips wrap selected text.
+Don't exit if save is cancelled for a previously unsaved item.
+Escape key closes find results if no output windows are open.
+Optionally save workspace between runs ("Remember open files and projects between sessions" in General options).
 
 Since 0.5.59:
 

@@ -69,6 +69,7 @@ typedef enum {
 #include "pnutils.h"
 #include "pnstrings.h"
 #include "include/singleton.h"
+#include "l10n.h"
 
 #include "Document.h"
 typedef boost::shared_ptr<Document> DocumentPtr;
@@ -89,6 +90,8 @@ struct IMainFrame
 	virtual bool CloseAll() = 0;
 	virtual bool SaveAll(bool ask = false) = 0;
 	virtual bool Open(LPCTSTR lpszFilename, bool bAddMRU = false) = 0;
+	virtual void OpenProject(LPCTSTR lpszFilename, bool intoExistingGroup = false) = 0;
+	virtual void OpenProjectGroup(LPCTSTR lpszFilename) = 0;
 	virtual bool CheckAlreadyOpen(LPCTSTR lpszFilename, EAlreadyOpenAction action) = 0;
 	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme) = 0;
 

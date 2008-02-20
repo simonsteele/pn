@@ -227,7 +227,8 @@ DocumentPtr CChildFrame::GetDocument() const
 
 void CChildFrame::SetTitle( bool bModified )
 {
-	LPCTSTR sFullPath = m_FileName;
+	tstring fn = m_spDocument->GetFileName();
+	LPCTSTR sFullPath = fn.c_str();
 
 	tstring filepart;
 	
@@ -279,25 +280,7 @@ void CChildFrame::SetTitle( bool bModified )
 
 tstring CChildFrame::GetFileName(EGFNType type)
 {
-	CFileName fn(m_FileName);
-
-	switch(type)
-	{
-		case FN_FULL:
-			return fn;
-
-		case FN_FILE:
-			return fn.GetFileName();
-
-		case FN_FILEPART:
-			return fn.GetFileName_NoExt();
-
-		case FN_PATH:
-			return fn.GetPath();
-
-		default:
-			return fn;
-	};
+	return m_spDocument->GetFileName(type);
 }
 
 LPCTSTR CChildFrame::GetTitle()
@@ -386,7 +369,6 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		s_bFirstChild = false;
 	}
 
-	m_FileName = _T("<new>");
 	SetTitle();
 
 	/*CSPopupMenu newMenu;
@@ -604,7 +586,7 @@ LRESULT CChildFrame::OnShowTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 
 LRESULT CChildFrame::OnPrint(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	m_po.Filename = m_FileName;
+	m_po.Filename = m_spDocument->GetFileName().c_str();
 	m_view.PrintDocument(&m_po, true);
 
 	return TRUE;
@@ -652,7 +634,7 @@ LRESULT CChildFrame::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 		{
 			CString cs;
 			cs.Format(IDS_FINDNOTFOUND, pOptions->FindText);
-			MessageBox(cs, _T("Programmers Notepad"), MB_OK);
+			MessageBox(cs, LS(IDR_MAINFRAME), MB_OK);
 		}
 	}
 	return TRUE;
@@ -925,11 +907,12 @@ LRESULT CChildFrame::OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	// Check there's a valid filename...
 	if(CanSave())
 	{
+		tstring filename = m_spDocument->GetFileName();
 		tstring alternateFile;
 
 		AlternateFiles* afiles = AlternateFiles::GetInstance();
 		
-		if(	afiles->GetAlternate(m_FileName, alternateFile) )
+		if(	afiles->GetAlternate(filename.c_str(), alternateFile) )
 		{
 				if( !g_Context.m_frame->CheckAlreadyOpen(alternateFile.c_str(), eSwitch) )
 					g_Context.m_frame->Open(alternateFile.c_str());
@@ -1049,13 +1032,13 @@ void CChildFrame::CheckAge()
 {
 	if(CanSave())
 	{
-		long age = FileAge(m_FileName);
+		long age = m_spDocument->GetFileAge();// FileAge(m_FileName);
 		if(age != m_FileAge)
 		{
-			if(FileExists(m_FileName))
+			if(m_spDocument->FileExists())
 			{
 				CString msg;
-				msg.Format(_T("%s\n\nThe above file has been modified outside of Programmers Notepad, do\nyou want to refresh and lose changes?"), (LPCTSTR)m_FileName);
+				msg.Format(IDS_MODIFIEDELSEWHERE, m_spDocument->GetFileName().c_str());
 				if ( AtlMessageBoxCheckNet(m_hWnd, (LPCTSTR)msg, _T("File Changed"), MB_YESNO | MB_FORCESYSMENU) == IDYES )
 				{
 					Revert();
@@ -1069,7 +1052,7 @@ void CChildFrame::CheckAge()
 			else
 			{
 				CString msg;
-				msg.Format(_T("Warning: the file %s does not exist any more."), (LPCTSTR)m_FileName);
+				msg.Format(IDS_FILENOLONGEREXISTS, m_spDocument->GetFileName().c_str());
 				g_Context.m_frame->SetStatusText((LPCTSTR)msg);
 				SetModifiedOverride(true);
 			}
@@ -1082,8 +1065,8 @@ void CChildFrame::Revert()
 	// Check that we have a valid filename first...
 	if(CanSave())
 	{
-		m_view.Revert((LPCTSTR)m_FileName);
-		m_FileAge = FileAge(m_FileName);
+		m_view.Revert(m_spDocument->GetFileName().c_str());
+		m_FileAge = m_spDocument->GetFileAge();
 		SetModifiedOverride(false);
 	}
 }
@@ -1094,8 +1077,8 @@ bool CChildFrame::PNOpenFile(LPCTSTR pathname, CScheme* pScheme, EPNEncoding enc
 
 	if(m_view.Load(pathname, pScheme, encoding))
 	{
-		m_FileAge = FileAge(pathname);
-		m_FileName = pathname;
+		m_spDocument->SetFileName(pathname);
+		m_FileAge = m_spDocument->GetFileAge();
 		SetTitle();
 		bRet = true;
 	}
@@ -1160,14 +1143,14 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool bStoreFilename, bool bUpdateMR
 		{
 			m_FileAge = FileAge(pathname);
 			SetModifiedOverride(false);
-			m_FileName = pathname;
+			m_spDocument->SetFileName(pathname);
 
 			SetTitle();			
 		}
 
 		if(bUpdateMRU)
 		{
-			g_Context.m_frame->AddMRUEntry(m_FileName);
+			g_Context.m_frame->AddMRUEntry(m_spDocument->GetFileName().c_str());
 		}
 	}
 
@@ -1275,18 +1258,18 @@ int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
 
 bool CChildFrame::CanSave()
 {
-	return ((m_FileName != _T("")) && (m_FileName.Find(_T("<")) == -1));
+	return m_spDocument->HasFile();
 }
 
 bool CChildFrame::SaveAs()
 {
-	LPCTSTR saPath = NULL;
+	tstring saPath;
 	if(CanSave())
 	{
-		saPath = m_FileName;
+		saPath = m_spDocument->GetFileName(FN_FULL);
 	}
 
-	CPNSaveDialogEx dlgSave(_T("All Files (*.*)|*.*|"), saPath);
+	CPNSaveDialogEx dlgSave(_T("All Files (*.*)|*.*|"), saPath.c_str());
 	bool bRet = true;
 
 	if(dlgSave.DoModal() == IDOK)
@@ -1323,9 +1306,9 @@ bool CChildFrame::Save()
 {
 	if(CanSave())
 	{
-		bool bResult = SaveFile(m_FileName, false);
+		bool bResult = SaveFile(m_spDocument->GetFileName().c_str(), false);
 		
-		m_FileAge = FileAge(m_FileName);
+		m_FileAge = m_spDocument->GetFileAge();
 		SetModifiedOverride(false);
 
 		return bResult;
@@ -1501,8 +1484,7 @@ void CChildFrame::Export(int type)
 
 		if(CanSave())
 		{
-			CFileName fn(m_FileName);
-			fn.GetFileName_NoExt(guessName);
+			guessName = m_spDocument->GetFileName(FN_FILEPART);
 		}
 		else
 		{

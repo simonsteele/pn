@@ -722,7 +722,7 @@ void CSchemeManager::Load()
 
 	m_Schemes.sort();
 
-	LoadExtMap();
+	LoadExtMap(m_SchemeExtMap, m_SchemeFileNameMap);
 }
 
 /**
@@ -730,50 +730,24 @@ void CSchemeManager::Load()
  * properties style key=value file. The file must be formatted:
  * .extension=schemename\r\n
  */
-void CSchemeManager::LoadExtMap()
+void CSchemeManager::LoadExtMap(SCHEME_MAP& extMap, SCHEME_MAP& fnMap, bool noUserMap)
 {
 	PNASSERT(m_SchemePath != NULL);
 	PNASSERT(m_CompiledPath != NULL);
 	
-	CTextFile file;
 	CString fn;
-	bool bOK;
 	
-	fn = m_CompiledPath;
-	fn += _T("extmap.dat");
-	bOK = file.Open(fn, CFile::modeText);
-	
-	if(!bOK)
+	if(!noUserMap)
 	{
-		fn = m_SchemePath;
+		fn = m_CompiledPath;
 		fn += _T("extmap.dat");
-		bOK = file.Open(fn, CFile::modeText);
-	}
-		
-	if(bOK)
-	{
-		CString buf;
-		
-		tstring ext;
-		tstring scheme;
-		
-		CScheme* sch;
-		int pos;
 
-		while(file.ReadLine(buf))
-		{
-			pos = buf.Find(_T('='));
-			ext = buf.Left(pos);
-			scheme = buf.Mid(pos+1);
-
-			sch = SchemeByName(scheme.c_str());
-			if(ext[0] != _T('.'))
-				m_SchemeFileNameMap.insert(m_SchemeFileNameMap.end(), SCMITEM(ext, sch));
-			else
-				m_SchemeExtMap.insert(m_SchemeExtMap.end(), SCMITEM(ext, sch));
-		}
-		file.Close();
+		internalLoadExtMap(fn, extMap, fnMap);
 	}
+	
+	fn = m_SchemePath;
+	fn += _T("extmap.dat");
+	internalLoadExtMap(fn, extMap, fnMap);
 }
 
 CScheme* CSchemeManager::InternalSchemeForFileName(const tstring& filename)
@@ -892,6 +866,68 @@ void CSchemeManager::BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCo
 			m.AddItem( (*i).GetTitle(), id);
 		}
 	}
+}
+
+void CSchemeManager::SaveExtMap()
+{
+	// Keep a map around to see if we're actually different from the originals.
+	SCHEME_MAP origExts;
+	LoadExtMap(origExts, origExts, true);
+
+	for(SCHEME_MAP::const_iterator i = m_SchemeExtMap.begin(); i != m_SchemeExtMap.end(); ++i)
+	{
+		SCHEME_MAP::const_iterator match = origExts.find((*i).first);
+		if(match != origExts.end())
+		{
+			if((*match).second == (*i).second)
+				continue; // they're the same, skip it.
+		}
+
+		// write
+	}
+
+	for(SCHEME_MAP::const_iterator j = m_SchemeFileNameMap.begin(); j != m_SchemeFileNameMap.end(); ++i)
+	{
+		SCHEME_MAP::const_iterator match = origExts.find((*j).first);
+		if(match != origExts.end())
+		{
+			if((*match).second == (*j).second)
+				continue; // they're the same, skip it.
+		}
+
+		// write
+	}
+}
+
+void CSchemeManager::internalLoadExtMap(LPCTSTR filename, SCHEME_MAP& extMap, SCHEME_MAP& fnMap)
+{
+	CTextFile file;
+	bool bOK = file.Open(filename, CFile::modeText);
+	
+	if(bOK)
+	{
+		CString buf;
+		
+		tstring ext;
+		tstring scheme;
+		
+		CScheme* sch;
+		int pos;
+
+		while(file.ReadLine(buf))
+		{
+			pos = buf.Find(_T('='));
+			ext = buf.Left(pos);
+			scheme = buf.Mid(pos+1);
+
+			sch = SchemeByName(scheme.c_str());
+			if(ext[0] != _T('.'))
+				fnMap.insert(fnMap.end(), SCMITEM(ext, sch));
+			else
+				extMap.insert(extMap.end(), SCMITEM(ext, sch));
+		}
+		file.Close();
+	}	
 }
 
 CSchemeManager * CSchemeManager::GetInstance()

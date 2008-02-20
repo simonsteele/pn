@@ -29,6 +29,9 @@ What's new?
 21) Ruby scheme
 22) Better behaviour with files opened using relative paths.
 23) Wrap text clips around selected text (SF RFE #1199676).
+24) Escape key closes find results if no output windows are open.
+25) Optionally save workspace between runs ("Remember open files and projects between sessions" in General options).
+26) Open to save workspace files from File menu, opening a .pnws file opens the saved workspace.
 
 Bug Fixes:
 ----------
@@ -47,6 +50,7 @@ Bug Fixes:
 12) Relative paths don't work from command-line with single-instance PN (SF Bug #1161783).
 13) Window Dimensions After Un-Maximizing (SF Bug #1167299).
 14) File -> New Broken (SF Bug #1221755).
+15) Don't exit if save is cancelled for a previously unsaved item.
 
 If you find a bug:
 ------------------

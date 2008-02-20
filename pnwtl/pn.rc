@@ -108,6 +108,7 @@ BEGIN
         MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
         MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
         MENUITEM "Save A&ll",                   ID_FILE_SAVEALL
+        MENUITEM "Save &Workspace As...",       ID_FILE_SAVEWORKSPACEAS
         POPUP "Enco&ding"
         BEGIN
             MENUITEM "8-bit",                       ID_ENCODING_8
@@ -810,26 +811,29 @@ BEGIN
     CONTROL         "&Show full file path in document windows",
                     IDC_OPT_FULLPATHCHECK,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,10,36,156,10
-    LTEXT           "&Display",IDC_STATIC,10,82,28,8
-    EDITTEXT        IDC_OPT_MRUCOUNT,42,80,30,14,ES_AUTOHSCROLL
+    LTEXT           "&Display",IDC_STATIC,10,94,28,8
+    EDITTEXT        IDC_OPT_MRUCOUNT,42,92,30,14,ES_AUTOHSCROLL
     LTEXT           "(1 to 50) items in the most recently used list.",
-                    IDC_STATIC,75,82,168,8
+                    IDC_STATIC,75,94,168,8
     CONTROL         "Start with a new, &blank document",
                     IDC_OPT_NEWFILEONSTART,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,10,48,196,10
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,104,299,1
-    LTEXT           "Tabs",IDC_STATIC,0,100,16,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,116,299,1
+    LTEXT           "Tabs",IDC_STATIC,0,112,16,8
     CONTROL         "Show &Tabs",IDC_OPT_SHOWTABSCHECK,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,10,112,228,10
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,124,228,10
     CONTROL         "Only show with ma&ximized document windows",
                     IDC_OPT_MAXTABSONLY,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,19,124,165,10
+                    WS_TABSTOP,19,136,165,10
     CONTROL         "At the &bottom of the main window",
                     IDC_OPT_TABSBOTTOMCHECK,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,19,136,228,10
+                    WS_TABSTOP,19,148,228,10
     CONTROL         "Tab &order controlled by recent use",
                     IDC_OPT_TABORDERCHECK,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,10,60,175,10
+    CONTROL         "&Remember open files and projects between sessions",
+                    IDC_OPT_SAVEWORKSPACE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,10,72,194,10
 END
 
 IDD_PAGE_NEWFILES DIALOGEX 0, 0, 300, 200
@@ -971,9 +975,9 @@ BEGIN
     CONTROL         "",IDC_AFILES_LIST,"SysListView32",LVS_REPORT | 
                     LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | 
                     LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,10,12,236,187
-    PUSHBUTTON      "&Add",IDC_AFILES_ADDBUTTON,250,12,50,14
-    PUSHBUTTON      "&Edit",IDC_AFILES_EDITBUTTON,250,30,50,14
-    PUSHBUTTON      "&Remove",IDC_AFILES_REMOVEBUTTON,250,48,50,14
+    PUSHBUTTON      "&Add",IDC_AFILES_ADDBUTTON,249,12,50,14
+    PUSHBUTTON      "&Edit",IDC_AFILES_EDITBUTTON,249,30,50,14
+    PUSHBUTTON      "&Remove",IDC_AFILES_REMOVEBUTTON,249,48,50,14
 END
 
 IDD_AFILEEDITOR DIALOGEX 0, 0, 248, 129
@@ -982,15 +986,15 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION |
 CAPTION "Edit Alternate File Pair"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
+    EDITTEXT        IDC_AFILE_STARTTEXT,7,17,234,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_AFILE_OTHERTEXT,7,45,234,14,ES_AUTOHSCROLL
     DEFPUSHBUTTON   "OK",IDOK,137,108,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,191,108,50,14
-    LTEXT           "Start Extensions:",IDC_STATIC,7,7,72,12
-    EDITTEXT        IDC_AFILE_STARTTEXT,7,17,234,14,ES_AUTOHSCROLL
+    LTEXT           "Start Extensions:",IDC_STATIC,7,7,72,9
     LTEXT           "Alternate Extensions:",IDC_STATIC,7,35,78,8
-    EDITTEXT        IDC_AFILE_OTHERTEXT,7,45,234,14,ES_AUTOHSCROLL
     LTEXT           "File extensions should be entered including the '.' dot character, separated by semi-colons, in order of precedence. e.g. \n\nStart: .cpp;.cxx;.c;.cc\nAlternate: .h;.hpp",
                     IDC_STATIC,36,64,205,41
-    ICON            IDI_INFOICON,IDC_STATIC,7,64,21,20
+    ICON            IDI_INFOICON,IDC_STATIC,7,64,20,20
 END
 
 IDD_PAGE_EDITDEFS DIALOGEX 0, 0, 300, 200
@@ -1295,6 +1299,38 @@ BEGIN
     RTEXT           "Folder:",IDC_STATIC,11,159,29,9
 END
 
+IDD_PAGE_FILETYPES DIALOGEX 0, 0, 300, 200
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "&Add",IDC_FILETYPES_ADDBUTTON,249,12,50,14
+    PUSHBUTTON      "&Edit",IDC_FILETYPES_EDITBUTTON,249,30,50,14
+    PUSHBUTTON      "&Remove",IDC_FILETYPES_REMOVEBUTTON,249,48,50,14
+    CONTROL         "",IDC_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | 
+                    LVS_SHOWSELALWAYS | LVS_SORTASCENDING | LVS_ALIGNLEFT | 
+                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,10,12,236,187
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,4,300,1
+    LTEXT           "File Types",IDC_STATIC,0,0,33,8
+END
+
+IDD_FILETYPEEDITOR DIALOGEX 0, 0, 248, 105
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Edit File Type"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_FILETYPE_MATCH,7,17,234,14,ES_AUTOHSCROLL
+    COMBOBOX        IDC_SCHEME_COMBO,7,45,234,12,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,137,84,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,191,84,50,14
+    LTEXT           "File Extension or Name to Match:",IDC_STATIC,7,7,167,10
+    LTEXT           "Scheme:",IDC_STATIC,7,35,78,8
+    LTEXT           "File extensions should be entered starting with the '.' dot character.",
+                    IDC_STATIC,36,64,205,19
+    ICON            IDI_INFOICON,IDC_STATIC,7,64,20,20
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1511,6 +1547,19 @@ BEGIN
         BOTTOMMARGIN, 194
         HORZGUIDE, 142
         HORZGUIDE, 159
+    END
+
+    IDD_PAGE_FILETYPES, DIALOG
+    BEGIN
+        RIGHTMARGIN, 299
+    END
+
+    IDD_FILETYPEEDITOR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 241
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 98
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -1737,6 +1786,15 @@ BEGIN
     IDS_PROJECTS_DEFAULTTEMPLATE "Empty Project"
     IDS_CHANGESCHEME        "&Change Scheme"
     IDS_NEW                 "&New"
+    IDS_NEWPROJECTGROUP     "New Project Group"
+    IDS_OPENPROJECTDLGTITLE "Open Project/Project Group"
+    IDS_SAVESOMETHING       "Save "
+    IDS_MODIFIEDELSEWHERE   "%s\n\nThe above file has been modified outside of Programmers Notepad, do\nyou want to refresh and lose changes?"
+    IDS_FILENOLONGEREXISTS  "Warning: the file %s does not exist any more."
+    IDS_WORKSPACEFILES      "Workspace Files (*.pnws)|*.pnws|"
+    IDS_PROJECTGROUPFILES   "Project Group Files (*.ppg)|*.ppg|"
+    IDS_ALLFILES            "All Files (*.*)|*.*|"
+    IDS_ALLPROJECTFILES     "Projects and Project Groups (*.pnproj, *.ppg)|*.pnproj;*.ppg|"
 END
 
 STRINGTABLE 
@@ -1749,6 +1807,11 @@ BEGIN
     IDS_OUTPUTSUPPORT       "Programmers Notepad 2 provides built-in support\nfor parsing output from the following tools:\n\nBorland C++\nMicrosoft Compilers\nGCC\nlcc-win32\nPython\nPerl\nand other similar tools."
     IDS_TOOLS_VARSTRINGS    "%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectPath),Path of Project,c:\\source\\pn2\\,$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\"
     IDS_TOOLS_SELWORKINGFOLDER "Select the working folder for the tool:"
+    IDS_PROJECTGROUP        "Project Group"
+    IDS_PROJECT             "Project"
+    IDS_DEFAULTSTATUS       "Ready"
+    IDS_FIND                "Find"
+    IDS_MODIFIED            "Modified"
 END
 
 #endif    // English (U.K.) resources

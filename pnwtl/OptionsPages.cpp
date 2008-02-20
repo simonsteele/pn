@@ -41,9 +41,11 @@ void COptionsPageGeneral::OnOK()
 	options.Set(PNSK_INTERFACE, _T("NewOnStart"), (bool)(m_bNewOnStart != FALSE));
 
 	options.Set(PNSK_INTERFACE, _T("Tabs"), (bool)(m_bShowTabs != FALSE));
-	//options.Set(PNSK_INTERFACE, _T("HideSingleTab"), (bool)(m_bHideSingleTab != FALSE));
 	options.Set(PNSK_INTERFACE, _T("TabsOnBottom"), (bool)(m_bTabsOnBottom != FALSE));
 	options.Set(PNSK_INTERFACE, _T("MaximizedTabsOnly"), (bool)(m_bTabsOnlyMax != FALSE));
+	options.Set(PNSK_INTERFACE, _T("SaveWorkspace"), (bool)(m_bSaveWorkspace != FALSE));
+
+	//options.Set(PNSK_INTERFACE, _T("HideSingleTab"), (bool)(m_bHideSingleTab != FALSE));
 }
 
 void COptionsPageGeneral::OnInitialise()
@@ -51,21 +53,28 @@ void COptionsPageGeneral::OnInitialise()
 	m_bMaximise = OPTIONS->GetCached(Options::OMaximiseNew);
 	m_bFullPath = OPTIONS->GetCached(Options::OShowFullPath);
 	m_bManageTabOrder = OPTIONS->GetCached(Options::OManageTabOrder);
-	m_iMRUSize = OPTIONS->Get(PNSK_INTERFACE, _T("MRUSize"), 4);
-	m_bMultiInstanceOk = OPTIONS->Get(PNSK_INTERFACE, _T("AllowMultiInstance"), false);
-	m_bNewOnStart = OPTIONS->Get(PNSK_INTERFACE, _T("NewOnStart"), true);
 
-    m_bShowTabs = OPTIONS->Get(PNSK_INTERFACE, _T("Tabs"), true);
+	// Interface settings
+	OPTIONS->BeginGroupOperation(PNSK_INTERFACE);
+
+	m_iMRUSize = OPTIONS->Get(NULL, _T("MRUSize"), 4);
+	m_bMultiInstanceOk = OPTIONS->Get(NULL, _T("AllowMultiInstance"), false);
+	m_bNewOnStart = OPTIONS->Get(NULL, _T("NewOnStart"), true);
+
+    m_bShowTabs = OPTIONS->Get(NULL, _T("Tabs"), true);
+	m_bTabsOnBottom = OPTIONS->Get(NULL, _T("TabsOnBottom"), false);
+	m_bTabsOnlyMax = OPTIONS->Get(NULL, _T("MaximizedTabsOnly"), false);
+	m_bSaveWorkspace = OPTIONS->Get(NULL, _T("SaveWorkspace"), false);
+
 	//m_bHideSingleTab = OPTIONS->Get(PNSK_INTERFACE, _T("HideSingleTab"), false);
-	m_bTabsOnBottom = OPTIONS->Get(PNSK_INTERFACE, _T("TabsOnBottom"), false);
-	m_bTabsOnlyMax = OPTIONS->Get(PNSK_INTERFACE, _T("MaximizedTabsOnly"), false);
+
+	OPTIONS->EndGroupOperation();
+
 	DoDataExchange();
 }
 
 LRESULT COptionsPageGeneral::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-
-
 	return 0;
 }
 
@@ -1881,4 +1890,214 @@ void COptionsPageFileAssoc::RemoveExtension(int index)
 	m_fam.UnsetAssociation(fa);
 
 	m_list.DeleteItem(index);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// COptionsPageFileTypes
+//////////////////////////////////////////////////////////////////////////////
+
+typedef struct tagFTDetails
+{
+	bool isFilename;
+	CScheme* pScheme;
+	tstring ext;
+} SFTDetails;
+
+int CALLBACK FileTypeAlphaAscendCompare(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	SFTDetails* p1 = reinterpret_cast<SFTDetails*>(lParam1);
+	SFTDetails* p2 = reinterpret_cast<SFTDetails*>(lParam2);
+
+	return (p1->ext < p2->ext) ? -1 : 1;
+}
+
+COptionsPageFileTypes::COptionsPageFileTypes()
+{
+	m_bDirty = false;
+}
+
+COptionsPageFileTypes::~COptionsPageFileTypes()
+{
+	
+}
+
+void COptionsPageFileTypes::addItem(int n, LPCTSTR ext, CScheme* pScheme, bool isFilename)
+{
+	LVITEM lvi;
+	lvi.mask = LVIF_TEXT;
+	
+	if(n == -1)
+		n = m_list.GetItemCount();
+
+	int index = m_list.InsertItem(n, ext);
+	
+	lvi.iItem = index;
+	lvi.iSubItem = 1;
+	lvi.pszText = const_cast<LPTSTR>( pScheme->GetTitle() );
+	m_list.SetItem(&lvi);
+
+	SFTDetails* pDetails = new SFTDetails;
+	pDetails->isFilename = isFilename;
+	pDetails->pScheme = pScheme;
+	pDetails->ext = ext;
+
+	m_list.SetItemData(index, (DWORD_PTR)pDetails);
+}
+
+void COptionsPageFileTypes::OnInitialise()
+{
+	m_pExtMap = CSchemeManager::GetInstance()->GetExtensionMap();
+	m_pFilenameMap = CSchemeManager::GetInstance()->GetFilenameMap();
+
+
+	int n = 0;
+	for(SCHEME_MAP::const_iterator i = m_pExtMap->begin(); i != m_pExtMap->end(); ++i)
+	{
+		addItem(n++, (*i).first.c_str(), (*i).second, false);
+	}
+
+	for(SCHEME_MAP::const_iterator j = m_pFilenameMap->begin(); j != m_pFilenameMap->end(); ++j)
+	{
+		addItem(n++, (*j).first.c_str(), (*j).second, true);
+	}
+}
+
+void COptionsPageFileTypes::OnOK()
+{
+	if(!m_bCreated || !m_bDirty)
+		return;
+
+	m_pExtMap->clear();
+	m_pFilenameMap->clear();
+
+	CSchemeManager* pSM = CSchemeManager::GetInstance();
+
+	for(int i = 0; i < m_list.GetItemCount(); i++)
+	{
+		CString sExt;
+		m_list.GetItemText(i, 0, sExt);
+		
+		SFTDetails* pDetails = reinterpret_cast<SFTDetails*>(m_list.GetItemData(i));
+
+		if(!pDetails->isFilename)
+		{
+			m_pExtMap->insert(SCHEME_MAP::value_type(tstring(sExt), pDetails->pScheme));
+		}
+		else
+		{
+			m_pFilenameMap->insert(SCHEME_MAP::value_type(tstring(sExt), pDetails->pScheme));
+		}
+
+		delete pDetails;
+	}
+
+	pSM->SaveExtMap();
+}
+
+void COptionsPageFileTypes::OnCancel()
+{
+	clear();
+}
+
+LPCTSTR COptionsPageFileTypes::GetTreePosition()
+{
+	return _T("Files");
+}
+
+LRESULT COptionsPageFileTypes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	m_list.Attach(GetDlgItem(IDC_LIST));
+
+	m_list.SetExtendedListViewStyle( LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT );
+
+	m_list.InsertColumn(0, _T("Match"), LVCFMT_LEFT, 120);
+	m_list.InsertColumn(1, _T("Scheme"), LVCFMT_LEFT, 200);
+
+	return 0;
+}
+
+LRESULT COptionsPageFileTypes::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CFileTypeEditorDialog dlg;
+	if(dlg.DoModal(m_hWnd) == IDOK)
+	{
+		tstring fn;
+		CScheme* pScheme;
+		dlg.GetValues(fn, pScheme);
+
+		if(fn[0] == _T('.'))
+		{
+			addItem(-1, fn.c_str(), pScheme, false);
+		}
+		else
+		{
+			addItem(-1, fn.c_str(), pScheme, true);
+		}
+	}
+	return 0;
+}
+
+LRESULT COptionsPageFileTypes::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int i = m_list.GetSelectedIndex();
+	if(i == -1)
+		return 0;
+
+	SFTDetails* pDetails = reinterpret_cast<SFTDetails*>( m_list.GetItemData( i ) );
+
+	delete pDetails;
+
+    m_list.DeleteItem(i);
+
+	m_bDirty = true;
+
+	return 0;
+}
+
+LRESULT COptionsPageFileTypes::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int i = m_list.GetSelectedIndex();
+	if(i == -1)
+		return 0;
+
+	CString ext;
+	m_list.GetItemText(i, 0, ext);
+
+	SFTDetails* pDetails = reinterpret_cast<SFTDetails*>( m_list.GetItemData( i ) );
+
+	CFileTypeEditorDialog dlg;
+	dlg.SetValues(ext, pDetails->pScheme);
+
+	if(dlg.DoModal(m_hWnd) == IDOK)
+	{
+		tstring match;
+		CScheme* pScheme;
+		dlg.GetValues(match, pScheme);
+
+		m_list.SetItemText(i, 0, match.c_str());
+		pDetails->pScheme = pScheme;
+		pDetails->isFilename = match[0] != _T('.');
+		pDetails->ext = match;
+
+		m_list.SortItems(&FileTypeAlphaAscendCompare, NULL);
+	}
+
+	return 0;
+}
+
+
+LRESULT COptionsPageFileTypes::OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	BOOL b;
+	OnEditClicked(0, 0, 0, b);
+	return 0;
+}
+
+void COptionsPageFileTypes::clear()
+{
+	for(int i = 0; i < m_list.GetItemCount(); i++)
+	{
+		SFTDetails* pDetails = reinterpret_cast<SFTDetails*>(m_list.GetItemData(i));
+		delete pDetails;
+	}
 }

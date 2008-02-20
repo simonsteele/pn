@@ -42,6 +42,7 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 			DDX_CHECK(IDC_OPT_TABSBOTTOMCHECK,	m_bTabsOnBottom)
 			DDX_CHECK(IDC_OPT_MAXTABSONLY,		m_bTabsOnlyMax)
 			DDX_CHECK(IDC_OPT_TABORDERCHECK,	m_bManageTabOrder)
+			DDX_CHECK(IDC_OPT_SAVEWORKSPACE,	m_bSaveWorkspace)
 		END_DDX_MAP()
 
 		virtual void OnOK();
@@ -61,6 +62,7 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 		BOOL			m_bTabsOnBottom;
 		BOOL			m_bTabsOnlyMax;
 		BOOL			m_bManageTabOrder;
+		BOOL			m_bSaveWorkspace;
 };
 
 class COptionsPageEditDefaults : public COptionsPageImpl<COptionsPageEditDefaults>,
@@ -702,6 +704,48 @@ class COptionsPageFileAssoc : public COptionsPageImpl<COptionsPageFileAssoc>,
 		StringMap		m_conflicts;
 		CFont			m_boldFont;
 		COLORREF		m_colors[2];
+};
+
+class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
+{
+	public:
+		COptionsPageFileTypes();
+		~COptionsPageFileTypes();
+
+		enum {IDD = IDD_PAGE_FILETYPES};
+
+		BEGIN_MSG_MAP(COptionsPageFileTypes)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+
+			COMMAND_HANDLER(IDC_FILETYPES_ADDBUTTON, BN_CLICKED, OnAddClicked)
+			COMMAND_HANDLER(IDC_FILETYPES_EDITBUTTON, BN_CLICKED, OnEditClicked)
+			COMMAND_HANDLER(IDC_FILETYPES_REMOVEBUTTON, BN_CLICKED, OnRemoveClicked)
+			NOTIFY_HANDLER(IDC_LIST, NM_DBLCLK, OnListDblClicked)
+		END_MSG_MAP()
+
+		virtual void OnInitialise();
+		virtual void OnOK();
+		virtual void OnCancel();
+		virtual LPCTSTR GetTreePosition();
+
+	protected:
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+		LRESULT OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+		LRESULT OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+
+	protected:
+		void addItem(int index, LPCTSTR ext, CScheme* pScheme, bool isFilename);
+		void clear();
+
+	protected:
+		CListViewCtrl		m_list;
+		SCHEME_MAP*			m_pExtMap;
+		SCHEME_MAP*			m_pFilenameMap;
+		bool				m_bDirty;
 };
 
 #endif

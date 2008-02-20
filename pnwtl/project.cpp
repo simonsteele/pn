@@ -1029,6 +1029,8 @@ void Workspace::AddProject(Project* project)
 
 	if(activeProject == NULL)
 		activeProject = project;
+
+	Notify(pcAdd, NULL, project);
 }
 
 void Workspace::InsertProject(Project* project, Project* insertAfter)
@@ -1049,6 +1051,8 @@ void Workspace::InsertProject(Project* project, Project* insertAfter)
 	project->setWorkspace(this);
     
 	bDirty = true;
+
+	Notify(pcAdd, NULL, project);
 }
 
 void Workspace::RemoveProject(Project* project)

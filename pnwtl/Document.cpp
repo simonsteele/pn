@@ -19,13 +19,23 @@ Document::Document(LPCTSTR filename)
 	if(filename)
         m_sFilename = filename;
 	else
-		m_sFilename = "";
+		m_sFilename = "<new>";
 }
 
 void Document::AddChildFrame(CChildFrame* pFrame)
 {
 	PNASSERT(m_pFrame == NULL); // Currently only support one frame per doc.
 	m_pFrame = pFrame;
+}
+
+bool Document::FileExists() const
+{
+	return HasFile() && ::FileExists(m_sFilename.c_str());
+}
+
+long Document::GetFileAge() const
+{
+	return FileAge(m_sFilename.c_str());
 }
 
 tstring Document::GetFileName(EGFNType type) const
@@ -54,6 +64,16 @@ tstring Document::GetFileName(EGFNType type) const
 CChildFrame* Document::GetFrame() const
 {
 	return m_pFrame;
+}
+
+bool Document::HasFile() const
+{
+	return ((m_sFilename != _T("")) && (m_sFilename.find(_T("<")) == -1));
+}
+
+void Document::SetFileName(LPCTSTR filename)
+{
+	m_sFilename = filename;
 }
 
 void Document::SetValid(bool bValid)

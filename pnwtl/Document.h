@@ -23,8 +23,14 @@ class Document
 
 		bool IsValid() const;
 
+		bool FileExists() const;
+
+		long GetFileAge() const;
 		tstring GetFileName(EGFNType type = FN_FULL) const;
 		CChildFrame* GetFrame() const;
+		bool HasFile() const;
+
+		void SetFileName(LPCTSTR filename);
 
 // Protected members for friend classes...
 	protected:

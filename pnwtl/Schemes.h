@@ -242,20 +242,28 @@ class CSchemeManager
 
 		void Load();
 		void Compile();
-		void LoadExtMap();
+		void LoadExtMap(SCHEME_MAP& extMap, SCHEME_MAP& fnMap, bool noUserMap = false);
 		
 		CScheme* SchemeForFile(LPCTSTR filename);
 		CScheme* SchemeForExt(LPCTSTR ext);
 		CScheme* SchemeByName(LPCTSTR name);
-		CScheme* GetDefaultScheme(){return &m_DefaultScheme;}
+		CScheme* GetDefaultScheme() {return &m_DefaultScheme;}
 
-		SCHEME_LIST* GetSchemesList(){return &m_Schemes;}
+		SCHEME_LIST* GetSchemesList() {return &m_Schemes;}
+
+		SCHEME_MAP* GetExtensionMap() { return &m_SchemeExtMap; }
+		SCHEME_MAP* GetFilenameMap() { return &m_SchemeFileNameMap; }
 
 		void BuildMenu(HMENU menu, CSMenuEventHandler* pHandler, int iCommand = SCHEMEMANAGER_SELECTSCHEME, bool bNewMenu = true);
+
+		void SaveExtMap();
 
 		static CSchemeManager * GetInstance();
 		static CSchemeManager & GetInstanceRef();
 		static void DeleteInstance();
+
+	protected:
+		void internalLoadExtMap(LPCTSTR filename, SCHEME_MAP& extMap, SCHEME_MAP& fnMap);
 
 	protected:
 		TCHAR*			m_SchemePath;

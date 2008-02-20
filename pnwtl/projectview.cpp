@@ -81,8 +81,6 @@ HWND CProjectTreeCtrl::Create(HWND hWndParent, _U_RECT rect, LPCTSTR szWindowNam
 void CProjectTreeCtrl::AddProject(Projects::Project* project)
 {
 	workspace->AddProject(project);
-	buildProject(GetRootItem(), project);
-	Expand(GetRootItem());
 }
 
 File* CProjectTreeCtrl::GetSelectedFile()
@@ -166,6 +164,12 @@ void CProjectTreeCtrl::OnProjectItemChange(PROJECT_CHANGE_TYPE changeType, Proje
 					SortChildren(hParent);
 					Expand(hParent);
 				}
+			}
+			else if(changeItem->GetType() == ptProject)
+			{
+				PNASSERT(changeContainer == NULL); // workspace
+				buildProject(GetRootItem(), static_cast<Projects::Project*>(changeItem));
+				Expand(GetRootItem());
 			}
 		}
 		break;

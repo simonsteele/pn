@@ -54,6 +54,15 @@
 #define IDS_PROJECTS_DEFAULTTEMPLATE    148
 #define IDS_CHANGESCHEME                149
 #define IDS_NEW                         150
+#define IDS_NEWPROJECTGROUP             151
+#define IDS_OPENPROJECTDLGTITLE         152
+#define IDS_SAVESOMETHING               153
+#define IDS_MODIFIEDELSEWHERE           154
+#define IDS_FILENOLONGEREXISTS          155
+#define IDS_WORKSPACEFILES              156
+#define IDS_PROJECTGROUPFILES           157
+#define IDS_ALLFILES                    158
+#define IDS_ALLPROJECTFILES             159
 #define IDI_TEXTCLIPS                   167
 #define IDR_POPUP_REGEXP                170
 #define IDR_POPUP_EDITOR                173
@@ -170,7 +179,12 @@
 #define IDD_NEWPROJECT                  336
 #define IDS_TOOLS_VARSTRINGS            337
 #define IDS_TOOLS_SELWORKINGFOLDER      338
+#define IDS_PROJECTGROUP                339
 #define ID_MRUPROJECT_MAX               340
+#define IDS_PROJECT                     340
+#define IDS_DEFAULTSTATUS               341
+#define IDS_FIND                        342
+#define IDS_MODIFIED                    343
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -188,6 +202,8 @@
 #define IDD_MAGICFOLDERWIZ2             435
 #define IDD_FINDEX                      436
 #define IDD_PAGE_DIALOGS                437
+#define IDD_PAGE_FILETYPES              438
+#define IDD_FILETYPEEDITOR              439
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_FINDTYPE_DUMMY              1003
@@ -229,6 +245,7 @@
 #define IDC_STYLE_SELBACKBUTTON         1012
 #define IDC_AFILE_STARTTEXT2            1012
 #define IDC_AFILE_OTHERTEXT             1012
+#define IDC_FILETYPE_MATCH              1012
 #define IDC_FONTSIZE_COMBO              1013
 #define IDC_STYLE_IGCOLBUTTON           1013
 #define IDC_SCHEMECOMBO                 1016
@@ -379,6 +396,11 @@
 #define IDC_TAB_TABSRADIO               1125
 #define IDC_TAB_SPACESRADIO             1126
 #define IDC_OPT_TABORDERCHECK           1127
+#define IDC_OPT_SAVEWORKSPACE           1128
+#define IDC_FILETYPES_ADDBUTTON         1128
+#define IDC_FILETYPES_EDITBUTTON        1129
+#define IDC_FILETYPES_REMOVEBUTTON      1130
+#define IDC_SCHEME_COMBO                1131
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -477,15 +499,16 @@
 #define ID_PROJECT_SAVEPROJECT          32946
 #define ID_PROJECT_REFRESH              32947
 #define ID_EDIT_GOTOBRACE               32948
+#define ID_FILE_SAVEWORKSPACEAS         32950
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        337
-#define _APS_NEXT_COMMAND_VALUE         32950
-#define _APS_NEXT_CONTROL_VALUE         1128
+#define _APS_NEXT_RESOURCE_VALUE        340
+#define _APS_NEXT_COMMAND_VALUE         32951
+#define _APS_NEXT_CONTROL_VALUE         1132
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

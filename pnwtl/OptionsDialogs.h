@@ -194,4 +194,32 @@ class CAFileEditorDialog : public CDialogImpl<CAFileEditorDialog>
 		tstring setTo;
 };
 
+class CFileTypeEditorDialog : public CDialogImpl<CFileTypeEditorDialog>
+{
+	public:
+		CFileTypeEditorDialog();
+
+		enum {IDD = IDD_FILETYPEEDITOR};
+
+		BEGIN_MSG_MAP(CFileTypeEditorDialog)
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			COMMAND_ID_HANDLER(IDOK, OnOK)
+			COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
+			
+		END_MSG_MAP()
+
+		void GetValues(tstring& match, CScheme*& scheme);
+		void SetValues(LPCTSTR match, CScheme* scheme);
+
+	protected:
+		LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+	protected:
+		CComboBox		m_combo;
+		tstring			m_match;
+		CScheme*		m_pScheme;
+};
+
 #endif
