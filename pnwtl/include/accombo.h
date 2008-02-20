@@ -120,7 +120,8 @@ public:
 
 	HWND m_hWndOwner; // window that wants enter key-press notifies.
 	CComboBoxEdit m_edit;
-	CCustomAutoComplete* m_pAC;
+	CCustomAutoComplete*	m_pAC;
+	CComPtr<IAutoComplete>	m_filesAC;
 
 // Constructors
 	CComboBoxACImpl() : m_pAC(NULL), m_hWndOwner(NULL) { }
@@ -141,6 +142,7 @@ public:
 		return bRet;
 	}
 
+	// These 2 provide for registry-based AutoComplete.
 	HWND Create(HWND hWndParent, _U_RECT rect, LPCTSTR szWindowName,
 			DWORD dwStyle, DWORD dwExStyle, _U_MENUorID MenuOrID,
 			LPCTSTR szSubKey, UINT nDummyId)
@@ -170,6 +172,35 @@ public:
 		return hWnd;
 	}
 
+	HWND Create(HWND hWndParent, _U_RECT rect, LPCTSTR szWindowName,
+			DWORD dwStyle, DWORD dwExStyle, _U_MENUorID MenuOrID)
+	{
+		m_hWndOwner = hWndParent;
+
+		HWND hWnd = baseClass::Create(hWndParent, *rect.m_lpRect, szWindowName, dwStyle, dwExStyle, (unsigned int)MenuOrID.m_hMenu);
+		if(hWnd)
+		{
+			InitFileAC();
+		}
+
+		return hWnd;
+	}
+
+	HWND Create(HWND hWndParent, _U_RECT rect, LPCTSTR szWindowName,
+			DWORD dwStyle, DWORD dwExStyle, _U_MENUorID MenuOrID, UINT nDummyId)
+	{
+		m_hWndOwner = hWndParent;
+
+		HWND hWnd = baseClass::Create(hWndParent, *rect.m_lpRect, szWindowName, dwStyle, dwExStyle, (unsigned int)MenuOrID.m_hMenu);
+		if(hWnd)
+		{
+			InitFileAC();
+			SetWindowPos(GetDlgItem(nDummyId), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+		}
+
+		return hWnd;
+	}
+
 	void SetOwnerHWND(HWND hWndOwner)
 	{
 		m_hWndOwner = hWndOwner;
@@ -185,7 +216,14 @@ public:
 
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
-		m_pAC->Unbind();
+		if(m_pAC)
+		{
+			m_pAC->Unbind();
+		}
+		if(m_filesAC)
+		{
+			m_filesAC.Release();
+		}
 		return 0;
 	}
 
@@ -243,6 +281,52 @@ public:
 			for(int i = 0; i < size; i++)
 			{
 				AddString(items[i]);
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	bool InitFileAC()
+	{
+		SetFont((HFONT)::SendMessage(GetParent(), WM_GETFONT, 0, 0));
+		HWND hWndEdit = GetWindow(GW_CHILD);
+		
+		if(hWndEdit)
+		{
+			m_edit.SubclassWindow(hWndEdit);
+
+			/*IUnknown *punkSource;
+
+CoCreateInstance(clsidSource, 
+                 NULL, 
+                 CLSCTX_INPROC_SERVER,
+                 IID_IACList, 
+                 (LPVOID*)&punkSource);*/
+
+			CComPtr<IUnknown> punkSource;
+			punkSource.CoCreateInstance(CLSID_ACListISF, NULL, CLSCTX_INPROC_SERVER);
+
+			IACList2 *pal2;
+
+			if (SUCCEEDED(punkSource->QueryInterface(IID_IACList2, (LPVOID*)&pal2)))
+			{
+				pal2->SetOptions(ACLO_FILESYSONLY);
+				pal2->Release();
+			}
+
+			HRESULT hr = S_OK;
+			hr = m_filesAC.CoCreateInstance(CLSID_AutoComplete);
+			m_filesAC->Init(hWndEdit, punkSource, NULL, NULL);
+
+			IAutoComplete2 *pac2;
+
+			if (SUCCEEDED(m_filesAC->QueryInterface(IID_IAutoComplete2, (LPVOID*)&pac2)))
+			{
+				pac2->SetOptions(ACO_AUTOSUGGEST);
+				pac2->Release();
 			}
 
 			return true;

@@ -311,6 +311,9 @@
 				RelativePath=".\Files.cpp">
 			</File>
 			<File
+				RelativePath=".\findex.cpp">
+			</File>
+			<File
 				RelativePath=".\jumpto.cpp">
 			</File>
 			<File
@@ -469,6 +472,9 @@
 			</File>
 			<File
 				RelativePath=".\finddlg.h">
+			</File>
+			<File
+				RelativePath=".\findex.h">
 			</File>
 			<File
 				RelativePath=".\folderadder.h">

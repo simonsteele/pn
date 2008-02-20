@@ -166,10 +166,13 @@
 #define IDD_PAGE_EDITDEFS               433
 #define IDD_PAGE_CONF                   434
 #define IDD_MAGICFOLDERWIZ2             435
+#define IDD_FINDEX                      436
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
+#define IDC_FINDTYPE_DUMMY              1003
 #define IDC_GOTOEDIT                    1004
 #define IDC_THEEDIT                     1004
+#define IDC_FINDWHERE_DUMMY             1004
 #define IDC_PNSCOMBO                    1005
 #define IDC_HELPBTN                     1006
 #define IDC_TREE                        1007
@@ -241,8 +244,12 @@
 #define IDC_TE_PARAMSEDIT               1042
 #define IDC_BACKSLASH_CHECK             1043
 #define IDC_TE_SHORTCUTEDIT             1043
+#define IDC_FINDTYPE_LABEL              1043
 #define IDC_TE_INFOLABEL                1044
+#define IDC_FINDWHERE_LABEL             1044
 #define IDC_TEXTTITLE                   1045
+#define IDC_BACKSLASH_CHECK2            1045
+#define IDC_BACKSLASHES_CHECK           1045
 #define IDC_VERSIONSTATIC               1046
 #define IDC_TE_CAPTURECHECK             1047
 #define IDC_OPT_INDENTGUIDESCHECK       1048
@@ -320,6 +327,10 @@
 #define IDC_PNOPEN_ENCODINGCOMBO        1100
 #define IDC_PNOPEN_ENCODINGASSTATIC     1101
 #define IDC_PNOPEN_ENCODINGSTATIC       1101
+#define IDC_FINDEX_TABDUMMY             1102
+#define IDC_FINDEX_TABS                 1103
+#define IDC_FINDEX_LINE                 1104
+#define IDC_FINDEX_DIRGROUP             1105
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -414,7 +425,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        333
 #define _APS_NEXT_COMMAND_VALUE         32925
-#define _APS_NEXT_CONTROL_VALUE         1102
+#define _APS_NEXT_CONTROL_VALUE         1106
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif
