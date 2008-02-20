@@ -640,6 +640,9 @@
 				RelativePath=".\res\toolbar.bmp">
 			</File>
 			<File
+				RelativePath=".\res\toolbardisabled.bmp">
+			</File>
+			<File
 				RelativePath="res\workspace.ico">
 			</File>
 		</Filter>

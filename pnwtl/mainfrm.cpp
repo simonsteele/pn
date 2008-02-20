@@ -209,54 +209,18 @@ void __stdcall CMainFrame::FileOpenNotify(CChildFrame* pChild, SChildEnumStruct*
 
 bool CMainFrame::CloseAll()
 {
-	bool bRet = false;
-
-	CComPtr<ITabbedMDIChildModifiedList> modifiedItems;
-	long modifiedCount = 0;
-
-	// Find any children that report they're modified...
-	m_tabbedClient.FindModified(&modifiedItems);
-	
-	if(modifiedItems == NULL)
+	if(SaveAll(true))
 	{
-		::CreateTabbedMDIChildModifiedList(&modifiedItems);
-	}
-	
-	// Now add any modified projects items...
-	getProjectsModified(modifiedItems);
+		// Close workspace, don't ask anything...
+		CloseWorkspace(false, false);
+		
+		// Close all files, don't ask anything...
+		m_tabbedClient.CloseAll(true);
 
-	// Display the "save modified items" dialog with
-	// checkboxes for each item if there's anything modified.
-	modifiedItems->get_Count(&modifiedCount);
-	if(modifiedCount > 0)
-	{
-		//  There's at least one modified item
-		CSaveModifiedItemsDialog dialog(modifiedItems, true);
-
-		INT_PTR response = dialog.DoModal();
-
-		switch(response)
-		{
-		case IDYES:
-			// The dialog will update the list and remove
-			// any items that the user unchecked
-			m_tabbedClient.SaveModified(modifiedItems);
-			bRet = true;
-			break;
-
-		case IDNO:
-			bRet = true;
-			break;
-
-		case IDCANCEL:
-			// Do nothing...
-			break;
-		}
+		return true;
 	}
 	else
-		bRet = true;
-
-	return bRet;
+		return false;
 }
 
 void CMainFrame::OnSchemeNew(LPVOID data)
@@ -424,6 +388,10 @@ LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 		// Still going to close...
 		SaveGUIState();
+
+		::ImageList_Destroy( m_hILMain );
+		::ImageList_Destroy( m_hILMainD );
+		::ImageList_Destroy( m_hILEdit );
 
 		CloseAndFreeDlg(m_FindDialog);
 		CloseAndFreeDlg(m_ReplaceDialog);
@@ -718,6 +686,27 @@ BOOL CMainFrame::AddReBarBand(HWND hWndBand, LPTSTR lpstrTitle, BOOL bNewRow, bo
 #define PN_REBAR_STYLE \
 	(WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | RBS_VARHEIGHT | RBS_BANDBORDERS | RBS_AUTOSIZE | CCS_NODIVIDER | RBS_DBLCLKTOGGLE)
 
+void CMainFrame::loadImages(USHORT id, HIMAGELIST* images, USHORT disId, HIMAGELIST* disImages)
+{
+	CImageList il;
+	CBitmap bmp;
+	il.Create(16, 16, ILC_COLOR32 | ILC_MASK, 3, 1);
+	bmp.LoadBitmap(id);
+	il.Add(bmp, RGB(255, 0, 255));
+	*images = il.Detach();
+	m_CmdBar.LoadImages(id);
+
+	if(disId != 0)
+	{
+        CBitmap bmpd;
+		il.Create(16, 16, ILC_COLOR32 | ILC_MASK, 3, 1);
+		bmpd.LoadBitmap(disId);
+		il.Add(bmpd, RGB(255, 0, 255));
+		*disImages = il.Detach();
+		m_CmdBar.LoadDisabledImages(id, disId, bmpd);
+	}
+}
+
 LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	// create command bar window
@@ -725,27 +714,35 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	// attach menu
 	m_CmdBar.AttachMenu(GetMenu());
 	
-	// load command bar images
-	m_CmdBar.LoadImages(IDR_MAINFRAME);
- 	m_CmdBar.LoadImages(IDR_TBR_EDIT);
-	
+	// remove old menu
+	SetMenu(NULL);
+
 	// Allow us to add images with a pink mask...
 	COLORREF clrOld = m_CmdBar.m_clrMask;
 	m_CmdBar.m_clrMask = RGB(255,0,255);
 	
-	// Load some images from a toolbar that's not used.
-	m_CmdBar.LoadImages(IDR_TBR_PROJECTS);
-	
-	// Set the mask back...
-	m_CmdBar.m_clrMask = clrOld;
-	
-	// remove old menu
-	SetMenu(NULL);
+	// load command bar images
+	//m_CmdBar.LoadImages(IDR_MAINFRAME);
+ 	//m_CmdBar.LoadImages(IDR_TBR_EDIT);
 
 	HWND hWndToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
 	HWND hWndEdtToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_TBR_EDIT, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
 	HWND hWndSchemeToolBar = CreateSchemeToolbar();
 	HWND hWndFindToolBar = CreateFindToolbar();
+
+	// High colour tb images:
+	loadImages(IDR_MAINFRAME, &m_hILMain, IDB_TBMAINDIS, &m_hILMainD);
+	loadImages(IDR_TBR_EDIT, &m_hILEdit);
+
+	// Load some images from a toolbar that's not used.
+	m_CmdBar.LoadImages(IDR_TBR_PROJECTS);
+
+	// Set the mask back...
+	m_CmdBar.m_clrMask = clrOld;
+
+	::SendMessage(hWndToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILMain);
+	::SendMessage(hWndToolBar, TB_SETDISABLEDIMAGELIST, 0, (LPARAM)m_hILMainD);
+	::SendMessage(hWndEdtToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILEdit);
 
 	CreateSimpleReBar(PN_REBAR_STYLE);
 	AddReBarBand(hWndCmdBar, NULL, FALSE, true);
@@ -1002,7 +999,7 @@ LRESULT CMainFrame::OnSaveModifiedItem(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 		ph->get_ProjectGroup(&projectGroup);
 		if(projectGroup != NULL)
 		{
-			if(SaveWorkspace(projectGroup, false) == IDCANCEL)
+			if(SaveWorkspace(projectGroup) == IDCANCEL)
 				return 1;
 		}
 	}
@@ -1724,6 +1721,27 @@ void CMainFrame::MoveLanguage(CSMenuHandle& remove, CSMenuHandle& add)
 		AddLanguageMenu(add);
 }
 
+void CMainFrame::AddMRUProjectsEntry(LPCTSTR lpszFile)
+{
+	CSMenuHandle menu(m_hMenu);
+	m_RecentProjects.AddEntry(lpszFile);
+	m_RecentProjects.UpdateMenu();
+
+	if(m_RecentProjects.GetCount() == 0)
+	{
+		CSMenuHandle file(menu.GetSubMenu(0));
+
+		for(int i = file.GetCount() - 1; i >= 0; i--)
+		{
+			if( ::GetMenuItemID(file, i) == ID_APP_EXIT )
+			{
+				// Insert one back - before the separator...
+				::InsertMenu(file.GetHandle(), i-1, MF_BYPOSITION | MF_POPUP, (UINT)(HMENU)m_RecentProjects, _T("Recent P&rojects"));
+			}
+		}
+	}
+}
+
 /**
  * Get the menu command id associated with the toolbar.
  */
@@ -1940,28 +1958,63 @@ void CMainFrame::SetStatusText(LPCTSTR text, bool bLongLife)
 		}
 }
 
-void CMainFrame::SaveAll()
+bool CMainFrame::SaveAll(bool ask)
 {
-	PerformChildEnum(ChildSaveNotify);
+	bool bRet = false;
 
-	if( !m_pProjectsWnd )
-		return;
+	CComPtr<ITabbedMDIChildModifiedList> modifiedItems;
+	long modifiedCount = 0;
+
+	// Find any children that report they're modified...
+	m_tabbedClient.FindModified(&modifiedItems);
 	
-	Projects::Workspace* workspace = m_pProjectsWnd->GetWorkspace();
-	if( !workspace )
-		return;
-
-	if( workspace->IsDirty() )
+	if(modifiedItems == NULL)
 	{
-		if(workspace->IsDirty(false))
-		{
-			// Something about the workspace has changed, 
-			// see if the user wants to save it.
-			DWORD dwRes = SaveWorkspace(workspace, true);
-		}
-
-		SaveProjects(workspace);
+		::CreateTabbedMDIChildModifiedList(&modifiedItems);
 	}
+	
+	// Now add any modified projects items...
+	getProjectsModified(modifiedItems);
+
+	// Display the "save modified items" dialog with
+	// checkboxes for each item if there's anything modified.
+	modifiedItems->get_Count(&modifiedCount);
+	if(modifiedCount > 0)
+	{
+		if(ask)
+		{
+			//  There's at least one modified item
+			CSaveModifiedItemsDialog dialog(modifiedItems, true);
+			INT_PTR response = dialog.DoModal();
+
+			switch(response)
+			{
+			case IDYES:
+				// The dialog will update the list and remove
+				// any items that the user unchecked
+				m_tabbedClient.SaveModified(modifiedItems);
+				bRet = true;
+				break;
+
+			case IDNO:
+				bRet = true;
+				break;
+
+			case IDCANCEL:
+				// Do nothing...
+				break;
+			}
+		}
+		else
+		{
+			m_tabbedClient.SaveModified(modifiedItems);
+			bRet = true;
+		}
+	}
+	else
+		bRet = true;
+
+	return bRet;
 }
 
 BOOL CALLBACK CMainFrame::ChildEnumProc(HWND hWnd, LPARAM lParam)
@@ -2045,6 +2098,8 @@ void CMainFrame::NewProject(LPCTSTR szProjectFile)
 
 	if( workspace == NULL )
 	{
+		AddMRUProjectsEntry(szProjectFile);
+
 		// No workspace currently open, create a blank one to store the project in.
 		workspace = new Projects::Workspace;
 		workspace->SetName(_T("New Project Group"));
@@ -2079,6 +2134,8 @@ void CMainFrame::OpenProject(LPCTSTR projectPath)
 		}
 		return;
 	}
+
+	AddMRUProjectsEntry(projectPath);
 
 	Projects::Workspace* workspace = new Projects::Workspace;
 	workspace->SetName(_T("New Project Group"));
@@ -2122,17 +2179,41 @@ bool CMainFrame::SaveWorkspaceAs(Projects::Workspace* pWorkspace)
 	}
 }
 
-DWORD CMainFrame::SaveWorkspace(Projects::Workspace* pWorkspace, bool bAsk)
+bool CMainFrame::CheckSaveWorkspace()
 {
-	if(bAsk)
+	ITabbedMDIChildModifiedList* modifiedItems;
+	::CreateTabbedMDIChildModifiedList(&modifiedItems);
+	
+	// Now add any modified projects items...
+	getProjectsModified(modifiedItems);
+
+	// Display the "save modified items" dialog with
+	// checkboxes for each item if there's anything modified.
+	long modifiedCount = 0;
+	modifiedItems->get_Count(&modifiedCount);
+	if(modifiedCount > 0)
 	{
-		DWORD dwRes = ::MessageBox(m_hWnd, _T("Do you want to save your changes to the project group?"), _T("Programmers Notepad"), MB_YESNOCANCEL | MB_ICONQUESTION);
-		if ( dwRes == IDCANCEL || dwRes == IDNO )
+		//  There's at least one modified item
+		CSaveModifiedItemsDialog dialog(modifiedItems, true);
+
+		INT_PTR response = dialog.DoModal();
+
+		if(response == IDYES)
 		{
-			return dwRes;
+			// The dialog will update the list and remove
+			// any items that the user unchecked
+			if( m_tabbedClient.SaveModified(modifiedItems) == E_ABORT )
+				return false;
 		}
+
+		return response == IDYES;
 	}
 
+	return true;
+}
+
+DWORD CMainFrame::SaveWorkspace(Projects::Workspace* pWorkspace)
+{
 	if( pWorkspace->CanSave() )
 	{
 		pWorkspace->Save();
@@ -2216,7 +2297,7 @@ bool CMainFrame::EnumWorkspaceWindows(SWorkspaceWindowsStruct* pWWS)
 /**
  * @return False if the user hits cancel at any point, true otherwise.
  */
-bool CMainFrame::CloseWorkspace(bool bAllowCloseFiles)
+bool CMainFrame::CloseWorkspace(bool bAllowCloseFiles, bool bAsk)
 {
 	if( !m_pProjectsWnd )
 		return true;
@@ -2225,27 +2306,15 @@ bool CMainFrame::CloseWorkspace(bool bAllowCloseFiles)
 	if( !workspace )
 		return true;
 
-	if( workspace->IsDirty() )
+	if( bAsk && workspace->IsDirty() )
 	{
-		if(workspace->IsDirty(false))
-		{
-			// Something about the workspace has changed, 
+		// Something about the workspace has changed, 
 			// see if the user wants to save it.
-			DWORD dwRes = SaveWorkspace(workspace, true);
-			if( dwRes == IDCANCEL )
-				return false;
-
-			if( !SaveProjects(workspace) )
-				return false;
-		}
-		else
-		{
-			if( !SaveProjects(workspace) )
-				return false;
-		}
+		if(!CheckSaveWorkspace())
+			return false;
 	}
 
-	if(bAllowCloseFiles)
+	if(bAsk && bAllowCloseFiles)
 	{
 		// No point in asking if there are no files open.
 		SWorkspaceWindowsStruct wws;

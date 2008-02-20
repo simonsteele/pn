@@ -41,7 +41,7 @@ END
 2 TEXTINCLUDE 
 BEGIN
     "#include ""atlres.h""\r\n"
-	"#include ""res/pn.rc2""\r\n"
+    "#include ""res/pn.rc2""\r\n"
     "\0"
 END
 
@@ -375,68 +375,6 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Toolbar
-//
-
-IDR_MAINFRAME TOOLBAR  16, 16
-BEGIN
-    BUTTON      ID_FILE_NEW
-    BUTTON      ID_FILE_OPEN
-    SEPARATOR
-    BUTTON      ID_FILE_SAVE
-    SEPARATOR
-    BUTTON      ID_FILE_CLOSE
-END
-
-IDR_TBR_EDIT TOOLBAR  16, 16
-BEGIN
-    BUTTON      ID_EDIT_UNDO
-    BUTTON      ID_EDIT_REDO
-    SEPARATOR
-    BUTTON      ID_EDIT_CUT
-    BUTTON      ID_EDIT_COPY
-    BUTTON      ID_EDIT_PASTE
-END
-
-IDR_TBR_SCHEME TOOLBAR  16, 15
-BEGIN
-    BUTTON      ID_PLACEHOLDER_SCHEMECOMBO
-END
-
-IDR_TBR_FIND TOOLBAR  16, 16
-BEGIN
-    BUTTON      ID_EDIT_FINDINFILES
-    BUTTON      ID_PLACEHOLDER_FINDCOMBO
-    BUTTON      ID_FINDTYPE_BUTTON
-END
-
-IDR_TBR_PROJECTS TOOLBAR  16, 16
-BEGIN
-    BUTTON      ID_PROJECT_ADDFOLDER
-    BUTTON      ID_PROJECT_REMOVE
-    BUTTON      ID_PROJECT_DELETE
-    BUTTON      ID_PROJECT_OPEN
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
-IDB_EDITOR              BITMAP                  "res\\editor.bmp"
-IDR_TBR_EDIT            BITMAP                  "res\\edittbr.bmp"
-IDB_TRUETYPE_FONTTYPE   BITMAP                  "res\\font_tru.bmp"
-IDR_TBR_SCHEME          BITMAP                  "res\\tbrScheme.bmp"
-IDR_TBR_FIND            BITMAP                  "res\\tbrFindCombo.bmp"
-IDB_FINDTOOLBAR         BITMAP                  "res\\findbarbmps.bmp"
-IDR_TBR_PROJECTS        BITMAP                  "res\\tbrProjects.bmp"
-IDB_ABOUT               BITMAP                  "res\\about.bmp"
-IDB_TAGTYPES            BITMAP                  "res\\tagtypes.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1355,6 +1293,69 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR  16, 16
+BEGIN
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    SEPARATOR
+    BUTTON      ID_FILE_SAVE
+    SEPARATOR
+    BUTTON      ID_FILE_CLOSE
+END
+
+IDR_TBR_EDIT TOOLBAR  16, 16
+BEGIN
+    BUTTON      ID_EDIT_UNDO
+    BUTTON      ID_EDIT_REDO
+    SEPARATOR
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
+END
+
+IDR_TBR_SCHEME TOOLBAR  16, 15
+BEGIN
+    BUTTON      ID_PLACEHOLDER_SCHEMECOMBO
+END
+
+IDR_TBR_FIND TOOLBAR  16, 16
+BEGIN
+    BUTTON      ID_EDIT_FINDINFILES
+    BUTTON      ID_PLACEHOLDER_FINDCOMBO
+    BUTTON      ID_FINDTYPE_BUTTON
+END
+
+IDR_TBR_PROJECTS TOOLBAR  16, 16
+BEGIN
+    BUTTON      ID_PROJECT_ADDFOLDER
+    BUTTON      ID_PROJECT_REMOVE
+    BUTTON      ID_PROJECT_DELETE
+    BUTTON      ID_PROJECT_OPEN
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+IDB_EDITOR              BITMAP                  "res\\editor.bmp"
+IDR_TBR_EDIT            BITMAP                  "res\\edittbr.bmp"
+IDB_TRUETYPE_FONTTYPE   BITMAP                  "res\\font_tru.bmp"
+IDR_TBR_SCHEME          BITMAP                  "res\\tbrScheme.bmp"
+IDR_TBR_FIND            BITMAP                  "res\\tbrFindCombo.bmp"
+IDB_FINDTOOLBAR         BITMAP                  "res\\findbarbmps.bmp"
+IDR_TBR_PROJECTS        BITMAP                  "res\\tbrProjects.bmp"
+IDB_ABOUT               BITMAP                  "res\\about.bmp"
+IDB_TAGTYPES            BITMAP                  "res\\tagtypes.bmp"
+IDB_TBMAINDIS           BITMAP                  "res\\toolbardisabled.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

@@ -263,7 +263,7 @@ public:
 	virtual void SetActiveScheme(HWND notifier, LPVOID pScheme);
 	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL, HWND hWndCaller = NULL);
 	virtual void SetStatusText(LPCTSTR text, bool bLongLife = true);
-	virtual void SaveAll();
+	virtual bool SaveAll(bool ask = false);
 	virtual bool CloseAll();
 	virtual bool Open(LPCTSTR pathname, bool bAddMRU = false);
 	virtual bool CheckAlreadyOpen(LPCTSTR filename, EAlreadyOpenAction action = (EAlreadyOpenAction)OPTIONS->GetCached(Options::OAlreadyOpenAction));
@@ -282,6 +282,8 @@ protected:
 	void MoveMRU(CSMenuHandle& r, CSMenuHandle& a);
 	void MoveNewMenu(CSMenuHandle& remove, CSMenuHandle& add);
 	void MoveLanguage(CSMenuHandle& remove, CSMenuHandle& add);
+
+	void AddMRUProjectsEntry(LPCTSTR lpszFile);
 
 	CSize GetGUIFontSize();
 	HWND CreateFindToolbar();
@@ -309,15 +311,18 @@ protected:
 	void OpenProject(LPCTSTR project);
 	void OpenWorkspace(LPCTSTR workspace);
 	bool SaveProjects(Projects::Workspace* pWorkspace);
-	DWORD SaveWorkspace(Projects::Workspace* pWorkspace, bool bAsk);
+	DWORD SaveWorkspace(Projects::Workspace* pWorkspace);
 	bool SaveWorkspaceAs(Projects::Workspace* pWorkspace);
-	bool CloseWorkspace(bool bAllowCloseFiles = false);
+	bool CloseWorkspace(bool bAllowCloseFiles = false, bool bAsk = true);
 	bool CloseWorkspaceFiles(Projects::Workspace* pWorkspace);
 	bool EnumWorkspaceWindows(SWorkspaceWindowsStruct* pWWS);
+	bool CheckSaveWorkspace();
 	
 	bool getProjectsModified(ITabbedMDIChildModifiedList* pModifiedList);
 
 	void launchExternalSearch(LPCTSTR searchString);
+
+	void loadImages(USHORT id, HIMAGELIST* images, USHORT disId = 0, HIMAGELIST* disImages = NULL);
 
 protected:
 
@@ -375,6 +380,10 @@ protected:
 	UINT					m_uiMIMessageID;
 
 	HACCEL					m_hToolAccel;
+
+	HIMAGELIST				m_hILMain;
+	HIMAGELIST				m_hILMainD;
+	HIMAGELIST				m_hILEdit;
 
 	bool					m_bShowingDefaultStatus;
 	bool					m_bIsXPOrLater;
