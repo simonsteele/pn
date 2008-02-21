@@ -42,7 +42,7 @@
 	#define _WTL_NO_CSTRING
 	#define _WTL_NO_WTYPES
 	#define _WTL_NO_UNION_CLASSES
-	extern "C" const int _fltused = 0;
+	//extern "C" const int _fltused = 0;
 #endif
 
 #include <atlwin.h>

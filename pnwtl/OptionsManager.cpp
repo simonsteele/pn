@@ -272,7 +272,7 @@ void Options::LoadPrintSettings(SPrintOptions* pSettings)
 void Options::GetPNPath(tstring& path, int pathtype)
 {
 	TCHAR buf[MAX_PATH +1];
-	memset(buf, 0, sizeof(buf));
+	buf[0] = '\0';
 
 	// Do paths that are relative to PN home dir.
 	if(pathtype < PNPATH_USERMIN)
@@ -329,6 +329,18 @@ void Options::GetPNPath(tstring& path, int pathtype)
 			GetPNPath(path, PNPATH_SCHEMES);
 		}
 	}
+}
+
+void Options::StaticGetPNPath(tstring& path)
+{
+	TCHAR buf[MAX_PATH +1];
+	buf[0] = '\0';
+
+	GetModuleFileName(NULL, buf, MAX_PATH);
+	path = buf;
+	
+	int cutoff = path.rfind(_T('\\'));
+	path = path.substr(0, cutoff+1);
 }
 
 void Options::SetUserSettingsPath(LPCTSTR path)

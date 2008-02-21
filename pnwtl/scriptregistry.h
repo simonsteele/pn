@@ -8,6 +8,12 @@ typedef std::list<Script*> script_list_t;
 typedef std::list<ScriptGroup*> group_list_t;
 typedef std::map<tstring, extensions::IScriptRunner*> s_runner_map;
 
+class IScriptRegistryEventSink
+{
+public:
+	virtual void OnScriptAdded(ScriptGroup* group, Script* script) = 0;
+};
+
 /**
  * Singleton managing references to scripts throughout the system.
  */
@@ -26,10 +32,16 @@ public:
 	virtual void RemoveRunner(LPCTSTR id);
 	virtual extensions::IScriptRunner* GetRunner(LPCTSTR id);
 
+	void SetEventSink(IScriptRegistryEventSink* sink);
+
 protected:
+	ScriptRegistry();
+	~ScriptRegistry();
+
 	void clear();
 
 protected:
+	IScriptRegistryEventSink* m_sink;
 	group_list_t m_groups;
 	s_runner_map m_runners;
 };
@@ -38,6 +50,7 @@ class ScriptGroup
 {
 public:
 	ScriptGroup(LPCTSTR name);
+	~ScriptGroup();
 
 	Script* Add(LPCTSTR name, LPCTSTR scriptref);
 

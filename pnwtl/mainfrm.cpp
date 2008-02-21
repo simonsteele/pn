@@ -2,7 +2,7 @@
  * @file mainfrm.cpp
  * @brief Main Window for Programmers Notepad 2 (Implementation)
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2006 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -34,7 +34,9 @@
 #include "findinfilesview.h"	// Find in Files view...
 #include "newprojectdialog.h"	// New Projects Dialog
 #include "workspacestate.h"		// Save Workspace State
+#include "ScriptRegistry.h"		// Scripts Registry
 #include "scriptview.h"			// Scripts Docker
+#include "extapp.h"
 
 // Other stuff
 #include "SchemeConfig.h"		// Scheme Configuration
@@ -126,7 +128,7 @@ CChildFrame* CMainFrame::NewEditor()
 	bool bMax = OPTIONS->GetCached(Options::OMaximiseNew) != 0;
 	pChild->CreateEx(m_hWndMDIClient, 0, 0, bMax ? WS_MAXIMIZE : 0);
 
-	g_Context.ExtApp.OnNewDocument( pD );
+	g_Context.ExtApp->OnNewDocument( pD );
 
 	return pChild;
 }

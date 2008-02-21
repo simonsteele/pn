@@ -3,7 +3,7 @@
 
 #include "stdafx.h"
 #include "sinks.h"
-#include "env.h"
+#include "app.h"
 #include "modules.h"
 
 using namespace boost::python;
@@ -32,9 +32,11 @@ bool __stdcall init_pn_extension(int iface_version, extensions::IPN* pn)
 
 	Py_Initialize();
 
-	g_app = new App( handle<>(borrowed(PyImport_AddModule("__main__"))) );
+	g_app = new App( handle<>(borrowed(PyImport_AddModule("__main__"))), pn );
+	g_appsink.reset( g_app );
 
-	g_appsink.reset( new AppSink(pn) );
+	g_app->Initialise();
+
 	pn->AddEventSink(g_appsink);
 
 	return true;
@@ -42,40 +44,13 @@ bool __stdcall init_pn_extension(int iface_version, extensions::IPN* pn)
 
 void __declspec(dllexport) __stdcall exit_pn_extension()
 {
-	AppSink* pAppSink = static_cast<AppSink*>( g_appsink.get() );
-	pAppSink->GetPN()->RemoveEventSink(g_appsink);
+	g_app->GetPN()->RemoveEventSink(g_appsink);
+	
+	// This will delete the app too...
+	g_app = NULL;
 	g_appsink.reset();
 
-	delete g_app;
-
 	Py_Finalize();
-}
-
-std::string getPythonErrorString() {
-    // Extra paranoia...
-    if (!PyErr_Occurred()) {
-        return "No Python error";
-    }
-
-    PyObject *type, *value, *traceback;
-    PyErr_Fetch(&type, &value, &traceback);
-    PyErr_Clear();
-
-    std::string message = "Python error: ";
-    if (type) {
-        type = PyObject_Str(type);
-        message += PyString_AsString(type);
-    }
-    if (value) {
-        value = PyObject_Str(value);
-        message += ": ";
-        message += PyString_AsString(value);
-    }
-    Py_XDECREF(type);
-    Py_XDECREF(value);
-    Py_XDECREF(traceback);
-
-    return message;
 }
 
 BOOL APIENTRY DllMain( HANDLE hModule, 

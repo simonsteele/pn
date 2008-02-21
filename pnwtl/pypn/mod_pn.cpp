@@ -1,10 +1,25 @@
 #include "stdafx.h"
+#include "sinks.h"
+#include "app.h"
 
 using namespace extensions;
 using namespace boost::python;
 
+void RegisterScript(const char* scriptname, const char* group, const char* name)
+{
+	g_app->RegisterScript(scriptname, group, name);
+}
+
 BOOST_PYTHON_MODULE(pn)
 {
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Expose Useful Bits
+
+	def("RegisterScript", &RegisterScript);
+
+	///////////////////////////////////////////////////////////////////////////////////////////////
+	// Expose IDocument
+
 	// This bit of magic gets overloaded functions working...
 	LRESULT (IDocument::*pSendMessage)(UINT msg, WPARAM wParam, LPARAM lParam) = &IDocument::SendEditorMessage;
 	LRESULT (IDocument::*pSendMessage2)(UINT msg, WPARAM wParam, const char* strParam) = &IDocument::SendEditorMessage;

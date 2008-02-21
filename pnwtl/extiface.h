@@ -1,6 +1,8 @@
 #ifndef extiface_h__included_670F47C6_1FF6_4605_9F74_6EC70FD85C26
 #define extiface_h__included_670F47C6_1FF6_4605_9F74_6EC70FD85C26
 
+#include "IOptions.h"
+
 namespace extensions
 {
 
@@ -28,6 +30,7 @@ public:
 	virtual void RemoveEventSink(IAppEventSinkPtr sink) = 0;
 
 	virtual IScriptRegistry* GetScriptRegistry() = 0;
+	virtual IOptions* GetOptionsManager() = 0;
 };
 
 class IDocument

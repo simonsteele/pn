@@ -6,6 +6,11 @@ ScriptRegistry::ScriptRegistry()
 	m_sink = NULL;
 }
 
+ScriptRegistry::~ScriptRegistry()
+{
+	clear();
+}
+
 void ScriptRegistry::Add(LPCTSTR group, LPCTSTR name, LPCTSTR scriptref)
 {
 	ScriptGroup* pGroup(NULL);
@@ -25,7 +30,10 @@ void ScriptRegistry::Add(LPCTSTR group, LPCTSTR name, LPCTSTR scriptref)
 		m_groups.push_back(pGroup);
 	}
 
-	pGroup->Add(name, scriptref);
+	Script* theScript = pGroup->Add(name, scriptref);
+
+	if(m_sink)
+		m_sink->OnScriptAdded(pGroup, theScript);
 }
 
 void ScriptRegistry::Clear()
@@ -61,6 +69,11 @@ extensions::IScriptRunner* ScriptRegistry::GetRunner(LPCTSTR id)
 		return NULL;
 }
 
+void ScriptRegistry::SetEventSink(IScriptRegistryEventSink* sink)
+{
+	m_sink = sink;
+}
+
 void ScriptRegistry::clear()
 {
 	for(group_list_t::iterator i = m_groups.begin(); i != m_groups.end(); ++i)
@@ -77,6 +90,11 @@ void ScriptRegistry::clear()
 ScriptGroup::ScriptGroup(LPCTSTR name)
 {
 	m_name = name;
+}
+
+ScriptGroup::~ScriptGroup()
+{
+	clear();
 }
 
 Script* ScriptGroup::Add(LPCTSTR name, LPCTSTR scriptref)
@@ -121,8 +139,13 @@ void Script::Run()
 	if(rindex == -1)
 		return;
 
-	tstring runner_id = str.substr(0, rindex-1);
+	tstring runner_id = str.substr(0, rindex);
 	extensions::IScriptRunner* runner = ScriptRegistry::GetInstanceRef().GetRunner(runner_id.c_str());
+	if(!runner)
+	{
+		UNEXPECTED("No ScriptRunner for this script type!");
+		return;
+	}
 
 	tstring script = str.substr(rindex+1);
 	runner->RunScript(script.c_str());

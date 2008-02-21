@@ -1,3 +1,7 @@
+#ifndef extension_h__included
+#define extension_h__included
+
+#include "extapp.h"
 #include "include/plugin.h"
 
 namespace extensions
@@ -13,8 +17,8 @@ public:
 			extensions::pn_ext_init_fn ext_init = (extensions::pn_ext_init_fn)FindFunction("init_pn_extension");
 			if(ext_init != NULL)
 			{
-				//if( ext_init(PN_EXT_IFACE_VERSION, &g_Context.ExtApp) )
-				//	m_bValid = true;
+				if( ext_init(PN_EXT_IFACE_VERSION, g_Context.ExtApp) )
+					m_bValid = true;
 			}
 		}
 	}
@@ -39,3 +43,5 @@ private:
 };
 
 }
+
+#endif // #ifndef extension_h__included

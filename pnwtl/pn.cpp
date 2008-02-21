@@ -20,6 +20,7 @@
 #include "MainFrm.h"
 
 #include "extension.h"
+#include "extapp.h"
 
 //#ifdef _DEBUG
 	#include "include/mdump.h"
@@ -58,6 +59,8 @@ static extensions::Extension *pypn = NULL;
 
 void Init()
 {
+	g_Context.ExtApp = new extensions::App;
+
 	// Where are the Schemes stored?
 	tstring path;
 	tstring cpath;
@@ -70,7 +73,7 @@ void Init()
 	SM.Load();
 
 	// Load us a python extension!
-	//pypn = new extensions::Extension("pypn.dll");
+	pypn = new extensions::Extension("pypn.dll");
 }
 
 void Shutdown()
@@ -83,7 +86,9 @@ void Shutdown()
 	OptionsFactory::Release(g_Context.options);
 	g_Context.options = NULL;
 
-	//delete pypn;
+	delete pypn;
+
+	delete g_Context.ExtApp;
 }
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
@@ -200,6 +205,10 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	// (and maybe other stuff later).
 	HRESULT hRes = ::OleInitialize(NULL);
 	ATLASSERT(SUCCEEDED(hRes));
+
+#ifdef _DEBUG
+	_CrtSetBreakAlloc(1062);
+#endif
 
 #if (_WIN32_IE >= 0x0300)
 	INITCOMMONCONTROLSEX iccx;

@@ -117,7 +117,7 @@ bool AppSettings::HaveUserPath() const
 void AppSettings::load()
 {
 	tstring path;
-	OPTIONS->GetPNPath(path, PNPATH_PN);
+	Options::StaticGetPNPath(path);
 	CFileName fn(_T("config.xml"));
 	fn.Root(path.c_str());
 	

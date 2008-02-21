@@ -52,7 +52,7 @@
 #include "version.h"
 #include "pntypes.h"
 #include "extiface.h"
-#include "extapp.h"
+//#include "extapp.h"
 
 // Pre-declarations...
 
@@ -135,6 +135,8 @@ static void LogWndPos(HWND hWnd)
 	LogWndPos(_T("Unknown"), hWnd);
 }
 
+namespace extensions { class App; }
+
 struct _Context 
 {
 	IMainFrame				*m_frame;
@@ -142,7 +144,7 @@ struct _Context
 	Options					*options;
 	OSVERSIONINFO			OSVersion;
 	LPCTSTR					AppTitle;
-	extensions::App			ExtApp;
+	extensions::App			*ExtApp;
 };
 
 /// This is the global application context.

@@ -1,6 +1,10 @@
 #include "stdafx.h"
-#include "scriptview.h"
 #include "scriptregistry.h"
+#include "scriptview.h"
+
+CScriptDocker::CScriptDocker()
+{
+}
 
 LRESULT CScriptDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -9,6 +13,10 @@ LRESULT CScriptDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 	m_view.Create(m_hWnd, rc, _T("ScriptsList"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | TVS_DISABLEDRAGDROP | TVS_HASLINES | TVS_LINESATROOT, 0, IDC_SCRIPTSLIST);
 	m_view.ShowWindow(SW_SHOW);
+
+	buildInitial();
+
+	ScriptRegistry::GetInstanceRef().SetEventSink(this);
 
 	return 0;
 }
@@ -26,4 +34,75 @@ LRESULT CScriptDocker::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 	bHandled = FALSE;
 
 	return 0;
+}
+
+LRESULT CScriptDocker::OnTreeDblClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	HTREEITEM hSel = m_view.GetSelectedItem();
+	
+	// Check if it's a group...
+	if(m_view.GetParentItem(hSel) == NULL)
+		return 0;
+
+	Script* script = reinterpret_cast<Script*>( m_view.GetItemData(hSel) );
+	if(script)
+	{
+		script->Run();
+	}
+
+	return 0;
+}
+
+void CScriptDocker::OnScriptAdded(ScriptGroup* group, Script* script)
+{
+	HTREEITEM ti_group = findGroup(group->GetName());
+	if(!ti_group)
+		ti_group = addGroup(group->GetName());
+
+	addScript(ti_group, script);
+}
+
+HTREEITEM CScriptDocker::addScript(HTREEITEM group, Script* script)
+{
+	HTREEITEM item = m_view.InsertItem(script->Name.c_str(), group, NULL);
+	m_view.SetItemData(item, reinterpret_cast<DWORD_PTR>(script));
+	m_view.Expand(group);
+
+	return item;
+}
+
+HTREEITEM CScriptDocker::findGroup(LPCTSTR name)
+{
+	HTREEITEM node = m_view.GetRootItem();
+	while(node)
+	{
+		CString csName;
+		m_view.GetItemText(node, csName);
+		if(csName.CompareNoCase(name) == 0)
+			return node;
+		node = m_view.GetNextSiblingItem(node);
+	}
+
+	return NULL;
+}
+
+HTREEITEM CScriptDocker::addGroup(LPCTSTR name)
+{
+	HTREEITEM group = m_view.InsertItem(name, NULL, NULL);
+	return group;
+}
+
+void CScriptDocker::buildInitial()
+{
+	ScriptRegistry* r = ScriptRegistry::GetInstance();
+	
+	for(group_list_t::const_iterator i = r->GetGroups().begin(); i != r->GetGroups().end(); ++i)
+	{
+		//tstring gname = (*i)->GetName();
+		HTREEITEM group = addGroup( (*i)->GetName() );
+		for(script_list_t::const_iterator j = (*i)->GetScripts().begin(); j != (*i)->GetScripts().end(); ++j)
+		{
+			addScript( group, (*j) );
+		}
+	}
 }

@@ -25,7 +25,7 @@
 				AdditionalIncludeDirectories="TabbingFramework, DockingFramework"
 				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,STRICT"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				BufferSecurityCheck="TRUE"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="3"
@@ -406,9 +406,6 @@
 				RelativePath=".\ScintillaImpl.cpp">
 			</File>
 			<File
-				RelativePath=".\ScriptRegistry.cpp">
-			</File>
-			<File
 				RelativePath="smartstart.cpp">
 			</File>
 			<File
@@ -497,9 +494,6 @@
 				RelativePath="exporters.h">
 			</File>
 			<File
-				RelativePath=".\extension.h">
-			</File>
-			<File
 				RelativePath=".\FileAssoc.h">
 			</File>
 			<File
@@ -528,6 +522,9 @@
 			</File>
 			<File
 				RelativePath=".\fromhandle.h">
+			</File>
+			<File
+				RelativePath=".\IOptions.h">
 			</File>
 			<File
 				RelativePath=".\jumpto.h">
@@ -618,9 +615,6 @@
 			</File>
 			<File
 				RelativePath=".\ScintillaWTL.h">
-			</File>
-			<File
-				RelativePath=".\scriptregistry.h">
 			</File>
 			<File
 				RelativePath=".\include\singleton.h">
@@ -981,7 +975,16 @@
 				RelativePath=".\extapp.h">
 			</File>
 			<File
+				RelativePath=".\extension.h">
+			</File>
+			<File
 				RelativePath=".\extiface.h">
+			</File>
+			<File
+				RelativePath=".\ScriptRegistry.cpp">
+			</File>
+			<File
+				RelativePath=".\scriptregistry.h">
 			</File>
 			<File
 				RelativePath=".\scriptview.cpp">

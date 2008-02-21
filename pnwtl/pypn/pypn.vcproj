@@ -22,7 +22,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PYPN_EXPORTS;SCI_NOLOAD"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				RuntimeTypeInfo="TRUE"
 				UsePrecompiledHeader="3"
 				WarningLevel="3"
@@ -45,7 +45,8 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				CommandLine="copy ..\..\boost_1_32_0\stage\lib\boost_python.dll $(TargetDir)
-copy scripts\init.py $(TargetDir)"/>
+copy scripts\init.py $(TargetDir)
+"/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
 			<Tool
@@ -120,6 +121,9 @@ copy scripts\init.py $(TargetDir)"/>
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
+				RelativePath=".\app.cpp">
+			</File>
+			<File
 				RelativePath=".\mod_debug.cpp">
 			</File>
 			<File
@@ -155,13 +159,16 @@ copy scripts\init.py $(TargetDir)"/>
 						UsePrecompiledHeader="1"/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\utils.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath=".\env.h">
+				RelativePath=".\app.h">
 			</File>
 			<File
 				RelativePath=".\modules.h">
@@ -171,6 +178,9 @@ copy scripts\init.py $(TargetDir)"/>
 			</File>
 			<File
 				RelativePath=".\stdafx.h">
+			</File>
+			<File
+				RelativePath=".\utils.h">
 			</File>
 			<File
 				RelativePath=".\wrapscintilla.h">

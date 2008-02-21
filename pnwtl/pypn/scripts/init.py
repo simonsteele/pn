@@ -22,7 +22,26 @@ def getSchemeConfig(name):
 	if not schemes.has_key(name):
 		schemes[name] = SchemeMapping(name)
 	return schemes[name]
-		
+
+######################################################
+## Experimental decorator things...
+def indenter(scheme):
+	def decorator(f):
+		s = getSchemeConfig(scheme)
+		s.indenter = f
+		return f
+	return decorator
+
+def script(name=None, group="Python"):
+	def decorator(f):
+		if name == None:
+			scriptName = f.func_name
+		else:
+			scriptName = name
+		pn.RegisterScript(f.func_name, group, scriptName)
+		return f
+	return decorator
+
 ######################################################
 ## Individual functions (eventually to be split into 
 ## other files.
@@ -37,6 +56,7 @@ def findPrevLineLastChar(p, sci):
 			return c
 	return None
 
+@indenter("python")
 def python_indent(c, doc):
 	sci = scintilla.Scintilla(doc)
 	if c == '\n' or c == '\r':
@@ -55,6 +75,10 @@ def python_indent(c, doc):
 				indent += 4
 				sci.IndentLine( line, indent )
 
+@script()
+def testScript():
+	debug.OutputDebugString("Hello Monkeys!")
+
 # Hook up the python indenter.
-s = getSchemeConfig("python")
-s.indenter = python_indent
+# s = getSchemeConfig("python")
+# s.indenter = python_indent

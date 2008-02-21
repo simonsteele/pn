@@ -12,30 +12,9 @@
 #define optionsmanager_h__included
 
 static const TCHAR* pnregroot = _T("Software\\Echo Software\\PN2\\");
-static const TCHAR* PNSK_MRU = _T("MRU");
-static const TCHAR* PNSK_MRUP = _T("MRUProjects");
-static const TCHAR* PNSK_INTERFACE = _T("Interface Settings");
-static const TCHAR* PNSK_EDITOR = _T("Editor Settings");
-static const TCHAR* PNSK_PRINT = _T("Print Settings");
-static const TCHAR* PNSK_DEFGUI = _T("\\default");
-static const TCHAR* PNSK_FIND = _T("Find");
-
-#define PNPATH_PN				0
-#define	PNPATH_SCHEMES			1
-#define PNPATH_CLIPS			3
-#define PNPATH_TOOLS			5
-#define PNPATH_TAGGERS			6
-#define PNPATH_PROJECTTEMPLATES	7
-
-#define PNPATH_USERMIN			50
-
-#define	PNPATH_USERSETTINGS		50
-#define PNPATH_USERTOOLS		50 // PNPATH_USERSETTINGS
-#define PNPATH_COMPILEDSCHEMES	50 // PNPATH_USERSETTINGS
-
-#define PNPATH_USERCLIPS		51
-
 class OptionsFactory;
+
+#include "IOptions.h"
 
 /**
  * This class is the gateway for all option saving and
@@ -44,39 +23,12 @@ class OptionsFactory;
  * the virtual base class for a number of implementation
  * classes which use different storage methods.
  */
-class Options
+class Options : public extensions::IOptions
 {
 	friend class OptionsFactory;
 
 	public:
 		virtual ~Options();
-
-		typedef enum
-		{
-			OUseTabs					= 0,
-			OTabWidth					= 1,
-			OShowIndentGuides			= 2,
-			OLineNumbers				= 3,
-			OMaximiseNew				= 4,
-			OShowFullPath				= 5,
-			OLineHighlight				= 6,
-			OWordWrap					= 7,
-			ORightGuide					= 8,
-			ORightColumn				= 9,
-			OLineHighlightColour		= 10,
-			ORightGuideColour			= 11,
-			OLineEndings				= 12,
-			OAlreadyOpenDropAction		= 13,
-			OAlreadyOpenAction			= 14,
-			ODefaultCodePage			= 15,
-			ODefaultScintillaCache		= 16,
-			OFindAlphaEnabled			= 17,
-			OFindAlphaPercent			= 18,
-			OVisibleLineEndings			= 19,
-			OVisibleWhiteSpace			= 20,
-			OManageTabOrder				= 21,
-			OPTION_COUNT				= 22
-		} ECachedOption;
 
 		void LoadCache();
 
@@ -105,6 +57,10 @@ class Options
 		void BeginGroupOperation(LPCTSTR subkey);
 		void EndGroupOperation();
 
+		// Used for a very special case of getting PN's Path at startup before
+		// there is an options manager.
+		static void StaticGetPNPath(tstring& path);
+
 	protected:
 		Options();
 
@@ -113,8 +69,6 @@ class Options
 		virtual void group(LPCTSTR location) = 0;
 		virtual void ungroup() = 0;
 
-		//SFindOptions			m_FindOptions;
-		//SReplaceOptions			m_ReplaceOptions;
 		SearchOptions			m_SearchOptions;
 		tstring					m_UserSettingsPath;
 
