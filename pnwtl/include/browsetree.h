@@ -56,9 +56,14 @@ class CBrowseTree : public CWindowImpl<CBrowseTree, CTreeViewCtrl>
 			if ( ! m_bSilent ) 
 				SetRedraw( TRUE );
 			
+			TCHAR drive = GetFirstDriveLetter();
+			tstring path;
+			path += drive;
+			path += ":\\";
+
 			// Dirty trick to get the system image list...
 			SHFILEINFO fi;
-			HIMAGELIST hSystemImages = ( HIMAGELIST )::SHGetFileInfo( _T( "C:\\" ), 0, &fi, sizeof( fi ), SHGFI_SYSICONINDEX | SHGFI_SMALLICON );
+			HIMAGELIST hSystemImages = ( HIMAGELIST )::SHGetFileInfo( path.c_str(), 0, &fi, sizeof( fi ), SHGFI_SYSICONINDEX | SHGFI_SMALLICON );
 			if ( hSystemImages == NULL )
 				return FALSE;
 
@@ -903,6 +908,38 @@ class CBrowseTree : public CWindowImpl<CBrowseTree, CTreeViewCtrl>
 		BOOL		m_bShowFiles;
 		BOOL		m_bDoubleBuffer;
 		BOOL		m_bSilent;
+
+	private:
+		/**
+		 * Get a valid drive letter to use for image retrieval hack
+		 */
+		TCHAR GetFirstDriveLetter()
+		{
+			DWORD logDrives = ::GetLogicalDrives();
+			
+			// Skip 'A' and 'B'
+			logDrives >>=2;
+
+			TCHAR drive = 'C';
+			while(drive < _T('Z'))
+			{
+				if (logDrives & 1)
+				{
+					tstring path;
+					path += drive;
+					path += ":\\";
+					if (::GetDriveType(path.c_str()) == DRIVE_FIXED)
+					{
+						break;
+					}
+				}
+				
+				drive++;
+				logDrives >>=1;
+			}
+			
+			return drive;
+		}
 };
 
 #endif // #ifndef browsetree_h__included

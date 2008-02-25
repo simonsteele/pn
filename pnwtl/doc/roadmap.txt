@@ -16,7 +16,7 @@ last updated: 05/01/2007
 File browser window.
 HTML Export configuration, inline HTML export.
 Preview for scheme configurator.
-Vista UI features
+[50%] Vista UI features
 
 0.12 Ellington
 ==============
@@ -33,10 +33,11 @@ PCRE Based Search.
 =========
 
 Filetype filters - e.g. allow loading of .dfm files.
-HTML preview window (ie+moz) {feature_browser_2-0-5}.
 Unicode build.
 
 0.18 Parker
 ===========
+
+HTML preview window (ie+moz) {feature_browser_2-0-5}.
 
 ??

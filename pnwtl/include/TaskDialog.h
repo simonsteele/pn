@@ -299,7 +299,7 @@ inline int AtlTaskDialogIndirect(TASKDIALOGCONFIG* pTask, int* pnButton = NULL, 
 // CDialogBaseUnits - Dialog helper
 //
 
-class CDialogBaseUnits
+/*class CDialogBaseUnits
 {
 public:
    SIZE m_sizeUnits;
@@ -427,7 +427,7 @@ public:
       RECT out = { MapDialogUnitsX(input.left), MapDialogUnitsY(input.top), MapDialogUnitsX(input.right), MapDialogUnitsY(input.bottom) };
       return out;
    }
-};
+};*/
 
 
 /////////////////////////////////////////////////////////////////////////

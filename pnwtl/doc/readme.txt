@@ -13,6 +13,8 @@ Bug Fixes:
 
 1) Don't auto-append find text
 2) Some message dialogs appear oddly on Win9x
+3) Can't use magic folder wizard without C: (SF #1703085)
+
 
 If you find a bug:
 ------------------
