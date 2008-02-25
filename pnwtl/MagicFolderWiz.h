@@ -10,7 +10,8 @@
 #ifndef magicfolderwiz_h__included
 #define magicfolderwiz_h__included
 
-class CBrowseTree;
+//class CBrowseTree;
+class CShellTreeCtrl;
 
 class MagicFolderWizard1 : public CPropertyPageImpl<MagicFolderWizard1>
 {
@@ -39,7 +40,7 @@ protected:
 
 protected:
 	CString selFolder;
-	CBrowseTree* shelltree;
+	CShellTreeCtrl* shelltree;
 };
 
 class MagicFolderWizard2 : public CPropertyPageImpl<MagicFolderWizard2>

@@ -1112,6 +1112,14 @@
 			Name="Include"
 			>
 			<File
+				RelativePath=".\include\atlshellext.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\atlshellextbase.h"
+				>
+			</File>
+			<File
 				RelativePath=".\AutoCompleteHandler.h"
 				>
 			</File>
@@ -1221,6 +1229,10 @@
 			</File>
 			<File
 				RelativePath=".\include\proplist\PropertyList.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\ShellCtrls.h"
 				>
 			</File>
 			<File

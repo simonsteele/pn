@@ -11,7 +11,10 @@
 #include "resource.h"
 
 #include "include/browsetree.h"
-#include "include/wtltreems.h"
+//#include "include/wtltreems.h"
+
+#include "include/atlshellext.h"
+#include "include/ShellCtrls.h"
 
 #include "MagicFolderWiz.h"
 
@@ -31,10 +34,13 @@ MagicFolderWizard1::~MagicFolderWizard1()
 
 LRESULT MagicFolderWizard1::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	shelltree = new CBrowseTree();
+	//shelltree = new CBrowseTree();
+	shelltree = new CShellTreeCtrl();
 	shelltree->SubclassWindow( GetDlgItem(IDC_SHELLTREE) );
-	shelltree->SetupTree();
-	shelltree->ShowFiles(FALSE);
+	//shelltree->SetupTree();
+	shelltree->SetShellStyle(SCT_EX_FILESYSTEMONLY);
+	shelltree->Populate();
+	//shelltree->ShowFiles(FALSE);
 	
 	return 0;
 }
@@ -55,12 +61,26 @@ int MagicFolderWizard1::OnSetActive()
 
 LRESULT MagicFolderWizard1::OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
+	LPNMTREEVIEW pnmtv = (LPNMTREEVIEW)pnmh;
+
 	CString str;
-	shelltree->GetSelectedPath(str);
-	if(str.GetLength() > 0)
+	//shelltree->GetSelectedPath(str);
+	
+	CPidl pidl;
+    shelltree->GetItemPidl(pnmtv->itemNew.hItem, &pidl);
+	TCHAR path[MAX_PATH+1];
+	path[0] = _T('\0');
+	if (!::SHGetPathFromIDList(pidl, path))
+	{
+		selFolder = _T("");
+		SetWizardButtons( 0 );
+		return 0;
+	}
+	
+	if (path[0] != NULL)
 	{
 		SetWizardButtons( PSWIZB_NEXT /*| PSWIZB_DISABLEDFINISH*/ );
-		selFolder = str;
+		selFolder = path;
 	}
 	else
 		selFolder = _T("");

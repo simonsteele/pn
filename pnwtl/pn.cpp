@@ -38,7 +38,7 @@
 /**
  * ATL AppModule
  */
-CAppModule _Module;
+CPNAppModule _Module;
 
 /**
  * Global application context object - stores
@@ -159,6 +159,8 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		}
 	}
 
+	_Module.m_ShellAllocator.Init();
+
 	CMessageLoop theLoop;
 	_Module.AddMessageLoop(&theLoop);
 
@@ -192,6 +194,8 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	delete theApp;
 
 	_Module.RemoveMessageLoop();
+
+	_Module.m_ShellAllocator.Term();
 
 	return nRet;
 }

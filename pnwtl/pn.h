@@ -2,7 +2,7 @@
  * @file pn.h
  * @brief Main Header File for Programmers Notepad 2, defines the application level services.
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.

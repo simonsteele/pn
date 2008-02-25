@@ -56,8 +56,15 @@
 
 #include <atlwin.h>
 #include <atlapp.h>
+#include "include/atlshellextbase.h"
 
-extern CAppModule _Module;
+class CPNAppModule : public CAppModule
+{
+public:
+	CShellMalloc	m_ShellAllocator;
+};
+
+extern CPNAppModule _Module;
 
 #include <atlmisc.h>
 #include <atlddx.h>
