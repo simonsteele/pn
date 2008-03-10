@@ -96,7 +96,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\lib\boost-python-2.5\boost_python-vc80-mt-gd-1_33_1.dll $(TargetDir)&#x0D;&#x0A;copy scripts\init.py $(TargetDir)&#x0D;&#x0A;"
+				CommandLine="copy ..\lib\boost-python-2.5\boost_python-vc80-mt-gd-1_34_1.dll $(TargetDir)&#x0D;&#x0A;copy scripts\init.py $(TargetDir)&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -259,7 +259,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\lib\boost-python-2.5\boost_python-vc80-mt-1_33_1.dll $(TargetDir)&#x0D;&#x0A;copy scripts\init.py $(TargetDir)&#x0D;&#x0A;"
+				CommandLine="copy ..\lib\boost-python-2.5\boost_python-vc80-mt-1_34_1.dll $(TargetDir)&#x0D;&#x0A;copy scripts\init.py $(TargetDir)&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
