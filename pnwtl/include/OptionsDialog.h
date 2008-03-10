@@ -34,10 +34,8 @@ class COptionsPage
 	friend class COptionsDialog;
 
 public:
-	COptionsPage()
+	COptionsPage() : m_bCreated(false)
 	{
-		m_bCreated = false;
-		m_bOrphan = false;
 	}
 
 	// Methods called by COptionsDialog when dealing with COptionsPage.
@@ -55,11 +53,10 @@ public:
 
 protected:
 	bool m_bCreated;
-	bool m_bOrphan;
 };
 
 template <class T>
-class COptionsPageImpl : public CDialogImpl<T>, public COptionsPage
+class COptionsPageImpl : public CDialogImpl<T>, public COptionsPage, CThemeImpl< COptionsPageImpl<T> >
 {
 	public:
 		virtual ~COptionsPageImpl(){}
@@ -76,8 +73,6 @@ class COptionsPageImpl : public CDialogImpl<T>, public COptionsPage
 		virtual void ClosePage()
 		{
 			DestroyWindow();
-			if(m_bOrphan)
-				delete this;
 		}
 
 		virtual void ShowPage(int showCmd)
@@ -91,16 +86,15 @@ class COptionsPageImpl : public CDialogImpl<T>, public COptionsPage
 		}
 };
 
-class COptionsDialog : public CDialogImpl<COptionsDialog>
+class COptionsDialog : public CDialogImpl<COptionsDialog>, CThemeImpl<COptionsDialog>
 {
 	typedef std::list<COptionsPage*> PAGEPTRLIST;
 	typedef CDialogImpl<COptionsDialog> baseClass;
 
 	public:
 
-		COptionsDialog()
+		COptionsDialog() : m_pCurrentPage(NULL)
 		{
-			m_pCurrentPage = NULL;
 		}
 
 		enum { IDD = IDD_OPTIONS };
@@ -121,7 +115,7 @@ class COptionsDialog : public CDialogImpl<COptionsDialog>
 
 		void AddPage(COptionsPage* pPage)
 		{
-			m_Pages.insert(m_Pages.end(), pPage);
+			m_Pages.push_back(pPage);
 		}
 	
 		void SetInitialPage(COptionsPage* pPage)
@@ -133,7 +127,7 @@ class COptionsDialog : public CDialogImpl<COptionsDialog>
 
 		LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 		{
-			PAGEPTRLIST::iterator i;
+			PAGEPTRLIST::const_iterator i;
 
 			for(i = m_Pages.begin(); i != m_Pages.end(); ++i)
 			{
@@ -147,7 +141,7 @@ class COptionsDialog : public CDialogImpl<COptionsDialog>
 
 		LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 		{
-			PAGEPTRLIST::iterator i;
+			PAGEPTRLIST::const_iterator i;
 
 			for(i = m_Pages.begin(); i != m_Pages.end(); ++i)
 			{
@@ -159,9 +153,17 @@ class COptionsDialog : public CDialogImpl<COptionsDialog>
 			return TRUE;
 		}
 
+		/**
+		 * Dialog is being initialised
+		 */
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 		{
 			m_tree.Attach(GetDlgItem(IDC_TREE));
+
+			if (WTL::RunTimeHelper::IsVista() && IsThemingSupported()) 
+			{
+				::SetWindowTheme(m_tree.m_hWnd, L"explorer", NULL);
+			}
 
 			InitialisePages();
 				
