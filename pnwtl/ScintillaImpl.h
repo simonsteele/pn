@@ -85,15 +85,17 @@ public:
 
 	void SetAutoCompleteHandler(AutoCompleteHandlerPtr& handler);
 
-protected:	
-	bool StartAutoComplete();
-	void AutoCloseBraces(SCNotification* scn);
+	tstring GetSelText2();
 	int GetCaretInLine();
 	CharacterRange GetSelection();
 	void InsertChar(long nPos, char nChar);
 	tstring GetLineText(int nLine=-1);
+
+private:
+	bool StartAutoComplete();
+	void AutoCloseBraces(SCNotification* scn);
+	
 	void SmartTag();
-	tstring GetSelText2();
 	bool StartCallTip();
 	void SetLineNumberWidth();
 	void RangeExtendAndGrab(char *sel, int len, int &selStart, int &selEnd, int lengthDoc, bool (*ischarforsel)(char ch), bool stripEol = true);

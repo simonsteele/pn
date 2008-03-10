@@ -665,6 +665,9 @@ void CTextView::DoContextMenu(CPoint* point)
 		popup.EnableMenuItem(ID_EDITOR_USEASSCRIPT, false);
 	}
 
+	tstring wordAtCursor = GetCurrentWord();
+	popup.EnableMenuItem(ID_GO_TO_DEF, wordAtCursor.size() != 0);
+
 	BOOL mnuResult = g_Context.m_frame->TrackPopupMenu(popup, TPM_RETURNCMD, point->x, point->y, NULL);
 
 	if(mnuResult != 0)

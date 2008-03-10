@@ -1036,6 +1036,93 @@ LRESULT CChildFrame::OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	return 0;
 }
 
+/**
+ * Provide auto-complete handling combined with Definitions
+ * to perform Go To Definition when multiple definitions exist
+ */
+class DefinitionInsertHandler : 
+	public Definitions, 
+	public BaseAutoCompleteHandler
+{
+public:
+	/// We're deleted as BaseAutoCompleteHandler*
+	virtual ~DefinitionInsertHandler(){}
+
+	/// User made a selection
+	virtual bool AutoCSelection(SCNotification* notification)
+	{
+		for (size_t i = 0; i < Prototypes.size(); ++i)
+		{
+			if (Prototypes[i] == notification->text)
+			{
+				Windows[i]->GetTextView()->GotoLine(Lines[i] - 1); //lines based on "0"
+				break;
+			}
+		}
+
+		return true;
+	}
+};
+
+LRESULT CChildFrame::OnGoToDef(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{    
+    // Set up buffer for selected keyword:
+	tstring sel = GetTextView()->GetCurrentWord(); //m_view.GetSelText2();
+	if (sel.size() == 0)
+	{
+		return 0;
+	}
+	
+	// Setup stuff for getting all possible definitions:
+	boost::shared_ptr<BaseAutoCompleteHandler> insertionHandler(new DefinitionInsertHandler);
+	Definitions* defs = static_cast<DefinitionInsertHandler*>(insertionHandler.get());
+	defs->SearchTerm = sel;
+	
+	::SendMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, JUMPVIEW_FIND_DEFINITIONS, reinterpret_cast<LPARAM>(defs));
+	
+    // Handle definitions: 0: not found, 1: go to source, 2: let user choose.
+	if (defs->Lines.size() == 0)
+    {
+		CString Msg;
+		Msg.Format("Definition of '%s' not found", sel.c_str());
+		g_Context.m_frame->SetStatusText(Msg);
+
+        return 0;
+    }
+	else if (defs->Lines.size() == 1)
+    {
+		defs->Windows[0]->GetTextView()->GotoLine(defs->Lines[0] - 1); //lines based on "0"
+    }
+    else
+    {
+		m_view.SetAutoCompleteHandler(insertionHandler);
+
+		std::string autoclist;
+		for (std::vector<std::string>::const_iterator i = defs->Prototypes.begin();
+			i != defs->Prototypes.end();
+			++i)
+        {
+			autoclist += (*i);
+			autoclist += '|';
+        }
+
+		if (!autoclist.size())
+		{
+			return 0;
+		}
+
+		// remove stray end separator
+		autoclist.resize(autoclist.size()-1);
+
+		int sep = m_view.AutoCGetSeparator();
+		m_view.AutoCSetSeparator('|');
+		m_view.UserListShow(0, autoclist.c_str());
+		m_view.AutoCSetSeparator(sep);
+    }
+
+    return 0;
+}
+
 LRESULT CChildFrame::OnGotoLine(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam/**/, BOOL& /*bHandled*/)
 {
 	int line= (int)lParam-1;

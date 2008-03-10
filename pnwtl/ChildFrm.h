@@ -102,6 +102,8 @@ public:
 
 		COMMAND_ID_HANDLER(ID_EDITOR_USEASSCRIPT, OnUseAsScript)
 
+		COMMAND_ID_HANDLER(ID_EDITOR_GOTODEFINITION, OnGoToDef)
+
 		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHideOutput)
 
 		COMMAND_ID_HANDLER(ID_VIEW_INDIVIDUALOUTPUT, OnIndividualOutputToggle);
@@ -126,6 +128,7 @@ public:
 		COMMAND_ID_HANDLER(ID_TOOLS_USETABS, OnUseTabs)
 		COMMAND_ID_HANDLER(ID_TOOLS_CONVERTTABSTOSPACES, OnConvertTabsToSpaces)
 		COMMAND_ID_HANDLER(ID_TOOLS_CONVERTSPACESTOTABS, OnConvertSpacesToTabs)
+        
 
 		COMMAND_ID_HANDLER(ID_EDIT_HEADERSWITCH, OnHeaderSwitch)
 
@@ -249,6 +252,7 @@ public:
 	LRESULT OnMarkWhiteSpaceToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnEOLMarkerToggle(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnUseAsScript(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnGoToDef(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);    
 	LRESULT OnHideOutput(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLineEndingsToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

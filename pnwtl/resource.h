@@ -615,6 +615,9 @@
 #define ID_EDIT_INSERTCLIP              32987
 #define ID_HELP_ONLINEHELP              32988
 #define ID_HELP_WEB_DOCS                32989
+#define ID_DUMMY_GOTODEFINITION         32990
+#define ID_GO_TO_DEF                    32991
+#define ID_EDITOR_GOTODEFINITION        32992
 
 // Next default values for new objects
 // 
@@ -622,7 +625,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        356
-#define _APS_NEXT_COMMAND_VALUE         32990
+#define _APS_NEXT_COMMAND_VALUE         32993
 #define _APS_NEXT_CONTROL_VALUE         1153
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

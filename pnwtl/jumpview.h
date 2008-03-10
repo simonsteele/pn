@@ -1,8 +1,8 @@
 /**
  * @file jumpview.h
  * @brief View to display ctags trees.
- * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele - http://untidy.net/
+ * @author Simon Steele, Manuel Sandoval
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -24,9 +24,24 @@ typedef struct
 
 extern TAGIMAGES jumpToTagImages [TAG_MAX+1];
 
-#define JUMPVIEW_FILE_ADD		0x1
-#define JUMPVIEW_FILE_CLOSE		0x2
-#define JUMPVIEW_FILE_ACTIVATE	0x3
+#define JUMPVIEW_FILE_MIN			0x1
+#define JUMPVIEW_FILE_ADD			0x1
+#define JUMPVIEW_FILE_CLOSE			0x2
+#define JUMPVIEW_FILE_ACTIVATE		0x3
+#define JUMPVIEW_FILE_MAX			0x3
+
+#define JUMPVIEW_FIND_DEFINITIONS	0x10
+
+class Definitions
+{
+public:
+	virtual ~Definitions(){}
+
+	tstring SearchTerm;
+	std::vector<std::string> Prototypes;
+	std::vector<int> Lines;
+	std::vector<CChildFrame*> Windows;
+};
 
 class ShellImageList;
 
@@ -75,6 +90,9 @@ private:
 	void 		activateFileTree(CChildFrame* pChildFrame);
 	void		deleteMethodInfo(LPMETHODINFO mi);
 	void		recursiveDelete(HTREEITEM hParent);
+
+	void		findDefinitions(Definitions& definitions);
+    void		recursiveDefinitionSearch(HTREEITEM hRoot, Definitions& definitions);
 	
 	// Drag and Drop Handlers
 	LRESULT		OnLButtonDblClick(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

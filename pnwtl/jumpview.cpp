@@ -1,8 +1,8 @@
 /**
  * @file jumpview.cpp
  * @brief View to display ctags trees.
- * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @author Simon Steele, Manuel Sandoval
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -108,43 +108,57 @@ HWND CJumpTreeCtrl::Create(HWND hWndParent, _U_RECT rect, LPCTSTR szWindowName ,
 
 LRESULT CJumpTreeCtrl::OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	CChildFrame* pChildFrame= (CChildFrame*)lParam;
-
-	// Check for weird error condition
+	if (wParam >= JUMPVIEW_FILE_MIN && wParam <= JUMPVIEW_FILE_MAX)
+	{
+		CChildFrame* pChildFrame;
+		
+		if (lParam != NULL)
+		{
+			pChildFrame = (CChildFrame*)lParam;
+		}
+		else
+		{
+			// Check for weird error condition
 #ifndef _DEBUG
 	if (pChildFrame == NULL)
 		RETURN_UNEXPECTED(_T("OnViewNotify called with NULL"), TRUE);
 #endif
-
-	SetRedraw(FALSE);
-
-	switch(wParam)
-	{
-		case JUMPVIEW_FILE_CLOSE:
-		{
-			deleteFileTreeItem(pChildFrame);
-			break;
 		}
 
-		case JUMPVIEW_FILE_ADD:
+		SetRedraw(FALSE);
+
+		switch(wParam)
 		{
-			// Not even sure this makes sense yet, why wouldn't we add if it's modified?
-			if(pChildFrame->CanSave())
+			case JUMPVIEW_FILE_CLOSE:
 			{
-				// Add a new file:
-				addFileTree(pChildFrame);
+				deleteFileTreeItem(pChildFrame);
+				break;
 			}
 
-			break;
-		} 
-		
-		default:
-		{
-			activateFileTree(pChildFrame);
+			case JUMPVIEW_FILE_ADD:
+			{
+				// Not even sure this makes sense yet, why wouldn't we add if it's modified?
+				if(pChildFrame->CanSave())
+				{
+					// Add a new file:
+					addFileTree(pChildFrame);
+				}
+
+				break;
+			} 
+			
+			default:
+			{
+				activateFileTree(pChildFrame);
+			}
 		}
+
+		SetRedraw(TRUE);
 	}
-		
-	SetRedraw(TRUE); 
+	else if (wParam == JUMPVIEW_FIND_DEFINITIONS)
+	{
+		this->findDefinitions(*(reinterpret_cast<Definitions*>(lParam)));
+	}
 
 	return TRUE;
 }
@@ -271,6 +285,42 @@ void CJumpTreeCtrl::recursiveDelete(HTREEITEM hParent)
 
 		DeleteItem(hChildItem);
 		hChildItem = GetChildItem(hParent);
+	}
+}
+
+void CJumpTreeCtrl::findDefinitions(Definitions& definitions)
+{   
+	HTREEITEM hRoot = GetRootItem();			
+	while (hRoot) 
+	{		
+		recursiveDefinitionSearch(hRoot, definitions);
+		hRoot = GetNextItem(hRoot, TVGN_NEXT );
+	}
+}
+
+void CJumpTreeCtrl::recursiveDefinitionSearch(HTREEITEM hRoot, Definitions& definitions)
+{
+	HTREEITEM node = GetChildItem(hRoot);		
+	while (node)
+	{	
+		LPMETHODINFO methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(node));
+		if (definitions.SearchTerm == methodInfoItem->methodName)
+		{            
+			definitions.Windows.push_back(static_cast<CChildFrame*>(methodInfoItem->userData));
+			definitions.Lines.push_back(methodInfoItem->lineNumber);
+			
+			if (methodInfoItem->fullText != NULL)
+			{
+				definitions.Prototypes.push_back(methodInfoItem->fullText);
+			}
+			else
+			{
+				definitions.Prototypes.push_back("");
+			}
+		}
+
+		recursiveDefinitionSearch(node, definitions);
+		node = GetNextItem(node, TVGN_NEXT);			
 	}
 }
 	
