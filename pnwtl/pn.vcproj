@@ -438,6 +438,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\browseview.cpp"
+				>
+			</File>
+			<File
 				RelativePath="childfrm.cpp"
 				>
 			</File>
@@ -700,6 +704,10 @@
 			</File>
 			<File
 				RelativePath=".\include\boyermoore.h"
+				>
+			</File>
+			<File
+				RelativePath=".\browseview.h"
 				>
 			</File>
 			<File

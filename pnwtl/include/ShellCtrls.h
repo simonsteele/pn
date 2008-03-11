@@ -129,7 +129,7 @@ inline BOOL AtlGetShellPidl(LPCITEMIDLIST pidl, IShellFolder** ppFolder, LPITEMI
 /**
  * Get a valid drive letter to use for image retrieval hack
  */
-TCHAR AtlGetFirstDriveLetter()
+inline TCHAR AtlGetFirstDriveLetter()
 {
 	DWORD logDrives = ::GetLogicalDrives();
 	
@@ -498,7 +498,16 @@ public:
       // Add children
       CComPtr<IEnumIDList> spEnum;
       DWORD dwEnumFlags = SHCONTF_FOLDERS;
-      if( (m_dwShellStyle & SCT_EX_SHOWHIDDEN) != 0 ) dwEnumFlags |= SHCONTF_INCLUDEHIDDEN;
+      if( (m_dwShellStyle & SCT_EX_SHOWHIDDEN) != 0 ) 
+	  {
+		  dwEnumFlags |= SHCONTF_INCLUDEHIDDEN;
+	  }
+	  
+	  if ( (m_dwShellStyle & SCT_EX_NOFILES) == 0 )
+	  {
+		  dwEnumFlags |= SHCONTF_NONFOLDERS;
+	  }
+
       if( SUCCEEDED(spFolder->EnumObjects(NULL, dwEnumFlags, &spEnum)) ) {
          CPidl pidl;
          DWORD  dwFetched;

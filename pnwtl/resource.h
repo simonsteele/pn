@@ -492,8 +492,8 @@
 #define ID_VIEW_WINDOWS_CTAGS           32703
 #define ID_VIEW_WINDOWS_FINDRESULTS     32704
 #define ID_VIEW_WINDOWS_SCRIPTS         32705
-#define ID_VIEW_LASTDOCKER              32705
-#define IDS_PROJECTDOESNOTEXIST         32706
+#define ID_VIEW_WINDOWS_BROWSER         32706
+#define ID_VIEW_LASTDOCKER              32706
 #define IDS_PROJSAVECHANGES             32707
 #define IDS_PROJCLOSEFILES              32708
 #define IDS_OPENANOTHER                 32709
@@ -618,6 +618,9 @@
 #define ID_DUMMY_GOTODEFINITION         32990
 #define ID_GO_TO_DEF                    32991
 #define ID_EDITOR_GOTODEFINITION        32992
+#define IDS_PROJECTDOESNOTEXIST         32993
+#define ID_EDIT_FINDINFILES32994        32994
+#define ID_WINDOWS_FILEBROWSER          32995
 
 // Next default values for new objects
 // 
@@ -625,7 +628,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        356
-#define _APS_NEXT_COMMAND_VALUE         32993
+#define _APS_NEXT_COMMAND_VALUE         32996
 #define _APS_NEXT_CONTROL_VALUE         1153
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

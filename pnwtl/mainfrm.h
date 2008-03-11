@@ -25,6 +25,7 @@ class CFindInFilesSink;
 class CMSTreeViewCtrl;
 class CFindInFilesView;
 class CScriptDocker;
+class CBrowseDocker;
 
 namespace Projects
 {
@@ -195,6 +196,7 @@ public:
 		UPDATE_ELEMENT(ID_VIEW_WINDOWS_PROJECT, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_WINDOWS_FINDRESULTS, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_WINDOWS_SCRIPTS, UPDUI_MENUPOPUP)
+		UPDATE_ELEMENT(ID_VIEW_WINDOWS_BROWSER, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_FILE_SAVE, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
 		UPDATE_ELEMENT(ID_FILE_CLOSE, UPDUI_TOOLBAR)
 		UPDATE_ELEMENT(ID_FILE_CLOSEWORKSPACE, UPDUI_MENUPOPUP)
@@ -345,7 +347,8 @@ public:
 		DW_PROJECTS = ID_VIEW_WINDOWS_PROJECT,
 		DW_CTAGS = ID_VIEW_WINDOWS_CTAGS,
 		DW_FINDRESULTS = ID_VIEW_WINDOWS_FINDRESULTS,
-		DW_SCRIPTS = ID_VIEW_WINDOWS_SCRIPTS
+		DW_SCRIPTS = ID_VIEW_WINDOWS_SCRIPTS,
+		DW_BROWSER = ID_VIEW_WINDOWS_BROWSER
 	} EDocker;
 
 	void ToggleDockingWindow(EDocker window, bool bSetValue = false, bool bShowing = true);
@@ -439,6 +442,7 @@ private:
 	CFindExDialog*			m_pFindEx;
 	CFindInFilesSink*		m_pFIFSink;
 	CScriptDocker*			m_pScriptsWnd;
+	CBrowseDocker*			m_pBrowseWnd;
 	
 	CScintilla				m_Dummy;			///< Scintilla often doesn't like unloading and reloading.
 

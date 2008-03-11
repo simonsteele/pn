@@ -34,13 +34,10 @@ MagicFolderWizard1::~MagicFolderWizard1()
 
 LRESULT MagicFolderWizard1::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	//shelltree = new CBrowseTree();
 	shelltree = new CShellTreeCtrl();
 	shelltree->SubclassWindow( GetDlgItem(IDC_SHELLTREE) );
-	//shelltree->SetupTree();
-	shelltree->SetShellStyle(SCT_EX_FILESYSTEMONLY);
+	shelltree->SetShellStyle(SCT_EX_FILESYSTEMONLY | SCT_EX_NOFILES);
 	shelltree->Populate();
-	//shelltree->ShowFiles(FALSE);
 	
 	return 0;
 }
@@ -64,7 +61,6 @@ LRESULT MagicFolderWizard1::OnSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 	LPNMTREEVIEW pnmtv = (LPNMTREEVIEW)pnmh;
 
 	CString str;
-	//shelltree->GetSelectedPath(str);
 	
 	CPidl pidl;
     shelltree->GetItemPidl(pnmtv->itemNew.hItem, &pidl);

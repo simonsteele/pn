@@ -24,15 +24,15 @@
 #include "childfrm.h"			// MDI Child
 #include "OptionsPages.h"		// Options Pages
 #include "aboutdlg.h"			// About Dialog
-#include "pndialogs.h"			// Misc Dialogs.
-#include "textclipsview.h"		// Text-Clips Docker...
+#include "pndialogs.h"			// Misc Dialogs
+#include "textclipsview.h"		// Text-Clips Docker
 #include "jumpview.h"			// Tags Docker
 #include "project.h"			// Projects
 #include "projectprops.h"		// Project Properties
-#include "projectview.h"		// Projects Docker...
+#include "projectview.h"		// Projects Docker
 #include "findex.h"				// Find Dialog
 #include "findinfiles.h"		// Find in Files
-#include "findinfilesview.h"	// Find in Files view...
+#include "findinfilesview.h"	// Find in Files view
 #include "newprojectdialog.h"	// New Projects Dialog
 #include "workspacestate.h"		// Save Workspace State
 #include "ScriptRegistry.h"		// Scripts Registry
@@ -40,10 +40,11 @@
 #include "toolsmanager.h"		// Tools Manager
 #include "extapp.h"
 #include "textclips.h"			// Text Clips
+#include "browseview.h"			// Browse Docker
 
 // Other stuff
 #include "SchemeConfig.h"		// Scheme Configuration
-#include <dbstate.h>			// Docking window state stuff...
+#include <dbstate.h>			// Docking window state stuff
 
 #include <htmlhelp.h>
 
@@ -115,26 +116,29 @@ CMainFrame::CMainFrame(CommandDispatch* commands, std::list<tstring>* cmdLineArg
 
 CMainFrame::~CMainFrame()
 {
-	if(m_pOutputWnd)
+	if (m_pOutputWnd)
 		delete m_pOutputWnd;
 
-	if(m_pFindResultsWnd)
+	if (m_pFindResultsWnd)
 		delete m_pFindResultsWnd;
 
-	if(m_pClipsWnd)
+	if (m_pClipsWnd)
 		delete m_pClipsWnd;
 
-	if(m_pProjectsWnd)
+	if (m_pProjectsWnd)
 		delete m_pProjectsWnd;
 
-	if(m_pCtagsWnd)
+	if (m_pCtagsWnd)
 		delete m_pCtagsWnd;
 
-	if(m_pScriptsWnd)
+	if (m_pScriptsWnd)
 		delete m_pScriptsWnd;
 
-	if(m_pTextClips)
+	if (m_pTextClips)
 		delete m_pTextClips;
+
+	if (m_pBrowseWnd)
+		delete m_pBrowseWnd;
 }
 
 /**
@@ -777,6 +781,10 @@ void CMainFrame::CreateDockingWindows()
 		m_dockingWindows, ID_VIEW_WINDOWS_CTAGS - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sLeft);
 	
+	m_pBrowseWnd = CreateDocker<CBrowseDocker>(LS(ID_VIEW_WINDOWS_BROWSE), rcLeft, this,
+		m_dockingWindows, ID_VIEW_WINDOWS_BROWSE - ID_VIEW_FIRSTDOCKER,
+		true, dockwins::CDockingSide::sLeft);
+
 	hCTagsWnd = m_pCtagsWnd->getHandle();
 
 	m_pScriptsWnd = CreateDocker<CScriptDocker>(LS(ID_VIEW_WINDOWS_SCRIPTS), rcLeft, this, 
@@ -786,6 +794,7 @@ void CMainFrame::CreateDockingWindows()
 	getDocker(DW_FINDRESULTS)->DockTo( getDocker(DW_OUTPUT)->m_hWnd, 0 );
 	getDocker(DW_CTAGS)->DockTo( getDocker(DW_PROJECTS)->m_hWnd, 0 );
 	getDocker(DW_TEXTCLIPS)->DockTo( getDocker(DW_PROJECTS)->m_hWnd, 0 );
+	getDocker(DW_SCRIPTS)->DockTo( getDocker(DW_PROJECTS)->m_hWnd, 0 );
 
 	// Register icons for menu niceness...
 	m_CmdBar.AddIcon(getDocker(DW_FINDRESULTS)->GetIcon(FALSE), ID_VIEW_WINDOWS_FINDRESULTS);
@@ -793,6 +802,8 @@ void CMainFrame::CreateDockingWindows()
 	m_CmdBar.AddIcon(getDocker(DW_SCRIPTS)->GetIcon(FALSE), ID_VIEW_WINDOWS_SCRIPTS);
 	m_CmdBar.AddIcon(getDocker(DW_TEXTCLIPS)->GetIcon(FALSE), ID_VIEW_WINDOWS_TEXTCLIPS);
 	m_CmdBar.AddIcon(getDocker(DW_OUTPUT)->GetIcon(FALSE), ID_VIEW_OUTPUT);
+	m_CmdBar.AddIcon(getDocker(DW_BROWSER)->GetIcon(FALSE), ID_VIEW_WINDOWS_BROWSER);
+	m_CmdBar.AddIcon(getDocker(DW_CTAGS)->GetIcon(FALSE), ID_VIEW_WINDOWS_CTAGS);
 }
 
 /**
@@ -1492,7 +1503,6 @@ LRESULT CMainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	else
 		pChild->SetScheme(SchemeManager::GetInstance()->GetDefaultScheme());
 		
-	
 	return 0;
 }
 
@@ -1988,14 +1998,14 @@ LRESULT CMainFrame::OnWebSFPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 
 LRESULT CMainFrame::OnWebSFBug(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	::ShellExecute(m_hWnd, _T("open"), _T("http://sourceforge.net/tracker/?func=add&group_id=45545&atid=443219"), NULL, NULL, SW_SHOW);
+	::ShellExecute(m_hWnd, _T("open"), _T("http://code.google.com/p/pnotepad/issues/entry"), NULL, NULL, SW_SHOW);
 
 	return 0;
 }
 
 LRESULT CMainFrame::OnWebSFRFE(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	::ShellExecute(m_hWnd, _T("open"), _T("http://sourceforge.net/tracker/?func=add&group_id=45545&atid=443222"), NULL, NULL, SW_SHOW);
+	::ShellExecute(m_hWnd, _T("open"), _T("http://code.google.com/p/pnotepad/issues/entry"), NULL, NULL, SW_SHOW);
 
 	return 0;
 }
@@ -2036,16 +2046,15 @@ void CMainFrame::launchExternalSearch(LPCTSTR searchString)
 	// avoid empty search strings...
 	if( ((LPCTSTR)wt) != NULL )
 	{
-		LPTSTR searchstr = new TCHAR[_tcslen((LPCTSTR)wt)+1];
-		_tcscpy(searchstr, (LPCTSTR)wt);
-		for(size_t i = 0; i < _tcslen(searchstr); i++)
+		tstring searchstr((LPCTSTR)wt);
+		
+		for(size_t i = 0; i < searchstr.size(); i++)
 		{
 			if(searchstr[i] == _T(' '))
 				searchstr[i] = _T('+');
 		}
 
-		s += (LPCTSTR)searchstr;
-		delete [] searchstr;
+		s += searchstr;
 	}
 
 	::ShellExecute(m_hWnd, _T("open"), s.c_str(), NULL, NULL, SW_SHOW);

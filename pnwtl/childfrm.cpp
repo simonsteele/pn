@@ -1706,7 +1706,7 @@ int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
 	
 	TCHAR* fstr;
 
-	int MBStyle = TDCBF_CANCEL_BUTTON | TDCBF_YES_BUTTON | TDCBF_NO_BUTTON;
+	int MBStyle = bOpen ? TDCBF_OK_BUTTON : TDCBF_CANCEL_BUTTON | TDCBF_YES_BUTTON | TDCBF_NO_BUTTON;
 	TASKDIALOG_BUTTON* pItems = NULL;
 	int nItems = 0;
 	int nDefault = IDCANCEL;
@@ -1807,7 +1807,7 @@ int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
 	cfg.cbSize = sizeof(cfg);
 	cfg.hInstance = _Module.GetResourceInstance();
 	cfg.pszWindowTitle = title.c_str();
-	cfg.pszMainIcon = MAKEINTRESOURCEW(IDR_MAINFRAME);
+	cfg.pszMainIcon = MAKEINTRESOURCEW(TDT_WARNING_ICON);
 	cfg.pszContent = message;
 	cfg.dwCommonButtons = MBStyle;
 	cfg.pButtons = pItems;
