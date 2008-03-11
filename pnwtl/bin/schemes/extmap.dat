@@ -55,6 +55,7 @@
 .pnproj=xml
 .pod=perl
 .properties=properties
+.ps1=powershell
 .py=python
 .pyw=python
 .rb=ruby
