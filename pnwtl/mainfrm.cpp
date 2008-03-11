@@ -781,8 +781,8 @@ void CMainFrame::CreateDockingWindows()
 		m_dockingWindows, ID_VIEW_WINDOWS_CTAGS - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sLeft);
 	
-	m_pBrowseWnd = CreateDocker<CBrowseDocker>(LS(ID_VIEW_WINDOWS_BROWSE), rcLeft, this,
-		m_dockingWindows, ID_VIEW_WINDOWS_BROWSE - ID_VIEW_FIRSTDOCKER,
+	m_pBrowseWnd = CreateDocker<CBrowseDocker>(LS(ID_VIEW_WINDOWS_BROWSER), rcLeft, this,
+		m_dockingWindows, ID_VIEW_WINDOWS_BROWSER - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sLeft);
 
 	hCTagsWnd = m_pCtagsWnd->getHandle();
