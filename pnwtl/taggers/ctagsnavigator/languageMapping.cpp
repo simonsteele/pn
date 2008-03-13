@@ -35,6 +35,8 @@ LPCWSTR GetLanguage(LPCWSTR filename, const char* scheme)
 		return L"Erlang";
 	else if(strcmp("fortran", scheme) == 0)
 		return L"Fortran";
+	else if(strcmp("fortran77", scheme) == 0)
+		return L"Fortran";
 	else if(strcmp("java", scheme) == 0)
 		return L"Java";
 	else if(strcmp("javascript", scheme) == 0)

@@ -2,7 +2,7 @@
  * @file ctagsnavigator.cpp
  * @brief CTAGS output parser for jump to function implementation.
  * @author Simon Steele
- * @note Copyright (c) 2004-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2004-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -63,7 +63,7 @@ bool __stdcall pn_init_extension(int iface_version, extensions::IPN* pn)
 void __stdcall pn_get_extension_info(PN::BaseString& name, PN::BaseString& version)
 {
 	name = "CTags Tagger";
-	version = "1.3";
+	version = "1.4";
 }
 
 /**
@@ -112,7 +112,7 @@ wchar_t* ConvertMBtoWC( const char* mbString )
  */
 CTagsTagSource::CTagsTagSource() : 
 	ITagSource(),
-	m_schemes( "assembler;cobol;cpp;csharp;eiffel;erlang;java;javascript;lisp;lua;makefile;pascal;perl;php;phpscript;plsql;python;ruby;shell;tcl;vb;verilog;vhdl;vim;yacc;web" )
+	m_schemes( "assembler;cobol;cpp;csharp;eiffel;erlang;fortran;fortran77;java;javascript;lisp;lua;makefile;pascal;perl;php;phpscript;plsql;python;ruby;shell;tcl;vb;verilog;vhdl;vim;yacc;web" )
 {
 }
 
@@ -161,7 +161,6 @@ void CTagsTagSource::SetTaggersPath(const char* path)
  */
 const char* CTagsTagSource::GetSchemesSupported()
 {
-	//return "assembler;cobol;cpp;csharp;eiffel;erlang;java;javascript;lisp;lua;makefile;pascal;perl;php;phpscript;plsql;python;ruby;shell;tcl;vb;verilog;vhdl;vim;yacc;web";
 	return m_schemes.c_str();
 }
 
@@ -215,7 +214,6 @@ bool CTagsTagSource::FindTags(ITagSink* sink,
 
 	wchar_t* cmd = L"ctags";
 	wchar_t* dir = NULL;
-	//wchar_t* clopts = new wchar_t[wcslen(cmd)+wcslen(CTAGSOPTS)+wcslen(CTAGSLANGOPTS)+MAX_LANGUAGE+wcslen(filename)+3];
 	wchar_t* clopts = new wchar_t[wcslen(cmd)+m_optionsParam.length()+wcslen(CTAGSOPTS)+wcslen(CTAGSLANGOPTS)+MAX_LANGUAGE+wcslen(filename)+3];
 	wcscpy(clopts, cmd);
 	wcscat(clopts, m_optionsParam.c_str() );
@@ -325,7 +323,7 @@ bool CTagsTagSource::FindTags(ITagSink* sink,
 		// Give ctags a chance to do some work - we give up our timeslice.
 		Sleep(0);
 
-		//The PeekNamedPipe function copies data from a named or 
+		// The PeekNamedPipe function copies data from a named or 
 		// anonymous pipe into a buffer without removing it from the pipe.
 		if(! ::PeekNamedPipe(hReadPipe, NULL, 0, NULL, &dwBytesAvail, NULL) )
 		{
