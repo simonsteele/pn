@@ -515,6 +515,7 @@ LRESULT CChildFrame::OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 	if(lParam == SCN_SAVEPOINTREACHED || lParam == SCN_SAVEPOINTLEFT)
 	{
 		SetTitle(GetModified());
+		m_spDocument->OnModifiedChanged(GetModified());
 	}
 	else
 	{
@@ -1627,6 +1628,7 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool ctagsRefresh, bool bStoreFilen
 			m_FileAge = FileAge(pathname);
 			SetModifiedOverride(false);
 			m_spDocument->SetFileName(pathname);
+			m_spDocument->OnAfterSave();
 
 			SetTitle();
 		}

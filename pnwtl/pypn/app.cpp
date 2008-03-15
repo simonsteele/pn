@@ -79,7 +79,7 @@ void App::Initialise()
 	loadInitScript();
 }
 
-void App::OnNewDocument(extensions::IDocumentPtr doc)
+void App::OnNewDocument(extensions::IDocumentPtr& doc)
 {
 	extensions::IDocumentEventSinkPtr p(new DocSink(doc));
 	doc->AddEventSink(p);
@@ -147,7 +147,7 @@ void fixCRLineEnds(char* buffer)
 /**
  * Run an open document as if it was a script
  */
-void App::RunDocScript(extensions::IDocumentPtr doc)
+void App::RunDocScript(extensions::IDocumentPtr& doc)
 {
 	HWND hWndScintilla = doc->GetScintillaHWND();
 	if(hWndScintilla)

@@ -1,60 +1,72 @@
 /**
- * @file browseview.h
- * @brief File Browser View
+ * @file openfilesview.h
+ * @brief Docking window showing open files
  * @author Simon Steele
  * @note Copyright (c) 2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
-
-#ifndef browseview_h__included
-#define browseview_h__included
-
-class CShellTreeCtrl;
+#ifndef openfilesview_h__included
+#define openfilesview_h__included
 
 /**
  * Explorer docking window
  */
-class CBrowseDocker : public CWindowImpl<CBrowseDocker>
+class COpenFilesDocker : public CWindowImpl<COpenFilesDocker>
+	
 {
-	typedef CWindowImpl<CBrowseDocker> baseClass;
+	typedef CWindowImpl<COpenFilesDocker> baseClass;
 
 public:
-	DECLARE_WND_CLASS(_T("CBrowseDocker"))
+	DECLARE_WND_CLASS(_T("COpenFilesDocker"))
 
-	CBrowseDocker();
-	~CBrowseDocker();
+	COpenFilesDocker();
+	~COpenFilesDocker();
 	
 	enum {
-		IDC_BROWSETREE = 106,
+		IDC_FILESLIST = 107,
 	};
 
-	BEGIN_MSG_MAP(CBrowseDocker)
+	BEGIN_MSG_MAP(COpenFilesDocker)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		MESSAGE_HANDLER(WM_GETMINMAXINFO, OnGetMinMaxInfo)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, OnCtlColor)
-		MESSAGE_HANDLER(WM_SHOWWINDOW, OnShow)
-		NOTIFY_HANDLER(IDC_BROWSETREE, NM_DBLCLK, OnTreeDblClick)
+		
+		NOTIFY_HANDLER(IDC_FILESLIST, NM_DBLCLK, OnListDblClk)
 
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
+	
+class AppEventSink;
+class DocEventSink;
 
 private:
+	// Private, but called by inner sink classes
+	void AddDocument(extensions::IDocumentPtr& doc);
+	void RemoveDocument(extensions::IDocumentPtr& doc);
+	void UpdateDocument(extensions::IDocumentPtr& doc);
+
+	// Really Private:
+	int findDocument(extensions::IDocumentPtr& doc);
+	void handleUserSelection(int index);
+	extensions::IDocument* docFromListItem(int item);
+
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT	OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	LRESULT	OnShow(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	LRESULT OnCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
-	LRESULT OnTreeDblClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT OnListDblClk(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
-	CShellTreeCtrl*		m_view;
+	CListViewCtrl m_view;
+	CImageList m_images;
+	extensions::IAppEventSinkPtr m_appSink;
 };
 
-#endif // #ifndef browseview_h__included
+#endif //#ifndef openfilesview_h__included

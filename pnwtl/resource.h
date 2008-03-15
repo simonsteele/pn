@@ -220,6 +220,9 @@
 #define IDI_TASKDLG_CHEVRON_LESS        354
 #define IDI_ICON6                       355
 #define IDI_TASKDLG_CHEVRON_MORE        355
+#define IDI_OPENFILES                   359
+#define IDB_BITMAP2                     360
+#define IDB_OPENFILES                   360
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -493,8 +496,8 @@
 #define ID_VIEW_WINDOWS_FINDRESULTS     32704
 #define ID_VIEW_WINDOWS_SCRIPTS         32705
 #define ID_VIEW_WINDOWS_BROWSER         32706
-#define ID_VIEW_LASTDOCKER              32706
-#define IDS_PROJSAVECHANGES             32707
+#define ID_VIEW_WINDOWS_OPENFILES       32707
+#define ID_VIEW_LASTDOCKER              32707
 #define IDS_PROJCLOSEFILES              32708
 #define IDS_OPENANOTHER                 32709
 #define IDS_TASKDLG_OK                  32710
@@ -621,14 +624,16 @@
 #define IDS_PROJECTDOESNOTEXIST         32993
 #define ID_EDIT_FINDINFILES32994        32994
 #define ID_WINDOWS_FILEBROWSER          32995
+#define IDS_PROJSAVECHANGES             32996
+#define ID_WINDOWS_OPENFILES            32997
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        356
-#define _APS_NEXT_COMMAND_VALUE         32996
+#define _APS_NEXT_RESOURCE_VALUE        361
+#define _APS_NEXT_COMMAND_VALUE         32998
 #define _APS_NEXT_CONTROL_VALUE         1153
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

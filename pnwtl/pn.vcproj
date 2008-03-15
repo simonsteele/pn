@@ -458,6 +458,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\editorfactory.cpp"
+				>
+			</File>
+			<File
 				RelativePath="exporters.cpp"
 				>
 			</File>
@@ -511,6 +515,10 @@
 			</File>
 			<File
 				RelativePath=".\NewProjectDialog.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\openfilesview.cpp"
 				>
 			</File>
 			<File
@@ -731,6 +739,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\editorfactory.h"
+				>
+			</File>
+			<File
 				RelativePath="exporters.h"
 				>
 			</File>
@@ -808,6 +820,10 @@
 			</File>
 			<File
 				RelativePath=".\NewProjectDialog.h"
+				>
+			</File>
+			<File
+				RelativePath=".\openfilesview.h"
 				>
 			</File>
 			<File
@@ -1016,6 +1032,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\folder_table.ico"
+				>
+			</File>
+			<File
 				RelativePath="res\font_tru.bmp"
 				>
 			</File>
@@ -1029,6 +1049,10 @@
 			</File>
 			<File
 				RelativePath="res\noproject.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\res\openfilesimages.bmp"
 				>
 			</File>
 			<File

@@ -2,7 +2,7 @@
  * @file OptionsPageGlobalStyles.cpp
  * @brief Options Dialog Global Styles Page for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2007-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -57,7 +57,7 @@ void COptionsPageGlobalStyles::OnInitialise()
 
 LPCTSTR COptionsPageGlobalStyles::GetTreePosition()
 {
-	return _T("Schemes\\Styles");
+	return _T("Fonts and Colors\\Styles");
 }
 
 void COptionsPageGlobalStyles::OnCancel()

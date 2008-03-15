@@ -26,12 +26,12 @@ public:
 	void Initialise();
 
 // IAppEventSink
-	virtual void OnNewDocument(extensions::IDocumentPtr doc);
+	virtual void OnNewDocument(extensions::IDocumentPtr& doc);
 	virtual void OnAppClose();
 	
 // IScriptRunner
 	virtual void RunScript(const char* name);
-	virtual void RunDocScript(extensions::IDocumentPtr doc);
+	virtual void RunDocScript(extensions::IDocumentPtr& doc);
 
 // Other
 	void RegisterScript(const char* scriptname, const char* group, const char* name);

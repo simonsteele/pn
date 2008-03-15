@@ -2,7 +2,7 @@
  * @file optionspages.cpp
  * @brief Options Dialog Pages (1) for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -578,7 +578,7 @@ void COptionsPageStyle::OnCancel()
 
 LPCTSTR COptionsPageStyle::GetTreePosition()
 {
-	return _T("Schemes");
+	return _T("Fonts and Colors");
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -678,7 +678,7 @@ void COptionsPageSchemes::OnOK()
 
 LPCTSTR COptionsPageSchemes::GetTreePosition()
 {
-	return _T("Schemes\\Advanced");
+	return _T("Fonts and Colors\\Advanced");
 }
 
 LRESULT COptionsPageSchemes::OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

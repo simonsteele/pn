@@ -23,9 +23,14 @@ Document::Document(LPCTSTR filename)
 	m_pFrame = NULL;
 	
 	if(filename)
-        m_sFilename = filename;
+	{
+        SetFileName(filename);
+	}
 	else
-		m_sFilename = "<new>";
+	{
+		m_sTitle = _T("<new>");
+		m_sFilename = _T("<new>");
+	}
 }
 
 Document::~Document()
@@ -85,6 +90,8 @@ bool Document::HasFile() const
 void Document::SetFileName(LPCTSTR filename)
 {
 	m_sFilename = filename;
+	CFileName fn(m_sFilename);
+	m_sTitle = fn.GetFileName();
 }
 
 void Document::SetValid(bool bValid)
@@ -101,7 +108,7 @@ bool Document::IsValid() const
 
 const char* Document::GetTitle() const
 {
-	return m_sFilename.c_str();
+	return m_sTitle.c_str();
 }
 
 const char* Document::GetFileName() const
@@ -176,6 +183,22 @@ void Document::OnBeforeSave(const char* filename)
 	}
 }
 
+void Document::OnAfterSave()
+{
+	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	{
+		(*i)->OnAfterSave();
+	}
+}
+
+void Document::OnModifiedChanged(bool modified)
+{
+	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	{
+		(*i)->OnModifiedChanged(modified);
+	}
+}
+
 void Document::OnDocClosing()
 {
 	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
@@ -184,12 +207,12 @@ void Document::OnDocClosing()
 	}
 }
 
-void Document::AddEventSink(extensions::IDocumentEventSinkPtr sink)
+void Document::AddEventSink(extensions::IDocumentEventSinkPtr& sink)
 {
 	m_sinks.push_back(sink);
 }
 
-void Document::RemoveEventSink(extensions::IDocumentEventSinkPtr sink)
+void Document::RemoveEventSink(extensions::IDocumentEventSinkPtr& sink)
 {
 	m_sinks.remove(sink);
 }

@@ -67,17 +67,17 @@
 			<style name="Default" key="32" />
 			<style name="Whitespace" key="0" />
 			<style name="Comment" key="1" fore="009300" bold="true" italic="true" class="comment" />
-			<style name="CommentLineBang" key="2" class="comment" />
+			<style name="Comment Line Bang" key="2" class="comment" />
 			<style name="Number" key="3" fore="a52a00" class="number" />
 			<style name="String" key="4" fore="ea0075" class="string" />
-			<style name="StringEOL" key="7" class="string" />
+			<style name="String EOL" key="7" class="string" />
 			<style name="Operator" key="5" class="operator" />
 			<style name="Identifier" key="6" />
 			<style name="Keyword" key="8" fore="0000ff" class="keyword" />
-			<style name="STDOperator" key="9" fore="0000ff" class="keyword" />
-			<style name="STDFunktion" key="11" fore="0000ff" class="keyword" />
-			<style name="STDPackage" key="12" fore="0000ff" class="keyword" />
-			<style name="STDType" key="13" fore="0000ff" class="keyword" />
+			<style name="STD Operator" key="9" fore="0000ff" class="keyword" />
+			<style name="STD Function" key="11" fore="0000ff" class="keyword" />
+			<style name="STD Package" key="12" fore="0000ff" class="keyword" />
+			<style name="STD Type" key="13" fore="0000ff" class="keyword" />
 			<style name="Attribute" key="10" fore="0000ff" class="keyword" />
 			<style name="Userword" key="14" fore="0000ff" class="keyword" />
 		</use-styles>

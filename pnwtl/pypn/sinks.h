@@ -17,7 +17,7 @@
 class DocSink : public extensions::IDocumentEventSink
 {
 public:
-	DocSink(extensions::IDocumentPtr doc);
+	DocSink(extensions::IDocumentPtr& doc);
 	virtual ~DocSink();
 
 	virtual void OnDocClosing();
@@ -25,6 +25,8 @@ public:
 	virtual void OnSchemeChange(const char *scheme){}
 	virtual void OnAfterLoad();
 	virtual void OnBeforeSave(const char* filename);
+	virtual void OnAfterSave();
+	virtual void OnModifiedChanged(bool modified);
 
 private:
 	extensions::IDocumentPtr m_doc;

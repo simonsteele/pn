@@ -254,6 +254,6 @@ void DocScript::Run()
 		UNEXPECTED("No ScriptRunner for this script type!");
 		return;
 	}
-
-	runner->RunDocScript(m_doc);
+	
+	runner->RunDocScript(extensions::IDocumentPtr(m_doc));
 }

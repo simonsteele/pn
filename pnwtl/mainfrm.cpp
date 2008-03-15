@@ -2,7 +2,7 @@
  * @file mainfrm.cpp
  * @brief Main Window for Programmers Notepad 2 (Implementation)
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -41,6 +41,8 @@
 #include "extapp.h"
 #include "textclips.h"			// Text Clips
 #include "browseview.h"			// Browse Docker
+#include "openfilesview.h"		// Open Files Docker
+#include "editorFactory.h"		// Editor Factory
 
 // Other stuff
 #include "SchemeConfig.h"		// Scheme Configuration
@@ -82,6 +84,8 @@ CMainFrame::CMainFrame(CommandDispatch* commands, std::list<tstring>* cmdLineArg
 	m_pClipsWnd(NULL),
 	m_pCtagsWnd(NULL),
 	m_pProjectsWnd(NULL),
+	m_pBrowseWnd(NULL),
+	m_pOpenFilesWnd(NULL),
 	hFindWnd(NULL),
 	m_statusResetCounter(0),
 	m_hToolAccel(NULL),
@@ -97,7 +101,9 @@ CMainFrame::CMainFrame(CommandDispatch* commands, std::list<tstring>* cmdLineArg
 	m_cmdLineArgs(cmdLineArgs),
 
 	// This text clip manager will be shared by the text clips view and editors
-	m_pTextClips(new TextClips::TextClipsManager)
+	m_pTextClips(new TextClips::TextClipsManager),
+
+	m_ChildFactory(commands, m_pTextClips, NULL)
 {
 	m_CmdBar.SetCallback(this, &CMainFrame::OnMDISetMenu);
 
@@ -139,37 +145,21 @@ CMainFrame::~CMainFrame()
 
 	if (m_pBrowseWnd)
 		delete m_pBrowseWnd;
+
+	if (m_pOpenFilesWnd)
+		delete m_pOpenFilesWnd;
 }
 
-/**
- * You should always use this function to make a new editor, it sets
- * up the close callback properly. If you don't, things will crash :)
- */
-CChildFrame* CMainFrame::NewEditor()
+EditorFactory& CMainFrame::GetFactory()
 {
-	DocumentPtr pD(new Document());
-	CChildFrame* pChild = new CChildFrame(pD, m_pCmdDispatch, m_pTextClips);
-	PNASSERT(pChild != NULL);
-	pD->AddChildFrame(pChild);
-
-	// Give the user the option to always maximise new windows.
-	bool bMax = OPTIONS->GetCached(Options::OMaximiseNew) != 0;
-	pChild->CreateEx(m_hWndMDIClient, 0, 0, bMax ? WS_MAXIMIZE : 0);
-
-	g_Context.ExtApp->OnNewDocument( pD );
-
-	return pChild;
+	return m_ChildFactory;
 }
 
 bool CMainFrame::OpenFile(LPCTSTR pathname, Scheme* pScheme, EPNEncoding encoding)
 {
 	bool bRet = false;
 
-	CChildFrame* pChild = NewEditor();
-	if(pathname)
-	{
-		bRet = pChild->PNOpenFile(pathname, pScheme, encoding);
-	}
+	CChildFrame* pChild = m_ChildFactory.FromFile(pathname, pScheme, encoding, bRet);
 
 	return bRet;
 }
@@ -326,8 +316,7 @@ bool CMainFrame::closeAll(bool shuttingDown)
 
 bool CMainFrame::OnSchemeNew(LPVOID data)
 {	
-	CChildFrame* pChild = NewEditor();
-	pChild->SetScheme((Scheme*)data);
+	CChildFrame* pChild = m_ChildFactory.WithScheme(reinterpret_cast<Scheme*>(data));
 
 	return true; // we handled it.
 }
@@ -791,10 +780,15 @@ void CMainFrame::CreateDockingWindows()
 		m_dockingWindows, ID_VIEW_WINDOWS_SCRIPTS - ID_VIEW_FIRSTDOCKER,
 		true, dockwins::CDockingSide::sRight);
 
+	m_pOpenFilesWnd = CreateDocker<COpenFilesDocker>(LS(ID_VIEW_WINDOWS_OPENFILES), rcLeft, this,
+		m_dockingWindows, ID_VIEW_WINDOWS_OPENFILES - ID_VIEW_FIRSTDOCKER,
+		true, dockwins::CDockingSide::sRight);
+
 	getDocker(DW_FINDRESULTS)->DockTo( getDocker(DW_OUTPUT)->m_hWnd, 0 );
 	getDocker(DW_CTAGS)->DockTo( getDocker(DW_PROJECTS)->m_hWnd, 0 );
 	getDocker(DW_TEXTCLIPS)->DockTo( getDocker(DW_PROJECTS)->m_hWnd, 0 );
-	getDocker(DW_SCRIPTS)->DockTo( getDocker(DW_PROJECTS)->m_hWnd, 0 );
+	getDocker(DW_BROWSER)->DockTo( getDocker(DW_PROJECTS)->m_hWnd, 0 );
+	getDocker(DW_SCRIPTS)->DockTo( getDocker(DW_OPENFILES)->m_hWnd, 0 );
 
 	// Register icons for menu niceness...
 	m_CmdBar.AddIcon(getDocker(DW_FINDRESULTS)->GetIcon(FALSE), ID_VIEW_WINDOWS_FINDRESULTS);
@@ -804,6 +798,7 @@ void CMainFrame::CreateDockingWindows()
 	m_CmdBar.AddIcon(getDocker(DW_OUTPUT)->GetIcon(FALSE), ID_VIEW_OUTPUT);
 	m_CmdBar.AddIcon(getDocker(DW_BROWSER)->GetIcon(FALSE), ID_VIEW_WINDOWS_BROWSER);
 	m_CmdBar.AddIcon(getDocker(DW_CTAGS)->GetIcon(FALSE), ID_VIEW_WINDOWS_CTAGS);
+	m_CmdBar.AddIcon(getDocker(DW_OPENFILES)->GetIcon(FALSE), ID_VIEW_WINDOWS_OPENFILES);
 }
 
 /**
@@ -1095,6 +1090,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	
 	CreateMDIClient();
 	m_CmdBar.SetMDIClient(m_hWndMDIClient);
+	m_ChildFactory.SetMdiClient(m_hWndMDIClient);
 
 	InitializeDockingFrame();
 	
@@ -1496,12 +1492,14 @@ LRESULT CMainFrame::OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 LRESULT CMainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CChildFrame* pChild = NewEditor();
+	Scheme* scheme;
 	tstring newscheme =	OPTIONS->Get(PNSK_EDITOR, _T("NewScheme"), _T(""));
 	if(newscheme.length() > 0)
-        pChild->SetScheme(SchemeManager::GetInstance()->SchemeByName(newscheme.c_str()));
+        scheme = SchemeManager::GetInstance()->SchemeByName(newscheme.c_str());
 	else
-		pChild->SetScheme(SchemeManager::GetInstance()->GetDefaultScheme());
+		scheme = SchemeManager::GetInstance()->GetDefaultScheme();
+
+	CChildFrame* pChild = m_ChildFactory.WithScheme(scheme);
 		
 	return 0;
 }

@@ -35,7 +35,9 @@ class Document : public extensions::IDocument, public extensions::ITextEditorEve
 
 		void OnAfterLoad();
 		void OnBeforeSave(const char* filename);
+		void OnAfterSave();
 		void OnDocClosing();
+		void OnModifiedChanged(bool modified);
 
 // IDocument members
 	public:
@@ -53,8 +55,8 @@ class Document : public extensions::IDocument, public extensions::ITextEditorEve
 
 		virtual bool IsValid() const;
 
-		virtual void AddEventSink(extensions::IDocumentEventSinkPtr sink);
-		virtual void RemoveEventSink(extensions::IDocumentEventSinkPtr sink);
+		virtual void AddEventSink(extensions::IDocumentEventSinkPtr& sink);
+		virtual void RemoveEventSink(extensions::IDocumentEventSinkPtr& sink);
 
 		virtual FindNextResult FindNext(extensions::ISearchOptions* options);
 		virtual bool Replace(extensions::ISearchOptions* options);
@@ -75,6 +77,7 @@ class Document : public extensions::IDocument, public extensions::ITextEditorEve
 		CChildFrame*	m_pFrame;
 		bool			m_bIsValid;
 		tstring			m_sFilename;
+		tstring			m_sTitle;
 		EventSinks		m_sinks;
 };
 

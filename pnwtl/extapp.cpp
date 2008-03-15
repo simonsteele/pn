@@ -404,16 +404,19 @@ extensions::IDocumentPtr App::OpenDocument(const char* filepath, const char* sch
  */
 extensions::IDocumentPtr App::NewDocument(const char* scheme)
 {
-	
-	CChildFrame* pEditor = static_cast<CMainFrame*>(g_Context.m_frame)->NewEditor();
-	
-	if(scheme)
+	Scheme* pScheme;
+	if (scheme)
 	{
-		Scheme* pScheme = SchemeManager::GetInstance()->SchemeByName(scheme);
-		if(pScheme)
-		{
-			pEditor->SetScheme( pScheme );
-		}
+		pScheme = SchemeManager::GetInstance()->SchemeByName(scheme);
+	}
+	
+	if (pScheme != NULL)
+	{
+		static_cast<CMainFrame*>(g_Context.m_frame)->GetFactory().WithScheme(pScheme);
+	}
+	else
+	{
+		static_cast<CMainFrame*>(g_Context.m_frame)->GetFactory().Default();
 	}
 
 	return GetCurrentDocument();

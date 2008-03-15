@@ -2,7 +2,7 @@
  * @file extiface.h
  * @brief PN Extensions Interface
  * @author Simon Steele
- * @note Copyright (c) 2006-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -53,7 +53,7 @@ typedef enum {fnNotFound, fnFound, fnReachedStart} FindNextResult;
 namespace extensions
 {
 
-#define PN_EXT_IFACE_VERSION	5
+#define PN_EXT_IFACE_VERSION	6
 
 /////////////////////////////////////////////////////////////////////////////
 // Predeclare types
@@ -182,9 +182,9 @@ public:
 	virtual bool IsValid() const = 0;
 
 	/// Add a document event sink
-	virtual void AddEventSink(IDocumentEventSinkPtr sink) = 0;
+	virtual void AddEventSink(IDocumentEventSinkPtr& sink) = 0;
 	/// Remove a document event sink
-	virtual void RemoveEventSink(IDocumentEventSinkPtr sink) = 0;
+	virtual void RemoveEventSink(IDocumentEventSinkPtr& sink) = 0;
 
 	/// Find Next
 	virtual FindNextResult FindNext(ISearchOptions* options) = 0;
@@ -218,7 +218,8 @@ public:
 	virtual ~IAppEventSink(){}
 
 	/// Called when a new document is opened/created
-	virtual void OnNewDocument(IDocumentPtr doc) = 0;
+	virtual void OnNewDocument(IDocumentPtr& doc) = 0;
+	
 	/// Called when PN is closing (you are about to be unloaded!)
 	virtual void OnAppClose() = 0;
 };
@@ -260,6 +261,12 @@ public:
 
 	/// Called before the document is saved
 	virtual void OnBeforeSave(const char* filename) = 0;
+
+	/// Called after the document is saved
+	virtual void OnAfterSave() = 0;
+
+	/// Called when the document modified state changes
+	virtual void OnModifiedChanged(bool modified) = 0;
 };
 
 /**
@@ -285,7 +292,7 @@ public:
 	 * This method requests that a runner runs the text
 	 * of a given document as a script.
 	 */
-	virtual void RunDocScript(IDocumentPtr doc) = 0;
+	virtual void RunDocScript(IDocumentPtr& doc) = 0;
 };
 
 /**

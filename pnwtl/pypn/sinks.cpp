@@ -2,7 +2,7 @@
  * @file sinks.cpp
  * @brief Defines miscellaneous sinks used to register for events
  * @author Simon Steele
- * @note Copyright (c) 2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -20,7 +20,7 @@ using namespace boost::python;
 	static char THIS_FILE[] = __FILE__;
 #endif*/
 
-DocSink::DocSink(IDocumentPtr doc) : m_doc(doc)
+DocSink::DocSink(IDocumentPtr& doc) : m_doc(doc)
 {
 
 }
@@ -66,6 +66,32 @@ void DocSink::OnBeforeSave(const char* filename)
 	try
 	{
 		boost::python::call_method<void>(g_app->PyPnGlue().ptr(), "onDocSave", filename, (m_doc));
+	}
+	catch(error_already_set&)
+	{
+		std::string s = getPythonErrorString();
+		OutputDebugString(s.c_str());
+	}
+}
+
+void DocSink::OnAfterSave()
+{
+	try
+	{
+		boost::python::call_method<void>(g_app->PyPnGlue().ptr(), "onDocSaved", (m_doc));
+	}
+	catch(error_already_set&)
+	{
+		std::string s = getPythonErrorString();
+		OutputDebugString(s.c_str());
+	}
+}
+
+void DocSink::OnModifiedChanged(bool modified)
+{
+	try
+	{
+		boost::python::call_method<void>(g_app->PyPnGlue().ptr(), "onModifiedChanged", modified, (m_doc));
 	}
 	catch(error_already_set&)
 	{

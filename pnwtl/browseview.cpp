@@ -1,3 +1,12 @@
+/**
+ * @file browseview.cpp
+ * @brief File Browser View
+ * @author Simon Steele
+ * @note Copyright (c) 2008 Simon Steele - http://untidy.net/
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #include "stdafx.h"
 #include "resource.h"
 #include "browseview.h"

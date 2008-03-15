@@ -2,7 +2,7 @@
  * @file mainfrm.h
  * @brief Main Window for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -26,6 +26,8 @@ class CMSTreeViewCtrl;
 class CFindInFilesView;
 class CScriptDocker;
 class CBrowseDocker;
+class COpenFilesDocker;
+class EditorFactory;
 
 namespace Projects
 {
@@ -42,6 +44,7 @@ struct tagEnumChildrenStruct;
 // Auto-complete for the find combo box.
 #include "CustomAutoComplete.h"	// Autocompletion.
 #include "include/accombo.h"	// Autocompleting combo box.
+#include "editorFactory.h"
 
 typedef void(__stdcall CMainFrame::*lpChildEnumFn)(CChildFrame* pFrame, tagEnumChildrenStruct* pStruct);
 
@@ -197,6 +200,7 @@ public:
 		UPDATE_ELEMENT(ID_VIEW_WINDOWS_FINDRESULTS, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_WINDOWS_SCRIPTS, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_VIEW_WINDOWS_BROWSER, UPDUI_MENUPOPUP)
+		UPDATE_ELEMENT(ID_VIEW_WINDOWS_OPENFILES, UPDUI_MENUPOPUP)
 		UPDATE_ELEMENT(ID_FILE_SAVE, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
 		UPDATE_ELEMENT(ID_FILE_CLOSE, UPDUI_TOOLBAR)
 		UPDATE_ELEMENT(ID_FILE_CLOSEWORKSPACE, UPDUI_MENUPOPUP)
@@ -207,7 +211,7 @@ public:
 		HANDLE_MENU_COMMAND(TOOLS_RUNTOOL, OnRunTool)
 	END_MENU_HANDLER_MAP()
 
-	CChildFrame* NewEditor();
+	EditorFactory& GetFactory();
 
 	bool OnSchemeNew(LPVOID data);
 	bool OnRunTool(LPVOID pTool);
@@ -348,7 +352,8 @@ public:
 		DW_CTAGS = ID_VIEW_WINDOWS_CTAGS,
 		DW_FINDRESULTS = ID_VIEW_WINDOWS_FINDRESULTS,
 		DW_SCRIPTS = ID_VIEW_WINDOWS_SCRIPTS,
-		DW_BROWSER = ID_VIEW_WINDOWS_BROWSER
+		DW_BROWSER = ID_VIEW_WINDOWS_BROWSER,
+		DW_OPENFILES = ID_VIEW_WINDOWS_OPENFILES
 	} EDocker;
 
 	void ToggleDockingWindow(EDocker window, bool bSetValue = false, bool bShowing = true);
@@ -443,10 +448,12 @@ private:
 	CFindInFilesSink*		m_pFIFSink;
 	CScriptDocker*			m_pScriptsWnd;
 	CBrowseDocker*			m_pBrowseWnd;
+	COpenFilesDocker*		m_pOpenFilesWnd;
 	
 	CScintilla				m_Dummy;			///< Scintilla often doesn't like unloading and reloading.
 
 	TextClips::TextClipsManager* m_pTextClips;
+	EditorFactory			m_ChildFactory;
 
 	CSPopupMenu				m_NewMenu;
 	CMRUMenu				m_RecentFiles;

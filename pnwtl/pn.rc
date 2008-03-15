@@ -80,6 +80,7 @@ BEGIN
             MENUITEM "T&ags",                       32703
             MENUITEM "&Scripts",                    32705
             MENUITEM "File &Browser",               ID_VIEW_WINDOWS_BROWSER
+            MENUITEM "Open Fi&les",                 ID_VIEW_WINDOWS_OPENFILES
         END
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM SEPARATOR
@@ -205,6 +206,7 @@ BEGIN
             MENUITEM "T&ags",                       ID_VIEW_WINDOWS_CTAGS
             MENUITEM "&Scripts",                    ID_VIEW_WINDOWS_SCRIPTS
             MENUITEM "File &Browser",               ID_VIEW_WINDOWS_BROWSER
+            MENUITEM "Open Fi&les",                 ID_VIEW_WINDOWS_OPENFILES
         END
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM SEPARATOR
@@ -682,6 +684,7 @@ IDI_TASKDLG_ARROW_HOT   ICON                    "res\\TaskDlgArrowHot.ico"
 IDI_TASKDLG_ARROW_NORMAL ICON                    "res\\TaskDlgArrowNormal.ico"
 IDI_TASKDLG_CHEVRON_LESS ICON                    "res\\TaskDlgChevronLess.ico"
 IDI_TASKDLG_CHEVRON_MORE ICON                    "res\\TaskDlgChevronMore.ico"
+IDI_OPENFILES           ICON                    "res\\folder_table.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1697,6 +1700,7 @@ IDB_TBMAINDIS           BITMAP                  "res\\toolbardisabled.bmp"
 IDB_REDCLOSE            BITMAP                  "res\\redclose.bmp"
 IDB_TBMAIN24            BITMAP                  "res\\tbrMain24.bmp"
 IDB_TBEDIT24            BITMAP                  "res\\tbrEdit24.bmp"
+IDB_OPENFILES           BITMAP                  "res\\openfilesimages.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1845,7 +1849,7 @@ BEGIN
     ID_VIEW_WINDOWS_FINDRESULTS "Find Results"
     ID_VIEW_WINDOWS_SCRIPTS "Scripts"
     ID_VIEW_WINDOWS_BROWSER "File Browser"
-    IDS_PROJSAVECHANGES     "Do you want to save changes to the project: %s?"
+    ID_VIEW_WINDOWS_OPENFILES "Open Files"
     IDS_PROJCLOSEFILES      "Close all project files?"
     IDS_OPENANOTHER         "Do you want to open another copy of %s?"
     IDS_TASKDLG_OK          "&OK"
@@ -1859,6 +1863,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_PROJECTDOESNOTEXIST "The specified project does not exist,\n would you like to create it?"
+    IDS_PROJSAVECHANGES     "Do you want to save changes to the project: %s?"
 END
 
 STRINGTABLE 
