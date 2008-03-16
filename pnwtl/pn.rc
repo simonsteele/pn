@@ -685,6 +685,7 @@ IDI_TASKDLG_ARROW_NORMAL ICON                    "res\\TaskDlgArrowNormal.ico"
 IDI_TASKDLG_CHEVRON_LESS ICON                    "res\\TaskDlgChevronLess.ico"
 IDI_TASKDLG_CHEVRON_MORE ICON                    "res\\TaskDlgChevronMore.ico"
 IDI_OPENFILES           ICON                    "res\\folder_table.ico"
+IDI_BROWSER             ICON                    "res\\folder_magnify.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

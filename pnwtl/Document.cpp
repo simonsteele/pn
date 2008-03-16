@@ -153,7 +153,7 @@ LRESULT Document::SendEditorMessage(UINT msg, WPARAM wParam, const char* strPara
 
 void Document::OnCharAdded(char c)
 {
-	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	for(EditEventSinks::const_iterator i = m_editSinks.begin(); i != m_editSinks.end(); ++i)
 	{
 		(*i)->OnCharAdded(c);
 	}
@@ -214,7 +214,19 @@ void Document::AddEventSink(extensions::IDocumentEventSinkPtr& sink)
 
 void Document::RemoveEventSink(extensions::IDocumentEventSinkPtr& sink)
 {
-	m_sinks.remove(sink);
+	std::remove(m_sinks.begin(), m_sinks.end(), sink);
+	//m_sinks.remove(sink);
+}
+
+void Document::AddEventSink(extensions::ITextEditorEventSinkPtr& sink)
+{
+	m_editSinks.push_back(sink);
+}
+
+void Document::RemoveEventSink(extensions::ITextEditorEventSinkPtr& sink)
+{
+	std::remove(m_editSinks.begin(), m_editSinks.end(), sink);
+	//m_editSinks.remove(sink);
 }
 
 FindNextResult Document::FindNext(extensions::ISearchOptions* options)

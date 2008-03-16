@@ -570,51 +570,24 @@ void MultipleInstanceManager::SendParameters()
 		return;
 	}
 
-	// Build a null separated list of parameters, store in shared memory 
-	// and broadcast that it's there. We also pad out any filenames to include
-	// a path if they're relative.
-	TCHAR curDir[MAX_PATH+1];
-	::GetCurrentDirectory(MAX_PATH+1, curDir);
-
 	GArray<TCHAR> parmarray;
 	int size = 0;
 	int paSize = 0;
-	for(int i = 1; i < __argc; i++)
+	
+	std::list<tstring> args = GetCommandLineArgs();
+	for(std::list<tstring>::const_iterator i = args.begin(); i != args.end(); ++i)
 	{
-		LPTSTR arg = __argv[i];
-		bool bOwn = false;
-
-		if(arg[0] != _T('/') && arg[0] != _T('-'))
-		{
-			CFileName fn(arg);
-			
-			// If it's a relative path, root it and
-			// make arg point to it.
-			if(fn.IsRelativePath())
-			{
-				fn.Root(curDir);
-				arg = new TCHAR[_tcslen(fn.c_str())+1];
-				_tcscpy(arg, fn.c_str());
-				bOwn = true;
-			}
-		}
-
-		paSize = _tcslen(arg);
+		paSize = (*i).size();
 		
 		parmarray.grow( size + paSize + 1);
 
-		_tcscpy(&parmarray[size], arg);
+		_tcscpy(&parmarray[size], (*i).c_str());
 
 		size += (paSize + 1);
-
-		if(bOwn)
-		{
-			delete [] arg;
-		}
 	}
 
 	// Append another NULL.
-	parmarray.grow(size+1);
+	parmarray.grow(size + 1);
 	parmarray[size] = _T('\0');
 
 	HANDLE	hMappedFile;
@@ -675,11 +648,11 @@ std::list<tstring> GetCommandLineArgs()
 	::GetCurrentDirectory(MAX_PATH+1, curDir);
 
 	// Process cmdline params... __argv and __argc in VC++
-	for(int i = 1; i < __argc; i++)
+	for (int i = 1; i < __argc; i++)
 	{
 		tstring arg = __argv[i]; 
 
-		if(arg[0] != _T('/') && arg[0] != _T('-'))
+		if (arg[0] != _T('/') && arg[0] != _T('-'))
 		{
 			CFileName fn(arg);
 			
@@ -699,10 +672,20 @@ std::list<tstring> GetCommandLineArgs()
 			// a rooted filename
 			params.insert(params.end(), arg);
 
-			if(i < (__argc-1))
+			if (i < (__argc - 1))
 			{
-				arg = __argv[++i];
-				params.insert(params.end(), arg);
+				bool takeNext = ( arg[1] == _T('l') || arg[1] == _T('c') || arg[1] == _T('p') );
+
+				if ( arg[1] == _T('-') )
+				{
+					takeNext = ( arg[2] == _T('l') || arg[2] == _T('c') || arg[2] == _T('p') );
+				}
+
+				if (takeNext)
+				{
+					arg = __argv[++i];
+					params.insert(params.end(), arg);
+				}
 			}
 		}
 	}

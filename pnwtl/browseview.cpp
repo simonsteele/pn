@@ -36,9 +36,9 @@ CBrowseDocker::~CBrowseDocker()
 
 LRESULT CBrowseDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	/*HICON hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_CTAGS), 
+	HICON hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_BROWSER), 
 			IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
-	SetIcon(hIconSmall, FALSE);*/
+	SetIcon(hIconSmall, FALSE);
 
 	RECT rc;
 	GetClientRect(&rc);

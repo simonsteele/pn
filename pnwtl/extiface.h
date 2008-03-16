@@ -62,6 +62,7 @@ class IPN;
 class IDocument;
 class IAppEventSink;
 class IDocumentEventSink;
+class ITextEditorEventSink;
 class IScriptRegistry;
 class ITextOutput;
 class ISearchOptions;
@@ -73,6 +74,7 @@ class ITagSource;
 //-------------------------------------------------------------------------
 typedef boost::shared_ptr<IDocument> IDocumentPtr;
 typedef boost::shared_ptr<IDocumentEventSink> IDocumentEventSinkPtr;
+typedef boost::shared_ptr<ITextEditorEventSink> ITextEditorEventSinkPtr;
 typedef boost::shared_ptr<IAppEventSink> IAppEventSinkPtr;
 /////////////////////////////////////////////////////////////////////////////
 
@@ -186,6 +188,11 @@ public:
 	/// Remove a document event sink
 	virtual void RemoveEventSink(IDocumentEventSinkPtr& sink) = 0;
 
+	/// Add a text editor event sink
+	virtual void AddEventSink(ITextEditorEventSinkPtr& sink) = 0;
+	/// Remove a text editor event sink
+	virtual void RemoveEventSink(ITextEditorEventSinkPtr& sink) = 0;
+
 	/// Find Next
 	virtual FindNextResult FindNext(ISearchOptions* options) = 0;
 
@@ -242,10 +249,9 @@ public:
  * @brief Document Event Interface
  * 
  * This event sink is used on a per-document basis to fire
- * events related to that document, including events from the 
- * @see ITextEditorEventSink interface.
+ * events related to that document
  */
-class IDocumentEventSink : public ITextEditorEventSink
+class IDocumentEventSink
 {
 public:
 	virtual ~IDocumentEventSink(){}

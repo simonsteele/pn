@@ -16,7 +16,8 @@ class Document : public extensions::IDocument, public extensions::ITextEditorEve
 {
 	friend class CChildFrame;
 
-	typedef std::list<extensions::IDocumentEventSinkPtr> EventSinks;
+	typedef std::vector<extensions::IDocumentEventSinkPtr> EventSinks;
+	typedef std::vector<extensions::ITextEditorEventSinkPtr> EditEventSinks;
 
 	public:
 		Document(LPCTSTR filename = NULL);
@@ -58,6 +59,9 @@ class Document : public extensions::IDocument, public extensions::ITextEditorEve
 		virtual void AddEventSink(extensions::IDocumentEventSinkPtr& sink);
 		virtual void RemoveEventSink(extensions::IDocumentEventSinkPtr& sink);
 
+		virtual void AddEventSink(extensions::ITextEditorEventSinkPtr& sink);
+		virtual void RemoveEventSink(extensions::ITextEditorEventSinkPtr& sink);
+
 		virtual FindNextResult FindNext(extensions::ISearchOptions* options);
 		virtual bool Replace(extensions::ISearchOptions* options);
 		virtual int ReplaceAll(extensions::ISearchOptions* options);
@@ -79,6 +83,7 @@ class Document : public extensions::IDocument, public extensions::ITextEditorEve
 		tstring			m_sFilename;
 		tstring			m_sTitle;
 		EventSinks		m_sinks;
+		EditEventSinks	m_editSinks;
 };
 
 #endif // #ifndef document_h__included_D464731B_1039_49da_A86C_5CB5F08CDD47

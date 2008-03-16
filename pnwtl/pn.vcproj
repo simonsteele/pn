@@ -1032,6 +1032,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\folder_magnify.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\folder_table.ico"
 				>
 			</File>

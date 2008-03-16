@@ -1127,15 +1127,14 @@ LRESULT CChildFrame::OnGoToDef(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 LRESULT CChildFrame::OnGotoLine(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam/**/, BOOL& /*bHandled*/)
 {
 	int line= (int)lParam-1;
-	m_view.GotoLine(line);
-	m_view.EnsureVisibleEnforcePolicy(line);
+	m_view.GotoLineEnsureVisible(line);
 
 	int offset = m_view.GetFirstVisibleLine();
-	
+	line = m_view.VisibleFromDocLine(line);
 	// Put the line we jump to two off the top of the screen...
 	offset = (line - offset) - 2;
 	m_view.LineScroll(0, offset);
-	::SetFocus(m_hWnd);
+	SetFocus();
 	return 0;
 }
 
