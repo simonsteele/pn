@@ -506,8 +506,10 @@ void CTagsTagSource::parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT
 					p += (2*sizeof(char));
 					
 					// find $/
-					pEndDecl = strchr(p, '$');
+					pEndDecl = strrchr(p, '$');
 					if (pEndDecl == NULL)
+						return;
+					if (*(pEndDecl+1) != '/')  //Check '/' following '$'
 						return;
 					*pEndDecl = '\0';
 					
