@@ -2,7 +2,7 @@
  * @file OptionsRegistry.h
  * @brief Registry configuration functionality.
  * @author Simon Steele
- * @note Copyright (c) 2004 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2004-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -58,9 +58,6 @@ RegistryOptions::RegistryOptions()
 {
 	groupLocked = false;
 	_preg = new CSRegistry();
-
-	// Load settings
-	loadCache();
 }
 
 RegistryOptions::~RegistryOptions()
@@ -76,6 +73,9 @@ void RegistryOptions::group(LPCTSTR location)
 {
 	groupLocked = true;
 	open(location);
+	/*LOG("\n**** GROUP: ");
+	LOG(location);
+	LOG(" ****");*/
 }
 
 void RegistryOptions::open(LPCTSTR location)
@@ -94,27 +94,46 @@ void RegistryOptions::ungroup()
 {
 	close();
 	groupLocked = false;
+	/*LOG("\n**** UNGROUP****");*/
 }
 
 bool RegistryOptions::Get(LPCTSTR subkey, LPCTSTR value, bool bDefault)
 {
 	RegAccess a(subkey, this);
 	
-	return _preg->ReadBool(value, bDefault);
+	bool bVal = _preg->ReadBool(value, bDefault);
+
+	/*TCHAR buffer[1024];
+	_stprintf(buffer, "\n<%s.%s: %s", subkey, value, bVal ? "true" : "false");
+	LOG(buffer);*/
+
+	return bVal;
 }
 
 int RegistryOptions::Get(LPCTSTR subkey, LPCTSTR value, int iDefault)
 {
 	RegAccess a(subkey, this);
 
-	return _preg->ReadInt(value, iDefault);
+	int iVal = _preg->ReadInt(value, iDefault);
+
+	/*TCHAR buffer[1024];
+	_stprintf(buffer, "\n<%s.%s: %d", subkey, value, iVal);
+	LOG(buffer);*/
+
+	return iVal;
 }
 
 uint64_t RegistryOptions::Get(LPCTSTR subkey, LPCTSTR value, uint64_t iDefault)
 {
 	RegAccess a(subkey, this);
 
-	return _preg->ReadUInt64(value, iDefault);
+	uint64_t iVal = _preg->ReadUInt64(value, iDefault);
+
+	/*TCHAR buffer[1024];
+	_stprintf(buffer, "\n<%s.%s: %I64d", subkey, value, iVal);
+	LOG(buffer);*/
+
+	return iVal;
 }
 
 tstring RegistryOptions::Get(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
@@ -124,6 +143,11 @@ tstring RegistryOptions::Get(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
 	tstring str;
 	if(!_preg->ReadString(value, str))
 		str = szDefault;
+	
+	/*TCHAR buffer[1024];
+	_stprintf(buffer, "\n<%s.%s: %s", subkey, value, str.c_str());
+	LOG(buffer);*/
+
 	return str;
 }
 
@@ -139,6 +163,10 @@ void RegistryOptions::Set(LPCTSTR subkey, LPCTSTR value, bool bVal)
 	RegAccess a(subkey, this);
 
 	_preg->WriteBool(value, bVal);
+
+	/*TCHAR buffer[1024];
+	_stprintf(buffer, "\n>%s.%s: %s", subkey, value, bVal ? "true" : "false");
+	LOG(buffer);*/
 }
 
 void RegistryOptions::Set(LPCTSTR subkey, LPCTSTR value, int iVal)
@@ -146,6 +174,10 @@ void RegistryOptions::Set(LPCTSTR subkey, LPCTSTR value, int iVal)
 	RegAccess a(subkey, this);
 
 	_preg->WriteInt(value, iVal);
+
+	/*TCHAR buffer[1024];
+	_stprintf(buffer, "\n>%s.%s: %d", subkey, value, iVal);
+	LOG(buffer);*/
 }
 
 void RegistryOptions::Set(LPCTSTR subkey, LPCTSTR value, uint64_t iVal)
@@ -153,6 +185,10 @@ void RegistryOptions::Set(LPCTSTR subkey, LPCTSTR value, uint64_t iVal)
 	RegAccess a(subkey, this);
 
 	_preg->WriteUInt64(value, iVal);
+
+	/*TCHAR buffer[1024];
+	_stprintf(buffer, "\n>%s.%s: %I64d", subkey, value, iVal);
+	LOG(buffer);*/
 }
 
 void RegistryOptions::Set(LPCTSTR subkey, LPCTSTR value, LPCTSTR szVal)
@@ -160,4 +196,8 @@ void RegistryOptions::Set(LPCTSTR subkey, LPCTSTR value, LPCTSTR szVal)
 	RegAccess a(subkey, this);
 
 	_preg->WriteString(value, szVal);
+
+	//TCHAR buffer[1024];
+	//_stprintf(buffer, "\n>%s.%s: %s", subkey, value, szVal);
+	//LOG(buffer);
 }

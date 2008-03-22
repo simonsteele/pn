@@ -86,7 +86,7 @@ class Options : public extensions::IOptions
 class OptionsFactory
 {
 public:
-	typedef enum {OTRegistry, OTIni} EOptionsType;
+	typedef enum {OTRegistry, OTIni, OTXml, OTSqlite} EOptionsType;
 
 	/**
 	 * This function will create a new options object of a given type.

@@ -2,7 +2,7 @@
  * @file optionsmanager.cpp
  * @brief Configuration functionality.
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -39,12 +39,8 @@ BOOL PNGetSpecialFolderPath (LPTSTR path, int folder)
 // Options
 //////////////////////////////////////////////////////////////////////////////
 
-Options::Options()
+Options::Options() : m_UserSettingsPath(_T(""))
 {
-	// Initialisation	
-	m_SearchOptions.Found = false;
-	m_SearchOptions.NoCursorMove = false;
-	m_UserSettingsPath = _T("");
 }
 
 Options::~Options()
@@ -376,6 +372,8 @@ const TCHAR* Options::GetS(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
 
 #include "OptionsRegistry.h"
 #include "OptionsIni.h"
+#include "OptionsXml.h"
+//#include "..\optionstest\OptionsSqlite.h"
 
 Options* OptionsFactory::GetOptions(EOptionsType type, Options* oldOptions)
 {
@@ -388,6 +386,12 @@ Options* OptionsFactory::GetOptions(EOptionsType type, Options* oldOptions)
 		case OTIni:
 			newInstance = new IniOptions;
 			break;
+		case OTXml:
+			newInstance = new XmlOptions;
+			break;
+		/*case OTSqlite:
+			newInstance = new SqliteOptions;
+			break;*/
 	}
 
 	if(oldOptions)
