@@ -534,6 +534,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OptionsXml.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\outputscintilla.cpp"
 				>
 			</File>
@@ -836,6 +840,10 @@
 			</File>
 			<File
 				RelativePath=".\OptionsRegistry.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OptionsXml.h"
 				>
 			</File>
 			<File
