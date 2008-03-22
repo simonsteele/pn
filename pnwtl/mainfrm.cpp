@@ -233,11 +233,11 @@ void __stdcall CMainFrame::WorkspaceChildEnumNotify(CChildFrame* pChild, SChildE
 		Projects::File* pFile = s->pWorkspace->FindFile(filename.c_str());
 
 		if(pFile)
-			s->FoundWindows.push_back(pChild);
+			s->FoundWindows.push_front(pChild); //s->FoundWindows.push_back(pChild);
 	}
 	else
 	{
-		s->FoundWindows.push_back(pChild);
+		s->FoundWindows.push_front(pChild); //s->FoundWindows.push_back(pChild);
 	}
 }
 
@@ -250,7 +250,7 @@ void __stdcall CMainFrame::WorkspaceChildCloseNotify(CChildFrame* pChild, SChild
 
 	if(pFile)
 	{
-		s->FoundWindows.push_back(pChild);
+		s->FoundWindows.push_front(pChild); //s->FoundWindows.push_back(pChild);
 
 		// check bCanClose first to see if we've already decided not to close.
 		if(s->bCanClose && !pChild->CanClose())
@@ -1554,7 +1554,7 @@ LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 		if(pChild != NULL)
 		{
 			path = pChild->GetFileName( FN_PATH );
-			dlgOpen.m_ofn.lpstrInitialDir = path.c_str();
+			dlgOpen.SetInitialPath(path.c_str());
 		}
 	}
 
@@ -1674,6 +1674,25 @@ LRESULT CMainFrame::OnFileCloseAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 LRESULT CMainFrame::OnFileSaveWorkspaceState(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CPNSaveDialog dlgSave(LS(IDS_WORKSPACEFILES), NULL, _T("pnws"));
+	TCHAR szFileName[MAX_PATH] = {0};
+
+	Projects::Workspace* pWorkspace = GetActiveWorkspace();
+	if (pWorkspace != NULL)
+	{
+		LPCTSTR path = NULL;
+
+		// See if there's a sensible path to save the workspace in.
+		const Projects::PROJECT_LIST& projects = pWorkspace->GetProjects();
+		if (projects.size() > 0)
+		{
+			path = (*projects.begin())->GetBasePath();
+		}
+		
+		_tcscpy(szFileName, pWorkspace->GetName());
+		dlgSave.m_ofn.lpstrFile = szFileName;
+		dlgSave.m_ofn.nMaxFile = MAX_PATH;
+		dlgSave.SetInitialPath(path);
+	}
 
 	if(dlgSave.DoModal() == IDOK)
 	{
@@ -2120,12 +2139,13 @@ LRESULT CMainFrame::OnFindComboEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	if( pEditor != NULL && lstrlen((LPCTSTR)wt) > 0 )
 	{
 		SearchOptions* pFindOptions = reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() );
-		if(pFindOptions->FindText != (LPCTSTR)wt)
+		if(_tcscmp(pFindOptions->GetFindText(), (LPCTSTR)wt) != 0)
 		{
-			pFindOptions->Found = false;
-			pFindOptions->FindText = (LPCTSTR)wt;
+			pFindOptions->SetFound(false);
+			pFindOptions->SetFindText((LPCTSTR)wt);
 			m_FindCombo.AddString((LPCTSTR)wt);
 		}
+
 		pEditor->FindNext(pFindOptions);
 	}
 	
@@ -2222,12 +2242,12 @@ Projects::Workspace* CMainFrame::GetActiveWorkspace()
 void CMainFrame::FindInFiles(SearchOptions* options)
 {
 	FindInFiles::GetInstance()->Start(
-		options->FindText,
-		options->Path,
-		options->FileExts,
-		options->Recurse,
-		options->MatchCase,
-		options->IncludeHidden,
+		options->GetFindText(),
+		options->GetSearchPath(),
+		options->GetFileExts(),
+		options->GetRecurse(),
+		options->GetMatchCase(),
+		options->GetIncludeHidden(),
 		m_pFindResultsWnd);
 }
 
@@ -2955,7 +2975,9 @@ bool CMainFrame::SaveWorkspaceAs(Projects::Workspace* pWorkspace)
 	tstring st = LS(IDS_SAVESOMETHING);
 	st += LS(IDS_PROJECTGROUP);
 	dlg.SetTitle(st.c_str());
-	
+	tstring setfn = pWorkspace->GetName();
+	dlg.m_ofn.lpstrFile = const_cast<LPTSTR>(setfn.c_str());
+	dlg.m_ofn.nMaxFile = MAX_PATH;
 	dlg.SetInitialPath(path);
 
 	if(dlg.DoModal() == IDOK)
