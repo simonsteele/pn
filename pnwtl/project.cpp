@@ -241,7 +241,11 @@ Folder::~Folder()
 
 void Folder::SetName(LPCTSTR name_)
 {
-	name = name_;
+	if (name != name_)
+	{
+		name = name_;
+		SetDirty();
+	}
 }
 
 LPCTSTR Folder::GetName()
