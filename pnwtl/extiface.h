@@ -402,6 +402,9 @@ public:
 	virtual bool GetUseSlashes() const = 0;
 	virtual void SetUseSlashes(bool slashes) = 0;
 
+	virtual bool GetNoCursorMove() const = 0;
+	virtual void SetNoCursorMove(bool reposition) = 0;
+
 	// Replace Options:
 	virtual const char* GetReplaceText() const = 0;
 	virtual void SetReplaceText(const char* text) = 0;

@@ -139,10 +139,10 @@ CFindBar::CFindBar()
 {
 	m_pLastFrame = NULL;
 	
-	so.Loop = true;
-	so.UseRegExp = false;
-	so.MatchCase = false;
-	so.MatchWholeWord = false;
+	so.SetLoopOK(true);
+	so.SetUseRegExp(false);
+	so.SetMatchCase(false);
+	so.SetMatchWholeWord(false);
 }
 
 void CFindBar::SetControllingHWND(HWND hWnd)
@@ -222,7 +222,7 @@ LRESULT CFindBar::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 		m_txtbox.SetWindowText("");
 		m_txtbox.SetDoRed(false);
 		m_lasttext = "";
-		so.Found = false;
+		so.SetFound(false);
 		m_pLastFrame = NULL;
 	}
 
@@ -265,7 +265,7 @@ LRESULT CFindBar::OnFindPrevClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 LRESULT CFindBar::OnMatchCaseClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	so.MatchCase = m_matchCase.GetCheck() == BST_CHECKED;
+	so.SetMatchCase(m_matchCase.GetCheck() == BST_CHECKED);
 
 	// Disabled for now, bugs being raised about searching when this is checked.
 	// Could be reintroduced with a check to see if the current selection still matches.
@@ -283,19 +283,19 @@ void CFindBar::findNext(LPCTSTR text, bool searchUp)
 	if(pChild != NULL)
 	{
 		if(m_pLastFrame != pChild)
-			so.Found = false;
+			so.SetFound(false);
 		m_pLastFrame = pChild;
 		
 		if(text == NULL)
 		{
-			so.FindText = m_lasttext.c_str();
+			so.SetFindText(m_lasttext.c_str());
 		}
 		else
 		{
-			so.FindText = text;
+			so.SetFindText(text);
 		}
 
-		so.Direction = !searchUp;
+		so.SetSearchBackwards(searchUp);
 
 		CTextView* pTV = pChild->GetTextView();
 		if(!pTV)
@@ -306,7 +306,7 @@ void CFindBar::findNext(LPCTSTR text, bool searchUp)
 		CharacterRange cr;
 		pTV->GetSel(cr);
 
-		if(so.FindText != m_lasttext.c_str())
+		if(m_lasttext != so.GetFindText())
 		{
 			// Kill the selection, so we re-select if we find good stuff,
 			// or move further on to find it.
@@ -325,12 +325,12 @@ void CFindBar::findNext(LPCTSTR text, bool searchUp)
 		if(result == fnNotFound)
 		{
 			pTV->SetSel(cr.cpMin, cr.cpMax);
-			reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() )->Found = false;
+			reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() )->SetFound(false);
 			m_txtbox.SetDoRed(true);
 		}
 		else
 		{
-			reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() )->Found = true;
+			reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() )->SetFound(true);
 			m_txtbox.SetDoRed(false);
 
 			bool showWrap = (result == fnReachedStart);
@@ -339,7 +339,7 @@ void CFindBar::findNext(LPCTSTR text, bool searchUp)
 		}
 
 		// Store text in main search options, and in our stored one.
-		OPTIONS->GetSearchOptions()->SetFindText( so.FindText );
-		m_lasttext = so.FindText;
+		OPTIONS->GetSearchOptions()->SetFindText( so.GetFindText() );
+		m_lasttext = so.GetFindText();
 	}
 }

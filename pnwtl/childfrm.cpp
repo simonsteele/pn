@@ -694,12 +694,12 @@ LRESULT CChildFrame::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 LRESULT CChildFrame::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	SearchOptions* pOptions = reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() );
-	if( pOptions->FindText != _T("") )
+	if( _tcslen(pOptions->GetFindText()) > 0 )
 	{
 		if( !/*m_view.*/FindNext(pOptions) )
 		{
 			CString cs;
-			cs.Format(IDS_FINDNOTFOUND, pOptions->FindText);
+			cs.Format(IDS_FINDNOTFOUND, pOptions->GetFindText());
 			MessageBox(cs, LS(IDR_MAINFRAME), MB_OK);
 		}
 	}
@@ -709,18 +709,18 @@ LRESULT CChildFrame::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 LRESULT CChildFrame::OnFindPrevious(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	SearchOptions* pOptions = reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() );
-	if( pOptions->FindText != _T("") )
+	if( _tcslen(pOptions->GetFindText()) > 0 )
 	{
-		pOptions->Direction = !pOptions->Direction;
+		pOptions->SetSearchBackwards(!pOptions->GetSearchBackwards());
 
 		if( !/*m_view.*/FindNext(pOptions) )
 		{
 			CString cs;
-			cs.Format(IDS_FINDNOTFOUND, pOptions->FindText);
+			cs.Format(IDS_FINDNOTFOUND, pOptions->GetFindText());
 			MessageBox(cs, LS(IDR_MAINFRAME), MB_OK);
 		}
 
-		pOptions->Direction = !pOptions->Direction;
+		pOptions->SetSearchBackwards(!pOptions->GetSearchBackwards());
 	}
 	
 	return TRUE;
@@ -1898,15 +1898,21 @@ FindNextResult CChildFrame::FindNext(SearchOptions* options)
 
 bool CChildFrame::Replace(SearchOptions* options)
 {
-	if(options->Found)
+	if(options->GetFound())
+	{
 		return m_view.ReplaceOnce(options);
+	}
 	else
 	{
 		m_view.FindNext(options);
-		if(options->Found)
+		if(options->GetFound())
+		{
 			return m_view.ReplaceOnce(options);
+		}
 		else
+		{
 			return false;
+		}
 	}
 }
 

@@ -13,6 +13,7 @@
 
 #include "scintillaif.h"
 
+namespace { class ISearchOptions; }
 class IWordProvider;
 class BaseAutoCompleteHandler;
 typedef boost::shared_ptr<BaseAutoCompleteHandler> AutoCompleteHandlerPtr;
@@ -27,9 +28,9 @@ public:
 	CScintillaImpl();
 	~CScintillaImpl();
 
-	int FindNext(SFindOptions* pOptions);
-	bool ReplaceOnce(SReplaceOptions* pOptions);
-	int ReplaceAll(SReplaceOptions* pOptions);
+	int FindNext(extensions::ISearchOptions* pOptions);
+	bool ReplaceOnce(extensions::ISearchOptions* pOptions);
+	int ReplaceAll(extensions::ISearchOptions* pOptions);
 	//void HighlightAll(SFindOptions* pOptions); - doesn't work with all schemes...
 
 	void ToggleFold();

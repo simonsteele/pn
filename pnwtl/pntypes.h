@@ -16,41 +16,14 @@ typedef __int64				int64_t;
 
 #include "scintilla.h"
 
-typedef struct tagFindOptions
-{
-	CString FindText;
-	bool MatchWholeWord;
-	bool MatchCase;
-	bool UseRegExp;
-	bool SearchAll;
-	bool Direction;		// true is down.
-	bool Loop;
-	bool Found;
-	bool UseSlashes;
-	bool NoCursorMove;
-} SFindOptions;
-
-typedef struct tagSearchOptions : tagFindOptions
-{
-	// Replace
-	CString ReplaceText;
-	bool	InSelection;
-
-	// Find In Files
-	CString	FileExts;
-	CString Path;
-	bool Recurse;
-	bool IncludeHidden;
-} BasicSearchOptions;
-
-typedef BasicSearchOptions SReplaceOptions;
-
 /**
  * Safe external version of SearchOptions
  */
-class SearchOptions : public BasicSearchOptions, public extensions::ISearchOptions
+class SearchOptions : public extensions::ISearchOptions
 {
 public:
+	SearchOptions();
+
 	// Basic Options:
 	virtual const char* GetFindText() const;
 	virtual void SetFindText(const char* findText);
@@ -100,6 +73,31 @@ public:
 	
 	// Result:
 	virtual bool GetFound() const;
+	virtual void SetFound(bool found);
+
+private:
+	friend class Options;
+
+	CString FindText;
+	bool MatchWholeWord;
+	bool MatchCase;
+	bool UseRegExp;
+	bool SearchAll;
+	bool Direction;		// true is down.
+	bool Loop;
+	bool Found;
+	bool UseSlashes;
+	bool NoCursorMove;
+
+	// Replace
+	CString ReplaceText;
+	bool	InSelection;
+
+	// Find In Files
+	CString	FileExts;
+	CString Path;
+	bool Recurse;
+	bool IncludeHidden;
 };
 
 typedef struct tagPrintOptions

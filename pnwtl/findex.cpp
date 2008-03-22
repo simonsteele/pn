@@ -297,15 +297,15 @@ LRESULT CFindExDialog::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 	if((BOOL)wParam)
 	{
 		SearchOptions* pOptions = reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() );
-		if(m_FindText.GetLength() == 0 && pOptions->FindText.GetLength())
-			m_FindText = pOptions->FindText;
-		m_ReplaceText = pOptions->ReplaceText;
-		m_FindTypeText = pOptions->FileExts;
+		if(m_FindText.GetLength() == 0 && _tcslen(pOptions->GetFindText()) > 0)
+			m_FindText = pOptions->GetFindText();
+		m_ReplaceText = pOptions->GetReplaceText();
+		m_FindTypeText = pOptions->GetFileExts();
 
 		switch(m_lastFifLocation)
 		{
 			case fwUser:
-				m_FindWhereText = pOptions->Path;
+				m_FindWhereText = pOptions->GetSearchPath();
 				break;
 			case fwCurrentFile:
 				m_FindWhereCombo.SetCurSel(0);
@@ -318,13 +318,13 @@ LRESULT CFindExDialog::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 				break;
 		}
 
-		m_bMatchCase = pOptions->MatchCase;
-		m_bMatchWhole = pOptions->MatchWholeWord;
-		m_bSearchUp = !pOptions->Direction;
-		m_bRegExp = pOptions->UseRegExp;
-		m_bUseSlashes = pOptions->UseSlashes;
-		m_bSearchSubdirs = pOptions->Recurse;
-		m_bIncludeHidden = pOptions->IncludeHidden;
+		m_bMatchCase = pOptions->GetMatchCase();
+		m_bMatchWhole = pOptions->GetMatchWholeWord();
+		m_bSearchUp = pOptions->GetSearchBackwards();
+		m_bRegExp = pOptions->GetUseRegExp();
+		m_bUseSlashes = pOptions->GetUseSlashes();
+		m_bSearchSubdirs = pOptions->GetRecurse();
+		m_bIncludeHidden = pOptions->GetIncludeHidden();
 
 		//m_bSearchAll = pOptions->SearchAll;
 		
@@ -745,25 +745,25 @@ SearchOptions* CFindExDialog::getOptions()
 	// If the user has changed to a different scintilla window
 	// then Found is no longer necessarily true.
 	if(editorChanged())
-		pOptions->Found = false;
+		pOptions->SetFound(false);
 
-	ELookWhere where = (ELookWhere)m_SearchWhere;
+	ELookWhere lookWhere = (ELookWhere)m_SearchWhere;
 
-	pOptions->FindText			= m_FindText;
-	pOptions->ReplaceText		= m_ReplaceText;
-	pOptions->Direction			= (m_bSearchUp == FALSE);
-	pOptions->MatchCase			= (m_bMatchCase == TRUE);
-	pOptions->MatchWholeWord	= (m_bMatchWhole == TRUE);
-	pOptions->UseRegExp			= (m_bRegExp == TRUE);
-	pOptions->UseSlashes		= (m_bUseSlashes == TRUE);
-	pOptions->InSelection		= (where == elwSelection);
-	pOptions->SearchAll			= (where == elwAllDocs);
-	pOptions->Recurse			= (m_bSearchSubdirs == TRUE);
-	pOptions->IncludeHidden		= (m_bIncludeHidden == TRUE);
-	pOptions->FileExts			= m_FindTypeText;
+	pOptions->SetFindText			( m_FindText );
+	pOptions->SetReplaceText		( m_ReplaceText );
+	pOptions->SetSearchBackwards	( m_bSearchUp == FALSE );
+	pOptions->SetMatchCase			( m_bMatchCase == TRUE );
+	pOptions->SetMatchWholeWord		( m_bMatchWhole == TRUE );
+	pOptions->SetUseRegExp			( m_bRegExp == TRUE );
+	pOptions->SetUseSlashes		    ( m_bUseSlashes == TRUE );
+	pOptions->SetReplaceInSelection	( lookWhere == elwSelection );
+	//pOptions->SetSearchAll			( lookWhere == elwAllDocs );
+	pOptions->SetRecurse			( m_bSearchSubdirs == TRUE );
+	pOptions->SetIncludeHidden		( m_bIncludeHidden == TRUE );
+	pOptions->SetFileExts			( m_FindTypeText );
 	
 	///@todo Add a user interface counterpart for the loop search option.
-	pOptions->Loop				= true;
+	pOptions->SetLoopOK(true);
 
 	// Where are we going to look?
 	pOptions->SetSearchPath(m_FindWhereText);

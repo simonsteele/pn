@@ -596,14 +596,14 @@ void CScintillaImpl::ManageBraceMatch()
 // Search and Replace code
 ////////////////////////////////////////////////////////////
 
-int CScintillaImpl::FindNext(SFindOptions* pOptions)
+int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 {
 	CharacterRange	cr;
 	int				startPosition, endPosition;
 	int				bRet = fnNotFound;
 	bool			checkFoundPos = true;
 
-	CString localFindText = pOptions->FindText;
+	CString localFindText(pOptions->GetFindText());
 
 	// If we're in UTF-8 mode we have a go at making the correct find string
 	// so that Windows characters get converted into UTF-8.
@@ -614,33 +614,34 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 		localFindText = (const char*)(const unsigned char*)conv;
 	}
 
-	int lenFind = UnSlashAsNeeded(localFindText, pOptions->UseSlashes, pOptions->UseRegExp);
+	int lenFind = UnSlashAsNeeded(localFindText, pOptions->GetUseSlashes(), pOptions->GetUseRegExp());
 	
 	if(lenFind == 0)
 		return -1;
 	
-	pOptions->Found = false;
+	///@todo Sort out interface accessibility
+	static_cast<SearchOptions*>(pOptions)->SetFound(false);
 
 	GetSel(cr);
 
 	///@todo SCFIND_WORDSTART
-	int flags = (pOptions->MatchWholeWord ? SCFIND_WHOLEWORD : 0) |
-				(pOptions->MatchCase ? SCFIND_MATCHCASE : 0) |
-				(pOptions->UseRegExp ? SCFIND_REGEXP : 0);
+	int flags = (pOptions->GetMatchWholeWord() ? SCFIND_WHOLEWORD : 0) |
+				(pOptions->GetMatchCase() ? SCFIND_MATCHCASE : 0) |
+				(pOptions->GetUseRegExp() ? SCFIND_REGEXP : 0);
 
 	///@todo set find pos on selchange/edit update
-	if( pOptions->FindText.Compare( lastFindDetails.findPhrase.c_str() ) != 0 ||
+	if( lastFindDetails.findPhrase != pOptions->GetFindText() ||
 		flags != lastFindDetails.flags ||
-		pOptions->Direction != lastFindDetails.direction )
+		pOptions->GetSearchBackwards() != lastFindDetails.direction )
 	{
 		// Find text has changed, set the startPos value, 
 		// and don't check to see if we wrapped this time.
 		//lastFindDetails.startPos = GetCurrentPos();
-		lastFindDetails.findPhrase = pOptions->FindText;
+		lastFindDetails.findPhrase = pOptions->GetFindText();
 		lastFindDetails.flags = flags;
 		lastFindDetails.result = fnNotFound;
 		lastFindDetails.lastPos = -1;
-		lastFindDetails.direction = pOptions->Direction;
+		lastFindDetails.direction = pOptions->GetSearchBackwards();
 		checkFoundPos = false;
 	}
 	else
@@ -657,7 +658,7 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 	const char* findtext = T2A(const_cast<TCHAR*>( (LPCTSTR)localFindText ));
 	#endif
 
-	if(!pOptions->Direction)
+	if(!pOptions->GetSearchBackwards())
 	{
 		startPosition = cr.cpMin - 1;
 		endPosition = 0;
@@ -674,9 +675,9 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 	
 	int posFind = SearchInTarget(lenFind, findtext);
 
-	if(posFind == -1 && pOptions->Loop)
+	if(posFind == -1 && pOptions->GetLoopOK())
 	{
-		if(!pOptions->Direction)
+		if(!pOptions->GetSearchBackwards())
 		{
 			startPosition = GetLength();
 			endPosition = 0;
@@ -699,14 +700,14 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 		if( checkFoundPos && lastFindDetails.result == fnFound &&
 			lastFindDetails.startPos == start)
 		{
-			pOptions->Found = true;
+			static_cast<SearchOptions*>(pOptions)->SetFound(true);
 			bRet = fnReachedStart;
 		}
 		else
 		{
 			EnsureRangeVisible(start, end);
 			SetSel(start, end);
-			pOptions->Found = true;
+			static_cast<SearchOptions*>(pOptions)->SetFound(true);
 			bRet = fnFound;
 		}
 	}
@@ -790,12 +791,12 @@ int CScintillaImpl::FindNext(SFindOptions* pOptions)
 	}
 }*/
 
-bool CScintillaImpl::ReplaceOnce(SReplaceOptions* pOptions)
+bool CScintillaImpl::ReplaceOnce(extensions::ISearchOptions* pOptions)
 {
-	if(pOptions->Found) 
+	if(pOptions->GetFound()) 
 	{
-		CString replaceTarget(pOptions->ReplaceText);
-		int replaceLen = UnSlashAsNeeded(replaceTarget, pOptions->UseSlashes, pOptions->UseRegExp);
+		CString replaceTarget(pOptions->GetReplaceText());
+		int replaceLen = UnSlashAsNeeded(replaceTarget, pOptions->GetUseSlashes(), pOptions->GetUseRegExp());
 		
 		CharacterRange cr;
 		GetSel(cr);
@@ -804,26 +805,26 @@ bool CScintillaImpl::ReplaceOnce(SReplaceOptions* pOptions)
 
 		int lenReplaced = replaceLen;
 		
-		if (pOptions->UseRegExp)
+		if (pOptions->GetUseRegExp())
 			lenReplaced = ReplaceTargetRE(replaceLen, (LPCTSTR)replaceTarget);
 		else
 			ReplaceTarget(replaceLen, (LPCTSTR)replaceTarget);
 		
 		SetSel(cr.cpMin + lenReplaced, cr.cpMin);
 		
-		pOptions->Found = false;
+		static_cast<SearchOptions*>(pOptions)->SetFound(false);
 	}
 
 	return FindNext(pOptions) != 0;
 }
 
-int CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions) 
+int CScintillaImpl::ReplaceAll(extensions::ISearchOptions* pOptions) 
 {
 	int repCount = 0;
 
-	CString findTarget(pOptions->FindText);
+	CString findTarget(pOptions->GetFindText());
 
-	int findLen = UnSlashAsNeeded(findTarget, pOptions->UseSlashes, pOptions->UseRegExp);
+	int findLen = UnSlashAsNeeded(findTarget, pOptions->GetUseSlashes(), pOptions->GetUseRegExp());
 	if (findLen == 0)
 	{
 		/*SString msg = LocaliseMessage(
@@ -840,7 +841,7 @@ int CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 	int startPosition = cr.cpMin;
 	int endPosition = cr.cpMax;
 	
-	if (pOptions->InSelection) 
+	if (pOptions->GetReplaceInSelection()) 
 	{
 		if (startPosition == endPosition) 
 		{
@@ -852,7 +853,7 @@ int CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 	else 
 	{
 		endPosition = GetLength();
-		if (pOptions->Loop) 
+		if (pOptions->GetLoopOK()) 
 		{
 			// Whole document
 			startPosition = 0;
@@ -860,20 +861,20 @@ int CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 		// If not looping, replace all only from caret to end of document
 	}
 
-	CString replaceTarget(pOptions->ReplaceText);
+	CString replaceTarget(pOptions->GetReplaceText());
 	
-	int replaceLen = UnSlashAsNeeded(replaceTarget, pOptions->UseSlashes, pOptions->UseRegExp);
+	int replaceLen = UnSlashAsNeeded(replaceTarget, pOptions->GetUseSlashes(), pOptions->GetUseRegExp());
 	
-	int flags = (pOptions->MatchWholeWord ? SCFIND_WHOLEWORD : 0) |
-	            (pOptions->MatchCase ? SCFIND_MATCHCASE : 0) |
-	            (pOptions->UseRegExp ? SCFIND_REGEXP : 0);
+	int flags = (pOptions->GetMatchWholeWord() ? SCFIND_WHOLEWORD : 0) |
+	            (pOptions->GetMatchCase() ? SCFIND_MATCHCASE : 0) |
+	            (pOptions->GetUseRegExp() ? SCFIND_REGEXP : 0);
 	
 	SetTarget(startPosition, endPosition);
 	SetSearchFlags(flags);
 	
 	int posFind = SearchInTarget(findLen, (LPCTSTR)findTarget);
 	
-	if ((findLen == 1) && pOptions->UseRegExp && (findTarget[0] == '^')) 
+	if ((findLen == 1) && pOptions->GetUseRegExp() && (findTarget[0] == '^')) 
 	{
 		// Special case for replace all start of line so it hits the first line
 		posFind = startPosition;
@@ -899,7 +900,7 @@ int CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 			}
 				
 			int lenReplaced = replaceLen;
-			if (pOptions->UseRegExp)
+			if (pOptions->GetUseRegExp())
 				lenReplaced = ReplaceTargetRE(replaceLen, (LPCTSTR)replaceTarget);
 			else
 				ReplaceTarget(replaceLen, (LPCTSTR)replaceTarget);
@@ -926,9 +927,9 @@ int CScintillaImpl::ReplaceAll(SReplaceOptions* pOptions)
 			}
 		}
 
-		if(!pOptions->NoCursorMove)
+		if(!pOptions->GetNoCursorMove())
 		{
-			if (pOptions->InSelection)
+			if (pOptions->GetReplaceInSelection())
 				SetSel(startPosition, endPosition);
 			else
 				SetSel(lastMatch, lastMatch);
