@@ -1599,9 +1599,12 @@ LRESULT CMainFrame::OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 		return 0;
 	}
 
-	if( OpenFile(filename) )
+	if(!CheckAlreadyOpen(filename))
 	{
-		m_RecentFiles.MoveToTop(wID - ID_MRUFILE_BASE);
+		if( OpenFile(filename) )
+		{
+			m_RecentFiles.MoveToTop(wID - ID_MRUFILE_BASE);
+		}
 	}
 
 	return 0;
