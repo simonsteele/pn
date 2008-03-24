@@ -1872,6 +1872,30 @@ class CScintilla
 		 */
 		void Allocate(int bytes);
 		/**
+		 * retrieves the value of the target encoded as UTF-8
+		 */
+		int TargetAsUTF8(char *s);
+		/**
+		 * Toggle Caret Sticky
+		 */
+		void ToggleCaretSticky();
+		/**
+		 * Get whether the sticky caret mode is enabled
+		 */
+		bool GetCaretSticky();
+		/**
+		 * Set whether the sticky caret mode is enabled
+		 */
+		void SetCaretSticky(bool sticky);
+		/**
+		 * Returns the position of a column on a line taking the width of tabs into account
+		 */
+		int FindColumn(int line, int column);
+		/**
+		 * Get an integer property value
+		 */
+		int GetPropertyInt(const char* key, int defaultVal);
+		/**
 		 * Start notifying the container of all key presses and commands.
 		 */
 		void StartRecord();

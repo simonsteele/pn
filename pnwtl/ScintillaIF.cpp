@@ -2697,4 +2697,34 @@ bool CScintilla::GetPasteConvertEndings()
 	return SPerform(SCI_GETPASTECONVERTENDINGS, 0, 0) != 0;
 }
 
+int CScintilla::TargetAsUTF8(char *s)
+{
+	return SPerform(SCI_TARGETASUTF8, 0, reinterpret_cast<LPARAM>(s));
+}
+
+void CScintilla::ToggleCaretSticky()
+{
+	SPerform(SCI_TOGGLECARETSTICKY, 0, 0);
+}
+
+bool CScintilla::GetCaretSticky()
+{
+	return SPerform(SCI_GETCARETSTICKY) != 0;
+}
+
+void CScintilla::SetCaretSticky(bool sticky)
+{
+	SPerform(SCI_SETCARETSTICKY, sticky ? 1 : 0, 0);
+}
+
+int CScintilla::FindColumn(int line, int column)
+{
+	return SPerform(SCI_FINDCOLUMN, line, column);
+}
+
+int CScintilla::GetPropertyInt(const char* key, int defaultVal)
+{
+	return SPerform(SCI_GETPROPERTYINT, reinterpret_cast<WPARAM>(key), defaultVal);
+}
+
 //--
