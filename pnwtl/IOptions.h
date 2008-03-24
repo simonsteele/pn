@@ -83,7 +83,11 @@ public:
 			OAutoCompleteTags			= 29,
 			OLineHighlightAlpha			= 30,
 			OFoldingEnabled				= 31,
-			OPTION_COUNT				= 32
+			OCaretXMove					= 32,
+			OCaretYMove					= 33,
+			OCaretXFlags				= 34,
+			OCaretYFlags				= 35,
+			OPTION_COUNT				= 36
 		} ECachedOption;
 
 		/// Set a bool value

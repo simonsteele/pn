@@ -487,10 +487,10 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 		sc.SPerform(SCI_SETPASTECONVERTENDINGS, options.GetCached(Options::OConvertLinesOnPaste));
 	}
 
-	// Set even treatment of left and right caret positioning, and sloppy behaviour. 
-	// Use 3 lines as the jump when scrolling up and down, and 20 pixels when scrolling left and right
-	sc.SPerform(SCI_SETXCARETPOLICY, CARET_SLOP | CARET_EVEN, 20);
-	sc.SPerform(SCI_SETYCARETPOLICY, CARET_SLOP | CARET_EVEN, 3);
+	// Set even treatment of left and right caret positioning, and sloppy behaviour by default. 
+	// Use 3 lines as the jump when scrolling up and down, and 20 pixels when scrolling left and right by default.
+	sc.SPerform(SCI_SETXCARETPOLICY, options.GetCached(Options::OCaretXFlags), options.GetCached(Options::OCaretXMove));
+	sc.SPerform(SCI_SETYCARETPOLICY, options.GetCached(Options::OCaretYFlags), options.GetCached(Options::OCaretYMove));
 
 	sc.SPerform(SCI_STYLERESETDEFAULT);
 	sc.SPerform(SCI_STYLESETFORE, STYLE_DEFAULT, ::GetSysColor(COLOR_WINDOWTEXT));

@@ -102,6 +102,10 @@ void Options::loadCache()
 	cache[OAutoCompleteTags]		= Get(NULL, _T("AutocompleteTags"), TRUE);
 	cache[OAutoCompleteActivation]	= Get(NULL, _T("AutocompleteActivation"), eacManual);
 	cache[OFoldingEnabled]			= Get(NULL, _T("Folding"), TRUE);
+	cache[OCaretXFlags]				= Get(NULL, _T("CaretXFlags"), CARET_SLOP | CARET_EVEN);
+	cache[OCaretXMove]				= Get(NULL, _T("CaretXMove"), 20);
+	cache[OCaretYFlags]				= Get(NULL, _T("CaretYFlags"), CARET_SLOP | CARET_EVEN);
+	cache[OCaretYMove]				= Get(NULL, _T("CaretYMove"), 3);
 	ungroup();
 	
 	// Interface Settings -------------------
@@ -168,6 +172,10 @@ void Options::saveCache()
 	Set(NULL, _T("AutocompleteTags"),		cache[OAutoCompleteTags]);
 	Set(NULL, _T("AutocompleteActivation"), cache[OAutoCompleteActivation]);
 	Set(NULL, _T("Folding"),				cache[OFoldingEnabled]);
+	Set(NULL, _T("CaretXFlags"),			cache[OCaretXFlags]);
+	Set(NULL, _T("CaretXMove"),				cache[OCaretXMove]);
+	Set(NULL, _T("CaretYFlags"),			cache[OCaretYFlags]);
+	Set(NULL, _T("CaretYMove"),				cache[OCaretYMove]);
 
 	ungroup();
 	
