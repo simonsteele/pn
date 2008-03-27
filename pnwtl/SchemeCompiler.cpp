@@ -875,7 +875,7 @@ void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR nam
 			t = atts.getValue(_T("folding"));
 			if(t != NULL && PNStringToBool(t))
 			{
-				//fldEnabled = 1, fldCompact = 2, fldComments = 4, fldPreProc = 8
+				//fldEnabled = 1, fldCompact = 2, fldComments = 4, fldPreProc = 8, fldElse = 16
 				flags |= fldEnabled;
 				
 				t = atts.getValue(_T("foldcompact"));
@@ -889,6 +889,10 @@ void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR nam
 				t = atts.getValue(_T("foldpreproc"));
 				if(t != NULL && PNStringToBool(t))
 					flags |= fldPreProc;
+
+				t = atts.getValue(_T("foldelse"));
+				if(t != NULL && PNStringToBool(t))
+					flags |= fldElse;
 			}
 
 			t = atts.getValue(_T("usetabs"));

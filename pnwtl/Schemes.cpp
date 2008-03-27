@@ -377,6 +377,9 @@ void Scheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 
 			if(hdr.Flags & fldPreProc)
 				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.preprocessor"), (LPARAM)_T("1"));
+
+			if(hdr.Flags & fldElse) 
+				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.at.else"), (LPARAM)_T("1"));
 		}
 
 		if(hdr.Flags & schOverrideTabs)
