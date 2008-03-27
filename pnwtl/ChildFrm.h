@@ -297,6 +297,7 @@ public:
 	int GetPosition(EGPType type);
 	void SetPosStatus(CMultiPaneStatusBarCtrl&	stat);
 	bool OnSchemeChange(LPVOID pVoid);
+	int GetLinePosition(int line);
 	
 	void SetScheme(Scheme* pScheme, bool allSettings = true);
 	void UpdateMenu();

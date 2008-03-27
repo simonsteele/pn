@@ -244,7 +244,8 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	rc.set(GetDlgItem(IDC_FINDTYPE_DUMMY), *this);
 	rc.bottom = rc.top + (size.cy * 10);
 
-	m_FindTypeCombo.Create(m_hWnd, rc, _T("FINDTYPECOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTYPE_COMBO);
+	m_FindTypeCombo.Create(m_hWnd, rc, _T("FINDTYPECOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTYPE_COMBO,
+		_T("FindType"), IDC_FINDTYPE_DUMMY);
 	m_FindTypeCombo.SetFont(GetFont());
 	m_FindTypeCombo.SetWindowPos(GetDlgItem(IDC_FINDTYPE_DUMMY), 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW | SWP_NOACTIVATE);
 

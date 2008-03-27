@@ -626,7 +626,7 @@ HWND CMainFrame::CreateFindToolbar()
 
 	HWND hWndCombo = m_FindCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), 
 		CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL,
-		0, IDC_FINDCOMBO, _T("Software\\Echo Software\\PN2\\AutoComplete\\FindToolbar"));
+		0, IDC_FINDCOMBO, _T("FindToolbar"));
 	hWndCombo;
 	ATLASSERT(hWndCombo != 0);
 

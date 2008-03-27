@@ -149,7 +149,7 @@ protected:
 	BXT::CComboBoxAC		m_FindTextCombo;
 	BXT::CComboBoxAC		m_ReplaceTextCombo;
 	BXT::CComboBoxAC		m_FindWhereCombo;
-	CComboBox				m_FindTypeCombo;
+	BXT::CComboBoxAC		m_FindTypeCombo;
 	CArrowButton			m_ReHelperBtn;
 	CArrowButton			m_ReHelperBtn2;
 	CChildFrame*			m_pLastEditor;

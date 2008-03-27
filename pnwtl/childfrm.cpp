@@ -1037,6 +1037,11 @@ LRESULT CChildFrame::OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	return 0;
 }
 
+int CChildFrame::GetLinePosition(int line)
+{
+	return m_view.PositionFromLine(line-1);
+}
+
 /**
  * Provide auto-complete handling combined with Definitions
  * to perform Go To Definition when multiple definitions exist
@@ -1124,17 +1129,41 @@ LRESULT CChildFrame::OnGoToDef(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
     return 0;
 }
 
-LRESULT CChildFrame::OnGotoLine(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam/**/, BOOL& /*bHandled*/)
+LRESULT CChildFrame::OnGotoLine(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	int line= (int)lParam-1;
-	m_view.GotoLineEnsureVisible(line);
+	int line = (int)lParam-1;
 
-	int offset = m_view.GetFirstVisibleLine();
-	line = m_view.VisibleFromDocLine(line);
 	// Put the line we jump to two off the top of the screen...
+	//m_view.GotoLineEnsureVisible(line);
+	/*int offset = m_view.GetFirstVisibleLine();
+	line = m_view.VisibleFromDocLine(line);
 	offset = (line - offset) - 2;
-	m_view.LineScroll(0, offset);
+	m_view.LineScroll(0, offset);*/
+	
+	if (wParam) 
+	{
+		int lineLength = m_view.LineLength(line);
+		char* lineBuf = new char[lineLength+1];
+		lineBuf[lineLength] = '\0';
+		m_view.GetLine(line, lineBuf);
+
+		CString fullText = lineBuf;
+		CString methodName = (char*)wParam;
+		int i = fullText.Find(methodName,0);
+		int j = methodName.GetLength();
+		int pos = GetLinePosition((int)lParam); 
+		delete [] lineBuf;
+		m_view.SetSel((long)(pos + i),(long)(pos + i + methodName.GetLength()));
+	}
+	else 
+	{
+		m_view.GotoLine(line);
+	}
+	
+	m_view.EnsureVisibleEnforcePolicy(line);
+	
 	SetFocus();
+
 	return 0;
 }
 
