@@ -217,13 +217,13 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	rc.bottom = rc.top + (size.cy * 10);
 
 	m_FindTextCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VSCROLL | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO,
-		_T("Software\\Echo Software\\PN2\\AutoComplete\\Find"), IDC_FINDTEXT_DUMMY);
+		_T("Find"), IDC_FINDTEXT_DUMMY);
 
 	rc.set(GetDlgItem(IDC_REPLACETEXT_DUMMY), *this);
 	rc.bottom = rc.top + (size.cy * 10);
 
 	m_ReplaceTextCombo.Create(m_hWnd, rc, _T("REPLACETEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_REPLACETEXT_COMBO,
-		_T("Software\\Echo Software\\PN2\\AutoComplete\\Replace"), IDC_REPLACETEXT_DUMMY);
+		_T("Replace"), IDC_REPLACETEXT_DUMMY);
 
 	// Store the position of the second combo.
 	m_group2Top = rc.top;
@@ -818,6 +818,10 @@ SearchOptions* CFindExDialog::getOptions()
 	}
 
 	m_lastFifLocation = (EFIFWhere)m_FindWhereCombo.GetItemData(m_FindWhereCombo.GetCurSel());
+
+	m_FindTextCombo.AddString( m_FindText );
+	m_ReplaceTextCombo.AddString( m_ReplaceText );
+	m_FindWhereCombo.AddString( m_FindWhereText );
 
 	return pOptions;
 }
