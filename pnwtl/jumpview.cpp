@@ -362,6 +362,24 @@ void CJumpTreeCtrl::OnFound(int count, LPMETHODINFO methodInfo)
 	};	
 }
 
+void updateMethodInfo(extensions::METHODINFO& dest, extensions::METHODINFO& src)
+{
+	dest.type = src.type;
+	dest.lineNumber = src.lineNumber;
+	dest.image = src.image;
+	dest.userData = src.userData;
+
+	if (src.methodName && dest.methodName == NULL)
+	{
+		dest.methodName = tcsnewdup(src.methodName);
+	}
+							
+	if (src.fullText && dest.fullText == NULL)
+	{
+		dest.fullText = tcsnewdup(src.fullText);
+	}
+}
+
 //Manuel Sandoval: This function adds new items to tag tree using recursivity:
 #define tag_class 3
 #define tag_struct 10
@@ -546,6 +564,7 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 		{
 			hChildItem = InsertItem( methodInfo->methodName, imagesNumber, imagesNumber, hTypeContainer, TVI_LAST );
 			methodInfoItem = new extensions::METHODINFO;
+			memset(methodInfoItem, 0, sizeof(extensions::METHODINFO));
 		}
 		else 
 		{
@@ -554,20 +573,7 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 		}
 		
 		//If new item is already inserted, update it's info (like the line where it is defined.)
-		memcpy(methodInfoItem, methodInfo, sizeof(extensions::METHODINFO));
-		
-		LPMETHODINFO parentInfo = reinterpret_cast<LPMETHODINFO>(GetItemData(hRoot));	
-		
-_RPT2(_CRT_WARN,"\nInsert %s in %s", methodInfo->methodName, methodInfo->parentName);
-		if (methodInfo->methodName)
-		{
-			methodInfoItem->methodName = tcsnewdup(methodInfo->methodName);
-		}
-								
-		if (methodInfo->fullText)
-		{
-			methodInfoItem->fullText = tcsnewdup(methodInfo->fullText);
-		}
+		updateMethodInfo(*methodInfoItem, *methodInfo);		
 		
 		SetItemData(hChildItem, reinterpret_cast<DWORD_PTR>( methodInfoItem ));
 		ret = hChildItem;
@@ -579,18 +585,28 @@ _RPT2(_CRT_WARN,"\nInsert %s in %s", methodInfo->methodName, methodInfo->parentN
 
 LRESULT CJumpTreeCtrl::OnLButtonDblClick(UINT /*uMsg*/, WPARAM wParam/**/, LPARAM lParam/**/, BOOL& bHandled)
 {
-	HTREEITEM hChildItem;
+	HTREEITEM hChildItem, hItem;
 	LPMETHODINFO methodInfoItem;
 
 	bHandled = false;
-	hChildItem=GetSelectedItem();
-	if (GetParentItem(hChildItem)==0) //If RootItem -> return
+	hChildItem = GetSelectedItem();
+	hItem = GetChildItem(hChildItem);
+
+	if (hItem != 0) 
+	{
+		//If not the last ChildItem -> toggle the tree
+		Expand(hItem, TVE_TOGGLE);
 		return 0;
+	}
+	
 	methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hChildItem));
-	if ( methodInfoItem->methodName == 0) // if ChildItem -> return
+	if (methodInfoItem->methodName == 0) // if ChildItem -> return
+	{
 		return 0;
+	}
+
 	bHandled = true;	// its the Item with line Info -> goto line
-	::PostMessage(static_cast<CChildFrame*>(methodInfoItem->userData)->m_hWnd,PN_GOTOLINE,0,(LPARAM)methodInfoItem->lineNumber);
+	::SendMessage(static_cast<CChildFrame*>(methodInfoItem->userData)->m_hWnd, PN_GOTOLINE, reinterpret_cast<WPARAM>(methodInfoItem->methodName), static_cast<LPARAM>(methodInfoItem->lineNumber));
 	return 0;
 }
 
