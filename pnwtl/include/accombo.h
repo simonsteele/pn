@@ -282,16 +282,16 @@ public:
 		{
 			m_edit.SubclassWindow(hWndEdit);
 
-			m_pAC = new CCustomAutoComplete(HKEY_CURRENT_USER, szSubKey);
+			m_pAC = new CCustomAutoCompletePN(szSubKey, 20);
 			m_pAC->Bind(hWndEdit, /*ACO_UPDOWNKEYDROPSLIST |*/ ACO_AUTOSUGGEST /*| ACO_AUTOAPPEND*/);
 
 			// Fill combobox with the 20 recent entries, assuming AC stores the
 			// strings inorder.
-			const CSimpleArray<CString> items = m_pAC->GetList();
-			int size = min(items.GetSize(), 20);
+			const std::vector<tstring>& items = m_pAC->GetList();
+			int size = min(items.size(), 20);
 			for(int i = 0; i < size; i++)
 			{
-				AddString(items[i]);
+				AddString(items[i].c_str());
 			}
 
 			return true;
@@ -357,7 +357,7 @@ CoCreateInstance(clsidSource,
 private:
 	HWND m_hWndOwner; // window that wants enter key-press notifies.
 	CComboBoxEdit m_edit;
-	CCustomAutoComplete*	m_pAC;
+	CCustomAutoCompletePN*	m_pAC;
 	CComPtr<IAutoComplete>	m_filesAC;
 	bool m_bAutoAdd;
 };
