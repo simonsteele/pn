@@ -99,7 +99,7 @@
 		</use-styles>
 	</base-language>
 	
-	<language base="cppbase" name="cpp" title="C / C++" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+	<language base="cppbase" name="cpp" title="C / C++" folding="true" foldcomments="true" foldelse="true" foldcompact="true" foldpreproc="true">
 		<lexer name="cpp" />
 		<comments line="//" streamStart="/*" streamEnd="*/" blockStart="/**" blockLine=" *" blockEnd=" */" />
 		<use-keywords>
@@ -125,7 +125,7 @@
 		</use-keywords>
 	</language>
 
-	<language base="cppbase" name="javascript" title="JavaScript" folding="true" foldcomments="true" foldcompact="true">
+	<language base="cppbase" name="javascript" title="JavaScript" folding="true" foldcomments="true" foldelse="true" foldcompact="true">
 		<comments line="//" streamStart="/*" streamEnd="*/" blockStart="/**" blockLine=" *" blockEnd=" */" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="javascript"/>
@@ -136,7 +136,7 @@
 		</use-styles>
 	</language>
 
-	<language base="cppbase" name="csharp" title="C#" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+	<language base="cppbase" name="csharp" title="C#" folding="true" foldcomments="true" foldelse="true" foldcompact="true" foldpreproc="true">
 		<comments line="//" streamStart="/*" streamEnd="*/" blockStart="/**" blockLine=" *" blockEnd=" */" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="csharp"/>
@@ -155,7 +155,7 @@
 		</use-styles>
 	</language>
 	
-	<language base="cppbase" name="java" title="Java" folding="true" foldcomments="true" foldcompact="true">
+	<language base="cppbase" name="java" title="Java" folding="true" foldcomments="true" foldelse="true" foldcompact="true">
 		<comments line="//" streamStart="/*" streamEnd="*/" blockStart="/**" blockLine=" *" blockEnd=" */" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="java"/>
