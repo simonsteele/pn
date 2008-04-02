@@ -52,7 +52,7 @@ public:
 			CLIP_DEFAULT_PRECIS,       // nClipPrecision
 			DEFAULT_QUALITY,           // nQuality
 			DEFAULT_PITCH | FF_SWISS,  // nPitchAndFamily
-			_T("MS Shell Dlg"));     // lpszFacename
+			_T("MS Shell Dlg 2"));     // lpszFacename
 
 
 		sName.SetFont(fnTitle);
