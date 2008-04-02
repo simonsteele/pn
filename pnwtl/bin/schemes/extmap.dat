@@ -76,6 +76,7 @@
 .vh=verilog
 .vhd=vhdl
 .xhtml=Web
+.xaml=xml
 .xml=xml
 .xsd=xml
 .xsl=xml
