@@ -7,6 +7,12 @@ What's new?
 -----------
 
 1) Switched to vista-style message dialogs
+2) Updated to Boost 1.35
+3) Updated to Scintilla 1.76
+4) Added new Open Files view
+5) Added new File Browser view
+6) New icons for docking windows
+
 
 Bug Fixes:
 ----------
