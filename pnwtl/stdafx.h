@@ -2,7 +2,7 @@
  * @file stdafx.h
  * @brief Pre-compiled header file.
  * @author Simon Steele
- * @note Copyright (c) 2004 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2004-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -87,6 +87,7 @@ typedef std::basic_string<TCHAR> tstring;
 //Boosty Goodness
 #include <boost/config.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/xpressive/xpressive.hpp>
 
 #define PNASSERT ATLASSERT
 

@@ -672,7 +672,7 @@ void CScintilla::ClearDocumentStyle()
 	SPerform(SCI_CLEARDOCUMENTSTYLE, 0, 0);
 }
 
-int CScintilla::GetLength()
+int CScintilla::GetLength() const
 {
 	return (int)SPerform(SCI_GETLENGTH, 0, 0);
 }

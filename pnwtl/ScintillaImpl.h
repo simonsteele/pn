@@ -2,7 +2,7 @@
  * @file ScintillaImpl.h
  * @brief Define further functionality for a scintilla wrapper.
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -12,6 +12,7 @@
 #define scintillaimpl_h__included
 
 #include "scintillaif.h"
+#include "scintillaiterator.h"
 
 namespace { class ISearchOptions; }
 class IWordProvider;
@@ -49,6 +50,35 @@ public:
 
 	bool UnCommentLine(const CommentSpecRec& comments);
 	bool UnCommentStream(const CommentSpecRec& comments);
+	
+	//*****************************************************************************
+	//* Code added by Manuel Sandoval webmailusr-msn@yahoo.com
+	//* Support for autocomplete
+	//*****************************************************************************
+
+	void AddToAutoComplete(CString FullTag, CString TagName);  //Called in: CJumpTreeCtrl::OnFound: Add new defined autocomplete tags
+	void ResetAutoComplete();           //Called in: CChildFrame::SaveFile: Clear new defined autocomplete tags
+	void InitAutoComplete(Scheme *sch); //Called in: CTextView::SetScheme: Initialize default autocomplete tags
+	void ClearAutoComplete();
+
+	virtual void SetKeyWords(int keywordSet, const char* keyWords);
+
+	void AttemptAutoComplete();
+
+	void SetAutoCompleteHandler(AutoCompleteHandlerPtr& handler);
+
+	tstring GetSelText2();
+	int GetCaretInLine();
+	CharacterRange GetSelection();
+	void InsertChar(long nPos, char nChar);
+	tstring GetLineText(int nLine=-1);
+
+public:
+	// iterable:
+	typedef ScintillaIterator iterator;
+	typedef ScintillaIterator const_iterator;
+	ScintillaIterator begin();
+	ScintillaIterator end();
 
 protected:
 	struct tagLastFindDetails
@@ -67,31 +97,6 @@ protected:
 
 	virtual LPCTSTR GetDocTitle(){return _T("");}
 
-	
-	//*****************************************************************************
-	//* Code added by Manuel Sandoval webmailusr-msn@yahoo.com
-	//* Support for autocomplete
-	//*****************************************************************************
-
-public:
-	typedef std::vector<tstring> CStringArray;
-	void AddToAutoComplete(CString FullTag, CString TagName);  //Called in: CJumpTreeCtrl::OnFound: Add new defined autocomplete tags
-	void ResetAutoComplete();           //Called in: CChildFrame::SaveFile: Clear new defined autocomplete tags
-	void InitAutoComplete(Scheme *sch); //Called in: CTextView::SetScheme: Initialize default autocomplete tags
-	void ClearAutoComplete();
-
-	virtual void SetKeyWords(int keywordSet, const char* keyWords);
-
-	void AttemptAutoComplete();
-
-	void SetAutoCompleteHandler(AutoCompleteHandlerPtr& handler);
-
-	tstring GetSelText2();
-	int GetCaretInLine();
-	CharacterRange GetSelection();
-	void InsertChar(long nPos, char nChar);
-	tstring GetLineText(int nLine=-1);
-
 private:
 	bool StartAutoComplete();
 	void AutoCloseBraces(SCNotification* scn);
@@ -103,7 +108,7 @@ private:
 	void ContinueCallTip();
 	void FillFunctionDefinition(int pos = -1);
 
-	tstring_array  m_Api, m_KW;
+	tstring_array  m_Api/*, m_KW*/;
 	tstring m_functionDefinition;
 	tstring m_currentCallTipWord;
 	tstring m_autoCompleteStartCharacters;
@@ -130,8 +135,6 @@ private:
 
 	IWordProvider* m_autoComplete;
 	AutoCompleteHandlerPtr m_autoCompleteHandler;
-	
-	//*****************************************************************************
 };
 
 #endif // scintillaimpl_h__included

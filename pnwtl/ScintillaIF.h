@@ -2,7 +2,7 @@
  * @file ScintillaIF.h
  * @brief Define scintilla wrapper class CScintilla
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -81,7 +81,7 @@ class CScintilla
 		 * SPerform uses either SendMessage or the function pointer (Perform)
 		 * to run scintilla commands on the relevant scintilla control.
 		 */
-		virtual inline long SPerform(long Msg, WPARAM wParam=0, LPARAM lParam=0)
+		virtual inline long SPerform(long Msg, WPARAM wParam=0, LPARAM lParam=0) const
 		{
 			if (Perform)
 				return Perform(m_Pointer, Msg, wParam, lParam);
@@ -196,7 +196,7 @@ class CScintilla
 		/**
 		 * The number of characters in the document.
 		 */
-		int GetLength();
+		int GetLength() const;
 		/**
 		 * Returns the character byte at the position.
 		 */

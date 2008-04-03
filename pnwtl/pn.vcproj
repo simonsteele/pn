@@ -46,6 +46,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/Zm140"
 				Optimization="0"
 				AdditionalIncludeDirectories="TabbingFramework, DockingFramework"
 				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,STRICT"
@@ -924,6 +925,10 @@
 			</File>
 			<File
 				RelativePath=".\scintillaimpl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ScintillaIterator.h"
 				>
 			</File>
 			<File

@@ -1565,6 +1565,16 @@ tstring CScintillaImpl::GetLineText(int nLine)
 	return strLine;
 }
 
+ScintillaIterator CScintillaImpl::begin()
+{
+	return ScintillaIterator(this, 0);
+}
+
+ScintillaIterator CScintillaImpl::end()
+{
+	return ScintillaIterator(this, GetLength());
+}
+
 tstring CScintillaImpl::GetSelText2()
 {
 	tstring ret;
