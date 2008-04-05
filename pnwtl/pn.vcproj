@@ -345,6 +345,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/Zm140"
 				Optimization="3"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="TabbingFramework, DockingFramework"

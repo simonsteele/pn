@@ -21,14 +21,17 @@
 	static char THIS_FILE[] = __FILE__;
 #endif
 
-CScintillaImpl::CScintillaImpl()
+typedef boost::xpressive::basic_regex<ScintillaIterator> sciregex;
+typedef boost::xpressive::match_results<ScintillaIterator> scimatch;
+typedef boost::xpressive::sub_match<ScintillaIterator> scisub_match;
+
+
+CScintillaImpl::CScintillaImpl() :
+	m_bAutoCompleteIgnoreCase(true)
 {
 	lastFindDetails.findPhrase = _T("");
 	lastFindDetails.startPos = 0;
 	lastFindDetails.direction = true;
-
-	// Default to case-insensitive...
-	m_bAutoCompleteIgnoreCase = true;
 
 	// To be replaced with scheme-based autocomplete:
 	m_autoComplete = new DefaultAutoComplete(m_bAutoCompleteIgnoreCase, OPTIONS->GetCached(extensions::IOptions::OAutoCompleteUseKeywords) == TRUE);
