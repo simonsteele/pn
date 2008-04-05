@@ -1757,7 +1757,6 @@ LRESULT CMainFrame::OnViewSchemesBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 LRESULT CMainFrame::OnViewFindBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	ToggleToolbar(TBR_FIND);
-	m_tabbedClient.ShowFindBar(true);
 	return 0;
 }
 
