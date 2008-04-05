@@ -13,14 +13,20 @@ What's new?
 5) Added new File Browser view
 6) New icons for docking windows
 
-
 Bug Fixes:
 ----------
 
 1) Don't auto-append find text
 2) Some message dialogs appear oddly on Win9x
 3) Can't use magic folder wizard without C: (SF #1703085)
+4) Correctly show toolbar toggles on load (#29)
+5) Don't show quickfind bar on toggle of find toolbar
 
+Extensions Interface Changes:
+-----------------------------
+
+1) Split IDocumentEventSink and ITextEditorEventSink (previously you had to implement both)
+2) More IDocumentEventSink methods
 
 If you find a bug:
 ------------------
