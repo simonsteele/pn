@@ -381,8 +381,8 @@ protected:
 	bool GetToolbarShowing(DWORD toolbarId);
 
 	void InitGUIState();
-	void LoadGUIState(LPCTSTR stateName = NULL);
-	void SaveGUIState(LPCTSTR stateName = NULL);
+	void LoadGUIState();
+	void SaveGUIState();
 	void SetDefaultGUIState();
 
 	void PerformChildEnum(SChildEnumStruct* s);

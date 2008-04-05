@@ -2519,29 +2519,13 @@ void CMainFrame::InitGUIState()
 	m_GUIState.Initialize(statekey.c_str(), m_hWnd/*, SW_SHOWMAXIMIZED*/);
 	m_GUIState.Add(sstate::CRebarStateAdapter(m_hWndToolBar/*, REBAR_SAVESTATE_VERSION*/));
 	m_GUIState.Add(dockers);
-
-	//LoadGUIState();
-
-	UISetCheck( GetRebarBarCmd( TBR_FILE   ), GetToolbarShowing( TBR_FILE   ));
-	UISetCheck( GetRebarBarCmd( TBR_EDIT   ), GetToolbarShowing( TBR_EDIT   ));
-	UISetCheck( GetRebarBarCmd( TBR_SCHEME ), GetToolbarShowing( TBR_SCHEME ));
-	UISetCheck( GetRebarBarCmd( TBR_FIND   ), GetToolbarShowing( TBR_FIND   ));
 }
 
 /**
  * Load a named or default GUI state from the registry.
  */
-void CMainFrame::LoadGUIState(LPCTSTR stateName)
+void CMainFrame::LoadGUIState()
 {
-	tstring* pConfigName = NULL;
-	if(stateName)
-	{
-		pConfigName = new tstring(pnregroot);
-		*pConfigName += PNSK_INTERFACE;
-		*pConfigName += _T('\\');
-		*pConfigName += stateName;
-	}
-
 	CPNWindowStateStorage storage;
 	if( !m_GUIState.Restore(storage) )
 	{
@@ -2550,25 +2534,20 @@ void CMainFrame::LoadGUIState(LPCTSTR stateName)
 
 	// Set initial UpdateUI state...
 	UISetCheck(ID_EDITOR_OUTPUTWND, getDocker(DW_OUTPUT)->IsWindowVisible());
+	UISetCheck( GetRebarBarCmd( TBR_FILE   ), GetToolbarShowing( TBR_FILE   ));
+	UISetCheck( GetRebarBarCmd( TBR_EDIT   ), GetToolbarShowing( TBR_EDIT   ));
+	UISetCheck( GetRebarBarCmd( TBR_SCHEME ), GetToolbarShowing( TBR_SCHEME ));
+	UISetCheck( GetRebarBarCmd( TBR_FIND   ), GetToolbarShowing( TBR_FIND   ));
 
 	UpdateLayout();
-
-	if(pConfigName)
-		delete pConfigName;
 }
 
 /**
  * Save the default or a named GUI state to the registry.
  */
-void CMainFrame::SaveGUIState(LPCTSTR stateName)
+void CMainFrame::SaveGUIState()
 {
-	tstring configName = "";
-	if(stateName)
-	{
-		configName = stateName;
-	}
-
-	CPNWindowStateStorage storage(configName);
+	CPNWindowStateStorage storage;
 	m_GUIState.Store(storage);
 
 	tstring mrukey;
