@@ -628,7 +628,8 @@ void CScintilla::FoldChanged(int line, int levelNow, int levelPrev)
 			Expand(line, true, false, 0, levelPrev);
 		}
 	}
-	else if (!(levelNow & SC_FOLDLEVELWHITEFLAG) && 
+	
+	if (!(levelNow & SC_FOLDLEVELWHITEFLAG) && 
 		((levelPrev & SC_FOLDLEVELNUMBERMASK) > (levelNow & SC_FOLDLEVELNUMBERMASK)))
 	{
 		// See if should still be hidden
