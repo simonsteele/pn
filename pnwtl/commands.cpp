@@ -51,6 +51,9 @@ WORD AccelToHKMod(WORD modifiers)
 	return real_modifiers;
 }
 
+namespace Commands
+{
+
 KeyMap::KeyMap(KeyToCommand* commands) : kmap(0), len(0), alloc(0), lastdispatcher(0)
 {
 	for (int i = 0; commands[i].key; i++)
@@ -241,6 +244,8 @@ void KeyMap::internalAssign(int key, int modifiers, unsigned int msg)
 	len++;
 }
 
+} // namespace Commands
+
 /////////////////////////////////////////////////////////////////////////////
 // CommandDispatch
 
@@ -255,7 +260,7 @@ std::string properCase(std::string instr)
 CommandDispatch::CommandDispatch()
 {
 	init();
-	m_keyMap = new KeyMap(DefaultKeyMap);
+	m_keyMap = new Commands::KeyMap(DefaultKeyMap);
 }
 
 CommandDispatch::CommandDispatch(LPCTSTR kbfile)
@@ -263,7 +268,7 @@ CommandDispatch::CommandDispatch(LPCTSTR kbfile)
 	init();
 	m_keyMap = NULL;
 	if(!Load(kbfile))
-		m_keyMap = new KeyMap(DefaultKeyMap);
+		m_keyMap = new Commands::KeyMap(DefaultKeyMap);
 }
 
 CommandDispatch::~CommandDispatch()
@@ -303,7 +308,7 @@ void CommandDispatch::UpdateMenuShortcuts(HMENU theMenu)
 	mii.dwTypeData = buffer;
 	mii.cch = 255;
 
-	KeyMap* theKeys = GetCurrentKeyMap();
+	Commands::KeyMap* theKeys = GetCurrentKeyMap();
 	const KeyToCommand* keyArr = theKeys->GetMappings();
 	for(size_t i(0); i < theKeys->GetCount(); i++)
 	{
@@ -508,13 +513,13 @@ bool CommandDispatch::LocalHandleCommand(int iID, int iCommand, CommandEventHand
 	return bHandled;
 }
 
-void CommandDispatch::SetCurrentKeyMap(const KeyMap* keyMap)
+void CommandDispatch::SetCurrentKeyMap(const Commands::KeyMap* keyMap)
 {
 	delete m_keyMap;
-	m_keyMap = new KeyMap(*keyMap);
+	m_keyMap = new Commands::KeyMap(*keyMap);
 }
 
-KeyMap* CommandDispatch::GetCurrentKeyMap() const
+Commands::KeyMap* CommandDispatch::GetCurrentKeyMap() const
 {
 	return m_keyMap;
 }
@@ -566,7 +571,7 @@ bool CommandDispatch::Load(LPCTSTR filename)
 	// Load up the key map
 	if(m_keyMap != NULL)
 		delete m_keyMap;
-	m_keyMap = new KeyMap(loadedcmds);
+	m_keyMap = new Commands::KeyMap(loadedcmds);
 	
 	// Don't need the loaded commands any more
 	delete loadedcmds;

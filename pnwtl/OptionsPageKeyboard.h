@@ -80,7 +80,7 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 		bool currentIsExtended();
 
 		CommandDetails* m_pCurrent;
-		KeyMap*			m_pKeyMap;
+		Commands::KeyMap* m_pKeyMap;
 		CommandDispatch*m_pDispatch;
 		CListViewCtrl	m_list;
 		CListBox		m_shortcutlist;

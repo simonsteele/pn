@@ -14,7 +14,6 @@
 #include "include/genx/genx.h"
 #include "projectwriter.h"
 
-#include "include/pcreplus.h"
 #include "include/filefinder.h"
 #include "include/filematcher.h"
 #include "folderadder.h"

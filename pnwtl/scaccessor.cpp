@@ -29,7 +29,7 @@ void ScintillaAccessor::Fill(int position)
 	if (endPos > lenDoc)
 		endPos = lenDoc;
 
-	TextRange tr = {{startPos, endPos}, buf};
+	Scintilla::TextRange tr = {{startPos, endPos}, buf};
 	m_pS->SPerform(SCI_GETTEXTRANGE, 0, (LPARAM)(void*)&tr);
 }
 

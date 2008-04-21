@@ -316,7 +316,7 @@ public:
 	////////////////////////////////////////////////////
 	// Autocomplete methods
 	
-	bool InsertClipCompleted(SCNotification* notification);
+	bool InsertClipCompleted(Scintilla::SCNotification* notification);
 
 protected:
 

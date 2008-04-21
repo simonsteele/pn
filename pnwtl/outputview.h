@@ -66,7 +66,7 @@ protected:
 	bool ExpandMatchedPath(CFileName& fn);
 	bool LocateInProjects(LPCTSTR part, tstring& full);
 
-	bool HandleREError(PCRE::RegExp& re, int style, int position);
+	bool HandleREError(boost::xpressive::sregex& re, int style, int position);
 	bool BuildAndHandleREError(int style, int position, const char* reDef);
 
 	LRESULT OnClear(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

@@ -21,7 +21,6 @@
 
 #include "include/sscontainers.h"
 #include "include/ssthreads.h"
-#include "include/pcreplus.h"
 
 #include <algorithm>
 
@@ -425,18 +424,25 @@ void ToolCommandString::OnFormatKey(LPCTSTR key)
 		if(!pTemplate)
 			return;
 
-		PCRE::RegExp re("ProjectProp:(?P<group>[-_a-zA-Z0-9]+)\\.(?P<cat>[-_a-zA-Z0-9]+)\\.(?P<val>[-_a-zA-Z0-9]+)");
-		if( re.Match(key) )
+		boost::xpressive::sregex re = boost::xpressive::sregex::compile("ProjectProp:(?P<group>[-_a-zA-Z0-9]+)\\.(?P<cat>[-_a-zA-Z0-9]+)\\.(?P<val>[-_a-zA-Z0-9]+)");
+		boost::xpressive::smatch match;
+		if (boost::xpressive::regex_match(std::string(key), match, re))
 		{
 			tstring group;
 			tstring cat;
 			tstring val;
         
 			// Extract the named matches from the RE, noting if there was a line or column.
-			bool ok = true;
+			bool ok; /*= true;
 			ok &= re.GetNamedMatch("group", group);
 			ok &= re.GetNamedMatch("cat", cat);
-			ok &= re.GetNamedMatch("val", val);
+			ok &= re.GetNamedMatch("val", val);*/
+
+			group = match["group"];
+			cat = match["cat"];
+			val = match["val"];
+
+			ok = !(group.empty() || cat.empty() || val.empty());
 
 			if(!ok)
 				return;
@@ -465,18 +471,25 @@ void ToolCommandString::OnFormatKey(LPCTSTR key)
 		if(!pFileObj)
 			return;
 
-		PCRE::RegExp re("ProjectProp:(?P<group>[-_a-zA-Z0-9]+)\\.(?P<cat>[-_a-zA-Z0-9]+)\\.(?P<val>[-_a-zA-Z0-9]+)");
-		if( re.Match(key) )
+		boost::xpressive::sregex re = boost::xpressive::sregex::compile("FileProp:(?P<group>[-_a-zA-Z0-9]+)\\.(?P<cat>[-_a-zA-Z0-9]+)\\.(?P<val>[-_a-zA-Z0-9]+)");
+		boost::xpressive::smatch match;
+		if (boost::xpressive::regex_match(std::string(key), match, re))
 		{
 			tstring group;
 			tstring cat;
 			tstring val;
         
 			// Extract the named matches from the RE, noting if there was a line or column.
-			bool ok = true;
+			bool ok; /*= true;
 			ok &= re.GetNamedMatch("group", group);
 			ok &= re.GetNamedMatch("cat", cat);
-			ok &= re.GetNamedMatch("val", val);
+			ok &= re.GetNamedMatch("val", val);*/
+
+			group = match["group"];
+			cat = match["cat"];
+			val = match["val"];
+
+			ok = !(group.empty() || cat.empty() || val.empty());
 
 			if(!ok)
 				return;

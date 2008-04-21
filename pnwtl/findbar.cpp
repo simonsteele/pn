@@ -303,7 +303,7 @@ void CFindBar::findNext(LPCTSTR text, bool searchUp)
 
 		// Move the text selection around so we search in the
 		// right place.
-		CharacterRange cr;
+		Scintilla::CharacterRange cr;
 		pTV->GetSel(cr);
 
 		if(m_lasttext != so.GetFindText())

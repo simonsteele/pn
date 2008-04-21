@@ -1,9 +1,20 @@
+/**
+ * @file filematcher.h
+ * @brief Use regular expressions to match file names
+ * @author Simon Steele
+ * @note Copyright (c) 2006-2008 Simon Steele - http://untidy.net/
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
+
 #ifndef filematcher_h__included
 #define filematcher_h__included
 
-#ifndef pcreplus_h__included
-	#error filematcher.h requires pcreplus.h to be included first.
-#endif
+//#ifndef pcreplus_h__included
+//	#error filematcher.h requires pcreplus.h to be included first.
+//#endif
 
 #ifndef _STRING_
 	#error filematcher.h requires <string> to be included first.
@@ -15,40 +26,32 @@ namespace PCRE
 class RegExFileMatcher
 {
 public:
-	RegExFileMatcher(LPCTSTR filterstr)
+	RegExFileMatcher(LPCTSTR filterstr) : valid(false), sPatterns("")
 	{
-		sPatterns = "";
-		re = NULL;
-
 		build(filterstr);
 	}
 
-	~RegExFileMatcher()
-	{
-		if(re != NULL)
-			delete re;
-	}
-
-	bool Match(LPCTSTR filename)
+	bool Match(LPCTSTR filename) const
 	{
 		PNASSERT(Valid());
-		return re->Match(filename);
+		return boost::xpressive::regex_match(std::string(filename), re);
 	}
 
-	bool Valid()
+	bool Valid() const
 	{
-		return re != NULL;
+		return valid;
 	}
 
-	LPCSTR Error()
+	LPCSTR Error() const
 	{
 		return error.c_str();
 	}
 
 protected:
 	std::string sPatterns;
-	RegExp* re;
+	boost::xpressive::sregex re;
 	std::string error;
+	bool valid;
 
 	void build(LPCTSTR filterstr)
 	{
@@ -79,13 +82,13 @@ protected:
 		{
 			try
 			{
-				re = new RegExp(sPatterns.c_str(), RegExp::CaseInsensitive | RegExp::UTF8);
+				re = boost::xpressive::sregex::compile(sPatterns, boost::xpressive::regex_constants::icase);
+				valid = true;
 			}
-			catch(REException& ex)
+			catch(boost::xpressive::regex_error& ex)
 			{
-				error = ex.GetMessage();
-				delete re;
-				re = NULL;
+				error = ex.what();
+				valid = false;
 			}
 		}
 	}

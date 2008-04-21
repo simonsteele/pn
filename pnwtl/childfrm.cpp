@@ -229,7 +229,7 @@ void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 ////////////////////////////////////////////////////
 // Autocomplete methods
 
-bool CChildFrame::InsertClipCompleted(SCNotification* notification)
+bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 {
 	tstring text = notification->text;
 	int colon = text.find(':');
@@ -768,7 +768,7 @@ LRESULT CChildFrame::OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 LRESULT CChildFrame::OnClipboardSwap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	TextRange tr;
+	Scintilla::TextRange tr;
 
 	tr.chrg.cpMin = m_view.GetSelectionStart();
 	tr.chrg.cpMax = m_view.GetSelectionEnd();
@@ -1055,7 +1055,7 @@ public:
 	virtual ~DefinitionInsertHandler(){}
 
 	/// User made a selection
-	virtual bool AutoCSelection(SCNotification* notification)
+	virtual bool AutoCSelection(Scintilla::SCNotification* notification)
 	{
 		for (size_t i = 0; i < Prototypes.size(); ++i)
 		{
@@ -1448,7 +1448,7 @@ bool CChildFrame::OnRunTool(LPVOID pTool)
 
 	if( pToolDef->WantStdIn() )
 	{
-		TextRange tr;
+		Scintilla::TextRange tr;
 
 		// We want to pass our selection/whole document to StdIn.
 		if(m_view.GetSelLength() > 0)

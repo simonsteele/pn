@@ -36,7 +36,7 @@ public:
 		if (indent < 0)
 			return;
 		
-		CharacterRange crange;
+		Scintilla::CharacterRange crange;
 		GetSel(crange);
 
 		int posBefore = GetLineIndentPosition(line);
@@ -99,7 +99,7 @@ public:
 			return buf;
 
 		buf.resize(end-start+1);
-		TextRange tr;
+		Scintilla::TextRange tr;
 		tr.chrg.cpMin = start;
 		tr.chrg.cpMax = end;
 		tr.lpstrText = &buf[0];
@@ -111,7 +111,7 @@ public:
 
 	boost::python::object FindTextString(int start, int end, const char* string_to_find, int flags)
 	{
-		TextToFind f;	
+		Scintilla::TextToFind f;	
 		f.lpstrText = (char*)string_to_find;
 		f.chrg.cpMin = start;
 		f.chrg.cpMax = end;

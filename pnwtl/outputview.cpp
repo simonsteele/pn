@@ -16,7 +16,6 @@
 #include "scilexer.h"
 #include "scaccessor.h"
 #include "project.h"
-#include "include/pcreplus.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // COutputView
@@ -92,30 +91,32 @@ bool COutputView::ExpandMatchedPath(CFileName& fn)
  * @brief Uses any regular expression string to try and match an error.
  * @param style - style that the error is displayed in.
  * @param position - position of the character clicked.
- * @param reDef - Regular Expression pattern definition.
+ * @param re - Regular Expression object.
  */
-bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
+bool COutputView::HandleREError(boost::xpressive::sregex& re, int style, int position)
 {
 	bool bRet = true;
 
-	TextRange tr;
+	Scintilla::TextRange tr;
 				
 	ExtendStyleRange(position, style, &tr);
-	char* buf = new char[tr.chrg.cpMax - tr.chrg.cpMin + 1];
-	tr.lpstrText = buf;
-
+	std::string buf;
+	buf.resize(tr.chrg.cpMax - tr.chrg.cpMin + 1);
+	tr.lpstrText = &buf[0];
 	GetTextRange(&tr);
+	buf.resize(tr.chrg.cpMax - tr.chrg.cpMin);
 
-	if( re.Match(tr.lpstrText) )
+	boost::xpressive::smatch match;
+	if( boost::xpressive::regex_match(buf, match, re) )
 	{
 		tstring filename;
 		tstring linestr;
 		tstring colstr;
         
 		// Extract the named matches from the RE, noting if there was a line or column.
-		bool bFile = re.GetNamedMatch("f", filename);
-		bool bLine = re.GetNamedMatch("l", linestr);
-		bool bCol = re.GetNamedMatch("c", colstr);
+		bool bFile = safe_get_submatch(match, filename, "f");
+		bool bLine = safe_get_submatch(match, linestr, "l");
+		bool bCol = safe_get_submatch(match, colstr, "c");
 
 #ifdef _DEBUG
 			tstring dbgout = _T("Matched file (");
@@ -194,8 +195,6 @@ bool COutputView::HandleREError(PCRE::RegExp& re, int style, int position)
 		bRet = false;
 	}
 
-	delete [] tr.lpstrText;
-
 	return bRet;
 }
 
@@ -254,12 +253,12 @@ bool COutputView::BuildAndHandleREError(int style, int position, const char* reD
 {
 	try
 	{
-		PCRE::RegExp re(reDef);
+		boost::xpressive::sregex re = boost::xpressive::sregex::compile(std::string(reDef));
 		return HandleREError(re, style, position);
 	}
-	catch (PCRE::REException& ex)
+	catch (boost::xpressive::regex_error& ex)
 	{
-		::MessageBox(m_hWnd, ex.GetMessage(), "PN2 - Regular Expression Error", MB_OK);
+		::MessageBox(m_hWnd, ex.what(), "PN2 - Regular Expression Error", MB_OK);
 	}
 
 	return false;
@@ -391,11 +390,11 @@ LRESULT COutputView::OnHotSpotClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
  */
 int COutputView::HandleNotify(LPARAM lParam)
 {
-	SCNotification *scn = (SCNotification*)lParam;
+	Scintilla::SCNotification *scn = (Scintilla::SCNotification*)lParam;
 	if( scn->nmhdr.code == SCN_HOTSPOTCLICK )
 	{
 		// Ignore if Ctrl is pressed...
-		if( (((SCNotification*)lParam)->modifiers & SCMOD_CTRL) != 0 )
+		if( (((Scintilla::SCNotification*)lParam)->modifiers & SCMOD_CTRL) != 0 )
 			return baseClass::HandleNotify(lParam);
 
 		int style = GetStyleAt(scn->position);

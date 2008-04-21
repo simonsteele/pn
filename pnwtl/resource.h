@@ -225,6 +225,7 @@
 #define IDB_OPENFILES                   360
 #define IDI_ICON5                       361
 #define IDI_BROWSER                     361
+#define IDC_MARGIN						400
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425

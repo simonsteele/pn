@@ -13,7 +13,6 @@
 
 #include "schemeconfig.h"
 
-#include "include/pcreplus.h"
 #include "outputview.h"
 #include "scilexer.h"
 
@@ -147,7 +146,7 @@ void CStyleDisplay::UpdateFont()
 
 int CScintillaREDialogWnd::HandleNotify(LPARAM lParam)
 {
-	SCNotification *scn = (SCNotification*)lParam;
+	Scintilla::SCNotification *scn = (Scintilla::SCNotification*)lParam;
 	
 	if( scn->nmhdr.code == SCN_HOTSPOTCLICK )
 	{

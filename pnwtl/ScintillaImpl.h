@@ -69,7 +69,7 @@ public:
 
 	tstring GetSelText2();
 	int GetCaretInLine();
-	CharacterRange GetSelection();
+	Scintilla::CharacterRange GetSelection();
 	void InsertChar(long nPos, char nChar);
 	tstring GetLineText(int nLine=-1);
 
@@ -99,7 +99,7 @@ protected:
 
 private:
 	bool StartAutoComplete();
-	void AutoCloseBraces(SCNotification* scn);
+	void AutoCloseBraces(Scintilla::SCNotification* scn);
 	
 	void SmartTag();
 	bool StartCallTip();

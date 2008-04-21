@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "include/boyermoore.h"
 #include "include/filefinder.h"
-#include "include/pcreplus.h"
 #include "include/filematcher.h"
 
 #include "findinfiles.h"

@@ -113,12 +113,15 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, WordLi
 			if(blockComment.ecLength == eSingle)
 			{
 				if( cc.Match(blockComment.ecode[0]) )
-					cc.SetState(ST_DEFAULT);
+					cc.ForwardSetState(ST_DEFAULT);
 			}
 			else if(blockComment.ecLength == eDouble)
 			{
 				if( cc.Match(blockComment.ecode[0], blockComment.ecode[1]) )
-					cc.SetState(ST_DEFAULT);
+				{
+					cc.Forward();
+					cc.ForwardSetState(ST_DEFAULT);
+				}
 			}
 			else
 			{

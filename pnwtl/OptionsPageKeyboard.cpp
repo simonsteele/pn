@@ -16,7 +16,7 @@
 COptionsPageKeyboard::COptionsPageKeyboard(CommandDispatch* dispatcher)
 {
 	m_pDispatch = dispatcher;
-	m_pKeyMap = new KeyMap(*dispatcher->GetCurrentKeyMap());
+	m_pKeyMap = new Commands::KeyMap(*dispatcher->GetCurrentKeyMap());
 	m_bDirty = false;
 	m_pCurrent = NULL;
 }

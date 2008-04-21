@@ -13,12 +13,12 @@
 
 //#define STATIC_SCILEXER
 #define WTL_SCINTILLA 1
-#define PLAT_WIN 1
+//#define PLAT_WIN 1
 
 #define SC_BOOKMARK 0
 #define SC_NUMBERED_BOOKMARK 1
 
-#include "scintilla.h"
+#include "scintilla/include/scintilla.h"
 
 //! Block size for disk reading and writing.
 const int blockSize = 131072;
@@ -34,7 +34,7 @@ struct RangeToFormat
 	void* hdcTarget;
 	RECT rc;
 	RECT rcPage;
-	CharacterRange chrg;
+	Scintilla::CharacterRange chrg;
 };
 
 /**
@@ -81,7 +81,7 @@ class CScintilla
 		 * SPerform uses either SendMessage or the function pointer (Perform)
 		 * to run scintilla commands on the relevant scintilla control.
 		 */
-		virtual inline long SPerform(long Msg, WPARAM wParam=0, LPARAM lParam=0) const
+		virtual long SPerform(long Msg, WPARAM wParam=0, LPARAM lParam=0)
 		{
 			if (Perform)
 				return Perform(m_Pointer, Msg, wParam, lParam);
@@ -103,10 +103,10 @@ class CScintilla
 		// The following are helper functions - they allow
 		// the code using certain parts of Scintilla to look
 		// a little cleaner.
-		void GetSel(CharacterRange& cr);
+		void GetSel(Scintilla::CharacterRange& cr);
 		void EnsureRangeVisible(int begin, int end);
 		void SetTarget(int begin, int end);
-		void SetTarget(CharacterRange* cr);
+		void SetTarget(Scintilla::CharacterRange* cr);
 		
 		void GotoLineEnsureVisible(int line);
 
@@ -196,7 +196,7 @@ class CScintilla
 		/**
 		 * The number of characters in the document.
 		 */
-		int GetLength() const;
+		int GetLength();
 		/**
 		 * Returns the character byte at the position.
 		 */
@@ -235,7 +235,7 @@ class CScintilla
 		 * Retrieve a buffer of cells.
 		 * Returns the number of bytes in the buffer not including terminating NULs.
 		 */
-		int GetStyledText(TextRange* tr);
+		int GetStyledText(Scintilla::TextRange* tr);
 		/**
 		 * Are there any redoable actions in the undo history?
 		 */
@@ -811,7 +811,7 @@ class CScintilla
 		/**
 		 * Find some text in the document.
 		 */
-		long FindText(int flags, TextToFind* ft);
+		long FindText(int flags, Scintilla::TextToFind* ft);
 		/**
 		 * On Windows, will draw the document into a display context such as a printer.
 		 */
@@ -862,7 +862,7 @@ class CScintilla
 		 * Retrieve a range of text.
 		 * Return the length of the text.
 		 */
-		int GetTextRange(TextRange* tr);
+		int GetTextRange(Scintilla::TextRange* tr);
 		/**
 		 * Draw the selection in normal style or with selection highlighted.
 		 */

@@ -516,11 +516,11 @@ int CTextView::HandleNotify(LPARAM lParam)
 			if(SmartStart::GetInstance()->OnChar(this) != SmartStart::eContinue)
 				m_bSmartStart = false;
 
-		m_pDoc->OnCharAdded( ( reinterpret_cast<SCNotification*>(lParam))->ch );
+		m_pDoc->OnCharAdded( ( reinterpret_cast<Scintilla::SCNotification*>(lParam))->ch );
 	}
 	else if(msg == SCN_MODIFIED)
 	{
-		if( ( reinterpret_cast<SCNotification*>(lParam))->linesAdded != 0 && m_bLineNos )
+		if( ( reinterpret_cast<Scintilla::SCNotification*>(lParam))->linesAdded != 0 && m_bLineNos )
 			SetLineNumberChars();
 	}
 	
@@ -564,7 +564,7 @@ tstring CTextView::GetCurrentWord()
 	// 2. check if the caret is inside a word
 	// 3. if neither 1 nor 2 are true, use the previous search text
 
-	CharacterRange cr;
+	Scintilla::CharacterRange cr;
 	GetSel(cr);
 	int len = cr.cpMax - cr.cpMin;
 
@@ -578,7 +578,7 @@ tstring CTextView::GetCurrentWord()
 	}
 	else
 	{
-		TextRange tr;
+		Scintilla::TextRange tr;
 		long pos = GetCurrentPos();
 		tr.chrg.cpMin = WordStartPosition(pos, true);
 		tr.chrg.cpMax = WordEndPosition(pos, true);
@@ -826,7 +826,7 @@ LRESULT CTextView::OnCommentLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 		BeginUndoAction();
 
 		// Find the selection
-		CharacterRange cr;
+		Scintilla::CharacterRange cr;
 		GetSel(cr);
 		int selStartLine = LineFromPosition( cr.cpMin );
 		int selEndLine = LineFromPosition( cr.cpMax );
@@ -875,7 +875,7 @@ LRESULT CTextView::OnCommentStream(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 		BeginUndoAction();
 		
 		// Find selection
-		CharacterRange cr;
+		Scintilla::CharacterRange cr;
 		GetSel(cr);
 		
 		// Insert start of stream comment...
@@ -909,7 +909,7 @@ LRESULT CTextView::OnCommentBlock(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	{
 		BeginUndoAction();
 
-		CharacterRange cr;
+		Scintilla::CharacterRange cr;
 		GetSel(cr);
 
 		int selStartLine = LineFromPosition( cr.cpMin );
@@ -966,7 +966,7 @@ LRESULT CTextView::OnUncomment(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	// 3. Else check start->end to see if we have a comment stream
 	// 4. Try to un-line-comment the selection...
 
-	CharacterRange cr;
+	Scintilla::CharacterRange cr;
 	GetSel(cr);
 
 	int startLine = LineFromPosition(cr.cpMin);
@@ -1106,6 +1106,7 @@ void CTextView::OnFirstShow()
 	m_pLastScheme = SchemeManager::GetInstance()->GetDefaultScheme();
 	m_pLastScheme->Load(*this);
 	SetEOLMode( OPTIONS->GetCached(Options::OLineEndings) );
+	SPerform(SCI_SETCODEPAGE, (long)OPTIONS->GetCached(Options::ODefaultCodePage));
 }
 
 void CTextView::checkLineLength()

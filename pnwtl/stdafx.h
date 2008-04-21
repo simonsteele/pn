@@ -89,6 +89,20 @@ typedef std::basic_string<TCHAR> tstring;
 #include <boost/shared_ptr.hpp>
 #include <boost/xpressive/xpressive.hpp>
 
+template <typename match_type>
+bool safe_get_submatch(match_type& match, typename match_type::string_type& expr, typename match_type::char_type const *name)
+{
+	try
+	{
+		expr = match[name].str();
+		return true;
+	}
+	catch (boost::xpressive::regex_error&)
+	{
+		return false;
+	}
+}
+
 #define PNASSERT ATLASSERT
 
 #ifdef _DEBUG

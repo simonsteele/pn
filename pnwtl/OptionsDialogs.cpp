@@ -2,7 +2,7 @@
  * @file OptionsDialogs.cpp
  * @brief Dialogs used to edit settings from the Options dialog.
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -13,8 +13,9 @@
 #include "OptionsDialogs.h"
 #include "SchemeConfig.h"
 #include "pndialogs.h"
-#include "include/pcreplus.h"
 #include "l10n.h"
+
+using namespace boost::xpressive;
 
 //////////////////////////////////////////////////////////////////////////////
 // CToolEditorDialog
@@ -292,27 +293,31 @@ LRESULT CToolConsoleIOPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 
 LRESULT CToolConsoleIOPage::OnHandleHSClick(UINT /*uMsg*/, WPARAM style, LPARAM position, BOOL& /*bHandled*/)
 {
-	TextRange tr;
+	Scintilla::TextRange tr;
 				
 	m_scintilla.ExtendStyleRange(position, style, &tr);
-	char* buf = new char[tr.chrg.cpMax - tr.chrg.cpMin + 1];
-	tr.lpstrText = buf;
-
+	
+	std::string buf;
+	buf.resize(tr.chrg.cpMax - tr.chrg.cpMin + 1);
+	//char* buf = new char[tr.chrg.cpMax - tr.chrg.cpMin + 1];
+	tr.lpstrText = &buf[0];
 	m_scintilla.GetTextRange(&tr);
+	buf.resize(tr.chrg.cpMax - tr.chrg.cpMin);
 
-	PCRE::RegExp* pRE = m_scintilla.GetRE();
+	sregex* pRE = m_scintilla.GetRE();
 
-	if( pRE && pRE->Match(tr.lpstrText) )
+	smatch match;
+	if( pRE && regex_match( buf, match, *pRE ))
 	{
 		tstring filename;
 		tstring linestr;
 		tstring colstr;
-        
-		// Extract the named matches from the RE, noting if there was a line or column.
-		bool bFile = pRE->GetNamedMatch("f", filename);
-		bool bLine = pRE->GetNamedMatch("l", linestr);
-		bool bCol = pRE->GetNamedMatch("c", colstr);
 
+		// Extract the named matches from the RE, noting if there was a line or column.
+		bool bFile = safe_get_submatch(match, filename, "f");
+		bool bLine = safe_get_submatch(match, linestr, "l");
+		bool bCol = safe_get_submatch(match, colstr, "c");
+        
 		tstring display = "";
 		if(bFile)
 		{
@@ -340,8 +345,6 @@ LRESULT CToolConsoleIOPage::OnHandleHSClick(UINT /*uMsg*/, WPARAM style, LPARAM 
 	{
 		GetDlgItem(IDC_TE_CLICKRESULTSSTATIC).SetWindowText("Error: no match");
 	}
-
-	delete [] buf;
 
 	return 0;
 }
@@ -374,14 +377,7 @@ LRESULT CToolConsoleIOPage::OnTextChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	CString cs;
 	GetDlgItem(IDC_TE_CUSTOMTEXT).GetWindowText(cs);
 
-	try
-	{
-		m_scintilla.SetRE(cs);
-	}
-	catch(PCRE::REException& /*ex*/)
-	{
-		// The RE is invalid...
-	}
+	m_scintilla.SetRE(cs);
 	
 	return 0;	
 }

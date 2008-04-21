@@ -2,7 +2,7 @@
  * @file outputscintilla.h
  * @brief Simple RegEx based output lexer wrapped in a scintilla.
  * @author Simon Steele
- * @note Copyright (c) 2005 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -13,10 +13,6 @@
 #include "scintillaimpl.h"
 
 class ScintillaAccessor;
-
-namespace PCRE {
-	class RegExp;
-}
 
 #define SCE_CUSTOM_ERROR	20
 
@@ -31,9 +27,9 @@ public:
 	~REScintilla();
 
 	void SetRE(LPCTSTR regex, bool bClearStyling = true);
-	void ExtendStyleRange(int startPos, int style, TextRange* tr);
+	void ExtendStyleRange(int startPos, int style, Scintilla::TextRange* tr);
 
-	PCRE::RegExp* GetRE() const;
+	boost::xpressive::sregex* GetRE() const;
 
 	virtual int HandleNotify(LPARAM lParam);
 
@@ -43,8 +39,8 @@ protected:
 
 protected:
 	tstring			m_customre;
-	PCRE::RegExp*	m_pRE;
 	bool			schemeLoaded;
+	boost::xpressive::sregex* m_pRE;
 };
 
 /**

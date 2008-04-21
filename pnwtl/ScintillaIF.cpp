@@ -138,7 +138,7 @@ bool CScintilla::OpenFile(LPCTSTR filename)
 
 void CScintilla::GetRange(int start, int end, char *text) 
 {
-	TextRange tr;
+	Scintilla::TextRange tr;
 	tr.chrg.cpMin = start;
 	tr.chrg.cpMax = end;
 	tr.lpstrText = text;
@@ -170,7 +170,7 @@ bool CScintilla::SaveFile(LPCTSTR filename)
 
 bool CScintilla::IsScintillaNotify(LPARAM lParam)
 {
-	SCNotification *scn = (SCNotification*)lParam;
+	Scintilla::SCNotification *scn = (Scintilla::SCNotification*)lParam;
 	if (scn->nmhdr.hwndFrom == m_scihWnd)
 		return true;
 	return false;
@@ -178,7 +178,7 @@ bool CScintilla::IsScintillaNotify(LPARAM lParam)
 
 int CScintilla::HandleNotify(LPARAM lParam)
 {
-	SCNotification *scn = (SCNotification*)lParam;
+	Scintilla::SCNotification *scn = (Scintilla::SCNotification*)lParam;
 	switch (scn->nmhdr.code)
 	{
 		case SCN_SAVEPOINTREACHED :
@@ -357,7 +357,7 @@ void CScintilla::JumpToNumberedBookmark(int number, int base)
 	debugBookmarkLines(m_numberedBookmarks);
 }
 
-void CScintilla::GetSel(CharacterRange& cr)
+void CScintilla::GetSel(Scintilla::CharacterRange& cr)
 {
 	cr.cpMin = GetSelectionStart();
 	cr.cpMax = GetSelectionEnd();
@@ -389,7 +389,7 @@ void CScintilla::SetTarget(int begin, int end)
 	SPerform(SCI_SETTARGETEND, end);
 }
 
-void CScintilla::SetTarget(CharacterRange* cr)
+void CScintilla::SetTarget(Scintilla::CharacterRange* cr)
 {
 	SPerform(SCI_SETTARGETSTART, cr->cpMin);
 	SPerform(SCI_SETTARGETEND, cr->cpMax);
@@ -673,7 +673,7 @@ void CScintilla::ClearDocumentStyle()
 	SPerform(SCI_CLEARDOCUMENTSTYLE, 0, 0);
 }
 
-int CScintilla::GetLength() const
+int CScintilla::GetLength()
 {
 	return (int)SPerform(SCI_GETLENGTH, 0, 0);
 }
@@ -718,7 +718,7 @@ void CScintilla::SetSavePoint()
 	SPerform(SCI_SETSAVEPOINT, 0, 0);
 }
 
-int CScintilla::GetStyledText(TextRange* tr)
+int CScintilla::GetStyledText(Scintilla::TextRange* tr)
 {
 	return (int)SPerform(SCI_GETSTYLEDTEXT, 0, (long)tr);
 }
@@ -1408,7 +1408,7 @@ int CScintilla::GetPrintColourMode()
 	return (int)SPerform(SCI_GETPRINTCOLOURMODE, 0, 0);
 }
 
-long CScintilla::FindText(int flags, TextToFind* ft)
+long CScintilla::FindText(int flags, Scintilla::TextToFind* ft)
 {
 	return SPerform(SCI_FINDTEXT, (long)flags, (long)ft);
 }
@@ -1468,7 +1468,7 @@ int CScintilla::GetSelText(char* text)
 	return (int)SPerform(SCI_GETSELTEXT, 0, (long)text);
 }
 
-int CScintilla::GetTextRange(TextRange* tr)
+int CScintilla::GetTextRange(Scintilla::TextRange* tr)
 {
 	return (int)SPerform(SCI_GETTEXTRANGE, 0, (long)tr);
 }

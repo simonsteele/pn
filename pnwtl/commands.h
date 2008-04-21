@@ -67,6 +67,8 @@ struct KeyboardFileHeader
 
 class CommandDispatch;
 
+namespace Commands {
+
 /**
  * Simple keyboard command map
  */
@@ -105,6 +107,8 @@ private:
 	int alloc;
 	static const KeyToCommand MapDefault[];
 };
+
+}
 
 typedef std::stack<DWORD> IDStack;
 
@@ -161,8 +165,8 @@ class CommandDispatch : public CommandEventHandler
 		bool HandleCommand(int iID);
 		bool LocalHandleCommand(int iID, int iCommand, CommandEventHandler* pHandler);
 
-		void SetCurrentKeyMap(const KeyMap* keyMap);
-		KeyMap* GetCurrentKeyMap() const;
+		void SetCurrentKeyMap(const Commands::KeyMap* keyMap);
+		Commands::KeyMap* GetCurrentKeyMap() const;
 
 		bool Load(LPCTSTR filename);
 		void Save(LPCTSTR filename) const;
@@ -179,7 +183,7 @@ class CommandDispatch : public CommandEventHandler
 		int			m_iRanges;
 		CmdIDRange*	m_pRange;
 		
-		KeyMap*		m_keyMap;
+		Commands::KeyMap* m_keyMap;
 		IDStack		m_freeIds;
 
 		MAP_HANDLERS m_Handlers;

@@ -2,7 +2,7 @@
  * @file pn.cpp
  * @brief Main Source File for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -74,6 +74,9 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
 	MiniDumper dumper(str.c_str());
 //#endif
+
+	Scintilla_RegisterClasses(_Module.m_hInst);
+	Scintilla_LinkLexers();
 	
 	// Store the current OS version
 	ZeroMemory(&g_Context.OSVersion, sizeof(OSVERSIONINFO));
@@ -214,7 +217,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	ATLASSERT(SUCCEEDED(hRes));
 
 #ifdef _DEBUG
-	//_CrtSetBreakAlloc(5437);
+//	_CrtSetBreakAlloc(6821);
 #endif
 
 #if (_WIN32_IE >= 0x0300)
@@ -239,6 +242,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 #ifdef _DEBUG
 	_CrtDumpMemoryLeaks();
 #endif
+
+	Scintilla_ReleaseResources();
 
 	return nRet;
 }

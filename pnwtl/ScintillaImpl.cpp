@@ -206,7 +206,7 @@ bool iswordcharforsel(char ch)
 int CScintillaImpl::HandleNotify(LPARAM lParam)
 {
 	int msg = CScintilla::HandleNotify(lParam);
-	SCNotification* scn = reinterpret_cast<SCNotification*>(lParam);
+	Scintilla::SCNotification* scn = reinterpret_cast<Scintilla::SCNotification*>(lParam);
 
 	switch (msg)
 	{
@@ -286,13 +286,13 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 
 		case SCN_CHARADDED:
 		{
-			DumbIndent( ((SCNotification*)lParam)->ch );
+			DumbIndent( ((Scintilla::SCNotification*)lParam)->ch );
 			
 			// Auto Close Tags:
 			if( m_bSmartTag && scn->ch == '>' )
 				SmartTag();
 
-			CharacterRange crange = GetSelection();
+			Scintilla::CharacterRange crange = GetSelection();
 			int selStart = crange.cpMin;
 			int selEnd = crange.cpMax;
 			
@@ -385,7 +385,7 @@ class ScintillaWordCounter : public WordCounter< ScintillaWordCounter<TBlockSize
 				int grabSize = length - actualPos;
 				if (grabSize > TBlockSize)
 					grabSize = TBlockSize;
-				TextRange tr;
+				Scintilla::TextRange tr;
 				tr.chrg.cpMin = actualPos;
 				tr.chrg.cpMax = actualPos + grabSize;
 				tr.lpstrText = buffer;
@@ -490,7 +490,7 @@ void CScintillaImpl::IndentLine(int line, int indent)
 	if (indent < 0)
 		return;
 	
-	CharacterRange crange;
+	Scintilla::CharacterRange crange;
 	GetSel(crange);
 
 	int posBefore = GetLineIndentPosition(line);
@@ -601,7 +601,7 @@ void CScintillaImpl::ManageBraceMatch()
 
 int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 {
-	CharacterRange	cr;
+	Scintilla::CharacterRange	cr;
 	int				startPosition, endPosition;
 	int				bRet = fnNotFound;
 	bool			checkFoundPos = true;
@@ -801,7 +801,7 @@ bool CScintillaImpl::ReplaceOnce(extensions::ISearchOptions* pOptions)
 		CString replaceTarget(pOptions->GetReplaceText());
 		int replaceLen = UnSlashAsNeeded(replaceTarget, pOptions->GetUseSlashes(), pOptions->GetUseRegExp());
 		
-		CharacterRange cr;
+		Scintilla::CharacterRange cr;
 		GetSel(cr);
 
 		SetTarget(cr.cpMin, cr.cpMax);
@@ -838,7 +838,7 @@ int CScintillaImpl::ReplaceAll(extensions::ISearchOptions* pOptions)
 		return 0;
 	}
 
-	CharacterRange cr;
+	Scintilla::CharacterRange cr;
 	GetSel(cr);
 
 	int startPosition = cr.cpMin;
@@ -1052,7 +1052,7 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 	pdlg.hDevNames = pOptions->hDevNames;
 
 	// See if a range has been selected
-	CharacterRange crange;
+	Scintilla::CharacterRange crange;
 	GetSel(crange);
 	int startPos = crange.cpMin;
 	int endPos = crange.cpMax;
@@ -1352,7 +1352,7 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 
 bool CScintillaImpl::UnCommentLine(const CommentSpecRec& comments)
 {
-	CharacterRange cr;
+	Scintilla::CharacterRange cr;
 	GetSel(cr);
 
 	int indentPos = GetLineIndentPosition(LineFromPosition(cr.cpMin));
@@ -1387,7 +1387,7 @@ bool CScintillaImpl::UnCommentLine(const CommentSpecRec& comments)
 
 bool CScintillaImpl::UnCommentStream(const CommentSpecRec& comments)
 {
-	CharacterRange cr;
+	Scintilla::CharacterRange cr;
 	GetSel(cr);
 
 	// Sanity checks...
@@ -1682,9 +1682,9 @@ int CScintillaImpl::GetCaretInLine()
 	return caret - lineStart;
 }
 
-CharacterRange CScintillaImpl::GetSelection()
+Scintilla::CharacterRange CScintillaImpl::GetSelection()
 {
-	CharacterRange crange;
+	Scintilla::CharacterRange crange;
 	crange.cpMin = GetSelectionStart();
 	crange.cpMax = GetSelectionEnd();
 	return crange;

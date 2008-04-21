@@ -110,7 +110,7 @@ LRESULT CJumpTreeCtrl::OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 {
 	if (wParam >= JUMPVIEW_FILE_MIN && wParam <= JUMPVIEW_FILE_MAX)
 	{
-		CChildFrame* pChildFrame;
+		CChildFrame* pChildFrame = NULL;
 		
 		if (lParam != NULL)
 		{

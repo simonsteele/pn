@@ -1095,7 +1095,7 @@ bool CFindExDialog::selectionIsWholeLine(CTextView* textView)
 	}
 	else if(selLength > 0)
 	{
-		CharacterRange cr;
+		Scintilla::CharacterRange cr;
 		textView->GetSel(cr);
 
 		int lineStart = textView->LineFromPosition(cr.cpMin);

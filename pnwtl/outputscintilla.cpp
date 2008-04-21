@@ -13,7 +13,7 @@
 #include "scaccessor.h"
 #include "scilexer.h"
 
-#include "include/pcreplus.h"
+using namespace boost::xpressive;
 
 REScintilla::REScintilla()
 {
@@ -43,25 +43,21 @@ void REScintilla::SetRE(LPCTSTR regex, bool bClearStyling)
 
 	if(!m_pRE)
 	{
-		m_pRE = new PCRE::RegExp;
+		m_pRE = new sregex;
 	}
 
 	try
 	{
 		// We pass 0 to disable the default UTF-8 matching, we're in ASCII in output window
-		m_pRE->Compile(m_customre.c_str(), 0);
-		m_pRE->Study();
+		*m_pRE = sregex::compile(m_customre);
 	}
-	catch(PCRE::REException& ex)
+	catch(boost::xpressive::regex_error& ex)
 	{
-		if(ex.GetMessage())
-		{
-			size_t len = strlen(ex.GetMessage()) + m_customre.size() + 90;
-			char* buf = new char[len];
-			sprintf(buf, "Custom Parser Error at %d (%s): %s", ex.GetOffset(), ex.GetMessage(), m_customre.c_str());
-			g_Context.m_frame->SetStatusText(buf);
-			delete [] buf;
-		}
+		size_t len = strlen(ex.what()) + m_customre.size() + 90;
+		char* buf = new char[len];
+		sprintf(buf, "Custom Parser Error (%s): %s", ex.what(), m_customre.c_str());
+		g_Context.m_frame->SetStatusText(buf);
+		delete [] buf;
 
 		delete m_pRE;
 		m_pRE = NULL;
@@ -98,14 +94,14 @@ void REScintilla::SetRE(LPCTSTR regex, bool bClearStyling)
 	}
 }
 
-PCRE::RegExp* REScintilla::GetRE() const
+sregex* REScintilla::GetRE() const
 {
 	return m_pRE;
 }
 
 int REScintilla::HandleNotify(LPARAM lParam)
 {
-	SCNotification *scn = (SCNotification*)lParam;
+	Scintilla::SCNotification *scn = (Scintilla::SCNotification*)lParam;
 
 	if( scn->nmhdr.code == SCN_STYLENEEDED )
 	{
@@ -141,7 +137,7 @@ int REScintilla::HandleNotify(LPARAM lParam)
  * start of the line and after the end of the line because we only do
  * line matches anyway at the moment.
  */
-void REScintilla::ExtendStyleRange(int startPos, int style, TextRange* tr)
+void REScintilla::ExtendStyleRange(int startPos, int style, Scintilla::TextRange* tr)
 {
 	// Find the extent of this styled text...
 	int docLength = GetLength();
@@ -212,7 +208,9 @@ void REScintilla::customColouriseLine(ScintillaAccessor& styler, char *lineBuffe
 		if(bHaveLineEnd)
 			endLine--;
 		
-		if( m_pRE->Match(lineBuffer, length, 0) )
+		std::string line(lineBuffer, length);
+
+		if( regex_match(line, *m_pRE) )
 		{
 			styler.ColourTo(endLine, SCE_CUSTOM_ERROR);
 		}

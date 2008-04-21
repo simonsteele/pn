@@ -48,8 +48,8 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm140"
 				Optimization="0"
-				AdditionalIncludeDirectories="TabbingFramework, DockingFramework"
-				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,STRICT"
+				AdditionalIncludeDirectories="TabbingFramework, DockingFramework, Scintilla\include"
+				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,STRICT,SCI_NAMESPACE,STATIC_SCILEXER,SCI_LEXER"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				BufferSecurityCheck="true"
@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib"
+				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib imm32.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -348,8 +348,8 @@
 				AdditionalOptions="/Zm140"
 				Optimization="3"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="TabbingFramework, DockingFramework"
-				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,STRICT"
+				AdditionalIncludeDirectories="TabbingFramework, DockingFramework, Scintilla\include"
+				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,STRICT,SCI_NAMESPACE,STATIC_SCILEXER,SCI_LEXER"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -378,7 +378,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib"
+				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib imm32.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -1263,10 +1263,6 @@
 			</File>
 			<File
 				RelativePath=".\include\pagesetupdialog.h"
-				>
-			</File>
-			<File
-				RelativePath="include\pcreplus.cpp"
 				>
 			</File>
 			<File
