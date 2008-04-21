@@ -24,8 +24,8 @@
 			<style name="Keyword" key="5" class="keyword"/>
 			<style name="Triple Quotes" key="6" fore="7f0000"/>
 			<style name="Triple Double Quotes" key="7" fore="7f0000"/>
-			<style name="Class name" key="8" fore="0000ff" bold="true"/>
-			<style name="Function or method name" key="9" fore="007f7f" bold="true"/>
+			<style name="Class name" key="8" class="class"/>
+			<style name="Function or method name" key="9" class="function"/>
 			<style name="Operators" key="10" bold="true"/>
 			<style name="Identifiers" key="11"/>
 			<style name="Comment block" key="12" fore="7f7f7f" />

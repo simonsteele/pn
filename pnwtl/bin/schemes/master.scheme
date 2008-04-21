@@ -8,8 +8,10 @@
 		<style-class name="whitespace" description="Whitespace" fore="a8c5ff" />
 		
 		<style-class name="comment" description="Comments" fore="007f00"/>
-		<style-class name="keyword" description="Keywords" fore="0000ef" />
+		<style-class name="keyword" description="Language Keywords" fore="0000ef" />
+		<style-class name="keyword2" description="Other Keywords" fore="0000af" />
 		<style-class name="string" description="Strings" fore="7f007f" />
+		<style-class name="character" description="Character Strings" fore="7f007f" />
 		<style-class name="number" description="Numbers" fore="007f7f" />
 		<style-class name="operator" description="Operators" />
 		<style-class name="preprocessor" description="Preprocessor" fore="7f7f00" />
@@ -26,6 +28,8 @@
 		<style-class name="linenumbers" description="Line Numbers" />
 		<style-class name="controlchars" description="Control Characters" fore="808080" />
 		<style-class name="identifier" description="Identifier" fore="7080ff" />
+		<style-class name="class" description="Class Name" fore="0000ff" bold="true"/>
+		<style-class name="function" description="Function Name" fore="007f7f" bold="true"/>
 	</style-classes>
 	<base-options>
 		<style name="Line Numbers" key="33" class="linenumbers" />
