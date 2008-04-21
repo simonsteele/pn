@@ -1,0 +1,26 @@
+<UserSettings>
+	<override-colours caret="FFFF66" indentGuides="282828" selBack="A0A0C0" />
+	<override-classes>
+		<style-class name="default" back="#404040" fore="DEDEDE" />
+		<style-class name="comment" fore="709070" italic="true"/>
+		<style-class name="keyword" fore="FFFFA0"/>
+		<style-class name="keyword2" fore="FF8000" bold="true"/>
+		<style-class name="string" fore="FF2020" />
+		<style-class name="character" fore="FF8080" />
+		<style-class name="number" fore="22C0FF" />
+		<style-class name="operator" fore="FFFFA0" />
+		<style-class name="error" fore="ffff00" back="ff0000" />
+		<style-class name="function" fore="FFCC66" bold="true"/>
+		<style-class name="class" fore="F4A020"/>
+		<style-class name="type" fore="F09040"/>
+		<style-class name="tag" fore="e89393" />
+		<style-class name="attribute" fore="cfcfcf" />
+		<style-class name="identifier" fore="efdcbc" />
+		<style-class name="error" fore="80d4aa" back="2f2f2f" bold="true" />
+		<style-class name="preprocessor" fore="ffcfaf" bold="true" />
+		<style-class name="linenumbers" fore="999999" />
+		<!-- storage types 6080FF -->
+		<!-- variant types 4080A0 -->
+		<!-- line highlight: A0804026 -->
+	</override-classes>
+</UserSettings>
