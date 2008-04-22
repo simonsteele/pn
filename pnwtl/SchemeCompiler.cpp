@@ -266,14 +266,19 @@ void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 
 	SchemeParser::Parse(path, mainfile, UserSettingsFile.c_str());
 
+	// Now we record a default scheme for use when no Scheme is selected. 
+	// It has only the basic styles.
 	tstring filename(m_LoadState.m_outputPath);
 	filename += _T("default.cscheme");
 
-	// Now we record a default scheme for use when no Scheme is selected. 
-	// It has only one style (0) and defaults.
+	// Create a scheme details object, this is needed when sendBaseStyles is called.
+	SchemeDetails sdDefault(_T("default"));
+	m_LoadState.m_pCurScheme = &sdDefault;
+
 	m_Recorder.StartRecording(_T("default"), _T("default"), filename.c_str(), 0);
 	m_Recorder.SetLexer(0);
 	
+	// Set default and whitespace styles:
 	StyleDetails temp(m_LoadState.m_Default);
 	temp.Key = STYLE_DEFAULT;
 	m_Recorder.SetDefStyle(&temp);
@@ -282,7 +287,9 @@ void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 	temp.Key = 0;
 	sendStyle(&temp, &m_Recorder);
 
+	// Send colours and styles for line numbers etc.
 	m_LoadState.m_DefaultColours.SendColours(&m_Recorder);
+	sendBaseStyles(&m_LoadState);
 
 	m_Recorder.EndRecording();
 }
