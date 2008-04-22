@@ -12,7 +12,7 @@
 		<lexer name="props"/>
 		<use-styles>
 			<style name="Default" key="32" />
-			<style name="Whitespace" key="0" fore="000000" />
+			<style name="Whitespace" key="0" />
 			<style name="Comment" key="1" class="comment" />
 			<style name="Section" key="2" fore="0000f0" back="e0f0f0" bold="true" eolfilled="true"/>
 			<style name="Assignment" key="3" class="operator"/>
@@ -54,8 +54,8 @@
 		<use-styles>
 			<style name="Default" key="32" />
 			<style name="Whitespace" key="0" />
-			<style name="Comment" key="1" fore="007f00" />
-			<style name="Command" key="2" fore="7f7f00" />
+			<style name="Comment" key="1" class="comment" />
+			<style name="Command" key="2" class="7f7f00" />
 			<style name="Source and Destination" key="3" fore="7f0000" />
 			<style name="Position Setting (@@)" key="4" fore="7f007f" />
 			<style name="Line Removed (-)" key="5" fore="007f7f" />
@@ -66,15 +66,15 @@
 		<lexer name="errorlist" />
 		<use-styles>
 			<style name="Default" key="32" size="9" />
-			<style name="Whitespace" key="0" fore="000000" />
-			<style name="Python error" key="1" fore="ff0000" hotspot="true" />
-			<style name="gcc error" key="2" fore="800080" hotspot="true" />
-			<style name="Microsoft error" key="3" fore="808000" hotspot="true" />
-			<style name="command or return status" key="4" fore="0000ff" hotspot="true" />
-			<style name="Borland message" key="5" fore="b06000" hotspot="true" />
-			<style name="Perl message" key="6" fore="ff0000" hotspot="true" />
-			<style name=".NET tracebacks" key="7" fore="ff0000" hotspot="true" />
-			<style name="Lua messages" key="8" fore="ff0000" hotspot="true" />
+			<style name="Whitespace" key="0" />
+			<style name="Python error" key="1" class="error" hotspot="true" />
+			<style name="gcc error" key="2" class="error" hotspot="true" />
+			<style name="Microsoft error" key="3" class="error" hotspot="true" />
+			<style name="command or return status" key="4" class="comment" hotspot="true" />
+			<style name="Borland message" key="5" class="error" hotspot="true" />
+			<style name="Perl message" key="6" class="error" hotspot="true" />
+			<style name=".NET tracebacks" key="7" class="error" hotspot="true" />
+			<style name="Lua messages" key="8" class="error" hotspot="true" />
 			<style name="ctags" key="9" fore="ff00ff" />
 			<group name="diff">
 				<style name="change (!)" key="10" fore="007f00" />
@@ -82,11 +82,11 @@
 				<style name="deletion (-)" key="12" fore="007f7f" />
 				<style name="message (---)" key="13" fore="7f0000" />
 			</group>
-			<style name="PHP error" key="14" fore="ff0000" hotspot="true" />
+			<style name="PHP error" key="14" class="error" hotspot="true" />
 			
 			<!-- this is the style used by the container-based error lexer. It may in the future
 			clash with that used by scintilla so will need updating then. -->
-			<style name="Custom error" key="20" fore="800080" hotspot="true" />
+			<style name="Custom error" key="20" class="error" hotspot="true" />
 		</use-styles>
 	</language>
 </Scheme>
