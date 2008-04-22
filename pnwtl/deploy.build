@@ -19,10 +19,10 @@
 	</target>
 	
 	<target name="build">
-		<echo message="pn.sln /Project pcre /ProjectConfig ReleaseDebug /Rebuild"/>
+		<echo message="pn.sln /Project scintilla /ProjectConfig ReleaseDebug /Rebuild"/>
 		<exec
 			program="devenv.com"
-			commandline='pn.sln /Project pcre /ProjectConfig ReleaseDebug /Rebuild'
+			commandline='pn.sln /Project scintilla /ProjectConfig ReleaseDebug /Rebuild'
 			output="build.log"/>
 		
 		<echo message="pn.sln /Project customscheme /ProjectConfig ReleaseDebug /Rebuild"/>
@@ -78,6 +78,7 @@
 				<include name="presets/*.xml"/>
 				<include name="taggers/ctags/*.*"/>
 				
+				<exclude name="scilexer.dll"/>
 				<exclude name="pypn.dll"/>
 				<exclude name="boost_python*.dll"/>
 				<exclude name="libexpatw.dll"/>
@@ -113,6 +114,7 @@
 				<include name="presets/*.xml"/>
 				<include name="taggers/ctags/*.*"/>
 				
+				<exclude name="scilexer.dll"/>
 				<exclude name="pypn.dll"/>
 				<exclude name="boost_python*.dll"/>
 				<exclude name="libexpatw.dll"/>

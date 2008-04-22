@@ -44,7 +44,9 @@ Source: configs\default\config.xml; DestDir: {app}; Flags: onlyifdoesntexist
 
 Source: ..\bin\dbghelp.dll; DestDir: {app}
 Source: ..\bin\libexpat.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\bin\SciLexer.dll; DestDir: {app}; Flags: ignoreversion
+
+; Commented out while we have SciLexer linked in
+;Source: ..\bin\SciLexer.dll; DestDir: {app}; Flags: ignoreversion
 
 Source: ..\bin\schemes\*.scheme; DestDir: {app}\schemes
 Source: ..\bin\schemes\*.lexer; DestDir: {app}\schemes
