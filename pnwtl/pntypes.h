@@ -14,7 +14,7 @@
 typedef unsigned __int64	uint64_t;
 typedef __int64				int64_t;
 
-#include "scintilla/include/scintilla.h"
+#include "include/scintilla/include/scintilla.h"
 
 /**
  * Safe external version of SearchOptions

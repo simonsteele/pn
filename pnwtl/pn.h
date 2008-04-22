@@ -59,7 +59,7 @@
 #include "allocator.h"
 #include "string.h"
 #include "extiface.h"
-#include "scintilla/include/Platform.h"
+#include "include/scintilla/include/Platform.h"
 #include "pntypes.h"
 
 // Pre-declarations...
