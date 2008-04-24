@@ -56,7 +56,7 @@ wait_for_sequences stop</keyword-class></keyword-classes>
 			<style name="Preprocessor" key="9" class="preprocessor"/>
 			<style name="Operator" key="10" class="operator"/>
 			<style name="Identifier" key="11" />
-			<style name="End of line string" key="12" fore="000000" font="font.monospace" back="e0c0e0" eolfilled="true"/>
+			<style name="End of line string" key="12" class="unclosedstring" eolfilled="true"/>
 			<style name="Regexp tag" key="13" fore="007F00" back="E0FFE0"/>
 			<style name="HDL signal" key="14" fore="00005F"/>
 			<style name="User defined" key="15" fore="E0F0FF"/>
