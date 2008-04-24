@@ -19,11 +19,11 @@
 	</target>
 	
 	<target name="build">
-		<echo message="pn.sln /Project scintilla /ProjectConfig ReleaseDebug /Rebuild"/>
+		<!--<echo message="pn.sln /Project scintilla /ProjectConfig ReleaseDebug /Rebuild"/>
 		<exec
 			program="devenv.com"
 			commandline='pn.sln /Project scintilla /ProjectConfig ReleaseDebug /Rebuild'
-			output="build.log"/>
+			output="build.log"/>-->
 		
 		<echo message="pn.sln /Project customscheme /ProjectConfig ReleaseDebug /Rebuild"/>
 		<exec 
