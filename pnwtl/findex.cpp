@@ -697,8 +697,7 @@ int CFindExDialog::getRegExpString(int nID, CString& Text)
 			Text = _T("$");
 			break;
 		case ID_REGEXP_TAGGEDEXPRESSSION:
-			Text = _T("\\(\\)");
-			offset = 2;
+			Text = _T("()");
 			break;
 		case ID_REGEXP_NOT:
 			Text = _T("~");
@@ -713,8 +712,7 @@ int CFindExDialog::getRegExpString(int nID, CString& Text)
 			Text = _T("+");
 			break;
 		case ID_REGEXP_GROUP:
-			Text = _T("\\{\\}");
-			offset = 2;
+			Text = _T("{}");
 			break;
 	};
 
