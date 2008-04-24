@@ -424,6 +424,11 @@ void Scheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 									m_Lexer = buf;
 								}
 								break;
+							case ttWordChars :
+								{
+									sc.SPerform(SCI_SETWORDCHARS, 0, (long)buf);
+								}
+								break;
 						}
 						delete [] buf;
 						buf = NULL;

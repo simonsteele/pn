@@ -2,7 +2,7 @@
  * @file SchemeCompiler.cpp
  * @brief Implement scheme reader and compiler classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -123,24 +123,37 @@ bool SchemeRecorder::EndRecording()
 
 long SchemeRecorder::SPerform(long Msg, WPARAM wParam, LPARAM lParam)
 {
-	if(Msg == SCI_STYLESETFONT)
+	switch (Msg)
 	{
-		m_next = nrTextRec;
-		m_tType = ttFontName;
-	}
-	else if(Msg == SCI_SETLEXERLANGUAGE)
-	{
-		m_next = nrTextRec;
-		m_tType = ttLexerLanguage;
-	}
-	else if(Msg == SCI_SETKEYWORDS)
-	{
-		m_next = nrTextRec;
-		m_tType = ttKeywords;
-	}
-	else if(Msg == SCI_SETPROPERTY)
-	{
-		m_next = nrPropRec;
+		case SCI_STYLESETFONT:
+		{
+			m_next = nrTextRec;
+			m_tType = ttFontName;
+		}
+		break;
+		case SCI_SETLEXERLANGUAGE:
+		{
+			m_next = nrTextRec;
+			m_tType = ttLexerLanguage;
+		}
+		break;
+		case SCI_SETKEYWORDS:
+		{
+			m_next = nrTextRec;
+			m_tType = ttKeywords;
+		}
+		break;
+		case SCI_SETPROPERTY:
+		{
+			m_next = nrPropRec;
+		}
+		break;
+		case SCI_SETWORDCHARS:
+		{
+			m_next = nrTextRec;
+			m_tType = ttWordChars;
+		}
+		break;
 	}
 
 	Record(Msg, wParam, lParam);
@@ -213,7 +226,7 @@ void SchemeRecorder::Record(long Msg, WPARAM wParam, LPARAM lParam)
 			txtr.MsgNum = Msg;
 			txtr.TextLength = strlen((const char*)lParam);
 			fwrite(&txtr, sizeof(TextRec), 1, m_out);
-			fwrite((const char*)lParam, sizeof(char), strlen((const char*)lParam), m_out);
+			fwrite((const char*)lParam, sizeof(char), txtr.TextLength, m_out);
 		}
 		else
 		{
@@ -226,6 +239,7 @@ void SchemeRecorder::Record(long Msg, WPARAM wParam, LPARAM lParam)
 		}
 
 	}
+
 	m_next = nrMsgRec;
 }
 
@@ -404,6 +418,11 @@ void SchemeCompiler::onError(XMLParserException& ex)
 {
 	if (m_Recorder.IsRecording())
 		m_Recorder.EndRecording();
+}
+
+void SchemeCompiler::onWordChars(const char* charset)
+{
+	m_Recorder.SetWordChars(charset);
 }
 
 ////////////////////////////////////////////////////////////
@@ -840,6 +859,7 @@ void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR nam
 	LPCTSTR t = NULL;
 	int flags = 0;
 	int ncflags = 0;
+	std::string wordchars;
 	BaseScheme* pBase = NULL;
 
 	if(pState->m_State == DOING_LANGUAGE && 
@@ -876,6 +896,7 @@ void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR nam
 				{
 					pBase = static_cast<BaseScheme*>( (*iBase).second );
 					flags = pBase->flags;
+					wordchars = pBase->wordchars;
 				}
 			}
 			
@@ -918,6 +939,10 @@ void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR nam
 			if(t != NULL && PNStringToBool(t))
 				flags |= schInternal;
 
+			t = atts.getValue(_T("wordchars"));
+			if (t != NULL && t[0] != NULL)
+				wordchars = t;
+
 			// Store the non-customised flags to pass on
 			ncflags = flags;
 
@@ -942,6 +967,11 @@ void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR nam
 			{
 				// Signal the implementing class that there's a language (scheme) coming.
 				onLanguage(scheme, title, flags, ncflags);
+				
+				if (wordchars.length())
+				{
+					onWordChars(wordchars.c_str());
+				}
 
 				if( pBase )
 				{
@@ -952,6 +982,7 @@ void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR nam
 			{
 				pState->m_pBase = static_cast<BaseScheme*>( pState->m_pCurScheme );
 				pState->m_pBase->flags = flags;
+				pState->m_pBase->wordchars = wordchars;
 			}
 
 			pState->m_State = DOING_LANGUAGE_DETAILS;

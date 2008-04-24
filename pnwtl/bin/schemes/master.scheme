@@ -30,6 +30,7 @@
 		<style-class name="identifier" description="Identifier" fore="7080ff" />
 		<style-class name="class" description="Class Name" fore="0000ff" bold="true"/>
 		<style-class name="function" description="Function Name" fore="007f7f" bold="true"/>
+		<style-class name="unclosedstring" description="Unclosed Single-Line String" fore="000000" back="e0c0e0" />
 	</style-classes>
 	<base-options>
 		<style name="Line Numbers" key="33" class="linenumbers" />

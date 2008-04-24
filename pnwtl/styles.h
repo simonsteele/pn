@@ -2,7 +2,7 @@
  * @file Styles.h
  * @brief Define style and style-containing classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -346,6 +346,7 @@ class BaseScheme : public SchemeDetails
 		int					valuesSet;
 		tstring				lexer;
 		int					styleBits;
+		std::string			wordchars;
 };
 
 typedef std::map<tstring, StyleDetails*> STYLEDETAILS_NAMEMAP;

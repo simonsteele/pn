@@ -12,6 +12,14 @@ What's new?
 4) Added new Open Files view
 5) Added new File Browser view
 6) New icons for docking windows
+7) Changed text search regular expressions engine to Boost Xpressive
+8) Added support for word character set specification in schemes
+9) New style presets (ZenBurn, Murky)
+10) Auto-complete choices are backed by file instead of the registry
+11) Goto line highlights the text that was jumped to when using tags
+12) Support for folding at "else" added to schemes (see cpp.scheme)
+13) Better default caret x positioning behaviour
+14) Minor visual improvements
 
 Bug Fixes:
 ----------
@@ -21,6 +29,10 @@ Bug Fixes:
 3) Can't use magic folder wizard without C: (SF #1703085)
 4) Correctly show toolbar toggles on load (#29)
 5) Don't show quickfind bar on toggle of find toolbar
+6) Make sure custom line number colouring works for default scheme
+7) Minor folding fix
+8) Check open files before opening from most recently used
+9) Fixed tags parsing where tag includes the dollar sign
 
 Extensions Interface Changes:
 -----------------------------

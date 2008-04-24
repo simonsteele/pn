@@ -44,6 +44,8 @@
 .ini=properties
 .java=java
 .js=javascript
+.lisp=lisp
+.lsp=lisp
 .mod=modula2
 .pag=vb
 .pas=pascal
@@ -65,9 +67,12 @@
 .s90=asm
 .scheme=xml
 .schemedef=xml
+.scm=scheme
 .sh=bash
 .sln=xml
+.smd=scheme
 .sql=sql
+.ss=scheme
 .tcl=tcl
 .url=properties
 .v=verilog

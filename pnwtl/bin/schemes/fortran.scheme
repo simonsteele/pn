@@ -60,7 +60,7 @@ timer undfl unlock union val virtual volatile zabs zcos zexp zlog zsin zsqrt</ke
 			<style name="Number" key="2" class="number"/>
 			<style name="Single Quote String" key="3" class="string"/>
 			<style name="Double Quote String" key="4" class="string"/>
-			<style name="End of line string" key="5" fore="000000" font="font.monospace" back="e0c0e0" eolfilled="true"/>
+			<style name="End of line string" key="5" class="unclosedstring"/>
 			
 			<style name="Operator" key="6" class="operator"/>
 			<style name="Identifier" key="7" class="identifier"/>

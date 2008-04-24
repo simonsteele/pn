@@ -2,7 +2,7 @@
  * @file Schemes.h
  * @brief Define Scheme and SchemeManager.
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -95,7 +95,7 @@ typedef struct tagSchemeProp
 } PropRec;
 
 /// Text types used in the TextRec struct
-typedef enum {ttFontName, ttKeywords, ttLexerLanguage} eTextType;
+typedef enum {ttFontName, ttKeywords, ttLexerLanguage, ttWordChars} eTextType;
 
 /// Used to store what the next thing to expect is
 typedef enum {nrMsgRec, nrTextRec, nrPropRec, nrCommentRec} eNextRec;

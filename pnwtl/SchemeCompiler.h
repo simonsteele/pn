@@ -2,7 +2,7 @@
  * @file SchemeCompiler.h
  * @brief Define scheme reader and compiler classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -177,6 +177,7 @@ class SchemeParser
 		virtual void onFile(LPCTSTR filename) = 0;
 		virtual void onColours(const EditorColours* defCols, const EditorColours* colours) = 0;
 		virtual void onError(XMLParserException& ex) = 0;
+		virtual void onWordChars(const char* charset) = 0;
 };
 
 /**
@@ -209,6 +210,7 @@ class SchemeCompiler : public SchemeParser
 		virtual void onLexer(LPCTSTR name, int styleBits);
 		virtual void onColours(const EditorColours* defCols, const EditorColours* colours);
 		virtual void onError(XMLParserException& ex);
+		virtual void onWordChars(const char* charset);
 
 	private:
 		uint64_t	m_newestFile;
