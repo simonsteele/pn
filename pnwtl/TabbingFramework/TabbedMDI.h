@@ -693,13 +693,15 @@ protected:
 	HWND m_hWndMDIClient;
 	DWORD m_nTabStyles;
 	BOOL m_bHideMDITabsWhenMDIChildNotMaximized;
+	bool m_bForceNoTabs;
 
 // Constructors
 public:
 	CMDITabOwnerImpl() :
 		m_hWndMDIClient(NULL),
 		m_nTabStyles(CTCS_TOOLTIPS | CTCS_BOLDSELECTEDTAB | CTCS_SCROLL | CTCS_CLOSEBUTTON | CTCS_DRAGREARRANGE),
-		m_bHideMDITabsWhenMDIChildNotMaximized(FALSE)
+		m_bHideMDITabsWhenMDIChildNotMaximized(FALSE),
+		m_bForceNoTabs(false)
 	{
 		ATLASSERT(UWM_MDICHILDACTIVATIONCHANGE != 0 && "The TabbedMDI Messages didn't get registered properly");
 		m_nMinTabCountForVisibleTabs = 1;
@@ -1156,6 +1158,11 @@ public:
 
 	void KeepTabsHidden(bool bKeepTabsHidden = true)
 	{
+		if (m_bForceNoTabs)
+		{
+			return;
+		}
+
 		if(m_bKeepTabsHidden != bKeepTabsHidden)
 		{
 			m_bKeepTabsHidden = bKeepTabsHidden;
@@ -1174,6 +1181,38 @@ public:
 			else
 			{
 				pT->ForceShowMDITabControl();
+			}
+		}
+	}
+
+	void ForceTabsHidden(bool bForceTabsHidden = true)
+	{
+		if (m_bForceNoTabs != bForceTabsHidden)
+		{
+			m_bForceNoTabs = bForceTabsHidden;
+
+			if (m_bForceNoTabs)
+			{
+				T* pT = static_cast<T*>(this);
+				pT->KeepTabsHidden(true);
+			}
+			else
+			{
+				// CalcTabAreaHeight will end up doing UpdateLayout and Invalidate
+				T* pT = static_cast<T*>(this);
+				pT->CalcTabAreaHeight();
+
+				// For MDI tabs, the UpdateLayout done by CalcTabAreaHeight
+				//  is not quite enough to force the tab control to show or hide.
+				//  So we'll force the tab control to be shown or hidden.
+				if(m_bKeepTabsHidden)
+				{
+					pT->ForceHideMDITabControl();
+				}
+				else
+				{
+					pT->ForceShowMDITabControl();
+				}
 			}
 		}
 	}

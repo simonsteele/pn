@@ -1073,7 +1073,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	if(!OPTIONS->Get(PNSK_INTERFACE, _T("Tabs"), true))
 	{
-		m_tabbedClient.GetTabOwner().KeepTabsHidden(true);
+		m_tabbedClient.GetTabOwner().ForceTabsHidden(true);
 	}
 	else
 	{
@@ -1086,7 +1086,6 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	//////////////////////////////////////////////////////////////
 	// Misc:
-
 	
 	CreateMDIClient();
 	m_CmdBar.SetMDIClient(m_hWndMDIClient);
