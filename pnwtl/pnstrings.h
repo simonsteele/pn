@@ -91,6 +91,20 @@ static void StringTokenise(const TStringType& str,
     }
 }
 
+template <typename TStringType>
+static void Trim(TStringType& str)
+{
+	TStringType::size_type pos = str.find_last_not_of(' ');
+	if(pos != TStringType::npos) {
+		str.erase(pos + 1);
+		pos = str.find_first_not_of(' ');
+		if(pos != TStringType::npos)
+			str.erase(0, pos);
+	}
+	else 
+		str.erase(str.begin(), str.end());
+}
+
 /**
  * This class builds strings using custom format specifiers. It
  * supports both %x style format strings and also $(var) style

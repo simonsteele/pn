@@ -55,28 +55,23 @@ protected:
 
 	void build(LPCTSTR filterstr)
 	{
-		TCHAR* dup = new TCHAR[_tcslen(filterstr)+1];
-		_tcscpy(dup, filterstr);
+		tstring s(filterstr);
+		Trim(s);
+		std::vector<tstring> toks;
+		StringTokenise(s, toks, tstring(";, "));
 
-		TCHAR* p = dup;
-		while(*p)
+		for(std::vector<tstring>::const_iterator i = toks.begin();
+			i != toks.end();
+			++i)
 		{
-			TCHAR* pSemi = strchr(p, _T(';'));
-			if(pSemi)
-				*pSemi = NULL;
+			tstring query = (*i);
+			Trim(query);
 
-			std::string pattern = convertMask(p);
+			std::string pattern = convertMask(query.c_str());
 			if(sPatterns.length() > 0)
 				sPatterns += '|';
 			sPatterns += pattern;
-
-			if(pSemi)
-				p = pSemi + 1;
-			else
-				p = p + _tcslen(p);
 		}
-
-		delete [] dup;
 
 		if(sPatterns.length() > 0)
 		{
@@ -123,6 +118,10 @@ protected:
 
 				case '.':
 					sOut += "\\.";
+					break;
+
+				case ' ':
+				case '\t':
 					break;
 				
 				default:
