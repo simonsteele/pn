@@ -620,7 +620,7 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 	int lenFind = UnSlashAsNeeded(localFindText, pOptions->GetUseSlashes(), pOptions->GetUseRegExp());
 	
 	if(lenFind == 0)
-		return -1;
+		return fnInvalidSearch;
 	
 	///@todo Sort out interface accessibility
 	static_cast<SearchOptions*>(pOptions)->SetFound(false);
@@ -696,7 +696,7 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 		posFind = SearchInTarget(lenFind, findtext);
 	}
 
-	if(posFind != -1)
+	if(posFind != -1 && posFind != -2)
 	{
 		int start = GetTargetStart();
 		int end = GetTargetEnd();
@@ -713,6 +713,10 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 			static_cast<SearchOptions*>(pOptions)->SetFound(true);
 			bRet = fnFound;
 		}
+	}
+	else if (posFind == -2)
+	{
+		bRet = fnInvalidRegex;
 	}
 
 	lastFindDetails.result = bRet;
@@ -884,7 +888,7 @@ int CScintillaImpl::ReplaceAll(extensions::ISearchOptions* pOptions)
 		SetTarget(startPosition, startPosition);
 	}
 	
-	if ((posFind != -1) && (posFind <= endPosition)) 
+	if ((posFind != -1) && (posFind != -2) && (posFind <= endPosition)) 
 	{
 		int lastMatch = posFind;
 		BeginUndoAction();

@@ -48,7 +48,7 @@
 #include "string.h"
 
 /// Find Next Result Enum
-typedef enum {fnNotFound, fnFound, fnReachedStart} FindNextResult;
+typedef enum {fnNotFound, fnFound, fnReachedStart, fnInvalidRegex, fnInvalidSearch} FindNextResult;
 
 namespace extensions
 {

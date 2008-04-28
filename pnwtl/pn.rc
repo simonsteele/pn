@@ -1712,6 +1712,13 @@ IDB_OPENFILES           BITMAP                  "res\\openfilesimages.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Cursor
+//
+
+IDC_MARGIN              CURSOR                  "include\\Scintilla\\Win32\\Margin.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
@@ -1923,9 +1930,8 @@ BEGIN
     IDS_CURRENTFOLDER       "Current Folder"
     IDS_CURRENTPROJECTFOLDER "Current Project Folder"
     IDS_FILETOOBIG          "Sorry, Programmer's Notepad couldn't open this file - most likely because it's too big (actual error: %s). PN needs to have enough free memory to open a file twice to successfully edit it."
+    IDS_INVALIDREGEX        "The regular expression is not valid."
 END
-
-IDC_MARGIN         CURSOR  DISCARDABLE     "include\\Scintilla\\Win32\\Margin.cur"
 
 #endif    // English (U.K.) resources
 /////////////////////////////////////////////////////////////////////////////

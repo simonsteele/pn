@@ -1066,6 +1066,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\scintilla\win32\Margin.cur"
+				>
+			</File>
+			<File
 				RelativePath="res\noproject.ico"
 				>
 			</File>

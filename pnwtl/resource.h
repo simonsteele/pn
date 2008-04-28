@@ -82,6 +82,7 @@
 #define IDR_POPUP_EDITOR                173
 #define IDS_CURRENTPROJECTFOLDER        173
 #define IDS_FILETOOBIG                  174
+#define IDS_INVALIDREGEX                175
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define IDD_INPUTBOX                    204
@@ -225,7 +226,7 @@
 #define IDB_OPENFILES                   360
 #define IDI_ICON5                       361
 #define IDI_BROWSER                     361
-#define IDC_MARGIN						400
+#define IDC_MARGIN                      400
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425

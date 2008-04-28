@@ -401,24 +401,42 @@ LRESULT CFindExDialog::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		return TRUE;
 	}
 
-	if(findNext())
+	switch(findNext())
 	{
+	case fnFound:
+		{
 		if(m_type != eftReplace && !OPTIONS->Get(PNSK_INTERFACE, _T("FindStaysOpen"), false))
 			// Default Visual C++, old PN and others behaviour:
 			ShowWindow(SW_HIDE);
-	}
-	else
-	{
-		CString strTextToFind = m_FindText;
-		CString strMsg;
+		}
+		break;
 
-		if (strTextToFind.IsEmpty())
-			strTextToFind = _T("(empty)");
+	case fnNotFound:
+	case fnInvalidSearch:
+		{
+			CString strTextToFind = m_FindText;
+			CString strMsg;
 
-		strMsg.Format(IDS_FINDNOTFOUND, strTextToFind);
-		MessageBox((LPCTSTR)strMsg, LS(IDR_MAINFRAME), MB_OK | MB_ICONINFORMATION);
+			if (strTextToFind.IsEmpty())
+				strTextToFind = _T("(empty)");
 
-		m_FindTextCombo.SetFocus();
+			strMsg.Format(IDS_FINDNOTFOUND, strTextToFind);
+			MessageBox((LPCTSTR)strMsg, LS(IDR_MAINFRAME), MB_OK | MB_ICONINFORMATION);
+
+			m_FindTextCombo.SetFocus();
+		}
+		break;
+
+	case fnInvalidRegex:
+		{
+			MessageBox(LS(IDS_INVALIDREGEX), LS(IDR_MAINFRAME), MB_OK | MB_ICONINFORMATION);
+
+			m_FindTextCombo.SetFocus();
+		}
+		break;
+
+	default:
+		LOG(_T("Unexpected Find Result"));
 	}
 
 	return TRUE;
@@ -645,9 +663,9 @@ void CFindExDialog::enableButtons()
 	CButton(GetDlgItem(IDC_FINDNEXT_BUTTON)).EnableWindow( inSelRadio.GetCheck() != BST_CHECKED );
 }
 
-bool CFindExDialog::findNext()
+FindNextResult CFindExDialog::findNext()
 {
-	int found = 0;
+	FindNextResult found = fnNotFound;
 
 	CChildFrame* editor = getCurrentEditorWnd();
 
@@ -657,8 +675,8 @@ bool CFindExDialog::findNext()
 		found = editor->FindNext(pOptions);
 		g_Context.m_frame->GetWindow()->SendMessage(PN_UPDATEFINDTEXT,0,0);
 	}
-	
-	return found != 0;
+
+	return found;
 }
 
 void CFindExDialog::findInFiles()

@@ -131,7 +131,16 @@ long Document::RegexFindText(int minPos, int maxPos, const char *s,
 	endPos = MovePositionOutsideChar(endPos, 1, false);
 
 	std::string restring(s, *length);
-	pre->re = docregex::compile(restring.c_str());
+	
+	try
+	{
+		pre->re = docregex::compile(restring.c_str());
+	}
+	catch(boost::xpressive::regex_error& ex)
+	{
+		// -1 is normally used for not found, -2 is used here for invalid regex
+		return -2;
+	}
 
 	int lineRangeStart = LineFromPosition(startPos);
 	int lineRangeEnd = LineFromPosition(endPos);

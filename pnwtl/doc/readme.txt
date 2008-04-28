@@ -33,6 +33,8 @@ Bug Fixes:
 7) Minor folding fix
 8) Check open files before opening from most recently used
 9) Fixed tags parsing where tag includes the dollar sign
+10) Find in files extensions can now be separated by space, comma, semicolon
+11) Inform the user when they're trying to search with an invalid regex
 
 Extensions Interface Changes:
 -----------------------------

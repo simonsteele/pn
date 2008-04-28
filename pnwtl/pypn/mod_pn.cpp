@@ -125,7 +125,9 @@ BOOST_PYTHON_MODULE(pn)
 	enum_<FindNextResult>("FindNextResult")
 		.value("fnNotFound", fnNotFound)
 		.value("fnFound", fnFound)
-		.value("fnReachedStart", fnReachedStart);
+		.value("fnReachedStart", fnReachedStart)
+		.value("fnInvalidRegex", fnInvalidRegex)
+		.value("fnInvalidSearch", fnInvalidSearch);
 
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Expose IDocument
