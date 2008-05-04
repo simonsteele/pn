@@ -1933,6 +1933,14 @@ BEGIN
     IDS_INVALIDREGEX        "The regular expression is not valid."
 END
 
+STRINGTABLE 
+BEGIN
+    IDS_UPDATEAVAIL         "An update for Programmer's Notepad is available (version %s), would you like to download it now?"
+    IDS_DOWNLOADNOW         "&Download Now"
+    IDS_REMINDMELATER       "&Remind Me Later"
+    IDS_DONOTDOWNLOAD       "Do &Not Download"
+END
+
 #endif    // English (U.K.) resources
 /////////////////////////////////////////////////////////////////////////////
 

@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib imm32.lib"
+				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib imm32.lib wininet.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -95,6 +95,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="pnvista.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -180,7 +181,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib"
+				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib wininet.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -195,6 +196,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="pnvista.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -292,6 +294,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="pnvista.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -378,7 +381,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib imm32.lib"
+				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib imm32.lib wininet.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -394,6 +397,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="pnvista.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -680,6 +684,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\updatecheck.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\WorkspaceState.cpp"
 				>
 			</File>
@@ -794,6 +802,10 @@
 			</File>
 			<File
 				RelativePath=".\fromhandle.h"
+				>
+			</File>
+			<File
+				RelativePath=".\inet.h"
 				>
 			</File>
 			<File
@@ -990,6 +1002,10 @@
 			</File>
 			<File
 				RelativePath=".\toolsxmlwriter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\updatecheck.h"
 				>
 			</File>
 			<File

@@ -39,6 +39,11 @@ namespace TextClips
 	class TextClipsManager;
 }
 
+namespace Updates
+{
+	class UpdateAvailableDetails;
+}
+
 struct tagEnumChildrenStruct;
 
 // Auto-complete for the find combo box.
@@ -358,7 +363,7 @@ public:
 
 	void ToggleDockingWindow(EDocker window, bool bSetValue = false, bool bShowing = true);
 
-protected:
+private:
 	void AddNewMenu(CSMenuHandle& menu);
 	void AddMRUMenu(CSMenuHandle& menu);
 	void AddLanguageMenu(CSMenuHandle& menu);
@@ -416,12 +421,12 @@ protected:
 	void setupAccelerators(HMENU mainMenu);
 	void setupToolsUI();
 
-protected:
 	inline CPNDockingWindow* getDocker(EDocker window) const;
+
+	void handleUpdate(const Updates::UpdateAvailableDetails* details);
 
 	CPNDockingWindow*		m_dockingWindows[(ID_VIEW_LASTDOCKER-ID_VIEW_FIRSTDOCKER)+1];
 
-protected:
 	enum {
 		SCHEME_COMBO_SIZE = 24, /* characters */
 		FIND_COMBO_SIZE = 30,
@@ -436,7 +441,6 @@ protected:
 		TBR_FILE = 103,
 	};
 
-private:
 	CommandDispatch*		m_pCmdDispatch;
 	COutputView*			m_pOutputWnd;
 	//COutputView*			m_pFindResultsWnd;

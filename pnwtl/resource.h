@@ -83,6 +83,10 @@
 #define IDS_CURRENTPROJECTFOLDER        173
 #define IDS_FILETOOBIG                  174
 #define IDS_INVALIDREGEX                175
+#define IDS_UPDATEAVAIL                 176
+#define IDS_DOWNLOADNOW                 177
+#define IDS_REMINDMELATER               178
+#define IDS_DONOTDOWNLOAD               179
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define IDD_INPUTBOX                    204

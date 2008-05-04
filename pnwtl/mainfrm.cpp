@@ -18,6 +18,19 @@
 #include "tools.h"				// External Tools
 #include "pndocking.h"			// Docking Window Stuff
 
+// Functionality
+#include "extapp.h"				// Application
+#include "workspacestate.h"		// Save Workspace State
+#include "ScriptRegistry.h"		// Scripts Registry
+#include "findinfiles.h"		// Find in Files
+#include "project.h"			// Projects
+#include "projectprops.h"		// Project Properties
+#include "textclips.h"			// Text Clips
+#include "SchemeConfig.h"		// Scheme Configuration
+#include "projectholder.h"
+#include "version.h"
+#include "updatecheck.h"
+
 // Windows and Dialogs
 #include "mainfrm.h"			// This Window
 #include "outputview.h"			// Output window
@@ -27,30 +40,18 @@
 #include "pndialogs.h"			// Misc Dialogs
 #include "textclipsview.h"		// Text-Clips Docker
 #include "jumpview.h"			// Tags Docker
-#include "project.h"			// Projects
-#include "projectprops.h"		// Project Properties
 #include "projectview.h"		// Projects Docker
 #include "findex.h"				// Find Dialog
-#include "findinfiles.h"		// Find in Files
 #include "findinfilesview.h"	// Find in Files view
 #include "newprojectdialog.h"	// New Projects Dialog
-#include "workspacestate.h"		// Save Workspace State
-#include "ScriptRegistry.h"		// Scripts Registry
 #include "scriptview.h"			// Scripts Docker
 #include "toolsmanager.h"		// Tools Manager
-#include "extapp.h"
-#include "textclips.h"			// Text Clips
 #include "browseview.h"			// Browse Docker
 #include "openfilesview.h"		// Open Files Docker
-#include "editorFactory.h"		// Editor Factory
 
 // Other stuff
-#include "SchemeConfig.h"		// Scheme Configuration
 #include <dbstate.h>			// Docking window state stuff
-
 #include <htmlhelp.h>
-
-#include "projectholder.h"
 
 using namespace L10N;
 
@@ -498,44 +499,58 @@ LRESULT CMainFrame::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 	return 1;
 }
 
-LRESULT CMainFrame::OnChildNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+LRESULT CMainFrame::OnChildNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-	if(lParam == SCN_UPDATEUI || lParam == PN_MDIACTIVATE)
+	switch(lParam)
 	{
-		// Update the status bar when Scintilla thinks that we should.
-		UpdateStatusBar();
-	}
-
-	// Update scheme combo...
-	if(lParam == PN_MDIACTIVATE || lParam == PN_SCHEMECHANGED)
-	{
-		HWND hMDIChild = MDIGetActive();
-		if(hMDIChild != NULL)
-		{
-			CChildFrame* pChild = CChildFrame::FromHandle(hMDIChild);
-			if(pChild != NULL)
+		case SCN_UPDATEUI:
 			{
-				Scheme* pScheme = pChild->GetTextView()->GetCurrentScheme();
-				for(int i = 0; i < m_SchemeCombo.GetCount(); i++)
-				{
-					if( pScheme == static_cast<Scheme*>( m_SchemeCombo.GetItemDataPtr(i) ) )
-					{
-						m_SchemeCombo.SetCurSel(i);
-						break;
-					}
-				}
-
-				m_hToolAccel = pChild->GetToolAccelerators();
+				UpdateStatusBar();
 			}
-			else
-				m_hToolAccel = NULL;
-		}
-		else
-			m_hToolAccel = NULL;
-	}
-	else if(lParam == PN_MDIDESTROY)
-	{
-		SetStatusText(NULL);
+			break;
+
+		case PN_MDIACTIVATE:
+		case PN_SCHEMECHANGED:
+			{
+				UpdateStatusBar();
+
+				HWND hMDIChild = MDIGetActive();
+				if(hMDIChild != NULL)
+				{
+					CChildFrame* pChild = CChildFrame::FromHandle(hMDIChild);
+					if(pChild != NULL)
+					{
+						Scheme* pScheme = pChild->GetTextView()->GetCurrentScheme();
+						for(int i = 0; i < m_SchemeCombo.GetCount(); i++)
+						{
+							if( pScheme == static_cast<Scheme*>( m_SchemeCombo.GetItemDataPtr(i) ) )
+							{
+								m_SchemeCombo.SetCurSel(i);
+								break;
+							}
+						}
+
+						m_hToolAccel = pChild->GetToolAccelerators();
+					}
+					else
+						m_hToolAccel = NULL;
+				}
+				else
+					m_hToolAccel = NULL;
+			}
+			break;
+
+		case PN_MDIDESTROY:
+			{
+				SetStatusText(NULL);
+			}
+			break;
+
+		case PN_UPDATEAVAILABLE:
+			{
+				handleUpdate(reinterpret_cast<const Updates::UpdateAvailableDetails*>(wParam));
+			}
+			break;
 	}
 	
 	return TRUE;
@@ -1336,6 +1351,8 @@ LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 
 	delete m_cmdLineArgs;
 	m_cmdLineArgs = NULL;
+
+	Updates::CheckForUpdates(m_hWnd);
 
 	return 0;
 }
@@ -3231,5 +3248,57 @@ void CMainFrame::openFileCheckType(LPCTSTR filename, EPNEncoding encoding)
             OpenFile(filename, NULL, encoding);
 			AddMRUEntry(filename);
 		}
+	}
+}
+
+void CMainFrame::handleUpdate(const Updates::UpdateAvailableDetails* details)
+{
+	CStringW msg;
+	CStringW ver;
+	ver.Format(L"%d.%d.%d Build %d", details->Major, details->Minor, details->Revision, details->Build);
+	msg.Format(IDS_UPDATEAVAIL, (LPCWSTR)ver);
+
+	std::wstring title(L10N::StringLoader::GetW(IDR_MAINFRAME));
+	std::wstring downloadNow(L10N::StringLoader::GetW(IDS_DOWNLOADNOW));
+	std::wstring remindLater(L10N::StringLoader::GetW(IDS_REMINDMELATER));
+	std::wstring never(L10N::StringLoader::GetW(IDS_DONOTDOWNLOAD));
+
+	TASKDIALOG_BUTTON buttons[3] = {
+		{ IDS_DOWNLOADNOW, downloadNow.c_str() },
+		{ IDS_REMINDMELATER, remindLater.c_str() },
+		{ IDS_DONOTDOWNLOAD, never.c_str() }};
+
+	TASKDIALOGCONFIG cfg = { 0 };
+	cfg.cbSize = sizeof(cfg);
+	cfg.hwndParent = m_hWnd;
+	cfg.hInstance = _Module.GetResourceInstance();
+	cfg.pszWindowTitle = title.c_str();
+	cfg.pszMainIcon = MAKEINTRESOURCEW(TDT_INFORMATION_ICON);
+	cfg.pszContent = (LPCWSTR)msg;
+	cfg.dwCommonButtons = 0;
+	cfg.pButtons = buttons;
+	cfg.cButtons = 3;
+	cfg.nDefaultButton = IDS_DOWNLOADNOW;
+
+	switch(PNTaskDialogIndirect(&cfg))
+	{
+		// Launch the update...
+	case IDS_DOWNLOADNOW:
+		{
+			::ShellExecute(m_hWnd, _T("open"), details->UpdateUrl.c_str(), NULL, NULL, SW_SHOW);
+		}
+		break;
+
+	case IDS_REMINDMELATER:
+		{
+			// Do nothing, we'll try again next time...
+		}
+		break;
+
+	case IDS_DONOTDOWNLOAD:
+		{
+			Updates::SetLastOfferedVersion(*details);
+		}
+		break;
 	}
 }

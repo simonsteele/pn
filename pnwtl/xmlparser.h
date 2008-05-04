@@ -2,7 +2,7 @@
  * @file xmlparser.h
  * @brief Define an XML parser framework using expat (http://expat.sourceforge.net/).
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -126,6 +126,7 @@ class XMLParser
 		XMLParser(bool namespaceAware = false);
 		~XMLParser();
 		bool LoadFile(LPCTSTR filename);
+		bool ParseBuffer(const char* buffer, DWORD dwRead, bool final);
 		void SetParseState(XMLParseState* pState);
 		void Reset();
 

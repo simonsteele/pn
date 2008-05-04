@@ -2,7 +2,7 @@
  * @file xmlparser.cpp
  * @brief Implement the XML parser framework.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -182,6 +182,11 @@ bool XMLParser::LoadFile(LPCTSTR filename)
 	} while (!done);
 
 	return bRet;
+}
+
+bool XMLParser::ParseBuffer(const char* buffer, DWORD dwRead, bool final)
+{
+	return XML_Parse(m_parser, buffer, dwRead, final) != 0;
 }
 
 XML_Parser XMLParser::GetParser()
