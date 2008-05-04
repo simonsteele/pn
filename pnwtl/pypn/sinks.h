@@ -14,19 +14,20 @@
 	#pragma once
 #endif
 
-class DocSink : public extensions::IDocumentEventSink
+class DocSink : public extensions::IDocumentEventSink, public extensions::ITextEditorEventSink
 {
 public:
 	DocSink(extensions::IDocumentPtr& doc);
 	virtual ~DocSink();
 
 	virtual void OnDocClosing();
-	virtual void OnCharAdded(char c);
 	virtual void OnSchemeChange(const char *scheme){}
 	virtual void OnAfterLoad();
 	virtual void OnBeforeSave(const char* filename);
 	virtual void OnAfterSave();
 	virtual void OnModifiedChanged(bool modified);
+
+	virtual void OnCharAdded(char c);
 
 private:
 	extensions::IDocumentPtr m_doc;

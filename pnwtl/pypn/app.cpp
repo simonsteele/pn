@@ -81,8 +81,11 @@ void App::Initialise()
 
 void App::OnNewDocument(extensions::IDocumentPtr& doc)
 {
-	extensions::IDocumentEventSinkPtr p(new DocSink(doc));
-	doc->AddEventSink(p);
+	boost::shared_ptr<DocSink> p(new DocSink(doc));
+	extensions::IDocumentEventSinkPtr pd(p);
+	extensions::ITextEditorEventSinkPtr pe(p);
+	doc->AddEventSink(pd);
+	doc->AddEventSink(pe);
 }
 
 void App::OnAppClose()
