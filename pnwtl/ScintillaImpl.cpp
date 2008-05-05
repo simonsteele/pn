@@ -644,7 +644,7 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 		lastFindDetails.flags = flags;
 		lastFindDetails.result = fnNotFound;
 		lastFindDetails.lastPos = -1;
-		lastFindDetails.direction = pOptions->GetSearchBackwards();
+		lastFindDetails.direction = !pOptions->GetSearchBackwards();
 		checkFoundPos = false;
 	}
 	else
@@ -661,7 +661,7 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 	const char* findtext = T2A(const_cast<TCHAR*>( (LPCTSTR)localFindText ));
 	#endif
 
-	if(!pOptions->GetSearchBackwards())
+	if(pOptions->GetSearchBackwards())
 	{
 		startPosition = cr.cpMin - 1;
 		endPosition = 0;
@@ -680,7 +680,7 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 
 	if(posFind == -1 && pOptions->GetLoopOK())
 	{
-		if(!pOptions->GetSearchBackwards())
+		if(pOptions->GetSearchBackwards())
 		{
 			startPosition = GetLength();
 			endPosition = 0;

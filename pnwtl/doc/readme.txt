@@ -20,6 +20,8 @@ What's new?
 12) Support for folding at "else" added to schemes (see cpp.scheme)
 13) Better default caret x positioning behaviour
 14) Minor visual improvements
+15) Marked as vista-aware, no more VirtualStore problems
+16) Automatic update check
 
 Bug Fixes:
 ----------

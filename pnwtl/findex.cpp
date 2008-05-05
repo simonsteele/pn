@@ -768,7 +768,7 @@ SearchOptions* CFindExDialog::getOptions()
 
 	pOptions->SetFindText			( m_FindText );
 	pOptions->SetReplaceText		( m_ReplaceText );
-	pOptions->SetSearchBackwards	( m_bSearchUp == FALSE );
+	pOptions->SetSearchBackwards	( m_bSearchUp == TRUE );
 	pOptions->SetMatchCase			( m_bMatchCase == TRUE );
 	pOptions->SetMatchWholeWord		( m_bMatchWhole == TRUE );
 	pOptions->SetUseRegExp			( m_bRegExp == TRUE );

@@ -457,6 +457,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\scintilla\src\LexMagik.cxx"
+				>
+			</File>
+			<File
 				RelativePath="..\include\scintilla\src\LexMatlab.cxx"
 				>
 			</File>
@@ -506,6 +510,10 @@
 			</File>
 			<File
 				RelativePath="..\include\scintilla\src\LexPOV.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\include\scintilla\src\LexPowerShell.cxx"
 				>
 			</File>
 			<File
