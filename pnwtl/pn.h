@@ -58,7 +58,7 @@
 	::OutputDebugString(message)
 
 #include "allocator.h"
-#include "string.h"
+#include "pnextstring.h"
 #include "extiface.h"
 #include "include/scintilla/include/Platform.h"
 #include "pntypes.h"

@@ -26,8 +26,9 @@ typedef std::basic_string<TCHAR> tstring;
 
 #include <atlstr.h>
 
+#include "../allocator.h"
+#include "../pnextstring.h"
 #include "../extiface.h"
 #include "../pnstrings.h"
-#include "../pntypes.h"
 
 extern std::string getPythonErrorString();

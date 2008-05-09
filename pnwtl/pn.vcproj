@@ -881,6 +881,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\pnextstring.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\pngenx.h"
 				>
 			</File>
@@ -966,10 +970,6 @@
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\string.h"
 				>
 			</File>
 			<File

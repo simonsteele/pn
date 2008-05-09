@@ -145,8 +145,7 @@
 				<include name="**/*.pdb"/>
 				<exclude name="pypn.pdb"/>
 			</fileset>
-		</zip>
-		
+		</zip>		
 	</target>
 	
 	<target name="pypn">
@@ -196,6 +195,36 @@
 		<zip zipfile="${distdir}\pdb-${deployver}-${pyver}.zip">
 			<fileset basedir="bin">
 				<include name="**/pypn.pdb"/>
+			</fileset>
+		</zip>
+	</target>
+	
+	<target name="sdk" depends="svnvar">
+		<property name="deployver" value="${ver}.${svn.revision}"/>
+		<property name="distdir" value="dist\sdk-${deployver}"/>
+		
+		<mkdir dir="${distdir}"/>
+		
+		<zip zipfile="${distdir}\sdk-${ver}.zip">
+			<fileset>
+				<include name="extiface.h"/>
+				<include name="allocator.h"/>
+				<include name="pnextstring.h"/>
+				<include name="IOptions.h"/>
+			</fileset>
+			<fileset basedir="sdk\template" prefix="template">
+				<include name="*.cpp"/>
+				<include name="*.h"/>
+				<include name="*.def"/>
+				<include name="*.vcproj"/>
+				<include name="*.sln"/>
+			</fileset>
+			<fileset basedir="sdk\demo" prefix="demo">
+				<include name="*.cpp"/>
+				<include name="*.h"/>
+				<include name="*.def"/>
+				<include name="*.vcproj"/>
+				<include name="*.sln"/>
 			</fileset>
 		</zip>
 	</target>

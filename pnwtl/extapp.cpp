@@ -250,6 +250,8 @@ void App::unloadExtensions()
 		(*i)->OnAppClose();
 	}
 
+	m_sinks.clear();
+
 	for(ExtensionList::const_iterator i = m_exts.begin(); i != m_exts.end(); ++i)
 	{
 		(*i)->Unload();
