@@ -370,6 +370,8 @@ public:
 	virtual void HideOutput() = 0;
 };
 
+typedef enum { fifPath, fifSingleFile, fifOpenFiles } EFIFFileSet;
+
 /**
  * @brief Interface to search options
  */
@@ -424,6 +426,9 @@ public:
 
 	virtual bool GetIncludeHidden() const = 0;
 	virtual void SetIncludeHidden(bool hidden) = 0;
+
+	virtual EFIFFileSet GetFileSet() const = 0;
+	virtual void SetFileSet(EFIFFileSet fileSet) = 0;
 	
 	// Result:
 	virtual bool GetFound() const = 0;
