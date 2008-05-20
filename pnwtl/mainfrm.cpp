@@ -2259,14 +2259,49 @@ Projects::Workspace* CMainFrame::GetActiveWorkspace()
 
 void CMainFrame::FindInFiles(SearchOptions* options)
 {
-	FindInFiles::GetInstance()->Start(
-		options->GetFindText(),
-		options->GetSearchPath(),
-		options->GetFileExts(),
-		options->GetRecurse(),
-		options->GetMatchCase(),
-		options->GetIncludeHidden(),
-		m_pFindResultsWnd);
+	switch(options->GetFileSet())
+	{
+	case extensions::fifSingleFile:
+		{
+			CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
+			if(pChild)
+			{
+				pChild->GetTextView()->FindAll(options, m_pFindResultsWnd, pChild->GetFileName().c_str());
+			}
+		}
+		break;
+
+	case extensions::fifPath:
+		{
+			FindInFiles::GetInstance()->Start(
+				options->GetFindText(),
+				options->GetSearchPath(),
+				options->GetFileExts(),
+				options->GetRecurse(),
+				options->GetMatchCase(),
+				options->GetIncludeHidden(),
+				m_pFindResultsWnd);
+		}
+		break;
+
+	case extensions::fifOpenFiles:
+		{
+			m_pFindResultsWnd->OnBeginSearch(options->GetFindText(), options->GetUseRegExp());
+
+			DocumentList list;
+			g_Context.m_frame->GetOpenDocuments(list);
+			for(DocumentList::const_iterator i = list.begin();
+				i != list.end();
+				++i)
+			{
+				(*i)->GetFrame()->GetTextView()->FindAll(options, m_pFindResultsWnd, (*i)->GetFileName(FN_FULL).c_str());
+			}
+
+			// TODO: Result Counts!
+			m_pFindResultsWnd->OnEndSearch(0, 0);
+		}
+		break;
+	}
 }
 
 void CMainFrame::ToggleDockingWindow(EDockingWindow window, bool bSetValue, bool bShowing)

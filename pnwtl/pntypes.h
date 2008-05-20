@@ -70,6 +70,9 @@ public:
 
 	virtual bool GetIncludeHidden() const;
 	virtual void SetIncludeHidden(bool hidden);
+
+	virtual extensions::EFIFFileSet GetFileSet() const;
+	virtual void SetFileSet(extensions::EFIFFileSet fileSet);
 	
 	// Result:
 	virtual bool GetFound() const;
@@ -98,6 +101,7 @@ private:
 	CString Path;
 	bool Recurse;
 	bool IncludeHidden;
+	extensions::EFIFFileSet m_fileSet;
 };
 
 typedef struct tagPrintOptions

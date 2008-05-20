@@ -16,6 +16,10 @@
 #include "include/utf8_16.h"
 #include "include/lineendings.h"
 #include "scriptregistry.h"
+#include "project.h"
+#include "childfrm.h"
+#include "findinfiles.h"
+#include <boost/bind.hpp>
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -627,8 +631,16 @@ Scheme* CTextView::GetCurrentScheme()
 	return m_pLastScheme;
 }
 
-#include "project.h"
-#include "childfrm.h"
+void HandleFindAllResult(CTextView* parent, FIFSink* sink, LPCTSTR szFilename, int start, int end)
+{
+	int line = parent->LineFromPosition(start);
+	sink->OnFoundString("", szFilename, line, parent->GetLineText(line).c_str());
+}
+
+void CTextView::FindAll(extensions::ISearchOptions* options, FIFSink* sink, LPCTSTR szFilename)
+{
+	CScintillaImpl::FindAll(options, boost::bind(HandleFindAllResult, this, sink, szFilename, _1, _2));
+}
 
 void CTextView::DoContextMenu(CPoint* point)
 {

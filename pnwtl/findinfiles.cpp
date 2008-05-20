@@ -40,9 +40,9 @@ public:
 // FIFThread
 ////////////////////////////////////////////////////////////////////////////////////
 
-FIFThread::FIFThread()
+FIFThread::FIFThread() : 
+	m_pBM(new BoyerMoore())
 {
-	m_pBM = new BoyerMoore();
 }
 
 void FIFThread::Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRecurse, bool bCaseSensitive, bool bIncludeHidden, FIFSink* pSink)
@@ -52,6 +52,7 @@ void FIFThread::Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRec
 
 	Stop();
 
+	m_it.reset();
 	m_pBM->SetSearchString(findstr);
 	m_pBM->SetCaseMode(bCaseSensitive);
 	m_pBM->SetIncludeHidden(bIncludeHidden);
@@ -63,6 +64,20 @@ void FIFThread::Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRec
 	Start();
 }
 
+void FIFThread::Find(LPCTSTR findstr, FileItPtr& iterator, bool bCaseSensitive, FIFSink* pSink)
+{
+	PNASSERT(findstr != NULL);
+	PNASSERT(pSink != NULL);
+
+	Stop();
+
+	m_it = iterator;
+	m_pBM->SetSearchString(findstr);
+	m_pBM->SetCaseMode(bCaseSensitive);
+	m_pSink = pSink;
+	Start();
+}
+
 FIFThread::~FIFThread()
 {
 	delete m_pBM;
@@ -70,20 +85,29 @@ FIFThread::~FIFThread()
 
 void FIFThread::Run()
 {
-	FIFFinder finder(this, &FIFThread::OnFoundFile);
-	finder.SetFilters(m_fileExts.c_str(), NULL, NULL, NULL);
-	m_nFiles = 0;
-	m_nLines = 0;
-	
 	// TODO: Change to true if using RegEx...
 	if(m_pSink)
 		m_pSink->OnBeginSearch(m_pBM->GetSearchString(), false);
 
-	finder.FindMatching(m_path.c_str(), m_bRecurse, m_bIncludeHidden);
+	if (m_it.get())
+	{
+		tstring file;
+		while(m_it->Next(file) && GetCanRun())
+		{
+			searchFile(file.c_str());
+		}
+	}
+	else
+	{
+		FIFFinder finder(this, &FIFThread::OnFoundFile);
+		finder.SetFilters(m_fileExts.c_str(), NULL, NULL, NULL);
+		m_nFiles = 0;
+		m_nLines = 0;
+
+		finder.FindMatching(m_path.c_str(), m_bRecurse, m_bIncludeHidden);
+	}
 
 	m_pSink->OnEndSearch(m_nLines, m_nFiles);
-
-	int a = 0;
 }
 
 void FIFThread::OnException()
@@ -91,14 +115,27 @@ void FIFThread::OnException()
 	LOG(_T("PN2: Exception whilst doing a find in files.\n"));
 }
 
-#define FIFBUFFERSIZE 4096
-
 void FIFThread::OnFoundFile(LPCTSTR path, FileFinderData& findData, bool& /*shouldContinue*/)
 {
 	CFileName fn(findData.GetFilename());
 	fn.Root(path);
 
-	FILE* file = _tfopen(fn.c_str(), _T("r"));
+	searchFile(fn.c_str());
+}
+
+void FIFThread::ManageStop()
+{
+	Stop();
+}
+
+#define FIFBUFFERSIZE 4096
+
+/**
+ * Do the actual searching in a file
+ */
+void FIFThread::searchFile(LPCTSTR filename)
+{
+	FILE* file = _tfopen(filename, _T("r"));
 	if(file != NULL)
 	{
 		TCHAR szBuf[ FIFBUFFERSIZE ];
@@ -136,7 +173,7 @@ void FIFThread::OnFoundFile(LPCTSTR path, FileFinderData& findData, bool& /*shou
 
 				// Convert the line for print and post it to the
 				// main thread for the GUI stuff.
-				foundString(fn.c_str(), nLine, szBuf);
+				foundString(filename, nLine, szBuf);
 				
 				// Increase search pointer so we can search the rest of the line.
 				ptr += nIdx + 1;
@@ -146,11 +183,6 @@ void FIFThread::OnFoundFile(LPCTSTR path, FileFinderData& findData, bool& /*shou
 		fclose(file);
 		Sleep(0);
 	}
-}
-
-void FIFThread::ManageStop()
-{
-	Stop();
 }
 
 /**
@@ -185,6 +217,11 @@ void FindInFiles::Start(
 						FIFSink* pSink)
 {
 	m_thread.Find(findstr, path, fileTypes, bRecurse, bCaseSensitive, bIncludeHidden, pSink);
+}
+
+void FindInFiles::Start(LPCTSTR findstr, FileItPtr& iterator, bool bCaseSensitive, FIFSink* pSink)
+{
+	m_thread.Find(findstr, iterator, bCaseSensitive, pSink);
 }
 
 void FindInFiles::Stop()

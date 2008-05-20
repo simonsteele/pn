@@ -19,6 +19,8 @@
 #include "schemes.h"
 #include "pntypes.h"
 
+class FIFSink;
+
 class CTextView : public CScintillaWindowImpl< CTextView, CScintillaImpl >
 {
 public:
@@ -66,6 +68,8 @@ public:
 
 	EPNEncoding GetEncoding();
 	void SetEncoding(EPNEncoding encoding);
+
+	void FindAll(extensions::ISearchOptions* options, FIFSink* sink, LPCTSTR szFilename);
 	
 	////////////////////////////////////////////////////////////////
 	// Overrides from CScintillaImpl / CScintillaWindowImpl

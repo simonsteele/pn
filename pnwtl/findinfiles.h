@@ -11,6 +11,38 @@ class FIFSink
 		virtual void OnEndSearch(int nFound, int nFiles) = 0;
 };
 
+class FileIterator
+{
+public:
+	virtual bool Next(tstring& file) = 0;
+};
+
+template <class TIter>
+class IteratorWrapper : FileIterator
+{
+public:
+	IteratorWrapper(TIter begin, TIter end) : m_i(iter), m_end(end)
+	{}
+
+	virtual bool Next(tstring& file)
+	{
+		if (m_i == m_end)
+		{
+			return false;
+		}
+
+		file = (*m_i);
+		m_i++;
+		return true;
+	}
+
+private:
+	TIter m_i;
+	TIter m_end;
+};
+
+typedef boost::shared_ptr<FileIterator> FileItPtr;
+
 class BoyerMoore;
 class FileFinderData;
 
@@ -21,18 +53,20 @@ class FIFThread : public CSSThread
 		virtual ~FIFThread();
 
 		void Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRecurse, bool bCaseSensitive, bool bIncludeHidden, FIFSink* pSink);
+		void Find(LPCTSTR findstr, FileItPtr& iterator, bool bCaseSensitive, FIFSink* pSink);
 
 		void OnFoundFile(LPCTSTR path, FileFinderData& file, bool& /*shouldContinue*/);
 
 		void ManageStop();
 
-	protected:
+	private:
 		virtual void Run();
 		virtual void OnException();
 
 		void foundString(LPCTSTR szFilename, int line, LPCTSTR buf);
+		void searchFile(LPCTSTR filename);
 
-	protected:
+		FileItPtr	m_it;
 		BoyerMoore* m_pBM;
 		FIFSink*	m_pSink;
 		int			m_nFiles;
@@ -51,7 +85,15 @@ public:
 	~FindInFiles();
 	bool IsRunning();
 	void Start(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRecurse, bool bCaseSensitive, bool bIncludeHidden, FIFSink* pSink);
+	void Start(LPCTSTR findstr, FileItPtr& iterator, bool bCaseSensitive, FIFSink* pSink);
 	void Stop();
+
+	template <class TIter>
+	void Start(LPCTSTR findstr, TIter begin, TIter end, bool bCaseSensitive, FIFSink* pSink)
+	{
+		FileItPtr ptr(new IteratorWrapper(begin, end));
+		Start(findstr, ptr, bCaseSensitive, pSink);
+	}
 
 protected:
 	FIFThread	m_thread;

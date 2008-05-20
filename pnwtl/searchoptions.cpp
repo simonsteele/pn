@@ -159,6 +159,16 @@ void SearchOptions::SetIncludeHidden(bool hidden)
 	IncludeHidden = hidden;
 }
 
+extensions::EFIFFileSet SearchOptions::GetFileSet() const
+{
+	return m_fileSet;
+}
+
+void SearchOptions::SetFileSet(extensions::EFIFFileSet fileSet)
+{
+	m_fileSet = fileSet;
+}
+
 bool SearchOptions::GetFound() const
 {	
 	return Found;

@@ -237,9 +237,11 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	m_FindWhereCombo.InsertString(0, LS(IDS_CURRENTFILE));
 	m_FindWhereCombo.InsertString(1, LS(IDS_CURRENTFOLDER));
 	m_FindWhereCombo.InsertString(2, LS(IDS_CURRENTPROJECTFOLDER));
+	m_FindWhereCombo.InsertString(3, LS(IDS_ALLOPENFILES));
 	m_FindWhereCombo.SetItemData(0, fwCurrentFile);
 	m_FindWhereCombo.SetItemData(1, fwCurrentFolder);
 	m_FindWhereCombo.SetItemData(2, fwCurrentProjectFolder);
+	m_FindWhereCombo.SetItemData(3, fwOpenDocs);
 
 	rc.set(GetDlgItem(IDC_FINDTYPE_DUMMY), *this);
 	rc.bottom = rc.top + (size.cy * 10);
@@ -316,6 +318,9 @@ LRESULT CFindExDialog::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 				break;
 			case fwCurrentProjectFolder:
 				m_FindWhereCombo.SetCurSel(2);
+				break;
+			case fwOpenDocs:
+				m_FindWhereCombo.SetCurSel(3);
 				break;
 		}
 
@@ -793,12 +798,14 @@ SearchOptions* CFindExDialog::getOptions()
 			{
 				if(m_pLastEditor != NULL && m_pLastEditor->CanSave())
 				{
-					pOptions->SetSearchPath(m_pLastEditor->GetFileName(FN_PATH).c_str());
-					pOptions->SetFileExts(m_pLastEditor->GetFileName(FN_FILE).c_str());
+					pOptions->SetFileSet(extensions::fifSingleFile);
+					/*pOptions->SetSearchPath(m_pLastEditor->GetFileName(FN_PATH).c_str());
+					pOptions->SetFileExts(m_pLastEditor->GetFileName(FN_FILE).c_str());*/
 				}
 				else
 				{
 					// No document! Can't search current file, leave as previous...
+					pOptions->SetFileSet(extensions::fifPath);
 					pOptions->SetSearchPath("");
 				}
 			}
@@ -806,6 +813,8 @@ SearchOptions* CFindExDialog::getOptions()
 
 		case fwCurrentFolder:
 			{
+				pOptions->SetFileSet(extensions::fifPath);
+
 				if(m_pLastEditor != NULL && m_pLastEditor->CanSave())
 				{
 					pOptions->SetSearchPath(m_pLastEditor->GetFileName(FN_PATH).c_str());
@@ -820,6 +829,8 @@ SearchOptions* CFindExDialog::getOptions()
 
 		case fwCurrentProjectFolder:
 			{
+				pOptions->SetFileSet(extensions::fifPath);
+
 				Projects::Workspace* curWorkspace = g_Context.m_frame->GetActiveWorkspace();
 				if(curWorkspace != NULL)
 				{
@@ -829,6 +840,13 @@ SearchOptions* CFindExDialog::getOptions()
 						pOptions->SetSearchPath(curProject->GetBasePath());
 					}
 				}
+			}
+			break;
+
+		case fwOpenDocs:
+			{
+				pOptions->SetFileSet(extensions::fifOpenFiles);
+				pOptions->SetSearchPath("");
 			}
 			break;
 		}
@@ -991,6 +1009,7 @@ void CFindExDialog::updateLayout()
 
 			CButton(GetDlgItem(IDC_CURRENTDOC_RADIO)).EnableWindow(TRUE);
 			CButton(GetDlgItem(IDC_INSELECTION_RADIO)).EnableWindow(FALSE);
+			//CButton(GetDlgItem(IDC_ALLOPEN_RADIO)).EnableWindow(FALSE);
 			
 			restTop = m_group1Bottom + 12;
 
@@ -1021,6 +1040,7 @@ void CFindExDialog::updateLayout()
 
 			CButton(GetDlgItem(IDC_CURRENTDOC_RADIO)).EnableWindow(TRUE);
 			CButton(GetDlgItem(IDC_INSELECTION_RADIO)).EnableWindow(TRUE);
+			//CButton(GetDlgItem(IDC_ALLOPEN_RADIO)).EnableWindow(FALSE);
 
 			restTop = m_group2Bottom + 12;
 
@@ -1050,6 +1070,7 @@ void CFindExDialog::updateLayout()
 
 			CButton(GetDlgItem(IDC_CURRENTDOC_RADIO)).EnableWindow(FALSE);
 			CButton(GetDlgItem(IDC_INSELECTION_RADIO)).EnableWindow(FALSE);
+			//CButton(GetDlgItem(IDC_ALLOPEN_RADIO)).EnableWindow(TRUE);
 
 			restTop = m_group3Bottom + 12;
 

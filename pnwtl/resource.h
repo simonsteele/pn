@@ -87,6 +87,7 @@
 #define IDS_DOWNLOADNOW                 177
 #define IDS_REMINDMELATER               178
 #define IDS_DONOTDOWNLOAD               179
+#define IDS_ALLOPENFILES                180
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define IDD_INPUTBOX                    204

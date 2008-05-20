@@ -1939,6 +1939,7 @@ BEGIN
     IDS_DOWNLOADNOW         "&Download Now"
     IDS_REMINDMELATER       "&Remind Me Later"
     IDS_DONOTDOWNLOAD       "Do &Not Download"
+    IDS_ALLOPENFILES        "Open Files"
 END
 
 #endif    // English (U.K.) resources

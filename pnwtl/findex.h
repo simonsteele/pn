@@ -139,7 +139,7 @@ protected:
 
 protected:
 	typedef enum { elwCurrentDoc, elwAllDocs, elwCurrentProj, elwSelection } ELookWhere;
-	typedef enum { fwCurrentFile = 1, fwCurrentFolder = 2, fwCurrentProjectFolder = 3, fwUser = 4 } EFIFWhere;
+	typedef enum { fwCurrentFile = 1, fwCurrentFolder = 2, fwCurrentProjectFolder = 3, fwOpenDocs = 4, fwUser = 5 } EFIFWhere;
 
 	EFIFWhere				m_lastFifLocation;
 	EFindDialogType			m_type;

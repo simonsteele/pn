@@ -730,41 +730,46 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 	return bRet;
 }
 
-/*void CScintillaImpl::HighlightAll(SFindOptions* pOptions) 
+int CScintillaImpl::FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn matchHandler)
 {
-	CString findTarget(pOptions->FindText);
+	int				bRet = fnNotFound;
+	bool			checkFoundPos = true;
 
-	int findLen = UnSlashAsNeeded(findTarget, pOptions->UnSlash, pOptions->UseRegExp);
-	if (findLen == 0) 
+	CString localFindText(pOptions->GetFindText());
+
+	// If we're in UTF-8 mode we have a go at making the correct find string
+	// so that Windows characters get converted into UTF-8.
+	if(GetCodePage() == SC_CP_UTF8)
 	{
-		///SString msg = LocaliseMessage(
-		//	inSelection ?
-		//	"Find string must not be empty for 'Replace in Selection' command." :
-		//	"Find string must not be empty for 'Replace All' command.");
-		//FindMessageBox(msg);
-		return;
+		// TODO provide a 16-bit encoding to UTF-8 conversion in unicode mode.
+		Windows1252_Utf8 conv((LPCTSTR)localFindText);
+		localFindText = (const char*)(const unsigned char*)conv;
 	}
+
+	int lenFind = UnSlashAsNeeded(localFindText, pOptions->GetUseSlashes(), pOptions->GetUseRegExp());
+	
+	if(lenFind == 0)
+		return fnInvalidSearch;
+	
+	///@todo Sort out interface accessibility
+	static_cast<SearchOptions*>(pOptions)->SetFound(false);
+
+	///@todo SCFIND_WORDSTART
+	int flags = (pOptions->GetMatchWholeWord() ? SCFIND_WHOLEWORD : 0) |
+				(pOptions->GetMatchCase() ? SCFIND_MATCHCASE : 0) |
+				(pOptions->GetUseRegExp() ? SCFIND_REGEXP : 0);
 
 	// Whole document
 	int startPosition = 0;
 	int endPosition = GetLength();
 	
-	int flags = (pOptions->MatchWholeWord ? SCFIND_WHOLEWORD : 0) |
-	            (pOptions->MatchCase ? SCFIND_MATCHCASE : 0) |
-	            (pOptions->UseRegExp ? SCFIND_REGEXP : 0);
-	
 	SetTarget(startPosition, endPosition);
 	SetSearchFlags(flags);
 
-	/////////////////////////////////////
-	IndicSetStyle(0, INDIC_SQUIGGLE);
-	IndicSetFore(0, RGB(0, 0x80, 0));
-	/////////////////////////////////////
-	
-	int posFind = SearchInTarget(findLen, (LPCTSTR)findTarget);
+	int posFind = SearchInTarget(lenFind, (LPCTSTR)localFindText);
 	
 	// Fix from Replace All Code:
-	if ((findLen == 1) && pOptions->UseRegExp && (findTarget[0] == '^')) 
+	if ((lenFind == 1) && pOptions->GetUseRegExp() && (localFindText[0] == '^')) 
 	{
 		// Special case for find all start of line so it hits the first line
 		posFind = startPosition;
@@ -774,16 +779,14 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 	if ((posFind != -1) && (posFind <= endPosition)) 
 	{
 		int lastMatch = posFind;
-		//BeginUndoAction();
 
 		while (posFind != -1) 
 		{
 			int lenTarget = GetTargetEnd() - GetTargetStart();
 			
-			lastMatch = posFind + findLen;
+			lastMatch = posFind + lenFind;
 
-			StartStyling(GetTargetStart(), INDICS_MASK);
-			SetStyling(lenTarget, INDIC0_MASK);
+			matchHandler(GetTargetStart(), GetTargetEnd());
 			
 			// For the special cases of start of line and end of line
 			// Something better could be done but there are too many special cases
@@ -791,12 +794,12 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 				lastMatch++;
 
 			SetTarget(lastMatch, endPosition);
-			posFind = SearchInTarget(findLen, (LPCTSTR)findTarget);
+			posFind = SearchInTarget(lenFind, (LPCTSTR)localFindText);
 		}
-		
-		//EndUndoAction();
 	}
-}*/
+
+	return fnReachedStart;
+}
 
 bool CScintillaImpl::ReplaceOnce(extensions::ISearchOptions* pOptions)
 {

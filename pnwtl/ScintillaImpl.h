@@ -18,6 +18,7 @@ namespace { class ISearchOptions; }
 class IWordProvider;
 class BaseAutoCompleteHandler;
 typedef boost::shared_ptr<BaseAutoCompleteHandler> AutoCompleteHandlerPtr;
+typedef boost::function<void (int start, int end)> MatchHandlerFn;
 
 /**
  * @class CScintillaImpl
@@ -32,6 +33,7 @@ public:
 	int FindNext(extensions::ISearchOptions* pOptions);
 	bool ReplaceOnce(extensions::ISearchOptions* pOptions);
 	int ReplaceAll(extensions::ISearchOptions* pOptions);
+	int FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn matchHandler);
 	//void HighlightAll(SFindOptions* pOptions); - doesn't work with all schemes...
 
 	void ToggleFold();
