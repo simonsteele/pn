@@ -130,7 +130,7 @@ int CPNOpenDialog::GetCount()
 	return m_files.size();
 }
 
-const std::list<tstring>& CPNOpenDialog::GetFiles()
+const std::vector<tstring>& CPNOpenDialog::GetFiles()
 {
 	if(!m_bParsed)
 		PreProcess();
@@ -240,6 +240,167 @@ void CPNOpenDialog::PreProcess()
 
 	m_bParsed = true;
 }
+
+//////////////////////////////////////////////////////////////////////////////
+// CVistaOpenDialog
+//////////////////////////////////////////////////////////////////////////////
+
+CVistaOpenDialog::CVistaOpenDialog(LPCWSTR filter) :
+	m_dialog(NULL)
+{
+	m_filterbuf.resize(wcslen(filter)+1);
+	wcscpy(&m_filterbuf[0], filter);
+
+	bool isFilter(false);
+	wchar_t* pch = &m_filterbuf[0];
+	wchar_t* pchlast = pch;
+	COMDLG_FILTERSPEC spec;
+	while ((pch = wcschr(pch, L'|')) != NULL)
+	{
+		*pch++ = L'\0';
+		
+		if (!isFilter)
+		{
+			spec.pszName = pchlast;
+		}
+		else
+		{
+			spec.pszSpec = pchlast;
+			m_filters.push_back(spec);
+		}
+
+		pchlast = pch;
+		isFilter = !isFilter;
+	}
+
+	m_dialog = new CShellFileOpenDialog(
+		 /*lpszFileName = */NULL, 
+         FOS_FORCEFILESYSTEM | FOS_PATHMUSTEXIST | FOS_FILEMUSTEXIST, 
+         /*defaultExtension*/NULL, 
+         &m_filters[0],
+         m_filters.size());
+}
+
+CVistaOpenDialog::~CVistaOpenDialog()
+{
+	if (m_dialog)
+	{
+		delete m_dialog;
+	}
+}
+
+template <class T> 
+class AutoTaskMemory
+{
+public:
+	AutoTaskMemory() : p(NULL)
+	{
+	}
+
+	~AutoTaskMemory()
+	{
+		if (p)
+		{
+			::CoTaskMemFree(p);
+		}
+	}
+
+	T* p;
+};
+
+INT_PTR CVistaOpenDialog::DoModal(HWND hWndParent)
+{
+	if (m_title.size())
+	{
+		CT2CW title(m_title.c_str());
+		m_dialog->GetPtr()->SetTitle(title);
+	}
+
+	INT_PTR res = m_dialog->DoModal(hWndParent);
+	if (res != IDOK)
+	{
+		return res;
+	}
+
+	CComPtr<IShellItemArray> resultItems;
+	HRESULT hr = m_dialog->GetPtr()->GetResults(&resultItems);
+	if (!SUCCEEDED(hr))
+	{
+		return 0;
+	}
+
+	DWORD count = 0;
+	hr = resultItems->GetCount(&count);
+	if (!SUCCEEDED(hr))
+	{
+		return 0;
+	}
+	
+	for (DWORD i = 0; i < count; i++)
+	{
+		CComPtr<IShellItem> shellItem;
+		if (SUCCEEDED(resultItems->GetItemAt(i, &shellItem)))
+		{
+			AutoTaskMemory<wchar_t> name;
+
+			if (SUCCEEDED(shellItem->GetDisplayName(SIGDN_FILESYSPATH, &name.p)))
+			{
+				CW2CT fn(name.p);
+				m_foundfiles.push_back(tstring(fn));
+			}
+		}
+	}
+	
+	return IDOK;
+}
+
+LPCTSTR CVistaOpenDialog::GetSingleFileName()
+{
+	if (m_foundfiles.size())
+	{
+		return m_foundfiles[0].c_str();
+	}
+
+	return NULL;
+}
+
+void CVistaOpenDialog::SetTitle(LPCTSTR title)
+{
+	m_title = title;
+}
+
+void CVistaOpenDialog::SetAllowMultiSelect(bool allow)
+{
+	DWORD curOptions;
+	if (SUCCEEDED(m_dialog->GetPtr()->GetOptions(&curOptions)))
+	{
+		if (allow)
+		{
+			curOptions |= FOS_ALLOWMULTISELECT;
+		}
+		else
+		{
+			curOptions &= ~FOS_ALLOWMULTISELECT;
+		}
+		
+		m_dialog->GetPtr()->SetOptions(curOptions);
+	}
+}
+
+COpenDialogBase::const_iterator CVistaOpenDialog::begin()
+{
+	return m_foundfiles.begin();
+}
+
+COpenDialogBase::const_iterator CVistaOpenDialog::end()
+{
+	return m_foundfiles.end();
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// CAdvancedOpenDialog
+//////////////////////////////////////////////////////////////////////////////
+
 
 //////////////////////////////////////////////////////////////////////////////
 // CPNSaveDialog

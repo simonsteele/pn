@@ -238,7 +238,7 @@ LRESULT CProjPropsView::OnBrowse(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*
 	}
 	else
 	{
-		CPNOpenDialog dlgOpen(_T("All Files (*.*)|*.*|"));
+		CAdvancedOpenDialog dlgOpen(_T("All Files (*.*)|*.*|"));
 		dlgOpen.SetTitle(pProp->GetDescription());
 
 		if(dlgOpen.DoModal() == IDOK)

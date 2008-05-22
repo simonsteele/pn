@@ -950,7 +950,7 @@ LRESULT CProjectTreeCtrl::OnNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 
 LRESULT CProjectTreeCtrl::OnAddProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CPNOpenDialog dlgOpen(_T("Project Files (*.pnproj)|*.pnproj|"));
+	CAdvancedOpenDialog dlgOpen(_T("Project Files (*.pnproj)|*.pnproj|"));
 	dlgOpen.SetTitle(_T("Open Project"));
 
 	if(dlgOpen.DoModal() == IDOK)
@@ -1009,8 +1009,8 @@ LRESULT CProjectTreeCtrl::OnAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 		if(folder == NULL)
 			return 0;
 
-		CPNOpenDialog dlgOpen(_T("All Files (*.*)|*.*|"));
-		dlgOpen.m_ofn.Flags |= OFN_ALLOWMULTISELECT;
+		CAdvancedOpenDialog dlgOpen(_T("All Files (*.*)|*.*|"));
+		dlgOpen.SetAllowMultiSelect(true);
 		dlgOpen.SetTitle(_T("Add Files"));
 		if(dlgOpen.DoModal() == IDOK)
 		{
@@ -1018,7 +1018,7 @@ LRESULT CProjectTreeCtrl::OnAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 
 			processNotifications = false;
 
-			for(CPNOpenDialog::const_iterator i = dlgOpen.begin(); 
+			for(COpenDialogBase::const_iterator i = dlgOpen.begin(); 
 				i != dlgOpen.end();
 				++i)
 			{

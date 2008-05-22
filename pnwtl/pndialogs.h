@@ -107,6 +107,22 @@ public:
 	END_MSG_MAP()
 };
 
+class COpenDialogBase
+{
+public:
+	virtual ~COpenDialogBase(){}
+	virtual INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow()) = 0;
+
+	virtual LPCTSTR GetSingleFileName() = 0;
+	virtual void SetTitle(LPCTSTR title) = 0;
+	virtual void SetAllowMultiSelect(bool allow) = 0;
+
+	typedef std::vector<tstring>::const_iterator const_iterator;
+
+	virtual const_iterator begin() = 0;
+	virtual const_iterator end() = 0;
+};
+
 /**
  * @brief File Dialog with special functionality for opening files.
  * This "special functionality" basically involves being able to open
@@ -114,24 +130,46 @@ public:
  * fact that the class automatically parses any selected filenames 
  * (multiple or single) into a list of tstrings.
  */
-class CPNOpenDialog : public CPNFileDialogImpl<CPNOpenDialog>
+class CPNOpenDialog : public CPNFileDialogImpl<CPNOpenDialog>, public COpenDialogBase
 {
 	typedef CPNFileDialogImpl<CPNOpenDialog> baseClass;
 	public:
-		typedef std::list<tstring>::const_iterator const_iterator;
 
 		CPNOpenDialog(LPCTSTR szFilter, LPCTSTR szPath = NULL);
-		~CPNOpenDialog();
+		virtual ~CPNOpenDialog();
 
-		INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow());
+		virtual INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow());
+
+		virtual LPCTSTR GetSingleFileName()
+		{
+			return CPNFileDialogImpl<CPNOpenDialog>::GetSingleFileName();
+		}
+
+		virtual void SetTitle(LPCTSTR title)
+		{
+			CPNFileDialogImpl<CPNOpenDialog>::SetTitle(title);
+		}
+
+		virtual void SetAllowMultiSelect(bool allow)
+		{
+			if (allow)
+			{
+				m_ofn.Flags |= OFN_ALLOWMULTISELECT;
+			}
+			else
+			{
+				m_ofn.Flags &= ~OFN_ALLOWMULTISELECT;
+			}
+		}
+	
 
 		void OnSelChange(LPOFNOTIFY /*lpon*/);
 
 		// List functionality:
 		int GetCount();
-		const std::list<tstring>& GetFiles();
-		const_iterator begin();
-		const_iterator end();
+		const std::vector<tstring>& GetFiles();
+		virtual const_iterator begin();
+		virtual const_iterator end();
 
 	protected:
 		TCHAR*	m_szFilesBuffer;
@@ -141,7 +179,7 @@ class CPNOpenDialog : public CPNFileDialogImpl<CPNOpenDialog>
 		int		m_bufSizeFiles;
 		int		m_bufSizeFolder;
 
-		std::list<tstring>	m_files;
+		std::vector<tstring>	m_files;
 
 		void Clear();
 		void PreProcess();
@@ -151,6 +189,100 @@ class CPNOpenDialog : public CPNFileDialogImpl<CPNOpenDialog>
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 };
+
+class CVistaOpenDialog : public COpenDialogBase
+{
+public:
+	CVistaOpenDialog(LPCWSTR filter);
+	virtual ~CVistaOpenDialog();
+
+	virtual INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow());
+
+	virtual LPCTSTR GetSingleFileName();
+
+	virtual void SetTitle(LPCTSTR title);
+
+	virtual void SetAllowMultiSelect(bool allow);
+
+	virtual const_iterator begin();
+	virtual const_iterator end();
+
+private:
+	CShellFileOpenDialog* m_dialog;
+	std::vector<wchar_t> m_filterbuf;
+	std::vector<COMDLG_FILTERSPEC> m_filters;
+	std::vector<tstring> m_foundfiles;
+	tstring m_title;
+};
+
+template <class TClassicDialog, class TVistaDialog>
+class CAdvancedOpenDialogImpl
+{
+public:
+	CAdvancedOpenDialogImpl(LPCTSTR filter)
+	{
+		if (WTL::RunTimeHelper::IsVista())
+		{
+			CT2CW filterw(filter);
+			m_dialog = new TVistaDialog(filterw);
+		}
+		else
+		{
+			m_dialog = new TClassicDialog(filter, m_path.size() ? m_path.c_str() : NULL);
+		}
+	}
+
+	~CAdvancedOpenDialogImpl()
+	{
+		if (m_dialog != NULL)
+		{
+			delete m_dialog;
+		}
+	}
+
+	INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow())
+	{
+		PNASSERT(m_dialog != NULL);
+		return m_dialog->DoModal(hWndParent);
+	}
+
+	LPCTSTR GetSingleFileName()
+	{
+		PNASSERT(m_dialog != NULL);
+		return m_dialog->GetSingleFileName();
+	}
+
+	void SetTitle(LPCTSTR title)
+	{
+		PNASSERT(m_dialog != NULL);
+		return m_dialog->SetTitle(title);
+	}
+
+	void SetAllowMultiSelect(bool allow)
+	{
+		PNASSERT(m_dialog != NULL);
+		return m_dialog->SetAllowMultiSelect(allow);
+	}
+
+	COpenDialogBase::const_iterator begin()
+	{
+		PNASSERT(m_dialog != NULL);
+		return m_dialog->begin();
+	}
+
+	COpenDialogBase::const_iterator end()
+	{
+		PNASSERT(m_dialog != NULL);
+		return m_dialog->end();
+	}
+
+
+private:
+	tstring m_path;
+	COpenDialogBase* m_dialog;
+};
+
+typedef CAdvancedOpenDialogImpl<CPNOpenDialog, CVistaOpenDialog> CAdvancedOpenDialog;
 
 class CPNSaveDialog : public CPNFileDialogImpl<CPNSaveDialog>
 {

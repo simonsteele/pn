@@ -1654,10 +1654,10 @@ LRESULT CMainFrame::OnMRUProjectSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*
 
 LRESULT CMainFrame::OnFileOpenProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CPNOpenDialog dlgOpen(LS(IDS_ALLPROJECTFILES));
+	CAdvancedOpenDialog dlgOpen(LS(IDS_ALLPROJECTFILES));
 	
 	tstring s = StringLoader::Get(IDS_OPENPROJECTDLGTITLE);
-	dlgOpen.m_ofn.lpstrTitle = s.c_str();
+	//TODO: dlgOpen.m_ofn.lpstrTitle = s.c_str();
 
 	if(dlgOpen.DoModal() == IDOK)
 	{

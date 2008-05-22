@@ -2113,9 +2113,7 @@ void CChildFrame::Export(int type)
 		tstring fileMask(pExp->GetFileMask());
 		fileMask += _T("All Files (*.*)|*.*|");
 
-		CPNFileDialog dlgSave(FALSE, pExp->GetDefaultExtension(), guessName.c_str(), 
-			OFN_HIDEREADONLY | OFN_OVERWRITEPROMPT,
-			fileMask.c_str(), m_hWnd);
+		CPNSaveDialog dlgSave(fileMask.c_str(), guessName.c_str(), pExp->GetDefaultExtension());
 		
 		if(dlgSave.DoModal() == IDOK)
 		{
