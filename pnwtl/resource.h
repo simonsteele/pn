@@ -635,6 +635,8 @@
 #define ID_WINDOWS_FILEBROWSER          32995
 #define IDS_PROJSAVECHANGES             32996
 #define ID_WINDOWS_OPENFILES            32997
+#define ID_VIEW_PREVIOUSBOOKMARK        32998
+#define ID_BOOKMARKS_PREVIOUS           32999
 
 // Next default values for new objects
 // 
@@ -642,7 +644,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        362
-#define _APS_NEXT_COMMAND_VALUE         32998
+#define _APS_NEXT_COMMAND_VALUE         33000
 #define _APS_NEXT_CONTROL_VALUE         1153
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

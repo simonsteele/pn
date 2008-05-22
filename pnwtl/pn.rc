@@ -218,6 +218,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Toggle &Bookmark",            ID_BOOKMARKS_TOGGLE
         MENUITEM "Next B&ookmark",              ID_BOOKMARKS_NEXT
+        MENUITEM "&Previous Bookmark",          ID_BOOKMARKS_PREVIOUS
         MENUITEM SEPARATOR
         POPUP "&Folding"
         BEGIN

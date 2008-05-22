@@ -119,6 +119,7 @@ class CScintilla
 		void DefineBookmarks();
 		void ToggleBookmark(int marker = SC_BOOKMARK);
 		void NextBookmark();
+		void PrevBookmark();
         
 		// Folding (mostly Scite implementation)
 		/// Set the Folding Margins

@@ -297,6 +297,21 @@ void CScintilla::NextBookmark()
 	}
 }
 
+void CScintilla::PrevBookmark()
+{
+	int line = LineFromPosition(GetCurrentPos());
+	int prevLine = MarkerPrevious(line-1, 1 << SC_BOOKMARK);
+	if (prevLine < 0)
+	{
+		prevLine = MarkerPrevious(GetLineCount(), 1 << SC_BOOKMARK);
+	}
+
+	if (!(prevLine < 0 || prevLine == line))
+	{
+		GotoLineEnsureVisible(prevLine);
+	}
+}
+
 void debugBookmarkLines(int* handles)
 {
 #ifdef DEBUG_NUMBERED_BOOKMARKS
