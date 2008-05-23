@@ -22,6 +22,10 @@ What's new?
 14) Minor visual improvements
 15) Marked as vista-aware, no more VirtualStore problems
 16) Automatic update check
+17) Go to previous bookmark
+18) Switched to vista open dialogs on appropriate platforms [IN PROGRESS]
+19) New SDK package
+20) New Find in Files option: All Open Files
 
 Bug Fixes:
 ----------
@@ -37,6 +41,7 @@ Bug Fixes:
 9) Fixed tags parsing where tag includes the dollar sign
 10) Find in files extensions can now be separated by space, comma, semicolon
 11) Inform the user when they're trying to search with an invalid regex
+12) Fix problem with tabs getting hidden
 
 Extensions Interface Changes:
 -----------------------------

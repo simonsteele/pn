@@ -277,6 +277,20 @@ inline int AtlTaskDialog(HWND hWndParent,
 
 #endif // _WIN32_WINNT < 0x0600
 
+#if !(defined(IDI_SHIELD))
+#define TD_WARNING_ICON         MAKEINTRESOURCEW(-1)
+#define TD_ERROR_ICON           MAKEINTRESOURCEW(-2)
+#define TD_INFORMATION_ICON     MAKEINTRESOURCEW(-3)
+#define TD_SHIELD_ICON          MAKEINTRESOURCEW(-4)
+
+#define TDT_WARNING_ICON         MAKEINTRESOURCE(-1)
+#define TDT_ERROR_ICON           MAKEINTRESOURCE(-2)
+#define TDT_INFORMATION_ICON     MAKEINTRESOURCE(-3)
+#define TDT_SHIELD_ICON          MAKEINTRESOURCE(-4)
+
+#define IDI_SHIELD          MAKEINTRESOURCE(32518)
+#endif
+
 inline int AtlTaskDialogIndirect(TASKDIALOGCONFIG* pTask, int* pnButton = NULL, int* pnRadioButton = NULL, BOOL* pfVerificationFlagChecked = NULL)
 {
    // This allows apps to run on older versions of Windows
