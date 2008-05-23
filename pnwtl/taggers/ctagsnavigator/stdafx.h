@@ -20,4 +20,11 @@
 #include <tchar.h>
 
 #include <boost/shared_ptr.hpp>
+
+#include <assert.h>
+
+#define PNASSERT assert
+
+#include "../../allocator.h"
+#include "../../pnextstring.h"
 #include "../../extiface.h"
