@@ -353,9 +353,10 @@ void COptionsPageGlobalStyles::savePreset()
 	tstring presetPath;
 	OPTIONS->GetPNPath(presetPath, PNPATH_PRESETS);
 
-	CPNSaveDialog sd("Preset Files (*.xml)|*.xml|All Files (*.*)|*.*|", NULL);
+	CAutoSaveDialog sd("Preset Files (*.xml)|*.xml|All Files (*.*)|*.*|");
 	sd.SetTitle("Save Preset As...");
 	sd.SetInitialPath( presetPath.c_str() );
+	sd.SetDefaultExtension("xml");
 	
 	if(sd.DoModal() == IDOK)
 	{

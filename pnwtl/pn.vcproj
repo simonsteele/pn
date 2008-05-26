@@ -480,6 +480,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\filedialogs.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Files.cpp"
 				>
 			</File>
@@ -725,6 +729,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\autofiledialog.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\boyermoore.h"
 				>
 			</File>
@@ -770,6 +778,14 @@
 			</File>
 			<File
 				RelativePath=".\FileAssocInfo.h"
+				>
+			</File>
+			<File
+				RelativePath=".\filedialogbase.h"
+				>
+			</File>
+			<File
+				RelativePath=".\filedialogs.h"
 				>
 			</File>
 			<File

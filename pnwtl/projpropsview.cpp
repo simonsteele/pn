@@ -2,7 +2,7 @@
  * @file projpropsview.cpp
  * @brief Project Properties
  * @author Simon Steele
- * @note Copyright (c) 2004-2005 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2004-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -238,7 +238,7 @@ LRESULT CProjPropsView::OnBrowse(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*
 	}
 	else
 	{
-		CAdvancedOpenDialog dlgOpen(_T("All Files (*.*)|*.*|"));
+		CAutoOpenDialog dlgOpen(LS(IDS_ALLFILES));
 		dlgOpen.SetTitle(pProp->GetDescription());
 
 		if(dlgOpen.DoModal() == IDOK)

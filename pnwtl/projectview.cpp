@@ -4,7 +4,7 @@
  * @author Simon Steele
  * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -950,7 +950,7 @@ LRESULT CProjectTreeCtrl::OnNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 
 LRESULT CProjectTreeCtrl::OnAddProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CAdvancedOpenDialog dlgOpen(_T("Project Files (*.pnproj)|*.pnproj|"));
+	CAutoOpenDialog dlgOpen(_T("Project Files (*.pnproj)|*.pnproj|"));
 	dlgOpen.SetTitle(_T("Open Project"));
 
 	if(dlgOpen.DoModal() == IDOK)
@@ -1009,7 +1009,7 @@ LRESULT CProjectTreeCtrl::OnAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 		if(folder == NULL)
 			return 0;
 
-		CAdvancedOpenDialog dlgOpen(_T("All Files (*.*)|*.*|"));
+		CAutoOpenDialog dlgOpen(LS(IDS_ALLFILES));
 		dlgOpen.SetAllowMultiSelect(true);
 		dlgOpen.SetTitle(_T("Add Files"));
 		if(dlgOpen.DoModal() == IDOK)
@@ -1018,7 +1018,7 @@ LRESULT CProjectTreeCtrl::OnAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 
 			processNotifications = false;
 
-			for(COpenDialogBase::const_iterator i = dlgOpen.begin(); 
+			for(IFileOpenDialogBase::const_iterator i = dlgOpen.begin(); 
 				i != dlgOpen.end();
 				++i)
 			{
@@ -1374,18 +1374,20 @@ LRESULT	CProjectTreeCtrl::OnMagicAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	Projects::MagicFolder* mf = static_cast<Projects::MagicFolder*>(lastItem);
 	tstring path = mf->GetFullPath();
 
-	CPNSaveDialog sd("All Files (*.*)|*.*|", NULL);
+	CAutoSaveDialog sd(LS(IDS_ALLFILES));
 	sd.SetTitle("New File Name...");
-	sd.SetInitialPath( path.c_str() );
+	sd.SetInitialPath(path.c_str());
 	
-	if(sd.DoModal() == IDOK)
+	if (sd.DoModal() == IDOK)
 	{
 		CFileName fn(sd.GetSingleFileName());
 		fn.ToLower();
-		tstring newPath;
-		fn.GetPath(newPath);
-		if(newPath != path)
+		std::transform(path.begin(), path.end(), path.begin(), tolower);
+		
+		if(fn.GetPath() != path)
+		{
 			::MessageBox(m_hWnd, LS(IDS_PATHNOTINMAGICFOLDER), LS(IDR_MAINFRAME), MB_ICONWARNING | MB_OK);
+		}
 		else
 		{
 			// Make and blank the file...

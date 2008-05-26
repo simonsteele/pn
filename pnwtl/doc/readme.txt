@@ -23,7 +23,7 @@ What's new?
 15) Marked as vista-aware, no more VirtualStore problems
 16) Automatic update check
 17) Go to previous bookmark
-18) Switched to vista open dialogs on appropriate platforms [IN PROGRESS]
+18) Switched to vista open/save dialogs on appropriate platforms
 19) New SDK package
 20) New Find in Files option: All Open Files
 

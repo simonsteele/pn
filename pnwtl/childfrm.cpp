@@ -1857,12 +1857,25 @@ bool CChildFrame::CanSave()
 bool CChildFrame::SaveAs(bool ctagsRefresh)
 {
 	tstring saPath;
+	tstring saFileName;
 	if(CanSave())
 	{
-		saPath = m_spDocument->GetFileName(FN_FULL);
+		saPath = m_spDocument->GetFileName(FN_PATH);
+		saFileName = m_spDocument->GetFileName(FN_FILE);
 	}
 
-	CPNSaveDialogEx dlgSave(_T("All Files (*.*)|*.*|"), saPath.c_str());
+	CAutoSaveDialogEx dlgSave(LS(IDS_ALLFILES));
+	
+	if (saPath.size())
+	{
+		dlgSave.SetInitialPath(saPath.c_str());
+	}
+
+	if (saFileName.size())
+	{
+		dlgSave.SetInitialFilename(saFileName.c_str());
+	}
+
 	bool bRet = true;
 
 	if(dlgSave.DoModal() == IDOK)
@@ -1872,9 +1885,13 @@ bool CChildFrame::SaveAs(bool ctagsRefresh)
 		{
 			ChangeFormat(format);
 		}
-		if(dlgSave.m_ofn.lpstrFile == NULL)
+		
+		if(dlgSave.GetSingleFileName() == NULL)
+		{
 			RETURN_UNEXPECTED(_T("SaveAs lpstrFile == NULL"), false);
-		SaveFile(dlgSave.m_ofn.lpstrFile, ctagsRefresh);
+		}
+		
+		SaveFile(dlgSave.GetSingleFileName(), ctagsRefresh);
 	}
 	else
 	{
@@ -2111,13 +2128,15 @@ void CChildFrame::Export(int type)
 		guessName += pExp->GetDefaultExtension();
 
 		tstring fileMask(pExp->GetFileMask());
-		fileMask += _T("All Files (*.*)|*.*|");
+		fileMask += LS(IDS_ALLFILES);
 
-		CPNSaveDialog dlgSave(fileMask.c_str(), guessName.c_str(), pExp->GetDefaultExtension());
+		CAutoSaveDialog dlgSave(fileMask.c_str());
+		dlgSave.SetDefaultExtension(pExp->GetDefaultExtension());
+		dlgSave.SetInitialFilename(guessName.c_str());
 		
 		if(dlgSave.DoModal() == IDOK)
 		{
-			fout.SetFileName(dlgSave.m_ofn.lpstrFile);
+			fout.SetFileName(dlgSave.GetSingleFileName());
 			if(fout.IsValid())
 			{
 				pExp->Export(0, -1);

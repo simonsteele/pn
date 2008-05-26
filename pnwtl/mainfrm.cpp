@@ -1,14 +1,11 @@
 /**
  * @file mainfrm.cpp
- * @brief Main Window for Programmers Notepad 2 (Implementation)
+ * @brief Main Window for Programmer's Notepad 2 (Implementation)
  * @author Simon Steele
  * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
- *
- * Notes: It might be better to try and use a single instance of the child frame
- * menu instead of all the switching work that is done in the current version.
  */
 
 #include "stdafx.h"
@@ -1559,8 +1556,8 @@ LRESULT CMainFrame::OnFileNewWorkspace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 
 LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CPNOpenDialogEx dlgOpen(LS(IDS_ALLFILES));
-	dlgOpen.m_ofn.Flags |= OFN_ALLOWMULTISELECT;
+	CAutoOpenDialogEx dlgOpen(LS(IDS_ALLFILES));
+	dlgOpen.SetAllowMultiSelect(true);
 
 	tstring path;
 
@@ -1577,7 +1574,7 @@ LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	if (dlgOpen.DoModal() == IDOK)
 	{
 		EAlreadyOpenAction action = (EAlreadyOpenAction)OPTIONS->GetCached(Options::OAlreadyOpenAction);
-		for(CPNOpenDialog::const_iterator i = dlgOpen.begin(); i != dlgOpen.end(); ++i)
+		for(IFileOpenDialogBase::const_iterator i = dlgOpen.begin(); i != dlgOpen.end(); ++i)
 		{
 			if( !CheckAlreadyOpen((*i).c_str(), action) )
 			{
@@ -1654,7 +1651,7 @@ LRESULT CMainFrame::OnMRUProjectSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*
 
 LRESULT CMainFrame::OnFileOpenProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CAdvancedOpenDialog dlgOpen(LS(IDS_ALLPROJECTFILES));
+	CAutoOpenDialog dlgOpen(LS(IDS_ALLPROJECTFILES));
 	
 	tstring s = StringLoader::Get(IDS_OPENPROJECTDLGTITLE);
 	//TODO: dlgOpen.m_ofn.lpstrTitle = s.c_str();
@@ -1692,8 +1689,8 @@ LRESULT CMainFrame::OnFileCloseAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 LRESULT CMainFrame::OnFileSaveWorkspaceState(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CPNSaveDialog dlgSave(LS(IDS_WORKSPACEFILES), NULL, _T("pnws"));
-	TCHAR szFileName[MAX_PATH] = {0};
+	CAutoSaveDialog dlgSave(LS(IDS_WORKSPACEFILES));
+	dlgSave.SetDefaultExtension(_T("pnws"));
 
 	Projects::Workspace* pWorkspace = GetActiveWorkspace();
 	if (pWorkspace != NULL)
@@ -1707,16 +1704,14 @@ LRESULT CMainFrame::OnFileSaveWorkspaceState(WORD /*wNotifyCode*/, WORD /*wID*/,
 			path = (*projects.begin())->GetBasePath();
 		}
 		
-		_tcscpy(szFileName, pWorkspace->GetName());
-		dlgSave.m_ofn.lpstrFile = szFileName;
-		dlgSave.m_ofn.nMaxFile = MAX_PATH;
+		dlgSave.SetInitialFilename(pWorkspace->GetName());
 		dlgSave.SetInitialPath(path);
 	}
 
 	if(dlgSave.DoModal() == IDOK)
 	{
 		WorkspaceState wss;
-		wss.Save(dlgSave.m_ofn.lpstrFile);
+		wss.Save(dlgSave.GetSingleFileName());
 	}
 
 	return 0;
@@ -3002,20 +2997,20 @@ bool CMainFrame::SaveWorkspaceAs(Projects::Workspace* pWorkspace)
 	if(projects.size() > 0)
 		path = (*projects.begin())->GetBasePath();
 	
-	CPNSaveDialog dlg(LS(IDS_PROJECTGROUPFILES), NULL, _T("ppg"));
+	CAutoSaveDialog dlg(LS(IDS_PROJECTGROUPFILES));
+	dlg.SetDefaultExtension(_T("ppg"));
 	
 	tstring st = LS(IDS_SAVESOMETHING);
 	st += LS(IDS_PROJECTGROUP);
 	dlg.SetTitle(st.c_str());
-	tstring setfn = pWorkspace->GetName();
-	dlg.m_ofn.lpstrFile = const_cast<LPTSTR>(setfn.c_str());
-	dlg.m_ofn.nMaxFile = MAX_PATH;
+
+	dlg.SetInitialFilename(pWorkspace->GetName());
 	dlg.SetInitialPath(path);
 
 	if(dlg.DoModal() == IDOK)
 	{
-		pWorkspace->SetFileName(dlg.m_ofn.lpstrFile);
-		AddMRUProjectsEntry(dlg.m_ofn.lpstrFile);
+		pWorkspace->SetFileName(dlg.GetSingleFileName());
+		AddMRUProjectsEntry(dlg.GetSingleFileName());
 		return true;
 	}
 	else
