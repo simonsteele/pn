@@ -813,53 +813,48 @@ void CMainFrame::CreateDockingWindows()
 	m_CmdBar.AddIcon(getDocker(DW_OPENFILES)->GetIcon(FALSE), ID_VIEW_WINDOWS_OPENFILES);
 }
 
-/**
- * This function is mostly identical to the one in WTL but allows the optional
- * use of chevrons.
- */
-static BOOL AddReBarBandCtrl(HWND hWndReBar, HWND hWndBand, int nID = 0, LPTSTR lpstrTitle = NULL, BOOL bNewRow = FALSE, int cxWidth = 0, BOOL bFullWidthAlways = FALSE, bool bUseChevrons = false)
+static BOOL AddReBarBandCtrl(HWND hWndReBar, HWND hWndBand, int nID = 0, LPCTSTR lpstrTitle = NULL, BOOL bNewRow = FALSE, int cxWidth = 0, BOOL bFullWidthAlways = FALSE, bool bUseChevrons = true)
 {
-	ATLASSERT(::IsWindow(hWndReBar));	// must be already created
+	ATLASSERT(::IsWindow(hWndReBar));   // must be already created
 #ifdef _DEBUG
 	// block - check if this is really a rebar
 	{
-		TCHAR lpszClassName[sizeof(REBARCLASSNAME)];
+		TCHAR lpszClassName[sizeof(REBARCLASSNAME)] = { 0 };
 		::GetClassName(hWndReBar, lpszClassName, sizeof(REBARCLASSNAME));
 		ATLASSERT(lstrcmp(lpszClassName, REBARCLASSNAME) == 0);
 	}
-#endif //_DEBUG
-	ATLASSERT(::IsWindow(hWndBand));	// must be already created
+#endif // _DEBUG
+	ATLASSERT(::IsWindow(hWndBand));   // must be already created
 
 	// Get number of buttons on the toolbar
 	int nBtnCount = (int)::SendMessage(hWndBand, TB_BUTTONCOUNT, 0, 0L);
 
 	// Set band info structure
-	REBARBANDINFO rbBand;
-	rbBand.cbSize = sizeof(REBARBANDINFO);
+	REBARBANDINFO rbBand = { RunTimeHelper::SizeOf_REBARBANDINFO() };
 #if (_WIN32_IE >= 0x0400)
 	rbBand.fMask = RBBIM_CHILD | RBBIM_CHILDSIZE | RBBIM_STYLE | RBBIM_ID | RBBIM_SIZE | RBBIM_IDEALSIZE;
 #else
 	rbBand.fMask = RBBIM_CHILD | RBBIM_CHILDSIZE | RBBIM_STYLE | RBBIM_ID | RBBIM_SIZE;
-#endif //!(_WIN32_IE >= 0x0400)
+#endif // !(_WIN32_IE >= 0x0400)
 	if(lpstrTitle != NULL)
 		rbBand.fMask |= RBBIM_TEXT;
 	rbBand.fStyle = RBBS_CHILDEDGE;
 #if (_WIN32_IE >= 0x0500)
-	if(nBtnCount > 0 && bUseChevrons)	// add chevron style for toolbar with buttons
+	if(nBtnCount > 0)   // add chevron style for toolbar with buttons
 		rbBand.fStyle |= RBBS_USECHEVRON;
-#endif //(_WIN32_IE >= 0x0500)
+#endif // (_WIN32_IE >= 0x0500)
 	if(bNewRow)
 		rbBand.fStyle |= RBBS_BREAK;
 
-	rbBand.lpText = lpstrTitle;
+	rbBand.lpText = (LPTSTR)lpstrTitle;
 	rbBand.hwndChild = hWndBand;
-	if(nID == 0)	// calc band ID
+	if(nID == 0)   // calc band ID
 		nID = ATL_IDW_BAND_FIRST + (int)::SendMessage(hWndReBar, RB_GETBANDCOUNT, 0, 0L);
 	rbBand.wID = nID;
 
 	// Calculate the size of the band
-	BOOL bRet;
-	RECT rcTmp;
+	BOOL bRet = FALSE;
+	RECT rcTmp = { 0 };
 	if(nBtnCount > 0)
 	{
 		bRet = (BOOL)::SendMessage(hWndBand, TB_GETITEMRECT, nBtnCount - 1, (LPARAM)&rcTmp);
@@ -870,7 +865,7 @@ static BOOL AddReBarBandCtrl(HWND hWndReBar, HWND hWndBand, int nID = 0, LPTSTR 
 		{
 			rbBand.cxMinChild = rbBand.cx;
 		}
-		else if(lpstrTitle == 0)
+		else if(lpstrTitle == NULL)
 		{
 			bRet = (BOOL)::SendMessage(hWndBand, TB_GETITEMRECT, 0, (LPARAM)&rcTmp);
 			ATLASSERT(bRet);
@@ -892,7 +887,7 @@ static BOOL AddReBarBandCtrl(HWND hWndReBar, HWND hWndBand, int nID = 0, LPTSTR 
 
 #if (_WIN32_IE >= 0x0400)
 	rbBand.cxIdeal = rbBand.cx;
-#endif //(_WIN32_IE >= 0x0400)
+#endif // (_WIN32_IE >= 0x0400)
 
 	// Add the band
 	LRESULT lRes = ::SendMessage(hWndReBar, RB_INSERTBAND, (WPARAM)-1, (LPARAM)&rbBand);
@@ -903,12 +898,12 @@ static BOOL AddReBarBandCtrl(HWND hWndReBar, HWND hWndBand, int nID = 0, LPTSTR 
 	}
 
 #if (_WIN32_IE >= 0x0501)
-	if(bUseChevrons)
+	if (bUseChevrons)
 	{
 		DWORD dwExStyle = (DWORD)::SendMessage(hWndBand, TB_GETEXTENDEDSTYLE, 0, 0L);
 		::SendMessage(hWndBand, TB_SETEXTENDEDSTYLE, 0, dwExStyle | TBSTYLE_EX_HIDECLIPPEDBUTTONS);
 	}
-#endif //(_WIN32_IE >= 0x0501)
+#endif // (_WIN32_IE >= 0x0501)
 
 	return TRUE;
 }

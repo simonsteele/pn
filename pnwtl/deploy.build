@@ -43,6 +43,12 @@
 			commandline='pn.sln /Project pnse /ProjectConfig ReleaseDebug /Rebuild'
 			output="build.log"/>
 		
+		<echo message="pn.sln /Project scintilla /ProjectConfig ReleaseDebug /Rebuild"/>
+		<exec
+			program="devenv.com"
+			commandline='pn.sln /Project scintilla /ProjectConfig ReleaseDebug /Rebuild'
+			output="build.log"/>
+		
 		<echo message="pn.sln /Project pn /ProjectConfig ReleaseDebug /Rebuild"/>
 		<exec
 			program="devenv.com"
