@@ -380,7 +380,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/VERBOSE"
 				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib imm32.lib wininet.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="1"
@@ -397,6 +396,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
+				AdditionalManifestFiles="pnvista.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"

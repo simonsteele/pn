@@ -26,9 +26,9 @@ CChildFrame* EditorFactory::FromFile(LPCTSTR pathname, Scheme* pScheme, EPNEncod
 	CChildFrame* pChild = createChild(pD);
 	if (pathname)
 	{
-		bOpened = pChild->PNOpenFile(pathname, pScheme, encoding);
-
 		notifyChild(pD);
+
+		bOpened = pChild->PNOpenFile(pathname, pScheme, encoding);
 	}
 
 	return pChild;

@@ -866,10 +866,27 @@ void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR nam
 		(_tcscmp(name, _T("language")) == 0 || _tcscmp(name, _T("schemedef")) == 0 || 
 		_tcscmp(name, _T("base-language")) == 0) )
 	{
-		LPCTSTR scheme = atts.getValue(_T("name"));
-		LPCTSTR title = atts.getValue(_T("title"));
-		if(scheme != NULL)
+		LPCTSTR schval = atts.getValue(_T("name"));
+		if(schval != NULL)
 		{
+			// Make sure scheme name is only 10 characters long
+			std::string scheme(schval);
+			if (scheme.length() > SC_HDR_NAMESIZE)
+			{
+				scheme.resize(SC_HDR_NAMESIZE);
+			}
+
+			LPCTSTR titval = atts.getValue(_T("title"));
+			std::string title;
+			if (titval != NULL)
+			{
+				title = titval;
+				if (title.length() > SC_HDR_TITLESIZE)
+				{
+					title.resize(SC_HDR_TITLESIZE);
+				}
+			}
+
 			pState->m_StartLang = ::GetTickCount(); // diags.
 
 			pState->m_langName = scheme;
@@ -966,7 +983,7 @@ void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR nam
 			if(!pState->m_bBaseParse)
 			{
 				// Signal the implementing class that there's a language (scheme) coming.
-				onLanguage(scheme, title, flags, ncflags);
+				onLanguage(scheme.c_str(), title.c_str(), flags, ncflags);
 				
 				if (wordchars.length())
 				{
@@ -1011,7 +1028,9 @@ void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR nam
 			}
 
 			if(!pState->m_bBaseParse)
+			{
 				onLexer(lexer, sbits);
+			}
 			else
 			{
 				pState->m_pBase->styleBits = sbits;

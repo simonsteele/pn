@@ -42,6 +42,8 @@ Bug Fixes:
 10) Find in files extensions can now be separated by space, comma, semicolon
 11) Inform the user when they're trying to search with an invalid regex
 12) Fix problem with tabs getting hidden
+13) Maximum scheme name length ignored when matching schemes to files (#71)
+14) OnAfterLoad not called when document first loaded
 
 Extensions Interface Changes:
 -----------------------------

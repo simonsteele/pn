@@ -2,7 +2,7 @@
  * @file SchemeManager.cpp
  * @brief Implement SchemeManager.
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -435,9 +435,8 @@ void SchemeManager::SaveExtMap()
 void SchemeManager::internalLoadExtMap(LPCTSTR filename, SCHEME_MAP& extMap, SCHEME_MAP& fnMap)
 {
 	CTextFile file;
-	bool bOK = file.Open(filename, CFile::modeText);
 	
-	if(bOK)
+	if(file.Open(filename, CFile::modeText))
 	{
 		CString buf;
 		
@@ -447,22 +446,37 @@ void SchemeManager::internalLoadExtMap(LPCTSTR filename, SCHEME_MAP& extMap, SCH
 		Scheme* sch;
 		int pos;
 
-		while(file.ReadLine(buf))
+		while (file.ReadLine(buf))
 		{
 			if(buf.GetLength() == 0)
-				UNEXPECTED("Holy Carp!");
+			{
+				UNEXPECTED("Read an empty line from the extension map file.");
+				continue;
+			}
+
 			pos = buf.Find(_T('='));
 			ext = buf.Left(pos);
 			scheme = buf.Mid(pos+1);
+			
+			if (scheme.length() > SC_HDR_NAMESIZE)
+			{
+				scheme.resize(SC_HDR_NAMESIZE);
+			}
 
 			sch = SchemeByName(scheme.c_str());
 			if(sch == NULL)
-				UNEXPECTED("Holy Carp Batfink!");
-			if(ext[0] != _T('.'))
-				fnMap.insert(fnMap.end(), SCMITEM(ext, sch));
+			{
+				UNEXPECTED("Failed to get an instance from SchemeByName");
+			}
 			else
-				extMap.insert(extMap.end(), SCMITEM(ext, sch));
+			{
+				if(ext[0] != _T('.'))
+					fnMap.insert(fnMap.end(), SCMITEM(ext, sch));
+				else
+					extMap.insert(extMap.end(), SCMITEM(ext, sch));
+			}
 		}
+
 		file.Close();
-	}	
+	}
 }
