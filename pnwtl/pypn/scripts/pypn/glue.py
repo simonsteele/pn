@@ -42,7 +42,6 @@ def onCharAdded(c, doc):
 		scheme.indenter(c, doc)
 	
 def onDocLoad(doc):
-	pn.AddOutput("DocLoad")
 	pass
 	
 def onDocSave(filename, doc):
