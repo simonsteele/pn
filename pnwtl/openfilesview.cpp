@@ -4,7 +4,7 @@
  * @author Simon Steele
  * @note Copyright (c) 2008 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -77,7 +77,10 @@ public:
 	}
 
 	/// Called after a document is loaded
-	virtual void OnAfterLoad(){}
+	virtual void OnAfterLoad()
+	{
+		m_owner->UpdateDocument(m_doc);
+	}
 
 	/// Called before the document is saved
 	virtual void OnBeforeSave(const char* filename){}
