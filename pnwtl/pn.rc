@@ -98,7 +98,9 @@ BEGIN
         MENUITEM "&Contents",                   32943
         MENUITEM SEPARATOR
         MENUITEM "PN &Home Page",               ID_HELP_WEB_PN
-        MENUITEM "PN on &Sourceforge",          252
+        MENUITEM "PN on &Google Code",          252
+        MENUITEM "&Online Help",                ID_HELP_WEB_DOCS
+        MENUITEM "&Forums",                     ID_HELP_WEB_FORUMS
         MENUITEM SEPARATOR
         MENUITEM "Report a &bug...",            253
         MENUITEM "Request a &feature...",       ID_HELP_WEB_SR
@@ -263,8 +265,9 @@ BEGIN
         MENUITEM "&Contents",                   ID_HELP_CONTENTS
         MENUITEM SEPARATOR
         MENUITEM "PN &HomePage",                251
-        MENUITEM "PN on &Sourceforge",          252
+        MENUITEM "PN on &Google Code",          252
         MENUITEM "&Online Help",                ID_HELP_WEB_DOCS
+        MENUITEM "&Forums",                     ID_HELP_WEB_FORUMS
         MENUITEM SEPARATOR
         MENUITEM "Report a &bug...",            253
         MENUITEM "Request a &feature...",       ID_HELP_WEB_SR

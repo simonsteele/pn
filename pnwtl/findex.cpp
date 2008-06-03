@@ -790,66 +790,75 @@ SearchOptions* CFindExDialog::getOptions()
 	// Where are we going to look?
 	pOptions->SetSearchPath(m_FindWhereText);
 
+	int findType(0);
 	if(m_FindWhereCombo.GetCurSel() != -1)
 	{
-		switch((EFIFWhere)m_FindWhereCombo.GetItemData(m_FindWhereCombo.GetCurSel()))
-		{
+		findType = (EFIFWhere)m_FindWhereCombo.GetItemData(m_FindWhereCombo.GetCurSel());
+	}
+
+	switch(findType)
+	{
 		case fwCurrentFile:
+		{
+			if(m_pLastEditor != NULL && m_pLastEditor->CanSave())
 			{
-				if(m_pLastEditor != NULL && m_pLastEditor->CanSave())
-				{
-					pOptions->SetFileSet(extensions::fifSingleFile);
-					/*pOptions->SetSearchPath(m_pLastEditor->GetFileName(FN_PATH).c_str());
-					pOptions->SetFileExts(m_pLastEditor->GetFileName(FN_FILE).c_str());*/
-				}
-				else
-				{
-					// No document! Can't search current file, leave as previous...
-					pOptions->SetFileSet(extensions::fifPath);
-					pOptions->SetSearchPath("");
-				}
+				pOptions->SetFileSet(extensions::fifSingleFile);
+				/*pOptions->SetSearchPath(m_pLastEditor->GetFileName(FN_PATH).c_str());
+				pOptions->SetFileExts(m_pLastEditor->GetFileName(FN_FILE).c_str());*/
 			}
-			break;
-
-		case fwCurrentFolder:
+			else
 			{
+				// No document! Can't search current file, leave as previous...
 				pOptions->SetFileSet(extensions::fifPath);
-
-				if(m_pLastEditor != NULL && m_pLastEditor->CanSave())
-				{
-					pOptions->SetSearchPath(m_pLastEditor->GetFileName(FN_PATH).c_str());
-				}
-				else
-				{
-					// No document! Can't search current file, leave as previous...
-					pOptions->SetSearchPath("");
-				}
-			}
-			break;
-
-		case fwCurrentProjectFolder:
-			{
-				pOptions->SetFileSet(extensions::fifPath);
-
-				Projects::Workspace* curWorkspace = g_Context.m_frame->GetActiveWorkspace();
-				if(curWorkspace != NULL)
-				{
-					Projects::Project* curProject = curWorkspace->GetActiveProject();
-					if(curProject != NULL)
-					{
-						pOptions->SetSearchPath(curProject->GetBasePath());
-					}
-				}
-			}
-			break;
-
-		case fwOpenDocs:
-			{
-				pOptions->SetFileSet(extensions::fifOpenFiles);
 				pOptions->SetSearchPath("");
 			}
-			break;
 		}
+		break;
+
+		case fwCurrentFolder:
+		{
+			pOptions->SetFileSet(extensions::fifPath);
+
+			if(m_pLastEditor != NULL && m_pLastEditor->CanSave())
+			{
+				pOptions->SetSearchPath(m_pLastEditor->GetFileName(FN_PATH).c_str());
+			}
+			else
+			{
+				// No document! Can't search current file, leave as previous...
+				pOptions->SetSearchPath("");
+			}
+		}
+		break;
+
+		case fwCurrentProjectFolder:
+		{
+			pOptions->SetFileSet(extensions::fifPath);
+
+			Projects::Workspace* curWorkspace = g_Context.m_frame->GetActiveWorkspace();
+			if(curWorkspace != NULL)
+			{
+				Projects::Project* curProject = curWorkspace->GetActiveProject();
+				if(curProject != NULL)
+				{
+					pOptions->SetSearchPath(curProject->GetBasePath());
+				}
+			}
+		}
+		break;
+
+		case fwOpenDocs:
+		{
+			pOptions->SetFileSet(extensions::fifOpenFiles);
+			pOptions->SetSearchPath("");
+		}
+		break;
+		
+		default:
+		{
+			pOptions->SetFileSet(extensions::fifPath);
+		}
+		break;
 	}
 
 	m_lastFifLocation = (EFIFWhere)m_FindWhereCombo.GetItemData(m_FindWhereCombo.GetCurSel());

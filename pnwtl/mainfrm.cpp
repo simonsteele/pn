@@ -2016,7 +2016,7 @@ LRESULT CMainFrame::OnWebPNHome(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 
 LRESULT CMainFrame::OnWebSFPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	::ShellExecute(m_hWnd, _T("open"), _T("http://www.sf.net/projects/pnotepad/"), NULL, NULL, SW_SHOW);
+	::ShellExecute(m_hWnd, _T("open"), _T("http://pnotepad.googlecode.com/"), NULL, NULL, SW_SHOW);
 
 	return 0;
 }
@@ -2038,6 +2038,13 @@ LRESULT CMainFrame::OnWebSFRFE(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 LRESULT CMainFrame::OnWebPNDoc(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	::ShellExecute(m_hWnd, _T("open"), _T("http://pnotepad.org/docs/"), NULL, NULL, SW_SHOW);
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnWebForums(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	::ShellExecute(m_hWnd, _T("open"), _T("http://pnotepad.org/forums/"), NULL, NULL, SW_SHOW);
 
 	return 0;
 }
@@ -2256,7 +2263,10 @@ void CMainFrame::FindInFiles(SearchOptions* options)
 			CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
 			if(pChild)
 			{
+				m_pFindResultsWnd->OnBeginSearch(options->GetFindText(), options->GetUseRegExp());
 				pChild->GetTextView()->FindAll(options, m_pFindResultsWnd, pChild->GetFileName().c_str());
+				// TODO: Result Counts!
+				m_pFindResultsWnd->OnEndSearch(m_pFindResultsWnd->GetResultCount(), 1);
 			}
 		}
 		break;
@@ -2280,15 +2290,17 @@ void CMainFrame::FindInFiles(SearchOptions* options)
 
 			DocumentList list;
 			g_Context.m_frame->GetOpenDocuments(list);
+			int documents(0);
 			for(DocumentList::const_iterator i = list.begin();
 				i != list.end();
 				++i)
 			{
+				documents++;
 				(*i)->GetFrame()->GetTextView()->FindAll(options, m_pFindResultsWnd, (*i)->GetFileName(FN_FULL).c_str());
 			}
 
 			// TODO: Result Counts!
-			m_pFindResultsWnd->OnEndSearch(0, 0);
+			m_pFindResultsWnd->OnEndSearch(m_pFindResultsWnd->GetResultCount(), documents);
 		}
 		break;
 	}

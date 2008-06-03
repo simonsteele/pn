@@ -78,6 +78,11 @@ void CFindInFilesView::Clear()
 	m_nItems = 0;
 }
 
+int CFindInFilesView::GetResultCount() const
+{
+	return m_list.GetItemCount();
+}
+
 LRESULT CFindInFilesView::OnListDblClk(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 	LPNMITEMACTIVATE lpnm = (LPNMITEMACTIVATE)pnmh;

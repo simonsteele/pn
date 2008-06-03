@@ -35,6 +35,7 @@ public:
 
 	void AddResult(LPCTSTR file, int line, LPCTSTR str);
 	void Clear();
+	int GetResultCount() const;
 
 // Implement FIFSink
 public:
