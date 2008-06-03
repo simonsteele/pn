@@ -1,4 +1,14 @@
+/**
+ * @file editorfactory.cpp
+ * @brief Create Editors
+ * @author Simon Steele
+ * @note Copyright (c) 2008 Simon Steele - http://untidy.net/
+ *
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #include "stdafx.h"
+#include "resource.h"
 #include "editorFactory.h"
 #include "childfrm.h"
 #include "extapp.h"
@@ -65,4 +75,4 @@ CChildFrame* EditorFactory::createChild(DocumentPtr& pD)
 void EditorFactory::notifyChild(DocumentPtr& pD)
 {
 	g_Context.ExtApp->OnNewDocument( pD );
-}	
+}

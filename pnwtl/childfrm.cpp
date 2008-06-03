@@ -833,6 +833,38 @@ LRESULT CChildFrame::OnTransposeLines(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	return 0;
 }
 
+/**
+ * Move the current line up
+ */
+LRESULT CChildFrame::OnMoveLineUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if (m_view.LineFromPosition(m_view.GetCurrentPos()) == 0)
+		return 0;
+	
+	m_view.BeginUndoAction();
+	m_view.LineTranspose();
+	m_view.LineUp();
+	m_view.EndUndoAction();
+	
+	return 0;
+}
+
+/**
+ * Move the current line down
+ */
+LRESULT CChildFrame::OnMoveLineDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if (m_view.LineFromPosition(m_view.GetCurrentPos()) == (m_view.GetLineCount() - 1))
+		return 0;
+	
+	m_view.BeginUndoAction();
+	m_view.LineDown();
+	m_view.LineTranspose();
+	m_view.EndUndoAction();
+
+	return 0;
+}
+
 LRESULT CChildFrame::OnLowerCase(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	m_view.LowerCase();

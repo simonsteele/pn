@@ -639,6 +639,11 @@
 #define ID_BOOKMARKS_PREVIOUS           32999
 #define ID_HELP_FORUMS                  33000
 #define ID_HELP_WEB_FORUMS              33001
+#define ID_EDIT_LINE                    33002
+#define ID_LINE_MOVELINEUP              33003
+#define ID_EDIT_MOVELINEUP              33004
+#define ID_LINE_MOVELINEDOWN            33005
+#define ID_EDIT_MOVELINEDOWN            33006
 
 // Next default values for new objects
 // 
@@ -646,7 +651,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        362
-#define _APS_NEXT_COMMAND_VALUE         33002
+#define _APS_NEXT_COMMAND_VALUE         33007
 #define _APS_NEXT_CONTROL_VALUE         1153
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

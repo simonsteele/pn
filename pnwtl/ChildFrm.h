@@ -87,6 +87,8 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_CUTLINE, OnCutLine)
 		COMMAND_ID_HANDLER(ID_EDIT_COPYLINE, OnCopyLine)
 		COMMAND_ID_HANDLER(ID_EDIT_TRANSPOSELINES, OnTransposeLines)
+		COMMAND_ID_HANDLER(ID_EDIT_MOVELINEUP, OnMoveLineUp)
+		COMMAND_ID_HANDLER(ID_EDIT_MOVELINEDOWN, OnMoveLineDown)
 		COMMAND_ID_HANDLER(ID_EDIT_LOWERCASE, OnLowerCase)
 		COMMAND_ID_HANDLER(ID_EDIT_UPPERCASE, OnUpperCase)
 		COMMAND_ID_HANDLER(ID_EDIT_AUTOCOMPLETE, OnAutoComplete)
@@ -238,6 +240,8 @@ public:
 	LRESULT OnCutLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCopyLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnTransposeLines(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnMoveLineUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnMoveLineDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnLowerCase(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnUpperCase(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnAutoComplete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

@@ -157,11 +157,17 @@ BEGIN
         MENUITEM "&Paste",                      ID_EDIT_PASTE
         MENUITEM "Clipboard S&wap",             ID_EDIT_CLIPBOARDSWAP
         MENUITEM SEPARATOR
-        MENUITEM "Cut &Line",                   ID_EDIT_CUTLINE
-        MENUITEM "Cop&y Line",                  ID_EDIT_COPYLINE
-        MENUITEM "Delete L&ine",                ID_EDIT_DELETELINE
-        MENUITEM "&Duplicate Line",             ID_EDIT_DUPLICATELINE
-        MENUITEM "Transp&ose Lines",            ID_EDIT_TRANSPOSELINES
+        POPUP "&Line"
+        BEGIN
+            MENUITEM "Cu&t Line",                   ID_EDIT_CUTLINE
+            MENUITEM "&Copy Line",                  ID_EDIT_COPYLINE
+            MENUITEM "De&lete Line",                ID_EDIT_DELETELINE
+            MENUITEM "&Duplicate Line",             ID_EDIT_DUPLICATELINE
+            MENUITEM SEPARATOR
+            MENUITEM "Transp&ose Lines",            ID_EDIT_TRANSPOSELINES
+            MENUITEM "Move Line &Up",               ID_EDIT_MOVELINEUP
+            MENUITEM "Move Line Do&wn",             ID_EDIT_MOVELINEDOWN
+        END
         MENUITEM SEPARATOR
         MENUITEM "Lo&wercase",                  ID_EDIT_LOWERCASE
         MENUITEM "U&ppercase",                  ID_EDIT_UPPERCASE
