@@ -107,7 +107,7 @@ bool COutputView::HandleREError(boost::xpressive::sregex& re, int style, int pos
 	buf.resize(tr.chrg.cpMax - tr.chrg.cpMin);
 
 	boost::xpressive::smatch match;
-	if( boost::xpressive::regex_match(buf, match, re) )
+	if( boost::xpressive::regex_search(buf, match, re) )
 	{
 		tstring filename;
 		tstring linestr;
