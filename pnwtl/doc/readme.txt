@@ -26,6 +26,8 @@ What's new?
 18) Switched to vista open/save dialogs on appropriate platforms
 19) New SDK package
 20) New Find in Files option: All Open Files
+21) New link to Forums in Help menu (#76)
+22) New Move Line Up and Move Line Down commands in Edit|Line (#68)
 
 Bug Fixes:
 ----------
@@ -44,6 +46,8 @@ Bug Fixes:
 12) Fix problem with tabs getting hidden
 13) Maximum scheme name length ignored when matching schemes to files (#71)
 14) OnAfterLoad not called when document first loaded
+15) Undo buffer not cleared properly at load and revert (#35)
+
 
 Extensions Interface Changes:
 -----------------------------

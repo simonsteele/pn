@@ -189,8 +189,9 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 	if ( file.Open(filename, CFile::modeRead | CFile::modeBinary) ) 
 	{
 		// Disable UNDO
-		//SPerform(SCI_SETUNDOCOLLECTION, 0);
-		SPerform(SCI_BEGINUNDOACTION);
+		SPerform(SCI_SETUNDOCOLLECTION, 0);
+		SPerform(SCI_EMPTYUNDOBUFFER);
+		//SPerform(SCI_BEGINUNDOACTION);
 
 		SPerform(SCI_CLEARALL);
 
@@ -208,7 +209,8 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 			tstring msg = L10N::StringLoader::Get(IDS_FILETOOBIG);
 
 			::MessageBox(m_hWnd, buf, LS(IDR_MAINFRAME), MB_ICONERROR | MB_OK);
-			
+		
+			SPerform(SCI_SETUNDOCOLLECTION, 1);
 			return false;
 		}
 		
@@ -270,7 +272,7 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 		SPerform(SCI_SETSEL, 0, 0);
 		
 		// Re-Enable UNDO (if necessary)
-		SPerform(SCI_ENDUNDOACTION);
+		//SPerform(SCI_ENDUNDOACTION);
 		SPerform(SCI_SETUNDOCOLLECTION, 1);
 
 		SetEOLMode(endings);

@@ -94,16 +94,39 @@ typedef boost::xpressive::basic_regex<DocumentIterator> docregex;
 typedef boost::xpressive::match_results<DocumentIterator> docmatch;
 typedef boost::xpressive::sub_match<DocumentIterator> docsub_match;
 
-class Document::CachedRegex
+class XpressiveRegexSearch : public RegexSearchBase
 {
 public:
+	XpressiveRegexSearch() : substituted(NULL){}
+	
+	virtual ~XpressiveRegexSearch()
+	{
+		if (substituted)
+		{
+			delete [] substituted;
+			substituted = NULL;
+		}
+	}
+
+	virtual long FindText(Document* doc, int minPos, int maxPos, const char *s,
+                        bool caseSensitive, bool word, bool wordStart, bool posix, int *length);
+
+	virtual const char *SubstituteByPosition(Document* doc, const char *text, int *length);
+
+private:
 	docregex re;
 	docmatch match;
+	char *substituted;
 };
 
-void Document::CleanupRegex()
+namespace Scintilla
 {
-	delete pre;
+
+RegexSearchBase *CreateRegexSearch(CharClassify *charClassTable)
+{
+	return new XpressiveRegexSearch();
+}
+
 }
 
 /**
@@ -111,15 +134,11 @@ void Document::CleanupRegex()
  * searches (just pass minPos > maxPos to do a backward search)
  * Has not been tested with backwards DBCS searches yet.
  */
-long Document::RegexFindText(int minPos, int maxPos, const char *s,
+long XpressiveRegexSearch::FindText(Document* doc, int minPos, int maxPos, const char *s,
                         bool caseSensitive, bool word, bool wordStart, bool posix, int *length) 
 {
 	
 	//@todo The character class support should be initialised from this->charClass
-	if (!pre)
-	{
-		pre = new CachedRegex;
-	}
 
 	int increment = (minPos <= maxPos) ? 1 : -1;
 
@@ -127,30 +146,30 @@ long Document::RegexFindText(int minPos, int maxPos, const char *s,
 	int endPos = maxPos;
 
 	// Range endpoints should not be inside DBCS characters, but just in case, move them.
-	startPos = MovePositionOutsideChar(startPos, 1, false);
-	endPos = MovePositionOutsideChar(endPos, 1, false);
+	startPos = doc->MovePositionOutsideChar(startPos, 1, false);
+	endPos = doc->MovePositionOutsideChar(endPos, 1, false);
 
 	std::string restring(s, *length);
 	
 	try
 	{
-		pre->re = docregex::compile(restring.c_str());
+		re = docregex::compile(restring.c_str());
 	}
-	catch(boost::xpressive::regex_error& ex)
+	catch(boost::xpressive::regex_error& /*ex*/)
 	{
 		// -1 is normally used for not found, -2 is used here for invalid regex
 		return -2;
 	}
 
-	int lineRangeStart = LineFromPosition(startPos);
-	int lineRangeEnd = LineFromPosition(endPos);
+	int lineRangeStart = doc->LineFromPosition(startPos);
+	int lineRangeEnd = doc->LineFromPosition(endPos);
 	if ((increment == 1) &&
-		(startPos >= LineEnd(lineRangeStart)) &&
+		(startPos >= doc->LineEnd(lineRangeStart)) &&
 		(lineRangeStart < lineRangeEnd)) 
 	{
 		// the start position is at end of line or between line end characters.
 		lineRangeStart++;
-		startPos = LineStart(lineRangeStart);
+		startPos = doc->LineStart(lineRangeStart);
 	}
 	
 	int pos = -1;
@@ -159,8 +178,8 @@ long Document::RegexFindText(int minPos, int maxPos, const char *s,
 	int lineRangeBreak = lineRangeEnd + increment;
 	for (int line = lineRangeStart; line != lineRangeBreak; line += increment) 
 	{
-		int startOfLine = LineStart(line);
-		int endOfLine = LineEnd(line);
+		int startOfLine = doc->LineStart(line);
+		int endOfLine = doc->LineEnd(line);
 		if (increment == 1) 
 		{
 			if (line == lineRangeStart) 
@@ -192,24 +211,24 @@ long Document::RegexFindText(int minPos, int maxPos, const char *s,
 			}
 		}
 
-		bool success = boost::xpressive::regex_search(DocumentIterator(this, startOfLine, endOfLine), DocumentIterator(this, endOfLine, endOfLine), pre->match, pre->re);
+		bool success = boost::xpressive::regex_search(DocumentIterator(doc, startOfLine, endOfLine), DocumentIterator(doc, endOfLine, endOfLine), match, re);
 		if (success) 
 		{
-			pos = startOfLine + pre->match.position(0);
-			lenRet = pre->match.length();
+			pos = startOfLine + match.position(0);
+			lenRet = match.length();
 			if (increment == -1) 
 			{
 				// Check for the last match on this line.
 				int repetitions = 1000;	// Break out of infinite loop
 				while (success && ((pos+lenRet) <= endOfLine) && (repetitions--)) 
 				{
-					success = boost::xpressive::regex_search(DocumentIterator(this, pos+1, endOfLine), DocumentIterator(this, endOfLine, endOfLine), pre->match, pre->re);
+					success = boost::xpressive::regex_search(DocumentIterator(doc, pos+1, endOfLine), DocumentIterator(doc, endOfLine, endOfLine), match, re);
 					if (success) 
 					{
 						if ((pos+lenRet) <= minPos) 
 						{
-							pos = (pos+1) + pre->match.position();
-							lenRet = pre->match.length();
+							pos = (pos+1) + match.position();
+							lenRet = match.length();
 						} 
 						else 
 						{
@@ -228,9 +247,7 @@ long Document::RegexFindText(int minPos, int maxPos, const char *s,
 	return pos;
 }
 
-const char *Document::SubstituteByPosition(const char *text, int *length) {
-	if (!pre)
-		return 0;
+const char *XpressiveRegexSearch::SubstituteByPosition(Document* doc, const char *text, int *length) {
 	delete []substituted;
 	substituted = 0;
 	/*DocumentIndexer di(this, Length());
@@ -241,9 +258,9 @@ const char *Document::SubstituteByPosition(const char *text, int *length) {
 		if (text[i] == '\\') {
 			if (text[i + 1] >= '1' && text[i + 1] <= '9') {
 				unsigned int patNum = text[i + 1] - '0';
-				if (pre->match.size() > patNum) {
+				if (match.size() > patNum) {
 					
-					lenResult += pre->match.length(patNum);
+					lenResult += match.length(patNum);
 				} else {
 					// We'll insert the \x
 					lenResult += 2;
@@ -274,9 +291,9 @@ const char *Document::SubstituteByPosition(const char *text, int *length) {
 		if (text[j] == '\\') {
 			if (text[j + 1] >= '1' && text[j + 1] <= '9') {
 				unsigned int patNum = text[j + 1] - '0';
-				if (pre->match.size() > patNum) {
-					memcpy(o, pre->match.str(patNum).c_str(), pre->match.length(patNum));
-					o += pre->match.length(patNum);
+				if (match.size() > patNum) {
+					memcpy(o, match.str(patNum).c_str(), match.length(patNum));
+					o += match.length(patNum);
 				} else {
 					*o++ = '\\';
 					*o++ = text[j];
