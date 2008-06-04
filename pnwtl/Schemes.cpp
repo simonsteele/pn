@@ -2,7 +2,7 @@
  * @file Schemes.cpp
  * @brief Implement Scheme and SchemeManager.
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -476,12 +476,14 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 	// Line Indentation...
 	sc.SPerform(SCI_SETUSETABS, options.GetCached(Options::OUseTabs) ? 1 : 0);
 	sc.SPerform(SCI_SETTABWIDTH, options.GetCached(Options::OTabWidth));
+	
 	if( options.GetCached(Options::OLineHighlight) )
 	{
 		sc.SPerform(SCI_SETCARETLINEVISIBLE, true);
 		sc.SPerform(SCI_SETCARETLINEBACK, options.GetCached(Options::OLineHighlightColour));
 		sc.SPerform(SCI_SETCARETLINEBACKALPHA, options.GetCached(Options::OLineHighlightAlpha));
 	}
+
 	sc.SPerform(SCI_SETEDGEMODE, options.GetCached(Options::ORightGuide));
 	sc.SPerform(SCI_SETEDGECOLUMN, options.GetCached(Options::ORightColumn));
 	sc.SPerform(SCI_SETEDGECOLOUR, options.GetCached(Options::ORightGuideColour));
@@ -494,6 +496,12 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 		sc.SetViewEOL(options.GetCached(Options::OVisibleLineEndings) != FALSE);
 		sc.SPerform(SCI_SETPASTECONVERTENDINGS, options.GetCached(Options::OConvertLinesOnPaste));
 	}
+
+	// When using line wrapping, home and end should jump to start and end of wrapped line, not whole wrapped block:
+	sc.SPerform(SCI_ASSIGNCMDKEY, SCK_HOME, SCI_VCHOMEWRAP);
+	sc.SPerform(SCI_ASSIGNCMDKEY, SCK_END, SCI_LINEENDWRAP);
+	sc.SPerform(SCI_ASSIGNCMDKEY, (SCK_HOME + (SCMOD_SHIFT << 16)), SCI_VCHOMEWRAPEXTEND);
+	sc.SPerform(SCI_ASSIGNCMDKEY, (SCK_END + (SCMOD_SHIFT << 16)), SCI_LINEENDWRAPEXTEND);
 
 	// Set even treatment of left and right caret positioning, and sloppy behaviour by default. 
 	// Use 3 lines as the jump when scrolling up and down, and 20 pixels when scrolling left and right by default.

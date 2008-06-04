@@ -1382,7 +1382,7 @@ bool CScintillaImpl::UnCommentLine(const CommentSpecRec& comments)
 		// The line starts with a comment line bit, uncomment it...
 		SetTargetStart(indentPos);
 		SetTargetEnd(indentPos + strlen(comments.CommentLineText));
-		ReplaceTarget(0, NULL);
+		ReplaceTarget(0, "");
 
 		EndUndoAction();
 

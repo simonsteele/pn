@@ -47,7 +47,8 @@ Bug Fixes:
 13) Maximum scheme name length ignored when matching schemes to files (#71)
 14) OnAfterLoad not called when document first loaded
 15) Undo buffer not cleared properly at load and revert (#35)
-
+16) Support forward-slash paths in command-line parameters (#49)
+17) When wrapping text, end key goes to the end of the wrap line (#69)
 
 Extensions Interface Changes:
 -----------------------------

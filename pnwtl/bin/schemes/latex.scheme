@@ -2,6 +2,7 @@
 <Scheme>
 	<language name="latex" title="LaTeX" folding="false" >
 		<lexer name="latex" />
+		<comments line="%" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="perl"/>
 		</use-keywords>

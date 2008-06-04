@@ -1274,9 +1274,12 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 		}
 		else
 		{
-			if(!CheckAlreadyOpen( parm ))
+			CFileName fn(parm);
+			fn.Sanitise();
+
+			if(!CheckAlreadyOpen(fn.c_str()))
 			{
-				openFileCheckType(parm);
+				openFileCheckType(fn.c_str());
 			}
 			
 			CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());

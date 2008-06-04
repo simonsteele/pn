@@ -180,6 +180,7 @@ void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message);
 #include "schememanager.h"
 
 #include "files.h"
+#include "filename.h"
 
 #include "pntaskdialog.h"
 

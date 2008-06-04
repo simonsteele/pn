@@ -25,6 +25,21 @@ typedef std::list<tstring> tstring_list;
 typedef std::vector<tstring> tstring_array;
 typedef std::list<std::string> string_list;
 
+template <class TChar>
+class char_buffer
+{
+public:
+	explicit char_buffer(TChar *buffer) : m_buf(buffer) {}
+	~char_buffer() { delete [] m_buf; }
+
+	TChar* get() const { return m_buf; }
+
+	operator TChar* () const { return m_buf; }
+
+private:
+	TChar* m_buf;
+};
+
 static TCHAR* tcsnewdup(LPCTSTR strin)
 {
 	TCHAR* ret = new TCHAR[_tcslen(strin)+1];

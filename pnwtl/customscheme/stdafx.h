@@ -15,6 +15,7 @@
 // Windows Header Files:
 #include <windows.h>
 #include <tchar.h>
+#include <shellapi.h>
 
 #include <assert.h>
 #define ATLASSERT assert

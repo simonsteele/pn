@@ -75,12 +75,15 @@ extern CPNAppModule _Module;
 #include <atlctrlw.h>
 #include <atlctrlx.h>
 #include <atltheme.h>
+#include <shlwapi.h>
+#include <shellapi.h>
 
 #include <list>
 #include <string>
 #include <map>
 #include <vector>
 #include <stack>
+#include <algorithm>
 
 typedef std::basic_string<TCHAR> tstring;
 

@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib imm32.lib wininet.lib"
+				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib imm32.lib wininet.lib shlwapi.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -181,7 +181,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib wininet.lib"
+				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib imm32.lib wininet.lib shlwapi.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -279,7 +279,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="delayimp.lib"
+				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib imm32.lib wininet.lib shlwapi.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -380,7 +380,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib imm32.lib wininet.lib"
+				AdditionalDependencies="delayimp.lib version.lib htmlhelp.lib imm32.lib wininet.lib shlwapi.lib"
 				OutputFile=".\bin/pn.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -480,6 +480,10 @@
 			</File>
 			<File
 				RelativePath=".\filedialogs.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\filename.cpp"
 				>
 			</File>
 			<File
@@ -785,6 +789,10 @@
 			</File>
 			<File
 				RelativePath=".\filedialogs.h"
+				>
+			</File>
+			<File
+				RelativePath=".\filename.h"
 				>
 			</File>
 			<File
