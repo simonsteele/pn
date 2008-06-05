@@ -2,7 +2,7 @@
  * @file findex.cpp
  * @brief Find and Replace dialogs for PN 2
  * @author Simon Steele
- * @note Copyright (c) 2004-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2004-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -85,20 +85,18 @@ public:
 	}
 };
 
-CFindExDialog::CFindExDialog() : m_FindWhereCombo(false)
+CFindExDialog::CFindExDialog() : 
+	m_SearchWhere(0),
+	m_type(eftFind),
+	m_lastType(eftInvalid),
+	m_lastFifLocation(fwUser),
+	m_FindWhereCombo(false), 
+	m_lastVisibleCB(-1),
+	m_bottom(-1),
+	m_pFnSLWA(NULL),
+	m_bInitialising(false),
+	m_pFirstEditor(NULL)
 {
-	m_SearchWhere = 0;
-	m_type = eftFind;
-	m_lastType = eftInvalid;
-	m_lastFifLocation = fwUser;
-
-	m_lastVisibleCB = -1;
-	m_bottom = -1;
-
-	m_pFnSLWA = NULL;
-
-	m_bInitialising = false;
-
 	if(g_Context.OSVersion.dwMajorVersion >= 5)
 	{
 		HMODULE hUser32 = ::GetModuleHandleA("USER32.DLL");
@@ -150,11 +148,11 @@ void CFindExDialog::Show(EFindDialogType type, LPCTSTR findText)
 		{
 			if(bigSelection)
 			{
-				m_SearchWhere = elwSelection;
+				m_SearchWhere = extensions::elwSelection;
 			}
 			else
 			{
-				m_SearchWhere = elwCurrentDoc;
+				m_SearchWhere = extensions::elwCurrentDoc;
 			}
 		}
 
@@ -404,6 +402,11 @@ LRESULT CFindExDialog::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	{
 		findInFiles();
 		return TRUE;
+	}
+
+	if (m_pFirstEditor == NULL)
+	{
+		m_pFirstEditor = getCurrentEditorWnd();
 	}
 
 	switch(findNext())
@@ -769,7 +772,7 @@ SearchOptions* CFindExDialog::getOptions()
 	if(editorChanged())
 		pOptions->SetFound(false);
 
-	ELookWhere lookWhere = (ELookWhere)m_SearchWhere;
+	extensions::EFindWhere lookWhere = (extensions::EFindWhere)m_SearchWhere;
 
 	pOptions->SetFindText			( m_FindText );
 	pOptions->SetReplaceText		( m_ReplaceText );
@@ -778,8 +781,8 @@ SearchOptions* CFindExDialog::getOptions()
 	pOptions->SetMatchWholeWord		( m_bMatchWhole == TRUE );
 	pOptions->SetUseRegExp			( m_bRegExp == TRUE );
 	pOptions->SetUseSlashes		    ( m_bUseSlashes == TRUE );
-	pOptions->SetReplaceInSelection	( lookWhere == elwSelection );
-	//pOptions->SetSearchAll			( lookWhere == elwAllDocs );
+	pOptions->SetReplaceInSelection	( lookWhere == extensions::elwSelection );
+	pOptions->SetFindTarget			( lookWhere );
 	pOptions->SetRecurse			( m_bSearchSubdirs == TRUE );
 	pOptions->SetIncludeHidden		( m_bIncludeHidden == TRUE );
 	pOptions->SetFileExts			( m_FindTypeText );
@@ -803,8 +806,6 @@ SearchOptions* CFindExDialog::getOptions()
 			if(m_pLastEditor != NULL && m_pLastEditor->CanSave())
 			{
 				pOptions->SetFileSet(extensions::fifSingleFile);
-				/*pOptions->SetSearchPath(m_pLastEditor->GetFileName(FN_PATH).c_str());
-				pOptions->SetFileExts(m_pLastEditor->GetFileName(FN_FILE).c_str());*/
 			}
 			else
 			{
@@ -1018,12 +1019,12 @@ void CFindExDialog::updateLayout()
 
 			CButton(GetDlgItem(IDC_CURRENTDOC_RADIO)).EnableWindow(TRUE);
 			CButton(GetDlgItem(IDC_INSELECTION_RADIO)).EnableWindow(FALSE);
-			//CButton(GetDlgItem(IDC_ALLOPEN_RADIO)).EnableWindow(FALSE);
+			CButton(GetDlgItem(IDC_ALLOPEN_RADIO)).EnableWindow(TRUE);
 			
 			restTop = m_group1Bottom + 12;
 
-			if(m_SearchWhere != elwCurrentDoc)
-				m_SearchWhere = elwCurrentDoc;
+			if(m_SearchWhere != extensions::elwCurrentDoc && m_SearchWhere != extensions::elwAllDocs)
+				m_SearchWhere = extensions::elwCurrentDoc;
 		}
 		break;
 
@@ -1049,12 +1050,12 @@ void CFindExDialog::updateLayout()
 
 			CButton(GetDlgItem(IDC_CURRENTDOC_RADIO)).EnableWindow(TRUE);
 			CButton(GetDlgItem(IDC_INSELECTION_RADIO)).EnableWindow(TRUE);
-			//CButton(GetDlgItem(IDC_ALLOPEN_RADIO)).EnableWindow(FALSE);
+			CButton(GetDlgItem(IDC_ALLOPEN_RADIO)).EnableWindow(FALSE);
 
 			restTop = m_group2Bottom + 12;
 
-			if(m_SearchWhere != elwCurrentDoc && m_SearchWhere != elwSelection)
-				m_SearchWhere = elwCurrentDoc;
+			if(m_SearchWhere != extensions::elwCurrentDoc && m_SearchWhere != extensions::elwSelection)
+				m_SearchWhere = extensions::elwCurrentDoc;
 		}
 		break;
 
@@ -1079,12 +1080,12 @@ void CFindExDialog::updateLayout()
 
 			CButton(GetDlgItem(IDC_CURRENTDOC_RADIO)).EnableWindow(FALSE);
 			CButton(GetDlgItem(IDC_INSELECTION_RADIO)).EnableWindow(FALSE);
-			//CButton(GetDlgItem(IDC_ALLOPEN_RADIO)).EnableWindow(TRUE);
+			CButton(GetDlgItem(IDC_ALLOPEN_RADIO)).EnableWindow(FALSE);
 
 			restTop = m_group3Bottom + 12;
 
-			if(m_SearchWhere != elwCurrentDoc)
-				m_SearchWhere = elwCurrentDoc;
+			if(m_SearchWhere != extensions::elwCurrentDoc)
+				m_SearchWhere = extensions::elwCurrentDoc;
 		}
 		break;
 	}

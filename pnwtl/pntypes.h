@@ -2,7 +2,7 @@
  * @file pntypes.h
  * @brief Define structs etc. used throughout pn2.
  * @author Simon Steele
- * @note Copyright (c) 2002-2004 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -37,7 +37,8 @@ public:
 	virtual bool GetUseRegExp() const;
 	virtual void SetUseRegExp(bool useRegExp);
 	
-	//bool SearchAll;
+	virtual extensions::EFindWhere GetFindTarget() const;
+	virtual void SetFindTarget(extensions::EFindWhere target);
 	
 	virtual bool GetSearchBackwards() const;
 	virtual void SetSearchBackwards(bool backwards);
@@ -81,7 +82,7 @@ public:
 private:
 	friend class Options;
 
-	CString FindText;
+	tstring FindText;
 	bool MatchWholeWord;
 	bool MatchCase;
 	bool UseRegExp;
@@ -91,14 +92,15 @@ private:
 	bool Found;
 	bool UseSlashes;
 	bool NoCursorMove;
+	extensions::EFindWhere m_findWhere;
 
 	// Replace
-	CString ReplaceText;
+	tstring ReplaceText;
 	bool	InSelection;
 
 	// Find In Files
-	CString	FileExts;
-	CString Path;
+	tstring	FileExts;
+	tstring Path;
 	bool Recurse;
 	bool IncludeHidden;
 	extensions::EFIFFileSet m_fileSet;

@@ -18,7 +18,7 @@ SearchOptions::SearchOptions() :
 
 const char* SearchOptions::GetFindText() const
 {
-	return (const char*)FindText;
+	return FindText.c_str();
 }
 
 void SearchOptions::SetFindText(const char* findText)
@@ -54,6 +54,16 @@ bool SearchOptions::GetUseRegExp() const
 void SearchOptions::SetUseRegExp(bool useRegExp)
 {
 	UseRegExp = useRegExp;
+}
+
+extensions::EFindWhere SearchOptions::GetFindTarget() const
+{
+	return m_findWhere;
+}
+
+void SearchOptions::SetFindTarget(extensions::EFindWhere target)
+{
+	m_findWhere = target;
 }
 
 bool SearchOptions::GetSearchBackwards() const
@@ -98,7 +108,7 @@ void SearchOptions::SetNoCursorMove(bool reposition)
 
 const char* SearchOptions::GetReplaceText() const
 {
-	return (const char*)ReplaceText;
+	return ReplaceText.c_str();
 }
 
 void SearchOptions::SetReplaceText(const char* text)
@@ -118,7 +128,7 @@ void SearchOptions::SetReplaceInSelection(bool inSelection)
 
 const char* SearchOptions::GetFileExts() const
 {
-	return (const char*)FileExts;
+	return FileExts.c_str();
 }
 
 void SearchOptions::SetFileExts(const char* extensions)
@@ -129,7 +139,7 @@ void SearchOptions::SetFileExts(const char* extensions)
 
 const char* SearchOptions::GetSearchPath() const
 {
-	return (const char*)Path;
+	return Path.c_str();
 }
 
 void SearchOptions::SetSearchPath(const char* path)

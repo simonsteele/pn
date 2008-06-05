@@ -635,7 +635,7 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 	///@todo set find pos on selchange/edit update
 	if( lastFindDetails.findPhrase != pOptions->GetFindText() ||
 		flags != lastFindDetails.flags ||
-		pOptions->GetSearchBackwards() != lastFindDetails.direction )
+		!pOptions->GetSearchBackwards() != lastFindDetails.direction )
 	{
 		// Find text has changed, set the startPos value, 
 		// and don't check to see if we wrapped this time.

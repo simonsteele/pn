@@ -371,6 +371,7 @@ public:
 };
 
 typedef enum { fifPath, fifSingleFile, fifOpenFiles } EFIFFileSet;
+typedef enum { elwCurrentDoc, elwAllDocs, elwCurrentProj, elwSelection } EFindWhere;
 
 /**
  * @brief Interface to search options
@@ -393,7 +394,8 @@ public:
 	virtual bool GetUseRegExp() const = 0;
 	virtual void SetUseRegExp(bool useRegExp) = 0;
 	
-	//bool SearchAll;
+	virtual EFindWhere GetFindTarget() const = 0;
+	virtual void SetFindTarget(EFindWhere target) = 0;
 	
 	virtual bool GetSearchBackwards() const = 0;
 	virtual void SetSearchBackwards(bool backwards) = 0;

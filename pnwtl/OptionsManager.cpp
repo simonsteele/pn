@@ -194,10 +194,10 @@ void Options::saveCache()
 	group(PNSK_FIND);
 
 	// New search options
-	Set(NULL, _T("FindText"),				m_SearchOptions.FindText);
-	Set(NULL, _T("ReplaceText"),			m_SearchOptions.ReplaceText);
-	Set(NULL, _T("Path"),					m_SearchOptions.Path);
-	Set(NULL, _T("FileExts"),				m_SearchOptions.FileExts);
+	Set(NULL, _T("FindText"),				m_SearchOptions.GetFindText());
+	Set(NULL, _T("ReplaceText"),			m_SearchOptions.GetReplaceText());
+	Set(NULL, _T("Path"),					m_SearchOptions.GetSearchPath());
+	Set(NULL, _T("FileExts"),				m_SearchOptions.GetFileExts());
 	
 	Set(NULL, _T("Direction"),				m_SearchOptions.Direction);
 	Set(NULL, _T("Loop"),					m_SearchOptions.Loop);

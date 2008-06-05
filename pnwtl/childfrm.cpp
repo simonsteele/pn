@@ -369,7 +369,7 @@ void CChildFrame::LoadExternalLexers()
 	OPTIONS->GetPNPath(sPath, PNPATH_SCHEMES);
 
 	tstring sPattern(sPath);
-	sPattern += "*.lexer";
+	sPattern += _T("*.lexer");
 
 	hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
 	if (hFind != INVALID_HANDLE_VALUE)
@@ -696,7 +696,7 @@ LRESULT CChildFrame::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	SearchOptions* pOptions = reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() );
 	if( _tcslen(pOptions->GetFindText()) > 0 )
 	{
-		if( !/*m_view.*/FindNext(pOptions) )
+		if( !FindNext(pOptions) )
 		{
 			CString cs;
 			cs.Format(IDS_FINDNOTFOUND, pOptions->GetFindText());
@@ -713,7 +713,7 @@ LRESULT CChildFrame::OnFindPrevious(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	{
 		pOptions->SetSearchBackwards(!pOptions->GetSearchBackwards());
 
-		if( !/*m_view.*/FindNext(pOptions) )
+		if( !FindNext(pOptions) )
 		{
 			CString cs;
 			cs.Format(IDS_FINDNOTFOUND, pOptions->GetFindText());
@@ -1965,12 +1965,35 @@ bool CChildFrame::Save(bool ctagsRefresh)
 FindNextResult CChildFrame::FindNext(SearchOptions* options)
 {
 	FindNextResult result = (FindNextResult)m_view.FindNext(options);
-	if( result == fnReachedStart )
+	if (result == fnReachedStart)
 	{
-		CString msg;
-		msg.LoadString(IDS_FINDLOOPED);
-		MessageBox(msg,	LS(IDR_MAINFRAME), MB_OK | MB_ICONINFORMATION);
+		if (options->GetFindTarget() == extensions::elwAllDocs)
+		{
+			::SendMessage(GetParent(), WM_MDINEXT, 0, 0);
+			CChildFrame* pNext = FromHandle(GetCurrentEditor());
+			while (pNext != this)
+			{
+				if (pNext->FindNext(options) == fnFound)
+				{
+					break;
+				}
+				
+				::SendMessage(GetParent(), WM_MDINEXT, 0, 0);
+				pNext = FromHandle(GetCurrentEditor());
+			}
+
+			if (pNext == this)
+			{
+				// We went all the way around, and couldn't find anything:
+				PNTaskDialog(m_hWnd, IDR_MAINFRAME, IDS_ALLFOUND, _T(""), TDCBF_OK_BUTTON, TDT_INFORMATION_ICON);
+			}
+		}
+		else
+		{
+			PNTaskDialog(m_hWnd, IDR_MAINFRAME, IDS_FINDLOOPED, _T(""), TDCBF_OK_BUTTON, TDT_INFORMATION_ICON);
+		}
 	}
+
 	return result;
 }
 

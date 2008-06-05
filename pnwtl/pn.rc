@@ -1950,6 +1950,7 @@ BEGIN
     IDS_REMINDMELATER       "&Remind Me Later"
     IDS_DONOTDOWNLOAD       "Do &Not Download"
     IDS_ALLOPENFILES        "Open Files"
+    IDS_ALLFOUND            "No more occurrences found in the specified set of documents."
 END
 
 #endif    // English (U.K.) resources
