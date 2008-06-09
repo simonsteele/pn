@@ -381,6 +381,23 @@ int lVhdlTypes[26] = {
 	/*w*/ 0,				/*x*/ 0, 
 	/*y*/ 0,				/*z*/ 0
 };
+
+int lLuaTypes[26] = {
+	/*a*/ 0,				/*b*/ 0,
+	/*c*/ 0,				/*d*/ 0,
+	/*e*/ 0,				/*f*/ TAG_FUNCTION,
+	/*g*/ 0,				/*h*/ 0,
+	/*i*/ 0,				/*j*/ 0,
+	/*k*/ 0,				/*l*/ 0,
+	/*m*/ 0,				/*n*/ 0,
+	/*o*/ 0,				/*p*/ 0,
+	/*q*/ 0,				/*r*/ 0,
+	/*s*/ 0,				/*t*/ 0,
+	/*u*/ 0,				/*v*/ 0,
+	/*w*/ 0,				/*x*/ 0, 
+	/*y*/ 0,				/*z*/ 0
+};
+
 /*
 the following are satisfied by the c defaults:
 php, python, tcl
@@ -429,6 +446,10 @@ void getTables(const char* schemeName, int** lcTypes, int** ucTypes)
 	else if(strcmp(schemeName, "vhdl") == 0)
 	{
 		*lcTypes = lVhdlTypes;
+	}
+	else if(strcmp(schemeName, "lua") == 0)
+	{
+		*lcTypes = lLuaTypes;
 	}
 	else if(s_externalTables.count( schemeName ) != 0)
 	{

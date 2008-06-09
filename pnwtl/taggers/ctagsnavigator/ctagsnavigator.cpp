@@ -63,7 +63,7 @@ bool __stdcall pn_init_extension(int iface_version, extensions::IPN* pn)
 void __stdcall pn_get_extension_info(PN::BaseString& name, PN::BaseString& version)
 {
 	name = "CTags Tagger";
-	version = "1.4";
+	version = "1.5";
 }
 
 /**

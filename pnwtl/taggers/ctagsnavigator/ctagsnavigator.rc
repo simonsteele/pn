@@ -65,8 +65,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,4,0,0
- PRODUCTVERSION 1,4,0,0
+ FILEVERSION 1,5,0,0
+ PRODUCTVERSION 1,5,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -83,12 +83,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele"
             VALUE "FileDescription", "CTags Tagger for PN2"
-            VALUE "FileVersion", "1.4.0.0"
+            VALUE "FileVersion", "1.5.0.0"
             VALUE "InternalName", "ctagsnavigator"
             VALUE "LegalCopyright", "Copyright (c) 2004-2008 Simon Steele"
             VALUE "OriginalFilename", "ctagsnavigator.dll"
             VALUE "ProductName", "Programmer's Notepad 2"
-            VALUE "ProductVersion", "1.4.0.0"
+            VALUE "ProductVersion", "1.5.0.0"
         END
     END
     BLOCK "VarFileInfo"
