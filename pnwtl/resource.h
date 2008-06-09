@@ -89,6 +89,11 @@
 #define IDS_DONOTDOWNLOAD               179
 #define IDS_ALLOPENFILES                180
 #define IDS_ALLFOUND                    181
+#define IDS_SAVEANDREMOVE               182
+#define IDS_DONOTREMOVE                 183
+#define IDS_REMOVE                      184
+#define IDS_SAVEBEFOREREMOVEQUESTION    185
+#define IDS_QSAVEPROJBEFOREREMOVE       185
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define IDD_INPUTBOX                    204

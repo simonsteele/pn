@@ -605,7 +605,52 @@ void CProjectTreeCtrl::handleRemove()
 			// All projects belong to single workspace (at the moment).
 			for(;i != selectedItems.end(); ++i)
 			{
-				Project* pProject = reinterpret_cast<Projects::Project*>( GetItemData((*i)) );
+				Project* pProject = reinterpret_cast<Projects::Project*>(GetItemData((*i)));
+
+				if(pProject->IsDirty())
+				{
+					CT2CW name(pProject->GetName());
+					CStringW msg;
+					msg.Format(IDS_QSAVEPROJBEFOREREMOVE, name);
+
+					std::wstring title(L10N::StringLoader::GetW(IDR_MAINFRAME));
+					std::wstring saveAndRemove(L10N::StringLoader::GetW(IDS_SAVEANDREMOVE));
+					std::wstring remove(L10N::StringLoader::GetW(IDS_REMOVE));
+					std::wstring dontRemove(L10N::StringLoader::GetW(IDS_DONOTREMOVE));
+
+					TASKDIALOG_BUTTON confirmRemoveButtons[3] = {
+						{ IDYES, saveAndRemove.c_str() },
+						{ IDNO, remove.c_str() },
+						{ IDCANCEL, dontRemove.c_str() },
+					};
+
+					TASKDIALOGCONFIG cfg = { 0 };
+					cfg.cbSize = sizeof(cfg);
+					cfg.hwndParent = m_hWnd;
+					cfg.hInstance = _Module.GetResourceInstance();
+					cfg.pszWindowTitle = title.c_str();
+					cfg.pszMainIcon = MAKEINTRESOURCEW(TDT_WARNING_ICON);
+					cfg.pszContent = (LPCWSTR)msg;
+					cfg.dwCommonButtons = 0;
+					cfg.pButtons = confirmRemoveButtons;
+					cfg.cButtons = 3;
+					cfg.nDefaultButton = IDCANCEL;
+
+					switch(PNTaskDialogIndirect(&cfg))
+					{
+						case IDCANCEL:
+						{
+							return;
+						}
+
+						case IDYES:
+						{
+							pProject->Save();
+						}
+						break;
+					}
+				}
+
 				workspace->RemoveProject(pProject);
 				DeleteItem((*i));
 			}

@@ -1091,23 +1091,6 @@ void Workspace::RemoveProject(Project* project)
 
 void Workspace::DetachProject(Project* project)
 {
-	if(project->IsDirty())
-	{
-		tstring msg = _T("Do you want to save changes to the project: ");
-		msg += project->GetName();
-		msg += _T("?");
-		DWORD dwRes = ::MessageBox(g_Context.m_frame->GetWindow()->m_hWnd, msg.c_str(), LS(IDR_MAINFRAME), MB_YESNOCANCEL | MB_ICONQUESTION);
-
-		if ( dwRes == IDCANCEL )
-		{
-			return;
-		}
-		else if( dwRes == IDYES )
-		{
-			project->Save();
-		}
-	}
-
 	projects.remove(project);
 	project->setWorkspace(NULL);
 
