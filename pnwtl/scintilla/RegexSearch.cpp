@@ -15,6 +15,8 @@
 using namespace Scintilla;
 #endif
 
+using namespace boost::xpressive;
+
 /**
  * std::iterator compatible iterator for Scintilla contents
  */
@@ -90,9 +92,9 @@ private:
 	Document* m_doc;
 };
 
-typedef boost::xpressive::basic_regex<DocumentIterator> docregex;
-typedef boost::xpressive::match_results<DocumentIterator> docmatch;
-typedef boost::xpressive::sub_match<DocumentIterator> docsub_match;
+typedef basic_regex<DocumentIterator> docregex;
+typedef match_results<DocumentIterator> docmatch;
+typedef sub_match<DocumentIterator> docsub_match;
 
 class XpressiveRegexSearch : public RegexSearchBase
 {
@@ -109,6 +111,9 @@ public:
 	}
 
 	virtual long FindText(Document* doc, int minPos, int maxPos, const char *s,
+                        bool caseSensitive, bool word, bool wordStart, bool posix, int *length);
+
+	virtual long OldFindText(Document* doc, int minPos, int maxPos, const char *s,
                         bool caseSensitive, bool word, bool wordStart, bool posix, int *length);
 
 	virtual const char *SubstituteByPosition(Document* doc, const char *text, int *length);
@@ -135,6 +140,113 @@ RegexSearchBase *CreateRegexSearch(CharClassify *charClassTable)
  * Has not been tested with backwards DBCS searches yet.
  */
 long XpressiveRegexSearch::FindText(Document* doc, int minPos, int maxPos, const char *s,
+                        bool caseSensitive, bool word, bool wordStart, bool posix, int *length) 
+{
+	int startPos, endPos, increment;
+
+	if (minPos > maxPos)
+	{
+		startPos = maxPos;
+		endPos = minPos;
+		increment = -1;
+	}
+	else
+	{
+		startPos = minPos;
+		endPos = maxPos;
+		increment = 1;
+	}
+
+	// Range endpoints should not be inside DBCS characters, but just in case, move them.
+	startPos = doc->MovePositionOutsideChar(startPos, 1, false);
+	endPos = doc->MovePositionOutsideChar(endPos, 1, false);
+
+	std::string restring(s, *length);
+
+	int compileFlags(regex_constants::ECMAScript);
+	if (!caseSensitive)
+	{
+		compileFlags |= regex_constants::icase;
+	}
+	
+	try
+	{
+		re = docregex::compile(restring.c_str(), static_cast<regex_constants::syntax_option_type>(compileFlags));
+	}
+	catch(regex_error& /*ex*/)
+	{
+		// -1 is normally used for not found, -2 is used here for invalid regex
+		return -2;
+	}
+
+	// Work out the range of lines we're searching across, moving beyond an empty end-of-line
+	int lineRangeStart = doc->LineFromPosition(startPos);
+	int lineRangeEnd = doc->LineFromPosition(endPos);
+	if ((increment == 1) &&
+		(startPos >= doc->LineEnd(lineRangeStart)) &&
+		(lineRangeStart < lineRangeEnd)) 
+	{
+		// the start position is at end of line or between line end characters.
+		lineRangeStart++;
+		startPos = doc->LineStart(lineRangeStart);
+	}
+
+	int flags(regex_constants::match_default);
+
+	// Work out the flags:
+	if (startPos != doc->LineStart(lineRangeStart))
+	{
+		flags |= regex_constants::match_not_bol;
+	}
+
+	if (endPos != doc->LineEnd(lineRangeEnd))
+	{
+		flags |= regex_constants::match_not_eol;
+	}
+
+	int pos(-1);
+	int lenRet(0);
+	DocumentIterator end(doc, endPos, endPos);
+	bool success = regex_search(DocumentIterator(doc, startPos, endPos), end, match, re, static_cast<regex_constants::match_flag_type>(flags));
+	if (success)
+	{
+		pos = startPos + match.position(0);
+		lenRet = match.length();
+		
+		if (increment == -1)
+		{
+			// Check for the last match on this line.
+			int repetitions = 1000;	// Break out of infinite loop
+			while (success && ((pos + lenRet) <= endPos) && (repetitions--)) 
+			{
+				success = regex_search(DocumentIterator(doc, pos + 1, endPos), end, match, re, static_cast<regex_constants::match_flag_type>(flags));
+				if (success) 
+				{
+					if ((pos + lenRet) <= minPos) 
+					{
+						pos = (pos + 1) + match.position(0);
+						lenRet = match.length();
+					} 
+					else 
+					{
+						success = 0;
+					}
+				}
+			}
+		}
+		
+		*length = lenRet;
+	}
+
+	return pos;
+}
+
+/**
+ * Find text in document, supporting both forward and backward
+ * searches (just pass minPos > maxPos to do a backward search)
+ * Has not been tested with backwards DBCS searches yet.
+ */
+long XpressiveRegexSearch::OldFindText(Document* doc, int minPos, int maxPos, const char *s,
                         bool caseSensitive, bool word, bool wordStart, bool posix, int *length) 
 {
 	
@@ -227,7 +339,7 @@ long XpressiveRegexSearch::FindText(Document* doc, int minPos, int maxPos, const
 					{
 						if ((pos+lenRet) <= minPos) 
 						{
-							pos = (pos+1) + match.position();
+							pos = (pos+1) + match.position(0);
 							lenRet = match.length();
 						} 
 						else 

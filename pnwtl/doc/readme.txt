@@ -12,7 +12,7 @@ What's new?
 4) Added new Open Files view
 5) Added new File Browser view
 6) New icons for docking windows
-7) Changed text search regular expressions engine to Boost Xpressive
+7) Changed text search regular expressions engine to Boost Xpressive, now supports multi-line regular expressions
 8) Added support for word character set specification in schemes
 9) New style presets (ZenBurn, Murky)
 10) Auto-complete choices are backed by file instead of the registry
@@ -49,6 +49,7 @@ Bug Fixes:
 15) Undo buffer not cleared properly at load and revert (#35)
 16) Support forward-slash paths in command-line parameters (#49)
 17) When wrapping text, end key goes to the end of the wrap line (#69)
+18) Odd behaviour when cancelling removal of unsaved project (SF #1957796)
 
 Extensions Interface Changes:
 -----------------------------
