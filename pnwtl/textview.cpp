@@ -1013,6 +1013,14 @@ LRESULT CTextView::OnUncomment(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	return 0;
 }
 
+/**
+ * Get document title, used for printing
+ */
+tstring CTextView::GetDocTitle()
+{
+	return tstring(m_pDoc->GetTitle());
+}
+
 bool CTextView::caretAtBrace(int& posBrace)
 {
 	///@todo Move to the properties? And should this be scheme-overridable.

@@ -1216,8 +1216,10 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 	::GetTextMetrics(hdc, &tm);
 	footerLineHeight = tm.tmHeight + tm.tmExternalLeading;
 
+	tstring docTitle(GetDocTitle());
+
 	DOCINFO di = {sizeof(DOCINFO), 0, 0, 0, 0};
-	di.lpszDocName = GetDocTitle() /*windowName.c_str()*/;
+	di.lpszDocName = docTitle.c_str();
 	di.lpszOutput = 0;
 	di.lpszDatatype = 0;
 	di.fwType = 0;

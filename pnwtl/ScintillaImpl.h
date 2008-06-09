@@ -97,7 +97,7 @@ protected:
 
 	void ManageBraceMatch();
 
-	virtual LPCTSTR GetDocTitle(){return _T("");}
+	virtual tstring GetDocTitle() { return tstring(""); }
 
 private:
 	bool StartAutoComplete();

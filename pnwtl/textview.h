@@ -103,6 +103,10 @@ public:
 
 	void checkLineLength();
 
+protected:
+	// Support for document title in printing:
+	virtual tstring GetDocTitle();
+
 private:
 	bool caretAtBrace(int& posBrace);
 	int seekBrace();
