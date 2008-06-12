@@ -25,7 +25,21 @@
 			commandline='pn.sln /Project scintilla /ProjectConfig ReleaseDebug /Rebuild'
 			output="build.log"/>-->
 		
-		<echo message="pn.sln /Project customscheme /ProjectConfig ReleaseDebug /Rebuild"/>
+		<exec 
+			program="devenv.com"
+			commandline='pn.sln /Clean ReleaseDebug'
+			output="build.log"/>
+		
+		<exec 
+			program="devenv.com"
+			commandline='pn.sln /Build ReleaseDebug'
+			output="build.log">
+			<environment>
+				<variable name="SVNREV" value="/DPN_BUILD=${svn.revision}"/>
+			</environment>
+		</exec>
+		
+		<!-- <echo message="pn.sln /Project customscheme /ProjectConfig ReleaseDebug /Rebuild"/>
 		<exec 
 			program="devenv.com"
 			commandline='pn.sln /Project customscheme /ProjectConfig ReleaseDebug /Rebuild'
@@ -53,7 +67,7 @@
 		<exec
 			program="devenv.com"
 			commandline='pn.sln /Project pn /ProjectConfig ReleaseDebug /Rebuild'
-			output="build.log"/>
+			output="build.log"/> -->
 	</target>
 
 	<!-- Deploy PN -->
@@ -233,6 +247,24 @@
 				<include name="*.sln"/>
 			</fileset>
 		</zip>
+	</target>
+	
+	<target name="upload" depends="svnvar">
+		<property name="deployver" value="${ver}.${svn.revision}"/>
+		<property name="compactver" value="${string::replace(deployver, '.', '')}"/>
+		<property name="distdir" value="dist\${deployver}"/>
+		
+		<exec
+			program="c:\python25\python"
+			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Installer" -p pnotepad --labels="Type-Installer" -u simon.steele --password="${password}" "${distdir}\pn${compactver}.exe"'/>
+		
+		<exec
+			program="c:\python25\python"
+			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Zip" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" ${distdir}\pn${compactver}.zip'/>		
+
+		<exec
+			program="c:\python25\python"
+			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Portable" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" ${distdir}\portable-pn${compactver}.zip'/>
 	</target>
 	
 </project>

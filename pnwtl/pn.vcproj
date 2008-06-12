@@ -348,7 +348,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm140"
+				AdditionalOptions="/Zm140 $(SVNREV)"
 				Optimization="3"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="TabbingFramework, DockingFramework, Scintilla\include"
