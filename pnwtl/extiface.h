@@ -169,6 +169,9 @@ public:
 	/// Is the document modified in memory?
 	virtual bool GetModified() const = 0;
 
+	/// Is the document write protect?
+	virtual bool GetWriteProtect() const = 0;
+
 	/// Can this document be saved (does it have a valid filename yet?)
 	virtual bool GetCanSave() const = 0;
 
@@ -273,6 +276,9 @@ public:
 
 	/// Called when the document modified state changes
 	virtual void OnModifiedChanged(bool modified) = 0;
+
+	/// Called when the document write protect state changes
+	virtual void OnWriteProtectChanged(bool writeProtect) = 0;
 };
 
 /**
@@ -370,7 +376,7 @@ public:
 	virtual void HideOutput() = 0;
 };
 
-typedef enum { fifPath, fifSingleFile, fifOpenFiles } EFIFFileSet;
+typedef enum { fifPath, fifSingleFile, fifOpenFiles, fifActiveProjectFiles } EFIFFileSet;
 typedef enum { elwCurrentDoc, elwAllDocs, elwCurrentProj, elwSelection } EFindWhere;
 
 /**

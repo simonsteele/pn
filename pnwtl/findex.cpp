@@ -59,7 +59,7 @@ const UINT REPLACE_CHECKBOXES [] = {
 const int nREPLACE_CHECKBOXES = 5;
 
 const UINT FINDINFILES_CHECKBOXES [] = {
-	//IDC_MATCHWHOLE_CHECK, 
+	IDC_MATCHWHOLE_CHECK, 
 	IDC_MATCHCASE_CHECK, 
 	//IDC_REGEXP_CHECK, 
 	//IDC_SEARCHUP_CHECK, 
@@ -94,8 +94,7 @@ CFindExDialog::CFindExDialog() :
 	m_lastVisibleCB(-1),
 	m_bottom(-1),
 	m_pFnSLWA(NULL),
-	m_bInitialising(false),
-	m_pFirstEditor(NULL)
+	m_bInitialising(false)
 {
 	if(g_Context.OSVersion.dwMajorVersion >= 5)
 	{
@@ -234,11 +233,11 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	m_FindWhereCombo.InsertString(0, LS(IDS_CURRENTFILE));
 	m_FindWhereCombo.InsertString(1, LS(IDS_CURRENTFOLDER));
-	m_FindWhereCombo.InsertString(2, LS(IDS_CURRENTPROJECTFOLDER));
+	m_FindWhereCombo.InsertString(2, LS(IDS_CURRENTPROJECTFILES));
 	m_FindWhereCombo.InsertString(3, LS(IDS_ALLOPENFILES));
 	m_FindWhereCombo.SetItemData(0, fwCurrentFile);
 	m_FindWhereCombo.SetItemData(1, fwCurrentFolder);
-	m_FindWhereCombo.SetItemData(2, fwCurrentProjectFolder);
+	m_FindWhereCombo.SetItemData(2, fwCurrentProjectFiles);
 	m_FindWhereCombo.SetItemData(3, fwOpenDocs);
 
 	rc.set(GetDlgItem(IDC_FINDTYPE_DUMMY), *this);
@@ -314,7 +313,7 @@ LRESULT CFindExDialog::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 			case fwCurrentFolder:
 				m_FindWhereCombo.SetCurSel(1);
 				break;
-			case fwCurrentProjectFolder:
+			case fwCurrentProjectFiles:
 				m_FindWhereCombo.SetCurSel(2);
 				break;
 			case fwOpenDocs:
@@ -402,11 +401,6 @@ LRESULT CFindExDialog::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	{
 		findInFiles();
 		return TRUE;
-	}
-
-	if (m_pFirstEditor == NULL)
-	{
-		m_pFirstEditor = getCurrentEditorWnd();
 	}
 
 	switch(findNext())
@@ -516,6 +510,7 @@ LRESULT CFindExDialog::OnBrowseClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 	CPNFolderDialog fd(m_hWnd, (LPCTSTR)str, strTitle, BIF_RETURNONLYFSDIRS | BIF_USENEWUI | BIF_NONEWFOLDERBUTTON);
 	if(fd.DoModal() == IDOK)
 	{
+		m_FindWhereCombo.SetCurSel(-1);
 		m_FindWhereCombo.SetWindowText( fd.GetFolderPath() );
 	}
 
@@ -832,19 +827,10 @@ SearchOptions* CFindExDialog::getOptions()
 		}
 		break;
 
-		case fwCurrentProjectFolder:
+		case fwCurrentProjectFiles:
 		{
-			pOptions->SetFileSet(extensions::fifPath);
-
-			Projects::Workspace* curWorkspace = g_Context.m_frame->GetActiveWorkspace();
-			if(curWorkspace != NULL)
-			{
-				Projects::Project* curProject = curWorkspace->GetActiveProject();
-				if(curProject != NULL)
-				{
-					pOptions->SetSearchPath(curProject->GetBasePath());
-				}
-			}
+			pOptions->SetFileSet(extensions::fifActiveProjectFiles);
+			pOptions->SetSearchPath("");
 		}
 		break;
 
@@ -861,12 +847,19 @@ SearchOptions* CFindExDialog::getOptions()
 		}
 		break;
 	}
+	
+	if ((findType == 0 || findType > fwOpenDocs) && pOptions->GetSearchPath() != "" ) {
+		if(DirExists(pOptions->GetSearchPath()))
+			m_FindWhereCombo.AddString(pOptions->GetSearchPath(),4);
+		else
+			pOptions->SetSearchPath("");
+	}
 
 	m_lastFifLocation = (EFIFWhere)m_FindWhereCombo.GetItemData(m_FindWhereCombo.GetCurSel());
 
 	m_FindTextCombo.AddString( m_FindText );
 	m_ReplaceTextCombo.AddString( m_ReplaceText );
-	m_FindWhereCombo.AddString( m_FindWhereText );
+//	m_FindWhereCombo.AddString( m_FindWhereText,3 );
 
 	return pOptions;
 }

@@ -77,8 +77,18 @@ int BoyerMoore::FindForward( char *pData, int nLength )
 			{
 				// Found string?
 				if (( *pcEndString == *pcTextPtr ) && ( ! strncmp( pcString, pcTextPtr - nStrLen, nStrLen )))
-					// Yes. Return the offset.
-					return ( int )(( pcTextPtr - pData ) - nStrLen );
+				{
+					// Yes. check first m_bMatchWholeWord, if ok -> Return the offset.
+					int firstChar=( int )(( pcTextPtr - pData ) - nStrLen );
+					if (m_bMatchWholeWord) {
+						if (MatchWholeWord(pData, nLength, firstChar, firstChar+nStrLen)) {
+							return firstChar;
+						}
+					}
+					else {
+						return firstChar;
+					}
+				}
 
 				// Find out how many characters
 				// we can skip.
@@ -100,8 +110,18 @@ int BoyerMoore::FindForward( char *pData, int nLength )
 			{
 				// Found string?
 				if (( tolower( *pcEndString ) == tolower( *pcTextPtr )) && ( ! _strnicmp( pcString, pcTextPtr - nStrLen, nStrLen )))
-					// Yes. Return the offset.
-					return ( int )(( pcTextPtr - pData ) - nStrLen );
+				{
+					// Yes. check first m_bMatchWholeWord, if ok -> Return the offset.
+					int firstChar=( int )(( pcTextPtr - pData ) - nStrLen );
+					if (m_bMatchWholeWord) {
+						if (MatchWholeWord(pData, nLength, firstChar, firstChar+nStrLen)) {
+							return firstChar;
+						}
+					}
+					else {
+						return firstChar;
+					}
+				}
 
 				// Find out how many characters
 				// we can skip.
@@ -145,8 +165,20 @@ int BoyerMoore::FindBackward( char *pData, int nLength )
 			{
 				// Found the string?
 				if (( *pcString == *pcTextPtr ) && ( ! strncmp( pcString + 1, pcTextPtr + 1, nStrLen )))
+				{
+					// Yes. check first m_bMatchWholeWord, if ok -> Return the offset.
+					int firstChar=( int )( pData - pcTextPtr );
+					if (m_bMatchWholeWord) {
+						if (MatchWholeWord(pData, nLength, firstChar, firstChar+nStrLen)) {
+							return firstChar;
+						}
+					}
+					else {
+						return firstChar;
+					}
+				}
 					// Return the index.
-					return ( int )( pData - pcTextPtr );
+//					return ( int )( pData - pcTextPtr );
 
 				// Find out how many characters
 				// we can skip.
@@ -187,6 +219,25 @@ int BoyerMoore::FindBackward( char *pData, int nLength )
 	}
 	return -1;
 }
+
+BOOL BoyerMoore::MatchWholeWord(char* pData, int nLength, int firstChar, int lastChar) 
+{
+	if (firstChar) 
+	{
+		char ch = *(pData+firstChar-1);
+		if (isalnum(ch) || ch == '_')
+			return FALSE;
+	}
+	if (nLength > lastChar) 
+	{
+		char ch = *(pData+lastChar+1);
+		if (isalnum(ch) || ch == '_')
+			return FALSE;
+	}
+	return TRUE;
+}
+
+
 #pragma warning( pop )
 
 // Operator overloads.
@@ -252,6 +303,12 @@ void BoyerMoore::SetSearchString( LPCSTR pszSearchString )
 void BoyerMoore::SetCaseMode( BOOL bCase ) 
 { 
 	m_bCaseOn = bCase; 
+	SetSearchString(); 
+}
+
+void BoyerMoore::SetMatchWholeWord( BOOL bMatchWholeWord ) 
+{ 
+	m_bMatchWholeWord = bMatchWholeWord; 
 	SetSearchString(); 
 }
 

@@ -251,6 +251,11 @@ public:
 
 	void AddString(LPCTSTR string)
 	{
+		AddString(string,0);
+	}
+	
+	void AddString(LPCTSTR string, int addPos )
+	{
 		CString text((LPCTSTR)string);
 		if(text.GetLength() > 0)
 		{
@@ -259,11 +264,11 @@ public:
 			if(i > 0)
 			{
 				DeleteString(i);
-				InsertString(0, text);
+				InsertString(addPos, text);
 			}
 			else if(i < 0)
-				InsertString(0, text);
-			SetCurSel(0);
+				InsertString(addPos, text);
+			SetCurSel(addPos);
 
 			if(m_pAC)
 				m_pAC->AddItem(text);
@@ -291,7 +296,7 @@ public:
 			int size = min(items.size(), 20);
 			for(int i = 0; i < size; i++)
 			{
-				AddString(items[i].c_str());
+				AddString(items[i].c_str(),-1);
 			}
 
 			return true;

@@ -27,6 +27,7 @@ public:
 	
 	void SetSearchString( LPCSTR pszSearchString );
 	void SetCaseMode( BOOL bCase = TRUE );
+	void SetMatchWholeWord( BOOL bMatchWholeWord = FALSE ); 
 	void SetIncludeHidden( BOOL bIncludeHidden = TRUE );
 
 	LPCTSTR GetSearchString() const;
@@ -39,10 +40,12 @@ public:
 protected:
 	// Helpers.
 	void SetSearchString();
+	BOOL MatchWholeWord(char* pData, int nLength, int firstChar, int lastChar);
 
 	// Data.
 	tstring	m_strSearchString;
 	BOOL	m_bCaseOn;
+	BOOL	m_bMatchWholeWord;
 	BOOL	m_bIncludeHidden;
 	int		m_aDeltas[ 256 ];
 	int		m_aBackDeltas[ 256 ];

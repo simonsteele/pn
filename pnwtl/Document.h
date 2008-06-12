@@ -39,6 +39,7 @@ class Document : public extensions::IDocument, public extensions::ITextEditorEve
 		void OnAfterSave();
 		void OnDocClosing();
 		void OnModifiedChanged(bool modified);
+		void OnWriteProtectChanged(bool writeProtect);
 
 // IDocument members
 	public:
@@ -47,6 +48,7 @@ class Document : public extensions::IDocument, public extensions::ITextEditorEve
 		virtual const char* GetCurrentScheme() const;
 		virtual HWND GetScintillaHWND() const;
 		virtual bool GetModified() const;
+		virtual bool GetWriteProtect() const;
 		virtual bool GetCanSave() const;
 
 		virtual bool Save(const char* filename, bool setFilename);

@@ -138,7 +138,7 @@ protected:
 	BOOL setLayeredWindowAttributes(HWND hwnd, COLORREF crKey, BYTE bAlpha, DWORD dwFlags);
 
 protected:
-	typedef enum { fwCurrentFile = 1, fwCurrentFolder = 2, fwCurrentProjectFolder = 3, fwOpenDocs = 4, fwUser = 5 } EFIFWhere;
+	typedef enum { fwCurrentFile = 1, fwCurrentFolder = 2, fwCurrentProjectFiles = 3, fwOpenDocs = 4, fwUser = 5 } EFIFWhere;
 
 	EFIFWhere				m_lastFifLocation;
 	EFindDialogType			m_type;
@@ -152,7 +152,6 @@ protected:
 	CArrowButton			m_ReHelperBtn;
 	CArrowButton			m_ReHelperBtn2;
 	CChildFrame*			m_pLastEditor;
-	CChildFrame*			m_pFirstEditor;
 	bool					m_bInitialising;
 
 	// Positional information

@@ -1,3 +1,13 @@
+/**
+ * @file findinfiles.cpp
+ * @brief Find In Files Implementation
+ * @author Simon Steele
+ * @note Copyright (c) 2006-2008 Simon Steele - http://untidy.net/
+ *
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #include "stdafx.h"
 #include "include/boyermoore.h"
 #include "include/filefinder.h"
@@ -45,7 +55,7 @@ FIFThread::FIFThread() :
 {
 }
 
-void FIFThread::Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRecurse, bool bCaseSensitive, bool bIncludeHidden, FIFSink* pSink)
+void FIFThread::Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRecurse, bool bCaseSensitive, bool bMatchWholeWord, bool bIncludeHidden, FIFSink* pSink)
 {
 	PNASSERT(findstr != NULL);
 	PNASSERT(pSink != NULL);
@@ -55,6 +65,7 @@ void FIFThread::Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRec
 	m_it.reset();
 	m_pBM->SetSearchString(findstr);
 	m_pBM->SetCaseMode(bCaseSensitive);
+	m_pBM->SetMatchWholeWord(bMatchWholeWord);
 	m_pBM->SetIncludeHidden(bIncludeHidden);
 	m_pSink = pSink;
 	m_fileExts = fileTypes;
@@ -64,7 +75,7 @@ void FIFThread::Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRec
 	Start();
 }
 
-void FIFThread::Find(LPCTSTR findstr, FileItPtr& iterator, bool bCaseSensitive, FIFSink* pSink)
+void FIFThread::Find(LPCTSTR findstr, FileItPtr& iterator, bool bCaseSensitive, bool bMatchWholeWord, FIFSink* pSink)
 {
 	PNASSERT(findstr != NULL);
 	PNASSERT(pSink != NULL);
@@ -74,6 +85,7 @@ void FIFThread::Find(LPCTSTR findstr, FileItPtr& iterator, bool bCaseSensitive, 
 	m_it = iterator;
 	m_pBM->SetSearchString(findstr);
 	m_pBM->SetCaseMode(bCaseSensitive);
+	m_pBM->SetMatchWholeWord(bMatchWholeWord);
 	m_pSink = pSink;
 	Start();
 }
@@ -99,12 +111,14 @@ void FIFThread::Run()
 	}
 	else
 	{
-		FIFFinder finder(this, &FIFThread::OnFoundFile);
-		finder.SetFilters(m_fileExts.c_str(), NULL, NULL, NULL);
 		m_nFiles = 0;
 		m_nLines = 0;
+		
+		FIFFinder finder(this, &FIFThread::OnFoundFile);
+		finder.SetFilters(m_fileExts.c_str(), NULL, NULL, NULL);
 
-		finder.FindMatching(m_path.c_str(), m_bRecurse, m_bIncludeHidden);
+		if (m_path.length() > 0)
+			finder.FindMatching(m_path.c_str(), m_bRecurse, m_bIncludeHidden);
 	}
 
 	m_pSink->OnEndSearch(m_nLines, m_nFiles);
@@ -213,15 +227,16 @@ void FindInFiles::Start(
 						LPCTSTR fileTypes, 
 						bool bRecurse, 
 						bool bCaseSensitive, 
+						bool bMatchWholeWord,
 						bool bIncludeHidden,
 						FIFSink* pSink)
 {
-	m_thread.Find(findstr, path, fileTypes, bRecurse, bCaseSensitive, bIncludeHidden, pSink);
+	m_thread.Find(findstr, path, fileTypes, bRecurse, bCaseSensitive, bMatchWholeWord, bIncludeHidden, pSink);
 }
 
-void FindInFiles::Start(LPCTSTR findstr, FileItPtr& iterator, bool bCaseSensitive, FIFSink* pSink)
+void FindInFiles::Start(LPCTSTR findstr, FileItPtr& iterator, bool bCaseSensitive, bool bMatchWholeWord, FIFSink* pSink)
 {
-	m_thread.Find(findstr, iterator, bCaseSensitive, pSink);
+	m_thread.Find(findstr, iterator, bCaseSensitive, bMatchWholeWord, pSink);
 }
 
 void FindInFiles::Stop()

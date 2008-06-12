@@ -99,3 +99,16 @@ void DocSink::OnModifiedChanged(bool modified)
 		OutputDebugString(s.c_str());
 	}
 }
+
+void DocSink::OnWriteProtectChanged(bool writeProtect)
+{
+	try
+	{
+		boost::python::call_method<void>(g_app->PyPnGlue().ptr(), "onWriteProtectChanged", writeProtect, (m_doc));
+	}
+	catch(error_already_set&)
+	{
+		std::string s = getPythonErrorString();
+		OutputDebugString(s.c_str());
+	}
+}

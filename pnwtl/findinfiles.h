@@ -1,3 +1,13 @@
+/**
+ * @file findinfiles.h
+ * @brief Find In Files Implementation
+ * @author Simon Steele
+ * @note Copyright (c) 2006-2008 Simon Steele - http://untidy.net/
+ *
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #ifndef findinfiles_h__included_8313F7A1_10AC_44dc_A29B_97395C2F76E9
 #define findinfiles_h__included_8313F7A1_10AC_44dc_A29B_97395C2F76E9
 
@@ -14,6 +24,7 @@ class FIFSink
 class FileIterator
 {
 public:
+	virtual ~FileIterator(){}
 	virtual bool Next(tstring& file) = 0;
 };
 
@@ -23,6 +34,8 @@ class IteratorWrapper : FileIterator
 public:
 	IteratorWrapper(TIter begin, TIter end) : m_i(iter), m_end(end)
 	{}
+
+	virtual ~IteratorWrapper() {}
 
 	virtual bool Next(tstring& file)
 	{
@@ -41,6 +54,41 @@ private:
 	TIter m_end;
 };
 
+class StringListIterator : public FileIterator
+{
+public:
+	StringListIterator() : m_started(false){}
+	virtual ~StringListIterator() {}
+
+	virtual bool Next(tstring& file)
+	{
+		if (!m_started)
+		{
+			m_i = m_list.begin();
+			m_started = true;
+		}
+
+		if (m_i == m_list.end())
+		{
+			return false;
+		}
+
+		file = (*m_i);
+		m_i++;
+		return true;
+	}
+
+	std::vector<tstring>& GetList()
+	{
+		return m_list;
+	}
+
+private:
+	std::vector<tstring> m_list;
+	std::vector<tstring>::const_iterator m_i;
+	bool m_started;
+};
+
 typedef boost::shared_ptr<FileIterator> FileItPtr;
 
 class BoyerMoore;
@@ -52,8 +100,8 @@ class FIFThread : public CSSThread
 		FIFThread();
 		virtual ~FIFThread();
 
-		void Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRecurse, bool bCaseSensitive, bool bIncludeHidden, FIFSink* pSink);
-		void Find(LPCTSTR findstr, FileItPtr& iterator, bool bCaseSensitive, FIFSink* pSink);
+		void Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRecurse, bool bCaseSensitive, bool bMatchWholeWord, bool bIncludeHidden, FIFSink* pSink);
+		void Find(LPCTSTR findstr, FileItPtr& iterator, bool bCaseSensitive, bool bMatchWholeWord, FIFSink* pSink);
 
 		void OnFoundFile(LPCTSTR path, FileFinderData& file, bool& /*shouldContinue*/);
 
@@ -84,8 +132,8 @@ class FindInFiles : public Singleton<FindInFiles, SINGLETON_AUTO_DELETE>
 public:
 	~FindInFiles();
 	bool IsRunning();
-	void Start(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRecurse, bool bCaseSensitive, bool bIncludeHidden, FIFSink* pSink);
-	void Start(LPCTSTR findstr, FileItPtr& iterator, bool bCaseSensitive, FIFSink* pSink);
+	void Start(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRecurse, bool bCaseSensitive, bool bMatchWholeWord, bool bIncludeHidden, FIFSink* pSink);
+	void Start(LPCTSTR findstr, FileItPtr& iterator, bool bCaseSensitive, bool bMatchWholeWord, FIFSink* pSink);
 	void Stop();
 
 	template <class TIter>

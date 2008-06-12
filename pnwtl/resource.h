@@ -80,7 +80,7 @@
 #define IDS_CURRENTFILE                 171
 #define IDS_CURRENTFOLDER               172
 #define IDR_POPUP_EDITOR                173
-#define IDS_CURRENTPROJECTFOLDER        173
+#define IDS_CURRENTPROJECTFILES         173
 #define IDS_FILETOOBIG                  174
 #define IDS_INVALIDREGEX                175
 #define IDS_UPDATEAVAIL                 176
@@ -650,6 +650,7 @@
 #define ID_EDIT_MOVELINEUP              33004
 #define ID_LINE_MOVELINEDOWN            33005
 #define ID_EDIT_MOVELINEDOWN            33006
+#define ID_EDITOR_WRITEPROTECT          33107
 
 // Next default values for new objects
 // 
@@ -657,7 +658,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        362
-#define _APS_NEXT_COMMAND_VALUE         33007
+#define _APS_NEXT_COMMAND_VALUE         33108
 #define _APS_NEXT_CONTROL_VALUE         1153
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

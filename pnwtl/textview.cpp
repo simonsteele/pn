@@ -636,7 +636,7 @@ Scheme* CTextView::GetCurrentScheme()
 void HandleFindAllResult(CTextView* parent, FIFSink* sink, LPCTSTR szFilename, int start, int end)
 {
 	int line = parent->LineFromPosition(start);
-	sink->OnFoundString("", szFilename, line, parent->GetLineText(line).c_str());
+	sink->OnFoundString("", szFilename, line+1, parent->GetLineText(line).c_str());
 }
 
 void CTextView::FindAll(extensions::ISearchOptions* options, FIFSink* sink, LPCTSTR szFilename)

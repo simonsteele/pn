@@ -126,6 +126,11 @@ bool Document::GetModified() const
 	return m_pFrame->GetModified();
 }
 
+bool Document::GetWriteProtect() const
+{
+	return m_pFrame->GetWriteProtect();
+}
+
 bool Document::GetCanSave() const
 {
 	return m_pFrame->CanSave();
@@ -204,6 +209,14 @@ void Document::OnDocClosing()
 	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
 	{
 		(*i)->OnDocClosing();
+	}
+}
+
+void Document::OnWriteProtectChanged(bool writeProtect)
+{
+	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	{
+		(*i)->OnWriteProtectChanged(writeProtect);
 	}
 }
 

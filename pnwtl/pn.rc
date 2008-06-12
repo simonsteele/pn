@@ -134,6 +134,7 @@ BEGIN
             MENUITEM "As &RTF...",                  ID_EXPORT_RTF
             MENUITEM "As HTML...",                  ID_EXPORT_HTML
         END
+        MENUITEM "Write protect",               ID_EDITOR_WRITEPROTECT
         MENUITEM SEPARATOR
         MENUITEM "Proper&ties...",              ID_VIEW_FILEPROPERTIES
         MENUITEM SEPARATOR
@@ -1754,6 +1755,11 @@ END
 
 STRINGTABLE 
 BEGIN
+    ID_EDITOR_WRITEPROTECT  "Toggle write protect"
+END
+
+STRINGTABLE 
+BEGIN
     ID_FILE_NEW             "Create a new document\nNew"
     ID_FILE_OPEN            "Open an existing document\nOpen"
     ID_FILE_CLOSE           "Close the active document\nClose"
@@ -1938,7 +1944,7 @@ BEGIN
                             "The folder %s could not be created, check that the path is valid."
     IDS_CURRENTFILE         "Current File"
     IDS_CURRENTFOLDER       "Current Folder"
-    IDS_CURRENTPROJECTFOLDER "Current Project Folder"
+    IDS_CURRENTPROJECTFILES "Current Project Files"
     IDS_FILETOOBIG          "Sorry, Programmer's Notepad couldn't open this file - most likely because it's too big (actual error: %s). PN needs to have enough free memory to open a file twice to successfully edit it."
     IDS_INVALIDREGEX        "The regular expression is not valid."
 END

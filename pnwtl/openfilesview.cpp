@@ -96,6 +96,11 @@ public:
 		m_owner->UpdateDocument(m_doc);
 	}
 
+	virtual void OnWriteProtectChanged(bool writeProtect)
+	{
+		m_owner->UpdateDocument(m_doc);
+	}
+
 private:
 	extensions::IDocumentPtr m_doc;
 	COpenFilesDocker* m_owner;
@@ -124,8 +129,8 @@ LRESULT COpenFilesDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	m_view.AddColumn(_T(""), 0);
 	m_view.SetColumnWidth(0, (rc.right-rc.left) -::GetSystemMetrics(SM_CXVSCROLL));
 
-	m_images.Create(16, 16, ILC_COLOR32 | ILC_MASK, 2, 1);
-	HBITMAP bmp = (HBITMAP)::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_OPENFILES), IMAGE_BITMAP, 32, 16, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
+	m_images.Create(16, 16, ILC_COLOR32 | ILC_MASK, 3, 1);
+	HBITMAP bmp = (HBITMAP)::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_OPENFILES), IMAGE_BITMAP, 48, 16, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
 	m_images.Add(bmp, RGB(255, 0 ,255));
 	m_view.SetImageList(m_images, LVSIL_SMALL);
 	
@@ -203,6 +208,7 @@ void COpenFilesDocker::AddDocument(extensions::IDocumentPtr& doc)
 	m_view.SetItemData(index, reinterpret_cast<DWORD_PTR>(doc.get()));
 	extensions::IDocumentEventSinkPtr docHandler(new DocEventSink(this, doc));
 	doc->AddEventSink(docHandler);
+	UpdateDocument(doc);
 }
 
 /// Remove a document from the list
@@ -222,7 +228,12 @@ void COpenFilesDocker::UpdateDocument(extensions::IDocumentPtr& doc)
 	if (itemIndex != -1)
 	{
 		LVITEM lvi = {0};
-		lvi.iImage = doc->GetModified() ? 1 : 0; 
+		if (doc->GetWriteProtect())
+			lvi.iImage = 2;
+		else if (doc->GetModified())
+			lvi.iImage = 1;
+		else
+			lvi.iImage = 0;
 		lvi.pszText = const_cast<LPTSTR>(doc->GetTitle());
 		lvi.iItem = itemIndex;
 		lvi.iSubItem = 0;

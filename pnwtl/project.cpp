@@ -573,6 +573,42 @@ void Folder::notify(PROJECT_CHANGE_TYPE changeType, Folder* changeContainer, Pro
 	}
 }
 
+void Folder::GetAllFiles(std::vector<tstring>& files)
+{
+	for(FOLDER_LIST::const_iterator i = GetFolders().begin();
+		i != GetFolders().end();
+		++i)
+	{
+		(*i)->GetAllFiles(files);
+	}
+
+	for(FILE_LIST::const_iterator j = GetFiles().begin();
+		j != GetFiles().end();
+		++j)
+	{
+		bool found = false;
+		
+		for(std::vector<tstring>::const_iterator k = files.begin();
+			k != files.end();
+			++k)
+		{
+			CFileName cfn1(*k);
+			const tstring& fn1 = cfn1.ToLower();
+			CFileName cfn2((*j)->GetFileName());
+
+			if (fn1 == cfn2.ToLower())
+			{
+				found = true;
+			}
+		}
+		
+		if (found == false)
+		{
+			files.push_back((*j)->GetFileName());
+		}
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // Project
 //////////////////////////////////////////////////////////////////////////////

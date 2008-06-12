@@ -26,6 +26,7 @@ public:
 	virtual void OnBeforeSave(const char* filename);
 	virtual void OnAfterSave();
 	virtual void OnModifiedChanged(bool modified);
+	virtual void OnWriteProtectChanged(bool writeProtect);
 
 	virtual void OnCharAdded(char c);
 

@@ -101,6 +101,7 @@ public:
 		COMMAND_ID_HANDLER(ID_EDITOR_LINENOS, OnLineNoToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_WHITESPACE, OnMarkWhiteSpaceToggle)
 		COMMAND_ID_HANDLER(ID_EDITOR_EOLCHARS, OnEOLMarkerToggle)
+		COMMAND_ID_HANDLER(ID_EDITOR_WRITEPROTECT, OnWriteProtectToggle)
 
 		COMMAND_ID_HANDLER(ID_EDITOR_USEASSCRIPT, OnUseAsScript)
 
@@ -196,6 +197,7 @@ public:
 	tstring GetFileName(EGFNType type = FN_FULL);
 	LPCTSTR GetTitle();
 	bool GetModified();
+	bool GetWriteProtect();
 
 	bool CanClose();
 
@@ -272,6 +274,7 @@ public:
 	LRESULT OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnJumpTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnWriteProtectToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	bool OnRunTool(LPVOID pTool);
 
@@ -291,6 +294,7 @@ public:
 	bool SaveAs(bool ctagsRefresh);
 	void ChangeFormat(EPNSaveFormat format);
 	bool Save(bool ctagsRefresh);
+	bool GetFileWriteProtect(LPCTSTR pathname);
 
 	////////////////////////////////////////////////////
 	// Editor Window Methods
@@ -361,6 +365,7 @@ private:
 	uint64_t			m_FileAge;
 	bool				m_bModifiedOverride;
 	bool				m_bClosing;
+	bool				m_bReadOnly;
 	TextClips::TextClipsManager*	m_pTextClips;
 	
 	int					m_iFirstToolCmd;

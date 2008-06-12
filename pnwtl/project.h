@@ -139,6 +139,8 @@ class Folder : public ProjectType
 		virtual const FOLDER_LIST&	GetFolders();
 		virtual const FILE_LIST&	GetFiles();
 
+		void GetAllFiles(std::vector<tstring>& files);
+
 		File* FindFile(LPCTSTR filename);
 		File* FindRelativeFile(LPCTSTR filename);
 

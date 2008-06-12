@@ -26,6 +26,8 @@
 #include "textclips.h"
 #include "autocomplete.h"
 #include "autocompletehandler.h"
+#include "project.h"
+#include "projectprops.h"
 
 #include "tabbingframework/TabbedMDISave.h"
 
@@ -52,7 +54,8 @@ CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::
 	m_pScript(NULL),
 	m_FileAge(-1),
 	m_iFirstToolCmd(ID_TOOLS_DUMMY),
-	m_bModifiedOverride(false)
+	m_bModifiedOverride(false),
+	m_bReadOnly(false)
 {
 	m_po.hDevMode = 0;
 	m_po.hDevNames = 0;
@@ -141,13 +144,14 @@ void CChildFrame::UpdateBarsPosition(RECT& rect, BOOL bResizeBars)
 	}
 }
 
-TBBUTTON MINI_BAR_BUTTONS[5] = 
+TBBUTTON MINI_BAR_BUTTONS[6] = 
 {
 	{ 1, ID_EDITOR_COLOURISE, TBSTATE_ENABLED | TBSTATE_CHECKED, TBSTYLE_CHECK, 0, 0, 0 },
 	{ 0, ID_EDITOR_WORDWRAP, TBSTATE_ENABLED, TBSTYLE_CHECK, 0, 0, 0 },
 	{ 2, ID_EDITOR_LINENOS, TBSTATE_ENABLED, TBSTYLE_CHECK, 0, 0, 0 },
 	{ 3, ID_EDITOR_WHITESPACE, TBSTATE_ENABLED, TBSTYLE_CHECK, 0, 0, 0 },
-	{ 4, ID_EDITOR_EOLCHARS, TBSTATE_ENABLED, TBSTYLE_CHECK, 0, 0, 0 }
+	{ 4, ID_EDITOR_EOLCHARS, TBSTATE_ENABLED, TBSTYLE_CHECK, 0, 0, 0 },
+	{ 5, ID_EDITOR_WRITEPROTECT, TBSTATE_ENABLED, TBSTYLE_CHECK, 0, 0, 0 }
 };
 
 void CChildFrame::SetupToolbar()
@@ -172,7 +176,7 @@ void CChildFrame::SetupToolbar()
 	toolbar.SetButtonSize(CSize(16, 15));
 	toolbar.SetImageList(m_hImgList);
 	
-	toolbar.AddButtons(5, &MINI_BAR_BUTTONS[0]);
+	toolbar.AddButtons(6, &MINI_BAR_BUTTONS[0]);
 
 	m_hWndToolBar = toolbar.Detach();
 }
@@ -301,6 +305,12 @@ void CChildFrame::SetTitle( bool bModified )
 	{
 		title += " *";
 		tabTitle += " *";
+	}
+
+	if(m_bReadOnly)
+	{
+		title += " (ReadOnly)";
+		tabTitle += " (ReadOnly)";
 	}
 
 	SetWindowText(title.c_str());
@@ -1035,6 +1045,39 @@ LRESULT CChildFrame::OnEOLMarkerToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hW
 	return 0;
 }
 
+LRESULT CChildFrame::OnWriteProtectToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	// Doesn't make any sense with an in-memory non-saveable document
+	if (!CanSave())
+	{
+		return 0;
+	}
+
+	bool bReadOnly = UIInvertCheck(wID);
+
+	if (!bReadOnly)
+	{
+		// Turning off read only, try and remove readonly from the file:
+		DWORD dwFileAttributes = GetFileAttributes(m_spDocument->GetFileName());
+		if (dwFileAttributes & FILE_ATTRIBUTE_READONLY)
+		{
+			dwFileAttributes &= ~FILE_ATTRIBUTE_READONLY;
+			if (!SetFileAttributes(m_spDocument->GetFileName(), dwFileAttributes))
+			{
+				::MessageBox(m_hWnd, _T("Unable to remove the write-protection from this file, you will need to save as a different file"), LS(IDR_MAINFRAME), MB_OK | MB_ICONINFORMATION);
+			}
+		}
+	}
+
+	m_bReadOnly = bReadOnly;
+	m_view.SetReadOnly(m_bReadOnly);
+	SetTitle();
+	
+	m_spDocument->OnWriteProtectChanged(m_bReadOnly);
+
+	return 0;
+}
+
 LRESULT CChildFrame::OnUseAsScript(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(m_pScript != NULL)
@@ -1602,12 +1645,52 @@ void CChildFrame::Revert()
 	}
 }
 
+bool CChildFrame::GetWriteProtect()
+{
+	return m_bReadOnly;
+}
+
+bool CChildFrame::GetFileWriteProtect(LPCTSTR pathname)
+{
+	DWORD dwFileAttributes = ::GetFileAttributes(pathname);
+	if(dwFileAttributes & FILE_ATTRIBUTE_READONLY)
+	{
+		return true;
+	}
+	else 
+	{
+		if (SetFileAttributes(pathname,dwFileAttributes |FILE_ATTRIBUTE_READONLY ) == 0)
+		{
+			// write permission
+			return true;
+		}
+		else
+		{
+			// no write permission -> restore File Attributes
+			SetFileAttributes(pathname,dwFileAttributes);
+			return false;
+		}
+
+	}
+}
+
 bool CChildFrame::PNOpenFile(LPCTSTR pathname, Scheme* pScheme, EPNEncoding encoding)
 {
 	bool bRet = false;
 
 	if(m_view.Load(pathname, pScheme, encoding))
 	{
+		if(GetFileWriteProtect(pathname)){
+			m_bReadOnly = true;
+			m_view.SetReadOnly(true);
+			UISetChecked(ID_EDITOR_WRITEPROTECT, true);
+		} 
+		else
+		{
+			m_bReadOnly = false;
+			UISetChecked(ID_EDITOR_WRITEPROTECT, false);
+		}
+
 		m_spDocument->SetFileName(pathname);
 		m_FileAge = m_spDocument->GetFileAge();
 		SetTitle();
@@ -2047,9 +2130,6 @@ void CChildFrame::SetScheme(Scheme* pScheme, bool allSettings)
     m_view.SetScheme(pScheme, allSettings);
 }
 
-#include "project.h"
-#include "projectprops.h"
-
 void CChildFrame::UpdateTools(Scheme* pScheme)
 {
 	CSMenuHandle menu(m_hMenu);
@@ -2288,6 +2368,7 @@ CChildFrame::_PoorMansUIEntry* CChildFrame::GetDefaultUIMap()
 		{ID_EDITOR_LINENOS, PMUI_MINIBAR | PMUI_MENU},
 		{ID_EDITOR_WHITESPACE, PMUI_MINIBAR | PMUI_MENU},
 		{ID_EDITOR_EOLCHARS, PMUI_MINIBAR | PMUI_MENU},
+		{ID_EDITOR_WRITEPROTECT, PMUI_MINIBAR | PMUI_MENU},
 		{ID_VIEW_INDIVIDUALOUTPUT, PMUI_MENU},
 		{ID_TOOLS_LECONVERT, PMUI_MENU},
 		// note: This one must be at the end.
