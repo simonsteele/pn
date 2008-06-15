@@ -111,7 +111,7 @@ public:
 	}
 
 	virtual long FindText(Document* doc, int minPos, int maxPos, const char *s,
-                        bool caseSensitive, bool word, bool wordStart, bool posix, int *length);
+                        bool caseSensitive, bool word, bool wordStart, int flags, int *length);
 
 	virtual long OldFindText(Document* doc, int minPos, int maxPos, const char *s,
                         bool caseSensitive, bool word, bool wordStart, bool posix, int *length);
@@ -140,7 +140,7 @@ RegexSearchBase *CreateRegexSearch(CharClassify *charClassTable)
  * Has not been tested with backwards DBCS searches yet.
  */
 long XpressiveRegexSearch::FindText(Document* doc, int minPos, int maxPos, const char *s,
-                        bool caseSensitive, bool word, bool wordStart, bool posix, int *length) 
+                        bool caseSensitive, bool word, bool wordStart, int searchFlags, int *length) 
 {
 	int startPos, endPos, increment;
 
