@@ -2,7 +2,10 @@
  * @file ScintillaIF.cpp
  * @brief Implementation of CScintilla
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ *
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
  */
 
 #include "stdafx.h"
@@ -309,6 +312,22 @@ void CScintilla::PrevBookmark()
 	if (!(prevLine < 0 || prevLine == line))
 	{
 		GotoLineEnsureVisible(prevLine);
+	}
+}
+
+void CScintilla::ClearAllBookmarks()
+{
+	MarkerDeleteAll(SC_BOOKMARK);
+
+	for (int i = 0; i < 10; i++)
+	{
+		if (m_numberedBookmarks[i] != -1)
+		{
+			MarkerDeleteHandle(m_numberedBookmarks[i]);
+			m_numberedBookmarks[i] = -1;
+
+			MarkerDeleteAll(SC_NUMBERED_BOOKMARK + i);
+		}
 	}
 }
 
@@ -2741,6 +2760,26 @@ int CScintilla::FindColumn(int line, int column)
 int CScintilla::GetPropertyInt(const char* key, int defaultVal)
 {
 	return SPerform(SCI_GETPROPERTYINT, reinterpret_cast<WPARAM>(key), defaultVal);
+}
+
+void CScintilla::SetIndicatorCurrent(int indicator)
+{
+	SPerform(SCI_SETINDICATORCURRENT, indicator, 0);
+}
+
+void CScintilla::SetIndicatorValue(int value)
+{
+	SPerform(SCI_SETINDICATORVALUE, value, 0);
+}
+
+void CScintilla::IndicatorFillRange(int start, int length)
+{
+	SPerform(SCI_INDICATORFILLRANGE, start, length);
+}
+
+void CScintilla::IndicatorClearRange(int start, int length)
+{
+	SPerform(SCI_INDICATORCLEARRANGE, start, length);
 }
 
 //--

@@ -4,7 +4,7 @@
  * @author Simon Steele
  * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -68,6 +68,7 @@ class CScintilla
 		 * true.
 		 */
 		bool IsScintillaNotify(LPARAM lParam);
+
 		/**
 		 * HandleNotify currently only updates the Modified flag
 		 * of CScintilla.
@@ -120,6 +121,7 @@ class CScintilla
 		void ToggleBookmark(int marker = SC_BOOKMARK);
 		void NextBookmark();
 		void PrevBookmark();
+		void ClearAllBookmarks();
         
 		// Folding (mostly Scite implementation)
 		/// Set the Folding Margins
@@ -1941,6 +1943,22 @@ class CScintilla
 		 * Get convert-on-paste setting
 		 */
 		bool GetPasteConvertEndings();
+		/**
+		 * Set current indicator number
+		 */
+		void SetIndicatorCurrent(int indicator);
+		/**
+		 * Set the value to use for the next indicator range
+		 */
+		void SetIndicatorValue(int value);
+		/**
+		 * Fill indicator range
+		 */
+		void IndicatorFillRange(int start, int length);
+		/**
+		 * Clear indicator range
+		 */
+		void IndicatorClearRange(int start, int length);
 	//--
 	//@}
 };

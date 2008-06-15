@@ -2,9 +2,9 @@
  * @file TextView.h
  * @brief Interface Definition for CTextView, the Scintilla based text-editor view.
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -16,10 +16,9 @@
 #include "ScintillaImpl.h"
 #include "ScintillaWTL.h"
 
-#include "schemes.h"
-#include "pntypes.h"
-
 class FIFSink;
+
+static const int INDIC_MARKALL = INDIC_CONTAINER;
 
 class CTextView : public CScintillaWindowImpl< CTextView, CScintillaImpl >
 {
@@ -40,6 +39,7 @@ public:
 		COMMAND_ID_HANDLER(ID_BOOKMARKS_TOGGLE, OnToggleBookmark)
 		COMMAND_ID_HANDLER(ID_BOOKMARKS_NEXT, OnNextBookmark)
 		COMMAND_ID_HANDLER(ID_BOOKMARKS_PREVIOUS, OnPrevBookmark)
+		COMMAND_ID_HANDLER(ID_BOOKMARKS_CLEARALL, OnClearAllBookmarks)
 		COMMAND_ID_HANDLER(ID_VIEW_COLLAPSEALLFOLDS, OnCollapseAll)
 		COMMAND_ID_HANDLER(ID_VIEW_EXPANDALLFOLDS, OnExpandAll)
 		COMMAND_ID_HANDLER(ID_VIEW_TOGGLEFOLD, OnToggleFold)
@@ -71,6 +71,8 @@ public:
 	void SetEncoding(EPNEncoding encoding);
 
 	void FindAll(extensions::ISearchOptions* options, FIFSink* sink, LPCTSTR szFilename);
+	void MarkAll(extensions::ISearchOptions* options);
+	void ClearMarkAll();
 	
 	////////////////////////////////////////////////////////////////
 	// Overrides from CScintillaImpl / CScintillaWindowImpl
@@ -92,6 +94,7 @@ public:
 	LRESULT OnToggleBookmark(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnNextBookmark(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnPrevBookmark(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnClearAllBookmarks(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCollapseAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnExpandAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnToggleFold(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

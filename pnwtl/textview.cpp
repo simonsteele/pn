@@ -2,7 +2,7 @@
  * @file TextView.cpp
  * @brief Implementation of CTextView, the Scintilla based text-editor view.
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -639,9 +639,31 @@ void HandleFindAllResult(CTextView* parent, FIFSink* sink, LPCTSTR szFilename, i
 	sink->OnFoundString("", szFilename, line+1, parent->GetLineText(line).c_str());
 }
 
+void HandleMarkAllResult(CTextView* parent, int start, int end)
+{
+	parent->IndicatorFillRange(start, end-start);
+}
+
 void CTextView::FindAll(extensions::ISearchOptions* options, FIFSink* sink, LPCTSTR szFilename)
 {
 	CScintillaImpl::FindAll(options, boost::bind(HandleFindAllResult, this, sink, szFilename, _1, _2));
+}
+
+void CTextView::MarkAll(extensions::ISearchOptions* options)
+{
+	ClearMarkAll();
+	
+	SetIndicatorValue(INDIC_ROUNDBOX);
+	IndicSetStyle(INDIC_MARKALL, INDIC_ROUNDBOX);
+	IndicSetFore(INDIC_MARKALL, RGB(255, 0, 0));
+	
+	CScintillaImpl::FindAll(options, boost::bind(HandleMarkAllResult, this, _1, _2));
+}
+
+void CTextView::ClearMarkAll()
+{
+	SetIndicatorCurrent(INDIC_MARKALL);
+	IndicatorClearRange(0, GetLength());
 }
 
 void CTextView::DoContextMenu(CPoint* point)
@@ -766,6 +788,12 @@ LRESULT CTextView::OnNextBookmark(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 LRESULT CTextView::OnPrevBookmark(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	PrevBookmark();
+	return 0;
+}
+
+LRESULT CTextView::OnClearAllBookmarks(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	ClearAllBookmarks();
 	return 0;
 }
 

@@ -4,7 +4,7 @@
  * @author Simon Steele
  * @note Copyright (c) 2004-2008 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -441,6 +441,20 @@ LRESULT CFindExDialog::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		LOG(_T("Unexpected Find Result"));
 	}
 
+	return TRUE;
+}
+
+LRESULT CFindExDialog::OnMarkAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CChildFrame* editor = getCurrentEditorWnd();
+
+	if(editor != NULL)
+	{
+		SearchOptions* pOptions = getOptions();
+		editor->MarkAll(pOptions);
+		g_Context.m_frame->GetWindow()->SendMessage(PN_UPDATEFINDTEXT,0,0);
+	}
+	
 	return TRUE;
 }
 

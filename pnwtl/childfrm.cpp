@@ -2080,6 +2080,11 @@ FindNextResult CChildFrame::FindNext(SearchOptions* options)
 	return result;
 }
 
+void CChildFrame::MarkAll(SearchOptions* options)
+{
+	m_view.MarkAll(options);
+}
+
 bool CChildFrame::Replace(SearchOptions* options)
 {
 	if(options->GetFound())

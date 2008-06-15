@@ -300,6 +300,7 @@ public:
 	// Editor Window Methods
 
 	FindNextResult FindNext(SearchOptions* options);
+	void MarkAll(SearchOptions* options);
 	bool Replace(SearchOptions* options);
 	int ReplaceAll(SearchOptions* options);
 	int GetPosition(EGPType type);
