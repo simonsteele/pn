@@ -307,7 +307,7 @@ LRESULT CToolConsoleIOPage::OnHandleHSClick(UINT /*uMsg*/, WPARAM style, LPARAM 
 	sregex* pRE = m_scintilla.GetRE();
 
 	smatch match;
-	if( pRE && regex_match( buf, match, *pRE ))
+	if( pRE && regex_search( buf, match, *pRE ))
 	{
 		tstring filename;
 		tstring linestr;

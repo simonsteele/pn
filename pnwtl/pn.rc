@@ -904,31 +904,31 @@ BEGIN
 END
 
 IDD_PAGE_VISUALHELP DIALOGEX 0, 0, 300, 200
-STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
+STYLE DS_SETFONT | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg 2", 400, 0, 0x1
 BEGIN
+    CONTROL         "Show Indentation Guides",IDC_OPT_INDENTGUIDESCHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,12,168,10
+    CONTROL         "Folding enabled for supporting schemes",IDC_OPT_FOLDINGCHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,24,157,10
+    CONTROL         "Highlight current editor line",IDC_OPT_LINELIGHTCHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,36,114,10
+    PUSHBUTTON      "Button1",IDC_OPT_LINELIGHTBUTTON,22,48,60,14
+    CONTROL         "Blend highlight colour:",IDC_OPT_LINELIGHTALPHACHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,96,50,84,10
+    CONTROL         "",IDC_LINEHIGHLIGHTSLIDER,"msctls_trackbar32",TBS_BOTH | WS_TABSTOP,194,48,49,13,WS_EX_TRANSPARENT
+    CONTROL         "No long line help",IDC_OPT_NOLLHELPRADIO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,10,84,120,10
+    CONTROL         "Show a line at the edge column",IDC_OPT_LLLINERADIO,
+                    "Button",BS_AUTORADIOBUTTON,10,96,126,10
+    CONTROL         "Highlight text beyond the edge column",IDC_OPT_LLHIGHLIGHTRADIO,
+                    "Button",BS_AUTORADIOBUTTON,10,108,150,10
+    EDITTEXT        IDC_OPT_LLCOLUMNEDIT,87,120,48,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Button2",IDC_OPT_LLCOLORBUTTON,140,120,54,14
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,1,4,298,1
     LTEXT           "Settings",IDC_STATIC,0,0,27,8
     LTEXT           "Rightmost Column:",IDC_STATIC,22,122,66,10
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,76,299,1
     LTEXT           "Long Line Helpers",IDC_STATIC,0,72,57,8
-    PUSHBUTTON      "Button2",IDC_OPT_LLCOLORBUTTON,140,120,54,14
-    EDITTEXT        IDC_OPT_LLCOLUMNEDIT,87,120,48,14,ES_AUTOHSCROLL
-    CONTROL         "Highlight text beyond the edge column",IDC_OPT_LLHIGHLIGHTRADIO,
-                    "Button",BS_AUTORADIOBUTTON,10,108,150,10
-    CONTROL         "Show a line at the edge column",IDC_OPT_LLLINERADIO,
-                    "Button",BS_AUTORADIOBUTTON,10,96,126,10
-    CONTROL         "No long line help",IDC_OPT_NOLLHELPRADIO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,10,84,120,10
-    CONTROL         "",IDC_LINEHIGHLIGHTSLIDER,"msctls_trackbar32",TBS_BOTH | WS_TABSTOP,194,48,49,13,WS_EX_TRANSPARENT
-    CONTROL         "Blend highlight colour:",IDC_OPT_LINELIGHTALPHACHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,96,50,84,10
-    PUSHBUTTON      "Button1",IDC_OPT_LINELIGHTBUTTON,22,48,60,14
-    CONTROL         "Highlight current editor line",IDC_OPT_LINELIGHTCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,36,114,10
-    CONTROL         "Folding enabled for supporting schemes",IDC_OPT_FOLDINGCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,24,157,10
-    CONTROL         "Show Indentation Guides",IDC_OPT_INDENTGUIDESCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,12,168,10
 END
 
 IDD_TAB_MISC DIALOGEX 0, 0, 294, 157

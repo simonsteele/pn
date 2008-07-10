@@ -2,9 +2,9 @@
  * @file outputscintilla.cpp
  * @brief Simple RegEx based output lexer wrapped in a scintilla.
  * @author Simon Steele
- * @note Copyright (c) 2005 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2008 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #include "stdafx.h"
@@ -50,6 +50,8 @@ void REScintilla::SetRE(LPCTSTR regex, bool bClearStyling)
 	{
 		// We pass 0 to disable the default UTF-8 matching, we're in ASCII in output window
 		*m_pRE = sregex::compile(m_customre);
+
+		g_Context.m_frame->SetStatusText(_T(""));
 	}
 	catch(boost::xpressive::regex_error& ex)
 	{
@@ -210,7 +212,7 @@ void REScintilla::customColouriseLine(ScintillaAccessor& styler, char *lineBuffe
 		
 		std::string line(lineBuffer, length);
 
-		if( regex_match(line, *m_pRE) )
+		if( regex_search(line, *m_pRE) )
 		{
 			styler.ColourTo(endLine, SCE_CUSTOM_ERROR);
 		}

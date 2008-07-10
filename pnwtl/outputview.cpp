@@ -270,7 +270,7 @@ bool COutputView::BuildAndHandleREError(int style, int position, const char* reD
  */
 void COutputView::HandleGCCError(int style, int position)
 {
-	BuildAndHandleREError(style, position, "(?U)(?P<f>.+):(?P<l>[0-9]+):((?P<c>[0-9]+):)? .*");
+	BuildAndHandleREError(style, position, "(?P<f>.+?):(?P<l>[0-9]+):((?P<c>[0-9]+):)? .*");
 }
 
 /**
@@ -298,10 +298,10 @@ void COutputView::HandleBorlandCPPError(int style, int position)
 {
 	// Explanation of this RE: http://www.pnotepad.org/devlog/archives/000086.html
 	
-	if( !BuildAndHandleREError(style, position, "(Error|Warning) ((E|W)[0-9]{4} )?(?U)(?P<f>.+) ((?P<c>[0-9]+) )?(?P<l>[0-9]+): [^\\s]") )
+	if( !BuildAndHandleREError(style, position, "(Error|Warning) ((E|W)[0-9]{4} )?(?P<f>.+?) ((?P<c>[0-9]+) )?(?P<l>[0-9]+): .+") )
 	{
 		// Didn't match borland C++, try lcc-win32:
-		BuildAndHandleREError(style, position, "(Error|Warning) (?P<f>.+): (?P<l>[0-9]+) .");
+		BuildAndHandleREError(style, position, "(Error|Warning) (?P<f>.+): (?P<l>[0-9]+) .+");
 	}
 }
 
