@@ -400,8 +400,23 @@ public:
       item.item.mask = TVIF_TEXT | TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_PARAM | TVIF_CHILDREN;
       item.item.pszText = LPSTR_TEXTCALLBACK;
       item.item.iImage = item.item.iSelectedImage = I_IMAGECALLBACK;
-      item.item.lParam= (LPARAM) pItem;        
-      item.item.cChildren = (dwAttribs & SFGAO_HASSUBFOLDER) != 0 ? 1 : 0;
+      item.item.lParam= (LPARAM) pItem;
+
+	  if ((m_dwShellStyle & SCT_EX_NOFILES) != 0)
+	  {
+         item.item.cChildren = (dwAttribs & (SFGAO_HASSUBFOLDER | SFGAO_CONTENTSMASK)) != 0 ? 1 : 0;
+	  }
+	  else
+	  {
+         // We can't tell from attributes if a folder contains any files, so just say all can be 
+         // enumerated.
+		 item.item.cChildren = 
+			 // test for zip files first (folder and stream, we don't support expanding them)
+			 (dwAttribs & (SFGAO_FOLDER | SFGAO_STREAM)) == (SFGAO_FOLDER | SFGAO_STREAM) ? 0 : 
+			 // then test for anything expandable
+			 (dwAttribs & (SFGAO_FOLDER | SFGAO_FILESYSANCESTOR | SFGAO_HASSUBFOLDER | SFGAO_CONTENTSMASK)) != 0 ? 1 : 0;
+	  }
+
       if( (dwAttribs & SFGAO_SHARE) != 0 ) {
          item.item.mask |= TVIF_STATE;
          item.item.stateMask |= TVIS_OVERLAYMASK;
@@ -513,7 +528,7 @@ public:
          DWORD  dwFetched;
          while( (spEnum->Next(1, &pidl, &dwFetched) == S_OK) && (dwFetched > 0) ) {
             // Get attributes and filter some items
-            DWORD dwAttribs = SFGAO_DISPLAYATTRMASK | SFGAO_HASSUBFOLDER;
+            DWORD dwAttribs = SFGAO_DISPLAYATTRMASK | SFGAO_HASSUBFOLDER | SFGAO_STREAM;
             if( !_FilterItem(spFolder, pidl, dwAttribs) ) {
                _InsertItem(spFolder, pFolderItem->pidlFull, pidl, dwAttribs, pnmtv->itemNew.hItem);
             }
