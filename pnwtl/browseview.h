@@ -12,6 +12,7 @@
 #define browseview_h__included
 
 class CShellTreeCtrl;
+class CExplorerMenu;
 
 /**
  * Explorer docking window
@@ -37,7 +38,14 @@ public:
 		MESSAGE_HANDLER(WM_GETMINMAXINFO, OnGetMinMaxInfo)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, OnCtlColor)
 		MESSAGE_HANDLER(WM_SHOWWINDOW, OnShow)
+		
 		NOTIFY_HANDLER(IDC_BROWSETREE, NM_DBLCLK, OnTreeDblClick)
+		NOTIFY_HANDLER(IDC_BROWSETREE, NM_RCLICK, OnRightClick)
+
+		{
+			if(handleSystemContextMenuMessage(hWnd, uMsg, wParam, lParam, lResult))
+				return TRUE;
+		}
 
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
@@ -54,6 +62,11 @@ private:
 
 	LRESULT OnTreeDblClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
+	LRESULT OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+
+	LRESULT handleSystemContextMenuMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult);
+
+	CExplorerMenu*		m_menuHandler;
 	CShellTreeCtrl*		m_view;
 };
 

@@ -883,17 +883,25 @@ public:
 
       CComPtr<IShellFolder> spFolder;
       CPidl pidlItem;
-      if( !AtlGetShellPidl(pidl, &spFolder, &pidlItem) ) return FALSE;
+      if( !AtlGetShellPidl(pidl, &spFolder, &pidlItem) ) 
+	  {
+		  return FALSE;
+	  }
 
       // Get a pointer to the item's IContextMenu interface and call
       // IContextMenu::QueryContextMenu to initialize a context menu.
       BOOL bResult = FALSE;
       CComPtr<IContextMenu> spContextMenu;
       LPCITEMIDLIST lpPidl = pidlItem;
-      if( FAILED( spFolder->GetUIObjectOf(hWnd, 1, &lpPidl, IID_IContextMenu, NULL, (LPVOID*) &spContextMenu))) return FALSE;
-      // Do we need to display the popup menu?
+      if( FAILED( spFolder->GetUIObjectOf(hWnd, 1, &lpPidl, IID_IContextMenu, NULL, (LPVOID*) &spContextMenu))) 
+	  {
+		  return FALSE;
+	  }
+      
+	  // Do we need to display the popup menu?
       HMENU hMenu = ::CreatePopupMenu();
-      int nCmd = 0;
+      
+	  int nCmd = 0;
       if( SUCCEEDED( spContextMenu->QueryContextMenu(
            hMenu, 
            0, 
@@ -911,8 +919,10 @@ public:
             NULL);
          m_spCtxMenu2.Release();
       }
+
       // If a command is available (from the menu, perhaps), execute it.
-      if( nCmd ) {
+      if( nCmd ) 
+	  {
          CMINVOKECOMMANDINFO ici = { 0 };
          ici.cbSize       = sizeof(CMINVOKECOMMANDINFO);
          ici.fMask        = 0;
@@ -923,10 +933,15 @@ public:
          ici.nShow        = SW_SHOWNORMAL;
          ici.dwHotKey     = 0;
          ici.hIcon        = NULL;
-         if( SUCCEEDED( spContextMenu->InvokeCommand(&ici)) ) bResult = TRUE;
+         
+		 if( SUCCEEDED( spContextMenu->InvokeCommand(&ici)) ) 
+			 bResult = TRUE;
       }
-      if( hMenu ) ::DestroyMenu(hMenu);
-      return bResult;
+      
+	  if( hMenu ) 
+		  ::DestroyMenu(hMenu);
+      
+	  return bResult;
    }
 
    // To fix the "Send To" problem with Shell Context menus you

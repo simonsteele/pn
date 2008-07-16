@@ -20,7 +20,7 @@
 	static char THIS_FILE[] = __FILE__;
 #endif
 
-CBrowseDocker::CBrowseDocker() : m_view(NULL)
+CBrowseDocker::CBrowseDocker() : m_view(NULL), m_menuHandler(new CExplorerMenu())
 {
 	
 }
@@ -132,4 +132,48 @@ LRESULT CBrowseDocker::OnTreeDblClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 	}
 
 	return 0;
+}
+
+LRESULT CBrowseDocker::OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	CPoint pt(GetMessagePos());
+	CPoint pt2(pt);
+
+	HTREEITEM hItem(NULL);
+
+	// Test for keyboard right-click...
+	if(pt.x != -1)
+	{
+		m_view->ScreenToClient(&pt2);
+
+		TVHITTESTINFO tvhti;
+		memset(&tvhti, 0, sizeof(TV_HITTESTINFO));
+		
+		tvhti.pt = pt2;
+		m_view->HitTest(&tvhti);
+
+		hItem = tvhti.hItem;
+	}
+	else
+	{
+	}
+
+	if (hItem != NULL)
+	{
+		//pt;
+		CPidl pidl;
+		m_view->GetItemPidl(hItem, &pidl);
+
+		m_menuHandler->TrackPopupMenu(pidl, pt.x, pt.y, m_hWnd);
+	}
+
+	return 0;
+}
+
+/**
+ * Chain window message handling to our context menu handler
+ */
+LRESULT CBrowseDocker::handleSystemContextMenuMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult)
+{
+	return m_menuHandler->ProcessWindowMessage(hWnd, uMsg, wParam, lParam, lResult);
 }
