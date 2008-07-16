@@ -20,7 +20,9 @@
 	static char THIS_FILE[] = __FILE__;
 #endif
 
-CBrowseDocker::CBrowseDocker() : m_view(NULL), m_menuHandler(new CExplorerMenu())
+CBrowseDocker::CBrowseDocker() : 
+	m_view(NULL), 
+	m_menuHandler(new CExplorerMenu())
 {
 	
 }
@@ -31,6 +33,12 @@ CBrowseDocker::~CBrowseDocker()
 	{
 		delete m_view;
 		m_view = NULL;
+	}
+
+	if (m_menuHandler)
+	{
+		delete m_menuHandler;
+		m_menuHandler = NULL;
 	}
 }
 
@@ -93,11 +101,6 @@ LRESULT	CBrowseDocker::OnShow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 {
 	bHandled = FALSE;
 
-	/*if (wParam)
-	{
-		::OutputDebugString("!!!!!!!!!!!!!!!!!!SHOW");
-	}*/
-
 	return 0;
 }
 
@@ -137,25 +140,24 @@ LRESULT CBrowseDocker::OnTreeDblClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 LRESULT CBrowseDocker::OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
 	CPoint pt(GetMessagePos());
-	CPoint pt2(pt);
-
 	HTREEITEM hItem(NULL);
 
 	// Test for keyboard right-click...
 	if(pt.x != -1)
 	{
+		CPoint pt2(pt);
 		m_view->ScreenToClient(&pt2);
 
-		TVHITTESTINFO tvhti;
-		memset(&tvhti, 0, sizeof(TV_HITTESTINFO));
-		
+		TVHITTESTINFO tvhti = {0};
 		tvhti.pt = pt2;
+
 		m_view->HitTest(&tvhti);
 
 		hItem = tvhti.hItem;
 	}
 	else
 	{
+		hItem = m_view->GetSelectedItem();
 	}
 
 	if (hItem != NULL)
