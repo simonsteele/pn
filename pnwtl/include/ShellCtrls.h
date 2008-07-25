@@ -910,13 +910,15 @@ public:
            CMF_EXPLORE)) ) 
       {
          m_spCtxMenu2 = spContextMenu;
-         // Display the context menu.
+         
+		 // Display the context menu.
          nCmd = ::TrackPopupMenu(hMenu, 
             TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
             x, y, 
             0, 
             hWnd, 
             NULL);
+
          m_spCtxMenu2.Release();
       }
 
