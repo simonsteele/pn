@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-#include "../pnwtl/autocomplete.h"
-#include "../pnwtl/pnstrings.h"
+#include "../autocomplete.h"
+#include "../pnstrings.h"
 
 void testAC()
 {

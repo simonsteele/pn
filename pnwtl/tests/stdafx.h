@@ -26,8 +26,8 @@
 #include <assert.h>
 #define PNASSERT assert
 
-#include "../pnwtl/allocator.h"
-#include "../pnwtl/string.h"
+#include "../allocator.h"
+#include "../pnextstring.h"
 
 #include <vector>
 #include <list>
