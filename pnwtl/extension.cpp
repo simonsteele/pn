@@ -12,8 +12,20 @@ Extension::Extension(LPCTSTR filename, IPN* app) : Plugin(filename), m_bValid(fa
 		{
 			if( app != NULL )
 			{
+#ifndef _DEBUG
+				try
+				{
+#endif
 				if( ext_init(PN_EXT_IFACE_VERSION, app) )
 					m_bValid = true;
+#ifndef _DEBUG
+				}
+				catch(...)
+				{
+					UNEXPECTED("Loading an extension for Programmer's Notepad has caused a problem, and the application will now close. Please try running in safe mode and disabling extensions to resolve this problem.");
+					throw;
+				}
+#endif
 			}
 			else
 			{
