@@ -11,6 +11,7 @@
 #define optionspagekeyboard_h__included
 
 #include "include/optionsdialog.h"
+#include "optionscontrols.h"
 
 typedef enum { cdtCommand, cdtExtended } CommandDetailsType;
 
@@ -84,7 +85,7 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 		CommandDispatch*m_pDispatch;
 		CListViewCtrl	m_list;
 		CListBox		m_shortcutlist;
-		CHotKeyCtrl		m_hotkey;
+		CPNHotkeyCtrl	m_hotkey;
 		bool			m_bDirty;
 };
 

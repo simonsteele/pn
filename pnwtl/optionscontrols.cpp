@@ -206,3 +206,43 @@ SchemeDetails* CSchemeCombo::GetItemScheme(int index)
 {
 	return static_cast<SchemeDetails*>(GetItemDataPtr(index));
 }
+
+LRESULT CPNHotkeyCtrl::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	bHandled = false;
+
+	if (wParam == VK_DELETE)
+	{
+		bHandled = true;
+	}
+
+	return 0;
+}
+
+LRESULT CPNHotkeyCtrl::OnKeyUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	bHandled = false;
+
+	if (wParam == VK_DELETE)
+	{
+		int current = SendMessage(HKM_GETHOTKEY, 0, 0);
+		if ((current & 0xff) != 0)
+		{
+			// No low-order byte value means no current key,
+			// we don't want to use the current modifiers.
+			current = 0;
+		}
+
+		// Set extended to make sure we get DEL and not NUM DECIMAL
+		current |= (HOTKEYF_EXT << 8);
+		
+		int key = wParam | current;
+		SendMessage(HKM_SETHOTKEY, key, 0);
+
+		SendMessageW(GetParent(), WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(), EN_CHANGE), (LPARAM)m_hWnd);
+
+		bHandled = true;
+	}
+
+	return 0;
+}

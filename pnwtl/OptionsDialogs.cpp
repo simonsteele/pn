@@ -57,7 +57,7 @@ LRESULT CToolSettingsPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	else
 		m_saveCombo.SetCurSel(0);
 
-	m_HotKeyCtrl = GetDlgItem(IDC_TE_HOTKEY);
+	m_HotKeyCtrl.SubclassWindow(GetDlgItem(IDC_TE_HOTKEY));
 	m_HotKeyCtrl.SetHotKey(LOBYTE(m_wHotKey), HIBYTE(m_wHotKey));
 
 	m_paramHelper.SubclassWindow( GetDlgItem(IDC_OPTHELPER_BUTTON) );

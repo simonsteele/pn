@@ -72,7 +72,7 @@ LRESULT COptionsPageKeyboard::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 	addExtensions();
 
 	m_shortcutlist.Attach(GetDlgItem(IDC_KB_ASSIGNEDLIST));
-	m_hotkey.Attach(GetDlgItem(IDC_KB_HOTKEY));
+	m_hotkey.SubclassWindow(GetDlgItem(IDC_KB_HOTKEY));
 
 	enableButtons();
 

@@ -145,4 +145,20 @@ class CSchemeCombo : public CComboBox
 		SchemeDetails* GetItemScheme(int index);
 };
 
+/**
+ * @brief Override the hotkey control to support the Delete key
+ */
+class CPNHotkeyCtrl : public CWindowImpl<CPNHotkeyCtrl, CHotKeyCtrl>
+{
+public:
+	BEGIN_MSG_MAP(CPNHotkeyCtrl)
+		MESSAGE_HANDLER(WM_KEYUP, OnKeyUp)
+		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
+	END_MSG_MAP()
+
+private:
+	LRESULT OnKeyUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+};
+
 #endif

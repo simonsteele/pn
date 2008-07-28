@@ -65,7 +65,7 @@ class CToolSettingsPage : public CPropertyPageImpl<CToolSettingsPage>,
 		CString		m_csCommand;
 		CString		m_csFolder;
 		CString		m_csParams;
-		CHotKeyCtrl	m_HotKeyCtrl;
+		CPNHotkeyCtrl	m_HotKeyCtrl;
 		
 		BOOL	m_bFilter;
 		int		m_iSaveStyle;
