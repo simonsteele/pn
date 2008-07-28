@@ -123,7 +123,7 @@ BEGIN
         MENUITEM "Save &Workspace As...",       ID_FILE_SAVEWORKSPACEAS
         POPUP "Enco&ding"
         BEGIN
-            MENUITEM "8-bit",                       ID_ENCODING_8
+            MENUITEM "ANSI",                        ID_ENCODING_8
             MENUITEM "UTF-8",                       ID_ENCODING_UTF8
             MENUITEM "UTF-16 Big Endian",           ID_ENCODING_UTF16BE
             MENUITEM "UTF-16 Little Endian",        ID_ENCODING_UTF16LE

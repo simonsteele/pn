@@ -1284,18 +1284,21 @@ LRESULT CChildFrame::OnUseTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 LRESULT CChildFrame::OnConvertTabsToSpaces(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
 {
 	SearchOptions options;
-	
+
+	if (m_view.GetTabWidth() < 1)
+	{
+		RETURN_UNEXPECTED( _T("Tab width must be greater than 0"), 0 );
+	}
+
 	m_view.BeginUndoAction();
 
-	// TODO: The options dialog should not allow a tab width of 0
-	assert( m_view.GetTabWidth() > 0 );
-
-	std::string replaceText = "\\1";
+	/*std::string replaceText = "\\1";
 	for ( int i = 0; i < m_view.GetTabWidth(); i++ )
-		replaceText += " ";
+		replaceText += " ";*/
 	
-	// Find all leading groups of spaces, convert to tabs
-	options.SetFindText("^\\( *\\)\t");
+	std::string replaceText(m_view.GetTabWidth(), ' ');
+
+	options.SetFindText("^\\t+");
 	options.SetReplaceText(replaceText.c_str());
 
 	options.SetIncludeHidden(true);
@@ -1324,16 +1327,17 @@ LRESULT CChildFrame::OnConvertSpacesToTabs(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 	m_view.BeginUndoAction();
 
-	// TODO: The options dialog should not allow a tab width of 0
-	assert( m_view.GetTabWidth() > 0 );
+	if (m_view.GetTabWidth() < 1)
+	{
+		RETURN_UNEXPECTED( _T("Tab width must be greater than 0"), 0 );
+	}
 
-	tstring findText = "^\\(\\t*\\)";
-	for ( int i = 0; i < m_view.GetTabWidth(); i++ )
-		findText += " ";
-	
+	TCHAR buf[100];
+	_stprintf(buf, _T("^[ ]{%d}"), m_view.GetTabWidth());
+
 	// Find all leading groups of spaces, convert to tabs
-	options.SetFindText(findText.c_str());
-	options.SetReplaceText("\\1\\t");
+	options.SetFindText(buf);
+	options.SetReplaceText("\\t");
 
 	options.SetIncludeHidden(true);
 	options.SetLoopOK(true);
@@ -1995,6 +1999,8 @@ bool CChildFrame::SaveAs(bool ctagsRefresh)
 
 	if(dlgSave.DoModal() == IDOK)
 	{
+		resetSaveDir();
+
 		EPNSaveFormat format = dlgSave.GetSaveFormat();
 		if(format != PNSF_NoChange)
 		{
@@ -2276,6 +2282,8 @@ void CChildFrame::Export(int type)
 		
 		if(dlgSave.DoModal() == IDOK)
 		{
+			resetSaveDir();
+
 			fout.SetFileName(dlgSave.GetSingleFileName());
 			if(fout.IsValid())
 			{
@@ -2298,8 +2306,7 @@ void CChildFrame::SetModifiedOverride(bool bVal)
 
 void CChildFrame::PrintSetup()
 {
-	SS::CPageSetupDialog psd(PSD_INWININIINTLMEASURE|PSD_ENABLEPAGESETUPTEMPLATE,
-		m_hWnd);
+	SS::CPageSetupDialog psd(PSD_INWININIINTLMEASURE|PSD_ENABLEPAGESETUPTEMPLATE, m_hWnd);
 
 	PAGESETUPDLG& pdlg = psd.m_psd;
 
@@ -2359,6 +2366,18 @@ void CChildFrame::CCFSplitter::GetOwnerClientRect(HWND hOwner, LPRECT lpRect)
 {
 	m_pFrame->GetClientRect(lpRect);
 	m_pFrame->UpdateBarsPosition(*lpRect, FALSE);	
+}
+
+void CChildFrame::resetSaveDir()
+{
+	if (OPTIONS->Get(PNSK_GENERAL, _T("ResetCurrentDir"), true))
+	{
+		// Store the directory we opened into, and then set current back to PN
+		//TCHAR curPath[MAX_PATH+1];
+		//::GetCurrentDirectory(MAX_PATH+1, curPath);
+		//m_lastOpenPath = curPath;
+		::SetCurrentDirectory(OPTIONS->GetPNPath(PNPATH_PN));
+	}
 }
 
 ////////////////////////////////////////////////////

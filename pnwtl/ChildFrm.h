@@ -327,7 +327,7 @@ public:
 	
 	bool InsertClipCompleted(Scintilla::SCNotification* notification);
 
-protected:
+private:
 
 	/**
 	 * Internal class which adjusts the splitter behaviour to take account
@@ -342,7 +342,6 @@ protected:
 		CChildFrame* m_pFrame;
 	};
 
-protected:
 	void LoadExternalLexers();
 	void PrintSetup();
 	void SchemeChanged(Scheme* pScheme);
@@ -354,8 +353,8 @@ protected:
 	int HandleFailedFileOp(LPCSTR filename, bool bOpening);
 	bool attemptOverwrite(LPCTSTR filename);
 	void handleClose();
+	void resetSaveDir();
 
-private:
 	CommandDispatch*	m_pCmdDispatch;
 	DocumentPtr			m_spDocument;
 	static bool			s_bFirstChild;

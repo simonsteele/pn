@@ -1559,7 +1559,7 @@ LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 	tstring path;
 
-	if(OPTIONS->Get(PNSK_INTERFACE, _T("OpenInCurrentDir"), true))
+	if (OPTIONS->Get(PNSK_INTERFACE, _T("OpenInCurrentDir"), true))
 	{
 		CChildFrame* pChild = CChildFrame::FromHandle( GetCurrentEditor() );
 		if(pChild != NULL)
@@ -1568,9 +1568,15 @@ LRESULT CMainFrame::OnFileOpen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 			dlgOpen.SetInitialPath(path.c_str());
 		}
 	}
+	else if (m_lastOpenPath.size())
+	{
+		dlgOpen.SetInitialPath(m_lastOpenPath.c_str());
+	}
 
 	if (dlgOpen.DoModal() == IDOK)
 	{
+		resetCurrentDir(true);
+
 		EAlreadyOpenAction action = (EAlreadyOpenAction)OPTIONS->GetCached(Options::OAlreadyOpenAction);
 		for(IFileOpenDialogBase::const_iterator i = dlgOpen.begin(); i != dlgOpen.end(); ++i)
 		{
@@ -1652,17 +1658,19 @@ LRESULT CMainFrame::OnFileOpenProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	CAutoOpenDialog dlgOpen(LS(IDS_ALLPROJECTFILES));
 	
 	tstring s = StringLoader::Get(IDS_OPENPROJECTDLGTITLE);
-	//TODO: dlgOpen.m_ofn.lpstrTitle = s.c_str();
+	dlgOpen.SetTitle(s.c_str());
 
 	if(dlgOpen.DoModal() == IDOK)
 	{
+		resetCurrentDir(false);
+
 		CFileName fn(dlgOpen.GetSingleFileName());
 		fn.ToLower();
-		if( fn.GetExtension() == _T(".pnproj") )
+		if (fn.GetExtension() == _T(".pnproj"))
 		{
 			OpenProject(fn.c_str());
 		}
-		else if( fn.GetExtension() == _T(".ppg") )
+		else if (fn.GetExtension() == _T(".ppg"))
 		{
 			OpenWorkspace(fn.c_str());
 		}
@@ -1706,8 +1714,10 @@ LRESULT CMainFrame::OnFileSaveWorkspaceState(WORD /*wNotifyCode*/, WORD /*wID*/,
 		dlgSave.SetInitialPath(path);
 	}
 
-	if(dlgSave.DoModal() == IDOK)
+	if (dlgSave.DoModal() == IDOK)
 	{
+		resetCurrentDir(false);
+
 		WorkspaceState wss;
 		wss.Save(dlgSave.GetSingleFileName());
 	}
@@ -3072,6 +3082,8 @@ bool CMainFrame::SaveWorkspaceAs(Projects::Workspace* pWorkspace)
 
 	if(dlg.DoModal() == IDOK)
 	{
+		resetCurrentDir(false);
+
 		pWorkspace->SetFileName(dlg.GetSingleFileName());
 		AddMRUProjectsEntry(dlg.GetSingleFileName());
 		return true;
@@ -3393,5 +3405,21 @@ void CMainFrame::handleUpdate(const Updates::UpdateAvailableDetails* details)
 			Updates::SetLastOfferedVersion(*details);
 		}
 		break;
+	}
+}
+
+void CMainFrame::resetCurrentDir(bool rememberOpenPath)
+{
+	if (OPTIONS->Get(PNSK_GENERAL, _T("ResetCurrentDir"), true))
+	{
+		// Store the directory we opened into, and then set current back to PN
+		if (rememberOpenPath)
+		{
+			TCHAR curPath[MAX_PATH+1];
+			::GetCurrentDirectory(MAX_PATH+1, curPath);
+			m_lastOpenPath = curPath;
+		}
+
+		::SetCurrentDirectory(OPTIONS->GetPNPath(PNPATH_PN));
 	}
 }

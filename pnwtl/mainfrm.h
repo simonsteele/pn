@@ -426,6 +426,8 @@ private:
 	inline CPNDockingWindow* getDocker(EDocker window) const;
 
 	void handleUpdate(const Updates::UpdateAvailableDetails* details);
+	
+	void resetCurrentDir(bool rememberOpenPath);
 
 	CPNDockingWindow*		m_dockingWindows[(ID_VIEW_LASTDOCKER-ID_VIEW_FIRSTDOCKER)+1];
 
@@ -495,6 +497,7 @@ private:
 	int						m_iFirstToolCmd;
 
 	std::list<tstring>*		m_cmdLineArgs;
+	tstring					m_lastOpenPath;
 
 	/* Can't free dialogs via the base class or destructors don't get
 	called. Use a template function to free any dialog class */
