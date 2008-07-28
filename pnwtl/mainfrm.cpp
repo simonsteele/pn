@@ -2138,7 +2138,8 @@ LRESULT CMainFrame::OnHelpContents(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	path = fn.c_str();
 
 	path += "::/htmlhelp/index.html";
-	::HtmlHelp(m_hWnd,
+	// Passing NULL as the caller causes HtmlHelp to load in sibling mode
+	::HtmlHelp(NULL,
          path.c_str(),
          HH_DISPLAY_TOC,
          NULL) ;
