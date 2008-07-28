@@ -324,8 +324,8 @@ void CJumpTreeCtrl::recursiveDefinitionSearch(HTREEITEM hRoot, Definitions& defi
 	}
 }
 	
-//Manuel Sandoval: Rewrote OnFound for ScintillaImpl can feature autocompleting.
-//Also now uses recursion, so items can added inside owner classes.
+// Manuel Sandoval: Rewrote OnFound for ScintillaImpl can feature autocompleting.
+// Also now uses recursion, so items can added inside owner classes.
 
 void CJumpTreeCtrl::OnFound(int count, LPMETHODINFO methodInfo)
 {
@@ -380,7 +380,7 @@ void updateMethodInfo(extensions::METHODINFO& dest, extensions::METHODINFO& src)
 	}
 }
 
-//Manuel Sandoval: This function adds new items to tag tree using recursivity:
+//Manuel Sandoval: This function adds new items to tag tree using recursion:
 #define tag_class 3
 #define tag_struct 10
 #define tag_union 12
@@ -399,20 +399,20 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 		if(!strncmp(methodInfo->parentName, "__", 2))
 			return 0;
 
-		//When an item has parentName, it's assumed to be owned by a class/struct.
-		//An owner can be in the form class1.class2...classn. So first find class1:
-		//I assume structs and classes can't have repeated names (?)
+		// When an item has parentName, it's assumed to be owned by a class/struct.
+		// An owner can be in the form class1.class2...classn. So first find class1:
+		// I assume structs and classes can't have repeated names (?)
 		char FirstAncestor[256];
 		memset(FirstAncestor, 0, sizeof(FirstAncestor));
 		int i = 0;
-		while((methodInfo->parentName[i] != '.') && (methodInfo->parentName[i]))
+		while ((methodInfo->parentName[i] != '.') && (methodInfo->parentName[i]))
 		{
 			FirstAncestor[i] = methodInfo->parentName[i];
 			i++;
 
-			//I don't think there is a class name longer than 256!
-			//But anyway: it's MANDATORY that strings are null terminated.
-			//So we must warrant there is enough room for it
+			// I don't think there is a class name longer than 256!
+			// But anyway: it's MANDATORY that strings are null terminated.
+			// So we must warrant there is enough room for it
 			if(i >= sizeof(FirstAncestor)-2)
 			{
 				ATLASSERT(false);
@@ -428,7 +428,7 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 		while (hClassContainer) 
 		{
 			methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hClassContainer));
-			//If we have "class"/"struct" node, try to find the owner class/struct in it:
+			// If we have "class"/"struct" node, try to find the owner class/struct in it:
 			if((methodInfoItem->type == tag_class)
 			|| (methodInfoItem->type == tag_struct)
 			|| (methodInfoItem->type == tag_union)
@@ -457,7 +457,7 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 				break;
 		}
 		
-		//If "class"/"struct" node still doesn't exist, or owner class/struct doesn't exist, create them:
+		// If "class"/"struct" node still doesn't exist, or owner class/struct doesn't exist, create them:
 		if(!hClassContainer || !hClassNode)
 		{		
 			// The container or class node does not exist, let's make it by creating a fake methodinfo for it:
@@ -585,28 +585,34 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 
 LRESULT CJumpTreeCtrl::OnLButtonDblClick(UINT /*uMsg*/, WPARAM wParam/**/, LPARAM lParam/**/, BOOL& bHandled)
 {
-	HTREEITEM hChildItem, hItem;
-	LPMETHODINFO methodInfoItem;
-
 	bHandled = false;
-	hChildItem = GetSelectedItem();
-	hItem = GetChildItem(hChildItem);
+	
+	HTREEITEM hChildItem = GetSelectedItem();
 
-	if (hItem != 0) 
+	if (hChildItem == NULL)
 	{
-		//If not the last ChildItem -> toggle the tree
+		return 0;
+	}
+
+	HTREEITEM hItem = GetChildItem(hChildItem);
+
+	if (hItem != NULL)
+	{
+		// If not the last ChildItem -> toggle the tree
 		Expand(hItem, TVE_TOGGLE);
 		return 0;
 	}
 	
-	methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hChildItem));
-	if (methodInfoItem->methodName == 0) // if ChildItem -> return
+	LPMETHODINFO methodInfoItem = reinterpret_cast<LPMETHODINFO>(GetItemData(hChildItem));
+	if (methodInfoItem == NULL || methodInfoItem->methodName == NULL) // if ChildItem -> return
 	{
 		return 0;
 	}
 
-	bHandled = true;	// its the Item with line Info -> goto line
+	// We found something to jump to:
+	bHandled = true;
 	::SendMessage(static_cast<CChildFrame*>(methodInfoItem->userData)->m_hWnd, PN_GOTOLINE, reinterpret_cast<WPARAM>(methodInfoItem->methodName), static_cast<LPARAM>(methodInfoItem->lineNumber));
+
 	return 0;
 }
 
@@ -619,18 +625,19 @@ LRESULT CJumpTreeCtrl::OnRButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 		CSPopupMenu popup(IDR_POPUP_CTAGS);
 		g_Context.m_frame->TrackPopupMenu(popup, 0, pt.x, pt.y, NULL, m_hWnd);
 	}
+	
 	return 0;
 }
 
 LRESULT CJumpTreeCtrl::OnCollapsAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	HTREEITEM hRoot;
- 	hRoot = GetRootItem();
+	HTREEITEM hRoot = GetRootItem();
 	while (hRoot)
 	{
 		Expand(hRoot, TVE_COLLAPSE);		
 		hRoot = GetNextItem(hRoot, TVGN_NEXT);
 	}
+
 	return 0;
 }
 
@@ -646,47 +653,12 @@ LRESULT CJumpTreeCtrl::OnExpandAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	return 0;
 }
 
-#if 0
-//Notification handler
-BOOL CJumpTreeCtrl::OnToolTipNotify(UINT id, NMHDR *pNMHDR,
-   LRESULT *pResult)
-{
-   // need to handle both ANSI and UNICODE versions of the message
-   TOOLTIPTEXTA* pTTTA = (TOOLTIPTEXTA*)pNMHDR;
-   TOOLTIPTEXTW* pTTTW = (TOOLTIPTEXTW*)pNMHDR;
-   CString strTipText;
-   UINT nID = pNMHDR->idFrom;
-   if (pNMHDR->code == TTN_NEEDTEXTA && (pTTTA->uFlags & TTF_IDISHWND) ||
-      pNMHDR->code == TTN_NEEDTEXTW && (pTTTW->uFlags & TTF_IDISHWND))
-   {
-      // idFrom is actually the HWND of the tool
-      nID = ::GetDlgCtrlID((HWND)nID);
-   }
-
-   if (nID != 0) // will be zero on a separator
-      strTipText.Format("Control ID = %d", nID);
-
-   if (pNMHDR->code == TTN_NEEDTEXTA)
-      lstrcpyn(pTTTA->szText, strTipText, sizeof(pTTTA->szText));
-   else
-      ::MultiByteToWideChar( CP_ACP , 0, strTipText, -1, pTTTW->szText, sizeof(pTTTW->szText) );
-   *pResult = 0;
-   return TRUE;    // message was handled
-}
-#endif
-
-
-
 LRESULT CJumpTreeCtrl::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	bHandled = FALSE;
 
-//	if(m_pDropTarget != NULL)
-//	{
-		deleteFileTree();
-//		HRESULT hr = RevokeDragDrop(m_hWnd);
-//		ATLASSERT(SUCCEEDED(hr));
-//	}
+	deleteFileTree();
+
 	return 0;
 }
 
