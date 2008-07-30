@@ -13,8 +13,7 @@
 /**
  * Explorer docking window
  */
-class COpenFilesDocker : public CWindowImpl<COpenFilesDocker>
-	
+class COpenFilesDocker : public CWindowImpl<COpenFilesDocker>	
 {
 	typedef CWindowImpl<COpenFilesDocker> baseClass;
 
@@ -34,8 +33,9 @@ public:
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		MESSAGE_HANDLER(WM_GETMINMAXINFO, OnGetMinMaxInfo)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, OnCtlColor)
-		
+
 		NOTIFY_HANDLER(IDC_FILESLIST, NM_DBLCLK, OnListDblClk)
+		NOTIFY_HANDLER(IDC_FILESLIST, LVN_GETINFOTIP, OnGetInfoTip);
 
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
@@ -63,6 +63,7 @@ private:
 	LRESULT OnCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
 	LRESULT OnListDblClk(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT OnGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	CListViewCtrl m_view;
 	CImageList m_images;

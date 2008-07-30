@@ -200,7 +200,7 @@ LRESULT CClipsDocker::OnClipGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 			str += _T("...");
 		}
 		
-		strcpy(pGetInfoTip->pszText, str.c_str());
+		_tcscpy(pGetInfoTip->pszText, str.c_str());
 	}
 
 	return 0;

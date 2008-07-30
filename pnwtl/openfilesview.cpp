@@ -125,9 +125,10 @@ LRESULT COpenFilesDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	RECT rc;
 	GetClientRect(&rc);
 	
-	m_view.Create(m_hWnd, rc, _T("OpenFilesList"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | LVS_REPORT | LVS_NOCOLUMNHEADER, LVS_EX_FULLROWSELECT, IDC_FILESLIST);
+	m_view.Create(m_hWnd, rc, _T("OpenFilesList"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | LVS_REPORT | LVS_NOCOLUMNHEADER, 0, IDC_FILESLIST);
 	m_view.AddColumn(_T(""), 0);
 	m_view.SetColumnWidth(0, (rc.right-rc.left) -::GetSystemMetrics(SM_CXVSCROLL));
+	m_view.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
 
 	m_images.Create(16, 16, ILC_COLOR32 | ILC_MASK, 3, 1);
 	HBITMAP bmp = (HBITMAP)::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_OPENFILES), IMAGE_BITMAP, 48, 16, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
@@ -199,6 +200,39 @@ LRESULT COpenFilesDocker::OnListDblClk(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	handleUserSelection( lpnm->iItem );
 
 	return 0;
+}
+
+LRESULT COpenFilesDocker::OnGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	LPNMLVGETINFOTIP pGetInfoTip = (LPNMLVGETINFOTIP)pnmh;
+
+	extensions::IDocument* rawdoc = docFromListItem(pGetInfoTip->iItem);
+	Document* pndoc = static_cast<Document*>(rawdoc);
+	
+	if (rawdoc && rawdoc->GetCanSave())
+	{
+		tstring str;
+		if (pGetInfoTip->dwFlags == 0)
+		{
+			str = pGetInfoTip->pszText;
+			str += _T(":\n");
+			str += pndoc->GetFileName(FN_FULL);
+		}
+		else
+		{
+			str = pndoc->GetFileName(FN_FULL);
+		}
+
+		if (str.size() >= (size_t)(pGetInfoTip->cchTextMax - 3))
+		{
+			str.resize(pGetInfoTip->cchTextMax-4);
+			str += _T("...");
+		}
+		
+		_tcscpy(pGetInfoTip->pszText, str.c_str());
+	}
+
+	return true;
 }
 
 /// Add a document to the list
