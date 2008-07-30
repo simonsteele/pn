@@ -604,5 +604,6 @@ class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
 #include "OptionsPageGlobalStyles.h"
 #include "OptionsPageClips.h"
 #include "OptionsPageExtensions.h"
+#include "OptionsPageEditing.h"
 
 #endif

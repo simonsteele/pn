@@ -1906,6 +1906,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsPageTools			pageTools(&schemeconfig, &toolsmanager);
 	COptionsPageProjectTools	pageProjectTools(&toolsmanager);
 	COptionsPageClips			pageClips(&schemeconfig, m_pTextClips);
+	COptionsPageEditing			pageEditing;
 
 	COptionsPageFileTypes		pageFiles(&schemeconfig);
 	COptionsPageAFiles			pageAFiles;
@@ -1920,6 +1921,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsDialog options;
 	options.AddPage(&general);
 	options.AddPage(&editDefs);
+	options.AddPage(&pageEditing);
 	options.AddPage(&visual);
 	options.AddPage(&confirmations);
 	options.AddPage(&dialogs);

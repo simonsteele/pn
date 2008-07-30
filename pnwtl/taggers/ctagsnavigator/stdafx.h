@@ -15,13 +15,12 @@
 
 // Windows Header Files:
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
+#include <stdlib.h>
 #include <windows.h>
-
 #include <tchar.h>
+#include <assert.h>
 
 #include <boost/shared_ptr.hpp>
-
-#include <assert.h>
 
 #define PNASSERT assert
 

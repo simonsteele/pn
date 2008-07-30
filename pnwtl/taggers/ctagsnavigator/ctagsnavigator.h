@@ -24,18 +24,16 @@
 
 #include <string>
 
-using namespace extensions;
-
 #define PARSE_BUFFER_SIZE	16384
 
 typedef struct tagParseState
 {
 	char		buffer[PARSE_BUFFER_SIZE*2];
 	int			extra;
-	ITagSink*	sink;
+	extensions::ITagSink*	sink;
 } PARSESTATE, * LPPARSESTATE;
 
-class CTagsTagSource : public ITagSource
+class CTagsTagSource : public extensions::ITagSource
 {
 public:
 	CTagsTagSource();
@@ -48,7 +46,7 @@ public:
 	/**
 	 * Enumerate tags
 	 */
-	virtual bool FindTags(ITagSink* sink, const wchar_t* filename, void* userData, MASKSTRUCT mask, const char* scheme);
+	virtual bool FindTags(extensions::ITagSink* sink, const wchar_t* filename, void* userData, MASKSTRUCT mask, const char* scheme);
 
 	/**
 	 * Load externally defined ctags languages.

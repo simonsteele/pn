@@ -14,7 +14,7 @@
 #include "languageTypeTables.h"
 #include "languageMapping.h"
 
-#include <stdlib.h>
+using namespace extensions;
 
 #ifdef _DEBUG
 #include <stdio.h>

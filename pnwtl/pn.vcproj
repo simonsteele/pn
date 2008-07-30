@@ -1593,6 +1593,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OptionsPageEditing.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OptionsPageEditing.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OptionsPageExtensions.cpp"
 				>
 			</File>

@@ -163,7 +163,7 @@ long XpressiveRegexSearch::FindText(Document* doc, int minPos, int maxPos, const
 
 	std::string restring(s, *length);
 
-	int compileFlags(regex_constants::ECMAScript);
+	int compileFlags(regex_constants::ECMAScript | regex_constants::not_dot_newline);
 	if (!caseSensitive)
 	{
 		compileFlags |= regex_constants::icase;

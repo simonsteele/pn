@@ -1375,6 +1375,23 @@ BEGIN
     CONTROL         "",IDC_EXTENSIONSLIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,10,14,279,117
 END
 
+IDD_PAGE_EDITING DIALOGEX 0, 0, 300, 200
+STYLE DS_SETFONT | DS_CONTROL | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg 2", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_CARETSLOPX_EDIT,63,24,54,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CARETSLOPY_EDIT,63,45,54,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,4,299,1
+    LTEXT           "Editing",IDC_STATIC,0,0,22,8
+    LTEXT           "Auto-scroll Caret Position Limits:",IDC_STATIC,10,12,111,8
+    LTEXT           "pixels",IDC_STATIC,124,26,19,8
+    LTEXT           "Horizontal:",IDC_STATIC,24,26,36,8
+    LTEXT           "text lines",IDC_STATIC,124,46,30,8
+    LTEXT           "Vertical:",IDC_STATIC,24,46,27,8
+    CONTROL         "Strictly enforce the auto-scroll positioning",IDC_CARETSTRICT_CHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,24,65,174,10
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1642,6 +1659,13 @@ BEGIN
     BEGIN
         RIGHTMARGIN, 299
         VERTGUIDE, 10
+    END
+
+    IDD_PAGE_EDITING, DIALOG
+    BEGIN
+        RIGHTMARGIN, 299
+        VERTGUIDE, 10
+        VERTGUIDE, 24
     END
 END
 #endif    // APSTUDIO_INVOKED
