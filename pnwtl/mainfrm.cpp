@@ -164,6 +164,7 @@ bool CMainFrame::OpenFile(LPCTSTR pathname, Scheme* pScheme, EPNEncoding encodin
 
 bool CMainFrame::Open(LPCTSTR pathname, bool bAddMRU)
 {
+
 	bool bRet = OpenFile(pathname, NULL);
 	if(bAddMRU && bRet)
 	{
@@ -1285,6 +1286,7 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 			CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
 			if(pChild)
 			{
+
 				CTextView* pTV = pChild->GetTextView();
 				if(bHaveLine)
 				{
@@ -1299,6 +1301,8 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 				{
 					pChild->SetScheme( pScheme );
 				}
+
+
 			}
 		}
 

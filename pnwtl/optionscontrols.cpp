@@ -172,15 +172,16 @@ int CSchemeCombo::AddScheme(LPCTSTR title, SchemeDetails* pScheme)
 
 void CSchemeCombo::Load(SchemeConfigParser* pConfig, LPCTSTR selectScheme, bool bIncludePlainText, bool bIncludeInternal)
 {
-	int index = 0;
-	int selIndex = 0;
 	LPCTSTR schemeToSelect = (selectScheme ? selectScheme : pConfig->GetCurrentScheme());
 
 	Clear();
 
+	tstring schemeText;
+
 	if( bIncludePlainText )
 	{
-		index = AddString(_T("Plain Text"));
+		schemeText = (_T("Plain Text"));
+		int index = AddString(schemeText.c_str());
 		SetItemDataPtr(index, pConfig->GetPlainTextScheme());
 	}
 
@@ -190,15 +191,15 @@ void CSchemeCombo::Load(SchemeConfigParser* pConfig, LPCTSTR selectScheme, bool 
 		if( !bIncludeInternal && (*i)->IsInternal() )
 			continue;
 
-		index = AddString((*i)->Title.c_str());
+		int index = AddString((*i)->Title.c_str());
 		SetItemDataPtr(index, (*i));
 		if((*i)->Name == schemeToSelect)
-			selIndex = index;
+			schemeText = (*i)->Title;
 	}
 	
-	if(GetCount() > 0)
+	if(schemeText.size())
 	{
-		SetCurSel(selIndex);
+		SelectString(0, schemeText.c_str());
 	}
 }
 
