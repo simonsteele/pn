@@ -74,7 +74,7 @@
 	<target name="deploy" depends="svnvar build">
 		<property name="deployver" value="${ver}.${svn.revision}"/>
 		<property name="compactver" value="${string::replace(deployver, '.', '')}"/>
-		<property name="distdir" value="dist\${deployver}"/>
+		<property name="distdir" value="..\dist\${deployver}"/>
 		
 		<echo message="${deployver} (${compactver})"/>
 		
@@ -114,7 +114,9 @@
 				<include name="ctags_README"/>
 				<include name="ctags_COPYING"/>
 				<include name="license.html"/>
-				<include name="help\pn2.chm"/>
+			</fileset>
+			<fileset basedir="doc\help">
+				<include name="pn2.chm"/>
 			</fileset>
 			<fileset basedir="bin\clips" prefix="clips">
 				<include name="*.clips"/>
@@ -150,7 +152,9 @@
 				<include name="ctags_README"/>
 				<include name="ctags_COPYING"/>
 				<include name="license.html"/>
-				<include name="help\pn2.chm"/>
+			</fileset>
+			<fileset basedir="doc\help">
+				<include name="pn2.chm"/>
 			</fileset>
 			<fileset basedir="bin\clips" prefix="clips">
 				<include name="*.clips"/>
@@ -197,7 +201,7 @@
 	<!-- Deploy PyPN -->
 	<target name="deploypypn" depends="svnvar">
 		<property name="deployver" value="${ver}.${svn.revision}"/>
-		<property name="distdir" value="dist\pypn-${deployver}"/>
+		<property name="distdir" value="..\dist\pypn-${deployver}"/>
 		
 		<mkdir dir="${distdir}"/>
 		
@@ -221,7 +225,7 @@
 	
 	<target name="sdk" depends="svnvar">
 		<property name="deployver" value="${ver}.${svn.revision}"/>
-		<property name="distdir" value="dist\sdk-${deployver}"/>
+		<property name="distdir" value="..\dist\sdk-${deployver}"/>
 		
 		<mkdir dir="${distdir}"/>
 		
@@ -252,7 +256,7 @@
 	<target name="upload" depends="svnvar">
 		<property name="deployver" value="${ver}.${svn.revision}"/>
 		<property name="compactver" value="${string::replace(deployver, '.', '')}"/>
-		<property name="distdir" value="dist\${deployver}"/>
+		<property name="distdir" value="..\dist\${deployver}"/>
 		
 		<exec
 			program="c:\python25\python"
