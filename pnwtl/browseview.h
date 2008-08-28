@@ -4,7 +4,7 @@
  * @author Simon Steele
  * @note Copyright (c) 2008 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -12,7 +12,7 @@
 #define browseview_h__included
 
 class CShellTreeCtrl;
-class CExplorerMenu;
+class ShellContextMenu;
 
 /**
  * Explorer docking window
@@ -66,7 +66,7 @@ private:
 
 	LRESULT handleSystemContextMenuMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult);
 
-	CExplorerMenu*		m_menuHandler;
+	ShellContextMenu*	m_menuHandler;
 	CShellTreeCtrl*		m_view;
 };
 

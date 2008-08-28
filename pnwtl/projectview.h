@@ -15,6 +15,7 @@
 #include "include/droptargetimpl.h"
 
 class ShellImageList;
+class ShellContextMenu;
 
 class CProjectTreeCtrl : public CMSTreeViewCtrl, Projects::IProjectWatcher, CThemeImpl<CProjectTreeCtrl>
 {
@@ -64,6 +65,11 @@ public:
 		COMMAND_ID_HANDLER(ID_PROJECT_OPENFOLDER, OnMagicOpenFolder)
 		COMMAND_ID_HANDLER(ID_PROJECT_SHELLOPEN, OnShellOpenFile)
 		COMMAND_ID_HANDLER(ID_PROJECT_RENAME, OnBeginRenameItem)
+
+		{
+			if(handleSystemContextMenuMessage(hWnd, uMsg, wParam, lParam, lResult))
+				return TRUE;
+		}
 		
 		CHAIN_MSG_MAP(baseClass)
 		
@@ -117,6 +123,8 @@ protected:
 	bool		handleFolderDrop(Projects::Folder* target);
 	bool		handleProjectDrop(Projects::Project* target);
 	void		handleEndDrag();
+
+	LRESULT handleSystemContextMenuMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult);
 
 	static int CompareWorker(LPARAM lParam1, LPARAM lParam2, LPARAM caseSensitive, bool sortAll);
 	static int CALLBACK CompareItem(LPARAM lParam1, LPARAM lParam2, LPARAM caseSensitive);
@@ -188,6 +196,7 @@ protected:
 	DWORD					dwDragHoverAcquire;
 	std::list<HTREEITEM>	dropSelectedItems;
 	CComObject<DropTarget>* m_pDropTarget;
+	ShellContextMenu*		m_explorerMenu;
 };
 
 class CProjectDocker : public CWindowImpl<CProjectDocker>// CPNDockingWindow<CProjectDocker>

@@ -11,6 +11,7 @@
 #include "resource.h"
 #include "filedialogs.h"
 #include "include/atlshellext.h"
+#include "include/ShellCtrls.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // CPNOpenDialog
@@ -314,6 +315,24 @@ size_t CVistaDialogHelper::GetFilterCount() const
 	return m_filters.size();
 }
 
+HRESULT SafeCreateShellItem(PCIDLIST_ABSOLUTE pidlParent, IShellFolder *psfParent, PCUITEMID_CHILD pidl, IShellItem **ppsi)
+{
+	static HMODULE shell32 = ::LoadLibrary(_T("shell32.dll"));
+	if (!shell32) 
+	{
+		return E_FAIL;
+	}
+
+	typedef HRESULT (STDAPICALLTYPE *PFNCREATESHELLITEM)(PCIDLIST_ABSOLUTE pidlParent, IShellFolder *psfParent, PCUITEMID_CHILD pidl, IShellItem **ppsi);
+	static PFNCREATESHELLITEM pfnCreateShellItem = reinterpret_cast<PFNCREATESHELLITEM>(::GetProcAddress(shell32, "SHCreateShellItem"));
+	if (pfnCreateShellItem == NULL)
+	{
+		return E_FAIL;
+	}
+
+	return pfnCreateShellItem(pidlParent, psfParent, pidl, ppsi);
+}
+
 HRESULT CVistaDialogHelper::GetPathShellItem(LPCTSTR path, IShellItem** si)
 {
 	if (path == NULL)
@@ -339,7 +358,7 @@ HRESULT CVistaDialogHelper::GetPathShellItem(LPCTSTR path, IShellItem** si)
 		return E_FAIL;
 	}
 
-	return SHCreateShellItem(NULL, NULL, pidl, si);
+	return SafeCreateShellItem(NULL, NULL, pidl, si);
 }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -4,15 +4,14 @@
  * @author Simon Steele
  * @note Copyright (c) 2008 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #include "stdafx.h"
 #include "resource.h"
 #include "browseview.h"
 
-#include "include/atlshellext.h"
-#include "include/ShellCtrls.h"
+#include "ExplorerMenu.h"
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -22,7 +21,7 @@
 
 CBrowseDocker::CBrowseDocker() : 
 	m_view(NULL), 
-	m_menuHandler(new CExplorerMenu())
+	m_menuHandler(new ShellContextMenu())
 {
 	
 }

@@ -86,6 +86,14 @@ inline BOOL AtlGetFilePidl(LPCTSTR pstrFileName, LPITEMIDLIST* pidl)
    return TRUE;
 };
 
+inline BOOL AtlGetFilePidl2(LPCTSTR pstrFileName, LPITEMIDLIST* pidl)
+{
+	CT2CW wPath(pstrFileName);
+	DWORD rgfInOut = 0;
+
+	return SUCCEEDED(SHILCreateFromPath(wPath, pidl, &rgfInOut));
+}
+
 inline BOOL AtlGetShellPidl(LPCITEMIDLIST pidl, IShellFolder** ppFolder, LPITEMIDLIST* pidlRel)
 {
    ATLASSERT(pidl);
@@ -876,7 +884,15 @@ class CExplorerMenu
 public:
    CComQIPtr<IContextMenu2, &IID_IContextMenu2> m_spCtxMenu2;
 
-   BOOL TrackPopupMenu(LPCITEMIDLIST pidl, int x, int y, HWND hWnd)
+   	BOOL TrackPopupMenu(LPCITEMIDLIST pidl, int x, int y, HWND hWnd, UINT idCmdFirst = 1, UINT idCmdLast = 0x7FFF)
+	{
+		CMenu menu;
+		menu.CreatePopupMenu();
+		int nCmd;	   
+		return CExplorerMenu::TrackPopupMenu(pidl, x, y, hWnd, menu.m_hMenu, menu.m_hMenu, idCmdFirst, idCmdLast, nCmd);
+   }
+
+   BOOL TrackPopupMenu(LPCITEMIDLIST pidl, int x, int y, HWND hWnd, HMENU hMenu, HMENU hInsertMenu, UINT idCmdFirst, UINT idCmdLast, int& nCmd)
    {
       ATLASSERT(pidl);
       ATLASSERT(::IsWindow(hWnd));
@@ -898,21 +914,18 @@ public:
 		  return FALSE;
 	  }
       
-	  // Do we need to display the popup menu?
-      HMENU hMenu = ::CreatePopupMenu();
-      
-	  int nCmd = 0;
+	  nCmd = 0;
       if( SUCCEEDED( spContextMenu->QueryContextMenu(
-           hMenu, 
+           hInsertMenu, 
            0, 
-           1, 
-           0x7FFF, 
+           idCmdFirst, 
+           idCmdLast, 
            CMF_EXPLORE)) ) 
       {
          m_spCtxMenu2 = spContextMenu;
          
 		 // Display the context menu.
-         nCmd = ::TrackPopupMenu(hMenu, 
+         nCmd = DoTrackPopupMenu(hMenu, 
             TPM_LEFTALIGN | TPM_RIGHTBUTTON | TPM_RETURNCMD,
             x, y, 
             0, 
@@ -923,13 +936,13 @@ public:
       }
 
       // If a command is available (from the menu, perhaps), execute it.
-      if( nCmd ) 
+      if( nCmd >= idCmdFirst && nCmd <= idCmdLast ) 
 	  {
          CMINVOKECOMMANDINFO ici = { 0 };
          ici.cbSize       = sizeof(CMINVOKECOMMANDINFO);
          ici.fMask        = 0;
          ici.hwnd         = hWnd;
-         ici.lpVerb       = MAKEINTRESOURCEA(nCmd - 1);
+         ici.lpVerb       = MAKEINTRESOURCEA(nCmd - idCmdFirst);
          ici.lpParameters = NULL;
          ici.lpDirectory  = NULL;
          ici.nShow        = SW_SHOWNORMAL;
@@ -939,9 +952,10 @@ public:
 		 if( SUCCEEDED( spContextMenu->InvokeCommand(&ici)) ) 
 			 bResult = TRUE;
       }
-      
-	  if( hMenu ) 
-		  ::DestroyMenu(hMenu);
+	  else
+	  {
+		  bResult = TRUE;
+	  }
       
 	  return bResult;
    }
@@ -959,11 +973,23 @@ public:
       MESSAGE_HANDLER(WM_MENUCHAR, OnShellMenuMsg)
    END_MSG_MAP()
 
+protected:
+	virtual BOOL DoTrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, int nReserved, HWND hWnd, CONST RECT *prcRect)
+	{
+		return ::TrackPopupMenu(hMenu, uFlags, x, y, nReserved, hWnd, prcRect);
+	}
+
+private:
    LRESULT OnShellMenuMsg(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
    {
       bHandled = FALSE;
       if( (uMsg == WM_DRAWITEM || uMsg == WM_MEASUREITEM) && (wParam != 0) ) return 0; // Only for menus
-      if( m_spCtxMenu2 ) m_spCtxMenu2->HandleMenuMsg(uMsg, wParam, lParam);
+      
+	  if( m_spCtxMenu2 ) 
+	  {
+		  m_spCtxMenu2->HandleMenuMsg(uMsg, wParam, lParam);
+	  }
+
       return 0;
    }
 };

@@ -10,15 +10,15 @@
 
 #include "stdafx.h"
 #include "resource.h"
+#include "include/shellicons.h"
+#include "include/filefinder.h"
 #include "project.h"
 #include "projectprops.h"
 #include "projectview.h"
 #include "pndialogs.h"
-#include "include/shellicons.h"
-#include "include/filefinder.h"
 #include "MagicFolderWiz.h"
-
 #include "projpropsview.h"
+#include "ExplorerMenu.h"
 
 using namespace Projects;
 
@@ -28,7 +28,14 @@ using namespace Projects;
 // CProjectTreeCtrl
 //////////////////////////////////////////////////////////////////////////////
 
-CProjectTreeCtrl::CProjectTreeCtrl()
+CProjectTreeCtrl::CProjectTreeCtrl() :
+	workspace(NULL),
+	lastItem(NULL),
+	m_pDropTarget(NULL),
+	dragging(false),
+	processNotifications(true),
+	shellImages(new ShellImageList()),
+	m_explorerMenu(new ShellContextMenu())
 {
 	workspace = NULL;
 	lastItem = NULL;
@@ -46,14 +53,15 @@ CProjectTreeCtrl::CProjectTreeCtrl()
 }
 
 CProjectTreeCtrl::~CProjectTreeCtrl()
-{
-	delete shellImages;
-	
+{	
 	if(m_pDropTarget != NULL)
 	{
 		m_pDropTarget->Release();
 		m_pDropTarget = NULL;
 	}
+
+	delete shellImages;
+	delete m_explorerMenu;
 }
 
 HWND CProjectTreeCtrl::Create(HWND hWndParent, _U_RECT rect, LPCTSTR szWindowName ,
@@ -398,13 +406,35 @@ void CProjectTreeCtrl::doContextMenu(LPPOINT pt)
 		else
 			multipleSelection = false;
 
-		switch(lastItem->GetType())
+		switch (lastItem->GetType())
 		{
 			case ptFile:
 			{
-				CSPopupMenu popup(IDR_POPUP_PROJECTFILE);
+				File* f = static_cast<File*>(lastItem);
 				
-				g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
+				CPidl pidl;
+				if (AtlGetFilePidl2(f->GetFileName(), &pidl))
+				{
+					// We can show the explorer menu:
+					CSPopupMenu popup(IDR_POPUP_PROJECTFILE);
+					CSPopupMenu explorer;
+					InsertMenu(popup.GetHandle(), ID_DUMMY_EXPLORER, MF_BYCOMMAND | MF_POPUP, reinterpret_cast<UINT_PTR>(explorer.GetHandle()), _T("Explorer"));
+					DeleteMenu(popup.GetHandle(), ID_DUMMY_EXPLORER, MF_BYCOMMAND);
+					
+					int nCmd;
+					BOOL result = m_explorerMenu->TrackPopupMenu(pidl, pt->x, pt->y, m_hWnd, popup.GetHandle(), explorer.GetHandle(), 10000, 11000, nCmd);
+					if (result && (nCmd < 10000 || nCmd > 11000))
+					{
+						::PostMessage(m_hWnd, WM_COMMAND, nCmd, 0L);
+					}
+				}
+				else
+				{
+					CSPopupMenu popup(IDR_POPUP_PROJECTFILE);
+					DeleteMenu(popup.GetHandle(), ID_DUMMY_EXPLORER, MF_BYCOMMAND);
+
+					g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
+				}
 			}
 			break;
 
@@ -2239,6 +2269,11 @@ void CProjectTreeCtrl::handleEndDrag()
 	ImageList_Destroy(hDragImageList);
 
 	dragging = false;
+}
+
+LRESULT CProjectTreeCtrl::handleSystemContextMenuMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult)
+{
+	return m_explorerMenu->ProcessWindowMessage(hWnd, uMsg, wParam, lParam, lResult);
 }
 
 int CProjectTreeCtrl::CompareWorker(LPARAM lParam1, LPARAM lParam2, LPARAM caseSensitive, bool sortAll)

@@ -10,6 +10,8 @@
 #ifndef openfilesview_h__included
 #define openfilesview_h__included
 
+class ShellContextMenu;
+
 /**
  * Explorer docking window
  */
@@ -33,6 +35,7 @@ public:
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 		MESSAGE_HANDLER(WM_GETMINMAXINFO, OnGetMinMaxInfo)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, OnCtlColor)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
 
 		NOTIFY_HANDLER(IDC_FILESLIST, NM_DBLCLK, OnListDblClk)
 		NOTIFY_HANDLER(IDC_FILESLIST, LVN_GETINFOTIP, OnGetInfoTip);
@@ -59,6 +62,7 @@ private:
 	LRESULT OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT	OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
 	LRESULT OnCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 
@@ -68,6 +72,7 @@ private:
 	CListViewCtrl m_view;
 	CImageList m_images;
 	extensions::IAppEventSinkPtr m_appSink;
+	ShellContextMenu* m_explorerMenu;
 };
 
 #endif //#ifndef openfilesview_h__included

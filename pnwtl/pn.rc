@@ -554,6 +554,8 @@ BEGIN
         MENUITEM "&Delete",                     258
         MENUITEM "Re&name",                     ID_PROJECT_RENAME
         MENUITEM SEPARATOR
+        MENUITEM "&Explorer",                   ID_DUMMY_EXPLORER
+        MENUITEM SEPARATOR
         MENUITEM "&Properties",                 ID_PROJECT_PROPERTIES
     END
 END

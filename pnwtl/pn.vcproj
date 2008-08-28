@@ -46,7 +46,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm140"
+				AdditionalOptions="/Zm180"
 				Optimization="0"
 				AdditionalIncludeDirectories="TabbingFramework, DockingFramework, Scintilla\include"
 				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,STRICT,SCI_NAMESPACE,STATIC_SCILEXER,SCI_LEXER"
@@ -150,6 +150,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/Zm180"
 				Optimization="3"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="TabbingFramework, DockingFramework, ."
@@ -348,7 +349,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm140 $(SVNREV)"
+				AdditionalOptions="/Zm180 $(SVNREV)"
 				Optimization="3"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="TabbingFramework, DockingFramework, Scintilla\include"
@@ -765,6 +766,10 @@
 			</File>
 			<File
 				RelativePath=".\editorfactory.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ExplorerMenu.h"
 				>
 			</File>
 			<File

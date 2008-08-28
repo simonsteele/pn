@@ -657,6 +657,7 @@
 #define ID_EDITOR_WRITEPROTECT          33107
 #define ID_VIEW_CLEARBOOKMARKS          33108
 #define ID_BOOKMARKS_CLEARALL           33109
+#define ID_DUMMY_EXPLORER               33110
 
 // Next default values for new objects
 // 
@@ -664,7 +665,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        362
-#define _APS_NEXT_COMMAND_VALUE         33110
+#define _APS_NEXT_COMMAND_VALUE         33111
 #define _APS_NEXT_CONTROL_VALUE         1154
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

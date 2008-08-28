@@ -13,6 +13,7 @@
 #include "openfilesview.h"
 #include "extapp.h"
 #include "childfrm.h"
+#include "ExplorerMenu.h"
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -106,7 +107,8 @@ private:
 	COpenFilesDocker* m_owner;
 };
 
-COpenFilesDocker::COpenFilesDocker()
+COpenFilesDocker::COpenFilesDocker() :
+	m_explorerMenu(new ShellContextMenu())
 {	
 	m_appSink.reset(new AppEventSink(this));
 	g_Context.ExtApp->AddEventSink(m_appSink);
@@ -114,6 +116,7 @@ COpenFilesDocker::COpenFilesDocker()
 
 COpenFilesDocker::~COpenFilesDocker()
 {
+	delete m_explorerMenu;
 }
 
 LRESULT COpenFilesDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -233,6 +236,51 @@ LRESULT COpenFilesDocker::OnGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	}
 
 	return true;
+}
+
+LRESULT COpenFilesDocker::OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	if (GET_X_LPARAM(lParam) == -1 && GET_Y_LPARAM(lParam) == -1)
+	{
+		/*CRect rc;
+		GetItemRect(hLastItem, &rc, TRUE);
+		CPoint pt(rc.right, rc.top);
+		ClientToScreen(&pt);
+		doContextMenu(&pt);*/
+	}
+	else
+	{
+		CPoint thept(GetMessagePos());
+		CPoint* pt(&thept);
+		
+		CPoint pt2(*pt);
+
+		// Test for keyboard right-click...
+		if (pt->x != -1)
+		{
+			m_view.ScreenToClient(&pt2);
+
+			LVHITTESTINFO lvhti;
+			memset(&lvhti, 0, sizeof(LVHITTESTINFO));
+			
+			lvhti.pt = pt2;
+			m_view.HitTest(&lvhti);
+
+			if (lvhti.iItem != -1 && (lvhti.flags & LVHT_ONITEM))
+			{
+				extensions::IDocument* doc = docFromListItem(lvhti.iItem);
+				Document* pndoc = static_cast<Document*>(doc);
+				tstring fn = pndoc->GetFileName();
+
+				CPidl pidl;
+				AtlGetFilePidl2(fn.c_str(), &pidl);
+
+				m_explorerMenu->TrackPopupMenu(pidl, pt->x, pt->y, m_hWnd);
+			}
+		}
+	}
+
+	return 0;
 }
 
 /// Add a document to the list
