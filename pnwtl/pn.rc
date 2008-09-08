@@ -56,6 +56,7 @@ BEGIN
         MENUITEM "&Open...",                    ID_FILE_OPEN
         MENUITEM "Open Project(s)...",          ID_FILE_OPENPROJECT
         MENUITEM "Close Project(s)",            ID_FILE_CLOSEWORKSPACE
+        MENUITEM "Open Wor&kspace...",          ID_FILE_OPENWORKSPACE
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
     END
@@ -115,6 +116,7 @@ BEGIN
     BEGIN
         MENUITEM "&Open...",                    ID_FILE_OPEN
         MENUITEM "Open Pro&ject(s)...",         289
+        MENUITEM "Open Wor&kspace...",          ID_FILE_OPENWORKSPACE
         MENUITEM "Re&vert",                     ID_FILE_REVERT
         MENUITEM SEPARATOR
         MENUITEM "&Save",                       ID_FILE_SAVE

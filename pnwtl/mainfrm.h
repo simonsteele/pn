@@ -129,6 +129,7 @@ public:
 		COMMAND_ID_HANDLER(ID_FILE_OPENPROJECT, OnFileOpenProject)
 		COMMAND_ID_HANDLER(ID_FILE_CLOSEWORKSPACE, OnFileCloseWorkspace)
 		COMMAND_ID_HANDLER(ID_FILE_CLOSEALL, OnFileCloseAll)
+		COMMAND_ID_HANDLER(ID_FILE_OPENWORKSPACE, OnFileOpenWorkspaceState)
 		COMMAND_ID_HANDLER(ID_FILE_SAVEWORKSPACEAS, OnFileSaveWorkspaceState)
 		
 		// Global edit action handlers - simply to map accelerators to action...
@@ -255,6 +256,7 @@ public:
 	LRESULT OnFileOpenProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileCloseWorkspace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileCloseAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFileOpenWorkspaceState(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileSaveWorkspaceState(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	// Edit

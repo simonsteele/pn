@@ -72,6 +72,8 @@ const DWORD ToolbarIds[4] = {
 	ATL_IDW_BAND_FIRST + 1,
 };
 
+#define TOOLS_MENU_INDEX 3
+
 CMainFrame::CMainFrame(CommandDispatch* commands, std::list<tstring>* cmdLineArgs) : 
 	m_RecentFiles(ID_MRUFILE_BASE, 4), 
 	m_RecentProjects(ID_MRUPROJECT_BASE, 4),
@@ -1697,6 +1699,19 @@ LRESULT CMainFrame::OnFileCloseAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	return 0;
 }
 
+LRESULT CMainFrame::OnFileOpenWorkspaceState(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CAutoOpenDialog dlgOpen(LS(IDS_WORKSPACEFILES));
+	
+	if (dlgOpen.DoModal(m_hWnd))
+	{
+		WorkspaceState wss;
+		wss.Load(dlgOpen.GetSingleFileName());
+	}
+
+	return 0;
+}
+
 LRESULT CMainFrame::OnFileSaveWorkspaceState(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CAutoSaveDialog dlgSave(LS(IDS_WORKSPACEFILES));
@@ -2539,7 +2554,7 @@ void CMainFrame::setupAccelerators(HMENU mainMenu)
 void CMainFrame::setupToolsUI()
 {
 	CSMenuHandle menu(m_hMenu);
-	CSMenuHandle tools( menu.GetSubMenu(2) );
+	CSMenuHandle tools(menu.GetSubMenu(TOOLS_MENU_INDEX));
 	ToolsManager* pTM = ToolsManager::GetInstance();
 
 	tstring projid;
