@@ -7,7 +7,7 @@ What's new?
 -----------
 
 1) Switched to vista-style message dialogs
-2) Updated to Boost 1.35
+2) Updated to Boost 1.36
 3) Updated to Scintilla 1.76
 4) Added new Open Files view
 5) Added new File Browser view
@@ -28,6 +28,11 @@ What's new?
 20) New Find in Files option: All Open Files
 21) New link to Forums in Help menu (#76)
 22) New Move Line Up and Move Line Down commands in Edit|Line (#68)
+23) Added readonly toggle to editor window (from Klaus, #83)
+24) (re-)Added Mark All
+25) Added Clear Bookmarks command (#90)
+26) Explorer menus in context menus
+27) Improved extension crash debugging (#127)
 
 Bug Fixes:
 ----------
@@ -50,6 +55,14 @@ Bug Fixes:
 16) Support forward-slash paths in command-line parameters (#49)
 17) When wrapping text, end key goes to the end of the wrap line (#69)
 18) Odd behaviour when cancelling removal of unsaved project (SF #1957796)
+19) Fixed long line help options
+20) Don't change to file directory on open, allows directory deletion
+21) Allow "Del" key in keyboard shortcut editor (#45)
+22) Hopefully fixed HTML help window positioning (#110)
+23) Fixed scheme selection in options dialog (#13)
+24) Fix Windows 2000 support (#124)
+25) Restore document windows on jumps (#130)
+26) Allow opening workspace files again (#25)
 
 Extensions Interface Changes:
 -----------------------------
