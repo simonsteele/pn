@@ -1215,6 +1215,11 @@ LRESULT CChildFrame::OnGotoLine(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	offset = (line - offset) - 2;
 	m_view.LineScroll(0, offset);*/
 	
+	if (IsIconic())
+	{
+		ShowWindow(SW_RESTORE);
+	}
+
 	if (wParam) 
 	{
 		int lineLength = m_view.LineLength(line);
