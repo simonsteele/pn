@@ -194,7 +194,7 @@
 				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.4"/>
 			</environment>
 		</exec>
-		<copy file="lib\boost-python-2.4\boost_python-vc80-mt-1_35.dll" todir="bin"/>
+		<copy file="lib\boost-python-2.4\boost_python-vc80-mt-1_36.dll" todir="bin"/>
 		<call target="deploypypn"/>
 	</target>
 	
