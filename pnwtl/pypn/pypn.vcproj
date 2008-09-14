@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="boost_python-vc80-mt-gd-1_35.lib"
+				AdditionalDependencies="boost_python-vc80-mt-gd-1_36.lib"
 				OutputFile="$(OutDir)/pypn.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="%PYTHONLIBDIR%;&quot;..\lib\boost-python-2.5&quot;"
@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="boost_python-vc80-mt-1_35.lib"
+				AdditionalDependencies="boost_python-vc80-mt-1_36.lib"
 				OutputFile="$(OutDir)/pypn.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(PYTHONLIBDIR);&quot;..\lib\boost-python-2.5&quot;"
@@ -226,7 +226,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="boost_python-vc80-mt-1_35.lib"
+				AdditionalDependencies="boost_python-vc80-mt-1_36.lib"
 				OutputFile="$(OutDir)/pypn.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(PYTHONLIBDIR);&quot;..\lib\boost-python-2.5&quot;"
@@ -352,6 +352,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
 				RelativePath=".\sinks.h"
 				>
 			</File>
@@ -373,6 +377,10 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath=".\PyPN.rc"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>
