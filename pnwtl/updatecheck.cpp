@@ -151,16 +151,31 @@ namespace Updates {
 
 void CheckForUpdates(HWND notifyWnd)
 {
-	if (OPTIONS->Get(PNSK_GENERAL, _T("CheckForUpdates"), true))
+	if (!OPTIONS->Get(PNSK_GENERAL, _T("CheckForUpdates"), true))
 	{
-		UpdateCheckDetails* details = new UpdateCheckDetails;
-		details->NotifyWnd = notifyWnd;		
-		details->CheckUnstable = OPTIONS->Get(PNSK_GENERAL, _T("CheckForUnstableUpdates"), false);
-		details->UnstableUpdateUrl = OPTIONS->Get(PNSK_GENERAL, _T("UnstableUpdateUrl"), _T("http://updates.pnotepad.org/unstable.xml"));
-		details->UpdateUrl = OPTIONS->Get(PNSK_GENERAL, _T("UpdateUrl"), _T("http://updates.pnotepad.org/stable.xml"));
-
-		::QueueUserWorkItem(CheckForUpdatesThreadProc, details, WT_EXECUTEDEFAULT);
+		return;
 	}
+
+	// Don't check more than once a day:
+	uint64_t lastCheck = OPTIONS->Get(PNSK_GENERAL, _T("LastUpdateCheck"), static_cast<uint64_t>(0));
+	SYSTEMTIME time;
+	::GetSystemTime(&time);
+	uint64_t thisCheck = (static_cast<uint64_t>(time.wYear) << 32) | (time.wMonth << 16) | time.wDay;
+	if (thisCheck == lastCheck)
+	{
+		return;
+	}
+	
+	OPTIONS->Set(PNSK_GENERAL, _T("LastUpdateCheck"), thisCheck);
+
+	// Start the update check process:
+	UpdateCheckDetails* details = new UpdateCheckDetails;
+	details->NotifyWnd = notifyWnd;		
+	details->CheckUnstable = OPTIONS->Get(PNSK_GENERAL, _T("CheckForUnstableUpdates"), false);
+	details->UnstableUpdateUrl = OPTIONS->Get(PNSK_GENERAL, _T("UnstableUpdateUrl"), _T("http://updates.pnotepad.org/unstable.xml"));
+	details->UpdateUrl = OPTIONS->Get(PNSK_GENERAL, _T("UpdateUrl"), _T("http://updates.pnotepad.org/stable.xml"));
+
+	::QueueUserWorkItem(CheckForUpdatesThreadProc, details, WT_EXECUTEDEFAULT);
 }
 
 Version GetLastOfferedVersion()
