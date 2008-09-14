@@ -53,7 +53,7 @@ typedef enum {fnNotFound, fnFound, fnReachedStart, fnInvalidRegex, fnInvalidSear
 namespace extensions
 {
 
-#define PN_EXT_IFACE_VERSION	6
+#define PN_EXT_IFACE_VERSION	7
 
 /////////////////////////////////////////////////////////////////////////////
 // Predeclare types

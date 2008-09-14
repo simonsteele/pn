@@ -105,7 +105,7 @@ class CScintilla
 		// the code using certain parts of Scintilla to look
 		// a little cleaner.
 		void GetSel(Scintilla::CharacterRange& cr);
-		void EnsureRangeVisible(int begin, int end);
+		void EnsureRangeVisible(int begin, int end, bool enforcePolicy = true);
 		void SetTarget(int begin, int end);
 		void SetTarget(Scintilla::CharacterRange* cr);
 		

@@ -507,6 +507,7 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 	// Use 3 lines as the jump when scrolling up and down, and 20 pixels when scrolling left and right by default.
 	sc.SPerform(SCI_SETXCARETPOLICY, options.GetCached(Options::OCaretXFlags), options.GetCached(Options::OCaretXMove));
 	sc.SPerform(SCI_SETYCARETPOLICY, options.GetCached(Options::OCaretYFlags), options.GetCached(Options::OCaretYMove));
+	sc.SPerform(SCI_SETVISIBLEPOLICY, VISIBLE_SLOP, 1);
 
 	sc.SPerform(SCI_STYLERESETDEFAULT);
 	sc.SPerform(SCI_STYLESETFORE, STYLE_DEFAULT, ::GetSysColor(COLOR_WINDOWTEXT));

@@ -50,7 +50,7 @@ CChildFrame* EditorFactory::WithScheme(Scheme* pScheme)
 	CChildFrame* pChild = createChild(pD);
 	pChild->SetScheme(pScheme);
 	notifyChild(pD);
-	return pChild;
+ 	return pChild;
 }
 
 void EditorFactory::SetMdiClient(HWND mdiClient)

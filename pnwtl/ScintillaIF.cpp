@@ -400,14 +400,14 @@ void CScintilla::GetSel(Scintilla::CharacterRange& cr)
 #define min(a, b)  (((a) < (b)) ? (a) : (b))
 #define max(a, b)  (((a) > (b)) ? (a) : (b))
 
-void CScintilla::EnsureRangeVisible(int begin, int end)
+void CScintilla::EnsureRangeVisible(int begin, int end, bool enforcePolicy)
 {
 	int lineStart = LineFromPosition(min(begin, end));
 	int lineEnd = LineFromPosition(max(begin, end));
 
 	for(int line = lineStart; line <= lineEnd; line++)
 	{
-		EnsureVisible(line);
+		enforcePolicy ? EnsureVisibleEnforcePolicy(line) : EnsureVisible(line);
 	}
 }
 

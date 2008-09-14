@@ -696,11 +696,11 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 		posFind = SearchInTarget(lenFind, findtext);
 	}
 
-	if(posFind != -1 && posFind != -2)
+	if (posFind != -1 && posFind != -2)
 	{
 		int start = GetTargetStart();
 		int end = GetTargetEnd();
-		if( checkFoundPos && lastFindDetails.result == fnFound &&
+		if (checkFoundPos && lastFindDetails.result == fnFound &&
 			lastFindDetails.startPos == start)
 		{
 			static_cast<SearchOptions*>(pOptions)->SetFound(true);
@@ -710,6 +710,7 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 		{
 			EnsureRangeVisible(start, end);
 			SetSel(start, end);
+ 			// ScrollCaret();
 			static_cast<SearchOptions*>(pOptions)->SetFound(true);
 			bRet = fnFound;
 		}
@@ -721,7 +722,7 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 
 	lastFindDetails.result = bRet;
 	lastFindDetails.lastPos = posFind;
-	if( checkFoundPos == false )
+	if (checkFoundPos == false)
 	{
 		GetSel(cr);
 		lastFindDetails.startPos = cr.cpMin;
