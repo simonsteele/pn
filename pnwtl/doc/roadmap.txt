@@ -4,7 +4,7 @@ PN is attempting to keep to a minimum of one release every two months.
 The planned feature-implementation schedule can be seen below. This will
 be modified as and when I see fit - so don't bet money on it or anything.
 
-Active CVS development branches are denoted with {branch-name}.
+Work with SVN development branches (e.g. prototypes/big rewrites) are denoted with {branch-name}.
 Work completed or in-progress is shown with [proportion-developer] or [complete-developer],
 where no developer name is given it's Simon.
 
@@ -13,27 +13,29 @@ last updated: 05/01/2007
 0.10 Dizzy
 ==========
 
-File browser window.
+[80%] File browser window.
+[70%] Better Vista compatibility (UI, UAC, ...)
+[100%] PCRE Based Search.
 HTML Export configuration, inline HTML export.
-Preview for scheme configurator.
-[50%] Vista UI features
 
 0.12 Ellington
 ==============
 
-Hex editor.
-Mini-PN - true notepad-style document-centric PN alternative build.
+Plugin windows and menu support.
+Unicode build.
 
 0.14 Charles
 ============
 
-PCRE Based Search.
+Tag tree organisation rewrite.
+Preview for scheme configurator.
+Hex editor.
 
 0.16 Monk
 =========
 
+Mini-PN - true notepad-style document-centric PN alternative build.
 Filetype filters - e.g. allow loading of .dfm files.
-Unicode build.
 
 0.18 Parker
 ===========
