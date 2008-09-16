@@ -2,9 +2,9 @@
  * @file appsettings.cpp
  * @brief Loading of core application settings
  * @author Simon Steele
- * @note Copyright (c) 2005-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2008 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -86,10 +86,10 @@ private:
 //////////////////////////////////////////////////////////////////////////////////
 // ExtDetails
 
-ExtDetails::ExtDetails(const char* path, const char* basePath)
+ExtDetails::ExtDetails(const char* path, const char* basePath) :
+	Path(path),
+	Disabled(false)
 {
-	Path = path;
-
 	CFileName fn(path);
 	if(fn.IsRelativePath())
 	{
@@ -97,8 +97,6 @@ ExtDetails::ExtDetails(const char* path, const char* basePath)
 	}
 
 	FullPath = fn;
-
-	Disabled = false;
 }
 
 bool ExtDetails::Exists() const
@@ -109,12 +107,12 @@ bool ExtDetails::Exists() const
 //////////////////////////////////////////////////////////////////////////////////
 // AppSettings
 
-AppSettings::AppSettings()
+AppSettings::AppSettings() :
+	m_bUseIni(false),
+	m_userPath(_T("")),
+	m_bHuntingTaggers(false)
 {
-	m_bUseIni = false;
-	m_userPath = _T("");
 	Options::StaticGetPNPath(m_pnpath);
-	m_bHuntingTaggers = false;
 
 	load();
 }
@@ -124,7 +122,7 @@ OptionsFactory::EOptionsType AppSettings::GetOptionsType() const
 	return m_bUseIni ? OptionsFactory::OTIni : OptionsFactory::OTRegistry;
 }
 
-LPCTSTR AppSettings::GetUserPath() const
+const TCHAR* AppSettings::GetUserPath() const
 {
 	return m_userPath.c_str();
 }
@@ -193,7 +191,10 @@ void AppSettings::findExtensionHandler(LPCTSTR path, FileFinderData& file, bool&
 		i != m_extensions.end();
 		++i)
 	{
-		if(_tcsicmp(details.Path.c_str(), (*i).Path.c_str()) == 0)
+		CFileName fn1(details.Path.c_str());
+		CFileName fn2((*i).Path.c_str());
+
+		if(_tcsicmp(fn1.Sanitise().c_str(), fn2.Sanitise().c_str()) == 0)
 		{
 			// Already known
 			return;
