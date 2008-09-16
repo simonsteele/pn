@@ -9,6 +9,9 @@
  */
 
 #include "stdafx.h"
+
+#include <boost/bind.hpp>
+
 #include "resource.h"
 #include "textview.h"
 #include "scaccessor.h"
@@ -19,7 +22,8 @@
 #include "project.h"
 #include "childfrm.h"
 #include "findinfiles.h"
-#include <boost/bind.hpp>
+
+using pnutils::threading::CritLock;
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -27,32 +31,27 @@
 	static char THIS_FILE[] = __FILE__;
 #endif
 
-CTextView::CTextView(DocumentPtr document, CommandDispatch* commands) : baseClass()
-{
-	m_pDoc = document;
-	m_pCmdDispatch = commands;
-
-	m_pLastScheme = NULL;
-	m_waitOnBookmarkNo = FALSE;
-	m_encType = eUnknown;
-	
+CTextView::CTextView(DocumentPtr document, CommandDispatch* commands) : 
+	m_pDoc(document),
+	m_pCmdDispatch(commands),
+	m_pLastScheme(NULL),
+	m_waitOnBookmarkNo(FALSE),
+	m_encType(eUnknown),
+	m_bMeasureCanRun(false)
+{	
 	m_bSmartStart = OPTIONS->Get(PNSK_EDITOR, _T("SmartStart"), true);
-
-	::InitializeCriticalSection(&m_csMeasure);
-	m_hMeasureThread = NULL;
-	m_bMeasureCanRun = false;
 }
 
 CTextView::~CTextView()
 {
-	::EnterCriticalSection(&m_csMeasure);
-	m_bMeasureCanRun = false;
-	::LeaveCriticalSection(&m_csMeasure);
-
-	if(m_hMeasureThread != NULL)
 	{
-		::WaitForSingleObject(m_hMeasureThread, 10000);
-		::CloseHandle(m_hMeasureThread);
+		CritLock lock(m_csMeasure);
+		m_bMeasureCanRun = false;
+	}
+
+	if(m_measureThread.Valid())
+	{
+		m_measureThread.Join(10000);
 	}
 }
 
@@ -75,7 +74,7 @@ void CTextView::SetScheme(Scheme* pScheme, bool allSettings)
 	if(pScheme != SchemeManager::GetInstance()->GetDefaultScheme())
 		m_bSmartStart = false;
 	
-	EnsureRangeVisible(0, GetLength());
+	EnsureRangeVisible(0, GetLength(), false);
 	ClearDocumentStyle(); // zero all style bytes
 
 	ClearAutoComplete();
@@ -463,7 +462,7 @@ void CTextView::EnableHighlighting(bool bEnable)
 	else
 	{
 		SetLexer(0);
-		EnsureRangeVisible(0, GetLength());
+		EnsureRangeVisible(0, GetLength(), false);
 		ClearDocumentStyle();
 		Colourise(0, -1);
 		StyleClearAll();
@@ -1167,27 +1166,24 @@ void CTextView::OnFirstShow()
 
 void CTextView::checkLineLength()
 {
-	::EnterCriticalSection(&m_csMeasure);
+	CritLock lock(m_csMeasure);
+
 	if(m_bMeasureCanRun)
 	{
-		::LeaveCriticalSection(&m_csMeasure);
 		return;
 	}
 	
-	if(m_hMeasureThread != NULL)
+	if(m_measureThread.Valid())
 	{
-		::LeaveCriticalSection(&m_csMeasure);
-		::WaitForSingleObject(m_hMeasureThread, 10000);
-		::EnterCriticalSection(&m_csMeasure);
-		::CloseHandle(m_hMeasureThread);
+		m_csMeasure.Leave();
+		m_measureThread.Join(10000);
+		m_csMeasure.Enter();
+		m_measureThread.Reset();
 	}
 
 	m_bMeasureCanRun = true;
 
-	unsigned int thrdid;
-	m_hMeasureThread = (HANDLE)_beginthreadex(NULL, 0, &CTextView::RunMeasureThread, this, 0, &thrdid);
-	
-	::LeaveCriticalSection(&m_csMeasure);	
+	m_measureThread.Create(&CTextView::RunMeasureThread, this);
 }
 
 /**
@@ -1222,9 +1218,11 @@ UINT __stdcall CTextView::RunMeasureThread(void* pThis)
 
 	while(true)
 	{
-		::EnterCriticalSection(&pTextView->m_csMeasure);
-		bCanRun = pTextView->m_bMeasureCanRun;
-		::LeaveCriticalSection(&pTextView->m_csMeasure);
+		{
+			CritLock lock(pTextView->m_csMeasure);
+			bCanRun = pTextView->m_bMeasureCanRun;
+		}
+		
 		if(!bCanRun)
 			break;
 
@@ -1257,9 +1255,10 @@ UINT __stdcall CTextView::RunMeasureThread(void* pThis)
 	// As long as nothing else wants direct access we're ok!
 	pTextView->EnableDirectAccess();
 
-	::EnterCriticalSection(&pTextView->m_csMeasure);
-	pTextView->m_bMeasureCanRun = false;
-	::LeaveCriticalSection(&pTextView->m_csMeasure);
+	{
+		CritLock lock(pTextView->m_csMeasure);
+		pTextView->m_bMeasureCanRun = false;
+	}
 
 	_endthreadex(0);
 

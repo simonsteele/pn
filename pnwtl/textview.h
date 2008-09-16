@@ -15,6 +15,7 @@
 
 #include "ScintillaImpl.h"
 #include "ScintillaWTL.h"
+#include "include/threading.h"
 
 class FIFSink;
 
@@ -25,7 +26,7 @@ class CTextView : public CScintillaWindowImpl< CTextView, CScintillaImpl >
 public:
 	typedef CScintillaWindowImpl< CTextView, CScintillaImpl > baseClass;
 
-	CTextView(DocumentPtr document, CommandDispatch* commands);
+	explicit CTextView(DocumentPtr document, CommandDispatch* commands);
 	~CTextView();
 
 	BOOL PreTranslateMessage(MSG* pMsg);
@@ -130,8 +131,8 @@ private:
 	DocumentPtr m_pDoc;
 
 	bool m_bMeasureCanRun;
-	CRITICAL_SECTION m_csMeasure;
-	HANDLE m_hMeasureThread;
+	pnutils::threading::CriticalSection m_csMeasure;
+	pnutils::threading::Thread m_measureThread;
 
 	static UINT __stdcall RunMeasureThread(void*);
 };

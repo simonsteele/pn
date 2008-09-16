@@ -212,7 +212,7 @@ int CScintilla::HandleNotify(LPARAM lParam)
 			break;
 		case SCN_NEEDSHOWN:
 			{
-				EnsureRangeVisible(scn->position, scn->position + scn->length/*, false*/);
+				EnsureRangeVisible(scn->position, scn->position + scn->length, false);
 			}
 			break;
 	}

@@ -1334,6 +1334,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\threading.h"
+				>
+			</File>
+			<File
 				RelativePath="include\Utf8_16.cpp"
 				>
 			</File>
