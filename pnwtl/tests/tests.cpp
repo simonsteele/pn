@@ -3,16 +3,12 @@
 
 #include "stdafx.h"
 
-extern void testString();
-extern void testAC();
-extern void testRegex();
+#define BOOST_TEST_MAIN
+#include <boost/test/unit_test.hpp>
 
-int _tmain(int argc, _TCHAR* argv[])
-{
-	testString();
-	testAC();
-	testRegex();
-
-	return 0;
-}
+//int _tmain(int argc, _TCHAR* argv[])
+//{
+//
+//	return 0;
+//}
 

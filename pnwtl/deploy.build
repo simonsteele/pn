@@ -18,13 +18,7 @@
 		<echo message="Using Subversion revision number: ${svn.revision}"/>
 	</target>
 	
-	<target name="build">
-		<!--<echo message="pn.sln /Project scintilla /ProjectConfig ReleaseDebug /Rebuild"/>
-		<exec
-			program="devenv.com"
-			commandline='pn.sln /Project scintilla /ProjectConfig ReleaseDebug /Rebuild'
-			output="build.log"/>-->
-		
+	<target name="build">		
 		<exec 
 			program="devenv.com"
 			commandline='pn.sln /Clean ReleaseDebug'
@@ -39,35 +33,8 @@
 			</environment>
 		</exec>
 		
-		<!-- <echo message="pn.sln /Project customscheme /ProjectConfig ReleaseDebug /Rebuild"/>
-		<exec 
-			program="devenv.com"
-			commandline='pn.sln /Project customscheme /ProjectConfig ReleaseDebug /Rebuild'
-			output="build.log"/>
-		
-		<echo message="pn.sln /Project ctagsnavigator /ProjectConfig ReleaseDebug /Rebuild"/>
-		<exec
-			program="devenv.com"
-			commandline='pn.sln /Project ctagsnavigator /ProjectConfig ReleaseDebug /Rebuild'
-			output="build.log"/>
-		
-		<echo message="pn.sln /Project pnse /ProjectConfig ReleaseDebug /Rebuild"/>
-		<exec
-			program="devenv.com"
-			commandline='pn.sln /Project pnse /ProjectConfig ReleaseDebug /Rebuild'
-			output="build.log"/>
-		
-		<echo message="pn.sln /Project scintilla /ProjectConfig ReleaseDebug /Rebuild"/>
-		<exec
-			program="devenv.com"
-			commandline='pn.sln /Project scintilla /ProjectConfig ReleaseDebug /Rebuild'
-			output="build.log"/>
-		
-		<echo message="pn.sln /Project pn /ProjectConfig ReleaseDebug /Rebuild"/>
-		<exec
-			program="devenv.com"
-			commandline='pn.sln /Project pn /ProjectConfig ReleaseDebug /Rebuild'
-			output="build.log"/> -->
+		<call target="checkpnmanifest" />
+		<call target="test" />
 	</target>
 
 	<!-- Deploy PN -->
@@ -172,7 +139,9 @@
 		</zip>		
 	</target>
 	
+	<!-- Build PyPN -->
 	<target name="pypn">
+		<!-- Python 2.5 -->
 		<property name="pyver" value="py25"/>
 		<exec
 			program="devenv"
@@ -183,7 +152,13 @@
 				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.5"/>
 			</environment>
 		</exec>
-		<call target="deploypypn"/>
+		
+		<property name="pywrongdep" value="python24"/>
+		<call target="checkpypndeps"/>
+		
+		<call target="deploypypn"/>		
+		
+		<!-- Python 2.4 -->
 		<property name="pyver" value="py24"/>
 		<exec
 			program="devenv"
@@ -195,6 +170,10 @@
 			</environment>
 		</exec>
 		<copy file="lib\boost-python-2.4\boost_python-vc80-mt-1_36.dll" todir="bin"/>
+		
+		<property name="pywrongdep" value="python25"/>
+		<call target="checkpypndeps"/>
+		
 		<call target="deploypypn"/>
 	</target>
 	
@@ -269,6 +248,30 @@
 		<exec
 			program="c:\python25\python"
 			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Portable" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" ${distdir}\portable-pn${compactver}.zip'/>
+	</target>
+	
+	<target name="checkpypndeps">
+		<delete file="bin\dep.txt" failonerror="false"/>
+		<exec
+			program="depends"
+			commandline="/c /ot:bin\dep.txt bin\pypn.dll" 
+			resultproperty="depresult"
+			failonerror="false"/>
+		<fail if="${int::parse(depresult) > 65536}" message="Failure code indicates depends error"/>
+		<loadfile file="bin\dep.txt" property="deps"/>
+		<fail if="${string::contains(string::to-lower(deps), pywrongdep)}" message="PyPN mistakenly depends on python24.dll"/>
+	</target>
+	
+	<target name="checkpnmanifest">
+		<exec
+			program="mt"
+			commandline="-inputresource:bin\pn.exe -out:bin\pndepcheck.manifest"/>
+		<loadfile file="bin\pndepcheck.manifest" property="pndeps"/>
+		<fail if="${string::contains(string::to-lower(pndeps), 'debug')}" message="PN dependency on debug dll"/>
+	</target>
+	
+	<target name="test">
+		<exec program="bin\tests.exe"/>
 	</target>
 	
 </project>
