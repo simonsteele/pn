@@ -498,6 +498,9 @@
 #define IDC_CLIPS_REMOVEBUTTON          1150
 #define IDC_OPT_LINELIGHTALPHACHECK     1152
 #define IDC_CARETSTRICT_CHECK           1153
+#define IDC_OPT_CHECKUPDATES            1154
+#define IDC_CHECK3                      1155
+#define IDC_OPT_WANTTESTINGUPGRADES     1155
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -668,7 +671,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        362
 #define _APS_NEXT_COMMAND_VALUE         33113
-#define _APS_NEXT_CONTROL_VALUE         1154
+#define _APS_NEXT_CONTROL_VALUE         1156
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

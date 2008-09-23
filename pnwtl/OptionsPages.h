@@ -2,7 +2,7 @@
  * @file optionspages.h
  * @brief Options Dialog Pages (1) for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -24,50 +24,6 @@ namespace Projects
 }
 
 class ToolsManager;
-
-class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
-							public CWinDataExchange<COptionsPageGeneral>
-{
-	public:
-		BEGIN_MSG_MAP(COptionsPageGeneral)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			REFLECT_NOTIFICATIONS()
-		END_MSG_MAP()
-		enum { IDD = IDD_PAGE_GENERAL };
-
-		BEGIN_DDX_MAP(COptionsPageGeneral)
-			DDX_UINT(IDC_OPT_MRUCOUNT,			m_iMRUSize)
-			DDX_CHECK(IDC_OPT_MAXCHECK,			m_bMaximise)
-			DDX_CHECK(IDC_OPT_FULLPATHCHECK,	m_bFullPath)
-			DDX_CHECK(IDC_OPT_NEWFILEONSTART,	m_bNewOnStart)
-			DDX_CHECK(IDC_MULTIINSTANCECHECK,	m_bMultiInstanceOk)
-			DDX_CHECK(IDC_OPT_SHOWTABSCHECK,	m_bShowTabs)
-			//DDX_CHECK(IDC_OPT_HIDEONETABCHECK,	m_bHideSingleTab)
-			DDX_CHECK(IDC_OPT_TABSBOTTOMCHECK,	m_bTabsOnBottom)
-			DDX_CHECK(IDC_OPT_MAXTABSONLY,		m_bTabsOnlyMax)
-			DDX_CHECK(IDC_OPT_TABORDERCHECK,	m_bManageTabOrder)
-			DDX_CHECK(IDC_OPT_SAVEWORKSPACE,	m_bSaveWorkspace)
-		END_DDX_MAP()
-
-		virtual void OnOK();
-		virtual void OnInitialise();
-		virtual LPCTSTR GetTreePosition();
-
-	protected:
-		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-		
-		BOOL			m_bNewOnStart;
-		BOOL			m_bMaximise;
-		BOOL			m_bFullPath;
-		BOOL			m_bMultiInstanceOk;
-		UINT			m_iMRUSize;
-		BOOL			m_bShowTabs;
-		//BOOL			m_bHideSingleTab;
-		BOOL			m_bTabsOnBottom;
-		BOOL			m_bTabsOnlyMax;
-		BOOL			m_bManageTabOrder;
-		BOOL			m_bSaveWorkspace;
-};
 
 class COptionsPageEditDefaults : public COptionsPageImpl<COptionsPageEditDefaults>,
 								public CWinDataExchange<COptionsPageEditDefaults>
@@ -599,6 +555,7 @@ class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
 		bool				m_bDirty;
 };
 
+#include "OptionsPageGeneral.h"
 #include "OptionsPageKeyboard.h"
 #include "OptionsPageAutocomplete.h"
 #include "OptionsPageGlobalStyles.h"
