@@ -94,4 +94,13 @@ bool FileExists(LPCTSTR FileName);
 bool CreateDirectoryRecursive(LPCTSTR pszDirectory, LPSECURITY_ATTRIBUTES lpSA = NULL);
 bool DeleteDirectory(LPCTSTR szDir, bool undoable = true);
 
+namespace FileUtil
+{
+
+bool RemoveReadOnly(LPCTSTR filename);
+
+bool FileIsReadOnly(LPCTSTR filename);
+
+}
+
 #endif

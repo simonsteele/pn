@@ -1,7 +1,30 @@
 #ifndef PNOTEPAD_INCLUDE_THREADING_H__INCLUDED
 #define PNOTEPAD_INCLUDE_THREADING_H__INCLUDED
 
-namespace pnutils { namespace threading {
+namespace pnutils { 
+
+class WinHandle
+{
+public:
+	explicit WinHandle(HANDLE handle) : m_handle(handle)
+	{
+	}
+
+	~WinHandle()
+	{
+		::CloseHandle(m_handle);
+	}
+
+	HANDLE Get() const
+	{
+		return m_handle;
+	}
+
+private:
+	HANDLE m_handle;
+};
+
+namespace threading {
 
 class CriticalSection
 {
@@ -45,6 +68,45 @@ public:
 
 private:
 	CriticalSection& m_cs;
+};
+
+class WinEvent
+{
+public:
+	explicit WinEvent(bool manualReset) : m_hEvent(::CreateEvent(NULL, manualReset, FALSE, NULL))
+	{
+	}
+
+	HANDLE Get() const
+	{
+		return m_hEvent.Get();
+	}
+
+	void Reset()
+	{
+		::ResetEvent(m_hEvent.Get());
+	}
+
+	void Set()
+	{
+		::SetEvent(m_hEvent.Get());
+	}
+
+	DWORD Wait(DWORD timeOut)
+	{
+		return ::WaitForSingleObject(m_hEvent.Get(), timeOut);
+	}
+
+private:
+	WinHandle m_hEvent;
+};
+
+class ManualResetEvent : public WinEvent
+{
+public:
+	explicit ManualResetEvent() : WinEvent(true)
+	{
+	}
 };
 
 class Thread

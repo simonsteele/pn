@@ -165,6 +165,46 @@ bool DeleteDirectory(LPCTSTR szDir, bool undoable)
 	return bRet;
 }
 
+namespace FileUtil
+{
+
+bool RemoveReadOnly(LPCTSTR filename)
+{
+	DWORD dwFileAtts = ::GetFileAttributes(filename);
+	if(dwFileAtts & FILE_ATTRIBUTE_READONLY)
+	{
+		dwFileAtts &= ~FILE_ATTRIBUTE_READONLY;
+		::SetFileAttributes(filename, dwFileAtts);
+		return true;
+	}
+	
+	return false;
+}
+
+bool FileIsReadOnly(LPCTSTR filename)
+{
+	DWORD dwFileAttributes = ::GetFileAttributes(filename);
+	return (dwFileAttributes & FILE_ATTRIBUTE_READONLY);
+	
+	// This code will check whether we really can change a file, but it feels dirty
+	// to me so is currently disabled.
+	//{
+	//	if (SetFileAttributes(pathname,dwFileAttributes |FILE_ATTRIBUTE_READONLY ) == 0)
+	//	{
+	//		// write permission
+	//		return true;
+	//	}
+	//	else
+	//	{
+	//		// no write permission -> restore File Attributes
+	//		SetFileAttributes(pathname,dwFileAttributes);
+	//		return false;
+	//	}
+	//}
+}
+
+} // namespace File
+
 ///////////////////////////////////////////////////////////////////////////
 // CFile - an MFC CFile replacement. No win api stuff, just pure Cpp.
 ///////////////////////////////////////////////////////////////////////////

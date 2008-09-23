@@ -1478,17 +1478,15 @@ public:
 	ChildTextFilterWrapper(CChildFrame* pOwner, TextFilterSink* pSink, CChildFrame* pActiveChild, const ToolDefinition& definition)
 		: baseClass(pOwner, pSink, pActiveChild, definition)
 	{
-		m_hFinishedEvent = ::CreateEvent(NULL, FALSE, FALSE, NULL);
 	}
 
 	virtual ~ChildTextFilterWrapper()
 	{
-		::CloseHandle(m_hFinishedEvent);
 	}
 
-	HANDLE GetFinishEventHandle() const
+	int Wait(DWORD dwWait)
 	{
-		return m_hFinishedEvent;
+		return m_hFinishedEvent.Wait(dwWait);
 	}
 
 	virtual void ShowOutputWindow()
@@ -1497,13 +1495,13 @@ public:
 
 	virtual void OnFinished()
 	{
-		::SetEvent(m_hFinishedEvent);
+		m_hFinishedEvent.Set();
 
 		baseClass::OnFinished();
 	}
 
 private:
-	HANDLE m_hFinishedEvent;
+	pnutils::threading::ManualResetEvent m_hFinishedEvent;
 };
 
 bool CChildFrame::OnRunTool(LPVOID pTool)
@@ -1562,9 +1560,8 @@ bool CChildFrame::OnRunTool(LPVOID pTool)
 	if( pToolDef->IsTextFilter() )
 	{
 		ChildTextFilterWrapper* pWaitWrapper = static_cast<ChildTextFilterWrapper*>(pWrapper.get());
-		HANDLE hWait = pWaitWrapper->GetFinishEventHandle();
 		bool bAbort = false;
-		while(::WaitForSingleObject(hWait, 10000) == WAIT_TIMEOUT)
+		while(pWaitWrapper->Wait(10000) == WAIT_TIMEOUT)
 		{
 			if(::MessageBox(m_hWnd, "This text filter is taking a long time to complete,\ndo you want to wait longer?", LS(IDR_MAINFRAME), MB_YESNO) == IDNO)
 			{
@@ -1661,26 +1658,7 @@ bool CChildFrame::GetWriteProtect()
 
 bool CChildFrame::GetFileWriteProtect(LPCTSTR pathname)
 {
-	DWORD dwFileAttributes = ::GetFileAttributes(pathname);
-	if(dwFileAttributes & FILE_ATTRIBUTE_READONLY)
-	{
-		return true;
-	}
-	else 
-	{
-		if (SetFileAttributes(pathname,dwFileAttributes |FILE_ATTRIBUTE_READONLY ) == 0)
-		{
-			// write permission
-			return true;
-		}
-		else
-		{
-			// no write permission -> restore File Attributes
-			SetFileAttributes(pathname,dwFileAttributes);
-			return false;
-		}
-
-	}
+	return FileUtil::FileIsReadOnly(pathname);
 }
 
 bool CChildFrame::PNOpenFile(LPCTSTR pathname, Scheme* pScheme, EPNEncoding encoding)
@@ -1782,6 +1760,17 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool ctagsRefresh, bool bStoreFilen
 			m_spDocument->SetFileName(pathname);
 			m_spDocument->OnAfterSave();
 
+			// We just saved as a new file, so we're not readonly any more
+			if (m_bReadOnly)
+			{
+				m_view.SetReadOnly(false);
+				m_bReadOnly = false;
+				UISetChecked(ID_EDITOR_WRITEPROTECT, false);
+				
+				// TODO: Should we bother with this when SetFileName and OnAfterSave have already been called?
+				m_spDocument->OnWriteProtectChanged(false);
+			}
+
 			SetTitle();
 		}
 
@@ -1805,14 +1794,7 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool ctagsRefresh, bool bStoreFilen
 
 bool CChildFrame::attemptOverwrite(LPCTSTR filename)
 {
-	DWORD dwFileAtts = ::GetFileAttributes(filename);
-	if(dwFileAtts & FILE_ATTRIBUTE_READONLY)
-	{
-		dwFileAtts &= ~FILE_ATTRIBUTE_READONLY;
-		::SetFileAttributes(filename, dwFileAtts);
-		return true;
-	}
-	else return false;
+	return FileUtil::RemoveReadOnly(filename);
 }
 
 void CChildFrame::handleClose()
@@ -1841,11 +1823,6 @@ void CChildFrame::handleClose()
 
 //TODO Move all the CFILE_ defines into the string resources.
 #define PN_CouldNotSaveReadOnly _T("The file \"%s\" could not be saved because it is write-protected.\n\nYou can either save in a different location or PN can attempt to remove the protection and\n overwrite the file in its current location.")
-/*const WTL::BXT::MBItem SaveReadOnlyButtons [] = {
-	{PNID_SAVEAS, _T("Save &As...")},
-	{PNID_OVERWRITE, _T("&Overwrite")},
-	{IDCANCEL, 0}
-};*/
 
 const int SaveReadOnlyButtonsCount = 2;
 
@@ -1956,7 +1933,6 @@ int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
 	CT2CW message(buffer.c_str());
 	std::wstring title(LSW(IDR_MAINFRAME));
 
-	//ret = AtlCustomMessageBoxNet(m_hWnd, (LPCTSTR)buffer, IDR_MAINFRAME, pItems, nItems, MBStyle);
 	TASKDIALOGCONFIG cfg = { 0 };
 	cfg.cbSize = sizeof(cfg);
 	cfg.hInstance = _Module.GetResourceInstance();
@@ -2257,49 +2233,48 @@ BOOL CChildFrame::OnEscapePressed()
 void CChildFrame::Export(int type)
 {
 	FileOutput fout(NULL);
-	StylesList* pStyles = m_view.GetCurrentScheme()->CreateStylesList();
-	BaseExporter* pExp = ExporterFactory::GetExporter(
-		(ExporterFactory::EExporterType)type, 
-		&fout, m_view.GetCurrentScheme()->GetName(), pStyles, &m_view);
+	std::auto_ptr<StylesList> pStyles(m_view.GetCurrentScheme()->CreateStylesList());
 	
-	if(pExp)
+	std::auto_ptr<BaseExporter> pExp(ExporterFactory::GetExporter(
+		(ExporterFactory::EExporterType)type, 
+		&fout, m_view.GetCurrentScheme()->GetName(), pStyles.get(), &m_view));
+	
+	if (!pExp.get())
 	{
-		tstring guessName;
-
-		if(CanSave())
-		{
-			guessName = m_spDocument->GetFileName(FN_FILEPART);
-		}
-		else
-		{
-			guessName = _T("untitled");
-		}	
-
-		guessName += _T(".");
-		guessName += pExp->GetDefaultExtension();
-
-		tstring fileMask(pExp->GetFileMask());
-		fileMask += LS(IDS_ALLFILES);
-
-		CAutoSaveDialog dlgSave(fileMask.c_str());
-		dlgSave.SetDefaultExtension(pExp->GetDefaultExtension());
-		dlgSave.SetInitialFilename(guessName.c_str());
-		
-		if(dlgSave.DoModal() == IDOK)
-		{
-			resetSaveDir();
-
-			fout.SetFileName(dlgSave.GetSingleFileName());
-			if(fout.IsValid())
-			{
-				pExp->Export(0, -1);
-			}
-		}
-
-		delete pExp;
+		return;
 	}
 
-	delete pStyles;
+	tstring guessName;
+
+	if(CanSave())
+	{
+		guessName = m_spDocument->GetFileName(FN_FILEPART);
+	}
+	else
+	{
+		guessName = _T("untitled");
+	}	
+
+	guessName += _T(".");
+	guessName += pExp->GetDefaultExtension();
+
+	tstring fileMask(pExp->GetFileMask());
+	fileMask += LS(IDS_ALLFILES);
+
+	CAutoSaveDialog dlgSave(fileMask.c_str());
+	dlgSave.SetDefaultExtension(pExp->GetDefaultExtension());
+	dlgSave.SetInitialFilename(guessName.c_str());
+	
+	if(dlgSave.DoModal() == IDOK)
+	{
+		resetSaveDir();
+
+		fout.SetFileName(dlgSave.GetSingleFileName());
+		if(fout.IsValid())
+		{
+			pExp->Export(0, -1);
+		}
+	}
 }
 
 void CChildFrame::SetModifiedOverride(bool bVal)
