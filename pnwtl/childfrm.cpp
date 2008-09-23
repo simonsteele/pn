@@ -747,29 +747,28 @@ LRESULT CChildFrame::OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 		rtfStringLength = m_view.GetSelLength() * 2;
 
 	StringOutput so(rtfStringLength);
-	StylesList* pStyles = m_view.GetCurrentScheme()->CreateStylesList();
-	RTFExporter rtf(&so, m_view.GetCurrentScheme()->GetName(), pStyles, &m_view);
+	std::auto_ptr<StylesList> pStyles(m_view.GetCurrentScheme()->CreateStylesList());
+	RTFExporter rtf(&so, m_view.GetCurrentScheme()->GetName(), pStyles.get(), &m_view);
+	
 	//If nothing is selected, copy entire file
 	if(selectionLength == 0) 
 		rtf.Export(0,m_view.GetTextLength());
 	else
 		rtf.Export(m_view.GetSelectionStart(), m_view.GetSelectionEnd());
-	delete pStyles;
-	
-	const char* pRTF = so.c_str();
-	int len = strlen(pRTF) + 1;
 
-	HGLOBAL hData = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, len);
+	std::string rtfstr(so.c_str());
+
+	HGLOBAL hData = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, rtfstr.size() + 1);
 	if( hData )
 	{
 		if( OpenClipboard() )
 		{
-			EmptyClipboard();
+			::EmptyClipboard();
 			char* pBuf = static_cast<char*>(::GlobalLock(hData));
-			memcpy(pBuf, pRTF, len);
+			memcpy(pBuf, rtfstr.c_str(), rtfstr.size() + 1);
 			::GlobalUnlock(hData);
 			::SetClipboardData(::RegisterClipboardFormat(CF_RTF), hData);
-			CloseClipboard();
+			::CloseClipboard();
 		}
 	}
 
@@ -786,10 +785,10 @@ LRESULT CChildFrame::OnClipboardSwap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 		tr.chrg.cpMax = m_view.GetLength();
 	int length = tr.chrg.cpMax - tr.chrg.cpMin;
 	
-	char* pNewBuf = new char[length + 1];
-	pNewBuf[length] = '\0';
-	tr.lpstrText = pNewBuf;
-				
+	std::vector<char> buffer(length + 1);
+	buffer[length] = '\0';
+	tr.lpstrText = &buffer[0];
+	
 	m_view.GetTextRange(&tr);
 
 	m_view.Paste();
@@ -801,14 +800,12 @@ LRESULT CChildFrame::OnClipboardSwap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 		{
 			EmptyClipboard();
 			char* pBuf = static_cast<char*>(::GlobalLock(hData));
-			memcpy(pBuf, pNewBuf, length + 1);
+			memcpy(pBuf, &buffer[0], length + 1);
 			::GlobalUnlock(hData);
 			::SetClipboardData(CF_TEXT, hData);
 			CloseClipboard();
 		}
 	}
-
-	delete [] pNewBuf;
 
 	return 0;
 }
@@ -1223,17 +1220,16 @@ LRESULT CChildFrame::OnGotoLine(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	if (wParam) 
 	{
 		int lineLength = m_view.LineLength(line);
-		char* lineBuf = new char[lineLength+1];
+		std::vector<char> lineBuf(lineLength + 1);
 		lineBuf[lineLength] = '\0';
-		m_view.GetLine(line, lineBuf);
+		m_view.GetLine(line, &lineBuf[0]);
 
-		CString fullText = lineBuf;
-		CString methodName = (char*)wParam;
-		int i = fullText.Find(methodName,0);
-		int j = methodName.GetLength();
+		std::string fullText(&lineBuf[0]);
+		std::string methodName(reinterpret_cast<char*>(wParam));
+		int i = fullText.find(methodName);
+		int j = methodName.size();
 		int pos = GetLinePosition((int)lParam); 
-		delete [] lineBuf;
-		m_view.SetSel((long)(pos + i),(long)(pos + i + methodName.GetLength()));
+		m_view.SetSel((long)(pos + i),(long)(pos + i + methodName.size()));
 	}
 	else 
 	{

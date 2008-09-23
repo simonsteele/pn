@@ -122,7 +122,7 @@ DWORD WINAPI CheckForUpdatesThreadProc(
   __in  LPVOID lpDetails
 )
 {
-	UpdateCheckDetails* details = reinterpret_cast<UpdateCheckDetails*>( lpDetails );
+	std::auto_ptr<UpdateCheckDetails> details(reinterpret_cast<UpdateCheckDetails*>( lpDetails ));
 
 	Version lastOffered = GetLastOfferedVersion();
 	UpdateAvailableDetails stable = GetVersionDetails(details->UpdateUrl.c_str());
@@ -141,8 +141,6 @@ DWORD WINAPI CheckForUpdatesThreadProc(
 	{
 		::SendMessage(details->NotifyWnd, PN_NOTIFY, reinterpret_cast<WPARAM>(&stable), PN_UPDATEAVAILABLE);
 	}
-
-	delete details;
 	
 	return 0;
 }

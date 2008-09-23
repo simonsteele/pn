@@ -1611,12 +1611,9 @@ LRESULT CMainFrame::OnMRUSelected(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl
 
 	if(!::FileExists( filename ))
 	{
-		tstring err = LS(IDS_CANTOPENFILE);
-		int bs = err.length() + _tcslen(filename) + 10;
-		TCHAR* buffer = new TCHAR[bs];
-		_sntprintf(buffer, bs, err.c_str(), filename);
-		::MessageBox(m_hWnd, buffer, LS(IDR_MAINFRAME), MB_ICONWARNING | MB_OK);
-		delete [] buffer;
+		CString err;
+		err.Format(IDS_CANTOPENFILE, filename);
+		::MessageBox(m_hWnd, (LPCTSTR)err, LS(IDR_MAINFRAME), MB_ICONWARNING | MB_OK);
 
 		m_RecentFiles.RemoveEntry(wID - ID_MRUFILE_BASE);
 		return 0;
@@ -3260,9 +3257,7 @@ bool CMainFrame::CloseWorkspace(bool bAllowCloseFiles, bool bAsk)
 		wws.pWorkspace = workspace;
 		if(EnumWorkspaceWindows(&wws))
 		{
-			CString str;
-			str.LoadString(_Module.m_hInst, IDS_PROJCLOSEFILES);
-			DWORD dwRes = ::MessageBox(m_hWnd, str, LS(IDR_MAINFRAME), MB_YESNOCANCEL | MB_ICONQUESTION);
+			DWORD dwRes = ::MessageBox(m_hWnd, LS(IDS_PROJCLOSEFILES), LS(IDR_MAINFRAME), MB_YESNOCANCEL | MB_ICONQUESTION);
 
 			if( dwRes == IDCANCEL )
 				return false;

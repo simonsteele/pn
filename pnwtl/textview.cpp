@@ -227,16 +227,16 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 			SPerform(SCI_SETLAYOUTCACHE, OPTIONS->GetCached(Options::ODefaultScintillaCache));
 		}
 		
-		char* data = new char[useBlockSize];
-		int lenFile = file.Read(data, useBlockSize);
+		std::vector<char> data(useBlockSize);
+		int lenFile = file.Read(&data[0], useBlockSize);
 
 		///See if there's an encoding specified or not...
         if(encoding == eUnknown)
-			determineEncoding(reinterpret_cast<unsigned char*>(data), lenFile, m_encType);
+			determineEncoding(reinterpret_cast<unsigned char*>(&data[0]), lenFile, m_encType);
 		else
 			m_encType = encoding;
 
-		EPNSaveFormat endings = determineLineEndings(reinterpret_cast<unsigned char*>(data), lenFile, m_encType);
+		EPNSaveFormat endings = determineLineEndings(reinterpret_cast<unsigned char*>(&data[0]), lenFile, m_encType);
 
 		if(m_encType != eUnknown)
 		{
@@ -250,9 +250,9 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 
 			while (lenFile > 0)
 			{
-				lenFile = converter.convert(data, lenFile, convEncType, nBomSkipBytes);
+				lenFile = converter.convert(&data[0], lenFile, convEncType, nBomSkipBytes);
 				SPerform(SCI_ADDTEXT, lenFile, (long)converter.getNewBuf());
-				lenFile = file.Read(data, useBlockSize);
+				lenFile = file.Read(&data[0], useBlockSize);
 			}
 		}
 		else
@@ -262,11 +262,11 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 			// Otherwise we do a simple read.
 			while (lenFile > 0) 
 			{
-				SPerform(SCI_ADDTEXT, lenFile, (long)data);
-				lenFile = file.Read(data, useBlockSize);
+				SPerform(SCI_ADDTEXT, lenFile, reinterpret_cast<LPARAM>(&data[0]));
+				lenFile = file.Read(&data[0], useBlockSize);
 			}
 		}
-		delete [] data;
+
 		file.Close();
 		SPerform(SCI_SETSEL, 0, 0);
 		
