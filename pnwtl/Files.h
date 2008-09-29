@@ -101,6 +101,12 @@ bool RemoveReadOnly(LPCTSTR filename);
 
 bool FileIsReadOnly(LPCTSTR filename);
 
+/**
+ * @param path Path buffer, must be at least MAX_PATH big...
+ * @param folder Folder ID
+ */
+BOOL PNGetSpecialFolderPath (LPTSTR path, int folder);
+
 }
 
 #endif

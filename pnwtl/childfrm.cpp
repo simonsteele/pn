@@ -1545,9 +1545,10 @@ bool CChildFrame::OnRunTool(LPVOID pTool)
 		int buflength = (tr.chrg.cpMax - tr.chrg.cpMin) + 1;
 		if(buflength)
 		{
-			tr.lpstrText = (char*)new unsigned char[buflength];
+			std::vector<unsigned char> buffer(buflength);
+			tr.lpstrText = reinterpret_cast<char*>(&buffer[0]);
 			m_view.GetTextRange(&tr);
-			pWrapper->SetStdIOBuffer((unsigned char*)tr.lpstrText, buflength);
+			pWrapper->SwapInStdInBuffer(buffer);
 		}
 	}
 

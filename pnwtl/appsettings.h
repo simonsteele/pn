@@ -52,6 +52,7 @@ public:
 protected:
 	void findExtensionHandler(LPCTSTR path, FileFinderData& data, bool& /*shouldContinue*/);
 	void load();
+	void load(const TCHAR* filename);
 	void save();
 	void onUserSettingsPath(XMLAttributes& atts);
 	void onStoreType(XMLAttributes& atts);
@@ -60,6 +61,7 @@ protected:
 protected:
 	bool			m_bHuntingTaggers;
 	bool			m_bUseIni;
+	bool			m_bAppSettingsPathSpecified;
 	int				m_parseState;
 	tstring			m_pnpath;
 	tstring			m_userPath;

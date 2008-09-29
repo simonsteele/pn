@@ -36,7 +36,7 @@ public:
 		genxDispose(m_writer);
 	}
 
-	void Start(LPCTSTR filename)
+	bool Start(LPCTSTR filename)
 	{
 		if(!m_bInited)
 			initXmlBits();
@@ -47,11 +47,12 @@ public:
 
 		if(m_hFile == NULL)
 		{
-			UNEXPECTED(_T("Could not open an XML file for writing"));
-			return;
+			RETURN_UNEXPECTED(_T("Could not open an XML file for writing"), false);
 		}
 
 		genxStartDocFile(m_writer, m_hFile);
+
+		return true;
 	}
 
 	bool IsValid()

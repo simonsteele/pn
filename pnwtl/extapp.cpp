@@ -83,9 +83,6 @@ void App::Init()
 
 	// Create the command dispatcher
 	m_dispatch = new CommandDispatch(keypath.c_str());
-
-	// Load our extensions - done from outside
-	//loadExtensions();
 }
 
 CommandDispatch& App::GetCommandDispatch()

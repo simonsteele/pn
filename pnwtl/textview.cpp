@@ -573,38 +573,34 @@ tstring CTextView::GetCurrentWord()
 	GetSel(cr);
 	int len = cr.cpMax - cr.cpMin;
 
-	char* pStr = NULL;
+	std::vector<char> buffer;
 
-	//CString sel;
 	if(len > 0)
 	{
-		pStr = new char[len+2];
-		GetSelText(pStr);
+		buffer.resize(len+2);
+		GetSelText(&buffer[0]);
 	}
 	else
 	{
-		Scintilla::TextRange tr;
 		long pos = GetCurrentPos();
-		tr.chrg.cpMin = WordStartPosition(pos, true);
-		tr.chrg.cpMax = WordEndPosition(pos, true);
-		len = tr.chrg.cpMax - tr.chrg.cpMin;
+		TextRangeEx tr(WordStartPosition(pos, true), WordEndPosition(pos, true));
+		len = tr.Length();
+
 		if(len > 0)
 		{
-			pStr = new char[len + 2];
-			tr.lpstrText = pStr;
+			buffer.resize(len+2);
+			tr.lpstrText = &buffer[0];
 			GetTextRange(&tr);
 		}
 	}
 
 	tstring ret;
 
-	if(pStr != NULL)
+	if(buffer.size())
 	{
 		USES_CONVERSION;
 
-		ret = A2CT(pStr);
-		delete [] pStr;
-		pStr = NULL;
+		ret = A2CT(&buffer[0]);
 	}
 
 	return ret;

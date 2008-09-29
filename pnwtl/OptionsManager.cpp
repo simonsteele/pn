@@ -12,29 +12,6 @@
 #include "OptionsManager.h"
 #include "files.h"
 
-/**
- * @param path Path buffer, must be at least MAX_PATH big...
- * @param folder Folder ID
- */
-BOOL PNGetSpecialFolderPath (LPTSTR path, int folder)
-{
-    ITEMIDLIST *pidl;		// Shell Item ID List ptr
-    IMalloc    *imalloc;	// Shell IMalloc interface ptr
-    BOOL		result;		// Return value
-
-    if (SHGetSpecialFolderLocation (NULL, folder, &pidl) != NOERROR)
-        return FALSE;
-
-    result = SHGetPathFromIDList (pidl, path);
-
-    if (SHGetMalloc (&imalloc) == NOERROR) {
-		imalloc->Free(pidl);
-        imalloc->Release();
-    }
-
-    return result;
-}
-
 //////////////////////////////////////////////////////////////////////////////
 // Options
 //////////////////////////////////////////////////////////////////////////////
@@ -313,7 +290,7 @@ void Options::GetPNPath(tstring& path, int pathtype)
 		}
 		/*ss 20/01/2003 Fix SF Bug #671357
 		SHGetSpecialFolderPath(NULL, buf, CSIDL_APPDATA, TRUE)*/
-		else if(PNGetSpecialFolderPath(buf, CSIDL_APPDATA))
+		else if (FileUtil::PNGetSpecialFolderPath(buf, CSIDL_APPDATA))
 		{
 			path = buf;
 			if(path[path.length()-1] != _T('\\'))

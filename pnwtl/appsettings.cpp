@@ -110,7 +110,8 @@ bool ExtDetails::Exists() const
 AppSettings::AppSettings() :
 	m_bUseIni(false),
 	m_userPath(_T("")),
-	m_bHuntingTaggers(false)
+	m_bHuntingTaggers(false),
+	m_bAppSettingsPathSpecified(false)
 {
 	Options::StaticGetPNPath(m_pnpath);
 
@@ -284,16 +285,55 @@ void AppSettings::load()
 	CFileName fn(_T("config.xml"));
 	fn.Root(m_pnpath.c_str());
 	
-	if(!::FileExists(fn.c_str()))
-		return;
+	if(::FileExists(fn.c_str()))
+	{
+		load(fn.c_str());
+	}
 
+	// See if there's a user-specified user settings path, and if not use the default:
+	if (!HaveUserPath())
+	{
+		TCHAR buf[MAX_PATH +1];
+		buf[0] = '\0';
+
+		if (FileUtil::PNGetSpecialFolderPath(buf, CSIDL_APPDATA))
+		{
+			m_userPath = buf;
+			if (m_userPath[m_userPath.length()-1] != _T('\\'))
+			{
+				m_userPath += _T('\\');
+			}
+
+			m_userPath += _T("Echo Software\\PN2\\");
+		}
+	}
+
+	// Make sure the User Settings path exists
+	if (!CreateDirectoryRecursive(m_userPath.c_str()))
+	{
+		UNEXPECTED(_T("Could not create user settings folder"));
+	}
+
+	fn = _T("config.xml");
+	fn.Root(m_userPath.c_str());
+
+	if (::FileExists(fn.c_str()))
+	{
+		// We only use extensions found in the user settings config.xml
+		m_extensions.clear();
+		load(fn.c_str());
+	}
+}
+
+void AppSettings::load(const TCHAR* filename)
+{
 	XMLParser parser;
 	parser.SetParseState(this);
 	m_parseState = AS_DEFAULT;
 
 	try
 	{
-        parser.LoadFile(fn.c_str());
+        parser.LoadFile(filename);
 	}
 	catch(XMLParserException& E)
 	{
@@ -314,11 +354,15 @@ void AppSettings::save()
 	//4. Need command-line parameters for setting options and scanning extensions
 	//5. Should we store extensions list in user profile instead of config.xml?
 
-	CFileName fn(_T("config.xml"));
-	fn.Root(m_pnpath.c_str());
-
+	CFileName fn("config.xml");
+	fn.Root(m_userPath.c_str());
+	
 	AppSettingsWriter writer;
-	writer.Start(fn.c_str());
+	if (!writer.Start(fn.c_str()))
+	{
+		return;
+	}
+
 	writer.StartConfig();
 
 	if(m_bUseIni)
@@ -326,7 +370,7 @@ void AppSettings::save()
 		writer.WriteStoreType(true);
 	}
 
-	if(m_userPath != "")
+	if (m_bAppSettingsPathSpecified && m_userPath.size())
 	{
 		writer.WriteUserSettingsPath(m_userPath.c_str());
 	}
@@ -373,15 +417,17 @@ void AppSettings::characterData(LPCTSTR /*data*/, int /*len*/)
 void AppSettings::onUserSettingsPath(XMLAttributes& atts)
 {
 	LPCTSTR szPath = atts.getValue(_T("path"));
-	if(szPath != NULL && szPath[0] != NULL)
+	if (szPath != NULL && szPath[0] != NULL)
 	{
 		// Check for relative paths
 		CPathName path(szPath);
-		if(path.IsRelativePath())
+		if (path.IsRelativePath())
 		{
 			path.Root( m_pnpath.c_str() );
 		}
+
 		m_userPath = path.c_str();
+		m_bAppSettingsPathSpecified = true;
 	}
 }
 

@@ -20,6 +20,21 @@ class BaseAutoCompleteHandler;
 typedef boost::shared_ptr<BaseAutoCompleteHandler> AutoCompleteHandlerPtr;
 typedef boost::function<void (int start, int end)> MatchHandlerFn;
 
+class TextRangeEx : public Scintilla::TextRange
+{
+public:
+	TextRangeEx(int start, int end)
+	{
+		chrg.cpMin = start;
+		chrg.cpMax = end;
+	}
+
+	int Length() const
+	{
+		return chrg.cpMax - chrg.cpMin;
+	}
+};
+
 /**
  * @class CScintillaImpl
  * @brief Implement useful Scintilla functionality...

@@ -2,13 +2,15 @@
  * @file tools.h
  * @brief External tools code
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #ifndef tools_h__included
 #define tools_h__included
+
+#include "include/threading.h"
 
 // Predeclares:
 
@@ -87,7 +89,6 @@ class SchemeTools
 class GlobalTools : public SchemeTools
 {
 	public:
-		//GlobalTools();
 		void WriteDefinition(ToolsXMLWriter& writer, ToolSource* source);
 };
 
@@ -193,9 +194,8 @@ class ToolWrapper : public ToolDefinition
 		void SetRunning(bool bRunning);
 		bool IsRunning();
 
-		/// Orphan a buffer of data off to this class
-		void SetStdIOBuffer(unsigned char* buffer, unsigned int size);
-		unsigned char* GetStdIOBuffer(unsigned int& size) const;
+		void SwapInStdInBuffer(std::vector<unsigned char>& buffer);
+		unsigned char* GetStdIOBuffer(unsigned int& size);
 
 		virtual void Revert() = 0;
 		virtual void ShowOutputWindow() = 0;
@@ -205,10 +205,9 @@ class ToolWrapper : public ToolDefinition
 		virtual void ClearOutput() = 0;
 
 	protected:
-		unsigned char*		m_pStdIOBuffer;
-		unsigned int		m_StdIOBufferSize;
+		std::vector<unsigned char> m_stdin;
 		CChildFrame*		m_pActiveChild;
-		CRITICAL_SECTION	m_csStatusLock;
+		pnutils::threading::CriticalSection m_csStatusLock;
 		HWND				m_hNotifyWnd;
 		bool				m_bRunning;
 };

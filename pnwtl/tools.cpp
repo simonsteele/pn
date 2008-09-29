@@ -20,7 +20,7 @@
 #include "toolsxmlwriter.h"
 
 #include "include/sscontainers.h"
-#include "include/ssthreads.h"
+#include "include/threading.h"
 
 #include <algorithm>
 
@@ -575,22 +575,16 @@ Projects::Project* ToolCommandString::GetActiveProject()
 //////////////////////////////////////////////////////////////////////////////
 
 ToolWrapper::ToolWrapper(CChildFrame* pActiveChild, const ToolDefinition& definition) :
-	m_pStdIOBuffer(NULL),
-	m_StdIOBufferSize(NULL),
 	m_hNotifyWnd(NULL),
 	m_pActiveChild(pActiveChild)
 {
 	ToolDefinition::_copy(definition);
 
-	::InitializeCriticalSection(&m_csStatusLock);
 	SetRunning(true);
 }
 
 ToolWrapper::~ToolWrapper()
 {
-	if(m_pStdIOBuffer != NULL)
-		delete [] m_pStdIOBuffer;
-	::DeleteCriticalSection(&m_csStatusLock);
 }
 
 CChildFrame* ToolWrapper::GetActiveChild()
@@ -621,25 +615,24 @@ void ToolWrapper::OnFinished()
 
 void ToolWrapper::SetRunning(bool bRunning)
 {
-	CSSCritLock lock(&m_csStatusLock);
+	pnutils::threading::CritLock lock(m_csStatusLock);
 	m_bRunning = bRunning;
 }
 
 bool ToolWrapper::IsRunning()
 {
-	CSSCritLock lock(&m_csStatusLock);
+	pnutils::threading::CritLock lock(m_csStatusLock);
 	return m_bRunning;
 }
 
 /// Orphan a buffer of data off to this class
-void ToolWrapper::SetStdIOBuffer(unsigned char* buffer, unsigned int size)
+void ToolWrapper::SwapInStdInBuffer(std::vector<unsigned char>& buffer)
 {
-	m_pStdIOBuffer = buffer;
-	m_StdIOBufferSize = size;
+	std::swap(m_stdin, buffer);
 }
 
-unsigned char* ToolWrapper::GetStdIOBuffer(unsigned int& size) const
+unsigned char* ToolWrapper::GetStdIOBuffer(unsigned int& size)
 {
-	size = m_StdIOBufferSize;
-	return m_pStdIOBuffer;
+	size = m_stdin.size();
+	return &m_stdin[0];
 }

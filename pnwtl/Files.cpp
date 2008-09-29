@@ -8,6 +8,9 @@
  * the conditions under which this source may be modified / distributed.
  */
 #include "stdafx.h"
+
+#include <shlobj.h>
+
 #include "Files.h"
 #include "resource.h"
 
@@ -201,6 +204,29 @@ bool FileIsReadOnly(LPCTSTR filename)
 	//		return false;
 	//	}
 	//}
+}
+
+/**
+ * @param path Path buffer, must be at least MAX_PATH big...
+ * @param folder Folder ID
+ */
+BOOL PNGetSpecialFolderPath (LPTSTR path, int folder)
+{
+    ITEMIDLIST *pidl;		// Shell Item ID List ptr
+    IMalloc    *imalloc;	// Shell IMalloc interface ptr
+    BOOL		result;		// Return value
+
+    if (SHGetSpecialFolderLocation (NULL, folder, &pidl) != NOERROR)
+        return FALSE;
+
+    result = SHGetPathFromIDList (pidl, path);
+
+    if (SHGetMalloc (&imalloc) == NOERROR) {
+		imalloc->Free(pidl);
+        imalloc->Release();
+    }
+
+    return result;
 }
 
 } // namespace File
