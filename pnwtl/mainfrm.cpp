@@ -1101,6 +1101,10 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_CmdBar.SetMDIClient(m_hWndMDIClient);
 	m_ChildFactory.SetMdiClient(m_hWndMDIClient);
 
+	HICON hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_READONLY), 
+				IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR);
+	m_tabbedClient.GetTabOwner().AddIcon(hIconSmall);
+
 	InitializeDockingFrame();
 	
 	// register object for message filtering and idle updates

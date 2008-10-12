@@ -1600,6 +1600,7 @@ public:
 		MESSAGE_HANDLER(UWM_MDICHILDTABTOOLTIPCHANGE, OnChildTabToolTipChange)
 		MESSAGE_HANDLER(UWM_MDICHILDMAXIMIZED, OnChildMaximized)
 		MESSAGE_HANDLER(UWM_MDICHILDUNMAXIMIZED, OnChildUnMaximized)
+		MESSAGE_HANDLER(UWM_MDICHILDICONCHANGE, OnChildTabIconChange)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -1823,6 +1824,19 @@ public:
 		if(wParam != NULL)
 		{
 			m_MdiTabOwner.UpdateTabToolTip((HWND)wParam, (LPCTSTR)lParam);
+		}
+
+		return 0;
+	}
+
+	LRESULT OnChildTabIconChange(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+		//  We make the MDI child responsible for sending us a
+		//  message (UWM_MDICHILDTABTOOLTIPCHANGE) with the icon to show
+
+		if(wParam != NULL)
+		{
+			m_MdiTabOwner.UpdateTabImage((HWND)wParam, (int)lParam);
 		}
 
 		return 0;

@@ -12,6 +12,7 @@
 #define UWM_MDICHILDSAVEMODIFIED_MSG       _T("UWM_MDICHILDSAVEMODIFIED_MSG-5DAD28EC-C961-11d5-8BDA-00500477589F")
 #define UWM_MDICHILDISMODIFIED_MSG         _T("UWM_MDICHILDISMODIFIED_MSG-5DAD28EC-C961-11d5-8BDA-00500477589F")
 #define UWM_MDICHILDCLOSEWITHNOPROMPT_MSG  _T("UWM_MDICHILDCLOSEWITHNOPROMPT_MSG-5DAD28EC-C961-11d5-8BDA-00500477589F")
+#define UWM_MDICHILDICONCHANGE_MSG	       _T("UWM_MDICHILDICONCHANGE_MSG-ED568196-1441-4938-BBD6-58579E531085")
 
 //-----------------------------------------------------------------------------
 // UWM_MDICHILDTABTEXTCHANGE
@@ -175,7 +176,21 @@ __declspec(selectany) UINT UWM_MDICHILDCLOSEWITHNOPROMPT = ::RegisterWindowMessa
 __declspec(selectany) UINT UWM_MDICHILDCLOSEWITHNOPROMPT = 0;
 #endif
 
-
+//-----------------------------------------------------------------------------
+// UWM_MDICHILDICONCHANGE
+//
+// Sent to an MDI child frame (derived from CTabbedMDIChildWindowImpl)
+// to select a new icon to display.
+//
+// WPARAM: HWND for the child window
+// LPARAM: Image index to display
+//-----------------------------------------------------------------------------
+#if (_MSC_VER >= 1300)
+__declspec(selectany) UINT UWM_MDICHILDICONCHANGE = ::RegisterWindowMessage(UWM_MDICHILDICONCHANGE_MSG);
+#else
+// Initialize via RegisterTabbedMDIMessages
+__declspec(selectany) UINT UWM_MDICHILDICONCHANGE = 0;
+#endif
 
 // NOTE: For VC 7.0+, we could simply have each one initialize on its own, like:
 //
@@ -200,6 +215,7 @@ struct RegisterTabbedMDIMessages
 		UWM_MDICHILDSAVEMODIFIED =       ::RegisterWindowMessage(UWM_MDICHILDSAVEMODIFIED_MSG);
 		UWM_MDICHILDISMODIFIED =         ::RegisterWindowMessage(UWM_MDICHILDISMODIFIED_MSG);
 		UWM_MDICHILDCLOSEWITHNOPROMPT =  ::RegisterWindowMessage(UWM_MDICHILDCLOSEWITHNOPROMPT_MSG);
+		UWM_MDICHILDICONCHANGE =		 ::RegisterWindowMessage(UWM_MDICHILDICONCHANGE_MSG);
 	}
 };
 

@@ -160,7 +160,11 @@ void CChildFrame::SetupToolbar()
 	CToolBarCtrl toolbar;
 
 	CImageList imglist;
-	imglist.Create(IDB_EDITOR, 9, 2, RGB(255,0,255));
+	//imglist.Create(IDB_EDITOR, 9, 2, RGB(255,0,255));
+	imglist.Create(9, 9, ILC_COLOR32 | ILC_MASK, 6, 1);
+	HBITMAP bmp = static_cast<HBITMAP>(::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_EDITOR), IMAGE_BITMAP, 55, 9, LR_CREATEDIBSECTION | LR_DEFAULTSIZE));
+	imglist.Add(bmp, RGB(255, 0, 255));
+
 	m_hImgList = imglist.Detach();
 
 	CRect rc;
@@ -308,11 +312,20 @@ void CChildFrame::SetTitle( bool bModified )
 		tabTitle += " *";
 	}
 
-	if(m_bReadOnly)
+	if (m_bReadOnly)
+	{
+		::SendMessage(GetParent(), UWM_MDICHILDICONCHANGE, reinterpret_cast<WPARAM>(m_hWnd), 0);
+	}
+	else
+	{
+		::SendMessage(GetParent(), UWM_MDICHILDICONCHANGE, reinterpret_cast<WPARAM>(m_hWnd), -1);
+	}
+
+	/*if(m_bReadOnly)
 	{
 		title += " (ReadOnly)";
 		tabTitle += " (ReadOnly)";
-	}
+	}*/
 
 	SetWindowText(title.c_str());
 	SetTabText(tabTitle.c_str());

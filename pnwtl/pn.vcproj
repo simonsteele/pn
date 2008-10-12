@@ -1158,6 +1158,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\readonly.ico"
+				>
+			</File>
+			<File
 				RelativePath=".\res\redclose.bmp"
 				>
 			</File>
