@@ -37,6 +37,7 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 			DDX_CHECK(IDC_OPT_SAVEWORKSPACE,		m_bSaveWorkspace)
 			DDX_CHECK(IDC_OPT_CHECKUPDATES,			m_bCheckForUpdates)
 			DDX_CHECK(IDC_OPT_WANTTESTINGUPGRADES,	m_bWantTestingUpdates)
+			DDX_CHECK(IDC_OPT_BACKUPCHECK,			m_bBackupOnSave)
 		END_DDX_MAP()
 
 		virtual void OnOK();
@@ -59,6 +60,7 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 		BOOL			m_bSaveWorkspace;
 		BOOL			m_bCheckForUpdates;
 		BOOL			m_bWantTestingUpdates;
+		BOOL			m_bBackupOnSave;
 };
 
 #endif // #ifndef PNOTEPAD_OPTIONSPAGEGENERAL_H__INCLUDED

@@ -2,15 +2,17 @@
  * @file Document.cpp
  * @brief PN Document
  * @author Simon Steele
- * @note Copyright (c) 2005 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2008 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
+
 #include "stdafx.h"
 #include "resource.h"
 #include "ChildFrm.h"
 #include "Document.h"
+#include "FileUtil.h"
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -158,65 +160,72 @@ LRESULT Document::SendEditorMessage(UINT msg, WPARAM wParam, const char* strPara
 
 void Document::OnCharAdded(char c)
 {
-	for(EditEventSinks::const_iterator i = m_editSinks.begin(); i != m_editSinks.end(); ++i)
+	BOOST_FOREACH(extensions::ITextEditorEventSinkPtr& i, m_editSinks)
 	{
-		(*i)->OnCharAdded(c);
+		i->OnCharAdded(c);
 	}
 }
 
 void Document::OnSchemeChange(const char* scheme)
 {
-	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	BOOST_FOREACH(extensions::IDocumentEventSinkPtr& i, m_sinks)
 	{
-		(*i)->OnSchemeChange(scheme);
+		i->OnSchemeChange(scheme);
 	}
 }
 
 void Document::OnAfterLoad()
 {
-	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	BOOST_FOREACH(extensions::IDocumentEventSinkPtr& i, m_sinks)
 	{
-		(*i)->OnAfterLoad();
+		i->OnAfterLoad();
 	}
 }
 
 void Document::OnBeforeSave(const char* filename)
 {
-	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	// Create a backup if the option is configured
+	if (HasFile() && OPTIONS->Get(PNSK_GENERAL, _T("BackupOnSave"), false))
 	{
-		(*i)->OnBeforeSave(filename);
+		FileUtil::CreateBackupFile(m_sFilename.c_str(), NULL, _T(".bak"));
+	}
+
+	// Notify the event sinks that we're about to save...
+	BOOST_FOREACH(extensions::IDocumentEventSinkPtr& i, m_sinks)
+	{
+		i->OnBeforeSave(filename);
 	}
 }
 
 void Document::OnAfterSave()
 {
-	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
-	{
-		(*i)->OnAfterSave();
+	BOOST_FOREACH(extensions::IDocumentEventSinkPtr& i, m_sinks)
+	{	
+		i->OnAfterSave();
 	}
 }
 
 void Document::OnModifiedChanged(bool modified)
 {
-	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	BOOST_FOREACH(extensions::IDocumentEventSinkPtr& i, m_sinks)
 	{
-		(*i)->OnModifiedChanged(modified);
+		i->OnModifiedChanged(modified);
 	}
 }
 
 void Document::OnDocClosing()
 {
-	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	BOOST_FOREACH(extensions::IDocumentEventSinkPtr& i, m_sinks)
 	{
-		(*i)->OnDocClosing();
+		i->OnDocClosing();
 	}
 }
 
 void Document::OnWriteProtectChanged(bool writeProtect)
 {
-	for(EventSinks::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	BOOST_FOREACH(extensions::IDocumentEventSinkPtr& i, m_sinks)
 	{
-		(*i)->OnWriteProtectChanged(writeProtect);
+		i->OnWriteProtectChanged(writeProtect);
 	}
 }
 

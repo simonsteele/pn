@@ -89,6 +89,7 @@ typedef std::basic_string<TCHAR> tstring;
 
 //Boosty Goodness
 #include <boost/config.hpp>
+#include <boost/foreach.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/xpressive/xpressive.hpp>
 

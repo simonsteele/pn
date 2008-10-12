@@ -48,6 +48,8 @@ void COptionsPageGeneral::OnOK()
 
 	options.Set(PNSK_GENERAL, _T("CheckForUpdates"), m_bCheckForUpdates != FALSE);
 	options.Set(PNSK_GENERAL, _T("CheckForUnstableUpdates"), m_bWantTestingUpdates != FALSE);
+
+	options.Set(PNSK_GENERAL, _T("BackupOnSave"), m_bBackupOnSave != FALSE);
 }
 
 void COptionsPageGeneral::OnInitialise()
@@ -74,6 +76,8 @@ void COptionsPageGeneral::OnInitialise()
 
 	m_bCheckForUpdates = OPTIONS->Get(PNSK_GENERAL, _T("CheckForUpdates"), true);
 	m_bWantTestingUpdates = OPTIONS->Get(PNSK_GENERAL, _T("CheckForUnstableUpdates"), false);
+
+	m_bBackupOnSave = OPTIONS->Get(PNSK_GENERAL, _T("BackupOnSave"), false);
 
 	DoDataExchange();
 }

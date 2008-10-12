@@ -2,9 +2,9 @@
  * @file files.cpp
  * @brief File access wrappers
  * @author Simon Steele
- * @note Copyright (c) 2005-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2008 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #include "stdafx.h"
@@ -167,69 +167,6 @@ bool DeleteDirectory(LPCTSTR szDir, bool undoable)
 
 	return bRet;
 }
-
-namespace FileUtil
-{
-
-bool RemoveReadOnly(LPCTSTR filename)
-{
-	DWORD dwFileAtts = ::GetFileAttributes(filename);
-	if(dwFileAtts & FILE_ATTRIBUTE_READONLY)
-	{
-		dwFileAtts &= ~FILE_ATTRIBUTE_READONLY;
-		::SetFileAttributes(filename, dwFileAtts);
-		return true;
-	}
-	
-	return false;
-}
-
-bool FileIsReadOnly(LPCTSTR filename)
-{
-	DWORD dwFileAttributes = ::GetFileAttributes(filename);
-	return (dwFileAttributes & FILE_ATTRIBUTE_READONLY);
-	
-	// This code will check whether we really can change a file, but it feels dirty
-	// to me so is currently disabled.
-	//{
-	//	if (SetFileAttributes(pathname,dwFileAttributes |FILE_ATTRIBUTE_READONLY ) == 0)
-	//	{
-	//		// write permission
-	//		return true;
-	//	}
-	//	else
-	//	{
-	//		// no write permission -> restore File Attributes
-	//		SetFileAttributes(pathname,dwFileAttributes);
-	//		return false;
-	//	}
-	//}
-}
-
-/**
- * @param path Path buffer, must be at least MAX_PATH big...
- * @param folder Folder ID
- */
-BOOL PNGetSpecialFolderPath (LPTSTR path, int folder)
-{
-    ITEMIDLIST *pidl;		// Shell Item ID List ptr
-    IMalloc    *imalloc;	// Shell IMalloc interface ptr
-    BOOL		result;		// Return value
-
-    if (SHGetSpecialFolderLocation (NULL, folder, &pidl) != NOERROR)
-        return FALSE;
-
-    result = SHGetPathFromIDList (pidl, path);
-
-    if (SHGetMalloc (&imalloc) == NOERROR) {
-		imalloc->Free(pidl);
-        imalloc->Release();
-    }
-
-    return result;
-}
-
-} // namespace File
 
 ///////////////////////////////////////////////////////////////////////////
 // CFile - an MFC CFile replacement. No win api stuff, just pure Cpp.

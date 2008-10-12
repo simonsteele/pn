@@ -492,6 +492,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\fileutil.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\findbar.cpp"
 				>
 			</File>
@@ -806,6 +810,10 @@
 			</File>
 			<File
 				RelativePath=".\Files.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fileutil.h"
 				>
 			</File>
 			<File

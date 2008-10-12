@@ -867,17 +867,19 @@ BEGIN
     CONTROL         "Check for &updates",IDC_OPT_CHECKUPDATES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,84,187,10
     CONTROL         "Look for testing releases",IDC_OPT_WANTTESTINGUPGRADES,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,96,114,10
-    LTEXT           "&Display",IDC_STATIC,10,118,28,8
-    EDITTEXT        IDC_OPT_MRUCOUNT,42,116,30,14,ES_AUTOHSCROLL
-    LTEXT           "(1 to 50) items in the most recently used list.",IDC_STATIC,75,118,168,8
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,140,299,1
-    CONTROL         "Show &Tabs",IDC_OPT_SHOWTABSCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,148,228,10
+    CONTROL         "Create backup files when saving",IDC_OPT_BACKUPCHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,108,119,10
+    EDITTEXT        IDC_OPT_MRUCOUNT,42,126,30,14,ES_AUTOHSCROLL
+    CONTROL         "Show &Tabs",IDC_OPT_SHOWTABSCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,158,228,10
     CONTROL         "Only show with ma&ximized document windows",IDC_OPT_MAXTABSONLY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,160,165,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,170,165,10
     CONTROL         "At the &bottom of the main window",IDC_OPT_TABSBOTTOMCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,172,228,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,182,228,10
+    LTEXT           "&Display",IDC_STATIC,10,128,28,8
+    LTEXT           "(1 to 50) items in the most recently used list.",IDC_STATIC,75,128,168,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,150,299,1
     LTEXT           "Settings",IDC_STATIC,0,0,27,8
-    LTEXT           "Tabs",IDC_STATIC,0,136,16,8
+    LTEXT           "Tabs",IDC_STATIC,0,146,16,8
 END
 
 IDD_PAGE_NEWFILES DIALOGEX 0, 0, 300, 200
@@ -1994,6 +1996,7 @@ BEGIN
     IDS_REMOVE              "&Remove"
     IDS_QSAVEPROJBEFOREREMOVE 
                             "Project ""%s"" has been changed, do you want to save the changes before removing?"
+    IDS_BACKUPCREATEFAIL    "Failed to create a backup document"
 END
 
 #endif    // English (U.K.) resources

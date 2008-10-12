@@ -11,9 +11,9 @@
 #include "stdafx.h"
 #include "appsettings.h"
 #include "extension.h"
+#include "fileutil.h"
 #include "include/genx/genx.h"
 #include "include/pngenx.h"
-
 #include "include/filefinder.h"
 
 //////////////////////////////////////////////////////////////////////////////////

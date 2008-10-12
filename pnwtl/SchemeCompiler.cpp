@@ -4,7 +4,7 @@
  * @author Simon Steele
  * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -69,6 +69,11 @@ bool SchemeRecorder::StartRecording(LPCTSTR scheme, LPCTSTR title, LPCTSTR outfi
 void SchemeRecorder::WriteCommentBlock(const char* linecomment, const char* streamcommentstart, const char* streamcommentend, 
 			const char* commentblockstart, const char* commentblockend, const char* commentblockline)
 {
+	if (!m_out)
+	{
+		return;
+	}
+
 	CommentSpecRec csr;
 	memset(&csr, 0, sizeof(CommentSpecRec));
 	if(linecomment)
@@ -92,6 +97,11 @@ void SchemeRecorder::WriteCommentBlock(const char* linecomment, const char* stre
 
 void SchemeRecorder::WriteHeader(LPCTSTR schemename, LPCTSTR schemetitle, int FoldFlags)
 {
+	if (!m_out)
+	{
+		return;
+	}
+
 	USES_CONVERSION;
 
 	SchemeHdrRec scHdr;
@@ -112,17 +122,23 @@ void SchemeRecorder::WriteHeader(LPCTSTR schemename, LPCTSTR schemetitle, int Fo
 
 bool SchemeRecorder::EndRecording()
 {
-	if(m_out)
+	if (m_out)
 	{
 		fclose(m_out);
 		m_out = NULL;
 		return true;
 	}
-	else return false;
+	else 
+		return false;
 }
 
 long SchemeRecorder::SPerform(long Msg, WPARAM wParam, LPARAM lParam)
 {
+	if (!m_out)
+	{
+		return 0;
+	}
+
 	switch (Msg)
 	{
 		case SCI_STYLESETFONT:
@@ -204,6 +220,11 @@ bool SchemeRecorder::CheckNecessary(long Msg, WPARAM wParam, LPARAM lParam)
 
 void SchemeRecorder::Record(long Msg, WPARAM wParam, LPARAM lParam)
 {
+	if (!m_out)
+	{
+		return;
+	}
+
 	if (CheckNecessary(Msg, wParam, lParam))
 	{
 		char next = (char)m_next;
@@ -319,7 +340,13 @@ void SchemeCompiler::onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int 
 	filename += name;
 	filename += _T(".cscheme");
 
-	m_Recorder.StartRecording(name, title, filename.c_str(), foldflags);
+	if (!m_Recorder.StartRecording(name, title, filename.c_str(), foldflags))
+	{
+		tstring msg("Failed to create file ");
+		msg += filename;
+		msg += ", schemes may not work correctly";
+		UNEXPECTED(msg.c_str());
+	}
 	
 	m_Recorder.SetDefStyle(&m_LoadState.m_Default);
 }
@@ -669,6 +696,21 @@ void SchemeParser::processStyleClass(SchemeLoaderState* pState, XMLAttributes& a
 		}
 
 		parseStyle(pState, atts, pStyle);
+
+		if (name == _T("default") && pStyle->FontName.size() == 0)
+		{
+			// No font specified, and this is our default style.
+			if (WTL::RunTimeHelper::IsVista())
+			{
+				pStyle->FontName = "Consolas";
+			}
+			else
+			{
+				pStyle->FontName = "Lucida Console";
+			}
+
+			pStyle->values |= edvFontName;
+		}
 
 		onStyleClass(pS);
 

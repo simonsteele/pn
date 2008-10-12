@@ -28,6 +28,7 @@
 #include "autocompletehandler.h"
 #include "project.h"
 #include "projectprops.h"
+#include "fileutil.h"
 
 #include "tabbingframework/TabbedMDISave.h"
 

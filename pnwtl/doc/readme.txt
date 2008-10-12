@@ -14,7 +14,7 @@ What's new?
 6) New icons for docking windows
 7) Changed text search regular expressions engine to Boost Xpressive, now supports multi-line regular expressions
 8) Added support for word character set specification in schemes
-9) New style presets (ZenBurn, Murky)
+9) New style presets (ZenBurn, Murky, Turbo)
 10) Auto-complete choices are backed by file instead of the registry
 11) Goto line highlights the text that was jumped to when using tags
 12) Support for folding at "else" added to schemes (see cpp.scheme)
@@ -33,6 +33,7 @@ What's new?
 25) Added Clear Bookmarks command (#90)
 26) Explorer menus in context menus
 27) Improved extension crash debugging (#127)
+28) Option to create backups when saving files (#106)
 
 Bug Fixes:
 ----------

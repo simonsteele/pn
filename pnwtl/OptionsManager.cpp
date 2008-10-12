@@ -11,6 +11,7 @@
 #include "stdafx.h"
 #include "OptionsManager.h"
 #include "files.h"
+#include "fileutil.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // Options
@@ -288,8 +289,6 @@ void Options::GetPNPath(tstring& path, int pathtype)
 		{
 			path = m_UserSettingsPath;
 		}
-		/*ss 20/01/2003 Fix SF Bug #671357
-		SHGetSpecialFolderPath(NULL, buf, CSIDL_APPDATA, TRUE)*/
 		else if (FileUtil::PNGetSpecialFolderPath(buf, CSIDL_APPDATA))
 		{
 			path = buf;

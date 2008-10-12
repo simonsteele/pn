@@ -1208,26 +1208,26 @@ UINT __stdcall CTextView::RunMeasureThread(void* pThis)
 	// remove it from the absolute.
 	absMaxLength -= 10;
 
-	while(true)
+	while (true)
 	{
 		{
 			CritLock lock(pTextView->m_csMeasure);
 			bCanRun = pTextView->m_bMeasureCanRun;
 		}
 		
-		if(!bCanRun)
+		if (!bCanRun)
 			break;
 
 		maxLines = pTextView->GetLineCount();
 		
-		if(index >= maxLines)
+		if (index >= maxLines)
 			break;
 		
 		endPos = pTextView->GetLineEndPosition(index);
 		endX = pTextView->PointXFromPosition(endPos);
 		maxLength = max(endX, maxLength);
 
-		if(maxLength >= absMaxLength)
+		if (maxLength >= absMaxLength)
 			break;
 
 		index++;
