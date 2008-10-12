@@ -290,7 +290,7 @@ IDR_POPUP_CTAGS MENU
 BEGIN
     POPUP "CTAGS"
     BEGIN
-        MENUITEM "&Collaps all",                ID_CTAGS_COLLAPSALL
+        MENUITEM "&Collapse all",               ID_CTAGS_COLLAPSALL
         MENUITEM "&Expand all",                 ID_CTAGS_EXPANDALL
     END
 END

@@ -474,7 +474,7 @@ void CTagsTagSource::parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT
 
 	while(bytesLeft > 0)
 	{
-		if(canParse(p, bytesLeft))
+		if (canParse(p, bytesLeft))
 		{
 			mi.methodName = NULL;
 			mi.parentName = NULL;
@@ -482,11 +482,19 @@ void CTagsTagSource::parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT
 			mi.userData = userData;
 
 			// terminate the string at the end of this line...
-			pLineEnd = strchr(p, 13);
+			if ((pLineEnd = strchr(p, '\r')) == NULL)
+			{
+				if ((pLineEnd = strchr(p, '\n')) == NULL)
+				{
+					// Couldn't find an end-of-line, we didn't get sensible data
+					return;
+				}
+			}
+
 			*pLineEnd = '\0';
 
 			//TODO if first char is ! skip line.
-			if(*p != '!')
+			if (*p != '!')
 			{
 				// tag
 				p = strtok(p, TAB);
@@ -494,14 +502,15 @@ void CTagsTagSource::parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT
 				
 				// skip filename token...
 				p = strtok(NULL, TAB);
-				if (p==NULL){
+				if (p == NULL)
+				{
 					// no TAB found --> return
 					return;
 				}
 				p += strlen(p) + 1;
 
 				// skip /^ - now in expression to find function (i.e. declaration)
-				if(*p == '/' && p[1] == '^')
+				if (*p == '/' && p[1] == '^')
 				{
 					p += (2*sizeof(char));
 					
