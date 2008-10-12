@@ -141,6 +141,27 @@
 	
 	<!-- Build PyPN -->
 	<target name="pypn">
+		<!-- Python 2.6 -->
+		<property name="pyver" value="py26"/>
+		<exec
+			program="devenv"
+			commandline='pn.sln /Project pypn /ProjectConfig ReleaseDebug /Rebuild'
+			output="pypn-2.6.log">
+			<environment>
+				<variable name="PYTHONINCDIR" value="C:\Python26\include"/>
+				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.6"/>
+			</environment>
+		</exec>
+		<copy file="lib\boost-python-2.6\boost_python-vc80-mt-1_36.dll" todir="bin"/>
+		
+		<property name="pywrongdep" value="python24"/>
+		<call target="checkpypndeps"/>
+		
+		<property name="pywrongdep" value="python25"/>
+		<call target="checkpypndeps"/>
+		
+		<call target="deploypypn"/>
+		
 		<!-- Python 2.5 -->
 		<property name="pyver" value="py25"/>
 		<exec
@@ -152,8 +173,12 @@
 				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.5"/>
 			</environment>
 		</exec>
+		<copy file="lib\boost-python-2.5\boost_python-vc80-mt-1_36.dll" todir="bin"/>
 		
 		<property name="pywrongdep" value="python24"/>
+		<call target="checkpypndeps"/>
+		
+		<property name="pywrongdep" value="python26"/>
 		<call target="checkpypndeps"/>
 		
 		<call target="deploypypn"/>		
@@ -172,6 +197,9 @@
 		<copy file="lib\boost-python-2.4\boost_python-vc80-mt-1_36.dll" todir="bin"/>
 		
 		<property name="pywrongdep" value="python25"/>
+		<call target="checkpypndeps"/>
+		
+		<property name="pywrongdep" value="python26"/>
 		<call target="checkpypndeps"/>
 		
 		<call target="deploypypn"/>
@@ -238,15 +266,15 @@
 		<property name="distdir" value="..\dist\${deployver}"/>
 		
 		<exec
-			program="c:\python25\python"
+			program="c:\python26\python"
 			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Installer" -p pnotepad --labels="Type-Installer" -u simon.steele --password="${password}" "${distdir}\pn${compactver}.exe"'/>
 		
 		<exec
-			program="c:\python25\python"
+			program="c:\python26\python"
 			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Zip" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" ${distdir}\pn${compactver}.zip'/>		
 
 		<exec
-			program="c:\python25\python"
+			program="c:\python26\python"
 			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Portable" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" ${distdir}\portable-pn${compactver}.zip'/>
 	</target>
 	
