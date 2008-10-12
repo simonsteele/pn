@@ -3,7 +3,7 @@
 	<style-classes>
 		<!-- All styles inherit the default style. Font fore and back colours are 
 		not specified - this way we inherit the system defaults -->
-		<style-class name="default" size="10" font="Lucida Console"/>
+		<style-class name="default" size="10" />
 		
 		<style-class name="whitespace" description="Whitespace" fore="a8c5ff" />
 		

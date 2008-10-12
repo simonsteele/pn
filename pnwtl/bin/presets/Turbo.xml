@@ -1,0 +1,27 @@
+<UserSettings>
+	<override-colours caret="eeee00" indentGuides="606060" selBack="A0A0C0" />
+	<override-classes>
+		<style-class name="default" back="000040" fore="ffff00" />
+		<style-class name="comment" fore="008B8B" />
+		<style-class name="boxcomment" fore="008B8B" />
+		<style-class name="keyword" fore="ffffff" />
+		<style-class name="keyword2" fore="00eeee" bold="true"/>
+		<style-class name="string" fore="808080" />
+		<style-class name="character" fore="808080" />
+		<style-class name="number" fore="00ffff" />
+		<style-class name="operator" fore="f0efd0" />
+		<style-class name="error" fore="ffff00" back="287eff" />
+		<style-class name="function" fore="ffffff" />
+		<style-class name="class" fore="808080"/>
+		<style-class name="type" fore="808080"/>
+		<style-class name="tag" fore="808080" />
+		<style-class name="attribute" fore="cfcfcf" />
+		<style-class name="identifier" fore="00ff00" />
+		<style-class name="error" fore="ffffff" back="287eff" bold="true" />
+		<style-class name="preprocessor" fore="2F4F2F" />
+		<style-class name="linenumbers" fore="00dddd" back="000040" />
+		<style-class name="bracematch" fore="ffffff" bold="true"/>
+		<style-class name="bracemismatch" fore="ff0000" bold="true"/>
+		<style-class name="controlchars" fore="dca3a3" bold="true" />
+	</override-classes>
+</UserSettings>
