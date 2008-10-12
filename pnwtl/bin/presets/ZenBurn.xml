@@ -4,6 +4,7 @@
 		<style-class name="default" back="3f3f3f" fore="dcdccc" />
 		<style-class name="comment" fore="7f9f7f" italic="true"/>
 		<style-class name="boxcomment" fore="82a282" bold="true"/>
+		<style-class name="commentline" fore="7f9f7f" italic="true"/>
 		<style-class name="keyword" fore="f0dfaf"/>
 		<style-class name="keyword2" fore="FF8000" bold="true"/>
 		<style-class name="string" fore="cc9393" />
