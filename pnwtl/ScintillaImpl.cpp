@@ -1360,12 +1360,9 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 	}
 }
 
-bool CScintillaImpl::UnCommentLine(const CommentSpecRec& comments)
+bool CScintillaImpl::UnCommentLine(const CommentSpecRec& comments, int line)
 {
-	Scintilla::CharacterRange cr;
-	GetSel(cr);
-
-	int indentPos = GetLineIndentPosition(LineFromPosition(cr.cpMin));
+	int indentPos = GetLineIndentPosition(line);
 	ScintillaAccessor sa(this);
 	bool match(true);
 
@@ -1393,6 +1390,14 @@ bool CScintillaImpl::UnCommentLine(const CommentSpecRec& comments)
 	}
 
 	return false;
+}
+
+bool CScintillaImpl::UnCommentLine(const CommentSpecRec& comments)
+{
+	Scintilla::CharacterRange cr;
+	GetSel(cr);
+
+	return UnCommentLine(comments, LineFromPosition(cr.cpMin));
 }
 
 bool CScintillaImpl::UnCommentStream(const CommentSpecRec& comments)

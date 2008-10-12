@@ -65,6 +65,7 @@ public:
 	
 	bool FindMatchingBraces(int& CaretBrace, int& OtherBrace);
 
+	bool UnCommentLine(const CommentSpecRec& comments, int line);
 	bool UnCommentLine(const CommentSpecRec& comments);
 	bool UnCommentStream(const CommentSpecRec& comments);
 	

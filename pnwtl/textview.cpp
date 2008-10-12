@@ -1011,10 +1011,35 @@ LRESULT CTextView::OnUncomment(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	int startLine = LineFromPosition(cr.cpMin);
 	int endLine = LineFromPosition(cr.cpMax);
 
-	if((cr.cpMin == cr.cpMax || startLine == endLine) && comments.CommentLineText[0] != NULL)
+	if (comments.CommentLineText[0] != NULL)
 	{
-		if( UnCommentLine(comments) )
+		// Look for and try to remove line comments:
+		int indentPos = GetLineIndentPosition(startLine);
+		ScintillaAccessor sa(this);
+		bool match(true);
+
+		for (size_t i(0); i < strlen(comments.CommentLineText); ++i)
+		{
+			if (sa.SafeGetCharAt(indentPos + i, '\0') != comments.CommentLineText[i])
+			{
+				match = false;
+				break;
+			}
+		}
+
+		if (match)
+		{
+			BeginUndoAction();
+
+			for (int line = startLine; line <= endLine; line++)
+			{
+				UnCommentLine(comments, line);
+			}
+
+			EndUndoAction();
+
 			return 0;
+		}
 	}
 
 	if(cr.cpMin == cr.cpMax)
