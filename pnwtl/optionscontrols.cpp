@@ -201,6 +201,11 @@ void CSchemeCombo::Load(SchemeConfigParser* pConfig, LPCTSTR selectScheme, bool 
 	{
 		SelectString(0, schemeText.c_str());
 	}
+	else
+	{
+		// Default: select the first scheme.
+		SetCurSel(0);
+	}
 }
 
 SchemeDetails* CSchemeCombo::GetItemScheme(int index)
