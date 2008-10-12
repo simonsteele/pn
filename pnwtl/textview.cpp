@@ -294,40 +294,36 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 
 bool CTextView::Load(LPCTSTR filename, Scheme* pScheme, EPNEncoding encoding)
 {
-	if( OpenFile(filename, encoding) )
+	if (OpenFile(filename, encoding))
 	{
 		// Clear the UNDO buffer
 		EmptyUndoBuffer();
 
-		Scheme* sch = pScheme;
+		Scheme* sch(pScheme);
 		
-		if(NULL == sch)
+		if (NULL == sch)
 		{
 			sch = SchemeManager::GetInstance()->SchemeForFile(filename);
-		}
-		else
-		{
-			sch = pScheme;	
 		}
 
 		SetScheme(sch);
 
-		if( (sch == SchemeManager::GetInstance()->GetDefaultScheme()) && OPTIONS->Get(PNSK_EDITOR, _T("SmartStart"), true) )
+		if ((sch == SchemeManager::GetInstance()->GetDefaultScheme()) && OPTIONS->Get(PNSK_EDITOR, _T("SmartStart"), true))
 		{
 			// SmartStart is enabled, we'll use it to try and get a scheme if our scheme
 			// is the default one...
 			SmartStart::GetInstance()->Scan(this);
 		}
 
-		if(OPTIONS->Get(PNSK_EDITOR, _T("EnableLongLineThread"), true))
+		if (OPTIONS->Get(PNSK_EDITOR, _T("EnableLongLineThread"), true))
 		{
 			checkLineLength();
 		}
 
 		return true;
 	}
-	else
-		return false;
+
+	return false;
 }
 
 /**

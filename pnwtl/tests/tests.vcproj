@@ -183,6 +183,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\iotests.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\regex_tests.cpp"
 				>
 			</File>
@@ -236,6 +240,10 @@
 			</File>
 			<File
 				RelativePath="..\autocomplete.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\Utf8_16.cpp"
 				>
 			</File>
 		</Filter>

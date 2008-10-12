@@ -67,6 +67,13 @@ size_t Utf8_16_Read::convert(char* buf, size_t len, encodingType enc_type, int s
 		return len - nSkip;
 	}
 
+	if (len == nSkip) {
+		// Nothing but BOM, empty file
+		m_nBufSize = 0;
+		m_pNewBuf = NULL;
+		return 0;
+	}
+
 	// Else...
 	size_t newSize = len + len / 2 + 1;
 	if (m_nBufSize != newSize) {
