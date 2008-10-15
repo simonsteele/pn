@@ -1,0 +1,27 @@
+<UserSettings>
+	<override-colours caret="e6e6fa" indentGuides="282828" />
+	<override-classes>
+		<style-class name="attribute" fore="cfcfcf" />
+		<style-class name="boxcomment" fore="99968b" bold="true"/>
+		<style-class name="bracematch" fore="f6f3e8" back="857b6f" bold="true"/>
+		<style-class name="bracemismatch" fore="eeb2a0" back="2e2e2e" bold="true"/>
+		<style-class name="character" fore="dca3a3" bold="true"/>
+		<style-class name="class" fore="cc9393" />
+		<style-class name="comment" fore="99968b"/>
+		<style-class name="commentdoc" fore="99968b"/>
+		<style-class name="default" font="Courier New" back="242424" fore="f6f3e8" />
+		<style-class name="error" fore="ffff00" back="ff0000" />
+		<style-class name="function" fore="cae682" bold="true"/>
+		<style-class name="identifier" fore="cae682" />
+		<style-class name="keyword" fore="8ac6f2" bold="true"/>
+		<style-class name="keyword2" fore="e5786d" />
+		<style-class name="linecomment" fore="99968b" italic="true" />
+		<style-class name="linenumbers" fore="857b6f" back="000000" />
+		<style-class name="number" fore="e5786d" />
+		<style-class name="operator" fore="e5786d" />
+		<style-class name="preprocessor" fore="e5786d" />
+		<style-class name="string" fore="95e454" />
+		<style-class name="tag" fore="cae682" bold="true"/>
+		<style-class name="type" fore="cae682"/>
+	</override-classes>
+</UserSettings>
