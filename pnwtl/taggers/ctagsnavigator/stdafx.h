@@ -20,6 +20,8 @@
 #include <tchar.h>
 #include <assert.h>
 
+#include <vector>
+
 #include <boost/shared_ptr.hpp>
 
 #define PNASSERT assert

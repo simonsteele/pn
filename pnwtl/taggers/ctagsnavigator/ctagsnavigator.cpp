@@ -76,7 +76,7 @@ void __stdcall pn_exit_extension()
 
 // Converts wide character to multibyte string
 // result is heap allocated
-wchar_t* ConvertMBtoWC( const char* mbString )
+std::wstring ConvertMBtoWC( const char* mbString )
 {
 	if ( NULL == mbString )
 	{
@@ -87,24 +87,24 @@ wchar_t* ConvertMBtoWC( const char* mbString )
 	size_t wideSize = ::mbstowcs( NULL, mbString, 0 );
 	if ( (size_t)-1 == wideSize )
 	{
-		return NULL;
+		return std::wstring(L"");
 	}
+
+	std::wstring wstr;
+	wstr.resize(wideSize+1);
 
 	// Allocate space for a wide string, leave room for NULL terminator
-	wchar_t* wideString = new wchar_t[ wideSize + 1 ];
+	//wchar_t* wideString = new wchar_t[ wideSize + 1 ];
 	
 	// Convert string
-	size_t resultSize = ::mbstowcs( wideString, mbString, wideSize );
+	size_t resultSize = ::mbstowcs( &wstr[0], mbString, wideSize );
 	if ( (size_t)-1 == resultSize )
 	{
-		delete [] wideString;
-		return NULL;
+		return std::wstring(L"");
 	}
 
-	// NULL terminate string
-	wideString[ resultSize ] = '\0';
-
-	return wideString;
+	wstr.resize(resultSize);
+	return wstr;
 }
 
 /**
@@ -127,13 +127,12 @@ void CTagsTagSource::LoadAdditionalLanguages()
 	DWORD val = ::GetFileAttributesA( optionsFile.c_str() );
 	if ( INVALID_FILE_ATTRIBUTES != val && ( FILE_ATTRIBUTE_DIRECTORY & val ) == 0 )
 	{
-		wchar_t* path = ConvertMBtoWC( optionsFile.c_str() );
-		if ( path )
+		std::wstring path = ConvertMBtoWC( optionsFile.c_str() );
+		if (path.size())
 		{
 			m_optionsParam = L" --options=\"";
 			m_optionsParam += path;
 			m_optionsParam += L"\" ";
-			delete [] path;
 		}
 	}
 
@@ -164,27 +163,6 @@ const char* CTagsTagSource::GetSchemesSupported()
 	return m_schemes.c_str();
 }
 
-/**
- * Simple string buffer helper
- */
-class TinyString
-{
-public:
-	TinyString(wchar_t* str)
-	{
-		_str = str;
-	}
-
-	~TinyString()
-	{
-		delete [] _str;
-	}
-
-protected:
-	wchar_t* _str;
-};
-
-
 #define MAX_LANGUAGE	12
 #define CTAGSOPTS	L" --fields=+n -f - " // must start and end with a space.
 #define CTAGSLANGOPTS L" --language-force="
@@ -212,25 +190,21 @@ bool CTagsTagSource::FindTags(ITagSink* sink,
 	memset(&state, 0, sizeof(PARSESTATE));
 	state.sink = sink;
 
-	wchar_t* cmd = L"ctags";
 	wchar_t* dir = NULL;
-	wchar_t* clopts = new wchar_t[wcslen(cmd)+m_optionsParam.length()+wcslen(CTAGSOPTS)+wcslen(CTAGSLANGOPTS)+MAX_LANGUAGE+wcslen(filename)+3];
-	wcscpy(clopts, cmd);
-	wcscat(clopts, m_optionsParam.c_str() );
+	std::wstring clopts(L"ctags");
+	clopts += m_optionsParam.c_str();
 
 	LPCWSTR lang = GetLanguage(filename, scheme);
 	if(lang != NULL)
 	{
-		wcscat(clopts, CTAGSLANGOPTS);
-		wcscat(clopts, lang);
+		clopts += CTAGSLANGOPTS;
+		clopts += lang;
 	}
 
-	wcscat(clopts, CTAGSOPTS);
-	wcscat(clopts, L"\"");
-	wcscat(clopts, filename);
-	wcscat(clopts, L"\"");
-
-	TinyString runopts(clopts);
+	clopts += CTAGSOPTS;
+	clopts += L"\"";
+	clopts += filename;
+	clopts += L"\"";
 
 	OSVERSIONINFOW osv = {sizeof(OSVERSIONINFOW), 0, 0, 0, 0, L""};
 
@@ -277,13 +251,19 @@ bool CTagsTagSource::FindTags(ITagSink* sink,
 	si.wShowWindow = SW_HIDE;
 	si.hStdInput = hStdInRead;
 	si.hStdOutput = hWritePipe;
-	si.hStdError = hWritePipe;
+	//si.hStdError = hWritePipe;
 
 	PROCESS_INFORMATION pi = {0, 0, 0, 0};
 
+	// CreateProcess can modify the contents of lpCommandLine when using the wide
+	// character version, so we allow for that here by using a MAX_PATH buffer
+	// when calling the function rather than the fixed-length string.
+	std::vector<wchar_t> cmdbuf(MAX_PATH);
+	memcpy(&cmdbuf[0], clopts.c_str(), clopts.size()*sizeof(wchar_t));
+
 	bool bCreated = ::CreateProcessW(
 		NULL, 
-		clopts, 
+		&cmdbuf[0],
 		&sa, /*LPSECURITY_ATTRIBUTES lpProcessAttributes*/
 		NULL, /*LPSECURITYATTRIBUTES lpThreadAttributes*/
 		TRUE, /*BOOL bInheritHandles*/ 
@@ -456,11 +436,7 @@ bool CTagsTagSource::canParse(char* buffer, DWORD dwLength)
  */
 void CTagsTagSource::parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT mask, void* userData, int* ltypes, int* utypes)
 {
-	METHODINFO mi;
-
-	char*	pEndDecl;
 	char*	pLineEnd;
-	char*	pDelim;
 	
 	// offset the start back by any carry-over from the last run.
 	char*	pStart = &state->buffer[PARSE_BUFFER_SIZE] - state->extra;
@@ -470,17 +446,13 @@ void CTagsTagSource::parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT
 	int bytesTotal = dwBytesRead + state->extra;
 	int bytesLeft = bytesTotal;
 
-	memset(&mi, 0, sizeof(METHODINFO));
-
 	while(bytesLeft > 0)
 	{
 		if (canParse(p, bytesLeft))
 		{
-			mi.methodName = NULL;
-			mi.parentName = NULL;
-			mi.fullText = NULL;
+			METHODINFO mi = {0};
 			mi.userData = userData;
-
+			
 			// terminate the string at the end of this line...
 			if ((pLineEnd = strchr(p, '\r')) == NULL)
 			{
@@ -491,92 +463,14 @@ void CTagsTagSource::parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT
 				}
 			}
 
+			// Make the current line a null-terminated string for parsing.
 			*pLineEnd = '\0';
 
-			//TODO if first char is ! skip line.
-			if (*p != '!')
+			if (processLine(p, pLineEnd, ltypes, utypes, mi))
 			{
-				// tag
-				p = strtok(p, TAB);
-				mi.methodName = p;
-				
-				// skip filename token...
-				p = strtok(NULL, TAB);
-				if (p == NULL)
-				{
-					// no TAB found --> return
-					return;
-				}
-				p += strlen(p) + 1;
-
-				// skip /^ - now in expression to find function (i.e. declaration)
-				if (*p == '/' && p[1] == '^')
-				{
-					p += (2*sizeof(char));
-					
-					// find $/
-					pEndDecl = strrchr(p, '$');
-					if (pEndDecl == NULL)
-						return;
-					if (*(pEndDecl+1) != '/')  //Check '/' following '$'
-						return;
-					*pEndDecl = '\0';
-					
-					mi.fullText = p;
-
-					// skip ;"[tab]
-					p = pEndDecl + 4;
-				}
-				else
-				{
-					pEndDecl = strchr(p, ';');
-					if (pEndDecl == NULL)
-						return;
-					p = pEndDecl + 3;
-				}
-
-				p = strtok(p, TAB);
-				
-				// Extensions are all key:value except type which has no : and is just a letter.
-				while(p < pLineEnd && p != NULL)
-				{
-					pDelim = strchr(p, ':');
-					if(pDelim)
-					{
-						// delimit and skip...
-						*pDelim++ = '\0';
-						if(strcmp(p, "line") == 0)
-						{
-							mi.lineNumber = atoi(pDelim);
-						}
-						else if(strcmp(p, "class") == 0)
-						{
-							mi.parentName = pDelim;
-						}
-						else if(strcmp(p, "struct") == 0)
-						{
-							mi.parentName = pDelim;
-						}
-						else if(strcmp(p, "union") == 0)
-						{
-							mi.parentName = pDelim;
-						}
-						else if(strcmp(p, "file") == 0)
-						{
-							// who cares!
-						}
-					}
-					else
-					{
-						// it's the type...
-						if(*p <= 'Z')
-							mi.type = utypes[*p - 65];
-						else
-							mi.type = ltypes[*p - 97];
-					}
-					
-					p = strtok(NULL, TAB);
-				}
+				// send method.
+				if ( ((maskVals[mi.type].mask1 & mask.mask1) != 0) || ((maskVals[mi.type].mask2 & mask.mask2) != 0) )
+					state->sink->OnFound(1, &mi);
 			}
 			
 			p = pLineEnd;
@@ -586,15 +480,12 @@ void CTagsTagSource::parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT
 			if((*p) == '\n')
 				p++;
 
-			// send method.
-			if ( ((maskVals[mi.type].mask1 & mask.mask1) != 0) || ((maskVals[mi.type].mask2 & mask.mask2) != 0) )
-				state->sink->OnFound(1, &mi);
-
 			bytesLeft = bytesTotal - (p - pStart);
 		}
 		else
 			break;
 	}
+	
 	// else store for next run
 	if(bytesLeft > 0)
 	{
@@ -603,4 +494,98 @@ void CTagsTagSource::parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT
 	}
 	else
 		state->extra = 0;
+}
+
+bool CTagsTagSource::processLine(char* p, const char* pLineEnd, const int* ltypes, const int* utypes, METHODINFO& mi)
+{
+	// Skip comment lines...
+	if (*p == '!')
+	{
+		return false;
+	}
+
+	// tag
+	p = strtok(p, TAB);
+	mi.methodName = p;
+	
+	// skip filename token...
+	p = strtok(NULL, TAB);
+	if (p == NULL)
+	{
+		// no TAB found --> return
+		return false;
+	}
+
+	p += strlen(p) + 1;
+
+	// skip /^ - now in expression to find function (i.e. declaration)
+	if (*p == '/' && p[1] == '^')
+	{
+		p += (2 * sizeof(char));
+		
+		// find $/
+		char* pEndDecl = strrchr(p, '$');
+		if (pEndDecl == NULL)
+			return false;
+		if (*(pEndDecl+1) != '/')  //Check '/' following '$'
+			return false;
+		*pEndDecl = '\0';
+		
+		mi.fullText = p;
+
+		// skip ;"[tab]
+		p = pEndDecl + 4;
+	}
+	else
+	{
+		char* pEndDecl = strchr(p, ';');
+		if (pEndDecl == NULL)
+			return false;
+		p = pEndDecl + 3;
+	}
+
+	p = strtok(p, TAB);
+	
+	// Extensions are all key:value except type which has no : and is just a letter.
+	while(p < pLineEnd && p != NULL)
+	{
+		char* pDelim = strchr(p, ':');
+		if(pDelim)
+		{
+			// delimit and skip...
+			*pDelim++ = '\0';
+			if(strcmp(p, "line") == 0)
+			{
+				mi.lineNumber = atoi(pDelim);
+			}
+			else if(strcmp(p, "class") == 0)
+			{
+				mi.parentName = pDelim;
+			}
+			else if(strcmp(p, "struct") == 0)
+			{
+				mi.parentName = pDelim;
+			}
+			else if(strcmp(p, "union") == 0)
+			{
+				mi.parentName = pDelim;
+			}
+			else if(strcmp(p, "file") == 0)
+			{
+				// who cares!
+			}
+		}
+		else
+		{
+			// it's the type...
+			if(*p <= 'Z')
+				mi.type = utypes[*p - 65];
+			else
+				mi.type = ltypes[*p - 97];
+		}
+		
+		p = strtok(NULL, TAB);
+	}
+
+	return true;
 }

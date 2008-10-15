@@ -61,6 +61,7 @@ public:
 private:
 	bool canParse(char* buffer, DWORD dwLength);
 	void parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT mask, void* userData, int* ltypes, int* utypes);
+	bool processLine(char* p, const char* pLineEnd, const int* ltypes, const int* utypes, extensions::METHODINFO& mi);
 	
 	/**
 	 * Path to taggers directory. Used for external ctags language definitions.
