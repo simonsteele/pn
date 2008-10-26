@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="define_scite_settings_for_lua_files_">
+			and
+			break
+			do
+			else
+			elseif
+			end
+			false
+			for
+			function
+			if
+			in
+			local
+			nil
+			not
+			or
+			repeat
+			return
+			then
+			true
+			until
+			while
+		</keyword-class>
+		<keyword-class name="define_scite_settings_for_lua_files_">
+			$(keywordclass.lua)
+		</keyword-class>
+		<keyword-class name="basic_functions_(in_both_versions_of_lua)">
+			_VERSION
+			assert
+			collectgarbage
+			dofile
+			error
+			gcinfo
+			loadfile
+			loadstring
+			print
+			rawget
+			rawset
+			require
+			tonumber
+			tostring
+			type
+			unpack
+		</keyword-class>
+		<keyword-class name="basic_functions">
+			_ALERT
+			_ERRORMESSAGE
+			_INPUT
+			_PROMPT
+			_OUTPUT
+			_STDERR
+			_STDIN
+			_STDOUT
+			call
+			dostring
+			foreach
+			foreachi
+			getn
+			globals
+			newtype
+			sort
+			tinsert
+			tremove
+		</keyword-class>
+		<keyword-class name="string_manipulation_&_mathematical_functions">
+			abs
+			acos
+			asin
+			atan
+			atan2
+			ceil
+			cos
+			deg
+			exp
+			floor
+			format
+			frexp
+			gsub
+			ldexp
+			log
+			log10
+			max
+			min
+			mod
+			rad
+			random
+			randomseed
+			sin
+			sqrt
+			strbyte
+			strchar
+			strfind
+			strlen
+			strlower
+			strrep
+			strsub
+			strupper
+			tan
+		</keyword-class>
+		<keyword-class name="input_and_output_facilities_&_system_facilities">
+			openfile
+			closefile
+			readfrom
+			writeto
+			appendto
+			remove
+			rename
+			flush
+			seek
+			tmpfile
+			tmpname
+			read
+			write
+			clock
+			date
+			difftime
+			execute
+			exit
+			getenv
+			setlocale
+			time
+		</keyword-class>
+		<keyword-class name="basic_functions">
+			_G
+			getfenv
+			getmetatable
+			ipairs
+			loadlib
+			next
+			pairs
+			pcall
+			rawequal
+			setfenv
+			setmetatable
+			xpcall
+			string
+			table
+			math
+			coroutine
+			io
+			os
+			debug
+			load
+			module
+			select
+		</keyword-class>
+		<keyword-class name="string_manipulation,_table_manipulation,_mathematical_functions_(string_&_table_&_math)">
+			string.byte
+			string.char
+			string.dump
+			string.find
+			string.len
+			string.lower
+			string.rep
+			string.sub
+			string.upper
+			string.format
+			string.gfind
+			string.gsub
+			table.concat
+			table.foreach
+			table.foreachi
+			table.getn
+			table.sort
+			table.insert
+			table.remove
+			table.setn
+			math.abs
+			math.acos
+			math.asin
+			math.atan
+			math.atan2
+			math.ceil
+			math.cos
+			math.deg
+			math.exp
+			math.floor
+			math.frexp
+			math.ldexp
+			math.log
+			math.log10
+			math.max
+			math.min
+			math.mod
+			math.pi
+			math.pow
+			math.rad
+			math.random
+			math.randomseed
+			math.sin
+			math.sqrt
+			math.tan
+			string.gmatch
+			string.match
+			string.reverse
+			table.maxn
+			math.cosh
+			math.fmod
+			math.modf
+			math.sinh
+			math.tanh
+			math.huge
+		</keyword-class>
+		<keyword-class name="coroutine_manipulation,_input_and_output_facilities,_system_facilities_(coroutine_&_io_&_os)">
+			coroutine.create
+			coroutine.resume
+			coroutine.status
+			coroutine.wrap
+			coroutine.yield
+			io.close
+			io.flush
+			io.input
+			io.lines
+			io.open
+			io.output
+			io.read
+			io.tmpfile
+			io.type
+			io.write
+			io.stdin
+			io.stdout
+			io.stderr
+			os.clock
+			os.date
+			os.difftime
+			os.execute
+			os.exit
+			os.getenv
+			os.remove
+			os.rename
+			os.setlocale
+			os.time
+			os.tmpname
+			coroutine.running
+			package.cpath
+			package.loaded
+			package.loadlib
+			package.path
+			package.preload
+			package.seeall
+			io.popen
+		</keyword-class>
+		<keyword-class name="if_you_still_use_both,_you_can_keep_them_like_below,_or_use_separate_styles_">
+			$(keywordclass2.lua)
+			$(keywordclass2.lua4)
+			$(keywordclass2.lua5)
+		</keyword-class>
+		<keyword-class name="if_you_still_use_both,_you_can_keep_them_like_below,_or_use_separate_styles_">
+			$(keywordclass3.lua4)
+			$(keywordclass3.lua5)
+		</keyword-class>
+		<keyword-class name="if_you_still_use_both,_you_can_keep_them_like_below,_or_use_separate_styles_">
+			$(keywordclass4.lua4)
+			$(keywordclass4.lua5)
+		</keyword-class>
+	</keyword-classes>
+	<language name="lua" title="Lua (lua)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="lua"/>
+		<use-keywords>
+			<keyword key="0" name="Define SciTE settings for Lua files." class="define_scite_settings_for_lua_files_"/>
+			<keyword key="1" name="Define SciTE settings for Lua files." class="define_scite_settings_for_lua_files_"/>
+			<keyword key="2" name="Basic Functions (in both versions of Lua)" class="basic_functions_(in_both_versions_of_lua)"/>
+			<keyword key="3" name="Basic Functions" class="basic_functions"/>
+			<keyword key="4" name="String Manipulation & Mathematical Functions" class="string_manipulation_&_mathematical_functions"/>
+			<keyword key="5" name="Input and Output Facilities & System Facilities" class="input_and_output_facilities_&_system_facilities"/>
+			<keyword key="6" name="Basic Functions" class="basic_functions"/>
+			<keyword key="7" name="String Manipulation, Table Manipulation, Mathematical Functions (string & table & math)" class="string_manipulation,_table_manipulation,_mathematical_functions_(string_&_table_&_math)"/>
+			<keyword key="8" name="Coroutine Manipulation, Input and Output Facilities, System Facilities (coroutine & io & os)" class="coroutine_manipulation,_input_and_output_facilities,_system_facilities_(coroutine_&_io_&_os)"/>
+			<keyword key="9" name="If you still use both, you can keep them like below, or use separate styles." class="if_you_still_use_both,_you_can_keep_them_like_below,_or_use_separate_styles_"/>
+			<keyword key="10" name="If you still use both, you can keep them like below, or use separate styles." class="if_you_still_use_both,_you_can_keep_them_like_below,_or_use_separate_styles_"/>
+			<keyword key="11" name="If you still use both, you can keep them like below, or use separate styles." class="if_you_still_use_both,_you_can_keep_them_like_below,_or_use_separate_styles_"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32" fore="000000"/>
+			<style name="White space: Visible only in View Whitespace mode (or if it has a back colour)" key="0" fore="FF0000"/>
+			<style name="Block comment (Lua 5.0)" key="1" class="comment"/>
+			<style name="Line comment" key="2" class="comment"/>
+			<style name="Doc comment -- Not used in Lua (yet?)" key="3" class="comment"/>
+			<style name="Number" key="4" class="number"/>
+			<style name="Keyword" key="5" class="keyword"/>
+			<style name="(Double quoted) String" key="6" class="string"/>
+			<style name="Character (Single quoted string)" key="7" class="string"/>
+			<style name="Literal string" key="8" class="string"/>
+			<style name="Preprocessor (obsolete in Lua 4.0 and up)" key="9" class="preprocessor"/>
+			<style name="Operators" key="10" class="operator"/>
+			<style name="Identifier (everything else...)" key="11" class="identifier"/>
+			<style name="End of line where string is not closed" key="12" class="string"/>
+			<style name="Other keywords (bozo test colors :-)" key="13" class="keyword"/>
+			<style name="Other keywords (bozo test colors :-)" key="14" class="keyword"/>
+			<style name="Other keywords (bozo test colors :-)" key="15" class="keyword"/>
+			<style name="Other keywords (bozo test colors :-)" key="16" class="keyword"/>
+			<style name="Other keywords (bozo test colors :-)" key="17" class="keyword"/>
+			<style name="Other keywords (bozo test colors :-)" key="18" class="keyword"/>
+			<style name="Other keywords (bozo test colors :-)" key="19" class="keyword"/>
+		</use-styles>
+	</language>
+</Scheme>

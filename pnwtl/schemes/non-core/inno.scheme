@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="inno.sections">
+ code components custommessages dirs files icons ini installdelete langoptions languages messages registry run setup types tasks uninstalldelete uninstallrun _istool 		</keyword-class>
+		<keyword-class name="inno.keywords">
+ allowcancelduringinstall allownoicons allowrootdirectory allowuncpath alwaysrestart alwaysshowcomponentslist alwaysshowdironreadypage alwaysshowgrouponreadypage alwaysusepersonalgroup appcomments appcontact appcopyright appenddefaultdirname appenddefaultgroupname appid appmodifypath appmutex appname apppublisher apppublisherurl appreadmefile appsupporturl appupdatesurl appvername appversion architecturesallowed architecturesinstallin64bitmode backcolor backcolor2 backcolordirection backsolid changesassociations changesenvironment compression copyrightfontname copyrightfontsize createappdir createuninstallregkey defaultdirname defaultgroupname defaultuserinfoname defaultuserinfoorg defaultuserinfoserial dialogfontname dialogfontsize direxistswarning disabledirpage disablefinishedpage disableprogramgrouppage disablereadymemo disablereadypage disablestartupprompt diskclustersize diskslicesize diskspanning enablesdirdoesntexistwarning encryption extradiskspacerequired flatcomponentslist infoafterfile infobeforefile internalcompresslevel languagedetectionmethod languagecodepage languageid languagename licensefile mergeduplicatefiles minversion onlybelowversion outputbasefilename outputdir outputmanifestfile password privilegesrequired reservebytes restartifneededbyrun setupiconfile showcomponentsizes showlanguagedialog showtaskstreelines slicesperdisk solidcompression sourcedir timestamprounding timestampsinutc titlefontname titlefontsize touchdate touchtime uninstallable uninstalldisplayicon uninstalldisplayname uninstallfilesdir uninstalllogmode uninstallrestartcomputer updateuninstalllogappname usepreviousappdir usepreviousgroup useprevioussetuptype useprevioustasks useprevioususerinfo userinfopage usesetupldr versioninfocompany versioninfocopyright versioninfodescription versioninfotextversion versioninfoversion welcomefontname welcomefontsize windowshowcaption windowstartmaximized windowresizable windowvisible wizardimagebackcolor wizardimagefile wizardimagestretch wizardsmallimagefile
+		</keyword-class>
+		<keyword-class name="inno.parameters">
+ afterinstall attribs beforeinstall check comment components copymode description destdir destname excludes extradiskspacerequired filename flags fontinstall groupdescription hotkey infoafterfile infobeforefile iconfilename iconindex key languages licensefile messagesfile minversion name onlybelowversion parameters permissions root runonceid section source statusmsg string subkey tasks type types valuedata valuename valuetype workingdir
+		</keyword-class>
+		<keyword-class name="inno.preprocessor_directives">
+ append define dim else emit endif endsub error expr file for if ifdef ifexist ifndef ifnexist include insert pragma sub undef
+		</keyword-class>
+		<keyword-class name="inno.pascal_keywords">
+ begin break case const continue do downto else end except finally for function if of procedure repeat then to try until uses var while with
+		</keyword-class>
+	</keyword-classes>
+	<language name="inno" title="Inno Setup" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="inno"/>
+		<use-keywords>
+			<keyword key="0" name="Sections" class="inno.sections"/>
+			<keyword key="1" name="Keywords" class="inno.keywords"/>
+			<keyword key="2" name="Parameters" class="inno.parameters"/>
+			<keyword key="3" name="Preprocessor directives" class="inno.preprocessor_directives"/>
+			<keyword key="4" name="Pascal keywords" class="inno.pascal_keywords"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="0"/>
+			<style name="Comment" key="1" class="comment"/>
+			<style name="Keyword" key="2" class="keyword"/>
+			<style name="Parameter" key="3"/>
+			<style name="Section" key="4" back="FFFFC0"/>
+			<style name="Preprocessor" key="5" class="preprocessor"/>
+			<style name="Preprocessor (inline)" key="6" class="preprocessor"/>
+			<style name="Pascal comment" key="7" class="comment"/>
+			<style name="Pascal keyword" key="8" class="keyword"/>
+			<style name="User defined keyword" key="9" class="keyword"/>
+			<style name="Double quoted string" key="10" class="string"/>
+			<style name="Single quoted string" key="11" class="string"/>
+		</use-styles>
+	</language>
+</Scheme>

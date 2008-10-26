@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="scriptol">
+			act action alias always and array as bool boolean break by byte class case catch const constant continue dyn def define dict do double echo else elsif end enum error false file for float forever function globak gtk in if ifdef import include int integer java javax let long match mod nil not natural null number or print protected public real return redo scan script scriptol sol short super static step until using var text then this true try void volatile while when undef zero
+		</keyword-class>
+	</keyword-classes>
+	<language name="scriptol" title="Scriptol (sol)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="scriptol"/>
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="scriptol"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default " key="0" fore="000000"/>
+			<style name="White space" key="1" fore="808080"/>
+			<style name="Scriptol style comment line " key="2" class="comment"/>
+			<style name="Persistent comment line " key="3" class="comment"/>
+			<style name="C style comment line " key="4" class="comment"/>
+			<style name="Comment-blocks" key="5" class="comment"/>
+			<style name="Number" key="6" class="number"/>
+			<style name="String" key="7" class="string"/>
+			<style name="Character/Single quoted string" key="8" class="string"/>
+			<style name="End of line where string is not closed" key="9" class="string"/>
+			<style name="Keyword" key="10" class="keyword"/>
+			<style name="Operators" key="11" class="operator"/>
+			<style name="Identifiers" key="12" class="identifier"/>
+			<style name="Class name definition" key="14" fore="0000FF" bold="true"/>
+		</use-styles>
+	</language>
+</Scheme>

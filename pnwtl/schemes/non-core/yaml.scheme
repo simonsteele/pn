@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="yaml_convertible_values">
+ true false yes no
+		</keyword-class>
+	</keyword-classes>
+	<language name="yaml" title="YAML" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="yaml"/>
+		<use-keywords>
+			<keyword key="0" name="YAML convertible values" class="yaml_convertible_values"/>
+		</use-keywords>
+		<use-styles>
+			<style name="default" key="0" fore="000000"/>
+			<style name="comment line" key="1" class="comment"/>
+			<style name="value identifier" key="2" class="identifier"/>
+			<style name="keyword value" key="3" class="keyword"/>
+			<style name="numerical value" key="4" class="number"/>
+			<style name="reference/repeating value" key="5" fore="008888"/>
+			<style name="document delimiting line" key="6" fore="FFFFFF" bold="true" back="000088" eolfilled="true"/>
+			<style name="text block marker" key="7" fore="333366"/>
+			<style name="syntax error marker" key="8" class="error"/>
+		</use-styles>
+	</language>
+</Scheme>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="kix.commands">
+ ? and beep big break call cd cls color cookie1 copy debug del dim display do until exit flushkb for each next function endfunction get gets global go gosub goto if else endif md or password play quit rd redim return run select case endselect set setl setm settime shell sleep small use while loop
+		</keyword-class>
+		<keyword-class name="kix.functions">
+ abs addkey addprinterconnection addprogramgroup addprogramitem asc ascan at backupeventlog box cdbl chr cint cleareventlog close comparefiletimes createobject cstr dectohex delkey delprinterconnection delprogramgroup delprogramitem deltree delvalue dir enumgroup enumipinfo enumkey enumlocalgroup enumvalue execute exist existkey expandenvironmentvars fix formatnumber freefilehandle getdiskspace getfileattr getfilesize getfiletime getfileversion getobject iif ingroup instr instrrev int isdeclared join kbhit keyexist lcase left len loadhive loadkey logevent logoff ltrim memorysize messagebox open readline readprofilestring readtype readvalue redirectoutput right rnd round rtrim savekey sendkeys sendmessage setascii setconsole setdefaultprinter setfileattr setfocus setoption setsystemstate settitle setwallpaper showprogramgroup shutdown sidtoname split srnd substr trim ubound ucase unloadhive val vartype vartypename writeline writeprofilestring writevalue
+		</keyword-class>
+		<keyword-class name="kix.macros">
+ address build color comment cpu crlf csd curdir date day domain dos error fullname homedir homedrive homeshr hostname inwin ipaddress0 ipaddress1 ipaddress2 ipaddress3 kix lanroot ldomain ldrive lm logonmode longhomedir lserver maxpwage mdayno mhz monthno month msecs pid primarygroup priv productsuite producttype pwage ras result rserver scriptdir scriptexe scriptname serror sid site startdir syslang ticks time userid userlang wdayno wksta wuserid ydayno year
+		</keyword-class>
+	</keyword-classes>
+	<language name="kix" title="Kix-Script (kix)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="kix"/>
+		<use-keywords>
+			<keyword key="0" name="Commands" class="kix.commands"/>
+			<keyword key="1" name="Functions" class="kix.functions"/>
+			<keyword key="2" name="@ Macros" class="kix.macros"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32"/>
+			<style name="Whitespace" key="0"/>
+			<style name="Comment" key="1" class="comment"/>
+			<style name="String" key="2" class="string"/>
+			<style name="String" key="3" class="string"/>
+			<style name="Number" key="4" back="number"/>
+			<style name="Variable" key="5" class="variable"/>
+			<style name="Macro" key="6" class="tag"/>
+			<style name="Keyword" key="7" class="keyword"/>
+			<style name="Function" key="8" class="function"/>
+			<style name="Operator" key="9" class="operator"/>
+		</use-styles>
+	</language>
+</Scheme>

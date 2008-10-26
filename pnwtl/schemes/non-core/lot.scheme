@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<language name="lot" title="Lot (lot)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="lot"/>
+		<use-styles>
+			<style name="Default" key="0" fore="000000"/>
+			<style name="header" key="1" back="00F0FF" eolfilled="true"/>
+			<style name="break" key="2" back="FFFF00" eolfilled="true"/>
+			<style name="fail" key="5" back="FF0000" eolfilled="true" bold="true"/>
+			<style name="abort" key="6" back="0000FF" bold="true" eolfilled="true"/>
+		</use-styles>
+	</language>
+</Scheme>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="mmixal.opcodes">
+			2ADDU 4ADDU 8ADDU 16ADDU ADD ADDU AND ANDNH ANDNL ANDNMH ANDNML 
+	BDIF BEV BN BNN BNP BNZ BOD BP BSPEC BYTE BZ CMP CMPU CSEV CSN CSNN CSNP CSNZ CSOD CSP CSWAP CSZ 
+	DIV DIVU ESPEC EXPR FADD FCMP FCMPE FDIV FEQL FEQLE FIX FIXU FLOT FLOTU FMUL FREM FSQRT FSUB FUN FUNE 
+	GET GETA GO GREG I_BIT INCH INCL INCMH INCML IS JMP LDA LDB LDBU LDHT LDO LDOU LDSF LDT LDTU LDUNC LDVTS LDW LDWU LOC LOCAL 
+	MOR MUL MULU MUX MXOR NAND NEG NEGU NNIX NOR NXOR O_BIT OCTA ODIF OR ORH ORL ORMH ORML ORN 
+	PBEV PBN PBNN PBNP PBNZ PBOD PBP PBZ POP PREFIX PREGO PRELD PREST PUSHGO PUSHJ PUT 
+	RESUME SAVE SET SETH SETL SETMH SETML SFLOT SFLOTU SL SLU SR SRU 
+	STB STBU STCO STHT STO STOU STSF STT STTU STUNC STW STWU SUB SUBU SWYM SYNC SYNCD TDIF TETRA TRAP TRIP UNSAVE 
+	WDIF WYDEXOR ZSEV ZSN ZSNN ZSNP ZSNZ ZSOD ZSP ZSZ
+		</keyword-class>
+		<keyword-class name="mmixal.specialregister">
+			rA rB rC rD rE rF rG rH rI rJ rK rL rM rN rO rP rQ rR rS rT rU rV rW rX rY rZ rBB rTT rWW rXX rYY rZZ
+		</keyword-class>
+		<keyword-class name="mmixal.symbols">
+			@ Text_Segment Data_Segment Pool_Segment Stack_Segment 
+	StdErr StdIn StdOut 
+	Fopen Fclose Fread Fwrite Fgets Fputs Fgetws Fputws Ftell Fseek 
+	TextRead TextWrite BinaryRead BinaryWrite BinaryReadWrite
+		</keyword-class>
+	</keyword-classes>
+	<language name="mmixal" title="MMIXAL (mms)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="mmixal"/>
+		<use-keywords>
+			<keyword key="0" name="Op Codes" class="mmixal.opcodes"/>
+			<keyword key="1" name="Special Register" class="mmixal.specialregister"/>
+			<keyword key="2" name="Symbols" class="mmixal.symbols"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32"/>
+			<style name="Whitespace" key="0"/>
+			<style name="Comment" key="1" class="comment"/>
+			<style name="Label" key="2" />
+			<style name="Opcode (not validated)" key="3" class="attribute"/>
+			<style name="Between Label and Opcode" key="4" />
+			<style name="Valid Opcode" key="5" class="tag"/>
+			<style name="Unknown Opcode" key="6" class="unknowntag"/>
+			<style name="Between Opcode and Operands" key="7"/>
+			<style name="Division of Operands" key="8"/>
+			<style name="Number" key="9" class="number"/>
+			<style name="Reference (to a Label)" key="10"/>
+			<style name="Character" key="11" class="character"/>
+			<style name="String" key="12" class="string"/>
+			<style name="Register" key="13" class="identifier"/>
+			<style name="Hex Number" key="14" class="number"/>
+			<style name="Operator" key="15" class="operator"/>
+			<style name="Symbol" key="16" class="keyword"/>
+			<style name="Preprocessor" key="17" class="preprocessor"/>
+		</use-styles>
+	</language>
+</Scheme>

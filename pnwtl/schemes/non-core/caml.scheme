@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="caml.textual">
+			and
+			as
+			assert
+			asr
+			begin
+			class
+			constraint
+			do
+			done
+			downto
+			else
+			end
+			exception
+			external
+			false
+			for
+			fun
+			function
+			functor
+			if
+			in
+			include
+			inherit
+			initializer
+			land
+			lazy
+			let
+			lor
+			lsl
+			lsr
+			lxor
+			match
+			method
+			mod
+			module
+			mutable
+			new
+			object
+			of
+			open
+			or
+			private
+			rec
+			sig
+			struct
+			then
+			to
+			true
+			try
+			type
+			val
+			virtual
+			when
+			while
+			with
+		</keyword-class>
+		<keyword-class name="caml.library">
+			option
+			Some
+			None
+			ignore
+			ref
+			lnot
+			succ
+			pred
+		</keyword-class>
+		<keyword-class name="caml.usertypes">
+			array
+			bool
+			char
+			float
+			int
+			list
+			string
+			unit
+		</keyword-class>
+	</keyword-classes>
+	<language name="caml" title="Objective Caml" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="caml"/>
+		<use-keywords>
+			<keyword key="0" name="Textual keywords" class="caml.textual"/>
+			<keyword key="1" name="Optional keywords" class="caml.library"/>
+			<keyword key="2" name="User types" class="caml.usertypes"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32"/>
+			<style name="White space" key="0" fore="808080"/>
+			<style name="Identifiers" key="1" class="identifier"/>
+			<style name="style.caml.2=" key="2" fore="000000" back="ffe0ff"/>
+			<style name="Keywords (builtin language-defined keywords)" key="3" class="keyword"/>
+			<style name="style.caml.4=" key="4" fore="000000" back="e0e0ff"/>
+			<style name="style.caml.5=fore:#000000,back:#ffe0e0" key="5" bold="true"/>
+			<style name="Linenum directive" key="6" class="number"/>
+			<style name="Operators" key="7" class="operator"/>
+			<style name="style.caml.8=$(colour.number)" key="8" class="number"/>
+			<style name="style.caml.9=$(colour.char)" key="9" fore="000000" back="ffff00"/>
+			<style name="style.caml.11=$(colour.string)" key="11" class="string"/>
+			<style name="Comment" key="12" class="comment"/>
+			<style name="Comment (Nested)" key="13" class="commentbox"/>
+			<style name="Comment (Doubly nested)" key="14" class="commentbox"/>
+			<style name="Comment (Triply nested)" key="15" class="commentbox"/>
+		</use-styles>
+	</language>
+</Scheme>

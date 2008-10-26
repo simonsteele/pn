@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="ave.keywords">
+			nil
+			true
+			false
+			else
+			for
+			if
+			while
+			then
+			elseif
+			end
+			av
+			self
+			in
+			exit
+		</keyword-class>
+	</keyword-classes>
+	<language name="ave" title="AVE" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="ave"/>
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="ave.keywords"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32" fore="000000"/>
+			<style name="White space: Visible only in View Whitespace mode (or if it has a back colour)" key="0" fore="FF0000"/>
+			<style name="Comment" key="1" class="comment"/>
+			<style name="Number" key="2" class="number"/>
+			<style name="Keyword" key="3" class="keyword"/>
+			<style name="String" key="6" class="string"/>
+			<style name="Enumeration " key="7" class="number"/>
+			<style name="End of line where string is not closed" key="8" class="string"/>
+			<style name="Operators" key="10" class="operator"/>
+			<style name="Identifier (everything else...)" key="9" class="identifier"/>
+			<style name="Other keywords (bozo test colors :-)" key="12" class="keyword"/>
+			<style name="Other keywords (bozo test colors :-)" key="13" class="keyword"/>
+			<style name="Other keywords (bozo test colors :-)" key="14" class="keyword"/>
+			<style name="Other keywords (bozo test colors :-)" key="15" class="keyword"/>
+			<style name="Other keywords (bozo test colors :-)" key="16" class="keyword"/>
+		</use-styles>
+	</language>
+</Scheme>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="keywords.eiffel">
+		alias all and any as bit boolean check class character clone create creation current debug deferred div 
+		do double else elseif end ensure equal expanded export external false feature forget from frozen general 
+		if implies indexing infix inherit inspect integer invariant is language like local loop mod name nochange 
+		none not obsolete old once or platform pointer prefix precursor real redefine rename require rescue result 
+		retry select separate string strip then true undefine unique until variant void when xor
+		</keyword-class>
+	</keyword-classes>
+	<language name="eiffel" title="Eiffel" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="eiffel"/>
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="keywords.eiffel"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="0"/>
+			<style name="Line comment" key="1" class="comment"/>
+			<style name="Number" key="2" class="number"/>
+			<style name="Keyword" key="3" class="keyword"/>
+			<style name="String" key="4" class="string"/>
+			<style name="Character" key="5" class="character"/>
+			<style name="Operators" key="6" class="operator"/>
+			<style name="Identifier" key="7" class="identifier"/>
+			<style name="End of line where string is not closed" key="8" class="unclosedstring"/>
+		</use-styles>
+	</language>
+</Scheme>

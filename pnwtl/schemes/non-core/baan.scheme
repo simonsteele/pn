@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="baan.keywords">
+		</keyword-class>
+	</keyword-classes>
+	<language name="baan" title="Baan" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="baan"/>
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="baan.keywords"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32"/>
+			<style name="White space" key="0" fore="808080"/>
+			<style name="Comment" key="1" class="comment"/>
+			<style name="Doc comment" key="2" class="comment"/>
+			<style name="Number" key="3" class="number"/>
+			<style name="Keyword" key="4" class="keyword"/>
+			<style name="Double quoted string" key="5" class="string"/>
+			<style name="Preprocessor" key="6" class="preprocessor"/>
+			<style name="Operators" key="7" class="operator"/>
+			<style name="Identifiers" key="8" class="identifier"/>
+			<style name="End of line where string is not closed" key="9" class="string"/>
+			<style name="Keywords2" key="10" class="keyword"/>
+		</use-styles>
+	</language>
+</Scheme>

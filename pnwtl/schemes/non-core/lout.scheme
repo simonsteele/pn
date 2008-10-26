@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="lout.keywords">
+			@OptGall @Filter @FilterIn @FilterOut @FilterErr @FontDef @Family @Face @Name @Metrics @ExtraMetrics @Mapping @Recode @Common @Rump @Meld @Insert @OneOf @Next @Plus @Minus @Wide @High @HShift @VShift @BeginHeaderComponent @EndHeaderComponent @SetHeaderComponent @ClearHeaderComponent @OneCol @OneRow @HScale @VScale @HCover @VCover @Scale @KernShrink @HContract @VContract @HLimited @VLimited @HExpand @VExpand @StartHVSpan @StartHSpan @StartVSpan @HSpan @VSpan @PAdjust @HAdjust @VAdjust @Rotate @Background @IncludeGraphic @SysIncludeGraphic @Graphic @LinkSource @LinkDest @URLLink @PlainGraphic @Verbatim @RawVerbatim @Case @Yield @BackEnd @Char @Font @Space @YUnit @ZUnit @Break @Underline @SetColour @SetColor @SetTexture @Outline @Language @CurrLang @CurrFamily @CurrFace @CurrYUnit @CurrZUnit @LEnv @LClos @LUse @LEO @Open @Use @NotRevealed @Tagged @Database @SysDatabase @Include @SysInclude @IncludeGraphicRepeated @PrependGraphic @SysIncludeGraphicRepeated @SysPrependGraphic @Target @Null @PageLabel @Galley @ForceGalley @LInput @Split @Tag @Key @Optimize @Merge @Enclose @Begin @End @Moment @Second @Minute @Hour @Day @Month @Year @Century @WeekDay @YearDay @DaylightSaving @@A @@B @@C @@D @@E @@V
+		</keyword-class>
+		<keyword-class name="lout.keywords2">
+			&amp;&amp;&amp; &amp;&amp; &amp; ^// ^/ ^|| ^| ^&amp; // / || |
+		</keyword-class>
+		<keyword-class name="lout.keywords3">
+			def langdef force horizontally into extend import export precedence associativity left right body macro named compulsory following preceding foll_or_prec now
+		</keyword-class>
+	</keyword-classes>
+	<language name="lout" title="Lout" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="lout"/>
+		<use-keywords>
+			<keyword key="0" name="Keywords 1" class="lout.keywords"/>
+			<keyword key="1" name="Keywords 2" class="lout.keywords2"/>
+			<keyword key="2" name="Keywords 3" class="lout.keywords3"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32"/>
+			<style name="White space" key="0" fore="808080"/>
+			<style name="Comment" key="1" class="comment"/>
+			<style name="Number" key="2" class="number"/>
+			<style name="Keyword" key="3" class="keyword"/>
+			<style name="Keyword2" key="4" class="keyword"/>
+			<style name="Keyword3" key="5" class="keyword"/>
+			<style name="Keyword4" key="6" class="keyword"/>
+			<style name="Double quoted string" key="7" class="string"/>
+			<style name="Operators" key="8" class="operator"/>
+			<style name="Identifiers" key="9" class="identifier"/>
+			<style name="End of line where string is not closed" key="10" class="unclosedstring"/>
+		</use-styles>
+	</language>
+</Scheme>

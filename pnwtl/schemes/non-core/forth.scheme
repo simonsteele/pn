@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="forth.control_keywords_forth">
+ AGAIN BEGIN CASE DO ELSE ENDCASE ENDOF IF LOOP OF REPEAT THEN UNTIL WHILE [IF] [ELSE] [THEN] ?DO
+		</keyword-class>
+		<keyword-class name="forth.keywords">
+			DUP DROP ROT SWAP OVER @ ! 2@ 2! 2DUP 2DROP 2SWAP 2OVER NIP R@ &gt;R R&gt; 2R@ 2&gt;R 2R&gt; 0= 0&lt; SP@ SP! 
+			W@ W! C@ C! &lt; &gt; = &lt;&gt; 0&lt;&gt; SPACE SPACES KEY? KEY THROW CATCH ABORT */ 2* /MOD CELL+ CELLS CHAR+ CHARS 
+			MOVE ERASE DABS TITLE HEX DECIMAL HOLD &lt;# # #S #&gt; SIGN D. . U. DUMP (.") &gt;NUMBER ' IMMEDIATE EXIT RECURSE 
+			UNLOOP LEAVE HERE ALLOT , C, W, COMPILE, BRANCH, RET, LIT, DLIT, ?BRANCH, ", &gt;MARK &gt;RESOLVE1 &lt;MARK &gt;RESOLVE 
+			ALIGN ALIGNED USER-ALLOT USER-HERE HEADER DOES&gt; SMUDGE HIDE :NONAME LAST-WORD ?ERROR ERROR2 FIND1 SFIND 
+			SET-CURRENT GET-CURRENT DEFINITIONS GET-ORDER FORTH ONLY SET-ORDER ALSO PREVIOUS VOC-NAME. ORDER LATEST 
+			LITERAL 2LITERAL SLITERAL CLITERAL ?LITERAL1 ?SLITERAL1 HEX-LITERAL HEX-SLITERAL ?LITERAL2 ?SLITERAL2 SOURCE 
+			EndOfChunk CharAddr PeekChar IsDelimiter GetChar OnDelimiter SkipDelimiters OnNotDelimiter SkipWord SkipUpTo 
+			ParseWord NextWord PARSE SKIP CONSOLE-HANDLES REFILL DEPTH ?STACK ?COMP WORD INTERPRET BYE QUIT MAIN1 EVALUATE 
+			INCLUDE-FILE INCLUDED &gt;BODY +WORD WORDLIST CLASS! CLASS@ PAR! PAR@ ID. ?IMMEDIATE ?VOC IMMEDIATE VOC WordByAddrWl 
+			WordByAddr NLIST WORDS SAVE OPTIONS /notransl ANSI&gt;OEM ACCEPT EMIT CR TYPE EKEY? EKEY EKEY&gt;CHAR EXTERNTASK 
+			ERASE-IMPORTS ModuleName ModuleDirName ENVIRONMENT? DROP-EXC-HANDLER SET-EXC-HANDLER HALT ERR CLOSE-FILE CREATE-FILE 
+			CREATE-FILE-SHARED OPEN-FILE-SHARED DELETE-FILE FILE-POSITION FILE-SIZE OPEN-FILE READ-FILE REPOSITION-FILE DOS-LINES 
+			UNIX-LINES READ-LINE WRITE-FILE RESIZE-FILE WRITE-LINE ALLOCATE FREE RESIZE START SUSPEND RESUME STOP PAUSE MIN MAX TRUE 
+			FALSE ASCIIZ&gt; R/O W/O ;CLASS ENDWITH OR AND /STRING SEARCH COMPARE EXPORT ;MODULE SPACE 
+		</keyword-class>
+		<keyword-class name="forth.defwords">
+			VARIABLE CREATE : VALUE CONSTANT VM: M: var dvar chars OBJ CONSTR: DESTR: CLASS: OBJECT: POINTER USER USER-CREATE USER-VALUE VECT WNDPROC: VOCABULARY -- TASK: CEZ: MODULE:
+		</keyword-class>
+		<keyword-class name="forth.prewords1">
+		CHAR [CHAR] POSTPONE WITH ['] TO [COMPILE] CHAR ASCII \'
+		</keyword-class>
+		<keyword-class name="forth.prewords2">
+			REQUIRE
+			WINAPI:
+		</keyword-class>
+		<keyword-class name="forth.string_words">
+			S"
+			ABORT"
+			Z"
+			"
+			."
+			C"
+		</keyword-class>
+	</keyword-classes>
+	<language name="forth" title="Forth files (f spf)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="forth"/>
+		<use-keywords>
+			<keyword key="0" name="control keywords Forth" class="forth.control_keywords_forth"/>
+			<keyword key="1" name="Keywords" class="forth.keywords"/>
+			<keyword key="2" name="Defwords" class="forth.defwords"/>
+			<keyword key="4" name="Prewords" class="forth.prewords"/>
+			<keyword key="4" name="Prewords 2" class="forth.prewords2"/>
+			<keyword key="5" name="String words" class="forth.string_words"/>
+		</use-keywords>
+		<use-styles>
+		<style name="Default" key="32"/>
+			<style name="White space" key="0"/>
+			<style name="Comment" key="1" class="comment"/>
+			<style name="ML Comment" key="2" class="comment"/>
+			<style name="Identifier" key="3" class="identifier"/>
+			<style name="Control" key="4" fore="00007f"/>
+			<style name="Keyword" key="5" class="keyword"/>
+			<style name="Defwords" key="6" fore="ff0000"/>
+			<style name="Preword 1" key="7" fore="cc3300"/>
+			<style name="Preword 2" key="8" fore="996633"/>
+			<style name="Number" key="9" class="number"/>
+			<style name="String" key="10" class="string"/>
+			<style name="Locale" key="11" fore="0000cc"/>
+		</use-styles>
+	</language>
+</Scheme>

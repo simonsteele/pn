@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="opal.keywords">
+ ALL AND ANDIF ANY AS ASSERT AXM COMPLETELY DATA DEF DERIVE DFD DISCRIMINATORS ELSE EX EXTERNAL FI FIX FUN IF IMPLEMENTATION IMPLIES IMPORT IN INHERIT INJECTIONS INTERFACE INTERNAL LAW LAZY LEFTASSOC LET MODULE NOT ONLY OR ORIF OTHERWISE POST PRE PRED PRIORITY PROPERTIES REALIZES REQUIRE RIGHTASSOC SELECTORS SIGNATURE SORT SPC SPEC SPECIFICATION STRUCTURE THE THEN THEORY THM TYPE UNIQ WHERE
+		</keyword-class>
+		<keyword-class name="opal.sorts">
+ aEntry agent align anchor ans arg arg1 arg2 array arrowWhere bag bitmap bool bstree byte callback canvasEditor capStyle channel char childstat codom codomFrom codomTo color colorModel com composeOp config configCom cursor dArray data data1 data11 data2 data21 data3 data31 data4 data41 dataFrom dataTo defaultPrio denotation device dist distOut dom domFrom domTo drawing dyn emitter env event eventInfo file filemode filestat filetype first first1 first2 first3 fission fmt font from from1 from2 funct group groupid heap iconfig image in inData index inode input int inter interdom interpreter iseq items joinStyle justifyHow long manager managerRequest map mapEntry mark mid modifier nat natMap OBJECT option orient out outData output packOp pair parser permission point positionRequest process procstat quad range real regulator rel relief res res1 res2 result role sap script scroller scrollView scrollWindow searchOpt second seekMode selector semaphor seq seqEntry set setEntry short sigaction sighandler sigmask signal size sizeRequest some sreal state stateId stateRequest string subrel tag textEditor time to tree triple union user userid version view void wconfig wconfigCom wday widget window wrapStyle
+		</keyword-class>
+	</keyword-classes>
+	<language name="opal" title="OPAL (impl sign)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="opal"/>
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="opal.keywords"/>
+			<keyword key="1" name="Sorts" class="opal.sorts"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="White space" key="0" fore="000000"/>
+			<style name="Comment block" key="1" class="comment"/>
+			<style name="Comment line" key="2" class="comment"/>
+			<style name="Integer" key="3" fore="007F7F"/>
+			<style name="Keyword" key="4" class="keyword"/>
+			<style name="Sort" key="5" fore="007F7F"/>
+			<style name="Double quoted string" key="6" class="string"/>
+			<style name="Brace normal" key="7" fore="000000"/>
+			<style name="Bool const" key="8" fore="A00000"/>
+			<style name="Brace highlight" key="34" fore="FF0000" back="FFFF00" bold="true"/>
+			<style name="Brace incomplete highlight" key="35" fore="FF0000" back="00FF00" bold="true"/>
+		</use-styles>
+	</language>
+</Scheme>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="bullant.keywords">
+			abstract
+			all
+			ancestor
+			and
+			application
+			assert
+			attributes
+			author
+			begin
+			callback
+			class
+			concrete
+			config
+			constants
+			construct
+			continue
+			depends
+			description
+			downcast
+			driver
+			elif
+			else
+			ensures
+			error
+			exception
+			exposure
+			extension
+			false
+			fatal
+			final
+			function
+			generics
+			glyph
+			help
+			hidden
+			host
+			immutable
+			in
+			inherits
+			is
+			kernel
+			label
+			leave
+			library
+			locals
+			mutable
+			none
+			not
+			null
+			obsolete
+			options
+			or
+			other
+			parameters
+			peer
+			private
+			public
+			raise
+			reason
+			restricted
+			retry
+			return
+			returns
+			rollback
+			route
+			security
+			self
+			settings
+			severity
+			step
+			task
+			test
+			transaction
+			true
+			unknown
+			varying
+			warning
+			when
+			method
+			end
+			if
+			until
+			while
+			trap
+			case
+			debug
+			for
+			foreach
+			lock
+			boolean
+			character
+			character$
+			date
+			date$
+			datetime
+			datetime$
+			float
+			hex$
+			identifier
+			identifier$
+			integer
+			interval
+			interval$
+			money
+			money$
+			raw
+			raw$
+			string
+			tick
+			tick$
+			time
+			time$
+			version
+			version$
+		</keyword-class>
+	</keyword-classes>
+	<language name="bullant" title="Bullant (.ant)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="bullant"/>
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="bullant.keywords"/>
+		</use-keywords>
+		<use-styles>
+		    <style name="Default" key="0" />
+			<style name="Comment" key="1" class="comment"/>
+			<style name="Line Comment" key="2" class="commentline"/>
+			<style name="Doc Comment" key="3" class="commentdoc"/>
+			<style name="Number" key="4" class="number"/>
+			<style name="Keyword" key="5" class="keyword"/>
+			<style name="Double Quoted String" key="6" class="string"/>
+			<style name="Single Quoted String" key="7" class="string"/>
+			<style name="Symbols" key="8" class="operator"/>
+			<style name="Preprocessor" key="9" class="preprocessor"/>
+		</use-styles>
+	</language>
+</Scheme>

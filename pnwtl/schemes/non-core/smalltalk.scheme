@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="smalltalk">
+ ifTrue: ifFalse: whileTrue: whileFalse: ifNil: ifNotNil: whileTrue whileFalse repeat isNil notNil
+		</keyword-class>
+	</keyword-classes>
+	<language name="smalltalk" title="Smalltalk" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="smalltalk"/>
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="smalltalk"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="0"/>
+			<style name="String" key="1" class="string"/>
+			<style name="Number" key="2" class="number"/>
+			<style name="Comment" key="3" class="comment"/>
+			<style name="Symbol" key="4" fore="800080"/>
+			<style name="Binary" key="5"/>
+			<style name="Boolean" key="6" bold="true"/>
+			<style name="self" key="7" bold="true"/>
+			<style name="super" key="8" bold="true"/>
+			<style name="nil" key="9" bold="true"/>
+			<style name="Global" key="10" bold="true"/>
+			<style name="Return" key="11" fore="A00000" bold="true"/>
+			<style name="Special" key="12" bold="true"/>
+			<style name="KwSend" key="13" fore="008000"/>
+			<style name="Assignment" key="14" bold="true"/>
+			<style name="Character" key="15" class="character"/>
+			<style name="Special selector" key="16" bold="true"/>
+		</use-styles>
+	</language>
+</Scheme>

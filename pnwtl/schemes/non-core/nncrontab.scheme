@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="nncrontab.section">
+			AGAIN ALLOT AND Action BEGIN CASE COMPARE CONSTANT CREATE DO Days ELSE ENDCASE ENDOF EVAL-SUBST EVALUATE FALSE Hours I IF LEAVE LOOP Minutes Months NOT OF OFF ON OR PAD REPEAT Rule SET THEN TRUE Time UNTIL VALUE VARIABLE WHILE WeekDays Years
+		</keyword-class>
+		<keyword-class name="nncrontab.keywords">
+			&lt;/JScript&gt; &lt;/SCRIPT&gt; &lt;/VBScript&gt; &lt;JScript&gt; &lt;VBScript&gt; ACCESS-DATE BEEP CALL_DIAL CALL_HANGUP CHAR CLIPBOARD CONSOLE CREATION-DATE CUR-DATE DATE- DATE-INTERVAL DELAY DIAL DIR-CREATE DIR-DELETE DIR-EMPTY DIR-SIZE Day@ Domain ERR-MSG EXIST FILE-ACCESS-DATE FILE-APPEND FILE-COPY FILE-CREATE FILE-CREATION-DATE FILE-CROP FILE-DATE FILE-DELETE FILE-EMPTY FILE-EXIST FILE-MOVE FILE-RENAME FILE-SIZE FILE-WRITE FILE-WRITE-DATE FOR-CHILD-WINDOWS FOR-FILES FOR-WINDOWS FREE-SPACE GET-CUR-TIME GET-REG GET-VER GetTickCount HANGUP HIDE-ICON HINT HINT-OFF HINT-POS HINT-SIZE HINTW HOST-EXIST Hour@ IDLE INTERVAL IS-ARCHIVE IS-DIR IS-HIDDEN IS-READONLY IS-SYSTEM KILL LAUNCH LOG LOGGEDON LOGOFF LogonBatch LogonInteractive LogonNetwork MOUSE-LBCLK MOUSE-LBDCLK MOUSE-LBDN MOUSE-LBUP MOUSE-MOVE MOUSE-MOVER MOUSE-MOVEW MOUSE-RBCLK MOUSE-RBDCLK MOUSE-RBDN MOUSE-RBUP MSG Min@ Mon@ MonitorResponseTime NHOST-EXIST No ONLINE PAUSE PLAY-SOUND PLAY-SOUNDW POP3-CHECK POWEROFF PROC-EXIST PROC-TIME PURGE-OLD PURGE-OLDA PURGE-OLDW Password QSTART-APP QSTART-APPW QUERY QUIT RASDomain RASError RASPassword RASPhone RASSecPassword RASUser RE-ALL RE-MATCH REBOOT REG-DELETE-KEY REG-DELETE-VALUE REG-DWORD REG-SZ REMINDER RUN SEND-KEYS SEND-KEYS-DELAY SHOW-ICON SHUTDOWN START-APP START-APPW START-QUIT START-TIME Sec@ SecPassword THINT THINTW TimeSec@ TMSG TQUERY User WDay@ WIN-ACTIVATE WIN-ACTIVE WIN-CLICK WIN-CLOSE WIN-EXIST WIN-HIDE WIN-HWND WIN-MAXIMIZE WIN-MINIMIZE WIN-MOVE WIN-MOVER WIN-RESTORE WIN-SEND-KEYS WIN-SHOW WIN-TERMINATE WIN-TOPMOST WIN-VER WIN-WAIT WINAPI WRITE-DATE WatchClipboard WatchConnect WatchDir WatchDisconnect WatchDriveInsert WatchDriveRemove WatchFile WatchProc WatchProcStop WatchWinActivate WatchWinCreate WatchWinDestroy WatchWindow WinNT Year@ Yes
+		</keyword-class>
+		<keyword-class name="nncrontab.modifiers">
+			ALL AboveNormalPriority AsService BelowNormalPriority FILESONLY HighPriority IdlePriority LoadProfile NoActive NoDel NoLog NoRunAs NormalPriority OnceADay OnceAHour OnceAMonth OnceAWeek RECURSIVE RealtimePriority RunOnce SWHide ShowMaximized ShowMinimized ShowNoActivate ShowNormal StartIn StartPos StartSize TODEPTH WATCH-CHANGE-ATTRIBUTES WATCH-CHANGE-DIR-NAME WATCH-CHANGE-FILE-NAME WATCH-CHANGE-LAST-WRITE WATCH-CHANGE-SECURITY WATCH-CHANGE-SIZE WaitFor WatchSubtree WithoutProfile
+		</keyword-class>
+	</keyword-classes>
+	<language name="nncrontab" title="nnCron files (tab spf)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+		<lexer name="nncrontab"/>
+		<use-keywords>
+			<keyword key="0" name="Section keywords and Forth words" class="nncrontab.section"/>
+			<keyword key="1" name="Keywords for nnCrontab" class="nncrontab.keywords"/>
+			<keyword key="2" name="Modifiers for nnCrontab" class="nncrontab.modifiers"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32"/>
+			<style name="Whitespace" key="0"/>
+			<style name="Comment" key="1" class="comment"/>
+			<style name="Task" key="2" fore="ffff00" back="606060"/>
+			<style name="Section Keywords" key="3" class="keyword2"/>
+			<style name="Keywords" key="4" class="keyword"/>
+			<style name="Modificators" key="5" class="tag"/>
+			<style name="Asterisk" key="6" back="ffe0ff"/>
+			<style name="Number" key="7" class="number"/>
+			<style name="String" key="8" class="string"/>
+			<style name="Environment Var" key="9" class="attribute"/>
+		</use-styles>
+	</language>
+</Scheme>
