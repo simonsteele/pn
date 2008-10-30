@@ -202,14 +202,11 @@ StylesList* Scheme::CreateStylesList()
 	TextRec			Txt;
 	MsgRec			Msg;
 	char			Next2;
-	char*			buf;
 
 	if( cfile.Open(m_SchemeFile) )
 	{
-		if(!InitialLoad(cfile, hdr))
+		if (!InitialLoad(cfile, hdr))
 			return NULL;
-
-		//long posFirstStyle = cfile.GetPosition();
 
 		StylesList* pList = new StylesList;
 		StyleDetails* pDefault = new StyleDetails;
@@ -217,6 +214,8 @@ StylesList* Scheme::CreateStylesList()
 		pDefault->Key = STYLE_DEFAULT;
 		pList->AddStyle(pDefault);
 		int curStyle = -1;
+
+		std::vector<char> buf;
 
 		// Find the default style...
 		while (cfile.GetPosition() < cfile.GetLength())
@@ -295,17 +294,15 @@ StylesList* Scheme::CreateStylesList()
 							curStyle = Txt.wParam;
 						}
 
-						buf = new char[Txt.TextLength + 1];
-						cfile.Read(buf, Txt.TextLength * sizeof(char));
+						buf.resize(Txt.TextLength + 1);
+						cfile.Read(&buf[0], Txt.TextLength * sizeof(char));
 						buf[Txt.TextLength] = '\0';
 						switch(Txt.TextType)
 						{
 							case ttFontName : 
-								pS->FontName = buf;
+								pS->FontName = &buf[0];
 								break;
 						}
-						delete [] buf;
-						buf = NULL;
 					}
 					else 
 						cfile.Seek(Txt.TextLength * sizeof(char), CFile::current);
@@ -336,7 +333,6 @@ void Scheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 	MsgRec Msg;
 	TextRec Txt;
 	PropRec Prp;
-	char *buf = NULL;
 	char Next2;
 
 	memset(&m_CommentSpec, 0, sizeof(CommentSpecRec));
@@ -395,6 +391,8 @@ void Scheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 			sc.SPerform(SCI_SETTABWIDTH, hdr.TabWidth, 0);
 		}
 
+		std::vector<char> buf;
+
 		while (cfile.GetPosition() < cfile.GetLength())
 		{
 			cfile.Read(&Next2, sizeof(char));
@@ -407,46 +405,42 @@ void Scheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 				case nrTextRec:
 					{
 						cfile.Read(&Txt, sizeof(TextRec));
-						buf = new char[Txt.TextLength + 1];
-						cfile.Read(buf, Txt.TextLength*sizeof(char));
+						buf.resize(Txt.TextLength + 1);
+						cfile.Read(&buf[0], Txt.TextLength*sizeof(char));
 						buf[Txt.TextLength] = '\0';
 						switch(Txt.TextType)
 						{
 							case ttFontName : 
-								sc.SPerform(SCI_STYLESETFONT, Txt.wParam, (long)buf);
+								sc.SPerform(SCI_STYLESETFONT, Txt.wParam, (long)&buf[0]);
 								break;
 							case ttKeywords : 
-								sc.SetKeyWords(Txt.wParam, buf);
+								sc.SetKeyWords(Txt.wParam, &buf[0]);
 								break;
 							case ttLexerLanguage : 
 								{
-									sc.SPerform(SCI_SETLEXERLANGUAGE, 0, (long)buf);
-									m_Lexer = buf;
+									sc.SPerform(SCI_SETLEXERLANGUAGE, 0, (long)&buf[0]);
+									m_Lexer = &buf[0];
 								}
 								break;
 							case ttWordChars :
 								{
-									sc.SPerform(SCI_SETWORDCHARS, 0, (long)buf);
+									sc.SPerform(SCI_SETWORDCHARS, 0, (long)&buf[0]);
 								}
 								break;
 						}
-						delete [] buf;
-						buf = NULL;
 					}
 					break;
 				case nrPropRec:
 				{
 					cfile.Read(&Prp, sizeof(PropRec));
-					buf = new char[Prp.NameLength + 1];
-					cfile.Read(buf, Prp.NameLength*sizeof(char));
+					buf.resize(Prp.NameLength + 1);
+					cfile.Read(&buf[0], Prp.NameLength*sizeof(char));
 					buf[Prp.NameLength] = '\0';
-					char* buf2 = new char[Prp.ValueLength + 1];
-					cfile.Read(buf2, Prp.ValueLength*sizeof(char));
+
+					std::vector<char> buf2(Prp.ValueLength + 1);
+					cfile.Read(&buf2[0], Prp.ValueLength*sizeof(char));
 					buf2[Prp.ValueLength] = '\0';
-					sc.SPerform(SCI_SETPROPERTY, (long)buf, (long)buf2);
-					delete [] buf;
-					delete [] buf2;
-					buf = NULL;
+					sc.SPerform(SCI_SETPROPERTY, (long)&buf[0], (long)&buf2[0]);
 				}
 				break;
 				case nrCommentRec:
@@ -524,7 +518,7 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 
 	// Default windows edit control behaviour... This needs to be optional.
 	///@todo allow default scintilla coloured selection...
-	if(options.Get(NULL, _T("DefaultSelectionColours"), true))
+	if (options.Get(NULL, _T("DefaultSelectionColours"), true))
 	{
 		sc.SPerform(SCI_SETSELFORE, 1, ::GetSysColor(COLOR_HIGHLIGHTTEXT));
 		sc.SPerform(SCI_SETSELBACK, 1, ::GetSysColor(COLOR_HIGHLIGHT));
@@ -533,16 +527,32 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 	{
 		COLORREF c;
 
-		if(options.Get(NULL, _T("SetSelectionFore"), false))
+		if (options.Get(NULL, _T("SetSelectionFore"), false))
 		{
 			c = (COLORREF)options.Get(NULL, _T("SelectionFore"), (int)::GetSysColor(COLOR_HIGHLIGHTTEXT));
 			sc.SPerform(SCI_SETSELFORE, 1, c);
 		}
 		else
+		{
 			sc.SPerform(SCI_SETSELFORE, 0, 0);
+		}
 		
 		c = (COLORREF)options.Get(NULL, _T("SelectionBack"), (int)::GetSysColor(COLOR_HIGHLIGHT));
 		sc.SPerform(SCI_SETSELBACK, 1, c);
+	}
+
+	if (options.Get(NULL, _T("DisplayCaretAsBlock"), false))
+	{
+		sc.SPerform(SCI_SETCARETSTYLE, CARETSTYLE_BLOCK, 0);
+	}
+	else
+	{
+		sc.SPerform(SCI_SETCARETSTYLE, CARETSTYLE_LINE, 0);
+		int cwidth = options.Get(NULL, _T("CaretWidth"), 0);
+		if (cwidth != 0)
+		{
+			sc.SPerform(SCI_SETCARETWIDTH, cwidth, 0);
+		}
 	}
 
 	options.EndGroupOperation();

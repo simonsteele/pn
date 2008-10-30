@@ -31,6 +31,7 @@ class COptionsPageEditing : public COptionsPageImpl<COptionsPageEditing>,
 			DDX_UINT(IDC_CARETSLOPX_EDIT, m_slopX)
 			DDX_UINT(IDC_CARETSLOPY_EDIT, m_slopY)
 			DDX_CHECK(IDC_CARETSTRICT_CHECK, m_strict)
+			DDX_CHECK(IDC_CARETBLOCK_CHECK, m_blockCaret)
 		END_DDX_MAP()
 
 		enum { IDD = IDD_PAGE_EDITING };
@@ -46,6 +47,7 @@ class COptionsPageEditing : public COptionsPageImpl<COptionsPageEditing>,
 		unsigned int m_slopX;
 		unsigned int m_slopY;
 		BOOL m_strict;
+		BOOL m_blockCaret;
 };
 
 #endif // #ifndef optionspageediting_h__included

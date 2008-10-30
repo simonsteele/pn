@@ -95,7 +95,6 @@
 #define IDS_SAVEBEFOREREMOVEQUESTION    185
 #define IDS_QSAVEPROJBEFOREREMOVE       185
 #define IDS_BACKUPCREATEFAIL            186
-#define IDS_STRING187                   187
 #define IDS_MAGICFOLDERRENAME           187
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
@@ -506,6 +505,8 @@
 #define IDC_OPT_CHECKUPDATES            1154
 #define IDC_OPT_WANTTESTINGUPGRADES     1155
 #define IDC_OPT_BACKUPCHECK             1157
+#define IDC_CARETBLOCKCHECK             1158
+#define IDC_CARETBLOCK_CHECK            1158
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -676,7 +677,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        363
 #define _APS_NEXT_COMMAND_VALUE         33113
-#define _APS_NEXT_CONTROL_VALUE         1158
+#define _APS_NEXT_CONTROL_VALUE         1159
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

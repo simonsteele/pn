@@ -75,8 +75,8 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	MiniDumper dumper(str.c_str());
 //#endif
 
-	Scintilla_RegisterClasses(_Module.m_hInst);
-	Scintilla_LinkLexers();
+	/*Scintilla_RegisterClasses(_Module.m_hInst);
+	Scintilla_LinkLexers();*/
 	
 	// Store the current OS version
 	ZeroMemory(&g_Context.OSVersion, sizeof(OSVERSIONINFO));
@@ -243,7 +243,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	_CrtDumpMemoryLeaks();
 #endif
 
-	Scintilla_ReleaseResources();
+	/*Scintilla_ReleaseResources();*/
 
 	return nRet;
 }

@@ -46,7 +46,7 @@ Source: ..\bin\dbghelp.dll; DestDir: {app}
 Source: ..\bin\libexpat.dll; DestDir: {app}; Flags: ignoreversion
 
 ; Commented out while we have SciLexer linked in
-;Source: ..\bin\SciLexer.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\bin\SciLexer.dll; DestDir: {app}; Flags: ignoreversion
 
 Source: ..\bin\schemes\*.scheme; DestDir: {app}\schemes
 Source: ..\bin\schemes\*.lexer; DestDir: {app}\schemes
@@ -68,7 +68,8 @@ Source: ..\doc\pcre-license.txt; DestDir: {app}
 Source: ..\doc\ctags_README; DestDir: {app}
 Source: ..\doc\ctags_COPYING; DestDir: {app}
 
-Source: ..\userschemes\*.schemedef; DestDir: {app}\schemes
+;Source: ..\userschemes\*.schemedef; DestDir: {app}\schemes
+Source: ..\schemes\user\*.schemedef; DestDir: {app}\samples
 
 ;Source: reqfiles\msvcp71.dll; DestDir: {app}
 ;Source: reqfiles\msvcr71.dll; DestDir: {app}

@@ -41,6 +41,8 @@ void COptionsPageEditing::OnOK()
 	OPTIONS->SetCached(Options::OCaretYFlags, yflags);
 	OPTIONS->SetCached(Options::OCaretXMove, m_slopX);
 	OPTIONS->SetCached(Options::OCaretYMove, m_slopY);
+	
+	OPTIONS->Set(PNSK_EDITOR, _T("DisplayCaretAsBlock"), m_blockCaret ? 1 : 0);
 }
 
 void COptionsPageEditing::OnInitialise()
@@ -50,6 +52,8 @@ void COptionsPageEditing::OnInitialise()
 	int xflags = OPTIONS->GetCached(Options::OCaretXFlags);
 	int yflags = OPTIONS->GetCached(Options::OCaretYFlags);
 	m_strict = (xflags & CARET_STRICT) != 0;
+
+	m_blockCaret = OPTIONS->Get(PNSK_EDITOR, _T("DisplayCaretAsBlock"), false);
 
 	DoDataExchange();
 }
