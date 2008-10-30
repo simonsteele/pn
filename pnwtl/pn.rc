@@ -1998,6 +1998,7 @@ BEGIN
     IDS_QSAVEPROJBEFOREREMOVE 
                             "Project ""%s"" has been changed, do you want to save the changes before removing?"
     IDS_BACKUPCREATEFAIL    "Failed to create a backup document"
+    IDS_MAGICFOLDERRENAME   "Are you sure you wish to rename this magic folder?\nThis will have the effect of renaming the actual folder on the disk."
 END
 
 #endif    // English (U.K.) resources

@@ -930,15 +930,22 @@ LRESULT CProjectTreeCtrl::OnEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 		case ptMagicFolder:
 		{
 			Projects::MagicFolder* pF = static_cast<Projects::MagicFolder*>(type);
-			
-			if(::MessageBox(m_hWnd, _T("Are you sure you wish to rename this magic folder?\nThis will have the effect of renaming the actual folder on the disk."), LS(IDR_MAINFRAME), MB_YESNOCANCEL | MB_ICONQUESTION) == IDYES)
+			if (pF->GetParent() == NULL || pF->GetParent()->GetType() != ptMagicFolder)
 			{
-				if(	pF->RenameFolder(ptvdi->item.pszText) )
+				// This is the root magic folder, renaming just changes the display name.
+				pF->SetName(ptvdi->item.pszText);
+			}
+			else
+			{
+				if (::PNTaskDialog(m_hWnd, LS(IDR_MAINFRAME), IDS_MAGICFOLDERRENAME, _T(""), TDCBF_YES_BUTTON | TDCBF_NO_BUTTON | TDCBF_CANCEL_BUTTON, TDT_WARNING_ICON) == IDYES)
 				{
-					pF->SetName(ptvdi->item.pszText);
-					
-					PNASSERT(ptvdi->item.mask == TVIF_TEXT);
-					SetItem(&ptvdi->item);
+					if (pF->RenameFolder(ptvdi->item.pszText))
+					{
+						pF->SetName(ptvdi->item.pszText);
+						
+						PNASSERT(ptvdi->item.mask == TVIF_TEXT);
+						SetItem(&ptvdi->item);
+					}
 				}
 			}
 		}
@@ -1334,12 +1341,12 @@ LRESULT	CProjectTreeCtrl::OnProjectProperties(WORD /*wNotifyCode*/, WORD /*wID*/
 {
 	CProjPropsView view;
 
-	if(lastItem == NULL)
+	if (lastItem == NULL)
 		return 0;
 
 	Project* project;
 
-	switch(lastItem->GetType())
+	switch (lastItem->GetType())
 	{
 		case ptProject:
 			project = static_cast<Project*>(lastItem);
@@ -1355,11 +1362,13 @@ LRESULT	CProjectTreeCtrl::OnProjectProperties(WORD /*wNotifyCode*/, WORD /*wID*/
 			}
 			break;
 		default:
-			throw "Whoops, forgot one!";
+			RETURN_UNEXPECTED("Unexpected project item type", 0);
 	}
 
-	if(project == NULL)
+	if (project == NULL)
+	{
 		return 0;
+	}
 	
 	PropGroupList groups;
 	UserData ud;
@@ -1367,7 +1376,7 @@ LRESULT	CProjectTreeCtrl::OnProjectProperties(WORD /*wNotifyCode*/, WORD /*wID*/
 
 	// Build up any custom properties that we want to display on
 	// top of the basic project ones.
-	if(lastItem->GetType() == ptMagicFolder)
+	if (lastItem->GetType() == ptMagicFolder)
 	{
 		MagicFolder* mf = static_cast<MagicFolder*>(lastItem);
 		if(mf->GetParent() != NULL && mf->GetParent()->GetType() != ptMagicFolder)
@@ -1382,7 +1391,7 @@ LRESULT	CProjectTreeCtrl::OnProjectProperties(WORD /*wNotifyCode*/, WORD /*wID*/
 	ProjectTemplate* pTheTemplate = project->GetTemplate();
 	
 	// If we got a template or we've got extra settings to display.
-	if(pTheTemplate != NULL || groups.size() > 0)
+	if (pTheTemplate != NULL || groups.size() > 0)
 	{
 		// Set up those extra properties
 		PropViewSet extraSet(&ud);
@@ -1395,7 +1404,7 @@ LRESULT	CProjectTreeCtrl::OnProjectProperties(WORD /*wNotifyCode*/, WORD /*wID*/
 		PropViewSet projectSet(pTheTemplate, lastItem);
 		
 		// Display 'em.
-		if(view.DisplayFor(&projectSet))
+		if (view.DisplayFor(&projectSet))
 		{
 			lastItem->SetDirty();
 

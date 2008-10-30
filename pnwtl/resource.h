@@ -95,6 +95,8 @@
 #define IDS_SAVEBEFOREREMOVEQUESTION    185
 #define IDS_QSAVEPROJBEFOREREMOVE       185
 #define IDS_BACKUPCREATEFAIL            186
+#define IDS_STRING187                   187
+#define IDS_MAGICFOLDERRENAME           187
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define IDD_INPUTBOX                    204
