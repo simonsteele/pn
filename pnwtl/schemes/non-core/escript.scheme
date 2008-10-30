@@ -36,6 +36,7 @@
 		</keyword-class>
 		<keyword-class name="keywords.escript3">
 			while for endfor function program endprogram endfunction foreach case else elseif if endcase endenum endforeach endif endwhile
+		</keyword-class>
 	</keyword-classes>
 	<language name="escript" title="E-Script" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
 		<lexer name="escript"/>

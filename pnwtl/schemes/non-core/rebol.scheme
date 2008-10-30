@@ -25,7 +25,7 @@
 			<style name="Block Comment ( comment {the text} )" key="2" class="comment"/>
 			<style name="Preface (text before the REBOL header)" key="3" bold="true"/>
 			<style name="Operators" key="4" class="operator"/>
-			<style name="Characters ( #"a" )" key="5" class="character"/>
+			<style name="Characters ( #&quot;a&quot; )" key="5" class="character"/>
 			<style name="String with quotes" key="6" class="string"/>
 			<style name="String with braces" key="7" class="string"/>
 			<style name="Number" key="8" class="number"/>
@@ -34,7 +34,7 @@
 			<style name="Binary ( 16#{1A803F59} )" key="11" fore="C000C0"/>
 			<style name="Money" key="12" fore="003070"/>
 			<style name="Issue { #123-CD-456 }" key="13" fore="800000"/>
-			<style name="Tag { <TITLE height=100> }" key="14" class="tag"/>
+			<style name="Tag { &lt;TITLE height=100&gt; }" key="14" class="tag"/>
 			<style name="File { %/C/Winnt/some.dll }" key="15" fore="0080FF"/>
 			<style name="Email { joe@mail.dom }" key="16" fore="0080FF"/>
 			<style name="URL { ftp://there.dom }" key="17" fore="0080FF"/>

@@ -21,8 +21,8 @@
 		<lexer name="pov"/>
 		<use-keywords>
 			<keyword key="0" name="Language directives (#xxx)" class="pov.directives"/>
-			<keyword key="2" name="Objects & CSG & Appearance (xxx {})" class="pov.objects"/>
-			<keyword key="3" name="Types & Modifiers & Items" class="pov.types"/>
+			<keyword key="2" name="Objects and CSG and Appearance (xxx {})" class="pov.objects"/>
+			<keyword key="3" name="Types and Modifiers and Items" class="pov.types"/>
 			<keyword key="4" name="Predefined Identifiers" class="pov.identifiers"/>
 			<keyword key="5" name="Predefined Functions" class="pov.functions"/>
 		</use-keywords>
@@ -38,8 +38,8 @@
 			<style name="End of line where string is not closed" key="7" class="string"/>
 			<style name="Directive: #keyword" key="8" class="keyword"/>
 			<style name="Directive keyword error" key="9" class="error"/>
-			<style name="Keyword 2: Objects & CSG & Appearance (xxx {})" key="10" class="keyword2"/>
-			<style name="Keyword 3: Types & Modifiers & Items" key="11" class="tag"/>
+			<style name="Keyword 2: Objects and CSG and Appearance (xxx {})" key="10" class="keyword2"/>
+			<style name="Keyword 3: Types and Modifiers and Items" key="11" class="tag"/>
 			<style name="Keyword 4: Predefined Identifiers" key="12" class="identifier"/>
 			<style name="Keyword 5: Predefined Functions" key="13" class="keyword"/>
 			<style name="Keyword 6" key="14" class="keyword"/>
