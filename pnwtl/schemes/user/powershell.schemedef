@@ -1,0 +1,55 @@
+<?xml version="1.0" ?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="ps1">
+			begin bool break char continue do else elseif end exit filter for foreach function if in int param process return string switch throw trap until where while $true $false
+		</keyword-class>
+		<keyword-class name="ps2">
+			-and -as -band -bnot -bor -ceq -contains -creplace -eq -ge -gt -ieq -ige -igt -ilike -ile -ilt -ine -inotlike -inotmatch -ireplace -is -isnot -like -lt -match -ne -not -notcontains -notlike -notmatch -or -replace
+		</keyword-class>
+	</keyword-classes>
+    
+	<schemedef name="posh" title="PowerShell" author="Simon Steele" url="http://www.pnotepad.org/" version="1" 
+		casesensitive="false" braces="{[()]}">
+		
+		<!-- Max 2 -->
+		<strings>
+			<!-- Double quotes string, with \ as an escape character. -->
+			<stringtype id="0" start="&quot;" end="&quot;" multiline="false" />
+			<stringtype id="1" start="'" end="'" multiline="false" />
+		</strings>
+		
+		<identifiers start="[a-zA-Z]" />
+		<identifiers2 start="[$]" content="[-_a-zA-Z0-9]" />
+		
+		<comments>
+			<!-- continuation="\" -->
+			<line start="#" />
+		</comments>
+		
+		<numbers start="[0-9]" content="[0-9a-f.x]" />
+		
+		<!-- <preprocessor start="#" continuation="\" /> -->
+		
+		<!-- From here on is the traditional scheme definition block... -->
+		<lexer name="posh" />
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="Line Comment" key="1" class="comment" />
+			<!-- <style name="Block Comment" key="2" class="comment" /> -->
+			<style name="Identifier" key="3" class="identifier" />
+			<style name="Number" key="4" class="number" />
+			<style name="Keywords" key="5" class="keyword" />
+			<style name="Keywords 2" key="6" class="keyword" fore="f80000" />
+			<style name="String" key="10" class="string" />
+			<style name="String 2" key="11" class="string" />
+			<style name="Special Identifier" key="13" fore="478698" />
+		</use-styles>
+		
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="ps1"/>
+			<keyword key="1" name="Keywords 2" class="ps2"/>
+		</use-keywords>
+		
+	</schemedef>
+</Scheme>
