@@ -71,15 +71,13 @@ void ToolRunner::OnException()
 
 int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 {
-	tstring tempstr(_T("\"\" "));
-	tempstr.insert(1, command);
-	tempstr += params;
-
-	TCHAR* commandBuf = new TCHAR[tempstr.size() + 1];
-	_tcscpy(commandBuf, tempstr.c_str());
+	tstring clopts(_T("\"\" "));
+	clopts.insert(1, command);
+	clopts += params;
 
 	if(!m_pWrapper->IsTextFilter())
 	{
+		tstring tempstr(clopts);
 		tempstr.insert(0, _T("> "));
 		tempstr += _T("\n");
 		m_pWrapper->_AddToolOutput(tempstr.c_str());
@@ -144,9 +142,12 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 
 	PROCESS_INFORMATION pi = {0, 0, 0, 0};
 
+	std::vector<char> cmdbuf(MAX_PATH);
+	memcpy(&cmdbuf[0], clopts.c_str(), clopts.size()*sizeof(wchar_t));
+
 	bool bCreated = ::CreateProcess(
 		NULL, 
-		commandBuf, 
+		&cmdbuf[0], 
 		&sa, /*LPSECURITY_ATTRIBUTES lpProcessAttributes*/
 		NULL, /*LPSECURITYATTRIBUTES lpThreadAttributes*/
 		TRUE, /*BOOL bInheritHandles*/ 
@@ -156,8 +157,6 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 		&si, /*LPSTARTUPINFO lpStartupInfo*/
 		&pi /*LPPROCESS_INFORMATION lpProcessInformation*/ 
 	) != 0;
-
-	delete [] commandBuf;
 
 	if(!bCreated)
 	{

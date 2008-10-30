@@ -634,5 +634,10 @@ void ToolWrapper::SwapInStdInBuffer(std::vector<unsigned char>& buffer)
 unsigned char* ToolWrapper::GetStdIOBuffer(unsigned int& size)
 {
 	size = m_stdin.size();
+	if (!size)
+	{
+		return 0;
+	}
+	
 	return &m_stdin[0];
 }
