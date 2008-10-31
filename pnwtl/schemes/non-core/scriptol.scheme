@@ -5,7 +5,7 @@
 			act action alias always and array as bool boolean break by byte class case catch const constant continue dyn def define dict do double echo else elsif end enum error false file for float forever function globak gtk in if ifdef import include int integer java javax let long match mod nil not natural null number or print protected public real return redo scan script scriptol sol short super static step until using var text then this true try void volatile while when undef zero
 		</keyword-class>
 	</keyword-classes>
-	<language name="scriptol" title="Scriptol (sol)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+	<language name="scriptol" title="Scriptol" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
 		<lexer name="scriptol"/>
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="scriptol"/>

@@ -11,7 +11,7 @@
  action! any-block! any-function! any-string! any-type! any-word! binary! bitset! block! char! datatype! date! decimal! email! error! event! file! function! get-word! hash! image! integer! issue! library! list! lit-path! lit-word! logic! money! native! none! number! object! op! pair! paren! path! port! refinement! routine! series! set-path! set-word! string! struct! symbol! tag! time! tuple! unset! url! word!
 		</keyword-class>
 	</keyword-classes>
-	<language name="rebol" title="REBOL" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+	<language name="rebol" title="Rebol" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
 		<lexer name="rebol"/>
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="rebol.keywords"/>

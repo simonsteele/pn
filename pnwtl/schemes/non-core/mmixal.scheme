@@ -22,7 +22,7 @@
 	TextRead TextWrite BinaryRead BinaryWrite BinaryReadWrite
 		</keyword-class>
 	</keyword-classes>
-	<language name="mmixal" title="MMIXAL (mms)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+	<language name="mmixal" title="MMixal" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
 		<lexer name="mmixal"/>
 		<use-keywords>
 			<keyword key="0" name="Op Codes" class="mmixal.opcodes"/>

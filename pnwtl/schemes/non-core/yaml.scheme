@@ -5,7 +5,7 @@
  true false yes no
 		</keyword-class>
 	</keyword-classes>
-	<language name="yaml" title="YAML" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+	<language name="yaml" title="Yaml" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
 		<lexer name="yaml"/>
 		<use-keywords>
 			<keyword key="0" name="YAML convertible values" class="yaml_convertible_values"/>

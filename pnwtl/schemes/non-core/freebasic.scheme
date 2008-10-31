@@ -8,7 +8,7 @@
 		 #define #dynamic #else #endif #error #if #ifdef #ifndef #inclib #include #print #static #undef
 		</keyword-class>
 	</keyword-classes>
-	<language name="freebasic" title="FreeBasic (bb bi)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+	<language name="freebasic" title="FreeBasic" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
 		<lexer name="freebasic"/>
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="freebasic.keywords"/>

@@ -118,7 +118,7 @@
 			version$
 		</keyword-class>
 	</keyword-classes>
-	<language name="bullant" title="Bullant (.ant)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+	<language name="bullant" title="Bullant" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
 		<lexer name="bullant"/>
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="bullant.keywords"/>

@@ -40,7 +40,7 @@
 			C"
 		</keyword-class>
 	</keyword-classes>
-	<language name="forth" title="Forth files (f spf)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+	<language name="forth" title="Forth files" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
 		<lexer name="forth"/>
 		<use-keywords>
 			<keyword key="0" name="control keywords Forth" class="forth.control_keywords_forth"/>

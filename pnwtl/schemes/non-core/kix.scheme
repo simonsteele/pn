@@ -11,7 +11,7 @@
  address build color comment cpu crlf csd curdir date day domain dos error fullname homedir homedrive homeshr hostname inwin ipaddress0 ipaddress1 ipaddress2 ipaddress3 kix lanroot ldomain ldrive lm logonmode longhomedir lserver maxpwage mdayno mhz monthno month msecs pid primarygroup priv productsuite producttype pwage ras result rserver scriptdir scriptexe scriptname serror sid site startdir syslang ticks time userid userlang wdayno wksta wuserid ydayno year
 		</keyword-class>
 	</keyword-classes>
-	<language name="kix" title="Kix-Script (kix)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+	<language name="kix" title="Kix-Script" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
 		<lexer name="kix"/>
 		<use-keywords>
 			<keyword key="0" name="Commands" class="kix.commands"/>

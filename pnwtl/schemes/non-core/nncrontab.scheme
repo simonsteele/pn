@@ -11,7 +11,7 @@
 			ALL AboveNormalPriority AsService BelowNormalPriority FILESONLY HighPriority IdlePriority LoadProfile NoActive NoDel NoLog NoRunAs NormalPriority OnceADay OnceAHour OnceAMonth OnceAWeek RECURSIVE RealtimePriority RunOnce SWHide ShowMaximized ShowMinimized ShowNoActivate ShowNormal StartIn StartPos StartSize TODEPTH WATCH-CHANGE-ATTRIBUTES WATCH-CHANGE-DIR-NAME WATCH-CHANGE-FILE-NAME WATCH-CHANGE-LAST-WRITE WATCH-CHANGE-SECURITY WATCH-CHANGE-SIZE WaitFor WatchSubtree WithoutProfile
 		</keyword-class>
 	</keyword-classes>
-	<language name="nncrontab" title="nnCron files (tab spf)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+	<language name="nncrontab" title="nnCron" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
 		<lexer name="nncrontab"/>
 		<use-keywords>
 			<keyword key="0" name="Section keywords and Forth words" class="nncrontab.section"/>

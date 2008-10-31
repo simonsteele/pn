@@ -46,7 +46,7 @@
 			<keyword key="2" name="Keywords 3" class="keywords.escript3"/>
 		</use-keywords>
 		<use-styles>
-			<style name="Default" key="0"/>
+			<style name="Default" key="32"/>
 			<style name="Comment" key="1" class="comment"/>
 			<style name="Line Comment" key="2" class="comment"/>
 			<style name="Doc comment" key="3" class="comment"/>

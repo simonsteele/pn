@@ -95,7 +95,7 @@
 		</keyword-class>
 		<keyword-class name="csound.other"></keyword-class>
 	</keyword-classes>
-	<language name="csound" title="Csound (orc sco csd)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+	<language name="csound" title="Csound" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
 		<lexer name="csound"/>
 		<use-keywords>
 			<keyword key="0" name="Opcodes" class="csound.opcodes"/>

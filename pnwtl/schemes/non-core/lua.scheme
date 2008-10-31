@@ -35,7 +35,7 @@
 			<include-class name="lua4.ioplus"/><include-class name="lua5.ioplus"/>
 		</keyword-class>
 	</keyword-classes>
-	<language name="lua" title="Lua (lua)" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
+	<language name="lua" title="Lua" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true">
 		<lexer name="lua"/>
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="lua.keywords"/>
