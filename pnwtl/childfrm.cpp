@@ -2205,18 +2205,21 @@ void CChildFrame::UpdateMenu()
 
 	g_Context.m_frame->SetActiveScheme(m_hWnd, m_view.GetCurrentScheme());
 
-	const CommentSpecRec& comments = m_view.GetCurrentScheme()->GetCommentSpec();
-	menu.EnableMenuItem(ID_COMMENTS_LINE, comments.CommentLineText[0] != NULL);
-	menu.EnableMenuItem(ID_COMMENTS_STREAM, (comments.CommentStreamStart[0] != NULL)
-		&& (comments.CommentStreamEnd[0] != NULL));
-	menu.EnableMenuItem(ID_COMMENTS_BLOCK, (comments.CommentBlockStart[0] != NULL)
-		&& (comments.CommentBlockEnd[0] != NULL));
+	if (m_view.GetCurrentScheme() != NULL)
+	{
+		const CommentSpecRec& comments = m_view.GetCurrentScheme()->GetCommentSpec();
+		menu.EnableMenuItem(ID_COMMENTS_LINE, comments.CommentLineText[0] != NULL);
+		menu.EnableMenuItem(ID_COMMENTS_STREAM, (comments.CommentStreamStart[0] != NULL)
+			&& (comments.CommentStreamEnd[0] != NULL));
+		menu.EnableMenuItem(ID_COMMENTS_BLOCK, (comments.CommentBlockStart[0] != NULL)
+			&& (comments.CommentBlockEnd[0] != NULL));
 
-	menu.EnableMenuItem(ID_COMMENTS_UNCOMMENT, (comments.CommentLineText[0] != NULL)
-		|| (comments.CommentStreamStart[0] != NULL)
-		|| (comments.CommentStreamEnd[0] != NULL)
-		|| (comments.CommentBlockStart[0] != NULL)
-		|| (comments.CommentBlockEnd[0] != NULL));
+		menu.EnableMenuItem(ID_COMMENTS_UNCOMMENT, (comments.CommentLineText[0] != NULL)
+			|| (comments.CommentStreamStart[0] != NULL)
+			|| (comments.CommentStreamEnd[0] != NULL)
+			|| (comments.CommentBlockStart[0] != NULL)
+			|| (comments.CommentBlockEnd[0] != NULL));
+	}
 }
 
 bool CChildFrame::IsOutputVisible()

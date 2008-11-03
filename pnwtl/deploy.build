@@ -65,7 +65,7 @@
 				<include name="presets/*.xml"/>
 				<include name="taggers/ctags/*.*"/>
 				
-				<exclude name="scilexer.dll"/>
+				<exclude name="tests.exe"/>
 				<exclude name="pypn.dll"/>
 				<exclude name="boost_python*.dll"/>
 				<exclude name="libexpatw.dll"/>
@@ -103,7 +103,7 @@
 				<include name="presets/*.xml"/>
 				<include name="taggers/ctags/*.*"/>
 				
-				<exclude name="scilexer.dll"/>
+				<exclude name="tests.exe"/>
 				<exclude name="pypn.dll"/>
 				<exclude name="boost_python*.dll"/>
 				<exclude name="libexpatw.dll"/>
