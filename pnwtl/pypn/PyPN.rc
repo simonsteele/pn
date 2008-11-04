@@ -53,8 +53,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,9,0,0
- PRODUCTVERSION 0,9,0,0
+ FILEVERSION 0,10,0,0
+ PRODUCTVERSION 0,10,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -71,12 +71,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Simon Steele"
             VALUE "FileDescription", "Python Extension for Programmer's Notepad"
-            VALUE "FileVersion", "0.9.0.0"
+            VALUE "FileVersion", "0.10.0.0"
             VALUE "InternalName", "pypn"
             VALUE "LegalCopyright", "Copyright (C) 2008 Simon Steele"
             VALUE "OriginalFilename", "pypn.dll"
             VALUE "ProductName", "Programmer's Notepad"
-            VALUE "ProductVersion", "0.9.0.0"
+            VALUE "ProductVersion", "0.10.0.0"
         END
     END
     BLOCK "VarFileInfo"

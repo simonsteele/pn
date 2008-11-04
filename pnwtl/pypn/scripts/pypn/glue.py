@@ -14,19 +14,21 @@ class SchemeMapping:
 		self.indenter = None
 
 def registerScript(f, group, scriptName):
-	#debug.OutputDebugString("group: " + str(group))
-	#debug.OutputDebugString("name: " + str(scriptName))
+	""" This is called by the script decorator to register
+	a script. """
 	scripts[f.func_name] = f
 	pn.RegisterScript(f.func_name, group, scriptName)
 
 def runScript(name):
+	""" This is called by PN to run a script by name. """
 	try:
-		#debug.OutputDebugString( name )
 		scripts[name]()
 	except KeyError:
 		pass
 
 def onCharAdded(c, doc):
+	""" Method called when a character is added, default behaviour manages calling indenters
+	and also calls any method registered with glue.schemes[scheme].on_char_added """
 	if not schemes.has_key(doc.CurrentScheme):
 		return
 		
@@ -42,12 +44,28 @@ def onCharAdded(c, doc):
 		scheme.indenter(c, doc)
 	
 def onDocLoad(doc):
+	""" Method called when a document is loaded into PN """
 	pass
 	
 def onDocSave(filename, doc):
+	""" Method called when a document is about to be saved to a file """
+	pass
+
+def onDocSaved(doc):
+	""" Method called when a document has been saved """
+	pass
+
+def onModifiedChanged(modified, doc):
+	""" Method called when the modified flag is changed """
+	pass
+
+def onWriteProtectChanged(protected, doc):
+	""" Method called when the read only status of a document is changed """
 	pass
 
 def getSchemeConfig(name):
+	""" Get a pypn scheme configuration, used to hook up indenter 
+	functions and character added handlers """
 	if not schemes.has_key(name):
 		schemes[name] = SchemeMapping(name)
 	return schemes[name]

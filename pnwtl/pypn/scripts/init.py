@@ -4,8 +4,9 @@ import pn, scintilla, debug
 # Import the rest of the pypn stuff
 from pypn import *
 from pypn.decorators import *
+import pypn.scintillautils
 
-#debug.OutputDebugString(repr(dir()))
+scintillautils.MonkeyPatch()
 
 ######################################################
 ## Bring on the scripts!

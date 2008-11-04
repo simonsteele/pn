@@ -45,7 +45,7 @@ bool __stdcall pn_init_extension(int iface_version, extensions::IPN* pn)
 void __declspec(dllexport) __stdcall pn_get_extension_info(PN::BaseString& name, PN::BaseString& version)
 {
 	name = "PyPN";
-	version = "0.8";
+	version = "0.10";
 }
 
 void __declspec(dllexport) __stdcall pn_exit_extension()

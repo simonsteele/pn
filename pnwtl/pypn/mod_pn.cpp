@@ -89,26 +89,30 @@ IDocumentPtr PNNewDocument(const char* scheme)
 
 BOOST_PYTHON_MODULE(pn)
 {
+	scope().attr("__doc__") = "Utilities for working with Programmer's Notepad, entry point for all APIs";
+
+	boost::python::docstring_options docstring_options(true);
+
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Expose Useful Bits
 
-	def("CurrentDoc", &CurrentDoc);
-	def("RegisterScript", &RegisterScript);
-	def("AppPath", &GetPNPath);
+	def("CurrentDoc", &CurrentDoc, "Get the current focused document");
+	def("RegisterScript", &RegisterScript, "Register a script");
+	def("AppPath", &GetPNPath, "Get the path Programmer's Notepad is running from");
 
-	def("AddOutput", &AddOutput);
-	def("ClearOutput", &ClearOutput);
-	def("SetOutputRegEx", &SetOutputRegEx);
-	def("SetOutputDefaultParser", &SetOutputDefaultParser);
-	def("SetOutputBasePath", &SetOutputBasePath);
+	def("AddOutput", &AddOutput, "Add text to the output window");
+	def("ClearOutput", &ClearOutput, "Clear the output window");
+	def("SetOutputRegEx", &SetOutputRegEx, "Set the regular expression used to parse output text for errors");
+	def("SetOutputDefaultParser", &SetOutputDefaultParser, "Switch to the default output parser");
+	def("SetOutputBasePath", &SetOutputBasePath, "Set the path to use to make relative paths parsed in output text absolute");
 
-	def("MessageBox", &PNMessageBox);
+	def("MessageBox", &PNMessageBox, "Display a message box");
 
-	def("InputBox", &PNInputBox);
+	def("InputBox", &PNInputBox, "Ask the user for input");
 
-	def("OpenDocument", &PNOpenDocument);
+	def("OpenDocument", &PNOpenDocument, "Open a file");
 
-	def("NewDocument", &PNNewDocument);
+	def("NewDocument", &PNNewDocument, "Create a new document");
 
 	CONSTANT(IDOK);
 	CONSTANT(IDCANCEL);
@@ -137,23 +141,23 @@ BOOST_PYTHON_MODULE(pn)
 	LRESULT (IDocument::*pSendMessage2)(UINT msg, WPARAM wParam, const char* strParam) = &IDocument::SendEditorMessage;
 
 	class_<IDocument, /*boost::shared_ptr<IDocument>,*/ boost::noncopyable >("IDocument", no_init)
-		.add_property("Title", &IDocument::GetTitle)
-		.add_property("FileName", &IDocument::GetFileName)
-		.add_property("CurrentScheme", &IDocument::GetCurrentScheme)
-		.add_property("Modified", &IDocument::GetModified)
-		.add_property("CanSave", &IDocument::GetCanSave)
+		.add_property("Title", &IDocument::GetTitle, "Display name of the document")
+		.add_property("FileName", &IDocument::GetFileName, "Full filename of the document")
+		.add_property("CurrentScheme", &IDocument::GetCurrentScheme, "Name of the current scheme")
+		.add_property("Modified", &IDocument::GetModified, "Indicates whether the document has been modified")
+		.add_property("CanSave", &IDocument::GetCanSave, "Indicates whether the document can be saved (i.e. it has a filename)")
 
-		.def("SendMessage", pSendMessage)
+		.def("SendMessage", pSendMessage, "Send a message to the scintilla window")
 		.def("SendMessage", pSendMessage2)
 	
-		.def("IsValid", &IDocument::IsValid)
+		.def("IsValid", &IDocument::IsValid, "Check if this document object is still valid")
 
-		.def("FindNext", &IDocument::FindNext)
-		.def("Replace", &IDocument::Replace)
-		.def("ReplaceAll", &IDocument::ReplaceAll)
+		.def("FindNext", &IDocument::FindNext, "Find the next occurrence of a user search item, see GetUserSearchOptions")
+		.def("Replace", &IDocument::Replace, "Replace the current find match based on user search settings, see GetUserSearchOptions")
+		.def("ReplaceAll", &IDocument::ReplaceAll, "Replace all based on user search settings, see GetUserSearchOptions")
 
-		.def("Save", &IDocument::Save)
-		.def("Close", &IDocument::Close)
+		.def("Save", &IDocument::Save, "Save the document")
+		.def("Close", &IDocument::Close, "Close the document")
     ;
 
 	class_<ISearchOptions, boost::noncopyable>("ISearchOptions", no_init)
@@ -173,7 +177,7 @@ BOOST_PYTHON_MODULE(pn)
 		.add_property("Found", &ISearchOptions::GetFound)
 	;
 
-	def("GetUserSearchOptions", &PNGetUserSearchOptions, return_value_policy<reference_existing_object>());
+	def("GetUserSearchOptions", &PNGetUserSearchOptions, return_value_policy<reference_existing_object>(), "Get the object storing the user's current search options");
 	
 	try
 	{

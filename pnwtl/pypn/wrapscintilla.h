@@ -86,12 +86,29 @@ public:
 		buf.resize(GetSelectionEnd()-GetSelectionStart()+1);
 		size_t size = GetSelText(&buf[0]);
 		// size includes the NULL terminator
-		buf.resize(size-1);
+		buf.resize(size - 1);
 
 		return buf;
 	}
 
-	std::string GetTextAsString(int start, int end)
+	std::string GetLineAsString(int line)
+	{
+		std::string buf;
+		buf.resize(LineLength(line) + 1);
+		int len = GetLine(line, &buf[0]);
+		buf.resize(len);
+		return buf;
+	}
+
+	boost::python::tuple GetCurLineAsString()
+	{
+		std::string buf;
+		buf.resize(GetCurLine(0, NULL));
+		int linePos = GetCurLine(buf.size(), &buf[0]);
+		return boost::python::make_tuple(buf, linePos);
+	}
+
+	std::string GetTextRangeAsString(int start, int end)
 	{
 		std::string buf;
 
@@ -106,6 +123,20 @@ public:
 		size_t size = GetTextRange(&tr);
 		buf.resize(size);
 		
+		return buf;
+	}
+
+	std::string GetTextAsString(int length)
+	{
+		if (length == 0)
+		{
+			return std::string();
+		}
+
+		std::string buf;
+		buf.resize(length);
+		GetText(length, &buf[0]);
+		buf.resize(length-1);
 		return buf;
 	}
 
