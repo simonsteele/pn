@@ -89,7 +89,7 @@ void Options::loadCache()
 	// Interface Settings -------------------
 	group(PNSK_INTERFACE);
 
-	cache[OMaximiseNew]				= Get(NULL, _T("MaximiseNew"), false);
+	cache[OMaximiseNew]				= Get(NULL, _T("MaximiseNew"), true);
 	cache[OShowFullPath]			= Get(NULL, _T("ShowFullPath"), false);
 	cache[OAlreadyOpenAction]		= Get(NULL, _T("AlreadyOpenAction"), eSwitch);
 	cache[OAlreadyOpenDropAction]	= Get(NULL, _T("AlreadyOpenDropAction"), eSwitch);

@@ -452,11 +452,11 @@ LRESULT CChildFrame::OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 		// Activate
 		::PostMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_ACTIVATE, (LPARAM)this);
 	
+		::PostMessage(m_hWnd, PN_CHECKAGE, 0, 0);
 	}
 	//else // Deactivate
 	
 	UpdateMenu();
-	::PostMessage(m_hWnd, PN_CHECKAGE, 0, 0);
 	bHandled = FALSE;
 	return 0;
 }
@@ -529,7 +529,16 @@ LRESULT CChildFrame::OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 LRESULT CChildFrame::OnCheckAge(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	if(!m_bClosing)
+	{
+		MSG msg;
+		if (PeekMessage(&msg, m_hWnd, WM_CLOSE, WM_CLOSE, PM_NOREMOVE) || (PeekMessage(&msg, m_hWnd, WM_SYSCOMMAND, WM_SYSCOMMAND, PM_NOREMOVE) && msg.wParam == SC_CLOSE))
+		{
+			// There is a quit message in the queue, don't do this.
+			return 0;
+		}
+
 		CheckAge();
+	}
 
 	return 0;
 }

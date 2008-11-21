@@ -338,7 +338,7 @@ public:
         {
             LOGFONTW lf;
 // Newer SDKs fix this define:
-#ifdef NTDDI_WIN6SP1
+#ifdef _WTL_NEW_UXTHEME
 			::GetThemeSysFont(m_winTheme, TMT_SMALLCAPTIONFONT, &lf);
 #else
             ::GetThemeSysFont(m_winTheme, TMT_SMALLCAPTIONFONT, (LOGFONT *)&lf);

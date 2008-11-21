@@ -401,59 +401,39 @@ public:
 		{
             SIZE szScreen;
 			size_t size = sizeof(DWORD);
-			float xratio=(general.GetBinary(ctxtCXScreen,&szScreen.cx,size)==ERROR_SUCCESS
-							 && (size == sizeof(DWORD))
-                                            ?float(::GetSystemMetrics(SM_CXSCREEN))/szScreen.cx
-                                            :float(1.0));
-				
-			size = sizeof(DWORD);
-			float yratio=(general.GetBinary(ctxtCYScreen,&szScreen.cy,size)==ERROR_SUCCESS
-							&& (size == sizeof(DWORD))
-                                            ?float(::GetSystemMetrics(SM_CYSCREEN))/szScreen.cy
-                                            :float(1.0));
+			int res = general.GetBinary(ctxtCXScreen, &szScreen.cx, size);
+			if (res != ERROR_NO_DATA)
+			{
+				// Nothing to load, we'll bail on loading settings here.
+				float xratio=(res == ERROR_SUCCESS
+								 && (size == sizeof(DWORD))
+												?float(::GetSystemMetrics(SM_CXSCREEN))/szScreen.cx
+												:float(1.0));
+					
+				size = sizeof(DWORD);
+				float yratio=(general.GetBinary(ctxtCYScreen,&szScreen.cy,size)==ERROR_SUCCESS
+								&& (size == sizeof(DWORD))
+												?float(::GetSystemMetrics(SM_CYSCREEN))/szScreen.cy
+												:float(1.0));
 
-			TStorage stg;
-			bRes=(stg.Open(stgMain,ctxtMainWindow,IStorge::Read)==ERROR_SUCCESS
-							&& m_pImpl->Restore(stg,xratio,yratio));
+				TStorage stg;
+				bRes=(stg.Open(stgMain,ctxtMainWindow,IStorge::Read)==ERROR_SUCCESS
+								&& m_pImpl->Restore(stg,xratio,yratio));
+			}
+			else
+			{
+				bRes = false;
+			}
 		}
 
-// 		CRegKey keyMain;
-//         CRegKey keyGeneral;
-// 		bool bRes=keyMain.Open(HKEY_CURRENT_USER,m_strMainKey.c_str(),KEY_READ)==ERROR_SUCCESS
-// 									&& (keyGeneral.Open(keyMain,ctxtGeneral,KEY_READ)==ERROR_SUCCESS);
-//         if(bRes)
-//         {
-//             SIZE szScreen;
-// 			DWORD dwCount = sizeof(DWORD);
-// 			float xratio=(::RegQueryValueEx(keyGeneral,ctxtCXScreen,NULL,NULL,
-// 							reinterpret_cast<LPBYTE>(&szScreen.cx),&dwCount) ==ERROR_SUCCESS
-// 								&& (dwCount == sizeof(DWORD)))
-//                                             ?float(::GetSystemMetrics(SM_CXSCREEN))/szScreen.cx
-//                                             :float(1.0);
-// 			dwCount = sizeof(DWORD);
-// 			float yratio=(::RegQueryValueEx(keyGeneral,ctxtCYScreen,NULL,NULL,
-// 							reinterpret_cast<LPBYTE>(&szScreen.cy),&dwCount) ==ERROR_SUCCESS
-// 								&&(dwCount == sizeof(DWORD)))
-//                                             ?float(::GetSystemMetrics(SM_CYSCREEN))/szScreen.cy
-//                                             :float(1.0);
-// /*
-//             xratio=(keyGeneral.QueryValue(reinterpret_cast<DWORD&>(szScreen.cx),ctxtCXScreen)==ERROR_SUCCESS)
-//                                             ?float(::GetSystemMetrics(SM_CXSCREEN))/szScreen.cx
-//                                             :float(1.0);
-//             yratio=(keyGeneral.QueryValue(reinterpret_cast<DWORD&>(szScreen.cy),ctxtCYScreen)==ERROR_SUCCESS)
-//                                             ?float(::GetSystemMetrics(SM_CYSCREEN))/szScreen.cy
-//                                             :float(1.0);
-// */
-// 			CRegKey key;
-// 			bRes=key.Open(keyMain,ctxtMainWindow,KEY_READ)==ERROR_SUCCESS
-// 					&&	m_pImpl->Restore(key,xratio,yratio);
-// 
-//         }
-
 		if(!bRes)
-			bRes=m_pImpl->RestoreDefault();
+		{
+			m_pImpl->RestoreDefault();
+		}
+
         return bRes;
     }
+
 	bool RestoreDefault(void)
 	{
 		return m_pImpl->RestoreDefault();

@@ -157,10 +157,19 @@ EditorFactory& CMainFrame::GetFactory()
 
 bool CMainFrame::OpenFile(LPCTSTR pathname, Scheme* pScheme, EPNEncoding encoding)
 {
-	bool bRet = false;
+	DocumentList docs;
+	this->GetOpenDocuments(docs);
+	if (docs.size() == 1)
+	{
+		DocumentPtr& doc = docs.front();
+		if (!doc->HasFile() && !doc->GetModified())
+		{
+			return doc->GetFrame()->PNOpenFile(pathname, pScheme, encoding);
+		}
+	}
 
-	CChildFrame* pChild = m_ChildFactory.FromFile(pathname, pScheme, encoding, bRet);
-
+	bool bRet(false);
+	m_ChildFactory.FromFile(pathname, pScheme, encoding, bRet);
 	return bRet;
 }
 
@@ -2707,6 +2716,12 @@ void CMainFrame::SetDefaultGUIState()
 	// Dock the output window to the bottom of the main frame, hide it.
 	getDocker(DW_OUTPUT)->Hide();
 	getDocker(DW_FINDRESULTS)->Hide();
+	getDocker(DW_BROWSER)->Hide();
+	getDocker(DW_PROJECTS)->Hide();
+	getDocker(DW_TEXTCLIPS)->Hide();
+	getDocker(DW_CTAGS)->Hide();
+	getDocker(DW_SCRIPTS)->Hide();
+	getDocker(DW_OPENFILES)->Hide();
 	//m_pOutputWnd->Hide();
 	//m_pClipsWnd->Hide();
 	//m_pProjectsWnd->Hide();
