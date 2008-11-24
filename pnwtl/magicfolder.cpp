@@ -248,7 +248,16 @@ SStringStack* newStringStackItem(SStringStack* last, LPCTSTR newPathElement)
 	{
 		item->previous = last;
 		item->val = last->val;
-		item->val += newPathElement;
+		
+		if (newPathElement)
+		{
+			item->val += newPathElement;
+		}
+		else
+		{
+			item->val += "ERROR";
+		}
+		
 		item->val += _T('\\');
 
 		std::transform (item->val.begin(), item->val.end(),    // source
