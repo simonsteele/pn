@@ -491,6 +491,11 @@ BEGIN
             MENUITEM "&Indent",                     ID_EDIT_INDENT
             MENUITEM "&Unindent",                   ID_EDIT_UNINDENT
         END
+        POPUP "Trans&form"
+        BEGIN
+            MENUITEM "&Uppercase",                  ID_EDIT_UPPERCASE
+            MENUITEM "&Lowercase",                  ID_EDIT_LOWERCASE
+        END
         MENUITEM SEPARATOR
         MENUITEM "Go to Definition",            ID_EDITOR_GOTODEFINITION
         MENUITEM SEPARATOR
