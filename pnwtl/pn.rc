@@ -496,6 +496,13 @@ BEGIN
             MENUITEM "&Uppercase",                  ID_EDIT_UPPERCASE
             MENUITEM "&Lowercase",                  ID_EDIT_LOWERCASE
         END
+        POPUP "Com&ments"
+        BEGIN
+            MENUITEM "&Line",                       ID_COMMENTS_LINE
+            MENUITEM "&Stream",                     ID_COMMENTS_STREAM
+            MENUITEM "&Block",                      ID_COMMENTS_BLOCK
+            MENUITEM "&Uncomment",                  ID_COMMENTS_UNCOMMENT
+        END
         MENUITEM SEPARATOR
         MENUITEM "Go to Definition",            ID_EDITOR_GOTODEFINITION
         MENUITEM SEPARATOR
