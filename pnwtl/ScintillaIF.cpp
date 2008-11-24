@@ -294,7 +294,7 @@ void CScintilla::NextBookmark()
 	int nextLine = MarkerNext(line+1, 1 << SC_BOOKMARK);
 	if (nextLine < 0)
 		nextLine = MarkerNext(0, 1 << SC_BOOKMARK);
-	if(! (nextLine < 0 || nextLine == line))
+	if (nextLine >= 0)
 	{
 		GotoLineEnsureVisible(nextLine);
 	}
