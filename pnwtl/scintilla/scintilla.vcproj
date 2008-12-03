@@ -840,6 +840,10 @@
 				</FileConfiguration>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\include\scintilla\win32\ScintRes.rc"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>
