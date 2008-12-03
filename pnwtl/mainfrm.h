@@ -317,6 +317,7 @@ public:
 	void __stdcall ChildOptionsUpdateNotify(CChildFrame* pChild, SChildEnumStruct* pES);
 	void __stdcall ChildSaveNotify(CChildFrame* pChild, SChildEnumStruct* pES);
 	void __stdcall FileOpenNotify(CChildFrame* pChild, SChildEnumStruct* pES);
+	void __stdcall ChildProjectNotify(CChildFrame* pChild, SChildEnumStruct* pES);
 
 	////////////////////////////////////////////////////////////////
 	// IMainFrame Implementation

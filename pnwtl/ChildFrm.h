@@ -67,7 +67,8 @@ public:
 		MESSAGE_HANDLER(PN_OPTIONSUPDATED, OnOptionsUpdate)
 		MESSAGE_HANDLER(PN_TOOLRUNUPDATE, OnToolFinished)
 		MESSAGE_HANDLER(PN_SCHEMECHANGED, OnSchemeChanged)
-		MESSAGE_HANDLER(PN_GOTOLINE, OnGotoLine)	
+		MESSAGE_HANDLER(PN_GOTOLINE, OnGotoLine)
+		MESSAGE_HANDLER(PN_PROJECTNOTIFY, OnProjectNotify)
 		MESSAGE_HANDLER(UWM_MDICHILDISMODIFIED, OnChildIsModified)
 		MESSAGE_HANDLER(UWM_MDICHILDSAVEMODIFIED, OnChildSaveModified)
 		MESSAGE_HANDLER(UWM_MDICHILDSHOWTABCONTEXTMENU, OnShowTabContextMenu)
@@ -221,6 +222,7 @@ public:
 	LRESULT OnChildSaveModified(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnShowTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnGotoLine(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam/**/, BOOL& /*bHandled*/);
+	LRESULT OnProjectNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	
 	////////////////////////////////////////////////////
 	// Command Handlers

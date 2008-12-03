@@ -294,6 +294,11 @@ void __stdcall CMainFrame::FileOpenNotify(CChildFrame* pChild, SChildEnumStruct*
 	}
 }
 
+void __stdcall CMainFrame::ChildProjectNotify(CChildFrame* pChild, SChildEnumStruct* pES)
+{
+	pChild->SendMessage(PN_PROJECTNOTIFY);
+}
+
 bool CMainFrame::CloseAll()
 {
 	return closeAll(false);
@@ -570,6 +575,7 @@ LRESULT CMainFrame::OnProjectNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 	bHandled = FALSE;
 
 	setupToolsUI();
+	PerformChildEnum(&CMainFrame::ChildProjectNotify);
 
 	return TRUE;
 }
@@ -2569,14 +2575,14 @@ void CMainFrame::setupToolsUI()
 
 	tstring projid;
 
-	Projects::Workspace* pAW = g_Context.m_frame->GetActiveWorkspace();
-	if(pAW)
+	Projects::Workspace* activeWorkspace = g_Context.m_frame->GetActiveWorkspace();
+	if (activeWorkspace)
 	{
-		Projects::Project* pAP = pAW->GetActiveProject();
-		if(pAP)
+		Projects::Project* activeProject = activeWorkspace->GetActiveProject();
+		if (activeProject)
 		{
-			Projects::ProjectTemplate* pT = pAP->GetTemplate();
-			if(pT)
+			Projects::ProjectTemplate* pT = activeProject->GetTemplate();
+			if (pT)
 			{
 				projid = pT->GetID();
 			}
@@ -2589,15 +2595,15 @@ void CMainFrame::setupToolsUI()
 
 	m_hProjAccel = NULL;
 
-	if(pAW)
+	if (activeWorkspace)
 	{
-		if(projid.size() > 0)
+		if (projid.size() > 0)
 		{
 			ProjectTools* pTools = pTM->GetToolsForProject(projid.c_str());
 			m_hProjAccel = pTools != NULL ? pTools->GetAcceleratorTable() : NULL;
 		}
 		
-		if(m_hProjAccel == NULL)
+		if (m_hProjAccel == NULL)
 		{
 			SchemeTools* pTools = pTM->GetGlobalProjectTools();
 			pTools->AllocateMenuResources(m_pCmdDispatch);
@@ -3022,29 +3028,29 @@ void CMainFrame::NewProject(LPCTSTR szProjectFile, LPCTSTR name, LPCTSTR templat
 void CMainFrame::OpenProject(LPCTSTR projectPath, bool intoExistingGroup)
 {
 	if(!m_pProjectsWnd)
-		UNEXPECTED(_T("No projects window!"))
-	else
 	{
-		/*if(!getDocker(DW_PROJECTS)->IsWindowVisible())
-			getDocker(DW_PROJECTS)->Toggle();*/
-		getDocker(DW_PROJECTS)->Show();
-		::SetFocus(getDocker(DW_PROJECTS)->GetClient());
+		UNEXPECTED(_T("No projects window!"))
+		return;
 	}
+	
+	getDocker(DW_PROJECTS)->Show();
+	::SetFocus(getDocker(DW_PROJECTS)->GetClient());
 
 	// Check if a project is already open...
-	if(!intoExistingGroup && m_pProjectsWnd->GetWorkspace() != NULL)
+	if (!intoExistingGroup && m_pProjectsWnd->GetWorkspace() != NULL)
 	{
-		if(!CloseWorkspace(true, true))
+		if (!CloseWorkspace(true, true))
 			return;
 	}
 
-	if(!FileExists(projectPath))
+	if (!FileExists(projectPath))
 	{
 		DWORD dwRes = ::MessageBox(m_hWnd, LS(IDS_PROJECTDOESNOTEXIST), LS(IDR_MAINFRAME), MB_YESNO);
-		if(dwRes == IDYES)
+		if (dwRes == IDYES)
 		{
 			NewProject(projectPath);
 		}
+
 		return;
 	}
 
@@ -3064,7 +3070,7 @@ void CMainFrame::OpenProject(LPCTSTR projectPath, bool intoExistingGroup)
 
 	workspace->AddProject(project);
 
-	if(setActive)
+	if (setActive)
 	{
 		m_pProjectsWnd->SetWorkspace(workspace);
 		
@@ -3080,17 +3086,18 @@ void CMainFrame::OpenProjectGroup(LPCTSTR projectGroup)
 void CMainFrame::OpenWorkspace(LPCTSTR workspacePath)
 {
 	if(!m_pProjectsWnd)
+	{
 		UNEXPECTED(_T("No projects window!"))
-	else
-	{
-		getDocker(DW_PROJECTS)->Show();
-		::SetFocus(getDocker(DW_PROJECTS)->GetClient());
+		return;
 	}
-
+	
+	getDocker(DW_PROJECTS)->Show();
+	::SetFocus(getDocker(DW_PROJECTS)->GetClient());
+	
 	// Check if a project is already open...
-	if(m_pProjectsWnd->GetWorkspace() != NULL)
+	if (m_pProjectsWnd->GetWorkspace() != NULL)
 	{
-		if(!CloseWorkspace(true, true))
+		if (!CloseWorkspace(true, true))
 			return;
 	}
 
