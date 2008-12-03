@@ -246,5 +246,10 @@ void WorkspaceState::handleFile(XMLAttributes& atts)
 {
 	LPCTSTR path = atts.getValue(_T("path"));
 	if(path != NULL && _tcslen(path) > 0)
-		g_Context.m_frame->Open(path);
+	{
+		if (!g_Context.m_frame->CheckAlreadyOpen(path, eSwitch))
+		{
+			g_Context.m_frame->Open(path);
+		}
+	}
 }
