@@ -331,17 +331,17 @@
 			<style name="Default" key="32" class="default"/>
 			<style name="Text" key="0" class="default"/>
 		
-			<group name="PHP" description="PHP code" class="php">
-				<style name="Default" key="118" fore="000033" />
-				<style name="Double quoted String" key="119" fore="007F00"/>
-				<style name="Single quoted string" key="120" fore="009F00"/>
-				<style name="Keyword" key="121" fore="7F007F" italic="true"/>
-				<style name="Number" key="122" fore="CC9900"/>
-				<style name="Variable" key="123" fore="00007F" italic="true"/>
-				<style name="Comment" key="124" class="comment" fore="999999" />
-				<style name="Line comment" key="125" class="comment" fore="666666" italic="true" />
-				<style name="String variable" key="126" fore="00007F" italic="true"/>
-				<style name="Operator" key="127" fore="000000"/>
+			<group name="PHP" description="PHP code">
+				<style name="Default" key="118" />
+				<style name="Double quoted String" key="119" class="string"/>
+				<style name="Single quoted string" key="120" class="character"/>
+				<style name="Keyword" key="121" class="keyword"/>
+				<style name="Number" key="122" class="number"/>
+				<style name="Variable" key="123" class="variable"/>
+				<style name="Comment" key="124" class="comment" />
+				<style name="Line comment" key="125" class="comment" />
+				<style name="String variable" key="126" fore="00007F" />
+				<style name="Operator" key="127" class="operator"/>
 			</group>
 			
 			<group name="HTML" description="HTML">
