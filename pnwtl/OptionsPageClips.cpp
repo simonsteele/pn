@@ -79,11 +79,14 @@ LRESULT COptionsPageClips::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	m_scintilla.AssignCmdKey(SCK_HOME, SCI_HOMEDISPLAY);
 	m_scintilla.AssignCmdKey(SCK_END, SCI_LINEENDDISPLAY);
 	m_scintilla.SetMarginWidthN(1, 0);
-	m_scintilla.SetReadOnly(true);
 	
 	// Stop scintilla from capturing the escape and tab keys...
 	m_scintilla.ClearCmdKey(SCK_ESCAPE);
 	m_scintilla.ClearCmdKey(SCK_TAB);
+
+	SchemeManager::GetInstance()->GetDefaultScheme()->Load(m_scintilla);
+
+	m_scintilla.SetReadOnly(true);
 
 	CRect rc;
 	m_list.GetClientRect(&rc);

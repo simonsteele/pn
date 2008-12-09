@@ -49,6 +49,8 @@ public:
 		// Stop scintilla from capturing the escape and tab keys...
 		m_scintilla.ClearCmdKey(SCK_ESCAPE);
 		//m_scintilla.ClearCmdKey(SCK_TAB);
+		
+		SchemeManager::GetInstance()->GetDefaultScheme()->Load(m_scintilla);
 
 		m_scintilla.SetText(m_text.c_str());
 	
