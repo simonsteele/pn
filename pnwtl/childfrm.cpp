@@ -56,7 +56,8 @@ CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::
 	m_FileAge(-1),
 	m_iFirstToolCmd(ID_TOOLS_DUMMY),
 	m_bModifiedOverride(false),
-	m_bReadOnly(false)
+	m_bReadOnly(false),
+	m_bIgnoreUpdates(false)
 {
 	m_po.hDevMode = 0;
 	m_po.hDevNames = 0;
@@ -528,7 +529,7 @@ LRESULT CChildFrame::OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 
 LRESULT CChildFrame::OnCheckAge(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	if(!m_bClosing)
+	if(!m_bIgnoreUpdates && !m_bClosing)
 	{
 		MSG msg;
 		if (PeekMessage(&msg, m_hWnd, WM_CLOSE, WM_CLOSE, PM_NOREMOVE) || (PeekMessage(&msg, m_hWnd, WM_SYSCOMMAND, WM_SYSCOMMAND, PM_NOREMOVE) && msg.wParam == SC_CLOSE))
@@ -1640,7 +1641,25 @@ void CChildFrame::CheckAge()
 			{
 				CString msg;
 				msg.Format(IDS_MODIFIEDELSEWHERE, m_spDocument->GetFileName(FN_FULL).c_str());
-				if (PNTaskDialog(m_hWnd, _T("File Changed"), _T(""), (LPCTSTR)msg, TDCBF_YES_BUTTON | TDCBF_NO_BUTTON, TDT_WARNING_ICON) == IDYES)
+				
+				USES_CONVERSION;
+				CT2CW message(msg);
+
+				TASKDIALOGCONFIG cfg = { 0 };
+				cfg.cbSize = sizeof(cfg);
+				cfg.hInstance = _Module.GetResourceInstance();
+				cfg.pszWindowTitle = L"File Changed";
+				cfg.pszMainIcon = MAKEINTRESOURCEW(TDT_WARNING_ICON);
+				cfg.pszContent = message;
+				cfg.dwCommonButtons = TDCBF_YES_BUTTON | TDCBF_NO_BUTTON;
+				cfg.pszVerificationText = L"Do not check for updates to this file";
+				cfg.nDefaultButton = TDCBF_YES_BUTTON;
+				cfg.dwFlags = TDF_ALLOW_DIALOG_CANCELLATION;
+
+				BOOL doNotShowAgain(FALSE);
+				int iRes = PNTaskDialogIndirect(&cfg, 0, &doNotShowAgain);
+
+				if (iRes == IDYES)
 				{
 					Revert();
 					// Update tags:
@@ -1653,6 +1672,11 @@ void CChildFrame::CheckAge()
 				{
 					m_FileAge = age;
 					SetModifiedOverride(true);
+				}
+
+				if (doNotShowAgain)
+				{
+					m_bIgnoreUpdates = true;
 				}
 			}
 			else

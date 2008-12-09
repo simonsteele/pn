@@ -368,6 +368,7 @@ private:
 	bool				m_bModifiedOverride;
 	bool				m_bClosing;
 	bool				m_bReadOnly;
+	bool				m_bIgnoreUpdates;
 	TextClips::TextClipsManager*	m_pTextClips;
 	
 	int					m_iFirstToolCmd;
