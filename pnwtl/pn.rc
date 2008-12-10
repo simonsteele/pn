@@ -689,6 +689,15 @@ BEGIN
     END
 END
 
+IDR_POPUP_BROWSER MENU 
+BEGIN
+    POPUP "DUMMY"
+    BEGIN
+        MENUITEM "&Refresh",                    ID_BROWSER_REFRESH
+        MENUITEM SEPARATOR
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

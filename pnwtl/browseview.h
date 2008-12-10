@@ -42,6 +42,8 @@ public:
 		NOTIFY_HANDLER(IDC_BROWSETREE, NM_DBLCLK, OnTreeDblClick)
 		NOTIFY_HANDLER(IDC_BROWSETREE, NM_RCLICK, OnRightClick)
 
+		COMMAND_ID_HANDLER(ID_BROWSER_REFRESH, OnRefresh)
+
 		{
 			if(handleSystemContextMenuMessage(hWnd, uMsg, wParam, lParam, lResult))
 				return TRUE;
@@ -64,8 +66,11 @@ private:
 
 	LRESULT OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
+	LRESULT OnRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
 	LRESULT handleSystemContextMenuMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult);
 
+	HTREEITEM			m_rightClickNode;
 	ShellContextMenu*	m_menuHandler;
 	CShellTreeCtrl*		m_view;
 };

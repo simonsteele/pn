@@ -21,7 +21,8 @@
 
 CBrowseDocker::CBrowseDocker() : 
 	m_view(NULL), 
-	m_menuHandler(new ShellContextMenu())
+	m_menuHandler(new ShellContextMenu()),
+	m_rightClickNode(NULL)
 {
 	
 }
@@ -161,11 +162,46 @@ LRESULT CBrowseDocker::OnRightClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandl
 
 	if (hItem != NULL)
 	{
-		//pt;
+		m_rightClickNode = hItem;
+
 		CPidl pidl;
 		m_view->GetItemPidl(hItem, &pidl);
 
-		m_menuHandler->TrackPopupMenu(pidl, pt.x, pt.y, m_hWnd);
+		// m_menuHandler->TrackPopupMenu(pidl, pt.x, pt.y, m_hWnd);
+		CSPopupMenu popup(IDR_POPUP_BROWSER);
+
+		int nCmd;
+		BOOL result = m_menuHandler->TrackPopupMenu(pidl, pt.x, pt.y, m_hWnd, popup.GetHandle(), popup.GetHandle(), 10000, 11000, nCmd);
+		if (result && (nCmd < 10000 || nCmd > 11000))
+		{
+			::PostMessage(m_hWnd, WM_COMMAND, nCmd, 0L);
+		}
+	}
+
+	return 0;
+}
+
+LRESULT CBrowseDocker::OnRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if (m_rightClickNode != NULL)
+	{
+		HTREEITEM hChild = TreeView_GetChild(m_view->m_hWnd, m_rightClickNode);
+		if (hChild)
+		{
+			bool expanded = (TreeView_GetItemState(m_view->m_hWnd, m_rightClickNode, TVIS_EXPANDED) & TVIS_EXPANDED) == TVIS_EXPANDED;
+			TreeView_Expand(m_view->m_hWnd, m_rightClickNode, TVE_COLLAPSERESET | TVE_COLLAPSE);
+
+			/*while(hChild)
+			{
+				TreeView_DeleteItem(m_view->m_hWnd, hChild);
+				hChild = TreeView_GetChild(m_view->m_hWnd, m_rightClickNode);
+			}*/
+
+			if (expanded)
+			{
+				TreeView_Expand(m_view->m_hWnd, m_rightClickNode, TVE_EXPAND);
+			}
+		}
 	}
 
 	return 0;

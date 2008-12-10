@@ -241,6 +241,8 @@
 #define IDI_BROWSER                     361
 #define IDI_ICON7                       362
 #define IDI_READONLY                    362
+#define IDR_MENU2                       363
+#define IDR_POPUP_BROWSER               363
 #define IDC_MARGIN                      400
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
@@ -672,14 +674,16 @@
 #define ID_DUMMY_TRANSFORM              33113
 #define ID_TRANSFORM_UPPERCASE          33114
 #define ID_TRANSFORM_LOWERCASE          33115
+#define ID_DUMMY_REFRESH                33116
+#define ID_BROWSER_REFRESH              33117
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        363
-#define _APS_NEXT_COMMAND_VALUE         33116
+#define _APS_NEXT_RESOURCE_VALUE        364
+#define _APS_NEXT_COMMAND_VALUE         33118
 #define _APS_NEXT_CONTROL_VALUE         1159
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
