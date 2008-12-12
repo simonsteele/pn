@@ -1571,6 +1571,9 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool ctagsRefresh, bool bStoreFilen
 		{
 		case PNID_SAVEAS:
 			bSuccess = SaveAs(ctagsRefresh);
+			// Don't update MRU or filename after SaveAs:
+			bStoreFilename = false;
+			bUpdateMRU = false;
 			break;
 		case PNID_OVERWRITE:
 			if(attemptOverwrite(pathname))
@@ -1624,7 +1627,8 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool ctagsRefresh, bool bStoreFilen
 
 		if(bUpdateMRU)
 		{
-			g_Context.m_frame->AddMRUEntry(m_spDocument->GetFileName(FN_FULL).c_str());
+			std::string fn(m_spDocument->GetFileName(FN_FULL));
+			g_Context.m_frame->AddMRUEntry(fn.c_str());
 		}
 
 		if(ctagsRefresh)
@@ -1866,7 +1870,8 @@ bool CChildFrame::Save(bool ctagsRefresh)
 {
 	if(CanSave())
 	{
-		bool bResult = SaveFile(m_spDocument->GetFileName(FN_FULL).c_str(), ctagsRefresh, true);
+		std::string fn(m_spDocument->GetFileName());
+		bool bResult = SaveFile(fn.c_str(), ctagsRefresh, true);
 		
 		m_FileAge = m_spDocument->GetFileAge();
 		SetModifiedOverride(false);

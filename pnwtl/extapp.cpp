@@ -104,13 +104,13 @@ void App::deinit()
 
 	delete m_settings;
 	
+	delete m_dispatch;
+
 	DeletionManager::DeleteAll();
 
 	// Free up the options object, thus storing the options.
 	OptionsFactory::Release(g_Context.options);
 	g_Context.options = NULL;
-
-	delete m_dispatch;
 }
 
 /**
