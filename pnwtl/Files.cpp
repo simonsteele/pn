@@ -56,8 +56,8 @@ uint64_t FileAge(LPCTSTR FileName)
 				return (int)MAKELONG(wLow, wHigh);
 			}
 		}
-	}	*/
-  return -1;
+	}	
+	return ~0;*/
 }
 
 bool DirExists(LPCTSTR szDir)

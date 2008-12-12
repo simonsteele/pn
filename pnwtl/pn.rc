@@ -880,7 +880,6 @@ IDD_PAGE_GENERAL DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg 2", 400, 0, 0x1
 BEGIN
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,4,299,1
     CONTROL         "&Allow multiple instances of Programmer's Notepad to start",IDC_MULTIINSTANCECHECK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,12,228,10
     CONTROL         "&Maximise new document windows",IDC_OPT_MAXCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,24,150,10
@@ -897,17 +896,20 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,96,114,10
     CONTROL         "Create backup files when saving",IDC_OPT_BACKUPCHECK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,108,119,10
-    EDITTEXT        IDC_OPT_MRUCOUNT,42,126,30,14,ES_AUTOHSCROLL
-    CONTROL         "Show &Tabs",IDC_OPT_SHOWTABSCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,158,228,10
+    CONTROL         "Allow editing of read only files",IDC_OPT_EDITREADONLY,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,120,196,10
+    EDITTEXT        IDC_OPT_MRUCOUNT,42,134,30,14,ES_AUTOHSCROLL
+    CONTROL         "Show &Tabs",IDC_OPT_SHOWTABSCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,165,228,10
     CONTROL         "Only show with ma&ximized document windows",IDC_OPT_MAXTABSONLY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,170,165,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,177,165,10
     CONTROL         "At the &bottom of the main window",IDC_OPT_TABSBOTTOMCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,182,228,10
-    LTEXT           "&Display",IDC_STATIC,10,128,28,8
-    LTEXT           "(1 to 50) items in the most recently used list.",IDC_STATIC,75,128,168,8
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,150,299,1
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,189,228,10
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,4,299,1
+    LTEXT           "&Display",IDC_STATIC,10,136,28,8
+    LTEXT           "(1 to 50) items in the most recently used list.",IDC_STATIC,75,136,168,8
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,157,299,1
     LTEXT           "Settings",IDC_STATIC,0,0,27,8
-    LTEXT           "Tabs",IDC_STATIC,0,146,16,8
+    LTEXT           "Tabs",IDC_STATIC,0,153,16,8
 END
 
 IDD_PAGE_NEWFILES DIALOGEX 0, 0, 300, 200

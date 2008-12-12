@@ -5,14 +5,28 @@
 namespace FileUtil
 {
 
+bool GetFileAttributes(LPCTSTR filename, FileAttributes_t& atts)
+{
+	return ::GetFileAttributesEx(filename, GetFileExInfoStandard, &atts) != 0;
+}
+
+bool IsReadOnly(const FileAttributes_t& atts)
+{
+	return (atts.dwFileAttributes & FILE_ATTRIBUTE_READONLY) != 0;
+}
+
+uint64_t GetFileAge(const FileAttributes_t& atts)
+{
+	return *((uint64_t*)&atts.ftLastWriteTime);
+}
+
 bool RemoveReadOnly(LPCTSTR filename)
 {
 	DWORD dwFileAtts = ::GetFileAttributes(filename);
 	if(dwFileAtts & FILE_ATTRIBUTE_READONLY)
 	{
 		dwFileAtts &= ~FILE_ATTRIBUTE_READONLY;
-		::SetFileAttributes(filename, dwFileAtts);
-		return true;
+		return ::SetFileAttributes(filename, dwFileAtts);
 	}
 	
 	return false;

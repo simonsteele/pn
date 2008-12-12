@@ -50,6 +50,8 @@ void COptionsPageGeneral::OnOK()
 	options.Set(PNSK_GENERAL, _T("CheckForUnstableUpdates"), m_bWantTestingUpdates != FALSE);
 
 	options.Set(PNSK_GENERAL, _T("BackupOnSave"), m_bBackupOnSave != FALSE);
+
+	options.Set(PNSK_GENERAL, _T("EditReadOnly"), m_bEditReadOnly != FALSE);
 }
 
 void COptionsPageGeneral::OnInitialise()
@@ -78,6 +80,8 @@ void COptionsPageGeneral::OnInitialise()
 	m_bWantTestingUpdates = OPTIONS->Get(PNSK_GENERAL, _T("CheckForUnstableUpdates"), false);
 
 	m_bBackupOnSave = OPTIONS->Get(PNSK_GENERAL, _T("BackupOnSave"), false);
+
+	m_bEditReadOnly = OPTIONS->Get(PNSK_GENERAL, _T("EditReadOnly"), false);
 
 	DoDataExchange();
 }

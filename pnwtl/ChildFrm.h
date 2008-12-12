@@ -273,7 +273,6 @@ public:
 	bool SaveAs(bool ctagsRefresh);
 	void ChangeFormat(EPNSaveFormat format);
 	bool Save(bool ctagsRefresh);
-	bool GetFileWriteProtect(LPCTSTR pathname);
 
 	////////////////////////////////////////////////////
 	// Editor Window Methods
@@ -334,6 +333,7 @@ private:
 	bool attemptOverwrite(LPCTSTR filename);
 	void handleClose();
 	void resetSaveDir();
+	void setReadOnly(bool newValue, bool setAttributes);
 
 	CommandDispatch*	m_pCmdDispatch;
 	DocumentPtr			m_spDocument;

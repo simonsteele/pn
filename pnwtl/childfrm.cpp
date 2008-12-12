@@ -971,27 +971,9 @@ LRESULT CChildFrame::OnWriteProtectToggle(WORD /*wNotifyCode*/, WORD wID, HWND /
 		return 0;
 	}
 
-	bool bReadOnly = UIInvertCheck(wID);
+	bool bReadOnly = !m_bReadOnly;
 
-	if (!bReadOnly)
-	{
-		// Turning off read only, try and remove readonly from the file:
-		DWORD dwFileAttributes = GetFileAttributes(m_spDocument->GetFileName());
-		if (dwFileAttributes & FILE_ATTRIBUTE_READONLY)
-		{
-			dwFileAttributes &= ~FILE_ATTRIBUTE_READONLY;
-			if (!SetFileAttributes(m_spDocument->GetFileName(), dwFileAttributes))
-			{
-				::MessageBox(m_hWnd, _T("Unable to remove the write-protection from this file, you will need to save as a different file"), LS(IDR_MAINFRAME), MB_OK | MB_ICONINFORMATION);
-			}
-		}
-	}
-
-	m_bReadOnly = bReadOnly;
-	m_view.SetReadOnly(m_bReadOnly);
-	SetTitle();
-	
-	m_spDocument->OnWriteProtectChanged(m_bReadOnly);
+	setReadOnly(bReadOnly, true);
 
 	return 0;
 }
@@ -1447,7 +1429,16 @@ void CChildFrame::CheckAge()
 {
 	if(CanSave())
 	{
-		uint64_t age = m_spDocument->GetFileAge();
+		FileUtil::FileAttributes_t atts;
+		
+		uint64_t age = ~0;
+		bool readOnly = false;
+		if (FileUtil::GetFileAttributesA(m_spDocument->GetFileName(), atts))
+		{
+			readOnly = FileUtil::IsReadOnly(atts);
+			age = FileUtil::GetFileAge(atts);
+		}
+
 		if(age != m_FileAge)
 		{
 			if(m_spDocument->FileExists())
@@ -1485,6 +1476,7 @@ void CChildFrame::CheckAge()
 				{
 					m_FileAge = age;
 					SetModifiedOverride(true);
+					setReadOnly(false, false);
 				}
 
 				if (doNotShowAgain)
@@ -1498,6 +1490,14 @@ void CChildFrame::CheckAge()
 				msg.Format(IDS_FILENOLONGEREXISTS, m_spDocument->GetFileName(FN_FULL).c_str());
 				g_Context.m_frame->SetStatusText((LPCTSTR)msg);
 				SetModifiedOverride(true);
+				setReadOnly(false, false);
+			}
+		}
+		else
+		{
+			if (m_bReadOnly != readOnly)
+			{
+				setReadOnly(readOnly, false);
 			}
 		}
 	}
@@ -1519,33 +1519,23 @@ bool CChildFrame::GetWriteProtect()
 	return m_bReadOnly;
 }
 
-bool CChildFrame::GetFileWriteProtect(LPCTSTR pathname)
-{
-	return FileUtil::FileIsReadOnly(pathname);
-}
-
 bool CChildFrame::PNOpenFile(LPCTSTR pathname, Scheme* pScheme, EPNEncoding encoding)
 {
 	bool bRet = false;
 
 	if(m_view.Load(pathname, pScheme, encoding))
 	{
-		if(GetFileWriteProtect(pathname)){
-			m_bReadOnly = true;
-			m_view.SetReadOnly(true);
-			UISetChecked(ID_EDITOR_WRITEPROTECT, true);
-		} 
-		else
+		FileUtil::FileAttributes_t atts;
+		if (FileUtil::GetFileAttributes(pathname, atts))
 		{
-			m_bReadOnly = false;
-			UISetChecked(ID_EDITOR_WRITEPROTECT, false);
+			setReadOnly(FileUtil::IsReadOnly(atts), false);
+			
+			m_spDocument->SetFileName(pathname);
+			m_FileAge = FileUtil::GetFileAge(atts);
+			SetTitle();
+			m_spDocument->OnAfterLoad();
+			bRet = true;
 		}
-
-		m_spDocument->SetFileName(pathname);
-		m_FileAge = m_spDocument->GetFileAge();
-		SetTitle();
-		m_spDocument->OnAfterLoad();
-		bRet = true;
 	}
 	else
 	{
@@ -1626,12 +1616,7 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool ctagsRefresh, bool bStoreFilen
 			// We just saved as a new file, so we're not readonly any more
 			if (m_bReadOnly)
 			{
-				m_view.SetReadOnly(false);
-				m_bReadOnly = false;
-				UISetChecked(ID_EDITOR_WRITEPROTECT, false);
-				
-				// TODO: Should we bother with this when SetFileName and OnAfterSave have already been called?
-				m_spDocument->OnWriteProtectChanged(false);
+				setReadOnly(false, false);
 			}
 
 			SetTitle();
@@ -2213,15 +2198,6 @@ HACCEL CChildFrame::GetToolAccelerators()
 	return pTools->GetAcceleratorTable();
 }
 
-////////////////////////////////////////////////////
-// CChildFrame::CCFSplitter
-
-void CChildFrame::CCFSplitter::GetOwnerClientRect(HWND hOwner, LPRECT lpRect)
-{
-	m_pFrame->GetClientRect(lpRect);
-	m_pFrame->UpdateBarsPosition(*lpRect, FALSE);	
-}
-
 void CChildFrame::resetSaveDir()
 {
 	if (OPTIONS->Get(PNSK_GENERAL, _T("ResetCurrentDir"), true))
@@ -2232,6 +2208,55 @@ void CChildFrame::resetSaveDir()
 		//m_lastOpenPath = curPath;
 		::SetCurrentDirectory(OPTIONS->GetPNPath(PNPATH_PN));
 	}
+}
+
+void CChildFrame::setReadOnly(bool newValue, bool setAttributes)
+{
+	if (OPTIONS->Get(PNSK_GENERAL, _T("EditReadOnly"), false))
+	{
+		return;
+	}
+
+	if (m_bReadOnly && !newValue && setAttributes)
+	{
+		// Turning off read only, try and remove readonly from the file:
+		FileUtil::FileAttributes_t atts;
+		if (FileUtil::GetFileAttributes(m_spDocument->GetFileName(), atts) && FileUtil::IsReadOnly(atts))
+		{
+			if (!FileUtil::RemoveReadOnly(m_spDocument->GetFileName()))
+			{
+				::MessageBox(m_hWnd, _T("Unable to remove the write-protection from this file, you will need to save as a different file"), LS(IDR_MAINFRAME), MB_OK | MB_ICONINFORMATION);
+			}
+		}
+	}
+	
+	// We should only set ReadOnly if the file isn't modified...
+	if (GetModified() && newValue)
+	{
+		g_Context.m_frame->SetStatusText(_T("Source file has become Read Only, and this document is modified."));
+		m_bReadOnly = false;
+		m_view.SetReadOnly(false);
+	}
+	else
+	{
+		m_bReadOnly = newValue;
+		m_view.SetReadOnly(m_bReadOnly);
+	}
+
+	SetTitle(GetModified());
+
+	UISetChecked(ID_EDITOR_WRITEPROTECT, m_bReadOnly, true);
+	
+	m_spDocument->OnWriteProtectChanged(m_bReadOnly);
+}
+
+////////////////////////////////////////////////////
+// CChildFrame::CCFSplitter
+
+void CChildFrame::CCFSplitter::GetOwnerClientRect(HWND hOwner, LPRECT lpRect)
+{
+	m_pFrame->GetClientRect(lpRect);
+	m_pFrame->UpdateBarsPosition(*lpRect, FALSE);	
 }
 
 ////////////////////////////////////////////////////

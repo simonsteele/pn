@@ -508,6 +508,8 @@
 #define IDC_OPT_BACKUPCHECK             1157
 #define IDC_CARETBLOCKCHECK             1158
 #define IDC_CARETBLOCK_CHECK            1158
+#define IDC_OPT_LOCKREADONLY            1159
+#define IDC_OPT_EDITREADONLY            1159
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -687,7 +689,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        364
 #define _APS_NEXT_COMMAND_VALUE         33122
-#define _APS_NEXT_CONTROL_VALUE         1159
+#define _APS_NEXT_CONTROL_VALUE         1160
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif
