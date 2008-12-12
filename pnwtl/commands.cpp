@@ -11,6 +11,7 @@
 #include "stdafx.h"
 #include "resource.h"
 #include "commands.h"
+#include "editorcommands.h"
 #include "extapp.h"
 
 // Default Keyboard Mapping (predec)
@@ -666,6 +667,12 @@ void CommandDispatch::init()
 	m_keyNameCtrl = GetKeyName(VK_CONTROL, false);
 	m_keyNameAlt = GetKeyName(VK_MENU, false);
 	m_keyNameShift = GetKeyName(VK_SHIFT, false);
+
+	Commands::GetEditorCommands(m_editorCommands);
+	BOOST_FOREACH(Commands::EditorCommand* cmd, m_editorCommands)
+	{
+		RegisterCallback(cmd->GetCommandID(), NULL, PN_COMMAND_EDITOR, reinterpret_cast<LPVOID>(cmd));
+	}
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -718,6 +725,8 @@ KeyToCommand DefaultKeyMap[] = {
 	{K_CTRL,		' ',		ID_EDIT_AUTOCOMPLETE},
 	{K_CTRL,		VK_OEM_PERIOD,		ID_COMMENTS_LINE},
 	{K_CTRL,		VK_OEM_COMMA,		ID_COMMENTS_UNCOMMENT},
+	{K_ALT,			'D',		ID_SELECTION_DUPLICATE},
+	{K_ALT,			'W',		ID_SELECTION_STRIPTRAILING},
 
 	// Bookmarks
 	{K_CTRL,		VK_F2,		ID_BOOKMARKS_TOGGLE},

@@ -12,7 +12,17 @@
 
 SearchOptions::SearchOptions() :
 	Found(false),
-	NoCursorMove(false)
+	NoCursorMove(false),
+	InSelection(false),
+	MatchWholeWord(false),
+	MatchCase(false),
+	UseRegExp(false),
+	SearchAll(false),
+	Direction(true),
+	Loop(true),
+	UseSlashes(false),
+	Recurse(false),
+	IncludeHidden(false)
 {
 }
 

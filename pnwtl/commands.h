@@ -69,6 +69,8 @@ class CommandDispatch;
 
 namespace Commands {
 
+class EditorCommand;
+
 /**
  * Simple keyboard command map
  */
@@ -177,6 +179,8 @@ class CommandDispatch : public CommandEventHandler
 
 	private:
 		void init();
+
+		std::list<Commands::EditorCommand*> m_editorCommands;
 
 		static CmdIDRange* s_IDs[];
 		

@@ -82,16 +82,6 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_FINDNEXT, OnFindNext)
 		COMMAND_ID_HANDLER(ID_EDIT_FINDPREVIOUS, OnFindPrevious)
 		COMMAND_ID_HANDLER(ID_EDIT_COPYRTF, OnCopyRTF)
-		COMMAND_ID_HANDLER(ID_EDIT_CLIPBOARDSWAP, OnClipboardSwap)
-		COMMAND_ID_HANDLER(ID_EDIT_DUPLICATELINE, OnDuplicateLine)
-		COMMAND_ID_HANDLER(ID_EDIT_DELETELINE, OnDeleteLine)
-		COMMAND_ID_HANDLER(ID_EDIT_CUTLINE, OnCutLine)
-		COMMAND_ID_HANDLER(ID_EDIT_COPYLINE, OnCopyLine)
-		COMMAND_ID_HANDLER(ID_EDIT_TRANSPOSELINES, OnTransposeLines)
-		COMMAND_ID_HANDLER(ID_EDIT_MOVELINEUP, OnMoveLineUp)
-		COMMAND_ID_HANDLER(ID_EDIT_MOVELINEDOWN, OnMoveLineDown)
-		COMMAND_ID_HANDLER(ID_EDIT_LOWERCASE, OnLowerCase)
-		COMMAND_ID_HANDLER(ID_EDIT_UPPERCASE, OnUpperCase)
 		COMMAND_ID_HANDLER(ID_EDIT_AUTOCOMPLETE, OnAutoComplete)
 		COMMAND_ID_HANDLER(ID_EDIT_COPYFILEPATH, OnCopyFilePath)
 		COMMAND_ID_HANDLER(ID_EDIT_INSERTCLIP, OnInsertClip)
@@ -129,10 +119,7 @@ public:
 		COMMAND_ID_HANDLER(ID_TOOLS_LECR, OnLineEndingsToggle)
 		COMMAND_ID_HANDLER(ID_TOOLS_LECONVERT, OnLineEndingsConvert)
 		COMMAND_ID_HANDLER(ID_TOOLS_STOPTOOLS, OnStopTools)
-		COMMAND_ID_HANDLER(ID_TOOLS_USETABS, OnUseTabs)
-		COMMAND_ID_HANDLER(ID_TOOLS_CONVERTTABSTOSPACES, OnConvertTabsToSpaces)
-		COMMAND_ID_HANDLER(ID_TOOLS_CONVERTSPACESTOTABS, OnConvertSpacesToTabs)
-        
+		COMMAND_ID_HANDLER(ID_TOOLS_USETABS, OnUseTabs)        
 
 		COMMAND_ID_HANDLER(ID_EDIT_HEADERSWITCH, OnHeaderSwitch)
 
@@ -146,6 +133,7 @@ public:
 
 		IMPLEMENT_FROMHANDLE()
 
+		LOCAL_MENUCOMMAND(PN_COMMAND_EDITOR)
 		LOCAL_MENUCOMMAND(MENUMESSAGE_CHANGESCHEME)
 		LOCAL_MENUCOMMAND(TOOLS_RUNTOOL)
 		//ROUTE_MENUCOMMANDS()
@@ -158,6 +146,7 @@ public:
 	END_MSG_MAP()
 
 	BEGIN_MENU_HANDLER_MAP()
+		HANDLE_MENU_COMMAND(PN_COMMAND_EDITOR, OnEditorCommand)
 		HANDLE_MENU_COMMAND(MENUMESSAGE_CHANGESCHEME, OnSchemeChange)
 		HANDLE_MENU_COMMAND(TOOLS_RUNTOOL, OnRunTool)
 	END_MENU_HANDLER_MAP()
@@ -238,16 +227,6 @@ public:
 	LRESULT OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFindPrevious(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnClipboardSwap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnDuplicateLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnDeleteLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnCutLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnCopyLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnTransposeLines(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnMoveLineUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnMoveLineDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnLowerCase(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnUpperCase(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnAutoComplete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnRevert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -267,8 +246,6 @@ public:
 	LRESULT OnLineEndingsConvert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnStopTools(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnUseTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnConvertTabsToSpaces(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnConvertSpacesToTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnEncodingSelect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewFileProps(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -308,6 +285,7 @@ public:
 	int GetPosition(EGPType type);
 	void SetPosStatus(CMultiPaneStatusBarCtrl&	stat);
 	bool OnSchemeChange(LPVOID pVoid);
+	bool OnEditorCommand(LPVOID pCommand);
 	int GetLinePosition(int line);
 	
 	void SetScheme(Scheme* pScheme, bool allSettings = true);

@@ -171,6 +171,12 @@ BEGIN
             MENUITEM "Move Line &Up",               ID_EDIT_MOVELINEUP
             MENUITEM "Move Line Do&wn",             ID_EDIT_MOVELINEDOWN
         END
+        POPUP "Selecti&on"
+        BEGIN
+            MENUITEM "&Compress Whitespace",        ID_SELECTION_COMPRESSWHITESPACE
+            MENUITEM "&Duplicate",                  ID_SELECTION_DUPLICATE
+            MENUITEM "&Strip Trailing Blanks",      ID_SELECTION_STRIPTRAILING
+        END
         MENUITEM SEPARATOR
         MENUITEM "Lo&wercase",                  ID_EDIT_LOWERCASE
         MENUITEM "U&ppercase",                  ID_EDIT_UPPERCASE

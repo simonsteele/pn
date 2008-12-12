@@ -29,7 +29,7 @@
 #include "project.h"
 #include "projectprops.h"
 #include "fileutil.h"
-
+#include "editorcommands.h"
 #include "tabbingframework/TabbedMDISave.h"
 
 #if defined (_DEBUG)
@@ -448,7 +448,7 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 LRESULT CChildFrame::OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
-	if (m_hWnd==(HWND)lParam)
+	if (m_hWnd == (HWND)lParam)
 	{
 		// Activate
 		::PostMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_ACTIVATE, (LPARAM)this);
@@ -802,115 +802,6 @@ LRESULT CChildFrame::OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 		}
 	}
 
-	return 0;
-}
-
-LRESULT CChildFrame::OnClipboardSwap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	Scintilla::TextRange tr;
-
-	tr.chrg.cpMin = m_view.GetSelectionStart();
-	tr.chrg.cpMax = m_view.GetSelectionEnd();
-	if( tr.chrg.cpMax < tr.chrg.cpMin )
-		tr.chrg.cpMax = m_view.GetLength();
-	int length = tr.chrg.cpMax - tr.chrg.cpMin;
-	
-	std::vector<char> buffer(length + 1);
-	buffer[length] = '\0';
-	tr.lpstrText = &buffer[0];
-	
-	m_view.GetTextRange(&tr);
-
-	m_view.Paste();
-
-	HGLOBAL hData = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, length+1);
-	if( hData )
-	{
-		if( OpenClipboard() )
-		{
-			EmptyClipboard();
-			char* pBuf = static_cast<char*>(::GlobalLock(hData));
-			memcpy(pBuf, &buffer[0], length + 1);
-			::GlobalUnlock(hData);
-			::SetClipboardData(CF_TEXT, hData);
-			CloseClipboard();
-		}
-	}
-
-	return 0;
-}
-
-LRESULT CChildFrame::OnDuplicateLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	m_view.LineDuplicate();
-	return 0;
-}
-
-LRESULT CChildFrame::OnDeleteLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	m_view.LineDelete();
-	return 0;
-}
-
-LRESULT CChildFrame::OnCutLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	m_view.LineCut();
-	return 0;
-}
-
-LRESULT CChildFrame::OnCopyLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	m_view.LineCopy();
-	return 0;
-}
-
-LRESULT CChildFrame::OnTransposeLines(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	m_view.LineTranspose();
-	return 0;
-}
-
-/**
- * Move the current line up
- */
-LRESULT CChildFrame::OnMoveLineUp(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	if (m_view.LineFromPosition(m_view.GetCurrentPos()) == 0)
-		return 0;
-	
-	m_view.BeginUndoAction();
-	m_view.LineTranspose();
-	m_view.LineUp();
-	m_view.EndUndoAction();
-	
-	return 0;
-}
-
-/**
- * Move the current line down
- */
-LRESULT CChildFrame::OnMoveLineDown(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	if (m_view.LineFromPosition(m_view.GetCurrentPos()) == (m_view.GetLineCount() - 1))
-		return 0;
-	
-	m_view.BeginUndoAction();
-	m_view.LineDown();
-	m_view.LineTranspose();
-	m_view.EndUndoAction();
-
-	return 0;
-}
-
-LRESULT CChildFrame::OnLowerCase(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	m_view.LowerCase();
-	return 0;
-}
-
-LRESULT CChildFrame::OnUpperCase(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	m_view.UpperCase();
 	return 0;
 }
 
@@ -1308,84 +1199,6 @@ LRESULT CChildFrame::OnUseTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 {
 	m_view.SetUseTabs(!m_view.GetUseTabs());
 	UpdateMenu();
-
-	return 0;
-}
-
-LRESULT CChildFrame::OnConvertTabsToSpaces(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
-{
-	SearchOptions options;
-
-	if (m_view.GetTabWidth() < 1)
-	{
-		RETURN_UNEXPECTED( _T("Tab width must be greater than 0"), 0 );
-	}
-
-	m_view.BeginUndoAction();
-
-	/*std::string replaceText = "\\1";
-	for ( int i = 0; i < m_view.GetTabWidth(); i++ )
-		replaceText += " ";*/
-	
-	std::string replaceText(m_view.GetTabWidth(), ' ');
-
-	options.SetFindText("^\\t+");
-	options.SetReplaceText(replaceText.c_str());
-
-	options.SetIncludeHidden(true);
-	options.SetLoopOK(true);
-	options.SetMatchCase(false);
-	options.SetMatchWholeWord(false);
-	options.SetRecurse(true);
-	options.SetReplaceInSelection( m_view.GetSelLength() != 0 );
-	options.SetSearchBackwards(false);
-	options.SetSearchPath("");
-	options.SetUseRegExp(true);
-	options.SetUseSlashes(false);
-	options.SetNoCursorMove(true);
-	
-	// Repeat until we've replaced all occurances
-	while ( ReplaceAll( &options ) != 0 );
-
-	m_view.EndUndoAction();
-
-	return 0;
-}
-
-LRESULT CChildFrame::OnConvertSpacesToTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
-{
-	SearchOptions options;
-
-	m_view.BeginUndoAction();
-
-	if (m_view.GetTabWidth() < 1)
-	{
-		RETURN_UNEXPECTED( _T("Tab width must be greater than 0"), 0 );
-	}
-
-	TCHAR buf[100];
-	_stprintf(buf, _T("^[ ]{%d}"), m_view.GetTabWidth());
-
-	// Find all leading groups of spaces, convert to tabs
-	options.SetFindText(buf);
-	options.SetReplaceText("\\t");
-
-	options.SetIncludeHidden(true);
-	options.SetLoopOK(true);
-	options.SetMatchCase(false);
-	options.SetMatchWholeWord(false);
-	options.SetRecurse(true);
-	options.SetReplaceInSelection( m_view.GetSelLength() != 0 );
-	options.SetSearchBackwards(false);
-	options.SetSearchPath("");
-	options.SetUseRegExp(true);
-	options.SetUseSlashes(false);
-	options.SetNoCursorMove(true);
-
-	// Repeat until we've replaced all occurances
-	while ( ReplaceAll( &options ) != 0 );
-
-	m_view.EndUndoAction();
 
 	return 0;
 }
@@ -2164,6 +1977,14 @@ bool CChildFrame::OnSchemeChange(LPVOID pVoid)
 {
 	SetScheme(static_cast<Scheme*>(pVoid), false);
 
+	return true;
+}
+
+bool CChildFrame::OnEditorCommand(LPVOID pCommand)
+{
+	Commands::EditorCommand* cmd = reinterpret_cast<Commands::EditorCommand*>(pCommand);
+	cmd->Apply(*GetTextView());
+	
 	return true;
 }
 

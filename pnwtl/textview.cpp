@@ -38,7 +38,7 @@ CTextView::CTextView(DocumentPtr document, CommandDispatch* commands) :
 	m_waitOnBookmarkNo(FALSE),
 	m_encType(eUnknown),
 	m_bMeasureCanRun(false)
-{	
+{
 	m_bSmartStart = OPTIONS->Get(PNSK_EDITOR, _T("SmartStart"), true);
 }
 

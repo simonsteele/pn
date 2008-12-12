@@ -464,6 +464,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\editorcommands.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\editorfactory.cpp"
 				>
 			</File>
@@ -766,6 +770,10 @@
 			</File>
 			<File
 				RelativePath=".\Document.h"
+				>
+			</File>
+			<File
+				RelativePath=".\editorcommands.h"
 				>
 			</File>
 			<File
