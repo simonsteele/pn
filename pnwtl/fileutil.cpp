@@ -26,7 +26,7 @@ bool RemoveReadOnly(LPCTSTR filename)
 	if(dwFileAtts & FILE_ATTRIBUTE_READONLY)
 	{
 		dwFileAtts &= ~FILE_ATTRIBUTE_READONLY;
-		return ::SetFileAttributes(filename, dwFileAtts);
+		return ::SetFileAttributes(filename, dwFileAtts) != 0;
 	}
 	
 	return false;
@@ -35,7 +35,7 @@ bool RemoveReadOnly(LPCTSTR filename)
 bool FileIsReadOnly(LPCTSTR filename)
 {
 	DWORD dwFileAttributes = ::GetFileAttributes(filename);
-	return (dwFileAttributes & FILE_ATTRIBUTE_READONLY);
+	return (dwFileAttributes & FILE_ATTRIBUTE_READONLY) != 0;
 	
 	// This code will check whether we really can change a file, but it feels dirty
 	// to me so is currently disabled.

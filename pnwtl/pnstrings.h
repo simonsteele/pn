@@ -121,6 +121,12 @@ static void Trim(TStringType& str)
 }
 
 /**
+ * Exception that can be thrown from a format string builder
+ * to abort the build 
+ */
+class FormatStringBuilderException : public std::exception {};
+
+/**
  * This class builds strings using custom format specifiers. It
  * supports both %x style format strings and also $(var) style
  * strings. The user must implement at least one of OnFormatChar
@@ -156,7 +162,7 @@ class CustomFormatStringBuilder
 					}
 					else if(next == _T('('))
 					{
-						// we matched a $(x) property...
+						// we matched a %(x) property...
 						std::string key;
 						i = ExtractProp(key, str, i);
 						pT->OnFormatPercentKey(key.c_str());
@@ -190,14 +196,8 @@ class CustomFormatStringBuilder
 					std::string key;
 					i = ExtractProp(key, str, i);
 
-					try
-					{
-						pT->OnFormatKey(key.c_str());
-					}
-					catch(...)
-					{
-						LOG("OnFormatKey Exception");
-					}
+					pT->OnFormatKey(key.c_str());
+					
 				}
 				else
 				{

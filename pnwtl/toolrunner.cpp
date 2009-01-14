@@ -395,9 +395,17 @@ int ToolRunner::Execute()
 	builder.reversePathSeps = m_pWrapper->ShouldUseForwardSlashes();
 	builder.pChild = m_pWrapper->GetActiveChild();
 	
-	m_pWrapper->Command = builder.Build(m_pWrapper->Command.c_str());
-	m_pWrapper->Params = builder.Build(m_pWrapper->Params.c_str());
-	m_pWrapper->Folder = builder.Build(m_pWrapper->Folder.c_str());
+	try
+	{
+		m_pWrapper->Command = builder.Build(m_pWrapper->Command.c_str());
+		m_pWrapper->Params = builder.Build(m_pWrapper->Params.c_str());
+		m_pWrapper->Folder = builder.Build(m_pWrapper->Folder.c_str());
+	}
+	catch (FormatStringBuilderException&)
+	{
+		LOG("FormatStringBuilderException building format string - user wants to cancel");
+		return 0;
+	}
 
 	if(!m_pWrapper->CaptureOutput())
 	{
@@ -415,7 +423,7 @@ int ToolRunner::Execute()
 		Start();
 	}
 
-	return 0;
+	return 1;
 }
 
 void ToolRunner::PostRun()
@@ -503,12 +511,14 @@ void ToolOwner::RunTool(ToolWrapperPtr& pTool, ToolOwnerID OwnerID)
 		}
 	}
 
-	_wrapper.pRunner->Execute();
-
-	if( !bThreaded )
+	if (!_wrapper.pRunner->Execute() && bThreaded)
+	{
+		// Signal this tool wrapper as done with.
+		MarkToolForDeletion(_wrapper.pRunner);
+	}
+	else if( !bThreaded )
 	{
 		delete _wrapper.pRunner;
-		//delete _wrapper.pWrapper;
 		_wrapper.pWrapper.reset();
 	}
 

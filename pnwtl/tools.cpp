@@ -373,12 +373,15 @@ void ToolCommandString::OnFormatChar(TCHAR thechar)
 
 		case _T('?'):
 			{
-				CInputDialog* dlg = new CInputDialog(_T("Tool Parameters"), _T("Parameters:"));
-				if( dlg->DoModal() == IDOK )
+				CInputDialog dlg(_T("Tool Parameters"), _T("Parameters:"));
+				if( dlg.DoModal() == IDOK )
 				{
-					m_string += dlg->GetInput();
+					m_string += dlg.GetInput();
 				}
-				delete dlg;
+				else
+				{
+					throw FormatStringBuilderException();
+				}
 			}
 			break;
 	}		
@@ -537,15 +540,14 @@ void ToolCommandString::OnFormatKey(LPCTSTR key)
  */
 void ToolCommandString::OnFormatPercentKey(LPCTSTR key)
 {
-	LPTSTR value = new TCHAR[32767]; // Max size for an environment variable
+	TCHAR value[32767]; // Max size for an environment variable
 	
-	if (GetEnvironmentVariable(key, value, 32767) == 0)
+	if (GetEnvironmentVariable(key, &value[0], 32767) == 0)
 	{
 		value[0] = 0; // Make sure it's an empty string even on error
 	}
-	m_string += value;
 	
-	delete [] value;
+	m_string += value;
 }
 
 #undef MATCH
