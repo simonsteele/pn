@@ -2,7 +2,7 @@
  * @file projectview.cpp
  * @brief View to display project trees.
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -957,6 +957,9 @@ LRESULT CProjectTreeCtrl::OnEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 			if( pF->Rename(ptvdi->item.pszText) )
 			{
 				PNASSERT(ptvdi->item.mask == TVIF_TEXT);
+				ptvdi->item.mask |= TVIF_IMAGE |TVIF_SELECTEDIMAGE;
+				ptvdi->item.iImage = shellImages->IndexForFile(pF->GetFileName());
+				ptvdi->item.iSelectedImage = ptvdi->item.iImage;
 				SetItem(&ptvdi->item);
 			}
 		}
@@ -1100,7 +1103,7 @@ LRESULT CProjectTreeCtrl::OnAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 
 			processNotifications = false;
 
-			for(IFileOpenDialogBase::const_iterator i = dlgOpen.begin(); 
+			for (IFileOpenDialogBase::const_iterator i = dlgOpen.begin(); 
 				i != dlgOpen.end();
 				++i)
 			{
@@ -1121,10 +1124,10 @@ LRESULT CProjectTreeCtrl::OnAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 
 LRESULT CProjectTreeCtrl::OnAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	if(lastItem == NULL)
+	if (lastItem == NULL)
 		return 0;
 
-	if(lastItem->GetType() == ptFolder || lastItem->GetType() == ptProject)
+	if (lastItem->GetType() == ptFolder || lastItem->GetType() == ptProject)
 	{
 		Projects::Folder* folder = static_cast<Projects::Folder*>(lastItem);
 		Projects::Folder* newFolder = new Projects::Folder(_T("New Folder"), folder->GetBasePath());
