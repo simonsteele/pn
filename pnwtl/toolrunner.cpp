@@ -2,9 +2,9 @@
  * @file toolrunner.cpp
  * @brief Run external tools
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -13,7 +13,7 @@
 
 #include "ChildFrm.h"   // for document info
 #include "tools.h"      // tools
-#include "toolrunner.h" // me!
+#include "toolrunner.h"
 
 #include <time.h>
 #include <sys/timeb.h>
@@ -66,7 +66,7 @@ void ToolRunner::Run()
 
 void ToolRunner::OnException()
 {
-	::OutputDebugString(_T("PN2: Exception whilst running a tool.\n"));
+	LOG(_T("PN2: Exception whilst running a tool.\n"));
 }
 
 int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
@@ -75,7 +75,7 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	clopts.insert(1, command);
 	clopts += params;
 
-	if(!m_pWrapper->IsTextFilter())
+	if (!m_pWrapper->IsTextFilter())
 	{
 		tstring tempstr(clopts);
 		tempstr.insert(0, _T("> "));
@@ -83,7 +83,7 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 		m_pWrapper->_AddToolOutput(tempstr.c_str());
 	}
 
-	if(_tcslen(dir) == 0)
+	if (_tcslen(dir) == 0)
 		dir = NULL;
 
 	OSVERSIONINFO osv = {sizeof(OSVERSIONINFO), 0, 0, 0, 0, _T("")};
@@ -96,7 +96,7 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	sa.lpSecurityDescriptor = NULL;
 
 	SECURITY_DESCRIPTOR sd;
-	if(!bWin9x)
+	if (!bWin9x)
 	{
 		// On NT we can have a proper security descriptor...
 		::InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
@@ -107,7 +107,7 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	HANDLE hWritePipe, hReadPipe;
 	HANDLE hStdInWrite, hStdInRead;
 	
-    if( ! ::CreatePipe(&hReadPipe, &hWritePipe, &sa, 0) )
+    if (!::CreatePipe(&hReadPipe, &hWritePipe, &sa, 0))
 	{
 		CLastErrorInfo lei;
 		m_pWrapper->_AddToolOutput("\n> Failed to create StdOut and StdErr Pipe: ");
@@ -118,7 +118,7 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 
 	// read handle, write handle, security attributes,  number of bytes reserved for pipe - 0 default
 	
-	if( ! ::CreatePipe(&hStdInRead, &hStdInWrite, &sa, 0) )
+	if (!::CreatePipe(&hStdInRead, &hStdInWrite, &sa, 0))
 	{
 		CLastErrorInfo lei;
 
@@ -143,7 +143,7 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	PROCESS_INFORMATION pi = {0, 0, 0, 0};
 
 	std::vector<char> cmdbuf(MAX_PATH);
-	memcpy(&cmdbuf[0], clopts.c_str(), clopts.size()*sizeof(wchar_t));
+	memcpy(&cmdbuf[0], clopts.c_str(), clopts.size() * sizeof(TCHAR));
 
 	bool bCreated = ::CreateProcess(
 		NULL, 
@@ -184,11 +184,11 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	bool bCompleted = false;
 	char buffer[TOOLS_BUFFER_SIZE];
 
-	while(!bCompleted)
+	while (!bCompleted)
 	{
 		Sleep(50);
 
-		if(dwBytesToWrite > 0)
+		if (dwBytesToWrite > 0)
 		{
 			// We have a filter (we think), so write the filter data into the stdin
 			// of the process we started.
@@ -207,16 +207,16 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 
 		//The PeekNamedPipe function copies data from a named or 
 		// anonymous pipe into a buffer without removing it from the pipe.
-		if(! ::PeekNamedPipe(hReadPipe, NULL, 0, NULL, &dwBytesAvail, NULL) )
+		if (!::PeekNamedPipe(hReadPipe, NULL, 0, NULL, &dwBytesAvail, NULL) )
 		{
 			dwBytesAvail = 0;
 		}
 
-		if(dwBytesAvail > 0)
+		if (dwBytesAvail > 0)
 		{
 			BOOL bRead = ::ReadFile(hReadPipe, buffer, sizeof(buffer), &dwBytesRead, NULL);
 
-			if(bRead && dwBytesRead)
+			if (bRead && dwBytesRead)
 			{
 				m_pWrapper->_AddToolOutput(buffer, dwBytesRead);
 			}
@@ -232,23 +232,23 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 
 			// No data from the process, is it still active?
 			::GetExitCodeProcess(pi.hProcess, &exitCode);
-			if(STILL_ACTIVE != exitCode)
+			if (STILL_ACTIVE != exitCode)
 			{
-				if(bWin9x)
+				if (bWin9x)
 				{
 					// If we're running on Windows 9x then we give the
 					// process some time to return the remainder of its data.
 					// We wait until a pre-set amount of time has elapsed and
 					// then exit.
 
-					if(timeDeathDetected == 0)
+					if (timeDeathDetected == 0)
 					{
 						timeDeathDetected = ::GetTickCount();
 					}
 					else
 					{
 						///@todo Get this value from the registry...
-						if((::GetTickCount() - timeDeathDetected) > 500)
+						if ((::GetTickCount() - timeDeathDetected) > 500)
 						{
 							bCompleted = true;
 						}
@@ -263,7 +263,7 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 		}
 
 		// While we're here, we check to see if we've been told to close.
-		if(!GetCanRun())
+		if (!GetCanRun())
 		{
 			if (WAIT_OBJECT_0 != ::WaitForSingleObject(pi.hProcess, 500)) 
 			{
@@ -274,6 +274,7 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 				m_pWrapper->_AddToolOutput("\n> Forcefully terminating process...\n");
 				::TerminateProcess(pi.hProcess, 1);
 			}
+
 			bCompleted = true;
 		}
 	} // while (!bCompleted)
@@ -294,7 +295,7 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	::CloseHandle(hWritePipe);
 	::CloseHandle(hStdInRead);
 	
-	if(hStdInWrite) // might already be closed
+	if (hStdInWrite) // might already be closed
 		::CloseHandle(hStdInWrite);
 
 	return m_RetCode;
@@ -313,9 +314,6 @@ int ToolRunner::Run_NoCapture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	tstring tempstr(_T("\"\" "));
 	tempstr.insert(1, command);
 	tempstr += params;
-
-	TCHAR* commandBuf = new TCHAR[tempstr.size() + 1];
-	_tcscpy(commandBuf, tempstr.c_str());
 
 	if(_tcslen(dir) == 0)
 		dir = NULL;
@@ -344,9 +342,12 @@ int ToolRunner::Run_NoCapture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 
 	PROCESS_INFORMATION pi = {0, 0, 0, 0};
 
+	std::vector<char> cmdbuf(MAX_PATH);
+	memcpy(&cmdbuf[0], tempstr.c_str(), tempstr.size() * sizeof(TCHAR));
+
 	bool bCreated = ::CreateProcess(
 		NULL, 
-		commandBuf, 
+		&cmdbuf[0], 
 		&sa, /*LPSECURITY_ATTRIBUTES lpProcessAttributes*/
 		NULL, /*LPSECURITYATTRIBUTES lpThreadAttributes*/
 		TRUE, /*BOOL bInheritHandles*/ 
@@ -356,8 +357,6 @@ int ToolRunner::Run_NoCapture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 		&si, /*LPSTARTUPINFO lpStartupInfo*/
 		&pi /*LPPROCESS_INFORMATION lpProcessInformation*/ 
 	) != 0;
-
-	delete [] commandBuf;
 
 	if(!bCreated)
 	{
@@ -370,9 +369,9 @@ int ToolRunner::Run_NoCapture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 
 	// We're waiting for this one to finish because it's a filter process - 
 	// i.e. it will change the current file.
-	if( m_pWrapper->IsFilter() )
+	if (m_pWrapper->IsFilter())
 	{
-		::WaitForSingleObject( pi.hProcess, INFINITE );
+		::WaitForSingleObject(pi.hProcess, INFINITE);
 		DWORD dwExitCode;
 		::GetExitCodeProcess(pi.hProcess, &dwExitCode);
 		result = dwExitCode;
@@ -623,7 +622,7 @@ void ToolOwner::KillTools(bool bWaitForKill, ToolOwnerID OwnerID)
 		// Don't tolerate more than 5 seconds of waiting...
 		if(iLoopCount > 50)
 		{
-			::OutputDebugString(_T("PN2: Gave up waiting for tools to finish."));
+			LOG(_T("PN2: Gave up waiting for tools to finish."));
 			break;
 		}
 
