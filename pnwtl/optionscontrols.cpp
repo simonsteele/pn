@@ -2,9 +2,9 @@
  * @file optionscontrols.cpp
  * @brief Controls for options dialogs (and the like).
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #include "stdafx.h"
@@ -252,6 +252,18 @@ LRESULT CPNHotkeyCtrl::OnKeyUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 
 		SendMessageW(GetParent(), WM_COMMAND, MAKEWPARAM(GetDlgCtrlID(), EN_CHANGE), (LPARAM)m_hWnd);
 
+		bHandled = true;
+	}
+
+	return 0;
+}
+
+LRESULT CPNHotkeyCtrl::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	bHandled = false;
+
+	if (wParam == ' ')
+	{
 		bHandled = true;
 	}
 
