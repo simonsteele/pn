@@ -54,6 +54,7 @@
     
 	<language name="vhdl" title="VHDL" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true" >
 		<lexer name="vhdl" />
+		<comments line="--" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="keywords"/>
 			<keyword key="1" name="operators" class="operators"/>
