@@ -142,6 +142,8 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 
 	PROCESS_INFORMATION pi = {0, 0, 0, 0};
 
+	DWORD dwCreationFlags = CREATE_NEW_CONSOLE; // CREATE_NEW_PROCESS_GROUP;
+
 	std::vector<char> cmdbuf(MAX_PATH);
 	memcpy(&cmdbuf[0], clopts.c_str(), clopts.size() * sizeof(TCHAR));
 
@@ -151,14 +153,14 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 		&sa, /*LPSECURITY_ATTRIBUTES lpProcessAttributes*/
 		NULL, /*LPSECURITYATTRIBUTES lpThreadAttributes*/
 		TRUE, /*BOOL bInheritHandles*/ 
-		CREATE_NEW_PROCESS_GROUP, /*DWORD dwCreationFlags*/
+		dwCreationFlags, /*DWORD dwCreationFlags*/
 		NULL, /*LPVOID lpEnvironment*/
 		dir, /*LPCTSTR lpWorkingDir*/
 		&si, /*LPSTARTUPINFO lpStartupInfo*/
 		&pi /*LPPROCESS_INFORMATION lpProcessInformation*/ 
 	) != 0;
 
-	if(!bCreated)
+	if (!bCreated)
 	{
 		::CloseHandle(hReadPipe);
 		::CloseHandle(hWritePipe);
@@ -175,7 +177,7 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	unsigned int dwBytesToWrite;
 	unsigned char* stdinbuf;
 	stdinbuf = m_pWrapper->GetStdIOBuffer(dwBytesToWrite);
-	if(!dwBytesToWrite)
+	if (!dwBytesToWrite)
 		stdinbuf = NULL;
 
 	DWORD dwBytesAvail, dwBytesRead, exitCode, timeDeathDetected;
@@ -315,7 +317,7 @@ int ToolRunner::Run_NoCapture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	tempstr.insert(1, command);
 	tempstr += params;
 
-	if(_tcslen(dir) == 0)
+	if (_tcslen(dir) == 0)
 		dir = NULL;
 
 	OSVERSIONINFO osv = {sizeof(OSVERSIONINFO), 0, 0, 0, 0, _T("")};
@@ -328,7 +330,7 @@ int ToolRunner::Run_NoCapture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	sa.lpSecurityDescriptor = NULL;
 
 	SECURITY_DESCRIPTOR sd;
-	if(!bWin9x)
+	if (!bWin9x)
 	{
 		// On NT we can have a proper security descriptor...
 		::InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION);
@@ -345,20 +347,22 @@ int ToolRunner::Run_NoCapture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	std::vector<char> cmdbuf(MAX_PATH);
 	memcpy(&cmdbuf[0], tempstr.c_str(), tempstr.size() * sizeof(TCHAR));
 
+	DWORD dwCreationFlags = CREATE_NEW_CONSOLE; // CREATE_NEW_PROCESS_GROUP - causes Ctrl-C to be disabled.
+
 	bool bCreated = ::CreateProcess(
 		NULL, 
 		&cmdbuf[0], 
 		&sa, /*LPSECURITY_ATTRIBUTES lpProcessAttributes*/
 		NULL, /*LPSECURITYATTRIBUTES lpThreadAttributes*/
 		TRUE, /*BOOL bInheritHandles*/ 
-		CREATE_NEW_PROCESS_GROUP, /*DWORD dwCreationFlags*/
+		dwCreationFlags, /*DWORD dwCreationFlags*/
 		NULL, /*LPVOID lpEnvironment*/
 		dir, /*LPCTSTR lpWorkingDir*/
 		&si, /*LPSTARTUPINFO lpStartupInfo*/
 		&pi /*LPPROCESS_INFORMATION lpProcessInformation*/ 
 	) != 0;
 
-	if(!bCreated)
+	if (!bCreated)
 	{
 		CLastErrorInfo lei;
 		m_pWrapper->_AddToolOutput("\n> Failed to create process: ");
@@ -377,7 +381,9 @@ int ToolRunner::Run_NoCapture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 		result = dwExitCode;
 	}
 	else
+	{
 		result = pi.dwProcessId;
+	}
 	
 	// Detach...
 	::CloseHandle(pi.hProcess);

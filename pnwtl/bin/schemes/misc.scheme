@@ -21,6 +21,7 @@
 	</language>
 	<language name="batch" title="Batch Files">
 		<lexer name="batch" />
+		<comments line="REM " />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="dosbatch"/>
 		</use-keywords>
