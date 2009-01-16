@@ -2,7 +2,7 @@
  * @file textclips.cpp
  * @brief text clips functionality.
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -184,13 +184,14 @@ void Clip::Insert(CScintilla *scintilla) const
 	if (length != 0)
 	{
 		// Get the selected text from Scintilla.
-		char* selData = new char[length+1];
-		int rxlen = scintilla->GetSelText(selData);
+		std::string sel;
+		sel.resize(length+1);
+		int rxlen = scintilla->GetSelText(&sel[0]);
 		PNASSERT(rxlen == length+1);
+		sel.resize(length);
 		
 		// Insert the text into the buffer.
-		clipstr.insert(offset, selData);
-		delete [] selData;
+		clipstr.insert(offset, sel);
 		
 		// Adjust the offset to place the cursor after the selected text.
 		offset += length;
@@ -507,14 +508,14 @@ void TextClipsManager::clear()
 
 void TextClipsManager::copy(const TextClipsManager& copy)
 {
-	for(LIST_CLIPSETS::const_iterator i = copy.m_clipSets.begin();
+	for (LIST_CLIPSETS::const_iterator i = copy.m_clipSets.begin();
 		i != copy.m_clipSets.end();
 		++i)
 	{
 		m_clipSets.push_back( new TextClipSet(**i) );
 	}
 
-	for(MAP_CLIPSETS::const_iterator j = copy.m_schemeClipSets.begin();
+	for (MAP_CLIPSETS::const_iterator j = copy.m_schemeClipSets.begin();
 		j != copy.m_schemeClipSets.end();
 		++j)
 	{
@@ -540,7 +541,7 @@ void TextClipsManager::findClips()
 
 	if (!FileExists(clipcache.c_str()))
 	{
-		if( DirExists(path.c_str()) )
+		if (DirExists(path.c_str()))
 			finder.Find(path.c_str(), _T("*.clips"));
 
 		// Save the clips we found in the cache
@@ -578,6 +579,7 @@ void TextClipsManager::parse(LPCTSTR filename)
 #define TCPS_START	0
 #define TCPS_CLIPS	1
 #define TCPS_CLIP	2
+#define TCPS_CHAR	3
 
 #define MATCH_ELEMENT(ename) \
 	if(_tcscmp(name, ename) == 0)
@@ -618,14 +620,13 @@ void TextClipsManager::startElement(LPCTSTR name, XMLAttributes& atts)
 			}
 
 			szEncoding = atts.getValue(_T("decodeNames"));
-			if(szEncoding != NULL)
-				if(szEncoding[0] == _T('t') || szEncoding[0] == _T('T'))
+			if(szEncoding != NULL && (szEncoding[0] == _T('t') || szEncoding[0] == _T('T')))
 					decodeNames = true;
 			
 			m_pCurSet = new TextClipSet(m_curFileName.c_str(), szName, szScheme, decodeNames);
 		}
 	}
-	else if ( IN_STATE(TCPS_CLIPS) )
+	else if (IN_STATE(TCPS_CLIPS))
 	{
 		MATCH_ELEMENT(_T("clip"))
 		{
@@ -636,29 +637,49 @@ void TextClipsManager::startElement(LPCTSTR name, XMLAttributes& atts)
 			SET_STATE(TCPS_CLIP);
 		}
 	}
+	else if (IN_STATE(TCPS_CLIP))
+	{
+		MATCH_ELEMENT(_T("char"))
+		{
+			LPCTSTR charValue = atts.getValue(_T("value"));
+			if (charValue != NULL && charValue[0] != NULL)
+			{
+				TCHAR val = static_cast<TCHAR>(_ttoi(charValue));
+				m_cData += val;
+			}
+
+			SET_STATE(TCPS_CHAR);
+		}
+	}
 }
 
 void TextClipsManager::endElement(LPCTSTR name)
 {
-	if ( IN_STATE(TCPS_CLIP) )
+	if (IN_STATE(TCPS_CLIP))
 	{
 		// Create new clip - name = m_curName, content = m_cData;
 		if (m_curEncoding != eNone)
+		{
 			decodeData();
+		}
 
 		if(decodeNames)
-			m_curName = Utf8_Windows1252( m_curName.c_str() );
+		{
+			m_curName = Utf8_Windows1252(m_curName.c_str());
+		}
 
 		Clip* clip = new Clip(m_curName, m_curShortcut, m_cData);
 
 		m_pCurSet->Add( clip );
 
+		m_cData = _T("");
+
 		SET_STATE(TCPS_CLIPS);
 	}
-	else if ( IN_STATE(TCPS_CLIPS) )
+	else if (IN_STATE(TCPS_CLIPS))
 	{
 		// General text clips or schemes based?
-		if(m_pCurSet->GetScheme() != NULL)
+		if (m_pCurSet->GetScheme() != NULL)
 		{
 			m_schemeClipSets.insert(MAP_CLIPSETS::value_type(tstring(m_pCurSet->GetScheme()), m_pCurSet));
 		}
@@ -670,23 +691,18 @@ void TextClipsManager::endElement(LPCTSTR name)
 
 		SET_STATE(TCPS_START);
 	}
-
-	m_cData = _T("");
+	else if (IN_STATE(TCPS_CHAR))
+	{
+		SET_STATE(TCPS_CLIP);
+	}
 }
 
 void TextClipsManager::characterData(LPCTSTR data, int len)
 {
 	if ( IN_STATE(TCPS_CLIP) )
 	{
-		TCHAR* buf = new TCHAR[len+1];
-
-		_tcsncpy(buf, data, len);
-		
-		buf[len] = 0;
-
+		tstring buf(data, len);
 		m_cData += buf;
-
-		delete [] buf;
 	}
 }
 
