@@ -213,7 +213,8 @@ class ToolWrapper : public ToolDefinition
 };
 
 /**
- * Template version of @see ToolWrapper. Simplifies use in different situations.
+ * Implements the default behaviour for tool output, regardless of the
+ * type of text view being used.
  */
 template <class TWindowOwner, class TOutputSink>
 class ToolWrapperT : public ToolWrapper
@@ -229,37 +230,59 @@ class ToolWrapperT : public ToolWrapper
 
 		virtual ~ToolWrapperT(){}
 
-		virtual void Revert() 
+		/**
+		 * Revert is called for tools that modify the current file.
+		 */
+		virtual void Revert()
 		{
-			if( m_pActiveChild != NULL )
-				m_pActiveChild->Revert();
+			if (m_pActiveChild != NULL)
+			{
+				// Send message, we're probably not in the UI thread here.
+				m_pActiveChild->SendMessage(WM_COMMAND, MAKEWPARAM(ID_FILE_REVERT, 0), 0);
+			}
 		}
 
+		/**
+		 * Display whichever output window is relevant
+		 */
 		virtual void ShowOutputWindow()
 		{
 			m_pWindowOwner->ToggleOutputWindow(true, true);
 		}
 
+		/**
+		 * Add output text
+		 */
 		virtual void _AddToolOutput(LPCTSTR output, int nLength = -1)
 		{
-			if(!m_bOutputShown)
+			if (!m_bOutputShown)
 			{
 				ShowOutputWindow();
 				m_bOutputShown = true;
 			}
+
 			m_pOutputSink->AddToolOutput(output, nLength);
 		}
 
+		/**
+		 * Set the path the tool is being run from, allowing relative path matching in the output window to work
+		 */
 		virtual void SetToolBasePath(LPCTSTR path)
 		{
 			m_pOutputSink->SetToolBasePath(path);
 		}
 
+		/**
+		 * Set the parser for the output
+		 */
 		virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL)
 		{
 			m_pOutputSink->SetToolParser(bBuiltIn, customExpression);
 		}
 
+		/**
+		 * Clear the output view
+		 */
 		virtual void ClearOutput()
 		{
 			m_pOutputSink->ClearOutput();

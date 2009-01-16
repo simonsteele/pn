@@ -217,11 +217,11 @@ LRESULT CPNHotkeyCtrl::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 {
 	bHandled = false;
 
-	if (wParam == VK_DELETE)
+	if (wParam == VK_DELETE || wParam == VK_SPACE)
 	{
 		bHandled = true;
 	}
-
+	
 	return 0;
 }
 
@@ -229,7 +229,9 @@ LRESULT CPNHotkeyCtrl::OnKeyUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 {
 	bHandled = false;
 
-	if (wParam == VK_DELETE)
+	// For some reason space is still clearing the box before we get to here, so there're no
+	// modifiers left.
+	if (wParam == VK_DELETE || wParam == VK_SPACE)
 	{
 		int current = SendMessage(HKM_GETHOTKEY, 0, 0);
 		if ((current & 0xff) != 0)
@@ -239,8 +241,11 @@ LRESULT CPNHotkeyCtrl::OnKeyUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 			current = 0;
 		}
 
-		// Set extended to make sure we get DEL and not NUM DECIMAL
-		current |= (HOTKEYF_EXT << 8);
+		if (wParam == VK_DELETE)
+		{
+			// Set extended to make sure we get DEL and not NUM DECIMAL
+			current |= (HOTKEYF_EXT << 8);
+		}
 		
 		int key = wParam | current;
 		SendMessage(HKM_SETHOTKEY, key, 0);
