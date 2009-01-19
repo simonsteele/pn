@@ -602,7 +602,7 @@ tstring CTextView::GetCurrentWord()
 	return ret;
 }
 
-EPNEncoding CTextView::GetEncoding()
+EPNEncoding CTextView::GetEncoding() const
 {
 	return m_encType;
 }
@@ -619,7 +619,7 @@ void CTextView::SetEncoding(EPNEncoding encoding)
 	}
 }
 
-Scheme* CTextView::GetCurrentScheme()
+Scheme* CTextView::GetCurrentScheme() const
 {
 	return m_pLastScheme;
 }

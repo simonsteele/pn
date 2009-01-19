@@ -2,24 +2,36 @@
  * @file ScintillaWTL.h
  * @brief Windows Template Library implementation of a Scintilla window.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
- *
- * These classes rely on my more generic Scintilla wrapper class which can
- * be obtained from:
- *
- * http://www.pnotepad.org/scintilla/
- *
- * At some point, this may be made into a standalone module.
  */
 
 #ifndef scintillawtl_h__included
 #define scintillawtl_h__included
 
 #include "scintillaif.h"
-//#include "schemes.h"
+
+/** 
+ * Whether we're a full unicode build or not, we now need to force Scintilla to be
+ * a unicode window to correctly support international character input.
+ *
+ * This is an almost exact copy of DECLARE_WND_SUPERCLASS with the type changed to
+ * always be wide.
+ */
+#define DECLARE_WND_SUPERCLASSW(WndClassName, OrigWndClassName) \
+static ATL::CWndClassInfoW& GetWndClassInfo() \
+{ \
+	static ATL::CWndClassInfoW wc = \
+	{ \
+		{ sizeof(WNDCLASSEX), 0, StartWindowProc, \
+		  0, 0, NULL, NULL, NULL, NULL, NULL, WndClassName, NULL }, \
+		OrigWndClassName, NULL, NULL, TRUE, 0, L"" \
+	}; \
+	return wc; \
+}
+
 
 /**
  * @class CScintillaWindow
@@ -29,13 +41,66 @@ template <class T, class TBase = CScintilla>
 class CScintillaWindowImpl : public CWindowImpl< CScintillaWindowImpl<T,TBase> >, public TBase
 {
 public:
-
-	DECLARE_WND_SUPERCLASS("ScintillaWindowImpl", "Scintilla")
+	DECLARE_WND_SUPERCLASSW(L"ScintillaWindowImpl", L"Scintilla")
 
 	BOOL PreTranslateMessage(MSG* pMsg)
 	{
 		pMsg;
 		return FALSE;
+	}
+
+	/**
+	 * This is almost an exact copy of the base class Create method, altered only to ensure
+	 * that all the window class registration and window creation is done in Unicode regardless
+	 * of our build type.
+	 */
+	HWND Create(HWND hWndParent, _U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
+			DWORD dwStyle = 0, DWORD dwExStyle = 0,
+			_U_MENUorID MenuOrID = 0U, LPVOID lpCreateParam = NULL)
+	{
+		if (T::GetWndClassInfo().m_lpszOrigName == NULL)
+			T::GetWndClassInfo().m_lpszOrigName = L"ScintillaWindowImpl";
+		ATOM atom = T::GetWndClassInfo().Register(&m_pfnSuperWindowProc);
+
+		dwStyle = T::GetWndStyle(dwStyle);
+		dwExStyle = T::GetWndExStyle(dwExStyle);
+
+		// set caption
+		if (szWindowName == NULL)
+			szWindowName = T::GetWndCaption();
+
+		//return CWindowImplBaseT< TBase, TWinTraits >::Create(hWndParent, rect, szWindowName,
+		//	dwStyle, dwExStyle, MenuOrID, atom, lpCreateParam);
+		BOOL result;
+		ATLASSUME(m_hWnd == NULL);
+
+		// Allocate the thunk structure here, where we can fail gracefully.
+		result = m_thunk.Init(NULL,NULL);
+		if (result == FALSE) {
+			SetLastError(ERROR_OUTOFMEMORY);
+			return NULL;
+		}
+
+		if(atom == 0)
+			return NULL;
+
+		_AtlWinModule.AddCreateWndData(&m_thunk.cd, this);
+
+		if(MenuOrID.m_hMenu == NULL && (dwStyle & WS_CHILD))
+			MenuOrID.m_hMenu = (HMENU)(UINT_PTR)this;
+		if(rect.m_lpRect == NULL)
+			rect.m_lpRect = &CScintillaWindowImpl<T,TBase>::rcDefault;
+
+		HWND hWnd = ::CreateWindowExW(dwExStyle, (LPCWSTR)MAKEINTATOM(atom), L"Scintilla",
+			dwStyle, rect.m_lpRect->left, rect.m_lpRect->top, rect.m_lpRect->right - rect.m_lpRect->left,
+			rect.m_lpRect->bottom - rect.m_lpRect->top, hWndParent, MenuOrID.m_hMenu,
+			_AtlBaseModule.GetModuleInstance(), lpCreateParam);
+
+		m_hWnd = hWnd;
+
+		ATLASSUME(m_hWnd == hWnd);
+
+		return hWnd;
 	}
 
 	BEGIN_MSG_MAP(CScintillaWindowImpl)
@@ -61,7 +126,9 @@ public:
 			// Setup direct scintilla messages stuff...
 			m_Pointer = (void *)SPerform(SCI_GETDIRECTPOINTER);
 			Perform = (scmsgfn)SPerform(SCI_GETDIRECTFUNCTION);
-			OnFirstShow();
+			
+			T* pT = static_cast<T*>(this);
+			pT->OnFirstShow();
 		}
 
 		bHandled = FALSE;
@@ -71,13 +138,15 @@ public:
 
 	LRESULT OnNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 	{
-		if(IsScintillaNotify(lParam))
+		if (IsScintillaNotify(lParam))
 		{
 			HandleNotify(lParam);
 			bHandled = TRUE;
 		}
 		else
+		{
 			bHandled = FALSE;
+		}
 
 		return 0;
 	}
@@ -125,18 +194,21 @@ public:
 		return 0;
 	}
 
+protected:
 	void DoContextMenu(CPoint* point)
 	{
 		// User Implementable...
 	}
 
-protected:
-	virtual void OnFirstShow(){}
+	void OnFirstShow()
+	{
+		// User Implementable through template type.
+	}
 };
 
-template <class TBase = CScintilla>
-class CScintillaWindow : public CScintillaWindowImpl<CScintillaWindow<TBase>, TBase>
-{
-};
+//template <class TBase = CScintilla>
+//class CScintillaWindow : public CScintillaWindowImpl<CScintillaWindow<TBase>, TBase>
+//{
+//};
 
 #endif

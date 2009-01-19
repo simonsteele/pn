@@ -2,9 +2,9 @@
  * @file OutputView.h
  * @brief View to display output from tool calls.
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -19,10 +19,11 @@
  */
 class COutputView : public CScintillaWindowImpl< COutputView, REScintilla >, public extensions::ITextOutput
 {
-typedef CScintillaWindowImpl< COutputView, REScintilla > baseClass;
+	typedef CScintillaWindowImpl< COutputView, REScintilla > baseClass;
+	friend class baseClass;
 
 public:
-	COutputView();
+	explicit COutputView();
 	~COutputView();
 
 	BEGIN_MSG_MAP(COutputView)
@@ -74,12 +75,12 @@ protected:
 	LRESULT OnCut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	virtual void OnFirstShow();
+	void OnFirstShow();
 
 	void SetOutputLexer();
 	void SetCustomLexer();
 
-protected:
+private:
 	bool			m_bCustom;
 	tstring			m_basepath;
 };

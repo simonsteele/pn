@@ -62,6 +62,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="imm32.lib"
 				OutputFile="$(OutDir)\SciLexer.dll"
+				GenerateDebugInformation="true"
 			/>
 			<Tool
 				Name="VCALinkTool"

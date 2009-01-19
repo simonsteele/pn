@@ -2,7 +2,7 @@
  * @file TextView.h
  * @brief Interface Definition for CTextView, the Scintilla based text-editor view.
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -21,10 +21,15 @@ class FIFSink;
 
 static const int INDIC_MARKALL = INDIC_CONTAINER;
 
+/**
+ * This is the final implementation of our Scintilla window, pulling together the
+ * application logic and the Scintilla wrappers that sit below.
+ */
 class CTextView : public CScintillaWindowImpl< CTextView, CScintillaImpl >
 {
 public:
 	typedef CScintillaWindowImpl< CTextView, CScintillaImpl > baseClass;
+	friend class baseClass;
 
 	explicit CTextView(DocumentPtr document, CommandDispatch* commands);
 	~CTextView();
@@ -53,7 +58,7 @@ public:
 	END_MSG_MAP()
 
 	void SetScheme(Scheme* pScheme, bool allSettings = true);
-	Scheme* GetCurrentScheme();
+	Scheme* GetCurrentScheme() const;
 
 	bool Load(LPCTSTR filename, Scheme* pScheme = NULL, EPNEncoding encoding = eUnknown);
 	bool Save(LPCTSTR filename, bool bSetScheme = true);
@@ -68,7 +73,7 @@ public:
 
 	tstring GetCurrentWord();
 
-	EPNEncoding GetEncoding();
+	EPNEncoding GetEncoding() const;
 	void SetEncoding(EPNEncoding encoding);
 
 	void FindAll(extensions::ISearchOptions* options, FIFSink* sink, LPCTSTR szFilename);
@@ -120,7 +125,9 @@ private:
 	int lineTextStartPosition(int line);
 
 	void ProcessNumberedBookmark(int n);
-	virtual void OnFirstShow();
+	
+	/// Called by CScintillaWindowImpl when the window is shown for the first time.
+	void OnFirstShow();
 
 	CommandDispatch* m_pCmdDispatch;
 	BOOL m_waitOnBookmarkNo;

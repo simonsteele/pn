@@ -907,9 +907,9 @@ CVistaSaveDialogEx::CVistaSaveDialogEx(LPCWSTR filter) : CVistaSaveDialog(filter
 		return;
 	}
 	
-	custom->StartVisualGroup(IDC_PNSAVE_SAVEASSTATIC, L"Encoding:");
+	custom->StartVisualGroup(IDC_PNSAVE_SAVEASSTATIC, L"Format:");
 	custom->AddComboBox(IDC_PNSAVE_TYPECOMBO);
-	custom->AddControlItem(IDC_PNSAVE_TYPECOMBO, PNSF_NoChange, L"No change to the file format.");
+	custom->AddControlItem(IDC_PNSAVE_TYPECOMBO, PNSF_NoChange, L"No Change");
 	custom->AddControlItem(IDC_PNSAVE_TYPECOMBO, PNSF_Windows, L"Ensure Windows Format (CR+LF)");
 	custom->AddControlItem(IDC_PNSAVE_TYPECOMBO, PNSF_Unix, L"Ensure Unix Format (LF)");
 	custom->AddControlItem(IDC_PNSAVE_TYPECOMBO, PNSF_Mac, L"Ensure Macintosh Format (CR)");
