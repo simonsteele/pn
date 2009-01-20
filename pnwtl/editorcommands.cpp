@@ -117,7 +117,7 @@ void SpacesToTabs(CScintillaImpl& editor)
 	}
 
 	TCHAR buf[100];
-	_stprintf(buf, _T("^[ ]{%d}"), editor.GetTabWidth());
+	_stprintf(buf, _T("[ ]{%d}"), editor.GetTabWidth());
 
 	// Find all leading groups of spaces, convert to tabs
 	SearchOptions options;
@@ -150,7 +150,7 @@ void TabsToSpaces(CScintillaImpl& editor)
 	std::string replaceText(editor.GetTabWidth(), ' ');
 
 	SearchOptions options;
-	options.SetFindText("^\\t");
+	options.SetFindText("\\t");
 	options.SetReplaceText(replaceText.c_str());
 	options.SetReplaceInSelection( editor.GetSelLength() != 0 );
 	options.SetSearchBackwards(false);
