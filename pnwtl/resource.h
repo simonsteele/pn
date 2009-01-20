@@ -242,7 +242,6 @@
 #define IDI_ICON7                       362
 #define IDI_READONLY                    362
 #define IDR_POPUP_BROWSER               363
-#define IDC_MARGIN                      400
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -508,7 +507,6 @@
 #define IDC_OPT_BACKUPCHECK             1157
 #define IDC_CARETBLOCKCHECK             1158
 #define IDC_CARETBLOCK_CHECK            1158
-#define IDC_OPT_LOCKREADONLY            1159
 #define IDC_OPT_EDITREADONLY            1159
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
