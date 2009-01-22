@@ -56,6 +56,7 @@
 .pnpt=xml
 .pnproj=xml
 .pod=perl
+.proj=xml
 .properties=properties
 .ps1=powershell
 .py=python
