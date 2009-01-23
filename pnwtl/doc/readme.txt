@@ -34,6 +34,13 @@ What's new?
 26) Explorer menus in context menus
 27) Improved extension crash debugging (#127)
 28) Option to create backups when saving files (#106)
+29) New commands for working with current text selection (#245)
+30) File changed notification can be disabled for a single file (#214)
+31) Text clip editor now uses default scheme (#144)
+32) Improved PHP styling with colour presets (#195)
+33) Comment commands and text transforms on context menu (#223, #221)
+34) Re-use unchanged blank document window when opening a file (#17)
+35) Clean up the UI for first run (#211)
 
 Bug Fixes:
 ----------
@@ -64,6 +71,20 @@ Bug Fixes:
 24) Fix Windows 2000 support (#124)
 25) Restore document windows on jumps (#130)
 26) Allow opening workspace files again (#25)
+27) Fixed Win7 Close Hang
+28) Fixed Tab and Space conversion errors (#301)
+29) Fixed extended character entry (#48)
+30) Project file icon changes when rename changes type (#259)
+31) Tool running crash (#250)
+32) Launching non-captured console tool disables Ctrl-C (#78)
+33) Space can't be entered as a keyboard shortcut (#284)
+34) Fix up ascii text clips, and allow insertion of special characters (#274)
+35) Cancelling parameters window doesn't cancel tool running (#285)
+36) Search hidden files option missing (#229)
+37) files are reopened when loading workspaces (#228)
+38) Project tools missing from menus (#227)
+39) Make sure jumping to a bookmark scrolls into view (#219)
+40) Middle click close on updated file causes crash (#203)
 
 Extensions Interface Changes:
 -----------------------------
