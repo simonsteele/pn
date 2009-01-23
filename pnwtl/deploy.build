@@ -48,7 +48,7 @@
 		<mkdir dir="${distdir}"/>
 		
 		<exec
-			program="c:\program files\inno setup 5\iscc"
+			program="c:\program files (x86)\inno setup 5\iscc"
 			commandline='pn2.iss /d"PNVersion=${deployver}"'
 			output="_iscc.log"
 			workingdir="installer" />
