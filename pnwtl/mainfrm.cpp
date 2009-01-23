@@ -602,6 +602,18 @@ LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 	return 0;
 }
 
+/**
+ * Handles a bug where the autocomplete combo box eats the WM_QUIT message causing PN
+ * to never exit on Win7. Hopefully won't be required post beta.
+ */
+LRESULT CMainFrame::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	::DestroyWindow(m_FindCombo.m_hWnd);
+
+	bHandled = FALSE;
+	return 0;
+}
+
 CSize CMainFrame::GetGUIFontSize()
 {
 	CClientDC dc(m_hWnd);
