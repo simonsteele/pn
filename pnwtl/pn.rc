@@ -141,7 +141,7 @@ BEGIN
         MENUITEM "Proper&ties...",              ID_VIEW_FILEPROPERTIES
         MENUITEM SEPARATOR
         MENUITEM "&Close",                      ID_FILE_CLOSE
-        MENUITEM "Close Proje&ct(s)",           301
+        MENUITEM "Close P&roject(s)",           301
         MENUITEM "Close All",                   ID_FILE_CLOSEALL
         MENUITEM SEPARATOR
         MENUITEM "&Print...",                   ID_FILE_PRINT

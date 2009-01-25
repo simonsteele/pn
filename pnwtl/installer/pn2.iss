@@ -32,7 +32,7 @@ OutputBaseFilename=pnsetup
 
 [Tasks]
 Name: desktopicon; Description: Create a &Desktop icon; GroupDescription: Additional icons:
-Name: quicklaunchicon; Description: Create a &Quick Launch icon; GroupDescription: Additional icons:; Flags: unchecked
+Name: quicklaunchicon; Description: Create a &Quick Launch icon; GroupDescription: Additional icons:; Flags: unchecked; OnlyBelowVersion: 0,6.01.7000
 
 [Files]
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files

@@ -101,10 +101,11 @@ us with a copy of the file(s):
 %appdata%\Echo Software\PN2\User*.xml
 
 e.g.
-C:\Documents and Settings\Simon\Application Data\Echo Software\PN2\User*.xml
+XP: C:\Documents and Settings\Simon\Application Data\Echo Software\PN2\User*.xml
+Vista+: C:\Users\Simon\AppData\Roaming\Echo Software\PN2\User*.xml
 
 E-mail: ss at pnotepad dot org with your reports, or use the handy 
 "Report a Bug" option on the Help menu to add it straight to the
-sourceforge bug tracker.
+Google Code bug tracker.
 
 Thanks for testing!
