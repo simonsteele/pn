@@ -129,6 +129,8 @@ private:
 	/// Called by CScintillaWindowImpl when the window is shown for the first time.
 	void OnFirstShow();
 
+	void checkDotLogTimestamp();
+
 	CommandDispatch* m_pCmdDispatch;
 	BOOL m_waitOnBookmarkNo;
 	Scheme* m_pLastScheme;

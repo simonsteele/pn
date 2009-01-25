@@ -279,6 +279,8 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 
 		SetLineNumberChars();
 
+		checkDotLogTimestamp();
+
 #ifdef _DEBUG
 		DWORD timeTotal = GetTickCount() - timeIn;
 		TCHAR outstr[300];
@@ -1179,6 +1181,39 @@ void CTextView::OnFirstShow()
 	m_pLastScheme->Load(*this);
 	SetEOLMode( OPTIONS->GetCached(Options::OLineEndings) );
 	SPerform(SCI_SETCODEPAGE, (long)OPTIONS->GetCached(Options::ODefaultCodePage));
+}
+
+/**
+ * Insert a timestamp if the file has .LOG in the first line
+ */
+void CTextView::checkDotLogTimestamp()
+{
+	int lineLength = min(4, LineLength(0));
+	if (lineLength != 4)
+	{
+		return;
+	}
+
+	std::string text;
+	text.resize(5);
+	GetText(5, &text[0]);
+	text.resize(4);
+
+	// If we have .LOG then add a blank line and then the date and time   
+	if (text == ".LOG")
+	{
+		std::string timestr("\r\n\r\n");
+		
+		time_t now;
+		time(&now);
+		struct tm* local(localtime(&now));
+
+		timestr += asctime(local);
+
+		AppendText(timestr.size(), timestr.c_str());
+
+		DocumentEnd();
+	}
 }
 
 void CTextView::checkLineLength()
