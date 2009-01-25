@@ -121,8 +121,8 @@ class Folder : public ProjectType
 	friend class File;
 
 	public:
-		Folder();
-		Folder(LPCTSTR name_, LPCTSTR basepath);
+		explicit Folder();
+		explicit Folder(LPCTSTR name_, LPCTSTR basepath);
 		virtual ~Folder();
 
 		void SetName(LPCTSTR name_);
@@ -170,6 +170,7 @@ class Folder : public ProjectType
 		void writeContents(ProjectWriter definition);
 
 	protected:
+		bool		m_canNotify;
 		tstring		name;
 		tstring		basePath;
 		FOLDER_LIST	children;

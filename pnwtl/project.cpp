@@ -221,12 +221,12 @@ void File::SetDirty()
 // Folder
 //////////////////////////////////////////////////////////////////////////////
 
-Folder::Folder() : ProjectType(ptFolder)
+Folder::Folder() : ProjectType(ptFolder), m_canNotify(true)
 {
 	parent = NULL;
 }
 
-Folder::Folder(LPCTSTR name_, LPCTSTR basepath) : ProjectType(ptFolder)
+Folder::Folder(LPCTSTR name_, LPCTSTR basepath) : ProjectType(ptFolder), m_canNotify(true)
 {
 	parent = NULL;
 	name = name_;
@@ -567,7 +567,7 @@ void Folder::notify(PROJECT_CHANGE_TYPE changeType, ProjectType* changeItem)
 
 void Folder::notify(PROJECT_CHANGE_TYPE changeType, Folder* changeContainer, ProjectType* changeItem)
 {
-	if(parent != NULL)
+	if (m_canNotify && parent != NULL)
 	{
 		parent->notify(changeType, changeContainer, changeItem);
 	}

@@ -91,16 +91,24 @@ void MagicFolder::HandleReadCache(XMLParser* parser, XMLParseState* parent)
 
 const FOLDER_LIST& MagicFolder::GetFolders()
 {
-	if(!read)
+	if (!read)
+	{
+		m_canNotify = false;
 		Refresh();
+		m_canNotify = true;
+	}
 
 	return children;
 }
 
 const FILE_LIST& MagicFolder::GetFiles()
 {
-	if(!read)
+	if (!read)
+	{
+		m_canNotify = false;
 		Refresh();
+		m_canNotify = true;
+	}
 
 	return files;
 }
