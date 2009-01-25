@@ -185,13 +185,13 @@
 			<!-- Embedded JavaScript -->			
 			<group name="JavaScript" description="Embedded JavaScript" class="embeddedjs">
 				<style name="Start" key="40" fore="7f7f00"/>
-				<style name="Default" key="41" fore="000000" bold="true" eolfilled="true"/>
+				<style name="Default" key="41" fore="000000" eolfilled="true"/>
 				<style name="Comment" key="42" class="comment" eolfilled="true"/>
 				<style name="Line Comment" key="43" class="comment"/>
 				<style name="Doc comment" key="44" class="comment" eolfilled="true"/>
 				<style name="Number" key="45" class="number" />
 				<style name="Word" key="46" fore="000000"/>
-				<style name="Keyword" key="47" class="keyword" bold="true"/>
+				<style name="Keyword" key="47" class="keyword" />
 				<style name="Double quoted string" key="48" class="string"/>
 				<style name="Single quoted string" key="49" class="string"/>
 				<style name="Symbols " key="50" class="operator"/>
@@ -202,7 +202,7 @@
 			<!-- ASP JavaScript -->
 			<group name="ASP JavaScript" description="JavaScript embedded within an ASP file." class="aspjs" >
 				<style name="Start" key="55" fore="7F7F00" />
-				<style name="Default" key="56" eolfilled="true" bold="true"/>
+				<style name="Default" key="56" eolfilled="true" />
 				<style name="Comment" key="57" fore="007F00" eolfilled="true"/>
 				<style name="Line Comment" key="58" fore="007F00"/>
 				<style name="Doc comment" key="59" fore="7F7F7F" bold="true" eolfilled="true"/>
