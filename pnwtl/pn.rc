@@ -1756,11 +1756,11 @@ BEGIN
     BUTTON      ID_PROJECT_REMOVE
     BUTTON      ID_PROJECT_DELETE
     BUTTON      ID_PROJECT_OPEN
-	BUTTON		ID_PROJECT_ADDFILES
-	BUTTON		ID_PROJECT_OPENALLFILES
-	BUTTON		ID_PROJECT_OPENFOLDER
-	BUTTON		ID_PROJECT_REFRESH
-	BUTTON		ID_PROJECT_RENAME
+    BUTTON      ID_PROJECT_ADDFILES
+    BUTTON      ID_PROJECT_OPENALLFILES
+    BUTTON      ID_PROJECT_OPENFOLDER
+    BUTTON      ID_PROJECT_REFRESH
+    BUTTON      ID_PROJECT_RENAME
 END
 
 
@@ -2028,6 +2028,7 @@ BEGIN
                             "Project ""%s"" has been changed, do you want to save the changes before removing?"
     IDS_BACKUPCREATEFAIL    "Failed to create a backup document"
     IDS_MAGICFOLDERRENAME   "Are you sure you wish to rename this magic folder?\nThis will have the effect of renaming the actual folder on the disk."
+    IDS_INVALIDFIFPATH      "Cannot find in files in %s, the directory does not exist"
 END
 
 #endif    // English (U.K.) resources

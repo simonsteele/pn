@@ -103,6 +103,9 @@ void FIFThread::Run()
 
 	if (m_it.get())
 	{
+		m_nFiles = 0;
+		m_nLines = 0;
+
 		tstring file;
 		while(m_it->Next(file) && GetCanRun())
 		{

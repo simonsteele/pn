@@ -2,7 +2,7 @@
  * @file findex.cpp
  * @brief Find and Replace dialogs for PN 2
  * @author Simon Steele
- * @note Copyright (c) 2004-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2004-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -298,7 +298,10 @@ LRESULT CFindExDialog::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 	{
 		SearchOptions* pOptions = reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() );
 		if(m_FindText.GetLength() == 0 && _tcslen(pOptions->GetFindText()) > 0)
+		{
 			m_FindText = pOptions->GetFindText();
+		}
+		
 		m_ReplaceText = pOptions->GetReplaceText();
 		m_FindTypeText = pOptions->GetFileExts();
 
@@ -700,6 +703,17 @@ void CFindExDialog::findInFiles()
 {
 	SearchOptions* pOptions = getOptions();
 
+	if (pOptions->GetFileSet() == extensions::fifPath)
+	{
+		if (!DirExists(pOptions->GetSearchPath()))
+		{
+			CString sError;
+			sError.Format(IDS_INVALIDFIFPATH, m_FindWhereText);
+			::PNTaskDialog(m_hWnd, IDR_MAINFRAME, _T(""), (LPCTSTR)sError, TDCBF_OK_BUTTON, TDT_WARNING_ICON);
+			return;
+		}
+	}
+
 	g_Context.m_frame->FindInFiles(pOptions);
 
 	// Reset the FileExtensions member incase we did find in current file...
@@ -800,8 +814,6 @@ SearchOptions* CFindExDialog::getOptions()
 	pOptions->SetLoopOK(true);
 
 	// Where are we going to look?
-	pOptions->SetSearchPath(m_FindWhereText);
-
 	int findType(0);
 	if(m_FindWhereCombo.GetCurSel() != -1)
 	{
@@ -858,15 +870,21 @@ SearchOptions* CFindExDialog::getOptions()
 		default:
 		{
 			pOptions->SetFileSet(extensions::fifPath);
+			pOptions->SetSearchPath(m_FindWhereText);
 		}
 		break;
 	}
 	
-	if ((findType == 0 || findType > fwOpenDocs) && pOptions->GetSearchPath() != "" ) {
+	if ((findType == 0 || findType > fwOpenDocs) && pOptions->GetSearchPath() != "" ) 
+	{
 		if(DirExists(pOptions->GetSearchPath()))
+		{
 			m_FindWhereCombo.AddString(pOptions->GetSearchPath(),4);
+		}
 		else
+		{
 			pOptions->SetSearchPath("");
+		}
 	}
 
 	m_lastFifLocation = (EFIFWhere)m_FindWhereCombo.GetItemData(m_FindWhereCombo.GetCurSel());

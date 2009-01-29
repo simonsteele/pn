@@ -2,9 +2,9 @@
  * @file findinfilesview.cpp
  * @brief Find In Files View
  * @author Simon Steele
- * @note Copyright (c) 2005-2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -113,9 +113,16 @@ LRESULT CFindInFilesView::OnFIFMatch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 
 LRESULT CFindInFilesView::OnFIFFinish(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
+	// We get called with 0 when the full search is done during one message handler.
+	int found = lParam;
+	if (found == 0)
+	{
+		found = GetResultCount();
+	}
+
 	DWORD dwTicksTaken = GetTickCount() - m_dwStartTicks;
 	TCHAR buf[4096];
-	_sntprintf(buf, 4096, _T("Search complete: %d matching lines found in %d files, taking %d milliseconds.\n"), lParam, wParam, dwTicksTaken);
+	_sntprintf(buf, 4096, _T("Search complete: %d matching lines found in %d files, taking %d milliseconds.\n"), found, wParam, dwTicksTaken);
 	g_Context.m_frame->SetStatusText(buf);
 	return 0;
 }

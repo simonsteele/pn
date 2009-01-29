@@ -2328,7 +2328,7 @@ void CMainFrame::FindInFiles(SearchOptions* options)
 			{
 				m_pFindResultsWnd->OnBeginSearch(options->GetFindText(), options->GetUseRegExp());
 				pChild->GetTextView()->FindAll(options, m_pFindResultsWnd, pChild->GetFileName().c_str());
-				m_pFindResultsWnd->OnEndSearch(m_pFindResultsWnd->GetResultCount(), 1);
+				m_pFindResultsWnd->OnEndSearch(0, 1);
 			}
 		}
 		break;
@@ -2363,7 +2363,7 @@ void CMainFrame::FindInFiles(SearchOptions* options)
 				(*i)->GetFrame()->GetTextView()->FindAll(options, m_pFindResultsWnd, (*i)->GetFileName(FN_FULL).c_str());
 			}
 
-			m_pFindResultsWnd->OnEndSearch(m_pFindResultsWnd->GetResultCount(), documents);
+			m_pFindResultsWnd->OnEndSearch(0, documents);
 		}
 		break;
 
@@ -2372,8 +2372,7 @@ void CMainFrame::FindInFiles(SearchOptions* options)
 			FindInFiles::GetInstance()->Stop();
 			
 			FileItPtr pIterable(new StringListIterator());
-			StringListIterator* listHolder = static_cast<StringListIterator*>(pIterable.get());
-			StringListIterator files;
+			StringListIterator* files = static_cast<StringListIterator*>(pIterable.get());
 
 			Projects::Workspace* pAW = g_Context.m_frame->GetActiveWorkspace();
 			if(pAW)
@@ -2381,7 +2380,7 @@ void CMainFrame::FindInFiles(SearchOptions* options)
 				Projects::Project* pAP = pAW->GetActiveProject();
 				if(pAP)
 				{
-					pAP->GetAllFiles(files.GetList());
+					pAP->GetAllFiles(files->GetList());
 					
 					// Remove any modified documents (we need to do this differently)
 					DocumentList list;
@@ -2391,18 +2390,14 @@ void CMainFrame::FindInFiles(SearchOptions* options)
 						++i)
 					{ 
 						tstring cfn1 = (*i)->GetFileName();
-						for(std::vector<tstring>::iterator k = files.GetList().begin();
-							k != files.GetList().end();
+						for(std::vector<tstring>::iterator k = files->GetList().begin();
+							k != files->GetList().end();
 							++k)
 						{
-							tstring cfn2 = (*k);
-							if (cfn1 == cfn2)
+							if (cfn1 == (*k) && (*i)->GetFrame()->GetModified())
 							{
-								if ((*i)->GetFrame()->GetModified() == true)
-								{
-									k = files.GetList().erase(k);
-									break;
-								}
+								k = files->GetList().erase(k);
+								break;
 							}
 						}
 					}
