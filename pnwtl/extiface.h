@@ -2,9 +2,9 @@
  * @file extiface.h
  * @brief PN Extensions Interface
  * @author Simon Steele
- * @note Copyright (c) 2006-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  *
  * @namespace extensions 
@@ -53,7 +53,7 @@ typedef enum {fnNotFound, fnFound, fnReachedStart, fnInvalidRegex, fnInvalidSear
 namespace extensions
 {
 
-#define PN_EXT_IFACE_VERSION	7
+#define PN_EXT_IFACE_VERSION	8
 
 /////////////////////////////////////////////////////////////////////////////
 // Predeclare types
@@ -67,6 +67,7 @@ class IScriptRegistry;
 class ITextOutput;
 class ISearchOptions;
 class ITagSource;
+class IMenuItems;
 /////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////
@@ -141,6 +142,9 @@ public:
 
 	/// Add a tag source (e.g. ctagsnavigator)
 	virtual void AddTagSource(ITagSource* tagSource) = 0;
+
+	/// Add plugin menu items
+	virtual void AddPluginMenuItems(IMenuItems* menuItems) = 0;
 };
 
 /**
@@ -440,6 +444,57 @@ public:
 	
 	// Result:
 	virtual bool GetFound() const = 0;
+};
+
+typedef enum {miItem, miSubmenu} EMenuItemType;
+
+typedef _W64 unsigned long cookie_t;
+
+typedef struct tagMenuItem
+{
+	/**
+	 * Set this to miSubmenu if the SubItems pointer is valid, otherwise use miItem.
+	 */
+	EMenuItemType Type;
+	
+	/**
+	 * Title of your menu item, Programmer's Notepad will copy this.
+	 */
+	wchar_t* Title;
+	
+	/**
+	 * User data to be passed back to your command handler. Ignored for miSubmenu.
+	 */
+	cookie_t UserData;
+	
+	/**
+	 * Handler function to be called when your command is executed. Ignored for miSubmenu.
+	 */
+	boost::function<void (cookie_t cookie)> Handler;
+	
+	/**
+	 * Pointer to subitems, only used when Type == miSubmenu
+	 */
+	IMenuItems* SubItems;
+} MenuItem;
+
+/**
+ * Interface to be implemented by a menu item provider.
+ */
+class IMenuItems
+{
+public:
+	virtual ~IMenuItems(){};
+
+	/**
+	 * Get the number of MenuItem instances that can be retrieved.
+	 */
+	virtual int GetItemCount() const = 0;
+
+	/**
+	 * Get an individual MenuItem instance by index.
+	 */
+	virtual MenuItem& GetItem(int index) const = 0;
 };
 
 /**

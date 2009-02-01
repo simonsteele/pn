@@ -21,6 +21,7 @@
 
 typedef std::basic_string<TCHAR> tstring;
 
+#include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/python.hpp>
 

@@ -936,7 +936,7 @@ public:
       }
 
       // If a command is available (from the menu, perhaps), execute it.
-      if( nCmd >= idCmdFirst && nCmd <= idCmdLast ) 
+      if( (UINT)nCmd >= idCmdFirst && (UINT)nCmd <= idCmdLast ) 
 	  {
          CMINVOKECOMMANDINFO ici = { 0 };
          ici.cbSize       = sizeof(CMINVOKECOMMANDINFO);

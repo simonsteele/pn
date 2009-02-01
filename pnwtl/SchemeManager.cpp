@@ -365,7 +365,7 @@ void SchemeManager::BuildMenu(HMENU menu, CommandDispatch* pDispatch, CommandEve
 		m.AddItem(_T("&Default\tCtrl+N"), ID_FILE_NEW);
 		m.AddItem(_T("&Project"), ID_FILE_NEW_PROJECT);
 		m.AddItem(_T("&Project Group"), ID_FILE_NEW_WORKSPACE);
-		m.AddItem(_T(""));
+		m.AddSeparator();
 	}
 	
 	id = pDispatch->RegisterCallback(pHandler, iCommand, (LPVOID)GetDefaultScheme());

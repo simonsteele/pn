@@ -22,6 +22,7 @@
 
 #include <vector>
 
+#include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 
 #define PNASSERT assert

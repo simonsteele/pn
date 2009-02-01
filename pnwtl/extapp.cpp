@@ -2,7 +2,7 @@
  * @file extapp.cpp
  * @brief Implement IPN and the basic App services
  * @author Simon Steele
- * @note Copyright (c) 2006-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -100,6 +100,11 @@ const AppSettings& App::GetSettings()
  */
 void App::deinit()
 {
+	BOOST_FOREACH(ExtensionMenuItem* item, m_pluginMenuItems)
+	{
+		delete item;
+	}
+
 	unloadExtensions();
 
 	delete m_settings;
@@ -207,6 +212,11 @@ void App::SetCanLoadExtensions(bool canLoad)
 App::ExtensionList& App::GetExtensions()
 {
 	return m_exts;
+}
+
+ExtensionItemList& App::GetExtensionMenuItems()
+{
+	return m_pluginMenuItems;
 }
 
 /**
@@ -427,4 +437,12 @@ extensions::IDocumentPtr App::NewDocument(const char* scheme)
 void App::ReleaseString(const TCHAR* str)
 {
 	delete [] str;
+}
+
+void App::AddPluginMenuItems(extensions::IMenuItems *source)
+{
+	for (int i = 0; i < source->GetItemCount(); ++i)
+	{
+		m_pluginMenuItems.push_back(new ExtensionMenuItem(source->GetItem(i)));
+	}
 }

@@ -75,6 +75,10 @@ public:
 		}
 	}
 
+	virtual void OnWriteProtectChanged(bool)
+	{
+	}
+
 private:
 	extensions::IDocumentPtr m_doc;
 };

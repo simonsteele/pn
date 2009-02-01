@@ -240,7 +240,7 @@ class CMRUMenu : public CMRUList
 
 	protected:
 		UINT		m_iBase;
-		TCHAR*		m_szEmpty;
+		tstring		m_strEmpty;
 		CSPopupMenu	m_Menu;
 };
 

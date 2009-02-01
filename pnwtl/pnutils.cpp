@@ -223,24 +223,20 @@ int CMRUList::GetCount()
 // CMRUMenu
 ///////////////////////////////////////////////////////////////
 
-CMRUMenu::CMRUMenu(UINT baseCmd, int size) : CMRUList(size)
+CMRUMenu::CMRUMenu(UINT baseCmd, int size) : CMRUList(size), m_strEmpty(LS(IDS_EMPTY))
 {
 	m_iBase = baseCmd;
-	m_szEmpty = new TCHAR[_tcslen(_T("(empty)"))+1];
-	_tcscpy(m_szEmpty, _T("(empty)"));
 }
 
 CMRUMenu::~CMRUMenu()
 {
-	if(m_szEmpty)
-		delete [] m_szEmpty;
 }
 
 #define MRUMENU_MAXCHARS 96
 
 void CMRUMenu::UpdateMenu()
 {
-	CSMenuHandle m = m_Menu.GetHandle();
+	CSMenuHandle m(m_Menu.GetHandle());
 	TCHAR* pszBuf = NULL;
 	TCHAR* pszItemText = NULL;
 
@@ -253,27 +249,30 @@ void CMRUMenu::UpdateMenu()
 	TCHAR szItemText[MRUMENU_MAXCHARS+6]; // add space for &, 2 digits, and a space
 	
 	int num = m.GetCount();
-	if(num != 0)
+	if (num != 0)
 	{
 		for(int i = num - 1; i >= 0; i--)
 		{
-			id = ::GetMenuItemID(m, i);
+			id = m.GetItemID(i);
 			if( (id >= m_iBase+1) && (id <= (m_iBase + num)) )
 			{
-				::RemoveMenu(m, i, MF_BYPOSITION);
+				m.RemoveItemByPosition(i);
 			}
+
 			if(id == m_iBase + (num - 1))
+			{
 				insertPoint = i;
+			}
 		}
 	}
 	else
 	{
-		m.AddItem(m_szEmpty, m_iBase);
+		m.AddItem(m_strEmpty.c_str(), m_iBase);
 	}
 
 	int nSize = m_entries.GetSize();
 
-	if(nSize > 0)
+	if (nSize > 0)
 	{
 		for(offset = 0; offset < m_entries.GetSize(); offset++)
 		{
@@ -283,16 +282,17 @@ void CMRUMenu::UpdateMenu()
 			// Fixed length strings...
 			AtlCompactPath(szBuf, e.pszData, maxChars);
 			wsprintf(szItemText, _T("&%i %s"), offset + 1, szBuf);
-			::InsertMenu(m, insertPoint + offset, MF_BYPOSITION | MF_STRING, m_iBase + co, szItemText);
+			m.InsertItemAtPosition(szItemText, m_iBase + co, insertPoint + offset);
+			// ::InsertMenu(m, insertPoint + offset, MF_BYPOSITION | MF_STRING, m_iBase + co, szItemText);
 		}
 	}
 	else
 	{
-		::InsertMenu(m, insertPoint, MF_BYPOSITION | MF_STRING, m_iBase, m_szEmpty);
-		::EnableMenuItem(m, m_iBase, MF_GRAYED);
-		offset += 1;
+		m.InsertItemAtPosition(m_strEmpty.c_str(), m_iBase, insertPoint, false, false, false);
+		offset++;
 	}
-	::DeleteMenu(m, insertPoint + offset, MF_BYPOSITION);
+
+	m.RemoveItemByPosition(insertPoint + offset);
 }
 
 CMRUMenu::operator HMENU()

@@ -2,9 +2,9 @@
  * @file commands.cpp
  * @brief Command Routing Stuff
  * @author Simon Steele
- * @note copyright (c) 2006 Simon Steele - http://untidy.net/
+ * @note copyright (c) 2006-2009 Simon Steele - http://untidy.net/
  * 
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 

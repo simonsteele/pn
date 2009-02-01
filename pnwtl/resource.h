@@ -97,6 +97,8 @@
 #define IDS_BACKUPCREATEFAIL            186
 #define IDS_MAGICFOLDERRENAME           187
 #define IDS_INVALIDFIFPATH              188
+#define IDS_EMPTY                       189
+#define IDS_EXTENSIONS_MENU             190
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define IDD_INPUTBOX                    204
@@ -680,6 +682,7 @@
 #define ID_SELECTION_DUPLICATE          33119
 #define ID_SELECTION_STRIPTRAILING      33120
 #define ID_SELECTION_COMPRESSWHITESPACE 33121
+#define ID_EXTENSIONS_DUMMY             33122
 
 // Next default values for new objects
 // 
@@ -687,7 +690,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        364
-#define _APS_NEXT_COMMAND_VALUE         33122
+#define _APS_NEXT_COMMAND_VALUE         33123
 #define _APS_NEXT_CONTROL_VALUE         1160
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

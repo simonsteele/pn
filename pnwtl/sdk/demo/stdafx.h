@@ -28,12 +28,13 @@
 #include <windows.h>
 #include <tchar.h>
 #include <boost/shared_ptr.hpp>
+#include <boost/function.hpp>
 #include <assert.h>
 
 #define PNASSERT assert
 
 #include "allocator.h"
-#include "pnextstring.h"
+#include "pnstring.h"
 #include "extiface.h"
 
 static extensions::IPN* g_pn;

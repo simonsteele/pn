@@ -2,9 +2,9 @@
  * @file ssmenus.h
  * @brief Interface for the menu functionality classes.
  * @author Simon Steele
- * @note copyright (c) 2002-2006 Simon Steele - http://untidy.net/
+ * @note copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  * 
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -29,23 +29,25 @@ template <bool t_bManaged>
 class CSMenuT
 {
 	public:
-		CSMenuT() : m_hMenu(NULL)
+		explicit CSMenuT() : m_hMenu(NULL)
 		{
 		}
 
-		CSMenuT(HMENU hMenu) : m_hMenu(hMenu)
+		explicit CSMenuT(HMENU hMenu) : m_hMenu(hMenu)
 		{
 		}
 
 		virtual ~CSMenuT()
 		{
-			if(t_bManaged)
+			if (t_bManaged)
+			{
 				Destroy();
+			}
 		}
 
 		void Destroy()
 		{
-			if(m_hMenu)
+			if (m_hMenu)
 			{
 				::DestroyMenu(m_hMenu);
 				m_hMenu = NULL;
@@ -57,15 +59,18 @@ class CSMenuT
 			::LoadMenu(GetAppInstance(), MAKEINTRESOURCE(resource));
 		}
 
-		int AddItem(LPCTSTR Caption, int iID = 0, bool bChecked = false, bool bDefault = false, bool bEnabled = true)
+		int AddItem(LPCTSTR Caption, int iID, bool bChecked = false, bool bDefault = false, bool bEnabled = true)
 		{
-			if(iID == 0)
+			if (iID == 0)
 			{
 				// Assign an ID!
+				throw std::exception("No menu ID provided");
 			}
 			
 			if (_tcslen(Caption) == 0)
+			{
 				::AppendMenu(GetHandle(), MF_SEPARATOR, 0, _T(""));
+			}
 			else 
 			{
 				int iFlags = MF_STRING | mfchecked[bChecked] | mfdefault[bDefault] | mfenabled[bEnabled];
@@ -75,9 +80,51 @@ class CSMenuT
 			return iID;
 		}
 
+		void InsertItemAtPosition(LPCTSTR caption, int iID, int position, bool bChecked = false, bool bDefault = false, bool bEnabled = true)
+		{
+			if (iID == 0)
+			{
+				// Assign an ID!
+				throw std::exception("No menu ID provided");
+			}
+
+			MENUITEMINFO mii = {sizeof(MENUITEMINFO), 0};
+			
+			if (_tcslen(caption) == 0)
+			{
+				mii.fMask = MIIM_FTYPE;
+				mii.fType = MFT_SEPARATOR;
+			}
+			else 
+			{
+				mii.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STATE | MIIM_STRING;
+				mii.fType = MFT_STRING;
+				mii.fState = 0 | 
+					(bChecked ? MFS_CHECKED : 0) |
+					(bDefault ? MFS_DEFAULT : 0) |
+					(!bEnabled ? MFS_DISABLED : 0);
+				mii.wID = iID;
+				mii.dwTypeData = const_cast<TCHAR*>(caption);
+			}
+
+			::InsertMenuItem(GetHandle(), position, TRUE, &mii);
+		}
+
+		void InsertSubMenuAtPosition(LPCTSTR caption, int position, HMENU subMenu)
+		{
+			MENUITEMINFO mii = {sizeof(MENUITEMINFO), 0};
+		
+			mii.fMask = MIIM_FTYPE | MIIM_SUBMENU | MIIM_STRING;
+			mii.fType = MFT_STRING;
+			mii.hSubMenu = subMenu;
+			mii.dwTypeData = const_cast<TCHAR*>(caption);
+
+			::InsertMenuItem(GetHandle(), position, TRUE, &mii);
+		}
+
 		void AddSeparator()
 		{
-			AddItem(_T(""));
+			AddItem(_T(""), -1);
 		}
 
 		void CheckMenuItem(int uIDCheckItem, bool bChecked)
@@ -100,6 +147,11 @@ class CSMenuT
 			return ::GetMenuItemInfo(GetHandle(), item, byPosition, pItemInfo);
 		}
 
+		unsigned int GetItemID(int position) const
+		{
+			return ::GetMenuItemID(SafeGetHandle(), position);
+		}
+
 		virtual HMENU GetHandle()
 		{
 			if(m_hMenu == NULL)
@@ -110,7 +162,7 @@ class CSMenuT
 			return m_hMenu;
 		}
 
-		HMENU SafeGetHandle()
+		HMENU SafeGetHandle() const
 		{
 			return m_hMenu;
 		}
@@ -130,6 +182,11 @@ class CSMenuT
 		CSMenuHandle GetSubMenu(int nPos)
 		{
 			return CSMenuHandle( ::GetSubMenu(SafeGetHandle(), nPos) );
+		}
+
+		void RemoveItemByPosition(int position)
+		{
+			::RemoveMenu(SafeGetHandle(), position, MF_BYPOSITION);	
 		}
 
 		const CSMenuT& operator = (const CSMenuT& copy)
@@ -159,8 +216,8 @@ class CSMenuT
 class CSPopupMenu : public CSMenu
 {
 	public:
-		CSPopupMenu();
-		CSPopupMenu(int resource, int index = 0);
+		explicit CSPopupMenu();
+		explicit CSPopupMenu(int resource, int index = 0);
 		virtual ~CSPopupMenu();
 
 		virtual HMENU GetHandle();

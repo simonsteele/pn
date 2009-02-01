@@ -12,6 +12,43 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     return TRUE;
 }
 
+void PluginFunc(extensions::cookie_t /*cookie*/)
+{
+	::MessageBox(NULL, _T("Hello!"), _T("Demo Plugin"), MB_ICONINFORMATION | MB_OK);
+}
+
+class Menu : public extensions::IMenuItems
+{
+public:
+	Menu()
+	{
+		item1.Handler = &PluginFunc;
+		item1.Title = L"Hello World";
+		item1.Type = extensions::miItem;
+		item1.UserData = 0;
+	}
+
+	/**
+	 * Get the number of MenuItem instances that can be retrieved.
+	 */
+	virtual int GetItemCount() const
+	{
+		return 1;
+	}
+
+	/**
+	 * Get an individual MenuItem instance by index.
+	 */
+	virtual extensions::MenuItem& GetItem(int index) const
+	{
+		if (index == 0)
+			return const_cast<extensions::MenuItem&>(item1);
+	}
+
+private:
+	extensions::MenuItem item1;
+};
+
 bool __stdcall pn_init_extension(int iface_version, extensions::IPN* pn)
 {
 	if(iface_version != PN_EXT_IFACE_VERSION)
@@ -24,6 +61,9 @@ bool __stdcall pn_init_extension(int iface_version, extensions::IPN* pn)
 
 	extensions::IAppEventSinkPtr appSink(new AppEventSink());
 	pn->AddEventSink(appSink);
+
+	Menu menu;
+	pn->AddPluginMenuItems(&menu);
 
 	return true;
 }

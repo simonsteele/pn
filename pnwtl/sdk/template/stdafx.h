@@ -33,5 +33,5 @@
 #define PNASSERT assert
 
 #include "allocator.h"
-#include "pnextstring.h"
+#include "pnstring.h"
 #include "extiface.h"

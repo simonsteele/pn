@@ -91,6 +91,7 @@ Extensions Interface Changes:
 
 1) Split IDocumentEventSink and ITextEditorEventSink (previously you had to implement both)
 2) More IDocumentEventSink methods
+3) Now supports menu items provided by extensions
 
 If you find a bug:
 ------------------

@@ -2,9 +2,9 @@
  * @file extapp.h
  * @brief Define App, the basic application services
  * @author Simon Steele
- * @note Copyright (c) 2006-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -17,6 +17,91 @@ namespace extensions { class Extension; }
 class AppSettings;
 class CommandDispatch;
 ////////////////////////
+
+class ExtensionMenuItem;
+typedef std::vector<ExtensionMenuItem*> ExtensionItemList;
+
+class ExtensionMenuItem : CommandEventHandler
+{
+public:
+	explicit ExtensionMenuItem(extensions::MenuItem& source) : m_title(source.Title), m_item(source), m_commandId(0)
+	{
+		if (source.Type == extensions::miSubmenu)
+		{
+			for (int i = 0; i < source.SubItems->GetItemCount(); ++i)
+			{
+				m_items.push_back(new ExtensionMenuItem(source.SubItems->GetItem(i)));
+			}
+		}
+	}
+
+	~ExtensionMenuItem()
+	{
+		BOOST_FOREACH(ExtensionMenuItem* i, m_items)
+		{
+			delete i;
+		}
+	}
+
+	const extensions::MenuItem& GetMenuItem() const
+	{
+		return m_item;
+	}
+
+	const wchar_t* GetTitle() const
+	{
+		return m_title.c_str();
+	}
+
+	const ExtensionItemList& GetSubItems() const
+	{
+		return m_items;
+	}
+
+	bool IsSubMenu() const
+	{
+		return m_item.Type == extensions::miSubmenu;
+	}
+
+	void BuildMenu(HMENU menu, CommandDispatch* dispatcher)
+	{
+		CSMenuHandle m(menu);
+		CW2CT titlet(m_title.c_str());
+
+		if (m_item.Type == extensions::miSubmenu)
+		{
+			CSPopupMenu submenu;
+
+			BOOST_FOREACH(ExtensionMenuItem* i, m_items)
+			{
+				i->BuildMenu(submenu.GetHandle(), dispatcher);
+			}
+
+			::AppendMenu(m.GetHandle(), MF_POPUP, reinterpret_cast<UINT_PTR>(submenu.GetHandle()), titlet);
+		}
+		else
+		{
+			if (!m_commandId)
+			{
+				m_commandId = dispatcher->RegisterCallback(this, PN_COMMAND_PLUGIN, NULL);
+			}
+			
+			m.AddItem(titlet, m_commandId);
+		}
+	}
+
+	bool SHandleDispatchedCommand(int iCommand, LPVOID data)
+	{
+		m_item.Handler(m_item.UserData);
+		return true;
+	}
+
+private:
+	extensions::MenuItem m_item;
+	std::wstring m_title;
+	ExtensionItemList m_items;
+	int m_commandId;
+};
 
 /**
  * The core App object implementing IPN. This manages extensions
@@ -45,6 +130,8 @@ public:
 	void SetCanLoadExtensions(bool canLoad);
 
 	ExtensionList& GetExtensions();
+
+	ExtensionItemList& GetExtensionMenuItems();
 
 	/**
 	 * This method is provided to clear out the PN user data
@@ -101,6 +188,9 @@ public:
 	/// Utility function to safely free strings given to you by PN
 	virtual void ReleaseString(const TCHAR* str);
 
+	/// Add plugin menu items
+	virtual void AddPluginMenuItems(extensions::IMenuItems *);
+
 // Stuff to signal event sinks...
 public:
 	void OnNewDocument(extensions::IDocumentPtr doc);
@@ -112,9 +202,10 @@ private:
 
 	bool			m_bCanLoadExtensions;
 	EventSinkList	m_sinks;
-	ExtensionList	m_exts;
+	ExtensionList   m_exts;
 	AppSettings*	m_settings;
 	CommandDispatch*m_dispatch;
+	ExtensionItemList m_pluginMenuItems;
 };
 
 #endif

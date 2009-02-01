@@ -2,7 +2,7 @@
  * @file ChildFrm.cpp
  * @brief Implementation of CChildFrame, the MDI Child window.
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -31,6 +31,7 @@
 #include "fileutil.h"
 #include "editorcommands.h"
 #include "tabbingframework/TabbedMDISave.h"
+#include "extapp.h"
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -439,6 +440,21 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	UISetChecked(ID_TOOLS_LECONVERT, true);
 
 	m_view.ShowLineNumbers(OPTIONS->GetCached(Options::OLineNumbers) != 0);
+
+	ExtensionItemList& items = g_Context.ExtApp->GetExtensionMenuItems();
+	if (items.size())
+	{
+		CSPopupMenu plugins;
+
+		BOOST_FOREACH(ExtensionMenuItem* i, items)
+		{
+			i->BuildMenu(plugins, m_pCmdDispatch);
+		}
+
+		CSMenuHandle m(m_hMenu);
+		m.InsertSubMenuAtPosition(LS(IDS_EXTENSIONS_MENU), 4, plugins);
+		plugins.Detach();
+	}
 
 	UpdateMenu();
 

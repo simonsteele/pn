@@ -2029,6 +2029,8 @@ BEGIN
     IDS_BACKUPCREATEFAIL    "Failed to create a backup document"
     IDS_MAGICFOLDERRENAME   "Are you sure you wish to rename this magic folder?\nThis will have the effect of renaming the actual folder on the disk."
     IDS_INVALIDFIFPATH      "Cannot find in files in %s, the directory does not exist"
+    IDS_EMPTY               "(empty)"
+    IDS_EXTENSIONS_MENU     "E&xtensions"
 END
 
 #endif    // English (U.K.) resources
