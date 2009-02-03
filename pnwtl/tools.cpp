@@ -420,38 +420,30 @@ void ToolCommandString::OnFormatKey(LPCTSTR key)
 	else if(MATCH_START(_T("ProjectProp:")))
 	{
 		Projects::Project* pP = GetActiveProject();
-		if(!pP)
+		if (!pP)
 			return;
 
 		Projects::ProjectTemplate* pTemplate = pP->GetTemplate();
-		if(!pTemplate)
+		if (!pTemplate)
 			return;
 
 		boost::xpressive::sregex re = boost::xpressive::sregex::compile("ProjectProp:(?P<group>[-_a-zA-Z0-9]+)\\.(?P<cat>[-_a-zA-Z0-9]+)\\.(?P<val>[-_a-zA-Z0-9]+)");
 		boost::xpressive::smatch match;
-		if (boost::xpressive::regex_match(std::string(key), match, re))
+		std::string prop(key);
+		if (boost::xpressive::regex_match(prop, match, re))
 		{
-			tstring group;
-			tstring cat;
-			tstring val;
-        
 			// Extract the named matches from the RE, noting if there was a line or column.
-			bool ok; /*= true;
-			ok &= re.GetNamedMatch("group", group);
-			ok &= re.GetNamedMatch("cat", cat);
-			ok &= re.GetNamedMatch("val", val);*/
+			std::string group(match["group"]);
+			std::string cat(match["cat"]);
+			std::string val(match["val"]);
 
-			group = match["group"];
-			cat = match["cat"];
-			val = match["val"];
-
-			ok = !(group.empty() || cat.empty() || val.empty());
-
-			if(!ok)
+			if (group.empty() || cat.empty() || val.empty())
+			{
 				return;
-		
+			}
+
 			LPCTSTR retval = pP->GetUserData().Lookup(pTemplate->GetNamespace(), group.c_str(), cat.c_str(), val.c_str(), _T(""));
-			if(retval != NULL)
+			if (retval != NULL)
 			{
 				m_string += retval;
 			}
@@ -460,45 +452,37 @@ void ToolCommandString::OnFormatKey(LPCTSTR key)
 	else if(MATCH_START(_T("FileProp:")))
 	{
 		Projects::Project* pP = GetActiveProject();
-		if(!pP)
+		if (!pP)
 			return;
 
 		Projects::ProjectTemplate* pTemplate = pP->GetTemplate();
-		if(!pTemplate)
+		if (!pTemplate)
 			return;
 
-		if(!pChild)
+		if (!pChild)
 			return;
 		
-		Projects::File* pFileObj = pP->FindFile( pChild->GetFileName().c_str() );
-		if(!pFileObj)
+		Projects::File* pFileObj = pP->FindFile(pChild->GetFileName().c_str());
+		if (!pFileObj)
 			return;
 
 		boost::xpressive::sregex re = boost::xpressive::sregex::compile("FileProp:(?P<group>[-_a-zA-Z0-9]+)\\.(?P<cat>[-_a-zA-Z0-9]+)\\.(?P<val>[-_a-zA-Z0-9]+)");
 		boost::xpressive::smatch match;
-		if (boost::xpressive::regex_match(std::string(key), match, re))
+		std::string prop(key);
+		if (boost::xpressive::regex_match(prop, match, re))
 		{
-			tstring group;
-			tstring cat;
-			tstring val;
-        
 			// Extract the named matches from the RE, noting if there was a line or column.
-			bool ok; /*= true;
-			ok &= re.GetNamedMatch("group", group);
-			ok &= re.GetNamedMatch("cat", cat);
-			ok &= re.GetNamedMatch("val", val);*/
+			std::string group(match["group"]);
+			std::string cat(match["cat"]);
+			std::string val(match["val"]);
 
-			group = match["group"];
-			cat = match["cat"];
-			val = match["val"];
-
-			ok = !(group.empty() || cat.empty() || val.empty());
-
-			if(!ok)
+			if (group.empty() || cat.empty() || val.empty())
+			{
 				return;
-		
+			}
+
 			LPCTSTR retval = pFileObj->GetUserData().Lookup(pTemplate->GetNamespace(), group.c_str(), cat.c_str(), val.c_str(), _T(""));
-			if(retval != NULL)
+			if (retval != NULL)
 			{
 				m_string += retval;
 			}
