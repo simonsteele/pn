@@ -178,17 +178,17 @@ void CSchemeCombo::Load(SchemeConfigParser* pConfig, LPCTSTR selectScheme, bool 
 
 	tstring schemeText;
 
-	if( bIncludePlainText )
+	if (bIncludePlainText)
 	{
-		schemeText = (_T("Plain Text"));
+		schemeText = _T("Plain Text");
 		int index = AddString(schemeText.c_str());
 		SetItemDataPtr(index, pConfig->GetPlainTextScheme());
 	}
 
-	for(SchemeDetailsList::const_iterator i = pConfig->GetSchemes().begin(); i != pConfig->GetSchemes().end(); ++i)
+	for (SchemeDetailsList::const_iterator i = pConfig->GetSchemes().begin(); i != pConfig->GetSchemes().end(); ++i)
 	{
 		// Skip internal (special) schemes?
-		if( !bIncludeInternal && (*i)->IsInternal() )
+		if (!bIncludeInternal && (*i)->IsInternal())
 			continue;
 
 		int index = AddString((*i)->Title.c_str());
@@ -197,7 +197,7 @@ void CSchemeCombo::Load(SchemeConfigParser* pConfig, LPCTSTR selectScheme, bool 
 			schemeText = (*i)->Title;
 	}
 	
-	if(schemeText.size())
+	if (schemeText.size())
 	{
 		SelectString(0, schemeText.c_str());
 	}

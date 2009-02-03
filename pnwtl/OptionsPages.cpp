@@ -701,7 +701,7 @@ void COptionsPageTools::OnInitialise()
 {
 	m_combo.AddScheme(_T("(None - Global Tools)"), NULL);
 	
-	m_combo.Load(m_pSchemes);
+	m_combo.Load(m_pSchemes, NULL, false, false);
 	
 	if(m_combo.GetCount() > 0)
 	{
@@ -718,13 +718,13 @@ void COptionsPageTools::OnOK()
 void COptionsPageTools::UpdateIndexes()
 {
 	// We re-number the tools here so that they can be displayed properly in the menu.
-	if(m_pCurrent != NULL)
+	if (m_pCurrent != NULL)
 	{
 		int itemCount = m_list.GetItemCount();
-		for(int i = 0; i < itemCount; i++)
+		for (int i = 0; i < itemCount; i++)
 		{
 			ToolDefinition* pDef = reinterpret_cast<ToolDefinition*>(m_list.GetItemData(i));
-			if(pDef)
+			if (pDef)
 			{
 				pDef->Index = i;
 			}
