@@ -233,13 +233,10 @@ void CJumpTreeCtrl::deleteFileTree()
 
 void CJumpTreeCtrl::deleteFileTreeItem(CChildFrame* pChildFrame)
 {
-    CString sText;
- 	HTREEITEM hRoot;
-	CChildFrame* childFrameItem;
-	hRoot = GetRootItem();
+ 	HTREEITEM hRoot = GetRootItem();
 	while (hRoot) 
 	{
-		childFrameItem = reinterpret_cast<CChildFrame*>(GetItemData(hRoot));
+		CChildFrame* childFrameItem = reinterpret_cast<CChildFrame*>(GetItemData(hRoot));
 		if (childFrameItem == pChildFrame)
 		{
 			deleteFileItem(hRoot);
