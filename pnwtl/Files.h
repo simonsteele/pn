@@ -26,13 +26,13 @@
 
 #define CFILE_SaveDiskFullError _T("%s could not be saved because the disk is full.\nDo you want to save in another location?")
 
-#define CFILE_SaveShareViolation _T("%s could not be saved because another program or user is\nusing the same file.\nDo you want to save in another location?")
+#define CFILE_SaveShareViolation _T("%s could not be saved because another program or user is using the same file.\nDo you want to save in another location?")
 
-#define CFILE_LoadShareViolation _T("%s could not be opened because another program or user is\nusing the same file.")
+#define CFILE_LoadShareViolation _T("%s could not be opened because another program or user is using the same file.")
 
-#define CFILE_NetSaveError _T("%s could not be saved because of a network error. This\ncould be because of a broken network\nconnection or because the network was too busy.\nDo you want to save in another location?")
+#define CFILE_NetSaveError _T("%s could not be saved because of a network error. This could be because of a broken network connection or because the network was too busy.\nDo you want to save in another location?")
 
-#define CFILE_NetLoadError _T("%s could not be opened because of a network error. This\ncould be because of a broken network\nconnection or because the network was too busy.")
+#define CFILE_NetLoadError _T("%s could not be opened because of a network error. This could be because of a broken network connection or because the network was too busy.")
 
 /**
  * @Author Simon Steele

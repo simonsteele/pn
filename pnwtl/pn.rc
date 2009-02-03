@@ -2031,6 +2031,12 @@ BEGIN
     IDS_INVALIDFIFPATH      "Cannot find in files in %s, the directory does not exist"
     IDS_EMPTY               "(empty)"
     IDS_EXTENSIONS_MENU     "E&xtensions"
+    IDS_SAVEACCESSDENIED    "%s could not be saved because access was denied.\nThis could be due to the file being marked read-only, or the disk being write-protected.\nDo you want to save in another location?"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_SAVESHAREVIOLATION  "%s could not be saved because another program or user is using the same file.\nDo you want to save in another location?"
 END
 
 #endif    // English (U.K.) resources

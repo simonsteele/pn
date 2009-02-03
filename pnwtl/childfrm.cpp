@@ -1689,23 +1689,25 @@ void CChildFrame::handleClose()
 	m_spDocument->SetValid(false);	
 }
 
-//TODO Move all the CFILE_ defines into the string resources.
-#define PN_CouldNotSaveReadOnly _T("The file \"%s\" could not be saved because it is write-protected.\n\nYou can either save in a different location or PN can attempt to remove the protection and\n overwrite the file in its current location.")
-
 const int SaveReadOnlyButtonsCount = 2;
+const int SaveElsewhereButtonsCount = 1;
 
 TASKDIALOG_BUTTON SaveReadOnlyButtons[] = {
          { PNID_SAVEAS, L"Save &As..." },
          { PNID_OVERWRITE, L"&Overwrite" },
       };
 
+TASKDIALOG_BUTTON SaveElsewhereButtons[] = {
+         { PNID_SAVEAS, L"Save &As..." },
+	  };
+
 int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
 {
 	int err = GetLastError();
 	
-	TCHAR* fstr;
+	tstring fstr;
 
-	int MBStyle = bOpen ? TDCBF_OK_BUTTON : TDCBF_CANCEL_BUTTON | TDCBF_YES_BUTTON | TDCBF_NO_BUTTON;
+	int MBStyle = bOpen ? TDCBF_OK_BUTTON : (TDCBF_CANCEL_BUTTON | TDCBF_YES_BUTTON | TDCBF_NO_BUTTON);
 	TASKDIALOG_BUTTON* pItems = NULL;
 	int nItems = 0;
 	int nDefault = IDCANCEL;
@@ -1723,7 +1725,7 @@ int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
 		else
 		{
 			// Special Read-Only handling...
-			fstr = PN_CouldNotSaveReadOnly; //IDS_SAVEREADONLY
+			fstr = LS(IDS_SAVEREADONLY);
 			MBStyle = TDCBF_CANCEL_BUTTON;
 			pItems = &SaveReadOnlyButtons[0];
 			nItems = SaveReadOnlyButtonsCount;
@@ -1739,7 +1741,11 @@ int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
 		}
 		else
 		{
-			fstr = CFILE_SaveAccessDenied;
+			fstr = LS(IDS_SAVEACCESSDENIED);
+			MBStyle = TDCBF_CANCEL_BUTTON;
+			pItems = &SaveElsewhereButtons[0];
+			nItems = SaveElsewhereButtonsCount;
+			nDefault = PNID_SAVEAS;
 		}
 		break;
 		
@@ -1752,6 +1758,10 @@ int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
 		else
 		{
 			fstr = CFILE_SaveDiskFullError;
+			MBStyle = TDCBF_CANCEL_BUTTON;
+			pItems = &SaveElsewhereButtons[0];
+			nItems = SaveElsewhereButtonsCount;
+			nDefault = PNID_SAVEAS;
 		}
 		break;
 		
@@ -1763,7 +1773,11 @@ int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
 		}
 		else
 		{
-			fstr = CFILE_SaveShareViolation;
+			fstr = LS(IDS_SAVESHAREVIOLATION);
+			MBStyle = TDCBF_CANCEL_BUTTON;
+			pItems = &SaveElsewhereButtons[0];
+			nItems = SaveElsewhereButtonsCount;
+			nDefault = PNID_SAVEAS;
 		}
 		break;
 		
@@ -1777,6 +1791,10 @@ int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
 		else
 		{
 			fstr = CFILE_NetSaveError;
+			MBStyle = TDCBF_CANCEL_BUTTON;
+			pItems = &SaveElsewhereButtons[0];
+			nItems = SaveElsewhereButtonsCount;
+			nDefault = PNID_SAVEAS;
 		}
 		break;
 		
@@ -1791,10 +1809,12 @@ int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
 		}
 	}
 
-	int bs = _tcslen(fstr) + fn.length() + 10;
+	int bs = fstr.length() + fn.length() + 10;
+	
 	std::string buffer;
-	buffer.reserve(bs);
-	_sntprintf(&buffer[0], bs, fstr, fn.c_str());
+	buffer.resize(bs);
+	int finalLength = _sntprintf(&buffer[0], bs, fstr.c_str(), fn.c_str());
+	buffer.resize(finalLength);
 
 	USES_CONVERSION;
 
@@ -1813,6 +1833,18 @@ int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
 	cfg.nDefaultButton = PNID_SAVEAS;
 
 	int iRes = PNTaskDialogIndirect(&cfg);
+
+	// If we didn't change the buttons then we need to translate the result code.
+	if (MBStyle == (TDCBF_CANCEL_BUTTON | TDCBF_YES_BUTTON | TDCBF_NO_BUTTON))
+	{
+		switch (iRes)
+		{
+		case TDCBF_YES_BUTTON:
+			return PNID_SAVEAS;
+		default:
+			return IDCANCEL;
+		}
+	}
 	
 	return iRes;
 }
