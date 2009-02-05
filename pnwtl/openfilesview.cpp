@@ -2,7 +2,7 @@
  * @file openfilesview.cpp
  * @brief Docking window showing open files
  * @author Simon Steele
- * @note Copyright (c) 2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2008-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -128,7 +128,7 @@ LRESULT COpenFilesDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	RECT rc;
 	GetClientRect(&rc);
 	
-	m_view.Create(m_hWnd, rc, _T("OpenFilesList"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | LVS_REPORT | LVS_NOCOLUMNHEADER, 0, IDC_FILESLIST);
+	m_view.Create(m_hWnd, rc, _T("OpenFilesList"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | LVS_REPORT | LVS_NOCOLUMNHEADER | LVS_SHOWSELALWAYS, 0, IDC_FILESLIST);
 	m_view.AddColumn(_T(""), 0);
 	m_view.SetColumnWidth(0, (rc.right-rc.left) -::GetSystemMetrics(SM_CXVSCROLL));
 	m_view.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
