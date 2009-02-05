@@ -85,6 +85,10 @@ Bug Fixes:
 38) Project tools missing from menus (#227)
 39) Make sure jumping to a bookmark scrolls into view (#219)
 40) Middle click close on updated file causes crash (#203)
+41) Workspace re-open prevented by command-line parameters (#288)
+42) Global tools selection the default with non-scheme file (#306)
+43) Magic folder crash (#257)
+44) Project properties don't work from tools
 
 Extensions Interface Changes:
 -----------------------------
