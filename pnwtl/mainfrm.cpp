@@ -1319,23 +1319,22 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 			CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
 			if(pChild)
 			{
-
 				CTextView* pTV = pChild->GetTextView();
 				if(bHaveLine)
 				{
 					pTV->GotoLine(iLine-1);
 				}
+
 				if(bHaveCol)
 				{
 					long pos = pTV->GetCurrentPos();
 					pTV->GotoPos(pos + iCol);
 				}
+
 				if(bHaveScheme && pScheme)
 				{
 					pChild->SetScheme( pScheme );
 				}
-
-
 			}
 		}
 
@@ -1355,27 +1354,34 @@ LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 
 	handleCommandLine(*m_cmdLineArgs);
 
-	if(OPTIONS->Get(PNSK_INTERFACE, _T("CheckAssocsOnStartup"), false))
+	if (OPTIONS->Get(PNSK_INTERFACE, _T("CheckAssocsOnStartup"), false))
 	{
 		FileAssocManager fam;
-		if(fam.CheckAssociations())
+		if (fam.CheckAssociations())
 		{
 			fam.UpdateAssociations();
 		}
 	}
 
-	if(OPTIONS->Get(PNSK_INTERFACE, _T("SaveWorkspace"), false) && m_cmdLineArgs->size() == 0)
+	HWND hWndEditor = GetCurrentEditor();
+	if (OPTIONS->Get(PNSK_INTERFACE, _T("SaveWorkspace"), false))
 	{
 		WorkspaceState wss;
 		wss.Load();
+
+		// If the user selected a file on the command line, re-activate it to
+		// avoid workspace files stealing the focus.
+		if (hWndEditor != NULL)
+		{
+			::SetFocus(hWndEditor);
+		}
 	}
 
-	HWND hWndEditor = GetCurrentEditor();
-	if(hWndEditor == NULL)
+	hWndEditor = GetCurrentEditor();
+	if (hWndEditor == NULL)
 	{
-		if(OPTIONS->Get(PNSK_INTERFACE, _T("NewOnStart"), true))
+		if (OPTIONS->Get(PNSK_INTERFACE, _T("NewOnStart"), true))
 		{
-			// Bad simon, bad.
 			BOOL bHandled;
 			OnFileNew(0, 0, 0, bHandled);
 		}
