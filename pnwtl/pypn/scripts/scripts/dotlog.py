@@ -10,7 +10,7 @@ def docLoad(doc):
 	
 	# Get the first line:
 	lineLength = s.LineLength(0)
-	text = s.GetText(0, lineLength)
+	text = s.GetTextRange(0, lineLength)
 	
 	# If we have .LOG then add a blank line and then the date and time
 	if text == ".LOG":

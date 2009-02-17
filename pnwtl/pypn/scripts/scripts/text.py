@@ -15,7 +15,7 @@ def SortLines():
 	""" Sort Lines (By Scott (wischeese)) """
 	editor = scintilla.Scintilla(pn.CurrentDoc())
 	editor.BeginUndoAction()
-	lsSelection = editor.GetText(editor.SelectionStart, editor.SelectionEnd)
+	lsSelection = editor.GetTextRange(editor.SelectionStart, editor.SelectionEnd)
 	laLines = lsSelection.splitlines(0)
 	laLines.sort()
 	lsReplace = string.join(laLines, '\r\n' )
@@ -64,7 +64,7 @@ def UpperCase():
 	""" Convert text to Upper Case by Benoit """
 	editor = scintilla.Scintilla(pn.CurrentDoc())
 	editor.BeginUndoAction()
-	selText = editor.GetText(editor.SelectionStart, editor.SelectionEnd)
+	selText = editor.GetTextRange(editor.SelectionStart, editor.SelectionEnd)
 	selText = selText.upper()
 	editor.ReplaceSel(selText)
 	editor.EndUndoAction() 
@@ -74,7 +74,7 @@ def LowerCase():
 	""" Convert text to Lower Case by Benoit """
 	editor = scintilla.Scintilla(pn.CurrentDoc())
 	editor.BeginUndoAction()
-	selText = editor.GetText(editor.SelectionStart, editor.SelectionEnd)
+	selText = editor.GetTextRange(editor.SelectionStart, editor.SelectionEnd)
 	selText = selText.lower()
 	editor.ReplaceSel(selText)
 	editor.EndUndoAction() 
@@ -84,7 +84,7 @@ def Capitalize():
 	""" Capitalise text by Benoit """
 	editor = scintilla.Scintilla(pn.CurrentDoc())
 	editor.BeginUndoAction()
-	selText = editor.GetText(editor.SelectionStart, editor.SelectionEnd)
+	selText = editor.GetTextRange(editor.SelectionStart, editor.SelectionEnd)
 	selText = selText.capitalize()
 	editor.ReplaceSel(selText)
 	editor.EndUndoAction() 
@@ -94,7 +94,7 @@ def TitleCase():
 	""" Title case text by Benoit """
 	editor = scintilla.Scintilla(pn.CurrentDoc())
 	editor.BeginUndoAction()
-	selText = editor.GetText(editor.SelectionStart, editor.SelectionEnd)
+	selText = editor.GetTextRange(editor.SelectionStart, editor.SelectionEnd)
 	selText = selText.title()
 	editor.ReplaceSel(selText)
 	editor.EndUndoAction() 
@@ -103,7 +103,7 @@ def TitleCase():
 def InvertCase():
 	editor = scintilla.Scintilla(pn.CurrentDoc())
 	editor.BeginUndoAction()
-	selText = editor.GetText(editor.SelectionStart, editor.SelectionEnd)
+	selText = editor.GetTextRange(editor.SelectionStart, editor.SelectionEnd)
 	selText = selText.swapcase()
 	editor.ReplaceSel(selText)
 	editor.EndUndoAction()

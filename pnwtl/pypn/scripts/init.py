@@ -24,10 +24,13 @@ def import_libs(dir):
         
         module_name, ext = os.path.splitext(f) # Handles no-extension files, etc.
         if ext == '.py': # Important, ignore .pyc/other files.
-            module = __import__("scripts." + module_name, globals(), locals(), [])
-            #debug.OutputDebugString( 'imported module: %s' % (module_name) )
-            library_list.append(module)
- 
+            try:
+                module = __import__("scripts." + module_name, globals(), locals(), [])
+                #debug.OutputDebugString( 'imported module: %s' % (module_name) )
+                library_list.append(module)
+            except Exception as ex:
+                pn.AddOutput("Script Import Error with " + module_name + ".py: " + str(ex))
+    
     return library_list
 
 import_libs(pn.AppPath() + "scripts")
