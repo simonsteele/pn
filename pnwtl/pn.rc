@@ -115,7 +115,7 @@ BEGIN
     POPUP "&File"
     BEGIN
         MENUITEM "&Open...",                    ID_FILE_OPEN
-        MENUITEM "Open Pro&ject(s)...",         289
+        MENUITEM "Open Pro&ject(s)...",         ID_FILE_OPENPROJECT
         MENUITEM "Open Wor&kspace...",          ID_FILE_OPENWORKSPACE
         MENUITEM "Re&vert",                     ID_FILE_REVERT
         MENUITEM SEPARATOR
@@ -141,7 +141,7 @@ BEGIN
         MENUITEM "Proper&ties...",              ID_VIEW_FILEPROPERTIES
         MENUITEM SEPARATOR
         MENUITEM "&Close",                      ID_FILE_CLOSE
-        MENUITEM "Close P&roject(s)",           301
+        MENUITEM "Close P&roject(s)",           ID_FILE_CLOSEWORKSPACE
         MENUITEM "Close All",                   ID_FILE_CLOSEALL
         MENUITEM SEPARATOR
         MENUITEM "&Print...",                   ID_FILE_PRINT
@@ -213,7 +213,7 @@ BEGIN
             MENUITEM "&Standard",                   ID_VIEW_TOOLBAR
             MENUITEM "&Edit",                       ID_VIEW_TOOLBAR_EDIT
             MENUITEM "&Find",                       ID_VIEW_TOOLBARS_FIND
-            MENUITEM "&Schemes",                    303
+            MENUITEM "&Schemes",                    ID_VIEW_TOOLBARS_SCHEMES
         END
         POPUP "&Windows"
         BEGIN
@@ -227,11 +227,11 @@ BEGIN
         END
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM SEPARATOR
-        MENUITEM "Line &End Markers",           32792
+        MENUITEM "Line &End Markers",           ID_EDITOR_EOLCHARS
         MENUITEM "Line &Numbers",               ID_EDITOR_LINENOS
         MENUITEM "&Mark WhiteSpace",            ID_EDITOR_WHITESPACE
-        MENUITEM "Syntax &Highlighting",        131
-        MENUITEM "Word W&rap",                  130
+        MENUITEM "Syntax &Highlighting",        ID_EDITOR_COLOURISE
+        MENUITEM "Word W&rap",                  ID_EDITOR_WORDWRAP
         MENUITEM SEPARATOR
         MENUITEM "Toggle &Bookmark",            ID_BOOKMARKS_TOGGLE
         MENUITEM "Next B&ookmark",              ID_BOOKMARKS_NEXT
@@ -265,7 +265,7 @@ BEGIN
         MENUITEM "Add Tools...",                ID_TOOLS_DUMMY
         MENUITEM "&Stop Tools",                 ID_TOOLS_STOPTOOLS, GRAYED
         MENUITEM SEPARATOR
-        MENUITEM "&Options",                    245
+        MENUITEM "&Options",                    ID_TOOLS_OPTIONS
     END
     POPUP "&Window"
     BEGIN
@@ -280,12 +280,12 @@ BEGIN
     BEGIN
         MENUITEM "&Contents",                   ID_HELP_CONTENTS
         MENUITEM SEPARATOR
-        MENUITEM "PN &HomePage",                251
-        MENUITEM "PN on &Google Code",          252
+        MENUITEM "PN &HomePage",                ID_HELP_WEB_PN
+        MENUITEM "PN on &Google Code",          ID_HELP_WEB_SF
         MENUITEM "&Online Help",                ID_HELP_WEB_DOCS
         MENUITEM "&Forums",                     ID_HELP_WEB_FORUMS
         MENUITEM SEPARATOR
-        MENUITEM "Report a &bug...",            253
+        MENUITEM "Report a &bug...",            ID_HELP_WEB_SB
         MENUITEM "Request a &feature...",       ID_HELP_WEB_SR
         MENUITEM SEPARATOR
         MENUITEM "&About Programmer's Notepad...", ID_APP_ABOUT
@@ -566,12 +566,12 @@ IDR_POPUP_PROJECTFILE MENU
 BEGIN
     POPUP "DUMMY"
     BEGIN
-        MENUITEM "&Open",                       287
+        MENUITEM "&Open",                       ID_PROJECT_OPEN
         MENUITEM "Open in De&fault Program",    ID_PROJECT_SHELLOPEN
         MENUITEM SEPARATOR
         MENUITEM "&Add Files...",               ID_PROJECT_ADDFILES
         MENUITEM "&Remove",                     ID_PROJECT_REMOVE
-        MENUITEM "&Delete",                     258
+        MENUITEM "&Delete",                     ID_PROJECT_DELETE
         MENUITEM "Re&name",                     ID_PROJECT_RENAME
         MENUITEM SEPARATOR
         MENUITEM "&Explorer",                   ID_DUMMY_EXPLORER
@@ -584,13 +584,13 @@ IDR_POPUP_PROJECTFOLDER MENU
 BEGIN
     POPUP "DUMMY"
     BEGIN
-        MENUITEM "&Add Files",                  288
+        MENUITEM "&Add Files",                  ID_PROJECT_ADDFILES
         MENUITEM "&Add New Folder",             ID_PROJECT_ADDFOLDER
         MENUITEM SEPARATOR
-        MENUITEM "&Open All Files",             299
+        MENUITEM "&Open All Files",             ID_PROJECT_OPENALLFILES
         MENUITEM "&Sort Folders",               ID_PROJECT_SORTFOLDERS
         MENUITEM SEPARATOR
-        MENUITEM "&Remove",                     286
+        MENUITEM "&Remove",                     ID_PROJECT_REMOVE
         MENUITEM SEPARATOR
         MENUITEM "Re&name",                     ID_PROJECT_RENAME
         MENUITEM "&Properties",                 ID_PROJECT_PROPERTIES
@@ -601,8 +601,8 @@ IDR_POPUP_PROJECT MENU
 BEGIN
     POPUP "PROJECT"
     BEGIN
-        MENUITEM "&Add Files",                  288
-        MENUITEM "Add New &Folder",             293
+        MENUITEM "&Add Files",                  ID_PROJECT_ADDFILES
+        MENUITEM "Add New &Folder",             ID_PROJECT_ADDFOLDER
         MENUITEM "Add &Magic Folder...",        ID_PROJECT_ADDMAGICFOLDER
         MENUITEM SEPARATOR
         MENUITEM "&Open All Files",             ID_PROJECT_OPENALLFILES
@@ -656,7 +656,7 @@ BEGIN
         MENUITEM "&Add New Folder",             ID_PROJECT_MAGICADDFOLDER, INACTIVE
         MENUITEM "&Add New File...",            ID_PROJECT_MAGICADDFILE
         MENUITEM SEPARATOR
-        MENUITEM "&Open All Files",             299
+        MENUITEM "&Open All Files",             ID_PROJECT_OPENALLFILES
         MENUITEM "&Sort Folders",               ID_PROJECT_SORTFOLDERS
         MENUITEM SEPARATOR
         MENUITEM "Re&fresh",                    ID_PROJECT_REFRESH
@@ -691,7 +691,7 @@ IDR_POPUP_REMOVEPROJECT MENU
 BEGIN
     POPUP "PROJECT"
     BEGIN
-        MENUITEM "&Remove Project",             286
+        MENUITEM "&Remove Project",             ID_PROJECT_REMOVE
     END
 END
 
