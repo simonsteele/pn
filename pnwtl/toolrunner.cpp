@@ -344,7 +344,7 @@ int ToolRunner::Run_NoCapture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 
 	PROCESS_INFORMATION pi = {0, 0, 0, 0};
 
-	std::vector<char> cmdbuf(MAX_PATH);
+	std::vector<TCHAR> cmdbuf(tempstr.length()+1);
 	memcpy(&cmdbuf[0], tempstr.c_str(), tempstr.size() * sizeof(TCHAR));
 
 	DWORD dwCreationFlags = CREATE_NEW_CONSOLE; // CREATE_NEW_PROCESS_GROUP - causes Ctrl-C to be disabled.
