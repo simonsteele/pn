@@ -34,7 +34,7 @@
 #define PNASSERT assert
 
 #include "allocator.h"
-#include "pnstring.h"
+#include "pnextstring.h"
 #include "extiface.h"
 
 static extensions::IPN* g_pn;

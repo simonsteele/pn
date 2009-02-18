@@ -27,11 +27,12 @@
 // Windows Header Files:
 #include <windows.h>
 #include <tchar.h>
+#include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 #include <assert.h>
 
 #define PNASSERT assert
 
 #include "allocator.h"
-#include "pnstring.h"
+#include "pnextstring.h"
 #include "extiface.h"

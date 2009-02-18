@@ -256,9 +256,9 @@ bool CTagsTagSource::FindTags(ITagSink* sink,
 	PROCESS_INFORMATION pi = {0, 0, 0, 0};
 
 	// CreateProcess can modify the contents of lpCommandLine when using the wide
-	// character version, so we allow for that here by using a MAX_PATH buffer
-	// when calling the function rather than the fixed-length string.
-	std::vector<wchar_t> cmdbuf(MAX_PATH);
+	// character version, so we put the command line into a byte buffer where this is
+	// safe.
+	std::vector<wchar_t> cmdbuf(clopts.length() + 1);
 	memcpy(&cmdbuf[0], clopts.c_str(), clopts.size()*sizeof(wchar_t));
 
 	bool bCreated = ::CreateProcessW(

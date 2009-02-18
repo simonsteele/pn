@@ -53,7 +53,7 @@
 			output="_iscc.log"
 			workingdir="installer" />
 			
-		<copy file="installer\output\pnsetup.exe" tofile="${distdir}\pn${compactver}.exe"/>
+		<copy file="installer\output\pnsetup.exe" tofile="${distdir}\pn${compactver}.exe" overwrite="true"/>
 			
 		<zip zipfile="${distdir}\pn${compactver}.zip">
 			<fileset basedir="bin">
@@ -142,6 +142,7 @@
 	<!-- Build PyPN -->
 	<target name="pypn">
 		<!-- Python 2.6 -->
+		<echo message="Building for Python 2.6"/>
 		<property name="pyver" value="py26"/>
 		<exec
 			program="devenv"
@@ -152,7 +153,7 @@
 				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.6"/>
 			</environment>
 		</exec>
-		<copy file="lib\boost-python-2.6\boost_python-vc80-mt-1_36.dll" todir="bin"/>
+		<copy file="lib\boost-python-2.6\boost_python-vc80-mt-1_36.dll" todir="bin" overwrite="true"/>
 		
 		<property name="pywrongdep" value="python24"/>
 		<call target="checkpypndeps"/>
@@ -163,6 +164,7 @@
 		<call target="deploypypn"/>
 		
 		<!-- Python 2.5 -->
+		<echo message="Building for Python 2.5"/>
 		<property name="pyver" value="py25"/>
 		<exec
 			program="devenv"
@@ -173,7 +175,7 @@
 				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.5"/>
 			</environment>
 		</exec>
-		<copy file="lib\boost-python-2.5\boost_python-vc80-mt-1_36.dll" todir="bin"/>
+		<copy file="lib\boost-python-2.5\boost_python-vc80-mt-1_36.dll" todir="bin" overwrite="true"/>
 		
 		<property name="pywrongdep" value="python24"/>
 		<call target="checkpypndeps"/>
@@ -184,6 +186,7 @@
 		<call target="deploypypn"/>		
 		
 		<!-- Python 2.4 -->
+		<echo message="Building for Python 2.4"/>
 		<property name="pyver" value="py24"/>
 		<exec
 			program="devenv"
@@ -194,7 +197,7 @@
 				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.4"/>
 			</environment>
 		</exec>
-		<copy file="lib\boost-python-2.4\boost_python-vc80-mt-1_36.dll" todir="bin"/>
+		<copy file="lib\boost-python-2.4\boost_python-vc80-mt-1_36.dll" todir="bin" overwrite="true"/>
 		
 		<property name="pywrongdep" value="python25"/>
 		<call target="checkpypndeps"/>
@@ -287,7 +290,7 @@
 			failonerror="false"/>
 		<fail if="${int::parse(depresult) > 65536}" message="Failure code indicates depends error"/>
 		<loadfile file="bin\dep.txt" property="deps"/>
-		<fail if="${string::contains(string::to-lower(deps), pywrongdep)}" message="PyPN mistakenly depends on python24.dll"/>
+		<fail if="${string::contains(string::to-lower(deps), pywrongdep)}" message="PyPN mistakenly depends on ${pywrongdep}"/>
 	</target>
 	
 	<target name="checkpnmanifest">

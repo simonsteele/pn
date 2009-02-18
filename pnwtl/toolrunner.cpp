@@ -144,7 +144,7 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 
 	DWORD dwCreationFlags = CREATE_NEW_CONSOLE; // CREATE_NEW_PROCESS_GROUP;
 
-	std::vector<TCHAR> cmdbuf(MAX_PATH);
+	std::vector<TCHAR> cmdbuf(clopts.length() + 1);
 	memcpy(&cmdbuf[0], clopts.c_str(), clopts.size() * sizeof(TCHAR));
 
 	bool bCreated = ::CreateProcess(
