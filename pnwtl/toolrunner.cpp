@@ -489,30 +489,30 @@ void ToolOwner::RunTool(ToolWrapperPtr& pTool, ToolOwnerID OwnerID)
 		m_RunningTools.push_back(_wrapper);	 // Add this tool to our list to mind.
 	}
 
-	if( pTool->SaveAll() )
+	if(pTool->SaveAll())
 	{
 		g_Context.m_frame->SaveAll();
 	}
-	else if( pTool->SaveProjectGroup() )
+	else if(pTool->SaveProjectGroup())
 	{
 		DocumentList list;
 		g_Context.m_frame->GetOpenWorkspaceDocuments(list);
 
-		for(DocumentList::iterator i = list.begin(); i != list.end(); ++i)
+		for (DocumentList::iterator i = list.begin(); i != list.end(); ++i)
 		{
 			CChildFrame* frame = (*i)->GetFrame();
-			if (frame)
+			if (frame != NULL && frame->GetModified())
 			{
-				frame->Save(true);// save and notify change
+				frame->Save(true); // save and notify change
 			}
 		}
 	}
-	else if( pTool->SaveOne() )
+	else if (pTool->SaveOne())
 	{
 		CChildFrame* pChild = pTool->GetActiveChild();
-		if(pChild)
+		if (pChild)
 		{
-			pChild->Save(true);// save and notify change
+			pChild->Save(true); // save and notify change
 		}
 	}
 
