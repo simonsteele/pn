@@ -31,6 +31,9 @@ void LineCopy(CScintillaImpl& editor);
 void LineCut(CScintillaImpl& editor);
 void LineDelete(CScintillaImpl& editor);
 void LineDuplicate(CScintillaImpl& editor);
+void RemoveBlankLines(CScintillaImpl& editor);
+void JoinLines(CScintillaImpl& editor);
+void SplitLines(CScintillaImpl& editor);
 
 void GetEditorCommands(std::list<EditorCommand*>& commands)
 {
@@ -49,6 +52,9 @@ void GetEditorCommands(std::list<EditorCommand*>& commands)
 	commands.push_back(new Internal::EditorCommandFn(ID_SELECTION_STRIPTRAILING, StripTrailingBlanks));
 	commands.push_back(new Internal::EditorCommandFn(ID_TOOLS_CONVERTSPACESTOTABS, SpacesToTabs));
 	commands.push_back(new Internal::EditorCommandFn(ID_TOOLS_CONVERTTABSTOSPACES, TabsToSpaces));
+	commands.push_back(new Internal::EditorCommandFn(ID_EDIT_REMOVEBLANKLINES, RemoveBlankLines));
+	commands.push_back(new Internal::EditorCommandFn(ID_EDIT_JOINLINES, JoinLines));
+	commands.push_back(new Internal::EditorCommandFn(ID_EDIT_SPLITLINES, SplitLines));
 }
 
 /**
@@ -251,14 +257,67 @@ void LineMoveDown(CScintillaImpl& editor)
 	editor.EndUndoAction();
 }
 
+/**
+ * Make the current selected text lower case.
+ */
 void TransformLowerCase(CScintillaImpl& editor)
 {
 	editor.LowerCase();
 }
 
+/**
+ * Make the current selected text upper case.
+ */
 void TransformUpperCase(CScintillaImpl& editor)
 {
 	editor.UpperCase();
+}
+
+/**
+ * Remove completely blank lines in the selection.
+ */
+void RemoveBlankLines(CScintillaImpl& editor)
+{
+	int lineStart = editor.LineFromPosition(editor.GetSelectionStart());
+	int lineEnd = editor.LineFromPosition(editor.GetSelectionEnd());
+	if (lineStart == lineEnd)
+	{
+		if (editor.LineLength(lineStart) == 0)
+		{
+			editor.LineDelete();
+		}
+
+		return;
+	}
+
+	for (int line = lineStart; line <= lineEnd; ++line)
+	{
+		int start = editor.PositionFromLine(line);
+		char startChar = editor.GetCharAt(start);
+		if (startChar == '\n' || startChar == '\r')
+		{
+			editor.SetTarget(start, start + editor.LineLength(line));
+			editor.ReplaceTarget(0, "");
+			lineEnd--;
+			--line;
+		}
+	}
+}
+
+/**
+ * Join lines in the selection.
+ */
+void JoinLines(CScintillaImpl& editor)
+{
+	editor.LinesJoin();
+}
+
+/**
+ * Split lines based on current window width.
+ */
+void SplitLines(CScintillaImpl& editor)
+{
+	editor.LinesSplit(0);
 }
 
 } // namespace Commands

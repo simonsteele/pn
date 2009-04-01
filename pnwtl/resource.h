@@ -685,6 +685,12 @@
 #define ID_SELECTION_STRIPTRAILING      33120
 #define ID_SELECTION_COMPRESSWHITESPACE 33121
 #define ID_EXTENSIONS_DUMMY             33122
+#define ID_SELECTION_REMOVEBLANKLINES   33123
+#define ID_EDIT_REMOVEBLANKLINES        33124
+#define ID_SELECTION_JOINLINES          33125
+#define ID_SELECTION_SPLITLINES         33126
+#define ID_EDIT_JOINLINES               33127
+#define ID_EDIT_SPLITLINES              33128
 
 // Next default values for new objects
 // 
@@ -692,7 +698,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        364
-#define _APS_NEXT_COMMAND_VALUE         33123
+#define _APS_NEXT_COMMAND_VALUE         33129
 #define _APS_NEXT_CONTROL_VALUE         1160
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

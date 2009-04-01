@@ -176,6 +176,9 @@ BEGIN
             MENUITEM "&Compress Whitespace",        ID_SELECTION_COMPRESSWHITESPACE
             MENUITEM "&Duplicate",                  ID_SELECTION_DUPLICATE
             MENUITEM "&Strip Trailing Blanks",      ID_SELECTION_STRIPTRAILING
+            MENUITEM "Remove Blank &Lines",         ID_EDIT_REMOVEBLANKLINES
+            MENUITEM "&Join Lines",                 ID_EDIT_JOINLINES
+            MENUITEM "Spli&t Lines",                ID_EDIT_SPLITLINES
         END
         MENUITEM SEPARATOR
         MENUITEM "Lo&wercase",                  ID_EDIT_LOWERCASE
