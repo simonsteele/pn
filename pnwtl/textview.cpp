@@ -299,7 +299,7 @@ bool CTextView::Load(LPCTSTR filename, Scheme* pScheme, EPNEncoding encoding)
 	if (OpenFile(filename, encoding))
 	{
 		// Clear the UNDO buffer
-		EmptyUndoBuffer();
+		// EmptyUndoBuffer();
 
 		Scheme* sch(pScheme);
 		
@@ -1202,13 +1202,31 @@ void CTextView::checkDotLogTimestamp()
 	// If we have .LOG then add a blank line and then the date and time   
 	if (text == ".LOG")
 	{
-		std::string timestr("\r\n\r\n");
+		std::string lineend;
+		
+		switch (GetEOLMode())
+		{
+		case SC_EOL_CRLF:
+			lineend = "\r\n";
+			break;
+		case SC_EOL_CR:
+			lineend = "\r";
+			break;
+		default:
+			lineend = "\n";
+		};
+
+		std::string timestr(lineend);
 		
 		time_t now;
 		time(&now);
 		struct tm* local(localtime(&now));
 
 		timestr += asctime(local);
+
+		// remove unwanted \n
+		timestr.resize(timestr.size() - 1);
+		timestr += lineend;
 
 		AppendText(timestr.size(), timestr.c_str());
 

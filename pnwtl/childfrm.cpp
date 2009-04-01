@@ -1545,11 +1545,12 @@ bool CChildFrame::PNOpenFile(LPCTSTR pathname, Scheme* pScheme, EPNEncoding enco
 		FileUtil::FileAttributes_t atts;
 		if (FileUtil::GetFileAttributes(pathname, atts))
 		{
-			setReadOnly(FileUtil::IsReadOnly(atts), false);
-			
 			m_spDocument->SetFileName(pathname);
 			m_FileAge = FileUtil::GetFileAge(atts);
-			SetTitle();
+			
+			SetTitle(GetModified());
+			setReadOnly(FileUtil::IsReadOnly(atts), false);
+			
 			m_spDocument->OnAfterLoad();
 			bRet = true;
 		}
