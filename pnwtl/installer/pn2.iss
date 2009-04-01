@@ -23,7 +23,6 @@ ShowLanguageDialog=no
 WizardImageFile=sidebar.bmp
 AppVersion={#PNVersion}
 AppID={{52CF142B-7B0E-41E7-98F5-B834122523E7}
-AppReadmeFile={app}\readme.txt
 UninstallDisplayIcon={app}\pn.exe
 UninstallDisplayName=Programmer's Notepad 2
 WizardSmallImageFile=small.bmp
@@ -59,12 +58,10 @@ Source: ..\bin\taggers\ctags\*.*; DestDir: {app}\taggers\ctags; Flags: ignorever
 Source: ..\bin\ctags.exe; DestDir: {app}; Flags: ignoreversion
 Source: ..\doc\help\pn2.chm; DestDir: {app}
 
-Source: ..\doc\readme.txt; DestDir: {app}; Flags: isreadme
+Source: ..\doc\readme.txt; DestDir: {app}
 Source: ..\doc\license.txt; DestDir: {app}
-Source: ..\doc\license.html; DestDir: {app}
 Source: ..\doc\credits.txt; DestDir: {app}
 Source: ..\doc\roadmap.txt; DestDir: {app}
-Source: ..\doc\pcre-license.txt; DestDir: {app}
 Source: ..\doc\ctags_README; DestDir: {app}
 Source: ..\doc\ctags_COPYING; DestDir: {app}
 

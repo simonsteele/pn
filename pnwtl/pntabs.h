@@ -1,3 +1,12 @@
+/**
+ * @file pntabs.h
+ * @brief Tab customisation
+ * @author Simon Steele
+ * @note Copyright (c) 2007-2009 Simon Steele - http://untidy.net/
+ *
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #ifndef pntabs_h__included
 #define pntabs_h__included
 
@@ -110,7 +119,7 @@ class CPNMDIClient : public CTabbedMDIClient< CDotNetTabCtrl<CTabViewTabItem>,
 		CPNMDITabOwner< CDotNetTabCtrl<CTabViewTabItem> > > baseClass;
 
 public:
-	CPNMDIClient();
+	explicit CPNMDIClient();
 	~CPNMDIClient();
 
 	BEGIN_MSG_MAP(CPNMDIClient)
@@ -139,7 +148,7 @@ public:
 
 	void ShowFindBar(bool bShow);
 
-protected:
+private:
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnMDINext(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -155,7 +164,9 @@ protected:
 
 	LRESULT OnPNNotify(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
-protected:
+	LRESULT mruMdiSwitch(bool forwards);
+	LRESULT tabOrderMdiSwitch(bool forwards);
+
 	typedef std::list<HWND> CHILD_STACK;
 	bool					m_bMoving;
 	CHILD_STACK				m_children;

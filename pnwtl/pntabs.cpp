@@ -1,11 +1,18 @@
+/**
+ * @file pntabs.cpp
+ * @brief Tab customisation
+ * @author Simon Steele
+ * @note Copyright (c) 2007-2009 Simon Steele - http://untidy.net/
+ *
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #include "stdafx.h"
 #include "pntabs.h"
 #include "findbar.h"
 
-CPNMDIClient::CPNMDIClient()
+CPNMDIClient::CPNMDIClient() : m_bMoving(false), m_findBar(new CFindBar())
 {
-	m_findBar = new CFindBar();
-	m_bMoving = false;
 }
 
 CPNMDIClient::~CPNMDIClient()
@@ -94,43 +101,14 @@ void CPNMDIClient::ShowFindBar(bool bShow)
 
 LRESULT CPNMDIClient::OnMDINext(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
-	if(!OPTIONS->GetCached(Options::OManageTabOrder) || m_children.size() < 2)
-	{
-		bHandled = FALSE;
-		return 0;
-	}
-
-	if(!m_bMoving)
-	{
-		// starting to move...
-		m_moveIt = m_children.begin();
-		m_bMoving = true;
-	}
-
-	if(lParam == 0)
-	{
-		// forwards
-		m_moveIt++;
-		if(m_moveIt == m_children.end())
-			m_moveIt = m_children.begin();
-	}
-	else
-	{
-		// backwards
-		if(m_moveIt == m_children.begin())
-			m_moveIt = m_children.end();
-		m_moveIt--;
-	}
-
-	// Activate our chosen window
-	LockWindowUpdate(TRUE);
-	SendMessage(WM_MDIACTIVATE, (WPARAM)(*m_moveIt), 0);
-	LockWindowUpdate(FALSE);
-	
-	
 	bHandled = TRUE;
 
-	return 0;
+	if(!OPTIONS->GetCached(Options::OManageTabOrder) || m_children.size() < 2)
+	{
+		return tabOrderMdiSwitch(lParam == 0);
+	}
+
+	return mruMdiSwitch(lParam == 0);
 }
 
 void CPNMDIClient::ControlUp()
@@ -257,6 +235,7 @@ LRESULT CPNMDIClient::OnWindowPosChanging(UINT uMsg, WPARAM wParam, LPARAM lPara
 				{
 					pWinPos->y += nTabAreaHeight;
 				}
+				
 				// Adjust for sizing?
 				if((pWinPos->flags & SWP_NOSIZE) == 0)
 				{
@@ -266,7 +245,9 @@ LRESULT CPNMDIClient::OnWindowPosChanging(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 				// Move the find bar...
 				if(m_findBar->IsWindow())
+				{
 					m_findBar->SetWindowPos(NULL, pWinPos->x, pWinPos->y + pWinPos->cy, pWinPos->cx, nBottomAreaHeight, (pWinPos->flags & SWP_NOMOVE) | (pWinPos->flags & SWP_NOSIZE) | SWP_NOZORDER | SWP_NOACTIVATE);
+				}
 			}
 
 			//sprintf(buf, "After OnWindowPosChanging[%d] tabs %d bottom %d height %d\n", runs++, nTabAreaHeight, nBottomAreaHeight, pWinPos->cy);
@@ -349,6 +330,67 @@ LRESULT CPNMDIClient::OnPNNotify(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	{
 		ShowFindBar(false);		
 	}
+
+	return 0;
+}
+
+LRESULT CPNMDIClient::mruMdiSwitch(bool forwards)
+{
+	if (!m_bMoving)
+	{
+		// starting to move...
+		m_moveIt = m_children.begin();
+		m_bMoving = true;
+	}
+
+	if (forwards)
+	{
+		// forwards
+		m_moveIt++;
+		if (m_moveIt == m_children.end())
+		{
+			m_moveIt = m_children.begin();
+		}
+	}
+	else
+	{
+		// backwards
+		if (m_moveIt == m_children.begin())
+		{
+			m_moveIt = m_children.end();
+		}
+		m_moveIt--;
+	}
+
+	// Activate our chosen window
+	LockWindowUpdate(TRUE);
+	SendMessage(WM_MDIACTIVATE, (WPARAM)(*m_moveIt), 0);
+	LockWindowUpdate(FALSE);
+
+	return 0;
+}
+
+LRESULT CPNMDIClient::tabOrderMdiSwitch(bool forwards)
+{
+	int index(0);
+	if (forwards)
+	{
+		index = m_MdiTabOwner.GetTabCtrl().GetCurSel() + 1;
+		if (index == m_MdiTabOwner.GetTabCtrl().GetItemCount())
+		{
+			index = 0;
+		}
+	}
+	else
+	{
+		index = m_MdiTabOwner.GetTabCtrl().GetCurSel() - 1;
+		if (index == -1)
+		{
+			index = m_MdiTabOwner.GetTabCtrl().GetItemCount() - 1;
+		}
+	}
+
+	m_MdiTabOwner.GetTabCtrl().SetCurSel(index);
 
 	return 0;
 }

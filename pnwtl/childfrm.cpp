@@ -1475,6 +1475,7 @@ void CChildFrame::CheckAge()
 				cfg.pszVerificationText = L"Do not check for updates to this file";
 				cfg.nDefaultButton = TDCBF_YES_BUTTON;
 				cfg.dwFlags = TDF_ALLOW_DIALOG_CANCELLATION;
+				cfg.hwndParent = m_hWnd;
 
 				BOOL doNotShowAgain(FALSE);
 				int iRes = PNTaskDialogIndirect(&cfg, 0, &doNotShowAgain);
@@ -1831,6 +1832,7 @@ int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
 	cfg.pButtons = pItems;
 	cfg.cButtons = nItems;
 	cfg.nDefaultButton = PNID_SAVEAS;
+	cfg.hwndParent = m_hWnd;
 
 	int iRes = PNTaskDialogIndirect(&cfg);
 
