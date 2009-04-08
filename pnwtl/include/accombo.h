@@ -42,7 +42,7 @@ public:
 		DECLARE_WND_SUPERCLASS(NULL, TBase::GetWndClassName())
 
 	// Constructors
-		CComboBoxEditImpl() : m_bInternalGetSel(false), m_selStart(0), m_selEnd(0) { }
+		CComboBoxEditImpl() : m_selStart(0), m_selEnd(0) { }
 
 		CComboBoxEditImpl< TBase >& operator=(HWND hWnd)
 		{
@@ -50,45 +50,30 @@ public:
 			return *this;
 		}
 
+		/**
+		 * Get the selection stored when the combo box edit control lost focus
+		 */
+		void GetStoredSel(int& start, int& end)
+		{
+			start = m_selStart;
+			end = m_selEnd;
+		}
+
 	// Message map and handlers
 		typedef CComboBoxEditImpl< T, TBase, TWinTraits >	thisClass;
 		BEGIN_MSG_MAP(thisClass)
-			//MESSAGE_HANDLER(EM_GETSEL, OnGetSel)
-			//MESSAGE_HANDLER(EM_REPLACESEL, OnReplaceSel)
-			//MESSAGE_HANDLER(WM_KILLFOCUS, OnKillFocus)
+			MESSAGE_HANDLER(WM_KILLFOCUS, OnKillFocus)
 			MESSAGE_HANDLER(WM_KEYUP, OnKeyUp)
 		END_MSG_MAP()
 
-		LRESULT OnGetSel(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
-		{
-			LRESULT lRes;
-			if(m_bInternalGetSel)
-			{
-				lRes = DefWindowProc(uMsg, wParam, lParam);
-			}
-			else
-			{
-				if(wParam)
-					*(int*)wParam = m_selStart;
-				if(lParam)
-					*(int*)lParam = m_selEnd;
-				lRes = MAKELRESULT(m_selStart, m_selEnd);
-			}
-			return lRes;
-		}
-
-		LRESULT OnReplaceSel(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
-		{
-			TBase::SetSel(m_selStart, m_selEnd);
-			return DefWindowProc(uMsg, wParam, lParam);
-		}
-
+		/**
+		 * We need to use Kill Focus to store away the current text box selection as the combo
+		 * control wipes it when focus is lost. This is needed so we can insert text at specific
+		 * points for regex match chars etc.
+		 */
 		LRESULT OnKillFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 		{
-			m_bInternalGetSel = true;
 			TBase::GetSel(m_selStart, m_selEnd);
-			m_bInternalGetSel = false;
-			//ATLTRACE(_T("CurSel: [%d, %d]\n"), m_selStart, m_selEnd);
 			bHandled = FALSE;
 			return 0;
 		}
@@ -99,6 +84,7 @@ public:
 			{
 				::SendMessage(GetParent(), BXT_WM_ENTER, 0, 0);
 			}
+
 			return 0;
 		}
 

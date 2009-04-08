@@ -475,7 +475,7 @@ LRESULT CFindExDialog::OnReInsertClicked(WORD /*wNotifyCode*/, WORD nID, HWND /*
 	CString Text;
 	int offset = getRegExpString(nID, Text);
 
-	DoDataExchange(TRUE);
+	// DoDataExchange(TRUE);
 	doRegExpInsert(&m_FindTextCombo, Text, m_FindText, offset);
 
 	return TRUE;
@@ -540,7 +540,7 @@ LRESULT CFindExDialog::OnReMatchesMenuItemClicked(WORD /*wNotifyCode*/, WORD nID
 	CString Text;
 	Text.Format(_T("\\%d"), matchno);
 
-	DoDataExchange(TRUE);
+	// DoDataExchange(TRUE);
 	doRegExpInsert(&m_ReplaceTextCombo, Text, m_ReplaceText, 0);
 
 	return 0;
@@ -656,24 +656,33 @@ void CFindExDialog::doRegExpHelperMenu(LPRECT rc, bool bDoMatches)
 
 int CFindExDialog::doRegExpInsert(BXT::CComboBoxAC* pCB, LPCTSTR insert, CString& str, int offset)
 {
-	CEdit cbedit(pCB->GetEditCtrl());
-	DWORD dwSel = cbedit.GetSel();
-	cbedit.ReplaceSel(insert);
+	int selStart, selEnd;
+	WTL::BXT::CComboBoxAC::CComboBoxEdit& edit = pCB->GetEditCtrl();
+	
+	// Selection is lost when the combo loses focus, we get the last stored
+	// selection range and reset it.
+	edit.GetStoredSel(selStart, selEnd);
+	edit.SetSel(selStart, selEnd);
+	edit.ReplaceSel(insert);
 
-	int pos = LOWORD(dwSel);
-	if(offset != 0)
-		pos += offset;
+	if (offset != 0)
+	{
+		selStart += offset;
+	}
 	else
-		pos += _tcslen(insert);
-	cbedit.SetFocus();
-	cbedit.SetSel(pos, pos);
+	{
+		selStart += _tcslen(insert);
+	}
 
-	return pos;
+	edit.SetFocus();
+	edit.SetSel(selStart, selStart);
+
+	return selStart;
 }
 
 bool CFindExDialog::editorChanged()
 {
-	return m_pLastEditor != getCurrentEditorWnd();// CChildFrame::FromHandle(GetCurrentEditor());
+	return m_pLastEditor != getCurrentEditorWnd();
 }
 
 void CFindExDialog::enableButtons()
