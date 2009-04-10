@@ -526,6 +526,11 @@ int CTextView::HandleNotify(LPARAM lParam)
 		if( ( reinterpret_cast<Scintilla::SCNotification*>(lParam))->linesAdded != 0 && m_bLineNos )
 			SetLineNumberChars();
 	}
+	else if (msg == SCN_MACRORECORD)
+	{
+		Scintilla::SCNotification* scn = reinterpret_cast<Scintilla::SCNotification*>(lParam);
+		m_recorder->RecordScintillaAction(scn->message, scn->wParam, scn->lParam);
+	}
 	
 	return msg;
 }
@@ -657,6 +662,12 @@ void CTextView::ClearMarkAll()
 {
 	SetIndicatorCurrent(INDIC_MARKALL);
 	IndicatorClearRange(0, GetLength());
+}
+
+void CTextView::StartRecord(extensions::IRecorderPtr recorder)
+{
+	m_recorder = recorder;
+	CScintilla::StartRecord();
 }
 
 void CTextView::DoContextMenu(CPoint* point)

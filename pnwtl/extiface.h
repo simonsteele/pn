@@ -50,6 +50,9 @@
 /// Find Next Result Enum
 typedef enum {fnNotFound, fnFound, fnReachedStart, fnInvalidRegex, fnInvalidSearch} FindNextResult;
 
+/// Search Type Enum
+typedef enum {stFindNext, stReplace, stReplaceAll} SearchType;
+
 namespace extensions
 {
 
@@ -68,6 +71,7 @@ class ITextOutput;
 class ISearchOptions;
 class ITagSource;
 class IMenuItems;
+class IRecorder;
 /////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////
@@ -77,6 +81,7 @@ typedef boost::shared_ptr<IDocument> IDocumentPtr;
 typedef boost::shared_ptr<IDocumentEventSink> IDocumentEventSinkPtr;
 typedef boost::shared_ptr<ITextEditorEventSink> ITextEditorEventSinkPtr;
 typedef boost::shared_ptr<IAppEventSink> IAppEventSinkPtr;
+typedef boost::shared_ptr<IRecorder> IRecorderPtr;
 /////////////////////////////////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////
@@ -145,6 +150,9 @@ public:
 
 	/// Add plugin menu items
 	virtual void AddPluginMenuItems(IMenuItems* menuItems) = 0;
+
+	/// Add a recorder (currently sets the /only/ recorder)
+	virtual void AddRecorder(IRecorderPtr recorder) = 0;
 };
 
 /**
@@ -495,6 +503,36 @@ public:
 	 * Get an individual MenuItem instance by index.
 	 */
 	virtual MenuItem& GetItem(int index) const = 0;
+};
+
+/**
+ * Interface to be implemented to provide script/macro recording.
+ */
+class IRecorder
+{
+public:
+	virtual ~IRecorder(){};
+
+	/**
+	 * Called when Scintilla reports an action, these will be withheld during any operation
+	 * that this interface has a stronger contract for (e.g. find/replace).
+	 */
+	virtual void RecordScintillaAction(int message, WPARAM wParam, LPARAM lParam) = 0;
+
+	/**
+	 * Called when a search action occurs, such as Find Next, Replace, Replace All
+	 */
+	virtual void RecordSearchAction(SearchType type, const ISearchOptions* options, FindNextResult result) = 0;
+
+	/**
+	 * Called to start the record process.
+	 */
+	virtual void StartRecording() = 0;
+
+	/**
+	 * Called to stop the record process.
+	 */
+	virtual void StopRecording() = 0;
 };
 
 /**

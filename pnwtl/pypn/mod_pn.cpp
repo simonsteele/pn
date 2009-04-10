@@ -70,6 +70,12 @@ std::string PNInputBox(const char* title, const char* caption)
 	return r;
 }
 
+std::string PNStringFromPointer(DWORD_PTR stringptr)
+{
+	const char* str = reinterpret_cast<const char*>(stringptr);
+	return std::string(str);
+}
+
 ISearchOptions* PNGetUserSearchOptions()
 {
 	return g_app->GetPN()->GetUserSearchOptions();
@@ -113,6 +119,8 @@ BOOST_PYTHON_MODULE(pn)
 	def("OpenDocument", &PNOpenDocument, "Open a file");
 
 	def("NewDocument", &PNNewDocument, "Create a new document");
+
+	def("StringFromPointer", &PNStringFromPointer, "Get a string value from a c-style string pointer");
 
 	CONSTANT(IDOK);
 	CONSTANT(IDCANCEL);

@@ -268,6 +268,8 @@ BEGIN
         MENUITEM "Add Tools...",                ID_TOOLS_DUMMY
         MENUITEM "&Stop Tools",                 ID_TOOLS_STOPTOOLS, GRAYED
         MENUITEM SEPARATOR
+        MENUITEM "&Record Script",              ID_TOOLS_RECORDSCRIPT
+        MENUITEM SEPARATOR
         MENUITEM "&Options",                    ID_TOOLS_OPTIONS
     END
     POPUP "&Window"

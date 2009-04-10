@@ -2075,6 +2075,32 @@ LRESULT CMainFrame::OnStopTools(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	return 0;
 }
 
+/**
+ * User wants to record a script/macro, we delegate to any registered instance of extensions::IRecorder
+ */
+LRESULT CMainFrame::OnRecordScript(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	// Check we can get a recorder
+	extensions::IRecorderPtr recorder = g_Context.ExtApp->GetRecorder();
+	if (recorder.get() == NULL)
+	{
+		return 0;
+	}
+
+	// Currently only start recording when there's a document open
+	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
+	if (!pChild)
+	{
+		return 0;
+	}
+
+	pChild->GetTextView()->StartRecord(recorder);
+
+	recorder->StartRecording();
+
+	return 0;
+}
+
 LRESULT CMainFrame::OnWebPNHome(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	::ShellExecute(m_hWnd, _T("open"), _T("http://www.pnotepad.org/"), NULL, NULL, SW_SHOW);

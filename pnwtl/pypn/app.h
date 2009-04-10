@@ -57,6 +57,7 @@ private:
 	extensions::ITextOutput* m_output;
 	extensions::IScriptRegistry* m_registry;
 	extensions::IPN* m_app;
+	extensions::IRecorderPtr m_recorder;
 	boost::python::object main_module;
 	boost::python::object main_namespace;
 	boost::python::object m_glue;

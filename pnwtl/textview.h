@@ -79,6 +79,8 @@ public:
 	void FindAll(extensions::ISearchOptions* options, FIFSink* sink, LPCTSTR szFilename);
 	void MarkAll(extensions::ISearchOptions* options);
 	void ClearMarkAll();
+
+	void StartRecord(extensions::IRecorderPtr recorder);
 	
 	////////////////////////////////////////////////////////////////
 	// Overrides from CScintillaImpl / CScintillaWindowImpl
@@ -138,6 +140,7 @@ private:
 	bool m_bSmartStart;
 	bool m_bLineNos;
 	DocumentPtr m_pDoc;
+	extensions::IRecorderPtr m_recorder;
 
 	bool m_bMeasureCanRun;
 	pnutils::threading::CriticalSection m_csMeasure;

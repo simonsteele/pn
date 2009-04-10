@@ -298,6 +298,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\recorder.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\ScintillaIF.cpp"
 				>
 			</File>
@@ -349,6 +353,10 @@
 			</File>
 			<File
 				RelativePath=".\modules.h"
+				>
+			</File>
+			<File
+				RelativePath=".\recorder.h"
 				>
 			</File>
 			<File

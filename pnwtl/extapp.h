@@ -140,6 +140,11 @@ public:
 	 */
 	bool ClearUserData();
 
+	/**
+	 * Get any instance of a recorder that has been registered
+	 */
+	extensions::IRecorderPtr GetRecorder() const;
+
 // Implement IPN:
 public:
 	/// Get the extension interface version
@@ -191,6 +196,9 @@ public:
 	/// Add plugin menu items
 	virtual void AddPluginMenuItems(extensions::IMenuItems *);
 
+	/// Register a script recorder
+	virtual void AddRecorder(extensions::IRecorderPtr recorder);
+
 // Stuff to signal event sinks...
 public:
 	void OnNewDocument(extensions::IDocumentPtr doc);
@@ -206,6 +214,7 @@ private:
 	AppSettings*	m_settings;
 	CommandDispatch*m_dispatch;
 	ExtensionItemList m_pluginMenuItems;
+	extensions::IRecorderPtr m_recorder;
 };
 
 #endif

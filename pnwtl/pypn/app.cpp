@@ -2,9 +2,9 @@
  * @file app.cpp
  * @brief Plugin Main Implementation
  * @author Simon Steele
- * @note Copyright (c) 2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-209 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #include "stdafx.h"
@@ -12,6 +12,7 @@
 #include "app.h"
 #include "utils.h"
 #include "wrapscintilla.h"
+#include "recorder.h"
 
 /*#if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -32,8 +33,6 @@ App::App(boost::python::handle<>& obj, extensions::IPN* app) : m_app(app), main_
 		m_registry->RegisterRunner("python", this);
 		m_registry->EnableSchemeScripts("python", "python");
 	}
-
-	//m_registry->Add("test", "Test Script", "python:testScript");
 
 	main_namespace = main_module.attr("__dict__");
 
@@ -67,7 +66,7 @@ void App::Initialise()
 	//OutputDebugString(setuppaths.c_str());
 	try
 	{
-		boost::python::handle<> ignored(PyRun_String(setuppaths.c_str(), Py_file_input, main_namespace.ptr(),main_namespace.ptr()));
+		boost::python::handle<> ignored(PyRun_String(setuppaths.c_str(), Py_file_input, main_namespace.ptr(), main_namespace.ptr()));
 	}
 	catch(boost::python::error_already_set&)
 	{
@@ -77,6 +76,10 @@ void App::Initialise()
 
 	// Now run the init.py file
 	loadInitScript();
+
+	// And now we're good to handle script recording:
+	m_recorder.reset(new Recorder(this));
+	m_app->AddRecorder(m_recorder);
 }
 
 void App::OnNewDocument(extensions::IDocumentPtr& doc)

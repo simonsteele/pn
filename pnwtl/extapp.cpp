@@ -100,11 +100,16 @@ const AppSettings& App::GetSettings()
  */
 void App::deinit()
 {
+	// Remove all plugin menu items
 	BOOST_FOREACH(ExtensionMenuItem* item, m_pluginMenuItems)
 	{
 		delete item;
 	}
 
+	// Remove any registered recorder instance
+	m_recorder.reset();
+
+	// Now it's safe to unload the extensions
 	unloadExtensions();
 
 	delete m_settings;
@@ -245,6 +250,11 @@ bool App::ClearUserData()
 	ensureUserSettingsDir();
 
 	return true;
+}
+
+extensions::IRecorderPtr App::GetRecorder() const
+{
+	return m_recorder;
 }
 
 /**
@@ -445,4 +455,9 @@ void App::AddPluginMenuItems(extensions::IMenuItems *source)
 	{
 		m_pluginMenuItems.push_back(new ExtensionMenuItem(source->GetItem(i)));
 	}
+}
+
+void App::AddRecorder(extensions::IRecorderPtr recorder)
+{
+	m_recorder = recorder;
 }

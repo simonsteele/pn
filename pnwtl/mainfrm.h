@@ -160,6 +160,7 @@ public:
 		COMMAND_ID_HANDLER(ID_TOOLS_OPTIONS, OnOptions)
 		COMMAND_ID_HANDLER(ID_TOOLS_DUMMY, OnOptions)
 		COMMAND_ID_HANDLER(ID_TOOLS_STOPTOOLS, OnStopTools)
+		COMMAND_ID_HANDLER(ID_TOOLS_RECORDSCRIPT, OnRecordScript)
 		COMMAND_ID_HANDLER(ID_HELP_WEB_PN, OnWebPNHome)
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SF, OnWebSFPage)
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SB, OnWebSFBug)
@@ -290,6 +291,7 @@ public:
 	LRESULT OnFindInFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnStopTools(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnRecordScript(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnWebPNHome(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnWebSFPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

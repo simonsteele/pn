@@ -1,4 +1,4 @@
-import pn, debug
+import pn, debug, scintilla, record
 
 ######################################################
 ## This stuff is all essential for pypn to work - that
@@ -69,3 +69,8 @@ def getSchemeConfig(name):
 	if not schemes.has_key(name):
 		schemes[name] = SchemeMapping(name)
 	return schemes[name]
+
+def startRecording(doc):
+	""" PN calls this to start recording a script, all recording actions
+	are delegated to the Recorder class """
+	return record.Recorder(doc)
