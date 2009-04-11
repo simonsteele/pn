@@ -1,4 +1,4 @@
-import pn
+import pn, scintilla
 
 def NoParamHandler(param):
 	return None
@@ -296,10 +296,19 @@ class Recorder:
 	def recordScintillaAction(self, message, wParam, lParam):
 		""" The user performed an action in scintilla, we handle it here 
 		and add it to the script """
-		command = self.handleMessage(message, wParam, lParam)
-		self.sci.AppendText(len(command), command)
+		command = self._handleMessage(message, wParam, lParam)
+		if command != None:
+			self.sci.AppendText(len(command), command)
+			
+	def stopRecording(self):
+		""" The user wants to stop recording, or the document the recording 
+		was made in is being closed. Read the document in as a script ready
+		to run and cancel the recording settings. """
+		pn.EvalDocument(self.doc)
+		self.doc = None
+		self.sci = None
 
-	def handleMessage(self, message, wParam, lParam):
+	def _handleMessage(self, message, wParam, lParam):
 		if handlers.has_key(message):
 			(action, param1, param2) = handlers[message]
 			p1 = param1(wParam)
@@ -310,4 +319,6 @@ class Recorder:
 			if p2 != None:
 				action = action + p2
 			return action + ")\r\n"
-		return "\tdoc.SendMessage(%d, %d, %d)\r\n" % (message, wParam, lParam)
+		# We don't have a handler for this message, so we don't script it - 
+		# the handlers collection is a whitelist.
+		return None

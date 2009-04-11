@@ -263,6 +263,35 @@ bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 }
 
 ////////////////////////////////////////////////////
+// Recording methods
+
+/**
+ * Start recording the user actions for a new script
+ */
+void CChildFrame::StartRecord(extensions::IRecorderPtr recorder)
+{
+	GetTextView()->StartRecording(recorder);
+}
+
+/**
+ * Called when the user wants to stop recording or when the window is being closed
+ * and a recording is in progress.
+ */
+void CChildFrame::StopRecord()
+{
+	GetTextView()->StopRecording();
+	g_Context.m_frame->RecordingStopped();
+}
+
+/**
+ * Find out whether a script recording is in progress.
+ */
+bool CChildFrame::IsRecording()
+{
+	return GetTextView()->IsRecording();
+}
+
+////////////////////////////////////////////////////
 // Document Entries
 
 DocumentPtr CChildFrame::GetDocument() const
@@ -1684,6 +1713,11 @@ void CChildFrame::handleClose()
 		ScriptRegistry::GetInstance()->Remove("User Scripts", m_pScript);
 		delete m_pScript;
 		m_pScript = NULL;
+	}
+
+	if (IsRecording())
+	{
+		StopRecord();
 	}
 
 	m_spDocument->OnDocClosing();

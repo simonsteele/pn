@@ -11,9 +11,6 @@
 #define recorder_h__included
 
 #include "../extiface.h"
-#include "wrapscintilla.h"
-
-typedef boost::shared_ptr<PNScintilla> ScintillaPtr;
 
 class App;
 
@@ -53,14 +50,11 @@ public:
 	virtual void StopRecording();
 
 private:
-	void appendText(const char* text);
-
 	App* m_app;
 	boost::python::object& m_glue;
 	boost::python::object m_recorder;
 	extensions::IPN* m_pn;
 	extensions::IDocumentPtr m_doc;
-	ScintillaPtr m_sci;
 };
 
 #endif // #ifndef recorder_h__included

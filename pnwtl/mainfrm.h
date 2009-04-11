@@ -161,6 +161,7 @@ public:
 		COMMAND_ID_HANDLER(ID_TOOLS_DUMMY, OnOptions)
 		COMMAND_ID_HANDLER(ID_TOOLS_STOPTOOLS, OnStopTools)
 		COMMAND_ID_HANDLER(ID_TOOLS_RECORDSCRIPT, OnRecordScript)
+		COMMAND_ID_HANDLER(ID_TOOLS_STOPRECORDING, OnStopRecording)
 		COMMAND_ID_HANDLER(ID_HELP_WEB_PN, OnWebPNHome)
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SF, OnWebSFPage)
 		COMMAND_ID_HANDLER(ID_HELP_WEB_SB, OnWebSFBug)
@@ -213,6 +214,8 @@ public:
 		UPDATE_ELEMENT(ID_FILE_SAVE, UPDUI_MENUPOPUP | UPDUI_TOOLBAR)
 		UPDATE_ELEMENT(ID_FILE_CLOSE, UPDUI_TOOLBAR)
 		UPDATE_ELEMENT(ID_FILE_CLOSEWORKSPACE, UPDUI_MENUPOPUP)
+		UPDATE_ELEMENT(ID_TOOLS_RECORDSCRIPT, UPDUI_MENUPOPUP)
+		UPDATE_ELEMENT(ID_TOOLS_STOPRECORDING, UPDUI_MENUPOPUP)
 	END_UPDATE_UI_MAP()
 
 	BEGIN_MENU_HANDLER_MAP()
@@ -292,6 +295,7 @@ public:
 	LRESULT OnOptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnStopTools(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnRecordScript(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnStopRecording(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnWebPNHome(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnWebSFPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -350,6 +354,8 @@ public:
 	virtual Projects::Workspace* GetActiveWorkspace();
 	
 	virtual void FindInFiles(SearchOptions* options);
+	
+	virtual void RecordingStopped();
 	
 	HWND GetJumpViewHandle(){return hCTagsWnd;}
 
@@ -505,6 +511,7 @@ private:
 
 	std::list<tstring>*		m_cmdLineArgs;
 	tstring					m_lastOpenPath;
+	DocumentPtr				m_recordingDoc;
 
 	/* Can't free dialogs via the base class or destructors don't get
 	called. Use a template function to free any dialog class */

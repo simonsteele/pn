@@ -80,7 +80,9 @@ public:
 	void MarkAll(extensions::ISearchOptions* options);
 	void ClearMarkAll();
 
-	void StartRecord(extensions::IRecorderPtr recorder);
+	void StartRecording(extensions::IRecorderPtr recorder);
+	void StopRecording();
+	bool IsRecording() const;
 	
 	////////////////////////////////////////////////////////////////
 	// Overrides from CScintillaImpl / CScintillaWindowImpl

@@ -2,7 +2,7 @@
  * @file Document.cpp
  * @brief PN Document
  * @author Simon Steele
- * @note Copyright (c) 2005-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -276,4 +276,9 @@ void Document::Close(bool dontAskUserIfUnsaved)
 	{
 		m_pFrame->PostMessage(WM_CLOSE, 0, 0);
 	}
+}
+
+void Document::Activate()
+{
+	SetFocus(m_pFrame->m_hWnd);
 }

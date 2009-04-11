@@ -227,6 +227,11 @@ public:
 	 * Close this document
 	 */
 	virtual void Close(bool dontAskUserIfUnsaved) = 0;
+
+	/**
+	 * Activate (focus) this document
+	 */
+	virtual void Activate() = 0;
 };
 
 /**

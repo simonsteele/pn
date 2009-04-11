@@ -91,6 +91,12 @@ IDocumentPtr PNNewDocument(const char* scheme)
 	return g_app->GetPN()->NewDocument(scheme);
 }
 
+void PNEvalDocument(IDocumentPtr doc)
+{
+	return g_app->RunDocScript(doc);
+}
+
+
 #define CONSTANT(x) scope().attr(#x) = x
 
 BOOST_PYTHON_MODULE(pn)
@@ -119,6 +125,8 @@ BOOST_PYTHON_MODULE(pn)
 	def("OpenDocument", &PNOpenDocument, "Open a file");
 
 	def("NewDocument", &PNNewDocument, "Create a new document");
+
+	def("EvalDocument", &PNEvalDocument, "Run a document as a PN python script");
 
 	def("StringFromPointer", &PNStringFromPointer, "Get a string value from a c-style string pointer");
 
@@ -166,6 +174,8 @@ BOOST_PYTHON_MODULE(pn)
 
 		.def("Save", &IDocument::Save, "Save the document")
 		.def("Close", &IDocument::Close, "Close the document")
+
+		.def("Activate", &IDocument::Activate, "Activate the document")
     ;
 
 	class_<ISearchOptions, boost::noncopyable>("ISearchOptions", no_init)

@@ -664,10 +664,37 @@ void CTextView::ClearMarkAll()
 	IndicatorClearRange(0, GetLength());
 }
 
-void CTextView::StartRecord(extensions::IRecorderPtr recorder)
+/**
+ * User wants to start recording.
+ */
+void CTextView::StartRecording(extensions::IRecorderPtr recorder)
 {
 	m_recorder = recorder;
 	CScintilla::StartRecord();
+	recorder->StartRecording();
+}
+
+/**
+ * User wants to stop recording.
+ */
+void CTextView::StopRecording()
+{
+	if (!m_recorder.get())
+	{
+		return;
+	}
+
+	CScintilla::StopRecord();
+	m_recorder->StopRecording();
+	m_recorder.reset();
+}
+
+/**
+ * Find out whether a recording is in progress.
+ */
+bool CTextView::IsRecording() const
+{
+	return m_recorder.get() != NULL;
 }
 
 void CTextView::DoContextMenu(CPoint* point)

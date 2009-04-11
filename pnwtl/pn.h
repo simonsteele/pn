@@ -124,6 +124,9 @@ struct IMainFrame
 	
 	// Search
 	virtual void FindInFiles(SearchOptions* options) = 0;
+
+	// Scripts
+	virtual void RecordingStopped() = 0;
 };
 
 static void LogWndPos(LPCTSTR codeLoc, HWND hWnd)

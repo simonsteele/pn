@@ -306,6 +306,13 @@ public:
 	
 	bool InsertClipCompleted(Scintilla::SCNotification* notification);
 
+	////////////////////////////////////////////////////
+	// Recording methods
+
+	void StartRecord(extensions::IRecorderPtr recorder);
+	void StopRecord();
+	bool IsRecording();
+
 private:
 
 	/**

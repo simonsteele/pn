@@ -53,7 +53,11 @@ void Recorder::StartRecording()
 	// Make sure we have no recordings in progress.
 	StopRecording();
 
+	extensions::IDocumentPtr currentDoc(m_pn->GetCurrentDocument());
+
 	m_doc = m_pn->NewDocument("python");
+
+	currentDoc->Activate();
 	
 	if (!m_doc.get())
 	{
@@ -81,11 +85,16 @@ void Recorder::StopRecording()
 		return;
 	}
 
-	m_sci.reset();
-	m_doc.reset();
-}
+	try
+	{
+		boost::python::call_method<void>(m_recorder.ptr(), "stopRecording");
+	}
+	catch(boost::python::error_already_set&)
+	{
+		std::string s = getPythonErrorString();
+		m_app->AddOutput(s.c_str());
+	}
 
-void Recorder::appendText(const char* text)
-{
-	m_sci->AppendText(strlen(text), text);
+	m_doc.reset();
+	m_recorder = boost::python::object();
 }

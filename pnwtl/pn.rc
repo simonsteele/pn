@@ -269,6 +269,7 @@ BEGIN
         MENUITEM "&Stop Tools",                 ID_TOOLS_STOPTOOLS, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "&Record Script",              ID_TOOLS_RECORDSCRIPT
+        MENUITEM "Stop R&ecording",             ID_TOOLS_STOPRECORDING, INACTIVE
         MENUITEM SEPARATOR
         MENUITEM "&Options",                    ID_TOOLS_OPTIONS
     END

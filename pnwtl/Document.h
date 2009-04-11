@@ -70,6 +70,8 @@ class Document : public extensions::IDocument, public extensions::ITextEditorEve
 
 		virtual void Close(bool dontAskUserIfUnsaved);
 
+		virtual void Activate();
+
 // ITextEditorEventSink members
 	public:
 		virtual void OnSchemeChange(const char* scheme);

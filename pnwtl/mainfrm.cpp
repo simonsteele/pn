@@ -2,7 +2,7 @@
  * @file mainfrm.cpp
  * @brief Main Window for Programmer's Notepad 2 (Implementation)
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -456,6 +456,8 @@ BOOL CMainFrame::OnIdle()
 	UIEnable(ID_FILE_SAVE, bCanSave);
 	UIEnable(ID_EDIT_CUT, bHasSel);
 	UIEnable(ID_EDIT_COPY, bHasSel);
+	UIEnable(ID_TOOLS_RECORDSCRIPT, m_recordingDoc.get() == 0);
+	UIEnable(ID_TOOLS_STOPRECORDING, m_recordingDoc.get() != 0);
 
 	lResult = ::SendMessage(::GetFocus(), EM_CANUNDO, 0, 0);
 	UIEnable(ID_EDIT_UNDO, lResult);
@@ -2094,9 +2096,25 @@ LRESULT CMainFrame::OnRecordScript(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 		return 0;
 	}
 
-	pChild->GetTextView()->StartRecord(recorder);
+	m_recordingDoc = pChild->GetDocument();
+	pChild->StartRecord(recorder);
 
-	recorder->StartRecording();
+	return 0;
+}
+
+/**
+ * User wants to stop/finalise a script recording session
+ */
+LRESULT CMainFrame::OnStopRecording(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if (!m_recordingDoc.get())
+	{
+		// Doesn't look like we're really recording.
+		return 0;
+	}
+
+	// Asking the view to stop the recording should cause ClearRecordingState() to be called from there, resetting m_recordingDoc.
+	m_recordingDoc->GetFrame()->StopRecord();
 
 	return 0;
 }
@@ -2447,6 +2465,14 @@ void CMainFrame::FindInFiles(SearchOptions* options)
 		break;
 
 	}
+}
+
+/**
+ * Called from an editor to signal script recording has ended
+ */
+void CMainFrame::RecordingStopped()
+{
+	m_recordingDoc.reset();
 }
 
 void CMainFrame::ToggleDockingWindow(EDockingWindow window, bool bSetValue, bool bShowing)
