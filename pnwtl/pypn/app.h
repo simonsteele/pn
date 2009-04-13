@@ -32,6 +32,7 @@ public:
 // IScriptRunner
 	virtual void RunScript(const char* name);
 	virtual void RunDocScript(extensions::IDocumentPtr& doc);
+	virtual void Eval(const char* script, PN::BaseString& output);
 
 // Other
 	void RegisterScript(const char* scriptname, const char* group, const char* name);

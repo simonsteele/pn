@@ -52,9 +52,8 @@ public:
 private:
 	App* m_app;
 	boost::python::object& m_glue;
-	boost::python::object m_recorder;
+	boost::python::handle<> m_recorder;
 	extensions::IPN* m_pn;
-	extensions::IDocumentPtr m_doc;
 };
 
 #endif // #ifndef recorder_h__included

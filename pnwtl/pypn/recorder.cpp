@@ -18,14 +18,14 @@ Recorder::Recorder(App* app) : m_app(app), m_pn(app->GetPN()), m_glue(app->PyPnG
 
 void Recorder::RecordScintillaAction(int message, WPARAM wParam, LPARAM lParam)
 {
-	if (!m_doc.get())
+	if (!m_recorder.get())
 	{
 		return;
 	}
 
 	try
 	{
-		boost::python::call_method<void>(m_recorder.ptr(), "recordScintillaAction", message, wParam, lParam);
+		boost::python::call_method<void>(m_recorder.get(), "recordScintillaAction", message, wParam, lParam);
 	}
 	catch(boost::python::error_already_set&)
 	{
@@ -39,7 +39,7 @@ void Recorder::RecordScintillaAction(int message, WPARAM wParam, LPARAM lParam)
  */
 void Recorder::RecordSearchAction(SearchType type, const extensions::ISearchOptions* options, FindNextResult result)
 {
-	if (!m_doc.get())
+	if (!m_recorder.get())
 	{
 		return;
 	}
@@ -52,21 +52,10 @@ void Recorder::StartRecording()
 {
 	// Make sure we have no recordings in progress.
 	StopRecording();
-
-	extensions::IDocumentPtr currentDoc(m_pn->GetCurrentDocument());
-
-	m_doc = m_pn->NewDocument("python");
-
-	currentDoc->Activate();
 	
-	if (!m_doc.get())
-	{
-		return;
-	}
-
 	try
 	{
-		m_recorder = boost::python::call_method<boost::python::object>(m_glue.ptr(), "startRecording", m_doc);
+		m_recorder = boost::python::call_method<boost::python::handle<>>(m_glue.ptr(), "startRecording");
 	}
 	catch(boost::python::error_already_set&)
 	{
@@ -80,14 +69,17 @@ void Recorder::StartRecording()
  */
 void Recorder::StopRecording()
 {
-	if (!m_doc.get())
+	if (!m_recorder.get())
 	{
 		return;
 	}
 
+	// Store the document that's currently being edited.
+	extensions::IDocumentPtr currentDoc(m_pn->GetCurrentDocument());
+
 	try
 	{
-		boost::python::call_method<void>(m_recorder.ptr(), "stopRecording");
+		boost::python::call_method<void>(m_recorder.get(), "stopRecording");
 	}
 	catch(boost::python::error_already_set&)
 	{
@@ -95,6 +87,9 @@ void Recorder::StopRecording()
 		m_app->AddOutput(s.c_str());
 	}
 
-	m_doc.reset();
-	m_recorder = boost::python::object();
+	m_recorder.reset();
+
+	// Reactivate the document we had when we were called, making sure
+	// that we haven't stolen the user's focus.
+	currentDoc->Activate();
 }

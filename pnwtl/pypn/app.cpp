@@ -192,6 +192,25 @@ void App::RunDocScript(extensions::IDocumentPtr& doc)
 	}
 }
 
+void App::Eval(const char* script, PN::BaseString& output)
+{
+	try
+	{
+		boost::python::str result(boost::python::eval(script, main_namespace, main_namespace));
+		output.Add(boost::python::extract<const char*>(result));
+		/*boost::python::handle<> ignored(PyRun_String(buffer,
+			Py_file_input, 
+			main_namespace.ptr(),
+			main_namespace.ptr()
+		));*/
+	}
+	catch(boost::python::error_already_set&)
+	{
+		std::string s = PyTracebackToString();
+		AddOutput(s.c_str());
+	}
+}
+
 /**
  * Register a script with PN
  */

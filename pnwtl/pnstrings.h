@@ -199,6 +199,25 @@ class CustomFormatStringBuilder
 					pT->OnFormatKey(key.c_str());
 					
 				}
+				else if (str[i] == _T('&') && (i != (len-1)))
+				{
+					if (str[i + 1] == _T('&'))
+					{
+						// Ignore double-&
+						m_string += str[i];
+						i++;
+					}
+					else if (str[i + 1] == _T('{'))
+					{
+						std::string key;
+						i = ExtractScriptRef(key, str, i);
+						pT->OnFormatScriptRef(key.c_str());
+					}
+					else
+					{
+						m_string += str[i];
+					}
+				}
 				else
 				{
 					m_string += str[i];
@@ -211,6 +230,7 @@ class CustomFormatStringBuilder
 		void OnFormatChar(TCHAR thechar){}
 		void OnFormatKey(LPCTSTR key){}
 		void OnFormatPercentKey(LPCTSTR key){}
+		void OnFormatScriptRef(LPCTSTR key){}
 
 	protected:
 		TCHAR SafeGetNextChar(LPCTSTR str, int i, int len)
@@ -224,11 +244,27 @@ class CustomFormatStringBuilder
 			return str[i+1];
 		}
 
+		int ExtractScriptRef(tstring& prop, LPCTSTR source, int pos)
+		{
+			return ExtractStr(prop, source, pos, _T('}'));
+		}
+
 		int ExtractProp(tstring& prop, LPCTSTR source, int pos)
 		{
-			// we matched a $(x) property...
+			return ExtractStr(prop, source, pos, _T(')'));
+		}
+
+		/**
+		 * Extract an expression looking for a specific end character.
+		 * @param prop the expression that is extracted
+		 * @param source the source text
+		 * @param pos index into the source text
+		 * @param exprEnd the character that ends the grouped expression.
+		 */
+		int ExtractStr(tstring& prop, LPCTSTR source, int pos, TCHAR exprEnd)
+		{
 			LPCTSTR pProp = &source[pos+2];
-			LPCTSTR endProp = _tcschr(pProp, _T(')'));
+			LPCTSTR endProp = _tcschr(pProp, exprEnd);
 			if(endProp != NULL)
 			{
 				int keylen = (endProp - pProp) / sizeof(TCHAR);

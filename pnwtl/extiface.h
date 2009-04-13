@@ -56,7 +56,7 @@ typedef enum {stFindNext, stReplace, stReplaceAll} SearchType;
 namespace extensions
 {
 
-#define PN_EXT_IFACE_VERSION	8
+#define PN_EXT_IFACE_VERSION	9
 
 /////////////////////////////////////////////////////////////////////////////
 // Predeclare types
@@ -304,6 +304,9 @@ public:
  * Interface for something that can run scripts from the 
  * script manager, this is how PN tells you to run a script whether
  * it be a file or a document.
+ * 
+ * It also provides methods allowing a scripting provider to let scripting
+ * be used in places like parameter lists.
  */
 class IScriptRunner
 {
@@ -322,6 +325,13 @@ public:
 	 * of a given document as a script.
 	 */
 	virtual void RunDocScript(IDocumentPtr& doc) = 0;
+
+	/**
+	 * Request a runner to attempt to run the script fragment provided,
+	 * this is used for allowing scripting to be used in tool parameters
+	 * etc.
+	 */
+	virtual void Eval(const char* script, PN::BaseString& output) = 0;
 };
 
 /**

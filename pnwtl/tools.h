@@ -2,7 +2,7 @@
  * @file tools.h
  * @brief External tools code
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -120,6 +120,7 @@ class ToolCommandString : public CustomFormatStringBuilder<ToolCommandString>
 		void OnFormatChar(TCHAR thechar);
 		void OnFormatKey(LPCTSTR key);
 		void OnFormatPercentKey(LPCTSTR key);
+		void OnFormatScriptRef(LPCTSTR key);
 
 		CChildFrame* pChild;
 		bool reversePathSeps;

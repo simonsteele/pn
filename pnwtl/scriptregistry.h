@@ -78,36 +78,60 @@ protected:
 	std::map<tstring, tstring> m_scriptableSchemes;
 };
 
+/**
+ * Named group of scripts
+ */
 class ScriptGroup
 {
 public:
-	ScriptGroup(const char* name);
+	explicit ScriptGroup(const char* name);
 	~ScriptGroup();
 
+	/**
+	 * Add a script with a name and a unique reference.
+	 */
 	Script* Add(const char* name, const char* scriptref);
+	
+	/**
+	 * Add a Script instance.
+	 */
 	void Add(Script* script);
+	
+	/**
+	 * Remove a Script instance.
+	 */
 	void Remove(Script* script);
+	
+	/**
+	 * Get a script instance by name, or null if not found.
+	 */
 	Script* Get(const char* name);
 
 	void Clear();
 
 	const script_list_t& GetScripts();
 
+	/**
+	 * Get the name of this group.
+	 */
 	const char* GetName() const;
 
-protected:
+private:
 	void clear();
 
 	tstring			m_name;
 	script_list_t	m_scripts;
 };
 
+/**
+ * Reference to a single script.
+ */
 class Script
 {
 public:
-	Script(const char* name, const char* scriptref) : Name(name), ScriptRef(scriptref){}
+	explicit Script(const char* name, const char* scriptref) : Name(name), ScriptRef(scriptref){}
 
-	Script(const Script& copy)
+	explicit Script(const Script& copy)
 	{
 		*this = copy;
 	}
@@ -125,10 +149,13 @@ public:
 	virtual void Run();
 };
 
+/**
+ * This is a script that is an open PN document.
+ */
 class DocScript : public Script
 {
 public:
-	DocScript(const char* name, const char* runner, DocumentPtr& doc) 
+	explicit DocScript(const char* name, const char* runner, DocumentPtr& doc) 
 		: Script(name, ""), m_runner(runner), m_doc(doc){}
 
 	virtual void Run();
