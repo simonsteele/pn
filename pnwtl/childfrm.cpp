@@ -177,7 +177,7 @@ void CChildFrame::SetupToolbar()
 	DWORD dwStyle = WS_CHILD | WS_VISIBLE | /*WS_CLIPCHILDREN | WS_CLIPSIBLINGS |*/ CCS_BOTTOM | 
 					CCS_NODIVIDER | TBSTYLE_TOOLTIPS | CCS_NORESIZE | TBSTYLE_FLAT;
 
-	toolbar.Create(m_hWnd, rc, NULL, dwStyle);
+	toolbar.Create(m_hWnd, rc, NULL, dwStyle, cwMinibar);
 	
 	toolbar.SetBitmapSize(CSize(9,9));
 	toolbar.SetButtonSize(CSize(16, 15));
@@ -204,10 +204,10 @@ void CChildFrame::EnsureOutputWindow()
 		rc2.top += (rc.Height() / 4) * 3;
 
 		m_pOutputView = new COutputView;
-		m_pOutputView->Create(m_hWnd, rc2, _T("Output"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
+		m_pOutputView->Create(m_hWnd, rc2, _T("Output"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwOutputView);
 		m_hWndOutput = m_pOutputView->m_hWnd;
 
-		m_pSplitter->Create(m_hWnd, rc, _T("Splitter"), 0, 0);
+		m_pSplitter->Create(m_hWnd, rc, _T("Splitter"), 0, 0, cwSplitter);
 		m_pSplitter->SetPanes((HWND)m_view, m_pOutputView->m_hWnd);
 		m_pSplitter->ProportionSplit();
 		m_pSplitter->SetSinglePaneMode(SPLITTER_TOP);
@@ -451,7 +451,7 @@ void CChildFrame::LoadExternalLexers()
 
 LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	m_hWndClient = m_view.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
+	m_hWndClient = m_view.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwScintilla);
 
 	if(s_bFirstChild)
 	{

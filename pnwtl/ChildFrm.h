@@ -314,6 +314,14 @@ public:
 	bool IsRecording();
 
 private:
+	// Window IDs we use, designed to avoid the WM_COMMAND ctrl id range
+	enum tagChildWindowIds
+	{
+		cwScintilla = 0x10000,
+		cwMinibar = 0x20000,
+		cwOutputView = 0x30000,
+		cwSplitter = 0x40000
+	};
 
 	/**
 	 * Internal class which adjusts the splitter behaviour to take account

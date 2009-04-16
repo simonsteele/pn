@@ -209,7 +209,7 @@ class CommandDispatch : public CommandEventHandler
 	}
 
 #define LOCAL_MENUCOMMAND(id) \
-	if(uMsg == WM_COMMAND) \
+	if(uMsg == WM_COMMAND && lParam == 0) \
 	{ \
 		bHandled = TRUE; \
 		if( m_pCmdDispatch->LocalHandleCommand(LOWORD(wParam), id, this) ) \

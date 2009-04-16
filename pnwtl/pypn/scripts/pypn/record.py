@@ -1,5 +1,10 @@
 import pn, scintilla
 
+############################################################################
+## These are parameter handlers, they're defined as [type]Handler where type
+## is a type defined by the scintilla interface. We only handle the basics
+## needed for the whitelist-supported set of commands.
+
 def NoParamHandler(param):
 	return None
 
@@ -37,6 +42,10 @@ def boolParamHandler(param):
 
 def keymodParamHandler(param):
 	return ""
+
+############################################################################
+## Map from scintilla message id to handlers and method names
+## This is our whitelist of allowed and understood commands
 
 handlers = {
 	2001 : ("AddText", intParamHandler, stringParamHandler),
@@ -281,35 +290,52 @@ handlers = {
 ############################################################################
 ## Script Recording
 
+SCI_REPLACESEL = 2170
+
 class Recorder:
 	""" The recorder class essentially implements IRecorder in python code,
 	the instance is passed to a shim in PyPN which calls the relevant python
 	instance methods. """
 	
-	def __init__(self, doc):
+	def __init__(self):
 		""" A recording is starting, we set up the basic script text """
-		self.doc = doc
-		self.sci = scintilla.Scintilla(doc)
-		script = "import pn, scintilla\r\n\r\n@script(\"New Script\", \"Recorded\")\r\ndef RecordedScript():\r\n\tdoc = pn.CurrentDoc()\r\n\tsci = scintilla.Scintilla(doc)\r\n"
-		self.sci.AppendText(len(script), script)
+		self.script = "import pn, scintilla\r\n\r\n@script(\"New Script\", \"Recorded\")\r\ndef RecordedScript():\r\n\tdoc = pn.CurrentDoc()\r\n\tsci = scintilla.Scintilla(doc)\r\n"
+		self.insertbuf = ""
+		self.lineends = ['\r', '\n']
 
 	def recordScintillaAction(self, message, wParam, lParam):
 		""" The user performed an action in scintilla, we handle it here 
 		and add it to the script """
 		command = self._handleMessage(message, wParam, lParam)
 		if command != None:
-			self.sci.AppendText(len(command), command)
+			self.script = self.script + command
 			
 	def stopRecording(self):
 		""" The user wants to stop recording, or the document the recording 
 		was made in is being closed. Read the document in as a script ready
 		to run and cancel the recording settings. """
-		pn.EvalDocument(self.doc)
-		self.doc = None
-		self.sci = None
+		doc = pn.NewDocument("python")
+		sci = scintilla.Scintilla(doc)
+		sci.ReplaceSel(self.script)
+		pn.EvalDocument(doc)
+		self.script = None
 
 	def _handleMessage(self, message, wParam, lParam):
-		if handlers.has_key(message):
+		""" Deal with a scintilla record message """
+		if message == SCI_REPLACESEL:
+			# Text insertion
+			text = pn.StringFromPointer(lParam)
+			
+			# See if we need to flush the insertion buffer
+			if len(self.insertbuf) > 0 and (len(text) == 0 or ((self.insertbuf[-1] in self.lineends) and (not text[0] in self.lineends))):
+				self._flushbuf()
+			
+			# Store away the insert
+			self.insertbuf = self.insertbuf + text
+			
+		elif handlers.has_key(message):
+			# Other message
+			self._flushbuf()
 			(action, param1, param2) = handlers[message]
 			p1 = param1(wParam)
 			p2 = param2(lParam)
@@ -319,6 +345,12 @@ class Recorder:
 			if p2 != None:
 				action = action + p2
 			return action + ")\r\n"
-		# We don't have a handler for this message, so we don't script it - 
-		# the handlers collection is a whitelist.
+		# We don't have a handler for this message, or we buffered it so we 
+		# don't script it
 		return None
+	
+	def _flushbuf(self):
+		""" Flush any built up character buffer """
+		if len(self.insertbuf) > 0:
+			self.script += "\tsci.ReplaceSel(" + repr(self.insertbuf) + ")\r\n"
+			self.insertbuf = ""
