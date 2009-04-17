@@ -42,12 +42,12 @@ public:
 class CScintillaImpl : public CScintilla
 {
 public:
-	CScintillaImpl();
+	explicit CScintillaImpl();
 	~CScintillaImpl();
 
-	int FindNext(extensions::ISearchOptions* pOptions);
-	bool ReplaceOnce(extensions::ISearchOptions* pOptions);
-	int ReplaceAll(extensions::ISearchOptions* pOptions);
+	virtual int FindNext(extensions::ISearchOptions* pOptions);
+	virtual bool ReplaceOnce(extensions::ISearchOptions* pOptions);
+	virtual int ReplaceAll(extensions::ISearchOptions* pOptions);
 	int FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn matchHandler);
 	//void HighlightAll(SFindOptions* pOptions); - doesn't work with all schemes...
 

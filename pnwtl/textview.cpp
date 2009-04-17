@@ -1372,3 +1372,48 @@ UINT __stdcall CTextView::RunMeasureThread(void* pThis)
 
 	return 0;
 }
+
+/**
+ * Override FindNext to provide script/macro recording support.
+ */
+int CTextView::FindNext(extensions::ISearchOptions* pOptions)
+{
+	int result = baseClass::FindNext(pOptions);
+
+	if (m_recorder.get())
+	{
+		m_recorder->RecordSearchAction(stFindNext, pOptions, static_cast<FindNextResult>(result));
+	}
+
+	return result;
+}
+
+/**
+ * Override ReplaceOnce to provide script/macro recording support.
+ */
+bool CTextView::ReplaceOnce(extensions::ISearchOptions* pOptions)
+{
+	bool result = baseClass::ReplaceOnce(pOptions);
+
+	if (m_recorder.get())
+	{
+		m_recorder->RecordSearchAction(stReplace, pOptions, result ? fnFound : fnNotFound);
+	}
+
+	return result;
+}
+
+/**
+ * Override ReplaceAll to provide script/macro recording support.
+ */
+int CTextView::ReplaceAll(extensions::ISearchOptions* pOptions)
+{
+	int result = baseClass::ReplaceAll(pOptions);
+
+	if (m_recorder.get())
+	{
+		m_recorder->RecordSearchAction(stReplaceAll, pOptions, static_cast<FindNextResult>(result));
+	}
+
+	return result;
+}

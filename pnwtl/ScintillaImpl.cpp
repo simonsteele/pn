@@ -623,7 +623,7 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 		return fnInvalidSearch;
 	
 	///@todo Sort out interface accessibility
-	static_cast<SearchOptions*>(pOptions)->SetFound(false);
+	pOptions->SetFound(false);
 
 	GetSel(cr);
 
@@ -703,7 +703,7 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 		if (checkFoundPos && lastFindDetails.result == fnFound &&
 			lastFindDetails.startPos == start)
 		{
-			static_cast<SearchOptions*>(pOptions)->SetFound(true);
+			pOptions->SetFound(true);
 			bRet = fnReachedStart;
 		}
 		else
@@ -711,7 +711,7 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 			EnsureRangeVisible(start, end);
 			SetSel(start, end);
  			// ScrollCaret();
-			static_cast<SearchOptions*>(pOptions)->SetFound(true);
+			pOptions->SetFound(true);
 			bRet = fnFound;
 		}
 	}
@@ -753,7 +753,7 @@ int CScintillaImpl::FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn
 		return fnInvalidSearch;
 	
 	///@todo Sort out interface accessibility
-	static_cast<SearchOptions*>(pOptions)->SetFound(false);
+	pOptions->SetFound(false);
 
 	///@todo SCFIND_WORDSTART
 	int flags = (pOptions->GetMatchWholeWord() ? SCFIND_WHOLEWORD : 0) |
@@ -823,7 +823,7 @@ bool CScintillaImpl::ReplaceOnce(extensions::ISearchOptions* pOptions)
 		
 		SetSel(cr.cpMin + lenReplaced, cr.cpMin);
 		
-		static_cast<SearchOptions*>(pOptions)->SetFound(false);
+		pOptions->SetFound(false);
 	}
 
 	return FindNext(pOptions) != 0;

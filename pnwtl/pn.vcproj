@@ -616,10 +616,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\searchoptions.cpp"
-				>
-			</File>
-			<File
 				RelativePath="smartstart.cpp"
 				>
 			</File>
@@ -1002,6 +998,10 @@
 			</File>
 			<File
 				RelativePath=".\ScintillaWTL.h"
+				>
+			</File>
+			<File
+				RelativePath=".\searchoptions.h"
 				>
 			</File>
 			<File

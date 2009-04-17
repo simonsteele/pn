@@ -100,19 +100,19 @@ void Options::loadCache()
 	group(PNSK_FIND);
 
 	// New Search Options...
-	m_SearchOptions.FindText		= Get(NULL, _T("FindText"), _T("")).c_str();
-	m_SearchOptions.ReplaceText		= Get(NULL, _T("ReplaceText"), _T("")).c_str();
-	m_SearchOptions.Path			= Get(NULL, _T("Path"), _T("")).c_str();
-	m_SearchOptions.FileExts		= Get(NULL, _T("FileExts"), _T("")).c_str();
+	m_SearchOptions.SetFindText(Get(NULL, _T("FindText"), _T("")).c_str());
+	m_SearchOptions.SetReplaceText(Get(NULL, _T("ReplaceText"), _T("")).c_str());
+	m_SearchOptions.SetSearchPath(Get(NULL, _T("Path"), _T("")).c_str());
+	m_SearchOptions.SetFileExts(Get(NULL, _T("FileExts"), _T("")).c_str());
 	
-	m_SearchOptions.Direction		= (BOOL)Get(NULL, _T("Direction"), true);
-	m_SearchOptions.Loop			= (BOOL)Get(NULL, _T("Loop"), true);
-	m_SearchOptions.MatchCase		= (BOOL)Get(NULL, _T("MatchCase"), false);
-	m_SearchOptions.MatchWholeWord	= (BOOL)Get(NULL, _T("MatchWholeWord"), false);
-	m_SearchOptions.Recurse			= (BOOL)Get(NULL, _T("Recurse"), true);
-	m_SearchOptions.IncludeHidden	= (BOOL)Get(NULL, _T("IncludeHidden"), true);
-	m_SearchOptions.UseRegExp		= (BOOL)Get(NULL, _T("UseRegExp"), false);
-	m_SearchOptions.UseSlashes		= (BOOL)Get(NULL, _T("UseSlashes"), false);	
+	m_SearchOptions.SetSearchBackwards(!(BOOL)Get(NULL, _T("Direction"), true));
+	m_SearchOptions.SetLoopOK((BOOL)Get(NULL, _T("Loop"), true));
+	m_SearchOptions.SetMatchCase((BOOL)Get(NULL, _T("MatchCase"), false));
+	m_SearchOptions.SetMatchWholeWord((BOOL)Get(NULL, _T("MatchWholeWord"), false));
+	m_SearchOptions.SetRecurse((BOOL)Get(NULL, _T("Recurse"), true));
+	m_SearchOptions.SetIncludeHidden((BOOL)Get(NULL, _T("IncludeHidden"), true));
+	m_SearchOptions.SetUseRegExp((BOOL)Get(NULL, _T("UseRegExp"), false));
+	m_SearchOptions.SetUseSlashes((BOOL)Get(NULL, _T("UseSlashes"), false));
 
 	cache[OFindAlphaEnabled]		= Get(NULL, _T("FindAlphaEnabled"), true);
 	cache[OFindAlphaPercent]		= Get(NULL, _T("FindAlphaPercent"), 60);
@@ -177,14 +177,14 @@ void Options::saveCache()
 	Set(NULL, _T("Path"),					m_SearchOptions.GetSearchPath());
 	Set(NULL, _T("FileExts"),				m_SearchOptions.GetFileExts());
 	
-	Set(NULL, _T("Direction"),				m_SearchOptions.Direction);
-	Set(NULL, _T("Loop"),					m_SearchOptions.Loop);
-	Set(NULL, _T("MatchCase"),				m_SearchOptions.MatchCase);
-	Set(NULL, _T("MatchWholeWord"),			m_SearchOptions.MatchWholeWord);
-	Set(NULL, _T("Recurse"),				m_SearchOptions.Recurse);
-	Set(NULL, _T("IncludeHidden"),			m_SearchOptions.IncludeHidden);
-	Set(NULL, _T("UseRegExp"),				m_SearchOptions.UseRegExp);
-	Set(NULL, _T("UseSlashes"),				m_SearchOptions.UseSlashes);
+	Set(NULL, _T("Direction"),				!m_SearchOptions.GetSearchBackwards());
+	Set(NULL, _T("Loop"),					m_SearchOptions.GetLoopOK());
+	Set(NULL, _T("MatchCase"),				m_SearchOptions.GetMatchCase());
+	Set(NULL, _T("MatchWholeWord"),			m_SearchOptions.GetMatchWholeWord());
+	Set(NULL, _T("Recurse"),				m_SearchOptions.GetRecurse());
+	Set(NULL, _T("IncludeHidden"),			m_SearchOptions.GetIncludeHidden());
+	Set(NULL, _T("UseRegExp"),				m_SearchOptions.GetUseRegExp());
+	Set(NULL, _T("UseSlashes"),				m_SearchOptions.GetUseSlashes());
 
 	Set(NULL, _T("FindAlphaEnabled"),		cache[OFindAlphaEnabled]);
 	Set(NULL, _T("FindAlphaPercent"),		cache[OFindAlphaPercent]);

@@ -277,10 +277,10 @@ public:
 	////////////////////////////////////////////////////
 	// Editor Window Methods
 
-	FindNextResult FindNext(SearchOptions* options);
-	void MarkAll(SearchOptions* options);
-	bool Replace(SearchOptions* options);
-	int ReplaceAll(SearchOptions* options);
+	FindNextResult FindNext(extensions::ISearchOptions* options);
+	void MarkAll(extensions::ISearchOptions* options);
+	bool Replace(extensions::ISearchOptions* options);
+	int ReplaceAll(extensions::ISearchOptions* options);
 	int GetPosition(EGPType type);
 	void SetPosStatus(CMultiPaneStatusBarCtrl&	stat);
 	bool OnSchemeChange(LPVOID pVoid);

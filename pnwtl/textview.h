@@ -94,6 +94,13 @@ public:
 	virtual int HandleNotify(LPARAM lParam);
 
 	////////////////////////////////////////////////////////////////
+	// Overrides to support script/macro recording:
+
+	virtual int FindNext(extensions::ISearchOptions* pOptions);
+	virtual bool ReplaceOnce(extensions::ISearchOptions* pOptions);
+	virtual int ReplaceAll(extensions::ISearchOptions* pOptions);
+
+	////////////////////////////////////////////////////////////////
 	// Command Handlers
 
 	LRESULT OnIndent(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

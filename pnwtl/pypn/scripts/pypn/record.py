@@ -287,6 +287,18 @@ handlers = {
 	2369 : ("SetCaretPolicy", intParamHandler, intParamHandler)
 }
 
+searchFields = {
+	pn.SearchType.stFindNext : ["FindText", "MatchWholeWord", "MatchCase", "UseRegExp", "SearchBackwards", "LoopOK", "UseSlashes"],
+	pn.SearchType.stReplace : ["FindText", "MatchWholeWord", "MatchCase", "UseRegExp", "SearchBackwards", "LoopOK", "UseSlashes", "ReplaceText", "ReplaceInSelection"],
+	pn.SearchType.stReplaceAll : ["FindText", "MatchWholeWord", "MatchCase", "UseRegExp", "SearchBackwards", "LoopOK", "UseSlashes", "ReplaceText", "ReplaceInSelection"]
+}
+
+searchActions = {
+	pn.SearchType.stFindNext : "FindNext",
+	pn.SearchType.stReplace : "ReplaceOnce",
+	pn.SearchType.stReplaceAll : "ReplaceAll"
+}
+
 ############################################################################
 ## Script Recording
 
@@ -309,11 +321,21 @@ class Recorder:
 		command = self._handleMessage(message, wParam, lParam)
 		if command != None:
 			self.script = self.script + command
-			
+	
+	def recordSearchAction(self, type, options, result):
+		""" The user performed a search action """
+		self._flushbuf()
+		self.script = self.script + "\topt = pn.GetUserSearchOptions()\r\n"
+		for opt in searchFields[type]:
+			self.script = self.script + "\topt." + opt + " = " + repr(getattr(options, opt)) + "\r\n"
+		self.script = self.script + "\tdoc." + searchActions[type] + "(opt)\r\n"
+		self.script = self.script + "\t# When recording, the result of this operation was: " + repr(result) + "\r\n"
+	
 	def stopRecording(self):
 		""" The user wants to stop recording, or the document the recording 
 		was made in is being closed. Read the document in as a script ready
 		to run and cancel the recording settings. """
+		self._flushbuf()
 		doc = pn.NewDocument("python")
 		sci = scintilla.Scintilla(doc)
 		sci.ReplaceSel(self.script)

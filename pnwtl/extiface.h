@@ -467,6 +467,7 @@ public:
 	
 	// Result:
 	virtual bool GetFound() const = 0;
+	virtual void SetFound(bool found) = 0;
 };
 
 typedef enum {miItem, miSubmenu} EMenuItemType;

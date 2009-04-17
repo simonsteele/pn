@@ -43,6 +43,16 @@ void Recorder::RecordSearchAction(SearchType type, const extensions::ISearchOpti
 	{
 		return;
 	}
+
+	try
+	{
+		boost::python::call_method<void>(m_recorder.get(), "recordSearchAction", type, SearchOptions(*options), result);
+	}
+	catch(boost::python::error_already_set&)
+	{
+		std::string s = getPythonErrorString();
+		m_app->AddOutput(s.c_str());
+	}
 }
 
 /**

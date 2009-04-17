@@ -253,17 +253,17 @@ void Document::RemoveEventSink(extensions::ITextEditorEventSinkPtr& sink)
 
 FindNextResult Document::FindNext(extensions::ISearchOptions* options)
 {
-	return m_pFrame->FindNext(static_cast<SearchOptions*>(options));
+	return m_pFrame->FindNext(options);
 }
 
 bool Document::Replace(extensions::ISearchOptions* options)
 {
-	return m_pFrame->Replace(static_cast<SearchOptions*>(options));
+	return m_pFrame->Replace(options);
 }
 
 int Document::ReplaceAll(extensions::ISearchOptions* options)
 {
-	return m_pFrame->ReplaceAll(static_cast<SearchOptions*>(options));
+	return m_pFrame->ReplaceAll(options);
 }
 
 void Document::Close(bool dontAskUserIfUnsaved)

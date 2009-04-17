@@ -31,5 +31,6 @@ typedef std::basic_string<TCHAR> tstring;
 #include "../pnextstring.h"
 #include "../extiface.h"
 #include "../pnstrings.h"
+#include "../searchoptions.h"
 
 extern std::string getPythonErrorString();

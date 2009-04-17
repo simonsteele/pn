@@ -1970,7 +1970,7 @@ bool CChildFrame::Save(bool ctagsRefresh)
 ////////////////////////////////////////////////////
 // Editor Window Methods	
 
-FindNextResult CChildFrame::FindNext(SearchOptions* options)
+FindNextResult CChildFrame::FindNext(extensions::ISearchOptions* options)
 {
 	FindNextResult result = (FindNextResult)m_view.FindNext(options);
 	if (result == fnReachedStart)
@@ -2005,12 +2005,12 @@ FindNextResult CChildFrame::FindNext(SearchOptions* options)
 	return result;
 }
 
-void CChildFrame::MarkAll(SearchOptions* options)
+void CChildFrame::MarkAll(extensions::ISearchOptions* options)
 {
 	m_view.MarkAll(options);
 }
 
-bool CChildFrame::Replace(SearchOptions* options)
+bool CChildFrame::Replace(extensions::ISearchOptions* options)
 {
 	if(options->GetFound())
 	{
@@ -2030,7 +2030,7 @@ bool CChildFrame::Replace(SearchOptions* options)
 	}
 }
 
-int CChildFrame::ReplaceAll(SearchOptions* options)
+int CChildFrame::ReplaceAll(extensions::ISearchOptions* options)
 {
 	return m_view.ReplaceAll(options);
 }

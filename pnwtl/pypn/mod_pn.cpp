@@ -76,7 +76,7 @@ std::string PNStringFromPointer(DWORD_PTR stringptr)
 	return std::string(str);
 }
 
-ISearchOptions* PNGetUserSearchOptions()
+extensions::ISearchOptions* PNGetUserSearchOptions()
 {
 	return g_app->GetPN()->GetUserSearchOptions();
 }
@@ -149,6 +149,11 @@ BOOST_PYTHON_MODULE(pn)
 		.value("fnInvalidRegex", fnInvalidRegex)
 		.value("fnInvalidSearch", fnInvalidSearch);
 
+	enum_<SearchType>("SearchType")
+		.value("stFindNext", stFindNext)
+		.value("stReplace", stReplace)
+		.value("stReplaceAll", stReplaceAll);
+
 	///////////////////////////////////////////////////////////////////////////////////////////////
 	// Expose IDocument
 
@@ -195,7 +200,11 @@ BOOST_PYTHON_MODULE(pn)
 		.add_property("Found", &ISearchOptions::GetFound)
 	;
 
+	class_<SearchOptions, bases<ISearchOptions>>("SearchOptions")
+		.def(init<const ISearchOptions&>());
+
 	def("GetUserSearchOptions", &PNGetUserSearchOptions, return_value_policy<reference_existing_object>(), "Get the object storing the user's current search options");
+	//def("GetUserSearchOptions", &PNGetUserSearchOptions, "Get the object storing the user's current search options");
 	
 	try
 	{
