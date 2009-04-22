@@ -54,7 +54,10 @@ void CPNMDIClient::ShowFindBar(bool bShow)
 	{
 		// Don't bother doing all this if we're already visible.
 		if(m_findBar->IsWindowVisible())
+		{
+			m_findBar->SetFocus();
 			return;
+		}
 
 		m_findBar->ShowWindow(SW_SHOW);
 		m_findBar->SetFocus();
