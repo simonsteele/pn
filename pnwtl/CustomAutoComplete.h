@@ -591,7 +591,7 @@ private:
 			{
 				while((read = fread(&buf, 1, sizeof(buf), f)) > 0)
 				{
-					load(buf, read);
+					load(buf, read / 2);
 				}
 			}
 			
@@ -638,6 +638,11 @@ private:
 		fwrite(&bom, 2, 1, f);
 		if (f != NULL)
 		{
+			if (m_asList.size() > static_cast<size_t>(m_nMaxElements))
+			{
+				m_asList.resize(m_nMaxElements);
+			}
+
 			for(TList::const_iterator i = m_asList.begin();
 				i != m_asList.end();
 				++i)
