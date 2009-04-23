@@ -48,13 +48,22 @@ LRESULT CFindBarEdit::OnCtlColorEdit(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam
 	}
 }
 
-LRESULT CFindBarEdit::OnCtlColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CFindBarEdit::OnCtlColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	// Microsoft Q130952 explains why we also need this
 	CDCHandle dc( (HDC) wParam );
 	dc.SetBkMode(TRANSPARENT);
 
-	ATLASSERT(GetStyle() & ES_READONLY);
+	if (reinterpret_cast<HWND>(lParam) != m_hWnd)
+	{
+		bHandled = false;
+		return 0;
+	}
+
+	// According to the docs, this should only be fired when we're disabled,
+	// but seems to fire all the time for me when debugging. As the visual effect
+	// is right this check is disabled.
+	// ATLASSERT(GetStyle() & ES_READONLY);
 	dc.SetTextColor( ::GetSysColor(COLOR_GRAYTEXT) );
 	dc.SetBkColor( ::GetSysColor(COLOR_WINDOW) );
 	return (LRESULT) (HBRUSH) m_brNormalBk;

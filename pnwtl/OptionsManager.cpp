@@ -357,7 +357,7 @@ const TCHAR* Options::GetS(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
 #include "OptionsRegistry.h"
 #include "OptionsIni.h"
 #include "OptionsXml.h"
-//#include "..\optionstest\OptionsSqlite.h"
+#include "..\optionstest\OptionsSqlite.h"
 
 Options* OptionsFactory::GetOptions(EOptionsType type, Options* oldOptions)
 {
@@ -373,9 +373,9 @@ Options* OptionsFactory::GetOptions(EOptionsType type, Options* oldOptions)
 		case OTXml:
 			newInstance = new XmlOptions;
 			break;
-		/*case OTSqlite:
-			newInstance = new SqliteOptions;
-			break;*/
+		//case OTSqlite:
+		//	newInstance = new SqliteOptions;
+		//	break;
 	}
 
 	if(oldOptions)
