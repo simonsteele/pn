@@ -1784,7 +1784,7 @@ LRESULT CMainFrame::OnQuickFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 
 LRESULT CMainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	ToggleToolbar(TBR_FILE);
+	ToggleToolbar();
 	return 0;
 }
 
@@ -2631,22 +2631,15 @@ void CMainFrame::setupToolsUI()
 	}
 }
 
-bool CMainFrame::GetToolbarShowing(DWORD toolbarId)
-{
-	REBARBANDINFO rbbi = {sizeof(rbbi), RBBIM_STYLE, 0};
-	::SendMessage(m_hWndToolBar, RB_GETBANDINFO, ATL_IDW_BAND_FIRST + 1, (LPARAM)&rbbi);
-	return ((rbbi.fStyle & RBBS_HIDDEN) == 0);
-}
-
 /**
  * Show/Hide toggle a toolbar (rebar band).
  */
-void CMainFrame::ToggleToolbar(DWORD toolbarId)
+void CMainFrame::ToggleToolbar()
 {
-	DWORD cmd = ID_VIEW_TOOLBAR;
-	BOOL bNowVisible = !((UIGetState( cmd ) & UPDUI_CHECKED) != 0);
-	::SendMessage(m_hWndToolBar, RB_SHOWBAND, ATL_IDW_BAND_FIRST + 1, bNowVisible);
-	UISetCheck(cmd, bNowVisible);
+	bool bNowVisible = !((UIGetState( ID_VIEW_TOOLBAR ) & UPDUI_CHECKED) != 0);
+	::ShowWindow(m_hWndToolBar, bNowVisible ? SW_SHOW : SW_HIDE);
+	UISetCheck(ID_VIEW_TOOLBAR, bNowVisible);
+	OPTIONS->Set(PNSK_INTERFACE, _T("ShowToolbar"), bNowVisible);
 	UpdateLayout();
 }
 
@@ -2685,7 +2678,14 @@ void CMainFrame::LoadGUIState()
 
 	// Set initial UpdateUI state...
 	UISetCheck(ID_EDITOR_OUTPUTWND, getDocker(DW_OUTPUT)->IsWindowVisible());
-	UISetCheck(ID_VIEW_TOOLBAR, GetToolbarShowing( TBR_FILE   ));
+
+	BOOL showToolbar = OPTIONS->Get(PNSK_INTERFACE, _T("ShowToolbar"), true);
+	if (!showToolbar)
+	{
+		::ShowWindow(m_hWndToolBar, SW_HIDE);
+	}
+
+	UISetCheck(ID_VIEW_TOOLBAR, showToolbar);
 
 	UpdateLayout();
 }

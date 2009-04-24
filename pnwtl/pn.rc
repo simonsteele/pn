@@ -312,13 +312,13 @@ IDR_MDICHILD            ICON                    "res\\pnDoc.ico"
 //
 
 IDD_ABOUTBOX DIALOGEX 0, 0, 255, 166
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "MS Shell Dlg 2", 0, 0, 0x0
 BEGIN
     CONTROL         319,IDC_ABOUTIMAGE,"Static",SS_BITMAP | SS_CENTERIMAGE,7,7,64,154
     DEFPUSHBUTTON   "OK",IDOK,198,147,50,14
-    LTEXT           "",IDC_VERSIONSTATIC,78,24,153,79
+    LTEXT           "",IDC_VERSIONSTATIC,78,24,170,100
     CONTROL         "",IDC_TOPSTATIC,"Static",SS_ETCHEDHORZ,7,7,65,1
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDVERT,7,7,1,155
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,8,160,65,1
@@ -1785,7 +1785,7 @@ BEGIN
     ID_EDITOR_WORDWRAP      "Toggle word wrap"
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
     ID_EDITOR_LINENOS       "Toggle line numbers display"
-    IDS_ABOUTVERSIONSTRING  "Version: v%s\nCopyright: Copyright © 2002-2009 Simon Steele\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
+    IDS_ABOUTVERSIONSTRING  "Version: v%s\n\nCopyright © 2002-2009 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
     IDS_PROJECTNOPROPS      "This project has no properties."
     IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c: Column"
     ID_FILE_NEW_PROJECT     "Create a new project."

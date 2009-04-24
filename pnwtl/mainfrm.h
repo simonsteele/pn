@@ -390,8 +390,7 @@ private:
 	void CreateDockingWindows();
 	BOOL AddReBarBand(HWND hWndBand, LPTSTR lpstrTitle = NULL, BOOL bNewRow = FALSE, bool bUseChevrons = false, int cxWidth = 0, BOOL bFullWidthAlways = FALSE);
 
-	void ToggleToolbar(DWORD toolbarId);
-	bool GetToolbarShowing(DWORD toolbarId);
+	void ToggleToolbar();
 
 	void InitGUIState();
 	void LoadGUIState();
