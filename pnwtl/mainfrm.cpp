@@ -531,12 +531,17 @@ LRESULT CMainFrame::OnChildNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 						}
 
 						m_hToolAccel = pChild->GetToolAccelerators();
+
+						g_Context.ExtApp->OnSelectDocument(pChild->GetDocument());
 					}
 					else
 						m_hToolAccel = NULL;
 				}
 				else
+				{
 					m_hToolAccel = NULL;
+					g_Context.ExtApp->OnSelectDocument(extensions::IDocumentPtr());
+				}
 			}
 			break;
 
@@ -2449,7 +2454,7 @@ void CMainFrame::AddNewMenu(CSMenuHandle& menu)
 {
 	PNASSERT(::IsMenu(m_NewMenu));
 	
-	CSMenuHandle file = menu.GetSubMenu(0);
+	CSMenuHandle file = menu.GetSubMenu(_T("&File"));
 	CString str;
 	str.LoadString(IDS_NEW);
 	::InsertMenu(file, 0, MF_BYPOSITION | MF_POPUP, (UINT)(HMENU)m_NewMenu, str);
@@ -2458,7 +2463,7 @@ void CMainFrame::AddNewMenu(CSMenuHandle& menu)
 void CMainFrame::AddMRUMenu(CSMenuHandle& menu)
 {
 	CString str;
-	CSMenuHandle file(menu.GetSubMenu(0));
+	CSMenuHandle file(menu.GetSubMenu(_T("&File")));
 	
 	PNASSERT(::IsMenu(m_RecentFiles));
 	PNASSERT(::IsMenu(m_RecentProjects));
@@ -2476,7 +2481,7 @@ void CMainFrame::AddMRUMenu(CSMenuHandle& menu)
 void CMainFrame::AddLanguageMenu(CSMenuHandle& menu)
 {
 	CString str;
-	CSMenuHandle view(menu.GetSubMenu(2));
+	CSMenuHandle view(menu.GetSubMenu(_T("&View")));
 	
 	PNASSERT(::IsMenu(m_Switcher));
 	str.LoadString(IDS_CHANGESCHEME);
@@ -2485,7 +2490,7 @@ void CMainFrame::AddLanguageMenu(CSMenuHandle& menu)
 
 void CMainFrame::MoveNewMenu(CSMenuHandle& remove, CSMenuHandle& add)
 {
-	CSMenuHandle file( remove.GetSubMenu(0) );
+	CSMenuHandle file( remove.GetSubMenu(_T("&File")) );
 	::RemoveMenu(file, 0, MF_BYPOSITION);
 	
 	AddNewMenu(add);
@@ -2493,7 +2498,7 @@ void CMainFrame::MoveNewMenu(CSMenuHandle& remove, CSMenuHandle& add)
 
 void CMainFrame::MoveMRU(CSMenuHandle& r, CSMenuHandle& a)
 {
-	CSMenuHandle file( r.GetSubMenu(0) );
+	CSMenuHandle file( r.GetSubMenu(_T("&File")) );
 	int state;
 	int count = 0;
 	for(int i = file.GetCount() - 1; i >= 0; i--)
@@ -2540,7 +2545,7 @@ void CMainFrame::MoveMRU(CSMenuHandle& r, CSMenuHandle& a)
 
 void CMainFrame::MoveLanguage(CSMenuHandle& remove, CSMenuHandle& add)
 {
-	CSMenuHandle view = remove.GetSubMenu(2);
+	CSMenuHandle view = remove.GetSubMenu(_T("&View"));
 	if((HMENU)remove != m_hMenu)
 	{
 		int state;
@@ -2575,7 +2580,7 @@ void CMainFrame::AddMRUProjectsEntry(LPCTSTR lpszFile)
 
 	if(m_RecentProjects.GetCount() == 0)
 	{
-		CSMenuHandle file(menu.GetSubMenu(0));
+		CSMenuHandle file(menu.GetSubMenu(_T("&File")));
 
 		for(int i = file.GetCount() - 1; i >= 0; i--)
 		{
@@ -2597,7 +2602,7 @@ void CMainFrame::setupAccelerators(HMENU mainMenu)
 void CMainFrame::setupToolsUI()
 {
 	CSMenuHandle menu(m_hMenu);
-	CSMenuHandle tools(menu.GetSubMenu(TOOLS_MENU_INDEX));
+	CSMenuHandle tools(menu.GetSubMenu(_T("&Tools")));
 	ToolsManager* pTM = ToolsManager::GetInstance();
 
 	tstring projid;

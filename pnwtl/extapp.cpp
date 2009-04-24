@@ -325,9 +325,20 @@ extensions::IOptions* App::GetOptionsManager()
  */
 void App::OnNewDocument(extensions::IDocumentPtr doc)
 {
-	for(EventSinkList::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	for (EventSinkList::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
 	{
 		(*i)->OnNewDocument(doc);
+	}
+}
+
+/**
+ * Notify event consumers of a document selection change
+ */
+void App::OnSelectDocument(extensions::IDocumentPtr doc)
+{
+	for (EventSinkList::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	{
+		(*i)->OnDocSelected(doc);
 	}
 }
 

@@ -2072,7 +2072,7 @@ void CChildFrame::SetScheme(Scheme* pScheme, bool allSettings)
 void CChildFrame::UpdateTools(Scheme* pScheme)
 {
 	CSMenuHandle menu(m_hMenu);
-	CSMenuHandle tools( menu.GetSubMenu(TOOLS_MENU_INDEX) );
+	CSMenuHandle tools( menu.GetSubMenu(_T("&Tools")) );
 
 	tstring projid;
 

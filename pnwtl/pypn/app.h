@@ -28,6 +28,7 @@ public:
 // IAppEventSink
 	virtual void OnNewDocument(extensions::IDocumentPtr& doc);
 	virtual void OnAppClose();
+	virtual void OnDocSelected(extensions::IDocumentPtr& doc);
 	
 // IScriptRunner
 	virtual void RunScript(const char* name);

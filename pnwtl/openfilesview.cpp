@@ -25,7 +25,7 @@
 class COpenFilesDocker::AppEventSink : public extensions::IAppEventSink
 {
 public:
-	AppEventSink(COpenFilesDocker* owner) : m_owner(owner)
+	explicit AppEventSink(COpenFilesDocker* owner) : m_owner(owner)
 	{
 	}
 
@@ -36,6 +36,9 @@ public:
 	
 	/// Called when PN is closing (you are about to be unloaded!)
 	virtual void OnAppClose();
+
+	/// Called when the user switches to a different document
+	virtual void OnDocSelected(extensions::IDocumentPtr& doc);
 
 private:
 	COpenFilesDocker* m_owner;
@@ -50,6 +53,11 @@ void COpenFilesDocker::AppEventSink::OnNewDocument(extensions::IDocumentPtr& doc
 /// Called when PN is closing (you are about to be unloaded!)
 void COpenFilesDocker::AppEventSink::OnAppClose()
 {
+}
+
+void COpenFilesDocker::AppEventSink::OnDocSelected(extensions::IDocumentPtr& doc)
+{
+	m_owner->SelectDocument(doc);
 }
 
 /// Document Event Sink implementation for the open files window
@@ -131,7 +139,15 @@ LRESULT COpenFilesDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	m_view.Create(m_hWnd, rc, _T("OpenFilesList"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | LVS_REPORT | LVS_NOCOLUMNHEADER | LVS_SHOWSELALWAYS, 0, IDC_FILESLIST);
 	m_view.AddColumn(_T(""), 0);
 	m_view.SetColumnWidth(0, (rc.right-rc.left) -::GetSystemMetrics(SM_CXVSCROLL));
-	m_view.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
+	
+	if (WTL::RunTimeHelper::IsVista())
+	{
+		m_view.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP | LVS_EX_DOUBLEBUFFER);
+	}
+	else
+	{
+		m_view.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
+	}
 
 	m_images.Create(16, 16, ILC_COLOR32 | ILC_MASK, 3, 1);
 	HBITMAP bmp = (HBITMAP)::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_OPENFILES), IMAGE_BITMAP, 48, 16, LR_CREATEDIBSECTION | LR_DEFAULTSIZE);
@@ -270,12 +286,30 @@ LRESULT COpenFilesDocker::OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 			{
 				extensions::IDocument* doc = docFromListItem(lvhti.iItem);
 				Document* pndoc = static_cast<Document*>(doc);
-				tstring fn = pndoc->GetFileName();
+				
+				CSPopupMenu popup(IDR_POPUP_TABS);
 
-				CPidl pidl;
-				AtlGetFilePidl2(fn.c_str(), &pidl);
+				if (pndoc->HasFile() && pndoc->FileExists())
+				{
+					tstring fn = pndoc->GetFileName();
 
-				m_explorerMenu->TrackPopupMenu(pidl, pt->x, pt->y, m_hWnd);
+					CPidl pidl;
+					AtlGetFilePidl2(fn.c_str(), &pidl);
+
+					CSPopupMenu explorer;
+					InsertMenu(popup.GetHandle(), popup.GetCount(), MF_BYPOSITION | MF_POPUP, reinterpret_cast<UINT_PTR>(explorer.GetHandle()), _T("Explorer"));
+						
+					int nCmd;
+					BOOL result = m_explorerMenu->TrackPopupMenu(pidl, pt->x, pt->y, m_hWnd, popup.GetHandle(), explorer.GetHandle(), 10000, 11000, nCmd);
+					if (result && (nCmd < 10000 || nCmd > 11000))
+					{
+						pndoc->GetFrame()->PostMessage(WM_COMMAND, nCmd, 0L);
+					}
+				}
+				else
+				{
+					g_Context.m_frame->TrackPopupMenu(popup.GetHandle(), 0, pt->x, pt->y);
+				}
 			}
 		}
 	}
@@ -324,6 +358,25 @@ void COpenFilesDocker::UpdateDocument(extensions::IDocumentPtr& doc)
 	}
 }
 
+/// Select a document in the list
+void COpenFilesDocker::SelectDocument(extensions::IDocumentPtr& doc)
+{
+	int itemIndex = findDocument(doc);
+
+	for (int i = 0; i < m_view.GetItemCount(); i++)
+	{
+		if (i != itemIndex)
+		{
+			m_view.SetItemState(i, 0, LVIS_SELECTED);
+		}
+		else
+		{
+			m_view.SetItemState(itemIndex, LVIS_SELECTED | LVIS_FOCUSED, LVIS_SELECTED | LVIS_FOCUSED);
+			m_view.EnsureVisible(itemIndex, FALSE);
+		}
+	}
+}
+
 /// Find a list item given a document
 inline int COpenFilesDocker::findDocument(extensions::IDocumentPtr& doc)
 {
@@ -344,7 +397,14 @@ void COpenFilesDocker::handleUserSelection(int index)
 {
 	extensions::IDocument* rawdoc = docFromListItem(index);
 	Document* pndoc = static_cast<Document*>(rawdoc);
-	pndoc->GetFrame()->SetFocus();
+	CChildFrame* frame = pndoc->GetFrame();
+	
+	if (frame)
+	{
+		::LockWindowUpdate(frame->GetParent());
+		frame->SetFocus();
+		::LockWindowUpdate(NULL);
+	}
 }
 
 /// Single place for the evil cast

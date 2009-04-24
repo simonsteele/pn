@@ -202,6 +202,7 @@ public:
 // Stuff to signal event sinks...
 public:
 	void OnNewDocument(extensions::IDocumentPtr doc);
+	void OnSelectDocument(extensions::IDocumentPtr doc);
 
 private:
 	void deinit();

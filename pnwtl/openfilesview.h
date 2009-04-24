@@ -38,6 +38,7 @@ public:
 		MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
 
 		NOTIFY_HANDLER(IDC_FILESLIST, NM_DBLCLK, OnListDblClk)
+		NOTIFY_HANDLER(IDC_FILESLIST, NM_CLICK, OnListDblClk)
 		NOTIFY_HANDLER(IDC_FILESLIST, LVN_GETINFOTIP, OnGetInfoTip);
 
 		REFLECT_NOTIFICATIONS()
@@ -51,6 +52,7 @@ private:
 	void AddDocument(extensions::IDocumentPtr& doc);
 	void RemoveDocument(extensions::IDocumentPtr& doc);
 	void UpdateDocument(extensions::IDocumentPtr& doc);
+	void SelectDocument(extensions::IDocumentPtr& doc);
 
 	// Really Private:
 	int findDocument(extensions::IDocumentPtr& doc);

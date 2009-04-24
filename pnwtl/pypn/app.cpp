@@ -92,8 +92,11 @@ void App::OnNewDocument(extensions::IDocumentPtr& doc)
 }
 
 void App::OnAppClose()
+{	
+}
+
+void App::OnDocSelected(extensions::IDocumentPtr& doc)
 {
-	
 }
 
 /**

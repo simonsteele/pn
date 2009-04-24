@@ -249,6 +249,9 @@ public:
 	
 	/// Called when PN is closing (you are about to be unloaded!)
 	virtual void OnAppClose() = 0;
+
+	/// Called when the user switches to a different document
+	virtual void OnDocSelected(IDocumentPtr& doc) = 0;
 };
 
 /**

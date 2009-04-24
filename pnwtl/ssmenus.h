@@ -184,6 +184,28 @@ class CSMenuT
 			return CSMenuHandle( ::GetSubMenu(SafeGetHandle(), nPos) );
 		}
 
+		CSMenuHandle GetSubMenu(LPTSTR name)
+		{
+			tstring sname(name);
+			
+			int bufsize = sname.length() + 10;
+			tstring buffer;
+			buffer.resize(bufsize);
+
+			for (int i = 0; i < GetCount(); i++)
+			{
+				int size = GetMenuString(SafeGetHandle(), i, &buffer[0], bufsize, MF_BYPOSITION);
+				buffer.resize(size);
+
+				if (buffer == sname)
+				{
+					return GetSubMenu(i);
+				}
+			}
+			
+			return CSMenuHandle(NULL);
+		}
+
 		void RemoveItemByPosition(int position)
 		{
 			::RemoveMenu(SafeGetHandle(), position, MF_BYPOSITION);	
