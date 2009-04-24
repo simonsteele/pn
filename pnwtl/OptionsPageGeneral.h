@@ -19,6 +19,8 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 	public:
 		BEGIN_MSG_MAP(COptionsPageGeneral)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+			COMMAND_HANDLER(IDC_OPT_SHOWTABSCHECK, BN_CLICKED, OnOptionClicked)
+			COMMAND_HANDLER(IDC_OPT_CHECKUPDATES, BN_CLICKED, OnOptionClicked)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 		enum { IDD = IDD_PAGE_GENERAL };
@@ -30,7 +32,6 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 			DDX_CHECK(IDC_OPT_NEWFILEONSTART,		m_bNewOnStart)
 			DDX_CHECK(IDC_MULTIINSTANCECHECK,		m_bMultiInstanceOk)
 			DDX_CHECK(IDC_OPT_SHOWTABSCHECK,		m_bShowTabs)
-			//DDX_CHECK(IDC_OPT_HIDEONETABCHECK,	m_bHideSingleTab)
 			DDX_CHECK(IDC_OPT_TABSBOTTOMCHECK,		m_bTabsOnBottom)
 			DDX_CHECK(IDC_OPT_MAXTABSONLY,			m_bTabsOnlyMax)
 			DDX_CHECK(IDC_OPT_TABORDERCHECK,		m_bManageTabOrder)
@@ -45,8 +46,11 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 		virtual void OnInitialise();
 		virtual LPCTSTR GetTreePosition();
 
-	protected:
+	private:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+		LRESULT OnOptionClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+		void enableControls();
 		
 		BOOL			m_bNewOnStart;
 		BOOL			m_bMaximise;
@@ -54,7 +58,6 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 		BOOL			m_bMultiInstanceOk;
 		UINT			m_iMRUSize;
 		BOOL			m_bShowTabs;
-		//BOOL			m_bHideSingleTab;
 		BOOL			m_bTabsOnBottom;
 		BOOL			m_bTabsOnlyMax;
 		BOOL			m_bManageTabOrder;

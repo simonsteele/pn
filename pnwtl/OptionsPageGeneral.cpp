@@ -88,5 +88,23 @@ void COptionsPageGeneral::OnInitialise()
 
 LRESULT COptionsPageGeneral::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	enableControls();
+
 	return 0;
+}
+
+LRESULT COptionsPageGeneral::OnOptionClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	enableControls();
+
+	return 0;
+}
+
+void COptionsPageGeneral::enableControls()
+{
+	DoDataExchange(TRUE);
+
+	GetDlgItem(IDC_OPT_MAXTABSONLY).EnableWindow(m_bShowTabs);
+	GetDlgItem(IDC_OPT_TABSBOTTOMCHECK).EnableWindow(m_bShowTabs);
+	GetDlgItem(IDC_OPT_WANTTESTINGUPGRADES).EnableWindow(m_bCheckForUpdates);
 }
