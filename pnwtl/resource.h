@@ -100,7 +100,6 @@
 #define IDS_EXTENSIONS_MENU             190
 #define IDS_SAVEACCESSDENIED            191
 #define IDS_SAVESHAREVIOLATION          192
-#define IDS_FIND_REACHEDSTART           194
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define IDD_INPUTBOX                    204
@@ -324,7 +323,10 @@
 #define IDC_STYLE_SELBACKBUTTON2        1014
 #define IDC_STYLE_IGCOLBUTTON2          1015
 #define IDC_SCHEMECOMBO                 1016
+#define IDC_STYLE_SELBACKBUTTON3        1016
+#define IDC_STYLE_SELWORDCOLBUTTON      1016
 #define IDC_SCHEMELABEL                 1017
+#define IDC_STYLE_MARKALLCOLBUTTON      1017
 #define IDC_STYLES_TREE                 1020
 #define IDC_STYLE_BOLDCHECK             1021
 #define IDC_STYLE_ITALICCHECK           1022
@@ -511,6 +513,7 @@
 #define IDC_CARETBLOCKCHECK             1158
 #define IDC_CARETBLOCK_CHECK            1158
 #define IDC_OPT_EDITREADONLY            1159
+#define IDC_OPT_SMARTHIGHLIGHTCHECK     1160
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -700,7 +703,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        365
 #define _APS_NEXT_COMMAND_VALUE         33132
-#define _APS_NEXT_CONTROL_VALUE         1160
+#define _APS_NEXT_CONTROL_VALUE         1161
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

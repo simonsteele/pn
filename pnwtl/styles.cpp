@@ -2,9 +2,9 @@
  * @file styles.cpp
  * @brief Define style and style-containing classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -121,9 +121,8 @@ bool PNStringToBool(LPCTSTR input)
 /////////////////////////////////////////////////////////////////////////////////////
 // EditorColours
 
-EditorColours::EditorColours()
+EditorColours::EditorColours() : values(0)
 {
-	values = 0;
 }
 
 const EditorColours& EditorColours::operator = (const EditorColours& copy)
@@ -133,6 +132,8 @@ const EditorColours& EditorColours::operator = (const EditorColours& copy)
 	crSelBack = copy.crSelBack;
 	crCaret = copy.crCaret;
 	crIG = copy.crIG;
+	crMarkAll = copy.crMarkAll;
+	crSmartHL = copy.crSmartHL;
 
 	return *this;
 }
@@ -152,6 +153,12 @@ void EditorColours::SetColour(Colours colour, COLORREF setColour)
 		break;
 	case ecIndentG:
 		crIG = setColour;
+		break;
+	case ecMarkAll:
+		crMarkAll = setColour;
+		break;
+	case ecSmartHL:
+		crSmartHL = setColour;
 		break;
 	}
 
@@ -190,6 +197,12 @@ bool EditorColours::GetColour(Colours colour, COLORREF& theColour) const
 		case ecIndentG:
 			theColour = crIG;
 			return true;
+		case ecMarkAll:
+			theColour = crMarkAll;
+			return true;
+		case ecSmartHL:
+			theColour = crSmartHL;
+			return true;
 	}
 		
 	return false;
@@ -221,6 +234,14 @@ void EditorColours::SetFromXml(XMLAttributes& atts)
 		{
 			SetColour(ecIndentG, (DWORD)val);
 		}
+		else if (_tcscmp(szKey, _T("markAll")) == 0)
+		{
+			SetColour(ecMarkAll, (DWORD)val);
+		}
+		else if (_tcscmp(szKey, _T("smartHighlight")) == 0)
+		{
+			SetColour(ecSmartHL, (DWORD)val);
+		}
 	}
 }
 
@@ -234,14 +255,30 @@ void EditorColours::SendColours(CScintilla* pSc) const
 			pSc->SPerform(SCI_SETSELFORE, true, crSelFore);
 	}
 	
-	if((values & ecSelBack) != 0)
+	if ((values & ecSelBack) != 0)
+	{
 		pSc->SPerform(SCI_SETSELBACK, true, crSelBack);
+	}
 	
-	if((values & ecCaret) != 0)
+	if ((values & ecCaret) != 0)
+	{
 		pSc->SPerform(SCI_SETCARETFORE, crCaret);
+	}
 	
-	if((values & ecIndentG) != 0)
+	if ((values & ecIndentG) != 0)
+	{
 		pSc->SPerform(SCI_STYLESETFORE, STYLE_INDENTGUIDE, crIG);
+	}
+
+	if (values & ecMarkAll)
+	{
+		pSc->SPerform(SCI_INDICSETFORE, INDIC_MARKALL, crMarkAll);
+	}
+
+	if (values & ecSmartHL)
+	{
+		pSc->SPerform(SCI_INDICSETFORE, INDIC_SMARTHIGHLIGHT, crSmartHL);
+	}
 }
 
 /**
@@ -249,14 +286,35 @@ void EditorColours::SendColours(CScintilla* pSc) const
  */
 void EditorColours::Combine(const EditorColours* other)
 {
-	if(other->values & ecSelFore)
+	if (other->values & ecSelFore)
+	{
 		SetColour(ecSelFore, other->crSelFore);
-	if(other->values & ecSelBack)
+	}
+
+	if (other->values & ecSelBack)
+	{
 		SetColour(ecSelBack, other->crSelBack);
-	if(other->values & ecCaret)
+	}
+
+	if (other->values & ecCaret)
+	{
 		SetColour(ecCaret, other->crCaret);
-	if(other->values & ecIndentG)
+	}
+
+	if (other->values & ecIndentG)
+	{
 		SetColour(ecIndentG, other->crIG);
+	}
+	
+	if (other->values & ecMarkAll)
+	{
+		SetColour(ecMarkAll, other->crMarkAll);
+	}
+
+	if (other->values & ecSmartHL)
+	{
+		SetColour(ecSmartHL, other->crSmartHL);
+	}
 }
 
 void EditorColours::Clear()

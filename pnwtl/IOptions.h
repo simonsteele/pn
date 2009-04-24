@@ -88,7 +88,8 @@ public:
 			OCaretYMove					= 33,
 			OCaretXFlags				= 34,
 			OCaretYFlags				= 35,
-			OPTION_COUNT				= 36
+			OSmartHighlight				= 36,
+			OPTION_COUNT				= 37
 		} ECachedOption;
 
 		/// Set a bool value

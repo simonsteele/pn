@@ -1,3 +1,4 @@
+
 /**
  * @file TextView.h
  * @brief Interface Definition for CTextView, the Scintilla based text-editor view.
@@ -18,8 +19,6 @@
 #include "include/threading.h"
 
 class FIFSink;
-
-static const int INDIC_MARKALL = INDIC_CONTAINER;
 
 /**
  * This is the final implementation of our Scintilla window, pulling together the
@@ -141,6 +140,8 @@ private:
 	void OnFirstShow();
 
 	void checkDotLogTimestamp();
+
+	void smartHighlight();
 
 	CommandDispatch* m_pCmdDispatch;
 	BOOL m_waitOnBookmarkNo;

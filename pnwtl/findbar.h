@@ -105,7 +105,7 @@ public:
 	void SetControllingHWND(HWND hWnd);
 	int GetDesiredHeight();
 
-protected:
+private:
 	// Messages:
 	LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 	LRESULT OnEraseBkgnd(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -123,7 +123,6 @@ protected:
 
 	void findNext(LPCTSTR text, bool searchUp);
 
-protected:
 	SearchOptions so;
 	CChildFrame* m_pLastFrame;
 	CXButton m_xbutton;

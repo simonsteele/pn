@@ -2,9 +2,9 @@
  * @file Styles.h
  * @brief Define style and style-containing classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -32,6 +32,8 @@ public:
 		ecSelBack	= 0x02,
 		ecCaret		= 0x04,
 		ecIndentG	= 0x08,
+		ecMarkAll   = 0x10,
+		ecSmartHL	= 0x20
 	} Colours;
 
 	EditorColours();
@@ -60,6 +62,8 @@ protected:
 	COLORREF	crSelBack;
 	COLORREF	crCaret;
 	COLORREF	crIG;
+	COLORREF	crMarkAll;
+	COLORREF	crSmartHL;
 	SHORT		values;
 };
 

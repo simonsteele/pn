@@ -1778,6 +1778,14 @@ LRESULT CMainFrame::OnUndo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 
 LRESULT CMainFrame::OnQuickFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	/*std::string text;
+
+	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
+	if (pChild != NULL)
+	{
+		text = pChild->GetTextView()->GetCurrentWord();
+	}*/
+	
 	m_tabbedClient.ShowFindBar(true);
 	return TRUE;
 }

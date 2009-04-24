@@ -42,7 +42,7 @@
 bool CChildFrame::s_bFirstChild = true;
 
 #define USERLIST_TEXTCLIPS 1
-#define TOOLS_MENU_INDEX 4
+#define TOOLS_MENU_INDEX 5
 
 CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::TextClipsManager* textclips) : 
 	m_spDocument(doc), 

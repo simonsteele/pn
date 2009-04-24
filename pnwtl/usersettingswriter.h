@@ -237,14 +237,35 @@ namespace Schemes
 			void writeColours(EditorColours* colours)
 			{
 				COLORREF colour;
-				if(colours->GetColour(EditorColours::ecSelFore, colour))
+				if (colours->GetColour(EditorColours::ecSelFore, colour))
+				{
 					addColourAtt(m_aSelFore, colour);
-				if(colours->GetColour(EditorColours::ecSelBack, colour))
+				}
+
+				if (colours->GetColour(EditorColours::ecSelBack, colour))
+				{
 					addColourAtt(m_aSelBack, colour);
-				if(colours->GetColour(EditorColours::ecCaret, colour))
+				}
+
+				if (colours->GetColour(EditorColours::ecCaret, colour))
+				{
 					addColourAtt(m_aCaret, colour);
-				if(colours->GetColour(EditorColours::ecIndentG, colour))
+				}
+
+				if (colours->GetColour(EditorColours::ecIndentG, colour))
+				{
 					addColourAtt(m_aIndentGuides, colour);
+				}
+				
+				if (colours->GetColour(EditorColours::ecMarkAll, colour))
+				{
+					addColourAtt(m_aMarkAll, colour);
+				}
+
+				if (colours->GetColour(EditorColours::ecSmartHL, colour))
+				{
+					addColourAtt(m_aSmartHL, colour);
+				}
 			}
 
 		protected:
@@ -319,6 +340,8 @@ namespace Schemes
 					ATT("ovtabs", m_aOverrideTabs);
 					ATT("usetabs", m_aUseTabs);
 					ATT("tabwidth", m_aTabWidth);
+					ATT("markAll", m_aMarkAll);
+					ATT("smartHighlight", m_aSmartHL);
 				END_ATTRIBUTES();
 			}
 
@@ -351,6 +374,8 @@ namespace Schemes
 			genxAttribute m_aOverrideTabs;
 			genxAttribute m_aUseTabs;
 			genxAttribute m_aTabWidth;
+			genxAttribute m_aSmartHL;
+			genxAttribute m_aMarkAll;
 	};
 }
 

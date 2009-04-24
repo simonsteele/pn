@@ -513,6 +513,9 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 	sc.DefineNumberedBookmarks();
 
 	sc.SPerform(SCI_SETMARGINWIDTHN, 1, 16/*margin ? marginWidth : 0*/);
+
+	sc.SPerform(SCI_INDICSETFORE, INDIC_MARKALL, RGB(255, 0, 0));
+	sc.SPerform(SCI_INDICSETFORE, INDIC_SMARTHIGHLIGHT, RGB(0, 255, 0));
 	
 	options.BeginGroupOperation(PNSK_EDITOR);
 

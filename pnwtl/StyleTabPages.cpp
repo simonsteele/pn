@@ -671,19 +671,19 @@ void CTabPageMisc::SetValues()
 			theColour = m_selFore.GetColor();
 		
 		if(theColour != CLR_DEFAULT)
-			m_pScheme->CustomColours.SetColour( EditorColours::ecSelFore, theColour);
+			m_pScheme->CustomColours.SetColour(EditorColours::ecSelFore, theColour);
 		
 		theColour = m_selBack.GetColor();
 		if(theColour != CLR_DEFAULT)
-			m_pScheme->CustomColours.SetColour( EditorColours::ecSelBack, theColour);
+			m_pScheme->CustomColours.SetColour(EditorColours::ecSelBack, theColour);
 
 		theColour = m_cursorCol.GetColor();
 		if(theColour != CLR_DEFAULT)
-			m_pScheme->CustomColours.SetColour( EditorColours::ecCaret, theColour);
+			m_pScheme->CustomColours.SetColour(EditorColours::ecCaret, theColour);
 
 		theColour = m_igCol.GetColor();
 		if(theColour != CLR_DEFAULT)
-			m_pScheme->CustomColours.SetColour( EditorColours::ecIndentG, theColour);
+			m_pScheme->CustomColours.SetColour(EditorColours::ecIndentG, theColour);
 
 		switch(m_iTabOverride)
 		{

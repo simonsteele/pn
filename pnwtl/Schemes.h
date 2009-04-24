@@ -2,9 +2,9 @@
  * @file Schemes.h
  * @brief Define Scheme and SchemeManager.
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -20,12 +20,15 @@ class CommandDispatch;
 #include "Scintillaif.h"
 #include "styles.h"
 
+static const int INDIC_MARKALL = INDIC_CONTAINER;
+static const int INDIC_SMARTHIGHLIGHT = INDIC_CONTAINER + 1;
+
 /**********************************************
  * Stuff for compiled scheme files
  **********************************************/
 
 // File Content Defines
-#define CompileVersion 0x06
+#define CompileVersion 0x07
 #define FileID "Caffeine.Scheme"
 
 typedef struct tagCompiledSchemeHdr

@@ -1,8 +1,8 @@
 /**
  * @file optionspages.h
- * @brief Options Dialog Pages (1) for Programmers Notepad 2
+ * @brief Options Dialog Pages for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -62,44 +62,6 @@ class COptionsPageEditDefaults : public COptionsPageImpl<COptionsPageEditDefault
 		int				m_CharSet;
 };
 
-class COptionsPageVisual : public COptionsPageImpl<COptionsPageVisual>,
-							public CWinDataExchange<COptionsPageVisual>
-{
-	public:
-		BEGIN_MSG_MAP(COptionsPageVisual)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			REFLECT_NOTIFICATIONS()
-		END_MSG_MAP()
-		enum { IDD = IDD_PAGE_VISUALHELP };
-
-		BEGIN_DDX_MAP(COptionsPageVisual)
-			DDX_CHECK(IDC_OPT_INDENTGUIDESCHECK, m_bIndentGuides)
-			DDX_CHECK(IDC_OPT_FOLDINGCHECK, m_bFolding)
-			DDX_CHECK(IDC_OPT_LINELIGHTCHECK, m_bLineHighlight)
-			DDX_RADIO(IDC_OPT_NOLLHELPRADIO, m_iLongLineHelp)
-			DDX_UINT(IDC_OPT_LLCOLUMNEDIT, m_iRightColumn)
-			DDX_CHECK(IDC_OPT_LINELIGHTALPHACHECK, m_bLineHighlightAlpha)
-		END_DDX_MAP()
-
-		virtual void OnOK();
-		virtual void OnInitialise();
-		virtual LPCTSTR GetTreePosition();
-
-	protected:
-		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-		
-		BOOL m_bIndentGuides;
-		BOOL m_bFolding;
-		BOOL m_bLineHighlight;
-		BOOL m_bLineHighlightAlpha;
-		int m_iLongLineHelp;
-		UINT m_iRightColumn;
-
-		CPNColorButton	m_btnLineCol;
-		CPNColorButton	m_btnLLCol;
-		CTrackBarCtrl	m_trackerHighlight;
-};
-
 class COptionsPageConf : public COptionsPageImpl<COptionsPageConf>,
 							public CWinDataExchange<COptionsPageConf>
 {
@@ -152,51 +114,6 @@ class COptionsPageDialogs : public COptionsPageImpl<COptionsPageDialogs>,
 		BOOL m_bOpenCurFileDir;
 		BOOL m_bFindAlpha;
 		BOOL m_bCloseFindNext;
-};
-
-class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
-{
-	public:
-		COptionsPageStyle(SchemeConfigParser* pSchemes) : m_pSchemes(pSchemes), m_bDirty(false) {}
-
-		BEGIN_MSG_MAP(COptionsPageStyle)
-			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			MESSAGE_HANDLER(PN_NOTIFY, OnNotify)
-			REFLECT_NOTIFICATIONS()
-		END_MSG_MAP()
-		enum { IDD = IDD_PAGE_STYLE };
-
-		virtual void OnOK();
-		virtual void OnCancel();
-		virtual void OnInitialise();
-		virtual LPCTSTR GetTreePosition();
-
-		bool IsDirty();
-
-	protected:
-		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-		LRESULT OnNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-	
-	protected:
-		CFontCombo		m_FontCombo;
-		CNumberCombo	m_SizeCombo;
-
-		CPNColorButton	m_fore;
-		CPNColorButton	m_back;
-		
-		CButton			m_bold;
-		CButton			m_italic;
-		CButton			m_underline;
-
-		CPNColorButton	m_cur;
-		CPNColorButton	m_indentGuides;
-		CPNColorButton	m_selFore;
-		CPNColorButton	m_selBack;
-
-		bool			m_bDirty;
-
-		SchemeConfigParser* m_pSchemes;
-		StylePtr		m_defclass;
 };
 
 class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
@@ -562,5 +479,7 @@ class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
 #include "OptionsPageClips.h"
 #include "OptionsPageExtensions.h"
 #include "OptionsPageEditing.h"
+#include "OptionsPageVisual.h"
+#include "OptionsPageStyle.h"
 
 #endif

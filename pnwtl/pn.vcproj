@@ -1682,6 +1682,22 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OptionsPageStyle.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OptionsPageStyle.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OptionsPageVisual.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OptionsPageVisual.h"
+				>
+			</File>
+			<File
 				RelativePath=".\StyleTabPages.cpp"
 				>
 			</File>

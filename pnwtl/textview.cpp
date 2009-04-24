@@ -2,7 +2,7 @@
  * @file TextView.cpp
  * @brief Implementation of CTextView, the Scintilla based text-editor view.
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -512,6 +512,8 @@ int CTextView::HandleNotify(LPARAM lParam)
 	else if(msg == SCN_UPDATEUI)
 	{
 		SendMessage(GetParent(), PN_NOTIFY, 0, SCN_UPDATEUI);
+
+		smartHighlight();
 	}
 	else if(msg == SCN_CHARADDED)
 	{
@@ -653,7 +655,6 @@ void CTextView::MarkAll(extensions::ISearchOptions* options)
 	
 	SetIndicatorValue(INDIC_ROUNDBOX);
 	IndicSetStyle(INDIC_MARKALL, INDIC_ROUNDBOX);
-	IndicSetFore(INDIC_MARKALL, RGB(255, 0, 0));
 	
 	CScintillaImpl::FindAll(options, boost::bind(HandleMarkAllResult, this, _1, _2));
 }
@@ -1292,6 +1293,47 @@ void CTextView::checkLineLength()
 	m_bMeasureCanRun = true;
 
 	m_measureThread.Create(&CTextView::RunMeasureThread, this);
+}
+
+/**
+ * Implement the smart highlight feature seen in Notepad++, this highlights
+ * all occurrences of the currently selected word.
+ */
+void CTextView::smartHighlight()
+{
+	if (!OPTIONS->GetCached(Options::OSmartHighlight))
+	{
+		return;
+	}
+
+	// Clear Smart Highlights:
+	SetIndicatorCurrent(INDIC_SMARTHIGHLIGHT);
+	IndicatorClearRange(0, GetLength());
+
+	Scintilla::CharacterRange cr;
+	GetSel(cr);
+	int len = cr.cpMax - cr.cpMin;
+	if (len > 0)
+	{
+		// Only do this for single-line selections where there are no spaces (i.e. a single word)
+		if (LineFromPosition(cr.cpMin) == LineFromPosition(cr.cpMax))
+		{
+			std::string buf;
+			buf.resize(len + 1);
+			GetSelText(&buf[0]);
+			buf.resize(len);
+
+			if (buf.find(' ') == -1 && buf.find('\t') == -1)
+			{
+				SetIndicatorValue(INDIC_ROUNDBOX);
+				IndicSetStyle(INDIC_SMARTHIGHLIGHT, INDIC_ROUNDBOX);
+				
+				SearchOptions opt;
+				opt.SetFindText(buf.c_str());
+				CScintillaImpl::FindAll(&opt, boost::bind(HandleMarkAllResult, this, _1, _2));
+			}
+		}
+	}
 }
 
 /**

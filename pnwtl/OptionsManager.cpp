@@ -116,6 +116,7 @@ void Options::loadCache()
 
 	cache[OFindAlphaEnabled]		= Get(NULL, _T("FindAlphaEnabled"), true);
 	cache[OFindAlphaPercent]		= Get(NULL, _T("FindAlphaPercent"), 60);
+	cache[OSmartHighlight]			= Get(NULL, _T("SmartHighlight"), true);
 
 	ungroup();
 }
@@ -188,6 +189,7 @@ void Options::saveCache()
 
 	Set(NULL, _T("FindAlphaEnabled"),		cache[OFindAlphaEnabled]);
 	Set(NULL, _T("FindAlphaPercent"),		cache[OFindAlphaPercent]);
+	Set(NULL, _T("SmartHighlight"),			cache[OSmartHighlight]);
 
 	ungroup();
 }

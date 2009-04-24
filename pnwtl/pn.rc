@@ -60,7 +60,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
     END
-    POPUP "&Edit"
+    POPUP "&Search"
     BEGIN
         MENUITEM "F&ind in Files",              ID_EDIT_FINDINFILES
     END
@@ -180,13 +180,6 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Select All",                 ID_EDIT_SELECTALL
         MENUITEM SEPARATOR
-        MENUITEM "&Find",                       ID_EDIT_FIND
-        MENUITEM "Find &Next",                  ID_EDIT_FINDNEXT
-        MENUITEM "Find Pre&vious",              ID_EDIT_FINDPREVIOUS
-        MENUITEM "R&eplace",                    ID_EDIT_REPLACE
-        MENUITEM "F&ind in Files",              ID_EDIT_FINDINFILES
-        MENUITEM "&Quick Find",                 ID_EDIT_QUICKFIND
-        MENUITEM SEPARATOR
         POPUP "Com&ments"
         BEGIN
             MENUITEM "&Line",                       ID_COMMENTS_LINE
@@ -202,6 +195,17 @@ BEGIN
         MENUITEM "&Jump To...",                 ID_EDIT_JUMPTO
         MENUITEM "&Autocomplete",               ID_EDIT_AUTOCOMPLETE
         MENUITEM "Insert Template",             ID_EDIT_INSERTCLIP
+    END
+    POPUP "&Search"
+    BEGIN
+        MENUITEM "&Find",                       ID_EDIT_FIND
+        MENUITEM "Find &Next",                  ID_EDIT_FINDNEXT
+        MENUITEM "Find Pre&vious",              ID_EDIT_FINDPREVIOUS
+        MENUITEM "F&ind in Files",              ID_EDIT_FINDINFILES
+        MENUITEM SEPARATOR
+        MENUITEM "R&eplace",                    ID_EDIT_REPLACE
+        MENUITEM SEPARATOR
+        MENUITEM "&Quick Find",                 ID_EDIT_QUICKFIND
     END
     POPUP "&View"
     BEGIN
@@ -755,7 +759,7 @@ BEGIN
 END
 
 IDD_PAGE_STYLE DIALOGEX 0, 0, 300, 200
-STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
+STYLE DS_SETFONT | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg 2", 400, 0, 0x1
 BEGIN
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,4,300,1
@@ -782,6 +786,10 @@ BEGIN
     LTEXT           "Indentation Guides:",IDC_STATIC,10,146,74,8
     CONTROL         "Don't change the foreground.",IDC_STYLE_SELUSEFORE,
                     "Button",BS_AUTOCHECKBOX | BS_NOTIFY | WS_TABSTOP,144,128,108,10
+    PUSHBUTTON      "Button1",IDC_STYLE_SELWORDCOLBUTTON,90,185,50,14
+    PUSHBUTTON      "Button1",IDC_STYLE_MARKALLCOLBUTTON,10,185,50,14
+    LTEXT           "Selected Word Highlight:",IDC_STATIC,90,174,84,8
+    LTEXT           "Mark All Highlight:",IDC_STATIC,10,174,74,8
 END
 
 IDD_PAGE_SCHEMES DIALOGEX 0, 0, 300, 200
@@ -944,24 +952,26 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,12,168,10
     CONTROL         "Folding enabled for supporting schemes",IDC_OPT_FOLDINGCHECK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,24,157,10
+    CONTROL         "Highlight all instances of selected word",IDC_OPT_SMARTHIGHLIGHTCHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,36,153,10
     CONTROL         "Highlight current editor line",IDC_OPT_LINELIGHTCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,36,114,10
-    PUSHBUTTON      "Button1",IDC_OPT_LINELIGHTBUTTON,22,48,60,14
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,48,114,10
+    PUSHBUTTON      "Button1",IDC_OPT_LINELIGHTBUTTON,22,60,60,14
     CONTROL         "Blend highlight colour:",IDC_OPT_LINELIGHTALPHACHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,96,50,84,10
-    CONTROL         "",IDC_LINEHIGHLIGHTSLIDER,"msctls_trackbar32",TBS_BOTH | WS_TABSTOP,194,48,49,13,WS_EX_TRANSPARENT
-    CONTROL         "No long line help",IDC_OPT_NOLLHELPRADIO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,10,84,120,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,96,62,84,10
+    CONTROL         "",IDC_LINEHIGHLIGHTSLIDER,"msctls_trackbar32",TBS_BOTH | WS_TABSTOP,194,60,49,13,WS_EX_TRANSPARENT
+    CONTROL         "No long line help",IDC_OPT_NOLLHELPRADIO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,10,96,120,10
     CONTROL         "Show a line at the edge column",IDC_OPT_LLLINERADIO,
-                    "Button",BS_AUTORADIOBUTTON,10,96,126,10
+                    "Button",BS_AUTORADIOBUTTON,10,108,126,10
     CONTROL         "Highlight text beyond the edge column",IDC_OPT_LLHIGHLIGHTRADIO,
-                    "Button",BS_AUTORADIOBUTTON,10,108,150,10
-    EDITTEXT        IDC_OPT_LLCOLUMNEDIT,87,120,48,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Button2",IDC_OPT_LLCOLORBUTTON,140,120,54,14
+                    "Button",BS_AUTORADIOBUTTON,10,120,150,10
+    EDITTEXT        IDC_OPT_LLCOLUMNEDIT,87,132,48,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Button2",IDC_OPT_LLCOLORBUTTON,140,132,54,14
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,1,4,298,1
     LTEXT           "Settings",IDC_STATIC,0,0,27,8
-    LTEXT           "Rightmost Column:",IDC_STATIC,22,122,66,10
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,76,299,1
-    LTEXT           "Long Line Helpers",IDC_STATIC,0,72,57,8
+    LTEXT           "Rightmost Column:",IDC_STATIC,22,134,66,10
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,89,299,1
+    LTEXT           "Long Line Helpers",IDC_STATIC,0,84,57,8
 END
 
 IDD_TAB_MISC DIALOGEX 0, 0, 294, 157
