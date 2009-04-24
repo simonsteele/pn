@@ -2,7 +2,7 @@
  * @file mainfrm.h
  * @brief Main Window for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -120,6 +120,7 @@ public:
 		MESSAGE_HANDLER(m_uiMIMessageID, OnMultiInstanceMsg)
 		MESSAGE_HANDLER(UWM_MDICHILDSAVEMODIFIED, OnSaveModifiedItem)
 		MESSAGE_HANDLER(PN_UPDATEFINDTEXT, OnUpdateFindText)
+		MESSAGE_HANDLER(PN_MDISETMENU, OnMDISetMenu)
 		
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
@@ -143,9 +144,6 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_QUICKFIND, OnQuickFind)
 
 		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
-		COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR_EDIT, OnViewEditBar)
-		COMMAND_ID_HANDLER(ID_VIEW_TOOLBARS_SCHEMES, OnViewSchemesBar)
-		COMMAND_ID_HANDLER(ID_VIEW_TOOLBARS_FIND, OnViewFindBar)
 		COMMAND_ID_HANDLER(ID_VIEW_STATUS_BAR, OnViewStatusBar)
 		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHideOutput)
 		COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
@@ -249,6 +247,8 @@ public:
 	
 	LRESULT OnUpdateFindText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
+	LRESULT OnMDISetMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
 	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -275,9 +275,6 @@ public:
 
 	// View
 	LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnViewEditBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnViewSchemesBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnViewFindBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewStatusBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnHideOutput(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
@@ -389,15 +386,11 @@ private:
 	void AddMRUProjectsEntry(LPCTSTR lpszFile);
 
 	CSize GetGUIFontSize();
-	HWND CreateFindToolbar();
-	HWND CreateSchemeToolbar();
+	HWND CreateToolbar();
 	void CreateDockingWindows();
 	BOOL AddReBarBand(HWND hWndBand, LPTSTR lpstrTitle = NULL, BOOL bNewRow = FALSE, bool bUseChevrons = false, int cxWidth = 0, BOOL bFullWidthAlways = FALSE);
 
 	void ToggleToolbar(DWORD toolbarId);
-	inline DWORD GetRebarBarCmd(DWORD toolbarId);
-	inline DWORD GetRebarBarId(DWORD toolbarId);
-	inline DWORD GetRebarBarIndex(DWORD toolbarId);
 	bool GetToolbarShowing(DWORD toolbarId);
 
 	void InitGUIState();
@@ -452,15 +445,11 @@ private:
 	};
 
 	enum {
-		TBR_SCHEME = 100,
-		TBR_FIND = 101,
-		TBR_EDIT = 102,
 		TBR_FILE = 103,
 	};
 
 	CommandDispatch*		m_pCmdDispatch;
 	COutputView*			m_pOutputWnd;
-	//COutputView*			m_pFindResultsWnd;
 	CFindInFilesView*		m_pFindResultsWnd;
 	CClipsDocker*			m_pClipsWnd;
 	CProjectDocker*			m_pProjectsWnd;
@@ -501,8 +490,6 @@ private:
 
 	HIMAGELIST				m_hILMain;
 	HIMAGELIST				m_hILMainD;
-	HIMAGELIST				m_hILEdit;
-	HIMAGELIST				m_hILFind;
 
 	bool					m_bShowingDefaultStatus;
 	bool					m_bIsXPOrLater;

@@ -58,20 +58,6 @@ using namespace L10N;
 	static char THIS_FILE[] = __FILE__;
 #endif
 
-const DWORD ToolbarCmds[4] = {
-	ID_VIEW_TOOLBARS_SCHEMES,
-	ID_VIEW_TOOLBARS_FIND,
-	ID_VIEW_TOOLBAR_EDIT,
-	ID_VIEW_TOOLBAR,
-};
-
-const DWORD ToolbarIds[4] = {
-	ATL_IDW_BAND_FIRST + 3,
-	ATL_IDW_BAND_FIRST + 4,
-	ATL_IDW_BAND_FIRST + 2,
-	ATL_IDW_BAND_FIRST + 1,
-};
-
 #define TOOLS_MENU_INDEX 3
 
 CMainFrame::CMainFrame(CommandDispatch* commands, std::list<tstring>* cmdLineArgs) : 
@@ -94,8 +80,6 @@ CMainFrame::CMainFrame(CommandDispatch* commands, std::list<tstring>* cmdLineArg
 	m_hProjAccel(NULL),
 	m_hILMain(NULL),
 	m_hILMainD(NULL),
-	m_hILEdit(NULL),
-	m_hILFind(NULL),
 
 	// Store command-line arguments for use later
 	m_cmdLineArgs(cmdLineArgs),
@@ -595,7 +579,6 @@ LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
 
 		::ImageList_Destroy( m_hILMain );
 		::ImageList_Destroy( m_hILMainD );
-		::ImageList_Destroy( m_hILEdit );
 
 		CloseAndFreeDlg(m_pFindEx);
 		m_pFindEx = NULL;
@@ -629,100 +612,46 @@ CSize CMainFrame::GetGUIFontSize()
 }
 
 #define PN_BETTER_TOOLBAR_STYLE \
-	(WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | CCS_NODIVIDER | CCS_NORESIZE | CCS_NOPARENTALIGN | TBSTYLE_TOOLTIPS | TBSTYLE_FLAT | TBSTYLE_LIST)
+	(WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | /*CCS_NODIVIDER | CCS_NORESIZE | CCS_NOPARENTALIGN |*/ TBSTYLE_TOOLTIPS /*| TBSTYLE_FLAT */| TBSTYLE_LIST)
 
-HWND CMainFrame::CreateFindToolbar()
+HWND CMainFrame::CreateToolbar()
 {
-	HWND hWnd = CreateSimpleToolBarCtrl(m_hWnd, IDR_TBR_FIND, FALSE, PN_BETTER_TOOLBAR_STYLE, TBR_FIND);
+	HWND hWnd = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, PN_BETTER_TOOLBAR_STYLE, TBR_FILE);
 
 	if(!hWnd)
 		return 0;
 
 	CToolBarCtrl fToolbar(hWnd);
-	fToolbar.SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
+	// fToolbar.SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
 	// Only IE 501
-	fToolbar.SetExtendedStyle(fToolbar.GetExtendedStyle() | /*TBSTYLE_EX_HIDECLIPPEDBUTTONS |*/ TBSTYLE_EX_MIXEDBUTTONS);
+
+	// Set TBSTYLE_FLAT here rather than in the create method to do the following:
+	// 1. Make split buttons render with a flat drop-down
+	// 2. Avoid weird drawing issues where the background shows through the toolbar.
+	::SetWindowLong(hWnd, GWL_STYLE, ::GetWindowLong(hWnd, GWL_STYLE) | TBSTYLE_FLAT);
+	fToolbar.SetExtendedStyle(fToolbar.GetExtendedStyle() | /*TBSTYLE_EX_HIDECLIPPEDBUTTONS |*/ TBSTYLE_EX_MIXEDBUTTONS | TBSTYLE_EX_DRAWDDARROWS | TBSTYLE_EX_DOUBLEBUFFER);
 
 	CSize sizeChar = GetGUIFontSize();
 	int cx = FIND_COMBO_SIZE * sizeChar.cx;
 
 	TBBUTTONINFO tbi;
 	RECT rc;
-
-	tbi.cbSize = sizeof TBBUTTONINFO;
-	tbi.dwMask = TBIF_STYLE | TBIF_SIZE;
-	tbi.fsStyle = TBSTYLE_SEP;
-	tbi.cx = (unsigned short)cx;
-
-	fToolbar.SetButtonInfo(ID_PLACEHOLDER_FINDCOMBO, &tbi);
-	fToolbar.GetItemRect(1, &rc);
-
-	rc.bottom = TOOLBAR_COMBO_DROPLINES * sizeChar.cy;
-	rc.left += 1; // slight offset from previous and next buttons.
-	rc.right -= 1;
-
-	//m_FindImages.Create(16, 16, ILC_COLOR32 | ILC_MASK, 3, 1);
-	//CBitmap bmp;
-	//bmp.LoadBitmap(IDB_FINDTOOLBAR);
-	//m_FindImages.Add(bmp, RGB(255, 0, 255));
-
-	//fToolbar.SetImageList(m_FindImages.m_hImageList);
-
-	HWND hWndCombo = m_FindCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), 
-		CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL,
-		0, IDC_FINDCOMBO, _T("FindToolbar"));
-	hWndCombo;
-	ATLASSERT(hWndCombo != 0);
-
-	m_FindCombo.SetParent(hWnd);
-	m_FindCombo.SetFont((HFONT)GetStockObject( DEFAULT_GUI_FONT ));
-	m_FindCombo.SetOwnerHWND(m_hWnd); // Get enter notifications.
-
-	// Set the drop-down button...
-	int nIndex = fToolbar.CommandToIndex(ID_FINDTYPE_BUTTON);
-	ATLASSERT(nIndex != -1);
 	
-	tstring fs = LS(IDS_FIND);
+	int cxsc = SCHEME_COMBO_SIZE * sizeChar.cx;
 
-	// Add drop-down style to the button
-	tbi.dwMask = TBIF_STYLE;
-	fToolbar.GetButtonInfo(ID_FINDTYPE_BUTTON, &tbi);
-	tbi.fsStyle |= BTNS_DROPDOWN;
-	tbi.fsStyle |= BTNS_SHOWTEXT | BTNS_AUTOSIZE;
-	tbi.dwMask |= TBIF_TEXT;
-	tbi.pszText = const_cast<LPSTR>(fs.c_str());
-	fToolbar.SetButtonInfo(ID_FINDTYPE_BUTTON, &tbi);
-
-	return hWnd;
-}
-
-HWND CMainFrame::CreateSchemeToolbar()
-{
-	HWND hWnd = CreateSimpleToolBarCtrl(m_hWnd, IDR_TBR_SCHEME, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE, TBR_SCHEME);
-
-	if (!hWnd) 
-		return 0;
-
-	CToolBarCtrl sToolbar(hWnd);
-
-	CSize sizeChar = GetGUIFontSize();
-	int cx = SCHEME_COMBO_SIZE * sizeChar.cx;
-
-	RECT rc;
-
-	TBBUTTONINFO tbi;
 	tbi.cbSize = sizeof TBBUTTONINFO;		
 	tbi.dwMask = TBIF_STYLE | TBIF_SIZE;
 	tbi.fsStyle = TBSTYLE_SEP;
-	tbi.cx = (unsigned short)cx;
+	tbi.cx = (unsigned short)cxsc;
 	
-	sToolbar.SetButtonInfo(ID_PLACEHOLDER_SCHEMECOMBO, &tbi); 						
-	sToolbar.GetItemRect(0, &rc); 
+	fToolbar.SetButtonInfo(ID_PLACEHOLDER_SCHEMECOMBO, &tbi); 						
+	
+	int nIndex = fToolbar.CommandToIndex(ID_PLACEHOLDER_SCHEMECOMBO);
+	fToolbar.GetItemRect(nIndex, &rc); 
 
 	rc.bottom = rc.top + TOOLBAR_COMBO_DROPLINES * sizeChar.cy;
 	
-	HWND hWndCombo =  m_SchemeCombo.Create(m_hWnd, rc, NULL, CBS_DROPDOWNLIST | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL,
-		0, IDC_SCHEMECOMBO);
+	HWND hWndCombo =  m_SchemeCombo.Create(m_hWnd, rc, NULL, CBS_DROPDOWNLIST | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL, 0, IDC_SCHEMECOMBO);
 	hWndCombo;
 	ATLASSERT(hWndCombo != 0);
 	
@@ -740,6 +669,42 @@ HWND CMainFrame::CreateSchemeToolbar()
 		index = m_SchemeCombo.AddString( (*i).GetTitle() );
 		m_SchemeCombo.SetItemDataPtr( index, &(*i) );
 	}
+
+	tbi.cbSize = sizeof TBBUTTONINFO;
+	tbi.dwMask = TBIF_STYLE | TBIF_SIZE;
+	tbi.fsStyle = TBSTYLE_SEP;
+	tbi.cx = (unsigned short)cx;
+
+	fToolbar.SetButtonInfo(ID_PLACEHOLDER_FINDCOMBO, &tbi);
+	
+	nIndex = fToolbar.CommandToIndex(ID_PLACEHOLDER_FINDCOMBO);
+	fToolbar.GetItemRect(nIndex, &rc);
+
+	rc.bottom = TOOLBAR_COMBO_DROPLINES * sizeChar.cy;
+	rc.left += 1; // slight offset from previous and next buttons.
+	rc.right -= 1;
+
+	hWndCombo = m_FindCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), 
+		CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL,
+		0, IDC_FINDCOMBO, _T("FindToolbar"));
+	hWndCombo;
+	ATLASSERT(hWndCombo != 0);
+
+	m_FindCombo.SetParent(hWnd);
+	m_FindCombo.SetFont((HFONT)GetStockObject( DEFAULT_GUI_FONT ));
+	m_FindCombo.SetOwnerHWND(m_hWnd); // Get enter notifications.
+
+	// Set the drop-down button...	
+	tstring fs = LS(IDS_FIND);
+
+	// Add drop-down style to the button
+	tbi.dwMask = TBIF_STYLE;
+	fToolbar.GetButtonInfo(ID_FINDTYPE_BUTTON, &tbi);
+	tbi.fsStyle |= BTNS_DROPDOWN;
+	tbi.fsStyle |= BTNS_SHOWTEXT | BTNS_AUTOSIZE;
+	tbi.dwMask |= TBIF_TEXT;
+	tbi.pszText = const_cast<LPSTR>(fs.c_str());
+	fToolbar.SetButtonInfo(ID_FINDTYPE_BUTTON, &tbi);
 
 	return hWnd;
 }
@@ -835,14 +800,14 @@ void CMainFrame::CreateDockingWindows()
 	getDocker(DW_SCRIPTS)->DockTo( getDocker(DW_OPENFILES)->m_hWnd, 0 );
 
 	// Register icons for menu niceness...
-	m_CmdBar.AddIcon(getDocker(DW_FINDRESULTS)->GetIcon(FALSE), ID_VIEW_WINDOWS_FINDRESULTS);
+	/*m_CmdBar.AddIcon(getDocker(DW_FINDRESULTS)->GetIcon(FALSE), ID_VIEW_WINDOWS_FINDRESULTS);
 	m_CmdBar.AddIcon(getDocker(DW_PROJECTS)->GetIcon(FALSE), ID_VIEW_WINDOWS_PROJECT);
 	m_CmdBar.AddIcon(getDocker(DW_SCRIPTS)->GetIcon(FALSE), ID_VIEW_WINDOWS_SCRIPTS);
 	m_CmdBar.AddIcon(getDocker(DW_TEXTCLIPS)->GetIcon(FALSE), ID_VIEW_WINDOWS_TEXTCLIPS);
 	m_CmdBar.AddIcon(getDocker(DW_OUTPUT)->GetIcon(FALSE), ID_VIEW_OUTPUT);
 	m_CmdBar.AddIcon(getDocker(DW_BROWSER)->GetIcon(FALSE), ID_VIEW_WINDOWS_BROWSER);
 	m_CmdBar.AddIcon(getDocker(DW_CTAGS)->GetIcon(FALSE), ID_VIEW_WINDOWS_CTAGS);
-	m_CmdBar.AddIcon(getDocker(DW_OPENFILES)->GetIcon(FALSE), ID_VIEW_WINDOWS_OPENFILES);
+	m_CmdBar.AddIcon(getDocker(DW_OPENFILES)->GetIcon(FALSE), ID_VIEW_WINDOWS_OPENFILES);*/
 }
 
 static BOOL AddReBarBandCtrl(HWND hWndReBar, HWND hWndBand, int nID = 0, LPCTSTR lpstrTitle = NULL, BOOL bNewRow = FALSE, int cxWidth = 0, BOOL bFullWidthAlways = FALSE, bool bUseChevrons = true)
@@ -995,26 +960,24 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	//////////////////////////////////////////////////////////////
 	// Command Bar and Toolbars:
 
-	// create command bar window
-	HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
-	// attach menu
-	m_CmdBar.AttachMenu(GetMenu());
-	
-	// remove old menu
-	SetMenu(NULL);
+	//// create command bar window
+	//HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
+	//// attach menu
+	//m_CmdBar.AttachMenu(GetMenu());
+	//
+	//// remove old menu
+	//SetMenu(NULL);
 
-	HWND hWndToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
-	HWND hWndEdtToolBar = CreateSimpleToolBarCtrl(m_hWnd, IDR_TBR_EDIT, FALSE, ATL_SIMPLE_TOOLBAR_PANE_STYLE);
-	HWND hWndSchemeToolBar = CreateSchemeToolbar();
-	HWND hWndFindToolBar = CreateFindToolbar();
+	HWND hWndToolBar = CreateToolbar();
+	m_hWndToolBar = hWndToolBar;
 
 	// Sort out toolbar images etc...
 	if(m_bIsXPOrLater && !OPTIONS->Get(PNSK_INTERFACE, "LowColourToolbars", false))
 	{
 		// XP toolbars...
-		m_CmdBar.LoadImages(IDR_MAINFRAME);
- 		m_CmdBar.LoadImages(IDR_TBR_EDIT);
-		m_CmdBar.LoadImages(IDR_TBR_FIND);
+		//m_CmdBar.LoadImages(IDR_MAINFRAME);
+ 		//m_CmdBar.LoadImages(IDR_TBR_EDIT);
+		//m_CmdBar.LoadImages(IDR_TBR_FIND);
 	}
 	else
 	{
@@ -1024,29 +987,29 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 		// 24-bit tb images, this needs re-instating for Non-XP display.
 		loadImages(IDB_TBMAIN24, &m_hILMain, IDB_TBMAINDIS, &m_hILMainD);
-		loadImages(IDB_TBEDIT24, &m_hILEdit);
-		loadImages(IDB_TBFIND24, &m_hILFind);
+		//loadImages(IDB_TBEDIT24, &m_hILEdit);
+		//loadImages(IDB_TBFIND24, &m_hILFind);
 
 		// Again, this code is used for Non-XP images.
 		::SendMessage(hWndToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILMain);
 		::SendMessage(hWndToolBar, TB_SETDISABLEDIMAGELIST, 0, (LPARAM)m_hILMainD);
-		::SendMessage(hWndEdtToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILEdit);
-		::SendMessage(hWndFindToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILFind);
+		//::SendMessage(hWndEdtToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILEdit);
+		//::SendMessage(hWndFindToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILFind);
 
 		// Set the mask back...
 		m_CmdBar.m_clrMask = clrOld;
 	}
 
 	// Additional Images:
-	{
-		COLORREF clrOld = m_CmdBar.m_clrMask;
-		m_CmdBar.m_clrMask = RGB(255,0,255);
-		
-		// Projects menu
-		m_CmdBar.LoadImages(IDR_TBR_PROJECTS);
-		
-		m_CmdBar.m_clrMask = clrOld;
-	}
+	//{
+	//	COLORREF clrOld = m_CmdBar.m_clrMask;
+	//	m_CmdBar.m_clrMask = RGB(255,0,255);
+	//	
+	//	// Projects menu
+	//	m_CmdBar.LoadImages(IDR_TBR_PROJECTS);
+	//	
+	//	m_CmdBar.m_clrMask = clrOld;
+	//}
 
 	// Contentious feature time - hidden option to hide SaveAll until 
 	// we have toolbar customisation.
@@ -1055,22 +1018,14 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		::SendMessage(hWndToolBar, TB_DELETEBUTTON, 4, 0);
 	}
 
-	CreateSimpleReBar(PN_REBAR_STYLE);
-	AddReBarBand(hWndCmdBar, NULL, FALSE, true);
-	AddReBarBand(hWndToolBar, NULL, TRUE, true);
-	AddReBarBand(hWndEdtToolBar, NULL, FALSE, true);
-	AddReBarBand(hWndSchemeToolBar, NULL, FALSE, true);
-	AddReBarBand(hWndFindToolBar, NULL, FALSE, true);
-	SizeSimpleReBarBands();
+	//CreateSimpleReBar(PN_REBAR_STYLE);
+	//AddReBarBand(hWndCmdBar, NULL, FALSE, true);
+	//AddReBarBand(hWndToolBar, NULL, TRUE, true);
+	//SizeSimpleReBarBands();
 
 	// CmdUI
 	UIAddToolBar(hWndToolBar);
-	UIAddToolBar(hWndEdtToolBar);
-	UIAddToolBar(hWndSchemeToolBar);
 	UISetCheck(ID_VIEW_TOOLBAR, 1);
-	UISetCheck(ID_VIEW_TOOLBAR_EDIT, 1);
-	UISetCheck(ID_VIEW_TOOLBARS_FIND, 1);
-	UISetCheck(ID_VIEW_TOOLBARS_SCHEMES, 1);
 	
 	//////////////////////////////////////////////////////////////
 	// Status Bar:
@@ -1103,6 +1058,8 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		m_StatusBar.ShowWindow(SW_HIDE);
 		UpdateLayout();
 	}
+
+	UpdateLayout();
 	
 	m_bShowingDefaultStatus = false;
 	SetStatusText(NULL);
@@ -1127,7 +1084,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	// Misc:
 	
 	CreateMDIClient();
-	m_CmdBar.SetMDIClient(m_hWndMDIClient);
+	//m_CmdBar.SetMDIClient(m_hWndMDIClient);
 	m_ChildFactory.SetMdiClient(m_hWndMDIClient);
 
 	HICON hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_READONLY), 
@@ -1530,6 +1487,21 @@ LRESULT CMainFrame::OnUpdateFindText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	return 0;
 }
 
+LRESULT CMainFrame::OnMDISetMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	bHandled = FALSE;
+	//::DefWindowProc(m_hWndMDIClient, uMsg, NULL, lParam);
+	//HMENU hOldMenu = GetMenu();
+	//BOOL bRet = AttachMenu((HMENU)wParam);
+
+	// PN Specific Code
+	OnMDISetMenu((HMENU)lParam, (HMENU)wParam);
+
+	/*bRet;
+	ATLASSERT(bRet);*/
+	return 0;
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Command Handlers...
 
@@ -1813,24 +1785,6 @@ LRESULT CMainFrame::OnQuickFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 LRESULT CMainFrame::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	ToggleToolbar(TBR_FILE);
-	return 0;
-}
-
-LRESULT CMainFrame::OnViewEditBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	ToggleToolbar(TBR_EDIT);
-	return 0;
-}
-
-LRESULT CMainFrame::OnViewSchemesBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	ToggleToolbar(TBR_SCHEME);	
-	return 0;
-}
-
-LRESULT CMainFrame::OnViewFindBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	ToggleToolbar(TBR_FIND);
 	return 0;
 }
 
@@ -2286,7 +2240,7 @@ LRESULT CMainFrame::OnToolbarDropDown(WPARAM /*wParam*/, LPNMHDR lParam, BOOL& /
 	
 	switch(lParam->idFrom)
 	{
-		case TBR_FIND:
+		case TBR_FILE:
 		{
 			CSPopupMenu popup(IDR_POPUP_FINDBARDD);
 			
@@ -2677,34 +2631,10 @@ void CMainFrame::setupToolsUI()
 	}
 }
 
-/**
- * Get the menu command id associated with the toolbar.
- */
-DWORD CMainFrame::GetRebarBarCmd(DWORD toolbarId)
-{
-	return ToolbarCmds[toolbarId - 100];
-}
-
-/**
- * Get the ID of the rebar band a toolbar is on.
- */
-DWORD CMainFrame::GetRebarBarId(DWORD toolbarId)
-{
-	return ToolbarIds[toolbarId - 100];
-}
-
-/**
- * Get the rebar band index of a given toolbar.
- */
-DWORD CMainFrame::GetRebarBarIndex(DWORD toolbarId)
-{
-	return ::SendMessage(m_hWndToolBar, RB_IDTOINDEX, GetRebarBarId(toolbarId), 0);
-}
-
 bool CMainFrame::GetToolbarShowing(DWORD toolbarId)
 {
 	REBARBANDINFO rbbi = {sizeof(rbbi), RBBIM_STYLE, 0};
-	::SendMessage(m_hWndToolBar, RB_GETBANDINFO, GetRebarBarIndex(toolbarId), (LPARAM)&rbbi);
+	::SendMessage(m_hWndToolBar, RB_GETBANDINFO, ATL_IDW_BAND_FIRST + 1, (LPARAM)&rbbi);
 	return ((rbbi.fStyle & RBBS_HIDDEN) == 0);
 }
 
@@ -2713,9 +2643,9 @@ bool CMainFrame::GetToolbarShowing(DWORD toolbarId)
  */
 void CMainFrame::ToggleToolbar(DWORD toolbarId)
 {
-	DWORD cmd = GetRebarBarCmd( toolbarId );
+	DWORD cmd = ID_VIEW_TOOLBAR;
 	BOOL bNowVisible = !((UIGetState( cmd ) & UPDUI_CHECKED) != 0);
-	::SendMessage(m_hWndToolBar, RB_SHOWBAND, GetRebarBarIndex( toolbarId ), bNowVisible);
+	::SendMessage(m_hWndToolBar, RB_SHOWBAND, ATL_IDW_BAND_FIRST + 1, bNowVisible);
 	UISetCheck(cmd, bNowVisible);
 	UpdateLayout();
 }
@@ -2738,7 +2668,7 @@ void CMainFrame::InitGUIState()
 	statekey += PNSK_DEFGUI;
 
 	m_GUIState.Initialize(statekey.c_str(), m_hWnd/*, SW_SHOWMAXIMIZED*/);
-	m_GUIState.Add(sstate::CRebarStateAdapter(m_hWndToolBar/*, REBAR_SAVESTATE_VERSION*/));
+	//m_GUIState.Add(sstate::CRebarStateAdapter(m_hWndToolBar/*, REBAR_SAVESTATE_VERSION*/));
 	m_GUIState.Add(dockers);
 }
 
@@ -2755,10 +2685,7 @@ void CMainFrame::LoadGUIState()
 
 	// Set initial UpdateUI state...
 	UISetCheck(ID_EDITOR_OUTPUTWND, getDocker(DW_OUTPUT)->IsWindowVisible());
-	UISetCheck( GetRebarBarCmd( TBR_FILE   ), GetToolbarShowing( TBR_FILE   ));
-	UISetCheck( GetRebarBarCmd( TBR_EDIT   ), GetToolbarShowing( TBR_EDIT   ));
-	UISetCheck( GetRebarBarCmd( TBR_SCHEME ), GetToolbarShowing( TBR_SCHEME ));
-	UISetCheck( GetRebarBarCmd( TBR_FIND   ), GetToolbarShowing( TBR_FIND   ));
+	UISetCheck(ID_VIEW_TOOLBAR, GetToolbarShowing( TBR_FILE   ));
 
 	UpdateLayout();
 }
@@ -2889,7 +2816,8 @@ BOOL CMainFrame::TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPAR
 	if( hWndCaller != NULL )
 		uFlags |= TPM_RETURNCMD;
 	
-	BOOL bRet = m_CmdBar.TrackPopupMenu(hMenu, uFlags, x, y, lpParams);
+	//BOOL bRet = m_CmdBar.TrackPopupMenu(hMenu, uFlags, x, y, lpParams);
+	BOOL bRet = ::TrackPopupMenuEx(hMenu, uFlags, x, y, m_hWnd, lpParams);
 
 	if( hWndCaller != NULL && bRet != 0 )
 		::SendMessage(hWndCaller, WM_COMMAND, bRet, NULL);

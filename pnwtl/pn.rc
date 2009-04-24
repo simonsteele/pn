@@ -66,13 +66,7 @@ BEGIN
     END
     POPUP "&View"
     BEGIN
-        POPUP "&Toolbars"
-        BEGIN
-            MENUITEM "&Standard",                   ID_VIEW_TOOLBAR
-            MENUITEM "&Edit",                       238
-            MENUITEM "&Find",                       302
-            MENUITEM "&Schemes",                    ID_VIEW_TOOLBARS_SCHEMES
-        END
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
         POPUP "&Windows"
         BEGIN
             MENUITEM "&Projects",                   ID_VIEW_WINDOWS_PROJECT
@@ -211,13 +205,7 @@ BEGIN
     END
     POPUP "&View"
     BEGIN
-        POPUP "&Toolbars"
-        BEGIN
-            MENUITEM "&Standard",                   ID_VIEW_TOOLBAR
-            MENUITEM "&Edit",                       ID_VIEW_TOOLBAR_EDIT
-            MENUITEM "&Find",                       ID_VIEW_TOOLBARS_FIND
-            MENUITEM "&Schemes",                    ID_VIEW_TOOLBARS_SCHEMES
-        END
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
         POPUP "&Windows"
         BEGIN
             MENUITEM "&Project",                    ID_VIEW_WINDOWS_PROJECT
@@ -1732,25 +1720,16 @@ BEGIN
     BUTTON      ID_FILE_SAVEALL
     SEPARATOR
     BUTTON      ID_FILE_CLOSE
-END
-
-IDR_TBR_EDIT TOOLBAR  16, 16
-BEGIN
+    SEPARATOR
     BUTTON      ID_EDIT_UNDO
     BUTTON      ID_EDIT_REDO
     SEPARATOR
     BUTTON      ID_EDIT_CUT
     BUTTON      ID_EDIT_COPY
     BUTTON      ID_EDIT_PASTE
-END
-
-IDR_TBR_SCHEME TOOLBAR  16, 15
-BEGIN
+    SEPARATOR
     BUTTON      ID_PLACEHOLDER_SCHEMECOMBO
-END
-
-IDR_TBR_FIND TOOLBAR  16, 16
-BEGIN
+    SEPARATOR
     BUTTON      ID_EDIT_FINDINFILES
     BUTTON      ID_PLACEHOLDER_FINDCOMBO
     BUTTON      ID_FINDTYPE_BUTTON
@@ -1777,19 +1756,15 @@ END
 
 IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
 IDB_EDITOR              BITMAP                  "res\\editor.bmp"
-IDR_TBR_EDIT            BITMAP                  "res\\edittbr.bmp"
 IDB_TRUETYPE_FONTTYPE   BITMAP                  "res\\font_tru.bmp"
-IDR_TBR_SCHEME          BITMAP                  "res\\tbrScheme.bmp"
-IDR_TBR_FIND            BITMAP                  "res\\tbrFindCombo.bmp"
-IDB_TBFIND24            BITMAP                  "res\\findbarbmps.bmp"
 IDR_TBR_PROJECTS        BITMAP                  "res\\tbrProjects.bmp"
 IDB_ABOUT               BITMAP                  "res\\about.bmp"
 IDB_TAGTYPES            BITMAP                  "res\\tagtypes.bmp"
 IDB_TBMAINDIS           BITMAP                  "res\\toolbardisabled.bmp"
 IDB_REDCLOSE            BITMAP                  "res\\redclose.bmp"
 IDB_TBMAIN24            BITMAP                  "res\\tbrMain24.bmp"
-IDB_TBEDIT24            BITMAP                  "res\\tbrEdit24.bmp"
 IDB_OPENFILES           BITMAP                  "res\\openfilesimages.bmp"
+IDB_TBFIND24            BITMAP                  "res\\findbarbmps.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

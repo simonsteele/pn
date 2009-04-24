@@ -4,7 +4,6 @@
 //
 #define IDOK2                           3
 #define IDC_REPLACE_BUTTON              4
-#define IDR_TBR_EDIT                    5
 #define IDR_POPUP_TABS                  5
 #define IDC_REPLACEALL_BUTTON           6
 #define IDC_REPLACEINSEL_BUTTON         7
@@ -152,12 +151,9 @@
 #define ID_VIEW_TOGGLEFOLD              272
 #define ID_EDIT_SELECTALL               273
 #define ID_HELP_WEB_SR                  275
-#define IDR_TBR_SCHEME                  276
 #define IDR_TOOLBAR1                    278
 #define IDR_TBR_FINDCOMBO               278
-#define IDR_TBR_FIND                    278
 #define IDB_FINDTOOLBAR                 280
-#define IDB_TBFIND24                    280
 #define IDR_FINDBAR_DDMENU              281
 #define IDR_POPUP_FINDBARDD             281
 #define ID_FINDBAR_SEARCHGOOGLE         282
@@ -232,7 +228,6 @@
 #define IDR_POPUP_FINDRESULT            347
 #define IDR_POPUP_REMOVEPROJECT         347
 #define IDB_TBMAIN24                    348
-#define IDB_TBEDIT24                    349
 #define IDD_TEXTCLIPEDITOR              350
 #define IDI_TASKDLG_ARROW_HOT           352
 #define IDI_TASKDLG_ARROW_NORMAL        353
@@ -247,6 +242,8 @@
 #define IDI_ICON7                       362
 #define IDI_READONLY                    362
 #define IDR_POPUP_BROWSER               363
+#define IDB_BITMAP3                     364
+#define IDB_TBFIND24                    364
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -693,14 +690,15 @@
 #define ID_EDIT_SPLITLINES              33128
 #define ID_TOOLS_RECORDSCRIPT           33129
 #define ID_TOOLS_STOPRECORDING          33130
+#define ID_TOOLBARS_STANDARD            33131
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        364
-#define _APS_NEXT_COMMAND_VALUE         33131
+#define _APS_NEXT_RESOURCE_VALUE        365
+#define _APS_NEXT_COMMAND_VALUE         33132
 #define _APS_NEXT_CONTROL_VALUE         1160
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

@@ -102,6 +102,20 @@ void CPNMDIClient::ShowFindBar(bool bShow)
 	::SetWindowPos(m_hWnd, NULL, rcMDIClient.left, rcMDIClient.top, rcMDIClient.right - rcMDIClient.left, rcMDIClient.bottom - rcMDIClient.top, SWP_NOZORDER | SWP_NOACTIVATE /*| SWP_NOMOVE*/);
 }
 
+LRESULT CPNMDIClient::OnMDISetMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	bHandled = TRUE;
+	
+	// Set window menu
+	HMENU hOldMenu = GetParent().GetMenu();
+	DefWindowProc(uMsg, wParam, lParam);
+
+	// Handle frame window menu
+	SendMessage(GetParent(), PN_MDISETMENU, wParam, reinterpret_cast<LPARAM>(hOldMenu));
+
+	return reinterpret_cast<LRESULT>(hOldMenu);
+}
+
 LRESULT CPNMDIClient::OnMDINext(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = TRUE;

@@ -42,6 +42,7 @@
 bool CChildFrame::s_bFirstChild = true;
 
 #define USERLIST_TEXTCLIPS 1
+#define TOOLS_MENU_INDEX 4
 
 CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::TextClipsManager* textclips) : 
 	m_spDocument(doc), 
@@ -2071,7 +2072,7 @@ void CChildFrame::SetScheme(Scheme* pScheme, bool allSettings)
 void CChildFrame::UpdateTools(Scheme* pScheme)
 {
 	CSMenuHandle menu(m_hMenu);
-	CSMenuHandle tools( menu.GetSubMenu(3) );
+	CSMenuHandle tools( menu.GetSubMenu(TOOLS_MENU_INDEX) );
 
 	tstring projid;
 

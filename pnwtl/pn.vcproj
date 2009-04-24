@@ -929,6 +929,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\pndocking.h"
+				>
+			</File>
+			<File
+				RelativePath=".\pndockingwindow.h"
+				>
+			</File>
+			<File
 				RelativePath=".\pnextstring.h"
 				>
 			</File>
