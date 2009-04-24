@@ -173,12 +173,12 @@ LRESULT CFindBar::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 	CRect rcMatchCase(440, 5, 440+90, 24);
 	CRect rcWrapLabel(550, 5, 550+250, 25);
 	
-	m_xbutton.Create(m_hWnd, rcCloseButton, "x", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 0, IDCANCEL);
-	m_findNext.Create(m_hWnd, rcFindNext, "Find &Next", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 0, IDC_FBFINDNEXTBUTTON);
-	m_findPrev.Create(m_hWnd, rcFindPrev, "Find &Previous", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 0, IDC_FBFINDPREVBUTTON);
-	m_txtbox.Create(m_hWnd, rcTextBox, "", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, WS_EX_CLIENTEDGE, IDC_FBTEXT);
-	m_matchCase.Create(m_hWnd, rcMatchCase, "Match Case", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | BS_AUTOCHECKBOX, 0, IDC_FBMATCHCASECHECK);
-	m_wrappedLabel.Create(m_hWnd, rcWrapLabel, "Reached end of document, continue from top", WS_CHILD | WS_CLIPSIBLINGS, 0, IDC_FBWRAPLABEL);
+	m_xbutton.Create(m_hWnd, rcCloseButton, _T("x"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 0, IDCANCEL);
+	m_findNext.Create(m_hWnd, rcFindNext, _T("Find &Next"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 0, IDC_FBFINDNEXTBUTTON);
+	m_findPrev.Create(m_hWnd, rcFindPrev, _T("Find &Previous"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 0, IDC_FBFINDPREVBUTTON);
+	m_txtbox.Create(m_hWnd, rcTextBox, _T(""), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, WS_EX_CLIENTEDGE, IDC_FBTEXT);
+	m_matchCase.Create(m_hWnd, rcMatchCase, _T("Match Case"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | BS_AUTOCHECKBOX, 0, IDC_FBMATCHCASECHECK);
+	m_wrappedLabel.Create(m_hWnd, rcWrapLabel, LS(IDS_FINDLOOPED), WS_CHILD | WS_CLIPSIBLINGS, 0, IDC_FBWRAPLABEL);
 	
 	HFONT fn = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
 	SetFont(fn);
@@ -344,7 +344,6 @@ void CFindBar::findNext(LPCTSTR text, bool searchUp)
 
 			bool showWrap = (result == fnReachedStart);
 			m_wrappedLabel.ShowWindow(showWrap ? SW_SHOW : SW_HIDE);
-				
 		}
 
 		// Store text in main search options, and in our stored one.

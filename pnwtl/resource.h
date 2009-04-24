@@ -100,6 +100,7 @@
 #define IDS_EXTENSIONS_MENU             190
 #define IDS_SAVEACCESSDENIED            191
 #define IDS_SAVESHAREVIOLATION          192
+#define IDS_FIND_REACHEDSTART           194
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define IDD_INPUTBOX                    204
