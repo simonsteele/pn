@@ -162,8 +162,8 @@ BEGIN
             MENUITEM "&Duplicate Line",             ID_EDIT_DUPLICATELINE
             MENUITEM SEPARATOR
             MENUITEM "Transp&ose Lines",            ID_EDIT_TRANSPOSELINES
-            MENUITEM "Move Line &Up",               ID_EDIT_MOVELINEUP
-            MENUITEM "Move Line Do&wn",             ID_EDIT_MOVELINEDOWN
+            MENUITEM "Move Line &Up",               ID_LINE_MOVELINEUP
+            MENUITEM "Move Line Do&wn",             ID_LINE_MOVELINEDOWN
         END
         POPUP "Selecti&on"
         BEGIN

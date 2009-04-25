@@ -666,9 +666,7 @@
 #define ID_HELP_WEB_FORUMS              33001
 #define ID_EDIT_LINE                    33002
 #define ID_LINE_MOVELINEUP              33003
-#define ID_EDIT_MOVELINEUP              33004
 #define ID_LINE_MOVELINEDOWN            33005
-#define ID_EDIT_MOVELINEDOWN            33006
 #define ID_EDITOR_WRITEPROTECT          33107
 #define ID_VIEW_CLEARBOOKMARKS          33108
 #define ID_BOOKMARKS_CLEARALL           33109
