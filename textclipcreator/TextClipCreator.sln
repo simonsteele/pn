@@ -1,21 +1,19 @@
-Microsoft Visual Studio Solution File, Format Version 8.00
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C# Express 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TextClipCreator", "TextClipCreator.csproj", "{7B98DC70-DA9A-4ACD-8D3F-4BC8B9769C93}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
 EndProject
 Global
-	GlobalSection(SolutionConfiguration) = preSolution
-		Debug = Debug
-		Release = Release
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ProjectConfiguration) = postSolution
-		{7B98DC70-DA9A-4ACD-8D3F-4BC8B9769C93}.Debug.ActiveCfg = Debug|.NET
-		{7B98DC70-DA9A-4ACD-8D3F-4BC8B9769C93}.Debug.Build.0 = Debug|.NET
-		{7B98DC70-DA9A-4ACD-8D3F-4BC8B9769C93}.Release.ActiveCfg = Release|.NET
-		{7B98DC70-DA9A-4ACD-8D3F-4BC8B9769C93}.Release.Build.0 = Release|.NET
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7B98DC70-DA9A-4ACD-8D3F-4BC8B9769C93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B98DC70-DA9A-4ACD-8D3F-4BC8B9769C93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B98DC70-DA9A-4ACD-8D3F-4BC8B9769C93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B98DC70-DA9A-4ACD-8D3F-4BC8B9769C93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-	EndGlobalSection
-	GlobalSection(ExtensibilityAddIns) = postSolution
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
