@@ -1,7 +1,5 @@
 using System;
-using System.Drawing;
-using System.Collections;
-using System.ComponentModel;
+using System.IO;
 using System.Windows.Forms;
 
 namespace TextClipCreator
@@ -11,6 +9,8 @@ namespace TextClipCreator
 	/// </summary>
 	public class MainForm : System.Windows.Forms.Form
 	{
+		const string UserDataDirectory = @"Echo Software\PN2";
+
 		private System.Windows.Forms.OpenFileDialog openFileDialog;
 		private System.Windows.Forms.ListBox lstClips;
 		private System.Windows.Forms.TextBox txtClipText;
@@ -48,6 +48,10 @@ namespace TextClipCreator
 			InitializeComponent();
 
 			enableButtons(false);
+
+			// REVIEW: check for write access to ProgramFiles?
+			openFileDialog.InitialDirectory = GetUserDataPath();
+			saveFileDialog.InitialDirectory = GetUserDataPath();
 		}
 
 		/// <summary>
@@ -498,6 +502,7 @@ namespace TextClipCreator
 		{
 			if (saveFileDialog.ShowDialog(this) == DialogResult.OK)
 			{
+				_filename = saveFileDialog.FileName;
 				Save(false);
 			}
 		}
@@ -603,6 +608,8 @@ namespace TextClipCreator
 					}
 				}
 
+				CheckPath(_filename);
+
 				try
 				{
 					_cs.Save(_clips, _filename);
@@ -632,6 +639,38 @@ namespace TextClipCreator
 				}
 			}
 			return true;
+		}
+
+		/// <summary>
+		/// Checks whether the specified filename is located in a path visible
+		/// to PN.
+		/// </summary>
+		/// <param name="filename">The filename the check.</param>
+		void CheckPath(string filename)
+		{
+			string userDataPath = GetUserDataPath();
+			string path = Path.GetFullPath(filename);
+			if (path != userDataPath)
+			{
+				string msg = string.Format(
+					"Saving text clips to a location different from\n{0}\nmakes them unavailble to Programmer's Notepad.",
+					userDataPath);
+
+				MessageBox.Show(this, msg, Text, MessageBoxButtons.OK,
+					MessageBoxIcon.Warning);
+			}
+		}
+
+		/// <summary>
+		/// Retrieves the path to the PN2 directory in the users application
+		/// data folder.
+		/// </summary>
+		/// <returns>The path.</returns>
+		static string GetUserDataPath()
+		{
+			return Path.Combine(
+				Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+				UserDataDirectory);
 		}
 	}
 }
