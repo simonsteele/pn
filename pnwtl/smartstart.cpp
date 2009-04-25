@@ -31,6 +31,8 @@ SmartStart::SmartStart()
 		m_Map.insert(SM_VT(tstring(_T("public class")), tstring(_T("csharp"))));
 		m_Map.insert(SM_VT(tstring(_T("<?")), tstring(_T("xml"))));
 		m_Map.insert(SM_VT(tstring(_T("<html")), tstring(_T("web"))));
+		m_Map.insert(SM_VT(tstring(_T("<!--")), tstring(_T("xml"))));
+		m_Map.insert(SM_VT(tstring(_T("import")), tstring(_T("python"))));
 	}
 	else
 	{
