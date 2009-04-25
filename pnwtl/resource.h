@@ -323,7 +323,6 @@
 #define IDC_STYLE_SELBACKBUTTON2        1014
 #define IDC_STYLE_IGCOLBUTTON2          1015
 #define IDC_SCHEMECOMBO                 1016
-#define IDC_STYLE_SELBACKBUTTON3        1016
 #define IDC_STYLE_SELWORDCOLBUTTON      1016
 #define IDC_SCHEMELABEL                 1017
 #define IDC_STYLE_MARKALLCOLBUTTON      1017
@@ -695,6 +694,8 @@
 #define ID_TOOLS_RECORDSCRIPT           33129
 #define ID_TOOLS_STOPRECORDING          33130
 #define ID_TOOLBARS_STANDARD            33131
+#define ID_SEARCH_FINDNEXTCURRENTWORD   33132
+#define ID_SEARCH_FINDPREVIOUSCURRENTWORD 33133
 
 // Next default values for new objects
 // 
@@ -702,7 +703,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        365
-#define _APS_NEXT_COMMAND_VALUE         33132
+#define _APS_NEXT_COMMAND_VALUE         33134
 #define _APS_NEXT_CONTROL_VALUE         1161
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

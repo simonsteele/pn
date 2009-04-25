@@ -200,6 +200,8 @@ BEGIN
     BEGIN
         MENUITEM "&Find",                       ID_EDIT_FIND
         MENUITEM "Find &Next",                  ID_EDIT_FINDNEXT
+        MENUITEM "Find Next Current &Word",     ID_SEARCH_FINDNEXTCURRENTWORD
+        MENUITEM "Find Previous C&urrent Word", ID_SEARCH_FINDPREVIOUSCURRENTWORD
         MENUITEM "Find Pre&vious",              ID_EDIT_FINDPREVIOUS
         MENUITEM "F&ind in Files",              ID_EDIT_FINDINFILES
         MENUITEM SEPARATOR

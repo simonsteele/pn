@@ -812,6 +812,20 @@ LRESULT CChildFrame::OnFindPrevious(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	return TRUE;
 }
 
+LRESULT CChildFrame::OnFindNextWordUnderCursor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	findNextWordUnderCursor(false);
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnFindPrevWordUnderCursor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	findNextWordUnderCursor(true);
+
+	return 0;
+}
+
 LRESULT CChildFrame::OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	int selectionLength = m_view.GetSelLength();
@@ -2339,6 +2353,25 @@ void CChildFrame::setReadOnly(bool newValue, bool setAttributes)
 	UISetChecked(ID_EDITOR_WRITEPROTECT, m_bReadOnly, true);
 	
 	m_spDocument->OnWriteProtectChanged(m_bReadOnly);
+}
+
+/**
+ * Implement find next word under cursor and find previous word under cursor.
+ */
+void CChildFrame::findNextWordUnderCursor(bool backwards)
+{
+	tstring word = m_view.GetCurrentWord();
+
+	if (!word.length())
+	{
+		return;
+	}
+
+	SearchOptions opts;
+	opts.SetFindText(word.c_str());
+	opts.SetSearchBackwards(backwards);
+
+	FindNext(&opts);
 }
 
 ////////////////////////////////////////////////////

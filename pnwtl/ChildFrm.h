@@ -26,6 +26,7 @@
 #include "textview.h"
 #include "jumpview.h"
 #include "tools.h"
+#include "resource.h"
 
 typedef enum {EP_LINE, EP_COL} EGPType;
 
@@ -81,6 +82,9 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_GOTO, OnGoto)
 		COMMAND_ID_HANDLER(ID_EDIT_FINDNEXT, OnFindNext)
 		COMMAND_ID_HANDLER(ID_EDIT_FINDPREVIOUS, OnFindPrevious)
+		COMMAND_ID_HANDLER(ID_SEARCH_FINDNEXTCURRENTWORD, OnFindNextWordUnderCursor)
+		COMMAND_ID_HANDLER(ID_SEARCH_FINDPREVIOUSCURRENTWORD, OnFindPrevWordUnderCursor)
+
 		COMMAND_ID_HANDLER(ID_EDIT_COPYRTF, OnCopyRTF)
 		COMMAND_ID_HANDLER(ID_EDIT_AUTOCOMPLETE, OnAutoComplete)
 		COMMAND_ID_HANDLER(ID_EDIT_COPYFILEPATH, OnCopyFilePath)
@@ -226,6 +230,8 @@ public:
 	LRESULT OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFindPrevious(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFindNextWordUnderCursor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFindPrevWordUnderCursor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnAutoComplete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnRevert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -349,6 +355,7 @@ private:
 	void handleClose();
 	void resetSaveDir();
 	void setReadOnly(bool newValue, bool setAttributes);
+	void findNextWordUnderCursor(bool backwards);
 
 	CommandDispatch*	m_pCmdDispatch;
 	DocumentPtr			m_spDocument;
