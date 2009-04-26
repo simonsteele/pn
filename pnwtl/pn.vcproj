@@ -1374,6 +1374,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\toolbar.h"
+				>
+			</File>
+			<File
 				RelativePath="include\Utf8_16.cpp"
 				>
 			</File>

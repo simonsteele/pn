@@ -49,6 +49,7 @@ struct tagEnumChildrenStruct;
 // Auto-complete for the find combo box.
 #include "CustomAutoComplete.h"	// Autocompletion.
 #include "include/accombo.h"	// Autocompleting combo box.
+#include "include/toolbar.h"
 #include "editorFactory.h"
 
 typedef void(__stdcall CMainFrame::*lpChildEnumFn)(CChildFrame* pFrame, tagEnumChildrenStruct* pStruct);
@@ -184,6 +185,7 @@ public:
 
 		ROUTE_MENUCOMMANDS()
 		
+		REFLECT_NOTIFICATIONS()
 		CHAIN_MDI_CHILD_COMMANDS()
 		CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
 		CHAIN_MSG_MAP(baseClass)
@@ -473,9 +475,8 @@ private:
 	CMultiPaneStatusBarCtrl	m_StatusBar;
 	commandBarClass			m_CmdBar;
 	CPNStateManager			m_GUIState;
-	CComboBox				m_SchemeCombo;
-	BXT::CComboBoxAC		m_FindCombo;
 	CImageList				m_FindImages;
+	CPNToolBar				m_ToolBar;
 
 	HWND					hFindWnd;
 	//HWND					hReplWnd;

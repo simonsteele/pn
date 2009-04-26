@@ -404,7 +404,7 @@ BOOL CMainFrame::OnIdle()
 	}
 
 	HWND hWnd = MDIGetActive();
-	m_SchemeCombo.EnableWindow( hWnd != NULL );
+	m_ToolBar.EnableSchemeCombo(hWnd != NULL);
 
 	bool bChild = false;
 	bool bCanSave = false;
@@ -521,14 +521,7 @@ LRESULT CMainFrame::OnChildNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 					if(pChild != NULL)
 					{
 						Scheme* pScheme = pChild->GetTextView()->GetCurrentScheme();
-						for(int i = 0; i < m_SchemeCombo.GetCount(); i++)
-						{
-							if( pScheme == static_cast<Scheme*>( m_SchemeCombo.GetItemDataPtr(i) ) )
-							{
-								m_SchemeCombo.SetCurSel(i);
-								break;
-							}
-						}
+						m_ToolBar.SelectScheme(pScheme);
 
 						m_hToolAccel = pChild->GetToolAccelerators();
 
@@ -598,7 +591,7 @@ LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
  */
 LRESULT CMainFrame::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	::DestroyWindow(m_FindCombo.m_hWnd);
+	::DestroyWindow(m_ToolBar.m_hWnd); //m_FindCombo.m_hWnd
 
 	bHandled = FALSE;
 	return 0;
@@ -617,7 +610,7 @@ CSize CMainFrame::GetGUIFontSize()
 }
 
 #define PN_BETTER_TOOLBAR_STYLE \
-	(WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | /*CCS_NODIVIDER | CCS_NORESIZE | CCS_NOPARENTALIGN |*/ TBSTYLE_TOOLTIPS /*| TBSTYLE_FLAT */| TBSTYLE_LIST)
+	(WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | /*CCS_NODIVIDER | CCS_NORESIZE | CCS_NOPARENTALIGN |*/ TBSTYLE_TOOLTIPS /*| TBSTYLE_FLAT */| TBSTYLE_LIST | CCS_ADJUSTABLE)
 
 HWND CMainFrame::CreateToolbar()
 {
@@ -626,91 +619,12 @@ HWND CMainFrame::CreateToolbar()
 	if(!hWnd)
 		return 0;
 
-	CToolBarCtrl fToolbar(hWnd);
+	m_ToolBar.SubclassWindow(hWnd);
 	// fToolbar.SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
 	// Only IE 501
 
-	// Set TBSTYLE_FLAT here rather than in the create method to do the following:
-	// 1. Make split buttons render with a flat drop-down
-	// 2. Avoid weird drawing issues where the background shows through the toolbar.
-	::SetWindowLong(hWnd, GWL_STYLE, ::GetWindowLong(hWnd, GWL_STYLE) | TBSTYLE_FLAT);
-	fToolbar.SetExtendedStyle(fToolbar.GetExtendedStyle() | /*TBSTYLE_EX_HIDECLIPPEDBUTTONS |*/ TBSTYLE_EX_MIXEDBUTTONS | TBSTYLE_EX_DRAWDDARROWS | TBSTYLE_EX_DOUBLEBUFFER);
-
-	CSize sizeChar = GetGUIFontSize();
-	int cx = FIND_COMBO_SIZE * sizeChar.cx;
-
-	TBBUTTONINFO tbi;
-	RECT rc;
 	
-	int cxsc = SCHEME_COMBO_SIZE * sizeChar.cx;
-
-	tbi.cbSize = sizeof TBBUTTONINFO;		
-	tbi.dwMask = TBIF_STYLE | TBIF_SIZE;
-	tbi.fsStyle = TBSTYLE_SEP;
-	tbi.cx = (unsigned short)cxsc;
 	
-	fToolbar.SetButtonInfo(ID_PLACEHOLDER_SCHEMECOMBO, &tbi); 						
-	
-	int nIndex = fToolbar.CommandToIndex(ID_PLACEHOLDER_SCHEMECOMBO);
-	fToolbar.GetItemRect(nIndex, &rc); 
-
-	rc.bottom = rc.top + TOOLBAR_COMBO_DROPLINES * sizeChar.cy;
-	
-	HWND hWndCombo =  m_SchemeCombo.Create(m_hWnd, rc, NULL, CBS_DROPDOWNLIST | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL, 0, IDC_SCHEMECOMBO);
-	hWndCombo;
-	ATLASSERT(hWndCombo != 0);
-	
-	m_SchemeCombo.SetParent(hWnd); 
-	m_SchemeCombo.SetFont((HFONT)GetStockObject( DEFAULT_GUI_FONT ));
-
-	SchemeManager* pM = SchemeManager::GetInstance();
-	SCHEME_LIST* pSchemes = pM->GetSchemesList();
-
-	int index = m_SchemeCombo.AddString( pM->GetDefaultScheme()->GetTitle() );
-	m_SchemeCombo.SetItemDataPtr( index, pM->GetDefaultScheme() );
-
-	for(SCIT i = pSchemes->begin(); i != pSchemes->end(); ++i)
-	{
-		index = m_SchemeCombo.AddString( (*i).GetTitle() );
-		m_SchemeCombo.SetItemDataPtr( index, &(*i) );
-	}
-
-	tbi.cbSize = sizeof TBBUTTONINFO;
-	tbi.dwMask = TBIF_STYLE | TBIF_SIZE;
-	tbi.fsStyle = TBSTYLE_SEP;
-	tbi.cx = (unsigned short)cx;
-
-	fToolbar.SetButtonInfo(ID_PLACEHOLDER_FINDCOMBO, &tbi);
-	
-	nIndex = fToolbar.CommandToIndex(ID_PLACEHOLDER_FINDCOMBO);
-	fToolbar.GetItemRect(nIndex, &rc);
-
-	rc.bottom = TOOLBAR_COMBO_DROPLINES * sizeChar.cy;
-	rc.left += 1; // slight offset from previous and next buttons.
-	rc.right -= 1;
-
-	hWndCombo = m_FindCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), 
-		CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP | WS_VSCROLL,
-		0, IDC_FINDCOMBO, _T("FindToolbar"));
-	hWndCombo;
-	ATLASSERT(hWndCombo != 0);
-
-	m_FindCombo.SetParent(hWnd);
-	m_FindCombo.SetFont((HFONT)GetStockObject( DEFAULT_GUI_FONT ));
-	m_FindCombo.SetOwnerHWND(m_hWnd); // Get enter notifications.
-
-	// Set the drop-down button...	
-	tstring fs = LS(IDS_FIND);
-
-	// Add drop-down style to the button
-	tbi.dwMask = TBIF_STYLE;
-	fToolbar.GetButtonInfo(ID_FINDTYPE_BUTTON, &tbi);
-	tbi.fsStyle |= BTNS_DROPDOWN;
-	tbi.fsStyle |= BTNS_SHOWTEXT | BTNS_AUTOSIZE;
-	tbi.dwMask |= TBIF_TEXT;
-	tbi.pszText = const_cast<LPSTR>(fs.c_str());
-	fToolbar.SetButtonInfo(ID_FINDTYPE_BUTTON, &tbi);
-
 	return hWnd;
 }
 
@@ -973,8 +887,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	//// remove old menu
 	//SetMenu(NULL);
 
-	HWND hWndToolBar = CreateToolbar();
-	m_hWndToolBar = hWndToolBar;
+	m_hWndToolBar = CreateToolbar();
 
 	// Sort out toolbar images etc...
 	if(m_bIsXPOrLater && !OPTIONS->Get(PNSK_INTERFACE, "LowColourToolbars", false))
@@ -996,8 +909,8 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 		//loadImages(IDB_TBFIND24, &m_hILFind);
 
 		// Again, this code is used for Non-XP images.
-		::SendMessage(hWndToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILMain);
-		::SendMessage(hWndToolBar, TB_SETDISABLEDIMAGELIST, 0, (LPARAM)m_hILMainD);
+		::SendMessage(m_hWndToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILMain);
+		::SendMessage(m_hWndToolBar, TB_SETDISABLEDIMAGELIST, 0, (LPARAM)m_hILMainD);
 		//::SendMessage(hWndEdtToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILEdit);
 		//::SendMessage(hWndFindToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILFind);
 
@@ -1020,7 +933,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	// we have toolbar customisation.
 	if(OPTIONS->Get(PNSK_INTERFACE, "HideSaveAll", false))
 	{
-		::SendMessage(hWndToolBar, TB_DELETEBUTTON, 4, 0);
+		::SendMessage(m_hWndToolBar, TB_DELETEBUTTON, 4, 0);
 	}
 
 	//CreateSimpleReBar(PN_REBAR_STYLE);
@@ -1029,7 +942,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	//SizeSimpleReBarBands();
 
 	// CmdUI
-	UIAddToolBar(hWndToolBar);
+	UIAddToolBar(m_hWndToolBar);
 	UISetCheck(ID_VIEW_TOOLBAR, 1);
 	
 	//////////////////////////////////////////////////////////////
@@ -1488,7 +1401,7 @@ LRESULT CMainFrame::OnSaveModifiedItem(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 LRESULT CMainFrame::OnUpdateFindText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	extensions::ISearchOptions* so = OPTIONS->GetSearchOptions();
-	m_FindCombo.SetWindowText(so->GetFindText());
+	m_ToolBar.SetFindText(so->GetFindText());
 	return 0;
 }
 
@@ -2150,14 +2063,14 @@ void CMainFrame::launchFind(EFindDialogType findType)
 
 void CMainFrame::launchExternalSearch(LPCTSTR searchString)
 {
-	CWindowText wt(m_FindCombo.m_hWnd);
+	tstring findText = m_ToolBar.GetFindText();
 
 	tstring s(searchString);
 
 	// avoid empty search strings...
-	if( ((LPCTSTR)wt) != NULL )
+	if( findText.size() )
 	{
-		tstring searchstr((LPCTSTR)wt);
+		tstring searchstr(findText);
 		
 		for(size_t i = 0; i < searchstr.size(); i++)
 		{
@@ -2215,30 +2128,32 @@ LRESULT CMainFrame::OnHelpContents(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 LRESULT CMainFrame::OnSchemeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	int iSel = m_SchemeCombo.GetCurSel();
-	Scheme* pScheme = static_cast<Scheme*>( m_SchemeCombo.GetItemDataPtr( iSel ) );
-	if( pScheme != NULL )
+	Scheme* pScheme = m_ToolBar.GetSelectedScheme();
+	if (pScheme != NULL)
 	{
-		CChildFrame* pEditor = CChildFrame::FromHandle( GetCurrentEditor() );
-		if( pEditor != NULL )
-			pEditor->SetScheme( pScheme, false );
+		CChildFrame* pEditor = CChildFrame::FromHandle(GetCurrentEditor());
+		if (pEditor != NULL)
+		{
+			pEditor->SetScheme(pScheme, false);
+		}
 	}
+
 	return 0;
 }
 
 LRESULT CMainFrame::OnFindComboEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CWindowText wt(m_FindCombo.m_hWnd); //Get find text...
+	tstring findText = m_ToolBar.GetFindText();
 
 	CChildFrame* pEditor = CChildFrame::FromHandle( GetCurrentEditor() );
-	if( pEditor != NULL && lstrlen((LPCTSTR)wt) > 0 )
+	if( pEditor != NULL && findText.size() > 0 )
 	{
 		SearchOptions* pFindOptions = reinterpret_cast<SearchOptions*>( OPTIONS->GetSearchOptions() );
-		if(_tcscmp(pFindOptions->GetFindText(), (LPCTSTR)wt) != 0)
+		if(_tcscmp(pFindOptions->GetFindText(), findText.c_str()) != 0)
 		{
 			pFindOptions->SetFound(false);
-			pFindOptions->SetFindText((LPCTSTR)wt);
-			m_FindCombo.AddString((LPCTSTR)wt);
+			pFindOptions->SetFindText(findText.c_str());
+			m_ToolBar.AddFindText(findText.c_str());
 		}
 
 		pEditor->FindNext(pFindOptions);
