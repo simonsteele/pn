@@ -2,7 +2,7 @@
  * @file editorcommands.cpp
  * @brief Built in text buffer commands
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -34,6 +34,8 @@ void LineDuplicate(CScintillaImpl& editor);
 void RemoveBlankLines(CScintillaImpl& editor);
 void JoinLines(CScintillaImpl& editor);
 void SplitLines(CScintillaImpl& editor);
+void ZoomIn(CScintillaImpl& editor);
+void ZoomOut(CScintillaImpl& editor);
 
 void GetEditorCommands(std::list<EditorCommand*>& commands)
 {
@@ -55,6 +57,8 @@ void GetEditorCommands(std::list<EditorCommand*>& commands)
 	commands.push_back(new Internal::EditorCommandFn(ID_EDIT_REMOVEBLANKLINES, RemoveBlankLines));
 	commands.push_back(new Internal::EditorCommandFn(ID_EDIT_JOINLINES, JoinLines));
 	commands.push_back(new Internal::EditorCommandFn(ID_EDIT_SPLITLINES, SplitLines));
+	commands.push_back(new Internal::EditorCommandFn(ID_VIEW_ZOOM_IN, ZoomIn));
+	commands.push_back(new Internal::EditorCommandFn(ID_VIEW_ZOOM_OUT, ZoomOut));
 }
 
 /**
@@ -318,6 +322,22 @@ void JoinLines(CScintillaImpl& editor)
 void SplitLines(CScintillaImpl& editor)
 {
 	editor.LinesSplit(0);
+}
+
+/**
+ * Increase Zoom Level
+ */
+void ZoomIn(CScintillaImpl& editor)
+{
+	editor.ZoomIn();
+}
+
+/**
+ * Decrease Zoom Level
+ */
+void ZoomOut(CScintillaImpl& editor)
+{
+	editor.ZoomOut();
 }
 
 } // namespace Commands

@@ -25,6 +25,7 @@
 #define PN_GOTOLINE			(WM_APP+13)
 #define PN_GETMDICLIENTRECT (WM_APP+14)
 #define PN_MDISETMENU		(WM_APP+15)
+#define PN_REFRESHUPDATEUI  (WM_APP+16)
 
 // Command IDs used around the place...
 #define PN_MDIACTIVATE		0x1

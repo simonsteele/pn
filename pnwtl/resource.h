@@ -244,6 +244,8 @@
 #define IDR_POPUP_BROWSER               363
 #define IDB_BITMAP3                     364
 #define IDB_TBFIND24                    364
+#define IDB_BITMAP4                     365
+#define IDB_TOOLBAR                     365
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -578,9 +580,7 @@
 #define ID_FILE_SAVEALL                 32865
 #define ID_EDIT_HEADERSWITCH            32866
 #define ID_EDIT_COPYRTF                 32871
-#define ID_PLACEHOLDER_SCHEMECOMBO      32873
 #define ID_EDIT_FINDINFILES             32874
-#define ID_PLACEHOLDER_FINDCOMBO        32875
 #define ID_FINDTYPE_BUTTON              32876
 #define ID_EXPORT_HTML                  32878
 #define ID_HEADERFOOTERFIELDS_FILENAME  32879
@@ -694,14 +694,18 @@
 #define ID_TOOLBARS_STANDARD            33131
 #define ID_SEARCH_FINDNEXTCURRENTWORD   33132
 #define ID_SEARCH_FINDPREVIOUSCURRENTWORD 33133
+#define ID_VIEW_ZOOM_IN                 33134
+#define ID_VIEW_ZOOM_OUT                33135
+#define ID_PLACEHOLDER_SCHEMECOMBO		33136
+#define ID_PLACEHOLDER_FINDCOMBO		33137
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        365
-#define _APS_NEXT_COMMAND_VALUE         33134
+#define _APS_NEXT_RESOURCE_VALUE        366
+#define _APS_NEXT_COMMAND_VALUE         33138
 #define _APS_NEXT_CONTROL_VALUE         1161
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

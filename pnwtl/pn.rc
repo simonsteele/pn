@@ -235,6 +235,8 @@ BEGIN
         MENUITEM "&Previous Bookmark",          ID_BOOKMARKS_PREVIOUS
         MENUITEM "&Clear Bookmarks",            ID_BOOKMARKS_CLEARALL
         MENUITEM SEPARATOR
+        MENUITEM "&Zoom In",                    ID_VIEW_ZOOM_IN
+        MENUITEM "Zoom O&ut",                   ID_VIEW_ZOOM_OUT
         POPUP "&Folding"
         BEGIN
             MENUITEM "Toggle Fold",                 ID_VIEW_TOGGLEFOLD
@@ -246,6 +248,7 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Individual Output",          ID_VIEW_INDIVIDUALOUTPUT
         MENUITEM "&Output",                     ID_VIEW_OUTPUT
+        MENUITEM SEPARATOR
     END
     POPUP "&Tools"
     BEGIN
@@ -1723,30 +1726,6 @@ END
 // Toolbar
 //
 
-IDR_MAINFRAME TOOLBAR  16, 16
-BEGIN
-    BUTTON      ID_FILE_NEW
-    BUTTON      ID_FILE_OPEN
-    SEPARATOR
-    BUTTON      ID_FILE_SAVE
-    BUTTON      ID_FILE_SAVEALL
-    SEPARATOR
-    BUTTON      ID_FILE_CLOSE
-    SEPARATOR
-    BUTTON      ID_EDIT_UNDO
-    BUTTON      ID_EDIT_REDO
-    SEPARATOR
-    BUTTON      ID_EDIT_CUT
-    BUTTON      ID_EDIT_COPY
-    BUTTON      ID_EDIT_PASTE
-    SEPARATOR
-    BUTTON      ID_PLACEHOLDER_SCHEMECOMBO
-    SEPARATOR
-    BUTTON      ID_EDIT_FINDINFILES
-    BUTTON      ID_PLACEHOLDER_FINDCOMBO
-    BUTTON      ID_FINDTYPE_BUTTON
-END
-
 IDR_TBR_PROJECTS TOOLBAR  16, 16
 BEGIN
     BUTTON      ID_PROJECT_ADDFOLDER
@@ -1766,7 +1745,6 @@ END
 // Bitmap
 //
 
-IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
 IDB_EDITOR              BITMAP                  "res\\editor.bmp"
 IDB_TRUETYPE_FONTTYPE   BITMAP                  "res\\font_tru.bmp"
 IDR_TBR_PROJECTS        BITMAP                  "res\\tbrProjects.bmp"
@@ -1777,6 +1755,7 @@ IDB_REDCLOSE            BITMAP                  "res\\redclose.bmp"
 IDB_TBMAIN24            BITMAP                  "res\\tbrMain24.bmp"
 IDB_OPENFILES           BITMAP                  "res\\openfilesimages.bmp"
 IDB_TBFIND24            BITMAP                  "res\\findbarbmps.bmp"
+IDB_TOOLBAR             BITMAP                  "res\\toolbar.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

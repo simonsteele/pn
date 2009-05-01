@@ -440,8 +440,8 @@ BOOL CMainFrame::OnIdle()
 	UIEnable(ID_FILE_SAVE, bCanSave);
 	UIEnable(ID_EDIT_CUT, bHasSel);
 	UIEnable(ID_EDIT_COPY, bHasSel);
-	UIEnable(ID_TOOLS_RECORDSCRIPT, m_recordingDoc.get() == 0);
-	UIEnable(ID_TOOLS_STOPRECORDING, m_recordingDoc.get() != 0);
+	UIEnable(ID_TOOLS_RECORDSCRIPT, bChild && m_recordingDoc.get() == 0 && g_Context.ExtApp->GetRecorder().get() != 0);
+	UIEnable(ID_TOOLS_STOPRECORDING, bChild && m_recordingDoc.get() != 0);
 
 	lResult = ::SendMessage(::GetFocus(), EM_CANUNDO, 0, 0);
 	UIEnable(ID_EDIT_UNDO, lResult);
@@ -455,7 +455,7 @@ BOOL CMainFrame::OnIdle()
 	}
 	else 
 	{
-		UIEnable(ID_EDIT_PASTE,FALSE);
+		UIEnable(ID_EDIT_PASTE, FALSE);
 	}
 
 	if(m_pProjectsWnd != NULL)
@@ -549,6 +549,21 @@ LRESULT CMainFrame::OnChildNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 				handleUpdate(reinterpret_cast<const Updates::UpdateAvailableDetails*>(wParam));
 			}
 			break;
+
+		case PN_REFRESHUPDATEUI:
+			{
+				const _AtlUpdateUIMap* pMap = m_pUIMap;
+
+				// Force refresh of all UI data:
+				for (; pMap->m_nID != (WORD)-1; pMap++)
+				{
+					UISetState(pMap->m_nID, UIGetState(pMap->m_nID));
+				}
+
+				UIUpdateToolBar(TRUE);
+				UIUpdateMenuBar(TRUE);
+			}
+			break;
 	}
 	
 	return TRUE;
@@ -614,7 +629,8 @@ CSize CMainFrame::GetGUIFontSize()
 
 HWND CMainFrame::CreateToolbar()
 {
-	HWND hWnd = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, PN_BETTER_TOOLBAR_STYLE, TBR_FILE);
+	//HWND hWnd = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, PN_BETTER_TOOLBAR_STYLE, TBR_FILE);
+	HWND hWnd = ::CreateWindowEx(0, TOOLBARCLASSNAME, NULL, PN_BETTER_TOOLBAR_STYLE, 0, 0, 100, 100, m_hWnd, (HMENU)LongToHandle(TBR_FILE), ModuleHelper::GetModuleInstance(), NULL);
 
 	if(!hWnd)
 		return 0;
@@ -2159,28 +2175,6 @@ LRESULT CMainFrame::OnFindComboEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 		pEditor->FindNext(pFindOptions);
 	}
 	
-	return 0;
-}
-
-LRESULT CMainFrame::OnToolbarDropDown(WPARAM /*wParam*/, LPNMHDR lParam, BOOL& /*bHandled*/)
-{
-	#define lpnmTB ((LPNMTOOLBAR)lParam)
-	
-	switch(lParam->idFrom)
-	{
-		case TBR_FILE:
-		{
-			CSPopupMenu popup(IDR_POPUP_FINDBARDD);
-			
-			CPoint pt(lpnmTB->rcButton.left, lpnmTB->rcButton.bottom);
-			::ClientToScreen(lParam->hwndFrom, &pt);
-
-			TrackPopupMenu(popup, 0, pt.x, pt.y);
-		};
-		break;
-	}
-
-	#undef lpnmTB
 	return 0;
 }
 

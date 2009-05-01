@@ -1098,6 +1098,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\bitmap4.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\ctags.ico"
 				>
 			</File>
