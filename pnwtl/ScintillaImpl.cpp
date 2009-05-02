@@ -895,7 +895,7 @@ int CScintillaImpl::ReplaceAll(extensions::ISearchOptions* pOptions)
 	
 	if ((posFind != -1) && (posFind != -2) && (posFind <= endPosition)) 
 	{
-		int lastMatch = posFind;
+		int lastMatch(posFind);
 		BeginUndoAction();
 
 		while (posFind != -1) 
@@ -903,12 +903,28 @@ int CScintillaImpl::ReplaceAll(extensions::ISearchOptions* pOptions)
 			int lenTarget = GetTargetEnd() - GetTargetStart();
 			
 			// See if the next character is an end-of-line if we have a zero-length replace target.
-			int movePastEOL = 0;
-			if(lenTarget <= 0)
+			int movePastEOL = 0;				
+			int lenReplaced = replaceLen;
+			if (pOptions->GetUseRegExp())
 			{
+				lenReplaced = ReplaceTargetRE(replaceLen, (LPCTSTR)replaceTarget);
+			}
+			else
+			{
+				ReplaceTarget(replaceLen, (LPCTSTR)replaceTarget);
+			}
+
+			repCount += 1 * (lenReplaced != 0 || lenTarget != 0);
+
+			if (lenTarget <= 0)
+			{
+				bool zeroLengthRepeatedFind = (posFind == lastMatch) && (lenReplaced == 0);
+
 				char chNext = static_cast<char>(GetCharAt(GetTargetEnd()));
-				if( chNext == '\r' || chNext == '\n' )
+				if (zeroLengthRepeatedFind || (chNext == '\r' || chNext == '\n'))
+				{
 					movePastEOL = 1;
+				}
 
 				if (pOptions->GetUseRegExp() && findTarget.Find(_T('^')) == -1 && findTarget.Find(_T('$')) == -1)
 				{
@@ -918,14 +934,6 @@ int CScintillaImpl::ReplaceAll(extensions::ISearchOptions* pOptions)
 					break;
 				}
 			}
-				
-			int lenReplaced = replaceLen;
-			if (pOptions->GetUseRegExp())
-				lenReplaced = ReplaceTargetRE(replaceLen, (LPCTSTR)replaceTarget);
-			else
-				ReplaceTarget(replaceLen, (LPCTSTR)replaceTarget);
-
-			repCount++;
 
 			// Modify for change caused by replacement
 			endPosition += lenReplaced - lenTarget;
