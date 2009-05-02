@@ -650,6 +650,14 @@ LRESULT CJumpTreeCtrl::OnExpandAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	return 0;
 }
 
+/**
+ * User pressed enter.
+ */
+LRESULT CJumpTreeCtrl::OnReturn(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHandled)
+{
+	return OnLButtonDblClick(0, 0, 0, bHandled);
+}
+
 LRESULT CJumpTreeCtrl::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	bHandled = FALSE;

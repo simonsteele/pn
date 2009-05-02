@@ -69,7 +69,7 @@ public:
 //		ON_NOTIFY_EX_RANGE(TTN_NEEDTEXTA, 0, 0xFFFF, OnToolTipNotify)
 //		ON_NOTIFY_EX_RANGE(TTN_NEEDTEXTW, 0, 0xFFFF, OnToolTipNotify)
 
-		
+		REFLECTED_NOTIFY_CODE_HANDLER(NM_RETURN, OnReturn)
 		REFLECTED_NOTIFY_CODE_HANDLER(TVN_SELCHANGED, OnSelChanged)
 	
 	END_MSG_MAP()
@@ -102,6 +102,8 @@ private:
 	// Command Handlers
 	LRESULT		OnCollapsAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnExpandAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	// Notify
+	LRESULT		OnReturn(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 
 	HTREEITEM				hLastItem;
 	ShellImageList*			shellImages;
