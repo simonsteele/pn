@@ -786,7 +786,7 @@ int CScintillaImpl::FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn
 		{
 			int lenTarget = GetTargetEnd() - GetTargetStart();
 			
-			lastMatch = posFind + lenFind;
+			lastMatch = posFind + lenTarget;
 
 			matchHandler(GetTargetStart(), GetTargetEnd());
 			
