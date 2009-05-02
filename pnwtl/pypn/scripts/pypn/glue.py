@@ -70,7 +70,7 @@ def getSchemeConfig(name):
 		schemes[name] = SchemeMapping(name)
 	return schemes[name]
 
-def startRecording(doc):
+def startRecording():
 	""" PN calls this to start recording a script, all recording actions
 	are delegated to the Recorder class """
-	return record.Recorder(doc)
+	return record.Recorder()

@@ -612,34 +612,18 @@ LRESULT CMainFrame::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	return 0;
 }
 
-CSize CMainFrame::GetGUIFontSize()
-{
-	CClientDC dc(m_hWnd);
-	dc.SelectFont((HFONT) GetStockObject( DEFAULT_GUI_FONT ));		
-	TEXTMETRIC tm;
-	dc.GetTextMetrics( &tm );
-	//int cxChar = tm.tmAveCharWidth;
-	//int cyChar = tm.tmHeight + tm.tmExternalLeading;
-
-	return CSize( tm.tmAveCharWidth, tm.tmHeight + tm.tmExternalLeading);
-}
-
 #define PN_BETTER_TOOLBAR_STYLE \
-	(WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | /*CCS_NODIVIDER | CCS_NORESIZE | CCS_NOPARENTALIGN |*/ TBSTYLE_TOOLTIPS /*| TBSTYLE_FLAT */| TBSTYLE_LIST | CCS_ADJUSTABLE)
+	(WS_CHILD | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | TBSTYLE_TOOLTIPS | TBSTYLE_LIST | CCS_ADJUSTABLE)
 
-HWND CMainFrame::CreateToolbar()
+HWND CMainFrame::CreateToolbar(bool lowColor)
 {
-	//HWND hWnd = CreateSimpleToolBarCtrl(m_hWnd, IDR_MAINFRAME, FALSE, PN_BETTER_TOOLBAR_STYLE, TBR_FILE);
 	HWND hWnd = ::CreateWindowEx(0, TOOLBARCLASSNAME, NULL, PN_BETTER_TOOLBAR_STYLE, 0, 0, 100, 100, m_hWnd, (HMENU)LongToHandle(TBR_FILE), ModuleHelper::GetModuleInstance(), NULL);
 
 	if(!hWnd)
 		return 0;
 
+	m_ToolBar.SetLowColor(lowColor);
 	m_ToolBar.SubclassWindow(hWnd);
-	// fToolbar.SetExtendedStyle(TBSTYLE_EX_DRAWDDARROWS);
-	// Only IE 501
-
-	
 	
 	return hWnd;
 }
@@ -893,57 +877,10 @@ HWND CMainFrame::CreateEx(HWND hWndParent, ATL::_U_RECT rect, DWORD dwStyle, DWO
 LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	//////////////////////////////////////////////////////////////
-	// Command Bar and Toolbars:
+	// Toolbar:
 
-	//// create command bar window
-	//HWND hWndCmdBar = m_CmdBar.Create(m_hWnd, rcDefault, NULL, ATL_SIMPLE_CMDBAR_PANE_STYLE);
-	//// attach menu
-	//m_CmdBar.AttachMenu(GetMenu());
-	//
-	//// remove old menu
-	//SetMenu(NULL);
-
-	m_hWndToolBar = CreateToolbar();
-
-	// Sort out toolbar images etc...
-	if(m_bIsXPOrLater && !OPTIONS->Get(PNSK_INTERFACE, "LowColourToolbars", false))
-	{
-		// XP toolbars...
-		//m_CmdBar.LoadImages(IDR_MAINFRAME);
- 		//m_CmdBar.LoadImages(IDR_TBR_EDIT);
-		//m_CmdBar.LoadImages(IDR_TBR_FIND);
-	}
-	else
-	{
-		// Allow us to add images with a pink mask...
-		COLORREF clrOld = m_CmdBar.m_clrMask;
-		m_CmdBar.m_clrMask = RGB(255,0,255);
-
-		// 24-bit tb images, this needs re-instating for Non-XP display.
-		loadImages(IDB_TBMAIN24, &m_hILMain, IDB_TBMAINDIS, &m_hILMainD);
-		//loadImages(IDB_TBEDIT24, &m_hILEdit);
-		//loadImages(IDB_TBFIND24, &m_hILFind);
-
-		// Again, this code is used for Non-XP images.
-		::SendMessage(m_hWndToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILMain);
-		::SendMessage(m_hWndToolBar, TB_SETDISABLEDIMAGELIST, 0, (LPARAM)m_hILMainD);
-		//::SendMessage(hWndEdtToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILEdit);
-		//::SendMessage(hWndFindToolBar, TB_SETIMAGELIST, 0, (LPARAM)m_hILFind);
-
-		// Set the mask back...
-		m_CmdBar.m_clrMask = clrOld;
-	}
-
-	// Additional Images:
-	//{
-	//	COLORREF clrOld = m_CmdBar.m_clrMask;
-	//	m_CmdBar.m_clrMask = RGB(255,0,255);
-	//	
-	//	// Projects menu
-	//	m_CmdBar.LoadImages(IDR_TBR_PROJECTS);
-	//	
-	//	m_CmdBar.m_clrMask = clrOld;
-	//}
+	bool lowColourToolbars = !m_bIsXPOrLater || OPTIONS->Get(PNSK_INTERFACE, "LowColourToolbars", false);
+	m_hWndToolBar = CreateToolbar(lowColourToolbars);
 
 	// Contentious feature time - hidden option to hide SaveAll until 
 	// we have toolbar customisation.
@@ -951,11 +888,6 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	{
 		::SendMessage(m_hWndToolBar, TB_DELETEBUTTON, 4, 0);
 	}
-
-	//CreateSimpleReBar(PN_REBAR_STYLE);
-	//AddReBarBand(hWndCmdBar, NULL, FALSE, true);
-	//AddReBarBand(hWndToolBar, NULL, TRUE, true);
-	//SizeSimpleReBarBands();
 
 	// CmdUI
 	UIAddToolBar(m_hWndToolBar);

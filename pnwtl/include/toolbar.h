@@ -79,6 +79,8 @@ class CPNToolBar : public CWindowImpl<CPNToolBar, CToolBarCtrl>
 	typedef CWindowImpl<CPNToolBar, CToolBarCtrl> baseClass;
 
 public:	
+	CPNToolBar() : m_LowColor(false) {}
+
 	BEGIN_MSG_MAP(CPNToolBar)
 		MESSAGE_HANDLER(PN_NOTIFY, OnNotify)
 
@@ -96,6 +98,14 @@ public:
 		COMMAND_ID_HANDLER(ID_TOOLS_CUSTOMIZETOOLBAR, OnCustomizeToolbar)
 	END_MSG_MAP()
 
+	/**
+	 * Set whether to use 24-bit color toolbar images.
+	 */
+	void SetLowColor(bool lowColor)
+	{
+		m_LowColor = lowColor;
+	}
+	
 	/**
 	 * Add a string to the find combo
 	 */
@@ -345,11 +355,25 @@ private:
 		::SendMessage(m_hWnd, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0L);
 
 		// Add images
-		m_Images.Create(16, 16, ILC_COLOR32 | ILC_MASK, 20, 4);
-		HBITMAP hBitmap = (HBITMAP)::LoadImage(
-										_Module.m_hInst,
-										MAKEINTRESOURCE(IDB_TOOLBAR),
-										IMAGE_BITMAP, 0, 0, LR_SHARED);
+		
+		
+		HBITMAP hBitmap;
+		if (m_LowColor)
+		{
+			m_Images.Create(16, 16, ILC_COLOR24 | ILC_MASK, 20, 4);
+			hBitmap = (HBITMAP)::LoadImage(
+											_Module.m_hInst,
+											MAKEINTRESOURCE(IDB_TBMAIN24),
+											IMAGE_BITMAP, 0, 0, LR_SHARED);
+		}
+		else
+		{
+			m_Images.Create(16, 16, ILC_COLOR32 | ILC_MASK, 20, 4);
+			hBitmap = (HBITMAP)::LoadImage(
+											_Module.m_hInst,
+											MAKEINTRESOURCE(IDB_TOOLBAR),
+											IMAGE_BITMAP, 0, 0, LR_SHARED);
+		}
 
 		m_Images.Add(hBitmap, RGB(255,0,255));
 		SetImageList(m_Images);
@@ -649,6 +673,7 @@ private:
 	BXT::CComboBoxAC		m_FindCombo;
 	CImageList				m_Images;
 	std::vector<TBBUTTON>	m_ResetConfig;
+	bool					m_LowColor;
 	
 #ifndef _UNICODE
 	std::list<std::string>	m_nonUnicodeTitles;

@@ -384,8 +384,7 @@ private:
 
 	void AddMRUProjectsEntry(LPCTSTR lpszFile);
 
-	CSize GetGUIFontSize();
-	HWND CreateToolbar();
+	HWND CreateToolbar(bool lowColor);
 	void CreateDockingWindows();
 	BOOL AddReBarBand(HWND hWndBand, LPTSTR lpstrTitle = NULL, BOOL bNewRow = FALSE, bool bUseChevrons = false, int cxWidth = 0, BOOL bFullWidthAlways = FALSE);
 
