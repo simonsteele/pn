@@ -2,13 +2,14 @@
  * @file ScintillaImpl.cpp
  * @brief Implement further functionality for a scintilla wrapper.
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
 #include "stdafx.h"
+#include "resource.h"
 #include "ScintillaImpl.h"
 #include "include/encoding.h"
 #include "scaccessor.h"
@@ -908,6 +909,14 @@ int CScintillaImpl::ReplaceAll(extensions::ISearchOptions* pOptions)
 				char chNext = static_cast<char>(GetCharAt(GetTargetEnd()));
 				if( chNext == '\r' || chNext == '\n' )
 					movePastEOL = 1;
+
+				if (pOptions->GetUseRegExp() && findTarget.Find(_T('^')) == -1 && findTarget.Find(_T('$')) == -1)
+				{
+					// Trying to avoid infinite loops here - looks like a zero-length target
+					// and it's not start or end of line. This may loop forever so we kill it here.
+					g_Context.m_frame->SetStatusText(LS(IDS_AVOIDINFINITESEARCH));
+					break;
+				}
 			}
 				
 			int lenReplaced = replaceLen;

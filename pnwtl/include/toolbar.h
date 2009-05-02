@@ -460,6 +460,7 @@ private:
 		m_FindCombo.SetFont((HFONT)GetStockObject( DEFAULT_GUI_FONT ));
 		m_FindCombo.SetOwnerHWND(hWndOwner); // Get enter notifications.
 		
+		resetSpecialButtons();
 		fixUpButtons();
 	}
 

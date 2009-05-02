@@ -100,6 +100,7 @@
 #define IDS_EXTENSIONS_MENU             190
 #define IDS_SAVEACCESSDENIED            191
 #define IDS_SAVESHAREVIOLATION          192
+#define IDS_AVOIDINFINITESEARCH         193
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define IDD_INPUTBOX                    204
@@ -133,7 +134,7 @@
 #define ID_HELP_WEB_SB                  253
 #define ID_HELP_REPORTABUG              254
 #define IDD_TOOLEDITOR                  255
-#define SCINTILLA_KILLFOCUS				256
+#define SCINTILLA_KILLFOCUS             256
 #define IDR_POPUP_OUTPUT                257
 #define ID_PROJECT_DELETE               258
 #define ID_OUTPUT_CLEAR                 259
@@ -272,8 +273,8 @@
 #define IDD_PAGE_KEYWORDTEXTCLIPS       443
 #define IDD_PAGE_EXTENSIONS             444
 #define IDD_PAGE_EDITING                445
-#define SCINTILLA_SETFOCUS				512
-#define SCINTILLA_CHANGE				768
+#define SCINTILLA_SETFOCUS              512
+#define SCINTILLA_CHANGE                768
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_FINDTYPE_DUMMY              1003

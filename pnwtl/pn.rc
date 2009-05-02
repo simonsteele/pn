@@ -2009,6 +2009,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_SAVESHAREVIOLATION  "%s could not be saved because another program or user is using the same file.\nDo you want to save in another location?"
+    IDS_AVOIDINFINITESEARCH "Avoiding infinite search loop, Replace All abandoned"
 END
 
 #endif    // English (U.K.) resources

@@ -436,19 +436,12 @@ BOOL CMainFrame::OnIdle()
 		UpdateStatusBar();
 	}
 	
-	UIEnable(ID_FILE_CLOSE, bChild);
-	UIEnable(ID_FILE_SAVE, bCanSave);
-	UIEnable(ID_EDIT_CUT, bHasSel);
-	UIEnable(ID_EDIT_COPY, bHasSel);
-	UIEnable(ID_TOOLS_RECORDSCRIPT, bChild && m_recordingDoc.get() == 0 && g_Context.ExtApp->GetRecorder().get() != 0);
-	UIEnable(ID_TOOLS_STOPRECORDING, bChild && m_recordingDoc.get() != 0);
-
 	lResult = ::SendMessage(::GetFocus(), EM_CANUNDO, 0, 0);
 	UIEnable(ID_EDIT_UNDO, lResult);
 	lResult = ::SendMessage(::GetFocus(), SCI_CANREDO, 0, 0);
 	UIEnable(ID_EDIT_REDO, lResult);
 
-	if (::OpenClipboard(NULL))
+	if (bChild && ::OpenClipboard(NULL))
 	{
 		UIEnable(ID_EDIT_PASTE, ::IsClipboardFormatAvailable(CF_TEXT) || ::IsClipboardFormatAvailable(CF_UNICODETEXT));
 		::CloseClipboard();
@@ -458,16 +451,30 @@ BOOL CMainFrame::OnIdle()
 		UIEnable(ID_EDIT_PASTE, FALSE);
 	}
 
+	bool bHaveProjects = false;
+
 	if(m_pProjectsWnd != NULL)
 	{
 		Projects::Workspace* pWorkspace = m_pProjectsWnd->GetWorkspace();
 		UIEnable(ID_FILE_CLOSEWORKSPACE, (pWorkspace != NULL));
+		bHaveProjects = pWorkspace != NULL;
 
 		/*if(pWorkspace)
 		{
 			setupToolsUI();
 		}*/
 	}
+
+	UIEnable(ID_FILE_CLOSE, bChild);
+	UIEnable(ID_FILE_SAVE, bCanSave);
+	UIEnable(ID_EDIT_CUT, bHasSel);
+	UIEnable(ID_EDIT_COPY, bHasSel);
+	UIEnable(ID_TOOLS_RECORDSCRIPT, bChild && m_recordingDoc.get() == 0 && g_Context.ExtApp->GetRecorder().get() != 0);
+	UIEnable(ID_TOOLS_STOPRECORDING, bChild && m_recordingDoc.get() != 0);
+	UIEnable(ID_FILE_SAVEALL, bCanSave || bHaveProjects);
+	UIEnable(ID_FINDTYPE_BUTTON, bChild);
+	UIEnable(ID_VIEW_ZOOM_IN, bChild);
+	UIEnable(ID_VIEW_ZOOM_OUT, bChild);
 
 	UIUpdateToolBar();
 
