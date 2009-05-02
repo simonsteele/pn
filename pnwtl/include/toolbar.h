@@ -14,6 +14,10 @@
 #include "CustomAutoComplete.h"	// Autocompletion.
 #include "include/accombo.h"	// Autocompleting combo box.
 
+#define TBR_FILE 103
+
+namespace toolbar {
+
 const int tbcxSeparator = 8;
 const TBBUTTON allButtons[] = 
 {
@@ -48,8 +52,24 @@ const TBBUTTON allButtons[] =
 	{ 20, ID_FILE_REVERT, TBSTATE_ENABLED, BTNS_BUTTON, {0}, 0, (INT_PTR)L"Revert" },
 };
 
-#define DEFAULT_TOOLBAR_COUNT 20
-#define TBR_FILE 103
+// Random values we use
+enum {
+	DEFAULT_TOOLBAR_COUNT = 20,
+	TOOLBAR_STATE_VERSION = 1,
+	ALL_BUTTONS_COUNT = sizeof(allButtons) / sizeof(TBBUTTON),
+};
+
+/**
+ * Struct used to head up the saved state file.
+ */
+typedef struct tagSavedState
+{
+	int stateVersion;
+	int btnInfoSize;
+	int buttonCount;
+} SavedState;
+
+} // namespace toolbar
 
 /**
  * Toolbar class to handle customization
@@ -60,6 +80,7 @@ class CPNToolBar : public CWindowImpl<CPNToolBar, CToolBarCtrl>
 
 public:	
 	BEGIN_MSG_MAP(CPNToolBar)
+		MESSAGE_HANDLER(PN_NOTIFY, OnNotify)
 
 		// Chained from the main frame:
 		ALT_MSG_MAP(1)
@@ -68,7 +89,11 @@ public:
 		NOTIFY_CODE_HANDLER(TBN_QUERYDELETE, OnQueryDelete)
 		NOTIFY_CODE_HANDLER(TBN_TOOLBARCHANGE, OnToolbarChange)
 		NOTIFY_CODE_HANDLER(TBN_DROPDOWN, OnToolbarDropDown)
+		NOTIFY_CODE_HANDLER(TBN_BEGINADJUST, OnToolbarBeginAdjust)
+		NOTIFY_CODE_HANDLER(TBN_ENDADJUST, OnToolbarEndAdjust)
+		NOTIFY_CODE_HANDLER(TBN_RESET, OnToolbarReset)
 		MESSAGE_HANDLER(WM_CTLCOLORLISTBOX, OnCtlColor)
+		COMMAND_ID_HANDLER(ID_TOOLS_CUSTOMIZETOOLBAR, OnCustomizeToolbar)
 	END_MSG_MAP()
 
 	/**
@@ -152,6 +177,19 @@ private:
 		TOOLBAR_COMBO_DROPLINES = 16,
 	};
 
+	/**
+	 * Notifications from this class to do UI updates...
+	 */
+	LRESULT OnNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+	{
+		if (lParam == PN_UPDATEDISPLAY)
+		{
+			fixUpButtons();
+		}
+
+		return 0;
+	}
+
 	/** 
 	 * Called by the toolbar customisation window until we return false to 
 	 * get information about buttons to display.
@@ -160,10 +198,10 @@ private:
 	{
 		LPTBNOTIFY lpTbNotify = reinterpret_cast<LPTBNOTIFY>(pnmh);
 		
-		int buttonCount = sizeof(allButtons) / sizeof(TBBUTTON);
+		int buttonCount = sizeof(toolbar::allButtons) / sizeof(TBBUTTON);
         if (lpTbNotify->iItem < buttonCount)
         {
-            lpTbNotify->tbButton = allButtons[lpTbNotify->iItem];
+            lpTbNotify->tbButton = toolbar::allButtons[lpTbNotify->iItem];
 			return TRUE;
 		}
 
@@ -191,7 +229,7 @@ private:
 	 */
 	LRESULT OnToolbarChange(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
 	{
-		updateComboPositions();
+		fixUpButtons();
 
 		// Make sure the UpdateUI state is correct for the toolbar buttons.
 		GetParent().PostMessage(PN_NOTIFY, 0, PN_REFRESHUPDATEUI);
@@ -219,6 +257,60 @@ private:
 			};
 			break;
 		}
+
+		return 0;
+	}
+
+	/**
+	 * Toolbar adjustment process beginning.
+	 */
+	LRESULT OnToolbarBeginAdjust(WPARAM /*wParam*/, LPNMHDR lParam, BOOL& /*bHandled*/)
+	{
+		//LPNMTOOLBAR lpnmTB = reinterpret_cast<LPNMTOOLBAR>(lParam);
+
+		return 0;
+	}
+
+	/**
+	 * User wants to reset the toolbar.
+	 */
+	LRESULT OnToolbarReset(WPARAM /*wParam*/, LPNMHDR lParam, BOOL& /*bHandled*/)
+	{
+		LPNMTOOLBAR lpnmTB = reinterpret_cast<LPNMTOOLBAR>(lParam);
+
+		int buttons = GetButtonCount();
+		while (buttons)
+		{
+			DeleteButton(0);
+			buttons--;
+		}
+
+		addDefaultButtons();
+		resetSpecialButtons();
+		fixUpButtons();
+
+		return 0;
+	}
+
+	/**
+	 * The user has finished modifying the toolbar configuration
+	 */
+	LRESULT OnToolbarEndAdjust(WPARAM /*wParam*/, LPNMHDR lParam, BOOL& /*bHandled*/)
+	{
+		LPNMTOOLBAR lpnmTB = reinterpret_cast<LPNMTOOLBAR>(lParam);
+
+		// Save...
+		saveButtons();
+
+		return 0;
+	}
+
+	/**
+	 * The user wants to customize the toolbar.
+	 */
+	LRESULT OnCustomizeToolbar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+	{
+		Customize();
 
 		return 0;
 	}
@@ -273,25 +365,9 @@ private:
 		font.GetLogFont(lf);
 		WORD cyFontHeight = (WORD)abs(lf.lfHeight);
 
-		// Make our buttons:
-		std::vector<TBBUTTON> buttons(sizeof(allButtons) / sizeof(TBBUTTON));
-		for (int i = 0; i < sizeof(allButtons)/sizeof(TBBUTTON); i++)
-		{
-			buttons[i] = allButtons[i];
-
-#ifndef _UNICODE
-			// We apply an ASCII version of the title for adding, and use the unicode for customisation
-			
-			if (buttons[i].iString != NULL)
-			{
-			m_nonUnicodeTitles.push_back(std::string(CW2CT((LPCWSTR)allButtons[i].iString)));
-			buttons[i].iString = (INT_PTR)((*m_nonUnicodeTitles.rbegin()).c_str());
-			}
-#endif
-		}
+		loadButtons();
 
 		// Add them and set button sizes etc.
-		::SendMessage(m_hWnd, TB_ADDBUTTONS, 20, (LPARAM)&buttons[0]);
 		::SendMessage(m_hWnd, TB_SETBITMAPSIZE, 0, MAKELONG(16, max(16, cyFontHeight)));
 		/*const int cxButtonMargin = 7;
 		const int cyButtonMargin = 2;
@@ -360,12 +436,42 @@ private:
 		m_FindCombo.SetFont((HFONT)GetStockObject( DEFAULT_GUI_FONT ));
 		m_FindCombo.SetOwnerHWND(hWndOwner); // Get enter notifications.
 		
-		GetButtonInfo(ID_FINDTYPE_BUTTON, &tbi);
-		tbi.dwMask = TBIF_STYLE;
-		tbi.fsStyle = BTNS_BUTTON | BTNS_AUTOSIZE | BTNS_DROPDOWN | BTNS_SHOWTEXT;
-		SetButtonInfo(ID_FINDTYPE_BUTTON, &tbi);
+		fixUpButtons();
 	}
 
+	/**
+	 * Add the default button set.
+	 */
+	void addDefaultButtons()
+	{
+		PNASSERT(toolbar::DEFAULT_TOOLBAR_COUNT <= (sizeof(toolbar::allButtons)/sizeof(TBBUTTON)));
+
+#ifndef _UNICODE
+		m_nonUnicodeTitles.clear();
+#endif
+
+		// Make our buttons:
+		std::vector<TBBUTTON> buttons(toolbar::DEFAULT_TOOLBAR_COUNT);
+		for (int i = 0; i < toolbar::DEFAULT_TOOLBAR_COUNT; i++)
+		{
+			buttons[i] = toolbar::allButtons[i];
+
+#ifndef _UNICODE
+			// We apply an ASCII version of the title for adding, and use the unicode for customisation
+			if (buttons[i].iString != NULL)
+			{
+				m_nonUnicodeTitles.push_back(std::string(CW2CT((LPCWSTR)toolbar::allButtons[i].iString)));
+				buttons[i].iString = (INT_PTR)((*m_nonUnicodeTitles.rbegin()).c_str());
+			}
+#endif
+		}
+
+		AddButtons(toolbar::DEFAULT_TOOLBAR_COUNT, &buttons[0]);
+	}
+
+	/**
+	 * Get the font metrics for the UI font.
+	 */
 	CSize getGUIFontSize()
 	{
 		CClientDC dc(m_hWnd);
@@ -378,6 +484,9 @@ private:
 		return CSize( tm.tmAveCharWidth, tm.tmHeight + tm.tmExternalLeading);
 	}
 
+	/**
+	 * Move a combo box in the toolbar if it's visible.
+	 */
 	void moveCombo(CComboBox& combo, DWORD dwComboId, int dropSize)
 	{
 		CRect rc;
@@ -399,7 +508,10 @@ private:
 		}
 	}
 
-	void updateComboPositions()
+	/**
+	 * Position the combo boxes and update the findtype button
+	 */
+	void fixUpButtons()
 	{
 		CSize sizeChar = getGUIFontSize();
 		int dropSize = TOOLBAR_COMBO_DROPLINES * sizeChar.cy;
@@ -408,9 +520,135 @@ private:
 		moveCombo(m_SchemeCombo, ID_PLACEHOLDER_SCHEMECOMBO, dropSize);
 	}
 
+	/**
+	 * Set up the buttons on the toolbar that hold the combo boxes
+	 */
+	void resetSpecialButtons()
+	{
+		CSize sizeChar = getGUIFontSize();
+
+		TBBUTTONINFO tbi = {0};
+
+		tbi.cbSize = sizeof(TBBUTTONINFO);
+		tbi.dwMask = TBIF_STYLE | TBIF_SIZE;
+		tbi.fsStyle = TBSTYLE_SEP;
+		
+		// Scheme Combo Sep:
+		tbi.cx = (unsigned short)SCHEME_COMBO_SIZE * sizeChar.cx;
+		SetButtonInfo(ID_PLACEHOLDER_SCHEMECOMBO, &tbi);
+
+		// Find Combo Sep:
+		tbi.cx = (unsigned short)FIND_COMBO_SIZE * sizeChar.cx;
+		SetButtonInfo(ID_PLACEHOLDER_FINDCOMBO, &tbi);
+
+		// Now the FindType drop-down button
+		int index = CommandToIndex(ID_FINDTYPE_BUTTON);
+		if (index != -1)
+		{
+			GetButtonInfo(ID_FINDTYPE_BUTTON, &tbi);
+			tbi.dwMask = TBIF_STYLE;
+			tbi.fsStyle = BTNS_BUTTON | BTNS_AUTOSIZE | BTNS_DROPDOWN | BTNS_SHOWTEXT;
+			SetButtonInfo(ID_FINDTYPE_BUTTON, &tbi);
+		}
+	}
+
+	/**
+	 * Try to load the toolbar buttons from the disk, falling back to default buttons.
+	 */
+	void loadButtons()
+	{
+		tstring path;
+		OPTIONS->GetPNPath(path, PNPATH_USERSETTINGS);
+
+		CFileName fn(_T("toolbar.dat"));
+		fn.Root(path.c_str());
+
+		bool bLoaded(false);
+
+		if (FileExists(fn.c_str()))
+		{
+			FILE* f = _tfopen(fn.c_str(), _T("rb"));
+			
+			if (f)
+			{
+				toolbar::SavedState state;
+				if ((fread(&state, sizeof(state), 1, f) == 1) && 
+					(state.stateVersion == toolbar::TOOLBAR_STATE_VERSION) &&
+					state.btnInfoSize == sizeof(TBBUTTON))
+				{
+					std::vector<TBBUTTON> buttons(state.buttonCount);
+					if (fread(&buttons[0], sizeof(TBBUTTON), state.buttonCount, f) == state.buttonCount)
+					{
+						// Fix up the titles:
+						for (size_t i = 0; i < buttons.size(); i++)
+						{
+							for (int j = 0; j < toolbar::ALL_BUTTONS_COUNT; j++)
+							{
+								if (toolbar::allButtons[j].idCommand == buttons[i].idCommand)
+								{
+									buttons[i].iString = toolbar::allButtons[j].iString;
+									break;
+								}
+							}
+
+#ifndef _UNICODE
+							// We apply an ASCII version of the title for adding, and use the unicode for customisation
+							if (buttons[i].iString != NULL)
+							{
+								m_nonUnicodeTitles.push_back(std::string(CW2CT((LPCWSTR)buttons[i].iString)));
+								buttons[i].iString = (INT_PTR)((*m_nonUnicodeTitles.rbegin()).c_str());
+							}
+#endif
+						}
+
+						AddButtons(buttons.size(), &buttons[0]);
+						bLoaded = true;
+					}
+				}
+
+				fclose(f);
+			}
+		}
+		
+		if (!bLoaded)
+		{
+			addDefaultButtons();
+		}
+	}
+
+	/**
+	 * Save the toolbar state to user settings.
+	 */
+	void saveButtons()
+	{
+		tstring path;
+		OPTIONS->GetPNPath(path, PNPATH_USERSETTINGS);
+
+		CFileName fn(_T("toolbar.dat"));
+		fn.Root(path.c_str());
+
+		FILE* f = _tfopen(fn.c_str(), _T("wb"));
+		if (f)
+		{
+			toolbar::SavedState state = {toolbar::TOOLBAR_STATE_VERSION, sizeof(TBBUTTON), GetButtonCount()};
+			fwrite(&state, sizeof(state), 1, f);
+			
+			TBBUTTON btn;
+			for (int i = 0; i < state.buttonCount; i++)
+			{
+				GetButton(i, &btn);
+				btn.iString = 0;
+				fwrite(&btn, sizeof(TBBUTTON), 1, f);
+			}
+
+			fclose(f);
+		}
+	}
+
 	CComboBox				m_SchemeCombo;
 	BXT::CComboBoxAC		m_FindCombo;
 	CImageList				m_Images;
+	std::vector<TBBUTTON>	m_ResetConfig;
 	
 #ifndef _UNICODE
 	std::list<std::string>	m_nonUnicodeTitles;

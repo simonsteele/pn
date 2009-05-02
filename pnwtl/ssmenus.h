@@ -190,10 +190,10 @@ class CSMenuT
 			
 			int bufsize = sname.length() + 10;
 			tstring buffer;
-			buffer.resize(bufsize);
 
 			for (int i = 0; i < GetCount(); i++)
 			{
+				buffer.resize(bufsize);
 				int size = GetMenuString(SafeGetHandle(), i, &buffer[0], bufsize, MF_BYPOSITION);
 				buffer.resize(size);
 

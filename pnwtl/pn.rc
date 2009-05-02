@@ -248,7 +248,6 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Individual Output",          ID_VIEW_INDIVIDUALOUTPUT
         MENUITEM "&Output",                     ID_VIEW_OUTPUT
-        MENUITEM SEPARATOR
     END
     POPUP "&Tools"
     BEGIN
@@ -262,12 +261,13 @@ BEGIN
         END
         MENUITEM "Use &Tabs",                   ID_TOOLS_USETABS
         MENUITEM SEPARATOR
-        MENUITEM "Add Tools...",                ID_TOOLS_DUMMY
+        MENUITEM "&Add Tools...",               ID_TOOLS_DUMMY
         MENUITEM "&Stop Tools",                 ID_TOOLS_STOPTOOLS, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "&Record Script",              ID_TOOLS_RECORDSCRIPT
         MENUITEM "Stop R&ecording",             ID_TOOLS_STOPRECORDING, INACTIVE
         MENUITEM SEPARATOR
+        MENUITEM "&Customize Toolbar",          ID_TOOLS_CUSTOMIZETOOLBAR
         MENUITEM "&Options",                    ID_TOOLS_OPTIONS
     END
     POPUP "&Window"

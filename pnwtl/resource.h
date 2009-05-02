@@ -133,6 +133,7 @@
 #define ID_HELP_WEB_SB                  253
 #define ID_HELP_REPORTABUG              254
 #define IDD_TOOLEDITOR                  255
+#define SCINTILLA_KILLFOCUS				256
 #define IDR_POPUP_OUTPUT                257
 #define ID_PROJECT_DELETE               258
 #define ID_OUTPUT_CLEAR                 259
@@ -271,6 +272,8 @@
 #define IDD_PAGE_KEYWORDTEXTCLIPS       443
 #define IDD_PAGE_EXTENSIONS             444
 #define IDD_PAGE_EDITING                445
+#define SCINTILLA_SETFOCUS				512
+#define SCINTILLA_CHANGE				768
 #define IDC_FINDTEXT_DUMMY              1001
 #define IDC_REPLACETEXT_DUMMY           1002
 #define IDC_FINDTYPE_DUMMY              1003
@@ -696,8 +699,9 @@
 #define ID_SEARCH_FINDPREVIOUSCURRENTWORD 33133
 #define ID_VIEW_ZOOM_IN                 33134
 #define ID_VIEW_ZOOM_OUT                33135
-#define ID_PLACEHOLDER_SCHEMECOMBO		33136
-#define ID_PLACEHOLDER_FINDCOMBO		33137
+#define ID_PLACEHOLDER_SCHEMECOMBO      33136
+#define ID_PLACEHOLDER_FINDCOMBO        33137
+#define ID_TOOLS_CUSTOMIZETOOLBAR       33138
 
 // Next default values for new objects
 // 
@@ -705,7 +709,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        366
-#define _APS_NEXT_COMMAND_VALUE         33138
+#define _APS_NEXT_COMMAND_VALUE         33139
 #define _APS_NEXT_CONTROL_VALUE         1161
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
