@@ -41,6 +41,15 @@ What's new?
 33) Comment commands and text transforms on context menu (#223, #221)
 34) Re-use unchanged blank document window when opening a file (#17)
 35) Clean up the UI for first run (#211)
+36) You can now record scripts (macros) with PyPN
+37) Window switching in the order of the tabs now supported (#391)
+38) Add find dialog accelerators (#401)
+39) Draggable toolbars replaced with one customizable one
+40) Find Next and Previous word under cursor (#155)
+41) Various improvements to the usability of the open files window (#84)
+42) Added Smart Highlight - marks all occurrences of selected word. (#150)
+43) Moved Find and related commands into Search menu
+44) New remove blank lines command
 
 Bug Fixes:
 ----------
@@ -89,6 +98,18 @@ Bug Fixes:
 42) Global tools selection the default with non-scheme file (#306)
 43) Magic folder crash (#257)
 44) Project properties don't work from tools
+45) Enter to select tag (#374)
+46) Project properties dialog resize (#398)
+47) BOM validated when loading unicode files (#335)
+48) Two replace all infinite loops fixed (#308, #372)
+49) Not all matches correct when using Mark All with regex (#366)
+50) Toolbar button state managed better (#287)
+51) Line up/down commands fixed (#369)
+52) Fixes for autocomplete file loading/saving (#384)
+53) Focus quick find even if already shown (#392)
+54) Text insertion in find combos fixed (#377)
+55) Don't save unnecessarily when running tools (#396)
+56) .LOG text styling matches notepad (#346)
 
 Extensions Interface Changes:
 -----------------------------
