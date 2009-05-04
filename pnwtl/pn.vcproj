@@ -436,10 +436,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\autocomplete.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\include\boyermoore.cpp"
 				>
 			</File>
@@ -711,10 +707,6 @@
 				RelativePath=".\xmlparser.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\xmltagsuggest.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -734,10 +726,6 @@
 			</File>
 			<File
 				RelativePath=".\appsettings.h"
-				>
-			</File>
-			<File
-				RelativePath=".\autocomplete.h"
 				>
 			</File>
 			<File
@@ -1078,10 +1066,6 @@
 			</File>
 			<File
 				RelativePath=".\WorkspaceState.h"
-				>
-			</File>
-			<File
-				RelativePath=".\xmltagsuggest.h"
 				>
 			</File>
 		</Filter>
@@ -1715,6 +1699,42 @@
 			</File>
 			<File
 				RelativePath=".\textclipeditor.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Autocomplete"
+			>
+			<File
+				RelativePath=".\autocomplete.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\autocomplete.h"
+				>
+			</File>
+			<File
+				RelativePath=".\autocompletemanager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\autocompletemanager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\xmlfileautocomplete.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\xmlfileautocomplete.h"
+				>
+			</File>
+			<File
+				RelativePath=".\xmltagsuggest.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\xmltagsuggest.h"
 				>
 			</File>
 		</Filter>

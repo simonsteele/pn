@@ -15,6 +15,7 @@
 #include "scaccessor.h"
 #include "autocomplete.h"
 #include "autocompletehandler.h"
+#include "autocompletemanager.h"
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -27,6 +28,9 @@ typedef boost::xpressive::match_results<ScintillaIterator> scimatch;
 typedef boost::xpressive::sub_match<ScintillaIterator> scisub_match;
 
 
+/**
+ * Constructor
+ */
 CScintillaImpl::CScintillaImpl() :
 	m_bAutoCompleteIgnoreCase(true)
 {
@@ -34,17 +38,17 @@ CScintillaImpl::CScintillaImpl() :
 	lastFindDetails.startPos = 0;
 	lastFindDetails.direction = true;
 
-	// To be replaced with scheme-based autocomplete:
-	m_autoComplete = new DefaultAutoComplete(m_bAutoCompleteIgnoreCase, OPTIONS->GetCached(extensions::IOptions::OAutoCompleteUseKeywords) == TRUE);
+	// TODO: This needs to be lazy loaded based on the current scheme, and swapped out on 
+	// scheme change.
+	m_autoComplete = AutocompleteManager().GetAutocomplete(NULL);
 }
 
 CScintillaImpl::~CScintillaImpl()
 {
-	delete m_autoComplete;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Search and Replace Support Code (please move this)  ///@todo
+// Search and Replace Support Code
 ////////////////////////////////////////////////////////////////////////////////
 
 /**

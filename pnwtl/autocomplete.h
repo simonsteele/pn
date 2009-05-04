@@ -13,6 +13,8 @@
 
 #pragma once
 
+//class IWordProvider;
+
 /**
  * Implementation of one autocomplete source
  */
@@ -50,6 +52,8 @@ public:
 	// New function to return the correct prototypes for a method
 	virtual void GetPrototypes(PN::BaseString& prototypes, char TokenSeparator, const char* method, int methodLength) = 0;
 };
+
+typedef boost::shared_ptr<IWordProvider> IWordProviderPtr;
 
 /**
  * PN default implementation of autocomplete:

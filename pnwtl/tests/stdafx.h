@@ -34,6 +34,8 @@
 #include <string>
 #include <map>
 
+#include <boost/shared_ptr.hpp>
+
 #define AtlIsValidString(x) true
 
 typedef std::string tstring;

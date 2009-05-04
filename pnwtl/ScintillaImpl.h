@@ -151,7 +151,7 @@ private:
 	int m_nMinAutoCompleteChars;
 	Scheme *m_pScheme;
 
-	IWordProvider* m_autoComplete;
+	boost::shared_ptr<IWordProvider> m_autoComplete;
 	AutoCompleteHandlerPtr m_autoCompleteHandler;
 };
 
