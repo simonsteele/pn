@@ -60,7 +60,7 @@ size_t Utf8_16_Read::convert(char* buf, size_t len, encodingType enc_type, int s
 		return len;
 	}
 
-	if (len <= nSkip) {
+	if (len <= (size_t)nSkip) {
 		// Nothing but BOM, empty file
 		m_nBufSize = 0;
 		m_pNewBuf = NULL;
@@ -70,7 +70,7 @@ size_t Utf8_16_Read::convert(char* buf, size_t len, encodingType enc_type, int s
 	// check bom
 	if (nSkip) {
 		for (int i = 0; i < nSkip; i++) {
-			if (buf[i] != k_Boms[m_eEncoding][i]) {
+			if (m_pBuf[i] != k_Boms[m_eEncoding][i]) {
 				// BOM doesn't match, give up and load the file in full as the user's chosen encoding.
 				nSkip = 0;
 				break;

@@ -616,6 +616,9 @@ private:
 								}
 							}
 
+							// Remove styles that break the toolbar height, they'll be re-applied later
+							buttons[i].fsStyle &= ~(BTNS_AUTOSIZE | BTNS_DROPDOWN | BTNS_SHOWTEXT);
+
 #ifndef _UNICODE
 							// We apply an ASCII version of the title for adding, and use the unicode for customisation
 							if (buttons[i].iString != NULL)
