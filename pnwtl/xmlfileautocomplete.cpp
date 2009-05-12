@@ -186,7 +186,9 @@ XmlFileAutocompleteProvider::XmlFileAutocompleteProvider()
 {
 	try
 	{
+#ifdef _DEBUG
 		OpTimer timer;
+#endif
 
 		XMLParser parser;
 		ParseHandler handler(m_tags);
