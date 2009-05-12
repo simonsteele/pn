@@ -110,6 +110,7 @@ Bug Fixes:
 54) Text insertion in find combos fixed (#377)
 55) Don't save unnecessarily when running tools (#396)
 56) .LOG text styling matches notepad (#346)
+57) Search dialog gets stuck on Win7 RC (#444)
 
 Extensions Interface Changes:
 -----------------------------
