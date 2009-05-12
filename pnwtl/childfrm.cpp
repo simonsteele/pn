@@ -1063,10 +1063,10 @@ LRESULT CChildFrame::OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 {
 	CString caption;
 	caption.Format(_T("&Line Number (1 - %d):"), m_view.GetLineCount());
-	CGotoDialog g(caption);
-	if(g.DoModal() == IDOK)
+	CGotoDialog g((LPCTSTR)caption);
+	if (g.DoModal() == IDOK)
 	{
-		m_view.GotoLine(g.GetLineNo()-1);
+		m_view.GotoLine(g.GetLineNo() - 1);
 	}
 
 	return 0;

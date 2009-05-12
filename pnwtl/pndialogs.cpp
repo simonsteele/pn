@@ -38,6 +38,7 @@ LRESULT CGotoDialog::OK(WORD wID)
 {
 	CInputDialogImpl<CGotoDialog>::OK(wID);
 	lineno = _ttoi(m_inputText);
+	OPTIONS->Set(PNSK_INTERFACE, _T("LastGoto"), lineno);
 
 	return TRUE;
 }
@@ -45,4 +46,21 @@ LRESULT CGotoDialog::OK(WORD wID)
 int CGotoDialog::GetLineNo()
 {
 	return lineno;
+}
+
+LRESULT CGotoDialog::InitDialog()
+{
+	baseClass::InitDialog();
+
+	int lastGoto = OPTIONS->Get(PNSK_INTERFACE, _T("LastGoto"), 0);
+	if (lastGoto != 0)
+	{
+		TCHAR buf[40];
+		_itot(lastGoto, buf, 10);
+		CEdit edit(GetDlgItem(IDC_THEEDIT));
+		edit.SetWindowText(buf);
+		edit.SetSelAll();
+	}
+
+	return 0;
 }

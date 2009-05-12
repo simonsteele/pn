@@ -90,15 +90,15 @@ class CInputDialogImpl : public CDialogImpl< CInputDialogImpl<T> >
 		LRESULT InitDialog()
 		{
 			CenterWindow(GetParent());
-			::SetWindowText(GetDlgItem(IDC_TEXTTITLE), m_caption);
-			SetWindowText(m_title);
+			::SetWindowText(GetDlgItem(IDC_TEXTTITLE), m_caption.c_str());
+			SetWindowText(m_title.c_str());
 
 			return TRUE;
 		}
 
 	protected:
-		CString m_title;
-		CString m_caption;
+		tstring m_title;
+		tstring m_caption;
 		CString m_inputText;
 };
 
@@ -111,13 +111,17 @@ class CInputDialog : public CInputDialogImpl<CInputDialog>
 
 class CGotoDialog : public CInputDialogImpl<CGotoDialog>
 {
+	typedef CInputDialogImpl<CGotoDialog> baseClass;
+
 	public:
-		CGotoDialog(LPCTSTR caption) : CInputDialogImpl<CGotoDialog>(_T("Go To Line"), caption) {}
+		explicit CGotoDialog(LPCTSTR caption) : CInputDialogImpl<CGotoDialog>(_T("Go To Line"), caption) {}
 		LRESULT OK(WORD wID);
 
 		int GetLineNo();
-	
-	protected:
+
+		LRESULT InitDialog();
+
+	private:
 		int lineno;
 };
 
