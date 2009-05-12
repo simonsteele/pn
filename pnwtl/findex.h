@@ -155,6 +155,7 @@ protected:
 	CArrowButton			m_ReHelperBtn2;
 	CChildFrame*			m_pLastEditor;
 	bool					m_bInitialising;
+	bool					m_bHiding;
 
 	// Positional information
 	int		m_group2Top;

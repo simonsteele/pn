@@ -94,7 +94,8 @@ CFindExDialog::CFindExDialog() :
 	m_lastVisibleCB(-1),
 	m_bottom(-1),
 	m_pFnSLWA(NULL),
-	m_bInitialising(false)
+	m_bInitialising(false),
+	m_bHiding(false)
 {
 	if(g_Context.OSVersion.dwMajorVersion >= 5)
 	{
@@ -369,7 +370,7 @@ LRESULT CFindExDialog::OnCloseCmd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 LRESULT CFindExDialog::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	if(LOWORD(wParam) == WA_INACTIVE && OPTIONS->GetCached(Options::OFindAlphaEnabled))
+	if(LOWORD(wParam) == WA_INACTIVE && OPTIONS->GetCached(Options::OFindAlphaEnabled) && !m_bHiding)
 	{
 		SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) | WS_EX_LAYERED);
 		int tspct = OPTIONS->GetCached(Options::OFindAlphaPercent);
@@ -412,7 +413,10 @@ LRESULT CFindExDialog::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		{
 		if(m_type != eftReplace && !OPTIONS->Get(PNSK_INTERFACE, _T("FindStaysOpen"), false))
 			// Default Visual C++, old PN and others behaviour:
+			// We disable the alpha behaviour because of a Win7 bug with hiding layered toolwindows
+			m_bHiding = true;
 			ShowWindow(SW_HIDE);
+			m_bHiding = false;
 		}
 		break;
 
