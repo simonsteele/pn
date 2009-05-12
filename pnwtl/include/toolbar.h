@@ -372,7 +372,7 @@ private:
 			hBitmap = (HBITMAP)::LoadImage(
 											_Module.m_hInst,
 											MAKEINTRESOURCE(IDB_TOOLBAR),
-											IMAGE_BITMAP, 0, 0, LR_SHARED);
+											IMAGE_BITMAP, 0, 0, LR_SHARED | LR_CREATEDIBSECTION);
 		}
 
 		m_Images.Add(hBitmap, RGB(255,0,255));
