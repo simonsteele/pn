@@ -1977,7 +1977,7 @@ LRESULT CMainFrame::OnWebSFBug(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 LRESULT CMainFrame::OnWebSFRFE(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	::ShellExecute(m_hWnd, _T("open"), _T("http://code.google.com/p/pnotepad/issues/entry"), NULL, NULL, SW_SHOW);
+	::ShellExecute(m_hWnd, _T("open"), _T("http://code.google.com/p/pnotepad/issues/entry?template=Enhancement%20Request"), NULL, NULL, SW_SHOW);
 
 	return 0;
 }
