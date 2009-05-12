@@ -195,6 +195,12 @@ void IniOptions::group(LPCTSTR location)
 	while(*p)
 	{
 		comma = _tcschr(p, _T('='));
+
+		if (comma == NULL)
+		{
+			break;
+		}
+
 		*comma = NULL;
 		comma++;
 		keyMap->insert(IniKeyMap::value_type(tstring(p), tstring(comma)));
