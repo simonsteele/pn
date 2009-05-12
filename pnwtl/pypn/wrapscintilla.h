@@ -27,6 +27,11 @@ public:
 
 	PNScintilla(extensions::IDocument* document)
 	{
+		if (document == NULL)
+		{
+			throw std::exception("Invalid document object: None");
+		}
+
 		m_scihWnd = document->GetScintillaHWND();
 		Perform = NULL;
 	}
