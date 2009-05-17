@@ -23,6 +23,7 @@
 .d=d
 .def=modula2
 .dfm=pascal
+.di=d
 .diff=diff
 .dob=vb
 .dpr=pascal

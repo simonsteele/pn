@@ -9,14 +9,16 @@
     -->
 	<keyword-classes>
 		<keyword-class name="d">
+			#line __traits __FILE__ __LINE__
+			__DATE__ __TIME__ __TIMESTAMP__ __VENDOR__ __VERSION__
 			abstract alias align asm assert auto body bool 
 			break byte case cast catch cdouble cent cfloat char class 
 			const continue creal dchar debug default delegate delete 
 			deprecated do double else enum export extern false final finally 
 			float for foreach foreach_reverse function goto idouble if 
-			ifloat import in inout int interface invariant ireal is lazy 
-			long mixin module new null out override package pragma private 
-			protected public real return scope short static struct super 
+			ifloat import in inout int immutable interface invariant ireal is lazy 
+			long mixin module new nothrow null out override package pragma private 
+			protected public pure real ref return scope short static string struct super 
 			switch synchronized template this throw true try typedef typeid 
 			typeof ubyte ucent uint ulong union unittest ushort version void 
 			volatile wchar while with
@@ -37,7 +39,7 @@
 
 	<!-- base scheme for C++ style languages -->
 	<language name="d" title="D" folding="true" foldcomments="true" foldcompact="false" foldpreproc="true">
-		<lexer name="cpp" />
+		<lexer name="d" />
 		<comments line="//" streamStart="/*" streamEnd="*/" blockStart="/**" blockLine=" *" blockEnd=" */" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="d"/>
@@ -50,23 +52,27 @@
 			<style name="Whitespace" key="0" />
 			<style name="Comment" key="1" class="commentbox"/>
 			<style name="Comment Line" key="2" class="commentline"/>
+			<style name="Comment Doc" key="3" class="commentdoc"/>
+			<style name="Comment Nested" key="4" class="commentbox"/>
 			
-			<style name="Number" key="4" class="number"/>
-			<style name="Keyword" key="5" class="keyword"/>
-			<style name="String" key="6" class="string"/>
-			<style name="Character" key="7" class="string"/>
+			<style name="Number" key="5" class="number"/>
+			<style name="Keyword" key="6" class="keyword"/>
+			<style name="Keyword" key="7" class="keyword"/>
+			<style name="Keyword" key="8" class="keyword"/>
+			<style name="Keyword" key="9" class="keyword"/>
 			
-			<style name="Preprocessor" key="9" class="preprocessor"/>
+			<style name="String" key="10" class="string"/>
+			<style name="End of line string" key="11" fore="000000" back="e0c0e0" eolfilled="true" />
 			
-			<style name="Operator" key="10" class="operator"/>
-			<style name="Identifier" key="11" />
-			<style name="End of line string" key="12" fore="000000" back="e0c0e0" eolfilled="true"/>
+			<style name="Character" key="12" class="character"/>
+			
+			<style name="Operator" key="13" class="operator"/>
+			<style name="Identifier" key="14" />
 
 			<!-- Comment doc: is this needed??? -->
-			<style name="Doc Comments" key="3" class="commentdoc"/>
 			<style name="Comment Line Doc" key="15" class="commentdoc"/>
-			<style name="Comment Doc Keyword" key="17" class="commentdoc" fore="3060a0"/>
-			<style name="Unknown Comment Doc Keyword" key="18" class="commentdoc" fore="804020"/>
+			<style name="Comment Doc Keyword" key="16" class="commentdoc" fore="3060a0"/>
+			<style name="Unknown Comment Doc Keyword" key="17" class="commentdoc" fore="804020"/>
 			
 		</use-styles>
 	</language>

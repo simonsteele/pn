@@ -2,9 +2,9 @@
  * @file afiles.cpp
  * @brief Alternate Files Implementation
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -101,8 +101,8 @@ void AlternateFileSet::get(LPCTSTR setstr, tstring& outstr) const
 
 void AlternateFileSet::clear()
 {
-	delete set1;
-	delete set2;
+	delete [] set1;
+	delete [] set2;
 }
 
 /**
@@ -121,11 +121,13 @@ AlternateFiles::AlternateFiles()
 		// Some simple defaults...
 		sets.push_back( new AlternateFileSet(_T(".cxx;.c;.cpp;.cc"), _T(".h;.hpp;.hh")) );
 		sets.push_back( new AlternateFileSet(_T(".dfm"), _T(".pas")) );
+		sets.push_back( new AlternateFileSet(_T(".d"), _T(".di")) );
 	}
 	else
 	{
 		XMLParser parser;
 		parser.SetParseState(this);
+
 		try
 		{
 			parser.LoadFile(path.c_str());

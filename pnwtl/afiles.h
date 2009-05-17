@@ -2,9 +2,9 @@
  * @file afiles.h
  * @brief Alternate Files definition
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -17,8 +17,8 @@
 class AlternateFileSet
 {
 public:
-	AlternateFileSet(LPCTSTR set1, LPCTSTR set2);
-	AlternateFileSet(const AlternateFileSet& copy);
+	explicit AlternateFileSet(LPCTSTR set1, LPCTSTR set2);
+	explicit AlternateFileSet(const AlternateFileSet& copy);
 	~AlternateFileSet();
 
 	void Set(LPCTSTR set1, LPCTSTR set2);
@@ -29,7 +29,7 @@ public:
 	void GetSet1String(tstring& str) const;
 	void GetSet2String(tstring& str) const;
 
-protected:
+private:
 	void set(TCHAR*&, LPCTSTR);
 	void get(LPCTSTR, tstring&) const;
 
