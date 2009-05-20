@@ -2,9 +2,9 @@
  * @file pnutils.h
  * @brief Utility classes such as MRU Lists etc.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  *
  * Classes in this file:
@@ -30,13 +30,12 @@
 class CWindowText
 {
 	public:
-		CWindowText(HWND hWnd)
+		CWindowText(HWND hWnd) : m_buffer(NULL)
 		{
 			PNASSERT(::IsWindow(hWnd));
-			m_buffer = NULL;
 
 			int len = ::GetWindowTextLength(hWnd);
-			if(len > 0)
+			if (len > 0)
 			{
 				len++;
 				m_buffer = new TCHAR[len];
@@ -46,7 +45,7 @@ class CWindowText
 
 		~CWindowText()
 		{
-			if(m_buffer)
+			if (m_buffer)
 				delete [] m_buffer;
 		}
 
@@ -55,7 +54,7 @@ class CWindowText
 			return m_buffer;
 		}
 
-	protected:
+	private:
 		TCHAR* m_buffer;
 };
 

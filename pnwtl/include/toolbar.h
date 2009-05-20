@@ -128,6 +128,11 @@ public:
 	tstring GetFindText() const
 	{
 		CWindowText wt(m_FindCombo.m_hWnd); //Get find text...
+		if ((LPCTSTR)wt == NULL)
+		{
+			return _T("");
+		}
+
 		return tstring((LPCTSTR)wt);
 	}
 
