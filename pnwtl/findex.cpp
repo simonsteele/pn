@@ -401,22 +401,24 @@ LRESULT CFindExDialog::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
 LRESULT CFindExDialog::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	if(m_type == eftFindInFiles)
+	if (m_type == eftFindInFiles)
 	{
 		findInFiles();
 		return TRUE;
 	}
 
-	switch(findNext())
+	switch (findNext())
 	{
 	case fnFound:
 		{
-		if(m_type != eftReplace && !OPTIONS->Get(PNSK_INTERFACE, _T("FindStaysOpen"), false))
-			// Default Visual C++, old PN and others behaviour:
-			// We disable the alpha behaviour because of a Win7 bug with hiding layered toolwindows
-			m_bHiding = true;
-			ShowWindow(SW_HIDE);
-			m_bHiding = false;
+			if (m_type != eftReplace && !OPTIONS->Get(PNSK_INTERFACE, _T("FindStaysOpen"), false))
+			{
+				// Default Visual C++, old PN and others behaviour:
+				// We disable the alpha behaviour because of a Win7 bug with hiding layered toolwindows
+				m_bHiding = true;
+				ShowWindow(SW_HIDE);
+				m_bHiding = false;
+			}
 		}
 		break;
 
