@@ -389,10 +389,7 @@ bool FileAssoc::AssociateExtention(LPCTSTR pDescription /*= NULL*/, LPCTSTR pIco
 		regOpenWith.Close();
 
 		// XP and later only
-		bool isXPOrLater =
-			(g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
-			( (g_Context.OSVersion.dwMajorVersion > 4) && (g_Context.OSVersion.dwMinorVersion > 0) );
-		if(isXPOrLater)
+		if(IsXPOrLater())
 		{
 			TCHAR val[256];
 			ULONG size = 256;
@@ -626,11 +623,7 @@ bool FileAssocManager::CheckAssociations()
 
 void FileAssocManager::CheckOpenWith()
 {
-	bool isXPOrLater =
-		(g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
-		( (g_Context.OSVersion.dwMajorVersion > 4) && (g_Context.OSVersion.dwMinorVersion > 0) );
-
-	if(isXPOrLater)
+	if(IsXPOrLater())
 		RegisterOpenWithForPerceivedType();
 	else
 		RegisterOpenWith();

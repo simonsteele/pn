@@ -81,8 +81,10 @@ HWND CProjectTreeCtrl::Create(HWND hWndParent, _U_RECT rect, LPCTSTR szWindowNam
 	ATLASSERT(SUCCEEDED(hr));
 
 	// Try to get a Vista style treeview:
-	if(g_Context.OSVersion.dwMajorVersion >= 6) 
+	if (WTL::RunTimeHelper::IsVista()) 
+	{
 		SetWindowTheme(L"explorer", NULL);
+	}
 
 	return hWndRet;
 }
