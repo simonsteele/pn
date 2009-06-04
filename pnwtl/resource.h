@@ -248,7 +248,6 @@
 #define IDB_TBFIND24                    364
 #define IDB_BITMAP4                     365
 #define IDB_TOOLBAR                     365
-#define IDB_BITMAP5                     366
 #define IDB_TBEDITOR24                  366
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
@@ -478,6 +477,8 @@
 #define IDC_CLOSEONFINDNEXTCHECK        1115
 #define IDC_FINDALPHACHECK              1116
 #define IDC_TREE1                       1117
+#define IDC_SHOWEDITORTOOLBAR           1117
+#define IDC_SHOWEDITORTOOLBARCHECK      1117
 #define IDC_VAR_LIST                    1118
 #define IDC_TE_CLICKRESULTSSTATIC       1120
 #define IDC_TE_OUTPUTGROUP              1121

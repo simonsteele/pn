@@ -476,7 +476,11 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	}
 
 	SetTitle();
-	SetupToolbar();
+	if (OPTIONS->Get(PNSK_INTERFACE, _T("MiniToolbar"), true))
+	{
+		SetupToolbar();
+	}
+
 	m_pCmdDispatch->UpdateMenuShortcuts(m_hMenu);
 
 	UISetChecked(ID_EDITOR_COLOURISE, true);
@@ -2440,7 +2444,7 @@ void CChildFrame::UISetChecked(UINT uID, bool bChecked, bool bUpdate)
 			{
 				if((pMap->wState & PMUI_MENU) != 0)
 					::CheckMenuItem(m_hMenu, uID, MF_BYCOMMAND | mfchecked[bChecked]);
-				if((pMap->wState & PMUI_MINIBAR) != 0)
+				if(m_hWndToolBar && (pMap->wState & PMUI_MINIBAR) != 0)
 					CToolBarCtrl(m_hWndToolBar).CheckButton(uID, bChecked);
 			}
 			
@@ -2460,6 +2464,7 @@ bool CChildFrame::UIGetChecked(UINT uID)
 		{
 			return (pMap->wState & PMUI_CHECKED) != 0;
 		}
+
 		pMap++;
 	}
 
@@ -2483,7 +2488,7 @@ bool CChildFrame::UIInvertCheck(UINT uID)
 
 			if((pMap->wState & PMUI_MENU) != 0)
 				::CheckMenuItem(m_hMenu, uID, MF_BYCOMMAND | mfchecked[bChecked]);
-			if((pMap->wState & PMUI_MINIBAR) != 0)
+			if(m_hWndToolBar && (pMap->wState & PMUI_MINIBAR) != 0)
 				CToolBarCtrl(m_hWndToolBar).CheckButton(uID, bChecked);
 
 			return bChecked;

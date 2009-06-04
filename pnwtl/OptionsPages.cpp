@@ -2,7 +2,7 @@
  * @file optionspages.cpp
  * @brief Options Dialog Pages (1) for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -224,6 +224,9 @@ void COptionsPageDialogs::OnOK()
 	// Find Dialog
 	OPTIONS->Set(PNSK_INTERFACE, _T("FindStaysOpen"), m_bCloseFindNext == FALSE);
 	OPTIONS->SetCached(Options::OFindAlphaEnabled, m_bFindAlpha);
+
+	// Other UI
+	OPTIONS->Set(PNSK_INTERFACE, _T("MiniToolbar"), m_bShowEditorToolbar == TRUE);
 }
 
 void COptionsPageDialogs::OnInitialise()
@@ -235,12 +238,15 @@ void COptionsPageDialogs::OnInitialise()
 	m_bCloseFindNext = !OPTIONS->Get(PNSK_INTERFACE, _T("FindStaysOpen"), false);
 	m_bFindAlpha = OPTIONS->GetCached(Options::OFindAlphaEnabled);
 
+	// Other UI
+	m_bShowEditorToolbar = OPTIONS->Get(PNSK_INTERFACE, _T("MiniToolbar"), true);
+
 	DoDataExchange();
 }
 
 LPCTSTR COptionsPageDialogs::GetTreePosition()
 {
-	return _T("General\\Dialogs");
+	return _T("General\\Interface");
 }
 
 LRESULT COptionsPageDialogs::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)

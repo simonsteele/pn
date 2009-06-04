@@ -102,6 +102,7 @@ class COptionsPageDialogs : public COptionsPageImpl<COptionsPageDialogs>,
 			DDX_CHECK(IDC_OPENCURFILEDIRCHECK,	m_bOpenCurFileDir)
 			DDX_CHECK(IDC_FINDALPHACHECK,		m_bFindAlpha)
 			DDX_CHECK(IDC_CLOSEONFINDNEXTCHECK,	m_bCloseFindNext)
+			DDX_CHECK(IDC_SHOWEDITORTOOLBARCHECK, m_bShowEditorToolbar)
 		END_DDX_MAP()
 
 		virtual void OnOK();
@@ -114,6 +115,7 @@ class COptionsPageDialogs : public COptionsPageImpl<COptionsPageDialogs>,
 		BOOL m_bOpenCurFileDir;
 		BOOL m_bFindAlpha;
 		BOOL m_bCloseFindNext;
+		BOOL m_bShowEditorToolbar;
 };
 
 class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
