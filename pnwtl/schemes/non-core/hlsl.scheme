@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="hlsl-keywords">
+			<!-- case insensitive -->
+			blendstate bool break, buffer cbuffer compile const continue
+			depthstencilstate depthstencilview discard do double else extern
+			false float for geometryshader half if in inline inout int matrix
+			namespace nointerpolation out pass pixelshader rasterizerstate
+			rendertargetview return register sampler sampler1d sampler2d sampler3d
+			samplercube sampler_state samplercomparisonstate shared stateblock
+			stateblock_state static string struct switch tbuffer technique
+			technique10 texture texture1 texture1d texture1darray texture2d
+			texture2darray texture2dms texture2dmsarray texture3d texturecube
+			texturecubearray true typedef uniform vector vertexshader void
+			volatile while
+		<!--/keyword-class>
+		<keyword-class name="hlsl-types"-->
+			<!-- case insensitive -->
+			target nointerpolation shared uniform row_major column_major snorm
+			unorm bool bool1 bool2 bool3 bool4 int int1 int2 int3 int4 uint uint1
+			uint2 uint3 uint4 half half1 half2 half3 half4 float float1 float2
+			float3 float4 double double1 double2 double3 double4 matrix bool1x1
+			bool1x2 bool1x3 bool1x4 bool2x1 bool2x2 bool2x3 bool2x4 bool3x1 bool3x2
+			bool3x3 bool3x4 bool4x1 bool4x2 bool4x3 bool4x4 int1x1 int1x2 int1x3
+			int1x4 int2x1 int2x2 int2x3 int2x4 int3x1 int3x2 int3x3 int3x4 int4x1
+			int4x2 int4x3 int4x4 uint1x1 uint1x2 uint1x3 uint1x4 uint2x1 uint2x2
+			uint2x3 uint2x4 uint3x1 uint3x2 uint3x3 uint3x4 uint4x1 uint4x2 uint4x3
+			uint4x4 half1x1 half1x2 half1x3 half1x4 half2x1 half2x2 half2x3 half2x4
+			half3x1 half3x2 half3x3 half3x4 half4x1 half4x2 half4x3 half4x4 float1x1
+			float1x2 float1x3 float1x4 float2x1 float2x2 float2x3 float2x4 float3x1
+			float3x2 float3x3 float3x4 float4x1 float4x2 float4x3 float4x4 double1x1
+			double1x2 double1x3 double1x4 double2x1 double2x2 double2x3 double2x4
+			double3x1 double3x2 double3x3 double3x4 double4x1 double4x2 double4x3
+			double4x4
+		</keyword-class>
+		<keyword-class name="hlsl-reserved">
+			<!-- case insensitive -->
+			auto case catch char class const_cast default delete dynamic_cast enum
+			explicit friend goto long mutable new operator private protected public
+			reinterpret_cast short signed sizeof static_cast template this throw try
+			typename union unsigned using virtual
+		</keyword-class>
+		<keyword-class name="hlsl-intrinsic">
+			<!-- case sensitive -->
+			abs acos all any asdouble asfloat asin asint asuint atan atan2 ceil
+			clamp clip cos cosh cross d3dcolortoubyte4 ddx ddy degrees determinant
+			distance dot exp exp2 faceforward floor fmod frac frexp fwidth
+			getrendertargetsamplecount getrendertargetsampleposition isfinite
+			isinf isnan ldexp length lerp lit log log10 log2 max min modf mul
+			noise normalize pow radians reflect refract round rsqrt saturate sign
+			sin sincos sinh smoothstep sqrt step tan tanh tex1d tex1dbias tex1dgrad
+			tex1dlod tex1dproj tex2d tex2dbias tex2dgrad tex2dlod tex2dproj tex3d
+			tex3dbias tex3dgrad tex3dlod tex3dproj texcube texcubebias texcubegrad
+			texcubelod texcubeproj transpose trunc
+		</keyword-class>
+		<!--keyword-class name="hlsl-intrinsic">
+			abs acos all any asdouble asfloat asin asint asuint atan atan2 ceil
+			clamp clip cos cosh cross D3DCOLORtoUBYTE4 ddx ddy degrees determinant
+			distance dot exp exp2 faceforward floor fmod frac frexp fwidth
+			GetRenderTargetSampleCount GetRenderTargetSamplePosition isfinite
+			isinf isnan ldexp length lerp lit log log10 log2 max min modf mul
+			noise normalize pow radians reflect refract round rsqrt saturate sign
+			sin sincos sinh smoothstep sqrt step tan tanh tex1D tex1Dbias tex1Dgrad
+			tex1Dlod tex1Dproj tex2D tex2Dbias tex2Dgrad tex2Dlod tex2Dproj tex3D
+			tex3Dbias tex3Dgrad tex3Dlod tex3Dproj texCUBE texCUBEbias texCUBEgrad
+			texCUBElod texCUBEproj transpose trunc
+		</keyword-class-->
+		<keyword-class name="doxygen">
+			a addindex addtogroup anchor arg attention
+			author b brief bug c class code date def defgroup deprecated dontinclude
+			e em endcode endhtmlonly endif endlatexonly endlink endverbatim enum example exception
+			f$ f[ f] file fn hideinitializer htmlinclude htmlonly
+			if image include ingroup internal invariant interface latexonly li line link
+			mainpage name namespace nosubgrouping note overload
+			p page par param post pre ref relates remarks return retval
+			sa section see showinitializer since skip skipline struct subsection
+			test throw todo typedef union until
+			var verbatim verbinclude version warning weakgroup $ @ \ &amp; &lt; &gt; # { }
+		</keyword-class>
+	</keyword-classes>
+	
+	<schemedef name="hlsl" title="HLSL" author="Björn Graf" braces="{[()]}" casesensitive="false" version="1" folding="true" foldcomments="true" foldelse="true" foldcompact="true" foldpreproc="true">
+		<lexer name="cppnocase" />
+		<!--lexer name="cpp" /-->
+
+		<strings>
+			<stringtype id="0" start="&quot;" end="&quot;" multiline="false" />
+		</strings>
+
+		<!--identifiers start="[a-zA-Z_]" content="[a-zA-Z0-9_]" /-->
+
+		<comments line="//" streamStart="/*" streamEnd="*/" blockStart="/**" blockLine=" *" blockEnd=" */" />
+
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="hlsl-keywords"/>
+			<keyword key="1" name="Intrinsic Functions" class="hlsl-intrinsic"/>
+			<keyword key="2" name="Doxygen Keywords" class="doxygen"/>
+			<keyword key="3" name="Reserved Words" class="hlsl-reserved"/>
+			<!--keyword key="4" name="Types" class="hlsl-types"/-->
+		</use-keywords>
+
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="Whitespace" key="0" class="whitespace" />
+			<style name="Comment" key="1" class="commentbox"/>
+			<style name="Comment Line" key="2" class="commentline"/>
+
+			<style name="Number" key="4" class="number"/>
+			<style name="Keyword" key="5" class="keyword"/>
+			<style name="String" key="6" class="string"/>
+			<style name="Character" key="7" class="string"/>
+
+			<style name="Operator" key="10" bold="true"/>
+			<style name="Identifier" key="11" />
+			<style name="End of line string" key="12" fore="000000" back="e0c0e0" eolfilled="true"/>
+
+			<style name="Doc Comments" key="3" class="commentdoc"/>
+			<style name="Preprocessor" key="9" class="preprocessor"/>
+			<style name="Verbatim" key="13" fore="007f00" back="e0ffe0" eolfilled="true"/>
+			<style name="Comment Line Doc" key="15" class="commentdoc"/>
+			<style name="Keywords 2" key="16" fore="b00040"/>
+			<style name="Comment Doc Keyword" key="17" class="commentdoc" fore="3060a0"/>
+			<style name="Unknown Comment Doc Keyword" key="18" class="commentdoc" fore="804020"/>
+			<style name="Reserved Words" key="19" class="commentdoc" fore="804020"/>
+		</use-styles>
+	</schemedef>
+</Scheme>

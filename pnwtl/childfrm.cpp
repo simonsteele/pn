@@ -1588,8 +1588,20 @@ void CChildFrame::Revert()
 	// Check that we have a valid filename first...
 	if(CanSave())
 	{
+		if (GetWriteProtect())
+		{
+			setReadOnly(false, false);
+		}
+
 		m_view.Revert(m_spDocument->GetFileName(FN_FULL).c_str());
-		m_FileAge = m_spDocument->GetFileAge();
+
+		FileUtil::FileAttributes_t atts;
+		if (FileUtil::GetFileAttributes(m_spDocument->GetFileName(FN_FULL).c_str(), atts))
+		{
+			m_FileAge = FileUtil::GetFileAge(atts);
+			setReadOnly(FileUtil::IsReadOnly(atts), false);
+		}
+
 		SetModifiedOverride(false);
 	}
 }
