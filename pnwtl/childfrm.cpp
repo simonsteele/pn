@@ -117,9 +117,11 @@ void CChildFrame::UpdateLayout(BOOL bResizeBars)
 	}
 
 	if(m_hWndClient != NULL)
+	{
 		::SetWindowPos(m_hWndClient, NULL, rect.left, rect.top,
 			rect.right - rect.left, rect.bottom - rect.top,
 			SWP_NOZORDER | SWP_NOACTIVATE);
+	}
 }
 
 void CChildFrame::UpdateBarsPosition(RECT& rect, BOOL bResizeBars)
@@ -132,6 +134,7 @@ void CChildFrame::UpdateBarsPosition(RECT& rect, BOOL bResizeBars)
 			// Size of mini bar controlled here...
 			::SetWindowPos(m_hWndToolBar, HWND_TOP, rect.left, rect.bottom - MINI_BAR_HEIGHT, rect.right-rect.left, MINI_BAR_HEIGHT, SWP_NOACTIVATE | SWP_NOZORDER);
 		}
+
 		RECT rectTB;
 		::GetWindowRect(m_hWndToolBar, &rectTB);
 		rect.bottom -= rectTB.bottom - rectTB.top;
@@ -162,21 +165,20 @@ void CChildFrame::SetupToolbar()
 {
 	CToolBarCtrl toolbar;
 
-	bool lowColour =  IsXPOrLater() || OPTIONS->Get(PNSK_INTERFACE, "LowColourToolbars", false);
+	bool lowColour = !IsXPOrLater() || OPTIONS->Get(PNSK_INTERFACE, "LowColourToolbars", false);
 
 	CImageList imglist;
 	HBITMAP bmp;
-	//imglist.Create(IDB_EDITOR, 9, 2, RGB(255,0,255));
 	
 	if (lowColour)
 	{
 		imglist.Create(9, 9, ILC_COLOR24 | ILC_MASK, 6, 1);
-		bmp = static_cast<HBITMAP>(::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_TBEDITOR24), IMAGE_BITMAP, 55, 9, LR_SHARED));
+		bmp = static_cast<HBITMAP>(::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_TBEDITOR24), IMAGE_BITMAP, 54, 9, LR_SHARED));
 	}
 	else
 	{
 		imglist.Create(9, 9, ILC_COLOR32 | ILC_MASK, 6, 1);
-		bmp = static_cast<HBITMAP>(::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_EDITOR), IMAGE_BITMAP, 55, 9, LR_SHARED | LR_CREATEDIBSECTION | LR_DEFAULTSIZE));
+		bmp = static_cast<HBITMAP>(::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_EDITOR), IMAGE_BITMAP, 54, 9, LR_SHARED | LR_CREATEDIBSECTION));
 	}
 
 	imglist.Add(bmp, RGB(255, 0, 255));
@@ -194,10 +196,10 @@ void CChildFrame::SetupToolbar()
 	toolbar.Create(m_hWnd, rc, NULL, dwStyle, cwMinibar);
 	
 	toolbar.SetBitmapSize(CSize(9,9));
-	// toolbar.SetButtonSize(CSize(16, 15));
 	toolbar.SetImageList(m_hImgList);
 	
 	toolbar.AddButtons(6, &MINI_BAR_BUTTONS[0]);
+	toolbar.SetButtonSize(CSize(16, 15));
 
 	m_hWndToolBar = toolbar.Detach();
 }
