@@ -87,7 +87,9 @@ CMainFrame::CMainFrame(CommandDispatch* commands, std::list<tstring>* cmdLineArg
 	// This text clip manager will be shared by the text clips view and editors
 	m_pTextClips(new TextClips::TextClipsManager),
 
-	m_ChildFactory(commands, m_pTextClips, NULL)
+	m_ChildFactory(commands, m_pTextClips, NULL),
+
+	m_bIsXPOrLater(IsXPOrLater())
 {
 	m_CmdBar.SetCallback(this, &CMainFrame::OnMDISetMenu);
 
@@ -97,11 +99,7 @@ CMainFrame::CMainFrame(CommandDispatch* commands, std::list<tstring>* cmdLineArg
 	pGlobalTools->AllocateMenuResources(m_pCmdDispatch);
 	m_hGlobalToolAccel = pGlobalTools->GetAcceleratorTable();
 
-	// If v5 then greater than v5.0 else v6 or better
-	m_bIsXPOrLater = 
-		(g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
-		(( (g_Context.OSVersion.dwMajorVersion == 5) && (g_Context.OSVersion.dwMinorVersion > 0) ) ||
-		 (g_Context.OSVersion.dwMajorVersion >= 6) );
+	//m_bIsXPOrLater = IsXPOrLater();
 }
 
 CMainFrame::~CMainFrame()

@@ -436,6 +436,13 @@ BEGIN
     "C",            ID_EDIT_COPYRTF,        VIRTKEY, CONTROL, ALT, NOINVERT
 END
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_TBEDITOR24          BITMAP                  "res\\editor24.bmp"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 

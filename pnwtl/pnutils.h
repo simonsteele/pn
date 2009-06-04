@@ -758,4 +758,6 @@ protected:
 
 std::list<tstring> GetCommandLineArgs();
 
+bool IsXPOrLater();
+
 #endif //#ifndef pnutils_h__included

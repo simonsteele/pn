@@ -692,3 +692,11 @@ std::list<tstring> GetCommandLineArgs()
 
 	return params;
 }
+
+bool IsXPOrLater()
+{
+	// If v5 then greater than v5.0 else v6 or better
+	return (g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) &&
+		(( (g_Context.OSVersion.dwMajorVersion == 5) && (g_Context.OSVersion.dwMinorVersion > 0) ) ||
+		 (g_Context.OSVersion.dwMajorVersion >= 6) );
+}

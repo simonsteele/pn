@@ -248,6 +248,8 @@
 #define IDB_TBFIND24                    364
 #define IDB_BITMAP4                     365
 #define IDB_TOOLBAR                     365
+#define IDB_BITMAP5                     366
+#define IDB_TBEDITOR24                  366
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -709,7 +711,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        366
+#define _APS_NEXT_RESOURCE_VALUE        367
 #define _APS_NEXT_COMMAND_VALUE         33139
 #define _APS_NEXT_CONTROL_VALUE         1161
 #define _APS_NEXT_SYMED_VALUE           104

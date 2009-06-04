@@ -162,10 +162,23 @@ void CChildFrame::SetupToolbar()
 {
 	CToolBarCtrl toolbar;
 
+	bool lowColour =  IsXPOrLater() || OPTIONS->Get(PNSK_INTERFACE, "LowColourToolbars", false);
+
 	CImageList imglist;
+	HBITMAP bmp;
 	//imglist.Create(IDB_EDITOR, 9, 2, RGB(255,0,255));
-	imglist.Create(9, 9, ILC_COLOR32 | ILC_MASK, 6, 1);
-	HBITMAP bmp = static_cast<HBITMAP>(::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_EDITOR), IMAGE_BITMAP, 55, 9, LR_CREATEDIBSECTION | LR_DEFAULTSIZE));
+	
+	if (lowColour)
+	{
+		imglist.Create(9, 9, ILC_COLOR24 | ILC_MASK, 6, 1);
+		bmp = static_cast<HBITMAP>(::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_TBEDITOR24), IMAGE_BITMAP, 55, 9, LR_SHARED));
+	}
+	else
+	{
+		imglist.Create(9, 9, ILC_COLOR32 | ILC_MASK, 6, 1);
+		bmp = static_cast<HBITMAP>(::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_EDITOR), IMAGE_BITMAP, 55, 9, LR_SHARED | LR_CREATEDIBSECTION | LR_DEFAULTSIZE));
+	}
+
 	imglist.Add(bmp, RGB(255, 0, 255));
 
 	m_hImgList = imglist.Detach();
@@ -181,7 +194,7 @@ void CChildFrame::SetupToolbar()
 	toolbar.Create(m_hWnd, rc, NULL, dwStyle, cwMinibar);
 	
 	toolbar.SetBitmapSize(CSize(9,9));
-	toolbar.SetButtonSize(CSize(16, 15));
+	// toolbar.SetButtonSize(CSize(16, 15));
 	toolbar.SetImageList(m_hImgList);
 	
 	toolbar.AddButtons(6, &MINI_BAR_BUTTONS[0]);
