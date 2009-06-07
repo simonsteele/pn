@@ -18,7 +18,7 @@
 			float for foreach foreach_reverse function goto idouble if 
 			ifloat import in inout int immutable interface invariant ireal is lazy 
 			long mixin module new nothrow null out override package pragma private 
-			protected public pure real ref return scope short static string struct super 
+			protected public pure real ref return scope short static struct super 
 			switch synchronized template this throw true try typedef typeid 
 			typeof ubyte ucent uint ulong union unittest ushort version void 
 			volatile wchar while with
