@@ -2,7 +2,7 @@
  * @file updatecheck.cpp
  * @brief Check for updates
  * @author Simon Steele
- * @note Copyright (c) 2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2008-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -17,24 +17,26 @@ using namespace Updates;
 
 #define UPDATE_BUFFER_SIZE 2048
 
+/**
+ * Details of an update check operation
+ */
 typedef struct tagUpdateCheckDetails
 {
 	tstring UpdateUrl;
 	tstring UnstableUpdateUrl;
 	bool CheckUnstable;
+	bool IgnoreLastOffer;
 	HWND NotifyWnd;
 } UpdateCheckDetails;
 
-/*
- <release major="2" minor="0" revision="9" build="12345" launchUrl=""/>
+/**
+ * XML Parser event handler for the update xml, format:
+ * <release major="2" minor="0" revision="9" build="12345" launchUrl=""/>
  */
-
 class UpdateParseState : public XMLParseState
 {
 public:
-	UpdateParseState() : Valid(false)
-	{
-	}
+	UpdateParseState() : Valid(false) {}
 
 	virtual void startElement(LPCTSTR name, XMLAttributes& atts)
 	{
@@ -75,19 +77,17 @@ public:
 		}
 	}
 
-	virtual void endElement(LPCTSTR name)
-	{
-	}
+	virtual void endElement(LPCTSTR name) {}
+	virtual void characterData(LPCTSTR data, int len) {}
 
-	virtual void characterData(LPCTSTR data, int len)
-	{
-	}
-
-public:
 	UpdateAvailableDetails Details;
 	bool Valid;
 };
 
+/**
+ * Get the most recent version of PN available as signalled in the file at the provided url
+ * @param url URL for an update xml file
+ */
 UpdateAvailableDetails GetVersionDetails(LPCTSTR url)
 {
 	UpdateParseState parseState;
@@ -99,7 +99,7 @@ UpdateAvailableDetails GetVersionDetails(LPCTSTR url)
 		XMLParser parser;
 		parser.SetParseState(&parseState);
 		
-		while(inet.ReadFile(&buffer[0], UPDATE_BUFFER_SIZE, &dwRead))
+		while (inet.ReadFile(&buffer[0], UPDATE_BUFFER_SIZE, &dwRead))
 		{
 			parser.ParseBuffer(buffer, dwRead, dwRead == 0);
 			if (dwRead == 0)
@@ -118,13 +118,15 @@ UpdateAvailableDetails GetVersionDetails(LPCTSTR url)
 	return parseState.Details;
 }
 
-DWORD WINAPI CheckForUpdatesThreadProc(
-  __in  LPVOID lpDetails
-)
+bool CheckAndNotify(UpdateCheckDetails* details)
 {
-	std::auto_ptr<UpdateCheckDetails> details(reinterpret_cast<UpdateCheckDetails*>( lpDetails ));
+	Version lastOffered;
+	
+	if (!details->IgnoreLastOffer)
+	{
+		lastOffered = GetLastOfferedVersion();
+	}
 
-	Version lastOffered = GetLastOfferedVersion();
 	UpdateAvailableDetails stable = GetVersionDetails(details->UpdateUrl.c_str());
 	UpdateAvailableDetails unstable;
 
@@ -133,20 +135,63 @@ DWORD WINAPI CheckForUpdatesThreadProc(
 		unstable = GetVersionDetails(details->UnstableUpdateUrl.c_str());
 	}
 
-	if (unstable > PNVersion() && unstable > lastOffered)
+	if ((unstable > stable) && (unstable > PNVersion()) && (unstable > lastOffered))
 	{
 		::SendMessage(details->NotifyWnd, PN_NOTIFY, reinterpret_cast<WPARAM>(&unstable), PN_UPDATEAVAILABLE);
+		return true;
 	}
 	else if (stable > PNVersion() && stable > lastOffered)
 	{
 		::SendMessage(details->NotifyWnd, PN_NOTIFY, reinterpret_cast<WPARAM>(&stable), PN_UPDATEAVAILABLE);
+		return true;
 	}
+	
+	return false;
+}
+
+/**
+ * Thread proc used via QueueUserWorkItem to check for updates outside the UI loop
+ */
+DWORD WINAPI CheckForUpdatesThreadProc(__in LPVOID lpDetails)
+{
+	std::auto_ptr<UpdateCheckDetails> details(reinterpret_cast<UpdateCheckDetails*>( lpDetails ));
+
+	CheckAndNotify(details.get());
 	
 	return 0;
 }
 
+/**
+ * Simple factory function for the update details object.
+ */
+UpdateCheckDetails* MakeUpdateDetails(HWND notifyWnd)
+{
+	// Start the update check process:
+	UpdateCheckDetails* details = new UpdateCheckDetails;
+	details->NotifyWnd = notifyWnd;		
+	details->CheckUnstable = OPTIONS->Get(PNSK_GENERAL, _T("CheckForUnstableUpdates"), false);
+	details->UnstableUpdateUrl = OPTIONS->Get(PNSK_GENERAL, _T("UnstableUpdateUrl"), _T("http://updates.pnotepad.org/unstable.xml"));
+	details->UpdateUrl = OPTIONS->Get(PNSK_GENERAL, _T("UpdateUrl"), _T("http://updates.pnotepad.org/stable.xml"));
+	details->IgnoreLastOffer = false;
+
+	return details;
+}
+
+/**
+ * Get the date as a 64-bit unsigned int for storage and comparison
+ */
+uint64_t GetDateAsUInt64()
+{
+	SYSTEMTIME time;
+	::GetSystemTime(&time);
+	return (static_cast<uint64_t>(time.wYear) << 32) | (time.wMonth << 16) | time.wDay;
+}
+
 namespace Updates {
 
+/**
+ * Spawn a user work item to check updates if necessary
+ */
 void CheckForUpdates(HWND notifyWnd)
 {
 	if (!OPTIONS->Get(PNSK_GENERAL, _T("CheckForUpdates"), true))
@@ -156,9 +201,7 @@ void CheckForUpdates(HWND notifyWnd)
 
 	// Don't check more than once a day:
 	uint64_t lastCheck = OPTIONS->Get(PNSK_GENERAL, _T("LastUpdateCheck"), static_cast<uint64_t>(0));
-	SYSTEMTIME time;
-	::GetSystemTime(&time);
-	uint64_t thisCheck = (static_cast<uint64_t>(time.wYear) << 32) | (time.wMonth << 16) | time.wDay;
+	uint64_t thisCheck = GetDateAsUInt64();
 	if (thisCheck == lastCheck)
 	{
 		return;
@@ -167,13 +210,21 @@ void CheckForUpdates(HWND notifyWnd)
 	OPTIONS->Set(PNSK_GENERAL, _T("LastUpdateCheck"), thisCheck);
 
 	// Start the update check process:
-	UpdateCheckDetails* details = new UpdateCheckDetails;
-	details->NotifyWnd = notifyWnd;		
-	details->CheckUnstable = OPTIONS->Get(PNSK_GENERAL, _T("CheckForUnstableUpdates"), false);
-	details->UnstableUpdateUrl = OPTIONS->Get(PNSK_GENERAL, _T("UnstableUpdateUrl"), _T("http://updates.pnotepad.org/unstable.xml"));
-	details->UpdateUrl = OPTIONS->Get(PNSK_GENERAL, _T("UpdateUrl"), _T("http://updates.pnotepad.org/stable.xml"));
+	::QueueUserWorkItem(CheckForUpdatesThreadProc, MakeUpdateDetails(notifyWnd), WT_EXECUTEDEFAULT);
+}
 
-	::QueueUserWorkItem(CheckForUpdatesThreadProc, details, WT_EXECUTEDEFAULT);
+/**
+ * Perform a synchronous check for updates on user request
+ */
+bool CheckForUpdatesSync(HWND notifyWnd)
+{
+	OPTIONS->Set(PNSK_GENERAL, _T("LastUpdateCheck"), GetDateAsUInt64());
+	std::auto_ptr<UpdateCheckDetails> details(MakeUpdateDetails(notifyWnd));
+	
+	// We don't want to hide anything we've offered before, always offer the most recent update:
+	details->IgnoreLastOffer = true;
+
+	return CheckAndNotify(details.get());
 }
 
 Version GetLastOfferedVersion()
@@ -195,4 +246,4 @@ void SetLastOfferedVersion(const Version& details)
 	OPTIONS->Set(PNSK_GENERAL, _T("LastUpdateOfferedBuild"), details.Build);
 }
 
-}
+} // namespace Updates

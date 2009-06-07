@@ -96,6 +96,7 @@ BEGIN
         MENUITEM "PN on &Google Code",          252
         MENUITEM "&Online Help",                ID_HELP_WEB_DOCS
         MENUITEM "&Forums",                     ID_HELP_WEB_FORUMS
+        MENUITEM "Check for &Updates",          ID_HELP_CHECKFORUPDATES
         MENUITEM SEPARATOR
         MENUITEM "Report a &bug...",            253
         MENUITEM "Request a &feature...",       ID_HELP_WEB_SR
@@ -287,6 +288,7 @@ BEGIN
         MENUITEM "PN on &Google Code",          ID_HELP_WEB_SF
         MENUITEM "&Online Help",                ID_HELP_WEB_DOCS
         MENUITEM "&Forums",                     ID_HELP_WEB_FORUMS
+        MENUITEM "Check for &Updates",          ID_HELP_CHECKFORUPDATES
         MENUITEM SEPARATOR
         MENUITEM "Report a &bug...",            ID_HELP_WEB_SB
         MENUITEM "Request a &feature...",       ID_HELP_WEB_SR
@@ -2022,6 +2024,7 @@ STRINGTABLE
 BEGIN
     IDS_SAVESHAREVIOLATION  "%s could not be saved because another program or user is using the same file.\nDo you want to save in another location?"
     IDS_AVOIDINFINITESEARCH "Avoiding infinite search loop, Replace All abandoned"
+    IDS_NOUPDATEAVAILABLE   "No updates are available at this time."
 END
 
 #endif    // English (U.K.) resources

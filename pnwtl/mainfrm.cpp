@@ -1994,6 +1994,22 @@ LRESULT CMainFrame::OnWebForums(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 	return 0;
 }
 
+/**
+ * User wants to forcibly check for updates now.
+ */
+LRESULT CMainFrame::OnUpdateCheck(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	bool updateAvailable = Updates::CheckForUpdatesSync(m_hWnd);
+
+	// Updates will have been prompted to the user if available
+	if (!updateAvailable)
+	{
+		PNTaskDialog(m_hWnd, LS(IDR_MAINFRAME), IDS_NOUPDATEAVAILABLE, _T(""), TDCBF_OK_BUTTON, TDT_INFORMATION_ICON);
+	}
+
+	return 0;
+}
+
 void CMainFrame::launchFind(EFindDialogType findType)
 {
 	HWND hWndCur = GetCurrentEditor();

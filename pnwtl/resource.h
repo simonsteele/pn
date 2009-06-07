@@ -101,6 +101,7 @@
 #define IDS_SAVEACCESSDENIED            191
 #define IDS_SAVESHAREVIOLATION          192
 #define IDS_AVOIDINFINITESEARCH         193
+#define IDS_NOUPDATEAVAILABLE           194
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define IDD_INPUTBOX                    204
@@ -707,6 +708,7 @@
 #define ID_TOOLS_CUSTOMIZETOOLBAR       33138
 #define ID_DUMMY_WORDWRAP               33139
 #define ID_OUTPUT_WORDWRAP              33140
+#define ID_HELP_CHECKFORUPDATES         33141
 
 // Next default values for new objects
 // 
@@ -714,7 +716,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        367
-#define _APS_NEXT_COMMAND_VALUE         33141
+#define _APS_NEXT_COMMAND_VALUE         33142
 #define _APS_NEXT_CONTROL_VALUE         1161
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
