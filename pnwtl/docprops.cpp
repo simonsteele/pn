@@ -117,6 +117,11 @@ LRESULT DocumentPropSheet::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 	::SetWindowText(GetDlgItem(IDC_FILEPROP_FILENAME), m_pChild->GetFileName().c_str());
 
+	// Disable controls if readonly
+	GetDlgItem(IDC_FILEPROP_ENCODING).EnableWindow(m_pChild->GetWriteProtect());
+	GetDlgItem(IDC_FILEPROP_LINEENDINGS).EnableWindow(m_pChild->GetWriteProtect());
+	GetDlgItem(IDC_FILEPROP_TABWIDTH).EnableWindow(m_pChild->GetWriteProtect());
+
 	return 0;
 }
 
