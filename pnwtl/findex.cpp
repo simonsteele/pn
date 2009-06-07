@@ -734,7 +734,10 @@ void CFindExDialog::findInFiles()
 	// Reset the FileExtensions member incase we did find in current file...
 	pOptions->SetFileExts(m_FindTypeText);
 
+	// Disable layered window for hiding to avoid Win7 bug.
+	m_bHiding = true;
 	ShowWindow(SW_HIDE);
+	m_bHiding = false;
 }
 
 int CFindExDialog::getRegExpString(int nID, CString& Text)
