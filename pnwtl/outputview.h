@@ -31,6 +31,7 @@ public:
 		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHide)
 		COMMAND_ID_HANDLER(ID_EDIT_CUT, OnCut)
 		COMMAND_ID_HANDLER(ID_EDIT_COPY, OnCopy)
+		COMMAND_ID_HANDLER(ID_OUTPUT_WORDWRAP, OnWordWrap)
 		MESSAGE_HANDLER(PN_HANDLEHSCLICK, OnHotSpotClicked)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		CHAIN_MSG_MAP(baseClass)
@@ -74,6 +75,7 @@ protected:
 	LRESULT OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCut(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnWordWrap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	void OnFirstShow();
 

@@ -557,8 +557,9 @@ BEGIN
         MENUITEM "Cu&t",                        57635
         MENUITEM "&Copy",                       57634
         MENUITEM SEPARATOR
-        MENUITEM "C&lear",                      ID_OUTPUT_CLEAR
+        MENUITEM "&Word Wrap",                  ID_OUTPUT_WORDWRAP
         MENUITEM SEPARATOR
+        MENUITEM "C&lear",                      ID_OUTPUT_CLEAR
         MENUITEM "&Hide",                       ID_OUTPUT_HIDE
     END
 END

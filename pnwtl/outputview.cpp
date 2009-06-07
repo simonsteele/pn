@@ -408,6 +408,7 @@ int COutputView::HandleNotify(LPARAM lParam)
 void COutputView::DoContextMenu(CPoint* point)
 {
 	CSPopupMenu popup(IDR_POPUP_OUTPUT);
+	popup.CheckMenuItem(ID_OUTPUT_WORDWRAP, GetWrapMode() == SC_WRAP_WORD);
 	g_Context.m_frame->TrackPopupMenu(popup, 0, point->x, point->y, NULL, m_hWnd);
 }
 
@@ -448,6 +449,8 @@ void COutputView::SetToolParser(bool bBuiltIn, LPCTSTR customExpression)
 		m_bCustom = false;
 		SetOutputLexer();
 	}
+
+	SetWrapMode(OPTIONS->Get(PNSK_INTERFACE, _T("OutputWrap"), false) ? SC_WRAP_WORD : SC_WRAP_NONE);
 }
 
 void COutputView::ClearOutput()
@@ -492,12 +495,26 @@ LRESULT COutputView::OnCopy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	return 0;
 }
 
-void COutputView::OnFirstShow()
+/**
+ * Toggle word-wrap for the output view
+ */
+LRESULT COutputView::OnWordWrap(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	bool toggle = !(GetWrapMode() == SC_WRAP_WORD);
+	SetWrapMode(toggle ? SC_WRAP_WORD : SC_WRAP_NONE);
+	OPTIONS->Set(PNSK_INTERFACE, _T("OutputWrap"), toggle);
+
+	return 0;
+}
+
+void COutputView::OnFirstShow()
+{	
 	if(!m_bCustom)
 		SetOutputLexer();
 	else
 		SetCustomLexer();
+
+	SetWrapMode(OPTIONS->Get(PNSK_INTERFACE, _T("OutputWrap"), false) ? SC_WRAP_WORD : SC_WRAP_NONE);
 }
 
 void COutputView::SetOutputLexer()
