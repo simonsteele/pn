@@ -30,7 +30,7 @@ public:
 	typedef CScintillaWindowImpl< CTextView, CScintillaImpl > baseClass;
 	friend class baseClass;
 
-	explicit CTextView(DocumentPtr document, CommandDispatch* commands);
+	explicit CTextView(DocumentPtr document, CommandDispatch* commands, AutoCompleteManager* autoComplete);
 	~CTextView();
 
 	BOOL PreTranslateMessage(MSG* pMsg);

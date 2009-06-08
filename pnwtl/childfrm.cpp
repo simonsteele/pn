@@ -44,9 +44,9 @@ bool CChildFrame::s_bFirstChild = true;
 #define USERLIST_TEXTCLIPS 1
 #define TOOLS_MENU_INDEX 5
 
-CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::TextClipsManager* textclips) : 
+CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::TextClipsManager* textclips, AutoCompleteManager* autoComplete) : 
 	m_spDocument(doc), 
-	m_view(doc, commands),
+	m_view(doc, commands, autoComplete),
 	m_pCmdDispatch(commands),
 	m_pTextClips(textclips),
 	m_hWndOutput(NULL),

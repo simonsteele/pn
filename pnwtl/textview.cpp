@@ -31,7 +31,7 @@ using pnutils::threading::CritLock;
 	static char THIS_FILE[] = __FILE__;
 #endif
 
-CTextView::CTextView(DocumentPtr document, CommandDispatch* commands) : 
+CTextView::CTextView(DocumentPtr document, CommandDispatch* commands, AutoCompleteManager* autoComplete) : 
 	m_pDoc(document),
 	m_pCmdDispatch(commands),
 	m_pLastScheme(NULL),
@@ -40,6 +40,7 @@ CTextView::CTextView(DocumentPtr document, CommandDispatch* commands) :
 	m_bMeasureCanRun(false)
 {
 	m_bSmartStart = OPTIONS->Get(PNSK_EDITOR, _T("SmartStart"), true);
+	SetAutoCompleteManager(autoComplete);
 }
 
 CTextView::~CTextView()
@@ -85,6 +86,9 @@ void CTextView::SetScheme(Scheme* pScheme, bool allSettings)
 		SetKeyWords(i, "");
 	}
 	
+	//Pass scheme to base class to set initial words for autocomplete
+	InitAutoComplete(pScheme);
+
 	pScheme->Load(*this, allSettings);
 	
 	//EnsureRangeVisible(0, GetLength());
@@ -96,9 +100,6 @@ void CTextView::SetScheme(Scheme* pScheme, bool allSettings)
 	m_pLastScheme = pScheme;
 
 	::SendMessage(GetParent(), PN_SCHEMECHANGED, 0, reinterpret_cast<LPARAM>(pScheme));
-
-	//Pass scheme to base class to set initial words for autocomplete
-	InitAutoComplete(pScheme);
 }
 
 static std::string ExtractLine(const char *buf, size_t length) {

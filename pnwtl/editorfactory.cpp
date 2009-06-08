@@ -2,7 +2,7 @@
  * @file editorfactory.cpp
  * @brief Create Editors
  * @author Simon Steele
- * @note Copyright (c) 2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2008-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -12,15 +12,17 @@
 #include "editorFactory.h"
 #include "childfrm.h"
 #include "extapp.h"
+#include "autocompletemanager.h"
 
 EditorFactory::EditorFactory(CommandDispatch* pCommandDispatch, TextClips::TextClipsManager* pClipManager, HWND hWndMDIClient) :
 	m_hWndMDIClient(hWndMDIClient),
 	m_pClipManager(pClipManager),
-	m_pCommandDispatch(pCommandDispatch)
+	m_pCommandDispatch(pCommandDispatch),
+	m_AutoComplete(new AutoCompleteManager())
 {
 }
 
-	CChildFrame* EditorFactory::Default()
+CChildFrame* EditorFactory::Default()
 {
 	DocumentPtr pD;
 	CChildFrame* pChild = createChild(pD);
@@ -61,7 +63,7 @@ void EditorFactory::SetMdiClient(HWND mdiClient)
 CChildFrame* EditorFactory::createChild(DocumentPtr& pD)
 {
 	pD.reset(new Document());
-	CChildFrame* pChild = new CChildFrame(pD, m_pCommandDispatch, m_pClipManager);
+	CChildFrame* pChild = new CChildFrame(pD, m_pCommandDispatch, m_pClipManager, m_AutoComplete.get());
 	PNASSERT(pChild != NULL);
 	pD->AddChildFrame(pChild);
 

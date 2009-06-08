@@ -23,7 +23,7 @@ namespace Impl
 class XmlFileAutocompleteProvider : public IWordProvider
 {
 public:
-	XmlFileAutocompleteProvider();
+	XmlFileAutocompleteProvider(LPCTSTR apiFile);
 	virtual ~XmlFileAutocompleteProvider();
 
 	/**

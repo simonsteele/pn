@@ -17,6 +17,7 @@
 namespace { class ISearchOptions; }
 class IWordProvider;
 class BaseAutoCompleteHandler;
+class AutoCompleteManager;
 typedef boost::shared_ptr<BaseAutoCompleteHandler> AutoCompleteHandlerPtr;
 typedef boost::function<void (int start, int end)> MatchHandlerFn;
 
@@ -74,6 +75,7 @@ public:
 	//* Support for autocomplete
 	//*****************************************************************************
 
+	void SetAutoCompleteManager(AutoCompleteManager* autoComplete);
 	void AddToAutoComplete(CString FullTag, CString TagName);  //Called in: CJumpTreeCtrl::OnFound: Add new defined autocomplete tags
 	void ResetAutoComplete();           //Called in: CChildFrame::SaveFile: Clear new defined autocomplete tags
 	void InitAutoComplete(Scheme *sch); //Called in: CTextView::SetScheme: Initialize default autocomplete tags
@@ -153,6 +155,7 @@ private:
 
 	boost::shared_ptr<IWordProvider> m_autoComplete;
 	AutoCompleteHandlerPtr m_autoCompleteHandler;
+	AutoCompleteManager* m_autoCompleteManager;
 };
 
 #endif // scintillaimpl_h__included

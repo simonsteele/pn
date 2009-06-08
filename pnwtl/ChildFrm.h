@@ -32,6 +32,7 @@ typedef enum {EP_LINE, EP_COL} EGPType;
 
 class COutputView;
 class DocScript;
+class AutoCompleteManager;
 
 namespace TextClips
 {
@@ -52,7 +53,7 @@ public:
 	DECLARE_FRAME_WND_CLASS(NULL, IDR_MDICHILD)
 	typedef CTabbedMDIChildWindowImpl<CChildFrame> baseClass;
 
-	CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::TextClipsManager* textclips);
+	CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::TextClipsManager* textclips, AutoCompleteManager* autoComplete);
 	~CChildFrame();
 	virtual void OnFinalMessage(HWND /*hWnd*/);
 

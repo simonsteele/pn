@@ -40,7 +40,7 @@ CScintillaImpl::CScintillaImpl() :
 
 	// TODO: This needs to be lazy loaded based on the current scheme, and swapped out on 
 	// scheme change.
-	m_autoComplete = AutocompleteManager().GetAutocomplete(NULL);
+	//m_autoComplete = AutocompleteManager().GetAutocomplete(NULL);
 }
 
 CScintillaImpl::~CScintillaImpl()
@@ -1497,6 +1497,7 @@ void CScintillaImpl::InitAutoComplete(Scheme* sch)
 {					
 	/*General Settings Initialization*/	
 	m_pScheme = sch;
+	m_autoComplete = m_autoCompleteManager->GetAutocomplete(m_pScheme->GetName());
 	m_bAutoCompletion = OPTIONS->GetCached(Options::OAutoComplete) != FALSE;
 	m_bSmartTag = OPTIONS->GetCached(Options::OAutoCompleteTags) != FALSE;
 	m_bAutoCompletionUseTags = OPTIONS->GetCached(Options::OAutoCompleteUseTags) != FALSE;
@@ -1532,7 +1533,7 @@ void CScintillaImpl::InitAutoComplete(Scheme* sch)
  */
 void CScintillaImpl::SetKeyWords(int keywordSet, const char* keyWords)
 {
-	if(OPTIONS->GetCached(Options::OAutoComplete))
+	if (OPTIONS->GetCached(Options::OAutoComplete) && m_autoComplete.get())
 	{
 		m_autoComplete->RegisterKeyWords(keywordSet, keyWords);
 	}
@@ -1558,6 +1559,11 @@ void CScintillaImpl::SetAutoCompleteHandler(AutoCompleteHandlerPtr& handler)
 	m_autoCompleteHandler = handler;
 }
 
+void CScintillaImpl::SetAutoCompleteManager(AutoCompleteManager* autoComplete)
+{
+	m_autoCompleteManager = autoComplete;
+}
+
 //This function adds to keywords functions from CTags
 void CScintillaImpl::AddToAutoComplete(CString FullTag, CString TagName)
 {	
@@ -1570,12 +1576,18 @@ void CScintillaImpl::AddToAutoComplete(CString FullTag, CString TagName)
 //This function cleans CTags Keywords from autocomplete list
 void CScintillaImpl::ResetAutoComplete()
 {
-	m_autoComplete->ResetTags();
+	if (m_autoComplete.get())
+	{
+		m_autoComplete->ResetTags();
+	}
 }
 
 void CScintillaImpl::ClearAutoComplete()
 {
-	m_autoComplete->Reset();
+	if (m_autoComplete.get())
+	{
+		m_autoComplete->Reset();
+	}
 }
 
 tstring CScintillaImpl::GetLineText(int nLine)

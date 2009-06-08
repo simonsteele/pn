@@ -13,6 +13,9 @@
 
 namespace Impl
 {
+	/**
+	 * Single method/item definition, one or more for each tag
+	 */
 	class Definition
 	{
 	public:
@@ -28,6 +31,9 @@ namespace Impl
 		std::string Params;
 	};
 
+	/**
+	 * Tag is one named autocomplete item, it can have many definitions
+	 */
 	class Tag
 	{
 	public:
@@ -182,7 +188,7 @@ private:
 /**
  * Constructor, initializes word lists.
  */
-XmlFileAutocompleteProvider::XmlFileAutocompleteProvider()
+XmlFileAutocompleteProvider::XmlFileAutocompleteProvider(LPCTSTR apiFile)
 {
 	try
 	{
@@ -193,7 +199,7 @@ XmlFileAutocompleteProvider::XmlFileAutocompleteProvider()
 		XMLParser parser;
 		ParseHandler handler(m_tags);
 		parser.SetParseState(&handler);
-		parser.LoadFile("php.xml");
+		parser.LoadFile(apiFile);
 	}
 	catch (XMLParserException& e)
 	{

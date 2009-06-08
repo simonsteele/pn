@@ -8,25 +8,29 @@
  * the conditions under which this source may be modified / distributed.
  */
 
-#ifndef autocompletemanager_h__included
-#define autocompletemanager_h__included
+#ifndef AutoCompleteManager_h__included
+#define AutoCompleteManager_h__included
 
 #include "autocomplete.h"
+
+typedef std::map<std::string, IWordProviderPtr> ApiMap;
 
 /**
  * Factory / instance manager for Autocomplete providers.
  */
-class AutocompleteManager
+class AutoCompleteManager
 {
 public:
 	/// Shutdown, free all providers.
-	~AutocompleteManager();
+	~AutoCompleteManager();
 
 	/// Get an autocomplete implementation for a given scheme.
 	IWordProviderPtr GetAutocomplete(const char* scheme);
 
 private:
-	std::map<std::string, IWordProvider*> m_providers;
+	IWordProviderPtr getApi(const char* scheme);
+
+	ApiMap m_apiProviders;
 };
 
-#endif  // #ifndef autocompletemanager_h__included
+#endif  // #ifndef AutoCompleteManager_h__included
