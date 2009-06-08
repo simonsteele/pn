@@ -50,6 +50,15 @@ const TBBUTTON allButtons[] =
 	{ 18, ID_TOOLS_RECORDSCRIPT, TBSTATE_ENABLED, BTNS_BUTTON, {0}, 0, (INT_PTR)L"Record Script" },
 	{ 19, ID_TOOLS_STOPRECORDING, TBSTATE_ENABLED, BTNS_BUTTON, {0}, 0, (INT_PTR)L"Stop Recording" },
 	{ 20, ID_FILE_REVERT, TBSTATE_ENABLED, BTNS_BUTTON, {0}, 0, (INT_PTR)L"Revert" },
+	
+	// Old Mini toolbar toggles
+	{ 21, ID_EDITOR_COLOURISE, TBSTATE_ENABLED, BTNS_CHECK, {0}, 0, (INT_PTR)L"Toggle Syntax Highlighting" },
+	{ 22, ID_EDITOR_WORDWRAP, TBSTATE_ENABLED, BTNS_CHECK, {0}, 0, (INT_PTR)L"Toggle Word Wrap" },
+	{ 23, ID_EDITOR_LINENOS, TBSTATE_ENABLED, BTNS_CHECK, {0}, 0, (INT_PTR)L"Toggle Line Numbers" },
+	{ 24, ID_EDITOR_WHITESPACE, TBSTATE_ENABLED, BTNS_CHECK, {0}, 0, (INT_PTR)L"Toggle Visible Whitespace" },
+	{ 25, ID_EDITOR_EOLCHARS, TBSTATE_ENABLED, BTNS_CHECK, {0}, 0, (INT_PTR)L"Toggle Visible Line Endings" },
+	{ 26, ID_EDITOR_WRITEPROTECT, TBSTATE_ENABLED, BTNS_CHECK, {0}, 0, (INT_PTR)L"Toggle Read Only" },
+
 };
 
 // Random values we use
