@@ -61,6 +61,7 @@ private:
 	{
 	public:
 		FIFMatch(LPCTSTR szFileName, int line, LPCTSTR szBuf);
+		FIFMatch(const FIFMatch& other);
 		~FIFMatch();
 
 		TCHAR*	FileName;
@@ -73,7 +74,7 @@ private:
 	DWORD			m_dwStartTicks;
 	tstring			m_lookingFor;
 	TCHAR			m_NCBuf[40];
-	std::queue<FIFMatch*> m_matchQueue;
+	std::queue<FIFMatch> m_matchQueue;
 };
 
 #endif //#ifndef findinfilesview_h__included_33B3B680_2120_4038_97EA_A109AAE08AB0

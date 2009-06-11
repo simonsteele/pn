@@ -107,10 +107,10 @@ LRESULT CFindInFilesView::OnFIFMatch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 {
 	while (m_matchQueue.size())
 	{
-		FIFMatch* pMatch = m_matchQueue.front();
+		FIFMatch& pMatch = m_matchQueue.front();
+		AddResult(pMatch.FileName, pMatch.Line, pMatch.Buf);
 		m_matchQueue.pop();
-		AddResult(pMatch->FileName, pMatch->Line, pMatch->Buf);
-		delete pMatch;
+		//delete pMatch;
 	}
 	
 	return 0;
@@ -164,7 +164,7 @@ const int QUEUE_THRESHOLD = 1000;
 void CFindInFilesView::OnFoundString(LPCTSTR stringFound, LPCTSTR szFilename, int line, LPCTSTR buf)
 {
 	// Post a match result to ourselves and respond to it on the window thread.
-	FIFMatch* match = new FIFMatch(szFilename, line, buf);
+	FIFMatch match(szFilename, line, buf);
 	m_matchQueue.push(match);
 	if (m_matchQueue.size() > QUEUE_THRESHOLD)
 	{
@@ -228,6 +228,30 @@ CFindInFilesView::FIFMatch::FIFMatch(LPCTSTR szFileName, int line, LPCTSTR szBuf
 	}
 	else
 		Buf = NULL;
+}
+
+CFindInFilesView::FIFMatch::FIFMatch(const CFindInFilesView::FIFMatch& other) : Line(other.Line)
+{
+	if (other.FileName)
+	{
+		FileName = new TCHAR[_tcslen(other.FileName)+1];
+		_tcscpy(FileName, other.FileName);
+	}
+	else
+	{
+		FileName = NULL;
+	}
+
+	if(other.Buf)
+	{
+		Buf = new TCHAR[_tcslen(other.Buf)+1];
+		_tcscpy(Buf, other.Buf);
+	}
+	else
+	{
+		Buf = NULL;
+	}
+
 }
 
 CFindInFilesView::FIFMatch::~FIFMatch()
