@@ -2405,11 +2405,19 @@ void CChildFrame::findNextWordUnderCursor(bool backwards)
 		return;
 	}
 
-	SearchOptions opts;
-	opts.SetFindText(word.c_str());
-	opts.SetSearchBackwards(backwards);
+	extensions::ISearchOptions* opts = OPTIONS->GetSearchOptions();
+	opts->SetFindText(word.c_str());
+	opts->SetSearchBackwards(backwards);
+	opts->SetMatchCase(false);
+	opts->SetUseRegExp(false);
+	opts->SetMatchWholeWord(false);
+	opts->SetUseSlashes(false);
+	opts->SetNoCursorMove(false);
 
-	FindNext(&opts);
+	FindNext(opts);
+
+	// We set this to false so that if the user then presses Shift-F3 we continue to move backwards.
+	opts->SetSearchBackwards(false);
 }
 
 ////////////////////////////////////////////////////
