@@ -105,9 +105,14 @@ LRESULT CFindInFilesView::OnReturn(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandle
 
 LRESULT CFindInFilesView::OnFIFMatch(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	FIFMatch* pMatch = (FIFMatch*)lParam;
-	AddResult(pMatch->FileName, pMatch->Line, pMatch->Buf);
-	delete pMatch;
+	while (m_matchQueue.size())
+	{
+		FIFMatch* pMatch = m_matchQueue.front();
+		m_matchQueue.pop();
+		AddResult(pMatch->FileName, pMatch->Line, pMatch->Buf);
+		delete pMatch;
+	}
+	
 	return 0;
 }
 
@@ -150,14 +155,22 @@ void CFindInFilesView::OnBeginSearch(LPCTSTR stringLookingFor, bool bIsRegex)
 
 void CFindInFilesView::OnEndSearch(int nFound, int nFiles)
 {
+	::SendMessage(m_hWnd, PN_FIFMATCH, 0, 0);
 	::PostMessage(m_hWnd, PN_FIFFINISH, nFiles, nFound);
 }
+
+const int QUEUE_THRESHOLD = 1000;
 
 void CFindInFilesView::OnFoundString(LPCTSTR stringFound, LPCTSTR szFilename, int line, LPCTSTR buf)
 {
 	// Post a match result to ourselves and respond to it on the window thread.
 	FIFMatch* match = new FIFMatch(szFilename, line, buf);
-	::PostMessage(m_hWnd, PN_FIFMATCH, 0, (LPARAM)match);
+	m_matchQueue.push(match);
+	if (m_matchQueue.size() > QUEUE_THRESHOLD)
+	{
+		// Join the threads here to ensure queue consistency
+		::SendMessage(m_hWnd, PN_FIFMATCH, 0, 0);
+	}
 }
 
 void CFindInFilesView::handleUserSelection(int index)
@@ -196,7 +209,7 @@ void CFindInFilesView::handleUserSelection(int index)
 //////////////////////////////////////////////////////////////////////////////////
 // class CFindInFilesView::FIFMatch
 
-CFindInFilesView::FIFMatch::FIFMatch(LPCTSTR szFileName, int line, LPCTSTR szBuf)
+CFindInFilesView::FIFMatch::FIFMatch(LPCTSTR szFileName, int line, LPCTSTR szBuf) : Line(line)
 {
 	if(szFileName)
 	{
@@ -215,14 +228,13 @@ CFindInFilesView::FIFMatch::FIFMatch(LPCTSTR szFileName, int line, LPCTSTR szBuf
 	}
 	else
 		Buf = NULL;
-
-	Line = line;
 }
 
 CFindInFilesView::FIFMatch::~FIFMatch()
 {
 	if(FileName != NULL)
 		delete [] FileName;
+
 	if(Buf != NULL)
 		delete [] Buf;
 }

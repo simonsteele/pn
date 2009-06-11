@@ -145,7 +145,7 @@ void FIFThread::ManageStop()
 	Stop();
 }
 
-#define FIFBUFFERSIZE 4096
+#define FIFBUFFERSIZE 8192
 
 /**
  * Do the actual searching in a file
@@ -155,38 +155,40 @@ void FIFThread::searchFile(LPCTSTR filename)
 	FILE* file = _tfopen(filename, _T("r"));
 	if(file != NULL)
 	{
-		TCHAR szBuf[ FIFBUFFERSIZE ];
+		std::vector<TCHAR> buffer(FIFBUFFERSIZE);
+		TCHAR* szBuf = &buffer[0];
 
-		int nLine = 0;
+		int nLine = 1;
 		m_nFiles++;
 
-		while(_fgetts(szBuf, FIFBUFFERSIZE, file))
+		while (_fgetts(szBuf, FIFBUFFERSIZE, file))
 		{
-			// Get the base pointer of the buffer.
-			TCHAR *ptr = szBuf;
 			int    nIdx;
+			TCHAR *ptr(szBuf);
+			size_t buflen(_tcslen(ptr));
+			size_t remaininglen(buflen);
+			bool haslineend(szBuf[buflen-1] == '\n' || szBuf[buflen-1] == '\r');
+			bool bAnyFound(false);
 
-			// Increase line number.
-			// TODO: This is bad practice, as a line *could* be longer than 4096 chars.
-			nLine++;
-
-			// Find all occurences on this line.
-			BOOL bAnyFound = FALSE;
-			while (( _tcslen( ptr )) && (( nIdx = m_pBM->FindForward( ptr, ( int )_tcslen( ptr ))) >= 0 ))
+			// Find all occurences in this buffer (usually a full line, but we will fail in extremely long lines
+			// TODO: Deal with lines longer than 4096 bytes?
+			while (remaininglen && ((nIdx = m_pBM->FindForward(ptr, static_cast<int>(remaininglen))) >= 0))
 			{
 				// Are we at the first found entry?
-				if ( bAnyFound == FALSE )
+				if (!bAnyFound)
 				{
 					// Strip white spaces from the end of the input buffer.
-					while ( _istspace( szBuf[ _tcslen( szBuf ) - 1 ] ))
-						szBuf[ _tcslen( szBuf ) - 1 ] = 0;
+					while (_istspace(szBuf[buflen - 1]))
+					{
+						szBuf[buflen - 1] = NULL;
+					}
 
 					// Increase lines-found counter.
 					m_nLines++;
 				}
 
 				// Found a least one.
-				bAnyFound = TRUE;
+				bAnyFound = true;
 
 				// Convert the line for print and post it to the
 				// main thread for the GUI stuff.
@@ -194,6 +196,13 @@ void FIFThread::searchFile(LPCTSTR filename)
 				
 				// Increase search pointer so we can search the rest of the line.
 				ptr += nIdx + 1;
+				remaininglen = _tcslen(ptr);
+			}
+
+			// Increase line number.
+			if (haslineend)
+			{
+				nLine++;
 			}
 		}
 

@@ -13,6 +13,7 @@
 
 #define PN_FIFFINISH	(PN_FIFMATCH+1)
 #define PN_FIFSTART		(PN_FIFMATCH+2)
+#include <queue>
 
 class CFindInFilesView : public CWindowImpl<CFindInFilesView>, public FIFSink
 {
@@ -72,6 +73,7 @@ private:
 	DWORD			m_dwStartTicks;
 	tstring			m_lookingFor;
 	TCHAR			m_NCBuf[40];
+	std::queue<FIFMatch*> m_matchQueue;
 };
 
 #endif //#ifndef findinfilesview_h__included_33B3B680_2120_4038_97EA_A109AAE08AB0
