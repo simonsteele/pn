@@ -1047,6 +1047,7 @@ LRESULT CChildFrame::OnWriteProtectToggle(WORD /*wNotifyCode*/, WORD wID, HWND /
 	// Doesn't make any sense with an in-memory non-saveable document
 	if (!CanSave())
 	{
+		UISetChecked(ID_EDITOR_WRITEPROTECT, false);
 		return 0;
 	}
 
@@ -2471,6 +2472,8 @@ void CChildFrame::UISetChecked(UINT uID, bool bChecked, bool bUpdate)
 
 		pMap++;
 	}
+
+	g_Context.m_frame->GetWindow()->SendMessage(PN_UPDATECHILDUI, 0, 0);
 }
 
 bool CChildFrame::UIGetChecked(UINT uID)
@@ -2509,9 +2512,9 @@ bool CChildFrame::UIInvertCheck(UINT uID)
 			if(m_hWndToolBar && (pMap->wState & PMUI_MINIBAR) != 0)
 				CToolBarCtrl(m_hWndToolBar).CheckButton(uID, bChecked);
 
+			g_Context.m_frame->GetWindow()->SendMessage(PN_UPDATECHILDUI, 0, 0);
+
 			return bChecked;
-			
-			break;
 		}
 		
 		pMap++;

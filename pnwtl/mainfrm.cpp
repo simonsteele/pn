@@ -519,6 +519,9 @@ LRESULT CMainFrame::OnChildNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 		case PN_SCHEMECHANGED:
 			{
 				UpdateStatusBar();
+				
+				BOOL temp;
+				OnUpdateChildUIState(PN_UPDATECHILDUI, 0, 0, temp);
 
 				HWND hMDIChild = MDIGetActive();
 				if(hMDIChild != NULL)
@@ -1374,6 +1377,35 @@ LRESULT CMainFrame::OnMDISetMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
 	/*bRet;
 	ATLASSERT(bRet);*/
+	return 0;
+}
+
+/**
+ * PN_UPDATECHILDUI is sent from the child frame to indicate that something about its
+ * config has changed and that global UI state might be affected.
+ */
+LRESULT CMainFrame::OnUpdateChildUIState(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	CChildFrame* pChildFrame = CChildFrame::FromHandle(GetCurrentEditor());
+	if (pChildFrame != NULL)
+	{
+		UISetCheck(ID_EDITOR_COLOURISE, pChildFrame->UIGetChecked(ID_EDITOR_COLOURISE));
+		UISetCheck(ID_EDITOR_EOLCHARS, pChildFrame->UIGetChecked(ID_EDITOR_EOLCHARS));
+		UISetCheck(ID_EDITOR_LINENOS, pChildFrame->UIGetChecked(ID_EDITOR_LINENOS));
+		UISetCheck(ID_EDITOR_WORDWRAP, pChildFrame->UIGetChecked(ID_EDITOR_WORDWRAP));
+		UISetCheck(ID_EDITOR_WRITEPROTECT, pChildFrame->UIGetChecked(ID_EDITOR_WRITEPROTECT));
+		UISetCheck(ID_EDITOR_WHITESPACE, pChildFrame->UIGetChecked(ID_EDITOR_WHITESPACE));
+	}
+	else
+	{
+		UISetCheck(ID_EDITOR_COLOURISE, false);
+		UISetCheck(ID_EDITOR_EOLCHARS, false);
+		UISetCheck(ID_EDITOR_LINENOS, false);
+		UISetCheck(ID_EDITOR_WORDWRAP, false);
+		UISetCheck(ID_EDITOR_WRITEPROTECT, false);
+		UISetCheck(ID_EDITOR_WHITESPACE, false);
+	}
+
 	return 0;
 }
 
