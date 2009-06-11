@@ -440,14 +440,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\browseview.cpp"
-				>
-			</File>
-			<File
-				RelativePath="childfrm.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\commands.cpp"
 				>
 			</File>
@@ -496,19 +488,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\findbar.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\findex.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\findinfiles.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\findinfilesview.cpp"
 				>
 			</File>
 			<File
@@ -516,27 +496,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\JumpToDialog.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\jumpview.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\l10n.cpp"
-				>
-			</File>
-			<File
-				RelativePath="mainfrm.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\NewProjectDialog.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\openfilesview.cpp"
 				>
 			</File>
 			<File
@@ -556,27 +516,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\outputscintilla.cpp"
-				>
-			</File>
-			<File
-				RelativePath="outputview.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\pn.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\pn.rc"
-				>
-			</File>
-			<File
-				RelativePath=".\pndialogs.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\pntabs.cpp"
 				>
 			</File>
 			<File
@@ -612,11 +556,11 @@
 				>
 			</File>
 			<File
-				RelativePath="smartstart.cpp"
+				RelativePath=".\singleinstance.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ssmenus.cpp"
+				RelativePath="smartstart.cpp"
 				>
 			</File>
 			<File
@@ -669,14 +613,6 @@
 			</File>
 			<File
 				RelativePath="textclips.cpp"
-				>
-			</File>
-			<File
-				RelativePath="textclipsview.cpp"
-				>
-			</File>
-			<File
-				RelativePath="textview.cpp"
 				>
 			</File>
 			<File
@@ -998,6 +934,10 @@
 			</File>
 			<File
 				RelativePath=".\searchoptions.h"
+				>
+			</File>
+			<File
+				RelativePath=".\singleinstance.h"
 				>
 			</File>
 			<File
@@ -1603,110 +1543,6 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Options Dialog"
-			>
-			<File
-				RelativePath="optionscontrols.cpp"
-				>
-			</File>
-			<File
-				RelativePath="OptionsDialogs.cpp"
-				>
-			</File>
-			<File
-				RelativePath="OptionsDialogs.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsPageAutocomplete.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsPageAutocomplete.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsPageClips.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsPageClips.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsPageEditing.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsPageEditing.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsPageExtensions.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsPageExtensions.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsPageGeneral.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsPageGlobalStyles.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsPageGlobalStyles.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsPageKeyboard.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsPageKeyboard.h"
-				>
-			</File>
-			<File
-				RelativePath="OptionsPages.cpp"
-				>
-			</File>
-			<File
-				RelativePath="OptionsPages.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsPageStyle.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsPageStyle.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsPageVisual.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsPageVisual.h"
-				>
-			</File>
-			<File
-				RelativePath=".\StyleTabPages.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\StyleTabPages.h"
-				>
-			</File>
-			<File
-				RelativePath=".\textclipeditor.h"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="Autocomplete"
 			>
 			<File
@@ -1741,6 +1577,182 @@
 				RelativePath=".\xmltagsuggest.h"
 				>
 			</File>
+		</Filter>
+		<Filter
+			Name="UI"
+			>
+			<File
+				RelativePath=".\browseview.cpp"
+				>
+			</File>
+			<File
+				RelativePath="childfrm.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\findbar.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\findex.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\findinfilesview.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\JumpToDialog.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\jumpview.cpp"
+				>
+			</File>
+			<File
+				RelativePath="mainfrm.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\NewProjectDialog.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\openfilesview.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\outputscintilla.cpp"
+				>
+			</File>
+			<File
+				RelativePath="outputview.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\pndialogs.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\pntabs.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ssmenus.cpp"
+				>
+			</File>
+			<File
+				RelativePath="textclipsview.cpp"
+				>
+			</File>
+			<File
+				RelativePath="textview.cpp"
+				>
+			</File>
+			<Filter
+				Name="Options Dialog"
+				>
+				<File
+					RelativePath="optionscontrols.cpp"
+					>
+				</File>
+				<File
+					RelativePath="OptionsDialogs.cpp"
+					>
+				</File>
+				<File
+					RelativePath="OptionsDialogs.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageAutocomplete.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageAutocomplete.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageClips.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageClips.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageEditing.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageEditing.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageExtensions.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageExtensions.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageGeneral.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageGlobalStyles.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageGlobalStyles.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageKeyboard.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageKeyboard.h"
+					>
+				</File>
+				<File
+					RelativePath="OptionsPages.cpp"
+					>
+				</File>
+				<File
+					RelativePath="OptionsPages.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageStyle.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageStyle.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageVisual.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageVisual.h"
+					>
+				</File>
+				<File
+					RelativePath=".\StyleTabPages.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\StyleTabPages.h"
+					>
+				</File>
+				<File
+					RelativePath=".\textclipeditor.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath=".\pn.exe.manifest"
