@@ -436,10 +436,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\boyermoore.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\commands.cpp"
 				>
 			</File>
@@ -564,10 +560,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ssreg.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -639,10 +631,6 @@
 				RelativePath=".\WorkspaceState.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\xmlparser.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -657,19 +645,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\allocator.h"
-				>
-			</File>
-			<File
 				RelativePath=".\appsettings.h"
 				>
 			</File>
 			<File
 				RelativePath=".\autofiledialog.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\boyermoore.h"
 				>
 			</File>
 			<File
@@ -858,14 +838,6 @@
 			</File>
 			<File
 				RelativePath=".\pndockingwindow.h"
-				>
-			</File>
-			<File
-				RelativePath=".\pnextstring.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\pngenx.h"
 				>
 			</File>
 			<File
@@ -1514,6 +1486,10 @@
 			Name="Extensions"
 			>
 			<File
+				RelativePath=".\allocator.h"
+				>
+			</File>
+			<File
 				RelativePath=".\extension.cpp"
 				>
 			</File>
@@ -1523,6 +1499,10 @@
 			</File>
 			<File
 				RelativePath=".\extiface.h"
+				>
+			</File>
+			<File
+				RelativePath=".\pnextstring.h"
 				>
 			</File>
 			<File
@@ -1539,6 +1519,30 @@
 			</File>
 			<File
 				RelativePath=".\scriptview.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Utilities"
+			>
+			<File
+				RelativePath=".\include\boyermoore.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\boyermoore.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\pngenx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ssreg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\xmlparser.cpp"
 				>
 			</File>
 		</Filter>
