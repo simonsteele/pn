@@ -27,6 +27,7 @@
 #include "projectholder.h"
 #include "version.h"
 #include "updatecheck.h"
+#include "singleinstance.h"
 
 // Windows and Dialogs
 #include "mainfrm.h"			// This Window
@@ -1267,8 +1268,11 @@ LRESULT CMainFrame::OnMultiInstanceMsg(UINT /*uMsg*/, WPARAM wParam, LPARAM lPar
 		handleCommandLine(parameters);
 	}
 
-	if(IsIconic())
+	if (IsIconic())
+	{
 		ShowWindow(SW_RESTORE);
+	}
+
 	::SetForegroundWindow(m_hWnd);
 
 	return 0;

@@ -570,46 +570,6 @@ class CNumberCombo : public CComboBox
 		}
 };
 
-class MultipleInstanceManager
-{
-public:
-	MultipleInstanceManager(LPCTSTR pszKey);
-	~MultipleInstanceManager();
-
-	void ActivateOther();
-	bool AlreadyActive();
-	void SendParameters();
-
-	bool GetParameters(std::list<tstring>& params, DWORD size);
-
-	UINT GetMessageID();
-
-	enum EMIEvents
-	{
-		MIM_ACTIVATE = 0,
-		MIM_PARAMETER_ARRAY = 1,
-	};
-
-protected:
-	bool CreateSharedData(BYTE** buffer, HANDLE* hMappedFile, size_t size);
-	void ReleaseSharedData(BYTE* buffer, HANDLE hMappedFile);
-
-	typedef long (__stdcall *PFNBroadcastSystemMessage)(DWORD dwFlags,
-		LPDWORD lpdwRecipients,
-		UINT uiMessage,
-		WPARAM wParam,
-		LPARAM lParam);
-
-protected:
-	HANDLE	m_hMutex;
-	bool	m_bAlreadyActive;
-	tstring	m_sKey;
-	UINT	m_uiMessage;
-	
-	PFNBroadcastSystemMessage	m_pfnBSM;
-	HMODULE						m_hUser32;
-};
-
 #ifdef _DEBUG
 
 /**

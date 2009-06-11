@@ -21,6 +21,8 @@
 
 #include "FileAssoc.h"
 
+#include "singleinstance.h"
+
 //#ifdef _DEBUG
 	#include "include/mdump.h"
 //#endif
@@ -191,6 +193,9 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	//	wndMain.ShowWindow(SW_MAXIMIZE);
 	//else
 	//	wndMain.ShowWindow(SW_SHOW/*nCmdShow*/);
+
+	// Signal that we're ready to be able to handle command-line parameters from other PN instances
+	checkMI.AllowParameters();
 
 	int nRet = theLoop.Run();
 

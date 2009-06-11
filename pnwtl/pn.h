@@ -71,6 +71,7 @@
 
 class ToolWrapper;
 class Options;
+class MultipleInstanceManager;
 namespace Projects {
 	class Workspace;
 }
