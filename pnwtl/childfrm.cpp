@@ -2019,32 +2019,38 @@ bool CChildFrame::Save(bool ctagsRefresh)
 FindNextResult CChildFrame::FindNext(extensions::ISearchOptions* options)
 {
 	FindNextResult result = (FindNextResult)m_view.FindNext(options);
-	if (result == fnReachedStart)
+	if (result == fnReachedStart && options->GetFindTarget() != extensions::elwAllDocs)
 	{
-		if (options->GetFindTarget() == extensions::elwAllDocs)
-		{
-			::SendMessage(GetParent(), WM_MDINEXT, 0, 0);
-			CChildFrame* pNext = FromHandle(GetCurrentEditor());
-			while (pNext != this)
-			{
-				if (pNext->FindNext(options) == fnFound)
-				{
-					break;
-				}
-				
-				::SendMessage(GetParent(), WM_MDINEXT, 0, 0);
-				pNext = FromHandle(GetCurrentEditor());
-			}
+		PNTaskDialog(m_hWnd, IDR_MAINFRAME, IDS_FINDLOOPED, _T(""), TDCBF_OK_BUTTON, TDT_INFORMATION_ICON);
+	}
+	else if (result != fnFound && options->GetFindTarget() == extensions::elwAllDocs)
+	{
+		// Prevent each doc in turn from trying to look at the next one
+		options->SetFindTarget(extensions::elwCurrentDoc);
 
-			if (pNext == this)
-			{
-				// We went all the way around, and couldn't find anything:
-				PNTaskDialog(m_hWnd, IDR_MAINFRAME, IDS_ALLFOUND, _T(""), TDCBF_OK_BUTTON, TDT_INFORMATION_ICON);
-			}
-		}
-		else
+		// Activate the next child window, and keep going until we find again
+		::SendMessage(GetParent(), WM_MDINEXT, 0, 0);
+		CChildFrame* pNext = FromHandle(GetCurrentEditor());
+		while (pNext != this)
 		{
-			PNTaskDialog(m_hWnd, IDR_MAINFRAME, IDS_FINDLOOPED, _T(""), TDCBF_OK_BUTTON, TDT_INFORMATION_ICON);
+			// See if this window contains our find text
+			if (pNext->FindNext(options) == fnFound)
+			{
+				result = fnFound;
+				break;
+			}
+			
+			// Move on to the next window
+			::SendMessage(GetParent(), WM_MDINEXT, 0, 0);
+			pNext = FromHandle(GetCurrentEditor());
+		}
+
+		options->SetFindTarget(extensions::elwAllDocs);
+
+		if (pNext == this)
+		{
+			// We went all the way around, and couldn't find anything:
+			PNTaskDialog(m_hWnd, IDR_MAINFRAME, IDS_ALLFOUND, _T(""), TDCBF_OK_BUTTON, TDT_INFORMATION_ICON);
 		}
 	}
 
