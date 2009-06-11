@@ -2,9 +2,9 @@
  * @file pn.h
  * @brief Main Header File for Programmers Notepad 2, defines the application level services.
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  *
  * Thanks to the author of kPad for the g_Context here!
@@ -69,7 +69,7 @@
 #include "pntypes.h"
 
 // Pre-declarations...
-
+class App;
 class ToolWrapper;
 class Options;
 class MultipleInstanceManager;
@@ -133,31 +133,6 @@ struct IMainFrame
 	virtual void RecordingStopped() = 0;
 };
 
-static void LogWndPos(LPCTSTR codeLoc, HWND hWnd)
-{
-	WINDOWPLACEMENT wp;
-    wp.length = sizeof(WINDOWPLACEMENT);
-    bool bRes=false;
-    if (::GetWindowPlacement(hWnd,&wp))
-    {
-		TCHAR buf[2000];
-		_stprintf(buf, _T("%s: %dx%d at %dx%d\n"), 
-			codeLoc,
-			wp.rcNormalPosition.right - wp.rcNormalPosition.left,
-			wp.rcNormalPosition.bottom - wp.rcNormalPosition.top,
-			wp.rcNormalPosition.left,
-			wp.rcNormalPosition.top);
-		LOG(buf);
-	}
-}
-
-static void LogWndPos(HWND hWnd)
-{
-	LogWndPos(_T("Unknown"), hWnd);
-}
-
-class App;
-
 struct _Context 
 {
 	IMainFrame				*m_frame;
@@ -168,7 +143,7 @@ struct _Context
 };
 
 /// This is the global application context.
-extern /*__declspec( thread )*/ _Context g_Context;
+extern _Context g_Context;
 
 HWND GetCurrentEditor();
 
@@ -193,5 +168,4 @@ void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message);
 
 #include "pntaskdialog.h"
 
-#define OPTIONS \
-	g_Context.options
+#define OPTIONS g_Context.options

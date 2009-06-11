@@ -2,9 +2,9 @@
  * @file pn.cpp
  * @brief Main Source File for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -77,9 +77,6 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	MiniDumper dumper(str.c_str());
 //#endif
 
-	/*Scintilla_RegisterClasses(_Module.m_hInst);
-	Scintilla_LinkLexers();*/
-	
 	// Store the current OS version
 	ZeroMemory(&g_Context.OSVersion, sizeof(OSVERSIONINFO));
 	g_Context.OSVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
@@ -153,11 +150,9 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	// Check multi instances
 	if(!bAllowMulti)
 	{
-		//LOG( _T("PN2 should only run one instance") );
 		if(checkMI.AlreadyActive())
 		{
 			LOG( _T("PN2 has an instance already, sending parameters and exiting") );
-			//GetAsyncKeyState() - use to see if shift is down.
 			checkMI.SendParameters();
 
 			return 0;
@@ -247,8 +242,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 #ifdef _DEBUG
 	_CrtDumpMemoryLeaks();
 #endif
-
-	/*Scintilla_ReleaseResources();*/
 
 	return nRet;
 }

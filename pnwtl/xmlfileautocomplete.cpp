@@ -201,16 +201,14 @@ XmlFileAutocompleteProvider::XmlFileAutocompleteProvider(LPCTSTR apiFile)
 		parser.SetParseState(&handler);
 		parser.LoadFile(apiFile);
 	}
-	catch (XMLParserException& e)
+	catch (XMLParserException& ex)
 	{
-		int a = 0;
-	}
+		CString err;
+		err.Format(_T("Error Parsing API XML: %s\n (file: %s, line: %d, column %d)"), 
+			XML_ErrorString(ex.GetErrorCode()), ex.GetFileName(), ex.GetLine(), ex.GetColumn());
 
-	/*Tag tag;
-	tag.Name = "foo";
-	tag.Defs.push_back(Definition("void", "int blah, int blah"));
-	tag.Defs.push_back(Definition("int", ""));
-	m_tags.push_back(tag);*/
+		g_Context.m_frame->SetStatusText(err);
+	}
 }
 
 /**
