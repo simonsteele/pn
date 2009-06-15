@@ -190,6 +190,7 @@ public:
 		CHAIN_MSG_MAP_ALT_MEMBER(m_ToolBar, 1)
 
 		CHAIN_MDI_CHILD_COMMANDS()
+		// CHAIN_DOCKER_COMMANDS() //?
 		CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()

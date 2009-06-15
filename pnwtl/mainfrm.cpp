@@ -370,6 +370,11 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 		{
 			m_tabbedClient.ControlUp();
 		}
+
+		if (pMsg->message == WM_KEYDOWN && pMsg->wParam == 'C')
+		{
+			int a = 0;
+		}
 		
 		if(m_hToolAccel != 0 && ::TranslateAccelerator(m_hWnd, m_hToolAccel, pMsg))
 			return TRUE;

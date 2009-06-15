@@ -359,7 +359,7 @@ const TCHAR* Options::GetS(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
 #include "OptionsRegistry.h"
 #include "OptionsIni.h"
 #include "OptionsXml.h"
-#include "..\optionstest\OptionsSqlite.h"
+//#include "..\optionstest\OptionsSqlite.h"
 
 Options* OptionsFactory::GetOptions(EOptionsType type, Options* oldOptions)
 {

@@ -3,8 +3,34 @@ Release Name: 2.0.9.x
 Build: 2.0.9.x, Version Label: 
 ========================================
 
-What's new?
------------
+What's new since the last testing release?
+------------------------------------------
+
+1) Find word under cursor updates user search options
+2) Allow all mini toolbar buttons to live on the main toolbar (#446)
+3) Fix a leak with huge find in files matches. 
+4) Fix line numbers when very long lines are in the source files (#129)
+5) Fix find next across multiple documents (#510)
+6) Fix multiple file opens from exporer (#508)
+7) Enable api-based autocomplete supporting notepad++ format (#142)
+8) Updated D language keywords and other bits (#484)
+9) Manual "Check for Updates" command under Help (#469)
+10) Mini toolbar slightly too small (#461)
+11) Disable properties controls when write-protect is enabled (#449)
+12) Fix inconsistent spelling of colour in options dialog 
+13) Support word wrap in output window (#382) 
+14) Avoid win7 bug hiding find in files dialog (#488) 
+15) Make sure readonly is disabled during revert (#380) 
+16) Provide option to disable mini toolbar (#470) 
+17) Try to fix mini toolbar button size issue (#501) 
+18) 24-bit images for mini toolbar where high colour is not supported (#342) 
+19) Fix crash when finding with no text (#463) 
+20) When close on Find Next is disabled, really don't close (#473) 
+21) Remember the last goto line
+22) Avoid a bug when reading invalid ini sections (#443)
+
+What's new in 2.0.9?
+--------------------
 
 1) Switched to vista-style message dialogs
 2) Updated to Boost 1.36
@@ -50,6 +76,8 @@ What's new?
 42) Added Smart Highlight - marks all occurrences of selected word. (#150)
 43) Moved Find and related commands into Search menu
 44) New remove blank lines command
+45) Mini bar can be removed and icons can be placed on customisable toolbar instead (#446)
+46) API-based autocomplete, notepad++ format for now (#142)
 
 Bug Fixes:
 ----------
