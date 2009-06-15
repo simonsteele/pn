@@ -370,11 +370,6 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg)
 		{
 			m_tabbedClient.ControlUp();
 		}
-
-		if (pMsg->message == WM_KEYDOWN && pMsg->wParam == 'C')
-		{
-			int a = 0;
-		}
 		
 		if(m_hToolAccel != 0 && ::TranslateAccelerator(m_hWnd, m_hToolAccel, pMsg))
 			return TRUE;
@@ -426,12 +421,6 @@ BOOL CMainFrame::OnIdle()
 		{
 			bChild = true;
 			bCanSave = pChild->GetModified();
-
-			CTextView* pTV = pChild->GetTextView();
-			if(pTV)
-			{
-				bHasSel = pTV->GetSelLength() > 0;
-			}
 		}
 	}
 	else

@@ -4,7 +4,7 @@
  * @author Simon Steele
  * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -141,7 +141,6 @@ public:
 		COMMAND_ID_HANDLER(ID_EDIT_COPY, OnCopy)
 		COMMAND_ID_HANDLER(ID_EDIT_PASTE, OnPaste)
 		COMMAND_ID_HANDLER(ID_EDIT_UNDO, OnUndo)
-		//COMMAND_ID_HANDLER(ID_EDIT_REDO, OnRedo)
 
 		COMMAND_ID_HANDLER(ID_EDIT_QUICKFIND, OnQuickFind)
 
@@ -190,7 +189,6 @@ public:
 		CHAIN_MSG_MAP_ALT_MEMBER(m_ToolBar, 1)
 
 		CHAIN_MDI_CHILD_COMMANDS()
-		// CHAIN_DOCKER_COMMANDS() //?
 		CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
