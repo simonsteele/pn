@@ -1022,6 +1022,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\findbarbmps24.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\folder_find.ico"
 				>
 			</File>

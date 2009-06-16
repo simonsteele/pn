@@ -445,6 +445,7 @@ END
 //
 
 IDB_TBEDITOR24          BITMAP                  "res\\editor24.bmp"
+IDB_TBFIND24            BITMAP                  "res\\findbarbmps24.bmp"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -1737,6 +1738,23 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Bitmap
+//
+
+IDB_EDITOR              BITMAP                  "res\\editor.bmp"
+IDB_TRUETYPE_FONTTYPE   BITMAP                  "res\\font_tru.bmp"
+IDR_TBR_PROJECTS        BITMAP                  "res\\tbrProjects.bmp"
+IDB_ABOUT               BITMAP                  "res\\about.bmp"
+IDB_TAGTYPES            BITMAP                  "res\\tagtypes.bmp"
+IDB_TBMAINDIS           BITMAP                  "res\\toolbardisabled.bmp"
+IDB_REDCLOSE            BITMAP                  "res\\redclose.bmp"
+IDB_TBMAIN24            BITMAP                  "res\\tbrMain24.bmp"
+IDB_OPENFILES           BITMAP                  "res\\openfilesimages.bmp"
+IDB_TBFIND              BITMAP                  "res\\findbarbmps.bmp"
+IDB_TOOLBAR             BITMAP                  "res\\toolbar.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // Toolbar
 //
 
@@ -1753,23 +1771,6 @@ BEGIN
     BUTTON      ID_PROJECT_RENAME
 END
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-IDB_EDITOR              BITMAP                  "res\\editor.bmp"
-IDB_TRUETYPE_FONTTYPE   BITMAP                  "res\\font_tru.bmp"
-IDR_TBR_PROJECTS        BITMAP                  "res\\tbrProjects.bmp"
-IDB_ABOUT               BITMAP                  "res\\about.bmp"
-IDB_TAGTYPES            BITMAP                  "res\\tagtypes.bmp"
-IDB_TBMAINDIS           BITMAP                  "res\\toolbardisabled.bmp"
-IDB_REDCLOSE            BITMAP                  "res\\redclose.bmp"
-IDB_TBMAIN24            BITMAP                  "res\\tbrMain24.bmp"
-IDB_OPENFILES           BITMAP                  "res\\openfilesimages.bmp"
-IDB_TBFIND24            BITMAP                  "res\\findbarbmps.bmp"
-IDB_TOOLBAR             BITMAP                  "res\\toolbar.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

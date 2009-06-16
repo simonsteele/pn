@@ -179,14 +179,20 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	pLoop->AddMessageFilter(this);
 
 	// Set up the tab control images.
-	m_imageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, 4, 4);
-	
-	HBITMAP hBitmap = (HBITMAP)::LoadImage(
-		_Module.m_hInst,
-		MAKEINTRESOURCE(IDB_TBFIND24),
-		IMAGE_BITMAP, 0, 0, LR_SHARED);
+	bool lowColour = !IsXPOrLater() || OPTIONS->Get(PNSK_INTERFACE, "LowColourToolbars", false);
+	HBITMAP hBitmap;
+	if (lowColour)
+	{
+		m_imageList.Create(16, 16, ILC_COLOR24 | ILC_MASK, 4, 1);
+		hBitmap = static_cast<HBITMAP>(::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_TBFIND24), IMAGE_BITMAP, 0, 0, LR_SHARED));
+	}
+	else
+	{
+		m_imageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, 4, 1);
+		hBitmap = static_cast<HBITMAP>(::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_TBFIND), IMAGE_BITMAP, 0, 0, LR_SHARED | LR_CREATEDIBSECTION));
+	}
 
-	m_imageList.Add(hBitmap, RGB(255,0,255));
+	m_imageList.Add(hBitmap, RGB(255, 0, 255));
 	m_tabControl.SetImageList(m_imageList.m_hImageList);
 	
 	// Position and create the tab control.

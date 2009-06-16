@@ -245,11 +245,11 @@
 #define IDI_ICON7                       362
 #define IDI_READONLY                    362
 #define IDR_POPUP_BROWSER               363
-#define IDB_BITMAP3                     364
-#define IDB_TBFIND24                    364
-#define IDB_BITMAP4                     365
+#define IDB_TBFIND                      364
 #define IDB_TOOLBAR                     365
 #define IDB_TBEDITOR24                  366
+#define IDB_BITMAP5                     367
+#define IDB_TBFIND24                    368
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -715,7 +715,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        367
+#define _APS_NEXT_RESOURCE_VALUE        369
 #define _APS_NEXT_COMMAND_VALUE         33142
 #define _APS_NEXT_CONTROL_VALUE         1161
 #define _APS_NEXT_SYMED_VALUE           104
