@@ -13,7 +13,7 @@
 
 #pragma once
 
-#define MINI_BAR_HEIGHT 16
+#define MINI_BAR_HEIGHT 17
 
 #define MENUMESSAGE_CHANGESCHEME 0xa
 
