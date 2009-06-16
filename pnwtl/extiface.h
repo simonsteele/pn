@@ -521,7 +521,7 @@ public:
 	/**
 	 * Get an individual MenuItem instance by index.
 	 */
-	virtual MenuItem& GetItem(int index) const = 0;
+	virtual const MenuItem& GetItem(int index) const = 0;
 };
 
 /**

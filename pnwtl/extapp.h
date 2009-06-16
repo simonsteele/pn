@@ -24,7 +24,7 @@ typedef std::vector<ExtensionMenuItem*> ExtensionItemList;
 class ExtensionMenuItem : CommandEventHandler
 {
 public:
-	explicit ExtensionMenuItem(extensions::MenuItem& source) : m_title(source.Title), m_item(source), m_commandId(0)
+	explicit ExtensionMenuItem(const extensions::MenuItem& source) : m_title(source.Title), m_item(source), m_commandId(0)
 	{
 		if (source.Type == extensions::miSubmenu)
 		{
