@@ -28,6 +28,8 @@ What's new since the last testing release?
 20) When close on Find Next is disabled, really don't close (#473) 
 21) Remember the last goto line
 22) Avoid a bug when reading invalid ini sections (#443)
+23) Fix bug preventing copy from output window (#412)
+24) More low-colour toolbar images for downlevel OS support (#518, #513)
 
 What's new in 2.0.9?
 --------------------
