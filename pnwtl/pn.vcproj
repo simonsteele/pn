@@ -881,10 +881,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Scintilla.h"
-				>
-			</File>
-			<File
 				RelativePath=".\scintillaif.h"
 				>
 			</File>

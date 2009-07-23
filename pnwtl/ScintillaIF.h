@@ -1961,6 +1961,8 @@ class CScintilla
 		void IndicatorClearRange(int start, int length);
 	//--
 	//@}
+
+		int GetSelections();
 };
 
 /**

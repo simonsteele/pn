@@ -1311,6 +1311,12 @@ void CTextView::smartHighlight()
 	SetIndicatorCurrent(INDIC_SMARTHIGHLIGHT);
 	IndicatorClearRange(0, GetLength());
 
+	if (GetSelections() > 1)
+	{
+		// Smart Highlight not supported with more than 1 selection.
+		return;
+	}
+
 	Scintilla::CharacterRange cr;
 	GetSel(cr);
 	int len = cr.cpMax - cr.cpMin;

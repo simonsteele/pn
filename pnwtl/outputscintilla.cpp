@@ -11,7 +11,7 @@
 #include "outputscintilla.h"
 
 #include "scaccessor.h"
-#include "scilexer.h"
+#include "include/scintilla/include/scilexer.h"
 
 using namespace boost::xpressive;
 

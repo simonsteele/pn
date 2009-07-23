@@ -519,6 +519,9 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 	
 	options.BeginGroupOperation(PNSK_EDITOR);
 
+	sc.SPerform(SCI_SETMULTIPLESELECTION, options.Get(NULL, _T("MultipleSelections"), true) ? 1 : 0, 0);
+	sc.SPerform(SCI_SETADDITIONALSELECTIONTYPING, options.Get(NULL, _T("TypeIntoMultipleSelections"), true) ? 1: 0, 0);
+
 	// Default windows edit control behaviour... This needs to be optional.
 	///@todo allow default scintilla coloured selection...
 	if (options.Get(NULL, _T("DefaultSelectionColours"), true))

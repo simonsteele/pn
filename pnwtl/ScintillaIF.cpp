@@ -2783,3 +2783,8 @@ void CScintilla::IndicatorClearRange(int start, int length)
 }
 
 //--
+
+int CScintilla::GetSelections()
+{
+	return SPerform(SCI_GETSELECTIONS, 0, 0);
+}

@@ -406,6 +406,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\scintilla\src\LexCOBOL.cxx"
+				>
+			</File>
+			<File
 				RelativePath="..\include\scintilla\src\LexConf.cxx"
 				>
 			</File>
@@ -514,6 +518,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\scintilla\src\LexMySQL.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\include\scintilla\src\LexNimrod.cxx"
+				>
+			</File>
+			<File
 				RelativePath="..\include\scintilla\src\LexNsis.cxx"
 				>
 			</File>
@@ -543,6 +555,10 @@
 			</File>
 			<File
 				RelativePath="..\include\scintilla\src\LexPOV.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\include\scintilla\src\LexPowerPro.cxx"
 				>
 			</File>
 			<File
@@ -582,6 +598,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\scintilla\src\LexSML.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\include\scintilla\src\LexSorcus.cxx"
+				>
+			</File>
+			<File
 				RelativePath="..\include\scintilla\src\LexSpecman.cxx"
 				>
 			</File>
@@ -594,7 +618,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\include\scintilla\src\LexTACL.cxx"
+				>
+			</File>
+			<File
 				RelativePath="..\include\scintilla\src\LexTADS3.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\include\scintilla\src\LexTAL.cxx"
 				>
 			</File>
 			<File
@@ -631,6 +663,14 @@
 			</File>
 			<File
 				RelativePath="..\include\scintilla\src\Partitioning.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\scintilla\src\PerLine.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\include\scintilla\src\PerLine.h"
 				>
 			</File>
 			<File
@@ -712,6 +752,14 @@
 						AdditionalIncludeDirectories="..\include\scintilla\src"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\include\scintilla\src\Selection.cxx"
+				>
+			</File>
+			<File
+				RelativePath="..\include\scintilla\src\Selection.h"
+				>
 			</File>
 			<File
 				RelativePath="..\include\scintilla\src\SplitVector.h"
