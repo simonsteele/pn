@@ -53,7 +53,7 @@ SchemeTools::SchemeTools() :
 {
 }
 
-SchemeTools::SchemeTools(LPCTSTR schemename) :
+SchemeTools::SchemeTools(LPCSTR schemename) :
 	m_Scheme(schemename),
 	m_hAccel(NULL)
 {
@@ -270,7 +270,7 @@ void ProjectTools::WriteDefinition(ToolsXMLWriter& writer, ToolSource* source)
 // GlobalProjectTools
 //////////////////////////////////////////////////////////////////////////////
 
-GlobalProjectTools::GlobalProjectTools() : ProjectTools("")
+GlobalProjectTools::GlobalProjectTools() : ProjectTools(_T(""))
 {
 
 }

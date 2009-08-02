@@ -40,7 +40,7 @@ class SchemeLoaderState
 		SchemeDetailsMap		m_SchemeDetails;
 		
 		// Keyword Definitions:
-		STRING_MAP				m_Keywords;
+		tstring_string_map		m_Keywords;
 
 		// State:
 		StylePtr				m_pGroupClass;
@@ -53,10 +53,10 @@ class SchemeLoaderState
 		DWORD					m_StartLoad;
 		DWORD					m_StartLang;
 		
-		tstring					m_langName;
+		std::string				m_langName;
 
 		// Character Data Caching...
-		tstring					m_CDATA;
+		std::string				m_CDATA;
 		tstring					m_storedName;
 };
 
@@ -76,7 +76,7 @@ class SchemeRecorder : public CScintilla
 	public:
 		SchemeRecorder();
 	
-		bool StartRecording(LPCTSTR scheme, LPCTSTR title, LPCTSTR outfile, int FoldFlags);
+		bool StartRecording(LPCSTR scheme, LPCTSTR title, LPCTSTR outfile, int FoldFlags);
 		void WriteCommentBlock(const char* linecomment, const char* streamcommentstart, const char* streamcommentend, 
 			const char* commentblockstart, const char* commentblockend, const char* commentblockline);
 		bool EndRecording();
@@ -91,7 +91,7 @@ class SchemeRecorder : public CScintilla
 	protected:
 		bool CheckNecessary(long Msg, WPARAM wParam, LPARAM lParam);
 
-		void WriteHeader(LPCTSTR schemename, LPCTSTR schemetitle, int FoldFlags);
+		void WriteHeader(LPCSTR schemename, LPCTSTR schemetitle, int FoldFlags);
 
 		StyleDetails	m_DefStyle;
 		eNextRec		m_next;
@@ -110,13 +110,13 @@ class UserSettingsParser
 		void Parse(LPCTSTR path, SchemeLoaderState*	pState);
 
 	private:
-		void characterData(void* userData, LPCTSTR data, int len);
-		void endElement(void *userData, LPCTSTR name);
-		void startElement(void *userData, LPCTSTR name, XMLAttributes& atts);
+		void characterData(void* userData, XML_CSTR data, int len);
+		void endElement(void *userData, XML_CSTR name);
+		void startElement(void *userData, XML_CSTR name, XMLAttributes& atts);
 
 		void processScheme(SchemeLoaderState* pState, XMLAttributes& atts);
-		void processSchemeElement(SchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts);
-		void processClassElement(SchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts);
+		void processSchemeElement(SchemeLoaderState* pState, XML_CSTR name, XMLAttributes& atts);
+		void processClassElement(SchemeLoaderState* pState, XML_CSTR name, XMLAttributes& atts);
 		void processGlobalColours(SchemeLoaderState* pState, XMLAttributes& atts);
 
 	private:
@@ -128,7 +128,6 @@ class UserSettingsParser
 
 /**
  * XML Scheme Parser
- * Uses James Clark's XML parser expat.
  */
 class SchemeParser
 {
@@ -141,14 +140,14 @@ class SchemeParser
 		SchemeLoaderState	m_LoadState;
 
 	protected:
-		void characterData(void* userData, LPCTSTR data, int len);
-		void endElement(void *userData, LPCTSTR name);
-		void startElement(void *userData, LPCTSTR name, XMLAttributes& atts);
+		void characterData(void* userData, XML_CSTR data, int len);
+		void endElement(void *userData, XML_CSTR name);
+		void startElement(void *userData, XML_CSTR name, XMLAttributes& atts);
 		void processKeywordCombine(SchemeLoaderState* pState, XMLAttributes& atts);
 		void specifyImportSet(SchemeLoaderState* pState, XMLAttributes& atts);
 		void specifyImportFile(SchemeLoaderState* pState, XMLAttributes& atts);
 		void processBaseStyle(SchemeLoaderState* pState, XMLAttributes& atts);
-		void processLanguageElement(SchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts);
+		void processLanguageElement(SchemeLoaderState* pState, XML_CSTR name, XMLAttributes& atts);
 		void processLanguageKeywords(SchemeLoaderState* pState, XMLAttributes& atts);
 		void processLanguageStyle(SchemeLoaderState* pState, XMLAttributes& atts);
 		void processLanguageStyleGroup(SchemeLoaderState* pState, XMLAttributes& atts);
@@ -158,13 +157,13 @@ class SchemeParser
 		void processGlobal(SchemeLoaderState* pState, XMLAttributes& atts);
 		void processProperty(SchemeLoaderState* pState, XMLAttributes& atts);
 		void customiseStyle(StyleDetails* style, StyleDetails* custom);
-		void sendBaseScheme(SchemeLoaderState* pState, BaseScheme* pBase, LPCTSTR baseName);
+		void sendBaseScheme(SchemeLoaderState* pState, BaseScheme* pBase, const char* baseName);
 		void sendBaseStyles(SchemeLoaderState* pState);
 		void processComments(SchemeLoaderState* pState, XMLAttributes& atts);
 
 	protected:
 		virtual void onLexer(LPCTSTR name, int styleBits) = 0;
-		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int ncfoldflags) = 0;
+		virtual void onLanguage(LPCSTR name, LPCTSTR title, int foldflags, int ncfoldflags) = 0;
 		virtual void onCommentSpec(const char* linecomment, const char* streamcommentstart, const char* streamcommentend, 
 			const char* commentblockstart, const char* commentblockend, const char* commentblockline) = 0;
 		virtual void onLanguageEnd() = 0;
@@ -173,7 +172,7 @@ class SchemeParser
 		virtual void onStyleGroupEnd() = 0;
 		virtual void onStyleClass(const StylePtr& details) = 0;
 		virtual void onProperty(LPCTSTR name, LPCTSTR value) = 0;
-		virtual void onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom) = 0;
+		virtual void onKeywords(int key, LPCSTR keywords, LPCTSTR name, LPCSTR custom) = 0;
 		virtual void onFile(LPCTSTR filename) = 0;
 		virtual void onColours(const EditorColours* defCols, const EditorColours* colours) = 0;
 		virtual void onError(XMLParserException& ex) = 0;
@@ -196,7 +195,7 @@ class SchemeCompiler : public SchemeParser
 	
 	// Implement SchemeParser
 	protected:
-		virtual void onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int ncfoldflags);
+		virtual void onLanguage(LPCSTR name, LPCTSTR title, int foldflags, int ncfoldflags);
 		virtual void onCommentSpec(const char* linecomment, const char* streamcommentstart, const char* streamcommentend, 
 			const char* commentblockstart, const char* commentblockend, const char* commentblockline);
 		virtual void onLanguageEnd();
@@ -206,7 +205,7 @@ class SchemeCompiler : public SchemeParser
 		virtual void onStyleClass(const StylePtr& details);
 		virtual void onProperty(LPCTSTR name, LPCTSTR value);
 		virtual void onFile(LPCTSTR filename);
-		virtual void onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom);
+		virtual void onKeywords(int key, LPCSTR keywords, LPCTSTR name, LPCSTR custom);
 		virtual void onLexer(LPCTSTR name, int styleBits);
 		virtual void onColours(const EditorColours* defCols, const EditorColours* colours);
 		virtual void onError(XMLParserException& ex);
@@ -216,6 +215,6 @@ class SchemeCompiler : public SchemeParser
 		uint64_t	m_newestFile;
 };
 
-SchemeDetails* ensureSchemeDetails(SchemeDetailsMap& map, tstring& name);
+SchemeDetails* ensureSchemeDetails(SchemeDetailsMap& map, std::string& name);
 
 #endif //#ifndef schemecompiler_h__included

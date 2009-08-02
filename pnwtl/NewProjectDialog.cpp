@@ -2,9 +2,9 @@
  * @file newprojectdialog.cpp
  * @brief New Project Dialog
  * @author Simon Steele
- * @note Copyright (c) 2005 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -22,7 +22,7 @@ static int GetComCtlVersion()
 {
 	static int ComCtlVersion = 0;
 
-	char* FileName = "comctl32.dll";
+	TCHAR* FileName = _T("comctl32.dll");
 	DWORD InfoSize, Dummy = 0;
 	BYTE* buf;
 	UINT VerSize;
@@ -37,7 +37,7 @@ static int GetComCtlVersion()
 			buf = new BYTE[InfoSize];
 			if (::GetFileVersionInfo(FileName, Dummy, InfoSize, buf))
 			{
-				if(::VerQueryValue(buf, "\\", (void**)&ffi, &VerSize))
+				if(::VerQueryValue(buf, _T("\\"), (void**)&ffi, &VerSize))
 				{
 					ComCtlVersion = ffi->dwFileVersionMS;
 				}

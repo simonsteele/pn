@@ -23,8 +23,8 @@ typedef struct CommandDetails_tag
 
 typedef struct ExtendedCommandDetails_tag : CommandDetails
 {
-	tstring group;
-	tstring name;
+	std::string group;
+	std::string name;
 } ExtendedCommandDetails;
 
 class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
@@ -72,8 +72,8 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 		void addExtensions();
 		void clear();
 		void enableButtons();
-		std::string findCommandName(DWORD command);
-		std::string findCommandName(const std::string& extcommand);
+		tstring findCommandName(DWORD command);
+		tstring findCommandName(const std::string& extcommand);
 		void updateSelection();
 		void showCommandSelection(CommandDetails* command);
 		void showExtendedSelection(ExtendedCommandDetails* command);

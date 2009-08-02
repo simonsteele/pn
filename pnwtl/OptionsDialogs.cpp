@@ -2,9 +2,9 @@
  * @file OptionsDialogs.cpp
  * @brief Dialogs used to edit settings from the Options dialog.
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -271,7 +271,7 @@ LRESULT CToolConsoleIOPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 	CRect rcScintilla;
 	::GetWindowRect(GetDlgItem(IDC_PLACEHOLDER), rcScintilla);
 	ScreenToClient(rcScintilla);
-	m_scintilla.Create(m_hWnd, rcScintilla, "Keywords", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_TABSTOP);
+	m_scintilla.Create(m_hWnd, rcScintilla, _T("Keywords"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_TABSTOP);
 	::SetWindowPos(m_scintilla, GetDlgItem(IDC_PLACEHOLDER), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 	m_scintilla.SetWrapMode(SC_WRAP_WORD);
 	m_scintilla.AssignCmdKey(SCK_HOME, SCI_HOMEDISPLAY);
@@ -309,21 +309,22 @@ LRESULT CToolConsoleIOPage::OnHandleHSClick(UINT /*uMsg*/, WPARAM style, LPARAM 
 	smatch match;
 	if( pRE && regex_search( buf, match, *pRE ))
 	{
-		tstring filename;
-		tstring linestr;
-		tstring colstr;
+		std::string filename;
+		std::string linestr;
+		std::string colstr;
 
 		// Extract the named matches from the RE, noting if there was a line or column.
 		bool bFile = safe_get_submatch(match, filename, "f");
 		bool bLine = safe_get_submatch(match, linestr, "l");
 		bool bCol = safe_get_submatch(match, colstr, "c");
         
-		tstring display = "";
+		std::string display = "";
 		if(bFile)
 		{
 			display += "f: ";
 			display += filename;
 		}
+
 		if(bLine)
 		{
 			if(display.length())
@@ -331,6 +332,7 @@ LRESULT CToolConsoleIOPage::OnHandleHSClick(UINT /*uMsg*/, WPARAM style, LPARAM 
 			display += "l: ";
 			display += linestr;
 		}
+
 		if(bCol)
 		{
 			if(display.length())
@@ -339,11 +341,12 @@ LRESULT CToolConsoleIOPage::OnHandleHSClick(UINT /*uMsg*/, WPARAM style, LPARAM 
 			display += colstr;
 		}
 
-		GetDlgItem(IDC_TE_CLICKRESULTSSTATIC).SetWindowText(display.c_str());
+		CA2CT dispconv(display.c_str());
+		GetDlgItem(IDC_TE_CLICKRESULTSSTATIC).SetWindowText(dispconv);
 	}
 	else
 	{
-		GetDlgItem(IDC_TE_CLICKRESULTSSTATIC).SetWindowText("Error: no match");
+		GetDlgItem(IDC_TE_CLICKRESULTSSTATIC).SetWindowText(_T("Error: no match"));
 	}
 
 	return 0;
@@ -374,10 +377,9 @@ LRESULT CToolConsoleIOPage::OnWindowStateChanged(WORD /*wNotifyCode*/, WORD /*wI
 
 LRESULT CToolConsoleIOPage::OnTextChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CString cs;
-	GetDlgItem(IDC_TE_CUSTOMTEXT).GetWindowText(cs);
+	CWindowText wt(GetDlgItem(IDC_TE_CUSTOMTEXT));
 
-	m_scintilla.SetRE(cs);
+	m_scintilla.SetRE(wt.GetA().c_str());
 	
 	return 0;	
 }
@@ -424,15 +426,13 @@ LRESULT CSmartStartEditorDialog::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 		m_schemeName = pScheme->Name.c_str();
 	}
 	else
-		m_schemeName = _T("default");
+	{
+		m_schemeName = "default";
+	}
 
-	int i = ::GetWindowTextLength(GetDlgItem(IDC_PHRASEEDIT)) + 1;
-			
-	TCHAR* buf = new TCHAR[i];
-	::GetWindowText(GetDlgItem(IDC_PHRASEEDIT), buf, i);
-	m_startPhrase = buf;
-	delete [] buf;
-
+	CWindowText wt(GetDlgItem(IDC_PHRASEEDIT));
+	m_startPhrase = wt.GetA();
+	
 	EndDialog(wID);
 
 	return 0;
@@ -461,20 +461,22 @@ LRESULT CSmartStartEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, 
 			selindex = index;
 		combo.SetItemDataPtr(index, (*i));
 	}
+
 	combo.SetCurSel(selindex);
 
-	CWindow(GetDlgItem(IDC_PHRASEEDIT)).SetWindowText(m_startPhrase.c_str());
+	CA2CT startPhrase(m_startPhrase.c_str());
+	CWindow(GetDlgItem(IDC_PHRASEEDIT)).SetWindowText(startPhrase);
 
 	return 0;
 }
 
-void CSmartStartEditorDialog::GetValues(tstring& startPhrase, tstring& schemeName)
+void CSmartStartEditorDialog::GetValues(std::string& startPhrase, std::string& schemeName)
 {
 	startPhrase = m_startPhrase;
 	schemeName = m_schemeName;
 }
 
-void CSmartStartEditorDialog::SetValues(LPCTSTR startPhrase, LPCTSTR schemeName)
+void CSmartStartEditorDialog::SetValues(LPCSTR startPhrase, LPCSTR schemeName)
 {
 	m_startPhrase = startPhrase;
 	m_schemeName = schemeName;
@@ -541,13 +543,13 @@ CFileTypeEditorDialog::CFileTypeEditorDialog(SchemeConfigParser* schemes)
 	m_schemes = schemes;
 }
 
-void CFileTypeEditorDialog::GetValues(tstring& match, tstring& scheme)
+void CFileTypeEditorDialog::GetValues(tstring& match, std::string& scheme)
 {
 	match = m_match;
 	scheme = m_sel;
 }
 
-void CFileTypeEditorDialog::SetValues(LPCTSTR match, LPCTSTR scheme)
+void CFileTypeEditorDialog::SetValues(LPCTSTR match, LPCSTR scheme)
 {
 	m_match = match;
 	m_sel = scheme;

@@ -20,7 +20,7 @@ public:
 	void WriteProjectGroup(LPCTSTR grouppath)
 	{
 		genxStartElement(m_eProjectGroup);
-		Windows1252_Utf8 conv(grouppath);
+		Tcs_Utf8 conv(grouppath);
 		genxAddAttribute(m_aPath, conv);
 		genxEndElement(m_writer);
 	}
@@ -28,7 +28,7 @@ public:
 	void WriteProject(LPCTSTR projpath)
 	{
 		genxStartElement(m_eProject);
-		Windows1252_Utf8 conv(projpath);
+		Tcs_Utf8 conv(projpath);
 		genxAddAttribute(m_aPath, conv);
 		genxEndElement(m_writer);
 	}
@@ -36,7 +36,7 @@ public:
 	void WriteFile(LPCTSTR filepath)
 	{
 		genxStartElement(m_eFile);
-		Windows1252_Utf8 conv(filepath);
+		Tcs_Utf8 conv(filepath);
 		genxAddAttribute(m_aPath, conv);
 		genxEndElement(m_writer);
 	}

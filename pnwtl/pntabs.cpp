@@ -35,7 +35,7 @@ BOOL CPNMDIClient::SubclassWindow(HWND hWnd)
 	{
 		CRect rcFB(0,0,100,30);
 		m_findBar->SetControllingHWND(m_hWnd);
-		m_findBar->Create(GetParent(), rcFB, "FindBar", /*WS_VISIBLE |*/ WS_CHILD | WS_CLIPSIBLINGS);
+		m_findBar->Create(GetParent(), rcFB, _T("FindBar"), /*WS_VISIBLE |*/ WS_CHILD | WS_CLIPSIBLINGS);
 		//m_findBar->ShowWindow(SW_HIDE);
 	}
 

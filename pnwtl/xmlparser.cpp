@@ -29,19 +29,19 @@
 // Global scope functions
 //////////////////////////////////////////////////////////
 
-void XMLParserStartElement(void *userData, LPCTSTR name, LPCTSTR *atts)
+void XMLParserStartElement(void *userData, XML_CSTR name, LPCTSTR *atts)
 {
 	XMLParseState* pState = static_cast<XMLParseState*>(userData);
 	pState->startElement(name, XMLAttributes(atts));
 }
 
-void XMLParserEndElement(void *userData, LPCTSTR name)
+void XMLParserEndElement(void *userData, XML_CSTR name)
 {
 	XMLParseState* pState = static_cast<XMLParseState*>(userData);
 	pState->endElement(name);
 }
 
-void XMLParserCharacterData(void *userData, LPCTSTR s, int len)
+void XMLParserCharacterData(void *userData, XML_CSTR s, int len)
 {
 	XMLParseState* pState = static_cast<XMLParseState*>(userData);
 	pState->characterData(s, len);
@@ -51,7 +51,7 @@ void XMLParserCharacterData(void *userData, LPCTSTR s, int len)
 // XMLAttributes - expat attributes wrapper...
 //////////////////////////////////////////////////////////
 
-XMLAttributes::XMLAttributes(LPCTSTR * atts)
+XMLAttributes::XMLAttributes(XML_CSTR * atts)
 {
 	m_count = 0;
 	m_atts = atts;
@@ -60,19 +60,19 @@ XMLAttributes::XMLAttributes(LPCTSTR * atts)
 		m_count++;
 }
 
-LPCTSTR XMLAttributes::operator [] (int index) const
+XML_CSTR XMLAttributes::operator [] (int index) const
 {
 	return getValue(index);
 }
 
-LPCTSTR XMLAttributes::getName(int index) const
+XML_CSTR XMLAttributes::getName(int index) const
 {
 	ATLASSERT(index < m_count);
 
 	return m_atts[index*2];
 }
 
-LPCTSTR XMLAttributes::getValue(int index) const
+XML_CSTR XMLAttributes::getValue(int index) const
 {
 	ATLASSERT(index < m_count);
 	
@@ -84,10 +84,10 @@ int XMLAttributes::getCount() const
 	return m_count;
 }
 
-LPCTSTR XMLAttributes::getValue(LPCTSTR name) const
+XML_CSTR XMLAttributes::getValue(XML_CSTR name) const
 {
-	LPCTSTR key = NULL;
-	LPCTSTR val = NULL;
+	XML_CSTR key = NULL;
+	XML_CSTR val = NULL;
 	
 	for(int i = 0; i < m_count; i++)
 	{

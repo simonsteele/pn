@@ -81,23 +81,27 @@ LRESULT CScriptDocker::OnTreeDblClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 
 void CScriptDocker::OnScriptAdded(ScriptGroup* group, Script* script)
 {
-	HTREEITEM ti_group = findGroup(group->GetName());
+	CA2CT groupName(group->GetName());
+	HTREEITEM ti_group = findGroup(groupName);
 	if(!ti_group)
-		ti_group = addGroup(group->GetName());
+		ti_group = addGroup(groupName);
 
 	addScript(ti_group, script);
 }
 
 void CScriptDocker::OnScriptRemoved(ScriptGroup* group, Script* script)
 {
-	HTREEITEM tiScript = findScript(group->GetName(), script->Name.c_str());
+	CA2CT scriptName(script->Name.c_str());
+	CA2CT groupName(group->GetName());
+	HTREEITEM tiScript = findScript(groupName, scriptName);
 	if(tiScript)
 		m_view.DeleteItem(tiScript);
 }
 
 HTREEITEM CScriptDocker::addScript(HTREEITEM group, Script* script)
 {
-	HTREEITEM item = m_view.InsertItem(script->Name.c_str(), group, NULL);
+	CA2CT scriptName(script->Name.c_str());
+	HTREEITEM item = m_view.InsertItem(scriptName, group, NULL);
 	m_view.SetItemData(item, reinterpret_cast<DWORD_PTR>(script));
 	m_view.Expand(group);
 
@@ -151,7 +155,8 @@ void CScriptDocker::buildInitial()
 	for(group_list_t::const_iterator i = r->GetGroups().begin(); i != r->GetGroups().end(); ++i)
 	{
 		//tstring gname = (*i)->GetName();
-		HTREEITEM group = addGroup( (*i)->GetName() );
+		CA2CT gname((*i)->GetName());
+		HTREEITEM group = addGroup( gname );
 		for(script_list_t::const_iterator j = (*i)->GetScripts().begin(); j != (*i)->GetScripts().end(); ++j)
 		{
 			addScript( group, (*j) );

@@ -67,7 +67,7 @@ void CFindInFilesView::AddResult(LPCTSTR file, int line, LPCTSTR str)
 {
 	int index = m_list.AddItem(m_nItems++, 0, file);
 	
-	_itoa(line, m_NCBuf, 10);
+	_itot(line, m_NCBuf, 10);
 	m_list.AddItem(index, 1, m_NCBuf);
 	m_list.AddItem(index, 2, str);
 }
@@ -134,7 +134,7 @@ LRESULT CFindInFilesView::OnFIFFinish(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 
 LRESULT CFindInFilesView::OnFIFStart(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	tstring sstartstr("Searching for: ");
+	tstring sstartstr(_T("Searching for: "));
 	sstartstr += m_lookingFor;
 	g_Context.m_frame->SetStatusText(sstartstr.c_str());
 	
@@ -191,7 +191,7 @@ void CFindInFilesView::handleUserSelection(int index)
 		
 		if(pView)
 		{
-			int line = atoi(str);
+			int line = _ttoi(str);
 
 			::SetFocus(pView->m_hWnd);
 		

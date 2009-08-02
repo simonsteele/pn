@@ -191,15 +191,15 @@ void App::LoadExtensions()
  */
 void App::RunExtensionCommand(const char* command)
 {
-	tstring str(command);
+	std::string str(command);
 	size_t rindex = str.find(':');
 	if(rindex == -1)
 		return;
 
-	tstring runner_id = str.substr(0, rindex);
-	if(runner_id == "ext")
+	std::string runner_id = str.substr(0, rindex);
+	if (runner_id == "ext")
 	{
-		UNEXPECTED("Not Yet Implemented");
+		UNEXPECTED(_T("Not Yet Implemented"));
 	}
 	else
 	{
@@ -240,7 +240,7 @@ bool App::ClearUserData()
 	// Go for the hard-core directory deletion approach!
 	if( !DeleteDirectory(userSettingsDir.c_str(), true) )
 	{
-		RETURN_UNEXPECTED("Failed to delete user settings directory!", false);
+		RETURN_UNEXPECTED(_T("Failed to delete user settings directory!"), false);
 	}
 
 	// Now clear out the UI settings
@@ -392,14 +392,17 @@ void App::FindInFiles(extensions::ISearchOptions* options)
  */
 char* App::InputBox(const char* title, const char* caption)
 {
-	CInputDialog ib(title, caption);
+	CA2CT titleconv(title);
+	CA2CT captionconv(caption);
+	CInputDialog ib(titleconv, captionconv);
 
 	if(ib.DoModal() == IDOK)
 	{
 		if(ib.GetInput() != NULL)
 		{
-			char* result = new char[_tcslen(ib.GetInput())+1];
-			strcpy(result, ib.GetInput());
+			CT2CA input(ib.GetInput());
+			char* result = new char[strlen(input)+1];
+			strcpy(result, input);
 			return result;
 		}	
 	}
@@ -411,7 +414,7 @@ char* App::InputBox(const char* title, const char* caption)
  * Open a file, optionally specify a scheme name to open the file
  * using or specify NULL to use the default.
  */
-extensions::IDocumentPtr App::OpenDocument(const char* filepath, const char* scheme)
+extensions::IDocumentPtr App::OpenDocument(const wchar_t* filepath, const char* scheme)
 {
 	Scheme* pScheme(NULL);
 	if(scheme != NULL)

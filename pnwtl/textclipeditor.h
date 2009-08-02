@@ -2,7 +2,7 @@
  * @file textclipeditor.h
  * @brief Text Clip Editing Dialog for Programmer's Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2007-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -17,11 +17,8 @@
 class CTextClipEditor : public CDialogImpl<CTextClipEditor>
 {
 public:
-	CTextClipEditor(tstring shortcut, tstring text, tstring hint)
+	CTextClipEditor(std::string shortcut, std::string text, tstring hint) : m_shortcut(shortcut), m_text(text), m_hint(hint)
 	{
-		m_shortcut = shortcut;
-		m_text = text;
-		m_hint = hint;
 	}
 
 	enum {IDD = IDD_TEXTCLIPEDITOR };
@@ -38,7 +35,7 @@ public:
 		::GetWindowRect(GetDlgItem(IDC_PLACEHOLDER), rcScintilla);
 		ScreenToClient(rcScintilla);
 		m_scintilla.SetWantAll(true);
-		m_scintilla.Create(m_hWnd, rcScintilla, "EditClipText", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_TABSTOP, WS_EX_STATICEDGE);
+		m_scintilla.Create(m_hWnd, rcScintilla, _T("EditClipText"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_TABSTOP, WS_EX_STATICEDGE);
 		::SetWindowPos(m_scintilla, GetDlgItem(IDC_PLACEHOLDER), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 		m_scintilla.SetWrapMode(SC_WRAP_WORD);
 		m_scintilla.AssignCmdKey(SCK_HOME, SCI_HOMEDISPLAY);
@@ -54,7 +51,9 @@ public:
 
 		m_scintilla.SetText(m_text.c_str());
 	
-		GetDlgItem(IDC_SHORTCUT_EDIT).SetWindowText(m_shortcut.c_str());
+		CA2CT scconv(m_shortcut.c_str());
+
+		GetDlgItem(IDC_SHORTCUT_EDIT).SetWindowText(scconv);
 		GetDlgItem(IDC_HINT_EDIT).SetWindowText(m_hint.c_str());
 
 		return 0;
@@ -65,15 +64,12 @@ public:
 		if (wID == IDOK)
 		{
 			CWindowText wt(GetDlgItem(IDC_SHORTCUT_EDIT).m_hWnd);
-			if ((LPCTSTR)wt != NULL)
-			{
-				m_shortcut = (LPCTSTR)wt;
-			}
+			m_shortcut = wt.GetA();
 
 			CWindowText wt2(GetDlgItem(IDC_HINT_EDIT).m_hWnd);
-			if ((LPCTSTR)wt2 != NULL)
+			if ((LPCTSTR)wt2)
 			{
-				m_hint = (LPCTSTR)wt2;
+				m_hint = wt2;
 			}
 
 			int len = m_scintilla.GetTextLength();
@@ -88,12 +84,12 @@ public:
 		return 0;
 	}
 
-	LPCTSTR GetShortcut() const
+	const char* GetShortcut() const
 	{
 		return m_shortcut.c_str();
 	}
 
-	LPCTSTR GetText() const
+	const char* GetText() const
 	{
 		return m_text.c_str();
 	}
@@ -105,8 +101,8 @@ public:
 
 private:
 	CScintillaDialogWnd m_scintilla;
-	tstring m_shortcut;
-	tstring m_text;
+	std::string m_shortcut;
+	std::string m_text;
 	tstring m_hint;
 };
 

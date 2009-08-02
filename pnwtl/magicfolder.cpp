@@ -2,17 +2,14 @@
  * @file magicfolder.cpp
  * @brief Magic Folders in Projects
  * @author Simon Steele
- * @note Copyright (c) 2004-2005 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2004-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
 #include "stdafx.h"
 #include "project.h"
-
-#include "include/genx/genx.h"
-#include "projectwriter.h"
 
 #include "include/filefinder.h"
 #include "include/filematcher.h"
@@ -40,7 +37,7 @@ namespace Projects
 {
 
 #define MATCH(ename) \
-	(_tcscmp(name, ename) == 0)
+	(_tcscmp(name, _T(ename)) == 0)
 
 #define IN_STATE(state) \
 	(parseState == state)
@@ -125,22 +122,23 @@ void MagicFolder::Refresh()
 	read = true;
 }
 
-void MagicFolder::WriteDefinition(SProjectWriter* definition)
-{
-	genxStartElementLiteral(definition->w, NULL, u("MagicFolder"));
-	genxAddAttributeLiteral(definition->w, NULL, u("name"), u(name.c_str()));
-	
-	CFileName cfn( basePath.c_str() );
-	tstring relPath = cfn.GetRelativePath( GetParent()->GetBasePath() );
-	genxAddAttributeLiteral(definition->w, NULL, u("path"), u(relPath.c_str()));
-
-	genxAddAttributeLiteral(definition->w, NULL, u("filter"), u(filter.c_str()));
-	genxAddAttributeLiteral(definition->w, NULL, u("excludeFolders"), u(folderFilter.c_str()));
-
-	writeContents(definition);
-
-	genxEndElement(definition->w);
-}
+//
+//void MagicFolder::WriteDefinition(SProjectWriter* definition)
+//{
+//	genxStartElementLiteral(definition->w, NULL, u("MagicFolder"));
+//	genxAddAttributeLiteral(definition->w, NULL, u("name"), u(name.c_str()));
+//	
+//	CFileName cfn( basePath.c_str() );
+//	tstring relPath = cfn.GetRelativePath( GetParent()->GetBasePath() );
+//	genxAddAttributeLiteral(definition->w, NULL, u("path"), u(relPath.c_str()));
+//
+//	genxAddAttributeLiteral(definition->w, NULL, u("filter"), u(filter.c_str()));
+//	genxAddAttributeLiteral(definition->w, NULL, u("excludeFolders"), u(folderFilter.c_str()));
+//
+//	writeContents(definition);
+//
+//	genxEndElement(definition->w);
+//}
 
 void MagicFolder::SetGotContents(bool bGotContents)
 {
@@ -152,14 +150,14 @@ tstring MagicFolder::getMagicFolderPath(MagicFolder* last)
 	if(last->GetParent()->GetType() != ptMagicFolder)
 	{
 		// at the bottom of the magic folder...
-		return tstring("\\");
+		return tstring(_T("\\"));
 	}
 	else
 	{
 		MagicFolder* pParent = reinterpret_cast<MagicFolder*>( last->GetParent() );
 		tstring s = getMagicFolderPath(pParent);
 		s += last->GetName();
-		s += '\\';
+		s += _T('\\');
 		return s;
 	}
 }
@@ -263,7 +261,7 @@ SStringStack* newStringStackItem(SStringStack* last, LPCTSTR newPathElement)
 		}
 		else
 		{
-			item->val += "ERROR";
+			item->val += _T("ERROR");
 		}
 		
 		item->val += _T('\\');
@@ -318,11 +316,11 @@ Folder* MagicFolderCache::GetCachedFolder(MagicFolder* actual)
 		return NULL;
 }
 
-void MagicFolderCache::startElement(LPCTSTR name, XMLAttributes& atts)
+void MagicFolderCache::startElement(XML_CSTR name, XMLAttributes& atts)
 {
 	if( IN_STATE( PS_FOLDER ) )
 	{
-		if( MATCH(_T("MagicFolder")) )
+		if( MATCH("MagicFolder") )
 		{
 			_depth++;
 			
@@ -333,7 +331,7 @@ void MagicFolderCache::startElement(LPCTSTR name, XMLAttributes& atts)
 			_current = new Folder(_pathStack->val.c_str(), _T(""));
 			_map->insert(MagicFolderCache::FolderMap::value_type(_pathStack->val, _current));
 		}
-		else if( MATCH(_T("File")) )
+		else if( MATCH("File") )
 		{
 			STATE(PS_FILE);
 			processFile(atts);
@@ -349,11 +347,11 @@ void MagicFolderCache::startElement(LPCTSTR name, XMLAttributes& atts)
 	}
 }
 
-void MagicFolderCache::endElement(LPCTSTR name)
+void MagicFolderCache::endElement(XML_CSTR name)
 {
 	if( IN_STATE(PS_FOLDER) )
 	{
-		if( MATCH(_T("MagicFolder")) )
+		if( MATCH("MagicFolder") )
 		{
 			if(_depth == 0)
 			{
@@ -389,7 +387,7 @@ void MagicFolderCache::endElement(LPCTSTR name)
 	}
 }
 
-void MagicFolderCache::characterData(LPCTSTR data, int len)
+void MagicFolderCache::characterData(XML_CSTR data, int len)
 {
 	
 }
@@ -399,7 +397,7 @@ void MagicFolderCache::processFile(XMLAttributes& atts)
 	_currentFile = _current->AddFile(ATTVAL(_T("path")));
 }
 
-void MagicFolderCache::processUserData(LPCTSTR name, XMLAttributes& atts)
+void MagicFolderCache::processUserData(XML_CSTR name, XMLAttributes& atts)
 {
 	if(parseState != PS_USERDATA)
 		udBase = parseState;

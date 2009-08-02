@@ -510,11 +510,22 @@ void ParseNullSeparatedStringBuffer( const char* buffer, std::vector< const char
 	return;
 }
 
-void loadExternalTables(const char* fileName, std::string* moreSchemes)
+std::string WcsTo1252(const wchar_t* str)
+{
+	int len = WideCharToMultiByte(CP_ACP, 0, str, -1, NULL, 0, NULL, NULL);
+	std::string ret;
+	ret.resize(len);
+	len = WideCharToMultiByte(CP_ACP, 0, str, -1, &ret[0], len, NULL, NULL);
+	ret.resize(len);
+	return ret;
+}
+
+void loadExternalTables(const wchar_t* fileName, std::string* moreSchemes)
 {
 	// Get all sections from the .ini file
 	char allSections[2000];
-	::GetPrivateProfileSectionNamesA( allSections, sizeof( allSections ), fileName );
+	std::string fileNameA(WcsTo1252(fileName));
+	::GetPrivateProfileSectionNamesA(allSections, sizeof( allSections ), fileNameA.c_str());
 
 	std::vector< const char* > sections;
 	ParseNullSeparatedStringBuffer( allSections, &sections );
@@ -522,13 +533,13 @@ void loadExternalTables(const char* fileName, std::string* moreSchemes)
 	// used for section data
 	char data[2000];
 	std::vector< const char* > lines;
-	std::vector< const char* >::iterator line;
+	std::vector< const char* >::const_iterator line;
 
-	std::vector< const char* >::iterator section;
+	std::vector< const char* >::const_iterator section;
 	for ( section = sections.begin(); section != sections.end(); ++section )
 	{
 		// Get all key/value pairs from section
-		::GetPrivateProfileSectionA( *section, data, sizeof( data ), fileName );
+		::GetPrivateProfileSectionA( *section, data, sizeof( data ), fileNameA.c_str() );
 		ParseNullSeparatedStringBuffer( data, &lines );
 
 		// Tables for language type data

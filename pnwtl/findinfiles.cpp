@@ -63,7 +63,10 @@ void FIFThread::Find(LPCTSTR findstr, LPCTSTR path, LPCTSTR fileTypes, bool bRec
 	Stop();
 
 	m_it.reset();
-	m_pBM->SetSearchString(findstr);
+
+	CT2CA findstrconv(findstr);
+
+	m_pBM->SetSearchString(findstrconv);
 	m_pBM->SetCaseMode(bCaseSensitive);
 	m_pBM->SetMatchWholeWord(bMatchWholeWord);
 	m_pBM->SetIncludeHidden(bIncludeHidden);
@@ -83,7 +86,10 @@ void FIFThread::Find(LPCTSTR findstr, FileItPtr& iterator, bool bCaseSensitive, 
 	Stop();
 
 	m_it = iterator;
-	m_pBM->SetSearchString(findstr);
+
+	CT2CA findstrconv(findstr);
+
+	m_pBM->SetSearchString(findstrconv);
 	m_pBM->SetCaseMode(bCaseSensitive);
 	m_pBM->SetMatchWholeWord(bMatchWholeWord);
 	m_pSink = pSink;
@@ -99,7 +105,10 @@ void FIFThread::Run()
 {
 	// TODO: Change to true if using RegEx...
 	if(m_pSink)
-		m_pSink->OnBeginSearch(m_pBM->GetSearchString(), false);
+	{
+		CA2CT findstr(m_pBM->GetSearchString());
+		m_pSink->OnBeginSearch(findstr, false);
+	}
 
 	if (m_it.get())
 	{
@@ -121,7 +130,9 @@ void FIFThread::Run()
 		finder.SetFilters(m_fileExts.c_str(), NULL, NULL, NULL);
 
 		if (m_path.length() > 0)
+		{
 			finder.FindMatching(m_path.c_str(), m_bRecurse, m_bIncludeHidden);
+		}
 	}
 
 	m_pSink->OnEndSearch(m_nLines, m_nFiles);
@@ -155,17 +166,17 @@ void FIFThread::searchFile(LPCTSTR filename)
 	FILE* file = _tfopen(filename, _T("r"));
 	if(file != NULL)
 	{
-		std::vector<TCHAR> buffer(FIFBUFFERSIZE);
-		TCHAR* szBuf = &buffer[0];
+		std::vector<char> buffer(FIFBUFFERSIZE);
+		char* szBuf = &buffer[0];
 
 		int nLine = 1;
 		m_nFiles++;
 
-		while (_fgetts(szBuf, FIFBUFFERSIZE, file))
+		while (fgets(szBuf, FIFBUFFERSIZE, file))
 		{
 			int    nIdx;
-			TCHAR *ptr(szBuf);
-			size_t buflen(_tcslen(ptr));
+			char *ptr(szBuf);
+			size_t buflen(strlen(ptr));
 			size_t remaininglen(buflen);
 			bool haslineend(szBuf[buflen-1] == '\n' || szBuf[buflen-1] == '\r');
 			bool bAnyFound(false);
@@ -178,7 +189,7 @@ void FIFThread::searchFile(LPCTSTR filename)
 				if (!bAnyFound)
 				{
 					// Strip white spaces from the end of the input buffer.
-					while (_istspace(szBuf[buflen - 1]))
+					while (isspace(szBuf[buflen - 1]))
 					{
 						szBuf[buflen - 1] = NULL;
 					}
@@ -196,7 +207,7 @@ void FIFThread::searchFile(LPCTSTR filename)
 				
 				// Increase search pointer so we can search the rest of the line.
 				ptr += nIdx + 1;
-				remaininglen = _tcslen(ptr);
+				remaininglen = strlen(ptr);
 			}
 
 			// Increase line number.
@@ -214,9 +225,11 @@ void FIFThread::searchFile(LPCTSTR filename)
 /**
  * Called when an instance of the string being searched for is found.
  */
-void FIFThread::foundString(LPCTSTR szFilename, int line, LPCTSTR buf)
+void FIFThread::foundString(LPCTSTR szFilename, int line, LPCSTR buf)
 {
-	m_pSink->OnFoundString(m_pBM->GetSearchString(), szFilename, line, buf);
+	CA2CT searchconv(m_pBM->GetSearchString());
+	CA2CT bufconv(buf);
+	m_pSink->OnFoundString(searchconv, szFilename, line, bufconv);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

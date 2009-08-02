@@ -2,7 +2,7 @@
  * @file SchemeConfig.cpp
  * @brief Scheme configuration classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -19,7 +19,7 @@
 // SchemeConfigParser
 /////////////////////////////////////////////////////////
 
-SchemeConfigParser::SchemeConfigParser(LPCTSTR currentScheme)
+SchemeConfigParser::SchemeConfigParser(LPCSTR currentScheme)
 	: m_DefaultScheme("default")
 {
 	m_pCurrent = NULL;
@@ -106,7 +106,7 @@ void SchemeConfigParser::LoadPresets(LPCTSTR path)
 	usp.SetPresetLoadMode();
 	usp.Parse(path, &m_LoadState);
 
-	StylePtr defcls = GetClass("default");
+	StylePtr defcls = GetClass(_T("default"));
 
 	// Minor validation (want our default font to look good):
 	if(defcls->CustomStyle != NULL && (defcls->CustomStyle->values & edvFontName))
@@ -127,7 +127,7 @@ void SchemeConfigParser::SaveConfig(LPCTSTR userSettingsPath)
 	Save(userSettingsPath);
 }
 
-LPCTSTR SchemeConfigParser::GetCurrentScheme()
+LPCSTR SchemeConfigParser::GetCurrentScheme()
 {
 	return m_CurrentScheme.c_str();
 }
@@ -145,7 +145,7 @@ void SchemeConfigParser::ResetClasses()
 	m_LoadState.m_DefaultColours.Clear();
 
 	// Now re-set the default style:
-	StylePtr defcls = GetClass("default");
+	StylePtr defcls = GetClass(_T("default"));
 	defcls->Combine(NULL, m_LoadState.m_Default);
 }
 
@@ -252,11 +252,11 @@ void SchemeConfigParser::onLexer(LPCTSTR name, int styleBits)
 
 }
 
-void SchemeConfigParser::onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int ncfoldflags)
+void SchemeConfigParser::onLanguage(LPCSTR name, LPCTSTR title, int foldflags, int ncfoldflags)
 {
 	PNASSERT(m_pCurrent == NULL);
 
-	m_pCurrent = ensureSchemeDetails( m_LoadState.m_SchemeDetails, tstring(name) );
+	m_pCurrent = ensureSchemeDetails( m_LoadState.m_SchemeDetails, std::string(name) );
 
 	m_pCurrent->Title = title;
 	m_pCurrent->Flags = ncfoldflags;
@@ -301,14 +301,14 @@ void SchemeConfigParser::onStyleGroupEnd()
 	m_pCurrent->EndStyleGroup();
 }
 
-void SchemeConfigParser::onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom)
+void SchemeConfigParser::onKeywords(int key, LPCSTR keywords, LPCTSTR name, LPCSTR custom)
 {
 	PNASSERT(m_pCurrent != NULL);
 
 	CustomKeywordSet* pSet = new CustomKeywordSet;
 	pSet->key = key;
-	pSet->pWords = new TCHAR[_tcslen(keywords)+1];
-	_tcscpy(pSet->pWords, keywords);
+	pSet->pWords = new char[strlen(keywords)+1];
+	strcpy(pSet->pWords, keywords);
 	pSet->pName = new TCHAR[_tcslen(name)+1];
 	_tcscpy(pSet->pName, name);
 	m_pCurrent->Keywords.AddKeywordSet(pSet);

@@ -90,9 +90,9 @@ bool Scheme::InitialLoad(CFile& file, SchemeHdrRec& hdr)
 	
 	#ifdef UNICODE
 	// Convert into a unicode string...	
-	USES_CONVERSION;
-	SetName(A2T(&hdr.Name[0]));
-	SetTitle(A2T(&hdr.Title[0]));
+	SetName(&hdr.Name[0]);
+	CA2CT title(&hdr.Title[0]);
+	SetTitle(title);
 	#else
 	// Otherwise just copy the string.	
 	SetName(&hdr.Name[0]);
@@ -120,7 +120,7 @@ bool Scheme::CheckName()
 	return bRet;
 }
 
-LPCTSTR Scheme::GetName() const
+const char* Scheme::GetName() const
 {
 	return m_Name;
 }
@@ -130,12 +130,12 @@ LPCTSTR Scheme::GetTitle() const
 	return m_Title;
 }
 
-LPCTSTR Scheme::GetFileName() const
+const wchar_t* Scheme::GetFileName() const
 {
 	return m_SchemeFile;
 }
 
-LPCTSTR Scheme::GetLexer() const
+const char* Scheme::GetLexer() const
 {
 	return m_Lexer.c_str();
 }
@@ -145,14 +145,14 @@ const CommentSpecRec& Scheme::GetCommentSpec() const
 	return m_CommentSpec;
 }
 
-void Scheme::SetName(LPCTSTR name)
+void Scheme::SetName(LPCSTR name)
 {
 	if(name)
 	{
 		if(m_Name)
 			delete [] m_Name;
-		m_Name = new TCHAR[_tcslen(name)+1];
-		_tcscpy(m_Name, name);
+		m_Name = new char[strlen(name)+1];
+		strcpy(m_Name, name);
 	}
 }
 
@@ -347,7 +347,7 @@ void Scheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 		// Check the file is OK and read the header.
 		if(!InitialLoad(cfile, hdr))
 		{
-			UNEXPECTED("Tried to load invalid binary scheme file at run-time");
+			UNEXPECTED(_T("Tried to load invalid binary scheme file at run-time"));
 			cfile.Close();
 			return;
 		}

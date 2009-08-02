@@ -441,13 +441,13 @@ private:
 		SchemeManager* pM = SchemeManager::GetInstance();
 		SCHEME_LIST* pSchemes = pM->GetSchemesList();
 
-		int index = m_SchemeCombo.AddString( pM->GetDefaultScheme()->GetTitle() );
+		int index = m_SchemeCombo.AddString(pM->GetDefaultScheme()->GetTitle());
 		m_SchemeCombo.SetItemDataPtr( index, pM->GetDefaultScheme() );
 
 		for(SCIT i = pSchemes->begin(); i != pSchemes->end(); ++i)
 		{
-			index = m_SchemeCombo.AddString( (*i).GetTitle() );
-			m_SchemeCombo.SetItemDataPtr( index, &(*i) );
+			index = m_SchemeCombo.AddString((*i).GetTitle());
+			m_SchemeCombo.SetItemDataPtr(index, &(*i));
 		}
 
 		tbi.cbSize = sizeof TBBUTTONINFO;

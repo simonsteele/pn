@@ -110,7 +110,7 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
     if (!::CreatePipe(&hReadPipe, &hWritePipe, &sa, 0))
 	{
 		CLastErrorInfo lei;
-		m_pWrapper->_AddToolOutput("\n> Failed to create StdOut and StdErr Pipe: ");
+		m_pWrapper->_AddToolOutput(_T("\n> Failed to create StdOut and StdErr Pipe: "));
 		m_pWrapper->_AddToolOutput((LPCTSTR)lei);
 
 		return lei.GetErrorCode();
@@ -122,7 +122,7 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	{
 		CLastErrorInfo lei;
 
-		m_pWrapper->_AddToolOutput("\n> Failed to create StdIn Pipe: ");
+		m_pWrapper->_AddToolOutput(_T("\n> Failed to create StdIn Pipe: "));
 		m_pWrapper->_AddToolOutput((LPCTSTR)lei);
 
 		return lei.GetErrorCode();
@@ -168,7 +168,7 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 		::CloseHandle(hStdInWrite);
 
 		CLastErrorInfo lei;
-		m_pWrapper->_AddToolOutput("\n> Failed to create process: ");
+		m_pWrapper->_AddToolOutput(_T("\n> Failed to create process: "));
 		m_pWrapper->_AddToolOutput((LPCTSTR)lei);
 
 		return lei.GetErrorCode();
@@ -184,7 +184,7 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	dwBytesAvail = dwBytesRead = exitCode = timeDeathDetected = 0;
 	DWORD dwBytesWritten = 0;
 	bool bCompleted = false;
-	char buffer[TOOLS_BUFFER_SIZE];
+	BYTE buffer[TOOLS_BUFFER_SIZE];
 
 	while (!bCompleted)
 	{
@@ -216,11 +216,13 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 
 		if (dwBytesAvail > 0)
 		{
-			BOOL bRead = ::ReadFile(hReadPipe, buffer, sizeof(buffer), &dwBytesRead, NULL);
+			BOOL bRead = ::ReadFile(hReadPipe, buffer, sizeof(buffer)-1, &dwBytesRead, NULL);
+			buffer[dwBytesRead] = NULL;
 
 			if (bRead && dwBytesRead)
 			{
-				m_pWrapper->_AddToolOutput(buffer, dwBytesRead);
+				CA2CT conv(reinterpret_cast<const char*>(buffer));
+				m_pWrapper->_AddToolOutput(&conv[0], -1);
 			}
 			else
 			{
@@ -273,7 +275,7 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 				// don't answer to a normal termination command.
 				// This function is dangerous: dependant DLLs don't know the process
 				// is terminated, and memory isn't released.
-				m_pWrapper->_AddToolOutput("\n> Forcefully terminating process...\n");
+				m_pWrapper->_AddToolOutput(_T("\n> Forcefully terminating process...\n"));
 				::TerminateProcess(pi.hProcess, 1);
 			}
 
@@ -283,7 +285,7 @@ int ToolRunner::Run_Capture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 
 	if (WAIT_OBJECT_0 != ::WaitForSingleObject(pi.hProcess, 1000)) 
 	{
-		m_pWrapper->_AddToolOutput("\n> Process failed to respond; forcing abrupt termination...");
+		m_pWrapper->_AddToolOutput(_T("\n> Process failed to respond; forcing abrupt termination..."));
 		::TerminateProcess(pi.hProcess, 2);
 	}
 
@@ -365,7 +367,7 @@ int ToolRunner::Run_NoCapture(LPCTSTR command, LPCTSTR params, LPCTSTR dir)
 	if (!bCreated)
 	{
 		CLastErrorInfo lei;
-		m_pWrapper->_AddToolOutput("\n> Failed to create process: ");
+		m_pWrapper->_AddToolOutput(_T("\n> Failed to create process: "));
 		m_pWrapper->_AddToolOutput((LPCTSTR)lei);
 
 		return lei.GetErrorCode();
@@ -408,7 +410,7 @@ int ToolRunner::Execute()
 	}
 	catch (FormatStringBuilderException&)
 	{
-		LOG("FormatStringBuilderException building format string - user wants to cancel");
+		LOG(_T("FormatStringBuilderException building format string - user wants to cancel"));
 		return 0;
 	}
 
@@ -444,7 +446,9 @@ void ToolRunner::PostRun()
 		
 		char buf[100];
 		strftime(buf, 100, "%M:%S", gmtime(&endtime));
-		exitcode += buf;
+
+		CA2CT bufconv(buf);
+		exitcode += bufconv;
 		
 		exitcode += _T("\n");
 

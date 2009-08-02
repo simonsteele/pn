@@ -23,9 +23,9 @@ tstring StringLoader::Get(UINT dwStringID)
 
 std::wstring StringLoader::GetW(UINT dwStringID)
 {
-	USES_CONVERSION;
 	tstring s = Get(dwStringID);
-	return T2W(s.c_str());
+	CT2CW res(s.c_str());
+	return std::wstring(res);
 }
 
 void StringLoader::InitResourceLoader()

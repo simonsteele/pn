@@ -54,6 +54,17 @@ class CWindowText
 			return m_buffer;
 		}
 
+		std::string GetA()
+		{
+			if (!m_buffer)
+			{
+				return std::string();
+			}
+
+			CT2CA conv(m_buffer);
+			return std::string(conv);
+		}
+
 	private:
 		TCHAR* m_buffer;
 };

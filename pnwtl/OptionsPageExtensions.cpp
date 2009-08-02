@@ -44,9 +44,12 @@ void COptionsPageExtensions::OnInitialise()
 			version = "Unknown";
 		}
 		
-		int index = m_list.InsertItem(count++, name.Get());
-		m_list.SetItemText(index, 1, version.Get());
-		m_list.SetItemText(index, 2, "Yes");
+		CA2CT nameconv(name.Get());
+		CA2CT versionconv(version.Get());
+
+		int index = m_list.InsertItem(count++, nameconv);
+		m_list.SetItemText(index, 1, versionconv);
+		m_list.SetItemText(index, 2, _T("Yes"));
 	}
 }
 

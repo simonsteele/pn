@@ -802,7 +802,7 @@ LRESULT COptionsPageProjectTools::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
 	label.Attach(GetDlgItem(IDC_SCHEMELABEL));
 	
 	CDC dc(label.GetDC());
-	label.SetWindowText("Project Template:");
+	label.SetWindowText(_T("Project Template:"));
 	dc.GetTextExtent(_T("Project Template:"), 17, &s);
 	
 	label.GetWindowRect(rc);
@@ -895,268 +895,7 @@ void COptionsPageProjectTools::updateFromSel(int iSel)
 		m_pTemplate = NULL;
 }
 
-//////////////////////////////////////////////////////////////////////////////
-// COptionsPageNewFiles
-//////////////////////////////////////////////////////////////////////////////
 
-#include "smartstart.h"
-
-COptionsPageNewFiles::COptionsPageNewFiles(SchemeConfigParser* pSchemes)
-{
-	m_pSchemes = pSchemes;
-	m_bDirty = false;
-}
-
-void COptionsPageNewFiles::AddItem(LPCTSTR key, LPCTSTR schemename)
-{
-	LVITEM lvi;
-
-	Scheme* pScheme = SchemeManager::GetInstance()->SchemeByName(schemename);
-	if(pScheme)
-	{
-
-		TCHAR* nameStore = new TCHAR[_tcslen(schemename)+1];
-		_tcscpy(nameStore, schemename);
-
-		lvi.mask = LVIF_IMAGE | LVIF_TEXT | LVIF_PARAM;
-		lvi.iItem = m_list.GetItemCount();
-		lvi.iSubItem = 0;
-		lvi.pszText = const_cast<LPTSTR>( key );
-		lvi.iImage = 0;
-		lvi.lParam = reinterpret_cast<LPARAM>(nameStore);
-
-		int iItem = m_list.InsertItem(&lvi);
-
-		lvi.mask = LVIF_TEXT;
-		lvi.iItem = iItem;
-		lvi.iSubItem = 1;
-		lvi.pszText = const_cast<LPTSTR>( pScheme->GetTitle() );
-		lvi.lParam = 0;
-
-		m_list.SetItem(&lvi);
-	}
-}
-
-/**
- * Manage the enabled state of the controls.
- */
-void COptionsPageNewFiles::EnableButtons()
-{
-	bool bSS = m_ssCheck.GetCheck() == BST_CHECKED;
-	int iSI = m_list.GetSelectedIndex();
-	m_list.EnableWindow(bSS);
-	::EnableWindow(GetDlgItem(IDC_SMARTSTART_ADDBUTTON), bSS);
-	::EnableWindow(GetDlgItem(IDC_SMARTSTART_EDITBUTTON), bSS && (iSI != -1));
-	::EnableWindow(GetDlgItem(IDC_SMARTSTART_REMOVEBUTTON), bSS && (iSI != -1));
-}
-
-void COptionsPageNewFiles::FreeResources()
-{
-	int count = m_list.GetItemCount();
-	for(int i = 0; i < count; i++)
-	{
-		TCHAR* pNameStored = reinterpret_cast<TCHAR*>( m_list.GetItemData(i) );
-		if(pNameStored)
-			delete [] pNameStored;
-		m_list.SetItemData(i, NULL);
-	}
-}
-
-void COptionsPageNewFiles::OnInitialise()
-{
-	tstring strNewScheme = OPTIONS->Get(PNSK_EDITOR, _T("NewScheme"), _T("Plain Text"));
-
-	// Populate and initialise schemes combo.
-	m_combo.Load(m_pSchemes, strNewScheme.c_str());
-
-	// Populate SmartStart list.
-	STRING_MAP& smap = SmartStart::GetInstance()->GetMap();
-	///@todo Sort the SmartStart list.
-	
-	for(SM_IT j = smap.begin(); j != smap.end(); ++j)
-	{
-		AddItem((*j).first.c_str(), (*j).second.c_str());
-	}
-
-	m_ssCheck.SetCheck( 
-		OPTIONS->Get(PNSK_EDITOR, _T("SmartStart"), true) ? BST_CHECKED : BST_UNCHECKED
-	);
-	
-	EnableButtons();
-}
-
-void COptionsPageNewFiles::OnOK()
-{
-	if(m_bCreated)
-	{
-		if(m_bDirty)
-		{
-			// Copy all items into smartstart manager...
-			SmartStart* pSS = SmartStart::GetInstance();
-			STRING_MAP& smap = pSS->GetMap();
-			smap.clear();
-
-			CString strBuf;
-			TCHAR* pStoredName;
-
-			int count = m_list.GetItemCount();
-			for(int i = 0; i < count; i++)
-			{
-				m_list.GetItemText(i, 0, strBuf);
-				pStoredName = reinterpret_cast<TCHAR*>( m_list.GetItemData(i) );
-				smap.insert(SM_VT(tstring(strBuf), tstring(pStoredName)));
-			}
-
-			pSS->Save();
-
-			// Set the default new-scheme.
-			int selIndex = m_combo.GetCurSel();
-			LPCTSTR wt = NULL;
-			SchemeDetails* pS = m_combo.GetItemScheme(selIndex);
-			if(pS)
-				wt = pS->Name.c_str();
-			else
-				wt = _T("Plain Text");
-			OPTIONS->Set(PNSK_EDITOR, _T("NewScheme"), wt);
-
-			// Enable SmartStart?
-			CButton button(GetDlgItem(IDC_SMARTSTART_ENABLECHECK));
-			OPTIONS->Set(PNSK_EDITOR, _T("SmartStart"), button.GetCheck() == BST_CHECKED);
-		}
-
-		FreeResources();
-	}
-}
-
-void COptionsPageNewFiles::OnCancel()
-{
-	if(m_bCreated)
-		FreeResources();
-}
-
-LPCTSTR COptionsPageNewFiles::GetTreePosition()
-{
-	return _T("Files\\New Files");
-}
-
-LRESULT COptionsPageNewFiles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	m_list.Attach(GetDlgItem(IDC_SMARTSTART_LIST));
-	CRect rc;
-	m_list.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
-	m_list.GetClientRect(rc);
-	m_list.InsertColumn(0, _T("Starting Phrase"), LVCFMT_LEFT, (rc.Width() / 3) * 2, 0);
-	m_list.InsertColumn(1, _T("Scheme"), LVCFMT_LEFT, (rc.Width() / 3) - 20, 0);
-
-	m_combo.Attach(GetDlgItem(IDC_NEW_SCHEMECOMBO));
-
-	m_ssCheck.Attach(GetDlgItem(IDC_SMARTSTART_ENABLECHECK));
-
-	return 0;
-}
-
-LRESULT COptionsPageNewFiles::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	CSmartStartEditorDialog edit(m_pSchemes);
-	
-	edit.SetValues(_T(""), _T(""));
-
-	if(edit.DoModal() == IDOK)
-	{
-		tstring startPhrase, schemeName;
-		edit.GetValues(startPhrase, schemeName);
-		AddItem(startPhrase.c_str(), schemeName.c_str());
-		m_bDirty = true;
-	}
-
-	return 0;
-}
-
-LRESULT COptionsPageNewFiles::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	int iSelIndex = m_list.GetSelectedIndex();
-	if(iSelIndex != -1)
-	{
-		CString strBuf;
-		m_list.GetItemText(iSelIndex, 0, strBuf);
-		TCHAR* pStoredData = reinterpret_cast<TCHAR*>( m_list.GetItemData(iSelIndex) );
-		if(pStoredData && strBuf.GetLength() > 0)
-		{
-			CSmartStartEditorDialog edit(m_pSchemes);
-
-			edit.SetValues(strBuf, pStoredData);
-
-			if(edit.DoModal() == IDOK)
-			{
-				tstring startPhrase, schemeName;
-				edit.GetValues(startPhrase, schemeName);
-				m_list.SetItemText(iSelIndex, 0, startPhrase.c_str());
-				
-				Scheme* pScheme = SchemeManager::GetInstance()->SchemeByName(schemeName.c_str());
-				if(pScheme)
-					m_list.SetItemText(iSelIndex, 1, pScheme->GetTitle());
-				
-				delete [] pStoredData;
-				pStoredData = new TCHAR[schemeName.length()+1];
-				_tcscpy(pStoredData, schemeName.c_str());
-				m_list.SetItemData(iSelIndex, reinterpret_cast<DWORD_PTR>( pStoredData ));
-				m_bDirty = true;
-			}
-		}
-	}
-	return 0;
-}
-
-LRESULT COptionsPageNewFiles::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	int iSelIndex = m_list.GetSelectedIndex();
-	if(iSelIndex != -1)
-	{
-		TCHAR* pStoredName = reinterpret_cast<TCHAR*>( m_list.GetItemData(iSelIndex) );
-		if(pStoredName)
-		{
-			delete [] pStoredName;
-			m_list.DeleteItem(iSelIndex);
-		}
-		m_bDirty = true;
-	}
-	return 0;
-}
-
-LRESULT COptionsPageNewFiles::OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	m_bDirty = true;
-	return 0;
-}
-
-LRESULT COptionsPageNewFiles::OnEnabledChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	m_bDirty = true;
-	EnableButtons();
-	return 0;
-}
-
-LRESULT COptionsPageNewFiles::OnListKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
-{
-	EnableButtons();
-
-	return 0;
-}
-
-LRESULT COptionsPageNewFiles::OnListClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
-{
-	EnableButtons();
-
-	return 0;
-}
-
-LRESULT COptionsPageNewFiles::OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
-{
-	BOOL b;
-	OnEditClicked(0, 0, 0, b);
-
-	return 0;
-}
 
 //////////////////////////////////////////////////////////////////////////////
 // COptionsPageAFiles
@@ -1882,7 +1621,7 @@ LRESULT COptionsPageFileTypes::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, 
 	if(dlg.DoModal(m_hWnd) == IDOK)
 	{
 		tstring fn;
-		tstring scheme;
+		std::string scheme;
 		dlg.GetValues(fn, scheme);
 		
 		Scheme* pScheme;
@@ -1936,7 +1675,7 @@ LRESULT COptionsPageFileTypes::OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/,
 	if(dlg.DoModal(m_hWnd) == IDOK)
 	{
 		tstring match;
-		tstring scheme;
+		std::string scheme;
 		dlg.GetValues(match, scheme);
 		
 		Scheme* pScheme;

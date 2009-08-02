@@ -40,7 +40,7 @@ MultipleInstanceManager::MultipleInstanceManager(LPCTSTR pszKey)
 	bool bWin95 = (g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS) &&
 		( (g_Context.OSVersion.dwMajorVersion == 4) && (g_Context.OSVersion.dwMinorVersion == 0) );
 
-	m_hUser32 = ::LoadLibrary("User32.dll");
+	m_hUser32 = ::LoadLibrary(_T("User32.dll"));
 
 	if(m_hUser32 != NULL)
 	{
@@ -195,7 +195,7 @@ void MultipleInstanceManager::SendParameters()
 	}
 	else
 	{
-		::OutputDebugString("PN failed to enter mutex to send parameters");
+		LOG(_T("PN failed to enter mutex to send parameters"));
 	}
 }
 

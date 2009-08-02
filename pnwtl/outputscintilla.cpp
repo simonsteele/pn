@@ -29,11 +29,15 @@ REScintilla::~REScintilla()
 	}
 }
 
-void REScintilla::SetRE(LPCTSTR regex, bool bClearStyling)
+void REScintilla::SetRE(LPCSTR regex, bool bClearStyling)
 {
 	// First of all build up the regular expression to use.
 	CToolREBuilder builder;
-	m_customre = builder.Build(regex);
+	
+	CA2CT regext(regex);
+	tstring result = builder.Build(regext);
+	CT2CA regexa(result.c_str());
+	m_customre = regexa;
 	
 	/*if(m_pRE)
 	{
@@ -56,8 +60,8 @@ void REScintilla::SetRE(LPCTSTR regex, bool bClearStyling)
 	catch(boost::xpressive::regex_error& ex)
 	{
 		size_t len = strlen(ex.what()) + m_customre.size() + 90;
-		char* buf = new char[len];
-		sprintf(buf, "Custom Parser Error (%s): %s", ex.what(), m_customre.c_str());
+		TCHAR* buf = new TCHAR[len];
+		_stprintf(buf, _T("Custom Parser Error (%S): %S"), ex.what(), m_customre.c_str());
 		g_Context.m_frame->SetStatusText(buf);
 		delete [] buf;
 

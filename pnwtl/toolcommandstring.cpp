@@ -75,7 +75,10 @@ void ToolCommandString::OnFormatChar(TCHAR thechar)
 		case _T('w'):
 
 			if (pChild)
-				m_string += pChild->GetTextView()->GetCurrentWord();
+			{
+				CA2CT word(pChild->GetTextView()->GetCurrentWord().c_str());
+				m_string += word;
+			}
 
 			break;
 
@@ -183,16 +186,17 @@ void ToolCommandString::OnFormatKey(LPCTSTR key)
 		if (!pTemplate)
 			return;
 
-		boost::xpressive::sregex re = boost::xpressive::sregex::compile("ProjectProp:(?P<group>[-_a-zA-Z0-9]+)\\.(?P<cat>[-_a-zA-Z0-9]+)\\.(?P<val>[-_a-zA-Z0-9]+)");
-		boost::xpressive::smatch match;
-		std::string prop(key);
+		boost::xpressive::tsregex re = boost::xpressive::tsregex::compile(L"ProjectProp:(?P<group>[-_a-zA-Z0-9]+)\\.(?P<cat>[-_a-zA-Z0-9]+)\\.(?P<val>[-_a-zA-Z0-9]+)");
+		boost::xpressive::tsmatch match;
+		
+		tstring prop(key);
 
 		if (boost::xpressive::regex_match(prop, match, re))
 		{
 			// Extract the named matches from the RE, noting if there was a line or column.
-			std::string group(match["group"]);
-			std::string cat(match["cat"]);
-			std::string val(match["val"]);
+			tstring group(match[_T("group")]);
+			tstring cat(match[_T("cat")]);
+			tstring val(match[_T("val")]);
 
 			if (group.empty() || cat.empty() || val.empty())
 			{
@@ -227,16 +231,16 @@ void ToolCommandString::OnFormatKey(LPCTSTR key)
 		if (!pFileObj)
 			return;
 
-		boost::xpressive::sregex re = boost::xpressive::sregex::compile("FileProp:(?P<group>[-_a-zA-Z0-9]+)\\.(?P<cat>[-_a-zA-Z0-9]+)\\.(?P<val>[-_a-zA-Z0-9]+)");
-		boost::xpressive::smatch match;
-		std::string prop(key);
+		boost::xpressive::tsregex re = boost::xpressive::tsregex::compile(_T("FileProp:(?P<group>[-_a-zA-Z0-9]+)\\.(?P<cat>[-_a-zA-Z0-9]+)\\.(?P<val>[-_a-zA-Z0-9]+)"));
+		boost::xpressive::tsmatch match;
+		tstring prop(key);
 
 		if (boost::xpressive::regex_match(prop, match, re))
 		{
 			// Extract the named matches from the RE, noting if there was a line or column.
-			std::string group(match["group"]);
-			std::string cat(match["cat"]);
-			std::string val(match["val"]);
+			tstring group(match[_T("group")]);
+			tstring cat(match[_T("cat")]);
+			tstring val(match[_T("val")]);
 
 			if (group.empty() || cat.empty() || val.empty())
 			{
@@ -271,7 +275,7 @@ void ToolCommandString::OnFormatKey(LPCTSTR key)
 	}
 	else if (MATCH(_T("PNPath")))
 	{
-		std::string pn;
+		tstring pn;
 		OPTIONS->GetPNPath(pn);
 		m_string += pn;
 	}
@@ -279,7 +283,7 @@ void ToolCommandString::OnFormatKey(LPCTSTR key)
 	{
 		tstring s = _T("Unknown constant: $(");
 		s += key;
-		s += ").";
+		s += _T(").");
 		g_Context.m_frame->SetStatusText(s.c_str());
 	}
 }
@@ -308,10 +312,13 @@ void ToolCommandString::OnFormatScriptRef(LPCTSTR key)
 	ToolCommandString cmdstr;
 	tstring script = cmdstr.Build(key);
 
-	int index = script.find(':');
+	CT2CA scriptconv(script.c_str());
 	
-	std::string engine = script.substr(0, index);
-	script = script.substr(index + 1);
+	std::string thescript(scriptconv);
+	int index = thescript.find(_T(':'));
+	
+	std::string engine = thescript.substr(0, index);
+	thescript = thescript.substr(index + 1);
 
 	extensions::IScriptRunner* runner = ScriptRegistry::GetInstanceRef().GetRunner(engine.c_str());
 	if (runner == NULL)
@@ -320,11 +327,12 @@ void ToolCommandString::OnFormatScriptRef(LPCTSTR key)
 	}
 
 	PN::AString output;
-	runner->Eval(script.c_str(), output);
+	runner->Eval(thescript.c_str(), output);
 	
 	if (output.GetLength())
 	{
-		m_string += output.Get();
+		CA2CT outputconv(output.Get());
+		m_string += outputconv;
 	}
 }
 

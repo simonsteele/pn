@@ -45,7 +45,7 @@ SchemeRecorder::SchemeRecorder() : CScintilla()
 	m_next = nrMsgRec;
 }
 
-bool SchemeRecorder::StartRecording(LPCTSTR scheme, LPCTSTR title, LPCTSTR outfile, int FoldFlags)
+bool SchemeRecorder::StartRecording(LPCSTR scheme, LPCTSTR title, LPCTSTR outfile, int FoldFlags)
 {
 	PNASSERT(m_out == NULL);
 
@@ -95,24 +95,24 @@ void SchemeRecorder::WriteCommentBlock(const char* linecomment, const char* stre
 
 }
 
-void SchemeRecorder::WriteHeader(LPCTSTR schemename, LPCTSTR schemetitle, int FoldFlags)
+void SchemeRecorder::WriteHeader(LPCSTR schemename, LPCTSTR schemetitle, int FoldFlags)
 {
 	if (!m_out)
 	{
 		return;
 	}
 
-	USES_CONVERSION;
+	CT2CA asciiTitle(schemetitle);
 
 	SchemeHdrRec scHdr;
 
 	memset(&scHdr.Name[0], 0, SC_HDR_NAMESIZE);
-	strcpy(&scHdr.Name[0], T2CA(schemename));
+	strcpy(&scHdr.Name[0], schemename);
 
 	if(schemetitle != NULL)
 	{
 		memset(&scHdr.Title[0], 0, SC_HDR_TITLESIZE);
-		strcpy(&scHdr.Title[0], T2CA(schemetitle));
+		strcpy(&scHdr.Title[0], asciiTitle);
 	}
 
 	scHdr.Flags = FoldFlags;
@@ -307,10 +307,10 @@ void SchemeCompiler::Compile(LPCTSTR path, LPCTSTR outpath, LPCTSTR mainfile)
 	filename += _T("default.cscheme");
 
 	// Create a scheme details object, this is needed when sendBaseStyles is called.
-	SchemeDetails sdDefault(_T("default"));
+	SchemeDetails sdDefault("default");
 	m_LoadState.m_pCurScheme = &sdDefault;
 
-	m_Recorder.StartRecording(_T("default"), _T("default"), filename.c_str(), 0);
+	m_Recorder.StartRecording("default", _T("default"), filename.c_str(), 0);
 	m_Recorder.SetLexer(0);
 	
 	// Set default and whitespace styles:
@@ -334,17 +334,18 @@ uint64_t SchemeCompiler::GetNewestFileTime() const
 	return m_newestFile;
 }
 
-void SchemeCompiler::onLanguage(LPCTSTR name, LPCTSTR title, int foldflags, int /*ncfoldflags*/)
+void SchemeCompiler::onLanguage(LPCSTR name, LPCTSTR title, int foldflags, int /*ncfoldflags*/)
 {
 	tstring filename(m_LoadState.m_outputPath);
-	filename += name;
+	CA2CT nameconv(name);
+	filename += nameconv;
 	filename += _T(".cscheme");
 
 	if (!m_Recorder.StartRecording(name, title, filename.c_str(), foldflags))
 	{
-		tstring msg("Failed to create file ");
+		tstring msg(_T("Failed to create file "));
 		msg += filename;
-		msg += ", schemes may not work correctly";
+		msg += _T(", schemes may not work correctly");
 		UNEXPECTED(msg.c_str());
 	}
 	
@@ -413,13 +414,12 @@ void SchemeCompiler::onFile(LPCTSTR filename)
 	m_newestFile = max(m_newestFile, FileAge(filename));
 }
 
-void SchemeCompiler::onKeywords(int key, LPCTSTR keywords, LPCTSTR name, LPCTSTR custom)
+void SchemeCompiler::onKeywords(int key, LPCSTR keywords, LPCTSTR name, LPCSTR custom)
 {
-	USES_CONVERSION;
 	if(custom)
-		m_Recorder.SetKeyWords(key, T2CA((LPCTSTR)custom));
+		m_Recorder.SetKeyWords(key, custom);
 	else
-		m_Recorder.SetKeyWords(key, T2CA((LPCTSTR)keywords));
+		m_Recorder.SetKeyWords(key, keywords);
 }
 
 void SchemeCompiler::onLexer(LPCTSTR name, int styleBits)
@@ -429,6 +429,7 @@ void SchemeCompiler::onLexer(LPCTSTR name, int styleBits)
 		USES_CONVERSION;
 		m_Recorder.SetLexerLanguage(T2A((LPTSTR)name));
 	}
+
 	m_Recorder.SetStyleBits(styleBits);
 }
 
@@ -558,7 +559,7 @@ void SchemeParser::processKeywordClass(SchemeLoaderState* pState, XMLAttributes&
 		{
 			pState->m_storedName = atts.getValue(i);
 			pState->m_State = DOING_KEYWORDS;
-			pState->m_CDATA = _T("");
+			pState->m_CDATA = "";
 			break;
 		}
 	}
@@ -661,7 +662,7 @@ void SchemeParser::processStyleClass(SchemeLoaderState* pState, XMLAttributes& a
 
 	if(t != NULL)
 	{
-		std::string name = t;
+		tstring name = t;
 		
 		pS = pState->GetClass(name.c_str());
 
@@ -803,7 +804,7 @@ void SchemeParser::processLanguageKeywords(SchemeLoaderState* pState, XMLAttribu
 	int x = atts.getCount();
 	tstring name;
 	LPCTSTR val = NULL;
-	tstring kw = _T("");
+	std::string kw = "";
 	tstring namestr;
 	int key = -1;
 
@@ -818,7 +819,7 @@ void SchemeParser::processLanguageKeywords(SchemeLoaderState* pState, XMLAttribu
 		}
 		else if(name == _T("class"))
 		{
-			STRING_MAP::iterator z = pState->m_Keywords.find(tstring(val));
+			tstring_string_map::const_iterator z = pState->m_Keywords.find(tstring(val));
 			if(z != pState->m_Keywords.end())
 			{
 				// we have some keywords...
@@ -831,7 +832,7 @@ void SchemeParser::processLanguageKeywords(SchemeLoaderState* pState, XMLAttribu
 		}
 	}
 
-	LPCTSTR custom = NULL;
+	LPCSTR custom = NULL;
 	CustomKeywordSet* pCustom = pState->m_pCurScheme->CustomKeywords.FindKeywordSet(key);
 	if(pCustom)
 		custom = pCustom->pWords;
@@ -846,24 +847,27 @@ void SchemeParser::processLanguageKeywords(SchemeLoaderState* pState, XMLAttribu
 		{
 			CustomKeywordSet* pSet = new CustomKeywordSet;
 			pSet->key = key;
+			
 			int sLen = namestr.length();
 			if(sLen != 0)
 			{
 				pSet->pName = new TCHAR[sLen + 1];
 				_tcscpy(pSet->pName, namestr.c_str());
 			}
+			
 			sLen = kw.length();
 			if(sLen != 0)
 			{
-                pSet->pWords = new TCHAR[sLen + 1];
-				_tcscpy(pSet->pWords, kw.c_str());
+                pSet->pWords = new char[sLen + 1];
+				strcpy(pSet->pWords, kw.c_str());
 			}
+
 			pState->m_pBase->Keywords.AddKeywordSet(pSet);
 		}
 	}
 }
 
-SchemeDetails* ensureSchemeDetails(SchemeDetailsMap& map, tstring& name)
+SchemeDetails* ensureSchemeDetails(SchemeDetailsMap& map, std::string& name)
 {
 	SchemeDetailsMap::const_iterator i = map.find( name );
 	if( i != map.end() )
@@ -878,7 +882,7 @@ SchemeDetails* ensureSchemeDetails(SchemeDetailsMap& map, tstring& name)
 	}
 }
 
-SchemeDetails* ensureBaseSchemeDetails(SchemeDetailsMap& map, tstring& name)
+SchemeDetails* ensureBaseSchemeDetails(SchemeDetailsMap& map, std::string& name)
 {
 	SchemeDetailsMap::const_iterator i = map.find( name );
 	if( i != map.end() )
@@ -912,14 +916,15 @@ void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR nam
 		if(schval != NULL)
 		{
 			// Make sure scheme name is only 10 characters long
-			std::string scheme(schval);
+			CT2CA schemenameconv(schval);
+			std::string scheme(schemenameconv);
 			if (scheme.length() > SC_HDR_NAMESIZE)
 			{
 				scheme.resize(SC_HDR_NAMESIZE);
 			}
 
 			LPCTSTR titval = atts.getValue(_T("title"));
-			std::string title;
+			tstring title;
 			if (titval != NULL)
 			{
 				title = titval;
@@ -950,7 +955,8 @@ void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR nam
 			if(base != NULL)
 			{
 				// The language has a base-language reference.
-				SchemeDetailsMap::iterator iBase = pState->m_BaseSchemeDetails.find(tstring(base));
+				CT2CA basename(base);
+				SchemeDetailsMap::iterator iBase = pState->m_BaseSchemeDetails.find(std::string(basename));
 				if( iBase != pState->m_BaseSchemeDetails.end() )
 				{
 					pBase = static_cast<BaseScheme*>( (*iBase).second );
@@ -1000,7 +1006,10 @@ void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR nam
 
 			t = atts.getValue(_T("wordchars"));
 			if (t != NULL && t[0] != NULL)
-				wordchars = t;
+			{
+				CT2CA wordcharsconv(t);
+				wordchars = wordcharsconv;
+			}
 
 			// Store the non-customised flags to pass on
 			ncflags = flags;
@@ -1034,14 +1043,16 @@ void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR nam
 
 				if( pBase )
 				{
-					sendBaseScheme(pState, pBase, base);
+					CT2CA basename(base);
+					sendBaseScheme(pState, pBase, basename);
 				}
 			}
 			else
 			{
 				pState->m_pBase = static_cast<BaseScheme*>( pState->m_pCurScheme );
 				pState->m_pBase->flags = flags;
-				pState->m_pBase->wordchars = wordchars;
+
+				pState->m_pBase->wordchars = wordchars.c_str();
 			}
 
 			pState->m_State = DOING_LANGUAGE_DETAILS;
@@ -1124,7 +1135,7 @@ void SchemeParser::specifyImportFile(SchemeLoaderState* pState, XMLAttributes& a
 	}
 }
 
-void SchemeParser::sendBaseScheme(SchemeLoaderState* pState, BaseScheme* pBase, LPCTSTR baseName)
+void SchemeParser::sendBaseScheme(SchemeLoaderState* pState, BaseScheme* pBase, LPCSTR baseName)
 {
 	GroupDetailsList::const_iterator iGroup = pBase->GroupDetails.begin();
 
@@ -1133,7 +1144,7 @@ void SchemeParser::sendBaseScheme(SchemeLoaderState* pState, BaseScheme* pBase, 
 		onLexer(pBase->lexer.c_str(), pBase->styleBits);
 	}
 
-	SchemeDetailsMap::const_iterator i = pState->m_BaseSchemeDetails.find( tstring(baseName) );
+	SchemeDetailsMap::const_iterator i = pState->m_BaseSchemeDetails.find( std::string(baseName) );
 	if(i != pState->m_BaseSchemeDetails.end())
 	{
 		SchemeDetails* sd = (*i).second;
@@ -1227,21 +1238,21 @@ void SchemeParser::sendBaseStyles(SchemeLoaderState* pState)
 
 void SchemeParser::processComments(SchemeLoaderState* pState, XMLAttributes& atts)
 {
-	LPCTSTR lineComment(NULL);
-	LPCTSTR startComment(NULL);
-	LPCTSTR endComment(NULL);
-	LPCTSTR startBlock(NULL);
-	LPCTSTR endBlock(NULL);
-	LPCTSTR blockLine(NULL);
+	LPCTSTR lineComment(atts.getValue(_T("line")));
+	LPCTSTR startComment(atts.getValue(_T("streamStart")));
+	LPCTSTR endComment(atts.getValue(_T("streamEnd")));
+	LPCTSTR startBlock(atts.getValue(_T("blockStart")));
+	LPCTSTR endBlock(atts.getValue(_T("blockEnd")));
+	LPCTSTR blockLine(atts.getValue(_T("blockLine")));
 
-	lineComment = atts.getValue("line");
-	startComment = atts.getValue("streamStart");
-	endComment = atts.getValue("streamEnd");
-	startBlock = atts.getValue("blockStart");
-	endBlock = atts.getValue("blockEnd");
-	blockLine = atts.getValue("blockLine");
+	CT2CA lineCommentConv(lineComment);
+	CT2CA startCommentConv(startComment);
+	CT2CA endCommentConv(endComment);
+	CT2CA startBlockConv(startBlock);
+	CT2CA endBlockConv(endBlock);
+	CT2CA blockLineConv(blockLine);
 
-	onCommentSpec(lineComment, startComment, endComment, startBlock, endBlock, blockLine);
+	onCommentSpec(lineCommentConv, startCommentConv, endCommentConv, startBlockConv, endBlockConv, blockLineConv);
 }
 
 /**
@@ -1296,7 +1307,7 @@ void SchemeParser::processKeywordCombine(SchemeLoaderState* pState, XMLAttribute
 	LPCTSTR name = atts.getValue(_T("name"));
 	if(name != NULL)
 	{
-		STRING_MAP::iterator z = pState->m_Keywords.find(tstring(name));
+		tstring_string_map::const_iterator z = pState->m_Keywords.find(tstring(name));
 		if(z != pState->m_Keywords.end())
 		{
 			pState->m_CDATA += (*z).second.c_str();
@@ -1422,9 +1433,9 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 	{
 		if(pS->m_CDATA.length() > 0)
 		{
-			tstring kw = NormaliseKeywords( tstring(pS->m_CDATA) );
+			std::string kw = NormaliseKeywords( std::string(pS->m_CDATA) );
 
-			pS->m_Keywords.insert(pS->m_Keywords.end(), STRING_MAP::value_type(pS->m_storedName, kw));
+			pS->m_Keywords.insert(pS->m_Keywords.end(), tstring_string_map::value_type(pS->m_storedName, kw));
 
 #ifdef _DEBUG
 			stattext = _T("Added Keyword Class: ");
@@ -1522,7 +1533,7 @@ void SchemeParser::endElement(void *userData, LPCTSTR name)
 	
 	// Clear character data after every tag end...
 	if(state != DOING_KEYWORDCOMBINE)
-		pS->m_CDATA = _T("");
+		pS->m_CDATA = "";
 }
 
 ///@todo perhaps change this to use strncat and go straight into the CData buffer...
@@ -1531,5 +1542,6 @@ void SchemeParser::characterData(void* userData, LPCTSTR data, int len)
 	SchemeLoaderState* pState = static_cast<SchemeLoaderState*>(userData);
 
 	tstring cdata(data, len);
-	pState->m_CDATA += cdata;
+	CT2CA convert(cdata.c_str());
+	pState->m_CDATA += convert;
 }

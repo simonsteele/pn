@@ -86,8 +86,8 @@ void DuplicateSelection(CScintillaImpl& editor)
 void StripTrailingBlanks(CScintillaImpl& editor)
 {
 	SearchOptions opt;
-	opt.SetFindText("[ \t]+$");
-	opt.SetReplaceText("");
+	opt.SetFindText(_T("[ \t]+$"));
+	opt.SetReplaceText(_T(""));
 	opt.SetUseRegExp(true);
 	opt.SetNoCursorMove(true);
 	if (editor.GetSelLength() > 0)
@@ -104,8 +104,8 @@ void StripTrailingBlanks(CScintillaImpl& editor)
 void CompressWhitespace(CScintillaImpl& editor)
 {
 	SearchOptions opt;
-	opt.SetFindText("[ \t][ \t]+");
-	opt.SetReplaceText(" ");
+	opt.SetFindText(_T("[ \t][ \t]+"));
+	opt.SetReplaceText(_T(" "));
 	opt.SetUseRegExp(true);
 	opt.SetNoCursorMove(true);
 	opt.SetReplaceInSelection(editor.GetSelLength() != 0);
@@ -132,7 +132,7 @@ void SpacesToTabs(CScintillaImpl& editor)
 	// Find all leading groups of spaces, convert to tabs
 	SearchOptions options;
 	options.SetFindText(buf);
-	options.SetReplaceText("\\t");
+	options.SetReplaceText(_T("\\t"));
 	options.SetReplaceInSelection(editor.GetSelLength() != 0);
 	options.SetUseRegExp(true);
 	options.SetNoCursorMove(true);
@@ -140,7 +140,7 @@ void SpacesToTabs(CScintillaImpl& editor)
 	editor.BeginUndoAction();
 	
 	// Repeat until we've replaced all occurances
-	while ( editor.ReplaceAll( &options ) != 0 );
+	while (editor.ReplaceAll(&options) != 0);
 	
 	editor.EndUndoAction();
 }
@@ -157,12 +157,12 @@ void TabsToSpaces(CScintillaImpl& editor)
 	}
 
 	// Set the replace text to tab width * space:
-	std::string replaceText(editor.GetTabWidth(), ' ');
+	tstring replaceText(editor.GetTabWidth(), ' ');
 
 	SearchOptions options;
-	options.SetFindText("\\t");
+	options.SetFindText(_T("\\t"));
 	options.SetReplaceText(replaceText.c_str());
-	options.SetReplaceInSelection( editor.GetSelLength() != 0 );
+	options.SetReplaceInSelection(editor.GetSelLength() != 0);
 	options.SetSearchBackwards(false);
 	options.SetUseRegExp(true);
 	options.SetNoCursorMove(true);
@@ -170,7 +170,7 @@ void TabsToSpaces(CScintillaImpl& editor)
 	editor.BeginUndoAction();
 
 	// Repeat until we've replaced all occurances
-	while ( editor.ReplaceAll( &options ) != 0 );
+	while (editor.ReplaceAll(&options) != 0);
 
 	editor.EndUndoAction();
 }

@@ -157,7 +157,7 @@ void CSRegistry::WriteString(LPCTSTR valname, LPCTSTR value)
 	
 	if(!m_open) throw "CSRegistry Exception - no open key.";
 
-	int len = strlen(value);
+	int len = _tcslen(value);
 	long lResult = 0;
     
 	if(len != 0)
@@ -167,7 +167,7 @@ void CSRegistry::WriteString(LPCTSTR valname, LPCTSTR value)
                              NULL,				// Reserved, dword = NULL.
                              REG_SZ,			// Type of data.
                              (LPBYTE) value,	// Data buffer.
-                              len);				// Size of data buffer.
+                              len * sizeof(TCHAR));				// Size of data buffer.
 		if(lResult != ERROR_SUCCESS)
 			throw "CSRegistry Exception - Error writing to registry.";
 	}
@@ -199,18 +199,23 @@ bool CSRegistry::ReadString(LPCTSTR valname, tstring& value)
 		// dwCount is now the size of the required buffer...
 		if (dwCount > 1)
 		{
-			BYTE	*bBuff = new BYTE[dwCount];
+			BYTE	*bBuff = new BYTE[dwCount+2];
 			long lResult = RegQueryValueEx(m_hKey, valname, 0, &dwType, bBuff, &dwCount);
+			
+			// Two NULL bytes for wchar_t in unicode, or double null for ASCII.
+			bBuff[dwCount] = NULL;
+			bBuff[dwCount+1] = NULL;
 
 			if(lResult == ERROR_SUCCESS && dwType == REG_SZ)
 			{
-				value = (const char *)bBuff;
+				value = (const TCHAR*)bBuff;
 				bRes = true;
 			}
+
 			delete [] bBuff;
 		}
 		else
-			value = "";
+			value = _T("");
 	}
 	
 	return bRes;

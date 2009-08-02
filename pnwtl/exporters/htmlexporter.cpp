@@ -4,9 +4,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 // HTMLExporter
 
-#define HTML_HTML401STRICT _T("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">")
-#define HTML_XHTML10STRICT _T("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">")
-#define HTML_XHTML11STRICT _T("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">")
+#define HTML_HTML401STRICT "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">"
+#define HTML_XHTML10STRICT "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">"
+#define HTML_XHTML11STRICT "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">"
 
 #define HTML_START       "<html>\n"
 #define HTML_STARTXHTML  "<html xmlns='http://www.w3.org/1999/xhtml'>\n"
@@ -44,7 +44,7 @@
 #define HTML_FONTFACE      "Courier New"
 #define HTML_COLOR         "#000"
 
-HTMLExporter::HTMLExporter(IOutput* pOutput, LPCTSTR lpszSchemeName, StylesList* pStyles, CScintilla* pScintilla)
+HTMLExporter::HTMLExporter(IOutput* pOutput, LPCSTR lpszSchemeName, StylesList* pStyles, CScintilla* pScintilla)
 	: BaseExporter(pOutput, lpszSchemeName, pStyles, pScintilla)
 {
 }
@@ -74,7 +74,7 @@ void HTMLExporter::InternalExport(int start, int end)
 		strFontFace = HTML_FONTFACE;
 
 	// Define a class name lookup table.
-	CString cssClassNames[STYLE_MAX + 1];
+	CStringA cssClassNames[STYLE_MAX + 1];
 	
 	// Write the HTML header...
 	//@todo: add a way to select the DOCTYPE
@@ -86,7 +86,7 @@ void HTMLExporter::InternalExport(int start, int end)
 	m_out->puts(HTML_TITLECLOSE);
 	m_out->puts(HTML_CSSOPEN);
 
-	CString strTemp;
+	CStringA strTemp;
 
 	// Dump the styles into CSS classes
 	//@todo: add support for CSS files
@@ -100,7 +100,7 @@ void HTMLExporter::InternalExport(int start, int end)
 		m_out->puts(cssClassNames[STYLE_DEFAULT]);
 
 		m_out->puts(HTML_CSSCLASSOPEN HTML_CSSBKGNDCOLOR);
-		strTemp.Format(_T("#%02X%02X%02X"),
+		strTemp.Format("#%02X%02X%02X",
 			GetRValue(pDefStyle->BackColor),
 			GetGValue(pDefStyle->BackColor),
 			GetBValue(pDefStyle->BackColor));
@@ -108,7 +108,7 @@ void HTMLExporter::InternalExport(int start, int end)
 		m_out->puts(HTML_CSSPROPERTYEND);
 
 		m_out->puts(HTML_CSSFORECOLOR);
-		strTemp.Format(_T("#%02X%02X%02X;"),
+		strTemp.Format("#%02X%02X%02X;",
 			GetRValue(pDefStyle->ForeColor),
 			GetGValue(pDefStyle->ForeColor),
 			GetBValue(pDefStyle->ForeColor));
@@ -127,7 +127,7 @@ void HTMLExporter::InternalExport(int start, int end)
 		if(pDefStyle->Bold)
 			m_out->puts("bold ");
 
-		strTemp.Format(_T("%dpt "), pDefStyle->FontSize ? pDefStyle->FontSize : fontSize);
+		strTemp.Format("%dpt ", pDefStyle->FontSize ? pDefStyle->FontSize : fontSize);
 		m_out->puts(strTemp);
 
 		m_out->putc('"');
@@ -155,7 +155,7 @@ void HTMLExporter::InternalExport(int start, int end)
 			if(pStyle->classname.length())
 				strTemp = pStyle->classname.c_str();
 			else
-				strTemp.Format(_T("%s%02d"), m_pSchemeName, istyle);
+				strTemp.Format("%s%02d", m_pSchemeName, istyle);
 			cssClassNames[istyle] = strTemp;
 			m_out->putc('.');
 			m_out->puts(cssClassNames[istyle]);
@@ -166,7 +166,7 @@ void HTMLExporter::InternalExport(int start, int end)
 			if(!pDefStyle || pStyle->BackColor != pDefStyle->BackColor)
 			{
 				m_out->puts(HTML_CSSBKGNDCOLOR);
-				strTemp.Format(_T("#%02X%02X%02X"),
+				strTemp.Format("#%02X%02X%02X",
 					GetRValue(pStyle->BackColor),
 					GetGValue(pStyle->BackColor),
 					GetBValue(pStyle->BackColor));
@@ -177,7 +177,7 @@ void HTMLExporter::InternalExport(int start, int end)
 			if(!pDefStyle || pStyle->ForeColor != pDefStyle->ForeColor)
 			{
 				m_out->puts(HTML_CSSFORECOLOR);
-				strTemp.Format(_T("#%02X%02X%02X"),
+				strTemp.Format("#%02X%02X%02X",
 					GetRValue(pStyle->ForeColor),
 					GetGValue(pStyle->ForeColor),
 					GetBValue(pStyle->ForeColor));
@@ -198,7 +198,7 @@ void HTMLExporter::InternalExport(int start, int end)
 				(!pDefStyle || pDefStyle->FontSize != pStyle->FontSize))
 			{
 				m_out->puts(HTML_CSSFONTSIZE);
-				strTemp.Format(_T("%dpt"), pStyle->FontSize);
+				strTemp.Format("%dpt", pStyle->FontSize);
 				m_out->puts(strTemp);
 				m_out->puts(HTML_CSSPROPERTYEND);
 			}
@@ -228,7 +228,7 @@ void HTMLExporter::InternalExport(int start, int end)
 	m_out->puts(HTML_BODYOPEN);
 
 	strTemp.Format(HTML_PREOPEN, m_pSchemeName);
-	m_out->puts((LPCTSTR)strTemp);
+	m_out->puts((LPCSTR)strTemp);
 
 	int styleCurrent = -1;
 	bool closePrevious = false;
@@ -247,7 +247,7 @@ void HTMLExporter::InternalExport(int start, int end)
 
 			if(cssClassNames[style].GetLength() > 0)
 			{
-				strTemp.Format(_T("<span class='%s'>"), cssClassNames[style]);
+				strTemp.Format("<span class='%s'>", cssClassNames[style]);
 				m_out->puts(strTemp);
 				closePrevious = true;
 /*				// inline styles; not recommend

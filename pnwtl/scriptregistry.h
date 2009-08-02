@@ -16,7 +16,7 @@ class ScriptGroup;
 
 typedef std::list<Script*> script_list_t;
 typedef std::list<ScriptGroup*> group_list_t;
-typedef std::map<tstring, extensions::IScriptRunner*> s_runner_map;
+typedef std::map<std::string, extensions::IScriptRunner*> s_runner_map;
 
 class IScriptRegistryEventSink
 {
@@ -46,7 +46,7 @@ public:
 
 	virtual void RegisterRunner(const char* id, extensions::IScriptRunner* runner);
 	virtual void RemoveRunner(const char* id);
-	virtual extensions::IScriptRunner* GetRunner(LPCTSTR id);
+	virtual extensions::IScriptRunner* GetRunner(const char* id);
 
 	/**
 	 * Enable scheme scripts for a given scheme via this runner.
@@ -58,7 +58,7 @@ public:
 	 * If it does, then open documents can be run as scripts by that runner.
 	 */
 	bool SchemeScriptsEnabled(const char* scheme);
-	bool SchemeScriptsEnabled(const char* scheme, tstring& runner);
+	bool SchemeScriptsEnabled(const char* scheme, std::string& runner);
 
 	void SetEventSink(IScriptRegistryEventSink* sink);
 
@@ -75,7 +75,7 @@ protected:
 	IScriptRegistryEventSink* m_sink;
 	group_list_t m_groups;
 	s_runner_map m_runners;
-	std::map<tstring, tstring> m_scriptableSchemes;
+	string_map m_scriptableSchemes;
 };
 
 /**
@@ -119,7 +119,7 @@ public:
 private:
 	void clear();
 
-	tstring			m_name;
+	std::string		m_name;
 	script_list_t	m_scripts;
 };
 
@@ -143,8 +143,8 @@ public:
 		return *this;
 	}
 	
-	tstring Name;
-	tstring ScriptRef;
+	std::string Name;
+	std::string ScriptRef;
 
 	virtual void Run();
 };
@@ -172,7 +172,7 @@ private:
 		return *this;
 	}
 
-	tstring m_runner;
+	std::string m_runner;
 	DocumentPtr m_doc;
 };
 

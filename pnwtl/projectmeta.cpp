@@ -12,7 +12,6 @@
 #include "projectmeta.h"
 #include "project.h"
 
-#include "include/genx/genx.h"
 #include "include/encoding.h"
 #include "projectwriter.h"
 
@@ -132,11 +131,11 @@ LIST_NODES& XmlNode::GetChildren()
 	return children;
 }
 
-void XmlNode::Write(ProjectWriter writer)
+void XmlNode::Write(ProjectWriter* writer)
 {
-	genxStartElementLiteral(writer->w, 
-		sNamespace.length() ? (utf8)sNamespace.c_str() : NULL, 
-		(utf8)sName.c_str());
+	Tcs_Utf8 ns(sNamespace.c_str());
+	Tcs_Utf8 name(sName.c_str());
+	genxStartElementLiteral(writer->GetWriter(), sNamespace.length() ? (constUtf8)ns : (constUtf8)NULL, name);
 	
 	for(LIST_ATTRS::iterator i = attributes.begin(); i != attributes.end(); ++i)
 	{
@@ -150,11 +149,11 @@ void XmlNode::Write(ProjectWriter writer)
 
 	if(sText.length() > 0)
 	{
-		Windows1252_Utf8 ustr(sText.c_str());
-		genxAddText(writer->w, ustr);
+		Tcs_Utf8 ustr(sText.c_str());
+		genxAddText(writer->GetWriter(), ustr);
 	}
 	
-	genxEndElement(writer->w);
+	genxEndElement(writer->GetWriter());
 }
 
 LPCTSTR XmlNode::GetText()
@@ -212,12 +211,12 @@ XmlAttribute& XmlAttribute::operator = (const XmlAttribute& copy)
 	return *this;
 }
 
-void XmlAttribute::Write(ProjectWriter writer)
+void XmlAttribute::Write(ProjectWriter* writer)
 {
-	genxAddAttributeLiteral(writer->w, 
-		sNamespace.length() ? (utf8)sNamespace.c_str() : NULL, 
-		(utf8)sName.c_str(), 
-		(utf8)sValue.c_str());
+	Tcs_Utf8 ns(sNamespace.c_str());
+	Tcs_Utf8 name(sName.c_str());
+	Tcs_Utf8 att(sValue.c_str());
+	genxAddAttributeLiteral(writer->GetWriter(), sNamespace.length() ? (constUtf8)ns : (constUtf8)NULL, name, att);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -257,7 +256,7 @@ const int UserData::GetCount()
 	return nodes.size();
 }
 
-void UserData::Write(ProjectWriter writer)
+void UserData::Write(ProjectWriter* writer)
 {
 	for(XN_CIT i = nodes.begin(); i != nodes.end(); ++i)
 	{

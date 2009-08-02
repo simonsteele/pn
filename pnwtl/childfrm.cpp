@@ -165,7 +165,7 @@ void CChildFrame::SetupToolbar()
 {
 	CToolBarCtrl toolbar;
 
-	bool lowColour = !IsXPOrLater() || OPTIONS->Get(PNSK_INTERFACE, "LowColourToolbars", false);
+	bool lowColour = !IsXPOrLater() || OPTIONS->Get(PNSK_INTERFACE, _T("LowColourToolbars"), false);
 
 	CImageList imglist;
 	HBITMAP bmp;
@@ -258,7 +258,7 @@ void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 
 bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 {
-	tstring text = notification->text;
+	std::string text = notification->text;
 	int colon = text.find(':');
 	text.resize(colon);
 
@@ -355,8 +355,8 @@ void CChildFrame::SetTitle( bool bModified )
 
 	if(bModified)
 	{
-		title += " *";
-		tabTitle += " *";
+		title += _T(" *");
+		tabTitle += _T(" *");
 	}
 
 	if (m_bReadOnly)
@@ -919,7 +919,7 @@ LRESULT CChildFrame::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 LRESULT CChildFrame::OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	tstring word = m_view.GetCurrentWord();	
+	std::string word = m_view.GetCurrentWord();	
 
 	const TextClips::TextClipSet* clips = m_pTextClips->GetClips(m_view.GetCurrentScheme()->GetName());
 	
@@ -942,7 +942,7 @@ LRESULT CChildFrame::OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		AutoCompleteHandlerPtr p(new AutoCompleteAdaptor<CChildFrame>(this, &CChildFrame::InsertClipCompleted));
 		m_view.SetAutoCompleteHandler(p);
 
-		tstring cliptext = clips->BuildSortedClipList();
+		std::string cliptext = clips->BuildSortedClipList();
 		int sep = m_view.AutoCGetSeparator();
 		m_view.AutoCSetSeparator(',');
 		m_view.AutoCShow(word.size(), cliptext.c_str());
@@ -1063,10 +1063,11 @@ LRESULT CChildFrame::OnUseAsScript(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	if(m_pScript != NULL)
 		return 0;
 
-	tstring runner;
+	std::string runner;
 	if(ScriptRegistry::GetInstanceRef().SchemeScriptsEnabled(m_view.GetCurrentScheme()->GetName(), runner))
 	{
-		m_pScript = new DocScript(GetFileName(FN_FILE).c_str(), runner.c_str(), m_spDocument);
+		CT2CA scriptName(GetFileName(FN_FILE).c_str());
+		m_pScript = new DocScript(scriptName, runner.c_str(), m_spDocument);
 		ScriptRegistry::GetInstance()->Add("User Scripts", m_pScript);
 	}
 
@@ -1128,7 +1129,7 @@ public:
 LRESULT CChildFrame::OnGoToDef(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {    
     // Set up buffer for selected keyword:
-	tstring sel = GetTextView()->GetCurrentWord(); //m_view.GetSelText2();
+	std::string sel = GetTextView()->GetCurrentWord(); //m_view.GetSelText2();
 	if (sel.size() == 0)
 	{
 		return 0;
@@ -1145,7 +1146,8 @@ LRESULT CChildFrame::OnGoToDef(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 	if (defs->Lines.size() == 0)
     {
 		CString Msg;
-		Msg.Format("Definition of '%s' not found", sel.c_str());
+		CA2CT selconv(sel.c_str());
+		Msg.Format(_T("Definition of '%s' not found"), selconv);
 		g_Context.m_frame->SetStatusText(Msg);
 
         return 0;
@@ -1362,13 +1364,13 @@ public:
 	{
 	}
 
-	const char* GetBuffer() const
+	const TCHAR* GetBuffer() const
 	{
 		return buffer.c_str();
 	}
 
 private:
-	std::string buffer;
+	tstring buffer;
 };
 
 class ChildTextFilterWrapper : public ToolWrapperT<CChildFrame, TextFilterSink>
@@ -1465,7 +1467,7 @@ bool CChildFrame::OnRunTool(LPVOID pTool)
 		bool bAbort = false;
 		while(pWaitWrapper->Wait(10000) == WAIT_TIMEOUT)
 		{
-			if(::MessageBox(m_hWnd, "This text filter is taking a long time to complete,\ndo you want to wait longer?", LS(IDR_MAINFRAME), MB_YESNO) == IDNO)
+			if(::MessageBox(m_hWnd, _T("This text filter is taking a long time to complete,\ndo you want to wait longer?"), LS(IDR_MAINFRAME), MB_YESNO) == IDNO)
 			{
 				bAbort = true;
 				break;
@@ -1476,13 +1478,18 @@ bool CChildFrame::OnRunTool(LPVOID pTool)
 		{
 			// We finished running...
 			if(!filter_sink.get())
-				RETURN_UNEXPECTED("Expected a filter_sink instance here!", false);
+			{
+				RETURN_UNEXPECTED(_T("Expected a filter_sink instance here!"), false);
+			}
 
 			m_view.BeginUndoAction();
 			if(m_view.GetSelLength() == 0)
+			{
 				m_view.ClearAll();
+			}
 			
-			m_view.ReplaceSel( filter_sink->GetBuffer() );
+			CT2CA newtext(filter_sink->GetBuffer());
+			m_view.ReplaceSel(newtext);
 			m_view.EndUndoAction();
 		}
 	}
@@ -1513,7 +1520,7 @@ void CChildFrame::CheckAge()
 		
 		uint64_t age = ~0;
 		bool readOnly = false;
-		if (FileUtil::GetFileAttributesA(m_spDocument->GetFileName(), atts))
+		if (FileUtil::GetFileAttributes(m_spDocument->GetFileName(), atts))
 		{
 			readOnly = FileUtil::IsReadOnly(atts);
 			age = FileUtil::GetFileAge(atts);
@@ -1721,7 +1728,7 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool ctagsRefresh, bool bStoreFilen
 
 		if(bUpdateMRU)
 		{
-			std::string fn(m_spDocument->GetFileName(FN_FULL));
+			std::wstring fn(m_spDocument->GetFileName(FN_FULL));
 			g_Context.m_frame->AddMRUEntry(fn.c_str());
 		}
 
@@ -1784,7 +1791,7 @@ TASKDIALOG_BUTTON SaveElsewhereButtons[] = {
          { PNID_SAVEAS, L"Save &As..." },
 	  };
 
-int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
+int CChildFrame::HandleFailedFileOp(LPCTSTR filename, bool bOpen)
 {
 	int err = GetLastError();
 	
@@ -1894,12 +1901,10 @@ int CChildFrame::HandleFailedFileOp(LPCSTR filename, bool bOpen)
 
 	int bs = fstr.length() + fn.length() + 10;
 	
-	std::string buffer;
+	tstring buffer;
 	buffer.resize(bs);
 	int finalLength = _sntprintf(&buffer[0], bs, fstr.c_str(), fn.c_str());
 	buffer.resize(finalLength);
-
-	USES_CONVERSION;
 
 	CT2CW message(buffer.c_str());
 	std::wstring title(LSW(IDR_MAINFRAME));
@@ -2002,7 +2007,7 @@ bool CChildFrame::Save(bool ctagsRefresh)
 {
 	if(CanSave())
 	{
-		std::string fn(m_spDocument->GetFileName());
+		std::wstring fn(m_spDocument->GetFileName());
 		bool bResult = SaveFile(fn.c_str(), ctagsRefresh, true);
 		
 		m_FileAge = m_spDocument->GetFileAge();
@@ -2398,15 +2403,17 @@ void CChildFrame::setReadOnly(bool newValue, bool setAttributes)
  */
 void CChildFrame::findNextWordUnderCursor(bool backwards)
 {
-	tstring word = m_view.GetCurrentWord();
+	std::string word = m_view.GetCurrentWord();
 
 	if (!word.length())
 	{
 		return;
 	}
 
+	CA2CT findtext(word.c_str());
+
 	extensions::ISearchOptions* opts = OPTIONS->GetSearchOptions();
-	opts->SetFindText(word.c_str());
+	opts->SetFindText(findtext);
 	opts->SetSearchBackwards(backwards);
 	opts->SetMatchCase(false);
 	opts->SetUseRegExp(false);

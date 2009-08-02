@@ -711,8 +711,8 @@ void TemplateLoader::onOptionListValue(XMLAttributes& atts)
 	if(!m_pCurrentListProp)
 		return;
 
-	LPCTSTR desc = ATTVAL("description");
-	LPCTSTR value = ATTVAL("value");
+	LPCTSTR desc = ATTVAL(_T("description"));
+	LPCTSTR value = ATTVAL(_T("value"));
 
 	if(!value)
 		return;

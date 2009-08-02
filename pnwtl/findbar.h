@@ -19,7 +19,7 @@
 class CFindBarEdit : public CWindowImpl<CFindBarEdit>
 {
 public:
-	DECLARE_WND_SUPERCLASS("PN_FINDBAREDIT", "EDIT");
+	DECLARE_WND_SUPERCLASS(_T("PN_FINDBAREDIT"), _T("EDIT"));
 
 	CFindBarEdit();
 
@@ -55,7 +55,7 @@ private:
 class CXButton : public CXPButton<CXButton>
 {
 public:
-	DECLARE_WND_SUPERCLASS("PN_CLOSEXBUTTON", "BUTTON")
+	DECLARE_WND_SUPERCLASS(_T("PN_CLOSEXBUTTON"), _T("BUTTON"))
 
 	HWND Create(HWND hWndParent, _U_RECT rect = NULL, LPCTSTR szWindowName = NULL,
 			DWORD dwStyle = 0, DWORD dwExStyle = 0,

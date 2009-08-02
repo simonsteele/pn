@@ -179,7 +179,7 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	pLoop->AddMessageFilter(this);
 
 	// Set up the tab control images.
-	bool lowColour = !IsXPOrLater() || OPTIONS->Get(PNSK_INTERFACE, "LowColourToolbars", false);
+	bool lowColour = !IsXPOrLater() || OPTIONS->Get(PNSK_INTERFACE, _T("LowColourToolbars"), false);
 	HBITMAP hBitmap;
 	if (lowColour)
 	{
@@ -856,7 +856,7 @@ SearchOptions* CFindExDialog::getOptions()
 			{
 				// No document! Can't search current file, leave as previous...
 				pOptions->SetFileSet(extensions::fifPath);
-				pOptions->SetSearchPath("");
+				pOptions->SetSearchPath(_T(""));
 			}
 		}
 		break;
@@ -872,7 +872,7 @@ SearchOptions* CFindExDialog::getOptions()
 			else
 			{
 				// No document! Can't search current file, leave as previous...
-				pOptions->SetSearchPath("");
+				pOptions->SetSearchPath(L"");
 			}
 		}
 		break;
@@ -880,14 +880,14 @@ SearchOptions* CFindExDialog::getOptions()
 		case fwCurrentProjectFiles:
 		{
 			pOptions->SetFileSet(extensions::fifActiveProjectFiles);
-			pOptions->SetSearchPath("");
+			pOptions->SetSearchPath(L"");
 		}
 		break;
 
 		case fwOpenDocs:
 		{
 			pOptions->SetFileSet(extensions::fifOpenFiles);
-			pOptions->SetSearchPath("");
+			pOptions->SetSearchPath(L"");
 		}
 		break;
 		
@@ -899,7 +899,7 @@ SearchOptions* CFindExDialog::getOptions()
 		break;
 	}
 	
-	if ((findType == 0 || findType > fwOpenDocs) && pOptions->GetSearchPath() != "" ) 
+	if ((findType == 0 || findType > fwOpenDocs) && wcscmp(pOptions->GetSearchPath(), L"") != -1) 
 	{
 		if(DirExists(pOptions->GetSearchPath()))
 		{
@@ -907,7 +907,7 @@ SearchOptions* CFindExDialog::getOptions()
 		}
 		else
 		{
-			pOptions->SetSearchPath("");
+			pOptions->SetSearchPath(L"");
 		}
 	}
 

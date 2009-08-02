@@ -14,6 +14,6 @@
 
 void getTables(const char* schemeName, int** lcTypes, int** ucTypes);
 
-void loadExternalTables(const char* fileName, std::string* moreSchemes);
+void loadExternalTables(const wchar_t* fileName, std::string* moreSchemes);
 
 #endif //#ifndef languageTypeTables_h__included

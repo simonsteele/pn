@@ -21,18 +21,18 @@ namespace TextClips {
 class Clip
 {
 	public:
-		Clip(const std::string& name, const std::string& shortcut, const std::string& data) : 
+		Clip(const tstring& name, const std::string& shortcut, const std::string& text) : 
 		  Name(name),
 		  Shortcut(shortcut),
-		  Text(data)
+		  Text(text)
 		{
 		}
 
 		Clip(const Clip& copy) : Name(copy.Name), Shortcut(copy.Shortcut), Text(copy.Text){}
 
 		tstring Name;
-		tstring Shortcut;
-		tstring Text;
+		std::string Shortcut;
+		std::string Text;
 
 		void Insert(CScintilla* scintilla) const;
 };
@@ -45,7 +45,7 @@ typedef std::list<Clip*>	LIST_CLIPS;
 class TextClipSet
 {
 	public:
-		TextClipSet(LPCTSTR filename, LPCTSTR name, LPCTSTR scheme, bool encodeClipNames);
+		TextClipSet(LPCTSTR filename, LPCTSTR name, LPCSTR scheme, bool encodeClipNames);
 		TextClipSet(const TextClipSet& copy);
 		~TextClipSet();
 
@@ -57,12 +57,12 @@ class TextClipSet
 		/**
 		 * Builds a list of clips formatted for scintilla display
 		 */
-		tstring BuildSortedClipList() const;
+		std::string BuildSortedClipList() const;
 
 		/**
 		 * Find a Clip by its text shortcut
 		 */
-		const Clip* FindByShortcut(const tstring& shortcut) const;
+		const Clip* FindByShortcut(const std::string& shortcut) const;
 
 		/**
 		 * Get the clips
@@ -82,7 +82,7 @@ class TextClipSet
 		/**
 		 * Get the scheme name if scheme-tied, NULL otherwise
 		 */
-		LPCTSTR GetScheme() const;
+		LPCSTR GetScheme() const;
 
 		/**
 		 * Should we encode text clip names?
@@ -105,7 +105,7 @@ class TextClipSet
 		LIST_CLIPS	m_clips;
 
 		tstring m_name;
-		tstring m_scheme;
+		std::string m_scheme;
 		tstring m_filename;
 		bool m_encodeClipNames;
 };
@@ -161,9 +161,9 @@ class TextClipsManager : public XMLParseState
 		// Parse state:
 		bool decodeNames;
 		int	m_parseState;
-		tstring m_cData;
+		std::string m_cData;
 		tstring m_curName;
-		tstring m_curShortcut;
+		std::string m_curShortcut;
 		tstring m_curFileName;
 		TextClipSet* m_pCurSet;
 		EEncoding m_curEncoding;

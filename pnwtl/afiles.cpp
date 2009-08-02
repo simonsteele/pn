@@ -306,8 +306,8 @@ void AlternateFiles::startElement(LPCTSTR name, XMLAttributes& atts)
 	}
 	else if( MATCH(AF_SETS, _T("Set")) )
 	{
-		LPCTSTR s1 = atts.getValue("ext1");
-		LPCTSTR s2 = atts.getValue("ext2");
+		LPCTSTR s1 = atts.getValue(_T("ext1"));
+		LPCTSTR s2 = atts.getValue(_T("ext2"));
 		if( s1 != NULL &&
 			s2 != NULL &&
 			(_tcslen(s1) > 0) &&

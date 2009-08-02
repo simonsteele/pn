@@ -45,7 +45,7 @@ namespace Impl
 using namespace Impl;
 
 #define MATCH(ename) \
-	(_tcscmp(name, ename) == 0)
+	(_tcscmp(name, _T(ename)) == 0)
 
 #define IN_STATE(state) \
 	(m_parseState == state)
@@ -61,7 +61,7 @@ class ParseHandler : public XMLParseState
 public:
 	ParseHandler(std::vector<Tag>& tags) : m_tags(tags), m_parseState(PHS_Start), m_current(NULL), m_currentDef(NULL) {}
 
-	void startElement(LPCTSTR name, XMLAttributes& atts)
+	void startElement(XML_CSTR name, XMLAttributes& atts)
 	{
 		if IN_STATE(PHS_Start)
 		{
@@ -128,11 +128,12 @@ public:
 private:
 	void handleKeyword(XMLAttributes& atts)
 	{
-		LPCTSTR name = atts.getValue("name");
+		LPCTSTR name = atts.getValue(_T("name"));
 		if (name != NULL && name[0] != NULL)
 		{
+			CT2CA tagName(name);
 			Tag tag;
-			tag.Name = name;
+			tag.Name = tagName;
 			m_tags.push_back(tag);
 			m_current = &m_tags.back();
 		}
@@ -140,10 +141,11 @@ private:
 
 	void handleOverload(XMLAttributes& atts)
 	{
-		LPCTSTR ret = atts.getValue("retVal");
+		LPCTSTR ret = atts.getValue(_T("retVal"));
 		if (ret != NULL && ret[0] != NULL)
 		{
-			Definition def(ret);
+			CT2CA retConv(ret);
+			Definition def(retConv);
 			m_current->Defs.push_back(def);
 			m_currentDef = &m_current->Defs.back();
 		}
@@ -160,7 +162,7 @@ private:
 			return;
 		}
 
-		LPCTSTR name = atts.getValue("name");
+		LPCTSTR name = atts.getValue(_T("name"));
 		if (name != NULL && name[0] != NULL)
 		{
 			if (m_currentDef->Params.size() > 0)
@@ -168,7 +170,8 @@ private:
 				m_currentDef->Params += ", ";
 			}
 
-			m_currentDef->Params += name;
+			CT2CA nameconv(name);
+			m_currentDef->Params += nameconv;
 		}
 	}
 

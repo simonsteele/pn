@@ -209,7 +209,7 @@ LRESULT CFindBar::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandle
 	HFONT hOldFont = (HFONT)SelectObject(ps.hdc, GetStockObject(DEFAULT_GUI_FONT));
 
 	CRect rcText(25, 5, 50, 25);
-	DrawText(ps.hdc, "Find:", 5, rcText, DT_RIGHT | DT_VCENTER | DT_SINGLELINE);
+	DrawText(ps.hdc, _T("Find:"), 5, rcText, DT_RIGHT | DT_VCENTER | DT_SINGLELINE);
 
 	SelectObject(ps.hdc, hOldFont);
 
@@ -228,9 +228,9 @@ LRESULT CFindBar::OnShowWindow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
 	bHandled = FALSE;
 	if(wParam)
 	{
-		m_txtbox.SetWindowText("");
+		m_txtbox.SetWindowText(_T(""));
 		m_txtbox.SetDoRed(false);
-		m_lasttext = "";
+		m_lasttext = _T("");
 		so.SetFound(false);
 		m_pLastFrame = NULL;
 	}

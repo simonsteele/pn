@@ -188,7 +188,7 @@ public:
 	virtual extensions::IDocumentPtr NewDocument(const char* scheme);
 
 	/// Open a document
-	virtual extensions::IDocumentPtr OpenDocument(const char* filepath, const char* scheme);
+	virtual extensions::IDocumentPtr OpenDocument(const wchar_t* filepath, const char* scheme);
 
 	/// Utility function to safely free strings given to you by PN
 	virtual void ReleaseString(const TCHAR* str);

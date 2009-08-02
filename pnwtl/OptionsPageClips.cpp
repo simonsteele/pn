@@ -73,7 +73,7 @@ LRESULT COptionsPageClips::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	CRect rcScintilla;
 	::GetWindowRect(GetDlgItem(IDC_PLACEHOLDER), rcScintilla);
 	ScreenToClient(rcScintilla);
-	m_scintilla.Create(m_hWnd, rcScintilla, "ClipText", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_TABSTOP, WS_EX_STATICEDGE);
+	m_scintilla.Create(m_hWnd, rcScintilla, _T("ClipText"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_TABSTOP, WS_EX_STATICEDGE);
 	::SetWindowPos(m_scintilla, GetDlgItem(IDC_PLACEHOLDER), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 	m_scintilla.SetWrapMode(SC_WRAP_WORD);
 	m_scintilla.AssignCmdKey(SCK_HOME, SCI_HOMEDISPLAY);
@@ -116,7 +116,7 @@ LRESULT COptionsPageClips::OnSchemeComboChange(WORD /*wNotifyCode*/, WORD /*wID*
 
 LRESULT COptionsPageClips::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	CTextClipEditor editor(tstring(""), tstring(""), tstring(""));
+	CTextClipEditor editor(std::string(""), std::string(""), tstring(_T("")));
 	if (editor.DoModal() == IDOK)
 	{
 		TextClips::Clip* clip = new TextClips::Clip(editor.GetHint(), editor.GetShortcut(), editor.GetText());
@@ -131,8 +131,11 @@ LRESULT COptionsPageClips::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 
 		m_pCurSet->Add(clip);
 
-		int index = m_list.AddItem(m_list.GetItemCount(), 0, clip->Shortcut.c_str());
+		CA2CT shortcut(clip->Shortcut.c_str());
+
+		int index = m_list.AddItem(m_list.GetItemCount(), 0, shortcut);
 		m_list.SetItemData(index, reinterpret_cast<DWORD_PTR>(clip));
+
 		m_list.SetItemText(index, 1, clip->Name.c_str());
 
 		m_dirty = true;
@@ -157,7 +160,10 @@ LRESULT COptionsPageClips::OnEditClipClicked(WORD /*wNotifyCode*/, WORD /*wID*/,
 		clip->Shortcut = editor.GetShortcut();
 		clip->Text = editor.GetText();
 		clip->Name = editor.GetHint();
-		m_list.SetItemText(m_list.GetSelectedIndex(), 0, clip->Shortcut.c_str());
+
+		CA2CT scconv(clip->Shortcut.c_str());
+		
+		m_list.SetItemText(m_list.GetSelectedIndex(), 0, scconv);
 		m_list.SetItemText(m_list.GetSelectedIndex(), 1, clip->Name.c_str());
 
 		m_dirty = true;
@@ -210,8 +216,10 @@ void COptionsPageClips::updateSel()
 				i != clips.end();
 				++i)
 			{
-				int index = m_list.AddItem(m_list.GetItemCount(), 0, (*i)->Shortcut.c_str());
+				CA2CT shortcut((*i)->Shortcut.c_str());
+				int index = m_list.AddItem(m_list.GetItemCount(), 0, shortcut);
 				m_list.SetItemData(index, reinterpret_cast<DWORD_PTR>(*i));
+				
 				m_list.SetItemText(index, 1, (*i)->Name.c_str());
 			}
 
@@ -229,7 +237,7 @@ void COptionsPageClips::updateSelectedClip()
 	if (sel == -1)
 	{
 		//GetDlgItem(IDC_SHORTCUT_STATIC).SetWindowText(_T(""));
-		m_scintilla.SetText(_T(""));
+		m_scintilla.SetText("");
 	}
 	else
 	{

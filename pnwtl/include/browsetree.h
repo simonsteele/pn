@@ -59,7 +59,7 @@ class CBrowseTree : public CWindowImpl<CBrowseTree, CTreeViewCtrl>
 			TCHAR drive = GetFirstDriveLetter();
 			tstring path;
 			path += drive;
-			path += ":\\";
+			path += _T(":\\");
 
 			// Dirty trick to get the system image list...
 			SHFILEINFO fi;
@@ -406,7 +406,7 @@ class CBrowseTree : public CWindowImpl<CBrowseTree, CTreeViewCtrl>
 					// Add an empty item so we get the LVN_ITEMEXPANDED
 					// notification message which we use to load or
 					// remove the directory entries.
-					if ( AddTreeItem( hDrive, "" ) == NULL )
+					if ( AddTreeItem( hDrive, _T("") ) == NULL )
 						return FALSE;
 				}
 			}
@@ -927,7 +927,7 @@ class CBrowseTree : public CWindowImpl<CBrowseTree, CTreeViewCtrl>
 				{
 					tstring path;
 					path += drive;
-					path += ":\\";
+					path += _T(":\\");
 					if (::GetDriveType(path.c_str()) == DRIVE_FIXED)
 					{
 						break;

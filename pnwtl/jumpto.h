@@ -20,7 +20,7 @@ class COutputView;
 typedef extensions::ITagSink ITagSink;
 typedef extensions::LPMETHODINFO LPMETHODINFO;
 
-typedef std::map<tstring, extensions::ITagSource*> HANDLERS_MAP;
+typedef std::map<std::string, extensions::ITagSource*> HANDLERS_MAP;
 
 class JumpToHandler : public Singleton<JumpToHandler, true>
 {

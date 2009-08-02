@@ -31,9 +31,9 @@ class CustomLexerFactory : public XMLParseState
 	protected:
 		bool Parse(LPCTSTR file);
 
-		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
-		virtual void endElement(LPCTSTR name);
-		virtual void characterData(LPCTSTR data, int len);
+		virtual void startElement(XML_CSTR name, XMLAttributes& atts);
+		virtual void endElement(XML_CSTR name);
+		virtual void characterData(XML_CSTR data, int len);
 
 		void doStringType(const XMLAttributes& atts);
 		void doScheme(const XMLAttributes& atts);

@@ -30,7 +30,7 @@ public:
 	void SetMatchWholeWord( BOOL bMatchWholeWord = FALSE ); 
 	void SetIncludeHidden( BOOL bIncludeHidden = TRUE );
 
-	LPCTSTR GetSearchString() const;
+	LPCSTR GetSearchString() const;
 	bool GetCaseSensitive() const;
 
 	// Operator overloads.
@@ -43,7 +43,7 @@ protected:
 	BOOL MatchWholeWord(char* pData, int nLength, int firstChar, int lastChar);
 
 	// Data.
-	tstring	m_strSearchString;
+	std::string	m_strSearchString;
 	BOOL	m_bCaseOn;
 	BOOL	m_bMatchWholeWord;
 	BOOL	m_bIncludeHidden;

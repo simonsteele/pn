@@ -2,13 +2,10 @@
  * @file pnstrings.h
  * @brief Utility classes and functions for strings.
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
- *
- * Classes in this file:
- *   CustomFormatStringBuilder	- Build up a string based on %x and $(x) format specs.
  */
 
 #ifndef pnstrings_h__included
@@ -23,22 +20,10 @@
 typedef std::map<tstring, tstring> STRING_MAP;
 typedef std::list<tstring> tstring_list;
 typedef std::vector<tstring> tstring_array;
+typedef std::vector<std::string> string_array;
 typedef std::list<std::string> string_list;
-
-template <class TChar>
-class char_buffer
-{
-public:
-	explicit char_buffer(TChar *buffer) : m_buf(buffer) {}
-	~char_buffer() { delete [] m_buf; }
-
-	TChar* get() const { return m_buf; }
-
-	operator TChar* () const { return m_buf; }
-
-private:
-	TChar* m_buf;
-};
+typedef std::map<tstring, std::string> tstring_string_map;
+typedef std::map<std::string, std::string> string_map;
 
 static TCHAR* tcsnewdup(LPCTSTR strin)
 {
@@ -47,12 +32,26 @@ static TCHAR* tcsnewdup(LPCTSTR strin)
 	return ret;
 }
 
+static char* strnewdup(const char* strin)
+{
+	char* ret = new char[strlen(strin)+1];
+	strcpy(ret, strin);
+	return ret;
+}
+
 static tstring IntToTString(int x)
 {
-	TCHAR _buffer[32];
-	_sntprintf(_buffer, 32, _T("%0d"), x);
+	TCHAR buffer[32];
+	_sntprintf(buffer, 32, _T("%0d"), x);
 	
-	return tstring(_buffer);
+	return tstring(buffer);
+}
+
+static std::string IntToString(int x)
+{
+	char buffer[32];
+	_snprintf(buffer, 32, "%0d", x);
+	return std::string(buffer);
 }
 
 static int strFirstNonWS(const char* lineBuf)
@@ -163,7 +162,7 @@ class CustomFormatStringBuilder
 					else if(next == _T('('))
 					{
 						// we matched a %(x) property...
-						std::string key;
+						tstring key;
 						i = ExtractProp(key, str, i);
 						pT->OnFormatPercentKey(key.c_str());
 					}
@@ -193,7 +192,7 @@ class CustomFormatStringBuilder
 					}
 
 					// we matched a $(x) property...
-					std::string key;
+					tstring key;
 					i = ExtractProp(key, str, i);
 
 					pT->OnFormatKey(key.c_str());
@@ -209,7 +208,7 @@ class CustomFormatStringBuilder
 					}
 					else if (str[i + 1] == _T('{'))
 					{
-						std::string key;
+						tstring key;
 						i = ExtractScriptRef(key, str, i);
 						pT->OnFormatScriptRef(key.c_str());
 					}
@@ -282,23 +281,13 @@ class CustomFormatStringBuilder
 		tstring	m_string;
 };
 
-///@todo could this be faster at all?
 void XMLSafeString(LPCTSTR from, tstring& to);
+void XMLSafeString(LPCSTR from, std::string& to);
 void XMLSafeString(tstring& str);
-
-struct FormatXML {
-   tstring str_;
-   explicit FormatXML(const tstring& str) : str_(str) { XMLSafeString(str_); }
-   friend tstream& operator<<(tstream& s, const FormatXML& x)
-   {
-		s << x.str_;
-		return s;
-   }
-};
 
 static std::string MakeIndentText(int indentation, bool useTabs, int tabSize)
 {
-	tstring theIndent;
+	std::string theIndent;
 	int tabs = useTabs ? (indentation / tabSize) : 0;
 	int spaces = useTabs ? (indentation % tabSize) : indentation;
 

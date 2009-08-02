@@ -51,8 +51,9 @@ IWordProviderPtr AutoCompleteManager::getApi(const char* scheme)
 
 	tstring uspath = OPTIONS->GetPNPath(PNPATH_SCHEMES);
 	
-	std::string apifile(scheme);
-	apifile += ".api";
+	CA2W schemeconv(scheme);
+	std::wstring apifile(schemeconv);
+	apifile += L".api";
 
 	CFileName fn(apifile);
 	fn.Root(uspath.c_str());

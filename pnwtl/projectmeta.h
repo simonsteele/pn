@@ -2,9 +2,9 @@
  * @file projectmeta.h
  * @brief Project MetaData
  * @author Simon Steele
- * @note Copyright (c) 2004-2005 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2004-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -14,7 +14,7 @@
 namespace Projects
 {
 
-typedef struct tagProjectWriter* ProjectWriter;
+class ProjectWriter;
 
 class XmlNode;
 class XmlAttribute;
@@ -27,17 +27,21 @@ typedef LIST_NODES::const_iterator	XN_CIT;
 
 typedef LIST_ATTRS::const_iterator	XA_IT;
 
+/**
+ * Represent a single XML metadata node in the project file.
+ */
 class XmlNode
 {
 	public:
-		XmlNode(LPCTSTR qualifiedName);
-		XmlNode(LPCTSTR lpszNamespace, LPCTSTR lpszName);
-		XmlNode(const XmlNode& copy);
+		explicit XmlNode(LPCTSTR qualifiedName);
+		explicit XmlNode(LPCTSTR lpszNamespace, LPCTSTR lpszName);
+		explicit XmlNode(const XmlNode& copy);
+		
 		~XmlNode();
 
 		XmlNode& operator = (const XmlNode& copy);
 		
-		void Write(ProjectWriter writer);
+		void Write(ProjectWriter* writer);
 
 		void AddAttributes(XMLAttributes& atts);
 		void AddChild(XmlNode* pChild);
@@ -50,10 +54,9 @@ class XmlNode
 
 		bool Matches(LPCTSTR ns, LPCTSTR name);
 
-	protected:
+	private:
 		void clear();
 
-	protected:
 		tstring		sNamespace;
 		tstring		sName;
 		tstring		sText;
@@ -64,6 +67,9 @@ class XmlNode
 		LIST_ATTRS	attributes;
 };
 
+/**
+ * Represent a single attribute in a node.
+ */
 class XmlAttribute
 {
 	public:
@@ -72,9 +78,9 @@ class XmlAttribute
 
 		XmlAttribute& operator = (const XmlAttribute& copy);
 
-		void Write(ProjectWriter writer);
+		void Write(ProjectWriter* writer);
 
-	protected:
+	private:
 		tstring		sNamespace;
 		tstring		sName;
 		tstring		sValue;
@@ -111,7 +117,7 @@ class UserData /*: public IMetaDataProvider*/
 
 		const int GetCount();
 
-		void Write(ProjectWriter writer);
+		void Write(ProjectWriter* writer);
 
 		virtual bool Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, bool defval);
 		virtual int Lookup(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value, int defval);
@@ -127,13 +133,12 @@ class UserData /*: public IMetaDataProvider*/
 		XN_CIT	begin();
 		XN_CIT	end();
 
-	protected:
+	private:
 		void clear();
 		XmlNode* locate(const LIST_NODES& nodes, LPCTSTR ns, LPCTSTR node);
 		XmlNode* lookUp(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value);
 		XmlNode* lookUpOrCreate(LPCTSTR ns, LPCTSTR group, LPCTSTR category, LPCTSTR value);
 
-	protected:
 		LIST_NODES nodes;
 		//LIST_ATTRS attrs;
 };

@@ -55,7 +55,7 @@ class SchemeTools
 {
 	public:
 		SchemeTools();
-		SchemeTools(LPCTSTR schemename);
+		SchemeTools(LPCSTR schemename);
 		virtual ~SchemeTools();
 
 		TOOLDEFS_LIST&	GetTools();
@@ -81,7 +81,7 @@ class SchemeTools
 		void			InternalWriteDefinition(ToolsXMLWriter& writer, ToolSource* source);
 		
 		TOOLDEFS_LIST	m_Tools;
-		tstring			m_Scheme;
+		std::string		m_Scheme;
 		CSPopupMenu		m_Menu;
 		HACCEL			m_hAccel;
 };

@@ -318,7 +318,7 @@ void BoyerMoore::SetIncludeHidden( BOOL bIncludeHidden )
 	SetSearchString(); 
 }
 
-LPCTSTR BoyerMoore::GetSearchString() const
+LPCSTR BoyerMoore::GetSearchString() const
 {
 	return m_strSearchString.c_str();
 }

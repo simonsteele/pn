@@ -43,7 +43,7 @@ public:
 
 		m_bInited = true;
 
-		m_hFile = _tfopen(filename, "wb");
+		m_hFile = _tfopen(filename, _T("wb"));
 
 		if(m_hFile == NULL)
 		{
@@ -74,6 +74,12 @@ public:
 	operator genxWriter ()
 	{
 		return m_writer;
+	}
+
+	void addAttributeConvertUTF8(genxAttribute a, LPCWSTR str)
+	{
+		Utf16_Utf8 conv(str);
+		genxAddAttribute(a, conv);
 	}
 
 	void addAttributeConvertUTF8(genxAttribute a, LPCSTR str)

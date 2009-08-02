@@ -351,7 +351,7 @@ private:
 	BOOL OnEscapePressed();
 	void Export(int type);
 	void SetModifiedOverride(bool bVal);
-	int HandleFailedFileOp(LPCSTR filename, bool bOpening);
+	int HandleFailedFileOp(LPCTSTR filename, bool bOpening);
 	bool attemptOverwrite(LPCTSTR filename);
 	void handleClose();
 	void resetSaveDir();

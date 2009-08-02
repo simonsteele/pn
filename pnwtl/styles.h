@@ -18,7 +18,7 @@
 int chartoval(TCHAR inp);
 COLORREF PNStringToColor(LPCTSTR input);
 bool PNStringToBool(LPCTSTR input);
-tstring NormaliseKeywords(tstring& in);
+std::string NormaliseKeywords(std::string& in);
 
 ////////////////////////////////////////////////////////////
 // EditorColours
@@ -122,8 +122,8 @@ class StyleDetails
 		bool EOLFilled;
 		bool Hotspot;
 
-		std::string name;
-		std::string classname;
+		tstring name;
+		tstring classname;
 		int values;
 };
 
@@ -180,7 +180,7 @@ class NamedStyleDetails : public FullStyleDetails
 {
 public:
 	NamedStyleDetails(int key) : FullStyleDetails(key){}
-	std::string FriendlyName;
+	tstring FriendlyName;
 };
 
 typedef std::list<StylePtr> StylePtrList;
@@ -250,8 +250,8 @@ class CustomKeywordSet
 
 	public:
 		int		key;
-		TCHAR*	pWords;
-		TCHAR*	pName;
+		char*	pWords;
+		LPTSTR	pName;
 		CustomKeywordSet* pNext;
 };
 
@@ -290,7 +290,7 @@ typedef std::list<GroupDetails_t> GroupDetailsList;
 class SchemeDetails
 {
 public:
-	SchemeDetails(LPCTSTR name);
+	SchemeDetails(LPCSTR name);
 	virtual ~SchemeDetails();
 	
 	StylePtr GetStyle(int key);
@@ -306,7 +306,7 @@ public:
 	void BeginStyleGroup(LPCTSTR name, LPCTSTR description, LPCTSTR classname);
 	void EndStyleGroup();
 
-	tstring				Name;
+	std::string			Name;
 	tstring				Title;
 	StylePtrList		Styles;
 	
@@ -331,14 +331,14 @@ private:
 };
 
 typedef std::list<SchemeDetails*> SchemeDetailsList;
-typedef std::map<tstring, SchemeDetails*> SchemeDetailsMap;
+typedef std::map<std::string, SchemeDetails*> SchemeDetailsMap;
 
 typedef enum {ebvLexer = 0x01} EBaseSet;
 
 class BaseScheme : public SchemeDetails
 {
 	public:
-		BaseScheme(LPCTSTR name) : SchemeDetails(name)
+		BaseScheme(LPCSTR name) : SchemeDetails(name)
 		{
 			lexer		= _T("");
 			styleBits	= 0;
@@ -374,6 +374,7 @@ class StylesMap
 			{
 				delete (*i).second;
 			}
+
 			m_Styles.clear();
 		}
 

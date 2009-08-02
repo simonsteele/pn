@@ -121,9 +121,9 @@ public:
 				}
 			}
 
-			USES_CONVERSION;
+			CT2COLE fms(p_lpszFormatString);
 			
-			hr = m_pac->Init(p_hWndEdit, this, NULL, T2OLE(p_lpszFormatString));
+			hr = m_pac->Init(p_hWndEdit, this, NULL, fms);
 
 			if (SUCCEEDED(hr))
 			{
@@ -299,13 +299,13 @@ public:
 		ULONG i;
 		for (i = 0; i < celt; i++)
 		{
-			USES_CONVERSION;
-
 			if (m_nCurrentElement == (ULONG)m_asList.size())
 				break;
 
+			CT2COLE el(m_asList[m_nCurrentElement].c_str());
+
 			rgelt[i] = (LPWSTR)::CoTaskMemAlloc((ULONG) sizeof(WCHAR) * (m_asList[m_nCurrentElement].length() + 1));
-			lstrcpyW(rgelt[i], T2OLE(m_asList[m_nCurrentElement].c_str()));
+			lstrcpyW(rgelt[i], el);
 
 			if (pceltFetched)
 				*pceltFetched++;

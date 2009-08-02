@@ -2,9 +2,9 @@
  * @file OptionsXml.cpp
  * @brief Xml configuration functionality.
  * @author Simon Steele
- * @note Copyright (c) 2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2008-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -30,7 +30,7 @@ public:
 	{
 		genxStartElementLiteral(m_writer, NULL, u("o"));
 		addAttributeConvertUTF8(m_attKey, key);
-		Windows1252_Utf8 val8(value);
+		Tcs_Utf8 val8(value);
 		genxAddText(m_writer, val8);
 		genxEndElement(m_writer);
 	}
@@ -82,15 +82,15 @@ void XmlOptions::Set(LPCTSTR subkey, LPCTSTR value, bool bVal)
 
 	subkey = m_groupLocked ? (m_group.c_str()) : subkey;
 
-	tstring sVal(bVal ? "true" : "false");
-	map_type::iterator i = m_options.find((tstring(subkey) + ".") + value);
+	tstring sVal(bVal ? _T("true") : _T("false"));
+	map_type::iterator i = m_options.find((tstring(subkey) + _T(".")) + value);
 	if (i != m_options.end())
 	{
 		(*i).second.swap(sVal);
 	}
 	else
 	{
-		m_options.insert(map_type::value_type((tstring(subkey) + ".") + value, sVal));
+		m_options.insert(map_type::value_type((tstring(subkey) + _T(".")) + value, sVal));
 	}
 }
 
@@ -106,14 +106,14 @@ void XmlOptions::Set(LPCTSTR subkey, LPCTSTR value, int iVal)
 	TCHAR cbuf[40];
 	_itot(iVal, cbuf, 10);
 
-	map_type::iterator i = m_options.find((tstring(subkey) + ".") + value);
+	map_type::iterator i = m_options.find((tstring(subkey) + _T(".")) + value);
 	if (i != m_options.end())
 	{
 		(*i).second = cbuf;
 	}
 	else
 	{
-		m_options.insert(map_type::value_type((tstring(subkey) + ".") + value, cbuf));
+		m_options.insert(map_type::value_type((tstring(subkey) + _T(".")) + value, cbuf));
 	}
 }
 
@@ -129,14 +129,14 @@ void XmlOptions::Set(LPCTSTR subkey, LPCTSTR value, uint64_t iVal)
 	TCHAR cbuf[70];
 	_ui64tot(iVal, cbuf, 10);
 
-	map_type::iterator i = m_options.find((tstring(subkey) + ".") + value);
+	map_type::iterator i = m_options.find((tstring(subkey) + _T(".")) + value);
 	if (i != m_options.end())
 	{
 		(*i).second = cbuf;
 	}
 	else
 	{
-		m_options.insert(map_type::value_type((tstring(subkey) + ".") + value, cbuf));
+		m_options.insert(map_type::value_type((tstring(subkey) + _T(".")) + value, cbuf));
 	}
 }
 
@@ -149,14 +149,14 @@ void XmlOptions::Set(LPCTSTR subkey, LPCTSTR value, LPCTSTR szVal)
 
 	subkey = m_groupLocked ? (m_group.c_str()) : subkey;
 
-	map_type::iterator i = m_options.find((tstring(subkey) + ".") + value);
+	map_type::iterator i = m_options.find((tstring(subkey) + _T(".")) + value);
 	if (i != m_options.end())
 	{
 		(*i).second = szVal;
 	}
 	else
 	{
-		m_options.insert(map_type::value_type((tstring(subkey) + ".") + value, szVal));
+		m_options.insert(map_type::value_type((tstring(subkey) + _T(".")) + value, szVal));
 	}
 }
 
@@ -169,7 +169,7 @@ bool XmlOptions::Get(LPCTSTR subkey, LPCTSTR value, bool bDefault)
 
 	subkey = m_groupLocked ? (m_group.c_str()) : subkey;
 
-	map_type::const_iterator it = m_options.find((tstring(subkey) + ".") + value);
+	map_type::const_iterator it = m_options.find((tstring(subkey) + _T(".")) + value);
 	if (it != m_options.end() && (*it).second.size())
 	{
 		return (*it).second[0] == 't' || (*it).second[0] == 'T';
@@ -187,7 +187,7 @@ int XmlOptions::Get(LPCTSTR subkey, LPCTSTR value, int iDefault)
 
 	subkey = m_groupLocked ? (m_group.c_str()) : subkey;
 
-	map_type::const_iterator it = m_options.find((tstring(subkey) + ".") + value);
+	map_type::const_iterator it = m_options.find((tstring(subkey) + _T(".")) + value);
 	if (it != m_options.end())
 	{
 		return _ttoi((*it).second.c_str());
@@ -205,11 +205,11 @@ uint64_t XmlOptions::Get(LPCTSTR subkey, LPCTSTR value, uint64_t iDefault)
 
 	subkey = m_groupLocked ? (m_group.c_str()) : subkey;
 
-	map_type::const_iterator it = m_options.find((tstring(subkey) + ".") + value);
+	map_type::const_iterator it = m_options.find((tstring(subkey) + _T(".")) + value);
 	if (it != m_options.end())
 	{
 		TCHAR* end(NULL);
-		return _strtoui64((*it).second.c_str(), &end, 10);
+		return _tcstoui64((*it).second.c_str(), &end, 10);
 	}
 
 	return iDefault;
@@ -224,7 +224,7 @@ tstring XmlOptions::Get(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
 
 	subkey = m_groupLocked ? (m_group.c_str()) : subkey;
 
-	map_type::const_iterator it = m_options.find((tstring(subkey) + ".") + value);
+	map_type::const_iterator it = m_options.find((tstring(subkey) + _T(".")) + value);
 	if (it != m_options.end())
 	{
 		return (*it).second;

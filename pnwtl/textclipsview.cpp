@@ -183,15 +183,18 @@ LRESULT CClipsDocker::OnClipGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	if(clip)
 	{
 		tstring str;
+
+		CA2CT clipText(clip->Text.c_str());
+
 		if(pGetInfoTip->dwFlags == 0)
 		{
 			str = pGetInfoTip->pszText;
 			str += _T(":\n");
-			str += clip->Text;
+			str += clipText;
 		}
 		else
 		{
-			str = clip->Text;
+			str = clipText;
 		}
 
 		if( str.size() >= (size_t)(pGetInfoTip->cchTextMax - 3) )

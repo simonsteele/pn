@@ -16,14 +16,15 @@ typedef BOOL (WINAPI *MINIDUMPWRITEDUMP)(HANDLE hProcess, DWORD dwPid, HANDLE hF
 									CONST PMINIDUMP_CALLBACK_INFORMATION CallbackParam
 									);
 
+// TODO: Make this a namespace - no point in the class.
 class MiniDumper
 {
 private:
-	static LPCSTR m_szAppName;
+	static LPCTSTR m_szAppName;
 
 	static LONG WINAPI TopLevelFilter( struct _EXCEPTION_POINTERS *pExceptionInfo );
 	static void InvalidParameterHandler( const wchar_t * expression, const wchar_t * function, const wchar_t * file, unsigned int line, uintptr_t pReserved);
 
 public:
-	MiniDumper( LPCSTR szAppName );
+	MiniDumper( LPCTSTR szAppName );
 };

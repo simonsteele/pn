@@ -92,7 +92,7 @@ public:
 	}
 
 	/// Called before the document is saved
-	virtual void OnBeforeSave(const char* filename){}
+	virtual void OnBeforeSave(const wchar_t* filename){}
 
 	/// Called after the document is saved
 	virtual void OnAfterSave()

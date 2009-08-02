@@ -11,9 +11,6 @@
 #ifndef smartstart_h__included
 #define smartstart_h__included
 
-typedef STRING_MAP::value_type SM_VT;
-typedef STRING_MAP::iterator SM_IT;
-
 class CTextView;
 
 class SmartStart : public Singleton<SmartStart, SINGLETON_AUTO_DELETE>, XMLParseState
@@ -30,7 +27,7 @@ public:
 	/// Use this function to scan the first m_max chars for smartstart matches.
 	void			Scan(CTextView* pView);
 	
-	STRING_MAP&		GetMap();
+	string_map&		GetMap();
 
 	void			Save();
 
@@ -48,9 +45,9 @@ protected:
 
 protected:
 	CTextView*	m_pView;
-	STRING_MAP	m_Map;
+	string_map	m_Map;
 	size_t		m_max;
-	TCHAR*		m_buffer;
+	char*		m_buffer;
 };
 
 #endif // #ifndef smartstart_h__included

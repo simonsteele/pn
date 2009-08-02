@@ -26,7 +26,7 @@ public:
 	REScintilla();
 	~REScintilla();
 
-	void SetRE(LPCTSTR regex, bool bClearStyling = true);
+	void SetRE(LPCSTR regex, bool bClearStyling = true);
 	void ExtendStyleRange(int startPos, int style, Scintilla::TextRange* tr);
 
 	boost::xpressive::sregex* GetRE() const;
@@ -38,7 +38,7 @@ protected:
 	void customColouriseLine(ScintillaAccessor& styler, char *lineBuffer, int length, int endLine);
 
 protected:
-	tstring			m_customre;
+	std::string		m_customre;
 	bool			schemeLoaded;
 	boost::xpressive::sregex* m_pRE;
 };

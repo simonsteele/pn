@@ -163,11 +163,11 @@ unsigned int UnSlashLowOctal(char *s) {
 	return o - sStart;
 }
 
-static int UnSlashAsNeeded(CString& s, bool escapes, bool regularExpression)
+static int UnSlashAsNeeded(std::string& s, bool escapes, bool regularExpression)
 {
-	//StringDup(s.c_str());
-	char *sUnslashed = new char[s.GetLength()+1];
-	strcpy(sUnslashed, s);
+	std::vector<char> buf(s.length()+1);
+	char *sUnslashed = &buf[0];
+	strcpy(sUnslashed, &s[0]);
 
 	int len;
 	if (escapes) 
@@ -188,7 +188,7 @@ static int UnSlashAsNeeded(CString& s, bool escapes, bool regularExpression)
 	}
 	
 	s = sUnslashed;
-	delete [] sUnslashed;
+
 	return len;
 }
 
@@ -611,15 +611,19 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 	int				bRet = fnNotFound;
 	bool			checkFoundPos = true;
 
-	CString localFindText(pOptions->GetFindText());
+	std::string localFindText;
 
 	// If we're in UTF-8 mode we have a go at making the correct find string
 	// so that Windows characters get converted into UTF-8.
 	if(GetCodePage() == SC_CP_UTF8)
 	{
-		// TODO provide a 16-bit encoding to UTF-8 conversion in unicode mode.
-		Windows1252_Utf8 conv((LPCTSTR)localFindText);
+		Tcs_Utf8 conv(pOptions->GetFindText());
 		localFindText = (const char*)(const unsigned char*)conv;
+	}
+	else
+	{
+		Tcs_Windows1252 conv(pOptions->GetFindText());
+		localFindText = conv;
 	}
 
 	int lenFind = UnSlashAsNeeded(localFindText, pOptions->GetUseSlashes(), pOptions->GetUseRegExp());
@@ -653,18 +657,11 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 		checkFoundPos = false;
 	}
 	else
+	{
 		checkFoundPos = (lastFindDetails.lastPos == cr.cpMin);
+	}
 
-	USES_CONVERSION;
-	#ifdef CT2A
-	//Manuel Sandoval: Something funny happens here:
-	//CT2A returns an invalid pointer
-	CT2A ft(localFindText);
-	const char* findtext = ft;
-	//const char* findtext = localFindText.Trim().GetBuffer();
-	#else
-	const char* findtext = T2A(const_cast<TCHAR*>( (LPCTSTR)localFindText ));
-	#endif
+	const char* findtext = localFindText.c_str();
 
 	if(pOptions->GetSearchBackwards())
 	{
@@ -741,15 +738,19 @@ int CScintillaImpl::FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn
 	int				bRet = fnNotFound;
 	bool			checkFoundPos = true;
 
-	CString localFindText(pOptions->GetFindText());
+	std::string localFindText;
 
 	// If we're in UTF-8 mode we have a go at making the correct find string
 	// so that Windows characters get converted into UTF-8.
 	if(GetCodePage() == SC_CP_UTF8)
 	{
-		// TODO provide a 16-bit encoding to UTF-8 conversion in unicode mode.
-		Windows1252_Utf8 conv((LPCTSTR)localFindText);
+		Tcs_Utf8 conv(pOptions->GetFindText());
 		localFindText = (const char*)(const unsigned char*)conv;
+	}
+	else
+	{
+		CT2CA conv(pOptions->GetFindText());
+		localFindText = (const char*)conv;
 	}
 
 	int lenFind = UnSlashAsNeeded(localFindText, pOptions->GetUseSlashes(), pOptions->GetUseRegExp());
@@ -757,7 +758,6 @@ int CScintillaImpl::FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn
 	if(lenFind == 0)
 		return fnInvalidSearch;
 	
-	///@todo Sort out interface accessibility
 	pOptions->SetFound(false);
 
 	///@todo SCFIND_WORDSTART
@@ -772,7 +772,7 @@ int CScintillaImpl::FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn
 	SetTarget(startPosition, endPosition);
 	SetSearchFlags(flags);
 
-	int posFind = SearchInTarget(lenFind, (LPCTSTR)localFindText);
+	int posFind = SearchInTarget(lenFind, localFindText.c_str());
 	
 	// Fix from Replace All Code:
 	if ((lenFind == 1) && pOptions->GetUseRegExp() && (localFindText[0] == '^')) 
@@ -800,7 +800,7 @@ int CScintillaImpl::FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn
 				lastMatch++;
 
 			SetTarget(lastMatch, endPosition);
-			posFind = SearchInTarget(lenFind, (LPCTSTR)localFindText);
+			posFind = SearchInTarget(lenFind, localFindText.c_str());
 		}
 	}
 
@@ -811,7 +811,9 @@ bool CScintillaImpl::ReplaceOnce(extensions::ISearchOptions* pOptions)
 {
 	if(pOptions->GetFound()) 
 	{
-		CString replaceTarget(pOptions->GetReplaceText());
+		CT2CA conv(pOptions->GetReplaceText());
+		std::string replaceTarget(conv);
+		
 		int replaceLen = UnSlashAsNeeded(replaceTarget, pOptions->GetUseSlashes(), pOptions->GetUseRegExp());
 		
 		Scintilla::CharacterRange cr;
@@ -822,9 +824,13 @@ bool CScintillaImpl::ReplaceOnce(extensions::ISearchOptions* pOptions)
 		int lenReplaced = replaceLen;
 		
 		if (pOptions->GetUseRegExp())
-			lenReplaced = ReplaceTargetRE(replaceLen, (LPCTSTR)replaceTarget);
+		{
+			lenReplaced = ReplaceTargetRE(replaceLen, replaceTarget.c_str());
+		}
 		else
-			ReplaceTarget(replaceLen, (LPCTSTR)replaceTarget);
+		{
+			ReplaceTarget(replaceLen, replaceTarget.c_str());
+		}
 		
 		SetSel(cr.cpMin + lenReplaced, cr.cpMin);
 		
@@ -838,7 +844,8 @@ int CScintillaImpl::ReplaceAll(extensions::ISearchOptions* pOptions)
 {
 	int repCount = 0;
 
-	CString findTarget(pOptions->GetFindText());
+	CT2CA findTargetConv(pOptions->GetFindText());
+	std::string findTarget(findTargetConv);
 
 	int findLen = UnSlashAsNeeded(findTarget, pOptions->GetUseSlashes(), pOptions->GetUseRegExp());
 	if (findLen == 0)
@@ -877,7 +884,8 @@ int CScintillaImpl::ReplaceAll(extensions::ISearchOptions* pOptions)
 		// If not looping, replace all only from caret to end of document
 	}
 
-	CString replaceTarget(pOptions->GetReplaceText());
+	CT2CA replaceTextConv(pOptions->GetReplaceText());
+	std::string replaceTarget(replaceTextConv);
 	
 	int replaceLen = UnSlashAsNeeded(replaceTarget, pOptions->GetUseSlashes(), pOptions->GetUseRegExp());
 	
@@ -888,7 +896,7 @@ int CScintillaImpl::ReplaceAll(extensions::ISearchOptions* pOptions)
 	SetTarget(startPosition, endPosition);
 	SetSearchFlags(flags);
 	
-	int posFind = SearchInTarget(findLen, (LPCTSTR)findTarget);
+	int posFind = SearchInTarget(findLen, findTarget.c_str());
 	
 	if ((findLen == 1) && pOptions->GetUseRegExp() && (findTarget[0] == '^')) 
 	{
@@ -911,11 +919,11 @@ int CScintillaImpl::ReplaceAll(extensions::ISearchOptions* pOptions)
 			int lenReplaced = replaceLen;
 			if (pOptions->GetUseRegExp())
 			{
-				lenReplaced = ReplaceTargetRE(replaceLen, (LPCTSTR)replaceTarget);
+				lenReplaced = ReplaceTargetRE(replaceLen, replaceTarget.c_str());
 			}
 			else
 			{
-				ReplaceTarget(replaceLen, (LPCTSTR)replaceTarget);
+				ReplaceTarget(replaceLen, replaceTarget.c_str());
 			}
 
 			repCount += 1 * (lenReplaced != 0 || lenTarget != 0);
@@ -930,7 +938,7 @@ int CScintillaImpl::ReplaceAll(extensions::ISearchOptions* pOptions)
 					movePastEOL = 1;
 				}
 
-				if (pOptions->GetUseRegExp() && findTarget.Find(_T('^')) == -1 && findTarget.Find(_T('$')) == -1)
+				if (pOptions->GetUseRegExp() && findTarget.find('^') == -1 && findTarget.find('$') == -1)
 				{
 					// Trying to avoid infinite loops here - looks like a zero-length target
 					// and it's not start or end of line. This may loop forever so we kill it here.
@@ -955,7 +963,7 @@ int CScintillaImpl::ReplaceAll(extensions::ISearchOptions* pOptions)
 			else
 			{
 				SetTarget(lastMatch, endPosition);
-				posFind = SearchInTarget(findLen, (LPCTSTR)findTarget);
+				posFind = SearchInTarget(findLen, findTarget.c_str());
 			}
 		}
 
@@ -1146,10 +1154,10 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 		// from the Page Setup dialog to device units.
 		// (There are 2540 hundredths of a mm in an inch.)
 
-		char localeInfo[3];
+		TCHAR localeInfo[3];
 		GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_IMEASURE, localeInfo, 3);
 
-		if (localeInfo[0] == '0')
+		if (localeInfo[0] == _T('0'))
 		{	// Metric system. '1' is US System
 			rectSetup.left		= MulDiv (pOptions->rcMargins.left, ptDpi.x, 2540);
 			rectSetup.top		= MulDiv (pOptions->rcMargins.top, ptDpi.y, 2540);
@@ -1212,7 +1220,7 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 	                                FALSE /*sdHeader.underlined*/,
 	                                0, 0, 0,
 	                                0, 0, 0,
-	                                /*(sdHeader.specified & StyleDefinition::sdFont) ? sdHeader.font.c_str() :*/ "Arial");
+	                                /*(sdHeader.specified & StyleDefinition::sdFont) ? sdHeader.font.c_str() :*/ _T("Arial"));
 	
 	::SelectObject(hdc, fontHeader);
 	::GetTextMetrics(hdc, &tm);
@@ -1232,7 +1240,7 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 	                                /*sdFooter.underlined*/FALSE,
 	                                0, 0, 0,
 	                                0, 0, 0,
-	                                /*(sdFooter.specified & StyleDefinition::sdFont) ? sdFooter.font.c_str() :*/ "Arial");
+	                                /*(sdFooter.specified & StyleDefinition::sdFont) ? sdFooter.font.c_str() :*/ _T("Arial"));
 	
 	::SelectObject(hdc, fontFooter);
 	::GetTextMetrics(hdc, &tm);
@@ -1485,7 +1493,7 @@ bool CScintillaImpl::UnCommentStream(const CommentSpecRec& comments)
 
 #include "SchemeConfig.h"
 
-inline int CompareNoCase(tstring &a, tstring& b)
+inline int CompareNoCase(std::string &a, std::string& b)
 {
 	return _stricmp(a.c_str(), b.c_str());
 }
@@ -1570,7 +1578,10 @@ void CScintillaImpl::AddToAutoComplete(CString FullTag, CString TagName)
 	if(!m_bAutoCompletionUseTags)
 		return;
 
-	m_autoComplete->RegisterTag(FullTag, TagName);
+	// TODO: This should not use CStrings...
+	CT2CA tag(FullTag);
+	CT2CA tagName(TagName);
+	m_autoComplete->RegisterTag(tag, tagName);
 }
 
 //This function cleans CTags Keywords from autocomplete list
@@ -1590,9 +1601,9 @@ void CScintillaImpl::ClearAutoComplete()
 	}
 }
 
-tstring CScintillaImpl::GetLineText(int nLine)
+std::string CScintillaImpl::GetLineText(int nLine)
 {	
-	tstring strLine;	
+	std::string strLine;	
 	// Get needed buffer size
 	int nLen;
 	if (nLine < 0)
@@ -1602,7 +1613,7 @@ tstring CScintillaImpl::GetLineText(int nLine)
 
 	// Allocate buffer
 	strLine.resize(nLen + 1);
-	LPTSTR linebuf = &strLine[0];
+	char* linebuf = &strLine[0];
 	
 	// And get the line
 	if (nLine < 0)
@@ -1626,14 +1637,13 @@ ScintillaIterator CScintillaImpl::end()
 	return ScintillaIterator(this, GetLength());
 }
 
-tstring CScintillaImpl::GetSelText2()
+std::string CScintillaImpl::GetSelText2()
 {
-	tstring ret;
-	int nStartSel(GetSelectionStart());
-	int nEndSel(GetSelectionEnd());
-	ret.resize(nEndSel - nStartSel + 1);
-	CScintilla::GetSelText(&ret[0]);
-	ret.resize(nEndSel - nStartSel);
+	std::string ret;
+	int selLength = CScintilla::GetSelText(NULL);
+	ret.resize(selLength + 1);
+	selLength = CScintilla::GetSelText(&ret[0]);
+	ret.resize(selLength);
 	return ret;
 }
 
@@ -1646,7 +1656,7 @@ void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>
 	
 	if(m_pScheme != NULL)
 	{
-		LPCTSTR lexer = m_pScheme->GetLexer();
+		LPCSTR lexer = m_pScheme->GetLexer();
 		if(strcmp(lexer, "xml") != 0 
 			&& strcmp(lexer, "hypertext") != 0
 			&& strcmp(lexer, "asp") != 0 
@@ -1683,7 +1693,7 @@ void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>
 			if( lCurrentPos - lPos < 1024 )
 			{
 				SetSel(lPos,lCurrentPos);
-				tstring text = GetSelText2();
+				std::string text = GetSelText2();
 				if( text == "<>" )
 				{
 					// Reset the selpos...
@@ -1692,7 +1702,7 @@ void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>
 				}
 				
 				size_t pos = text.find(' ');
-				if( tstring::npos == pos )
+				if( std::string::npos == pos )
 				{
 					text.insert(1, "/");
 				}
@@ -1702,6 +1712,7 @@ void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>
 					text.insert(1, "/");
 					text += ">";
 				}
+				
 				BeginUndoAction();
 				SetSel(lCurrentPos,lCurrentPos);
 				AddText(text.size(), text.c_str());
@@ -1767,7 +1778,7 @@ bool CScintillaImpl::StartCallTip()
 {
 	m_nCurrentCallTip = 0;
 	m_currentCallTipWord.clear();
-	tstring strLine = GetLineText();
+	std::string strLine = GetLineText();
 	int current = GetCaretInLine();
 	int pos = GetCurrentPos();
 	int braces;
@@ -1822,7 +1833,7 @@ bool CScintillaImpl::StartCallTip()
 
 void CScintillaImpl::ContinueCallTip()
 {
-	tstring strLine = GetLineText();
+	std::string strLine = GetLineText();
 	int current = GetCaretInLine();
 	const char* functionDefinition = m_functionDefinition.c_str();
 
@@ -1894,13 +1905,13 @@ void CScintillaImpl::FillFunctionDefinition(int pos)
 
 	PN::AString callTipList;
 	char FNC_SEPARATOR = (char)0x01;
-	tstring seps;
+	std::string seps;
 	seps += FNC_SEPARATOR;
 
 	m_autoComplete->GetPrototypes(callTipList, FNC_SEPARATOR, m_currentCallTipWord.c_str(), m_currentCallTipWord.length());
 
 	m_Api.clear();
-	tstring strCallTipList(callTipList);
+	std::string strCallTipList(callTipList);
 	StringTokenise(strCallTipList, m_Api, seps);
 	
 	if (m_Api.size() > 0 && (static_cast<size_t>(m_nCurrentCallTip) < m_Api.size()))
@@ -1928,7 +1939,7 @@ bool CScintillaImpl::StartAutoComplete()
 	if( !m_bAutoCompletion )
 		return false;
 
-	tstring line = GetLineText();
+	std::string line = GetLineText();
 	int current = GetCaretInLine();
 	int startword = current;
 	while ((startword > 0) 
@@ -1941,7 +1952,7 @@ bool CScintillaImpl::StartAutoComplete()
 	if(m_bAutoActivate && !(current - startword >= m_nMinAutoCompleteChars))
 		return false;
 
-	tstring root = line.substr(startword, current - startword);
+	std::string root = line.substr(startword, current - startword);
 	PN::AString autoCompleteList;
 	m_autoComplete->GetWords(autoCompleteList, root.c_str(), root.length());
 	if(autoCompleteList.GetLength())

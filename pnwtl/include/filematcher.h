@@ -2,9 +2,9 @@
  * @file filematcher.h
  * @brief Use regular expressions to match file names
  * @author Simon Steele
- * @note Copyright (c) 2006-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -26,7 +26,7 @@ namespace PCRE
 class RegExFileMatcher
 {
 public:
-	RegExFileMatcher(LPCTSTR filterstr) : valid(false), sPatterns("")
+	RegExFileMatcher(LPCTSTR filterstr) : valid(false), sPatterns(_T(""))
 	{
 		build(filterstr);
 	}
@@ -34,7 +34,7 @@ public:
 	bool Match(LPCTSTR filename) const
 	{
 		PNASSERT(Valid());
-		return boost::xpressive::regex_match(std::string(filename), re);
+		return boost::xpressive::regex_match(tstring(filename), re);
 	}
 
 	bool Valid() const
@@ -42,15 +42,15 @@ public:
 		return valid;
 	}
 
-	LPCSTR Error() const
+	LPCTSTR Error() const
 	{
 		return error.c_str();
 	}
 
-protected:
-	std::string sPatterns;
-	boost::xpressive::sregex re;
-	std::string error;
+private:
+	tstring sPatterns;
+	boost::xpressive::wsregex re;
+	tstring error;
 	bool valid;
 
 	void build(LPCTSTR filterstr)
@@ -58,7 +58,7 @@ protected:
 		tstring s(filterstr);
 		Trim(s);
 		std::vector<tstring> toks;
-		StringTokenise(s, toks, tstring(";, "));
+		StringTokenise(s, toks, tstring(_T(";, ")));
 
 		for(std::vector<tstring>::const_iterator i = toks.begin();
 			i != toks.end();
@@ -67,9 +67,9 @@ protected:
 			tstring query = (*i);
 			Trim(query);
 
-			std::string pattern = convertMask(query.c_str());
+			tstring pattern = convertMask(query.c_str());
 			if(sPatterns.length() > 0)
-				sPatterns += '|';
+				sPatterns += _T('|');
 			sPatterns += pattern;
 		}
 
@@ -77,20 +77,21 @@ protected:
 		{
 			try
 			{
-				re = boost::xpressive::sregex::compile(sPatterns, boost::xpressive::regex_constants::icase);
+				re = boost::xpressive::wsregex::compile(sPatterns, boost::xpressive::regex_constants::icase);
 				valid = true;
 			}
 			catch(boost::xpressive::regex_error& ex)
 			{
-				error = ex.what();
+				CA2CT what(ex.what());
+				error = what;
 				valid = false;
 			}
 		}
 	}
 
-	std::string convertMask(LPCTSTR sIn)
+	tstring convertMask(LPCTSTR sIn)
 	{
-		std::string sOut = "(";
+		tstring sOut = _T("(");
 
 		size_t i = 0;
 		while ( i < _tcslen(sIn) )
@@ -98,38 +99,38 @@ protected:
 			// Add most characters straight in...
 			switch(sIn[i])
 			{
-				case '*':
-					sOut += ".*";
+				case _T('*'):
+					sOut += _T(".*");
 					break;
 				
-				case '?':
+				case _T('?'):
 					if(i == 0)
-						sOut += "(^.)";
+						sOut += _T("(^.)");
 					else
-						sOut += ".?";
+						sOut += _T(".?");
 					break;
 				
-				case '\\':
+				case _T('\\'):
 					if(i == 0)
-						sOut += "(^[\\\\])";
+						sOut += _T("(^[\\\\])");
 					else
 						sOut += _T("\\\\");
 					break;
 
-				case '.':
-					sOut += "\\.";
+				case _T('.'):
+					sOut += _T("\\.");
 					break;
 
-				case ' ':
-				case '\t':
+				case _T(' '):
+				case _T('\t'):
 					break;
 				
 				default:
 					if(i == 0)
 					{
-						sOut += "(^[";
+						sOut += _T("(^[");
 						sOut += sIn[i];
-						sOut += "])";
+						sOut += _T("])");
 					}
 					else
 						sOut += sIn[i];
@@ -139,7 +140,7 @@ protected:
 			i++;
 		}
 
-		return sOut + "$)";
+		return sOut + _T("$)");
 	}
 };
 

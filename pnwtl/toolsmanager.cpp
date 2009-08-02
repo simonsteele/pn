@@ -2,9 +2,9 @@
  * @file toolsmanager.cpp
  * @brief Manage External Tools
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -90,12 +90,12 @@ SchemeTools* ToolsManager::GetGlobalProjectTools()
 	return m_pGlobalProjectTools;
 }
 
-SchemeTools* ToolsManager::GetToolsFor(LPCTSTR scheme)
+SchemeTools* ToolsManager::GetToolsFor(LPCSTR scheme)
 {
 	SchemeTools* tools = find(scheme, m_toolSets);
 	if(!tools)
 	{
-		tstring sid(scheme);
+		std::string sid(scheme);
 		tools = new SchemeTools(scheme);
 		m_toolSets.insert(SCHEMETOOLS_MAP::value_type(sid, tools));
 	}
@@ -105,20 +105,21 @@ SchemeTools* ToolsManager::GetToolsFor(LPCTSTR scheme)
 
 ProjectTools* ToolsManager::GetToolsForProject(LPCTSTR id)
 {
-	ProjectTools* tools = static_cast<ProjectTools*>( find(id, m_projectTools) );
+	CT2CA idconv(id);
+	ProjectTools* tools = static_cast<ProjectTools*>( find(idconv, m_projectTools) );
 	if(!tools)
 	{
 		tstring sid(id);
 		tools = new ProjectTools(id);
-		m_projectTools.insert(SCHEMETOOLS_MAP::value_type(sid, tools));
+		m_projectTools.insert(SCHEMETOOLS_MAP::value_type(std::string(idconv), tools));
 	}
 
 	return tools;
 }
 
-SchemeTools* ToolsManager::find(LPCTSTR id, SCHEMETOOLS_MAP& col)
+SchemeTools* ToolsManager::find(LPCSTR id, SCHEMETOOLS_MAP& col)
 {
-	tstring stofind(id);
+	std::string stofind(id);
 	SCHEMETOOLS_MAP::iterator i = col.find(id);
 	
 	SchemeTools* pRet = NULL;
@@ -223,7 +224,7 @@ int ToolsManager::BuildMenu(TOOLDEFS_LIST& tools, CommandDispatch* dispatcher, C
 				tstring sc = dispatcher->GetShortcutText(LOBYTE(pT->Shortcut), HIBYTE(pT->Shortcut));
 				if(sc.length() > 0)
 				{
-					str += "\t";
+					str += _T("\t");
 					str += sc;
 				}
 			}
@@ -277,7 +278,7 @@ void ToolsManager::ReLoad(CommandDispatch* pDispatch)
 	tstring pattern(uspath);
 	tstring to_open;
 
-	pattern += "*.xml";
+	pattern += _T("*.xml");
 
 	WIN32_FIND_DATA FindFileData;
 	HANDLE hFind = ::FindFirstFile(pattern.c_str(), &FindFileData);
@@ -353,8 +354,9 @@ void ToolsManager::processScheme(XMLAttributes& atts)
 	LPCTSTR schemename = atts.getValue(_T("name"));
 	if(schemename)
 	{
+		CT2CA scheme(schemename);
 		// Only ever one SchemeTools object per named scheme, independent of source files.
-		SchemeTools* old = GetToolsFor(schemename);
+		SchemeTools* old = GetToolsFor(scheme);
 		PNASSERT(old != NULL);
 		m_pCur = old;
 	}
@@ -406,17 +408,17 @@ void ToolsManager::processTool(XMLAttributes& atts)
 			if(_tcscmp(attr, _T("command")) == 0)
 				pDef->Command = val;
 			else if(_tcscmp(attr, _T("params")) == 0)
-				pDef->Params = Utf8_Windows1252(val);
+				pDef->Params = Xml_Tcs(val);
 			else if(_tcscmp(attr, _T("folder")) == 0)
-				pDef->Folder = Utf8_Windows1252(val);
+				pDef->Folder = Xml_Tcs(val);
 			else if(_tcscmp(attr, _T("shortcut")) == 0)
 				pDef->Shortcut = _ttoi(val);
 			else if(_tcscmp(attr, _T("parsepattern")) == 0)
-				pDef->CustomParsePattern = Utf8_Windows1252(val);
+				pDef->CustomParsePattern = Xml_Tcs(val);
 			else if(_tcscmp(attr, _T("flags")) == 0)
 			{
 				LPTSTR end;
-				pDef->SetFlags( strtoul(val, &end, 10) );
+				pDef->SetFlags( _tcstoul(val, &end, 10) );
 			}
 			else if(_tcscmp(attr, _T("index")) == 0)
 				pDef->Index = _ttoi(val);

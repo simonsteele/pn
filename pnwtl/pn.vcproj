@@ -248,9 +248,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="/Zm180"
 				Optimization="0"
 				AdditionalIncludeDirectories="TabbingFramework, DockingFramework"
-				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,STRICT,UNICODE"
+				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,STRICT,UNICODE,SCI_NAMESPACE"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="2"
@@ -295,7 +296,6 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="pnvista.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -1181,6 +1181,14 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="DebugUnicode|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="ReleaseDebug|Win32"
 					>
 					<Tool
@@ -1210,6 +1218,14 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugUnicode|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
@@ -1714,6 +1730,10 @@
 				</File>
 				<File
 					RelativePath=".\OptionsPageKeyboard.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageNewFiles.cpp"
 					>
 				</File>
 				<File

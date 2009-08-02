@@ -109,39 +109,40 @@ bool COutputView::HandleREError(boost::xpressive::sregex& re, int style, int pos
 	boost::xpressive::smatch match;
 	if( boost::xpressive::regex_search(buf, match, re) )
 	{
-		tstring filename;
-		tstring linestr;
-		tstring colstr;
+		std::string filename;
+		std::string linestr;
+		std::string colstr;
         
 		// Extract the named matches from the RE, noting if there was a line or column.
 		bool bFile = safe_get_submatch(match, filename, "f");
 		bool bLine = safe_get_submatch(match, linestr, "l");
 		bool bCol = safe_get_submatch(match, colstr, "c");
 
-#ifdef _DEBUG
-			tstring dbgout = _T("Matched file (");
-			dbgout += filename;
-			dbgout += _T(") line (");
-			dbgout += linestr;
-			dbgout += _T(") col (");
-			dbgout += colstr;
-			dbgout += _T(")\n");
-			LOG(dbgout.c_str());
-#endif
+//#ifdef _DEBUG
+//			tstring dbgout = _T("Matched file (");
+//			dbgout += filename;
+//			dbgout += _T(") line (");
+//			dbgout += linestr;
+//			dbgout += _T(") col (");
+//			dbgout += colstr;
+//			dbgout += _T(")\n");
+//			LOG(dbgout.c_str());
+//#endif
 
 		if(bFile)
 		{
 			//First check if the file exists as is, if it does then we go with that,
 			//else we try to resolve it.
-			CFileName fn(filename.c_str());
+			CA2CT filenameConv(filename.c_str());
+			CFileName fn(filenameConv);
 			fn.Sanitise();
 
-#ifdef _DEBUG
-			dbgout = _T("After sanitise, filename = ");
-			dbgout += fn.c_str();
-			dbgout += _T("\n");
-			LOG(dbgout.c_str());
-#endif
+//#ifdef _DEBUG
+//			dbgout = _T("After sanitise, filename = ");
+//			dbgout += fn.c_str();
+//			dbgout += _T("\n");
+//			LOG(dbgout.c_str());
+//#endif
 
 			if( fn.IsRelativePath() )
 			{
@@ -157,7 +158,8 @@ bool COutputView::HandleREError(boost::xpressive::sregex& re, int style, int pos
 			}
 			else
 			{
-				tstring msg = _T("Could not locate ") + filename;
+				tstring msg = _T("Could not locate ");
+				msg += filenameConv;
 				msg += _T(". If the file exists, see help under \"Output\" to fix this.");
 				g_Context.m_frame->SetStatusText(msg.c_str());
 				bRet = false;
@@ -258,7 +260,8 @@ bool COutputView::BuildAndHandleREError(int style, int position, const char* reD
 	}
 	catch (boost::xpressive::regex_error& ex)
 	{
-		::MessageBox(m_hWnd, ex.what(), "PN2 - Regular Expression Error", MB_OK);
+		CA2CT errorMessage(ex.what());
+		::MessageBox(m_hWnd, errorMessage, _T("PN2 - Regular Expression Error"), MB_OK);
 	}
 
 	return false;
@@ -429,7 +432,15 @@ void COutputView::SafeAppendText(LPCSTR s, int len, bool bScrollToView)
 
 void COutputView::AddToolOutput(LPCTSTR output, int nLength)
 {
-	SafeAppendText(output, nLength);
+	// TODO: Argh, the inefficiency...
+	if (nLength == -1)
+	{
+		nLength = _tcslen(output);
+	}
+
+	tstring opconv(output, nLength);
+	CT2CA outputconv(opconv.c_str());
+	SafeAppendText(outputconv, -1);
 }
 
 void COutputView::SetToolBasePath(LPCTSTR path)
@@ -442,7 +453,8 @@ void COutputView::SetToolParser(bool bBuiltIn, LPCTSTR customExpression)
 	if(!bBuiltIn && customExpression != NULL)
 	{
 		m_bCustom = true;
-		SetRE(customExpression, false);
+		CT2CA expr(customExpression);
+		SetRE(expr, false);
 	}
 	else
 	{

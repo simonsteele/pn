@@ -20,13 +20,12 @@ namespace Projects
 
 #include "xmlparser.h"
 
-typedef struct tagProjectWriter* ProjectWriter;
-
 class ProjectViewState;
 class Project;
 class Folder;
 class File;
 class ProjectTemplate;
+class ProjectWriter;
 
 typedef std::list<Folder*>		FOLDER_LIST;
 typedef FOLDER_LIST::iterator	FL_IT;
@@ -94,14 +93,13 @@ class File : public ProjectType
 
 		LPCTSTR GetDisplayName();
 		LPCTSTR GetFileName();
+		LPCTSTR GetRelativePath();
 
 		Folder* GetFolder();
 
 		virtual void SetDirty();
 
 		bool Rename(LPCTSTR newFilePart);		
-
-		void WriteDefinition(ProjectWriter definition);
 
 	protected:
 		void SetFolder(Folder* folder);
@@ -154,8 +152,6 @@ class Folder : public ProjectType
 		Folder* GetParent();
 		Project* GetProject();
 
-		virtual void WriteDefinition(ProjectWriter definition);
-
 		static bool MoveFile(File* file, Projects::Folder* into);
 		static bool MoveChild(Projects::Folder* folder, Projects::Folder* into);
 
@@ -167,7 +163,6 @@ class Folder : public ProjectType
 		virtual void notify(PROJECT_CHANGE_TYPE changeType);
 		virtual void notify(PROJECT_CHANGE_TYPE changeType, ProjectType* changeItem);
 		virtual void notify(PROJECT_CHANGE_TYPE changeType, Folder* changeContainer, ProjectType* changeItem);
-		void writeContents(ProjectWriter definition);
 
 	protected:
 		bool		m_canNotify;
@@ -189,8 +184,6 @@ class MagicFolder : public Folder
 
 		virtual const FOLDER_LIST&	GetFolders();
 		virtual const FILE_LIST&	GetFiles();
-
-		virtual void WriteDefinition(ProjectWriter definition);
 
 		void SetGotContents(bool bGotContents);
 
@@ -312,6 +305,7 @@ class Project : public Folder, XMLParseState
 		Project();
 
 		friend class Workspace;
+		friend class ProjectWriter;
 
 		virtual void notify(PROJECT_CHANGE_TYPE changeType, Folder* changeContainer, ProjectType* changeItem);
 

@@ -76,7 +76,9 @@ void COptionsPageStyle::OnInitialise()
 	StyleDetails style;
 	m_defclass->Combine(NULL, style);
 	
-	m_FontCombo.SelectString(-1, style.FontName.c_str());
+	CA2CT fontconv(style.FontName.c_str());
+
+	m_FontCombo.SelectString(-1, fontconv);
 	m_SizeCombo.Select(style.FontSize);
 	
 	m_fore.SetColor(style.ForeColor);
@@ -143,7 +145,9 @@ void COptionsPageStyle::OnOK()
 	CString str;
 	m_FontCombo.GetLBText(i, str);
 
-	display.FontName	= str;
+	CT2CA fontconv(str);
+
+	display.FontName	= (LPCSTR)fontconv;
 	display.FontSize	= GetDlgItemInt(IDC_FONTSIZE_COMBO);
 	display.ForeColor	= m_fore.SafeGetColor();
 	display.BackColor	= m_back.SafeGetColor();

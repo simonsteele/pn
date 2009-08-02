@@ -46,7 +46,7 @@ bool __stdcall pn_init_extension(int iface_version, extensions::IPN* pn)
 
 	// Get Taggers Path
 	extensions::IOptions* options = pn->GetOptionsManager();
-	const char* taggersPath = options->GetPNPath( PNPATH_TAGGERS );
+	LPCTSTR taggersPath = options->GetPNPath( PNPATH_TAGGERS );
 	g_source.SetTaggersPath(taggersPath);
 	pn->ReleaseString( taggersPath );
 
@@ -121,23 +121,22 @@ CTagsTagSource::CTagsTagSource() :
  */
 void CTagsTagSource::LoadAdditionalLanguages()
 {
-	std::string optionsFile = m_taggersPath + "ctags\\additionalLanguages.conf";
+	std::wstring optionsFile = m_taggersPath + L"ctags\\additionalLanguages.conf";
 	
 	// Check for file's existence
-	DWORD val = ::GetFileAttributesA( optionsFile.c_str() );
+	DWORD val = ::GetFileAttributes( optionsFile.c_str() );
 	if ( INVALID_FILE_ATTRIBUTES != val && ( FILE_ATTRIBUTE_DIRECTORY & val ) == 0 )
 	{
-		std::wstring path = ConvertMBtoWC( optionsFile.c_str() );
-		if (path.size())
+		if (optionsFile.size())
 		{
 			m_optionsParam = L" --options=\"";
-			m_optionsParam += path;
+			m_optionsParam += optionsFile;
 			m_optionsParam += L"\" ";
 		}
 	}
 
-	std::string schemesFile = m_taggersPath + "ctags\\additionalSupportedSchemes.ini";
-	val = ::GetFileAttributesA( schemesFile.c_str() );
+	std::wstring schemesFile = m_taggersPath + L"ctags\\additionalSupportedSchemes.ini";
+	val = ::GetFileAttributes( schemesFile.c_str() );
 	if ( INVALID_FILE_ATTRIBUTES != val && ( FILE_ATTRIBUTE_DIRECTORY & val ) == 0 )
 	{
 		// Load external language type tables and add the supported schemes
@@ -150,7 +149,7 @@ void CTagsTagSource::LoadAdditionalLanguages()
 /**
  * Set a path to look in for external ctags definitions
  */
-void CTagsTagSource::SetTaggersPath(const char* path)
+void CTagsTagSource::SetTaggersPath(const wchar_t* path)
 {
 	m_taggersPath = path;
 }

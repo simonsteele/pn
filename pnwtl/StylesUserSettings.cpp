@@ -2,7 +2,7 @@
  * @file StylesUserSettings.cpp
  * @brief Implement user customised scheme reading
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -82,13 +82,10 @@ void UserSettingsParser::characterData(void* userData, LPCTSTR data, int len)
 
 	if(pState->m_State == US_KEYWORDS)
 	{
-		CString cdata;
-		TCHAR* buf = cdata.GetBuffer(len+1);
-		_tcsncpy(buf, data, len);
-		buf[len] = 0;
-		cdata.ReleaseBuffer();
-
-		pState->m_CDATA += cdata;
+		tstring buf(data, len);
+		CT2CA bufconv(buf.c_str());
+		
+		pState->m_CDATA += bufconv;
 	}
 }
 
@@ -135,15 +132,15 @@ void UserSettingsParser::endElement(void *userData, LPCTSTR name)
 	{
 		if(!m_loadingPreset)
 		{
-			tstring kw = NormaliseKeywords( tstring(pState->m_CDATA) );
+			std::string kw = NormaliseKeywords( std::string(pState->m_CDATA) );
 			
 			if(kw.length() > 0)
 			{
 				CustomKeywordSet* pSet = new CustomKeywordSet;
 				pSet->key = m_idval;
 				pSet->pName = NULL;
-				pSet->pWords = new TCHAR[kw.length()+1];
-				_tcscpy(pSet->pWords, kw.c_str());
+				pSet->pWords = new char[kw.length()+1];
+				strcpy(pSet->pWords, kw.c_str());
 				m_pCurScheme->CustomKeywords.AddKeywordSet(pSet);
 			}
 		}
@@ -176,7 +173,7 @@ void UserSettingsParser::endElement(void *userData, LPCTSTR name)
 		pState->m_State = 0;
 	}
 
-	pState->m_CDATA = _T("");
+	pState->m_CDATA = "";
 }
 
 void UserSettingsParser::processClassElement(SchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts)
@@ -253,7 +250,7 @@ void UserSettingsParser::processSchemeElement(SchemeLoaderState* pState, LPCTSTR
 			LPCTSTR key = atts.getValue(_T("key"));
 			m_idval = _ttoi(key);
 
-			pState->m_CDATA = _T("");
+			pState->m_CDATA = "";
 
 			pState->m_State = US_KEYWORDS;
 		}
@@ -286,11 +283,13 @@ void UserSettingsParser::processScheme(SchemeLoaderState* pState, XMLAttributes&
 	{
 		if(!m_loadingPreset)
 		{
-			m_pCurScheme = new SchemeDetails(pName);
+			CT2CA schemeName(pName);
+			m_pCurScheme = new SchemeDetails(schemeName);
 		}
 		else
 		{
-			SchemeDetailsMap::iterator iScheme = pState->m_SchemeDetails.find(tstring(pName));
+			CT2CA schemeName(pName);
+			SchemeDetailsMap::iterator iScheme = pState->m_SchemeDetails.find(std::string(schemeName));
 			if(iScheme != pState->m_SchemeDetails.end())
 			{
 				m_pCurScheme = (*iScheme).second;
@@ -308,7 +307,7 @@ void UserSettingsParser::processScheme(SchemeLoaderState* pState, XMLAttributes&
 		m_SchemeName = pName;
 		pState->m_State = US_SCHEME;
 
-		LPCTSTR temp = atts.getValue("ovtabs");
+		LPCTSTR temp = atts.getValue(_T("ovtabs"));
 		if(temp != NULL && _tcslen(temp) > 0)
 		{
 			m_pCurScheme->CustomFlagFlags |= schOverrideTabs;
@@ -317,7 +316,7 @@ void UserSettingsParser::processScheme(SchemeLoaderState* pState, XMLAttributes&
 				// Signal that we definitely want to override the tab use.
 				m_pCurScheme->CustomFlags |= schOverrideTabs;
 		
-			temp = atts.getValue("usetabs");
+			temp = atts.getValue(_T("usetabs"));
 			if(temp != NULL && _tcslen(temp) > 0)
 			{
 				m_pCurScheme->CustomFlagFlags |= schUseTabs;
@@ -327,7 +326,7 @@ void UserSettingsParser::processScheme(SchemeLoaderState* pState, XMLAttributes&
 
 		}
 
-		temp = atts.getValue("tabwidth");
+		temp = atts.getValue(_T("tabwidth"));
 		if(temp != NULL && _tcslen(temp) > 0)
 		{
 			m_pCurScheme->CustomFlagFlags |= schOverrideTabSize;

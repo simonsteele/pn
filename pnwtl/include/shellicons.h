@@ -120,7 +120,7 @@ class ShellImageList
 		{
 			static int ComCtlVersion = 0;
 
-			char* FileName = "comctl32.dll";
+			const TCHAR* FileName = _T("comctl32.dll");
 			DWORD InfoSize, Dummy = 0;
 			BYTE* buf;
 			UINT VerSize;
@@ -135,7 +135,7 @@ class ShellImageList
 					buf = new BYTE[InfoSize];
 					if (::GetFileVersionInfo(FileName, Dummy, InfoSize, buf))
 					{
-						if(::VerQueryValue(buf, "\\", (void**)&ffi, &VerSize))
+						if(::VerQueryValue(buf, _T("\\"), (void**)&ffi, &VerSize))
 						{
 							ComCtlVersion = ffi->dwFileVersionMS;
 						}

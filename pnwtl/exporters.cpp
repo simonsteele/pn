@@ -11,6 +11,7 @@ void PrintfConduit::printf(const char* format, ...)
 	va_start(args, format);
 
 	str.FormatV(format, args);
+	
 	puts(str);
 
 	va_end(args);
@@ -19,7 +20,7 @@ void PrintfConduit::printf(const char* format, ...)
 ////////////////////////////////////////////////////////////////////////////////
 // BaseExporter class
 
-BaseExporter::BaseExporter(IOutput* pOutput, LPCTSTR lpszSchemeName, StylesList* pStyles, CScintilla* pScintilla)
+BaseExporter::BaseExporter(IOutput* pOutput, LPCSTR lpszSchemeName, StylesList* pStyles, CScintilla* pScintilla)
 {
 	m_out = pOutput;
 	m_pStyles = pStyles;
@@ -79,7 +80,7 @@ LPCTSTR BaseExporter::GetFileMask()
 ////////////////////////////////////////////////////////////////////////////////
 // ExporterFactory class
 			
-BaseExporter* ExporterFactory::GetExporter(EExporterType type, IOutput* pOutput, LPCTSTR lpszSchemeName, StylesList* pStyles, CScintilla* pScintilla)
+BaseExporter* ExporterFactory::GetExporter(EExporterType type, IOutput* pOutput, LPCSTR lpszSchemeName, StylesList* pStyles, CScintilla* pScintilla)
 {
 	switch(type)
 	{

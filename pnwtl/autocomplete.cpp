@@ -2,13 +2,14 @@
  * @file autocomplete.cpp
  * @brief Implement autocomplete behaviours
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
 #include "stdafx.h"
+#include "pnstrings.h"
 #include "autocomplete.h"
 
 #if defined (_DEBUG)
@@ -18,7 +19,7 @@
 #endif
 
 // Insert a string into a string list maintaining sorting
-void insert_sorted(tstring_array& arr, tstring& w)
+void insert_sorted(string_array& arr, std::string& w)
 {
 	//TODO: w.Trim();
 	//w = w.Trim();
@@ -29,16 +30,16 @@ void insert_sorted(tstring_array& arr, tstring& w)
 	{
 		arr.push_back(w);
 	}
-	else if(_tcsicmp(w.c_str(), arr.back().c_str()) > 0)
+	else if(_stricmp(w.c_str(), arr.back().c_str()) > 0)
 	{
 		arr.push_back(w);
 	}
 	else
 	{
-		tstring_array::iterator i = arr.begin();
+		string_array::iterator i = arr.begin();
 		while(i != arr.end())
 		{
-			if(_tcsicmp((*i).c_str(), w.c_str()) > 0)
+			if(_stricmp((*i).c_str(), w.c_str()) > 0)
 			{
 				arr.insert(i, w);
 				/*if(arr.size()>65) //For debugging
@@ -96,7 +97,7 @@ void DefaultAutoComplete::RegisterKeyWords(int set, const char* words)
 	if(m_useKeywords)
 	{
 		const char* word(words);
-		tstring newWord;
+		std::string newWord;
 		while(*word)
 		{
 			newWord.clear();
@@ -127,7 +128,7 @@ void DefaultAutoComplete::RegisterTag(const char* tag, const char* name)
 			endBrace = tag + strlen(tag);
 		}
 		
-		tstring display(name);
+		std::string display(name);
 		display.append(openBrace, endBrace-openBrace+1);
 		//tag += FullTag.Mid(startP, endP-startP+1);
 		
@@ -135,7 +136,7 @@ void DefaultAutoComplete::RegisterTag(const char* tag, const char* name)
 	}	
 	else
 	{
-		insert_sorted(m_api, tstring(name));
+		insert_sorted(m_api, std::string(name));
 	}
 }
 
@@ -183,7 +184,7 @@ void DefaultAutoComplete::eliminateDuplicateWords(PN::BaseString& words)
 	words.UnlockBuffer();
 }
 
-void DefaultAutoComplete::BinarySearchFor(PN::BaseString& result, const tstring_array& source, const char* wordStart, int searchLen, fnComparer compare, char otherSeparator, bool includeParameters, bool exactLen, char tokenSeparator)
+void DefaultAutoComplete::BinarySearchFor(PN::BaseString& result, const string_array& source, const char* wordStart, int searchLen, fnComparer compare, char otherSeparator, bool includeParameters, bool exactLen, char tokenSeparator)
 {
 	unsigned int wordlen;			// length of the word part (before the '(' brace) of the api array element
 	int pivot;						// index of api array element just being compared
@@ -235,7 +236,7 @@ void DefaultAutoComplete::BinarySearchFor(PN::BaseString& result, const tstring_
 	}
 }
 
-void DefaultAutoComplete::getNearestWords(PN::BaseString& wordsNear, const tstring_array& arr, const char *wordStart, int searchLen, bool ignoreCase, char otherSeparator, bool exactLen, bool IncludeParameters,char TokenSeparator)
+void DefaultAutoComplete::getNearestWords(PN::BaseString& wordsNear, const string_array& arr, const char *wordStart, int searchLen, bool ignoreCase, char otherSeparator, bool exactLen, bool IncludeParameters,char TokenSeparator)
 {
 	if (0 == arr.size())
 		return; // is empty

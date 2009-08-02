@@ -882,12 +882,12 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	//////////////////////////////////////////////////////////////
 	// Toolbar:
 
-	bool lowColourToolbars = !m_bIsXPOrLater || OPTIONS->Get(PNSK_INTERFACE, "LowColourToolbars", false);
+	bool lowColourToolbars = !m_bIsXPOrLater || OPTIONS->Get(PNSK_INTERFACE, _T("LowColourToolbars"), false);
 	m_hWndToolBar = CreateToolbar(lowColourToolbars);
 
 	// Contentious feature time - hidden option to hide SaveAll until 
 	// we have toolbar customisation.
-	if(OPTIONS->Get(PNSK_INTERFACE, "HideSaveAll", false))
+	if(OPTIONS->Get(PNSK_INTERFACE, _T("HideSaveAll"), false))
 	{
 		::SendMessage(m_hWndToolBar, TB_DELETEBUTTON, 4, 0);
 	}
@@ -1114,7 +1114,8 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 				else if(_tcsicmp(&parm[1], _T("s")) == 0 || _tcsicmp(&parm[1], _T("-scheme")) == 0)
 				{
 					SchemeManager* pSM = SchemeManager::GetInstance();
-					pScheme = pSM->SchemeByName(nextArg);
+					CT2CA schemeconv(nextArg);
+					pScheme = pSM->SchemeByName(schemeconv);
 					if(pScheme != NULL && pScheme != pSM->GetDefaultScheme())
 					{
 						bHaveScheme = true;
@@ -1423,8 +1424,9 @@ LRESULT CMainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 {
 	Scheme* scheme;
 	tstring newscheme =	OPTIONS->Get(PNSK_EDITOR, _T("NewScheme"), _T(""));
+	CT2CA schemename(newscheme.c_str());
 	if(newscheme.length() > 0)
-        scheme = SchemeManager::GetInstance()->SchemeByName(newscheme.c_str());
+        scheme = SchemeManager::GetInstance()->SchemeByName(schemename);
 	else
 		scheme = SchemeManager::GetInstance()->GetDefaultScheme();
 
@@ -1446,7 +1448,7 @@ LRESULT CMainFrame::OnFileNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	tstring folder = dlg.GetFolder();
 	
 	CFileName fn(dlg.GetName());
-	fn.ChangeExtensionTo(".pnproj");
+	fn.ChangeExtensionTo(_T(".pnproj"));
 	fn.Root(folder.c_str());
 	
 	NewProject(fn.c_str(), dlg.GetName(), dlg.GetTemplateGUID());
@@ -1798,7 +1800,7 @@ LRESULT CMainFrame::OnFindInFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	SchemeManager* pSM = SchemeManager::GetInstance();
-	LPCTSTR currentScheme = NULL;
+	LPCSTR currentScheme = NULL;
 
 	CChildFrame* pFrame = CChildFrame::FromHandle(GetCurrentEditor());
 	if(pFrame)
@@ -1867,21 +1869,12 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	// Show the dialog:
 	if( options.DoModal() == IDOK )
 	{
-		DWORD dwTimeNow = ::GetTickCount();
-
 		// Save the modified tool sets...
 		toolsmanager.Save();
 
 		// and then re-load them into the main manager...
 		ToolsManager* pSTM = ToolsManager::GetInstance();
 		pSTM->ReLoad(m_pCmdDispatch); // pass in true to cache menu resources.
-
-#if _DEBUG
-		dwTimeNow = ::GetTickCount() - dwTimeNow;
-		char buf[55];
-		sprintf(buf, "Took %dms to save tools\n", dwTimeNow);
-		LOG(buf);
-#endif
 
 		if( pageStyle.IsDirty() || pageSchemes.IsDirty() || pageGlobalStyles.IsDirty() )
 		{
@@ -2055,9 +2048,14 @@ void CMainFrame::launchFind(EFindDialogType findType)
 
 	CChildFrame* pChild = hWndCur ? CChildFrame::FromHandle(hWndCur) : NULL;
 	if(pChild)
-		m_pFindEx->Show(findType, pChild->GetTextView()->GetCurrentWord().c_str());
+	{
+		CA2CT findText(pChild->GetTextView()->GetCurrentWord().c_str());
+		m_pFindEx->Show(findType, findText);
+	}
 	else
+	{
 		m_pFindEx->Show(findType);
+	}
 }
 
 void CMainFrame::launchExternalSearch(LPCTSTR searchString)
@@ -2111,11 +2109,11 @@ LRESULT CMainFrame::OnHelpContents(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 {
 	tstring path;
 	OPTIONS->GetPNPath(path);
-	CFileName fn("pn2.chm");
+	CFileName fn(_T("pn2.chm"));
 	fn.Root(path.c_str());
 	path = fn.c_str();
 
-	path += "::/htmlhelp/index.html";
+	path += _T("::/htmlhelp/index.html");
 	// Passing NULL as the caller causes HtmlHelp to load in sibling mode
 	::HtmlHelp(NULL,
          path.c_str(),

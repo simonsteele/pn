@@ -2,9 +2,9 @@
  * @file smartstart.cpp
  * @brief Implementation of SmartStart
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -12,10 +12,14 @@
 #include "resource.h"
 #include "textview.h"
 #include "xmlparser.h"
+#include "pnstrings.h"
 #include "smartstart.h"
 
+typedef string_map::value_type SM_VT;
+typedef string_map::iterator SM_IT;
+
 /// protected singleton constructor...
-SmartStart::SmartStart()
+SmartStart::SmartStart() : m_buffer(NULL)
 {
 	tstring path;
 	OPTIONS->GetPNPath(path, PNPATH_USERSETTINGS);
@@ -24,15 +28,15 @@ SmartStart::SmartStart()
 	if(!FileExists(path.c_str()))
 	{
 		// Some simple defaults...
-		m_Map.insert(SM_VT(tstring(_T("#ifndef")), tstring(_T("cpp"))));
-		m_Map.insert(SM_VT(tstring(_T("#include")), tstring(_T("cpp"))));
-		m_Map.insert(SM_VT(tstring(_T("/*")), tstring(_T("cpp"))));
-		m_Map.insert(SM_VT(tstring(_T("unit")), tstring(_T("pascal"))));
-		m_Map.insert(SM_VT(tstring(_T("public class")), tstring(_T("csharp"))));
-		m_Map.insert(SM_VT(tstring(_T("<?")), tstring(_T("xml"))));
-		m_Map.insert(SM_VT(tstring(_T("<html")), tstring(_T("web"))));
-		m_Map.insert(SM_VT(tstring(_T("<!--")), tstring(_T("xml"))));
-		m_Map.insert(SM_VT(tstring(_T("import")), tstring(_T("python"))));
+		m_Map.insert(SM_VT(std::string("#ifndef"), std::string("cpp")));
+		m_Map.insert(SM_VT(std::string("#include"), std::string("cpp")));
+		m_Map.insert(SM_VT(std::string("/*"), std::string("cpp")));
+		m_Map.insert(SM_VT(std::string("unit"), std::string("pascal")));
+		m_Map.insert(SM_VT(std::string("public class"), std::string("csharp")));
+		m_Map.insert(SM_VT(std::string("<?"), std::string("xml")));
+		m_Map.insert(SM_VT(std::string("<html"), std::string("web")));
+		m_Map.insert(SM_VT(std::string("<!--"), std::string("xml")));
+		m_Map.insert(SM_VT(std::string("import"), std::string("python")));
 	}
 	else
 	{
@@ -50,7 +54,6 @@ SmartStart::SmartStart()
 		}
 	}
 
-	m_buffer = NULL;
 	update();
 }
 
@@ -73,19 +76,19 @@ void SmartStart::Save()
 		// <ssv from="using " to="csharp" />
 		// </SmartStart>
 		
-		f.Write(_T("<?xml version=\"1.0\"?>\r\n<SmartStart>\r\n"), 37 * sizeof(TCHAR));
+		f.Write("<?xml version=\"1.0\"?>\r\n<SmartStart>\r\n", 37 * sizeof(char));
 
-		tstring sout;
-		for(SM_IT i = m_Map.begin(); i != m_Map.end(); ++i)
+		std::string sout;
+		for(string_map::const_iterator i = m_Map.begin(); i != m_Map.end(); ++i)
 		{
-			sout = _T("<ssv from=\"");
+			sout = "<ssv from=\"";
 			XMLSafeString((*i).first.c_str(), sout);
 			//sout += (*i).first;
-			sout += _T("\" to=\"");
+			sout += "\" to=\"";
 			XMLSafeString((*i).second.c_str(), sout);
 			//sout += (*i).second;
-			sout += _T("\" />\r\n");
-			f.Write((void*)sout.c_str(), sout.length() * sizeof(TCHAR));
+			sout += "\" />\r\n";
+			f.Write((void*)sout.c_str(), sout.length() * sizeof(char));
 		}
 
 		f.Write(_T("</SmartStart>"), 13 * sizeof(TCHAR));
@@ -103,7 +106,7 @@ SmartStart::EContinueState SmartStart::OnChar(CTextView* pView)
 {
 	// See if we can find the first m_max characters in the view in our map.
 	pView->GetText(m_max, m_buffer);
-	SM_IT found = m_Map.find(tstring(m_buffer));
+	SM_IT found = m_Map.find(std::string(m_buffer));
 	
 	if(found != m_Map.end())
 	{
@@ -113,10 +116,11 @@ SmartStart::EContinueState SmartStart::OnChar(CTextView* pView)
 		{
 			applyScheme(pView, pScheme);
 		}
+
 		return eMatched;
 	}
 
-	if(_tcslen(m_buffer) == (m_max - 1))
+	if(strlen(m_buffer) == (m_max - 1))
 	{
 		//buffer is full and we haven't matched. Give up trying...
 		return eGiveUp;
@@ -129,11 +133,11 @@ void SmartStart::Scan(CTextView* pView)
 {
 	pView->GetText(m_max, m_buffer);
 	
-	int length = _tcslen(m_buffer);
+	int length = strlen(m_buffer);
 	
-	while(length > 0)
+	while (length > 0)
 	{
-		tstring str(m_buffer, 0, length);
+		std::string str(m_buffer, 0, length);
 
 		SM_IT found = m_Map.find(str);
 		if(found != m_Map.end())
@@ -150,7 +154,7 @@ void SmartStart::Scan(CTextView* pView)
 	}
 }
 
-STRING_MAP& SmartStart::GetMap()
+string_map& SmartStart::GetMap()
 {
 	return m_Map;
 }
@@ -169,8 +173,8 @@ void SmartStart::update()
 	if(m_buffer)
 		delete [] m_buffer;
 
-	m_buffer = new TCHAR[m_max];
-	memset(m_buffer, 0, m_max * sizeof(TCHAR));
+	m_buffer = new char[m_max];
+	memset(m_buffer, 0, m_max * sizeof(char));
 }
 
 /// Apply the scheme, and notify the user by setting the status...
@@ -187,13 +191,16 @@ void SmartStart::applyScheme(CTextView* pView, Scheme* pScheme)
 /// Called on each XML element start - looks for tags: <ssv from="keyphrase" to="lexer" />
 void SmartStart::startElement(LPCTSTR name, XMLAttributes& atts)
 {
-	if(_tcscmp(name, "ssv") == 0)
+	if(_tcscmp(name, _T("ssv")) == 0)
 	{
 		LPCTSTR tcf, tct;
-		tcf = atts.getValue("from");
-		tct = atts.getValue("to");
+		tcf = atts.getValue(_T("from"));
+		tct = atts.getValue(_T("to"));
 		if(tcf == NULL || tct == NULL)
 			return;
-		m_Map.insert(SM_VT(tstring(tcf), tstring(tct)));
+		
+		CT2CA phrase(tcf);
+		CT2CA scheme(tct);
+		m_Map.insert(SM_VT(std::string(phrase), std::string(scheme)));
 	}
 }

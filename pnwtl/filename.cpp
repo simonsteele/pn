@@ -322,7 +322,7 @@ tstring& CFileName::Sanitise()
 
 	LPCTSTR in = m_FileName.c_str();
 	int bufsize = min(_tcslen(in)+1, MAX_PATH);
-	char_buffer<TCHAR> res(new TCHAR[bufsize]);
+	std::vector<TCHAR> res(bufsize);
 
 	LPCTSTR fnd = _tcschr(in, _T(':'));
 	bool bColon = fnd != NULL;
@@ -338,7 +338,7 @@ tstring& CFileName::Sanitise()
 	}
 
 	bool bSlash = false;
-	LPTSTR build = res;
+	LPTSTR build = &res[0];
 
 	// Step through the input string and catch things like double-slashes,
 	// and forward instead of backward slashes.
@@ -376,12 +376,12 @@ tstring& CFileName::Sanitise()
 
 	*build++ = NULL;
 
-	m_FileName = res;
+	m_FileName = &res[0];
 
-	PathCanonicalize(res, m_FileName.c_str());
-	m_FileName = res;
-	GetLongPathName(m_FileName.c_str(), res, bufsize);
-	m_FileName = res;
+	PathCanonicalize(&res[0], m_FileName.c_str());
+	m_FileName = &res[0];
+	GetLongPathName(m_FileName.c_str(), &res[0], bufsize);
+	m_FileName = &res[0];
 
 	return m_FileName;
 }

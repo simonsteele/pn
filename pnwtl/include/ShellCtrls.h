@@ -151,7 +151,7 @@ inline TCHAR AtlGetFirstDriveLetter()
 		{
 			tstring path;
 			path += drive;
-			path += ":\\";
+			path += _T(":\\");
 			if (::GetDriveType(path.c_str()) == DRIVE_FIXED)
 			{
 				break;
@@ -367,7 +367,7 @@ public:
 	  TCHAR drive = AtlGetFirstDriveLetter();
       tstring path;
       path += drive;
-      path += ":\\";
+      path += _T(":\\");
 
 	  images = (HIMAGELIST) ::SHGetFileInfo( path.c_str(), 0, &sfi, sizeof(sfi), SHGFI_SYSICONINDEX | SHGFI_SMALLICON);
       SetImageList(images.Detach(), TVSIL_NORMAL);

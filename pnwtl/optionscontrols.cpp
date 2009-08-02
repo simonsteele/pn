@@ -78,8 +78,10 @@ void CStyleDisplay::SetBack(COLORREF back)
 	Invalidate();
 }
 
-void CStyleDisplay::SetStyle(LPCTSTR fontname, int fontsize, COLORREF fore, COLORREF back, LPCTSTR name, bool bold, bool italic, bool underline)
+void CStyleDisplay::SetStyle(LPCSTR fontname, int fontsize, COLORREF fore, COLORREF back, LPCTSTR name, bool bold, bool italic, bool underline)
 {
+	CA2CT fontconv(fontname);
+
 	m_Name = name;
 	m_Fore = fore;
 	m_Back = back;
@@ -89,7 +91,7 @@ void CStyleDisplay::SetStyle(LPCTSTR fontname, int fontsize, COLORREF fore, COLO
 	m_lf.lfWeight = (bold ? FW_BOLD : FW_NORMAL);
 	m_lf.lfUnderline = underline;
 	m_lf.lfItalic = italic;
-	_tcscpy(m_lf.lfFaceName, fontname);
+	_tcscpy(m_lf.lfFaceName, (LPCTSTR)fontconv);
 
 	UpdateFont();
 }
@@ -170,9 +172,9 @@ int CSchemeCombo::AddScheme(LPCTSTR title, SchemeDetails* pScheme)
 	return index;
 }
 
-void CSchemeCombo::Load(SchemeConfigParser* pConfig, LPCTSTR selectScheme, bool bIncludePlainText, bool bIncludeInternal)
+void CSchemeCombo::Load(SchemeConfigParser* pConfig, LPCSTR selectScheme, bool bIncludePlainText, bool bIncludeInternal)
 {
-	LPCTSTR schemeToSelect = (selectScheme ? selectScheme : pConfig->GetCurrentScheme());
+	LPCSTR schemeToSelect = (selectScheme ? selectScheme : pConfig->GetCurrentScheme());
 
 	Clear();
 

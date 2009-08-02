@@ -1,3 +1,12 @@
+/**
+ * @file toolsxmlwriter.h
+ * @brief Write Tools XML
+ * @author Simon Steele
+ * @note Copyright (c) 2009 Simon Steele - http://untidy.net/
+ *
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #ifndef toolsxmlwriter_h__included
 #define toolsxmlwriter_h__included
 
@@ -17,9 +26,9 @@ public:
 		addAttributeConvertUTF8(m_aParsePattern, tool->CustomParsePattern.c_str());
 		
 		// No UTF-8 Here...
-		genxAddAttribute(m_aShortcut, (utf8)IntToTString(tool->Shortcut).c_str());
-		genxAddAttribute(m_aFlags, (utf8)IntToTString(tool->GetFlags()).c_str());
-		genxAddAttribute(m_aIndex, (utf8)IntToTString(tool->Index).c_str());
+		genxAddAttribute(m_aShortcut, reinterpret_cast<constUtf8>(IntToString(tool->Shortcut).c_str()));
+		genxAddAttribute(m_aFlags, reinterpret_cast<constUtf8>(IntToString(tool->GetFlags()).c_str()));
+		genxAddAttribute(m_aIndex, reinterpret_cast<constUtf8>(IntToString(tool->Index).c_str()));
 		genxEndElement(m_writer);
 	}
 
@@ -33,7 +42,7 @@ public:
 		pop();
 	}
 
-	void beginScheme(LPCTSTR name)
+	void beginScheme(LPCSTR name)
 	{
 		genxStartElement(m_eScheme);
 		genxAddAttribute(m_aName, u(name));

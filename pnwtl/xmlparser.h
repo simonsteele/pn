@@ -15,6 +15,10 @@
 
 #ifdef _UNICODE
 	#define XML_UNICODE
+	#define XML_UNICODE_WCHAR_T
+	#define XML_CSTR LPCTSTR
+#else
+	#define XML_CSTR LPCSTR
 #endif
 
 #include "expat.h"
@@ -28,18 +32,18 @@ static const TCHAR* tszXMLParserDefaultException = _T("Exception while parsing X
 class XMLAttributes
 {
 	public:
-		XMLAttributes(LPCTSTR * atts);
+		XMLAttributes(XML_CSTR * atts);
 
-		LPCTSTR getName(int index) const;
+		XML_CSTR getName(int index) const;
 		
-		LPCTSTR getValue(int index) const;
-		LPCTSTR getValue(LPCTSTR name) const;
-		LPCTSTR operator [] (int index) const;
+		XML_CSTR getValue(int index) const;
+		XML_CSTR getValue(XML_CSTR name) const;
+		XML_CSTR operator [] (int index) const;
 
 		int getCount() const;
 
-	protected:
-		LPCTSTR * m_atts;
+	private:
+		XML_CSTR * m_atts;
 		int m_count;
 };
 
@@ -53,18 +57,18 @@ class XMLAttributes
 class XMLParseState
 {
 	public:
-		virtual void startElement(LPCTSTR name, XMLAttributes& atts) = 0;
-		virtual void endElement(LPCTSTR name) = 0;
-		virtual void characterData(LPCTSTR data, int len) = 0;
+		virtual void startElement(XML_CSTR name, XMLAttributes& atts) = 0;
+		virtual void endElement(XML_CSTR name) = 0;
+		virtual void characterData(XML_CSTR data, int len) = 0;
 };
 
 template <typename T>
 class XMLParserCallback : public XMLParseState
 {
 	public:
-		typedef void (T::*SF)(void *userData, LPCTSTR name, XMLAttributes& atts);
-		typedef void (T::*EF)(void *userData, LPCTSTR name);
-		typedef void (T::*CD)(void *userData, LPCTSTR data, int len);
+		typedef void (T::*SF)(void *userData, XML_CSTR name, XMLAttributes& atts);
+		typedef void (T::*EF)(void *userData, XML_CSTR name);
+		typedef void (T::*CD)(void *userData, XML_CSTR data, int len);
 
 		XMLParserCallback(T& t, SF elementStartFn, EF elementEndFn) :
 			m_t(&t), m_sf(elementStartFn), m_ef(elementEndFn), m_cd(NULL) {}
@@ -82,17 +86,17 @@ class XMLParserCallback : public XMLParseState
 			m_userData = data;
 		}
 
-		virtual void startElement(LPCTSTR name, XMLAttributes& atts)
+		virtual void startElement(XML_CSTR name, XMLAttributes& atts)
 		{
 			(m_t->*m_sf)(m_userData, name, atts);
 		}
 
-		virtual void endElement(LPCTSTR name)
+		virtual void endElement(XML_CSTR name)
 		{
 			(m_t->*m_ef)(m_userData, name);
 		}
 
-		virtual void characterData(LPCTSTR data, int len)
+		virtual void characterData(XML_CSTR data, int len)
 		{
 			if(m_cd)
 			{

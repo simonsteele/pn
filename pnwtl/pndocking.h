@@ -54,14 +54,14 @@ public:
 
 	virtual long Create(IStorge& parent, LPCTSTR name, Modes mode)
 	{
-		m_path = static_cast<CPNWindowStateStorage&>(parent).m_path + "\\";
+		m_path = static_cast<CPNWindowStateStorage&>(parent).m_path + _T("\\");
 		m_path += name;
 		return ERROR_SUCCESS;
 	}
 
 	virtual long Open(IStorge& parent,LPCTSTR name,Modes mode)
 	{
-		m_path = static_cast<CPNWindowStateStorage&>(parent).m_path + "\\";
+		m_path = static_cast<CPNWindowStateStorage&>(parent).m_path + _T("\\");
 		m_path += name;
 		return ERROR_SUCCESS;
 	}

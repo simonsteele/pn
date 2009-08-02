@@ -2,9 +2,9 @@
  * @file project.cpp
  * @brief Projects
  * @author Simon Steele
- * @note Copyright (c) 2003-2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2003-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -12,7 +12,6 @@
 #include "resource.h"
 #include "project.h"
 
-#include "include/genx/genx.h"
 #include "projectwriter.h"
 
 #include "include/filefinder.h"
@@ -73,7 +72,7 @@ namespace Projects
 		if(ppppppszAtt != NULL) \
 			str = ppppppszAtt; \
 		else \
-			str = "error"; \
+			str = _T("error"); \
 	}
 
 //////////////////////////////////////////////////////////////////////////////
@@ -143,6 +142,11 @@ Projects::Folder* File::GetFolder()
 	return parentFolder;
 }
 
+LPCTSTR File::GetRelativePath()
+{
+	return relPath.c_str();
+}
+
 void File::SetFolder(Projects::Folder* folder)
 {
 	parentFolder = folder;
@@ -191,26 +195,26 @@ bool File::Rename(LPCTSTR newFilePart)
 	return false;
 }
 
-void File::WriteDefinition(SProjectWriter* definition)
-{
-	genxStartElement(definition->eFile);
-	
-	genxStatus writeOk = genxAddAttribute(definition->aFilePath, (const utf8)relPath.c_str());
-	if(writeOk == GENX_BAD_UTF8)
-	{
-		Windows1252_Utf8 conv(relPath.c_str());
-
-		writeOk = genxAddAttribute(definition->aFilePath, conv);
-
-		if(writeOk != GENX_SUCCESS)
-			UNEXPECTED(_T("Could not write file name."));
-	}
-
-	// Save user data...
-	userData.Write(definition);
-
-	genxEndElement(definition->w);
-}
+//void File::WriteDefinition(SProjectWriter* definition)
+//{
+//	genxStartElement(definition->eFile);
+//	
+//	genxStatus writeOk = genxAddAttribute(definition->aFilePath, (const utf8)relPath.c_str());
+//	if(writeOk == GENX_BAD_UTF8)
+//	{
+//		Tcs_Utf8 conv(relPath.c_str());
+//
+//		writeOk = genxAddAttribute(definition->aFilePath, conv);
+//
+//		if(writeOk != GENX_SUCCESS)
+//			UNEXPECTED(_T("Could not write file name."));
+//	}
+//
+//	// Save user data...
+//	userData.Write(definition);
+//
+//	genxEndElement(definition->w);
+//}
 
 void File::SetDirty()
 {
@@ -440,45 +444,45 @@ Project* Folder::GetProject()
 		return NULL;
 }
 
-void Folder::WriteDefinition(SProjectWriter* definition)
-{
-	genxStartElementLiteral(definition->w, NULL, u("Folder"));
-	genxStatus writeOk = genxAddAttributeLiteral(definition->w, NULL, u("name"), u(name.c_str()));
-	if(writeOk == GENX_BAD_UTF8)
-	{
-		Windows1252_Utf8 conv(name.c_str());
-
-		writeOk = genxAddAttributeLiteral(definition->w, NULL, u("name"), conv);
-		if(writeOk != GENX_SUCCESS)
-			UNEXPECTED(_T("Could not write folder name."));
-	}
-	
-	writeContents(definition);
-
-	genxEndElement(definition->w);
-}
-
-void Folder::writeContents(SProjectWriter* definition)
-{
-	// Save user data...
-	userData.Write(definition);
-
-	// Save children folders
-	for(FOLDER_LIST::const_iterator i = children.begin();
-		i != children.end();
-		++i)
-	{
-		(*i)->WriteDefinition(definition);
-	}
-
-	// Save files
-	for(FILE_LIST::const_iterator j = files.begin(); 
-		j != files.end(); 
-		++j)
-	{
-		(*j)->WriteDefinition(definition);
-	}
-}
+//void Folder::WriteDefinition(SProjectWriter* definition)
+//{
+//	genxStartElementLiteral(definition->w, NULL, u("Folder"));
+//	genxStatus writeOk = genxAddAttributeLiteral(definition->w, NULL, u("name"), u(name.c_str()));
+//	if(writeOk == GENX_BAD_UTF8)
+//	{
+//		Tcs_Utf8 conv(name.c_str());
+//
+//		writeOk = genxAddAttributeLiteral(definition->w, NULL, u("name"), conv);
+//		if(writeOk != GENX_SUCCESS)
+//			UNEXPECTED(_T("Could not write folder name."));
+//	}
+//	
+//	writeContents(definition);
+//
+//	genxEndElement(definition->w);
+//}
+//
+//void Folder::writeContents(SProjectWriter* definition)
+//{
+//	// Save user data...
+//	userData.Write(definition);
+//
+//	// Save children folders
+//	for(FOLDER_LIST::const_iterator i = children.begin();
+//		i != children.end();
+//		++i)
+//	{
+//		(*i)->WriteDefinition(definition);
+//	}
+//
+//	// Save files
+//	for(FILE_LIST::const_iterator j = files.begin(); 
+//		j != files.end(); 
+//		++j)
+//	{
+//		(*j)->WriteDefinition(definition);
+//	}
+//}
 
 void Folder::SetDirty()
 {
@@ -680,35 +684,21 @@ bool Project::Exists()
 
 void Project::Save()
 {
-	SProjectWriter writer;
-
-	writer.w = genxNew(NULL, NULL, NULL);
-	genxStatus s;
+	ProjectWriter writer;
 	
-	writer.eFile = genxDeclareElement(writer.w, NULL, u("File"), &s);
-	writer.aFilePath = genxDeclareAttribute(writer.w, NULL, u("path"), &s);
-
-	FILE* hFile = _tfopen(fileName.c_str(), "wb");
-
-	if(hFile == NULL)
+	writer.Start(fileName.c_str());
+	
+	if (writer.IsValid())
+	{
+		writer.WriteProject(this);
+		writer.Close();
+	}
+	else
 	{
 		UNEXPECTED(_T("Could not open the project file for writing"));
 		return;
 	}
-
-	genxStartDocFile(writer.w, hFile);
 	
-	writeDefinition(&writer);
-
-	if (genxEndDocument(writer.w))
-	{
-		// error...
-	}
-
-	fclose(hFile);
-
-	genxDispose(writer.w);
-
 	bDirty = false;
 	Folder::notify(pcClean);
 
@@ -767,7 +757,7 @@ void Project::parse()
 	theParser = NULL;
 }
 
-void Project::startElement(LPCTSTR name, XMLAttributes& atts)
+void Project::startElement(XML_CSTR name, XMLAttributes& atts)
 {
 	if( IN_STATE(PS_START) )
 	{
@@ -831,7 +821,7 @@ void Project::startElement(LPCTSTR name, XMLAttributes& atts)
 	}
 }
 
-void Project::endElement(LPCTSTR name)
+void Project::endElement(XML_CSTR name)
 {
 	if( IN_STATE(PS_PROJECT) )
 	{
@@ -874,7 +864,7 @@ void Project::endElement(LPCTSTR name)
 	}
 }
 
-void Project::characterData(LPCTSTR data, int len)
+void Project::characterData(XML_CSTR data, int len)
 {
 	if( IN_STATE(PS_USERDATA) )
 	{
@@ -882,34 +872,34 @@ void Project::characterData(LPCTSTR data, int len)
 	}
 }
 
-void Project::writeDefinition(SProjectWriter* definition)
-{
-	genxStartElementLiteral(definition->w, NULL, u("Project"));
-	genxStatus writeOk = genxAddAttributeLiteral(definition->w, NULL, u("name"), u(name.c_str()));
-	if(writeOk == GENX_BAD_UTF8)
-	{
-		Windows1252_Utf8 conv(name.c_str());
-		writeOk = genxAddAttributeLiteral(definition->w, NULL, u("name"), conv);
-
-		if(writeOk != GENX_SUCCESS)
-			UNEXPECTED(_T("Could not encode project name for writing."));
-	}
-
-	if(typeID.length() != 0)
-	{
-		genxAddAttributeLiteral(definition->w, NULL, u("typeId"), u(typeID.c_str()));
-	}
-
-	writeContents(definition);
-
-	genxEndElement(definition->w);
-}
+//void Project::writeDefinition(SProjectWriter* definition)
+//{
+//	genxStartElementLiteral(definition->w, NULL, u("Project"));
+//	genxStatus writeOk = genxAddAttributeLiteral(definition->w, NULL, u("name"), u(name.c_str()));
+//	if(writeOk == GENX_BAD_UTF8)
+//	{
+//		Tcs_Utf8 conv(name.c_str());
+//		writeOk = genxAddAttributeLiteral(definition->w, NULL, u("name"), conv);
+//
+//		if(writeOk != GENX_SUCCESS)
+//			UNEXPECTED(_T("Could not encode project name for writing."));
+//	}
+//
+//	if(typeID.length() != 0)
+//	{
+//		genxAddAttributeLiteral(definition->w, NULL, u("typeId"), u(typeID.c_str()));
+//	}
+//
+//	writeContents(definition);
+//
+//	genxEndElement(definition->w);
+//}
 
 void Project::processProject(XMLAttributes& atts)
 {
 	if(atts.getValue(_T("name")) != NULL)
 	{
-		name = Utf8_Windows1252( ATTVAL(_T("name")) );
+		name = Xml_Tcs( ATTVAL(_T("name")) );
 	}
 	else
 	{
@@ -919,7 +909,7 @@ void Project::processProject(XMLAttributes& atts)
 
 	if(atts.getValue(_T("typeId")) != NULL)
 	{
-		typeID = Utf8_Windows1252( ATTVAL(_T("typeId")) );
+		typeID = Xml_Tcs( ATTVAL(_T("typeId")) );
 		if(typeID.length() > 0)
 		{
 			ProjectTemplate* pTemplate = Registry::GetInstance()->FromID(typeID.c_str());
@@ -937,7 +927,7 @@ void Project::processProject(XMLAttributes& atts)
 
 void Project::processFolder(XMLAttributes& atts)
 {
-	Utf8_Windows1252 nm( ATTVAL(_T("name")) );
+	Xml_Tcs nm( ATTVAL(_T("name")) );
 	Folder* folder = new Folder(nm, basePath.c_str());
 	currentFolder->AddChild(folder);
 	currentFolder = folder;
@@ -945,21 +935,21 @@ void Project::processFolder(XMLAttributes& atts)
 
 void Project::processFile(XMLAttributes& atts)
 {
-	Utf8_Windows1252 path( ATTVAL(_T("path")) );
+	Xml_Tcs path( ATTVAL(_T("path")) );
 	lastParsedFile = currentFolder->AddFile(path);
 }
 
 void Project::processMagicFolder(XMLAttributes& atts)
 {
-	Utf8_Windows1252 path( ATTVAL(_T("path")) );
-	Utf8_Windows1252 name( ATTVAL(_T("name")) );
-	Utf8_Windows1252 filter( ATTVAL(_T("filter")) );
-	Utf8_Windows1252 folderFilter( ATTVAL(_T("excludeFolders")) );
+	Xml_Tcs path( ATTVAL(_T("path")) );
+	Xml_Tcs name( ATTVAL(_T("name")) );
+	Xml_Tcs filter( ATTVAL(_T("filter")) );
+	Xml_Tcs folderFilter( ATTVAL(_T("excludeFolders")) );
 
 	if(!path.IsValid() || !name.IsValid())
 		return;
 
-	CPathName mfPath((const char*)path);
+	CPathName mfPath(path);
 	if(mfPath.IsRelativePath())
 	{
 		mfPath.Root( basePath.c_str() );
@@ -968,10 +958,10 @@ void Project::processMagicFolder(XMLAttributes& atts)
 	MagicFolder* mf = new MagicFolder(name, mfPath.c_str());
 	
 	if(filter.IsValid())
-		mf->SetFilter( (const char*)filter );
+		mf->SetFilter(filter);
 
 	if(folderFilter.IsValid())
-		mf->SetFolderFilter( (const char*)folderFilter );
+		mf->SetFolderFilter(folderFilter);
 
 	currentFolder->AddChild(mf);
 	
@@ -981,7 +971,7 @@ void Project::processMagicFolder(XMLAttributes& atts)
 	mf->HandleReadCache(theParser, this);
 }
 
-void Project::processUserData(LPCTSTR name, XMLAttributes& atts)
+void Project::processUserData(XML_CSTR name, XMLAttributes& atts)
 {
 	if(parseState != PS_USERDATA)
 		udBase = parseState;
@@ -1038,7 +1028,7 @@ ProjectViewState* Project::GetViewState()
 	{
 		ProjectViewState* vs = new ProjectViewState();
 		CFileName fn(GetFileName());
-		fn.ChangeExtensionTo(".pnps");
+		fn.ChangeExtensionTo(_T(".pnps"));
 	
 		vs->Load(fn.c_str());
 		
@@ -1053,7 +1043,7 @@ void Project::SaveViewState()
 	if(m_viewState != NULL)
 	{
 		CFileName fn(GetFileName());
-		fn.ChangeExtensionTo(".pnps");
+		fn.ChangeExtensionTo(_T(".pnps"));
 
 		m_viewState->Save(fn.c_str());
 	}
@@ -1294,7 +1284,7 @@ void Workspace::startElement(LPCTSTR name, XMLAttributes& atts)
 	{
 		if ( MATCH(WORKSPACENODE) )
 		{
-			SETVALIDATTSTR(this->name, "name");
+			SETVALIDATTSTR(this->name, _T("name"));
 			STATE(PS_WORKSPACE);
 		}
 	}
@@ -1302,7 +1292,7 @@ void Workspace::startElement(LPCTSTR name, XMLAttributes& atts)
 	{
 		if ( MATCH(PROJECTNODE) )
 		{
-			LPCTSTR path = ATTVAL("path");
+			LPCTSTR path = ATTVAL(_T("path"));
 			if(path != NULL && _tcslen(path) > 0)
 			{
 				CFileName fn(path);
@@ -1389,7 +1379,7 @@ bool ProjectViewState::ShouldExpand(Folder* folder)
 		return (*i).second;
 	}
 	else
-		return OPTIONS->Get("Projects", "ExpandDefault", false);
+		return OPTIONS->Get(_T("Projects"), _T("ExpandDefault"), false);
 }
 
 void ProjectViewState::SetExpand(Folder* folder, bool expand)
@@ -1455,7 +1445,7 @@ void ProjectViewState::Save(LPCTSTR filename)
 	for(ExpandCache::iterator i = cache->begin(); i != cache->end(); ++i)
 	{
 		genxStartElementLiteral(w, NULL, u("e"));
-		Windows1252_Utf8 path((*i).first.c_str());
+		Tcs_Utf8 path((*i).first.c_str());
 		genxAddAttributeLiteral(w, NULL, u("p"), u(path));
 		genxAddAttributeLiteral(w, NULL, u("x"), (*i).second ? u("true") : u("false"));
 		genxEndElement(w);
@@ -1507,14 +1497,14 @@ void ProjectViewState::startElement(LPCTSTR name, XMLAttributes& atts)
 			LPCTSTR e = atts.getValue(_T("p"));
 			if(e != NULL)
 			{
-				Utf8_Windows1252 path(e);
+				Xml_Tcs path(e);
 				LPCTSTR x = atts.getValue(_T("x"));
 				if(x != NULL && *x != NULL)
 				{
 					if(x[0] == _T('t'))
-						SetExpand((const char*)path, true);
+						SetExpand(path, true);
 					else
-						SetExpand((const char*)path, false);
+						SetExpand(path, false);
 				}
 			}
 		}

@@ -108,12 +108,12 @@ bool Document::IsValid() const
 	return m_bIsValid;
 }
 
-const char* Document::GetTitle() const
+const wchar_t* Document::GetTitle() const
 {
 	return m_sTitle.c_str();
 }
 
-const char* Document::GetFileName() const
+const wchar_t* Document::GetFileName() const
 {
 	return m_sFilename.c_str();
 }
@@ -143,7 +143,7 @@ HWND Document::GetScintillaHWND() const
 	return m_pFrame->GetTextView()->m_hWnd;
 }
 
-bool Document::Save(const char* filename, bool setFilename)
+bool Document::Save(const wchar_t* filename, bool setFilename)
 {
 	return m_pFrame->SaveFile(filename, setFilename, setFilename);
 }
@@ -182,7 +182,7 @@ void Document::OnAfterLoad()
 	}
 }
 
-void Document::OnBeforeSave(const char* filename)
+void Document::OnBeforeSave(const wchar_t* filename)
 {
 	// Create a backup if the option is configured
 	if (HasFile() && OPTIONS->Get(PNSK_GENERAL, _T("BackupOnSave"), false))

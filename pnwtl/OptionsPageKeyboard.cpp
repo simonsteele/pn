@@ -163,7 +163,7 @@ LRESULT COptionsPageKeyboard::OnHotKeyChanged(WORD /*wNotifyCode*/, WORD /*wID*/
 	const KeyToCommand* mappings = m_pKeyMap->GetMappings();
 	size_t noof_mappings(m_pKeyMap->GetCount());
 
-	std::string command_name;
+	tstring command_name;
 
 	int command = m_pKeyMap->Find(keycode, real_modifiers);
 	if(command != 0)
@@ -184,7 +184,7 @@ LRESULT COptionsPageKeyboard::OnHotKeyChanged(WORD /*wNotifyCode*/, WORD /*wID*/
 
 	if(command_name.size())
 	{
-		command_name = "Currently assigned to " + command_name;
+		command_name = _T("Currently assigned to ") + command_name;
 		GetDlgItem(IDC_KB_SHORTCUTINUSELABEL).SetWindowText(command_name.c_str());
 		GetDlgItem(IDC_KB_SHORTCUTINUSELABEL).ShowWindow(SW_SHOW);
 		return 0;
@@ -215,14 +215,14 @@ LRESULT COptionsPageKeyboard::OnKeySelChanged(WORD /*wNotifyCode*/, WORD /*wID*/
 	return 0;
 }
 
-inline void fixText(char* buf, char* target)
+inline void fixText(TCHAR* buf, TCHAR* target)
 {
-	size_t l = strlen(buf);
+	size_t l = _tcslen(buf);
 	for(size_t ix(0); ix < l; ++ix)
 	{
-		if(*buf == '\t')
+		if(*buf == _T('\t'))
 			break;
-		if(*buf == '&')
+		if(*buf == _T('&'))
 		{
 			buf++;
 			continue;
@@ -232,13 +232,14 @@ inline void fixText(char* buf, char* target)
 			*target++ = *buf++;
 		}
 	}
+
 	*target = '\0';
 }
 
 int COptionsPageKeyboard::addItems(CSMenuHandle& menu, const char* group, int count)
 {
-	char buffer[256];
-	char displayBuffer[256];
+	TCHAR buffer[256];
+	TCHAR displayBuffer[256];
 	MENUITEMINFO mii;
 	memset(&mii, 0, sizeof(MENUITEMINFO));
 	mii.cbSize = sizeof(MENUITEMINFO);
@@ -260,13 +261,15 @@ int COptionsPageKeyboard::addItems(CSMenuHandle& menu, const char* group, int co
 			if(newgroup.size())
 				newgroup += ".";
 			fixText(buffer, displayBuffer);
-			newgroup += displayBuffer;
+			CT2CA convtext(displayBuffer);
+			newgroup += convtext;
 			count = addItems(CSMenuHandle(mii.hSubMenu), newgroup.c_str(), count);
 		}
 		else
 		{
 			fixText(buffer, displayBuffer);
-			int ixItem = m_list.AddItem(count++, 0, group);
+			CA2CT groupText(group);
+			int ixItem = m_list.AddItem(count++, 0, groupText);
 			m_list.SetItemText(ixItem, 1, displayBuffer);
 			
 			// Store info about the command...
@@ -292,8 +295,11 @@ void COptionsPageKeyboard::addExtensions()
 		for(script_list_t::const_iterator j = (*i)->GetScripts().begin();
 			j != (*i)->GetScripts().end(); ++j)
 		{
-			int ixItem = m_list.AddItem(count++, 0, group.c_str());
-			m_list.SetItemText(ixItem, 1, (*j)->Name.c_str());
+			CA2CT groupconv(group.c_str());
+			CA2CT nameconv((*j)->Name.c_str());
+
+			int ixItem = m_list.AddItem(count++, 0, groupconv);
+			m_list.SetItemText(ixItem, 1, nameconv);
 			
 			// Store the details of this command
 			ExtendedCommandDetails* ecd = new ExtendedCommandDetails;
@@ -328,18 +334,18 @@ void COptionsPageKeyboard::enableButtons()
  * returns the textual name of that command - used for 
  * "already assigned to: %s"
  */
-std::string COptionsPageKeyboard::findCommandName(DWORD command)
+tstring COptionsPageKeyboard::findCommandName(DWORD command)
 {
 	for(int ix(0); ix < m_list.GetItemCount(); ++ix)
 	{
 		CommandDetails* cd = reinterpret_cast<CommandDetails*>( m_list.GetItemData(ix) );
 		if(cd->type == cdtCommand && cd->command == command)
 		{
-			std::string res;
+			tstring res;
 			CString s;
 			m_list.GetItemText(ix, 0, s);
 			res = s;
-			res += ".";
+			res += _T(".");
 			m_list.GetItemText(ix, 1, s);
 			res += s;
 			
@@ -347,14 +353,14 @@ std::string COptionsPageKeyboard::findCommandName(DWORD command)
 		}
 	}
 
-	return "";
+	return _T("");
 }
 
 /**
  * Given an extension command string (e.g. python:Script) what's the friendly
  * name?
  */
-std::string COptionsPageKeyboard::findCommandName(const std::string& extcommand)
+tstring COptionsPageKeyboard::findCommandName(const std::string& extcommand)
 {
 	ScriptRegistry* registry = static_cast<ScriptRegistry*>( g_Context.ExtApp->GetScriptRegistry() );
 
@@ -367,14 +373,15 @@ std::string COptionsPageKeyboard::findCommandName(const std::string& extcommand)
 			Script* script = registry->FindScript(ecd->group.c_str(), ecd->name.c_str());
 			if(script != NULL && script->ScriptRef == extcommand)
 			{
-				std::string result("extension: ");
-				result += ecd->name;
+				CA2CT extname(ecd->name.c_str());
+				tstring result(_T("extension: "));
+				result += extname;
 				return result;
 			}
 		}
 	}
 	
-	return "";
+	return _T("");
 }
 
 void COptionsPageKeyboard::updateSelection()

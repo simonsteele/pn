@@ -158,18 +158,17 @@ class CSmartStartEditorDialog : public CDialogImpl<CSmartStartEditorDialog>
 			COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
 		END_MSG_MAP()
 
-		void GetValues(tstring& startPhrase, tstring& schemeName);
-		void SetValues(LPCTSTR startPhrase, LPCTSTR schemeName);
+		void GetValues(std::string& startPhrase, std::string& schemeName);
+		void SetValues(LPCSTR startPhrase, LPCSTR schemeName);
 
-	protected:
+	private:
 		LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
-	protected:
 		SchemeConfigParser*	m_pSchemes;
-		tstring				m_startPhrase;
-		tstring				m_schemeName;
+		std::string			m_startPhrase;
+		std::string			m_schemeName;
 };
 
 class CAFileEditorDialog : public CDialogImpl<CAFileEditorDialog>
@@ -213,8 +212,8 @@ class CFileTypeEditorDialog : public CDialogImpl<CFileTypeEditorDialog>
 			
 		END_MSG_MAP()
 
-		void GetValues(tstring& match, tstring& scheme);
-		void SetValues(LPCTSTR match, LPCTSTR scheme);
+		void GetValues(tstring& match, std::string& scheme);
+		void SetValues(LPCTSTR match, LPCSTR scheme);
 
 	protected:
 		LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -225,7 +224,7 @@ class CFileTypeEditorDialog : public CDialogImpl<CFileTypeEditorDialog>
 		SchemeConfigParser* m_schemes;
 		CSchemeCombo	m_combo;
 		tstring			m_match;
-		tstring			m_sel;
+		std::string		m_sel;
 };
 
 #endif

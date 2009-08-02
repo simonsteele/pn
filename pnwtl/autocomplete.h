@@ -2,7 +2,7 @@
  * @file autocomplete.h
  * @brief Define autocomplete behaviours
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -97,14 +97,14 @@ public:
 private:
 	void eliminateDuplicateWords(PN::BaseString& words);
 	//MSO3: Redefined this function to have a custom token separator:
-	void getNearestWords(PN::BaseString& into, const tstring_array& arr, const char *wordStart, int searchLen, bool ignoreCase, char otherSeparator, bool exactLen, bool IncludeParameters=false, char TokenSeparator=' ');
+	void getNearestWords(PN::BaseString& into, const string_array& arr, const char *wordStart, int searchLen, bool ignoreCase, char otherSeparator, bool exactLen, bool IncludeParameters=false, char TokenSeparator=' ');
 	unsigned int lengthWord(const char *word, char otherSeparator);
 
 	typedef int (*fnComparer)(const char*, const char*, size_t);
-	void BinarySearchFor(PN::BaseString& result, const tstring_array& source, const char* wordStart, int searchLen, fnComparer compare, char otherSeparator, bool includeParameters, bool exactLen, char tokenSeparator);
+	void BinarySearchFor(PN::BaseString& result, const string_array& source, const char* wordStart, int searchLen, fnComparer compare, char otherSeparator, bool includeParameters, bool exactLen, char tokenSeparator);
 
-	tstring_array m_api;
-	tstring_array m_keywords;
+	string_array m_api;
+	string_array m_keywords;
 	bool m_ignoreCase;
 	bool m_useKeywords;
 };

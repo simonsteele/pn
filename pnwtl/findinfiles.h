@@ -111,7 +111,7 @@ class FIFThread : public CSSThread
 		virtual void Run();
 		virtual void OnException();
 
-		void foundString(LPCTSTR szFilename, int line, LPCTSTR buf);
+		void foundString(LPCTSTR szFilename, int line, LPCSTR buf);
 		void searchFile(LPCTSTR filename);
 
 		FileItPtr	m_it;

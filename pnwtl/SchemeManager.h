@@ -2,9 +2,9 @@
  * @file SchemeManager.cpp
  * @brief Implement SchemeManager.
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -40,7 +40,7 @@ class SchemeManager : public Singleton<SchemeManager, true>
 		
 		Scheme* SchemeForFile(LPCTSTR filename);
 		Scheme* SchemeForExt(LPCTSTR ext);
-		Scheme* SchemeByName(LPCTSTR name);
+		Scheme* SchemeByName(LPCSTR name);
 		
 		Scheme* GetDefaultScheme();
 
@@ -68,7 +68,7 @@ class SchemeManager : public Singleton<SchemeManager, true>
 		TCHAR*			m_CompiledPath;
 		SCHEME_LIST		m_Schemes;
 
-		SCHEME_MAP		m_SchemeNameMap;
+		SCHEME_MAPA		m_SchemeNameMap;
 		SCHEME_MAP		m_SchemeExtMap;
 		SCHEME_MAP		m_SchemeFileNameMap;
 

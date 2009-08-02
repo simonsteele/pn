@@ -140,10 +140,10 @@ public:
 	virtual IDocumentPtr NewDocument(const char* scheme) = 0;
 
 	/// Open a document
-	virtual IDocumentPtr OpenDocument(const char* filepath, const char* scheme) = 0;
+	virtual IDocumentPtr OpenDocument(LPCTSTR filepath, const char* scheme) = 0;
 
 	/// Utility function to safely free strings given to you by PN
-	virtual void ReleaseString(const char* str) = 0;
+	virtual void ReleaseString(LPCTSTR str) = 0;
 
 	/// Add a tag source (e.g. ctagsnavigator)
 	virtual void AddTagSource(ITagSource* tagSource) = 0;
@@ -167,10 +167,10 @@ public:
 	virtual ~IDocument(){}
 
 	/// Get the title of this document
-	virtual const char* GetTitle() const = 0;
+	virtual const wchar_t* GetTitle() const = 0;
 	
 	/// Get the filename of this document
-	virtual const char* GetFileName() const = 0;
+	virtual const wchar_t* GetFileName() const = 0;
 	
 	/// Get the name of the scheme being used (the unique name, not the friendly name)
 	virtual const char* GetCurrentScheme() const = 0;
@@ -188,7 +188,7 @@ public:
 	virtual bool GetCanSave() const = 0;
 
 	/// Save this file to the filename passed, optionally setting the UI filename
-	virtual bool Save(const char* filename, bool setFilename) = 0;
+	virtual bool Save(const wchar_t* filename, bool setFilename) = 0;
 
 	/// Send a message to Scintilla
 	virtual LRESULT SendEditorMessage(UINT msg, WPARAM wParam, LPARAM lParam) = 0;
@@ -289,7 +289,7 @@ public:
 	virtual void OnAfterLoad() = 0;
 
 	/// Called before the document is saved
-	virtual void OnBeforeSave(const char* filename) = 0;
+	virtual void OnBeforeSave(const wchar_t* filename) = 0;
 
 	/// Called after the document is saved
 	virtual void OnAfterSave() = 0;
@@ -418,8 +418,8 @@ public:
 	virtual ~ISearchOptions(){}
 
 	// Basic Options:
-	virtual const char* GetFindText() const = 0;
-	virtual void SetFindText(const char* findText) = 0;
+	virtual const wchar_t* GetFindText() const = 0;
+	virtual void SetFindText(const wchar_t* findText) = 0;
 	
 	virtual bool GetMatchWholeWord() const = 0;
 	virtual void SetMatchWholeWord(bool matchWholeWord) = 0;
@@ -446,18 +446,18 @@ public:
 	virtual void SetNoCursorMove(bool reposition) = 0;
 
 	// Replace Options:
-	virtual const char* GetReplaceText() const = 0;
-	virtual void SetReplaceText(const char* text) = 0;
+	virtual const wchar_t* GetReplaceText() const = 0;
+	virtual void SetReplaceText(const wchar_t* text) = 0;
 	
 	virtual bool GetReplaceInSelection() const = 0;
 	virtual void SetReplaceInSelection(bool inSelection) = 0;
 
 	// Find In Files Options:
-	virtual const char* GetFileExts() const = 0;
-	virtual void SetFileExts(const char* extensions) = 0;
+	virtual const wchar_t* GetFileExts() const = 0;
+	virtual void SetFileExts(const wchar_t* extensions) = 0;
 	
-	virtual const char* GetSearchPath() const = 0;
-	virtual void SetSearchPath(const char* path) = 0;
+	virtual const wchar_t* GetSearchPath() const = 0;
+	virtual void SetSearchPath(const wchar_t* path) = 0;
 	
 	virtual bool GetRecurse() const = 0;
 	virtual void SetRecurse(bool recurse) = 0;

@@ -18,13 +18,13 @@
  * Take a string containing keywords and possible extraneous whitespace and formatting
  * and turn into a single line of space separated keywords.
  */
-tstring NormaliseKeywords(tstring& in)
+std::string NormaliseKeywords(std::string& in)
 {
-	tstring response;
+	std::string response;
 	response.reserve(in.length());
 
 	bool space(true);
-	const TCHAR* p(in.c_str());
+	const char* p(in.c_str());
 	while(*p)
 	{
 		switch(*p)
@@ -551,7 +551,7 @@ void FullStyleDetails::CombineNoCustom(const StyleDetails* defStyle, StyleDetail
 		// possible!
 		if(Class->Style == NULL)
 		{
-			UNEXPECTED("Found a style class reference with a custom class but no original class");
+			UNEXPECTED(_T("Found a style class reference with a custom class but no original class"));
 			return;
 		}
 
@@ -738,7 +738,7 @@ CustomKeywordSet* CustomKeywordHolder::GetFirstKeywordSet() const
 /////////////////////////////////////////////////////////////////////////////////////
 // SchemeDetails
 
-SchemeDetails::SchemeDetails(LPCTSTR name)
+SchemeDetails::SchemeDetails(LPCSTR name)
 {
 	Name = name;
 	Flags = 0;

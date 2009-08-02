@@ -25,7 +25,7 @@ class ToolsManager :
 		SchemeTools* GetGlobalTools();
 		SchemeTools* GetGlobalProjectTools();
 
-		SchemeTools* GetToolsFor(LPCTSTR scheme);
+		SchemeTools* GetToolsFor(LPCSTR scheme);
 		ProjectTools* GetToolsForProject(LPCTSTR id);
 		//int GetMenuFor(LPCTSTR scheme, CSMenuHandle& menu, int iInsertBefore);
 
@@ -54,10 +54,10 @@ class ToolsManager :
 		virtual void characterData(LPCTSTR data, int len){}
 
 	protected:
-		typedef std::map<tstring, SchemeTools*> SCHEMETOOLS_MAP;
+		typedef std::map<std::string, SchemeTools*> SCHEMETOOLS_MAP;
 		typedef std::list<ToolSource*> SOURCES_LIST;
 
-		SchemeTools* find(LPCTSTR id, SCHEMETOOLS_MAP& col);
+		SchemeTools* find(LPCSTR id, SCHEMETOOLS_MAP& col);
 
 		ToolSource			m_DefaultToolsSource;
 		SchemeTools*		m_pCur;

@@ -56,7 +56,7 @@ bool FileIsReadOnly(LPCTSTR filename)
 
 bool CreateBackupFile(LPCTSTR path, LPCTSTR prefix, LPCTSTR extension)
 {
-	std::string backupname(path);
+	tstring backupname(path);
 	
 	if (prefix != NULL)
 	{
@@ -69,7 +69,7 @@ bool CreateBackupFile(LPCTSTR path, LPCTSTR prefix, LPCTSTR extension)
 	}
 	else
 	{
-		backupname += ".bak";
+		backupname += _T(".bak");
 	}
 
 	return CopyFile(path, backupname.c_str(), FALSE) != 0;

@@ -2,9 +2,9 @@
  * @file OptionsPageGlobalStyles.cpp
  * @brief Options Dialog Global Styles Page for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2007-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2007-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #include "stdafx.h"
@@ -47,7 +47,7 @@ void COptionsPageGlobalStyles::OnInitialise()
 	tstring path;
 	OPTIONS->GetPNPath(path, PNPATH_PRESETS);
 	FileFinder<COptionsPageGlobalStyles> finder(this, &COptionsPageGlobalStyles::OnPresetFound);
-	finder.Find(path.c_str(), "*.xml", false, false);
+	finder.Find(path.c_str(), _T("*.xml"), false, false);
 	
 	if(m_presets.GetCount() > 0)
 	{
@@ -75,7 +75,7 @@ LRESULT COptionsPageGlobalStyles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
 	
 	m_list.Attach(GetDlgItem(IDC_STYLES_LIST));
 	m_list.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
-	m_list.AddColumn("Styles", 0);
+	m_list.AddColumn(_T("Styles"), 0);
 	m_list.GetClientRect(rc);
 	m_list.SetColumnWidth(0, rc.Width() - ::GetSystemMetrics(SM_CXVSCROLL));
 
@@ -136,7 +136,9 @@ LRESULT COptionsPageGlobalStyles::OnFontChanged(WORD /*wNotifyCode*/, WORD /*wID
 		int i = m_FontCombo.GetCurSel();
 		CString str;
 		m_FontCombo.GetLBText(i, str);
-		m_style.FontName = (LPCTSTR)str;
+		
+		CT2CA fontconv((LPCTSTR)str);
+		m_style.FontName = fontconv;
 		onChange();
 	}
 
@@ -260,7 +262,7 @@ LRESULT COptionsPageGlobalStyles::OnSavePresetClicked(WORD /*wNotifyCode*/, WORD
 	return 0;
 }
 
-void COptionsPageGlobalStyles::OnPresetFound(const char* path, FileFinderData& file, bool& /*shouldContinue*/)
+void COptionsPageGlobalStyles::OnPresetFound(const wchar_t* path, FileFinderData& file, bool& /*shouldContinue*/)
 {
 	CFileName fn(file.GetFilename());
 	m_presets.AddString(fn.GetFileName_NoExt().c_str());
@@ -325,7 +327,9 @@ void COptionsPageGlobalStyles::updateDisplay()
 	m_fore.SetColor(m_style.ForeColor);
 	m_back.SetColor(m_style.BackColor);
 
-	m_FontCombo.SelectString(-1, m_style.FontName.c_str());
+	CA2CT fontconv(m_style.FontName.c_str());
+
+	m_FontCombo.SelectString(-1, fontconv);
 	m_SizeCombo.Select(m_style.FontSize);
 }
 
@@ -353,10 +357,10 @@ void COptionsPageGlobalStyles::savePreset()
 	tstring presetPath;
 	OPTIONS->GetPNPath(presetPath, PNPATH_PRESETS);
 
-	CAutoSaveDialog sd("Preset Files (*.xml)|*.xml|All Files (*.*)|*.*|");
-	sd.SetTitle("Save Preset As...");
+	CAutoSaveDialog sd(_T("Preset Files (*.xml)|*.xml|All Files (*.*)|*.*|"));
+	sd.SetTitle(_T("Save Preset As..."));
 	sd.SetInitialPath( presetPath.c_str() );
-	sd.SetDefaultExtension("xml");
+	sd.SetDefaultExtension(_T("xml"));
 	
 	if(sd.DoModal() == IDOK)
 	{

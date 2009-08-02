@@ -2,9 +2,9 @@
  * @file tempfile.h
  * @brief Temporary filenames.
  * @author Simon Steele
- * @note Copyright (c) 2004 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2004-2009 Simon Steele <s.steele@pnotepad.org>
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #ifndef tempfile_h__included
@@ -33,11 +33,11 @@ class TempFileName
 		const char* c_str()
 		{
 #ifdef _UNICODE
-			USES_CONVERSION;
-			tempFilea = CW2CA(tempFile.c_str());
+			CT2CA conv(tempFile.c_str());
+			tempFilea = conv;
 			return tempFilea.c_str();
 #else
-			return tempFile.c_str();
+			return tempFile;
 #endif
 		}
 

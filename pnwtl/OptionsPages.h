@@ -286,7 +286,7 @@ class COptionsPageNewFiles : public COptionsPageImpl<COptionsPageNewFiles>
 		virtual void OnCancel();
 		virtual LPCTSTR GetTreePosition();
 
-	protected:
+	private:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		LRESULT OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnEditClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -297,7 +297,7 @@ class COptionsPageNewFiles : public COptionsPageImpl<COptionsPageNewFiles>
 		LRESULT OnListClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 		LRESULT OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
-		void AddItem(LPCTSTR key, LPCTSTR schemetitle);
+		void AddItem(LPCSTR key, LPCSTR schemename);
 		void EnableButtons();
 		void FreeResources();
 

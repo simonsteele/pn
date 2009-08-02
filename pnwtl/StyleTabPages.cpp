@@ -81,11 +81,11 @@ void CTabPageKeywords::SetItem()
 	{
 		// compare the keyword sets first, has the current one changed?
 		int len = m_scintilla.GetTextLength();
-		TCHAR* pCS = new TCHAR[len+1];
+		char* pCS = new char[len+1];
 		m_scintilla.GetText(len+1, pCS);
-		pCS[len] = _T('\0');
+		pCS[len] = '\0';
 		
-		if(_tcscmp(m_pSet->pWords, pCS) != 0)
+		if(strcmp(m_pSet->pWords, pCS) != 0)
 		{
 			CustomKeywordSet* pCustomSet = m_pScheme->CustomKeywords.FindKeywordSet(m_pSet->key);
 
@@ -173,7 +173,7 @@ LRESULT CTabPageKeywords::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	CRect rcScintilla;
 	::GetWindowRect(GetDlgItem(IDC_PLACEHOLDER), rcScintilla);
 	ScreenToClient(rcScintilla);
-	m_scintilla.Create(m_hWnd, rcScintilla, "Keywords", WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_TABSTOP);
+	m_scintilla.Create(m_hWnd, rcScintilla, _T("Keywords"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_TABSTOP);
 	::SetWindowPos(m_scintilla, GetDlgItem(IDC_PLACEHOLDER), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 	m_scintilla.SetWrapMode(SC_WRAP_WORD);
 	m_scintilla.AssignCmdKey(SCK_HOME, SCI_HOMEDISPLAY);
@@ -214,7 +214,7 @@ LRESULT CTabPageKeywords::OnSortClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	std::string str;
 
 	int len = m_scintilla.GetTextLength();
-	TCHAR* pCS = new TCHAR[len+1];
+	char* pCS = new char[len+1];
 	m_scintilla.GetText(len+1, pCS);
 	pCS[len] = _T('\0');
 	str = pCS;
@@ -232,7 +232,7 @@ LRESULT CTabPageKeywords::OnSortClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 	for(std::vector<std::string>::const_iterator i = tokens.begin(); i != tokens.end(); ++i)
 	{
 		if(i != tokens.begin())
-			strout += _T(" ");
+			strout += " ";
 		strout += (*i);
 	}
 
@@ -377,14 +377,19 @@ LRESULT CTabPageStyles::OnBackChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 
 LRESULT CTabPageStyles::OnFontChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {			
-	if(m_pStyle)
+	if (m_pStyle)
 	{
+		USES_CONVERSION;
+
 		int i = m_FontCombo.GetCurSel();
 		CString str;
 		m_FontCombo.GetLBText(i, str);
 		m_sd.SetFontName(str);
-		m_Style.FontName = (LPCTSTR)str;
+		
+		CT2CA fn((LPCTSTR)str);
+		m_Style.FontName = static_cast<LPCSTR>(fn);
 	}
+
 	return 0;
 }
 
@@ -463,7 +468,9 @@ void CTabPageStyles::UpdateSel()
 					m_sd.SetStyle(m_Style.FontName.c_str(), m_Style.FontSize, m_Style.ForeColor, m_Style.BackColor, sname.c_str(), m_Style.Bold, m_Style.Italic, m_Style.Underline);
 				}
 				else
+				{
 					m_sd.SetStyle(m_Style.FontName.c_str(), m_Style.FontSize, m_Style.ForeColor, m_Style.BackColor, m_Style.name.c_str(), m_Style.Bold, m_Style.Italic, m_Style.Underline);
+				}
 
 				m_bold.SetCheck(m_Style.Bold ? BST_CHECKED : BST_UNCHECKED);
 				m_italic.SetCheck(m_Style.Italic ? BST_CHECKED : BST_UNCHECKED);
@@ -472,7 +479,9 @@ void CTabPageStyles::UpdateSel()
 				m_fore.SetColor(m_Style.ForeColor);
 				m_back.SetColor(m_Style.BackColor);
 
-				m_FontCombo.SelectString(-1, m_Style.FontName.c_str());
+				CA2CT fontconv(m_Style.FontName.c_str());
+
+				m_FontCombo.SelectString(-1, fontconv);
 				m_SizeCombo.Select(m_Style.FontSize);
 
 				::SetWindowText(GetDlgItem(IDC_STATIC_TC), _T("Text Colour: "));

@@ -108,7 +108,7 @@ namespace Schemes
 				genxAddAttribute(m_aName, u(name));
 			}
 
-			void writeKeywords(int key, LPCTSTR keywords)
+			void writeKeywords(int key, LPCSTR keywords)
 			{
 				genxStartElement(m_eKeywords);
 				genxAddAttribute(m_aKey, u(IntToTString(key).c_str()));
@@ -141,7 +141,7 @@ namespace Schemes
 				endStyle();
 			}
 
-			void setFont(LPCTSTR name)
+			void setFont(LPCSTR name)
 			{
 				genxAddAttribute(m_aFont, u(name));
 			}
@@ -211,7 +211,8 @@ namespace Schemes
 
 			void setClass(LPCTSTR theClass)
 			{
-				genxAddAttribute(m_aClass, u(theClass));
+				Tcs_Utf8 className(theClass);
+				genxAddAttribute(m_aClass, className);
 			}
 
 			void endStyle()

@@ -120,29 +120,29 @@ class CFile;
 class Scheme
 {
 	public:
-		Scheme();
-		Scheme(SchemeManager* pManager);
-		Scheme(SchemeManager* pManager, LPCTSTR filename);
+		explicit Scheme();
+		explicit Scheme(SchemeManager* pManager);
+		explicit Scheme(SchemeManager* pManager, const wchar_t* filename);
 		
-		Scheme(const Scheme& copy);
+		explicit Scheme(const Scheme& copy);
 
-		~Scheme();
+		virtual ~Scheme();
 
-		virtual void Load(CScintilla& sc, bool allSettings = true, LPCTSTR filename = NULL);
+		virtual void Load(CScintilla& sc, bool allSettings = true, const wchar_t* filename = NULL);
 		
 		virtual StylesList* CreateStylesList();
 
-		virtual void SetName(LPCTSTR name);
-		virtual void SetTitle(LPCTSTR title);
+		virtual void SetName(const char* name);
+		virtual void SetTitle(const TCHAR* title);
 		
-		void SetFileName(LPCTSTR filename);
+		void SetFileName(const wchar_t* filename);
 
 		virtual bool CheckName();
 
-		virtual LPCTSTR GetName() const;
-		virtual LPCTSTR GetTitle() const;
-		virtual LPCTSTR GetFileName() const;
-		virtual LPCTSTR GetLexer() const;
+		virtual const char* GetName() const;
+		virtual const TCHAR* GetTitle() const;
+		virtual const wchar_t* GetFileName() const;
+		virtual const char* GetLexer() const;
 
 		const CommentSpecRec& GetCommentSpec() const;
 
@@ -155,13 +155,13 @@ class Scheme
 		const Scheme& operator = (const Scheme& copy);
 
 	protected:
-		TCHAR*			m_SchemeFile;
-		TCHAR*			m_Name;
+		wchar_t*		m_SchemeFile;
+		char*			m_Name;
 		TCHAR*			m_Title;
 		bool			m_bInternal;
 		SchemeManager*	m_pManager;
 		CommentSpecRec	m_CommentSpec;
-		tstring			m_Lexer;
+		std::string		m_Lexer;
 
 		bool InitialLoad(CFile& file, SchemeHdrRec& hdr);
 
@@ -179,22 +179,24 @@ class DefaultScheme : public Scheme
 {
 	public:
 		DefaultScheme(){}
+		virtual ~DefaultScheme(){}
 
 		virtual void Load(CScintilla& sc, LPCTSTR filename = NULL);
 
 		// Can't set name, it's always "Default"
-		virtual void SetName(LPCTSTR name){}
+		virtual void SetName(const char* name){}
 
-		virtual void CheckName(LPCTSTR filename = NULL){}
+		virtual void CheckName(const wchar_t* filename = NULL){}
 
-		virtual LPCTSTR GetName() const {return _T("Default");}
+		virtual const char* GetName() const { return "Default"; }
 
-		virtual LPCTSTR GetTitle() const {return _T("Plain Text");}
+		virtual const TCHAR* GetTitle() const { return _T("Plain Text"); }
 };
 
 typedef std::list<Scheme>				SCHEME_LIST;
 typedef SCHEME_LIST::iterator			SCIT;	 
 typedef std::map<tstring, Scheme*>		SCHEME_MAP;
+typedef std::map<std::string, Scheme*>	SCHEME_MAPA;
 typedef SCHEME_MAP::iterator			SCHEME_MAPIT;
 typedef SCHEME_MAP::value_type			SCMITEM;
 

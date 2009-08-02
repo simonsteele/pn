@@ -124,18 +124,18 @@ uint64_t IniOptions::Get(LPCTSTR subkey, LPCTSTR value, uint64_t iDefault)
 		if(i != keyMap->end())
 		{
 			TCHAR* end(NULL);
-			return _strtoui64((*i).second.c_str(), &end, 10);
+			return _tcstoui64((*i).second.c_str(), &end, 10);
 		}
 		else
 			return iDefault;
 	}
 	else
 	{
-		tstring srep = Get(subkey, value, "");
+		tstring srep = Get(subkey, value, _T(""));
 		if (srep.size())
 		{
 			TCHAR* end(NULL);
-			return _strtoui64(srep.c_str(), &end, 10);
+			return _tcstoui64(srep.c_str(), &end, 10);
 		}
 		else
 		{
@@ -174,7 +174,7 @@ tstring IniOptions::Get(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
 
 void IniOptions::Clear(LPCTSTR subkey)
 {
-	TCHAR* emptySection = "\0";
+	const TCHAR* emptySection = _T("\0");
 	::WritePrivateProfileSection(subkey, emptySection, _filename);
 }
 

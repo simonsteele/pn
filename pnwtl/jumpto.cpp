@@ -43,12 +43,14 @@ JumpToHandler::~JumpToHandler()
 void JumpToHandler::AddSource(extensions::ITagSource* source)
 {
 	char* schemesstr = _strdup(source->GetSchemesSupported());
-	char* p = _tcstok(schemesstr, _T(";"));
+	char* p = strtok(schemesstr, ";");
+	
 	while(p)
 	{
-		handlers.insert( HANDLERS_MAP::value_type(tstring(p), source) );
-		p = _tcstok(NULL, _T(";"));
+		handlers.insert( HANDLERS_MAP::value_type(std::string(p), source) );
+		p = strtok(NULL, ";");
 	}
+
 	free(schemesstr);
 }
 
@@ -62,7 +64,7 @@ void JumpToHandler::FindTags(CChildFrame* pChildFrame, ITagSink* pNotifySink)
 
 	// First let's find out what scheme it is...
 	Scheme* pScheme = pChildFrame->GetTextView()->GetCurrentScheme();
-	tstring schemeName = pScheme->GetName();
+	std::string schemeName = pScheme->GetName();
 	
 	extensions::ITagSource* pSource = NULL;
 

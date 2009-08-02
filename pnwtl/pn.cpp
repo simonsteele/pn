@@ -56,7 +56,9 @@ void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message)
 	msg += _T(", line: ");
 	msg += IntToTString(line);
 	msg += _T(", version: ");
-	msg += PN_VERSION;
+	
+	CA2CT verstring(PN_VERSION);
+	msg += verstring;
 	msg += _T(".\n");
 	msg += message;
 	msg += _T("\n\nPlease create a bug on sourceforge, e-mail this information to the discussion list, or post it to the forums.");
@@ -70,12 +72,7 @@ HWND GetCurrentEditor()
 
 int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
-//#ifdef _DEBUG
-	tstring str(_T("PN2_"));
-	str += PN_VERSTRING;
-
-	MiniDumper dumper(str.c_str());
-//#endif
+	MiniDumper dumper(_T("PN2_") PN_VERSTRING_T);
 
 	// Store the current OS version
 	ZeroMemory(&g_Context.OSVersion, sizeof(OSVERSIONINFO));

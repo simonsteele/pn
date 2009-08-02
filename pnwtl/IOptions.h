@@ -108,10 +108,10 @@ public:
 		virtual int Get(LPCTSTR subkey, LPCTSTR value, int iDefault) = 0;
 		
 		/// Get a string (note, you should free this using IPN::ReleaseString from an extension)
-		virtual const char* GetS(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault) = 0;
+		virtual LPCTSTR GetS(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault) = 0;
 
 		/// Get a PN path (note, you should free this using IPN::ReleaseString from an extension)
-		virtual const char* GetPNPath(int pathtype = PNPATH_PN) = 0;
+		virtual LPCTSTR GetPNPath(int pathtype = PNPATH_PN) = 0;
 
 		/// Get a cached option
 		virtual int GetCached(ECachedOption option) = 0;

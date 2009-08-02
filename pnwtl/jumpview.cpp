@@ -2,9 +2,9 @@
  * @file jumpview.cpp
  * @brief View to display ctags trees.
  * @author Simon Steele, Manuel Sandoval
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -72,6 +72,15 @@ TAGIMAGES jumpToTagImages [TAG_MAX+1] =
 	{9,_T("architecture")},	/* TAG_ARCHITECTURE 40*/
 	{2,_T("process")},		/* TAG_PROCESS		41*/
 };
+
+namespace 
+{
+	char* TcsToMbsNewDup(const TCHAR* source)
+	{
+		CT2CA conv(source);
+		return strnewdup(conv);
+	}
+}
 
 //////////////////////////////////////////////////////////////////////////////
 // CJumpTreeCtrl
@@ -256,7 +265,7 @@ void CJumpTreeCtrl::deleteFileItem(HTREEITEM hRoot)
 void CJumpTreeCtrl::recursiveDelete(HTREEITEM hParent)
 {
 #ifdef _DEBUG
-	char buffer[256];
+	TCHAR buffer[256];
 #endif
 	HTREEITEM hChildItem, hItem;
 	LPMETHODINFO methodInfoItem;
@@ -368,12 +377,12 @@ void updateMethodInfo(extensions::METHODINFO& dest, extensions::METHODINFO& src)
 
 	if (src.methodName && dest.methodName == NULL)
 	{
-		dest.methodName = tcsnewdup(src.methodName);
+		dest.methodName = strnewdup(src.methodName);
 	}
 							
 	if (src.fullText && dest.fullText == NULL)
 	{
-		dest.fullText = tcsnewdup(src.fullText);
+		dest.fullText = strnewdup(src.fullText);
 	}
 }
 
@@ -522,9 +531,9 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 				
 				methodInfoItem = new extensions::METHODINFO;
 				memcpy(methodInfoItem, methodInfo, sizeof(extensions::METHODINFO));
-				methodInfoItem->methodName = tcsnewdup(jumpToTagImages[methodInfo->type].imageName);
+				methodInfoItem->methodName = TcsToMbsNewDup(jumpToTagImages[methodInfo->type].imageName);
 				methodInfoItem->parentName = 0;
-				methodInfoItem->fullText = tcsnewdup(methodInfoItem->methodName);
+				methodInfoItem->fullText = strnewdup(methodInfoItem->methodName);
 				
 				SetItemData(hTypeContainer, reinterpret_cast<DWORD_PTR>( methodInfoItem ));
 				SetItemImage(hTypeContainer, imagesNumber, imagesNumber);
@@ -559,7 +568,8 @@ HTREEITEM CJumpTreeCtrl::RecursiveInsert(HTREEITEM hRoot, LPMETHODINFO methodInf
 
 		if(!checkNode)
 		{
-			hChildItem = InsertItem( methodInfo->methodName, imagesNumber, imagesNumber, hTypeContainer, TVI_LAST );
+			CA2CT methodName(methodInfo->methodName);
+			hChildItem = InsertItem( methodName, imagesNumber, imagesNumber, hTypeContainer, TVI_LAST );
 			methodInfoItem = new extensions::METHODINFO;
 			memset(methodInfoItem, 0, sizeof(extensions::METHODINFO));
 		}

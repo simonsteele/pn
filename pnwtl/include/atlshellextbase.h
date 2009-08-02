@@ -151,7 +151,7 @@ public:
       ovi.dwOSVersionInfoSize = sizeof(ovi);
       ::GetVersionEx(&ovi);
       if( ovi.dwMajorVersion >= 6 ) {
-         HINSTANCE hShell32 = ::LoadLibrary("shell32.dll");
+         HINSTANCE hShell32 = ::LoadLibrary(_T("shell32.dll"));
          typedef HRESULT (WINAPI *PFNSHGETIMAGELIST)(int,REFIID,LPVOID*);
          PFNSHGETIMAGELIST fnSHGetImageList = (PFNSHGETIMAGELIST) ::GetProcAddress(hShell32, "SHGetImageList");
          if( fnSHGetImageList != NULL ) {
@@ -181,7 +181,7 @@ public:
    {
       ATLASSERT(uType==SHGFI_LARGEICON || uType==SHGFI_SMALLICON);
       SHFILEINFO sfi = { 0 };
-      ::SHGetFileInfo("temp.txt", 0, &sfi, sizeof(sfi), SHGFI_ICON | SHGFI_USEFILEATTRIBUTES | SHGFI_SHELLICONSIZE | uType);
+      ::SHGetFileInfo(_T("temp.txt"), 0, &sfi, sizeof(sfi), SHGFI_ICON | SHGFI_USEFILEATTRIBUTES | SHGFI_SHELLICONSIZE | uType);
       if( sfi.hIcon != NULL ) {
          ICONINFO ii = { 0 };
          ::GetIconInfo(sfi.hIcon, &ii);

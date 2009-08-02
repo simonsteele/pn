@@ -142,7 +142,7 @@ bool SchemeManager::internalLoad(bool forceCompile)
 
 	FileFinder<SchemeManager, SMFindData> f(this, &SchemeManager::_compiledFileFound);
 	f.GetFindData().ForceCompile = forceCompile;
-	if (!f.Find(m_CompiledPath, "*.cscheme"))
+	if (!f.Find(m_CompiledPath, _T("*.cscheme")))
 	{
 		m_SchemeNameMap.clear();
 		m_Schemes.clear();
@@ -207,14 +207,10 @@ void SchemeManager::_compiledFileFound(LPCTSTR path, SMFindData& file, bool& sho
 		}
 		else
 		{
-			tstring SchemeName = cs->GetName();
-			TCHAR *tcs = new TCHAR[SchemeName.size()+1];
-			_tcscpy(tcs, SchemeName.c_str());
-			tcs = CharLower(tcs);
-			SchemeName = tcs;
-			delete [] tcs;
-
-			m_SchemeNameMap.insert(m_SchemeNameMap.end(), SCMITEM(SchemeName, cs));
+			std::string schemeName(cs->GetName());
+			std::transform(schemeName.begin(), schemeName.end(), schemeName.begin(), tolower);
+			
+			m_SchemeNameMap.insert(m_SchemeNameMap.end(), SCHEME_MAPA::value_type(schemeName, cs));
 		}
 	}
 }
@@ -306,16 +302,16 @@ Scheme* SchemeManager::SchemeForFile(LPCTSTR filename)
 /**
  * @return Scheme* identified by "name"
  */
-Scheme* SchemeManager::SchemeByName(LPCTSTR name)
+Scheme* SchemeManager::SchemeByName(LPCSTR name)
 {
-	tstring strName(name);
+	std::string strName(name);
 	std::transform(strName.begin(), strName.end(), strName.begin(), tolower);
 
-	SCHEME_MAP::const_iterator i = m_SchemeNameMap.find(strName);
+	SCHEME_MAPA::const_iterator i = m_SchemeNameMap.find(strName);
 
 	if(i != m_SchemeNameMap.end())
 	{
-		return SCMITEM(*i).second;
+		return (*i).second;
 	}
 	else
 		return &m_DefaultScheme;
@@ -397,6 +393,8 @@ void SchemeManager::SaveExtMap()
 
 	tstring line;
 
+	//TODO: Extmap will become unicode here, not sure we want that.
+
 	for(SCHEME_MAP::const_iterator i = m_SchemeExtMap.begin(); i != m_SchemeExtMap.end(); ++i)
 	{
 		SCHEME_MAP::const_iterator match = origExts.find((*i).first);
@@ -407,9 +405,10 @@ void SchemeManager::SaveExtMap()
 		}
 
 		// write
-		line = (*i).first + "=";
-		line += (*i).second->GetName();
-		line += "\n";
+		CA2CT schemeName((*i).second->GetName());
+		line = (*i).first + _T("=");
+		line += schemeName;
+		line += _T("\n");
 		file.WriteLine(line.c_str());
 	}
 
@@ -423,9 +422,10 @@ void SchemeManager::SaveExtMap()
 		}
 
 		// write
-		line = (*j).first + "=";
-		line += (*j).second->GetName();
-		line += "\n";
+		CA2CT schemeName((*j).second->GetName());
+		line = (*j).first + _T("=");
+		line += schemeName;
+		line += _T("\n");
 		file.WriteLine(line.c_str());
 	}
 
@@ -450,7 +450,7 @@ void SchemeManager::internalLoadExtMap(LPCTSTR filename, SCHEME_MAP& extMap, SCH
 		{
 			if(buf.GetLength() == 0)
 			{
-				UNEXPECTED("Read an empty line from the extension map file.");
+				UNEXPECTED(_T("Read an empty line from the extension map file."));
 				continue;
 			}
 
@@ -463,10 +463,11 @@ void SchemeManager::internalLoadExtMap(LPCTSTR filename, SCHEME_MAP& extMap, SCH
 				scheme.resize(SC_HDR_NAMESIZE);
 			}
 
-			sch = SchemeByName(scheme.c_str());
+			CT2CA schemeName(scheme.c_str());
+			sch = SchemeByName(schemeName);
 			if(sch == NULL)
 			{
-				UNEXPECTED("Failed to get an instance from SchemeByName");
+				UNEXPECTED(_T("Failed to get an instance from SchemeByName"));
 			}
 			else
 			{

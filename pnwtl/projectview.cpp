@@ -561,7 +561,7 @@ HTREEITEM CProjectTreeCtrl::getLastFolderItem(HTREEITEM hParentNode)
 
 void CProjectTreeCtrl::getMagicFolderProps(Projects::UserData& ud, Projects::MagicFolder* mf, Projects::PropGroupList& groups)
 {
-	Projects::PropGroup* extrasGroup = new PropGroup("Folder", "Magic Folder");
+	Projects::PropGroup* extrasGroup = new PropGroup(_T("Folder"), _T("Magic Folder"));
 
 	// Set up the ud object with MagicFolder options.
 	ud.Set(_T(""), _T("Folder"), _T("Folder"), _T("Name"), mf->GetName());
@@ -850,7 +850,7 @@ void CProjectTreeCtrl::sort(HTREEITEM hFolderNode, bool bSortFolders, bool bRecu
 	else
 		sortcb.lpfnCompare = &CProjectTreeCtrl::CompareItem;
 
-	BOOL caseSensitive = OPTIONS->Get("Projects", "SortCaseSensitive", true);
+	BOOL caseSensitive = OPTIONS->Get(_T("Projects"), _T("SortCaseSensitive"), true);
 	sortcb.lParam = caseSensitive;
 
 	SortChildrenCB(&sortcb, bRecurse);
@@ -1367,7 +1367,7 @@ LRESULT	CProjectTreeCtrl::OnProjectProperties(WORD /*wNotifyCode*/, WORD /*wID*/
 			}
 			break;
 		default:
-			RETURN_UNEXPECTED("Unexpected project item type", 0);
+			RETURN_UNEXPECTED(_T("Unexpected project item type"), 0);
 	}
 
 	if (project == NULL)
@@ -1401,7 +1401,7 @@ LRESULT	CProjectTreeCtrl::OnProjectProperties(WORD /*wNotifyCode*/, WORD /*wID*/
 		// Set up those extra properties
 		PropViewSet extraSet(&ud);
 		extraSet.PropertyGroups = &groups;
-		extraSet.PropNamespace = "";
+		extraSet.PropNamespace = _T("");
 
 		view.SetExtraSet(&extraSet);
 
@@ -1464,7 +1464,7 @@ LRESULT	CProjectTreeCtrl::OnMagicAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	tstring path = mf->GetFullPath();
 
 	CAutoSaveDialog sd(LS(IDS_ALLFILES));
-	sd.SetTitle("New File Name...");
+	sd.SetTitle(_T("New File Name..."));
 	sd.SetInitialPath(path.c_str());
 	
 	if (sd.DoModal() == IDOK)
@@ -1480,7 +1480,7 @@ LRESULT	CProjectTreeCtrl::OnMagicAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 		else
 		{
 			// Make and blank the file...
-			FILE* theFile = fopen(fn.c_str(), "wb");
+			FILE* theFile = _tfopen(fn.c_str(), _T("wb"));
 			if(theFile)
 			{
 				mf->AddFile(fn.c_str());

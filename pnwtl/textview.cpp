@@ -568,12 +568,17 @@ void CTextView::SetPosStatus(CMultiPaneStatusBarCtrl& stat)
 		g_Context.m_frame->SetStatusText(NULL);
 }
 
-tstring CTextView::GetCurrentWord()
+std::string CTextView::GetCurrentWord()
 {
 	// VS.NET style find text:
 	// 1. check if there is a selection
 	// 2. check if the caret is inside a word
 	// 3. if neither 1 nor 2 are true, use the previous search text
+
+	if (GetSelections() > 1)
+	{
+		return "";
+	}
 
 	Scintilla::CharacterRange cr;
 	GetSel(cr);
@@ -600,13 +605,11 @@ tstring CTextView::GetCurrentWord()
 		}
 	}
 
-	tstring ret;
+	std::string ret;
 
 	if(buffer.size())
 	{
-		USES_CONVERSION;
-
-		ret = A2CT(&buffer[0]);
+		ret = &buffer[0];
 	}
 
 	return ret;
@@ -637,7 +640,8 @@ Scheme* CTextView::GetCurrentScheme() const
 void HandleFindAllResult(CTextView* parent, FIFSink* sink, LPCTSTR szFilename, int start, int end)
 {
 	int line = parent->LineFromPosition(start);
-	sink->OnFoundString("", szFilename, line+1, parent->GetLineText(line).c_str());
+	CA2CT lineText(parent->GetLineText(line).c_str());
+	sink->OnFoundString(_T(""), szFilename, line+1, lineText);
 }
 
 void HandleMarkAllResult(CTextView* parent, int start, int end)
@@ -734,7 +738,7 @@ void CTextView::DoContextMenu(CPoint* point)
 		popup.EnableMenuItem(ID_EDITOR_USEASSCRIPT, false);
 	}
 
-	tstring wordAtCursor = GetCurrentWord();
+	std::string wordAtCursor = GetCurrentWord();
 	popup.EnableMenuItem(ID_GO_TO_DEF, wordAtCursor.size() != 0);
 
 	BOOL mnuResult = g_Context.m_frame->TrackPopupMenu(popup, TPM_RETURNCMD, point->x, point->y, NULL);
@@ -1005,8 +1009,8 @@ LRESULT CTextView::OnCommentBlock(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		SetTargetStart(PositionFromLine(selStartLine));
 		SetTargetEnd(PositionFromLine(selStartLine));
 
-		tstring indent = MakeIndentText( GetLineIndentation( leftmostline ), GetUseTabs(), GetTabWidth() );
-		tstring startline(indent);
+		std::string indent = MakeIndentText( GetLineIndentation( leftmostline ), GetUseTabs(), GetTabWidth() );
+		std::string startline(indent);
 		startline += comments.CommentBlockStart;
         startline += "\r\n";
 
@@ -1021,7 +1025,7 @@ LRESULT CTextView::OnCommentBlock(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			ReplaceTarget(strlen(comments.CommentBlockLine), comments.CommentBlockLine);
 		}
 		
-		tstring endline("\r\n");
+		std::string endline("\r\n");
 		endline += indent;
 		endline += comments.CommentBlockEnd;
 		endline += "\r\n";
@@ -1335,8 +1339,9 @@ void CTextView::smartHighlight()
 				SetIndicatorValue(INDIC_ROUNDBOX);
 				IndicSetStyle(INDIC_SMARTHIGHLIGHT, INDIC_ROUNDBOX);
 				
+				CA2CT findText(buf.c_str());
 				SearchOptions opt;
-				opt.SetFindText(buf.c_str());
+				opt.SetFindText(findText);
 				CScintillaImpl::FindAll(&opt, boost::bind(HandleMarkAllResult, this, _1, _2));
 			}
 		}

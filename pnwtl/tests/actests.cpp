@@ -2,8 +2,8 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "../autocomplete.h"
 #include "../pnstrings.h"
+#include "../autocomplete.h"
 
 struct ac_fixture
 {

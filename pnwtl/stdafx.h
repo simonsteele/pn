@@ -108,6 +108,16 @@ bool safe_get_submatch(match_type& match, typename match_type::string_type& expr
 	}
 }
 
+namespace boost { namespace xpressive {
+#ifdef _UNICODE
+	typedef wsregex tsregex;
+	typedef wsmatch tsmatch;
+#else
+	typedef sregex tsregex;
+	typedef smatch tsmatch;
+#endif
+}} // namespace boost::xpressive
+
 #define PNASSERT ATLASSERT
 
 #ifdef _DEBUG

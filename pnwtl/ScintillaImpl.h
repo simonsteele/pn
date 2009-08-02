@@ -87,11 +87,11 @@ public:
 
 	void SetAutoCompleteHandler(AutoCompleteHandlerPtr& handler);
 
-	tstring GetSelText2();
+	std::string GetSelText2();
 	int GetCaretInLine();
 	Scintilla::CharacterRange GetSelection();
 	void InsertChar(long nPos, char nChar);
-	tstring GetLineText(int nLine=-1);
+	std::string GetLineText(int nLine=-1);
 
 public:
 	// iterable:
@@ -115,7 +115,7 @@ protected:
 
 	void ManageBraceMatch();
 
-	virtual tstring GetDocTitle() { return tstring(""); }
+	virtual tstring GetDocTitle() { return tstring(_T("")); }
 
 private:
 	bool StartAutoComplete();
@@ -128,16 +128,16 @@ private:
 	void ContinueCallTip();
 	void FillFunctionDefinition(int pos = -1);
 
-	tstring_array  m_Api/*, m_KW*/;
-	tstring m_functionDefinition;
-	tstring m_currentCallTipWord;
-	tstring m_autoCompleteStartCharacters;
-	tstring m_calltipWordCharacters;
-	tstring m_strWordCharacters;
-	tstring m_calltipParametersEnd;
-	tstring m_calltipParametersStart;	
-	tstring m_calltipParametersSeparators;
-	tstring m_calltipEndDefinition;
+	string_array  m_Api/*, m_KW*/;
+	std::string m_functionDefinition;
+	std::string m_currentCallTipWord;
+	std::string m_autoCompleteStartCharacters;
+	std::string m_calltipWordCharacters;
+	std::string m_strWordCharacters;
+	std::string m_calltipParametersEnd;
+	std::string m_calltipParametersStart;	
+	std::string m_calltipParametersSeparators;
+	std::string m_calltipEndDefinition;
 	bool m_bAutoCompletion;
 	bool m_bAutoCompleteIgnoreCase;	
 	bool m_bAutoCompletionUseTags;

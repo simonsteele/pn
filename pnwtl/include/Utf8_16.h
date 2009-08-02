@@ -130,7 +130,7 @@ public:
 	void setEncoding(encodingType eType);
 	void setWriteBOM(bool writeBOM);
 
-	FILE * fopen(const char *_name, const char *_type);
+	FILE * fopen(const TCHAR *_name, const TCHAR *_type);
 	size_t fwrite(const void* p, size_t _size);
 	void fclose();
 

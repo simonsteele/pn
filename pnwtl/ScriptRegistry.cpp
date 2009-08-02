@@ -2,16 +2,16 @@
  * @file ScriptRegistry.cpp
  * @brief Script Registry
  * @author Simon Steele
- * @note Copyright (c) 2006-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
 #include "stdafx.h"
 #include "scriptregistry.h"
 
-typedef std::map<tstring, tstring> tstringmap;
+typedef std::map<std::string, std::string> stringmap;
 
 ScriptRegistry::ScriptRegistry()
 {
@@ -76,7 +76,7 @@ ScriptGroup* ScriptRegistry::getGroup(const char* group)
 {
 	for(group_list_t::iterator i = m_groups.begin(); i != m_groups.end(); ++i)
 	{
-		if(_tcsicmp((*i)->GetName(), group) == 0)
+		if(strcmp((*i)->GetName(), group) == 0)
 		{
 			return (*i);
 		}
@@ -97,19 +97,19 @@ const group_list_t& ScriptRegistry::GetGroups()
 
 void ScriptRegistry::RegisterRunner(const char* id, extensions::IScriptRunner* runner)
 {
-	m_runners.insert(s_runner_map::value_type(tstring(id), runner));
+	m_runners.insert(s_runner_map::value_type(std::string(id), runner));
 }
 
 void ScriptRegistry::RemoveRunner(const char* id)
 {
-	s_runner_map::iterator i = m_runners.find(tstring(id));
+	s_runner_map::iterator i = m_runners.find(std::string(id));
 	if(i != m_runners.end())
 		m_runners.erase(i);
 }
 
 extensions::IScriptRunner* ScriptRegistry::GetRunner(const char* id)
 {
-	s_runner_map::const_iterator i = m_runners.find(tstring(id));
+	s_runner_map::const_iterator i = m_runners.find(std::string(id));
 	if(i != m_runners.end())
 	{
 		return (*i).second;
@@ -120,17 +120,17 @@ extensions::IScriptRunner* ScriptRegistry::GetRunner(const char* id)
 
 void ScriptRegistry::EnableSchemeScripts(const char* scheme, const char* runnerId)
 {
-	m_scriptableSchemes.insert(tstringmap::value_type(tstring(scheme), tstring(runnerId)));
+	m_scriptableSchemes.insert(string_map::value_type(std::string(scheme), std::string(runnerId)));
 }
 
 bool ScriptRegistry::SchemeScriptsEnabled(const char* scheme)
 {
-	return m_scriptableSchemes.find(tstring(scheme)) != m_scriptableSchemes.end();
+	return m_scriptableSchemes.find(std::string(scheme)) != m_scriptableSchemes.end();
 }
 
-bool ScriptRegistry::SchemeScriptsEnabled(const char* scheme, tstring& runner)
+bool ScriptRegistry::SchemeScriptsEnabled(const char* scheme, std::string& runner)
 {
-	tstringmap::const_iterator i = m_scriptableSchemes.find(tstring(scheme));
+	string_map::const_iterator i = m_scriptableSchemes.find(std::string(scheme));
 	if(i != m_scriptableSchemes.end())
 	{
 		runner = (*i).second;
@@ -150,6 +150,7 @@ void ScriptRegistry::clear()
 	{
 		delete (*i);
 	}
+
 	m_groups.clear();
 }
 
@@ -157,7 +158,7 @@ void ScriptRegistry::clear()
 // ScriptGroup
 //////////////////////////////////////////////////////////////////////////
 
-ScriptGroup::ScriptGroup(LPCTSTR name)
+ScriptGroup::ScriptGroup(LPCSTR name)
 {
 	m_name = name;
 }
@@ -205,7 +206,7 @@ const script_list_t& ScriptGroup::GetScripts()
 	return m_scripts;
 }
 
-LPCTSTR ScriptGroup::GetName() const
+LPCSTR ScriptGroup::GetName() const
 {
 	return m_name.c_str();
 }
@@ -216,6 +217,7 @@ void ScriptGroup::clear()
 	{
 		delete (*i);
 	}
+
 	m_scripts.clear();
 }
 
@@ -225,20 +227,20 @@ void ScriptGroup::clear()
 
 void Script::Run()
 {
-	tstring str(ScriptRef);
+	std::string str(ScriptRef);
 	size_t rindex = str.find(':');
 	if(rindex == -1)
 		return;
 
-	tstring runner_id = str.substr(0, rindex);
+	std::string runner_id = str.substr(0, rindex);
 	extensions::IScriptRunner* runner = ScriptRegistry::GetInstanceRef().GetRunner(runner_id.c_str());
 	if(!runner)
 	{
-		UNEXPECTED("No ScriptRunner for this script type!");
+		UNEXPECTED(_T("No ScriptRunner for this script type!"));
 		return;
 	}
 
-	tstring script = str.substr(rindex+1);
+	std::string script = str.substr(rindex+1);
 	runner->RunScript(script.c_str());
 }
 
@@ -251,7 +253,7 @@ void DocScript::Run()
 	extensions::IScriptRunner* runner = ScriptRegistry::GetInstanceRef().GetRunner(m_runner.c_str());
 	if(!runner)
 	{
-		UNEXPECTED("No ScriptRunner for this script type!");
+		UNEXPECTED(_T("No ScriptRunner for this script type!"));
 		return;
 	}
 	

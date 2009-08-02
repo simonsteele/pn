@@ -331,15 +331,44 @@ void XMLSafeString(LPCTSTR from, tstring& to)
 		switch(from[i])
 		{
 			case _T('"'):
-				to += "&quot;";
+				to += _T("&quot;");
 				break;
 			case _T('<'):
-				to += "&lt;";
+				to += _T("&lt;");
 				break;
 			case _T('>'):
-				to += "&gt;";
+				to += _T("&gt;");
 				break;
 			case _T('&'):
+				to += _T("&amp;");
+				break;
+			case _T('\''):
+				to += _T("&apos;");
+				break;
+			default:
+				to += from[i];
+		}
+	}
+}
+
+void XMLSafeString(LPCSTR from, std::string& to)
+{
+	int len = strlen(from);
+
+	for(int i = 0; i < len; i++)
+	{
+		switch(from[i])
+		{
+			case '"':
+				to += "&quot;";
+				break;
+			case '<':
+				to += "&lt;";
+				break;
+			case '>':
+				to += "&gt;";
+				break;
+			case '&':
 				to += "&amp;";
 				break;
 			case _T('\''):
@@ -451,7 +480,7 @@ std::list<tstring> GetCommandLineArgs()
 	// Process cmdline params... __argv and __argc in VC++
 	for (int i = 1; i < __argc; i++)
 	{
-		tstring arg = __argv[i]; 
+		tstring arg = __wargv[i]; 
 
 		if (arg[0] != _T('/') && arg[0] != _T('-'))
 		{
@@ -484,7 +513,7 @@ std::list<tstring> GetCommandLineArgs()
 
 				if (takeNext)
 				{
-					arg = __argv[++i];
+					arg = __wargv[++i];
 					params.insert(params.end(), arg);
 				}
 			}

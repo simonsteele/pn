@@ -70,7 +70,7 @@ public:
 
 	void SetPosStatus(CMultiPaneStatusBarCtrl& stat);
 
-	tstring GetCurrentWord();
+	std::string GetCurrentWord();
 
 	EPNEncoding GetEncoding() const;
 	void SetEncoding(EPNEncoding encoding);

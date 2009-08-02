@@ -37,7 +37,7 @@
 #define RTF_FONTFACE      "Courier New"
 #define RTF_COLOR         "#000000"
 
-RTFExporter::RTFExporter(IOutput* pOutput, LPCTSTR lpszSchemeName, StylesList* pStyles, CScintilla* pScintilla)
+RTFExporter::RTFExporter(IOutput* pOutput, LPCSTR lpszSchemeName, StylesList* pStyles, CScintilla* pScintilla)
 : BaseExporter(pOutput, lpszSchemeName, pStyles, pScintilla)
 {
 
@@ -248,7 +248,7 @@ void RTFExporter::GetRTFStyleChange(char *delta, char *last, const char *current
 void RTFExporter::InternalExport(int start, int end)
 {
 	int wysiwyg           = /*pOptions->GetRtfWYSIWYG()*/	1;
-	CString strFontFace   = /*pOptions->GetRtfFontName()*/	"Courier New";
+	CStringA strFontFace   = /*pOptions->GetRtfFontName()*/	"Courier New";
 	unsigned characterset = /*pOptions->GetRtfCharset()*/	0;
 	int fontSize          = /*pOptions->GetRtfFontSize()*/	10 << 1;
 	int tabs              = /*pOptions->GetRtfTabs()*/		1;
@@ -273,9 +273,9 @@ void RTFExporter::InternalExport(int start, int end)
 	m_out->printf(RTF_FONTDEF, 0, characterset, strFontFace);
 	strncpy(*colors, "#000000", MAX_COLORDEF);
 	
-	CString strFontFamily;
-	CString strForeground;
-	CString strBackground;
+	CStringA strFontFamily;
+	CStringA strForeground;
+	CStringA strBackground;
 	
 	StyleDetails* pDefStyle = GetStyle(STYLE_DEFAULT);
 
@@ -283,7 +283,7 @@ void RTFExporter::InternalExport(int start, int end)
 	// the rtf style lookup tables for them.
 	for (int istyle = 0; istyle <= STYLE_DEFAULT; istyle++)
 	{
-		TCHAR szColorTmp[32] = {0};
+		char szColorTmp[32] = {0};
 
 		StyleDetails* pStyle = GetStyle(istyle);
 		

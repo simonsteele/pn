@@ -44,31 +44,31 @@ public:
 		{
 			LPCTSTR temp;
 
-			temp = atts.getValue("major");
+			temp = atts.getValue(_T("major"));
 			if (!temp)
 				return;
 
 			Details.Major = _ttoi(temp);
 
-			temp = atts.getValue("minor");
+			temp = atts.getValue(_T("minor"));
 			if (!temp)
 				return;
 
 			Details.Minor = _ttoi(temp);
 
-			temp = atts.getValue("revision");
+			temp = atts.getValue(_T("revision"));
 			if (!temp)
 				return;
 
 			Details.Revision = _ttoi(temp);
 
-			temp = atts.getValue("build");
+			temp = atts.getValue(_T("build"));
 			if (!temp)
 				return;
 
 			Details.Build = _ttoi(temp);
 
-			temp = atts.getValue("launchUrl");
+			temp = atts.getValue(_T("launchUrl"));
 			if (!temp)
 				return;
 
@@ -94,14 +94,14 @@ UpdateAvailableDetails GetVersionDetails(LPCTSTR url)
 	Inet inet;
 	if (inet.Open(url))
 	{
-		TCHAR buffer[UPDATE_BUFFER_SIZE];
+		BYTE buffer[UPDATE_BUFFER_SIZE];
 		DWORD dwRead;
 		XMLParser parser;
 		parser.SetParseState(&parseState);
 		
 		while (inet.ReadFile(&buffer[0], UPDATE_BUFFER_SIZE, &dwRead))
 		{
-			parser.ParseBuffer(buffer, dwRead, dwRead == 0);
+			parser.ParseBuffer((const char*)buffer, dwRead, dwRead == 0);
 			if (dwRead == 0)
 				break;
 		}

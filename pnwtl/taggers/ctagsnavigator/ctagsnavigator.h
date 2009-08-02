@@ -56,7 +56,7 @@ public:
 	/**
 	 * Set a path to look in for external ctags definitions
 	 */
-	void SetTaggersPath(const char* path);
+	void SetTaggersPath(const wchar_t* path);
 
 private:
 	bool canParse(char* buffer, DWORD dwLength);
@@ -66,7 +66,7 @@ private:
 	/**
 	 * Path to taggers directory. Used for external ctags language definitions.
 	 */
-	std::string m_taggersPath;
+	std::wstring m_taggersPath;
 	std::string m_schemes;
 	std::wstring m_optionsParam;
 };

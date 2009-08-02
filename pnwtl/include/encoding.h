@@ -2,9 +2,9 @@
  * @file encoding.h
  * @brief Various simple text encoding conversion routines.
  * @author Simon Steele
- * @note Copyright (c) 2003 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2003-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #ifndef encoding_h__included
@@ -314,5 +314,121 @@ protected:
 	unsigned char* decoded;
 	bool bValid;
 };
+
+class Utf8_Utf16
+{
+public:
+	explicit Utf8_Utf16(const char* str)
+	{
+		if (str == NULL)
+		{
+			return;
+		}
+
+		size_t lenstr(strlen(str));
+
+		// UTF-16 should be less chars than UTF-8:
+		store.resize(lenstr+1);
+
+		int length = MultiByteToWideChar(CP_UTF8, 0, str, lenstr, &store[0], lenstr+1);
+		if (length == 0)
+		{
+			length = MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
+			store.resize(length);
+			length = MultiByteToWideChar(CP_UTF8, 0, str, -1, &store[0], length);
+		}
+
+		if (length != 0)
+		{
+			m_valid = true;
+			store.resize(length);
+		}
+	}
+	
+	operator const wchar_t* () const
+	{
+		return store.c_str();
+	}
+
+private:
+	std::wstring store;
+	bool m_valid;
+};
+
+/**
+ * Convert UTF-16 to UTF-8
+ * Currently using Windows transformation.
+ */
+template <int ICodePage, typename TResult>
+class Utf16_Mbs
+{
+public:
+	explicit Utf16_Mbs(const wchar_t* str)
+	{
+		if (str == NULL)
+		{
+			return;
+		}
+
+		int length = WideCharToMultiByte(ICodePage, 0, str, -1, NULL, 0, NULL, NULL);
+		m_store.resize(length);
+		length = WideCharToMultiByte(ICodePage, 0, str, -1, &m_store[0], length, NULL, NULL);
+		m_valid = length != 0;
+		
+		if (m_valid)
+		{
+			m_store.resize(length);
+		}
+		else
+		{
+			m_store.resize(0);
+		}
+	}
+
+	operator TResult () const
+	{
+		return reinterpret_cast<TResult>(m_store.c_str());
+	}
+
+private:
+	bool m_valid;
+	std::string m_store;
+};
+
+typedef Utf16_Mbs<CP_UTF8, const unsigned char*> Utf16_Utf8;
+typedef Utf16_Mbs<CP_ACP, const char*> Utf16_Windows1252;
+
+class TcsIdentity
+{
+public:
+	explicit TcsIdentity(const TCHAR* str) : m_store(str)
+	{
+	}
+
+	operator const TCHAR* () const
+	{
+		return m_store;
+	}
+
+	bool IsValid() const
+	{
+		return m_store != NULL;
+	}
+
+private:
+	const TCHAR* m_store;
+};
+
+#ifdef _UNICODE
+	typedef Utf16_Utf8 Tcs_Utf8;
+	typedef Utf8_Utf16 Utf8_Tcs;
+	typedef TcsIdentity Xml_Tcs;
+	typedef Utf16_Windows1252 Tcs_Windows1252;
+#else
+	typedef Windows1252_Utf8 Tcs_Utf8;
+	typedef Utf8_Windows1252 Utf8_Tcs;
+	typedef Utf8_Windows1252 Xml_Tcs;
+	typedef TcsIdentity Tcs_Windows1252;
+#endif
 
 #endif // #ifndef encoding_h__included

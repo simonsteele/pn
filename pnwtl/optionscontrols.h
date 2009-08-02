@@ -43,7 +43,7 @@ class CStyleDisplay : public CWindowImpl<CStyleDisplay>
 		void SetSize(int size, bool bInvalidate = true);
 		void SetFore(COLORREF fore);
 		void SetBack(COLORREF back);
-		void SetStyle(LPCTSTR fontname, int fontsize, COLORREF fore, COLORREF back, LPCTSTR name, bool bold, bool italic, bool underline);
+		void SetStyle(LPCSTR fontname, int fontsize, COLORREF fore, COLORREF back, LPCTSTR name, bool bold, bool italic, bool underline);
 		
 	protected:
 		CString		m_Name;
@@ -139,7 +139,7 @@ class CSchemeCombo : public CComboBox
 		int AddScheme(LPCTSTR title, SchemeDetails* pScheme);
 		
 		/// Load schemes from a SchemeConfigParser instance into the combo box.
-		void Load(SchemeConfigParser* pConfig, LPCTSTR selectScheme = NULL, bool bIncludePlainText = true, bool bIncludeInternal = false);
+		void Load(SchemeConfigParser* pConfig, LPCSTR selectScheme = NULL, bool bIncludePlainText = true, bool bIncludeInternal = false);
 		
 		/// Return a SchemeConfig* for the item 'index'.
 		SchemeDetails* GetItemScheme(int index);

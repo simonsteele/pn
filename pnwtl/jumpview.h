@@ -37,7 +37,7 @@ class Definitions
 public:
 	virtual ~Definitions(){}
 
-	tstring SearchTerm;
+	std::string SearchTerm;
 	std::vector<std::string> Prototypes;
 	std::vector<int> Lines;
 	std::vector<CChildFrame*> Windows;

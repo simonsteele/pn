@@ -35,7 +35,7 @@ class PrintfConduit : public IOutput
 		virtual void printf(const char* format, ...);
 
 	protected:
-		CString str;
+		CStringA str;
 };
 
 /**
@@ -45,7 +45,7 @@ class PrintfConduit : public IOutput
 class BaseExporter
 {
 	public:
-		BaseExporter(IOutput* pOutput, LPCTSTR lpszSchemeName, StylesList* pStyles, CScintilla* pScintilla);
+		BaseExporter(IOutput* pOutput, LPCSTR lpszSchemeName, StylesList* pStyles, CScintilla* pScintilla);
 		virtual ~BaseExporter(){}
 
 		void Export(int start, int finish);
@@ -67,7 +67,7 @@ class BaseExporter
 		StylesList*	m_pStyles;
 		IOutput*	m_out;
 
-		LPCTSTR		m_pSchemeName;
+		LPCSTR		m_pSchemeName;
 };
 
 class ExporterFactory
@@ -76,7 +76,7 @@ class ExporterFactory
 		typedef enum { RTF, HTML } EExporterType;
 
 		static BaseExporter* GetExporter(EExporterType type, 
-			IOutput* pOutput, LPCTSTR lpszSchemeName, StylesList* pStyles, CScintilla* pScintilla);
+			IOutput* pOutput, LPCSTR lpszSchemeName, StylesList* pStyles, CScintilla* pScintilla);
 
 	private:
 		ExporterFactory(){}
@@ -128,7 +128,7 @@ class FileOutput : public PrintfConduit
 class RTFExporter : public BaseExporter
 {
 	public:
-		RTFExporter(IOutput* pOutput, LPCTSTR lpszSchemeName, StylesList* pStyles, CScintilla* pScintilla);
+		RTFExporter(IOutput* pOutput, LPCSTR lpszSchemeName, StylesList* pStyles, CScintilla* pScintilla);
 
 		virtual LPCTSTR GetDefaultExtension();
 		virtual LPCTSTR GetFileMask();
@@ -149,7 +149,7 @@ class RTFExporter : public BaseExporter
 class HTMLExporter : public BaseExporter
 {
 public:
-	HTMLExporter(IOutput* pOutput, LPCTSTR lpszSchemeName, StylesList* pStyles, CScintilla* pScintilla);
+	HTMLExporter(IOutput* pOutput, LPCSTR lpszSchemeName, StylesList* pStyles, CScintilla* pScintilla);
 
 	virtual LPCTSTR GetDefaultExtension();
 	virtual LPCTSTR GetFileMask();

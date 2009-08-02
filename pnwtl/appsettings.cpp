@@ -36,14 +36,14 @@ public:
 		genxEndElement(m_writer);
 	}
 
-	void WriteUserSettingsPath(const char* path)
+	void WriteUserSettingsPath(LPCTSTR path)
 	{
 		genxStartElementLiteral(m_writer, NULL, u("userSettings"));
 		addAttributeConvertUTF8(m_attPath, path);
 		genxEndElement(m_writer);
 	}
 
-	void WriteExtension(const char* path, bool disabled)
+	void WriteExtension(LPCTSTR path, bool disabled)
 	{
 		genxStartElementLiteral(m_writer, NULL, u("extension"));
 		addAttributeConvertUTF8(m_attPath, path);
@@ -86,7 +86,7 @@ private:
 //////////////////////////////////////////////////////////////////////////////////
 // ExtDetails
 
-ExtDetails::ExtDetails(const char* path, const char* basePath) :
+ExtDetails::ExtDetails(LPCTSTR path, LPCTSTR basePath) :
 	Path(path),
 	Disabled(false)
 {
@@ -173,7 +173,7 @@ void AppSettings::findExtensionHandler(LPCTSTR path, FileFinderData& file, bool&
 	tstring fn;
 	if(m_bHuntingTaggers)
 	{
-		fn = "Taggers\\";
+		fn = _T("Taggers\\");
 		fn += file.GetFilename();
 	}
 	else
@@ -354,7 +354,7 @@ void AppSettings::save()
 	//4. Need command-line parameters for setting options and scanning extensions
 	//5. Should we store extensions list in user profile instead of config.xml?
 
-	CFileName fn("config.xml");
+	CFileName fn(_T("config.xml"));
 	fn.Root(m_userPath.c_str());
 	
 	AppSettingsWriter writer;
@@ -453,7 +453,7 @@ void AppSettings::onExtension(XMLAttributes& atts)
 	LPCTSTR disabled = atts.getValue(_T("disabled"));
 	if(path == NULL || path[0] == NULL)
 	{
-		LOG("Found extension element with no \"path\" attribute, ignoring.");
+		LOG(_T("Found extension element with no \"path\" attribute, ignoring."));
 		return;
 	}
 

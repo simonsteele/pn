@@ -250,9 +250,9 @@ void KeyMap::internalAssign(int key, int modifiers, unsigned int msg)
 /////////////////////////////////////////////////////////////////////////////
 // CommandDispatch
 
-std::string properCase(std::string instr)
+tstring properCase(tstring instr)
 {
-	std::string::iterator i = instr.begin();
+	tstring::iterator i = instr.begin();
 	i++;
 	std::transform(i, instr.end(), i, tolower);
 	return instr;
@@ -527,7 +527,7 @@ Commands::KeyMap* CommandDispatch::GetCurrentKeyMap() const
 
 bool CommandDispatch::Load(LPCTSTR filename)
 {
-	FILE* kbfile = fopen(filename, "rb");
+	FILE* kbfile = _tfopen(filename, _T("rb"));
 	if(!kbfile)
 		return false;
 
@@ -537,7 +537,7 @@ bool CommandDispatch::Load(LPCTSTR filename)
 		|| hdr.commands < 1)
 	{
 		//The magic is bad...
-		UNEXPECTED("Keyboard mappings file seems to be corrupt.");
+		UNEXPECTED(_T("Keyboard mappings file seems to be corrupt."));
 		fclose(kbfile);
 		return false;
 	}
@@ -545,7 +545,7 @@ bool CommandDispatch::Load(LPCTSTR filename)
 	KeyToCommand* loadedcmds = new KeyToCommand[hdr.commands+1];
 	if(fread(loadedcmds, sizeof(KeyToCommand), hdr.commands, kbfile) != hdr.commands)
 	{
-		UNEXPECTED("Failed to load the correct number of commands from the keyboard mappings file.");
+		UNEXPECTED(_T("Failed to load the correct number of commands from the keyboard mappings file."));
 		fclose(kbfile);
 		delete loadedcmds;
 		return false;
@@ -557,7 +557,7 @@ bool CommandDispatch::Load(LPCTSTR filename)
 		storedexts = new StoredExtensionCommand[hdr.extensions];
 		if(fread(storedexts, sizeof(StoredExtensionCommand), hdr.extensions, kbfile) != hdr.extensions)
 		{
-			UNEXPECTED("Failed to load the correct number of extension commands from the keyboard mappings file.");
+			UNEXPECTED(_T("Failed to load the correct number of extension commands from the keyboard mappings file."));
 			delete storedexts;
 		}
 	}
@@ -599,10 +599,10 @@ bool CommandDispatch::Load(LPCTSTR filename)
 
 void CommandDispatch::Save(LPCTSTR filename) const
 {
-	FILE* kbfile = fopen(filename, "wb");
+	FILE* kbfile = _tfopen(filename, _T("wb"));
 	if(!kbfile)
 	{
-		UNEXPECTED("Failed to open keyboard shortcut configuration file for writing");
+		UNEXPECTED(_T("Failed to open keyboard shortcut configuration file for writing"));
 		return;
 	}
 

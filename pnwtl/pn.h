@@ -43,15 +43,25 @@
 
 #define PNID_DONTASKUSER	253
 
+#ifdef _UNICODE
+	#define WIDEN2(x) L ## x
+	#define WIDEN(x) WIDEN2(x)
+	#define __WFILE__ WIDEN(__FILE__)
+	#define __TFILE__ __WFILE__
+#else
+	#define __TFILE__ __FILE__
+#endif
+
+
 //#if defined(DEBUG_)
 	#define UNEXPECTED(message) \
 	{ \
-		pn__Unexpected(__FILE__, __LINE__, message); \
+		pn__Unexpected(__TFILE__, __LINE__, message); \
 	}
 
 	#define RETURN_UNEXPECTED(message, ret) \
 	{ \
-		pn__Unexpected(__FILE__, __LINE__, message); \
+		pn__Unexpected(__TFILE__, __LINE__, message); \
 		return ret; \
 	}
 /*#else

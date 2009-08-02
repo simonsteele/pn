@@ -114,7 +114,7 @@ bool CScintilla::EnableDirectAccess()
 
 bool CScintilla::OpenFile(LPCTSTR filename)
 {
-	FILE *fp = fopen(filename, "rb");
+	FILE *fp = _tfopen(filename, _T("rb"));
 	if (fp) 
 	{
 		//fileModTime = GetModTime(fullPath);
@@ -150,7 +150,7 @@ void CScintilla::GetRange(int start, int end, char *text)
 
 bool CScintilla::SaveFile(LPCTSTR filename)
 {
-	FILE *fp = fopen(filename, "wb");
+	FILE *fp = _tfopen(filename, _T("wb"));
 	if (fp) {
 		char data[blockSize + 1];
 		int lengthDoc = SPerform(SCI_GETLENGTH);
