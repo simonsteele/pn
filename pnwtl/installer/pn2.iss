@@ -71,13 +71,13 @@ Source: ..\schemes\user\*.schemedef; DestDir: {app}\samples
 ;Source: reqfiles\msvcp71.dll; DestDir: {app}
 ;Source: reqfiles\msvcr71.dll; DestDir: {app}
 
-Source: reqfiles\Microsoft.VC80.CRT\Microsoft.VC80.CRT.manifest; DestDir: {app}\Microsoft.VC80.CRT; MinVersion: 0,5.01.2600
-Source: reqfiles\Microsoft.VC80.CRT\msvcm80.dll; DestDir: {app}\Microsoft.VC80.CRT; MinVersion: 0,5.01.2600
-Source: reqfiles\Microsoft.VC80.CRT\msvcp80.dll; DestDir: {app}\Microsoft.VC80.CRT; MinVersion: 0,5.01.2600
-Source: reqfiles\Microsoft.VC80.CRT\msvcr80.dll; DestDir: {app}\Microsoft.VC80.CRT; MinVersion: 0,5.01.2600
+Source: reqfiles\Microsoft.VC90.CRT\Microsoft.VC90.CRT.manifest; DestDir: {app}\Microsoft.VC90.CRT; MinVersion: 0,5.01.2600
+Source: reqfiles\Microsoft.VC90.CRT\msvcm90.dll; DestDir: {app}\Microsoft.VC90.CRT; MinVersion: 0,5.01.2600
+Source: reqfiles\Microsoft.VC90.CRT\msvcp90.dll; DestDir: {app}\Microsoft.VC90.CRT; MinVersion: 0,5.01.2600
+Source: reqfiles\Microsoft.VC90.CRT\msvcr90.dll; DestDir: {app}\Microsoft.VC90.CRT; MinVersion: 0,5.01.2600
 
-Source: reqfiles\Microsoft.VC80.CRT\msvcp80.dll; DestDir: {app}; OnlyBelowVersion: 0,5.01.2600; Flags: ignoreversion
-Source: reqfiles\Microsoft.VC80.CRT\msvcr80.dll; DestDir: {app}; OnlyBelowVersion: 0,5.01.2600; Flags: ignoreversion
+Source: reqfiles\Microsoft.VC90.CRT\msvcp90.dll; DestDir: {app}; OnlyBelowVersion: 0,5.01.2600; Flags: ignoreversion
+Source: reqfiles\Microsoft.VC90.CRT\msvcr90.dll; DestDir: {app}; OnlyBelowVersion: 0,5.01.2600; Flags: ignoreversion
 
 [Icons]
 Name: {group}\Programmer's Notepad 2; Filename: {app}\pn.exe
@@ -95,4 +95,4 @@ UseAbsolutePaths=false
 Root: HKCU; SubKey: Software\Classes\SystemFileAssociations\text\shell\edit.PN2; ValueType: string; Flags: uninsdeletekey dontcreatekey
 Root: HKCU; SubKey: Software\Classes\SystemFileAssociations\text\OpenWithList\pn.exe; ValueType: string; Flags: uninsdeletekey dontcreatekey
 [Dirs]
-Name: {app}\Microsoft.VC80.CRT
+Name: {app}\Microsoft.VC90.CRT
