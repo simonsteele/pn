@@ -76,7 +76,7 @@ public:
 	void beginProject(LPCTSTR id)
 	{
 		genxStartElement(m_eProject);
-		genxAddAttribute(m_aPID, u(id));
+		addAttributeConvertUTF8(m_aPID, id);
 	}
 
 	void endProject()
