@@ -2,9 +2,9 @@
  * @file usersettingswriter.h
  * @brief Write out the UserSettings file.
  * @author Simon Steele
- * @note Copyright (c) 2005-2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -47,7 +47,7 @@ namespace Schemes
 			void beginScheme(SchemeDetails* scheme)
 			{
 				genxStartElement(m_eScheme);
-				genxAddAttribute(m_aName, u((LPCTSTR)scheme->Name.c_str()));
+				genxAddAttribute(m_aName, u(scheme->Name.c_str()));
 
 				if((scheme->CustomFlags & USETABFOLDFLAGSMASK) != (scheme->Flags & USETABFOLDFLAGSMASK))
 				{
@@ -57,7 +57,7 @@ namespace Schemes
 
 				if(scheme->CustomFlags & schOverrideTabSize)
 				{
-					genxAddAttribute(m_aTabWidth, u(IntToTString(scheme->CustomTabWidth).c_str()));
+					genxAddAttribute(m_aTabWidth, u(IntToString(scheme->CustomTabWidth).c_str()));
 				}
 			}
 
@@ -99,19 +99,19 @@ namespace Schemes
 			void beginStyle(int key)
 			{
 				genxStartElement(m_eStyle);
-				genxAddAttribute(m_aKey, u(IntToTString(key).c_str()));
+				genxAddAttribute(m_aKey, u(IntToString(key).c_str()));
 			}
 
 			void beginStyleClass(LPCTSTR name)
 			{
 				genxStartElement(m_eStyleClass);
-				genxAddAttribute(m_aName, u(name));
+				addAttributeConvertUTF8(m_aName, name);
 			}
 
 			void writeKeywords(int key, LPCSTR keywords)
 			{
 				genxStartElement(m_eKeywords);
-				genxAddAttribute(m_aKey, u(IntToTString(key).c_str()));
+				genxAddAttribute(m_aKey, u(IntToString(key).c_str()));
 				Windows1252_Utf8 kwconv(keywords);
 				genxAddText(m_writer, u(kwconv));
 				pop();
@@ -148,7 +148,7 @@ namespace Schemes
 
 			void setSize(int size)
 			{
-				genxAddAttribute(m_aSize, u(IntToTString(size).c_str()));
+				genxAddAttribute(m_aSize, u(IntToString(size).c_str()));
 			}
 
 			void setFore(COLORREF fore)
@@ -301,9 +301,9 @@ namespace Schemes
 				}
 				else
 				{
-					TCHAR colbuf[12];
+					char colbuf[12];
 					colbuf[11] = NULL;
-					_sntprintf(colbuf, 11, _T("%.2x%.2x%.2x"), GetRValue(colour), GetGValue(colour), GetBValue(colour));
+					_snprintf(colbuf, 11, "%.2x%.2x%.2x", GetRValue(colour), GetGValue(colour), GetBValue(colour));
 					genxAddAttribute(att, u(colbuf));
 				}
 			}
