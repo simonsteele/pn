@@ -1,0 +1,30 @@
+<UserSettings>
+	<override-colours caret="C1CBD2" indentGuides="394448" selBack="404E51"/>
+	<override-classes>
+		<style-class name="default" font="Courier New" back="293134" fore="E0E2E4" />
+		<style-class name="comment" fore="66747B" italic="true"/>
+		<style-class name="boxcomment" fore="66747B" bold="true"/>
+		<style-class name="commentline" fore="66747B" italic="true"/>
+		<style-class name="keyword" fore="93C763"/>
+		<style-class name="string" fore="E1E2CF" />
+		<style-class name="character" fore="FF8409" bold="true"/>
+		<style-class name="number" fore="FFCD22" />
+		<style-class name="operator" fore="E8E2B7" />
+		<style-class name="error" fore="E0E2E4" back="ff0000" />
+		<style-class name="function" fore="E0E2E4" bold="true"/>
+		<style-class name="class" fore="E0E2E4"/>
+		<style-class name="type" fore="678CB1"/>
+		<style-class name="tag" fore="678CB1" />
+		<style-class name="attribute" fore="B3B689" />
+		<style-class name="identifier" fore="E0E2E4" />
+		<style-class name="error" fore="E0E2E4" back="2f2f2f" bold="true" />
+		<style-class name="preprocessor" fore="A082BD" bold="true" />
+		<style-class name="linenumbers" fore="81969A" back="3F4B4E" />
+		<style-class name="bracematch" fore="F3DB2E" back="293134" bold="true"/>
+		<style-class name="bracemismatch" fore="FB0000" back="293134" bold="true"/>
+		<style-class name="controlchars" fore="FF8409" bold="true" />
+		<!-- storage types 6080FF -->
+		<!-- variant types 4080A0 -->
+		<!-- line highlight: 434443 -->
+	</override-classes>
+</UserSettings>
