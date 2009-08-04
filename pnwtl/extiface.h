@@ -56,7 +56,7 @@ typedef enum {stFindNext, stReplace, stReplaceAll} SearchType;
 namespace extensions
 {
 
-#define PN_EXT_IFACE_VERSION	9
+#define PN_EXT_IFACE_VERSION	10
 
 /////////////////////////////////////////////////////////////////////////////
 // Predeclare types
