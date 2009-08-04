@@ -390,20 +390,18 @@ void App::FindInFiles(extensions::ISearchOptions* options)
 /**
  * Present an InputBox to get input from the user
  */
-char* App::InputBox(const char* title, const char* caption)
+wchar_t* App::InputBox(const wchar_t* title, const wchar_t* caption)
 {
-	CA2CT titleconv(title);
-	CA2CT captionconv(caption);
+	CW2CT titleconv(title);
+	CW2CT captionconv(caption);
 	CInputDialog ib(titleconv, captionconv);
 
 	if(ib.DoModal() == IDOK)
 	{
 		if(ib.GetInput() != NULL)
 		{
-			CT2CA input(ib.GetInput());
-			char* result = new char[strlen(input)+1];
-			strcpy(result, input);
-			return result;
+			CT2CW input(ib.GetInput());
+			return wcsnewdup(input);
 		}	
 	}
 
@@ -458,7 +456,7 @@ extensions::IDocumentPtr App::NewDocument(const char* scheme)
 /**
  * Release a C string allocated by PN
  */
-void App::ReleaseString(const TCHAR* str)
+void App::ReleaseString(const wchar_t* str)
 {
 	delete [] str;
 }

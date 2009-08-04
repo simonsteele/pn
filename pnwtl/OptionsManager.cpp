@@ -335,20 +335,20 @@ extensions::ISearchOptions* Options::GetSearchOptions()
 	return static_cast<extensions::ISearchOptions*>(&m_SearchOptions);
 }
 
-const TCHAR* Options::GetPNPath(int pathtype)
+wchar_t* Options::GetPNPath(int pathtype)
 {
-	tstring s;
+	std::wstring s;
 	GetPNPath(s, pathtype);
-	TCHAR* ret = new TCHAR[s.size()+1];
-	_tcscpy(ret, s.c_str());
+	wchar_t* ret = new wchar_t[s.size()+1];
+	wcscpy(ret, s.c_str());
 	return ret;
 }
 
-const TCHAR* Options::GetS(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
+wchar_t* Options::GetS(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
 {
-	tstring s = Get(subkey, value, szDefault);
-	TCHAR* ret = new TCHAR[s.size()+1];
-	_tcscpy(ret, s.c_str());
+	std::wstring s = Get(subkey, value, szDefault);
+	wchar_t* ret = new wchar_t[s.size()+1];
+	wcscpy(ret, s.c_str());
 	return ret;
 }
 

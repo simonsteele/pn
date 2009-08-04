@@ -414,7 +414,7 @@ void ToolsManager::processTool(XMLAttributes& atts)
 			else if(_tcscmp(attr, _T("shortcut")) == 0)
 				pDef->Shortcut = _ttoi(val);
 			else if(_tcscmp(attr, _T("parsepattern")) == 0)
-				pDef->CustomParsePattern = Xml_Tcs(val);
+				pDef->CustomParsePattern = Xml_Windows1252(val);
 			else if(_tcscmp(attr, _T("flags")) == 0)
 			{
 				LPTSTR end;

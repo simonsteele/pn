@@ -202,7 +202,7 @@ class ToolWrapper : public ToolDefinition
 		virtual void ShowOutputWindow() = 0;
 		virtual void _AddToolOutput(LPCTSTR output, int nLength = -1) = 0;
 		virtual void SetToolBasePath(LPCTSTR path) = 0;
-		virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL) = 0;
+		virtual void SetToolParser(bool bBuiltIn, const char* customExpression = NULL) = 0;
 		virtual void ClearOutput() = 0;
 
 	protected:
@@ -276,7 +276,7 @@ class ToolWrapperT : public ToolWrapper
 		/**
 		 * Set the parser for the output
 		 */
-		virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL)
+		virtual void SetToolParser(bool bBuiltIn, const char* customExpression = NULL)
 		{
 			m_pOutputSink->SetToolParser(bBuiltIn, customExpression);
 		}

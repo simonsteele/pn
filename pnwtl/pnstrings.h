@@ -39,6 +39,13 @@ static char* strnewdup(const char* strin)
 	return ret;
 }
 
+static wchar_t* wcsnewdup(const wchar_t* strin)
+{
+	wchar_t* ret = new wchar_t[wcslen(strin)+1];
+	wcscpy(ret, strin);
+	return ret;
+}
+
 static tstring IntToTString(int x)
 {
 	TCHAR buffer[32];

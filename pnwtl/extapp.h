@@ -182,7 +182,7 @@ public:
 	virtual void FindInFiles(extensions::ISearchOptions* options);
 
 	/// Get some text from the user
-	virtual char* InputBox(const char* title, const char* caption);
+	virtual wchar_t* InputBox(const wchar_t* title, const wchar_t* caption);
 
 	/// Make a new document
 	virtual extensions::IDocumentPtr NewDocument(const char* scheme);
@@ -191,7 +191,7 @@ public:
 	virtual extensions::IDocumentPtr OpenDocument(const wchar_t* filepath, const char* scheme);
 
 	/// Utility function to safely free strings given to you by PN
-	virtual void ReleaseString(const TCHAR* str);
+	virtual void ReleaseString(const wchar_t* str);
 
 	/// Add plugin menu items
 	virtual void AddPluginMenuItems(extensions::IMenuItems *);

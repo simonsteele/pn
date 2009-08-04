@@ -236,17 +236,20 @@ void CToolConsoleIOPage::GetValues(ToolDefinition* pDefinition)
 
 	if(m_iBuiltIn)
 	{
-		pDefinition->CustomParsePattern = m_csCustomPattern;
+		CT2CA pattern(m_csCustomPattern);
+		pDefinition->CustomParsePattern = (const char*)pattern;
 	}
 }
 
 void CToolConsoleIOPage::SetValues(ToolDefinition* pDefinition)
 {
+	CA2CT parsePattern(pDefinition->CustomParsePattern.c_str());
+
 	m_bCapture			= pDefinition->CaptureOutput();
 	m_bGlobal			= pDefinition->GlobalOutput();
 	m_bClear			= pDefinition->ShouldClearOutput();
 	m_iBuiltIn			= pDefinition->UseCustomParser() ? 1 : 0;
-	m_csCustomPattern	= pDefinition->CustomParsePattern.c_str();
+	m_csCustomPattern	= parsePattern;
 	m_bWantStdIn		= pDefinition->WantStdIn();
 	m_bTextFilter		= pDefinition->IsTextFilter();
 }

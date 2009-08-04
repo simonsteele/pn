@@ -13,6 +13,7 @@
 #include "utils.h"
 #include "wrapscintilla.h"
 #include "recorder.h"
+#include "../include/encoding.h"
 
 /*#if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -51,10 +52,12 @@ void App::Initialise()
 {
 	// Before we do anything else, make sure python can find our files!
 	// Find Me
-	std::string s;
-	const TCHAR* path = m_app->GetOptionsManager()->GetPNPath();
-	s = path;
+	
+	const wchar_t* path = m_app->GetOptionsManager()->GetPNPath();
+	Utf16_Windows1252 pathconv(path);
 	m_app->ReleaseString(path);
+
+	std::string s(pathconv);
 
 	if((s[s.length()-1]) == '\\')
 	{
@@ -248,7 +251,10 @@ void App::AddOutput(const char* text, int length)
 {
 	if(ensureOutput())
 	{
-		m_output->AddToolOutput(text, length);
+		// Yes, more ascii-to-unicode inefficiency here...
+		std::string t(text, length);
+		Windows1252_Utf16 textconv(t.c_str());
+		m_output->AddToolOutput(textconv, -1);
 	}
 }
 
@@ -276,7 +282,7 @@ void App::SetOutputDefaultParser()
 	}
 }
 
-void App::SetOutputBasePath(const char* path)
+void App::SetOutputBasePath(const wchar_t* path)
 {
 	if(ensureOutput())
 	{
@@ -306,10 +312,11 @@ void App::loadInitScript()
 {
 	extensions::IOptions* opts = m_app->GetOptionsManager();
 	
-	const TCHAR* szpnpath = opts->GetPNPath();
+	const wchar_t* szpnpath = opts->GetPNPath();
 
-	TCHAR szpath[MAX_PATH+1];
-	_tcscpy(szpath, szpnpath);
+	Utf16_Windows1252 pathconv(szpnpath);
+	char szpath[MAX_PATH];
+	strcpy(szpath, pathconv);
 	
 	m_app->ReleaseString(szpnpath);
 

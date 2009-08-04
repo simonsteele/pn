@@ -1,9 +1,21 @@
+/**
+ * @file mod_pn.cpp
+ * @brief PN module for PyPN, most extiface items exposed here
+ * @author Simon Steele
+ * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
+ *
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #include "stdafx.h"
 #include "sinks.h"
 #include "app.h"
 
 using namespace extensions;
 using namespace boost::python;
+
+namespace 
+{
 
 void RegisterScript(const char* scriptname, const char* group, const char* name)
 {
@@ -15,11 +27,10 @@ boost::shared_ptr<IDocument> CurrentDoc()
 	return g_app->GetPN()->GetCurrentDocument();
 }
 
-std::string GetPNPath()
+std::wstring GetPNPath()
 {
-	std::string str;
-	const TCHAR* szstr = g_app->GetPN()->GetOptionsManager()->GetPNPath();
-	str = szstr;
+	const wchar_t* szstr = g_app->GetPN()->GetOptionsManager()->GetPNPath();
+	std::wstring str(szstr);
 	g_app->GetPN()->ReleaseString(szstr);
 	return str;
 }
@@ -44,7 +55,7 @@ void SetOutputDefaultParser()
 	g_app->SetOutputDefaultParser();
 }
 
-void SetOutputBasePath(const char* path)
+void SetOutputBasePath(const wchar_t* path)
 {
 	g_app->SetOutputBasePath(path);
 }
@@ -60,12 +71,12 @@ int PNMessageBox(const char* text, const char* title, int type)
 	return ::MessageBox(hw, text, title, type);
 }
 
-std::string PNInputBox(const char* title, const char* caption)
+std::wstring PNInputBox(const wchar_t* title, const wchar_t* caption)
 {
-	char* result = g_app->GetPN()->InputBox(title, caption);
+	wchar_t* result = g_app->GetPN()->InputBox(title, caption);
 	if(result == NULL)
-		return "";
-	std::string r(result);
+		return L"";
+	std::wstring r(result);
 	g_app->GetPN()->ReleaseString(result);
 	return r;
 }
@@ -81,7 +92,7 @@ extensions::ISearchOptions* PNGetUserSearchOptions()
 	return g_app->GetPN()->GetUserSearchOptions();
 }
 
-IDocumentPtr PNOpenDocument(const char* filepath, const char* scheme)
+IDocumentPtr PNOpenDocument(const wchar_t* filepath, const char* scheme)
 {
 	return g_app->GetPN()->OpenDocument(filepath, scheme);
 }
@@ -96,6 +107,55 @@ void PNEvalDocument(IDocumentPtr doc)
 	return g_app->RunDocScript(doc);
 }
 
+/**
+ * wrap GetFileName to return wstring which BP has a converter for.
+ */
+std::wstring GetDocumentFileName(IDocumentPtr& doc)
+{
+	return std::wstring(doc->GetFileName());
+}
+
+/**
+ * wrap GetTitle to return wstring which BP has a converter for.
+ */
+std::wstring GetDocumentTitle(IDocumentPtr& doc)
+{
+	return std::wstring(doc->GetTitle());
+}
+
+/**
+ * wrap GetFindText to return wstring which BP has a converter for.
+ */
+std::wstring GetSearchOptionsFindText(ISearchOptions* so)
+{
+	return so->GetFindText();
+}
+
+/**
+ * wrap GetReplaceText to return wstring which BP has a converter for.
+ */
+std::wstring GetSearchOptionsReplaceText(ISearchOptions* so)
+{
+	return so->GetReplaceText();
+}
+
+/**
+ * wrap GetFileExts to return wstring which BP has a converter for.
+ */
+std::wstring GetSearchOptionsFileExts(ISearchOptions* so)
+{
+	return so->GetFileExts();
+}
+
+/**
+ * wrap GetSearchPath to return wstring which BP has a converter for.
+ */
+std::wstring GetSearchOptionsSearchPath(ISearchOptions* so)
+{
+	return so->GetSearchPath();
+}
+
+} // namespace
 
 #define CONSTANT(x) scope().attr(#x) = x
 
@@ -162,8 +222,8 @@ BOOST_PYTHON_MODULE(pn)
 	LRESULT (IDocument::*pSendMessage2)(UINT msg, WPARAM wParam, const char* strParam) = &IDocument::SendEditorMessage;
 
 	class_<IDocument, /*boost::shared_ptr<IDocument>,*/ boost::noncopyable >("IDocument", no_init)
-		.add_property("Title", &IDocument::GetTitle, "Display name of the document")
-		.add_property("FileName", &IDocument::GetFileName, "Full filename of the document")
+		.add_property("Title", &GetDocumentTitle, "Display name of the document")
+		.add_property("FileName", &GetDocumentFileName, "Full filename of the document")
 		.add_property("CurrentScheme", &IDocument::GetCurrentScheme, "Name of the current scheme")
 		.add_property("Modified", &IDocument::GetModified, "Indicates whether the document has been modified")
 		.add_property("CanSave", &IDocument::GetCanSave, "Indicates whether the document can be saved (i.e. it has a filename)")
@@ -184,17 +244,17 @@ BOOST_PYTHON_MODULE(pn)
     ;
 
 	class_<ISearchOptions, boost::noncopyable>("ISearchOptions", no_init)
-		.add_property("FindText", &ISearchOptions::GetFindText, &ISearchOptions::SetFindText)
+		.add_property("FindText", &GetSearchOptionsFindText, &ISearchOptions::SetFindText)
 		.add_property("MatchWholeWord", &ISearchOptions::GetMatchWholeWord, &ISearchOptions::SetMatchWholeWord)
 		.add_property("MatchCase", &ISearchOptions::GetMatchCase, &ISearchOptions::SetMatchCase)
 		.add_property("UseRegExp", &ISearchOptions::GetUseRegExp, &ISearchOptions::SetUseRegExp)
 		.add_property("SearchBackwards", &ISearchOptions::GetSearchBackwards, &ISearchOptions::SetSearchBackwards)
 		.add_property("LoopOK", &ISearchOptions::GetLoopOK, &ISearchOptions::SetLoopOK)
 		.add_property("UseSlashes", &ISearchOptions::GetUseSlashes, &ISearchOptions::SetUseSlashes)
-		.add_property("ReplaceText", &ISearchOptions::GetReplaceText, &ISearchOptions::SetReplaceText)
+		.add_property("ReplaceText", &GetSearchOptionsReplaceText, &ISearchOptions::SetReplaceText)
 		.add_property("ReplaceInSelection", &ISearchOptions::GetReplaceInSelection, &ISearchOptions::SetReplaceInSelection)
-		.add_property("FileExts", &ISearchOptions::GetFileExts, &ISearchOptions::SetFileExts)
-		.add_property("SearchPath", &ISearchOptions::GetSearchPath, &ISearchOptions::SetSearchPath)
+		.add_property("FileExts", &GetSearchOptionsFileExts, &ISearchOptions::SetFileExts)
+		.add_property("SearchPath", &GetSearchOptionsSearchPath, &ISearchOptions::SetSearchPath)
 		.add_property("Recurse", &ISearchOptions::GetRecurse, &ISearchOptions::SetRecurse)
 		.add_property("IncludeHidden", &ISearchOptions::GetIncludeHidden, &ISearchOptions::SetIncludeHidden)
 		.add_property("Found", &ISearchOptions::GetFound)

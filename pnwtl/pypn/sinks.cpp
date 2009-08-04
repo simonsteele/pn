@@ -2,9 +2,9 @@
  * @file sinks.cpp
  * @brief Defines miscellaneous sinks used to register for events
  * @author Simon Steele
- * @note Copyright (c) 2006-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #include "stdafx.h"
@@ -61,7 +61,7 @@ void DocSink::OnAfterLoad()
 	}
 }
 
-void DocSink::OnBeforeSave(const char* filename)
+void DocSink::OnBeforeSave(const wchar_t* filename)
 {
 	try
 	{

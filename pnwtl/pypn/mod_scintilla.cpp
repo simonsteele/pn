@@ -2,7 +2,7 @@
  * @file mod_scintilla.cpp
  * @brief boost::python scintilla module
  * @author Simon Steele
- * @note Copyright (c) 2006-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.

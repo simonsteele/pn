@@ -48,7 +48,7 @@ public:
 	void ClearOutput();
 	void SetOutputRegEx(const char* regex);
 	void SetOutputDefaultParser();
-	void SetOutputBasePath(const char* path);
+	void SetOutputBasePath(const wchar_t* path);
 
 private:
 	bool ensureOutput();

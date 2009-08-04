@@ -47,7 +47,7 @@ public:
 public:
 	virtual void AddToolOutput(LPCTSTR output, int nLength = -1);
 	virtual void SetToolBasePath(LPCTSTR path);
-	virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL);
+	virtual void SetToolParser(bool bBuiltIn, const char* customExpression = NULL);
 	virtual void ClearOutput();
 	virtual void ShowOutput();
 	virtual void HideOutput();

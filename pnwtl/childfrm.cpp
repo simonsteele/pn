@@ -1374,7 +1374,7 @@ public:
 	{
 	}
 
-	void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL)
+	void SetToolParser(bool bBuiltIn, const char* customExpression = NULL)
 	{
 	}
 

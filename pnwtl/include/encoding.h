@@ -315,10 +315,11 @@ protected:
 	bool bValid;
 };
 
-class Utf8_Utf16
+template <int ICodePage>
+class Mbs_Utf16
 {
 public:
-	explicit Utf8_Utf16(const char* str)
+	explicit Mbs_Utf16(const char* str)
 	{
 		if (str == NULL)
 		{
@@ -330,12 +331,12 @@ public:
 		// UTF-16 should be less chars than UTF-8:
 		store.resize(lenstr+1);
 
-		int length = MultiByteToWideChar(CP_UTF8, 0, str, lenstr, &store[0], lenstr+1);
+		int length = MultiByteToWideChar(ICodePage, 0, str, lenstr, &store[0], lenstr+1);
 		if (length == 0)
 		{
-			length = MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
+			length = MultiByteToWideChar(ICodePage, 0, str, -1, NULL, 0);
 			store.resize(length);
-			length = MultiByteToWideChar(CP_UTF8, 0, str, -1, &store[0], length);
+			length = MultiByteToWideChar(ICodePage, 0, str, -1, &store[0], length);
 		}
 
 		if (length != 0)
@@ -354,6 +355,9 @@ private:
 	std::wstring store;
 	bool m_valid;
 };
+
+typedef Mbs_Utf16<CP_ACP> Windows1252_Utf16;
+typedef Mbs_Utf16<CP_UTF8> Utf8_Utf16;
 
 /**
  * Convert UTF-16 to UTF-8
@@ -424,11 +428,13 @@ private:
 	typedef Utf8_Utf16 Utf8_Tcs;
 	typedef TcsIdentity Xml_Tcs;
 	typedef Utf16_Windows1252 Tcs_Windows1252;
+	typedef Utf16_Windows1252 Xml_Windows1252;
 #else
 	typedef Windows1252_Utf8 Tcs_Utf8;
 	typedef Utf8_Windows1252 Utf8_Tcs;
 	typedef Utf8_Windows1252 Xml_Tcs;
 	typedef TcsIdentity Tcs_Windows1252;
+	typedef Utf8_Windows1252 Xml_Windows1252;
 #endif
 
 #endif // #ifndef encoding_h__included

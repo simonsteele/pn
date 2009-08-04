@@ -134,16 +134,16 @@ public:
 	virtual void FindInFiles(ISearchOptions* options) = 0;
 
 	/// Get some input from the user
-	virtual char* InputBox(const char* title, const char* caption) = 0;
+	virtual wchar_t* InputBox(const wchar_t* title, const wchar_t* caption) = 0;
 
 	// Create a new document
 	virtual IDocumentPtr NewDocument(const char* scheme) = 0;
 
 	/// Open a document
-	virtual IDocumentPtr OpenDocument(LPCTSTR filepath, const char* scheme) = 0;
+	virtual IDocumentPtr OpenDocument(const wchar_t* filepath, const char* scheme) = 0;
 
 	/// Utility function to safely free strings given to you by PN
-	virtual void ReleaseString(LPCTSTR str) = 0;
+	virtual void ReleaseString(const wchar_t* str) = 0;
 
 	/// Add a tag source (e.g. ctagsnavigator)
 	virtual void AddTagSource(ITagSource* tagSource) = 0;
@@ -393,11 +393,11 @@ public:
 	virtual ~ITextOutput(){}
 
 	/// Add some text to the window, @param nLength to use a fixed length or -1 to calculate, @param output The text to output
-	virtual void AddToolOutput(LPCTSTR output, int nLength = -1) = 0;
+	virtual void AddToolOutput(const wchar_t* output, int nLength = -1) = 0;
 	/// Set the base directory for messages being placed in the output window (for error matching)
-	virtual void SetToolBasePath(LPCTSTR path) = 0;
+	virtual void SetToolBasePath(const wchar_t* path) = 0;
 	/// Set the error parser for the window, optionally specifying a regular expression
-	virtual void SetToolParser(bool bBuiltIn, LPCTSTR customExpression = NULL) = 0;
+	virtual void SetToolParser(bool bBuiltIn, const char* customExpression = NULL) = 0;
 	/// Clear the output window
 	virtual void ClearOutput() = 0;
 	/// Show the output window

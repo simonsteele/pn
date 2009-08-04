@@ -797,10 +797,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\OptionsPageGeneral.h"
-				>
-			</File>
-			<File
 				RelativePath=".\OptionsRegistry.h"
 				>
 			</File>
@@ -1714,6 +1710,10 @@
 				</File>
 				<File
 					RelativePath=".\OptionsPageGeneral.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageGeneral.h"
 					>
 				</File>
 				<File

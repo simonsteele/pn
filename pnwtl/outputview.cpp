@@ -448,13 +448,12 @@ void COutputView::SetToolBasePath(LPCTSTR path)
 	m_basepath = path;
 }
 
-void COutputView::SetToolParser(bool bBuiltIn, LPCTSTR customExpression)
+void COutputView::SetToolParser(bool bBuiltIn, const char* customExpression)
 {
 	if(!bBuiltIn && customExpression != NULL)
 	{
 		m_bCustom = true;
-		CT2CA expr(customExpression);
-		SetRE(expr, false);
+		SetRE(customExpression, false);
 	}
 	else
 	{

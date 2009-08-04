@@ -82,7 +82,7 @@ public:
 	tstring	Folder;
 	tstring	Params;
 	WORD	Shortcut;
-	tstring CustomParsePattern;
+	std::string CustomParsePattern;
 	int		CommandID;
 	int		Index;
 
