@@ -86,7 +86,6 @@ CChildFrame::~CChildFrame()
 
 	if(m_pOutputView)
 		delete m_pOutputView;
-
 	if(m_pUIData)
 		delete [] m_pUIData;
 }
@@ -489,6 +488,7 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	UISetChecked(ID_TOOLS_LECONVERT, true);
 
 	m_view.ShowLineNumbers(OPTIONS->GetCached(Options::OLineNumbers) != 0);
+	updateViewKeyBindings();
 
 	ExtensionItemList& items = g_Context.ExtApp->GetExtensionMenuItems();
 	if (items.size())
@@ -624,6 +624,21 @@ LRESULT CChildFrame::OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 	return TRUE;
 }
 
+
+void CChildFrame::updateViewKeyBindings()
+{
+	m_view.SPerform(SCI_CLEARALLCMDKEYS, 0, 0);
+	Commands::KeyMap* map = m_pCmdDispatch->GetCurrentScintillaMap();
+	const KeyToCommand* key = map->GetMappings();
+
+	for(size_t j = map->GetCount() - 1; j >= 0; j--)
+	{	
+		m_view.SPerform(SCI_ASSIGNCMDKEY, CodeToScintilla(&key[j]), key[j].msg);
+		if (j == 0)
+			break;
+	}
+}
+
 LRESULT CChildFrame::OnOptionsUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	Scheme* pS = m_view.GetCurrentScheme();
@@ -634,6 +649,9 @@ LRESULT CChildFrame::OnOptionsUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 		m_view.SetScheme(pS);
 
 	m_view.ShowLineNumbers(OPTIONS->GetCached(Options::OLineNumbers) != 0);
+
+	// update scintilla shortcuts
+	updateViewKeyBindings();
 
 	UpdateMenu();
 

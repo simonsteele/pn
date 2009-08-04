@@ -2,9 +2,9 @@
  * @file optionspagekeyboard.cpp
  * @brief Options Dialog Keyboard Page for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #include "stdafx.h"
@@ -17,6 +17,7 @@ COptionsPageKeyboard::COptionsPageKeyboard(CommandDispatch* dispatcher)
 {
 	m_pDispatch = dispatcher;
 	m_pKeyMap = new Commands::KeyMap(*dispatcher->GetCurrentKeyMap());
+	m_pScintillaMap = new Commands::KeyMap(*dispatcher->GetCurrentScintillaMap());
 	m_bDirty = false;
 	m_pCurrent = NULL;
 }
@@ -28,8 +29,10 @@ COptionsPageKeyboard::~COptionsPageKeyboard()
 
 void COptionsPageKeyboard::OnOK()
 {
-	if(m_bDirty)
+	if(m_bDirty) {
 		m_pDispatch->SetCurrentKeyMap(m_pKeyMap);
+		m_pDispatch->SetCurrentScintillaMap(m_pScintillaMap);
+	}
 
 	if(!m_bCreated)
 		return;
@@ -70,6 +73,7 @@ LRESULT COptionsPageKeyboard::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 	CSMenu menu(::LoadMenu(_Module.m_hInst, MAKEINTRESOURCE(IDR_MDICHILD)));
 	addItems(CSMenuHandle(menu), "", 0);
 	addExtensions();
+	addScintilla();
 
 	m_shortcutlist.Attach(GetDlgItem(IDC_KB_ASSIGNEDLIST));
 	m_hotkey.SubclassWindow(GetDlgItem(IDC_KB_HOTKEY));
@@ -106,6 +110,10 @@ LRESULT COptionsPageKeyboard::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 		cmd.msg = 0;
 		m_pKeyMap->AddExtended(cmd);
 	}
+	else if (currentIsScintilla())
+	{
+		m_pScintillaMap->AssignCmdKey(keycode, modifiers, m_pCurrent->command);
+	}
 	else
 	{
 		m_pKeyMap->AssignCmdKey(keycode, modifiers, m_pCurrent->command);
@@ -134,6 +142,13 @@ LRESULT COptionsPageKeyboard::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/
 			if(currentIsExtended())
 			{
 				m_pKeyMap->RemoveExtended( data & 0x00ff, (data & 0xff00) >> 8 );
+			}
+			else if(currentIsScintilla())
+			{
+				m_pScintillaMap->RemoveCmdKey(
+					m_pScintillaMap->GetMappings()[data].key,
+					m_pScintillaMap->GetMappings()[data].modifiers,
+					m_pScintillaMap->GetMappings()[data].msg);
 			}
 			else
 			{
@@ -166,6 +181,10 @@ LRESULT COptionsPageKeyboard::OnHotKeyChanged(WORD /*wNotifyCode*/, WORD /*wID*/
 	tstring command_name;
 
 	int command = m_pKeyMap->Find(keycode, real_modifiers);
+	
+	if(command == 0)
+		command = m_pScintillaMap->Find(keycode, real_modifiers);
+
 	if(command != 0)
 	{
 		// We found a command with this key combination assigned, so now we have a command
@@ -395,6 +414,7 @@ void COptionsPageKeyboard::updateSelection()
 		switch(cd->type)
 		{
 		case cdtCommand:
+		case cdtScintilla:
 			showCommandSelection(cd);
 			break;
 		case cdtExtended:
@@ -414,6 +434,24 @@ void COptionsPageKeyboard::showCommandSelection(CommandDetails* cd)
 {
 	size_t noof_mappings = m_pKeyMap->GetCount();
 	const KeyToCommand* mappings = m_pKeyMap->GetMappings();
+
+	for(size_t ixMap(0); ixMap < noof_mappings; ++ixMap)
+	{
+		if(mappings[ixMap].msg == cd->command)
+		{
+			int hkmods(0);
+			if( mappings[ixMap].modifiers & FALT ) hkmods |= HOTKEYF_ALT;
+			if( mappings[ixMap].modifiers & FCONTROL ) hkmods |= HOTKEYF_CONTROL;
+			if( mappings[ixMap].modifiers & FSHIFT ) hkmods |= HOTKEYF_SHIFT;
+			tstring sc = m_pDispatch->GetShortcutText(mappings[ixMap].key, hkmods);
+			int ixLI = m_shortcutlist.AddString(sc.c_str());
+			m_shortcutlist.SetItemData(ixLI, ixMap);
+		}
+	}
+
+	//loop over scintilla as well
+	noof_mappings = m_pScintillaMap->GetCount();
+	mappings = m_pScintillaMap->GetMappings();
 
 	for(size_t ixMap(0); ixMap < noof_mappings; ++ixMap)
 	{
@@ -463,4 +501,116 @@ bool COptionsPageKeyboard::currentIsExtended()
 	if(m_pCurrent != NULL)
 		return m_pCurrent->type == cdtExtended;
 	return false;
+}
+
+bool COptionsPageKeyboard::currentIsScintilla()
+{
+	if(m_pCurrent != NULL)
+		return m_pCurrent->type == cdtScintilla;
+	return false;
+}
+
+struct ScintillaStingType{
+	char* name;
+	int msg;
+};
+
+struct ScintillaStingType ScintillaStrings[] = {
+	{"Line down extend", SCI_LINEDOWNEXTEND},
+	{"Line down", SCI_LINEDOWN},
+	{"Line scroll down", SCI_LINESCROLLDOWN},
+	{"Line down rect extend", SCI_LINEDOWNRECTEXTEND},
+	{"Line up", SCI_LINEUP},
+	{"Line up extend", SCI_LINEUPEXTEND},
+	{"Line scroll up", SCI_LINESCROLLUP},
+	{"Line up rect extend", SCI_LINEUPRECTEXTEND},
+	{"Para up", SCI_PARAUP},
+	{"Para up extend", SCI_PARAUPEXTEND},
+	{"Para down", SCI_PARADOWN},
+	{"Para down extend", SCI_PARADOWNEXTEND},
+	{"Char left", SCI_CHARLEFT},
+	{"Char left extend", SCI_CHARLEFTEXTEND},
+	{"Word left", SCI_WORDLEFT},
+	{"Word left extend", SCI_WORDLEFTEXTEND},
+	{"Char left rect extend", SCI_CHARLEFTRECTEXTEND},
+	{"Char right", SCI_CHARRIGHT},
+	{"Char right extend", SCI_CHARRIGHTEXTEND},
+	{"Word right", SCI_WORDRIGHT},
+	{"Word right extend", SCI_WORDRIGHTEXTEND},
+	{"Char Right Rect Extend", SCI_CHARRIGHTRECTEXTEND},
+	{"Word Part Left", SCI_WORDPARTLEFT},
+	{"Word Part Left Extend", SCI_WORDPARTLEFTEXTEND},
+	{"Word Part Right", SCI_WORDPARTRIGHT},
+	{"Word Part Right Extend", SCI_WORDPARTRIGHTEXTEND},
+	{"VC Home", SCI_VCHOME},
+	{"VC Home Extend", SCI_VCHOMEEXTEND},
+	{"Document Start", SCI_DOCUMENTSTART},
+	{"Document Start Extend", SCI_DOCUMENTSTARTEXTEND},
+	{"Home Display", SCI_HOMEDISPLAY},
+	{"VC Home Rect Extend", SCI_VCHOMERECTEXTEND},
+	{"Line End", SCI_LINEEND},
+	{"Line End Extend", SCI_LINEENDEXTEND},
+	{"Document End", SCI_DOCUMENTEND},
+	{"Document End Extend", SCI_DOCUMENTENDEXTEND},
+	{"Line End Display", SCI_LINEENDDISPLAY},
+	{"Line End Rect Extend", SCI_LINEENDRECTEXTEND},
+	{"Page Up", SCI_PAGEUP},
+	{"Page Up Extend", SCI_PAGEUPEXTEND},
+	{"Page Up Rect Extend", SCI_PAGEUPRECTEXTEND},
+	{"Page Down", SCI_PAGEDOWN},
+	{"Page Down Extend", SCI_PAGEDOWNEXTEND},
+	{"Page Down Rect Extend", SCI_PAGEDOWNRECTEXTEND},
+	{"Clear", SCI_CLEAR},
+//	{"Cut", SCI_CUT},
+	{"Del Word Right", SCI_DELWORDRIGHT},
+	{"Del Line Right", SCI_DELLINERIGHT},
+	{"Edit Toggle Overtype", SCI_EDITTOGGLEOVERTYPE},
+//	{"Paste", SCI_PASTE},
+//	{"Copy", SCI_COPY},
+	{"Cancel", SCI_CANCEL},
+	{"Delete Back", SCI_DELETEBACK},
+	{"Del Word Left", SCI_DELWORDLEFT},
+//	{"Undo", SCI_UNDO},
+	{"Del Line Left", SCI_DELLINELEFT},
+//	{"Redo", SCI_REDO},
+//	{"Select All", SCI_SELECTALL},
+	{"Tab", SCI_TAB},
+	{"Back Tab", SCI_BACKTAB},
+	{"Newline", SCI_NEWLINE},
+	{"Zoom In", SCI_ZOOMIN},
+	{"Zoom Out", SCI_ZOOMOUT},
+	{"Set Zoom", SCI_SETZOOM},
+//	{"Line Cut", SCI_LINECUT},
+//	{"Line Delete", SCI_LINEDELETE},
+//	{"Line Copy", SCI_LINECOPY},
+//	{"Line Transpose", SCI_LINETRANSPOSE},
+	{"Selection Duplicate", SCI_SELECTIONDUPLICATE},
+//	{"Lower Case", SCI_LOWERCASE},
+//	{"Upper Case", SCI_UPPERCASE},
+	{NULL, 0}
+};
+
+void COptionsPageKeyboard::addScintilla()
+{
+	int i = 0;
+	int count = m_list.GetItemCount();
+
+	while (ScintillaStrings[i].name)
+	{
+		std::string group("Scintilla");
+
+		CA2CT groupconv(group.c_str());
+		CA2CT nameconv(ScintillaStrings[i].name);
+
+		int ixItem = m_list.AddItem(count++, 0, groupconv);
+		m_list.SetItemText(ixItem, 1, nameconv);
+		
+		// Store info about the command...
+		CommandDetails* cd = new CommandDetails;
+		cd->type = cdtScintilla;
+		cd->command = ScintillaStrings[i].msg;
+		m_list.SetItemData(ixItem, reinterpret_cast<DWORD_PTR>(cd));
+		i++;
+	}
+
 }

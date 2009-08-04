@@ -2,9 +2,9 @@
  * @file optionspagekeyboard.h
  * @brief Options Dialog Keyboard Page for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #ifndef optionspagekeyboard_h__included
@@ -13,7 +13,7 @@
 #include "include/optionsdialog.h"
 #include "optionscontrols.h"
 
-typedef enum { cdtCommand, cdtExtended } CommandDetailsType;
+typedef enum { cdtCommand, cdtExtended, cdtScintilla } CommandDetailsType;
 
 typedef struct CommandDetails_tag
 {
@@ -70,6 +70,7 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 
 		int addItems(CSMenuHandle& menu, const char* group, int count = 0);
 		void addExtensions();
+		void addScintilla();
 		void clear();
 		void enableButtons();
 		tstring findCommandName(DWORD command);
@@ -79,9 +80,11 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 		void showExtendedSelection(ExtendedCommandDetails* command);
 		void cleanUp();
 		bool currentIsExtended();
+		bool currentIsScintilla();
 
 		CommandDetails* m_pCurrent;
 		Commands::KeyMap* m_pKeyMap;
+		Commands::KeyMap* m_pScintillaMap;
 		CommandDispatch*m_pDispatch;
 		CListViewCtrl	m_list;
 		CListBox		m_shortcutlist;

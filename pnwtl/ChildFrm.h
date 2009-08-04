@@ -357,6 +357,7 @@ private:
 	void resetSaveDir();
 	void setReadOnly(bool newValue, bool setAttributes);
 	void findNextWordUnderCursor(bool backwards);
+	void updateViewKeyBindings();
 
 	CommandDispatch*	m_pCmdDispatch;
 	DocumentPtr			m_spDocument;

@@ -16,6 +16,7 @@
 
 // Default Keyboard Mapping (predec)
 KeyToCommand DefaultKeyMap[];
+KeyToCommand DefaultScintillaMap[];
 
 // Available Command ID ranges:
 CmdIDRange IDRange1 = {20000, 21000, 0};
@@ -50,6 +51,47 @@ WORD AccelToHKMod(WORD modifiers)
 	if( modifiers & FSHIFT ) real_modifiers |= HOTKEYF_SHIFT;
 	
 	return real_modifiers;
+}
+
+static int keyTranslate(int keyIn) {
+	switch (keyIn) {
+		case VK_DOWN:		return SCK_DOWN;
+		case VK_UP:			return SCK_UP;
+		case VK_LEFT:		return SCK_LEFT;
+		case VK_RIGHT:		return SCK_RIGHT;
+		case VK_HOME:		return SCK_HOME;
+		case VK_END:		return SCK_END;
+		case VK_PRIOR:		return SCK_PRIOR;
+		case VK_NEXT:		return SCK_NEXT;
+		case VK_DELETE:		return SCK_DELETE;
+		case VK_INSERT:		return SCK_INSERT;
+		case VK_ESCAPE:		return SCK_ESCAPE;
+		case VK_BACK:		return SCK_BACK;
+		case VK_TAB:		return SCK_TAB;
+		case VK_RETURN:		return SCK_RETURN;
+		case VK_ADD:		return SCK_ADD;
+		case VK_SUBTRACT:	return SCK_SUBTRACT;
+		case VK_DIVIDE:		return SCK_DIVIDE;
+		case VK_OEM_2:		return '/';
+		case VK_OEM_3:		return '`';
+		case VK_OEM_4:		return '[';
+		case VK_OEM_5:		return '\\';
+		case VK_OEM_6:		return ']';
+		default:			return keyIn;
+	}
+};
+ 
+int CodeToScintilla(const KeyToCommand* cmd)
+{
+	int scintilla_modifiers(0);
+
+	int modifiers = cmd->modifiers;
+
+	if( modifiers & FALT ) scintilla_modifiers |= SCMOD_ALT;
+	if( modifiers & FCONTROL ) scintilla_modifiers |= SCMOD_CTRL;
+	if( modifiers & FSHIFT) scintilla_modifiers |= SCMOD_SHIFT;
+
+	return keyTranslate((int)cmd->key) + (scintilla_modifiers << 16);
 }
 
 namespace Commands
@@ -262,14 +304,18 @@ CommandDispatch::CommandDispatch()
 {
 	init();
 	m_keyMap = new Commands::KeyMap(DefaultKeyMap);
+	m_ScintillaKeyMap = new Commands::KeyMap(DefaultScintillaMap);
 }
 
 CommandDispatch::CommandDispatch(LPCTSTR kbfile)
 {
 	init();
 	m_keyMap = NULL;
-	if(!Load(kbfile))
+	m_ScintillaKeyMap  = NULL;
+	if(!Load(kbfile)) {
 		m_keyMap = new Commands::KeyMap(DefaultKeyMap);
+		m_ScintillaKeyMap = new Commands::KeyMap(DefaultScintillaMap);
+	}
 }
 
 CommandDispatch::~CommandDispatch()
@@ -280,7 +326,9 @@ CommandDispatch::~CommandDispatch()
 	}
 
 	delete m_keyMap;
+	delete m_ScintillaKeyMap;
 	m_keyMap = NULL;
+	m_ScintillaKeyMap = NULL;
 }
 
 HACCEL CommandDispatch::GetAccelerators()
@@ -377,15 +425,16 @@ tstring CommandDispatch::GetShortcutText(int wCode, int wModifiers)
 
 tstring CommandDispatch::GetKeyName(UINT vk, bool extended)
 {
-	LONG lScan = MapVirtualKeyEx(vk, 0, GetKeyboardLayout(0)) << 16;
+	LONG lScan = MapVirtualKeyEx(vk, MAPVK_VK_TO_VSC, GetKeyboardLayout(0)) << 16;
 
 	// if it's an extended key, add the extended flag
 	if (extended)
 		lScan |= 0x01000000L;
 
 	tstring str;
-	GArray<TCHAR> tcbuf;
 	
+	GArray<TCHAR> tcbuf;
+
 	int nBufferLen = 64;
 	int nLen;
 	do
@@ -520,9 +569,44 @@ void CommandDispatch::SetCurrentKeyMap(const Commands::KeyMap* keyMap)
 	m_keyMap = new Commands::KeyMap(*keyMap);
 }
 
+void CommandDispatch::SetCurrentScintillaMap(const Commands::KeyMap* keyMap)
+{
+	delete m_ScintillaKeyMap;
+	m_ScintillaKeyMap = new Commands::KeyMap(*keyMap);
+}
+
+
 Commands::KeyMap* CommandDispatch::GetCurrentKeyMap() const
 {
 	return m_keyMap;
+}
+
+Commands::KeyMap* CommandDispatch::GetCurrentScintillaMap() const
+{
+	return m_ScintillaKeyMap;
+}
+
+static Commands::KeyMap* readKeyMap(int commands, FILE* kbfile)
+{
+	KeyToCommand* loadedcmds = new KeyToCommand[commands+1];
+	if(fread(loadedcmds, sizeof(KeyToCommand), commands, kbfile) != commands)
+	{
+		UNEXPECTED(_T("Failed to load the correct number of commands from the keyboard mappings file."));
+		delete loadedcmds;
+		return NULL;
+	}
+
+	// Set up the end marker
+	loadedcmds[commands].key = 0;
+	loadedcmds[commands].modifiers = 0;
+	loadedcmds[commands].msg = 0;
+
+	Commands::KeyMap* keyMap = new Commands::KeyMap(loadedcmds);
+	
+	// Don't need the loaded commands any more
+	delete loadedcmds;
+
+	return keyMap;
 }
 
 bool CommandDispatch::Load(LPCTSTR filename)
@@ -534,6 +618,7 @@ bool CommandDispatch::Load(LPCTSTR filename)
 	KeyboardFileHeader hdr = {0};
 	if(fread(&hdr, sizeof(KeyboardFileHeader), 1, kbfile) != 1 
 		|| memcmp(hdr.magic, "PNKEYS", 7) != 0
+		|| (hdr.version != KEYBOARD_FILE_VERSION)
 		|| hdr.commands < 1)
 	{
 		//The magic is bad...
@@ -542,12 +627,21 @@ bool CommandDispatch::Load(LPCTSTR filename)
 		return false;
 	}
 
-	KeyToCommand* loadedcmds = new KeyToCommand[hdr.commands+1];
-	if(fread(loadedcmds, sizeof(KeyToCommand), hdr.commands, kbfile) != hdr.commands)
+	if (m_keyMap)
+		delete m_keyMap;
+	m_keyMap = readKeyMap(hdr.commands, kbfile);
+	if (!m_keyMap)
 	{
-		UNEXPECTED(_T("Failed to load the correct number of commands from the keyboard mappings file."));
 		fclose(kbfile);
-		delete loadedcmds;
+		return false;
+	}
+
+	if (m_ScintillaKeyMap)
+		delete m_ScintillaKeyMap;
+	m_ScintillaKeyMap = readKeyMap(hdr.scintilla, kbfile);
+	if (!m_ScintillaKeyMap)
+	{
+		fclose(kbfile);
 		return false;
 	}
 
@@ -563,19 +657,6 @@ bool CommandDispatch::Load(LPCTSTR filename)
 	}
 
 	fclose(kbfile);
-	
-	// Set up the end marker
-	loadedcmds[hdr.commands].key = 0;
-	loadedcmds[hdr.commands].modifiers = 0;
-	loadedcmds[hdr.commands].msg = 0;
-
-	// Load up the key map
-	if(m_keyMap != NULL)
-		delete m_keyMap;
-	m_keyMap = new Commands::KeyMap(loadedcmds);
-	
-	// Don't need the loaded commands any more
-	delete loadedcmds;
 
 	// Add the extension commands
 	if(storedexts)
@@ -610,6 +691,7 @@ void CommandDispatch::Save(LPCTSTR filename) const
 	memcpy(hdr.magic, "PNKEYS", 7);
 	hdr.version = KEYBOARD_FILE_VERSION;
 	hdr.commands = m_keyMap->GetCount();
+	hdr.scintilla = m_ScintillaKeyMap->GetCount();
 	hdr.extensions = m_keyMap->GetExtendedCount();
 
 	fwrite(&hdr, sizeof(KeyboardFileHeader), 1, kbfile);
@@ -618,6 +700,11 @@ void CommandDispatch::Save(LPCTSTR filename) const
 
 	fwrite(mappings, sizeof(KeyToCommand), hdr.commands, kbfile);
 
+	mappings = m_ScintillaKeyMap->GetMappings();
+
+	fwrite(mappings, sizeof(KeyToCommand), hdr.scintilla, kbfile);
+
+	
 	//Write shortcuts for scripts etc.
 	const ExtensionCommands& extcmds = m_keyMap->GetExtendedMappings();
 	for(ExtensionCommands::const_iterator i = extcmds.begin();
@@ -749,7 +836,6 @@ KeyToCommand DefaultKeyMap[] = {
 	{K_ALT,			VK_F8,		ID_VIEW_WINDOWS_FINDRESULTS},
 	{K_ALT,			VK_F9,		ID_VIEW_WINDOWS_CTAGS},
 	{K_ALT,			VK_F10,		ID_VIEW_WINDOWS_SCRIPTS},
-	//{K_ALT,			'G',		ID_VIEW_WINDOWS_CTAGS}, - Alt G to go back to Jump To!
 
 	// View | Folding
 	{K_CTRLALT,		VK_SUBTRACT,ID_VIEW_COLLAPSEALLFOLDS},
@@ -759,4 +845,85 @@ KeyToCommand DefaultKeyMap[] = {
 	// Tools
 	{K_CTRLSHIFT,	'K',		ID_TOOLS_STOPTOOLS},
 	{0,				0,			0}
+};
+
+KeyToCommand DefaultScintillaMap[] = {
+    {K_SHIFT,       VK_DOWN, 	SCI_LINEDOWNEXTEND},
+    {0,	            VK_DOWN, 	SCI_LINEDOWN},
+    {K_CTRL,	    VK_DOWN, 	SCI_LINESCROLLDOWN},
+    {K_ALTSHIFT,    VK_DOWN,    SCI_LINEDOWNRECTEXTEND},
+    {0,       	    VK_UP, 		SCI_LINEUP},
+    {K_SHIFT,	    VK_UP, 		SCI_LINEUPEXTEND},
+    {K_CTRL,	    VK_UP, 		SCI_LINESCROLLUP},
+    {K_ALTSHIFT,	VK_UP, 		SCI_LINEUPRECTEXTEND},
+    {K_CTRL,	    VK_OEM_4/*'['*/,		SCI_PARAUP},
+	{K_CTRLSHIFT,	VK_OEM_4/*'['*/,		SCI_PARAUPEXTEND},
+    {K_CTRL,	    VK_OEM_6/*']'*/,		SCI_PARADOWN},
+    {K_CTRLSHIFT,	VK_OEM_6/*']'*/,		SCI_PARADOWNEXTEND},
+    {0,       	    VK_LEFT,	SCI_CHARLEFT},
+    {K_SHIFT,	    VK_LEFT,	SCI_CHARLEFTEXTEND},
+    {K_CTRL,	    VK_LEFT,	SCI_WORDLEFT},
+    {K_CTRLSHIFT,	VK_LEFT,	SCI_WORDLEFTEXTEND},
+    {K_ALTSHIFT,	VK_LEFT,	SCI_CHARLEFTRECTEXTEND},
+    {0,       	    VK_RIGHT,	SCI_CHARRIGHT},
+    {K_SHIFT,	    VK_RIGHT,	SCI_CHARRIGHTEXTEND},
+    {K_CTRL,	    VK_RIGHT,	SCI_WORDRIGHT},
+    {K_CTRLSHIFT,	VK_RIGHT,	SCI_WORDRIGHTEXTEND},
+    {K_ALTSHIFT,	VK_RIGHT,	SCI_CHARRIGHTRECTEXTEND},
+    {K_CTRL,	    VK_OEM_2/*'/'*/,	 	SCI_WORDPARTLEFT},
+    {K_CTRLSHIFT,	VK_OEM_2/*'/'*/,		SCI_WORDPARTLEFTEXTEND},
+    {K_CTRL,	    VK_OEM_5/*'\\'*/,		SCI_WORDPARTRIGHT},
+    {K_CTRLSHIFT,	VK_OEM_5/*'\\'*/,		SCI_WORDPARTRIGHTEXTEND},
+    {0,       	    VK_HOME,	SCI_VCHOME},
+    {K_SHIFT, 	    VK_HOME, 	SCI_VCHOMEEXTEND},
+    {K_CTRL, 	    VK_HOME, 	SCI_DOCUMENTSTART},
+    {K_CTRLSHIFT,   VK_HOME, 	SCI_DOCUMENTSTARTEXTEND},
+    {K_ALT, 	    VK_HOME, 	SCI_HOMEDISPLAY},
+    {K_ALTSHIFT,	VK_HOME,	SCI_VCHOMERECTEXTEND},
+    {0,       	    VK_END,	 	SCI_LINEEND},
+    {K_SHIFT, 	    VK_END,	 	SCI_LINEENDEXTEND},
+    {K_CTRL, 	    VK_END, 	SCI_DOCUMENTEND},
+    {K_CTRLSHIFT,   VK_END, 	SCI_DOCUMENTENDEXTEND},
+    {K_ALT, 	    VK_END, 	SCI_LINEENDDISPLAY},
+    {K_ALTSHIFT,	VK_END,		SCI_LINEENDRECTEXTEND},
+    {0,       	    VK_PRIOR,	SCI_PAGEUP},
+    {K_SHIFT, 	    VK_PRIOR,	SCI_PAGEUPEXTEND},
+    {K_ALTSHIFT,	VK_PRIOR,	SCI_PAGEUPRECTEXTEND},
+    {0,        	    VK_NEXT, 	SCI_PAGEDOWN},
+    {K_SHIFT, 	    VK_NEXT, 	SCI_PAGEDOWNEXTEND},
+    {K_ALTSHIFT,	VK_NEXT,	SCI_PAGEDOWNRECTEXTEND},
+    {0,       	    VK_DELETE, 	SCI_CLEAR},
+//  {K_SHIFT,	    VK_DELETE, 	SCI_CUT},
+    {K_CTRL,	    VK_DELETE, 	SCI_DELWORDRIGHT},
+    {K_CTRLSHIFT,   VK_DELETE,	SCI_DELLINERIGHT},
+    {0,       	    VK_INSERT, 	SCI_EDITTOGGLEOVERTYPE},
+//  {K_SHIFT,	    VK_INSERT, 	SCI_PASTE},
+//  {K_CTRL,	    VK_INSERT, 	SCI_COPY},
+    {0,       	    VK_ESCAPE,  SCI_CANCEL},
+    {0,        	    VK_BACK,	SCI_DELETEBACK},
+    {K_SHIFT, 	    VK_BACK,	SCI_DELETEBACK},
+    {K_CTRL, 	    VK_BACK,	SCI_DELWORDLEFT},
+//  {K_ALT,	        VK_BACK, 	SCI_UNDO},
+    {K_CTRLSHIFT,	VK_BACK,	SCI_DELLINELEFT},
+//    {K_CTRL,	    'Z', 		SCI_UNDO},
+//  {K_CTRL,	    'Y', 		SCI_REDO},
+//  {K_CTRL,	    'X', 		SCI_CUT},
+//  {K_CTRL,	    'C', 		SCI_COPY},
+//  {K_CTRL,	    'V', 		SCI_PASTE},
+//  {K_CTRL,	    'A', 		SCI_SELECTALL},
+    {0,       	    VK_TAB,		SCI_TAB},
+    {K_SHIFT,	    VK_TAB,		SCI_BACKTAB},
+    {0,       	    VK_RETURN, 	SCI_NEWLINE},
+    {K_SHIFT,	    VK_RETURN, 	SCI_NEWLINE},
+    {K_CTRL,	    VK_ADD, 	SCI_ZOOMIN},
+    {K_CTRL,	    VK_SUBTRACT,SCI_ZOOMOUT},
+    {K_CTRL,	    VK_DIVIDE,	SCI_SETZOOM},
+//	{K_CTRL,	    'L', 		SCI_LINECUT},
+//	{K_CTRLSHIFT,   'L', 		SCI_LINEDELETE},
+//  {K_CTRLSHIFT,   'T', 		SCI_LINECOPY},
+//  {K_CTRL,	    'T', 		SCI_LINETRANSPOSE},
+    {K_CTRL,	    'D', 		SCI_SELECTIONDUPLICATE},
+//  {K_CTRL,	    'U', 		SCI_LOWERCASE},
+//  {K_CTRLSHIFT,   'U', 		SCI_UPPERCASE},
+    {0,0,0},
 };

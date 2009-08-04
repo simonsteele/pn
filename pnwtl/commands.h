@@ -31,6 +31,8 @@ struct KeyToCommand
 	unsigned int msg;
 };
 
+int CodeToScintilla(const KeyToCommand* cmd);
+
 /**
  * extension command for storage in the keyboard file
  */
@@ -60,10 +62,11 @@ struct KeyboardFileHeader
 	unsigned char magic[7];
 	unsigned int version;
 	unsigned int commands;
+	unsigned int scintilla;
 	unsigned int extensions;
 };
 
-#define KEYBOARD_FILE_VERSION	1
+#define KEYBOARD_FILE_VERSION	2
 
 class CommandDispatch;
 
@@ -168,8 +171,10 @@ class CommandDispatch : public CommandEventHandler
 		bool LocalHandleCommand(int iID, int iCommand, CommandEventHandler* pHandler);
 
 		void SetCurrentKeyMap(const Commands::KeyMap* keyMap);
+		void SetCurrentScintillaMap(const Commands::KeyMap* keyMap);
 		Commands::KeyMap* GetCurrentKeyMap() const;
-
+		Commands::KeyMap* GetCurrentScintillaMap() const;
+		
 		bool Load(LPCTSTR filename);
 		void Save(LPCTSTR filename) const;
 
@@ -188,6 +193,7 @@ class CommandDispatch : public CommandEventHandler
 		CmdIDRange*	m_pRange;
 		
 		Commands::KeyMap* m_keyMap;
+		Commands::KeyMap* m_ScintillaKeyMap;
 		IDStack		m_freeIds;
 
 		MAP_HANDLERS m_Handlers;
