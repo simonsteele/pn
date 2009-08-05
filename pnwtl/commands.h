@@ -61,12 +61,22 @@ struct KeyboardFileHeader
 {
 	unsigned char magic[7];
 	unsigned int version;
-	unsigned int commands;
-	unsigned int scintilla;
-	unsigned int extensions;
 };
 
-#define KEYBOARD_FILE_VERSION	2
+struct KeyboardFileHeaderLengths
+{
+	unsigned int commands;
+	unsigned int extensions;
+	unsigned int scintilla;
+};
+
+#define KEYBOARD_FILE_V1				1
+#define KEYBOARD_FILE_V2				2
+#define KEYBOARD_FILE_HEADER_SIZE		sizeof(KeyboardFileHeader)
+#define KEYBOARD_FILE_V1_HEADER_SIZE	(2 * sizeof(unsigned int))
+#define KEYBOARD_FILE_V2_HEADER_SIZE	sizeof(KeyboardFileHeaderLengths)
+
+#define KEYBOARD_FILE_VERSION			2
 
 class CommandDispatch;
 

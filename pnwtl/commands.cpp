@@ -312,8 +312,14 @@ CommandDispatch::CommandDispatch(LPCTSTR kbfile)
 	init();
 	m_keyMap = NULL;
 	m_ScintillaKeyMap  = NULL;
-	if(!Load(kbfile)) {
+	
+	if (!Load(kbfile)) 
+	{
 		m_keyMap = new Commands::KeyMap(DefaultKeyMap);
+	}
+
+	if (m_ScintillaKeyMap == NULL)
+	{
 		m_ScintillaKeyMap = new Commands::KeyMap(DefaultScintillaMap);
 	}
 }
@@ -611,15 +617,15 @@ static Commands::KeyMap* readKeyMap(int commands, FILE* kbfile)
 
 bool CommandDispatch::Load(LPCTSTR filename)
 {
+	int res = 0;
 	FILE* kbfile = _tfopen(filename, _T("rb"));
 	if(!kbfile)
 		return false;
 
 	KeyboardFileHeader hdr = {0};
-	if(fread(&hdr, sizeof(KeyboardFileHeader), 1, kbfile) != 1 
-		|| memcmp(hdr.magic, "PNKEYS", 7) != 0
-		|| (hdr.version != KEYBOARD_FILE_VERSION)
-		|| hdr.commands < 1)
+	KeyboardFileHeaderLengths lengths = {0};
+	if(fread(&hdr, KEYBOARD_FILE_HEADER_SIZE, 1, kbfile) != 1 
+		|| memcmp(hdr.magic, "PNKEYS", 7) != 0)
 	{
 		//The magic is bad...
 		UNEXPECTED(_T("Keyboard mappings file seems to be corrupt."));
@@ -627,29 +633,58 @@ bool CommandDispatch::Load(LPCTSTR filename)
 		return false;
 	}
 
+	if (hdr.version == KEYBOARD_FILE_V1)
+	{
+		res = fread(&lengths, KEYBOARD_FILE_V1_HEADER_SIZE, 1, kbfile);
+	} 
+	else if (hdr.version == KEYBOARD_FILE_V2) 
+	{
+		res = fread(&lengths, KEYBOARD_FILE_V2_HEADER_SIZE, 1, kbfile);
+	} 
+	else 
+	{
+		UNEXPECTED(_T("Keyboard mappings file seems to be corrupt."));
+		fclose(kbfile);
+		return false;
+	}
+
+	if (res != 1 || lengths.commands < 1)
+	{
+		UNEXPECTED(_T("Keyboard mappings file seems to be corrupt."));
+		fclose(kbfile);
+		return false;
+	}
+
 	if (m_keyMap)
 		delete m_keyMap;
-	m_keyMap = readKeyMap(hdr.commands, kbfile);
+	
+	m_keyMap = readKeyMap(lengths.commands, kbfile);
+	
 	if (!m_keyMap)
 	{
 		fclose(kbfile);
 		return false;
 	}
 
-	if (m_ScintillaKeyMap)
-		delete m_ScintillaKeyMap;
-	m_ScintillaKeyMap = readKeyMap(hdr.scintilla, kbfile);
-	if (!m_ScintillaKeyMap)
-	{
-		fclose(kbfile);
-		return false;
+	if (hdr.version >= KEYBOARD_FILE_V2) // Scintilla enabled
+	{ 		
+		if (m_ScintillaKeyMap)
+			delete m_ScintillaKeyMap;
+		
+		m_ScintillaKeyMap = readKeyMap(lengths.scintilla, kbfile);
+		
+		if (!m_ScintillaKeyMap)
+		{
+			fclose(kbfile);
+			return false;
+		}
 	}
 
 	StoredExtensionCommand* storedexts(NULL);
-	if(hdr.extensions > 0)
+	if(lengths.extensions > 0)
 	{
-		storedexts = new StoredExtensionCommand[hdr.extensions];
-		if(fread(storedexts, sizeof(StoredExtensionCommand), hdr.extensions, kbfile) != hdr.extensions)
+		storedexts = new StoredExtensionCommand[lengths.extensions];
+		if(fread(storedexts, sizeof(StoredExtensionCommand), lengths.extensions, kbfile) != lengths.extensions)
 		{
 			UNEXPECTED(_T("Failed to load the correct number of extension commands from the keyboard mappings file."));
 			delete storedexts;
@@ -661,7 +696,7 @@ bool CommandDispatch::Load(LPCTSTR filename)
 	// Add the extension commands
 	if(storedexts)
 	{
-		for(size_t i = 0; i < hdr.extensions; ++i)
+		for(size_t i = 0; i < lengths.extensions; ++i)
 		{
 			ExtensionCommand cmd;
 			cmd.command = storedexts[i].command;
@@ -688,21 +723,23 @@ void CommandDispatch::Save(LPCTSTR filename) const
 	}
 
 	KeyboardFileHeader hdr = {0};
+	KeyboardFileHeaderLengths lengths = {0};
 	memcpy(hdr.magic, "PNKEYS", 7);
 	hdr.version = KEYBOARD_FILE_VERSION;
-	hdr.commands = m_keyMap->GetCount();
-	hdr.scintilla = m_ScintillaKeyMap->GetCount();
-	hdr.extensions = m_keyMap->GetExtendedCount();
+	lengths.commands = m_keyMap->GetCount();
+	lengths.scintilla = m_ScintillaKeyMap->GetCount();
+	lengths.extensions = m_keyMap->GetExtendedCount();
 
-	fwrite(&hdr, sizeof(KeyboardFileHeader), 1, kbfile);
+	fwrite(&hdr, KEYBOARD_FILE_HEADER_SIZE, 1, kbfile);
+	fwrite(&lengths, KEYBOARD_FILE_V2_HEADER_SIZE, 1, kbfile);
 
 	const KeyToCommand* mappings = m_keyMap->GetMappings();
 
-	fwrite(mappings, sizeof(KeyToCommand), hdr.commands, kbfile);
+	fwrite(mappings, sizeof(KeyToCommand), lengths.commands, kbfile);
 
 	mappings = m_ScintillaKeyMap->GetMappings();
 
-	fwrite(mappings, sizeof(KeyToCommand), hdr.scintilla, kbfile);
+	fwrite(mappings, sizeof(KeyToCommand), lengths.scintilla, kbfile);
 
 	
 	//Write shortcuts for scripts etc.
