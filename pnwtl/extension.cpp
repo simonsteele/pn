@@ -22,7 +22,7 @@ Extension::Extension(LPCTSTR filename, IPN* app) : Plugin(filename), m_bValid(fa
 				}
 				catch(...)
 				{
-					UNEXPECTED("Loading an extension for Programmer's Notepad has caused a problem, and the application will now close. Please try running in safe mode and disabling extensions to resolve this problem.");
+					UNEXPECTED(_T("Loading an extension for Programmer's Notepad has caused a problem, and the application will now close. Please try running in safe mode and disabling extensions to resolve this problem."));
 					throw;
 				}
 #endif

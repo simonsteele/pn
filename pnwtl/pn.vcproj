@@ -350,7 +350,7 @@
 				Optimization="3"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="TabbingFramework, DockingFramework, Scintilla\include"
-				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,STRICT,SCI_NAMESPACE"
+				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,STRICT,UNICODE,SCI_NAMESPACE"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
