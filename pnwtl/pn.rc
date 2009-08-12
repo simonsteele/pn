@@ -43,6 +43,32 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.K.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+3 TEXTINCLUDE 
+BEGIN
+    "#include ""res/pn.rc2""\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -306,178 +332,6 @@ BEGIN
     END
 END
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "res\\pn.ico"
-IDR_MDICHILD            ICON                    "res\\pnDoc.ico"
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_ABOUTBOX DIALOGEX 0, 0, 255, 166
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "About"
-FONT 8, "MS Shell Dlg 2", 0, 0, 0x0
-BEGIN
-    CONTROL         319,IDC_ABOUTIMAGE,"Static",SS_BITMAP | SS_CENTERIMAGE,7,7,64,154
-    DEFPUSHBUTTON   "OK",IDOK,198,147,50,14
-    LTEXT           "",IDC_VERSIONSTATIC,78,24,170,100
-    CONTROL         "",IDC_TOPSTATIC,"Static",SS_ETCHEDHORZ,7,7,65,1
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDVERT,7,7,1,155
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,8,160,65,1
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDVERT,71,7,1,155
-    LTEXT           "Programmer's Notepad 2",IDC_NAME,77,10,146,12
-END
-
-IDD_PNSAVE DIALOG  0, 0, 230, 14
-STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CLIPSIBLINGS | WS_SYSMENU
-FONT 8, "MS Shell Dlg 2"
-BEGIN
-    LTEXT           "File Format:",IDC_PNSAVE_SAVEASSTATIC,8,2,39,8
-    COMBOBOX        IDC_PNSAVE_TYPECOMBO,70,0,90,122,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-END
-
-IDD_PNOPEN DIALOGEX 0, 0, 230, 14
-STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CLIPSIBLINGS | WS_SYSMENU
-FONT 8, "MS Shell Dlg 2", 0, 0, 0x0
-BEGIN
-    LTEXT           "Encoding:",IDC_PNOPEN_ENCODINGSTATIC,8,2,32,8
-    COMBOBOX        IDC_PNOPEN_ENCODINGCOMBO,70,0,90,122,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
-BEGIN
-    IDD_ABOUTBOX, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 248
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 161
-    END
-
-    IDD_PNSAVE, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 61
-    END
-
-    IDD_PNOPEN, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 61
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Accelerator
-//
-
-IDR_MAINFRAME ACCELERATORS 
-BEGIN
-    VK_F2,          ID_BOOKMARKS_NEXT,      VIRTKEY, NOINVERT
-    "Q",            ID_BOOKMARKS_NUMBERED_JUMP, VIRTKEY, CONTROL, NOINVERT
-    "K",            ID_BOOKMARKS_NUMBERED_SET, VIRTKEY, CONTROL, NOINVERT
-    VK_F2,          ID_BOOKMARKS_TOGGLE,    VIRTKEY, CONTROL, NOINVERT
-    "C",            ID_EDIT_CLIPBOARDSWAP,  VIRTKEY, SHIFT, CONTROL, NOINVERT
-    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
-    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
-    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
-    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
-    "X",            ID_EDIT_CUT,            VIRTKEY, SHIFT, CONTROL, NOINVERT
-    "L",            ID_EDIT_CUTLINE,        VIRTKEY, CONTROL, NOINVERT
-    "L",            ID_EDIT_DELETELINE,     VIRTKEY, SHIFT, CONTROL, NOINVERT
-    "F",            ID_EDIT_FIND,           VIRTKEY, CONTROL, NOINVERT
-    "F",            ID_EDIT_FINDINFILES,    VIRTKEY, SHIFT, CONTROL, NOINVERT
-    VK_F3,          ID_EDIT_FINDNEXT,       VIRTKEY, NOINVERT
-    VK_F3,          ID_EDIT_FINDPREVIOUS,   VIRTKEY, SHIFT, NOINVERT
-    "G",            ID_EDIT_GOTO,           VIRTKEY, CONTROL, NOINVERT
-    VK_OEM_4,       ID_EDIT_GOTOBRACE,      VIRTKEY, CONTROL, NOINVERT
-    "H",            ID_EDIT_HEADERSWITCH,   VIRTKEY, SHIFT, CONTROL, NOINVERT
-    "G",            ID_VIEW_WINDOWS_CTAGS,  VIRTKEY, ALT, NOINVERT
-    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
-    "V",            ID_EDIT_PASTE,          VIRTKEY, SHIFT, CONTROL, NOINVERT
-    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
-    VK_OEM_2,       ID_EDIT_QUICKFIND,      VIRTKEY, CONTROL, NOINVERT
-    "H",            ID_EDIT_REPLACE,        VIRTKEY, CONTROL, NOINVERT
-    "R",            ID_EDIT_REPLACE,        VIRTKEY, CONTROL, NOINVERT
-    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
-    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
-    "W",            ID_FILE_CLOSE,          VIRTKEY, CONTROL, NOINVERT
-    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
-    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
-    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
-    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
-    "S",            ID_FILE_SAVEALL,        VIRTKEY, SHIFT, CONTROL, NOINVERT
-    VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
-    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
-    "K",            ID_TOOLS_STOPTOOLS,     VIRTKEY, SHIFT, CONTROL, NOINVERT
-    VK_SUBTRACT,    ID_VIEW_COLLAPSEALLFOLDS, VIRTKEY, CONTROL, ALT, NOINVERT
-    VK_ADD,         ID_VIEW_EXPANDALLFOLDS, VIRTKEY, CONTROL, ALT, NOINVERT
-    VK_RETURN,      ID_VIEW_FILEPROPERTIES, VIRTKEY, ALT, NOINVERT
-    VK_F8,          ID_VIEW_INDIVIDUALOUTPUT, VIRTKEY, SHIFT, NOINVERT
-    VK_F8,          ID_VIEW_OUTPUT,         VIRTKEY, NOINVERT
-    VK_MULTIPLY,    ID_VIEW_TOGGLEFOLD,     VIRTKEY, CONTROL, NOINVERT
-    "C",            ID_EDIT_COPYRTF,        VIRTKEY, CONTROL, ALT, NOINVERT
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-IDB_TBEDITOR24          BITMAP                  "res\\editor24.bmp"
-IDB_TBFIND24            BITMAP                  "res\\findbarbmps24.bmp"
-#endif    // English (U.S.) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// English (U.K.) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
-#ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
-#pragma code_page(1252)
-#endif //_WIN32
-
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
-
-3 TEXTINCLUDE 
-BEGIN
-    "#include ""res/pn.rc2""\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Menu
-//
-
 IDR_POPUP_REGEXP MENU 
 BEGIN
     POPUP "DUMMY"
@@ -726,6 +580,8 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\pn.ico"
+IDR_MDICHILD            ICON                    "res\\pnDoc.ico"
 IDI_INFOICON            ICON                    "res\\infoicon.ico"
 IDI_TEXTCLIPS           ICON                    "res\\textclips.ico"
 IDI_PROJECTS            ICON                    "res\\projects.ico"
@@ -749,6 +605,37 @@ IDI_READONLY            ICON                    "res\\readonly.ico"
 //
 // Dialog
 //
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 255, 166
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About"
+FONT 8, "MS Shell Dlg 2", 0, 0, 0x0
+BEGIN
+    CONTROL         319,IDC_ABOUTIMAGE,"Static",SS_BITMAP | SS_CENTERIMAGE,7,7,64,154
+    DEFPUSHBUTTON   "OK",IDOK,198,147,50,14
+    LTEXT           "",IDC_VERSIONSTATIC,78,24,170,100
+    CONTROL         "",IDC_TOPSTATIC,"Static",SS_ETCHEDHORZ,7,7,65,1
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDVERT,7,7,1,155
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,8,160,65,1
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDVERT,71,7,1,155
+    LTEXT           "Programmer's Notepad 2",IDC_NAME,77,10,146,12
+END
+
+IDD_PNSAVE DIALOG  0, 0, 230, 14
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CLIPSIBLINGS | WS_SYSMENU
+FONT 8, "MS Shell Dlg 2"
+BEGIN
+    LTEXT           "File Format:",IDC_PNSAVE_SAVEASSTATIC,8,2,39,8
+    COMBOBOX        IDC_PNSAVE_TYPECOMBO,70,0,90,122,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_PNOPEN DIALOGEX 0, 0, 230, 14
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CLIPSIBLINGS | WS_SYSMENU
+FONT 8, "MS Shell Dlg 2", 0, 0, 0x0
+BEGIN
+    LTEXT           "Encoding:",IDC_PNOPEN_ENCODINGSTATIC,8,2,32,8
+    COMBOBOX        IDC_PNOPEN_ENCODINGCOMBO,70,0,90,122,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
 
 IDD_INPUTBOX DIALOGEX 0, 0, 164, 55
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -1466,6 +1353,26 @@ END
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO 
 BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 248
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 161
+    END
+
+    IDD_PNSAVE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 61
+    END
+
+    IDD_PNOPEN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 61
+    END
+
     IDD_INPUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -1738,9 +1645,65 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS 
+BEGIN
+    VK_F2,          ID_BOOKMARKS_NEXT,      VIRTKEY, NOINVERT
+    "Q",            ID_BOOKMARKS_NUMBERED_JUMP, VIRTKEY, CONTROL, NOINVERT
+    "K",            ID_BOOKMARKS_NUMBERED_SET, VIRTKEY, CONTROL, NOINVERT
+    VK_F2,          ID_BOOKMARKS_TOGGLE,    VIRTKEY, CONTROL, NOINVERT
+    "C",            ID_EDIT_CLIPBOARDSWAP,  VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
+    "X",            ID_EDIT_CUT,            VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "L",            ID_EDIT_CUTLINE,        VIRTKEY, CONTROL, NOINVERT
+    "L",            ID_EDIT_DELETELINE,     VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "F",            ID_EDIT_FIND,           VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_EDIT_FINDINFILES,    VIRTKEY, SHIFT, CONTROL, NOINVERT
+    VK_F3,          ID_EDIT_FINDNEXT,       VIRTKEY, NOINVERT
+    VK_F3,          ID_EDIT_FINDPREVIOUS,   VIRTKEY, SHIFT, NOINVERT
+    "G",            ID_EDIT_GOTO,           VIRTKEY, CONTROL, NOINVERT
+    VK_OEM_4,       ID_EDIT_GOTOBRACE,      VIRTKEY, CONTROL, NOINVERT
+    "H",            ID_EDIT_HEADERSWITCH,   VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "G",            ID_VIEW_WINDOWS_CTAGS,  VIRTKEY, ALT, NOINVERT
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_EDIT_PASTE,          VIRTKEY, SHIFT, CONTROL, NOINVERT
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
+    VK_OEM_2,       ID_EDIT_QUICKFIND,      VIRTKEY, CONTROL, NOINVERT
+    "H",            ID_EDIT_REPLACE,        VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_EDIT_REPLACE,        VIRTKEY, CONTROL, NOINVERT
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
+    "W",            ID_FILE_CLOSE,          VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVEALL,        VIRTKEY, SHIFT, CONTROL, NOINVERT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
+    "K",            ID_TOOLS_STOPTOOLS,     VIRTKEY, SHIFT, CONTROL, NOINVERT
+    VK_SUBTRACT,    ID_VIEW_COLLAPSEALLFOLDS, VIRTKEY, CONTROL, ALT, NOINVERT
+    VK_ADD,         ID_VIEW_EXPANDALLFOLDS, VIRTKEY, CONTROL, ALT, NOINVERT
+    VK_RETURN,      ID_VIEW_FILEPROPERTIES, VIRTKEY, ALT, NOINVERT
+    VK_F8,          ID_VIEW_INDIVIDUALOUTPUT, VIRTKEY, SHIFT, NOINVERT
+    VK_F8,          ID_VIEW_OUTPUT,         VIRTKEY, NOINVERT
+    VK_MULTIPLY,    ID_VIEW_TOGGLEFOLD,     VIRTKEY, CONTROL, NOINVERT
+    "C",            ID_EDIT_COPYRTF,        VIRTKEY, CONTROL, ALT, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // Bitmap
 //
 
+IDB_TBEDITOR24          BITMAP                  "res\\editor24.bmp"
+IDB_TBFIND24            BITMAP                  "res\\findbarbmps24.bmp"
 IDB_EDITOR              BITMAP                  "res\\editor.bmp"
 IDB_TRUETYPE_FONTTYPE   BITMAP                  "res\\font_tru.bmp"
 IDR_TBR_PROJECTS        BITMAP                  "res\\tbrProjects.bmp"

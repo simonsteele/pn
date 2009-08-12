@@ -61,7 +61,7 @@ void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message)
 	msg += verstring;
 	msg += _T(".\n");
 	msg += message;
-	msg += _T("\n\nPlease create a bug on sourceforge, e-mail this information to the discussion list, or post it to the forums.");
+	msg += _T("\n\nPlease post this to the forums, or file a bug.");
 	::MessageBox(NULL, msg.c_str(), LS(IDR_MAINFRAME), MB_OK | MB_ICONWARNING);
 }
 
@@ -86,6 +86,12 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	// Create the App object thus initialising options and extension interfaces, amongst other bits
 	App* theApp = new App();
 	g_Context.ExtApp = theApp;
+
+	HINSTANCE pseudoloc = ::LoadLibrary(L"pnlangps.dll");
+	if (pseudoloc)
+	{
+		_Module.SetResourceInstance(pseudoloc);
+	}
 
 	// See if we allow multiple instances
 	bool bAllowMulti = OPTIONS->Get(PNSK_INTERFACE, _T("AllowMultiInstance"), false);
