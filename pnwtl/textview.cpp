@@ -1009,10 +1009,23 @@ LRESULT CTextView::OnCommentBlock(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		SetTargetStart(PositionFromLine(selStartLine));
 		SetTargetEnd(PositionFromLine(selStartLine));
 
+		std::string lineend;
+		switch (GetEOLMode())
+		{
+			case SC_EOL_CRLF:
+				lineend = "\r\n";
+				break;
+			case SC_EOL_CR:
+				lineend = "\r";
+				break;
+			default:
+				lineend = "\n";
+		};
+
 		std::string indent = MakeIndentText( GetLineIndentation( leftmostline ), GetUseTabs(), GetTabWidth() );
 		std::string startline(indent);
 		startline += comments.CommentBlockStart;
-        startline += "\r\n";
+        startline += lineend;
 
 		ReplaceTarget(startline.size(), startline.c_str());
 
@@ -1025,10 +1038,10 @@ LRESULT CTextView::OnCommentBlock(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			ReplaceTarget(strlen(comments.CommentBlockLine), comments.CommentBlockLine);
 		}
 		
-		std::string endline("\r\n");
+		std::string endline(lineend);
 		endline += indent;
 		endline += comments.CommentBlockEnd;
-		endline += "\r\n";
+		endline += lineend;
 
 		GetSel(cr);
 		SetTargetStart(cr.cpMax);

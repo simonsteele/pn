@@ -358,7 +358,7 @@ void Scheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 		if((hdr.Flags & fldEnabled) && OPTIONS->GetCached(Options::OFoldingEnabled))
 		{
 			///@todo obviously these details need to come from settings somewhere...
-			sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold"), (LPARAM)_T("1"));
+			sc.SPerform(SCI_SETPROPERTY, (WPARAM)"fold", (LPARAM)"1");
 			sc.SPerform(SCI_SETMARGINTYPEN, 2, SC_MARGIN_SYMBOL);
 			sc.SPerform(SCI_SETMARGINMASKN, 2, SC_MASK_FOLDERS);
 			sc.SPerform(SCI_SETMARGINSENSITIVEN, 2, true);
@@ -366,16 +366,16 @@ void Scheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 			sc.SPerform(SCI_SETFOLDFLAGS, 16, 0);
 			sc.SetFoldingMargins(efsVSNet);
 
-			sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.compact"), (LPARAM)((hdr.Flags & fldCompact) ? _T("1") : _T("0")));
+			sc.SPerform(SCI_SETPROPERTY, (WPARAM)"fold.compact", (LPARAM)((hdr.Flags & fldCompact) ? "1" : "0"));
 			
 			if(hdr.Flags & fldComments)
-				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.comment"), (LPARAM)_T("1"));
+				sc.SPerform(SCI_SETPROPERTY, (WPARAM)"fold.comment", (LPARAM)"1");
 
 			if(hdr.Flags & fldPreProc)
-				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.preprocessor"), (LPARAM)_T("1"));
+				sc.SPerform(SCI_SETPROPERTY, (WPARAM)"fold.preprocessor", (LPARAM)"1");
 
 			if(hdr.Flags & fldElse) 
-				sc.SPerform(SCI_SETPROPERTY, (WPARAM)_T("fold.at.else"), (LPARAM)_T("1"));
+				sc.SPerform(SCI_SETPROPERTY, (WPARAM)"fold.at.else", (LPARAM)"1");
 		}
 
 		if(hdr.Flags & schOverrideTabs)
@@ -434,11 +434,11 @@ void Scheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 				{
 					cfile.Read(&Prp, sizeof(PropRec));
 					buf.resize(Prp.NameLength + 1);
-					cfile.Read(&buf[0], Prp.NameLength*sizeof(char));
+					cfile.Read(&buf[0], Prp.NameLength * sizeof(char));
 					buf[Prp.NameLength] = '\0';
 
 					std::vector<char> buf2(Prp.ValueLength + 1);
-					cfile.Read(&buf2[0], Prp.ValueLength*sizeof(char));
+					cfile.Read(&buf2[0], Prp.ValueLength * sizeof(char));
 					buf2[Prp.ValueLength] = '\0';
 					sc.SPerform(SCI_SETPROPERTY, (long)&buf[0], (long)&buf2[0]);
 				}
