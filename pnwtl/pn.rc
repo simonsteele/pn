@@ -514,6 +514,7 @@ BEGIN
         MENUITEM "User Name (%u)",              ID_HEADERFOOTERFIELDS_USERNAME
         MENUITEM SEPARATOR
         MENUITEM "Current Page (%p)",           ID_HEADERFOOTERFIELDS_CURRENTPAGE
+        MENUITEM "Page Count (%P)",             ID_HEADERFOOTERFIELDS_PAGECOUNT
     END
 END
 

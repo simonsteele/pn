@@ -160,6 +160,9 @@ class CPageSetupDialog : public CPageSetupDialogImpl<CPageSetupDialog>
 				case ID_HEADERFOOTERFIELDS_CURRENTPAGE:
 					str = _T("%p");
 					break;
+				case ID_HEADERFOOTERFIELDS_PAGECOUNT:
+					str = _T("%P");
+					break;
 
 				default:
 					return false;
