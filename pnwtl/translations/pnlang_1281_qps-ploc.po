@@ -1,0 +1,2589 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1900-01-01 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# msgid/msgstr fields for Accelerator keys
+# Format is: "ID:xxxxxx:VACS+X" where:
+#    ID:xxxxx = the menu ID corresponding to the accelerator
+#    V = Virtual key (or blank if not used) - nearly always set!
+#    A = Alt key     (or blank if not used)
+#    C = Ctrl key    (or blank if not used)
+#    S = Shift key   (or blank if not used)
+#    X = upper case character
+# e.g. "V CS+Q" == Ctrl + Shift + 'Q'
+# ONLY Accelerator Keys with corresponding alphanumeric characters can be
+# updated i.e. function keys (F2), special keys (Delete, HoMe) etc. will not.
+# ONLY change the msgstr field. Do NOT change any other.
+# If you do not want to change an Accelerator Key, copy msgid to msgstr
+#. Resource IDs: (11)
+#, c-format
+msgid "%d character(s) selected."
+msgstr "%d ƈħȧřȧƈŧḗř(ş) şḗŀḗƈŧḗḓ."
+
+#. Resource IDs: (9)
+#, c-format
+msgid "%d occurrence(s) replaced."
+msgstr "%d ǿƈƈŭřřḗƞƈḗ(ş) řḗƥŀȧƈḗḓ."
+
+#. Resource IDs: (22)
+#, c-format
+msgid "%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectName),Name of Project,Project 1,$(ProjectPath),Path of Project,c:\\source\\pn2\\,$(ProjectGroupName),Name of the Project Group,Project Group 1,$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\,$(PNPath),PN Install Path,c:\\program files\\pn,$(ProjectProp:x),Project Property,value of 'x',$(FileProp:x),File Property,value of 'x',%(ENV),ENV Environment Variable,ENV value"
+msgstr ""
+"%f,Ƒīŀḗ Ƞȧḿḗ,ḿȧīƞƒřḿ.ƈƥƥ,%n,Ƒīŀḗ Ƞȧḿḗ (ƞǿ ḗẋŧ),ḿȧīƞƒřḿ,%ŀ,Ƈŭřřḗƞŧ Ŀīƞḗ "
+"Ƞŭḿƀḗř,232,%?,Ȧşķ ƒǿř ƥȧřȧḿḗŧḗřş,(?),%p,Ƈŭřřḗƞŧ Ƥřǿĵḗƈŧ Ƒīŀḗ,ƥƞ.ƥƞƥřǿĵ,%"
+"d,Ƥȧŧħ ǿƒ Ƒīŀḗ,ƈ:\\şǿŭřƈḗ\\ƥƞ\\ŧḗşŧ\\,%c,Ƈǿŀŭḿƞ,12,%%,Ƥḗřƈḗƞŧ Şẏḿƀǿŀ,%,%"
+"ẇ,Ƈŭřřḗƞŧ ẇǿřḓ,ƈħḗḗşḗ,%g,Ƥřǿĵḗƈŧ Ɠřǿŭƥ Ƒīŀḗ,ƥƞ2.ƥƥɠ,$(ƤřǿĵḗƈŧȠȧḿḗ),Ƞȧḿḗ ǿƒ "
+"Ƥřǿĵḗƈŧ,Ƥřǿĵḗƈŧ 1,$(ƤřǿĵḗƈŧƤȧŧħ),Ƥȧŧħ ǿƒ "
+"Ƥřǿĵḗƈŧ,ƈ:\\şǿŭřƈḗ\\ƥƞ2\\,$(ƤřǿĵḗƈŧƓřǿŭƥȠȧḿḗ),Ƞȧḿḗ ǿƒ ŧħḗ Ƥřǿĵḗƈŧ Ɠřǿŭƥ,Ƥřǿĵḗƈŧ "
+"Ɠřǿŭƥ 1,$(ƤřǿĵḗƈŧƓřǿŭƥƤȧŧħ),Ƥȧŧħ ǿƒ Ƥřǿĵḗƈŧ "
+"Ɠřǿŭƥ,ƈ:\\şǿŭřƈḗ\\ƥƞ2\\,$(ƤȠƤȧŧħ),ƤȠ Īƞşŧȧŀŀ Ƥȧŧħ,ƈ:\\ƥřǿɠřȧḿ "
+"ƒīŀḗş\\ƥƞ,$(ƤřǿĵḗƈŧƤřǿƥ:ẋ),Ƥřǿĵḗƈŧ Ƥřǿƥḗřŧẏ,ṽȧŀŭḗ ǿƒ 'ẋ',$(ƑīŀḗƤřǿƥ:ẋ),Ƒīŀḗ "
+"Ƥřǿƥḗřŧẏ,ṽȧŀŭḗ ǿƒ 'ẋ',%(ḖȠṼ),ḖȠṼ Ḗƞṽīřǿƞḿḗƞŧ Ṽȧřīȧƀŀḗ,ḖȠṼ ṽȧŀŭḗ"
+
+#. Resource IDs: (9)
+#, c-format
+msgid "%f: File Name\n%l: Line Number\n%c: Column"
+msgstr ""
+"%f: Ƒīŀḗ Ƞȧḿḗ\n"
+"%ŀ: Ŀīƞḗ Ƞŭḿƀḗř\n"
+"%c: Ƈǿŀŭḿƞ"
+
+#. Resource IDs: (1061)
+msgid "%f: Filename, %l: Line Number, %c: Column"
+msgstr "%f: Ƒīŀḗƞȧḿḗ, %ŀ: Ŀīƞḗ Ƞŭḿƀḗř, %c: Ƈǿŀŭḿƞ"
+
+#. Resource IDs: (9)
+#, c-format
+msgid "%s Properties"
+msgstr "%s Ƥřǿƥḗřŧīḗş"
+
+#. Resource IDs: (11)
+#, c-format
+msgid "%s could not be opened.\n\nThis could be because the file no longer exists, a disk is absent or due to a broken network connection."
+msgstr ""
+"%s ƈǿŭŀḓ ƞǿŧ ƀḗ ǿƥḗƞḗḓ.\n"
+"\n"
+"Ŧħīş ƈǿŭŀḓ ƀḗ ƀḗƈȧŭşḗ ŧħḗ ƒīŀḗ ƞǿ ŀǿƞɠḗř ḗẋīşŧş, ȧ ḓīşķ īş ȧƀşḗƞŧ ǿř ḓŭḗ ŧǿ "
+"ȧ ƀřǿķḗƞ ƞḗŧẇǿřķ ƈǿƞƞḗƈŧīǿƞ."
+
+#. Resource IDs: (12)
+#, c-format
+msgid "%s could not be saved because access was denied.\nThis could be due to the file being marked read-only, or the disk being write-protected.\nDo you want to save in another location?"
+msgstr ""
+"%s ƈǿŭŀḓ ƞǿŧ ƀḗ şȧṽḗḓ ƀḗƈȧŭşḗ ȧƈƈḗşş ẇȧş ḓḗƞīḗḓ.\n"
+"Ŧħīş ƈǿŭŀḓ ƀḗ ḓŭḗ ŧǿ ŧħḗ ƒīŀḗ ƀḗīƞɠ ḿȧřķḗḓ řḗȧḓ-ǿƞŀẏ, ǿř ŧħḗ ḓīşķ ƀḗīƞɠ "
+"ẇřīŧḗ-ƥřǿŧḗƈŧḗḓ.\n"
+"Ḓǿ ẏǿŭ ẇȧƞŧ ŧǿ şȧṽḗ īƞ ȧƞǿŧħḗř ŀǿƈȧŧīǿƞ?"
+
+#. Resource IDs: (13)
+#, c-format
+msgid "%s could not be saved because another program or user is using the same file.\nDo you want to save in another location?"
+msgstr ""
+"%s ƈǿŭŀḓ ƞǿŧ ƀḗ şȧṽḗḓ ƀḗƈȧŭşḗ ȧƞǿŧħḗř ƥřǿɠřȧḿ ǿř ŭşḗř īş ŭşīƞɠ ŧħḗ şȧḿḗ "
+"ƒīŀḗ.\n"
+"Ḓǿ ẏǿŭ ẇȧƞŧ ŧǿ şȧṽḗ īƞ ȧƞǿŧħḗř ŀǿƈȧŧīǿƞ?"
+
+#. Resource IDs: (10)
+#, c-format
+msgid "%s\n\nThe above file has been modified outside of Programmer's Notepad, do you want to refresh and lose changes?"
+msgstr ""
+"%s\n"
+"\n"
+"Ŧħḗ ȧƀǿṽḗ ƒīŀḗ ħȧş ƀḗḗƞ ḿǿḓīƒīḗḓ ǿŭŧşīḓḗ ǿƒ Ƥřǿɠřȧḿḿḗř'ş Ƞǿŧḗƥȧḓ, ḓǿ ẏǿŭ "
+"ẇȧƞŧ ŧǿ řḗƒřḗşħ ȧƞḓ ŀǿşḗ ƈħȧƞɠḗş?"
+
+#. Resource IDs: (57664)
+msgid "&About Programmer's Notepad..."
+msgstr "&Ȧƀǿŭŧ Ƥřǿɠřȧḿḿḗř'ş Ƞǿŧḗƥȧḓ..."
+
+#. Resource IDs: (1010, 1011, 1034, 1078, 1128, 1148)
+msgid "&Add"
+msgstr "&Ȧḓḓ"
+
+#. Resource IDs: (288)
+msgid "&Add Files"
+msgstr "&Ȧḓḓ Ƒīŀḗş"
+
+#. Resource IDs: (288)
+msgid "&Add Files..."
+msgstr "&Ȧḓḓ Ƒīŀḗş..."
+
+#. Resource IDs: (32963)
+msgid "&Add New File..."
+msgstr "&Ȧḓḓ Ƞḗẇ Ƒīŀḗ..."
+
+#. Resource IDs: (293, 32918)
+msgid "&Add New Folder"
+msgstr "&Ȧḓḓ Ƞḗẇ Ƒǿŀḓḗř"
+
+#. Resource IDs: (32788)
+msgid "&Add Tools..."
+msgstr "&Ȧḓḓ Ŧǿǿŀş..."
+
+#. Resource IDs: (1053)
+msgid "&Allow multiple instances of Programmer's Notepad to start"
+msgstr "&Ȧŀŀǿẇ ḿŭŀŧīƥŀḗ īƞşŧȧƞƈḗş ǿƒ Ƥřǿɠřȧḿḿḗř'ş Ƞǿŧḗƥȧḓ ŧǿ şŧȧřŧ"
+
+#. Resource IDs: (32970)
+msgid "&Autocomplete"
+msgstr "&Ȧŭŧǿƈǿḿƥŀḗŧḗ"
+
+#. Resource IDs: (32967)
+msgid "&Block"
+msgstr "&Ɓŀǿƈķ"
+
+#. Resource IDs: (1021)
+msgid "&Bold"
+msgstr "&Ɓǿŀḓ"
+
+#. Resource IDs: (1105)
+msgid "&Bottom:"
+msgstr "&Ɓǿŧŧǿḿ:"
+
+#. Resource IDs: (57650)
+msgid "&Cascade"
+msgstr "&Ƈȧşƈȧḓḗ"
+
+#. Resource IDs: (10)
+msgid "&Change Scheme"
+msgstr "&Ƈħȧƞɠḗ Şƈħḗḿḗ"
+
+#. Resource IDs: (1033)
+msgid "&Clear"
+msgstr "&Ƈŀḗȧř"
+
+#. Resource IDs: (33109)
+msgid "&Clear Bookmarks"
+msgstr "&Ƈŀḗȧř Ɓǿǿķḿȧřķş"
+
+#. Resource IDs: (57602)
+msgid "&Close"
+msgstr "&Ƈŀǿşḗ"
+
+#. Resource IDs: (65535)
+msgid "&Code Page:"
+msgstr "&Ƈǿḓḗ Ƥȧɠḗ:"
+
+#. Resource IDs: (32962)
+msgid "&Collapse all"
+msgstr "&Ƈǿŀŀȧƥşḗ ȧŀŀ"
+
+#. Resource IDs: (33121)
+msgid "&Compress Whitespace"
+msgstr "&Ƈǿḿƥřḗşş Ẇħīŧḗşƥȧƈḗ"
+
+#. Resource IDs: (32943)
+msgid "&Contents"
+msgstr "&Ƈǿƞŧḗƞŧş"
+
+#. Resource IDs: (32780)
+msgid "&Convert Automatically"
+msgstr "&Ƈǿƞṽḗřŧ Ȧŭŧǿḿȧŧīƈȧŀŀẏ"
+
+#. Resource IDs: (57634)
+msgid "&Copy"
+msgstr "&Ƈǿƥẏ"
+
+#. Resource IDs: (32914)
+msgid "&Copy Line"
+msgstr "&Ƈǿƥẏ Ŀīƞḗ"
+
+#. Resource IDs: (33138)
+msgid "&Customize Toolbar"
+msgstr "&Ƈŭşŧǿḿīzḗ Ŧǿǿŀƀȧř"
+
+#. Resource IDs: (258, 32862)
+msgid "&Delete"
+msgstr "&Ḓḗŀḗŧḗ"
+
+#. Resource IDs: (298)
+msgid "&Delete Project"
+msgstr "&Ḓḗŀḗŧḗ Ƥřǿĵḗƈŧ"
+
+#. Resource IDs: (65535)
+msgid "&Display"
+msgstr "&Ḓīşƥŀȧẏ"
+
+#. Resource IDs: (12)
+msgid "&Don't Remove"
+msgstr "&Ḓǿƞ'ŧ Řḗḿǿṽḗ"
+
+#. Resource IDs: (12)
+msgid "&Download Now"
+msgstr "&Ḓǿẇƞŀǿȧḓ Ƞǿẇ"
+
+#. Resource IDs: (33119)
+msgid "&Duplicate"
+msgstr "&Ḓŭƥŀīƈȧŧḗ"
+
+#. Resource IDs: (32908)
+msgid "&Duplicate Line"
+msgstr "&Ḓŭƥŀīƈȧŧḗ Ŀīƞḗ"
+
+#. Resource IDs: (1010, 1011, 1033, 1079, 1129, 1149, 65535)
+msgid "&Edit"
+msgstr "&Ḗḓīŧ"
+
+#. Resource IDs: (32963)
+msgid "&Expand all"
+msgstr "&Ḗẋƥȧƞḓ ȧŀŀ"
+
+#. Resource IDs: (33110)
+msgid "&Explorer"
+msgstr "&Ḗẋƥŀǿřḗř"
+
+#. Resource IDs: (65535)
+msgid "&Export"
+msgstr "&Ḗẋƥǿřŧ"
+
+#. Resource IDs: (65535)
+msgid "&File"
+msgstr "&Ƒīŀḗ"
+
+#. Resource IDs: (57636)
+msgid "&Find"
+msgstr "&Ƒīƞḓ"
+
+#. Resource IDs: (103)
+msgid "&Find Next"
+msgstr "&Ƒīƞḓ Ƞḗẋŧ"
+
+#. Resource IDs: (32704)
+msgid "&Find Results"
+msgstr "&Ƒīƞḓ Řḗşŭŀŧş"
+
+#. Resource IDs: (65535)
+msgid "&Folding"
+msgstr "&Ƒǿŀḓīƞɠ"
+
+#. Resource IDs: (65535)
+msgid "&Font:"
+msgstr "&Ƒǿƞŧ:"
+
+#. Resource IDs: (33)
+msgid "&Footer:"
+msgstr "&Ƒǿǿŧḗř:"
+
+#. Resource IDs: (33001)
+msgid "&Forums"
+msgstr "&Ƒǿřŭḿş"
+
+#. Resource IDs: (282)
+msgid "&Google"
+msgstr "&Ɠǿǿɠŀḗ"
+
+#. Resource IDs: (32774)
+msgid "&Goto"
+msgstr "&Ɠǿŧǿ"
+
+#. Resource IDs: (32)
+msgid "&Header:"
+msgstr "&Ħḗȧḓḗř:"
+
+#. Resource IDs: (9, 1006, 65535)
+msgid "&Help"
+msgstr "&Ħḗŀƥ"
+
+#. Resource IDs: (260)
+msgid "&Hide"
+msgstr "&Ħīḓḗ"
+
+#. Resource IDs: (1115)
+msgid "&Hide when \"Find Next\" is clicked."
+msgstr "&Ħīḓḗ ẇħḗƞ \"Ƒīƞḓ Ƞḗẋŧ\" īş ƈŀīƈķḗḓ."
+
+#. Resource IDs: (32863)
+msgid "&Indent"
+msgstr "&Īƞḓḗƞŧ"
+
+#. Resource IDs: (65535)
+msgid "&Indentation"
+msgstr "&Īƞḓḗƞŧȧŧīǿƞ"
+
+#. Resource IDs: (264)
+msgid "&Individual Output"
+msgstr "&Īƞḓīṽīḓŭȧŀ Ǿŭŧƥŭŧ"
+
+#. Resource IDs: (1022)
+msgid "&Italic"
+msgstr "&Īŧȧŀīƈ"
+
+#. Resource IDs: (33127)
+msgid "&Join Lines"
+msgstr "&Ĵǿīƞ Ŀīƞḗş"
+
+#. Resource IDs: (32905)
+msgid "&Jump To..."
+msgstr "&Ĵŭḿƥ Ŧǿ..."
+
+#. Resource IDs: (1102)
+msgid "&Left:"
+msgstr "&Ŀḗƒŧ:"
+
+#. Resource IDs: (32968, 65535)
+msgid "&Line"
+msgstr "&Ŀīƞḗ"
+
+#. Resource IDs: (65535)
+msgid "&Line Endings"
+msgstr "&Ŀīƞḗ Ḗƞḓīƞɠş"
+
+#. Resource IDs: (65535)
+msgid "&Line Endings:"
+msgstr "&Ŀīƞḗ Ḗƞḓīƞɠş:"
+
+#. Resource IDs: (1045)
+msgid "&Line Number (1 - %d):"
+msgstr "&Ŀīƞḗ Ƞŭḿƀḗř (1 - %d):"
+
+#. Resource IDs: (1038)
+msgid "&Load"
+msgstr "&Ŀǿȧḓ"
+
+#. Resource IDs: (32912)
+msgid "&Lowercase"
+msgstr "&Ŀǿẇḗřƈȧşḗ"
+
+#. Resource IDs: (32779)
+msgid "&Macintosh (CR)"
+msgstr "&Ḿȧƈīƞŧǿşħ (ƇŘ)"
+
+#. Resource IDs: (21199)
+msgid "&Mark All"
+msgstr "&Ḿȧřķ Ȧŀŀ"
+
+#. Resource IDs: (32791)
+msgid "&Mark WhiteSpace"
+msgstr "&Ḿȧřķ ẆħīŧḗŞƥȧƈḗ"
+
+#. Resource IDs: (1056)
+msgid "&Maximise new document windows"
+msgstr "&Ḿȧẋīḿīşḗ ƞḗẇ ḓǿƈŭḿḗƞŧ ẇīƞḓǿẇş"
+
+#. Resource IDs: (65535)
+msgid "&Method:"
+msgstr "&Ḿḗŧħǿḓ:"
+
+#. Resource IDs: (10)
+msgid "&New"
+msgstr "&Ƞḗẇ"
+
+#. Resource IDs: (2045)
+msgid "&No"
+msgstr "&Ƞǿ"
+
+#. Resource IDs: (2045)
+msgid "&OK"
+msgstr "&ǾĶ"
+
+#. Resource IDs: (32989)
+msgid "&Online Help"
+msgstr "&Ǿƞŀīƞḗ Ħḗŀƥ"
+
+#. Resource IDs: (287)
+msgid "&Open"
+msgstr "&Ǿƥḗƞ"
+
+#. Resource IDs: (299)
+msgid "&Open All Files"
+msgstr "&Ǿƥḗƞ Ȧŀŀ Ƒīŀḗş"
+
+#. Resource IDs: (1114)
+msgid "&Open dialog should start in the directory of the current file."
+msgstr "&Ǿƥḗƞ ḓīȧŀǿɠ şħǿŭŀḓ şŧȧřŧ īƞ ŧħḗ ḓīřḗƈŧǿřẏ ǿƒ ŧħḗ ƈŭřřḗƞŧ ƒīŀḗ."
+
+#. Resource IDs: (32981)
+msgid "&Open in Default Program"
+msgstr "&Ǿƥḗƞ īƞ Ḓḗƒȧŭŀŧ Ƥřǿɠřȧḿ"
+
+#. Resource IDs: (57601)
+msgid "&Open..."
+msgstr "&Ǿƥḗƞ..."
+
+#. Resource IDs: (245)
+msgid "&Options"
+msgstr "&Ǿƥŧīǿƞş"
+
+#. Resource IDs: (32700)
+msgid "&Output"
+msgstr "&Ǿŭŧƥŭŧ"
+
+#. Resource IDs: (57637)
+msgid "&Paste"
+msgstr "&Ƥȧşŧḗ"
+
+#. Resource IDs: (32999)
+msgid "&Previous Bookmark"
+msgstr "&Ƥřḗṽīǿŭş Ɓǿǿķḿȧřķ"
+
+#. Resource IDs: (57607)
+msgid "&Print..."
+msgstr "&Ƥřīƞŧ..."
+
+#. Resource IDs: (1026)
+msgid "&Printer..."
+msgstr "&Ƥřīƞŧḗř..."
+
+#. Resource IDs: (32701)
+msgid "&Project"
+msgstr "&Ƥřǿĵḗƈŧ"
+
+#. Resource IDs: (32701)
+msgid "&Projects"
+msgstr "&Ƥřǿĵḗƈŧş"
+
+#. Resource IDs: (32924)
+msgid "&Properties"
+msgstr "&Ƥřǿƥḗřŧīḗş"
+
+#. Resource IDs: (32902)
+msgid "&Properties\tAlt+Enter"
+msgstr "&Ƥřǿƥḗřŧīḗş\tȦŀŧ+Ḗƞŧḗř"
+
+#. Resource IDs: (32953)
+msgid "&Quick Find"
+msgstr "&Ɋŭīƈķ Ƒīƞḓ"
+
+#. Resource IDs: (10)
+msgid "&Recent Files"
+msgstr "&Řḗƈḗƞŧ Ƒīŀḗş"
+
+#. Resource IDs: (33129)
+msgid "&Record Script"
+msgstr "&Řḗƈǿřḓ Şƈřīƥŧ"
+
+#. Resource IDs: (57644)
+msgid "&Redo"
+msgstr "&Řḗḓǿ"
+
+#. Resource IDs: (33117)
+msgid "&Refresh"
+msgstr "&Řḗƒřḗşħ"
+
+#. Resource IDs: (1128)
+msgid "&Remember open files and projects between sessions"
+msgstr "&Řḗḿḗḿƀḗř ǿƥḗƞ ƒīŀḗş ȧƞḓ ƥřǿĵḗƈŧş ƀḗŧẇḗḗƞ şḗşşīǿƞş"
+
+#. Resource IDs: (12)
+msgid "&Remind Me Later"
+msgstr "&Řḗḿīƞḓ Ḿḗ Ŀȧŧḗř"
+
+#. Resource IDs: (12, 286, 1010, 1012, 1033, 1080, 1130, 1150)
+msgid "&Remove"
+msgstr "&Řḗḿǿṽḗ"
+
+#. Resource IDs: (286)
+msgid "&Remove Project"
+msgstr "&Řḗḿǿṽḗ Ƥřǿĵḗƈŧ"
+
+#. Resource IDs: (4)
+msgid "&Replace"
+msgstr "&Řḗƥŀȧƈḗ"
+
+#. Resource IDs: (1033, 1036)
+msgid "&Reset"
+msgstr "&Řḗşḗŧ"
+
+#. Resource IDs: (2045)
+msgid "&Retry"
+msgstr "&Řḗŧřẏ"
+
+#. Resource IDs: (1103)
+msgid "&Right:"
+msgstr "&Řīɠħŧ:"
+
+#. Resource IDs: (1040, 57603)
+msgid "&Save"
+msgstr "&Şȧṽḗ"
+
+#. Resource IDs: (12)
+msgid "&Save and Remove"
+msgstr "&Şȧṽḗ ȧƞḓ Řḗḿǿṽḗ"
+
+#. Resource IDs: (1017)
+msgid "&Scheme:"
+msgstr "&Şƈħḗḿḗ:"
+
+#. Resource IDs: (32705)
+msgid "&Scripts"
+msgstr "&Şƈřīƥŧş"
+
+#. Resource IDs: (65535)
+msgid "&Search"
+msgstr "&Şḗȧřƈħ"
+
+#. Resource IDs: (273)
+msgid "&Select All"
+msgstr "&Şḗŀḗƈŧ Ȧŀŀ"
+
+#. Resource IDs: (32897)
+msgid "&Set Active Project"
+msgstr "&Şḗŧ Ȧƈŧīṽḗ Ƥřǿĵḗƈŧ"
+
+#. Resource IDs: (1051)
+msgid "&Show Line Numbers"
+msgstr "&Şħǿẇ Ŀīƞḗ Ƞŭḿƀḗřş"
+
+#. Resource IDs: (1062)
+msgid "&Show full file path in document windows"
+msgstr "&Şħǿẇ ƒŭŀŀ ƒīŀḗ ƥȧŧħ īƞ ḓǿƈŭḿḗƞŧ ẇīƞḓǿẇş"
+
+#. Resource IDs: (65535)
+msgid "&Size:"
+msgstr "&Şīzḗ:"
+
+#. Resource IDs: (1034)
+msgid "&Sort"
+msgstr "&Şǿřŧ"
+
+#. Resource IDs: (32916)
+msgid "&Sort Folders"
+msgstr "&Şǿřŧ Ƒǿŀḓḗřş"
+
+#. Resource IDs: (1090)
+msgid "&Source:"
+msgstr "&Şǿŭřƈḗ:"
+
+#. Resource IDs: (59393)
+msgid "&Status Bar"
+msgstr "&Şŧȧŧŭş Ɓȧř"
+
+#. Resource IDs: (32789)
+msgid "&Stop Tools"
+msgstr "&Şŧǿƥ Ŧǿǿŀş"
+
+#. Resource IDs: (32966)
+msgid "&Stream"
+msgstr "&Şŧřḗȧḿ"
+
+#. Resource IDs: (33120)
+msgid "&Strip Trailing Blanks"
+msgstr "&Şŧřīƥ Ŧřȧīŀīƞɠ Ɓŀȧƞķş"
+
+#. Resource IDs: (65535)
+msgid "&Tab Width:"
+msgstr "&Ŧȧƀ Ẇīḓŧħ:"
+
+#. Resource IDs: (32702)
+msgid "&Text Clips"
+msgstr "&Ŧḗẋŧ Ƈŀīƥş"
+
+#. Resource IDs: (65535)
+msgid "&Text Colour:"
+msgstr "&Ŧḗẋŧ Ƈǿŀǿŭř:"
+
+#. Resource IDs: (59392)
+msgid "&Toolbar"
+msgstr "&Ŧǿǿŀƀȧř"
+
+#. Resource IDs: (65535)
+msgid "&Tools"
+msgstr "&Ŧǿǿŀş"
+
+#. Resource IDs: (1104)
+msgid "&Top:"
+msgstr "&Ŧǿƥ:"
+
+#. Resource IDs: (32969)
+msgid "&Uncomment"
+msgstr "&Ŭƞƈǿḿḿḗƞŧ"
+
+#. Resource IDs: (1023)
+msgid "&Underline"
+msgstr "&Ŭƞḓḗřŀīƞḗ"
+
+#. Resource IDs: (57643)
+msgid "&Undo"
+msgstr "&Ŭƞḓǿ"
+
+#. Resource IDs: (32864)
+msgid "&Unindent"
+msgstr "&Ŭƞīƞḓḗƞŧ"
+
+#. Resource IDs: (32778)
+msgid "&Unix (LF)"
+msgstr "&Ŭƞīẋ (ĿƑ)"
+
+#. Resource IDs: (32911)
+msgid "&Uppercase"
+msgstr "&Ŭƥƥḗřƈȧşḗ"
+
+#. Resource IDs: (1049)
+msgid "&Use the tab character for indentation"
+msgstr "&Ŭşḗ ŧħḗ ŧȧƀ ƈħȧřȧƈŧḗř ƒǿř īƞḓḗƞŧȧŧīǿƞ"
+
+#. Resource IDs: (65535)
+msgid "&View"
+msgstr "&Ṽīḗẇ"
+
+#. Resource IDs: (65535)
+msgid "&Window"
+msgstr "&Ẇīƞḓǿẇ"
+
+#. Resource IDs: (65535)
+msgid "&Windows"
+msgstr "&Ẇīƞḓǿẇş"
+
+#. Resource IDs: (32777)
+msgid "&Windows (CRLF)"
+msgstr "&Ẇīƞḓǿẇş (ƇŘĿƑ)"
+
+#. Resource IDs: (33140)
+msgid "&Word Wrap"
+msgstr "&Ẇǿřḓ Ẇřȧƥ"
+
+#. Resource IDs: (1083)
+msgid "&Word-Wrap"
+msgstr "&Ẇǿřḓ-Ẇřȧƥ"
+
+#. Resource IDs: (2045)
+msgid "&Yes"
+msgstr "&Ẏḗş"
+
+#. Resource IDs: (33134)
+msgid "&Zoom In"
+msgstr "&Ẑǿǿḿ Īƞ"
+
+#. Resource IDs: (65535)
+msgid "(1 to 50) items in the most recently used list."
+msgstr "(1 ŧǿ 50) īŧḗḿş īƞ ŧħḗ ḿǿşŧ řḗƈḗƞŧŀẏ ŭşḗḓ ŀīşŧ."
+
+#. Resource IDs: (12)
+msgid "(empty)"
+msgstr "(ḗḿƥŧẏ)"
+
+#. Resource IDs: (1120)
+msgid "(enter text and click above to test)"
+msgstr "(ḗƞŧḗř ŧḗẋŧ ȧƞḓ ƈŀīƈķ ȧƀǿṽḗ ŧǿ ŧḗşŧ)"
+
+#. Resource IDs: (1010, 1012, 21206)
+msgid "..."
+msgstr "..."
+
+#. Resource IDs: (32847)
+msgid "0 or More Matches"
+msgstr "0 ǿř Ḿǿřḗ Ḿȧŧƈħḗş"
+
+#. Resource IDs: (32848)
+msgid "1 or More Matches"
+msgstr "1 ǿř Ḿǿřḗ Ḿȧŧƈħḗş"
+
+#. Resource IDs: (1058)
+msgid "?"
+msgstr "?"
+
+#. Resource IDs: (65535)
+msgid "A Magic Folder will reflect the contents of a file system folder in a Projects folder. Select the folder you wish to include below:"
+msgstr ""
+"Ȧ Ḿȧɠīƈ Ƒǿŀḓḗř ẇīŀŀ řḗƒŀḗƈŧ ŧħḗ ƈǿƞŧḗƞŧş ǿƒ ȧ ƒīŀḗ şẏşŧḗḿ ƒǿŀḓḗř īƞ ȧ "
+"Ƥřǿĵḗƈŧş ƒǿŀḓḗř. Şḗŀḗƈŧ ŧħḗ ƒǿŀḓḗř ẏǿŭ ẇīşħ ŧǿ īƞƈŀŭḓḗ ƀḗŀǿẇ:"
+
+#. Resource IDs: (1107)
+msgid "A&ll open documents"
+msgstr "Ȧ&ŀŀ ǿƥḗƞ ḓǿƈŭḿḗƞŧş"
+
+#. Resource IDs: (32890)
+msgid "ANSI"
+msgstr "ȦȠŞĪ"
+
+#. Resource IDs: (100)
+msgid "About"
+msgstr "Ȧƀǿŭŧ"
+
+#. Resource IDs: (3826)
+msgid "Activate Task List"
+msgstr "Ȧƈŧīṽȧŧḗ Ŧȧşķ Ŀīşŧ"
+
+#. Resource IDs: (3826)
+msgid "Activate this window"
+msgstr "Ȧƈŧīṽȧŧḗ ŧħīş ẇīƞḓǿẇ"
+
+#. Resource IDs: (309)
+msgid "Add &Existing Project..."
+msgstr "Ȧḓḓ &Ḗẋīşŧīƞɠ Ƥřǿĵḗƈŧ..."
+
+#. Resource IDs: (32917)
+msgid "Add &Magic Folder..."
+msgstr "Ȧḓḓ &Ḿȧɠīƈ Ƒǿŀḓḗř..."
+
+#. Resource IDs: (308)
+msgid "Add &New Project"
+msgstr "Ȧḓḓ &Ƞḗẇ Ƥřǿĵḗƈŧ"
+
+#. Resource IDs: (293)
+msgid "Add New &Folder"
+msgstr "Ȧḓḓ Ƞḗẇ &Ƒǿŀḓḗř"
+
+#. Resource IDs: (32788)
+msgid "Add Tools..."
+msgstr "Ȧḓḓ Ŧǿǿŀş..."
+
+#. Resource IDs: (10)
+msgid "All Files (*.*)|*.*|"
+msgstr "Ȧŀŀ Ƒīŀḗş (*.*)|*.*|"
+
+#. Resource IDs: (1045)
+msgid "Allow backslash expressions"
+msgstr "Ȧŀŀǿẇ ƀȧƈķşŀȧşħ ḗẋƥřḗşşīǿƞş"
+
+#. Resource IDs: (1159)
+msgid "Allow editing of read only files"
+msgstr "Ȧŀŀǿẇ ḗḓīŧīƞɠ ǿƒ řḗȧḓ ǿƞŀẏ ƒīŀḗş"
+
+#. Resource IDs: (65535)
+msgid "Alternate Extensions:"
+msgstr "Ȧŀŧḗřƞȧŧḗ Ḗẋŧḗƞşīǿƞş:"
+
+#. Resource IDs: (65535)
+msgid "Alternate File Pairs"
+msgstr "Ȧŀŧḗřƞȧŧḗ Ƒīŀḗ Ƥȧīřş"
+
+#. Resource IDs: (12)
+#, c-format
+msgid "An update for Programmer's Notepad is available (version %s), would you like to download it now?"
+msgstr ""
+"Ȧƞ ŭƥḓȧŧḗ ƒǿř Ƥřǿɠřȧḿḿḗř'ş Ƞǿŧḗƥȧḓ īş ȧṽȧīŀȧƀŀḗ (ṽḗřşīǿƞ %s), ẇǿŭŀḓ ẏǿŭ ŀīķḗ "
+"ŧǿ ḓǿẇƞŀǿȧḓ īŧ ƞǿẇ?"
+
+#. Resource IDs: (32839)
+msgid "Any Character"
+msgstr "Ȧƞẏ Ƈħȧřȧƈŧḗř"
+
+#. Resource IDs: (12)
+msgid "Are you sure you wish to rename this magic folder?\nThis will have the effect of renaming the actual folder on the disk."
+msgstr ""
+"Ȧřḗ ẏǿŭ şŭřḗ ẏǿŭ ẇīşħ ŧǿ řḗƞȧḿḗ ŧħīş ḿȧɠīƈ ƒǿŀḓḗř?\n"
+"Ŧħīş ẇīŀŀ ħȧṽḗ ŧħḗ ḗƒƒḗƈŧ ǿƒ řḗƞȧḿīƞɠ ŧħḗ ȧƈŧŭȧŀ ƒǿŀḓḗř ǿƞ ŧħḗ ḓīşķ."
+
+#. Resource IDs: (57649)
+msgid "Arrange &Icons"
+msgstr "Ȧřřȧƞɠḗ &Īƈǿƞş"
+
+#. Resource IDs: (3604)
+msgid "Arrange icons at the bottom of the window\nArrange Icons"
+msgstr ""
+"Ȧřřȧƞɠḗ īƈǿƞş ȧŧ ŧħḗ ƀǿŧŧǿḿ ǿƒ ŧħḗ ẇīƞḓǿẇ\n"
+"Ȧřřȧƞɠḗ Īƈǿƞş"
+
+#. Resource IDs: (3604)
+msgid "Arrange windows as non-overlapping tiles\nTile Windows"
+msgstr ""
+"Ȧřřȧƞɠḗ ẇīƞḓǿẇş ȧş ƞǿƞ-ǿṽḗřŀȧƥƥīƞɠ ŧīŀḗş\n"
+"Ŧīŀḗ Ẇīƞḓǿẇş"
+
+#. Resource IDs: (3604)
+msgid "Arrange windows so they overlap\nCascade Windows"
+msgstr ""
+"Ȧřřȧƞɠḗ ẇīƞḓǿẇş şǿ ŧħḗẏ ǿṽḗřŀȧƥ\n"
+"Ƈȧşƈȧḓḗ Ẇīƞḓǿẇş"
+
+#. Resource IDs: (266)
+msgid "As &RTF..."
+msgstr "Ȧş &ŘŦƑ..."
+
+#. Resource IDs: (32878)
+msgid "As HTML..."
+msgstr "Ȧş ĦŦḾĿ..."
+
+#. Resource IDs: (1091, 1094)
+msgid "Ask Me"
+msgstr "Ȧşķ Ḿḗ"
+
+#. Resource IDs: (65535)
+msgid "Assign Shortcuts:"
+msgstr "Ȧşşīɠƞ Şħǿřŧƈŭŧş:"
+
+#. Resource IDs: (1055)
+msgid "At the &bottom of the main window"
+msgstr "Ȧŧ ŧħḗ &ƀǿŧŧǿḿ ǿƒ ŧħḗ ḿȧīƞ ẇīƞḓǿẇ"
+
+#. Resource IDs: (1141)
+msgid "Auto-Close HTML/XML Tags"
+msgstr "Ȧŭŧǿ-Ƈŀǿşḗ ĦŦḾĿ/XML Ŧȧɠş"
+
+#. Resource IDs: (65535)
+msgid "Auto-scroll Caret Position Limits:"
+msgstr "Ȧŭŧǿ-şƈřǿŀŀ Ƈȧřḗŧ Ƥǿşīŧīǿƞ Ŀīḿīŧş:"
+
+#. Resource IDs: (1143)
+msgid "AutoComplete After:"
+msgstr "ȦŭŧǿƇǿḿƥŀḗŧḗ Ȧƒŧḗř:"
+
+#. Resource IDs: (65535)
+msgid "AutoComplete Settings"
+msgstr "ȦŭŧǿƇǿḿƥŀḗŧḗ Şḗŧŧīƞɠş"
+
+#. Resource IDs: (1144)
+msgid "AutoComplete when asked"
+msgstr "ȦŭŧǿƇǿḿƥŀḗŧḗ ẇħḗƞ ȧşķḗḓ"
+
+#. Resource IDs: (13)
+msgid "Avoiding infinite search loop, Replace All abandoned"
+msgstr "Ȧṽǿīḓīƞɠ īƞƒīƞīŧḗ şḗȧřƈħ ŀǿǿƥ, Řḗƥŀȧƈḗ Ȧŀŀ ȧƀȧƞḓǿƞḗḓ"
+
+#. Resource IDs: (65535)
+msgid "Bac&kground:"
+msgstr "Ɓȧƈ&ķɠřǿŭƞḓ:"
+
+#. Resource IDs: (65535)
+msgid "Base Style Settings"
+msgstr "Ɓȧşḗ Şŧẏŀḗ Şḗŧŧīƞɠş"
+
+#. Resource IDs: (32842)
+msgid "Beginning of Line"
+msgstr "Ɓḗɠīƞƞīƞɠ ǿƒ Ŀīƞḗ"
+
+#. Resource IDs: (1152)
+msgid "Blend highlight colour:"
+msgstr "Ɓŀḗƞḓ ħīɠħŀīɠħŧ ƈǿŀǿŭř:"
+
+#. Resource IDs: (1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1073)
+msgid "Button1"
+msgstr "Ɓŭŧŧǿƞ1"
+
+#. Resource IDs: (1033)
+msgid "Button2"
+msgstr "Ɓŭŧŧǿƞ2"
+
+#. Resource IDs: (259)
+msgid "C&lear"
+msgstr "Ƈ&ŀḗȧř"
+
+#. Resource IDs: (65535)
+msgid "CTAGS"
+msgstr "ƇŦȦƓŞ"
+
+#. Resource IDs: (2, 2045)
+msgid "Cancel"
+msgstr "Ƈȧƞƈḗŀ"
+
+#. Resource IDs: (12)
+#, c-format
+msgid "Cannot find in files in %s, the directory does not exist"
+msgstr "Ƈȧƞƞǿŧ ƒīƞḓ īƞ ƒīŀḗş īƞ %s, ŧħḗ ḓīřḗƈŧǿřẏ ḓǿḗş ƞǿŧ ḗẋīşŧ"
+
+#. Resource IDs: (1047)
+msgid "Capture output?"
+msgstr "Ƈȧƥŧŭřḗ ǿŭŧƥŭŧ?"
+
+#. Resource IDs: (3601)
+msgid "Change the printer and printing options\nPrint Setup"
+msgstr ""
+"Ƈħȧƞɠḗ ŧħḗ ƥřīƞŧḗř ȧƞḓ ƥřīƞŧīƞɠ ǿƥŧīǿƞş\n"
+"Ƥřīƞŧ Şḗŧŭƥ"
+
+#. Resource IDs: (3601)
+msgid "Change the printing options\nPage Setup"
+msgstr ""
+"Ƈħȧƞɠḗ ŧħḗ ƥřīƞŧīƞɠ ǿƥŧīǿƞş\n"
+"Ƥȧɠḗ Şḗŧŭƥ"
+
+#. Resource IDs: (3825)
+msgid "Change the window position"
+msgstr "Ƈħȧƞɠḗ ŧħḗ ẇīƞḓǿẇ ƥǿşīŧīǿƞ"
+
+#. Resource IDs: (3825)
+msgid "Change the window size"
+msgstr "Ƈħȧƞɠḗ ŧħḗ ẇīƞḓǿẇ şīzḗ"
+
+#. Resource IDs: (32841)
+msgid "Character Not in Range"
+msgstr "Ƈħȧřȧƈŧḗř Ƞǿŧ īƞ Řȧƞɠḗ"
+
+#. Resource IDs: (65535)
+msgid "Character Se&t:"
+msgstr "Ƈħȧřȧƈŧḗř Şḗ&ŧ:"
+
+#. Resource IDs: (32840)
+msgid "Character in Range"
+msgstr "Ƈħȧřȧƈŧḗř īƞ Řȧƞɠḗ"
+
+#. Resource IDs: (65535)
+msgid "Characters:"
+msgstr "Ƈħȧřȧƈŧḗřş:"
+
+#. Resource IDs: (1099)
+msgid "Check &Now"
+msgstr "Ƈħḗƈķ &Ƞǿẇ"
+
+#. Resource IDs: (33141)
+msgid "Check for &Updates"
+msgstr "Ƈħḗƈķ ƒǿř &Ŭƥḓȧŧḗş"
+
+#. Resource IDs: (1154)
+msgid "Check for &updates"
+msgstr "Ƈħḗƈķ ƒǿř &ŭƥḓȧŧḗş"
+
+#. Resource IDs: (57602)
+msgid "Cl&ose\tCtrl-F4"
+msgstr "Ƈŀ&ǿşḗ\tƇŧřŀ-Ƒ4"
+
+#. Resource IDs: (1051)
+msgid "Clear output before running?"
+msgstr "Ƈŀḗȧř ǿŭŧƥŭŧ ƀḗƒǿřḗ řŭƞƞīƞɠ?"
+
+#. Resource IDs: (267)
+msgid "Clipboard S&wap"
+msgstr "Ƈŀīƥƀǿȧřḓ Ş&ẇȧƥ"
+
+#. Resource IDs: (2045)
+msgid "Close"
+msgstr "Ƈŀǿşḗ"
+
+#. Resource IDs: (32920)
+msgid "Close &All"
+msgstr "Ƈŀǿşḗ &Ȧŀŀ"
+
+#. Resource IDs: (32920)
+msgid "Close All"
+msgstr "Ƈŀǿşḗ Ȧŀŀ"
+
+#. Resource IDs: (32931)
+msgid "Close All &Other"
+msgstr "Ƈŀǿşḗ Ȧŀŀ &Ǿŧħḗř"
+
+#. Resource IDs: (32931)
+msgid "Close All &Other Windows"
+msgstr "Ƈŀǿşḗ Ȧŀŀ &Ǿŧħḗř Ẇīƞḓǿẇş"
+
+#. Resource IDs: (301)
+msgid "Close P&roject(s)"
+msgstr "Ƈŀǿşḗ Ƥ&řǿĵḗƈŧ(ş)"
+
+#. Resource IDs: (301)
+msgid "Close Project(s)"
+msgstr "Ƈŀǿşḗ Ƥřǿĵḗƈŧ(ş)"
+
+#. Resource IDs: (2045)
+msgid "Close all project files?"
+msgstr "Ƈŀǿşḗ ȧŀŀ ƥřǿĵḗƈŧ ƒīŀḗş?"
+
+#. Resource IDs: (3601)
+msgid "Close the active document\nClose"
+msgstr ""
+"Ƈŀǿşḗ ŧħḗ ȧƈŧīṽḗ ḓǿƈŭḿḗƞŧ\n"
+"Ƈŀǿşḗ"
+
+#. Resource IDs: (3825)
+msgid "Close the active window and prompts to save the documents"
+msgstr "Ƈŀǿşḗ ŧħḗ ȧƈŧīṽḗ ẇīƞḓǿẇ ȧƞḓ ƥřǿḿƥŧş ŧǿ şȧṽḗ ŧħḗ ḓǿƈŭḿḗƞŧş"
+
+#. Resource IDs: (268)
+msgid "Collapse All Folds"
+msgstr "Ƈǿŀŀȧƥşḗ Ȧŀŀ Ƒǿŀḓş"
+
+#. Resource IDs: (65535)
+msgid "Com&ments"
+msgstr "Ƈǿḿ&ḿḗƞŧş"
+
+#. Resource IDs: (65535)
+msgid "Command:"
+msgstr "Ƈǿḿḿȧƞḓ:"
+
+#. Resource IDs: (32972)
+msgid "Convert Spaces to Tabs"
+msgstr "Ƈǿƞṽḗřŧ Şƥȧƈḗş ŧǿ Ŧȧƀş"
+
+#. Resource IDs: (32971)
+msgid "Convert Tabs to Spaces"
+msgstr "Ƈǿƞṽḗřŧ Ŧȧƀş ŧǿ Şƥȧƈḗş"
+
+#. Resource IDs: (32974)
+msgid "Copy &File Path"
+msgstr "Ƈǿƥẏ &Ƒīŀḗ Ƥȧŧħ"
+
+#. Resource IDs: (32871)
+msgid "Copy as RTF"
+msgstr "Ƈǿƥẏ ȧş ŘŦƑ"
+
+#. Resource IDs: (3603)
+msgid "Copy the selection and put it on the Clipboard\nCopy"
+msgstr ""
+"Ƈǿƥẏ ŧħḗ şḗŀḗƈŧīǿƞ ȧƞḓ ƥŭŧ īŧ ǿƞ ŧħḗ Ƈŀīƥƀǿȧřḓ\n"
+"Ƈǿƥẏ"
+
+#. Resource IDs: (11)
+msgid "Could not create file"
+msgstr "Ƈǿŭŀḓ ƞǿŧ ƈřḗȧŧḗ ƒīŀḗ"
+
+#. Resource IDs: (3601)
+msgid "Create a new document\nNew"
+msgstr ""
+"Ƈřḗȧŧḗ ȧ ƞḗẇ ḓǿƈŭḿḗƞŧ\n"
+"Ƞḗẇ"
+
+#. Resource IDs: (9)
+msgid "Create a new project."
+msgstr "Ƈřḗȧŧḗ ȧ ƞḗẇ ƥřǿĵḗƈŧ."
+
+#. Resource IDs: (9)
+msgid "Create a new workspace."
+msgstr "Ƈřḗȧŧḗ ȧ ƞḗẇ ẇǿřķşƥȧƈḗ."
+
+#. Resource IDs: (1157)
+msgid "Create backup files when saving"
+msgstr "Ƈřḗȧŧḗ ƀȧƈķŭƥ ƒīŀḗş ẇħḗƞ şȧṽīƞɠ"
+
+#. Resource IDs: (57635)
+msgid "Cu&t"
+msgstr "Ƈŭ&ŧ"
+
+#. Resource IDs: (32910)
+msgid "Cu&t Line"
+msgstr "Ƈŭ&ŧ Ŀīƞḗ"
+
+#. Resource IDs: (1106)
+msgid "Curren&t document"
+msgstr "Ƈŭřřḗƞ&ŧ ḓǿƈŭḿḗƞŧ"
+
+#. Resource IDs: (32884)
+msgid "Current Date (%c)"
+msgstr "Ƈŭřřḗƞŧ Ḓȧŧḗ (%c)"
+
+#. Resource IDs: (11)
+msgid "Current File"
+msgstr "Ƈŭřřḗƞŧ Ƒīŀḗ"
+
+#. Resource IDs: (11)
+msgid "Current Folder"
+msgstr "Ƈŭřřḗƞŧ Ƒǿŀḓḗř"
+
+#. Resource IDs: (32881)
+msgid "Current Page (%p)"
+msgstr "Ƈŭřřḗƞŧ Ƥȧɠḗ (%p)"
+
+#. Resource IDs: (11)
+msgid "Current Project Files"
+msgstr "Ƈŭřřḗƞŧ Ƥřǿĵḗƈŧ Ƒīŀḗş"
+
+#. Resource IDs: (65535)
+msgid "Current Shortcuts:"
+msgstr "Ƈŭřřḗƞŧ Şħǿřŧƈŭŧş:"
+
+#. Resource IDs: (32888)
+msgid "Current Time (%t)"
+msgstr "Ƈŭřřḗƞŧ Ŧīḿḗ (%ŧ)"
+
+#. Resource IDs: (1108)
+msgid "Current pro&ject"
+msgstr "Ƈŭřřḗƞŧ ƥřǿ&ĵḗƈŧ"
+
+#. Resource IDs: (65535)
+msgid "Cursor Colour:"
+msgstr "Ƈŭřşǿř Ƈǿŀǿŭř:"
+
+#. Resource IDs: (1121)
+msgid "Custom Output Parsing"
+msgstr "Ƈŭşŧǿḿ Ǿŭŧƥŭŧ Ƥȧřşīƞɠ"
+
+#. Resource IDs: (3603)
+msgid "Cut the selection and put it on the Clipboard\nCut"
+msgstr ""
+"Ƈŭŧ ŧħḗ şḗŀḗƈŧīǿƞ ȧƞḓ ƥŭŧ īŧ ǿƞ ŧħḗ Ƈŀīƥƀǿȧřḓ\n"
+"Ƈŭŧ"
+
+#. Resource IDs: (65535)
+msgid "DUMMY"
+msgstr "ḒŬḾḾẎ"
+
+#. Resource IDs: (32909)
+msgid "De&lete Line"
+msgstr "Ḓḗ&ŀḗŧḗ Ŀīƞḗ"
+
+#. Resource IDs: (65535)
+msgid "Defaults"
+msgstr "Ḓḗƒȧŭŀŧş"
+
+#. Resource IDs: (1158)
+msgid "Display block caret instead of line"
+msgstr "Ḓīşƥŀȧẏ ƀŀǿƈķ ƈȧřḗŧ īƞşŧḗȧḓ ǿƒ ŀīƞḗ"
+
+#. Resource IDs: (3601)
+msgid "Display full pages\nPrint Preview"
+msgstr ""
+"Ḓīşƥŀȧẏ ƒŭŀŀ ƥȧɠḗş\n"
+"Ƥřīƞŧ Ƥřḗṽīḗẇ"
+
+#. Resource IDs: (3605)
+msgid "Display program information, version number and copyright\nAbout"
+msgstr ""
+"Ḓīşƥŀȧẏ ƥřǿɠřȧḿ īƞƒǿřḿȧŧīǿƞ, ṽḗřşīǿƞ ƞŭḿƀḗř ȧƞḓ ƈǿƥẏřīɠħŧ\n"
+"Ȧƀǿŭŧ"
+
+#. Resource IDs: (12)
+msgid "Do &Not Download"
+msgstr "Ḓǿ &Ƞǿŧ Ḓǿẇƞŀǿȧḓ"
+
+#. Resource IDs: (1051)
+msgid "Do not &ask me again"
+msgstr "Ḓǿ ƞǿŧ &ȧşķ ḿḗ ȧɠȧīƞ"
+
+#. Resource IDs: (65535)
+msgid "Do you want to associate these extensions with Programmer's Notepad 2 now?"
+msgstr ""
+"Ḓǿ ẏǿŭ ẇȧƞŧ ŧǿ ȧşşǿƈīȧŧḗ ŧħḗşḗ ḗẋŧḗƞşīǿƞş ẇīŧħ Ƥřǿɠřȧḿḿḗř'ş Ƞǿŧḗƥȧḓ 2 ƞǿẇ?"
+
+#. Resource IDs: (2045)
+#, c-format
+msgid "Do you want to open another copy of %s?"
+msgstr "Ḓǿ ẏǿŭ ẇȧƞŧ ŧǿ ǿƥḗƞ ȧƞǿŧħḗř ƈǿƥẏ ǿƒ %s?"
+
+#. Resource IDs: (2063)
+#, c-format
+msgid "Do you want to save changes to the project: %s?"
+msgstr "Ḓǿ ẏǿŭ ẇȧƞŧ ŧǿ şȧṽḗ ƈħȧƞɠḗş ŧǿ ŧħḗ ƥřǿĵḗƈŧ: %s?"
+
+#. Resource IDs: (9)
+msgid "Document"
+msgstr "Ḓǿƈŭḿḗƞŧ"
+
+#. Resource IDs: (1074)
+msgid "Don't change the foreground."
+msgstr "Ḓǿƞ'ŧ ƈħȧƞɠḗ ŧħḗ ƒǿřḗɠřǿŭƞḓ."
+
+#. Resource IDs: (57665)
+msgid "E&xit"
+msgstr "Ḗ&ẋīŧ"
+
+#. Resource IDs: (12)
+msgid "E&xtensions"
+msgstr "Ḗ&ẋŧḗƞşīǿƞş"
+
+#. Resource IDs: (432)
+msgid "Edit Alternate File Pair"
+msgstr "Ḗḓīŧ Ȧŀŧḗřƞȧŧḗ Ƒīŀḗ Ƥȧīř"
+
+#. Resource IDs: (439)
+msgid "Edit File Type"
+msgstr "Ḗḓīŧ Ƒīŀḗ Ŧẏƥḗ"
+
+#. Resource IDs: (262)
+msgid "Edit SmartStart Phrase"
+msgstr "Ḗḓīŧ ŞḿȧřŧŞŧȧřŧ Ƥħřȧşḗ"
+
+#. Resource IDs: (65535)
+msgid "Editing"
+msgstr "Ḗḓīŧīƞɠ"
+
+#. Resource IDs: (10)
+msgid "Empty Project"
+msgstr "Ḗḿƥŧẏ Ƥřǿĵḗƈŧ"
+
+#. Resource IDs: (1138)
+msgid "Enable AutoComplete"
+msgstr "Ḗƞȧƀŀḗ ȦŭŧǿƇǿḿƥŀḗŧḗ"
+
+#. Resource IDs: (1051)
+msgid "Enable SmartStart"
+msgstr "Ḗƞȧƀŀḗ ŞḿȧřŧŞŧȧřŧ"
+
+#. Resource IDs: (65535)
+msgid "Enco&ding"
+msgstr "Ḗƞƈǿ&ḓīƞɠ"
+
+#. Resource IDs: (1101, 65535)
+msgid "Encoding:"
+msgstr "Ḗƞƈǿḓīƞɠ:"
+
+#. Resource IDs: (32843)
+msgid "End of Line"
+msgstr "Ḗƞḓ ǿƒ Ŀīƞḗ"
+
+#. Resource IDs: (3825)
+msgid "Enlarge the window to full size"
+msgstr "Ḗƞŀȧřɠḗ ŧħḗ ẇīƞḓǿẇ ŧǿ ƒŭŀŀ şīzḗ"
+
+#. Resource IDs: (65535)
+msgid "Enter a semi-colon separated list of directories that you do not wish to include:"
+msgstr ""
+"Ḗƞŧḗř ȧ şḗḿī-ƈǿŀǿƞ şḗƥȧřȧŧḗḓ ŀīşŧ ǿƒ ḓīřḗƈŧǿřīḗş ŧħȧŧ ẏǿŭ ḓǿ ƞǿŧ ẇīşħ ŧǿ "
+"īƞƈŀŭḓḗ:"
+
+#. Resource IDs: (65535)
+msgid "Enter a semi-colon separated list of file types that you wish to include:"
+msgstr ""
+"Ḗƞŧḗř ȧ şḗḿī-ƈǿŀǿƞ şḗƥȧřȧŧḗḓ ŀīşŧ ǿƒ ƒīŀḗ ŧẏƥḗş ŧħȧŧ ẏǿŭ ẇīşħ ŧǿ īƞƈŀŭḓḗ:"
+
+#. Resource IDs: (3603)
+msgid "Erase everything\nErase All"
+msgstr ""
+"Ḗřȧşḗ ḗṽḗřẏŧħīƞɠ\n"
+"Ḗřȧşḗ Ȧŀŀ"
+
+#. Resource IDs: (3603)
+msgid "Erase the selection\nErase"
+msgstr ""
+"Ḗřȧşḗ ŧħḗ şḗŀḗƈŧīǿƞ\n"
+"Ḗřȧşḗ"
+
+#. Resource IDs: (65535)
+msgid "Ex&tension:"
+msgstr "Ḗẋ&ŧḗƞşīǿƞ:"
+
+#. Resource IDs: (269)
+msgid "Expand All Folds"
+msgstr "Ḗẋƥȧƞḓ Ȧŀŀ Ƒǿŀḓş"
+
+#. Resource IDs: (65535)
+msgid "Extensions"
+msgstr "Ḗẋŧḗƞşīǿƞş"
+
+#. Resource IDs: (32874)
+msgid "F&ind in Files"
+msgstr "Ƒ&īƞḓ īƞ Ƒīŀḗş"
+
+#. Resource IDs: (12)
+msgid "Failed to create a backup document"
+msgstr "Ƒȧīŀḗḓ ŧǿ ƈřḗȧŧḗ ȧ ƀȧƈķŭƥ ḓǿƈŭḿḗƞŧ"
+
+#. Resource IDs: (1110)
+msgid "Fi&nd what:"
+msgstr "Ƒī&ƞḓ ẇħȧŧ:"
+
+#. Resource IDs: (32706)
+msgid "File &Browser"
+msgstr "Ƒīŀḗ &Ɓřǿẇşḗř"
+
+#. Resource IDs: (2045)
+msgid "File Browser"
+msgstr "Ƒīŀḗ Ɓřǿẇşḗř"
+
+#. Resource IDs: (32882)
+msgid "File Date (%D)"
+msgstr "Ƒīŀḗ Ḓȧŧḗ (%Ḓ)"
+
+#. Resource IDs: (65535)
+msgid "File Dialogs"
+msgstr "Ƒīŀḗ Ḓīȧŀǿɠş"
+
+#. Resource IDs: (65535)
+msgid "File Extension or Name to Match:"
+msgstr "Ƒīŀḗ Ḗẋŧḗƞşīǿƞ ǿř Ƞȧḿḗ ŧǿ Ḿȧŧƈħ:"
+
+#. Resource IDs: (1056)
+msgid "File Format:"
+msgstr "Ƒīŀḗ Ƒǿřḿȧŧ:"
+
+#. Resource IDs: (32879)
+msgid "File Name (%f)"
+msgstr "Ƒīŀḗ Ƞȧḿḗ (%f)"
+
+#. Resource IDs: (32880)
+msgid "File Path (%d)"
+msgstr "Ƒīŀḗ Ƥȧŧħ (%d)"
+
+#. Resource IDs: (32887)
+msgid "File Time (%T)"
+msgstr "Ƒīŀḗ Ŧīḿḗ (%Ŧ)"
+
+#. Resource IDs: (65535)
+msgid "File Types"
+msgstr "Ƒīŀḗ Ŧẏƥḗş"
+
+#. Resource IDs: (65535)
+msgid "File extensions should be entered including the '.' dot character, separated by semi-colons, in order of precedence. e.g. \n\nStart: .cpp;.cxx;.c;.cc\nAlternate: .h;.hpp"
+msgstr ""
+"Ƒīŀḗ ḗẋŧḗƞşīǿƞş şħǿŭŀḓ ƀḗ ḗƞŧḗřḗḓ īƞƈŀŭḓīƞɠ ŧħḗ '.' ḓǿŧ ƈħȧřȧƈŧḗř, şḗƥȧřȧŧḗḓ "
+"ƀẏ şḗḿī-ƈǿŀǿƞş, īƞ ǿřḓḗř ǿƒ ƥřḗƈḗḓḗƞƈḗ. ḗ.ɠ. \n"
+"\n"
+"Şŧȧřŧ: .ƈƥƥ;.ƈẋẋ;.ƈ;.ƈƈ\n"
+"Ȧŀŧḗřƞȧŧḗ: .ħ;.ħƥƥ"
+
+#. Resource IDs: (65535)
+msgid "File extensions should be entered starting with the '.' dot character."
+msgstr "Ƒīŀḗ ḗẋŧḗƞşīǿƞş şħǿŭŀḓ ƀḗ ḗƞŧḗřḗḓ şŧȧřŧīƞɠ ẇīŧħ ŧħḗ '.' ḓǿŧ ƈħȧřȧƈŧḗř."
+
+#. Resource IDs: (1043)
+msgid "File types:"
+msgstr "Ƒīŀḗ ŧẏƥḗş:"
+
+#. Resource IDs: (65535)
+msgid "File:"
+msgstr "Ƒīŀḗ:"
+
+#. Resource IDs: (1024)
+msgid "Fill to &end of line"
+msgstr "Ƒīŀŀ ŧǿ &ḗƞḓ ǿƒ ŀīƞḗ"
+
+#. Resource IDs: (22)
+msgid "Find"
+msgstr "Ƒīƞḓ"
+
+#. Resource IDs: (32773)
+msgid "Find &Next"
+msgstr "Ƒīƞḓ &Ƞḗẋŧ"
+
+#. Resource IDs: (2055)
+msgid "Find (drop down for other find types)"
+msgstr "Ƒīƞḓ (ḓřǿƥ ḓǿẇƞ ƒǿř ǿŧħḗř ƒīƞḓ ŧẏƥḗş)"
+
+#. Resource IDs: (65535)
+msgid "Find Dialog"
+msgstr "Ƒīƞḓ Ḓīȧŀǿɠ"
+
+#. Resource IDs: (33132)
+msgid "Find Next Current &Word"
+msgstr "Ƒīƞḓ Ƞḗẋŧ Ƈŭřřḗƞŧ &Ẇǿřḓ"
+
+#. Resource IDs: (32956)
+msgid "Find Pre&vious"
+msgstr "Ƒīƞḓ Ƥřḗ&ṽīǿŭş"
+
+#. Resource IDs: (33133)
+msgid "Find Previous C&urrent Word"
+msgstr "Ƒīƞḓ Ƥřḗṽīǿŭş Ƈ&ŭřřḗƞŧ Ẇǿřḓ"
+
+#. Resource IDs: (2045)
+msgid "Find Results"
+msgstr "Ƒīƞḓ Řḗşŭŀŧş"
+
+#. Resource IDs: (9)
+msgid "Find reached the starting point of the search."
+msgstr "Ƒīƞḓ řḗȧƈħḗḓ ŧħḗ şŧȧřŧīƞɠ ƥǿīƞŧ ǿƒ ŧħḗ şḗȧřƈħ."
+
+#. Resource IDs: (2055)
+msgid "Find text in files\nFind in Files"
+msgstr ""
+"Ƒīƞḓ ŧḗẋŧ īƞ ƒīŀḗş\n"
+"Ƒīƞḓ īƞ Ƒīŀḗş"
+
+#. Resource IDs: (3603)
+msgid "Find the specified text\nFind"
+msgstr ""
+"Ƒīƞḓ ŧħḗ şƥḗƈīƒīḗḓ ŧḗẋŧ\n"
+"Ƒīƞḓ"
+
+#. Resource IDs: (1044)
+msgid "Find where:"
+msgstr "Ƒīƞḓ ẇħḗřḗ:"
+
+#. Resource IDs: (65535)
+msgid "Folder:"
+msgstr "Ƒǿŀḓḗř:"
+
+#. Resource IDs: (1146)
+msgid "Folding enabled for supporting schemes"
+msgstr "Ƒǿŀḓīƞɠ ḗƞȧƀŀḗḓ ƒǿř şŭƥƥǿřŧīƞɠ şƈħḗḿḗş"
+
+#. Resource IDs: (65535)
+msgid "Font Style"
+msgstr "Ƒǿƞŧ Şŧẏŀḗ"
+
+#. Resource IDs: (204)
+msgid "Go To Line"
+msgstr "Ɠǿ Ŧǿ Ŀīƞḗ"
+
+#. Resource IDs: (32992)
+msgid "Go to Definition"
+msgstr "Ɠǿ ŧǿ Ḓḗƒīƞīŧīǿƞ"
+
+#. Resource IDs: (283)
+msgid "Google Gr&oups"
+msgstr "Ɠǿǿɠŀḗ Ɠř&ǿŭƥş"
+
+#. Resource IDs: (32849)
+msgid "Group"
+msgstr "Ɠřǿŭƥ"
+
+#. Resource IDs: (65535)
+msgid "HEADERFOOTERFIELDS"
+msgstr "ĦḖȦḒḖŘƑǾǾŦḖŘƑĪḖĿḒŞ"
+
+#. Resource IDs: (1160)
+msgid "Highlight all instances of selected word"
+msgstr "Ħīɠħŀīɠħŧ ȧŀŀ īƞşŧȧƞƈḗş ǿƒ şḗŀḗƈŧḗḓ ẇǿřḓ"
+
+#. Resource IDs: (1066)
+msgid "Highlight current editor line"
+msgstr "Ħīɠħŀīɠħŧ ƈŭřřḗƞŧ ḗḓīŧǿř ŀīƞḗ"
+
+#. Resource IDs: (1068)
+msgid "Highlight text beyond the edge column"
+msgstr "Ħīɠħŀīɠħŧ ŧḗẋŧ ƀḗẏǿƞḓ ŧħḗ ḗḓɠḗ ƈǿŀŭḿƞ"
+
+#. Resource IDs: (65535)
+msgid "Hint:"
+msgstr "Ħīƞŧ:"
+
+#. Resource IDs: (65535)
+msgid "Horizontal:"
+msgstr "Ħǿřīzǿƞŧȧŀ:"
+
+#. Accelerator Entry for Menu ID:267; 'Clipboard S&wap'
+msgid "ID:267:V CS+C"
+msgstr "ĪḒ:267:Ṽ ƇŞ+Ƈ"
+
+#. Accelerator Entry for Menu ID:32703; 'T&ags'
+msgid "ID:32703:VA  +G"
+msgstr "ĪḒ:32703:ṼȦ  +Ɠ"
+
+#. Accelerator Entry for Menu ID:32774; '&Goto'
+msgid "ID:32774:V C +G"
+msgstr "ĪḒ:32774:Ṽ Ƈ +Ɠ"
+
+#. Accelerator Entry for Menu ID:32783; ''
+msgid "ID:32783:V C +K"
+msgstr "ĪḒ:32783:Ṽ Ƈ +Ķ"
+
+#. Accelerator Entry for Menu ID:32784; ''
+msgid "ID:32784:V C +Q"
+msgstr "ĪḒ:32784:Ṽ Ƈ +Ɋ"
+
+#. Accelerator Entry for Menu ID:32789; '&Stop Tools'
+msgid "ID:32789:V CS+K"
+msgstr "ĪḒ:32789:Ṽ ƇŞ+Ķ"
+
+#. Accelerator Entry for Menu ID:32865; 'Save A&ll'
+msgid "ID:32865:V CS+S"
+msgstr "ĪḒ:32865:Ṽ ƇŞ+Ş"
+
+#. Accelerator Entry for Menu ID:32866; ''
+msgid "ID:32866:V CS+H"
+msgstr "ĪḒ:32866:Ṽ ƇŞ+Ħ"
+
+#. Accelerator Entry for Menu ID:32871; 'Copy as RTF'
+msgid "ID:32871:VAC +C"
+msgstr "ĪḒ:32871:ṼȦƇ +Ƈ"
+
+#. Accelerator Entry for Menu ID:32874; 'F&ind in Files'
+msgid "ID:32874:V CS+F"
+msgstr "ĪḒ:32874:Ṽ ƇŞ+Ƒ"
+
+#. Accelerator Entry for Menu ID:32909; 'De&lete Line'
+msgid "ID:32909:V CS+L"
+msgstr "ĪḒ:32909:Ṽ ƇŞ+Ŀ"
+
+#. Accelerator Entry for Menu ID:32910; 'Cu&t Line'
+msgid "ID:32910:V C +L"
+msgstr "ĪḒ:32910:Ṽ Ƈ +Ŀ"
+
+#. Accelerator Entry for Menu ID:57600; ''
+msgid "ID:57600:V C +N"
+msgstr "ĪḒ:57600:Ṽ Ƈ +Ƞ"
+
+#. Accelerator Entry for Menu ID:57601; '&Open...'
+msgid "ID:57601:V C +O"
+msgstr "ĪḒ:57601:Ṽ Ƈ +Ǿ"
+
+#. Accelerator Entry for Menu ID:57602; 'Cl&ose\tCtrl-F4'
+msgid "ID:57602:V C +W"
+msgstr "ĪḒ:57602:Ṽ Ƈ +Ẇ"
+
+#. Accelerator Entry for Menu ID:57603; '&Save'
+msgid "ID:57603:V C +S"
+msgstr "ĪḒ:57603:Ṽ Ƈ +Ş"
+
+#. Accelerator Entry for Menu ID:57607; '&Print...'
+msgid "ID:57607:V C +P"
+msgstr "ĪḒ:57607:Ṽ Ƈ +Ƥ"
+
+#. Accelerator Entry for Menu ID:57634; '&Copy'
+msgid "ID:57634:V C +C"
+msgstr "ĪḒ:57634:Ṽ Ƈ +Ƈ"
+
+#. Accelerator Entry for Menu ID:57635; 'Cu&t'
+msgid "ID:57635:V C +X"
+msgstr "ĪḒ:57635:Ṽ Ƈ +Ẋ"
+
+#. Accelerator Entry for Menu ID:57635; 'Cu&t'
+msgid "ID:57635:V CS+X"
+msgstr "ĪḒ:57635:Ṽ ƇŞ+Ẋ"
+
+#. Accelerator Entry for Menu ID:57636; '&Find'
+msgid "ID:57636:V C +F"
+msgstr "ĪḒ:57636:Ṽ Ƈ +Ƒ"
+
+#. Accelerator Entry for Menu ID:57637; '&Paste'
+msgid "ID:57637:V C +V"
+msgstr "ĪḒ:57637:Ṽ Ƈ +Ṽ"
+
+#. Accelerator Entry for Menu ID:57637; '&Paste'
+msgid "ID:57637:V CS+V"
+msgstr "ĪḒ:57637:Ṽ ƇŞ+Ṽ"
+
+#. Accelerator Entry for Menu ID:57641; 'R&eplace'
+msgid "ID:57641:V C +H"
+msgstr "ĪḒ:57641:Ṽ Ƈ +Ħ"
+
+#. Accelerator Entry for Menu ID:57641; 'R&eplace'
+msgid "ID:57641:V C +R"
+msgstr "ĪḒ:57641:Ṽ Ƈ +Ř"
+
+#. Accelerator Entry for Menu ID:57643; '&Undo'
+msgid "ID:57643:V C +Z"
+msgstr "ĪḒ:57643:Ṽ Ƈ +Ẑ"
+
+#. Resource IDs: (1109)
+msgid "In &selection"
+msgstr "Īƞ &şḗŀḗƈŧīǿƞ"
+
+#. Resource IDs: (1134)
+msgid "Include &hidden"
+msgstr "Īƞƈŀŭḓḗ &ħīḓḓḗƞ"
+
+#. Resource IDs: (1139)
+msgid "Include Scheme Keywords"
+msgstr "Īƞƈŀŭḓḗ Şƈħḗḿḗ Ķḗẏẇǿřḓş"
+
+#. Resource IDs: (1140)
+msgid "Include Tags"
+msgstr "Īƞƈŀŭḓḗ Ŧȧɠş"
+
+#. Resource IDs: (65535)
+msgid "Indentation Guides:"
+msgstr "Īƞḓḗƞŧȧŧīǿƞ Ɠŭīḓḗş:"
+
+#. Resource IDs: (3603)
+msgid "Insert Clipboard contents\nPaste"
+msgstr ""
+"Īƞşḗřŧ Ƈŀīƥƀǿȧřḓ ƈǿƞŧḗƞŧş\n"
+"Ƥȧşŧḗ"
+
+#. Resource IDs: (32987)
+msgid "Insert Template"
+msgstr "Īƞşḗřŧ Ŧḗḿƥŀȧŧḗ"
+
+#. Resource IDs: (321)
+msgid "Jump To..."
+msgstr "Ĵŭḿƥ Ŧǿ..."
+
+#. Resource IDs: (65535)
+msgid "Jump to:"
+msgstr "Ĵŭḿƥ ŧǿ:"
+
+#. Resource IDs: (65535)
+msgid "Keyboard Shortcuts"
+msgstr "Ķḗẏƀǿȧřḓ Şħǿřŧƈŭŧş"
+
+#. Resource IDs: (1057)
+msgid "L&andscape"
+msgstr "Ŀ&ȧƞḓşƈȧƥḗ"
+
+#. Resource IDs: (32792)
+msgid "Line &End Markers"
+msgstr "Ŀīƞḗ &Ḗƞḓ Ḿȧřķḗřş"
+
+#. Resource IDs: (132)
+msgid "Line &Numbers"
+msgstr "Ŀīƞḗ &Ƞŭḿƀḗřş"
+
+#. Resource IDs: (65535)
+msgid "Line Endings:"
+msgstr "Ŀīƞḗ Ḗƞḓīƞɠş:"
+
+#. Resource IDs: (65535)
+msgid "Lines:"
+msgstr "Ŀīƞḗş:"
+
+#. Resource IDs: (32912)
+msgid "Lo&wercase"
+msgstr "Ŀǿ&ẇḗřƈȧşḗ"
+
+#. Resource IDs: (65535)
+msgid "Long Line Helpers"
+msgstr "Ŀǿƞɠ Ŀīƞḗ Ħḗŀƥḗřş"
+
+#. Resource IDs: (1059)
+msgid "Look for a custom pattern:"
+msgstr "Ŀǿǿķ ƒǿř ȧ ƈŭşŧǿḿ ƥȧŧŧḗřƞ:"
+
+#. Resource IDs: (1155)
+msgid "Look for testing releases"
+msgstr "Ŀǿǿķ ƒǿř ŧḗşŧīƞɠ řḗŀḗȧşḗş"
+
+#. Resource IDs: (1075)
+msgid "Margins"
+msgstr "Ḿȧřɠīƞş"
+
+#. Resource IDs: (65535)
+msgid "Mark All Highlight:"
+msgstr "Ḿȧřķ Ȧŀŀ Ħīɠħŀīɠħŧ:"
+
+#. Resource IDs: (105)
+msgid "Match &case"
+msgstr "Ḿȧŧƈħ &ƈȧşḗ"
+
+#. Resource IDs: (104)
+msgid "Match &whole word only"
+msgstr "Ḿȧŧƈħ &ẇħǿŀḗ ẇǿřḓ ǿƞŀẏ"
+
+#. Resource IDs: (22)
+msgid "Modified"
+msgstr "Ḿǿḓīƒīḗḓ"
+
+#. Resource IDs: (1034)
+msgid "Move &Down"
+msgstr "Ḿǿṽḗ &Ḓǿẇƞ"
+
+#. Resource IDs: (1033)
+msgid "Move &Up"
+msgstr "Ḿǿṽḗ &Ŭƥ"
+
+#. Resource IDs: (33003)
+msgid "Move Line &Up"
+msgstr "Ḿǿṽḗ Ŀīƞḗ &Ŭƥ"
+
+#. Resource IDs: (33005)
+msgid "Move Line Do&wn"
+msgstr "Ḿǿṽḗ Ŀīƞḗ Ḓǿ&ẇƞ"
+
+#. Resource IDs: (65535)
+msgid "Name:"
+msgstr "Ƞȧḿḗ:"
+
+#. Resource IDs: (65535)
+msgid "New File"
+msgstr "Ƞḗẇ Ƒīŀḗ"
+
+#. Resource IDs: (10)
+msgid "New Project Group"
+msgstr "Ƞḗẇ Ƥřǿĵḗƈŧ Ɠřǿŭƥ"
+
+#. Resource IDs: (336)
+msgid "New Project..."
+msgstr "Ƞḗẇ Ƥřǿĵḗƈŧ..."
+
+#. Resource IDs: (32787)
+msgid "Next B&ookmark"
+msgstr "Ƞḗẋŧ Ɓ&ǿǿķḿȧřķ"
+
+#. Resource IDs: (7)
+msgid "No"
+msgstr "Ƞǿ"
+
+#. Resource IDs: (1124)
+msgid "No Override"
+msgstr "Ƞǿ Ǿṽḗřřīḓḗ"
+
+#. Resource IDs: (1067)
+msgid "No long line help"
+msgstr "Ƞǿ ŀǿƞɠ ŀīƞḗ ħḗŀƥ"
+
+#. Resource IDs: (12)
+msgid "No more occurrences found in the specified set of documents."
+msgstr "Ƞǿ ḿǿřḗ ǿƈƈŭřřḗƞƈḗş ƒǿŭƞḓ īƞ ŧħḗ şƥḗƈīƒīḗḓ şḗŧ ǿƒ ḓǿƈŭḿḗƞŧş."
+
+#. Resource IDs: (13)
+msgid "No updates are available at this time."
+msgstr "Ƞǿ ŭƥḓȧŧḗş ȧřḗ ȧṽȧīŀȧƀŀḗ ȧŧ ŧħīş ŧīḿḗ."
+
+#. Resource IDs: (32845)
+msgid "Not"
+msgstr "Ƞǿŧ"
+
+#. Resource IDs: (65535)
+msgid "Note: The first item in any list will be the default tool."
+msgstr "Ƞǿŧḗ: Ŧħḗ ƒīřşŧ īŧḗḿ īƞ ȧƞẏ ŀīşŧ ẇīŀŀ ƀḗ ŧħḗ ḓḗƒȧŭŀŧ ŧǿǿŀ."
+
+#. Resource IDs: (1)
+msgid "OK"
+msgstr "ǾĶ"
+
+#. Resource IDs: (1057)
+msgid "Only show with ma&ximized document windows"
+msgstr "Ǿƞŀẏ şħǿẇ ẇīŧħ ḿȧ&ẋīḿīzḗḓ ḓǿƈŭḿḗƞŧ ẇīƞḓǿẇş"
+
+#. Resource IDs: (32977)
+msgid "Open &Folder"
+msgstr "Ǿƥḗƞ &Ƒǿŀḓḗř"
+
+#. Resource IDs: (32976)
+msgid "Open Con&taining Folder"
+msgstr "Ǿƥḗƞ Ƈǿƞ&ŧȧīƞīƞɠ Ƒǿŀḓḗř"
+
+#. Resource IDs: (32707)
+msgid "Open Fi&les"
+msgstr "Ǿƥḗƞ Ƒī&ŀḗş"
+
+#. Resource IDs: (12, 2045)
+msgid "Open Files"
+msgstr "Ǿƥḗƞ Ƒīŀḗş"
+
+#. Resource IDs: (289)
+msgid "Open Pro&ject(s)..."
+msgstr "Ǿƥḗƞ Ƥřǿ&ĵḗƈŧ(ş)..."
+
+#. Resource IDs: (289)
+msgid "Open Project(s)..."
+msgstr "Ǿƥḗƞ Ƥřǿĵḗƈŧ(ş)..."
+
+#. Resource IDs: (10)
+msgid "Open Project/Project Group"
+msgstr "Ǿƥḗƞ Ƥřǿĵḗƈŧ/Project Ɠřǿŭƥ"
+
+#. Resource IDs: (33111)
+msgid "Open Wor&kspace..."
+msgstr "Ǿƥḗƞ Ẇǿř&ķşƥȧƈḗ..."
+
+#. Resource IDs: (3601)
+msgid "Open an existing document\nOpen"
+msgstr ""
+"Ǿƥḗƞ ȧƞ ḗẋīşŧīƞɠ ḓǿƈŭḿḗƞŧ\n"
+"Ǿƥḗƞ"
+
+#. Resource IDs: (3604)
+msgid "Open another window for the active document\nNew Window"
+msgstr ""
+"Ǿƥḗƞ ȧƞǿŧħḗř ẇīƞḓǿẇ ƒǿř ŧħḗ ȧƈŧīṽḗ ḓǿƈŭḿḗƞŧ\n"
+"Ƞḗẇ Ẇīƞḓǿẇ"
+
+#. Resource IDs: (32979)
+msgid "Open in De&fault Program"
+msgstr "Ǿƥḗƞ īƞ Ḓḗ&ƒȧŭŀŧ Ƥřǿɠřȧḿ"
+
+#. Resource IDs: (3838)
+msgid "Open this document"
+msgstr "Ǿƥḗƞ ŧħīş ḓǿƈŭḿḗƞŧ"
+
+#. Resource IDs: (243)
+msgid "Options"
+msgstr "Ǿƥŧīǿƞş"
+
+#. Resource IDs: (32846)
+msgid "Or"
+msgstr "Ǿř"
+
+#. Resource IDs: (1072)
+msgid "Orientation"
+msgstr "Ǿřīḗƞŧȧŧīǿƞ"
+
+#. Resource IDs: (65535)
+msgid "Other User Interface Options"
+msgstr "Ǿŧħḗř Ŭşḗř Īƞŧḗřƒȧƈḗ Ǿƥŧīǿƞş"
+
+#. Resource IDs: (2044)
+msgid "Output"
+msgstr "Ǿŭŧƥŭŧ"
+
+#. Resource IDs: (65535)
+msgid "Output Parsing:"
+msgstr "Ǿŭŧƥŭŧ Ƥȧřşīƞɠ:"
+
+#. Resource IDs: (65535)
+msgid "Override Indentation:"
+msgstr "Ǿṽḗřřīḓḗ Īƞḓḗƞŧȧŧīǿƞ:"
+
+#. Resource IDs: (1056)
+msgid "P&ortrait"
+msgstr "Ƥ&ǿřŧřȧīŧ"
+
+#. Resource IDs: (251)
+msgid "PN &Home Page"
+msgstr "ƤȠ &Ħǿḿḗ Ƥȧɠḗ"
+
+#. Resource IDs: (251)
+msgid "PN &HomePage"
+msgstr "ƤȠ &ĦǿḿḗƤȧɠḗ"
+
+#. Resource IDs: (9)
+#, c-format
+msgid "PN could not remove the write-protection from \"%s\".\n\n Would you like to save with a different name?"
+msgstr ""
+"ƤȠ ƈǿŭŀḓ ƞǿŧ řḗḿǿṽḗ ŧħḗ ẇřīŧḗ-ƥřǿŧḗƈŧīǿƞ ƒřǿḿ \"%s\".\n"
+"\n"
+" Ẇǿŭŀḓ ẏǿŭ ŀīķḗ ŧǿ şȧṽḗ ẇīŧħ ȧ ḓīƒƒḗřḗƞŧ ƞȧḿḗ?"
+
+#. Resource IDs: (252)
+msgid "PN on &Google Code"
+msgstr "ƤȠ ǿƞ &Ɠǿǿɠŀḗ Ƈǿḓḗ"
+
+#. Resource IDs: (330)
+msgid "PN2 File Associations"
+msgstr "ƤȠ2 Ƒīŀḗ Ȧşşǿƈīȧŧīǿƞş"
+
+#. Resource IDs: (1051)
+msgid "PN2 should &check the associations when starting"
+msgstr "ƤȠ2 şħǿŭŀḓ &ƈħḗƈķ ŧħḗ ȧşşǿƈīȧŧīǿƞş ẇħḗƞ şŧȧřŧīƞɠ"
+
+#. Resource IDs: (65535)
+msgid "PROJECT"
+msgstr "ƤŘǾĴḖƇŦ"
+
+#. Resource IDs: (12)
+msgid "Page Setup"
+msgstr "Ƥȧɠḗ Şḗŧŭƥ"
+
+#. Resource IDs: (1073)
+msgid "Paper"
+msgstr "Ƥȧƥḗř"
+
+#. Resource IDs: (65535)
+msgid "Parameters:"
+msgstr "Ƥȧřȧḿḗŧḗřş:"
+
+#. Resource IDs: (1133)
+msgid "Pass my selection to this tool using Standard Input"
+msgstr "Ƥȧşş ḿẏ şḗŀḗƈŧīǿƞ ŧǿ ŧħīş ŧǿǿŀ ŭşīƞɠ Şŧȧƞḓȧřḓ Īƞƥŭŧ"
+
+#. Resource IDs: (65535)
+msgid "Pattern:"
+msgstr "Ƥȧŧŧḗřƞ:"
+
+#. Resource IDs: (65535)
+msgid "Presets"
+msgstr "Ƥřḗşḗŧş"
+
+#. Resource IDs: (65535)
+msgid "Preview"
+msgstr "Ƥřḗṽīḗẇ"
+
+#. Resource IDs: (57606)
+msgid "Print Set&up..."
+msgstr "Ƥřīƞŧ Şḗŧ&ŭƥ..."
+
+#. Resource IDs: (3601)
+msgid "Print the active document\nPrint"
+msgstr ""
+"Ƥřīƞŧ ŧħḗ ȧƈŧīṽḗ ḓǿƈŭḿḗƞŧ\n"
+"Ƥřīƞŧ"
+
+#. Resource IDs: (9)
+msgid "Programmer's Notepad"
+msgstr "Ƥřǿɠřȧḿḿḗř'ş Ƞǿŧḗƥȧḓ"
+
+#. Resource IDs: (1098)
+msgid "Programmer's Notepad 2"
+msgstr "Ƥřǿɠřȧḿḿḗř'ş Ƞǿŧḗƥȧḓ 2"
+
+#. Resource IDs: (65535)
+msgid "Programmer's Notepad 2 is not the handler for these extensions:"
+msgstr "Ƥřǿɠřȧḿḿḗř'ş Ƞǿŧḗƥȧḓ 2 īş ƞǿŧ ŧħḗ ħȧƞḓŀḗř ƒǿř ŧħḗşḗ ḗẋŧḗƞşīǿƞş:"
+
+#. Resource IDs: (22)
+msgid "Programmer's Notepad 2 provides built-in support\nfor parsing output from the following tools:\n\nBorland C++\nMicrosoft Compilers\nGCC\nlcc-win32\nPython\nPerl\nand other similar tools."
+msgstr ""
+"Ƥřǿɠřȧḿḿḗř'ş Ƞǿŧḗƥȧḓ 2 ƥřǿṽīḓḗş ƀŭīŀŧ-īƞ şŭƥƥǿřŧ\n"
+"ƒǿř ƥȧřşīƞɠ ǿŭŧƥŭŧ ƒřǿḿ ŧħḗ ƒǿŀŀǿẇīƞɠ ŧǿǿŀş:\n"
+"\n"
+"Ɓǿřŀȧƞḓ Ƈ++\n"
+"Ḿīƈřǿşǿƒŧ Ƈǿḿƥīŀḗřş\n"
+"ƓƇƇ\n"
+"ŀƈƈ-ẇīƞ32\n"
+"Ƥẏŧħǿƞ\n"
+"Ƥḗřŀ\n"
+"ȧƞḓ ǿŧħḗř şīḿīŀȧř ŧǿǿŀş."
+
+#. Resource IDs: (22)
+msgid "Project"
+msgstr "Ƥřǿĵḗƈŧ"
+
+#. Resource IDs: (22)
+msgid "Project Group"
+msgstr "Ƥřǿĵḗƈŧ Ɠřǿŭƥ"
+
+#. Resource IDs: (10)
+msgid "Project Group Files (*.ppg)|*.ppg|"
+msgstr "Ƥřǿĵḗƈŧ Ɠřǿŭƥ Ƒīŀḗş (*.ƥƥɠ)|*.ƥƥɠ|"
+
+#. Resource IDs: (12)
+#, c-format
+msgid "Project \"%s\" has been changed, do you want to save the changes before removing?"
+msgstr ""
+"Ƥřǿĵḗƈŧ \"%s\" ħȧş ƀḗḗƞ ƈħȧƞɠḗḓ, ḓǿ ẏǿŭ ẇȧƞŧ ŧǿ şȧṽḗ ŧħḗ ƈħȧƞɠḗş ƀḗƒǿřḗ "
+"řḗḿǿṽīƞɠ?"
+
+#. Resource IDs: (2044)
+msgid "Projects"
+msgstr "Ƥřǿĵḗƈŧş"
+
+#. Resource IDs: (10)
+msgid "Projects and Project Groups (*.pnproj, *.ppg)|*.pnproj;*.ppg|"
+msgstr "Ƥřǿĵḗƈŧş ȧƞḓ Ƥřǿĵḗƈŧ Ɠřǿŭƥş (*.ƥƞƥřǿĵ, *.ƥƥɠ)|*.ƥƞƥřǿĵ;*.ƥƥɠ|"
+
+#. Resource IDs: (32902)
+msgid "Proper&ties..."
+msgstr "Ƥřǿƥḗř&ŧīḗş..."
+
+#. Resource IDs: (3605)
+msgid "Quit the application; prompts to save documents\nExit"
+msgstr ""
+"Ɋŭīŧ ŧħḗ ȧƥƥŀīƈȧŧīǿƞ; ƥřǿḿƥŧş ŧǿ şȧṽḗ ḓǿƈŭḿḗƞŧş\n"
+"Ḗẋīŧ"
+
+#. Resource IDs: (57641)
+msgid "R&eplace"
+msgstr "Ř&ḗƥŀȧƈḗ"
+
+#. Resource IDs: (32947)
+msgid "Re&fresh"
+msgstr "Řḗ&ƒřḗşħ"
+
+#. Resource IDs: (32982)
+msgid "Re&name"
+msgstr "Řḗ&ƞȧḿḗ"
+
+#. Resource IDs: (263)
+msgid "Re&vert"
+msgstr "Řḗ&ṽḗřŧ"
+
+#. Resource IDs: (1090, 1093)
+msgid "Re-Open"
+msgstr "Řḗ-Ǿƥḗƞ"
+
+#. Resource IDs: (22, 3585)
+msgid "Ready"
+msgstr "Řḗȧḓẏ"
+
+#. Resource IDs: (10)
+msgid "Recent Pro&jects"
+msgstr "Řḗƈḗƞŧ Ƥřǿ&ĵḗƈŧş"
+
+#. Resource IDs: (11)
+msgid "Rectangular Selection."
+msgstr "Řḗƈŧȧƞɠŭŀȧř Şḗŀḗƈŧīǿƞ."
+
+#. Resource IDs: (3603)
+msgid "Redo the previously undone action\nRedo"
+msgstr ""
+"Řḗḓǿ ŧħḗ ƥřḗṽīǿŭşŀẏ ŭƞḓǿƞḗ ȧƈŧīǿƞ\n"
+"Řḗḓǿ"
+
+#. Resource IDs: (3825)
+msgid "Reduce the window to an icon"
+msgstr "Řḗḓŭƈḗ ŧħḗ ẇīƞḓǿẇ ŧǿ ȧƞ īƈǿƞ"
+
+#. Resource IDs: (107)
+msgid "Regular &expression"
+msgstr "Řḗɠŭŀȧř &ḗẋƥřḗşşīǿƞ"
+
+#. Resource IDs: (33124)
+msgid "Remove Blank &Lines"
+msgstr "Řḗḿǿṽḗ Ɓŀȧƞķ &Ŀīƞḗş"
+
+#. Resource IDs: (3603)
+msgid "Repeat the last action\nRepeat"
+msgstr ""
+"Řḗƥḗȧŧ ŧħḗ ŀȧşŧ ȧƈŧīǿƞ\n"
+"Řḗƥḗȧŧ"
+
+#. Resource IDs: (6)
+msgid "Replace &All"
+msgstr "Řḗƥŀȧƈḗ &Ȧŀŀ"
+
+#. Resource IDs: (11)
+msgid "Replace my selection."
+msgstr "Řḗƥŀȧƈḗ ḿẏ şḗŀḗƈŧīǿƞ."
+
+#. Resource IDs: (3603)
+msgid "Replace specific text with different text\nReplace"
+msgstr ""
+"Řḗƥŀȧƈḗ şƥḗƈīƒīƈ ŧḗẋŧ ẇīŧħ ḓīƒƒḗřḗƞŧ ŧḗẋŧ\n"
+"Řḗƥŀȧƈḗ"
+
+#. Resource IDs: (1042)
+msgid "Replace with:"
+msgstr "Řḗƥŀȧƈḗ ẇīŧħ:"
+
+#. Resource IDs: (253)
+msgid "Report a &bug..."
+msgstr "Řḗƥǿřŧ ȧ &ƀŭɠ..."
+
+#. Resource IDs: (275)
+msgid "Request a &feature..."
+msgstr "Řḗɋŭḗşŧ ȧ &ƒḗȧŧŭřḗ..."
+
+#. Resource IDs: (1037)
+msgid "Reset &All"
+msgstr "Řḗşḗŧ &Ȧŀŀ"
+
+#. Resource IDs: (3826)
+msgid "Restore the window to normal size"
+msgstr "Řḗşŧǿřḗ ŧħḗ ẇīƞḓǿẇ ŧǿ ƞǿřḿȧŀ şīzḗ"
+
+#. Resource IDs: (17)
+msgid "Revert this document to the current saved state\nRevert"
+msgstr ""
+"Řḗṽḗřŧ ŧħīş ḓǿƈŭḿḗƞŧ ŧǿ ŧħḗ ƈŭřřḗƞŧ şȧṽḗḓ şŧȧŧḗ\n"
+"Řḗṽḗřŧ"
+
+#. Resource IDs: (65535)
+msgid "Rightmost Column:"
+msgstr "Řīɠħŧḿǿşŧ Ƈǿŀŭḿƞ:"
+
+#. Resource IDs: (32946)
+msgid "Sa&ve Project"
+msgstr "Şȧ&ṽḗ Ƥřǿĵḗƈŧ"
+
+#. Resource IDs: (10)
+msgid "Save "
+msgstr "Şȧṽḗ "
+
+#. Resource IDs: (57604)
+msgid "Save &As..."
+msgstr "Şȧṽḗ &Ȧş..."
+
+#. Resource IDs: (32950)
+msgid "Save &Workspace As..."
+msgstr "Şȧṽḗ &Ẇǿřķşƥȧƈḗ Ȧş..."
+
+#. Resource IDs: (32865)
+msgid "Save A&ll"
+msgstr "Şȧṽḗ Ȧ&ŀŀ"
+
+#. Resource IDs: (2055)
+msgid "Save all open documents\nSave All"
+msgstr ""
+"Şȧṽḗ ȧŀŀ ǿƥḗƞ ḓǿƈŭḿḗƞŧş\n"
+"Şȧṽḗ Ȧŀŀ"
+
+#. Resource IDs: (3601)
+msgid "Save the active document with a new name\nSave As"
+msgstr ""
+"Şȧṽḗ ŧħḗ ȧƈŧīṽḗ ḓǿƈŭḿḗƞŧ ẇīŧħ ȧ ƞḗẇ ƞȧḿḗ\n"
+"Şȧṽḗ Ȧş"
+
+#. Resource IDs: (3601)
+msgid "Save the active document\nSave"
+msgstr ""
+"Şȧṽḗ ŧħḗ ȧƈŧīṽḗ ḓǿƈŭḿḗƞŧ\n"
+"Şȧṽḗ"
+
+#. Resource IDs: (65535)
+msgid "Save:"
+msgstr "Şȧṽḗ:"
+
+#. Resource IDs: (1017, 65535)
+msgid "Scheme:"
+msgstr "Şƈħḗḿḗ:"
+
+#. Resource IDs: (221)
+msgid "Schemes"
+msgstr "Şƈħḗḿḗş"
+
+#. Resource IDs: (2045)
+msgid "Scripts"
+msgstr "Şƈřīƥŧş"
+
+#. Resource IDs: (436, 1111)
+msgid "Search"
+msgstr "Şḗȧřƈħ"
+
+#. Resource IDs: (1047)
+msgid "Search &up"
+msgstr "Şḗȧřƈħ &ŭƥ"
+
+#. Resource IDs: (1046)
+msgid "Search sub&directories"
+msgstr "Şḗȧřƈħ şŭƀ&ḓīřḗƈŧǿřīḗş"
+
+#. Resource IDs: (3603)
+msgid "Select the entire document\nSelect All"
+msgstr ""
+"Şḗŀḗƈŧ ŧħḗ ḗƞŧīřḗ ḓǿƈŭḿḗƞŧ\n"
+"Şḗŀḗƈŧ Ȧŀŀ"
+
+#. Resource IDs: (10)
+msgid "Select the root folder for the search:"
+msgstr "Şḗŀḗƈŧ ŧħḗ řǿǿŧ ƒǿŀḓḗř ƒǿř ŧħḗ şḗȧřƈħ:"
+
+#. Resource IDs: (22)
+msgid "Select the working folder for the tool:"
+msgstr "Şḗŀḗƈŧ ŧħḗ ẇǿřķīƞɠ ƒǿŀḓḗř ƒǿř ŧħḗ ŧǿǿŀ:"
+
+#. Resource IDs: (65535)
+msgid "Selected Word Highlight:"
+msgstr "Şḗŀḗƈŧḗḓ Ẇǿřḓ Ħīɠħŀīɠħŧ:"
+
+#. Resource IDs: (65535)
+msgid "Selecti&on"
+msgstr "Şḗŀḗƈŧī&ǿƞ"
+
+#. Resource IDs: (65535)
+msgid "Selection Background:"
+msgstr "Şḗŀḗƈŧīǿƞ Ɓȧƈķɠřǿŭƞḓ:"
+
+#. Resource IDs: (65535)
+msgid "Selection Foreground:"
+msgstr "Şḗŀḗƈŧīǿƞ Ƒǿřḗɠřǿŭƞḓ:"
+
+#. Resource IDs: (1116)
+msgid "Semi-transparent when not active (Windows XP+ only)."
+msgstr "Şḗḿī-ŧřȧƞşƥȧřḗƞŧ ẇħḗƞ ƞǿŧ ȧƈŧīṽḗ (Ẇīƞḓǿẇş ẊƤ+ ǿƞŀẏ)."
+
+#. Resource IDs: (65535)
+msgid "Settings"
+msgstr "Şḗŧŧīƞɠş"
+
+#. Resource IDs: (65535)
+msgid "Shortcut:"
+msgstr "Şħǿřŧƈŭŧ:"
+
+#. Resource IDs: (65535)
+msgid "Shortcuts:"
+msgstr "Şħǿřŧƈŭŧş:"
+
+#. Resource IDs: (1054)
+msgid "Show &Tabs"
+msgstr "Şħǿẇ &Ŧȧƀş"
+
+#. Resource IDs: (1048)
+msgid "Show Indentation Guides"
+msgstr "Şħǿẇ Īƞḓḗƞŧȧŧīǿƞ Ɠŭīḓḗş"
+
+#. Resource IDs: (1117)
+msgid "Show Mini Editor Toolbar"
+msgstr "Şħǿẇ Ḿīƞī Ḗḓīŧǿř Ŧǿǿŀƀȧř"
+
+#. Resource IDs: (1069)
+msgid "Show a line at the edge column"
+msgstr "Şħǿẇ ȧ ŀīƞḗ ȧŧ ŧħḗ ḗḓɠḗ ƈǿŀŭḿƞ"
+
+#. Resource IDs: (3713)
+msgid "Show or hide the status bar\nToggle StatusBar"
+msgstr ""
+"Şħǿẇ ǿř ħīḓḗ ŧħḗ şŧȧŧŭş ƀȧř\n"
+"Ŧǿɠɠŀḗ ŞŧȧŧŭşƁȧř"
+
+#. Resource IDs: (3713)
+msgid "Show or hide the toolbar\nToggle ToolBar"
+msgstr ""
+"Şħǿẇ ǿř ħīḓḗ ŧħḗ ŧǿǿŀƀȧř\n"
+"Ŧǿɠɠŀḗ ŦǿǿŀƁȧř"
+
+#. Resource IDs: (1089)
+msgid "Si&ze:"
+msgstr "Şī&zḗ:"
+
+#. Resource IDs: (65535)
+msgid "SmartStart"
+msgstr "ŞḿȧřŧŞŧȧřŧ"
+
+#. Resource IDs: (11)
+#, c-format
+msgid "Sorry, Programmer's Notepad couldn't open this file - most likely because it's too big (actual error: %s). PN needs to have enough free memory to open a file twice to successfully edit it."
+msgstr ""
+"Şǿřřẏ, Ƥřǿɠřȧḿḿḗř'ş Ƞǿŧḗƥȧḓ ƈǿŭŀḓƞ'ŧ ǿƥḗƞ ŧħīş ƒīŀḗ - ḿǿşŧ ŀīķḗŀẏ ƀḗƈȧŭşḗ "
+"īŧ'ş ŧǿǿ ƀīɠ (ȧƈŧŭȧŀ ḗřřǿř: %s). ƤȠ ƞḗḗḓş ŧǿ ħȧṽḗ ḗƞǿŭɠħ ƒřḗḗ ḿḗḿǿřẏ ŧǿ ǿƥḗƞ "
+"ȧ ƒīŀḗ ŧẇīƈḗ ŧǿ şŭƈƈḗşşƒŭŀŀẏ ḗḓīŧ īŧ."
+
+#. Resource IDs: (65535)
+msgid "Special Symbols:"
+msgstr "Şƥḗƈīȧŀ Şẏḿƀǿŀş:"
+
+#. Resource IDs: (33128)
+msgid "Spli&t Lines"
+msgstr "Şƥŀī&ŧ Ŀīƞḗş"
+
+#. Resource IDs: (3604)
+msgid "Split the active window into panes\nSplit"
+msgstr ""
+"Şƥŀīŧ ŧħḗ ȧƈŧīṽḗ ẇīƞḓǿẇ īƞŧǿ ƥȧƞḗş\n"
+"Şƥŀīŧ"
+
+#. Resource IDs: (65535)
+msgid "Standard Input and Output:"
+msgstr "Şŧȧƞḓȧřḓ Īƞƥŭŧ ȧƞḓ Ǿŭŧƥŭŧ:"
+
+#. Resource IDs: (65535)
+msgid "Start Extensions:"
+msgstr "Şŧȧřŧ Ḗẋŧḗƞşīǿƞş:"
+
+#. Resource IDs: (65535)
+msgid "Start Phrase:"
+msgstr "Şŧȧřŧ Ƥħřȧşḗ:"
+
+#. Resource IDs: (1051)
+msgid "Start with a new, &blank document"
+msgstr "Şŧȧřŧ ẇīŧħ ȧ ƞḗẇ, &ƀŀȧƞķ ḓǿƈŭḿḗƞŧ"
+
+#. Resource IDs: (1001, 1002, 1003, 1004, 1008, 1027, 1085, 1086, 1087)
+msgid "Static"
+msgstr "Şŧȧŧīƈ"
+
+#. Resource IDs: (33130)
+msgid "Stop R&ecording"
+msgstr "Şŧǿƥ Ř&ḗƈǿřḓīƞɠ"
+
+#. Resource IDs: (1153)
+msgid "Strictly enforce the auto-scroll positioning"
+msgstr "Şŧřīƈŧŀẏ ḗƞƒǿřƈḗ ŧħḗ ȧŭŧǿ-şƈřǿŀŀ ƥǿşīŧīǿƞīƞɠ"
+
+#. Resource IDs: (65535)
+msgid "Styles"
+msgstr "Şŧẏŀḗş"
+
+#. Resource IDs: (1089, 1092)
+msgid "Switch"
+msgstr "Şẇīŧƈħ"
+
+#. Resource IDs: (3606)
+msgid "Switch back to the previous window pane\nPrevious Pane"
+msgstr ""
+"Şẇīŧƈħ ƀȧƈķ ŧǿ ŧħḗ ƥřḗṽīǿŭş ẇīƞḓǿẇ ƥȧƞḗ\n"
+"Ƥřḗṽīǿŭş Ƥȧƞḗ"
+
+#. Resource IDs: (3825)
+msgid "Switch to the next document window"
+msgstr "Şẇīŧƈħ ŧǿ ŧħḗ ƞḗẋŧ ḓǿƈŭḿḗƞŧ ẇīƞḓǿẇ"
+
+#. Resource IDs: (3606)
+msgid "Switch to the next window pane\nNext Pane"
+msgstr ""
+"Şẇīŧƈħ ŧǿ ŧħḗ ƞḗẋŧ ẇīƞḓǿẇ ƥȧƞḗ\n"
+"Ƞḗẋŧ Ƥȧƞḗ"
+
+#. Resource IDs: (3825)
+msgid "Switch to the previous document window"
+msgstr "Şẇīŧƈħ ŧǿ ŧħḗ ƥřḗṽīǿŭş ḓǿƈŭḿḗƞŧ ẇīƞḓǿẇ"
+
+#. Resource IDs: (131)
+msgid "Syntax &Highlighting"
+msgstr "Şẏƞŧȧẋ &Ħīɠħŀīɠħŧīƞɠ"
+
+#. Resource IDs: (32703)
+msgid "T&ags"
+msgstr "Ŧ&ȧɠş"
+
+#. Resource IDs: (1127)
+msgid "Tab &order controlled by recent use"
+msgstr "Ŧȧƀ &ǿřḓḗř ƈǿƞŧřǿŀŀḗḓ ƀẏ řḗƈḗƞŧ ŭşḗ"
+
+#. Resource IDs: (65535)
+msgid "Tab Width:"
+msgstr "Ŧȧƀ Ẇīḓŧħ:"
+
+#. Resource IDs: (65535)
+msgid "Tabs"
+msgstr "Ŧȧƀş"
+
+#. Resource IDs: (1112)
+msgid "Tabs go here."
+msgstr "Ŧȧƀş ɠǿ ħḗřḗ."
+
+#. Resource IDs: (227)
+msgid "Tagged Expression 1"
+msgstr "Ŧȧɠɠḗḓ Ḗẋƥřḗşşīǿƞ 1"
+
+#. Resource IDs: (228)
+msgid "Tagged Expression 2"
+msgstr "Ŧȧɠɠḗḓ Ḗẋƥřḗşşīǿƞ 2"
+
+#. Resource IDs: (229)
+msgid "Tagged Expression 3"
+msgstr "Ŧȧɠɠḗḓ Ḗẋƥřḗşşīǿƞ 3"
+
+#. Resource IDs: (230)
+msgid "Tagged Expression 4"
+msgstr "Ŧȧɠɠḗḓ Ḗẋƥřḗşşīǿƞ 4"
+
+#. Resource IDs: (231)
+msgid "Tagged Expression 5"
+msgstr "Ŧȧɠɠḗḓ Ḗẋƥřḗşşīǿƞ 5"
+
+#. Resource IDs: (232)
+msgid "Tagged Expression 6"
+msgstr "Ŧȧɠɠḗḓ Ḗẋƥřḗşşīǿƞ 6"
+
+#. Resource IDs: (233)
+msgid "Tagged Expression 7"
+msgstr "Ŧȧɠɠḗḓ Ḗẋƥřḗşşīǿƞ 7"
+
+#. Resource IDs: (234)
+msgid "Tagged Expression 8"
+msgstr "Ŧȧɠɠḗḓ Ḗẋƥřḗşşīǿƞ 8"
+
+#. Resource IDs: (235)
+msgid "Tagged Expression 9"
+msgstr "Ŧȧɠɠḗḓ Ḗẋƥřḗşşīǿƞ 9"
+
+#. Resource IDs: (32844)
+msgid "Tagged Expresssion"
+msgstr "Ŧȧɠɠḗḓ Ḗẋƥřḗşşşīǿƞ"
+
+#. Resource IDs: (2044)
+msgid "Tags"
+msgstr "Ŧȧɠş"
+
+#. Resource IDs: (65535)
+msgid "Testing:"
+msgstr "Ŧḗşŧīƞɠ:"
+
+#. Resource IDs: (1072)
+msgid "Text &Colour:"
+msgstr "Ŧḗẋŧ &Ƈǿŀǿŭř:"
+
+#. Resource IDs: (350)
+msgid "Text Clip Editor"
+msgstr "Ŧḗẋŧ Ƈŀīƥ Ḗḓīŧǿř"
+
+#. Resource IDs: (2044)
+msgid "Text Clips"
+msgstr "Ŧḗẋŧ Ƈŀīƥş"
+
+#. Resource IDs: (9)
+#, c-format
+msgid "The file \"%s\" could not be saved because it is write-protected.\n\nYou can either save in a different location or PN can attempt to remove the protection and overwrite the file in its current location."
+msgstr ""
+"Ŧħḗ ƒīŀḗ \"%s\" ƈǿŭŀḓ ƞǿŧ ƀḗ şȧṽḗḓ ƀḗƈȧŭşḗ īŧ īş ẇřīŧḗ-ƥřǿŧḗƈŧḗḓ.\n"
+"\n"
+"Ẏǿŭ ƈȧƞ ḗīŧħḗř şȧṽḗ īƞ ȧ ḓīƒƒḗřḗƞŧ ŀǿƈȧŧīǿƞ ǿř ƤȠ ƈȧƞ ȧŧŧḗḿƥŧ ŧǿ řḗḿǿṽḗ ŧħḗ "
+"ƥřǿŧḗƈŧīǿƞ ȧƞḓ ǿṽḗřẇřīŧḗ ŧħḗ ƒīŀḗ īƞ īŧş ƈŭřřḗƞŧ ŀǿƈȧŧīǿƞ."
+
+#. Resource IDs: (11)
+msgid "The file must be placed inside this magic folder directory."
+msgstr "Ŧħḗ ƒīŀḗ ḿŭşŧ ƀḗ ƥŀȧƈḗḓ īƞşīḓḗ ŧħīş ḿȧɠīƈ ƒǿŀḓḗř ḓīřḗƈŧǿřẏ."
+
+#. Resource IDs: (11)
+#, c-format
+msgid "The folder %s could not be created, check that the path is valid."
+msgstr "Ŧħḗ ƒǿŀḓḗř %s ƈǿŭŀḓ ƞǿŧ ƀḗ ƈřḗȧŧḗḓ, ƈħḗƈķ ŧħȧŧ ŧħḗ ƥȧŧħ īş ṽȧŀīḓ."
+
+#. Resource IDs: (11)
+#, c-format
+msgid "The folder %s does not exist, do you want to create it?"
+msgstr "Ŧħḗ ƒǿŀḓḗř %s ḓǿḗş ƞǿŧ ḗẋīşŧ, ḓǿ ẏǿŭ ẇȧƞŧ ŧǿ ƈřḗȧŧḗ īŧ?"
+
+#. Resource IDs: (11)
+msgid "The regular expression is not valid."
+msgstr "Ŧħḗ řḗɠŭŀȧř ḗẋƥřḗşşīǿƞ īş ƞǿŧ ṽȧŀīḓ."
+
+#. Resource IDs: (2063)
+msgid "The specified project does not exist,\n would you like to create it?"
+msgstr ""
+"Ŧħḗ şƥḗƈīƒīḗḓ ƥřǿĵḗƈŧ ḓǿḗş ƞǿŧ ḗẋīşŧ,\n"
+" ẇǿŭŀḓ ẏǿŭ ŀīķḗ ŧǿ ƈřḗȧŧḗ īŧ?"
+
+#. Resource IDs: (9)
+#, c-format
+msgid "The specified text '%s' was not found."
+msgstr "Ŧħḗ şƥḗƈīƒīḗḓ ŧḗẋŧ '%s' ẇȧş ƞǿŧ ƒǿŭƞḓ."
+
+#. Resource IDs: (9)
+msgid "This project has no properties."
+msgstr "Ŧħīş ƥřǿĵḗƈŧ ħȧş ƞǿ ƥřǿƥḗřŧīḗş."
+
+#. Resource IDs: (1048)
+msgid "This tool will modify the current file."
+msgstr "Ŧħīş ŧǿǿŀ ẇīŀŀ ḿǿḓīƒẏ ŧħḗ ƈŭřřḗƞŧ ƒīŀḗ."
+
+#. Resource IDs: (57651)
+msgid "Tile &Horizontal"
+msgstr "Ŧīŀḗ &Ħǿřīzǿƞŧȧŀ"
+
+#. Resource IDs: (57652)
+msgid "Tile &Vertical"
+msgstr "Ŧīŀḗ &Ṽḗřŧīƈȧŀ"
+
+#. Resource IDs: (32786)
+msgid "Toggle &Bookmark"
+msgstr "Ŧǿɠɠŀḗ &Ɓǿǿķḿȧřķ"
+
+#. Resource IDs: (272)
+msgid "Toggle Fold"
+msgstr "Ŧǿɠɠŀḗ Ƒǿŀḓ"
+
+#. Resource IDs: (9)
+msgid "Toggle line numbers display"
+msgstr "Ŧǿɠɠŀḗ ŀīƞḗ ƞŭḿƀḗřş ḓīşƥŀȧẏ"
+
+#. Resource IDs: (9)
+msgid "Toggle syntax highlighting"
+msgstr "Ŧǿɠɠŀḗ şẏƞŧȧẋ ħīɠħŀīɠħŧīƞɠ"
+
+#. Resource IDs: (2050)
+msgid "Toggle visible line-end characters"
+msgstr "Ŧǿɠɠŀḗ ṽīşīƀŀḗ ŀīƞḗ-ḗƞḓ ƈħȧřȧƈŧḗřş"
+
+#. Resource IDs: (2050)
+msgid "Toggle visible whitespace characters"
+msgstr "Ŧǿɠɠŀḗ ṽīşīƀŀḗ ẇħīŧḗşƥȧƈḗ ƈħȧřȧƈŧḗřş"
+
+#. Resource IDs: (9)
+msgid "Toggle word wrap"
+msgstr "Ŧǿɠɠŀḗ ẇǿřḓ ẇřȧƥ"
+
+#. Resource IDs: (2070)
+msgid "Toggle write protect"
+msgstr "Ŧǿɠɠŀḗ ẇřīŧḗ ƥřǿŧḗƈŧ"
+
+#. Resource IDs: (65535)
+msgid "Trans&form"
+msgstr "Ŧřȧƞş&ƒǿřḿ"
+
+#. Resource IDs: (32913)
+msgid "Transp&ose Lines"
+msgstr "Ŧřȧƞşƥ&ǿşḗ Ŀīƞḗş"
+
+#. Resource IDs: (32911)
+msgid "U&ppercase"
+msgstr "Ŭ&ƥƥḗřƈȧşḗ"
+
+#. Resource IDs: (32891)
+msgid "UTF-16 Big Endian"
+msgstr "ŬŦƑ-16 Ɓīɠ Ḗƞḓīȧƞ"
+
+#. Resource IDs: (32892)
+msgid "UTF-16 Little Endian"
+msgstr "ŬŦƑ-16 Ŀīŧŧŀḗ Ḗƞḓīȧƞ"
+
+#. Resource IDs: (32893)
+msgid "UTF-8"
+msgstr "ŬŦƑ-8"
+
+#. Resource IDs: (32894)
+msgid "UTF-8 No Mark"
+msgstr "ŬŦƑ-8 Ƞǿ Ḿȧřķ"
+
+#. Resource IDs: (3603)
+msgid "Undo the last action\nUndo"
+msgstr ""
+"Ŭƞḓǿ ŧħḗ ŀȧşŧ ȧƈŧīǿƞ\n"
+"Ŭƞḓǿ"
+
+#. Resource IDs: (261)
+msgid "Use &Tabs"
+msgstr "Ŭşḗ &Ŧȧƀş"
+
+#. Resource IDs: (32960)
+msgid "Use As &Script"
+msgstr "Ŭşḗ Ȧş &Şƈřīƥŧ"
+
+#. Resource IDs: (1126)
+msgid "Use Spaces"
+msgstr "Ŭşḗ Şƥȧƈḗş"
+
+#. Resource IDs: (21)
+msgid "Use an individual output window."
+msgstr "Ŭşḗ ȧƞ īƞḓīṽīḓŭȧŀ ǿŭŧƥŭŧ ẇīƞḓǿẇ."
+
+#. Resource IDs: (1125)
+msgid "Use tabs"
+msgstr "Ŭşḗ ŧȧƀş"
+
+#. Resource IDs: (1057)
+msgid "Use the built-in error parser."
+msgstr "Ŭşḗ ŧħḗ ƀŭīŀŧ-īƞ ḗřřǿř ƥȧřşḗř."
+
+#. Resource IDs: (10)
+msgid "Use the main output window."
+msgstr "Ŭşḗ ŧħḗ ḿȧīƞ ǿŭŧƥŭŧ ẇīƞḓǿẇ."
+
+#. Resource IDs: (32886)
+msgid "User Name (%u)"
+msgstr "Ŭşḗř Ƞȧḿḗ (%u)"
+
+#. Resource IDs: (9)
+#, c-format
+msgid "Version: v%s\n\nCopyright © 2002-2009 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
+msgstr ""
+"Ṽḗřşīǿƞ: ṽ%s\n"
+"\n"
+"Ƈǿƥẏřīɠħŧ © 2002-2009 Şīḿǿƞ Şŧḗḗŀḗ\n"
+"\n"
+"Ƥřǿɠřȧḿḿḗř'ş Ƞǿŧḗƥȧḓ īş Ƒřḗḗ Şǿƒŧẇȧřḗ.\n"
+"\n"
+"Ƥřǿɠřȧḿḿḗř'ş Ƞǿŧḗƥȧḓ ŭşḗş Şƈīƞŧīŀŀȧ, ẆŦĿ, ƓḗƞẊ, Ḗẋƥȧŧ, Ḗẋŭƀḗřȧƞŧ ƇŦȧɠş, ȧƞḓ "
+"Ɓǿǿşŧ. Ŧħȧƞķş ŧǿ ŧħḗ ȧŭŧħǿřş ȧƞḓ ƈǿƞŧřīƀŭŧǿřş ǿƞ ŧħǿşḗ ƥřǿĵḗƈŧş, ȧƞḓ ȧŀŀ "
+"ŧħǿşḗ ẇħǿ ħȧṽḗ ƈǿƞŧřīƀŭŧḗḓ ŧǿ Ƥřǿɠřȧḿḿḗř'ş Ƞǿŧḗƥȧḓ."
+
+#. Resource IDs: (65535)
+msgid "Vertical:"
+msgstr "Ṽḗřŧīƈȧŀ:"
+
+#. Resource IDs: (1123)
+msgid "Visible &Whitespace Characters"
+msgstr "Ṽīşīƀŀḗ &Ẇħīŧḗşƥȧƈḗ Ƈħȧřȧƈŧḗřş"
+
+#. Resource IDs: (1122)
+msgid "Visible Line &Endings"
+msgstr "Ṽīşīƀŀḗ Ŀīƞḗ &Ḗƞḓīƞɠş"
+
+#. Resource IDs: (65535)
+msgid "WORKSPACE"
+msgstr "ẆǾŘĶŞƤȦƇḖ"
+
+#. Resource IDs: (10)
+#, c-format
+msgid "Warning: the file %s does not exist any more."
+msgstr "Ẇȧřƞīƞɠ: ŧħḗ ƒīŀḗ %s ḓǿḗş ƞǿŧ ḗẋīşŧ ȧƞẏ ḿǿřḗ."
+
+#. Resource IDs: (65535)
+msgid "When an open file is dropped:"
+msgstr "Ẇħḗƞ ȧƞ ǿƥḗƞ ƒīŀḗ īş ḓřǿƥƥḗḓ:"
+
+#. Resource IDs: (65535)
+msgid "When attempting to re-open a file:"
+msgstr "Ẇħḗƞ ȧŧŧḗḿƥŧīƞɠ ŧǿ řḗ-ǿƥḗƞ ȧ ƒīŀḗ:"
+
+#. Resource IDs: (130)
+msgid "Word W&rap"
+msgstr "Ẇǿřḓ Ẇ&řȧƥ"
+
+#. Resource IDs: (65535)
+msgid "Words:"
+msgstr "Ẇǿřḓş:"
+
+#. Resource IDs: (10)
+msgid "Workspace Files (*.pnws)|*.pnws|"
+msgstr "Ẇǿřķşƥȧƈḗ Ƒīŀḗş (*.ƥƞẇş)|*.ƥƞẇş|"
+
+#. Resource IDs: (11)
+#, c-format
+msgid "Would you like to save changes to:\n%s?"
+msgstr ""
+"Ẇǿŭŀḓ ẏǿŭ ŀīķḗ ŧǿ şȧṽḗ ƈħȧƞɠḗş ŧǿ:\n"
+"%s?"
+
+#. Resource IDs: (33107)
+msgid "Write protect"
+msgstr "Ẇřīŧḗ ƥřǿŧḗƈŧ"
+
+#. Resource IDs: (6)
+msgid "Yes"
+msgstr "Ẏḗş"
+
+#. Resource IDs: (65535)
+msgid "You can restrict the file types shown by a magic folder, and the directories that it displays."
+msgstr ""
+"Ẏǿŭ ƈȧƞ řḗşŧřīƈŧ ŧħḗ ƒīŀḗ ŧẏƥḗş şħǿẇƞ ƀẏ ȧ ḿȧɠīƈ ƒǿŀḓḗř, ȧƞḓ ŧħḗ ḓīřḗƈŧǿřīḗş "
+"ŧħȧŧ īŧ ḓīşƥŀȧẏş."
+
+#. Resource IDs: (33135)
+msgid "Zoom O&ut"
+msgstr "Ẑǿǿḿ Ǿ&ŭŧ"
+
+#. Resource IDs: (11)
+msgid "\n> Process Exit Code: "
+msgstr ""
+"\n"
+"> Ƥřǿƈḗşş Ḗẋīŧ Ƈǿḓḗ: "
+
+#. Resource IDs: (11)
+msgid "\n> Time Taken: "
+msgstr ""
+"\n"
+"> Ŧīḿḗ Ŧȧķḗƞ: "
+
+#. Resource IDs: (65535)
+msgid "characters"
+msgstr "ƈħȧřȧƈŧḗřş"
+
+#. Resource IDs: (65535)
+msgid "example: %f:%l: "
+msgstr "ḗẋȧḿƥŀḗ: %f:%ŀ: "
+
+#. Resource IDs: (65535)
+msgid "pixels"
+msgstr "ƥīẋḗŀş"
+
+#. Resource IDs: (65535)
+msgid "text lines"
+msgstr "ŧḗẋŧ ŀīƞḗş"
+
+#. Resource IDs: (332)
+msgid "w"
+msgstr "ẇ"
