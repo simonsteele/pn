@@ -1143,20 +1143,23 @@ IDD_PAGE_DIALOGS DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg 2", 400, 0, 0x1
 BEGIN
-    CONTROL         "",-1,"Static",SS_ETCHEDHORZ,0,4,299,1
-    LTEXT           "File Dialogs",-1,0,0,36,8
-    CONTROL         "",-1,"Static",SS_ETCHEDHORZ,0,64,299,1
-    LTEXT           "Find Dialog",-1,0,60,36,8
+    CONTROL         "",-1,"Static",SS_ETCHEDHORZ,0,49,299,1
+    LTEXT           "File Dialogs",-1,0,45,36,8
+    CONTROL         "",-1,"Static",SS_ETCHEDHORZ,0,109,299,1
+    LTEXT           "Find Dialog",-1,0,105,36,8
     CONTROL         "&Open dialog should start in the directory of the current file.",IDC_OPENCURFILEDIRCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,12,228,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,57,228,10
     CONTROL         "&Hide when ""Find Next"" is clicked.",IDC_CLOSEONFINDNEXTCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,72,213,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,117,213,10
     CONTROL         "Semi-transparent when not active (Windows XP+ only).",IDC_FINDALPHACHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,84,218,10
-    CONTROL         "",-1,"Static",SS_ETCHEDHORZ,0,129,299,1
-    LTEXT           "Other User Interface Options",-1,0,125,95,8
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,129,218,10
+    CONTROL         "",-1,"Static",SS_ETCHEDHORZ,0,174,299,1
+    LTEXT           "Other User Interface Options",-1,0,170,95,8
     CONTROL         "Show Mini Editor Toolbar",IDC_SHOWEDITORTOOLBARCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,137,213,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,182,213,10
+    CONTROL         "",-1,"Static",SS_ETCHEDHORZ,0,5,299,1
+    LTEXT           "Language",-1,0,1,32,8
+    COMBOBOX        IDC_LANGUAGECOMBO,10,12,126,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
 END
 
 IDD_TOOLCONSOLEIOPAGE DIALOGEX 0, 0, 243, 238

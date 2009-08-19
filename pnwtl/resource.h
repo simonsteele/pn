@@ -405,6 +405,7 @@
 #define IDC_FOLDER_COMBO                1053
 #define IDC_STYLE_PRESETLIST            1053
 #define IDC_STYLE_PRESETCOMBO           1053
+#define IDC_LANGUAGECOMBO               1053
 #define IDC_OPT_LECOMBO                 1054
 #define IDC_FILEPROP_ENCODING           1054
 #define IDC_OPT_SHOWTABSCHECK           1054
@@ -482,6 +483,7 @@
 #define IDC_TREE1                       1117
 #define IDC_SHOWEDITORTOOLBARCHECK      1117
 #define IDC_VAR_LIST                    1118
+#define IDC_OPENCURFILEDIRCHECK2        1118
 #define IDC_TE_CLICKRESULTSSTATIC       1120
 #define IDC_TE_OUTPUTGROUP              1121
 #define IDC_OPT_LINEENDINGSCHECK        1122

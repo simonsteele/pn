@@ -13,6 +13,8 @@
 #include "OptionsPages.h"
 #include "OptionsDialogs.h"
 #include "toolsmanager.h"
+#include "include/filefinder.h"
+#include "version.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // COptionsPageEditDefaults
@@ -203,7 +205,6 @@ tstring COptionsPageConf::GetTreePosition()
 
 LRESULT COptionsPageConf::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-		
 	return 0;
 }
 
@@ -227,6 +228,22 @@ void COptionsPageDialogs::OnOK()
 
 	// Other UI
 	OPTIONS->Set(PNSK_INTERFACE, _T("MiniToolbar"), m_bShowEditorToolbar == TRUE);
+
+	CComboBox langCombo(GetDlgItem(IDC_LANGUAGECOMBO));
+	int sel = langCombo.GetCurSel();
+	if (sel != 0)
+	{
+		std::map<int, tstring>::const_iterator i = m_lcid_map.find(langCombo.GetItemData(sel));
+		if (i != m_lcid_map.end())
+		{
+			OPTIONS->Set(PNSK_INTERFACE, _T("Language"), (*i).second.c_str());
+		}
+	}
+	else
+	{
+		OPTIONS->Set(PNSK_INTERFACE, _T("Language"), _T(""));
+	}
+
 }
 
 void COptionsPageDialogs::OnInitialise()
@@ -251,6 +268,61 @@ tstring COptionsPageDialogs::GetTreePosition()
 
 LRESULT COptionsPageDialogs::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	// Languages:
+	CComboBox langCombo(GetDlgItem(IDC_LANGUAGECOMBO));
+	langCombo.AddString(_T("English"));
+	langCombo.SetCurSel(0);
+	
+	tstring currentSetting = OPTIONS->Get(PNSK_INTERFACE, _T("Language"), _T(""));
+
+	FileFinderList finder;
+	const std::list<tstring>& languageDlls = finder.GetFiles(OPTIONS->GetPNPath(), _T("pnlang*.dll"), false);
+
+	boost::xpressive::tsregex re = boost::xpressive::tsregex::compile(L"^pnlang_(?P<lcid>[0-9]+)_(?P<langcode>[a-zA-Z]+-[a-zA-Z]+)_(?P<ver>([0-9]+\\.){3}[0-9]+).dll$");
+	
+	BOOST_FOREACH(const tstring& langdll, languageDlls)
+	{
+		boost::xpressive::tsmatch match;
+		if (boost::xpressive::regex_match(langdll, match, re))
+		{
+			tstring lcidstr(match[_T("lcid")]);
+			tstring langcodestr(match[_T("langcode")]);
+			tstring ver(match[_T("ver")]);
+
+			if (ver != PN_VERSTRING_T)
+			{
+				continue;
+			}
+
+			int lcid = _ttoi(lcidstr.c_str());
+
+			TCHAR buf[80];
+			tstring friendlyname;
+			if (::GetLocaleInfo(lcid, LOCALE_SNATIVELANGUAGENAME, buf, (sizeof(buf)/sizeof(TCHAR)) - 1) != 0)
+			{
+				friendlyname = buf;
+				friendlyname += L" (";
+				friendlyname += langcodestr;
+				friendlyname += L")";
+			}
+			else
+			{
+				friendlyname = langcodestr;
+			}
+			
+			int index = langCombo.AddString(friendlyname.c_str());
+			langCombo.SetItemData(index, lcid);
+
+			tstring languageIdString(lcidstr + L"_" + langcodestr);
+			m_lcid_map.insert(std::map<int, tstring>::value_type(lcid, languageIdString));
+
+			if (languageIdString == currentSetting)
+			{
+				langCombo.SetCurSel(index);
+			}
+		}
+	}
+
 	return 0;
 }
 

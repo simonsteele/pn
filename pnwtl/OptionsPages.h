@@ -109,13 +109,15 @@ class COptionsPageDialogs : public COptionsPageImpl<COptionsPageDialogs>,
 		virtual void OnInitialise();
 		virtual tstring GetTreePosition();
 
-	protected:
+	private:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 		
 		BOOL m_bOpenCurFileDir;
 		BOOL m_bFindAlpha;
 		BOOL m_bCloseFindNext;
 		BOOL m_bShowEditorToolbar;
+
+		std::map<int, tstring> m_lcid_map;
 };
 
 class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>

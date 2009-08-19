@@ -158,4 +158,38 @@ public:
 	FileFinder(TOwner* pOwner, OnFoundFunc func) : baseClass(pOwner, func){}
 };
 
+/**
+ * Simple file finder that returns a list of matching files.
+ */
+class FileFinderList : public FileFinderImpl<FileFinderList, FileFinderList, FileFinderData>
+{
+	typedef FileFinderImpl<FileFinderList, FileFinderList, FileFinderData> baseClass;
+public:
+	FileFinderList() : baseClass(this, &FileFinderList::OnFoundFunc)
+	{
+	}
+
+	/// Get a list of matching files from path
+	const std::list<tstring>& GetFiles(LPCTSTR path, LPCTSTR filespec, bool recurse)
+	{
+		m_matches.clear();
+
+		Find(path, filespec, recurse, true);
+
+		return m_matches;
+	}
+
+private:
+	void OnFoundFunc(LPCTSTR path, FileFinderData& details, bool& shouldContinue)
+	{
+		m_matches.push_back(details.GetFilename());
+	}
+
+	void OnDirChange(LPCTSTR path)
+	{
+	}
+
+	std::list<tstring> m_matches;
+};
+
 #endif //ifndef filefinder_h__included
