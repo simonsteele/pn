@@ -2,7 +2,7 @@
  * @file optionspages.cpp
  * @brief Options Dialog General Page
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -16,9 +16,9 @@
 // COptionsPageGeneral
 //////////////////////////////////////////////////////////////////////////////
 
-LPCTSTR COptionsPageGeneral::GetTreePosition()
+tstring COptionsPageGeneral::GetTreePosition()
 {
-	return _T("General");
+	return LS(IDS_OPTGROUP_GENERAL);
 }
 
 void COptionsPageGeneral::OnOK()
@@ -89,6 +89,9 @@ void COptionsPageGeneral::OnInitialise()
 LRESULT COptionsPageGeneral::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	enableControls();
+
+	int a = MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_CUSTOM_UNSPECIFIED), SORT_DEFAULT);
+	a;
 
 	return 0;
 }

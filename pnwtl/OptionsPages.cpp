@@ -93,7 +93,7 @@ void COptionsPageEditDefaults::OnInitialise()
 	DoDataExchange();
 }
 
-LPCTSTR COptionsPageEditDefaults::GetTreePosition()
+tstring COptionsPageEditDefaults::GetTreePosition()
 {
 	return _T("General\\Defaults");
 }
@@ -196,7 +196,7 @@ void COptionsPageConf::OnInitialise()
 	DoDataExchange();
 }
 
-LPCTSTR COptionsPageConf::GetTreePosition()
+tstring COptionsPageConf::GetTreePosition()
 {
 	return _T("General\\Confirmations");
 }
@@ -244,7 +244,7 @@ void COptionsPageDialogs::OnInitialise()
 	DoDataExchange();
 }
 
-LPCTSTR COptionsPageDialogs::GetTreePosition()
+tstring COptionsPageDialogs::GetTreePosition()
 {
 	return _T("General\\Interface");
 }
@@ -349,7 +349,7 @@ void COptionsPageSchemes::OnOK()
 	m_misctab.Finalise();
 }
 
-LPCTSTR COptionsPageSchemes::GetTreePosition()
+tstring COptionsPageSchemes::GetTreePosition()
 {
 	return _T("Fonts and Colors\\Advanced");
 }
@@ -730,7 +730,7 @@ LRESULT COptionsPageTools::OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	return 0;
 }
 
-LPCTSTR COptionsPageTools::GetTreePosition()
+tstring COptionsPageTools::GetTreePosition()
 {
 	return _T("Tools");
 }
@@ -787,7 +787,7 @@ void COptionsPageProjectTools::OnOK()
 	//m_toolstore.Save();
 }
 
-LPCTSTR COptionsPageProjectTools::GetTreePosition()
+tstring COptionsPageProjectTools::GetTreePosition()
 {
 	return _T("Tools\\Project Tools");
 }
@@ -967,7 +967,7 @@ void COptionsPageAFiles::OnCancel()
 
 }
 
-LPCTSTR COptionsPageAFiles::GetTreePosition()
+tstring COptionsPageAFiles::GetTreePosition()
 {
 	return _T("Files\\Alternate Files");
 }
@@ -1103,7 +1103,7 @@ COptionsPageFileAssoc::COptionsPageFileAssoc()
 	, m_bKeyChange(false)
 {}
 
-LPCTSTR COptionsPageFileAssoc::GetTreePosition()
+tstring COptionsPageFileAssoc::GetTreePosition()
 {
 	return _T("Files\\File Associations");
 }
@@ -1598,7 +1598,7 @@ void COptionsPageFileTypes::OnCancel()
 	clear();
 }
 
-LPCTSTR COptionsPageFileTypes::GetTreePosition()
+tstring COptionsPageFileTypes::GetTreePosition()
 {
 	return _T("Files");
 }

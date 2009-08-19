@@ -44,7 +44,7 @@ public:
 	virtual void OnInitialise(){};
 
 	// Return a tree position like "Schemes\AddOn Options"
-	virtual LPCTSTR GetTreePosition() = 0;
+	virtual tstring GetTreePosition() = 0;
 
 	virtual HWND CreatePage(HWND hOwner, LPRECT rcPos, HWND hInsertAfter = NULL) = 0;
 	virtual void ClosePage() = 0;
@@ -199,9 +199,9 @@ class COptionsDialog : public CDialogImpl<COptionsDialog>, CThemeImpl<COptionsDi
 
 			for(i = m_Pages.begin(); i != m_Pages.end(); ++i)
 			{
-				LPCTSTR treeloc = (*i)->GetTreePosition();
-				PNASSERT(_tcslen(treeloc) < 200);
-				_tcscpy(buf, treeloc);
+				tstring treeloc = (*i)->GetTreePosition();
+				PNASSERT(treeloc.length() < 200);
+				_tcscpy(buf, treeloc.c_str());
 
 				HTREEITEM ti = NULL;
 				TCHAR* pSlash = NULL;
@@ -214,6 +214,7 @@ class COptionsDialog : public CDialogImpl<COptionsDialog>, CThemeImpl<COptionsDi
 					*pSlash = '\\';
 					pNext = pSlash + 1;
 				}
+
 				// Add Tree Item
 				HTREEITEM item = AddTreeEntry(pNext, ti);
 				m_tree.SetItemData(item, reinterpret_cast<DWORD_PTR>(*i));

@@ -464,7 +464,7 @@ BOOL CMainFrame::OnIdle()
 	UIEnable(ID_EDIT_COPY, bHasSel);
 	UIEnable(ID_TOOLS_RECORDSCRIPT, bChild && m_recordingDoc.get() == 0 && g_Context.ExtApp->GetRecorder().get() != 0);
 	UIEnable(ID_TOOLS_STOPRECORDING, bChild && m_recordingDoc.get() != 0);
-	UIEnable(ID_FILE_SAVEALL, bCanSave || bHaveProjects);
+	UIEnable(ID_FILE_SAVEALL, bChild || bHaveProjects);
 	UIEnable(ID_FINDTYPE_BUTTON, bChild);
 	UIEnable(ID_VIEW_ZOOM_IN, bChild);
 	UIEnable(ID_VIEW_ZOOM_OUT, bChild);

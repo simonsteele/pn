@@ -43,7 +43,7 @@ class COptionsPageGlobalStyles : public COptionsPageImpl<COptionsPageGlobalStyle
 
 		virtual void OnOK();
 		virtual void OnInitialise();
-		virtual LPCTSTR GetTreePosition();
+		virtual tstring GetTreePosition();
 		virtual void OnCancel();
 
 		bool IsDirty();

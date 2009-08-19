@@ -49,7 +49,7 @@ void COptionsPageClips::OnInitialise()
 	
 }
 
-LPCTSTR COptionsPageClips::GetTreePosition()
+tstring COptionsPageClips::GetTreePosition()
 {
 	return _T("General\\Code Templates");
 }

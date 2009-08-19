@@ -20,7 +20,7 @@ class COptionsPageExtensions : public COptionsPageImpl<COptionsPageExtensions>
 
 		virtual void OnOK();
 		virtual void OnInitialise();
-		virtual LPCTSTR GetTreePosition();
+		virtual tstring GetTreePosition();
 		virtual void OnCancel();
 
 	private:

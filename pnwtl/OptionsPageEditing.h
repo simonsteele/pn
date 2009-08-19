@@ -38,7 +38,7 @@ class COptionsPageEditing : public COptionsPageImpl<COptionsPageEditing>,
 
 		virtual void OnOK();
 		virtual void OnInitialise();
-		virtual LPCTSTR GetTreePosition();
+		virtual tstring GetTreePosition();
 		virtual void OnCancel();
 
 	private:

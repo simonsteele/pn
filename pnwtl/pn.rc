@@ -1991,6 +1991,8 @@ BEGIN
     IDS_SAVESHAREVIOLATION  "%s could not be saved because another program or user is using the same file.\nDo you want to save in another location?"
     IDS_AVOIDINFINITESEARCH "Avoiding infinite search loop, Replace All abandoned"
     IDS_NOUPDATEAVAILABLE   "No updates are available at this time."
+    IDS_OPTGROUP_GENERAL    "General"
+    IDS_OPTPAGE_AUTOCOMPLETE "Autocomplete"
 END
 
 #endif    // English (U.K.) resources

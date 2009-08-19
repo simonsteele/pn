@@ -102,6 +102,8 @@
 #define IDS_SAVESHAREVIOLATION          192
 #define IDS_AVOIDINFINITESEARCH         193
 #define IDS_NOUPDATEAVAILABLE           194
+#define IDS_OPTGROUP_GENERAL            195
+#define IDS_OPTPAGE_AUTOCOMPLETE        196
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define IDD_INPUTBOX                    204

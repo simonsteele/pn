@@ -44,7 +44,7 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 
 		virtual void OnOK();
 		virtual void OnInitialise();
-		virtual LPCTSTR GetTreePosition();
+		virtual tstring GetTreePosition();
 
 	private:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

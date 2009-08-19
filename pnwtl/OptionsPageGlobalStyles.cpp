@@ -55,7 +55,7 @@ void COptionsPageGlobalStyles::OnInitialise()
 	}
 }
 
-LPCTSTR COptionsPageGlobalStyles::GetTreePosition()
+tstring COptionsPageGlobalStyles::GetTreePosition()
 {
 	return _T("Fonts and Colors\\Styles");
 }

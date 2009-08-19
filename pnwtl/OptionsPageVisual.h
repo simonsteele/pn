@@ -39,7 +39,7 @@ class COptionsPageVisual : public COptionsPageImpl<COptionsPageVisual>,
 
 		virtual void OnOK();
 		virtual void OnInitialise();
-		virtual LPCTSTR GetTreePosition();
+		virtual tstring GetTreePosition();
 
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

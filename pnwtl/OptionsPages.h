@@ -46,7 +46,7 @@ class COptionsPageEditDefaults : public COptionsPageImpl<COptionsPageEditDefault
 
 		virtual void OnOK();
 		virtual void OnInitialise();
-		virtual LPCTSTR GetTreePosition();
+		virtual tstring GetTreePosition();
 
 	private:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -79,7 +79,7 @@ class COptionsPageConf : public COptionsPageImpl<COptionsPageConf>,
 
 		virtual void OnOK();
 		virtual void OnInitialise();
-		virtual LPCTSTR GetTreePosition();
+		virtual tstring GetTreePosition();
 
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -107,7 +107,7 @@ class COptionsPageDialogs : public COptionsPageImpl<COptionsPageDialogs>,
 
 		virtual void OnOK();
 		virtual void OnInitialise();
-		virtual LPCTSTR GetTreePosition();
+		virtual tstring GetTreePosition();
 
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -134,7 +134,7 @@ class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
 
 		virtual void OnInitialise();
 		virtual void OnOK();
-		virtual LPCTSTR GetTreePosition();
+		virtual tstring GetTreePosition();
 
 		bool IsDirty();
 
@@ -181,7 +181,7 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 
 		virtual void OnInitialise();
 		virtual void OnOK();
-		virtual LPCTSTR GetTreePosition();
+		virtual tstring GetTreePosition();
 
 	protected:
 		COptionsPageTools(ToolsManager* pToolManager);
@@ -243,7 +243,7 @@ class COptionsPageProjectTools : public COptionsPageTools
 
 		virtual void OnInitialise();
 		virtual void OnOK();
-		virtual LPCTSTR GetTreePosition();
+		virtual tstring GetTreePosition();
 
 	protected:
 		virtual void EnableButtons();
@@ -284,7 +284,7 @@ class COptionsPageNewFiles : public COptionsPageImpl<COptionsPageNewFiles>
 		virtual void OnInitialise();
 		virtual void OnOK();
 		virtual void OnCancel();
-		virtual LPCTSTR GetTreePosition();
+		virtual tstring GetTreePosition();
 
 	private:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -331,7 +331,7 @@ class COptionsPageAFiles : public COptionsPageImpl<COptionsPageAFiles>
 		virtual void OnInitialise();
 		virtual void OnOK();
 		virtual void OnCancel();
-		virtual LPCTSTR GetTreePosition();
+		virtual tstring GetTreePosition();
 
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -394,7 +394,7 @@ class COptionsPageFileAssoc : public COptionsPageImpl<COptionsPageFileAssoc>,
 		virtual void OnInitialise();
 		virtual void OnOK();
 		virtual void OnCancel();
-		virtual LPCTSTR GetTreePosition();
+		virtual tstring GetTreePosition();
 
 		DWORD OnPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
 		DWORD OnItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
@@ -451,7 +451,7 @@ class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
 		virtual void OnInitialise();
 		virtual void OnOK();
 		virtual void OnCancel();
-		virtual LPCTSTR GetTreePosition();
+		virtual tstring GetTreePosition();
 
 	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

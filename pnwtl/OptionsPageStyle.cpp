@@ -204,7 +204,7 @@ void COptionsPageStyle::OnCancel()
 {
 }
 
-LPCTSTR COptionsPageStyle::GetTreePosition()
+tstring COptionsPageStyle::GetTreePosition()
 {
 	return _T("Fonts and Colors");
 }

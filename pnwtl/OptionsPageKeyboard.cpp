@@ -44,7 +44,7 @@ void COptionsPageKeyboard::OnInitialise()
 {
 }
 
-LPCTSTR COptionsPageKeyboard::GetTreePosition()
+tstring COptionsPageKeyboard::GetTreePosition()
 {
 	return _T("General\\Keyboard");
 }

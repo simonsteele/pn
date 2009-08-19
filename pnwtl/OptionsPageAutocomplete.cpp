@@ -45,9 +45,9 @@ void COptionsPageAutocomplete::OnInitialise()
 	m_bInited = true;
 }
 
-LPCTSTR COptionsPageAutocomplete::GetTreePosition()
+tstring COptionsPageAutocomplete::GetTreePosition()
 {
-	return _T("General\\AutoComplete");
+	return MAKE_OPTIONSTREEPATH(IDS_OPTGROUP_GENERAL, IDS_OPTPAGE_AUTOCOMPLETE);
 }
 
 void COptionsPageAutocomplete::OnCancel()

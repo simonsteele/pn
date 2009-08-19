@@ -58,7 +58,7 @@ void COptionsPageEditing::OnInitialise()
 	DoDataExchange();
 }
 
-LPCTSTR COptionsPageEditing::GetTreePosition()
+tstring COptionsPageEditing::GetTreePosition()
 {
 	return _T("General\\Editing");
 }

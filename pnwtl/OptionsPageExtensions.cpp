@@ -53,7 +53,7 @@ void COptionsPageExtensions::OnInitialise()
 	}
 }
 
-LPCTSTR COptionsPageExtensions::GetTreePosition()
+tstring COptionsPageExtensions::GetTreePosition()
 {
 	return _T("Extensions");
 }

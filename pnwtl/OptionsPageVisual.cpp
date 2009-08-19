@@ -22,7 +22,7 @@
 // COptionsPageVisual
 //////////////////////////////////////////////////////////////////////////////
 
-LPCTSTR COptionsPageVisual::GetTreePosition()
+tstring COptionsPageVisual::GetTreePosition()
 {
 	return _T("General\\Visual Help");
 }

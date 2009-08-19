@@ -34,7 +34,7 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 		virtual void OnOK();
 		virtual void OnCancel();
 		virtual void OnInitialise();
-		virtual LPCTSTR GetTreePosition();
+		virtual tstring GetTreePosition();
 
 		bool IsDirty();
 

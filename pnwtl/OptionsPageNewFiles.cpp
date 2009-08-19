@@ -159,7 +159,7 @@ void COptionsPageNewFiles::OnCancel()
 		FreeResources();
 }
 
-LPCTSTR COptionsPageNewFiles::GetTreePosition()
+tstring COptionsPageNewFiles::GetTreePosition()
 {
 	return _T("Files\\New Files");
 }

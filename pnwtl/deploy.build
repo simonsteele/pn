@@ -267,14 +267,15 @@
 		<property name="deployver" value="${ver}.${svn.revision}"/>
 		<property name="compactver" value="${string::replace(deployver, '.', '')}"/>
 		<property name="distdir" value="..\dist\${deployver}"/>
-		
+
 		<exec
 			program="c:\python26\python"
 			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Installer" -p pnotepad --labels="Type-Installer" -u simon.steele --password="${password}" "${distdir}\pn${compactver}.exe"'/>
-		
+
+
 		<exec
 			program="c:\python26\python"
-			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Zip" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" ${distdir}\pn${compactver}.zip'/>		
+			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Zip" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" ${distdir}\pn${compactver}.zip'/>
 
 		<exec
 			program="c:\python26\python"
