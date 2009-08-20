@@ -706,6 +706,10 @@ msgstr ""
 msgid "Add Tools..."
 msgstr ""
 
+#. Resource IDs: (14)
+msgid "Advanced"
+msgstr ""
+
 #. Resource IDs: (10)
 msgid "All Files (*.*)|*.*|"
 msgstr ""
@@ -714,8 +718,20 @@ msgstr ""
 msgid "Allow backslash expressions"
 msgstr ""
 
+#. Resource IDs: (1160)
+msgid "Allow caret to be placed outside current text bounds"
+msgstr ""
+
 #. Resource IDs: (1159)
 msgid "Allow editing of read only files"
+msgstr ""
+
+#. Resource IDs: (1159)
+msgid "Allow multple selections"
+msgstr ""
+
+#. Resource IDs: (1161)
+msgid "Allow typing into multiple caret points"
 msgstr ""
 
 #. Resource IDs: (65535)
@@ -724,6 +740,10 @@ msgstr ""
 
 #. Resource IDs: (65535)
 msgid "Alternate File Pairs"
+msgstr ""
+
+#. Resource IDs: (14)
+msgid "Alternate Files"
 msgstr ""
 
 #. Resource IDs: (12)
@@ -944,6 +964,10 @@ msgstr ""
 msgid "Close the active window and prompts to save the documents"
 msgstr ""
 
+#. Resource IDs: (13)
+msgid "Code Templates"
+msgstr ""
+
 #. Resource IDs: (268)
 msgid "Collapse All Folds"
 msgstr ""
@@ -954,6 +978,10 @@ msgstr ""
 
 #. Resource IDs: (65535)
 msgid "Command:"
+msgstr ""
+
+#. Resource IDs: (14)
+msgid "Confirmations"
 msgstr ""
 
 #. Resource IDs: (32972)
@@ -1202,6 +1230,10 @@ msgstr ""
 msgid "File &Browser"
 msgstr ""
 
+#. Resource IDs: (14)
+msgid "File Associations"
+msgstr ""
+
 #. Resource IDs: (2045)
 msgid "File Browser"
 msgstr ""
@@ -1252,6 +1284,10 @@ msgstr ""
 
 #. Resource IDs: (65535)
 msgid "File:"
+msgstr ""
+
+#. Resource IDs: (14)
+msgid "Files"
 msgstr ""
 
 #. Resource IDs: (1024)
@@ -1316,6 +1352,10 @@ msgstr ""
 
 #. Resource IDs: (65535)
 msgid "Font Style"
+msgstr ""
+
+#. Resource IDs: (13)
+msgid "Fonts and Colours"
 msgstr ""
 
 #. Resource IDs: (13)
@@ -1494,12 +1534,20 @@ msgstr ""
 msgid "Insert Template"
 msgstr ""
 
+#. Resource IDs: (14)
+msgid "Interface"
+msgstr ""
+
 #. Resource IDs: (321)
 msgid "Jump To..."
 msgstr ""
 
 #. Resource IDs: (65535)
 msgid "Jump to:"
+msgstr ""
+
+#. Resource IDs: (14)
+msgid "Keyboard"
 msgstr ""
 
 #. Resource IDs: (65535)
@@ -1588,6 +1636,10 @@ msgstr ""
 
 #. Resource IDs: (65535)
 msgid "New File"
+msgstr ""
+
+#. Resource IDs: (14)
+msgid "New Files"
 msgstr ""
 
 #. Resource IDs: (10)
@@ -1813,6 +1865,10 @@ msgstr ""
 
 #. Resource IDs: (10)
 msgid "Project Group Files (*.ppg)|*.ppg|"
+msgstr ""
+
+#. Resource IDs: (14)
+msgid "Project Tools"
 msgstr ""
 
 #. Resource IDs: (12)
@@ -2301,6 +2357,10 @@ msgstr ""
 msgid "Toggle write protect"
 msgstr ""
 
+#. Resource IDs: (14)
+msgid "Tools"
+msgstr ""
+
 #. Resource IDs: (65535)
 msgid "Trans&form"
 msgstr ""
@@ -2380,6 +2440,10 @@ msgstr ""
 
 #. Resource IDs: (1122)
 msgid "Visible Line &Endings"
+msgstr ""
+
+#. Resource IDs: (14)
+msgid "Visual Help"
 msgstr ""
 
 #. Resource IDs: (65535)

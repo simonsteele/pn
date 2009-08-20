@@ -35,6 +35,7 @@
 		
 		<call target="checkpnmanifest" />
 		<call target="test" />
+		<call target="buildlanguagedlls" />
 	</target>
 
 	<!-- Deploy PN -->
@@ -54,6 +55,14 @@
 			workingdir="installer" />
 			
 		<copy file="installer\output\pnsetup.exe" tofile="${distdir}\pn${compactver}.exe" overwrite="true"/>
+		
+		<exec
+			program="c:\program files (x86)\inno setup 5\iscc"
+			commandline='pn2_translated.iss /d"PNVersion=${deployver}"'
+			output="_iscc.log"
+			workingdir="installer" />
+			
+		<copy file="installer\output\pnsetuptrans.exe" tofile="${distdir}\pn${compactver}_multilang.exe" overwrite="true"/>
 			
 		<zip zipfile="${distdir}\pn${compactver}.zip">
 			<fileset basedir="bin">
@@ -70,7 +79,7 @@
 				<exclude name="boost_python*.dll"/>
 				<exclude name="libexpatw.dll"/>
 			</fileset>
-			<fileset basedir="installer\reqfiles\Microsoft.VC80.CRT" prefix="Microsoft.VC80.CRT">
+			<fileset basedir="installer\reqfiles\Microsoft.VC90.CRT" prefix="Microsoft.VC90.CRT">
 				<include name="*"/>
 			</fileset>
 			<fileset basedir="doc">
@@ -108,7 +117,7 @@
 				<exclude name="boost_python*.dll"/>
 				<exclude name="libexpatw.dll"/>
 			</fileset>
-			<fileset basedir="installer\reqfiles\Microsoft.VC80.CRT" prefix="Microsoft.VC80.CRT">
+			<fileset basedir="installer\reqfiles\Microsoft.VC90.CRT" prefix="Microsoft.VC90.CRT">
 				<include name="*"/>
 			</fileset>
 			<fileset basedir="doc">
@@ -136,7 +145,22 @@
 				<include name="**/*.pdb"/>
 				<exclude name="pypn.pdb"/>
 			</fileset>
-		</zip>		
+		</zip>
+		
+		<zip zipfile="${distdir}\translations${compactver}.zip">
+			<fileset basedir="bin">
+				<include name="bin\pnlang_*.dll"/>
+			</fileset>
+		</zip>
+		
+		<zip zipfile="${distdir}\translatetools${compactver}.zip">
+			<fileset>
+				<include name="bin\pnlang.dll"/>
+				<include name="translations\*.pot"/>
+				<include name="translations\*.po"/>
+				<include name="tools\ResText\*.*"/>
+			</fileset>
+		</zip>
 	</target>
 	
 	<!-- Build PyPN -->
@@ -153,7 +177,7 @@
 				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.6"/>
 			</environment>
 		</exec>
-		<copy file="lib\boost-python-2.6\boost_python-vc80-mt-1_36.dll" todir="bin" overwrite="true"/>
+		<copy file="lib\boost-python-2.6\boost_python-vc90-mt-1_39.dll" todir="bin" overwrite="true"/>
 		
 		<property name="pywrongdep" value="python24"/>
 		<call target="checkpypndeps"/>
@@ -175,7 +199,7 @@
 				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.5"/>
 			</environment>
 		</exec>
-		<copy file="lib\boost-python-2.5\boost_python-vc80-mt-1_36.dll" todir="bin" overwrite="true"/>
+		<copy file="lib\boost-python-2.5\boost_python-vc90-mt-1_39.dll" todir="bin" overwrite="true"/>
 		
 		<property name="pywrongdep" value="python24"/>
 		<call target="checkpypndeps"/>
@@ -197,7 +221,7 @@
 				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.4"/>
 			</environment>
 		</exec>
-		<copy file="lib\boost-python-2.4\boost_python-vc80-mt-1_36.dll" todir="bin" overwrite="true"/>
+		<copy file="lib\boost-python-2.4\boost_python-vc90-mt-1_39.dll" todir="bin" overwrite="true"/>
 		
 		<property name="pywrongdep" value="python25"/>
 		<call target="checkpypndeps"/>
@@ -318,6 +342,53 @@
 			commandline="-inputresource:bin\pn.exe -out:bin\pndepcheck.manifest"/>
 		<loadfile file="bin\pndepcheck.manifest" property="pndeps"/>
 		<fail if="${string::contains(string::to-lower(pndeps), 'debug')}" message="PN dependency on debug dll"/>
+	</target>
+	
+	<target name="buildlanguagedlls">
+		<property name="svn.revision" value="0" if="${property::exists('svn.revision') == false}"/>
+		<foreach item="File" property="filename">
+			<in>
+				<items>
+					<include name="translations\*.po" />
+				</items>
+			</in>
+			<do>
+				<exec
+					program="tools\ResText\ResText.exe"
+					commandline="apply bin\pnlang.dll bin\${path::get-file-name-without-extension(filename)}_${ver}.${svn.revision}.dll ${filename}"/>
+			</do>
+		</foreach>
+	</target>
+	
+	<target name="updatepotfile">
+		<exec
+		    program="tools\ResText\ResText.exe"
+			commandline="extract bin\pnlang.dll translations\pnlang_2057_en-GB.pot"/>
+	</target>
+	
+	<target name="updatepofiles" depends="updatepotfile">
+		<property name="msgmerge" value="c:\Program Files (x86)\Poedit\bin\msgmerge.exe"/>
+		<foreach item="File" property="filename">
+			<in>
+				<items>
+					<include name="translations\*.po" />
+				</items>
+			</in>
+			<do>
+				<exec
+					program="${msgmerge}"
+					commandline="-o translations\temp.po ${filename} translations\pnlang_2057_en-GB.pot"/>
+				<copy file="translations\temp.po" tofile="${filename}" overwrite="true"/>
+			</do>
+		</foreach>
+		<delete file="translations\temp.po" failonerror="false"/>
+	</target>
+	
+	<target name="updatepseudoloc" depends="updatepofiles">
+		<property name="podebug" value="c:\python26\scripts\podebug"/>
+		<exec
+			program="c:\python26\python.exe"
+			commandline="${podebug} translations\pnlang_2057_en-GB.pot -o translations\pnlang_1281_qps-ploc.po --rewrite=unicode"/>
 	</target>
 	
 	<target name="test">

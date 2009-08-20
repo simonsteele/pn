@@ -732,6 +732,10 @@ msgstr "Ȧḓḓ Ƞḗẇ &Ƒǿŀḓḗř"
 msgid "Add Tools..."
 msgstr "Ȧḓḓ Ŧǿǿŀş..."
 
+#. Resource IDs: (14)
+msgid "Advanced"
+msgstr "Ȧḓṽȧƞƈḗḓ"
+
 #. Resource IDs: (10)
 msgid "All Files (*.*)|*.*|"
 msgstr "Ȧŀŀ Ƒīŀḗş (*.*)|*.*|"
@@ -740,9 +744,21 @@ msgstr "Ȧŀŀ Ƒīŀḗş (*.*)|*.*|"
 msgid "Allow backslash expressions"
 msgstr "Ȧŀŀǿẇ ƀȧƈķşŀȧşħ ḗẋƥřḗşşīǿƞş"
 
+#. Resource IDs: (1160)
+msgid "Allow caret to be placed outside current text bounds"
+msgstr "Ȧŀŀǿẇ ƈȧřḗŧ ŧǿ ƀḗ ƥŀȧƈḗḓ ǿŭŧşīḓḗ ƈŭřřḗƞŧ ŧḗẋŧ ƀǿŭƞḓş"
+
 #. Resource IDs: (1159)
 msgid "Allow editing of read only files"
 msgstr "Ȧŀŀǿẇ ḗḓīŧīƞɠ ǿƒ řḗȧḓ ǿƞŀẏ ƒīŀḗş"
+
+#. Resource IDs: (1159)
+msgid "Allow multple selections"
+msgstr "Ȧŀŀǿẇ ḿŭŀŧƥŀḗ şḗŀḗƈŧīǿƞş"
+
+#. Resource IDs: (1161)
+msgid "Allow typing into multiple caret points"
+msgstr "Ȧŀŀǿẇ ŧẏƥīƞɠ īƞŧǿ ḿŭŀŧīƥŀḗ ƈȧřḗŧ ƥǿīƞŧş"
 
 #. Resource IDs: (65535)
 msgid "Alternate Extensions:"
@@ -751,6 +767,10 @@ msgstr "Ȧŀŧḗřƞȧŧḗ Ḗẋŧḗƞşīǿƞş:"
 #. Resource IDs: (65535)
 msgid "Alternate File Pairs"
 msgstr "Ȧŀŧḗřƞȧŧḗ Ƒīŀḗ Ƥȧīřş"
+
+#. Resource IDs: (14)
+msgid "Alternate Files"
+msgstr "Ȧŀŧḗřƞȧŧḗ Ƒīŀḗş"
 
 #. Resource IDs: (12)
 #, c-format
@@ -986,6 +1006,10 @@ msgstr ""
 msgid "Close the active window and prompts to save the documents"
 msgstr "Ƈŀǿşḗ ŧħḗ ȧƈŧīṽḗ ẇīƞḓǿẇ ȧƞḓ ƥřǿḿƥŧş ŧǿ şȧṽḗ ŧħḗ ḓǿƈŭḿḗƞŧş"
 
+#. Resource IDs: (13)
+msgid "Code Templates"
+msgstr "Ƈǿḓḗ Ŧḗḿƥŀȧŧḗş"
+
 #. Resource IDs: (268)
 msgid "Collapse All Folds"
 msgstr "Ƈǿŀŀȧƥşḗ Ȧŀŀ Ƒǿŀḓş"
@@ -997,6 +1021,10 @@ msgstr "Ƈǿḿ&ḿḗƞŧş"
 #. Resource IDs: (65535)
 msgid "Command:"
 msgstr "Ƈǿḿḿȧƞḓ:"
+
+#. Resource IDs: (14)
+msgid "Confirmations"
+msgstr "Ƈǿƞƒīřḿȧŧīǿƞş"
 
 #. Resource IDs: (32972)
 msgid "Convert Spaces to Tabs"
@@ -1262,6 +1290,10 @@ msgstr "Ƒī&ƞḓ ẇħȧŧ:"
 msgid "File &Browser"
 msgstr "Ƒīŀḗ &Ɓřǿẇşḗř"
 
+#. Resource IDs: (14)
+msgid "File Associations"
+msgstr "Ƒīŀḗ Ȧşşǿƈīȧŧīǿƞş"
+
 #. Resource IDs: (2045)
 msgid "File Browser"
 msgstr "Ƒīŀḗ Ɓřǿẇşḗř"
@@ -1318,6 +1350,10 @@ msgstr "Ƒīŀḗ ŧẏƥḗş:"
 #. Resource IDs: (65535)
 msgid "File:"
 msgstr "Ƒīŀḗ:"
+
+#. Resource IDs: (14)
+msgid "Files"
+msgstr "Ƒīŀḗş"
 
 #. Resource IDs: (1024)
 msgid "Fill to &end of line"
@@ -1386,6 +1422,10 @@ msgstr "Ƒǿŀḓīƞɠ ḗƞȧƀŀḗḓ ƒǿř şŭƥƥǿřŧīƞɠ şƈħḗ�
 #. Resource IDs: (65535)
 msgid "Font Style"
 msgstr "Ƒǿƞŧ Şŧẏŀḗ"
+
+#. Resource IDs: (13)
+msgid "Fonts and Colours"
+msgstr "Ƒǿƞŧş ȧƞḓ Ƈǿŀǿŭřş"
 
 #. Resource IDs: (13)
 msgid "General"
@@ -1565,6 +1605,10 @@ msgstr ""
 msgid "Insert Template"
 msgstr "Īƞşḗřŧ Ŧḗḿƥŀȧŧḗ"
 
+#. Resource IDs: (14)
+msgid "Interface"
+msgstr "Īƞŧḗřƒȧƈḗ"
+
 #. Resource IDs: (321)
 msgid "Jump To..."
 msgstr "Ĵŭḿƥ Ŧǿ..."
@@ -1572,6 +1616,10 @@ msgstr "Ĵŭḿƥ Ŧǿ..."
 #. Resource IDs: (65535)
 msgid "Jump to:"
 msgstr "Ĵŭḿƥ ŧǿ:"
+
+#. Resource IDs: (14)
+msgid "Keyboard"
+msgstr "Ķḗẏƀǿȧřḓ"
 
 #. Resource IDs: (65535)
 msgid "Keyboard Shortcuts"
@@ -1660,6 +1708,10 @@ msgstr "Ƞȧḿḗ:"
 #. Resource IDs: (65535)
 msgid "New File"
 msgstr "Ƞḗẇ Ƒīŀḗ"
+
+#. Resource IDs: (14)
+msgid "New Files"
+msgstr "Ƞḗẇ Ƒīŀḗş"
 
 #. Resource IDs: (10)
 msgid "New Project Group"
@@ -1904,6 +1956,10 @@ msgstr "Ƥřǿĵḗƈŧ Ɠřǿŭƥ"
 #. Resource IDs: (10)
 msgid "Project Group Files (*.ppg)|*.ppg|"
 msgstr "Ƥřǿĵḗƈŧ Ɠřǿŭƥ Ƒīŀḗş (*.ƥƥɠ)|*.ƥƥɠ|"
+
+#. Resource IDs: (14)
+msgid "Project Tools"
+msgstr "Ƥřǿĵḗƈŧ Ŧǿǿŀş"
 
 #. Resource IDs: (12)
 #, c-format
@@ -2430,6 +2486,10 @@ msgstr "Ŧǿɠɠŀḗ ẇǿřḓ ẇřȧƥ"
 msgid "Toggle write protect"
 msgstr "Ŧǿɠɠŀḗ ẇřīŧḗ ƥřǿŧḗƈŧ"
 
+#. Resource IDs: (14)
+msgid "Tools"
+msgstr "Ŧǿǿŀş"
+
 #. Resource IDs: (65535)
 msgid "Trans&form"
 msgstr "Ŧřȧƞş&ƒǿřḿ"
@@ -2521,6 +2581,10 @@ msgstr "Ṽīşīƀŀḗ &Ẇħīŧḗşƥȧƈḗ Ƈħȧřȧƈŧḗřş"
 #. Resource IDs: (1122)
 msgid "Visible Line &Endings"
 msgstr "Ṽīşīƀŀḗ Ŀīƞḗ &Ḗƞḓīƞɠş"
+
+#. Resource IDs: (14)
+msgid "Visual Help"
+msgstr "Ṽīşŭȧŀ Ħḗŀƥ"
 
 #. Resource IDs: (65535)
 msgid "WORKSPACE"
