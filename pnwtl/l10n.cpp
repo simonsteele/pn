@@ -2,9 +2,9 @@
  * @file l10n.cpp
  * @brief PN Internationalisation
  * @author Simon Steele
- * @note Copyright (c) 2005 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #include "stdafx.h"
@@ -32,7 +32,7 @@ void StringLoader::InitResourceLoader()
 {
 	release();
 
-	s_pTheInstance = new ResourceStringLoader(_Module.m_hInst);
+	s_pTheInstance = new ResourceStringLoader(_Module.m_hInstResource);
 	DeletionManager::Register(s_pTheInstance);
 }
 

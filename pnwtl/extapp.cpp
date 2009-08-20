@@ -33,9 +33,9 @@
 App::App() : m_dispatch(NULL), m_bCanLoadExtensions(true)
 {
 	// Now we initialise any l10n stuff...
-	//TODO: Make this check settings in AppSettings to work out what to do. Note that some
-	//error checking stuff in AppSettings will make use of StringLoader so there is a cyclic
-	//dependancy to cope with.
+	// Note that some error checking stuff in AppSettings will make use of StringLoader 
+	// so there is a cyclic	dependancy to cope with - this is why we initialise once here
+	// and then again in setAppLanguage if necessary.
 	L10N::StringLoader::InitResourceLoader();
 
 	// This loads some global app settings, including what to
@@ -45,6 +45,9 @@ App::App() : m_dispatch(NULL), m_bCanLoadExtensions(true)
 
 	// Now we have the most important settings, we can make the options object...
 	g_Context.options = m_settings->MakeOptions();
+
+	// Switch languages if necessary.
+	setAppLanguage();
 
 	// Now ensure the user settings directory is available!
 	ensureUserSettingsDir();
@@ -276,6 +279,25 @@ void App::unloadExtensions()
 	}
 
 	m_exts.clear();
+}
+
+void App::setAppLanguage()
+{
+	tstring language = OPTIONS->Get(PNSK_INTERFACE, _T("Language"), _T(""));
+	if (language.size())
+	{
+		language = _T("pnlang_") + language;
+		language += _T("_") PN_VERSTRING_T _T(".dll");
+
+		HINSTANCE languageResources = ::LoadLibrary(language.c_str());
+		if (languageResources)
+		{
+			_Module.SetResourceInstance(languageResources);
+		}
+
+		// Re-initialize resource loader from this point:
+		L10N::StringLoader::InitResourceLoader();
+	}
 }
 
 unsigned int App::GetIFaceVersion() const

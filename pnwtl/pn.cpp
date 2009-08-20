@@ -87,19 +87,6 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 	App* theApp = new App();
 	g_Context.ExtApp = theApp;
 
-	tstring language = OPTIONS->Get(PNSK_INTERFACE, _T("Language"), _T(""));
-	if (language.size())
-	{
-		language = _T("pnlang_") + language;
-		language += _T("_") PN_VERSTRING_T _T(".dll");
-
-		HINSTANCE languageResources = ::LoadLibrary(language.c_str());
-		if (languageResources)
-		{
-			_Module.SetResourceInstance(languageResources);
-		}
-	}
-
 	// See if we allow multiple instances
 	bool bAllowMulti = OPTIONS->Get(PNSK_INTERFACE, _T("AllowMultiInstance"), false);
 

@@ -796,6 +796,10 @@ msgid "AutoComplete when asked"
 msgstr ""
 
 #. Resource IDs: (13)
+msgid "Autocomplete"
+msgstr ""
+
+#. Resource IDs: (13)
 msgid "Avoiding infinite search loop, Replace All abandoned"
 msgstr ""
 
@@ -1314,6 +1318,10 @@ msgstr ""
 msgid "Font Style"
 msgstr ""
 
+#. Resource IDs: (13)
+msgid "General"
+msgstr ""
+
 #. Resource IDs: (204)
 msgid "Go To Line"
 msgstr ""
@@ -1500,6 +1508,10 @@ msgstr ""
 
 #. Resource IDs: (1057)
 msgid "L&andscape"
+msgstr ""
+
+#. Resource IDs: (65535)
+msgid "Language"
 msgstr ""
 
 #. Resource IDs: (32792)
@@ -1733,6 +1745,10 @@ msgstr ""
 
 #. Resource IDs: (65535)
 msgid "PROJECT"
+msgstr ""
+
+#. Resource IDs: (32883)
+msgid "Page Count (%P)"
 msgstr ""
 
 #. Resource IDs: (12)
@@ -1970,6 +1986,10 @@ msgstr ""
 
 #. Resource IDs: (1046)
 msgid "Search sub&directories"
+msgstr ""
+
+#. Resource IDs: (273)
+msgid "Select &All"
 msgstr ""
 
 #. Resource IDs: (3603)

@@ -184,7 +184,7 @@ class CSMenuT
 			return CSMenuHandle( ::GetSubMenu(SafeGetHandle(), nPos) );
 		}
 
-		CSMenuHandle GetSubMenu(LPTSTR name)
+		CSMenuHandle GetSubMenu(LPCTSTR name)
 		{
 			tstring sname(name);
 			

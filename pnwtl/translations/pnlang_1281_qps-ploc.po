@@ -832,6 +832,10 @@ msgid "AutoComplete when asked"
 msgstr "ȦŭŧǿƇǿḿƥŀḗŧḗ ẇħḗƞ ȧşķḗḓ"
 
 #. Resource IDs: (13)
+msgid "Autocomplete"
+msgstr "Ȧŭŧǿƈǿḿƥŀḗŧḗ"
+
+#. Resource IDs: (13)
 msgid "Avoiding infinite search loop, Replace All abandoned"
 msgstr "Ȧṽǿīḓīƞɠ īƞƒīƞīŧḗ şḗȧřƈħ ŀǿǿƥ, Řḗƥŀȧƈḗ Ȧŀŀ ȧƀȧƞḓǿƞḗḓ"
 
@@ -1383,6 +1387,10 @@ msgstr "Ƒǿŀḓīƞɠ ḗƞȧƀŀḗḓ ƒǿř şŭƥƥǿřŧīƞɠ şƈħḗ�
 msgid "Font Style"
 msgstr "Ƒǿƞŧ Şŧẏŀḗ"
 
+#. Resource IDs: (13)
+msgid "General"
+msgstr "Ɠḗƞḗřȧŀ"
+
 #. Resource IDs: (204)
 msgid "Go To Line"
 msgstr "Ɠǿ Ŧǿ Ŀīƞḗ"
@@ -1572,6 +1580,10 @@ msgstr "Ķḗẏƀǿȧřḓ Şħǿřŧƈŭŧş"
 #. Resource IDs: (1057)
 msgid "L&andscape"
 msgstr "Ŀ&ȧƞḓşƈȧƥḗ"
+
+#. Resource IDs: (65535)
+msgid "Language"
+msgstr "Ŀȧƞɠŭȧɠḗ"
 
 #. Resource IDs: (32792)
 msgid "Line &End Markers"
@@ -1812,6 +1824,10 @@ msgstr "ƤȠ2 şħǿŭŀḓ &ƈħḗƈķ ŧħḗ ȧşşǿƈīȧŧīǿƞş ẇħ�
 #. Resource IDs: (65535)
 msgid "PROJECT"
 msgstr "ƤŘǾĴḖƇŦ"
+
+#. Resource IDs: (32883)
+msgid "Page Count (%P)"
+msgstr "Ƥȧɠḗ Ƈǿŭƞŧ (%Ƥ)"
 
 #. Resource IDs: (12)
 msgid "Page Setup"
@@ -2079,6 +2095,10 @@ msgstr "Şḗȧřƈħ &ŭƥ"
 #. Resource IDs: (1046)
 msgid "Search sub&directories"
 msgstr "Şḗȧřƈħ şŭƀ&ḓīřḗƈŧǿřīḗş"
+
+#. Resource IDs: (273)
+msgid "Select &All"
+msgstr "Şḗŀḗƈŧ &Ȧŀŀ"
 
 #. Resource IDs: (3603)
 msgid "Select the entire document\nSelect All"

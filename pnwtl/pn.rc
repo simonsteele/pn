@@ -1996,6 +1996,12 @@ BEGIN
     IDS_NOUPDATEAVAILABLE   "No updates are available at this time."
     IDS_OPTGROUP_GENERAL    "General"
     IDS_OPTPAGE_AUTOCOMPLETE "Autocomplete"
+    IDS_MENU_TOOLS          "&Tools"
+    IDS_MENU_VIEW           "&View"
+    IDS_MENU_FILE           "&File"
+    IDS_MENU_SEARCH         "&Search"
+    IDS_MENU_HELP           "&Help"
+    IDS_MENU_EDIT           "&Edit"
 END
 
 #endif    // English (U.K.) resources

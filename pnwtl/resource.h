@@ -104,6 +104,12 @@
 #define IDS_NOUPDATEAVAILABLE           194
 #define IDS_OPTGROUP_GENERAL            195
 #define IDS_OPTPAGE_AUTOCOMPLETE        196
+#define IDS_MENU_TOOLS                  197
+#define IDS_MENU_VIEW                   198
+#define IDS_MENU_FILE                   199
+#define IDS_MENU_SEARCH                 200
+#define IDS_MENU_HELP                   201
+#define IDS_MENU_EDIT                   202
 #define IDB_EDITOR                      203
 #define IDD_GOTO                        204
 #define IDD_INPUTBOX                    204
@@ -483,7 +489,6 @@
 #define IDC_TREE1                       1117
 #define IDC_SHOWEDITORTOOLBARCHECK      1117
 #define IDC_VAR_LIST                    1118
-#define IDC_OPENCURFILEDIRCHECK2        1118
 #define IDC_TE_CLICKRESULTSSTATIC       1120
 #define IDC_TE_OUTPUTGROUP              1121
 #define IDC_OPT_LINEENDINGSCHECK        1122

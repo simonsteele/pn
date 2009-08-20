@@ -208,6 +208,7 @@ private:
 	void deinit();
 	void ensureUserSettingsDir();
 	void unloadExtensions();
+	void setAppLanguage();
 
 	bool			m_bCanLoadExtensions;
 	EventSinkList	m_sinks;

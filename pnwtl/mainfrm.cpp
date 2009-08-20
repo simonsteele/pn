@@ -2344,7 +2344,7 @@ void CMainFrame::AddNewMenu(CSMenuHandle& menu)
 {
 	PNASSERT(::IsMenu(m_NewMenu));
 	
-	CSMenuHandle file = menu.GetSubMenu(_T("&File"));
+	CSMenuHandle file = menu.GetSubMenu(LS(IDS_MENU_FILE));
 	CString str;
 	str.LoadString(IDS_NEW);
 	::InsertMenu(file, 0, MF_BYPOSITION | MF_POPUP, (UINT)(HMENU)m_NewMenu, str);
@@ -2353,7 +2353,7 @@ void CMainFrame::AddNewMenu(CSMenuHandle& menu)
 void CMainFrame::AddMRUMenu(CSMenuHandle& menu)
 {
 	CString str;
-	CSMenuHandle file(menu.GetSubMenu(_T("&File")));
+	CSMenuHandle file(menu.GetSubMenu(LS(IDS_MENU_FILE)));
 	
 	PNASSERT(::IsMenu(m_RecentFiles));
 	PNASSERT(::IsMenu(m_RecentProjects));
@@ -2371,7 +2371,7 @@ void CMainFrame::AddMRUMenu(CSMenuHandle& menu)
 void CMainFrame::AddLanguageMenu(CSMenuHandle& menu)
 {
 	CString str;
-	CSMenuHandle view(menu.GetSubMenu(_T("&View")));
+	CSMenuHandle view(menu.GetSubMenu(LS(IDS_MENU_VIEW)));
 	
 	PNASSERT(::IsMenu(m_Switcher));
 	str.LoadString(IDS_CHANGESCHEME);
@@ -2380,7 +2380,7 @@ void CMainFrame::AddLanguageMenu(CSMenuHandle& menu)
 
 void CMainFrame::MoveNewMenu(CSMenuHandle& remove, CSMenuHandle& add)
 {
-	CSMenuHandle file( remove.GetSubMenu(_T("&File")) );
+	CSMenuHandle file( remove.GetSubMenu(LS(IDS_MENU_FILE)) );
 	::RemoveMenu(file, 0, MF_BYPOSITION);
 	
 	AddNewMenu(add);
@@ -2388,7 +2388,7 @@ void CMainFrame::MoveNewMenu(CSMenuHandle& remove, CSMenuHandle& add)
 
 void CMainFrame::MoveMRU(CSMenuHandle& r, CSMenuHandle& a)
 {
-	CSMenuHandle file( r.GetSubMenu(_T("&File")) );
+	CSMenuHandle file( r.GetSubMenu(LS(IDS_MENU_FILE)) );
 	int state;
 	int count = 0;
 	for(int i = file.GetCount() - 1; i >= 0; i--)
@@ -2435,7 +2435,7 @@ void CMainFrame::MoveMRU(CSMenuHandle& r, CSMenuHandle& a)
 
 void CMainFrame::MoveLanguage(CSMenuHandle& remove, CSMenuHandle& add)
 {
-	CSMenuHandle view = remove.GetSubMenu(_T("&View"));
+	CSMenuHandle view = remove.GetSubMenu(LS(IDS_MENU_VIEW));
 	if((HMENU)remove != m_hMenu)
 	{
 		int state;
@@ -2470,7 +2470,7 @@ void CMainFrame::AddMRUProjectsEntry(LPCTSTR lpszFile)
 
 	if(m_RecentProjects.GetCount() == 0)
 	{
-		CSMenuHandle file(menu.GetSubMenu(_T("&File")));
+		CSMenuHandle file(menu.GetSubMenu(LS(IDS_MENU_FILE)));
 
 		for(int i = file.GetCount() - 1; i >= 0; i--)
 		{
@@ -2492,7 +2492,7 @@ void CMainFrame::setupAccelerators(HMENU mainMenu)
 void CMainFrame::setupToolsUI()
 {
 	CSMenuHandle menu(m_hMenu);
-	CSMenuHandle tools(menu.GetSubMenu(_T("&Tools")));
+	CSMenuHandle tools(menu.GetSubMenu(LS(IDS_MENU_TOOLS)));
 	ToolsManager* pTM = ToolsManager::GetInstance();
 
 	tstring projid;
