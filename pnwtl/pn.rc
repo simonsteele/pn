@@ -1336,17 +1336,23 @@ FONT 8, "MS Shell Dlg 2", 400, 0, 0x1
 BEGIN
     EDITTEXT        IDC_CARETSLOPX_EDIT,63,24,54,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_CARETSLOPY_EDIT,63,43,54,14,ES_AUTOHSCROLL
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,4,299,1
-    LTEXT           "Editing",IDC_STATIC,0,0,22,8
-    LTEXT           "Auto-scroll Caret Position Limits:",IDC_STATIC,10,12,111,8
-    LTEXT           "pixels",IDC_STATIC,124,26,19,8
-    LTEXT           "Horizontal:",IDC_STATIC,24,26,36,8
-    LTEXT           "text lines",IDC_STATIC,124,44,30,8
-    LTEXT           "Vertical:",IDC_STATIC,24,44,27,8
     CONTROL         "Strictly enforce the auto-scroll positioning",IDC_CARETSTRICT_CHECK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,24,64,174,10
     CONTROL         "Display block caret instead of line",IDC_CARETBLOCK_CHECK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,80,155,10
+    CONTROL         "Allow multple selections",IDC_ALLOWMULTISELECT_CHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,92,167,10
+    CONTROL         "Allow typing into multiple caret points",IDC_ALLOWMULTISELECTTYPING_CHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,106,167,10
+    CONTROL         "Allow caret to be placed outside current text bounds",IDC_VIRTUALSPACE_CHECK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,118,223,10
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,4,299,1
+    LTEXT           "Editing",IDC_STATIC,0,0,22,8
+    LTEXT           "Auto-scroll Caret Position Limits:",IDC_STATIC,10,12,124,8
+    LTEXT           "pixels",IDC_STATIC,124,26,61,8
+    LTEXT           "Horizontal:",IDC_STATIC,24,26,36,8
+    LTEXT           "text lines",IDC_STATIC,124,44,66,8
+    LTEXT           "Vertical:",IDC_STATIC,24,44,36,8
 END
 
 
@@ -2002,6 +2008,7 @@ BEGIN
     IDS_MENU_SEARCH         "&Search"
     IDS_MENU_HELP           "&Help"
     IDS_MENU_EDIT           "&Edit"
+    IDS_OPTPAGE_EDITING     "Editing"
 END
 
 #endif    // English (U.K.) resources

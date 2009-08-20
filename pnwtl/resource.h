@@ -111,6 +111,7 @@
 #define IDS_MENU_HELP                   201
 #define IDS_MENU_EDIT                   202
 #define IDB_EDITOR                      203
+#define IDS_OPTPAGE_EDITING             203
 #define IDD_GOTO                        204
 #define IDD_INPUTBOX                    204
 #define ID_VIEW_CHANGESCHEME            221
@@ -530,7 +531,10 @@
 #define IDC_CARETBLOCKCHECK             1158
 #define IDC_CARETBLOCK_CHECK            1158
 #define IDC_OPT_EDITREADONLY            1159
+#define IDC_ALLOWMULTISELECT_CHECK      1159
 #define IDC_OPT_SMARTHIGHLIGHTCHECK     1160
+#define IDC_VIRTUALSPACE_CHECK          1160
+#define IDC_ALLOWMULTISELECTTYPING_CHECK 1161
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204

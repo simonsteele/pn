@@ -519,6 +519,10 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 	
 	options.BeginGroupOperation(PNSK_EDITOR);
 
+	int vsflags = options.Get(NULL, _T("VirtualSpaceRectSel"), true) ? SCVS_RECTANGULARSELECTION : 0;
+	vsflags |= options.Get(NULL, _T("VirtualSpace"), false) ? SCVS_USERACCESSIBLE : 0;
+	sc.SPerform(SCI_SETVIRTUALSPACEOPTIONS, vsflags, 0); 
+
 	sc.SPerform(SCI_SETMULTIPLESELECTION, options.Get(NULL, _T("MultipleSelections"), true) ? 1 : 0, 0);
 	sc.SPerform(SCI_SETADDITIONALSELECTIONTYPING, options.Get(NULL, _T("TypeIntoMultipleSelections"), true) ? 1: 0, 0);
 

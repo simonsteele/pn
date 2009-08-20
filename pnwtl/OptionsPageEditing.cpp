@@ -2,7 +2,7 @@
  * @file OptionsPageEditing.cpp
  * @brief Caret positioning and other editing options
  * @author Simon Steele
- * @note Copyright (c) 2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2008-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -43,6 +43,9 @@ void COptionsPageEditing::OnOK()
 	OPTIONS->SetCached(Options::OCaretYMove, m_slopY);
 	
 	OPTIONS->Set(PNSK_EDITOR, _T("DisplayCaretAsBlock"), m_blockCaret ? 1 : 0);
+	OPTIONS->Set(PNSK_EDITOR, _T("MultipleSelections"), m_multiSelect ? 1 : 0);
+	OPTIONS->Set(PNSK_EDITOR, _T("TypeIntoMultipleSelections"), m_multiSelectTyping ? 1 : 0);
+	OPTIONS->Set(PNSK_EDITOR, _T("VirtualSpace"), m_virtualSpace ? 1 : 0);
 }
 
 void COptionsPageEditing::OnInitialise()
@@ -54,13 +57,16 @@ void COptionsPageEditing::OnInitialise()
 	m_strict = (xflags & CARET_STRICT) != 0;
 
 	m_blockCaret = OPTIONS->Get(PNSK_EDITOR, _T("DisplayCaretAsBlock"), false);
+	m_multiSelect = OPTIONS->Get(PNSK_EDITOR, _T("MultipleSelections"), true);
+	m_multiSelectTyping = OPTIONS->Get(PNSK_EDITOR, _T("TypeIntoMultipleSelections"), true);
+	m_virtualSpace = OPTIONS->Get(PNSK_EDITOR, _T("VirtualSpace"), false);
 
 	DoDataExchange();
 }
 
 tstring COptionsPageEditing::GetTreePosition()
 {
-	return _T("General\\Editing");
+	return MAKE_OPTIONSTREEPATH(IDS_OPTGROUP_GENERAL, IDS_OPTPAGE_EDITING);
 }
 
 void COptionsPageEditing::OnCancel()
