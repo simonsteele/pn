@@ -24,7 +24,7 @@
 
 tstring COptionsPageVisual::GetTreePosition()
 {
-	return _T("General\\Visual Help");
+	return MAKE_OPTIONSTREEPATH(IDS_OPTGROUP_GENERAL, IDS_OPTPAGE_VISUALHELP);
 }
 
 void COptionsPageVisual::OnOK()

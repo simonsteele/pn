@@ -2009,6 +2009,26 @@ BEGIN
     IDS_MENU_HELP           "&Help"
     IDS_MENU_EDIT           "&Edit"
     IDS_OPTPAGE_EDITING     "Editing"
+    IDS_OPTPAGE_CODETEMPLATES "Code Templates"
+    IDS_OPTGROUP_EXTENSIONS "Extensions"
+    IDS_OPTGROUP_STYLES     "Fonts and Colours"
+    IDS_OPTPAGE_STYLES      "Styles"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_OPTPAGE_KEYBOARD    "Keyboard"
+    IDS_OPTGROUP_FILES      "Files"
+    IDS_OPTPAGE_NEWFILES    "New Files"
+    IDS_OPTPAGE_DEFAULT     "Defaults"
+    IDS_OPTPAGE_CONFIRMATIONS "Confirmations"
+    IDS_OPTPAGE_INTERFACE   "Interface"
+    IDS_OPTPAGE_ADVANCED    "Advanced"
+    IDS_OPTGROUP_TOOLS      "Tools"
+    IDS_OPTPAGE_PROJECTTOOLS "Project Tools"
+    IDS_OPTPAGE_ALTERNATEFILES "Alternate Files"
+    IDS_OPTPAGE_FILEASSOC   "File Associations"
+    IDS_OPTPAGE_VISUALHELP  "Visual Help"
 END
 
 #endif    // English (U.K.) resources

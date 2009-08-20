@@ -161,7 +161,7 @@ void COptionsPageNewFiles::OnCancel()
 
 tstring COptionsPageNewFiles::GetTreePosition()
 {
-	return _T("Files\\New Files");
+	return MAKE_OPTIONSTREEPATH(IDS_OPTGROUP_FILES, IDS_OPTPAGE_NEWFILES);
 }
 
 LRESULT COptionsPageNewFiles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)

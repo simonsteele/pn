@@ -97,7 +97,7 @@ void COptionsPageEditDefaults::OnInitialise()
 
 tstring COptionsPageEditDefaults::GetTreePosition()
 {
-	return _T("General\\Defaults");
+	return MAKE_OPTIONSTREEPATH(IDS_OPTGROUP_GENERAL, IDS_OPTPAGE_DEFAULT);
 }
 
 
@@ -200,7 +200,7 @@ void COptionsPageConf::OnInitialise()
 
 tstring COptionsPageConf::GetTreePosition()
 {
-	return _T("General\\Confirmations");
+	return MAKE_OPTIONSTREEPATH(IDS_OPTGROUP_GENERAL, IDS_OPTPAGE_CONFIRMATIONS);
 }
 
 LRESULT COptionsPageConf::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -263,7 +263,7 @@ void COptionsPageDialogs::OnInitialise()
 
 tstring COptionsPageDialogs::GetTreePosition()
 {
-	return _T("General\\Interface");
+	return MAKE_OPTIONSTREEPATH(IDS_OPTGROUP_GENERAL, IDS_OPTPAGE_INTERFACE);
 }
 
 LRESULT COptionsPageDialogs::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -423,7 +423,7 @@ void COptionsPageSchemes::OnOK()
 
 tstring COptionsPageSchemes::GetTreePosition()
 {
-	return _T("Fonts and Colors\\Advanced");
+	return MAKE_OPTIONSTREEPATH(IDS_OPTGROUP_STYLES, IDS_OPTPAGE_ADVANCED);
 }
 
 LRESULT COptionsPageSchemes::OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -804,7 +804,7 @@ LRESULT COptionsPageTools::OnComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 
 tstring COptionsPageTools::GetTreePosition()
 {
-	return _T("Tools");
+	return L10N::StringLoader::Get(IDS_OPTGROUP_TOOLS);
 }
 
 LRESULT COptionsPageTools::OnListKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
@@ -861,7 +861,7 @@ void COptionsPageProjectTools::OnOK()
 
 tstring COptionsPageProjectTools::GetTreePosition()
 {
-	return _T("Tools\\Project Tools");
+	return MAKE_OPTIONSTREEPATH(IDS_OPTGROUP_TOOLS, IDS_OPTPAGE_PROJECTTOOLS);
 }
 
 
@@ -1041,7 +1041,7 @@ void COptionsPageAFiles::OnCancel()
 
 tstring COptionsPageAFiles::GetTreePosition()
 {
-	return _T("Files\\Alternate Files");
+	return MAKE_OPTIONSTREEPATH(IDS_OPTGROUP_FILES, IDS_OPTPAGE_ALTERNATEFILES);
 }
 
 LRESULT COptionsPageAFiles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -1177,7 +1177,7 @@ COptionsPageFileAssoc::COptionsPageFileAssoc()
 
 tstring COptionsPageFileAssoc::GetTreePosition()
 {
-	return _T("Files\\File Associations");
+	return MAKE_OPTIONSTREEPATH(IDS_OPTGROUP_FILES, IDS_OPTPAGE_FILEASSOC);
 }
 
 void COptionsPageFileAssoc::OnOK()
@@ -1672,7 +1672,7 @@ void COptionsPageFileTypes::OnCancel()
 
 tstring COptionsPageFileTypes::GetTreePosition()
 {
-	return _T("Files");
+	return L10N::StringLoader::Get(IDS_OPTGROUP_FILES);
 }
 
 LRESULT COptionsPageFileTypes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)

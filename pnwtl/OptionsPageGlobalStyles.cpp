@@ -57,7 +57,7 @@ void COptionsPageGlobalStyles::OnInitialise()
 
 tstring COptionsPageGlobalStyles::GetTreePosition()
 {
-	return _T("Fonts and Colors\\Styles");
+	return MAKE_OPTIONSTREEPATH(IDS_OPTGROUP_STYLES, IDS_OPTPAGE_STYLES);
 }
 
 void COptionsPageGlobalStyles::OnCancel()

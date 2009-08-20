@@ -18,7 +18,7 @@
 
 tstring COptionsPageGeneral::GetTreePosition()
 {
-	return LS(IDS_OPTGROUP_GENERAL);
+	return L10N::StringLoader::Get(IDS_OPTGROUP_GENERAL);
 }
 
 void COptionsPageGeneral::OnOK()

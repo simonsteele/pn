@@ -206,5 +206,5 @@ void COptionsPageStyle::OnCancel()
 
 tstring COptionsPageStyle::GetTreePosition()
 {
-	return _T("Fonts and Colors");
+	return L10N::StringLoader::Get(IDS_OPTGROUP_STYLES);
 }

@@ -46,7 +46,7 @@ void COptionsPageKeyboard::OnInitialise()
 
 tstring COptionsPageKeyboard::GetTreePosition()
 {
-	return _T("General\\Keyboard");
+	return MAKE_OPTIONSTREEPATH(IDS_OPTGROUP_GENERAL, IDS_OPTPAGE_KEYBOARD);
 }
 
 bool COptionsPageKeyboard::IsDirty() const

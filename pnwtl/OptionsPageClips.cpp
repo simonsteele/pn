@@ -2,7 +2,7 @@
  * @file optionspageclips.cpp
  * @brief Options Dialog Clips Page for Programmer's Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2007-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -51,7 +51,7 @@ void COptionsPageClips::OnInitialise()
 
 tstring COptionsPageClips::GetTreePosition()
 {
-	return _T("General\\Code Templates");
+	return MAKE_OPTIONSTREEPATH(IDS_OPTGROUP_GENERAL, IDS_OPTPAGE_CODETEMPLATES);
 }
 
 void COptionsPageClips::OnCancel()
