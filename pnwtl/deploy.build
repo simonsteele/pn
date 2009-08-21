@@ -346,6 +346,13 @@
 	
 	<target name="buildlanguagedlls">
 		<property name="svn.revision" value="0" if="${property::exists('svn.revision') == false}"/>
+		
+		<delete>
+			<fileset>
+				<include name="bin\pnlang_*.dll"/>
+			</fileset>
+		</delete>
+		
 		<foreach item="File" property="filename">
 			<in>
 				<items>

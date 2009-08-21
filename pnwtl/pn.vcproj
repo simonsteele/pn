@@ -153,7 +153,7 @@
 				Optimization="3"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="TabbingFramework, DockingFramework, ."
-				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,STRICT,SCI_NAMESPACE"
+				PreprocessorDefinitions="WIN32,NDEBUG,_WINDOWS,STRICT,SCI_NAMESPACE,UNICODE"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -198,7 +198,6 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="pnvista.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -396,7 +395,6 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				AdditionalManifestFiles="pnvista.manifest"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
