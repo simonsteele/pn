@@ -298,7 +298,7 @@ LRESULT COptionsPageDialogs::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 
 			TCHAR buf[80];
 			tstring friendlyname;
-			if (::GetLocaleInfo(lcid, LOCALE_SNATIVELANGUAGENAME, buf, (sizeof(buf)/sizeof(TCHAR)) - 1) != 0)
+			if (::GetLocaleInfo(lcid, LOCALE_SNATIVELANGNAME, buf, (sizeof(buf)/sizeof(TCHAR)) - 1) != 0)
 			{
 				friendlyname = buf;
 				friendlyname += L" (";

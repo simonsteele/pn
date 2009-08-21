@@ -1637,14 +1637,10 @@ ScintillaIterator CScintillaImpl::end()
 	return ScintillaIterator(this, GetLength());
 }
 
+// TODO: Remove this
 std::string CScintillaImpl::GetSelText2()
 {
-	std::string ret;
-	int selLength = CScintilla::GetSelText(NULL);
-	ret.resize(selLength + 1);
-	selLength = CScintilla::GetSelText(&ret[0]);
-	ret.resize(selLength);
-	return ret;
+	return GetSelText();
 }
 
 void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>

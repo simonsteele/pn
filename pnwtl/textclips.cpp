@@ -180,26 +180,19 @@ void Clip::Insert(CScintilla *scintilla) const
 	
 	int curPos = scintilla->GetCurrentPos();
 
-	int length = scintilla->GetSelLength();
-	if (length != 0)
+	std::string sel(scintilla->GetSelText());
+	if (sel.length() != 0)
 	{
-		// Get the selected text from Scintilla.
-		std::string sel;
-		sel.resize(length+1);
-		int rxlen = scintilla->GetSelText(&sel[0]);
-		PNASSERT(rxlen == length+1);
-		sel.resize(length);
-		
 		// Insert the text into the buffer.
 		clipstr.insert(offset, sel);
 		
 		// Adjust the offset to place the cursor after the selected text.
-		offset += length;
+		offset += sel.length();
 	}
 
 	// Wrap everything in an undo block.
 	scintilla->BeginUndoAction();
-	if (length)
+	if (sel.length())
 	{
 		scintilla->DeleteBack(); // kill the selection text, we're inserting it again.
 		curPos = scintilla->GetCurrentPos();

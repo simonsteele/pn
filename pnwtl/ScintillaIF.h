@@ -862,6 +862,10 @@ class CScintilla
 		 */
 		int GetSelText(char* text);
 		/**
+		 * Retrieve the selected text.
+		 */
+		std::string GetSelText();
+		/**
 		 * Retrieve a range of text.
 		 * Return the length of the text.
 		 */

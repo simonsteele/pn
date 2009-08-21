@@ -1502,6 +1502,16 @@ int CScintilla::GetSelText(char* text)
 	return (int)SPerform(SCI_GETSELTEXT, 0, (long)text);
 }
 
+std::string CScintilla::GetSelText()
+{
+	std::string ret;
+	int selLength = GetSelText(NULL);
+	ret.resize(selLength + 1);
+	selLength = GetSelText(&ret[0]);
+	ret.resize(selLength - 1); // selLength includes NULL.
+	return ret;
+}
+
 int CScintilla::GetTextRange(Scintilla::TextRange* tr)
 {
 	return (int)SPerform(SCI_GETTEXTRANGE, 0, (long)tr);

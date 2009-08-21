@@ -580,9 +580,7 @@ std::string CTextView::GetCurrentWord()
 		return "";
 	}
 
-	Scintilla::CharacterRange cr;
-	GetSel(cr);
-	int len = cr.cpMax - cr.cpMin;
+	int len = GetSelText(NULL);
 
 	std::vector<char> buffer;
 
@@ -1342,10 +1340,7 @@ void CTextView::smartHighlight()
 		// Only do this for single-line selections where there are no spaces (i.e. a single word)
 		if (LineFromPosition(cr.cpMin) == LineFromPosition(cr.cpMax))
 		{
-			std::string buf;
-			buf.resize(len + 1);
-			GetSelText(&buf[0]);
-			buf.resize(len);
+			std::string buf(GetSelText2());
 
 			if (buf.find(' ') == -1 && buf.find('\t') == -1)
 			{

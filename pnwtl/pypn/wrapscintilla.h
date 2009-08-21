@@ -88,7 +88,7 @@ public:
 	std::string GetSelTextAsString()
 	{
 		std::string buf;
-		buf.resize(GetSelectionEnd()-GetSelectionStart()+1);
+		buf.resize(GetSelText(NULL)+1);
 		size_t size = GetSelText(&buf[0]);
 		// size includes the NULL terminator
 		buf.resize(size - 1);
