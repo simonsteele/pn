@@ -2,9 +2,9 @@
  * @file toolsmanager.h
  * @brief Manage External Tools
  * @author Simon Steele
- * @note Copyright (c) 2002-2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -36,10 +36,12 @@ class ToolsManager :
 
 		const ToolSource* GetDefaultToolStore();
 
-	protected:
+	private:
 		void Clear(CommandDispatch* pDispatch = NULL);
 
 		int BuildMenu(TOOLDEFS_LIST& list, CommandDispatch* dispatcher, CSMenuHandle& menu, int iInsertBefore, int iCommand = TOOLS_RUNTOOL);
+
+		void toolsFileFound(LPCTSTR path, FileFinderData& details, bool& shouldContinue);
 
 		// Scheme & Tool Creation
 		void processScheme(XMLAttributes& atts);
@@ -53,7 +55,7 @@ class ToolsManager :
 		virtual void endElement(LPCTSTR name);
 		virtual void characterData(LPCTSTR data, int len){}
 
-	protected:
+	private:
 		typedef std::map<std::string, SchemeTools*> SCHEMETOOLS_MAP;
 		typedef std::list<ToolSource*> SOURCES_LIST;
 

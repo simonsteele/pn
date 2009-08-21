@@ -2,9 +2,9 @@
  * @file filefinder.h
  * @brief Find files according to a spec.
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2009 Simon Steele <s.steele@pnotepad.org>
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -156,6 +156,25 @@ class FileFinder : public FileFinderImpl<FileFinder<TOwner, TFindData>, TOwner, 
 	typedef FileFinderImpl<FileFinder<TOwner, TFindData>, TOwner, TFindData> baseClass;
 public:
 	FileFinder(TOwner* pOwner, OnFoundFunc func) : baseClass(pOwner, func){}
+};
+
+/**
+ * Find and let a functor handle this.
+ */
+template <typename TFunctor>
+class FileFinderFunctor : public FileFinderImpl<FileFinderFunctor<TFunctor>, FileFinderFunctor<TFunctor>, FileFinderData>
+{
+	typedef FileFinderImpl<FileFinderFunctor<TFunctor>, FileFinderFunctor<TFunctor>, FileFinderData> baseClass;
+public:
+	explicit FileFinderFunctor(TFunctor functor) : m_f(functor), baseClass(this, &FileFinderFunctor<TFunctor>::OnFoundFunc) {}
+
+private:
+	void OnFoundFunc(LPCTSTR path, FileFinderData& details, bool& shouldContinue)
+	{
+		m_f(path, details, shouldContinue);
+	}
+
+	TFunctor m_f;
 };
 
 /**
