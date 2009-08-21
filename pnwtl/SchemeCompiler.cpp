@@ -11,6 +11,7 @@
 #include "stdafx.h"
 #include "SchemeCompiler.h"
 #include "ssreg.h"
+#include "include/filefinder.h"
 
 // Parser State Defines
 #define DOING_GLOBALS			1
@@ -768,15 +769,13 @@ void SchemeParser::processLanguageStyle(SchemeLoaderState* pState, XMLAttributes
 		// be the m_pGroupClass member of pState.
 		style->GroupClass = pState->m_pGroupClass;
 	}
-	else
-	{
-		classname = atts.getValue(_T("class"));
+	
+	classname = atts.getValue(_T("class"));
 
-		// We've not found a class yet, but if we do have a class name, we try to find that.
-		if(classname && (_tcslen(classname) > 0) && (_tcscmp(classname, _T("default")) != 0))
-		{
-			style->Class = pState->GetClass(classname);
-		}
+	// We've not found a class yet, but if we do have a class name, we try to find that.
+	if(classname && (_tcslen(classname) > 0) && (_tcscmp(classname, _T("default")) != 0))
+	{
+		style->Class = pState->GetClass(classname);
 	}
 
 	style->Style = new StyleDetails;
@@ -1262,36 +1261,19 @@ void SchemeParser::specifyImportSet(SchemeLoaderState* pState, XMLAttributes& at
 {
 	LPCTSTR pattern = atts.getValue(_T("pattern"));
 
-	if(pattern != NULL)
+	if (pattern != NULL)
 	{
-		HANDLE hFind;
-		WIN32_FIND_DATA FindFileData;
+		FileFinderList finder;
+		std::list<tstring> files = finder.GetFiles(pState->m_basePath.c_str(), pattern, false);
 
-		tstring sPattern = pState->m_basePath;
-		sPattern += pattern;
-		
-		tstring toAdd;
-
-		hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
-		if (hFind != INVALID_HANDLE_VALUE) 
+		for (std::list<tstring>::const_iterator i = files.begin(); i != files.end(); ++i)
 		{
-			BOOL found = TRUE;
-			tstring filename;
-
-			while (found)
+			if (!boost::iends_with((*i), _T("master.scheme")))
 			{
-				if(_tcsicmp(FindFileData.cFileName, _T("master.scheme")) != 0)
-				{
-					toAdd = pState->m_basePath;
-					toAdd += FindFileData.cFileName;
-
-					pState->m_IncludeFiles.insert(pState->m_IncludeFiles.end(), toAdd.c_str());
-				}
-
-				found = FindNextFile(hFind, &FindFileData);
+				CFileName fn(*i);
+				fn.Root(pState->m_basePath.c_str());
+				pState->m_IncludeFiles.push_back(fn.c_str());
 			}
-
-			FindClose(hFind);
 		}
 	}
 	else
