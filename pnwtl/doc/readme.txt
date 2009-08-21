@@ -8,7 +8,8 @@ What's new in 2.1?
 
 1) Multiple concurrent selections (ctrl+select)
 2) Type into multiple selections and block selections
-3) Virtual space (TODO - Not Yet Enabled)
+3) Virtual space
+4) Translations - PN in your language
 
 What's new in 2.1 under the cover?
 ------------------------------------------
@@ -20,12 +21,12 @@ What's new in 2.1 under the cover?
 Bug Fixes:
 ----------
 
-1) 
+1) Save All now available regardless of current file save state
 
 Extensions Interface Changes:
 -----------------------------
 
-1) 
+1) Many changes for unicode, all paths are now wchar_t
 
 If you find a bug:
 ------------------
