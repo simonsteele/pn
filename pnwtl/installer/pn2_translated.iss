@@ -42,7 +42,8 @@ Source: ..\bin\pnse.dll; DestDir: {app}; Flags: ignoreversion restartreplace uni
 Source: configs\default\config.xml; DestDir: {app}; Flags: onlyifdoesntexist
 
 Source: ..\bin\dbghelp.dll; DestDir: {app}
-Source: ..\bin\libexpat.dll; DestDir: {app}; Flags: ignoreversion
+;Source: ..\bin\libexpat.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\bin\libexpatw.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\bin\SciLexer.dll; DestDir: {app}; Flags: ignoreversion
 
 ;Translations

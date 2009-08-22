@@ -66,18 +66,18 @@
 			
 		<zip zipfile="${distdir}\pn${compactver}.zip">
 			<fileset basedir="bin">
-				<include name="**/*.dll"/>
-				<include name="**/*.exe"/>
+				<include name="libexpatw.dll"/>
+				<include name="scilexer.dll"/>
+				<include name="pnse.dll"/>
+				<include name="dbghelp.dll"/>
+				<include name="pn.exe"/>
+				<include name="ctags.exe"/>
 				<include name="schemes/*.scheme"/>
 				<include name="schemes/*.lexer"/>
 				<include name="schemes/extmap.dat"/>
 				<include name="presets/*.xml"/>
 				<include name="taggers/ctags/*.*"/>
-				
-				<exclude name="tests.exe"/>
-				<exclude name="pypn.dll"/>
-				<exclude name="boost_python*.dll"/>
-				<exclude name="libexpatw.dll"/>
+				<include name="taggers/ctagsnavigator.dll"/>
 			</fileset>
 			<fileset basedir="installer\reqfiles\Microsoft.VC90.CRT" prefix="Microsoft.VC90.CRT">
 				<include name="*"/>
@@ -104,18 +104,18 @@
 		
 		<zip zipfile="${distdir}\portable-pn${compactver}.zip">
 			<fileset basedir="bin">
-				<include name="**/*.dll"/>
-				<include name="**/*.exe"/>
+				<include name="libexpatw.dll"/>
+				<include name="scilexer.dll"/>
+				<include name="pnse.dll"/>
+				<include name="dbghelp.dll"/>
+				<include name="pn.exe"/>
+				<include name="ctags.exe"/>
 				<include name="schemes/*.scheme"/>
 				<include name="schemes/*.lexer"/>
 				<include name="schemes/extmap.dat"/>
 				<include name="presets/*.xml"/>
 				<include name="taggers/ctags/*.*"/>
-				
-				<exclude name="tests.exe"/>
-				<exclude name="pypn.dll"/>
-				<exclude name="boost_python*.dll"/>
-				<exclude name="libexpatw.dll"/>
+				<include name="taggers/ctagsnavigator.dll"/>
 			</fileset>
 			<fileset basedir="installer\reqfiles\Microsoft.VC90.CRT" prefix="Microsoft.VC90.CRT">
 				<include name="*"/>
