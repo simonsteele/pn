@@ -252,9 +252,17 @@ void App::AddOutput(const char* text, int length)
 	if(ensureOutput())
 	{
 		// Yes, more ascii-to-unicode inefficiency here...
-		std::string t(text, length);
-		Windows1252_Utf16 textconv(t.c_str());
-		m_output->AddToolOutput(textconv, -1);
+		if (length >= 0)
+		{
+			std::string t(text, length);
+			Windows1252_Utf16 textconv(t.c_str());
+			m_output->AddToolOutput(textconv, -1);
+		}
+		else
+		{
+			Windows1252_Utf16 textconv(text);
+			m_output->AddToolOutput(textconv, -1);
+		}
 	}
 }
 

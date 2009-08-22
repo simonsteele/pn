@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="boost_python-vc80-mt-1_36.lib"
+				AdditionalDependencies="boost_python-vc90-mt-1_39.lib"
 				OutputFile="$(OutDir)/pypn.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(PYTHONLIBDIR);&quot;..\lib\boost-python-2.5&quot;"
@@ -206,7 +206,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(PYTHONINCDIR);c:\python25\include"
+				AdditionalIncludeDirectories="$(PYTHONINCDIR);c:\python26\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;PYPN_EXPORTS;SCI_NOLOAD;SCI_NAMESPACE"
 				RuntimeLibrary="2"
 				RuntimeTypeInfo="true"
@@ -225,10 +225,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="boost_python-vc80-mt-1_36.lib"
+				AdditionalDependencies="boost_python-vc90-mt-1_39.lib"
 				OutputFile="$(OutDir)/pypn.dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(PYTHONLIBDIR);&quot;..\lib\boost-python-2.5&quot;"
+				AdditionalLibraryDirectories="$(PYTHONLIBDIR);&quot;..\lib\boost-python-2.6&quot;"
 				ModuleDefinitionFile="pypn.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"

@@ -1,10 +1,19 @@
-// pypn.cpp : Defines the entry point for the DLL application.
-//
+/**
+ * @file pypn.cpp
+ * @brief Plugin Interface Implementation
+ * @author Simon Steele
+ * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
+ *
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 
 #include "stdafx.h"
 #include "sinks.h"
 #include "app.h"
 #include "modules.h"
+#include "utils.h"
+#include "../include/encoding.h"
 
 using namespace boost::python;
 
@@ -26,18 +35,31 @@ bool __stdcall pn_init_extension(int iface_version, extensions::IPN* pn)
 	if(iface_version != PN_EXT_IFACE_VERSION)
 		return false;
 
-	PN_INIT_PYTHON_MODULE(pn);
-	PN_INIT_PYTHON_MODULE(debug);
-	PN_INIT_PYTHON_MODULE(scintilla);
+	try
+	{
+		PN_INIT_PYTHON_MODULE(pn);
+		PN_INIT_PYTHON_MODULE(debug);
+		PN_INIT_PYTHON_MODULE(scintilla);
 
-	Py_Initialize();
+		Py_Initialize();
 
-	g_app = new App( handle<>(borrowed(PyImport_AddModule("__main__"))), pn );
-	g_appsink.reset( g_app );
+		g_app = new App( handle<>(borrowed(PyImport_AddModule("__main__"))), pn );
+		g_appsink.reset( g_app );
 
-	g_app->Initialise();
+		g_app->Initialise();
 
-	pn->AddEventSink(g_appsink);
+		pn->AddEventSink(g_appsink);
+	}
+	catch(boost::python::error_already_set&)
+	{
+		std::string s = PyTracebackToString();
+		pn->GetGlobalOutputWindow()->ShowOutput();
+		
+		Windows1252_Utf16 textconv(s.c_str());
+		pn->GetGlobalOutputWindow()->AddToolOutput(textconv);		
+
+		return false;
+	}
 
 	return true;
 }

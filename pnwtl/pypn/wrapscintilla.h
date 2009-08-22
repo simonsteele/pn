@@ -131,6 +131,10 @@ public:
 		return buf;
 	}
 
+	/**
+	 * Implement GetText to return std::string.
+	 * @param length Number of characters to be retrieved - no need to include null in length.
+	 */
 	std::string GetTextAsString(int length)
 	{
 		if (length == 0)
@@ -139,9 +143,9 @@ public:
 		}
 
 		std::string buf;
+		buf.resize(length + 1);
+		length = GetText(length + 1, &buf[0]);
 		buf.resize(length);
-		GetText(length, &buf[0]);
-		buf.resize(length-1);
 		return buf;
 	}
 

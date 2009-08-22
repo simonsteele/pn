@@ -1967,6 +1967,46 @@ class CScintilla
 	//@}
 
 		int GetSelections();
+
+		void ClearSelections();
+		void SetSelection(int caret, int anchor);
+		void AddSelection(int caret, int anchor);
+		void SetMainSelection(int selection);
+		int GetMainSelection();
+
+		void SetSelectionNCaret(int selection, int pos);
+		int GetSelectionNCaret(int selection);
+		void SetSelectionNCaretVirtualSpace(int selection, int space);
+		int GetSelectionNCaretVirtualSpace(int selection);
+		void SetSelectionNAnchor(int selection, int posAnchor);
+		int GetSelectionNAnchor(int selection);
+		void SetSelectionNAnchorVirtualSpace(int selection, int space);
+		int GetSelectionNAnchorVirtualSpace(int selection);
+		void SetSelectionNStart(int selection, int pos);
+		int GetSelectionNStart(int selection);
+		void SetSelectionNEnd(int selection, int pos);
+		int GetSelectionNEnd(int selection);
+
+		void SetRectangularSelectionCaret(int pos);
+		int GetRectangularSelectionCaret();
+		void SetRectangularSelectionCaretVirtualSpace(int space);
+		int GetRectangularSelectionCaretVirtualSpace();
+		void SetRectangularSelectionAnchor(int posAnchor);
+		int GetRectangularSelectionAnchor();
+		void SetRectangularSelectionAnchorVirtualSpace(int space);
+		int GetRectangularSelectionAnchorVirtualSpace();
+
+		void SetAdditionalSelAlpha(int alpha);
+		int GetAdditionalSelAlpha();
+		void SetAdditionalSelFore(int colour);
+		void SetAdditionalSelBack(int colour);
+		void SetAdditionalCaretFore(int colour);
+		int GetAdditionalCaretFore();
+		void SetAdditionalCaretsBlink(bool additionalCaretsBlink);
+		bool GetAdditionalCaretsBlink();
+
+		void SwapMainAnchorCaret();
+		void RotateSelection();
 };
 
 /**
