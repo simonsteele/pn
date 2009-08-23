@@ -107,6 +107,18 @@ class_< PNScintilla, boost::noncopyable >("Scintilla", init<extensions::IDocumen
 	//.add_property("WrapVisualFlagsLocation", &PNScintilla::GetWrapVisualFlagsLocation, &PNScintilla::SetWrapVisualFlagsLocation)
 	.add_property("XOffset", &PNScintilla::GetXOffset, &PNScintilla::SetXOffset)
 	.add_property("Zoom", &PNScintilla::GetZoom, &PNScintilla::SetZoom)
+
+	.add_property("RectangularSelectionCaret", &PNScintilla::GetRectangularSelectionCaret, &PNScintilla::SetRectangularSelectionCaret)
+	.add_property("RectangularSelectionCaretVirtualSpace", &PNScintilla::GetRectangularSelectionCaretVirtualSpace, &PNScintilla::SetRectangularSelectionCaretVirtualSpace)
+	.add_property("RectangularSelectionAnchor", &PNScintilla::GetRectangularSelectionAnchor, &PNScintilla::SetRectangularSelectionAnchor)
+	.add_property("RectangularSelectionAnchorVirtualSpace", &PNScintilla::GetRectangularSelectionAnchorVirtualSpace, &PNScintilla::SetRectangularSelectionAnchorVirtualSpace)
+
+	.add_property("AdditionalSelAlpha", &PNScintilla::GetAdditionalSelAlpha, &PNScintilla::SetAdditionalSelAlpha)
+	.add_property("AdditionalCaretFore", &PNScintilla::GetAdditionalCaretFore, &PNScintilla::SetAdditionalCaretFore)
+	.add_property("AdditionalCaretsBlink", &PNScintilla::GetAdditionalCaretsBlink, &PNScintilla::SetAdditionalCaretsBlink)
+
+	.add_property("MainSelection", &PNScintilla::GetMainSelection, &PNScintilla::SetMainSelection)
+
 	.def("AddRefDocument", &PNScintilla::AddRefDocument)
 	.def("AddStyledText", &PNScintilla::AddStyledText)
 	.def("AddText", &PNScintilla::AddText)
@@ -377,6 +389,29 @@ class_< PNScintilla, boost::noncopyable >("Scintilla", init<extensions::IDocumen
 	//.def("WrapCount", &PNScintilla::WrapCount)
 	.def("ZoomIn", &PNScintilla::ZoomIn)
 	.def("ZoomOut", &PNScintilla::ZoomOut)
+
+	.def("ClearSelections", &PNScintilla::ClearSelections)
+	.def("SetSelection", &PNScintilla::SetSelection)
+	.def("AddSelection", &PNScintilla::AddSelection)
+
+	.def("SetSelectionNCaret", &PNScintilla::SetSelectionNCaret)
+	.def("GetSelectionNCaret", &PNScintilla::GetSelectionNCaret)
+	.def("SetSelectionNCaretVirtualSpace", &PNScintilla::SetSelectionNCaretVirtualSpace)
+	.def("GetSelectionNCaretVirtualSpace", &PNScintilla::GetSelectionNCaretVirtualSpace)
+	.def("SetSelectionNAnchor", &PNScintilla::SetSelectionNAnchor)
+	.def("GetSelectionNAnchor", &PNScintilla::GetSelectionNAnchor)
+	.def("SetSelectionNAnchorVirtualSpace", &PNScintilla::SetSelectionNAnchorVirtualSpace)
+	.def("GetSelectionNAnchorVirtualSpace", &PNScintilla::GetSelectionNAnchorVirtualSpace)
+	.def("SetSelectionNStart", &PNScintilla::SetSelectionNStart)
+	.def("GetSelectionNStart", &PNScintilla::GetSelectionNStart)
+	.def("SetSelectionNEnd", &PNScintilla::SetSelectionNEnd)
+	.def("GetSelectionNEnd", &PNScintilla::GetSelectionNEnd)
+
+	.def("SetAdditionalSelFore", &PNScintilla::SetAdditionalSelFore)
+	.def("SetAdditionalSelBack", &PNScintilla::SetAdditionalSelBack)
+
+	.def("SwapMainAnchorCaret", &PNScintilla::SwapMainAnchorCaret)
+	.def("RotateSelection", &PNScintilla::RotateSelection)
 	;
 	scope current;
 	current.attr("CARET_EVEN") = 0x08;

@@ -2969,7 +2969,7 @@ void CScintilla::SetAdditionalCaretsBlink(bool additionalCaretsBlink)
 
 bool CScintilla::GetAdditionalCaretsBlink()
 {
-	return SPerform(SCI_GETADDITIONALCARETSBLINK, 0, 0);
+	return SPerform(SCI_GETADDITIONALCARETSBLINK, 0, 0) != 0;
 }
 
 void CScintilla::SwapMainAnchorCaret()

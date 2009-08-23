@@ -174,11 +174,11 @@ void MultipleInstanceManager::SendParameters()
 
 	if(RequestPermission())
 	{
-		if( !CreateSharedData(&buffer, &hMappedFile, parmarray.size()) )
+		if( !CreateSharedData(&buffer, &hMappedFile, parmarray.size() * sizeof(TCHAR)) )
 			return;
 
 		// Copy the big buffer into the other big buffer :)
-		memcpy(buffer, &parmarray[0], parmarray.size());
+		memcpy(buffer, &parmarray[0], parmarray.size() * sizeof(TCHAR));
 
 		DWORD dwRecipients = BSM_APPLICATIONS;
 		long res = m_pfnBSM(
@@ -186,7 +186,7 @@ void MultipleInstanceManager::SendParameters()
 			&dwRecipients, 
 			m_uiMessage,
 			MIM_PARAMETER_ARRAY,
-			parmarray.size());
+			parmarray.size() * sizeof(TCHAR));
 
 		PNASSERT(res != -1);
 
