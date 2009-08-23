@@ -8,38 +8,32 @@ Work with SVN development branches (e.g. prototypes/big rewrites) are denoted wi
 Work completed or in-progress is shown with [proportion-developer] or [complete-developer],
 where no developer name is given it's Simon.
 
-last updated: 05/01/2007
+last updated: 23/08/2009
 
-0.10 Dizzy
-==========
-
-[80%] File browser window.
-[70%] Better Vista compatibility (UI, UAC, ...)
-[100%] PCRE Based Search.
-HTML Export configuration, inline HTML export.
-
-0.12 Ellington
+2.2 Ellington
 ==============
 
-Plugin windows and menu support.
-Unicode build.
+Unicode build [complete]
+Extension menu shortcut support
 
-0.14 Charles
+2.4 Charles
 ============
 
+Extension docking windows.
 Tag tree organisation rewrite.
+Text clips built-in management.
 Preview for scheme configurator.
-Hex editor.
 
-0.16 Monk
+2.6 Monk
 =========
 
-Mini-PN - true notepad-style document-centric PN alternative build.
-Filetype filters - e.g. allow loading of .dfm files.
+Hex editor
+Extension file sources - ftp etc.
 
-0.18 Parker
+2.8 Parker
 ===========
 
 HTML preview window (ie+moz) {feature_browser_2-0-5}.
-
+Mini-PN - true notepad-style document-centric PN alternative build.
+Filetype filters - e.g. allow loading of .dfm files.
 ??
