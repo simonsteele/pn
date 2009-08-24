@@ -33,6 +33,7 @@ typedef enum {EP_LINE, EP_COL} EGPType;
 class COutputView;
 class DocScript;
 class AutoCompleteManager;
+namespace Views { class View; }
 
 namespace TextClips
 {
@@ -131,6 +132,8 @@ public:
 		COMMAND_ID_HANDLER(ID_VIEW_FILEPROPERTIES, OnViewFileProps)
 
 		COMMAND_ID_HANDLER(ID_PROJECT_ADDTHISFILE, OnProjectAddFile)
+
+		COMMAND_ID_HANDLER(ID_WINDOW_SPLITHORIZONTAL, OnSplitHorizontal)
 
 		COMMAND_RANGE_HANDLER(ID_ENCODING_8, ID_ENCODING_UTF8NOBOM, OnEncodingSelect)
 
@@ -257,6 +260,7 @@ public:
 	LRESULT OnEncodingSelect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewFileProps(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnProjectAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnSplitHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnJumpTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -327,7 +331,8 @@ private:
 		cwScintilla = 0x10000,
 		cwMinibar = 0x20000,
 		cwOutputView = 0x30000,
-		cwSplitter = 0x40000
+		cwSplitter = 0x40000,
+		cwViewSplitter = 0x50000
 	};
 
 	/**
@@ -375,9 +380,13 @@ private:
 	
 	int					m_iFirstToolCmd;
 
+	AutoCompleteManager* m_autoComplete;
+
 	CCFSplitter*		m_pSplitter;
 	COutputView*		m_pOutputView;
 	DocScript*			m_pScript;
+
+	boost::shared_ptr<Views::View> m_primeView;
 
 	///@todo move this into COptionsManager
 	SPrintOptions		m_po;

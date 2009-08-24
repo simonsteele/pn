@@ -1771,6 +1771,26 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Views"
+				>
+				<File
+					RelativePath=".\views\splitview.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\views\splitview.h"
+					>
+				</File>
+				<File
+					RelativePath=".\views\view.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\views\view.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath=".\pn.exe.manifest"

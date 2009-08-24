@@ -304,6 +304,8 @@ BEGIN
         MENUITEM "Tile &Vertical",              57652
         MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
         MENUITEM SEPARATOR
+        MENUITEM "&Split Horizontal",           ID_WINDOW_SPLITHORIZONTAL
+        MENUITEM SEPARATOR
         MENUITEM "Close All &Other Windows",    ID_WINDOW_CLOSEALLOTHER
     END
     POPUP "&Help"

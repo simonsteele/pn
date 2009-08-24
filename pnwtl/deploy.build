@@ -149,7 +149,7 @@
 		
 		<zip zipfile="${distdir}\translations${compactver}.zip">
 			<fileset basedir="bin">
-				<include name="bin\pnlang_*.dll"/>
+				<include name="pnlang_*.dll"/>
 			</fileset>
 		</zip>
 		

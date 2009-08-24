@@ -33,6 +33,7 @@
 #include "tabbingframework/TabbedMDISave.h"
 #include "extapp.h"
 #include "include/filefinder.h"
+#include "views/splitview.h"
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -48,6 +49,7 @@ bool CChildFrame::s_bFirstChild = true;
 CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::TextClipsManager* textclips, AutoCompleteManager* autoComplete) : 
 	m_spDocument(doc), 
 	m_view(doc, commands, autoComplete),
+	m_autoComplete(autoComplete),
 	m_pCmdDispatch(commands),
 	m_pTextClips(textclips),
 	m_hWndOutput(NULL),
@@ -114,6 +116,11 @@ void CChildFrame::UpdateLayout(BOOL bResizeBars)
 	{
 		m_pSplitter->UpdateLayout(true);
 		return;
+	}
+
+	if (m_primeView.get())
+	{
+		m_primeView->UpdateLayout();
 	}
 
 	if(m_hWndClient != NULL)
@@ -1342,6 +1349,26 @@ LRESULT CChildFrame::OnViewFileProps(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 LRESULT CChildFrame::OnProjectAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	int a = 0;
+	return 0;
+}
+
+LRESULT CChildFrame::OnSplitHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	int scintillaDoc = GetTextView()->GetDocPointer();
+
+	CTextView* newTextView = new CTextView(m_spDocument, m_pCmdDispatch, m_autoComplete);
+	newTextView->Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwScintilla+1);
+	newTextView->SetDocPointer(scintillaDoc);
+
+	Views::ViewPtr newView(new Views::SplitView(Views::splitHorz, Views::ViewPtr(), m_view.m_hWnd, newTextView->m_hWnd));
+	Views::SplitView* sv = static_cast<Views::SplitView*>(newView.get());
+
+	m_primeView = newView;
+
+	CRect rc;
+	GetClientRect(rc);
+	m_hWndClient = sv->Create(m_hWnd, rc, cwViewSplitter);
+
 	return 0;
 }
 
