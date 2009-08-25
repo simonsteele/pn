@@ -449,7 +449,8 @@ struct LexerLoader
 	{
 		CFileName to_open(match.GetFilename());
 		to_open.Root(path);
-		m_view->SPerform(SCI_LOADLEXERLIBRARY, 0, reinterpret_cast<LPARAM>(to_open.c_str()));
+		CT2CA lexerPath(to_open.c_str());
+		m_view->SPerform(SCI_LOADLEXERLIBRARY, 0, StrToLp(lexerPath));
 	}
 
 	CTextView* m_view;

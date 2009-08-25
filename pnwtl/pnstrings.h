@@ -25,6 +25,26 @@ typedef std::list<std::string> string_list;
 typedef std::map<tstring, std::string> tstring_string_map;
 typedef std::map<std::string, std::string> string_map;
 
+static inline LPARAM StrToLp(const char* str)
+{
+	return reinterpret_cast<LPARAM>(str);
+}
+
+static inline WPARAM StrToWp(const char* str)
+{
+	return reinterpret_cast<WPARAM>(str);
+}
+
+static inline LPARAM WcsToLp(const wchar_t* str)
+{
+	return reinterpret_cast<LPARAM>(str);
+}
+
+static inline WPARAM WcsToWp(const wchar_t* str)
+{
+	return reinterpret_cast<WPARAM>(str);
+}
+
 static TCHAR* tcsnewdup(LPCTSTR strin)
 {
 	TCHAR* ret = new TCHAR[_tcslen(strin)+1];
