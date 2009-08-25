@@ -70,7 +70,7 @@ void AlternateFileSet::GetSet2String(tstring& str) const
 void AlternateFileSet::set(TCHAR*& pSet, LPCTSTR instr)
 {
 	pSet = new TCHAR[_tcslen(instr)+2];
-	memset(pSet, 0, _tcslen(instr)+2);
+	memset(pSet, 0, (_tcslen(instr)+2)*sizeof(TCHAR));
 
 	TCHAR* p = pSet;
 	_tcscpy(p, instr);
