@@ -1505,10 +1505,28 @@ int CScintilla::GetSelText(char* text)
 std::string CScintilla::GetSelText()
 {
 	std::string ret;
+	
+	// First instance, GetSelText returns buffer size required to store text including NULL
 	int selLength = GetSelText(NULL);
-	ret.resize(selLength + 1);
+
+	if (selLength == 1)
+	{
+		return "";
+	}
+
+	ret.resize(selLength);
+	
+	// Now GetSelText returns:
+	// 1. If the document is empty: 0
+	// 2. Otherwise: number of characters written, including NULL
 	selLength = GetSelText(&ret[0]);
-	ret.resize(selLength - 1); // selLength includes NULL.
+	if (selLength == 0)
+	{
+		return "";
+	}
+
+	ret.resize(selLength - 1);
+	
 	return ret;
 }
 
