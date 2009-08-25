@@ -2,7 +2,7 @@
  * @file filedialogs.cpp
  * @brief File Dialogs
  * @author Simon Steele
- * @note Copyright (c) 2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2008-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -632,7 +632,7 @@ void CPNSaveDialog::SetInitialPath(LPCTSTR initial)
 
 void CPNSaveDialog::SetDefaultExtension(LPCTSTR ext)
 {
-	SetDefExt(ext);
+	CPNFileDialogImpl<CPNSaveDialog>::SetDefaultExtension(ext);
 }
 
 void CPNSaveDialog::SetInitialFilename(LPCTSTR initial)

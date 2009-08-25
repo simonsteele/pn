@@ -2,7 +2,7 @@
  * @file autofiledialog.h
  * @brief File dialogs that automatically work best on pre or post Vista
  * @author Simon Steele
- * @note Copyright (c) 2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2008-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
