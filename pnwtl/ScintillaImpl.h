@@ -44,7 +44,7 @@ class CScintillaImpl : public CScintilla
 {
 public:
 	explicit CScintillaImpl();
-	~CScintillaImpl();
+	virtual ~CScintillaImpl();
 
 	virtual int FindNext(extensions::ISearchOptions* pOptions);
 	virtual bool ReplaceOnce(extensions::ISearchOptions* pOptions);

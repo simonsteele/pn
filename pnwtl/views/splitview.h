@@ -19,13 +19,17 @@ namespace Views {
 
 typedef enum { splitHorz, splitVert } ESplitType;
 
+class SplitView;
+
 /**
  * Split View
  */
 class SplitView : public View
 {
 public:
-	SplitView(ESplitType splitType, ViewPtr& parent, HWND view1, HWND view2);
+	static boost::shared_ptr<SplitView> MakeSplitView(ESplitType splitType, ViewPtr& parent, ViewPtr& view1, ViewPtr& view2);
+
+	virtual ~SplitView();
 
 	/**
 	 * Create the splitter window.
@@ -37,11 +41,24 @@ public:
 	 */
 	virtual void UpdateLayout();
 
+	/**
+	 * Get the window handle for this view.
+	 */
+	virtual HWND GetHwnd();
+
+	/**
+	 * Swap child windows.
+	 */
+	void SwapChildren(ViewPtr& oldchild, ViewPtr& newChild);
+
 private:
+	explicit SplitView(ESplitType splitType, ViewPtr& parent, ViewPtr& view1, ViewPtr& view2);
+	void init();
+
 	ESplitType m_splitType;
 	CSimpleSplitter m_wnd;
-	HWND m_w1;
-	HWND m_w2;
+	ViewPtr m_w1;
+	ViewPtr m_w2;
 };
 
 }

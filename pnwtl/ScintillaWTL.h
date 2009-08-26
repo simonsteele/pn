@@ -41,6 +41,8 @@ template <class T, class TBase = CScintilla>
 class CScintillaWindowImpl : public CWindowImpl< CScintillaWindowImpl<T,TBase> >, public TBase
 {
 public:
+	virtual ~CScintillaWindowImpl() {}
+
 	DECLARE_WND_SUPERCLASSW(L"ScintillaWindowImpl", L"Scintilla")
 
 	BOOL PreTranslateMessage(MSG* pMsg)

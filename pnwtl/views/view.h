@@ -10,17 +10,20 @@
 #ifndef view_h_included
 #define view_h_included
 
+#include "boost/enable_shared_from_this.hpp"
+
 namespace Views {
 
-typedef enum { vtText, vtSplit } EViewType;
+typedef enum { vtUnknown, vtText, vtSplit } EViewType;
 
 class View;
 typedef boost::shared_ptr<View> ViewPtr;
+typedef boost::weak_ptr<View> WeakViewPtr;
 
 /**
  * Base class for nestable views
  */
-class View
+class View : public boost::enable_shared_from_this<View>
 {
 public:
 	View(EViewType type, ViewPtr& parent) : m_type(type), m_parent(parent) {}
@@ -33,18 +36,40 @@ public:
 	EViewType GetType() const;
 
 	/**
+	 * Get the window handle for this view.
+	 */
+	virtual HWND GetHwnd() = 0;
+
+	/**
 	 * Update window layout
 	 */
 	virtual void UpdateLayout();
 
-protected:
+	/**
+	 * Notify the parent that you got focused.
+	 */
+	void NotifyGotFocus();
+
+	/**
+	 * Change the parent view.
+	 */
+	void SetParentView(ViewPtr parent);
+
 	/** 
 	 * Get this view's parent.
 	 */
-	ViewPtr& GetParent() const;
+	ViewPtr GetParentView();
+
+protected:
+
+	/**
+	 * Override to handle focus notifications, make sure to call
+	 * base if you're not the bottom view.
+	 */
+	virtual void NotifyGotFocus(ViewPtr& focused);
 
 private:
-	ViewPtr& m_parent;
+	WeakViewPtr m_parent;
 	EViewType m_type;
 };
 

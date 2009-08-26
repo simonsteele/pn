@@ -46,9 +46,43 @@ bool CChildFrame::s_bFirstChild = true;
 #define USERLIST_TEXTCLIPS 1
 #define TOOLS_MENU_INDEX 5
 
+namespace { // Implementation details:
+
+class BaseView : public Views::View
+{
+public:
+	BaseView(CChildFrame* owner) : Views::View(Views::vtUnknown, Views::ViewPtr()), m_owner(owner)
+	{
+
+	}
+
+	virtual ~BaseView()
+	{
+	}
+
+	HWND GetHwnd()
+	{
+		return m_owner->m_hWnd;
+	}
+
+protected:
+	void NotifyGotFocus(Views::ViewPtr& focused)
+	{
+		m_owner->SetLastView(focused);
+	}
+
+private:
+	CChildFrame* m_owner;
+};
+
+}
+
 CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::TextClipsManager* textclips, AutoCompleteManager* autoComplete) : 
 	m_spDocument(doc), 
-	m_view(doc, commands, autoComplete),
+	m_view(new CTextView(doc, Views::ViewPtr(), commands, autoComplete)),
+	m_primeView(m_view),
+	m_lastTextView(m_view),
+	m_focusView(m_view),
 	m_autoComplete(autoComplete),
 	m_pCmdDispatch(commands),
 	m_pTextClips(textclips),
@@ -70,6 +104,9 @@ CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::
 	OPTIONS->LoadPrintSettings(&m_po);
 
 	InitUpdateUI();
+
+	m_baseView.reset(new BaseView(this));
+	m_view->SetParentView(m_baseView);
 }
 
 CChildFrame::~CChildFrame()
@@ -89,6 +126,7 @@ CChildFrame::~CChildFrame()
 
 	if(m_pOutputView)
 		delete m_pOutputView;
+
 	if(m_pUIData)
 		delete [] m_pUIData;
 }
@@ -114,17 +152,14 @@ void CChildFrame::UpdateLayout(BOOL bResizeBars)
 	// resize client window
 	if(m_pSplitter)
 	{
+		// TODO: Resize the splitter window instead.
 		m_pSplitter->UpdateLayout(true);
 		return;
 	}
 
-	if (m_primeView.get())
+	if (/*m_primeView.get() || */m_hWndClient != NULL)
 	{
-		m_primeView->UpdateLayout();
-	}
-
-	if(m_hWndClient != NULL)
-	{
+		// Our m_hWndClient will always be the prime view, regardless of type...
 		::SetWindowPos(m_hWndClient, NULL, rect.left, rect.top,
 			rect.right - rect.left, rect.bottom - rect.top,
 			SWP_NOZORDER | SWP_NOACTIVATE);
@@ -231,7 +266,7 @@ void CChildFrame::EnsureOutputWindow()
 		m_hWndOutput = m_pOutputView->m_hWnd;
 
 		m_pSplitter->Create(m_hWnd, rc, _T("Splitter"), 0, 0, cwSplitter);
-		m_pSplitter->SetPanes((HWND)m_view, m_pOutputView->m_hWnd);
+		m_pSplitter->SetPanes(m_view->GetHwnd(), m_pOutputView->m_hWnd);
 		m_pSplitter->ProportionSplit();
 		m_pSplitter->SetSinglePaneMode(SPLITTER_TOP);
 	}
@@ -277,7 +312,7 @@ bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 		{
 			GetTextView()->BeginUndoAction();
 			GetTextView()->DelWordLeft();
-			clip->Insert(&m_view);
+			clip->Insert(GetTextView());
 			GetTextView()->EndUndoAction();
 		}
 	}
@@ -878,7 +913,7 @@ LRESULT CChildFrame::OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 	StringOutput so(rtfStringLength);
 	std::auto_ptr<StylesList> pStyles(GetTextView()->GetCurrentScheme()->CreateStylesList());
-	RTFExporter rtf(&so, GetTextView()->GetCurrentScheme()->GetName(), pStyles.get(), &m_view);
+	RTFExporter rtf(&so, GetTextView()->GetCurrentScheme()->GetName(), pStyles.get(), GetTextView());
 	
 	//If nothing is selected, copy entire file
 	if(selectionLength == 0) 
@@ -954,7 +989,7 @@ LRESULT CChildFrame::OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	{
 		GetTextView()->BeginUndoAction();
 		GetTextView()->DelWordLeft();
-		desired->Insert(&m_view);
+		desired->Insert(GetTextView());
 		GetTextView()->EndUndoAction();
 	}
 	else
@@ -1355,20 +1390,37 @@ LRESULT CChildFrame::OnProjectAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 LRESULT CChildFrame::OnSplitHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	int scintillaDoc = GetTextView()->GetDocPointer();
+	Views::ViewPtr parent = m_focusView->GetParentView();
 
-	CTextView* newTextView = new CTextView(m_spDocument, m_pCmdDispatch, m_autoComplete);
-	newTextView->Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwScintilla+1);
-	newTextView->SetDocPointer(scintillaDoc);
+	// Create the view we're going to split into:
+	Views::ViewPtr newTextViewPtr(new CTextView(m_spDocument, Views::ViewPtr(), m_pCmdDispatch, m_autoComplete));	
+	CTextView* newTextView = static_cast<CTextView*>(newTextViewPtr.get());
+	newTextView->Create(parent->GetHwnd(), rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwScintilla+1);
+	newTextView->SetDocPointer(GetTextView()->GetDocPointer());
 
-	Views::ViewPtr newView(new Views::SplitView(Views::splitHorz, Views::ViewPtr(), m_view.m_hWnd, newTextView->m_hWnd));
+	// Now we want the parent of the last-focused view to get a new child, the splitter.
+	// The splitter will have the last-focused view, and also the new text view.
+	Views::ViewPtr newView(Views::SplitView::MakeSplitView(Views::splitHorz, parent, m_focusView, newTextViewPtr));
 	Views::SplitView* sv = static_cast<Views::SplitView*>(newView.get());
 
-	m_primeView = newView;
-
 	CRect rc;
-	GetClientRect(rc);
-	m_hWndClient = sv->Create(m_hWnd, rc, cwViewSplitter);
+	::GetClientRect(m_focusView->GetHwnd(), rc);
+	HWND hWndSplit = sv->Create(parent->GetHwnd(), rc, cwViewSplitter);
+
+	if (parent->GetType() == Views::vtSplit)
+	{
+		// Re-parent the child...
+		Views::SplitView* parentSplitter = static_cast<Views::SplitView*>(parent.get());
+		parentSplitter->SwapChildren(m_focusView, newView);
+	}
+
+	if (m_focusView == m_primeView)
+	{
+		m_primeView = newView;
+		m_hWndClient = hWndSplit;
+	}
+
+	UpdateLayout();
 
 	return 0;
 }
@@ -2285,7 +2337,7 @@ void CChildFrame::Export(int type)
 	
 	std::auto_ptr<BaseExporter> pExp(ExporterFactory::GetExporter(
 		(ExporterFactory::EExporterType)type, 
-		&fout, GetTextView()->GetCurrentScheme()->GetName(), pStyles.get(), &m_view));
+		&fout, GetTextView()->GetCurrentScheme()->GetName(), pStyles.get(), GetTextView()));
 	
 	if (!pExp.get())
 	{
@@ -2372,7 +2424,8 @@ void CChildFrame::PrintSetup()
 
 CTextView* CChildFrame::GetTextView()
 {
-	return &m_view;
+	// TODO: In SetLastView should we upcast to CTextView and store always with that type?
+	return static_cast<CTextView*>(m_lastTextView.get());
 }
 
 COutputView* CChildFrame::GetOutputWindow()
@@ -2466,6 +2519,15 @@ void CChildFrame::findNextWordUnderCursor(bool backwards)
 
 	// We set this to false so that if the user then presses Shift-F3 we continue to move backwards.
 	opts->SetSearchBackwards(false);
+}
+
+void CChildFrame::SetLastView(Views::ViewPtr& view)
+{
+	m_focusView = view;
+	if (m_focusView->GetType() == Views::vtText)
+	{
+		m_lastTextView = m_focusView;
+	}
 }
 
 ////////////////////////////////////////////////////

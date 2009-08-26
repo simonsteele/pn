@@ -17,6 +17,7 @@
 #include "ScintillaImpl.h"
 #include "ScintillaWTL.h"
 #include "include/threading.h"
+#include "views/view.h"
 
 class FIFSink;
 
@@ -24,18 +25,20 @@ class FIFSink;
  * This is the final implementation of our Scintilla window, pulling together the
  * application logic and the Scintilla wrappers that sit below.
  */
-class CTextView : public CScintillaWindowImpl< CTextView, CScintillaImpl >
+class CTextView : public CScintillaWindowImpl< CTextView, CScintillaImpl >, public Views::View
 {
 public:
 	typedef CScintillaWindowImpl< CTextView, CScintillaImpl > baseClass;
 	friend class baseClass;
 
-	explicit CTextView(DocumentPtr document, CommandDispatch* commands, AutoCompleteManager* autoComplete);
-	~CTextView();
+	explicit CTextView(DocumentPtr document, Views::ViewPtr parent, CommandDispatch* commands, AutoCompleteManager* autoComplete);
+	virtual ~CTextView();
 
 	BOOL PreTranslateMessage(MSG* pMsg);
 
 	BEGIN_MSG_MAP(CTextView)
+		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
+
 		COMMAND_ID_HANDLER(ID_EDIT_INDENT, OnIndent)
 		COMMAND_ID_HANDLER(ID_EDIT_UNINDENT, OnUnindent)
 		COMMAND_ID_HANDLER(ID_EDIT_SELECTALL, OnSelectAll)
@@ -99,6 +102,14 @@ public:
 	virtual bool ReplaceOnce(extensions::ISearchOptions* pOptions);
 	virtual int ReplaceAll(extensions::ISearchOptions* pOptions);
 
+	// Implement View
+	HWND GetHwnd() { return m_hWnd; }
+
+private:
+
+	// Message Handlers
+	HRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+
 	////////////////////////////////////////////////////////////////
 	// Command Handlers
 
@@ -122,7 +133,6 @@ public:
 
 	void checkLineLength();
 
-protected:
 	// Support for document title in printing:
 	virtual tstring GetDocTitle();
 

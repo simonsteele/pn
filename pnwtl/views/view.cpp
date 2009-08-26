@@ -21,11 +21,30 @@ EViewType View::GetType() const
 	return m_type;
 }
 
-ViewPtr& View::GetParent() const
+void View::SetParentView(ViewPtr parent)
 {
-	return m_parent;
+	m_parent = parent;
+}
+
+ViewPtr View::GetParentView()
+{
+	return m_parent.lock();
 }
 
 void View::UpdateLayout()
 {
+}
+
+void View::NotifyGotFocus()
+{
+	NotifyGotFocus(shared_from_this());
+}
+
+void View::NotifyGotFocus(ViewPtr& focused)
+{
+	ViewPtr view(m_parent.lock());
+	if (view.get())
+	{
+		view->NotifyGotFocus(focused);
+	}
 }

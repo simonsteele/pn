@@ -1,10 +1,14 @@
 /**
  * @file wtlsplitter.h
- * @author Simon Steele <mailto:ss@pnotepad.org>
+ * @author Simon Steele <http://untidy.net/>
  * @brief Simple splitter framework for WTL
  *
  * This code was inspired by sample code from James Brown:
  *		- http://freespace.virgin.net/james.brown7/tuts/splitter.htm
+ *
+ * This splitter exists because the WTL-provided splitter is too inflexible
+ * and also has the split direction as a template parameter making runtime
+ * choice of split direction tricky.
  */
 #ifndef wtlsplitter_h__included
 #define wtlsplitter_h__included
@@ -18,20 +22,40 @@
 #define SPLITTER_TOP	SPLITTER_PANE1
 #define SPLITTER_BOTTOM	SPLITTER_PANE2
 
+/**
+ * Splitting window container for WTL.
+ */
 template <class T>
 class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 {
 	public:
-		CWTLSplitter()
-		{
-			m_oldY = -4;
-			m_bMoved = false;
-			m_bDragging = false;
-			m_bHorz = false;
-			
-			SetSplitterSize(4);
-			m_singlePane = SPLITTER_NORMAL;
+		/*
+		bool	bSinglePane;
 
+		float	m_fProportion;
+		int		m_singlePane;
+		int		m_halfSize;
+		int		m_splitterSize;
+		int		m_nSplitterPos;
+		int		m_oldY;
+		bool	m_bMoved;
+		bool	m_bDragging;
+		bool	m_bHorz;
+		bool	m_bFullDrag;
+		bool	m_bProportional;
+		*/
+		explicit CWTLSplitter() :
+			m_oldY(-4),
+			m_bMoved(false),
+			m_bHorz(false),
+			m_nSplitterPos(0),
+			m_fProportion(0.5),
+			m_bDragging(false),
+			m_bFullDrag(true),
+			m_bProportional(false),
+			m_singlePane(SPLITTER_NORMAL)
+		{
+			SetSplitterSize(4);
 			GetSysSettings();
 		}
 
@@ -43,10 +67,21 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 			MESSAGE_HANDLER(WM_CREATE, OnCreate)
 			MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
 			MESSAGE_HANDLER(WM_CAPTURECHANGED, OnCaptureChanged)
+			MESSAGE_HANDLER(WM_SIZE, OnResized)
 		END_MSG_MAP()
 
 		void SetPanes(HWND pane1, HWND pane2, bool bUpdate = true)
 		{
+			if (pane1 && m_hWnd)
+			{
+				::SetParent(pane1, m_hWnd);
+			}
+			
+			if (pane2 && m_hWnd)
+			{
+				::SetParent(pane2, m_hWnd);
+			}
+
 			panes[0] = pane1;
 			panes[1] = pane2;
 			
@@ -61,7 +96,7 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 			if(bUpdate)
 			{
 				CRect rc;
-				static_cast<T*>(this)->GetOwnerClientRect(m_hwOwner, rc);
+				static_cast<T*>(this)->GetOwnerClientRect(GetParent(), rc);
 				
 				//We assume this is being changed mid-run, so we guess at the split position.
 				if(m_bHorz)
@@ -120,7 +155,7 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 			m_bProportional = true;
 
 			CRect rc;
-			static_cast<T*>(this)->GetOwnerClientRect(m_hwOwner, rc);
+			static_cast<T*>(this)->GetOwnerClientRect(GetParent(), rc);
 			if(m_bHorz)
 			{
 				m_nSplitterPos = rc.top + (int)((float)rc.Height() * proportion) - m_halfSize;
@@ -139,7 +174,7 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 		void CentreSplit(bool bUpdate = true)
 		{
 			CRect rc;
-			static_cast<T*>(this)->GetOwnerClientRect(m_hwOwner, rc);
+			static_cast<T*>(this)->GetOwnerClientRect(GetParent(), rc);
 
 			if(m_bHorz)
 			{
@@ -160,7 +195,7 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 			pT->LayoutWindows(bExternal);
 		}
 		
-	protected:
+	private:
 
 		void NormaliseSplit(CRect& rect)
 		{
@@ -193,7 +228,7 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 		void LayoutWindows(bool bExternal)
 		{
 			CRect rc;
-			static_cast<T*>(this)->GetOwnerClientRect(m_hwOwner, rc);
+			static_cast<T*>(this)->GetOwnerClientRect(GetParent(), rc);
 
 			if(SPLITTER_NORMAL != m_singlePane)
 			{
@@ -230,7 +265,7 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 			}
 
 			::MoveWindow(panes[1], rc2.left, rc2.top, rc2.Width(), rc2.Height(), true);
-			MoveWindow(rc);
+			//MoveWindow(rc);
 		}
 
 		void DrawXorBar(HDC hdc, int x1, int y1, int width, int height)
@@ -276,17 +311,23 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 	protected:
 		void GetOwnerClientRect(HWND hOwner, LPRECT lpRect)
 		{
-			::GetClientRect(m_hwOwner, lpRect);
+			WINDOWPLACEMENT wp = {0};
+			wp.length = sizeof(WINDOWPLACEMENT);
+			::GetWindowPlacement(m_hWnd, &wp);
+		
+			memcpy(lpRect, &wp.rcNormalPosition, sizeof(RECT));
+			//wp.rcNormalPosition
+			//::GetClientRect(GetParent(), lpRect);
 		}
 
 		void InternalAdjustPoints(LPRECT lpRect, LPPOINT lpPoint)
 		{
 			RECT wrect;
 
-			::GetWindowRect(m_hwOwner, &wrect);
-			static_cast<T*>(this)->GetOwnerClientRect(m_hwOwner, lpRect);
-			::ClientToScreen(m_hwOwner, (LPPOINT)lpRect);
-			::ClientToScreen(m_hwOwner, ((LPPOINT)lpRect)+1);
+			::GetWindowRect(GetParent(), &wrect);
+			static_cast<T*>(this)->GetOwnerClientRect(GetParent(), lpRect);
+			::ClientToScreen(GetParent(), (LPPOINT)lpRect);
+			::ClientToScreen(GetParent(), ((LPPOINT)lpRect)+1);
 
 			//convert the mouse coordinates relative to the top-left of the window
 			ClientToScreen(lpPoint);
@@ -318,17 +359,25 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 		{
 			RECT rect;
 
-			::GetWindowRect(m_hwOwner, &rect);
+			::GetWindowRect(GetParent(), &rect);
 			lpPoint->x += rect.left;
 			lpPoint->y += rect.top;
 
 			//now convert into CLIENT coordinates
-			::ScreenToClient(m_hwOwner, lpPoint);
+			::ScreenToClient(GetParent(), lpPoint);
 		}
 
 		LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 		{
-			m_hwOwner = GetParent();
+			if (panes[0])
+			{
+				::SetParent(panes[0], m_hWnd);
+			}
+
+			if (panes[1])
+			{
+				::SetParent(panes[1], m_hWnd);
+			}
 			
 			UpdateCursor();
 			return 0;
@@ -347,12 +396,12 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 
 			m_bDragging = true;
 
-			//::SetCapture(m_hwOwner);
+			//::SetCapture(GetParent());
 			SetCapture();
 
 			if(!m_bFullDrag)
 			{
-				hdc = ::GetWindowDC(m_hwOwner);
+				hdc = ::GetWindowDC(GetParent());
 				if(m_bHorz)
 				{
 					DrawXorBar(hdc, rect.left + 1, pt.y - m_halfSize, rect.right - 2, m_splitterSize);
@@ -363,7 +412,7 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 					DrawXorBar(hdc, pt.x - m_halfSize, rect.top+1, m_splitterSize, rect.bottom - 2);
 					m_oldY = pt.x;
 				}
-				::ReleaseDC(m_hwOwner, hdc);
+				::ReleaseDC(GetParent(), hdc);
 			}
 			
 			return 0;
@@ -390,7 +439,7 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 			
 			(static_cast<T*>(this))->InternalAdjustPoints(&rect, &pt);
 
-			hdc = ::GetWindowDC(m_hwOwner);
+			hdc = ::GetWindowDC(GetParent());
 			if(m_bHorz)
 			{
 				DrawXorBar(hdc, rect.left+1, m_oldY - m_halfSize, rect.right - 2, m_splitterSize);
@@ -401,7 +450,7 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 				DrawXorBar(hdc, m_oldY - m_halfSize, rect.top+1, m_splitterSize, rect.bottom-2);
 				m_oldY = pt.x;
 			}
-			::ReleaseDC(m_hwOwner, hdc);
+			::ReleaseDC(GetParent(), hdc);
 
 			m_bDragging = false;
 
@@ -440,11 +489,11 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 				{
 					if(!m_bFullDrag)
 					{
-						hdc = ::GetWindowDC(m_hwOwner);
+						hdc = ::GetWindowDC(GetParent());
 						DrawXorBar(hdc, rect.left+1, m_oldY - m_halfSize, rect.right - 2, m_splitterSize);
 						DrawXorBar(hdc, rect.left+1, pt.y - m_halfSize, rect.right - 2, m_splitterSize);
 							
-						::ReleaseDC(m_hwOwner, hdc);
+						::ReleaseDC(GetParent(), hdc);
 
 						m_oldY = pt.y;
 					}
@@ -464,10 +513,10 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 				{
 					if(!m_bFullDrag)
 					{
-						hdc = ::GetWindowDC(m_hwOwner);
+						hdc = ::GetWindowDC(GetParent());
 						DrawXorBar(hdc, m_oldY - m_halfSize, rect.top+1, m_splitterSize, rect.bottom - 2);
 						DrawXorBar(hdc, pt.x - m_halfSize, rect.top+1, m_splitterSize, rect.bottom - 2);
-						::ReleaseDC(m_hwOwner, hdc);
+						::ReleaseDC(GetParent(), hdc);
 
 						m_oldY = pt.x;
 					}
@@ -514,8 +563,13 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 			return 0;
 		}
 
+		LRESULT OnResized(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+		{
+			UpdateLayout(true);
+			return 0;
+		}
+
 	protected:
-        HWND	m_hwOwner;
 		HWND	panes[2];
 		bool	bSinglePane;
 

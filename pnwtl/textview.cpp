@@ -31,7 +31,8 @@ using pnutils::threading::CritLock;
 	static char THIS_FILE[] = __FILE__;
 #endif
 
-CTextView::CTextView(DocumentPtr document, CommandDispatch* commands, AutoCompleteManager* autoComplete) : 
+CTextView::CTextView(DocumentPtr document, Views::ViewPtr parent, CommandDispatch* commands, AutoCompleteManager* autoComplete) : 
+	Views::View(Views::vtText, parent),
 	m_pDoc(document),
 	m_pCmdDispatch(commands),
 	m_pLastScheme(NULL),
@@ -773,6 +774,13 @@ void CTextView::DoContextMenu(CPoint* point)
 	{
 		m_pCmdDispatch->ReturnID((*i));
 	}
+}
+
+HRESULT CTextView::OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	bHandled = false;
+	NotifyGotFocus();
+	return 0;
 }
 
 ////////////////////////////////////////////////////////////////

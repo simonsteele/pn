@@ -12,16 +12,40 @@
 
 using namespace Views;
 
-/**
- * Splitter Constructor
- */
-SplitView::SplitView(ESplitType splitType, ViewPtr& parent, HWND view1, HWND view2) : 
+SplitView::SplitView(ESplitType splitType, ViewPtr& parent, ViewPtr& view1, ViewPtr& view2) : 
 	  View(vtSplit, parent), 
-	  m_splitType(splitType), 
+	  m_splitType(splitType),
 	  m_w1(view1), 
 	  m_w2(view2) 
 {
-	m_wnd.SetPanes(m_w1, m_w2, false);
+}
+
+SplitView::~SplitView()
+{
+}
+
+/**
+ * This static factory function exists because the SplitView can't use shared_from_this in its constructor.
+ */
+boost::shared_ptr<SplitView> SplitView::MakeSplitView(ESplitType splitType, ViewPtr& parent, ViewPtr& view1, ViewPtr& view2)
+{
+	boost::shared_ptr<SplitView> view(new SplitView(splitType, parent, view1, view2));
+	view->init();
+	return view;
+}
+
+/**
+ * Initialize Splitter
+ */
+void SplitView::init()
+{
+	PNASSERT(m_w1.get());
+	PNASSERT(m_w2.get());
+
+	m_w1->SetParentView(shared_from_this());
+	m_w2->SetParentView(shared_from_this());
+
+	m_wnd.SetPanes(m_w1->GetHwnd(), m_w2->GetHwnd(), false);
 	m_wnd.DisableSinglePaneMode(false);
 	m_wnd.SetHorizontal(m_splitType == splitHorz);
 }
@@ -33,7 +57,36 @@ HWND SplitView::Create(HWND hWndOwner, LPRECT rc, int controlId)
 	return wnd;
 }
 
+/**
+ * Get the window handle for this view.
+ */
+HWND SplitView::GetHwnd()
+{
+	return m_wnd.m_hWnd;
+}
+
 void SplitView::UpdateLayout()
 {
 	m_wnd.UpdateLayout();
+}
+
+/**
+ * Swap child windows.
+ */
+void SplitView::SwapChildren(ViewPtr& oldchild, ViewPtr& newChild)
+{
+	if (m_w1 == oldchild)
+	{
+		m_w1 = newChild;
+	}
+	else if (m_w2 == oldchild)
+	{
+		m_w2 = newChild;
+	}
+	else
+	{
+		throw new std::exception("Invalid old child passed to SwapChildren");
+	}
+
+	m_wnd.SetPanes(m_w1->GetHwnd(), m_w2->GetHwnd(), true);
 }

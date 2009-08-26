@@ -49,7 +49,7 @@ class CScintilla
 		CScintilla();
 
 		/// Destructor
-		~CScintilla();
+		virtual ~CScintilla();
 
 #ifndef WTL_SCINTILLA
 		/// Create a Scintilla window inside parent hParent.

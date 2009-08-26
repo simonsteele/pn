@@ -55,7 +55,7 @@ public:
 	typedef CTabbedMDIChildWindowImpl<CChildFrame> baseClass;
 
 	CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::TextClipsManager* textclips, AutoCompleteManager* autoComplete);
-	~CChildFrame();
+	virtual ~CChildFrame();
 	virtual void OnFinalMessage(HWND /*hWnd*/);
 
 	BEGIN_MSG_MAP(CChildFrame)
@@ -324,6 +324,9 @@ public:
 	void StopRecord();
 	bool IsRecording();
 
+	// View Management
+	void SetLastView(Views::ViewPtr& view);
+
 private:
 	// Window IDs we use, designed to avoid the WM_COMMAND ctrl id range
 	enum tagChildWindowIds
@@ -369,7 +372,6 @@ private:
 	static bool			s_bFirstChild;
 	HWND				m_hWndOutput;
 	HIMAGELIST			m_hImgList;
-	CTextView			m_view;
 	CString				m_Title;
 	uint64_t			m_FileAge;
 	bool				m_bModifiedOverride;
@@ -386,7 +388,37 @@ private:
 	COutputView*		m_pOutputView;
 	DocScript*			m_pScript;
 
-	boost::shared_ptr<Views::View> m_primeView;
+	/**
+	 * The very first text view to be created - this could probably
+	 * go away as m_primeView/m_lastTextView would do for holding it.
+	 * TODO
+	 */
+	boost::shared_ptr<CTextView> m_view;
+
+	/**
+	 * The prime view at any point is the virtual-root of the view tree, it sits
+	 * just above base view, but base view doesn't know anything about it. This gets
+	 * changed out when we split the top-level view.
+	 */
+	Views::ViewPtr		m_primeView;
+	
+	/**
+	 * This is the last focused view, regardless of type. Not really needed with
+	 * only one focusable view type, but this will expand in the future.
+	 */
+	Views::ViewPtr		m_focusView;
+
+	/**
+	 * Pointer to the last text view that was focused, this allows us to perform
+	 * edit commands where the user would expect them to be done.
+	 */
+	Views::ViewPtr		m_lastTextView;
+	
+	/**
+	 * Pointer to our base view instance - this is the root of the view
+	 * tree, and never changes. It feeds CChildFrame view focus notifications.
+	 */
+	Views::ViewPtr		m_baseView;
 
 	///@todo move this into COptionsManager
 	SPrintOptions		m_po;
