@@ -558,6 +558,10 @@ msgstr "&Şǿřŧ Ƒǿŀḓḗřş"
 msgid "&Source:"
 msgstr "&Şǿŭřƈḗ:"
 
+#. Resource IDs: (33142)
+msgid "&Split Horizontal"
+msgstr "&Şƥŀīŧ Ħǿřīzǿƞŧȧŀ"
+
 #. Resource IDs: (59393)
 msgid "&Status Bar"
 msgstr "&Şŧȧŧŭş Ɓȧř"
@@ -2253,6 +2257,10 @@ msgstr "Şƥḗƈīȧŀ Şẏḿƀǿŀş:"
 #. Resource IDs: (33128)
 msgid "Spli&t Lines"
 msgstr "Şƥŀī&ŧ Ŀīƞḗş"
+
+#. Resource IDs: (33143)
+msgid "Split V&ertical"
+msgstr "Şƥŀīŧ Ṽ&ḗřŧīƈȧŀ"
 
 #. Resource IDs: (3604)
 msgid "Split the active window into panes\nSplit"

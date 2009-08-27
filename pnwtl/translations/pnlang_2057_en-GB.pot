@@ -534,6 +534,10 @@ msgstr ""
 msgid "&Source:"
 msgstr ""
 
+#. Resource IDs: (33142)
+msgid "&Split Horizontal"
+msgstr ""
+
 #. Resource IDs: (59393)
 msgid "&Status Bar"
 msgstr ""
@@ -2135,6 +2139,10 @@ msgstr ""
 
 #. Resource IDs: (33128)
 msgid "Spli&t Lines"
+msgstr ""
+
+#. Resource IDs: (33143)
+msgid "Split V&ertical"
 msgstr ""
 
 #. Resource IDs: (3604)
