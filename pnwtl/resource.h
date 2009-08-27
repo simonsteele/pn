@@ -740,6 +740,7 @@
 #define ID_OUTPUT_WORDWRAP              33140
 #define ID_HELP_CHECKFORUPDATES         33141
 #define ID_WINDOW_SPLITHORIZONTAL       33142
+#define ID_WINDOW_SPLITVERTICAL         33143
 
 // Next default values for new objects
 // 
@@ -747,7 +748,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        369
-#define _APS_NEXT_COMMAND_VALUE         33143
+#define _APS_NEXT_COMMAND_VALUE         33144
 #define _APS_NEXT_CONTROL_VALUE         1161
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

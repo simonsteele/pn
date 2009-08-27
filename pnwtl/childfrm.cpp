@@ -677,6 +677,45 @@ void CChildFrame::updateViewKeyBindings()
 	}
 }
 
+/**
+ * Split the currently selected view into two, with a new Scintilla control
+ * as the new split.
+ */
+void CChildFrame::splitSelectedView(bool horizontal)
+{
+	Views::ViewPtr parent = m_focusView->GetParentView();
+
+	// Create the view we're going to split into:
+	Views::ViewPtr newTextViewPtr(new CTextView(m_spDocument, Views::ViewPtr(), m_pCmdDispatch, m_autoComplete));	
+	CTextView* newTextView = static_cast<CTextView*>(newTextViewPtr.get());
+	newTextView->Create(parent->GetHwnd(), rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwScintilla+1);
+	newTextView->SetDocPointer(GetTextView()->GetDocPointer());
+
+	// Now we want the parent of the last-focused view to get a new child, the splitter.
+	// The splitter will have the last-focused view, and also the new text view.
+	Views::ViewPtr newView(Views::SplitView::MakeSplitView(horizontal ? Views::splitHorz : Views::splitVert, parent, m_focusView, newTextViewPtr));
+	Views::SplitView* sv = static_cast<Views::SplitView*>(newView.get());
+
+	CRect rc;
+	::GetClientRect(m_focusView->GetHwnd(), rc);
+	HWND hWndSplit = sv->Create(parent->GetHwnd(), rc, cwViewSplitter);
+
+	if (parent->GetType() == Views::vtSplit)
+	{
+		// Re-parent the child...
+		Views::SplitView* parentSplitter = static_cast<Views::SplitView*>(parent.get());
+		parentSplitter->SwapChildren(m_focusView, newView);
+	}
+
+	if (m_focusView == m_primeView)
+	{
+		m_primeView = newView;
+		m_hWndClient = hWndSplit;
+	}
+
+	UpdateLayout();
+}
+
 LRESULT CChildFrame::OnOptionsUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	Scheme* pS = GetTextView()->GetCurrentScheme();
@@ -1390,37 +1429,14 @@ LRESULT CChildFrame::OnProjectAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 LRESULT CChildFrame::OnSplitHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	Views::ViewPtr parent = m_focusView->GetParentView();
+	splitSelectedView(true);
 
-	// Create the view we're going to split into:
-	Views::ViewPtr newTextViewPtr(new CTextView(m_spDocument, Views::ViewPtr(), m_pCmdDispatch, m_autoComplete));	
-	CTextView* newTextView = static_cast<CTextView*>(newTextViewPtr.get());
-	newTextView->Create(parent->GetHwnd(), rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwScintilla+1);
-	newTextView->SetDocPointer(GetTextView()->GetDocPointer());
+	return 0;
+}
 
-	// Now we want the parent of the last-focused view to get a new child, the splitter.
-	// The splitter will have the last-focused view, and also the new text view.
-	Views::ViewPtr newView(Views::SplitView::MakeSplitView(Views::splitHorz, parent, m_focusView, newTextViewPtr));
-	Views::SplitView* sv = static_cast<Views::SplitView*>(newView.get());
-
-	CRect rc;
-	::GetClientRect(m_focusView->GetHwnd(), rc);
-	HWND hWndSplit = sv->Create(parent->GetHwnd(), rc, cwViewSplitter);
-
-	if (parent->GetType() == Views::vtSplit)
-	{
-		// Re-parent the child...
-		Views::SplitView* parentSplitter = static_cast<Views::SplitView*>(parent.get());
-		parentSplitter->SwapChildren(m_focusView, newView);
-	}
-
-	if (m_focusView == m_primeView)
-	{
-		m_primeView = newView;
-		m_hWndClient = hWndSplit;
-	}
-
-	UpdateLayout();
+LRESULT CChildFrame::OnSplitVertical(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	splitSelectedView(false);
 
 	return 0;
 }

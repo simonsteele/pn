@@ -311,11 +311,12 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 	protected:
 		void GetOwnerClientRect(HWND hOwner, LPRECT lpRect)
 		{
-			WINDOWPLACEMENT wp = {0};
+			/*WINDOWPLACEMENT wp = {0};
 			wp.length = sizeof(WINDOWPLACEMENT);
 			::GetWindowPlacement(m_hWnd, &wp);
 		
-			memcpy(lpRect, &wp.rcNormalPosition, sizeof(RECT));
+			memcpy(lpRect, &wp.rcNormalPosition, sizeof(RECT));*/
+			GetClientRect(lpRect);
 			//wp.rcNormalPosition
 			//::GetClientRect(GetParent(), lpRect);
 		}
@@ -324,10 +325,10 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 		{
 			RECT wrect;
 
-			::GetWindowRect(GetParent(), &wrect);
-			static_cast<T*>(this)->GetOwnerClientRect(GetParent(), lpRect);
-			::ClientToScreen(GetParent(), (LPPOINT)lpRect);
-			::ClientToScreen(GetParent(), ((LPPOINT)lpRect)+1);
+			GetWindowRect(&wrect);
+			GetClientRect(lpRect);
+			ClientToScreen((LPPOINT)lpRect);
+			ClientToScreen(((LPPOINT)lpRect)+1);
 
 			//convert the mouse coordinates relative to the top-left of the window
 			ClientToScreen(lpPoint);
@@ -359,12 +360,12 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 		{
 			RECT rect;
 
-			::GetWindowRect(GetParent(), &rect);
+			GetWindowRect(&rect);
 			lpPoint->x += rect.left;
 			lpPoint->y += rect.top;
 
 			//now convert into CLIENT coordinates
-			::ScreenToClient(GetParent(), lpPoint);
+			ScreenToClient(lpPoint);
 		}
 
 		LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -396,7 +397,6 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 
 			m_bDragging = true;
 
-			//::SetCapture(GetParent());
 			SetCapture();
 
 			if(!m_bFullDrag)

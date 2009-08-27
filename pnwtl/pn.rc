@@ -305,6 +305,7 @@ BEGIN
         MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
         MENUITEM SEPARATOR
         MENUITEM "&Split Horizontal",           ID_WINDOW_SPLITHORIZONTAL
+        MENUITEM "Split V&ertical",             ID_WINDOW_SPLITVERTICAL
         MENUITEM SEPARATOR
         MENUITEM "Close All &Other Windows",    ID_WINDOW_CLOSEALLOTHER
     END

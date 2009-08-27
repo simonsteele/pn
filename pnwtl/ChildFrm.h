@@ -134,6 +134,7 @@ public:
 		COMMAND_ID_HANDLER(ID_PROJECT_ADDTHISFILE, OnProjectAddFile)
 
 		COMMAND_ID_HANDLER(ID_WINDOW_SPLITHORIZONTAL, OnSplitHorizontal)
+		COMMAND_ID_HANDLER(ID_WINDOW_SPLITVERTICAL, OnSplitVertical)
 
 		COMMAND_RANGE_HANDLER(ID_ENCODING_8, ID_ENCODING_UTF8NOBOM, OnEncodingSelect)
 
@@ -261,6 +262,7 @@ public:
 	LRESULT OnViewFileProps(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnProjectAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSplitHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnSplitVertical(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnJumpTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -366,6 +368,7 @@ private:
 	void setReadOnly(bool newValue, bool setAttributes);
 	void findNextWordUnderCursor(bool backwards);
 	void updateViewKeyBindings();
+	void splitSelectedView(bool horizontal);
 
 	CommandDispatch*	m_pCmdDispatch;
 	DocumentPtr			m_spDocument;
