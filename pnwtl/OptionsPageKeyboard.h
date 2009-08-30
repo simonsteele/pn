@@ -59,7 +59,7 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 		
 		bool IsDirty() const;
 
-	protected:
+	private:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 		LRESULT OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -68,7 +68,7 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 		LRESULT OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 		LRESULT OnKeySelChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-		int addItems(CSMenuHandle& menu, const char* group, int count = 0);
+		int addItems(CSMenuHandle& menu, LPCTSTR group, int count = 0);
 		void addExtensions();
 		void addScintilla();
 		void clear();

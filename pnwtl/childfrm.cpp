@@ -359,32 +359,26 @@ DocumentPtr CChildFrame::GetDocument() const
 
 void CChildFrame::SetTitle( bool bModified )
 {
-	tstring fn = m_spDocument->GetFileName();
-	LPCTSTR sFullPath = fn.c_str();
-
 	tstring filepart;
 	
-	tstring title;
+	tstring fn(m_spDocument->GetFileName());
+	tstring title(m_spDocument->GetTitle());
 	tstring tabTitle;
 
-	if(_tcschr(sFullPath, _T('<')) != 0)
+	if (fn.length())
 	{
-		// no filename yet...
-		title = tabTitle = _T("<new>");
-	}
-	else
-	{
-		if( _tcschr(sFullPath, _T('\\')) != NULL )
+		if(fn.find(_T('\\')) != -1)
 		{
-			CFileName fn(sFullPath);
-			filepart = fn.GetFileName();
+			CFileName fullfilename(fn.c_str());
+			filepart = fullfilename.GetFileName();
 		}
 		else
-			filepart = sFullPath;
+		{
+			filepart = fn;
+		}
 		
 		if( OPTIONS->GetCached(Options::OShowFullPath) )
 		{
-			title = sFullPath;
 			tabTitle = filepart;
 		}
 		else
@@ -392,10 +386,9 @@ void CChildFrame::SetTitle( bool bModified )
 			title = filepart;
 			tabTitle = filepart;
 		}
-
 	}
 
-	if(bModified)
+	if (bModified)
 	{
 		title += _T(" *");
 		tabTitle += _T(" *");
@@ -418,9 +411,7 @@ void CChildFrame::SetTitle( bool bModified )
 
 	SetWindowText(title.c_str());
 	SetTabText(tabTitle.c_str());
-	SetTabToolTip(sFullPath);
-	
-	m_Title = sFullPath;
+	SetTabToolTip(fn.c_str());
 
 	MDIRefreshMenu();
 }
@@ -430,9 +421,9 @@ tstring CChildFrame::GetFileName(EGFNType type)
 	return m_spDocument->GetFileName(type);
 }
 
-LPCTSTR CChildFrame::GetTitle()
+tstring CChildFrame::GetTitle()
 {
-	return m_Title;
+	return m_spDocument->GetTitle();
 }
 
 bool CChildFrame::GetModified()
@@ -447,7 +438,7 @@ bool CChildFrame::CanClose()
 	if(GetModified())
 	{
 		CString title;
-		title.Format(IDS_SAVE_CHANGES, GetTitle());
+		title.Format(IDS_SAVE_CHANGES, GetTitle().c_str());
 		int res = MessageBox(title, LS(IDR_MAINFRAME), MB_YESNOCANCEL | MB_ICONQUESTION);
 		switch (res)
 		{

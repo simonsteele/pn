@@ -130,8 +130,11 @@
 #define IDS_OPTPAGE_ALTERNATEFILES      217
 #define IDS_OPTPAGE_FILEASSOC           218
 #define IDS_OPTPAGE_VISUALHELP          219
+#define IDS_SHORTCUTS_EDITOR            220
 #define ID_VIEW_CHANGESCHEME            221
+#define IDS_SHORTCUTS_SCRIPTS           221
 #define ID_VIEW_SCHEMES                 222
+#define IDS_NEW_FILE_TITLE              222
 #define IDR_POPUP_REGEXPM               226
 #define ID_REGEXP_TAGGEDEXPRESSION1     227
 #define ID_REGEXP_TAGGEDEXPRESSION2     228

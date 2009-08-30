@@ -30,8 +30,13 @@ Document::Document(LPCTSTR filename)
 	}
 	else
 	{
-		m_sTitle = _T("<new>");
-		m_sFilename = _T("<new>");
+		m_sTitle = LS(IDS_NEW_FILE_TITLE);
+		if (m_sTitle.length() == 0) // in case of resource problems
+		{
+			m_sTitle = _T("<new>");
+		}
+
+		m_sFilename = _T("");
 	}
 }
 

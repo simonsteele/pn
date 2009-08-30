@@ -194,7 +194,7 @@ public:
 
 	void SetTitle(bool bModified = false);
 	tstring GetFileName(EGFNType type = FN_FULL);
-	LPCTSTR GetTitle();
+	tstring GetTitle();
 	bool GetModified();
 	bool GetWriteProtect();
 
@@ -375,7 +375,6 @@ private:
 	static bool			s_bFirstChild;
 	HWND				m_hWndOutput;
 	HIMAGELIST			m_hImgList;
-	CString				m_Title;
 	uint64_t			m_FileAge;
 	bool				m_bModifiedOverride;
 	bool				m_bClosing;

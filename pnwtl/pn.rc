@@ -2032,6 +2032,9 @@ BEGIN
     IDS_OPTPAGE_ALTERNATEFILES "Alternate Files"
     IDS_OPTPAGE_FILEASSOC   "File Associations"
     IDS_OPTPAGE_VISUALHELP  "Visual Help"
+    IDS_SHORTCUTS_EDITOR    "Editor"
+    IDS_SHORTCUTS_SCRIPTS   "Scripts"
+    IDS_NEW_FILE_TITLE      "<new>"
 END
 
 #endif    // English (U.K.) resources
