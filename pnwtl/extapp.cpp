@@ -174,6 +174,7 @@ void App::LoadExtensions()
 			}
 			else
 			{
+				delete ext;
 				tstring msg(_T("Failed to load extension: "));
 				msg += details.Path;
 				LOG(msg.c_str());
