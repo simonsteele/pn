@@ -140,7 +140,7 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 				UpdateLayout();
 		}
 
-		int GetSinglePaneMode()
+		int GetSinglePaneMode() const
 		{
 			return m_singlePane;
 		}
@@ -232,8 +232,8 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 
 			if(SPLITTER_NORMAL != m_singlePane)
 			{
+				// We're in single pane mode, make sure we place the focused pane over everything:
 				::SetWindowPos(panes[m_singlePane], HWND_TOP, rc.left, rc.top, rc.Width(), rc.Height(), SWP_SHOWWINDOW);
-				MoveWindow(-1, -1, 0, 0);
 				return;
 			}
 

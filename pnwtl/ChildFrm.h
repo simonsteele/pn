@@ -340,19 +340,6 @@ private:
 		cwViewSplitter = 0x50000
 	};
 
-	/**
-	 * Internal class which adjusts the splitter behaviour to take account
-	 * of the mini-bar.
-	 */
-	class CCFSplitter : public CWTLSplitter<CCFSplitter>
-	{
-	public:
-		CCFSplitter(CChildFrame* pFrame) : m_pFrame(pFrame){}
-		void GetOwnerClientRect(HWND hOwner, LPRECT lpRect);
-	protected:
-		CChildFrame* m_pFrame;
-	};
-
 	void LoadExternalLexers();
 	void PrintSetup();
 	void SchemeChanged(Scheme* pScheme);
@@ -373,29 +360,20 @@ private:
 	CommandDispatch*	m_pCmdDispatch;
 	DocumentPtr			m_spDocument;
 	static bool			s_bFirstChild;
-	HWND				m_hWndOutput;
 	HIMAGELIST			m_hImgList;
 	uint64_t			m_FileAge;
 	bool				m_bModifiedOverride;
 	bool				m_bClosing;
 	bool				m_bReadOnly;
 	bool				m_bIgnoreUpdates;
+	HWND				m_hWndOutput;
 	TextClips::TextClipsManager*	m_pTextClips;
 	
 	int					m_iFirstToolCmd;
 
 	AutoCompleteManager* m_autoComplete;
 
-	CCFSplitter*		m_pSplitter;
-	COutputView*		m_pOutputView;
 	DocScript*			m_pScript;
-
-	/**
-	 * The very first text view to be created - this could probably
-	 * go away as m_primeView/m_lastTextView would do for holding it.
-	 * TODO
-	 */
-	boost::shared_ptr<CTextView> m_view;
 
 	/**
 	 * The prime view at any point is the virtual-root of the view tree, it sits
@@ -421,6 +399,12 @@ private:
 	 * tree, and never changes. It feeds CChildFrame view focus notifications.
 	 */
 	Views::ViewPtr		m_baseView;
+
+	/**
+	 * If you're using individual output windows then this view will get inserted
+	 * below the top-level view to split and display the output window.
+	 */
+	Views::ViewPtr		m_outputView;
 
 	///@todo move this into COptionsManager
 	SPrintOptions		m_po;

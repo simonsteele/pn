@@ -90,3 +90,19 @@ void SplitView::SwapChildren(ViewPtr& oldchild, ViewPtr& newChild)
 
 	m_wnd.SetPanes(m_w1->GetHwnd(), m_w2->GetHwnd(), true);
 }
+
+/**
+ * Find out whether the splitter is focusing on only one pane - i.e. not splitting
+ */
+int SplitView::GetSinglePaneMode() const
+{
+	return m_wnd.GetSinglePaneMode();
+}
+
+/**
+ * Set whether the splitter is focusing on one page or neither.
+ */
+void SplitView::SetSinglePaneMode(int mode)
+{
+	m_wnd.SetSinglePaneMode(mode);
+}

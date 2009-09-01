@@ -79,24 +79,21 @@ private:
 
 CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::TextClipsManager* textclips, AutoCompleteManager* autoComplete) : 
 	m_spDocument(doc), 
-	m_view(new CTextView(doc, Views::ViewPtr(), commands, autoComplete)),
-	m_primeView(m_view),
-	m_lastTextView(m_view),
-	m_focusView(m_view),
+	m_primeView(new CTextView(doc, Views::ViewPtr(), commands, autoComplete)),
+	m_lastTextView(m_primeView),
+	m_focusView(m_primeView),
 	m_autoComplete(autoComplete),
 	m_pCmdDispatch(commands),
 	m_pTextClips(textclips),
-	m_hWndOutput(NULL),
 	m_hImgList(NULL),
-	m_pSplitter(NULL),
-	m_pOutputView(NULL),
 	m_bClosing(false),
 	m_pScript(NULL),
 	m_FileAge(-1),
 	m_iFirstToolCmd(ID_TOOLS_DUMMY),
 	m_bModifiedOverride(false),
 	m_bReadOnly(false),
-	m_bIgnoreUpdates(false)
+	m_bIgnoreUpdates(false),
+	m_hWndOutput(NULL)
 {
 	m_po.hDevMode = 0;
 	m_po.hDevNames = 0;
@@ -106,7 +103,7 @@ CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::
 	InitUpdateUI();
 
 	m_baseView.reset(new BaseView(this));
-	m_view->SetParentView(m_baseView);
+	m_primeView->SetParentView(m_baseView);
 }
 
 CChildFrame::~CChildFrame()
@@ -120,12 +117,6 @@ CChildFrame::~CChildFrame()
 
 	if(m_hImgList)
 		::ImageList_Destroy(m_hImgList);
-
-	if(m_pSplitter)
-		delete m_pSplitter;
-
-	if(m_pOutputView)
-		delete m_pOutputView;
 
 	if(m_pUIData)
 		delete [] m_pUIData;
@@ -148,14 +139,6 @@ void CChildFrame::UpdateLayout(BOOL bResizeBars)
 
 	// position bars and offset their dimensions
 	UpdateBarsPosition(rect, bResizeBars);
-
-	// resize client window
-	if(m_pSplitter)
-	{
-		// TODO: Resize the splitter window instead.
-		m_pSplitter->UpdateLayout(true);
-		return;
-	}
 
 	if (/*m_primeView.get() || */m_hWndClient != NULL)
 	{
@@ -248,48 +231,57 @@ void CChildFrame::SetupToolbar()
 
 void CChildFrame::EnsureOutputWindow()
 {
-	if(!m_pSplitter)
+	if (!m_outputView.get())
 	{
-		m_pSplitter = new CCFSplitter(this);
-		
-		m_pSplitter->SetHorizontal( OPTIONS->Get(PNSK_EDITOR, _T("OutputSplitHorizontal"), true) );
+		// TODO: This code should share with the split windows code:
+		Views::ViewPtr parent(m_primeView->GetParentView());
 
 		CRect rc;
-		GetClientRect(rc);
-		UpdateBarsPosition(rc, FALSE);
+		::GetClientRect(m_primeView->GetHwnd(), rc);
+		
+		m_outputView.reset(new COutputView);
+		COutputView* view = static_cast<COutputView*>(m_outputView.get());
 
 		CRect rc2(rc);
 		rc2.top += (rc.Height() / 4) * 3;
 
-		m_pOutputView = new COutputView;
-		m_pOutputView->Create(m_hWnd, rc2, _T("Output"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwOutputView);
-		m_hWndOutput = m_pOutputView->m_hWnd;
+		m_hWndOutput = view->Create(m_hWnd, rc2, _T("Output"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwOutputView);
 
-		m_pSplitter->Create(m_hWnd, rc, _T("Splitter"), 0, 0, cwSplitter);
-		m_pSplitter->SetPanes(m_view->GetHwnd(), m_pOutputView->m_hWnd);
-		m_pSplitter->ProportionSplit();
-		m_pSplitter->SetSinglePaneMode(SPLITTER_TOP);
+		Views::ESplitType split = OPTIONS->Get(PNSK_EDITOR, _T("OutputSplitHorizontal"), true) ? Views::splitHorz : Views::splitVert;
+
+		Views::ViewPtr newView(Views::SplitView::MakeSplitView(split, parent, m_primeView, m_outputView));
+		Views::SplitView* sv = static_cast<Views::SplitView*>(newView.get());
+				
+		HWND hWndSplit = sv->Create(parent->GetHwnd(), rc, cwSplitter);
+
+		m_primeView = newView;
+		m_hWndClient = hWndSplit;
+
+		UpdateLayout();
 	}
 }
 
 void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 {
-	bool bShow;
-	bool bVisible = ((m_pSplitter != NULL) ? m_pSplitter->GetSinglePaneMode() == SPLITTER_NORMAL : false);
-	if(bSetValue)
-		bShow = bSetShowing;
-	else
-		bShow = !bVisible;
+	bool bVisible(true);
+	if (!m_outputView.get())
+	{
+		EnsureOutputWindow();
+		bVisible = false;
+	}
 
-	EnsureOutputWindow();
+	Views::SplitView* sv = static_cast<Views::SplitView*>(m_outputView->GetParentView().get());
+	
+	bVisible = bVisible && sv->GetSinglePaneMode() == SPLITTER_NORMAL;
+	bool bShow = bSetValue ? bSetShowing : !bVisible;
 
 	if(bShow && !bVisible)
 	{
-		m_pSplitter->DisableSinglePaneMode();
+		sv->SetSinglePaneMode(SPLITTER_NORMAL);
 	}
 	else if(!bShow && bVisible)
 	{
-		m_pSplitter->SetSinglePaneMode(SPLITTER_TOP);
+		sv->SetSinglePaneMode(SPLITTER_TOP);
 	}
 
 	UISetChecked(ID_VIEW_INDIVIDUALOUTPUT, bShow);
@@ -1526,7 +1518,7 @@ bool CChildFrame::OnRunTool(LPVOID pTool)
 	{
 		if(pToolDef->CaptureOutput())
 			EnsureOutputWindow();
-		pWrapper.reset( new ChildOutputWrapper(this, m_pOutputView, this, *pToolDef) );
+		pWrapper.reset( new ChildOutputWrapper(this, GetOutputWindow(), this, *pToolDef) );
 	}
 
 	pWrapper->SetNotifyWindow(m_hWnd);
@@ -2317,7 +2309,12 @@ void CChildFrame::UpdateMenu()
 
 bool CChildFrame::IsOutputVisible()
 {
-	return ((m_pSplitter != NULL) ? m_pSplitter->GetSinglePaneMode() == SPLITTER_NORMAL : false);
+	if (!m_outputView.get())
+	{
+		return false;
+	}
+
+	return static_cast<Views::SplitView*>(m_primeView.get())->GetSinglePaneMode() == SPLITTER_NORMAL;
 }
 
 /**
@@ -2438,7 +2435,7 @@ CTextView* CChildFrame::GetTextView()
 COutputView* CChildFrame::GetOutputWindow()
 {
 	EnsureOutputWindow();
-	return m_pOutputView;
+	return static_cast<COutputView*>(m_outputView.get());
 }
 
 HACCEL CChildFrame::GetToolAccelerators()
@@ -2535,15 +2532,6 @@ void CChildFrame::SetLastView(Views::ViewPtr& view)
 	{
 		m_lastTextView = m_focusView;
 	}
-}
-
-////////////////////////////////////////////////////
-// CChildFrame::CCFSplitter
-
-void CChildFrame::CCFSplitter::GetOwnerClientRect(HWND hOwner, LPRECT lpRect)
-{
-	m_pFrame->GetClientRect(lpRect);
-	m_pFrame->UpdateBarsPosition(*lpRect, FALSE);	
 }
 
 ////////////////////////////////////////////////////

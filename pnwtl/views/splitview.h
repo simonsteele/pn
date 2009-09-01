@@ -51,6 +51,16 @@ public:
 	 */
 	void SwapChildren(ViewPtr& oldchild, ViewPtr& newChild);
 
+	/**
+	 * Find out whether the splitter is focusing on only one pane - i.e. not splitting
+	 */
+	int GetSinglePaneMode() const;
+
+	/**
+	 * Set whether the splitter is focusing on one page or neither.
+	 */
+	void SetSinglePaneMode(int mode);
+
 private:
 	explicit SplitView(ESplitType splitType, ViewPtr& parent, ViewPtr& view1, ViewPtr& view2);
 	void init();
