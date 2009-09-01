@@ -331,6 +331,13 @@ CommandDispatch::~CommandDispatch()
 		delete (*i).second;
 	}
 
+	for(std::list<Commands::EditorCommand*>::const_iterator i = m_editorCommands.begin();
+		i != m_editorCommands.end();
+		++i)
+	{
+		delete (*i);
+	}
+	
 	delete m_keyMap;
 	delete m_ScintillaKeyMap;
 	m_keyMap = NULL;
