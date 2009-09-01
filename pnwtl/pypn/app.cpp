@@ -2,7 +2,7 @@
  * @file app.cpp
  * @brief Plugin Main Implementation
  * @author Simon Steele
- * @note Copyright (c) 2006-209 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.

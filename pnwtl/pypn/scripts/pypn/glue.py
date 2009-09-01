@@ -74,3 +74,31 @@ def startRecording():
 	""" PN calls this to start recording a script, all recording actions
 	are delegated to the Recorder class """
 	return record.Recorder()
+	
+def evalCommand(str):
+	""" This is just a very simple prototype of VI-style commands """
+	len = len(str)
+	if len == 0:
+		return ""
+	
+	if len == 1:
+		sci = scintilla.Scintilla(pn.CurrentDoc())
+		if str == 'j':
+			sci.LineDown()
+		elif str == 'k':
+			sci.LineUp()
+		elif str == 'h':
+			sci.CharLeft()
+		elif str == 'l':
+			sci.CharRight()
+		elif str == '0':
+			sci.Home()
+		elif str == '$':
+			sci.LineEnd()
+		elif str == 'w':
+			sci.WordRight()
+		elif str == 'b':
+			sci.WordLeft()
+		return ''
+		
+	return str
