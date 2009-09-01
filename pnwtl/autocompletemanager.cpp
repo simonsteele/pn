@@ -49,7 +49,8 @@ IWordProviderPtr AutoCompleteManager::getApi(const char* scheme)
 		return (*existing).second;
 	}
 
-	tstring uspath = OPTIONS->GetPNPath(PNPATH_SCHEMES);
+	tstring uspath;
+	OPTIONS->GetPNPath(uspath, PNPATH_SCHEMES);
 	
 	CA2W schemeconv(scheme);
 	std::wstring apifile(schemeconv);
