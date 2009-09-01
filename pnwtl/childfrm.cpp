@@ -165,6 +165,18 @@ void CChildFrame::UpdateBarsPosition(RECT& rect, BOOL bResizeBars)
 		rect.bottom -= rectTB.bottom - rectTB.top;
 	}
 
+	if (m_cmdTextBox.m_hWnd != NULL)
+	{
+		if (bResizeBars)
+		{
+			m_cmdTextBox.SetWindowPos(HWND_TOP, rect.left, rect.bottom - 22, rect.right-rect.left, 22, SWP_NOACTIVATE | SWP_NOZORDER);
+		}
+
+		RECT rectTB;
+		m_cmdTextBox.GetWindowRect(&rectTB);
+		rect.bottom -= rectTB.bottom - rectTB.top;
+	}
+
 	// resize status bar
 	if(m_hWndStatusBar != NULL && ((DWORD)::GetWindowLong(m_hWndStatusBar, GWL_STYLE) & WS_VISIBLE))
 	{
@@ -379,6 +391,10 @@ void CChildFrame::SetTitle( bool bModified )
 			tabTitle = filepart;
 		}
 	}
+	else
+	{
+		tabTitle = title;
+	}
 
 	if (bModified)
 	{
@@ -499,6 +515,21 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	if (OPTIONS->Get(PNSK_INTERFACE, _T("MiniToolbar"), true))
 	{
 		SetupToolbar();
+	}
+
+	// This is where we enable the prototype command bar
+	if (OPTIONS->Get(PNSK_INTERFACE, _T("Commandbar"), false))
+	{
+		CRect rcTextBox;
+		GetClientRect(rcTextBox);
+		rcTextBox.top  = rcTextBox.bottom - 22;
+		
+		if (m_hWndToolBar != NULL)
+			rcTextBox.MoveToY(rcTextBox.top - MINI_BAR_HEIGHT);
+		
+		m_cmdTextBox.Create(m_hWnd, rcTextBox, _T(""), WS_CHILD | WS_VISIBLE, 0, cwCommandWnd);
+		HFONT fn = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
+		m_cmdTextBox.SetFont(fn);
 	}
 
 	m_pCmdDispatch->UpdateMenuShortcuts(m_hMenu);
@@ -660,6 +691,20 @@ void CChildFrame::updateViewKeyBindings()
 	}
 }
 
+struct OptionsUpdateVisitor : public Views::Visitor
+{
+	OptionsUpdateVisitor(Scheme* scheme) : _scheme(scheme) {}
+	virtual void operator ()(Views::View* view)
+	{
+		if (view->GetType() == Views::vtText)
+		{
+			if (_scheme) static_cast<CTextView*>(view)->SetScheme(_scheme, true);
+			static_cast<CTextView*>(view)->ShowLineNumbers(OPTIONS->GetCached(Options::OLineNumbers) != 0);
+		}
+	}
+	Scheme* _scheme;
+};
+
 /**
  * Split the currently selected view into two, with a new Scintilla control
  * as the new split.
@@ -673,6 +718,7 @@ void CChildFrame::splitSelectedView(bool horizontal)
 	CTextView* newTextView = static_cast<CTextView*>(newTextViewPtr.get());
 	newTextView->Create(parent->GetHwnd(), rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwScintilla+1);
 	newTextView->SetDocPointer(GetTextView()->GetDocPointer());
+	newTextView->Visit(OptionsUpdateVisitor(GetTextView()->GetCurrentScheme()));
 
 	// Now we want the parent of the last-focused view to get a new child, the splitter.
 	// The splitter will have the last-focused view, and also the new text view.
@@ -704,13 +750,9 @@ LRESULT CChildFrame::OnOptionsUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	Scheme* pS = GetTextView()->GetCurrentScheme();
 	UpdateTools(pS);
 
-	// re-load the compiled scheme...
-	if(pS)
-		GetTextView()->SetScheme(pS);
+	m_primeView->Visit(OptionsUpdateVisitor(pS));
 
-	GetTextView()->ShowLineNumbers(OPTIONS->GetCached(Options::OLineNumbers) != 0);
-
-	// update scintilla shortcuts
+	// update scintilla shortcuts (does this need to be per view?)
 	updateViewKeyBindings();
 
 	UpdateMenu();
@@ -1144,7 +1186,7 @@ LRESULT CChildFrame::OnUseAsScript(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	std::string runner;
 	if(ScriptRegistry::GetInstanceRef().SchemeScriptsEnabled(GetTextView()->GetCurrentScheme()->GetName(), runner))
 	{
-		CT2CA scriptName(GetFileName(FN_FILE).c_str());
+		CT2CA scriptName(GetTitle().c_str());
 		m_pScript = new DocScript(scriptName, runner.c_str(), m_spDocument);
 		ScriptRegistry::GetInstance()->Add("User Scripts", m_pScript);
 	}
@@ -1597,6 +1639,42 @@ LRESULT CChildFrame::OnGetInfoTip(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 	LPNMTBGETINFOTIP pS = (LPNMTBGETINFOTIP)pnmh;
 
 	::LoadString(_Module.m_hInst, pS->iItem, pS->pszText, pS->cchTextMax);
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnCommandNotify(WORD wNotifyCode, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	// Yes, this is very much prototype code!
+	static bool lock = false;
+	if (wNotifyCode == EN_CHANGE)
+	{
+		if (lock)
+		{
+			return 0;
+		}
+
+		lock = true;
+		
+		extensions::IScriptRunner* python = ScriptRegistry::GetInstance()->GetRunner("python");
+		if (python)
+		{
+			PN::AString str;
+			std::string command("evalCommand('");
+			
+			CWindowText wt(m_cmdTextBox);
+			CT2CA commandtext(wt);
+			command += commandtext;
+			command += "')";
+
+			python->Eval(command.c_str(), str);
+
+			CA2CT newwt(str.Get());
+			m_cmdTextBox.SetWindowText(newwt);
+		}
+		
+		lock = false;
+	}
 
 	return 0;
 }
@@ -2213,9 +2291,23 @@ bool CChildFrame::OnEditorCommand(LPVOID pCommand)
 	return true;
 }
 
+struct SetSchemeVisitor : public Views::Visitor
+{
+	SetSchemeVisitor(Scheme* scheme, bool all) : _scheme(scheme), _all(all) {}
+	virtual void operator ()(Views::View* view)
+	{
+		if (view->GetType() == Views::vtText)
+		{
+			static_cast<CTextView*>(view)->SetScheme(_scheme, _all);
+		}
+	}
+	Scheme* _scheme;
+	bool _all;
+};
+
 void CChildFrame::SetScheme(Scheme* pScheme, bool allSettings)
 {
-    GetTextView()->SetScheme(pScheme, allSettings);
+	m_primeView->Visit(SetSchemeVisitor(pScheme, allSettings));
 }
 
 void CChildFrame::UpdateTools(Scheme* pScheme)
@@ -2244,6 +2336,9 @@ void CChildFrame::UpdateTools(Scheme* pScheme)
 	);
 }
 
+/**
+ * Called when the scheme is changed.
+ */
 void CChildFrame::SchemeChanged(Scheme* pScheme)
 {
 	UpdateTools(pScheme);
@@ -2314,7 +2409,7 @@ bool CChildFrame::IsOutputVisible()
 		return false;
 	}
 
-	return static_cast<Views::SplitView*>(m_primeView.get())->GetSinglePaneMode() == SPLITTER_NORMAL;
+	return static_cast<Views::SplitView*>(m_outputView->GetParentView().get())->GetSinglePaneMode() == SPLITTER_NORMAL;
 }
 
 /**

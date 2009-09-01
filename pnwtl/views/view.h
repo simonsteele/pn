@@ -14,11 +14,19 @@
 
 namespace Views {
 
-typedef enum { vtUnknown, vtText, vtSplit } EViewType;
+typedef enum { vtUnknown, vtText, vtSplit, vtOutput, vtCommand } EViewType;
 
 class View;
 typedef boost::shared_ptr<View> ViewPtr;
 typedef boost::weak_ptr<View> WeakViewPtr;
+
+/**
+ * Abstract base class for View visitors.
+ */
+struct Visitor
+{
+	virtual void operator ()(View* view) = 0;
+};
 
 /**
  * Base class for nestable views
@@ -59,6 +67,12 @@ public:
 	 * Get this view's parent.
 	 */
 	ViewPtr GetParentView();
+
+	/**
+	 * Visit this view and child views. If your view contains others,
+	 * you should call Visit on them after visitor(this);
+	 */
+	virtual void Visit(Visitor& visitor);
 
 protected:
 

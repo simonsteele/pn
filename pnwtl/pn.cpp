@@ -207,14 +207,14 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	//	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	//HRESULT hRes = ::CoInitialize(NULL);
 	//HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	
+
 	// We now use OleInitialize so that we can use IDropTarget for the projects view 
 	// (and maybe other stuff later).
 	HRESULT hRes = ::OleInitialize(NULL);
 	ATLASSERT(SUCCEEDED(hRes));
 
 #ifdef _DEBUG
-//	_CrtSetBreakAlloc(6821);
+//	_CrtSetBreakAlloc(789);
 #endif
 
 #if (_WIN32_IE >= 0x0300)

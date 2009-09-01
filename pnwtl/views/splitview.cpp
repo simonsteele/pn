@@ -106,3 +106,13 @@ void SplitView::SetSinglePaneMode(int mode)
 {
 	m_wnd.SetSinglePaneMode(mode);
 }
+
+/**
+ * Visit this view and child views.
+ */
+void SplitView::Visit(Visitor& visitor)
+{
+	visitor(this);
+	m_w1->Visit(visitor);
+	m_w2->Visit(visitor);
+}

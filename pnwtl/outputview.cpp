@@ -22,7 +22,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 COutputView::COutputView() : 
-	Views::View(Views::vtUnknown, Views::ViewPtr())
+	Views::View(Views::vtOutput, Views::ViewPtr())
 {
 	m_bCustom = false;
 }

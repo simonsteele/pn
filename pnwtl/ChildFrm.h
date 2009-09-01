@@ -33,12 +33,7 @@ typedef enum {EP_LINE, EP_COL} EGPType;
 class COutputView;
 class DocScript;
 class AutoCompleteManager;
-namespace Views { class View; }
-
-namespace TextClips
-{
-	class TextClipsManager;
-}
+namespace TextClips { class TextClipsManager; }
 
 #define CHAIN_OUTPUT_COMMANDS() \
 	if(uMsg == WM_COMMAND && m_hWndOutput != NULL) \
@@ -135,6 +130,8 @@ public:
 
 		COMMAND_ID_HANDLER(ID_WINDOW_SPLITHORIZONTAL, OnSplitHorizontal)
 		COMMAND_ID_HANDLER(ID_WINDOW_SPLITVERTICAL, OnSplitVertical)
+
+		COMMAND_HANDLER(cwCommandWnd, EN_CHANGE, OnCommandNotify)
 
 		COMMAND_RANGE_HANDLER(ID_ENCODING_8, ID_ENCODING_UTF8NOBOM, OnEncodingSelect)
 
@@ -263,6 +260,7 @@ public:
 	LRESULT OnProjectAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSplitHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSplitVertical(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCommandNotify(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnJumpTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -337,7 +335,10 @@ private:
 		cwMinibar = 0x20000,
 		cwOutputView = 0x30000,
 		cwSplitter = 0x40000,
-		cwViewSplitter = 0x50000
+		cwViewSplitter = 0x50000,
+		
+		// This one we want commands from:
+		cwCommandWnd = 0x1000
 	};
 
 	void LoadExternalLexers();
@@ -367,6 +368,7 @@ private:
 	bool				m_bReadOnly;
 	bool				m_bIgnoreUpdates;
 	HWND				m_hWndOutput;
+	CEdit				m_cmdTextBox;
 	TextClips::TextClipsManager*	m_pTextClips;
 	
 	int					m_iFirstToolCmd;
@@ -411,10 +413,5 @@ private:
 
 	_PoorMansUIEntry*	m_pUIData;
 };
-
-/////////////////////////////////////////////////////////////////////////////
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
 #endif // !defined(CHILDFRM_H__INCLUDED)

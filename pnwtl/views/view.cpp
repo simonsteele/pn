@@ -40,6 +40,14 @@ void View::NotifyGotFocus()
 	NotifyGotFocus(shared_from_this());
 }
 
+/**
+ * Visit this view and child views.
+ */
+void View::Visit(Visitor& visitor)
+{
+	visitor(this);
+}
+
 void View::NotifyGotFocus(ViewPtr& focused)
 {
 	ViewPtr view(m_parent.lock());

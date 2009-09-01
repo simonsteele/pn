@@ -61,6 +61,11 @@ public:
 	 */
 	void SetSinglePaneMode(int mode);
 
+	/**
+	 * Visit this view and child views.
+	 */
+	virtual void Visit(Visitor& visitor);
+	
 private:
 	explicit SplitView(ESplitType splitType, ViewPtr& parent, ViewPtr& view1, ViewPtr& view2);
 	void init();

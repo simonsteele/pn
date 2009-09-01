@@ -25,7 +25,7 @@ class COutputView : public CScintillaWindowImpl< COutputView, REScintilla >, pub
 
 public:
 	explicit COutputView();
-	~COutputView();
+	virtual ~COutputView();
 
 	BEGIN_MSG_MAP(COutputView)
 		COMMAND_ID_HANDLER(ID_OUTPUT_CLEAR, OnClear)
