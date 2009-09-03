@@ -1663,6 +1663,13 @@ LRESULT CChildFrame::OnCommandNotify(WORD wNotifyCode, WORD /*wID*/, HWND /*hWnd
 			std::string command("evalCommand('");
 			
 			CWindowText wt(m_cmdTextBox);
+
+			if ((LPCTSTR)wt == NULL)
+			{
+				lock = false;
+				return 0;
+			}
+
 			CT2CA commandtext(wt);
 			command += commandtext;
 			command += "')";
@@ -1674,6 +1681,28 @@ LRESULT CChildFrame::OnCommandNotify(WORD wNotifyCode, WORD /*wID*/, HWND /*hWnd
 		}
 		
 		lock = false;
+	}
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnCommandEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	extensions::IScriptRunner* python = ScriptRegistry::GetInstance()->GetRunner("python");
+	if (python)
+	{
+		PN::AString str;
+		std::string command("evalCommandEnter('");
+		
+		CWindowText wt(m_cmdTextBox);
+		CT2CA commandtext(wt);
+		command += commandtext;
+		command += "')";
+
+		python->Eval(command.c_str(), str);
+
+		CA2CT newwt(str.Get());
+		m_cmdTextBox.SetWindowText(newwt);
 	}
 
 	return 0;

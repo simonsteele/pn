@@ -27,6 +27,7 @@
 #include "jumpview.h"
 #include "tools.h"
 #include "resource.h"
+#include "controls/commandbaredit.h"
 
 typedef enum {EP_LINE, EP_COL} EGPType;
 
@@ -132,6 +133,7 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_SPLITVERTICAL, OnSplitVertical)
 
 		COMMAND_HANDLER(cwCommandWnd, EN_CHANGE, OnCommandNotify)
+		COMMAND_HANDLER(cwCommandWnd, BN_CLICKED, OnCommandEnter)
 
 		COMMAND_RANGE_HANDLER(ID_ENCODING_8, ID_ENCODING_UTF8NOBOM, OnEncodingSelect)
 
@@ -261,6 +263,7 @@ public:
 	LRESULT OnSplitHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSplitVertical(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCommandNotify(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCommandEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnJumpTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -368,7 +371,7 @@ private:
 	bool				m_bReadOnly;
 	bool				m_bIgnoreUpdates;
 	HWND				m_hWndOutput;
-	CEdit				m_cmdTextBox;
+	CCommandBarEdit		m_cmdTextBox;
 	TextClips::TextClipsManager*	m_pTextClips;
 	
 	int					m_iFirstToolCmd;

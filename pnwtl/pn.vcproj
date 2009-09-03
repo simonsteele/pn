@@ -1791,6 +1791,14 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="Controls"
+				>
+				<File
+					RelativePath=".\controls\commandbaredit.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath=".\pn.exe.manifest"
