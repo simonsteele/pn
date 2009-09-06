@@ -662,6 +662,10 @@ msgstr ""
 msgid "1 or More Matches"
 msgstr ""
 
+#. Resource IDs: (14)
+msgid "<new>"
+msgstr ""
+
 #. Resource IDs: (1058)
 msgid "?"
 msgstr ""
@@ -1160,6 +1164,10 @@ msgstr ""
 
 #. Resource IDs: (65535)
 msgid "Editing"
+msgstr ""
+
+#. Resource IDs: (14)
+msgid "Editor"
 msgstr ""
 
 #. Resource IDs: (10)

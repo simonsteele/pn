@@ -686,6 +686,10 @@ msgstr "0 ǿř Ḿǿřḗ Ḿȧŧƈħḗş"
 msgid "1 or More Matches"
 msgstr "1 ǿř Ḿǿřḗ Ḿȧŧƈħḗş"
 
+#. Resource IDs: (14)
+msgid "<new>"
+msgstr "<new>"
+
 #. Resource IDs: (1058)
 msgid "?"
 msgstr "?"
@@ -1214,6 +1218,10 @@ msgstr "Ḗḓīŧ ŞḿȧřŧŞŧȧřŧ Ƥħřȧşḗ"
 #. Resource IDs: (65535)
 msgid "Editing"
 msgstr "Ḗḓīŧīƞɠ"
+
+#. Resource IDs: (14)
+msgid "Editor"
+msgstr "Ḗḓīŧǿř"
 
 #. Resource IDs: (10)
 msgid "Empty Project"
