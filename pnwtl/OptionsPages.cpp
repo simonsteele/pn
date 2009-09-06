@@ -276,7 +276,9 @@ LRESULT COptionsPageDialogs::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 	tstring currentSetting = OPTIONS->Get(PNSK_INTERFACE, _T("Language"), _T(""));
 
 	FileFinderList finder;
-	const std::list<tstring>& languageDlls = finder.GetFiles(OPTIONS->GetPNPath(), _T("pnlang*.dll"), false);
+	tstring pnpath;
+	OPTIONS->GetPNPath(pnpath);
+	const std::list<tstring>& languageDlls = finder.GetFiles(pnpath.c_str(), _T("pnlang*.dll"), false);
 
 	boost::xpressive::tsregex re = boost::xpressive::tsregex::compile(L"^pnlang_(?P<lcid>[0-9]+)_(?P<langcode>[a-zA-Z]+-[a-zA-Z]+)_(?P<ver>([0-9]+\\.){3}[0-9]+).dll$");
 	
