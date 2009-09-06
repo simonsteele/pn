@@ -132,6 +132,9 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_SPLITHORIZONTAL, OnSplitHorizontal)
 		COMMAND_ID_HANDLER(ID_WINDOW_SPLITVERTICAL, OnSplitVertical)
 
+		COMMAND_ID_HANDLER(ID_FILE_CLOSEALL, OnFileCloseAll)
+		COMMAND_ID_HANDLER(ID_WINDOW_CLOSEALLOTHER, OnWindowCloseAllOther)
+
 		COMMAND_HANDLER(cwCommandWnd, EN_CHANGE, OnCommandNotify)
 		COMMAND_HANDLER(cwCommandWnd, BN_CLICKED, OnCommandEnter)
 
@@ -268,7 +271,9 @@ public:
 	LRESULT OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnJumpTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnWriteProtectToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
+	LRESULT OnWindowCloseAllOther(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFileCloseAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	
 	bool OnRunTool(LPVOID pTool);
 
 	////////////////////////////////////////////////////

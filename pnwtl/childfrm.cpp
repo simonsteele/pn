@@ -1178,6 +1178,20 @@ LRESULT CChildFrame::OnWriteProtectToggle(WORD /*wNotifyCode*/, WORD wID, HWND /
 	return 0;
 }
 
+LRESULT CChildFrame::OnWindowCloseAllOther(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	::PostMessage(GetMDIFrame(), PN_CLOSEALLOTHER, reinterpret_cast<WPARAM>(m_hWnd), NULL);
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnFileCloseAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	::PostMessage(GetMDIFrame(), WM_COMMAND, ID_FILE_CLOSEALL, 0);
+	
+	return 0;
+}
+
 LRESULT CChildFrame::OnUseAsScript(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(m_pScript != NULL)

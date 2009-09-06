@@ -27,6 +27,7 @@
 #define PN_MDISETMENU		(WM_APP+15)
 #define PN_REFRESHUPDATEUI  (WM_APP+16)
 #define PN_UPDATECHILDUI	(WM_APP+17)
+#define PN_CLOSEALLOTHER	(WM_APP+18)
 
 // Command IDs used around the place...
 #define PN_MDIACTIVATE		0x1

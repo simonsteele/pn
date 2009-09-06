@@ -1750,11 +1750,9 @@ LRESULT CMainFrame::OnWindowArrangeIcons(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	return 0;
 }
 
-LRESULT CMainFrame::OnWindowCloseAllOther(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainFrame::OnCloseAllOther(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	HWND hWndCurChild = GetCurrentEditor();
-	if(!hWndCurChild)
-		return 0;
+	HWND staysOpen = reinterpret_cast<HWND>(wParam);
 
 	HWND hWndChild = ::GetTopWindow(m_tabbedClient.m_hWnd);
 	while(hWndChild != NULL)
@@ -1762,7 +1760,7 @@ LRESULT CMainFrame::OnWindowCloseAllOther(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 		HWND hWndClose = hWndChild;
 		hWndChild = ::GetNextWindow(hWndChild, GW_HWNDNEXT);
 
-		if(hWndClose != hWndCurChild && ::IsWindow(hWndClose))
+		if(hWndClose != staysOpen && ::IsWindow(hWndClose))
 		{
 			// This is not the current window, so send a 
 			// close message it should understand.
