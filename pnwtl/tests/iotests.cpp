@@ -34,4 +34,20 @@ BOOST_AUTO_TEST_CASE( opening_empty_utf8_file_with_bom_has_no_data )
 	BOOST_CHECK_EQUAL(lenFile, 0);
 }
 
+// Bug: http://code.google.com/p/pnotepad/issues/detail?id=592&start=200
+BOOST_AUTO_TEST_CASE( converting_threebyte_utf8_char_works )
+{
+	unsigned char data[3] = { 0xe2, 0x9f, 0xa0 };
+
+	Utf8_16::encodingType encodingType(Utf8_16::eUtf16LittleEndian);
+	Utf8_Iter iter;
+	iter.reset();
+	iter.set(&data[0], sizeof(data), encodingType);
+	++iter;
+	++iter;
+	DWORD dwUtf16 = iter.get();
+	
+	BOOST_CHECK_EQUAL(0x27e0, dwUtf16);
+}
+
 BOOST_AUTO_TEST_SUITE_END();
