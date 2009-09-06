@@ -2,9 +2,9 @@
  * @file optionsdialog.h
  * @brief A Tree-Item-Per-Page Options dialog.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  *
  * To create your options dialog, first create a dialog template and give
@@ -93,7 +93,7 @@ class COptionsDialog : public CDialogImpl<COptionsDialog>, CThemeImpl<COptionsDi
 
 	public:
 
-		COptionsDialog() : m_pCurrentPage(NULL)
+		COptionsDialog() : m_pCurrentPage(NULL), m_pInitialPage(NULL), m_hInitialItem(NULL)
 		{
 		}
 
