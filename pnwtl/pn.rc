@@ -2035,6 +2035,12 @@ BEGIN
     IDS_SHORTCUTS_EDITOR    "Editor"
     IDS_SHORTCUTS_SCRIPTS   "Scripts"
     IDS_NEW_FILE_TITLE      "<new>"
+    IDS_REPLACE             "Replace"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_FINDINFILES         "Find in Files"
 END
 
 #endif    // English (U.K.) resources

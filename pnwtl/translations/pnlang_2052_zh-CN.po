@@ -1453,6 +1453,11 @@ msgstr "查找上一次出现的该单词(&U)"
 msgid "Find Results"
 msgstr "查找结果"
 
+#. Resource IDs: (15)
+#, fuzzy
+msgid "Find in Files"
+msgstr "文件中查找(&I)"
+
 #. Resource IDs: (9)
 msgid "Find reached the starting point of the search."
 msgstr "查找操作已经巡回到起始位置."
@@ -2131,6 +2136,11 @@ msgid ""
 msgstr ""
 "再做最后一个动作\n"
 "再做"
+
+#. Resource IDs: (14)
+#, fuzzy
+msgid "Replace"
+msgstr "替换(&R)"
 
 #. Resource IDs: (6)
 msgid "Replace &All"

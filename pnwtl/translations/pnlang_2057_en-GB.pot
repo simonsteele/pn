@@ -1338,6 +1338,10 @@ msgstr ""
 msgid "Find Results"
 msgstr ""
 
+#. Resource IDs: (15)
+msgid "Find in Files"
+msgstr ""
+
 #. Resource IDs: (9)
 msgid "Find reached the starting point of the search."
 msgstr ""
@@ -1954,6 +1958,10 @@ msgstr ""
 
 #. Resource IDs: (3603)
 msgid "Repeat the last action\nRepeat"
+msgstr ""
+
+#. Resource IDs: (14)
+msgid "Replace"
 msgstr ""
 
 #. Resource IDs: (6)

@@ -1403,6 +1403,10 @@ msgstr "Ƒīƞḓ Ƥřḗṽīǿŭş Ƈ&ŭřřḗƞŧ Ẇǿřḓ"
 msgid "Find Results"
 msgstr "Ƒīƞḓ Řḗşŭŀŧş"
 
+#. Resource IDs: (15)
+msgid "Find in Files"
+msgstr "Ƒīƞḓ īƞ Ƒīŀḗş"
+
 #. Resource IDs: (9)
 msgid "Find reached the starting point of the search."
 msgstr "Ƒīƞḓ řḗȧƈħḗḓ ŧħḗ şŧȧřŧīƞɠ ƥǿīƞŧ ǿƒ ŧħḗ şḗȧřƈħ."
@@ -2053,6 +2057,10 @@ msgid "Repeat the last action\nRepeat"
 msgstr ""
 "Řḗƥḗȧŧ ŧħḗ ŀȧşŧ ȧƈŧīǿƞ\n"
 "Řḗƥḗȧŧ"
+
+#. Resource IDs: (14)
+msgid "Replace"
+msgstr "Řḗƥŀȧƈḗ"
 
 #. Resource IDs: (6)
 msgid "Replace &All"
