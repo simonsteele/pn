@@ -25,6 +25,7 @@ COptionsPageKeyboard::COptionsPageKeyboard(CommandDispatch* dispatcher)
 COptionsPageKeyboard::~COptionsPageKeyboard()
 {
 	delete m_pKeyMap;
+	delete m_pScintillaMap;
 }
 
 void COptionsPageKeyboard::OnOK()
