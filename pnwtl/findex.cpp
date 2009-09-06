@@ -284,9 +284,9 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	m_bInitialising = true;
 
 	// Add tabs
-	addTab(_T("Find"), 2);
-	addTab(_T("Replace"), 3);
-	addTab(_T("Find in Files"), 0);
+	addTab(LS(IDS_FIND), 2);
+	addTab(LS(IDS_REPLACE), 3);
+	addTab(LS(IDS_FINDINFILES), 0);
 
 	m_bInitialising = false;
 
