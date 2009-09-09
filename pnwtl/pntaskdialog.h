@@ -23,7 +23,7 @@ inline int PNTaskDialogIndirect(TASKDIALOGCONFIG* pTask, int* pnRadioButton = NU
 								BOOL* pfVerificationFlagChecked = NULL)
 {
 	int nButton;
-	if (false /*WTL::RunTimeHelper::IsVista()*/)
+	if (WTL::RunTimeHelper::IsVista())
 	{
 		DWORD hRet = AtlTaskDialogIndirect(pTask, &nButton, pnRadioButton, pfVerificationFlagChecked);
 		ATLVERIFY(SUCCEEDED(hRet));

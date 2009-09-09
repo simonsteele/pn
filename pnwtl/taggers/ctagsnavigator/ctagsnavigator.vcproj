@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="ctagsnavigator"
 	ProjectGUID="{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}"
+	RootNamespace="ctagsnavigator"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -20,7 +21,7 @@
 			OutputDirectory="..\..\bin\taggers"
 			IntermediateDirectory="Debug"
 			ConfigurationType="2"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops;..\..\common.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -98,7 +99,7 @@
 			OutputDirectory="..\..\bin\taggers"
 			IntermediateDirectory="Release"
 			ConfigurationType="2"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops;..\..\common.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -172,7 +173,7 @@
 			OutputDirectory="..\..\bin\taggers"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops;..\..\common.vsprops"
 			CharacterSet="2"
 			>
 			<Tool

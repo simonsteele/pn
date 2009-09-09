@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="customscheme"
 	ProjectGUID="{A7E621BE-65CC-446A-A5A1-4C20D117D344}"
+	RootNamespace="customscheme"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -20,7 +21,7 @@
 			OutputDirectory="..\bin\schemes"
 			IntermediateDirectory="Debug"
 			ConfigurationType="2"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops;..\common.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -99,7 +100,7 @@
 			OutputDirectory="..\bin\schemes"
 			IntermediateDirectory="Release"
 			ConfigurationType="2"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops;..\common.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -182,7 +183,7 @@
 			OutputDirectory="DebugUnicode"
 			IntermediateDirectory="DebugUnicode"
 			ConfigurationType="2"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops;..\common.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -261,7 +262,7 @@
 			OutputDirectory="..\bin\schemes"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops;..\common.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
