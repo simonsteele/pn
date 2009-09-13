@@ -72,6 +72,7 @@ Document::Document() {
 	backspaceUnindents = false;
 	watchers = 0;
 	lenWatchers = 0;
+	performingStyle = false;
 
 	matchesValid = false;
 	regex = 0;
