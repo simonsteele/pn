@@ -59,7 +59,10 @@ public:
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
-	void SetScheme(Scheme* pScheme, bool allSettings = true);
+	/**
+	 * @param flags Affect the scheme change by using ESchemeChangeFlags values
+	 */
+	void SetScheme(Scheme* pScheme, int flags = scfNone);
 	Scheme* GetCurrentScheme() const;
 
 	bool Load(LPCTSTR filename, Scheme* pScheme = NULL, EPNEncoding encoding = eUnknown);

@@ -71,13 +71,17 @@ BOOL CTextView::PreTranslateMessage(MSG* pMsg)
 	return FALSE;
 }
 
-void CTextView::SetScheme(Scheme* pScheme, bool allSettings)
+void CTextView::SetScheme(Scheme* pScheme, int flags)
 {
 	if(pScheme != SchemeManager::GetInstance()->GetDefaultScheme())
 		m_bSmartStart = false;
 	
 	EnsureRangeVisible(0, GetLength(), false);
-	ClearDocumentStyle(); // zero all style bytes
+	
+	if ((flags & scfNoRestyle) == 0)
+	{
+		ClearDocumentStyle(); // zero all style bytes
+	}
 
 	ClearAutoComplete();
 
@@ -90,12 +94,16 @@ void CTextView::SetScheme(Scheme* pScheme, bool allSettings)
 	//Pass scheme to base class to set initial words for autocomplete
 	InitAutoComplete(pScheme);
 
-	pScheme->Load(*this, allSettings);
+	pScheme->Load(*this, (flags & scfNoViewSettings) == 0);
 	
 	//EnsureRangeVisible(0, GetLength());
 	//ClearDocumentStyle();
 	
-	Colourise(0, -1);
+	if ((flags & scfNoRestyle) == 0)
+	{
+		Colourise(0, -1);
+	}
+
 	InvalidateRect(NULL, FALSE);
 	
 	m_pLastScheme = pScheme;

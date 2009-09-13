@@ -698,7 +698,7 @@ struct OptionsUpdateVisitor : public Views::Visitor
 	{
 		if (view->GetType() == Views::vtText)
 		{
-			if (_scheme) static_cast<CTextView*>(view)->SetScheme(_scheme, true);
+			if (_scheme) static_cast<CTextView*>(view)->SetScheme(_scheme);
 			static_cast<CTextView*>(view)->ShowLineNumbers(OPTIONS->GetCached(Options::OLineNumbers) != 0);
 		}
 	}
@@ -718,7 +718,7 @@ struct ViewUpdateVisitor : public Views::Visitor
 				return;
 			}
 
-			current->SetScheme(m_other->GetCurrentScheme(), false);
+			current->SetScheme(m_other->GetCurrentScheme(), scfNoViewSettings | scfNoRestyle);
 			current->SetWrapMode(m_other->GetWrapMode());
 			current->SetViewEOL(m_other->GetViewEOL());
 			current->SetViewWS(m_other->GetViewWS());
@@ -2352,7 +2352,7 @@ void CChildFrame::SetPosStatus(CMultiPaneStatusBarCtrl&	stat)
 
 bool CChildFrame::OnSchemeChange(LPVOID pVoid)
 {
-	SetScheme(static_cast<Scheme*>(pVoid), false);
+	SetScheme(static_cast<Scheme*>(pVoid), scfNoViewSettings);
 
 	return true;
 }
@@ -2367,21 +2367,22 @@ bool CChildFrame::OnEditorCommand(LPVOID pCommand)
 
 struct SetSchemeVisitor : public Views::Visitor
 {
-	SetSchemeVisitor(Scheme* scheme, bool all) : _scheme(scheme), _all(all) {}
+	SetSchemeVisitor(Scheme* scheme, ESchemeChangeFlags flags) : _scheme(scheme), _flags(flags) {}
 	virtual void operator ()(Views::View* view)
 	{
 		if (view->GetType() == Views::vtText)
 		{
-			static_cast<CTextView*>(view)->SetScheme(_scheme, _all);
+			static_cast<CTextView*>(view)->SetScheme(_scheme, _flags);
+			_flags |= scfNoRestyle; // only need to restyle once.
 		}
 	}
 	Scheme* _scheme;
-	bool _all;
+	int _flags;
 };
 
 void CChildFrame::SetScheme(Scheme* pScheme, bool allSettings)
 {
-	m_primeView->Visit(SetSchemeVisitor(pScheme, allSettings));
+	m_primeView->Visit(SetSchemeVisitor(pScheme, allSettings ? scfNone : scfNoViewSettings));
 }
 
 void CChildFrame::UpdateTools(Scheme* pScheme)
