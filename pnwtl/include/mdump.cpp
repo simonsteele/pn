@@ -3,6 +3,8 @@
 
 LPCTSTR MiniDumper::m_szAppName;
 
+#define SCRATCH_BUFFER_LENGTH _MAX_PATH*4
+
 MiniDumper::MiniDumper( LPCTSTR szAppName )
 {
 	// if this assert fires then you have two instances of MiniDumper
@@ -51,7 +53,8 @@ LONG MiniDumper::TopLevelFilter( struct _EXCEPTION_POINTERS *pExceptionInfo )
 		if (pDump)
 		{
 			TCHAR szDumpPath[_MAX_PATH];
-			TCHAR szScratch [_MAX_PATH*4];
+			TCHAR szScratch [SCRATCH_BUFFER_LENGTH + 1];
+			szScratch[SCRATCH_BUFFER_LENGTH] = NULL;
 
 			// work out a good place for the dump file
 			if (!GetTempPath( _MAX_PATH, szDumpPath ))
@@ -67,7 +70,7 @@ LONG MiniDumper::TopLevelFilter( struct _EXCEPTION_POINTERS *pExceptionInfo )
 				HANDLE hFile = ::CreateFile( szDumpPath, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
 											FILE_ATTRIBUTE_NORMAL, NULL );
 
-				if (hFile!=INVALID_HANDLE_VALUE)
+				if (hFile != INVALID_HANDLE_VALUE)
 				{
 					_MINIDUMP_EXCEPTION_INFORMATION ExInfo;
 
@@ -76,23 +79,24 @@ LONG MiniDumper::TopLevelFilter( struct _EXCEPTION_POINTERS *pExceptionInfo )
 					ExInfo.ClientPointers = NULL;
 
 					// write the dump
-					BOOL bOK = pDump( GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpNormal, &ExInfo, NULL, NULL );
+					BOOL bOK = pDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpNormal, &ExInfo, NULL, NULL);
 					if (bOK)
 					{
-						_stprintf( szScratch, _T("A diagnostic dump file has been saved at this location:\n '%s'\n\n\nPlease offer this file to the PN development team using either the discussion mailing list or the bug tracker\n and provide the diagnostic file so that they can try to fix the problem that you have experienced."), szDumpPath );
+						_sntprintf(szScratch, SCRATCH_BUFFER_LENGTH, _T("A diagnostic dump file has been saved at this location:\n '%s'\n\n\nPlease offer this file to the PN development team using either the discussion mailing list or the bug tracker\n and provide the diagnostic file so that they can try to fix the problem that you have experienced."), szDumpPath);
 						szResult = szScratch;
 						retval = EXCEPTION_EXECUTE_HANDLER;
 					}
 					else
 					{
-						_stprintf( szScratch, _T("Failed to save dump file to '%s' (error %d)"), szDumpPath, GetLastError() );
+						_sntprintf(szScratch, SCRATCH_BUFFER_LENGTH, _T("Failed to save dump file to '%s' (error %d)"), szDumpPath, GetLastError());
 						szResult = szScratch;
 					}
+
 					::CloseHandle(hFile);
 				}
 				else
 				{
-					_stprintf( szScratch, _T("Failed to create dump file '%s' (error %d)"), szDumpPath, GetLastError() );
+					_sntprintf(szScratch, SCRATCH_BUFFER_LENGTH, _T("Failed to create dump file '%s' (error %d)"), szDumpPath, GetLastError());
 					szResult = szScratch;
 				}
 			}
@@ -108,7 +112,9 @@ LONG MiniDumper::TopLevelFilter( struct _EXCEPTION_POINTERS *pExceptionInfo )
 	}
 
 	if (szResult)
+	{
 		::MessageBox( NULL, szResult, m_szAppName, MB_OK );
+	}
 
 	return retval;
 }

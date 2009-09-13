@@ -127,7 +127,8 @@ void SpacesToTabs(CScintillaImpl& editor)
 	}
 
 	TCHAR buf[100];
-	_stprintf(buf, _T("[ ]{%d}"), editor.GetTabWidth());
+	buf[99] = NULL;
+	_sntprintf(buf, 99, _T("[ ]{%d}"), editor.GetTabWidth());
 
 	// Find all leading groups of spaces, convert to tabs
 	SearchOptions options;

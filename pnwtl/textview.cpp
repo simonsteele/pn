@@ -286,7 +286,8 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 #ifdef _DEBUG
 		DWORD timeTotal = GetTickCount() - timeIn;
 		TCHAR outstr[300];
-		_stprintf(outstr, _T("File load takes %d milliseconds\n"), timeTotal);
+		outstr[299] = NULL;
+		_sntprintf(outstr, 299, _T("File load takes %d milliseconds\n"), timeTotal);
 		::OutputDebugString(outstr);
 #endif
 
@@ -542,10 +543,11 @@ int CTextView::HandleNotify(LPARAM lParam)
 void CTextView::SetPosStatus(CMultiPaneStatusBarCtrl& stat)
 {
 	TCHAR tvstatbuf[50];
+	tvstatbuf[49] = NULL;
 	
 	long pos = GetCurrentPos();
 
-	_stprintf(tvstatbuf, _T("[%d:%d] : %d"), 
+	_sntprintf(tvstatbuf, 49, _T("[%d:%d] : %d"), 
 		(LineFromPosition(pos) + 1),	/* row    */
 		(GetColumn(pos) + 1),			/* column */
 		GetLineCount()					/* lines  */
@@ -561,7 +563,7 @@ void CTextView::SetPosStatus(CMultiPaneStatusBarCtrl& stat)
 		}
 		else
 		{
-			_stprintf(tvstatbuf, LS(IDS_SELLENGTH), GetSelLength());
+			_sntprintf(tvstatbuf, 49, LS(IDS_SELLENGTH), GetSelLength());
 		}
 		g_Context.m_frame->SetStatusText(tvstatbuf, false);
 	}
@@ -1424,7 +1426,8 @@ UINT __stdcall CTextView::RunMeasureThread(void* pThis)
 
 #ifdef _DEBUG
 	TCHAR buf[50];
-	_stprintf(buf, _T("PN: Max line length: %d"), maxLength);
+	buf[49] = NULL;
+	_sntprintf(buf, 49, _T("PN: Max line length: %d"), maxLength);
 	LOG(buf);
 #endif
 
