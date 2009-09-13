@@ -705,6 +705,31 @@ struct OptionsUpdateVisitor : public Views::Visitor
 	Scheme* _scheme;
 };
 
+struct ViewUpdateVisitor : public Views::Visitor
+{
+	ViewUpdateVisitor(CTextView* other) : m_other(other) {}
+	virtual void operator ()(Views::View* view)
+	{
+		if (view->GetType() == Views::vtText)
+		{
+			CTextView* current = static_cast<CTextView*>(view);
+			if (current == m_other)
+			{
+				return;
+			}
+
+			current->SetScheme(m_other->GetCurrentScheme(), false);
+			current->SetWrapMode(m_other->GetWrapMode());
+			current->SetViewEOL(m_other->GetViewEOL());
+			current->SetViewWS(m_other->GetViewWS());
+			current->SetMarginWidthN(0, m_other->GetMarginWidthN(0));
+			current->SetIndentationGuides(m_other->GetIndentationGuides());
+			current->SetPasteConvertEndings(m_other->GetPasteConvertEndings());
+		}
+	}
+	CTextView* m_other;
+};
+
 /**
  * Split the currently selected view into two, with a new Scintilla control
  * as the new split.
@@ -718,7 +743,6 @@ void CChildFrame::splitSelectedView(bool horizontal)
 	CTextView* newTextView = static_cast<CTextView*>(newTextViewPtr.get());
 	newTextView->Create(parent->GetHwnd(), rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwScintilla+1);
 	newTextView->SetDocPointer(GetTextView()->GetDocPointer());
-	newTextView->Visit(OptionsUpdateVisitor(GetTextView()->GetCurrentScheme()));
 
 	// Now we want the parent of the last-focused view to get a new child, the splitter.
 	// The splitter will have the last-focused view, and also the new text view.
@@ -741,6 +765,9 @@ void CChildFrame::splitSelectedView(bool horizontal)
 		m_primeView = newView;
 		m_hWndClient = hWndSplit;
 	}
+
+	// Now the view hierarchy is all sorted, we can restyle the document:
+	newTextView->Visit(ViewUpdateVisitor(GetTextView()));
 
 	UpdateLayout();
 }

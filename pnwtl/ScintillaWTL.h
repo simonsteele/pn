@@ -41,6 +41,7 @@ template <class T, class TBase = CScintilla>
 class CScintillaWindowImpl : public CWindowImpl< CScintillaWindowImpl<T,TBase> >, public TBase
 {
 public:
+	CScintillaWindowImpl() : m_ctrlid(0) {}
 	virtual ~CScintillaWindowImpl() {}
 
 	DECLARE_WND_SUPERCLASSW(L"ScintillaWindowImpl", L"Scintilla")
@@ -93,6 +94,8 @@ public:
 		if(rect.m_lpRect == NULL)
 			rect.m_lpRect = &CScintillaWindowImpl<T,TBase>::rcDefault;
 
+		m_ctrlid = HandleToLong(MenuOrID.m_hMenu);
+
 		HWND hWnd = ::CreateWindowExW(dwExStyle, (LPCWSTR)MAKEINTATOM(atom), L"Scintilla",
 			dwStyle, rect.m_lpRect->left, rect.m_lpRect->top, rect.m_lpRect->right - rect.m_lpRect->left,
 			rect.m_lpRect->bottom - rect.m_lpRect->top, hWndParent, MenuOrID.m_hMenu,
@@ -109,7 +112,9 @@ public:
 		MESSAGE_HANDLER(WM_CREATE, OnCreate)
 		MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
 		MESSAGE_HANDLER(WM_SHOWWINDOW, OnShowWindow)
-		MESSAGE_HANDLER(OCM_NOTIFY, OnNotify)
+		// MESSAGE_HANDLER(OCM_NOTIFY, OnNotify)
+		
+		REFLECTED_NOTIFY_ID_HANDLER(m_ctrlid, OnNotify)
 	END_MSG_MAP()
 
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -138,11 +143,11 @@ public:
 		return 0;
 	}
 
-	LRESULT OnNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+	LRESULT OnNotify(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 	{
-		if (IsScintillaNotify(lParam))
+		if (IsScintillaNotify((LPARAM)pnmh))
 		{
-			HandleNotify(lParam);
+			HandleNotify((LPARAM)pnmh);
 			bHandled = TRUE;
 		}
 		else
@@ -206,6 +211,9 @@ protected:
 	{
 		// User Implementable through template type.
 	}
+
+private:
+	int m_ctrlid;
 };
 
 //template <class TBase = CScintilla>

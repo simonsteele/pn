@@ -68,6 +68,8 @@ class CWTLSplitter : public CWindowImpl< CWTLSplitter<T> >
 			MESSAGE_HANDLER(WM_SETTINGCHANGE, OnSettingChange)
 			MESSAGE_HANDLER(WM_CAPTURECHANGED, OnCaptureChanged)
 			MESSAGE_HANDLER(WM_SIZE, OnResized)
+
+			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 
 		void SetPanes(HWND pane1, HWND pane2, bool bUpdate = true)

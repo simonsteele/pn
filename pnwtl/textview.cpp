@@ -100,7 +100,7 @@ void CTextView::SetScheme(Scheme* pScheme, bool allSettings)
 	
 	m_pLastScheme = pScheme;
 
-	::SendMessage(GetParent(), PN_SCHEMECHANGED, 0, reinterpret_cast<LPARAM>(pScheme));
+	::SendMessage(m_pDoc->GetFrame()->m_hWnd, PN_SCHEMECHANGED, 0, reinterpret_cast<LPARAM>(pScheme));
 }
 
 static std::string ExtractLine(const char *buf, size_t length) {
@@ -504,17 +504,17 @@ int CTextView::HandleNotify(LPARAM lParam)
 	
 	if(msg == SCN_SAVEPOINTREACHED)
 	{
-		SendMessage(GetParent(), PN_NOTIFY, 0, SCN_SAVEPOINTREACHED);
+		SendMessage(m_pDoc->GetFrame()->m_hWnd, PN_NOTIFY, 0, SCN_SAVEPOINTREACHED);
 		m_Modified = false;
 	}
 	else if(msg == SCN_SAVEPOINTLEFT)
 	{
-		SendMessage(GetParent(), PN_NOTIFY, 0, SCN_SAVEPOINTLEFT);
+		SendMessage(m_pDoc->GetFrame()->m_hWnd, PN_NOTIFY, 0, SCN_SAVEPOINTLEFT);
 		m_Modified = true;
 	}
 	else if(msg == SCN_UPDATEUI)
 	{
-		SendMessage(GetParent(), PN_NOTIFY, 0, SCN_UPDATEUI);
+		SendMessage(m_pDoc->GetFrame()->m_hWnd, PN_NOTIFY, 0, SCN_UPDATEUI);
 
 		smartHighlight();
 	}
@@ -710,12 +710,10 @@ void CTextView::DoContextMenu(CPoint* point)
 	CSPopupMenu popupProjects;
 
 	// Build up a menu allowing us to add this file to a current project...
-	CChildFrame* pParent = CChildFrame::FromHandle(GetParent());
-	
 	Projects::Workspace* pWS = g_Context.m_frame->GetActiveWorkspace();
 	std::vector<int> menuIDs;
 
-	if(pParent->CanSave() && pWS != NULL)
+	if(m_pDoc->GetCanSave() && pWS != NULL)
 	{
 		const Projects::PROJECT_LIST& projects = pWS->GetProjects();
 		int index = 0;
@@ -759,7 +757,7 @@ void CTextView::DoContextMenu(CPoint* point)
 				{
 					// we should add this file to the project at index i.
 					bFoundOne = true;
-					tstring fn = pParent->GetFileName();
+					tstring fn = m_pDoc->GetFileName();
 					(*i2)->AddFile(fn.c_str());
 				}
 				i2++;
