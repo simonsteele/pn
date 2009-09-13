@@ -21,12 +21,12 @@
 	<target name="build">		
 		<exec 
 			program="devenv.com"
-			commandline='pn.sln /Clean ReleaseDebug'
+			commandline='pn.sln /Clean Release'
 			output="build.log"/>
 		
 		<exec 
 			program="devenv.com"
-			commandline='pn.sln /Build ReleaseDebug'
+			commandline='pn.sln /Build Release'
 			output="build.log">
 			<environment>
 				<variable name="SVNREV" value="/DPN_BUILD=${svn.revision}"/>
@@ -170,7 +170,7 @@
 		<property name="pyver" value="py26"/>
 		<exec
 			program="devenv"
-			commandline='pn.sln /Project pypn /ProjectConfig ReleaseDebug /Rebuild'
+			commandline='pn.sln /Project pypn /ProjectConfig Release /Rebuild'
 			output="pypn-2.6.log">
 			<environment>
 				<variable name="PYTHONINCDIR" value="C:\Python26\include"/>
@@ -192,7 +192,7 @@
 		<property name="pyver" value="py25"/>
 		<exec
 			program="devenv"
-			commandline='pn.sln /Project pypn /ProjectConfig ReleaseDebug /Rebuild'
+			commandline='pn.sln /Project pypn /ProjectConfig Release /Rebuild'
 			output="pypn-2.5.log">
 			<environment>
 				<variable name="PYTHONINCDIR" value="C:\Python25\include"/>
@@ -214,7 +214,7 @@
 		<property name="pyver" value="py24"/>
 		<exec
 			program="devenv"
-			commandline='pn.sln /Project pypn /ProjectConfig ReleaseDebug /Rebuild'
+			commandline='pn.sln /Project pypn /ProjectConfig Release /Rebuild'
 			output="pypn-2.4.log">
 			<environment>
 				<variable name="PYTHONINCDIR" value="C:\Python24\include"/>
