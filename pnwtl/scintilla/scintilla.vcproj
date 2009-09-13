@@ -43,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\include\scintilla\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;SCI_LEXER;SCI_NAMESPACE;SCI_OWNREGEX;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;SCI_LEXER;SCI_NAMESPACE;SCI_OWNREGEX;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
