@@ -1029,7 +1029,11 @@ LRESULT CChildFrame::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 		_tcscpy(strbuf, fn.c_str());
 		::GlobalUnlock(mem);
 
+#ifdef _UNICODE
+		::SetClipboardData(CF_UNICODETEXT, mem);
+#else
 		::SetClipboardData(CF_TEXT, mem);
+#endif
 
 		::CloseClipboard();
 	}
