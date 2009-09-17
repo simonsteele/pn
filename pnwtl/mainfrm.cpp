@@ -92,7 +92,7 @@ CMainFrame::CMainFrame(CommandDispatch* commands, std::list<tstring>* cmdLineArg
 
 	m_bIsXPOrLater(IsXPOrLater())
 {
-	m_CmdBar.SetCallback(this, &CMainFrame::OnMDISetMenu);
+	// m_CmdBar.SetCallback(this, &CMainFrame::OnMDISetMenu);
 
 	m_uiMIMessageID = g_Context.m_miManager->GetMessageID();
 
@@ -1359,6 +1359,12 @@ LRESULT CMainFrame::OnUpdateFindText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	m_ToolBar.SetFindText(so->GetFindText());
 	return 0;
 }
+
+//LRESULT OnMDISetMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+//	{
+//		SetMDIFrameMenu();
+//		return 0;
+//	}
 
 LRESULT CMainFrame::OnMDISetMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {

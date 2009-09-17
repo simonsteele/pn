@@ -365,6 +365,8 @@ private:
 	void findNextWordUnderCursor(bool backwards);
 	void updateViewKeyBindings();
 	void splitSelectedView(bool horizontal);
+	void setMDIFrameMenu();
+	HMENU getWindowMenu();
 
 	CommandDispatch*	m_pCmdDispatch;
 	DocumentPtr			m_spDocument;

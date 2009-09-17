@@ -526,7 +526,7 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	return 1;
 }
 
-LRESULT CChildFrame::OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+LRESULT CChildFrame::OnMDIActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	if (m_hWnd == (HWND)lParam)
 	{
@@ -538,8 +538,38 @@ LRESULT CChildFrame::OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	//else // Deactivate
 	
 	UpdateMenu();
-	bHandled = FALSE;
-	return 0;
+	
+	// The base-class WM_MDIACTIVATE implementation breaks the window menu for localised builds
+	// and there's no way to avoid it but to handle this message completely here.
+	bHandled = TRUE;
+
+	BOOL fake(false);
+	baseClass::OnMDIActivate(uMsg, wParam, lParam, fake);
+	
+	if((HWND)lParam == m_hWnd && m_hMenu != NULL)
+	{
+		setMDIFrameMenu();
+	}
+	else if((HWND)lParam == NULL)
+	{
+		::SendMessage(GetMDIFrame(), WM_MDISETMENU, 0, 0);
+	}
+
+	return DefWindowProc(uMsg, wParam, lParam);
+}
+
+HMENU CChildFrame::getWindowMenu()
+{
+	CSMenuHandle menu(m_hMenu);
+	return menu.GetSubMenu(LS(IDS_MENU_WINDOW));
+}
+
+void CChildFrame::setMDIFrameMenu()
+{
+	HMENU hWindowMenu = getWindowMenu();
+	MDISetMenu(m_hMenu, hWindowMenu);
+	MDIRefreshMenu();
+	::DrawMenuBar(GetMDIFrame());
 }
 
 LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)

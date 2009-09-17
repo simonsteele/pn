@@ -2041,6 +2041,7 @@ END
 STRINGTABLE 
 BEGIN
     IDS_FINDINFILES         "Find in Files"
+    IDS_MENU_WINDOW         "&Window"
 END
 
 #endif    // English (U.K.) resources

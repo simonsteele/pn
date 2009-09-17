@@ -137,6 +137,7 @@
 #define IDS_NEW_FILE_TITLE              222
 #define IDS_REPLACE                     223
 #define IDS_FINDINFILES                 224
+#define IDS_MENU_WINDOW                 225
 #define IDR_POPUP_REGEXPM               226
 #define ID_REGEXP_TAGGEDEXPRESSION1     227
 #define ID_REGEXP_TAGGEDEXPRESSION2     228
