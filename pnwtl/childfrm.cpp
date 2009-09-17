@@ -361,39 +361,15 @@ DocumentPtr CChildFrame::GetDocument() const
 	return m_spDocument;
 }
 
-void CChildFrame::SetTitle( bool bModified )
+void CChildFrame::SetTitle(bool bModified)
 {
-	tstring filepart;
-	
 	tstring fn(m_spDocument->GetFileName());
 	tstring title(m_spDocument->GetTitle());
-	tstring tabTitle;
+	tstring tabTitle(title);
 
-	if (fn.length())
+	if (fn.length() && OPTIONS->GetCached(Options::OShowFullPath))
 	{
-		if(fn.find(_T('\\')) != -1)
-		{
-			CFileName fullfilename(fn.c_str());
-			filepart = fullfilename.GetFileName();
-		}
-		else
-		{
-			filepart = fn;
-		}
-		
-		if( OPTIONS->GetCached(Options::OShowFullPath) )
-		{
-			tabTitle = filepart;
-		}
-		else
-		{
-			title = filepart;
-			tabTitle = filepart;
-		}
-	}
-	else
-	{
-		tabTitle = title;
+		title = fn.c_str();
 	}
 
 	if (bModified)
@@ -402,20 +378,7 @@ void CChildFrame::SetTitle( bool bModified )
 		tabTitle += _T(" *");
 	}
 
-	if (m_bReadOnly)
-	{
-		::SendMessage(GetParent(), UWM_MDICHILDICONCHANGE, reinterpret_cast<WPARAM>(m_hWnd), 0);
-	}
-	else
-	{
-		::SendMessage(GetParent(), UWM_MDICHILDICONCHANGE, reinterpret_cast<WPARAM>(m_hWnd), -1);
-	}
-
-	/*if(m_bReadOnly)
-	{
-		title += " (ReadOnly)";
-		tabTitle += " (ReadOnly)";
-	}*/
+	::SendMessage(GetParent(), UWM_MDICHILDICONCHANGE, reinterpret_cast<WPARAM>(m_hWnd), m_bReadOnly ? 0 : -1);
 
 	SetWindowText(title.c_str());
 	SetTabText(tabTitle.c_str());
