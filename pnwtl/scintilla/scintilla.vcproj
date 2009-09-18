@@ -619,6 +619,14 @@
 						AdditionalIncludeDirectories="..\include\scintilla\src"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalIncludeDirectories="..\include\scintilla\src"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\include\scintilla\src\PositionCache.cxx"
@@ -661,6 +669,14 @@
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalIncludeDirectories="..\include\scintilla\src"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
