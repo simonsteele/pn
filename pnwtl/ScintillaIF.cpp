@@ -2395,7 +2395,7 @@ int CScintilla::GetModEventMask()
 	return (int)SPerform(SCI_GETMODEVENTMASK, 0, 0);
 }
 
-void CScintilla::SetFocus(bool focus)
+void CScintilla::SetEditorFocus(bool focus)
 {
 	SPerform(SCI_SETFOCUS, (long)focus, 0);
 }

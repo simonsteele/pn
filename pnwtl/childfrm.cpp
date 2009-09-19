@@ -93,6 +93,7 @@ CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::
 	m_bModifiedOverride(false),
 	m_bReadOnly(false),
 	m_bIgnoreUpdates(false),
+	m_bHandlingCommand(false),
 	m_hWndOutput(NULL)
 {
 	m_po.hDevMode = 0;
@@ -1681,30 +1682,83 @@ LRESULT CChildFrame::OnGetInfoTip(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 	return 0;
 }
 
+/**
+ * Set focus to the command box (if it's enabled).
+ */
+LRESULT CChildFrame::OnFocusCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if (!m_cmdTextBox.m_hWnd)
+	{
+		return 0;
+	}
+
+	m_cmdTextBox.SetFocus();
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnCommandGotFocus(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if (!m_cmdTextBox.m_hWnd)
+	{
+		return 0;
+	}
+
+	// Disable blinking...
+	GetTextView()->SetCaretPeriod(0);
+	
+	// Pretend the editor has the focus...
+	GetTextView()->SetEditorFocus(true);
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnCommandLostFocus(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if (!m_cmdTextBox.m_hWnd)
+	{
+		return 0;
+	}
+
+	// Re-enable blinking...
+	GetTextView()->SetCaretPeriod(500);
+
+	return 0;
+}
+
+/**
+ * Set focus to the most recent text view.
+ */
+LRESULT CChildFrame::OnFocusTextView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	::SetFocus(m_lastTextView->GetHwnd());
+
+	return 0;
+}
+
 LRESULT CChildFrame::OnCommandNotify(WORD wNotifyCode, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	// Yes, this is very much prototype code!
-	static bool lock = false;
 	if (wNotifyCode == EN_CHANGE)
 	{
-		if (lock)
+		if (m_bHandlingCommand)
 		{
 			return 0;
 		}
 
-		lock = true;
+		m_bHandlingCommand = true;
 		
 		extensions::IScriptRunner* python = ScriptRegistry::GetInstance()->GetRunner("python");
 		if (python)
 		{
 			PN::AString str;
-			std::string command("evalCommand('");
+			std::string command("glue.evalCommand('");
 			
 			CWindowText wt(m_cmdTextBox);
 
 			if ((LPCTSTR)wt == NULL)
 			{
-				lock = false;
+				m_bHandlingCommand = false;
 				return 0;
 			}
 
@@ -1714,11 +1768,24 @@ LRESULT CChildFrame::OnCommandNotify(WORD wNotifyCode, WORD /*wID*/, HWND /*hWnd
 
 			python->Eval(command.c_str(), str);
 
+			// Escape, means focus editor, e.g. enter insert mode:
+			if (str == "\\`")
+			{
+				SendMessage(WM_COMMAND, MAKEWPARAM(ID_EDIT_FOCUSTEXTVIEW, 0), 0);
+				str = "";
+			}
+
 			CA2CT newwt(str.Get());
-			m_cmdTextBox.SetWindowText(newwt);
+			if (_tcscmp(wt, newwt) != 0)
+			{
+				m_cmdTextBox.SetWindowText(newwt);
+				
+				int len = _tcslen(newwt);
+				m_cmdTextBox.SetSel(len, len);
+			}
 		}
 		
-		lock = false;
+		m_bHandlingCommand = false;
 	}
 
 	return 0;
@@ -1730,7 +1797,7 @@ LRESULT CChildFrame::OnCommandEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	if (python)
 	{
 		PN::AString str;
-		std::string command("evalCommandEnter('");
+		std::string command("glue.evalCommandEnter('");
 		
 		CWindowText wt(m_cmdTextBox);
 		CT2CA commandtext(wt);

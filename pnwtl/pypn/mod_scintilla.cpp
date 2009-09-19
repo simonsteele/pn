@@ -52,7 +52,7 @@ class_< PNScintilla, boost::noncopyable >("Scintilla", init<extensions::IDocumen
 	.add_property("EndAtLastLine", &PNScintilla::GetEndAtLastLine, &PNScintilla::SetEndAtLastLine)
 	.add_property("EndStyled", &PNScintilla::GetEndStyled)
 	.add_property("FirstVisibleLine", &PNScintilla::GetFirstVisibleLine)
-	.add_property("Focus", &PNScintilla::GetFocus, &PNScintilla::SetFocus)
+	.add_property("Focus", &PNScintilla::GetFocus, &PNScintilla::SetEditorFocus)
 	.add_property("HScrollBar", &PNScintilla::GetHScrollBar, &PNScintilla::SetHScrollBar)
 	.add_property("HighlightGuide", &PNScintilla::GetHighlightGuide, &PNScintilla::SetHighlightGuide)
 	.add_property("Indent", &PNScintilla::GetIndent, &PNScintilla::SetIndent)

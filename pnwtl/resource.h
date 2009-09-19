@@ -747,6 +747,8 @@
 #define ID_HELP_CHECKFORUPDATES         33141
 #define ID_WINDOW_SPLITHORIZONTAL       33142
 #define ID_WINDOW_SPLITVERTICAL         33143
+#define ID_EDIT_FOCUSCOMMAND			33144
+#define ID_EDIT_FOCUSTEXTVIEW			33145
 
 // Next default values for new objects
 // 
@@ -754,7 +756,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        369
-#define _APS_NEXT_COMMAND_VALUE         33144
+#define _APS_NEXT_COMMAND_VALUE         33146
 #define _APS_NEXT_CONTROL_VALUE         1161
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

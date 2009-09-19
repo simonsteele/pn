@@ -1620,7 +1620,7 @@ class CScintilla
 		/**
 		 * Change internal focus flag.
 		 */
-		void SetFocus(bool focus);
+		void SetEditorFocus(bool focus);
 		/**
 		 * Get internal focus flag.
 		 */

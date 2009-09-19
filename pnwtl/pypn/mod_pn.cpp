@@ -155,6 +155,34 @@ std::wstring GetSearchOptionsSearchPath(ISearchOptions* so)
 	return so->GetSearchPath();
 }
 
+void PNSetClipboardText(const char* text)
+{
+	if (text == NULL)
+	{
+		return;
+	}
+
+	size_t length = strlen(text);
+
+	HGLOBAL hData = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, length + 1);
+	if (hData != NULL)
+	{
+		HWND owner = g_app->GetPN()->GetMainWindow();
+
+		if (::OpenClipboard(owner))
+		{
+			::EmptyClipboard();
+			
+			char* pBuf = static_cast<char*>(::GlobalLock(hData));
+			memcpy(pBuf, &text[0], length + 1);
+			::GlobalUnlock(hData);
+			
+			::SetClipboardData(CF_TEXT, hData);
+			::CloseClipboard();
+		}
+	}
+}
+
 } // namespace
 
 #define CONSTANT(x) scope().attr(#x) = x
@@ -189,6 +217,8 @@ BOOST_PYTHON_MODULE(pn)
 	def("EvalDocument", &PNEvalDocument, "Run a document as a PN python script");
 
 	def("StringFromPointer", &PNStringFromPointer, "Get a string value from a c-style string pointer");
+
+	def("SetClipboardText", &PNSetClipboardText, "Set clipboard text");
 
 	CONSTANT(IDOK);
 	CONSTANT(IDCANCEL);

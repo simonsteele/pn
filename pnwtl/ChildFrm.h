@@ -135,8 +135,12 @@ public:
 		COMMAND_ID_HANDLER(ID_FILE_CLOSEALL, OnFileCloseAll)
 		COMMAND_ID_HANDLER(ID_WINDOW_CLOSEALLOTHER, OnWindowCloseAllOther)
 
+		COMMAND_ID_HANDLER(ID_EDIT_FOCUSCOMMAND, OnFocusCommand)
+		COMMAND_ID_HANDLER(ID_EDIT_FOCUSTEXTVIEW, OnFocusTextView)
 		COMMAND_HANDLER(cwCommandWnd, EN_CHANGE, OnCommandNotify)
 		COMMAND_HANDLER(cwCommandWnd, BN_CLICKED, OnCommandEnter)
+		COMMAND_HANDLER(cwCommandWnd, BN_SETFOCUS, OnCommandGotFocus)
+		COMMAND_HANDLER(cwCommandWnd, BN_KILLFOCUS, OnCommandLostFocus)
 
 		COMMAND_RANGE_HANDLER(ID_ENCODING_8, ID_ENCODING_UTF8NOBOM, OnEncodingSelect)
 
@@ -265,8 +269,12 @@ public:
 	LRESULT OnProjectAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSplitHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSplitVertical(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFocusCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFocusTextView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCommandNotify(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCommandEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCommandGotFocus(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCommandLostFocus(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnJumpTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -377,6 +385,7 @@ private:
 	bool				m_bClosing;
 	bool				m_bReadOnly;
 	bool				m_bIgnoreUpdates;
+	bool				m_bHandlingCommand;
 	HWND				m_hWndOutput;
 	CCommandBarEdit		m_cmdTextBox;
 	TextClips::TextClipsManager*	m_pTextClips;
