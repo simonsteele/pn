@@ -481,6 +481,8 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		SetupToolbar();
 	}
 
+	CSMenuHandle menu(m_hMenu);
+
 	// This is where we enable the prototype command bar
 	if (OPTIONS->Get(PNSK_INTERFACE, _T("Commandbar"), false))
 	{
@@ -494,6 +496,8 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		m_cmdTextBox.Create(m_hWnd, rcTextBox, _T(""), WS_CHILD | WS_VISIBLE, 0, cwCommandWnd);
 		HFONT fn = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
 		m_cmdTextBox.SetFont(fn);
+
+		menu.EnableMenuItem(ID_EDIT_FOCUSCOMMAND, true);
 	}
 
 	m_pCmdDispatch->UpdateMenuShortcuts(m_hMenu);
@@ -516,8 +520,7 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			i->BuildMenu(plugins, m_pCmdDispatch);
 		}
 
-		CSMenuHandle m(m_hMenu);
-		m.InsertSubMenuAtPosition(LS(IDS_EXTENSIONS_MENU), 4, plugins);
+		menu.InsertSubMenuAtPosition(LS(IDS_EXTENSIONS_MENU), 4, plugins);
 		plugins.Detach();
 	}
 

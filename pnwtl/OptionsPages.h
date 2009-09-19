@@ -88,6 +88,10 @@ class COptionsPageConf : public COptionsPageImpl<COptionsPageConf>,
 		int m_iReDrop;
 };
 
+/**
+ * "Interface" options page, was once "Dialogs". Options here for turning on and off
+ * bits of the UI.
+ */
 class COptionsPageDialogs : public COptionsPageImpl<COptionsPageDialogs>,
 							public CWinDataExchange<COptionsPageDialogs>
 {
@@ -96,6 +100,7 @@ class COptionsPageDialogs : public COptionsPageImpl<COptionsPageDialogs>,
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
+		
 		enum { IDD = IDD_PAGE_DIALOGS };
 
 		BEGIN_DDX_MAP(COptionsPageDialogs)
@@ -103,6 +108,7 @@ class COptionsPageDialogs : public COptionsPageImpl<COptionsPageDialogs>,
 			DDX_CHECK(IDC_FINDALPHACHECK,		m_bFindAlpha)
 			DDX_CHECK(IDC_CLOSEONFINDNEXTCHECK,	m_bCloseFindNext)
 			DDX_CHECK(IDC_SHOWEDITORTOOLBARCHECK, m_bShowEditorToolbar)
+			DDX_CHECK(IDC_ENABLECOMMANDBAR_CHECK, m_bEnableCmdBar)
 		END_DDX_MAP()
 
 		virtual void OnOK();
@@ -116,6 +122,7 @@ class COptionsPageDialogs : public COptionsPageImpl<COptionsPageDialogs>,
 		BOOL m_bFindAlpha;
 		BOOL m_bCloseFindNext;
 		BOOL m_bShowEditorToolbar;
+		BOOL m_bEnableCmdBar;
 
 		std::map<int, tstring> m_lcid_map;
 };

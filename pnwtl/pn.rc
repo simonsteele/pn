@@ -294,6 +294,8 @@ BEGIN
         MENUITEM "&Record Script",              ID_TOOLS_RECORDSCRIPT
         MENUITEM "Stop R&ecording",             ID_TOOLS_STOPRECORDING, INACTIVE
         MENUITEM SEPARATOR
+        MENUITEM "Command &Mode",               ID_EDIT_FOCUSCOMMAND, INACTIVE
+        MENUITEM SEPARATOR
         MENUITEM "&Customize Toolbar",          ID_TOOLS_CUSTOMIZETOOLBAR
         MENUITEM "&Options",                    ID_TOOLS_OPTIONS
     END
@@ -1156,13 +1158,14 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,117,213,10
     CONTROL         "Semi-transparent when not active (Windows XP+ only).",IDC_FINDALPHACHECK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,129,218,10
-    CONTROL         "",-1,"Static",SS_ETCHEDHORZ,0,174,299,1
-    LTEXT           "Other User Interface Options",-1,0,170,95,8
+    CONTROL         "",-1,"Static",SS_ETCHEDHORZ,0,162,299,1
+    LTEXT           "Other User Interface Options",-1,0,158,95,8
     CONTROL         "Show Mini Editor Toolbar",IDC_SHOWEDITORTOOLBARCHECK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,182,213,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,170,213,10
     CONTROL         "",-1,"Static",SS_ETCHEDHORZ,0,5,299,1
     LTEXT           "Language",-1,0,1,32,8
     COMBOBOX        IDC_LANGUAGECOMBO,10,12,126,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Enable Command Bar",IDC_ENABLECOMMANDBAR_CHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,182,213,10
 END
 
 IDD_TOOLCONSOLEIOPAGE DIALOGEX 0, 0, 243, 238

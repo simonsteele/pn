@@ -228,6 +228,7 @@ void COptionsPageDialogs::OnOK()
 
 	// Other UI
 	OPTIONS->Set(PNSK_INTERFACE, _T("MiniToolbar"), m_bShowEditorToolbar == TRUE);
+	OPTIONS->Set(PNSK_INTERFACE, _T("Commandbar"), m_bEnableCmdBar == TRUE);
 
 	CComboBox langCombo(GetDlgItem(IDC_LANGUAGECOMBO));
 	int sel = langCombo.GetCurSel();
@@ -257,6 +258,7 @@ void COptionsPageDialogs::OnInitialise()
 
 	// Other UI
 	m_bShowEditorToolbar = OPTIONS->Get(PNSK_INTERFACE, _T("MiniToolbar"), true);
+	m_bEnableCmdBar = OPTIONS->Get(PNSK_INTERFACE, _T("Commandbar"), false);
 
 	DoDataExchange();
 }

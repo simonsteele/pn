@@ -512,6 +512,7 @@
 #define IDC_TREE1                       1117
 #define IDC_SHOWEDITORTOOLBARCHECK      1117
 #define IDC_VAR_LIST                    1118
+#define IDC_ENABLECOMMANDBAR_CHECK      1118
 #define IDC_TE_CLICKRESULTSSTATIC       1120
 #define IDC_TE_OUTPUTGROUP              1121
 #define IDC_OPT_LINEENDINGSCHECK        1122
@@ -747,8 +748,8 @@
 #define ID_HELP_CHECKFORUPDATES         33141
 #define ID_WINDOW_SPLITHORIZONTAL       33142
 #define ID_WINDOW_SPLITVERTICAL         33143
-#define ID_EDIT_FOCUSCOMMAND			33144
-#define ID_EDIT_FOCUSTEXTVIEW			33145
+#define ID_EDIT_FOCUSCOMMAND            33144
+#define ID_EDIT_FOCUSTEXTVIEW           33145
 
 // Next default values for new objects
 // 
