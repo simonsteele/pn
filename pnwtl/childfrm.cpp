@@ -1768,13 +1768,6 @@ LRESULT CChildFrame::OnCommandNotify(WORD wNotifyCode, WORD /*wID*/, HWND /*hWnd
 
 			python->Eval(command.c_str(), str);
 
-			// Escape, means focus editor, e.g. enter insert mode:
-			if (str == "\\`")
-			{
-				SendMessage(WM_COMMAND, MAKEWPARAM(ID_EDIT_FOCUSTEXTVIEW, 0), 0);
-				str = "";
-			}
-
 			CA2CT newwt(str.Get());
 			if (_tcscmp(wt, newwt) != 0)
 			{

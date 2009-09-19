@@ -1,6 +1,11 @@
 # Standard PN Builtins
 import pn, scintilla, debug
 
+# Begin PyPN initialization, this flag can be checked
+# by scripts to change behaviour during runtime for easy
+# development
+pn.initializing = True
+
 # Import the rest of the pypn stuff
 from pypn import *
 from pypn.decorators import *
@@ -34,6 +39,9 @@ def import_libs(dir):
     return library_list
 
 import_libs(pn.AppPath() + "scripts")
+
+# We're done with our pypn initialization stage
+pn.initializing = False
 
 ######################################################
 ## Individual functions (eventually to be split into 

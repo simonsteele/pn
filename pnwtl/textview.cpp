@@ -38,7 +38,8 @@ CTextView::CTextView(DocumentPtr document, Views::ViewPtr parent, CommandDispatc
 	m_pLastScheme(NULL),
 	m_waitOnBookmarkNo(FALSE),
 	m_encType(eUnknown),
-	m_bMeasureCanRun(false)
+	m_bMeasureCanRun(false),
+	m_bOverwriteTarget(false)
 {
 	m_bSmartStart = OPTIONS->Get(PNSK_EDITOR, _T("SmartStart"), true);
 	SetAutoCompleteManager(autoComplete);
@@ -525,12 +526,15 @@ int CTextView::HandleNotify(LPARAM lParam)
 		SendMessage(m_pDoc->GetFrame()->m_hWnd, PN_NOTIFY, 0, SCN_UPDATEUI);
 
 		smartHighlight();
+		updateOverwriteTarget();
 	}
 	else if(msg == SCN_CHARADDED)
 	{
 		if(m_bSmartStart)
+		{
 			if(SmartStart::GetInstance()->OnChar(this) != SmartStart::eContinue)
 				m_bSmartStart = false;
+		}
 
 		m_pDoc->OnCharAdded( ( reinterpret_cast<Scintilla::SCNotification*>(lParam))->ch );
 	}
@@ -782,6 +786,16 @@ void CTextView::DoContextMenu(CPoint* point)
 	{
 		m_pCmdDispatch->ReturnID((*i));
 	}
+}
+
+/**
+ * Enter overwrite target mode from a command.
+ */
+HRESULT CTextView::OnOverwriteTarget(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	BeginOverwriteTarget();
+
+	return 0;
 }
 
 HRESULT CTextView::OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -1495,4 +1509,72 @@ int CTextView::ReplaceAll(extensions::ISearchOptions* pOptions)
 	}
 
 	return result;
+}
+
+/**
+ * OverwriteTarget mode works like VIM's "change in" command, we set an end point
+ * and if the cursor leaves that point we delete everything from the last cursor
+ * pos to the end of the target.
+ */
+void CTextView::BeginOverwriteTarget()
+{
+	SetIndicatorCurrent(INDIC_OVERWRITETARGET);
+	IndicatorClearRange(0, GetLength());
+
+	SetIndicatorValue(INDIC_BOX);
+	IndicSetStyle(INDIC_OVERWRITETARGET, INDIC_BOX);
+
+	int startTarget = GetTargetStart();
+	int endTarget = GetTargetEnd();
+	IndicatorFillRange(startTarget, endTarget - startTarget);
+
+	SetOvertype(true);
+
+	// Move to the start of the target:
+	SetSelectionStart(startTarget);
+	SetSelectionEnd(startTarget);
+
+	m_bOverwriteTarget = true;
+}
+
+/**
+ * We're in overwrite target mode and something has caused a UI update, we need
+ * to work out what to do.
+ */
+void CTextView::updateOverwriteTarget()
+{
+	if (!m_bOverwriteTarget)
+	{
+		return;
+	}
+
+	// Find the range of the indicator, we start by finding the end because it's the first
+	// end we'll find in the document.
+	bool onAt0 = SPerform(SCI_INDICATORVALUEAT, INDIC_OVERWRITETARGET, 0) != 0;
+	
+	int start = onAt0 ? 0 : SPerform(SCI_INDICATOREND, INDIC_OVERWRITETARGET, 0);
+	int end = SPerform(SCI_INDICATOREND, INDIC_OVERWRITETARGET, start);
+	
+	int line = LineFromPosition(start);
+
+	// Find our current position:
+	int current = GetCurrentPos();
+	int currentLine = LineFromPosition(line);
+
+	if (current < start || current > end)
+	{
+		// User has stepped outside the target, time to clear the remaining target.
+		SetTarget(start, end);
+		ReplaceTarget(0, NULL);
+
+		// We're out of this mode now:
+		SetOvertype(false);
+		m_bOverwriteTarget = false;
+	}
+	else
+	{
+		// User is inside the target
+		SPerform(SCI_SETINDICATORCURRENT, INDIC_OVERWRITETARGET, 0);
+		SPerform(SCI_INDICATORCLEARRANGE, start, current - start);
+	}
 }

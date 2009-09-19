@@ -516,6 +516,7 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 
 	sc.SPerform(SCI_INDICSETFORE, INDIC_MARKALL, RGB(255, 0, 0));
 	sc.SPerform(SCI_INDICSETFORE, INDIC_SMARTHIGHLIGHT, RGB(0, 255, 0));
+	sc.SPerform(SCI_INDICSETFORE, INDIC_OVERWRITETARGET, ::GetSysColor(COLOR_HIGHLIGHT));
 	
 	options.BeginGroupOperation(PNSK_EDITOR);
 

@@ -28,6 +28,7 @@
 #define PN_REFRESHUPDATEUI  (WM_APP+16)
 #define PN_UPDATECHILDUI	(WM_APP+17)
 #define PN_CLOSEALLOTHER	(WM_APP+18)
+#define PN_OVERWRITETARGET	(WM_APP+19)
 
 // Command IDs used around the place...
 #define PN_MDIACTIVATE		0x1

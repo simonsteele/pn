@@ -38,6 +38,7 @@ public:
 
 	BEGIN_MSG_MAP(CTextView)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
+		MESSAGE_HANDLER(PN_OVERWRITETARGET, OnOverwriteTarget)
 
 		COMMAND_ID_HANDLER(ID_EDIT_INDENT, OnIndent)
 		COMMAND_ID_HANDLER(ID_EDIT_UNINDENT, OnUnindent)
@@ -105,6 +106,8 @@ public:
 	virtual bool ReplaceOnce(extensions::ISearchOptions* pOptions);
 	virtual int ReplaceAll(extensions::ISearchOptions* pOptions);
 
+	void BeginOverwriteTarget();
+
 	// Implement View
 	HWND GetHwnd() { return m_hWnd; }
 
@@ -112,6 +115,7 @@ private:
 
 	// Message Handlers
 	HRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	HRESULT OnOverwriteTarget(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
 	////////////////////////////////////////////////////////////////
 	// Command Handlers
@@ -155,6 +159,7 @@ private:
 	void checkDotLogTimestamp();
 
 	void smartHighlight();
+	void updateOverwriteTarget();
 
 	CommandDispatch* m_pCmdDispatch;
 	BOOL m_waitOnBookmarkNo;
@@ -162,6 +167,7 @@ private:
 	EPNEncoding m_encType;
 	bool m_bSmartStart;
 	bool m_bLineNos;
+	bool m_bOverwriteTarget;
 	DocumentPtr m_pDoc;
 	extensions::IRecorderPtr m_recorder;
 

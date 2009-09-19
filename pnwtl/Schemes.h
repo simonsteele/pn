@@ -22,6 +22,7 @@ class CommandDispatch;
 
 static const int INDIC_MARKALL = INDIC_CONTAINER;
 static const int INDIC_SMARTHIGHLIGHT = INDIC_CONTAINER + 1;
+static const int INDIC_OVERWRITETARGET = INDIC_CONTAINER + 2;
 
 /**********************************************
  * Stuff for compiled scheme files
