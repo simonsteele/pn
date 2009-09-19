@@ -144,10 +144,14 @@ LRESULT CJumpToDialog::OnEditKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPar
 void CJumpToDialog::OnFound(int count, LPMETHODINFO methodInfo)
 {
 	LVITEM lvi;
+	
+	CA2CT methodName(methodInfo->methodName);
+	CA2CT parentName(methodInfo->parentName);
+	
 	memset(&lvi, 0, sizeof(LVITEM));
 	lvi.iItem = list.GetItemCount();
 	lvi.mask = LVIF_TEXT | LVIF_IMAGE;
-	lvi.pszText = (TCHAR*)methodInfo->methodName;
+	lvi.pszText = const_cast<TCHAR*>(static_cast<const TCHAR*>(methodName));
 	if(methodInfo->type <= TAG_MAX)
 		lvi.iImage = jumpToTagImages[methodInfo->type].imagesNumber;
 	else
@@ -157,7 +161,7 @@ void CJumpToDialog::OnFound(int count, LPMETHODINFO methodInfo)
 	lvi.mask = LVIF_TEXT;
 	lvi.iItem = index;
 	lvi.iSubItem = 1;
-	lvi.pszText = (TCHAR*)methodInfo->parentName;
+	lvi.pszText = const_cast<TCHAR*>(static_cast<const TCHAR*>(parentName));
 	list.SetItem(&lvi);
 
 	_itot(methodInfo->lineNumber, itoabuf, 10);

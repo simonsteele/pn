@@ -588,7 +588,6 @@ std::string CTextView::GetCurrentWord()
 	// VS.NET style find text:
 	// 1. check if there is a selection
 	// 2. check if the caret is inside a word
-	// 3. if neither 1 nor 2 are true, use the previous search text
 
 	if (GetSelections() > 1)
 	{
@@ -599,7 +598,7 @@ std::string CTextView::GetCurrentWord()
 
 	std::vector<char> buffer;
 
-	if(len > 0)
+	if(len > 1) // 1 character when there's no selection.
 	{
 		buffer.resize(len+2);
 		GetSelText(&buffer[0]);
