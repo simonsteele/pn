@@ -75,5 +75,7 @@ void COptionsPageEditing::OnCancel()
 
 LRESULT COptionsPageEditing::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	m_editingHeader.SubclassWindow(GetDlgItem(IDC_EDITING_STATIC));
+
 	return 0;
 }

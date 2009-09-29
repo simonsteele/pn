@@ -103,6 +103,8 @@ tstring COptionsPageEditDefaults::GetTreePosition()
 
 LRESULT COptionsPageEditDefaults::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	m_defaultsHeader.SubclassWindow(GetDlgItem(IDC_DEFAULTS_STATIC));
+
 	//typedef enum { PNSF_Windows = SC_EOL_CRLF, PNSF_Unix = SC_EOL_LF, PNSF_Mac = SC_EOL_CR, PNSF_NoChange} EPNSaveFormat;
 	CComboBox cb;
 	cb.Attach(GetDlgItem(IDC_OPT_LECOMBO));
@@ -205,6 +207,8 @@ tstring COptionsPageConf::GetTreePosition()
 
 LRESULT COptionsPageConf::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
+
 	return 0;
 }
 
@@ -270,6 +274,12 @@ tstring COptionsPageDialogs::GetTreePosition()
 
 LRESULT COptionsPageDialogs::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	// Headers:
+	m_languageHeader.SubclassWindow(GetDlgItem(IDC_LANGUAGE_STATIC));
+	m_dialogsHeader.SubclassWindow(GetDlgItem(IDC_DIALOGS_STATIC));
+	m_findHeader.SubclassWindow(GetDlgItem(IDC_FIND_STATIC));
+	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
+
 	// Languages:
 	CComboBox langCombo(GetDlgItem(IDC_LANGUAGECOMBO));
 	langCombo.AddString(_T("English"));
@@ -1050,6 +1060,10 @@ tstring COptionsPageAFiles::GetTreePosition()
 
 LRESULT COptionsPageAFiles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	// Header:
+	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
+
+	// Controls:
 	m_list.Attach(GetDlgItem(IDC_AFILES_LIST));
 	CRect rc;
 	m_list.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
@@ -1681,6 +1695,10 @@ tstring COptionsPageFileTypes::GetTreePosition()
 
 LRESULT COptionsPageFileTypes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	// Header:
+	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
+
+	// Controls:
 	m_list.Attach(GetDlgItem(IDC_LIST));
 
 	m_list.SetExtendedListViewStyle( LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT );

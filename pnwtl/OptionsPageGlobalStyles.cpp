@@ -71,6 +71,11 @@ bool COptionsPageGlobalStyles::IsDirty()
 
 LRESULT COptionsPageGlobalStyles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	// Headers:
+	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
+	m_presetsHeader.SubclassWindow(GetDlgItem(IDC_PRESETS_STATIC));
+
+	// Style Controls:
 	CRect rc;
 	
 	m_list.Attach(GetDlgItem(IDC_STYLES_LIST));

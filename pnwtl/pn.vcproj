@@ -1679,6 +1679,10 @@
 					RelativePath=".\controls\commandbaredit.h"
 					>
 				</File>
+				<File
+					RelativePath=".\controls\OptionsBlockHeader.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<File

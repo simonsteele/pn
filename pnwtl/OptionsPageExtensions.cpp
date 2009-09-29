@@ -65,6 +65,10 @@ void COptionsPageExtensions::OnCancel()
 
 LRESULT COptionsPageExtensions::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	// Header:
+	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
+
+	// Controls:
 	m_list.Attach(GetDlgItem(IDC_EXTENSIONSLIST));
 	m_list.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 140, 0);
 	m_list.InsertColumn(1, _T("Version"), LVCFMT_LEFT, 80, 0);

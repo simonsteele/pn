@@ -558,6 +558,13 @@
 #define IDC_OPT_SMARTHIGHLIGHTCHECK     1160
 #define IDC_VIRTUALSPACE_CHECK          1160
 #define IDC_ALLOWMULTISELECTTYPING_CHECK 1161
+#define IDC_TABS_STATIC                 1161
+#define IDC_SETTINGS_STATIC             1162
+#define IDC_DEFAULTS_STATIC             1163
+#define IDC_EDITING_STATIC              1164
+#define IDC_LINEHELPERS_STATIC          1165
+#define IDC_PRESETS_STATIC              1167
+#define IDC_SMARTSTART_STATIC           1168
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -750,6 +757,9 @@
 #define ID_WINDOW_SPLITVERTICAL         33143
 #define ID_EDIT_FOCUSCOMMAND            33144
 #define ID_EDIT_FOCUSTEXTVIEW           33145
+#define IDC_LANGUAGE_STATIC             33146
+#define IDC_DIALOGS_STATIC              33147
+#define IDC_FIND_STATIC                 33148
 
 // Next default values for new objects
 // 
@@ -757,8 +767,8 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        369
-#define _APS_NEXT_COMMAND_VALUE         33146
-#define _APS_NEXT_CONTROL_VALUE         1161
+#define _APS_NEXT_COMMAND_VALUE         33149
+#define _APS_NEXT_CONTROL_VALUE         1169
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

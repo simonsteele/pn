@@ -90,6 +90,10 @@ void COptionsPageGeneral::OnInitialise()
 
 LRESULT COptionsPageGeneral::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	// Set up header controls:
+	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
+	m_tabsHeader.SubclassWindow(GetDlgItem(IDC_TABS_STATIC));
+
 	return 0;
 }
 

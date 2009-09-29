@@ -13,6 +13,7 @@
 
 #include "include/optionsdialog.h"
 #include "include/sslistctrl.h"
+#include "controls/OptionsBlockHeader.h"
 #include "optionscontrols.h"
 #include "StyleTabPages.h"
 #include "SchemeConfig.h"
@@ -60,6 +61,8 @@ class COptionsPageEditDefaults : public COptionsPageImpl<COptionsPageEditDefault
 		EPNSaveFormat	m_SaveFormat;
 		ECodePage		m_CodePage;
 		int				m_CharSet;
+
+		COptionsBlockHeader m_defaultsHeader;
 };
 
 class COptionsPageConf : public COptionsPageImpl<COptionsPageConf>,
@@ -86,6 +89,8 @@ class COptionsPageConf : public COptionsPageImpl<COptionsPageConf>,
 
 		int m_iReOpen;
 		int m_iReDrop;
+
+		COptionsBlockHeader m_settingsHeader;
 };
 
 /**
@@ -125,6 +130,11 @@ class COptionsPageDialogs : public COptionsPageImpl<COptionsPageDialogs>,
 		BOOL m_bEnableCmdBar;
 
 		std::map<int, tstring> m_lcid_map;
+
+		COptionsBlockHeader m_languageHeader;
+		COptionsBlockHeader m_dialogsHeader;
+		COptionsBlockHeader m_findHeader;
+		COptionsBlockHeader m_settingsHeader;
 };
 
 class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
@@ -315,6 +325,9 @@ class COptionsPageNewFiles : public COptionsPageImpl<COptionsPageNewFiles>
 		SchemeConfigParser*	m_pSchemes;
 		CSchemeCombo		m_combo;
 		CButton				m_ssCheck;
+
+		COptionsBlockHeader m_settingsHeader;
+		COptionsBlockHeader m_smartStartHeader;
 };
 
 class SetsList;
@@ -353,10 +366,12 @@ class COptionsPageAFiles : public COptionsPageImpl<COptionsPageAFiles>
 
 		void addItem(LPCTSTR set1, LPCTSTR set2, AlternateFileSet* lpData);
 
-	protected:
+	private:
 		CListViewCtrl	m_list;
 		SetsList*		sets;
 		bool			m_bDirty;
+
+		COptionsBlockHeader m_settingsHeader;
 };
 
 #include "FileAssoc.h"
@@ -481,6 +496,8 @@ class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
 		SCHEME_MAP*			m_pExtMap;
 		SCHEME_MAP*			m_pFilenameMap;
 		bool				m_bDirty;
+
+		COptionsBlockHeader m_settingsHeader;
 };
 
 #include "OptionsPageGeneral.h"

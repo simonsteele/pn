@@ -166,6 +166,11 @@ tstring COptionsPageNewFiles::GetTreePosition()
 
 LRESULT COptionsPageNewFiles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	// Headers:
+	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
+	m_smartStartHeader.SubclassWindow(GetDlgItem(IDC_SMARTSTART_STATIC));
+
+	// Controls:
 	m_list.Attach(GetDlgItem(IDC_SMARTSTART_LIST));
 	CRect rc;
 	m_list.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);

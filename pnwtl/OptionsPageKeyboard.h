@@ -12,6 +12,7 @@
 
 #include "include/optionsdialog.h"
 #include "optionscontrols.h"
+#include "controls/OptionsBlockHeader.h"
 
 typedef enum { cdtCommand, cdtExtended, cdtScintilla } CommandDetailsType;
 
@@ -90,6 +91,8 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 		CListBox		m_shortcutlist;
 		CPNHotkeyCtrl	m_hotkey;
 		bool			m_bDirty;
+
+		COptionsBlockHeader m_settingsHeader;
 };
 
 #endif

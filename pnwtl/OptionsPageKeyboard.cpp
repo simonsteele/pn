@@ -63,6 +63,10 @@ void COptionsPageKeyboard::OnCancel()
 
 LRESULT COptionsPageKeyboard::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	// Header:
+	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
+
+	// List control
 	m_list.Attach(GetDlgItem(IDC_KB_COMMANDS));
 	m_list.SetViewType(LVS_REPORT);
 	m_list.AddColumn(_T("Group"), 0);
@@ -71,11 +75,13 @@ LRESULT COptionsPageKeyboard::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 	m_list.SetColumnWidth(1, 300);
 	m_list.SetExtendedListViewStyle( LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT );
 
+	// Add items
 	CSMenu menu(::LoadMenu(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MDICHILD)));
 	addItems(CSMenuHandle(menu), _T(""), 0);
 	addExtensions();
 	addScintilla();
 
+	// Key controls:
 	m_shortcutlist.Attach(GetDlgItem(IDC_KB_ASSIGNEDLIST));
 	m_hotkey.SubclassWindow(GetDlgItem(IDC_KB_HOTKEY));
 

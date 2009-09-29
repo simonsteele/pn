@@ -2,7 +2,7 @@
  * @file optionspageautocomplete.h
  * @brief Options Dialog Autocomplete Page for Programmer's Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -11,6 +11,7 @@
 #define optionspageautocomplete_h__included
 
 #include "include/optionsdialog.h"
+#include "controls/OptionsBlockHeader.h"
 
 /**
  * Autocomplete options page
@@ -22,6 +23,7 @@ class COptionsPageAutocomplete : public COptionsPageImpl<COptionsPageAutocomplet
 		COptionsPageAutocomplete();
 
 		BEGIN_MSG_MAP(COptionsPageAutocomplete)		
+			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
 		enum { IDD = IDD_PAGE_AUTOCOMPLETE };
@@ -41,6 +43,8 @@ class COptionsPageAutocomplete : public COptionsPageImpl<COptionsPageAutocomplet
 		virtual void OnCancel();
 
 	private:
+		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
 		bool m_bInited;
 		BOOL m_bEnabled;
 		BOOL m_bUseKeywords;
@@ -48,6 +52,8 @@ class COptionsPageAutocomplete : public COptionsPageImpl<COptionsPageAutocomplet
 		BOOL m_bCloseTags;
 		int m_iStartAt;
 		int m_iActivation;
+
+		COptionsBlockHeader m_settingsHeader;
 };
 
 #endif // #ifndef optionspageautocomplete_h__included

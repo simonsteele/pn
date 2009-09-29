@@ -83,6 +83,9 @@ void COptionsPageVisual::OnInitialise()
 
 LRESULT COptionsPageVisual::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
+	m_linesHeader.SubclassWindow(GetDlgItem(IDC_LINEHELPERS_STATIC));
+
 	m_btnLineCol.SubclassWindow(GetDlgItem(IDC_OPT_LINELIGHTBUTTON));
 	m_btnLineCol.SetDefaultColor(RGB(255, 255, 224));
 	m_btnLLCol.SubclassWindow(GetDlgItem(IDC_OPT_LLCOLORBUTTON));

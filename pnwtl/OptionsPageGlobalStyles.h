@@ -2,7 +2,7 @@
  * @file OptionsPageGlobalStyles.h
  * @brief Options Dialog Global Styles Page for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2007-2009 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -11,6 +11,7 @@
 #define OptionsPageGlobalStyles_h__included
 
 #include "include/optionsdialog.h"
+#include "controls/OptionsBlockHeader.h"
 
 class SchemeConfigParser;
 
@@ -100,6 +101,9 @@ class COptionsPageGlobalStyles : public COptionsPageImpl<COptionsPageGlobalStyle
 		bool				m_dirty;
 
 		SchemeConfigParser*	m_pSchemes;
+
+		COptionsBlockHeader m_settingsHeader;
+		COptionsBlockHeader m_presetsHeader;
 };
 
 #endif
