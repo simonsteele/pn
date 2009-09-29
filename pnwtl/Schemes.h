@@ -189,7 +189,7 @@ class DefaultScheme : public Scheme
 
 		virtual void CheckName(const wchar_t* filename = NULL){}
 
-		virtual const char* GetName() const { return "Default"; }
+		virtual const char* GetName() const { return "default"; }
 
 		virtual const TCHAR* GetTitle() const { return _T("Plain Text"); }
 };
