@@ -939,7 +939,7 @@ IDD_PAGE_AFILES DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg 2", 400, 0, 0x1
 BEGIN
-    LTEXT           "Alternate File Pairs",IDC_STATIC,0,0,299,8
+    LTEXT           "Alternate File Pairs",IDC_SETTINGS_STATIC,0,0,299,8
     CONTROL         "",IDC_AFILES_LIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,10,12,236,187
     PUSHBUTTON      "&Add",IDC_AFILES_ADDBUTTON,249,12,50,14
     PUSHBUTTON      "&Edit",IDC_AFILES_EDITBUTTON,249,30,50,14
@@ -1854,6 +1854,8 @@ END
 
 STRINGTABLE 
 BEGIN
+    IDS_HDR_EXTENSIONS_VERSION "Version"
+    IDS_HDR_EXTENSIONS_ENABLED "Enabled"
     ID_FILE_REVERT          "Revert this document to the current saved state\nRevert"
 END
 
@@ -2024,6 +2026,41 @@ STRINGTABLE
 BEGIN
     IDS_FINDINFILES         "Find in Files"
     IDS_MENU_WINDOW         "&Window"
+    IDS_HDR_KEYBOARD_GROUP  "Group"
+    IDS_HDR_KEYBOARD_COMMAND "Command"
+    IDS_HDR_CLIPS_SHORTCUT  "Shortcut"
+    IDS_HDR_CLIPS_HINT      "Hint"
+    IDS_HDR_AFILES_EXTENSIONS "Extensions"
+    IDS_HDR_AFILES_ALTEXTS  "Alternate Extensions"
+    IDS_HDR_STYLETAB_STYLES "Styles"
+    IDS_HDR_STYLETAB_KEYWORDS "Keywords"
+    IDS_HDR_STYLETAB_MOREOPTIONS "More Options"
+    IDS_HDR_TOOLS_NAME      "Name"
+    IDS_HDR_TOOLS_COMMAND   "Command"
+    IDS_HDR_TOOLS_PARAMS    "Params"
+    IDS_HDR_TOOLS_NEWTOOL   "New Tool"
+    IDS_HDR_TOOLS_EDITTOOL  "Edit Tool"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_HDR_TOOLS_PROPERTIES "Properties"
+    IDS_HDR_TOOLS_CONSOLEIO "Console I/O"
+    IDS_TOOLS_GLOBALTOOLS   "(None - Global Tools)"
+    IDS_HDR_PROJECTTOOLS_TEMPLATE "Project Template:"
+    IDS_PROJECTTOOLS_ALLPROJECTS "(None - All Projects)"
+    IDS_HDR_FILETYPES_MATCH "Match"
+    IDS_HDR_FILETYPES_SCHEME "Scheme"
+    IDS_HDR_SMARTSTART_PHRASE "Starting Phrase"
+    IDS_HDR_FILEASSOC_TYPENAME "Type Name"
+    IDS_HDR_FILEASSOC_METHOD "Method"
+    IDS_HDR_FILEASSOC_EXTENSION "Extension"
+    IDS_FILEASSOC_BADCHARS  "An extension may not contain any of these characters: "
+    IDS_FILEASSOC_CURRENTASSOC 
+                            "The selected method for this extension is currently associated with '%s'"
+    IDS_EXTENSIONS_UNKNOWN  "Unknown"
+    IDS_EXTENSIONS_ENABLED  "Yes"
+    IDS_HDR_EXTENSIONS_NAME "Name"
 END
 
 #endif    // English (U.K.) resources

@@ -37,11 +37,13 @@ void COptionsPageExtensions::OnInitialise()
 	{
 		PN::AString name;
 		PN::AString version;
+
+		std::string unknown(LSA(IDS_EXTENSIONS_UNKNOWN));
 		
 		if(!(*i)->GetDetails(name, version))
 		{
-			name = "Unknown";
-			version = "Unknown";
+			name = unknown.c_str();
+			version = unknown.c_str();
 		}
 		
 		CA2CT nameconv(name.Get());
@@ -49,7 +51,7 @@ void COptionsPageExtensions::OnInitialise()
 
 		int index = m_list.InsertItem(count++, nameconv);
 		m_list.SetItemText(index, 1, versionconv);
-		m_list.SetItemText(index, 2, _T("Yes"));
+		m_list.SetItemText(index, 2, LS(IDS_EXTENSIONS_ENABLED));
 	}
 }
 
@@ -70,9 +72,9 @@ LRESULT COptionsPageExtensions::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, L
 
 	// Controls:
 	m_list.Attach(GetDlgItem(IDC_EXTENSIONSLIST));
-	m_list.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 140, 0);
-	m_list.InsertColumn(1, _T("Version"), LVCFMT_LEFT, 80, 0);
-	m_list.InsertColumn(2, _T("Enabled"), LVCFMT_LEFT, 80, 0);
+	m_list.InsertColumn(0, LS(IDS_HDR_EXTENSIONS_NAME), LVCFMT_LEFT, 140, 0);
+	m_list.InsertColumn(1, LS(IDS_HDR_EXTENSIONS_VERSION), LVCFMT_LEFT, 80, 0);
+	m_list.InsertColumn(2, LS(IDS_HDR_EXTENSIONS_ENABLED), LVCFMT_LEFT, 80, 0);
 	m_list.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
 
 	return 0;

@@ -21,6 +21,13 @@ tstring StringLoader::Get(UINT dwStringID)
 	return s_pTheInstance->load(dwStringID);
 }
 
+std::string StringLoader::GetA(UINT dwStringID)
+{
+	tstring s = Get(dwStringID);
+	CT2CA res(s.c_str());
+	return std::string(res);
+}
+
 std::wstring StringLoader::GetW(UINT dwStringID)
 {
 	tstring s = Get(dwStringID);

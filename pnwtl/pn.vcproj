@@ -1588,6 +1588,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\OptionsPageFileAssoc.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\OptionsPageGeneral.cpp"
 					>
 				</File>

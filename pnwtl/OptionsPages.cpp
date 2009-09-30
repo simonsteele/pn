@@ -360,10 +360,6 @@ bool COptionsPageSchemes::IsDirty()
 	return m_bDirty || m_misctab.IsDirty();
 }
 
-// Dialog Message Hook stuff...
-//#include "include/dialogmessagehook.h"
-//CDialogMessageHook::InstallHook(m_props.m_hWnd);
-
 LRESULT COptionsPageSchemes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	CWindow label;
@@ -373,7 +369,8 @@ LRESULT COptionsPageSchemes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 	label.Attach(GetDlgItem(IDC_SCHEMELABEL));
 	
 	CDC dc(label.GetDC());
-	dc.GetTextExtent(_T("Scheme:"), 7, &s);
+	CWindowText hdrText(label.m_hWnd);
+	dc.GetTextExtent(hdrText, -1, &s);
 	
 	label.GetWindowRect(rc);
 	ScreenToClient(rc);
@@ -387,13 +384,17 @@ LRESULT COptionsPageSchemes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 	ScreenToClient(rcCombo);
 	rcCombo.left = rc.right + 5;
 
-	
 	CRect rcPH;
 	::GetWindowRect(GetDlgItem(IDC_PS_PLACEHOLDER), rcPH);
 	ScreenToClient(rcPH);
-	m_stylestab.SetTitle(_T("Styles"));
-	m_keywordstab.SetTitle(_T("Keywords"));
-	m_misctab.SetTitle(_T("More Options"));
+
+	tstring schemes(LS(IDS_HDR_STYLETAB_STYLES));
+	tstring keywords(LS(IDS_HDR_STYLETAB_KEYWORDS));
+	tstring misc(LS(IDS_HDR_STYLETAB_MOREOPTIONS));
+
+	m_stylestab.SetTitle(schemes.c_str());
+	m_keywordstab.SetTitle(keywords.c_str());
+	m_misctab.SetTitle(misc.c_str());
 	m_props.AddPage(m_stylestab);
 	m_props.AddPage(m_keywordstab);
 	m_props.AddPage(m_misctab);
@@ -417,7 +418,6 @@ LRESULT COptionsPageSchemes::OnNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM l
 
 	return 0;
 }
-
 
 void COptionsPageSchemes::OnInitialise()
 {
@@ -467,7 +467,7 @@ COptionsPageTools::COptionsPageTools(SchemeConfigParser* pSchemes, ToolsManager*
 	m_toolstore = pToolManager;
 }
 
-COptionsPageTools::COptionsPageTools(ToolsManager* pToolManager) /*protected*/
+COptionsPageTools::COptionsPageTools(ToolsManager* pToolManager)
 {
 	m_pSchemes = NULL;
 	m_pScheme = NULL;
@@ -482,48 +482,15 @@ COptionsPageTools::~COptionsPageTools()
 
 LRESULT COptionsPageTools::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	CWindow label;
-	CSize s;
-	CRect rc;
-
-	label.Attach(GetDlgItem(IDC_SCHEMELABEL));
+	CWindowText hdrtext(GetDlgItem(IDC_SCHEMELABEL));
+	initControls((LPCTSTR)hdrtext);
 	
-	CDC dc(label.GetDC());
-	dc.GetTextExtent(_T("Scheme:"), 7, &s);
-	
-	label.GetWindowRect(rc);
-	ScreenToClient(rc);
-	rc.right = rc.left + s.cx;
-	label.SetWindowPos(HWND_TOP, &rc, 0);
-
-	CRect rcCombo;
-
-	m_combo.Attach(GetDlgItem(IDC_SCHEMECOMBO));
-
-	m_combo.GetWindowRect(rcCombo);
-	ScreenToClient(rcCombo);
-	rcCombo.left = rc.right + 5;
-	//m_combo.SetWindowPos(HWND_TOP, &rcCombo, 0);
-
-	m_list.Attach(GetDlgItem(IDC_LIST));
-	m_list.SetExtendedListViewStyle( m_list.GetExtendedListViewStyle() | LVS_EX_FULLROWSELECT );
-	m_list.GetClientRect(rc);
-	m_list.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 130, 0);
-	m_list.InsertColumn(1, _T("Command"), LVCFMT_LEFT, rc.Width() - 130 - 100 - 20, 0);
-	m_list.InsertColumn(2, _T("Params"), LVCFMT_LEFT, 100, 0);
-
-	m_btnMoveUp.SetDirection(CArrowButton::abdUp);
-	m_btnMoveUp.SubclassWindow(GetDlgItem(IDC_TOOLS_MOVEUPBUTTON));
-	m_btnMoveDown.SubclassWindow(GetDlgItem(IDC_TOOLS_MOVEDOWNBUTTON));
-
-	EnableButtons();
-
 	return 0;
 }
 
 void COptionsPageTools::OnInitialise()
 {
-	m_combo.AddScheme(_T("(None - Global Tools)"), NULL);
+	m_combo.AddScheme(LS(IDS_TOOLS_GLOBALTOOLS), NULL);
 	
 	m_combo.Load(m_pSchemes, NULL, false, false);
 	
@@ -535,7 +502,6 @@ void COptionsPageTools::OnInitialise()
 
 void COptionsPageTools::OnOK()
 {
-	//m_toolstore.Save();
 	UpdateIndexes();
 }
 
@@ -619,13 +585,13 @@ SchemeTools* COptionsPageTools::GetTools()
 
 bool COptionsPageTools::doToolEditDlg(ToolDefinition* in, ToolDefinition* out)
 {
-	LPCTSTR title = (in != NULL) ? _T("Edit Tool") : _T("New Tool");
-	CPropertySheet sheet( title, 0, m_hWnd );
+	tstring title = (in != NULL) ? LS(IDS_HDR_TOOLS_EDITTOOL) : LS(IDS_HDR_TOOLS_NEWTOOL);
+	CPropertySheet sheet(title.c_str(), 0, m_hWnd);
 	sheet.m_psh.dwFlags |= (PSH_NOAPPLYNOW | PSH_PROPTITLE | PSH_USEICONID);
 	sheet.m_psh.pszIcon = MAKEINTRESOURCE(IDR_MDICHILD);
 	
-	CToolSettingsPage toolPage(_T("Properties"));
-	CToolConsoleIOPage consolePage(_T("Console I/O"));
+	CToolSettingsPage toolPage(LS(IDS_HDR_TOOLS_PROPERTIES));
+	CToolConsoleIOPage consolePage(LS(IDS_HDR_TOOLS_CONSOLEIO));
 
 	if(in)
 	{
@@ -763,26 +729,6 @@ LRESULT COptionsPageTools::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	return 0;
 }
 
-/*struct ListCtrlMoveOneData
-{
-	LPARAM ItemData;
-    bool bMoveDown;
-	bool bDoneOne;
-};
-
-int CALLBACK ListCtrlMoveOneCompareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
-{
-	ListCtrlMoveOneData* pD = reinterpret_cast<ListCtrlMoveOneData*>(lParamSort);
-	LPARAM lpCompare = pD->bMoveDown ? lParam1 : lParam2;
-	if( !pD->bDoneOne && lpCompare == pD->ItemData )
-	{
-		((ListCtrlMoveOneData*)lParamSort)->bDoneOne = true;
-		
-		return 1;
-	}
-	return 0;
-}*/
-
 LRESULT COptionsPageTools::OnUpClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	int iSelIndex = m_list.GetSelectedIndex();
@@ -792,6 +738,7 @@ LRESULT COptionsPageTools::OnUpClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 		GetTools()->MoveUp(pDef);
 		m_list.MoveItemUp(iSelIndex);
 	}
+
 	EnableButtons();
 	return 0;
 }
@@ -842,6 +789,37 @@ LRESULT COptionsPageTools::OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& 
 	return 0;
 }
 
+void COptionsPageTools::initControls(LPCTSTR itemTitle)
+{
+	CWindow label;
+	CSize s;
+	CRect rc;
+
+	label.Attach(GetDlgItem(IDC_SCHEMELABEL));
+	label.SetWindowText(itemTitle);
+	
+	CDC dc(label.GetDC());
+	dc.GetTextExtent(itemTitle, -1, &s);
+	
+	label.GetWindowRect(rc);
+	ScreenToClient(rc);
+	rc.right = rc.left + s.cx;
+	label.SetWindowPos(HWND_TOP, &rc, 0);
+
+	getCombo()->Attach(GetDlgItem(IDC_SCHEMECOMBO));
+
+	m_list.Attach(GetDlgItem(IDC_LIST));
+	m_list.SetExtendedListViewStyle(m_list.GetExtendedListViewStyle() | LVS_EX_FULLROWSELECT);
+	m_list.GetClientRect(rc);
+	m_list.InsertColumn(0, LS(IDS_HDR_TOOLS_NAME), LVCFMT_LEFT, 130, 0);
+	m_list.InsertColumn(1, LS(IDS_HDR_TOOLS_COMMAND), LVCFMT_LEFT, rc.Width() - 130 - 100 - 20, 0);
+	m_list.InsertColumn(2, LS(IDS_HDR_TOOLS_PARAMS), LVCFMT_LEFT, 100, 0);
+
+	m_btnMoveUp.SetDirection(CArrowButton::abdUp);
+	m_btnMoveUp.SubclassWindow(GetDlgItem(IDC_TOOLS_MOVEUPBUTTON));
+	m_btnMoveDown.SubclassWindow(GetDlgItem(IDC_TOOLS_MOVEDOWNBUTTON));
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // COptionsPageProjectTools
 //////////////////////////////////////////////////////////////////////////////
@@ -878,30 +856,12 @@ tstring COptionsPageProjectTools::GetTreePosition()
 	return MAKE_OPTIONSTREEPATH(IDS_OPTGROUP_TOOLS, IDS_OPTPAGE_PROJECTTOOLS);
 }
 
-
 LRESULT COptionsPageProjectTools::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	CWindow label;
-	CSize s;
-	CRect rc;
+	tstring title(LS(IDS_HDR_PROJECTTOOLS_TEMPLATE));
+	initControls(title.c_str());
 
-	label.Attach(GetDlgItem(IDC_SCHEMELABEL));
-	
-	CDC dc(label.GetDC());
-	label.SetWindowText(_T("Project Template:"));
-	dc.GetTextExtent(_T("Project Template:"), 17, &s);
-	
-	label.GetWindowRect(rc);
-	ScreenToClient(rc);
-	rc.right = rc.left + s.cx;
-	label.SetWindowPos(HWND_TOP, &rc, 0);
-
-	CRect rcCombo;
-
-	m_combo.Attach(GetDlgItem(IDC_SCHEMECOMBO));
-	m_combo.GetWindowRect(rcCombo);
-
-	int index = m_combo.AddString(_T("(None - All Projects)"));
+	int index = m_combo.AddString(LS(IDS_PROJECTTOOLS_ALLPROJECTS));
 	m_combo.SetItemDataPtr(index, NULL);
 
 	const Projects::TEMPLATE_MAP& templates = Projects::Registry::GetInstance()->GetTemplates();
@@ -914,23 +874,6 @@ LRESULT COptionsPageProjectTools::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
 	}
 
 	m_combo.SetCurSel(0);
-	
-	ScreenToClient(rcCombo);
-	rcCombo.left = rc.right + 5;
-	//m_combo.SetWindowPos(HWND_TOP, &rcCombo, 0);
-
-	m_list.Attach(GetDlgItem(IDC_LIST));
-	m_list.SetExtendedListViewStyle( m_list.GetExtendedListViewStyle() | LVS_EX_FULLROWSELECT );
-	m_list.GetClientRect(rc);
-	m_list.InsertColumn(0, _T("Name"), LVCFMT_LEFT, 130, 0);
-	m_list.InsertColumn(1, _T("Command"), LVCFMT_LEFT, rc.Width() - 130 - 100 - 20, 0);
-	m_list.InsertColumn(2, _T("Params"), LVCFMT_LEFT, 100, 0);
-
-	m_btnMoveUp.SetDirection(CArrowButton::abdUp);
-	m_btnMoveUp.SubclassWindow(GetDlgItem(IDC_TOOLS_MOVEUPBUTTON));
-	m_btnMoveDown.SubclassWindow(GetDlgItem(IDC_TOOLS_MOVEDOWNBUTTON));
-
-	EnableButtons();
 
 	return 0;
 }
@@ -1068,8 +1011,8 @@ LRESULT COptionsPageAFiles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 	CRect rc;
 	m_list.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 	m_list.GetClientRect(rc);
-	m_list.InsertColumn(0, _T("Extensions"), LVCFMT_LEFT, (rc.Width() / 2) - 10, 0);
-	m_list.InsertColumn(1, _T("Alternate Extensions"), LVCFMT_LEFT, (rc.Width() / 2) - 10, 0);
+	m_list.InsertColumn(0, LS(IDS_HDR_AFILES_EXTENSIONS), LVCFMT_LEFT, (rc.Width() / 2) - 10, 0);
+	m_list.InsertColumn(1, LS(IDS_HDR_AFILES_ALTEXTS), LVCFMT_LEFT, (rc.Width() / 2) - 10, 0);
 
 	//TODO: Enable/disable the add, remove and edit buttons based on the selection
 	return 0;
@@ -1180,396 +1123,6 @@ LRESULT COptionsPageAFiles::OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL&
 	OnEditClicked(0, 0, 0, b);
 
 	return 0;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-// COptionsPageFileAssoc
-//////////////////////////////////////////////////////////////////////////////
-
-COptionsPageFileAssoc::COptionsPageFileAssoc()
-	: m_bDirty(false)
-	, m_mode(ModeNone)
-	, m_fam()
-	, m_bKeyChange(false)
-{}
-
-tstring COptionsPageFileAssoc::GetTreePosition()
-{
-	return MAKE_OPTIONSTREEPATH(IDS_OPTGROUP_FILES, IDS_OPTPAGE_FILEASSOC);
-}
-
-void COptionsPageFileAssoc::OnOK()
-{
-	if(!m_bCreated)
-		return;
-
-	CString ext;
-	CString method;
-	FileAssoc fa;
-	for(int i = 0; i < m_list.GetItemCount(); i++)
-	{
-		ListItemToFileAssoc(i, fa);
-		m_fam.SetAssociation(fa);
-	}
-	m_fam.UpdateAssociations();
-
-	OPTIONS->Set(PNSK_INTERFACE, _T("CheckAssocsOnStartup"),
-		IsDlgButtonChecked(IDC_CHECKONSTARTUP) == BST_CHECKED);
-}
-
-void COptionsPageFileAssoc::OnInitialise()
-{
-	CheckDlgButton(IDC_CHECKONSTARTUP,
-		OPTIONS->Get(PNSK_INTERFACE, _T("CheckAssocsOnStartup"), false) ? BST_CHECKED : BST_UNCHECKED);
-
-	const FileAssocManager::FileAssocs& fas = m_fam.GetAssociations();
-	for(int i = 0; i < fas.GetSize(); i++)
-	{
-		const FileAssoc& fa = fas[i];
-		m_list.AddItem(i, ColConflict, _T(""));
-		m_list.SetItemText(i, ColExtension, fa.GetExtension());
-		m_list.SetItemText(i, ColMethod, fa.GetVerbName(true));
-		m_list.SetItemText(i, ColTypeName, fa.GetCurrentTypeName());
-	}
-}
-
-void COptionsPageFileAssoc::OnCancel()
-{
-}
-
-LRESULT COptionsPageFileAssoc::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-	m_combo.Attach(GetDlgItem(IDC_FILEASSO_METHOD));
-	m_combo.AddString(_T("Open"));
-	m_combo.AddString(_T("Edit"));
-	m_combo.AddString(_T("Edit with PN2"));
-	m_combo.SetCurSel(0);
-
-	m_buttonAddEdit.Attach(GetDlgItem(IDC_ADD));
-	m_buttonRemove.Attach(GetDlgItem(IDC_REMOVE));
-
-	m_list.Attach(GetDlgItem(IDC_FILEASSO_LIST));
-	m_list.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_INFOTIP);
-	m_list.AddColumn(_T("!"), ColConflict, ColConflict, LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM, LVCFMT_CENTER);
-	m_list.AddColumn(_T("Extension"), ColExtension, ColExtension);
-	m_list.AddColumn(_T("Method"), ColMethod, ColMethod);
-
-	RECT rc;
-	::GetWindowRect(GetDlgItem(IDC_FILEASSO_LIST), &rc);
-
-	LVCOLUMN lvc = { 0 };
-	lvc.mask = LVCF_FMT | LVCF_WIDTH | LVCF_TEXT | LVCF_SUBITEM;
-	lvc.fmt = LVCFMT_LEFT;
-	lvc.pszText = _T("Type Name");
-	lvc.cx = (rc.right - rc.left) / 2;
-	lvc.iSubItem = ColTypeName;
-	m_list.InsertColumn(ColTypeName, &lvc);
-	//m_list.AddColumn(_T("Type Name"), 2, 2);
-
-	// Prepare to draw conflicts highlighted
-	m_boldFont;
-	HFONT hFont = GetFont();
-	LOGFONT lf = {0};
-	GetObject(hFont, sizeof(lf), &lf);
-	lf.lfWeight = FW_BOLD;
-	m_boldFont.CreateFontIndirect(&lf);
-
-	// Ensure there's (some) contrast between the highlight color and the background
-	m_colors[0] = ::GetSysColor(COLOR_WINDOWTEXT);
-	COLORREF bkgnd = ::GetSysColor(COLOR_WINDOW);
-	COLORREF highlight = RGB(255, 0, 0);
-	const int tolerance = 0x7F;
-	int r = abs(GetRValue(bkgnd) - GetRValue(highlight));
-	int g = abs(GetGValue(bkgnd) - GetGValue(highlight));
-	int b = abs(GetBValue(bkgnd) - GetBValue(highlight));
-	if(r < tolerance && g < tolerance && b < tolerance)
-	{
-		//TODO: Should a calculate to get an inverse take place here?
-		// But this if body will only be reached when the user has a redish
-		// window background and we won't be able to use this signal color
-		// then...
-		highlight = m_colors[0];
-	}
-
-	m_colors[1] = highlight;
-	return 0;
-}
-
-LRESULT COptionsPageFileAssoc::OnExtensionChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	CString curExt;
-	GetDlgItemText(IDC_EXTENSION, curExt);
-	if(curExt.GetLength() == 0)
-	{
-		SetMode(ModeNone, false);
-	}
-	else
-	{
-		// If the extension exists in the list, select the item and set the
-		// EditMode. This case is true when the user just selected an item
-		// in the list (may be a performace problem on a very low end computer
-		// and a very large list of extensions. For this edge case a separate
-		// m_list.GetSelectedIndex() != -1 test would perform better).
-
-		// ListViewCtrl::FindItem does not work here because the extension is
-		// in a subitem.
-		int extIndex;
-		for(extIndex = 0; extIndex < m_list.GetItemCount(); extIndex++)
-		{
-			CString ext;
-			m_list.GetItemText(extIndex, 1, ext);
-			if(ext == curExt)
-			{
-				break;
-			}
-		}
-
-		if(extIndex < m_list.GetItemCount())
-		{
-			CString method;
-			m_list.GetItemText(extIndex, ColMethod, method);
-			m_combo.SelectString(0, method);
-			m_bKeyChange = true;
-			m_list.SelectItem(extIndex);
-			m_bKeyChange = false;
-			SetMode(ModeEdit, false);
-		}
-		else
-		{
-			SetMode(ModeAdd, false);
-		}
-	}
-
-	return 0;
-}
-
-LRESULT COptionsPageFileAssoc::OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	CString ext;
-	GetDlgItemText(IDC_EXTENSION, ext);
-	CString method;
-	m_combo.GetLBText(m_combo.GetCurSel(), method);
-
-	FileAssoc fa(ext, method);
-	m_fam.SetAssociation(fa);
-
-	int itemIndex;
-	if(m_mode == ModeAdd)
-	{
-		itemIndex = m_list.GetItemCount();
-		m_list.AddItem(itemIndex, ColConflict, _T(""));
-		m_list.SetItemText(itemIndex, ColExtension, fa.GetExtension());
-		m_list.SetItemText(itemIndex, ColTypeName, fa.GetCurrentTypeName());
-	}
-	else //if(m_mode == ModeEdit)
-	{
-		itemIndex = m_list.GetSelectedIndex();
-	}
-
-	m_list.SetItemText(itemIndex, ColMethod, method);
-
-	if(fa.HasConflict())
-	{
-		if(m_conflicts.FindKey(ext) != -1)
-		{
-			m_conflicts.SetAt(ext, fa.GetCurrentAppName());
-		}
-		else
-		{
-			m_conflicts.Add(ext, fa.GetCurrentAppName());
-		}
-		m_list.SetItemText(itemIndex, ColConflict, _T("!"));
-	}
-	else if(!fa.IsValid())
-	{
-		// We can ignore the test for VerbNone in FileAssoc::IsValid() here
-		// because the user cannot enter VerbNone.
-		CString conflictMsg(_T("An extension may not contain any of these characters: "));
-		LPCTSTR invalidChars = FileAssoc::GetInvalidChars();
-		for(int i = 0; invalidChars[i] != 0; i++)
-		{
-			conflictMsg += invalidChars[i];
-			conflictMsg += _T(' ');
-		}
-
-		m_list.SetItemText(itemIndex, ColConflict, _T("!"));
-		m_list.SetItemText(itemIndex, ColExtension, ext);
-		m_list.SetItemText(itemIndex, ColTypeName, conflictMsg);
-	}
-	else
-	{
-		int i = m_conflicts.FindKey(ext);
-		if(i != -1)
-		{
-			m_conflicts.RemoveAt(i);
-		}
-
-		m_list.SetItemText(itemIndex, ColConflict, _T(""));
-	}
-
-	m_bDirty = true;
-	SetMode(ModeNone);
-	return 0;
-}
-
-LRESULT COptionsPageFileAssoc::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	int selIndex = m_list.GetSelectedIndex();
-	if(selIndex != -1)
-	{
-		RemoveExtension(selIndex);
-	}
-	return 0;
-}
-
-LRESULT COptionsPageFileAssoc::OnCheckNowClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-	m_fam.UpdateAssociations();
-	return 0;
-}
-
-LRESULT COptionsPageFileAssoc::OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
-{
-	// The item selected state can change throught various ways:
-	// 1. the user selected an item in the list
-	// 2. the user modifies an extension he just selected which results in a
-	//    deselect
-	// 3. the user clicks in the list view but not on an item
-	// In the first case, we want to switch to edit mode, in the 2nd to add
-	// mode and in the last to none.
-
-	NMLISTVIEW* plv = (LPNMLISTVIEW)pnmh;
-	if(/*m_mode != ModeAdd && */plv->uChanged == LVIF_STATE)
-	{
-		if((plv->uNewState & LVIS_SELECTED) != 0)
-		{
-			CString ext;
-			CString method;
-			m_list.GetItemText(plv->iItem, ColExtension, ext);
-			m_list.GetItemText(plv->iItem, ColMethod, method);
-			//NOTE: setting the extension edit after clearing it in SetMode results in the item being deselected again
-			SetMode(ModeEdit, !m_bKeyChange, ext);
-			m_combo.SelectString(0, method);
-		}
-		else
-		{
-			SetMode(ModeNone);
-		}
-	}
-	return 0;
-}
-
-LRESULT COptionsPageFileAssoc::OnListSetFocus(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
-{
-	if(m_list.GetSelectedIndex() == -1)
-	{
-		SetMode(ModeNone);
-	}
-	return 0;
-}
-
-LRESULT COptionsPageFileAssoc::OnListGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
-{
-	NMLVGETINFOTIP* plgit = (NMLVGETINFOTIP*)pnmh;
-	CString ext;
-	m_list.GetItemText(plgit->iItem, ColExtension, ext);
-	int i = m_conflicts.FindKey(ext);
-	if(i != -1)
-	{
-		CString msg;
-		msg.Format(_T("The selected method for this extension is currently associated with '%s'"),
-			m_conflicts.GetValueAt(i));
-		::lstrcpyn(plgit->pszText, msg, plgit->cchTextMax);
-	}
-	return 0;
-}
-
-LRESULT COptionsPageFileAssoc::OnListKeyDown(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
-{
-	NMLVKEYDOWN* plkd = (NMLVKEYDOWN*)pnmh;
-	int selIndex = m_list.GetSelectedIndex();
-	if(plkd->wVKey == VK_DELETE && selIndex != -1)
-	{
-		RemoveExtension(selIndex);
-	}
-	return 0;
-}
-
-DWORD COptionsPageFileAssoc::OnPrePaint(int idCtrl, LPNMCUSTOMDRAW lpNMCustomDraw)
-{
-	DWORD ret = CDRF_DODEFAULT;
-	if(idCtrl == IDC_LIST)
-	{
-		ret = CDRF_NOTIFYITEMDRAW;
-	}
-	return ret;
-}
-
-DWORD COptionsPageFileAssoc::OnItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW lpNMCustomDraw)
-{
-	DWORD ret = CDRF_DODEFAULT;
-	CString ext;
-	m_list.GetItemText(lpNMCustomDraw->dwItemSpec, ColExtension, ext);
-	int i = m_conflicts.FindKey(ext);
-	if(i != -1)
-	{
-		CDCHandle dc(lpNMCustomDraw->hdc);
-		dc.SelectFont(m_boldFont);
-		ret = CDRF_NEWFONT | CDRF_NOTIFYSUBITEMDRAW;
-	}
-	return ret;
-}
-
-DWORD COptionsPageFileAssoc::OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW lpNMCustomDraw)
-{
-	NMLVCUSTOMDRAW* lvcd = (NMLVCUSTOMDRAW*)lpNMCustomDraw;
-	if(lvcd->iSubItem == ColConflict)
-		lvcd->clrText = m_colors[1];
-	else
-		lvcd->clrText = m_colors[0];
-	return CDRF_DODEFAULT;
-}
-
-void COptionsPageFileAssoc::SetMode(Mode mode, bool setExt /*= true*/, LPCTSTR ext /*= NULL*/)
-{
-	if(m_mode == ModeChanging)
-		return;
-
-	m_mode = ModeChanging;
-
-	if(setExt)
-	{
-		SetDlgItemText(IDC_EXTENSION, ext);
-	}
-	m_buttonAddEdit.SetWindowText(mode == ModeAdd ? _T("&Add") : _T("&Edit"));
-	m_buttonAddEdit.EnableWindow(mode != ModeNone);
-	m_buttonRemove.EnableWindow(m_list.GetSelectedIndex() > -1);
-
-	if(mode != ModeEdit && m_list.GetSelectedIndex() > -1)
-	{
-		m_list.SetItemState(m_list.GetSelectedIndex(), 0, LVIS_SELECTED);
-	}
-
-	m_mode = mode;
-}
-
-void COptionsPageFileAssoc::ListItemToFileAssoc(int index, FileAssoc& fa)
-{
-	CString ext;
-	CString method;
-	m_list.GetItemText(index, ColExtension, ext);
-	m_list.GetItemText(index, ColMethod, method);
-
-	fa.SetExtensionAndVerb(ext, method);
-}
-
-void COptionsPageFileAssoc::RemoveExtension(int index)
-{
-	FileAssoc fa;
-	ListItemToFileAssoc(index, fa);
-	m_fam.UnsetAssociation(fa);
-
-	m_list.DeleteItem(index);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -1703,8 +1256,8 @@ LRESULT COptionsPageFileTypes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 
 	m_list.SetExtendedListViewStyle( LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT );
 
-	m_list.InsertColumn(0, _T("Match"), LVCFMT_LEFT, 120, -1);
-	m_list.InsertColumn(1, _T("Scheme"), LVCFMT_LEFT, 200, -1);
+	m_list.InsertColumn(0, LS(IDS_HDR_FILETYPES_MATCH), LVCFMT_LEFT, 120, -1);
+	m_list.InsertColumn(1, LS(IDS_HDR_FILETYPES_SCHEME), LVCFMT_LEFT, 200, -1);
 
 	return 0;
 }

@@ -91,8 +91,8 @@ LRESULT COptionsPageClips::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	CRect rc;
 	m_list.GetClientRect(&rc);
 	int wCol = rc.right - rc.left - 20 - 80;
-	m_list.InsertColumn(0, _T("Shortcut"), LVCFMT_LEFT, 80, 0);
-	m_list.InsertColumn(1, _T("Hint"), LVCFMT_LEFT, wCol, 0);
+	m_list.InsertColumn(0, LS(IDS_HDR_CLIPS_SHORTCUT), LVCFMT_LEFT, 80, 0);
+	m_list.InsertColumn(1, LS(IDS_HDR_CLIPS_HINT), LVCFMT_LEFT, wCol, 0);
 	m_list.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
 
 	updateSel();

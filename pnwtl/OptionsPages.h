@@ -235,9 +235,10 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 		LRESULT OnListClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 		LRESULT OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
+		void initControls(LPCTSTR itemTitle);
+
 	protected:
 		bool				m_bChanging;
-		CSchemeCombo		m_combo;
 		CSSListCtrl			m_list;
 		SchemeConfigParser* m_pSchemes;
 		SchemeDetails*		m_pScheme;
@@ -247,6 +248,9 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 
 		CArrowButton		m_btnMoveUp;
 		CArrowButton		m_btnMoveDown;
+
+	private:
+		CSchemeCombo		m_combo;
 };
 
 class COptionsPageProjectTools : public COptionsPageTools
@@ -272,10 +276,9 @@ class COptionsPageProjectTools : public COptionsPageTools
 		virtual CComboBox* getCombo();
 		virtual void updateFromSel(int iSel);
 
-	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
-	protected:
+	private:
 		CComboBox	m_combo;
 		Projects::ProjectTemplate* m_pTemplate;
 };

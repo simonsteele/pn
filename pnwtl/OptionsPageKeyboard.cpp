@@ -69,8 +69,8 @@ LRESULT COptionsPageKeyboard::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 	// List control
 	m_list.Attach(GetDlgItem(IDC_KB_COMMANDS));
 	m_list.SetViewType(LVS_REPORT);
-	m_list.AddColumn(_T("Group"), 0);
-	m_list.AddColumn(_T("Command"), 1);
+	m_list.AddColumn(LS(IDS_HDR_KEYBOARD_GROUP), 0);
+	m_list.AddColumn(LS(IDS_HDR_KEYBOARD_COMMAND), 1);
 	m_list.SetColumnWidth(0, 80);
 	m_list.SetColumnWidth(1, 300);
 	m_list.SetExtendedListViewStyle( LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT );

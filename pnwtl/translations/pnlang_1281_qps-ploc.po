@@ -666,6 +666,14 @@ msgstr "&Ẑǿǿḿ Īƞ"
 msgid "(1 to 50) items in the most recently used list."
 msgstr "(1 ŧǿ 50) īŧḗḿş īƞ ŧħḗ ḿǿşŧ řḗƈḗƞŧŀẏ ŭşḗḓ ŀīşŧ."
 
+#. Resource IDs: (16)
+msgid "(None - All Projects)"
+msgstr "(Ƞǿƞḗ - Ȧŀŀ Ƥřǿĵḗƈŧş)"
+
+#. Resource IDs: (16)
+msgid "(None - Global Tools)"
+msgstr "(Ƞǿƞḗ - Ɠŀǿƀȧŀ Ŧǿǿŀş)"
+
 #. Resource IDs: (12)
 msgid "(empty)"
 msgstr "(ḗḿƥŧẏ)"
@@ -768,6 +776,10 @@ msgstr "Ȧŀŀǿẇ ḿŭŀŧƥŀḗ şḗŀḗƈŧīǿƞş"
 msgid "Allow typing into multiple caret points"
 msgstr "Ȧŀŀǿẇ ŧẏƥīƞɠ īƞŧǿ ḿŭŀŧīƥŀḗ ƈȧřḗŧ ƥǿīƞŧş"
 
+#. Resource IDs: (15)
+msgid "Alternate Extensions"
+msgstr "Ȧŀŧḗřƞȧŧḗ Ḗẋŧḗƞşīǿƞş"
+
 #. Resource IDs: (65535)
 msgid "Alternate Extensions:"
 msgstr "Ȧŀŧḗřƞȧŧḗ Ḗẋŧḗƞşīǿƞş:"
@@ -779,6 +791,10 @@ msgstr "Ȧŀŧḗřƞȧŧḗ Ƒīŀḗ Ƥȧīřş"
 #. Resource IDs: (14)
 msgid "Alternate Files"
 msgstr "Ȧŀŧḗřƞȧŧḗ Ƒīŀḗş"
+
+#. Resource IDs: (16)
+msgid "An extension may not contain any of these characters: "
+msgstr "Ȧƞ ḗẋŧḗƞşīǿƞ ḿȧẏ ƞǿŧ ƈǿƞŧȧīƞ ȧƞẏ ǿƒ ŧħḗşḗ ƈħȧřȧƈŧḗřş: "
 
 #. Resource IDs: (12)
 #, c-format
@@ -1026,6 +1042,14 @@ msgstr "Ƈǿŀŀȧƥşḗ Ȧŀŀ Ƒǿŀḓş"
 msgid "Com&ments"
 msgstr "Ƈǿḿ&ḿḗƞŧş"
 
+#. Resource IDs: (15)
+msgid "Command"
+msgstr "Ƈǿḿḿȧƞḓ"
+
+#. Resource IDs: (33144)
+msgid "Command &Mode"
+msgstr "Ƈǿḿḿȧƞḓ &Ḿǿḓḗ"
+
 #. Resource IDs: (65535)
 msgid "Command:"
 msgstr "Ƈǿḿḿȧƞḓ:"
@@ -1033,6 +1057,10 @@ msgstr "Ƈǿḿḿȧƞḓ:"
 #. Resource IDs: (14)
 msgid "Confirmations"
 msgstr "Ƈǿƞƒīřḿȧŧīǿƞş"
+
+#. Resource IDs: (16)
+msgid "Console I/O"
+msgstr "Ƈǿƞşǿŀḗ Ī/Ǿ"
 
 #. Resource IDs: (32972)
 msgid "Convert Spaces to Tabs"
@@ -1215,6 +1243,10 @@ msgstr "Ḗḓīŧ Ƒīŀḗ Ŧẏƥḗ"
 msgid "Edit SmartStart Phrase"
 msgstr "Ḗḓīŧ ŞḿȧřŧŞŧȧřŧ Ƥħřȧşḗ"
 
+#. Resource IDs: (15)
+msgid "Edit Tool"
+msgstr "Ḗḓīŧ Ŧǿǿŀ"
+
 #. Resource IDs: (65535)
 msgid "Editing"
 msgstr "Ḗḓīŧīƞɠ"
@@ -1231,9 +1263,17 @@ msgstr "Ḗḿƥŧẏ Ƥřǿĵḗƈŧ"
 msgid "Enable AutoComplete"
 msgstr "Ḗƞȧƀŀḗ ȦŭŧǿƇǿḿƥŀḗŧḗ"
 
+#. Resource IDs: (1118)
+msgid "Enable Command Bar"
+msgstr "Ḗƞȧƀŀḗ Ƈǿḿḿȧƞḓ Ɓȧř"
+
 #. Resource IDs: (1051)
 msgid "Enable SmartStart"
 msgstr "Ḗƞȧƀŀḗ ŞḿȧřŧŞŧȧřŧ"
+
+#. Resource IDs: (17)
+msgid "Enabled"
+msgstr "Ḗƞȧƀŀḗḓ"
 
 #. Resource IDs: (65535)
 msgid "Enco&ding"
@@ -1281,6 +1321,10 @@ msgstr "Ḗẋ&ŧḗƞşīǿƞ:"
 #. Resource IDs: (269)
 msgid "Expand All Folds"
 msgstr "Ḗẋƥȧƞḓ Ȧŀŀ Ƒǿŀḓş"
+
+#. Resource IDs: (16)
+msgid "Extension"
+msgstr "Ḗẋŧḗƞşīǿƞ"
 
 #. Resource IDs: (65535)
 msgid "Extensions"
@@ -1479,6 +1523,10 @@ msgstr "Ħīɠħŀīɠħŧ ƈŭřřḗƞŧ ḗḓīŧǿř ŀīƞḗ"
 msgid "Highlight text beyond the edge column"
 msgstr "Ħīɠħŀīɠħŧ ŧḗẋŧ ƀḗẏǿƞḓ ŧħḗ ḗḓɠḗ ƈǿŀŭḿƞ"
 
+#. Resource IDs: (15)
+msgid "Hint"
+msgstr "Ħīƞŧ"
+
 #. Resource IDs: (65535)
 msgid "Hint:"
 msgstr "Ħīƞŧ:"
@@ -1641,6 +1689,10 @@ msgstr "Ķḗẏƀǿȧřḓ"
 msgid "Keyboard Shortcuts"
 msgstr "Ķḗẏƀǿȧřḓ Şħǿřŧƈŭŧş"
 
+#. Resource IDs: (15)
+msgid "Keywords"
+msgstr "Ķḗẏẇǿřḓş"
+
 #. Resource IDs: (1057)
 msgid "L&andscape"
 msgstr "Ŀ&ȧƞḓşƈȧƥḗ"
@@ -1689,6 +1741,10 @@ msgstr "Ḿȧřɠīƞş"
 msgid "Mark All Highlight:"
 msgstr "Ḿȧřķ Ȧŀŀ Ħīɠħŀīɠħŧ:"
 
+#. Resource IDs: (16)
+msgid "Match"
+msgstr "Ḿȧŧƈħ"
+
 #. Resource IDs: (105)
 msgid "Match &case"
 msgstr "Ḿȧŧƈħ &ƈȧşḗ"
@@ -1697,9 +1753,17 @@ msgstr "Ḿȧŧƈħ &ƈȧşḗ"
 msgid "Match &whole word only"
 msgstr "Ḿȧŧƈħ &ẇħǿŀḗ ẇǿřḓ ǿƞŀẏ"
 
+#. Resource IDs: (16)
+msgid "Method"
+msgstr "Ḿḗŧħǿḓ"
+
 #. Resource IDs: (22)
 msgid "Modified"
 msgstr "Ḿǿḓīƒīḗḓ"
+
+#. Resource IDs: (15)
+msgid "More Options"
+msgstr "Ḿǿřḗ Ǿƥŧīǿƞş"
 
 #. Resource IDs: (1034)
 msgid "Move &Down"
@@ -1716,6 +1780,10 @@ msgstr "Ḿǿṽḗ Ŀīƞḗ &Ŭƥ"
 #. Resource IDs: (33005)
 msgid "Move Line Do&wn"
 msgstr "Ḿǿṽḗ Ŀīƞḗ Ḓǿ&ẇƞ"
+
+#. Resource IDs: (15, 16)
+msgid "Name"
+msgstr "Ƞȧḿḗ"
 
 #. Resource IDs: (65535)
 msgid "Name:"
@@ -1736,6 +1804,10 @@ msgstr "Ƞḗẇ Ƥřǿĵḗƈŧ Ɠřǿŭƥ"
 #. Resource IDs: (336)
 msgid "New Project..."
 msgstr "Ƞḗẇ Ƥřǿĵḗƈŧ..."
+
+#. Resource IDs: (15)
+msgid "New Tool"
+msgstr "Ƞḗẇ Ŧǿǿŀ"
 
 #. Resource IDs: (32787)
 msgid "Next B&ookmark"
@@ -1909,6 +1981,10 @@ msgstr "Ƥȧƥḗř"
 msgid "Parameters:"
 msgstr "Ƥȧřȧḿḗŧḗřş:"
 
+#. Resource IDs: (15)
+msgid "Params"
+msgstr "Ƥȧřȧḿş"
+
 #. Resource IDs: (1133)
 msgid "Pass my selection to this tool using Standard Input"
 msgstr "Ƥȧşş ḿẏ şḗŀḗƈŧīǿƞ ŧǿ ŧħīş ŧǿǿŀ ŭşīƞɠ Şŧȧƞḓȧřḓ Īƞƥŭŧ"
@@ -1973,6 +2049,10 @@ msgstr "Ƥřǿĵḗƈŧ Ɠřǿŭƥ"
 msgid "Project Group Files (*.ppg)|*.ppg|"
 msgstr "Ƥřǿĵḗƈŧ Ɠřǿŭƥ Ƒīŀḗş (*.ƥƥɠ)|*.ƥƥɠ|"
 
+#. Resource IDs: (16)
+msgid "Project Template:"
+msgstr "Ƥřǿĵḗƈŧ Ŧḗḿƥŀȧŧḗ:"
+
 #. Resource IDs: (14)
 msgid "Project Tools"
 msgstr "Ƥřǿĵḗƈŧ Ŧǿǿŀş"
@@ -1995,6 +2075,10 @@ msgstr "Ƥřǿĵḗƈŧş ȧƞḓ Ƥřǿĵḗƈŧ Ɠřǿŭƥş (*.ƥƞƥřǿĵ, 
 #. Resource IDs: (32902)
 msgid "Proper&ties..."
 msgstr "Ƥřǿƥḗř&ŧīḗş..."
+
+#. Resource IDs: (16)
+msgid "Properties"
+msgstr "Ƥřǿƥḗřŧīḗş"
 
 #. Resource IDs: (3605)
 msgid "Quit the application; prompts to save documents\nExit"
@@ -2148,6 +2232,10 @@ msgstr ""
 msgid "Save:"
 msgstr "Şȧṽḗ:"
 
+#. Resource IDs: (16)
+msgid "Scheme"
+msgstr "Şƈħḗḿḗ"
+
 #. Resource IDs: (1017, 65535)
 msgid "Scheme:"
 msgstr "Şƈħḗḿḗ:"
@@ -2213,6 +2301,10 @@ msgstr "Şḗḿī-ŧřȧƞşƥȧřḗƞŧ ẇħḗƞ ƞǿŧ ȧƈŧīṽḗ (Ẇ
 #. Resource IDs: (65535)
 msgid "Settings"
 msgstr "Şḗŧŧīƞɠş"
+
+#. Resource IDs: (15)
+msgid "Shortcut"
+msgstr "Şħǿřŧƈŭŧ"
 
 #. Resource IDs: (65535)
 msgid "Shortcut:"
@@ -2299,6 +2391,10 @@ msgstr "Şŧȧřŧ Ƥħřȧşḗ:"
 #. Resource IDs: (1051)
 msgid "Start with a new, &blank document"
 msgstr "Şŧȧřŧ ẇīŧħ ȧ ƞḗẇ, &ƀŀȧƞķ ḓǿƈŭḿḗƞŧ"
+
+#. Resource IDs: (16)
+msgid "Starting Phrase"
+msgstr "Şŧȧřŧīƞɠ Ƥħřȧşḗ"
 
 #. Resource IDs: (1001, 1002, 1003, 1004, 1008, 1027, 1085, 1086, 1087)
 msgid "Static"
@@ -2451,6 +2547,12 @@ msgstr "Ŧħḗ ƒǿŀḓḗř %s ḓǿḗş ƞǿŧ ḗẋīşŧ, ḓǿ ẏǿŭ 
 msgid "The regular expression is not valid."
 msgstr "Ŧħḗ řḗɠŭŀȧř ḗẋƥřḗşşīǿƞ īş ƞǿŧ ṽȧŀīḓ."
 
+#. Resource IDs: (16)
+#, c-format
+msgid "The selected method for this extension is currently associated with '%s'"
+msgstr ""
+"Ŧħḗ şḗŀḗƈŧḗḓ ḿḗŧħǿḓ ƒǿř ŧħīş ḗẋŧḗƞşīǿƞ īş ƈŭřřḗƞŧŀẏ ȧşşǿƈīȧŧḗḓ ẇīŧħ '%s'"
+
 #. Resource IDs: (2063)
 msgid "The specified project does not exist,\n would you like to create it?"
 msgstr ""
@@ -2522,6 +2624,10 @@ msgstr "Ŧřȧƞş&ƒǿřḿ"
 msgid "Transp&ose Lines"
 msgstr "Ŧřȧƞşƥ&ǿşḗ Ŀīƞḗş"
 
+#. Resource IDs: (16)
+msgid "Type Name"
+msgstr "Ŧẏƥḗ Ƞȧḿḗ"
+
 #. Resource IDs: (32911)
 msgid "U&ppercase"
 msgstr "Ŭ&ƥƥḗřƈȧşḗ"
@@ -2547,6 +2653,10 @@ msgid "Undo the last action\nUndo"
 msgstr ""
 "Ŭƞḓǿ ŧħḗ ŀȧşŧ ȧƈŧīǿƞ\n"
 "Ŭƞḓǿ"
+
+#. Resource IDs: (16)
+msgid "Unknown"
+msgstr "Ŭƞķƞǿẇƞ"
 
 #. Resource IDs: (261)
 msgid "Use &Tabs"
@@ -2579,6 +2689,10 @@ msgstr "Ŭşḗ ŧħḗ ḿȧīƞ ǿŭŧƥŭŧ ẇīƞḓǿẇ."
 #. Resource IDs: (32886)
 msgid "User Name (%u)"
 msgstr "Ŭşḗř Ƞȧḿḗ (%u)"
+
+#. Resource IDs: (17)
+msgid "Version"
+msgstr "Ṽḗřşīǿƞ"
 
 #. Resource IDs: (9)
 #, c-format
