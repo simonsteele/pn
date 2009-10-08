@@ -103,7 +103,7 @@ private:
 			i != folder->GetFolders().end();
 			++i)
 		{
-			if (folder->GetType() == ptMagicFolder)
+			if ((*i)->GetType() == ptMagicFolder)
 			{
 				writeMagicFolder(static_cast<MagicFolder*>(*i));
 			}
