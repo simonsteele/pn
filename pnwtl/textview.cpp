@@ -1564,7 +1564,7 @@ void CTextView::updateOverwriteTarget()
 	{
 		// User has stepped outside the target, time to clear the remaining target.
 		SetTarget(start, end);
-		ReplaceTarget(0, NULL);
+		ReplaceTarget(0, "");
 
 		// We're out of this mode now:
 		SetOvertype(false);
