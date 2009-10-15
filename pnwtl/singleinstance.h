@@ -20,6 +20,7 @@ public:
 	void ActivateOther();
 	bool AlreadyActive();
 	void SendParameters();
+	void SendParameters(const std::list<tstring>& args);
 
 	void AllowParameters();
 

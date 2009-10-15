@@ -149,11 +149,16 @@ void MultipleInstanceManager::SendParameters()
 		return;
 	}
 
+	std::list<tstring> args = GetCommandLineArgs();
+	SendParameters(args);
+}
+
+void MultipleInstanceManager::SendParameters(const std::list<tstring>& args)
+{
 	GArray<TCHAR> parmarray;
 	int size = 0;
 	int paSize = 0;
 	
-	std::list<tstring> args = GetCommandLineArgs();
 	for(std::list<tstring>::const_iterator i = args.begin(); i != args.end(); ++i)
 	{
 		paSize = (*i).size();

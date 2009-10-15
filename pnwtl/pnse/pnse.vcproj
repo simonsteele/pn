@@ -53,7 +53,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;UNICODE;_UNICODE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -116,7 +116,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops;..\common.vsprops"
 			UseOfATL="1"
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="2"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -144,7 +144,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL"
+				Optimization="3"
+				WholeProgramOptimization="true"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;UNICODE;_UNICODE"
+				StringPooling="true"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -173,7 +176,7 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				RandomizedBaseAddress="1"
+				RandomizedBaseAddress="0"
 				DataExecutionPrevention="0"
 				ImportLibrary="$(OutDir)/pnse.lib"
 				TargetMachine="1"
@@ -226,6 +229,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\singleinstance.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\stdafx.cpp"
 				>
 				<FileConfiguration
@@ -244,10 +251,6 @@
 						UsePrecompiledHeader="1"
 					/>
 				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\TalkToPN.cpp"
-				>
 			</File>
 		</Filter>
 		<Filter
@@ -269,10 +272,6 @@
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TalkToPN.h"
 				>
 			</File>
 		</Filter>
