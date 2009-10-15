@@ -26,7 +26,7 @@
 class CustomLexerFactory : public XMLParseState
 {
 	public:
-		CustomLexerFactory(const char* path);
+		CustomLexerFactory(const TCHAR* path);
 
 	protected:
 		bool Parse(LPCTSTR file);
@@ -43,8 +43,8 @@ class CustomLexerFactory : public XMLParseState
 		void doIdentifiers(const XMLAttributes& atts);
 		void doIdentifiers2(const XMLAttributes& atts);
 		
-		void SetCommentTypeCode(LPCTSTR pVal, ECodeLength& length, 
-			TCHAR* code, TCHAR*& pCode, CommentType_t* type);
+		void SetCommentTypeCode(LPCSTR pVal, ECodeLength& length, 
+			char* code, char*& pCode, CommentType_t* type);
 		void doCommentType(int type, const XMLAttributes& atts);
 
 	protected:
