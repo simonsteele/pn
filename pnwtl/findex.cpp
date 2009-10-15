@@ -220,14 +220,14 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	rc.set(GetDlgItem(IDC_FINDTEXT_DUMMY), *this);
 	rc.bottom = rc.top + (size.cy * 10);
 
-	m_FindTextCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VSCROLL | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO,
-		_T("Find"), IDC_FINDTEXT_DUMMY);
+	m_FindTextCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VSCROLL | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO, _T("Find"), IDC_FINDTEXT_DUMMY);
+	m_FindTextCombo.SetWindowPos(GetDlgItem(IDC_FINDTEXT_LABEL), rc, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 
 	rc.set(GetDlgItem(IDC_REPLACETEXT_DUMMY), *this);
 	rc.bottom = rc.top + (size.cy * 10);
 
-	m_ReplaceTextCombo.Create(m_hWnd, rc, _T("REPLACETEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_REPLACETEXT_COMBO,
-		_T("Replace"), IDC_REPLACETEXT_DUMMY);
+	m_ReplaceTextCombo.Create(m_hWnd, rc, _T("REPLACETEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_REPLACETEXT_COMBO, _T("Replace"), IDC_REPLACETEXT_DUMMY);
+	m_ReplaceTextCombo.SetWindowPos(GetDlgItem(IDC_REPLACETEXT_LABEL), rc, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 
 	// Store the position of the second combo.
 	m_group2Top = rc.top;
@@ -237,6 +237,7 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	m_FindWhereCombo.Create(m_hWnd, rc, _T("FINDWHERECOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDWHERE_COMBO,
 		IDC_FINDWHERE_DUMMY);
+	m_FindWhereCombo.SetWindowPos(GetDlgItem(IDC_FINDWHERE_LABEL), rc, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 
 	m_FindWhereCombo.InsertString(0, LS(IDS_CURRENTFILE));
 	m_FindWhereCombo.InsertString(1, LS(IDS_CURRENTFOLDER));
