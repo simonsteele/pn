@@ -2,7 +2,7 @@
  * @file projectview.h
  * @brief View to display project trees.
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -62,6 +62,7 @@ public:
 		COMMAND_ID_HANDLER(ID_PROJECT_SAVEPROJECT, OnSaveProject)
 		COMMAND_ID_HANDLER(ID_PROJECT_REFRESH, OnRefresh)
 		COMMAND_ID_HANDLER(ID_PROJECT_MAGICADDFILE, OnMagicAddFile)
+		COMMAND_ID_HANDLER(ID_PROJECT_MAGICADDFOLDER, OnMagicAddFolder)
 		COMMAND_ID_HANDLER(ID_PROJECT_OPENFOLDER, OnMagicOpenFolder)
 		COMMAND_ID_HANDLER(ID_PROJECT_SHELLOPEN, OnShellOpenFile)
 		COMMAND_ID_HANDLER(ID_PROJECT_RENAME, OnBeginRenameItem)
@@ -87,7 +88,7 @@ public:
 
 	virtual void	OnProjectItemChange(Projects::PROJECT_CHANGE_TYPE changeType, Projects::Folder* changeContainer, Projects::ProjectType* changeItem);
 
-protected:
+private:
 	HTREEITEM	addFileNode(Projects::File* file, HTREEITEM hParent, HTREEITEM hInsertAfter);
 	HTREEITEM	addFolderNode(Projects::Folder* folder, HTREEITEM hParent, HTREEITEM hInsertAfter);
 	void		buildTree();
@@ -130,7 +131,6 @@ protected:
 	static int CALLBACK CompareItem(LPARAM lParam1, LPARAM lParam2, LPARAM caseSensitive);
 	static int CALLBACK CompareItemSortAll(LPARAM lParam1, LPARAM lParam2, LPARAM caseSensitive);
 
-protected:
 	// IDropTarget Handlers
 	HRESULT		OnDragEnter(LPDATAOBJECT /*pDataObject*/, DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/);
 	HRESULT		OnDragOver(DWORD /*dwKeyState*/, POINTL /*pt*/, LPDWORD /*pdwEffect*/);
@@ -159,6 +159,7 @@ protected:
 	LRESULT		OnSaveProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnRefresh(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnMagicAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT	    OnMagicAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnMagicOpenFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnShellOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT		OnBeginRenameItem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -176,7 +177,28 @@ protected:
 	LRESULT		OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT		OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
-protected:
+	template <class TProjectItem>
+	TProjectItem* GetProjectItem(HTREEITEM node)
+	{
+		PNASSERT(node != NULL);
+		return reinterpret_cast<TProjectItem*>(GetItemData(node));
+	}
+
+	template <class TProjectItem>
+	TProjectItem* CastProjectItem(Projects::ProjectType* other)
+	{
+		PNASSERT(other != NULL);
+		PNASSERT(ProjectTypeTraits<TProjectItem>::CanChangeFrom(other->GetType()));
+		return static_cast<TProjectItem*>(other);
+	}
+
+	template <class TProjectItem>
+	TProjectItem* GetLastItem()
+	{
+		return CastProjectItem<TProjectItem>(lastItem);
+	}
+
+private:
 	HTREEITEM				hLastItem;
 	ShellImageList*			shellImages;
 	Projects::ProjectType*	lastItem;
@@ -197,6 +219,7 @@ protected:
 	std::list<HTREEITEM>	dropSelectedItems;
 	CComObject<DropTarget>* m_pDropTarget;
 	ShellContextMenu*		m_explorerMenu;
+	bool					m_addingMagicFolder;
 };
 
 class CProjectDocker : public CWindowImpl<CProjectDocker>// CPNDockingWindow<CProjectDocker>

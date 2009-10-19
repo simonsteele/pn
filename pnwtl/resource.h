@@ -201,6 +201,7 @@
 #define IDR_POPUP_OUTPUT                257
 #define IDS_HDR_EXTENSIONS_ENABLED      257
 #define ID_PROJECT_DELETE               258
+#define IDS_PROJECTS_TEMPMAGICFOLDER    258
 #define ID_OUTPUT_CLEAR                 259
 #define ID_OUTPUT_HIDE                  260
 #define ID_TOOLS_USETABS                261

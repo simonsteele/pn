@@ -528,7 +528,7 @@ IDR_POPUP_PROJECTMFOLDER MENU
 BEGIN
     POPUP "PROJECT"
     BEGIN
-        MENUITEM "&Add New Folder",             ID_PROJECT_MAGICADDFOLDER, INACTIVE
+        MENUITEM "&Add New Folder",             ID_PROJECT_MAGICADDFOLDER
         MENUITEM "&Add New File...",            ID_PROJECT_MAGICADDFILE
         MENUITEM SEPARATOR
         MENUITEM "&Open All Files",             ID_PROJECT_OPENALLFILES
@@ -1856,6 +1856,7 @@ STRINGTABLE
 BEGIN
     IDS_HDR_EXTENSIONS_VERSION "Version"
     IDS_HDR_EXTENSIONS_ENABLED "Enabled"
+    IDS_PROJECTS_TEMPMAGICFOLDER "New Folder"
     ID_FILE_REVERT          "Revert this document to the current saved state\nRevert"
 END
 

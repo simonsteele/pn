@@ -35,16 +35,9 @@ CProjectTreeCtrl::CProjectTreeCtrl() :
 	dragging(false),
 	processNotifications(true),
 	shellImages(new ShellImageList()),
-	m_explorerMenu(new ShellContextMenu())
+	m_explorerMenu(new ShellContextMenu()),
+	m_addingMagicFolder(false)
 {
-	workspace = NULL;
-	lastItem = NULL;
-	m_pDropTarget = NULL;
-
-	dragging = false;
-
-	processNotifications = true;
-
 	projectIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_PROJECTFOLDER)) );
 	badProjectIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_BADPROJECT)) );
 	workspaceIcon = shellImages->AddIcon( ::LoadIcon( _Module.m_hInst, MAKEINTRESOURCE(IDI_WORKSPACE)) );
@@ -111,7 +104,6 @@ File* CProjectTreeCtrl::GetSelectedFile()
 	return NULL;
 }
 
-
 void CProjectTreeCtrl::SetWorkspace(Projects::Workspace* ws)
 {
 	if(workspace != NULL)
@@ -157,12 +149,12 @@ void CProjectTreeCtrl::OnProjectItemChange(PROJECT_CHANGE_TYPE changeType, Proje
 				
 				if(hParent != NULL)
 				{
-					addFileNode(static_cast<File*>( changeItem ), hParent, hLastFolder);
+					addFileNode(CastProjectItem<File>(changeItem), hParent, hLastFolder);
 					SortChildren(hParent);
 					Expand(hParent);
 				}
 			}
-			else if(changeItem->GetType() == ptFolder)
+			else if(changeItem->GetType() == ptFolder || changeItem->GetType() == ptMagicFolder)
 			{
 				PNASSERT(changeContainer != NULL);
 				HTREEITEM hParent = findFolder(changeContainer);
@@ -172,7 +164,7 @@ void CProjectTreeCtrl::OnProjectItemChange(PROJECT_CHANGE_TYPE changeType, Proje
 
 				if(hParent != NULL)
 				{
-					Projects::Folder* folder = static_cast<Projects::Folder*>( changeItem );
+					Projects::Folder* folder = CastProjectItem<Projects::Folder>(changeItem);
 					
 					FOLDER_LIST fl;
 					fl.push_back(folder);
@@ -271,23 +263,17 @@ void CProjectTreeCtrl::buildTree()
 	// Image, SelImage, hParent, hInsertAfter
 	SetRedraw(FALSE);
 
-	try
-	{
-		HTREEITEM hTopItem = InsertItem( workspace->GetName(), workspaceIcon, workspaceIcon, NULL, NULL );
-		SetItemData(hTopItem, reinterpret_cast<DWORD_PTR>( workspace ));
-		const PROJECT_LIST& projects = workspace->GetProjects();
+	HTREEITEM hTopItem = InsertItem( workspace->GetName(), workspaceIcon, workspaceIcon, NULL, NULL );
+	SetItemData(hTopItem, reinterpret_cast<DWORD_PTR>( workspace ));
+	const PROJECT_LIST& projects = workspace->GetProjects();
 
-		for(PROJECT_LIST::const_iterator i = projects.begin(); i != projects.end(); ++i)
-		{
-			buildProject(hTopItem, (*i));
-		}
-
-		Expand(hTopItem);
-		Select(hTopItem, TVGN_CARET);
-	}
-	catch(...)
+	for(PROJECT_LIST::const_iterator i = projects.begin(); i != projects.end(); ++i)
 	{
+		buildProject(hTopItem, (*i));
 	}
+
+	Expand(hTopItem);
+	Select(hTopItem, TVGN_CARET);
 
 	SetRedraw(TRUE);
 }
@@ -586,22 +572,26 @@ void CProjectTreeCtrl::handleRemove()
 	if(lastItem == NULL)
 		return;
 
+	PROJECT_TYPE ptypeCheck = lastItem->GetType();
+
 	// We can't delete lots of items and still be in the middle of using the
 	// GetFirst/GetNextSelectedItem loop because the current selection will
 	// change. 
 	std::list<HTREEITEM> selectedItems;
 	HTREEITEM sel = GetFirstSelectedItem();
-	while(sel)
+	while (sel)
 	{
+		if (GetProjectItem<ProjectType>(sel)->GetType() != ptypeCheck)
+		{
+			::MessageBeep(MB_ICONASTERISK);
+			return;
+		}
+
 		selectedItems.push_front(sel);
 		sel = GetNextSelectedItem(sel);
 	}
 
 	std::list<HTREEITEM>::iterator i = selectedItems.begin();
-
-	// just to be safe we cache the selected list and
-	// clear the selection to be safe.
-	//ClearSelection();
 
 	switch(lastItem->GetType())
 	{
@@ -612,6 +602,13 @@ void CProjectTreeCtrl::handleRemove()
 			{
 				File* pF = reinterpret_cast<File*>( GetItemData((*i)) );
 				Projects::Folder* pFolder = pF->GetFolder();
+				
+				// We don't remove from magic folders:
+				if (pFolder->GetType() == ptMagicFolder)
+				{
+					continue;
+				}
+
 				pFolder->RemoveFile(pF);
 			}
 		}
@@ -760,7 +757,7 @@ void CProjectTreeCtrl::handleRightClick(LPPOINT pt)
 			if (tvhti.flags & (TVHT_ONITEM|TVHT_ONITEMRIGHT))
 			{
 
-				ProjectType* ptype = reinterpret_cast<ProjectType*>( GetItemData(tvhti.hItem) );
+				ProjectType* ptype = GetProjectItem<ProjectType>(tvhti.hItem);
 				hLastItem = tvhti.hItem;
 				lastItem = ptype;
 
@@ -912,15 +909,25 @@ LRESULT CProjectTreeCtrl::OnEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 
 	// Edit cancelled...
 	if(ptvdi->item.pszText == NULL)
+	{
+		if (m_addingMagicFolder)
+		{
+			m_addingMagicFolder = false;
+
+			Projects::MagicFolder* pF = GetProjectItem<MagicFolder>(ptvdi->item.hItem);
+			pF->GetParent()->RemoveChild(pF);
+		}
+
 		return 0;
+	}
 	
-	ProjectType* type = reinterpret_cast<ProjectType*>( GetItemData(ptvdi->item.hItem) );
+	ProjectType* type = GetProjectItem<ProjectType>(ptvdi->item.hItem);
 	switch( type->GetType() )
 	{
 		case ptProject:
 		case ptFolder:
 		{
-			Projects::Folder* pF = static_cast<Projects::Folder*>(type);
+			Projects::Folder* pF = CastProjectItem<Projects::Folder>(type);
 			pF->SetName(ptvdi->item.pszText);
 			
 			PNASSERT(ptvdi->item.mask == TVIF_TEXT);
@@ -930,8 +937,32 @@ LRESULT CProjectTreeCtrl::OnEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 
 		case ptMagicFolder:
 		{
-			Projects::MagicFolder* pF = static_cast<Projects::MagicFolder*>(type);
-			if (pF->GetParent() == NULL || pF->GetParent()->GetType() != ptMagicFolder)
+			Projects::MagicFolder* pF = CastProjectItem<Projects::MagicFolder>(type);
+			if (m_addingMagicFolder)
+			{
+				m_addingMagicFolder = false;
+
+				CPathName path(pF->GetFullPath());
+				path.ChangeLastElement(ptvdi->item.pszText);
+
+				if (::DirExists(path.c_str()))
+				{
+					pF->GetParent()->RemoveChild(pF);
+					return 0;
+				}
+				else if (!CreateDirectoryRecursive(path.c_str()))
+				{
+					pF->GetParent()->RemoveChild(pF);
+					return 0;
+				}
+
+				pF->SetName(ptvdi->item.pszText);
+				pF->SetFullPath(path.c_str());
+				
+				PNASSERT(ptvdi->item.mask == TVIF_TEXT);
+				SetItem(&ptvdi->item);
+			}
+			else if (pF->GetParent() == NULL || pF->GetParent()->GetType() != ptMagicFolder)
 			{
 				// This is the root magic folder, renaming just changes the display name.
 				pF->SetName(ptvdi->item.pszText);
@@ -954,7 +985,7 @@ LRESULT CProjectTreeCtrl::OnEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
 
 		case ptFile:
 		{
-			File* pF = static_cast<File*>(type);
+			File* pF = CastProjectItem<File>(type);
 			if( pF->Rename(ptvdi->item.pszText) )
 			{
 				PNASSERT(ptvdi->item.mask == TVIF_TEXT);
@@ -1131,17 +1162,13 @@ LRESULT CProjectTreeCtrl::OnAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 	if (lastItem->GetType() == ptFolder || lastItem->GetType() == ptProject)
 	{
 		Projects::Folder* folder = static_cast<Projects::Folder*>(lastItem);
-		Projects::Folder* newFolder = new Projects::Folder(_T("New Folder"), folder->GetBasePath());
+		Projects::Folder* newFolder = new Projects::Folder(LS(IDS_PROJECTS_TEMPMAGICFOLDER), folder->GetBasePath());
 
 		// Add the folder (this will add it to the tree through notifications)
 		folder->AddChild(newFolder);
 		
 		HTREEITEM hFolderNode = findFolder(newFolder);
 		EditLabel(hFolderNode);
-	}
-	else if(lastItem->GetType() == ptMagicFolder)
-	{
-		// TODO
 	}
 
 	return 0;
@@ -1168,7 +1195,7 @@ LRESULT CProjectTreeCtrl::OnAddMagicFolder(WORD /*wNotifyCode*/, WORD /*wID*/, H
 		processNotifications = false;
 
 		// Add a Magic Folder...
-		Projects::Folder* folder = static_cast<Projects::Folder*>(lastItem);
+		Projects::Folder* folder = GetLastItem<Projects::Folder>();
 		Projects::MagicFolder* newFolder = new Projects::MagicFolder(pn.GetDirectoryName().c_str(), pn.c_str());
 
 		newFolder->SetFilter( wiz2.GetFileFilter() );
@@ -1199,7 +1226,7 @@ LRESULT CProjectTreeCtrl::OnOpenAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 	if(lastItem->GetType() == ptWorkspace)
 	{
-		Workspace* pW = static_cast<Workspace*>(lastItem);
+		Workspace* pW = GetLastItem<Workspace>();
 		
 		for(PROJECT_LIST::const_iterator i = pW->GetProjects().begin();
 			i != pW->GetProjects().end();
@@ -1213,7 +1240,7 @@ LRESULT CProjectTreeCtrl::OnOpenAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 		HTREEITEM sel = GetFirstSelectedItem();
 		while(sel)
 		{
-			Projects::Folder* pF = reinterpret_cast<Projects::Folder*>( GetItemData(sel) );
+			Projects::Folder* pF = GetProjectItem<Projects::Folder>(sel);
 			
 			openAll(pF);
 
@@ -1241,7 +1268,6 @@ LRESULT CProjectTreeCtrl::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 	switch(lastItem->GetType())
 	{
-		case ptMagicFile:
 		case ptFile:
 		{
 			// We can't delete lots of items and still be in the middle of using the
@@ -1258,7 +1284,7 @@ LRESULT CProjectTreeCtrl::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 			for(std::list<HTREEITEM>::iterator i = selectedItems.begin();
 				i != selectedItems.end(); ++i)
 			{
-				File* pF = reinterpret_cast<File*>( GetItemData((*i)) );
+				File* pF = GetProjectItem<File>((*i));
 				Projects::Folder* pFolder = pF->GetFolder();
 				tstring filename = pF->GetFileName();
 				tstring askstr = _T("Are you sure you wish to delete:\n") + filename;
@@ -1289,7 +1315,7 @@ LRESULT CProjectTreeCtrl::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 			for(std::list<HTREEITEM>::const_iterator i = selectedItems.begin();
 				i != selectedItems.end(); ++i)
 			{
-				MagicFolder* pMF = reinterpret_cast<MagicFolder*>( GetItemData((*i)) );
+				MagicFolder* pMF = GetProjectItem<MagicFolder>((*i));
 				tstring msg = _T("Are you sure you wish to delete the folder ");
 				msg += pMF->GetFullPath();
 				msg += _T(" and all its contents?");
@@ -1320,7 +1346,7 @@ LRESULT CProjectTreeCtrl::OnSetActiveProject(WORD /*wNotifyCode*/, WORD /*wID*/,
 	if(lastItem->GetType() != ptProject)
 		return 0;
 
-	workspace->SetActiveProject( static_cast<Projects::Project*>(lastItem) );
+	workspace->SetActiveProject(GetLastItem<Projects::Project>());
 
 	return 0;
 }
@@ -1495,6 +1521,34 @@ LRESULT	CProjectTreeCtrl::OnMagicAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	return 0;
 }
 
+LRESULT	CProjectTreeCtrl::OnMagicAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if (lastItem->GetType() != ptMagicFolder)
+	{
+		return 0;
+	}
+
+	m_addingMagicFolder = true;
+
+	Projects::MagicFolder* mf = static_cast<Projects::MagicFolder*>(lastItem);
+	tstring path = mf->GetFullPath();
+	path += LS(IDS_PROJECTS_TEMPMAGICFOLDER);
+	
+	Projects::MagicFolder* temp = new Projects::MagicFolder(LS(IDS_PROJECTS_TEMPMAGICFOLDER), path.c_str());
+	temp->SetFilter(mf->GetFilter());
+	temp->SetFolderFilter(mf->GetFolderFilter());
+	temp->SetGotContents(true);
+	mf->AddChild(temp);
+
+	// Adding the child should have resulted in a node being added to the tree:
+	HTREEITEM hTempFolder = findItem(temp, hLastItem);
+	
+	// Make the user edit the folder name:
+	EditLabel(hTempFolder);
+
+	return 0;
+}
+
 LRESULT CProjectTreeCtrl::OnMagicOpenFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(lastItem->GetType() != ptMagicFolder)
@@ -1520,7 +1574,9 @@ LRESULT CProjectTreeCtrl::OnShellOpenFile(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 LRESULT CProjectTreeCtrl::OnBeginRenameItem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(hLastItem != NULL)
+	{
 		EditLabel(hLastItem);
+	}
 
 	return 0;
 }
