@@ -514,7 +514,7 @@ void ToolOwner::RunTool(ToolWrapperPtr& pTool, ToolOwnerID OwnerID)
 	else if (pTool->SaveOne())
 	{
 		CChildFrame* pChild = pTool->GetActiveChild();
-		if (pChild)
+		if (pChild && pChild->GetModified())
 		{
 			pChild->Save(true); // save and notify change
 		}
