@@ -378,10 +378,14 @@ tstring& CFileName::Sanitise()
 
 	m_FileName = &res[0];
 
-	PathCanonicalize(&res[0], m_FileName.c_str());
-	m_FileName = &res[0];
-	GetLongPathName(m_FileName.c_str(), &res[0], bufsize);
-	m_FileName = &res[0];
+	if (m_FileName.length() >= 2 && m_FileName[1] == _T(':') || m_FileName[0] == _T('\\'))
+	{
+		// Ask windows to make this path better for us:
+		PathCanonicalize(&res[0], m_FileName.c_str());
+		m_FileName = &res[0];
+		GetLongPathName(m_FileName.c_str(), &res[0], bufsize);
+		m_FileName = &res[0];
+	}
 
 	return m_FileName;
 }
