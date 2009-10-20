@@ -213,7 +213,7 @@ protected:
 	}
 
 private:
-	int m_ctrlid;
+	DWORD m_ctrlid;
 };
 
 //template <class TBase = CScintilla>

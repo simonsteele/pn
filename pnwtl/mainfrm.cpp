@@ -314,7 +314,7 @@ bool CMainFrame::closeAll(bool shuttingDown)
 
 bool CMainFrame::OnSchemeNew(LPVOID data)
 {	
-	CChildFrame* pChild = m_ChildFactory.WithScheme(reinterpret_cast<Scheme*>(data));
+	m_ChildFactory.WithScheme(reinterpret_cast<Scheme*>(data));
 
 	return true; // we handled it.
 }
@@ -1174,12 +1174,6 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	LoadGUIState();
-
-	bool bHaveLine = false;
-	bool bHaveCol = false;
-	bool bHaveScheme = false;
-	int iLine = 0, iCol = 0;
-	Scheme* pScheme = NULL;
 
 	handleCommandLine(*m_cmdLineArgs);
 
@@ -2640,7 +2634,7 @@ void CMainFrame::PerformChildEnum(SChildEnumStruct* s)
 
 void CMainFrame::PerformChildEnum(lpChildEnumFn pFunction)
 {
-	SChildEnumStruct s = {this, pFunction};
+	SChildEnumStruct s = {pFunction, this};
 	EnumChildWindows(m_hWndMDIClient, ChildEnumProc, reinterpret_cast<LPARAM>(&s));
 }
 

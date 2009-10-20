@@ -19,7 +19,7 @@ typedef enum { cdtCommand, cdtExtended, cdtScintilla } CommandDetailsType;
 typedef struct CommandDetails_tag
 {
 	CommandDetailsType type;
-	int command;
+	DWORD command;
 } CommandDetails;
 
 typedef struct ExtendedCommandDetails_tag : CommandDetails

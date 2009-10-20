@@ -184,10 +184,10 @@ bool SchemeRecorder::CheckNecessary(long Msg, WPARAM wParam, LPARAM lParam)
 	switch (Msg)
 	{
 		case SCI_STYLESETFORE:
-			res = lParam != m_DefStyle.ForeColor;
+			res = (COLORREF)lParam != m_DefStyle.ForeColor;
 			break;
 		case SCI_STYLESETBACK:
-			res = lParam != m_DefStyle.BackColor;
+			res = (COLORREF)lParam != m_DefStyle.BackColor;
 			break;
 		case SCI_STYLESETBOLD:
 			res = (lParam != 0) != m_DefStyle.Bold;

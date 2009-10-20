@@ -237,8 +237,6 @@ CMRUMenu::~CMRUMenu()
 void CMRUMenu::UpdateMenu()
 {
 	CSMenuHandle m(m_Menu.GetHandle());
-	TCHAR* pszBuf = NULL;
-	TCHAR* pszItemText = NULL;
 
 	UINT id;
 	int insertPoint = 0;
@@ -470,8 +468,6 @@ DelObject* DeletionManager::s_pLast = NULL;
 
 std::list<tstring> GetCommandLineArgs()
 {
-	int lastArg = __argc - 1;
-
 	std::list<tstring> params;
 
 	TCHAR curDir[MAX_PATH+1];

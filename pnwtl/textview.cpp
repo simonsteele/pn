@@ -1554,12 +1554,9 @@ void CTextView::updateOverwriteTarget()
 	int start = onAt0 ? 0 : SPerform(SCI_INDICATOREND, INDIC_OVERWRITETARGET, 0);
 	int end = SPerform(SCI_INDICATOREND, INDIC_OVERWRITETARGET, start);
 	
-	int line = LineFromPosition(start);
-
 	// Find our current position:
 	int current = GetCurrentPos();
-	int currentLine = LineFromPosition(line);
-
+	
 	if (current < start || current > end)
 	{
 		// User has stepped outside the target, time to clear the remaining target.

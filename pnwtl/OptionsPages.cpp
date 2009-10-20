@@ -63,7 +63,7 @@ void COptionsPageEditDefaults::OnInitialise()
 	CComboBox cb(GetDlgItem(IDC_OPT_LECOMBO));
 	for(int i = 0; i < cb.GetCount(); i++)
 	{
-		if(cb.GetItemData(i) == m_SaveFormat)
+		if(cb.GetItemData(i) == (DWORD_PTR)m_SaveFormat)
 		{
 			cb.SetCurSel(i);
 			break;
@@ -74,7 +74,7 @@ void COptionsPageEditDefaults::OnInitialise()
 	cb.Attach(GetDlgItem(IDC_OPT_CPCOMBO));
 	for(int i = 0; i < cb.GetCount(); i++)
 	{
-		if(cb.GetItemData(i) == m_CodePage)
+		if(cb.GetItemData(i) == (DWORD_PTR)m_CodePage)
 		{
 			cb.SetCurSel(i);
 			break;
@@ -85,7 +85,7 @@ void COptionsPageEditDefaults::OnInitialise()
 	cb.Attach(GetDlgItem(IDC_OPT_CSCOMBO));
 	for(int i = 0; i < cb.GetCount(); i++)
 	{
-		if(cb.GetItemData(i) == m_CharSet)
+		if(cb.GetItemData(i) == (DWORD_PTR)m_CharSet)
 		{
 			cb.SetCurSel(i);
 			break;

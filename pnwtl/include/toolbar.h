@@ -300,8 +300,6 @@ private:
 	 */
 	LRESULT OnToolbarReset(WPARAM /*wParam*/, LPNMHDR lParam, BOOL& /*bHandled*/)
 	{
-		LPNMTOOLBAR lpnmTB = reinterpret_cast<LPNMTOOLBAR>(lParam);
-
 		int buttons = GetButtonCount();
 		while (buttons)
 		{
@@ -321,8 +319,6 @@ private:
 	 */
 	LRESULT OnToolbarEndAdjust(WPARAM /*wParam*/, LPNMHDR lParam, BOOL& /*bHandled*/)
 	{
-		LPNMTOOLBAR lpnmTB = reinterpret_cast<LPNMTOOLBAR>(lParam);
-
 		// Save...
 		saveButtons();
 
@@ -616,7 +612,7 @@ private:
 					state.btnInfoSize == sizeof(TBBUTTON))
 				{
 					std::vector<TBBUTTON> buttons(state.buttonCount);
-					if (fread(&buttons[0], sizeof(TBBUTTON), state.buttonCount, f) == state.buttonCount)
+					if (fread(&buttons[0], sizeof(TBBUTTON), state.buttonCount, f) == (size_t)state.buttonCount)
 					{
 						// Fix up the titles:
 						for (size_t i = 0; i < buttons.size(); i++)

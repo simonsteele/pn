@@ -1374,7 +1374,6 @@ LRESULT CChildFrame::OnGotoLine(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 		std::string fullText(&lineBuf[0]);
 		std::string methodName(reinterpret_cast<char*>(wParam));
 		int i = fullText.find(methodName);
-		int j = methodName.size();
 		int pos = GetLinePosition((int)lParam); 
 		GetTextView()->SetSel((long)(pos + i),(long)(pos + i + methodName.size()));
 	}
@@ -1490,7 +1489,6 @@ LRESULT CChildFrame::OnViewFileProps(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 
 LRESULT CChildFrame::OnProjectAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	int a = 0;
 	return 0;
 }
 
@@ -1818,7 +1816,7 @@ void CChildFrame::CheckAge()
 	{
 		FileUtil::FileAttributes_t atts;
 		
-		uint64_t age = ~0;
+		uint64_t age = (uint64_t)~0;
 		bool readOnly = false;
 		if (FileUtil::GetFileAttributes(m_spDocument->GetFileName(), atts))
 		{

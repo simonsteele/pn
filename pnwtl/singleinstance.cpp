@@ -88,7 +88,9 @@ void MultipleInstanceManager::ActivateOther()
 		return;
 
 	DWORD dwRecipients = BSM_APPLICATIONS;
-	long res = m_pfnBSM(
+	
+	//long res = 
+	m_pfnBSM(
 		BSF_ALLOWSFW | BSF_FORCEIFHUNG | BSF_IGNORECURRENTTASK,
 		&dwRecipients, 
 		m_uiMessage,

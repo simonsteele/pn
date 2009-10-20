@@ -49,7 +49,6 @@ void CPNMDIClient::ShowFindBar(bool bShow)
 	int tah = m_MdiTabOwner.GetTabAreaHeight();
 	int fbh = m_findBar->GetDesiredHeight();
 
-	int offset = 0;
 	if(bShow)
 	{
 		// Don't bother doing all this if we're already visible.

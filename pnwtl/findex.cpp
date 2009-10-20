@@ -210,7 +210,7 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	// Move the line that goes beneath the tab control.
 	CStatic s(GetDlgItem(IDC_FINDEX_LINE));
 	ClientRect rc(s, *this);
-	int height = rc.Height();
+
 	rc.top = rcTabs.bottom + 1;
 	s.SetWindowPos(HWND_TOP, rc, SWP_SIMPLEMOVE);
 
@@ -1013,9 +1013,9 @@ void CFindExDialog::updateLayout()
 {
 	DoDataExchange(TRUE);
 
-	int restTop;
-	const UINT* checkboxes = NULL;
-	int nCheckboxes = 0;
+	int restTop(0);
+	const UINT* checkboxes(NULL);
+	int nCheckboxes(0);
 
 	if(m_type == m_lastType)
 		return;

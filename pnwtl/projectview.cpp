@@ -160,8 +160,6 @@ void CProjectTreeCtrl::OnProjectItemChange(PROJECT_CHANGE_TYPE changeType, Proje
 				HTREEITEM hParent = findFolder(changeContainer);
 				PNASSERT(hParent != NULL);
 
-				HTREEITEM hLastFolder = getLastFolderItem(hParent);
-
 				if(hParent != NULL)
 				{
 					Projects::Folder* folder = CastProjectItem<Projects::Folder>(changeItem);
@@ -1043,8 +1041,6 @@ LRESULT	CProjectTreeCtrl::OnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 	RECT rcItem;
 	TreeView_GetItemRect(m_hWnd, lpnmtv->itemNew.hItem, &rcItem, TRUE);
 
-	DWORD dwIndent = TreeView_GetIndent(m_hWnd);
-
 	if(ImageList_BeginDrag(hImageList, 0, 0, 0) == 0)
 		::OutputDebugString(_T("Failed BeginDrag\n"));
 
@@ -1203,7 +1199,6 @@ LRESULT CProjectTreeCtrl::OnAddMagicFolder(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 		folder->AddChild(newFolder);
 			
-		HTREEITEM hInsertAfter = getLastFolderItem(hLastItem);
 		FOLDER_LIST fl;
 		fl.insert(fl.end(), newFolder);
 		ProjectViewState viewState;
@@ -2243,15 +2238,11 @@ bool CProjectTreeCtrl::handleProjectDrop(Projects::Project* target)
 			DeleteItem( (*i) );
 		}
 
-		HTREEITEM hParent = GetParentItem(hDropTargetItem);
-		HTREEITEM hInsertAfter = hDropTargetItem;
 		Project* pLast = target;
 
 		// Then re-add them, and move them in the projects list at the same time.
 		for(PROJECT_LIST::iterator j = projects.begin(); j != projects.end(); ++j)
 		{
-			//hInsertAfter = buildProject(hParent, (*j), hInsertAfter);
-			
 			workspace->MoveProject((*j), pLast);
 			pLast = (*j);
 		}
@@ -2300,8 +2291,6 @@ bool CProjectTreeCtrl::handleFolderDrop(Projects::Folder* target)
 			// Move the folder object...
 			Projects::Folder* pFolder = static_cast<Projects::Folder*>( ptSelItem );
 			Projects::Folder::MoveChild(pFolder, target);
-
-			bool bExpanded = (GetItemState((*i), TVIS_EXPANDED) & TVIS_EXPANDED) != 0;
 
 			// Move the tree item(s)...
 			DeleteItem( (*i) );
@@ -2482,7 +2471,6 @@ Projects::Workspace* CProjectDocker::GetWorkspace()
 
 LRESULT CProjectDocker::OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 {
-	LPNMTREEVIEW pN = reinterpret_cast<LPNMTREEVIEW>(pnmh);
 	if(pnmh->code == NM_DBLCLK || pnmh->code == NM_RETURN)
 	{
 		File* file = m_view.GetSelectedFile();

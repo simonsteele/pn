@@ -35,7 +35,7 @@ uint64_t FileAge(LPCTSTR FileName)
 		return *((uint64_t*)&data.ftLastWriteTime);
 	}
 	
-	return ~0;
+	return (uint64_t)~0;
 
 	/*HANDLE Handle;
 	WIN32_FIND_DATA FindData;

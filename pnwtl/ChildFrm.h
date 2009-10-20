@@ -180,7 +180,7 @@ public:
 
 	struct _PoorMansUIEntry
 	{
-		int nID;
+		UINT nID;
 		WORD wState;
 	};
 

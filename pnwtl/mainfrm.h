@@ -56,8 +56,8 @@ typedef void(__stdcall CMainFrame::*lpChildEnumFn)(CChildFrame* pFrame, tagEnumC
 
 typedef struct tagEnumChildrenStruct
 {
-	CMainFrame* pMainFrame;
 	lpChildEnumFn pFunction;
+	CMainFrame* pMainFrame;
 } SChildEnumStruct;
 
 typedef struct tagCloseStruct : public tagEnumChildrenStruct
@@ -67,16 +67,16 @@ typedef struct tagCloseStruct : public tagEnumChildrenStruct
 
 typedef struct tagWorkspaceCloseStruct : public tagCloseStruct
 {
-	bool bInProjectGroupOnly;
 	Projects::Workspace* pWorkspace;
 	std::list<CChildFrame*> FoundWindows;
+	bool bInProjectGroupOnly;
 } SWorkspaceWindowsStruct;
 
 typedef struct tagIsOpenStruct : public tagEnumChildrenStruct
 {
-	bool bFound;
 	LPCTSTR pszFilename;
 	CChildFrame* pMatch;
+	bool bFound;
 } SIsOpen;
 
 /**

@@ -182,9 +182,6 @@ LRESULT COptionsPageKeyboard::OnHotKeyChanged(WORD /*wNotifyCode*/, WORD /*wID*/
 	real_modifiers = HKToAccelMod(modifiers);
 
 	// Look for commands with this key assigned...
-	const KeyToCommand* mappings = m_pKeyMap->GetMappings();
-	size_t noof_mappings(m_pKeyMap->GetCount());
-
 	tstring command_name;
 
 	int command = m_pKeyMap->Find(keycode, real_modifiers);

@@ -735,9 +735,7 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 
 int CScintillaImpl::FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn matchHandler)
 {
-	int				bRet = fnNotFound;
-	bool			checkFoundPos = true;
-
+	int	bRet = fnNotFound;
 	std::string localFindText;
 
 	// If we're in UTF-8 mode we have a go at making the correct find string

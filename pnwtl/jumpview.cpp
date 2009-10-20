@@ -336,7 +336,7 @@ void CJumpTreeCtrl::recursiveDefinitionSearch(HTREEITEM hRoot, Definitions& defi
 void CJumpTreeCtrl::OnFound(int count, LPMETHODINFO methodInfo)
 {
 	HTREEITEM hRoot = GetRootItem();		
-	CChildFrame* pChildFrame;
+	CChildFrame* pChildFrame(NULL);
 	
 	//Find the root node, which is the frame of the file that contains the method
 	//The root node was inserted by addFileTree. So it must exist.
@@ -755,8 +755,6 @@ LRESULT CJumpDocker::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 
 LRESULT CJumpDocker::OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 {
-	LPNMTREEVIEW pN = reinterpret_cast<LPNMTREEVIEW>(pnmh);
-
 	if(pnmh->code == NM_DBLCLK)
 	{
 #if 0
@@ -780,7 +778,7 @@ LRESULT CJumpDocker::OnTreeNotify(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
 
 LRESULT CJumpDocker::OnClipGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-	LPNMTVDISPINFO pGetInfoTip = (LPNMTVDISPINFO)pnmh;
+	// LPNMTVDISPINFO pGetInfoTip = (LPNMTVDISPINFO)pnmh;
 	return 0;
 }
 
