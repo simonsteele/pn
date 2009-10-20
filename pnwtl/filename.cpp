@@ -73,7 +73,7 @@ tstring CFileName::GetPath()
 tstring CFileName::GetDirectoryName()
 {
 	tstring path = GetPath();
-	char cLast = path[path.length() - 1];
+	TCHAR cLast = path[path.length() - 1];
 	if(cLast == _T('\\') || cLast == _T('/'))
 	{
 		// remove the last char.
@@ -344,7 +344,7 @@ tstring& CFileName::Sanitise()
 	// and forward instead of backward slashes.
 	while(*in != NULL)
 	{
-		char ch = *in;
+		TCHAR ch = *in;
 		switch(ch)
 		{
 			// Pretend forward slashes are back-slashes and fall-through
@@ -506,7 +506,7 @@ CPathName::CPathName(LPCTSTR path)
 	m_FileName = path;
 	if(m_FileName.length())
 	{
-		char cLast = m_FileName[m_FileName.length() - 1];
+		TCHAR cLast = m_FileName[m_FileName.length() - 1];
 		if(cLast != _T('\\') && cLast != _T('/'))
 			m_FileName += _T("\\");
 	}
@@ -521,7 +521,7 @@ CPathName& CPathName::operator = (const tstring& filename)
 void CPathName::ChangeLastElement(LPCTSTR lastEl)
 {
 	tstring path = GetPath();
-	char cLast = path[path.length() - 1];
+	TCHAR cLast = path[path.length() - 1];
 	if(cLast == _T('\\') || cLast == _T('/'))
 	{
 		// remove the last char.

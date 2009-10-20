@@ -99,7 +99,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		++i)
 	{
 		const tstring& arg = (*i);
-		if( arg.size() > 2 && ((arg[0] == '-') || (arg[0] == '/')) )
+		if( arg.size() > 2 && ((arg[0] == _T('-')) || (arg[0] == _T('/'))) )
 		{
 			// command-line arg:
 			if(_tcsicmp(&arg.c_str()[1], _T("-reset")) == 0)
