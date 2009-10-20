@@ -179,7 +179,7 @@ void CPNExt::InformPN()
 	MultipleInstanceManager checkMI(PN_KEY);
 	if (checkMI.AlreadyActive())
 	{
-		checkMI.SendParameters();
+		checkMI.SendParameters(m_files);
 	}
 	else
 	{
