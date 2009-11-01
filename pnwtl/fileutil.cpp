@@ -32,6 +32,16 @@ bool RemoveReadOnly(LPCTSTR filename)
 	return false;
 }
 
+bool SetReadOnly(LPCTSTR filename)
+{
+	DWORD dwFileAtts = ::GetFileAttributes(filename);
+	if((dwFileAtts & FILE_ATTRIBUTE_READONLY) == 0)
+	{
+		dwFileAtts |= FILE_ATTRIBUTE_READONLY;
+		return ::SetFileAttributes(filename, dwFileAtts) != 0;
+	}
+}
+
 bool FileIsReadOnly(LPCTSTR filename)
 {
 	DWORD dwFileAttributes = ::GetFileAttributes(filename);

@@ -2687,16 +2687,23 @@ void CChildFrame::setReadOnly(bool newValue, bool setAttributes)
 		return;
 	}
 
-	if (m_bReadOnly && !newValue && setAttributes)
+	if (setAttributes)
 	{
-		// Turning off read only, try and remove readonly from the file:
-		FileUtil::FileAttributes_t atts;
-		if (FileUtil::GetFileAttributes(m_spDocument->GetFileName(), atts) && FileUtil::IsReadOnly(atts))
+		if (!newValue)
 		{
-			if (!FileUtil::RemoveReadOnly(m_spDocument->GetFileName()))
+			// Turning off read only, try and remove readonly from the file:
+			FileUtil::FileAttributes_t atts;
+			if (FileUtil::GetFileAttributes(m_spDocument->GetFileName(), atts) && FileUtil::IsReadOnly(atts))
 			{
-				::MessageBox(m_hWnd, _T("Unable to remove the write-protection from this file, you will need to save as a different file"), LS(IDR_MAINFRAME), MB_OK | MB_ICONINFORMATION);
+				if (!FileUtil::RemoveReadOnly(m_spDocument->GetFileName()))
+				{
+					::MessageBox(m_hWnd, _T("Unable to remove the write-protection from this file, you will need to save as a different file"), LS(IDR_MAINFRAME), MB_OK | MB_ICONINFORMATION);
+				}
 			}
+		}
+		else
+		{
+			FileUtil::SetReadOnly(m_spDocument->GetFileName());
 		}
 	}
 	
