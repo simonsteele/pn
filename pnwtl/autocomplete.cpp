@@ -122,8 +122,8 @@ void DefaultAutoComplete::RegisterTag(const char* tag, const char* name)
 	const char* openBrace = strchr(tag, '(');
 	if(openBrace != NULL)
 	{
-		const char* endBrace = strchr(tag, ')');
-		if(endBrace == NULL)
+		const char* endBrace = strrchr(tag, ')');
+		if(endBrace == NULL || endBrace < openBrace)
 		{
 			endBrace = tag + strlen(tag);
 		}
