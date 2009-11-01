@@ -1121,7 +1121,16 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 						bHaveScheme = true;
 					}
 					else
+					{
 						pScheme = NULL;
+					}
+				}
+				else if(_tcsicmp(&parm[1], _T("z")) == 0)
+				{
+					// This parameter is used to tell PN to ignore the next command-line argument,
+					// added to support using PN as a fake debugger for notepad.exe to make an easy
+					// notepad replacement.
+					skip = true;
 				}
 				else
 				{
