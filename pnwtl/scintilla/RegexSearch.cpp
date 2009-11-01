@@ -380,6 +380,7 @@ const char *XpressiveRegexSearch::SubstituteByPosition(Document* doc, const char
 				i++;
 			} else {
 				switch (text[i + 1]) {
+				case '\\':
 				case 'a':
 				case 'b':
 				case 'f':
@@ -435,6 +436,9 @@ const char *XpressiveRegexSearch::SubstituteByPosition(Document* doc, const char
 					break;
 				case 'v':
 					*o++ = '\v';
+					break;
+				case '\\':
+					*o++ = '\\';
 					break;
 				default:
 					*o++ = '\\';
