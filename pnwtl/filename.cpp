@@ -446,6 +446,11 @@ void CFileName::GetFileName_NoExt(tstring& buf)
 	buf = GetFileName_NoExt();
 }
 
+void CFileName::AddExtension(LPCTSTR newext)
+{
+	m_FileName += newext;
+}
+
 void CFileName::ChangeExtensionTo(LPCTSTR newext)
 {
 	tstring	str;

@@ -1457,7 +1457,7 @@ LRESULT CMainFrame::OnFileNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	tstring folder = dlg.GetFolder();
 	
 	CFileName fn(dlg.GetName());
-	fn.ChangeExtensionTo(_T(".pnproj"));
+	fn.AddExtension(_T(".pnproj"));
 	fn.Root(folder.c_str());
 	
 	NewProject(fn.c_str(), dlg.GetName(), dlg.GetTemplateGUID());
