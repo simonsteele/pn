@@ -149,12 +149,12 @@ void SpacesToTabs(CScintillaImpl& editor)
 
 	TCHAR buf[100];
 	buf[99] = NULL;
-	_sntprintf(buf, 99, _T("[ ]{%d}"), editor.GetTabWidth());
+	_sntprintf(buf, 99, _T("^(\\t*)[ ]{%d}"), editor.GetTabWidth());
 
 	// Find all leading groups of spaces, convert to tabs
 	SearchOptions options;
 	options.SetFindText(buf);
-	options.SetReplaceText(_T("\\t"));
+	options.SetReplaceText(_T("\\1\\t"));
 	options.SetReplaceInSelection(editor.GetSelLength() != 0);
 	options.SetUseRegExp(true);
 	options.SetNoCursorMove(true);
@@ -178,11 +178,16 @@ void TabsToSpaces(CScintillaImpl& editor)
 		return;
 	}
 
+	TCHAR buf[100];
+	buf[99] = NULL;
+	_sntprintf(buf, 99, _T("^(([ ]{%d})*)\\t"), editor.GetTabWidth());
+
 	// Set the replace text to tab width * space:
 	tstring replaceText(editor.GetTabWidth(), ' ');
+	replaceText = _T("\\1") + replaceText;
 
 	SearchOptions options;
-	options.SetFindText(_T("\\t"));
+	options.SetFindText(buf);
 	options.SetReplaceText(replaceText.c_str());
 	options.SetReplaceInSelection(editor.GetSelLength() != 0);
 	options.SetSearchBackwards(false);
