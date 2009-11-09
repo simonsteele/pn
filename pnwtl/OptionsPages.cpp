@@ -1193,6 +1193,9 @@ void COptionsPageFileTypes::OnInitialise()
 	{
 		addItem(n++, (*j).first.c_str(), (*j).second, true);
 	}
+
+	m_bStripTrailingOnSave = OPTIONS->Get(PNSK_EDITOR, _T("StripTrailingBeforeSave"), false);
+	m_bEnsureBlankLine = OPTIONS->Get(PNSK_EDITOR, _T("EnsureBlankFinalLine"), false);
 }
 
 void COptionsPageFileTypes::OnOK()
@@ -1200,6 +1203,13 @@ void COptionsPageFileTypes::OnOK()
 	if(!m_bCreated)
 		return;
 
+	// General options first:
+	DoDataExchange(true);
+
+	OPTIONS->Set(PNSK_EDITOR, _T("StripTrailingBeforeSave"), m_bStripTrailingOnSave);
+	OPTIONS->Set(PNSK_EDITOR, _T("EnsureBlankFinalLine"), m_bEnsureBlankLine);
+
+	// Dirty set if the list is edited:
 	if(!m_bDirty)
 	{
 		clear();
@@ -1250,6 +1260,7 @@ LRESULT COptionsPageFileTypes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 {
 	// Header:
 	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
+	m_optionsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC2));
 
 	// Controls:
 	m_list.Attach(GetDlgItem(IDC_LIST));
@@ -1258,6 +1269,8 @@ LRESULT COptionsPageFileTypes::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 
 	m_list.InsertColumn(0, LS(IDS_HDR_FILETYPES_MATCH), LVCFMT_LEFT, 120, -1);
 	m_list.InsertColumn(1, LS(IDS_HDR_FILETYPES_SCHEME), LVCFMT_LEFT, 200, -1);
+
+	DoDataExchange(false);
 
 	return 0;
 }

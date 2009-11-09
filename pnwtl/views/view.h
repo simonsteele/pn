@@ -14,7 +14,7 @@
 
 namespace Views {
 
-typedef enum { vtUnknown, vtText, vtSplit, vtOutput, vtCommand } EViewType;
+typedef enum { vtUnknown, vtText, vtSplit, vtOutput, vtRoot } EViewType;
 
 class View;
 typedef boost::shared_ptr<View> ViewPtr;

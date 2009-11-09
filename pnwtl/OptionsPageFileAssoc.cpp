@@ -1,6 +1,13 @@
+/**
+ * @file OptionsPageFileAssoc.cpp
+ * @brief File Associations Window
+ *
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #include "stdafx.h"
-#include "OptionsPages.h"
 #include "resource.h"
+#include "OptionsPages.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // COptionsPageFileAssoc

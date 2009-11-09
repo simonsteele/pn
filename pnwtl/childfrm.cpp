@@ -51,7 +51,7 @@ namespace { // Implementation details:
 class BaseView : public Views::View
 {
 public:
-	BaseView(CChildFrame* owner) : Views::View(Views::vtUnknown, Views::ViewPtr()), m_owner(owner)
+	BaseView(CChildFrame* owner) : Views::View(Views::vtRoot, Views::ViewPtr()), m_owner(owner)
 	{
 
 	}
@@ -764,8 +764,73 @@ void CChildFrame::splitSelectedView(bool horizontal)
 	}
 
 	// Now the view hierarchy is all sorted, we can restyle the document:
-	newTextView->Visit(ViewUpdateVisitor(GetTextView()));
+	ViewUpdateVisitor visitor(GetTextView());
+	newTextView->Visit(visitor);
 
+	UpdateLayout();
+}
+
+void CChildFrame::removeSplit(bool closeCurrent)
+{
+	if (m_focusView->GetParentView()->GetType() != Views::vtSplit)
+	{
+		// Not a splitter contained view, we can't do anything.
+		return;
+	}
+
+	// Current parent:
+	Views::ViewPtr oldParent(m_focusView->GetParentView());
+	Views::SplitView* parentSplit = static_cast<Views::SplitView*>(oldParent.get());
+
+	if (oldParent == m_primeView)
+	{
+		// Make sure we're not trying to close the output splitter:
+		if (m_focusView == m_outputView)
+		{
+			return;
+		}
+
+		if (parentSplit->GetOtherChild(m_focusView) == m_outputView)
+		{
+			return;
+		}
+	}
+
+	// We are closing this view, so we want to keep the _other_ child.
+	Views::ViewPtr viewToKeep(closeCurrent ? parentSplit->GetOtherChild(m_focusView) : m_focusView);
+
+	// Swap parents:
+	Views::ViewPtr newParent(oldParent->GetParentView());
+	parentSplit->DetachView(viewToKeep);
+	viewToKeep->SetParentView(newParent);
+
+	// Work out how to slot into the hierarchy:
+	switch (newParent->GetType())
+	{
+	case Views::vtSplit:
+		{
+			Views::SplitView* splitView = static_cast<Views::SplitView*>(newParent.get());
+			
+			// Swap the children:
+			splitView->SwapChildren(oldParent, viewToKeep);
+		}
+		break;
+
+	case Views::vtRoot:
+		{
+			// We reached the bottom, we're now the prime view:
+			m_primeView = viewToKeep;
+			m_hWndClient = viewToKeep->GetHwnd();
+		}
+		break;
+
+	default:
+		break;
+	}
+
+	::SetParent(viewToKeep->GetHwnd(), newParent->GetHwnd());
+	m_focusView = viewToKeep;
+	oldParent.reset();
 	UpdateLayout();
 }
 
@@ -774,7 +839,8 @@ LRESULT CChildFrame::OnOptionsUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	Scheme* pS = GetTextView()->GetCurrentScheme();
 	UpdateTools(pS);
 
-	m_primeView->Visit(OptionsUpdateVisitor(pS));
+	OptionsUpdateVisitor visitor(pS);
+	m_primeView->Visit(visitor);
 
 	// update scintilla shortcuts (does this need to be per view?)
 	updateViewKeyBindings();
@@ -1506,6 +1572,13 @@ LRESULT CChildFrame::OnSplitVertical(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	return 0;
 }
 
+LRESULT CChildFrame::OnCloseSplit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	removeSplit(true);
+
+	return 0;
+}
+
 class ChildOutputWrapper : public ToolWrapperT<CChildFrame, COutputView>
 {
 typedef ToolWrapperT<CChildFrame, COutputView> baseClass;
@@ -1956,6 +2029,17 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool ctagsRefresh, bool bStoreFilen
 	if(bStoreFilename)
 	{
 		m_spDocument->OnBeforeSave(pathname);
+	}
+
+	if (OPTIONS->Get(PNSK_EDITOR, _T("StripTrailingBeforeSave"), false))
+	{
+		// Strip trailing spaces:
+		SendMessage(WM_COMMAND, MAKEWPARAM(ID_EDIT_STRIPTRAILING, 0), 0);
+	}
+
+	if (OPTIONS->Get(PNSK_EDITOR, _T("EnsureBlankFinalLine"), false))
+	{
+		SendMessage(WM_COMMAND, MAKEWPARAM(ID_EDIT_ENSUREFINALBLANKLINE, 0), 0);
 	}
 
 	// Do the save
@@ -2436,7 +2520,8 @@ struct SetSchemeVisitor : public Views::Visitor
 
 void CChildFrame::SetScheme(Scheme* pScheme, bool allSettings)
 {
-	m_primeView->Visit(SetSchemeVisitor(pScheme, allSettings ? scfNone : scfNoViewSettings));
+	SetSchemeVisitor visitor(pScheme, allSettings ? scfNone : scfNoViewSettings);
+	m_primeView->Visit(visitor);
 }
 
 void CChildFrame::UpdateTools(Scheme* pScheme)
@@ -2781,7 +2866,7 @@ CChildFrame::_PoorMansUIEntry* CChildFrame::GetDefaultUIMap()
 		{ID_VIEW_INDIVIDUALOUTPUT, PMUI_MENU},
 		{ID_TOOLS_LECONVERT, PMUI_MENU},
 		// note: This one must be at the end.
-		{-1, 0}
+		{static_cast<uint64_t>(-1), 0}
 	};
 	return theMap;
 }

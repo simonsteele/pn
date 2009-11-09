@@ -62,6 +62,16 @@ public:
 	void SetSinglePaneMode(int mode);
 
 	/**
+	 * Detach one of the panes - do this only just before destruction.
+	 */
+	void DetachView(ViewPtr& view);
+
+	/**
+	 * Get the other child view.
+	 */
+	ViewPtr& GetOtherChild(ViewPtr& child);
+
+	/**
 	 * Visit this view and child views.
 	 */
 	virtual void Visit(Visitor& visitor);

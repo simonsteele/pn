@@ -20,8 +20,29 @@ SplitView::SplitView(ESplitType splitType, ViewPtr& parent, ViewPtr& view1, View
 {
 }
 
+/**
+ * On destruction we might still be responsible for one or more views,
+ * we need to remove them here. We then destroy our window if it still exists.
+ *
+ * Explanation: If we're the current root child for the child view then when the
+ * child view is closed our window gets destroyed before we're destructed.
+ */
 SplitView::~SplitView()
 {
+	if (m_w1.get())
+	{
+		::DestroyWindow(m_w1->GetHwnd());
+	}
+
+	if (m_w2.get())
+	{
+		::DestroyWindow(m_w2->GetHwnd());
+	}
+
+	if (::IsWindow(m_wnd))
+	{
+		m_wnd.DestroyWindow();
+	}
 }
 
 /**
@@ -85,7 +106,7 @@ void SplitView::SwapChildren(ViewPtr& oldchild, ViewPtr& newChild)
 	}
 	else
 	{
-		throw new std::exception("Invalid old child passed to SwapChildren");
+		throw std::exception("Invalid old child passed to SwapChildren");
 	}
 
 	m_wnd.SetPanes(m_w1->GetHwnd(), m_w2->GetHwnd(), true);
@@ -105,6 +126,44 @@ int SplitView::GetSinglePaneMode() const
 void SplitView::SetSinglePaneMode(int mode)
 {
 	m_wnd.SetSinglePaneMode(mode);
+}
+
+/**
+ * Detach one of the panes - do this only just before destruction.
+ */
+void SplitView::DetachView(ViewPtr& view)
+{
+	if (m_w1 == view)
+	{
+		m_w1.reset();
+	}
+	else if (m_w2 == view)
+	{
+		m_w2.reset();
+	}
+	else
+	{
+		throw std::exception("Invalid view passed to DetachView");
+	}
+}
+
+/**
+ * Get the other child view.
+ */
+ViewPtr& SplitView::GetOtherChild(ViewPtr& child)
+{
+	if (m_w1 == child)
+	{
+		return m_w2;
+	}
+	else if (m_w2 == child)
+	{
+		return m_w1;
+	}
+	else
+	{
+		throw std::exception("Invalid view passed to GetOtherChild");
+	}
 }
 
 /**

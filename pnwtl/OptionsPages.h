@@ -458,13 +458,19 @@ class COptionsPageFileAssoc : public COptionsPageImpl<COptionsPageFileAssoc>,
 		COLORREF		m_colors[2];
 };
 
-class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
+class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>,
+						      public CWinDataExchange<COptionsPageFileTypes>
 {
 	public:
 		COptionsPageFileTypes(SchemeConfigParser* schemes);
 		~COptionsPageFileTypes();
 
 		enum {IDD = IDD_PAGE_FILETYPES};
+
+		BEGIN_DDX_MAP(COptionsPageNewFiles)
+			DDX_CHECK(IDC_STRIPBEFORESAVE_CHECK, m_bStripTrailingOnSave)
+			DDX_CHECK(IDC_ENSUREBLANKLINE_CHECK, m_bEnsureBlankLine)
+		END_DDX_MAP()
 
 		BEGIN_MSG_MAP(COptionsPageFileTypes)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -480,7 +486,7 @@ class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
 		virtual void OnCancel();
 		virtual tstring GetTreePosition();
 
-	protected:
+	private:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 		LRESULT OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -489,18 +495,20 @@ class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
 
 		LRESULT OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
-	protected:
+	private:
 		void addItem(int index, LPCTSTR ext, Scheme* pScheme, bool isFilename);
 		void clear();
 
-	protected:
 		SchemeConfigParser* m_schemes;
 		CListViewCtrl		m_list;
 		SCHEME_MAP*			m_pExtMap;
 		SCHEME_MAP*			m_pFilenameMap;
 		bool				m_bDirty;
+		BOOL				m_bStripTrailingOnSave;
+		BOOL				m_bEnsureBlankLine;
 
 		COptionsBlockHeader m_settingsHeader;
+		COptionsBlockHeader m_optionsHeader;
 };
 
 #include "OptionsPageGeneral.h"

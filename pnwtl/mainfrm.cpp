@@ -1439,7 +1439,8 @@ LRESULT CMainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	else
 		scheme = SchemeManager::GetInstance()->GetDefaultScheme();
 
-	CChildFrame* pChild = m_ChildFactory.WithScheme(scheme);
+	/*CChildFrame* pChild = */
+	m_ChildFactory.WithScheme(scheme);
 		
 	return 0;
 }

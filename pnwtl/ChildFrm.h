@@ -131,6 +131,7 @@ public:
 
 		COMMAND_ID_HANDLER(ID_WINDOW_SPLITHORIZONTAL, OnSplitHorizontal)
 		COMMAND_ID_HANDLER(ID_WINDOW_SPLITVERTICAL, OnSplitVertical)
+		COMMAND_ID_HANDLER(ID_WINDOW_CLOSESPLIT, OnCloseSplit)
 
 		COMMAND_ID_HANDLER(ID_FILE_CLOSEALL, OnFileCloseAll)
 		COMMAND_ID_HANDLER(ID_WINDOW_CLOSEALLOTHER, OnWindowCloseAllOther)
@@ -269,6 +270,7 @@ public:
 	LRESULT OnProjectAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSplitHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnSplitVertical(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCloseSplit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFocusCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFocusTextView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCommandNotify(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -373,6 +375,7 @@ private:
 	void findNextWordUnderCursor(bool backwards);
 	void updateViewKeyBindings();
 	void splitSelectedView(bool horizontal);
+	void removeSplit(bool closeCurrent);
 	void setMDIFrameMenu();
 	HMENU getWindowMenu();
 
