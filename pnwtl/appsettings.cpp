@@ -110,7 +110,6 @@ bool ExtDetails::Exists() const
 AppSettings::AppSettings() :
 	m_bUseIni(false),
 	m_userPath(_T("")),
-	m_bHuntingTaggers(false),
 	m_bAppSettingsPathSpecified(false)
 {
 	Options::StaticGetPNPath(m_pnpath);
@@ -154,12 +153,7 @@ void AppSettings::FindExtensions()
 	 FileFinder<AppSettings> finder(this, &AppSettings::findExtensionHandler); 
 	 tstring pnpath;
 
-	 m_bHuntingTaggers = false;
 	 OPTIONS->GetPNPath(pnpath);
-	 finder.Find(pnpath.c_str(), _T("*.dll"), false);
-	 
-	 m_bHuntingTaggers = true;
-	 OPTIONS->GetPNPath(pnpath, PNPATH_TAGGERS);
 	 finder.Find(pnpath.c_str(), _T("*.dll"), false);
 }
 
@@ -171,15 +165,7 @@ void AppSettings::Save()
 void AppSettings::findExtensionHandler(LPCTSTR path, FileFinderData& file, bool& /*shouldContinue*/)
 {
 	tstring fn;
-	if(m_bHuntingTaggers)
-	{
-		fn = _T("Taggers\\");
-		fn += file.GetFilename();
-	}
-	else
-	{
-		fn = file.GetFilename();
-	}
+	fn = file.GetFilename();
 	
 	ExtDetails details(fn.c_str(), m_pnpath.c_str());
 
