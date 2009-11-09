@@ -161,6 +161,8 @@ private:
 	void smartHighlight();
 	void updateOverwriteTarget();
 
+	void handleMarkAllResult(int start, int end);
+
 	CommandDispatch* m_pCmdDispatch;
 	BOOL m_waitOnBookmarkNo;
 	Scheme* m_pLastScheme;
@@ -170,6 +172,7 @@ private:
 	bool m_bOverwriteTarget;
 	DocumentPtr m_pDoc;
 	extensions::IRecorderPtr m_recorder;
+	int m_findAllResultCount;
 
 	bool m_bMeasureCanRun;
 	pnutils::threading::CriticalSection m_csMeasure;

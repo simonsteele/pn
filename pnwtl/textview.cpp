@@ -661,6 +661,12 @@ void HandleMarkAllResult(CTextView* parent, int start, int end)
 	parent->IndicatorFillRange(start, end-start);
 }
 
+void CTextView::handleMarkAllResult(int start, int end)
+{
+	IndicatorFillRange(start, end-start);
+	m_findAllResultCount++;
+}
+
 void CTextView::FindAll(extensions::ISearchOptions* options, FIFSink* sink, LPCTSTR szFilename)
 {
 	CScintillaImpl::FindAll(options, boost::bind(HandleFindAllResult, this, sink, szFilename, _1, _2));
@@ -673,7 +679,12 @@ void CTextView::MarkAll(extensions::ISearchOptions* options)
 	SetIndicatorValue(INDIC_ROUNDBOX);
 	IndicSetStyle(INDIC_MARKALL, INDIC_ROUNDBOX);
 	
-	CScintillaImpl::FindAll(options, boost::bind(HandleMarkAllResult, this, _1, _2));
+	m_findAllResultCount = 0;
+	CScintillaImpl::FindAll(options, boost::bind(&CTextView::handleMarkAllResult, ref(this), _1, _2));
+	
+	CString str;
+	str.Format(IDS_MARKALL_COUNT, m_findAllResultCount);
+	g_Context.m_frame->SetStatusText((LPCTSTR)str);
 }
 
 void CTextView::ClearMarkAll()

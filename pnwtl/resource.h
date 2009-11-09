@@ -203,6 +203,7 @@
 #define ID_PROJECT_DELETE               258
 #define IDS_PROJECTS_TEMPMAGICFOLDER    258
 #define ID_OUTPUT_CLEAR                 259
+#define IDS_MARKALL_COUNT               259
 #define ID_OUTPUT_HIDE                  260
 #define ID_TOOLS_USETABS                261
 #define IDD_SMARTSTARTEDITOR            262
@@ -600,7 +601,6 @@
 #define IDC_PRESETS_STATIC              1167
 #define IDC_SMARTSTART_STATIC           1168
 #define IDC_STRIPBEFORESAVE_CHECK       1169
-#define IDC_STRIPBEFORESAVE_CHECK2      1170
 #define IDC_ENSUREBLANKLINE_CHECK       1170
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200

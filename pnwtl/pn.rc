@@ -1864,6 +1864,7 @@ BEGIN
     IDS_HDR_EXTENSIONS_VERSION "Version"
     IDS_HDR_EXTENSIONS_ENABLED "Enabled"
     IDS_PROJECTS_TEMPMAGICFOLDER "New Folder"
+    IDS_MARKALL_COUNT       "Found %d occurrences"
     ID_FILE_REVERT          "Revert this document to the current saved state\nRevert"
 END
 
