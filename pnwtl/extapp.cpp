@@ -458,7 +458,7 @@ extensions::IDocumentPtr App::OpenDocument(const wchar_t* filepath, const char* 
  */
 extensions::IDocumentPtr App::NewDocument(const char* scheme)
 {
-	Scheme* pScheme;
+	Scheme* pScheme(NULL);
 	if (scheme)
 	{
 		pScheme = SchemeManager::GetInstance()->SchemeByName(scheme);
