@@ -844,7 +844,7 @@ void CProjectTreeCtrl::sort(HTREEITEM hFolderNode, bool bSortFolders, bool bRecu
 	else
 		sortcb.lpfnCompare = &CProjectTreeCtrl::CompareItem;
 
-	BOOL caseSensitive = OPTIONS->Get(_T("Projects"), _T("SortCaseSensitive"), true);
+	BOOL caseSensitive = OPTIONS->Get(_T("Projects"), _T("SortCaseSensitive"), false);
 	sortcb.lParam = caseSensitive;
 
 	SortChildrenCB(&sortcb, bRecurse);
