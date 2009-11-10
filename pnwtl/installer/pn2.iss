@@ -53,8 +53,8 @@ Source: ..\bin\schemes\extmap.dat; DestDir: {app}\schemes
 Source: ..\bin\clips\*.clips; DestDir: {app}\clips
 Source: ..\bin\presets\*.xml; DestDir: {app}\presets
 
-Source: ..\bin\taggers\ctagsnavigator.dll; DestDir: {app}\taggers; Flags: ignoreversion
-Source: ..\bin\taggers\ctags\*.*; DestDir: {app}\taggers\ctags; Flags: ignoreversion
+Source: ..\bin\ctagsnavigator.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\bin\ctags\*.*; DestDir: {app}\ctags; Flags: ignoreversion
 Source: ..\bin\ctags.exe; DestDir: {app}; Flags: ignoreversion
 Source: ..\doc\help\pn2.chm; DestDir: {app}
 

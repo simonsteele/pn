@@ -11,6 +11,7 @@
 			output="_revision.txt"
 			failonerror="false"/>
 		<loadfile file="_revision.txt" property="svn.revision" />
+		<property name="svn.revision" value="${string::trim(svn.revision)}"/>
 		<echo message="Using Mercurial revision number: ${svn.revision}"/>
 	</target>
 	
@@ -356,6 +357,7 @@
 				</items>
 			</in>
 			<do>
+			    <echo message="apply bin\pnlang.dll bin\${path::get-file-name-without-extension(filename)}_${ver}.${svn.revision}.dll ${filename}"/>
 				<exec
 					program="tools\ResText\ResText.exe"
 					commandline="apply bin\pnlang.dll bin\${path::get-file-name-without-extension(filename)}_${ver}.${svn.revision}.dll ${filename}"/>
