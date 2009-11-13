@@ -40,6 +40,10 @@ namespace TextClips { class TextClipsManager; }
 	if(uMsg == WM_COMMAND && m_hWndOutput != NULL) \
 		::SendMessage(m_hWndOutput, uMsg, wParam, lParam);
 
+#define CHAIN_PN_CLIENT_COMMANDS() \
+	if(uMsg == WM_COMMAND && m_hWndClient != NULL) \
+		::SendMessage(m_focusView->GetHwnd(), uMsg, wParam, lParam);
+
 /**
  * @brief Programmers Notepad 2 MDI Child window.
  */
@@ -156,7 +160,7 @@ public:
 		
 		// Chaining
 		CHAIN_MSG_MAP(baseClass)
-		CHAIN_CLIENT_COMMANDS()
+		CHAIN_PN_CLIENT_COMMANDS()
 		CHAIN_OUTPUT_COMMANDS()
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
