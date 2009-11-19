@@ -2907,7 +2907,7 @@ void CScintilla::SetSelectionNEnd(int selection, int pos)
 
 int CScintilla::GetSelectionNEnd(int selection)
 {
-	return SPerform(SCI_SETSELECTIONNEND, selection, 0);
+	return SPerform(SCI_GETSELECTIONNEND, selection, 0);
 }
 
 void CScintilla::SetRectangularSelectionCaret(int pos)
