@@ -40,6 +40,11 @@ bool SetReadOnly(LPCTSTR filename)
 		dwFileAtts |= FILE_ATTRIBUTE_READONLY;
 		return ::SetFileAttributes(filename, dwFileAtts) != 0;
 	}
+	else
+	{
+		// File is already read only, we'll claim the glory.
+		return true;
+	}
 }
 
 bool FileIsReadOnly(LPCTSTR filename)
