@@ -12,6 +12,7 @@ What's new in 2.1?
 4) Translations - PN in your language
 5) Command bar for PyPN users, supports customisable modal commands
 6) Complete Unicode conversion, files, searching, projects, UI, clips...
+7) Flexible split views
 
 What's new in 2.1 under the cover?
 ------------------------------------------
