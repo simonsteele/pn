@@ -293,7 +293,7 @@ class CustomFormatStringBuilder
 			LPCTSTR endProp = _tcschr(pProp, exprEnd);
 			if(endProp != NULL)
 			{
-				int keylen = (endProp - pProp) / sizeof(TCHAR);
+				int keylen = (endProp - pProp);
 				prop.assign(pProp, keylen);
 				pos += (2 + keylen); // skip ( + len + )
 			}
