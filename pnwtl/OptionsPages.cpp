@@ -590,8 +590,10 @@ bool COptionsPageTools::doToolEditDlg(ToolDefinition* in, ToolDefinition* out)
 	sheet.m_psh.dwFlags |= (PSH_NOAPPLYNOW | PSH_PROPTITLE | PSH_USEICONID);
 	sheet.m_psh.pszIcon = MAKEINTRESOURCE(IDR_MDICHILD);
 	
-	CToolSettingsPage toolPage(LS(IDS_HDR_TOOLS_PROPERTIES));
-	CToolConsoleIOPage consolePage(LS(IDS_HDR_TOOLS_CONSOLEIO));
+	tstring propertiesTitle(LS(IDS_HDR_TOOLS_PROPERTIES));
+	tstring consoleIoTitle(LS(IDS_HDR_TOOLS_CONSOLEIO));
+	CToolSettingsPage toolPage(propertiesTitle.c_str());
+	CToolConsoleIOPage consolePage(consoleIoTitle.c_str());
 
 	if(in)
 	{
