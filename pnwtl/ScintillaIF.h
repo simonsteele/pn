@@ -871,6 +871,10 @@ class CScintilla
 		 */
 		int GetTextRange(Scintilla::TextRange* tr);
 		/**
+		 * Retrieve a range of text.
+		 */
+		std::string CScintilla::GetTextRange(int start, int end);
+		/**
 		 * Draw the selection in normal style or with selection highlighted.
 		 */
 		void HideSelection(bool normal);

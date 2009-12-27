@@ -315,10 +315,14 @@ bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 		const TextClips::Clip* clip = set->FindByShortcut(text);
 		if(clip != NULL)
 		{
-			GetTextView()->BeginUndoAction();
+			// GetTextView()->BeginUndoAction();
 			GetTextView()->DelWordLeft();
-			clip->Insert(GetTextView());
-			GetTextView()->EndUndoAction();
+			// GetTextView()->EndUndoAction();
+
+			// clip->Insert(GetTextView());
+			std::vector<TextClips::Chunk> chunks;
+			clip->GetChunks(chunks);
+			GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
 		}
 	}
 

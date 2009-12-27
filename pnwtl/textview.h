@@ -18,6 +18,7 @@
 #include "ScintillaWTL.h"
 #include "include/threading.h"
 #include "views/view.h"
+#include "textclips.h"
 
 class FIFSink;
 
@@ -39,6 +40,7 @@ public:
 	BEGIN_MSG_MAP(CTextView)
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
 		MESSAGE_HANDLER(PN_OVERWRITETARGET, OnOverwriteTarget)
+		MESSAGE_HANDLER(PN_INSERTCLIP, OnInsertClip)
 
 		COMMAND_ID_HANDLER(ID_EDIT_INDENT, OnIndent)
 		COMMAND_ID_HANDLER(ID_EDIT_UNINDENT, OnUnindent)
@@ -116,6 +118,7 @@ private:
 	// Message Handlers
 	HRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	HRESULT OnOverwriteTarget(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	HRESULT OnInsertClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
 	////////////////////////////////////////////////////////////////
 	// Command Handlers
@@ -160,6 +163,8 @@ private:
 
 	void smartHighlight();
 	void updateOverwriteTarget();
+	void beginInsertClip(std::vector<TextClips::Chunk>& chunks);
+	void updateInsertClip();
 
 	void handleMarkAllResult(int start, int end);
 
@@ -170,9 +175,11 @@ private:
 	bool m_bSmartStart;
 	bool m_bLineNos;
 	bool m_bOverwriteTarget;
+	bool m_bInsertClip;
 	DocumentPtr m_pDoc;
 	extensions::IRecorderPtr m_recorder;
 	int m_findAllResultCount;
+	std::vector<TextClips::Chunk> m_insertClipChunks;
 
 	bool m_bMeasureCanRun;
 	pnutils::threading::CriticalSection m_csMeasure;

@@ -413,6 +413,18 @@
 				RelativePath=".\WorkspaceState.cpp"
 				>
 			</File>
+			<Filter
+				Name="TextClips"
+				>
+				<File
+					RelativePath=".\textclips\chunk.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\textclips\clip.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

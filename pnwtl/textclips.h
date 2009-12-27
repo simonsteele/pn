@@ -2,7 +2,7 @@
  * @file textclips.h
  * @brief Text Clips Classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -14,6 +14,28 @@
 #include <list>
 
 namespace TextClips {
+
+/**
+ * Single part of a smart text clip, can be plain text or a field.
+ */
+class Chunk
+{
+public:
+	Chunk() : m_field(false), Id(0) {}
+	Chunk(bool field, const std::string& text) : m_field(field), m_text(text), Id(0) {}
+	Chunk(bool field, int id) : m_field(field), Id(id) {}
+
+	int Id;
+
+	bool IsField() const;
+	std::string GetText() const;
+	
+	void SetText(const char* text);
+
+private:
+	bool m_field;
+	std::string m_text;
+};
 
 /**
  * Simple class to represent a text clip.
@@ -35,6 +57,8 @@ class Clip
 		std::string Text;
 
 		void Insert(CScintilla* scintilla) const;
+
+		void GetChunks(std::vector<Chunk>& chunks) const;
 };
 
 typedef std::list<Clip*>	LIST_CLIPS;

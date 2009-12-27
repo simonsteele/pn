@@ -39,7 +39,8 @@ CTextView::CTextView(DocumentPtr document, Views::ViewPtr parent, CommandDispatc
 	m_waitOnBookmarkNo(FALSE),
 	m_encType(eUnknown),
 	m_bMeasureCanRun(false),
-	m_bOverwriteTarget(false)
+	m_bOverwriteTarget(false),
+	m_bInsertClip(false)
 {
 	m_bSmartStart = OPTIONS->Get(PNSK_EDITOR, _T("SmartStart"), true);
 	SetAutoCompleteManager(autoComplete);
@@ -527,6 +528,7 @@ int CTextView::HandleNotify(LPARAM lParam)
 
 		smartHighlight();
 		updateOverwriteTarget();
+		updateInsertClip();
 	}
 	else if(msg == SCN_CHARADDED)
 	{
@@ -804,6 +806,19 @@ void CTextView::DoContextMenu(CPoint* point)
 HRESULT CTextView::OnOverwriteTarget(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	BeginOverwriteTarget();
+
+	return 0;
+}
+
+HRESULT CTextView::OnInsertClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+{
+	std::vector<TextClips::Chunk>* chunks = reinterpret_cast<std::vector<TextClips::Chunk>*>(lParam);
+	if (chunks == NULL)
+	{
+		return -1;
+	}
+
+	beginInsertClip(*chunks);
 
 	return 0;
 }
@@ -1584,4 +1599,147 @@ void CTextView::updateOverwriteTarget()
 		SPerform(SCI_SETINDICATORCURRENT, INDIC_OVERWRITETARGET, 0);
 		SPerform(SCI_INDICATORCLEARRANGE, start, current - start);
 	}
+}
+
+void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
+{
+	m_insertClipChunks.swap(chunks);
+
+	int pos = GetCurrentPos();
+	int firstFieldPos = 0;
+
+	SPerform(SCI_SETINDICATORCURRENT, INDIC_TEXTCLIPFIELD, 0);
+	SetIndicatorValue(INDIC_BOX);
+	IndicSetStyle(INDIC_TEXTCLIPFIELD, INDIC_BOX);
+
+	std::vector<TextClips::Chunk>::const_iterator i;
+	for(i = m_insertClipChunks.begin(); i != m_insertClipChunks.end(); ++i)
+	{
+		std::string chunkText = (*i).GetText();
+		InsertText(pos, chunkText.c_str());
+		
+		if ((*i).IsField())
+		{
+			IndicatorFillRange(pos, chunkText.size());
+
+			if (firstFieldPos == 0)
+			{
+				firstFieldPos = pos;
+			}
+		}
+
+		pos += chunkText.size();
+	}
+
+	if (firstFieldPos == 0)
+	{
+		firstFieldPos = pos;
+	}
+
+	// Set the selection to the insertion point or first field point.
+	SetSel(firstFieldPos, firstFieldPos);
+
+	m_bInsertClip = true;
+}
+
+typedef std::vector<TextClips::Chunk>::iterator ChunkIt_t;
+
+ChunkIt_t firstChunk(std::vector<TextClips::Chunk>& chunks, int id)
+{
+	for (ChunkIt_t i = chunks.begin(); i != chunks.end(); ++i)
+	{
+		if ((*i).IsField() && (*i).Id == id)
+		{
+			return i;
+		}
+	}
+
+	return chunks.end();
+}
+
+void CTextView::updateInsertClip()
+{
+	if (!m_bInsertClip)
+	{
+		return;
+	}
+
+	int currentPos = GetCurrentPos();
+	int prevPos = currentPos - 1;
+	if (prevPos < 0)
+	{
+		prevPos = currentPos;
+	}
+
+	SPerform(SCI_SETINDICATORCURRENT, INDIC_TEXTCLIPFIELD, 0);
+
+	// Exit condition:
+	if (SPerform(SCI_INDICATORVALUEAT, INDIC_TEXTCLIPFIELD, currentPos) == 0 && SPerform(SCI_INDICATORVALUEAT, INDIC_TEXTCLIPFIELD, prevPos) == 0)
+	{
+		m_bInsertClip = false;
+		SPerform(SCI_INDICATORCLEARRANGE, 0, GetLength());
+		return;
+	}
+
+	// Find the first field:
+	bool onAt0 = SPerform(SCI_INDICATORVALUEAT, INDIC_TEXTCLIPFIELD, 0) != 0;
+	
+	int start = onAt0 ? 0 : SPerform(SCI_INDICATOREND, INDIC_TEXTCLIPFIELD, 0);
+	int end = SPerform(SCI_INDICATOREND, INDIC_TEXTCLIPFIELD, start);
+
+	if (start == end)
+	{
+		// No indicator ranges, nothing to do...
+		m_bInsertClip = false;
+		return;
+	}
+
+	int original = start;
+
+	ChunkIt_t chunkit = m_insertClipChunks.begin();
+
+	do
+	{
+		while(!(*chunkit).IsField() && chunkit != m_insertClipChunks.end())
+		{
+			chunkit++;
+		}
+
+		if (chunkit == m_insertClipChunks.end())
+		{
+			// Eek, we should have had another field chunk to match this indicator, bail...
+			break;
+		}
+
+		int chunkId = (*chunkit).Id;
+		ChunkIt_t masterChunk = firstChunk(m_insertClipChunks, chunkId);
+		std::string current(GetTextRange(start, end));
+
+		if (currentPos >= start && currentPos <= end && chunkit == masterChunk)
+		{
+			// Update the master
+			if (current != (*chunkit).GetText())
+			{
+				(*chunkit).SetText(current.c_str());
+			}
+		}
+		else
+		{
+			std::string chunkText((*masterChunk).GetText());
+			
+			if (current != chunkText)
+			{
+				SetTarget(start, end);
+				ReplaceTarget(chunkText.size(), chunkText.c_str());
+				end = start + chunkText.size();
+
+				IndicatorFillRange(start, chunkText.size());
+			}
+		}
+
+		++chunkit;
+		start = SPerform(SCI_INDICATOREND, INDIC_TEXTCLIPFIELD, end + 1);
+		end = SPerform(SCI_INDICATOREND, INDIC_TEXTCLIPFIELD, start);
+	}
+	while (start < end && start > original);
 }

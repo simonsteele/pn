@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<Scheme>
+	<!-- Scheme for the D language, see www.digitalmars.com -->
+	<!-- Note that there are things to do to fully support D:
+	   1. Add support for /+ +/ comments to the Scintilla cpp lexer.
+	   2. Add support for literal strings to the Scintilla cpp lexer 
+	      (like C# @ strings).
+	   3. Add support for backtick strings to the Scintilla cpp lexer.
+    -->
+	<keyword-classes>
+		<keyword-class name="powershell_cmds">
+			break continue do else elseif filter for foreach function if in return switch until where while
+		</keyword-class>
+		<keyword-class name="powershell_cmdlets">add-content add-history add-member add-pssnapin clear-content clear-item 
+clear-itemproperty clear-variable compare-object convertfrom-securestring 
+convert-path convertto-html convertto-securestring copy-item copy-itemproperty 
+export-alias export-clixml export-console export-csv foreach-object format-custom 
+format-list format-table format-wide get-acl get-alias get-authenticodesignature 
+get-childitem get-command get-content get-credential get-culture get-date 
+get-eventlog get-executionpolicy get-help get-history get-host get-item 
+get-itemproperty get-location get-member get-pfxcertificate get-process get-psdrive 
+get-psprovider get-pssnapin get-service get-tracesource get-uiculture get-unique 
+get-variable get-wmiobject group-object import-alias import-clixml import-csv 
+invoke-expression invoke-history invoke-item join-path measure-command 
+measure-object move-item move-itemproperty new-alias new-item new-itemproperty 
+new-object new-psdrive new-service new-timespan new-variable out-default out-file 
+out-host out-null out-printer out-string pop-location push-location read-host 
+remove-item remove-itemproperty remove-psdrive remove-pssnapin remove-variable 
+rename-item rename-itemproperty resolve-path restart-service resume-service 
+select-object select-string set-acl set-alias set-authenticodesignature 
+set-content set-date set-executionpolicy set-item set-itemproperty set-location 
+set-psdebug set-service set-tracesource set-variable sort-object split-path 
+start-service start-sleep start-transcript stop-process stop-service 
+stop-transcript suspend-service tee-object test-path trace-command 
+update-formatdata update-typedata where-object write-debug write-error write-host 
+write-output write-progress write-verbose write-warning</keyword-class>
+		<keyword-class name="powershell_aliases">ac asnp clc cli clp clv cpi cpp cvpa diff epal epcsv fc fl foreach ft fw gal gc \
+gci gcm gdr ghy gi gl gm gp gps group gsv gsnp gu gv gwmi iex ihy ii ipal ipcsv \
+mi mp nal ndr ni nv oh rdr ri rni rnp rp rsnp rv rvpa sal sasv sc select si sl \
+sleep sort sp spps spsv sv tee where write cat cd clear cp h history kill lp ls \
+mount mv popd ps pushd pwd r rm rmdir echo cls chdir copy del dir erase move rd \
+ren set type</keyword-class>
+	</keyword-classes>
+
+	<!-- base scheme for C++ style languages -->
+	<language name="powershell" title="Powershell" folding="true" foldcomments="true" foldcompact="false" foldpreproc="true">
+		<lexer name="powershell" />
+		<comments line=";" streamStart="/*" streamEnd="*/" blockStart="/**" blockLine=" *" blockEnd=" */" />
+		<use-keywords>
+			<keyword key="0" name="Commands" class="powershell_cmds"/>
+			<keyword key="1" name="Cmdlets" class="powershell_cmdlets"/>
+			<keyword key="2" name="Aliases" class="powershell_aliases"/>
+		</use-keywords>
+		
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="Whitespace" key="0" />
+			<style name="Comment" key="1" class="comment"/>
+			<style name="String" key="2" class="string"/>
+			
+			<style name="Character" key="3" class="character"/>
+			
+			<style name="Number" key="4" class="number"/>
+			<style name="Variable" key="5" class="variable"/>
+			<style name="Operator" key="6" class="operator"/>
+			
+			<style name="Identifier" key="7" class="identifier"/>
+			
+			<style name="Keyword" key="8" class="keyword"/>
+			<style name="Cmdlet" key="9" class="keyword"/>
+			
+			<style name="Alias" key="10" fore="008080"/>
+		</use-styles>
+	</language>
+
+</Scheme>

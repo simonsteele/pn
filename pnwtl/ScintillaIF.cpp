@@ -1535,6 +1535,26 @@ int CScintilla::GetTextRange(Scintilla::TextRange* tr)
 	return (int)SPerform(SCI_GETTEXTRANGE, 0, (long)tr);
 }
 
+std::string CScintilla::GetTextRange(int start, int end)
+{
+	std::string ret;
+	
+	// First instance, GetSelText returns buffer size required to store text including NULL
+	int selLength = end - start;
+
+	ret.resize(selLength + 1);
+	
+	Scintilla::Sci_TextRange range;
+	range.chrg.cpMin = start;
+	range.chrg.cpMax = end;
+	range.lpstrText = &ret[0];
+	
+	int len = GetTextRange(&range);
+	ret.resize(len);
+	
+	return ret;
+}
+
 void CScintilla::HideSelection(bool normal)
 {
 	SPerform(SCI_HIDESELECTION, (long)normal, 0);
