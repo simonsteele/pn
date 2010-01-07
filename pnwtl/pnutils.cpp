@@ -474,7 +474,7 @@ std::list<tstring> GetCommandLineArgs()
 	::GetCurrentDirectory(MAX_PATH+1, curDir);
 
 	// Process cmdline params... __argv and __argc in VC++
-	for (int i = 1; i < __argc; i++)
+	for (int i = 1; i < __argc; ++i)
 	{
 		tstring arg = __wargv[i]; 
 
@@ -496,21 +496,56 @@ std::list<tstring> GetCommandLineArgs()
 		{
 			// It's a parameter, we don't want to turn it into
 			// a rooted filename
-			params.insert(params.end(), arg);
 
-			if (i < (__argc - 1))
+			// Process -1, this means all following args are a single file:
+			if (arg == _T("-1"))
 			{
-				bool takeNext = ( arg[1] == _T('l') || arg[1] == _T('c') || arg[1] == _T('p') );
+				++i;
 
-				if ( arg[1] == _T('-') )
+				tstring oneparam;
+				
+				for (; i < __argc; ++i)
 				{
-					takeNext = ( arg[2] == _T('l') || arg[2] == _T('c') || arg[2] == _T('p') );
+					arg = __wargv[i];
+
+					if (oneparam.size())
+					{
+						oneparam += _T(" ");
+					}
+
+					oneparam += arg;
 				}
 
-				if (takeNext)
+				CFileName fn(oneparam);
+			
+				// If it's a relative path, root it and
+				// make arg point to it.
+				if(fn.IsRelativePath())
 				{
-					arg = __wargv[++i];
-					params.insert(params.end(), arg);
+					fn.Root(curDir);
+					oneparam = fn.c_str();
+				}
+
+				params.insert(params.end(), oneparam);
+			}
+			else
+			{
+				params.insert(params.end(), arg);
+
+				if (i < (__argc - 1))
+				{
+					bool takeNext = ( arg[1] == _T('l') || arg[1] == _T('c') || arg[1] == _T('p') );
+
+					if ( arg[1] == _T('-') )
+					{
+						takeNext = ( arg[2] == _T('l') || arg[2] == _T('c') || arg[2] == _T('p') );
+					}
+
+					if (takeNext)
+					{
+						arg = __wargv[++i];
+						params.insert(params.end(), arg);
+					}
 				}
 			}
 		}

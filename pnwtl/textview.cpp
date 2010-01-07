@@ -1734,6 +1734,8 @@ void CTextView::updateInsertClip()
 				end = start + chunkText.size();
 
 				IndicatorFillRange(start, chunkText.size());
+
+
 			}
 		}
 

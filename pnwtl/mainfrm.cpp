@@ -1132,6 +1132,28 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 					// notepad replacement.
 					skip = true;
 				}
+				else if (_tcsicmp(&parm[1], _T("1")) == 0)
+				{
+					// This parameter says that everything that follows is a single filename, remaining params are joined.
+					++i;
+
+					tstring oneparam;
+					
+					for (; i != parameters.end(); ++i)
+					{
+						if (oneparam.size())
+						{
+							oneparam += _T(" ");
+						}
+
+						oneparam += (*i);
+					}
+
+					std::list<tstring> newset;
+					newset.push_back(oneparam);
+					handleCommandLine(newset);
+					break;
+				}
 				else
 				{
 					skip = false;
