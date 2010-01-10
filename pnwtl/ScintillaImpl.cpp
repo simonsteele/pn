@@ -779,8 +779,8 @@ int CScintillaImpl::FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn
 		posFind = startPosition;
 		SetTarget(startPosition, startPosition);
 	}
-	
-	if ((posFind != -1) && (posFind <= endPosition)) 
+
+	if ((posFind != -1) && (posFind <= endPosition))
 	{
 		int lastMatch = posFind;
 
@@ -795,10 +795,20 @@ int CScintillaImpl::FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn
 			// For the special cases of start of line and end of line
 			// Something better could be done but there are too many special cases
 			if (lenTarget <= 0)
+			{
 				lastMatch++;
+			}
 
-			SetTarget(lastMatch, endPosition);
-			posFind = SearchInTarget(lenFind, localFindText.c_str());
+			if (lastMatch < endPosition)
+			{
+				SetTarget(lastMatch, endPosition);
+				posFind = SearchInTarget(lenFind, localFindText.c_str());
+			}
+			else
+			{
+				// we hit document end
+				posFind = -1;
+			}
 		}
 	}
 
