@@ -13,6 +13,7 @@
 
 #include "include/optionsdialog.h"
 #include "include/sslistctrl.h"
+#include "controls/OptionsBlockHeader.h"
 #include "optionscontrols.h"
 #include "StyleTabPages.h"
 #include "SchemeConfig.h"
@@ -60,6 +61,8 @@ class COptionsPageEditDefaults : public COptionsPageImpl<COptionsPageEditDefault
 		EPNSaveFormat	m_SaveFormat;
 		ECodePage		m_CodePage;
 		int				m_CharSet;
+
+		COptionsBlockHeader m_defaultsHeader;
 };
 
 class COptionsPageConf : public COptionsPageImpl<COptionsPageConf>,
@@ -86,8 +89,14 @@ class COptionsPageConf : public COptionsPageImpl<COptionsPageConf>,
 
 		int m_iReOpen;
 		int m_iReDrop;
+
+		COptionsBlockHeader m_settingsHeader;
 };
 
+/**
+ * "Interface" options page, was once "Dialogs". Options here for turning on and off
+ * bits of the UI.
+ */
 class COptionsPageDialogs : public COptionsPageImpl<COptionsPageDialogs>,
 							public CWinDataExchange<COptionsPageDialogs>
 {
@@ -96,6 +105,7 @@ class COptionsPageDialogs : public COptionsPageImpl<COptionsPageDialogs>,
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
+		
 		enum { IDD = IDD_PAGE_DIALOGS };
 
 		BEGIN_DDX_MAP(COptionsPageDialogs)
@@ -103,6 +113,7 @@ class COptionsPageDialogs : public COptionsPageImpl<COptionsPageDialogs>,
 			DDX_CHECK(IDC_FINDALPHACHECK,		m_bFindAlpha)
 			DDX_CHECK(IDC_CLOSEONFINDNEXTCHECK,	m_bCloseFindNext)
 			DDX_CHECK(IDC_SHOWEDITORTOOLBARCHECK, m_bShowEditorToolbar)
+			DDX_CHECK(IDC_ENABLECOMMANDBAR_CHECK, m_bEnableCmdBar)
 		END_DDX_MAP()
 
 		virtual void OnOK();
@@ -116,8 +127,14 @@ class COptionsPageDialogs : public COptionsPageImpl<COptionsPageDialogs>,
 		BOOL m_bFindAlpha;
 		BOOL m_bCloseFindNext;
 		BOOL m_bShowEditorToolbar;
+		BOOL m_bEnableCmdBar;
 
 		std::map<int, tstring> m_lcid_map;
+
+		COptionsBlockHeader m_languageHeader;
+		COptionsBlockHeader m_dialogsHeader;
+		COptionsBlockHeader m_findHeader;
+		COptionsBlockHeader m_settingsHeader;
 };
 
 class COptionsPageSchemes : public COptionsPageImpl<COptionsPageSchemes>
@@ -218,9 +235,10 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 		LRESULT OnListClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 		LRESULT OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
+		void initControls(LPCTSTR itemTitle);
+
 	protected:
 		bool				m_bChanging;
-		CSchemeCombo		m_combo;
 		CSSListCtrl			m_list;
 		SchemeConfigParser* m_pSchemes;
 		SchemeDetails*		m_pScheme;
@@ -230,6 +248,9 @@ class COptionsPageTools : public COptionsPageImpl<COptionsPageTools>
 
 		CArrowButton		m_btnMoveUp;
 		CArrowButton		m_btnMoveDown;
+
+	private:
+		CSchemeCombo		m_combo;
 };
 
 class COptionsPageProjectTools : public COptionsPageTools
@@ -255,10 +276,9 @@ class COptionsPageProjectTools : public COptionsPageTools
 		virtual CComboBox* getCombo();
 		virtual void updateFromSel(int iSel);
 
-	protected:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
-	protected:
+	private:
 		CComboBox	m_combo;
 		Projects::ProjectTemplate* m_pTemplate;
 };
@@ -308,6 +328,9 @@ class COptionsPageNewFiles : public COptionsPageImpl<COptionsPageNewFiles>
 		SchemeConfigParser*	m_pSchemes;
 		CSchemeCombo		m_combo;
 		CButton				m_ssCheck;
+
+		COptionsBlockHeader m_settingsHeader;
+		COptionsBlockHeader m_smartStartHeader;
 };
 
 class SetsList;
@@ -346,10 +369,12 @@ class COptionsPageAFiles : public COptionsPageImpl<COptionsPageAFiles>
 
 		void addItem(LPCTSTR set1, LPCTSTR set2, AlternateFileSet* lpData);
 
-	protected:
+	private:
 		CListViewCtrl	m_list;
 		SetsList*		sets;
 		bool			m_bDirty;
+
+		COptionsBlockHeader m_settingsHeader;
 };
 
 #include "FileAssoc.h"
@@ -433,13 +458,19 @@ class COptionsPageFileAssoc : public COptionsPageImpl<COptionsPageFileAssoc>,
 		COLORREF		m_colors[2];
 };
 
-class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
+class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>,
+						      public CWinDataExchange<COptionsPageFileTypes>
 {
 	public:
 		COptionsPageFileTypes(SchemeConfigParser* schemes);
 		~COptionsPageFileTypes();
 
 		enum {IDD = IDD_PAGE_FILETYPES};
+
+		BEGIN_DDX_MAP(COptionsPageNewFiles)
+			DDX_CHECK(IDC_STRIPBEFORESAVE_CHECK, m_bStripTrailingOnSave)
+			DDX_CHECK(IDC_ENSUREBLANKLINE_CHECK, m_bEnsureBlankLine)
+		END_DDX_MAP()
 
 		BEGIN_MSG_MAP(COptionsPageFileTypes)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -455,7 +486,7 @@ class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
 		virtual void OnCancel();
 		virtual tstring GetTreePosition();
 
-	protected:
+	private:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 		LRESULT OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -464,16 +495,20 @@ class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>
 
 		LRESULT OnListDblClicked(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
-	protected:
+	private:
 		void addItem(int index, LPCTSTR ext, Scheme* pScheme, bool isFilename);
 		void clear();
 
-	protected:
 		SchemeConfigParser* m_schemes;
 		CListViewCtrl		m_list;
 		SCHEME_MAP*			m_pExtMap;
 		SCHEME_MAP*			m_pFilenameMap;
 		bool				m_bDirty;
+		BOOL				m_bStripTrailingOnSave;
+		BOOL				m_bEnsureBlankLine;
+
+		COptionsBlockHeader m_settingsHeader;
+		COptionsBlockHeader m_optionsHeader;
 };
 
 #include "OptionsPageGeneral.h"

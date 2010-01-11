@@ -15,6 +15,8 @@ typedef WIN32_FILE_ATTRIBUTE_DATA FileAttributes_t;
 
 bool RemoveReadOnly(LPCTSTR filename);
 
+bool SetReadOnly(LPCTSTR filename);
+
 bool FileIsReadOnly(LPCTSTR filename);
 
 bool CreateBackupFile(LPCTSTR path, LPCTSTR prefix, LPCTSTR extension);

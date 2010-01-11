@@ -1185,7 +1185,9 @@ void Workspace::Save()
 
 	genxStartDocFile(w, hFile);
 	genxStartElementLiteral(w, NULL, u("Workspace"));
-	genxAddAttributeLiteral(w, NULL, u("name"), u(name.c_str()));
+	
+	Tcs_Utf8 nameconv(name.c_str());
+	genxAddAttributeLiteral(w, NULL, u("name"), u(nameconv));
 
 	CFileName wspFN(fileName.c_str());
 	tstring wspPath = wspFN.GetPath();
@@ -1197,10 +1199,10 @@ void Workspace::Save()
 		Project* p = (*i);
 		
 		CFileName pfn(p->GetFileName().c_str());
-		tstring relpath = pfn.GetRelativePath(wspPath.c_str());
+		Tcs_Utf8 relPath(pfn.GetRelativePath(wspPath.c_str()).c_str());
 
 		genxStartElementLiteral(w, NULL, u("Project"));
-		genxAddAttributeLiteral(w, NULL, u("path"), u(relpath.c_str()));
+		genxAddAttributeLiteral(w, NULL, u("path"), u(relPath));
 		genxEndElement(w);
 	}
 

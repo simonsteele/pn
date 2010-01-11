@@ -65,7 +65,8 @@ void DocSink::OnBeforeSave(const wchar_t* filename)
 {
 	try
 	{
-		boost::python::call_method<void>(g_app->PyPnGlue().ptr(), "onDocSave", filename, (m_doc));
+		std::wstring fn(filename);
+		boost::python::call_method<void>(g_app->PyPnGlue().ptr(), "onDocSave", fn, (m_doc));
 	}
 	catch(error_already_set&)
 	{

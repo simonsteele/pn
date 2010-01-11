@@ -27,21 +27,22 @@
 #include "jumpview.h"
 #include "tools.h"
 #include "resource.h"
+#include "controls/commandbaredit.h"
 
 typedef enum {EP_LINE, EP_COL} EGPType;
 
 class COutputView;
 class DocScript;
 class AutoCompleteManager;
-
-namespace TextClips
-{
-	class TextClipsManager;
-}
+namespace TextClips { class TextClipsManager; }
 
 #define CHAIN_OUTPUT_COMMANDS() \
 	if(uMsg == WM_COMMAND && m_hWndOutput != NULL) \
 		::SendMessage(m_hWndOutput, uMsg, wParam, lParam);
+
+#define CHAIN_PN_CLIENT_COMMANDS() \
+	if(uMsg == WM_COMMAND && m_hWndClient != NULL) \
+		::SendMessage(m_focusView->GetHwnd(), uMsg, wParam, lParam);
 
 /**
  * @brief Programmers Notepad 2 MDI Child window.
@@ -54,7 +55,7 @@ public:
 	typedef CTabbedMDIChildWindowImpl<CChildFrame> baseClass;
 
 	CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::TextClipsManager* textclips, AutoCompleteManager* autoComplete);
-	~CChildFrame();
+	virtual ~CChildFrame();
 	virtual void OnFinalMessage(HWND /*hWnd*/);
 
 	BEGIN_MSG_MAP(CChildFrame)
@@ -132,6 +133,20 @@ public:
 
 		COMMAND_ID_HANDLER(ID_PROJECT_ADDTHISFILE, OnProjectAddFile)
 
+		COMMAND_ID_HANDLER(ID_WINDOW_SPLITHORIZONTAL, OnSplitHorizontal)
+		COMMAND_ID_HANDLER(ID_WINDOW_SPLITVERTICAL, OnSplitVertical)
+		COMMAND_ID_HANDLER(ID_WINDOW_CLOSESPLIT, OnCloseSplit)
+
+		COMMAND_ID_HANDLER(ID_FILE_CLOSEALL, OnFileCloseAll)
+		COMMAND_ID_HANDLER(ID_WINDOW_CLOSEALLOTHER, OnWindowCloseAllOther)
+
+		COMMAND_ID_HANDLER(ID_EDIT_FOCUSCOMMAND, OnFocusCommand)
+		COMMAND_ID_HANDLER(ID_EDIT_FOCUSTEXTVIEW, OnFocusTextView)
+		COMMAND_HANDLER(cwCommandWnd, EN_CHANGE, OnCommandNotify)
+		COMMAND_HANDLER(cwCommandWnd, BN_CLICKED, OnCommandEnter)
+		COMMAND_HANDLER(cwCommandWnd, BN_SETFOCUS, OnCommandGotFocus)
+		COMMAND_HANDLER(cwCommandWnd, BN_KILLFOCUS, OnCommandLostFocus)
+
 		COMMAND_RANGE_HANDLER(ID_ENCODING_8, ID_ENCODING_UTF8NOBOM, OnEncodingSelect)
 
 		NOTIFY_CODE_HANDLER(TBN_GETINFOTIP, OnGetInfoTip)
@@ -145,7 +160,7 @@ public:
 		
 		// Chaining
 		CHAIN_MSG_MAP(baseClass)
-		CHAIN_CLIENT_COMMANDS()
+		CHAIN_PN_CLIENT_COMMANDS()
 		CHAIN_OUTPUT_COMMANDS()
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
@@ -170,7 +185,7 @@ public:
 
 	struct _PoorMansUIEntry
 	{
-		int nID;
+		UINT nID;
 		WORD wState;
 	};
 
@@ -190,7 +205,7 @@ public:
 
 	void SetTitle(bool bModified = false);
 	tstring GetFileName(EGFNType type = FN_FULL);
-	LPCTSTR GetTitle();
+	tstring GetTitle();
 	bool GetModified();
 	bool GetWriteProtect();
 
@@ -257,11 +272,22 @@ public:
 	LRESULT OnEncodingSelect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnViewFileProps(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnProjectAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnSplitHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnSplitVertical(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCloseSplit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFocusCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFocusTextView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCommandNotify(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCommandEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCommandGotFocus(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnCommandLostFocus(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnJumpTo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnWriteProtectToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-
+	LRESULT OnWindowCloseAllOther(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFileCloseAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	
 	bool OnRunTool(LPVOID pTool);
 
 	////////////////////////////////////////////////////
@@ -320,6 +346,9 @@ public:
 	void StopRecord();
 	bool IsRecording();
 
+	// View Management
+	void SetLastView(Views::ViewPtr& view);
+
 private:
 	// Window IDs we use, designed to avoid the WM_COMMAND ctrl id range
 	enum tagChildWindowIds
@@ -327,20 +356,11 @@ private:
 		cwScintilla = 0x10000,
 		cwMinibar = 0x20000,
 		cwOutputView = 0x30000,
-		cwSplitter = 0x40000
-	};
-
-	/**
-	 * Internal class which adjusts the splitter behaviour to take account
-	 * of the mini-bar.
-	 */
-	class CCFSplitter : public CWTLSplitter<CCFSplitter>
-	{
-	public:
-		CCFSplitter(CChildFrame* pFrame) : m_pFrame(pFrame){}
-		void GetOwnerClientRect(HWND hOwner, LPRECT lpRect);
-	protected:
-		CChildFrame* m_pFrame;
+		cwSplitter = 0x40000,
+		cwViewSplitter = 0x50000,
+		
+		// This one we want commands from:
+		cwCommandWnd = 0x1000
 	};
 
 	void LoadExternalLexers();
@@ -358,36 +378,66 @@ private:
 	void setReadOnly(bool newValue, bool setAttributes);
 	void findNextWordUnderCursor(bool backwards);
 	void updateViewKeyBindings();
+	void splitSelectedView(bool horizontal);
+	void removeSplit(bool closeCurrent);
+	void setMDIFrameMenu();
+	HMENU getWindowMenu();
 
 	CommandDispatch*	m_pCmdDispatch;
 	DocumentPtr			m_spDocument;
 	static bool			s_bFirstChild;
-	HWND				m_hWndOutput;
 	HIMAGELIST			m_hImgList;
-	CTextView			m_view;
-	CString				m_Title;
 	uint64_t			m_FileAge;
 	bool				m_bModifiedOverride;
 	bool				m_bClosing;
 	bool				m_bReadOnly;
 	bool				m_bIgnoreUpdates;
+	bool				m_bHandlingCommand;
+	HWND				m_hWndOutput;
+	CCommandBarEdit		m_cmdTextBox;
 	TextClips::TextClipsManager*	m_pTextClips;
 	
 	int					m_iFirstToolCmd;
 
-	CCFSplitter*		m_pSplitter;
-	COutputView*		m_pOutputView;
+	AutoCompleteManager* m_autoComplete;
+
 	DocScript*			m_pScript;
+
+	/**
+	 * The prime view at any point is the virtual-root of the view tree, it sits
+	 * just above base view, but base view doesn't know anything about it. This gets
+	 * changed out when we split the top-level view.
+	 */
+	Views::ViewPtr		m_primeView;
+	
+	/**
+	 * This is the last focused view, regardless of type. Not really needed with
+	 * only one focusable view type, but this will expand in the future.
+	 */
+	Views::ViewPtr		m_focusView;
+
+	/**
+	 * Pointer to the last text view that was focused, this allows us to perform
+	 * edit commands where the user would expect them to be done.
+	 */
+	Views::ViewPtr		m_lastTextView;
+	
+	/**
+	 * Pointer to our base view instance - this is the root of the view
+	 * tree, and never changes. It feeds CChildFrame view focus notifications.
+	 */
+	Views::ViewPtr		m_baseView;
+
+	/**
+	 * If you're using individual output windows then this view will get inserted
+	 * below the top-level view to split and display the output window.
+	 */
+	Views::ViewPtr		m_outputView;
 
 	///@todo move this into COptionsManager
 	SPrintOptions		m_po;
 
 	_PoorMansUIEntry*	m_pUIData;
 };
-
-/////////////////////////////////////////////////////////////////////////////
-
-//{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
 #endif // !defined(CHILDFRM_H__INCLUDED)

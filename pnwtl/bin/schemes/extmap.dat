@@ -47,6 +47,7 @@
 .js=javascript
 .lisp=lisp
 .lsp=lisp
+.lua=lua
 .mod=modula2
 .pag=vb
 .pas=pascal

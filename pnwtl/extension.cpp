@@ -20,7 +20,18 @@ Extension::Extension(LPCTSTR filename, IPN* app) : Plugin(filename), m_bValid(fa
 					m_bValid = true;
 #ifndef _DEBUG
 				}
-				catch(...)
+				catch (std::exception& cppexception)
+				{
+					CFileName fn(filename);
+					tstring msg(_T("Extension "));
+					msg += fn.GetFileName();
+					msg += _T(" has experienced an error on load, and will not be available:\n");
+					
+					CA2CT what(cppexception.what());
+					msg += what;
+					UNEXPECTED(msg.c_str());
+				}
+				catch (...)
 				{
 					UNEXPECTED(_T("Loading an extension for Programmer's Notepad has caused a problem, and the application will now close. Please try running in safe mode and disabling extensions to resolve this problem."));
 					throw;

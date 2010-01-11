@@ -100,8 +100,6 @@ public:
 		if ((m_fBound) || (m_pac))
 			return FALSE;
 
-		LPOLESTR pFormatString = NULL;
-
 		HRESULT hr = S_OK;
 
 		hr = m_pac.CoCreateInstance(CLSID_AutoComplete);
@@ -155,7 +153,7 @@ public:
 		{
 			if (std::find(m_asList.begin(), m_asList.end(), p_sItem) == m_asList.end())
 			{
-				if (m_asList.size() == m_nMaxElements)
+				if (m_asList.size() == (size_t)m_nMaxElements)
 				{
 					static_cast<TStorage*>(this)->RemoveFromStorage(m_asList.back());
 					m_asList.resize(m_asList.size()-1);

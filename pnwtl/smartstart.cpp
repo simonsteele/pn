@@ -37,6 +37,9 @@ SmartStart::SmartStart() : m_buffer(NULL)
 		m_Map.insert(SM_VT(std::string("<html"), std::string("web")));
 		m_Map.insert(SM_VT(std::string("<!--"), std::string("xml")));
 		m_Map.insert(SM_VT(std::string("import"), std::string("python")));
+		m_Map.insert(SM_VT(std::string("#!/usr/bin/perl"), std::string("perl")));
+		m_Map.insert(SM_VT(std::string("#!/usr/local/bin/perl"), std::string("perl")));
+		m_Map.insert(SM_VT(std::string("#!/usr/bin/env python"), std::string("python")));
 	}
 	else
 	{

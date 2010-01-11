@@ -166,6 +166,7 @@ public:
 	bool useTabs;
 	bool tabIndents;
 	bool backspaceUnindents;
+	bool performingStyle;		///< Prevent reentrance
 
 	DecorationList decorations;
 

@@ -32,6 +32,8 @@
 #include "editorcommands.h"
 #include "tabbingframework/TabbedMDISave.h"
 #include "extapp.h"
+#include "include/filefinder.h"
+#include "views/splitview.h"
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -44,22 +46,55 @@ bool CChildFrame::s_bFirstChild = true;
 #define USERLIST_TEXTCLIPS 1
 #define TOOLS_MENU_INDEX 5
 
+namespace { // Implementation details:
+
+class BaseView : public Views::View
+{
+public:
+	BaseView(CChildFrame* owner) : Views::View(Views::vtRoot, Views::ViewPtr()), m_owner(owner)
+	{
+
+	}
+
+	virtual ~BaseView()
+	{
+	}
+
+	HWND GetHwnd()
+	{
+		return m_owner->m_hWnd;
+	}
+
+protected:
+	void NotifyGotFocus(Views::ViewPtr& focused)
+	{
+		m_owner->SetLastView(focused);
+	}
+
+private:
+	CChildFrame* m_owner;
+};
+
+}
+
 CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::TextClipsManager* textclips, AutoCompleteManager* autoComplete) : 
 	m_spDocument(doc), 
-	m_view(doc, commands, autoComplete),
+	m_primeView(new CTextView(doc, Views::ViewPtr(), commands, autoComplete)),
+	m_lastTextView(m_primeView),
+	m_focusView(m_primeView),
+	m_autoComplete(autoComplete),
 	m_pCmdDispatch(commands),
 	m_pTextClips(textclips),
-	m_hWndOutput(NULL),
 	m_hImgList(NULL),
-	m_pSplitter(NULL),
-	m_pOutputView(NULL),
 	m_bClosing(false),
 	m_pScript(NULL),
 	m_FileAge(-1),
 	m_iFirstToolCmd(ID_TOOLS_DUMMY),
 	m_bModifiedOverride(false),
 	m_bReadOnly(false),
-	m_bIgnoreUpdates(false)
+	m_bIgnoreUpdates(false),
+	m_bHandlingCommand(false),
+	m_hWndOutput(NULL)
 {
 	m_po.hDevMode = 0;
 	m_po.hDevNames = 0;
@@ -67,6 +102,9 @@ CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::
 	OPTIONS->LoadPrintSettings(&m_po);
 
 	InitUpdateUI();
+
+	m_baseView.reset(new BaseView(this));
+	m_primeView->SetParentView(m_baseView);
 }
 
 CChildFrame::~CChildFrame()
@@ -81,11 +119,6 @@ CChildFrame::~CChildFrame()
 	if(m_hImgList)
 		::ImageList_Destroy(m_hImgList);
 
-	if(m_pSplitter)
-		delete m_pSplitter;
-
-	if(m_pOutputView)
-		delete m_pOutputView;
 	if(m_pUIData)
 		delete [] m_pUIData;
 }
@@ -108,15 +141,9 @@ void CChildFrame::UpdateLayout(BOOL bResizeBars)
 	// position bars and offset their dimensions
 	UpdateBarsPosition(rect, bResizeBars);
 
-	// resize client window
-	if(m_pSplitter)
+	if (/*m_primeView.get() || */m_hWndClient != NULL)
 	{
-		m_pSplitter->UpdateLayout(true);
-		return;
-	}
-
-	if(m_hWndClient != NULL)
-	{
+		// Our m_hWndClient will always be the prime view, regardless of type...
 		::SetWindowPos(m_hWndClient, NULL, rect.left, rect.top,
 			rect.right - rect.left, rect.bottom - rect.top,
 			SWP_NOZORDER | SWP_NOACTIVATE);
@@ -136,6 +163,18 @@ void CChildFrame::UpdateBarsPosition(RECT& rect, BOOL bResizeBars)
 
 		RECT rectTB;
 		::GetWindowRect(m_hWndToolBar, &rectTB);
+		rect.bottom -= rectTB.bottom - rectTB.top;
+	}
+
+	if (m_cmdTextBox.m_hWnd != NULL)
+	{
+		if (bResizeBars)
+		{
+			m_cmdTextBox.SetWindowPos(HWND_TOP, rect.left, rect.bottom - 22, rect.right-rect.left, 22, SWP_NOACTIVATE | SWP_NOZORDER);
+		}
+
+		RECT rectTB;
+		m_cmdTextBox.GetWindowRect(&rectTB);
 		rect.bottom -= rectTB.bottom - rectTB.top;
 	}
 
@@ -205,48 +244,57 @@ void CChildFrame::SetupToolbar()
 
 void CChildFrame::EnsureOutputWindow()
 {
-	if(!m_pSplitter)
+	if (!m_outputView.get())
 	{
-		m_pSplitter = new CCFSplitter(this);
-		
-		m_pSplitter->SetHorizontal( OPTIONS->Get(PNSK_EDITOR, _T("OutputSplitHorizontal"), true) );
+		// TODO: This code should share with the split windows code:
+		Views::ViewPtr parent(m_primeView->GetParentView());
 
 		CRect rc;
-		GetClientRect(rc);
-		UpdateBarsPosition(rc, FALSE);
+		::GetClientRect(m_primeView->GetHwnd(), rc);
+		
+		m_outputView.reset(new COutputView);
+		COutputView* view = static_cast<COutputView*>(m_outputView.get());
 
 		CRect rc2(rc);
 		rc2.top += (rc.Height() / 4) * 3;
 
-		m_pOutputView = new COutputView;
-		m_pOutputView->Create(m_hWnd, rc2, _T("Output"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwOutputView);
-		m_hWndOutput = m_pOutputView->m_hWnd;
+		m_hWndOutput = view->Create(m_hWnd, rc2, _T("Output"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwOutputView);
 
-		m_pSplitter->Create(m_hWnd, rc, _T("Splitter"), 0, 0, cwSplitter);
-		m_pSplitter->SetPanes((HWND)m_view, m_pOutputView->m_hWnd);
-		m_pSplitter->ProportionSplit();
-		m_pSplitter->SetSinglePaneMode(SPLITTER_TOP);
+		Views::ESplitType split = OPTIONS->Get(PNSK_EDITOR, _T("OutputSplitHorizontal"), true) ? Views::splitHorz : Views::splitVert;
+
+		Views::ViewPtr newView(Views::SplitView::MakeSplitView(split, parent, m_primeView, m_outputView));
+		Views::SplitView* sv = static_cast<Views::SplitView*>(newView.get());
+				
+		HWND hWndSplit = sv->Create(parent->GetHwnd(), rc, cwSplitter);
+
+		m_primeView = newView;
+		m_hWndClient = hWndSplit;
+
+		UpdateLayout();
 	}
 }
 
 void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 {
-	bool bShow;
-	bool bVisible = ((m_pSplitter != NULL) ? m_pSplitter->GetSinglePaneMode() == SPLITTER_NORMAL : false);
-	if(bSetValue)
-		bShow = bSetShowing;
-	else
-		bShow = !bVisible;
+	bool bVisible(true);
+	if (!m_outputView.get())
+	{
+		EnsureOutputWindow();
+		bVisible = false;
+	}
 
-	EnsureOutputWindow();
+	Views::SplitView* sv = static_cast<Views::SplitView*>(m_outputView->GetParentView().get());
+	
+	bVisible = bVisible && sv->GetSinglePaneMode() == SPLITTER_NORMAL;
+	bool bShow = bSetValue ? bSetShowing : !bVisible;
 
 	if(bShow && !bVisible)
 	{
-		m_pSplitter->DisableSinglePaneMode();
+		sv->SetSinglePaneMode(SPLITTER_NORMAL);
 	}
 	else if(!bShow && bVisible)
 	{
-		m_pSplitter->SetSinglePaneMode(SPLITTER_TOP);
+		sv->SetSinglePaneMode(SPLITTER_TOP);
 	}
 
 	UISetChecked(ID_VIEW_INDIVIDUALOUTPUT, bShow);
@@ -261,16 +309,25 @@ bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 	int colon = text.find(':');
 	text.resize(colon);
 
-	const TextClips::TextClipSet* set = m_pTextClips->GetClips( m_view.GetCurrentScheme()->GetName() );
+	const TextClips::TextClipSet* set = m_pTextClips->GetClips( GetTextView()->GetCurrentScheme()->GetName() );
 	if(set != NULL)
 	{
 		const TextClips::Clip* clip = set->FindByShortcut(text);
 		if(clip != NULL)
 		{
-			m_view.BeginUndoAction();
-			m_view.DelWordLeft();
-			clip->Insert(&m_view);
-			m_view.EndUndoAction();
+#ifdef CLIPS_DEV
+			GetTextView()->DelWordLeft();
+
+			std::vector<TextClips::Chunk> chunks;
+			clip->GetChunks(chunks);
+			GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
+#else
+			GetTextView()->BeginUndoAction();
+			GetTextView()->DelWordLeft();
+			GetTextView()->EndUndoAction();
+
+			clip->Insert(GetTextView());
+#endif
 		}
 	}
 
@@ -314,70 +371,28 @@ DocumentPtr CChildFrame::GetDocument() const
 	return m_spDocument;
 }
 
-void CChildFrame::SetTitle( bool bModified )
+void CChildFrame::SetTitle(bool bModified)
 {
-	tstring fn = m_spDocument->GetFileName();
-	LPCTSTR sFullPath = fn.c_str();
+	tstring fn(m_spDocument->GetFileName());
+	tstring title(m_spDocument->GetTitle());
+	tstring tabTitle(title);
 
-	tstring filepart;
-	
-	tstring title;
-	tstring tabTitle;
-
-	if(_tcschr(sFullPath, _T('<')) != 0)
+	if (fn.length() && OPTIONS->GetCached(Options::OShowFullPath))
 	{
-		// no filename yet...
-		title = tabTitle = _T("<new>");
-	}
-	else
-	{
-		if( _tcschr(sFullPath, _T('\\')) != NULL )
-		{
-			CFileName fn(sFullPath);
-			filepart = fn.GetFileName();
-		}
-		else
-			filepart = sFullPath;
-		
-		if( OPTIONS->GetCached(Options::OShowFullPath) )
-		{
-			title = sFullPath;
-			tabTitle = filepart;
-		}
-		else
-		{
-			title = filepart;
-			tabTitle = filepart;
-		}
-
+		title = fn.c_str();
 	}
 
-	if(bModified)
+	if (bModified)
 	{
 		title += _T(" *");
 		tabTitle += _T(" *");
 	}
 
-	if (m_bReadOnly)
-	{
-		::SendMessage(GetParent(), UWM_MDICHILDICONCHANGE, reinterpret_cast<WPARAM>(m_hWnd), 0);
-	}
-	else
-	{
-		::SendMessage(GetParent(), UWM_MDICHILDICONCHANGE, reinterpret_cast<WPARAM>(m_hWnd), -1);
-	}
-
-	/*if(m_bReadOnly)
-	{
-		title += " (ReadOnly)";
-		tabTitle += " (ReadOnly)";
-	}*/
+	::SendMessage(GetParent(), UWM_MDICHILDICONCHANGE, reinterpret_cast<WPARAM>(m_hWnd), m_bReadOnly ? 0 : -1);
 
 	SetWindowText(title.c_str());
 	SetTabText(tabTitle.c_str());
-	SetTabToolTip(sFullPath);
-	
-	m_Title = sFullPath;
+	SetTabToolTip(fn.c_str());
 
 	MDIRefreshMenu();
 }
@@ -387,14 +402,14 @@ tstring CChildFrame::GetFileName(EGFNType type)
 	return m_spDocument->GetFileName(type);
 }
 
-LPCTSTR CChildFrame::GetTitle()
+tstring CChildFrame::GetTitle()
 {
-	return m_Title;
+	return m_spDocument->GetTitle();
 }
 
 bool CChildFrame::GetModified()
 {
-	return m_view.GetModified() || m_bModifiedOverride;
+	return GetTextView()->GetModified() || m_bModifiedOverride;
 }
 
 bool CChildFrame::CanClose()
@@ -404,7 +419,7 @@ bool CChildFrame::CanClose()
 	if(GetModified())
 	{
 		CString title;
-		title.Format(IDS_SAVE_CHANGES, GetTitle());
+		title.Format(IDS_SAVE_CHANGES, GetTitle().c_str());
 		int res = MessageBox(title, LS(IDR_MAINFRAME), MB_YESNOCANCEL | MB_ICONQUESTION);
 		switch (res)
 		{
@@ -430,43 +445,38 @@ bool CChildFrame::CanClose()
 	return bRet;
 }
 
+/**
+ * Functor to load lexers we find.
+ */
+struct LexerLoader
+{
+	LexerLoader(CTextView* view) : m_view(view){}
+
+	void operator ()(LPCTSTR path, FileFinderData& match, bool& shouldContinue)
+	{
+		CFileName to_open(match.GetFilename());
+		to_open.Root(path);
+		CT2CA lexerPath(to_open.c_str());
+		m_view->SPerform(SCI_LOADLEXERLIBRARY, 0, StrToLp(lexerPath));
+	}
+
+	CTextView* m_view;
+};
+
 void CChildFrame::LoadExternalLexers()
 {
-	HANDLE hFind;
-	WIN32_FIND_DATA FindFileData;
-
 	tstring sPath;
 	OPTIONS->GetPNPath(sPath, PNPATH_SCHEMES);
 
-	tstring sPattern(sPath);
-	sPattern += _T("*.lexer");
-
-	hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
-	if (hFind != INVALID_HANDLE_VALUE)
-	{
-		//Found the first file...
-		BOOL found = TRUE;
-		tstring to_open;
-
-		while (found) 
-		{
-			to_open = sPath;
-			to_open += FindFileData.cFileName;
-			m_view.SPerform(SCI_LOADLEXERLIBRARY, 0, reinterpret_cast<LPARAM>( to_open.c_str()));
-			found = FindNextFile(hFind, &FindFileData);
-		}
-
-		FindClose(hFind);
-	}
+	FileFinderFunctor<LexerLoader>(LexerLoader(GetTextView())).Find(sPath.c_str(), _T("*.lexer"), false);
 }
-
 
 ////////////////////////////////////////////////////
 // Message Handlers
 
 LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	m_hWndClient = m_view.Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwScintilla);
+	m_hWndClient = GetTextView()->Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwScintilla);
 
 	if(s_bFirstChild)
 	{
@@ -480,6 +490,25 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 		SetupToolbar();
 	}
 
+	CSMenuHandle menu(m_hMenu);
+
+	// This is where we enable the prototype command bar
+	if (OPTIONS->Get(PNSK_INTERFACE, _T("Commandbar"), false))
+	{
+		CRect rcTextBox;
+		GetClientRect(rcTextBox);
+		rcTextBox.top  = rcTextBox.bottom - 22;
+		
+		if (m_hWndToolBar != NULL)
+			rcTextBox.MoveToY(rcTextBox.top - MINI_BAR_HEIGHT);
+		
+		m_cmdTextBox.Create(m_hWnd, rcTextBox, _T(""), WS_CHILD | WS_VISIBLE, 0, cwCommandWnd);
+		HFONT fn = (HFONT)::GetStockObject(DEFAULT_GUI_FONT);
+		m_cmdTextBox.SetFont(fn);
+
+		menu.EnableMenuItem(ID_EDIT_FOCUSCOMMAND, true);
+	}
+
 	m_pCmdDispatch->UpdateMenuShortcuts(m_hMenu);
 
 	UISetChecked(ID_EDITOR_COLOURISE, true);
@@ -487,7 +516,7 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	UISetChecked(ID_EDITOR_LINENOS, OPTIONS->GetCached(Options::OLineNumbers) != 0);
 	UISetChecked(ID_TOOLS_LECONVERT, true);
 
-	m_view.ShowLineNumbers(OPTIONS->GetCached(Options::OLineNumbers) != 0);
+	GetTextView()->ShowLineNumbers(OPTIONS->GetCached(Options::OLineNumbers) != 0);
 	updateViewKeyBindings();
 
 	ExtensionItemList& items = g_Context.ExtApp->GetExtensionMenuItems();
@@ -500,8 +529,7 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 			i->BuildMenu(plugins, m_pCmdDispatch);
 		}
 
-		CSMenuHandle m(m_hMenu);
-		m.InsertSubMenuAtPosition(LS(IDS_EXTENSIONS_MENU), 4, plugins);
+		menu.InsertSubMenuAtPosition(LS(IDS_EXTENSIONS_MENU), 4, plugins);
 		plugins.Detach();
 	}
 
@@ -511,7 +539,7 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 	return 1;
 }
 
-LRESULT CChildFrame::OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+LRESULT CChildFrame::OnMDIActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	if (m_hWnd == (HWND)lParam)
 	{
@@ -523,8 +551,38 @@ LRESULT CChildFrame::OnMDIActivate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPar
 	//else // Deactivate
 	
 	UpdateMenu();
-	bHandled = FALSE;
-	return 0;
+	
+	// The base-class WM_MDIACTIVATE implementation breaks the window menu for localised builds
+	// and there's no way to avoid it but to handle this message completely here.
+	bHandled = TRUE;
+
+	BOOL fake(false);
+	baseClass::OnMDIActivate(uMsg, wParam, lParam, fake);
+	
+	if((HWND)lParam == m_hWnd && m_hMenu != NULL)
+	{
+		setMDIFrameMenu();
+	}
+	else if((HWND)lParam == NULL)
+	{
+		::SendMessage(GetMDIFrame(), WM_MDISETMENU, 0, 0);
+	}
+
+	return DefWindowProc(uMsg, wParam, lParam);
+}
+
+HMENU CChildFrame::getWindowMenu()
+{
+	CSMenuHandle menu(m_hMenu);
+	return menu.GetSubMenu(LS(IDS_MENU_WINDOW));
+}
+
+void CChildFrame::setMDIFrameMenu()
+{
+	HMENU hWindowMenu = getWindowMenu();
+	MDISetMenu(m_hMenu, hWindowMenu);
+	MDIRefreshMenu();
+	::DrawMenuBar(GetMDIFrame());
 }
 
 LRESULT CChildFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
@@ -585,11 +643,11 @@ LRESULT CChildFrame::OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 	if(CTabbedMDIChildWindowImpl<CChildFrame>::PreTranslateMessage(pMsg))
 		return TRUE;
 
-	if(pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE && GetFocus() == m_view.m_hWnd)
+	if(pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE && GetFocus() == GetTextView()->m_hWnd)
 		if(OnEscapePressed())
 			return TRUE;
 
-	return m_view.PreTranslateMessage(pMsg);
+	return GetTextView()->PreTranslateMessage(pMsg);
 }
 
 LRESULT CChildFrame::OnCheckAge(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -627,30 +685,173 @@ LRESULT CChildFrame::OnViewNotify(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 
 void CChildFrame::updateViewKeyBindings()
 {
-	m_view.SPerform(SCI_CLEARALLCMDKEYS, 0, 0);
+	GetTextView()->SPerform(SCI_CLEARALLCMDKEYS, 0, 0);
 	Commands::KeyMap* map = m_pCmdDispatch->GetCurrentScintillaMap();
 	const KeyToCommand* key = map->GetMappings();
 
 	for(size_t j = map->GetCount() - 1; j >= 0; j--)
 	{	
-		m_view.SPerform(SCI_ASSIGNCMDKEY, CodeToScintilla(&key[j]), key[j].msg);
+		GetTextView()->SPerform(SCI_ASSIGNCMDKEY, CodeToScintilla(&key[j]), key[j].msg);
 		if (j == 0)
 			break;
 	}
 }
 
+struct OptionsUpdateVisitor : public Views::Visitor
+{
+	OptionsUpdateVisitor(Scheme* scheme) : _scheme(scheme) {}
+	virtual void operator ()(Views::View* view)
+	{
+		if (view->GetType() == Views::vtText)
+		{
+			if (_scheme) static_cast<CTextView*>(view)->SetScheme(_scheme);
+			static_cast<CTextView*>(view)->ShowLineNumbers(OPTIONS->GetCached(Options::OLineNumbers) != 0);
+		}
+	}
+	Scheme* _scheme;
+};
+
+struct ViewUpdateVisitor : public Views::Visitor
+{
+	ViewUpdateVisitor(CTextView* other) : m_other(other) {}
+	virtual void operator ()(Views::View* view)
+	{
+		if (view->GetType() == Views::vtText)
+		{
+			CTextView* current = static_cast<CTextView*>(view);
+			if (current == m_other)
+			{
+				return;
+			}
+
+			current->SetScheme(m_other->GetCurrentScheme(), scfNoViewSettings | scfNoRestyle);
+			current->SetWrapMode(m_other->GetWrapMode());
+			current->SetViewEOL(m_other->GetViewEOL());
+			current->SetViewWS(m_other->GetViewWS());
+			current->SetMarginWidthN(0, m_other->GetMarginWidthN(0));
+			current->SetIndentationGuides(m_other->GetIndentationGuides());
+			current->SetPasteConvertEndings(m_other->GetPasteConvertEndings());
+		}
+	}
+	CTextView* m_other;
+};
+
+/**
+ * Split the currently selected view into two, with a new Scintilla control
+ * as the new split.
+ */
+void CChildFrame::splitSelectedView(bool horizontal)
+{
+	Views::ViewPtr parent = m_focusView->GetParentView();
+
+	// Create the view we're going to split into:
+	Views::ViewPtr newTextViewPtr(new CTextView(m_spDocument, Views::ViewPtr(), m_pCmdDispatch, m_autoComplete));	
+	CTextView* newTextView = static_cast<CTextView*>(newTextViewPtr.get());
+	newTextView->Create(parent->GetHwnd(), rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwScintilla+1);
+	newTextView->SetDocPointer(GetTextView()->GetDocPointer());
+
+	// Now we want the parent of the last-focused view to get a new child, the splitter.
+	// The splitter will have the last-focused view, and also the new text view.
+	Views::ViewPtr newView(Views::SplitView::MakeSplitView(horizontal ? Views::splitHorz : Views::splitVert, parent, m_focusView, newTextViewPtr));
+	Views::SplitView* sv = static_cast<Views::SplitView*>(newView.get());
+
+	CRect rc;
+	::GetClientRect(m_focusView->GetHwnd(), rc);
+	HWND hWndSplit = sv->Create(parent->GetHwnd(), rc, cwViewSplitter);
+
+	if (parent->GetType() == Views::vtSplit)
+	{
+		// Re-parent the child...
+		Views::SplitView* parentSplitter = static_cast<Views::SplitView*>(parent.get());
+		parentSplitter->SwapChildren(m_focusView, newView);
+	}
+
+	if (m_focusView == m_primeView)
+	{
+		m_primeView = newView;
+		m_hWndClient = hWndSplit;
+	}
+
+	// Now the view hierarchy is all sorted, we can restyle the document:
+	ViewUpdateVisitor visitor(GetTextView());
+	newTextView->Visit(visitor);
+
+	UpdateLayout();
+}
+
+void CChildFrame::removeSplit(bool closeCurrent)
+{
+	if (m_focusView->GetParentView()->GetType() != Views::vtSplit)
+	{
+		// Not a splitter contained view, we can't do anything.
+		return;
+	}
+
+	// Current parent:
+	Views::ViewPtr oldParent(m_focusView->GetParentView());
+	Views::SplitView* parentSplit = static_cast<Views::SplitView*>(oldParent.get());
+
+	if (oldParent == m_primeView)
+	{
+		// Make sure we're not trying to close the output splitter:
+		if (m_focusView == m_outputView)
+		{
+			return;
+		}
+
+		if (parentSplit->GetOtherChild(m_focusView) == m_outputView)
+		{
+			return;
+		}
+	}
+
+	// We are closing this view, so we want to keep the _other_ child.
+	Views::ViewPtr viewToKeep(closeCurrent ? parentSplit->GetOtherChild(m_focusView) : m_focusView);
+
+	// Swap parents:
+	Views::ViewPtr newParent(oldParent->GetParentView());
+	parentSplit->DetachView(viewToKeep);
+	viewToKeep->SetParentView(newParent);
+
+	// Work out how to slot into the hierarchy:
+	switch (newParent->GetType())
+	{
+	case Views::vtSplit:
+		{
+			Views::SplitView* splitView = static_cast<Views::SplitView*>(newParent.get());
+			
+			// Swap the children:
+			splitView->SwapChildren(oldParent, viewToKeep);
+		}
+		break;
+
+	case Views::vtRoot:
+		{
+			// We reached the bottom, we're now the prime view:
+			m_primeView = viewToKeep;
+			m_hWndClient = viewToKeep->GetHwnd();
+		}
+		break;
+
+	default:
+		break;
+	}
+
+	::SetParent(viewToKeep->GetHwnd(), newParent->GetHwnd());
+	m_focusView = viewToKeep;
+	oldParent.reset();
+	UpdateLayout();
+}
+
 LRESULT CChildFrame::OnOptionsUpdate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	Scheme* pS = m_view.GetCurrentScheme();
+	Scheme* pS = GetTextView()->GetCurrentScheme();
 	UpdateTools(pS);
 
-	// re-load the compiled scheme...
-	if(pS)
-		m_view.SetScheme(pS);
+	OptionsUpdateVisitor visitor(pS);
+	m_primeView->Visit(visitor);
 
-	m_view.ShowLineNumbers(OPTIONS->GetCached(Options::OLineNumbers) != 0);
-
-	// update scintilla shortcuts
+	// update scintilla shortcuts (does this need to be per view?)
 	updateViewKeyBindings();
 
 	UpdateMenu();
@@ -685,7 +886,7 @@ LRESULT CChildFrame::OnSchemeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lP
 
 LRESULT CChildFrame::OnProjectNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	UpdateTools(m_view.GetCurrentScheme());
+	UpdateTools(GetTextView()->GetCurrentScheme());
 	return 0;
 }
 
@@ -708,7 +909,7 @@ LRESULT CChildFrame::OnChildIsModified(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 		else
 		{
 			wstr = L"New File: ";
-			wstr += T2CW( (LPCTSTR)m_view.GetCurrentScheme()->GetTitle() );
+			wstr += T2CW( (LPCTSTR)GetTextView()->GetCurrentScheme()->GetTitle() );
 			pMI->put_Description( wstr.c_str() );
 		}
 
@@ -755,7 +956,7 @@ LRESULT CChildFrame::OnShowTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPAR
 LRESULT CChildFrame::OnPrint(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	m_po.Filename = m_spDocument->GetFileName(FN_FULL).c_str();
-	m_view.PrintDocument(&m_po, true);
+	GetTextView()->PrintDocument(&m_po, true);
 
 	return TRUE;
 }
@@ -804,13 +1005,13 @@ LRESULT CChildFrame::OnExportHTML(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 
 LRESULT CChildFrame::OnRedo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	m_view.Redo();
+	GetTextView()->Redo();
 	return TRUE;
 }
 
 LRESULT CChildFrame::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	m_view.DeleteBack();
+	GetTextView()->DeleteBack();
 	return TRUE;
 }
 
@@ -865,23 +1066,23 @@ LRESULT CChildFrame::OnFindPrevWordUnderCursor(WORD /*wNotifyCode*/, WORD /*wID*
 
 LRESULT CChildFrame::OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	int selectionLength = m_view.GetSelLength();
+	int selectionLength = GetTextView()->GetSelLength();
 	int rtfStringLength;
 	//If nothing is selected, copy entire file	
 	if(selectionLength == 0)
-		rtfStringLength = m_view.GetTextLength() * 2;
+		rtfStringLength = GetTextView()->GetTextLength() * 2;
 	else
-		rtfStringLength = m_view.GetSelLength() * 2;
+		rtfStringLength = GetTextView()->GetSelLength() * 2;
 
 	StringOutput so(rtfStringLength);
-	std::auto_ptr<StylesList> pStyles(m_view.GetCurrentScheme()->CreateStylesList());
-	RTFExporter rtf(&so, m_view.GetCurrentScheme()->GetName(), pStyles.get(), &m_view);
+	std::auto_ptr<StylesList> pStyles(GetTextView()->GetCurrentScheme()->CreateStylesList());
+	RTFExporter rtf(&so, GetTextView()->GetCurrentScheme()->GetName(), pStyles.get(), GetTextView());
 	
 	//If nothing is selected, copy entire file
 	if(selectionLength == 0) 
-		rtf.Export(0,m_view.GetTextLength());
+		rtf.Export(0,GetTextView()->GetTextLength());
 	else
-		rtf.Export(m_view.GetSelectionStart(), m_view.GetSelectionEnd());
+		rtf.Export(GetTextView()->GetSelectionStart(), GetTextView()->GetSelectionEnd());
 
 	std::string rtfstr(so.c_str());
 
@@ -904,7 +1105,7 @@ LRESULT CChildFrame::OnCopyRTF(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 LRESULT CChildFrame::OnAutoComplete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	m_view.AttemptAutoComplete();
+	GetTextView()->AttemptAutoComplete();
 	return 0;
 }
 
@@ -927,7 +1128,11 @@ LRESULT CChildFrame::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 		_tcscpy(strbuf, fn.c_str());
 		::GlobalUnlock(mem);
 
+#ifdef _UNICODE
+		::SetClipboardData(CF_UNICODETEXT, mem);
+#else
 		::SetClipboardData(CF_TEXT, mem);
+#endif
 
 		::CloseClipboard();
 	}
@@ -937,9 +1142,9 @@ LRESULT CChildFrame::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 LRESULT CChildFrame::OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	std::string word = m_view.GetCurrentWord();	
+	std::string word = GetTextView()->GetCurrentWord();	
 
-	const TextClips::TextClipSet* clips = m_pTextClips->GetClips(m_view.GetCurrentScheme()->GetName());
+	const TextClips::TextClipSet* clips = m_pTextClips->GetClips(GetTextView()->GetCurrentScheme()->GetName());
 	
 	if(clips == NULL)
 	{
@@ -949,22 +1154,22 @@ LRESULT CChildFrame::OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	const TextClips::Clip* desired = clips->FindByShortcut(word);
 	if(desired != NULL)
 	{
-		m_view.BeginUndoAction();
-		m_view.DelWordLeft();
-		desired->Insert(&m_view);
-		m_view.EndUndoAction();
+		GetTextView()->BeginUndoAction();
+		GetTextView()->DelWordLeft();
+		desired->Insert(GetTextView());
+		GetTextView()->EndUndoAction();
 	}
 	else
 	{
 		// Now we want to autocomplete a list of clips:
 		AutoCompleteHandlerPtr p(new AutoCompleteAdaptor<CChildFrame>(this, &CChildFrame::InsertClipCompleted));
-		m_view.SetAutoCompleteHandler(p);
+		GetTextView()->SetAutoCompleteHandler(p);
 
 		std::string cliptext = clips->BuildSortedClipList();
-		int sep = m_view.AutoCGetSeparator();
-		m_view.AutoCSetSeparator(',');
-		m_view.AutoCShow(word.size(), cliptext.c_str());
-		m_view.AutoCSetSeparator(sep);
+		int sep = GetTextView()->AutoCGetSeparator();
+		GetTextView()->AutoCSetSeparator(',');
+		GetTextView()->AutoCShow(word.size(), cliptext.c_str());
+		GetTextView()->AutoCSetSeparator(sep);
 	}
 
 	return 0;
@@ -1011,11 +1216,11 @@ LRESULT CChildFrame::OnClose(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 LRESULT CChildFrame::OnWordWrapToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	if(m_view.GetWrapMode() == SC_WRAP_WORD)
-		m_view.SetWrapMode( SC_WRAP_NONE );
+	if(GetTextView()->GetWrapMode() == SC_WRAP_WORD)
+		GetTextView()->SetWrapMode( SC_WRAP_NONE );
 	else
-		m_view.SetWrapMode( SC_WRAP_WORD );
-	//m_view.SetWrapMode( UIInvertCheck(wID) ? SC_WRAP_WORD : SC_WRAP_NONE );
+		GetTextView()->SetWrapMode( SC_WRAP_WORD );
+	//GetTextView()->SetWrapMode( UIInvertCheck(wID) ? SC_WRAP_WORD : SC_WRAP_NONE );
 	UpdateMenu();
 
 	return 0;
@@ -1023,7 +1228,7 @@ LRESULT CChildFrame::OnWordWrapToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 
 LRESULT CChildFrame::OnColouriseToggle(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-	m_view.EnableHighlighting(UIInvertCheck(wID));
+	GetTextView()->EnableHighlighting(UIInvertCheck(wID));
 
 	UpdateMenu();
 	
@@ -1032,7 +1237,7 @@ LRESULT CChildFrame::OnColouriseToggle(WORD /*wNotifyCode*/, WORD wID, HWND hWnd
 
 LRESULT CChildFrame::OnLineNoToggle(WORD /*wNotifyCode*/, WORD wID, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-	m_view.ShowLineNumbers(UIInvertCheck(wID));
+	GetTextView()->ShowLineNumbers(UIInvertCheck(wID));
 
 	return 0;
 }
@@ -1048,14 +1253,14 @@ LRESULT CChildFrame::OnMarkWhiteSpaceToggle(WORD /*wNotifyCode*/, WORD wID, HWND
 {
 	bool bShow = UIInvertCheck(wID);
 	
-	m_view.SetViewWS((bShow ? SCWS_VISIBLEALWAYS : SCWS_INVISIBLE));
+	GetTextView()->SetViewWS((bShow ? SCWS_VISIBLEALWAYS : SCWS_INVISIBLE));
 
 	return 0;
 }
 
 LRESULT CChildFrame::OnEOLMarkerToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	m_view.SetViewEOL(UIInvertCheck(wID));
+	GetTextView()->SetViewEOL(UIInvertCheck(wID));
 
 	return 0;
 }
@@ -1076,15 +1281,29 @@ LRESULT CChildFrame::OnWriteProtectToggle(WORD /*wNotifyCode*/, WORD wID, HWND /
 	return 0;
 }
 
+LRESULT CChildFrame::OnWindowCloseAllOther(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	::PostMessage(GetMDIFrame(), PN_CLOSEALLOTHER, reinterpret_cast<WPARAM>(m_hWnd), NULL);
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnFileCloseAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	::PostMessage(GetMDIFrame(), WM_COMMAND, ID_FILE_CLOSEALL, 0);
+	
+	return 0;
+}
+
 LRESULT CChildFrame::OnUseAsScript(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(m_pScript != NULL)
 		return 0;
 
 	std::string runner;
-	if(ScriptRegistry::GetInstanceRef().SchemeScriptsEnabled(m_view.GetCurrentScheme()->GetName(), runner))
+	if(ScriptRegistry::GetInstanceRef().SchemeScriptsEnabled(GetTextView()->GetCurrentScheme()->GetName(), runner))
 	{
-		CT2CA scriptName(GetFileName(FN_FILE).c_str());
+		CT2CA scriptName(GetTitle().c_str());
 		m_pScript = new DocScript(scriptName, runner.c_str(), m_spDocument);
 		ScriptRegistry::GetInstance()->Add("User Scripts", m_pScript);
 	}
@@ -1101,11 +1320,11 @@ LRESULT CChildFrame::OnHideOutput(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 LRESULT CChildFrame::OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CString caption;
-	caption.Format(_T("&Line Number (1 - %d):"), m_view.GetLineCount());
+	caption.Format(_T("&Line Number (1 - %d):"), GetTextView()->GetLineCount());
 	CGotoDialog g((LPCTSTR)caption);
 	if (g.DoModal() == IDOK)
 	{
-		m_view.GotoLine(g.GetLineNo() - 1);
+		GetTextView()->GotoLine(g.GetLineNo() - 1);
 	}
 
 	return 0;
@@ -1113,7 +1332,7 @@ LRESULT CChildFrame::OnGoto(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 int CChildFrame::GetLinePosition(int line)
 {
-	return m_view.PositionFromLine(line-1);
+	return GetTextView()->PositionFromLine(line-1);
 }
 
 /**
@@ -1147,7 +1366,7 @@ public:
 LRESULT CChildFrame::OnGoToDef(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {    
     // Set up buffer for selected keyword:
-	std::string sel = GetTextView()->GetCurrentWord(); //m_view.GetSelText2();
+	std::string sel = GetTextView()->GetCurrentWord(); //GetTextView()->GetSelText2();
 	if (sel.size() == 0)
 	{
 		return 0;
@@ -1176,7 +1395,7 @@ LRESULT CChildFrame::OnGoToDef(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
     }
     else
     {
-		m_view.SetAutoCompleteHandler(insertionHandler);
+		GetTextView()->SetAutoCompleteHandler(insertionHandler);
 
 		std::string autoclist;
 		for (std::vector<std::string>::const_iterator i = defs->Prototypes.begin();
@@ -1195,10 +1414,10 @@ LRESULT CChildFrame::OnGoToDef(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 		// remove stray end separator
 		autoclist.resize(autoclist.size()-1);
 
-		int sep = m_view.AutoCGetSeparator();
-		m_view.AutoCSetSeparator('|');
-		m_view.UserListShow(0, autoclist.c_str());
-		m_view.AutoCSetSeparator(sep);
+		int sep = GetTextView()->AutoCGetSeparator();
+		GetTextView()->AutoCSetSeparator('|');
+		GetTextView()->UserListShow(0, autoclist.c_str());
+		GetTextView()->AutoCSetSeparator(sep);
     }
 
     return 0;
@@ -1209,11 +1428,11 @@ LRESULT CChildFrame::OnGotoLine(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 	int line = (int)lParam-1;
 
 	// Put the line we jump to two off the top of the screen...
-	//m_view.GotoLineEnsureVisible(line);
-	/*int offset = m_view.GetFirstVisibleLine();
-	line = m_view.VisibleFromDocLine(line);
+	//GetTextView()->GotoLineEnsureVisible(line);
+	/*int offset = GetTextView()->GetFirstVisibleLine();
+	line = GetTextView()->VisibleFromDocLine(line);
 	offset = (line - offset) - 2;
-	m_view.LineScroll(0, offset);*/
+	GetTextView()->LineScroll(0, offset);*/
 	
 	if (IsIconic())
 	{
@@ -1222,24 +1441,23 @@ LRESULT CChildFrame::OnGotoLine(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
 	if (wParam) 
 	{
-		int lineLength = m_view.LineLength(line);
+		int lineLength = GetTextView()->LineLength(line);
 		std::vector<char> lineBuf(lineLength + 1);
 		lineBuf[lineLength] = '\0';
-		m_view.GetLine(line, &lineBuf[0]);
+		GetTextView()->GetLine(line, &lineBuf[0]);
 
 		std::string fullText(&lineBuf[0]);
 		std::string methodName(reinterpret_cast<char*>(wParam));
 		int i = fullText.find(methodName);
-		int j = methodName.size();
 		int pos = GetLinePosition((int)lParam); 
-		m_view.SetSel((long)(pos + i),(long)(pos + i + methodName.size()));
+		GetTextView()->SetSel((long)(pos + i),(long)(pos + i + methodName.size()));
 	}
 	else 
 	{
-		m_view.GotoLine(line);
+		GetTextView()->GotoLine(line);
 	}
 	
-	m_view.EnsureVisibleEnforcePolicy(line);
+	GetTextView()->EnsureVisibleEnforcePolicy(line);
 	
 	SetFocus();
 
@@ -1249,14 +1467,14 @@ LRESULT CChildFrame::OnGotoLine(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 LRESULT CChildFrame::OnLineEndingsToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	if(wID == ID_TOOLS_LECRLF)
-		m_view.SetEOLMode((int)PNSF_Windows);
+		GetTextView()->SetEOLMode((int)PNSF_Windows);
 	else if(wID == ID_TOOLS_LELF)
-		m_view.SetEOLMode((int)PNSF_Unix);
+		GetTextView()->SetEOLMode((int)PNSF_Unix);
 	else
-		m_view.SetEOLMode((int)PNSF_Mac);
+		GetTextView()->SetEOLMode((int)PNSF_Mac);
 	
 	if(UIGetChecked(ID_TOOLS_LECONVERT))
-		m_view.ConvertEOLs(m_view.GetEOLMode());
+		GetTextView()->ConvertEOLs(GetTextView()->GetEOLMode());
 
 	UpdateMenu();
 	return 0;
@@ -1279,7 +1497,7 @@ LRESULT CChildFrame::OnStopTools(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 LRESULT CChildFrame::OnUseTabs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	m_view.SetUseTabs(!m_view.GetUseTabs());
+	GetTextView()->SetUseTabs(!GetTextView()->GetUseTabs());
 	UpdateMenu();
 
 	return 0;
@@ -1309,12 +1527,12 @@ LRESULT CChildFrame::OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 LRESULT CChildFrame::OnEncodingSelect(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	EPNEncoding oldEncoding = m_view.GetEncoding();
+	EPNEncoding oldEncoding = GetTextView()->GetEncoding();
 	EPNEncoding encoding = (EPNEncoding)(wID - ID_ENCODING_8);
 	
 	if(oldEncoding != encoding)
 	{
-		m_view.SetEncoding(encoding);
+		GetTextView()->SetEncoding(encoding);
 
 		SetModifiedOverride(true);
 
@@ -1346,7 +1564,27 @@ LRESULT CChildFrame::OnViewFileProps(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 
 LRESULT CChildFrame::OnProjectAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	int a = 0;
+	return 0;
+}
+
+LRESULT CChildFrame::OnSplitHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	splitSelectedView(true);
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnSplitVertical(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	splitSelectedView(false);
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnCloseSplit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	removeSplit(true);
+
 	return 0;
 }
 
@@ -1444,7 +1682,7 @@ bool CChildFrame::OnRunTool(LPVOID pTool)
 	{
 		if(pToolDef->CaptureOutput())
 			EnsureOutputWindow();
-		pWrapper.reset( new ChildOutputWrapper(this, m_pOutputView, this, *pToolDef) );
+		pWrapper.reset( new ChildOutputWrapper(this, GetOutputWindow(), this, *pToolDef) );
 	}
 
 	pWrapper->SetNotifyWindow(m_hWnd);
@@ -1454,17 +1692,17 @@ bool CChildFrame::OnRunTool(LPVOID pTool)
 		Scintilla::TextRange tr;
 
 		// We want to pass our selection/whole document to StdIn.
-		if(m_view.GetSelLength() > 0)
+		if(GetTextView()->GetSelLength() > 0)
 		{
 			// Selection...
-			tr.chrg.cpMin = m_view.GetSelectionStart();
-			tr.chrg.cpMax = m_view.GetSelectionEnd();
+			tr.chrg.cpMin = GetTextView()->GetSelectionStart();
+			tr.chrg.cpMax = GetTextView()->GetSelectionEnd();
 		}
 		else
 		{
 			// Whole Document
 			tr.chrg.cpMin = 0;
-			tr.chrg.cpMax = m_view.GetLength();
+			tr.chrg.cpMax = GetTextView()->GetLength();
 		}
 
 		int buflength = (tr.chrg.cpMax - tr.chrg.cpMin) + 1;
@@ -1472,7 +1710,7 @@ bool CChildFrame::OnRunTool(LPVOID pTool)
 		{
 			std::vector<unsigned char> buffer(buflength);
 			tr.lpstrText = reinterpret_cast<char*>(&buffer[0]);
-			m_view.GetTextRange(&tr);
+			GetTextView()->GetTextRange(&tr);
 			pWrapper->SwapInStdInBuffer(buffer);
 		}
 	}
@@ -1500,15 +1738,15 @@ bool CChildFrame::OnRunTool(LPVOID pTool)
 				RETURN_UNEXPECTED(_T("Expected a filter_sink instance here!"), false);
 			}
 
-			m_view.BeginUndoAction();
-			if(m_view.GetSelLength() == 0)
+			GetTextView()->BeginUndoAction();
+			if(GetTextView()->GetSelLength() == 0)
 			{
-				m_view.ClearAll();
+				GetTextView()->ClearAll();
 			}
 			
 			CT2CA newtext(filter_sink->GetBuffer());
-			m_view.ReplaceSel(newtext);
-			m_view.EndUndoAction();
+			GetTextView()->ReplaceSel(newtext);
+			GetTextView()->EndUndoAction();
 		}
 	}
 
@@ -1527,6 +1765,130 @@ LRESULT CChildFrame::OnGetInfoTip(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 	return 0;
 }
 
+/**
+ * Set focus to the command box (if it's enabled).
+ */
+LRESULT CChildFrame::OnFocusCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if (!m_cmdTextBox.m_hWnd)
+	{
+		return 0;
+	}
+
+	m_cmdTextBox.SetFocus();
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnCommandGotFocus(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if (!m_cmdTextBox.m_hWnd)
+	{
+		return 0;
+	}
+
+	// Disable blinking...
+	GetTextView()->SetCaretPeriod(0);
+	
+	// Pretend the editor has the focus...
+	GetTextView()->SetEditorFocus(true);
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnCommandLostFocus(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if (!m_cmdTextBox.m_hWnd)
+	{
+		return 0;
+	}
+
+	// Re-enable blinking...
+	GetTextView()->SetCaretPeriod(500);
+
+	return 0;
+}
+
+/**
+ * Set focus to the most recent text view.
+ */
+LRESULT CChildFrame::OnFocusTextView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	::SetFocus(m_lastTextView->GetHwnd());
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnCommandNotify(WORD wNotifyCode, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	// Yes, this is very much prototype code!
+	if (wNotifyCode == EN_CHANGE)
+	{
+		if (m_bHandlingCommand)
+		{
+			return 0;
+		}
+
+		m_bHandlingCommand = true;
+		
+		extensions::IScriptRunner* python = ScriptRegistry::GetInstance()->GetRunner("python");
+		if (python)
+		{
+			PN::AString str;
+			std::string command("glue.evalCommand('");
+			
+			CWindowText wt(m_cmdTextBox);
+
+			if ((LPCTSTR)wt == NULL)
+			{
+				m_bHandlingCommand = false;
+				return 0;
+			}
+
+			CT2CA commandtext(wt);
+			command += commandtext;
+			command += "')";
+
+			python->Eval(command.c_str(), str);
+
+			CA2CT newwt(str.Get());
+			if (_tcscmp(wt, newwt) != 0)
+			{
+				m_cmdTextBox.SetWindowText(newwt);
+				
+				int len = _tcslen(newwt);
+				m_cmdTextBox.SetSel(len, len);
+			}
+		}
+		
+		m_bHandlingCommand = false;
+	}
+
+	return 0;
+}
+
+LRESULT CChildFrame::OnCommandEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	extensions::IScriptRunner* python = ScriptRegistry::GetInstance()->GetRunner("python");
+	if (python)
+	{
+		PN::AString str;
+		std::string command("glue.evalCommandEnter('");
+		
+		CWindowText wt(m_cmdTextBox);
+		CT2CA commandtext(wt);
+		command += commandtext;
+		command += "')";
+
+		python->Eval(command.c_str(), str);
+
+		CA2CT newwt(str.Get());
+		m_cmdTextBox.SetWindowText(newwt);
+	}
+
+	return 0;
+}
+
 ////////////////////////////////////////////////////
 // File Management Methods
 
@@ -1536,7 +1898,7 @@ void CChildFrame::CheckAge()
 	{
 		FileUtil::FileAttributes_t atts;
 		
-		uint64_t age = ~0;
+		uint64_t age = (uint64_t)~0;
 		bool readOnly = false;
 		if (FileUtil::GetFileAttributes(m_spDocument->GetFileName(), atts))
 		{
@@ -1619,7 +1981,7 @@ void CChildFrame::Revert()
 			setReadOnly(false, false);
 		}
 
-		m_view.Revert(m_spDocument->GetFileName(FN_FULL).c_str());
+		GetTextView()->Revert(m_spDocument->GetFileName(FN_FULL).c_str());
 
 		FileUtil::FileAttributes_t atts;
 		if (FileUtil::GetFileAttributes(m_spDocument->GetFileName(FN_FULL).c_str(), atts))
@@ -1641,7 +2003,7 @@ bool CChildFrame::PNOpenFile(LPCTSTR pathname, Scheme* pScheme, EPNEncoding enco
 {
 	bool bRet = false;
 
-	if(m_view.Load(pathname, pScheme, encoding))
+	if(GetTextView()->Load(pathname, pScheme, encoding))
 	{
 		FileUtil::FileAttributes_t atts;
 		if (FileUtil::GetFileAttributes(pathname, atts))
@@ -1678,8 +2040,19 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool ctagsRefresh, bool bStoreFilen
 		m_spDocument->OnBeforeSave(pathname);
 	}
 
+	if (OPTIONS->Get(PNSK_EDITOR, _T("StripTrailingBeforeSave"), false))
+	{
+		// Strip trailing spaces:
+		SendMessage(WM_COMMAND, MAKEWPARAM(ID_EDIT_STRIPTRAILING, 0), 0);
+	}
+
+	if (OPTIONS->Get(PNSK_EDITOR, _T("EnsureBlankFinalLine"), false))
+	{
+		SendMessage(WM_COMMAND, MAKEWPARAM(ID_EDIT_ENSUREFINALBLANKLINE, 0), 0);
+	}
+
 	// Do the save
-	if(m_view.Save(pathname, bStoreFilename))
+	if(GetTextView()->Save(pathname, bStoreFilename))
 	{
 		bSuccess = true;
 	}
@@ -1697,7 +2070,7 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool ctagsRefresh, bool bStoreFilen
 		case PNID_OVERWRITE:
 			if(attemptOverwrite(pathname))
 			{
-				if(m_view.Save(pathname, bStoreFilename))
+				if(GetTextView()->Save(pathname, bStoreFilename))
 				{
 					bSuccess = true;
 				}
@@ -2015,8 +2388,8 @@ bool CChildFrame::SaveAs(bool ctagsRefresh)
 
 void CChildFrame::ChangeFormat(EPNSaveFormat format)
 {
-	m_view.SetEOLMode( (int)format );
-	m_view.ConvertEOLs( (int)format );
+	GetTextView()->SetEOLMode( (int)format );
+	GetTextView()->ConvertEOLs( (int)format );
 
 	UpdateMenu();
 }
@@ -2042,7 +2415,7 @@ bool CChildFrame::Save(bool ctagsRefresh)
 
 FindNextResult CChildFrame::FindNext(extensions::ISearchOptions* options)
 {
-	FindNextResult result = (FindNextResult)m_view.FindNext(options);
+	FindNextResult result = (FindNextResult)GetTextView()->FindNext(options);
 	if (result == fnReachedStart && options->GetFindTarget() != extensions::elwAllDocs)
 	{
 		PNTaskDialog(m_hWnd, IDR_MAINFRAME, IDS_FINDLOOPED, _T(""), TDCBF_OK_BUTTON, TDT_INFORMATION_ICON);
@@ -2083,21 +2456,21 @@ FindNextResult CChildFrame::FindNext(extensions::ISearchOptions* options)
 
 void CChildFrame::MarkAll(extensions::ISearchOptions* options)
 {
-	m_view.MarkAll(options);
+	GetTextView()->MarkAll(options);
 }
 
 bool CChildFrame::Replace(extensions::ISearchOptions* options)
 {
 	if(options->GetFound())
 	{
-		return m_view.ReplaceOnce(options);
+		return GetTextView()->ReplaceOnce(options);
 	}
 	else
 	{
-		m_view.FindNext(options);
+		GetTextView()->FindNext(options);
 		if(options->GetFound())
 		{
-			return m_view.ReplaceOnce(options);
+			return GetTextView()->ReplaceOnce(options);
 		}
 		else
 		{
@@ -2108,25 +2481,25 @@ bool CChildFrame::Replace(extensions::ISearchOptions* options)
 
 int CChildFrame::ReplaceAll(extensions::ISearchOptions* options)
 {
-	return m_view.ReplaceAll(options);
+	return GetTextView()->ReplaceAll(options);
 }
 
 int CChildFrame::GetPosition(EGPType type)
 {
 	if(type == EP_LINE)
-		return m_view.LineFromPosition(m_view.GetCurrentPos());
+		return GetTextView()->LineFromPosition(GetTextView()->GetCurrentPos());
 	else
-		return m_view.GetColumn(m_view.GetCurrentPos());
+		return GetTextView()->GetColumn(GetTextView()->GetCurrentPos());
 }
 
 void CChildFrame::SetPosStatus(CMultiPaneStatusBarCtrl&	stat)
 {
-	m_view.SetPosStatus(stat);
+	GetTextView()->SetPosStatus(stat);
 }
 
 bool CChildFrame::OnSchemeChange(LPVOID pVoid)
 {
-	SetScheme(static_cast<Scheme*>(pVoid), false);
+	SetScheme(static_cast<Scheme*>(pVoid), scfNoViewSettings);
 
 	return true;
 }
@@ -2139,9 +2512,25 @@ bool CChildFrame::OnEditorCommand(LPVOID pCommand)
 	return true;
 }
 
+struct SetSchemeVisitor : public Views::Visitor
+{
+	SetSchemeVisitor(Scheme* scheme, ESchemeChangeFlags flags) : _scheme(scheme), _flags(flags) {}
+	virtual void operator ()(Views::View* view)
+	{
+		if (view->GetType() == Views::vtText)
+		{
+			static_cast<CTextView*>(view)->SetScheme(_scheme, _flags);
+			_flags |= scfNoRestyle; // only need to restyle once.
+		}
+	}
+	Scheme* _scheme;
+	int _flags;
+};
+
 void CChildFrame::SetScheme(Scheme* pScheme, bool allSettings)
 {
-    m_view.SetScheme(pScheme, allSettings);
+	SetSchemeVisitor visitor(pScheme, allSettings ? scfNone : scfNoViewSettings);
+	m_primeView->Visit(visitor);
 }
 
 void CChildFrame::UpdateTools(Scheme* pScheme)
@@ -2170,6 +2559,9 @@ void CChildFrame::UpdateTools(Scheme* pScheme)
 	);
 }
 
+/**
+ * Called when the scheme is changed.
+ */
 void CChildFrame::SchemeChanged(Scheme* pScheme)
 {
 	UpdateTools(pScheme);
@@ -2185,14 +2577,14 @@ void CChildFrame::UpdateMenu()
 {
 	CSMenuHandle menu(m_hMenu);
 
-	EPNSaveFormat f = (EPNSaveFormat)m_view.GetEOLMode();
+	EPNSaveFormat f = (EPNSaveFormat)GetTextView()->GetEOLMode();
 	
 	menu.CheckMenuItem(ID_TOOLS_LECRLF, f == PNSF_Windows);
 	menu.CheckMenuItem(ID_TOOLS_LECR, f == PNSF_Mac);
 	menu.CheckMenuItem(ID_TOOLS_LELF, f == PNSF_Unix);
-	menu.CheckMenuItem(ID_TOOLS_USETABS, m_view.GetUseTabs());
+	menu.CheckMenuItem(ID_TOOLS_USETABS, GetTextView()->GetUseTabs());
 
-	EPNEncoding e = m_view.GetEncoding();
+	EPNEncoding e = GetTextView()->GetEncoding();
 
 	menu.CheckMenuItem(ID_ENCODING_8, e == eUnknown);
 	menu.CheckMenuItem(ID_ENCODING_UTF8, e == eUtf8);
@@ -2200,10 +2592,10 @@ void CChildFrame::UpdateMenu()
 	menu.CheckMenuItem(ID_ENCODING_UTF16LE, e == eUtf16LittleEndian);
 	menu.CheckMenuItem(ID_ENCODING_UTF8NOBOM, e == eUtf8NoBOM);
 
-	UISetChecked(ID_EDITOR_WORDWRAP, m_view.GetWrapMode() == SC_WRAP_WORD);
-	UISetChecked(ID_EDITOR_EOLCHARS, m_view.GetViewEOL());
-	UISetChecked(ID_EDITOR_WHITESPACE, m_view.GetViewWS() == SCWS_VISIBLEALWAYS);
-	UISetChecked(ID_EDITOR_LINENOS, m_view.GetMarginWidthN(0) > 0);
+	UISetChecked(ID_EDITOR_WORDWRAP, GetTextView()->GetWrapMode() == SC_WRAP_WORD);
+	UISetChecked(ID_EDITOR_EOLCHARS, GetTextView()->GetViewEOL());
+	UISetChecked(ID_EDITOR_WHITESPACE, GetTextView()->GetViewWS() == SCWS_VISIBLEALWAYS);
+	UISetChecked(ID_EDITOR_LINENOS, GetTextView()->GetMarginWidthN(0) > 0);
 	
 	bool bToolsRunning = false;
 	if( ToolOwner::HasInstance() )
@@ -2214,11 +2606,11 @@ void CChildFrame::UpdateMenu()
 
 	menu.EnableMenuItem(ID_TOOLS_STOPTOOLS, bToolsRunning);
 
-	g_Context.m_frame->SetActiveScheme(m_hWnd, m_view.GetCurrentScheme());
+	g_Context.m_frame->SetActiveScheme(m_hWnd, GetTextView()->GetCurrentScheme());
 
-	if (m_view.GetCurrentScheme() != NULL)
+	if (GetTextView()->GetCurrentScheme() != NULL)
 	{
-		const CommentSpecRec& comments = m_view.GetCurrentScheme()->GetCommentSpec();
+		const CommentSpecRec& comments = GetTextView()->GetCurrentScheme()->GetCommentSpec();
 		menu.EnableMenuItem(ID_COMMENTS_LINE, comments.CommentLineText[0] != NULL);
 		menu.EnableMenuItem(ID_COMMENTS_STREAM, (comments.CommentStreamStart[0] != NULL)
 			&& (comments.CommentStreamEnd[0] != NULL));
@@ -2235,7 +2627,12 @@ void CChildFrame::UpdateMenu()
 
 bool CChildFrame::IsOutputVisible()
 {
-	return ((m_pSplitter != NULL) ? m_pSplitter->GetSinglePaneMode() == SPLITTER_NORMAL : false);
+	if (!m_outputView.get())
+	{
+		return false;
+	}
+
+	return static_cast<Views::SplitView*>(m_outputView->GetParentView().get())->GetSinglePaneMode() == SPLITTER_NORMAL;
 }
 
 /**
@@ -2258,11 +2655,11 @@ BOOL CChildFrame::OnEscapePressed()
 void CChildFrame::Export(int type)
 {
 	FileOutput fout(NULL);
-	std::auto_ptr<StylesList> pStyles(m_view.GetCurrentScheme()->CreateStylesList());
+	std::auto_ptr<StylesList> pStyles(GetTextView()->GetCurrentScheme()->CreateStylesList());
 	
 	std::auto_ptr<BaseExporter> pExp(ExporterFactory::GetExporter(
 		(ExporterFactory::EExporterType)type, 
-		&fout, m_view.GetCurrentScheme()->GetName(), pStyles.get(), &m_view));
+		&fout, GetTextView()->GetCurrentScheme()->GetName(), pStyles.get(), GetTextView()));
 	
 	if (!pExp.get())
 	{
@@ -2349,18 +2746,19 @@ void CChildFrame::PrintSetup()
 
 CTextView* CChildFrame::GetTextView()
 {
-	return &m_view;
+	// TODO: In SetLastView should we upcast to CTextView and store always with that type?
+	return static_cast<CTextView*>(m_lastTextView.get());
 }
 
 COutputView* CChildFrame::GetOutputWindow()
 {
 	EnsureOutputWindow();
-	return m_pOutputView;
+	return static_cast<COutputView*>(m_outputView.get());
 }
 
 HACCEL CChildFrame::GetToolAccelerators()
 {
-	SchemeTools* pTools = ToolsManager::GetInstance()->GetToolsFor( m_view.GetCurrentScheme()->GetName() );
+	SchemeTools* pTools = ToolsManager::GetInstance()->GetToolsFor( GetTextView()->GetCurrentScheme()->GetName() );
 	return pTools->GetAcceleratorTable();
 }
 
@@ -2383,16 +2781,23 @@ void CChildFrame::setReadOnly(bool newValue, bool setAttributes)
 		return;
 	}
 
-	if (m_bReadOnly && !newValue && setAttributes)
+	if (setAttributes)
 	{
-		// Turning off read only, try and remove readonly from the file:
-		FileUtil::FileAttributes_t atts;
-		if (FileUtil::GetFileAttributes(m_spDocument->GetFileName(), atts) && FileUtil::IsReadOnly(atts))
+		if (!newValue)
 		{
-			if (!FileUtil::RemoveReadOnly(m_spDocument->GetFileName()))
+			// Turning off read only, try and remove readonly from the file:
+			FileUtil::FileAttributes_t atts;
+			if (FileUtil::GetFileAttributes(m_spDocument->GetFileName(), atts) && FileUtil::IsReadOnly(atts))
 			{
-				::MessageBox(m_hWnd, _T("Unable to remove the write-protection from this file, you will need to save as a different file"), LS(IDR_MAINFRAME), MB_OK | MB_ICONINFORMATION);
+				if (!FileUtil::RemoveReadOnly(m_spDocument->GetFileName()))
+				{
+					::MessageBox(m_hWnd, _T("Unable to remove the write-protection from this file, you will need to save as a different file"), LS(IDR_MAINFRAME), MB_OK | MB_ICONINFORMATION);
+				}
 			}
+		}
+		else
+		{
+			FileUtil::SetReadOnly(m_spDocument->GetFileName());
 		}
 	}
 	
@@ -2401,12 +2806,12 @@ void CChildFrame::setReadOnly(bool newValue, bool setAttributes)
 	{
 		g_Context.m_frame->SetStatusText(_T("Source file has become Read Only, and this document is modified."));
 		m_bReadOnly = false;
-		m_view.SetReadOnly(false);
+		GetTextView()->SetReadOnly(false);
 	}
 	else
 	{
 		m_bReadOnly = newValue;
-		m_view.SetReadOnly(m_bReadOnly);
+		GetTextView()->SetReadOnly(m_bReadOnly);
 	}
 
 	SetTitle(GetModified());
@@ -2421,7 +2826,7 @@ void CChildFrame::setReadOnly(bool newValue, bool setAttributes)
  */
 void CChildFrame::findNextWordUnderCursor(bool backwards)
 {
-	std::string word = m_view.GetCurrentWord();
+	std::string word = GetTextView()->GetCurrentWord();
 
 	if (!word.length())
 	{
@@ -2445,13 +2850,13 @@ void CChildFrame::findNextWordUnderCursor(bool backwards)
 	opts->SetSearchBackwards(false);
 }
 
-////////////////////////////////////////////////////
-// CChildFrame::CCFSplitter
-
-void CChildFrame::CCFSplitter::GetOwnerClientRect(HWND hOwner, LPRECT lpRect)
+void CChildFrame::SetLastView(Views::ViewPtr& view)
 {
-	m_pFrame->GetClientRect(lpRect);
-	m_pFrame->UpdateBarsPosition(*lpRect, FALSE);	
+	m_focusView = view;
+	if (m_focusView->GetType() == Views::vtText)
+	{
+		m_lastTextView = m_focusView;
+	}
 }
 
 ////////////////////////////////////////////////////
@@ -2470,7 +2875,7 @@ CChildFrame::_PoorMansUIEntry* CChildFrame::GetDefaultUIMap()
 		{ID_VIEW_INDIVIDUALOUTPUT, PMUI_MENU},
 		{ID_TOOLS_LECONVERT, PMUI_MENU},
 		// note: This one must be at the end.
-		{-1, 0}
+		{static_cast<uint64_t>(-1), 0}
 	};
 	return theMap;
 }

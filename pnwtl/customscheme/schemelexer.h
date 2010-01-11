@@ -43,15 +43,15 @@ typedef struct tagStringType
 {
 	bool bValid;
 
-	TCHAR start;
-	TCHAR end;
+	char start;
+	char end;
 	bool multiLine;
 	
 	bool bContinuation;
-	TCHAR continuation;
+	char continuation;
 
 	bool bEscape;
-	TCHAR escape;
+	char escape;
 } StringType_t;
 
 typedef enum {eSingle, eDouble, eMore} ECodeLength;
@@ -69,13 +69,13 @@ typedef struct tagCommentSettings
 	
 	// First and second chars for eSingle or eDouble mode, 
 	// pCode valid in eMore mode.
-	TCHAR		scode[2];
-	TCHAR		ecode[2];
-	TCHAR*		pSCode;
-	TCHAR*		pECode;
+	char		scode[2];
+	char		ecode[2];
+	char*		pSCode;
+	char*		pECode;
 	
 	bool		bContinuation;
-	TCHAR		continuation;
+	char		continuation;
 
 	// Set to the Style to set if this type is detected...
 	int			relatedStyle;
@@ -102,15 +102,15 @@ class CustomLexer : public Lexer
 
 	// Custom Lexer Attributes
 	public:
-		tstring			tsName;
+		std::string		tsName;
 		bool			bCaseSensitive;
 		StringType_t	stringTypes[MAX_STRINGTYPES];
 		bool			kwEnable[MAX_KEYWORDS];
 
 		bool			bPreProc;
 		bool			bPreProcContinuation;
-		TCHAR			preProcStart;
-		TCHAR			preProcContinue;
+		char			preProcStart;
+		char			preProcContinue;
 
 		CommentType_t	singleLineComment;
 		CommentType_t	blockComment;
@@ -124,7 +124,7 @@ class CustomLexer : public Lexer
 		CharSet			identStartSet;
 		CharSet			identContentSet;
 
-	protected:
+	private:
 		inline bool IsAWordStart(int ch) const;
 		inline bool IsAWordChar(int ch) const;
 		inline bool IsANumStart(int ch) const;

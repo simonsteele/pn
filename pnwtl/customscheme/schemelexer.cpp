@@ -2,9 +2,9 @@
  * @file schemelexer.cpp
  * @brief Custom lexer for user-defined languages - based on simple language settings.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #include "stdafx.h"
@@ -127,7 +127,7 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, WordLi
 			{
 				if( cc.MatchIgnoreCase(blockComment.pECode) )
 				{
-					cc.Forward(_tcslen(blockComment.pECode));
+					cc.Forward(strlen(blockComment.pECode));
 					cc.SetState(ST_DEFAULT);
 				}
 			}
@@ -276,7 +276,7 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, WordLi
 						if( cc.MatchIgnoreCase(comment.pSCode) )
 						{
 							cc.SetState(comment.relatedStyle);
-							cc.Forward(_tcslen(comment.pSCode)-1);
+							cc.Forward(strlen(comment.pSCode)-1);
 							break;
 						}
 					} // comment....

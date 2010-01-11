@@ -31,13 +31,16 @@ using pnutils::threading::CritLock;
 	static char THIS_FILE[] = __FILE__;
 #endif
 
-CTextView::CTextView(DocumentPtr document, CommandDispatch* commands, AutoCompleteManager* autoComplete) : 
+CTextView::CTextView(DocumentPtr document, Views::ViewPtr parent, CommandDispatch* commands, AutoCompleteManager* autoComplete) : 
+	Views::View(Views::vtText, parent),
 	m_pDoc(document),
 	m_pCmdDispatch(commands),
 	m_pLastScheme(NULL),
 	m_waitOnBookmarkNo(FALSE),
 	m_encType(eUnknown),
-	m_bMeasureCanRun(false)
+	m_bMeasureCanRun(false),
+	m_bOverwriteTarget(false),
+	m_bInsertClip(false)
 {
 	m_bSmartStart = OPTIONS->Get(PNSK_EDITOR, _T("SmartStart"), true);
 	SetAutoCompleteManager(autoComplete);
@@ -70,13 +73,17 @@ BOOL CTextView::PreTranslateMessage(MSG* pMsg)
 	return FALSE;
 }
 
-void CTextView::SetScheme(Scheme* pScheme, bool allSettings)
+void CTextView::SetScheme(Scheme* pScheme, int flags)
 {
 	if(pScheme != SchemeManager::GetInstance()->GetDefaultScheme())
 		m_bSmartStart = false;
 	
 	EnsureRangeVisible(0, GetLength(), false);
-	ClearDocumentStyle(); // zero all style bytes
+	
+	if ((flags & scfNoRestyle) == 0)
+	{
+		ClearDocumentStyle(); // zero all style bytes
+	}
 
 	ClearAutoComplete();
 
@@ -89,17 +96,21 @@ void CTextView::SetScheme(Scheme* pScheme, bool allSettings)
 	//Pass scheme to base class to set initial words for autocomplete
 	InitAutoComplete(pScheme);
 
-	pScheme->Load(*this, allSettings);
+	pScheme->Load(*this, (flags & scfNoViewSettings) == 0);
 	
 	//EnsureRangeVisible(0, GetLength());
 	//ClearDocumentStyle();
 	
-	Colourise(0, -1);
+	if ((flags & scfNoRestyle) == 0)
+	{
+		Colourise(0, -1);
+	}
+
 	InvalidateRect(NULL, FALSE);
 	
 	m_pLastScheme = pScheme;
 
-	::SendMessage(GetParent(), PN_SCHEMECHANGED, 0, reinterpret_cast<LPARAM>(pScheme));
+	::SendMessage(m_pDoc->GetFrame()->m_hWnd, PN_SCHEMECHANGED, 0, reinterpret_cast<LPARAM>(pScheme));
 }
 
 static std::string ExtractLine(const char *buf, size_t length) {
@@ -285,7 +296,8 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 #ifdef _DEBUG
 		DWORD timeTotal = GetTickCount() - timeIn;
 		TCHAR outstr[300];
-		_stprintf(outstr, _T("File load takes %d milliseconds\n"), timeTotal);
+		outstr[299] = NULL;
+		_sntprintf(outstr, 299, _T("File load takes %d milliseconds\n"), timeTotal);
 		::OutputDebugString(outstr);
 #endif
 
@@ -502,25 +514,29 @@ int CTextView::HandleNotify(LPARAM lParam)
 	
 	if(msg == SCN_SAVEPOINTREACHED)
 	{
-		SendMessage(GetParent(), PN_NOTIFY, 0, SCN_SAVEPOINTREACHED);
+		SendMessage(m_pDoc->GetFrame()->m_hWnd, PN_NOTIFY, 0, SCN_SAVEPOINTREACHED);
 		m_Modified = false;
 	}
 	else if(msg == SCN_SAVEPOINTLEFT)
 	{
-		SendMessage(GetParent(), PN_NOTIFY, 0, SCN_SAVEPOINTLEFT);
+		SendMessage(m_pDoc->GetFrame()->m_hWnd, PN_NOTIFY, 0, SCN_SAVEPOINTLEFT);
 		m_Modified = true;
 	}
 	else if(msg == SCN_UPDATEUI)
 	{
-		SendMessage(GetParent(), PN_NOTIFY, 0, SCN_UPDATEUI);
+		SendMessage(m_pDoc->GetFrame()->m_hWnd, PN_NOTIFY, 0, SCN_UPDATEUI);
 
 		smartHighlight();
+		updateOverwriteTarget();
+		updateInsertClip();
 	}
 	else if(msg == SCN_CHARADDED)
 	{
 		if(m_bSmartStart)
+		{
 			if(SmartStart::GetInstance()->OnChar(this) != SmartStart::eContinue)
 				m_bSmartStart = false;
+		}
 
 		m_pDoc->OnCharAdded( ( reinterpret_cast<Scintilla::SCNotification*>(lParam))->ch );
 	}
@@ -541,10 +557,11 @@ int CTextView::HandleNotify(LPARAM lParam)
 void CTextView::SetPosStatus(CMultiPaneStatusBarCtrl& stat)
 {
 	TCHAR tvstatbuf[50];
+	tvstatbuf[49] = NULL;
 	
 	long pos = GetCurrentPos();
 
-	_stprintf(tvstatbuf, _T("[%d:%d] : %d"), 
+	_sntprintf(tvstatbuf, 49, _T("[%d:%d] : %d"), 
 		(LineFromPosition(pos) + 1),	/* row    */
 		(GetColumn(pos) + 1),			/* column */
 		GetLineCount()					/* lines  */
@@ -560,7 +577,7 @@ void CTextView::SetPosStatus(CMultiPaneStatusBarCtrl& stat)
 		}
 		else
 		{
-			_stprintf(tvstatbuf, LS(IDS_SELLENGTH), GetSelLength());
+			_sntprintf(tvstatbuf, 49, LS(IDS_SELLENGTH), GetSelLength());
 		}
 		g_Context.m_frame->SetStatusText(tvstatbuf, false);
 	}
@@ -573,20 +590,17 @@ std::string CTextView::GetCurrentWord()
 	// VS.NET style find text:
 	// 1. check if there is a selection
 	// 2. check if the caret is inside a word
-	// 3. if neither 1 nor 2 are true, use the previous search text
 
 	if (GetSelections() > 1)
 	{
 		return "";
 	}
 
-	Scintilla::CharacterRange cr;
-	GetSel(cr);
-	int len = cr.cpMax - cr.cpMin;
+	int len = GetSelText(NULL);
 
 	std::vector<char> buffer;
 
-	if(len > 0)
+	if(len > 1) // 1 character when there's no selection.
 	{
 		buffer.resize(len+2);
 		GetSelText(&buffer[0]);
@@ -649,6 +663,12 @@ void HandleMarkAllResult(CTextView* parent, int start, int end)
 	parent->IndicatorFillRange(start, end-start);
 }
 
+void CTextView::handleMarkAllResult(int start, int end)
+{
+	IndicatorFillRange(start, end-start);
+	m_findAllResultCount++;
+}
+
 void CTextView::FindAll(extensions::ISearchOptions* options, FIFSink* sink, LPCTSTR szFilename)
 {
 	CScintillaImpl::FindAll(options, boost::bind(HandleFindAllResult, this, sink, szFilename, _1, _2));
@@ -661,7 +681,12 @@ void CTextView::MarkAll(extensions::ISearchOptions* options)
 	SetIndicatorValue(INDIC_ROUNDBOX);
 	IndicSetStyle(INDIC_MARKALL, INDIC_ROUNDBOX);
 	
-	CScintillaImpl::FindAll(options, boost::bind(HandleMarkAllResult, this, _1, _2));
+	m_findAllResultCount = 0;
+	CScintillaImpl::FindAll(options, boost::bind(&CTextView::handleMarkAllResult, ref(this), _1, _2));
+	
+	CString str;
+	str.Format(IDS_MARKALL_COUNT, m_findAllResultCount);
+	g_Context.m_frame->SetStatusText((LPCTSTR)str);
 }
 
 void CTextView::ClearMarkAll()
@@ -709,12 +734,10 @@ void CTextView::DoContextMenu(CPoint* point)
 	CSPopupMenu popupProjects;
 
 	// Build up a menu allowing us to add this file to a current project...
-	CChildFrame* pParent = CChildFrame::FromHandle(GetParent());
-	
 	Projects::Workspace* pWS = g_Context.m_frame->GetActiveWorkspace();
 	std::vector<int> menuIDs;
 
-	if(pParent->CanSave() && pWS != NULL)
+	if(m_pDoc->GetCanSave() && pWS != NULL)
 	{
 		const Projects::PROJECT_LIST& projects = pWS->GetProjects();
 		int index = 0;
@@ -758,7 +781,7 @@ void CTextView::DoContextMenu(CPoint* point)
 				{
 					// we should add this file to the project at index i.
 					bFoundOne = true;
-					tstring fn = pParent->GetFileName();
+					tstring fn = m_pDoc->GetFileName();
 					(*i2)->AddFile(fn.c_str());
 				}
 				i2++;
@@ -775,6 +798,36 @@ void CTextView::DoContextMenu(CPoint* point)
 	{
 		m_pCmdDispatch->ReturnID((*i));
 	}
+}
+
+/**
+ * Enter overwrite target mode from a command.
+ */
+HRESULT CTextView::OnOverwriteTarget(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	BeginOverwriteTarget();
+
+	return 0;
+}
+
+HRESULT CTextView::OnInsertClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+{
+	std::vector<TextClips::Chunk>* chunks = reinterpret_cast<std::vector<TextClips::Chunk>*>(lParam);
+	if (chunks == NULL)
+	{
+		return -1;
+	}
+
+	beginInsertClip(*chunks);
+
+	return 0;
+}
+
+HRESULT CTextView::OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	bHandled = false;
+	NotifyGotFocus();
+	return 0;
 }
 
 ////////////////////////////////////////////////////////////////
@@ -1342,10 +1395,7 @@ void CTextView::smartHighlight()
 		// Only do this for single-line selections where there are no spaces (i.e. a single word)
 		if (LineFromPosition(cr.cpMin) == LineFromPosition(cr.cpMax))
 		{
-			std::string buf;
-			buf.resize(len + 1);
-			GetSelText(&buf[0]);
-			buf.resize(len);
+			std::string buf(GetSelText2());
 
 			if (buf.find(' ') == -1 && buf.find('\t') == -1)
 			{
@@ -1421,7 +1471,8 @@ UINT __stdcall CTextView::RunMeasureThread(void* pThis)
 
 #ifdef _DEBUG
 	TCHAR buf[50];
-	_stprintf(buf, _T("PN: Max line length: %d"), maxLength);
+	buf[49] = NULL;
+	_sntprintf(buf, 49, _T("PN: Max line length: %d"), maxLength);
 	LOG(buf);
 #endif
 
@@ -1483,4 +1534,214 @@ int CTextView::ReplaceAll(extensions::ISearchOptions* pOptions)
 	}
 
 	return result;
+}
+
+/**
+ * OverwriteTarget mode works like VIM's "change in" command, we set an end point
+ * and if the cursor leaves that point we delete everything from the last cursor
+ * pos to the end of the target.
+ */
+void CTextView::BeginOverwriteTarget()
+{
+	SetIndicatorCurrent(INDIC_OVERWRITETARGET);
+	IndicatorClearRange(0, GetLength());
+
+	SetIndicatorValue(INDIC_BOX);
+	IndicSetStyle(INDIC_OVERWRITETARGET, INDIC_BOX);
+
+	int startTarget = GetTargetStart();
+	int endTarget = GetTargetEnd();
+	IndicatorFillRange(startTarget, endTarget - startTarget);
+
+	SetOvertype(true);
+
+	// Move to the start of the target:
+	SetSelectionStart(startTarget);
+	SetSelectionEnd(startTarget);
+
+	m_bOverwriteTarget = true;
+}
+
+/**
+ * We're in overwrite target mode and something has caused a UI update, we need
+ * to work out what to do.
+ */
+void CTextView::updateOverwriteTarget()
+{
+	if (!m_bOverwriteTarget)
+	{
+		return;
+	}
+
+	// Find the range of the indicator, we start by finding the end because it's the first
+	// end we'll find in the document.
+	bool onAt0 = SPerform(SCI_INDICATORVALUEAT, INDIC_OVERWRITETARGET, 0) != 0;
+	
+	int start = onAt0 ? 0 : SPerform(SCI_INDICATOREND, INDIC_OVERWRITETARGET, 0);
+	int end = SPerform(SCI_INDICATOREND, INDIC_OVERWRITETARGET, start);
+	
+	// Find our current position:
+	int current = GetCurrentPos();
+	
+	if (current < start || current > end)
+	{
+		// User has stepped outside the target, time to clear the remaining target.
+		SetTarget(start, end);
+		ReplaceTarget(0, "");
+
+		// We're out of this mode now:
+		SetOvertype(false);
+		m_bOverwriteTarget = false;
+	}
+	else
+	{
+		// User is inside the target
+		SPerform(SCI_SETINDICATORCURRENT, INDIC_OVERWRITETARGET, 0);
+		SPerform(SCI_INDICATORCLEARRANGE, start, current - start);
+	}
+}
+
+void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
+{
+	m_insertClipChunks.swap(chunks);
+
+	int pos = GetCurrentPos();
+	int firstFieldPos = 0;
+
+	SPerform(SCI_SETINDICATORCURRENT, INDIC_TEXTCLIPFIELD, 0);
+	SetIndicatorValue(INDIC_BOX);
+	IndicSetStyle(INDIC_TEXTCLIPFIELD, INDIC_BOX);
+
+	std::vector<TextClips::Chunk>::const_iterator i;
+	for(i = m_insertClipChunks.begin(); i != m_insertClipChunks.end(); ++i)
+	{
+		std::string chunkText = (*i).GetText();
+		InsertText(pos, chunkText.c_str());
+		
+		if ((*i).IsField())
+		{
+			IndicatorFillRange(pos, chunkText.size());
+
+			if (firstFieldPos == 0)
+			{
+				firstFieldPos = pos;
+			}
+		}
+
+		pos += chunkText.size();
+	}
+
+	if (firstFieldPos == 0)
+	{
+		firstFieldPos = pos;
+	}
+
+	// Set the selection to the insertion point or first field point.
+	SetSel(firstFieldPos, firstFieldPos);
+
+	m_bInsertClip = true;
+}
+
+typedef std::vector<TextClips::Chunk>::iterator ChunkIt_t;
+
+ChunkIt_t firstChunk(std::vector<TextClips::Chunk>& chunks, int id)
+{
+	for (ChunkIt_t i = chunks.begin(); i != chunks.end(); ++i)
+	{
+		if ((*i).IsField() && (*i).Id == id)
+		{
+			return i;
+		}
+	}
+
+	return chunks.end();
+}
+
+void CTextView::updateInsertClip()
+{
+	if (!m_bInsertClip)
+	{
+		return;
+	}
+
+	int currentPos = GetCurrentPos();
+	int prevPos = currentPos - 1;
+	if (prevPos < 0)
+	{
+		prevPos = currentPos;
+	}
+
+	SPerform(SCI_SETINDICATORCURRENT, INDIC_TEXTCLIPFIELD, 0);
+
+	// Exit condition:
+	if (SPerform(SCI_INDICATORVALUEAT, INDIC_TEXTCLIPFIELD, currentPos) == 0 && SPerform(SCI_INDICATORVALUEAT, INDIC_TEXTCLIPFIELD, prevPos) == 0)
+	{
+		m_bInsertClip = false;
+		SPerform(SCI_INDICATORCLEARRANGE, 0, GetLength());
+		return;
+	}
+
+	// Find the first field:
+	bool onAt0 = SPerform(SCI_INDICATORVALUEAT, INDIC_TEXTCLIPFIELD, 0) != 0;
+	
+	int start = onAt0 ? 0 : SPerform(SCI_INDICATOREND, INDIC_TEXTCLIPFIELD, 0);
+	int end = SPerform(SCI_INDICATOREND, INDIC_TEXTCLIPFIELD, start);
+
+	if (start == end)
+	{
+		// No indicator ranges, nothing to do...
+		m_bInsertClip = false;
+		return;
+	}
+
+	int original = start;
+
+	ChunkIt_t chunkit = m_insertClipChunks.begin();
+
+	do
+	{
+		while(!(*chunkit).IsField() && chunkit != m_insertClipChunks.end())
+		{
+			chunkit++;
+		}
+
+		if (chunkit == m_insertClipChunks.end())
+		{
+			// Eek, we should have had another field chunk to match this indicator, bail...
+			break;
+		}
+
+		int chunkId = (*chunkit).Id;
+		ChunkIt_t masterChunk = firstChunk(m_insertClipChunks, chunkId);
+		std::string current(GetTextRange(start, end));
+
+		if (currentPos >= start && currentPos <= end && chunkit == masterChunk)
+		{
+			// Update the master
+			if (current != (*chunkit).GetText())
+			{
+				(*chunkit).SetText(current.c_str());
+			}
+		}
+		else
+		{
+			std::string chunkText((*masterChunk).GetText());
+			
+			if (current != chunkText)
+			{
+				SetTarget(start, end);
+				ReplaceTarget(chunkText.size(), chunkText.c_str());
+				end = start + chunkText.size();
+
+				IndicatorFillRange(start, chunkText.size());
+
+
+			}
+		}
+
+		++chunkit;
+		start = SPerform(SCI_INDICATOREND, INDIC_TEXTCLIPFIELD, end + 1);
+		end = SPerform(SCI_INDICATOREND, INDIC_TEXTCLIPFIELD, start);
+	}
+	while (start < end && start > original);
 }

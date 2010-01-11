@@ -735,9 +735,7 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 
 int CScintillaImpl::FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn matchHandler)
 {
-	int				bRet = fnNotFound;
-	bool			checkFoundPos = true;
-
+	int	bRet = fnNotFound;
 	std::string localFindText;
 
 	// If we're in UTF-8 mode we have a go at making the correct find string
@@ -781,8 +779,8 @@ int CScintillaImpl::FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn
 		posFind = startPosition;
 		SetTarget(startPosition, startPosition);
 	}
-	
-	if ((posFind != -1) && (posFind <= endPosition)) 
+
+	if ((posFind != -1) && (posFind <= endPosition))
 	{
 		int lastMatch = posFind;
 
@@ -797,10 +795,20 @@ int CScintillaImpl::FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn
 			// For the special cases of start of line and end of line
 			// Something better could be done but there are too many special cases
 			if (lenTarget <= 0)
+			{
 				lastMatch++;
+			}
 
-			SetTarget(lastMatch, endPosition);
-			posFind = SearchInTarget(lenFind, localFindText.c_str());
+			if (lastMatch < endPosition)
+			{
+				SetTarget(lastMatch, endPosition);
+				posFind = SearchInTarget(lenFind, localFindText.c_str());
+			}
+			else
+			{
+				// we hit document end
+				posFind = -1;
+			}
 		}
 	}
 
@@ -1637,14 +1645,10 @@ ScintillaIterator CScintillaImpl::end()
 	return ScintillaIterator(this, GetLength());
 }
 
+// TODO: Remove this
 std::string CScintillaImpl::GetSelText2()
 {
-	std::string ret;
-	int selLength = CScintilla::GetSelText(NULL);
-	ret.resize(selLength + 1);
-	selLength = CScintilla::GetSelText(&ret[0]);
-	ret.resize(selLength);
-	return ret;
+	return GetSelText();
 }
 
 void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>

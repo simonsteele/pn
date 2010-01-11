@@ -25,6 +25,7 @@ COptionsPageKeyboard::COptionsPageKeyboard(CommandDispatch* dispatcher)
 COptionsPageKeyboard::~COptionsPageKeyboard()
 {
 	delete m_pKeyMap;
+	delete m_pScintillaMap;
 }
 
 void COptionsPageKeyboard::OnOK()
@@ -62,19 +63,25 @@ void COptionsPageKeyboard::OnCancel()
 
 LRESULT COptionsPageKeyboard::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	// Header:
+	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
+
+	// List control
 	m_list.Attach(GetDlgItem(IDC_KB_COMMANDS));
 	m_list.SetViewType(LVS_REPORT);
-	m_list.AddColumn(_T("Group"), 0);
-	m_list.AddColumn(_T("Command"), 1);
+	m_list.AddColumn(LS(IDS_HDR_KEYBOARD_GROUP), 0);
+	m_list.AddColumn(LS(IDS_HDR_KEYBOARD_COMMAND), 1);
 	m_list.SetColumnWidth(0, 80);
 	m_list.SetColumnWidth(1, 300);
 	m_list.SetExtendedListViewStyle( LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT );
 
-	CSMenu menu(::LoadMenu(_Module.m_hInst, MAKEINTRESOURCE(IDR_MDICHILD)));
-	addItems(CSMenuHandle(menu), "", 0);
+	// Add items
+	CSMenu menu(::LoadMenu(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MDICHILD)));
+	addItems(CSMenuHandle(menu), _T(""), 0);
 	addExtensions();
 	addScintilla();
 
+	// Key controls:
 	m_shortcutlist.Attach(GetDlgItem(IDC_KB_ASSIGNEDLIST));
 	m_hotkey.SubclassWindow(GetDlgItem(IDC_KB_HOTKEY));
 
@@ -175,9 +182,6 @@ LRESULT COptionsPageKeyboard::OnHotKeyChanged(WORD /*wNotifyCode*/, WORD /*wID*/
 	real_modifiers = HKToAccelMod(modifiers);
 
 	// Look for commands with this key assigned...
-	const KeyToCommand* mappings = m_pKeyMap->GetMappings();
-	size_t noof_mappings(m_pKeyMap->GetCount());
-
 	tstring command_name;
 
 	int command = m_pKeyMap->Find(keycode, real_modifiers);
@@ -252,10 +256,10 @@ inline void fixText(TCHAR* buf, TCHAR* target)
 		}
 	}
 
-	*target = '\0';
+	*target = _T('\0');
 }
 
-int COptionsPageKeyboard::addItems(CSMenuHandle& menu, const char* group, int count)
+int COptionsPageKeyboard::addItems(CSMenuHandle& menu, LPCTSTR group, int count)
 {
 	TCHAR buffer[256];
 	TCHAR displayBuffer[256];
@@ -276,19 +280,20 @@ int COptionsPageKeyboard::addItems(CSMenuHandle& menu, const char* group, int co
 
 		if(mii.hSubMenu != NULL)
 		{
-			std::string newgroup(group);
+			tstring newgroup(group);
 			if(newgroup.size())
-				newgroup += ".";
+				newgroup += _T(".");
+			
 			fixText(buffer, displayBuffer);
-			CT2CA convtext(displayBuffer);
-			newgroup += convtext;
+			
+			newgroup += displayBuffer;
 			count = addItems(CSMenuHandle(mii.hSubMenu), newgroup.c_str(), count);
 		}
 		else
 		{
 			fixText(buffer, displayBuffer);
-			CA2CT groupText(group);
-			int ixItem = m_list.AddItem(count++, 0, groupText);
+			
+			int ixItem = m_list.AddItem(count++, 0, group);
 			m_list.SetItemText(ixItem, 1, displayBuffer);
 			
 			// Store info about the command...
@@ -309,15 +314,16 @@ void COptionsPageKeyboard::addExtensions()
 	int count = m_list.GetItemCount();
 	for(group_list_t::const_iterator i = groups.begin(); i != groups.end(); ++i)
 	{
-		std::string group("Scripts.");
-		group += (*i)->GetName();
+		tstring group(LS(IDS_SHORTCUTS_SCRIPTS));
+		group += _T(".");
+		CA2CT nameConv((*i)->GetName());
+		group += nameConv;
 		for(script_list_t::const_iterator j = (*i)->GetScripts().begin();
 			j != (*i)->GetScripts().end(); ++j)
 		{
-			CA2CT groupconv(group.c_str());
 			CA2CT nameconv((*j)->Name.c_str());
 
-			int ixItem = m_list.AddItem(count++, 0, groupconv);
+			int ixItem = m_list.AddItem(count++, 0, group.c_str());
 			m_list.SetItemText(ixItem, 1, nameconv);
 			
 			// Store the details of this command
@@ -510,83 +516,83 @@ bool COptionsPageKeyboard::currentIsScintilla()
 	return false;
 }
 
-struct ScintillaStingType{
-	char* name;
+struct EditorCommandTypes{
+	TCHAR* name;
 	int msg;
 };
 
-struct ScintillaStingType ScintillaStrings[] = {
-	{"Line down extend", SCI_LINEDOWNEXTEND},
-	{"Line down", SCI_LINEDOWN},
-	{"Line scroll down", SCI_LINESCROLLDOWN},
-	{"Line down rect extend", SCI_LINEDOWNRECTEXTEND},
-	{"Line up", SCI_LINEUP},
-	{"Line up extend", SCI_LINEUPEXTEND},
-	{"Line scroll up", SCI_LINESCROLLUP},
-	{"Line up rect extend", SCI_LINEUPRECTEXTEND},
-	{"Para up", SCI_PARAUP},
-	{"Para up extend", SCI_PARAUPEXTEND},
-	{"Para down", SCI_PARADOWN},
-	{"Para down extend", SCI_PARADOWNEXTEND},
-	{"Char left", SCI_CHARLEFT},
-	{"Char left extend", SCI_CHARLEFTEXTEND},
-	{"Word left", SCI_WORDLEFT},
-	{"Word left extend", SCI_WORDLEFTEXTEND},
-	{"Char left rect extend", SCI_CHARLEFTRECTEXTEND},
-	{"Char right", SCI_CHARRIGHT},
-	{"Char right extend", SCI_CHARRIGHTEXTEND},
-	{"Word right", SCI_WORDRIGHT},
-	{"Word right extend", SCI_WORDRIGHTEXTEND},
-	{"Char Right Rect Extend", SCI_CHARRIGHTRECTEXTEND},
-	{"Word Part Left", SCI_WORDPARTLEFT},
-	{"Word Part Left Extend", SCI_WORDPARTLEFTEXTEND},
-	{"Word Part Right", SCI_WORDPARTRIGHT},
-	{"Word Part Right Extend", SCI_WORDPARTRIGHTEXTEND},
-	{"VC Home", SCI_VCHOME},
-	{"VC Home Extend", SCI_VCHOMEEXTEND},
-	{"Document Start", SCI_DOCUMENTSTART},
-	{"Document Start Extend", SCI_DOCUMENTSTARTEXTEND},
-	{"Home Display", SCI_HOMEDISPLAY},
-	{"VC Home Rect Extend", SCI_VCHOMERECTEXTEND},
-	{"Line End", SCI_LINEEND},
-	{"Line End Extend", SCI_LINEENDEXTEND},
-	{"Document End", SCI_DOCUMENTEND},
-	{"Document End Extend", SCI_DOCUMENTENDEXTEND},
-	{"Line End Display", SCI_LINEENDDISPLAY},
-	{"Line End Rect Extend", SCI_LINEENDRECTEXTEND},
-	{"Page Up", SCI_PAGEUP},
-	{"Page Up Extend", SCI_PAGEUPEXTEND},
-	{"Page Up Rect Extend", SCI_PAGEUPRECTEXTEND},
-	{"Page Down", SCI_PAGEDOWN},
-	{"Page Down Extend", SCI_PAGEDOWNEXTEND},
-	{"Page Down Rect Extend", SCI_PAGEDOWNRECTEXTEND},
-	{"Clear", SCI_CLEAR},
-//	{"Cut", SCI_CUT},
-	{"Del Word Right", SCI_DELWORDRIGHT},
-	{"Del Line Right", SCI_DELLINERIGHT},
-	{"Edit Toggle Overtype", SCI_EDITTOGGLEOVERTYPE},
-//	{"Paste", SCI_PASTE},
-//	{"Copy", SCI_COPY},
-	{"Cancel", SCI_CANCEL},
-	{"Delete Back", SCI_DELETEBACK},
-	{"Del Word Left", SCI_DELWORDLEFT},
-//	{"Undo", SCI_UNDO},
-	{"Del Line Left", SCI_DELLINELEFT},
-//	{"Redo", SCI_REDO},
-//	{"Select All", SCI_SELECTALL},
-	{"Tab", SCI_TAB},
-	{"Back Tab", SCI_BACKTAB},
-	{"Newline", SCI_NEWLINE},
-	{"Zoom In", SCI_ZOOMIN},
-	{"Zoom Out", SCI_ZOOMOUT},
-	{"Set Zoom", SCI_SETZOOM},
-//	{"Line Cut", SCI_LINECUT},
-//	{"Line Delete", SCI_LINEDELETE},
-//	{"Line Copy", SCI_LINECOPY},
-//	{"Line Transpose", SCI_LINETRANSPOSE},
-	{"Selection Duplicate", SCI_SELECTIONDUPLICATE},
-//	{"Lower Case", SCI_LOWERCASE},
-//	{"Upper Case", SCI_UPPERCASE},
+struct EditorCommandTypes ScintillaStrings[] = {
+	{ _T("Line down extend"), SCI_LINEDOWNEXTEND },
+	{ _T("Line down"), SCI_LINEDOWN },
+	{ _T("Line scroll down"), SCI_LINESCROLLDOWN },
+	{ _T("Line down rect extend"), SCI_LINEDOWNRECTEXTEND },
+	{ _T("Line up"), SCI_LINEUP },
+	{ _T("Line up extend"), SCI_LINEUPEXTEND },
+	{ _T("Line scroll up"), SCI_LINESCROLLUP },
+	{ _T("Line up rect extend"), SCI_LINEUPRECTEXTEND },
+	{ _T("Para up"), SCI_PARAUP },
+	{ _T("Para up extend"), SCI_PARAUPEXTEND },
+	{ _T("Para down"), SCI_PARADOWN },
+	{ _T("Para down extend"), SCI_PARADOWNEXTEND },
+	{ _T("Char left"), SCI_CHARLEFT },
+	{ _T("Char left extend"), SCI_CHARLEFTEXTEND },
+	{ _T("Word left"), SCI_WORDLEFT },
+	{ _T("Word left extend"), SCI_WORDLEFTEXTEND },
+	{ _T("Char left rect extend"), SCI_CHARLEFTRECTEXTEND },
+	{ _T("Char right"), SCI_CHARRIGHT },
+	{ _T("Char right extend"), SCI_CHARRIGHTEXTEND },
+	{ _T("Word right"), SCI_WORDRIGHT },
+	{ _T("Word right extend"), SCI_WORDRIGHTEXTEND },
+	{ _T("Char Right Rect Extend"), SCI_CHARRIGHTRECTEXTEND },
+	{ _T("Word Part Left"), SCI_WORDPARTLEFT },
+	{ _T("Word Part Left Extend"), SCI_WORDPARTLEFTEXTEND },
+	{ _T("Word Part Right"), SCI_WORDPARTRIGHT },
+	{ _T("Word Part Right Extend"), SCI_WORDPARTRIGHTEXTEND },
+	{ _T("VC Home"), SCI_VCHOME },
+	{ _T("VC Home Extend"), SCI_VCHOMEEXTEND },
+	{ _T("Document Start"), SCI_DOCUMENTSTART },
+	{ _T("Document Start Extend"), SCI_DOCUMENTSTARTEXTEND },
+	{ _T("Home Display"), SCI_HOMEDISPLAY },
+	{ _T("VC Home Rect Extend"), SCI_VCHOMERECTEXTEND },
+	{ _T("Line End"), SCI_LINEEND },
+	{ _T("Line End Extend"), SCI_LINEENDEXTEND },
+	{ _T("Document End"), SCI_DOCUMENTEND },
+	{ _T("Document End Extend"), SCI_DOCUMENTENDEXTEND },
+	{ _T("Line End Display"), SCI_LINEENDDISPLAY },
+	{ _T("Line End Rect Extend"), SCI_LINEENDRECTEXTEND },
+	{ _T("Page Up"), SCI_PAGEUP },
+	{ _T("Page Up Extend"), SCI_PAGEUPEXTEND },
+	{ _T("Page Up Rect Extend"), SCI_PAGEUPRECTEXTEND },
+	{ _T("Page Down"), SCI_PAGEDOWN },
+	{ _T("Page Down Extend"), SCI_PAGEDOWNEXTEND },
+	{ _T("Page Down Rect Extend"), SCI_PAGEDOWNRECTEXTEND },
+	{ _T("Clear"), SCI_CLEAR },
+//	{ _T("Cut"), SCI_CUT },
+	{ _T("Del Word Right"), SCI_DELWORDRIGHT },
+	{ _T("Del Line Right"), SCI_DELLINERIGHT },
+	{ _T("Edit Toggle Overtype"), SCI_EDITTOGGLEOVERTYPE },
+//	{ _T("Paste"), SCI_PASTE },
+//	{ _T("Copy"), SCI_COPY },
+	{ _T("Cancel"), SCI_CANCEL },
+	{ _T("Delete Back"), SCI_DELETEBACK },
+	{ _T("Del Word Left"), SCI_DELWORDLEFT },
+//	{ _T("Undo"), SCI_UNDO },
+	{ _T("Del Line Left"), SCI_DELLINELEFT },
+//	{ _T("Redo"), SCI_REDO },
+//	{ _T("Select All"), SCI_SELECTALL },
+	{ _T("Tab"), SCI_TAB },
+	{ _T("Back Tab"), SCI_BACKTAB },
+	{ _T("Newline"), SCI_NEWLINE },
+	{ _T("Zoom In"), SCI_ZOOMIN },
+	{ _T("Zoom Out"), SCI_ZOOMOUT },
+	{ _T("Set Zoom"), SCI_SETZOOM },
+//	{ _T("Line Cut"), SCI_LINECUT },
+//	{ _T("Line Delete"), SCI_LINEDELETE },
+//	{ _T("Line Copy"), SCI_LINECOPY },
+//	{ _T("Line Transpose"), SCI_LINETRANSPOSE },
+	{ _T("Selection Duplicate"), SCI_SELECTIONDUPLICATE },
+//	{ _T("Lower Case"), SCI_LOWERCASE },
+//	{ _T("Upper Case"), SCI_UPPERCASE },
 	{NULL, 0}
 };
 
@@ -597,13 +603,8 @@ void COptionsPageKeyboard::addScintilla()
 
 	while (ScintillaStrings[i].name)
 	{
-		std::string group("Scintilla");
-
-		CA2CT groupconv(group.c_str());
-		CA2CT nameconv(ScintillaStrings[i].name);
-
-		int ixItem = m_list.AddItem(count++, 0, groupconv);
-		m_list.SetItemText(ixItem, 1, nameconv);
+		int ixItem = m_list.AddItem(count++, 0, LS(IDS_SHORTCUTS_EDITOR));
+		m_list.SetItemText(ixItem, 1, ScintillaStrings[i].name);
 		
 		// Store info about the command...
 		CommandDetails* cd = new CommandDetails;

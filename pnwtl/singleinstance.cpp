@@ -88,7 +88,9 @@ void MultipleInstanceManager::ActivateOther()
 		return;
 
 	DWORD dwRecipients = BSM_APPLICATIONS;
-	long res = m_pfnBSM(
+	
+	//long res = 
+	m_pfnBSM(
 		BSF_ALLOWSFW | BSF_FORCEIFHUNG | BSF_IGNORECURRENTTASK,
 		&dwRecipients, 
 		m_uiMessage,
@@ -149,11 +151,16 @@ void MultipleInstanceManager::SendParameters()
 		return;
 	}
 
+	std::list<tstring> args = GetCommandLineArgs();
+	SendParameters(args);
+}
+
+void MultipleInstanceManager::SendParameters(const std::list<tstring>& args)
+{
 	GArray<TCHAR> parmarray;
 	int size = 0;
 	int paSize = 0;
 	
-	std::list<tstring> args = GetCommandLineArgs();
 	for(std::list<tstring>::const_iterator i = args.begin(); i != args.end(); ++i)
 	{
 		paSize = (*i).size();
@@ -174,11 +181,11 @@ void MultipleInstanceManager::SendParameters()
 
 	if(RequestPermission())
 	{
-		if( !CreateSharedData(&buffer, &hMappedFile, parmarray.size()) )
+		if( !CreateSharedData(&buffer, &hMappedFile, parmarray.size() * sizeof(TCHAR)) )
 			return;
 
 		// Copy the big buffer into the other big buffer :)
-		memcpy(buffer, &parmarray[0], parmarray.size());
+		memcpy(buffer, &parmarray[0], parmarray.size() * sizeof(TCHAR));
 
 		DWORD dwRecipients = BSM_APPLICATIONS;
 		long res = m_pfnBSM(
@@ -186,7 +193,7 @@ void MultipleInstanceManager::SendParameters()
 			&dwRecipients, 
 			m_uiMessage,
 			MIM_PARAMETER_ARRAY,
-			parmarray.size());
+			parmarray.size() * sizeof(TCHAR));
 
 		PNASSERT(res != -1);
 

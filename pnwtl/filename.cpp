@@ -73,7 +73,7 @@ tstring CFileName::GetPath()
 tstring CFileName::GetDirectoryName()
 {
 	tstring path = GetPath();
-	char cLast = path[path.length() - 1];
+	TCHAR cLast = path[path.length() - 1];
 	if(cLast == _T('\\') || cLast == _T('/'))
 	{
 		// remove the last char.
@@ -344,7 +344,7 @@ tstring& CFileName::Sanitise()
 	// and forward instead of backward slashes.
 	while(*in != NULL)
 	{
-		char ch = *in;
+		TCHAR ch = *in;
 		switch(ch)
 		{
 			// Pretend forward slashes are back-slashes and fall-through
@@ -378,10 +378,14 @@ tstring& CFileName::Sanitise()
 
 	m_FileName = &res[0];
 
-	PathCanonicalize(&res[0], m_FileName.c_str());
-	m_FileName = &res[0];
-	GetLongPathName(m_FileName.c_str(), &res[0], bufsize);
-	m_FileName = &res[0];
+	if (m_FileName.length() >= 2 && m_FileName[1] == _T(':') || m_FileName[0] == _T('\\'))
+	{
+		// Ask windows to make this path better for us:
+		PathCanonicalize(&res[0], m_FileName.c_str());
+		m_FileName = &res[0];
+		GetLongPathName(m_FileName.c_str(), &res[0], bufsize);
+		m_FileName = &res[0];
+	}
 
 	return m_FileName;
 }
@@ -440,6 +444,11 @@ tstring CFileName::GetExtension()
 void CFileName::GetFileName_NoExt(tstring& buf)
 {
 	buf = GetFileName_NoExt();
+}
+
+void CFileName::AddExtension(LPCTSTR newext)
+{
+	m_FileName += newext;
 }
 
 void CFileName::ChangeExtensionTo(LPCTSTR newext)
@@ -502,7 +511,7 @@ CPathName::CPathName(LPCTSTR path)
 	m_FileName = path;
 	if(m_FileName.length())
 	{
-		char cLast = m_FileName[m_FileName.length() - 1];
+		TCHAR cLast = m_FileName[m_FileName.length() - 1];
 		if(cLast != _T('\\') && cLast != _T('/'))
 			m_FileName += _T("\\");
 	}
@@ -517,7 +526,7 @@ CPathName& CPathName::operator = (const tstring& filename)
 void CPathName::ChangeLastElement(LPCTSTR lastEl)
 {
 	tstring path = GetPath();
-	char cLast = path[path.length() - 1];
+	TCHAR cLast = path[path.length() - 1];
 	if(cLast == _T('\\') || cLast == _T('/'))
 	{
 		// remove the last char.

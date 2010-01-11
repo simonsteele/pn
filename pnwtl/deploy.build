@@ -3,30 +3,27 @@
 
 	<target name="svnvar">
 		<!-- Retrieve subversion revision number -->
-		<echo message="Retrieving Subversion revision number"/>
+		<echo message="Retrieving Mercurial revision number"/>
 		<property name="svn.revision" value="0"/>
 		<exec
-			program="svn"
-			commandline='log "." --xml --limit 1'
-			output="_revision.xml"
+			program="hg"
+			commandline='log --limit 1 --template {rev}'
+			output="_revision.txt"
 			failonerror="false"/>
-		<xmlpeek
-			file="_revision.xml"
-			xpath="/log/logentry/@revision"
-			property="svn.revision"
-			failonerror="false"/>
-		<echo message="Using Subversion revision number: ${svn.revision}"/>
+		<loadfile file="_revision.txt" property="svn.revision" />
+		<property name="svn.revision" value="${string::trim(svn.revision)}"/>
+		<echo message="Using Mercurial revision number: ${svn.revision}"/>
 	</target>
 	
 	<target name="build">		
 		<exec 
 			program="devenv.com"
-			commandline='pn.sln /Clean ReleaseDebug'
+			commandline='pn.sln /Clean Release'
 			output="build.log"/>
 		
 		<exec 
 			program="devenv.com"
-			commandline='pn.sln /Build ReleaseDebug'
+			commandline='pn.sln /Build Release'
 			output="build.log">
 			<environment>
 				<variable name="SVNREV" value="/DPN_BUILD=${svn.revision}"/>
@@ -66,18 +63,18 @@
 			
 		<zip zipfile="${distdir}\pn${compactver}.zip">
 			<fileset basedir="bin">
-				<include name="**/*.dll"/>
-				<include name="**/*.exe"/>
+				<include name="libexpatw.dll"/>
+				<include name="scilexer.dll"/>
+				<include name="pnse.dll"/>
+				<include name="dbghelp.dll"/>
+				<include name="pn.exe"/>
+				<include name="ctags.exe"/>
 				<include name="schemes/*.scheme"/>
 				<include name="schemes/*.lexer"/>
 				<include name="schemes/extmap.dat"/>
 				<include name="presets/*.xml"/>
-				<include name="taggers/ctags/*.*"/>
-				
-				<exclude name="tests.exe"/>
-				<exclude name="pypn.dll"/>
-				<exclude name="boost_python*.dll"/>
-				<exclude name="libexpatw.dll"/>
+				<include name="ctags/*.*"/>
+				<include name="ctagsnavigator.dll"/>
 			</fileset>
 			<fileset basedir="installer\reqfiles\Microsoft.VC90.CRT" prefix="Microsoft.VC90.CRT">
 				<include name="*"/>
@@ -104,18 +101,18 @@
 		
 		<zip zipfile="${distdir}\portable-pn${compactver}.zip">
 			<fileset basedir="bin">
-				<include name="**/*.dll"/>
-				<include name="**/*.exe"/>
+				<include name="libexpatw.dll"/>
+				<include name="scilexer.dll"/>
+				<include name="pnse.dll"/>
+				<include name="dbghelp.dll"/>
+				<include name="pn.exe"/>
+				<include name="ctags.exe"/>
 				<include name="schemes/*.scheme"/>
 				<include name="schemes/*.lexer"/>
 				<include name="schemes/extmap.dat"/>
 				<include name="presets/*.xml"/>
-				<include name="taggers/ctags/*.*"/>
-				
-				<exclude name="tests.exe"/>
-				<exclude name="pypn.dll"/>
-				<exclude name="boost_python*.dll"/>
-				<exclude name="libexpatw.dll"/>
+				<include name="ctags/*.*"/>
+				<include name="ctagsnavigator.dll"/>
 			</fileset>
 			<fileset basedir="installer\reqfiles\Microsoft.VC90.CRT" prefix="Microsoft.VC90.CRT">
 				<include name="*"/>
@@ -149,7 +146,7 @@
 		
 		<zip zipfile="${distdir}\translations${compactver}.zip">
 			<fileset basedir="bin">
-				<include name="bin\pnlang_*.dll"/>
+				<include name="pnlang_*.dll"/>
 			</fileset>
 		</zip>
 		
@@ -170,7 +167,7 @@
 		<property name="pyver" value="py26"/>
 		<exec
 			program="devenv"
-			commandline='pn.sln /Project pypn /ProjectConfig ReleaseDebug /Rebuild'
+			commandline='pn.sln /Project pypn /ProjectConfig Release /Rebuild'
 			output="pypn-2.6.log">
 			<environment>
 				<variable name="PYTHONINCDIR" value="C:\Python26\include"/>
@@ -192,7 +189,7 @@
 		<property name="pyver" value="py25"/>
 		<exec
 			program="devenv"
-			commandline='pn.sln /Project pypn /ProjectConfig ReleaseDebug /Rebuild'
+			commandline='pn.sln /Project pypn /ProjectConfig Release /Rebuild'
 			output="pypn-2.5.log">
 			<environment>
 				<variable name="PYTHONINCDIR" value="C:\Python25\include"/>
@@ -214,7 +211,7 @@
 		<property name="pyver" value="py24"/>
 		<exec
 			program="devenv"
-			commandline='pn.sln /Project pypn /ProjectConfig ReleaseDebug /Rebuild'
+			commandline='pn.sln /Project pypn /ProjectConfig Release /Rebuild'
 			output="pypn-2.4.log">
 			<environment>
 				<variable name="PYTHONINCDIR" value="C:\Python24\include"/>
@@ -346,6 +343,13 @@
 	
 	<target name="buildlanguagedlls">
 		<property name="svn.revision" value="0" if="${property::exists('svn.revision') == false}"/>
+		
+		<delete>
+			<fileset>
+				<include name="bin\pnlang_*.dll"/>
+			</fileset>
+		</delete>
+		
 		<foreach item="File" property="filename">
 			<in>
 				<items>
@@ -353,6 +357,7 @@
 				</items>
 			</in>
 			<do>
+			    <echo message="apply bin\pnlang.dll bin\${path::get-file-name-without-extension(filename)}_${ver}.${svn.revision}.dll ${filename}"/>
 				<exec
 					program="tools\ResText\ResText.exe"
 					commandline="apply bin\pnlang.dll bin\${path::get-file-name-without-extension(filename)}_${ver}.${svn.revision}.dll ${filename}"/>

@@ -19,6 +19,7 @@ namespace Commands
 void CompressWhitespace(CScintillaImpl& editor);
 void ClipboardSwap(CScintillaImpl& editor);
 void DuplicateSelection(CScintillaImpl& editor);
+void StripAllTrailing(CScintillaImpl& editor);
 void StripTrailingBlanks(CScintillaImpl& editor);
 void TabsToSpaces(CScintillaImpl& editor);
 void SpacesToTabs(CScintillaImpl& editor);
@@ -36,6 +37,7 @@ void JoinLines(CScintillaImpl& editor);
 void SplitLines(CScintillaImpl& editor);
 void ZoomIn(CScintillaImpl& editor);
 void ZoomOut(CScintillaImpl& editor);
+void EnsureFinalBlankLine(CScintillaImpl& editor);
 
 void GetEditorCommands(std::list<EditorCommand*>& commands)
 {
@@ -49,6 +51,7 @@ void GetEditorCommands(std::list<EditorCommand*>& commands)
 	commands.push_back(new Internal::EditorCommandFn(ID_EDIT_DELETELINE, LineDelete));
 	commands.push_back(new Internal::EditorCommandFn(ID_EDIT_DUPLICATELINE, LineDuplicate));
 	commands.push_back(new Internal::EditorCommandFn(ID_EDIT_CLIPBOARDSWAP, ClipboardSwap));
+	commands.push_back(new Internal::EditorCommandFn(ID_EDIT_STRIPTRAILING, StripAllTrailing));
 	commands.push_back(new Internal::EditorCommandFn(ID_SELECTION_COMPRESSWHITESPACE, CompressWhitespace));
 	commands.push_back(new Internal::EditorCommandFn(ID_SELECTION_DUPLICATE, DuplicateSelection));
 	commands.push_back(new Internal::EditorCommandFn(ID_SELECTION_STRIPTRAILING, StripTrailingBlanks));
@@ -59,6 +62,7 @@ void GetEditorCommands(std::list<EditorCommand*>& commands)
 	commands.push_back(new Internal::EditorCommandFn(ID_EDIT_SPLITLINES, SplitLines));
 	commands.push_back(new Internal::EditorCommandFn(ID_VIEW_ZOOM_IN, ZoomIn));
 	commands.push_back(new Internal::EditorCommandFn(ID_VIEW_ZOOM_OUT, ZoomOut));
+	commands.push_back(new Internal::EditorCommandFn(ID_EDIT_ENSUREFINALBLANKLINE, EnsureFinalBlankLine));
 }
 
 /**
@@ -80,10 +84,11 @@ void DuplicateSelection(CScintillaImpl& editor)
 	editor.InsertText(editor.GetSelectionEnd(), sel.c_str());
 }
 
+
 /**
- * Remove trailing whitespace
+ * Perform trailing space strip.
  */
-void StripTrailingBlanks(CScintillaImpl& editor)
+void stripTrailing(CScintillaImpl& editor, bool inSelection)
 {
 	SearchOptions opt;
 	opt.SetFindText(_T("[ \t]+$"));
@@ -92,10 +97,26 @@ void StripTrailingBlanks(CScintillaImpl& editor)
 	opt.SetNoCursorMove(true);
 	if (editor.GetSelLength() > 0)
 	{
-		opt.SetReplaceInSelection(true);
+		opt.SetReplaceInSelection(inSelection);
 	}
 
 	editor.ReplaceAll(&opt);
+}
+
+/**
+ * Remove trailing whitespace from the selection
+ */
+void StripTrailingBlanks(CScintillaImpl& editor)
+{
+	stripTrailing(editor, true);
+}
+
+/**
+ * Remove trailing whitespace in the whole document
+ */
+void StripAllTrailing(CScintillaImpl& editor)
+{
+	stripTrailing(editor, false);
 }
 
 /**
@@ -127,12 +148,13 @@ void SpacesToTabs(CScintillaImpl& editor)
 	}
 
 	TCHAR buf[100];
-	_stprintf(buf, _T("[ ]{%d}"), editor.GetTabWidth());
+	buf[99] = NULL;
+	_sntprintf(buf, 99, _T("^(\\t*)[ ]{%d}"), editor.GetTabWidth());
 
 	// Find all leading groups of spaces, convert to tabs
 	SearchOptions options;
 	options.SetFindText(buf);
-	options.SetReplaceText(_T("\\t"));
+	options.SetReplaceText(_T("\\1\\t"));
 	options.SetReplaceInSelection(editor.GetSelLength() != 0);
 	options.SetUseRegExp(true);
 	options.SetNoCursorMove(true);
@@ -156,11 +178,16 @@ void TabsToSpaces(CScintillaImpl& editor)
 		return;
 	}
 
+	TCHAR buf[100];
+	buf[99] = NULL;
+	_sntprintf(buf, 99, _T("^(([ ]{%d})*)\\t"), editor.GetTabWidth());
+
 	// Set the replace text to tab width * space:
 	tstring replaceText(editor.GetTabWidth(), ' ');
+	replaceText = _T("\\1") + replaceText;
 
 	SearchOptions options;
-	options.SetFindText(_T("\\t"));
+	options.SetFindText(buf);
 	options.SetReplaceText(replaceText.c_str());
 	options.SetReplaceInSelection(editor.GetSelLength() != 0);
 	options.SetSearchBackwards(false);
@@ -338,6 +365,37 @@ void ZoomIn(CScintillaImpl& editor)
 void ZoomOut(CScintillaImpl& editor)
 {
 	editor.ZoomOut();
+}
+
+void EnsureFinalBlankLine(CScintillaImpl& editor)
+{
+	int finalPosition = editor.GetLength();
+	int finalLine = editor.LineFromPosition(finalPosition);
+	int finalLineLength = editor.LineLength(finalLine);
+
+	if (finalLineLength > 0)
+	{
+		int oldTargetStart = editor.GetTargetStart();
+		int oldTargetEnd = editor.GetTargetEnd();
+		editor.SetTarget(finalPosition, finalPosition);
+		
+		switch (editor.GetEOLMode())
+		{
+		case SC_EOL_CR:
+			editor.ReplaceTarget(1, "\r");
+			break;
+
+		case SC_EOL_LF:
+			editor.ReplaceTarget(1, "\n");
+			break;
+
+		case SC_EOL_CRLF:
+			editor.ReplaceTarget(2, "\r\n");
+			break;
+		}
+
+		editor.SetTarget(oldTargetStart, oldTargetEnd);
+	}
 }
 
 } // namespace Commands

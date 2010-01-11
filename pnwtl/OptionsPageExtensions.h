@@ -1,7 +1,18 @@
+/**
+ * @file optionspages.cpp
+ * @brief Extensions Options Dialog Page
+ * @author Simon Steele
+ * @note Copyright (c) 2008-2009 Simon Steele - http://untidy.net/
+ *
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #ifndef optionspageextensions_h__included
 #define optionspageextensions_h__included
 
 #include "include/optionsdialog.h"
+#include "controls/OptionsBlockHeader.h"
 
 /**
  * Autocomplete options page
@@ -28,6 +39,8 @@ class COptionsPageExtensions : public COptionsPageImpl<COptionsPageExtensions>
 
 	private:
 		CListViewCtrl m_list;
+
+		COptionsBlockHeader m_settingsHeader;
 };
 
 #endif // #ifndef optionspageextensions_h__included

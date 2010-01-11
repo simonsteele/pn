@@ -22,6 +22,7 @@ namespace L10N
 
 		static tstring Get(UINT dwStringID);
 		static std::wstring GetW(UINT dwStringID);
+		static std::string GetA(UINT dwStringID);
 
 		static void InitResourceLoader();
 
@@ -59,6 +60,7 @@ namespace L10N
 
 #define LS(stringId) L10N::StringLoader::Get(stringId).c_str()
 #define LSW(stringId) L10N::StringLoader::GetW(stringId).c_str()
+#define LSA(stringId) L10N::StringLoader::GetA(stringId).c_str()
 #define MAKE_OPTIONSTREEPATH(groupId, nodeId) L10N::StringLoader::Get(groupId) + _T("\\") + L10N::StringLoader::Get(nodeId)
 
 #endif //#ifndef l10n_h__included_49BE3F95_5C3B_433b_B37F_417D489B9587

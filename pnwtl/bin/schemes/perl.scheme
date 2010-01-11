@@ -36,6 +36,7 @@
 	</style-classes>
 	<language name="perl" title="Perl" folding="true" >
 		<lexer name="perl" />
+		<comments line="#" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="perl"/>
 		</use-keywords>

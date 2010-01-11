@@ -53,3 +53,11 @@ tstring COptionsPageAutocomplete::GetTreePosition()
 void COptionsPageAutocomplete::OnCancel()
 {
 }
+
+LRESULT COptionsPageAutocomplete::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	// Header:
+	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
+
+	return 0;
+}

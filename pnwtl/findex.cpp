@@ -210,7 +210,7 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	// Move the line that goes beneath the tab control.
 	CStatic s(GetDlgItem(IDC_FINDEX_LINE));
 	ClientRect rc(s, *this);
-	int height = rc.Height();
+
 	rc.top = rcTabs.bottom + 1;
 	s.SetWindowPos(HWND_TOP, rc, SWP_SIMPLEMOVE);
 
@@ -220,14 +220,14 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	rc.set(GetDlgItem(IDC_FINDTEXT_DUMMY), *this);
 	rc.bottom = rc.top + (size.cy * 10);
 
-	m_FindTextCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VSCROLL | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO,
-		_T("Find"), IDC_FINDTEXT_DUMMY);
+	m_FindTextCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VSCROLL | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO, _T("Find"), IDC_FINDTEXT_DUMMY);
+	m_FindTextCombo.SetWindowPos(GetDlgItem(IDC_FINDTEXT_LABEL), rc, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 
 	rc.set(GetDlgItem(IDC_REPLACETEXT_DUMMY), *this);
 	rc.bottom = rc.top + (size.cy * 10);
 
-	m_ReplaceTextCombo.Create(m_hWnd, rc, _T("REPLACETEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_REPLACETEXT_COMBO,
-		_T("Replace"), IDC_REPLACETEXT_DUMMY);
+	m_ReplaceTextCombo.Create(m_hWnd, rc, _T("REPLACETEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_REPLACETEXT_COMBO, _T("Replace"), IDC_REPLACETEXT_DUMMY);
+	m_ReplaceTextCombo.SetWindowPos(GetDlgItem(IDC_REPLACETEXT_LABEL), rc, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 
 	// Store the position of the second combo.
 	m_group2Top = rc.top;
@@ -237,6 +237,7 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	m_FindWhereCombo.Create(m_hWnd, rc, _T("FINDWHERECOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDWHERE_COMBO,
 		IDC_FINDWHERE_DUMMY);
+	m_FindWhereCombo.SetWindowPos(GetDlgItem(IDC_FINDWHERE_LABEL), rc, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 
 	m_FindWhereCombo.InsertString(0, LS(IDS_CURRENTFILE));
 	m_FindWhereCombo.InsertString(1, LS(IDS_CURRENTFOLDER));
@@ -284,9 +285,9 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	m_bInitialising = true;
 
 	// Add tabs
-	addTab(_T("Find"), 2);
-	addTab(_T("Replace"), 3);
-	addTab(_T("Find in Files"), 0);
+	addTab(LS(IDS_FIND), 2);
+	addTab(LS(IDS_REPLACE), 3);
+	addTab(LS(IDS_FINDINFILES), 0);
 
 	m_bInitialising = false;
 
@@ -1012,9 +1013,9 @@ void CFindExDialog::updateLayout()
 {
 	DoDataExchange(TRUE);
 
-	int restTop;
-	const UINT* checkboxes = NULL;
-	int nCheckboxes = 0;
+	int restTop(0);
+	const UINT* checkboxes(NULL);
+	int nCheckboxes(0);
 
 	if(m_type == m_lastType)
 		return;

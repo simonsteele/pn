@@ -2,9 +2,9 @@
  * @file wrapscintilla.h
  * @brief A scintilla wrapper for use outside PN, derives from the main PN one.
  * @author Simon Steele
- * @note Copyright (c) 2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #ifndef pypnwrapscintilla_h__included
@@ -15,6 +15,8 @@
 #endif
 
 #include "../scintillaif.h"
+
+#define PN_OVERWRITETARGET	(WM_APP+19)
 
 class PNScintilla : public CScintilla
 {
@@ -88,7 +90,7 @@ public:
 	std::string GetSelTextAsString()
 	{
 		std::string buf;
-		buf.resize(GetSelectionEnd()-GetSelectionStart()+1);
+		buf.resize(GetSelText(NULL)+1);
 		size_t size = GetSelText(&buf[0]);
 		// size includes the NULL terminator
 		buf.resize(size - 1);
@@ -131,6 +133,10 @@ public:
 		return buf;
 	}
 
+	/**
+	 * Implement GetText to return std::string.
+	 * @param length Number of characters to be retrieved - no need to include null in length.
+	 */
 	std::string GetTextAsString(int length)
 	{
 		if (length == 0)
@@ -139,9 +145,9 @@ public:
 		}
 
 		std::string buf;
+		buf.resize(length + 1);
+		length = GetText(length + 1, &buf[0]);
 		buf.resize(length);
-		GetText(length, &buf[0]);
-		buf.resize(length-1);
 		return buf;
 	}
 
@@ -155,6 +161,16 @@ public:
 		if(result == -1)
 			return boost::python::object(false);
 		return boost::python::make_tuple(f.chrgText.cpMin, f.chrgText.cpMax);
+	}
+
+	void SetFocus()
+	{
+		::SetFocus(m_scihWnd);
+	}
+
+	void BeginOverwriteTarget()
+	{
+		::SendMessage(m_scihWnd, PN_OVERWRITETARGET, 0, 0);
 	}
 };
 

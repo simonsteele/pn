@@ -367,8 +367,8 @@ protected:
 	 */
 	LRESULT OnKeyDown(UINT uMsg, WPARAM nChar, LPARAM lParam, BOOL& bHandled)
 	{
-		SHORT nRepCnt = HIWORD(lParam);
-		SHORT nFlags = LOWORD(lParam);
+		/*SHORT nRepCnt = HIWORD(lParam);
+		SHORT nFlags = LOWORD(lParam);*/
 
 		HWND hWndParent = GetParent();
 

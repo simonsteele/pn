@@ -2,7 +2,7 @@
  * @file app.cpp
  * @brief Plugin Main Implementation
  * @author Simon Steele
- * @note Copyright (c) 2006-209 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -252,9 +252,17 @@ void App::AddOutput(const char* text, int length)
 	if(ensureOutput())
 	{
 		// Yes, more ascii-to-unicode inefficiency here...
-		std::string t(text, length);
-		Windows1252_Utf16 textconv(t.c_str());
-		m_output->AddToolOutput(textconv, -1);
+		if (length >= 0)
+		{
+			std::string t(text, length);
+			Windows1252_Utf16 textconv(t.c_str());
+			m_output->AddToolOutput(textconv, -1);
+		}
+		else
+		{
+			Windows1252_Utf16 textconv(text);
+			m_output->AddToolOutput(textconv, -1);
+		}
 	}
 }
 

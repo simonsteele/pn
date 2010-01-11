@@ -2,7 +2,7 @@
  * @file project.h
  * @brief Implement a Solution->Project->Folders hierarchy.
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -20,12 +20,14 @@ namespace Projects
 
 #include "xmlparser.h"
 
+class Workspace;
 class ProjectViewState;
 class Project;
 class Folder;
 class File;
 class ProjectTemplate;
 class ProjectWriter;
+class MagicFolder;
 
 typedef std::list<Folder*>		FOLDER_LIST;
 typedef FOLDER_LIST::iterator	FL_IT;
@@ -33,12 +35,21 @@ typedef FOLDER_LIST::iterator	FL_IT;
 typedef std::list<File*>		FILE_LIST;
 typedef FILE_LIST::iterator		FILE_IT;
 
-typedef enum {ptFile, ptMagicFile, ptFolder, ptMagicFolder, ptProject, ptWorkspace} PROJECT_TYPE;
+typedef enum {ptFile, ptFolder, ptMagicFolder, ptProject, ptWorkspace} PROJECT_TYPE;
 typedef enum {pcAdd, pcRemove, pcEdit, pcClear, pcDirty, pcClean, pcActive} PROJECT_CHANGE_TYPE;
 
 class FolderAdder;
 class MagicFolderAdder;
 class MagicFolderCache;
+
+template <class TProjectItem>
+struct ProjectTypeTraits { };
+
+template<> struct ProjectTypeTraits<File> { static inline PROJECT_TYPE GetType() { return ptFile; } static inline bool CanChangeFrom(PROJECT_TYPE type) { return type == ptFile; } };
+template<> struct ProjectTypeTraits<Folder> { static inline PROJECT_TYPE GetType() { return ptFolder; } static inline bool CanChangeFrom(PROJECT_TYPE type) { return type == ptFolder || type == ptProject || type == ptMagicFolder; } };
+template<> struct ProjectTypeTraits<MagicFolder> { static inline PROJECT_TYPE GetType() { return ptMagicFolder; } static inline bool CanChangeFrom(PROJECT_TYPE type) { return type == ptMagicFolder; } };
+template<> struct ProjectTypeTraits<Project> { static inline PROJECT_TYPE GetType() { return ptProject; } static inline bool CanChangeFrom(PROJECT_TYPE type) { return type == ptProject; } };
+template<> struct ProjectTypeTraits<Workspace> { static inline PROJECT_TYPE GetType() { return ptWorkspace; } static inline bool CanChangeFrom(PROJECT_TYPE type) { return type == ptWorkspace; } };
 
 /**
  * Base-type for all Projects objects

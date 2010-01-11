@@ -392,7 +392,7 @@ public:
       ATLASSERT(pidlPath);
 
       // Create PARAM data
-      PSHELLITEMINFO pItem;
+      PSHELLITEMINFO pItem(NULL);
       ATLTRY(pItem = new SHELLITEMINFO);
       ATLASSERT(pItem);
       pItem->pidlFull.Copy( pidlPath );

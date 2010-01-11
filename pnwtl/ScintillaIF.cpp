@@ -2,7 +2,7 @@
  * @file ScintillaIF.cpp
  * @brief Implementation of CScintilla
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -1502,9 +1502,57 @@ int CScintilla::GetSelText(char* text)
 	return (int)SPerform(SCI_GETSELTEXT, 0, (long)text);
 }
 
+std::string CScintilla::GetSelText()
+{
+	std::string ret;
+	
+	// First instance, GetSelText returns buffer size required to store text including NULL
+	int selLength = GetSelText(NULL);
+
+	if (selLength == 1)
+	{
+		return "";
+	}
+
+	ret.resize(selLength);
+	
+	// Now GetSelText returns:
+	// 1. If the document is empty: 0
+	// 2. Otherwise: number of characters written, including NULL
+	selLength = GetSelText(&ret[0]);
+	if (selLength == 0)
+	{
+		return "";
+	}
+
+	ret.resize(selLength - 1);
+	
+	return ret;
+}
+
 int CScintilla::GetTextRange(Scintilla::TextRange* tr)
 {
 	return (int)SPerform(SCI_GETTEXTRANGE, 0, (long)tr);
+}
+
+std::string CScintilla::GetTextRange(int start, int end)
+{
+	std::string ret;
+	
+	// First instance, GetSelText returns buffer size required to store text including NULL
+	int selLength = end - start;
+
+	ret.resize(selLength + 1);
+	
+	Scintilla::Sci_TextRange range;
+	range.chrg.cpMin = start;
+	range.chrg.cpMax = end;
+	range.lpstrText = &ret[0];
+	
+	int len = GetTextRange(&range);
+	ret.resize(len);
+	
+	return ret;
 }
 
 void CScintilla::HideSelection(bool normal)
@@ -2367,7 +2415,7 @@ int CScintilla::GetModEventMask()
 	return (int)SPerform(SCI_GETMODEVENTMASK, 0, 0);
 }
 
-void CScintilla::SetFocus(bool focus)
+void CScintilla::SetEditorFocus(bool focus)
 {
 	SPerform(SCI_SETFOCUS, (long)focus, 0);
 }
@@ -2787,4 +2835,187 @@ void CScintilla::IndicatorClearRange(int start, int length)
 int CScintilla::GetSelections()
 {
 	return SPerform(SCI_GETSELECTIONS, 0, 0);
+}
+
+void CScintilla::ClearSelections()
+{
+	SPerform(SCI_CLEARSELECTIONS, 0, 0);
+}
+
+
+void CScintilla::SetSelection(int caret, int anchor)
+{
+	SPerform(SCI_SETSELECTION, caret, anchor);
+}
+
+
+void CScintilla::AddSelection(int caret, int anchor)
+{
+	SPerform(SCI_ADDSELECTION, caret, anchor);
+}
+
+
+void CScintilla::SetMainSelection(int selection)
+{
+	SPerform(SCI_SETMAINSELECTION, selection, 0);
+}
+
+
+int CScintilla::GetMainSelection()
+{
+	return SPerform(SCI_GETMAINSELECTION, 0, 0);
+}
+
+
+
+void CScintilla::SetSelectionNCaret(int selection, int pos)
+{
+	SPerform(SCI_SETSELECTIONNCARET, selection, pos);
+}
+
+
+int CScintilla::GetSelectionNCaret(int selection)
+{
+	return SPerform(SCI_GETSELECTIONNCARET, selection, 0);
+}
+
+
+void CScintilla::SetSelectionNCaretVirtualSpace(int selection, int space)
+{
+	SPerform(SCI_SETSELECTIONNCARETVIRTUALSPACE, selection, space);
+}
+
+int CScintilla::GetSelectionNCaretVirtualSpace(int selection)
+{
+	return SPerform(SCI_GETSELECTIONNCARETVIRTUALSPACE, selection, 0);
+}
+
+void CScintilla::SetSelectionNAnchor(int selection, int posAnchor)
+{
+	SPerform(SCI_SETSELECTIONNANCHOR, selection, posAnchor);
+}
+
+int CScintilla::GetSelectionNAnchor(int selection)
+{
+	return SPerform(SCI_GETSELECTIONNANCHOR, selection, 0);
+}
+
+void CScintilla::SetSelectionNAnchorVirtualSpace(int selection, int space)
+{
+	SPerform(SCI_SETSELECTIONNANCHORVIRTUALSPACE, selection, space);
+}
+
+int CScintilla::GetSelectionNAnchorVirtualSpace(int selection)
+{
+	return SPerform(SCI_GETSELECTIONNANCHORVIRTUALSPACE, selection, 0);
+}
+
+void CScintilla::SetSelectionNStart(int selection, int pos)
+{
+	SPerform(SCI_SETSELECTIONNSTART, selection, pos);
+}
+
+int CScintilla::GetSelectionNStart(int selection)
+{
+	return SPerform(SCI_GETSELECTIONNSTART, selection, 0);
+}
+
+void CScintilla::SetSelectionNEnd(int selection, int pos)
+{
+	SPerform(SCI_SETSELECTIONNEND, selection, pos);
+}
+
+int CScintilla::GetSelectionNEnd(int selection)
+{
+	return SPerform(SCI_GETSELECTIONNEND, selection, 0);
+}
+
+void CScintilla::SetRectangularSelectionCaret(int pos)
+{
+	SPerform(SCI_SETRECTANGULARSELECTIONCARET, pos, 0);
+}
+
+int CScintilla::GetRectangularSelectionCaret()
+{
+	return SPerform(SCI_GETRECTANGULARSELECTIONCARET, 0, 0);
+}
+
+void CScintilla::SetRectangularSelectionCaretVirtualSpace(int space)
+{
+	SPerform(SCI_SETRECTANGULARSELECTIONCARETVIRTUALSPACE, space, 0);
+}
+
+int CScintilla::GetRectangularSelectionCaretVirtualSpace()
+{
+	return SPerform(SCI_GETRECTANGULARSELECTIONCARETVIRTUALSPACE, 0, 0);
+}
+
+void CScintilla::SetRectangularSelectionAnchor(int posAnchor)
+{
+	SPerform(SCI_SETRECTANGULARSELECTIONANCHOR, posAnchor, 0);
+}
+
+int CScintilla::GetRectangularSelectionAnchor()
+{
+	return SPerform(SCI_GETRECTANGULARSELECTIONANCHOR, 0, 0);
+}
+
+void CScintilla::SetRectangularSelectionAnchorVirtualSpace(int space)
+{
+	SPerform(SCI_SETRECTANGULARSELECTIONANCHORVIRTUALSPACE, space, 0);
+}
+
+int CScintilla::GetRectangularSelectionAnchorVirtualSpace()
+{
+	return SPerform(SCI_GETRECTANGULARSELECTIONANCHORVIRTUALSPACE, 0, 0);
+}
+
+void CScintilla::SetAdditionalSelAlpha(int alpha)
+{
+	SPerform(SCI_SETADDITIONALSELALPHA, alpha, 0);
+}
+
+int CScintilla::GetAdditionalSelAlpha()
+{
+	return SPerform(SCI_GETADDITIONALSELALPHA, 0, 0);
+}
+
+void CScintilla::SetAdditionalSelFore(int colour)
+{
+	SPerform(SCI_SETADDITIONALSELFORE, colour, 0);
+}
+
+void CScintilla::SetAdditionalSelBack(int colour)
+{
+	SPerform(SCI_SETADDITIONALSELBACK, colour, 0);
+}
+
+void CScintilla::SetAdditionalCaretFore(int colour)
+{
+	SPerform(SCI_SETADDITIONALCARETFORE, colour, 0);
+}
+
+int CScintilla::GetAdditionalCaretFore()
+{
+	return SPerform(SCI_GETADDITIONALCARETFORE, 0, 0);
+}
+
+void CScintilla::SetAdditionalCaretsBlink(bool additionalCaretsBlink)
+{
+	SPerform(SCI_SETADDITIONALCARETSBLINK, additionalCaretsBlink ? 1 : 0, 0);
+}
+
+bool CScintilla::GetAdditionalCaretsBlink()
+{
+	return SPerform(SCI_GETADDITIONALCARETSBLINK, 0, 0) != 0;
+}
+
+void CScintilla::SwapMainAnchorCaret()
+{
+	SPerform(SCI_SWAPMAINANCHORCARET, 0, 0);
+}
+
+void CScintilla::RotateSelection()
+{
+	SPerform(SCI_ROTATESELECTION, 0, 0);
 }

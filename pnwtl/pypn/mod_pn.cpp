@@ -55,9 +55,9 @@ void SetOutputDefaultParser()
 	g_app->SetOutputDefaultParser();
 }
 
-void SetOutputBasePath(const wchar_t* path)
+void SetOutputBasePath(std::wstring path)
 {
-	g_app->SetOutputBasePath(path);
+	g_app->SetOutputBasePath(path.c_str());
 }
 
 int PNMessageBox(const char* text, const char* title, int type)
@@ -71,9 +71,9 @@ int PNMessageBox(const char* text, const char* title, int type)
 	return ::MessageBox(hw, text, title, type);
 }
 
-std::wstring PNInputBox(const wchar_t* title, const wchar_t* caption)
+std::wstring PNInputBox(std::wstring title, std::wstring caption)
 {
-	wchar_t* result = g_app->GetPN()->InputBox(title, caption);
+	wchar_t* result = g_app->GetPN()->InputBox(title.c_str(), caption.c_str());
 	if(result == NULL)
 		return L"";
 	std::wstring r(result);
@@ -92,9 +92,9 @@ extensions::ISearchOptions* PNGetUserSearchOptions()
 	return g_app->GetPN()->GetUserSearchOptions();
 }
 
-IDocumentPtr PNOpenDocument(const wchar_t* filepath, const char* scheme)
+IDocumentPtr PNOpenDocument(std::wstring filepath, const char* scheme)
 {
-	return g_app->GetPN()->OpenDocument(filepath, scheme);
+	return g_app->GetPN()->OpenDocument(filepath.c_str(), scheme);
 }
 
 IDocumentPtr PNNewDocument(const char* scheme)
@@ -131,12 +131,28 @@ std::wstring GetSearchOptionsFindText(ISearchOptions* so)
 	return so->GetFindText();
 }
 
+/** 
+ * Wrap SetFindText to use wstring.
+ */
+void SetSearchOptionsFindText(ISearchOptions* so, std::wstring str)
+{
+	so->SetFindText(str.c_str());
+}
+
 /**
  * wrap GetReplaceText to return wstring which BP has a converter for.
  */
 std::wstring GetSearchOptionsReplaceText(ISearchOptions* so)
 {
 	return so->GetReplaceText();
+}
+
+/**
+ * wrap SetReplaceText to take wstring which BP can convert.
+ */
+void SetSearchOptionsReplaceText(ISearchOptions* so, std::wstring str)
+{
+	so->SetReplaceText(str.c_str());
 }
 
 /**
@@ -148,11 +164,55 @@ std::wstring GetSearchOptionsFileExts(ISearchOptions* so)
 }
 
 /**
+ * Wrap SetFileExts to use wstring which BP can convert.
+ */
+void SetSearchOptionsFileExts(ISearchOptions* so, std::wstring str)
+{
+	so->SetFileExts(str.c_str());
+}
+
+/**
  * wrap GetSearchPath to return wstring which BP has a converter for.
  */
 std::wstring GetSearchOptionsSearchPath(ISearchOptions* so)
 {
 	return so->GetSearchPath();
+}
+
+/**
+ * Wrap SetSearchPath to use wstring which BP can convert.
+ */
+void SetSearchOptionsSearchPath(ISearchOptions* so, std::wstring str)
+{
+	so->SetSearchPath(str.c_str());
+}
+
+void PNSetClipboardText(const char* text)
+{
+	if (text == NULL)
+	{
+		return;
+	}
+
+	size_t length = strlen(text);
+
+	HGLOBAL hData = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, length + 1);
+	if (hData != NULL)
+	{
+		HWND owner = g_app->GetPN()->GetMainWindow();
+
+		if (::OpenClipboard(owner))
+		{
+			::EmptyClipboard();
+			
+			char* pBuf = static_cast<char*>(::GlobalLock(hData));
+			memcpy(pBuf, &text[0], length + 1);
+			::GlobalUnlock(hData);
+			
+			::SetClipboardData(CF_TEXT, hData);
+			::CloseClipboard();
+		}
+	}
 }
 
 } // namespace
@@ -189,6 +249,8 @@ BOOST_PYTHON_MODULE(pn)
 	def("EvalDocument", &PNEvalDocument, "Run a document as a PN python script");
 
 	def("StringFromPointer", &PNStringFromPointer, "Get a string value from a c-style string pointer");
+
+	def("SetClipboardText", &PNSetClipboardText, "Set clipboard text");
 
 	CONSTANT(IDOK);
 	CONSTANT(IDCANCEL);
@@ -244,17 +306,17 @@ BOOST_PYTHON_MODULE(pn)
     ;
 
 	class_<ISearchOptions, boost::noncopyable>("ISearchOptions", no_init)
-		.add_property("FindText", &GetSearchOptionsFindText, &ISearchOptions::SetFindText)
+		.add_property("FindText", &GetSearchOptionsFindText, &SetSearchOptionsFindText)
 		.add_property("MatchWholeWord", &ISearchOptions::GetMatchWholeWord, &ISearchOptions::SetMatchWholeWord)
 		.add_property("MatchCase", &ISearchOptions::GetMatchCase, &ISearchOptions::SetMatchCase)
 		.add_property("UseRegExp", &ISearchOptions::GetUseRegExp, &ISearchOptions::SetUseRegExp)
 		.add_property("SearchBackwards", &ISearchOptions::GetSearchBackwards, &ISearchOptions::SetSearchBackwards)
 		.add_property("LoopOK", &ISearchOptions::GetLoopOK, &ISearchOptions::SetLoopOK)
 		.add_property("UseSlashes", &ISearchOptions::GetUseSlashes, &ISearchOptions::SetUseSlashes)
-		.add_property("ReplaceText", &GetSearchOptionsReplaceText, &ISearchOptions::SetReplaceText)
+		.add_property("ReplaceText", &GetSearchOptionsReplaceText, &SetSearchOptionsReplaceText)
 		.add_property("ReplaceInSelection", &ISearchOptions::GetReplaceInSelection, &ISearchOptions::SetReplaceInSelection)
-		.add_property("FileExts", &GetSearchOptionsFileExts, &ISearchOptions::SetFileExts)
-		.add_property("SearchPath", &GetSearchOptionsSearchPath, &ISearchOptions::SetSearchPath)
+		.add_property("FileExts", &GetSearchOptionsFileExts, &SetSearchOptionsFileExts)
+		.add_property("SearchPath", &GetSearchOptionsSearchPath, &SetSearchOptionsSearchPath)
 		.add_property("Recurse", &ISearchOptions::GetRecurse, &ISearchOptions::SetRecurse)
 		.add_property("IncludeHidden", &ISearchOptions::GetIncludeHidden, &ISearchOptions::SetIncludeHidden)
 		.add_property("Found", &ISearchOptions::GetFound)

@@ -166,12 +166,17 @@ tstring COptionsPageNewFiles::GetTreePosition()
 
 LRESULT COptionsPageNewFiles::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	// Headers:
+	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
+	m_smartStartHeader.SubclassWindow(GetDlgItem(IDC_SMARTSTART_STATIC));
+
+	// Controls:
 	m_list.Attach(GetDlgItem(IDC_SMARTSTART_LIST));
 	CRect rc;
 	m_list.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 	m_list.GetClientRect(rc);
-	m_list.InsertColumn(0, _T("Starting Phrase"), LVCFMT_LEFT, (rc.Width() / 3) * 2, 0);
-	m_list.InsertColumn(1, _T("Scheme"), LVCFMT_LEFT, (rc.Width() / 3) - 20, 0);
+	m_list.InsertColumn(0, LS(IDS_HDR_SMARTSTART_PHRASE), LVCFMT_LEFT, (rc.Width() / 3) * 2, 0);
+	m_list.InsertColumn(1, LS(IDS_HDR_FILETYPES_SCHEME), LVCFMT_LEFT, (rc.Width() / 3) - 20, 0);
 
 	m_combo.Attach(GetDlgItem(IDC_NEW_SCHEMECOMBO));
 

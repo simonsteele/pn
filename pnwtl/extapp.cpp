@@ -174,6 +174,7 @@ void App::LoadExtensions()
 			}
 			else
 			{
+				delete ext;
 				tstring msg(_T("Failed to load extension: "));
 				msg += details.Path;
 				LOG(msg.c_str());
@@ -457,7 +458,7 @@ extensions::IDocumentPtr App::OpenDocument(const wchar_t* filepath, const char* 
  */
 extensions::IDocumentPtr App::NewDocument(const char* scheme)
 {
-	Scheme* pScheme;
+	Scheme* pScheme(NULL);
 	if (scheme)
 	{
 		pScheme = SchemeManager::GetInstance()->SchemeByName(scheme);

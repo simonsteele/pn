@@ -65,6 +65,11 @@ public:
 
 	void BuildMenu(HMENU menu, CommandDispatch* dispatcher)
 	{
+		if (m_title.size() == 0)
+		{
+			return;
+		}
+
 		CSMenuHandle m(menu);
 		CW2CT titlet(m_title.c_str());
 
@@ -78,6 +83,10 @@ public:
 			}
 
 			::AppendMenu(m.GetHandle(), MF_POPUP, reinterpret_cast<UINT_PTR>(submenu.GetHandle()), titlet);
+		}
+		else if (m_title[0] == _T('-'))
+		{
+			m.AddSeparator();
 		}
 		else
 		{

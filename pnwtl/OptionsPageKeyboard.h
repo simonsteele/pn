@@ -12,13 +12,14 @@
 
 #include "include/optionsdialog.h"
 #include "optionscontrols.h"
+#include "controls/OptionsBlockHeader.h"
 
 typedef enum { cdtCommand, cdtExtended, cdtScintilla } CommandDetailsType;
 
 typedef struct CommandDetails_tag
 {
 	CommandDetailsType type;
-	int command;
+	DWORD command;
 } CommandDetails;
 
 typedef struct ExtendedCommandDetails_tag : CommandDetails
@@ -59,7 +60,7 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 		
 		bool IsDirty() const;
 
-	protected:
+	private:
 		LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 		LRESULT OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -68,7 +69,7 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 		LRESULT OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 		LRESULT OnKeySelChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-		int addItems(CSMenuHandle& menu, const char* group, int count = 0);
+		int addItems(CSMenuHandle& menu, LPCTSTR group, int count = 0);
 		void addExtensions();
 		void addScintilla();
 		void clear();
@@ -90,6 +91,8 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 		CListBox		m_shortcutlist;
 		CPNHotkeyCtrl	m_hotkey;
 		bool			m_bDirty;
+
+		COptionsBlockHeader m_settingsHeader;
 };
 
 #endif

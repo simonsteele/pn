@@ -11,6 +11,7 @@
 #ifndef optionspageediting_h__included
 #define optionspageediting_h__included
 
+#include "controls/OptionsBlockHeader.h"
 #include "include/optionsdialog.h"
 
 /**
@@ -54,6 +55,8 @@ class COptionsPageEditing : public COptionsPageImpl<COptionsPageEditing>,
 		BOOL m_virtualSpace;
 		BOOL m_multiSelect;
 		BOOL m_multiSelectTyping;
+
+		COptionsBlockHeader m_editingHeader;
 };
 
 #endif // #ifndef optionspageediting_h__included

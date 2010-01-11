@@ -153,9 +153,6 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 {
 	Schemes::Writer writer;
 
-	StyleDetails* pStyle = NULL;
-	StyleDetails* pOrig = NULL;
-	
 	writer.Start(filename);
 	writer.beginDoc();
 

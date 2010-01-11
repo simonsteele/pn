@@ -12,6 +12,7 @@
 #include "tools.h"
 #include "toolsmanager.h"
 #include "toolsxmlwriter.h"
+#include "include/filefinder.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // ToolsManager
@@ -246,10 +247,7 @@ void ToolsManager::ReLoad(CommandDispatch* pDispatch)
 {
 	Clear(pDispatch);
 
-	XMLParser parser;
-	parser.SetParseState(this);
-
-	/// Try and load the user tools file.
+	// Try and load the user tools file.
 	tstring uspath;
 	OPTIONS->GetPNPath(uspath, PNPATH_USERTOOLS);
 	uspath += _T("UserTools.xml");
@@ -262,6 +260,8 @@ void ToolsManager::ReLoad(CommandDispatch* pDispatch)
 	{
 		try
 		{
+			XMLParser parser;
+			parser.SetParseState(this);
 			parser.LoadFile(uspath.c_str());
 		}
 		catch ( XMLParserException& ex )
@@ -270,48 +270,13 @@ void ToolsManager::ReLoad(CommandDispatch* pDispatch)
 			str += ex.GetMessage();
 			UNEXPECTED(str.c_str());
 		}
-
 	}
 
 	// Now we try and find any pre-shipped tool configurations.
 	OPTIONS->GetPNPath(uspath, PNPATH_TOOLS);
-	tstring pattern(uspath);
-	tstring to_open;
 
-	pattern += _T("*.xml");
-
-	WIN32_FIND_DATA FindFileData;
-	HANDLE hFind = ::FindFirstFile(pattern.c_str(), &FindFileData);
-	if(hFind != INVALID_HANDLE_VALUE)
-	{
-		BOOL found = TRUE;
-		while (found)
-		{
-			to_open = uspath;
-			to_open += FindFileData.cFileName;
-
-			try
-			{
-				ToolSource* ts = new ToolSource;
-				ts->FileName = to_open;
-				m_toolSources.push_back(ts);
-				m_pCurSource = ts;
-
-				parser.Reset();
-				parser.LoadFile(to_open.c_str());
-			}
-			catch( XMLParserException& ex)
-			{
-				tstring str(_T("XML Parser Exception loading Scheme Tools:"));
-				str += ex.GetMessage();
-				UNEXPECTED(str.c_str());
-			}
-
-			found = ::FindNextFile(hFind, &FindFileData);
-		}
-
-		::FindClose(hFind);
-	}
+	FileFinder<ToolsManager> finder(this, &ToolsManager::toolsFileFound);
+	finder.Find(uspath.c_str(), _T("*.xml"), false);
 }
 
 void ToolsManager::Save()
@@ -346,6 +311,30 @@ void ToolsManager::Save()
 			writer.endSchemeTools();
 			writer.Close();
 		}		
+	}
+}
+
+void ToolsManager::toolsFileFound(LPCTSTR path, FileFinderData& details, bool& shouldContinue)
+{
+	CFileName fn(details.GetFilename());
+	fn.Root(path);
+
+	try
+	{
+		ToolSource* ts = new ToolSource;
+		ts->FileName = fn.c_str();
+		m_toolSources.push_back(ts);
+		m_pCurSource = ts;
+
+		XMLParser parser;
+		parser.SetParseState(this);
+		parser.LoadFile(fn.c_str());
+	}
+	catch( XMLParserException& ex)
+	{
+		tstring str(_T("XML Parser Exception loading Scheme Tools:"));
+		str += ex.GetMessage();
+		UNEXPECTED(str.c_str());
 	}
 }
 

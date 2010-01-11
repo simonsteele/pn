@@ -2,15 +2,16 @@
  * @file CustomScheme.cpp
  * @brief Defines the entry point for the custom schemes DLL.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #include "stdafx.h"
 #include "CustomScheme.h"
 #include "scintilla/Accessor.h"
 #include "scintilla/WindowAccessor.h"
+#include "../include/encoding.h"
 
 HMODULE theModule;
 
@@ -38,17 +39,17 @@ Lexers theLexers;
 // CustomLexerFactory
 //////////////////////////////////////////////////////////////////////////
 
-CustomLexerFactory::CustomLexerFactory(const char* path)
+CustomLexerFactory::CustomLexerFactory(const TCHAR* path)
 {
 	m_parser.SetParseState(this);
 
 	//Load and parse customlexers
 	tstring sPath(path);
-	if(sPath[sPath.size()-1] != '/' && sPath[sPath.size()-1] != '\\')
-		sPath += '\\';
+	if(sPath[sPath.size()-1] != _T('/') && sPath[sPath.size()-1] != _T('\\'))
+		sPath += _T('\\');
 
 	tstring sPattern(sPath);
-	sPattern += "*.schemedef";
+	sPattern += _T("*.schemedef");
 
 	WIN32_FIND_DATA FindFileData;
 	HANDLE hFind = INVALID_HANDLE_VALUE;
@@ -64,10 +65,15 @@ CustomLexerFactory::CustomLexerFactory(const char* path)
 			
 			// Now make the CustomLexer object.
 			m_pCurrent = new CustomLexer;
-			if( Parse(to_open.c_str()) )
+			if (Parse(to_open.c_str()))
+			{
 				theLexers.AddLexer(m_pCurrent);
+			}
 			else
+			{
 				delete m_pCurrent;
+				m_pCurrent = NULL;
+			}
 
 			found = FindNextFile(hFind, &FindFileData);
 		}
@@ -82,8 +88,16 @@ bool CustomLexerFactory::Parse(LPCTSTR file)
 	m_bFileOK = true;
 	m_state = STATE_DEFAULT;
 
-	m_parser.LoadFile(file);
-	m_parser.Reset();
+	try
+	{
+		m_parser.LoadFile(file);
+		m_parser.Reset();
+	}
+	catch (XMLParserException& ex)
+	{
+		::OutputDebugString(ex.GetMessage());
+		m_bFileOK = false;
+	}
 
 	return m_bFileOK;
 }
@@ -102,11 +116,11 @@ void CustomLexerFactory::doScheme(const XMLAttributes& atts)
 
 		if(_tcscmp(pName, _T("casesensitive")) == 0)
 		{
-			m_pCurrent->bCaseSensitive = (pVal[0] == _T('t') || pVal[0] == _T('T'));
+			m_pCurrent->bCaseSensitive = SBOOL(pVal);
 		}
 		else if(_tcscmp(pName, _T("name")) == 0)
 		{
-			m_pCurrent->tsName = pVal;
+			m_pCurrent->tsName = Tcs_Windows1252(pVal);
 		}
 	}
 
@@ -137,11 +151,11 @@ void CustomLexerFactory::doStringType(const XMLAttributes& atts)
 
 		if(_tcscmp(pName, _T("start")) == 0)
 		{
-			st.start = pVal[0];
+			st.start = static_cast<char>(pVal[0]);
 		}
 		else if(_tcscmp(pName, _T("end")) == 0)
 		{
-			st.end = pVal[0];
+			st.end = static_cast<char>(pVal[0]);
 		}
 		else if(_tcscmp(pName, _T("multiline")) == 0)
 		{
@@ -150,12 +164,12 @@ void CustomLexerFactory::doStringType(const XMLAttributes& atts)
 		else if(_tcscmp(pName, _T("continuation")) == 0)
 		{
 			st.bContinuation = true;
-			st.continuation = pVal[0];
+			st.continuation = static_cast<char>(pVal[0]);
 		}
 		else if(_tcscmp(pName, _T("escape")) == 0)
 		{
 			st.bEscape = true;
-			st.escape = pVal[0];
+			st.escape = static_cast<char>(pVal[0]);
 		}
 	}
 
@@ -183,13 +197,13 @@ void CustomLexerFactory::doPreProcessor(const XMLAttributes& atts)
 	if(!pszStart)
 		return;
 	m_pCurrent->bPreProc = true;
-	m_pCurrent->preProcStart = pszStart[0];
+	m_pCurrent->preProcStart = static_cast<char>(pszStart[0]);
 
 	LPCTSTR pszCont = atts.getValue(_T("continuation"));
 	if(!pszCont)
 		return;
 	m_pCurrent->bPreProcContinuation = true;
-	m_pCurrent->preProcContinue = pszCont[0];
+	m_pCurrent->preProcContinue = static_cast<char>(pszCont[0]);
 }
 
 void CustomLexerFactory::doNumbers(const XMLAttributes& atts)
@@ -199,13 +213,13 @@ void CustomLexerFactory::doNumbers(const XMLAttributes& atts)
 		return;
 
 	// start will be something like [a-z]. This needs parsing into a character set.
-	m_pCurrent->numberStartSet.ParsePattern(pszStart);
+	m_pCurrent->numberStartSet.ParsePattern(Tcs_Windows1252(pszStart));
 
 	LPCTSTR pszContent = atts.getValue(_T("content"));
 	if(!pszContent)
 		return;
 
-	m_pCurrent->numberContentSet.ParsePattern(pszContent);
+	m_pCurrent->numberContentSet.ParsePattern(Tcs_Windows1252(pszContent));
 }
 
 void CustomLexerFactory::doIdentifiers(const XMLAttributes& atts)
@@ -214,7 +228,7 @@ void CustomLexerFactory::doIdentifiers(const XMLAttributes& atts)
 	if( pszStart )
 	{
 		CharSet chSet;
-		if( chSet.ParsePattern(pszStart) )
+		if( chSet.ParsePattern(Tcs_Windows1252(pszStart)) )
             m_pCurrent->wordStartSet = chSet;
 	}
 	
@@ -222,7 +236,7 @@ void CustomLexerFactory::doIdentifiers(const XMLAttributes& atts)
 	if( pszContent )
 	{
 		CharSet chSet;
-		if( chSet.ParsePattern(pszContent) )
+		if( chSet.ParsePattern(Tcs_Windows1252(pszContent)) )
             m_pCurrent->wordContentSet = chSet;
 	}
 }
@@ -234,16 +248,16 @@ void CustomLexerFactory::doIdentifiers2(const XMLAttributes& atts)
 		return;
 
 	// start will be something like [a-z]. This needs parsing into a character set.
-	m_pCurrent->identStartSet.ParsePattern(pszStart);
+	m_pCurrent->identStartSet.ParsePattern(Tcs_Windows1252(pszStart));
 
 	LPCTSTR pszContent = atts.getValue(_T("content"));
 	if(!pszContent)
 		return;
 
-	m_pCurrent->identContentSet.ParsePattern(pszContent);
+	m_pCurrent->identContentSet.ParsePattern(Tcs_Windows1252(pszContent));
 }
 
-void CustomLexerFactory::SetCommentTypeCode(LPCTSTR pVal, ECodeLength& length, TCHAR* code, TCHAR*& pCode, CommentType_t* type)
+void CustomLexerFactory::SetCommentTypeCode(LPCSTR pVal, ECodeLength& length, char* code, char*& pCode, CommentType_t* type)
 {
 	if(pVal && pVal[0] != NULL)
 	{
@@ -260,8 +274,8 @@ void CustomLexerFactory::SetCommentTypeCode(LPCTSTR pVal, ECodeLength& length, T
 		else
 		{
 			length = eMore;
-			pCode = new TCHAR[_tcslen(pVal)+1];
-			_tcscpy(pCode, pVal);
+			pCode = new char[strlen(pVal)+1];
+			strcpy(pCode, pVal);
 		}
 	}
 	else
@@ -290,9 +304,9 @@ void CustomLexerFactory::doCommentType(int commentType, const XMLAttributes& att
 	type->bValid = true;
 
 	LPCTSTR pVal = atts.getValue(_T("start"));
-	SetCommentTypeCode(pVal, type->scLength, type->scode, type->pSCode, type);
+	SetCommentTypeCode(Tcs_Windows1252(pVal), type->scLength, type->scode, type->pSCode, type);
 	pVal = atts.getValue(_T("end"));
-	SetCommentTypeCode(pVal, type->ecLength, type->ecode, type->pECode, type);
+	SetCommentTypeCode(Tcs_Windows1252(pVal), type->ecLength, type->ecode, type->pECode, type);
 
 	if(commentType == CT_LINE)
 	{
@@ -300,7 +314,7 @@ void CustomLexerFactory::doCommentType(int commentType, const XMLAttributes& att
 		if(pVal)
 		{
 			type->bContinuation = true;
-			type->continuation = pVal[0];
+			type->continuation = static_cast<char>(pVal[0]);
 		}
 	}
 }
@@ -407,10 +421,13 @@ void CustomLexerFactory::characterData(LPCTSTR data, int len)
 // Exported Functions
 //////////////////////////////////////////////////////////////////////////
 
-int FindLastSlash(char *inp) {
+int FindLastSlash(const TCHAR *inp) 
+{
 	int ret = -1;
-	for (int i = static_cast<int>(strlen(inp)) - 1; i >= 0; i--) {
-		if (inp[i] == '\\' || inp[i] == '/') {
+	for (int i = static_cast<int>(_tcslen(inp)) - 1; i >= 0; i--) 
+	{
+		if (inp[i] == _T('\\') || inp[i] == _T('/')) 
+		{
 			ret = i;
 			break;
 		}
@@ -424,14 +441,16 @@ void FindLexers()
 
 	if(!bFound)
 	{
-		char path[MAX_PATH + 1];
+		bFound = true;
+
+		TCHAR path[MAX_PATH + 1];
 
 		GetModuleFileName(theModule, path, MAX_PATH);
 
 		int i = FindLastSlash(path);
 
 		if (i == -1)
-			i = static_cast<int>(strlen(path));
+			i = static_cast<int>(_tcslen(path));
 
 		tstring sPath(path, 0, i);
 

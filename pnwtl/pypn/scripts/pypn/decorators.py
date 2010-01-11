@@ -1,4 +1,4 @@
-import glue
+import glue, pn, scintilla
 
 ######################################################
 ## Experimental decorator things...
@@ -9,12 +9,28 @@ def indenter(scheme):
 		return f
 	return decorator
 
-def script(name=None, group="Python"):
+def script(name=None, group="Python", auto_undo=True):
 	def decorator(f):
+		""" Decorator code """
+		def wrappedScript():
+			""" Wrap the script function to automatically group undo """
+			if not auto_undo:
+				f()
+			else:
+				s = scintilla.Scintilla(pn.CurrentDoc())
+				try:
+					s.BeginUndoAction()
+					f()
+				finally:
+					s.EndUndoAction()
+		
 		if name == None:
 			scriptName = f.func_name
 		else:
 			scriptName = name
+		
 		glue.registerScript(f, group, scriptName)
-		return f
+		
+		return wrappedScript
+		
 	return decorator

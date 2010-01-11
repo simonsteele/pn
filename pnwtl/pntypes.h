@@ -2,7 +2,7 @@
  * @file pntypes.h
  * @brief Define structs etc. used throughout pn2.
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -163,5 +163,7 @@ typedef enum { eftFind, eftReplace, eftFindInFiles, eftInvalid } EFindDialogType
 typedef enum {FN_FULL, FN_FILE, FN_PATH, FN_FILEPART} EGFNType;
 
 typedef enum { eacManual, eacTextMatch } EACMode;
+
+typedef enum { scfNone = 0, scfNoViewSettings = 1, scfNoRestyle = 2 } ESchemeChangeFlags;
 
 #endif

@@ -1,18 +1,31 @@
-// PNExt.cpp : Implementation of CPNExt
+/**
+ * @file PNExt.cpp
+ * @brief Shell Extension for Programmer's Notepad
+ * @author Simon Steele
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ *
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 
 #include "stdafx.h"
-#include "TalkToPN.h"
+#include "..\singleinstance.h"
 #include "PNExt.h"
 #include "module.h"
 
 #define PN_KEY _T("{FCA6FB45-3224-497a-AC73-C30E498E9ADA}")
 
-typedef std::basic_string<TCHAR> tstring;
+/**
+ * Global state, just the OS version for this shell extension.
+ */
+Context g_Context;
 
 // CPNExt
-CPNExt::CPNExt() : m_communicator(PN_KEY)
+CPNExt::CPNExt()
 {
-
+	ZeroMemory(&g_Context.OSVersion, sizeof(OSVERSIONINFO));
+	g_Context.OSVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	::GetVersionEx(&g_Context.OSVersion);
 }
 
 HRESULT CPNExt::Initialize( LPCITEMIDLIST pidlFolder, LPDATAOBJECT pDataObj, HKEY hProgID )
@@ -146,7 +159,9 @@ HRESULT CPNExt::InvokeCommand( LPCMINVOKECOMMANDINFO pCmdInfo )
 	{
 	case 0:
 		{
-			::OutputDebugString("Sending File(s) to PN");
+#ifdef DEBUG
+			::OutputDebugString(_T("Sending File(s) to PN"));
+#endif
 			InformPN();
 
 			return S_OK;
@@ -161,22 +176,15 @@ HRESULT CPNExt::InvokeCommand( LPCMINVOKECOMMANDINFO pCmdInfo )
 void CPNExt::InformPN()
 {
 	// TODO Add "Local\\" to the key.
-	HANDLE hMutex = ::OpenMutex(MUTEX_MODIFY_STATE, FALSE, PN_KEY);
-	if(hMutex)
+	MultipleInstanceManager checkMI(PN_KEY);
+	if (checkMI.AlreadyActive())
 	{
-		InformRunningPN();
-
-		::CloseHandle(hMutex);
+		checkMI.SendParameters(m_files);
 	}
 	else
 	{
 		InformNewPN();
 	}
-}
-
-void CPNExt::InformRunningPN()
-{
-	m_communicator.SendParameters(m_files);
 }
 
 void CPNExt::InformNewPN()
@@ -214,8 +222,10 @@ void CPNExt::InformNewPN()
 	TCHAR* buf = new TCHAR[cmdline.size()+1];
 	_tcscpy(buf, cmdline.c_str());
 
+#ifdef DEBUG
 	::OutputDebugString(_T("Going to CreateProcess PN"));
 	::OutputDebugString(buf);
+#endif
 	if( ::CreateProcess(
 		NULL,
 		buf,

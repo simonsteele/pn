@@ -34,7 +34,7 @@
 
 	// This allows Debug builds in VS2005 to load dlls
 	// that reference Release libraries.
-	#pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.VC80.CRT' version='8.0.50608.0' processorArchitecture='X86' publicKeyToken='1fc8b3b9a1e18e3b' language='*'\"")
+	// #pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.VC80.CRT' version='8.0.50608.0' processorArchitecture='X86' publicKeyToken='1fc8b3b9a1e18e3b' language='*'\"")
 #endif
 
 /**
@@ -99,7 +99,7 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 		++i)
 	{
 		const tstring& arg = (*i);
-		if( arg.size() > 2 && ((arg[0] == '-') || (arg[0] == '/')) )
+		if( arg.size() > 2 && ((arg[0] == _T('-')) || (arg[0] == _T('/'))) )
 		{
 			// command-line arg:
 			if(_tcsicmp(&arg.c_str()[1], _T("-reset")) == 0)
@@ -207,14 +207,14 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	//	HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
 	//HRESULT hRes = ::CoInitialize(NULL);
 	//HRESULT hRes = ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	
+
 	// We now use OleInitialize so that we can use IDropTarget for the projects view 
 	// (and maybe other stuff later).
 	HRESULT hRes = ::OleInitialize(NULL);
 	ATLASSERT(SUCCEEDED(hRes));
 
 #ifdef _DEBUG
-//	_CrtSetBreakAlloc(6821);
+//	_CrtSetBreakAlloc(789);
 #endif
 
 #if (_WIN32_IE >= 0x0300)

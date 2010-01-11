@@ -14,6 +14,7 @@
 #include "include/optionsdialog.h"
 #include "optionscontrols.h"
 #include "SchemeConfig.h"
+#include "controls/OptionsBlockHeader.h"
 
 /**
  * Options page for basic text styles
@@ -64,6 +65,8 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 
 		SchemeConfigParser* m_pSchemes;
 		StylePtr		m_defclass;
+
+		COptionsBlockHeader m_settingsHeader;
 };
 
 #endif // #ifndef optionspagestyle_h__included

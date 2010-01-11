@@ -59,7 +59,6 @@ protected:
 	void onExtension(XMLAttributes& atts);
 
 protected:
-	bool			m_bHuntingTaggers;
 	bool			m_bUseIni;
 	bool			m_bAppSettingsPathSpecified;
 	int				m_parseState;

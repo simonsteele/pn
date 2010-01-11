@@ -534,6 +534,10 @@ msgstr ""
 msgid "&Source:"
 msgstr ""
 
+#. Resource IDs: (33142)
+msgid "&Split Horizontal"
+msgstr ""
+
 #. Resource IDs: (59393)
 msgid "&Status Bar"
 msgstr ""
@@ -638,6 +642,14 @@ msgstr ""
 msgid "(1 to 50) items in the most recently used list."
 msgstr ""
 
+#. Resource IDs: (16)
+msgid "(None - All Projects)"
+msgstr ""
+
+#. Resource IDs: (16)
+msgid "(None - Global Tools)"
+msgstr ""
+
 #. Resource IDs: (12)
 msgid "(empty)"
 msgstr ""
@@ -656,6 +668,10 @@ msgstr ""
 
 #. Resource IDs: (32848)
 msgid "1 or More Matches"
+msgstr ""
+
+#. Resource IDs: (14)
+msgid "<new>"
 msgstr ""
 
 #. Resource IDs: (1058)
@@ -734,6 +750,10 @@ msgstr ""
 msgid "Allow typing into multiple caret points"
 msgstr ""
 
+#. Resource IDs: (15)
+msgid "Alternate Extensions"
+msgstr ""
+
 #. Resource IDs: (65535)
 msgid "Alternate Extensions:"
 msgstr ""
@@ -744,6 +764,10 @@ msgstr ""
 
 #. Resource IDs: (14)
 msgid "Alternate Files"
+msgstr ""
+
+#. Resource IDs: (16)
+msgid "An extension may not contain any of these characters: "
 msgstr ""
 
 #. Resource IDs: (12)
@@ -976,12 +1000,24 @@ msgstr ""
 msgid "Com&ments"
 msgstr ""
 
+#. Resource IDs: (15)
+msgid "Command"
+msgstr ""
+
+#. Resource IDs: (33144)
+msgid "Command &Mode"
+msgstr ""
+
 #. Resource IDs: (65535)
 msgid "Command:"
 msgstr ""
 
 #. Resource IDs: (14)
 msgid "Confirmations"
+msgstr ""
+
+#. Resource IDs: (16)
+msgid "Console I/O"
 msgstr ""
 
 #. Resource IDs: (32972)
@@ -1154,8 +1190,16 @@ msgstr ""
 msgid "Edit SmartStart Phrase"
 msgstr ""
 
+#. Resource IDs: (15)
+msgid "Edit Tool"
+msgstr ""
+
 #. Resource IDs: (65535)
 msgid "Editing"
+msgstr ""
+
+#. Resource IDs: (14)
+msgid "Editor"
 msgstr ""
 
 #. Resource IDs: (10)
@@ -1166,8 +1210,16 @@ msgstr ""
 msgid "Enable AutoComplete"
 msgstr ""
 
+#. Resource IDs: (1118)
+msgid "Enable Command Bar"
+msgstr ""
+
 #. Resource IDs: (1051)
 msgid "Enable SmartStart"
+msgstr ""
+
+#. Resource IDs: (17)
+msgid "Enabled"
 msgstr ""
 
 #. Resource IDs: (65535)
@@ -1208,6 +1260,10 @@ msgstr ""
 
 #. Resource IDs: (269)
 msgid "Expand All Folds"
+msgstr ""
+
+#. Resource IDs: (16)
+msgid "Extension"
 msgstr ""
 
 #. Resource IDs: (65535)
@@ -1326,6 +1382,10 @@ msgstr ""
 msgid "Find Results"
 msgstr ""
 
+#. Resource IDs: (15)
+msgid "Find in Files"
+msgstr ""
+
 #. Resource IDs: (9)
 msgid "Find reached the starting point of the search."
 msgstr ""
@@ -1392,6 +1452,10 @@ msgstr ""
 
 #. Resource IDs: (1068)
 msgid "Highlight text beyond the edge column"
+msgstr ""
+
+#. Resource IDs: (15)
+msgid "Hint"
 msgstr ""
 
 #. Resource IDs: (65535)
@@ -1554,6 +1618,10 @@ msgstr ""
 msgid "Keyboard Shortcuts"
 msgstr ""
 
+#. Resource IDs: (15)
+msgid "Keywords"
+msgstr ""
+
 #. Resource IDs: (1057)
 msgid "L&andscape"
 msgstr ""
@@ -1602,6 +1670,10 @@ msgstr ""
 msgid "Mark All Highlight:"
 msgstr ""
 
+#. Resource IDs: (16)
+msgid "Match"
+msgstr ""
+
 #. Resource IDs: (105)
 msgid "Match &case"
 msgstr ""
@@ -1610,8 +1682,16 @@ msgstr ""
 msgid "Match &whole word only"
 msgstr ""
 
+#. Resource IDs: (16)
+msgid "Method"
+msgstr ""
+
 #. Resource IDs: (22)
 msgid "Modified"
+msgstr ""
+
+#. Resource IDs: (15)
+msgid "More Options"
 msgstr ""
 
 #. Resource IDs: (1034)
@@ -1628,6 +1708,10 @@ msgstr ""
 
 #. Resource IDs: (33005)
 msgid "Move Line Do&wn"
+msgstr ""
+
+#. Resource IDs: (15, 16)
+msgid "Name"
 msgstr ""
 
 #. Resource IDs: (65535)
@@ -1648,6 +1732,10 @@ msgstr ""
 
 #. Resource IDs: (336)
 msgid "New Project..."
+msgstr ""
+
+#. Resource IDs: (15)
+msgid "New Tool"
 msgstr ""
 
 #. Resource IDs: (32787)
@@ -1815,6 +1903,10 @@ msgstr ""
 msgid "Parameters:"
 msgstr ""
 
+#. Resource IDs: (15)
+msgid "Params"
+msgstr ""
+
 #. Resource IDs: (1133)
 msgid "Pass my selection to this tool using Standard Input"
 msgstr ""
@@ -1867,6 +1959,10 @@ msgstr ""
 msgid "Project Group Files (*.ppg)|*.ppg|"
 msgstr ""
 
+#. Resource IDs: (16)
+msgid "Project Template:"
+msgstr ""
+
 #. Resource IDs: (14)
 msgid "Project Tools"
 msgstr ""
@@ -1886,6 +1982,10 @@ msgstr ""
 
 #. Resource IDs: (32902)
 msgid "Proper&ties..."
+msgstr ""
+
+#. Resource IDs: (16)
+msgid "Properties"
 msgstr ""
 
 #. Resource IDs: (3605)
@@ -1942,6 +2042,10 @@ msgstr ""
 
 #. Resource IDs: (3603)
 msgid "Repeat the last action\nRepeat"
+msgstr ""
+
+#. Resource IDs: (14)
+msgid "Replace"
 msgstr ""
 
 #. Resource IDs: (6)
@@ -2020,6 +2124,10 @@ msgstr ""
 msgid "Save:"
 msgstr ""
 
+#. Resource IDs: (16)
+msgid "Scheme"
+msgstr ""
+
 #. Resource IDs: (1017, 65535)
 msgid "Scheme:"
 msgstr ""
@@ -2084,6 +2192,10 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
+#. Resource IDs: (15)
+msgid "Shortcut"
+msgstr ""
+
 #. Resource IDs: (65535)
 msgid "Shortcut:"
 msgstr ""
@@ -2137,6 +2249,10 @@ msgstr ""
 msgid "Spli&t Lines"
 msgstr ""
 
+#. Resource IDs: (33143)
+msgid "Split V&ertical"
+msgstr ""
+
 #. Resource IDs: (3604)
 msgid "Split the active window into panes\nSplit"
 msgstr ""
@@ -2155,6 +2271,10 @@ msgstr ""
 
 #. Resource IDs: (1051)
 msgid "Start with a new, &blank document"
+msgstr ""
+
+#. Resource IDs: (16)
+msgid "Starting Phrase"
 msgstr ""
 
 #. Resource IDs: (1001, 1002, 1003, 1004, 1008, 1027, 1085, 1086, 1087)
@@ -2300,6 +2420,11 @@ msgstr ""
 msgid "The regular expression is not valid."
 msgstr ""
 
+#. Resource IDs: (16)
+#, c-format
+msgid "The selected method for this extension is currently associated with '%s'"
+msgstr ""
+
 #. Resource IDs: (2063)
 msgid "The specified project does not exist,\n would you like to create it?"
 msgstr ""
@@ -2369,6 +2494,10 @@ msgstr ""
 msgid "Transp&ose Lines"
 msgstr ""
 
+#. Resource IDs: (16)
+msgid "Type Name"
+msgstr ""
+
 #. Resource IDs: (32911)
 msgid "U&ppercase"
 msgstr ""
@@ -2391,6 +2520,10 @@ msgstr ""
 
 #. Resource IDs: (3603)
 msgid "Undo the last action\nUndo"
+msgstr ""
+
+#. Resource IDs: (16)
+msgid "Unknown"
 msgstr ""
 
 #. Resource IDs: (261)
@@ -2423,6 +2556,10 @@ msgstr ""
 
 #. Resource IDs: (32886)
 msgid "User Name (%u)"
+msgstr ""
+
+#. Resource IDs: (17)
+msgid "Version"
 msgstr ""
 
 #. Resource IDs: (9)

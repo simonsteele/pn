@@ -2,7 +2,7 @@
  * @file OptionsPageGeneral.h
  * @brief Options Dialog General Page
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -12,6 +12,7 @@
 #define PNOTEPAD_OPTIONSPAGEGENERAL_H__INCLUDED
 
 #include "include/optionsdialog.h"
+#include "controls/OptionsBlockHeader.h"
 
 class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 							public CWinDataExchange<COptionsPageGeneral>
@@ -66,6 +67,9 @@ class COptionsPageGeneral : public COptionsPageImpl<COptionsPageGeneral>,
 		BOOL			m_bWantTestingUpdates;
 		BOOL			m_bBackupOnSave;
 		BOOL			m_bEditReadOnly;
+		
+		COptionsBlockHeader m_tabsHeader;
+		COptionsBlockHeader m_settingsHeader;
 };
 
 #endif // #ifndef PNOTEPAD_OPTIONSPAGEGENERAL_H__INCLUDED

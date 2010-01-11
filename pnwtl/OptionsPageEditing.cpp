@@ -53,7 +53,8 @@ void COptionsPageEditing::OnInitialise()
 	m_slopX = OPTIONS->GetCached(Options::OCaretXMove);
 	m_slopY = OPTIONS->GetCached(Options::OCaretYMove);
 	int xflags = OPTIONS->GetCached(Options::OCaretXFlags);
-	int yflags = OPTIONS->GetCached(Options::OCaretYFlags);
+	// int yflags = OPTIONS->GetCached(Options::OCaretYFlags);
+	
 	m_strict = (xflags & CARET_STRICT) != 0;
 
 	m_blockCaret = OPTIONS->Get(PNSK_EDITOR, _T("DisplayCaretAsBlock"), false);
@@ -75,5 +76,7 @@ void COptionsPageEditing::OnCancel()
 
 LRESULT COptionsPageEditing::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	m_editingHeader.SubclassWindow(GetDlgItem(IDC_EDITING_STATIC));
+
 	return 0;
 }

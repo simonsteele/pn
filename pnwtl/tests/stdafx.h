@@ -38,5 +38,5 @@
 
 #define AtlIsValidString(x) true
 
-typedef std::string tstring;
+typedef std::basic_string<TCHAR> tstring;
 typedef std::vector<tstring> tstring_array;

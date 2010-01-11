@@ -92,7 +92,7 @@ CMainFrame::CMainFrame(CommandDispatch* commands, std::list<tstring>* cmdLineArg
 
 	m_bIsXPOrLater(IsXPOrLater())
 {
-	m_CmdBar.SetCallback(this, &CMainFrame::OnMDISetMenu);
+	// m_CmdBar.SetCallback(this, &CMainFrame::OnMDISetMenu);
 
 	m_uiMIMessageID = g_Context.m_miManager->GetMessageID();
 
@@ -314,7 +314,7 @@ bool CMainFrame::closeAll(bool shuttingDown)
 
 bool CMainFrame::OnSchemeNew(LPVOID data)
 {	
-	CChildFrame* pChild = m_ChildFactory.WithScheme(reinterpret_cast<Scheme*>(data));
+	m_ChildFactory.WithScheme(reinterpret_cast<Scheme*>(data));
 
 	return true; // we handled it.
 }
@@ -1121,7 +1121,38 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 						bHaveScheme = true;
 					}
 					else
+					{
 						pScheme = NULL;
+					}
+				}
+				else if(_tcsicmp(&parm[1], _T("z")) == 0)
+				{
+					// This parameter is used to tell PN to ignore the next command-line argument,
+					// added to support using PN as a fake debugger for notepad.exe to make an easy
+					// notepad replacement.
+					skip = true;
+				}
+				else if (_tcsicmp(&parm[1], _T("1")) == 0)
+				{
+					// This parameter says that everything that follows is a single filename, remaining params are joined.
+					++i;
+
+					tstring oneparam;
+					
+					for (; i != parameters.end(); ++i)
+					{
+						if (oneparam.size())
+						{
+							oneparam += _T(" ");
+						}
+
+						oneparam += (*i);
+					}
+
+					std::list<tstring> newset;
+					newset.push_back(oneparam);
+					handleCommandLine(newset);
+					break;
 				}
 				else
 				{
@@ -1174,12 +1205,6 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 LRESULT CMainFrame::OnInitialiseFrame(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	LoadGUIState();
-
-	bool bHaveLine = false;
-	bool bHaveCol = false;
-	bool bHaveScheme = false;
-	int iLine = 0, iCol = 0;
-	Scheme* pScheme = NULL;
 
 	handleCommandLine(*m_cmdLineArgs);
 
@@ -1360,6 +1385,12 @@ LRESULT CMainFrame::OnUpdateFindText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	return 0;
 }
 
+//LRESULT OnMDISetMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+//	{
+//		SetMDIFrameMenu();
+//		return 0;
+//	}
+
 LRESULT CMainFrame::OnMDISetMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
@@ -1430,7 +1461,8 @@ LRESULT CMainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	else
 		scheme = SchemeManager::GetInstance()->GetDefaultScheme();
 
-	CChildFrame* pChild = m_ChildFactory.WithScheme(scheme);
+	/*CChildFrame* pChild = */
+	m_ChildFactory.WithScheme(scheme);
 		
 	return 0;
 }
@@ -1448,7 +1480,7 @@ LRESULT CMainFrame::OnFileNewProject(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	tstring folder = dlg.GetFolder();
 	
 	CFileName fn(dlg.GetName());
-	fn.ChangeExtensionTo(_T(".pnproj"));
+	fn.AddExtension(_T(".pnproj"));
 	fn.Root(folder.c_str());
 	
 	NewProject(fn.c_str(), dlg.GetName(), dlg.GetTemplateGUID());
@@ -1750,11 +1782,9 @@ LRESULT CMainFrame::OnWindowArrangeIcons(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	return 0;
 }
 
-LRESULT CMainFrame::OnWindowCloseAllOther(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CMainFrame::OnCloseAllOther(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	HWND hWndCurChild = GetCurrentEditor();
-	if(!hWndCurChild)
-		return 0;
+	HWND staysOpen = reinterpret_cast<HWND>(wParam);
 
 	HWND hWndChild = ::GetTopWindow(m_tabbedClient.m_hWnd);
 	while(hWndChild != NULL)
@@ -1762,7 +1792,7 @@ LRESULT CMainFrame::OnWindowCloseAllOther(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 		HWND hWndClose = hWndChild;
 		hWndChild = ::GetNextWindow(hWndChild, GW_HWNDNEXT);
 
-		if(hWndClose != hWndCurChild && ::IsWindow(hWndClose))
+		if(hWndClose != staysOpen && ::IsWindow(hWndClose))
 		{
 			// This is not the current window, so send a 
 			// close message it should understand.
@@ -2636,7 +2666,7 @@ void CMainFrame::PerformChildEnum(SChildEnumStruct* s)
 
 void CMainFrame::PerformChildEnum(lpChildEnumFn pFunction)
 {
-	SChildEnumStruct s = {this, pFunction};
+	SChildEnumStruct s = {pFunction, this};
 	EnumChildWindows(m_hWndMDIClient, ChildEnumProc, reinterpret_cast<LPARAM>(&s));
 }
 

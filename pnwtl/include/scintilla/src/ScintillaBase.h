@@ -43,8 +43,6 @@ protected:
 	int listType;			///< 0 is an autocomplete list
 	int maxListWidth;		/// Maximum width of list, in average character widths
 
-	bool performingStyle;	///< Prevent reentrance
-
 #ifdef SCI_LEXER
 	int lexLanguage;
 	const LexerModule *lexCurrent;

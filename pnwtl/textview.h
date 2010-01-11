@@ -17,6 +17,8 @@
 #include "ScintillaImpl.h"
 #include "ScintillaWTL.h"
 #include "include/threading.h"
+#include "views/view.h"
+#include "textclips.h"
 
 class FIFSink;
 
@@ -24,18 +26,22 @@ class FIFSink;
  * This is the final implementation of our Scintilla window, pulling together the
  * application logic and the Scintilla wrappers that sit below.
  */
-class CTextView : public CScintillaWindowImpl< CTextView, CScintillaImpl >
+class CTextView : public CScintillaWindowImpl< CTextView, CScintillaImpl >, public Views::View
 {
 public:
 	typedef CScintillaWindowImpl< CTextView, CScintillaImpl > baseClass;
 	friend class baseClass;
 
-	explicit CTextView(DocumentPtr document, CommandDispatch* commands, AutoCompleteManager* autoComplete);
-	~CTextView();
+	explicit CTextView(DocumentPtr document, Views::ViewPtr parent, CommandDispatch* commands, AutoCompleteManager* autoComplete);
+	virtual ~CTextView();
 
 	BOOL PreTranslateMessage(MSG* pMsg);
 
 	BEGIN_MSG_MAP(CTextView)
+		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
+		MESSAGE_HANDLER(PN_OVERWRITETARGET, OnOverwriteTarget)
+		MESSAGE_HANDLER(PN_INSERTCLIP, OnInsertClip)
+
 		COMMAND_ID_HANDLER(ID_EDIT_INDENT, OnIndent)
 		COMMAND_ID_HANDLER(ID_EDIT_UNINDENT, OnUnindent)
 		COMMAND_ID_HANDLER(ID_EDIT_SELECTALL, OnSelectAll)
@@ -56,7 +62,10 @@ public:
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
-	void SetScheme(Scheme* pScheme, bool allSettings = true);
+	/**
+	 * @param flags Affect the scheme change by using ESchemeChangeFlags values
+	 */
+	void SetScheme(Scheme* pScheme, int flags = scfNone);
 	Scheme* GetCurrentScheme() const;
 
 	bool Load(LPCTSTR filename, Scheme* pScheme = NULL, EPNEncoding encoding = eUnknown);
@@ -99,6 +108,18 @@ public:
 	virtual bool ReplaceOnce(extensions::ISearchOptions* pOptions);
 	virtual int ReplaceAll(extensions::ISearchOptions* pOptions);
 
+	void BeginOverwriteTarget();
+
+	// Implement View
+	HWND GetHwnd() { return m_hWnd; }
+
+private:
+
+	// Message Handlers
+	HRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	HRESULT OnOverwriteTarget(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	HRESULT OnInsertClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+
 	////////////////////////////////////////////////////////////////
 	// Command Handlers
 
@@ -122,7 +143,6 @@ public:
 
 	void checkLineLength();
 
-protected:
 	// Support for document title in printing:
 	virtual tstring GetDocTitle();
 
@@ -142,6 +162,11 @@ private:
 	void checkDotLogTimestamp();
 
 	void smartHighlight();
+	void updateOverwriteTarget();
+	void beginInsertClip(std::vector<TextClips::Chunk>& chunks);
+	void updateInsertClip();
+
+	void handleMarkAllResult(int start, int end);
 
 	CommandDispatch* m_pCmdDispatch;
 	BOOL m_waitOnBookmarkNo;
@@ -149,8 +174,12 @@ private:
 	EPNEncoding m_encType;
 	bool m_bSmartStart;
 	bool m_bLineNos;
+	bool m_bOverwriteTarget;
+	bool m_bInsertClip;
 	DocumentPtr m_pDoc;
 	extensions::IRecorderPtr m_recorder;
+	int m_findAllResultCount;
+	std::vector<TextClips::Chunk> m_insertClipChunks;
 
 	bool m_bMeasureCanRun;
 	pnutils::threading::CriticalSection m_csMeasure;

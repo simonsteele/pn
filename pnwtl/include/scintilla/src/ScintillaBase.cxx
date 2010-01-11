@@ -54,7 +54,6 @@ ScintillaBase::ScintillaBase() {
 	maxListWidth = 0;
 #ifdef SCI_LEXER
 	lexLanguage = SCLEX_CONTAINER;
-	performingStyle = false;
 	lexCurrent = 0;
 	for (int wl = 0;wl < numWordLists;wl++)
 		keyWordLists[wl] = new WordList;
@@ -497,11 +496,11 @@ void ScintillaBase::SetLexerLanguage(const char *languageName) {
 }
 
 void ScintillaBase::Colourise(int start, int end) {
-	if (!performingStyle) {
+	if (!pdoc->performingStyle) {
 		// Protect against reentrance, which may occur, for example, when
 		// fold points are discovered while performing styling and the folding
 		// code looks for child lines which may trigger styling.
-		performingStyle = true;
+		pdoc->performingStyle = true;
 
 		int lengthDoc = pdoc->Length();
 		if (end == -1)
@@ -528,7 +527,7 @@ void ScintillaBase::Colourise(int start, int end) {
 			}
 		}
 
-		performingStyle = false;
+		pdoc->performingStyle = false;
 	}
 }
 #endif

@@ -60,11 +60,8 @@ LPCTSTR HTMLExporter::GetFileMask()
 
 void HTMLExporter::InternalExport(int start, int end)
 {
-	bool writeXHTML = true;
 	CString strFontFace(_T("Courier New"));
 	int  fontSize = 10;
-	// IE use quirks mode with <?xml?>
-	bool addXmlProlog = false;
 	bool useTabs = false;
 
 	int tabSize = SendEditor(SCI_GETTABWIDTH, 0, 0);
@@ -232,7 +229,6 @@ void HTMLExporter::InternalExport(int start, int end)
 
 	int styleCurrent = -1;
 	bool closePrevious = false;
-	StyleDetails* pCurrent = NULL;
 	for(int i = start; i < end; i++)
 	{
 		char ch = CharAt(i);

@@ -13,18 +13,19 @@
 
 #include "outputscintilla.h"
 #include "ScintillaWTL.h"
+#include "views/view.h"
 
 /**
  * Scintilla window with special output handling.
  */
-class COutputView : public CScintillaWindowImpl< COutputView, REScintilla >, public extensions::ITextOutput
+class COutputView : public CScintillaWindowImpl< COutputView, REScintilla >, public extensions::ITextOutput, public Views::View
 {
 	typedef CScintillaWindowImpl< COutputView, REScintilla > baseClass;
 	friend class baseClass;
 
 public:
 	explicit COutputView();
-	~COutputView();
+	virtual ~COutputView();
 
 	BEGIN_MSG_MAP(COutputView)
 		COMMAND_ID_HANDLER(ID_OUTPUT_CLEAR, OnClear)
@@ -51,6 +52,10 @@ public:
 	virtual void ClearOutput();
 	virtual void ShowOutput();
 	virtual void HideOutput();
+
+	// Implement Views::View
+public:
+	virtual HWND GetHwnd() { return m_hWnd; }
 
 protected:
 	LRESULT OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

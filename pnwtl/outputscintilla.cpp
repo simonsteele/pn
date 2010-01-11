@@ -61,7 +61,8 @@ void REScintilla::SetRE(LPCSTR regex, bool bClearStyling)
 	{
 		size_t len = strlen(ex.what()) + m_customre.size() + 90;
 		TCHAR* buf = new TCHAR[len];
-		_stprintf(buf, _T("Custom Parser Error (%S): %S"), ex.what(), m_customre.c_str());
+		buf[len - 1] = NULL;
+		_sntprintf(buf, len - 1, _T("Custom Parser Error (%S): %S"), ex.what(), m_customre.c_str());
 		g_Context.m_frame->SetStatusText(buf);
 		delete [] buf;
 

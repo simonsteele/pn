@@ -46,7 +46,22 @@
 #include <list>
 #include <string>
 
+using namespace ATL;
+
+// PN definitions so we can share code:
 #define LOG(x) OutputDebugString(x)
 #define PNASSERT(x) (void(0))
+typedef std::basic_string<TCHAR> tstring;
 
-using namespace ATL;
+#include "../include/sscontainers.h"
+
+/// Multiple instance manager will read it's version information from here.
+typedef struct tagContext
+{
+	OSVERSIONINFO OSVersion;
+} Context;
+
+extern Context g_Context;
+
+/// This is here to allow MultipleInstanceManager to compile.
+static std::list<tstring> GetCommandLineArgs() { return std::list<tstring>(); }

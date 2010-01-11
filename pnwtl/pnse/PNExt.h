@@ -53,11 +53,9 @@ public:
 
 private:
 	void InformPN();
-	void InformRunningPN();
 	void InformNewPN();
     
-	PNCommunicator m_communicator;
-	std::list< std::basic_string<TCHAR> > m_files;
+	std::list< tstring > m_files;
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(PNExt), CPNExt)

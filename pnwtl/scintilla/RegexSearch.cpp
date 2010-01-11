@@ -1,3 +1,12 @@
+/**
+ * @file RegexSearch.cpp
+ * @brief XPressive searching for Scintilla, developed for Programmer's Notepad.
+ * @author Simon Steele
+ * @note Copyright (c) since 2009 Simon Steele - http://untidy.net/
+ *
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #include <stdlib.h>
 
 #include "Platform.h"
@@ -35,6 +44,14 @@ public:
 		m_pos(pos),
 		m_end(end)
 	{
+		// Check for debug builds
+		PLATFORM_ASSERT(m_pos <= m_end);
+
+		// Ensure for release.
+		if (m_pos > m_end)
+		{
+			m_pos = m_end;
+		}
 	}
 
 	DocumentIterator(const DocumentIterator& copy) :
@@ -42,6 +59,14 @@ public:
 		m_pos(copy.m_pos),
 		m_end(copy.m_end)
 	{
+		// Check for debug builds
+		PLATFORM_ASSERT(m_pos <= m_end);
+
+		// Ensure for release.
+		if (m_pos > m_end)
+		{
+			m_pos = m_end;
+		}
 	}
 
 	bool operator == (const DocumentIterator& other) const
@@ -61,6 +86,8 @@ public:
 
 	DocumentIterator& operator ++ ()
 	{
+		PLATFORM_ASSERT(m_pos < m_end);
+
 		m_pos++;
 		return *this;
 	}
@@ -380,6 +407,7 @@ const char *XpressiveRegexSearch::SubstituteByPosition(Document* doc, const char
 				i++;
 			} else {
 				switch (text[i + 1]) {
+				case '\\':
 				case 'a':
 				case 'b':
 				case 'f':
@@ -435,6 +463,9 @@ const char *XpressiveRegexSearch::SubstituteByPosition(Document* doc, const char
 					break;
 				case 'v':
 					*o++ = '\v';
+					break;
+				case '\\':
+					*o++ = '\\';
 					break;
 				default:
 					*o++ = '\\';

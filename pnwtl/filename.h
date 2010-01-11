@@ -19,6 +19,7 @@ public:
 	CFileName& operator = (const CFileName& filename);	///< Change to filename.filename.
 	
 	// Operations
+	void AddExtension(LPCTSTR newext);					///< Add a new extension to the filename, even if there's one already.
 	void ChangeExtensionTo(LPCTSTR newext);				///< Change the extension of the filename.
 	void ChangePathTo(LPCTSTR newpath);					///< Change the path of the filename to newpath.
 	

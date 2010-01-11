@@ -181,7 +181,7 @@ void IniOptions::Clear(LPCTSTR subkey)
 void IniOptions::group(LPCTSTR location)
 {
 	//The return value specifies the number of characters copied to the buffer, not including the terminating null character. If the buffer is not large enough to contain all the key name and value pairs associated with the named section, the return value is equal to nSize minus two.
-	int bufsize = 2048;
+	DWORD bufsize = 2048;
 	TCHAR* buffer = new TCHAR[bufsize];
 	while( GetPrivateProfileSection(location, buffer, bufsize, _filename) == (bufsize -2) )
 	{

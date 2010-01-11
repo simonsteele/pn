@@ -12,6 +12,7 @@
 #define optionspagevisual_h__included
 
 #include "include/optionsdialog.h"
+#include "controls/OptionsBlockHeader.h"
 
 /**
  * Visual Help Options Page
@@ -55,6 +56,9 @@ class COptionsPageVisual : public COptionsPageImpl<COptionsPageVisual>,
 		CPNColorButton	m_btnLineCol;
 		CPNColorButton	m_btnLLCol;
 		CTrackBarCtrl	m_trackerHighlight;
+
+		COptionsBlockHeader m_settingsHeader;
+		COptionsBlockHeader m_linesHeader;
 };
 
 

@@ -331,6 +331,13 @@ CommandDispatch::~CommandDispatch()
 		delete (*i).second;
 	}
 
+	for(std::list<Commands::EditorCommand*>::const_iterator i = m_editorCommands.begin();
+		i != m_editorCommands.end();
+		++i)
+	{
+		delete (*i);
+	}
+	
 	delete m_keyMap;
 	delete m_ScintillaKeyMap;
 	m_keyMap = NULL;
@@ -854,6 +861,7 @@ KeyToCommand DefaultKeyMap[] = {
 	{K_CTRL,		VK_OEM_COMMA,		ID_COMMENTS_UNCOMMENT},
 	{K_ALT,			'D',		ID_SELECTION_DUPLICATE},
 	{K_ALTSHIFT,	'W',		ID_SELECTION_STRIPTRAILING},
+	{K_ALT,			'X',		ID_EDIT_FOCUSCOMMAND},
 
 	// Bookmarks
 	{K_CTRL,		VK_F2,		ID_BOOKMARKS_TOGGLE},

@@ -56,8 +56,8 @@ typedef void(__stdcall CMainFrame::*lpChildEnumFn)(CChildFrame* pFrame, tagEnumC
 
 typedef struct tagEnumChildrenStruct
 {
-	CMainFrame* pMainFrame;
 	lpChildEnumFn pFunction;
+	CMainFrame* pMainFrame;
 } SChildEnumStruct;
 
 typedef struct tagCloseStruct : public tagEnumChildrenStruct
@@ -67,16 +67,16 @@ typedef struct tagCloseStruct : public tagEnumChildrenStruct
 
 typedef struct tagWorkspaceCloseStruct : public tagCloseStruct
 {
-	bool bInProjectGroupOnly;
 	Projects::Workspace* pWorkspace;
 	std::list<CChildFrame*> FoundWindows;
+	bool bInProjectGroupOnly;
 } SWorkspaceWindowsStruct;
 
 typedef struct tagIsOpenStruct : public tagEnumChildrenStruct
 {
-	bool bFound;
 	LPCTSTR pszFilename;
 	CChildFrame* pMatch;
+	bool bFound;
 } SIsOpen;
 
 /**
@@ -123,6 +123,7 @@ public:
 		MESSAGE_HANDLER(PN_UPDATEFINDTEXT, OnUpdateFindText)
 		MESSAGE_HANDLER(PN_MDISETMENU, OnMDISetMenu)
 		MESSAGE_HANDLER(PN_UPDATECHILDUI, OnUpdateChildUIState)
+		MESSAGE_HANDLER(PN_CLOSEALLOTHER, OnCloseAllOther)
 		
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
@@ -152,7 +153,6 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_HORZ, OnWindowTile)
 		COMMAND_ID_HANDLER(ID_WINDOW_TILE_VERT, OnWindowTileVert)
 		COMMAND_ID_HANDLER(ID_WINDOW_ARRANGE, OnWindowArrangeIcons)
-		COMMAND_ID_HANDLER(ID_WINDOW_CLOSEALLOTHER, OnWindowCloseAllOther)
 		COMMAND_ID_HANDLER(ID_EDIT_FIND, OnFind)
 		COMMAND_ID_HANDLER(ID_EDIT_REPLACE, OnReplace)
 		COMMAND_ID_HANDLER(ID_EDIT_FINDINFILES, OnFindInFiles)
@@ -262,6 +262,7 @@ public:
 
 	LRESULT OnMDISetMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnUpdateChildUIState(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnCloseAllOther(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
@@ -297,7 +298,6 @@ public:
 	LRESULT OnWindowTile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnWindowTileVert(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnWindowArrangeIcons(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnWindowCloseAllOther(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

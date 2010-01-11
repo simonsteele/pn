@@ -74,3 +74,9 @@ def startRecording():
 	""" PN calls this to start recording a script, all recording actions
 	are delegated to the Recorder class """
 	return record.Recorder()
+
+def evalCommand():
+	pass
+	
+def evalCommandEnter():
+	pass

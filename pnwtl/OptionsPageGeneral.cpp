@@ -84,14 +84,15 @@ void COptionsPageGeneral::OnInitialise()
 	m_bEditReadOnly = OPTIONS->Get(PNSK_GENERAL, _T("EditReadOnly"), false);
 
 	DoDataExchange();
+
+	enableControls();
 }
 
 LRESULT COptionsPageGeneral::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	enableControls();
-
-	int a = MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_CUSTOM_UNSPECIFIED), SORT_DEFAULT);
-	a;
+	// Set up header controls:
+	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
+	m_tabsHeader.SubclassWindow(GetDlgItem(IDC_TABS_STATIC));
 
 	return 0;
 }

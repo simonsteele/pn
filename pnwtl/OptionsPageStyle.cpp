@@ -23,6 +23,10 @@ bool COptionsPageStyle::IsDirty()
 
 LRESULT COptionsPageStyle::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+	// Header:
+	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
+
+	// Style controls:
 	m_FontCombo.SubclassWindow(GetDlgItem(IDC_FONT_COMBO));
 	m_SizeCombo.Attach(GetDlgItem(IDC_FONTSIZE_COMBO));
 

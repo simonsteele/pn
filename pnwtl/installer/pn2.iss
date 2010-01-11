@@ -42,9 +42,9 @@ Source: ..\bin\pnse.dll; DestDir: {app}; Flags: ignoreversion restartreplace uni
 Source: configs\default\config.xml; DestDir: {app}; Flags: onlyifdoesntexist
 
 Source: ..\bin\dbghelp.dll; DestDir: {app}
-Source: ..\bin\libexpat.dll; DestDir: {app}; Flags: ignoreversion
+;Source: ..\bin\libexpat.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\bin\libexpatw.dll; DestDir: {app}; Flags: ignoreversion
 
-; Commented out while we have SciLexer linked in
 Source: ..\bin\SciLexer.dll; DestDir: {app}; Flags: ignoreversion
 
 Source: ..\bin\schemes\*.scheme; DestDir: {app}\schemes
@@ -53,8 +53,8 @@ Source: ..\bin\schemes\extmap.dat; DestDir: {app}\schemes
 Source: ..\bin\clips\*.clips; DestDir: {app}\clips
 Source: ..\bin\presets\*.xml; DestDir: {app}\presets
 
-Source: ..\bin\taggers\ctagsnavigator.dll; DestDir: {app}\taggers; Flags: ignoreversion
-Source: ..\bin\taggers\ctags\*.*; DestDir: {app}\taggers\ctags; Flags: ignoreversion
+Source: ..\bin\ctagsnavigator.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\bin\ctags\*.*; DestDir: {app}\ctags; Flags: ignoreversion
 Source: ..\bin\ctags.exe; DestDir: {app}; Flags: ignoreversion
 Source: ..\doc\help\pn2.chm; DestDir: {app}
 

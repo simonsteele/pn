@@ -130,7 +130,10 @@ LRESULT CBrowseDocker::OnTreeDblClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 		::SHGetFileInfo((LPCTSTR)(LPITEMIDLIST)pidl, 0, &sfi, sizeof(SHFILEINFO), SHGFI_PIDL | SHGFI_ATTRIBUTES);
 		if ((sfi.dwAttributes & SFGAO_FOLDER) == 0)
 		{		
-			g_Context.m_frame->Open(path, true);
+			if(!g_Context.m_frame->CheckAlreadyOpen(path, eSwitch))
+			{
+				g_Context.m_frame->Open(path, true);
+			}
 		}
 	}
 
