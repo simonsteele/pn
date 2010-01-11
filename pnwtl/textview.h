@@ -41,6 +41,7 @@ public:
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
 		MESSAGE_HANDLER(PN_OVERWRITETARGET, OnOverwriteTarget)
 		MESSAGE_HANDLER(PN_INSERTCLIP, OnInsertClip)
+		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
 
 		COMMAND_ID_HANDLER(ID_EDIT_INDENT, OnIndent)
 		COMMAND_ID_HANDLER(ID_EDIT_UNINDENT, OnUnindent)
@@ -119,6 +120,7 @@ private:
 	HRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	HRESULT OnOverwriteTarget(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	HRESULT OnInsertClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	HRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
 	////////////////////////////////////////////////////////////////
 	// Command Handlers
@@ -165,6 +167,8 @@ private:
 	void updateOverwriteTarget();
 	void beginInsertClip(std::vector<TextClips::Chunk>& chunks);
 	void updateInsertClip();
+	void endInsertClip();
+	void nextClipField();
 
 	void handleMarkAllResult(int start, int end);
 
@@ -180,6 +184,7 @@ private:
 	extensions::IRecorderPtr m_recorder;
 	int m_findAllResultCount;
 	std::vector<TextClips::Chunk> m_insertClipChunks;
+	int m_currentFieldStart;
 
 	bool m_bMeasureCanRun;
 	pnutils::threading::CriticalSection m_csMeasure;

@@ -40,7 +40,8 @@ CTextView::CTextView(DocumentPtr document, Views::ViewPtr parent, CommandDispatc
 	m_encType(eUnknown),
 	m_bMeasureCanRun(false),
 	m_bOverwriteTarget(false),
-	m_bInsertClip(false)
+	m_bInsertClip(false),
+	m_currentFieldStart(0)
 {
 	m_bSmartStart = OPTIONS->Get(PNSK_EDITOR, _T("SmartStart"), true);
 	SetAutoCompleteManager(autoComplete);
@@ -537,12 +538,37 @@ int CTextView::HandleNotify(LPARAM lParam)
 			if(SmartStart::GetInstance()->OnChar(this) != SmartStart::eContinue)
 				m_bSmartStart = false;
 		}
+		
+		if (m_bInsertClip)
+		{
+			// Handle the special case where you replace the whole current field with a character
+			// Scintilla drops the indicator at that point, so we reinstate it here
+			int currentPos = GetCurrentPos();
+			if (currentPos == m_currentFieldStart + 1)
+			{
+				// We've moved on from our first pos, check we still have our field highlight
+				if (SPerform(SCI_INDICATORVALUEAT, INDIC_TEXTCLIPFIELD, m_currentFieldStart) == 0)
+				{
+					SPerform(SCI_SETINDICATORCURRENT, INDIC_TEXTCLIPFIELD, 0);
+					IndicatorFillRange(m_currentFieldStart, 1);
+				}
+			}
+			else if (currentPos > m_currentFieldStart && 
+				SPerform(SCI_INDICATORVALUEAT, INDIC_TEXTCLIPFIELD, currentPos) == 0 &&
+				SPerform(SCI_INDICATORVALUEAT, INDIC_TEXTCLIPFIELD, m_currentFieldStart) != 0)
+			{
+				// We've moved beyond the end of the current indicator, extend it:
+				SPerform(SCI_SETINDICATORCURRENT, INDIC_TEXTCLIPFIELD, 0);
+				IndicatorFillRange(m_currentFieldStart, currentPos - m_currentFieldStart);
+			}
+		}
 
 		m_pDoc->OnCharAdded( ( reinterpret_cast<Scintilla::SCNotification*>(lParam))->ch );
 	}
 	else if(msg == SCN_MODIFIED)
 	{
-		if( ( reinterpret_cast<Scintilla::SCNotification*>(lParam))->linesAdded != 0 && m_bLineNos )
+		Scintilla::SCNotification* scn(reinterpret_cast<Scintilla::SCNotification*>(lParam));
+		if( scn->linesAdded != 0 && m_bLineNos )
 			SetLineNumberChars();
 	}
 	else if (msg == SCN_MACRORECORD)
@@ -823,6 +849,27 @@ HRESULT CTextView::OnInsertClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	return 0;
 }
 
+HRESULT CTextView::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	if (!m_bInsertClip)
+	{
+		bHandled = false;
+		return 0;
+	}
+
+	if (wParam == VK_TAB && ::GetFocus() == m_hWnd)
+	{
+		// Next field in the template:
+		nextClipField();
+	}
+	else
+	{
+		bHandled = FALSE;
+	}
+	
+	return 0;
+}
+
 HRESULT CTextView::OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	bHandled = false;
@@ -961,7 +1008,7 @@ LRESULT CTextView::OnCommentLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	if( GetSelLength() && comments.CommentLineText[0] != NULL)
 	{
 		// Comment a block out using line comments
-		BeginUndoAction();
+		UndoGroup group(*this);
 
 		// Find the selection
 		Scintilla::CharacterRange cr;
@@ -983,21 +1030,17 @@ LRESULT CTextView::OnCommentLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 			SetTargetEnd(linestart);
 			ReplaceTarget(strlen(comments.CommentLineText), comments.CommentLineText);
 		}
-
-		EndUndoAction();
 	}
 	else if( comments.CommentLineText[0] != NULL )
 	{
 		// Comment the current line out...
-		BeginUndoAction();
+		UndoGroup group(*this);
 
 		int commentLine = LineFromPosition( GetCurrentPos() );
 		int commentAt = PositionFromLine( commentLine ) + lineTextStartPosition( commentLine );
 		SetTargetStart(commentAt);
 		SetTargetEnd(commentAt);
 		ReplaceTarget(strlen(comments.CommentLineText), comments.CommentLineText);
-
-		EndUndoAction();
 	}
 
 	return 0;
@@ -1010,7 +1053,7 @@ LRESULT CTextView::OnCommentStream(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 	if( GetSelLength() && comments.CommentStreamStart[0] != NULL && comments.CommentStreamEnd[0] != NULL )
 	{
-		BeginUndoAction();
+		UndoGroup group(*this);
 		
 		// Find selection
 		Scintilla::CharacterRange cr;
@@ -1030,8 +1073,6 @@ LRESULT CTextView::OnCommentStream(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 		// Expand the selection to include the comment chars...
 		SetSel(cr.cpMin, cr.cpMax);
-
-		EndUndoAction();
 	}
 
 	return 0;
@@ -1045,7 +1086,7 @@ LRESULT CTextView::OnCommentBlock(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	if( comments.CommentBlockStart[0] != NULL && comments.CommentBlockEnd[0] != NULL &&
 		comments.CommentBlockLine[0] != NULL )
 	{
-		BeginUndoAction();
+		UndoGroup group(*this);
 
 		Scintilla::CharacterRange cr;
 		GetSel(cr);
@@ -1100,8 +1141,6 @@ LRESULT CTextView::OnCommentBlock(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		SetTargetStart(cr.cpMax);
 		SetTargetEnd(cr.cpMax);
 		ReplaceTarget(endline.size(), endline.c_str());
-
-		EndUndoAction();
 	}
 	
 	return 0;
@@ -1141,14 +1180,12 @@ LRESULT CTextView::OnUncomment(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 		if (match)
 		{
-			BeginUndoAction();
+			UndoGroup group(*this);
 
 			for (int line = startLine; line <= endLine; line++)
 			{
 				UnCommentLine(comments, line);
 			}
-
-			EndUndoAction();
 
 			return 0;
 		}
@@ -1603,14 +1640,20 @@ void CTextView::updateOverwriteTarget()
 
 void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 {
+	// We open an Undo action as soon as we start clip insertion:
+	BeginUndoAction();
+
 	m_insertClipChunks.swap(chunks);
 
 	int pos = GetCurrentPos();
 	int firstFieldPos = 0;
+	int firstFieldLen = 0;
 
 	SPerform(SCI_SETINDICATORCURRENT, INDIC_TEXTCLIPFIELD, 0);
 	SetIndicatorValue(INDIC_BOX);
-	IndicSetStyle(INDIC_TEXTCLIPFIELD, INDIC_BOX);
+	IndicSetStyle(INDIC_TEXTCLIPFIELD, INDIC_ROUNDBOX);
+	IndicSetFore(INDIC_TEXTCLIPFIELD, RGB(0xff, 0xff, 0xff));
+	SPerform(SCI_INDICSETALPHA, INDIC_TEXTCLIPFIELD, 80);
 
 	std::vector<TextClips::Chunk>::const_iterator i;
 	for(i = m_insertClipChunks.begin(); i != m_insertClipChunks.end(); ++i)
@@ -1625,6 +1668,7 @@ void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 			if (firstFieldPos == 0)
 			{
 				firstFieldPos = pos;
+				firstFieldLen = chunkText.size();
 			}
 		}
 
@@ -1637,7 +1681,8 @@ void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 	}
 
 	// Set the selection to the insertion point or first field point.
-	SetSel(firstFieldPos, firstFieldPos);
+	SetSel(firstFieldPos, firstFieldPos + firstFieldLen);
+	m_currentFieldStart = firstFieldPos;
 
 	m_bInsertClip = true;
 }
@@ -1673,11 +1718,20 @@ void CTextView::updateInsertClip()
 
 	SPerform(SCI_SETINDICATORCURRENT, INDIC_TEXTCLIPFIELD, 0);
 
+	if (currentPos == m_currentFieldStart)
+	{
+		// Could be a zero-width piece, handle this here:
+		if (SPerform(SCI_INDICATORVALUEAT, INDIC_TEXTCLIPFIELD, currentPos) == 0)
+		{
+			// Give the user another go...
+			return;
+		}
+	}
+
 	// Exit condition:
 	if (SPerform(SCI_INDICATORVALUEAT, INDIC_TEXTCLIPFIELD, currentPos) == 0 && SPerform(SCI_INDICATORVALUEAT, INDIC_TEXTCLIPFIELD, prevPos) == 0)
 	{
-		m_bInsertClip = false;
-		SPerform(SCI_INDICATORCLEARRANGE, 0, GetLength());
+		endInsertClip();
 		return;
 	}
 
@@ -1690,7 +1744,7 @@ void CTextView::updateInsertClip()
 	if (start == end)
 	{
 		// No indicator ranges, nothing to do...
-		m_bInsertClip = false;
+		endInsertClip();
 		return;
 	}
 
@@ -1729,14 +1783,87 @@ void CTextView::updateInsertClip()
 			
 			if (current != chunkText)
 			{
+				// We want to add this to the previous undo action.
 				SetTarget(start, end);
 				ReplaceTarget(chunkText.size(), chunkText.c_str());
 				end = start + chunkText.size();
 
 				IndicatorFillRange(start, chunkText.size());
-
-
 			}
+		}
+
+		++chunkit;
+		start = SPerform(SCI_INDICATOREND, INDIC_TEXTCLIPFIELD, end + 1);
+		end = SPerform(SCI_INDICATOREND, INDIC_TEXTCLIPFIELD, start);
+	}
+	while (start < end && start > original);
+}
+
+void CTextView::endInsertClip()
+{
+	m_bInsertClip = false;
+	SPerform(SCI_INDICATORCLEARRANGE, 0, GetLength());
+	EndUndoAction();
+}
+
+void CTextView::nextClipField()
+{
+	int currentPos = GetCurrentPos();
+
+	// Find the first field:
+	bool onAt0 = SPerform(SCI_INDICATORVALUEAT, INDIC_TEXTCLIPFIELD, 0) != 0;
+	
+	int start = onAt0 ? 0 : SPerform(SCI_INDICATOREND, INDIC_TEXTCLIPFIELD, 0);
+	int end = SPerform(SCI_INDICATOREND, INDIC_TEXTCLIPFIELD, start);
+
+	if (start == end)
+	{
+		// No indicator ranges, nothing to do...
+		endInsertClip();
+		return;
+	}
+
+	int original = start;
+
+	ChunkIt_t chunkit = m_insertClipChunks.begin();
+
+	do
+	{
+		while (chunkit != m_insertClipChunks.end() && !(*chunkit).IsField())
+		{
+			chunkit++;
+		}
+
+		if (chunkit == m_insertClipChunks.end())
+		{
+			// Eek, we should have had another field chunk to match this indicator, bail...
+			break;
+		}
+
+		if (currentPos >= start && currentPos <= end)
+		{
+			// This is the chunk we're currently in, see if there's a next one:
+			ChunkIt_t nextField(chunkit);
+			nextField++;
+			while (nextField != m_insertClipChunks.end() && !(*nextField).IsField())
+			{
+				nextField++;
+			}
+
+			if (nextField != m_insertClipChunks.end())
+			{
+				// Another chunk to go, 
+				start = SPerform(SCI_INDICATOREND, INDIC_TEXTCLIPFIELD, end + 1);
+				SetSel(start, start);
+			}
+			else 
+			{
+				// We're all done...
+				// TODO: Find the exit cursor position and go there...
+				endInsertClip();
+			}
+
+			break;
 		}
 
 		++chunkit;

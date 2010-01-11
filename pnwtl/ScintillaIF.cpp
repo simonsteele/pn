@@ -2,7 +2,7 @@
  * @file ScintillaIF.cpp
  * @brief Implementation of CScintilla
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -16,6 +16,22 @@
 #ifdef SCINTILLA_PIXMAPS
 #include "ScintillaPixmaps.h"
 #endif
+
+///////////////////////////////////////////////////////////////////////////////
+// UndoGroup
+
+UndoGroup::UndoGroup(CScintilla& sci) : m_sci(sci)
+{
+	m_sci.BeginUndoAction();
+}
+
+UndoGroup::~UndoGroup()
+{
+	m_sci.EndUndoAction();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// CScintilla
 
 // Initialise no Scintilla dll on startup...
 HMODULE CScintilla::scidll = NULL;
