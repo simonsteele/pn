@@ -37,6 +37,7 @@
   int mLastPosition;
 }
 
+- (void) dealloc;
 - (void) removeMarkedText;
 - (void) setCursor: (Scintilla::Window::Cursor) cursor;
 

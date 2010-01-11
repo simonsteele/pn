@@ -1001,7 +1001,12 @@ int ScintillaGTK::EncodedFromUTF8(char *utf8, char *encoded) {
 }
 
 bool ScintillaGTK::ValidCodePage(int codePage) const {
-	return codePage == 0 || codePage == SC_CP_UTF8 || codePage == SC_CP_DBCS;
+	return codePage == 0 
+	|| codePage == SC_CP_UTF8 
+	|| codePage == 932
+	|| codePage == 936
+	|| codePage == 950
+	|| codePage == SC_CP_DBCS;
 }
 
 sptr_t ScintillaGTK::WndProc(unsigned int iMessage, uptr_t wParam, sptr_t lParam) {
@@ -1535,7 +1540,9 @@ void ScintillaGTK::ReceivedSelection(GtkSelectionData *selection_data) {
 				if (selection_data->selection != GDK_SELECTION_PRIMARY) {
 					ClearSelection();
 				}
-				SelectionPosition selStart = SelectionStart();
+				SelectionPosition selStart = sel.IsRectangular() ?
+					sel.Rectangular().Start() :
+					sel.Range(sel.Main()).Start();
 
 				if (selText.rectangular) {
 					PasteRectangular(selStart, selText.s, selText.len);

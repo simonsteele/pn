@@ -38,7 +38,7 @@
 
     <h1>Scintilla Documentation</h1>
 
-    <p>Last edited 7/August/2009 NH</p>
+    <p>Last edited 1/September/2009 NH</p>
 
     <p>There is <a class="jump" href="Design.html">an overview of the internal design of
     Scintilla</a>.<br />
@@ -1459,10 +1459,13 @@ struct TextToFind {
      <a class="message" href="#SCI_GETADDITIONALCARETFORE">SCI_GETADDITIONALCARETFORE</a><br />
      <a class="message" href="#SCI_SETADDITIONALCARETSBLINK">SCI_SETADDITIONALCARETSBLINK(bool additionalCaretsBlink)</a><br />
      <a class="message" href="#SCI_GETADDITIONALCARETSBLINK">SCI_GETADDITIONALCARETSBLINK</a><br />
+     <a class="message" href="#SCI_SETADDITIONALCARETSVISIBLE">SCI_SETADDITIONALCARETSVISIBLE(bool additionalCaretsVisible)</a><br />
+     <a class="message" href="#SCI_GETADDITIONALCARETSVISIBLE">SCI_GETADDITIONALCARETSVISIBLE</a><br />
      <br />
 
      <a class="message" href="#SCI_SWAPMAINANCHORCARET">SCI_SWAPMAINANCHORCARET</a><br />
      <a class="message" href="#SCI_ROTATESELECTION">SCI_ROTATESELECTION</a><br />
+    </code>
 
     <p>
     There may be multiple selections active at one time. 
@@ -1594,6 +1597,11 @@ struct TextToFind {
      <a class="message" href="#SCI_GETCARETFORE"><code>SCI_GETCARETFORE</code></a>,
      <a class="message" href="#SCI_SETCARETPERIOD"><code>SCI_SETCARETPERIOD</code></a>, and
      <a class="message" href="#SCI_GETCARETPERIOD"><code>SCI_GETCARETPERIOD</code></a>.</p>
+
+    <p>
+     <b id="SCI_SETADDITIONALCARETSVISIBLE">SCI_SETADDITIONALCARETSVISIBLE(bool additionalCaretsVisible)</b><br />
+     <b id="SCI_GETADDITIONALCARETSVISIBLE">SCI_GETADDITIONALCARETSVISIBLE</b><br />
+     Determine whether to show additional carets (defaults to <code>true</code>).
 
     <p>
      <b id="SCI_SWAPMAINANCHORCARET">SCI_SWAPMAINANCHORCARET</b><br />
@@ -1950,6 +1958,9 @@ struct TextToFind {
     useWhitespaceForeColour, int colour)</a><br />
      <a class="message" href="#SCI_SETWHITESPACEBACK">SCI_SETWHITESPACEBACK(bool
     useWhitespaceBackColour, int colour)</a><br />
+     <a class="message" href="#SCI_SETWHITESPACESIZE">SCI_SETWHITESPACESIZE(int
+    size)</a><br />
+     <a class="message" href="#SCI_GETWHITESPACESIZE">SCI_GETWHITESPACESIZE</a><br />
      <a class="message" href="#SCI_SETEXTRAASCENT">SCI_SETEXTRAASCENT(int extraAscent)</a><br />
      <a class="message" href="#SCI_GETEXTRAASCENT">SCI_GETEXTRAASCENT</a><br />
      <a class="message" href="#SCI_SETEXTRADESCENT">SCI_SETEXTRADESCENT(int extraDescent)</a><br />
@@ -2004,6 +2015,12 @@ struct TextToFind {
     foreground and/or background colour of all visible white space can be set globally, overriding
     the lexer's colours with <code>SCI_SETWHITESPACEFORE</code> and
     <code>SCI_SETWHITESPACEBACK</code>.</p>
+
+     <b id="SCI_SETWHITESPACESIZE">SCI_SETWHITESPACESIZE(int size)</b><br />
+     <b id="SCI_GETWHITESPACESIZE">SCI_GETWHITESPACESIZE</b><br />
+     SCI_SETWHITESPACESIZE sets the size of the dots used for mark space characters.
+     The SCI_GETWHITESPACESIZE message retrieves the current size.
+    <p>
 
     <p>
      <b id="SCI_SETEXTRAASCENT">SCI_SETEXTRAASCENT(int extraAscent)</b><br />
@@ -2856,6 +2873,8 @@ struct TextToFind {
      <a class="message" href="#SCI_GETBUFFEREDDRAW">SCI_GETBUFFEREDDRAW</a><br />
      <a class="message" href="#SCI_SETTWOPHASEDRAW">SCI_SETTWOPHASEDRAW(bool twoPhase)</a><br />
      <a class="message" href="#SCI_GETTWOPHASEDRAW">SCI_GETTWOPHASEDRAW</a><br />
+     <a class="message" href="#SCI_SETFONTQUALITY">SCI_SETFONTQUALITY(int fontQuality)</a><br />
+     <a class="message" href="#SCI_GETFONTQUALITY">SCI_GETFONTQUALITY</a><br />
      <a class="message" href="#SCI_SETCODEPAGE">SCI_SETCODEPAGE(int codePage)</a><br />
      <a class="message" href="#SCI_GETCODEPAGE">SCI_GETCODEPAGE</a><br />
      <a class="message" href="#SCI_SETKEYSUNICODE">SCI_SETKEYSUNICODE(bool keysUnicode)</a><br />
@@ -2917,6 +2936,14 @@ struct TextToFind {
      transparent mode. Two phase drawing may flicker more than single phase
      unless buffered drawing is on. The default is for drawing to be two phase.</p>
 
+    <p><b id="SCI_SETFONTQUALITY">SCI_SETFONTQUALITY(int fontQuality)</b><br />
+     <b id="SCI_GETFONTQUALITY">SCI_GETFONTQUALITY</b><br />
+     Manage font quality (antialiasing method). Currently, the following values are available on Windows:
+     <code>SC_EFF_QUALITY_DEFAULT</code> (backward compatible),
+     <code>SC_EFF_QUALITY_NON_ANTIALIASED</code>,
+     <code>SC_EFF_QUALITY_ANTIALIASED</code>,
+     <code>SC_EFF_QUALITY_LCD_OPTIMIZED</code>.</p>
+
     <p><b id="SCI_SETCODEPAGE">SCI_SETCODEPAGE(int codePage)</b><br />
      <b id="SCI_GETCODEPAGE">SCI_GETCODEPAGE</b><br />
      Scintilla has some support for Japanese, Chinese and Korean DBCS. Use this message with
@@ -2933,16 +2960,17 @@ struct TextToFind {
     normal Unicode encoding before being drawn by the OS and thus can display Hebrew, Arabic,
     Cyrillic, and Han characters. Languages which can use two characters stacked vertically in one
     horizontal space, such as Thai, will mostly work but there are some issues where the characters
-    are drawn separately leading to visual glitches. Bi-directional text is not supported. Characters outside the
-    Basic Multilingual Plane are unlikely to work.</p>
+    are drawn separately leading to visual glitches. Bi-directional text is not supported. </p>
 
     <p>On Windows, code page can be set to 932 (Japanese Shift-JIS), 936 (Simplified Chinese GBK),
     949 (Korean Unified Hangul Code), 950 (Traditional Chinese Big5), or 1361 (Korean Johab)
     although these may require installation of language specific support.</p>
 
-    <p>On GTK+, code page <code>SC_CP_DBCS</code> (1) sets Scintilla into
-    multi byte character mode as is required for Japanese language processing with
-    the EUC encoding.</p>
+    <p>On GTK+, code page can be set to 932 (Japanese Shift-JIS), 936 (Simplified Chinese GBK),
+    or 950 (Traditional Chinese Big5).
+    The code page may also be set to <code>SC_CP_DBCS</code> (1)
+    which uses the current locale to handle multi byte characters which may work for otherwise unsupported 
+    code pages.</p>
 
     <p>For GTK+ 1.x, the locale should be set to a Unicode locale with a call similar to
     <code>setlocale(LC_CTYPE, "en_US.UTF-8")</code>. Fonts with an <code>"iso10646"</code> registry
@@ -3685,6 +3713,8 @@ struct TextToFind {
      <a class="message" href="#SCI_AUTOCSELECT">SCI_AUTOCSELECT(&lt;unused&gt;, const char
     *select)</a><br />
      <a class="message" href="#SCI_AUTOCGETCURRENT">SCI_AUTOCGETCURRENT</a><br />
+     <a class="message" href="#SCI_AUTOCGETCURRENTTEXT">SCI_AUTOCGETCURRENTTEXT(&lt;unused&gt;,
+     char *text)</a><br />
      <a class="message" href="#SCI_AUTOCSETCANCELATSTART">SCI_AUTOCSETCANCELATSTART(bool
     cancel)</a><br />
      <a class="message" href="#SCI_AUTOCGETCANCELATSTART">SCI_AUTOCGETCANCELATSTART</a><br />
@@ -3764,8 +3794,18 @@ struct TextToFind {
     item is found, it is selected. If the item is not found, the autocompletion list closes if
     auto-hide is true (see <a class="message"
     href="#SCI_AUTOCSETAUTOHIDE"><code>SCI_AUTOCSETAUTOHIDE</code></a>).<br />
-    The current selection can be retrieved with <code>SCI_AUTOCGETCURRENT</code>
-    </p>
+    The current selection index can be retrieved with <code>SCI_AUTOCGETCURRENT</code>.</p>
+
+    <p><b id="SCI_AUTOCGETCURRENTTEXT">SCI_AUTOCGETCURRENTTEXT(&lt;unused&gt;, char *text)</b><br />
+     This message retrieves the current selected text in the autocompletion list. Normally the
+    <a class="message" href="#SCN_AUTOCSELECTION"><code>SCN_AUTOCSELECTION</code></a> notification
+    is used instead.</p>
+
+    <p></p>The value is copied to the <code>text</code> buffer, returning the length (not including the
+    terminating 0). If not found, an empty string is copied to the buffer and 0 is returned.</p>
+
+    <p>If the value argument is 0 then the length that should be allocated to store the value is
+    returned; again, the terminating 0 is not included.</p>
 
     <p><b id="SCI_AUTOCSETCANCELATSTART">SCI_AUTOCSETCANCELATSTART(bool cancel)</b><br />
      <b id="SCI_AUTOCGETCANCELATSTART">SCI_AUTOCGETCANCELATSTART</b><br />

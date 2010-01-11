@@ -153,7 +153,7 @@ Font::~Font()
  * TODO: rewrite to use NSFont.
  */
 void Font::Create(const char *faceName, int characterSet, int size, bool bold, bool italic, 
-                  bool extraFontFlag)
+                  int extraFontFlag)
 {
   // TODO: How should I handle the characterSet request?
   Release();

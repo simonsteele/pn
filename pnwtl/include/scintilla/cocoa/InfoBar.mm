@@ -188,6 +188,7 @@ static float BarFontSize = 10.0;
   [mZoomPopup release];
   
   // 2) The caret position label.
+  Class oldCellClass = [NSTextField cellClass];
   [NSTextField setCellClass: [VerticallyCenteredTextFieldCell class]];
   
   mCaretPositionLabel = [[NSTextField alloc] initWithFrame: NSMakeRect(0.0, 0.0, 50.0, 1.0)];
@@ -219,6 +220,9 @@ static float BarFontSize = 10.0;
 
   [self addSubview: mStatusTextLabel];
   [mStatusTextLabel release];
+  
+  // Restore original cell class so that everything else doesn't get broken
+  [NSTextField setCellClass: oldCellClass];
 }
 
 //--------------------------------------------------------------------------------------------------

@@ -1362,7 +1362,9 @@ void ScintillaWin::Paste() {
 	UndoGroup ug(pdoc);
 	bool isLine = SelectionEmpty() && (::IsClipboardFormatAvailable(cfLineSelect) != 0);
 	ClearSelection();
-	SelectionPosition selStart = sel.Range(sel.Main()).Start();
+	SelectionPosition selStart = sel.IsRectangular() ?
+		sel.Rectangular().Start() :
+		sel.Range(sel.Main()).Start();
 	bool isRectangular = ::IsClipboardFormatAvailable(cfColumnSelect) != 0;
 
 	// Always use CF_UNICODETEXT if available

@@ -182,6 +182,7 @@ LEXOBJS=\
 	$(DIR_O)\LexLout.obj \
 	$(DIR_O)\LexLua.obj \
 	$(DIR_O)\LexMagik.obj \
+	$(DIR_O)\LexMarkdown.obj \
 	$(DIR_O)\LexMatlab.obj \
 	$(DIR_O)\LexMetapost.obj \
 	$(DIR_O)\LexMMIXAL.obj \
@@ -439,6 +440,8 @@ $(DIR_O)\LexLout.obj: ..\src\LexLout.cxx $(LEX_HEADERS)
 $(DIR_O)\LexLua.obj: ..\src\LexLua.cxx $(LEX_HEADERS)
 
 $(DIR_O)\LexMagik.obj: ..\src\LexMagik.cxx $(LEX_HEADERS)
+
+$(DIR_O)\LexMarkdown.obj: ..\src\LexMarkdown.cxx $(LEX_HEADERS)
 
 $(DIR_O)\LexMatlab.obj: ..\src\LexMatlab.cxx $(LEX_HEADERS)
 

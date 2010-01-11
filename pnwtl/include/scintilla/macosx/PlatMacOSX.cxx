@@ -75,7 +75,7 @@ Font::~Font() { Release(); }
 
 
 void Font::Create(const char *faceName, int /*characterSet*/,
-                  int size, bool bold, bool italic, bool /*extraFontFlag*/) {
+                  int size, bool bold, bool italic, int /*extraFontFlag*/) {
     // TODO: How should I handle the characterSet request?
     Release();
 

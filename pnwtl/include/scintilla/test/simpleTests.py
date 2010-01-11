@@ -1015,6 +1015,112 @@ class TestMultiSelection(unittest.TestCase):
 		self.assertEquals(self.ed.GetSelectionNCaret(0), 3)
 		self.assertEquals(self.ed.GetSelectionNCaretVirtualSpace(0), 0)
 
+class TestLexer(unittest.TestCase):
+	def setUp(self):
+		self.xite = XiteWin.xiteFrame
+		self.ed = self.xite.ed
+		self.ed.ClearAll()
+		self.ed.EmptyUndoBuffer()
+		
+	def testLexerNumber(self):
+		self.ed.Lexer = self.ed.SCLEX_CPP
+		self.assertEquals(self.ed.GetLexer(), self.ed.SCLEX_CPP)
+
+	def testLexerName(self):
+		self.ed.LexerLanguage = b"cpp"
+		self.assertEquals(self.ed.GetLexer(), self.ed.SCLEX_CPP)
+		name = b"-" * 100
+		length = self.ed.GetLexerLanguage(0, name)
+		name = name[:length]
+		self.assertEquals(name, b"cpp")
+
+class TestAutoComplete(unittest.TestCase):
+
+	def setUp(self):
+		self.xite = XiteWin.xiteFrame
+		self.ed = self.xite.ed
+		self.ed.ClearAll()
+		self.ed.EmptyUndoBuffer()
+		# 3 lines of 3 characters
+		t = b"xxx\n"
+		self.ed.AddText(len(t), t)
+
+	def testDefaults(self):
+		self.assertEquals(self.ed.AutoCGetSeparator(), ord(' '))
+		self.assertEquals(self.ed.AutoCGetMaxHeight(), 5)
+		self.assertEquals(self.ed.AutoCGetMaxWidth(), 0)
+		self.assertEquals(self.ed.AutoCGetTypeSeparator(), ord('?'))
+		self.assertEquals(self.ed.AutoCGetIgnoreCase(), 0)
+		self.assertEquals(self.ed.AutoCGetAutoHide(), 1)
+		self.assertEquals(self.ed.AutoCGetDropRestOfWord(), 0)
+
+	def testChangeDefaults(self):
+		self.ed.AutoCSetSeparator(ord('-'))
+		self.assertEquals(self.ed.AutoCGetSeparator(), ord('-'))
+		self.ed.AutoCSetSeparator(ord(' '))
+
+		self.ed.AutoCSetMaxHeight(100)
+		self.assertEquals(self.ed.AutoCGetMaxHeight(), 100)
+		self.ed.AutoCSetMaxHeight(5)
+
+		self.ed.AutoCSetMaxWidth(100)
+		self.assertEquals(self.ed.AutoCGetMaxWidth(), 100)
+		self.ed.AutoCSetMaxWidth(0)
+
+		self.ed.AutoCSetTypeSeparator(ord('@'))
+		self.assertEquals(self.ed.AutoCGetTypeSeparator(), ord('@'))
+		self.ed.AutoCSetTypeSeparator(ord('?'))
+
+		self.ed.AutoCSetIgnoreCase(1)
+		self.assertEquals(self.ed.AutoCGetIgnoreCase(), 1)
+		self.ed.AutoCSetIgnoreCase(0)
+
+		self.ed.AutoCSetAutoHide(0)
+		self.assertEquals(self.ed.AutoCGetAutoHide(), 0)
+		self.ed.AutoCSetAutoHide(1)
+
+		self.ed.AutoCSetDropRestOfWord(1)
+		self.assertEquals(self.ed.AutoCGetDropRestOfWord(), 1)
+		self.ed.AutoCSetDropRestOfWord(0)
+
+	def testAutoShow(self):
+		self.assertEquals(self.ed.AutoCActive(), 0)
+		self.ed.SetSel(0, 0)
+
+		self.ed.AutoCShow(0, b"za defn ghi")
+		self.assertEquals(self.ed.AutoCActive(), 1)
+		#~ time.sleep(2)
+		self.assertEquals(self.ed.AutoCPosStart(), 0)
+		self.assertEquals(self.ed.AutoCGetCurrent(), 0)
+		t = b"xxx"
+		l = self.ed.AutoCGetCurrentText(5, t)
+		#~ self.assertEquals(l, 3)
+		self.assertEquals(t, b"za\0")
+		self.ed.AutoCCancel()
+		self.assertEquals(self.ed.AutoCActive(), 0)
+
+	def testAutoShowComplete(self):
+		self.assertEquals(self.ed.AutoCActive(), 0)
+		self.ed.SetSel(0, 0)
+
+		self.ed.AutoCShow(0, b"za defn ghi")
+		self.ed.AutoCComplete()
+		self.assertEquals(self.ed.Contents(), b"zaxxx\n")
+
+		self.assertEquals(self.ed.AutoCActive(), 0)
+
+	def testAutoShowSelect(self):
+		self.assertEquals(self.ed.AutoCActive(), 0)
+		self.ed.SetSel(0, 0)
+
+		self.ed.AutoCShow(0, b"za defn ghi")
+		self.ed.AutoCSelect(0, b"d")
+		self.ed.AutoCComplete()
+		self.assertEquals(self.ed.Contents(), b"defnxxx\n")
+
+		self.assertEquals(self.ed.AutoCActive(), 0)
+
+
 #~ import os
 #~ for x in os.getenv("PATH").split(";"):
 	#~ n = "scilexer.dll"

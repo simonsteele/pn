@@ -22,6 +22,7 @@
 #include "PlatformRes.h"
 #include "UniConversion.h"
 #include "XPM.h"
+#include "FontQuality.h"
 
 #ifndef IDC_HAND
 #define IDC_HAND MAKEINTRESOURCE(32649)
@@ -179,13 +180,35 @@ void Palette::Allocate(Window &) {
 	}
 }
 
-static void SetLogFont(LOGFONTA &lf, const char *faceName, int characterSet, int size, bool bold, bool italic) {
+#ifndef CLEARTYPE_QUALITY
+#define CLEARTYPE_QUALITY 5
+#endif
+
+static BYTE Win32MapFontQuality(int extraFontFlag) {
+	switch (extraFontFlag & SC_EFF_QUALITY_MASK) {
+
+		case SC_EFF_QUALITY_NON_ANTIALIASED:
+			return NONANTIALIASED_QUALITY;
+
+		case SC_EFF_QUALITY_ANTIALIASED:
+			return ANTIALIASED_QUALITY;
+
+		case SC_EFF_QUALITY_LCD_OPTIMIZED:
+			return CLEARTYPE_QUALITY;
+
+		default:
+			return SC_EFF_QUALITY_DEFAULT;
+	}
+}
+
+static void SetLogFont(LOGFONTA &lf, const char *faceName, int characterSet, int size, bool bold, bool italic, int extraFontFlag) {
 	memset(&lf, 0, sizeof(lf));
 	// The negative is to allow for leading
 	lf.lfHeight = -(abs(size));
 	lf.lfWeight = bold ? FW_BOLD : FW_NORMAL;
 	lf.lfItalic = static_cast<BYTE>(italic ? 1 : 0);
 	lf.lfCharSet = static_cast<BYTE>(characterSet);
+	lf.lfQuality = Win32MapFontQuality(extraFontFlag);
 	strncpy(lf.lfFaceName, faceName, sizeof(lf.lfFaceName));
 }
 
@@ -194,10 +217,11 @@ static void SetLogFont(LOGFONTA &lf, const char *faceName, int characterSet, int
  * If one font is the same as another, its hash will be the same, but if the hash is the
  * same then they may still be different.
  */
-static int HashFont(const char *faceName, int characterSet, int size, bool bold, bool italic) {
+static int HashFont(const char *faceName, int characterSet, int size, bool bold, bool italic, int extraFontFlag) {
 	return
 		size ^
 		(characterSet << 10) ^
+		((extraFontFlag & SC_EFF_QUALITY_MASK) << 9) ^
 		(bold ? 0x10000000 : 0) ^
 		(italic ? 0x20000000 : 0) ^
 		faceName[0];
@@ -208,33 +232,34 @@ class FontCached : Font {
 	int usage;
 	LOGFONTA lf;
 	int hash;
-	FontCached(const char *faceName_, int characterSet_, int size_, bool bold_, bool italic_);
+	FontCached(const char *faceName_, int characterSet_, int size_, bool bold_, bool italic_, int extraFontFlag_);
 	~FontCached() {}
-	bool SameAs(const char *faceName_, int characterSet_, int size_, bool bold_, bool italic_);
+	bool SameAs(const char *faceName_, int characterSet_, int size_, bool bold_, bool italic_, int extraFontFlag_);
 	virtual void Release();
 
 	static FontCached *first;
 public:
-	static FontID FindOrCreate(const char *faceName_, int characterSet_, int size_, bool bold_, bool italic_);
+	static FontID FindOrCreate(const char *faceName_, int characterSet_, int size_, bool bold_, bool italic_, int extraFontFlag_);
 	static void ReleaseId(FontID fid_);
 };
 
 FontCached *FontCached::first = 0;
 
-FontCached::FontCached(const char *faceName_, int characterSet_, int size_, bool bold_, bool italic_) :
+FontCached::FontCached(const char *faceName_, int characterSet_, int size_, bool bold_, bool italic_, int extraFontFlag_) :
 	next(0), usage(0), hash(0) {
-	SetLogFont(lf, faceName_, characterSet_, size_, bold_, italic_);
-	hash = HashFont(faceName_, characterSet_, size_, bold_, italic_);
+	SetLogFont(lf, faceName_, characterSet_, size_, bold_, italic_, extraFontFlag_);
+	hash = HashFont(faceName_, characterSet_, size_, bold_, italic_, extraFontFlag_);
 	fid = ::CreateFontIndirectA(&lf);
 	usage = 1;
 }
 
-bool FontCached::SameAs(const char *faceName_, int characterSet_, int size_, bool bold_, bool italic_) {
+bool FontCached::SameAs(const char *faceName_, int characterSet_, int size_, bool bold_, bool italic_, int extraFontFlag_) {
 	return
 		(lf.lfHeight == -(abs(size_))) &&
 		(lf.lfWeight == (bold_ ? FW_BOLD : FW_NORMAL)) &&
 		(lf.lfItalic == static_cast<BYTE>(italic_ ? 1 : 0)) &&
 		(lf.lfCharSet == characterSet_) &&
+		(lf.lfQuality == Win32MapFontQuality(extraFontFlag_)) &&
 		0 == strcmp(lf.lfFaceName,faceName_);
 }
 
@@ -244,19 +269,19 @@ void FontCached::Release() {
 	fid = 0;
 }
 
-FontID FontCached::FindOrCreate(const char *faceName_, int characterSet_, int size_, bool bold_, bool italic_) {
+FontID FontCached::FindOrCreate(const char *faceName_, int characterSet_, int size_, bool bold_, bool italic_, int extraFontFlag_) {
 	FontID ret = 0;
 	::EnterCriticalSection(&crPlatformLock);
-	int hashFind = HashFont(faceName_, characterSet_, size_, bold_, italic_);
+	int hashFind = HashFont(faceName_, characterSet_, size_, bold_, italic_, extraFontFlag_);
 	for (FontCached *cur=first; cur; cur=cur->next) {
 		if ((cur->hash == hashFind) &&
-			cur->SameAs(faceName_, characterSet_, size_, bold_, italic_)) {
+			cur->SameAs(faceName_, characterSet_, size_, bold_, italic_, extraFontFlag_)) {
 			cur->usage++;
 			ret = cur->fid;
 		}
 	}
 	if (ret == 0) {
-		FontCached *fc = new FontCached(faceName_, characterSet_, size_, bold_, italic_);
+		FontCached *fc = new FontCached(faceName_, characterSet_, size_, bold_, italic_, extraFontFlag_);
 		if (fc) {
 			fc->next = first;
 			first = fc;
@@ -296,14 +321,15 @@ Font::~Font() {
 #define FONTS_CACHED
 
 void Font::Create(const char *faceName, int characterSet, int size,
-	bool bold, bool italic, bool) {
+	bool bold, bool italic, int extraFontFlag) {
 	Release();
 #ifndef FONTS_CACHED
 	LOGFONT lf;
-	SetLogFont(lf, faceName, characterSet, size, bold, italic);
+	SetLogFont(lf, faceName, characterSet, size, bold, italic, extraFontFlag);
 	fid = ::CreateFontIndirect(&lf);
 #else
-	fid = FontCached::FindOrCreate(faceName, characterSet, size, bold, italic);
+	if (faceName)
+		fid = FontCached::FindOrCreate(faceName, characterSet, size, bold, italic, extraFontFlag);
 #endif
 }
 
