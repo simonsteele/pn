@@ -10,7 +10,7 @@
 #ifndef toolsxmlwriter_h__included
 #define toolsxmlwriter_h__included
 
-#include "include/genx/genx.h"
+#include "third_party/genx/genx.h"
 #include "include/pngenx.h"
 
 class ToolsXMLWriter : public GenxXMLWriter

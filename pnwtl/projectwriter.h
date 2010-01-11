@@ -10,7 +10,7 @@
 #ifndef projectwriter_h__included
 #define projectwriter_h__included
 
-#include "include/genx/genx.h"
+#include "third_party/genx/genx.h"
 #include "include/pngenx.h"
 
 namespace Projects

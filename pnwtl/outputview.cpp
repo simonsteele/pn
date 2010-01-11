@@ -13,7 +13,7 @@
 #include "outputview.h"
 #include "textview.h"
 #include "childfrm.h"
-#include "include/scintilla/include/scilexer.h"
+#include "third_party/scintilla/include/scilexer.h"
 #include "scaccessor.h"
 #include "project.h"
 

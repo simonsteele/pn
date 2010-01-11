@@ -956,7 +956,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\genx\charProps.c"
+				RelativePath=".\third_party\genx\charProps.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -984,7 +984,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\genx\genx.c"
+				RelativePath=".\third_party\genx\genx.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -1006,7 +1006,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\include\genx\genx.h"
+				RelativePath=".\third_party\genx\genx.h"
 				>
 			</File>
 			<File

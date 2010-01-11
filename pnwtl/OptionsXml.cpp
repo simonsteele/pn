@@ -10,18 +10,12 @@
 
 #include "stdafx.h"
 #include "OptionsManager.h"
-#include "include\genx\genx.h"
-#include "include\pngenx.h"
+#include "third_party/genx/genx.h"
+#include "include/pngenx.h"
 #include "OptionsXml.h"
 
 #pragma warning( push )
 #pragma warning(disable: 4996) // see MSDN on hash_map
-
-/*#if (_ATL_VER >= 0x0700)
-	#include <hash_map>
-#else
-	#include <map>
-#endif*/
 
 class OptionsXmlWriter : public GenxXMLWriter
 {

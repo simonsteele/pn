@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "include/genx/genx.h"
+#include "third_party/genx/genx.h"
 #include "include/pngenx.h"
 #include "WorkspaceState.h"
 #include "project.h"

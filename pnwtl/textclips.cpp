@@ -12,7 +12,7 @@
 #include "textclips.h"
 #include "include/filefinder.h"
 #include "include/encoding.h"
-#include "include/genx/genx.h"
+#include "third_party/genx/genx.h"
 #include "include/pngenx.h"
 
 #if defined (_DEBUG)

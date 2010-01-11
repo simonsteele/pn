@@ -78,7 +78,7 @@
 #include "allocator.h"
 #include "pnextstring.h"
 #include "extiface.h"
-#include "include/scintilla/include/Platform.h"
+#include "third_party/scintilla/include/Platform.h"
 #include "pntypes.h"
 
 // Pre-declarations...

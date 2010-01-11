@@ -18,7 +18,7 @@
 #define SC_BOOKMARK 0
 #define SC_NUMBERED_BOOKMARK 1
 
-#include "include/scintilla/include/scintilla.h"
+#include "third_party/scintilla/include/scintilla.h"
 
 //! Block size for disk reading and writing.
 const int blockSize = 131072;

@@ -14,7 +14,7 @@
 typedef unsigned __int64	uint64_t;
 typedef __int64				int64_t;
 
-#include "include/scintilla/include/scintilla.h"
+#include "third_party/scintilla/include/scintilla.h"
 #include "searchoptions.h"
 
 typedef struct tagPrintOptions
