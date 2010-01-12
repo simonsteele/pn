@@ -13,7 +13,7 @@ What's new in 2.1?
 5) Command bar for PyPN users, supports customisable modal commands
 6) Complete Unicode conversion, files, searching, projects, UI, clips...
 7) Flexible split views
-8) New -z and -1 command-line parameters to help using with Image File Execution options
+8) New -z command-line parameters for use with Image File Execution options
 
 What's new in 2.1 under the cover?
 ------------------------------------------
