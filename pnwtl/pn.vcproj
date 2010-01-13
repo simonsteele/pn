@@ -424,6 +424,10 @@
 					RelativePath=".\textclips\clip.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\textclips\cliphandler.cpp"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter

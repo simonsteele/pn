@@ -303,6 +303,8 @@ void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 ////////////////////////////////////////////////////
 // Autocomplete methods
 
+#define CLIPS_DEV
+
 bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 {
 	std::string text = notification->text;

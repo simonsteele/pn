@@ -44,3 +44,21 @@ void Chunk::SetText(const char* text)
 
 	// TODO: Disable any transforms and/or links etc.
 }
+
+void Chunk::SetPos(int start, int end)
+{
+	m_start = start;
+	m_end = end;
+}
+
+void Chunk::GetPos(int& start, int& end) const
+{
+	start = m_start;
+	end = m_end;
+}
+
+void Chunk::OffsetPos(int offset)
+{
+	m_start += offset;
+	m_end += offset;
+}

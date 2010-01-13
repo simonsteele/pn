@@ -3,7 +3,7 @@
  * @file TextView.h
  * @brief Interface Definition for CTextView, the Scintilla based text-editor view.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -21,6 +21,7 @@
 #include "textclips.h"
 
 class FIFSink;
+class ClipInsertionState;
 
 /**
  * This is the final implementation of our Scintilla window, pulling together the
@@ -165,10 +166,15 @@ private:
 
 	void smartHighlight();
 	void updateOverwriteTarget();
+	
+	/**
+	 * Clip insertion:
+	 */
 	void beginInsertClip(std::vector<TextClips::Chunk>& chunks);
 	void updateInsertClip();
 	void endInsertClip();
 	void nextClipField();
+	void handleInsertClipNotify(Scintilla::SCNotification* scn);
 
 	void handleMarkAllResult(int start, int end);
 
@@ -183,8 +189,7 @@ private:
 	DocumentPtr m_pDoc;
 	extensions::IRecorderPtr m_recorder;
 	int m_findAllResultCount;
-	std::vector<TextClips::Chunk> m_insertClipChunks;
-	int m_currentFieldStart;
+	boost::shared_ptr<ClipInsertionState> m_insertClipState;
 
 	bool m_bMeasureCanRun;
 	pnutils::threading::CriticalSection m_csMeasure;

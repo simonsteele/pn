@@ -21,9 +21,9 @@ namespace TextClips {
 class Chunk
 {
 public:
-	Chunk() : m_field(false), Id(0) {}
-	Chunk(bool field, const std::string& text) : m_field(field), m_text(text), Id(0) {}
-	Chunk(bool field, int id) : m_field(field), Id(id) {}
+	Chunk() : m_field(false), m_start(0), m_end(0), Id(0) {}
+	Chunk(bool field, const std::string& text) : m_field(field), m_text(text), m_start(0), m_end(0), Id(0) {}
+	Chunk(bool field, int id) : m_field(field), Id(id), m_start(0), m_end(0) {}
 
 	int Id;
 
@@ -32,9 +32,16 @@ public:
 	
 	void SetText(const char* text);
 
+	// Field Position tracking:
+	void SetPos(int start, int end);
+	void GetPos(int& start, int& end) const;
+	void OffsetPos(int offset);
+
 private:
 	bool m_field;
 	std::string m_text;
+	int m_start;
+	int m_end;
 };
 
 /**
