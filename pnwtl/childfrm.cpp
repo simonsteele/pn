@@ -1156,10 +1156,18 @@ LRESULT CChildFrame::OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	const TextClips::Clip* desired = clips->FindByShortcut(word);
 	if(desired != NULL)
 	{
+#ifdef CLIPS_DEV
+		GetTextView()->DelWordLeft();
+
+		std::vector<TextClips::Chunk> chunks;
+		desired->GetChunks(chunks);
+		GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
+#else
 		GetTextView()->BeginUndoAction();
 		GetTextView()->DelWordLeft();
 		desired->Insert(GetTextView());
 		GetTextView()->EndUndoAction();
+#endif
 	}
 	else
 	{

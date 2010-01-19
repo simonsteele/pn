@@ -43,6 +43,7 @@ public:
 		MESSAGE_HANDLER(PN_OVERWRITETARGET, OnOverwriteTarget)
 		MESSAGE_HANDLER(PN_INSERTCLIP, OnInsertClip)
 		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
+		MESSAGE_HANDLER(WM_KEYUP, OnKeyUp)
 
 		COMMAND_ID_HANDLER(ID_EDIT_INDENT, OnIndent)
 		COMMAND_ID_HANDLER(ID_EDIT_UNINDENT, OnUnindent)
@@ -122,6 +123,7 @@ private:
 	HRESULT OnOverwriteTarget(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	HRESULT OnInsertClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	HRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	HRESULT OnKeyUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
 	////////////////////////////////////////////////////////////////
 	// Command Handlers
@@ -174,6 +176,7 @@ private:
 	void updateInsertClip();
 	void endInsertClip();
 	void nextClipField();
+	void prevClipField();
 	void handleInsertClipNotify(Scintilla::SCNotification* scn);
 
 	void handleMarkAllResult(int start, int end);

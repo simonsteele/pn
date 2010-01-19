@@ -109,7 +109,28 @@ class TextClipParser : public CustomFormatStringBuilder<TextClipParser>
 			// TODO: Other format chars... 
 		}
 
-		void OnFormatKey(LPCTSTR key) {}
+		void OnFormatKey(LPCTSTR key)
+		{
+			pushChunk();
+
+			boost::xpressive::tsregex tabstopMatch = boost::xpressive::tsregex::compile(_T("([0-9]+):(.+)"));
+
+			boost::xpressive::tsmatch match;
+			tstring prop(key);
+
+			if (boost::xpressive::regex_match(prop, match, tabstopMatch))
+			{
+				tstring stopid(match[1]);
+				tstring text(match[2]);
+
+				int stop = _ttoi(stopid.c_str());
+
+				Tcs_Utf8 texta(text.c_str());
+
+				m_chunks.push_back(Chunk(true, stop, std::string((const char*)(const unsigned char*)texta)));
+			}
+		}
+		
 		void OnFormatPercentKey(LPCTSTR key) {}
 		void OnFormatScriptRef(LPCTSTR key) {}
 

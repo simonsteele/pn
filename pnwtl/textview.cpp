@@ -841,11 +841,40 @@ HRESULT CTextView::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BO
 	if (wParam == VK_TAB && ::GetFocus() == m_hWnd)
 	{
 		// Next field in the template:
-		nextClipField();
+		if ( GetKeyState( VK_SHIFT ) & 0x8000 )
+		{
+			prevClipField();
+		}
+		else
+		{
+			nextClipField();
+		}
+		
+		bHandled = true;
 	}
 	else
 	{
 		bHandled = FALSE;
+	}
+	
+	return 0;
+}
+
+HRESULT CTextView::OnKeyUp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	if (!m_bInsertClip)
+	{
+		bHandled = false;
+		return 0;
+	}
+
+	if (wParam == VK_TAB && ::GetFocus() == m_hWnd)
+	{
+		bHandled = true;
+	}
+	else
+	{
+		bHandled = false;
 	}
 	
 	return 0;

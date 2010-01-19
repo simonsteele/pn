@@ -71,6 +71,12 @@ private:
 
 void ClipInsertionState::HandleModification(CTextView* tv, int pos, int len, bool insert)
 {
+	// We don't want to make any changes while handling the user's ones!
+	if (Working)
+	{
+		return;
+	}
+
 	if (pos >= CurrentFieldStart &&
 		pos <= CurrentFieldEnd)
 	{
@@ -83,15 +89,12 @@ void ClipInsertionState::HandleModification(CTextView* tv, int pos, int len, boo
 		}
 		else
 		{
-			if (pos == CurrentFieldStart)
+			CurrentFieldEnd -= len;
+			if (CurrentFieldEnd < CurrentFieldStart)
 			{
-				CurrentFieldEnd -= len;
-				if (CurrentFieldEnd < CurrentFieldStart)
-				{
-					// Clip insertion is no longer valid:
-					Valid = false;
-					return;
-				}
+				// Clip insertion is no longer valid:
+				Valid = false;
+				return;
 			}
 		}
 
@@ -104,8 +107,6 @@ void ClipInsertionState::HandleModification(CTextView* tv, int pos, int len, boo
 		OffsetOtherChunks(CurrentFieldEnd - origEndPos);
 	}
 }
-
-
 
 void ClipInsertionState::OffsetOtherChunks(int offset)
 {
@@ -139,13 +140,18 @@ ChunkIt_t ClipInsertionState::FindChunk(int pos)
 
 void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 {
+	if (m_bInsertClip)
+	{
+		// We're already inserting a clip, abandon that one and switch to this one:
+		endInsertClip();
+	}
+
 	// We open an Undo action as soon as we start clip insertion:
 	BeginUndoAction();
 
 	m_insertClipState.reset(new ClipInsertionState());
 
 	WorkingLock preventReentrance(m_insertClipState);
-
 
 	m_insertClipState->Chunks.swap(chunks);
 
@@ -201,19 +207,6 @@ void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 	m_bInsertClip = true;
 }
 
-ChunkIt_t firstChunk(std::vector<TextClips::Chunk>& chunks, int id)
-{
-	for (ChunkIt_t i = chunks.begin(); i != chunks.end(); ++i)
-	{
-		if ((*i).IsField() && (*i).Id == id)
-		{
-			return i;
-		}
-	}
-
-	return chunks.end();
-}
-
 void CTextView::updateInsertClip()
 {
 	if (!m_bInsertClip || m_insertClipState->Working)
@@ -238,43 +231,54 @@ void CTextView::updateInsertClip()
 		m_insertClipState->LastModifyValid = false;
 
 		IndicatorFillRange(m_insertClipState->CurrentFieldStart, m_insertClipState->CurrentFieldEnd - m_insertClipState->CurrentFieldStart);
-	}
 
-	// Update chunk text and positions:
-	int offset(0);
-	std::string chunkText((*m_insertClipState->CurrentChunk).GetText());
+		// Update chunk text and positions:
+		int offset(0);
+		std::string chunkText((*m_insertClipState->CurrentChunk).GetText());
 
-	ChunkIt_t i = m_insertClipState->CurrentChunk;
-	++i;
-	for (; i != m_insertClipState->Chunks.end(); ++i)
-	{
-		if ((*i).IsField())
+		ChunkIt_t i = m_insertClipState->CurrentChunk;
+		++i;
+		for (; i != m_insertClipState->Chunks.end(); ++i)
 		{
-			// Offset by our running offset:
-			(*i).OffsetPos(offset);
-
-			if ((*i).Id == (*m_insertClipState->CurrentChunk).Id)
+			if ((*i).IsField())
 			{
-				// See if the text has changed:
-				std::string oldText((*i).GetText());
-				if (oldText != chunkText)
+				// Offset by our running offset:
+				(*i).OffsetPos(offset);
+
+				if ((*i).Id == (*m_insertClipState->CurrentChunk).Id)
 				{
-					int start, end;
-					(*i).GetPos(start, end);
+					// See if the text has changed:
+					std::string oldText((*i).GetText());
+					if (oldText != chunkText)
+					{
+						int start, end;
+						(*i).GetPos(start, end);
 
-					SetTarget(start, end);
-					ReplaceTarget(chunkText.size(), chunkText.c_str());
+						SetTarget(start, end);
+						ReplaceTarget(chunkText.size(), chunkText.c_str());
 
-					end += chunkText.size() - oldText.size();
-					offset += chunkText.size() - oldText.size();
+						end += chunkText.size() - oldText.size();
+						offset += chunkText.size() - oldText.size();
 
-					(*i).SetText(chunkText.c_str());
-					(*i).SetPos(start, end);
+						(*i).SetText(chunkText.c_str());
+						(*i).SetPos(start, end);
 
-					IndicatorFillRange(start, end - start);
+						IndicatorFillRange(start, end - start);
+					}
 				}
 			}
 		}
+	}
+
+	int pos = GetCurrentPos();
+	m_insertClipState->CurrentChunk = m_insertClipState->FindChunk(pos);
+	if (m_insertClipState->CurrentChunk == m_insertClipState->Chunks.end())
+	{
+		endInsertClip();
+	}
+	else
+	{
+		(*m_insertClipState->CurrentChunk).GetPos(m_insertClipState->CurrentFieldStart, m_insertClipState->CurrentFieldEnd);
 	}
 }
 
@@ -286,12 +290,42 @@ void CTextView::endInsertClip()
 	EndUndoAction();
 }
 
+void CTextView::prevClipField()
+{
+	if (m_insertClipState->CurrentChunk != m_insertClipState->Chunks.end())
+	{
+		if (m_insertClipState->CurrentChunk != m_insertClipState->Chunks.begin())
+		{
+			--m_insertClipState->CurrentChunk;
+			while (!(*m_insertClipState->CurrentChunk).IsField())
+			{
+				if (m_insertClipState->CurrentChunk == m_insertClipState->Chunks.begin())
+				{
+					// Can't go any further back:
+					endInsertClip();
+					return;
+				}
+
+				--m_insertClipState->CurrentChunk;
+			}
+
+			int start, end;
+			(*m_insertClipState->CurrentChunk).GetPos(start, end);
+			SetSel(start, end);
+		}
+		else
+		{
+			endInsertClip();
+		}
+	}
+}
+
 void CTextView::nextClipField()
 {
 	if (m_insertClipState->CurrentChunk != m_insertClipState->Chunks.end())
 	{
 		++m_insertClipState->CurrentChunk;
-		while (!(*m_insertClipState->CurrentChunk).IsField() && m_insertClipState->CurrentChunk != m_insertClipState->Chunks.end())
+		while (m_insertClipState->CurrentChunk != m_insertClipState->Chunks.end() && !(*m_insertClipState->CurrentChunk).IsField())
 		{
 			++m_insertClipState->CurrentChunk;
 		}
@@ -319,16 +353,10 @@ void CTextView::handleInsertClipNotify(Scintilla::SCNotification* scn)
 
 	if(msg == SCN_UPDATEUI)
 	{
-		LOG(_T("SCN_UPDATEUI\n"));
-		
 		updateInsertClip();
 	}
 	else if(msg == SCN_MODIFIED)
 	{
-		TCHAR buffer[40];
-		_sntprintf(buffer, 40, _T("SCN_MODIFIED: %x\n"), scn->modificationType);
-		LOG(buffer);
-
 		if ((scn->modificationType & (SC_MOD_INSERTTEXT | SC_MOD_DELETETEXT)) != 0)
 		{
 			m_insertClipState->HandleModification(this, scn->position, scn->length, (scn->modificationType & SC_MOD_INSERTTEXT) != 0);

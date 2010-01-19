@@ -24,6 +24,7 @@ public:
 	Chunk() : m_field(false), m_start(0), m_end(0), Id(0) {}
 	Chunk(bool field, const std::string& text) : m_field(field), m_text(text), m_start(0), m_end(0), Id(0) {}
 	Chunk(bool field, int id) : m_field(field), Id(id), m_start(0), m_end(0) {}
+	Chunk(bool field, int id, const std::string& text) : m_field(field), Id(id), m_text(text), m_start(0), m_end(0) {}
 
 	int Id;
 
