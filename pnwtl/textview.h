@@ -44,6 +44,7 @@ public:
 		MESSAGE_HANDLER(PN_INSERTCLIP, OnInsertClip)
 		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
 		MESSAGE_HANDLER(WM_KEYUP, OnKeyUp)
+		MESSAGE_HANDLER(WM_CHAR, OnChar)
 
 		COMMAND_ID_HANDLER(ID_EDIT_INDENT, OnIndent)
 		COMMAND_ID_HANDLER(ID_EDIT_UNINDENT, OnUnindent)
@@ -124,6 +125,7 @@ private:
 	HRESULT OnInsertClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	HRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	HRESULT OnKeyUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	HRESULT OnChar(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
 	////////////////////////////////////////////////////////////////
 	// Command Handlers
@@ -189,6 +191,7 @@ private:
 	bool m_bLineNos;
 	bool m_bOverwriteTarget;
 	bool m_bInsertClip;
+	bool m_bSkipNextChar;
 	DocumentPtr m_pDoc;
 	extensions::IRecorderPtr m_recorder;
 	int m_findAllResultCount;

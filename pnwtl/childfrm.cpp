@@ -303,7 +303,7 @@ void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 ////////////////////////////////////////////////////
 // Autocomplete methods
 
-//#define CLIPS_DEV
+#define CLIPS_DEV
 
 bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 {
@@ -321,7 +321,7 @@ bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 			GetTextView()->DelWordLeft();
 
 			std::vector<TextClips::Chunk> chunks;
-			clip->GetChunks(chunks);
+			clip->GetChunks(chunks, GetTextView());
 			GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
 #else
 			GetTextView()->BeginUndoAction();
@@ -1160,7 +1160,7 @@ LRESULT CChildFrame::OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		GetTextView()->DelWordLeft();
 
 		std::vector<TextClips::Chunk> chunks;
-		desired->GetChunks(chunks);
+		desired->GetChunks(chunks, GetTextView());
 		GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
 #else
 		GetTextView()->BeginUndoAction();

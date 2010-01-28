@@ -40,7 +40,8 @@ CTextView::CTextView(DocumentPtr document, Views::ViewPtr parent, CommandDispatc
 	m_encType(eUnknown),
 	m_bMeasureCanRun(false),
 	m_bOverwriteTarget(false),
-	m_bInsertClip(false)
+	m_bInsertClip(false),
+	m_bSkipNextChar(false)
 {
 	m_bSmartStart = OPTIONS->Get(PNSK_EDITOR, _T("SmartStart"), true);
 	SetAutoCompleteManager(autoComplete);
@@ -851,32 +852,26 @@ HRESULT CTextView::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BO
 		}
 		
 		bHandled = true;
+		m_bSkipNextChar = true;
 	}
 	else
 	{
-		bHandled = FALSE;
+		bHandled = false;
 	}
 	
 	return 0;
 }
 
 HRESULT CTextView::OnKeyUp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
-{
-	if (!m_bInsertClip)
-	{
-		bHandled = false;
-		return 0;
-	}
+{	
+	return 0;
+}
 
-	if (wParam == VK_TAB && ::GetFocus() == m_hWnd)
-	{
-		bHandled = true;
-	}
-	else
-	{
-		bHandled = false;
-	}
-	
+HRESULT CTextView::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	bHandled = m_bSkipNextChar;
+	m_bSkipNextChar = false;
+
 	return 0;
 }
 

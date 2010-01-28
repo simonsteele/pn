@@ -22,6 +22,22 @@ bool Chunk::IsField() const
 }
 
 /**
+ * Is this chunk a field?
+ */
+bool Chunk::IsMasterField() const
+{
+	return m_masterField;
+}
+
+/**
+ * Is this chunk a field?
+ */
+bool Chunk::IsFinalCaretPos() const
+{
+	return m_finalCaretPos;
+}
+
+/**
  * Get the text for this chunk.
  */
 std::string Chunk::GetText() const

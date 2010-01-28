@@ -15,20 +15,24 @@
 
 namespace TextClips {
 
+typedef enum { ctNone = 0, ctField = 0x01, ctMasterField = 0x03, ctFinalCaretPos = 0x4 } EChunkType;
+
 /**
  * Single part of a smart text clip, can be plain text or a field.
  */
 class Chunk
 {
 public:
-	Chunk() : m_field(false), m_start(0), m_end(0), Id(0) {}
-	Chunk(bool field, const std::string& text) : m_field(field), m_text(text), m_start(0), m_end(0), Id(0) {}
-	Chunk(bool field, int id) : m_field(field), Id(id), m_start(0), m_end(0) {}
-	Chunk(bool field, int id, const std::string& text) : m_field(field), Id(id), m_text(text), m_start(0), m_end(0) {}
+	Chunk() : m_field(false), m_masterField(false), m_finalCaretPos(false), m_start(0), m_end(0), Id(0) {}
+	Chunk(EChunkType field, const std::string& text) : m_field(field & ctField), m_masterField((field & ctMasterField) == ctMasterField), m_finalCaretPos(field & ctFinalCaretPos), m_text(text), m_start(0), m_end(0), Id(0) {}
+	Chunk(EChunkType field, int id) : m_field(field & ctField), m_masterField((field & ctMasterField) == ctMasterField), m_finalCaretPos(field & ctFinalCaretPos), Id(id), m_start(0), m_end(0) {}
+	Chunk(EChunkType field, int id, const std::string& text) : m_field(field & ctField), m_masterField((field & ctMasterField) == ctMasterField), m_finalCaretPos(field & ctFinalCaretPos), Id(id), m_text(text), m_start(0), m_end(0) {}
 
 	int Id;
 
 	bool IsField() const;
+	bool IsMasterField() const;
+	bool IsFinalCaretPos() const;
 	std::string GetText() const;
 	
 	void SetText(const char* text);
@@ -40,6 +44,8 @@ public:
 
 private:
 	bool m_field;
+	bool m_masterField;
+	bool m_finalCaretPos;
 	std::string m_text;
 	int m_start;
 	int m_end;
@@ -67,6 +73,10 @@ class Clip
 		void Insert(CScintilla* scintilla) const;
 
 		void GetChunks(std::vector<Chunk>& chunks) const;
+		void GetChunks(std::vector<Chunk>& chunks, CScintilla* scintilla) const;
+
+	private:
+		std::string FixText(CScintilla* scintilla) const;
 };
 
 typedef std::list<Clip*>	LIST_CLIPS;

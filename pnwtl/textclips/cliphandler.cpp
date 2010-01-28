@@ -176,7 +176,7 @@ void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 		std::string chunkText = (*i).GetText();
 		InsertText(pos, chunkText.c_str());
 
-		if ((*i).IsField())
+		if ((*i).IsMasterField())
 		{
 			(*i).SetPos(pos, pos + chunkText.size());
 
@@ -187,6 +187,10 @@ void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 				firstFieldPos = pos;
 				m_insertClipState->CurrentChunk = i;
 			}
+		}
+		else if ((*i).IsField())
+		{
+			(*i).SetPos(pos, pos + chunkText.size());
 		}
 
 		pos += chunkText.size();
@@ -263,7 +267,7 @@ void CTextView::updateInsertClip()
 						(*i).SetText(chunkText.c_str());
 						(*i).SetPos(start, end);
 
-						IndicatorFillRange(start, end - start);
+						// IndicatorFillRange(start, end - start);
 					}
 				}
 			}
@@ -297,7 +301,7 @@ void CTextView::prevClipField()
 		if (m_insertClipState->CurrentChunk != m_insertClipState->Chunks.begin())
 		{
 			--m_insertClipState->CurrentChunk;
-			while (!(*m_insertClipState->CurrentChunk).IsField())
+			while (!(*m_insertClipState->CurrentChunk).IsMasterField())
 			{
 				if (m_insertClipState->CurrentChunk == m_insertClipState->Chunks.begin())
 				{
@@ -325,7 +329,7 @@ void CTextView::nextClipField()
 	if (m_insertClipState->CurrentChunk != m_insertClipState->Chunks.end())
 	{
 		++m_insertClipState->CurrentChunk;
-		while (m_insertClipState->CurrentChunk != m_insertClipState->Chunks.end() && !(*m_insertClipState->CurrentChunk).IsField())
+		while (m_insertClipState->CurrentChunk != m_insertClipState->Chunks.end() && !(*m_insertClipState->CurrentChunk).IsMasterField())
 		{
 			++m_insertClipState->CurrentChunk;
 		}
