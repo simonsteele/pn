@@ -34,6 +34,7 @@ public:
 	void HandleModification(CTextView* tv, int pos, int len, bool insert);
 	void OffsetOtherChunks(int offset);
 	ChunkIt_t FindChunk(int pos);
+	ChunkIt_t FindMasterChunk(int id);
 
 	std::vector<TextClips::Chunk> Chunks;
 	int CurrentFieldStart;
@@ -138,6 +139,19 @@ ChunkIt_t ClipInsertionState::FindChunk(int pos)
 	return Chunks.end();
 }
 
+ChunkIt_t ClipInsertionState::FindMasterChunk(int id)
+{
+	for (ChunkIt_t i = Chunks.begin(); i != Chunks.end(); ++i)
+	{
+		if ((*i).Id == id && (*i).IsMasterField())
+		{
+			return i;
+		}
+	}
+
+	return Chunks.end();
+}
+
 void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 {
 	if (m_bInsertClip)
@@ -174,10 +188,11 @@ void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 	for (ChunkIt_t i = m_insertClipState->Chunks.begin(); i != m_insertClipState->Chunks.end(); ++i)
 	{
 		std::string chunkText = (*i).GetText();
-		InsertText(pos, chunkText.c_str());
 
 		if ((*i).IsMasterField())
 		{
+			InsertText(pos, chunkText.c_str());
+
 			(*i).SetPos(pos, pos + chunkText.size());
 
 			IndicatorFillRange(pos, chunkText.size());
@@ -190,7 +205,21 @@ void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 		}
 		else if ((*i).IsField())
 		{
+			// Need to get the master field for the text:
+			ChunkIt_t master = m_insertClipState->FindMasterChunk((*i).Id);
+			if (master != m_insertClipState->Chunks.end())
+			{
+				chunkText = (*master).GetText();
+				(*i).SetText(chunkText.c_str());
+			}
+
+			InsertText(pos, chunkText.c_str());
+
 			(*i).SetPos(pos, pos + chunkText.size());
+		}
+		else
+		{
+			InsertText(pos, chunkText.c_str());
 		}
 
 		pos += chunkText.size();
