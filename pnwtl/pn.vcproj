@@ -1580,6 +1580,14 @@
 					RelativePath=".\controls\OptionsBlockHeader.h"
 					>
 				</File>
+				<File
+					RelativePath=".\controls\pntabcontrol.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\controls\pntabcontrol.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<File
