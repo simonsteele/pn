@@ -68,6 +68,7 @@ class TextClipParser : public CustomFormatStringBuilder<TextClipParser>
 			pushChunk();
 
 			boost::xpressive::tsregex tabstopMatch = boost::xpressive::tsregex::compile(_T("([0-9]+):(.+)"));
+			boost::xpressive::tsregex tabstopMatchSimple = boost::xpressive::tsregex::compile(_T("([0-9]+)"));
 
 			boost::xpressive::tsmatch match;
 			tstring prop(key);
@@ -80,11 +81,30 @@ class TextClipParser : public CustomFormatStringBuilder<TextClipParser>
 				int stop = _ttoi(stopid.c_str());
 
 				// If this is the first insertion this is a master chunk:
-				EChunkType chunkType = m_seenStops.insert(stop).second ? ctMasterField : ctField;
+				int chunkType = m_seenStops.insert(stop).second ? ctMasterField : ctField;
+				if (stop == 0)
+				{
+					chunkType = chunkType | ctFinalCaretPos;
+				}
 				
 				Tcs_Utf8 texta(text.c_str());
 
 				m_chunks.push_back(Chunk(chunkType, stop, std::string((const char*)(const unsigned char*)texta)));
+			}
+			else if (boost::xpressive::regex_match(prop, match, tabstopMatchSimple))
+			{
+				tstring stopid(match[1]);
+
+				int stop = _ttoi(stopid.c_str());
+
+				// If this is the first insertion this is a master chunk:
+				int chunkType = m_seenStops.insert(stop).second ? ctMasterField : ctField;
+				if (stop == 0)
+				{
+					chunkType = chunkType | ctFinalCaretPos;
+				}
+
+				m_chunks.push_back(Chunk(chunkType, stop));
 			}
 		}
 		

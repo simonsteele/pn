@@ -342,6 +342,17 @@ void CTextView::nextClipField()
 		}
 		else
 		{
+			for (ChunkIt_t chunk = m_insertClipState->Chunks.begin(); chunk != m_insertClipState->Chunks.end(); ++chunk)
+			{
+				if ((*chunk).IsFinalCaretPos())
+				{
+					int start, end;
+					(*m_insertClipState->CurrentChunk).GetPos(start, end);
+					SetSel(start, end);
+					break;
+				}
+			}
+
 			endInsertClip();
 		}
 	}

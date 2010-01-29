@@ -45,7 +45,7 @@ std::string Chunk::GetText() const
 	// TODO: Apply any effect desired.
 	if (m_text.size() == 0 && Id > 0)
 	{
-		return std::string("Field");
+		return std::string("");
 	}
 
 	return m_text;

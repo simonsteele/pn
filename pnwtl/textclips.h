@@ -24,9 +24,9 @@ class Chunk
 {
 public:
 	Chunk() : m_field(false), m_masterField(false), m_finalCaretPos(false), m_start(0), m_end(0), Id(0) {}
-	Chunk(EChunkType field, const std::string& text) : m_field(field & ctField), m_masterField((field & ctMasterField) == ctMasterField), m_finalCaretPos(field & ctFinalCaretPos), m_text(text), m_start(0), m_end(0), Id(0) {}
-	Chunk(EChunkType field, int id) : m_field(field & ctField), m_masterField((field & ctMasterField) == ctMasterField), m_finalCaretPos(field & ctFinalCaretPos), Id(id), m_start(0), m_end(0) {}
-	Chunk(EChunkType field, int id, const std::string& text) : m_field(field & ctField), m_masterField((field & ctMasterField) == ctMasterField), m_finalCaretPos(field & ctFinalCaretPos), Id(id), m_text(text), m_start(0), m_end(0) {}
+	Chunk(/*EChunkType*/int field, const std::string& text) : m_field(field & ctField), m_masterField((field & ctMasterField) == ctMasterField), m_finalCaretPos(field & ctFinalCaretPos), m_text(text), m_start(0), m_end(0), Id(0) {}
+	Chunk(/*EChunkType*/int field, int id) : m_field(field & ctField), m_masterField((field & ctMasterField) == ctMasterField), m_finalCaretPos(field & ctFinalCaretPos), Id(id), m_start(0), m_end(0) {}
+	Chunk(/*EChunkType*/int field, int id, const std::string& text) : m_field(field & ctField), m_masterField((field & ctMasterField) == ctMasterField), m_finalCaretPos(field & ctFinalCaretPos), Id(id), m_text(text), m_start(0), m_end(0) {}
 
 	int Id;
 
