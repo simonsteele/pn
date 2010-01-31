@@ -88,6 +88,7 @@ Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Programmer's Notepa
 
 [Run]
 Filename: {app}\pn.exe; Description: Launch Programmer's Notepad; Flags: nowait postinstall skipifsilent; OnlyBelowVersion: 0,6
+Filename: {app}\pn.exe; Description: Update Extensions; Parameters: --findexts; WorkingDir: {app}; StatusMsg: Updating Extension Registration; Flags: runhidden runasoriginaluser; Tasks: 
 
 [_ISTool]
 EnableISX=false
@@ -98,3 +99,5 @@ Root: HKCU; SubKey: Software\Classes\SystemFileAssociations\text\shell\edit.PN2;
 Root: HKCU; SubKey: Software\Classes\SystemFileAssociations\text\OpenWithList\pn.exe; ValueType: string; Flags: uninsdeletekey dontcreatekey
 [Dirs]
 Name: {app}\Microsoft.VC90.CRT
+[InstallDelete]
+Name: {app}\taggers\ctagsnavigator.*; Type: files; Tasks: 
