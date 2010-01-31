@@ -2,7 +2,7 @@
  * @file IOptions.h
  * @brief PN Options Manager Interface
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -89,7 +89,9 @@ public:
 			OCaretXFlags				= 34,
 			OCaretYFlags				= 35,
 			OSmartHighlight				= 36,
-			OPTION_COUNT				= 37
+			OLinePaddingTop				= 37,
+			OLinePaddingBottom			= 38,
+			OPTION_COUNT				= 39
 		} ECachedOption;
 
 		/// Set a bool value

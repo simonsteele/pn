@@ -43,6 +43,8 @@ void COptionsPageVisual::OnOK()
 	options.SetCached(Options::ORightColumn, m_iRightColumn);
 	options.SetCached(Options::ORightGuideColour, m_btnLLCol.SafeGetColor());
 	options.SetCached(Options::OSmartHighlight, m_bSmartHighlight);
+	options.SetCached(Options::OLinePaddingTop, m_iLinePaddingTop);
+	options.SetCached(Options::OLinePaddingBottom, m_iLinePaddingBottom);
 
 	if (m_bLineHighlightAlpha)
 	{
@@ -62,6 +64,8 @@ void COptionsPageVisual::OnInitialise()
 	m_iLongLineHelp		= OPTIONS->GetCached(Options::ORightGuide);
 	m_iRightColumn		= OPTIONS->GetCached(Options::ORightColumn);
 	m_bSmartHighlight	= OPTIONS->GetCached(Options::OSmartHighlight);
+	m_iLinePaddingTop   = OPTIONS->GetCached(Options::OLinePaddingTop);
+	m_iLinePaddingBottom   = OPTIONS->GetCached(Options::OLinePaddingBottom);
 	
 	int lineHighlightAlpha = OPTIONS->GetCached(Options::OLineHighlightAlpha);
 	if (lineHighlightAlpha == SC_ALPHA_NOALPHA)
@@ -85,6 +89,7 @@ LRESULT COptionsPageVisual::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 {
 	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
 	m_linesHeader.SubclassWindow(GetDlgItem(IDC_LINEHELPERS_STATIC));
+	m_paddingHeader.SubclassWindow(GetDlgItem(IDC_LINEPADDING_STATIC));
 
 	m_btnLineCol.SubclassWindow(GetDlgItem(IDC_OPT_LINELIGHTBUTTON));
 	m_btnLineCol.SetDefaultColor(RGB(255, 255, 224));

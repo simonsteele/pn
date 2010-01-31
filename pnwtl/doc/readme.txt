@@ -16,6 +16,7 @@ What's new in 2.1?
 8) New -z command-line parameter for use with Image File Execution options
 9) Smart fields in code templates
 10) Small visual tweaks
+11) Line padding options - increase visual space between lines for improved readability
 
 What's new in 2.1 under the cover?
 ------------------------------------------
@@ -28,6 +29,7 @@ Bug Fixes:
 ----------
 
 1) Save All now available regardless of current file save state
+2) Long line length recalculated better, scrolling improved
 
 Extensions Interface Changes:
 -----------------------------

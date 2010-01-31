@@ -493,8 +493,10 @@
 #define IDC_EDIT2                       1064
 #define IDC_OPT_MRUCOUNT                1064
 #define IDC_MAGICFOLDER_FILEFILTER      1064
+#define IDC_OPT_LINEPADDINGTOP_TEXT     1064
 #define IDC_OPT_MRUTEXTLENGTH           1065
 #define IDC_MAGICFOLDER_FOLDERFILTER    1065
+#define IDC_OPT_LINEPADDINGBOTTOM_TEXT  1065
 #define IDC_OPT_LINELIGHTCHECK          1066
 #define IDC_OPT_NOLLHELPRADIO           1067
 #define IDC_OPT_LLHIGHLIGHTRADIO        1068
@@ -602,6 +604,7 @@
 #define IDC_SMARTSTART_STATIC           1168
 #define IDC_STRIPBEFORESAVE_CHECK       1169
 #define IDC_ENSUREBLANKLINE_CHECK       1170
+#define IDC_LINEPADDING_STATIC          1170
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -808,7 +811,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        369
 #define _APS_NEXT_COMMAND_VALUE         33152
-#define _APS_NEXT_CONTROL_VALUE         1170
+#define _APS_NEXT_CONTROL_VALUE         1171
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

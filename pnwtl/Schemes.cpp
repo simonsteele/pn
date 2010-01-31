@@ -500,13 +500,19 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 	sc.SPerform(SCI_SETYCARETPOLICY, options.GetCached(Options::OCaretYFlags), options.GetCached(Options::OCaretYMove));
 	sc.SPerform(SCI_SETVISIBLEPOLICY, VISIBLE_SLOP, 1);
 
+	// Default style:
 	sc.SPerform(SCI_STYLERESETDEFAULT);
 	sc.SPerform(SCI_STYLESETFORE, STYLE_DEFAULT, ::GetSysColor(COLOR_WINDOWTEXT));
 	sc.SPerform(SCI_STYLESETBACK, STYLE_DEFAULT, ::GetSysColor(COLOR_WINDOW));
 	sc.SPerform(SCI_STYLESETCHARACTERSET, STYLE_DEFAULT, options.GetCached(Options::ODefaultCharSet));
 	sc.SPerform(SCI_STYLECLEARALL);
 
+	// Line length measurement:
 	sc.SPerform(SCI_SETSCROLLWIDTHTRACKING, 1);
+	
+	// Line height padding:
+	sc.SPerform(SCI_SETEXTRAASCENT, options.GetCached(Options::OLinePaddingTop));
+	sc.SPerform(SCI_SETEXTRADESCENT, options.GetCached(Options::OLinePaddingBottom));
 
 	sc.DefineBookmarks();
 	sc.DefineNumberedBookmarks();

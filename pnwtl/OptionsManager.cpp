@@ -2,7 +2,7 @@
  * @file optionsmanager.cpp
  * @brief Configuration functionality.
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -84,6 +84,8 @@ void Options::loadCache()
 	cache[OCaretXMove]				= Get(NULL, _T("CaretXMove"), 20);
 	cache[OCaretYFlags]				= Get(NULL, _T("CaretYFlags"), CARET_SLOP | CARET_EVEN);
 	cache[OCaretYMove]				= Get(NULL, _T("CaretYMove"), 3);
+	cache[OLinePaddingTop]			= Get(NULL, _T("OLinePaddingTop"), 1);
+	cache[OLinePaddingBottom]		= Get(NULL, _T("OLinePaddingBottom"), 0);
 	ungroup();
 	
 	// Interface Settings -------------------
@@ -155,6 +157,8 @@ void Options::saveCache()
 	Set(NULL, _T("CaretXMove"),				cache[OCaretXMove]);
 	Set(NULL, _T("CaretYFlags"),			cache[OCaretYFlags]);
 	Set(NULL, _T("CaretYMove"),				cache[OCaretYMove]);
+	Set(NULL, _T("OLinePaddingTop"),		cache[OLinePaddingTop]);
+	Set(NULL, _T("OLinePaddingBottom"),		cache[OLinePaddingBottom]);
 
 	ungroup();
 	
