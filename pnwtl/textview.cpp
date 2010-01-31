@@ -38,7 +38,6 @@ CTextView::CTextView(DocumentPtr document, Views::ViewPtr parent, CommandDispatc
 	m_pLastScheme(NULL),
 	m_waitOnBookmarkNo(FALSE),
 	m_encType(eUnknown),
-	m_bMeasureCanRun(false),
 	m_bOverwriteTarget(false),
 	m_bInsertClip(false),
 	m_bSkipNextChar(false)
@@ -49,15 +48,6 @@ CTextView::CTextView(DocumentPtr document, Views::ViewPtr parent, CommandDispatc
 
 CTextView::~CTextView()
 {
-	{
-		CritLock lock(m_csMeasure);
-		m_bMeasureCanRun = false;
-	}
-
-	if(m_measureThread.Valid())
-	{
-		m_measureThread.Join(10000);
-	}
 }
 
 BOOL CTextView::PreTranslateMessage(MSG* pMsg)
@@ -331,11 +321,6 @@ bool CTextView::Load(LPCTSTR filename, Scheme* pScheme, EPNEncoding encoding)
 			SmartStart::GetInstance()->Scan(this);
 		}
 
-		if (OPTIONS->Get(PNSK_EDITOR, _T("EnableLongLineThread"), true))
-		{
-			checkLineLength();
-		}
-
 		return true;
 	}
 
@@ -368,11 +353,6 @@ void CTextView::Revert(LPCTSTR filename)
 			int lineTop = VisibleFromDocLine( scrollPos );
 			LineScroll(0, lineTop - curTop);
 			Invalidate();
-		}
-
-		if(OPTIONS->Get(PNSK_EDITOR, _T("EnableLongLineThread"), true))
-		{
-			checkLineLength();
 		}
 	}
 }
@@ -1386,28 +1366,6 @@ void CTextView::checkDotLogTimestamp()
 	}
 }
 
-void CTextView::checkLineLength()
-{
-	CritLock lock(m_csMeasure);
-
-	if(m_bMeasureCanRun)
-	{
-		return;
-	}
-	
-	if(m_measureThread.Valid())
-	{
-		m_csMeasure.Leave();
-		m_measureThread.Join(10000);
-		m_csMeasure.Enter();
-		m_measureThread.Reset();
-	}
-
-	m_bMeasureCanRun = true;
-
-	m_measureThread.Create(&CTextView::RunMeasureThread, this);
-}
-
 /**
  * Implement the smart highlight feature seen in Notepad++, this highlights
  * all occurrences of the currently selected word.
@@ -1451,86 +1409,6 @@ void CTextView::smartHighlight()
 			}
 		}
 	}
-}
-
-/**
- * This thread is responsible for trying to make the line length in
- * the scintilla view much more sensible. We optionally whack it up
- * to the maximum limit. This is much more useful for viewing long
- * documents.
- */
-UINT __stdcall CTextView::RunMeasureThread(void* pThis)
-{
-	CTextView* pTextView = static_cast<CTextView*>(pThis);
-
-	pTextView->DisableDirectAccess();
-
-	bool bCanRun = true;
-	int maxLines = 0;
-	int index = 0;
-	int maxLength = pTextView->GetScrollWidth() - 10;
-	int endPos;
-	int endX;
-	int absMaxLength;
-
-	// NT has a 1000000 pixel max, 9x has 30000.
-	if(g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_NT)
-		absMaxLength = 1000000;
-	else
-		absMaxLength = 30000;
-
-	// We add 10 to the length we find as a little buffer, so
-	// remove it from the absolute.
-	absMaxLength -= 10;
-
-	while (true)
-	{
-		{
-			CritLock lock(pTextView->m_csMeasure);
-			bCanRun = pTextView->m_bMeasureCanRun;
-		}
-		
-		if (!bCanRun)
-			break;
-
-		maxLines = pTextView->GetLineCount();
-		
-		if (index >= maxLines)
-			break;
-		
-		endPos = pTextView->GetLineEndPosition(index);
-		endX = pTextView->PointXFromPosition(endPos);
-		maxLength = max(endX, maxLength);
-
-		if (maxLength >= absMaxLength)
-			break;
-
-		index++;
-	}
-
-	// ensure we stay below the absolute maximum...
-	maxLength = min(maxLength, absMaxLength);
-
-#ifdef _DEBUG
-	TCHAR buf[50];
-	buf[49] = NULL;
-	_sntprintf(buf, 49, _T("PN: Max line length: %d"), maxLength);
-	LOG(buf);
-#endif
-
-	pTextView->SetScrollWidth(maxLength + 10);
-
-	// As long as nothing else wants direct access we're ok!
-	pTextView->EnableDirectAccess();
-
-	{
-		CritLock lock(pTextView->m_csMeasure);
-		pTextView->m_bMeasureCanRun = false;
-	}
-
-	_endthreadex(0);
-
-	return 0;
 }
 
 /**

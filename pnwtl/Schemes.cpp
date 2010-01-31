@@ -464,9 +464,6 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 {
 	Options& options = *OPTIONS;
 
-	//ss 16/02/2003 Now performed by document...
-	//sc.SPerform(SCI_SETEOLMODE, options.LineEndings);
-
 	// Line Indentation...
 	sc.SPerform(SCI_SETUSETABS, options.GetCached(Options::OUseTabs) ? 1 : 0);
 	sc.SPerform(SCI_SETTABWIDTH, options.GetCached(Options::OTabWidth));
@@ -508,6 +505,8 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 	sc.SPerform(SCI_STYLESETBACK, STYLE_DEFAULT, ::GetSysColor(COLOR_WINDOW));
 	sc.SPerform(SCI_STYLESETCHARACTERSET, STYLE_DEFAULT, options.GetCached(Options::ODefaultCharSet));
 	sc.SPerform(SCI_STYLECLEARALL);
+
+	sc.SPerform(SCI_SETSCROLLWIDTHTRACKING, 1);
 
 	sc.DefineBookmarks();
 	sc.DefineNumberedBookmarks();

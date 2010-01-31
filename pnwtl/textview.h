@@ -148,8 +148,6 @@ private:
 	LRESULT OnCommentBlock(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnUncomment(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	void checkLineLength();
-
 	// Support for document title in printing:
 	virtual tstring GetDocTitle();
 
@@ -196,12 +194,6 @@ private:
 	extensions::IRecorderPtr m_recorder;
 	int m_findAllResultCount;
 	boost::shared_ptr<ClipInsertionState> m_insertClipState;
-
-	bool m_bMeasureCanRun;
-	pnutils::threading::CriticalSection m_csMeasure;
-	pnutils::threading::Thread m_measureThread;
-
-	static UINT __stdcall RunMeasureThread(void*);
 };
 
 /////////////////////////////////////////////////////////////////////////////
