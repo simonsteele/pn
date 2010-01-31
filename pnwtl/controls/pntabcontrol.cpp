@@ -133,11 +133,11 @@ void CPNTabControl::DrawBackground(RECT rcClient, LPNMCTCCUSTOMDRAW lpNMCustomDr
 
 		if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
 		{
-			rc.bottom = rc.top + 3;
+			rc.bottom = rc.top;
 			dc.FillSolidRect(&rc, lpNMCustomDraw->clrBtnFace);
 
 			CPen penText;
-			penText.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrBtnText);
+			penText.CreatePen(PS_SOLID, 1, lpNMCustomDraw->clrBtnHighlight);
 			CPenHandle penOld = dc.SelectPen(penText);
 
 			dc.MoveTo(rc.left, rc.bottom);
@@ -236,13 +236,16 @@ void CPNTabControl::DrawItem_TabSelected(DWORD dwStyle, LPNMCTCCUSTOMDRAW lpNMCu
 
 	if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
 	{
-		WTL::CPenHandle penOld = dc.SelectPen(penText);
+		WTL::CPenHandle penOld = dc.SelectPen(penHilight);
 
 		//dc.MoveTo(rcTab.right, rcTab.top);
 		dc.MoveTo(rcTab.right, rcTab.bottom);
 		dc.LineTo(rcTab.left, rcTab.bottom);
-		dc.SelectPen(penHilight);
-		dc.LineTo(rcTab.left, rcTab.top-1);
+		
+		dc.SelectPen(penShadow);
+		
+		dc.MoveTo(rcTab.right-1, rcTab.top);
+		dc.LineTo(rcTab.right-1, rcTab.bottom - 1);
 
 		dc.SelectPen(penOld);
 	}
@@ -294,7 +297,7 @@ void CPNTabControl::DrawItem_TabInactive(DWORD dwStyle, LPNMCTCCUSTOMDRAW lpNMCu
 	if(CTCS_BOTTOM == (dwStyle & CTCS_BOTTOM))
 	{
 		// Important!  Be sure and keep within "our" tab area horizontally
-		dc.MoveTo(rcTab.right-1, rcTab.top + 3);
+		dc.MoveTo(rcTab.right-1, rcTab.top);
 		dc.LineTo(rcTab.right-1, rcTab.bottom - 1);
 	}
 	else
