@@ -21,14 +21,15 @@
 		<exec program="C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" commandline="x86" />
 	</target>
 	
-	<target name="build">		
+	<target name="build">
+		<property name="devenv.path" value="devenv.com" if="${property::exists('devenv.path') == false}"/>
 		<exec 
-			program="devenv.com"
+			program="${devenv.path}"
 			commandline='pn.sln /Clean Release'
 			output="build.log"/>
 		
 		<exec 
-			program="devenv.com"
+			program="${devenv.path}"
 			commandline='pn.sln /Build Release'
 			output="build.log">
 			<environment>
