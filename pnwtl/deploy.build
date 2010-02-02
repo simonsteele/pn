@@ -17,6 +17,10 @@
 		<echo message="Using Mercurial revision number: ${svn.revision}"/>
 	</target>
 	
+	<target name="env">
+		<exec program="C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" commandline="x86" />
+	</target>
+	
 	<target name="build">		
 		<exec 
 			program="devenv.com"
