@@ -2,11 +2,13 @@
 <project name="pn" default="deploy" basedir=".">
 
 	<target name="svnvar">
+		<property name="hg.path" value="" if="${property::exists('hg.path') == false}"/>
+		
 		<!-- Retrieve subversion revision number -->
 		<echo message="Retrieving Mercurial revision number"/>
 		<property name="svn.revision" value="0"/>
 		<exec
-			program="hg"
+			program="${hg.path}hg"
 			commandline='log --limit 1 --template {rev}'
 			output="_revision.txt"
 			failonerror="false"/>
