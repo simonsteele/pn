@@ -357,6 +357,8 @@ void CTextView::nextClipField()
 {
 	if (m_insertClipState->CurrentChunk != m_insertClipState->Chunks.end())
 	{
+		ChunkIt_t oldChunk(m_insertClipState->CurrentChunk);
+
 		++m_insertClipState->CurrentChunk;
 		while (m_insertClipState->CurrentChunk != m_insertClipState->Chunks.end() && !(*m_insertClipState->CurrentChunk).IsMasterField())
 		{
@@ -371,14 +373,18 @@ void CTextView::nextClipField()
 		}
 		else
 		{
-			for (ChunkIt_t chunk = m_insertClipState->Chunks.begin(); chunk != m_insertClipState->Chunks.end(); ++chunk)
+			// Don't seek if we're already at the final position:
+			if (!(*oldChunk).IsFinalCaretPos())
 			{
-				if ((*chunk).IsFinalCaretPos())
+				for (ChunkIt_t chunk = m_insertClipState->Chunks.begin(); chunk != m_insertClipState->Chunks.end(); ++chunk)
 				{
-					int start, end;
-					(*m_insertClipState->CurrentChunk).GetPos(start, end);
-					SetSel(start, end);
-					break;
+					if ((*chunk).IsFinalCaretPos())
+					{
+						int start, end;
+						(*chunk).GetPos(start, end);
+						SetSel(start, end);
+						break;
+					}
 				}
 			}
 
