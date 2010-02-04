@@ -2,7 +2,7 @@
  * @file Styles.h
  * @brief Define style and style-containing classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -28,12 +28,13 @@ class EditorColours
 {
 public:
 	typedef enum {
-		ecSelFore	= 0x01,
-		ecSelBack	= 0x02,
-		ecCaret		= 0x04,
-		ecIndentG	= 0x08,
-		ecMarkAll   = 0x10,
-		ecSmartHL	= 0x20
+		ecSelFore		= 0x01,
+		ecSelBack		= 0x02,
+		ecCaret			= 0x04,
+		ecIndentG		= 0x08,
+		ecMarkAll		= 0x10,
+		ecSmartHL		= 0x20,
+		ecTemplateField = 0x40,
 	} Colours;
 
 	EditorColours();
@@ -64,6 +65,7 @@ protected:
 	COLORREF	crIG;
 	COLORREF	crMarkAll;
 	COLORREF	crSmartHL;
+	COLORREF	crTemplateField;
 	SHORT		values;
 };
 

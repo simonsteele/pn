@@ -13,6 +13,42 @@
 
 using namespace TextClips;
 
+Chunk::Chunk() : 
+	m_field(false), 
+	m_masterField(false), 
+	m_finalCaretPos(false), 
+	m_start(0), 
+	m_end(0), 
+	Id(0) 
+{}
+
+Chunk::Chunk(/*EChunkType*/int field, const std::string& text) : 
+	m_field((field & ctField) != 0),
+	m_masterField((field & ctMasterField) == ctMasterField),
+	m_finalCaretPos((field & ctFinalCaretPos) != 0),
+	m_text(text),
+	m_start(0),
+	m_end(0),
+	Id(0) {}
+
+Chunk::Chunk(/*EChunkType*/int field, int id) : 
+	m_field((field & ctField) != 0),
+	m_masterField((field & ctMasterField) == ctMasterField),
+	m_finalCaretPos((field & ctFinalCaretPos) != 0),
+	Id(id),
+	m_start(0),
+	m_end(0) {}
+
+Chunk::Chunk(/*EChunkType*/int field, int id, const std::string& text) : 
+	m_field((field & ctField) != 0),
+	m_masterField((field & ctMasterField) == ctMasterField),
+	m_finalCaretPos((field & ctFinalCaretPos) != 0),
+	Id(id),
+	m_text(text),
+	m_start(0),
+	m_end(0) 
+{}
+
 /**
  * Is this chunk a field?
  */

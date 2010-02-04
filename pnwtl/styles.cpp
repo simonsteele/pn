@@ -2,7 +2,7 @@
  * @file styles.cpp
  * @brief Define style and style-containing classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -134,6 +134,7 @@ const EditorColours& EditorColours::operator = (const EditorColours& copy)
 	crIG = copy.crIG;
 	crMarkAll = copy.crMarkAll;
 	crSmartHL = copy.crSmartHL;
+	crTemplateField = copy.crTemplateField;
 
 	return *this;
 }
@@ -160,6 +161,8 @@ void EditorColours::SetColour(Colours colour, COLORREF setColour)
 	case ecSmartHL:
 		crSmartHL = setColour;
 		break;
+	case ecTemplateField:
+		crTemplateField = setColour;
 	}
 
 	values |= colour;
@@ -203,6 +206,8 @@ bool EditorColours::GetColour(Colours colour, COLORREF& theColour) const
 		case ecSmartHL:
 			theColour = crSmartHL;
 			return true;
+		case ecTemplateField:
+			theColour = ecTemplateField;
 	}
 		
 	return false;
@@ -242,6 +247,10 @@ void EditorColours::SetFromXml(XMLAttributes& atts)
 		{
 			SetColour(ecSmartHL, (DWORD)val);
 		}
+		else if (_tcscmp(szKey, _T("templateField")) == 0)
+		{
+			SetColour(ecTemplateField, (DWORD)val);
+		}
 	}
 }
 
@@ -279,6 +288,11 @@ void EditorColours::SendColours(CScintilla* pSc) const
 	{
 		pSc->SPerform(SCI_INDICSETFORE, INDIC_SMARTHIGHLIGHT, crSmartHL);
 	}
+
+	if (values & ecTemplateField)
+	{
+		pSc->SPerform(SCI_INDICSETFORE, INDIC_TEXTCLIPFIELD, crTemplateField);
+	}
 }
 
 /**
@@ -314,6 +328,11 @@ void EditorColours::Combine(const EditorColours* other)
 	if (other->values & ecSmartHL)
 	{
 		SetColour(ecSmartHL, other->crSmartHL);
+	}
+
+	if (other->values & ecTemplateField)
+	{
+		SetColour(ecTemplateField, other->crTemplateField);
 	}
 }
 

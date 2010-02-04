@@ -2,7 +2,7 @@
  * @file OptionsPageStyle.h
  * @brief Style Options Page
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -60,6 +60,7 @@ class COptionsPageStyle : public COptionsPageImpl<COptionsPageStyle>
 		CPNColorButton	m_selBack;
 		CPNColorButton	m_markAll;
 		CPNColorButton	m_smartHighlight;
+		CPNColorButton  m_templateField;
 
 		bool			m_bDirty;
 

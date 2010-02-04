@@ -399,6 +399,8 @@
 #define IDC_STYLE_SELWORDCOLBUTTON      1016
 #define IDC_SCHEMELABEL                 1017
 #define IDC_STYLE_MARKALLCOLBUTTON      1017
+#define IDC_STYLE_IGCOLBUTTON3          1018
+#define IDC_STYLE_TFCOLBUTTON           1018
 #define IDC_STYLES_TREE                 1020
 #define IDC_STYLE_BOLDCHECK             1021
 #define IDC_STYLE_ITALICCHECK           1022

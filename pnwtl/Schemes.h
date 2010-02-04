@@ -25,6 +25,13 @@ static const int INDIC_SMARTHIGHLIGHT = INDIC_CONTAINER + 1;
 static const int INDIC_OVERWRITETARGET = INDIC_CONTAINER + 2;
 static const int INDIC_TEXTCLIPFIELD = INDIC_CONTAINER + 3;
 
+static const int DEFAULT_SMARTHIGHLIGHT_COLOUR = RGB(0, 255, 0);
+static const int DEFAULT_TEXTCLIPFIELD_COLOUR = RGB(0, 0, 255);
+static const int DEFAULT_MARKALL_COLOUR = RGB(255, 0, 0);
+static const int DEFAULT_OVERWRITE_COLOUR = RGB(0, 0xF0, 0x80);
+
+static const int DEFAULT_INDIC_ALPHA_LEVEL = 80;
+
 /**********************************************
  * Stuff for compiled scheme files
  **********************************************/

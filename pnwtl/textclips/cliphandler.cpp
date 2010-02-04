@@ -181,9 +181,6 @@ void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 
 	SPerform(SCI_SETINDICATORCURRENT, INDIC_TEXTCLIPFIELD, 0);
 	SetIndicatorValue(INDIC_BOX);
-	IndicSetStyle(INDIC_TEXTCLIPFIELD, INDIC_ROUNDBOX);
-	IndicSetFore(INDIC_TEXTCLIPFIELD, RGB(0xff, 0xff, 0xff));
-	SPerform(SCI_INDICSETALPHA, INDIC_TEXTCLIPFIELD, 80);
 
 	for (ChunkIt_t i = m_insertClipState->Chunks.begin(); i != m_insertClipState->Chunks.end(); ++i)
 	{

@@ -2,7 +2,7 @@
  * @file OptionsPageStyle.cpp
  * @brief Style Options Page
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -39,6 +39,7 @@ LRESULT COptionsPageStyle::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	m_selBack.SubclassWindow(GetDlgItem(IDC_STYLE_SELBACKBUTTON2));
 	m_markAll.SubclassWindow(GetDlgItem(IDC_STYLE_MARKALLCOLBUTTON));
 	m_smartHighlight.SubclassWindow(GetDlgItem(IDC_STYLE_SELWORDCOLBUTTON));
+	m_templateField.SubclassWindow(GetDlgItem(IDC_STYLE_TFCOLBUTTON));
 
 	m_bold.Attach(GetDlgItem(IDC_STYLE_BOLDCHECK));
 	m_italic.Attach(GetDlgItem(IDC_STYLE_ITALICCHECK));
@@ -100,9 +101,10 @@ void COptionsPageStyle::OnInitialise()
 	m_selFore.SetDefaultColor(::GetSysColor(COLOR_HIGHLIGHTTEXT));
 	m_selBack.SetDefaultColor(::GetSysColor(COLOR_HIGHLIGHT));
 	m_cur.SetDefaultColor(::GetSysColor(COLOR_WINDOWTEXT));
-	m_indentGuides.SetDefaultColor(RGB(0,0,0));
-	m_markAll.SetDefaultColor(RGB(255,0,0));
-	m_smartHighlight.SetDefaultColor(RGB(0,255,0));
+	m_indentGuides.SetDefaultColor(RGB(0, 0, 0));
+	m_markAll.SetDefaultColor(DEFAULT_MARKALL_COLOUR);
+	m_smartHighlight.SetDefaultColor(DEFAULT_SMARTHIGHLIGHT_COLOUR);
+	m_templateField.SetDefaultColor(DEFAULT_TEXTCLIPFIELD_COLOUR);
 
 	COLORREF c;
 	if(ec->GetColour(EditorColours::ecSelFore, c))
@@ -120,6 +122,7 @@ void COptionsPageStyle::OnInitialise()
 	DisplayIfSet(m_indentGuides, ec, EditorColours::ecIndentG);
 	DisplayIfSet(m_markAll, ec, EditorColours::ecMarkAll);
 	DisplayIfSet(m_smartHighlight, ec, EditorColours::ecSmartHL);
+	DisplayIfSet(m_templateField, ec, EditorColours::ecTemplateField);
 	
 	// Simple dirty checking - if the page is shown we rebuild.
 	m_bDirty = true;
@@ -202,6 +205,7 @@ void COptionsPageStyle::OnOK()
 	StoreIfSet(m_indentGuides, ec, EditorColours::ecIndentG);
 	StoreIfSet(m_markAll, ec, EditorColours::ecMarkAll);
 	StoreIfSet(m_smartHighlight, ec, EditorColours::ecSmartHL);
+	StoreIfSet(m_templateField, ec, EditorColours::ecTemplateField);
 }
 
 void COptionsPageStyle::OnCancel()
