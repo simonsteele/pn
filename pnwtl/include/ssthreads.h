@@ -120,8 +120,6 @@ class CSSCritLock
  */
 class CSSThread
 {
-	friend unsigned int __stdcall SSThreadFunc(LPVOID pData);
-	
 	public:
 		CSSThread()
 		{
@@ -249,30 +247,31 @@ class CSSThread
 		HANDLE m_evtStopped;
 		HANDLE m_evtStop;
 		HANDLE m_hThread;
+
+	private:
+		static unsigned int __stdcall SSThreadFunc(LPVOID pVoid)
+		{
+			CSSThread* pThreadClass = static_cast<CSSThread*>(pVoid);
+
+			pThreadClass->OnBeginThread();
+			pThreadClass->SetStopped(false);
+			
+			try
+			{
+				pThreadClass->Run();
+			}
+			catch (...)
+			{
+				pThreadClass->OnException();
+			}
+			
+			pThreadClass->OnEndThread();
+			pThreadClass->SetStopped(true);
+			
+			_endthreadex(0);
+			return 0;
+		}
 };
-
-static unsigned int __stdcall SSThreadFunc(LPVOID pVoid)
-{
-	CSSThread* pThreadClass = static_cast<CSSThread*>(pVoid);
-
-	pThreadClass->OnBeginThread();
-	pThreadClass->SetStopped(false);
-	
-	try
-	{
-		pThreadClass->Run();
-	}
-	catch (...)
-	{
-		pThreadClass->OnException();
-	}
-	
-	pThreadClass->OnEndThread();
-	pThreadClass->SetStopped(true);
-	
-	_endthreadex(0);
-	return 0;
-}
 
 /**
  * @class CSSThreadT
