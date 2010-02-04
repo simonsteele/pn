@@ -163,6 +163,7 @@ void EditorColours::SetColour(Colours colour, COLORREF setColour)
 		break;
 	case ecTemplateField:
 		crTemplateField = setColour;
+		break;
 	}
 
 	values |= colour;
@@ -207,7 +208,8 @@ bool EditorColours::GetColour(Colours colour, COLORREF& theColour) const
 			theColour = crSmartHL;
 			return true;
 		case ecTemplateField:
-			theColour = ecTemplateField;
+			theColour = crTemplateField;
+			return true;
 	}
 		
 	return false;
