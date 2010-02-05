@@ -6,6 +6,11 @@
 	>
 	<Tool
 		Name="VCCLCompilerTool"
+		AdditionalIncludeDirectories="&quot;$(SolutionDir)..\..\lib\boost_1_41_0&quot;"
 		PreprocessorDefinitions="_BIND_TO_CURRENT_CRT_VERSION"
+	/>
+	<UserMacro
+		Name="BoostFileVer"
+		Value="1_41"
 	/>
 </VisualStudioPropertySheet>
