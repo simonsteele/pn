@@ -49,6 +49,7 @@ Source: ..\bin\SciLexer.dll; DestDir: {app}; Flags: ignoreversion
 
 Source: ..\bin\schemes\*.scheme; DestDir: {app}\schemes
 Source: ..\bin\schemes\*.lexer; DestDir: {app}\schemes
+Source: ..\bin\schemes\*.api; DestDir: {app}\schemes
 Source: ..\bin\schemes\extmap.dat; DestDir: {app}\schemes
 Source: ..\bin\clips\*.clips; DestDir: {app}\clips
 Source: ..\bin\presets\*.xml; DestDir: {app}\presets
