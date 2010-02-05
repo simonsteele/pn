@@ -90,7 +90,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\lib\boost_unit_test\boost_unit_test_framework-vc90-mt-gd-1_39.dll $(TargetDir)"
+				CommandLine="copy ..\lib\boost_unit_test\boost_unit_test_framework-vc90-mt-gd-$(BoostFileVer).dll $(TargetDir)"
 			/>
 		</Configuration>
 		<Configuration
@@ -167,7 +167,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\lib\boost_unit_test\boost_unit_test_framework-vc90-mt-1_39.dll $(TargetDir)"
+				CommandLine="copy ..\lib\boost_unit_test\boost_unit_test_framework-vc90-mt-$(BoostFileVer).dll $(TargetDir)"
 			/>
 		</Configuration>
 	</Configurations>
