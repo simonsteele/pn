@@ -12,6 +12,9 @@ syntax: glob
 *.idb
 *.dep
 *.ncb
+*.ilk
+*.orig
+*.vsp
 
 Release
 Debug
