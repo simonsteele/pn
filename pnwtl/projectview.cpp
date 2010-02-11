@@ -2,7 +2,7 @@
  * @file projectview.cpp
  * @brief View to display project trees.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -1489,6 +1489,8 @@ LRESULT	CProjectTreeCtrl::OnMagicAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	
 	if (sd.DoModal() == IDOK)
 	{
+		// Transform the filename to lowercase to compare paths - need to ensure the file
+		// belongs in this magic folder.
 		CFileName fncompare(sd.GetSingleFileName());
 		fncompare.ToLower();
 		std::transform(path.begin(), path.end(), path.begin(), tolower);
