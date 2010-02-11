@@ -1489,16 +1489,18 @@ LRESULT	CProjectTreeCtrl::OnMagicAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	
 	if (sd.DoModal() == IDOK)
 	{
-		CFileName fn(sd.GetSingleFileName());
-		fn.ToLower();
+		CFileName fncompare(sd.GetSingleFileName());
+		fncompare.ToLower();
 		std::transform(path.begin(), path.end(), path.begin(), tolower);
 		
-		if(fn.GetPath() != path)
+		if(fncompare.GetPath() != path)
 		{
 			::MessageBox(m_hWnd, LS(IDS_PATHNOTINMAGICFOLDER), LS(IDR_MAINFRAME), MB_ICONWARNING | MB_OK);
 		}
 		else
 		{
+			CFileName fn(sd.GetSingleFileName());
+
 			// Make and blank the file...
 			FILE* theFile = _tfopen(fn.c_str(), _T("wb"));
 			if(theFile)

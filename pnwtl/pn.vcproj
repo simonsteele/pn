@@ -1202,14 +1202,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MagicFolderWiz.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MagicFolderWiz.h"
-				>
-			</File>
-			<File
 				RelativePath="project.cpp"
 				>
 			</File>
@@ -1242,23 +1234,7 @@
 				>
 			</File>
 			<File
-				RelativePath="projectview.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\projectview.h"
-				>
-			</File>
-			<File
 				RelativePath=".\projectwriter.h"
-				>
-			</File>
-			<File
-				RelativePath=".\projpropsview.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\projpropsview.h"
 				>
 			</File>
 		</Filter>
@@ -1586,6 +1562,34 @@
 				</File>
 				<File
 					RelativePath=".\controls\pntabcontrol.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Projects"
+				>
+				<File
+					RelativePath=".\MagicFolderWiz.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MagicFolderWiz.h"
+					>
+				</File>
+				<File
+					RelativePath="projectview.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\projectview.h"
+					>
+				</File>
+				<File
+					RelativePath=".\projpropsview.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\projpropsview.h"
 					>
 				</File>
 			</Filter>
