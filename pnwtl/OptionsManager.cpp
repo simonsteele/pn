@@ -231,8 +231,8 @@ void Options::SavePrintSettings(SPrintOptions* pSettings)
 	Set(NULL, _T("RightMargin"), pSettings->rcMargins.right);
 	Set(NULL, _T("BottomMargin"), pSettings->rcMargins.bottom);
 
-	Set(NULL, _T("Header"), pSettings->Header);
-	Set(NULL, _T("Footer"), pSettings->Footer);
+	Set(NULL, _T("Header"), pSettings->Header.c_str());
+	Set(NULL, _T("Footer"), pSettings->Footer.c_str());
 
 	ungroup();
 }

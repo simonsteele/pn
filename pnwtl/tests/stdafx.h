@@ -34,9 +34,27 @@
 #include <string>
 #include <map>
 
-#include <boost/shared_ptr.hpp>
-
 #define AtlIsValidString(x) true
 
 typedef std::basic_string<TCHAR> tstring;
 typedef std::vector<tstring> tstring_array;
+
+// Boosty Goodness:
+#include <boost/shared_ptr.hpp>
+#include <boost/xpressive/xpressive.hpp>
+
+namespace boost { namespace xpressive {
+#ifdef _UNICODE
+	typedef wsregex tsregex;
+	typedef wsmatch tsmatch;
+#else
+	typedef sregex tsregex;
+	typedef smatch tsmatch;
+#endif
+}} // namespace boost::xpressive
+
+// PN Stuff:
+#include "../scintillaif.h"
+#include "../pnstrings.h"
+#include "../extiface.h"
+#include "../pntypes.h"

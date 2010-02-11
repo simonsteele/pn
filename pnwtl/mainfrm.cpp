@@ -2,7 +2,7 @@
  * @file mainfrm.cpp
  * @brief Main Window for Programmer's Notepad 2 (Implementation)
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -23,6 +23,7 @@
 #include "project.h"			// Projects
 #include "projectprops.h"		// Project Properties
 #include "textclips.h"			// Text Clips
+#include "textclips/clipmanager.h" // Text Clips Manager
 #include "SchemeConfig.h"		// Scheme Configuration
 #include "projectholder.h"
 #include "version.h"

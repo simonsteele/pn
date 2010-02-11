@@ -1312,7 +1312,7 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 	int pageNum = 1;
 	bool printPage;
 	
-	PrintFormatStringBuilder fb( pOptions->Filename );
+	PrintFormatStringBuilder fb( pOptions->Filename.c_str() );
 
 	while (lengthPrinted < lengthDoc) 
 	{

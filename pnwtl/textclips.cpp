@@ -2,7 +2,7 @@
  * @file textclips.cpp
  * @brief text clips functionality.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -10,6 +10,7 @@
 
 #include "stdafx.h"
 #include "textclips.h"
+#include "textclips/clipmanager.h"
 #include "include/filefinder.h"
 #include "include/encoding.h"
 #include "third_party/genx/genx.h"

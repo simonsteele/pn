@@ -1,0 +1,157 @@
+/**
+ * Unit tests for Template Clips Behaviour
+ */
+
+#include "stdafx.h"
+
+#include <boost/test/unit_test.hpp>
+
+#include "../textclips.h"
+#include "../scintillaif.h"
+
+BOOST_AUTO_TEST_SUITE( clips_tests );
+
+using namespace TextClips;
+
+/**
+ * Check simple text results in a single chunk to be inserted.
+ */
+BOOST_AUTO_TEST_CASE( plain_text_should_become_single_chunk )
+{
+	Clip clip(tstring(L""), std::string(""), std::string("Clip\nText\nThree Lines"));
+	std::vector<Chunk> chunks;
+	clip.GetChunks(chunks);
+
+	BOOST_REQUIRE_EQUAL(1, chunks.size());
+	BOOST_REQUIRE_EQUAL("Clip\nText\nThree Lines", (*chunks.begin()).GetText());
+}
+
+/**
+ * Check single simple field means three chunks.
+ */
+BOOST_AUTO_TEST_CASE( field_in_middle_makes_three_chunks )
+{
+	Clip clip(tstring(L""), std::string(""), std::string("Clip $(1) Text"));
+	std::vector<Chunk> chunks;
+	clip.GetChunks(chunks);
+
+	BOOST_REQUIRE_EQUAL(3, chunks.size());
+	std::vector<Chunk>::const_iterator chunk(chunks.begin());
+	BOOST_REQUIRE_EQUAL("Clip ", (*chunk).GetText());
+	chunk++;
+	BOOST_REQUIRE_EQUAL("", (*chunk).GetText());
+	BOOST_REQUIRE_EQUAL(1, (*chunk).Id);
+	BOOST_REQUIRE_EQUAL(true, (*chunk).IsField());
+	BOOST_REQUIRE_EQUAL(true, (*chunk).IsMasterField());
+	chunk++;
+	BOOST_REQUIRE_EQUAL(" Text", (*chunk).GetText());
+}
+
+/**
+ * Check a clip with just a field works ok.
+ */
+BOOST_AUTO_TEST_CASE( just_a_field_works )
+{
+	Clip clip(tstring(L""), std::string(""), std::string("$(3)"));
+	std::vector<Chunk> chunks;
+	clip.GetChunks(chunks);
+
+	BOOST_REQUIRE_EQUAL(1, chunks.size());
+	std::vector<Chunk>::const_iterator chunk(chunks.begin());
+	
+	// Only field $(3) should be a master field
+	BOOST_REQUIRE_EQUAL("", (*chunk).GetText());
+	BOOST_REQUIRE_EQUAL(3, (*chunk).Id);
+	BOOST_REQUIRE_EQUAL(true, (*chunk).IsField());
+	BOOST_REQUIRE_EQUAL(true, (*chunk).IsMasterField());
+}
+
+/**
+ * Check a clip with just a field works ok.
+ */
+BOOST_AUTO_TEST_CASE( just_multiple_fields_works )
+{
+	Clip clip(tstring(L""), std::string(""), std::string("$(3)$(2:Test)"));
+	std::vector<Chunk> chunks;
+	clip.GetChunks(chunks);
+
+	BOOST_REQUIRE_EQUAL(2, chunks.size());
+	std::vector<Chunk>::const_iterator chunk(chunks.begin());
+	
+	// Only instance of $(3) should be a master field
+	BOOST_REQUIRE_EQUAL("", (*chunk).GetText());
+	BOOST_REQUIRE_EQUAL(3, (*chunk).Id);
+	BOOST_REQUIRE_EQUAL(true, (*chunk).IsField());
+	BOOST_REQUIRE_EQUAL(true, (*chunk).IsMasterField());
+
+	// Only instance of $(2) should be a master field
+	chunk++;
+	BOOST_REQUIRE_EQUAL("Test", (*chunk).GetText());
+	BOOST_REQUIRE_EQUAL(2, (*chunk).Id);
+	BOOST_REQUIRE_EQUAL(true, (*chunk).IsField());
+	BOOST_REQUIRE_EQUAL(true, (*chunk).IsMasterField());
+}
+
+/**
+ * Check initial field text
+ */
+BOOST_AUTO_TEST_CASE( initial_field_text_is_stored )
+{
+	Clip clip(tstring(L""), std::string(""), std::string("Clip: $(1:Monkey)"));
+	std::vector<Chunk> chunks;
+	clip.GetChunks(chunks);
+
+	BOOST_REQUIRE_EQUAL(2, chunks.size());
+	std::vector<Chunk>::const_iterator chunk(chunks.begin());
+	
+	// First instance of $(1) should be a master field
+	chunk++;
+	BOOST_REQUIRE_EQUAL("Monkey", (*chunk).GetText());
+}
+
+/**
+ * Check a repeated field means one master and one slave.
+ */
+BOOST_AUTO_TEST_CASE( second_field_instance_is_slave )
+{
+	Clip clip(tstring(L""), std::string(""), std::string("Clip $(1) Text $(1)"));
+	std::vector<Chunk> chunks;
+	clip.GetChunks(chunks);
+
+	BOOST_REQUIRE_EQUAL(4, chunks.size());
+	std::vector<Chunk>::const_iterator chunk(chunks.begin());
+	
+	// First instance of $(1) should be a master field
+	chunk++;
+	BOOST_REQUIRE_EQUAL("", (*chunk).GetText());
+	BOOST_REQUIRE_EQUAL(1, (*chunk).Id);
+	BOOST_REQUIRE_EQUAL(true, (*chunk).IsField());
+	BOOST_REQUIRE_EQUAL(true, (*chunk).IsMasterField());
+	
+	// The second instance of $(1) should make a non-master field
+	chunk++;
+	chunk++;
+	BOOST_REQUIRE_EQUAL("", (*chunk).GetText());
+	BOOST_REQUIRE_EQUAL(1, (*chunk).Id);
+	BOOST_REQUIRE_EQUAL(true, (*chunk).IsField());
+	BOOST_REQUIRE_EQUAL(false, (*chunk).IsMasterField());
+}
+
+/**
+ * Tab stop zero is caret rest position.
+ */
+BOOST_AUTO_TEST_CASE( stop_zero_should_be_end_caret_pos )
+{
+	Clip clip(tstring(L""), std::string(""), std::string("Clip: $(0)"));
+	std::vector<Chunk> chunks;
+	clip.GetChunks(chunks);
+
+	BOOST_REQUIRE_EQUAL(2, chunks.size());
+	std::vector<Chunk>::const_iterator chunk(chunks.begin());
+	
+	// First instance of $(1) should be a master field
+	chunk++;
+	BOOST_REQUIRE_EQUAL(true, (*chunk).IsFinalCaretPos());
+}
+
+BOOST_AUTO_TEST_SUITE_END();

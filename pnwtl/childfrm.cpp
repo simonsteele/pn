@@ -24,6 +24,7 @@
 #include "afiles.h"
 #include "scriptregistry.h"
 #include "textclips.h"
+#include "textclips/clipmanager.h"
 #include "autocomplete.h"
 #include "autocompletehandler.h"
 #include "project.h"
@@ -2733,8 +2734,8 @@ void CChildFrame::PrintSetup()
 	pdlg.hDevMode = m_po.hDevMode;
 	pdlg.hDevNames = m_po.hDevNames;
 
-	psd.SetHeaderText(m_po.Header);
-	psd.SetFooterText(m_po.Footer);
+	psd.SetHeaderText(m_po.Header.c_str());
+	psd.SetFooterText(m_po.Footer.c_str());
 
 	if ( psd.DoModal() != IDOK )
 	{

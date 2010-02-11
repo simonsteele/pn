@@ -386,10 +386,6 @@
 				>
 			</File>
 			<File
-				RelativePath="textclips.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\toolcommandstring.cpp"
 				>
 			</File>
@@ -426,6 +422,14 @@
 				</File>
 				<File
 					RelativePath=".\textclips\cliphandler.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\textclips\clipmanager.h"
+					>
+				</File>
+				<File
+					RelativePath="textclips.cpp"
 					>
 				</File>
 			</Filter>

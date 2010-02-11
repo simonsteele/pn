@@ -27,11 +27,11 @@ typedef struct tagPrintOptions
 	RECT	rcMargins;
 
 	// Header and Footer text...
-	CString Header;
-	CString Footer;
+	tstring Header;
+	tstring Footer;
 
 	// Filename
-	CString Filename;
+	tstring Filename;
 
 } SPrintOptions;
 

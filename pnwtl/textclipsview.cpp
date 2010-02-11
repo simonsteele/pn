@@ -11,6 +11,7 @@
 #include "stdafx.h"
 #include "resource.h"
 #include "textclips.h"
+#include "textclips/clipmanager.h"
 #include "textclipsview.h"
 #include "childfrm.h"
 #include <algorithm>

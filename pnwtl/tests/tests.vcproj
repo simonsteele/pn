@@ -22,7 +22,7 @@
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			InheritedPropertySheets="..\common.vsprops"
-			CharacterSet="0"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;BOOST_TEST_DYN_LINK"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;BOOST_TEST_DYN_LINK;SCI_NAMESPACE;UNICODE;_UNICODE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -119,7 +119,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;BOOST_TEST_DYN_LINK"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;BOOST_TEST_DYN_LINK;SCI_NAMESPACE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -184,6 +184,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\cliptests.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\exttests.cpp"
 				>
 			</File>
@@ -245,6 +249,18 @@
 			</File>
 			<File
 				RelativePath="..\autocomplete.h"
+				>
+			</File>
+			<File
+				RelativePath="..\textclips\chunk.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\textclips\clip.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\ScintillaIF.cpp"
 				>
 			</File>
 			<File
