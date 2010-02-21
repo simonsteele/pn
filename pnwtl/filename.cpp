@@ -321,7 +321,7 @@ tstring& CFileName::Sanitise()
 	}
 
 	LPCTSTR in = m_FileName.c_str();
-	int bufsize = min(_tcslen(in)+1, MAX_PATH);
+	int bufsize = max(_tcslen(in)+1, MAX_PATH);
 	std::vector<TCHAR> res(bufsize);
 
 	LPCTSTR fnd = _tcschr(in, _T(':'));
@@ -383,7 +383,14 @@ tstring& CFileName::Sanitise()
 		// Ask windows to make this path better for us:
 		PathCanonicalize(&res[0], m_FileName.c_str());
 		m_FileName = &res[0];
-		GetLongPathName(m_FileName.c_str(), &res[0], bufsize);
+		
+		int expandResult(0);
+		if ((expandResult = GetLongPathName(m_FileName.c_str(), &res[0], bufsize)) > bufsize)
+		{
+			res.resize(expandResult+1);
+			GetLongPathName(m_FileName.c_str(), &res[0], expandResult + 1);
+		}
+		
 		m_FileName = &res[0];
 	}
 
