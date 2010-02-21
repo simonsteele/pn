@@ -1568,6 +1568,14 @@
 					RelativePath=".\controls\pntabcontrol.h"
 					>
 				</File>
+				<File
+					RelativePath=".\controls\textclipstree.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\controls\textclipstree.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Projects"

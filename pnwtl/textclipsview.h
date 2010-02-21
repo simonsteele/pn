@@ -2,7 +2,7 @@
  * @file textclipsview.h
  * @brief View to display text clips.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -10,6 +10,8 @@
 
 #ifndef textclipsview_h__included
 #define textclipsview_h__included
+
+#include "controls/textclipstree.h"
 
 namespace TextClips {
 	class Clip;
@@ -68,11 +70,11 @@ private:
 
 	void AddClip(TextClips::Clip* tc);
 	void InsertClip(TextClips::Clip* tc);
-	void LoadSet(TextClips::TextClipSet* set);
+	void LoadSet(Scheme* scheme);
 	void saveView();
 	void setupView();
 
-	CListViewCtrl	m_view;
+	CTextClipsTreeCtrl m_tv;
 	CComboBox		m_combo;
 	TextClips::TextClipsManager* m_pTheClips;
 
