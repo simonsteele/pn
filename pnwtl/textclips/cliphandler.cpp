@@ -167,7 +167,9 @@ void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 
 	WorkingLock preventReentrance(m_insertClipState);
 
+	// Store the chunks:
 	m_insertClipState->Chunks.swap(chunks);
+	m_insertClipState->CurrentChunk = m_insertClipState->Chunks.end();
 
 	if (m_insertClipState->Chunks.size() == 0)
 	{
