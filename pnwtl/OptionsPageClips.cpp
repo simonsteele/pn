@@ -209,7 +209,7 @@ void COptionsPageClips::updateSel()
 	SchemeDetails* pCurScheme = reinterpret_cast<SchemeDetails*>(m_combo.GetItemData(m_combo.GetCurSel()));
 	if(pCurScheme != NULL)
 	{
-		TextClips::TextClipSet* schemeClips = m_pClips->GetClips(pCurScheme->Name.c_str());
+		TextClips::TextClipSet* schemeClips = m_pClips->GetClips(pCurScheme->Name.c_str()).front();
 		if (schemeClips != NULL)
 		{
 			const TextClips::LIST_CLIPS clips = schemeClips->GetClips();

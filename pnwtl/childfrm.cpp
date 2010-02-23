@@ -312,8 +312,8 @@ bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 	int colon = text.find(':');
 	text.resize(colon);
 
-	const TextClips::TextClipSet* set = m_pTextClips->GetClips( GetTextView()->GetCurrentScheme()->GetName() );
-	if(set != NULL)
+	const TextClips::LIST_CLIPSETS& sets = m_pTextClips->GetClips( GetTextView()->GetCurrentScheme()->GetName() );
+	BOOST_FOREACH(TextClips::TextClipSet* set, sets)
 	{
 		const TextClips::Clip* clip = set->FindByShortcut(text);
 		if(clip != NULL)
@@ -324,12 +324,14 @@ bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 			std::vector<TextClips::Chunk> chunks;
 			clip->GetChunks(chunks, GetTextView());
 			GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
+			break;
 #else
 			GetTextView()->BeginUndoAction();
 			GetTextView()->DelWordLeft();
 			GetTextView()->EndUndoAction();
 
 			clip->Insert(GetTextView());
+			break;
 #endif
 		}
 	}
@@ -1147,41 +1149,38 @@ LRESULT CChildFrame::OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 {
 	std::string word = GetTextView()->GetCurrentWord();	
 
-	const TextClips::TextClipSet* clips = m_pTextClips->GetClips(GetTextView()->GetCurrentScheme()->GetName());
+	const TextClips::LIST_CLIPSETS& clips = m_pTextClips->GetClips(GetTextView()->GetCurrentScheme()->GetName());
+
+	BOOST_FOREACH(TextClips::TextClipSet* set, clips)
+	{
+		const TextClips::Clip* desired = set->FindByShortcut(word);
+		if(desired != NULL)
+		{
+	#ifdef CLIPS_DEV
+			GetTextView()->DelWordLeft();
+
+			std::vector<TextClips::Chunk> chunks;
+			desired->GetChunks(chunks, GetTextView());
+			GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
+	#else
+			GetTextView()->BeginUndoAction();
+			GetTextView()->DelWordLeft();
+			desired->Insert(GetTextView());
+			GetTextView()->EndUndoAction();
+	#endif
+			return 0;
+		}
+	}
 	
-	if(clips == NULL)
-	{
-		return 0;
-	}
+	// We didn't find an exact match, now we want to autocomplete a list of clips:
+	AutoCompleteHandlerPtr p(new AutoCompleteAdaptor<CChildFrame>(this, &CChildFrame::InsertClipCompleted));
+	GetTextView()->SetAutoCompleteHandler(p);
 
-	const TextClips::Clip* desired = clips->FindByShortcut(word);
-	if(desired != NULL)
-	{
-#ifdef CLIPS_DEV
-		GetTextView()->DelWordLeft();
-
-		std::vector<TextClips::Chunk> chunks;
-		desired->GetChunks(chunks, GetTextView());
-		GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
-#else
-		GetTextView()->BeginUndoAction();
-		GetTextView()->DelWordLeft();
-		desired->Insert(GetTextView());
-		GetTextView()->EndUndoAction();
-#endif
-	}
-	else
-	{
-		// Now we want to autocomplete a list of clips:
-		AutoCompleteHandlerPtr p(new AutoCompleteAdaptor<CChildFrame>(this, &CChildFrame::InsertClipCompleted));
-		GetTextView()->SetAutoCompleteHandler(p);
-
-		std::string cliptext = clips->BuildSortedClipList();
-		int sep = GetTextView()->AutoCGetSeparator();
-		GetTextView()->AutoCSetSeparator(',');
-		GetTextView()->AutoCShow(word.size(), cliptext.c_str());
-		GetTextView()->AutoCSetSeparator(sep);
-	}
+	std::string cliptext = m_pTextClips->BuildSortedClipList(GetTextView()->GetCurrentScheme()->GetName());
+	int sep = GetTextView()->AutoCGetSeparator();
+	GetTextView()->AutoCSetSeparator(',');
+	GetTextView()->AutoCShow(word.size(), cliptext.c_str());
+	GetTextView()->AutoCSetSeparator(sep);
 
 	return 0;
 }

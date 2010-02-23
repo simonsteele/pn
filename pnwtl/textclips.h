@@ -2,7 +2,7 @@
  * @file textclips.h
  * @brief Text Clips Classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -16,6 +16,11 @@
 namespace TextClips {
 
 typedef enum { ctNone = 0, ctField = 0x01, ctMasterField = 0x03, ctFinalCaretPos = 0x4 } EChunkType;
+
+class TextClipSet;
+
+typedef std::list<TextClipSet*> LIST_CLIPSETS;
+typedef std::map<std::string, LIST_CLIPSETS> MAP_CLIPSETS;
 
 /**
  * Single part of a smart text clip, can be plain text or a field.
@@ -95,11 +100,6 @@ class TextClipSet
 		 * Add a clip
 		 */
 		void Add(Clip* clip);
-
-		/**
-		 * Builds a list of clips formatted for scintilla display
-		 */
-		std::string BuildSortedClipList() const;
 
 		/**
 		 * Find a Clip by its text shortcut

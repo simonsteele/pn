@@ -83,8 +83,7 @@ LRESULT CClipsDocker::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BO
 		rcCombo.bottom = rcCombo.top + m_comboHeight;
 		rc.top += m_comboHeight + 1;
 
-		m_tv.SetWindowPos(NULL, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top ,SWP_NOZORDER | SWP_NOACTIVATE);
-		//m_view.SetColumnWidth(0, rc.right - rc.left - ::GetSystemMetrics(SM_CXVSCROLL) - 1);
+		m_tv.SetWindowPos(NULL, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_NOZORDER | SWP_NOACTIVATE);
 		m_combo.SetWindowPos(NULL, rcCombo.left, rcCombo.top, rcCombo.right - rcCombo.left, rcCombo.bottom - rcCombo.top, SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 
@@ -146,13 +145,18 @@ LRESULT CClipsDocker::OnComboSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
  */
 LRESULT CClipsDocker::OnClipSelected(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-	if( ((LPNMITEMACTIVATE)pnmh)->iItem == -1 )
+	HTREEITEM hSel = m_tv.GetSelectedItem();
+	if (hSel == NULL)
+	{
 		return 0;
+	}
 
-	/*TextClips::Clip* clip = reinterpret_cast<TextClips::Clip*>( m_view.GetItemData(((LPNMITEMACTIVATE)pnmh)->iItem));
+	TextClips::Clip* clip = reinterpret_cast<TextClips::Clip*>( m_tv.GetItemData(hSel));
 	
-	if(clip)
-		InsertClip(clip);*/
+	if(clip != NULL)
+	{
+		InsertClip(clip);
+	}
 
 	return 0;
 }
@@ -219,24 +223,34 @@ void CClipsDocker::Reset()
 void CClipsDocker::LoadSet(Scheme* scheme)
 {
 	m_tv.DeleteAllItems();
-	TextClips::TextClipSet* set = m_pTheClips->GetClips(scheme->GetName());
+	const TextClips::LIST_CLIPSETS& sets = m_pTheClips->GetClips(scheme->GetName());
 
-	if (set == NULL)
+	BOOST_FOREACH(TextClips::TextClipSet* set, sets)
 	{
-		return;
-	}
-	
-	HTREEITEM ti = m_tv.InsertItem(set->GetName(), TVI_ROOT, NULL);
+		LPCTSTR setName(set->GetName());
+		HTREEITEM parent;
+		if (setName && setName[0])
+		{
+			parent = m_tv.InsertItem(set->GetName(), TVI_ROOT, NULL);
+		}
+		else
+		{
+			parent = TVI_ROOT;
+		}
 
-	const TextClips::LIST_CLIPS& clips = set->GetClips();
-		
-	for (TextClips::LIST_CLIPS::const_iterator i = clips.begin(); i != clips.end(); ++i)
-	{
-		HTREEITEM clipItem = m_tv.InsertItem((*i)->Name.c_str(), ti, NULL);
-		m_tv.SetItemData(clipItem, reinterpret_cast<DWORD_PTR>((*i)));
-	}
+		const TextClips::LIST_CLIPS& clips = set->GetClips();
+			
+		for (TextClips::LIST_CLIPS::const_iterator i = clips.begin(); i != clips.end(); ++i)
+		{
+			HTREEITEM clipItem = m_tv.InsertItem((*i)->Name.c_str(), parent, NULL);
+			m_tv.SetItemData(clipItem, reinterpret_cast<DWORD_PTR>((*i)));
+		}
 
-	m_tv.Expand(ti);
+		if (parent != TVI_ROOT)
+		{
+			m_tv.Expand(parent);
+		}
+	}
 }
 
 inline void CClipsDocker::AddClip(TextClips::Clip* tc)
@@ -257,7 +271,10 @@ void CClipsDocker::InsertClip(TextClips::Clip* tc)
 			return;
 		}
 
-		tc->Insert(pS);
+		std::vector<TextClips::Chunk> chunks;
+		tc->GetChunks(chunks, pS);
+		
+		pS->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
 		
 		::SetFocus(pS->m_hWnd);
 	}

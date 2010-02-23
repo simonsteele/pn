@@ -425,7 +425,23 @@
 					>
 				</File>
 				<File
+					RelativePath=".\textclips\clipmanager.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\textclips\clipmanager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\textclips\clipparser.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\textclips\clipparser.h"
+					>
+				</File>
+				<File
+					RelativePath=".\textclips\clipwriter.h"
 					>
 				</File>
 				<File
