@@ -27,25 +27,21 @@ class TextClipsManager
 
 		void OnFound(LPCTSTR path, FileFinderData& file, bool& /*shouldContinue*/);
 
-		const LIST_CLIPSETS& GetClipSets();
 		const LIST_CLIPSETS& GetClips(LPCSTR schemeName);
 
 		std::string BuildSortedClipList(LPCSTR schemeName) const;
 
 		void Add(TextClipSet* clips);
 
-		void Save(bool ignoreFilenames = false);
+		void Save();
 
 		void Reset(const TextClipsManager& copy);
 
 	private:
 		void clear();
 		void copy(const TextClipsManager& copy);
-		void decodeData();
-		void findClips();
 		void parse(LPCTSTR filename);
 
-		LIST_CLIPSETS	m_clipSets;
 		MAP_CLIPSETS	m_schemeClipSets;
 		LIST_CLIPSETS*	m_loadingClips;
 };

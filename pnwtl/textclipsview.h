@@ -19,10 +19,12 @@ namespace TextClips {
 	class TextClipSet;
 }
 
-class CClipsDocker : public CWindowImpl<CClipsDocker>//CPNDockingWindow<CClipsDocker>
+/**
+ * Docking window for Text Clips
+ */
+class CClipsDocker : public CWindowImpl<CClipsDocker>
 {
 	typedef CClipsDocker thisClass;
-	//typedef CPNDockingWindow<CClipsDocker> baseClass;
 	typedef CWindowImpl<CClipsDocker> baseClass;
 
 public:
@@ -49,7 +51,6 @@ public:
 		NOTIFY_HANDLER(IDC_CLIPSLIST, NM_RETURN, OnClipEnterPressed);
 		NOTIFY_HANDLER(IDC_CLIPSLIST, LVN_GETINFOTIP, OnClipGetInfoTip);
 		REFLECT_NOTIFICATIONS()
-		//CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
 	void Reset();

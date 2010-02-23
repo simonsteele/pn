@@ -23,7 +23,6 @@ namespace TextClips {
 
 TextClipsManager::TextClipsManager() : m_loadingClips(NULL)
 {
-	//findClips();
 }
 
 /**
@@ -37,11 +36,6 @@ TextClipsManager::TextClipsManager(const TextClipsManager& other)
 TextClipsManager::~TextClipsManager()
 {
 	clear();
-}
-
-const LIST_CLIPSETS& TextClipsManager::GetClipSets()
-{
-	return m_clipSets;
 }
 
 const LIST_CLIPSETS& TextClipsManager::GetClips(LPCSTR schemeName)
@@ -140,67 +134,26 @@ void TextClipsManager::Add(TextClipSet* clips)
 
 		(*i).second.push_back(clips);
 	}
-	else
-	{
-		m_clipSets.push_back(clips);
-	}
 }
 
 /**
  * First save all cached clip sets, then save those in their
  * own files.
  */
-void TextClipsManager::Save(bool ignoreFilenames)
+void TextClipsManager::Save()
 {
-	LIST_CLIPSETS toSave;
-
-	tstring usPath;
-	OPTIONS->GetPNPath(usPath, PNPATH_USERCLIPS);
-
-	tstring clipcache = usPath + _T("installClipCache.xml");
-
-	TextClipsWriter writer;
-	writer.Start(clipcache.c_str());
-	writer.BeginClipSets();
-
 	// iterate through and store the clips that need saving into a file other
 	// than the cache file in toSave, then save them.
-
-	for (LIST_CLIPSETS::iterator i = m_clipSets.begin(); i != m_clipSets.end(); ++i)
+	for (MAP_CLIPSETS::iterator j = m_schemeClipSets.begin(); j != m_schemeClipSets.end(); ++j)
 	{
-		LPCTSTR filename = (*i)->GetFilename();
-		if (!ignoreFilenames && filename != NULL)
+		BOOST_FOREACH(TextClipSet* set, (*j).second)
 		{
-			toSave.push_back(*i);
+			LPCTSTR filename = set->GetFilename();
+			if (filename != NULL)
+			{
+				set->Save();
+			}
 		}
-		else
-		{
-			writer.WriteClipSet(*i);
-		}
-	}
-
-	throw "FIXME";
-
-	/*for (MAP_CLIPSETS::iterator j = m_schemeClipSets.begin(); j != m_schemeClipSets.end(); ++j)
-	{
-		LPCTSTR filename = (*j).second->GetFilename();
-		if (!ignoreFilenames && filename != NULL)
-		{
-			toSave.push_back((*j).second);
-		}
-		else
-		{
-			writer.WriteClipSet((*j).second);
-		}
-	}*/
-
-	writer.EndClipSets();
-	writer.Close();
-
-	// Save the clip sets that have their own file
-	for (LIST_CLIPSETS::iterator k = toSave.begin(); k != toSave.end(); ++k)
-	{
-		(*k)->Save();
 	}
 }
 
@@ -226,13 +179,6 @@ void TextClipsManager::OnFound(LPCTSTR path, FileFinderData& file, bool& /*shoul
  */
 void TextClipsManager::clear()
 {
-	for (LIST_CLIPSETS::iterator i = m_clipSets.begin(); i != m_clipSets.end(); ++i)
-	{
-		delete (*i);
-	}
-
-	m_clipSets.clear();
-
 	for (MAP_CLIPSETS::iterator j = m_schemeClipSets.begin(); j != m_schemeClipSets.end(); ++j)
 	{
 		for (LIST_CLIPSETS::iterator k = (*j).second.begin(); k != (*j).second.end(); ++k)
@@ -246,56 +192,17 @@ void TextClipsManager::clear()
 
 void TextClipsManager::copy(const TextClipsManager& copy)
 {
-	throw "FAIL";
-
-	for (LIST_CLIPSETS::const_iterator i = copy.m_clipSets.begin();
-		i != copy.m_clipSets.end();
-		++i)
-	{
-		m_clipSets.push_back( new TextClipSet(**i) );
-	}
-
-	/*for (MAP_CLIPSETS::const_iterator j = copy.m_schemeClipSets.begin();
+	for (MAP_CLIPSETS::const_iterator j = copy.m_schemeClipSets.begin();
 		j != copy.m_schemeClipSets.end();
 		++j)
 	{
-		m_schemeClipSets.insert(MAP_CLIPSETS::value_type( (*j).first, new TextClipSet(*(*j).second)));
-	}*/
-}
-
-/**
- * Uses FileFinder to find the clips files.
- */
-void TextClipsManager::findClips()
-{
-	FileFinder<TextClipsManager> finder(this, &TextClipsManager::OnFound);
-
-	tstring path;
-	tstring usPath;
-	
-	// Search distribution clips directory.
-	OPTIONS->GetPNPath(path, PNPATH_CLIPS);
-	OPTIONS->GetPNPath(usPath, PNPATH_USERCLIPS);
-
-	tstring clipcache = usPath + _T("installClipCache.xml");
-
-	if (!FileExists(clipcache.c_str()))
-	{
-		if (DirExists(path.c_str()))
-			finder.Find(path.c_str(), _T("*.clips"));
-
-		// Save the clips we found in the cache
-		Save(true);
+		MAP_CLIPSETS::iterator k = m_schemeClipSets.insert(MAP_CLIPSETS::value_type((*j).first, LIST_CLIPSETS())).first;
+		LIST_CLIPSETS& mine((*k).second);
+		BOOST_FOREACH(TextClipSet* copySet, (*j).second)
+		{
+			mine.push_back(new TextClipSet(*copySet));
+		}
 	}
-	else
-	{
-		// Read the cache
-		parse(clipcache.c_str());
-	}
-	
-	// Search user clips directory and load those:
-	if( DirExists(usPath.c_str()) )
-		finder.Find(usPath.c_str(), _T("*.clips"));
 }
 
 void TextClipsManager::parse(LPCTSTR filename)

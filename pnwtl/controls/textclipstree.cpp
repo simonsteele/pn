@@ -23,6 +23,7 @@ LRESULT CTextClipsTreeCtrl::OnCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHa
 				
 				HTREEITEM item = (HTREEITEM)cdn->nmcd.dwItemSpec;
 				
+				// Get information about the item:
 				TCHAR textbuf[256];
 				TVITEMEX info = {0};
 				info.hItem = item;
@@ -42,8 +43,8 @@ LRESULT CTextClipsTreeCtrl::OnCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHa
 				if (cdn->nmcd.uItemState & CDIS_SELECTED)
 				{
 					bgColor = GetSysColor(COLOR_HIGHLIGHT);
-					LOG(info.pszText);
-					LOG(_T("\n"));
+					//LOG(info.pszText);
+					//LOG(_T("\n"));
 				}
 
 				itemBrush.CreateSolidBrush(bgColor);
@@ -73,17 +74,16 @@ LRESULT CTextClipsTreeCtrl::OnCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHa
 						rcItem.MoveToX(rcRow.right - 5 - rcItem.Width());
 						rcItem.MoveToY(rcRow.top + ((rcRow.Height() - rcItem.Height()) / 2));
 						rcItem.InflateRect(2, 2);
-						
+
+						// And do the drawing:
 						dc.SetBkColor(shortcutBg);
 						CBrushHandle pOldBrush(dc.SelectBrush(shortcutBrush));
 						CPenHandle pOldPen(dc.SelectPen(shortcutPen));
 						dc.RoundRect(rcItem, CPoint(2, 2));
-						//int oldAlignment = dc.SetTextAlign(TA_CENTER | TA_BASELINE);
 						dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
 						dc.DrawText(shortcutText, -1, rcItem, DT_SINGLELINE | DT_CENTER | DT_HIDEPREFIX | DT_VCENTER);
 						dc.SelectBrush(pOldBrush);
 						dc.SelectPen(pOldPen);
-						//dc.SetTextAlign(oldAlignment);
 					}
 				}
 
