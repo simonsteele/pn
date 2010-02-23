@@ -1453,14 +1453,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\OptionsPageClips.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\OptionsPageClips.h"
-					>
-				</File>
-				<File
 					RelativePath=".\OptionsPageEditing.cpp"
 					>
 				</File>

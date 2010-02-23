@@ -290,31 +290,6 @@ void CClipsDocker::saveView()
 
 void CClipsDocker::setupView()
 {
-	/*const TextClips::LIST_CLIPSETS& sets = m_pTheClips->GetClipSets();
-	
-	tstring lastSet = OPTIONS->Get(PNSK_INTERFACE, _T("LastClipSet"), _T(""));
-
-	int selindex = 0;
-	int index;
-	for(TextClips::LIST_CLIPSETS::const_iterator i = sets.begin();
-		i != sets.end();
-		++i)
-	{
-		index = m_combo.InsertString(m_combo.GetCount(), (*i)->GetName());
-		m_combo.SetItemDataPtr(index, *i);
-		if(lastSet == (*i)->GetName())
-		{
-			selindex = index;
-		}
-	}
-
-	if (sets.size() > 0)
-	{
-		m_combo.SetCurSel(selindex);
-		BOOL unneeded;
-		OnComboSelChange(0, 0, NULL, unneeded);
-	}*/
-
 	SchemeManager* pM = SchemeManager::GetInstance();
 	SCHEME_LIST* pSchemes = pM->GetSchemesList();
 

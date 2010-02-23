@@ -2,7 +2,7 @@
  * @file optionspages.h
  * @brief Options Dialog Pages for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -515,7 +515,6 @@ class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>,
 #include "OptionsPageKeyboard.h"
 #include "OptionsPageAutocomplete.h"
 #include "OptionsPageGlobalStyles.h"
-#include "OptionsPageClips.h"
 #include "OptionsPageExtensions.h"
 #include "OptionsPageEditing.h"
 #include "OptionsPageVisual.h"

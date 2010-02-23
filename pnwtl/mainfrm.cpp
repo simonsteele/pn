@@ -1827,7 +1827,6 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsPageNewFiles		pageNewFiles(&schemeconfig);
 	COptionsPageTools			pageTools(&schemeconfig, &toolsmanager);
 	COptionsPageProjectTools	pageProjectTools(&toolsmanager);
-	COptionsPageClips			pageClips(&schemeconfig, m_pTextClips);
 	COptionsPageEditing			pageEditing;
 
 	COptionsPageFileTypes		pageFiles(&schemeconfig);
@@ -1858,7 +1857,6 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	options.AddPage(&pageAFiles);
 	options.AddPage(&pageKeyboard);
 	options.AddPage(&pageAutocomplete);
-	options.AddPage(&pageClips);
 	options.AddPage(&pageExtensions);
 
 	// If we were launched from the "Add Tools" menu item, 
@@ -1904,13 +1902,6 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 			m_pCmdDispatch->Save(kmfile.c_str());
 			
 			setupAccelerators(m_hMenu);
-		}
-
-		// If text clips page has changes, then update the text clips view
-		// actually not necessary until we actually edit text clips and not just templates!
-		if (pageClips.IsDirty())
-		{
-			m_pClipsWnd->Reset();
 		}
 
 		PerformChildEnum(&CMainFrame::ChildOptionsUpdateNotify);
