@@ -808,6 +808,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\clipstoolbar.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\clipstoolbar24.bmp"
+				>
+			</File>
+			<File
 				RelativePath=".\res\ctags.ico"
 				>
 			</File>

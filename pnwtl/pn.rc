@@ -1727,6 +1727,8 @@ IDB_TBMAIN24            BITMAP                  "res\\tbrMain24.bmp"
 IDB_OPENFILES           BITMAP                  "res\\openfilesimages.bmp"
 IDB_TBFIND              BITMAP                  "res\\findbarbmps.bmp"
 IDB_TOOLBAR             BITMAP                  "res\\toolbar.bmp"
+IDB_TBCLIPS             BITMAP                  "res\\clipstoolbar.bmp"
+IDB_TBCLIPS24           BITMAP                  "res\\clipstoolbar24.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //

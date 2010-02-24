@@ -315,6 +315,9 @@
 #define IDB_TBEDITOR24                  366
 #define IDB_BITMAP5                     367
 #define IDB_TBFIND24                    368
+#define IDB_TBCLIPS                     369
+#define IDB_BITMAP4                     370
+#define IDB_TBCLIPS24                   370
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -399,7 +402,6 @@
 #define IDC_STYLE_SELWORDCOLBUTTON      1016
 #define IDC_SCHEMELABEL                 1017
 #define IDC_STYLE_MARKALLCOLBUTTON      1017
-#define IDC_STYLE_IGCOLBUTTON3          1018
 #define IDC_STYLE_TFCOLBUTTON           1018
 #define IDC_STYLES_TREE                 1020
 #define IDC_STYLE_BOLDCHECK             1021
@@ -805,14 +807,18 @@
 #define ID_EDIT_STRIPTRAILING           33149
 #define ID_WINDOW_CLOSESPLIT            33150
 #define ID_EDIT_ENSUREFINALBLANKLINE    33151
+#define ID_CLIPS_ADD					33152
+#define ID_CLIPS_REMOVE					33153
+#define ID_CLIPS_ADDSET					33154
+#define ID_CLIPS_REMOVESET				33155
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        369
-#define _APS_NEXT_COMMAND_VALUE         33152
+#define _APS_NEXT_RESOURCE_VALUE        371
+#define _APS_NEXT_COMMAND_VALUE         33156
 #define _APS_NEXT_CONTROL_VALUE         1171
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

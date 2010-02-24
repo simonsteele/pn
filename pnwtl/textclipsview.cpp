@@ -13,16 +13,22 @@
 #include "textclips.h"
 #include "textclips/clipmanager.h"
 #include "textclipsview.h"
+#include "textclipeditor.h"
 #include "childfrm.h"
 #include <algorithm>
 
-CClipsDocker::CClipsDocker(TextClips::TextClipsManager* manager)
+#define TOOLBAR_HEIGHT 22
+
+CClipsDocker::CClipsDocker(TextClips::TextClipsManager* manager) : m_hWndToolBar(NULL), m_pTheClips(manager), m_hImgList(NULL)
 {
-	m_pTheClips = manager;
 }
 
 CClipsDocker::~CClipsDocker()
 {
+	if (m_hImgList)
+	{
+		ImageList_Destroy(m_hImgList);
+	}
 }
 
 LRESULT CClipsDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -49,6 +55,7 @@ LRESULT CClipsDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	CRect rcCombo(rc);
 	rcCombo.bottom = rcCombo.top + (m_comboHeight * 8); // what value here?
 	rc.top += m_comboHeight;
+	rc.bottom -= TOOLBAR_HEIGHT;
 
 	m_tv.Create(m_hWnd, rc, _T("ClipsTree"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | TVS_FULLROWSELECT | TVS_NOHSCROLL, 0, IDC_CLIPSLIST);
 	m_tv.SetIndent(0);
@@ -58,8 +65,8 @@ LRESULT CClipsDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	m_combo.Create(m_hWnd, rcCombo, _T("ClipsCombo"), WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_TABSTOP | CBS_DROPDOWNLIST | CBS_SORT, 0, IDC_CLIPSCOMBO);
 	m_combo.SetFont( static_cast<HFONT> (GetStockObject( DEFAULT_GUI_FONT )) );
 	
-	// Fill the combo box.
-	setupView();
+	setupToolbar();
+	setupView(); // Fill Combo
 
 	return 0;
 }
@@ -82,9 +89,11 @@ LRESULT CClipsDocker::OnSize(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BO
 		CRect rcCombo(rc);
 		rcCombo.bottom = rcCombo.top + m_comboHeight;
 		rc.top += m_comboHeight + 1;
+		rc.bottom -= TOOLBAR_HEIGHT;
 
 		m_tv.SetWindowPos(NULL, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_NOZORDER | SWP_NOACTIVATE);
 		m_combo.SetWindowPos(NULL, rcCombo.left, rcCombo.top, rcCombo.right - rcCombo.left, rcCombo.bottom - rcCombo.top, SWP_NOZORDER | SWP_NOACTIVATE);
+		::SetWindowPos(m_hWndToolBar, NULL, rc.left, rc.bottom, rc.right - rc.left, rc.bottom + TOOLBAR_HEIGHT, SWP_NOZORDER | SWP_NOACTIVATE);
 	}
 
 	bHandled = FALSE;
@@ -129,7 +138,6 @@ LRESULT CClipsDocker::OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 LRESULT CClipsDocker::OnComboSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	int index = m_combo.GetCurSel();
-	//TextClips::TextClipSet* pSet = reinterpret_cast<TextClips::TextClipSet*>( m_combo.GetItemDataPtr(index) );
 	Scheme* pSet = reinterpret_cast<Scheme*>( m_combo.GetItemDataPtr(index) );
 
 	if( pSet != NULL )
@@ -210,6 +218,38 @@ LRESULT CClipsDocker::OnClipGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	return 0;
 }
 
+LRESULT CClipsDocker::OnAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	CTextClipEditor dlg(std::string(""), std::string(""), tstring(_T("")));
+	if (dlg.DoModal() != IDOK)
+	{
+		return 0;
+	}
+
+	TextClips::Clip* clip = new TextClips::Clip(dlg.GetHint(), dlg.GetShortcut(), dlg.GetText());
+
+	// TODO something sensible with the clip.
+	delete clip;
+
+	return 0;
+}
+
+LRESULT CClipsDocker::OnRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	return 0;
+}
+
+LRESULT CClipsDocker::OnAddSet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	return 0;
+}
+
+LRESULT CClipsDocker::OnRemoveSet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	return 0;
+}
+
+
 void CClipsDocker::Reset()
 {
 	saveView();
@@ -218,6 +258,41 @@ void CClipsDocker::Reset()
 	m_combo.Clear();
 
 	setupView();
+}
+
+TextClips::Clip* ClipPtrFromLParam(LPARAM param)
+{
+	return reinterpret_cast<TextClips::Clip*>(param);
+}
+
+int CALLBACK TreeSorter(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	if (lParam1 == 0 && lParam2 != 0)
+	{
+		return 1;
+	}
+	else if (lParam2 == 0 && lParam1 != 0)
+	{
+		return -1;
+	}
+	else if (lParam1 == 0 && lParam2 == 0)
+	{
+		return 0;
+	}
+	
+	TextClips::Clip* clip1 = ClipPtrFromLParam(lParam1);
+	TextClips::Clip* clip2 = ClipPtrFromLParam(lParam2);
+	
+	if (clip1->Name < clip2->Name)
+	{
+		return -1;
+	}
+	else if (clip1->Name > clip2->Name)
+	{
+		return 1;
+	}
+
+	return 0;
 }
 
 void CClipsDocker::LoadSet(Scheme* scheme)
@@ -251,6 +326,13 @@ void CClipsDocker::LoadSet(Scheme* scheme)
 			m_tv.Expand(parent);
 		}
 	}
+
+	TVSORTCB sort = {0};
+	sort.hParent = TVI_ROOT;
+	sort.lParam = 0;
+	sort.lpfnCompare = &TreeSorter;
+
+	m_tv.SortChildrenCB(&sort, false);
 }
 
 inline void CClipsDocker::AddClip(TextClips::Clip* tc)
@@ -301,4 +383,54 @@ void CClipsDocker::setupView()
 		index = m_combo.AddString((*i).GetTitle());
 		m_combo.SetItemDataPtr(index, &(*i));
 	}
+}
+
+TBBUTTON TOOLBAR_BUTTONS[4] = 
+{
+	{ 0, ID_CLIPS_ADD, TBSTATE_ENABLED, TBSTYLE_CHECK, 0, 0, 0 },
+	{ 1, ID_CLIPS_REMOVE, 0, TBSTYLE_CHECK, 0, 0, 0 },
+	{ 2, ID_CLIPS_ADDSET, TBSTATE_ENABLED, TBSTYLE_CHECK, 0, 0, 0 },
+	{ 3, ID_CLIPS_REMOVESET, 0, TBSTYLE_CHECK, 0, 0, 0 },
+};
+
+void CClipsDocker::setupToolbar()
+{
+	CToolBarCtrl toolbar;
+
+	bool lowColour = !IsXPOrLater() || OPTIONS->Get(PNSK_INTERFACE, _T("LowColourToolbars"), false);
+
+	CImageList imglist;
+	HBITMAP bmp;
+	
+	if (lowColour)
+	{
+		imglist.Create(16, 16, ILC_COLOR24 | ILC_MASK, 4, 1);
+		bmp = static_cast<HBITMAP>(::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_TBCLIPS24), IMAGE_BITMAP, 64, 16, LR_SHARED));
+	}
+	else
+	{
+		imglist.Create(16, 16, ILC_COLOR32 | ILC_MASK, 4, 1);
+		bmp = static_cast<HBITMAP>(::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_TBCLIPS), IMAGE_BITMAP, 64, 16, LR_SHARED | LR_CREATEDIBSECTION));
+	}
+
+	imglist.Add(bmp, RGB(255, 0, 255));
+
+	m_hImgList = imglist.Detach();
+
+	CRect rc;
+	GetClientRect(rc);
+	rc.top = rc.bottom - TOOLBAR_HEIGHT;
+
+	// We fix the size of the mini toolbar to make it suitably small (see TOOLBAR_HEIGHT).
+	DWORD dwStyle = WS_CHILD | WS_VISIBLE | CCS_BOTTOM | CCS_NODIVIDER | TBSTYLE_TOOLTIPS | CCS_NORESIZE | TBSTYLE_FLAT;
+
+	toolbar.Create(m_hWnd, rc, NULL, dwStyle, 0, IDC_CLIPSTOOLBAR);
+	
+	toolbar.SetBitmapSize(CSize(16, 16));
+	toolbar.SetImageList(m_hImgList);
+	
+	toolbar.AddButtons(4, &TOOLBAR_BUTTONS[0]);
+	toolbar.SetButtonSize(CSize(20, 20));
+
+	m_hWndToolBar = toolbar.Detach();
 }
