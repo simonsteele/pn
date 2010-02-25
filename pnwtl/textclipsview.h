@@ -84,6 +84,9 @@ private:
 	void setupView();
 	void setupToolbar();
 
+	TextClips::TextClipSet* getSetFromSetItem(HTREEITEM setItem);
+	TextClips::TextClipSet* getOrCreateSet(LPCTSTR title);
+
 	CTextClipsTreeCtrl m_tv;
 	CComboBox		m_combo;
 	TextClips::TextClipsManager* m_pTheClips;

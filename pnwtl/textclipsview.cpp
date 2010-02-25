@@ -228,8 +228,44 @@ LRESULT CClipsDocker::OnAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 	TextClips::Clip* clip = new TextClips::Clip(dlg.GetHint(), dlg.GetShortcut(), dlg.GetText());
 
-	// TODO something sensible with the clip.
-	delete clip;
+	TextClips::TextClipSet* set(NULL);
+	HTREEITEM hSelected = m_tv.GetSelectedItem();
+	HTREEITEM hParent = TVI_ROOT;
+	if (hSelected == NULL)
+	{
+		// No selection, add to root.
+		set = getOrCreateSet(NULL);
+	}
+
+	if (m_tv.GetItemData(hSelected) == NULL)
+	{
+		// Set selected
+		set = getSetFromSetItem(hSelected);
+	}
+	else
+	{
+		// Item, let's see if we have a parent
+		hParent = m_tv.GetParentItem(hSelected);
+		if (hParent == NULL)
+		{
+			hParent = TVI_ROOT;
+			set = getOrCreateSet(NULL);
+		}
+		else
+		{
+			set = getSetFromSetItem(hParent);
+		}
+	}
+
+	set->Add(clip);
+
+	HTREEITEM clipItem = m_tv.InsertItem(clip->Name.c_str(), hParent, NULL);
+	m_tv.SetItemData(clipItem, reinterpret_cast<DWORD_PTR>(clip));
+
+	if (hParent != TVI_ROOT)
+	{
+		m_tv.Expand(hParent, TVE_EXPAND);
+	}
 
 	return 0;
 }
@@ -248,7 +284,6 @@ LRESULT CClipsDocker::OnRemoveSet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 {
 	return 0;
 }
-
 
 void CClipsDocker::Reset()
 {
@@ -433,4 +468,55 @@ void CClipsDocker::setupToolbar()
 	toolbar.SetButtonSize(CSize(20, 20));
 
 	m_hWndToolBar = toolbar.Detach();
+}
+
+/**
+ * Get a clip set from the set tree item
+ */
+TextClips::TextClipSet* CClipsDocker::getSetFromSetItem(HTREEITEM setItem)
+{
+	CString str;
+	m_tv.GetItemText(setItem, str);
+	return getOrCreateSet(str);
+}
+
+/**
+ * Get a set by name, and if it doesn't exist create it.
+ */
+TextClips::TextClipSet* CClipsDocker::getOrCreateSet(LPCTSTR title)
+{
+	int index = m_combo.GetCurSel();
+	if (index == -1)
+	{
+		RETURN_UNEXPECTED(_T("GetOrCreateSet called with no scheme"), NULL);
+	}
+
+	Scheme* scheme = reinterpret_cast<Scheme*>( m_combo.GetItemDataPtr(index) );
+	
+	const TextClips::LIST_CLIPSETS& sets = m_pTheClips->GetClips(scheme->GetName());
+
+	BOOST_FOREACH(TextClips::TextClipSet* set, sets)
+	{
+		LPCTSTR setName = set->GetName();
+
+		if (title == NULL)
+		{
+			if (setName == NULL || setName[0] == NULL)
+			{
+				return set;
+			}
+		}
+		else
+		{
+			if (_tcscmp(setName, title) == 0)
+			{
+				return set;
+			}
+		}
+	}
+
+	// We didn't find the set:
+	TextClips::TextClipSet* newSet = new TextClips::TextClipSet(_T(""), title, scheme->GetName(), false);
+	m_pTheClips->Add(newSet);
+	return newSet;
 }
