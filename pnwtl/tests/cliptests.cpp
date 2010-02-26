@@ -7,9 +7,21 @@
 #include <boost/test/unit_test.hpp>
 
 #include "../textclips.h"
+#include "../textclips/clipmanager.h"
 #include "../scintillaif.h"
+#include "mocks/mockoptions.h"
 
-BOOST_AUTO_TEST_SUITE( clips_tests );
+static MockOptions options;
+
+struct clips_fixture
+{
+	clips_fixture()
+	{
+		g_Options = &options;
+	}
+};
+
+BOOST_FIXTURE_TEST_SUITE( clips_tests, clips_fixture );
 
 using namespace TextClips;
 
@@ -152,6 +164,68 @@ BOOST_AUTO_TEST_CASE( stop_zero_should_be_end_caret_pos )
 	// First instance of $(1) should be a master field
 	chunk++;
 	BOOST_REQUIRE_EQUAL(true, (*chunk).IsFinalCaretPos());
+}
+
+/**
+ * Retrieve by scheme name works.
+ */
+BOOST_AUTO_TEST_CASE( add_retrieve_by_schemename )
+{
+	TextClipsManager manager;
+	
+	BOOST_REQUIRE_EQUAL(0, manager.GetClips("default").size());
+
+	manager.Add(new TextClipSet(_T(""), _T("Set"), "default", false));
+
+	BOOST_REQUIRE_EQUAL(1, manager.GetClips("default").size());
+	BOOST_REQUIRE_EQUAL(_T("Set"), manager.GetClips("default").front()->GetName());
+}
+
+/**
+ * Retrieve by scheme name works.
+ */
+BOOST_AUTO_TEST_CASE( remove_set )
+{
+	TextClipsManager manager;
+
+	TextClipSet* set = new TextClipSet(_T(""), _T("Set"), "default", false);
+	manager.Add(set);
+	// TODO: manager.Delete(set); Work out how to delete a set in tests.
+
+	BOOST_REQUIRE_EQUAL(0, manager.GetClips("default").size());
+}
+
+/**
+ * Reset copies clips from other manager instance.
+ */
+BOOST_AUTO_TEST_CASE( basic_reset )
+{
+	TextClipsManager manager;
+	manager.Add(new TextClipSet(_T(""), _T("C++ Set"), "cpp", false));
+
+	{
+		TextClipsManager other;
+		other.Add(new TextClipSet(_T(""), _T("Set"), "default", false));
+
+		manager.Reset(other);
+	}
+	
+	BOOST_REQUIRE_EQUAL(1, manager.GetClips("default").size());
+	BOOST_REQUIRE_EQUAL(_T("Set"), manager.GetClips("default").front()->GetName());
+	BOOST_REQUIRE_EQUAL(0, manager.GetClips("cpp").size());
+}
+
+/**
+ * Adding new clip sets to the manager should set a suitable filename.
+ */
+BOOST_AUTO_TEST_CASE( adding_new_clip_set_sets_filename )
+{
+	TextClipSet* set = new TextClipSet(_T(""), _T("Set"), "default", false);
+
+	TextClipsManager manager;
+	manager.Add(set);
+
+	BOOST_REQUIRE_EQUAL(_T("Tests\\Clips\\default.clips"), set->GetFilename());
 }
 
 BOOST_AUTO_TEST_SUITE_END();

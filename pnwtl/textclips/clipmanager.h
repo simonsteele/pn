@@ -13,6 +13,8 @@
 
 #include "../textclips.h"
 
+class FileFinderData;
+
 namespace TextClips {
 
 /**

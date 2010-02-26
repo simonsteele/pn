@@ -63,7 +63,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)\lib\boost_unit_test&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\lib\boost_unit_test&quot;;&quot;$(SolutionDir)\lib\&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
@@ -138,7 +138,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)\lib\boost_unit_test&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\lib\boost_unit_test&quot;;&quot;$(SolutionDir)\lib\&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -252,6 +252,26 @@
 				>
 			</File>
 			<File
+				RelativePath="..\third_party\genx\charProps.c"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\textclips\chunk.cpp"
 				>
 			</File>
@@ -260,11 +280,59 @@
 				>
 			</File>
 			<File
+				RelativePath="..\textclips\clipmanager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\textclips\clipparser.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Files.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\third_party\genx\genx.c"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\ScintillaIF.cpp"
 				>
 			</File>
 			<File
+				RelativePath="..\textclips.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\include\Utf8_16.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\xmlparser.cpp"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Mocks"
+			>
+			<File
+				RelativePath=".\mocks\mockoptions.h"
 				>
 			</File>
 		</Filter>

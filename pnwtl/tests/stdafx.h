@@ -25,9 +25,30 @@
 
 #include <assert.h>
 #define PNASSERT assert
+#define PN_NO_CSTRING 1
+
+#include <atlbase.h>
+#include <shellapi.h>
+
+// Disable the "unreferenced formal parameter" warning. I see no reason for it.
+#pragma warning( disable: 4100 )
+
+// Disable the CRT deprecation warnings in VS 2005
+#define _CRT_SECURE_NO_DEPRECATE
+#define _SCL_SECURE_NO_DEPRECATE
+#define _CRT_SECURE_NO_WARNINGS
+
+// Implement debug mode memory allocation checking.
+#ifdef _DEBUG
+	#define CRTDBG_MAP_ALLOC
+	#include <stdlib.h>
+	#include <crtdbg.h>
+	#define DEBUG_NEW  new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#endif // #ifdef _DEBUG
 
 #include "../allocator.h"
 #include "../pnextstring.h"
+#include "../xmlparser.h"
 
 #include <vector>
 #include <list>
@@ -42,6 +63,7 @@ typedef std::vector<tstring> tstring_array;
 // Boosty Goodness:
 #include <boost/shared_ptr.hpp>
 #include <boost/xpressive/xpressive.hpp>
+#include <boost/foreach.hpp>
 
 namespace boost { namespace xpressive {
 #ifdef _UNICODE
@@ -58,3 +80,11 @@ namespace boost { namespace xpressive {
 #include "../pnstrings.h"
 #include "../extiface.h"
 #include "../pntypes.h"
+#include "../files.h"
+#include "mocks/mockoptions.h"
+
+extern IOptionsWithString* g_Options;
+#define OPTIONS g_Options
+#define LOG(x) ::OutputDebugString(x);
+
+#define RETURN_UNEXPECTED(x, ret) assert(false);

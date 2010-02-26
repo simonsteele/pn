@@ -14,15 +14,6 @@
 #include "Files.h"
 #include "resource.h"
 
-#ifndef pnutils_h__included
-static TCHAR* tcsnewdup(LPCTSTR strin)
-{
-	TCHAR* ret = new TCHAR[_tcslen(strin)+1];
-	_tcscpy(ret, strin);
-	return ret;
-}
-#endif
-
 /**
  * @brief Get the dos file time of a file.
  * @param FileName fully qualified path.
