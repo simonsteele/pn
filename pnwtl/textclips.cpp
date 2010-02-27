@@ -12,6 +12,7 @@
 #include "textclips.h"
 #include "textclips/clipmanager.h"
 #include "textclips/clipwriter.h"
+#include "filename.h"
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -129,6 +130,12 @@ void TextClipSet::Remove(TextClips::Clip* clip)
 
 void TextClipSet::Save()
 {
+	CFileName fn(m_filename.c_str());
+	if (!DirExists(fn.GetPath().c_str()))
+	{
+		CreateDirectoryRecursive(fn.GetPath().c_str(), NULL);
+	}
+
 	TextClipsWriter writer;
 	writer.Start(m_filename.c_str());
 	writer.WriteClipSet(this);

@@ -147,14 +147,22 @@ void TextClipsManager::Add(TextClipSet* clips)
 	if (filename == NULL || filename[0] == NULL)
 	{
 		// Need to set a filename.
-		int index = 0;
 		Utf8_Tcs fnScheme(schemeName.c_str());
+		
+		// Find the scheme-specific path.
 		tstring userClipsPath;
 		OPTIONS->GetPNPath(userClipsPath, PNPATH_USERCLIPS);
+		CPathName userClipsPathname(userClipsPath);
+		userClipsPath = userClipsPathname;
+		userClipsPath += (LPCTSTR)fnScheme;
+		userClipsPath += _T("\\");
+
 		tstring filePart;
 		std::vector<tstring> existingFiles;
 		getAllKnownSetFilenames(schemeName.c_str(), existingFiles);
 		
+		int index = 0;
+
 		do
 		{
 			filePart = (LPCTSTR)fnScheme;
@@ -283,15 +291,16 @@ void TextClipsManager::parse(LPCTSTR filename)
  */
 void TextClipsManager::getAllKnownSetFilenames(const char* scheme, std::vector<tstring>& clipFiles)
 {
-	for (MAP_CLIPSETS::const_iterator i = m_schemeClipSets.begin();
-		i != m_schemeClipSets.end();
-		++i)
+	MAP_CLIPSETS::const_iterator i = m_schemeClipSets.find(std::string(scheme));
+	if (i == m_schemeClipSets.end())
 	{
-		BOOST_FOREACH(TextClipSet* set, (*i).second)
-		{
-			CFileName fn(set->GetFilename());
-			clipFiles.push_back(fn.GetFileName_NoExt());
-		}
+		return;
+	}
+
+	BOOST_FOREACH(TextClipSet* set, (*i).second)
+	{
+		CFileName fn(set->GetFilename());
+		clipFiles.push_back(fn.GetFileName_NoExt());
 	}
 }
 

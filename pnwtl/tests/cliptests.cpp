@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE( adding_new_clip_set_sets_filename )
 	TextClipsManager manager;
 	manager.Add(set);
 
-	BOOST_REQUIRE_EQUAL(_T("Tests\\User\\default.clips"), set->GetFilename());
+	BOOST_REQUIRE_EQUAL(_T("Tests\\User\\default\\default.clips"), set->GetFilename());
 }
 
 
@@ -271,7 +271,7 @@ BOOST_AUTO_TEST_CASE( filename_allocation_avoids_dupes )
 	TextClipSet* set = new TextClipSet(_T(""), _T("Set"), "default", false);
 	manager.Add(set);
 
-	BOOST_REQUIRE_EQUAL(_T("Tests\\User\\default\\default2.clips"), set->GetFilename());
+	BOOST_REQUIRE_EQUAL(_T("Tests\\User\\default\\default1.clips"), set->GetFilename());
 }
 
 BOOST_AUTO_TEST_SUITE_END();
