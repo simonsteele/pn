@@ -42,7 +42,7 @@ class TextClipsManager
 		void clear();
 		void copy(const TextClipsManager& copy);
 		void parse(LPCTSTR filename);
-		void getAllKnownSetFilenames(std::vector<tstring>& clipFiles);
+		void getAllKnownSetFilenames(const char* scheme, std::vector<tstring>& clipFiles);
 
 		MAP_CLIPSETS	m_schemeClipSets;
 		LIST_CLIPSETS*	m_loadingClips;

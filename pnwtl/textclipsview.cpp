@@ -258,6 +258,7 @@ LRESULT CClipsDocker::OnAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	}
 
 	set->Add(clip);
+	set->Save();
 
 	HTREEITEM clipItem = m_tv.InsertItem(clip->Name.c_str(), hParent, NULL);
 	m_tv.SetItemData(clipItem, reinterpret_cast<DWORD_PTR>(clip));
@@ -393,7 +394,7 @@ void CClipsDocker::InsertClip(TextClips::Clip* tc)
 		
 		pS->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
 		
-		::SetFocus(pS->m_hWnd);
+		pChild->SetFocus();
 	}
 }
 

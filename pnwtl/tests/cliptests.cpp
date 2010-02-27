@@ -263,14 +263,15 @@ BOOST_AUTO_TEST_CASE( adding_new_clip_set_sets_filename )
 BOOST_AUTO_TEST_CASE( filename_allocation_avoids_dupes )
 {
 	TextClipsManager manager;
-	manager.Add(new TextClipSet(_T("Blah\\default.clips"), _T("Set 2"), "python", false));
-	manager.Add(new TextClipSet(_T("Blah\\default1.clips"), _T("Set 3"), "c++", false));
+	manager.Add(new TextClipSet(_T("default\\default.clips"), _T("Set 2"), "default", false));
+	manager.Add(new TextClipSet(_T("python\\default1.clips"), _T("Set 3"), "python", false));
 	
-	// Because default and default1 already exist, this should become default2.clips.
+	// Because default already exists for default scheme, this should become default1.clips.
+	// default1 in c++ should be ignored.
 	TextClipSet* set = new TextClipSet(_T(""), _T("Set"), "default", false);
 	manager.Add(set);
 
-	BOOST_REQUIRE_EQUAL(_T("Tests\\User\\default2.clips"), set->GetFilename());
+	BOOST_REQUIRE_EQUAL(_T("Tests\\User\\default\\default2.clips"), set->GetFilename());
 }
 
 BOOST_AUTO_TEST_SUITE_END();

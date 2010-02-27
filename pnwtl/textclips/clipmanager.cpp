@@ -153,7 +153,7 @@ void TextClipsManager::Add(TextClipSet* clips)
 		OPTIONS->GetPNPath(userClipsPath, PNPATH_USERCLIPS);
 		tstring filePart;
 		std::vector<tstring> existingFiles;
-		getAllKnownSetFilenames(existingFiles);
+		getAllKnownSetFilenames(schemeName.c_str(), existingFiles);
 		
 		do
 		{
@@ -281,7 +281,7 @@ void TextClipsManager::parse(LPCTSTR filename)
 /**
  * Retrieves all known set filenames, excluding paths and extensions.
  */
-void TextClipsManager::getAllKnownSetFilenames(std::vector<tstring>& clipFiles)
+void TextClipsManager::getAllKnownSetFilenames(const char* scheme, std::vector<tstring>& clipFiles)
 {
 	for (MAP_CLIPSETS::const_iterator i = m_schemeClipSets.begin();
 		i != m_schemeClipSets.end();
