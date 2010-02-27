@@ -117,9 +117,14 @@ class TextClipSet
 		LPCTSTR GetName() const;
 
 		/**
-		 * Get the filename that stores these clips, or NULL if in the global store
+		 * Get the filename that stores these clips.
 		 */
 		LPCTSTR GetFilename() const;
+
+		/**
+		 * Set the filename of this clip set.
+		 */
+		void SetFilename(LPCTSTR filename);
 
 		/**
 		 * Get the scheme name if scheme-tied, NULL otherwise
@@ -139,7 +144,7 @@ class TextClipSet
 		/**
 		 * Save this clipset to its file
 		 */
-		void Save();
+		virtual void Save();
 
 	private:
 		void clear();
@@ -150,6 +155,7 @@ class TextClipSet
 		std::string m_scheme;
 		tstring m_filename;
 		bool m_encodeClipNames;
+		bool m_bDirty;
 };
 
 } // namespace TextClips

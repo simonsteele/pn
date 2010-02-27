@@ -14,6 +14,7 @@
 #include "clipwriter.h"
 #include "../include/filefinder.h"
 #include "../include/encoding.h"
+#include "../filename.h"
 
 namespace TextClips {
 
@@ -122,39 +123,93 @@ std::string TextClipsManager::BuildSortedClipList(LPCSTR schemeName) const
 	return result;
 }
 
+struct CaseInsensitiveComparer 
+{
+	CaseInsensitiveComparer(const tstring& x) : m_x(x) {}
+	bool operator()(const tstring &y) const 
+	{
+		return _tcsicmp(m_x.c_str(), y.c_str()) == 0;
+	}
+	const tstring& m_x;
+};
+
 void TextClipsManager::Add(TextClipSet* clips)
 {
-	if(clips->GetScheme() != NULL)
+	if(clips->GetScheme() == NULL)
 	{
-		MAP_CLIPSETS::iterator i = m_schemeClipSets.find(std::string(clips->GetScheme()));
-		if (i == m_schemeClipSets.end())
-		{
-			i = m_schemeClipSets.insert(MAP_CLIPSETS::value_type(std::string(clips->GetScheme()), LIST_CLIPSETS())).first;
-		}
-
-		(*i).second.push_back(clips);
+		throw std::exception("Text Clip Sets must have an associated scheme");
 	}
+
+	std::string schemeName(clips->GetScheme());
+
+	// Set up storage:
+	LPCTSTR filename = clips->GetFilename();
+	if (filename == NULL || filename[0] == NULL)
+	{
+		// Need to set a filename.
+		int index = 0;
+		Utf8_Tcs fnScheme(schemeName.c_str());
+		tstring userClipsPath;
+		OPTIONS->GetPNPath(userClipsPath, PNPATH_USERCLIPS);
+		tstring filePart;
+		std::vector<tstring> existingFiles;
+		getAllKnownSetFilenames(existingFiles);
+		
+		do
+		{
+			filePart = (LPCTSTR)fnScheme;
+			
+			// Add a number to the filename if it already exists and try again.
+			if (index > 0)
+			{
+				TCHAR indexstr[33];
+				_itot(index, &indexstr[0], 10);
+				filePart = filePart + indexstr;
+			}
+
+			index++;
+		}
+		while (std::find_if(existingFiles.begin(), existingFiles.end(), CaseInsensitiveComparer(filePart)) != existingFiles.end());
+
+		filePart += _T(".clips");
+
+		CFileName schemeFile(filePart.c_str());
+		schemeFile.ChangePathTo(userClipsPath.c_str());
+
+		clips->SetFilename(schemeFile.c_str());
+		
+	}
+
+	// Add to list for this set:
+	MAP_CLIPSETS::iterator i = m_schemeClipSets.find(schemeName);
+	if (i == m_schemeClipSets.end())
+	{
+		i = m_schemeClipSets.insert(MAP_CLIPSETS::value_type(schemeName, LIST_CLIPSETS())).first;
+	}
+
+	(*i).second.push_back(clips);
 }
 
 /**
- * First save all cached clip sets, then save those in their
- * own files.
+ * Delete a set from the clip store - includes file deletion.
  */
-void TextClipsManager::Save()
+void TextClipsManager::Delete(TextClipSet* clips)
 {
-	// iterate through and store the clips that need saving into a file other
-	// than the cache file in toSave, then save them.
-	for (MAP_CLIPSETS::iterator j = m_schemeClipSets.begin(); j != m_schemeClipSets.end(); ++j)
+	if(clips->GetScheme() == NULL)
 	{
-		BOOST_FOREACH(TextClipSet* set, (*j).second)
-		{
-			LPCTSTR filename = set->GetFilename();
-			if (filename != NULL)
-			{
-				set->Save();
-			}
-		}
+		throw std::exception("Text Clip Sets must have an associated scheme");
 	}
+
+	MAP_CLIPSETS::iterator i = m_schemeClipSets.find(std::string(clips->GetScheme()));
+	
+	if (i == m_schemeClipSets.end())
+	{
+		throw std::exception("Set not found"); 
+	}
+
+	(*i).second.remove(clips);
+
+	delete clips;
 }
 
 void TextClipsManager::Reset(const TextClipsManager& other)
@@ -220,6 +275,23 @@ void TextClipsManager::parse(LPCTSTR filename)
 	catch( XMLParserException& ex )
 	{
 		LOG(ex.GetMessage());
+	}
+}
+
+/**
+ * Retrieves all known set filenames, excluding paths and extensions.
+ */
+void TextClipsManager::getAllKnownSetFilenames(std::vector<tstring>& clipFiles)
+{
+	for (MAP_CLIPSETS::const_iterator i = m_schemeClipSets.begin();
+		i != m_schemeClipSets.end();
+		++i)
+	{
+		BOOST_FOREACH(TextClipSet* set, (*i).second)
+		{
+			CFileName fn(set->GetFilename());
+			clipFiles.push_back(fn.GetFileName_NoExt());
+		}
 	}
 }
 

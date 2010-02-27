@@ -34,8 +34,7 @@ class TextClipsManager
 		std::string BuildSortedClipList(LPCSTR schemeName) const;
 
 		void Add(TextClipSet* clips);
-
-		void Save();
+		void Delete(TextClipSet* clips);
 
 		void Reset(const TextClipsManager& copy);
 
@@ -43,6 +42,7 @@ class TextClipsManager
 		void clear();
 		void copy(const TextClipsManager& copy);
 		void parse(LPCTSTR filename);
+		void getAllKnownSetFilenames(std::vector<tstring>& clipFiles);
 
 		MAP_CLIPSETS	m_schemeClipSets;
 		LIST_CLIPSETS*	m_loadingClips;

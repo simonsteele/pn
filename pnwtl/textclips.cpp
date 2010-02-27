@@ -98,8 +98,13 @@ LPCTSTR TextClipSet::GetFilename() const
 	}
 	else
 	{
-		return NULL;
+		return _T("");
 	}
+}
+
+void TextClipSet::SetFilename(LPCTSTR filename)
+{
+	m_filename = filename;
 }
 
 LPCSTR TextClipSet::GetScheme() const
@@ -143,6 +148,8 @@ void TextClipSet::clear()
 void TextClipSet::Add(Clip* clip)
 {
 	m_clips.push_back(clip);
+	m_bDirty = true;
 }
+
 
 } // namespace TextClips

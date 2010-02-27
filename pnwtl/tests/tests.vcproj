@@ -288,6 +288,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\filename.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\Files.cpp"
 				>
 			</File>

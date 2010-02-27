@@ -167,6 +167,17 @@ BOOST_AUTO_TEST_CASE( stop_zero_should_be_end_caret_pos )
 }
 
 /**
+ * Can set clipset filename.
+ */
+BOOST_AUTO_TEST_CASE( set_clipset_filename )
+{
+	TextClipSet set(_T(""), _T("test"), "default", false);
+	BOOST_REQUIRE_EQUAL(_T(""), set.GetFilename());
+	set.SetFilename(_T("BLAH"));
+	BOOST_REQUIRE_EQUAL(_T("BLAH"), set.GetFilename());
+}
+
+/**
  * Retrieve by scheme name works.
  */
 BOOST_AUTO_TEST_CASE( add_retrieve_by_schemename )
@@ -182,7 +193,7 @@ BOOST_AUTO_TEST_CASE( add_retrieve_by_schemename )
 }
 
 /**
- * Retrieve by scheme name works.
+ * Can delete a set.
  */
 BOOST_AUTO_TEST_CASE( remove_set )
 {
@@ -190,9 +201,26 @@ BOOST_AUTO_TEST_CASE( remove_set )
 
 	TextClipSet* set = new TextClipSet(_T(""), _T("Set"), "default", false);
 	manager.Add(set);
-	// TODO: manager.Delete(set); Work out how to delete a set in tests.
+	manager.Delete(set);
 
 	BOOST_REQUIRE_EQUAL(0, manager.GetClips("default").size());
+}
+
+/**
+ * Deleting one set of several works correctly.
+ */
+BOOST_AUTO_TEST_CASE( remove_one_of_set )
+{
+	TextClipsManager manager;
+
+	TextClipSet* set = new TextClipSet(_T(""), _T("Set"), "default", false);
+	TextClipSet* set2 = new TextClipSet(_T(""), _T("Set 2"), "default", false);
+	manager.Add(set);
+	manager.Add(set2);
+	manager.Delete(set);
+
+	BOOST_REQUIRE_EQUAL(1, manager.GetClips("default").size());
+	BOOST_REQUIRE_EQUAL(set2, manager.GetClips("default").front());
 }
 
 /**
@@ -225,7 +253,24 @@ BOOST_AUTO_TEST_CASE( adding_new_clip_set_sets_filename )
 	TextClipsManager manager;
 	manager.Add(set);
 
-	BOOST_REQUIRE_EQUAL(_T("Tests\\Clips\\default.clips"), set->GetFilename());
+	BOOST_REQUIRE_EQUAL(_T("Tests\\User\\default.clips"), set->GetFilename());
+}
+
+
+/**
+ * Adding new clip sets to the manager should set a suitable filename.
+ */
+BOOST_AUTO_TEST_CASE( filename_allocation_avoids_dupes )
+{
+	TextClipsManager manager;
+	manager.Add(new TextClipSet(_T("Blah\\default.clips"), _T("Set 2"), "python", false));
+	manager.Add(new TextClipSet(_T("Blah\\default1.clips"), _T("Set 3"), "c++", false));
+	
+	// Because default and default1 already exist, this should become default2.clips.
+	TextClipSet* set = new TextClipSet(_T(""), _T("Set"), "default", false);
+	manager.Add(set);
+
+	BOOST_REQUIRE_EQUAL(_T("Tests\\User\\default2.clips"), set->GetFilename());
 }
 
 BOOST_AUTO_TEST_SUITE_END();
