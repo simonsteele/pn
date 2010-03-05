@@ -279,7 +279,7 @@ void Options::GetPNPath(tstring& path, int pathtype)
 				path += _T("Tools\\");
 				break;
 			case PNPATH_TAGGERS:
-				path += _T("Taggers\\");
+				// path += _T("Taggers\\"); - taggers now in the main directory.
 				break;
 			case PNPATH_PROJECTTEMPLATES:
 				path += _T("Projects\\");
