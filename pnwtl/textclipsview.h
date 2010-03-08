@@ -46,12 +46,16 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLORLISTBOX, OnCtlColor)
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, OnCtlColor)
 		MESSAGE_HANDLER(WM_GETMINMAXINFO, OnGetMinMaxInfo)
+		MESSAGE_HANDLER(PN_SETFOCUS, OnSetEditorFocus)
 		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHide)
 		COMMAND_ID_HANDLER(ID_CLIPS_ADD, OnAdd)
+		COMMAND_ID_HANDLER(ID_CLIPS_EDIT, OnEdit)
+		COMMAND_ID_HANDLER(ID_CLIPS_REMOVE, OnRemove)
 		COMMAND_HANDLER(IDC_CLIPSCOMBO, CBN_SELCHANGE, OnComboSelChange)
 		NOTIFY_HANDLER(IDC_CLIPSLIST, NM_DBLCLK, OnClipSelected);
 		NOTIFY_HANDLER(IDC_CLIPSLIST, NM_RETURN, OnClipEnterPressed);
 		NOTIFY_HANDLER(IDC_CLIPSLIST, LVN_GETINFOTIP, OnClipGetInfoTip);
+		NOTIFY_HANDLER(IDC_CLIPSLIST, TVN_SELCHANGED, OnClipSelChanged)
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
 
@@ -63,10 +67,12 @@ private:
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnSetEditorFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	
 	LRESULT OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 	LRESULT OnAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnAddSet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnRemoveSet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -76,6 +82,7 @@ private:
 	LRESULT OnClipSelected(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT OnClipEnterPressed(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT OnClipGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT OnClipSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	void AddClip(TextClips::Clip* tc);
 	void InsertClip(TextClips::Clip* tc);
@@ -84,6 +91,8 @@ private:
 	void setupView();
 	void setupToolbar();
 
+	TextClips::TextClipSet* getSetForItem(HTREEITEM item);
+	TextClips::TextClipSet* getSetForItem(HTREEITEM item, HTREEITEM& parent);
 	TextClips::TextClipSet* getSetFromSetItem(HTREEITEM setItem);
 	TextClips::TextClipSet* getOrCreateSet(LPCTSTR title);
 

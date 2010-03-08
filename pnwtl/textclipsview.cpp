@@ -9,15 +9,62 @@
  */
 
 #include "stdafx.h"
+
+#include <algorithm>
+
 #include "resource.h"
 #include "textclips.h"
 #include "textclips/clipmanager.h"
 #include "textclipsview.h"
 #include "textclipeditor.h"
 #include "childfrm.h"
-#include <algorithm>
 
 #define TOOLBAR_HEIGHT 22
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+// Utils
+
+namespace {
+
+TextClips::Clip* ClipPtrFromLParam(LPARAM param)
+{
+	return reinterpret_cast<TextClips::Clip*>(param);
+}
+
+int CALLBACK TreeSorter(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
+{
+	if (lParam1 == 0 && lParam2 != 0)
+	{
+		return 1;
+	}
+	else if (lParam2 == 0 && lParam1 != 0)
+	{
+		return -1;
+	}
+	else if (lParam1 == 0 && lParam2 == 0)
+	{
+		return 0;
+	}
+	
+	TextClips::Clip* clip1 = ClipPtrFromLParam(lParam1);
+	TextClips::Clip* clip2 = ClipPtrFromLParam(lParam2);
+	
+	if (clip1->Name < clip2->Name)
+	{
+		return -1;
+	}
+	else if (clip1->Name > clip2->Name)
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
+} // namespace {
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+// CClipsDocker
 
 CClipsDocker::CClipsDocker(TextClips::TextClipsManager* manager) : m_hWndToolBar(NULL), m_pTheClips(manager), m_hImgList(NULL)
 {
@@ -128,6 +175,18 @@ LRESULT CClipsDocker::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM l
 	return 0;
 }
 
+/**
+ * This is used to avoid the focus capture that happens in NM_DBLCLK, we post PN_SETFOCUS to ourselves
+ * and set the focus from there.
+ */
+LRESULT CClipsDocker::OnSetEditorFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	::LockWindowUpdate(::GetParent((HWND)lParam));
+	::SetFocus((HWND)lParam);
+	::LockWindowUpdate(NULL);
+	return 0;
+}
+
 LRESULT CClipsDocker::OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	//Hide();
@@ -166,21 +225,15 @@ LRESULT CClipsDocker::OnClipSelected(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 		InsertClip(clip);
 	}
 
-	return 0;
+	return 1;
 }
 
-LRESULT CClipsDocker::OnClipEnterPressed(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+/**
+ * Insert a selected clip into the current text, keyboard selection.
+ */
+LRESULT CClipsDocker::OnClipEnterPressed(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
-	/*int selIndex = m_view.GetSelectedIndex();
-	if(selIndex >= 0)
-	{
-		TextClips::Clip* clip = reinterpret_cast<TextClips::Clip*>( m_view.GetItemData(selIndex) );
-		
-		if(clip)
-			InsertClip(clip);
-	}*/
-
-	return 0;
+	return OnClipSelected(idCtrl, pnmh, bHandled);
 }
 
 LRESULT CClipsDocker::OnClipGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
@@ -218,6 +271,18 @@ LRESULT CClipsDocker::OnClipGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	return 0;
 }
 
+LRESULT CClipsDocker::OnClipSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	LPNMTREEVIEW pnmtv = reinterpret_cast<LPNMTREEVIEW>(pnmh);
+
+	bool haveClipSelected = pnmtv->itemNew.hItem != NULL && pnmtv->itemNew.lParam != 0;
+	bool haveSetSelected = !haveClipSelected && pnmtv->itemNew.hItem != NULL;
+	::SendMessage(m_hWndToolBar, TB_ENABLEBUTTON, ID_CLIPS_EDIT, haveClipSelected);
+	::SendMessage(m_hWndToolBar, TB_ENABLEBUTTON, ID_CLIPS_REMOVE, haveClipSelected);
+	::SendMessage(m_hWndToolBar, TB_ENABLEBUTTON, ID_CLIPS_REMOVESET, haveSetSelected);
+	return 0;
+}
+
 LRESULT CClipsDocker::OnAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CTextClipEditor dlg(std::string(""), std::string(""), tstring(_T("")));
@@ -244,17 +309,8 @@ LRESULT CClipsDocker::OnAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	}
 	else
 	{
-		// Item, let's see if we have a parent
-		hParent = m_tv.GetParentItem(hSelected);
-		if (hParent == NULL)
-		{
-			hParent = TVI_ROOT;
-			set = getOrCreateSet(NULL);
-		}
-		else
-		{
-			set = getSetFromSetItem(hParent);
-		}
+		// Item, get the set and find the parent item (or TVI_ROOT)
+		set = getSetForItem(hSelected, hParent);
 	}
 
 	set->Add(clip);
@@ -271,8 +327,63 @@ LRESULT CClipsDocker::OnAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	return 0;
 }
 
+LRESULT CClipsDocker::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	HTREEITEM hSelected = m_tv.GetSelectedItem();
+	
+	if (hSelected == NULL)
+	{
+		return 0;
+	}
+
+	DWORD_PTR itemData = m_tv.GetItemData(hSelected);
+	if (itemData == NULL)
+	{
+		return 0;
+	}
+
+	TextClips::Clip* clip = ClipPtrFromLParam(itemData);
+
+	CTextClipEditor dlg(clip->Shortcut, clip->Text, clip->Name);
+	if (dlg.DoModal() != IDOK)
+	{
+		return 0;
+	}
+
+	clip->Shortcut = dlg.GetShortcut();
+	clip->Text = dlg.GetText();
+	clip->Name = dlg.GetHint();
+
+	TextClips::TextClipSet* set = getSetForItem(hSelected);
+	set->Save();
+
+	m_tv.SetItemText(hSelected, clip->Name.c_str());
+
+	return 0;
+}
+
 LRESULT CClipsDocker::OnRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	HTREEITEM hSelected = m_tv.GetSelectedItem();
+	
+	if (hSelected == NULL)
+	{
+		return 0;
+	}
+
+	DWORD_PTR itemData = m_tv.GetItemData(hSelected);
+	if (itemData == NULL)
+	{
+		return 0;
+	}
+
+	TextClips::Clip* clip = ClipPtrFromLParam(itemData);
+	TextClips::TextClipSet* set = getSetForItem(hSelected);
+	set->Remove(clip);
+	delete clip;
+	set->Save();
+	m_tv.DeleteItem(hSelected);
+
 	return 0;
 }
 
@@ -294,41 +405,6 @@ void CClipsDocker::Reset()
 	m_combo.Clear();
 
 	setupView();
-}
-
-TextClips::Clip* ClipPtrFromLParam(LPARAM param)
-{
-	return reinterpret_cast<TextClips::Clip*>(param);
-}
-
-int CALLBACK TreeSorter(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
-{
-	if (lParam1 == 0 && lParam2 != 0)
-	{
-		return 1;
-	}
-	else if (lParam2 == 0 && lParam1 != 0)
-	{
-		return -1;
-	}
-	else if (lParam1 == 0 && lParam2 == 0)
-	{
-		return 0;
-	}
-	
-	TextClips::Clip* clip1 = ClipPtrFromLParam(lParam1);
-	TextClips::Clip* clip2 = ClipPtrFromLParam(lParam2);
-	
-	if (clip1->Name < clip2->Name)
-	{
-		return -1;
-	}
-	else if (clip1->Name > clip2->Name)
-	{
-		return 1;
-	}
-
-	return 0;
 }
 
 void CClipsDocker::LoadSet(Scheme* scheme)
@@ -394,7 +470,7 @@ void CClipsDocker::InsertClip(TextClips::Clip* tc)
 		
 		pS->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
 		
-		pChild->SetFocus();
+		PostMessage(PN_SETFOCUS, 0, reinterpret_cast<LPARAM>(pS->m_hWnd));
 	}
 }
 
@@ -419,15 +495,22 @@ void CClipsDocker::setupView()
 		index = m_combo.AddString((*i).GetTitle());
 		m_combo.SetItemDataPtr(index, &(*i));
 	}
+
+	m_combo.SetCurSel(0);
 }
 
-TBBUTTON TOOLBAR_BUTTONS[4] = 
+TBBUTTON TOOLBAR_BUTTONS[5] = 
 {
-	{ 0, ID_CLIPS_ADD, TBSTATE_ENABLED, TBSTYLE_CHECK, 0, 0, 0 },
-	{ 1, ID_CLIPS_REMOVE, 0, TBSTYLE_CHECK, 0, 0, 0 },
-	{ 2, ID_CLIPS_ADDSET, TBSTATE_ENABLED, TBSTYLE_CHECK, 0, 0, 0 },
-	{ 3, ID_CLIPS_REMOVESET, 0, TBSTYLE_CHECK, 0, 0, 0 },
+	{ 0, ID_CLIPS_ADD, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0, 0, 0 },
+	{ 4, ID_CLIPS_EDIT, 0, TBSTYLE_BUTTON, 0, 0, 0 },
+	{ 1, ID_CLIPS_REMOVE, 0, TBSTYLE_BUTTON, 0, 0, 0 },
+	{ 2, ID_CLIPS_ADDSET, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0, 0, 0 },
+	{ 3, ID_CLIPS_REMOVESET, 0, TBSTYLE_BUTTON, 0, 0, 0 },
 };
+
+#define TOOLBAR_BUTTON_COUNT 5
+#define TOOLBAR_BUTTON_SIZE 16
+#define TOOLBAR_WIDTH TOOLBAR_BUTTON_SIZE * TOOLBAR_BUTTON_COUNT
 
 void CClipsDocker::setupToolbar()
 {
@@ -440,13 +523,13 @@ void CClipsDocker::setupToolbar()
 	
 	if (lowColour)
 	{
-		imglist.Create(16, 16, ILC_COLOR24 | ILC_MASK, 4, 1);
-		bmp = static_cast<HBITMAP>(::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_TBCLIPS24), IMAGE_BITMAP, 64, 16, LR_SHARED));
+		imglist.Create(16, 16, ILC_COLOR24 | ILC_MASK, TOOLBAR_BUTTON_COUNT, 1);
+		bmp = static_cast<HBITMAP>(::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_TBCLIPS24), IMAGE_BITMAP, TOOLBAR_WIDTH, TOOLBAR_BUTTON_SIZE, LR_SHARED));
 	}
 	else
 	{
-		imglist.Create(16, 16, ILC_COLOR32 | ILC_MASK, 4, 1);
-		bmp = static_cast<HBITMAP>(::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_TBCLIPS), IMAGE_BITMAP, 64, 16, LR_SHARED | LR_CREATEDIBSECTION));
+		imglist.Create(16, 16, ILC_COLOR32 | ILC_MASK, TOOLBAR_BUTTON_COUNT, 1);
+		bmp = static_cast<HBITMAP>(::LoadImage(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(IDB_TBCLIPS), IMAGE_BITMAP, TOOLBAR_WIDTH, TOOLBAR_BUTTON_SIZE, LR_SHARED | LR_CREATEDIBSECTION));
 	}
 
 	imglist.Add(bmp, RGB(255, 0, 255));
@@ -462,13 +545,40 @@ void CClipsDocker::setupToolbar()
 
 	toolbar.Create(m_hWnd, rc, NULL, dwStyle, 0, IDC_CLIPSTOOLBAR);
 	
-	toolbar.SetBitmapSize(CSize(16, 16));
+	toolbar.SetBitmapSize(CSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE));
 	toolbar.SetImageList(m_hImgList);
 	
-	toolbar.AddButtons(4, &TOOLBAR_BUTTONS[0]);
+	toolbar.AddButtons(TOOLBAR_BUTTON_COUNT, &TOOLBAR_BUTTONS[0]);
 	toolbar.SetButtonSize(CSize(20, 20));
 
 	m_hWndToolBar = toolbar.Detach();
+}
+
+/**
+ * Get a clip set for the selected clip tree item.
+ */
+TextClips::TextClipSet* CClipsDocker::getSetForItem(HTREEITEM item)
+{
+	HTREEITEM hParent(NULL);
+	return getSetForItem(item, hParent);
+}
+
+/**
+ * Get a clip set for the selected clip tree item, and also return the 
+ * HTREEITEM for the set where it exists.
+ */
+TextClips::TextClipSet* CClipsDocker::getSetForItem(HTREEITEM item, HTREEITEM& hParent)
+{
+	hParent = m_tv.GetParentItem(item);
+	if (hParent == NULL)
+	{
+		hParent = TVI_ROOT;
+		return getOrCreateSet(NULL);
+	}
+	else
+	{
+		return getSetFromSetItem(hParent);
+	}	
 }
 
 /**

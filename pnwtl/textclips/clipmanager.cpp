@@ -39,6 +39,24 @@ TextClipsManager::~TextClipsManager()
 	clear();
 }
 
+template <class T, class TIterator> class contains_predicate : public std::unary_function<T, bool> 
+{
+public:
+	explicit contains_predicate(TIterator begin, TIterator end) : m_begin(begin), m_end(end)
+	{
+	}
+
+	bool operator( ) ( T& val ) 
+	{
+		return std::find(m_begin, m_end, val) != m_end;
+	}
+
+private:
+	TIterator m_begin;
+	TIterator m_end;
+};
+
+
 const LIST_CLIPSETS& TextClipsManager::GetClips(LPCSTR schemeName)
 {
 	MAP_CLIPSETS::iterator i = m_schemeClipSets.find(std::string(schemeName));
@@ -48,11 +66,8 @@ const LIST_CLIPSETS& TextClipsManager::GetClips(LPCSTR schemeName)
 		return (*i).second;
 	}
 	
-	// Not loaded yet...
-	FileFinder<TextClipsManager> finder(this, &TextClipsManager::OnFound);
-
+	// No clips loaded yet, let's do it:
 	i = m_schemeClipSets.insert(MAP_CLIPSETS::value_type(std::string(schemeName), LIST_CLIPSETS())).first;
-	m_loadingClips = &(*i).second;
 
 	tstring path;
 	tstring usPath;
@@ -69,19 +84,52 @@ const LIST_CLIPSETS& TextClipsManager::GetClips(LPCSTR schemeName)
 	usPath += (LPCTSTR)scheme;
 	usPath += _T("\\");
 
-	if (DirExists(path.c_str()))
-	{
-		finder.Find(path.c_str(), _T("*.clips"));
+	FileFinderList finder;
+	std::list<tstring> userFiles;
+
+	if( DirExists(usPath.c_str()) )
+	{		
+		const std::list<tstring>& foundFiles = finder.GetFiles(usPath.c_str(), _T("*.clips"), false);
+		userFiles.insert(userFiles.end(), foundFiles.begin(), foundFiles.end());
 	}
 	
-	// Search user clips directory and load those:
-	if( DirExists(usPath.c_str()) )
-	{
-		finder.Find(usPath.c_str(), _T("*.clips"));
-	}
+	m_loadingClips = &(*i).second;
 
+	if (DirExists(path.c_str()))
+	{
+		FileFinderList finder;
+
+		std::list<tstring> foundFiles(finder.GetFiles(path.c_str(), _T("*.clips"), false));
+		foundFiles.remove_if(contains_predicate<tstring, std::list<tstring>::const_iterator>(userFiles.begin(), userFiles.end()));
+
+		// Load these files:
+		loadClips(path.c_str(), foundFiles);
+
+		// Switch all filenames to point to user settings in case of
+		// user modification:
+		BOOST_FOREACH (TextClipSet* set, (*i).second)
+		{
+			CFileName setfn(set->GetFilename());
+			setfn.ChangePathTo(usPath.c_str());
+			set->SetFilename(setfn.c_str());
+		}
+	}
+	
+	// load user files:
+	loadClips(usPath.c_str(), userFiles);
+	
 	m_loadingClips = NULL;
 	return (*i).second;
+}
+
+void TextClipsManager::loadClips(LPCTSTR path, std::list<tstring>& files)
+{
+	BOOST_FOREACH (tstring& file, files)
+	{
+		CFileName clipsFile(file);
+		clipsFile.Root(path);
+		parse(clipsFile.c_str());
+	}
 }
 
 bool SortClipsByShortcut(const Clip* p1, const Clip* p2)
@@ -224,17 +272,6 @@ void TextClipsManager::Reset(const TextClipsManager& other)
 {
 	clear();
 	copy(other);
-}
-
-/**
- * Called by the file finder class, creates a new TextClipSet from
- * the given file path.
- */
-void TextClipsManager::OnFound(LPCTSTR path, FileFinderData& file, bool& /*shouldContinue*/)
-{
-	tstring fullpath(path);
-	fullpath += file.GetFilename();
-	parse(fullpath.c_str());
 }
 
 /**
