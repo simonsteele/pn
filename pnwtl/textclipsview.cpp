@@ -18,50 +18,29 @@
 #include "textclipsview.h"
 #include "textclipeditor.h"
 #include "childfrm.h"
+#include "pndialogs.h"
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+// Our Toolbar Bits
 
 #define TOOLBAR_HEIGHT 22
 
-///////////////////////////////////////////////////////////////////////////////////////////////
-// Utils
-
 namespace {
 
-TextClips::Clip* ClipPtrFromLParam(LPARAM param)
+TBBUTTON TOOLBAR_BUTTONS[5] = 
 {
-	return reinterpret_cast<TextClips::Clip*>(param);
+	{ 0, ID_CLIPS_ADD, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0, 0, 0 },
+	{ 4, ID_CLIPS_EDIT, 0, TBSTYLE_BUTTON, 0, 0, 0 },
+	{ 1, ID_CLIPS_REMOVE, 0, TBSTYLE_BUTTON, 0, 0, 0 },
+	{ 2, ID_CLIPS_ADDSET, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0, 0, 0 },
+	{ 3, ID_CLIPS_REMOVESET, 0, TBSTYLE_BUTTON, 0, 0, 0 },
+};
+
 }
 
-int CALLBACK TreeSorter(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
-{
-	if (lParam1 == 0 && lParam2 != 0)
-	{
-		return 1;
-	}
-	else if (lParam2 == 0 && lParam1 != 0)
-	{
-		return -1;
-	}
-	else if (lParam1 == 0 && lParam2 == 0)
-	{
-		return 0;
-	}
-	
-	TextClips::Clip* clip1 = ClipPtrFromLParam(lParam1);
-	TextClips::Clip* clip2 = ClipPtrFromLParam(lParam2);
-	
-	if (clip1->Name < clip2->Name)
-	{
-		return -1;
-	}
-	else if (clip1->Name > clip2->Name)
-	{
-		return 1;
-	}
-
-	return 0;
-}
-
-} // namespace {
+#define TOOLBAR_BUTTON_COUNT 5
+#define TOOLBAR_BUTTON_SIZE 16
+#define TOOLBAR_WIDTH TOOLBAR_BUTTON_SIZE * TOOLBAR_BUTTON_COUNT
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // CClipsDocker
@@ -108,6 +87,7 @@ LRESULT CClipsDocker::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 	m_tv.SetIndent(0);
 	m_tv.ShowWindow(SW_SHOW);
 	m_tv.SetExtendedStyle(TVS_EX_DOUBLEBUFFER, TVS_EX_DOUBLEBUFFER);
+	m_tv.SetItemHeight(m_tv.GetItemHeight() + 4);
 
 	m_combo.Create(m_hWnd, rcCombo, _T("ClipsCombo"), WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_TABSTOP | CBS_DROPDOWNLIST | CBS_SORT, 0, IDC_CLIPSCOMBO);
 	m_combo.SetFont( static_cast<HFONT> (GetStockObject( DEFAULT_GUI_FONT )) );
@@ -223,9 +203,10 @@ LRESULT CClipsDocker::OnClipSelected(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 	if(clip != NULL)
 	{
 		InsertClip(clip);
+		return 1;
 	}
 
-	return 1;
+	return 0;
 }
 
 /**
@@ -306,6 +287,7 @@ LRESULT CClipsDocker::OnAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	{
 		// Set selected
 		set = getSetFromSetItem(hSelected);
+		hParent = hSelected;
 	}
 	else
 	{
@@ -389,11 +371,41 @@ LRESULT CClipsDocker::OnRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 LRESULT CClipsDocker::OnAddSet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	CInputDialog ib(LS(IDS_ADDCLIPSETTITLE), LS(IDS_ADDCLIPSETCAPTION));
+	if (ib.DoModal(g_Context.m_frame->GetWindow()->m_hWnd) == IDOK)
+	{
+		if(ib.GetInput() == NULL)
+		{
+			return 0;
+		}
+
+		// Create the set, ignoring this if the name is a duplicate:
+		getOrCreateSet(ib.GetInput());
+	}
+	
 	return 0;
 }
 
 LRESULT CClipsDocker::OnRemoveSet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+	HTREEITEM hSelected = m_tv.GetSelectedItem();
+
+	if (hSelected == NULL)
+	{
+		return 0;
+	}
+
+	// Item data must be null for a set.
+	DWORD_PTR itemData = m_tv.GetItemData(hSelected);
+	if (itemData != NULL)
+	{
+		return 0;
+	}
+
+	TextClips::TextClipSet* set = getSetFromSetItem(hSelected);
+	m_pTheClips->Delete(set);
+	m_tv.DeleteItem(hSelected);
+
 	return 0;
 }
 
@@ -439,12 +451,7 @@ void CClipsDocker::LoadSet(Scheme* scheme)
 		}
 	}
 
-	TVSORTCB sort = {0};
-	sort.hParent = TVI_ROOT;
-	sort.lParam = 0;
-	sort.lpfnCompare = &TreeSorter;
-
-	m_tv.SortChildrenCB(&sort, false);
+	m_tv.SortSets();
 }
 
 inline void CClipsDocker::AddClip(TextClips::Clip* tc)
@@ -498,19 +505,6 @@ void CClipsDocker::setupView()
 
 	m_combo.SetCurSel(0);
 }
-
-TBBUTTON TOOLBAR_BUTTONS[5] = 
-{
-	{ 0, ID_CLIPS_ADD, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0, 0, 0 },
-	{ 4, ID_CLIPS_EDIT, 0, TBSTYLE_BUTTON, 0, 0, 0 },
-	{ 1, ID_CLIPS_REMOVE, 0, TBSTYLE_BUTTON, 0, 0, 0 },
-	{ 2, ID_CLIPS_ADDSET, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0, 0, 0 },
-	{ 3, ID_CLIPS_REMOVESET, 0, TBSTYLE_BUTTON, 0, 0, 0 },
-};
-
-#define TOOLBAR_BUTTON_COUNT 5
-#define TOOLBAR_BUTTON_SIZE 16
-#define TOOLBAR_WIDTH TOOLBAR_BUTTON_SIZE * TOOLBAR_BUTTON_COUNT
 
 void CClipsDocker::setupToolbar()
 {
@@ -629,5 +623,12 @@ TextClips::TextClipSet* CClipsDocker::getOrCreateSet(LPCTSTR title)
 	// We didn't find the set:
 	TextClips::TextClipSet* newSet = new TextClips::TextClipSet(_T(""), title, scheme->GetName(), false);
 	m_pTheClips->Add(newSet);
+	if (title != NULL && title[0])
+	{
+		// This is a named Clip Set, add an item for it
+		m_tv.InsertItem(title, TVI_ROOT, NULL);
+		m_tv.SortSets();
+	}
+
 	return newSet;
 }

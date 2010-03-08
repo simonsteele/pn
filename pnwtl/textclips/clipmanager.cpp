@@ -265,6 +265,11 @@ void TextClipsManager::Delete(TextClipSet* clips)
 
 	(*i).second.remove(clips);
 
+	if (::FileExists(clips->GetFilename()))
+	{
+		::DeleteFile(clips->GetFilename());
+	}
+
 	delete clips;
 }
 

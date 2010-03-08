@@ -205,7 +205,9 @@
 #define ID_OUTPUT_CLEAR                 259
 #define IDS_MARKALL_COUNT               259
 #define ID_OUTPUT_HIDE                  260
+#define IDS_ADDCLIPSETCAPTION           260
 #define ID_TOOLS_USETABS                261
+#define IDS_ADDCLIPSETTITLE             261
 #define IDD_SMARTSTARTEDITOR            262
 #define ID_FILE_REVERT                  263
 #define ID_VIEW_INDIVIDUALOUTPUT        264
@@ -807,11 +809,11 @@
 #define ID_EDIT_STRIPTRAILING           33149
 #define ID_WINDOW_CLOSESPLIT            33150
 #define ID_EDIT_ENSUREFINALBLANKLINE    33151
-#define ID_CLIPS_ADD					33152
-#define ID_CLIPS_REMOVE					33153
-#define ID_CLIPS_ADDSET					33154
-#define ID_CLIPS_REMOVESET				33155
-#define ID_CLIPS_EDIT					33156
+#define ID_CLIPS_ADD                    33152
+#define ID_CLIPS_REMOVE                 33153
+#define ID_CLIPS_ADDSET                 33154
+#define ID_CLIPS_REMOVESET              33155
+#define ID_CLIPS_EDIT                   33156
 
 // Next default values for new objects
 // 
