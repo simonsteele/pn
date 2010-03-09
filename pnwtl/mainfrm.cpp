@@ -1618,7 +1618,7 @@ LRESULT CMainFrame::OnFileOpenWorkspaceState(WORD /*wNotifyCode*/, WORD /*wID*/,
 {
 	CAutoOpenDialog dlgOpen(LS(IDS_WORKSPACEFILES));
 	
-	if (dlgOpen.DoModal(m_hWnd))
+	if (dlgOpen.DoModal(m_hWnd) == IDOK)
 	{
 		WorkspaceState wss;
 		wss.Load(dlgOpen.GetSingleFileName());

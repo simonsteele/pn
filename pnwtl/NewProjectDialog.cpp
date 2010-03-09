@@ -2,7 +2,7 @@
  * @file newprojectdialog.cpp
  * @brief New Project Dialog
  * @author Simon Steele
- * @note Copyright (c) 2005-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -148,7 +148,7 @@ LRESULT CNewProjectDialog::OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/,
 	strTitle.LoadString(IDS_BROWSEFINDROOT);
 
 	CPNFolderDialog fd(m_hWnd, (LPCTSTR)str, strTitle);
-	if(fd.DoModal())
+	if(fd.DoModal() == IDOK)
 	{
 		m_folderCombo.SetWindowText( fd.GetFolderPath() );
 	}
