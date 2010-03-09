@@ -37,9 +37,9 @@ XmlNode::XmlNode(LPCTSTR qualifiedName)
 	{
 		TCHAR* buf = new TCHAR[_tcslen(qualifiedName)+1];
 
-		sName = pSep+1;
-		int nslen = (pSep - qualifiedName) / sizeof(TCHAR);
-		_tcsncpy(buf, qualifiedName, (pSep - qualifiedName) / sizeof(TCHAR));
+		sName = pSep + 1;
+		int nslen = pSep - qualifiedName;
+		_tcsncpy(buf, qualifiedName, nslen);
 		buf[nslen] = _T('\0');
 		sNamespace = buf;
 		

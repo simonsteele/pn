@@ -223,6 +223,10 @@
 				RelativePath=".\tests.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\userdatatests.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -314,6 +318,10 @@
 						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\projectmeta.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\ScintillaIF.cpp"

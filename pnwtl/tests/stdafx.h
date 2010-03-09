@@ -81,6 +81,7 @@ namespace boost { namespace xpressive {
 #include "../extiface.h"
 #include "../pntypes.h"
 #include "../files.h"
+#include "../filename.h"
 #include "mocks/mockoptions.h"
 
 extern IOptionsWithString* g_Options;
@@ -88,3 +89,4 @@ extern IOptionsWithString* g_Options;
 #define LOG(x) ::OutputDebugString(x);
 
 #define RETURN_UNEXPECTED(x, ret) assert(false);
+#define UNEXPECTED(x) assert(false);

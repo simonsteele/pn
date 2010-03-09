@@ -872,29 +872,6 @@ void Project::characterData(XML_CSTR data, int len)
 	}
 }
 
-//void Project::writeDefinition(SProjectWriter* definition)
-//{
-//	genxStartElementLiteral(definition->w, NULL, u("Project"));
-//	genxStatus writeOk = genxAddAttributeLiteral(definition->w, NULL, u("name"), u(name.c_str()));
-//	if(writeOk == GENX_BAD_UTF8)
-//	{
-//		Tcs_Utf8 conv(name.c_str());
-//		writeOk = genxAddAttributeLiteral(definition->w, NULL, u("name"), conv);
-//
-//		if(writeOk != GENX_SUCCESS)
-//			UNEXPECTED(_T("Could not encode project name for writing."));
-//	}
-//
-//	if(typeID.length() != 0)
-//	{
-//		genxAddAttributeLiteral(definition->w, NULL, u("typeId"), u(typeID.c_str()));
-//	}
-//
-//	writeContents(definition);
-//
-//	genxEndElement(definition->w);
-//}
-
 void Project::processProject(XMLAttributes& atts)
 {
 	if(atts.getValue(_T("name")) != NULL)
