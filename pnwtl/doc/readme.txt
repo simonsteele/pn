@@ -1,6 +1,6 @@
 ========================================
-Release Name: 2.1.2.x
-Build: 2.1.2.x, Version Label: 
+Release Name: 2.1.3.x
+Build: 2.1.3.x, Version Label: 
 ========================================
 
 What's new in 2.1?
@@ -17,12 +17,13 @@ What's new in 2.1?
 9) Smart fields in code templates
 10) Small visual tweaks
 11) Line padding options - increase visual space between lines for improved readability
+12) Complete redesign of text clips, with editing built in to new UI view and code templates and text clips consolidated
 
 What's new in 2.1 under the cover?
 ------------------------------------------
 
 1) Scintilla updated to latest
-2) Boost updated to 1.39
+2) Boost updated to 1.41
 3) Now built with Visual Studio 2008
 
 Bug Fixes:
