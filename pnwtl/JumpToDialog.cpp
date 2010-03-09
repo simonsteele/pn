@@ -213,7 +213,7 @@ void CJumpToDialog::filter(LPCTSTR text)
 	lvfi.flags = LVFI_PARTIAL;
 	lvfi.psz = text;
 
-	int index = list.FindItem(&lvfi, 0);
+	int index = list.FindItem(&lvfi, -1);
 	if(index != -1)
 		list.SelectItem(index);
 }
