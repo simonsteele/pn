@@ -87,7 +87,8 @@ LRESULT CTextClipsTreeCtrl::OnCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHa
 				TCHAR textbuf[256];
 				TVITEMEX info = {0};
 				info.hItem = item;
-				info.mask = TVIF_CHILDREN | TVIF_TEXT | TVIF_PARAM;
+				info.mask = TVIF_CHILDREN | TVIF_TEXT | TVIF_PARAM | TVIF_STATE;
+				info.stateMask = TVIS_EXPANDED;
 				info.pszText = &textbuf[0];
 				info.cchTextMax = 256;
 				GetItem(&info);
@@ -138,19 +139,19 @@ void CTextClipsTreeCtrl::DrawClipSet(CDCHandle& dc, CRect& rcItem, TVITEMEX& inf
 
 	TRIVERTEX        vert[2];
 	GRADIENT_RECT    gRect;
-	vert [0] .x      = rcItem.left;
-	vert [0] .y      = rcItem.top;
-	vert [0] .Red    = GetRValue(btnFace) << 8;
-	vert [0] .Green  = GetGValue(btnFace) << 8;
-	vert [0] .Blue   = GetBValue(btnFace) << 8;
-	vert [0] .Alpha  = 0x0000;
+	vert[0].x      = rcItem.left;
+	vert[0].y      = rcItem.top;
+	vert[0].Red    = GetRValue(btnFace) << 8;
+	vert[0].Green  = GetGValue(btnFace) << 8;
+	vert[0].Blue   = GetBValue(btnFace) << 8;
+	vert[0].Alpha  = 0x0000;
 
-	vert [1] .x      = rcItem.right;
-	vert [1] .y      = rcItem.bottom;
-	vert [1] .Red    = GetRValue(btnHl) << 8;
-	vert [1] .Green  = GetGValue(btnHl) << 8;
-	vert [1] .Blue   = GetBValue(btnHl) << 8;
-	vert [1] .Alpha  = 0x0000;
+	vert[1].x      = rcItem.right;
+	vert[1].y      = rcItem.bottom;
+	vert[1].Red    = GetRValue(btnHl) << 8;
+	vert[1].Green  = GetGValue(btnHl) << 8;
+	vert[1].Blue   = GetBValue(btnHl) << 8;
+	vert[1].Alpha  = 0x0000;
 
 	gRect.UpperLeft  = 0;
 	gRect.LowerRight = 1;
@@ -179,7 +180,7 @@ void CTextClipsTreeCtrl::DrawClipSet(CDCHandle& dc, CRect& rcItem, TVITEMEX& inf
 
 	if (m_HeaderTheme.IsThemingSupported())
 	{
-		m_HeaderTheme.DrawThemeBackground(dc, EBP_NORMALGROUPCOLLAPSE, EBNGC_NORMAL, rcItem);
+		m_HeaderTheme.DrawThemeBackground(dc, (info.state & TVIS_EXPANDED) ? EBP_NORMALGROUPCOLLAPSE : EBP_NORMALGROUPEXPAND, EBNGC_NORMAL, rcItem);
 	}
 }
 
@@ -190,36 +191,39 @@ void CTextClipsTreeCtrl::DrawClip(CDCHandle& dc, CRect& rcItem, HTREEITEM item, 
 {
 	// Draw an actual clip:
 	TextClips::Clip* clip = reinterpret_cast<TextClips::Clip*>(GetItemData(item));
-	if (clip != NULL && clip->Shortcut.size())
+	if (clip != NULL)
 	{
 		// Draw Text:
 		dc.DrawText(info.pszText, -1, rcItem, DT_SINGLELINE | DT_HIDEPREFIX | DT_VCENTER);
 
-		// Draw Shortcut:
-		CA2CT shortcutText(clip->Shortcut.c_str());
-		
-		COLORREF shortcutBg(GetSysColor(COLOR_BTNFACE));
-		CBrush shortcutBrush;
-		shortcutBrush.CreateSolidBrush(shortcutBg);
-		CPen shortcutPen;
-		shortcutPen.CreatePen(PS_SOLID, 1, shortcutBg);
+		if (clip->Shortcut.size())
+		{
+			// Draw Shortcut:
+			CA2CT shortcutText(clip->Shortcut.c_str());
+			
+			COLORREF shortcutBg(GetSysColor(COLOR_BTNFACE));
+			CBrush shortcutBrush;
+			shortcutBrush.CreateSolidBrush(shortcutBg);
+			CPen shortcutPen;
+			shortcutPen.CreatePen(PS_SOLID, 1, shortcutBg);
 
-		// Work out where to draw the shortcut:
-		CRect rcRow(rcItem);
-		
-		dc.DrawText(shortcutText, -1, rcItem, DT_SINGLELINE | DT_CALCRECT | DT_HIDEPREFIX);
-		rcItem.MoveToX(rcRow.right - 5 - rcItem.Width());
-		rcItem.MoveToY(rcRow.top + ((rcRow.Height() - rcItem.Height()) / 2));
-		rcItem.InflateRect(2, 2);
+			// Work out where to draw the shortcut:
+			CRect rcRow(rcItem);
+			
+			dc.DrawText(shortcutText, -1, rcItem, DT_SINGLELINE | DT_CALCRECT | DT_HIDEPREFIX);
+			rcItem.MoveToX(rcRow.right - 5 - rcItem.Width());
+			rcItem.MoveToY(rcRow.top + ((rcRow.Height() - rcItem.Height()) / 2));
+			rcItem.InflateRect(2, 2);
 
-		// And do the drawing:
-		dc.SetBkColor(shortcutBg);
-		CBrushHandle pOldBrush(dc.SelectBrush(shortcutBrush));
-		CPenHandle pOldPen(dc.SelectPen(shortcutPen));
-		dc.RoundRect(rcItem, CPoint(2, 2));
-		dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
-		dc.DrawText(shortcutText, -1, rcItem, DT_SINGLELINE | DT_CENTER | DT_HIDEPREFIX | DT_VCENTER);
-		dc.SelectBrush(pOldBrush);
-		dc.SelectPen(pOldPen);
+			// And do the drawing:
+			dc.SetBkColor(shortcutBg);
+			CBrushHandle pOldBrush(dc.SelectBrush(shortcutBrush));
+			CPenHandle pOldPen(dc.SelectPen(shortcutPen));
+			dc.RoundRect(rcItem, CPoint(2, 2));
+			dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
+			dc.DrawText(shortcutText, -1, rcItem, DT_SINGLELINE | DT_CENTER | DT_HIDEPREFIX | DT_VCENTER);
+			dc.SelectBrush(pOldBrush);
+			dc.SelectPen(pOldPen);
+		}
 	}
 }
