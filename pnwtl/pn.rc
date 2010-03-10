@@ -1878,7 +1878,12 @@ BEGIN
     IDS_MARKALL_COUNT       "Found %d occurrences"
     IDS_ADDCLIPSETCAPTION   "Type the name of the new Clip set..."
     IDS_ADDCLIPSETTITLE     "New Clip Set"
+    ID_CLIPS_ADD            "Add Clip"
     ID_FILE_REVERT          "Revert this document to the current saved state\nRevert"
+    ID_CLIPS_REMOVE         "Remove Clip"
+    ID_CLIPS_EDIT           "Edit Clip"
+    ID_CLIPS_ADDSET         "Add Clip Set"
+    ID_CLIPS_REMOVESET      "Remove Clip Set"
 END
 
 STRINGTABLE 

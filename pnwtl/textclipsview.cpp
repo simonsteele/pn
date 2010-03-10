@@ -24,23 +24,24 @@
 // Our Toolbar Bits
 
 #define TOOLBAR_HEIGHT 22
-
-namespace {
-
-TBBUTTON TOOLBAR_BUTTONS[5] = 
-{
-	{ 0, ID_CLIPS_ADD, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0, 0, 0 },
-	{ 4, ID_CLIPS_EDIT, 0, TBSTYLE_BUTTON, 0, 0, 0 },
-	{ 1, ID_CLIPS_REMOVE, 0, TBSTYLE_BUTTON, 0, 0, 0 },
-	{ 2, ID_CLIPS_ADDSET, TBSTATE_ENABLED, TBSTYLE_BUTTON, 0, 0, 0 },
-	{ 3, ID_CLIPS_REMOVESET, 0, TBSTYLE_BUTTON, 0, 0, 0 },
-};
-
-}
-
 #define TOOLBAR_BUTTON_COUNT 5
 #define TOOLBAR_BUTTON_SIZE 16
 #define TOOLBAR_WIDTH TOOLBAR_BUTTON_SIZE * TOOLBAR_BUTTON_COUNT
+
+namespace {
+
+// TODO: Can we store the tooltip text with the same ids as the buttons?
+
+TBBUTTON TOOLBAR_BUTTONS[TOOLBAR_BUTTON_COUNT] = 
+{
+	{ 0, ID_CLIPS_ADD, TBSTATE_ENABLED, BTNS_BUTTON, 0, 0, 0 },
+	{ 4, ID_CLIPS_EDIT, 0, BTNS_BUTTON, 0, 0, 0 },
+	{ 1, ID_CLIPS_REMOVE, 0, BTNS_BUTTON, 0, 0, 0 },
+	{ 2, ID_CLIPS_ADDSET, TBSTATE_ENABLED, BTNS_BUTTON, 0, 0, 0 },
+	{ 3, ID_CLIPS_REMOVESET, 0, BTNS_BUTTON, 0, 0, 0 },
+};
+
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // CClipsDocker
@@ -261,6 +262,26 @@ LRESULT CClipsDocker::OnClipSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHa
 	::SendMessage(m_hWndToolBar, TB_ENABLEBUTTON, ID_CLIPS_EDIT, haveClipSelected);
 	::SendMessage(m_hWndToolBar, TB_ENABLEBUTTON, ID_CLIPS_REMOVE, haveClipSelected);
 	::SendMessage(m_hWndToolBar, TB_ENABLEBUTTON, ID_CLIPS_REMOVESET, haveSetSelected);
+	return 0;
+}
+
+/**
+ * Get the tooltip text for each item.
+ */
+LRESULT CClipsDocker::OnToolbarGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
+{
+	LPNMTBGETINFOTIP pGetInfoTip = (LPNMTBGETINFOTIP)pnmh;
+
+	tstring str = LS(pGetInfoTip->iItem);
+
+	if (str.size() >= static_cast<size_t>(pGetInfoTip->cchTextMax));
+	{
+		str.resize(pGetInfoTip->cchTextMax - 4);
+		str += _T("...");
+	}
+
+	_tcscpy(pGetInfoTip->pszText, str.c_str());
+
 	return 0;
 }
 
@@ -538,10 +559,10 @@ void CClipsDocker::setupToolbar()
 	DWORD dwStyle = WS_CHILD | WS_VISIBLE | CCS_BOTTOM | CCS_NODIVIDER | TBSTYLE_TOOLTIPS | CCS_NORESIZE | TBSTYLE_FLAT;
 
 	toolbar.Create(m_hWnd, rc, NULL, dwStyle, 0, IDC_CLIPSTOOLBAR);
-	
+	toolbar.SetButtonStructSize();
 	toolbar.SetBitmapSize(CSize(TOOLBAR_BUTTON_SIZE, TOOLBAR_BUTTON_SIZE));
 	toolbar.SetImageList(m_hImgList);
-	
+
 	toolbar.AddButtons(TOOLBAR_BUTTON_COUNT, &TOOLBAR_BUTTONS[0]);
 	toolbar.SetButtonSize(CSize(20, 20));
 

@@ -1090,10 +1090,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\toolbar.h"
-				>
-			</File>
-			<File
 				RelativePath="include\Utf8_16.cpp"
 				>
 			</File>
@@ -1594,6 +1590,10 @@
 				</File>
 				<File
 					RelativePath=".\controls\textclipstree.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\toolbar.h"
 					>
 				</File>
 			</Filter>

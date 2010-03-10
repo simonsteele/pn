@@ -209,11 +209,16 @@
 #define ID_TOOLS_USETABS                261
 #define IDS_ADDCLIPSETTITLE             261
 #define IDD_SMARTSTARTEDITOR            262
+#define IDS_CLIPS_ADDCLIP               262
 #define ID_FILE_REVERT                  263
 #define ID_VIEW_INDIVIDUALOUTPUT        264
+#define IDS_CLIPS_REMOVECLIP            264
 #define ID_FILE_EXPORT                  265
+#define IDS_CLIPS_EDITCLIP              265
 #define ID_EXPORT_RTF                   266
+#define IDS_CLIPS_ADDCLIPSET            266
 #define ID_EDIT_CLIPBOARDSWAP           267
+#define IDS_CLIPS_REMOVECLIPSET         267
 #define ID_VIEW_COLLAPSEALLFOLDS        268
 #define ID_VIEW_EXPANDALLFOLDS          269
 #define ID_VIEW_FOLDING                 270

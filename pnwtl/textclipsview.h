@@ -57,6 +57,7 @@ public:
 		NOTIFY_HANDLER(IDC_CLIPSLIST, NM_DBLCLK, OnClipSelected);
 		NOTIFY_HANDLER(IDC_CLIPSLIST, NM_RETURN, OnClipEnterPressed);
 		NOTIFY_HANDLER(IDC_CLIPSLIST, LVN_GETINFOTIP, OnClipGetInfoTip);
+		NOTIFY_HANDLER(IDC_CLIPSTOOLBAR, TBN_GETINFOTIP, OnToolbarGetInfoTip);
 		NOTIFY_HANDLER(IDC_CLIPSLIST, TVN_SELCHANGED, OnClipSelChanged)
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
@@ -85,6 +86,7 @@ private:
 	LRESULT OnClipEnterPressed(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT OnClipGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT OnClipSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
+	LRESULT OnToolbarGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
 	void AddClip(TextClips::Clip* tc);
 	void InsertClip(TextClips::Clip* tc);
