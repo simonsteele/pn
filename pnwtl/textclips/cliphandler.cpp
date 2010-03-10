@@ -369,6 +369,13 @@ void CTextView::nextClipField()
 			int start, end;
 			(*m_insertClipState->CurrentChunk).GetPos(start, end);
 			SetSel(start, end);
+
+			if ((*m_insertClipState->CurrentChunk).IsFinalCaretPos() && (*m_insertClipState->CurrentChunk).GetText() == "")
+			{
+				// If we just reached the final position, and there's no text to edit,
+				// end clip insertion straight away.
+				endInsertClip();
+			}
 		}
 		else
 		{
