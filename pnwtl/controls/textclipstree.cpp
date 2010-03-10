@@ -88,7 +88,7 @@ LRESULT CTextClipsTreeCtrl::OnCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHa
 				TVITEMEX info = {0};
 				info.hItem = item;
 				info.mask = TVIF_CHILDREN | TVIF_TEXT | TVIF_PARAM | TVIF_STATE;
-				info.stateMask = TVIS_EXPANDED;
+				info.stateMask = TVIS_EXPANDED | TVIS_SELECTED;
 				info.pszText = &textbuf[0];
 				info.cchTextMax = 256;
 				GetItem(&info);
@@ -101,11 +101,16 @@ LRESULT CTextClipsTreeCtrl::OnCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHa
 				
 				CBrush itemBrush;
 				COLORREF bgColor(info.cChildren ? GetSysColor(COLOR_BTNFACE) : GetSysColor(COLOR_WINDOW));
-				if (cdn->nmcd.uItemState & CDIS_SELECTED)
+				if (cdn->nmcd.uItemState & (CDIS_SELECTED | CDIS_FOCUS))
 				{
+					// We get drawn before the CDIS_SELECTED state is removed,
+					// and yet the text has been set back to black. I think this is to clear
+					// the selection but find no way to see if the selection is outgoing to 
+					// clear the highlight too. Therefore we force the text color to stay light.
+					dc.SetTextColor(GetSysColor(COLOR_HIGHLIGHTTEXT));
 					bgColor = GetSysColor(COLOR_HIGHLIGHT);
 				}
-
+				
 				itemBrush.CreateSolidBrush(bgColor);
 				
 				dc.SetBkColor(bgColor);
@@ -133,7 +138,6 @@ LRESULT CTextClipsTreeCtrl::OnCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHa
  */
 void CTextClipsTreeCtrl::DrawClipSet(CDCHandle& dc, CRect& rcItem, TVITEMEX& info)
 {
-	//COLORREF btnFace(dc.GetBkColor());
 	COLORREF btnFace(GetSysColor(COLOR_BTNHIGHLIGHT));
 	COLORREF btnHl(GetSysColor(COLOR_BTNFACE));
 
@@ -194,7 +198,9 @@ void CTextClipsTreeCtrl::DrawClip(CDCHandle& dc, CRect& rcItem, HTREEITEM item, 
 	if (clip != NULL)
 	{
 		// Draw Text:
+		rcItem.left += 2;
 		dc.DrawText(info.pszText, -1, rcItem, DT_SINGLELINE | DT_HIDEPREFIX | DT_VCENTER);
+		rcItem.left -= 2;
 
 		if (clip->Shortcut.size())
 		{
