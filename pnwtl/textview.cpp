@@ -23,13 +23,21 @@
 #include "childfrm.h"
 #include "findinfiles.h"
 
-using pnutils::threading::CritLock;
-
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
 	#undef THIS_FILE
 	static char THIS_FILE[] = __FILE__;
 #endif
+
+/**
+ * SmartHighlight is fun, but causes a lot of work in huge files. We now
+ * limit the scope to +/- 200 lines from the start point. If this isn't desirable
+ * this will have to be updated to be smarted with UPDATEUI.
+ */
+#define MAX_SMARTHIGHLIGHT_LINES 200
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// CTextView
 
 CTextView::CTextView(DocumentPtr document, Views::ViewPtr parent, CommandDispatch* commands, AutoCompleteManager* autoComplete) : 
 	Views::View(Views::vtText, parent),
@@ -1402,10 +1410,14 @@ void CTextView::smartHighlight()
 				SetIndicatorValue(INDIC_ROUNDBOX);
 				IndicSetStyle(INDIC_SMARTHIGHLIGHT, INDIC_ROUNDBOX);
 				
+				// Get our confining range for Smart Highlight:
+				int startAtLine = max(0, DocLineFromVisible(GetFirstVisibleLine()) - MAX_SMARTHIGHLIGHT_LINES);
+				int endAtLine = min(GetLineCount(), DocLineFromVisible(GetFirstVisibleLine() + LinesOnScreen()) + MAX_SMARTHIGHLIGHT_LINES);
+				
 				CA2CT findText(buf.c_str());
 				SearchOptions opt;
 				opt.SetFindText(findText);
-				CScintillaImpl::FindAll(&opt, boost::bind(HandleMarkAllResult, this, _1, _2));
+				CScintillaImpl::FindAll(PositionFromLine(startAtLine), PositionFromLine(endAtLine), &opt, boost::bind(HandleMarkAllResult, this, _1, _2));
 			}
 		}
 	}
