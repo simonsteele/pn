@@ -88,7 +88,6 @@ private:
 	LRESULT OnClipSelChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 	LRESULT OnToolbarGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 
-	void AddClip(TextClips::Clip* tc);
 	void InsertClip(TextClips::Clip* tc);
 	void LoadSet(Scheme* scheme);
 	void saveView();

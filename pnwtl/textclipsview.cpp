@@ -19,6 +19,7 @@
 #include "textclipeditor.h"
 #include "childfrm.h"
 #include "pndialogs.h"
+#include "include/encoding.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Our Toolbar Bits
@@ -475,12 +476,6 @@ void CClipsDocker::LoadSet(Scheme* scheme)
 	m_tv.SortSets();
 }
 
-inline void CClipsDocker::AddClip(TextClips::Clip* tc)
-{
-	//int iIndex = m_view.InsertItem(m_view.GetItemCount(), tc->Name.c_str());
-	//m_view.SetItemData(iIndex, reinterpret_cast<DWORD_PTR>(tc));
-}
-
 void CClipsDocker::InsertClip(TextClips::Clip* tc)
 {
 	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
@@ -504,10 +499,15 @@ void CClipsDocker::InsertClip(TextClips::Clip* tc)
 
 void CClipsDocker::saveView()
 {
-	/*CWindowText wt(m_combo.m_hWnd);
-	LPCTSTR sztw = (LPCTSTR)wt;
-	if(sztw && _tcslen(sztw) > 0)
-		OPTIONS->Set(PNSK_INTERFACE, _T("LastClipSet"), sztw);*/
+	int index = m_combo.GetCurSel();
+	if (index == -1)
+	{
+		return;
+	}
+
+	Scheme* pScheme = reinterpret_cast<Scheme*>( m_combo.GetItemDataPtr(index) );
+	Windows1252_Tcs schemeName(pScheme->GetName());
+	OPTIONS->Set(PNSK_INTERFACE, _T("LastClipsScheme"), schemeName);
 }
 
 void CClipsDocker::setupView()
@@ -515,16 +515,39 @@ void CClipsDocker::setupView()
 	SchemeManager* pM = SchemeManager::GetInstance();
 	SCHEME_LIST* pSchemes = pM->GetSchemesList();
 
+	// Text to select after populating combo:
+	Tcs_Windows1252 lastClipsScheme(OPTIONS->Get(PNSK_INTERFACE, _T("LastClipsScheme"), _T("")).c_str());
+	std::string schemeToSelect(lastClipsScheme);
+	tstring selectText;
+
+	// Add the schemes:
 	int index = m_combo.AddString(pM->GetDefaultScheme()->GetTitle());
-	m_combo.SetItemDataPtr( index, pM->GetDefaultScheme() );
+	m_combo.SetItemDataPtr(index, pM->GetDefaultScheme());
 
 	for(SCIT i = pSchemes->begin(); i != pSchemes->end(); ++i)
 	{
 		index = m_combo.AddString((*i).GetTitle());
 		m_combo.SetItemDataPtr(index, &(*i));
+
+		// See if this was the previous selection:
+		if(schemeToSelect == (*i).GetName())
+		{
+			selectText = (*i).GetTitle();
+		}
 	}
 
-	m_combo.SetCurSel(0);
+	if (selectText.size())
+	{
+		m_combo.SelectString(0, selectText.c_str());
+	}
+	else
+	{
+		// Default:
+		m_combo.SelectString(0, pM->GetDefaultScheme()->GetTitle());
+	}
+
+	BOOL ignored;
+	OnComboSelChange(0, 0, 0, ignored);
 }
 
 void CClipsDocker::setupToolbar()
