@@ -31,8 +31,8 @@
 
 /**
  * SmartHighlight is fun, but causes a lot of work in huge files. We now
- * limit the scope to +/- 200 lines from the start point. If this isn't desirable
- * this will have to be updated to be smarted with UPDATEUI.
+ * limit the scope to +/- 200 lines from the top and bottom of the current view. 
+ * If this isn't desirable this will have to be updated to be smarted with UPDATEUI.
  */
 #define MAX_SMARTHIGHLIGHT_LINES 200
 
