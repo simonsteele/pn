@@ -192,6 +192,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\filenametests.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\iotests.cpp"
 				>
 			</File>

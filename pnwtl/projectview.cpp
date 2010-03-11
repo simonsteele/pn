@@ -784,10 +784,10 @@ void CProjectTreeCtrl::setMagicFolderProps(Projects::UserData& ud, Projects::Mag
 	if(path.length() > 0 && DirExists(path.c_str()))
 	{
 		CPathName pn(path.c_str());
-		if(pn.c_str() != folder->GetFullPath())
+		if((tstring)pn != folder->GetFullPath())
 		{
 			// Path may have changed...
-			folder->SetFullPath(path.c_str());
+			folder->SetFullPath(pn.c_str());
 
 			refreshMagicFolder(folder, hFolder);
 		}
