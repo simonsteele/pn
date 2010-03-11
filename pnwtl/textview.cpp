@@ -1320,7 +1320,13 @@ void CTextView::OnFirstShow()
 	m_pLastScheme = SchemeManager::GetInstance()->GetDefaultScheme();
 	m_pLastScheme->Load(*this);
 	SetEOLMode( OPTIONS->GetCached(Options::OLineEndings) );
-	SPerform(SCI_SETCODEPAGE, (long)OPTIONS->GetCached(Options::ODefaultCodePage));
+	
+	int defaultCodePage = (long)OPTIONS->GetCached(Options::ODefaultCodePage);
+	SPerform(SCI_SETCODEPAGE, defaultCodePage);
+	if (defaultCodePage == PNCP_Unicode)
+	{
+		m_encType = eUtf8;
+	}
 }
 
 /**
