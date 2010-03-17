@@ -1372,6 +1372,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\OptionsPageFileTypes.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\OptionsPageGeneral.cpp"
 					>
 				</File>
