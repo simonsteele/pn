@@ -2,18 +2,20 @@
 <project name="pn" default="deploy" basedir=".">
 
 	<target name="svnvar">
-		<property name="hg.path" value="" if="${property::exists('hg.path') == false}"/>
-		
-		<!-- Retrieve subversion revision number -->
-		<echo message="Retrieving Mercurial revision number"/>
-		<property name="svn.revision" value="0"/>
-		<exec
-			program="${hg.path}hg"
-			commandline='log --limit 1 --template {rev}'
-			output="_revision.txt"
-			failonerror="false"/>
-		<loadfile file="_revision.txt" property="svn.revision" />
-		<property name="svn.revision" value="${string::trim(svn.revision)}"/>
+		<ifnot test="${property::exists('svn.revision')}">
+			<property name="hg.path" value="" if="${property::exists('hg.path') == false}"/>
+			
+			<!-- Retrieve subversion revision number -->
+			<echo message="Retrieving Mercurial revision number"/>
+			<property name="svn.revision" value="0"/>
+			<exec
+				program="${hg.path}hg"
+				commandline='log --limit 1 --template {rev}'
+				output="_revision.txt"
+				failonerror="false"/>
+			<loadfile file="_revision.txt" property="svn.revision" />
+			<property name="svn.revision" value="${string::trim(svn.revision)}"/>
+		</ifnot>
 		<echo message="Using Mercurial revision number: ${svn.revision}"/>
 	</target>
 	
@@ -68,6 +70,20 @@
 			
 		<copy file="installer\output\pnsetuptrans.exe" tofile="${distdir}\pn${compactver}_multilang.exe" overwrite="true"/>
 			
+		<call target="zip" />
+	</target>
+	
+	<target name="deployzip" depends="svnvar">
+		<property name="deployver" value="${ver}.${svn.revision}"/>
+		<property name="compactver" value="${string::replace(deployver, '.', '')}"/>
+		<property name="distdir" value="..\dist\${deployver}"/>
+		
+		<echo message="${deployver} (${compactver})"/>
+		
+		<call target="zip" />
+	</target>
+	
+	<target name="zip">
 		<zip zipfile="${distdir}\pn${compactver}.zip">
 			<fileset basedir="bin">
 				<include name="libexpatw.dll"/>
@@ -99,7 +115,7 @@
 				<include name="pn2.chm"/>
 			</fileset>
 			<fileset basedir="bin\clips" prefix="clips">
-				<include name="*.clips"/>
+				<include name="*\*.clips"/>
 			</fileset>
 			<fileset basedir="installer\configs\default">
 				<include name="config.xml"/>
@@ -137,7 +153,7 @@
 				<include name="pn2.chm"/>
 			</fileset>
 			<fileset basedir="bin\clips" prefix="clips">
-				<include name="*.clips"/>
+				<include name="*\*.clips"/>
 			</fileset>
 			<fileset basedir="installer\configs\portable">
 				<include name="config.xml"/>
@@ -300,6 +316,9 @@
 			program="c:\python26\python"
 			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Installer" -p pnotepad --labels="Type-Installer" -u simon.steele --password="${password}" "${distdir}\pn${compactver}.exe"'/>
 
+		<exec
+			program="c:\python26\python"
+			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision}  Multi-language Installer" -p pnotepad -l Type-Installer -u simon.steele --password="${password}" ${distdir}\pn${compactver}_multilang.exe'/>
 
 		<exec
 			program="c:\python26\python"
@@ -308,6 +327,10 @@
 		<exec
 			program="c:\python26\python"
 			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Portable" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" ${distdir}\portable-pn${compactver}.zip'/>
+			
+		<exec
+			program="c:\python26\python"
+			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Translation Tools" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" ${distdir}\translatetools${compactver}.zip'/>
 	</target>
 	
 	<target name="uploadpypn" depends="svnvar">
@@ -326,6 +349,7 @@
 		<exec
 			program="c:\python26\python"
 			commandline='googlecode_upload.py -s "PyPN ${ver}.${svn.revision} for Python 2.4" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" "${distdir}\pypn-${deployver}-py24.zip"'/>
+
 	</target>
 	
 	<target name="checkpypndeps">
