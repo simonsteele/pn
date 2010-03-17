@@ -658,8 +658,8 @@ struct CBoxedDockingWindowTraits
 };
 
 typedef CBoxedDockingWindowTraits<COutlookLikeCaption, CTabDockingBox<COutlookLikeDockingBoxTraits>,
-									WS_OVERLAPPEDWINDOW | WS_POPUP | WS_VISIBLE |
-									WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW>
+									/*WS_OVERLAPPEDWINDOW | */WS_CAPTION | WS_POPUP | WS_VISIBLE |
+									WS_CLIPCHILDREN /*| WS_CLIPSIBLINGS*/, WS_EX_TOOLWINDOW>
 								COutlookLikeBoxedDockingWindowTraits;
 
 typedef CBoxedDockingWindowTraits<COutlookLikeExCaption, CTabDockingBox<COutlookLikeExDockingBoxTraits>,

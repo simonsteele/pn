@@ -637,7 +637,7 @@ TWnd* CreateDockerWindow(TWnd* pWnd, LPCTSTR title, CRect& rect, CMainFrame* own
 					bool bDock, dockwins::CDockingSide side = dockwins::CDockingSide::sLeft,
 					int nBar = 0, float fPctPos = 0)
 {
-	DWORD dwStyle = WS_OVERLAPPED | WS_CAPTION | WS_THICKFRAME | WS_POPUP | WS_CLIPCHILDREN /*| WS_CLIPSIBLINGS*/;
+	DWORD dwStyle = /*WS_OVERLAPPED | */WS_CAPTION | WS_THICKFRAME | WS_POPUP | WS_CLIPCHILDREN /*| WS_CLIPSIBLINGS*/;
 	CRect rcBar(0, 0, 200, 70);
 
 	CPNDockingWindow* pDocker = new CPNDockingWindow(title);
