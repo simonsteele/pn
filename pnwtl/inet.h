@@ -2,7 +2,7 @@
  * @file inet.h
  * @brief Wrap the WinInet API allowing simple HTTP file open
  * @author Simon Steele
- * @note Copyright (c) 2008-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2008-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -14,10 +14,13 @@
 
 #define UA_PN _T("Programmer's Notepad/") PN_VERSTRING_T
 
+/**
+ * Simple wrapper around the WinInet library.
+ */
 class Inet
 {
 public:
-	Inet() : m_hInet(NULL), m_hConnection(NULL)
+	explicit Inet() : m_hInet(NULL), m_hConnection(NULL)
 	{
 		m_hInet = ::InternetOpen(
 			UA_PN,
@@ -35,11 +38,7 @@ public:
 
 	~Inet()
 	{
-		if (m_hConnection)
-		{
-			::InternetCloseHandle(m_hConnection);
-			m_hConnection = NULL;
-		}
+		Close();
 
 		if (m_hInet)
 		{
@@ -48,23 +47,22 @@ public:
 		}
 	}
 
-	/** 
-	 * Callback called from inside internet request, dispatch to class instance to handle.
+	/**
+	 * Attempt to open a URL for reading.
+	 * @return false if we don't have a valid internet connection, the url is null, or we fail to open the url, true otherwise.
 	 */
-	/*static void CALLBACK InternetStatusCallback(
-	  __in  HINTERNET hInternet,
-	  __in  DWORD_PTR dwContext,
-	  __in  DWORD dwInternetStatus,
-	  __in  LPVOID lpvStatusInformation,
-	  __in  DWORD dwStatusInformationLength
-	)
-	{
-		Inet* inet = reinterpret_cast<Inet*>(dwContext);
-		inet->handleCallback(hInternet, dwInternetStatus, lpvStatusInformation, dwStatusInformationLength);
-	}*/
-
 	bool Open(LPCTSTR url)
 	{
+		if (m_hInet == NULL)
+		{
+			return false;
+		}
+
+		if (url == NULL)
+		{
+			return false;
+		}
+
 		m_hConnection = ::InternetOpenUrl(
 			m_hInet,
 			url,
@@ -76,6 +74,10 @@ public:
 		return m_hConnection != NULL;
 	}
 
+	/**
+	 * Read from a connection opened with Open.
+	 * @return true if we read data.
+	 */
 	bool ReadFile(LPVOID lpBuffer, DWORD dwNumberOfBytesToRead, LPDWORD dwRead)
 	{
 		PNASSERT(m_hConnection != NULL);
@@ -83,6 +85,9 @@ public:
 		return ::InternetReadFile(m_hConnection, lpBuffer, dwNumberOfBytesToRead, dwRead) != 0;
 	}
 
+	/**
+	 * Close any open connection.
+	 */
 	void Close()
 	{
 		if (m_hConnection != NULL)
@@ -91,16 +96,6 @@ public:
 			m_hConnection = NULL;
 		}
 	}
-
-	//void handleCallback(HINTERNET hInternet, DWORD dwInternetStatus, LPVOID lpvStatusInformation, DWORD dwStatusInformationLength)
-	//{
-	//	if (dwInternetStatus == INTERNET_STATUS_REQUEST_COMPLETE)
-	//	{
-	//		INTERNET_ASYNC_RESULT* pResult = reinterpret_cast<INTERNET_ASYNC_RESULT*>(lpvStatusInformation);
-	//		//pResult->dwResult
-	//		int a = pResult->dwResult;
-	//	}
-	//}
 
 private:
 	HINTERNET m_hInet;
