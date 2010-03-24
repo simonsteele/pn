@@ -1880,21 +1880,28 @@ LRESULT CChildFrame::OnCommandNotify(WORD wNotifyCode, WORD /*wID*/, HWND /*hWnd
 LRESULT CChildFrame::OnCommandEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	extensions::IScriptRunner* python = ScriptRegistry::GetInstance()->GetRunner("python");
-	if (python)
+	if (python == NULL)
 	{
-		PN::AString str;
-		std::string command("glue.evalCommandEnter('");
-		
-		CWindowText wt(m_cmdTextBox);
-		CT2CA commandtext(wt);
-		command += commandtext;
-		command += "')";
-
-		python->Eval(command.c_str(), str);
-
-		CA2CT newwt(str.Get());
-		m_cmdTextBox.SetWindowText(newwt);
+		return 0;
 	}
+
+	PN::AString str;
+	CWindowText wt(m_cmdTextBox);
+	
+	// Some basic argument safety changes until we make an extension
+	// interface that makes this properly safe.
+	std::string commandText(wt.GetA());
+	boost::replace_all(commandText, "\\", "\\\\");
+	boost::replace_all(commandText, "'", "\\'");
+
+	std::string command("glue.evalCommandEnter('");
+	command += commandText;
+	command += "')";
+
+	python->Eval(command.c_str(), str);
+
+	CA2CT newwt(str.Get());
+	m_cmdTextBox.SetWindowText(newwt);
 
 	return 0;
 }
