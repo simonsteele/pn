@@ -68,7 +68,7 @@ private:
 	{
 		if (LOWORD(lParam) == HTCLIENT)
 		{
-			SetCursor(m_hHandCursor);
+			::SetCursor(m_hHandCursor);
 		}
 
 		return TRUE;
