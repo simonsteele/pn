@@ -1508,6 +1508,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\controls\hyperlink.h"
+					>
+				</File>
+				<File
 					RelativePath=".\controls\OptionsBlockHeader.h"
 					>
 				</File>

@@ -1329,6 +1329,7 @@ FONT 8, "MS Shell Dlg 2", 400, 0, 0x1
 BEGIN
     LTEXT           "Extensions",IDC_SETTINGS_STATIC,0,0,299,8
     CONTROL         "",IDC_EXTENSIONSLIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,10,14,279,117
+    LTEXT           "Find more extensions at www.pnotepad.org...",IDC_EXTLINK,10,183,201,14
 END
 
 IDD_PAGE_EDITING DIALOGEX 0, 0, 300, 200
@@ -1878,12 +1879,16 @@ BEGIN
     IDS_MARKALL_COUNT       "Found %d occurrences"
     IDS_ADDCLIPSETCAPTION   "Type the name of the new Clip set..."
     IDS_ADDCLIPSETTITLE     "New Clip Set"
-    ID_CLIPS_ADD            "Add Clip"
     ID_FILE_REVERT          "Revert this document to the current saved state\nRevert"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CLIPS_ADD            "Add Clip"
     ID_CLIPS_REMOVE         "Remove Clip"
-    ID_CLIPS_EDIT           "Edit Clip"
     ID_CLIPS_ADDSET         "Add Clip Set"
     ID_CLIPS_REMOVESET      "Remove Clip Set"
+    ID_CLIPS_EDIT           "Edit Clip"
 END
 
 STRINGTABLE 

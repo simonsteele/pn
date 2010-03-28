@@ -21,6 +21,7 @@
 
 COptionsPageExtensions::COptionsPageExtensions()
 {
+	m_extensionsLink.SetTarget(L"http://www.pnotepad.org/add-ons/");
 }
 
 void COptionsPageExtensions::OnOK()
@@ -69,6 +70,9 @@ LRESULT COptionsPageExtensions::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, L
 {
 	// Header:
 	m_settingsHeader.SubclassWindow(GetDlgItem(IDC_SETTINGS_STATIC));
+
+	// Link:
+	m_extensionsLink.SubclassWindow(GetDlgItem(IDC_EXTLINK));
 
 	// Controls:
 	m_list.Attach(GetDlgItem(IDC_EXTENSIONSLIST));
