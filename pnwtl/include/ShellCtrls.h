@@ -274,20 +274,35 @@ public:
       ATLASSERT(pFolder);
       ATLASSERT(pidl);
 
-      if( m_dwShellStyle == 0 && dwAttribs == 0 ) return FALSE;
+      if( m_dwShellStyle == 0 && dwAttribs == 0 )
+	  {
+		  return FALSE;
+	  }
+
       dwAttribs |= SFGAO_DISPLAYATTRMASK | SFGAO_FOLDER | SFGAO_FILESYSTEM | SFGAO_FILESYSANCESTOR;
 
-      // A fix by Anatoly Ivasyuk to only query for limited attributes on a
-      // removable media (prevents floppy activity)...
-      DWORD dwRemovable = SFGAO_REMOVABLE;
+      // Pre-check some attributes as some others cause trouble if these are present:
+      DWORD dwRemovable = SFGAO_REMOVABLE | SFGAO_STREAM | SFGAO_FOLDER;
       pFolder->GetAttributesOf(1, &pidl, &dwRemovable);
-      if( (dwRemovable & SFGAO_REMOVABLE) != 0 ) dwAttribs &= ~SFGAO_READONLY;
-      pFolder->GetAttributesOf(1, &pidl, &dwAttribs);
+      
+	  // If this is a floppy, we remove ReadOnly checks as this causes disk activity
+	  if ((dwRemovable & SFGAO_REMOVABLE) != 0)
+	  {
+		  dwAttribs &= ~SFGAO_READONLY;
+	  }
+
+	  // If this is a zip file, we don't want to look for sub folders - we don't support expansion
+	  if ((dwRemovable & (SFGAO_STREAM | SFGAO_FOLDER)) == (SFGAO_STREAM | SFGAO_FOLDER))
+	  {
+		  dwAttribs &= ~SFGAO_HASSUBFOLDER;
+	  }
+      
+	  pFolder->GetAttributesOf(1, &pidl, &dwAttribs);
 
       // Filter some items
       if( (m_dwShellStyle & SCT_EX_NOFOLDERS) != 0 && (dwAttribs & SFGAO_FOLDER) != 0 ) return TRUE;
       if( (m_dwShellStyle & SCT_EX_NOFILES) != 0 && ((dwAttribs & SFGAO_FOLDER) == 0) ) return TRUE;
-      if( (m_dwShellStyle & SCT_EX_NOREADONLY) != 0 && (dwAttribs & SFGAO_READONLY) != 0 ) return TRUE;;
+      if( (m_dwShellStyle & SCT_EX_NOREADONLY) != 0 && (dwAttribs & SFGAO_READONLY) != 0 ) return TRUE;
       if( (m_dwShellStyle & SCT_EX_FILESYSTEMONLY) != 0 && ((dwAttribs & (SFGAO_FILESYSTEM | SFGAO_FILESYSANCESTOR)) == 0) ) return TRUE;
 
       return FALSE;
