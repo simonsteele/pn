@@ -79,6 +79,42 @@ BOOST_AUTO_TEST_CASE( just_a_field_works )
 }
 
 /**
+ * The only field insertion mechanism should be the $() type to avoid confusion.
+ */
+//BOOST_AUTO_TEST_CASE( percent_not_treated_specially )
+//{
+//	Clip clip(tstring(L""), std::string(""), std::string("text % text"));
+//	std::vector<Chunk> chunks;
+//	clip.GetChunks(chunks);
+//
+//	BOOST_REQUIRE_EQUAL(1, chunks.size());
+//	std::vector<Chunk>::const_iterator chunk(chunks.begin());
+//	
+//	// Only field $(3) should be a master field
+//	BOOST_REQUIRE_EQUAL("text % text", (*chunk).GetText());
+//	BOOST_REQUIRE_EQUAL(false, (*chunk).IsField());
+//	BOOST_REQUIRE_EQUAL(false, (*chunk).IsMasterField());
+//}
+//
+///**
+// * Tools-style escapes should not be supported in clips.
+// */
+//BOOST_AUTO_TEST_CASE( percent_not_treated_specially_2 )
+//{
+//	Clip clip(tstring(L""), std::string(""), std::string("text %f text"));
+//	std::vector<Chunk> chunks;
+//	clip.GetChunks(chunks);
+//
+//	BOOST_REQUIRE_EQUAL(1, chunks.size());
+//	std::vector<Chunk>::const_iterator chunk(chunks.begin());
+//	
+//	// Only field $(3) should be a master field
+//	BOOST_REQUIRE_EQUAL("text %f text", (*chunk).GetText());
+//	BOOST_REQUIRE_EQUAL(false, (*chunk).IsField());
+//	BOOST_REQUIRE_EQUAL(false, (*chunk).IsMasterField());
+//}
+
+/**
  * Check a clip with just a field works ok.
  */
 BOOST_AUTO_TEST_CASE( just_multiple_fields_works )

@@ -64,6 +64,7 @@ typedef std::vector<tstring> tstring_array;
 #include <boost/shared_ptr.hpp>
 #include <boost/xpressive/xpressive.hpp>
 #include <boost/foreach.hpp>
+#include <boost/spirit/include/qi.hpp>
 
 namespace boost { namespace xpressive {
 #ifdef _UNICODE

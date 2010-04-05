@@ -41,6 +41,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="-Zm160"
 				Optimization="0"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;BOOST_TEST_DYN_LINK;SCI_NAMESPACE;UNICODE;_UNICODE"
 				MinimalRebuild="true"
@@ -201,6 +202,10 @@
 			</File>
 			<File
 				RelativePath=".\regex_tests.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\snippetparsetests.cpp"
 				>
 			</File>
 			<File
