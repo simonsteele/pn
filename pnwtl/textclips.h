@@ -23,18 +23,35 @@ typedef std::list<TextClipSet*> LIST_CLIPSETS;
 typedef std::map<std::string, LIST_CLIPSETS> MAP_CLIPSETS;
 
 /**
+ * Interface for variable providing.
+ */
+class IVariableProvider
+{
+public:
+	virtual ~IVariableProvider() {}
+
+	/**
+	 * Get the value of a variable.
+	 * @param value Output for the variable value
+	 * @returns true if value stored, false otherwise
+	 */
+	virtual bool GetVariable(const char* name, std::string& value) = 0;
+};
+
+/**
  * Single part of a smart text clip, can be plain text or a field.
  */
 class Chunk
 {
 public:
-	Chunk();
-	Chunk(/*EChunkType*/int field, const std::string& text);
-	Chunk(/*EChunkType*/int field, int id);
-	Chunk(/*EChunkType*/int field, int id, const std::string& text);
+	explicit Chunk();
+	explicit Chunk(/*EChunkType*/int field, const std::string& text);
+	explicit Chunk(/*EChunkType*/int field, int id);
+	explicit Chunk(/*EChunkType*/int field, int id, const std::string& text);
 
 	int Id;
 
+	bool IsText() const;
 	bool IsField() const;
 	bool IsMasterField() const;
 	bool IsFinalCaretPos() const;
@@ -48,10 +65,9 @@ public:
 	void OffsetPos(int offset);
 
 private:
-	bool m_field;
-	bool m_masterField;
-	bool m_finalCaretPos;
+	int m_flags;
 	std::string m_text;
+	std::string m_variable;
 	int m_start;
 	int m_end;
 };

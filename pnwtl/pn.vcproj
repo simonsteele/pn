@@ -90,7 +90,7 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\bin/pn.pdb"
 				SubSystem="2"
-				RandomizedBaseAddress="1"
+				RandomizedBaseAddress="0"
 				DataExecutionPrevention="0"
 			/>
 			<Tool

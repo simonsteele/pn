@@ -14,35 +14,29 @@
 using namespace TextClips;
 
 Chunk::Chunk() : 
-	m_field(false), 
-	m_masterField(false), 
-	m_finalCaretPos(false), 
+	m_flags(0),
 	m_start(0), 
 	m_end(0), 
 	Id(0) 
 {}
 
 Chunk::Chunk(/*EChunkType*/int field, const std::string& text) : 
-	m_field((field & ctField) != 0),
-	m_masterField((field & ctMasterField) == ctMasterField),
-	m_finalCaretPos((field & ctFinalCaretPos) != 0),
+	m_flags(field),
 	m_text(text),
 	m_start(0),
 	m_end(0),
-	Id(0) {}
+	Id(0)
+{}
 
 Chunk::Chunk(/*EChunkType*/int field, int id) : 
-	m_field((field & ctField) != 0),
-	m_masterField((field & ctMasterField) == ctMasterField),
-	m_finalCaretPos((field & ctFinalCaretPos) != 0),
+	m_flags(field),
 	Id(id),
 	m_start(0),
-	m_end(0) {}
+	m_end(0)
+{}
 
 Chunk::Chunk(/*EChunkType*/int field, int id, const std::string& text) : 
-	m_field((field & ctField) != 0),
-	m_masterField((field & ctMasterField) == ctMasterField),
-	m_finalCaretPos((field & ctFinalCaretPos) != 0),
+	m_flags(field),
 	Id(id),
 	m_text(text),
 	m_start(0),
@@ -50,11 +44,19 @@ Chunk::Chunk(/*EChunkType*/int field, int id, const std::string& text) :
 {}
 
 /**
+ * Is this chunk just text?
+ */
+bool Chunk::IsText() const
+{
+	return ((m_flags & (ctField | ctMasterField)) == 0);
+}
+
+/**
  * Is this chunk a field?
  */
 bool Chunk::IsField() const
 {
-	return m_field;
+	return ((m_flags & ctField) != 0);
 }
 
 /**
@@ -62,15 +64,15 @@ bool Chunk::IsField() const
  */
 bool Chunk::IsMasterField() const
 {
-	return m_masterField;
+	return ((m_flags & ctMasterField) == ctMasterField);
 }
 
 /**
- * Is this chunk a field?
+ * Is this chunk a tab stop?
  */
 bool Chunk::IsFinalCaretPos() const
 {
-	return m_finalCaretPos;
+	return ((m_flags & ctFinalCaretPos) != 0);
 }
 
 /**
