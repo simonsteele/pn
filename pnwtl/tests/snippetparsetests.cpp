@@ -64,13 +64,17 @@ public:
 			// Rule to match variables: ${blah}
 			variable_rule = lit("${") >> +char_("-_a-zA-Z0-9") >> lit("}");
 
+			// Rule to match variables: ${blah:default value}
+			variable_with_default_rule = lit("${") >> +char_("-_a-zA-Z0-9") >> lit(":") >> placeholder_inner_text_rule >> lit("}");
+
 			// Master expression:
 			start = +(
-				text_rule				[phx::bind(&snippet::text, this, _1)] | 
-				escape_rule				[phx::bind(&snippet::escape_char, this, _1)] |
-				empty_placeholder_rule	[phx::bind(&snippet::empty_placeholder, this, _1)] | 
-				placeholder_text_rule	[phx::bind(&snippet::text_placeholder, this, _1)] | 
-				variable_rule			[phx::bind(&snippet::variable, this, _1)]
+				text_rule					[phx::bind(&snippet::text, this, _1)] | 
+				escape_rule					[phx::bind(&snippet::escape_char, this, _1)] |
+				empty_placeholder_rule		[phx::bind(&snippet::empty_placeholder, this, _1)] | 
+				placeholder_text_rule		[phx::bind(&snippet::text_placeholder, this, _1)] | 
+				variable_rule				[phx::bind(&snippet::variable, this, _1)] |
+				variable_with_default_rule	[phx::bind(&snippet::variable_default, this, _1)]
 			);
 		}
 
@@ -81,6 +85,7 @@ public:
 		qi::rule<Iterator, std::pair<int, std::string>(), boost::spirit::ascii::space_type> placeholder_text_rule;
 		qi::rule<Iterator, std::string()> placeholder_inner_text_rule;
 		qi::rule<Iterator, std::string()> variable_rule;
+		qi::rule<Iterator, std::pair<std::string, std::string>()> variable_with_default_rule;
 		qi::rule<Iterator, boost::spirit::ascii::space_type> start;
 
 		snippet_parser& m_parser;
@@ -134,6 +139,11 @@ public:
 			variable(name, std::string(""));
 		}
 
+		void variable_default(std::pair<std::string, std::string> const& details)
+		{
+			variable(details.first, details.second);
+		}
+
 		void variable(std::string const& name, std::string const& value)
 		{
 			std::string realText;
@@ -142,7 +152,7 @@ public:
 				realText = value;
 			}
 
-			m_placeholders.push_back(Chunk(TextClips::ctNone, realText));
+			append_text(realText.c_str());
 		}
 
 		std::vector<Chunk> m_placeholders;
@@ -182,12 +192,12 @@ class FakeVariableProvider : public TextClips::IVariableProvider
 {
 	virtual bool GetVariable(const char* name, std::string& value)
 	{
-		if (strcmp(name, "TEST") == 0)
+		if (stricmp(name, "TEST") == 0)
 		{
 			value = "Test Value";
 			return true;
 		}
-		else if (strcmp(name, "Test2") == 0)
+		else if (stricmp(name, "Test2") == 0)
 		{
 			value = "Test Value 2";
 			return true;
@@ -320,6 +330,51 @@ BOOST_AUTO_TEST_CASE( basic_variable )
 	ChunkItC c = p.get_placeholders().begin();
 	BOOST_REQUIRE_EQUAL(true, (*c).IsText());
 	BOOST_REQUIRE_EQUAL("Test Value", (*c).GetText());
+}
+
+BOOST_AUTO_TEST_CASE( basic_variable_in_text )
+{
+	snippet_parser<std::string::iterator> p;
+	FakeVariableProvider vars;
+	p.set_variables(&vars);
+
+	std::string input("here is some${test2}text");
+	BOOST_REQUIRE_EQUAL(true, p.parse_snippet(input.begin(), input.end()));
+	BOOST_REQUIRE_EQUAL(1, p.get_placeholders().size());
+	
+	ChunkItC c = p.get_placeholders().begin();
+	BOOST_REQUIRE_EQUAL(true, (*c).IsText());
+	BOOST_REQUIRE_EQUAL("here is someTest Value 2text", (*c).GetText());
+}
+
+BOOST_AUTO_TEST_CASE( basic_variable_with_ignored_default )
+{
+	snippet_parser<std::string::iterator> p;
+	FakeVariableProvider vars;
+	p.set_variables(&vars);
+
+	std::string input("${test:blah}");
+	BOOST_REQUIRE_EQUAL(true, p.parse_snippet(input.begin(), input.end()));
+	BOOST_REQUIRE_EQUAL(1, p.get_placeholders().size());
+	
+	ChunkItC c = p.get_placeholders().begin();
+	BOOST_REQUIRE_EQUAL(true, (*c).IsText());
+	BOOST_REQUIRE_EQUAL("Test Value", (*c).GetText());
+}
+
+BOOST_AUTO_TEST_CASE( basic_variable_with_default )
+{
+	snippet_parser<std::string::iterator> p;
+	FakeVariableProvider vars;
+	p.set_variables(&vars);
+
+	std::string input("${test3:blah blah}");
+	BOOST_REQUIRE_EQUAL(true, p.parse_snippet(input.begin(), input.end()));
+	BOOST_REQUIRE_EQUAL(1, p.get_placeholders().size());
+	
+	ChunkItC c = p.get_placeholders().begin();
+	BOOST_REQUIRE_EQUAL(true, (*c).IsText());
+	BOOST_REQUIRE_EQUAL("blah blah", (*c).GetText());
 }
 
 BOOST_AUTO_TEST_SUITE_END();
