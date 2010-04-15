@@ -289,6 +289,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\textclips\chunkparser.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\textclips\chunkparser.h"
+				>
+			</File>
+			<File
 				RelativePath="..\textclips\clip.cpp"
 				>
 			</File>

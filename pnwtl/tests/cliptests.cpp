@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE( plain_text_should_become_single_chunk )
  */
 BOOST_AUTO_TEST_CASE( field_in_middle_makes_three_chunks )
 {
-	Clip clip(tstring(L""), std::string(""), std::string("Clip $(1) Text"));
+	Clip clip(tstring(L""), std::string(""), std::string("Clip ${1} Text"));
 	std::vector<Chunk> chunks;
 	clip.GetChunks(chunks);
 
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE( field_in_middle_makes_three_chunks )
  */
 BOOST_AUTO_TEST_CASE( just_a_field_works )
 {
-	Clip clip(tstring(L""), std::string(""), std::string("$(3)"));
+	Clip clip(tstring(L""), std::string(""), std::string("${3}"));
 	std::vector<Chunk> chunks;
 	clip.GetChunks(chunks);
 
@@ -81,45 +81,45 @@ BOOST_AUTO_TEST_CASE( just_a_field_works )
 /**
  * The only field insertion mechanism should be the $() type to avoid confusion.
  */
-//BOOST_AUTO_TEST_CASE( percent_not_treated_specially )
-//{
-//	Clip clip(tstring(L""), std::string(""), std::string("text % text"));
-//	std::vector<Chunk> chunks;
-//	clip.GetChunks(chunks);
-//
-//	BOOST_REQUIRE_EQUAL(1, chunks.size());
-//	std::vector<Chunk>::const_iterator chunk(chunks.begin());
-//	
-//	// Only field $(3) should be a master field
-//	BOOST_REQUIRE_EQUAL("text % text", (*chunk).GetText());
-//	BOOST_REQUIRE_EQUAL(false, (*chunk).IsField());
-//	BOOST_REQUIRE_EQUAL(false, (*chunk).IsMasterField());
-//}
-//
-///**
-// * Tools-style escapes should not be supported in clips.
-// */
-//BOOST_AUTO_TEST_CASE( percent_not_treated_specially_2 )
-//{
-//	Clip clip(tstring(L""), std::string(""), std::string("text %f text"));
-//	std::vector<Chunk> chunks;
-//	clip.GetChunks(chunks);
-//
-//	BOOST_REQUIRE_EQUAL(1, chunks.size());
-//	std::vector<Chunk>::const_iterator chunk(chunks.begin());
-//	
-//	// Only field $(3) should be a master field
-//	BOOST_REQUIRE_EQUAL("text %f text", (*chunk).GetText());
-//	BOOST_REQUIRE_EQUAL(false, (*chunk).IsField());
-//	BOOST_REQUIRE_EQUAL(false, (*chunk).IsMasterField());
-//}
+BOOST_AUTO_TEST_CASE( percent_not_treated_specially )
+{
+	Clip clip(tstring(L""), std::string(""), std::string("text % text"));
+	std::vector<Chunk> chunks;
+	clip.GetChunks(chunks);
+
+	BOOST_REQUIRE_EQUAL(1, chunks.size());
+	std::vector<Chunk>::const_iterator chunk(chunks.begin());
+	
+	// Only field $(3) should be a master field
+	BOOST_REQUIRE_EQUAL("text % text", (*chunk).GetText());
+	BOOST_REQUIRE_EQUAL(false, (*chunk).IsField());
+	BOOST_REQUIRE_EQUAL(false, (*chunk).IsMasterField());
+}
+
+/**
+ * Tools-style escapes should not be supported in clips.
+ */
+BOOST_AUTO_TEST_CASE( percent_not_treated_specially_2 )
+{
+	Clip clip(tstring(L""), std::string(""), std::string("text %f text"));
+	std::vector<Chunk> chunks;
+	clip.GetChunks(chunks);
+
+	BOOST_REQUIRE_EQUAL(1, chunks.size());
+	std::vector<Chunk>::const_iterator chunk(chunks.begin());
+	
+	// Only field $(3) should be a master field
+	BOOST_REQUIRE_EQUAL("text %f text", (*chunk).GetText());
+	BOOST_REQUIRE_EQUAL(false, (*chunk).IsField());
+	BOOST_REQUIRE_EQUAL(false, (*chunk).IsMasterField());
+}
 
 /**
  * Check a clip with just a field works ok.
  */
 BOOST_AUTO_TEST_CASE( just_multiple_fields_works )
 {
-	Clip clip(tstring(L""), std::string(""), std::string("$(3)$(2:Test)"));
+	Clip clip(tstring(L""), std::string(""), std::string("${3}${2:Test}"));
 	std::vector<Chunk> chunks;
 	clip.GetChunks(chunks);
 
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE( just_multiple_fields_works )
  */
 BOOST_AUTO_TEST_CASE( initial_field_text_is_stored )
 {
-	Clip clip(tstring(L""), std::string(""), std::string("Clip: $(1:Monkey)"));
+	Clip clip(tstring(L""), std::string(""), std::string("Clip: ${1:Monkey}"));
 	std::vector<Chunk> chunks;
 	clip.GetChunks(chunks);
 
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE( initial_field_text_is_stored )
  */
 BOOST_AUTO_TEST_CASE( second_field_instance_is_slave )
 {
-	Clip clip(tstring(L""), std::string(""), std::string("Clip $(1) Text $(1)"));
+	Clip clip(tstring(L""), std::string(""), std::string("Clip ${1} Text ${1}"));
 	std::vector<Chunk> chunks;
 	clip.GetChunks(chunks);
 
@@ -190,7 +190,7 @@ BOOST_AUTO_TEST_CASE( second_field_instance_is_slave )
  */
 BOOST_AUTO_TEST_CASE( stop_zero_should_be_end_caret_pos )
 {
-	Clip clip(tstring(L""), std::string(""), std::string("Clip: $(0)"));
+	Clip clip(tstring(L""), std::string(""), std::string("Clip: ${0}"));
 	std::vector<Chunk> chunks;
 	clip.GetChunks(chunks);
 

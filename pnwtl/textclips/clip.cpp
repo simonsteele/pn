@@ -9,6 +9,7 @@
  */
 #include "stdafx.h"
 #include "../textclips.h"
+#include "chunkparser.h"
 #include "../include/encoding.h"
 
 #include <set>
@@ -55,92 +56,6 @@ void Clip::Insert(CScintilla *scintilla) const
 	scintilla->EndUndoAction();
 }
 
-class TextClipParser : public CustomFormatStringBuilder<TextClipParser>
-{
-	public:
-		void OnFormatChar(TCHAR thechar) 
-		{
-			pushChunk();
-
-			if (thechar >= '0' && thechar <= '9')
-			{
-				int stop = (thechar - '0');
-				EChunkType chunkType = m_seenStops.insert(stop).second ? ctMasterField : ctField;
-				m_chunks.push_back(Chunk(chunkType, stop));
-			}
-
-			// TODO: Other format chars... 
-		}
-
-		void OnFormatKey(LPCTSTR key)
-		{
-			pushChunk();
-
-			boost::xpressive::tsregex tabstopMatch = boost::xpressive::tsregex::compile(_T("([0-9]+):(.+)"));
-			boost::xpressive::tsregex tabstopMatchSimple = boost::xpressive::tsregex::compile(_T("([0-9]+)"));
-
-			boost::xpressive::tsmatch match;
-			tstring prop(key);
-
-			if (boost::xpressive::regex_match(prop, match, tabstopMatch))
-			{
-				tstring stopid(match[1]);
-				tstring text(match[2]);
-
-				int stop = _ttoi(stopid.c_str());
-
-				// If this is the first insertion this is a master chunk:
-				int chunkType = m_seenStops.insert(stop).second ? ctMasterField : ctField;
-				if (stop == 0)
-				{
-					chunkType = chunkType | ctFinalCaretPos;
-				}
-				
-				Tcs_Utf8 texta(text.c_str());
-
-				m_chunks.push_back(Chunk(chunkType, stop, std::string((const char*)(const unsigned char*)texta)));
-			}
-			else if (boost::xpressive::regex_match(prop, match, tabstopMatchSimple))
-			{
-				tstring stopid(match[1]);
-
-				int stop = _ttoi(stopid.c_str());
-
-				// If this is the first insertion this is a master chunk:
-				int chunkType = m_seenStops.insert(stop).second ? ctMasterField : ctField;
-				if (stop == 0)
-				{
-					chunkType = chunkType | ctFinalCaretPos;
-				}
-
-				m_chunks.push_back(Chunk(chunkType, stop));
-			}
-		}
-		
-		void OnFormatPercentKey(LPCTSTR key) {}
-		void OnFormatScriptRef(LPCTSTR key) {}
-
-		void SwapChunks(std::vector<Chunk>& chunks)
-		{
-			pushChunk();
-			m_chunks.swap(chunks);
-		}
-
-	private:
-		void pushChunk()
-		{
-			if (m_string.size())
-			{
-				Utf16_Utf8 conv(m_string.c_str());
-				m_chunks.push_back(Chunk(ctNone, std::string((const char*)(const unsigned char*)conv)));
-				m_string = _T("");
-			}
-		}
-
-		std::vector<Chunk> m_chunks;
-		std::set<int> m_seenStops;
-};
-
 void Clip::GetChunks(std::vector<Chunk>& chunks) const
 {
 	return GetChunks(chunks, NULL);
@@ -148,15 +63,10 @@ void Clip::GetChunks(std::vector<Chunk>& chunks) const
 
 void Clip::GetChunks(std::vector<Chunk>& chunks, CScintilla* scintilla) const
 {
-	TextClipParser parser;
-	
 	std::string insertText = FixText(scintilla);
 
-	Utf8_Tcs conv(insertText.c_str());
-	parser.Build(conv);
-	
-	std::vector<Chunk> results;
-	parser.SwapChunks(chunks);
+	ChunkParser parser;
+	parser.Parse(std::string(insertText.c_str()), chunks);
 }
 
 std::string Clip::FixText(CScintilla* scintilla) const

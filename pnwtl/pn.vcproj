@@ -47,7 +47,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm180"
+				AdditionalOptions="/Zm208"
 				Optimization="0"
 				AdditionalIncludeDirectories="TabbingFramework, DockingFramework, Scintilla\include"
 				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,STRICT,SCI_NAMESPACE,UNICODE,_UNICODE"
@@ -149,7 +149,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm180 $(SVNREV)"
+				AdditionalOptions="/Zm208 $(SVNREV)"
 				Optimization="3"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="TabbingFramework, DockingFramework, Scintilla\include"
@@ -506,6 +506,14 @@
 				>
 				<File
 					RelativePath=".\textclips\chunk.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\textclips\chunkparser.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\textclips\chunkparser.h"
 					>
 				</File>
 				<File
