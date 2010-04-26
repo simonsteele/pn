@@ -229,6 +229,12 @@ void CProjectTreeCtrl::OnProjectItemChange(PROJECT_CHANGE_TYPE changeType, Proje
 				HTREEITEM hItem = findItem(changeItem, hParent);
 				DeleteItem( hItem );
 			}
+			else if (changeItem->GetType() == ptMagicFolder)
+			{
+				HTREEITEM hFolder = findFolder(CastProjectItem<Projects::Folder>(changeItem));
+				PNASSERT(hFolder != NULL);
+				DeleteItem(hFolder);
+			}
 		}
 		break;
 	}
