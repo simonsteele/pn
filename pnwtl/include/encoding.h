@@ -394,6 +394,11 @@ public:
 		return reinterpret_cast<TResult>(m_store.c_str());
 	}
 
+	const char* c_str() const
+	{
+		return m_store.c_str();
+	}
+
 private:
 	bool m_valid;
 	std::string m_store;

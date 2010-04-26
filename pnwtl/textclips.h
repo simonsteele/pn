@@ -94,7 +94,7 @@ class Clip
 		void Insert(CScintilla* scintilla) const;
 
 		void GetChunks(std::vector<Chunk>& chunks) const;
-		void GetChunks(std::vector<Chunk>& chunks, CScintilla* scintilla) const;
+		void GetChunks(std::vector<Chunk>& chunks, CScintilla* scintilla, IVariableProvider* variables) const;
 
 	private:
 		std::string FixText(CScintilla* scintilla) const;

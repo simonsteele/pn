@@ -58,14 +58,20 @@ void Clip::Insert(CScintilla *scintilla) const
 
 void Clip::GetChunks(std::vector<Chunk>& chunks) const
 {
-	return GetChunks(chunks, NULL);
+	return GetChunks(chunks, NULL, NULL);
 }
 
-void Clip::GetChunks(std::vector<Chunk>& chunks, CScintilla* scintilla) const
+void Clip::GetChunks(std::vector<Chunk>& chunks, CScintilla* scintilla, IVariableProvider* variables) const
 {
 	std::string insertText = FixText(scintilla);
 
 	ChunkParser parser;
+
+	if (variables)
+	{
+		parser.SetVariableProvider(variables);
+	}
+
 	parser.Parse(std::string(insertText.c_str()), chunks);
 }
 

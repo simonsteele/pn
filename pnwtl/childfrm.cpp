@@ -35,6 +35,7 @@
 #include "extapp.h"
 #include "include/filefinder.h"
 #include "views/splitview.h"
+#include "textclips/variables.h"
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -322,7 +323,8 @@ bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 			GetTextView()->DelWordLeft();
 
 			std::vector<TextClips::Chunk> chunks;
-			clip->GetChunks(chunks, GetTextView());
+			TextClips::DefaultVariableProvider variables(this, g_Context.m_frame->GetActiveWorkspace());
+			clip->GetChunks(chunks, GetTextView(), &variables);
 			GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
 			break;
 #else
@@ -1160,7 +1162,8 @@ LRESULT CChildFrame::OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 			GetTextView()->DelWordLeft();
 
 			std::vector<TextClips::Chunk> chunks;
-			desired->GetChunks(chunks, GetTextView());
+			TextClips::DefaultVariableProvider variables(this, g_Context.m_frame->GetActiveWorkspace());
+			desired->GetChunks(chunks, GetTextView(), &variables);
 			GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
 	#else
 			GetTextView()->BeginUndoAction();

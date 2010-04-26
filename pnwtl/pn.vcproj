@@ -552,6 +552,14 @@
 					RelativePath="textclips.h"
 					>
 				</File>
+				<File
+					RelativePath=".\textclips\variables.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\textclips\variables.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Tools"

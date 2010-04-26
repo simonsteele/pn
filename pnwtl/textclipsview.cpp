@@ -20,6 +20,7 @@
 #include "childfrm.h"
 #include "pndialogs.h"
 #include "include/encoding.h"
+#include "textclips/variables.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Our Toolbar Bits
@@ -488,8 +489,9 @@ void CClipsDocker::InsertClip(TextClips::Clip* tc)
 			return;
 		}
 
+		TextClips::DefaultVariableProvider variables(pChild, g_Context.m_frame->GetActiveWorkspace());
 		std::vector<TextClips::Chunk> chunks;
-		tc->GetChunks(chunks, pS);
+		tc->GetChunks(chunks, pS, &variables);
 		
 		pS->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
 		
