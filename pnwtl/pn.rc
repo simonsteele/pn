@@ -221,7 +221,7 @@ BEGIN
         MENUITEM "&Goto",                       ID_EDIT_GOTO
         MENUITEM "&Jump To...",                 ID_EDIT_JUMPTO
         MENUITEM "&Autocomplete",               ID_EDIT_AUTOCOMPLETE
-        MENUITEM "Insert Template",             ID_EDIT_INSERTCLIP
+        MENUITEM "&Insert Text Clip",           ID_EDIT_INSERTCLIP
     END
     POPUP "&Search"
     BEGIN
