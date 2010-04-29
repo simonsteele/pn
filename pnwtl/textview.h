@@ -114,6 +114,8 @@ public:
 
 	void BeginOverwriteTarget();
 
+	void UpdateModifiedState();
+
 	// Implement View
 	HWND GetHwnd() { return m_hWnd; }
 

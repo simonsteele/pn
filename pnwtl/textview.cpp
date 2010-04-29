@@ -1538,3 +1538,8 @@ void CTextView::updateOverwriteTarget()
 		SPerform(SCI_INDICATORCLEARRANGE, start, current - start);
 	}
 }
+
+void CTextView::UpdateModifiedState()
+{
+	m_Modified = GetModify();
+}

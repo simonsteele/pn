@@ -756,6 +756,7 @@ void CChildFrame::splitSelectedView(bool horizontal)
 	CTextView* newTextView = static_cast<CTextView*>(newTextViewPtr.get());
 	newTextView->Create(parent->GetHwnd(), rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, /*WS_EX_CLIENTEDGE*/0, cwScintilla+1);
 	newTextView->SetDocPointer(GetTextView()->GetDocPointer());
+	newTextView->UpdateModifiedState();
 
 	// Now we want the parent of the last-focused view to get a new child, the splitter.
 	// The splitter will have the last-focused view, and also the new text view.
