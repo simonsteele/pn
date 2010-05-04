@@ -64,6 +64,8 @@ IWordProvider::~IWordProvider()
 
 DefaultAutoComplete::DefaultAutoComplete(bool ignoreCase, bool useKeywords) : m_ignoreCase(ignoreCase), m_useKeywords(useKeywords)
 {
+	m_tagsDirty = false;
+	m_keywordsDirty = false;
 }
 
 /// virtual destructor
@@ -74,12 +76,11 @@ DefaultAutoComplete::~DefaultAutoComplete()
 //MSO3: Redefined this function to include also parameters and have a custom token separator
 void DefaultAutoComplete::GetWords(PN::BaseString& nearestWords, const char* root, int rootLength,bool IncludeParameters, char tokenSeparator)
 {
-	if(m_api.size() != m_keywords.size())
-		ResetTags();
+	CreateCompleteList();
 
-	if ( m_api.size() > 0)
+	if ( m_completelist.size() > 0)
 	{
-		getNearestWords(nearestWords, m_api, root, rootLength, m_ignoreCase, '(', false, IncludeParameters, tokenSeparator);
+		getNearestWords(nearestWords, m_completelist, root, rootLength, m_ignoreCase, '(', false, IncludeParameters, tokenSeparator);
 		if(!nearestWords.Empty())
 		{
 			eliminateDuplicateWords(nearestWords);
@@ -89,10 +90,12 @@ void DefaultAutoComplete::GetWords(PN::BaseString& nearestWords, const char* roo
 
 void DefaultAutoComplete::GetPrototypes(PN::BaseString& prototypes, char tokenSeparator, const char* method, int methodLength)
 {
-	if ( !m_api.size() )
+	CreateCompleteList();
+
+	if ( !m_completelist.size() )
 		return;
 
-	getNearestWords(prototypes, m_api, method, methodLength, m_ignoreCase, '(', true, true, tokenSeparator);
+	getNearestWords(prototypes, m_completelist, method, methodLength, m_ignoreCase, '(', true, true, tokenSeparator);
 }
 
 void DefaultAutoComplete::RegisterKeyWords(int set, const char* words)
@@ -113,6 +116,8 @@ void DefaultAutoComplete::RegisterKeyWords(int set, const char* words)
 				word++;
 
 			insert_sorted(m_keywords, newWord);
+
+			m_keywordsDirty = true;
 		}
 	}
 }
@@ -135,18 +140,37 @@ void DefaultAutoComplete::RegisterTag(const char* tag, const char* name)
 		display.append(openBrace, endBrace-openBrace+1);
 		//tag += FullTag.Mid(startP, endP-startP+1);
 		
-		insert_sorted(m_api, display);
+		insert_sorted(m_tags, display);
 	}	
 	else
 	{
-		insert_sorted(m_api, std::string(name));
+		insert_sorted(m_tags, std::string(name));
+	}
+
+	m_tagsDirty = true;
+}
+
+void DefaultAutoComplete::CreateCompleteList()
+{
+	if(m_tagsDirty || m_keywordsDirty)
+	{
+		m_completelist.clear();
+		
+		m_completelist.reserve(m_tags.size() + m_keywords.size());
+		m_completelist.insert(m_completelist.end(), m_tags.begin(), m_tags.end());
+		m_completelist.insert(m_completelist.end(), m_keywords.begin(), m_keywords.end());
+
+		//Turn off the dirty flags
+		m_tagsDirty = false;
+		m_keywordsDirty = false;
 	}
 }
 
 void DefaultAutoComplete::ResetTags()
 {
-	m_api.clear();
-	m_api = m_keywords;
+	//Make sure the tags are not set to dirty, because the RegisterTags function will do that once it adds a new tag
+	m_tags.clear();
+	m_tagsDirty = false;
 }
 
 /**
@@ -154,8 +178,13 @@ void DefaultAutoComplete::ResetTags()
  */
 void DefaultAutoComplete::Reset()
 {
+	m_completelist.clear();
+
+	//Make sure the keywords are not set to dirty, because the RegisterKeywords function will do that once it adds a new keyword
 	m_keywords.clear();
-	m_api.clear();
+	m_keywordsDirty = false;
+
+	ResetTags();
 }
 
 void DefaultAutoComplete::eliminateDuplicateWords(PN::BaseString& words)

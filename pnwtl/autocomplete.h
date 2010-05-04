@@ -93,6 +93,11 @@ public:
 	 * Complete reset
 	 */
 	virtual void Reset();
+	
+	/**
+	 * Check if Tags or Keywords are dirty and create a new list out of them
+	 **/
+	virtual void CreateCompleteList();
 
 private:
 	void eliminateDuplicateWords(PN::BaseString& words);
@@ -103,10 +108,13 @@ private:
 	typedef int (*fnComparer)(const char*, const char*, size_t);
 	void BinarySearchFor(PN::BaseString& result, const string_array& source, const char* wordStart, int searchLen, fnComparer compare, char otherSeparator, bool includeParameters, bool exactLen, char tokenSeparator);
 
-	string_array m_api;
+	string_array m_tags;
 	string_array m_keywords;
+	string_array m_completelist;
 	bool m_ignoreCase;
 	bool m_useKeywords;
+	bool m_tagsDirty;
+	bool m_keywordsDirty;
 };
 
 #endif
