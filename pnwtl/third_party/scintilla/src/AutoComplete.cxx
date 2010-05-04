@@ -124,52 +124,32 @@ void AutoComplete::Move(int delta) {
 	lb->Select(current);
 }
 
-void AutoComplete::Select(const char *word) {
-	size_t lenWord = strlen(word);
+void AutoComplete::Select(const char *word, bool bIgnoreCase) {
 	int location = -1;
+
+	char *tmpWord = const_cast<char*>(word);
+	tmpWord = (bIgnoreCase) ? _strlwr(tmpWord) : tmpWord;
+	size_t tmpWordLength = strlen(tmpWord);
+
 	const int maxItemLen=1000;
 	char item[maxItemLen];
-	int start = 0; // lower bound of the api array block to search
-	int end = lb->Length() - 1; // upper bound of the api array block to search
-	while ((start <= end) && (location == -1)) { // Binary searching loop
-		int pivot = (start + end) / 2;
-		lb->GetValue(pivot, item, maxItemLen);
-		int cond;
-		if (ignoreCase)
-			cond = CompareNCaseInsensitive(word, item, lenWord);
-		else
-			cond = strncmp(word, item, lenWord);
-		if (!cond) {
-			// Find first match
-			while (pivot > start) {
-				lb->GetValue(pivot-1, item, maxItemLen);
-				if (ignoreCase)
-					cond = CompareNCaseInsensitive(word, item, lenWord);
-				else
-					cond = strncmp(word, item, lenWord);
-				if (0 != cond)
-					break;
-				--pivot;
-			}
-			location = pivot;
-			if (ignoreCase) {
-				// Check for exact-case match
-				for (; pivot <= end; pivot++) {
-					lb->GetValue(pivot, item, maxItemLen);
-					if (!strncmp(word, item, lenWord)) {
-						location = pivot;
-						break;
-					}
-					if (CompareNCaseInsensitive(word, item, lenWord))
-						break;
-				}
-			}
-		} else if (cond < 0) {
-			end = pivot - 1;
-		} else if (cond > 0) {
-			start = pivot + 1;
+
+	int length = lb->Length() - 1;
+
+	for(int i = 0; i <= length; i++)
+	{
+		lb->GetValue(i, item, maxItemLen);
+
+		char *tmpItem = const_cast<char*>(item);
+		tmpItem = (bIgnoreCase) ? _strlwr(tmpItem) : tmpItem;
+
+		if(strncmp(tmpWord, tmpItem, tmpWordLength) == 0)
+		{
+			location = i;
+			break;
 		}
 	}
+
 	if (location == -1 && autoHide)
 		Cancel();
 	else

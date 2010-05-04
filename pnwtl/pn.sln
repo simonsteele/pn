@@ -14,7 +14,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scintilla", "scintilla\scin
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tests", "tests\tests.vcproj", "{0F01F7C9-BF32-4AB4-A616-B3A691CCE6A9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pnlang", "translations\pnlang.vcproj", "{CE784A17-DBE2-4722-8B91-1012244A3EA4}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pnlang", "translations_old\pnlang.vcproj", "{CE784A17-DBE2-4722-8B91-1012244A3EA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,9 +35,7 @@ Global
 		{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}.Release|Win32.ActiveCfg = Release|Win32
 		{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}.Release|Win32.Build.0 = Release|Win32
 		{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}.Debug|Win32.ActiveCfg = Debug|Win32
-		{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}.Debug|Win32.Build.0 = Debug|Win32
 		{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}.Release|Win32.ActiveCfg = Release|Win32
-		{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}.Release|Win32.Build.0 = Release|Win32
 		{188B3F1D-5109-49FD-9DAF-9802AE63763B}.Debug|Win32.ActiveCfg = Debug|Win32
 		{188B3F1D-5109-49FD-9DAF-9802AE63763B}.Debug|Win32.Build.0 = Debug|Win32
 		{188B3F1D-5109-49FD-9DAF-9802AE63763B}.Release|Win32.ActiveCfg = Release|Win32
@@ -47,9 +45,7 @@ Global
 		{4B384DE2-A934-474E-A6FF-AA1329DEE600}.Release|Win32.ActiveCfg = Release|Win32
 		{4B384DE2-A934-474E-A6FF-AA1329DEE600}.Release|Win32.Build.0 = Release|Win32
 		{0F01F7C9-BF32-4AB4-A616-B3A691CCE6A9}.Debug|Win32.ActiveCfg = Debug|Win32
-		{0F01F7C9-BF32-4AB4-A616-B3A691CCE6A9}.Debug|Win32.Build.0 = Debug|Win32
 		{0F01F7C9-BF32-4AB4-A616-B3A691CCE6A9}.Release|Win32.ActiveCfg = Release|Win32
-		{0F01F7C9-BF32-4AB4-A616-B3A691CCE6A9}.Release|Win32.Build.0 = Release|Win32
 		{CE784A17-DBE2-4722-8B91-1012244A3EA4}.Debug|Win32.ActiveCfg = Debug|Win32
 		{CE784A17-DBE2-4722-8B91-1012244A3EA4}.Debug|Win32.Build.0 = Debug|Win32
 		{CE784A17-DBE2-4722-8B91-1012244A3EA4}.Release|Win32.ActiveCfg = Release|Win32

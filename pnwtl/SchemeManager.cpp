@@ -162,7 +162,7 @@ bool SchemeManager::schemesHaveChanged()
 	f.GetFindData().Newest = OPTIONS->Get(PNSK_SCHEMES, _T("NewestScheme"), static_cast<uint64_t>(0));
 
 	f.Find(m_SchemePath, _T("*.scheme"));
-	f.Find(m_SchemePath, _T("*.customscheme"));
+	f.Find(m_SchemePath, _T("*.schemedef"));
 	
 	return f.GetFindData().FoundNewer;
 }

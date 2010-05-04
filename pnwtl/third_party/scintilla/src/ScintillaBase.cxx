@@ -313,7 +313,7 @@ void ScintillaBase::AutoCompleteMoveToCurrentWord() {
 	for (i = startWord; i < sel.MainCaret() && i - startWord < 1000; i++)
 		wordCurrent[i - startWord] = pdoc->CharAt(i);
 	wordCurrent[Platform::Minimum(i - startWord, 999)] = '\0';
-	ac.Select(wordCurrent);
+	ac.Select(wordCurrent, ac.ignoreCase);
 }
 
 void ScintillaBase::AutoCompleteCharacterAdded(char ch) {
@@ -580,7 +580,7 @@ sptr_t ScintillaBase::WndProc(unsigned int iMessage, uptr_t wParam, sptr_t lPara
 		break;
 
 	case SCI_AUTOCSELECT:
-		ac.Select(reinterpret_cast<char *>(lParam));
+		ac.Select(reinterpret_cast<char *>(lParam), ac.ignoreCase);
 		break;
 
 	case SCI_AUTOCGETCURRENT:

@@ -68,7 +68,7 @@ public:
 	void Move(int delta);
 
 	/// Select a list element that starts with word as the current element
-	void Select(const char *word);
+	void Select(const char *word, bool bIgnoreCase);
 };
 
 #ifdef SCI_NAMESPACE
