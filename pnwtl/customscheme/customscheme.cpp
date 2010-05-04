@@ -490,24 +490,20 @@ void EXPORT __stdcall GetLexerName(unsigned int Index, char *name, int buflength
 void EXPORT __stdcall Lex(unsigned int lexer, 
 	unsigned int startPos, int length, int initStyle, char *words[], WindowID window, char *props)
 {
-	WordList **wordlists = StringToWordLists(words);
-
 	PropSet ps;
 	ps.SetMultiple(props);
 	
 	WindowAccessor wa(window, ps);
 	
-	theLexers[lexer]->DoLex(startPos, length, initStyle, wordlists, wa);
+	theLexers[lexer]->DoLex(startPos, length, initStyle, words, wa);
 
 	wa.Flush();
-
-	FreeWordLists(wordlists);	
 }
 
 void EXPORT __stdcall Fold(unsigned int lexer, 
 	unsigned int startPos, int length, int initStyle, char *words[], WindowID window, char *props)
 {
-	WordList **wordlists = StringToWordLists(words);
+	WordList **wordlists = StringToWordLists(words, false);
 
 	PropSet ps;
 	ps.SetMultiple(props);

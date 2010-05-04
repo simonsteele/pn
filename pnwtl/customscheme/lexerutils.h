@@ -13,7 +13,7 @@ class Lexer
 			return "error";
 		}
 
-		virtual void DoLex(unsigned int startPos, int length, int initStyle, WordList *keywordlists[],
+		virtual void DoLex(unsigned int startPos, int length, int initStyle, char *words[],
                             Accessor &styler) const
 		{
 

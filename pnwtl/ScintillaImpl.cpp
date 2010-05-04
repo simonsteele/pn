@@ -340,7 +340,7 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 				{
 					AutoCCancel();
 					if (contains(m_autoCompleteStartCharacters.c_str(), scn->ch))
-						StartAutoComplete();
+						StartAutoComplete(false);
 				}
 			}
 			else 
@@ -353,7 +353,7 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 				else
 				{
 					if (m_bAutoActivate && contains(m_autoCompleteStartCharacters.c_str(), scn->ch))
-						StartAutoComplete();
+						StartAutoComplete(false);
 				}
 			}
 			break;
@@ -1569,7 +1569,7 @@ void CScintillaImpl::SetKeyWords(int keywordSet, const char* keyWords)
 void CScintillaImpl::AttemptAutoComplete()
 {
 	if(m_bAutoCompletion)
-		StartAutoComplete();
+		StartAutoComplete(true);
 }
 
 /**
@@ -1943,7 +1943,7 @@ _RPT2(_CRT_WARN,"2---CallTipShow %i, [%s]\n",m_lastPosCallTip - m_currentCallTip
 	}
 }
 
-bool CScintillaImpl::StartAutoComplete()
+bool CScintillaImpl::StartAutoComplete(bool bForcefully)
 {
 	if( !m_bAutoCompletion )
 		return false;
@@ -1958,7 +1958,7 @@ bool CScintillaImpl::StartAutoComplete()
 		startword--;
 	}
 
-	if(m_bAutoActivate && !(current - startword >= m_nMinAutoCompleteChars))
+	if(!bForcefully && m_bAutoActivate && !(current - startword >= m_nMinAutoCompleteChars))
 		return false;
 
 	std::string root = line.substr(startword, current - startword);

@@ -10,7 +10,7 @@
 
 // Create WordLists...
 
-static WordList **StringToWordLists(char *val[]) {
+static WordList **StringToWordLists(char *val[], bool bForceLowerCase) {
     int dim = 0;
 
     while (val[dim])
@@ -21,7 +21,7 @@ static WordList **StringToWordLists(char *val[]) {
 	for (int i = 0; i < dim; i++) 
 	{
         wla[i] = new WordList;
-        wla[i]->Set(val[i]);
+		wla[i]->Set((bForceLowerCase) ? _strlwr(val[i]) : val[i]);
     }
     
 	wla[dim] = 0;

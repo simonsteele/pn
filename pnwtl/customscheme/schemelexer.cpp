@@ -85,7 +85,7 @@ bool CustomLexer::IsANumChar(int ch) const
 			} \
 		}
 
-void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, WordList *keywordlists[],
+void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, char *words[],
 					Accessor &styler) const
 {
 	// String EOL styles do not leak onto the next line - could these styles be the same one?
@@ -136,12 +136,20 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, WordLi
 		{
 			if(! IsAWordChar(cc.ch) )
 			{
+				WordList **keywordlists = NULL;
 				char s[100];
+
 				if(bCaseSensitive)
+				{
+					keywordlists = StringToWordLists(words, false);
 					cc.GetCurrent(s, sizeof(s));
+				}
 				else
+				{
+					keywordlists = StringToWordLists(words, true);
 					cc.GetCurrentLowered(s, sizeof(s));
-				
+				}
+
 				for(int z = 0; z < MAX_KEYWORDS; z++)
 				{
 					if( (*keywordlists[z]).InList(s) )
@@ -152,6 +160,8 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, WordLi
 				}
 				
 				cc.SetState(ST_DEFAULT);
+
+				FreeWordLists(keywordlists);	
 			}
 		}
 		else if( cc.state == STYLE_NUMBER )

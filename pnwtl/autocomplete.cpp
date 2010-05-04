@@ -74,6 +74,9 @@ DefaultAutoComplete::~DefaultAutoComplete()
 //MSO3: Redefined this function to include also parameters and have a custom token separator
 void DefaultAutoComplete::GetWords(PN::BaseString& nearestWords, const char* root, int rootLength,bool IncludeParameters, char tokenSeparator)
 {
+	if(m_api.size() != m_keywords.size())
+		ResetTags();
+
 	if ( m_api.size() > 0)
 	{
 		getNearestWords(nearestWords, m_api, root, rootLength, m_ignoreCase, '(', false, IncludeParameters, tokenSeparator);

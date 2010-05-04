@@ -94,7 +94,7 @@ class CustomLexer : public Lexer
 			return tsName.c_str();
 		}
 
-		virtual void DoLex(unsigned int startPos, int length, int initStyle, WordList *keywordlists[],
+		virtual void DoLex(unsigned int startPos, int length, int initStyle, char *words[],
                             Accessor &styler) const;
 
 		virtual void DoFold(unsigned int startPos, int length, int initStyle, WordList *keywordlists[],

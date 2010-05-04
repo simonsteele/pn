@@ -119,7 +119,7 @@ protected:
 	virtual tstring GetDocTitle() { return tstring(_T("")); }
 
 private:
-	bool StartAutoComplete();
+	bool StartAutoComplete(bool bForcefully);
 	void AutoCloseBraces(Scintilla::SCNotification* scn);
 	
 	void SmartTag();
