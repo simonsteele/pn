@@ -609,7 +609,7 @@ class XiteWin():
 		print()
 		print("\n".join(sorted(self.ed.used)))
 
-	def CmdUncalled(self):
+	def Uncalled(self):
 		print()
 		unused = sorted(self.ed.all.difference(self.ed.used))
 		uu = {}
@@ -617,9 +617,8 @@ class XiteWin():
 			v = self.ed.getvalue(u)
 			if v > 2000:
 				uu[v] = u
-		for x in sorted(uu.keys())[150:]:
-			print(x, uu[x])
-		print()
+		#~ for x in sorted(uu.keys())[150:]:
+		return uu
 
 	def CmdExit(self):
 		self.Exit()
@@ -648,3 +647,5 @@ def main(test):
 	global xiteFrame
 	xiteFrame = XiteWin(test)
 	xiteFrame.AppLoop()
+	#~ xiteFrame.CmdExercised()
+	return xiteFrame.Uncalled()

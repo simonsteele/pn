@@ -101,7 +101,7 @@ static void Colourise4glDoc(unsigned int startPos, int length, int initStyle, Wo
 				if (!IsAWordChar(sc.ch) && sc.ch != '-') {
 					char s[1000];
 					sc.GetCurrentLowered(s, sizeof(s));
-					if (((sc.state & 0x10) == 0) && keywords2.InList(s) || keywords3.InList(s)) {
+					if ((((sc.state & 0x10) == 0) && keywords2.InList(s)) || keywords3.InList(s)) {
 						sc.ChangeState(SCE_4GL_BLOCK | ResetSentenceStart);
 					}
 					else if (keywords1.InList(s)) {

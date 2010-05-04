@@ -101,7 +101,7 @@ static const KeyToCommand macMapDefault[] =
   {SCK_BACK,      SCI_ALT,    SCI_UNDO},
   {SCK_BACK,      SCI_CSHIFT, SCI_DELLINELEFT},
   {'z',           SCI_CMD,    SCI_UNDO},
-  {'y',           SCI_CMD,    SCI_REDO},
+  {'z',           SCI_SCMD,   SCI_REDO},
   {'x',           SCI_CMD,    SCI_CUT},
   {'c',           SCI_CMD,    SCI_COPY},
   {'v',           SCI_CMD,    SCI_PASTE},

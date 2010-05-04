@@ -16,8 +16,8 @@ namespace Scintilla {
  */
 class ScintillaBase : public Editor {
 	// Private so ScintillaBase objects can not be copied
-	ScintillaBase(const ScintillaBase &) : Editor() {}
-	ScintillaBase &operator=(const ScintillaBase &) { return *this; }
+	ScintillaBase(const ScintillaBase &);
+	ScintillaBase &operator=(const ScintillaBase &);
 
 protected:
 	/** Enumeration of commands and child windows. */
@@ -44,6 +44,7 @@ protected:
 	int maxListWidth;		/// Maximum width of list, in average character widths
 
 #ifdef SCI_LEXER
+	bool performingStyle;	///< Prevent reentrance
 	int lexLanguage;
 	const LexerModule *lexCurrent;
 	PropSetSimple props;
@@ -75,7 +76,7 @@ protected:
 	void AutoCompleteCharacterDeleted();
 	void AutoCompleteCompleted();
 	void AutoCompleteMoveToCurrentWord();
-	static void AutoCompleteDoubleClick(void* p);
+	static void AutoCompleteDoubleClick(void *p);
 
 	void CallTipClick();
 	void CallTipShow(Point pt, const char *defn);

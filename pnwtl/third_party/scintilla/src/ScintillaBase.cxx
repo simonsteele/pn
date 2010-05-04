@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <ctype.h>
 
+#include <string>
 #include <vector>
 
 #include "Platform.h"
@@ -54,8 +55,9 @@ ScintillaBase::ScintillaBase() {
 	maxListWidth = 0;
 #ifdef SCI_LEXER
 	lexLanguage = SCLEX_CONTAINER;
+	performingStyle = false;
 	lexCurrent = 0;
-	for (int wl = 0;wl < numWordLists;wl++)
+	for (int wl = 0; wl < numWordLists; wl++)
 		keyWordLists[wl] = new WordList;
 	keyWordLists[numWordLists] = 0;
 #endif
@@ -63,7 +65,7 @@ ScintillaBase::ScintillaBase() {
 
 ScintillaBase::~ScintillaBase() {
 #ifdef SCI_LEXER
-	for (int wl = 0;wl < numWordLists;wl++)
+	for (int wl = 0; wl < numWordLists; wl++)
 		delete keyWordLists[wl];
 #endif
 }
@@ -201,8 +203,8 @@ int ScintillaBase::KeyCommand(unsigned int iMessage) {
 	return Editor::KeyCommand(iMessage);
 }
 
-void ScintillaBase::AutoCompleteDoubleClick(void* p) {
-	ScintillaBase* sci = reinterpret_cast<ScintillaBase*>(p);
+void ScintillaBase::AutoCompleteDoubleClick(void *p) {
+	ScintillaBase *sci = reinterpret_cast<ScintillaBase *>(p);
 	sci->AutoCompleteCompleted();
 }
 
@@ -496,11 +498,11 @@ void ScintillaBase::SetLexerLanguage(const char *languageName) {
 }
 
 void ScintillaBase::Colourise(int start, int end) {
-	if (!pdoc->performingStyle) {
+	if (!performingStyle) {
 		// Protect against reentrance, which may occur, for example, when
 		// fold points are discovered while performing styling and the folding
 		// code looks for child lines which may trigger styling.
-		pdoc->performingStyle = true;
+		performingStyle = true;
 
 		int lengthDoc = pdoc->Length();
 		if (end == -1)
@@ -527,7 +529,7 @@ void ScintillaBase::Colourise(int start, int end) {
 			}
 		}
 
-		pdoc->performingStyle = false;
+		performingStyle = false;
 	}
 }
 #endif
