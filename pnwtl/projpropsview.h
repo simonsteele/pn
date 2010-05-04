@@ -11,7 +11,7 @@
 #ifndef projpropsview_h__included
 #define projpropsview_h__included
 
-#include "include/proplist/propertylist.h"
+#include "third_party/viksoe_proplist/propertylist.h"
 
 /**
  * This class represents a meta data item and a set of properties that

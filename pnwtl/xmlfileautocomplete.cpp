@@ -262,7 +262,7 @@ void XmlFileAutocompleteProvider::GetPrototypes(PN::BaseString& prototypes, char
 	std::vector<Tag>::const_iterator it = m_tags.begin();
 	for (; it != m_tags.end(); it++)
 	{
-		if (strncmp((*it).Name.c_str(), method, methodLength) == 0)
+		if ((*it).Name.size() == methodLength && strncmp((*it).Name.c_str(), method, methodLength) == 0)
 		{
 			BOOST_FOREACH(const Definition& def, (*it).Defs)
 			{

@@ -1,6 +1,6 @@
 #define PN_MAJOR			2
 #define PN_MINOR			1
-#define PN_REVISION			1
+#define PN_REVISION			3
 #ifndef PN_BUILD
 	#define PN_BUILD		0
 #endif

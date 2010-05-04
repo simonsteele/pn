@@ -2,7 +2,7 @@
  * @file textclips.h
  * @brief Text Clips Classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -15,26 +15,61 @@
 
 namespace TextClips {
 
+typedef enum { ctNone = 0, ctField = 0x01, ctMasterField = 0x03, ctFinalCaretPos = 0x4 } EChunkType;
+
+class TextClipSet;
+
+typedef std::list<TextClipSet*> LIST_CLIPSETS;
+typedef std::map<std::string, LIST_CLIPSETS> MAP_CLIPSETS;
+
+/**
+ * Interface for variable providing.
+ */
+class IVariableProvider
+{
+public:
+	virtual ~IVariableProvider() {}
+
+	/**
+	 * Get the value of a variable.
+	 * @param value Output for the variable value
+	 * @returns true if value stored, false otherwise
+	 */
+	virtual bool GetVariable(const char* name, std::string& value) = 0;
+};
+
 /**
  * Single part of a smart text clip, can be plain text or a field.
  */
 class Chunk
 {
 public:
-	Chunk() : m_field(false), Id(0) {}
-	Chunk(bool field, const std::string& text) : m_field(field), m_text(text), Id(0) {}
-	Chunk(bool field, int id) : m_field(field), Id(id) {}
+	explicit Chunk();
+	explicit Chunk(/*EChunkType*/int field, const std::string& text);
+	explicit Chunk(/*EChunkType*/int field, int id);
+	explicit Chunk(/*EChunkType*/int field, int id, const std::string& text);
 
 	int Id;
 
+	bool IsText() const;
 	bool IsField() const;
+	bool IsMasterField() const;
+	bool IsFinalCaretPos() const;
 	std::string GetText() const;
 	
 	void SetText(const char* text);
 
+	// Field Position tracking:
+	void SetPos(int start, int end);
+	void GetPos(int& start, int& end) const;
+	void OffsetPos(int offset);
+
 private:
-	bool m_field;
+	int m_flags;
 	std::string m_text;
+	std::string m_variable;
+	int m_start;
+	int m_end;
 };
 
 /**
@@ -59,6 +94,10 @@ class Clip
 		void Insert(CScintilla* scintilla) const;
 
 		void GetChunks(std::vector<Chunk>& chunks) const;
+		void GetChunks(std::vector<Chunk>& chunks, CScintilla* scintilla, IVariableProvider* variables) const;
+
+	private:
+		std::string FixText(CScintilla* scintilla) const;
 };
 
 typedef std::list<Clip*>	LIST_CLIPS;
@@ -79,11 +118,6 @@ class TextClipSet
 		void Add(Clip* clip);
 
 		/**
-		 * Builds a list of clips formatted for scintilla display
-		 */
-		std::string BuildSortedClipList() const;
-
-		/**
 		 * Find a Clip by its text shortcut
 		 */
 		const Clip* FindByShortcut(const std::string& shortcut) const;
@@ -99,9 +133,14 @@ class TextClipSet
 		LPCTSTR GetName() const;
 
 		/**
-		 * Get the filename that stores these clips, or NULL if in the global store
+		 * Get the filename that stores these clips.
 		 */
 		LPCTSTR GetFilename() const;
+
+		/**
+		 * Set the filename of this clip set.
+		 */
+		void SetFilename(LPCTSTR filename);
 
 		/**
 		 * Get the scheme name if scheme-tied, NULL otherwise
@@ -121,7 +160,7 @@ class TextClipSet
 		/**
 		 * Save this clipset to its file
 		 */
-		void Save();
+		virtual void Save();
 
 	private:
 		void clear();
@@ -132,65 +171,7 @@ class TextClipSet
 		std::string m_scheme;
 		tstring m_filename;
 		bool m_encodeClipNames;
-};
-
-typedef std::list<TextClipSet*> LIST_CLIPSETS;
-typedef std::map<std::string, TextClipSet*> MAP_CLIPSETS;
-
-/**
- * Represents a set of text clip sets.
- */
-class TextClipsManager : public XMLParseState
-{
-	public:
-		TextClipsManager();
-		TextClipsManager(const TextClipsManager& copy);
-		~TextClipsManager();
-
-		void OnFound(LPCTSTR path, FileFinderData& file, bool& /*shouldContinue*/);
-
-		const LIST_CLIPSETS& GetClipSets();
-
-		TextClipSet* GetClips(LPCSTR schemeName);
-
-		void Add(TextClipSet* clips);
-
-		void Save(bool ignoreFilenames = false);
-
-		void Reset(const TextClipsManager& copy);
-
-		//XMLParseState
-	public:
-		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
-		virtual void endElement(LPCTSTR name);
-		virtual void characterData(LPCTSTR data, int len);
-
-	private:
-		typedef enum tagEncodings
-			{
-				eNone,
-				eWindows1252,
-				eANSI,
-			} EEncoding;
-
-		void clear();
-		void copy(const TextClipsManager& copy);
-		void decodeData();
-		void findClips();
-		void parse(LPCTSTR filename);
-
-		LIST_CLIPSETS	m_clipSets;
-		MAP_CLIPSETS	m_schemeClipSets;
-
-		// Parse state:
-		bool decodeNames;
-		int	m_parseState;
-		std::string m_cData;
-		tstring m_curName;
-		std::string m_curShortcut;
-		tstring m_curFileName;
-		TextClipSet* m_pCurSet;
-		EEncoding m_curEncoding;
+		bool m_bDirty;
 };
 
 } // namespace TextClips

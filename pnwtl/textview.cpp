@@ -2,7 +2,7 @@
  * @file TextView.cpp
  * @brief Implementation of CTextView, the Scintilla based text-editor view.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -23,13 +23,21 @@
 #include "childfrm.h"
 #include "findinfiles.h"
 
-using pnutils::threading::CritLock;
-
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
 	#undef THIS_FILE
 	static char THIS_FILE[] = __FILE__;
 #endif
+
+/**
+ * SmartHighlight is fun, but causes a lot of work in huge files. We now
+ * limit the scope to +/- 200 lines from the top and bottom of the current view. 
+ * If this isn't desirable this will have to be updated to be smarted with UPDATEUI.
+ */
+#define MAX_SMARTHIGHLIGHT_LINES 200
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// CTextView
 
 CTextView::CTextView(DocumentPtr document, Views::ViewPtr parent, CommandDispatch* commands, AutoCompleteManager* autoComplete) : 
 	Views::View(Views::vtText, parent),
@@ -38,9 +46,9 @@ CTextView::CTextView(DocumentPtr document, Views::ViewPtr parent, CommandDispatc
 	m_pLastScheme(NULL),
 	m_waitOnBookmarkNo(FALSE),
 	m_encType(eUnknown),
-	m_bMeasureCanRun(false),
 	m_bOverwriteTarget(false),
-	m_bInsertClip(false)
+	m_bInsertClip(false),
+	m_bSkipNextChar(false)
 {
 	m_bSmartStart = OPTIONS->Get(PNSK_EDITOR, _T("SmartStart"), true);
 	SetAutoCompleteManager(autoComplete);
@@ -48,15 +56,6 @@ CTextView::CTextView(DocumentPtr document, Views::ViewPtr parent, CommandDispatc
 
 CTextView::~CTextView()
 {
-	{
-		CritLock lock(m_csMeasure);
-		m_bMeasureCanRun = false;
-	}
-
-	if(m_measureThread.Valid())
-	{
-		m_measureThread.Join(10000);
-	}
 }
 
 BOOL CTextView::PreTranslateMessage(MSG* pMsg)
@@ -330,11 +329,6 @@ bool CTextView::Load(LPCTSTR filename, Scheme* pScheme, EPNEncoding encoding)
 			SmartStart::GetInstance()->Scan(this);
 		}
 
-		if (OPTIONS->Get(PNSK_EDITOR, _T("EnableLongLineThread"), true))
-		{
-			checkLineLength();
-		}
-
 		return true;
 	}
 
@@ -367,11 +361,6 @@ void CTextView::Revert(LPCTSTR filename)
 			int lineTop = VisibleFromDocLine( scrollPos );
 			LineScroll(0, lineTop - curTop);
 			Invalidate();
-		}
-
-		if(OPTIONS->Get(PNSK_EDITOR, _T("EnableLongLineThread"), true))
-		{
-			checkLineLength();
 		}
 	}
 }
@@ -511,7 +500,9 @@ void CTextView::ShowLineNumbers(bool bShow)
 int CTextView::HandleNotify(LPARAM lParam)
 {
 	int msg = baseClass::HandleNotify(lParam);
-	
+
+	Scintilla::SCNotification* scn(reinterpret_cast<Scintilla::SCNotification*>(lParam));
+
 	if(msg == SCN_SAVEPOINTREACHED)
 	{
 		SendMessage(m_pDoc->GetFrame()->m_hWnd, PN_NOTIFY, 0, SCN_SAVEPOINTREACHED);
@@ -528,7 +519,6 @@ int CTextView::HandleNotify(LPARAM lParam)
 
 		smartHighlight();
 		updateOverwriteTarget();
-		updateInsertClip();
 	}
 	else if(msg == SCN_CHARADDED)
 	{
@@ -537,18 +527,24 @@ int CTextView::HandleNotify(LPARAM lParam)
 			if(SmartStart::GetInstance()->OnChar(this) != SmartStart::eContinue)
 				m_bSmartStart = false;
 		}
-
+		
 		m_pDoc->OnCharAdded( ( reinterpret_cast<Scintilla::SCNotification*>(lParam))->ch );
 	}
 	else if(msg == SCN_MODIFIED)
 	{
-		if( ( reinterpret_cast<Scintilla::SCNotification*>(lParam))->linesAdded != 0 && m_bLineNos )
+		if( scn->linesAdded != 0 && m_bLineNos )
+		{
 			SetLineNumberChars();
+		}
 	}
 	else if (msg == SCN_MACRORECORD)
 	{
-		Scintilla::SCNotification* scn = reinterpret_cast<Scintilla::SCNotification*>(lParam);
 		m_recorder->RecordScintillaAction(scn->message, scn->wParam, scn->lParam);
+	}
+
+	if (m_bInsertClip)
+	{
+		handleInsertClipNotify(scn);
 	}
 	
 	return msg;
@@ -823,6 +819,50 @@ HRESULT CTextView::OnInsertClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	return 0;
 }
 
+HRESULT CTextView::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	if (!m_bInsertClip)
+	{
+		bHandled = false;
+		return 0;
+	}
+
+	if (wParam == VK_TAB && ::GetFocus() == m_hWnd)
+	{
+		// Next field in the template:
+		if ( GetKeyState( VK_SHIFT ) & 0x8000 )
+		{
+			prevClipField();
+		}
+		else
+		{
+			nextClipField();
+		}
+		
+		bHandled = true;
+		m_bSkipNextChar = true;
+	}
+	else
+	{
+		bHandled = false;
+	}
+	
+	return 0;
+}
+
+HRESULT CTextView::OnKeyUp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+{	
+	return 0;
+}
+
+HRESULT CTextView::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	bHandled = m_bSkipNextChar;
+	m_bSkipNextChar = false;
+
+	return 0;
+}
+
 HRESULT CTextView::OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	bHandled = false;
@@ -961,7 +1001,7 @@ LRESULT CTextView::OnCommentLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 	if( GetSelLength() && comments.CommentLineText[0] != NULL)
 	{
 		// Comment a block out using line comments
-		BeginUndoAction();
+		UndoGroup group(*this);
 
 		// Find the selection
 		Scintilla::CharacterRange cr;
@@ -983,21 +1023,17 @@ LRESULT CTextView::OnCommentLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 			SetTargetEnd(linestart);
 			ReplaceTarget(strlen(comments.CommentLineText), comments.CommentLineText);
 		}
-
-		EndUndoAction();
 	}
 	else if( comments.CommentLineText[0] != NULL )
 	{
 		// Comment the current line out...
-		BeginUndoAction();
+		UndoGroup group(*this);
 
 		int commentLine = LineFromPosition( GetCurrentPos() );
 		int commentAt = PositionFromLine( commentLine ) + lineTextStartPosition( commentLine );
 		SetTargetStart(commentAt);
 		SetTargetEnd(commentAt);
 		ReplaceTarget(strlen(comments.CommentLineText), comments.CommentLineText);
-
-		EndUndoAction();
 	}
 
 	return 0;
@@ -1010,7 +1046,7 @@ LRESULT CTextView::OnCommentStream(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 	if( GetSelLength() && comments.CommentStreamStart[0] != NULL && comments.CommentStreamEnd[0] != NULL )
 	{
-		BeginUndoAction();
+		UndoGroup group(*this);
 		
 		// Find selection
 		Scintilla::CharacterRange cr;
@@ -1030,8 +1066,6 @@ LRESULT CTextView::OnCommentStream(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 
 		// Expand the selection to include the comment chars...
 		SetSel(cr.cpMin, cr.cpMax);
-
-		EndUndoAction();
 	}
 
 	return 0;
@@ -1045,7 +1079,7 @@ LRESULT CTextView::OnCommentBlock(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	if( comments.CommentBlockStart[0] != NULL && comments.CommentBlockEnd[0] != NULL &&
 		comments.CommentBlockLine[0] != NULL )
 	{
-		BeginUndoAction();
+		UndoGroup group(*this);
 
 		Scintilla::CharacterRange cr;
 		GetSel(cr);
@@ -1100,8 +1134,6 @@ LRESULT CTextView::OnCommentBlock(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 		SetTargetStart(cr.cpMax);
 		SetTargetEnd(cr.cpMax);
 		ReplaceTarget(endline.size(), endline.c_str());
-
-		EndUndoAction();
 	}
 	
 	return 0;
@@ -1141,14 +1173,12 @@ LRESULT CTextView::OnUncomment(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 
 		if (match)
 		{
-			BeginUndoAction();
+			UndoGroup group(*this);
 
 			for (int line = startLine; line <= endLine; line++)
 			{
 				UnCommentLine(comments, line);
 			}
-
-			EndUndoAction();
 
 			return 0;
 		}
@@ -1290,7 +1320,13 @@ void CTextView::OnFirstShow()
 	m_pLastScheme = SchemeManager::GetInstance()->GetDefaultScheme();
 	m_pLastScheme->Load(*this);
 	SetEOLMode( OPTIONS->GetCached(Options::OLineEndings) );
-	SPerform(SCI_SETCODEPAGE, (long)OPTIONS->GetCached(Options::ODefaultCodePage));
+	
+	int defaultCodePage = (long)OPTIONS->GetCached(Options::ODefaultCodePage);
+	SPerform(SCI_SETCODEPAGE, defaultCodePage);
+	if (defaultCodePage == PNCP_Unicode)
+	{
+		m_encType = eUtf8;
+	}
 }
 
 /**
@@ -1344,28 +1380,6 @@ void CTextView::checkDotLogTimestamp()
 	}
 }
 
-void CTextView::checkLineLength()
-{
-	CritLock lock(m_csMeasure);
-
-	if(m_bMeasureCanRun)
-	{
-		return;
-	}
-	
-	if(m_measureThread.Valid())
-	{
-		m_csMeasure.Leave();
-		m_measureThread.Join(10000);
-		m_csMeasure.Enter();
-		m_measureThread.Reset();
-	}
-
-	m_bMeasureCanRun = true;
-
-	m_measureThread.Create(&CTextView::RunMeasureThread, this);
-}
-
 /**
  * Implement the smart highlight feature seen in Notepad++, this highlights
  * all occurrences of the currently selected word.
@@ -1402,93 +1416,17 @@ void CTextView::smartHighlight()
 				SetIndicatorValue(INDIC_ROUNDBOX);
 				IndicSetStyle(INDIC_SMARTHIGHLIGHT, INDIC_ROUNDBOX);
 				
+				// Get our confining range for Smart Highlight:
+				int startAtLine = max(0, DocLineFromVisible(GetFirstVisibleLine()) - MAX_SMARTHIGHLIGHT_LINES);
+				int endAtLine = min(GetLineCount(), DocLineFromVisible(GetFirstVisibleLine() + LinesOnScreen()) + MAX_SMARTHIGHLIGHT_LINES);
+				
 				CA2CT findText(buf.c_str());
 				SearchOptions opt;
 				opt.SetFindText(findText);
-				CScintillaImpl::FindAll(&opt, boost::bind(HandleMarkAllResult, this, _1, _2));
+				CScintillaImpl::FindAll(PositionFromLine(startAtLine), PositionFromLine(endAtLine), &opt, boost::bind(HandleMarkAllResult, this, _1, _2));
 			}
 		}
 	}
-}
-
-/**
- * This thread is responsible for trying to make the line length in
- * the scintilla view much more sensible. We optionally whack it up
- * to the maximum limit. This is much more useful for viewing long
- * documents.
- */
-UINT __stdcall CTextView::RunMeasureThread(void* pThis)
-{
-	CTextView* pTextView = static_cast<CTextView*>(pThis);
-
-	pTextView->DisableDirectAccess();
-
-	bool bCanRun = true;
-	int maxLines = 0;
-	int index = 0;
-	int maxLength = pTextView->GetScrollWidth() - 10;
-	int endPos;
-	int endX;
-	int absMaxLength;
-
-	// NT has a 1000000 pixel max, 9x has 30000.
-	if(g_Context.OSVersion.dwPlatformId == VER_PLATFORM_WIN32_NT)
-		absMaxLength = 1000000;
-	else
-		absMaxLength = 30000;
-
-	// We add 10 to the length we find as a little buffer, so
-	// remove it from the absolute.
-	absMaxLength -= 10;
-
-	while (true)
-	{
-		{
-			CritLock lock(pTextView->m_csMeasure);
-			bCanRun = pTextView->m_bMeasureCanRun;
-		}
-		
-		if (!bCanRun)
-			break;
-
-		maxLines = pTextView->GetLineCount();
-		
-		if (index >= maxLines)
-			break;
-		
-		endPos = pTextView->GetLineEndPosition(index);
-		endX = pTextView->PointXFromPosition(endPos);
-		maxLength = max(endX, maxLength);
-
-		if (maxLength >= absMaxLength)
-			break;
-
-		index++;
-	}
-
-	// ensure we stay below the absolute maximum...
-	maxLength = min(maxLength, absMaxLength);
-
-#ifdef _DEBUG
-	TCHAR buf[50];
-	buf[49] = NULL;
-	_sntprintf(buf, 49, _T("PN: Max line length: %d"), maxLength);
-	LOG(buf);
-#endif
-
-	pTextView->SetScrollWidth(maxLength + 10);
-
-	// As long as nothing else wants direct access we're ok!
-	pTextView->EnableDirectAccess();
-
-	{
-		CritLock lock(pTextView->m_csMeasure);
-		pTextView->m_bMeasureCanRun = false;
-	}
-
-	_endthreadex(0);
-
-	return 0;
 }
 
 /**
@@ -1601,147 +1539,7 @@ void CTextView::updateOverwriteTarget()
 	}
 }
 
-void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
+void CTextView::UpdateModifiedState()
 {
-	m_insertClipChunks.swap(chunks);
-
-	int pos = GetCurrentPos();
-	int firstFieldPos = 0;
-
-	SPerform(SCI_SETINDICATORCURRENT, INDIC_TEXTCLIPFIELD, 0);
-	SetIndicatorValue(INDIC_BOX);
-	IndicSetStyle(INDIC_TEXTCLIPFIELD, INDIC_BOX);
-
-	std::vector<TextClips::Chunk>::const_iterator i;
-	for(i = m_insertClipChunks.begin(); i != m_insertClipChunks.end(); ++i)
-	{
-		std::string chunkText = (*i).GetText();
-		InsertText(pos, chunkText.c_str());
-		
-		if ((*i).IsField())
-		{
-			IndicatorFillRange(pos, chunkText.size());
-
-			if (firstFieldPos == 0)
-			{
-				firstFieldPos = pos;
-			}
-		}
-
-		pos += chunkText.size();
-	}
-
-	if (firstFieldPos == 0)
-	{
-		firstFieldPos = pos;
-	}
-
-	// Set the selection to the insertion point or first field point.
-	SetSel(firstFieldPos, firstFieldPos);
-
-	m_bInsertClip = true;
-}
-
-typedef std::vector<TextClips::Chunk>::iterator ChunkIt_t;
-
-ChunkIt_t firstChunk(std::vector<TextClips::Chunk>& chunks, int id)
-{
-	for (ChunkIt_t i = chunks.begin(); i != chunks.end(); ++i)
-	{
-		if ((*i).IsField() && (*i).Id == id)
-		{
-			return i;
-		}
-	}
-
-	return chunks.end();
-}
-
-void CTextView::updateInsertClip()
-{
-	if (!m_bInsertClip)
-	{
-		return;
-	}
-
-	int currentPos = GetCurrentPos();
-	int prevPos = currentPos - 1;
-	if (prevPos < 0)
-	{
-		prevPos = currentPos;
-	}
-
-	SPerform(SCI_SETINDICATORCURRENT, INDIC_TEXTCLIPFIELD, 0);
-
-	// Exit condition:
-	if (SPerform(SCI_INDICATORVALUEAT, INDIC_TEXTCLIPFIELD, currentPos) == 0 && SPerform(SCI_INDICATORVALUEAT, INDIC_TEXTCLIPFIELD, prevPos) == 0)
-	{
-		m_bInsertClip = false;
-		SPerform(SCI_INDICATORCLEARRANGE, 0, GetLength());
-		return;
-	}
-
-	// Find the first field:
-	bool onAt0 = SPerform(SCI_INDICATORVALUEAT, INDIC_TEXTCLIPFIELD, 0) != 0;
-	
-	int start = onAt0 ? 0 : SPerform(SCI_INDICATOREND, INDIC_TEXTCLIPFIELD, 0);
-	int end = SPerform(SCI_INDICATOREND, INDIC_TEXTCLIPFIELD, start);
-
-	if (start == end)
-	{
-		// No indicator ranges, nothing to do...
-		m_bInsertClip = false;
-		return;
-	}
-
-	int original = start;
-
-	ChunkIt_t chunkit = m_insertClipChunks.begin();
-
-	do
-	{
-		while(!(*chunkit).IsField() && chunkit != m_insertClipChunks.end())
-		{
-			chunkit++;
-		}
-
-		if (chunkit == m_insertClipChunks.end())
-		{
-			// Eek, we should have had another field chunk to match this indicator, bail...
-			break;
-		}
-
-		int chunkId = (*chunkit).Id;
-		ChunkIt_t masterChunk = firstChunk(m_insertClipChunks, chunkId);
-		std::string current(GetTextRange(start, end));
-
-		if (currentPos >= start && currentPos <= end && chunkit == masterChunk)
-		{
-			// Update the master
-			if (current != (*chunkit).GetText())
-			{
-				(*chunkit).SetText(current.c_str());
-			}
-		}
-		else
-		{
-			std::string chunkText((*masterChunk).GetText());
-			
-			if (current != chunkText)
-			{
-				SetTarget(start, end);
-				ReplaceTarget(chunkText.size(), chunkText.c_str());
-				end = start + chunkText.size();
-
-				IndicatorFillRange(start, chunkText.size());
-
-
-			}
-		}
-
-		++chunkit;
-		start = SPerform(SCI_INDICATOREND, INDIC_TEXTCLIPFIELD, end + 1);
-		end = SPerform(SCI_INDICATOREND, INDIC_TEXTCLIPFIELD, start);
-	}
-	while (start < end && start > original);
+	m_Modified = GetModify();
 }

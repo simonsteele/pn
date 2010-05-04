@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 
+IOptionsWithString* g_Options = NULL;
+
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 

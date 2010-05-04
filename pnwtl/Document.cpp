@@ -2,7 +2,7 @@
  * @file Document.cpp
  * @brief PN Document
  * @author Simon Steele
- * @note Copyright (c) 2005-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -33,7 +33,7 @@ Document::Document(LPCTSTR filename)
 		m_sTitle = LS(IDS_NEW_FILE_TITLE);
 		if (m_sTitle.length() == 0) // in case of resource problems
 		{
-			m_sTitle = _T("<new>");
+			m_sTitle = _T("Untitled");
 		}
 
 		m_sFilename = _T("");
@@ -91,7 +91,7 @@ CChildFrame* Document::GetFrame() const
 
 bool Document::HasFile() const
 {
-	return ((m_sFilename != _T("")) && (m_sFilename.find(_T("<")) == -1));
+	return m_sFilename.size() > 0;
 }
 
 void Document::SetFileName(LPCTSTR filename)

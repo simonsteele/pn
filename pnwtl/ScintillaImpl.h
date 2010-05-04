@@ -50,6 +50,7 @@ public:
 	virtual bool ReplaceOnce(extensions::ISearchOptions* pOptions);
 	virtual int ReplaceAll(extensions::ISearchOptions* pOptions);
 	int FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn matchHandler);
+	int FindAll(int start, int end, extensions::ISearchOptions* pOptions, MatchHandlerFn matchHandler);
 	//void HighlightAll(SFindOptions* pOptions); - doesn't work with all schemes...
 
 	void ToggleFold();

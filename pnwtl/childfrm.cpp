@@ -2,7 +2,7 @@
  * @file ChildFrm.cpp
  * @brief Implementation of CChildFrame, the MDI Child window.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -24,6 +24,7 @@
 #include "afiles.h"
 #include "scriptregistry.h"
 #include "textclips.h"
+#include "textclips/clipmanager.h"
 #include "autocomplete.h"
 #include "autocompletehandler.h"
 #include "project.h"
@@ -34,6 +35,7 @@
 #include "extapp.h"
 #include "include/filefinder.h"
 #include "views/splitview.h"
+#include "textclips/variables.h"
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -303,14 +305,16 @@ void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 ////////////////////////////////////////////////////
 // Autocomplete methods
 
+#define CLIPS_DEV
+
 bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 {
 	std::string text = notification->text;
 	int colon = text.find(':');
 	text.resize(colon);
 
-	const TextClips::TextClipSet* set = m_pTextClips->GetClips( GetTextView()->GetCurrentScheme()->GetName() );
-	if(set != NULL)
+	const TextClips::LIST_CLIPSETS& sets = m_pTextClips->GetClips( GetTextView()->GetCurrentScheme()->GetName() );
+	BOOST_FOREACH(TextClips::TextClipSet* set, sets)
 	{
 		const TextClips::Clip* clip = set->FindByShortcut(text);
 		if(clip != NULL)
@@ -319,14 +323,17 @@ bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 			GetTextView()->DelWordLeft();
 
 			std::vector<TextClips::Chunk> chunks;
-			clip->GetChunks(chunks);
+			TextClips::DefaultVariableProvider variables(this, g_Context.m_frame->GetActiveWorkspace());
+			clip->GetChunks(chunks, GetTextView(), &variables);
 			GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
+			break;
 #else
 			GetTextView()->BeginUndoAction();
 			GetTextView()->DelWordLeft();
 			GetTextView()->EndUndoAction();
 
 			clip->Insert(GetTextView());
+			break;
 #endif
 		}
 	}
@@ -476,7 +483,7 @@ void CChildFrame::LoadExternalLexers()
 
 LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	m_hWndClient = GetTextView()->Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwScintilla);
+	m_hWndClient = GetTextView()->Create(m_hWnd, rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, /*WS_EX_CLIENTEDGE*/0, cwScintilla);
 
 	if(s_bFirstChild)
 	{
@@ -747,8 +754,9 @@ void CChildFrame::splitSelectedView(bool horizontal)
 	// Create the view we're going to split into:
 	Views::ViewPtr newTextViewPtr(new CTextView(m_spDocument, Views::ViewPtr(), m_pCmdDispatch, m_autoComplete));	
 	CTextView* newTextView = static_cast<CTextView*>(newTextViewPtr.get());
-	newTextView->Create(parent->GetHwnd(), rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE, cwScintilla+1);
+	newTextView->Create(parent->GetHwnd(), rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, /*WS_EX_CLIENTEDGE*/0, cwScintilla+1);
 	newTextView->SetDocPointer(GetTextView()->GetDocPointer());
+	newTextView->UpdateModifiedState();
 
 	// Now we want the parent of the last-focused view to get a new child, the splitter.
 	// The splitter will have the last-focused view, and also the new text view.
@@ -1144,33 +1152,39 @@ LRESULT CChildFrame::OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 {
 	std::string word = GetTextView()->GetCurrentWord();	
 
-	const TextClips::TextClipSet* clips = m_pTextClips->GetClips(GetTextView()->GetCurrentScheme()->GetName());
+	const TextClips::LIST_CLIPSETS& clips = m_pTextClips->GetClips(GetTextView()->GetCurrentScheme()->GetName());
+
+	BOOST_FOREACH(TextClips::TextClipSet* set, clips)
+	{
+		const TextClips::Clip* desired = set->FindByShortcut(word);
+		if(desired != NULL)
+		{
+	#ifdef CLIPS_DEV
+			GetTextView()->DelWordLeft();
+
+			std::vector<TextClips::Chunk> chunks;
+			TextClips::DefaultVariableProvider variables(this, g_Context.m_frame->GetActiveWorkspace());
+			desired->GetChunks(chunks, GetTextView(), &variables);
+			GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
+	#else
+			GetTextView()->BeginUndoAction();
+			GetTextView()->DelWordLeft();
+			desired->Insert(GetTextView());
+			GetTextView()->EndUndoAction();
+	#endif
+			return 0;
+		}
+	}
 	
-	if(clips == NULL)
-	{
-		return 0;
-	}
+	// We didn't find an exact match, now we want to autocomplete a list of clips:
+	AutoCompleteHandlerPtr p(new AutoCompleteAdaptor<CChildFrame>(this, &CChildFrame::InsertClipCompleted));
+	GetTextView()->SetAutoCompleteHandler(p);
 
-	const TextClips::Clip* desired = clips->FindByShortcut(word);
-	if(desired != NULL)
-	{
-		GetTextView()->BeginUndoAction();
-		GetTextView()->DelWordLeft();
-		desired->Insert(GetTextView());
-		GetTextView()->EndUndoAction();
-	}
-	else
-	{
-		// Now we want to autocomplete a list of clips:
-		AutoCompleteHandlerPtr p(new AutoCompleteAdaptor<CChildFrame>(this, &CChildFrame::InsertClipCompleted));
-		GetTextView()->SetAutoCompleteHandler(p);
-
-		std::string cliptext = clips->BuildSortedClipList();
-		int sep = GetTextView()->AutoCGetSeparator();
-		GetTextView()->AutoCSetSeparator(',');
-		GetTextView()->AutoCShow(word.size(), cliptext.c_str());
-		GetTextView()->AutoCSetSeparator(sep);
-	}
+	std::string cliptext = m_pTextClips->BuildSortedClipList(GetTextView()->GetCurrentScheme()->GetName());
+	int sep = GetTextView()->AutoCGetSeparator();
+	GetTextView()->AutoCSetSeparator(',');
+	GetTextView()->AutoCShow(word.size(), cliptext.c_str());
+	GetTextView()->AutoCSetSeparator(sep);
 
 	return 0;
 }
@@ -1870,21 +1884,28 @@ LRESULT CChildFrame::OnCommandNotify(WORD wNotifyCode, WORD /*wID*/, HWND /*hWnd
 LRESULT CChildFrame::OnCommandEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	extensions::IScriptRunner* python = ScriptRegistry::GetInstance()->GetRunner("python");
-	if (python)
+	if (python == NULL)
 	{
-		PN::AString str;
-		std::string command("glue.evalCommandEnter('");
-		
-		CWindowText wt(m_cmdTextBox);
-		CT2CA commandtext(wt);
-		command += commandtext;
-		command += "')";
-
-		python->Eval(command.c_str(), str);
-
-		CA2CT newwt(str.Get());
-		m_cmdTextBox.SetWindowText(newwt);
+		return 0;
 	}
+
+	PN::AString str;
+	CWindowText wt(m_cmdTextBox);
+	
+	// Some basic argument safety changes until we make an extension
+	// interface that makes this properly safe.
+	std::string commandText(wt.GetA());
+	boost::replace_all(commandText, "\\", "\\\\");
+	boost::replace_all(commandText, "'", "\\'");
+
+	std::string command("glue.evalCommandEnter('");
+	command += commandText;
+	command += "')";
+
+	python->Eval(command.c_str(), str);
+
+	CA2CT newwt(str.Get());
+	m_cmdTextBox.SetWindowText(newwt);
 
 	return 0;
 }
@@ -2723,8 +2744,8 @@ void CChildFrame::PrintSetup()
 	pdlg.hDevMode = m_po.hDevMode;
 	pdlg.hDevNames = m_po.hDevNames;
 
-	psd.SetHeaderText(m_po.Header);
-	psd.SetFooterText(m_po.Footer);
+	psd.SetHeaderText(m_po.Header.c_str());
+	psd.SetFooterText(m_po.Footer.c_str());
 
 	if ( psd.DoModal() != IDOK )
 	{

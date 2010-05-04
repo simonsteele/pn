@@ -2,7 +2,7 @@
  * @file mainfrm.cpp
  * @brief Main Window for Programmer's Notepad 2 (Implementation)
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -23,6 +23,7 @@
 #include "project.h"			// Projects
 #include "projectprops.h"		// Project Properties
 #include "textclips.h"			// Text Clips
+#include "textclips/clipmanager.h" // Text Clips Manager
 #include "SchemeConfig.h"		// Scheme Configuration
 #include "projectholder.h"
 #include "version.h"
@@ -636,7 +637,7 @@ TWnd* CreateDockerWindow(TWnd* pWnd, LPCTSTR title, CRect& rect, CMainFrame* own
 					bool bDock, dockwins::CDockingSide side = dockwins::CDockingSide::sLeft,
 					int nBar = 0, float fPctPos = 0)
 {
-	DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+	DWORD dwStyle = /*WS_OVERLAPPED | */WS_CAPTION | WS_THICKFRAME | WS_POPUP | WS_CLIPCHILDREN /*| WS_CLIPSIBLINGS*/;
 	CRect rcBar(0, 0, 200, 70);
 
 	CPNDockingWindow* pDocker = new CPNDockingWindow(title);
@@ -1125,35 +1126,6 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 						pScheme = NULL;
 					}
 				}
-				else if(_tcsicmp(&parm[1], _T("z")) == 0)
-				{
-					// This parameter is used to tell PN to ignore the next command-line argument,
-					// added to support using PN as a fake debugger for notepad.exe to make an easy
-					// notepad replacement.
-					skip = true;
-				}
-				else if (_tcsicmp(&parm[1], _T("1")) == 0)
-				{
-					// This parameter says that everything that follows is a single filename, remaining params are joined.
-					++i;
-
-					tstring oneparam;
-					
-					for (; i != parameters.end(); ++i)
-					{
-						if (oneparam.size())
-						{
-							oneparam += _T(" ");
-						}
-
-						oneparam += (*i);
-					}
-
-					std::list<tstring> newset;
-					newset.push_back(oneparam);
-					handleCommandLine(newset);
-					break;
-				}
 				else
 				{
 					skip = false;
@@ -1161,7 +1133,7 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 				
 				if(skip)
 				{
-					i++;
+					++i;
 					continue;
 				}
 			}
@@ -1646,7 +1618,7 @@ LRESULT CMainFrame::OnFileOpenWorkspaceState(WORD /*wNotifyCode*/, WORD /*wID*/,
 {
 	CAutoOpenDialog dlgOpen(LS(IDS_WORKSPACEFILES));
 	
-	if (dlgOpen.DoModal(m_hWnd))
+	if (dlgOpen.DoModal(m_hWnd) == IDOK)
 	{
 		WorkspaceState wss;
 		wss.Load(dlgOpen.GetSingleFileName());
@@ -1855,7 +1827,6 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	COptionsPageNewFiles		pageNewFiles(&schemeconfig);
 	COptionsPageTools			pageTools(&schemeconfig, &toolsmanager);
 	COptionsPageProjectTools	pageProjectTools(&toolsmanager);
-	COptionsPageClips			pageClips(&schemeconfig, m_pTextClips);
 	COptionsPageEditing			pageEditing;
 
 	COptionsPageFileTypes		pageFiles(&schemeconfig);
@@ -1886,7 +1857,6 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 	options.AddPage(&pageAFiles);
 	options.AddPage(&pageKeyboard);
 	options.AddPage(&pageAutocomplete);
-	options.AddPage(&pageClips);
 	options.AddPage(&pageExtensions);
 
 	// If we were launched from the "Add Tools" menu item, 
@@ -1932,13 +1902,6 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 			m_pCmdDispatch->Save(kmfile.c_str());
 			
 			setupAccelerators(m_hMenu);
-		}
-
-		// If text clips page has changes, then update the text clips view
-		// actually not necessary until we actually edit text clips and not just templates!
-		if (pageClips.IsDirty())
-		{
-			m_pClipsWnd->Reset();
 		}
 
 		PerformChildEnum(&CMainFrame::ChildOptionsUpdateNotify);

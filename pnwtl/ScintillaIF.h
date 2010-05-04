@@ -2,7 +2,7 @@
  * @file ScintillaIF.h
  * @brief Define scintilla wrapper class CScintilla
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -18,7 +18,7 @@
 #define SC_BOOKMARK 0
 #define SC_NUMBERED_BOOKMARK 1
 
-#include "include/scintilla/include/scintilla.h"
+#include "third_party/scintilla/include/scintilla.h"
 
 //! Block size for disk reading and writing.
 const int blockSize = 131072;
@@ -35,6 +35,21 @@ struct RangeToFormat
 	RECT rc;
 	RECT rcPage;
 	Scintilla::CharacterRange chrg;
+};
+
+class CScintilla;
+
+/**
+ * UndoGroup begins an undo collection when declared and ends it when destroyed.
+ */
+class UndoGroup
+{
+public:
+	UndoGroup(CScintilla&);
+	~UndoGroup();
+
+private:
+	CScintilla& m_sci;
 };
 
 /**

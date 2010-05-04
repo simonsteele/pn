@@ -2,7 +2,7 @@
  * @file Schemes.cpp
  * @brief Implement Scheme and SchemeManager.
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -464,9 +464,6 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 {
 	Options& options = *OPTIONS;
 
-	//ss 16/02/2003 Now performed by document...
-	//sc.SPerform(SCI_SETEOLMODE, options.LineEndings);
-
 	// Line Indentation...
 	sc.SPerform(SCI_SETUSETABS, options.GetCached(Options::OUseTabs) ? 1 : 0);
 	sc.SPerform(SCI_SETTABWIDTH, options.GetCached(Options::OTabWidth));
@@ -503,20 +500,33 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 	sc.SPerform(SCI_SETYCARETPOLICY, options.GetCached(Options::OCaretYFlags), options.GetCached(Options::OCaretYMove));
 	sc.SPerform(SCI_SETVISIBLEPOLICY, VISIBLE_SLOP, 1);
 
+	// Default style:
 	sc.SPerform(SCI_STYLERESETDEFAULT);
 	sc.SPerform(SCI_STYLESETFORE, STYLE_DEFAULT, ::GetSysColor(COLOR_WINDOWTEXT));
 	sc.SPerform(SCI_STYLESETBACK, STYLE_DEFAULT, ::GetSysColor(COLOR_WINDOW));
 	sc.SPerform(SCI_STYLESETCHARACTERSET, STYLE_DEFAULT, options.GetCached(Options::ODefaultCharSet));
 	sc.SPerform(SCI_STYLECLEARALL);
 
+	// Line length measurement:
+	sc.SPerform(SCI_SETSCROLLWIDTHTRACKING, 1);
+	
+	// Line height padding:
+	sc.SPerform(SCI_SETEXTRAASCENT, options.GetCached(Options::OLinePaddingTop));
+	sc.SPerform(SCI_SETEXTRADESCENT, options.GetCached(Options::OLinePaddingBottom));
+
 	sc.DefineBookmarks();
 	sc.DefineNumberedBookmarks();
 
 	sc.SPerform(SCI_SETMARGINWIDTHN, 1, 16/*margin ? marginWidth : 0*/);
 
-	sc.SPerform(SCI_INDICSETFORE, INDIC_MARKALL, RGB(255, 0, 0));
-	sc.SPerform(SCI_INDICSETFORE, INDIC_SMARTHIGHLIGHT, RGB(0, 255, 0));
-	sc.SPerform(SCI_INDICSETFORE, INDIC_OVERWRITETARGET, ::GetSysColor(COLOR_HIGHLIGHT));
+	// Indicators:
+	sc.SPerform(SCI_INDICSETFORE, INDIC_MARKALL, DEFAULT_MARKALL_COLOUR);
+	sc.SPerform(SCI_INDICSETFORE, INDIC_SMARTHIGHLIGHT, DEFAULT_SMARTHIGHLIGHT_COLOUR);
+	sc.SPerform(SCI_INDICSETFORE, INDIC_OVERWRITETARGET, DEFAULT_OVERWRITE_COLOUR);
+	sc.SPerform(SCI_INDICSETFORE, INDIC_TEXTCLIPFIELD, DEFAULT_TEXTCLIPFIELD_COLOUR);
+	sc.SPerform(SCI_INDICSETALPHA, INDIC_SMARTHIGHLIGHT, DEFAULT_INDIC_ALPHA_LEVEL);
+	sc.SPerform(SCI_INDICSETALPHA, INDIC_TEXTCLIPFIELD, DEFAULT_INDIC_ALPHA_LEVEL);
+	sc.IndicSetStyle(INDIC_TEXTCLIPFIELD, INDIC_ROUNDBOX);
 	
 	options.BeginGroupOperation(PNSK_EDITOR);
 

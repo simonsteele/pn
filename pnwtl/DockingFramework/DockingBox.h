@@ -174,7 +174,7 @@ struct CDockingBoxTraits : CDockingWindowTraits<TCaption,t_dwStyle,t_dwExStyle>
 };
 
 typedef CDockingBoxTraits<COutlookLikeCaption,
-								WS_OVERLAPPEDWINDOW | WS_POPUP/* WS_CHILD*/ |
+								/*WS_OVERLAPPEDWINDOW | */WS_CAPTION | WS_POPUP/* WS_CHILD*/ |
 								/*WS_VISIBLE |*/ WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
 								WS_EX_TOOLWINDOW/* WS_EX_CLIENTEDGE*/> COutlookLikeDockingBoxTraits;
 typedef CDockingBoxTraits<COutlookLikeExCaption,

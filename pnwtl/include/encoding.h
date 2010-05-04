@@ -394,6 +394,11 @@ public:
 		return reinterpret_cast<TResult>(m_store.c_str());
 	}
 
+	const char* c_str() const
+	{
+		return m_store.c_str();
+	}
+
 private:
 	bool m_valid;
 	std::string m_store;
@@ -429,11 +434,13 @@ private:
 	typedef TcsIdentity Xml_Tcs;
 	typedef Utf16_Windows1252 Tcs_Windows1252;
 	typedef Utf16_Windows1252 Xml_Windows1252;
+	typedef Windows1252_Utf16 Windows1252_Tcs;
 #else
 	typedef Windows1252_Utf8 Tcs_Utf8;
 	typedef Utf8_Windows1252 Utf8_Tcs;
 	typedef Utf8_Windows1252 Xml_Tcs;
 	typedef TcsIdentity Tcs_Windows1252;
+	typedef TcsIdentity Windows1252_Tcs;
 	typedef Utf8_Windows1252 Xml_Windows1252;
 #endif
 

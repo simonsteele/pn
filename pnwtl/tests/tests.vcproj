@@ -22,7 +22,7 @@
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			InheritedPropertySheets="..\common.vsprops"
-			CharacterSet="0"
+			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -41,8 +41,9 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="-Zm160"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;BOOST_TEST_DYN_LINK"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;BOOST_TEST_DYN_LINK;SCI_NAMESPACE;UNICODE;_UNICODE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -63,7 +64,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)\lib\boost_unit_test&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\lib\boost_unit_test&quot;;&quot;$(SolutionDir)\lib\&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
@@ -90,7 +91,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\lib\boost_unit_test\boost_unit_test_framework-vc90-mt-gd-1_39.dll $(TargetDir)"
+				CommandLine="copy ..\lib\boost_unit_test\boost_unit_test_framework-vc90-mt-gd-$(BoostFileVer).dll $(TargetDir)"
 			/>
 		</Configuration>
 		<Configuration
@@ -119,7 +120,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;BOOST_TEST_DYN_LINK"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;BOOST_TEST_DYN_LINK;SCI_NAMESPACE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -138,7 +139,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(SolutionDir)\lib\boost_unit_test&quot;"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)\lib\boost_unit_test&quot;;&quot;$(SolutionDir)\lib\&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -167,7 +168,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\lib\boost_unit_test\boost_unit_test_framework-vc90-mt-1_39.dll $(TargetDir)"
+				CommandLine="copy ..\lib\boost_unit_test\boost_unit_test_framework-vc90-mt-$(BoostFileVer).dll $(TargetDir)"
 			/>
 		</Configuration>
 	</Configurations>
@@ -184,7 +185,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\cliptests.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\exttests.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\filenametests.cpp"
 				>
 			</File>
 			<File
@@ -193,6 +202,10 @@
 			</File>
 			<File
 				RelativePath=".\regex_tests.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\snippetparsetests.cpp"
 				>
 			</File>
 			<File
@@ -217,6 +230,10 @@
 			</File>
 			<File
 				RelativePath=".\tests.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\userdatatests.cpp"
 				>
 			</File>
 		</Filter>
@@ -248,7 +265,103 @@
 				>
 			</File>
 			<File
+				RelativePath="..\third_party\genx\charProps.c"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\textclips\chunk.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\textclips\chunkparser.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\textclips\chunkparser.h"
+				>
+			</File>
+			<File
+				RelativePath="..\textclips\clip.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\textclips\clipmanager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\textclips\clipparser.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\filename.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\Files.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\third_party\genx\genx.c"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\projectmeta.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\ScintillaIF.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\textclips.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\include\Utf8_16.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\xmlparser.cpp"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Mocks"
+			>
+			<File
+				RelativePath=".\mocks\mockoptions.h"
 				>
 			</File>
 		</Filter>

@@ -221,7 +221,7 @@ BEGIN
         MENUITEM "&Goto",                       ID_EDIT_GOTO
         MENUITEM "&Jump To...",                 ID_EDIT_JUMPTO
         MENUITEM "&Autocomplete",               ID_EDIT_AUTOCOMPLETE
-        MENUITEM "Insert Template",             ID_EDIT_INSERTCLIP
+        MENUITEM "&Insert Text Clip",           ID_EDIT_INSERTCLIP
     END
     POPUP "&Search"
     BEGIN
@@ -673,33 +673,35 @@ IDD_PAGE_STYLE DIALOGEX 0, 0, 300, 200
 STYLE DS_SETFONT | DS_CONTROL | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg 2", 400, 0, 0x1
 BEGIN
-    LTEXT           "Base Style Settings",IDC_SETTINGS_STATIC,0,0,299,8
-    LTEXT           "&Font:",IDC_STATIC,10,12,48,8
     COMBOBOX        IDC_FONT_COMBO,10,22,140,120,CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_SORT | CBS_HASSTRINGS | CBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "&Size:",IDC_STATIC,160,12,42,8
     COMBOBOX        IDC_FONTSIZE_COMBO,160,22,60,66,CBS_DROPDOWN | CBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "&Text Colour:",IDC_STATIC,10,40,48,8
     PUSHBUTTON      "Button1",IDC_STYLE_FOREBUTTON,10,50,60,14
-    LTEXT           "Bac&kground:",IDC_STATIC,90,40,42,8
     PUSHBUTTON      "Button2",IDC_STYLE_BACKBUTTON,90,50,60,14
     CONTROL         "&Bold",IDC_STYLE_BOLDCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,17,81,60,10,WS_EX_TRANSPARENT
     CONTROL         "&Italic",IDC_STYLE_ITALICCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,81,48,10,WS_EX_TRANSPARENT
     CONTROL         "&Underline",IDC_STYLE_UNDERLINECHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,17,95,60,10,WS_EX_TRANSPARENT
-    GROUPBOX        "Font Style",IDC_STATIC,10,70,140,38
     PUSHBUTTON      "Button1",IDC_STYLE_CURCOLBUTTON,10,127,50,14
-    PUSHBUTTON      "Button1",IDC_STYLE_SELFOREBUTTON,90,127,50,14
-    PUSHBUTTON      "Button1",IDC_STYLE_SELBACKBUTTON2,90,156,50,14
-    PUSHBUTTON      "Button1",IDC_STYLE_IGCOLBUTTON2,10,156,50,14
-    LTEXT           "Selection Foreground:",IDC_STATIC,90,116,84,8
-    LTEXT           "Cursor Colour:",IDC_STATIC,10,116,73,8
-    LTEXT           "Selection Background:",IDC_STATIC,90,146,84,8
-    LTEXT           "Indentation Guides:",IDC_STATIC,10,146,74,8
+    PUSHBUTTON      "Button1",IDC_STYLE_IGCOLBUTTON2,96,126,50,14
+    PUSHBUTTON      "Button1",IDC_STYLE_SELBACKBUTTON2,10,156,50,14
+    PUSHBUTTON      "Button1",IDC_STYLE_SELFOREBUTTON,96,156,50,14
     CONTROL         "Don't change the foreground.",IDC_STYLE_SELUSEFORE,
-                    "Button",BS_AUTOCHECKBOX | BS_NOTIFY | WS_TABSTOP,144,128,108,10
-    PUSHBUTTON      "Button1",IDC_STYLE_SELWORDCOLBUTTON,90,185,50,14
+                    "Button",BS_AUTOCHECKBOX | BS_NOTIFY | WS_TABSTOP,151,157,108,10
     PUSHBUTTON      "Button1",IDC_STYLE_MARKALLCOLBUTTON,10,185,50,14
-    LTEXT           "Selected Word Highlight:",IDC_STATIC,90,174,84,8
+    PUSHBUTTON      "Button1",IDC_STYLE_SELWORDCOLBUTTON,96,185,50,14
+    PUSHBUTTON      "Button1",IDC_STYLE_TFCOLBUTTON,182,185,50,14
+    LTEXT           "Base Style Settings",IDC_SETTINGS_STATIC,0,0,299,8
+    LTEXT           "&Font:",IDC_STATIC,10,12,48,8
+    LTEXT           "&Size:",IDC_STATIC,160,12,42,8
+    LTEXT           "&Text Colour:",IDC_STATIC,10,40,48,8
+    LTEXT           "Bac&kground:",IDC_STATIC,90,40,42,8
+    GROUPBOX        "Font Style",IDC_STATIC,10,70,140,38
+    LTEXT           "Selection Foreground:",IDC_STATIC,96,146,84,8
+    LTEXT           "Cursor Colour:",IDC_STATIC,10,116,73,8
+    LTEXT           "Selection Background:",IDC_STATIC,10,146,84,8
+    LTEXT           "Indentation Guides:",IDC_STATIC,96,116,74,8
+    LTEXT           "Selected Word Highlight:",IDC_STATIC,96,174,84,8
     LTEXT           "Mark All Highlight:",IDC_STATIC,10,174,74,8
+    LTEXT           "Template Field:",IDC_STATIC,182,174,74,8
 END
 
 IDD_PAGE_SCHEMES DIALOGEX 0, 0, 300, 200
@@ -866,16 +868,23 @@ BEGIN
     CONTROL         "Blend highlight colour:",IDC_OPT_LINELIGHTALPHACHECK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,96,62,84,10
     CONTROL         "",IDC_LINEHIGHLIGHTSLIDER,"msctls_trackbar32",TBS_BOTH | WS_TABSTOP,194,60,49,13,WS_EX_TRANSPARENT
-    CONTROL         "No long line help",IDC_OPT_NOLLHELPRADIO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,10,96,120,10
+    EDITTEXT        IDC_OPT_LINEPADDINGTOP_TEXT,42,92,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_OPT_LINEPADDINGBOTTOM_TEXT,42,110,40,14,ES_AUTOHSCROLL
+    CONTROL         "No long line help",IDC_OPT_NOLLHELPRADIO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,10,144,120,10
     CONTROL         "Show a line at the edge column",IDC_OPT_LLLINERADIO,
-                    "Button",BS_AUTORADIOBUTTON,10,108,126,10
+                    "Button",BS_AUTORADIOBUTTON,10,156,126,10
     CONTROL         "Highlight text beyond the edge column",IDC_OPT_LLHIGHLIGHTRADIO,
-                    "Button",BS_AUTORADIOBUTTON,10,120,150,10
-    EDITTEXT        IDC_OPT_LLCOLUMNEDIT,87,132,48,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Button2",IDC_OPT_LLCOLORBUTTON,140,132,54,14
+                    "Button",BS_AUTORADIOBUTTON,10,168,150,10
+    EDITTEXT        IDC_OPT_LLCOLUMNEDIT,93,180,48,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "Button2",IDC_OPT_LLCOLORBUTTON,146,180,54,14
     LTEXT           "Settings",IDC_SETTINGS_STATIC,0,0,299,8
-    LTEXT           "Rightmost Column:",IDC_STATIC,22,134,66,10
-    LTEXT           "Long Line Helpers",IDC_LINEHELPERS_STATIC,0,84,299,8
+    LTEXT           "Rightmost Column:",IDC_STATIC,22,182,66,10
+    LTEXT           "Long Line Helpers",IDC_LINEHELPERS_STATIC,0,132,299,8
+    LTEXT           "Line Padding",IDC_LINEPADDING_STATIC,0,80,299,9
+    LTEXT           "Top:",IDC_STATIC,10,92,29,11
+    LTEXT           "pixels",IDC_STATIC,87,92,19,11
+    LTEXT           "Bottom:",IDC_STATIC,10,110,29,11
+    LTEXT           "pixels",IDC_STATIC,88,110,19,11
 END
 
 IDD_TAB_MISC DIALOGEX 0, 0, 294, 157
@@ -1320,6 +1329,7 @@ FONT 8, "MS Shell Dlg 2", 400, 0, 0x1
 BEGIN
     LTEXT           "Extensions",IDC_SETTINGS_STATIC,0,0,299,8
     CONTROL         "",IDC_EXTENSIONSLIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,10,14,279,117
+    LTEXT           "Find more extensions at www.pnotepad.org...",IDC_EXTLINK,10,183,201,14
 END
 
 IDD_PAGE_EDITING DIALOGEX 0, 0, 300, 200
@@ -1718,6 +1728,8 @@ IDB_TBMAIN24            BITMAP                  "res\\tbrMain24.bmp"
 IDB_OPENFILES           BITMAP                  "res\\openfilesimages.bmp"
 IDB_TBFIND              BITMAP                  "res\\findbarbmps.bmp"
 IDB_TOOLBAR             BITMAP                  "res\\toolbar.bmp"
+IDB_TBCLIPS             BITMAP                  "res\\clipstoolbar.bmp"
+IDB_TBCLIPS24           BITMAP                  "res\\clipstoolbar24.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1757,7 +1769,7 @@ BEGIN
     ID_EDITOR_WORDWRAP      "Toggle word wrap"
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
     ID_EDITOR_LINENOS       "Toggle line numbers display"
-    IDS_ABOUTVERSIONSTRING  "Version: v%s\n\nCopyright © 2002-2009 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
+    IDS_ABOUTVERSIONSTRING  "Version: v%s\n\nCopyright © 2002-2010 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
     IDS_PROJECTNOPROPS      "This project has no properties."
     IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c: Column"
     ID_FILE_NEW_PROJECT     "Create a new project."
@@ -1865,7 +1877,18 @@ BEGIN
     IDS_HDR_EXTENSIONS_ENABLED "Enabled"
     IDS_PROJECTS_TEMPMAGICFOLDER "New Folder"
     IDS_MARKALL_COUNT       "Found %d occurrences"
+    IDS_ADDCLIPSETCAPTION   "Type the name of the new Clip set..."
+    IDS_ADDCLIPSETTITLE     "New Clip Set"
     ID_FILE_REVERT          "Revert this document to the current saved state\nRevert"
+END
+
+STRINGTABLE 
+BEGIN
+    ID_CLIPS_ADD            "Add Clip"
+    ID_CLIPS_REMOVE         "Remove Clip"
+    ID_CLIPS_ADDSET         "Add Clip Set"
+    ID_CLIPS_REMOVESET      "Remove Clip Set"
+    ID_CLIPS_EDIT           "Edit Clip"
 END
 
 STRINGTABLE 
@@ -2027,7 +2050,7 @@ BEGIN
     IDS_OPTPAGE_VISUALHELP  "Visual Help"
     IDS_SHORTCUTS_EDITOR    "Editor"
     IDS_SHORTCUTS_SCRIPTS   "Scripts"
-    IDS_NEW_FILE_TITLE      "<new>"
+    IDS_NEW_FILE_TITLE      "Untitled"
     IDS_REPLACE             "Replace"
 END
 

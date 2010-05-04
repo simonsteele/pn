@@ -2,7 +2,7 @@
  * @file projectview.cpp
  * @brief View to display project trees.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -228,6 +228,12 @@ void CProjectTreeCtrl::OnProjectItemChange(PROJECT_CHANGE_TYPE changeType, Proje
 
 				HTREEITEM hItem = findItem(changeItem, hParent);
 				DeleteItem( hItem );
+			}
+			else if (changeItem->GetType() == ptMagicFolder)
+			{
+				HTREEITEM hFolder = findFolder(CastProjectItem<Projects::Folder>(changeItem));
+				PNASSERT(hFolder != NULL);
+				DeleteItem(hFolder);
 			}
 		}
 		break;
@@ -784,10 +790,10 @@ void CProjectTreeCtrl::setMagicFolderProps(Projects::UserData& ud, Projects::Mag
 	if(path.length() > 0 && DirExists(path.c_str()))
 	{
 		CPathName pn(path.c_str());
-		if(pn.c_str() != folder->GetFullPath())
+		if((tstring)pn != folder->GetFullPath())
 		{
 			// Path may have changed...
-			folder->SetFullPath(path.c_str());
+			folder->SetFullPath(pn.c_str());
 
 			refreshMagicFolder(folder, hFolder);
 		}
@@ -1489,16 +1495,20 @@ LRESULT	CProjectTreeCtrl::OnMagicAddFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 	
 	if (sd.DoModal() == IDOK)
 	{
-		CFileName fn(sd.GetSingleFileName());
-		fn.ToLower();
+		// Transform the filename to lowercase to compare paths - need to ensure the file
+		// belongs in this magic folder.
+		CFileName fncompare(sd.GetSingleFileName());
+		fncompare.ToLower();
 		std::transform(path.begin(), path.end(), path.begin(), tolower);
 		
-		if(fn.GetPath() != path)
+		if(fncompare.GetPath() != path)
 		{
 			::MessageBox(m_hWnd, LS(IDS_PATHNOTINMAGICFOLDER), LS(IDR_MAINFRAME), MB_ICONWARNING | MB_OK);
 		}
 		else
 		{
+			CFileName fn(sd.GetSingleFileName());
+
 			// Make and blank the file...
 			FILE* theFile = _tfopen(fn.c_str(), _T("wb"));
 			if(theFile)

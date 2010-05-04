@@ -1,6 +1,0 @@
-*.clw *.pch *.obj *.bsc *.sbr *.pdb *.ncb *.opt *.plg *.idb *.ilk
-Doxyfile
-*.exe *.lib *.dll
-*.aps
-*.WW *.positions
-*.cscheme

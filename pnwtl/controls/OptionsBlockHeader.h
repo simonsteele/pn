@@ -26,6 +26,7 @@ private:
 		CRect rc;
 		GetClientRect(rc);
 		dc.SetBkColor(GetSysColor(COLOR_BTNFACE));
+		dc.SetTextColor(GetSysColor(COLOR_BTNTEXT));
 		dc.FillRect(&rc, (HBRUSH)::GetSysColorBrush(COLOR_BTNFACE));
 
 		HFONT hOldFont = dc.SelectFont(GetParent().GetFont());

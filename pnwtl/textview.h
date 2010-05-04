@@ -3,7 +3,7 @@
  * @file TextView.h
  * @brief Interface Definition for CTextView, the Scintilla based text-editor view.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -21,6 +21,7 @@
 #include "textclips.h"
 
 class FIFSink;
+class ClipInsertionState;
 
 /**
  * This is the final implementation of our Scintilla window, pulling together the
@@ -41,6 +42,9 @@ public:
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
 		MESSAGE_HANDLER(PN_OVERWRITETARGET, OnOverwriteTarget)
 		MESSAGE_HANDLER(PN_INSERTCLIP, OnInsertClip)
+		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
+		MESSAGE_HANDLER(WM_KEYUP, OnKeyUp)
+		MESSAGE_HANDLER(WM_CHAR, OnChar)
 
 		COMMAND_ID_HANDLER(ID_EDIT_INDENT, OnIndent)
 		COMMAND_ID_HANDLER(ID_EDIT_UNINDENT, OnUnindent)
@@ -110,6 +114,8 @@ public:
 
 	void BeginOverwriteTarget();
 
+	void UpdateModifiedState();
+
 	// Implement View
 	HWND GetHwnd() { return m_hWnd; }
 
@@ -119,6 +125,9 @@ private:
 	HRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	HRESULT OnOverwriteTarget(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	HRESULT OnInsertClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	HRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	HRESULT OnKeyUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	HRESULT OnChar(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
 	////////////////////////////////////////////////////////////////
 	// Command Handlers
@@ -141,8 +150,6 @@ private:
 	LRESULT OnCommentBlock(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnUncomment(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-	void checkLineLength();
-
 	// Support for document title in printing:
 	virtual tstring GetDocTitle();
 
@@ -163,8 +170,16 @@ private:
 
 	void smartHighlight();
 	void updateOverwriteTarget();
+	
+	/**
+	 * Clip insertion:
+	 */
 	void beginInsertClip(std::vector<TextClips::Chunk>& chunks);
 	void updateInsertClip();
+	void endInsertClip();
+	void nextClipField();
+	void prevClipField();
+	void handleInsertClipNotify(Scintilla::SCNotification* scn);
 
 	void handleMarkAllResult(int start, int end);
 
@@ -176,16 +191,11 @@ private:
 	bool m_bLineNos;
 	bool m_bOverwriteTarget;
 	bool m_bInsertClip;
+	bool m_bSkipNextChar;
 	DocumentPtr m_pDoc;
 	extensions::IRecorderPtr m_recorder;
 	int m_findAllResultCount;
-	std::vector<TextClips::Chunk> m_insertClipChunks;
-
-	bool m_bMeasureCanRun;
-	pnutils::threading::CriticalSection m_csMeasure;
-	pnutils::threading::Thread m_measureThread;
-
-	static UINT __stdcall RunMeasureThread(void*);
+	boost::shared_ptr<ClipInsertionState> m_insertClipState;
 };
 
 /////////////////////////////////////////////////////////////////////////////

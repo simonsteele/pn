@@ -21,7 +21,7 @@
 			OutputDirectory="..\bin"
 			IntermediateDirectory="Debug"
 			ConfigurationType="2"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops;..\common.vsprops"
+			InheritedPropertySheets="..\common.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="boost_python-vc90-mt-gd-1_39.lib"
+				AdditionalDependencies="boost_python-vc90-mt-gd-$(BoostFileVer).lib"
 				OutputFile="$(OutDir)/pypn.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="%PYTHONLIBDIR%;&quot;..\lib\boost-python-2.6&quot;"
@@ -96,7 +96,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\lib\boost-python-2.6\boost_python-vc90-mt-gd-1_39.dll $(TargetDir)&#x0D;&#x0A;copy scripts\init.py $(TargetDir)&#x0D;&#x0A;"
+				CommandLine="copy ..\lib\boost-python-2.6\boost_python-vc90-mt-gd-$(BoostFileVer).dll $(TargetDir)&#x0D;&#x0A;copy scripts\init.py $(TargetDir)&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -104,7 +104,7 @@
 			OutputDirectory="..\bin"
 			IntermediateDirectory="Release"
 			ConfigurationType="2"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops;..\common.vsprops"
+			InheritedPropertySheets="..\common.vsprops"
 			CharacterSet="2"
 			>
 			<Tool
@@ -147,7 +147,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="boost_python-vc90-mt-1_39.lib"
+				AdditionalDependencies="boost_python-vc90-mt-$(BoostFileVer).lib"
 				OutputFile="$(OutDir)/pypn.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(PYTHONLIBDIR);&quot;..\lib\boost-python-2.6&quot;"
@@ -181,7 +181,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy ..\lib\boost-python-2.6\boost_python-vc90-mt-1_39.dll $(TargetDir)&#x0D;&#x0A;copy scripts\init.py $(TargetDir)&#x0D;&#x0A;"
+				CommandLine="copy ..\lib\boost-python-2.6\boost_python-vc90-mt-$(BoostFileVer).dll $(TargetDir)&#x0D;&#x0A;copy scripts\init.py $(TargetDir)&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

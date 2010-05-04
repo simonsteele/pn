@@ -466,6 +466,10 @@ void DeletionManager::DeleteAll()
 DelObject* DeletionManager::s_pFirst = NULL;
 DelObject* DeletionManager::s_pLast = NULL;
 
+/**
+ * Process the raw command line arguments for the process, making sure
+ * all filename arguments are fully-qualified paths.
+ */
 std::list<tstring> GetCommandLineArgs()
 {
 	std::list<tstring> params;
@@ -498,12 +502,14 @@ std::list<tstring> GetCommandLineArgs()
 			// a rooted filename
 
 			// Process -1, this means all following args are a single file:
-			if (arg == _T("-1"))
+			if (arg == _T("-z"))
 			{
-				++i;
+				// Most past -z and the next parameter, this will be notepad.exe path:
+				i += 2;
 
 				tstring oneparam;
 				
+				// Add any remaining parameters to oneparam:
 				for (; i < __argc; ++i)
 				{
 					arg = __wargv[i];
@@ -516,17 +522,20 @@ std::list<tstring> GetCommandLineArgs()
 					oneparam += arg;
 				}
 
-				CFileName fn(oneparam);
-			
-				// If it's a relative path, root it and
-				// make arg point to it.
-				if(fn.IsRelativePath())
+				if (oneparam.size())
 				{
-					fn.Root(curDir);
-					oneparam = fn.c_str();
-				}
+					CFileName fn(oneparam);
+				
+					// If it's a relative path, root it and
+					// make arg point to it.
+					if(fn.IsRelativePath())
+					{
+						fn.Root(curDir);
+						oneparam = fn.c_str();
+					}
 
-				params.insert(params.end(), oneparam);
+					params.insert(params.end(), oneparam);
+				}
 			}
 			else
 			{

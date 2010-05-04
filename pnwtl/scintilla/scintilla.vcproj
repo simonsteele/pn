@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\include\scintilla\include"
+				AdditionalIncludeDirectories="..\third_party\scintilla\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;SCI_LEXER;SCI_NAMESPACE;SCI_OWNREGEX;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -116,7 +116,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\include\scintilla\include"
+				AdditionalIncludeDirectories="..\third_party\scintilla\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;SCI_LEXER;SCI_NAMESPACE;SCI_OWNREGEX;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -173,450 +173,454 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\include\scintilla\src\AutoComplete.cxx"
+				RelativePath="..\third_party\scintilla\src\AutoComplete.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\AutoComplete.h"
+				RelativePath="..\third_party\scintilla\src\AutoComplete.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\CallTip.cxx"
+				RelativePath="..\third_party\scintilla\src\CallTip.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\CallTip.h"
+				RelativePath="..\third_party\scintilla\src\CallTip.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\CellBuffer.cxx"
+				RelativePath="..\third_party\scintilla\src\CellBuffer.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\CellBuffer.h"
+				RelativePath="..\third_party\scintilla\src\CellBuffer.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\CharacterSet.h"
+				RelativePath="..\third_party\scintilla\src\CharacterSet.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\CharClassify.cxx"
+				RelativePath="..\third_party\scintilla\src\CharClassify.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\CharClassify.h"
+				RelativePath="..\third_party\scintilla\src\CharClassify.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\ContractionState.cxx"
+				RelativePath="..\third_party\scintilla\src\ContractionState.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\ContractionState.h"
+				RelativePath="..\third_party\scintilla\src\ContractionState.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\Decoration.cxx"
+				RelativePath="..\third_party\scintilla\src\Decoration.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\Decoration.h"
+				RelativePath="..\third_party\scintilla\src\Decoration.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\Document.cxx"
+				RelativePath="..\third_party\scintilla\src\Document.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\Document.h"
+				RelativePath="..\third_party\scintilla\src\Document.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\DocumentAccessor.cxx"
+				RelativePath="..\third_party\scintilla\src\DocumentAccessor.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\DocumentAccessor.h"
+				RelativePath="..\third_party\scintilla\src\DocumentAccessor.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\Editor.cxx"
+				RelativePath="..\third_party\scintilla\src\Editor.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\Editor.h"
+				RelativePath="..\third_party\scintilla\src\Editor.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\ExternalLexer.cxx"
+				RelativePath="..\third_party\scintilla\src\ExternalLexer.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\ExternalLexer.h"
+				RelativePath="..\third_party\scintilla\src\ExternalLexer.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\Indicator.cxx"
+				RelativePath="..\third_party\scintilla\src\Indicator.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\Indicator.h"
+				RelativePath="..\third_party\scintilla\src\Indicator.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\KeyMap.cxx"
+				RelativePath="..\third_party\scintilla\src\KeyMap.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\KeyMap.h"
+				RelativePath="..\third_party\scintilla\src\KeyMap.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\KeyWords.cxx"
+				RelativePath="..\third_party\scintilla\src\KeyWords.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexAbaqus.cxx"
+				RelativePath="..\third_party\scintilla\src\LexAbaqus.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexAda.cxx"
+				RelativePath="..\third_party\scintilla\src\LexAda.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexAPDL.cxx"
+				RelativePath="..\third_party\scintilla\src\LexAPDL.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexAsm.cxx"
+				RelativePath="..\third_party\scintilla\src\LexAsm.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexAsn1.cxx"
+				RelativePath="..\third_party\scintilla\src\LexAsn1.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexASY.cxx"
+				RelativePath="..\third_party\scintilla\src\LexASY.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexAU3.cxx"
+				RelativePath="..\third_party\scintilla\src\LexAU3.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexAVE.cxx"
+				RelativePath="..\third_party\scintilla\src\LexAVE.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexBaan.cxx"
+				RelativePath="..\third_party\scintilla\src\LexBaan.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexBash.cxx"
+				RelativePath="..\third_party\scintilla\src\LexBash.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexBasic.cxx"
+				RelativePath="..\third_party\scintilla\src\LexBasic.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexBullant.cxx"
+				RelativePath="..\third_party\scintilla\src\LexBullant.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexCaml.cxx"
+				RelativePath="..\third_party\scintilla\src\LexCaml.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexCLW.cxx"
+				RelativePath="..\third_party\scintilla\src\LexCLW.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexCmake.cxx"
+				RelativePath="..\third_party\scintilla\src\LexCmake.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexCOBOL.cxx"
+				RelativePath="..\third_party\scintilla\src\LexCOBOL.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexConf.cxx"
+				RelativePath="..\third_party\scintilla\src\LexConf.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexCPP.cxx"
+				RelativePath="..\third_party\scintilla\src\LexCPP.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexCrontab.cxx"
+				RelativePath="..\third_party\scintilla\src\LexCrontab.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexCsound.cxx"
+				RelativePath="..\third_party\scintilla\src\LexCsound.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexCSS.cxx"
+				RelativePath="..\third_party\scintilla\src\LexCSS.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexD.cxx"
+				RelativePath="..\third_party\scintilla\src\LexD.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexEiffel.cxx"
+				RelativePath="..\third_party\scintilla\src\LexEiffel.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexErlang.cxx"
+				RelativePath="..\third_party\scintilla\src\LexErlang.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexEScript.cxx"
+				RelativePath="..\third_party\scintilla\src\LexEScript.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexFlagship.cxx"
+				RelativePath="..\third_party\scintilla\src\LexFlagship.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexForth.cxx"
+				RelativePath="..\third_party\scintilla\src\LexForth.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexFortran.cxx"
+				RelativePath="..\third_party\scintilla\src\LexFortran.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexGAP.cxx"
+				RelativePath="..\third_party\scintilla\src\LexGAP.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexGui4Cli.cxx"
+				RelativePath="..\third_party\scintilla\src\LexGui4Cli.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexHaskell.cxx"
+				RelativePath="..\third_party\scintilla\src\LexHaskell.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexHTML.cxx"
+				RelativePath="..\third_party\scintilla\src\LexHTML.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexInno.cxx"
+				RelativePath="..\third_party\scintilla\src\LexInno.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexKix.cxx"
+				RelativePath="..\third_party\scintilla\src\LexKix.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexLisp.cxx"
+				RelativePath="..\third_party\scintilla\src\LexLisp.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexLout.cxx"
+				RelativePath="..\third_party\scintilla\src\LexLout.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexLua.cxx"
+				RelativePath="..\third_party\scintilla\src\LexLua.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexMagik.cxx"
+				RelativePath="..\third_party\scintilla\src\LexMagik.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexMatlab.cxx"
+				RelativePath="..\third_party\scintilla\src\LexMarkdown.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexMetapost.cxx"
+				RelativePath="..\third_party\scintilla\src\LexMatlab.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexMMIXAL.cxx"
+				RelativePath="..\third_party\scintilla\src\LexMetapost.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexMPT.cxx"
+				RelativePath="..\third_party\scintilla\src\LexMMIXAL.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexMSSQL.cxx"
+				RelativePath="..\third_party\scintilla\src\LexMPT.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexMySQL.cxx"
+				RelativePath="..\third_party\scintilla\src\LexMSSQL.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexNimrod.cxx"
+				RelativePath="..\third_party\scintilla\src\LexMySQL.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexNsis.cxx"
+				RelativePath="..\third_party\scintilla\src\LexNimrod.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexOpal.cxx"
+				RelativePath="..\third_party\scintilla\src\LexNsis.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexOthers.cxx"
+				RelativePath="..\third_party\scintilla\src\LexOpal.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexPascal.cxx"
+				RelativePath="..\third_party\scintilla\src\LexOthers.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexPB.cxx"
+				RelativePath="..\third_party\scintilla\src\LexPascal.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexPerl.cxx"
+				RelativePath="..\third_party\scintilla\src\LexPB.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexPLM.cxx"
+				RelativePath="..\third_party\scintilla\src\LexPerl.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexPOV.cxx"
+				RelativePath="..\third_party\scintilla\src\LexPLM.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexPowerPro.cxx"
+				RelativePath="..\third_party\scintilla\src\LexPOV.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexPowerShell.cxx"
+				RelativePath="..\third_party\scintilla\src\LexPowerPro.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexProgress.cxx"
+				RelativePath="..\third_party\scintilla\src\LexPowerShell.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexPS.cxx"
+				RelativePath="..\third_party\scintilla\src\LexProgress.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexPython.cxx"
+				RelativePath="..\third_party\scintilla\src\LexPS.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexR.cxx"
+				RelativePath="..\third_party\scintilla\src\LexPython.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexRebol.cxx"
+				RelativePath="..\third_party\scintilla\src\LexR.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexRuby.cxx"
+				RelativePath="..\third_party\scintilla\src\LexRebol.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexScriptol.cxx"
+				RelativePath="..\third_party\scintilla\src\LexRuby.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexSmalltalk.cxx"
+				RelativePath="..\third_party\scintilla\src\LexScriptol.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexSML.cxx"
+				RelativePath="..\third_party\scintilla\src\LexSmalltalk.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexSorcus.cxx"
+				RelativePath="..\third_party\scintilla\src\LexSML.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexSpecman.cxx"
+				RelativePath="..\third_party\scintilla\src\LexSorcus.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexSpice.cxx"
+				RelativePath="..\third_party\scintilla\src\LexSpecman.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexSQL.cxx"
+				RelativePath="..\third_party\scintilla\src\LexSpice.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexTACL.cxx"
+				RelativePath="..\third_party\scintilla\src\LexSQL.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexTADS3.cxx"
+				RelativePath="..\third_party\scintilla\src\LexTACL.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexTAL.cxx"
+				RelativePath="..\third_party\scintilla\src\LexTADS3.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexTCL.cxx"
+				RelativePath="..\third_party\scintilla\src\LexTAL.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexTeX.cxx"
+				RelativePath="..\third_party\scintilla\src\LexTCL.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexVB.cxx"
+				RelativePath="..\third_party\scintilla\src\LexTeX.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexVerilog.cxx"
+				RelativePath="..\third_party\scintilla\src\LexVB.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexVHDL.cxx"
+				RelativePath="..\third_party\scintilla\src\LexVerilog.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LexYAML.cxx"
+				RelativePath="..\third_party\scintilla\src\LexVHDL.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LineMarker.cxx"
+				RelativePath="..\third_party\scintilla\src\LexYAML.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\LineMarker.h"
+				RelativePath="..\third_party\scintilla\src\LineMarker.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\Partitioning.h"
+				RelativePath="..\third_party\scintilla\src\LineMarker.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\PerLine.cxx"
+				RelativePath="..\third_party\scintilla\src\Partitioning.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\PerLine.h"
+				RelativePath="..\third_party\scintilla\src\PerLine.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\win32\PlatformRes.h"
+				RelativePath="..\third_party\scintilla\src\PerLine.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\win32\PlatWin.cxx"
+				RelativePath="..\third_party\scintilla\win32\PlatformRes.h"
+				>
+			</File>
+			<File
+				RelativePath="..\third_party\scintilla\win32\PlatWin.cxx"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories="..\include\scintilla\src"
+						AdditionalIncludeDirectories="..\third_party\scintilla\src"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -624,55 +628,55 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories="..\include\scintilla\src"
+						AdditionalIncludeDirectories="..\third_party\scintilla\src"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\PositionCache.cxx"
+				RelativePath="..\third_party\scintilla\src\PositionCache.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\PositionCache.h"
+				RelativePath="..\third_party\scintilla\src\PositionCache.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\PropSet.cxx"
+				RelativePath="..\third_party\scintilla\src\PropSet.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\RESearch.cxx"
+				RelativePath="..\third_party\scintilla\src\RESearch.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\RESearch.h"
+				RelativePath="..\third_party\scintilla\src\RESearch.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\RunStyles.cxx"
+				RelativePath="..\third_party\scintilla\src\RunStyles.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\RunStyles.h"
+				RelativePath="..\third_party\scintilla\src\RunStyles.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\ScintillaBase.cxx"
+				RelativePath="..\third_party\scintilla\src\ScintillaBase.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\ScintillaBase.h"
+				RelativePath="..\third_party\scintilla\src\ScintillaBase.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\win32\ScintillaWin.cxx"
+				RelativePath="..\third_party\scintilla\win32\ScintillaWin.cxx"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories="..\include\scintilla\src"
+						AdditionalIncludeDirectories="..\third_party\scintilla\src"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -680,68 +684,68 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories="..\include\scintilla\src"
+						AdditionalIncludeDirectories="..\third_party\scintilla\src"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\Selection.cxx"
+				RelativePath="..\third_party\scintilla\src\Selection.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\Selection.h"
+				RelativePath="..\third_party\scintilla\src\Selection.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\SplitVector.h"
+				RelativePath="..\third_party\scintilla\src\SplitVector.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\Style.cxx"
+				RelativePath="..\third_party\scintilla\src\Style.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\Style.h"
+				RelativePath="..\third_party\scintilla\src\Style.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\StyleContext.cxx"
+				RelativePath="..\third_party\scintilla\src\StyleContext.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\StyleContext.h"
+				RelativePath="..\third_party\scintilla\src\StyleContext.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\SVector.h"
+				RelativePath="..\third_party\scintilla\src\SVector.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\UniConversion.cxx"
+				RelativePath="..\third_party\scintilla\src\UniConversion.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\UniConversion.h"
+				RelativePath="..\third_party\scintilla\src\UniConversion.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\ViewStyle.cxx"
+				RelativePath="..\third_party\scintilla\src\ViewStyle.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\ViewStyle.h"
+				RelativePath="..\third_party\scintilla\src\ViewStyle.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\WindowAccessor.cxx"
+				RelativePath="..\third_party\scintilla\src\WindowAccessor.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\XPM.cxx"
+				RelativePath="..\third_party\scintilla\src\XPM.cxx"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\src\XPM.h"
+				RelativePath="..\third_party\scintilla\src\XPM.h"
 				>
 			</File>
 		</Filter>
@@ -751,39 +755,39 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\include\scintilla\include\Accessor.h"
+				RelativePath="..\third_party\scintilla\include\Accessor.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\include\KeyWords.h"
+				RelativePath="..\third_party\scintilla\include\KeyWords.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\include\Platform.h"
+				RelativePath="..\third_party\scintilla\include\Platform.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\include\PropSet.h"
+				RelativePath="..\third_party\scintilla\include\PropSet.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\include\SciLexer.h"
+				RelativePath="..\third_party\scintilla\include\SciLexer.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\include\Scintilla.h"
+				RelativePath="..\third_party\scintilla\include\Scintilla.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\include\ScintillaWidget.h"
+				RelativePath="..\third_party\scintilla\include\ScintillaWidget.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\include\SString.h"
+				RelativePath="..\third_party\scintilla\include\SString.h"
 				>
 			</File>
 			<File
-				RelativePath="..\include\scintilla\include\WindowAccessor.h"
+				RelativePath="..\third_party\scintilla\include\WindowAccessor.h"
 				>
 			</File>
 		</Filter>
@@ -798,7 +802,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories="..\include\scintilla\src"
+						AdditionalIncludeDirectories="..\third_party\scintilla\src"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -806,13 +810,13 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						AdditionalIncludeDirectories="..\include\scintilla\src"
+						AdditionalIncludeDirectories="..\third_party\scintilla\src"
 					/>
 				</FileConfiguration>
 			</File>
 		</Filter>
 		<File
-			RelativePath="..\include\scintilla\win32\ScintRes.rc"
+			RelativePath="..\third_party\scintilla\win32\ScintRes.rc"
 			>
 		</File>
 	</Files>

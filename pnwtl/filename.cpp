@@ -25,42 +25,45 @@ CFileName& CFileName::operator = (const tstring& filename)
 
 int CFileName::GetLastSlashPos()
 {
-	int pos = m_FileName.rfind(_T('\\'));
-	if(pos == m_FileName.npos)
+	size_t pos = m_FileName.rfind(_T('\\'));
+	if (pos == m_FileName.npos)
 	{
 		// couldn't find '\\', try again for '/'
 		pos = m_FileName.rfind(_T('/'));
 	}
-	if(pos != m_FileName.npos)
-		return ++pos;
+	
+	if (pos != m_FileName.npos)
+	{
+		return static_cast<int>(++pos);
+	}
 	else
-		return m_FileName.npos;
+	{
+		return static_cast<int>(m_FileName.npos);
+	}
 }
 
 int CFileName::GetLastDotPos(tstring* str)
 {
-	if(!str)
+	if(str == NULL)
 	{
-		int pos = m_FileName.rfind(_T('.'));
-		if(pos != m_FileName.npos)
-			return ++pos;
-		else
-			return m_FileName.npos;
+		str = &m_FileName;
+	}
+
+	size_t pos = str->rfind(_T('.'));
+	if (pos != str->npos)
+	{
+		return static_cast<int>(++pos);
 	}
 	else
 	{
-		int pos = str->rfind(_T('.'));
-		if(pos != m_FileName.npos)
-			return ++pos;
-		else
-			return m_FileName.npos;
+		return static_cast<int>(str->npos);
 	}
 }
 
 tstring CFileName::GetPath()
 {
 	int pos = GetLastSlashPos();
-	if (pos != m_FileName.npos)
+	if (pos != static_cast<int>(m_FileName.npos))
 	{
 		return m_FileName.substr(0, pos);
 	}
@@ -74,19 +77,20 @@ tstring CFileName::GetDirectoryName()
 {
 	tstring path = GetPath();
 	TCHAR cLast = path[path.length() - 1];
-	if(cLast == _T('\\') || cLast == _T('/'))
+	if (cLast == _T('\\') || cLast == _T('/'))
 	{
 		// remove the last char.
 		path.erase(path.length()-1);
 	}
 
-	int pos = path.rfind(_T('\\'));
-	if(pos == path.npos)
+	size_t pos = path.rfind(_T('\\'));
+	if (pos == path.npos)
 	{
 		// couldn't find '\\', try again for '/'
 		pos = path.rfind(_T('/'));
 	}
-	if(pos != path.npos)
+	
+	if (pos != path.npos)
 	{
 		path = path.substr(++pos);
 	}
@@ -108,20 +112,28 @@ bool CFileName::IsRelativePath()
 {
 	// If there's no slash in it, it's definitely relative...
 	int spos = GetLastSlashPos();
-	if( spos == m_FileName.npos )
+	if (spos == static_cast<int>(m_FileName.npos))
+	{
 		return true;
+	}
 
 	// If the length is less than 3 then there isn't a drive letter.
-	if( m_FileName.length() < 3 )
+	if (m_FileName.length() < 3)
+	{
 		return true;
+	}
 
 	// Is there a drive letter as the first two characters (then it's not relative)?
-	if( ::isalpha(m_FileName[0]) && (m_FileName[1] == _T(':')) )
+	if (::isalpha(m_FileName[0]) && (m_FileName[1] == _T(':')))
+	{
 		return false;
+	}
 
 	// If it begins with a slash then it's not relative - mostly linux style paths.
-	if( m_FileName[0] == _T('\\') || m_FileName[0] == _T('/') )
+	if (m_FileName[0] == _T('\\') || m_FileName[0] == _T('/'))
+	{
 		return false;
+	}
 
 	return true;
 }
@@ -131,33 +143,36 @@ bool CFileName::IsRelativePath()
  */
 tstring CFileName::GetRelativePath(LPCTSTR path)
 {
-	if(IsSubElementOf(path))
+	TCHAR slash;
+	if (_tcschr(path, _T('/')) != NULL)
 	{
-		TCHAR slash;
-		int chopLen = _tcslen(path);
-		
-		if(_tcschr(path, _T('/')) != NULL)
-			slash = _T('/');
-		else
-			slash = _T('\\');
-
-		// We're walking down the tree...
-		if(path[_tcslen(path)-1] == slash)
-		{
-			chopLen++;
-		}
-
-        return m_FileName.substr(chopLen-1);
+		slash = _T('/');
 	}
-	else if(PathIsParentElementOf(path))
+	else
+	{
+		slash = _T('\\');
+	}
+
+	// We want to always compare to a full path, if there's no trailing slash we should insert one:
+	tstring compareTo(path);
+	if (!(*compareTo.rbegin() == slash))
+	{
+		compareTo += slash;
+	}
+
+	if (IsSubElementOf(compareTo.c_str()))
+	{
+		int chopLen = compareTo.size();
+
+        return m_FileName.substr(chopLen);
+	}
+	else if(PathIsParentElementOf(compareTo.c_str()))
 	{
 		//Cop out.
 		return m_FileName;
 	}
 	else
 	{
-		///@todo Add a relative filename thing to walk down if we're a sub-element of path.
-		
 		//Cop out.
 		return m_FileName;
 	}
@@ -321,7 +336,7 @@ tstring& CFileName::Sanitise()
 	}
 
 	LPCTSTR in = m_FileName.c_str();
-	int bufsize = min(_tcslen(in)+1, MAX_PATH);
+	int bufsize = max(_tcslen(in)+1, MAX_PATH);
 	std::vector<TCHAR> res(bufsize);
 
 	LPCTSTR fnd = _tcschr(in, _T(':'));
@@ -383,7 +398,14 @@ tstring& CFileName::Sanitise()
 		// Ask windows to make this path better for us:
 		PathCanonicalize(&res[0], m_FileName.c_str());
 		m_FileName = &res[0];
-		GetLongPathName(m_FileName.c_str(), &res[0], bufsize);
+		
+		int expandResult(0);
+		if ((expandResult = GetLongPathName(m_FileName.c_str(), &res[0], bufsize)) > bufsize)
+		{
+			res.resize(expandResult+1);
+			GetLongPathName(m_FileName.c_str(), &res[0], expandResult + 1);
+		}
+		
 		m_FileName = &res[0];
 	}
 
@@ -399,10 +421,14 @@ tstring CFileName::GetFileName()
 {
 	int pos = GetLastSlashPos();
 
-	if (pos != m_FileName.npos)
+	if (pos != static_cast<int>(m_FileName.npos))
+	{
 		return m_FileName.substr(pos);
+	}
 	else
+	{
 		return m_FileName;
+	}
 }
 
 tstring CFileName::GetFileName_NoExt()
@@ -411,7 +437,7 @@ tstring CFileName::GetFileName_NoExt()
 	
 	int pos = GetLastSlashPos();
 	
-	if (pos != m_FileName.npos)
+	if (pos != static_cast<int>(m_FileName.npos))
 	{
 		work = m_FileName.substr(pos); 
 	}
@@ -421,9 +447,9 @@ tstring CFileName::GetFileName_NoExt()
 	}
 	
 	pos = GetLastDotPos(&work);
-	if(pos != work.npos)
+	if(pos != static_cast<int>(work.npos))
 	{
-		work = work.substr(0, pos-1);
+		work = work.substr(0, pos - 1);
 	}
 
 	return work;
@@ -433,12 +459,14 @@ tstring CFileName::GetFileName_NoExt()
 tstring CFileName::GetExtension()
 {
 	int pos = GetLastDotPos(&m_FileName);
-	if(pos != m_FileName.npos)
+	if (pos != static_cast<int>(m_FileName.npos))
 	{
 		return m_FileName.substr(pos-1);
 	}
 	else
+	{
 		return tstring(_T(""));
+	}
 }
 
 void CFileName::GetFileName_NoExt(tstring& buf)
@@ -535,7 +563,7 @@ void CPathName::ChangeLastElement(LPCTSTR lastEl)
 
 	m_FileName = path;
 	int pos = GetLastSlashPos();
-	if(pos != m_FileName.npos)
+	if (pos != static_cast<int>(m_FileName.npos))
 	{
 		m_FileName = path.substr(0, pos);
 		m_FileName += lastEl;

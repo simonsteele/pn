@@ -103,7 +103,7 @@ struct CDockingBarWinTraits : CWinTraits<t_dwStyle,t_dwExStyle>
 	typedef dockwins::CDocker CDocker;
 };
 
-typedef CDockingBarWinTraits<WS_OVERLAPPEDWINDOW| WS_POPUP/* WS_CHILD*/ | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW/* WS_EX_CLIENTEDGE*/>    CSimpleDockingBarWinTraits;
+typedef CDockingBarWinTraits</*WS_OVERLAPPEDWINDOW| */WS_CAPTION | WS_POPUP/* WS_CHILD*/ | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW/* WS_EX_CLIENTEDGE*/>    CSimpleDockingBarWinTraits;
 
 template <class T,
           class TBase = CWindow,
@@ -689,7 +689,7 @@ struct CDockingWindowTraits : CDockingBarWinTraits<t_dwStyle,t_dwExStyle>
 	typedef TCaption CCaption;
 };
 
-typedef CDockingWindowTraits<CCaptionBase,WS_OVERLAPPEDWINDOW | WS_POPUP/* WS_CHILD*/ | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW/* WS_EX_CLIENTEDGE*/> CEmptyTitleDockingWindowTraits;
+typedef CDockingWindowTraits<CCaptionBase,/*WS_OVERLAPPEDWINDOW | */WS_CAPTION | WS_POPUP/* WS_CHILD*/ | WS_VISIBLE | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW/* WS_EX_CLIENTEDGE*/> CEmptyTitleDockingWindowTraits;
 
 template <class T,
           class TBase = CWindow,

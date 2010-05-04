@@ -13,6 +13,7 @@
 
 #include "include/optionsdialog.h"
 #include "controls/OptionsBlockHeader.h"
+#include "controls/hyperlink.h"
 
 /**
  * Autocomplete options page
@@ -39,6 +40,7 @@ class COptionsPageExtensions : public COptionsPageImpl<COptionsPageExtensions>
 
 	private:
 		CListViewCtrl m_list;
+		CHyperlink m_extensionsLink;
 
 		COptionsBlockHeader m_settingsHeader;
 };

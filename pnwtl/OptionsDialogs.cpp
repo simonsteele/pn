@@ -2,7 +2,7 @@
  * @file OptionsDialogs.cpp
  * @brief Dialogs used to edit settings from the Options dialog.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -147,7 +147,7 @@ LRESULT CToolSettingsPage::OnBrowseCommand(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 	LPCTSTR pFN = ( (m_csCommand.Find(_T('%')) == -1) ? (LPCTSTR)m_csCommand : NULL );
 	CFileDialog fd(true, _T("exe"), pFN, OFN_HIDEREADONLY, _T("Executable Files (exe, com, bat, vbs...)\0*.exe;*.com;*.bat;*.vbs;*.cmd\0All Files (*.*)\0*.*\0"), NULL);
-	if( fd.DoModal() )
+	if( fd.DoModal() == IDOK )
 	{
 		m_csCommand = fd.m_ofn.lpstrFile;
 		DoDataExchange();

@@ -30,6 +30,7 @@
 #define PN_CLOSEALLOTHER	(WM_APP+18)
 #define PN_OVERWRITETARGET	(WM_APP+19)
 #define PN_INSERTCLIP		(WM_APP+20)
+#define PN_SETFOCUS			(WM_APP+21)
 
 // Command IDs used around the place...
 #define PN_MDIACTIVATE		0x1
@@ -78,7 +79,7 @@
 #include "allocator.h"
 #include "pnextstring.h"
 #include "extiface.h"
-#include "include/scintilla/include/Platform.h"
+#include "third_party/scintilla/include/Platform.h"
 #include "pntypes.h"
 
 // Pre-declarations...

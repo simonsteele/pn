@@ -218,8 +218,9 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, WordLi
 			if(cc.atLineEnd)
 				cc.SetState(ST_DEFAULT);
 		}
+		
 		// Finally we do default state handling...
-		else if( cc.state == ST_DEFAULT )
+		if( cc.state == ST_DEFAULT )
 		{
 			if( s1 && (cc.ch == stringTypes[0].start) )
 			{

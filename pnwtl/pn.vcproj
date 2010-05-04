@@ -20,7 +20,7 @@
 			OutputDirectory=".\bin"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops;.\common.vsprops"
+			InheritedPropertySheets=".\common.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
@@ -47,7 +47,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm180"
+				AdditionalOptions="/Zm208"
 				Optimization="0"
 				AdditionalIncludeDirectories="TabbingFramework, DockingFramework, Scintilla\include"
 				PreprocessorDefinitions="WIN32,_DEBUG,_WINDOWS,STRICT,SCI_NAMESPACE,UNICODE,_UNICODE"
@@ -90,7 +90,7 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\bin/pn.pdb"
 				SubSystem="2"
-				RandomizedBaseAddress="1"
+				RandomizedBaseAddress="0"
 				DataExecutionPrevention="0"
 			/>
 			<Tool
@@ -121,7 +121,7 @@
 			OutputDirectory=".\bin"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops;.\common.vsprops"
+			InheritedPropertySheets=".\common.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
@@ -149,7 +149,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zm180 $(SVNREV)"
+				AdditionalOptions="/Zm208 $(SVNREV)"
 				Optimization="3"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="TabbingFramework, DockingFramework, Scintilla\include"
@@ -230,7 +230,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\afiles.h"
+				>
+			</File>
+			<File
 				RelativePath=".\appsettings.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\appsettings.h"
+				>
+			</File>
+			<File
+				RelativePath=".\AutoCompleteHandler.h"
 				>
 			</File>
 			<File
@@ -238,7 +250,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\commands.h"
+				>
+			</File>
+			<File
 				RelativePath=".\docprops.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\docprops.h"
 				>
 			</File>
 			<File
@@ -246,7 +266,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Document.h"
+				>
+			</File>
+			<File
 				RelativePath=".\editorcommands.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\editorcommands.h"
 				>
 			</File>
 			<File
@@ -254,7 +282,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\editorfactory.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ExplorerMenu.h"
+				>
+			</File>
+			<File
 				RelativePath="exporters.cpp"
+				>
+			</File>
+			<File
+				RelativePath="exporters.h"
 				>
 			</File>
 			<File
@@ -262,23 +302,31 @@
 				>
 			</File>
 			<File
+				RelativePath=".\extapp.h"
+				>
+			</File>
+			<File
 				RelativePath=".\FileAssoc.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\filedialogs.cpp"
+				RelativePath=".\FileAssoc.h"
 				>
 			</File>
 			<File
-				RelativePath=".\filename.cpp"
+				RelativePath=".\FileAssocInfo.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Files.cpp"
+				RelativePath=".\filename.h"
 				>
 			</File>
 			<File
-				RelativePath=".\fileutil.cpp"
+				RelativePath=".\Files.h"
+				>
+			</File>
+			<File
+				RelativePath=".\fileutil.h"
 				>
 			</File>
 			<File
@@ -286,11 +334,35 @@
 				>
 			</File>
 			<File
+				RelativePath=".\findinfiles.h"
+				>
+			</File>
+			<File
+				RelativePath=".\folderadder.h"
+				>
+			</File>
+			<File
+				RelativePath=".\IOptions.h"
+				>
+			</File>
+			<File
 				RelativePath=".\jumpto.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\l10n.cpp"
+				RelativePath=".\jumpto.h"
+				>
+			</File>
+			<File
+				RelativePath=".\jumptointerface.h"
+				>
+			</File>
+			<File
+				RelativePath=".\mainfrm.h"
+				>
+			</File>
+			<File
+				RelativePath="include\OptionsDialog.h"
 				>
 			</File>
 			<File
@@ -298,7 +370,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OptionsIni.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OptionsManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath="OptionsManager.h"
 				>
 			</File>
 			<File
@@ -306,7 +386,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\OptionsRegistry.h"
+				>
+			</File>
+			<File
 				RelativePath=".\OptionsXml.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OptionsXml.h"
+				>
+			</File>
+			<File
+				RelativePath=".\plugins.h"
 				>
 			</File>
 			<File
@@ -314,11 +406,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\pn.h"
+				>
+			</File>
+			<File
 				RelativePath=".\pn.rc"
 				>
 			</File>
 			<File
-				RelativePath=".\pnutils.cpp"
+				RelativePath=".\pntypes.h"
 				>
 			</File>
 			<File
@@ -326,27 +422,31 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SchemeCompiler.cpp"
-				>
-			</File>
-			<File
-				RelativePath="SchemeConfig.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SchemeManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Schemes.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\scintillaif.cpp"
 				>
 			</File>
 			<File
+				RelativePath=".\scintillaif.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ScintillaImpl.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\scintillaimpl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ScintillaIterator.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ScintillaWTL.h"
+				>
+			</File>
+			<File
+				RelativePath=".\searchoptions.h"
 				>
 			</File>
 			<File
@@ -355,6 +455,10 @@
 			</File>
 			<File
 				RelativePath="smartstart.cpp"
+				>
+			</File>
+			<File
+				RelativePath="smartstart.h"
 				>
 			</File>
 			<File
@@ -378,39 +482,23 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\stdafx.h"
+				>
+			</File>
+			<File
 				RelativePath=".\styles.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\StylesUserSettings.cpp"
-				>
-			</File>
-			<File
-				RelativePath="textclips.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\toolcommandstring.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\toolrunner.cpp"
-				>
-			</File>
-			<File
-				RelativePath="tools.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\toolsmanager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\updatecheck.cpp"
+				RelativePath=".\usersettingswriter.h"
 				>
 			</File>
 			<File
 				RelativePath=".\WorkspaceState.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\WorkspaceState.h"
 				>
 			</File>
 			<Filter
@@ -421,351 +509,138 @@
 					>
 				</File>
 				<File
+					RelativePath=".\textclips\chunkparser.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\textclips\chunkparser.h"
+					>
+				</File>
+				<File
 					RelativePath=".\textclips\clip.cpp"
 					>
 				</File>
+				<File
+					RelativePath=".\textclips\cliphandler.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\textclips\clipmanager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\textclips\clipmanager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\textclips\clipparser.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\textclips\clipparser.h"
+					>
+				</File>
+				<File
+					RelativePath=".\textclips\clipwriter.h"
+					>
+				</File>
+				<File
+					RelativePath="textclips.cpp"
+					>
+				</File>
+				<File
+					RelativePath="textclips.h"
+					>
+				</File>
+				<File
+					RelativePath=".\textclips\variables.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\textclips\variables.h"
+					>
+				</File>
 			</Filter>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl"
-			>
-			<File
-				RelativePath=".\aboutdlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\afiles.h"
-				>
-			</File>
-			<File
-				RelativePath=".\appsettings.h"
-				>
-			</File>
-			<File
-				RelativePath=".\autofiledialog.h"
-				>
-			</File>
-			<File
-				RelativePath=".\browseview.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ChildFrm.h"
-				>
-			</File>
-			<File
-				RelativePath=".\commands.h"
-				>
-			</File>
-			<File
-				RelativePath=".\CustomAutoComplete.h"
-				>
-			</File>
-			<File
-				RelativePath=".\docprops.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Document.h"
-				>
-			</File>
-			<File
-				RelativePath=".\editorcommands.h"
-				>
-			</File>
-			<File
-				RelativePath=".\editorfactory.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ExplorerMenu.h"
-				>
-			</File>
-			<File
-				RelativePath="exporters.h"
-				>
-			</File>
-			<File
-				RelativePath=".\extapp.h"
-				>
-			</File>
-			<File
-				RelativePath=".\FileAssoc.h"
-				>
-			</File>
-			<File
-				RelativePath=".\FileAssocInfo.h"
-				>
-			</File>
-			<File
-				RelativePath=".\filedialogbase.h"
-				>
-			</File>
-			<File
-				RelativePath=".\filedialogs.h"
-				>
-			</File>
-			<File
-				RelativePath=".\filename.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Files.h"
-				>
-			</File>
-			<File
-				RelativePath=".\fileutil.h"
-				>
-			</File>
-			<File
-				RelativePath=".\findbar.h"
-				>
-			</File>
-			<File
-				RelativePath=".\findex.h"
-				>
-			</File>
-			<File
-				RelativePath=".\findinfiles.h"
-				>
-			</File>
-			<File
-				RelativePath=".\findinfilesview.h"
-				>
-			</File>
-			<File
-				RelativePath=".\folderadder.h"
-				>
-			</File>
-			<File
-				RelativePath="include\fontcombo.h"
-				>
-			</File>
-			<File
-				RelativePath=".\fromhandle.h"
-				>
-			</File>
-			<File
-				RelativePath=".\inet.h"
-				>
-			</File>
-			<File
-				RelativePath=".\IOptions.h"
-				>
-			</File>
-			<File
-				RelativePath=".\jumpto.h"
-				>
-			</File>
-			<File
-				RelativePath=".\JumpToDialog.h"
-				>
-			</File>
-			<File
-				RelativePath=".\jumptointerface.h"
-				>
-			</File>
-			<File
-				RelativePath=".\jumpview.h"
-				>
-			</File>
-			<File
-				RelativePath=".\l10n.h"
-				>
-			</File>
-			<File
-				RelativePath=".\mainfrm.h"
-				>
-			</File>
-			<File
-				RelativePath=".\NewProjectDialog.h"
-				>
-			</File>
-			<File
-				RelativePath=".\openfilesview.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsIni.h"
-				>
-			</File>
-			<File
-				RelativePath="OptionsManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsRegistry.h"
-				>
-			</File>
-			<File
-				RelativePath=".\OptionsXml.h"
-				>
-			</File>
-			<File
-				RelativePath=".\outputscintilla.h"
-				>
-			</File>
-			<File
-				RelativePath="outputview.h"
-				>
-			</File>
-			<File
-				RelativePath=".\plugins.h"
-				>
-			</File>
-			<File
-				RelativePath=".\pn.h"
-				>
-			</File>
-			<File
-				RelativePath=".\pndialogs.h"
-				>
-			</File>
-			<File
-				RelativePath=".\pndocking.h"
-				>
-			</File>
-			<File
-				RelativePath=".\pndockingwindow.h"
-				>
-			</File>
-			<File
-				RelativePath=".\pnstrings.h"
-				>
-			</File>
-			<File
-				RelativePath="pntabs.h"
-				>
-			</File>
-			<File
-				RelativePath=".\pntaskdialog.h"
-				>
-			</File>
-			<File
-				RelativePath=".\pntypes.h"
-				>
-			</File>
-			<File
-				RelativePath=".\pnutils.h"
-				>
-			</File>
-			<File
-				RelativePath=".\resource.h"
-				>
-			</File>
-			<File
-				RelativePath=".\resource.hm"
-				>
-			</File>
-			<File
-				RelativePath=".\SchemeCompiler.h"
-				>
-			</File>
-			<File
-				RelativePath="SchemeConfig.h"
-				>
-			</File>
-			<File
-				RelativePath=".\SchemeManager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Schemes.h"
-				>
-			</File>
-			<File
-				RelativePath=".\scintillaif.h"
-				>
-			</File>
-			<File
-				RelativePath=".\scintillaimpl.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ScintillaIterator.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ScintillaWTL.h"
-				>
-			</File>
-			<File
-				RelativePath=".\searchoptions.h"
-				>
-			</File>
-			<File
-				RelativePath=".\singleinstance.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\singleton.h"
-				>
-			</File>
-			<File
-				RelativePath="smartstart.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ssmenus.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ssreg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath="styles.h"
-				>
-			</File>
-			<File
-				RelativePath="textclips.h"
-				>
-			</File>
-			<File
-				RelativePath="textclipsview.h"
-				>
-			</File>
-			<File
-				RelativePath=".\textview.h"
-				>
-			</File>
-			<File
-				RelativePath=".\toolrunner.h"
-				>
-			</File>
-			<File
-				RelativePath="tools.h"
-				>
-			</File>
-			<File
-				RelativePath=".\toolsmanager.h"
-				>
-			</File>
-			<File
-				RelativePath=".\toolsxmlwriter.h"
-				>
-			</File>
-			<File
-				RelativePath=".\updatecheck.h"
-				>
-			</File>
-			<File
-				RelativePath=".\usersettingswriter.h"
-				>
-			</File>
-			<File
-				RelativePath="version.h"
-				>
-			</File>
-			<File
-				RelativePath=".\WorkspaceState.h"
-				>
-			</File>
+			<Filter
+				Name="Tools"
+				>
+				<File
+					RelativePath=".\toolcommandstring.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\toolrunner.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\toolrunner.h"
+					>
+				</File>
+				<File
+					RelativePath="tools.cpp"
+					>
+				</File>
+				<File
+					RelativePath="tools.h"
+					>
+				</File>
+				<File
+					RelativePath=".\toolsmanager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\toolsmanager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\toolsxmlwriter.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Schemes"
+				>
+				<File
+					RelativePath=".\SchemeCompiler.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SchemeCompiler.h"
+					>
+				</File>
+				<File
+					RelativePath="SchemeConfig.cpp"
+					>
+				</File>
+				<File
+					RelativePath="SchemeConfig.h"
+					>
+				</File>
+				<File
+					RelativePath=".\SchemeManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\SchemeManager.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Schemes.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Schemes.h"
+					>
+				</File>
+				<File
+					RelativePath="styles.h"
+					>
+				</File>
+				<File
+					RelativePath=".\StylesUserSettings.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -781,6 +656,14 @@
 			</File>
 			<File
 				RelativePath=".\res\bitmap4.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\clipstoolbar.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\res\clipstoolbar24.bmp"
 				>
 			</File>
 			<File
@@ -856,6 +739,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\res\pn.rc2"
+				>
+			</File>
+			<File
 				RelativePath=".\res\pndoc.ico"
 				>
 			</File>
@@ -873,6 +760,14 @@
 			</File>
 			<File
 				RelativePath=".\res\redclose.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
+				RelativePath=".\resource.hm"
 				>
 			</File>
 			<File
@@ -932,12 +827,16 @@
 				>
 			</File>
 			<File
+				RelativePath="version.h"
+				>
+			</File>
+			<File
 				RelativePath="res\workspace.ico"
 				>
 			</File>
 		</Filter>
 		<Filter
-			Name="Include"
+			Name="third_party"
 			>
 			<File
 				RelativePath=".\include\atlshellext.h"
@@ -948,15 +847,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\AutoCompleteHandler.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\browsetree.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\genx\charProps.c"
+				RelativePath=".\third_party\genx\charProps.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -976,15 +867,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="include\ColorButton.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\include\encoding.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\genx\genx.c"
+				RelativePath=".\third_party\genx\genx.c"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -1006,63 +889,11 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\include\genx\genx.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\lineendings.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\mdump.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\include\mdump.h"
-				>
-			</File>
-			<File
-				RelativePath="include\OptionsDialog.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\pagesetupdialog.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\plugin.h"
-				>
-			</File>
-			<File
-				RelativePath=".\res\pn.rc2"
-				>
-			</File>
-			<File
-				RelativePath=".\include\proplist\PropertyList.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\ShellCtrls.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\TaskDialog.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\threading.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\toolbar.h"
+				RelativePath=".\third_party\genx\genx.h"
 				>
 			</File>
 			<File
 				RelativePath="include\Utf8_16.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\include\wtltreems.h"
 				>
 			</File>
 			<Filter
@@ -1198,14 +1029,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MagicFolderWiz.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\MagicFolderWiz.h"
-				>
-			</File>
-			<File
 				RelativePath="project.cpp"
 				>
 			</File>
@@ -1238,63 +1061,7 @@
 				>
 			</File>
 			<File
-				RelativePath="projectview.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\projectview.h"
-				>
-			</File>
-			<File
 				RelativePath=".\projectwriter.h"
-				>
-			</File>
-			<File
-				RelativePath=".\projpropsview.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\projpropsview.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Extensions"
-			>
-			<File
-				RelativePath=".\allocator.h"
-				>
-			</File>
-			<File
-				RelativePath=".\extension.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\extension.h"
-				>
-			</File>
-			<File
-				RelativePath=".\extiface.h"
-				>
-			</File>
-			<File
-				RelativePath=".\pnextstring.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ScriptRegistry.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\scriptregistry.h"
-				>
-			</File>
-			<File
-				RelativePath=".\scriptview.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\scriptview.h"
 				>
 			</File>
 		</Filter>
@@ -1310,11 +1077,95 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\encoding.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\filefinder.h"
+				>
+			</File>
+			<File
+				RelativePath=".\filename.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Files.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\fileutil.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\fromhandle.h"
+				>
+			</File>
+			<File
+				RelativePath=".\inet.h"
+				>
+			</File>
+			<File
+				RelativePath=".\l10n.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\l10n.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\lineendings.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\mdump.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\include\mdump.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\pngenx.h"
 				>
 			</File>
 			<File
+				RelativePath=".\pnstrings.h"
+				>
+			</File>
+			<File
+				RelativePath=".\pnutils.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\pnutils.h"
+				>
+			</File>
+			<File
+				RelativePath=".\singleinstance.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\singleton.h"
+				>
+			</File>
+			<File
 				RelativePath=".\ssreg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ssreg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\threading.h"
+				>
+			</File>
+			<File
+				RelativePath=".\updatecheck.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\updatecheck.h"
 				>
 			</File>
 			<File
@@ -1362,11 +1213,23 @@
 			Name="UI"
 			>
 			<File
+				RelativePath=".\aboutdlg.h"
+				>
+			</File>
+			<File
 				RelativePath=".\browseview.cpp"
 				>
 			</File>
 			<File
+				RelativePath=".\browseview.h"
+				>
+			</File>
+			<File
 				RelativePath="childfrm.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ChildFrm.h"
 				>
 			</File>
 			<File
@@ -1382,11 +1245,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\findinfilesview.h"
+				>
+			</File>
+			<File
 				RelativePath=".\JumpToDialog.cpp"
 				>
 			</File>
 			<File
+				RelativePath=".\JumpToDialog.h"
+				>
+			</File>
+			<File
 				RelativePath=".\jumpview.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\jumpview.h"
 				>
 			</File>
 			<File
@@ -1402,6 +1277,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\openfilesview.h"
+				>
+			</File>
+			<File
 				RelativePath=".\outputscintilla.cpp"
 				>
 			</File>
@@ -1410,11 +1289,39 @@
 				>
 			</File>
 			<File
+				RelativePath="outputview.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\pagesetupdialog.h"
+				>
+			</File>
+			<File
 				RelativePath=".\pndialogs.cpp"
 				>
 			</File>
 			<File
+				RelativePath=".\pndialogs.h"
+				>
+			</File>
+			<File
+				RelativePath=".\pndocking.h"
+				>
+			</File>
+			<File
+				RelativePath=".\pndockingwindow.h"
+				>
+			</File>
+			<File
 				RelativePath=".\pntabs.cpp"
+				>
+			</File>
+			<File
+				RelativePath="pntabs.h"
+				>
+			</File>
+			<File
+				RelativePath=".\pntaskdialog.h"
 				>
 			</File>
 			<File
@@ -1426,7 +1333,15 @@
 				>
 			</File>
 			<File
+				RelativePath="textclipsview.h"
+				>
+			</File>
+			<File
 				RelativePath="textview.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\textview.h"
 				>
 			</File>
 			<Filter
@@ -1453,14 +1368,6 @@
 					>
 				</File>
 				<File
-					RelativePath=".\OptionsPageClips.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\OptionsPageClips.h"
-					>
-				</File>
-				<File
 					RelativePath=".\OptionsPageEditing.cpp"
 					>
 				</File>
@@ -1478,6 +1385,10 @@
 				</File>
 				<File
 					RelativePath=".\OptionsPageFileAssoc.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageFileTypes.cpp"
 					>
 				</File>
 				<File
@@ -1569,14 +1480,178 @@
 				Name="Controls"
 				>
 				<File
+					RelativePath=".\autofiledialog.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\browsetree.h"
+					>
+				</File>
+				<File
+					RelativePath="include\ColorButton.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\controls\commandbaredit.h"
+					>
+				</File>
+				<File
+					RelativePath=".\CustomAutoComplete.h"
+					>
+				</File>
+				<File
+					RelativePath=".\filedialogbase.h"
+					>
+				</File>
+				<File
+					RelativePath=".\filedialogs.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\filedialogs.h"
+					>
+				</File>
+				<File
+					RelativePath=".\findbar.h"
+					>
+				</File>
+				<File
+					RelativePath=".\findex.h"
+					>
+				</File>
+				<File
+					RelativePath="include\fontcombo.h"
+					>
+				</File>
+				<File
+					RelativePath=".\controls\hyperlink.h"
 					>
 				</File>
 				<File
 					RelativePath=".\controls\OptionsBlockHeader.h"
 					>
 				</File>
+				<File
+					RelativePath=".\outputscintilla.h"
+					>
+				</File>
+				<File
+					RelativePath=".\controls\pntabcontrol.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\controls\pntabcontrol.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\proplist\PropertyList.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\ShellCtrls.h"
+					>
+				</File>
+				<File
+					RelativePath=".\ssmenus.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\TaskDialog.h"
+					>
+				</File>
+				<File
+					RelativePath=".\controls\textclipstree.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\controls\textclipstree.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\toolbar.h"
+					>
+				</File>
+				<File
+					RelativePath=".\include\wtltreems.h"
+					>
+				</File>
 			</Filter>
+			<Filter
+				Name="Projects"
+				>
+				<File
+					RelativePath=".\MagicFolderWiz.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MagicFolderWiz.h"
+					>
+				</File>
+				<File
+					RelativePath=".\NewProjectDialog.h"
+					>
+				</File>
+				<File
+					RelativePath="projectview.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\projectview.h"
+					>
+				</File>
+				<File
+					RelativePath=".\projpropsview.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\projpropsview.h"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Extensions"
+			>
+			<File
+				RelativePath=".\allocator.h"
+				>
+			</File>
+			<File
+				RelativePath=".\extension.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\extension.h"
+				>
+			</File>
+			<File
+				RelativePath=".\extiface.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\plugin.h"
+				>
+			</File>
+			<File
+				RelativePath=".\pnextstring.h"
+				>
+			</File>
+			<File
+				RelativePath=".\ScriptRegistry.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\scriptregistry.h"
+				>
+			</File>
+			<File
+				RelativePath=".\scriptview.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\scriptview.h"
+				>
+			</File>
 		</Filter>
 		<File
 			RelativePath=".\pn.exe.manifest"

@@ -2,7 +2,7 @@
  * @file projectwriter.h
  * @brief Write Project XML
  * @author Simon Steele
- * @note Copyright (c) 2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2009-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -10,7 +10,7 @@
 #ifndef projectwriter_h__included
 #define projectwriter_h__included
 
-#include "include/genx/genx.h"
+#include "third_party/genx/genx.h"
 #include "include/pngenx.h"
 
 namespace Projects
@@ -24,17 +24,6 @@ namespace Projects
 class ProjectWriter : public GenxXMLWriter
 {
 public:
-	/*
-		genxStatus writeOk = genxAddAttributeLiteral(m_writer, NULL, u("name"), u(name.c_str()));
-	    if(writeOk == GENX_BAD_UTF8)
-		{
-			Tcs_Utf8 conv(name.c_str());
-			writeOk = genxAddAttributeLiteral(definition->w, NULL, u("name"), conv);
-
-			if(writeOk != GENX_SUCCESS)
-				UNEXPECTED(_T("Could not encode project name for writing."));
-		}*/
-
 	/**
 	 * Get the writer instance.
 	 */
@@ -74,7 +63,7 @@ protected:
 		PREDECLARE_ATTRIBUTES()
 			ATT("path", m_aPath);
 			ATT("name", m_aName);
-			ATT("typeid", m_aTypeId);
+			ATT("typeId", m_aTypeId);
 			ATT("filter", m_aFilter);
 			ATT("excludeFolders", m_aExcluded);
 		END_ATTRIBUTES();

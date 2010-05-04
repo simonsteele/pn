@@ -199,26 +199,29 @@ class CustomFormatStringBuilder
 						i++;
 					}
 				}
-				else if(str[i] == _T('$') && (i != (len-1)))
+				else if (str[i] == _T('$'))
 				{
-					if( str[i+1] == _T('$') )
+					next = SafeGetNextChar(str, i, len);
+
+					if (next == NULL)
 					{
-						// If we are seeing a $$( then it means we want the $ sign.
-						if(SafeGetNextChar(str, i+1, len) == _T('('))
-						{
-							m_string += str[i];
-							// Skip the next dollar sign as well.
-							i += 1;
-							continue;
-						}
+						m_string += str[i];
 					}
-					else if( str[i+1] != _T('(') )
+					else if (next == _T('$'))
+					{
+						// If we are seeing a $$ then it means we want the $ sign.
+						m_string += str[i];
+						// Skip the next dollar sign as well.
+						i ++;
+						continue;
+					}
+					else if ( next != _T('(') )
 					{
 						m_string += str[i];
 						continue;
 					}
 
-					// we matched a $(x) property...
+					// we probably matched a $(x) property...
 					tstring key;
 					i = ExtractProp(key, str, i);
 

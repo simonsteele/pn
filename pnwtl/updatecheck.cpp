@@ -2,7 +2,7 @@
  * @file updatecheck.cpp
  * @brief Check for updates
  * @author Simon Steele
- * @note Copyright (c) 2008-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2008-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -103,7 +103,9 @@ UpdateAvailableDetails GetVersionDetails(LPCTSTR url)
 		{
 			parser.ParseBuffer((const char*)buffer, dwRead, dwRead == 0);
 			if (dwRead == 0)
+			{
 				break;
+			}
 		}
 
 		if (!parseState.Valid)
@@ -120,6 +122,11 @@ UpdateAvailableDetails GetVersionDetails(LPCTSTR url)
 
 bool CheckAndNotify(UpdateCheckDetails* details)
 {
+	if (details == NULL)
+	{
+		return false;
+	}
+
 	Version lastOffered;
 	
 	if (!details->IgnoreLastOffer)

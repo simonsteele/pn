@@ -1,6 +1,18 @@
+/**
+ * @file clip.cpp
+ * @brief Single Text Clip functionality.
+ * @author Simon Steele
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ *
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #include "stdafx.h"
 #include "../textclips.h"
+#include "chunkparser.h"
 #include "../include/encoding.h"
+
+#include <set>
 
 using namespace TextClips;
 
@@ -10,57 +22,7 @@ using namespace TextClips;
 
 void Clip::Insert(CScintilla *scintilla) const
 {
-	std::string clipstr;
-	std::string theText(Text);
-	std::string theIndent;
-
-	// Indentation:
-	int indentation = scintilla->GetLineIndentation(scintilla->LineFromPosition(scintilla->GetCurrentPos()));
-	
-	// Work out tabs and spaces combination to get the indentation right
-	// according to user's settings.
-	theIndent = MakeIndentText( indentation, scintilla->GetUseTabs(), scintilla->GetTabWidth() );
-
-	for (size_t i = 0; i < theText.size(); i++)
-	{
-		if (theText[i] == '\n')
-		{
-			theText.insert(i+1, theIndent);
-			i += theIndent.size();
-		}
-	}
-	
-	// Text is in Unix EOL mode (LF only), convert it to target EOL mode
-	switch (scintilla->GetEOLMode())
-	{
-	case PNSF_Unix:
-		// no conversion needed, just copy
-		clipstr = theText;
-		break;
-
-	case PNSF_Windows:
-		{
-			// heuristically reserve size for the target string
-			// and copy the string by inserting '\r' where appropriate
-			clipstr.reserve(theText.size() + (theText.size() / 16));
-			std::string::const_iterator it = theText.begin();
-			std::string::const_iterator end = theText.end();
-			for(; it != end; ++it)
-			{
-				if(*it == '\n')
-					clipstr += '\r';
-				clipstr += *it;
-			}
-		}
-		break;
-
-	case PNSF_Mac:
-		// reserve size for the target string and use standard algorithm
-		clipstr.reserve(theText.size());
-		std::replace_copy(theText.begin(), theText.end(),
-			std::back_inserter(clipstr), '\n', '\r');
-		break;
-	}
+	std::string clipstr = FixText(scintilla);
 	
 	size_t offset = clipstr.find(_T('|'));
 	if (offset != clipstr.npos)
@@ -94,51 +56,82 @@ void Clip::Insert(CScintilla *scintilla) const
 	scintilla->EndUndoAction();
 }
 
-class TextClipParser : public CustomFormatStringBuilder<TextClipParser>
-{
-	public:
-		void OnFormatChar(TCHAR thechar) 
-		{
-			pushChunk();
-
-			if (thechar >= '0' && thechar <= '9')
-			{
-				m_chunks.push_back(Chunk(true, (thechar - '0') + 1));
-			}
-
-			// TODO: Other format chars... 
-		}
-
-		void OnFormatKey(LPCTSTR key) {}
-		void OnFormatPercentKey(LPCTSTR key) {}
-		void OnFormatScriptRef(LPCTSTR key) {}
-
-		void SwapChunks(std::vector<Chunk>& chunks)
-		{
-			pushChunk();
-			m_chunks.swap(chunks);
-		}
-
-	private:
-		void pushChunk()
-		{
-			if (m_string.size())
-			{
-				Utf16_Utf8 conv(m_string.c_str());
-				m_chunks.push_back(Chunk(false, std::string((const char*)(const unsigned char*)conv)));
-				m_string = _T("");
-			}
-		}
-
-		std::vector<Chunk> m_chunks;
-};
-
 void Clip::GetChunks(std::vector<Chunk>& chunks) const
 {
-	TextClipParser parser;
-	Utf8_Tcs conv(Text.c_str());
-	parser.Build(conv);
+	return GetChunks(chunks, NULL, NULL);
+}
+
+void Clip::GetChunks(std::vector<Chunk>& chunks, CScintilla* scintilla, IVariableProvider* variables) const
+{
+	std::string insertText = FixText(scintilla);
+
+	ChunkParser parser;
+
+	if (variables)
+	{
+		parser.SetVariableProvider(variables);
+	}
+
+	parser.Parse(std::string(insertText.c_str()), chunks);
+}
+
+std::string Clip::FixText(CScintilla* scintilla) const
+{
+	if (scintilla == NULL)
+	{
+		return Text;
+	}
+
+	// Indentation:
+	int indentation = scintilla->GetLineIndentation(scintilla->LineFromPosition(scintilla->GetCurrentPos()));
 	
-	std::vector<Chunk> results;
-	parser.SwapChunks(chunks);
+	// Work out tabs and spaces combination to get the indentation right
+	// according to user's settings.
+	std::string theIndent = MakeIndentText( indentation, scintilla->GetUseTabs(), scintilla->GetTabWidth() );
+
+	std::string theText(Text);
+	for (size_t i = 0; i < theText.size(); i++)
+	{
+		if (theText[i] == '\n')
+		{
+			theText.insert(i+1, theIndent);
+			i += theIndent.size();
+		}
+	}
+	
+	std::string clipstr;
+
+	// Text is in Unix EOL mode (LF only), convert it to target EOL mode
+	switch (scintilla->GetEOLMode())
+	{
+	case PNSF_Unix:
+		// no conversion needed, just copy
+		clipstr = theText;
+		break;
+
+	case PNSF_Windows:
+		{
+			// heuristically reserve size for the target string
+			// and copy the string by inserting '\r' where appropriate
+			clipstr.reserve(theText.size() + (theText.size() / 16));
+			std::string::const_iterator it = theText.begin();
+			std::string::const_iterator end = theText.end();
+			for(; it != end; ++it)
+			{
+				if(*it == '\n')
+					clipstr += '\r';
+				clipstr += *it;
+			}
+		}
+		break;
+
+	case PNSF_Mac:
+		// reserve size for the target string and use standard algorithm
+		clipstr.reserve(theText.size());
+		std::replace_copy(theText.begin(), theText.end(),
+			std::back_inserter(clipstr), '\n', '\r');
+		break;
+	}
+
+	return clipstr;
 }

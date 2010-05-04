@@ -2,7 +2,7 @@
  * @file OptionsPageVisual.h
  * @brief Visual Help Options Page
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -36,6 +36,8 @@ class COptionsPageVisual : public COptionsPageImpl<COptionsPageVisual>,
 			DDX_UINT(IDC_OPT_LLCOLUMNEDIT, m_iRightColumn)
 			DDX_CHECK(IDC_OPT_LINELIGHTALPHACHECK, m_bLineHighlightAlpha)
 			DDX_CHECK(IDC_OPT_SMARTHIGHLIGHTCHECK, m_bSmartHighlight)
+			DDX_UINT(IDC_OPT_LINEPADDINGTOP_TEXT, m_iLinePaddingTop)
+			DDX_UINT(IDC_OPT_LINEPADDINGBOTTOM_TEXT, m_iLinePaddingBottom)
 		END_DDX_MAP()
 
 		virtual void OnOK();
@@ -52,6 +54,8 @@ class COptionsPageVisual : public COptionsPageImpl<COptionsPageVisual>,
 		int m_iLongLineHelp;
 		UINT m_iRightColumn;
 		BOOL m_bSmartHighlight;
+		int m_iLinePaddingTop;
+		int m_iLinePaddingBottom;
 
 		CPNColorButton	m_btnLineCol;
 		CPNColorButton	m_btnLLCol;
@@ -59,6 +63,7 @@ class COptionsPageVisual : public COptionsPageImpl<COptionsPageVisual>,
 
 		COptionsBlockHeader m_settingsHeader;
 		COptionsBlockHeader m_linesHeader;
+		COptionsBlockHeader m_paddingHeader;
 };
 
 

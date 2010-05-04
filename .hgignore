@@ -1,0 +1,24 @@
+syntax: glob
+
+*.dll
+*.exe
+*.user
+*.pdb
+*.suo
+*.obj
+*.sbr
+*.exp
+*.pch
+*.idb
+*.dep
+*.ncb
+*.ilk
+*.orig
+*.vsp
+
+Release
+Debug
+dist
+crashes
+
+_ReSharper.*

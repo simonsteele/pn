@@ -267,6 +267,11 @@ namespace Schemes
 				{
 					addColourAtt(m_aSmartHL, colour);
 				}
+
+				if (colours->GetColour(EditorColours::ecTemplateField, colour))
+				{
+					addColourAtt(m_aTemplateField, colour);
+				}
 			}
 
 		protected:
@@ -343,6 +348,7 @@ namespace Schemes
 					ATT("tabwidth", m_aTabWidth);
 					ATT("markAll", m_aMarkAll);
 					ATT("smartHighlight", m_aSmartHL);
+					ATT("templateField", m_aTemplateField);
 				END_ATTRIBUTES();
 			}
 
@@ -377,6 +383,7 @@ namespace Schemes
 			genxAttribute m_aTabWidth;
 			genxAttribute m_aSmartHL;
 			genxAttribute m_aMarkAll;
+			genxAttribute m_aTemplateField;
 	};
 }
 

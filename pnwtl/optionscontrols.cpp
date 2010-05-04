@@ -14,7 +14,7 @@
 #include "schemeconfig.h"
 
 #include "outputview.h"
-#include "include/scintilla/include/scilexer.h"
+#include "third_party/scintilla/include/scilexer.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // CStyleDisplay

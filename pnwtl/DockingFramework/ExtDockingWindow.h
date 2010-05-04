@@ -470,7 +470,7 @@ struct COutlookLikeCaption :  COutlookLikeExCaption
 };
 
 typedef CDockingWindowTraits<COutlookLikeCaption,
-								WS_OVERLAPPEDWINDOW | WS_POPUP | WS_VISIBLE |
+								/*WS_OVERLAPPEDWINDOW | */WS_CAPTION | WS_POPUP | WS_VISIBLE |
 								WS_CLIPCHILDREN | WS_CLIPSIBLINGS,WS_EX_TOOLWINDOW>
 							COutlookLikeTitleDockingWindowTraits;
 

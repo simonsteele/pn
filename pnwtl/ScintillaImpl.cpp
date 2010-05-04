@@ -735,6 +735,11 @@ int CScintillaImpl::FindNext(extensions::ISearchOptions* pOptions)
 
 int CScintillaImpl::FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn matchHandler)
 {
+	return FindAll(0, GetLength(), pOptions, matchHandler);
+}
+
+int CScintillaImpl::FindAll(int start, int end, extensions::ISearchOptions* pOptions, MatchHandlerFn matchHandler)
+{
 	int	bRet = fnNotFound;
 	std::string localFindText;
 
@@ -764,8 +769,8 @@ int CScintillaImpl::FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn
 				(pOptions->GetUseRegExp() ? SCFIND_REGEXP : 0);
 
 	// Whole document
-	int startPosition = 0;
-	int endPosition = GetLength();
+	int startPosition = start;
+	int endPosition = end;
 	
 	SetTarget(startPosition, endPosition);
 	SetSearchFlags(flags);
@@ -1312,7 +1317,7 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 	int pageNum = 1;
 	bool printPage;
 	
-	PrintFormatStringBuilder fb( pOptions->Filename );
+	PrintFormatStringBuilder fb( pOptions->Filename.c_str() );
 
 	while (lengthPrinted < lengthDoc) 
 	{

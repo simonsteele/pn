@@ -24,6 +24,8 @@
 #include <TabbedMDISave.h>
 #include <TabbedMDI.h>
 
+#include "controls/pntabcontrol.h"
+
 class CFindBar;
 
 template< class TTabCtrl >
@@ -112,11 +114,9 @@ public:
  * windows list control, what better way than to use the framework
  * provided in tabbed MDI code.
  */
-class CPNMDIClient : public CTabbedMDIClient< CDotNetTabCtrl<CTabViewTabItem>, 
-	CPNMDITabOwner< CDotNetTabCtrl<CTabViewTabItem> > >
+class CPNMDIClient : public CTabbedMDIClient< CPNTabControl, CPNMDITabOwner< CPNTabControl > >
 {
-	typedef CTabbedMDIClient< CDotNetTabCtrl<CTabViewTabItem>, 
-		CPNMDITabOwner< CDotNetTabCtrl<CTabViewTabItem> > > baseClass;
+	typedef CTabbedMDIClient< CPNTabControl, CPNMDITabOwner< CPNTabControl > > baseClass;
 
 public:
 	explicit CPNMDIClient();
