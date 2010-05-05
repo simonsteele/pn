@@ -143,7 +143,7 @@ Editor::Editor() {
 	xOffset = 0;
 	xCaretMargin = 50;
 	horizontalScrollBarVisible = true;
-	scrollWidth = 2000;
+	scrollWidth = 0;
 	trackLineWidth = false;
 	lineWidthMaxSeen = 0;
 	verticalScrollBarVisible = true;
