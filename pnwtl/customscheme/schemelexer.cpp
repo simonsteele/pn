@@ -14,9 +14,12 @@
 #include "scintilla/windowaccessor.h"
 #include "scintilla/stylecontext.h"
 
+//Define a static keyword listpublic:
+	static WordList **keywordList;
+
 CustomLexer::CustomLexer()
 {
-	static const CharSet chStartSet("[a-zA-Z0-9_]");
+	static const CharSet chStartSet("[-a-zA-Z0-9_]");
 
 	for(int i = 0; i < MAX_STRINGTYPES; i++)
 	{
@@ -136,23 +139,18 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, char *
 		{
 			if(! IsAWordChar(cc.ch) )
 			{
-				WordList **keywordlists = NULL;
+				//Get the current typed keyword
 				char s[100];
+				(bCaseSensitive) ? cc.GetCurrent(s, sizeof(s)) : cc.GetCurrentLowered(s, sizeof(s));
+				
+				//Cache the keyword list in case that wasn't done yet, note that this method speeds things up, but requires a PNotepad restart
+				if(keywordList == NULL)
+					keywordList = (bCaseSensitive) ? StringToWordLists(words, false) : StringToWordLists(words, true);
 
-				if(bCaseSensitive)
-				{
-					keywordlists = StringToWordLists(words, false);
-					cc.GetCurrent(s, sizeof(s));
-				}
-				else
-				{
-					keywordlists = StringToWordLists(words, true);
-					cc.GetCurrentLowered(s, sizeof(s));
-				}
-
+				//Loop through all keywords untill we find what we need
 				for(int z = 0; z < MAX_KEYWORDS; z++)
 				{
-					if( (*keywordlists[z]).InList(s) )
+					if( (*keywordList[z]).InList(s) )
 					{
 						cc.ChangeState(STYLE_KEYWORDS + z);
 						break;
@@ -160,8 +158,6 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, char *
 				}
 				
 				cc.SetState(ST_DEFAULT);
-
-				FreeWordLists(keywordlists);	
 			}
 		}
 		else if( cc.state == STYLE_NUMBER )
