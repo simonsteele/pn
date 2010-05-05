@@ -14,8 +14,8 @@
 #include "scintilla/windowaccessor.h"
 #include "scintilla/stylecontext.h"
 
-//Define a static keyword listpublic:
-	static WordList **keywordList;
+//Define a static keyword list
+static WordList **keywordList;
 
 CustomLexer::CustomLexer()
 {

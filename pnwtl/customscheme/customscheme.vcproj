@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="customscheme"
 	ProjectGUID="{A7E621BE-65CC-446A-A5A1-4C20D117D344}"
 	RootNamespace="customscheme"
