@@ -1192,6 +1192,12 @@ LRESULT CChildFrame::OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	GetTextView()->SetAutoCompleteHandler(p);
 
 	std::string cliptext = m_pTextClips->BuildSortedClipList(GetTextView()->GetCurrentScheme()->GetName());
+
+	if (cliptext.empty())
+	{
+		return 0;
+	}
+
 	int sep = GetTextView()->AutoCGetSeparator();
 	GetTextView()->AutoCSetSeparator(',');
 	GetTextView()->AutoCShow(word.size(), cliptext.c_str());

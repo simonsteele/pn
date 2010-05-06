@@ -141,7 +141,7 @@ std::string TextClipsManager::BuildSortedClipList(LPCSTR schemeName) const
 {
 	MAP_CLIPSETS::const_iterator i = m_schemeClipSets.find(std::string(schemeName));
 	
-	if (i != m_schemeClipSets.end())
+	if (i == m_schemeClipSets.end())
 	{
 		return std::string("");
 	}
