@@ -543,11 +543,11 @@ std::list<tstring> GetCommandLineArgs()
 
 				if (i < (__argc - 1))
 				{
-					bool takeNext = ( arg[1] == _T('l') || arg[1] == _T('c') || arg[1] == _T('p') );
+					bool takeNext = ( arg[1] == _T('l') || arg[1] == _T('c') || arg[1] == _T('p') || arg[1] == _T('s') );
 
 					if ( arg[1] == _T('-') )
 					{
-						takeNext = ( arg[2] == _T('l') || arg[2] == _T('c') || arg[2] == _T('p') );
+						takeNext = ( arg[2] == _T('l') || arg[2] == _T('c') || arg[2] == _T('p') || arg[2] == _T('s') );
 					}
 
 					if (takeNext)
