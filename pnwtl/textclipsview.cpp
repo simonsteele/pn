@@ -276,7 +276,7 @@ LRESULT CClipsDocker::OnToolbarGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*
 
 	tstring str = LS(pGetInfoTip->iItem);
 
-	if (str.size() >= static_cast<size_t>(pGetInfoTip->cchTextMax));
+	if (str.size() >= static_cast<size_t>(pGetInfoTip->cchTextMax))
 	{
 		str.resize(pGetInfoTip->cchTextMax - 4);
 		str += _T("...");

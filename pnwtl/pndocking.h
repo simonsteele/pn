@@ -11,6 +11,12 @@
 #ifndef pndocking_h__included
 #define pndocking_h__included
 
+//#define DF_AUTO_HIDE_FEATURES
+
+#ifdef DF_AUTO_HIDE_FEATURES
+	#include <DWAutoHide.h>
+#endif
+
 #include <DockMisc.h>
 #include <DockingFocus.h>
 #include <DockingFrame.h>
@@ -234,9 +240,15 @@ class /*ATL_NO_VTABLE*/ CPNDockingWindowT : public dockwins::CBoxedDockingWindow
 };
 
 // Get a slightly slimmer splitter - much nicer.
-typedef dockwins::CDockingFrameTraitsT< dockwins::CSimpleSplitterBar<3>,
-		WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
-		WS_EX_APPWINDOW | WS_EX_WINDOWEDGE> CPNDockingFrameTraits;
+#ifdef DF_AUTO_HIDE_FEATURES
+	typedef dockwins::CDockingFrameTraitsT< dockwins::COutlookLikeAutoHidePaneTraits,dockwins::CSimpleSplitterBar<3>,
+			WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
+			WS_EX_APPWINDOW | WS_EX_WINDOWEDGE> CPNDockingFrameTraits;
+#else
+	typedef dockwins::CDockingFrameTraitsT< dockwins::CSimpleSplitterBar<3>,
+			WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
+			WS_EX_APPWINDOW | WS_EX_WINDOWEDGE> CPNDockingFrameTraits;
+#endif
 
 /**
  * @brief This class combines the Tabbed MDI framework with the docking windows framework

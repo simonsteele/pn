@@ -574,7 +574,7 @@ template <class T,
 		  class TWinTraits = CDockingFrameTraits,
 		  class TAutoHidePaneTraits = COutlookLikeAutoHidePaneTraits >
 class ATL_NO_VTABLE CAutoHideMDIDockingFrameImpl :
-	public CDockingFrameImplBase< T, CMDIFrameWindowImpl< T ,TBase, TWinTraits> ,TWinTraits, TAutoHidePaneTraits >
+	public CDockingFrameImplBase< T, CMDIFrameWindowImpl< T ,TBase, TWinTraits> ,TWinTraits >
 {
 public:
 	DECLARE_WND_CLASS(_T("CAutoHideMDIDockingFrameImpl"))
