@@ -310,7 +310,18 @@ void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 {
 	std::string text = notification->text;
+
+	if (text.empty())
+	{
+		return false;
+	}
+
 	int colon = text.find(':');
+	if (colon == -1)
+	{
+		return false;
+	}
+
 	text.resize(colon);
 
 	const TextClips::LIST_CLIPSETS& sets = m_pTextClips->GetClips( GetTextView()->GetCurrentScheme()->GetName() );

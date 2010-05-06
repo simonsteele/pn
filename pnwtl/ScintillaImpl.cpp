@@ -289,6 +289,12 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 		}
 		break;
 
+		case SCN_AUTOCCANCELLED:
+			{
+				m_autoCompleteHandler.reset();
+			}
+			break;
+
 		case SCN_CHARADDED:
 		{
 			DumbIndent( ((Scintilla::SCNotification*)lParam)->ch );
