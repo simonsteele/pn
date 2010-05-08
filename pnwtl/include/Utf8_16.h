@@ -12,6 +12,9 @@
 //   http://www.cl.cam.ac.uk/~mgk25/unicode.html
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifndef UTF8_16_INCLUDED
+#define UTF8_16_INCLUDED
+
 #include <stdio.h>
 #include <assert.h>
 
@@ -142,3 +145,6 @@ protected:
 	bool m_bFirstWrite;
 	bool m_bWriteBOM;
 };
+
+#endif
+// #ifndef UTF8_16_INCLUDED

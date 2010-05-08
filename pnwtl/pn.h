@@ -169,6 +169,7 @@ void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message);
 #include "xmlparser.h"
 #include "commands.h"
 #include "ssmenus.h"
+#include "ifilesource.h"
 
 #include "optionsmanager.h"
 

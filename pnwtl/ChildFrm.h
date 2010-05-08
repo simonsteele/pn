@@ -372,7 +372,7 @@ private:
 	void Export(int type);
 	void SetModifiedOverride(bool bVal);
 	int HandleFailedFileOp(LPCTSTR filename, bool bOpening);
-	bool attemptOverwrite(LPCTSTR filename);
+	IFilePtr attemptOverwrite(LPCTSTR filename);
 	void handleClose();
 	void resetSaveDir();
 	void setReadOnly(bool newValue, bool setAttributes);

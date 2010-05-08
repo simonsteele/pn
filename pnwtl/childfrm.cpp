@@ -36,6 +36,7 @@
 #include "include/filefinder.h"
 #include "views/splitview.h"
 #include "textclips/variables.h"
+#include "win32filesource.h"
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -2090,46 +2091,70 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool ctagsRefresh, bool bStoreFilen
 	}
 
 	// Do the save
-	if(GetTextView()->Save(pathname, bStoreFilename))
+
+	IFilePtr file;
+
+	try
 	{
-		bSuccess = true;
-	}
-	else if (bStoreFilename)
-	{
-		// Only present UI if we're doing a user-visible save
-		switch(HandleFailedFileOp(pathname, false))
+		file = Win32FileSource().OpenWrite(pathname);
+		if (GetTextView()->Save(file, bStoreFilename))
 		{
-		case PNID_SAVEAS:
-			bSuccess = SaveAs(ctagsRefresh);
-			// Don't update MRU or filename after SaveAs:
-			bStoreFilename = false;
-			bUpdateMRU = false;
-			break;
-		case PNID_OVERWRITE:
-			if(attemptOverwrite(pathname))
+			bSuccess = true;
+		}
+
+		file->Close();
+	}
+	catch (FileSourceException& ex)
+	{
+		::SetLastError(ex.GetError());
+		if (bStoreFilename)
+		{
+			// Only present UI if we're doing a user-visible save
+			switch(HandleFailedFileOp(pathname, false))
 			{
-				if(GetTextView()->Save(pathname, bStoreFilename))
+			case PNID_SAVEAS:
+				bSuccess = SaveAs(ctagsRefresh);
+				// Don't update MRU or filename after SaveAs:
+				bStoreFilename = false;
+				bUpdateMRU = false;
+				break;
+			case PNID_OVERWRITE:
 				{
-					bSuccess = true;
-				}
-				else
-				{
-					// If we thought we'd done the overwrite, but then failed to save again...
-					CString s;
-					s.Format(IDS_SAVEREADONLYFAIL, pathname);
-					if(PNTaskDialog(m_hWnd, IDR_MAINFRAME, _T(""), (LPCTSTR)s, TDCBF_YES_BUTTON | TDCBF_NO_BUTTON | TDCBF_CANCEL_BUTTON, TDT_WARNING_ICON) == IDYES)
-						bSuccess = SaveAs(ctagsRefresh);
+					file = attemptOverwrite(pathname);
+					if (file.get())
+					{					
+						if (GetTextView()->Save(file, bStoreFilename))
+						{
+							file->Close();
+							bSuccess = true;
+						}
+						else
+						{
+							file->Close();
+
+							// TODO: This error is now in the wrong place, we need to handle attemptOverwrite
+							// being able to remove readonly but still not being able to open for write.
+							// Perhaps to this in attemptOverwrite.
+
+							// If we thought we'd done the overwrite, but then failed to save again...
+							CString s;
+							s.Format(IDS_SAVEREADONLYFAIL, pathname);
+							if(PNTaskDialog(m_hWnd, IDR_MAINFRAME, _T(""), (LPCTSTR)s, TDCBF_YES_BUTTON | TDCBF_NO_BUTTON | TDCBF_CANCEL_BUTTON, TDT_WARNING_ICON) == IDYES)
+								bSuccess = SaveAs(ctagsRefresh);
+						}
+					}
+					else
+					{
+						// If the attempt to overwrite failed.
+						CString s;
+						s.Format(IDS_SAVEREADONLYFAIL, pathname);
+						if(PNTaskDialog(m_hWnd, IDR_MAINFRAME, _T(""), (LPCTSTR)s, TDCBF_YES_BUTTON | TDCBF_NO_BUTTON | TDCBF_CANCEL_BUTTON, TDT_WARNING_ICON) == IDYES)
+							bSuccess = SaveAs(ctagsRefresh);
+					}
+
+					break;
 				}
 			}
-			else
-			{
-				// If the attempt to overwrite failed.
-				CString s;
-				s.Format(IDS_SAVEREADONLYFAIL, pathname);
-				if(PNTaskDialog(m_hWnd, IDR_MAINFRAME, _T(""), (LPCTSTR)s, TDCBF_YES_BUTTON | TDCBF_NO_BUTTON | TDCBF_CANCEL_BUTTON, TDT_WARNING_ICON) == IDYES)
-					bSuccess = SaveAs(ctagsRefresh);
-			}
-			break;
 		}
 	}
 
@@ -2174,9 +2199,22 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool ctagsRefresh, bool bStoreFilen
 	return bSuccess;
 }
 
-bool CChildFrame::attemptOverwrite(LPCTSTR filename)
+IFilePtr CChildFrame::attemptOverwrite(LPCTSTR filename)
 {
-	return FileUtil::RemoveReadOnly(filename);
+	if (FileUtil::RemoveReadOnly(filename))
+	{
+		try
+		{
+			IFilePtr ret(Win32FileSource().OpenWrite(filename));
+			return ret;
+		}
+		catch (FileSourceException& ex)
+		{
+			::SetLastError(ex.GetError());
+		}
+	}
+
+	return IFilePtr();
 }
 
 void CChildFrame::handleClose()

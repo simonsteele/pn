@@ -73,7 +73,7 @@ public:
 	Scheme* GetCurrentScheme() const;
 
 	bool Load(LPCTSTR filename, Scheme* pScheme = NULL, EPNEncoding encoding = eUnknown);
-	bool Save(LPCTSTR filename, bool bSetScheme = true);
+	bool Save(IFilePtr file, bool bSetScheme = true);
 
 	void Revert(LPCTSTR filename);
 
@@ -100,7 +100,8 @@ public:
 	// Overrides from CScintillaImpl / CScintillaWindowImpl
 	
 	virtual bool OpenFile(LPCTSTR filename, EPNEncoding encoding);
-	virtual bool SaveFile(LPCTSTR filename, bool setSavePoint = true);
+	
+	bool SaveFile(IFilePtr file, bool setSavePoint = true);
 
 	void DoContextMenu(CPoint* point);
 	virtual int HandleNotify(LPARAM lParam);

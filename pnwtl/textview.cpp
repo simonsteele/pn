@@ -16,12 +16,12 @@
 #include "textview.h"
 #include "scaccessor.h"
 #include "smartstart.h"
-#include "include/utf8_16.h"
 #include "include/lineendings.h"
 #include "scriptregistry.h"
 #include "project.h"
 #include "childfrm.h"
 #include "findinfiles.h"
+#include "unicodefilewriter.h"
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -365,7 +365,7 @@ void CTextView::Revert(LPCTSTR filename)
 	}
 }
 
-bool CTextView::SaveFile(LPCTSTR filename, bool setSavePoint)
+bool CTextView::SaveFile(IFilePtr file, bool setSavePoint)
 {
 	char data[blockSize + 1];
 	int lengthDoc = SPerform(SCI_GETLENGTH);
@@ -373,51 +373,33 @@ bool CTextView::SaveFile(LPCTSTR filename, bool setSavePoint)
 	if(m_encType == eUnknown)
 	{
 		// Standard 8-bit ascii...
-		CFile file;
-		if( file.Open(filename, CFile::modeWrite | CFile::modeBinary) )
+		for (int i = 0; i < lengthDoc; i += blockSize) 
 		{
-			for (int i = 0; i < lengthDoc; i += blockSize) 
-			{
-				int grabSize = lengthDoc - i;
-				if (grabSize > blockSize)
-					grabSize = blockSize;
-				GetRange(i, i + grabSize, data);
-				
-				/*if (props.GetInt("strip.trailing.spaces"))
-					grabSize = StripTrailingSpaces(
-									data, grabSize, grabSize != blockSize);*/
-				
-				file.Write(data, grabSize);
-			}
-			file.Close();
+			int grabSize = lengthDoc - i;
+			if (grabSize > blockSize)
+				grabSize = blockSize;
+			GetRange(i, i + grabSize, data);
+
+			file->Write(data, grabSize);
 		}
-		else
-			return false;
 	}
 	else
 	{
 		// Deal with writing unicode formats here...
-		Utf8_16_Write converter;
+		UnicodeFileWriter converter(file);
 		Utf8_16::encodingType convEncType = (m_encType == eUtf8NoBOM) ? Utf8_16::eUtf8 : static_cast<Utf8_16::encodingType>(m_encType);
-		converter.setEncoding( convEncType );
-		converter.setWriteBOM( m_encType != eUtf8NoBOM );
+		converter.SetEncoding( convEncType );
+		converter.SetWriteBOM( m_encType != eUtf8NoBOM );
 
-		FILE* fp = converter.fopen(filename, _T("wb"));
-		if(fp != NULL)
+		for(int i = 0; i < lengthDoc; i += blockSize)
 		{
-			for(int i = 0; i < lengthDoc; i += blockSize)
-			{
-				int grabSize = lengthDoc - i;
-				if( grabSize > blockSize )
-					grabSize = blockSize;
-				GetRange(i, i + grabSize, data);
+			int grabSize = lengthDoc - i;
+			if( grabSize > blockSize )
+				grabSize = blockSize;
+			GetRange(i, i + grabSize, data);
 
-				converter.fwrite(data, grabSize);
-			}
-			converter.fclose();
+			converter.Write(data, grabSize);
 		}
-		else
-			return false;
 	}
 
 	// We allow saving the file without setting the save point for the UI
@@ -429,15 +411,15 @@ bool CTextView::SaveFile(LPCTSTR filename, bool setSavePoint)
 	return true;
 }
 
-bool CTextView::Save(LPCTSTR filename, bool bSetScheme)
+bool CTextView::Save(IFilePtr file, bool bSetScheme)
 {
-	if( SaveFile(filename, bSetScheme) )
+	if (SaveFile(file, bSetScheme))
 	{
-		if(bSetScheme)
+		if (bSetScheme)
 		{
 			// Apply scheme if we picked up a filetype
-			Scheme* sch = SchemeManager::GetInstance()->SchemeForFile(filename);
-			if(sch != NULL && sch != SchemeManager::GetInstance()->GetDefaultScheme() && sch != GetCurrentScheme())
+			Scheme* sch = SchemeManager::GetInstance()->SchemeForFile(file->GetFilename().c_str());
+			if (sch != NULL && sch != SchemeManager::GetInstance()->GetDefaultScheme() && sch != GetCurrentScheme())
 			{
 				SetScheme(sch);
 			}
