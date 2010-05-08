@@ -1,6 +1,6 @@
 ========================================
-Release Name: 2.1.3.x
-Build: 2.1.3.x, Version Label: 
+Release Name: 2.1.4.x
+Build: 2.1.4.x, Version Label: 
 ========================================
 
 What's new in 2.1?
@@ -14,16 +14,16 @@ What's new in 2.1?
 6) Complete Unicode conversion, files, searching, projects, UI, clips...
 7) Flexible split views
 8) New -z command-line parameter for use with Image File Execution options
-9) Smart fields in code templates
+9) Complete redesign of text clips, with editing built in to new UI view and code templates and text clips consolidated
 10) Small visual tweaks
 11) Line padding options - increase visual space between lines for improved readability
-12) Complete redesign of text clips, with editing built in to new UI view and code templates and text clips consolidated
+12) CTags upgraded to 5.8
 
 What's new in 2.1 under the cover?
 ------------------------------------------
 
 1) Scintilla updated to latest
-2) Boost updated to 1.41
+2) Boost updated to 1.42
 3) Now built with Visual Studio 2008
 
 Bug Fixes:
@@ -31,6 +31,20 @@ Bug Fixes:
 
 1) Save All now available regardless of current file save state
 2) Long line length recalculated better, scrolling improved
+3) Scheme command line argument was broken (#899)
+4) Cannot autocomplete after cancelling text clip insertion (#857)
+5) New default 0 scrollbar width (#897)
+6) Assorted autocomplete fixes, should now be more reliable
+7) Fixed incorrect calltip display (#792)
+8) Fix default style continuation with custom schemes (#890)
+9) Remove magic folder if add is cancelled (#868)
+10) Minor UI fixes (#869)
+11) Fix for slow loading when there are large zip files on the desktop
+12) Error in command bar when pressing enter with no text (#842)
+13) Menu access via keyboard was broken when focused on a docking window
+14) Avoid docking windows being minimised etc. (#776)
+15) Problem with file save modifiers (#836)
+16) Hidden files can now be saved (#859)
 
 Extensions Interface Changes:
 -----------------------------
