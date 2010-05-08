@@ -197,8 +197,6 @@ bool AlternateFiles::GetAlternate(LPCTSTR filename, tstring& afile) const
 	if(!altexts)
 		return 0;
 
-	bool bFound = false;
-
 	while(*altexts)
 	{
 		// Quick sanity check to make sure we don't get the same file.
