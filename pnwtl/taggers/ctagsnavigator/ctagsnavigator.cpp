@@ -63,7 +63,7 @@ bool __stdcall pn_init_extension(int iface_version, extensions::IPN* pn)
 void __stdcall pn_get_extension_info(PN::BaseString& name, PN::BaseString& version)
 {
 	name = "CTags Tagger";
-	version = "1.5";
+	version = "1.6";
 }
 
 /**
@@ -112,7 +112,7 @@ std::wstring ConvertMBtoWC( const char* mbString )
  */
 CTagsTagSource::CTagsTagSource() : 
 	ITagSource(),
-	m_schemes( "assembler;cobol;cpp;csharp;eiffel;erlang;fortran;fortran77;java;javascript;lisp;lua;makefile;pascal;perl;php;phpscript;plsql;python;ruby;shell;tcl;vb;verilog;vhdl;vim;yacc;web" )
+	m_schemes( "ant;assembler;basic;cobol;cpp;csharp;batch;eiffel;erlang;flex;fortran;fortran77;java;javascript;lisp;lua;makefile;matlab;ocaml;pascal;perl;php;phpscript;plsql;python;ruby;shell;tcl;tex;vb;verilog;vhdl;vim;yacc;web" )
 {
 }
 

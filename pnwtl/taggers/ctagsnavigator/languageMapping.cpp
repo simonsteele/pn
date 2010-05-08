@@ -21,7 +21,9 @@ LPCWSTR GetLanguage(LPCWSTR filename, const char* scheme)
 			return NULL;
 	}
 
-	if(strcmp("cpp", scheme) == 0)
+	if (strcmp("batch", scheme) == 0)
+		return L"dosbatch";
+	else if(strcmp("cpp", scheme) == 0)
 		return L"C++";
 	else if(strcmp("csharp", scheme) == 0)
 		return L"C#";
