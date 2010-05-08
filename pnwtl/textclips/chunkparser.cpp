@@ -54,6 +54,9 @@ struct snippet : qi::grammar<Iterator, boost::spirit::ascii::space_type>
 		// Empty placeholder, e.g. ${0)
 		empty_placeholder_rule = lit("${") >> int_[_val = _1] >> char_('}');
 
+		// Short form placeholders
+		short_form_placeholder_rule = lit("$") >> int_[_val = _1];
+
 		// Numbered placeholder with initial text:
 		placeholder_text_rule = lit("${") >> int_ >> lit(":") >> placeholder_inner_text_rule >> lit("}");
 
@@ -73,7 +76,8 @@ struct snippet : qi::grammar<Iterator, boost::spirit::ascii::space_type>
 			empty_placeholder_rule		[phx::bind(&snippet::empty_placeholder, this, _1)] | 
 			placeholder_text_rule		[phx::bind(&snippet::text_placeholder, this, _1)] | 
 			variable_rule				[phx::bind(&snippet::variable, this, _1)] |
-			variable_with_default_rule	[phx::bind(&snippet::variable_default, this, _1)]
+			variable_with_default_rule	[phx::bind(&snippet::variable_default, this, _1)] |
+			short_form_placeholder_rule [phx::bind(&snippet::empty_placeholder, this, _1)]
 		);
 	}
 
@@ -81,6 +85,7 @@ struct snippet : qi::grammar<Iterator, boost::spirit::ascii::space_type>
 	qi::rule<Iterator, std::string()> text_rule;
 	qi::rule<Iterator, char()> escape_rule;
 	qi::rule<Iterator, int(), boost::spirit::ascii::space_type> empty_placeholder_rule;
+	qi::rule<Iterator, int()> short_form_placeholder_rule;
 	qi::rule<Iterator, std::pair<int, std::string>(), boost::spirit::ascii::space_type> placeholder_text_rule;
 	qi::rule<Iterator, std::string()> placeholder_inner_text_rule;
 	qi::rule<Iterator, std::string()> variable_rule;
