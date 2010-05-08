@@ -31,6 +31,7 @@
 #define PN_OVERWRITETARGET	(WM_APP+19)
 #define PN_INSERTCLIP		(WM_APP+20)
 #define PN_SETFOCUS			(WM_APP+21)
+#define	PN_COMPLETECLIP		(WM_APP+22)
 
 // Command IDs used around the place...
 #define PN_MDIACTIVATE		0x1

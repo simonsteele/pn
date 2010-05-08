@@ -72,6 +72,7 @@ public:
 		MESSAGE_HANDLER(PN_SCHEMECHANGED, OnSchemeChanged)
 		MESSAGE_HANDLER(PN_GOTOLINE, OnGotoLine)
 		MESSAGE_HANDLER(PN_PROJECTNOTIFY, OnProjectNotify)
+		MESSAGE_HANDLER(PN_COMPLETECLIP, OnCompleteClip)
 		MESSAGE_HANDLER(UWM_MDICHILDISMODIFIED, OnChildIsModified)
 		MESSAGE_HANDLER(UWM_MDICHILDSAVEMODIFIED, OnChildSaveModified)
 		MESSAGE_HANDLER(UWM_MDICHILDSHOWTABCONTEXTMENU, OnShowTabContextMenu)
@@ -232,6 +233,7 @@ public:
 	LRESULT OnShowTabContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnGotoLine(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam/**/, BOOL& /*bHandled*/);
 	LRESULT OnProjectNotify(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT OnCompleteClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	
 	////////////////////////////////////////////////////
 	// Command Handlers
@@ -382,6 +384,7 @@ private:
 	void removeSplit(bool closeCurrent);
 	void setMDIFrameMenu();
 	HMENU getWindowMenu();
+	bool insertMatchingClip(const char* word);
 
 	CommandDispatch*	m_pCmdDispatch;
 	DocumentPtr			m_spDocument;

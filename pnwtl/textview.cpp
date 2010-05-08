@@ -213,6 +213,8 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 		}
 		catch(std::bad_alloc& ba)
 		{
+			// TODO: This now needs to check Scintilla's error handler
+			// to find out if there was an exception and then maybe throw.
 			TCHAR buf[1024];
 			_sntprintf(buf, 1024, LS(IDS_FILETOOBIG), ba.what());
 			buf[1023] = NULL;
@@ -803,30 +805,33 @@ HRESULT CTextView::OnInsertClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 
 HRESULT CTextView::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	if (!m_bInsertClip)
-	{
-		bHandled = false;
-		return 0;
-	}
+	bHandled = false;
 
 	if (wParam == VK_TAB && ::GetFocus() == m_hWnd)
 	{
-		// Next field in the template:
-		if ( GetKeyState( VK_SHIFT ) & 0x8000 )
+		if (m_bInsertClip)
 		{
-			prevClipField();
+			// Next field in the template:
+			if ( GetKeyState( VK_SHIFT ) & 0x8000 )
+			{
+				prevClipField();
+			}
+			else
+			{
+				nextClipField();
+			}
+			
+			bHandled = true;
+			m_bSkipNextChar = true;
 		}
 		else
 		{
-			nextClipField();
+			if (GetParent().SendMessage(PN_COMPLETECLIP, 0, 0))
+			{
+				bHandled = true;
+				m_bSkipNextChar = true;
+			}
 		}
-		
-		bHandled = true;
-		m_bSkipNextChar = true;
-	}
-	else
-	{
-		bHandled = false;
 	}
 	
 	return 0;

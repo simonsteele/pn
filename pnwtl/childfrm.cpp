@@ -1160,32 +1160,44 @@ LRESULT CChildFrame::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	return 0;
 }
 
+/**
+ * User pressed tab in the editor, see if we can complete a text clip.
+ */
+LRESULT CChildFrame::OnCompleteClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	CTextView* view(GetTextView());
+	if (view->GetSelections() > 1 || view->GetSelLength() > 1)
+	{
+		return 0;
+	}
+
+	int pos = view->GetCurrentPos();
+	
+	int start = view->WordStartPosition(pos, true);
+	int end = view->WordEndPosition(pos, true);
+
+	if (end > pos)
+	{
+		// We're in a word, not at the end of it, bail.
+		return 0;
+	}
+
+	std::string word = view->CScintilla::GetTextRange(start, end);
+	if (insertMatchingClip(word.c_str()))
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
 LRESULT CChildFrame::OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	std::string word = GetTextView()->GetCurrentWord();	
 
-	const TextClips::LIST_CLIPSETS& clips = m_pTextClips->GetClips(GetTextView()->GetCurrentScheme()->GetName());
-
-	BOOST_FOREACH(TextClips::TextClipSet* set, clips)
+	if (insertMatchingClip(word.c_str()))
 	{
-		const TextClips::Clip* desired = set->FindByShortcut(word);
-		if(desired != NULL)
-		{
-	#ifdef CLIPS_DEV
-			GetTextView()->DelWordLeft();
-
-			std::vector<TextClips::Chunk> chunks;
-			TextClips::DefaultVariableProvider variables(this, g_Context.m_frame->GetActiveWorkspace());
-			desired->GetChunks(chunks, GetTextView(), &variables);
-			GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
-	#else
-			GetTextView()->BeginUndoAction();
-			GetTextView()->DelWordLeft();
-			desired->Insert(GetTextView());
-			GetTextView()->EndUndoAction();
-	#endif
-			return 0;
-		}
+		return 0;
 	}
 	
 	// We didn't find an exact match, now we want to autocomplete a list of clips:
@@ -2933,6 +2945,31 @@ void CChildFrame::SetLastView(Views::ViewPtr& view)
 	{
 		m_lastTextView = m_focusView;
 	}
+}
+
+/**
+ * Insert a text clip if we find an exactly matching clip key
+ */
+bool CChildFrame::insertMatchingClip(const char* word)
+{
+	const TextClips::LIST_CLIPSETS& clips = m_pTextClips->GetClips(GetTextView()->GetCurrentScheme()->GetName());
+
+	BOOST_FOREACH(TextClips::TextClipSet* set, clips)
+	{
+		const TextClips::Clip* desired = set->FindByShortcut(word);
+		if(desired != NULL)
+		{
+			GetTextView()->DelWordLeft();
+
+			std::vector<TextClips::Chunk> chunks;
+			TextClips::DefaultVariableProvider variables(this, g_Context.m_frame->GetActiveWorkspace());
+			desired->GetChunks(chunks, GetTextView(), &variables);
+			GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
+			return true;
+		}
+	}
+
+	return false;
 }
 
 ////////////////////////////////////////////////////
