@@ -1,5 +1,5 @@
 /*
-*   $Id: read.h,v 1.5 2006/05/30 04:37:12 darren Exp $
+*   $Id: read.h 659 2008-04-20 23:27:48Z elliotth $
 *
 *   Copyright (c) 1998-2002, Darren Hiebert
 *
@@ -105,6 +105,7 @@ extern boolean fileOpen (const char *const fileName, const langType language);
 extern boolean fileEOF (void);
 extern void fileClose (void);
 extern int fileGetc (void);
+extern int fileSkipToCharacter (int c);
 extern void fileUngetc (int c);
 extern const unsigned char *fileReadLine (void);
 extern char *readLine (vString *const vLine, FILE *const fp);

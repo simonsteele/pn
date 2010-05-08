@@ -1,5 +1,5 @@
 /*
-*   $Id: keyword.c,v 1.6 2006/05/30 04:37:12 darren Exp $
+*   $Id: keyword.c 715 2009-07-06 03:31:00Z dhiebert $
 *
 *   Copyright (c) 1998-2002, Darren Hiebert
 *
@@ -123,8 +123,7 @@ static hashEntry *newEntry (
 extern void addKeyword (const char *const string, langType language, int value)
 {
 	const unsigned long hashedValue = hashValue (string);
-	hashEntry *tableEntry = getHashTableEntry (hashedValue);
-	hashEntry *entry = tableEntry;
+	hashEntry *entry = getHashTableEntry (hashedValue);
 
 	if (entry == NULL)
 	{
@@ -190,6 +189,16 @@ extern void freeKeywordTable (void)
 		}
 		eFree (HashTable);
 	}
+}
+
+extern int analyzeToken (vString *const name, langType language)
+{
+	vString *keyword = vStringNew ();
+	int result;
+	vStringCopyToLower (keyword, name);
+	result = lookupKeyword (vStringValue (keyword), language);
+	vStringDelete (keyword);
+	return result;
 }
 
 #ifdef DEBUG

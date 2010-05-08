@@ -1,18 +1,19 @@
 /*
- *	 $Id: jscript.c 666 2008-05-15 17:47:31Z dfishburn $
+ *	 $Id: flex.c 666 2008-05-15 17:47:31Z dfishburn $
  *
- *	 Copyright (c) 2003, Darren Hiebert
+ *	 Copyright (c) 2008, David Fishburn
  *
  *	 This source code is released for free distribution under the terms of the
  *	 GNU General Public License.
  *
- *	 This module contains functions for generating tags for JavaScript language
- *	 files.
+ *	 This module contains functions for generating tags for Adobe languages.
+ *	 There are a number of different ones, but this will begin with:
+ *	     Flex
+ *	         MXML files (*.mMacromedia XML)
+ *	         ActionScript files (*.as)
  *
- *	 This is a good reference for different forms of the function statement:
- *		 http://www.permadi.com/tutorial/jsFunc/
- *   Another good reference:
- *       http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Guide
+ *	 Flex 3 language reference
+ *		 http://livedocs.adobe.com/flex/3/langref/index.html
  */
 
 /*
@@ -71,7 +72,15 @@ typedef enum eKeywordId {
 	KEYWORD_switch,
 	KEYWORD_try,
 	KEYWORD_catch,
-	KEYWORD_finally
+	KEYWORD_finally,
+	KEYWORD_public,
+	KEYWORD_private,
+	KEYWORD_static,
+	KEYWORD_class,
+	KEYWORD_id,
+	KEYWORD_script,
+	KEYWORD_cdata,
+	KEYWORD_mx
 } keywordId;
 
 /*	Used to determine whether keyword is valid for the token language and
@@ -98,9 +107,16 @@ typedef enum eTokenType {
 	TOKEN_OPEN_CURLY,
 	TOKEN_CLOSE_CURLY,
 	TOKEN_EQUAL_SIGN,
+	TOKEN_EXCLAMATION,
 	TOKEN_FORWARD_SLASH,
 	TOKEN_OPEN_SQUARE,
-	TOKEN_CLOSE_SQUARE
+	TOKEN_CLOSE_SQUARE,
+	TOKEN_OPEN_MXML,
+	TOKEN_CLOSE_MXML,
+	TOKEN_CLOSE_SGML,
+	TOKEN_LESS_THAN,
+	TOKEN_GREATER_THAN,
+	TOKEN_QUESTION_MARK
 } tokenType;
 
 typedef struct sTokenInfo {
@@ -112,6 +128,7 @@ typedef struct sTokenInfo {
 	fpos_t 			filePosition;
 	int				nestLevel;
 	boolean			ignoreTag;
+	boolean			isClass;
 } tokenInfo;
 
 /*
@@ -123,23 +140,25 @@ static langType Lang_js;
 static jmp_buf Exception;
 
 typedef enum {
-	JSTAG_FUNCTION,
-	JSTAG_CLASS,
-	JSTAG_METHOD,
-	JSTAG_PROPERTY,
-	JSTAG_VARIABLE,
-	JSTAG_COUNT
-} jsKind;
+	FLEXTAG_FUNCTION,
+	FLEXTAG_CLASS,
+	FLEXTAG_METHOD,
+	FLEXTAG_PROPERTY,
+	FLEXTAG_VARIABLE,
+	FLEXTAG_MXTAG,
+	FLEXTAG_COUNT
+} flexKind;
 
-static kindOption JsKinds [] = {
+static kindOption FlexKinds [] = {
 	{ TRUE,  'f', "function",	  "functions"		   },
 	{ TRUE,  'c', "class",		  "classes"			   },
 	{ TRUE,  'm', "method",		  "methods"			   },
 	{ TRUE,  'p', "property",	  "properties"		   },
-	{ TRUE,  'v', "variable",	  "global variables"   }
+	{ TRUE,  'v', "variable",	  "global variables"   },
+	{ TRUE,  'x', "mxtag",		  "mxtags" 			   }
 };
 
-static const keywordDesc JsKeywordTable [] = {
+static const keywordDesc FlexKeywordTable [] = {
 	/* keyword		keyword ID */
 	{ "function",	KEYWORD_function			},
 	{ "Function",	KEYWORD_capital_function	},
@@ -157,7 +176,15 @@ static const keywordDesc JsKeywordTable [] = {
 	{ "switch",		KEYWORD_switch				},
 	{ "try",		KEYWORD_try					},
 	{ "catch",		KEYWORD_catch				},
-	{ "finally",	KEYWORD_finally				}
+	{ "finally",	KEYWORD_finally				},
+	{ "public",		KEYWORD_public				},
+	{ "private",	KEYWORD_private				},
+	{ "static",		KEYWORD_static				},
+	{ "class",		KEYWORD_class				},
+	{ "id",			KEYWORD_id					},
+	{ "script",		KEYWORD_script				},
+	{ "cdata",		KEYWORD_cdata				},
+	{ "mx",			KEYWORD_mx					}
 };
 
 /*
@@ -167,7 +194,8 @@ static const keywordDesc JsKeywordTable [] = {
 /* Recursive functions */
 static void parseFunction (tokenInfo *const token);
 static boolean parseBlock (tokenInfo *const token, tokenInfo *const parent);
-static boolean parseLine (tokenInfo *const token, boolean is_inside_class);
+static boolean parseLine (tokenInfo *const token);
+static boolean parseActionScript (tokenInfo *const token);
 
 static boolean isIdentChar (const int c)
 {
@@ -176,14 +204,14 @@ static boolean isIdentChar (const int c)
 		 c == '@' || c == '_' || c == '#');
 }
 
-static void buildJsKeywordHash (void)
+static void buildFlexKeywordHash (void)
 {
-	const size_t count = sizeof (JsKeywordTable) /
-		sizeof (JsKeywordTable [0]);
+	const size_t count = sizeof (FlexKeywordTable) /
+		sizeof (FlexKeywordTable [0]);
 	size_t i;
 	for (i = 0	;  i < count  ;  ++i)
 	{
-		const keywordDesc* const p = &JsKeywordTable [i];
+		const keywordDesc* const p = &FlexKeywordTable [i];
 		addKeyword (p->name, Lang_js, (int) p->id);
 	}
 }
@@ -197,6 +225,7 @@ static tokenInfo *newToken (void)
 	token->string		= vStringNew ();
 	token->scope		= vStringNew ();
 	token->nestLevel	= 0;
+	token->isClass		= FALSE;
 	token->ignoreTag	= FALSE;
 	token->lineNumber   = getSourceLineNumber ();
 	token->filePosition = getInputFilePosition ();
@@ -215,9 +244,9 @@ static void deleteToken (tokenInfo *const token)
  *	 Tag generation functions
  */
 
-static void makeConstTag (tokenInfo *const token, const jsKind kind)
+static void makeConstTag (tokenInfo *const token, const flexKind kind)
 {
-	if (JsKinds [kind].enabled && ! token->ignoreTag )
+	if (FlexKinds [kind].enabled && ! token->ignoreTag )
 	{
 		const char *const name = vStringValue (token->string);
 		tagEntryInfo e;
@@ -225,19 +254,31 @@ static void makeConstTag (tokenInfo *const token, const jsKind kind)
 
 		e.lineNumber   = token->lineNumber;
 		e.filePosition = token->filePosition;
-		e.kindName	   = JsKinds [kind].name;
-		e.kind		   = JsKinds [kind].letter;
+		e.kindName	   = FlexKinds [kind].name;
+		e.kind		   = FlexKinds [kind].letter;
 
 		makeTagEntry (&e);
 	}
 }
 
-static void makeJsTag (tokenInfo *const token, const jsKind kind)
+static void makeFlexTag (tokenInfo *const token, flexKind kind)
 {
 	vString *	fulltag;
 
-	if (JsKinds [kind].enabled && ! token->ignoreTag )
+	if (FlexKinds [kind].enabled && ! token->ignoreTag )
 	{
+	DebugStatement ( 
+			debugPrintf (DEBUG_PARSE
+				, "\n makeFlexTag start: token isClass:%d  scope:%s  name:%s\n"
+				, token->isClass
+				, vStringValue(token->scope)
+				, vStringValue(token->string)
+				);
+			);
+		if (kind == FLEXTAG_FUNCTION && token->isClass )
+		{
+			kind = FLEXTAG_METHOD;
+		}
 		/*
 		 * If a scope has been added to the token, change the token
 		 * string to include the scope when making the tag.
@@ -277,8 +318,31 @@ static void makeClassTag (tokenInfo *const token)
 		if ( ! stringListHas(ClassNames, vStringValue (fulltag)) )
 		{
 			stringListAdd (ClassNames, vStringNewCopy (fulltag));
-			makeJsTag (token, JSTAG_CLASS);
+			makeFlexTag (token, FLEXTAG_CLASS);
 		}
+		vStringDelete (fulltag);
+	}
+}
+
+static void makeMXTag (tokenInfo *const token)
+{ 
+	vString *	fulltag;
+
+	if ( ! token->ignoreTag )
+	{
+		fulltag = vStringNew ();
+		if (vStringLength (token->scope) > 0)
+		{
+			vStringCopy(fulltag, token->scope);
+			vStringCatS (fulltag, ".");
+			vStringCatS (fulltag, vStringValue(token->string));
+		}
+		else
+		{
+			vStringCopy(fulltag, token->string);
+		}
+		vStringTerminate(fulltag);
+		makeFlexTag (token, FLEXTAG_MXTAG);
 		vStringDelete (fulltag);
 	}
 }
@@ -304,7 +368,7 @@ static void makeFunctionTag (tokenInfo *const token)
 		if ( ! stringListHas(FunctionNames, vStringValue (fulltag)) )
 		{
 			stringListAdd (FunctionNames, vStringNewCopy (fulltag));
-			makeJsTag (token, JSTAG_FUNCTION);
+			makeFlexTag (token, FLEXTAG_FUNCTION);
 		}
 		vStringDelete (fulltag);
 	}
@@ -383,6 +447,7 @@ getNextChar:
 		case '=': token->type = TOKEN_EQUAL_SIGN;			break;
 		case '[': token->type = TOKEN_OPEN_SQUARE;			break;
 		case ']': token->type = TOKEN_CLOSE_SQUARE;			break;
+		case '?': token->type = TOKEN_QUESTION_MARK;		break;
 
 		case '\'':
 		case '"':
@@ -405,10 +470,13 @@ getNextChar:
 				  {
 					  int d = fileGetc ();
 					  if ( (d != '*') &&		/* is this the start of a comment? */
-							  (d != '/') )		/* is a one line comment? */
+							  (d != '/') &&		/* is a one line comment? */
+							  (d != '>') )		/* is this a close XML tag? */
 					  {
-						  token->type = TOKEN_FORWARD_SLASH;
 						  fileUngetc (d);
+						  token->type = TOKEN_FORWARD_SLASH;
+						  token->lineNumber = getSourceLineNumber ();
+						  token->filePosition = getInputFilePosition ();
 					  }
 					  else
 					  {
@@ -430,9 +498,191 @@ getNextChar:
 							  fileSkipToCharacter ('\n');
 							  goto getNextChar;
 						  }
+						  else if (d == '>')	/* is this the start of a comment?  */
+						  {
+							  token->type = TOKEN_CLOSE_SGML;
+							  token->lineNumber = getSourceLineNumber ();
+							  token->filePosition = getInputFilePosition ();
+						  }
 					  }
 					  break;
 				  }
+
+		case '<':
+				  {
+					  /*
+					   * An XML comment looks like this 
+					   *   <!-- anything over multiple lines -->
+					   */
+					  int d = fileGetc ();
+
+					  if ( (d != '!' )  && 		/* is this the start of a comment? */
+					       (d != '/' )  &&	 	/* is this the start of a closing mx tag */
+					       (d != 'm' )    ) 	/* is this the start of a mx tag */
+					  {
+						  fileUngetc (d);
+						  token->type = TOKEN_LESS_THAN;
+						  token->lineNumber = getSourceLineNumber ();
+						  token->filePosition = getInputFilePosition ();
+
+					  }
+					  else
+					  {
+						  if (d == '!')
+						  {
+							  int e = fileGetc ();
+							  if ( e != '-' ) 		/* is this the start of a comment? */
+							  {
+								  fileUngetc (e);
+								  fileUngetc (d);
+								  token->type = TOKEN_LESS_THAN;
+								  token->lineNumber = getSourceLineNumber ();
+								  token->filePosition = getInputFilePosition ();
+							  }
+							  else
+							  {
+								  if (e == '-')
+								  {
+									  int f = fileGetc ();
+									  if ( f != '-' ) 		/* is this the start of a comment? */
+									  {
+										  fileUngetc (f);
+										  fileUngetc (e);
+										  fileUngetc (d);
+										  token->type = TOKEN_LESS_THAN;
+										  token->lineNumber = getSourceLineNumber ();
+										  token->filePosition = getInputFilePosition ();
+									  }
+									  else
+									  {
+										  if (f == '-')
+										  {
+											  do
+											  {
+												  fileSkipToCharacter ('-');
+												  c = fileGetc ();
+												  if (c == '-') 
+												  {
+													  d = fileGetc ();
+													  if (d == '>')
+														  break;
+													  else
+													  {
+														  fileUngetc (d);
+														  fileUngetc (c);
+													  }
+													  break;
+												  }
+												  else
+													  fileUngetc (c);
+											  } while (c != EOF && c != '\0');
+											  goto getNextChar;
+										  }
+									  }
+								  }
+							  }
+						  }
+						  else if (d == 'm')
+						  {
+							  int e = fileGetc ();
+							  if ( e != 'x' ) 		/* continuing an mx tag */
+							  {
+								  fileUngetc (e);
+								  fileUngetc (d);
+								  token->type = TOKEN_LESS_THAN;
+								  token->lineNumber = getSourceLineNumber ();
+								  token->filePosition = getInputFilePosition ();
+							  }
+							  else
+							  {
+								  if (e == 'x')
+								  {
+									  int f = fileGetc ();
+									  if ( f != ':' ) 		/* is this the start of a comment? */
+									  {
+										  fileUngetc (f);
+										  fileUngetc (e);
+										  fileUngetc (d);
+										  token->type = TOKEN_LESS_THAN;
+										  token->lineNumber = getSourceLineNumber ();
+										  token->filePosition = getInputFilePosition ();
+									  }
+									  else
+									  {
+										  if (f == ':')
+										  {
+											  token->type = TOKEN_OPEN_MXML;
+											  token->lineNumber = getSourceLineNumber ();
+											  token->filePosition = getInputFilePosition ();
+										  }
+									  }
+								  }
+							  }
+						  }
+						  else if (d == '/')
+						  {
+							  int e = fileGetc ();
+							  if ( e != 'm' ) 		/* continuing an mx tag */
+							  {
+								  fileUngetc (e);
+								  fileUngetc (d);
+								  token->type = TOKEN_LESS_THAN;
+								  token->lineNumber = getSourceLineNumber ();
+								  token->filePosition = getInputFilePosition ();
+							  }
+							  else
+							  {
+								  int f = fileGetc ();
+								  if ( f != 'x' ) 		/* continuing an mx tag */
+								  {
+									  fileUngetc (f);
+									  fileUngetc (e);
+									  token->type = TOKEN_LESS_THAN;
+									  token->lineNumber = getSourceLineNumber ();
+									  token->filePosition = getInputFilePosition ();
+								  }
+								  else
+								  {
+									  if (f == 'x')
+									  {
+										  int g = fileGetc ();
+										  if ( g != ':' ) 		/* is this the start of a comment? */
+										  {
+											  fileUngetc (g);
+											  fileUngetc (f);
+											  fileUngetc (e);
+											  token->type = TOKEN_LESS_THAN;
+											  token->lineNumber = getSourceLineNumber ();
+											  token->filePosition = getInputFilePosition ();
+										  }
+										  else
+										  {
+											  if (g == ':')
+											  {
+												  token->type = TOKEN_CLOSE_MXML;
+												  token->lineNumber = getSourceLineNumber ();
+												  token->filePosition = getInputFilePosition ();
+											  }
+										  }
+									  }
+								  }
+							  }
+						  }
+					  }
+					  break;
+				  }
+
+		case '>':
+				  token->type = TOKEN_GREATER_THAN;
+				  token->lineNumber = getSourceLineNumber ();
+				  token->filePosition = getInputFilePosition ();
+				  break;
+
+		case '!': 
+				  token->type = TOKEN_EXCLAMATION;			
+				  /*token->lineNumber = getSourceLineNumber ();
+				  token->filePosition = getInputFilePosition ();*/
+				  break;
 
 		default:
 				  if (! isIdentChar (c))
@@ -459,6 +709,7 @@ static void copyToken (tokenInfo *const dest, tokenInfo *const src)
 	dest->filePosition = src->filePosition;
 	dest->type = src->type;
 	dest->keyword = src->keyword;
+	dest->isClass = src->isClass;
 	vStringCopy(dest->string, src->string);
 	vStringCopy(dest->scope, src->scope);
 }
@@ -599,22 +850,18 @@ static void parseSwitch (tokenInfo *const token)
 
 	if (isType (token, TOKEN_OPEN_PAREN)) 
 	{
-		/*
-		 * Handle nameless functions, these will only
-		 * be considered methods.
-		 */
 		skipArgumentList(token);
 	}
 
 	if (isType (token, TOKEN_OPEN_CURLY)) 
 	{
-		/* 
-		 * This will be either a function or a class.
-		 * We can only determine this by checking the body
-		 * of the function.  If we find a "this." we know
-		 * it is a class, otherwise it is a function.
-		 */
-		parseBlock (token, token);
+		do
+		{
+			readToken (token);
+		} while (! (isType (token, TOKEN_CLOSE_SGML) || 
+					isType (token, TOKEN_CLOSE_MXML) ||
+					isType (token, TOKEN_CLOSE_CURLY) ||
+					isType (token, TOKEN_GREATER_THAN)) ); 
 	}
 
 }
@@ -668,7 +915,7 @@ static void parseLoop (tokenInfo *const token)
 		} 
 		else 
 		{
-			parseLine(token, FALSE);
+			parseLine(token);
 		}
 	} 
 	else if (isKeyword (token, KEYWORD_do))
@@ -687,7 +934,7 @@ static void parseLoop (tokenInfo *const token)
 		} 
 		else 
 		{
-			parseLine(token, FALSE);
+			parseLine(token);
 		}
 
 		readToken(token);
@@ -821,41 +1068,89 @@ static boolean parseIf (tokenInfo *const token)
 static void parseFunction (tokenInfo *const token)
 {
 	tokenInfo *const name = newToken ();
-	boolean is_class = FALSE;
 
 	/*
 	 * This deals with these formats
-	 *	   function validFunctionTwo(a,b) {}
+     *     private static function ioErrorHandler( event:IOErrorEvent ):void {
 	 */
 
-	readToken (name);
-	/* Add scope in case this is an INNER function */
+	if ( isKeyword(token, KEYWORD_function) )
+	{
+		readToken (token);
+	}
+
+	copyToken (name, token);
+	/* Add scope in case this is an INNER function 
 	addToScope(name, token->scope);
+	*/
+
+	DebugStatement ( 
+			debugPrintf (DEBUG_PARSE
+				, "\n parseFunction: token isClass:%d  scope:%s  name:%s\n"
+				, token->isClass
+				, vStringValue(token->scope)
+				, vStringValue(token->string)
+				);
+			);
+	DebugStatement ( 
+			debugPrintf (DEBUG_PARSE
+				, "\n parseFunction: name isClass:%d  scope:%s  name:%s\n"
+				, name->isClass
+				, vStringValue(name->scope)
+				, vStringValue(name->string)
+				);
+			);
 
 	readToken (token);
-	if (isType (token, TOKEN_PERIOD))
-	{
-		do
-		{
-			readToken (token);
-			if ( isKeyword(token, KEYWORD_NONE) )
-			{
-				addContext (name, token);
-				readToken (token);
-			}
-		} while (isType (token, TOKEN_PERIOD));
-	}
 
 	if ( isType (token, TOKEN_OPEN_PAREN) )
 		skipArgumentList(token);
 
+	if ( isType (token, TOKEN_COLON) )
+	{
+		/*
+		 *   function fname ():ReturnType 
+		 */
+		readToken (token);
+		readToken (token);
+	}
+
 	if ( isType (token, TOKEN_OPEN_CURLY) )
 	{
-		is_class = parseBlock (token, name);
-		if ( is_class ) 
-			makeClassTag (name);
-		else 
-			makeFunctionTag (name);
+		DebugStatement ( 
+				debugPrintf (DEBUG_PARSE
+					, "\n parseFunction end: name isClass:%d  scope:%s  name:%s\n"
+					, name->isClass
+					, vStringValue(name->scope)
+					, vStringValue(name->string)
+					);
+				);
+		parseBlock (token, name);
+		DebugStatement ( 
+				debugPrintf (DEBUG_PARSE
+					, "\n parseFunction end2: token isClass:%d  scope:%s  name:%s\n"
+					, token->isClass
+					, vStringValue(token->scope)
+					, vStringValue(token->string)
+					);
+				);
+		DebugStatement ( 
+				debugPrintf (DEBUG_PARSE
+					, "\n parseFunction end2: token isClass:%d  scope:%s  name:%s\n"
+					, token->isClass
+					, vStringValue(token->scope)
+					, vStringValue(token->string)
+					);
+				);
+		DebugStatement ( 
+				debugPrintf (DEBUG_PARSE
+					, "\n parseFunction end3: name isClass:%d  scope:%s  name:%s\n"
+					, name->isClass
+					, vStringValue(name->scope)
+					, vStringValue(name->string)
+					);
+				);
+		makeFunctionTag (name);
 	}
 
 	findCmdTerm (token);
@@ -865,11 +1160,20 @@ static void parseFunction (tokenInfo *const token)
 
 static boolean parseBlock (tokenInfo *const token, tokenInfo *const parent)
 {
-	boolean is_class = FALSE;
 	boolean read_next_token = TRUE;
 	vString * saveScope = vStringNew ();
 
+	vStringClear(saveScope);
+	vStringCopy (saveScope, token->scope);
 	token->nestLevel++;
+	DebugStatement ( 
+			debugPrintf (DEBUG_PARSE
+				, "\n parseBlock start: token isClass:%d  scope:%s  name:%s\n"
+				, token->isClass
+				, vStringValue(token->scope)
+				, vStringValue(token->string)
+				);
+			);
 	/*
 	 * Make this routine a bit more forgiving.
 	 * If called on an open_curly advance it
@@ -886,44 +1190,7 @@ static boolean parseBlock (tokenInfo *const token, tokenInfo *const parent)
 		 */
 		do
 		{
-			read_next_token = TRUE;
-			if (isKeyword (token, KEYWORD_this))
-			{
-				/*
-				 * Means we are inside a class and have found
-				 * a class, not a function
-				 */
-				is_class = TRUE;
-				vStringCopy(saveScope, token->scope);
-				addToScope (token, parent->string);
-
-				/*
-				 * Ignore the remainder of the line
-				 * findCmdTerm(token);
-				 */
-				parseLine (token, is_class);
-
-				vStringCopy(token->scope, saveScope);
-			} 
-			else if (isKeyword (token, KEYWORD_var))
-			{
-				/*
-				 * Potentially we have found an inner function.
-				 * Set something to indicate the scope
-				 */
-				vStringCopy(saveScope, token->scope);
-				addToScope (token, parent->string);
-				parseLine (token, is_class);
-				vStringCopy(token->scope, saveScope);
-			} 
-			else if (isKeyword (token, KEYWORD_function))
-			{
-				vStringCopy(saveScope, token->scope);
-				addToScope (token, parent->string);
-				parseFunction (token);
-				vStringCopy(token->scope, saveScope);
-			} 
-			else if (isType (token, TOKEN_OPEN_CURLY))
+			if (isType (token, TOKEN_OPEN_CURLY))
 			{
 				/* Handle nested blocks */
 				parseBlock (token, parent);
@@ -936,7 +1203,7 @@ static boolean parseBlock (tokenInfo *const token, tokenInfo *const parent)
 				 * parseLine will detect this case and indicate
 				 * whether we should read an additional token.
 				 */
-				read_next_token = parseLine (token, is_class);
+				read_next_token = parseLine (token);
 			}
 
 			/*
@@ -956,7 +1223,15 @@ static boolean parseBlock (tokenInfo *const token, tokenInfo *const parent)
 	vStringDelete(saveScope);
 	token->nestLevel--;
 
-	return is_class;
+	DebugStatement ( 
+			debugPrintf (DEBUG_PARSE
+				, "\n parseBlock end: token isClass:%d  scope:%s  name:%s\n"
+				, token->isClass
+				, vStringValue(token->scope)
+				, vStringValue(token->string)
+				);
+			);
+	return FALSE;
 }
 
 static void parseMethods (tokenInfo *const token, tokenInfo *const class)
@@ -976,7 +1251,7 @@ static void parseMethods (tokenInfo *const token, tokenInfo *const class)
 		readToken (token);
 		if (isType (token, TOKEN_STRING) || isKeyword(token, KEYWORD_NONE))
 		{
-			copyToken(name, token);
+			copyToken (name, token);
 
 			readToken (token);
 			if ( isType (token, TOKEN_COLON) )
@@ -993,7 +1268,7 @@ static void parseMethods (tokenInfo *const token, tokenInfo *const class)
 					if (isType (token, TOKEN_OPEN_CURLY)) 
 					{
 						addToScope (name, class->string);
-						makeJsTag (name, JSTAG_METHOD);
+						makeFlexTag (name, FLEXTAG_METHOD);
 						parseBlock (token, name);
 
 						/*
@@ -1006,7 +1281,7 @@ static void parseMethods (tokenInfo *const token, tokenInfo *const class)
 				else
 				{
 						addToScope (name, class->string);
-						makeJsTag (name, JSTAG_PROPERTY);
+						makeFlexTag (name, FLEXTAG_PROPERTY);
 
 						/*
 						 * Read the next token, if a comma
@@ -1023,11 +1298,128 @@ static void parseMethods (tokenInfo *const token, tokenInfo *const class)
 	deleteToken (name);
 }
 
-static boolean parseStatement (tokenInfo *const token, boolean is_inside_class)
+static boolean parseVar (tokenInfo *const token, boolean is_public)
 {
 	tokenInfo *const name = newToken ();
 	tokenInfo *const secondary_name = newToken ();
 	vString * saveScope = vStringNew ();
+	boolean is_terminated = TRUE;
+
+	vStringClear(saveScope);
+	vStringCopy (saveScope, token->scope);
+	/*
+	 * Variables are defined as:
+	 *     private static var lastFaultMessage:Date = new Date( 0 );
+	 *     private static var webRequests:ArrayCollection = new ArrayCollection();
+	 */
+
+	if ( isKeyword(token, KEYWORD_var) )
+	{
+		readToken(token);
+	}
+
+	/* Variable name */
+	copyToken (name, token);
+	readToken(token);
+
+	if ( isType (token, TOKEN_COLON) )
+	{
+		/*
+		 *   var vname ():DataType = new Date();
+		 *   var vname ():DataType;
+		 */
+		readToken (token);
+		readToken (token);
+	}
+
+	while (! isType (token, TOKEN_SEMICOLON) )
+	{
+		readToken (token);
+	}
+
+	if ( isType (token, TOKEN_SEMICOLON) )
+	{
+		/*
+		 * Only create variables for global scope
+		 */
+		/* if ( token->nestLevel == 0 && is_global ) */
+		if ( is_public )
+		{
+			if (isType (token, TOKEN_SEMICOLON)) 
+				makeFlexTag (name, FLEXTAG_VARIABLE);
+		}
+	}
+
+	vStringCopy(token->scope, saveScope);
+	deleteToken (name);
+	deleteToken (secondary_name);
+	vStringDelete(saveScope);
+
+	return is_terminated;
+}
+
+static boolean parseClass (tokenInfo *const token)
+{
+	tokenInfo *const name = newToken ();
+	vString * saveScope = vStringNew ();
+	boolean saveIsClass = token->isClass;
+
+	vStringClear(saveScope);
+	vStringCopy (saveScope, token->scope);
+	/*
+	 * Variables are defined as:
+	 *     private static var lastFaultMessage:Date = new Date( 0 );
+	 *     private static var webRequests:ArrayCollection = new ArrayCollection();
+	 */
+
+	if ( isKeyword(token, KEYWORD_class) )
+	{
+		readToken(token);
+	}
+
+	token->isClass = TRUE;
+	/* Add class name to scope */
+	addToScope(token, token->string);
+	/* Class name */
+	copyToken (name, token);
+	readToken(token);
+
+	DebugStatement ( 
+			debugPrintf (DEBUG_PARSE
+				, "\n parseClass start: token isClass:%d  scope:%s  name:%s\n"
+				, token->isClass
+				, vStringValue(token->scope)
+				, vStringValue(token->string)
+				);
+			);
+	if ( isType (token, TOKEN_OPEN_CURLY) )
+	{
+		makeClassTag (name);
+		parseBlock (token, name);
+	}
+
+	DebugStatement ( 
+			debugPrintf (DEBUG_PARSE
+				, "\n parseClass end: token isClass:%d  scope:%s  name:%s\n"
+				, token->isClass
+				, vStringValue(token->scope)
+				, vStringValue(token->string)
+				);
+			);
+	vStringCopy(token->scope, saveScope);
+	token->isClass = saveIsClass;
+	deleteToken (name);
+	vStringDelete(saveScope);
+
+	return TRUE;
+}
+
+static boolean parseStatement (tokenInfo *const token)
+{
+	tokenInfo *const name = newToken ();
+	tokenInfo *const secondary_name = newToken ();
+	vString * saveScope = vStringNew ();
+	boolean is_public = FALSE;
 	boolean is_class = FALSE;
 	boolean is_terminated = TRUE;
 	boolean is_global = FALSE;
@@ -1035,6 +1427,15 @@ static boolean parseStatement (tokenInfo *const token, boolean is_inside_class)
 	vString *	fulltag;
 
 	vStringClear(saveScope);
+	vStringCopy (saveScope, token->scope);
+	DebugStatement ( 
+			debugPrintf (DEBUG_PARSE
+				, "\n parseStatement: token isClass:%d  scope:%s  name:%s\n"
+				, token->isClass
+				, vStringValue(token->scope)
+				, vStringValue(token->string)
+				);
+			);
 	/*
 	 * Functions can be named or unnamed.
 	 * This deals with these formats:
@@ -1063,33 +1464,61 @@ static boolean parseStatement (tokenInfo *const token, boolean is_inside_class)
 	 *	   Database.prototype.validMethodThree = Database_getTodaysDate;
 	 */
 
-	if ( is_inside_class ) 
-		is_class = TRUE;
-	/*
-	 * var can preceed an inner function
-	 */
-	if ( isKeyword(token, KEYWORD_var) )
+	if ( isKeyword(token, KEYWORD_public) )
 	{
-		/*
-		 * Only create variables for global scope
-		 */
-		if ( token->nestLevel == 0 )
-		{
-			is_global = TRUE;
-		}
+		is_public = TRUE;
 		readToken(token);
 	}
 
-	if ( isKeyword(token, KEYWORD_this) )
+	if ( isKeyword(token, KEYWORD_private) )
 	{
 		readToken(token);
-		if (isType (token, TOKEN_PERIOD))
-		{
-			readToken(token);
-		}
 	}
 
-	copyToken(name, token);
+	if ( isKeyword(token, KEYWORD_static) )
+	{
+		readToken(token);
+	}
+
+	if (isType(token, TOKEN_KEYWORD))
+	{
+		switch (token->keyword)
+		{
+			case KEYWORD_for:	   
+			case KEYWORD_while:
+			case KEYWORD_do:
+				parseLoop (token); 
+				break;
+			case KEYWORD_if:
+			case KEYWORD_else:
+			case KEYWORD_try:
+			case KEYWORD_catch:
+			case KEYWORD_finally:
+				/* Common semantics */
+				is_terminated = parseIf (token); 
+				break;
+			case KEYWORD_switch:
+				parseSwitch (token); 
+				break;
+			case KEYWORD_class:
+				parseClass (token); 
+				return is_terminated;
+				break;
+			case KEYWORD_function:
+				parseFunction (token); 
+				return is_terminated;
+				break;
+			case KEYWORD_var:
+				parseVar (token, is_public); 
+				return is_terminated;
+				break;
+			default:
+				readToken(token);
+				break;
+		}
+	} 
+
+	copyToken (name, token);
 
 	while (! isType (token, TOKEN_CLOSE_CURLY) &&
 	       ! isType (token, TOKEN_SEMICOLON)   &&
@@ -1159,7 +1588,7 @@ static boolean parseStatement (tokenInfo *const token, boolean is_inside_class)
 							vStringCopy(saveScope, token->scope);
 							addToScope(token, name->string);
 
-							makeJsTag (token, JSTAG_METHOD);
+							makeFlexTag (token, FLEXTAG_METHOD);
 							/*
 							 * We can read until the end of the block / statement.
 							 * We need to correctly parse any nested blocks, but
@@ -1208,15 +1637,19 @@ static boolean parseStatement (tokenInfo *const token, boolean is_inside_class)
 		if ( isType (token, TOKEN_OPEN_PAREN) )
 			skipArgumentList(token);
 
+		if ( isType (token, TOKEN_COLON) )
+		{
+			/*
+			 * Functions are of this form:
+			 *   function fname ():ReturnType {
+			 */
+			readToken (token);
+			readToken (token);
+		}
+
 		if ( isType (token, TOKEN_OPEN_SQUARE) )
 			skipArrayList(token);
 
-		/*
-		if ( isType (token, TOKEN_OPEN_CURLY) )
-		{
-			is_class = parseBlock (token, name);
-		}
-		*/
 	}
 
 	if ( isType (token, TOKEN_CLOSE_CURLY) )
@@ -1242,7 +1675,7 @@ static boolean parseStatement (tokenInfo *const token, boolean is_inside_class)
 			 *	   var g_var2;
 			 */
 			if (isType (token, TOKEN_SEMICOLON)) 
-				makeJsTag (name, JSTAG_VARIABLE);
+				makeFlexTag (name, FLEXTAG_VARIABLE);
 		}
 		/* 
 		 * Statement has ended.
@@ -1280,7 +1713,7 @@ static boolean parseStatement (tokenInfo *const token, boolean is_inside_class)
 				 * we have established this is a valid function we will
 				 * create the secondary reference to it.
 				 */
-				copyToken(secondary_name, token);
+				copyToken (secondary_name, token);
 				readToken (token);
 			}
 
@@ -1295,20 +1728,17 @@ static boolean parseStatement (tokenInfo *const token, boolean is_inside_class)
 				 * of the function.  If we find a "this." we know
 				 * it is a class, otherwise it is a function.
 				 */
-				if ( is_inside_class ) 
+				if ( token->isClass ) 
 				{
-					makeJsTag (name, JSTAG_METHOD);
+					makeFlexTag (name, FLEXTAG_METHOD);
 					if ( vStringLength(secondary_name->string) > 0 )
 						makeFunctionTag (secondary_name);
 					parseBlock (token, name);
 				} 
 				else 
 				{
-					is_class = parseBlock (token, name);
-					if ( is_class ) 
-						makeClassTag (name);
-					else 
-						makeFunctionTag (name);
+					parseBlock (token, name);
+					makeFunctionTag (name);
 
 					if ( vStringLength(secondary_name->string) > 0 )
 						makeFunctionTag (secondary_name);
@@ -1333,7 +1763,7 @@ static boolean parseStatement (tokenInfo *const token, boolean is_inside_class)
 				/*
 				 * Nameless functions are only setup as methods.
 				 */
-				makeJsTag (name, JSTAG_METHOD);
+				makeFlexTag (name, FLEXTAG_METHOD);
 				parseBlock (token, name);
 			}
 		} 
@@ -1423,7 +1853,7 @@ static boolean parseStatement (tokenInfo *const token, boolean is_inside_class)
 				{
 					findCmdTerm (token);
 					if (isType (token, TOKEN_SEMICOLON)) 
-						makeJsTag (name, JSTAG_VARIABLE);
+						makeFlexTag (name, FLEXTAG_VARIABLE);
 				}
 				vStringDelete (fulltag);
 			}
@@ -1456,7 +1886,7 @@ cleanUp:
 	return is_terminated;
 }
 
-static boolean parseLine (tokenInfo *const token, boolean is_inside_class)
+static boolean parseLine (tokenInfo *const token)
 {
 	boolean is_terminated = TRUE;
 	/*
@@ -1490,7 +1920,7 @@ static boolean parseLine (tokenInfo *const token, boolean is_inside_class)
 				parseSwitch (token); 
 				break;
 			default:			   
-				parseStatement (token, is_inside_class); 
+				parseStatement (token); 
 				break;
 		}
 	} 
@@ -1501,40 +1931,281 @@ static boolean parseLine (tokenInfo *const token, boolean is_inside_class)
 		 * SEMICOLON terminated.  parseBlock needs to know this
 		 * so that it does not read the next token.
 		 */
-		is_terminated = parseStatement (token, is_inside_class); 
+		is_terminated = parseStatement (token); 
 	}
 	return is_terminated;
 }
 
-static void parseJsFile (tokenInfo *const token)
+static boolean parseCDATA (tokenInfo *const token)
+{
+	if (isType (token, TOKEN_LESS_THAN))
+	{
+		/*
+		 * Handle these tags 
+		 * <![CDATA[
+		 *    ...
+		 * ]]>
+		 */
+		readToken (token);
+		if (isType (token, TOKEN_EXCLAMATION))
+		{
+			/*
+			 * Not sure why I had to comment these out, but I did.
+			 * readToken (token);
+			 * if (isType (token, TOKEN_OPEN_SQUARE))
+			 * {
+			*/
+				readToken (token);
+				if (isKeyword (token, KEYWORD_cdata))
+				{
+					readToken (token);
+					if (isType (token, TOKEN_OPEN_SQUARE))
+					{
+						parseActionScript (token);
+						if (isType (token, TOKEN_CLOSE_SQUARE))
+						{
+							readToken (token);
+							if (isType (token, TOKEN_CLOSE_SQUARE))
+							{
+								readToken (token);
+							}
+						}
+					}
+				}
+			/*} Not sure */
+		}
+	}
+	else
+	{
+		parseActionScript (token);
+	}
+	return TRUE;
+}
+
+static boolean parseMXML (tokenInfo *const token)
+{
+	tokenInfo *const name = newToken ();
+	tokenInfo *const type = newToken ();
+	/*
+	 * Detect the common statements, if, while, for, do, ...
+	 * This is necessary since the last statement within a block "{}"
+	 * can be optionally terminated.
+	 *
+	 * If the statement is not terminated, we need to tell
+	 * the calling routine to prevent reading an additional token
+	 * looking for the end of the statement.
+	 */
+
+	readToken (token);
+
+	if (isKeyword (token, KEYWORD_script))
+	{
+		/*
+		 * These tags can be of this form:
+		 * <mx:Script src="filename.as" />
+		 */
+		do
+		{
+			readToken (token);
+		} while (! (isType (token, TOKEN_CLOSE_SGML) || 
+					isType (token, TOKEN_CLOSE_MXML) ||
+					isType (token, TOKEN_GREATER_THAN)) ); 
+
+		if (isType (token, TOKEN_CLOSE_MXML))
+		{
+			/*
+			 * We have found a </mx:type> tag 
+			 * Finish reading the "type" and ">"
+			 */
+			readToken (token);
+			readToken (token);
+			goto cleanUp;
+		}
+		if (isType (token, TOKEN_CLOSE_SGML))
+		{
+			/*
+			 * We have found a <mx:Script src="filename.as" />
+			 */
+			goto cleanUp;
+		}
+
+		/*
+		 * This is a beginning of an embedded script.
+		 * These typically are of this format:
+		 *    <mx:Script>
+		 *        <![CDATA[
+		 *        ... ActionScript ...
+		 *        ]]>
+		 *    </mx:Script>
+		 */
+		readToken (token);
+		parseCDATA (token);
+
+		readToken (token);
+		if (isType (token, TOKEN_CLOSE_MXML))
+		{
+			/*
+			 * We have found a </mx:type> tag 
+			 * Finish reading the "type" and ">"
+			 */
+			readToken (token);
+			readToken (token);
+		}
+		goto cleanUp;
+	}
+
+	copyToken (type, token);
+
+	readToken (token);
+	do
+	{
+		if (isType (token, TOKEN_OPEN_MXML))
+		{
+			parseMXML (token);
+		}
+		else if (isKeyword (token, KEYWORD_id))
+		{
+			/* = */
+			readToken (token);
+			readToken (token);
+
+			copyToken (name, token);
+			addToScope (name, type->string);
+			makeMXTag (name);
+		}
+		readToken (token);
+	} while (! (isType (token, TOKEN_CLOSE_SGML) || isType (token, TOKEN_CLOSE_MXML)) ); 
+
+	if (isType (token, TOKEN_CLOSE_MXML))
+	{
+		/*
+		 * We have found a </mx:type> tag 
+		 * Finish reading the "type" and ">"
+		 */
+		readToken (token);
+		readToken (token);
+	}
+
+cleanUp:
+	deleteToken (name);
+	deleteToken (type);
+	return TRUE;
+}
+
+static boolean parseActionScript (tokenInfo *const token)
 {
 	do
 	{
 		readToken (token);
 
-		if (isType(token, TOKEN_KEYWORD))
+		if (isType (token, TOKEN_LESS_THAN))
 		{
-			switch (token->keyword)
+			/*
+			 * Handle these tags 
+			 * <![CDATA[
+			 *    ...
+			 * ]]>
+			 */
+			readToken (token);
+			if (isType (token, TOKEN_EQUAL_SIGN))
 			{
-				case KEYWORD_function:	parseFunction (token); break;
-				default:				parseLine (token, FALSE); break;
+				if (isType (token, TOKEN_OPEN_SQUARE))
+				{
+					readToken (token);
+					if (isKeyword (token, KEYWORD_cdata))
+					{
+						readToken (token);
+					}
+				}
+			}
+		}
+		if (isType (token, TOKEN_CLOSE_SQUARE))
+		{
+			/*
+			 * Handle these tags 
+			 * <![CDATA[
+			 *    ...
+			 * ]]>
+			 */
+			readToken (token);
+			if (isType (token, TOKEN_CLOSE_SQUARE))
+			{
+				readToken (token);
+				if (isType (token, TOKEN_GREATER_THAN))
+				{
+					return TRUE;
+				}
+			}
+		}
+		else if (isType (token, TOKEN_CLOSE_MXML))
+		{
+			/*
+			 * Read the Script> tags 
+			 */
+			readToken (token);
+			readToken (token);
+			return TRUE;
+		} 
+		else if (isType (token, TOKEN_OPEN_MXML))
+		{
+			parseMXML (token);
+		} 
+		else 
+		{
+			if (isType(token, TOKEN_KEYWORD))
+			{
+				switch (token->keyword)
+				{
+					case KEYWORD_function:	parseFunction (token); break;
+					default:				parseLine (token); break;
+				}
+			} 
+			else 
+			{
+				parseLine (token); 
+			}
+		}
+	} while (TRUE);
+}
+
+static void parseFlexFile (tokenInfo *const token)
+{
+	do
+	{
+		readToken (token);
+
+		if (isType (token, TOKEN_OPEN_MXML))
+		{
+			parseMXML (token);
+		} 
+		if (isType (token, TOKEN_LESS_THAN))
+		{
+			readToken (token);
+			if (isType (token, TOKEN_QUESTION_MARK))
+			{
+				readToken (token);
+				while (! isType (token, TOKEN_QUESTION_MARK) )
+				{
+					readToken (token);
+				} 
+				readToken (token);
 			}
 		} 
 		else 
 		{
-			parseLine (token, FALSE); 
+			parseActionScript (token);
 		}
 	} while (TRUE);
 }
 
 static void initialize (const langType language)
 {
-	Assert (sizeof (JsKinds) / sizeof (JsKinds [0]) == JSTAG_COUNT);
+	Assert (sizeof (FlexKinds) / sizeof (FlexKinds [0]) == FLEXTAG_COUNT);
 	Lang_js = language;
-	buildJsKeywordHash ();
+	buildFlexKeywordHash ();
 }
 
-static void findJsTags (void)
+static void findFlexTags (void)
 {
 	tokenInfo *const token = newToken ();
 	exception_t exception;
@@ -1544,7 +2215,7 @@ static void findJsTags (void)
 	
 	exception = (exception_t) (setjmp (Exception));
 	while (exception == ExceptionNone)
-		parseJsFile (token);
+		parseFlexFile (token);
 
 	stringListDelete (ClassNames);
 	stringListDelete (FunctionNames);
@@ -1554,17 +2225,17 @@ static void findJsTags (void)
 }
 
 /* Create parser definition stucture */
-extern parserDefinition* JavaScriptParser (void)
+extern parserDefinition* FlexParser (void)
 {
-	static const char *const extensions [] = { "js", NULL };
-	parserDefinition *const def = parserNew ("JavaScript");
+	static const char *const extensions [] = { "as", "mxml", NULL };
+	parserDefinition *const def = parserNew ("Flex");
 	def->extensions = extensions;
 	/*
 	 * New definitions for parsing instead of regex
 	 */
-	def->kinds		= JsKinds;
-	def->kindCount	= KIND_COUNT (JsKinds);
-	def->parser		= findJsTags;
+	def->kinds		= FlexKinds;
+	def->kindCount	= KIND_COUNT (FlexKinds);
+	def->parser		= findFlexTags;
 	def->initialize = initialize;
 
 	return def;

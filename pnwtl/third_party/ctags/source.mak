@@ -1,4 +1,4 @@
-# $Id: source.mak,v 1.15 2003/04/01 05:02:13 darren Exp $
+# $Id: source.mak 720 2009-07-07 03:55:23Z dhiebert $
 #
 # Shared macros
 
@@ -9,15 +9,19 @@ HEADERS = \
 
 SOURCES = \
 	args.c \
+	ant.c \
 	asm.c \
 	asp.c \
 	awk.c \
+	basic.c \
 	beta.c \
 	c.c \
 	cobol.c \
+	dosbatch.c \
 	eiffel.c \
 	entry.c \
 	erlang.c \
+	flex.c \
 	fortran.c \
 	get.c \
 	html.c \
@@ -28,6 +32,8 @@ SOURCES = \
 	lua.c \
 	main.c \
 	make.c \
+	matlab.c \
+	ocaml.c \
 	options.c \
 	parse.c \
 	pascal.c \
@@ -46,6 +52,7 @@ SOURCES = \
 	sql.c \
 	strlist.c \
 	tcl.c \
+	tex.c \
 	verilog.c \
 	vhdl.c \
 	vim.c \
@@ -58,17 +65,25 @@ ENVIRONMENT_HEADERS = \
 ENVIRONMENT_SOURCES = \
     argproc.c mac.c qdos.c
 
+REGEX_SOURCES = gnu_regex/regex.c
+
+REGEX_HEADERS = gnu_regex/regex.h
+
 OBJECTS = \
 	args.$(OBJEXT) \
+	ant.$(OBJEXT) \
 	asm.$(OBJEXT) \
 	asp.$(OBJEXT) \
 	awk.$(OBJEXT) \
+	basic.$(OBJEXT) \
 	beta.$(OBJEXT) \
 	c.$(OBJEXT) \
 	cobol.$(OBJEXT) \
+	dosbatch.$(OBJEXT) \
 	eiffel.$(OBJEXT) \
 	entry.$(OBJEXT) \
 	erlang.$(OBJEXT) \
+	flex.$(OBJEXT) \
 	fortran.$(OBJEXT) \
 	get.$(OBJEXT) \
 	html.$(OBJEXT) \
@@ -79,6 +94,8 @@ OBJECTS = \
 	lua.$(OBJEXT) \
 	main.$(OBJEXT) \
 	make.$(OBJEXT) \
+	matlab.$(OBJEXT) \
+	ocaml.$(OBJEXT) \
 	options.$(OBJEXT) \
 	parse.$(OBJEXT) \
 	pascal.$(OBJEXT) \
@@ -97,9 +114,9 @@ OBJECTS = \
 	sql.$(OBJEXT) \
 	strlist.$(OBJEXT) \
 	tcl.$(OBJEXT) \
+	tex.$(OBJEXT) \
 	verilog.$(OBJEXT) \
 	vhdl.$(OBJEXT) \
 	vim.$(OBJEXT) \
 	yacc.$(OBJEXT) \
 	vstring.$(OBJEXT)
-

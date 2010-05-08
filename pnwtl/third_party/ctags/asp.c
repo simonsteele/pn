@@ -1,5 +1,5 @@
 /*
-*   $Id: asp.c,v 1.8 2006/05/30 04:37:11 darren Exp $
+*   $Id: asp.c 711 2009-07-04 16:52:11Z dhiebert $
 *
 *   Copyright (c) 2000, Patrick Dehne <patrick@steidle.net>
 *
@@ -25,11 +25,12 @@
 *   DATA DEFINITIONS
 */
 typedef enum {
-	K_CONST, K_FUNCTION, K_SUB, K_DIM
+	K_CONST, K_CLASS, K_FUNCTION, K_SUB, K_DIM
 } aspKind;
 
 static kindOption AspKinds [] = {
-	{ TRUE, 'c', "constant",   "constants"},
+	{ TRUE, 'd', "constant",   "constants"},
+	{ TRUE, 'c', "class",      "classes"}, 
 	{ TRUE, 'f', "function",   "functions"},
 	{ TRUE, 's', "subroutine", "subroutines"},
 	{ TRUE, 'v', "variable",   "variables"}
@@ -112,6 +113,102 @@ static void findAspTags (void)
 				}
 			}
 
+			/* class member? */
+			else if (strncasecmp ((const char*) cp, "public", (size_t) 6) == 0)
+			{
+				cp += 6;
+				if (isspace ((int) *cp))
+				{
+					while (isspace ((int) *cp))
+						++cp;
+					if (strncasecmp ((const char*) cp, "function", (size_t) 8) == 0)
+					{
+						cp+=8;
+					    while (isspace ((int) *cp))
+						    ++cp;
+					    while (isalnum ((int) *cp)  ||  *cp == '_')
+					    {
+						    vStringPut (name, (int) *cp);
+						    ++cp;
+					    }
+					    vStringTerminate (name);
+					    makeSimpleTag (name, AspKinds, K_FUNCTION);
+					    vStringClear (name);
+					}
+					else if (strncasecmp ((const char*) cp, "sub", (size_t) 3) == 0)
+					{
+						cp+=3;
+					    while (isspace ((int) *cp))
+						    ++cp;
+					    while (isalnum ((int) *cp)  ||  *cp == '_')
+					    {
+						    vStringPut (name, (int) *cp);
+						    ++cp;
+					    }
+					    vStringTerminate (name);
+					    makeSimpleTag (name, AspKinds, K_SUB);
+					    vStringClear (name);
+					}
+					else {
+					    while (isalnum ((int) *cp)  ||  *cp == '_')
+					    {
+						    vStringPut (name, (int) *cp);
+						    ++cp;
+					    }
+					    vStringTerminate (name);
+					    makeSimpleTag (name, AspKinds, K_DIM);
+					    vStringClear (name);
+					}
+				}
+			}
+			else if (strncasecmp ((const char*) cp, "private", (size_t) 7) == 0)
+			{
+				cp += 7;
+				if (isspace ((int) *cp))
+				{
+					while (isspace ((int) *cp))
+						++cp;
+					if (strncasecmp ((const char*) cp, "function", (size_t) 8) == 0)
+					{
+						cp+=8;
+					    while (isspace ((int) *cp))
+						    ++cp;
+					    while (isalnum ((int) *cp)  ||  *cp == '_')
+					    {
+						    vStringPut (name, (int) *cp);
+						    ++cp;
+					    }
+					    vStringTerminate (name);
+					    makeSimpleTag (name, AspKinds, K_FUNCTION);
+					    vStringClear (name);
+					}
+					else if (strncasecmp ((const char*) cp, "sub", (size_t) 3) == 0)
+					{
+						cp+=3;
+					    while (isspace ((int) *cp))
+						    ++cp;
+					    while (isalnum ((int) *cp)  ||  *cp == '_')
+					    {
+						    vStringPut (name, (int) *cp);
+						    ++cp;
+					    }
+					    vStringTerminate (name);
+					    makeSimpleTag (name, AspKinds, K_SUB);
+					    vStringClear (name);
+					}
+					else {
+					    while (isalnum ((int) *cp)  ||  *cp == '_')
+					    {
+						    vStringPut (name, (int) *cp);
+						    ++cp;
+					    }
+					    vStringTerminate (name);
+					    makeSimpleTag (name, AspKinds, K_DIM);
+					    vStringClear (name);
+					}
+				}
+			}
+
 			/* function? */
 			else if (strncasecmp ((const char*) cp, "function", (size_t) 8) == 0)
 			{
@@ -170,6 +267,25 @@ static void findAspTags (void)
 				}
 			}
 
+			/* class declaration? */
+			else if (strncasecmp ((const char*) cp, "class", (size_t) 5) == 0)
+			{
+				cp += 5;
+				if (isspace ((int) *cp))
+				{
+					while (isspace ((int) *cp))
+						++cp;
+					while (isalnum ((int) *cp)  ||  *cp == '_')
+					{
+						vStringPut (name, (int) *cp);
+						++cp;
+					}
+					vStringTerminate (name);
+					makeSimpleTag (name, AspKinds, K_CLASS);
+					vStringClear (name);
+				}
+			}
+
 			/* const declaration? */
 			else if (strncasecmp ((const char*) cp, "const", (size_t) 5) == 0)
 			{
@@ -209,3 +325,4 @@ extern parserDefinition* AspParser (void)
 }
 
 /* vi:set tabstop=4 shiftwidth=4: */
+
