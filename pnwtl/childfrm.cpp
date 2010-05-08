@@ -1176,7 +1176,7 @@ LRESULT CChildFrame::OnCompleteClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 	int start = view->WordStartPosition(pos, true);
 	int end = view->WordEndPosition(pos, true);
 
-	if (end > pos)
+	if (start == end || end > pos)
 	{
 		// We're in a word, not at the end of it, bail.
 		return 0;

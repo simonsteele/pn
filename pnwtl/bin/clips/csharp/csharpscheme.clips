@@ -2,16 +2,16 @@
 <clip name="class" shortcut="cl">/// &lt;summary&gt;
 /// 
 /// &lt;/summary&gt;
-public class |
+public class $0
 {
 	
 }</clip><clip name="method" shortcut="m">/// &lt;summary&gt;
 /// 
 /// &lt;/summary&gt;
-public void |()
+public void $0()
 {
 	
-}</clip><clip name="property" shortcut="prop">private | x;
+}</clip><clip name="property" shortcut="prop">private $0 x;
 
 /// &lt;summary&gt;
 /// Gets or sets 
@@ -20,13 +20,13 @@ public type X
 {
 	get { return this.x; }
 	set { this.x = value; }
-}</clip><clip name="interface" shortcut="iface">public interface I|
+}</clip><clip name="interface" shortcut="iface">public interface I$0
 {
 	
-}</clip><clip name="if" shortcut="if">if (|)
+}</clip><clip name="if" shortcut="if">if ($0)
 {
 	
-}</clip><clip name="if else" shortcut="ife">if (|)
+}</clip><clip name="if else" shortcut="ife">if ($0)
 {
 	
 }

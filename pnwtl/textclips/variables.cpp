@@ -44,14 +44,14 @@ bool DefaultVariableProvider::GetVariable(const char* name, std::string& value)
 	value = "";
 	char itosbuf[40];
 
-	if (iequals(n, "FilePath"))
+	if (iequals(n, "PN_FileName"))
 	{
 		if (m_pChild)
 		{
 			set(value, m_pChild->GetFileName(FN_FILE));
 		}
 	}
-	else if (iequals(n, "FileDirectory"))
+	else if (iequals(n, "PN_FileDirectory"))
 	{
 		if (m_pChild)
 		{
@@ -59,14 +59,21 @@ bool DefaultVariableProvider::GetVariable(const char* name, std::string& value)
 			set(value, pn.c_str());
 		}
 	}
-	else if (iequals(n, "Filename"))
+	else if (iequals(n, "PN_FilenameNoExt"))
 	{
 		if (m_pChild)
 		{
 			set(value, m_pChild->GetFileName(FN_FILEPART));
 		}
 	}
-	else if (iequals(n, "CurrentLine"))
+	else if (iequals(n, "PN_FilePath"))
+	{
+		if (m_pChild)
+		{
+			set(value, m_pChild->GetFileName(FN_FULL));
+		}
+	}
+	else if (iequals(n, "PN_CurrentLine"))
 	{
 		if (m_pChild)
 		{
@@ -74,7 +81,7 @@ bool DefaultVariableProvider::GetVariable(const char* name, std::string& value)
 			set(value, itosbuf);
 		}
 	}
-	else if (iequals(n, "CurrentColumn"))
+	else if (iequals(n, "PN_CurrentColumn"))
 	{
 		if (m_pChild)
 		{
@@ -82,28 +89,28 @@ bool DefaultVariableProvider::GetVariable(const char* name, std::string& value)
 			set(value, itosbuf);
 		}
 	}
-	else if (iequals(n, "CurrentWord"))
+	else if (iequals(n, "PN_CurrentWord"))
 	{
 		if (m_pChild)
 		{
 			set(value, m_pChild->GetTextView()->GetCurrentWord());
 		}
 	}
-	else if (iequals(n, "CurrentLineText"))
+	else if (iequals(n, "PN_CurrentLineText"))
 	{
 		if (m_pChild)
 		{
 			set(value, m_pChild->GetTextView()->GetLineText());
 		}
 	}
-	else if (iequals(n, "SelectedText"))
+	else if (iequals(n, "PN_SelectedText"))
 	{
 		if (m_pChild)
 		{
 			set(value, m_pChild->GetTextView()->GetSelText2());
 		}
 	}
-	else if (iequals(n, "CurrentProjectFile"))
+	else if (iequals(n, "PN_CurrentProjectFile"))
 	{
 		if (m_pWorkspace != NULL)
 		{
@@ -116,7 +123,7 @@ bool DefaultVariableProvider::GetVariable(const char* name, std::string& value)
 			}
 		}
 	}
-	else if (iequals(n, "CurrentProjectGroupFile"))
+	else if (iequals(n, "PN_CurrentProjectGroupFile"))
 	{
 		if (m_pWorkspace != NULL && m_pWorkspace->CanSave())
 		{
@@ -124,7 +131,7 @@ bool DefaultVariableProvider::GetVariable(const char* name, std::string& value)
 			set(value, fn.c_str());
 		}
 	}
-	else if (iequals(n, "ProjectPath"))
+	else if (iequals(n, "PN_ProjectPath"))
 	{
 		if (m_pActiveProject)
 		{
@@ -132,7 +139,7 @@ bool DefaultVariableProvider::GetVariable(const char* name, std::string& value)
 			set(value, fn.c_str());
 		}
 	}
-	else if (iequals(n, "ProjectGroupPath"))
+	else if (iequals(n, "PN_ProjectGroupPath"))
 	{
 		if (m_pWorkspace != NULL && m_pWorkspace->CanSave())
 		{
@@ -140,46 +147,46 @@ bool DefaultVariableProvider::GetVariable(const char* name, std::string& value)
 			set(value, fn.c_str());
 		}
 	}
-	else if (boost::istarts_with(n, "ProjectProp:"))
+	else if (boost::istarts_with(n, "PN_ProjectProp:"))
 	{
 		if (m_pActiveProject)
 		{
 			set(value, getProjectProp(n));
 		}
 	}
-	else if (boost::istarts_with(n, "FileProp:"))
+	else if (boost::istarts_with(n, "PN_FileProp:"))
 	{
 		if (m_pActiveProject)
 		{
 			set(value, getFileProp(n));
 		}
 	}
-	else if (iequals(n, "ProjectName"))
+	else if (iequals(n, "PN_ProjectName"))
 	{
 		if (m_pActiveProject)
 		{
 			set(value, m_pActiveProject->GetName());
 		}
 	}
-	else if (iequals(n, "ProjectGroupName"))
+	else if (iequals(n, "PN_ProjectGroupName"))
 	{
 		if (m_pWorkspace != NULL)
 		{
 			set(value, m_pWorkspace->GetName());
 		}
 	}
-	else if (iequals(n, "PNPath"))
+	else if (iequals(n, "PN_PNPath"))
 	{
 		tstring pn;
 		OPTIONS->GetPNPath(pn);
 		set(value, pn);
 	}
-	else if (iequals(n, "UseTabsYesNo"))
+	else if (iequals(n, "PN_UseTabsYesNo"))
 	{
 		// TODO
 		value = "NO";
 	}
-	else if (iequals(n, "TabSize"))
+	else if (iequals(n, "PN_TabSize"))
 	{
 		// TODO
 		value = "4";
@@ -279,6 +286,8 @@ tstring DefaultVariableProvider::getFileProp(const std::string n)
 			return retval;
 		}
 	}
+
+	return tstring(_T(""));
 }
 
 std::string DefaultVariableProvider::getTextmateVariable(const std::string& name)
@@ -286,37 +295,37 @@ std::string DefaultVariableProvider::getTextmateVariable(const std::string& name
 	if (name == "TM_CURRENT_LINE")
 	{
 		// Current line text
-		return "CurrentLineText";
+		return "PN_CurrentLineText";
 	}
 	else if (name == "TM_CURRENT_WORD")
 	{
 		// Current cursor word
-		return "CurrentWord";
+		return "PN_CurrentWord";
 	}
 	else if (name == "TM_DIRECTORY")
 	{
 		// Current directory
-		return "FileDirectory";
+		return "PN_FileDirectory";
 	}
 	else if (name == "TM_FILEPATH")
 	{
 		// Full path for current file
-		return "FilePath";
+		return "PN_FilePath";
 	}
 	else if (name == "TM_LINE_INDEX")
 	{
 		// Index in the current line, or current column in real money
-		return "CurrentColumn";
+		return "PN_CurrentColumn";
 	}
 	else if (name == "TM_LINE_NUMBER")
 	{
 		// Current line number.
-		return "CurrentLine";
+		return "PN_CurrentLine";
 	}
 	else if (name == "TM_PROJECT_DIRECTORY")
 	{
 		// Top-level directory in the project drawer, probably the project path
-		return "ProjectPath";
+		return "PN_ProjectPath";
 	}
 	else if (name == "TM_SELECTED_FILES")
 	{
@@ -331,17 +340,17 @@ std::string DefaultVariableProvider::getTextmateVariable(const std::string& name
 	else if (name == "TM_SELECTED_TEXT")
 	{
 		// Current selected text
-		return "SelectedText";
+		return "PN_SelectedText";
 	}
 	else if (name == "TM_SOFT_TABS")
 	{
 		// YES if soft tabs are enabled, NO otherwise
-		return "UseTabsYesNo";
+		return "PN_UseTabsYesNo";
 	}
 	else if (name == "TM_TAB_SIZE")
 	{
 		// Tab size
-		return "TabSize";
+		return "PN_TabSize";
 	}
 
 	return name;

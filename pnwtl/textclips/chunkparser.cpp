@@ -197,8 +197,13 @@ bool ChunkParser::Parse(const std::string& clip, std::vector<Chunk>& chunks)
 		boost::spirit::ascii::space
 	);
     
-	if (first != last) // fail if we did not get a full match
-		return false;
+	if (first != last)
+	{
+		// if we did not get a full match, we copy in the remaining text:
+		std::string buf(first, last);
+		m_grammar->m_placeholders.push_back(Chunk(TextClips::ctNone, buf));
+		r = false;
+	}
     
 	std::swap(m_grammar->m_placeholders, chunks);
 

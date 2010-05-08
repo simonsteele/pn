@@ -4,36 +4,36 @@
 	<clip name="Main body"><![CDATA[
  
   begin
-    |;
+    $0;
   end.
 
 ]]></clip>
 	<clip name="Function body"><![CDATA[
-	function |(param1: int):int;
+	function $0(param1: int):int;
 	var  ;
 	begin
 	end;
 ]]></clip>
 	<clip name="Procedure body"><![CDATA[
-	Procedure |();
+	Procedure $0();
 	var  ;
 	begin
 	end;
 ]]></clip>
 <clip name="exit proc/function"><![CDATA[  exit;
-|]]></clip>
+$0]]></clip>
 <clip name="exit program"><![CDATA[  halt(0);
-|]]></clip>
+$0]]></clip>
 	<clip name="----- Control -----"><![CDATA[]]></clip>
-	<clip name="if (short)"><![CDATA[  if (|) then ;
+	<clip name="if (short)"><![CDATA[  if ($0) then ;
 ]]></clip>
-	<clip name="if"><![CDATA[  if (|) then
+	<clip name="if"><![CDATA[  if ($0) then
   begin
     ;
   end;
 
 ]]></clip>	
-	<clip name="if else"><![CDATA[  if (|) then
+	<clip name="if else"><![CDATA[  if ($0) then
   begin
     ;
   end 
@@ -42,7 +42,7 @@
   end;
 
 ]]></clip>
-	<clip name="if else if"><![CDATA[  if (|) then
+	<clip name="if else if"><![CDATA[  if ($0) then
   begin
     ;
   end 
@@ -53,7 +53,7 @@
   end;
 
 ]]></clip>
-	<clip name="case (switch)"><![CDATA[ case (|) of
+	<clip name="case (switch)"><![CDATA[ case ($0) of
       :
       begin
       end;
@@ -73,7 +73,7 @@
 end;
 
 ]]></clip>	
-	<clip name="for"><![CDATA[  for | to do
+	<clip name="for"><![CDATA[  for $0 to do
   begin
     ;    
   end;
@@ -83,11 +83,11 @@ end;
 	<clip name="repeat"><![CDATA[  repeat 
   
     ;
-  until |;
+  until $0;
 
 ]]></clip>
 	
-	<clip name="do while"><![CDATA[  while (|) do
+	<clip name="do while"><![CDATA[  while ($0) do
   begin
     ;
   end;
@@ -95,10 +95,10 @@ end;
 ]]></clip>
 		
 	<clip name="----- Other -----"><![CDATA[]]></clip>
-	<clip name="constant"><![CDATA[const | = ;]]></clip>
-	<clip name="variable section"><![CDATA[var | = ;]]></clip>
-	<clip name="variable assign"><![CDATA[  |:=; ]]></clip>
-	<clip name="use library"><![CDATA[uses "|";]]></clip>
-	<clip name="Comment "><![CDATA[{|}]]></clip>
-	<clip name="Comment //"><![CDATA[//|]]></clip>	
+	<clip name="constant"><![CDATA[const $0 = ;]]></clip>
+	<clip name="variable section"><![CDATA[var $0 = ;]]></clip>
+	<clip name="variable assign"><![CDATA[  $0:=; ]]></clip>
+	<clip name="use library"><![CDATA[uses "$0";]]></clip>
+	<clip name="Comment "><![CDATA[{$0}]]></clip>
+	<clip name="Comment //"><![CDATA[//$0]]></clip>	
 </clips>

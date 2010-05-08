@@ -5,7 +5,7 @@
 		"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd"&gt;
 	
 	&lt;book&gt;
-		&lt;title&gt;|&lt;/title&gt;
+		&lt;title&gt;$0&lt;/title&gt;
 		&lt;titleabbrev&gt;&lt;/titleabbrev&gt;
 		
 		&lt;bookinfo&gt;
@@ -34,7 +34,7 @@
 	
 	</clip><clip name="part" shortcut="">
 	&lt;part&gt;
-		&lt;title&gt;|&lt;/title&gt;
+		&lt;title&gt;$0&lt;/title&gt;
 		&lt;partintro&gt;
 			&lt;para&gt;
 			Introduction to this part.
@@ -45,7 +45,7 @@
 	
 	</clip><clip name="chapter" shortcut="">
 &lt;chapter&gt;
-	&lt;title&gt;|&lt;/title&gt;
+	&lt;title&gt;$0&lt;/title&gt;
 &lt;/chapter&gt;
 	</clip><clip name="PN Help Topic" shortcut="">
 	&lt;section&gt;
@@ -55,4 +55,4 @@
 		&lt;para&gt;This documentation is still to be written, &lt;ulink url="mailto:ss@pnotepad.org?subject=documentation%20help"&gt;perhaps you can help?&lt;/ulink&gt;&lt;/para&gt;
 	&lt;/section&gt;
 	
-	</clip><clip name="link" shortcut="">&lt;link linkend="|"&gt;&lt;/link&gt;</clip><clip name="keycombo" shortcut="">&lt;keycombo&gt;|&lt;/keycombo&gt;</clip><clip name="htmlhelp topic" shortcut="">&lt;?dbhh topicname="|" topicid="number"?&gt;</clip></clips>
+	</clip><clip name="link" shortcut="">&lt;link linkend="$0"&gt;&lt;/link&gt;</clip><clip name="keycombo" shortcut="">&lt;keycombo&gt;$0&lt;/keycombo&gt;</clip><clip name="htmlhelp topic" shortcut="">&lt;?dbhh topicname="$0" topicid="number"?&gt;</clip></clips>

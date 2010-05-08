@@ -2,25 +2,25 @@
   void main(void)
   //
   {
-    |;
+    $0;
   }
 
 </clip><clip name="Function body" shortcut="">
-  void | (void)
+  void $0 (void)
   //
   {
     ;
   }
 
 </clip><clip name="return" shortcut="">  return;
-|</clip><clip name="----- Control -----" shortcut=""></clip><clip name="if (short)" shortcut="">  if (|) {;}
-</clip><clip name="if" shortcut="">  if (|)
+$0</clip><clip name="----- Control -----" shortcut=""></clip><clip name="if (short)" shortcut="">  if ($0) {;}
+</clip><clip name="if" shortcut="">  if ($0)
   {
     ;
   }
 
-</clip><clip name="if else (short)" shortcut="">  if (|) {;} else {;}
-</clip><clip name="if else" shortcut="">  if (|)
+</clip><clip name="if else (short)" shortcut="">  if ($0) {;} else {;}
+</clip><clip name="if else" shortcut="">  if ($0)
   {
     ;
   } 
@@ -29,7 +29,7 @@
     ;
   }
 
-</clip><clip name="if else if" shortcut="">  if (|)
+</clip><clip name="if else if" shortcut="">  if ($0)
   {
     ;
   }
@@ -46,7 +46,7 @@
     ;
   }
 
-</clip><clip name="switch" shortcut="">  switch (|)
+</clip><clip name="switch" shortcut="">  switch ($0)
   {
     case ():
       ;
@@ -65,25 +65,25 @@
       break;
   }
 
-</clip><clip name="for (short)" shortcut="">  for(|;;) {;}
-</clip><clip name="for" shortcut="">  for(|;;)
+</clip><clip name="for (short)" shortcut="">  for($0;;) {;}
+</clip><clip name="for" shortcut="">  for($0;;)
   {
     ;    
   }
 
-</clip><clip name="while (short)" shortcut="">  while(|) {;}
-</clip><clip name="while" shortcut="">  while(|)
+</clip><clip name="while (short)" shortcut="">  while($0) {;}
+</clip><clip name="while" shortcut="">  while($0)
   {
     ;
   }
 
-</clip><clip name="do while (short)" shortcut="">  do {;} while (|);
+</clip><clip name="do while (short)" shortcut="">  do {;} while ($0);
 </clip><clip name="do while" shortcut="">  do
   {
     ;
   }
-  while (|);
+  while ($0);
 
 </clip><clip name="break" shortcut="">  break;
-|</clip><clip name="continue" shortcut="">  continue;
-|</clip><clip name="----- Other -----" shortcut=""></clip><clip name="#define" shortcut="">#define |</clip><clip name="#include &quot;&quot;" shortcut="">#include "|"</clip><clip name="#include &lt;>" shortcut="">#include &lt;|&gt;</clip><clip name="Comment /**/" shortcut="">/*|*/</clip><clip name="Comment //" shortcut="">//|</clip><clip name="Comment //***" shortcut="">//***|</clip></clips>
+$0</clip><clip name="continue" shortcut="">  continue;
+$0</clip><clip name="----- Other -----" shortcut=""></clip><clip name="#define" shortcut="">#define $0</clip><clip name="#include &quot;&quot;" shortcut="">#include "$0"</clip><clip name="#include &lt;>" shortcut="">#include &lt;$0&gt;</clip><clip name="Comment /**/" shortcut="">/*$0*/</clip><clip name="Comment //" shortcut="">//$0</clip><clip name="Comment //***" shortcut="">//***$0</clip></clips>

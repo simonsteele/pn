@@ -232,4 +232,25 @@ BOOST_AUTO_TEST_CASE( basic_variable_with_default )
 	BOOST_REQUIRE_EQUAL("blah blah", (*c).GetText());
 }
 
+BOOST_AUTO_TEST_CASE( parse_failure_copies_text )
+{
+	TextClips::ChunkParser p;
+	FakeVariableProvider vars;
+	p.SetVariableProvider(&vars);
+
+	std::string input("${1:Test} $(2) test");
+	std::vector<Chunk> chunks;
+	BOOST_REQUIRE_EQUAL(false, p.Parse(input, chunks));
+	BOOST_REQUIRE_EQUAL(3, chunks.size());
+	
+	ChunkItC c = chunks.begin();
+	BOOST_REQUIRE_EQUAL(true, (*c).IsMasterField());
+	c++;
+	BOOST_REQUIRE_EQUAL(true, (*c).IsText());
+	BOOST_REQUIRE_EQUAL(" ", (*c).GetText());
+	c++;
+	BOOST_REQUIRE_EQUAL(true, (*c).IsText());
+	BOOST_REQUIRE_EQUAL("$(2) test", (*c).GetText());
+}
+
 BOOST_AUTO_TEST_SUITE_END();

@@ -1,2 +1,5 @@
 <clips name="" scheme="python">
-<clip name="class" shortcut="cl">class |:</clip><clip name="method" shortcut="m">def |():</clip><clip name="xrange" shortcut="xr">for x in xrange(|):</clip></clips>
+<clip name="class" shortcut="cl">class ${1:Name}:
+	$0</clip><clip name="method" shortcut="m">def ${1:Name}():
+	$0</clip><clip name="xrange" shortcut="xr">for x in xrange(${1:range}):
+	$0</clip></clips>
