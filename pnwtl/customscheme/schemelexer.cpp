@@ -2,7 +2,7 @@
  * @file schemelexer.cpp
  * @brief Custom lexer for user-defined languages - based on simple language settings.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -13,9 +13,6 @@
 #include "scintilla/accessor.h"
 #include "scintilla/windowaccessor.h"
 #include "scintilla/stylecontext.h"
-
-//Define a static keyword list
-static WordList **keywordList;
 
 CustomLexer::CustomLexer()
 {
@@ -89,7 +86,7 @@ bool CustomLexer::IsANumChar(int ch) const
 		}
 
 void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, char *words[],
-					Accessor &styler) const
+					Accessor &styler)
 {
 	// String EOL styles do not leak onto the next line - could these styles be the same one?
 	bool s1 = stringTypes[0].bValid;
@@ -144,13 +141,22 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, char *
 				(bCaseSensitive) ? cc.GetCurrent(s, sizeof(s)) : cc.GetCurrentLowered(s, sizeof(s));
 				
 				//Cache the keyword list in case that wasn't done yet, note that this method speeds things up, but requires a PNotepad restart
-				if(keywordList == NULL)
-					keywordList = (bCaseSensitive) ? StringToWordLists(words, false) : StringToWordLists(words, true);
+				if (keywordList.empty())
+				{
+					if (bCaseSensitive)
+					{
+						StringToWordLists(words, false, keywordList);
+					}
+					else
+					{
+						StringToWordLists(words, true, keywordList);
+					}
+				}
 
 				//Loop through all keywords untill we find what we need
 				for(int z = 0; z < MAX_KEYWORDS; z++)
 				{
-					if( (*keywordList[z]).InList(s) )
+					if( (keywordList[z]).InList(s) )
 					{
 						cc.ChangeState(STYLE_KEYWORDS + z);
 						break;
@@ -295,7 +301,7 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, char *
 	cc.Complete();
 }
 
-void CustomLexer::DoFold(unsigned int startPos, int length, int initStyle, WordList *keywordlists[],
+void CustomLexer::DoFold(unsigned int startPos, int length, int initStyle, char *words[],
                     Accessor &styler) const
 {
 

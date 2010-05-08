@@ -2,7 +2,7 @@
  * @file schemelexer.h
  * @brief Custom lexer for user-defined languages - based on simple language settings.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -88,6 +88,7 @@ class CustomLexer : public Lexer
 {
 	public:
 		CustomLexer();
+		virtual ~CustomLexer(){}
 
 		virtual const char* GetName() const
 		{
@@ -95,9 +96,9 @@ class CustomLexer : public Lexer
 		}
 
 		virtual void DoLex(unsigned int startPos, int length, int initStyle, char *words[],
-                            Accessor &styler) const;
+                            Accessor &styler);
 
-		virtual void DoFold(unsigned int startPos, int length, int initStyle, WordList *keywordlists[],
+		virtual void DoFold(unsigned int startPos, int length, int initStyle, char *words[],
                             Accessor &styler) const;
 
 	// Custom Lexer Attributes
@@ -129,6 +130,28 @@ class CustomLexer : public Lexer
 		inline bool IsAWordChar(int ch) const;
 		inline bool IsANumStart(int ch) const;
 		inline bool IsANumChar(int ch) const;
+
+		//Define a static keyword list
+		std::vector<WordList> keywordList;
 };
+
+// Create WordLists...
+
+static void StringToWordLists(char *val[], bool bForceLowerCase, std::vector<WordList>& wordLists) {
+	int dim = 0;
+    
+	while (val[dim])
+	{
+        dim++;
+	}
+
+	//	WordList **wla = new WordList*[dim+1];
+	wordLists.resize(dim);
+    
+	for (int i = 0; i < dim; i++) 
+	{
+        wordLists[i].Set((bForceLowerCase) ? _strlwr(val[i]) : val[i]);
+    }
+}
 
 #endif

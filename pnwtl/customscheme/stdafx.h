@@ -33,3 +33,5 @@ typedef unsigned __int64 uint64_t;
 #else
 #define EXPORT __declspec(dllimport)
 #endif
+
+#include <vector>
