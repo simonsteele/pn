@@ -319,7 +319,11 @@ bool CTagsTagSource::FindTags(ITagSink* sink,
 //				fwrite(buffer, dwBytesRead, 1, fDump);
 //#endif
 				// Parse the CTAGS data:
-				parseData(&state, dwBytesRead, mask, userData, ltypes, utypes);
+				if (!parseData(&state, dwBytesRead, mask, userData, ltypes, utypes))
+				{
+					// Parse failure - most likely we were going to blow our buffer.
+					break;
+				}
 			}
 			else
 			{
@@ -374,8 +378,6 @@ bool CTagsTagSource::FindTags(ITagSink* sink,
 				}
 			}
 		}
-
-		
 	} // while (!bCompleted)
 
 //#ifdef _DEBUG
@@ -433,7 +435,7 @@ bool CTagsTagSource::canParse(char* buffer, DWORD dwLength)
 /**
  * Parse a buffer that's been read
  */
-void CTagsTagSource::parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT mask, void* userData, int* ltypes, int* utypes)
+bool CTagsTagSource::parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT mask, void* userData, int* ltypes, int* utypes)
 {
 	char*	pLineEnd;
 	
@@ -458,7 +460,7 @@ void CTagsTagSource::parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT
 				if ((pLineEnd = strchr(p, '\n')) == NULL)
 				{
 					// Couldn't find an end-of-line, we didn't get sensible data
-					return;
+					return false;
 				}
 			}
 
@@ -488,11 +490,24 @@ void CTagsTagSource::parseData(LPPARSESTATE state, DWORD dwBytesRead, MASKSTRUCT
 	// else store for next run
 	if(bytesLeft > 0)
 	{
-		memcpy(&state->buffer[PARSE_BUFFER_SIZE-bytesLeft], p, bytesLeft);
-		state->extra = bytesLeft;
+		if (bytesLeft <= PARSE_BUFFER_SIZE)
+		{
+			// We have room to store what we have and continue parsing:
+			memcpy(&state->buffer[PARSE_BUFFER_SIZE-bytesLeft], p, bytesLeft);
+			state->extra = bytesLeft;
+		}
+		else
+		{
+			// Our buffer is now too big to store and continue parsing, we have to abort.
+			return false;
+		}
 	}
 	else
+	{
 		state->extra = 0;
+	}
+
+	return true;
 }
 
 bool CTagsTagSource::processLine(char* p, const char* pLineEnd, const int* ltypes, const int* utypes, METHODINFO& mi)
