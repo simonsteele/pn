@@ -245,20 +245,47 @@ public:
 		CString text((LPCTSTR)string);
 		if(text.GetLength() > 0)
 		{
-			int i = FindStringExact(-1, text);
+			int i = FindStringExactMatchCase(text);
+			
 			// Bring the string on top
-			if(i > 0)
+			if (i >= 0)
 			{
 				DeleteString(i);
 				InsertString(addPos, text);
 			}
-			else if(i < 0)
+			else if (i == CB_ERR)
+			{
 				InsertString(addPos, text);
+			}
+
 			SetCurSel(addPos);
 
 			if(m_pAC)
 				m_pAC->AddItem(text);
 		}
+	}
+
+	int FindStringExactMatchCase(LPCTSTR string)
+	{
+		size_t searchLength(_tcslen(string));
+		std::vector<TCHAR> buffer(searchLength+1);
+		for (int i = 0; i < GetCount(); i++)
+		{
+			size_t entryLength = GetLBTextLen(i);
+			if (entryLength != searchLength)
+			{
+				continue;
+			}
+
+			GetLBText(i, &buffer[0]);
+
+			if (_tcscmp(string, &buffer[0]) == 0)
+			{
+				return i;
+			}
+		}
+
+		return CB_ERR;
 	}
 
 	/**
