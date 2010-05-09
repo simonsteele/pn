@@ -544,7 +544,7 @@ class CNumberCombo : public CComboBox
 			if(bTryWindowText)
 			{
 				CWindowText wt(m_hWnd);
-				if(_tcslen((LPCTSTR)wt) > 0)
+				if((LPCTSTR)wt && _tcslen((LPCTSTR)wt) > 0)
 				{
 					int size = _ttol((LPCTSTR)wt);
 					if( size != 0 )
