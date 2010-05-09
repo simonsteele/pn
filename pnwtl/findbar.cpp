@@ -176,7 +176,7 @@ LRESULT CFindBar::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 	m_xbutton.Create(m_hWnd, rcCloseButton, _T("x"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 0, IDCANCEL);
 	m_findNext.Create(m_hWnd, rcFindNext, _T("Find &Next"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 0, IDC_FBFINDNEXTBUTTON);
 	m_findPrev.Create(m_hWnd, rcFindPrev, _T("Find &Previous"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 0, IDC_FBFINDPREVBUTTON);
-	m_txtbox.Create(m_hWnd, rcTextBox, _T(""), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, WS_EX_CLIENTEDGE, IDC_FBTEXT);
+	m_txtbox.Create(m_hWnd, rcTextBox, _T(""), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | ES_AUTOHSCROLL, WS_EX_CLIENTEDGE, IDC_FBTEXT);
 	m_matchCase.Create(m_hWnd, rcMatchCase, _T("Match Case"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | BS_AUTOCHECKBOX, 0, IDC_FBMATCHCASECHECK);
 	m_wrappedLabel.Create(m_hWnd, rcWrapLabel, LS(IDS_FINDLOOPED), WS_CHILD | WS_CLIPSIBLINGS, 0, IDC_FBWRAPLABEL);
 	
@@ -188,6 +188,8 @@ LRESULT CFindBar::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
 	m_findPrev.SetFont(fn);
 	m_matchCase.SetFont(fn);
 	m_wrappedLabel.SetFont(fn);
+
+	m_txtbox.SendMessage(EM_SETLIMITTEXT, 0, 0);
 
 	return 0;
 }
