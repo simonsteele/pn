@@ -45,6 +45,7 @@ Bug Fixes:
 14) Avoid docking windows being minimised etc. (#776)
 15) Problem with file save modifiers (#836)
 16) Hidden files can now be saved (#859)
+17) Remapped jump to matching brace to Alt-[ to avoid stomping on jump to previous paragraph which is Ctrl-[ (#831)
 
 Extensions Interface Changes:
 -----------------------------

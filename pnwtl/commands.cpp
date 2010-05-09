@@ -602,7 +602,7 @@ Commands::KeyMap* CommandDispatch::GetCurrentScintillaMap() const
 static Commands::KeyMap* readKeyMap(int commands, FILE* kbfile)
 {
 	KeyToCommand* loadedcmds = new KeyToCommand[commands+1];
-	if(fread(loadedcmds, sizeof(KeyToCommand), commands, kbfile) != commands)
+	if(fread(loadedcmds, sizeof(KeyToCommand), commands, kbfile) != static_cast<size_t>(commands))
 	{
 		UNEXPECTED(_T("Failed to load the correct number of commands from the keyboard mappings file."));
 		delete loadedcmds;
@@ -852,7 +852,7 @@ KeyToCommand DefaultKeyMap[] = {
 	{K_CTRLSHIFT,	'F',		ID_EDIT_FINDINFILES},
 	{K_CTRL,		VK_OEM_2,	ID_EDIT_QUICKFIND},
 	{K_CTRL,		'G',		ID_EDIT_GOTO},
-	{K_CTRL,		VK_OEM_4,	ID_EDIT_GOTOBRACE},
+	{K_ALT,			VK_OEM_4,	ID_EDIT_GOTOBRACE},
 	{K_ALT,			'G',		ID_EDIT_JUMPTO},
 	{K_CTRLSHIFT,	'H',		ID_EDIT_HEADERSWITCH},
 	{K_CTRL,		' ',		ID_EDIT_AUTOCOMPLETE},
