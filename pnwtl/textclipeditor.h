@@ -18,20 +18,30 @@
 /**
  * Editor window for text clips
  */
-class CTextClipEditor : public CDialogImpl<CTextClipEditor>
+class CTextClipEditor : public CDialogImpl<CTextClipEditor>,
+						public CDialogResize<CTextClipEditor>
 {
 public:
 	CTextClipEditor(std::string shortcut, std::string text, tstring hint) : m_shortcut(shortcut), m_text(text), m_hint(hint)
 	{
 	}
 
-	enum {IDD = IDD_TEXTCLIPEDITOR };
+	enum { IDD = IDD_TEXTCLIPEDITOR };
 
 	BEGIN_MSG_MAP(CTextClipEditor)
 		MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
 		COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
 		COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
+		CHAIN_MSG_MAP( CDialogResize<CTextClipEditor> )
 	END_MSG_MAP()
+
+	enum { IDC_EDITOR = 102 };
+
+	BEGIN_DLGRESIZE_MAP(CTextClipEditor)
+		DLGRESIZE_CONTROL(IDC_EDITOR, DLSZ_SIZE_Y | DLSZ_SIZE_X)
+		DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X | DLSZ_MOVE_Y)
+		DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X | DLSZ_MOVE_Y)
+    END_DLGRESIZE_MAP()
 
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 	{
@@ -39,7 +49,7 @@ public:
 		::GetWindowRect(GetDlgItem(IDC_PLACEHOLDER), rcScintilla);
 		ScreenToClient(rcScintilla);
 		m_scintilla.SetWantAll(true);
-		m_scintilla.Create(m_hWnd, rcScintilla, _T("EditClipText"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_TABSTOP, WS_EX_STATICEDGE);
+		m_scintilla.Create(m_hWnd, rcScintilla, _T("EditClipText"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_TABSTOP, WS_EX_STATICEDGE, IDC_EDITOR);
 		::SetWindowPos(m_scintilla, GetDlgItem(IDC_PLACEHOLDER), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 		m_scintilla.SetWrapMode(SC_WRAP_WORD);
 		m_scintilla.AssignCmdKey(SCK_HOME, SCI_HOMEDISPLAY);
@@ -59,6 +69,10 @@ public:
 
 		GetDlgItem(IDC_SHORTCUT_EDIT).SetWindowText(scconv);
 		GetDlgItem(IDC_HINT_EDIT).SetWindowText(m_hint.c_str());
+
+		CenterWindow(GetParent());
+
+		DlgResize_Init();
 
 		return 0;
 	}

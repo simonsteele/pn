@@ -21,10 +21,10 @@ class ${1:ClassName} ${3:extends AnotherClass}
 	}
 	###	
 
-}</clip><clip name="for" shortcut="for">for ( $$${1:i}=${2:0}; $$${1:i} &lt; ${3}; $$${1:i}++ )
+}</clip><clip name="for" shortcut="for">for ( \$${1:i}=${2:0}; \$${1:i} &lt; ${3}; \$${1:i}++ )
 { 
 	${0:# code...}
-}</clip><clip name="foreach" shortcut="foreach">foreach( $$${1:variable} as $$${2:key} =&gt; $$${3:value} )
+}</clip><clip name="foreach" shortcut="foreach">foreach( \$${1:variable} as \$${2:key} =&gt; \$${3:value} )
 {
 	${0:# code...}
 }</clip><clip name="function" shortcut="function">${1:public }function ${2:FunctionName} (${3: params})
