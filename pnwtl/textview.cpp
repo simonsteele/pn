@@ -245,9 +245,13 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 
 		///See if there's an encoding specified or not...
         if(encoding == eUnknown)
+		{
 			determineEncoding(reinterpret_cast<unsigned char*>(&data[0]), lenFile, m_encType);
+		}
 		else
+		{
 			m_encType = encoding;
+		}
 
 		EPNSaveFormat endings = determineLineEndings(reinterpret_cast<unsigned char*>(&data[0]), lenFile, m_encType);
 
@@ -270,7 +274,7 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 		}
 		else
 		{
-			SPerform(SCI_SETCODEPAGE, (long)OPTIONS->GetCached(Options::ODefaultCodePage));
+			// SPerform(SCI_SETCODEPAGE, (long)OPTIONS->GetCached(Options::ODefaultCodePage)); - default code page should be for new files only.
 
 			// Otherwise we do a simple read.
 			while (lenFile > 0) 
