@@ -58,10 +58,10 @@ void Clip::Insert(CScintilla *scintilla) const
 
 void Clip::GetChunks(std::vector<Chunk>& chunks) const
 {
-	return GetChunks(chunks, NULL, NULL);
+	return GetChunks(chunks, NULL, NULL, NULL);
 }
 
-void Clip::GetChunks(std::vector<Chunk>& chunks, CScintilla* scintilla, IVariableProvider* variables) const
+void Clip::GetChunks(std::vector<Chunk>& chunks, CScintilla* scintilla, IVariableProvider* variables, extensions::IScriptRegistry* scriptRegistry) const
 {
 	std::string insertText = FixText(scintilla);
 
@@ -70,6 +70,15 @@ void Clip::GetChunks(std::vector<Chunk>& chunks, CScintilla* scintilla, IVariabl
 	if (variables)
 	{
 		parser.SetVariableProvider(variables);
+	}
+
+	if (scriptRegistry)
+	{
+		extensions::IScriptRunner* runner = scriptRegistry->GetRunner("python");
+		if (runner != NULL)
+		{
+			parser.SetScriptRunner(runner);
+		}
 	}
 
 	parser.Parse(std::string(insertText.c_str()), chunks);

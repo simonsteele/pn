@@ -337,6 +337,23 @@ public:
 	virtual void Eval(const char* script, PN::BaseString& output) = 0;
 };
 
+typedef enum { efCaptureOutput } EExecFlags;
+
+/**
+ * Extension for the IScriptRunner interface to avoid breaking interface compatibility during 2.1
+ */
+class IScriptRunner2
+{
+public:
+	virtual ~IScriptRunner2() {}
+
+	/**
+	 * Execute a method by name, with one optional parameter.
+	 * @param flags Optional extra hints as to how to run the function.
+	 */
+	virtual void Exec(const char* function, const char* param, int flags, PN::BaseString& output) = 0;
+};
+
 /**
  * @brief The Script Registry
  * 

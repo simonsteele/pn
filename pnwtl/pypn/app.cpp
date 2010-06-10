@@ -217,6 +217,20 @@ void App::Eval(const char* script, PN::BaseString& output)
 	}
 }
 
+void App::Exec(const char* function, const char* param, int flags, PN::BaseString& output)
+{
+	try
+	{
+		std::string result(boost::python::call_method<std::string>(main_namespace.ptr(), function, param));
+		output.Add(result.c_str());
+	}
+	catch(boost::python::error_already_set&)
+	{
+		std::string s = PyTracebackToString();
+		AddOutput(s.c_str());
+	}
+}
+
 /**
  * Register a script with PN
  */

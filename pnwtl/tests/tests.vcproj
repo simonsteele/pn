@@ -364,6 +364,10 @@
 				RelativePath=".\mocks\mockoptions.h"
 				>
 			</File>
+			<File
+				RelativePath=".\mocks\mockscriptrunner.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

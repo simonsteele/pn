@@ -13,6 +13,10 @@
 
 #include "../textclips.h"
 
+namespace extensions {
+	class IScriptRunner;
+}
+
 namespace TextClips {
 
 namespace Internal {
@@ -32,6 +36,7 @@ public:
 	bool Parse(const std::string& clip, std::vector<Chunk>& chunks);
 
 	void SetVariableProvider(IVariableProvider* variables);
+	void SetScriptRunner(extensions::IScriptRunner* runner);
 
 private:
 	Internal::snippet<std::string::const_iterator>* m_grammar;

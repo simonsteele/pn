@@ -13,6 +13,10 @@
 
 #include <list>
 
+namespace extensions {
+	class ScriptRegistry;
+}
+
 namespace TextClips {
 
 typedef enum { ctNone = 0, ctField = 0x01, ctMasterField = 0x03, ctFinalCaretPos = 0x4 } EChunkType;
@@ -94,7 +98,7 @@ class Clip
 		void Insert(CScintilla* scintilla) const;
 
 		void GetChunks(std::vector<Chunk>& chunks) const;
-		void GetChunks(std::vector<Chunk>& chunks, CScintilla* scintilla, IVariableProvider* variables) const;
+		void GetChunks(std::vector<Chunk>& chunks, CScintilla* scintilla, IVariableProvider* variables, extensions::IScriptRegistry* scriptRegistry) const;
 
 	private:
 		std::string FixText(CScintilla* scintilla) const;

@@ -17,6 +17,7 @@
 #include <boost/fusion/include/std_pair.hpp>
 
 using namespace TextClips;
+using namespace extensions;
 
 namespace TextClips { namespace Internal {
 
@@ -40,13 +41,13 @@ using qi::_1;
 template <typename Iterator>
 struct snippet : qi::grammar<Iterator, boost::spirit::ascii::space_type>
 {
-	explicit snippet() : snippet::base_type(start), m_vars(NULL)
+	explicit snippet() : snippet::base_type(start), m_vars(NULL), m_runner(NULL)
 	{
 		// bring in _val?
 		using qi::labels::_val;
 
 		// text, match anything but $ and collect it up:
-		text_rule = lexeme[+(char_ - '$' - '\\')[_val += qi::_1]];
+		text_rule = lexeme[+(char_ - '$' - '\\' - '`')[_val += qi::_1]];
 
 		// Handle escapes
 		escape_rule = lit("\\") >> char_;
@@ -69,6 +70,12 @@ struct snippet : qi::grammar<Iterator, boost::spirit::ascii::space_type>
 		// Rule to match variables: ${blah:default value}
 		variable_with_default_rule = lit("${") >> +char_("-_a-zA-Z0-9") >> lit(":") >> placeholder_inner_text_rule >> lit("}");
 
+		// Rule to match backtick expressions: `code here`
+		backtick_expression_rule = lit('`') >> backtick_inner_text_rule >> lit('`');
+
+		// Rule to match the text in a placeholder
+		backtick_inner_text_rule = lexeme[+(char_ - '`')[_val += qi::_1]];
+
 		// Master expression:
 		start = +(
 			text_rule					[phx::bind(&snippet::text, this, _1)] | 
@@ -77,7 +84,8 @@ struct snippet : qi::grammar<Iterator, boost::spirit::ascii::space_type>
 			placeholder_text_rule		[phx::bind(&snippet::text_placeholder, this, _1)] | 
 			variable_rule				[phx::bind(&snippet::variable, this, _1)] |
 			variable_with_default_rule	[phx::bind(&snippet::variable_default, this, _1)] |
-			short_form_placeholder_rule [phx::bind(&snippet::empty_placeholder, this, _1)]
+			short_form_placeholder_rule [phx::bind(&snippet::empty_placeholder, this, _1)] |
+			backtick_expression_rule    [phx::bind(&snippet::backtick, this, _1)]
 		);
 	}
 
@@ -90,6 +98,8 @@ struct snippet : qi::grammar<Iterator, boost::spirit::ascii::space_type>
 	qi::rule<Iterator, std::string()> placeholder_inner_text_rule;
 	qi::rule<Iterator, std::string()> variable_rule;
 	qi::rule<Iterator, std::pair<std::string, std::string>()> variable_with_default_rule;
+	qi::rule<Iterator, std::string()> backtick_expression_rule;
+	qi::rule<Iterator, std::string()> backtick_inner_text_rule;
 	qi::rule<Iterator, boost::spirit::ascii::space_type> start;
 
 	// HANDLERS:
@@ -169,9 +179,24 @@ struct snippet : qi::grammar<Iterator, boost::spirit::ascii::space_type>
 		append_text(realText.c_str());
 	}
 
+	void backtick(std::string const& text)
+	{
+		if (m_runner != NULL)
+		{
+			PN::AString as;
+			m_runner->Eval(text.c_str(), as);
+			append_text(as.Get());
+		}
+		else
+		{
+			append_text("");
+		}
+	}
+
 	std::vector<Chunk> m_placeholders;
 	std::set<int> m_seenStops;
 	TextClips::IVariableProvider* m_vars;
+	extensions::IScriptRunner* m_runner;
 };
 
 }} // namespace TextClips::Internal
@@ -213,4 +238,9 @@ bool ChunkParser::Parse(const std::string& clip, std::vector<Chunk>& chunks)
 void ChunkParser::SetVariableProvider(IVariableProvider* variables)
 {
 	m_grammar->m_vars = variables;
+}
+
+void ChunkParser::SetScriptRunner(IScriptRunner* runner)
+{
+	m_grammar->m_runner = runner;
 }

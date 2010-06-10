@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="%PYTHONINCDIR%"
+				AdditionalIncludeDirectories="%PYTHONINCDIR%;c:\python26\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;PYPN_EXPORTS;SCI_NOLOAD;SCI_NAMESPACE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -66,7 +66,7 @@
 				AdditionalDependencies="boost_python-vc90-mt-gd-$(BoostFileVer).lib"
 				OutputFile="$(OutDir)/pypn.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="%PYTHONLIBDIR%;&quot;..\lib\boost-python-2.6&quot;"
+				AdditionalLibraryDirectories="%PYTHONLIBDIR%;&quot;..\lib\boost-python-2.6&quot;;c:\python26\libs"
 				ModuleDefinitionFile="pypn.def"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/pypn.pdb"
