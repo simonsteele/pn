@@ -491,6 +491,12 @@ int CTextView::HandleNotify(LPARAM lParam)
 
 	Scintilla::SCNotification* scn(reinterpret_cast<Scintilla::SCNotification*>(lParam));
 
+	if (scn->nmhdr.hwndFrom != m_hWnd)
+	{
+		// This is not for us
+        return msg;
+	}
+
 	if(msg == SCN_SAVEPOINTREACHED)
 	{
 		SendMessage(m_pDoc->GetFrame()->m_hWnd, PN_NOTIFY, 0, SCN_SAVEPOINTREACHED);
@@ -503,6 +509,13 @@ int CTextView::HandleNotify(LPARAM lParam)
 	}
 	else if(msg == SCN_UPDATEUI)
 	{
+		if (GetModEventMask() == 0)
+		{
+			// If we're not notifying of changes, we don't care about updateui at this point either.
+			// This resolves a nasty never-ending update loop with multiple views and smartHighlight.
+			return msg;
+		}
+
 		SendMessage(m_pDoc->GetFrame()->m_hWnd, PN_NOTIFY, 0, SCN_UPDATEUI);
 
 		smartHighlight();

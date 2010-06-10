@@ -768,6 +768,10 @@ void CChildFrame::splitSelectedView(bool horizontal)
 	CTextView* newTextView = static_cast<CTextView*>(newTextViewPtr.get());
 	newTextView->Create(parent->GetHwnd(), rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, /*WS_EX_CLIENTEDGE*/0, cwScintilla+1);
 	newTextView->SetDocPointer(GetTextView()->GetDocPointer());
+	
+	// Disable notifications on the inactive view:
+	newTextView->SetModEventMask(0);
+
 	newTextView->UpdateModifiedState();
 
 	// Now we want the parent of the last-focused view to get a new child, the splitter.
@@ -2938,12 +2942,32 @@ void CChildFrame::findNextWordUnderCursor(bool backwards)
 	opts->SetSearchBackwards(false);
 }
 
+// Possible notifications: SCN_MODIFIED: SC_MOD_INSERTTEXT, SC_MOD_DELETETEXT, 
+// SC_MOD_CHANGESTYLE, SC_MOD_CHANGEFOLD, SC_PERFORMED_USER, SC_PERFORMED_UNDO, 
+// SC_PERFORMED_REDO, SC_MULTISTEPUNDOREDO, SC_LASTSTEPINUNDOREDO, SC_MOD_CHANGEMARKER, 
+// SC_MOD_BEFOREINSERT, SC_MOD_BEFOREDELETE, SC_MULTILINEUNDOREDO, and SC_MODEVENTMASKALL
+
 void CChildFrame::SetLastView(Views::ViewPtr& view)
 {
 	m_focusView = view;
+	
 	if (m_focusView->GetType() == Views::vtText)
 	{
+		if (m_lastTextView.get())
+		{
+			// Remove current notification mask, we're switching to another view:
+			CTextView* tv = static_cast<CTextView*>(m_lastTextView.get());
+			tv->SetModEventMask(0);
+		}
+
 		m_lastTextView = m_focusView;
+		
+		// Enable notifications on the active view
+		CTextView* tv = static_cast<CTextView*>(m_lastTextView.get());
+		tv->SetModEventMask(SC_MODEVENTMASKALL);
+
+		// Notify the frame to update UI.
+		SendMessage(GetMDIFrame(), PN_NOTIFY, 0, SCN_UPDATEUI);
 	}
 }
 
