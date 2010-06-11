@@ -337,7 +337,12 @@ public:
 	virtual void Eval(const char* script, PN::BaseString& output) = 0;
 };
 
-typedef enum { efCaptureOutput } EExecFlags;
+/**
+ * Execution flags for IScriptRunner2.
+ * efCaptureOutput instructs Exec to return stdout rather than the Eval(x) of the script
+ * efBuiltIn instructs Exec that the script to be run is part of the PN support libaries, for PyPN this means it's in glue.
+ */
+typedef enum { efCaptureOutput = 0x01, efBuiltIn = 0x02 } EExecFlags;
 
 /**
  * Extension for the IScriptRunner interface to avoid breaking interface compatibility during 2.1

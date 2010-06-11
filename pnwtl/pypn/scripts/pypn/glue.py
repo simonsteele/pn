@@ -1,4 +1,5 @@
 import pn, debug, scintilla, record
+import sys
 
 ######################################################
 ## This stuff is all essential for pypn to work - that
@@ -6,12 +7,24 @@ import pn, debug, scintilla, record
 
 schemes = {}
 scripts = {}
+oldstdout = None
 
 class SchemeMapping:
 	def __init__(self, name):
 		self.name = name
 		self.on_char_added = None
 		self.indenter = None
+
+class StdOutCapture:
+	""" Simple output capturer """
+	def __init__(self):
+		self.output = ""
+	
+	def write(self, s):
+		self.output = self.output + s
+	
+	def getOutput(self):
+		return self.output
 
 def registerScript(f, group, scriptName):
 	""" This is called by the script decorator to register
@@ -74,6 +87,28 @@ def startRecording():
 	""" PN calls this to start recording a script, all recording actions
 	are delegated to the Recorder class """
 	return record.Recorder()
+
+def startCapturingStdOut():
+	""" PN calls this to start capturing stdout """
+	global oldstdout
+	oldstdout = sys.stdout
+	sys.stdout = StdOutCapture()
+
+def finishCapturingStdOut():
+	""" PN calls this to finish stdout capture and get the output. """
+	global oldstdout
+	
+	if (oldstdout != None):
+		ret = sys.stdout.getOutput()
+		sys.stdout = oldstdout
+		oldstdout = None
+		return ret
+	else:
+		return ""
+
+def evalScript(script):
+	exec(script)
+	return ""
 
 def evalCommand():
 	pass

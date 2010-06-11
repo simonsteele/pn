@@ -184,7 +184,17 @@ struct snippet : qi::grammar<Iterator, boost::spirit::ascii::space_type>
 		if (m_runner != NULL)
 		{
 			PN::AString as;
-			m_runner->Eval(text.c_str(), as);
+			
+			extensions::IScriptRunner2* runner2 = dynamic_cast<extensions::IScriptRunner2*>(m_runner);
+			if (runner2 != NULL)
+			{
+				runner2->Exec("evalScript", text.c_str(), extensions::efCaptureOutput | extensions::efBuiltIn, as);
+			}
+			else
+			{
+				m_runner->Eval(text.c_str(), as);
+			}
+
 			append_text(as.Get());
 		}
 		else
