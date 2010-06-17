@@ -1074,6 +1074,7 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 	bool bHaveCol = false;
 	bool bHaveScheme = false;
 	int iLine = 0, iCol = 0;
+	bool bReadOnly = false;
 	Scheme* pScheme = NULL;
 	
 	if(parameters.size() < 1)
@@ -1126,6 +1127,12 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 						pScheme = NULL;
 					}
 				}
+				else if (_tcsicmp(&parm[1], _T("-readonly")) == 0)
+				{
+					bReadOnly = true;
+					skip = false;
+					continue;
+				}
 				else
 				{
 					skip = false;
@@ -1167,10 +1174,15 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 				{
 					pChild->SetScheme( pScheme );
 				}
+
+				if (bReadOnly)
+				{
+					pChild->SetReadOnly(true);
+				}
 			}
 		}
 
-		bHaveCol = bHaveLine = bHaveScheme = false;
+		bHaveCol = bHaveLine = bHaveScheme = bReadOnly = false;
 	}
 }
 

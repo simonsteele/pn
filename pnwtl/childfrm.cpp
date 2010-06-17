@@ -97,7 +97,8 @@ CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::
 	m_bReadOnly(false),
 	m_bIgnoreUpdates(false),
 	m_bHandlingCommand(false),
-	m_hWndOutput(NULL)
+	m_hWndOutput(NULL),
+	m_bReadOnlyOverride(false)
 {
 	m_po.hDevMode = 0;
 	m_po.hDevNames = 0;
@@ -1801,6 +1802,15 @@ bool CChildFrame::OnRunTool(LPVOID pTool)
 	return true;
 }
 
+/**
+ * Set the ReadOnly flag.
+ */
+void CChildFrame::SetReadOnly(bool readonly)
+{
+	m_bReadOnlyOverride = readonly;
+	setReadOnly(readonly, false);
+}
+
 ////////////////////////////////////////////////////
 // Notify Handlers
 
@@ -1971,7 +1981,7 @@ LRESULT CChildFrame::OnCommandEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 void CChildFrame::CheckAge()
 {
-	if(CanSave())
+	if (CanSave())
 	{
 		FileUtil::FileAttributes_t atts;
 		
@@ -1983,7 +1993,7 @@ void CChildFrame::CheckAge()
 			age = FileUtil::GetFileAge(atts);
 		}
 
-		if(age != m_FileAge)
+		if (age != m_FileAge)
 		{
 			if(m_spDocument->FileExists())
 			{
@@ -2040,7 +2050,7 @@ void CChildFrame::CheckAge()
 		}
 		else
 		{
-			if (m_bReadOnly != readOnly)
+			if (m_bReadOnly != readOnly && !m_bReadOnlyOverride)
 			{
 				setReadOnly(readOnly, false);
 			}
@@ -2890,7 +2900,7 @@ void CChildFrame::resetSaveDir()
 
 void CChildFrame::setReadOnly(bool newValue, bool setAttributes)
 {
-	if (OPTIONS->Get(PNSK_GENERAL, _T("EditReadOnly"), false))
+	if (OPTIONS->Get(PNSK_GENERAL, _T("EditReadOnly"), false) && !m_bReadOnlyOverride && !m_bReadOnly)
 	{
 		return;
 	}

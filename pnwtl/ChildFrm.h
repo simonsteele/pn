@@ -292,6 +292,8 @@ public:
 	
 	bool OnRunTool(LPVOID pTool);
 
+	void SetReadOnly(bool readonly);
+
 	////////////////////////////////////////////////////
 	// Notify Handlers
 
@@ -396,6 +398,7 @@ private:
 	bool				m_bReadOnly;
 	bool				m_bIgnoreUpdates;
 	bool				m_bHandlingCommand;
+	bool				m_bReadOnlyOverride;
 	HWND				m_hWndOutput;
 	CCommandBarEdit		m_cmdTextBox;
 	TextClips::TextClipsManager*	m_pTextClips;
