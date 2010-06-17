@@ -1883,8 +1883,6 @@ LRESULT CChildFrame::OnCommandNotify(WORD wNotifyCode, WORD /*wID*/, HWND /*hWnd
 		if (python)
 		{
 			PN::AString str;
-			std::string command("glue.evalCommand('");
-			
 			CWindowText wt(m_cmdTextBox);
 
 			if ((LPCTSTR)wt == NULL)
@@ -1893,11 +1891,22 @@ LRESULT CChildFrame::OnCommandNotify(WORD wNotifyCode, WORD /*wID*/, HWND /*hWnd
 				return 0;
 			}
 
-			CT2CA commandtext(wt);
-			command += commandtext;
-			command += "')";
+			extensions::IScriptRunner2* python2 = dynamic_cast<extensions::IScriptRunner2*>(python);
+			if (python2 != NULL)
+			{
+				CT2CA commandtext(wt);
+				python2->Exec("evalCommand", commandtext, extensions::efBuiltIn, str);
+			}
+			else
+			{
+				std::string command("glue.evalCommand('");
+				
+				CT2CA commandtext(wt);
+				command += commandtext;
+				command += "')";
 
-			python->Eval(command.c_str(), str);
+				python->Eval(command.c_str(), str);
+			}
 
 			CA2CT newwt(str.Get());
 			if (_tcscmp(wt, newwt) != 0)
@@ -1925,18 +1934,31 @@ LRESULT CChildFrame::OnCommandEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 	PN::AString str;
 	CWindowText wt(m_cmdTextBox);
+	if ((LPCTSTR)wt == NULL)
+	{
+		return 0;
+	}
 	
-	// Some basic argument safety changes until we make an extension
-	// interface that makes this properly safe.
-	std::string commandText(wt.GetA());
-	boost::replace_all(commandText, "\\", "\\\\");
-	boost::replace_all(commandText, "'", "\\'");
+	extensions::IScriptRunner2* python2 = dynamic_cast<extensions::IScriptRunner2*>(python);
+	if (python2 != NULL)
+	{
+		CT2CA commandtext(wt);
+		python2->Exec("evalCommandEnter", commandtext, extensions::efBuiltIn, str);
+	}
+	else
+	{
+		// Some basic argument safety changes until we make an extension
+		// interface that makes this properly safe.
+		std::string commandText(wt.GetA());
+		boost::replace_all(commandText, "\\", "\\\\");
+		boost::replace_all(commandText, "'", "\\'");
 
-	std::string command("glue.evalCommandEnter('");
-	command += commandText;
-	command += "')";
+		std::string command("glue.evalCommandEnter('");
+		command += commandText;
+		command += "')";
 
-	python->Eval(command.c_str(), str);
+		python->Eval(command.c_str(), str);
+	}
 
 	CA2CT newwt(str.Get());
 	m_cmdTextBox.SetWindowText(newwt);

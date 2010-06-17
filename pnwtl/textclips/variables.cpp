@@ -79,6 +79,7 @@ bool DefaultVariableProvider::GetVariable(const char* name, std::string& value)
 		{
 			_itoa(m_pChild->GetPosition(EP_LINE), itosbuf, 10);
 			set(value, itosbuf);
+			boost::trim_left_if(value, boost::is_any_of("\r\n"));
 		}
 	}
 	else if (iequals(n, "PN_CurrentColumn"))
@@ -189,7 +190,35 @@ bool DefaultVariableProvider::GetVariable(const char* name, std::string& value)
 	else if (iequals(n, "PN_TabSize"))
 	{
 		// TODO
-		value = "4";
+		if (m_pChild)
+		{
+			int tabSize = m_pChild->GetTextView()->GetTabWidth();
+			char buffer[34];
+			_snprintf(buffer, 33, "%d", tabSize);
+			set(value, buffer);
+		}
+	}
+	else if (iequals(n, "PN_Time"))
+	{
+		time_t now;
+		time(&now);
+		char buffer[40];
+		struct tm* local(localtime(&now));
+		if (strftime(buffer, 40, "%X", local) != 0)
+		{
+			value = buffer;
+		}
+	}
+	else if (iequals(n, "PN_Date"))
+	{
+		time_t now;
+		time(&now);
+		char buffer[41];
+		struct tm* local(localtime(&now));
+		if (strftime(buffer, 40, "%x", local) != 0)
+		{
+			value = buffer;
+		}
 	}
 
 	// unmatched:
