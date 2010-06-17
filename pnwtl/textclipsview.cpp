@@ -49,7 +49,7 @@ TBBUTTON TOOLBAR_BUTTONS[TOOLBAR_BUTTON_COUNT] =
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // CClipsDocker
 
-CClipsDocker::CClipsDocker(TextClips::TextClipsManager* manager) : m_hWndToolBar(NULL), m_pTheClips(manager), m_hImgList(NULL)
+CClipsDocker::CClipsDocker(TextClips::TextClipsManager* manager) : m_hWndToolBar(NULL), m_pTheClips(manager), m_hImgList(NULL), m_hLastItem(NULL)
 {
 }
 
@@ -168,6 +168,27 @@ LRESULT CClipsDocker::OnSetEditorFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	::LockWindowUpdate(::GetParent((HWND)lParam));
 	::SetFocus((HWND)lParam);
 	::LockWindowUpdate(NULL);
+	return 0;
+}
+
+LRESULT	CClipsDocker::OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	// If this is from a keyboard press...
+	if(GET_X_LPARAM(lParam) == -1 && GET_Y_LPARAM(lParam) == -1)
+	{
+		CRect rc;
+		m_hLastItem = m_tv.GetSelectedItem();
+		m_tv.GetItemRect(m_hLastItem, &rc, TRUE);
+		CPoint pt(rc.right, rc.top);
+		m_tv.ClientToScreen(&pt);
+		doContextMenu(&pt);
+	}
+	else
+	{
+		CPoint pt(GetMessagePos());
+		handleRightClick(&pt);
+	}
+
 	return 0;
 }
 
@@ -334,7 +355,7 @@ LRESULT CClipsDocker::OnAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 
 LRESULT CClipsDocker::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	HTREEITEM hSelected = m_tv.GetSelectedItem();
+	HTREEITEM hSelected = m_hLastItem != NULL ? m_hLastItem : m_tv.GetSelectedItem();
 	
 	if (hSelected == NULL)
 	{
@@ -369,7 +390,7 @@ LRESULT CClipsDocker::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 LRESULT CClipsDocker::OnRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	HTREEITEM hSelected = m_tv.GetSelectedItem();
+	HTREEITEM hSelected = m_hLastItem != NULL ? m_hLastItem : m_tv.GetSelectedItem();
 	
 	if (hSelected == NULL)
 	{
@@ -677,4 +698,47 @@ TextClips::TextClipSet* CClipsDocker::getOrCreateSet(LPCTSTR title)
 	}
 
 	return newSet;
+}
+
+void CClipsDocker::handleRightClick(LPPOINT pt)
+{
+	//CPoint pt(GetMessagePos());
+	CPoint pt2(*pt);
+
+	// Test for keyboard right-click...
+	if(pt->x != -1)
+	{
+		m_tv.ScreenToClient(&pt2);
+
+		TVHITTESTINFO tvhti;
+		memset(&tvhti, 0, sizeof(TV_HITTESTINFO));
+		
+		tvhti.pt = pt2;
+		m_tv.HitTest(&tvhti);
+
+		m_hLastItem = NULL;
+
+		if(tvhti.hItem != NULL)
+		{
+			if (tvhti.flags & (TVHT_ONITEM|TVHT_ONITEMRIGHT))
+			{
+				m_hLastItem = tvhti.hItem;
+			}
+		}
+	}
+
+	doContextMenu(pt);
+}
+
+void CClipsDocker::doContextMenu(LPPOINT pt)
+{
+	if (m_hLastItem != NULL)
+	{
+		CSPopupMenu popup(IDR_POPUP_TEXTCLIPS);
+		DeleteMenu(popup.GetHandle(), ID_DUMMY_EXPLORER, MF_BYCOMMAND);
+
+		g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
+
+		m_hLastItem = NULL;
+	}
 }

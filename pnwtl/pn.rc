@@ -580,6 +580,15 @@ BEGIN
     END
 END
 
+IDR_POPUP_TEXTCLIPS MENU 
+BEGIN
+    POPUP "DUMMY"
+    BEGIN
+        MENUITEM "&Edit",                       ID_CLIPS_EDIT
+        MENUITEM "&Remove",                     ID_CLIPS_REMOVE
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

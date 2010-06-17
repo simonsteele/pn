@@ -325,6 +325,8 @@
 #define IDB_TBCLIPS                     369
 #define IDB_BITMAP4                     370
 #define IDB_TBCLIPS24                   370
+#define IDR_MENU2                       371
+#define IDR_POPUP_TEXTCLIPS             371
 #define IDD_PNSAVE                      423
 #define IDD_PAGE_SCHEMES                424
 #define IDD_TAB_STYLES1                 425
@@ -826,7 +828,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        371
+#define _APS_NEXT_RESOURCE_VALUE        372
 #define _APS_NEXT_COMMAND_VALUE         33157
 #define _APS_NEXT_CONTROL_VALUE         1172
 #define _APS_NEXT_SYMED_VALUE           104
