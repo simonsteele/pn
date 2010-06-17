@@ -84,7 +84,7 @@ Source: reqfiles\Microsoft.VC90.CRT\msvcr90.dll; DestDir: {app}; OnlyBelowVersio
 
 [Icons]
 Name: {group}\Programmer's Notepad 2; Filename: {app}\pn.exe
-Name: {userdesktop}\Programmer's Notepad; Filename: {app}\pn.exe; Tasks: desktopicon
+Name: {commondesktop}\Programmer's Notepad; Filename: {app}\pn.exe; Tasks: desktopicon
 Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Programmer's Notepad; Filename: {app}\pn.exe; Tasks: quicklaunchicon
 
 [Run]
