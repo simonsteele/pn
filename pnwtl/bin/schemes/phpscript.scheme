@@ -12,7 +12,7 @@
 			xor virtual while __file__ __line__ __sleep __wakeup
 		</keyword-class>
 	</keyword-classes>
-	<language name="phpscript" title="PHP Script" folding="true" foldcomments="false" foldcompact="false">
+	<language name="phpscript" title="PHP Script" folding="true" foldcomments="false" foldcompact="false" wordchars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$_-">
 		<comments line="//" streamStart="/*" streamEnd="*/"/>
 		<lexer name="phpscript" stylebits="7" />
 		<property name="fold.html" value="1" />
