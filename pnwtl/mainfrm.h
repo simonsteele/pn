@@ -373,6 +373,8 @@ public:
 
 	virtual extensions::ITextOutput* GetGlobalOutputWindow();
 
+	int GetTabIndex(CChildFrame* child);
+
 public:
 	void ToggleOutputWindow(bool bSetValue = false, bool bShowing = true);
 

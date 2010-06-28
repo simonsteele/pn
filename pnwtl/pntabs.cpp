@@ -101,6 +101,11 @@ void CPNMDIClient::ShowFindBar(bool bShow)
 	::SetWindowPos(m_hWnd, NULL, rcMDIClient.left, rcMDIClient.top, rcMDIClient.right - rcMDIClient.left, rcMDIClient.bottom - rcMDIClient.top, SWP_NOZORDER | SWP_NOACTIVATE /*| SWP_NOMOVE*/);
 }
 
+int CPNMDIClient::GetTabIndex(HWND hWndChild)
+{
+	return m_MdiTabOwner.GetTabIndex(hWndChild);
+}
+
 LRESULT CPNMDIClient::OnMDISetMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = TRUE;

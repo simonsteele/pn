@@ -2682,6 +2682,24 @@ void CMainFrame::SetActiveScheme(HWND notifier, LPVOID pScheme)
 	}
 }
 
+/**
+ * Sorter for comparing child windows based on their tab control
+ * index.
+ */
+class SortByTabIndex
+{
+public:
+	SortByTabIndex(CMainFrame* mainframe) : m_frame(mainframe){}
+	
+	bool operator()(CChildFrame* p1, CChildFrame* p2)
+	{
+		return m_frame->GetTabIndex(p1) < m_frame->GetTabIndex(p2);
+	}
+
+private:
+	CMainFrame* m_frame;
+};
+
 void CMainFrame::GetOpenDocuments(DocumentList& list)
 {
 	SWorkspaceWindowsStruct s;
@@ -2690,6 +2708,8 @@ void CMainFrame::GetOpenDocuments(DocumentList& list)
 	s.pWorkspace = NULL;
 
 	PerformChildEnum(&s);
+
+	s.FoundWindows.sort(SortByTabIndex(this));
 
 	for(std::list<CChildFrame*>::iterator i = s.FoundWindows.begin();
 		i != s.FoundWindows.end(); 
@@ -3203,6 +3223,14 @@ bool CMainFrame::CloseWorkspace(bool bAllowCloseFiles, bool bAsk)
 extensions::ITextOutput* CMainFrame::GetGlobalOutputWindow()
 {
 	return m_pOutputWnd;
+}
+
+/**
+ * Get the index of the tab for a child window.
+ */
+int CMainFrame::GetTabIndex(CChildFrame* child)
+{
+	return m_tabbedClient.GetTabIndex(child->m_hWnd);
 }
 
 bool CMainFrame::getProjectsModified(ITabbedMDIChildModifiedList* pModifiedList)
