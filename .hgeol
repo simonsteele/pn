@@ -1,0 +1,7 @@
+[patterns]
+**.cpp = native
+**.h = native
+**.cxx = native
+**.vcproj = CRLF
+**.txt = native
+**.sln = CRLF
