@@ -741,8 +741,8 @@ BEGIN
     CONTROL         "&Italic",IDC_STYLE_ITALICCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,185,85,72,10,WS_EX_TRANSPARENT
     CONTROL         "&Underline",IDC_STYLE_UNDERLINECHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,114,97,68,10,WS_EX_TRANSPARENT
     LTEXT           "Static",IDC_STYLE_EXAMPLE,107,117,184,18,SS_SUNKEN | NOT WS_VISIBLE
-    PUSHBUTTON      "&Reset",IDC_STYLE_RESETBTN,187,139,50,14
-    PUSHBUTTON      "Reset &All",IDC_STYLE_RESETALLBTN,241,139,50,14
+    PUSHBUTTON      "&Reset",IDC_STYLE_RESETBTN,167,139,60,14
+    PUSHBUTTON      "Reset &All",IDC_STYLE_RESETALLBTN,231,139,60,14
     GROUPBOX        "Font Style",IDC_STATIC,107,74,184,38
 END
 
@@ -1894,7 +1894,16 @@ BEGIN
     IDS_MARKALL_COUNT       "Found %d occurrences"
     IDS_ADDCLIPSETCAPTION   "Type the name of the new Clip set..."
     IDS_ADDCLIPSETTITLE     "New Clip Set"
+    IDS_FILE_PROPERTIES     "Properties"
     ID_FILE_REVERT          "Revert this document to the current saved state\nRevert"
+    IDS_FINDBAR_FINDNEXT    "Find &Next"
+    IDS_FINDBAR_FINDPREV    "Find &Previous"
+    IDS_FINDBAR_MATCHCASE   "Match Case"
+    IDS_FINDBAR_PROMPT      "File:"
+    IDS_FINDRESULTS_FILE    "File"
+    IDS_FINDRESULTS_LINE    "Line"
+    IDS_FINDRESULTS_TEXT    "Text"
+    IDS_FINDRESULTS_SEARCHINGFOR "Searching for: "
 END
 
 STRINGTABLE 
@@ -2108,6 +2117,12 @@ BEGIN
     IDS_EXTENSIONS_UNKNOWN  "Unknown"
     IDS_EXTENSIONS_ENABLED  "Yes"
     IDS_HDR_EXTENSIONS_NAME "Name"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_FINDRESULTS_SUMMARY "Search complete: %d matching lines found in %d files, taking %d milliseconds.\n"
+    IDS_FINDRESULTS_NOTFOUND "Could not locate "
 END
 
 #endif    // English (U.K.) resources

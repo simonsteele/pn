@@ -1597,7 +1597,8 @@ LRESULT CChildFrame::OnViewFileProps(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	CPropertySheet sheet( fn.c_str(), 0, m_hWnd );
 	sheet.m_psh.dwFlags |= (PSH_NOAPPLYNOW | PSH_PROPTITLE | PSH_USEICONID);
 	sheet.m_psh.pszIcon = MAKEINTRESOURCE(IDR_MDICHILD);
-	DocumentPropSheet docPropPage(this, _T("Properties"));
+	tstring title(L10N::StringLoader::Get(IDS_FILE_PROPERTIES));
+	DocumentPropSheet docPropPage(this, title.c_str());
 
 	sheet.AddPage(docPropPage);
 	if(sheet.DoModal() == IDOK)
