@@ -2123,6 +2123,14 @@ STRINGTABLE
 BEGIN
     IDS_FINDRESULTS_SUMMARY "Search complete: %d matching lines found in %d files, taking %d milliseconds.\n"
     IDS_FINDRESULTS_NOTFOUND "Could not locate "
+    IDS_TOOLS_HEADER_TEXT   "Text"
+    IDS_TOOLS_HEADER_MEANING "Meaning"
+    IDS_TOOLS_HEADER_EXAMPLE "Example"
+    IDS_TOOLS_SAVE_NONE     "None"
+    IDS_TOOLS_SAVE_CURRENTFILE "Current File"
+    IDS_TOOLS_SAVE_ALLFILES "All Files"
+    IDS_TOOLS_SAVE_PROJECTGROUP "Project Group Files"
+    IDS_TOOLS_NEWTOOL       "New Tool"
 END
 
 #endif    // English (U.K.) resources

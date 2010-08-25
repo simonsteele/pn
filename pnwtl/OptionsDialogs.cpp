@@ -33,7 +33,7 @@ CToolSettingsPage::CToolSettingsPage(LPCTSTR title) :
 
 	m_wHotKey = 0;
 
-	m_csDisplayTitle = _T("New Tool");
+	m_csDisplayTitle = LS(IDS_TOOLS_NEWTOOL);
 }
 
 LRESULT CToolSettingsPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -43,10 +43,10 @@ LRESULT CToolSettingsPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	SetWindowText(m_csDisplayTitle);
 
 	m_saveCombo.Attach(GetDlgItem(IDC_TE_SAVECOMBO));
-	m_saveCombo.AddString(_T("None"));
-	m_saveCombo.AddString(_T("Current File"));
-	m_saveCombo.AddString(_T("All Files"));
-	m_saveCombo.AddString(_T("Project Group Files"));
+	m_saveCombo.AddString(LS(IDS_TOOLS_SAVE_NONE));
+	m_saveCombo.AddString(LS(IDS_TOOLS_SAVE_CURRENTFILE));
+	m_saveCombo.AddString(LS(IDS_TOOLS_SAVE_ALLFILES));
+	m_saveCombo.AddString(LS(IDS_TOOLS_SAVE_PROJECTGROUP));
 
 	if(m_iSaveStyle == TOOL_SAVEALL)
 		m_saveCombo.SetCurSel(2);
@@ -63,9 +63,9 @@ LRESULT CToolSettingsPage::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 	m_paramHelper.SubclassWindow( GetDlgItem(IDC_OPTHELPER_BUTTON) );
 
 	m_VarList.Attach(GetDlgItem(IDC_VAR_LIST));
-	m_VarList.InsertColumn(0, _T("Text"), LVCFMT_LEFT, 105, -1);
-	m_VarList.InsertColumn(1, _T("Meaning"), LVCFMT_LEFT, 115, -1);
-	m_VarList.InsertColumn(2, _T("Example"), LVCFMT_LEFT, 100, -1);
+	m_VarList.InsertColumn(0, LS(IDS_TOOLS_HEADER_TEXT), LVCFMT_LEFT, 105, -1);
+	m_VarList.InsertColumn(1, LS(IDS_TOOLS_HEADER_MEANING), LVCFMT_LEFT, 115, -1);
+	m_VarList.InsertColumn(2, LS(IDS_TOOLS_HEADER_EXAMPLE), LVCFMT_LEFT, 100, -1);
 
 	CString str;
 	str.LoadString(IDS_TOOLS_VARSTRINGS);
