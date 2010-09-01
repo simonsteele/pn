@@ -1,6 +1,6 @@
 ========================================
-Release Name: 2.1.4.x
-Build: 2.1.4.x, Version Label: 
+Release Name: 2.1.5.x
+Build: 2.1.5.x, Version Label: 
 ========================================
 
 What's new in 2.1?
@@ -19,6 +19,7 @@ What's new in 2.1?
 11) Line padding options - increase visual space between lines for improved readability
 12) CTags upgraded to 5.8
 13) Converting between ANSI/Unicode properly converts current file contents (#1020, #1021, #1018, #148)
+14) Context menu for text clips
 
 What's new in 2.1 under the cover?
 ------------------------------------------
