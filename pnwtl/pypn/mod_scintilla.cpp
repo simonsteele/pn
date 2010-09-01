@@ -230,6 +230,7 @@ class_< PNScintilla, boost::noncopyable >("Scintilla", init<extensions::IDocumen
 	.def("IndicSetFore", &PNScintilla::IndicSetFore)
 	.def("IndicGetStyle", &PNScintilla::IndicGetStyle)
 	.def("IndicSetStyle", &PNScintilla::IndicSetStyle)
+	.def("InsertClip", &PNScintilla::InsertClip)
 	.def("InsertText", &PNScintilla::InsertText)
 	.def("LineCopy", &PNScintilla::LineCopy)
 	.def("LineCut", &PNScintilla::LineCut)

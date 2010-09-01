@@ -2,7 +2,7 @@
  * @file wrapscintilla.h
  * @brief A scintilla wrapper for use outside PN, derives from the main PN one.
  * @author Simon Steele
- * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -17,6 +17,7 @@
 #include "../scintillaif.h"
 
 #define PN_OVERWRITETARGET	(WM_APP+19)
+#define PN_INSERTCLIPTEXT   (WM_APP+23)
 
 class PNScintilla : public CScintilla
 {
@@ -111,7 +112,9 @@ public:
 	{
 		std::string buf;
 		buf.resize(GetCurLine(0, NULL));
+		
 		int linePos = GetCurLine(buf.size(), &buf[0]);
+		
 		return boost::python::make_tuple(buf, linePos);
 	}
 
@@ -120,7 +123,9 @@ public:
 		std::string buf;
 
 		if(end <= start)
+		{
 			return buf;
+		}
 
 		buf.resize(end-start+1);
 		Scintilla::TextRange tr;
@@ -158,8 +163,12 @@ public:
 		f.chrg.cpMin = start;
 		f.chrg.cpMax = end;
 		long result = FindText(flags, &f);
+		
 		if(result == -1)
+		{
 			return boost::python::object(false);
+		}
+
 		return boost::python::make_tuple(f.chrgText.cpMin, f.chrgText.cpMax);
 	}
 
@@ -171,6 +180,11 @@ public:
 	void BeginOverwriteTarget()
 	{
 		::SendMessage(m_scihWnd, PN_OVERWRITETARGET, 0, 0);
+	}
+
+	void InsertClip(std::string clipText)
+	{
+		::SendMessage(m_scihWnd, PN_INSERTCLIPTEXT, 0, reinterpret_cast<LPARAM>(clipText.c_str()));
 	}
 };
 

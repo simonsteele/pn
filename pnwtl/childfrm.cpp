@@ -898,6 +898,9 @@ LRESULT CChildFrame::OnToolFinished(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 {
 	UpdateMenu();
 
+	// If a tool has finished, we want to find out if the current file has been updated in any way
+	PostMessage(PN_CHECKAGE, 0, 0);
+
 	return 0;
 }
 

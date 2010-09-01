@@ -22,6 +22,7 @@
 #include "childfrm.h"
 #include "findinfiles.h"
 #include "unicodefilewriter.h"
+#include "textclips/variables.h"
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -807,6 +808,25 @@ HRESULT CTextView::OnOverwriteTarget(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	return 0;
 }
 
+/**
+ * Insert a clip based on text passed in, used for extensions.
+ */
+HRESULT CTextView::OnInsertClipText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+{
+	if (lParam == 0)
+	{
+		return 0;
+	}
+
+	// Make a clip and process the text:
+	TextClips::Clip clip(_T(""), "", reinterpret_cast<const char*>(lParam));
+	TextClips::DefaultVariableProvider variables(m_pDoc->GetFrame(), g_Context.m_frame->GetActiveWorkspace());
+	std::vector<TextClips::Chunk> chunks;
+	clip.GetChunks(chunks, this, &variables, ScriptRegistry::GetInstance());
+
+	return OnInsertClip(0, 0, reinterpret_cast<LPARAM>(&chunks), bHandled);
+}
+
 HRESULT CTextView::OnInsertClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
 	std::vector<TextClips::Chunk>* chunks = reinterpret_cast<std::vector<TextClips::Chunk>*>(lParam);
@@ -816,6 +836,28 @@ HRESULT CTextView::OnInsertClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	}
 
 	beginInsertClip(*chunks);
+
+	return 0;
+}
+
+/**
+ * Message to set current scheme, using message to avoid revving the
+ * extensions interface further in 2.1.
+ */
+LRESULT CTextView::OnSetSchemeText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	if (lParam == 0)
+	{
+		return 0;
+	}
+
+	SchemeManager* pSM = SchemeManager::GetInstance();
+	Scheme* pScheme(pSM->SchemeByName(reinterpret_cast<const char*>(lParam)));
+
+	if (pScheme != NULL)
+	{
+		m_pDoc->GetFrame()->SetScheme(pScheme, scfNoViewSettings);
+	}
 
 	return 0;
 }
