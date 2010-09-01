@@ -642,6 +642,12 @@ void CTextView::SetEncoding(EPNEncoding encoding)
 		// Set the code page to UTF-8 if we're going to do unicode editing.
 		SetCodePage(SC_CP_UTF8);
 	}
+	else
+	{
+		// We're ANSI, go for our default codepage:
+		int defaultCodePage = (long)OPTIONS->GetCached(Options::ODefaultCodePage);
+		SetCodePage(defaultCodePage);
+	}
 }
 
 Scheme* CTextView::GetCurrentScheme() const

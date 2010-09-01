@@ -18,6 +18,7 @@ What's new in 2.1?
 10) Small visual tweaks
 11) Line padding options - increase visual space between lines for improved readability
 12) CTags upgraded to 5.8
+13) Converting between ANSI/Unicode properly converts current file contents (#1020, #1021, #1018, #148)
 
 What's new in 2.1 under the cover?
 ------------------------------------------

@@ -387,6 +387,7 @@ private:
 	void setMDIFrameMenu();
 	HMENU getWindowMenu();
 	bool insertMatchingClip(const char* word);
+	bool canConvertEncoding();
 
 	CommandDispatch*	m_pCmdDispatch;
 	DocumentPtr			m_spDocument;

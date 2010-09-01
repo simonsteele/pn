@@ -2131,6 +2131,10 @@ BEGIN
     IDS_TOOLS_SAVE_ALLFILES "All Files"
     IDS_TOOLS_SAVE_PROJECTGROUP "Project Group Files"
     IDS_TOOLS_NEWTOOL       "New Tool"
+    IDS_REENCODE            "Changing the encoding between Unicode and ANSI will clear your Undo history, and may lose unsupported characters. Are you sure?"
+    IDS_CONVERT             "&Convert"
+    IDS_ENCODING_CONVERSION "Encoding Conversion"
+    IDS_DONOTASKMEAGAIN     "Do not ask me again."
 END
 
 #endif    // English (U.K.) resources

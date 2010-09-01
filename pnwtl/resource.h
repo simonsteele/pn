@@ -251,10 +251,14 @@
 #define IDR_POPUP_FINDBARDD             281
 #define IDS_TOOLS_NEWTOOL               281
 #define ID_FINDBAR_SEARCHGOOGLE         282
+#define IDS_REENCODE                    282
 #define ID_FINDBAR_SEARCHGOOGLEGROUPS   283
+#define IDS_CONVERT                     283
 #define IDI_ICON1                       284
+#define IDS_ENCODING_CONVERSION         284
 #define IDR_MENU1                       285
 #define IDR_POPUP_PROJECTFILE           285
+#define IDS_DONOTASKMEAGAIN             285
 #define ID_PROJECT_REMOVE               286
 #define ID_PROJECT_OPEN                 287
 #define ID_PROJECT_ADDFILES             288

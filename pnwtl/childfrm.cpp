@@ -1577,6 +1577,86 @@ LRESULT CChildFrame::OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	return 0;
 }
 
+#define CONVERT_BUFFER_SIZE (1024 * 64)
+
+size_t GetTargetBufferSize(size_t size)
+{
+	return ((size * 5) + 2);
+}
+
+size_t GetWideBufferSize(size_t size)
+{
+	return ((size * 3) + 2);
+}
+
+void ConvertEncoding(CTextView* textView, UINT oldEncoding, UINT newEncoding)
+{
+	int length = textView->GetLength();
+
+	if (length == 0)
+	{
+		return;
+	}
+
+	// Make our buffers:
+	size_t bufferSize = CONVERT_BUFFER_SIZE;
+	char* buffer = new char[GetTargetBufferSize(bufferSize)];
+	wchar_t* wbuffer = new wchar_t[GetWideBufferSize(bufferSize)];
+
+	int start = 0;
+	int end = CONVERT_BUFFER_SIZE;
+
+	while (start < length)
+	{
+		end = start + min(bufferSize, length - start);
+
+		// We want to convert on line boundaries, to ensure we don't split a multi-byte character:
+		int endLine = textView->LineFromPosition(end);
+		int endOfEndLine = textView->GetLineEndPosition(endLine);
+		if (endOfEndLine != end)
+		{
+			endLine--;
+			end = textView->PositionFromLine(endLine);
+
+			// Sanity chex:
+			if (end <= start)
+			{
+				// The current line is longer than our buffer, we'll have to re-allocate and try again:
+				endLine++;
+				bufferSize = textView->LineLength(endLine) + 2;
+				PNASSERT(bufferSize > CONVERT_BUFFER_SIZE);
+				delete [] buffer;
+				delete [] wbuffer;
+				buffer = new char[GetTargetBufferSize(bufferSize)];
+				wbuffer = new wchar_t[GetWideBufferSize(bufferSize)];
+				
+				// Re-loop, have another go...
+				continue;
+			}
+		}
+
+		Scintilla::TextRange tr;
+		tr.chrg.cpMin = start;
+		tr.chrg.cpMax = end;
+		tr.lpstrText = buffer;
+
+		textView->GetTextRange(&tr);
+
+		// TODO: Not sure this is the best way to do this, seems very wasteful!
+		size_t cbwText = ::MultiByteToWideChar(oldEncoding, 0, buffer, end - start, wbuffer, GetWideBufferSize(bufferSize));
+		size_t resultingLength = ::WideCharToMultiByte(newEncoding, 0, wbuffer, cbwText, buffer, GetTargetBufferSize(bufferSize), NULL, NULL);
+
+		// Swap out the text:
+		textView->SetTargetStart(start);
+		textView->SetTargetEnd(end);
+		textView->ReplaceTarget(resultingLength, buffer);
+
+		// Update everything for the next loop:
+		start = start + resultingLength;
+		length = textView->GetLength();
+	}
+}
+
 LRESULT CChildFrame::OnEncodingSelect(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	EPNEncoding oldEncoding = GetTextView()->GetEncoding();
@@ -1584,7 +1664,33 @@ LRESULT CChildFrame::OnEncodingSelect(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 	
 	if(oldEncoding != encoding)
 	{
-		GetTextView()->SetEncoding(encoding);
+		CTextView* textView = GetTextView();
+
+		if (encoding == eUnknown || oldEncoding == eUnknown)
+		{
+			// We're converting between UTF8 and non-UTF8 in the buffer representation (our only two options):
+			// This means a real buffer representation change and we're going to kill undo/various other bits:
+			if (!canConvertEncoding())
+			{
+				return 0;
+			}
+
+			textView->Cancel();
+			textView->SetUndoCollection(0);
+			textView->EmptyUndoBuffer();
+
+			int defaultCodePage = (long)OPTIONS->GetCached(Options::ODefaultCodePage);
+
+			ConvertEncoding(
+				GetTextView(),
+				oldEncoding == eUnknown ? defaultCodePage : CP_UTF8,
+				encoding == eUnknown ? defaultCodePage : CP_UTF8);
+
+			textView->EmptyUndoBuffer();
+			textView->SetUndoCollection(1);
+		}
+
+		textView->SetEncoding(encoding);
 
 		SetModifiedOverride(true);
 
@@ -3030,6 +3136,49 @@ bool CChildFrame::insertMatchingClip(const char* word)
 	}
 
 	return false;
+}
+
+/**
+ * Check the user is happy to convert the file encoding.
+ */
+bool CChildFrame::canConvertEncoding()
+{
+	bool doNotAsk = OPTIONS->Get(PNSK_GENERAL, _T("AskBeforeEncodingConversion"), true);
+	if (!doNotAsk)
+	{
+		return true;
+	}
+
+	std::wstring title(L10N::StringLoader::GetW(IDS_ENCODING_CONVERSION));
+	std::wstring convert(L10N::StringLoader::GetW(IDS_CONVERT));
+	std::wstring cancel(L10N::StringLoader::GetW(IDS_TASKDLG_CANCEL));
+	std::wstring msg(L10N::StringLoader::GetW(IDS_REENCODE));
+	std::wstring donotask(L10N::StringLoader::GetW(IDS_DONOTASKMEAGAIN));
+
+	TASKDIALOG_BUTTON convertButtons[2] = {
+		{ IDYES, convert.c_str() },
+		{ IDCANCEL, cancel.c_str() },
+	};
+
+	TASKDIALOGCONFIG cfg = { 0 };
+	cfg.cbSize = sizeof(cfg);
+	cfg.hwndParent = m_hWnd;
+	cfg.hInstance = _Module.GetResourceInstance();
+	cfg.pszWindowTitle = title.c_str();
+	cfg.pszMainIcon = MAKEINTRESOURCEW(TDT_WARNING_ICON);
+	cfg.pszContent = msg.c_str();
+	cfg.pszVerificationText = donotask.c_str();
+	cfg.dwCommonButtons = 0;
+	cfg.pButtons = convertButtons;
+	cfg.cButtons = 2;
+	cfg.nDefaultButton = IDCANCEL;
+	cfg.dwFlags = TDF_ALLOW_DIALOG_CANCELLATION;
+
+	BOOL doNotShowAgain(FALSE);
+	int iRes = PNTaskDialogIndirect(&cfg, 0, &doNotShowAgain);
+
+	OPTIONS->Set(PNSK_GENERAL, _T("AskBeforeEncodingConversion"), doNotShowAgain ? false : true);
+	return iRes == IDYES;
 }
 
 ////////////////////////////////////////////////////
