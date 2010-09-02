@@ -2135,6 +2135,7 @@ BEGIN
     IDS_CONVERT             "&Convert"
     IDS_ENCODING_CONVERSION "Encoding Conversion"
     IDS_DONOTASKMEAGAIN     "Do not ask me again."
+    IDS_WORKSPACESAVEFAIL   "Failed to open workspace file %s for writing. Workspace state could not be saved."
 END
 
 #endif    // English (U.K.) resources

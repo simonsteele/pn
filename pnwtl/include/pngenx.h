@@ -47,7 +47,7 @@ public:
 
 		if(m_hFile == NULL)
 		{
-			RETURN_UNEXPECTED(_T("Could not open an XML file for writing"), false);
+			return false;
 		}
 
 		genxStartDocFile(m_writer, m_hFile);

@@ -153,7 +153,12 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 {
 	Schemes::Writer writer;
 
-	writer.Start(filename);
+	if (!writer.Start(filename))
+	{
+		UNEXPECTED(_T("Could not open usersettings.xml for writing."));
+		return;
+	}
+
 	writer.beginDoc();
 
 	// Colour Overrides

@@ -260,6 +260,7 @@
 #define IDR_POPUP_PROJECTFILE           285
 #define IDS_DONOTASKMEAGAIN             285
 #define ID_PROJECT_REMOVE               286
+#define IDS_WORKSPACESAVEFAIL           286
 #define ID_PROJECT_OPEN                 287
 #define ID_PROJECT_ADDFILES             288
 #define ID_FILE_OPENPROJECT             289

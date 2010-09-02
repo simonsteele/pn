@@ -137,7 +137,12 @@ void TextClipSet::Save()
 	}
 
 	TextClipsWriter writer;
-	writer.Start(m_filename.c_str());
+	if (!writer.Start(m_filename.c_str()))
+	{
+		UNEXPECTED(_T("Failed to open text clip set file for writing."));
+		return;
+	}
+
 	writer.WriteClipSet(this);
 	writer.Close();
 }
