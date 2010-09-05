@@ -415,6 +415,7 @@
 #define IDC_KB_ADD                      1011
 #define IDC_AUTOCOMPLETECHARSTEXT       1011
 #define IDC_CARETSLOPX_EDIT             1011
+#define IDC_MAGICFOLDER_EXCLUDEDFILEFILTER 1011
 #define IDC_FONT_COMBO                  1012
 #define IDC_TOOLS_REMOVEBUTTON          1012
 #define IDC_TE_BROWSEBUTTON             1012

@@ -921,6 +921,7 @@ void Project::processMagicFolder(XMLAttributes& atts)
 	Xml_Tcs path( ATTVAL(_T("path")) );
 	Xml_Tcs name( ATTVAL(_T("name")) );
 	Xml_Tcs filter( ATTVAL(_T("filter")) );
+	Xml_Tcs excludedFileFilter( ATTVAL(_T("excludeFiles")) );
 	Xml_Tcs folderFilter( ATTVAL(_T("excludeFolders")) );
 
 	if(!path.IsValid() || !name.IsValid())
@@ -936,6 +937,9 @@ void Project::processMagicFolder(XMLAttributes& atts)
 	
 	if(filter.IsValid())
 		mf->SetFilter(filter);
+
+	if(excludedFileFilter.IsValid())
+		mf->SetExcludedFileFilter(excludedFileFilter);
 
 	if(folderFilter.IsValid())
 		mf->SetFolderFilter(folderFilter);

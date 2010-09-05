@@ -65,7 +65,8 @@ protected:
 			ATT("name", m_aName);
 			ATT("typeId", m_aTypeId);
 			ATT("filter", m_aFilter);
-			ATT("excludeFolders", m_aExcluded);
+			ATT("excludeFiles", m_aExcludedFiles);
+			ATT("excludeFolders", m_aExcludedFolders);
 		END_ATTRIBUTES();
 	}
 
@@ -120,7 +121,8 @@ private:
 		tstring relPath = cfn.GetRelativePath( folder->GetParent()->GetBasePath() );
 		addAttributeConvertUTF8(m_aPath, relPath.c_str());
 		addAttributeConvertUTF8(m_aFilter, folder->GetFilter());
-		addAttributeConvertUTF8(m_aExcluded, folder->GetFolderFilter());
+		addAttributeConvertUTF8(m_aExcludedFiles, folder->GetExcludedFileFilter());
+		addAttributeConvertUTF8(m_aExcludedFolders, folder->GetFolderFilter());
 
 		writeFolderContents(folder);
 
@@ -144,7 +146,8 @@ private:
 	genxAttribute m_aName;
 	genxAttribute m_aTypeId;
 	genxAttribute m_aFilter;
-	genxAttribute m_aExcluded;
+	genxAttribute m_aExcludedFiles;
+	genxAttribute m_aExcludedFolders;
 };
 
 

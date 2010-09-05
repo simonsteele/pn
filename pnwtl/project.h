@@ -206,6 +206,9 @@ class MagicFolder : public Folder
 		LPCTSTR GetFilter() const;
 		void SetFilter(LPCTSTR filter);
 
+		LPCTSTR GetExcludedFileFilter() const;
+		void SetExcludedFileFilter(LPCTSTR value);
+
 		LPCTSTR GetFolderFilter() const;
 		void SetFolderFilter(LPCTSTR filter);
 
@@ -221,7 +224,8 @@ class MagicFolder : public Folder
 	protected:
 		//tstring				path;
 		tstring				filter;
-		tstring				folderFilter;
+		tstring             excludedFileFilter;
+		tstring				folderFilter;		
 		bool				read;
 		MagicFolderCache*	cache;
 };
