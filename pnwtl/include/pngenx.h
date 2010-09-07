@@ -2,7 +2,7 @@
  * @file pngenx.h
  * @brief Bits and pieces for using genx.
  * @author Simon Steele
- * @note Copyright (c) 2002-2003 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -19,29 +19,28 @@
 class GenxXMLWriter
 {
 public:
-	GenxXMLWriter()
+	GenxXMLWriter() : m_hFile(NULL), m_bInited(false)
 	{
-		m_hFile = NULL;
-		
 		m_writer = genxNew(NULL, NULL, NULL);
-
-		m_bInited = false;
 	}
 
 	~GenxXMLWriter()
 	{
-		if(m_hFile != NULL)
-			Close();
-
+		Close();
 		genxDispose(m_writer);
 	}
 
+	/**
+	 * Open a file and prepare to write xml.
+	 * @return True if file opened successfully, false otherwise.
+	 */
 	bool Start(LPCTSTR filename)
 	{
 		if(!m_bInited)
+		{
 			initXmlBits();
-
-		m_bInited = true;
+			m_bInited = true;
+		}
 
 		m_hFile = _tfopen(filename, _T("wb"));
 
@@ -55,13 +54,24 @@ public:
 		return true;
 	}
 
+	/**
+	 * @return true if this writer currently has a file open for writing.
+	 */
 	bool IsValid()
 	{
 		return (m_hFile != NULL) && (m_writer != NULL);
 	}
 
+	/**
+	 * Close the current file.
+	 */
 	void Close()
 	{
+		if (!IsValid())
+		{
+			return;
+		}
+
 		if (genxEndDocument(m_writer))
 		{
 			// error...
@@ -76,12 +86,18 @@ public:
 		return m_writer;
 	}
 
+	/**
+	 * Add a string attribute, converting the passed value to UTF-8 along the way.
+	 */
 	void addAttributeConvertUTF8(genxAttribute a, LPCWSTR str)
 	{
 		Utf16_Utf8 conv(str);
 		genxAddAttribute(a, conv);
 	}
 
+	/**
+	 * Add a string attribute, converting the passed value to UTF-8 along the way.
+	 */
 	void addAttributeConvertUTF8(genxAttribute a, LPCSTR str)
 	{
 		Windows1252_Utf8 conv(str);
@@ -118,18 +134,5 @@ protected:
 	}
 
 #define u(x) (constUtf8)x
-
-/*class PreDecAtt
-{
-public:
-	PreDecAtt(genxWriter writer, constUtf8 name) 
-	{ 
-		genxStatus s; 
-		att = genxDeclareAttribute(writer, NULL, name, &s); 
-	}
-protected:
-	genxAttribute att;
-};*/
-
 
 #endif
