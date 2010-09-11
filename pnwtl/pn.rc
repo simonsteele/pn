@@ -805,7 +805,7 @@ FONT 8, "MS Shell Dlg 2", 400, 0, 0x1
 BEGIN
     CONTROL         "&Allow multiple instances of Programmer's Notepad to start",IDC_MULTIINSTANCECHECK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,12,280,10
-    CONTROL         "&Maximise new document windows",IDC_OPT_MAXCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,24,280,10
+    CONTROL         "&Maximize new document windows",IDC_OPT_MAXCHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,24,280,10
     CONTROL         "&Show full file path in document windows",IDC_OPT_FULLPATHCHECK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,36,280,10
     CONTROL         "Start with a new, &blank document",IDC_OPT_NEWFILEONSTART,
