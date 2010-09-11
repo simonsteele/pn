@@ -543,7 +543,7 @@ int CTextView::HandleNotify(LPARAM lParam)
 	{
 		m_recorder->RecordScintillaAction(scn->message, scn->wParam, scn->lParam);
 	}
-
+	
 	if (m_bInsertClip)
 	{
 		handleInsertClipNotify(scn);
@@ -913,6 +913,34 @@ HRESULT CTextView::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 	m_bSkipNextChar = false;
 
 	return 0;
+}
+
+/**
+ * Override Vertical Scroll to handle smarthighlight throughout the file.
+ */
+HRESULT CTextView::OnVScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	bHandled = true;
+	HRESULT ret = DefWindowProc(uMsg, wParam, lParam);
+	smartHighlight();
+
+	return ret;
+}
+
+/**
+ * Override Mouse Wheel to handle smarthighlight throughout the file.
+ */
+HRESULT CTextView::OnMouseWheel(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	bHandled = true;
+	HRESULT ret = DefWindowProc(uMsg, wParam, lParam);
+	
+	if ((wParam & (MK_CONTROL | MK_SHIFT)) == 0)
+	{
+		smartHighlight();
+	}
+
+	return ret;
 }
 
 HRESULT CTextView::OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -1469,7 +1497,7 @@ void CTextView::smartHighlight()
 				IndicSetStyle(INDIC_SMARTHIGHLIGHT, INDIC_ROUNDBOX);
 				
 				// Get our confining range for Smart Highlight:
-				int startAtLine = max(0, DocLineFromVisible(GetFirstVisibleLine()) - MAX_SMARTHIGHLIGHT_LINES);
+				int startAtLine = DocLineFromVisible(GetFirstVisibleLine());
 				int endAtLine = min(GetLineCount(), DocLineFromVisible(GetFirstVisibleLine() + LinesOnScreen()) + MAX_SMARTHIGHLIGHT_LINES);
 				
 				CA2CT findText(buf.c_str());
