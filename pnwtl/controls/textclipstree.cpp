@@ -15,29 +15,40 @@ namespace {
  */
 int CALLBACK TreeSorter(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 {
-	if (lParam1 == 0 && lParam2 != 0)
+	std::map<DWORD_PTR, int>* pointerIsSet = reinterpret_cast<std::map<DWORD_PTR, int>*>(lParamSort);
+	bool firstIsSet = pointerIsSet->find(lParam1) != pointerIsSet->end();
+	bool secondIsSet = pointerIsSet->find(lParam2) != pointerIsSet->end();
+	
+	if (firstIsSet && !secondIsSet)
 	{
 		return 1;
 	}
-	else if (lParam2 == 0 && lParam1 != 0)
+	else if (!firstIsSet && secondIsSet)
 	{
 		return -1;
 	}
-	else if (lParam1 == 0 && lParam2 == 0)
+	else if (firstIsSet /*&& secondIsSet*/)
 	{
-		return 0;
+		// Both sets
+		TextClips::TextClipSet* set = ClipSetPtrFromLParam(lParam1);
+		TextClips::TextClipSet* set2 = ClipSetPtrFromLParam(lParam2);
+
+		return _tcscmp(set->GetName(), set2->GetName());
 	}
-	
-	TextClips::Clip* clip1 = ClipPtrFromLParam(lParam1);
-	TextClips::Clip* clip2 = ClipPtrFromLParam(lParam2);
-	
-	if (clip1->Name < clip2->Name)
+	else
 	{
-		return -1;
-	}
-	else if (clip1->Name > clip2->Name)
-	{
-		return 1;
+		// Both clips
+		TextClips::Clip* clip1 = ClipPtrFromLParam(lParam1);
+		TextClips::Clip* clip2 = ClipPtrFromLParam(lParam2);
+		
+		if (clip1->Name < clip2->Name)
+		{
+			return -1;
+		}
+		else if (clip1->Name > clip2->Name)
+		{
+			return 1;
+		}
 	}
 
 	return 0;
@@ -48,6 +59,11 @@ int CALLBACK TreeSorter(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort)
 TextClips::Clip* ClipPtrFromLParam(LPARAM param)
 {
 	return reinterpret_cast<TextClips::Clip*>(param);
+}
+
+TextClips::TextClipSet* ClipSetPtrFromLParam(LPARAM param)
+{
+	return reinterpret_cast<TextClips::TextClipSet*>(param);
 }
 
 CTextClipsTreeCtrl::CTextClipsTreeCtrl()
@@ -62,10 +78,56 @@ void CTextClipsTreeCtrl::SortSets()
 {
 	TVSORTCB sort = {0};
 	sort.hParent = TVI_ROOT;
-	sort.lParam = 0;
+	sort.lParam = reinterpret_cast<DWORD_PTR>(&m_isSet);
 	sort.lpfnCompare = &TreeSorter;
 
 	SortChildrenCB(&sort, false);
+
+	// TODO: Sort sub-sets.
+}
+
+void CTextClipsTreeCtrl::AddClip(TextClips::Clip* clip, HTREEITEM parent)
+{
+	HTREEITEM clipItem = InsertItem(clip->Name.c_str(), parent, NULL);
+	SetItemData(clipItem, reinterpret_cast<DWORD_PTR>(clip));
+}
+
+/**
+ * Check the tree item represents a clip, and then return the relevant clip.
+ */
+TextClips::Clip* CTextClipsTreeCtrl::GetClip(HTREEITEM item)
+{
+	DWORD_PTR data(GetItemData(item));
+	if (m_isSet.find(data) == m_isSet.end())
+	{
+		return reinterpret_cast<TextClips::Clip*>(data);
+	}
+	
+	return NULL;
+}
+
+void CTextClipsTreeCtrl::RemoveSet(TextClips::TextClipSet* set, HTREEITEM item)
+{
+	m_isSet.erase(reinterpret_cast<DWORD_PTR>(set));
+	DeleteItem(item);
+}
+
+void CTextClipsTreeCtrl::DeleteAllItems()
+{
+	baseClass::DeleteAllItems();
+	m_isSet.clear();
+}
+
+HTREEITEM CTextClipsTreeCtrl::AddSet(TextClips::TextClipSet* set)
+{
+	HTREEITEM parent = InsertItem(set->GetName(), TVI_ROOT, NULL);
+	SetItemData(parent, reinterpret_cast<DWORD_PTR>(set));
+	
+	// m_isSet is used to work out what we have when we 
+	// try to turn a DWORD_PTR back into an item.
+	m_isSet[reinterpret_cast<DWORD_PTR>(set)] = true;
+
+	return parent;
 }
 
 LRESULT CTextClipsTreeCtrl::OnCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHandled)
@@ -116,7 +178,7 @@ LRESULT CTextClipsTreeCtrl::OnCustomDraw(int /*idCtrl*/, LPNMHDR pnmh, BOOL& bHa
 				dc.SetBkColor(bgColor);
 				dc.FillRect(rcItem, itemBrush);
 
-				if (info.lParam == 0)
+				if (m_isSet.find(info.lParam) != m_isSet.end())
 				{
 					DrawClipSet(dc, rcItem, info);
 				}

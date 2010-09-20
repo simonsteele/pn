@@ -1,5 +1,5 @@
 import pn, debug, scintilla, record
-import sys
+import sys, string
 
 ######################################################
 ## This stuff is all essential for pypn to work - that
@@ -102,6 +102,7 @@ def finishCapturingStdOut():
 		ret = sys.stdout.getOutput()
 		sys.stdout = oldstdout
 		oldstdout = None
+		ret = string.rstrip(ret, "\r\n")
 		return ret
 	else:
 		return ""

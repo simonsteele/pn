@@ -223,13 +223,17 @@ void App::Exec(const char* function, const char* param, int flags, PN::BaseStrin
 
 	try
 	{
+		PyObject* scope = (flags & extensions::efBuiltIn) ? m_glue.ptr() : main_namespace.ptr();
+
 		if (flags & extensions::efCaptureOutput)
 		{
 			boost::python::call_method<void>(m_glue.ptr(), "startCapturingStdOut");
+			boost::python::call_method<void>(scope, function, param);
 		}
-		
-		PyObject* scope = (flags & extensions::efBuiltIn) ? m_glue.ptr() : main_namespace.ptr();
-		result = boost::python::call_method<std::string>(scope, function, param);
+		else
+		{
+			result = boost::python::call_method<std::string>(scope, function, param);
+		}
 	}
 	catch(boost::python::error_already_set&)
 	{

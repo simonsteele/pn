@@ -223,7 +223,7 @@ LRESULT CClipsDocker::OnClipSelected(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 		return 0;
 	}
 
-	TextClips::Clip* clip = reinterpret_cast<TextClips::Clip*>( m_tv.GetItemData(hSel));
+	TextClips::Clip* clip = m_tv.GetClip(hSel);
 	
 	if(clip != NULL)
 	{
@@ -342,13 +342,14 @@ LRESULT CClipsDocker::OnAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	set->Add(clip);
 	set->Save();
 
-	HTREEITEM clipItem = m_tv.InsertItem(clip->Name.c_str(), hParent, NULL);
-	m_tv.SetItemData(clipItem, reinterpret_cast<DWORD_PTR>(clip));
+	m_tv.AddClip(clip, hParent);
 
 	if (hParent != TVI_ROOT)
 	{
 		m_tv.Expand(hParent, TVE_EXPAND);
 	}
+
+	m_tv.SortSets();
 
 	return 0;
 }
@@ -362,13 +363,12 @@ LRESULT CClipsDocker::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 		return 0;
 	}
 
-	DWORD_PTR itemData = m_tv.GetItemData(hSelected);
-	if (itemData == NULL)
+	TextClips::Clip* clip = m_tv.GetClip(hSelected);
+
+	if (clip == NULL)
 	{
 		return 0;
 	}
-
-	TextClips::Clip* clip = ClipPtrFromLParam(itemData);
 
 	CTextClipEditor dlg(clip->Shortcut, clip->Text, clip->Name);
 	if (dlg.DoModal() != IDOK)
@@ -397,13 +397,12 @@ LRESULT CClipsDocker::OnRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 		return 0;
 	}
 
-	DWORD_PTR itemData = m_tv.GetItemData(hSelected);
-	if (itemData == NULL)
+	TextClips::Clip* clip(m_tv.GetClip(hSelected));
+	if (clip == NULL)
 	{
 		return 0;
 	}
 
-	TextClips::Clip* clip = ClipPtrFromLParam(itemData);
 	TextClips::TextClipSet* set = getSetForItem(hSelected);
 	set->Remove(clip);
 	delete clip;
@@ -440,15 +439,15 @@ LRESULT CClipsDocker::OnRemoveSet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	}
 
 	// Item data must be null for a set.
-	DWORD_PTR itemData = m_tv.GetItemData(hSelected);
-	if (itemData != NULL)
+	TextClips::Clip* clip = m_tv.GetClip(hSelected);
+	if (clip != NULL)
 	{
 		return 0;
 	}
 
 	TextClips::TextClipSet* set = getSetFromSetItem(hSelected);
+	m_tv.RemoveSet(set, hSelected);
 	m_pTheClips->Delete(set);
-	m_tv.DeleteItem(hSelected);
 
 	return 0;
 }
@@ -474,7 +473,7 @@ void CClipsDocker::LoadSet(Scheme* scheme)
 		HTREEITEM parent;
 		if (setName && setName[0])
 		{
-			parent = m_tv.InsertItem(set->GetName(), TVI_ROOT, NULL);
+			parent = m_tv.AddSet(set);
 		}
 		else
 		{
@@ -485,8 +484,7 @@ void CClipsDocker::LoadSet(Scheme* scheme)
 			
 		for (TextClips::LIST_CLIPS::const_iterator i = clips.begin(); i != clips.end(); ++i)
 		{
-			HTREEITEM clipItem = m_tv.InsertItem((*i)->Name.c_str(), parent, NULL);
-			m_tv.SetItemData(clipItem, reinterpret_cast<DWORD_PTR>((*i)));
+			m_tv.AddClip((*i), parent);
 		}
 
 		if (parent != TVI_ROOT)
@@ -693,7 +691,7 @@ TextClips::TextClipSet* CClipsDocker::getOrCreateSet(LPCTSTR title)
 	if (title != NULL && title[0])
 	{
 		// This is a named Clip Set, add an item for it
-		m_tv.InsertItem(title, TVI_ROOT, NULL);
+		m_tv.AddSet(newSet);
 		m_tv.SortSets();
 	}
 
