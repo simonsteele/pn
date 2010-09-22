@@ -891,7 +891,7 @@ HRESULT CTextView::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BO
 		}
 		else
 		{
-			if (GetParent().SendMessage(PN_COMPLETECLIP, 0, 0))
+			if (::SendMessage(m_pDoc->GetFrame()->m_hWnd, PN_COMPLETECLIP, 0, 0))
 			{
 				bHandled = true;
 				m_bSkipNextChar = true;

@@ -81,9 +81,20 @@ void CTextClipsTreeCtrl::SortSets()
 	sort.lParam = reinterpret_cast<DWORD_PTR>(&m_isSet);
 	sort.lpfnCompare = &TreeSorter;
 
-	SortChildrenCB(&sort, false);
+	SortChildrenCB(&sort);
 
 	// TODO: Sort sub-sets.
+	HTREEITEM item = GetChildItem(TVI_ROOT);
+	while (item)
+	{
+		if (ItemHasChildren(item))
+		{
+			sort.hParent = item;
+			SortChildrenCB(&sort);
+		}
+
+		item = GetNextSiblingItem(item);
+	}
 }
 
 void CTextClipsTreeCtrl::AddClip(TextClips::Clip* clip, HTREEITEM parent)
