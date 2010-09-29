@@ -109,6 +109,11 @@ void CTextClipsTreeCtrl::AddClip(TextClips::Clip* clip, HTREEITEM parent)
 TextClips::Clip* CTextClipsTreeCtrl::GetClip(HTREEITEM item)
 {
 	DWORD_PTR data(GetItemData(item));
+	if (data == NULL)
+	{
+		::OutputDebugString(_T("Data is null"));
+	}
+
 	if (m_isSet.find(data) == m_isSet.end())
 	{
 		return reinterpret_cast<TextClips::Clip*>(data);

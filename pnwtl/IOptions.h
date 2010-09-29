@@ -67,7 +67,7 @@ public:
 			OLineEndings				= 12,
 			OAlreadyOpenDropAction		= 13,
 			OAlreadyOpenAction			= 14,
-			ODefaultCodePage			= 15,
+			ODefaultCodePage			= 15, // Deprecated
 			ODefaultScintillaCache		= 16,
 			OFindAlphaEnabled			= 17,
 			OFindAlphaPercent			= 18,
@@ -75,7 +75,7 @@ public:
 			OVisibleWhiteSpace			= 20,
 			OManageTabOrder				= 21,
 			OConvertLinesOnPaste		= 22,
-			ODefaultCharSet				= 23,
+			ODefaultCharSet				= 23, // Deprecated
 			OAutoComplete				= 24,
 			OAutoCompleteUseKeywords	= 25,
 			OAutoCompleteUseTags		= 26,
@@ -91,7 +91,9 @@ public:
 			OSmartHighlight				= 36,
 			OLinePaddingTop				= 37,
 			OLinePaddingBottom			= 38,
-			OPTION_COUNT				= 39
+			ODefaultEncoding			= 39,
+			OMultiByteCodePage			= 40,
+			OPTION_COUNT				= 41
 		} ECachedOption;
 
 		/// Set a bool value

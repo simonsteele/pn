@@ -220,6 +220,7 @@ LRESULT CClipsDocker::OnClipSelected(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 	HTREEITEM hSel = m_tv.GetSelectedItem();
 	if (hSel == NULL)
 	{
+		::OutputDebugString(_T("No Selected Item"));
 		return 0;
 	}
 
@@ -227,9 +228,12 @@ LRESULT CClipsDocker::OnClipSelected(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 	
 	if(clip != NULL)
 	{
+		::OutputDebugString(_T("Inserting Clip"));
 		InsertClip(clip);
 		return 1;
 	}
+
+	::OutputDebugString(_T("Clip Was Null"));
 
 	return 0;
 }

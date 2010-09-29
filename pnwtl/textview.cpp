@@ -275,7 +275,7 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 		}
 		else
 		{
-			// SPerform(SCI_SETCODEPAGE, (long)OPTIONS->GetCached(Options::ODefaultCodePage)); - default code page should be for new files only.
+			SPerform(SCI_SETCODEPAGE, (long)OPTIONS->GetCached(Options::OMultiByteCodePage));
 
 			// Otherwise we do a simple read.
 			while (lenFile > 0) 
@@ -645,8 +645,8 @@ void CTextView::SetEncoding(EPNEncoding encoding)
 	else
 	{
 		// We're ANSI, go for our default codepage:
-		int defaultCodePage = (long)OPTIONS->GetCached(Options::ODefaultCodePage);
-		SetCodePage(defaultCodePage);
+		int ansiCodePage = (long)OPTIONS->GetCached(Options::OMultiByteCodePage);
+		SetCodePage(ansiCodePage);
 	}
 }
 
@@ -1401,12 +1401,19 @@ void CTextView::OnFirstShow()
 	m_pLastScheme->Load(*this);
 	SetEOLMode( OPTIONS->GetCached(Options::OLineEndings) );
 	
-	int defaultCodePage = (long)OPTIONS->GetCached(Options::ODefaultCodePage);
-	SPerform(SCI_SETCODEPAGE, defaultCodePage);
-	if (defaultCodePage == PNCP_Unicode)
+	int defaultEncoding = (long)OPTIONS->GetCached(Options::ODefaultEncoding);
+	if (defaultEncoding == eUnknown)
 	{
-		m_encType = eUtf8;
+		int ansiCodePage = OPTIONS->GetCached(Options::OMultiByteCodePage);
+		SPerform(SCI_SETCODEPAGE, ansiCodePage);
 	}
+	else
+	{
+		// Any unicode encoding has UTF8 as the Scintilla Code Page.
+		SPerform(SCI_SETCODEPAGE, SC_CP_UTF8);	
+	}
+	
+	m_encType = (EPNEncoding)defaultEncoding;
 }
 
 /**

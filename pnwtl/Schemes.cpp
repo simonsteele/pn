@@ -504,7 +504,6 @@ void Scheme::SetupScintilla(CScintilla& sc, bool allSettings)
 	sc.SPerform(SCI_STYLERESETDEFAULT);
 	sc.SPerform(SCI_STYLESETFORE, STYLE_DEFAULT, ::GetSysColor(COLOR_WINDOWTEXT));
 	sc.SPerform(SCI_STYLESETBACK, STYLE_DEFAULT, ::GetSysColor(COLOR_WINDOW));
-	sc.SPerform(SCI_STYLESETCHARACTERSET, STYLE_DEFAULT, options.GetCached(Options::ODefaultCharSet));
 	sc.SPerform(SCI_STYLECLEARALL);
 
 	// Line length measurement:

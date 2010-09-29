@@ -59,8 +59,8 @@ class COptionsPageEditDefaults : public COptionsPageImpl<COptionsPageEditDefault
 		BOOL			m_bWhiteSpace;
 		UINT			m_iTabWidth;
 		EPNSaveFormat	m_SaveFormat;
-		ECodePage		m_CodePage;
-		int				m_CharSet;
+		ECodePage		m_AnsiCodePage;
+		EPNEncoding		m_DefaultEncoding;
 
 		COptionsBlockHeader m_defaultsHeader;
 };

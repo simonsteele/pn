@@ -1679,7 +1679,7 @@ LRESULT CChildFrame::OnEncodingSelect(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 			textView->SetUndoCollection(0);
 			textView->EmptyUndoBuffer();
 
-			int defaultCodePage = (long)OPTIONS->GetCached(Options::ODefaultCodePage);
+			int defaultCodePage = (long)OPTIONS->GetCached(Options::OMultiByteCodePage);
 
 			ConvertEncoding(
 				GetTextView(),

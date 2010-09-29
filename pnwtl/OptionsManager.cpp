@@ -86,6 +86,8 @@ void Options::loadCache()
 	cache[OCaretYMove]				= Get(NULL, _T("CaretYMove"), 3);
 	cache[OLinePaddingTop]			= Get(NULL, _T("OLinePaddingTop"), 1);
 	cache[OLinePaddingBottom]		= Get(NULL, _T("OLinePaddingBottom"), 0);
+	cache[ODefaultEncoding]			= Get(NULL, _T("DefaultEncoding"), eUnknown);
+	cache[OMultiByteCodePage]		= Get(NULL, _T("MultiByteCodePage"), PNCP_Default);
 	ungroup();
 	
 	// Interface Settings -------------------
@@ -159,6 +161,8 @@ void Options::saveCache()
 	Set(NULL, _T("CaretYMove"),				cache[OCaretYMove]);
 	Set(NULL, _T("OLinePaddingTop"),		cache[OLinePaddingTop]);
 	Set(NULL, _T("OLinePaddingBottom"),		cache[OLinePaddingBottom]);
+	Set(NULL, _T("DefaultEncoding"),		cache[ODefaultEncoding]);
+	Set(NULL, _T("MultiByteCodePage"),		cache[OMultiByteCodePage]);
 
 	ungroup();
 	
