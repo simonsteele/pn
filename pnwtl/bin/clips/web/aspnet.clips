@@ -1,59 +1,59 @@
-<clips name="ASP.NET"><clip name="----- Directives ----" shortcut=""></clip><clip name="Assembly" shortcut="">&lt;%@ Assembly Name="|" %&gt;</clip><clip name="Control (C#)" shortcut="">&lt;%@ Control Language="C#" %&gt;|</clip><clip name="Control (VB)" shortcut="">&lt;%@ Control Language="VB" %&gt;|</clip><clip name="Implements" shortcut="">&lt;%@ Implements Interface="|" %&gt;</clip><clip name="Import" shortcut="">&lt;%@ Import Namespace="|" %&gt;</clip><clip name="OutputCache" shortcut="">&lt;%@ OutputCache Duration="100" VaryByParam="none|" %&gt;</clip><clip name="Page (C#)" shortcut="">&lt;%@ Page Language="C#" ContentType="text/html" ResponseEncoding="iso-8859-1" %&gt;|</clip><clip name="Page (VB)" shortcut="">&lt;%@ Page Language="VB" ContentType="text/html" ResponseEncoding="iso-8859-1" %&gt;|</clip><clip name="Reference (Control)" shortcut="">&lt;%@ Reference Control="|.ascx" %&gt;</clip><clip name="Reference (Page)" shortcut="">&lt;%@ Reference Page="|.aspx" %&gt;</clip><clip name="Register" shortcut="">&lt;%@ Register TagPrefix="|" TagName="" Src="" %&gt;</clip><clip name="----- Web Controls ----" shortcut=""></clip><clip name="AdRotator" shortcut="">&lt;asp:AdRotator id="AdRotator1"
-	AdvertisementFile="|.xml"
+<clips name="ASP.NET"><clip name="----- Directives ----" shortcut=""></clip><clip name="Assembly" shortcut="">&lt;%@ Assembly Name="$0" %&gt;</clip><clip name="Control (C#)" shortcut="">&lt;%@ Control Language="C#" %&gt;$0</clip><clip name="Control (VB)" shortcut="">&lt;%@ Control Language="VB" %&gt;$0</clip><clip name="Implements" shortcut="">&lt;%@ Implements Interface="$0" %&gt;</clip><clip name="Import" shortcut="">&lt;%@ Import Namespace="$0" %&gt;</clip><clip name="OutputCache" shortcut="">&lt;%@ OutputCache Duration="100" VaryByParam="none$0" %&gt;</clip><clip name="Page (C#)" shortcut="">&lt;%@ Page Language="C#" ContentType="text/html" ResponseEncoding="iso-8859-1" %&gt;$0</clip><clip name="Page (VB)" shortcut="">&lt;%@ Page Language="VB" ContentType="text/html" ResponseEncoding="iso-8859-1" %&gt;$0</clip><clip name="Reference (Control)" shortcut="">&lt;%@ Reference Control="$0.ascx" %&gt;</clip><clip name="Reference (Page)" shortcut="">&lt;%@ Reference Page="$0.aspx" %&gt;</clip><clip name="Register" shortcut="">&lt;%@ Register TagPrefix="$0" TagName="" Src="" %&gt;</clip><clip name="----- Web Controls ----" shortcut=""></clip><clip name="AdRotator" shortcut="">&lt;asp:AdRotator id="AdRotator1"
+	AdvertisementFile="$0.xml"
 	runat="server"/&gt;</clip><clip name="Button" shortcut="">&lt;asp:Button id="Button1"
-	Text="|"
+	Text="$0"
 	OnClick=""
 	runat="server" /&gt;</clip><clip name="Calendar" shortcut="">&lt;asp:Calendar id="Calendar1"
 	runat="server"&gt;
 &lt;/asp:Calendar&gt;</clip><clip name="CheckBox" shortcut="">&lt;asp:CheckBox id="CheckBox1" 
-	Text="|"
+	Text="$0"
 	runat="server" /&gt;</clip><clip name="CheckBoxList" shortcut="">&lt;asp:CheckBoxList id="CheckBoxList1"
-	DataSource='&lt;%# | %&gt;'
+	DataSource='&lt;%# $0 %&gt;'
 	DataTextField=""
 	DataValueField=""
 	runat="server"&gt;
 	&lt;asp:ListItem Value="" Selected=""&gt;&lt;/asp:ListItem&gt;
 &lt;/asp:CheckBoxList&gt;</clip><clip name="DataGrid" shortcut="">&lt;asp:DataGrid id="DataGrid1"
-	DataSource='&lt;%# | %&gt;'
+	DataSource='&lt;%# $0 %&gt;'
 	runat="server"&gt;
 &lt;/asp:DataGrid&gt;</clip><clip name="DataList" shortcut="">&lt;asp:DataList id="DataList1"
 	DataKeyField=""
-	DataSource='&lt;%# | %&gt;'
+	DataSource='&lt;%# $0 %&gt;'
 	runat="server"&gt;
 &lt;/asp:DataList&gt;</clip><clip name="DropDownList" shortcut="">&lt;asp:DropDownList id="DropDownList1"
-	DataSource='&lt;%# | %&gt;'
+	DataSource='&lt;%# $0 %&gt;'
 	DataTextField=""
 	DataValueField=""
 	runat="server"&gt;
 	&lt;asp:ListItem Value="" Selected=""&gt;&lt;/asp:ListItem&gt;
 &lt;/asp:DropDownList&gt;</clip><clip name="HyperLink" shortcut="">&lt;asp:HyperLink id="HyperLink1"
-	Text="|"
+	Text="$0"
 	ToolTip=""
 	NavigateUrl=""
 	runat="server" /&gt;</clip><clip name="Image" shortcut="">&lt;asp:Image id="Image1"
-	ImageUrl="|"
+	ImageUrl="$0"
 	AlternateText=""
 	ImageAlign=""
 	runat="server" /&gt;</clip><clip name="ImageButton" shortcut="">&lt;asp:ImageButton id="ImageButton1"
-	ImageUrl="|"
+	ImageUrl="$0"
 	OnClick=""
-	runat="server" /&gt;</clip><clip name="Label" shortcut="">&lt;asp:Label id="Label1" Text="|" runat="server" /&gt;</clip><clip name="LinkButton" shortcut="">&lt;asp:LinkButton id="LinkButton1"
-	Text="|"
+	runat="server" /&gt;</clip><clip name="Label" shortcut="">&lt;asp:Label id="Label1" Text="$0" runat="server" /&gt;</clip><clip name="LinkButton" shortcut="">&lt;asp:LinkButton id="LinkButton1"
+	Text="$0"
 	OnClick=""
 	runat="server" /&gt;</clip><clip name="ListBox" shortcut="">&lt;asp:ListBox id="ListBox1"
-	DataSource='&lt;%# | %&gt;'
+	DataSource='&lt;%# $0 %&gt;'
 	DataTextField=""
 	DataValueField=""
 	runat="server"&gt;
 	&lt;asp:ListItem Value="" Selected=""&gt;&lt;/asp:ListItem&gt;
-&lt;/asp:ListBox&gt;</clip><clip name="Literal" shortcut="">&lt;asp:Literal id="Literal1" Text="|" runat="server" /&gt;</clip><clip name="Panel" shortcut="">&lt;asp:Panel id="Panel1" runat="server"&gt;
-|
+&lt;/asp:ListBox&gt;</clip><clip name="Literal" shortcut="">&lt;asp:Literal id="Literal1" Text="$0" runat="server" /&gt;</clip><clip name="Panel" shortcut="">&lt;asp:Panel id="Panel1" runat="server"&gt;
+$0
 &lt;/asp:Panel&gt;</clip><clip name="PlaceHolder" shortcut="">&lt;asp:PlaceHolder id="PlaceHolder1" runat="server" /&gt;</clip><clip name="RadioButton" shortcut="">&lt;asp:RadioButton id="RadioButton1" 
-	Checked="|"
+	Checked="$0"
 	GroupName=""
 	Text=""
 	runat="server" /&gt;</clip><clip name="RadioButtonList" shortcut="">&lt;asp:RadioButtonList id="RadioButtonList1"
-	DataSource='&lt;%# | %&gt;'
+	DataSource='&lt;%# $0 %&gt;'
 	DataTextField=""
 	DataValueField=""
 	RepeatColumns=""
@@ -63,7 +63,7 @@
 	runat="server"&gt;
 	&lt;asp:ListItem Value="" Selected=""&gt;&lt;/asp:ListItem&gt;
 &lt;/asp:RadioButtonList&gt;</clip><clip name="Repeater" shortcut="">&lt;asp:Repeater id="Repeater1"
-	DataSource='&lt;%# | %&gt;'
+	DataSource='&lt;%# $0 %&gt;'
 	runat="server"&gt;
 	&lt;HeaderTemplate&gt;
 
@@ -88,7 +88,7 @@
 	runat="server"&gt;
 	&lt;asp:TableRow&gt;
 		&lt;asp:TableCell&gt;
-			|
+			$0
 		&lt;/asp:TableCell&gt;
 	&lt;/asp:TableRow&gt;
 &lt;/asp:Table&gt;</clip><clip name="TableCell" shortcut="">&lt;asp:TableCell id="TableCell1"
@@ -98,19 +98,19 @@
 	VerticalAlign=""
 	Wrap=""
 	runat="server"&gt;
-	|
+	$0
 &lt;/asp:TableCell&gt;</clip><clip name="TableRow" shortcut="">&lt;asp:TableRow id="TableRow1"
 	HorizontalAlign=""
 	VerticalAlign=""
 	runat="server"&gt;
 	&lt;asp:TableCell&gt;
-	|
+	$0
 	&lt;/asp:TableCell&gt;
 &lt;/asp:TableRow&gt;</clip><clip name="TextBox" shortcut="">&lt;asp:TextBox id="TextBox1"
 	Columns=""
 	MaxLength=""
 	Rows=""
-	Text="|"
+	Text="$0"
 	TextMode=""
 	Wrap=""
 	runat="server" /&gt;</clip><clip name="Xml" shortcut="">&lt;asp:Xml id="Xml1"
@@ -120,7 +120,7 @@
 	Transform=""
 	TransformSource=""
 	runat="server" /&gt;</clip><clip name="----- Validation Controls -----" shortcut=""></clip><clip name="CompareValidator" shortcut="">&lt;asp:CompareValidator id="CompareValidator1"
-	ControlToValidate="|"
+	ControlToValidate="$0"
 	ValueToCompare=""
 	Type=""
 	Operator=""
@@ -128,28 +128,28 @@
 	runat="server"&gt;
 &lt;/asp:CompareValidator&gt;</clip><clip name="CustomValidator" shortcut="">&lt;asp:CustomValidator id="CustomValidator1"
 	runat="server"
-	ControlToValidate="|"
+	ControlToValidate="$0"
 	ClientValidationFunction=""
 	OnServerValidate=""
 	ErrorMessage=""&gt;
 &lt;/asp:CustomValidator&gt;</clip><clip name="RangeValidator" shortcut="">&lt;asp:RangeValidator id="RangeValidator1"
-	ControlToValidate="|"
+	ControlToValidate="$0"
 	MinimumValue=""
 	Type=""
 	ErrorMessage=""
 	runat="server"&gt;
 &lt;/asp:RangeValidator&gt;</clip><clip name="RegularExpressionValidator" shortcut="">&lt;asp:RegularExpressionValidator id="RegularExpressionValidator1" 
-	ControlToValidate="|"
+	ControlToValidate="$0"
 	ValidationExpression=""
 	ErrorMessage=""
 	runat="server"&gt;
 &lt;/asp:RegularExpressionValidator&gt;</clip><clip name="RequiredFieldValidator" shortcut="">&lt;asp:RequiredFieldValidator id="RequiredFieldValidator1"
-	ControlToValidate="|"
+	ControlToValidate="$0"
 	InitialValue=""
 	ErrorMessage=""
 	runat="server"&gt;
 &lt;/asp:RequiredFieldValidator&gt;</clip><clip name="ValidationSummary" shortcut="">&lt;asp:ValidationSummary id="ValidationSummary1"
-	DisplayMode="|"
+	DisplayMode="$0"
 	EnableClientScript=""
 	ShowSummary=""
 	ShowMessageBox=""
