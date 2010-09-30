@@ -48,6 +48,8 @@
 #include "browseview.h"			// Browse Docker
 #include "openfilesview.h"		// Open Files Docker
 
+#include "include/encoding.h"
+
 // Other stuff
 #include <dbstate.h>			// Docking window state stuff
 #include <htmlhelp.h>
@@ -2054,8 +2056,21 @@ void CMainFrame::launchFind(EFindDialogType findType)
 	CChildFrame* pChild = hWndCur ? CChildFrame::FromHandle(hWndCur) : NULL;
 	if(pChild)
 	{
-		CA2CT findText(pChild->GetTextView()->GetCurrentWord().c_str());
-		m_pFindEx->Show(findType, findText);
+		std::string currentWord(pChild->GetTextView()->GetCurrentWord());
+		tstring currentWordT;
+		if (pChild->GetTextView()->GetEncoding() != eUnknown)
+		{
+			// Editor is in unicode mode:
+			Utf8_Utf16 conv(currentWord.c_str());
+			currentWordT = conv;
+		}
+		else
+		{
+			Windows1252_Utf16 conv(currentWord.c_str());
+			currentWordT = conv;
+		}
+
+		m_pFindEx->Show(findType, currentWordT.c_str());
 	}
 	else
 	{
