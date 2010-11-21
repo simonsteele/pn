@@ -138,12 +138,7 @@ LRESULT COptionsPageGlobalStyles::OnFontChanged(WORD /*wNotifyCode*/, WORD /*wID
 {
 	if(m_pStyle)
 	{
-		int i = m_FontCombo.GetCurSel();
-		CString str;
-		m_FontCombo.GetLBText(i, str);
-		
-		CT2CA fontconv((LPCTSTR)str);
-		m_style.FontName = fontconv;
+		m_style.FontName = m_FontCombo.GetSelFontName();
 		onChange();
 	}
 
@@ -332,9 +327,7 @@ void COptionsPageGlobalStyles::updateDisplay()
 	m_fore.SetColor(m_style.ForeColor);
 	m_back.SetColor(m_style.BackColor);
 
-	CA2CT fontconv(m_style.FontName.c_str());
-
-	m_FontCombo.SelectString(-1, fontconv);
+	m_FontCombo.SelectString(-1, m_style.FontName.c_str());
 	m_SizeCombo.Select(m_style.FontSize);
 }
 

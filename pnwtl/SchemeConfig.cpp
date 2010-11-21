@@ -113,7 +113,7 @@ void SchemeConfigParser::LoadPresets(LPCTSTR path)
 	{
 		if(!validateFont(defcls->CustomStyle->FontName.c_str()))
 		{
-			defcls->CustomStyle->FontName = "";
+			defcls->CustomStyle->FontName = _T("");
 			defcls->CustomStyle->values ^= edvFontName;
 		}
 	}
@@ -376,7 +376,7 @@ int CALLBACK ValidateFontCB(
     return 1; 
 } 
 
-bool SchemeConfigParser::validateFont(const char* fontName)
+bool SchemeConfigParser::validateFont(LPCTSTR fontName)
 {
 	FontValidationInfo fvi;
 	fvi.Name = fontName;

@@ -48,7 +48,7 @@ class SchemeConfigParser : public SchemeParser
 	protected:
 		void Sort();
 		void Save(LPCTSTR filename);
-		bool validateFont(const char* fontName);
+		bool validateFont(LPCTSTR fontName);
 
 		SchemeDetailsList	m_Schemes;
 		SchemeDetails*		m_pCurrent;

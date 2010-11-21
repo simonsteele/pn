@@ -362,8 +362,21 @@ StyleDetails::StyleDetails()
 }
 
 StyleDetails::StyleDetails(const StyleDetails& copy)
+	:Key(copy.Key)
+	,FontName(copy.FontName)
+	,FontSize(copy.FontSize)
+	,ForeColor(copy.ForeColor)
+	,BackColor(copy.BackColor)
+	,Bold(copy.Bold)
+	,Italic(copy.Italic)
+	,Underline(copy.Underline)
+	,EOLFilled(copy.EOLFilled)
+	,Hotspot(copy.Hotspot)
+
+	,values(copy.values)
+    ,name(copy.name)
+	,classname(copy.classname)
 {
-	*this = copy;
 }
 
 StyleDetails& StyleDetails::operator = (const StyleDetails& copy)
@@ -380,8 +393,8 @@ StyleDetails& StyleDetails::operator = (const StyleDetails& copy)
 	Hotspot = copy.Hotspot;
 
 	values = copy.values;
+    name = copy.name;
 	classname = copy.classname;
-	name = copy.name;
 	
 	return *this;
 }

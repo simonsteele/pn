@@ -114,7 +114,7 @@ class StyleDetails
 
 		int Key;
 		
-		std::string FontName;
+		tstring FontName;
 		int FontSize;
 		COLORREF ForeColor;
 		COLORREF BackColor;

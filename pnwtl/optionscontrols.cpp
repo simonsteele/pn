@@ -78,10 +78,8 @@ void CStyleDisplay::SetBack(COLORREF back)
 	Invalidate();
 }
 
-void CStyleDisplay::SetStyle(LPCSTR fontname, int fontsize, COLORREF fore, COLORREF back, LPCTSTR name, bool bold, bool italic, bool underline)
+void CStyleDisplay::SetStyle(LPCTSTR fontname, int fontsize, COLORREF fore, COLORREF back, LPCTSTR name, bool bold, bool italic, bool underline)
 {
-	CA2CT fontconv(fontname);
-
 	m_Name = name;
 	m_Fore = fore;
 	m_Back = back;
@@ -91,7 +89,7 @@ void CStyleDisplay::SetStyle(LPCSTR fontname, int fontsize, COLORREF fore, COLOR
 	m_lf.lfWeight = (bold ? FW_BOLD : FW_NORMAL);
 	m_lf.lfUnderline = underline;
 	m_lf.lfItalic = italic;
-	_tcscpy(m_lf.lfFaceName, (LPCTSTR)fontconv);
+	_tcscpy(m_lf.lfFaceName, fontname);
 
 	UpdateFont();
 }

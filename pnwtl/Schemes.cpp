@@ -300,7 +300,7 @@ StylesList* Scheme::CreateStylesList()
 						switch(Txt.TextType)
 						{
 							case ttFontName : 
-								pS->FontName = &buf[0];
+								pS->FontName = CA2CT(&buf[0]);
 								break;
 						}
 					}

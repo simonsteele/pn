@@ -181,6 +181,7 @@ bool SchemeRecorder::CheckNecessary(long Msg, WPARAM wParam, LPARAM lParam)
 {
 	bool res = true;
 	bool nOther = false;
+    CString fontName;
 	switch (Msg)
 	{
 		case SCI_STYLESETFORE:
@@ -202,7 +203,8 @@ bool SchemeRecorder::CheckNecessary(long Msg, WPARAM wParam, LPARAM lParam)
 			res = (lParam != 0) != m_DefStyle.EOLFilled;
 			break;
 		case SCI_STYLESETFONT:
-			res = (m_DefStyle.FontName != (const char*)lParam);
+            fontName = (const char*)lParam;
+			res = (m_DefStyle.FontName.compare(fontName));
 			break;
 		case SCI_STYLESETSIZE:
 			res = m_DefStyle.FontSize != lParam;
@@ -394,7 +396,8 @@ void SchemeCompiler::onProperty(LPCTSTR name, LPCTSTR value)
 
 void SchemeCompiler::sendStyle(StyleDetails* s, SchemeRecorder* compiler)
 {
-	compiler->StyleSetFont(s->Key, s->FontName.c_str());
+    CT2CA fontconv(s->FontName.c_str());
+	compiler->StyleSetFont(s->Key, fontconv);
 	compiler->StyleSetSize(s->Key, s->FontSize);
 	if(s->ForeColor != -1)
 		compiler->StyleSetFore(s->Key, s->ForeColor);
@@ -607,8 +610,7 @@ void SchemeParser::parseStyle(SchemeLoaderState* pState, XMLAttributes& atts, St
 		}
 		else if(_tcscmp(nm, _T("font")) == 0)
 		{
-			USES_CONVERSION;
-			pStyle->FontName = T2CA(t);
+			pStyle->FontName = t;
 			pStyle->values |= edvFontName;
 		}
 		else if(_tcscmp(nm, _T("size")) == 0)
@@ -704,11 +706,11 @@ void SchemeParser::processStyleClass(SchemeLoaderState* pState, XMLAttributes& a
 			// No font specified, and this is our default style.
 			if (WTL::RunTimeHelper::IsVista())
 			{
-				pStyle->FontName = "Consolas";
+				pStyle->FontName = _T("Consolas");
 			}
 			else
 			{
-				pStyle->FontName = "Lucida Console";
+				pStyle->FontName = _T("Lucida Console");
 			}
 
 			pStyle->values |= edvFontName;
