@@ -97,9 +97,9 @@ BEGIN
         BEGIN
             MENUITEM "&Projects",                   ID_VIEW_WINDOWS_PROJECT
             MENUITEM "&Text Clips",                 ID_VIEW_WINDOWS_TEXTCLIPS
-            MENUITEM "&Find Results",               32704
-            MENUITEM "T&ags",                       32703
-            MENUITEM "&Scripts",                    32705
+            MENUITEM "&Find Results",               ID_VIEW_WINDOWS_FINDRESULTS
+            MENUITEM "T&ags",                       ID_VIEW_WINDOWS_CTAGS
+            MENUITEM "&Scripts",                    ID_VIEW_WINDOWS_SCRIPTS
             MENUITEM "File &Browser",               ID_VIEW_WINDOWS_BROWSER
             MENUITEM "Open Fi&les",                 ID_VIEW_WINDOWS_OPENFILES
         END
@@ -109,22 +109,22 @@ BEGIN
     END
     POPUP "&Tools"
     BEGIN
-        MENUITEM "Add Tools...",                32788
-        MENUITEM "&Stop Tools",                 32789, GRAYED
+        MENUITEM "Add Tools...",                ID_TOOLS_DUMMY
+        MENUITEM "&Stop Tools",                 ID_TOOLS_STOPTOOLS, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "&Options",                    ID_TOOLS_OPTIONS
     END
     POPUP "&Help"
     BEGIN
-        MENUITEM "&Contents",                   32943
+        MENUITEM "&Contents",                   ID_HELP_CONTENTS
         MENUITEM SEPARATOR
         MENUITEM "PN &Home Page",               ID_HELP_WEB_PN
-        MENUITEM "PN on &Google Code",          252
+        MENUITEM "PN on &Google Code",          ID_HELP_WEB_SF
         MENUITEM "&Online Help",                ID_HELP_WEB_DOCS
         MENUITEM "&Forums",                     ID_HELP_WEB_FORUMS
         MENUITEM "Check for &Updates",          ID_HELP_CHECKFORUPDATES
         MENUITEM SEPARATOR
-        MENUITEM "Report a &bug...",            253
+        MENUITEM "Report a &bug...",            ID_HELP_WEB_SB
         MENUITEM "Request a &feature...",       ID_HELP_WEB_SR
         MENUITEM SEPARATOR
         MENUITEM "&About Programmer's Notepad...", ID_APP_ABOUT
@@ -303,7 +303,7 @@ BEGIN
     BEGIN
         MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
         MENUITEM "Tile &Horizontal",            ID_WINDOW_TILE_HORZ
-        MENUITEM "Tile &Vertical",              57652
+        MENUITEM "Tile &Vertical",              ID_WINDOW_TILE_VERT
         MENUITEM "Arrange &Icons",              ID_WINDOW_ARRANGE
         MENUITEM SEPARATOR
         MENUITEM "&Split Horizontal",           ID_WINDOW_SPLITHORIZONTAL
@@ -316,7 +316,7 @@ BEGIN
     BEGIN
         MENUITEM "&Contents",                   ID_HELP_CONTENTS
         MENUITEM SEPARATOR
-        MENUITEM "PN &HomePage",                ID_HELP_WEB_PN
+        MENUITEM "PN &Home Page",               ID_HELP_WEB_PN
         MENUITEM "PN on &Google Code",          ID_HELP_WEB_SF
         MENUITEM "&Online Help",                ID_HELP_WEB_DOCS
         MENUITEM "&Forums",                     ID_HELP_WEB_FORUMS
@@ -1787,7 +1787,7 @@ BEGIN
     ID_EDITOR_WORDWRAP      "Toggle word wrap"
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
     ID_EDITOR_LINENOS       "Toggle line numbers display"
-    IDS_ABOUTVERSIONSTRING  "Version: v%s\n\nCopyright © 2002-2010 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
+    IDS_ABOUTVERSIONSTRING  "Version: v%s\n\nCopyright ?2002-2010 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
     IDS_PROJECTNOPROPS      "This project has no properties."
     IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c: Column"
     ID_FILE_NEW_PROJECT     "Create a new project."
