@@ -177,6 +177,7 @@ public:
 		COMMAND_HANDLER(IDC_FINDCOMBO, BXTN_ENTER, OnFindComboEnter)
 
 		//NOTIFY_CODE_HANDLER(TBN_DROPDOWN, OnToolbarDropDown)
+        NOTIFY_HANDLER(ATL_IDW_STATUS_BAR, NM_DBLCLK, OnStatusBarDblClick)
 
 		COMMAND_RANGE_HANDLER(ID_VIEW_FIRSTDOCKER, ID_VIEW_LASTDOCKER, OnDockerToggle)
 		COMMAND_RANGE_HANDLER(ID_MRUFILE_BASE, ID_MRUFILE_MAX, OnMRUSelected)
@@ -263,6 +264,8 @@ public:
 	LRESULT OnMDISetMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnUpdateChildUIState(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnCloseAllOther(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
+    LRESULT OnStatusBarDblClick(int /*wParam*/, LPNMHDR lParam, BOOL& bHandled);
 
 	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 

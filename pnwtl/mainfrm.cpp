@@ -3410,3 +3410,37 @@ void CMainFrame::resetCurrentDir(bool rememberOpenPath)
 		::SetCurrentDirectory(OPTIONS->GetPNPath(PNPATH_PN));
 	}
 }
+
+LRESULT CMainFrame::OnStatusBarDblClick(int /*wParam*/, LPNMHDR lParam, BOOL& bHandled)
+{
+    bHandled = FALSE;
+    CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
+	
+	if(pChild)
+	{
+		LPNMMOUSE pnmm = (LPNMMOUSE)lParam;
+
+		PNASSERT(pnmm->dwItemSpec < m_StatusBar.m_nPanes);
+		UINT nID = m_StatusBar.m_pPane[pnmm->dwItemSpec];
+
+		switch (nID)
+		{
+			case ID_POS_PANE:
+				SendMessage(m_hWnd, WM_COMMAND, MAKELONG(ID_EDIT_GOTO, 1), 0);
+
+				bHandled = TRUE;
+				return TRUE;
+
+			case ID_INS_PANE:
+				pChild->GetTextView()->EditToggleOvertype();
+
+				bHandled = TRUE;
+				return TRUE;
+
+			default:
+				break;
+		}
+	}
+
+    return FALSE;
+}
