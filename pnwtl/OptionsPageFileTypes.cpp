@@ -9,9 +9,9 @@
  */
 
 #include "stdafx.h"
+#include "resource.h"
 #include "OptionsPages.h"
 #include "OptionsDialogs.h"
-#include "resource.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // COptionsPageFileTypes

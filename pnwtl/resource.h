@@ -262,8 +262,11 @@
 #define ID_PROJECT_REMOVE               286
 #define IDS_WORKSPACESAVEFAIL           286
 #define ID_PROJECT_OPEN                 287
+#define IDS_EXPLORERCONTEXTMENU         287
 #define ID_PROJECT_ADDFILES             288
+#define IDS_OPTIONS_ADDEDITWITH         288
 #define ID_FILE_OPENPROJECT             289
+#define IDS_OPTIONS_REMOVEEDITWITH      289
 #define IDR_POPUP_PROJECTFOLDER         290
 #define ID_DUMMY_ADDFILES               291
 #define ID_DUMMY_DELETE                 292
@@ -643,6 +646,7 @@
 #define IDC_ENSUREBLANKLINE_CHECK       1170
 #define IDC_LINEPADDING_STATIC          1170
 #define IDC_EXTLINK                     1171
+#define IDC_ENABLEEXPLORERCONTEXT       1172
 #define IDC_MARKALL_BUTTON              21199
 #define IDC_SEARCHALL_CHECK             21200
 #define IDC_REHELPER_BUTTON             21204
@@ -854,7 +858,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        372
 #define _APS_NEXT_COMMAND_VALUE         33157
-#define _APS_NEXT_CONTROL_VALUE         1172
+#define _APS_NEXT_CONTROL_VALUE         1173
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif
