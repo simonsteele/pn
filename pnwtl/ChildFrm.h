@@ -388,6 +388,7 @@ private:
 	HMENU getWindowMenu();
 	bool insertMatchingClip(const char* word);
 	bool canConvertEncoding();
+	void insertClip(const TextClips::Clip* clip);
 
 	CommandDispatch*	m_pCmdDispatch;
 	DocumentPtr			m_spDocument;

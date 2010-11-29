@@ -512,11 +512,7 @@ void CClipsDocker::InsertClip(TextClips::Clip* tc)
 			return;
 		}
 
-		TextClips::DefaultVariableProvider variables(pChild, g_Context.m_frame->GetActiveWorkspace());
-		std::vector<TextClips::Chunk> chunks;
-		tc->GetChunks(chunks, pS, &variables, ScriptRegistry::GetInstance());
-		
-		pS->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
+		pS->InsertClip(tc);
 		
 		PostMessage(PN_SETFOCUS, 0, reinterpret_cast<LPARAM>(pS->m_hWnd));
 	}

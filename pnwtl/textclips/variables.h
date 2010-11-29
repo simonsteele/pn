@@ -37,6 +37,11 @@ public:
 	 */
 	virtual bool GetVariable(const char* name, std::string& value);
 
+	/**
+	 * Find out if the user's selection was used.
+	 */
+	bool GetSelectionUsed() const;
+
 private:
 	tstring getProjectProp(const std::string n);
 	tstring getFileProp(const std::string n);
@@ -48,6 +53,7 @@ private:
 	void set(std::string& value, const std::string& variable);
 	void set(std::string& value, const std::wstring& variable);
 
+	bool m_selectionUsed;
 	CChildFrame* m_pChild;
 	Projects::Workspace* m_pWorkspace;
 	Projects::Project* m_pActiveProject;

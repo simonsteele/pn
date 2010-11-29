@@ -334,11 +334,7 @@ bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 		{
 #ifdef CLIPS_DEV
 			GetTextView()->DelWordLeft();
-
-			std::vector<TextClips::Chunk> chunks;
-			TextClips::DefaultVariableProvider variables(this, g_Context.m_frame->GetActiveWorkspace());
-			clip->GetChunks(chunks, GetTextView(), &variables, ScriptRegistry::GetInstance());
-			GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
+			GetTextView()->InsertClip(clip);
 			break;
 #else
 			GetTextView()->BeginUndoAction();
@@ -3126,11 +3122,7 @@ bool CChildFrame::insertMatchingClip(const char* word)
 		if(desired != NULL)
 		{
 			GetTextView()->DelWordLeft();
-
-			std::vector<TextClips::Chunk> chunks;
-			TextClips::DefaultVariableProvider variables(this, g_Context.m_frame->GetActiveWorkspace());
-			desired->GetChunks(chunks, GetTextView(), &variables, ScriptRegistry::GetInstance());
-			GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
+			GetTextView()->InsertClip(desired);
 			return true;
 		}
 	}

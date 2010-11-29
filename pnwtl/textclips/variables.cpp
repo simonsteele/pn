@@ -19,7 +19,8 @@ using namespace TextClips;
 DefaultVariableProvider::DefaultVariableProvider(CChildFrame* childFrame, Projects::Workspace* currentWorkspace) :
     m_pChild(childFrame),
 	m_pWorkspace(currentWorkspace),
-	m_pActiveProject(NULL)
+	m_pActiveProject(NULL),
+	m_selectionUsed(false)
 {
 	if (currentWorkspace != NULL)
 	{
@@ -109,6 +110,7 @@ bool DefaultVariableProvider::GetVariable(const char* name, std::string& value)
 		if (m_pChild)
 		{
 			set(value, m_pChild->GetTextView()->GetSelText2());
+			m_selectionUsed = true;
 		}
 	}
 	else if (iequals(n, "PN_CurrentProjectFile"))
@@ -228,6 +230,14 @@ bool DefaultVariableProvider::GetVariable(const char* name, std::string& value)
 	}
 
 	return true;		
+}
+
+/**
+ * Find out if the user's selection was used.
+ */
+bool DefaultVariableProvider::GetSelectionUsed() const
+{
+	return m_selectionUsed;
 }
 
 tstring DefaultVariableProvider::getProjectProp(const std::string n)

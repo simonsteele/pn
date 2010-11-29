@@ -124,6 +124,8 @@ public:
 	// Implement View
 	HWND GetHwnd() { return m_hWnd; }
 
+	void InsertClip(const TextClips::Clip* clip);
+
 private:
 
 	// Message Handlers

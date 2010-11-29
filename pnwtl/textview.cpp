@@ -815,6 +815,24 @@ HRESULT CTextView::OnOverwriteTarget(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 }
 
 /**
+ * Insert a clip.
+ */
+void CTextView::InsertClip(const TextClips::Clip* clip)
+{
+	TextClips::DefaultVariableProvider variables(m_pDoc->GetFrame(), g_Context.m_frame->GetActiveWorkspace());
+	std::vector<TextClips::Chunk> chunks;
+	clip->GetChunks(chunks, this, &variables, ScriptRegistry::GetInstance());
+
+	if (variables.GetSelectionUsed() && GetSelLength())
+	{
+		DeleteBack();
+	}
+
+	BOOL bHandled(FALSE);
+	OnInsertClip(0, 0, reinterpret_cast<LPARAM>(&chunks), bHandled);
+}
+
+/**
  * Insert a clip based on text passed in, used for extensions.
  */
 HRESULT CTextView::OnInsertClipText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
@@ -826,11 +844,9 @@ HRESULT CTextView::OnInsertClipText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPa
 
 	// Make a clip and process the text:
 	TextClips::Clip clip(_T(""), "", reinterpret_cast<const char*>(lParam));
-	TextClips::DefaultVariableProvider variables(m_pDoc->GetFrame(), g_Context.m_frame->GetActiveWorkspace());
-	std::vector<TextClips::Chunk> chunks;
-	clip.GetChunks(chunks, this, &variables, ScriptRegistry::GetInstance());
+	InsertClip(&clip);
 
-	return OnInsertClip(0, 0, reinterpret_cast<LPARAM>(&chunks), bHandled);
+	return 0;
 }
 
 HRESULT CTextView::OnInsertClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
