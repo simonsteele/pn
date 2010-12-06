@@ -41,7 +41,7 @@
 	</base-language>
 	
 	<language base="vbbase" name="vb" title="Visual Basic" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true" >
-    <comments line="'" blockStart="'" blockLine="'" blockEnd="" />
+		<comments line="'" blockStart="'" blockLine="'" blockEnd="" />
 		<lexer name="vb" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="vbnet"/>
@@ -49,6 +49,7 @@
 	</language>
 	
 	<language base="vbbase" name="vbscript" title="VBScript" folding="true" foldcomments="true" foldcompact="true" foldpreproc="true" >
+		<comments line="'" blockStart="'" blockLine="'" blockEnd="" />
 		<lexer name="vbscript" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="vb"/>
