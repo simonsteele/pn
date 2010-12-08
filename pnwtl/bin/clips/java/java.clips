@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <clips name="Java">
-	<clip name="----- Block -----"><![CDATA[]]></clip>
 	<clip name="Main body"><![CDATA[
   void main(void)
   //
@@ -19,7 +18,6 @@
 ]]></clip>
 	<clip name="return"><![CDATA[  return;
 $0]]></clip>
-	<clip name="----- Control -----"><![CDATA[]]></clip>
 	<clip name="if (short)"><![CDATA[  if ($0) {;}
 ]]></clip>
 	<clip name="if"><![CDATA[  if ($0)
@@ -107,7 +105,6 @@ $0]]></clip>
 $0]]></clip>
 	<clip name="continue"><![CDATA[  continue;
 $0]]></clip>
-	<clip name="----- Other -----"><![CDATA[]]></clip>
 	<clip name="constant"><![CDATA[final static $0 = ;]]></clip>
 	<clip name="import"><![CDATA[import "$0";]]></clip>
 	<clip name="#include &lt;&gt;"><![CDATA[#include <$0>]]></clip>

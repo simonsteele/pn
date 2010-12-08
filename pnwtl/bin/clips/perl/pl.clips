@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <clips name="Perl">
-  <clip name="----- Block -----" />
   <clip name="Begin Block">BEGIN {
 
     $0;
@@ -14,16 +13,14 @@
 
 }
 </clip>
-	<clip name="Function"><![CDATA[
-sub $0($$Par1, $$Par2)
+	<clip name="Function" shortcut="fn"><![CDATA[
+sub $1(${2:$$Par1, $$Par2})
 {
-    my($$Par1,$$Par2)=($$_[0],$$_[1]);
+    ${0:my($$Par1,$$Par2)=($$_[0],$$_[1]);}
     return 0;
 }
 
 ]]></clip>
-
-  <clip name="----- Control -----" />
 
 <clip name="if"><![CDATA[
 if ($0)
@@ -108,7 +105,6 @@ else
 }
 
 </clip>
-  <clip name="----- Files and Directories -----" />
   <clip name="Open File for reading">open(FILEREAD, "$0/path/to/file")$0$0 die "cannot open: $$!";
 </clip>
   <clip name="Open File for writing (clobber)">open(FILEWRITE, "&gt;$0/path/to/file")$0$0 die "cannot open: $$!";
@@ -118,7 +114,6 @@ else
   <clip name="File Stats">($$dev,$$ino,$$mode,$$nlink,$$uid,$$gid,$$rdev,
  $$size,$$atime,$$mtime,$$ctime,$$blksize,$$blocks) = stat ("$0/path/to/file");
 </clip>
-  <clip name="----- Other -----" />
   <clip name="use">use $0;</clip>
   <clip name="Shebang">#!/usr/bin/perl
 	

@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <clips name="VBNet">
-	<clip name="----- Block -----"><![CDATA[]]></clip>
 	<clip name="Main body"><![CDATA[
 Imports System
 Class $0
@@ -10,9 +9,9 @@ Class $0
     End Sub
 End Class
 ]]></clip>
-        <clip name="Function body"><![CDATA[
-  function  $0 (ByVal Par1 as int16, ByVal Par2 as String) As Int16
-    return 0
+        <clip name="Function body" shortcut="fn"><![CDATA[
+  function  $1 (${2:ByVal Par1 as int16, ByVal Par2 as String}) As ${3:Int16}
+    return $0
   end function
 ]]></clip>
 	<clip name="Procedure body"><![CDATA[ sub $0() 
@@ -21,7 +20,6 @@ End Class
 ]]></clip>
 	<clip name="return"><![CDATA[  return
 $0]]></clip>
-	<clip name="----- Control -----"><![CDATA[]]></clip>
 	<clip name="if (short)"><![CDATA[  if ($0) then
 ]]></clip>
 	<clip name="if"><![CDATA[  if ($0) then
@@ -53,7 +51,6 @@ $0]]></clip>
      Next 
 ]]></clip>
 		
-	<clip name="----- Other -----"><![CDATA[]]></clip>
 	<clip name="imports"><![CDATA[imports $0]]></clip>
 	<clip name="Var declaration "><![CDATA[ Dim $0 as new Object() ]]></clip>
 	<clip name="Array declaration (size=n) "><![CDATA[ Dim MyArr(n-1) of Object]]></clip>

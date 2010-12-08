@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <clips name="Pascal/Delphi">
-	<clip name="----- Block -----"><![CDATA[]]></clip>
 	<clip name="Main body"><![CDATA[
  
   begin
@@ -24,7 +23,6 @@
 $0]]></clip>
 <clip name="exit program"><![CDATA[  halt(0);
 $0]]></clip>
-	<clip name="----- Control -----"><![CDATA[]]></clip>
 	<clip name="if (short)"><![CDATA[  if ($0) then ;
 ]]></clip>
 	<clip name="if"><![CDATA[  if ($0) then
@@ -93,8 +91,6 @@ end;
   end;
 
 ]]></clip>
-		
-	<clip name="----- Other -----"><![CDATA[]]></clip>
 	<clip name="constant"><![CDATA[const $0 = ;]]></clip>
 	<clip name="variable section"><![CDATA[var $0 = ;]]></clip>
 	<clip name="variable assign"><![CDATA[  $0:=; ]]></clip>
