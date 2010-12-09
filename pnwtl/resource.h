@@ -621,9 +621,9 @@
 #define IDC_SMARTSTART_STATIC           1168
 #define IDC_STRIPBEFORESAVE_CHECK       1169
 #define IDC_ENSUREBLANKLINE_CHECK       1170
-#define IDC_LINEPADDING_STATIC          1170
-#define IDC_EXTLINK                     1171
-#define IDC_ENABLEEXPLORERCONTEXT       1172
+#define IDC_LINEPADDING_STATIC          1171
+#define IDC_EXTLINK                     1172
+#define IDC_ENABLEEXPLORERCONTEXT       1173
 #define IDS_SHORTCUTS_SCRIPTS           1800
 #define IDS_HDR_FILETYPES_MATCH         1801
 #define IDS_FILEASSOC_BADCHARS          1802
@@ -858,7 +858,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        372
 #define _APS_NEXT_COMMAND_VALUE         33157
-#define _APS_NEXT_CONTROL_VALUE         1173
+#define _APS_NEXT_CONTROL_VALUE         1174
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

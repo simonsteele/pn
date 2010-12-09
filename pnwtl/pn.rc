@@ -1787,7 +1787,7 @@ BEGIN
     ID_EDITOR_WORDWRAP      "Toggle word wrap"
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
     ID_EDITOR_LINENOS       "Toggle line numbers display"
-    IDS_ABOUTVERSIONSTRING  "Version: v%s\n\nCopyright ?2002-2010 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
+    IDS_ABOUTVERSIONSTRING  "Version: v%s\n\nCopyright © 2002-2010 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
     IDS_PROJECTNOPROPS      "This project has no properties."
     IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c: Column"
     ID_FILE_NEW_PROJECT     "Create a new project."
@@ -1893,20 +1893,40 @@ STRINGTABLE
 BEGIN
     IDS_HDR_EXTENSIONS_VERSION "Version"
     IDS_HDR_EXTENSIONS_ENABLED "Enabled"
+    IDS_FILE_PROPERTIES     "Properties"
+    ID_FILE_REVERT          "Revert this document to the current saved state\nRevert"
+    IDS_FINDBAR_FINDPREV    "Find &Previous"
+    IDS_FINDRESULTS_TEXT    "Text"
+    IDS_FINDRESULTS_SEARCHINGFOR "Searching for: "
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_SHORTCUTS_SCRIPTS   "Scripts"
+    IDS_HDR_FILETYPES_MATCH "Match"
+    IDS_FILEASSOC_BADCHARS  "An extension may not contain any of these characters: "
+    IDS_FILEASSOC_CURRENTASSOC 
+                            "The selected method for this extension is currently associated with '%s'"
+    IDS_EXTENSIONS_UNKNOWN  "Unknown"
     IDS_PROJECTS_TEMPMAGICFOLDER "New Folder"
     IDS_MARKALL_COUNT       "Found %d occurrences"
     IDS_ADDCLIPSETCAPTION   "Type the name of the new Clip set..."
+END
+
+STRINGTABLE 
+BEGIN
     IDS_ADDCLIPSETTITLE     "New Clip Set"
-    IDS_FILE_PROPERTIES     "Properties"
-    ID_FILE_REVERT          "Revert this document to the current saved state\nRevert"
     IDS_FINDBAR_FINDNEXT    "Find &Next"
-    IDS_FINDBAR_FINDPREV    "Find &Previous"
     IDS_FINDBAR_MATCHCASE   "Match Case"
     IDS_FINDBAR_PROMPT      "File:"
     IDS_FINDRESULTS_FILE    "File"
     IDS_FINDRESULTS_LINE    "Line"
-    IDS_FINDRESULTS_TEXT    "Text"
-    IDS_FINDRESULTS_SEARCHINGFOR "Searching for: "
+    IDS_FINDRESULTS_SUMMARY "Search complete: %d matching lines found in %d files, taking %d milliseconds.\n"
+    IDS_FINDRESULTS_NOTFOUND "Could not locate "
+    IDS_TOOLS_HEADER_MEANING "Meaning"
+    IDS_REENCODE            "Changing the encoding between Unicode and ANSI will clear your Undo history, and may lose unsupported characters. Are you sure?"
+    IDS_CONVERT             "&Convert"
+    IDS_WORKSPACESAVEFAIL   "Failed to open workspace file %s for writing. Workspace state could not be saved."
 END
 
 STRINGTABLE 
@@ -2076,7 +2096,6 @@ BEGIN
     IDS_OPTPAGE_FILEASSOC   "Integration"
     IDS_OPTPAGE_VISUALHELP  "Visual Help"
     IDS_SHORTCUTS_EDITOR    "Editor"
-    IDS_SHORTCUTS_SCRIPTS   "Scripts"
     IDS_NEW_FILE_TITLE      "Untitled"
     IDS_REPLACE             "Replace"
 END
@@ -2108,37 +2127,26 @@ BEGIN
     IDS_TOOLS_GLOBALTOOLS   "(None - Global Tools)"
     IDS_HDR_PROJECTTOOLS_TEMPLATE "Project Template:"
     IDS_PROJECTTOOLS_ALLPROJECTS "(None - All Projects)"
-    IDS_HDR_FILETYPES_MATCH "Match"
     IDS_HDR_FILETYPES_SCHEME "Scheme"
     IDS_HDR_SMARTSTART_PHRASE "Starting Phrase"
     IDS_HDR_FILEASSOC_TYPENAME "Type Name"
     IDS_HDR_FILEASSOC_METHOD "Method"
     IDS_HDR_FILEASSOC_EXTENSION "Extension"
-    IDS_FILEASSOC_BADCHARS  "An extension may not contain any of these characters: "
-    IDS_FILEASSOC_CURRENTASSOC 
-                            "The selected method for this extension is currently associated with '%s'"
-    IDS_EXTENSIONS_UNKNOWN  "Unknown"
     IDS_EXTENSIONS_ENABLED  "Yes"
     IDS_HDR_EXTENSIONS_NAME "Name"
 END
 
 STRINGTABLE 
 BEGIN
-    IDS_FINDRESULTS_SUMMARY "Search complete: %d matching lines found in %d files, taking %d milliseconds.\n"
-    IDS_FINDRESULTS_NOTFOUND "Could not locate "
     IDS_TOOLS_HEADER_TEXT   "Text"
-    IDS_TOOLS_HEADER_MEANING "Meaning"
     IDS_TOOLS_HEADER_EXAMPLE "Example"
     IDS_TOOLS_SAVE_NONE     "None"
     IDS_TOOLS_SAVE_CURRENTFILE "Current File"
     IDS_TOOLS_SAVE_ALLFILES "All Files"
     IDS_TOOLS_SAVE_PROJECTGROUP "Project Group Files"
     IDS_TOOLS_NEWTOOL       "New Tool"
-    IDS_REENCODE            "Changing the encoding between Unicode and ANSI will clear your Undo history, and may lose unsupported characters. Are you sure?"
-    IDS_CONVERT             "&Convert"
     IDS_ENCODING_CONVERSION "Encoding Conversion"
     IDS_DONOTASKMEAGAIN     "Do not ask me again."
-    IDS_WORKSPACESAVEFAIL   "Failed to open workspace file %s for writing. Workspace state could not be saved."
     IDS_EXPLORERCONTEXTMENU "Edit with Programmer's Notepad"
 END
 
