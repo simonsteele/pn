@@ -563,10 +563,10 @@ LRESULT CChildFrame::OnMDIActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 		::PostMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_ACTIVATE, (LPARAM)this);
 	
 		::PostMessage(m_hWnd, PN_CHECKAGE, 0, 0);
+
+		UpdateMenu();
 	}
 	//else // Deactivate
-	
-	UpdateMenu();
 	
 	// The base-class WM_MDIACTIVATE implementation breaks the window menu for localised builds
 	// and there's no way to avoid it but to handle this message completely here.
