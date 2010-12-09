@@ -3087,6 +3087,11 @@ void CChildFrame::findNextWordUnderCursor(bool backwards)
 
 void CChildFrame::SetLastView(Views::ViewPtr& view)
 {
+	if (view == m_focusView)
+	{
+		return;
+	}
+
 	m_focusView = view;
 	
 	if (m_focusView->GetType() == Views::vtText)
