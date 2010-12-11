@@ -86,7 +86,7 @@ XmlNode& XmlNode::operator = (const XmlNode& copy)
 	return *this;
 }
 
-void XmlNode::AddAttributes(XMLAttributes& atts)
+void XmlNode::AddAttributes(const XMLAttributes& atts)
 {
 	LPCTSTR pSep;
 	for(int i = 0; i < atts.getCount(); i++)

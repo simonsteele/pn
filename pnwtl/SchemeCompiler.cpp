@@ -204,7 +204,7 @@ bool SchemeRecorder::CheckNecessary(long Msg, WPARAM wParam, LPARAM lParam)
 			break;
 		case SCI_STYLESETFONT:
             fontName = (const char*)lParam;
-			res = (m_DefStyle.FontName.compare(fontName));
+			res = m_DefStyle.FontName.compare(fontName) != 0;
 			break;
 		case SCI_STYLESETSIZE:
 			res = m_DefStyle.FontSize != lParam;
@@ -527,7 +527,7 @@ void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
 /**
  * A base style is a style that every scheme reflects.
  */
-void SchemeParser::processBaseStyle(SchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processBaseStyle(SchemeLoaderState* pState, const XMLAttributes& atts)
 {
 	// Create a style with no default settings, the defaults will be applied
 	// later as the base style is used for each scheme.
@@ -544,7 +544,7 @@ void SchemeParser::processBaseStyle(SchemeLoaderState* pState, XMLAttributes& at
 	pState->m_BaseStyles.push_back(style);
 }
 
-void SchemeParser::processProperty(SchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processProperty(SchemeLoaderState* pState, const XMLAttributes& atts)
 {
 	LPCTSTR name = atts.getValue(_T("name"));
 	LPCTSTR value = atts.getValue(_T("value"));
@@ -555,7 +555,7 @@ void SchemeParser::processProperty(SchemeLoaderState* pState, XMLAttributes& att
 	}
 }
 
-void SchemeParser::processKeywordClass(SchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processKeywordClass(SchemeLoaderState* pState, const XMLAttributes& atts)
 {
 	for(int i = 0; i < atts.getCount(); i++)
 	{
@@ -569,7 +569,7 @@ void SchemeParser::processKeywordClass(SchemeLoaderState* pState, XMLAttributes&
 	}
 }
 
-void SchemeParser::parseStyle(SchemeLoaderState* pState, XMLAttributes& atts, StyleDetails* pStyle)
+void SchemeParser::parseStyle(SchemeLoaderState* pState, const XMLAttributes& atts, StyleDetails* pStyle)
 {
 	LPCTSTR nm;
 	LPCTSTR t;
@@ -651,7 +651,7 @@ void SchemeParser::customiseStyle(StyleDetails* style, StyleDetails* custom)
 	style->layer(*custom);
 }
 
-void SchemeParser::processStyleClass(SchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processStyleClass(SchemeLoaderState* pState, const XMLAttributes& atts)
 {
 	//<style-class name="comment" inherit-style="bold" fore="comment-color"/>
 	// fore, back, font, size, italics, bold, underline, eolfilled
@@ -726,7 +726,7 @@ void SchemeParser::processStyleClass(SchemeLoaderState* pState, XMLAttributes& a
 	}
 }
 
-void SchemeParser::processLanguageStyleGroup(SchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processLanguageStyleGroup(SchemeLoaderState* pState, const XMLAttributes& atts)
 {
 	StylePtr pClass;
 	LPCTSTR pszClass = atts.getValue(_T("class"));
@@ -755,7 +755,7 @@ void SchemeParser::processLanguageStyleGroup(SchemeLoaderState* pState, XMLAttri
  * 3) Class in the current style class attribute.
  * 4) Default style.
  */
-void SchemeParser::processLanguageStyle(SchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processLanguageStyle(SchemeLoaderState* pState, const XMLAttributes& atts)
 {
 	LPCTSTR classname;
 
@@ -799,7 +799,7 @@ void SchemeParser::processLanguageStyle(SchemeLoaderState* pState, XMLAttributes
 	}*/
 }
 
-void SchemeParser::processLanguageKeywords(SchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processLanguageKeywords(SchemeLoaderState* pState, const XMLAttributes& atts)
 {
 	 //<keyword key="0" class="hypertext"/>
 	int x = atts.getCount();
@@ -901,7 +901,7 @@ SchemeDetails* ensureBaseSchemeDetails(SchemeDetailsMap& map, std::string& name)
 /**
  * @brief Process some XML element related to the "language" block of a schemes file.
  */
-void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts)
+void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR name, const XMLAttributes& atts)
 {
 	LPCTSTR t = NULL;
 	int flags = 0;
@@ -1121,7 +1121,7 @@ void SchemeParser::processLanguageElement(SchemeLoaderState* pState, LPCTSTR nam
 /**
  * @brief Add a specific file to the list of files to be processed.
  */
-void SchemeParser::specifyImportFile(SchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::specifyImportFile(SchemeLoaderState* pState, const XMLAttributes& atts)
 {
 	LPCTSTR name = atts.getValue(_T("name"));
 	if(name != NULL)
@@ -1237,7 +1237,7 @@ void SchemeParser::sendBaseStyles(SchemeLoaderState* pState)
 	onStyleGroupEnd();
 }
 
-void SchemeParser::processComments(SchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processComments(SchemeLoaderState* pState, const XMLAttributes& atts)
 {
 	LPCTSTR lineComment(atts.getValue(_T("line")));
 	LPCTSTR startComment(atts.getValue(_T("streamStart")));
@@ -1259,7 +1259,7 @@ void SchemeParser::processComments(SchemeLoaderState* pState, XMLAttributes& att
 /**
  * @brief Take an import fileset specification and add the relevant files to be processed.
  */
-void SchemeParser::specifyImportSet(SchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::specifyImportSet(SchemeLoaderState* pState, const XMLAttributes& atts)
 {
 	LPCTSTR pattern = atts.getValue(_T("pattern"));
 
@@ -1284,7 +1284,7 @@ void SchemeParser::specifyImportSet(SchemeLoaderState* pState, XMLAttributes& at
 	}
 }
 
-void SchemeParser::processKeywordCombine(SchemeLoaderState* pState, XMLAttributes& atts)
+void SchemeParser::processKeywordCombine(SchemeLoaderState* pState, const XMLAttributes& atts)
 {
 	pState->m_State = DOING_KEYWORDCOMBINE;
 
@@ -1307,7 +1307,7 @@ void SchemeParser::processKeywordCombine(SchemeLoaderState* pState, XMLAttribute
 	}
 }
 
-void SchemeParser::startElement(void *userData, LPCTSTR name, XMLAttributes& atts)
+void SchemeParser::startElement(void *userData, LPCTSTR name, const XMLAttributes& atts)
 {
 	SchemeLoaderState* pState = static_cast<SchemeLoaderState*>(userData);
 	int state = pState->m_State;

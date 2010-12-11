@@ -325,7 +325,7 @@ Folder* MagicFolderCache::GetCachedFolder(MagicFolder* actual)
 		return NULL;
 }
 
-void MagicFolderCache::startElement(XML_CSTR name, XMLAttributes& atts)
+void MagicFolderCache::startElement(XML_CSTR name, const XMLAttributes& atts)
 {
 	if( IN_STATE( PS_FOLDER ) )
 	{
@@ -401,12 +401,12 @@ void MagicFolderCache::characterData(XML_CSTR data, int len)
 	
 }
 
-void MagicFolderCache::processFile(XMLAttributes& atts)
+void MagicFolderCache::processFile(const XMLAttributes& atts)
 {
 	_currentFile = _current->AddFile(ATTVAL(_T("path")));
 }
 
-void MagicFolderCache::processUserData(XML_CSTR name, XMLAttributes& atts)
+void MagicFolderCache::processUserData(XML_CSTR name, const XMLAttributes& atts)
 {
 	if(parseState != PS_USERDATA)
 		udBase = parseState;

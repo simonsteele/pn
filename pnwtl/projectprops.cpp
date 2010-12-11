@@ -506,7 +506,7 @@ ProjectTemplate* TemplateLoader::FromFile(LPCTSTR path)
 	return m_pTemplate;
 }
 
-void TemplateLoader::startElement(LPCTSTR name, XMLAttributes& atts)
+void TemplateLoader::startElement(LPCTSTR name, const XMLAttributes& atts)
 {
 	BEGIN_HANDLERS()
 		BEGIN_STATE(PTL_DEFAULT)
@@ -562,7 +562,7 @@ void TemplateLoader::characterData(LPCTSTR data, int len)
 
 }
 
-void TemplateLoader::onProjectConfig(XMLAttributes& atts)
+void TemplateLoader::onProjectConfig(const XMLAttributes& atts)
 {
 	LPCTSTR name = ATTVAL(_T("name"));
 	if(name == NULL)
@@ -578,7 +578,7 @@ void TemplateLoader::onProjectConfig(XMLAttributes& atts)
 	m_pTemplate = new ProjectTemplate(id, name, ns, icon, helpfile);
 }
 
-void TemplateLoader::onSet(XMLAttributes& atts)
+void TemplateLoader::onSet(const XMLAttributes& atts)
 {
 	LPCTSTR type = ATTVAL(_T("type"));
 	PROJECT_TYPE pType;
@@ -608,7 +608,7 @@ void TemplateLoader::onEndSet()
 	}
 }
 
-void TemplateLoader::onGroup(XMLAttributes& atts)
+void TemplateLoader::onGroup(const XMLAttributes& atts)
 {
 	if(m_pCurrentGroup != NULL)
 	{
@@ -654,7 +654,7 @@ void TemplateLoader::onEndGroup()
 	}
 }
 
-void TemplateLoader::onCategory(XMLAttributes& atts)
+void TemplateLoader::onCategory(const XMLAttributes& atts)
 {
 	if(!m_pCurrentGroup)
 		return;
@@ -678,27 +678,27 @@ void TemplateLoader::onEndCategory()
 	m_pCurrentCat = NULL;
 }
 
-void TemplateLoader::onOption(XMLAttributes& atts)
+void TemplateLoader::onOption(const XMLAttributes& atts)
 {
 	makeProp(atts, propBool);
 }
 
-void TemplateLoader::onInt(XMLAttributes& atts)
+void TemplateLoader::onInt(const XMLAttributes& atts)
 {
 	makeProp(atts, propInt);
 }
 
-void TemplateLoader::onFilePath(XMLAttributes& atts)
+void TemplateLoader::onFilePath(const XMLAttributes& atts)
 {
 	makeProp(atts, propFile);
 }
 
-void TemplateLoader::onFolderPath(XMLAttributes& atts)
+void TemplateLoader::onFolderPath(const XMLAttributes& atts)
 {
 	makeProp(atts, propFolder);
 }
 
-void TemplateLoader::onOptionList(XMLAttributes& atts)
+void TemplateLoader::onOptionList(const XMLAttributes& atts)
 {
 	if(!m_pCurrentCat)
 		return;
@@ -706,7 +706,7 @@ void TemplateLoader::onOptionList(XMLAttributes& atts)
 	makeProp(atts, propChoice);
 }
 
-void TemplateLoader::onOptionListValue(XMLAttributes& atts)
+void TemplateLoader::onOptionListValue(const XMLAttributes& atts)
 {
 	if(!m_pCurrentListProp)
 		return;
@@ -730,12 +730,12 @@ void TemplateLoader::onEndOptionList()
 	m_pCurrentListProp = NULL;
 }
 
-void TemplateLoader::onText(XMLAttributes& atts)
+void TemplateLoader::onText(const XMLAttributes& atts)
 {
 	makeProp(atts, propString);
 }
 
-void TemplateLoader::makeProp(XMLAttributes& atts, PropType type)
+void TemplateLoader::makeProp(const XMLAttributes& atts, PropType type)
 {
 	if(!m_pCurrentCat)
 		return;

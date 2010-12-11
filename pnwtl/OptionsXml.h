@@ -34,7 +34,7 @@ public:
 
 // XmlParseState
 private:
-	virtual void startElement(XML_CSTR name, XMLAttributes& atts);
+	virtual void startElement(XML_CSTR name, const XMLAttributes& atts);
 	virtual void endElement(XML_CSTR name);
 	virtual void characterData(XML_CSTR data, int len);
 

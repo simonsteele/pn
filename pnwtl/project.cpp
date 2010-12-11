@@ -757,7 +757,7 @@ void Project::parse()
 	theParser = NULL;
 }
 
-void Project::startElement(XML_CSTR name, XMLAttributes& atts)
+void Project::startElement(XML_CSTR name, const XMLAttributes& atts)
 {
 	if( IN_STATE(PS_START) )
 	{
@@ -872,7 +872,7 @@ void Project::characterData(XML_CSTR data, int len)
 	}
 }
 
-void Project::processProject(XMLAttributes& atts)
+void Project::processProject(const XMLAttributes& atts)
 {
 	if(atts.getValue(_T("name")) != NULL)
 	{
@@ -902,7 +902,7 @@ void Project::processProject(XMLAttributes& atts)
 	}
 }
 
-void Project::processFolder(XMLAttributes& atts)
+void Project::processFolder(const XMLAttributes& atts)
 {
 	Xml_Tcs nm( ATTVAL(_T("name")) );
 	Folder* folder = new Folder(nm, basePath.c_str());
@@ -910,13 +910,13 @@ void Project::processFolder(XMLAttributes& atts)
 	currentFolder = folder;
 }
 
-void Project::processFile(XMLAttributes& atts)
+void Project::processFile(const XMLAttributes& atts)
 {
 	Xml_Tcs path( ATTVAL(_T("path")) );
 	lastParsedFile = currentFolder->AddFile(path);
 }
 
-void Project::processMagicFolder(XMLAttributes& atts)
+void Project::processMagicFolder(const XMLAttributes& atts)
 {
 	Xml_Tcs path( ATTVAL(_T("path")) );
 	Xml_Tcs name( ATTVAL(_T("name")) );
@@ -952,7 +952,7 @@ void Project::processMagicFolder(XMLAttributes& atts)
 	mf->HandleReadCache(theParser, this);
 }
 
-void Project::processUserData(XML_CSTR name, XMLAttributes& atts)
+void Project::processUserData(XML_CSTR name, const XMLAttributes& atts)
 {
 	if(parseState != PS_USERDATA)
 		udBase = parseState;
@@ -1261,7 +1261,7 @@ void Workspace::SetWatcher(IProjectWatcher* newWatcher)
 	watcher = newWatcher;
 }
 
-void Workspace::startElement(LPCTSTR name, XMLAttributes& atts)
+void Workspace::startElement(LPCTSTR name, const XMLAttributes& atts)
 {
 	if ( IN_STATE(PS_START) )
 	{
@@ -1464,7 +1464,7 @@ void ProjectViewState::getFolderPath(Folder* folder, tstring& path)
 #define PNPS_START 0
 #define PNPS_VIEWSTATE 1
 
-void ProjectViewState::startElement(LPCTSTR name, XMLAttributes& atts)
+void ProjectViewState::startElement(LPCTSTR name, const XMLAttributes& atts)
 {
 	if ( IN_STATE(PNPS_START) )
 	{

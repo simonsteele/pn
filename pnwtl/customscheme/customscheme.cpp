@@ -319,7 +319,7 @@ void CustomLexerFactory::doCommentType(int commentType, const XMLAttributes& att
 	}
 }
 
-void CustomLexerFactory::startElement(XML_CSTR name, XMLAttributes& atts)
+void CustomLexerFactory::startElement(XML_CSTR name, const XMLAttributes& atts)
 {
 	if(_tcscmp(name, _T("schemedef")) == 0 && m_state == STATE_DEFAULT)
 	{

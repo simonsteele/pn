@@ -89,7 +89,7 @@ void UserSettingsParser::characterData(void* userData, LPCTSTR data, int len)
 	}
 }
 
-void UserSettingsParser::startElement(void *userData, LPCTSTR name, XMLAttributes& atts)
+void UserSettingsParser::startElement(void *userData, LPCTSTR name, const XMLAttributes& atts)
 {
 	SchemeLoaderState* pState = static_cast<SchemeLoaderState*>(userData);
 	int state = pState->m_State;
@@ -176,7 +176,7 @@ void UserSettingsParser::endElement(void *userData, LPCTSTR name)
 	pState->m_CDATA = "";
 }
 
-void UserSettingsParser::processClassElement(SchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts)
+void UserSettingsParser::processClassElement(SchemeLoaderState* pState, LPCTSTR name, const XMLAttributes& atts)
 {
 	if(_tcscmp(name, _T("style-class")) == 0)
 	{
@@ -216,7 +216,7 @@ void UserSettingsParser::processClassElement(SchemeLoaderState* pState, LPCTSTR 
 	}
 }
 
-void UserSettingsParser::processSchemeElement(SchemeLoaderState* pState, LPCTSTR name, XMLAttributes& atts)
+void UserSettingsParser::processSchemeElement(SchemeLoaderState* pState, LPCTSTR name, const XMLAttributes& atts)
 {
 	if(pState->m_State == US_STYLE_OVERRIDES)
 	{
@@ -275,7 +275,7 @@ void UserSettingsParser::processSchemeElement(SchemeLoaderState* pState, LPCTSTR
 #define SZTRUE(s) \
 	(s[0] == 't')
 
-void UserSettingsParser::processScheme(SchemeLoaderState* pState, XMLAttributes& atts)
+void UserSettingsParser::processScheme(SchemeLoaderState* pState, const XMLAttributes& atts)
 {
 	LPCTSTR pName =  atts.getValue(_T("name"));
 
@@ -343,7 +343,7 @@ void UserSettingsParser::processScheme(SchemeLoaderState* pState, XMLAttributes&
 #endif
 }
 
-void UserSettingsParser::processGlobalColours(SchemeLoaderState* pState, XMLAttributes& atts)
+void UserSettingsParser::processGlobalColours(SchemeLoaderState* pState, const XMLAttributes& atts)
 {
 	pState->m_DefaultColours.SetFromXml(atts);
 }

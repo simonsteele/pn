@@ -204,7 +204,7 @@ void WorkspaceState::save(LPCTSTR filename)
 #define WS_BEGIN		0
 #define WS_WORKSPACE	1
 
-void WorkspaceState::startElement(LPCTSTR name, XMLAttributes& atts)
+void WorkspaceState::startElement(LPCTSTR name, const XMLAttributes& atts)
 {
 	if(IN_STATE(WS_BEGIN))
 	{
@@ -242,7 +242,7 @@ void WorkspaceState::endElement(LPCTSTR name)
 	}
 }
 
-void WorkspaceState::handleProjectGroup(XMLAttributes& atts)
+void WorkspaceState::handleProjectGroup(const XMLAttributes& atts)
 {
 	LPCTSTR path = atts.getValue(_T("path"));
 	if(path != NULL && _tcslen(path) > 0)
@@ -251,7 +251,7 @@ void WorkspaceState::handleProjectGroup(XMLAttributes& atts)
 	}
 }
 
-void WorkspaceState::handleProject(XMLAttributes& atts)
+void WorkspaceState::handleProject(const XMLAttributes& atts)
 {
 	LPCTSTR path = atts.getValue(_T("path"));
 	if(path != NULL && _tcslen(path) > 0)
@@ -260,7 +260,7 @@ void WorkspaceState::handleProject(XMLAttributes& atts)
 	}
 }
 
-void WorkspaceState::handleFile(XMLAttributes& atts)
+void WorkspaceState::handleFile(const XMLAttributes& atts)
 {
 	LPCTSTR path = atts.getValue(_T("path"));
 	if(path != NULL && _tcslen(path) > 0)

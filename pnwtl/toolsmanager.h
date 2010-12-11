@@ -44,14 +44,14 @@ class ToolsManager :
 		void toolsFileFound(LPCTSTR path, FileFinderData& details, bool& shouldContinue);
 
 		// Scheme & Tool Creation
-		void processScheme(XMLAttributes& atts);
-		void processGlobal(XMLAttributes& atts);
-		void processProject(XMLAttributes& atts);
-		void processTool(XMLAttributes& atts);
-		void processAllProjects(XMLAttributes& atts);
+		void processScheme(const XMLAttributes& atts);
+		void processGlobal(const XMLAttributes& atts);
+		void processProject(const XMLAttributes& atts);
+		void processTool(const XMLAttributes& atts);
+		void processAllProjects(const XMLAttributes& atts);
 
 		// XML Parsing
-		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
+		virtual void startElement(LPCTSTR name, const XMLAttributes& atts);
 		virtual void endElement(LPCTSTR name);
 		virtual void characterData(LPCTSTR data, int len){}
 

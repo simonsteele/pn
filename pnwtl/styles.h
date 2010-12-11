@@ -18,7 +18,7 @@
 int chartoval(TCHAR inp);
 COLORREF PNStringToColor(LPCTSTR input);
 bool PNStringToBool(LPCTSTR input);
-std::string NormaliseKeywords(std::string& in);
+std::string NormaliseKeywords(const std::string& in);
 
 ////////////////////////////////////////////////////////////
 // EditorColours
@@ -47,7 +47,7 @@ public:
 	///@return True if colour configured, false otherwise
 	bool GetColour(Colours colour, COLORREF& theColour) const;
 
-	void SetFromXml(XMLAttributes& atts);
+	void SetFromXml(const XMLAttributes& atts);
 
 	void SendColours(CScintilla* pSc) const;
 

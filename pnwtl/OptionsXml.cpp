@@ -279,7 +279,7 @@ void XmlOptions::save()
 	writer.Close();
 }
 
-void XmlOptions::startElement(LPCTSTR name, XMLAttributes& atts)
+void XmlOptions::startElement(LPCTSTR name, const XMLAttributes& atts)
 {
 	if (*name != NULL && *name == _T('o') && *(name+1) == NULL)
 	{

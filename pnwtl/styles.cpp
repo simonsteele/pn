@@ -18,7 +18,7 @@
  * Take a string containing keywords and possible extraneous whitespace and formatting
  * and turn into a single line of space separated keywords.
  */
-std::string NormaliseKeywords(std::string& in)
+std::string NormaliseKeywords(const std::string& in)
 {
 	std::string response;
 	response.reserve(in.length());
@@ -215,7 +215,7 @@ bool EditorColours::GetColour(Colours colour, COLORREF& theColour) const
 	return false;
 }
 
-void EditorColours::SetFromXml(XMLAttributes& atts)
+void EditorColours::SetFromXml(const XMLAttributes& atts)
 {
 	LPCTSTR szKey, szValue;
 	int val;

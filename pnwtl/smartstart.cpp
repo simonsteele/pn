@@ -192,7 +192,7 @@ void SmartStart::applyScheme(CTextView* pView, Scheme* pScheme)
 // XMLParseState Implementation:
 
 /// Called on each XML element start - looks for tags: <ssv from="keyphrase" to="lexer" />
-void SmartStart::startElement(LPCTSTR name, XMLAttributes& atts)
+void SmartStart::startElement(LPCTSTR name, const XMLAttributes& atts)
 {
 	if(_tcscmp(name, _T("ssv")) == 0)
 	{

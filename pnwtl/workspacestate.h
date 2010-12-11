@@ -15,15 +15,15 @@ class WorkspaceState : XMLParseState
 
 // XMLParseState
 	protected:
-		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
+		virtual void startElement(LPCTSTR name, const XMLAttributes& atts);
 		virtual void endElement(LPCTSTR name);
 		virtual void characterData(LPCTSTR data, int len){};
 
 // XML Bit Handlers
 	protected:
-		void handleProjectGroup(XMLAttributes& atts);
-		void handleProject(XMLAttributes& atts);
-		void handleFile(XMLAttributes& atts);
+		void handleProjectGroup(const XMLAttributes& atts);
+		void handleProject(const XMLAttributes& atts);
+		void handleFile(const XMLAttributes& atts);
 
 	protected:
 		int m_parseState;

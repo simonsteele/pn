@@ -38,7 +38,7 @@ class UpdateParseState : public XMLParseState
 public:
 	UpdateParseState() : Valid(false) {}
 
-	virtual void startElement(LPCTSTR name, XMLAttributes& atts)
+	virtual void startElement(LPCTSTR name, const XMLAttributes& atts)
 	{
 		if (_tcscmp(name, _T("release")) == 0)
 		{

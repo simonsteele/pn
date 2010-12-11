@@ -271,7 +271,7 @@ void SchemeConfigParser::onLanguageEnd()
 	m_pCurrent = NULL;
 }
 
-void SchemeConfigParser::onStyleGroup(XMLAttributes& att, const StylePtr& pClass)
+void SchemeConfigParser::onStyleGroup(const XMLAttributes& att, const StylePtr& pClass)
 {
 	PNASSERT(m_pCurrent != NULL);
 
