@@ -257,5 +257,7 @@ void DocScript::Run()
 		return;
 	}
 	
-	runner->RunDocScript(extensions::IDocumentPtr(m_doc));
+	// switch smartptr type for extensions:
+	extensions::IDocumentPtr idoc(m_doc);
+	runner->RunDocScript(idoc);
 }

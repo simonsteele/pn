@@ -37,7 +37,8 @@ void View::UpdateLayout()
 
 void View::NotifyGotFocus()
 {
-	NotifyGotFocus(shared_from_this());
+	ViewPtr sharedThis(shared_from_this());
+	NotifyGotFocus(sharedThis);
 }
 
 /**

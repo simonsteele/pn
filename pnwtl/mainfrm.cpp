@@ -985,9 +985,10 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_RecentProjects.SetSize(OPTIONS->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4));
 	m_RecentProjects.Load(OPTIONS, mrukey.c_str());
 	m_RecentProjects.UpdateMenu();
-	
-	AddMRUMenu(CSMenuHandle(m_hMenu));
-	AddNewMenu(CSMenuHandle(m_hMenu));
+
+	CSMenuHandle menu(m_hMenu);
+	AddMRUMenu(menu);
+	AddNewMenu(menu);
 
 	CreateDockingWindows();
 	InitGUIState();
@@ -3420,7 +3421,7 @@ LRESULT CMainFrame::OnStatusBarDblClick(int /*wParam*/, LPNMHDR lParam, BOOL& bH
 	{
 		LPNMMOUSE pnmm = (LPNMMOUSE)lParam;
 
-		PNASSERT(pnmm->dwItemSpec < m_StatusBar.m_nPanes);
+		PNASSERT(static_cast<int>(pnmm->dwItemSpec) < m_StatusBar.m_nPanes);
 		UINT nID = m_StatusBar.m_pPane[pnmm->dwItemSpec];
 
 		switch (nID)

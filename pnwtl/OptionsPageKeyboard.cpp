@@ -77,7 +77,8 @@ LRESULT COptionsPageKeyboard::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 
 	// Add items
 	CSMenu menu(::LoadMenu(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MDICHILD)));
-	addItems(CSMenuHandle(menu), _T(""), 0);
+	CSMenuHandle menuHandle(menu);
+	addItems(menuHandle, _T(""), 0);
 	addExtensions();
 	addScintilla();
 
@@ -287,7 +288,9 @@ int COptionsPageKeyboard::addItems(CSMenuHandle& menu, LPCTSTR group, int count)
 			fixText(buffer, displayBuffer);
 			
 			newgroup += displayBuffer;
-			count = addItems(CSMenuHandle(mii.hSubMenu), newgroup.c_str(), count);
+
+			CSMenuHandle subMenu(mii.hSubMenu);
+			count = addItems(subMenu, newgroup.c_str(), count);
 		}
 		else
 		{

@@ -215,6 +215,6 @@ class SchemeCompiler : public SchemeParser
 		uint64_t	m_newestFile;
 };
 
-SchemeDetails* ensureSchemeDetails(SchemeDetailsMap& map, std::string& name);
+SchemeDetails* ensureSchemeDetails(SchemeDetailsMap& map, const std::string& name);
 
 #endif //#ifndef schemecompiler_h__included

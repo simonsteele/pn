@@ -934,7 +934,7 @@ void CPNTabControl::UpdateLayout_ScrollToFit(RECT rcTabItemArea)
 	HFONT hRestoreNormalFont = NULL;
 	for( size_t i=0; i<nCount; ++i )
 	{
-		bool bSelected = ((int)i == m_iCurSel);
+		// bool bSelected = ((int)i == m_iCurSel);
 
 		TItem* pItem = m_Items[i];
 		ATLASSERT(pItem != NULL);

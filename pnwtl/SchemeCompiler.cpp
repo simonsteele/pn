@@ -868,7 +868,7 @@ void SchemeParser::processLanguageKeywords(SchemeLoaderState* pState, const XMLA
 	}
 }
 
-SchemeDetails* ensureSchemeDetails(SchemeDetailsMap& map, std::string& name)
+SchemeDetails* ensureSchemeDetails(SchemeDetailsMap& map, const std::string& name)
 {
 	SchemeDetailsMap::const_iterator i = map.find( name );
 	if( i != map.end() )
@@ -883,7 +883,7 @@ SchemeDetails* ensureSchemeDetails(SchemeDetailsMap& map, std::string& name)
 	}
 }
 
-SchemeDetails* ensureBaseSchemeDetails(SchemeDetailsMap& map, std::string& name)
+SchemeDetails* ensureBaseSchemeDetails(SchemeDetailsMap& map, const std::string& name)
 {
 	SchemeDetailsMap::const_iterator i = map.find( name );
 	if( i != map.end() )

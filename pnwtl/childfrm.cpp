@@ -54,7 +54,7 @@ namespace { // Implementation details:
 class BaseView : public Views::View
 {
 public:
-	BaseView(CChildFrame* owner) : Views::View(Views::vtRoot, Views::ViewPtr()), m_owner(owner)
+	BaseView(CChildFrame* owner) : Views::View(Views::vtRoot), m_owner(owner)
 	{
 
 	}
@@ -91,7 +91,7 @@ CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::
 	m_hImgList(NULL),
 	m_bClosing(false),
 	m_pScript(NULL),
-	m_FileAge(-1),
+	m_FileAge(static_cast<uint64_t>(-1)),
 	m_iFirstToolCmd(ID_TOOLS_DUMMY),
 	m_bModifiedOverride(false),
 	m_bReadOnly(false),
@@ -1604,7 +1604,7 @@ void ConvertEncoding(CTextView* textView, UINT oldEncoding, UINT newEncoding)
 
 	while (start < length)
 	{
-		end = start + min(bufferSize, length - start);
+		end = start + min(bufferSize, static_cast<size_t>(length - start));
 
 		// We want to convert on line boundaries, to ensure we don't split a multi-byte character:
 		int endLine = textView->LineFromPosition(end);
