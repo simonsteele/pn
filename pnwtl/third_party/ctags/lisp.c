@@ -1,5 +1,5 @@
 /*
-*   $Id: lisp.c,v 1.3 2006/05/30 04:37:12 darren Exp $
+*   $Id: lisp.c 717 2009-07-07 03:40:50Z dhiebert $
 *
 *   Copyright (c) 2000-2002, Darren Hiebert
 *
@@ -126,7 +126,7 @@ static void findLispTags (void)
 extern parserDefinition* LispParser (void)
 {
 	static const char *const extensions [] = {
-		"cl", "clisp", "el", "l", "lisp", "lsp", "ml", NULL
+		"cl", "clisp", "el", "l", "lisp", "lsp", NULL
 	};
 	parserDefinition* def = parserNew ("Lisp");
 	def->kinds      = LispKinds;

@@ -48,6 +48,8 @@
 #include "browseview.h"			// Browse Docker
 #include "openfilesview.h"		// Open Files Docker
 
+#include "include/encoding.h"
+
 // Other stuff
 #include <dbstate.h>			// Docking window state stuff
 #include <htmlhelp.h>
@@ -983,9 +985,10 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	m_RecentProjects.SetSize(OPTIONS->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4));
 	m_RecentProjects.Load(OPTIONS, mrukey.c_str());
 	m_RecentProjects.UpdateMenu();
-	
-	AddMRUMenu(CSMenuHandle(m_hMenu));
-	AddNewMenu(CSMenuHandle(m_hMenu));
+
+	CSMenuHandle menu(m_hMenu);
+	AddMRUMenu(menu);
+	AddNewMenu(menu);
 
 	CreateDockingWindows();
 	InitGUIState();
@@ -1074,6 +1077,7 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 	bool bHaveCol = false;
 	bool bHaveScheme = false;
 	int iLine = 0, iCol = 0;
+	bool bReadOnly = false;
 	Scheme* pScheme = NULL;
 	
 	if(parameters.size() < 1)
@@ -1126,6 +1130,12 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 						pScheme = NULL;
 					}
 				}
+				else if (_tcsicmp(&parm[1], _T("-readonly")) == 0)
+				{
+					bReadOnly = true;
+					skip = false;
+					continue;
+				}
 				else
 				{
 					skip = false;
@@ -1167,10 +1177,15 @@ void CMainFrame::handleCommandLine(std::list<tstring>& parameters)
 				{
 					pChild->SetScheme( pScheme );
 				}
+
+				if (bReadOnly)
+				{
+					pChild->SetReadOnly(true);
+				}
 			}
 		}
 
-		bHaveCol = bHaveLine = bHaveScheme = false;
+		bHaveCol = bHaveLine = bHaveScheme = bReadOnly = false;
 	}
 }
 
@@ -2042,8 +2057,21 @@ void CMainFrame::launchFind(EFindDialogType findType)
 	CChildFrame* pChild = hWndCur ? CChildFrame::FromHandle(hWndCur) : NULL;
 	if(pChild)
 	{
-		CA2CT findText(pChild->GetTextView()->GetCurrentWord().c_str());
-		m_pFindEx->Show(findType, findText);
+		std::string currentWord(pChild->GetTextView()->GetCurrentWord());
+		tstring currentWordT;
+		if (pChild->GetTextView()->GetEncoding() != eUnknown)
+		{
+			// Editor is in unicode mode:
+			Utf8_Utf16 conv(currentWord.c_str());
+			currentWordT = conv;
+		}
+		else
+		{
+			Windows1252_Utf16 conv(currentWord.c_str());
+			currentWordT = conv;
+		}
+
+		m_pFindEx->Show(findType, currentWordT.c_str());
 	}
 	else
 	{
@@ -2670,6 +2698,24 @@ void CMainFrame::SetActiveScheme(HWND notifier, LPVOID pScheme)
 	}
 }
 
+/**
+ * Sorter for comparing child windows based on their tab control
+ * index.
+ */
+class SortByTabIndex
+{
+public:
+	SortByTabIndex(CMainFrame* mainframe) : m_frame(mainframe){}
+	
+	bool operator()(CChildFrame* p1, CChildFrame* p2)
+	{
+		return m_frame->GetTabIndex(p1) < m_frame->GetTabIndex(p2);
+	}
+
+private:
+	CMainFrame* m_frame;
+};
+
 void CMainFrame::GetOpenDocuments(DocumentList& list)
 {
 	SWorkspaceWindowsStruct s;
@@ -2678,6 +2724,8 @@ void CMainFrame::GetOpenDocuments(DocumentList& list)
 	s.pWorkspace = NULL;
 
 	PerformChildEnum(&s);
+
+	s.FoundWindows.sort(SortByTabIndex(this));
 
 	for(std::list<CChildFrame*>::iterator i = s.FoundWindows.begin();
 		i != s.FoundWindows.end(); 
@@ -3193,6 +3241,14 @@ extensions::ITextOutput* CMainFrame::GetGlobalOutputWindow()
 	return m_pOutputWnd;
 }
 
+/**
+ * Get the index of the tab for a child window.
+ */
+int CMainFrame::GetTabIndex(CChildFrame* child)
+{
+	return m_tabbedClient.GetTabIndex(child->m_hWnd);
+}
+
 bool CMainFrame::getProjectsModified(ITabbedMDIChildModifiedList* pModifiedList)
 {
 	USES_CONVERSION;
@@ -3354,4 +3410,38 @@ void CMainFrame::resetCurrentDir(bool rememberOpenPath)
 
 		::SetCurrentDirectory(OPTIONS->GetPNPath(PNPATH_PN));
 	}
+}
+
+LRESULT CMainFrame::OnStatusBarDblClick(int /*wParam*/, LPNMHDR lParam, BOOL& bHandled)
+{
+    bHandled = FALSE;
+    CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
+	
+	if(pChild)
+	{
+		LPNMMOUSE pnmm = (LPNMMOUSE)lParam;
+
+		PNASSERT(static_cast<int>(pnmm->dwItemSpec) < m_StatusBar.m_nPanes);
+		UINT nID = m_StatusBar.m_pPane[pnmm->dwItemSpec];
+
+		switch (nID)
+		{
+			case ID_POS_PANE:
+				SendMessage(m_hWnd, WM_COMMAND, MAKELONG(ID_EDIT_GOTO, 1), 0);
+
+				bHandled = TRUE;
+				return TRUE;
+
+			case ID_INS_PANE:
+				pChild->GetTextView()->EditToggleOvertype();
+
+				bHandled = TRUE;
+				return TRUE;
+
+			default:
+				break;
+		}
+	}
+
+    return FALSE;
 }

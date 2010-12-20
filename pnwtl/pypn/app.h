@@ -16,7 +16,8 @@
  */
 class App : 
 	public extensions::IAppEventSink,
-	public extensions::IScriptRunner
+	public extensions::IScriptRunner,
+	public extensions::IScriptRunner2
 {
 public:
 	App(boost::python::handle<>& obj, extensions::IPN* app);
@@ -34,6 +35,9 @@ public:
 	virtual void RunScript(const char* name);
 	virtual void RunDocScript(extensions::IDocumentPtr& doc);
 	virtual void Eval(const char* script, PN::BaseString& output);
+
+// IScriptRunner2
+	virtual void Exec(const char* function, const char* param, int flags, PN::BaseString& output);
 
 // Other
 	void RegisterScript(const char* scriptname, const char* group, const char* name);

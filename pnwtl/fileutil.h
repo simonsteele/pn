@@ -25,6 +25,8 @@ bool GetFileAttributes(LPCTSTR filename, FileAttributes_t& atts);
 
 bool IsReadOnly(const FileAttributes_t& atts);
 
+bool IsHidden(const FileAttributes_t& atts);
+
 uint64_t GetFileAge(const FileAttributes_t& atts);
 
 /**

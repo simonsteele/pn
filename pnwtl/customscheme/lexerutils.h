@@ -8,79 +8,48 @@ class Accessor;
 class Lexer
 {
 	public:
+		virtual ~Lexer(){}
+
 		virtual const char* GetName() const
 		{
 			return "error";
 		}
 
-		virtual void DoLex(unsigned int startPos, int length, int initStyle, WordList *keywordlists[],
-                            Accessor &styler) const
-		{
-
-		}
-
-		virtual void DoFold(unsigned int startPos, int length, int initStyle, WordList *keywordlists[],
-                            Accessor &styler) const
-		{
-
-		}
+		virtual void DoLex(unsigned int startPos, int length, int initStyle, char *words[],
+                            Accessor &styler) = 0;
+		
+		virtual void DoFold(unsigned int startPos, int length, int initStyle, char *words[],
+                            Accessor &styler) const = 0;
 };
 
 class Lexers
 {
 	public:
-		Lexers()
+		explicit Lexers()
 		{
-			m_count = m_listsize = 0;
-			m_pLexers = 0;
 		}
 
 		~Lexers()
 		{
-			if(m_pLexers)
-			{
-				free(m_pLexers);
-			}
 		}
 		
-		int GetCount()
+		int GetCount() const
 		{
-			return m_count;
+			return m_lexers.size();
 		}
 
 		void AddLexer(Lexer* pLexer)
 		{
-			if(!m_pLexers)
-			{
-				m_pLexers = static_cast<Lexer**>( malloc(2 * sizeof(Lexer*)));
-				m_listsize = 2;
-			}
-			else if(m_count >= m_listsize)
-			{
-				int newsize = m_listsize * 2;
-				Lexer** pNewList = static_cast<Lexer**>( realloc(m_pLexers, newsize * sizeof(Lexer*)));
-				if(!pNewList)
-				{
-					// Argh!
-					m_pLexers = NULL;
-					m_listsize = m_count = 0;
-					return;
-				}
-				m_pLexers = pNewList;
-			}
-
-			m_pLexers[m_count++] = pLexer;
+			m_lexers.push_back(pLexer);
 		}
 
-		const Lexer* operator [] (int index)
+		Lexer* operator [] (int index) const
 		{
-			return m_pLexers[index];
+			return m_lexers[index];
 		}
 
-	protected:
-		Lexer**	m_pLexers;
-		int		m_count;
-		int		m_listsize;
+	private:
+		std::vector<Lexer*> m_lexers;
 };
 
 #endif 

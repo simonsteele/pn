@@ -253,7 +253,7 @@ protected:
 			dc.DrawIconEx(pt,m_icons.GetIcon(m_state),sz);
 		}
 	protected:
-		static CIcons	m_icons;
+		CIcons	m_icons;
 		CIcons::States	m_state;
 	};
 public:

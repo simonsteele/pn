@@ -262,7 +262,12 @@ void XmlOptions::load()
 void XmlOptions::save()
 {
 	OptionsXmlWriter writer;
-	writer.Start(m_userSettingsPath.c_str());
+	if (!writer.Start(m_userSettingsPath.c_str()))
+	{
+		UNEXPECTED(_T("Failed to open user settings xml file for writing."));
+		return;
+	}
+
 	writer.StartConfig();
 
 	for(map_type::const_iterator i = m_options.begin(); i != m_options.end(); ++i)
@@ -274,7 +279,7 @@ void XmlOptions::save()
 	writer.Close();
 }
 
-void XmlOptions::startElement(LPCTSTR name, XMLAttributes& atts)
+void XmlOptions::startElement(LPCTSTR name, const XMLAttributes& atts)
 {
 	if (*name != NULL && *name == _T('o') && *(name+1) == NULL)
 	{

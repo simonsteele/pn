@@ -59,8 +59,8 @@ class COptionsPageEditDefaults : public COptionsPageImpl<COptionsPageEditDefault
 		BOOL			m_bWhiteSpace;
 		UINT			m_iTabWidth;
 		EPNSaveFormat	m_SaveFormat;
-		ECodePage		m_CodePage;
-		int				m_CharSet;
+		ECodePage		m_AnsiCodePage;
+		EPNEncoding		m_DefaultEncoding;
 
 		COptionsBlockHeader m_defaultsHeader;
 };
@@ -410,6 +410,7 @@ class COptionsPageFileAssoc : public COptionsPageImpl<COptionsPageFileAssoc>,
 			COMMAND_HANDLER(IDC_ADD, BN_CLICKED, OnAddClicked)
 			COMMAND_HANDLER(IDC_REMOVE, BN_CLICKED, OnRemoveClicked)
 			COMMAND_HANDLER(IDC_CHECKNOW, BN_CLICKED, OnCheckNowClicked)
+			COMMAND_HANDLER(IDC_ENABLEEXPLORERCONTEXT, BN_CLICKED, OnEnableExplorerContextMenu)
 			NOTIFY_HANDLER(IDC_LIST, LVN_ITEMCHANGED, OnListItemChanged)
 			NOTIFY_HANDLER(IDC_LIST, NM_SETFOCUS, OnListSetFocus)
 			NOTIFY_HANDLER(IDC_LIST, LVN_GETINFOTIP, OnListGetInfoTip)
@@ -435,6 +436,7 @@ class COptionsPageFileAssoc : public COptionsPageImpl<COptionsPageFileAssoc>,
 		LRESULT OnAddClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 		LRESULT OnCheckNowClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+		LRESULT OnEnableExplorerContextMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
 		LRESULT OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 		LRESULT OnListSetFocus(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
@@ -444,6 +446,10 @@ class COptionsPageFileAssoc : public COptionsPageImpl<COptionsPageFileAssoc>,
 		void SetMode(Mode mode, bool setExt = true, LPCTSTR extension = NULL);
 		void ListItemToFileAssoc(int index, FileAssoc& fa);
 		void RemoveExtension(int index);
+
+		bool checkExplorerContextMenu();
+		void removeContextMenu();
+		void addContextMenu();
 
 		bool			m_bDirty;
 		bool			m_bKeyChange;
@@ -456,6 +462,7 @@ class COptionsPageFileAssoc : public COptionsPageImpl<COptionsPageFileAssoc>,
 		StringMap		m_conflicts;
 		CFont			m_boldFont;
 		COLORREF		m_colors[2];
+		bool			m_bExplorerMenuRegistered;
 };
 
 class COptionsPageFileTypes : public COptionsPageImpl<COptionsPageFileTypes>,

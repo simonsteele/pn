@@ -1,5 +1,5 @@
 /*
-*   $Id: make.c,v 1.6 2006/05/30 04:37:12 darren Exp $
+*   $Id: make.c 681 2008-10-12 22:43:00Z dhiebert $
 *
 *   Copyright (c) 2000-2005, Darren Hiebert
 *
@@ -166,6 +166,12 @@ static void findMakeTags (void)
 				skipLine ();
 			}
 			else {
+				if (strcmp(vStringValue (name), "export") == 0 &&
+					isIdentifier (c))
+				{
+					c = skipToNonWhite ();
+					readIdentifier (c, name);
+				}
 				c = skipToNonWhite ();
 				if (strchr (":?+", c) != NULL)
 				{
@@ -197,7 +203,7 @@ static void findMakeTags (void)
 
 extern parserDefinition* MakefileParser (void)
 {
-	static const char *const patterns [] = { "[Mm]akefile", NULL };
+	static const char *const patterns [] = { "[Mm]akefile", "GNUmakefile", NULL };
 	static const char *const extensions [] = { "mak", "mk", NULL };
 	parserDefinition* const def = parserNew ("Make");
 	def->kinds      = MakeKinds;

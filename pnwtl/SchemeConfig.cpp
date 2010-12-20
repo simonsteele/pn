@@ -113,7 +113,7 @@ void SchemeConfigParser::LoadPresets(LPCTSTR path)
 	{
 		if(!validateFont(defcls->CustomStyle->FontName.c_str()))
 		{
-			defcls->CustomStyle->FontName = "";
+			defcls->CustomStyle->FontName = _T("");
 			defcls->CustomStyle->values ^= edvFontName;
 		}
 	}
@@ -153,7 +153,12 @@ void SchemeConfigParser::Save(LPCTSTR filename)
 {
 	Schemes::Writer writer;
 
-	writer.Start(filename);
+	if (!writer.Start(filename))
+	{
+		UNEXPECTED(_T("Could not open usersettings.xml for writing."));
+		return;
+	}
+
 	writer.beginDoc();
 
 	// Colour Overrides
@@ -266,7 +271,7 @@ void SchemeConfigParser::onLanguageEnd()
 	m_pCurrent = NULL;
 }
 
-void SchemeConfigParser::onStyleGroup(XMLAttributes& att, const StylePtr& pClass)
+void SchemeConfigParser::onStyleGroup(const XMLAttributes& att, const StylePtr& pClass)
 {
 	PNASSERT(m_pCurrent != NULL);
 
@@ -371,7 +376,7 @@ int CALLBACK ValidateFontCB(
     return 1; 
 } 
 
-bool SchemeConfigParser::validateFont(const char* fontName)
+bool SchemeConfigParser::validateFont(LPCTSTR fontName)
 {
 	FontValidationInfo fvi;
 	fvi.Name = fontName;

@@ -217,6 +217,50 @@ void App::Eval(const char* script, PN::BaseString& output)
 	}
 }
 
+void App::Exec(const char* function, const char* param, int flags, PN::BaseString& output)
+{
+	std::string result;
+
+	try
+	{
+		PyObject* scope = (flags & extensions::efBuiltIn) ? m_glue.ptr() : main_namespace.ptr();
+
+		if (flags & extensions::efCaptureOutput)
+		{
+			boost::python::call_method<void>(m_glue.ptr(), "startCapturingStdOut");
+			boost::python::call_method<void>(scope, function, param);
+		}
+		else
+		{
+			result = boost::python::call_method<std::string>(scope, function, param);
+		}
+	}
+	catch(boost::python::error_already_set&)
+	{
+		std::string s = PyTracebackToString();
+		AddOutput(s.c_str());
+	}
+
+	try
+	{
+		if (flags & extensions::efCaptureOutput)
+		{
+			std::string outputCapture;
+			outputCapture = boost::python::call_method<std::string>(m_glue.ptr(), "finishCapturingStdOut");
+			output.Add(outputCapture.c_str());
+		}
+		else
+		{
+			output.Add(result.c_str());
+		}
+	}
+	catch(boost::python::error_already_set&)
+	{
+		std::string s = PyTracebackToString();
+		AddOutput(s.c_str());
+	}
+}
+
 /**
  * Register a script with PN
  */

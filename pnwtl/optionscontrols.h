@@ -43,7 +43,7 @@ class CStyleDisplay : public CWindowImpl<CStyleDisplay>
 		void SetSize(int size, bool bInvalidate = true);
 		void SetFore(COLORREF fore);
 		void SetBack(COLORREF back);
-		void SetStyle(LPCSTR fontname, int fontsize, COLORREF fore, COLORREF back, LPCTSTR name, bool bold, bool italic, bool underline);
+		void SetStyle(LPCTSTR fontname, int fontsize, COLORREF fore, COLORREF back, LPCTSTR name, bool bold, bool italic, bool underline);
 		
 	protected:
 		CString		m_Name;

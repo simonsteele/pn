@@ -1,8 +1,19 @@
+/**
+ * @file WorkspaceState.cpp
+ * @brief Load and save the set of open files.
+ * @author Simon Steele
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ *
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #include "stdafx.h"
 #include "third_party/genx/genx.h"
 #include "include/pngenx.h"
 #include "WorkspaceState.h"
 #include "project.h"
+#include "resource.h"
 
 //
 // <Workspace>
@@ -136,7 +147,14 @@ void WorkspaceState::load(LPCTSTR filename)
 void WorkspaceState::save(LPCTSTR filename)
 {
 	WSWriter writer;
-	writer.Start(filename);
+	if (!writer.Start(filename))
+	{
+		CString str;
+		str.Format(IDS_WORKSPACESAVEFAIL, filename);
+
+		PNTaskDialog(g_Context.m_frame->GetWindow()->m_hWnd, IDR_MAINFRAME, _T(""), (LPCTSTR)str, TDCBF_OK_BUTTON, TDT_WARNING_ICON);
+		return;
+	}
 
 	writer.BeginWorkspace();
 
@@ -186,7 +204,7 @@ void WorkspaceState::save(LPCTSTR filename)
 #define WS_BEGIN		0
 #define WS_WORKSPACE	1
 
-void WorkspaceState::startElement(LPCTSTR name, XMLAttributes& atts)
+void WorkspaceState::startElement(LPCTSTR name, const XMLAttributes& atts)
 {
 	if(IN_STATE(WS_BEGIN))
 	{
@@ -224,7 +242,7 @@ void WorkspaceState::endElement(LPCTSTR name)
 	}
 }
 
-void WorkspaceState::handleProjectGroup(XMLAttributes& atts)
+void WorkspaceState::handleProjectGroup(const XMLAttributes& atts)
 {
 	LPCTSTR path = atts.getValue(_T("path"));
 	if(path != NULL && _tcslen(path) > 0)
@@ -233,7 +251,7 @@ void WorkspaceState::handleProjectGroup(XMLAttributes& atts)
 	}
 }
 
-void WorkspaceState::handleProject(XMLAttributes& atts)
+void WorkspaceState::handleProject(const XMLAttributes& atts)
 {
 	LPCTSTR path = atts.getValue(_T("path"));
 	if(path != NULL && _tcslen(path) > 0)
@@ -242,7 +260,7 @@ void WorkspaceState::handleProject(XMLAttributes& atts)
 	}
 }
 
-void WorkspaceState::handleFile(XMLAttributes& atts)
+void WorkspaceState::handleFile(const XMLAttributes& atts)
 {
 	LPCTSTR path = atts.getValue(_T("path"));
 	if(path != NULL && _tcslen(path) > 0)

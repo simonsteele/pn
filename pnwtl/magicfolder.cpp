@@ -71,8 +71,9 @@ MagicFolder::MagicFolder(LPCTSTR name_, /*LPCTSTR path_, */LPCTSTR base_)
 	
 	cache = NULL;
 
-	filter = _T("*.*");
-	folderFilter = _T("CVS;.svn");
+	filter = _T("*");
+	excludedFileFilter = FolderAdder::getDefaultExcludedFileFilter();
+	folderFilter = FolderAdder::getDefaultExcludedFolderFilter();
 }
 
 MagicFolder::~MagicFolder()
@@ -117,7 +118,7 @@ void MagicFolder::Refresh()
 	MagicFolderAdder mfa;
 	
 	//TODO: remove parameter duplication here...
-	mfa.BuildFolder(this, basePath.c_str(), filter.c_str(), basePath.c_str(), folderFilter.c_str(), true);
+	mfa.BuildFolder(this, basePath.c_str(), filter.c_str(), basePath.c_str(), excludedFileFilter.c_str(), folderFilter.c_str(), true);
 
 	read = true;
 }
@@ -192,6 +193,14 @@ LPCTSTR MagicFolder::GetFilter() const
 void MagicFolder::SetFilter(LPCTSTR szFilter)
 {
 	filter = szFilter;
+}
+
+LPCTSTR MagicFolder::GetExcludedFileFilter() const {
+	return excludedFileFilter.c_str();
+}
+
+void MagicFolder::SetExcludedFileFilter(LPCTSTR value) {
+	excludedFileFilter = value;
 }
 
 LPCTSTR MagicFolder::GetFolderFilter() const
@@ -316,7 +325,7 @@ Folder* MagicFolderCache::GetCachedFolder(MagicFolder* actual)
 		return NULL;
 }
 
-void MagicFolderCache::startElement(XML_CSTR name, XMLAttributes& atts)
+void MagicFolderCache::startElement(XML_CSTR name, const XMLAttributes& atts)
 {
 	if( IN_STATE( PS_FOLDER ) )
 	{
@@ -392,12 +401,12 @@ void MagicFolderCache::characterData(XML_CSTR data, int len)
 	
 }
 
-void MagicFolderCache::processFile(XMLAttributes& atts)
+void MagicFolderCache::processFile(const XMLAttributes& atts)
 {
 	_currentFile = _current->AddFile(ATTVAL(_T("path")));
 }
 
-void MagicFolderCache::processUserData(XML_CSTR name, XMLAttributes& atts)
+void MagicFolderCache::processUserData(XML_CSTR name, const XMLAttributes& atts)
 {
 	if(parseState != PS_USERDATA)
 		udBase = parseState;

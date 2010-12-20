@@ -47,6 +47,7 @@ public:
 		MESSAGE_HANDLER(WM_CTLCOLOREDIT, OnCtlColor)
 		MESSAGE_HANDLER(WM_GETMINMAXINFO, OnGetMinMaxInfo)
 		MESSAGE_HANDLER(PN_SETFOCUS, OnSetEditorFocus)
+		MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
 		COMMAND_ID_HANDLER(ID_OUTPUT_HIDE, OnHide)
 		COMMAND_ID_HANDLER(ID_CLIPS_ADD, OnAdd)
 		COMMAND_ID_HANDLER(ID_CLIPS_EDIT, OnEdit)
@@ -71,6 +72,7 @@ private:
 	LRESULT OnCtlColor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	LRESULT OnSetEditorFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
+	LRESULT	OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	
 	LRESULT OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
@@ -93,6 +95,8 @@ private:
 	void saveView();
 	void setupView();
 	void setupToolbar();
+	void handleRightClick(LPPOINT pt);
+	void doContextMenu(LPPOINT pt);
 
 	TextClips::TextClipSet* getSetForItem(HTREEITEM item);
 	TextClips::TextClipSet* getSetForItem(HTREEITEM item, HTREEITEM& parent);
@@ -106,6 +110,7 @@ private:
 	int m_comboHeight;
 	HWND m_hWndToolBar;
 	HIMAGELIST m_hImgList;
+	HTREEITEM m_hLastItem;
 };
 
 #endif

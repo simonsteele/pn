@@ -58,7 +58,8 @@ public:
 	END_MSG_MAP()
 
 	LPCTSTR GetFileFilter() const;
-	LPCTSTR GetFolderFilter() const;
+	LPCTSTR GetExcludedFileFiler() const;
+	LPCTSTR GetFolderFilter() const;	
 
 protected:
 	LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -69,6 +70,7 @@ protected:
 
 protected:
 	CString strFileFilter;
+	CString strExcludedFileFilter;
 	CString strFolderFilter;
 };
 

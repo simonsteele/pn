@@ -1,5 +1,5 @@
 /*
-*   $Id: parsers.h,v 1.12 2006/05/30 04:37:12 darren Exp $
+*   $Id: parsers.h 717 2009-07-07 03:40:50Z dhiebert $
 *
 *   Copyright (c) 2000-2003, Darren Hiebert
 *
@@ -16,16 +16,20 @@
 
 /* Add the name of any new parser definition function here */
 #define PARSER_LIST \
+	AntParser, \
 	AsmParser, \
 	AspParser, \
 	AwkParser, \
+	BasicParser, \
 	BetaParser, \
 	CParser, \
 	CppParser, \
 	CsharpParser, \
 	CobolParser, \
+	DosBatchParser, \
 	EiffelParser, \
 	ErlangParser, \
+	FlexParser, \
 	FortranParser, \
 	HtmlParser, \
 	JavaParser, \
@@ -33,6 +37,8 @@
 	LispParser, \
 	LuaParser, \
 	MakefileParser, \
+	MatLabParser, \
+	OcamlParser, \
 	PascalParser, \
 	PerlParser, \
 	PhpParser, \
@@ -45,6 +51,7 @@
 	SmlParser, \
 	SqlParser, \
 	TclParser, \
+	TexParser, \
 	VeraParser, \
 	VerilogParser, \
 	VhdlParser, \

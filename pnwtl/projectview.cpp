@@ -556,6 +556,7 @@ void CProjectTreeCtrl::getMagicFolderProps(Projects::UserData& ud, Projects::Mag
 	ud.Set(_T(""), _T("Folder"), _T("Folder"), _T("Name"), mf->GetName());
 	ud.Set(_T(""), _T("Folder"), _T("Folder"), _T("Path"), mf->GetFullPath());
 	ud.Set(_T(""), _T("Folder"), _T("Filters"), _T("IncludeFiles"), mf->GetFilter());
+	ud.Set(_T(""), _T("Folder"), _T("Filters"), _T("ExcludeFiles"), mf->GetExcludedFileFilter());
 	ud.Set(_T(""), _T("Folder"), _T("Filters"), _T("ExcludeFolders"), mf->GetFolderFilter());
 	
 	PropCategory* cat = new PropCategory(_T("Folder"), _T("Magic Folders"));
@@ -565,6 +566,7 @@ void CProjectTreeCtrl::getMagicFolderProps(Projects::UserData& ud, Projects::Mag
 
 	cat = new PropCategory(_T("Filters"), _T("Filters"));
 	cat->Add( new ProjectProp(_T("IncludeFiles"), _T("Include Files"), propString) );
+	cat->Add( new ProjectProp(_T("ExcludeFiles"), _T("Exclude Files"), propString) );
 	cat->Add( new ProjectProp(_T("ExcludeFolders"), _T("Exclude Folders"), propString) );
 	extrasGroup->Add(cat);
 
@@ -783,6 +785,7 @@ void CProjectTreeCtrl::setMagicFolderProps(Projects::UserData& ud, Projects::Mag
 	folder->SetName( ud.Lookup(_T(""), _T("Folder"), _T("Folder"), _T("Name"), _T("error")) );
 	SetItemText(hFolder, folder->GetName());
 	folder->SetFilter( ud.Lookup(_T(""), _T("Folder"), _T("Filters"), _T("IncludeFiles"), _T("")) );
+	folder->SetExcludedFileFilter( ud.Lookup(_T(""), _T("Folder"), _T("Filters"), _T("ExcludeFiles"), _T("")) );
 	folder->SetFolderFilter( ud.Lookup(_T(""), _T("Folder"), _T("Filters"), _T("ExcludeFolders"), _T("")) );
 
 	// Now see if we've changed path...
@@ -1201,6 +1204,7 @@ LRESULT CProjectTreeCtrl::OnAddMagicFolder(WORD /*wNotifyCode*/, WORD /*wID*/, H
 		Projects::MagicFolder* newFolder = new Projects::MagicFolder(pn.GetDirectoryName().c_str(), pn.c_str());
 
 		newFolder->SetFilter( wiz2.GetFileFilter() );
+		newFolder->SetExcludedFileFilter( wiz2.GetExcludedFileFiler() );
 		newFolder->SetFolderFilter( wiz2.GetFolderFilter() );
 
 		folder->AddChild(newFolder);
@@ -1541,6 +1545,7 @@ LRESULT	CProjectTreeCtrl::OnMagicAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	
 	Projects::MagicFolder* temp = new Projects::MagicFolder(LS(IDS_PROJECTS_TEMPMAGICFOLDER), path.c_str());
 	temp->SetFilter(mf->GetFilter());
+	temp->SetExcludedFileFilter(mf->GetExcludedFileFilter());
 	temp->SetFolderFilter(mf->GetFolderFilter());
 	temp->SetGotContents(true);
 	mf->AddChild(temp);

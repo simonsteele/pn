@@ -16,12 +16,13 @@
 #include "textview.h"
 #include "scaccessor.h"
 #include "smartstart.h"
-#include "include/utf8_16.h"
 #include "include/lineendings.h"
 #include "scriptregistry.h"
 #include "project.h"
 #include "childfrm.h"
 #include "findinfiles.h"
+#include "unicodefilewriter.h"
+#include "textclips/variables.h"
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -213,6 +214,8 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 		}
 		catch(std::bad_alloc& ba)
 		{
+			// TODO: This now needs to check Scintilla's error handler
+			// to find out if there was an exception and then maybe throw.
 			TCHAR buf[1024];
 			_sntprintf(buf, 1024, LS(IDS_FILETOOBIG), ba.what());
 			buf[1023] = NULL;
@@ -243,9 +246,13 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 
 		///See if there's an encoding specified or not...
         if(encoding == eUnknown)
+		{
 			determineEncoding(reinterpret_cast<unsigned char*>(&data[0]), lenFile, m_encType);
+		}
 		else
+		{
 			m_encType = encoding;
+		}
 
 		EPNSaveFormat endings = determineLineEndings(reinterpret_cast<unsigned char*>(&data[0]), lenFile, m_encType);
 
@@ -268,7 +275,7 @@ bool CTextView::OpenFile(LPCTSTR filename, EPNEncoding encoding)
 		}
 		else
 		{
-			SPerform(SCI_SETCODEPAGE, (long)OPTIONS->GetCached(Options::ODefaultCodePage));
+			SPerform(SCI_SETCODEPAGE, (long)OPTIONS->GetCached(Options::OMultiByteCodePage));
 
 			// Otherwise we do a simple read.
 			while (lenFile > 0) 
@@ -365,7 +372,7 @@ void CTextView::Revert(LPCTSTR filename)
 	}
 }
 
-bool CTextView::SaveFile(LPCTSTR filename, bool setSavePoint)
+bool CTextView::SaveFile(IFilePtr file, bool setSavePoint)
 {
 	char data[blockSize + 1];
 	int lengthDoc = SPerform(SCI_GETLENGTH);
@@ -373,51 +380,33 @@ bool CTextView::SaveFile(LPCTSTR filename, bool setSavePoint)
 	if(m_encType == eUnknown)
 	{
 		// Standard 8-bit ascii...
-		CFile file;
-		if( file.Open(filename, CFile::modeWrite | CFile::modeBinary) )
+		for (int i = 0; i < lengthDoc; i += blockSize) 
 		{
-			for (int i = 0; i < lengthDoc; i += blockSize) 
-			{
-				int grabSize = lengthDoc - i;
-				if (grabSize > blockSize)
-					grabSize = blockSize;
-				GetRange(i, i + grabSize, data);
-				
-				/*if (props.GetInt("strip.trailing.spaces"))
-					grabSize = StripTrailingSpaces(
-									data, grabSize, grabSize != blockSize);*/
-				
-				file.Write(data, grabSize);
-			}
-			file.Close();
+			int grabSize = lengthDoc - i;
+			if (grabSize > blockSize)
+				grabSize = blockSize;
+			GetRange(i, i + grabSize, data);
+
+			file->Write(data, grabSize);
 		}
-		else
-			return false;
 	}
 	else
 	{
 		// Deal with writing unicode formats here...
-		Utf8_16_Write converter;
+		UnicodeFileWriter converter(file);
 		Utf8_16::encodingType convEncType = (m_encType == eUtf8NoBOM) ? Utf8_16::eUtf8 : static_cast<Utf8_16::encodingType>(m_encType);
-		converter.setEncoding( convEncType );
-		converter.setWriteBOM( m_encType != eUtf8NoBOM );
+		converter.SetEncoding( convEncType );
+		converter.SetWriteBOM( m_encType != eUtf8NoBOM );
 
-		FILE* fp = converter.fopen(filename, _T("wb"));
-		if(fp != NULL)
+		for(int i = 0; i < lengthDoc; i += blockSize)
 		{
-			for(int i = 0; i < lengthDoc; i += blockSize)
-			{
-				int grabSize = lengthDoc - i;
-				if( grabSize > blockSize )
-					grabSize = blockSize;
-				GetRange(i, i + grabSize, data);
+			int grabSize = lengthDoc - i;
+			if( grabSize > blockSize )
+				grabSize = blockSize;
+			GetRange(i, i + grabSize, data);
 
-				converter.fwrite(data, grabSize);
-			}
-			converter.fclose();
+			converter.Write(data, grabSize);
 		}
-		else
-			return false;
 	}
 
 	// We allow saving the file without setting the save point for the UI
@@ -429,15 +418,15 @@ bool CTextView::SaveFile(LPCTSTR filename, bool setSavePoint)
 	return true;
 }
 
-bool CTextView::Save(LPCTSTR filename, bool bSetScheme)
+bool CTextView::Save(IFilePtr file, bool bSetScheme)
 {
-	if( SaveFile(filename, bSetScheme) )
+	if (SaveFile(file, bSetScheme))
 	{
-		if(bSetScheme)
+		if (bSetScheme)
 		{
 			// Apply scheme if we picked up a filetype
-			Scheme* sch = SchemeManager::GetInstance()->SchemeForFile(filename);
-			if(sch != NULL && sch != SchemeManager::GetInstance()->GetDefaultScheme() && sch != GetCurrentScheme())
+			Scheme* sch = SchemeManager::GetInstance()->SchemeForFile(file->GetFilename().c_str());
+			if (sch != NULL && sch != SchemeManager::GetInstance()->GetDefaultScheme() && sch != GetCurrentScheme())
 			{
 				SetScheme(sch);
 			}
@@ -503,6 +492,12 @@ int CTextView::HandleNotify(LPARAM lParam)
 
 	Scintilla::SCNotification* scn(reinterpret_cast<Scintilla::SCNotification*>(lParam));
 
+	if (scn->nmhdr.hwndFrom != m_hWnd)
+	{
+		// This is not for us
+        return msg;
+	}
+
 	if(msg == SCN_SAVEPOINTREACHED)
 	{
 		SendMessage(m_pDoc->GetFrame()->m_hWnd, PN_NOTIFY, 0, SCN_SAVEPOINTREACHED);
@@ -515,6 +510,13 @@ int CTextView::HandleNotify(LPARAM lParam)
 	}
 	else if(msg == SCN_UPDATEUI)
 	{
+		if (GetModEventMask() == 0)
+		{
+			// If we're not notifying of changes, we don't care about updateui at this point either.
+			// This resolves a nasty never-ending update loop with multiple views and smartHighlight.
+			return msg;
+		}
+
 		SendMessage(m_pDoc->GetFrame()->m_hWnd, PN_NOTIFY, 0, SCN_UPDATEUI);
 
 		smartHighlight();
@@ -541,7 +543,7 @@ int CTextView::HandleNotify(LPARAM lParam)
 	{
 		m_recorder->RecordScintillaAction(scn->message, scn->wParam, scn->lParam);
 	}
-
+	
 	if (m_bInsertClip)
 	{
 		handleInsertClipNotify(scn);
@@ -639,6 +641,12 @@ void CTextView::SetEncoding(EPNEncoding encoding)
 		// Experimental, 2006-02-12
 		// Set the code page to UTF-8 if we're going to do unicode editing.
 		SetCodePage(SC_CP_UTF8);
+	}
+	else
+	{
+		// We're ANSI, go for our default codepage:
+		int ansiCodePage = (long)OPTIONS->GetCached(Options::OMultiByteCodePage);
+		SetCodePage(ansiCodePage);
 	}
 }
 
@@ -806,6 +814,41 @@ HRESULT CTextView::OnOverwriteTarget(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	return 0;
 }
 
+/**
+ * Insert a clip.
+ */
+void CTextView::InsertClip(const TextClips::Clip* clip)
+{
+	TextClips::DefaultVariableProvider variables(m_pDoc->GetFrame(), g_Context.m_frame->GetActiveWorkspace());
+	std::vector<TextClips::Chunk> chunks;
+	clip->GetChunks(chunks, this, &variables, ScriptRegistry::GetInstance());
+
+	if (variables.GetSelectionUsed() && GetSelLength())
+	{
+		DeleteBack();
+	}
+
+	BOOL bHandled(FALSE);
+	OnInsertClip(0, 0, reinterpret_cast<LPARAM>(&chunks), bHandled);
+}
+
+/**
+ * Insert a clip based on text passed in, used for extensions.
+ */
+HRESULT CTextView::OnInsertClipText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
+{
+	if (lParam == 0)
+	{
+		return 0;
+	}
+
+	// Make a clip and process the text:
+	TextClips::Clip clip(_T(""), "", reinterpret_cast<const char*>(lParam));
+	InsertClip(&clip);
+
+	return 0;
+}
+
 HRESULT CTextView::OnInsertClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
 	std::vector<TextClips::Chunk>* chunks = reinterpret_cast<std::vector<TextClips::Chunk>*>(lParam);
@@ -819,32 +862,57 @@ HRESULT CTextView::OnInsertClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 	return 0;
 }
 
-HRESULT CTextView::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+/**
+ * Message to set current scheme, using message to avoid revving the
+ * extensions interface further in 2.1.
+ */
+LRESULT CTextView::OnSetSchemeText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-	if (!m_bInsertClip)
+	if (lParam == 0)
 	{
-		bHandled = false;
 		return 0;
 	}
 
+	SchemeManager* pSM = SchemeManager::GetInstance();
+	Scheme* pScheme(pSM->SchemeByName(reinterpret_cast<const char*>(lParam)));
+
+	if (pScheme != NULL)
+	{
+		m_pDoc->GetFrame()->SetScheme(pScheme, scfNoViewSettings);
+	}
+
+	return 0;
+}
+
+HRESULT CTextView::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+{
+	bHandled = false;
+
 	if (wParam == VK_TAB && ::GetFocus() == m_hWnd)
 	{
-		// Next field in the template:
-		if ( GetKeyState( VK_SHIFT ) & 0x8000 )
+		if (m_bInsertClip)
 		{
-			prevClipField();
+			// Next field in the template:
+			if ( GetKeyState( VK_SHIFT ) & 0x8000 )
+			{
+				prevClipField();
+			}
+			else
+			{
+				nextClipField();
+			}
+			
+			bHandled = true;
+			m_bSkipNextChar = true;
 		}
 		else
 		{
-			nextClipField();
+			if (::SendMessage(m_pDoc->GetFrame()->m_hWnd, PN_COMPLETECLIP, 0, 0))
+			{
+				bHandled = true;
+				m_bSkipNextChar = true;
+			}
 		}
-		
-		bHandled = true;
-		m_bSkipNextChar = true;
-	}
-	else
-	{
-		bHandled = false;
 	}
 	
 	return 0;
@@ -861,6 +929,34 @@ HRESULT CTextView::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 	m_bSkipNextChar = false;
 
 	return 0;
+}
+
+/**
+ * Override Vertical Scroll to handle smarthighlight throughout the file.
+ */
+HRESULT CTextView::OnVScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	bHandled = true;
+	HRESULT ret = DefWindowProc(uMsg, wParam, lParam);
+	smartHighlight();
+
+	return ret;
+}
+
+/**
+ * Override Mouse Wheel to handle smarthighlight throughout the file.
+ */
+HRESULT CTextView::OnMouseWheel(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	bHandled = true;
+	HRESULT ret = DefWindowProc(uMsg, wParam, lParam);
+	
+	if ((wParam & (MK_CONTROL | MK_SHIFT)) == 0)
+	{
+		smartHighlight();
+	}
+
+	return ret;
 }
 
 HRESULT CTextView::OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -1321,12 +1417,19 @@ void CTextView::OnFirstShow()
 	m_pLastScheme->Load(*this);
 	SetEOLMode( OPTIONS->GetCached(Options::OLineEndings) );
 	
-	int defaultCodePage = (long)OPTIONS->GetCached(Options::ODefaultCodePage);
-	SPerform(SCI_SETCODEPAGE, defaultCodePage);
-	if (defaultCodePage == PNCP_Unicode)
+	int defaultEncoding = (long)OPTIONS->GetCached(Options::ODefaultEncoding);
+	if (defaultEncoding == eUnknown)
 	{
-		m_encType = eUtf8;
+		int ansiCodePage = OPTIONS->GetCached(Options::OMultiByteCodePage);
+		SPerform(SCI_SETCODEPAGE, ansiCodePage);
 	}
+	else
+	{
+		// Any unicode encoding has UTF8 as the Scintilla Code Page.
+		SPerform(SCI_SETCODEPAGE, SC_CP_UTF8);	
+	}
+	
+	m_encType = (EPNEncoding)defaultEncoding;
 }
 
 /**
@@ -1417,7 +1520,7 @@ void CTextView::smartHighlight()
 				IndicSetStyle(INDIC_SMARTHIGHLIGHT, INDIC_ROUNDBOX);
 				
 				// Get our confining range for Smart Highlight:
-				int startAtLine = max(0, DocLineFromVisible(GetFirstVisibleLine()) - MAX_SMARTHIGHLIGHT_LINES);
+				int startAtLine = DocLineFromVisible(GetFirstVisibleLine());
 				int endAtLine = min(GetLineCount(), DocLineFromVisible(GetFirstVisibleLine() + LinesOnScreen()) + MAX_SMARTHIGHLIGHT_LINES);
 				
 				CA2CT findText(buf.c_str());

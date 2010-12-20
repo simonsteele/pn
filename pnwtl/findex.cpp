@@ -2,7 +2,7 @@
  * @file findex.cpp
  * @brief Find and Replace dialogs for PN 2
  * @author Simon Steele
- * @note Copyright (c) 2004-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2004-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -205,7 +205,7 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	rcTabs.bottom = calcTabAreaHeight();
 
 	m_tabControl.Create(m_hWnd, rcTabs, NULL, dwStyle, 0, IDC_FINDEX_TABS);
-	m_tabControl.SetWindowPos(GetDlgItem(IDC_FINDEXTABS_PLACEHOLDER), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW | SWP_NOACTIVATE);
+	m_tabControl.SetWindowPos(GetDlgItem(IDC_FINDEXTABS_PLACEHOLDER).m_hWnd, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW | SWP_NOACTIVATE);
 
 	// Move the line that goes beneath the tab control.
 	CStatic s(GetDlgItem(IDC_FINDEX_LINE));
@@ -216,28 +216,31 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	// Sort out the combo boxes.
 	CSize size = getGUIFontSize();
-	
-	rc.set(GetDlgItem(IDC_FINDTEXT_DUMMY), *this);
+
+	CWindow findTextDummy(GetDlgItem(IDC_FINDTEXT_DUMMY));
+	rc.set(findTextDummy, *this);
 	rc.bottom = rc.top + (size.cy * 10);
 
 	m_FindTextCombo.Create(m_hWnd, rc, _T("FINDTEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VSCROLL | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTEXT_COMBO, _T("Find"), IDC_FINDTEXT_DUMMY);
-	m_FindTextCombo.SetWindowPos(GetDlgItem(IDC_FINDTEXT_LABEL), rc, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
+	m_FindTextCombo.SetWindowPos(GetDlgItem(IDC_FINDTEXT_LABEL).m_hWnd, rc, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 
-	rc.set(GetDlgItem(IDC_REPLACETEXT_DUMMY), *this);
+	CWindow replaceTextDummy(GetDlgItem(IDC_REPLACETEXT_DUMMY));
+	rc.set(replaceTextDummy, *this);
 	rc.bottom = rc.top + (size.cy * 10);
 
 	m_ReplaceTextCombo.Create(m_hWnd, rc, _T("REPLACETEXTCOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_REPLACETEXT_COMBO, _T("Replace"), IDC_REPLACETEXT_DUMMY);
-	m_ReplaceTextCombo.SetWindowPos(GetDlgItem(IDC_REPLACETEXT_LABEL), rc, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
+	m_ReplaceTextCombo.SetWindowPos(GetDlgItem(IDC_REPLACETEXT_LABEL).m_hWnd, rc, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 
 	// Store the position of the second combo.
 	m_group2Top = rc.top;
 
-	rc.set(GetDlgItem(IDC_FINDWHERE_DUMMY), *this);
+	CWindow findWhereDummy(GetDlgItem(IDC_FINDWHERE_DUMMY));
+	rc.set(findWhereDummy, *this);
 	rc.bottom = rc.top + (size.cy * 10);
 
 	m_FindWhereCombo.Create(m_hWnd, rc, _T("FINDWHERECOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDWHERE_COMBO,
 		IDC_FINDWHERE_DUMMY);
-	m_FindWhereCombo.SetWindowPos(GetDlgItem(IDC_FINDWHERE_LABEL), rc, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
+	m_FindWhereCombo.SetWindowPos(GetDlgItem(IDC_FINDWHERE_LABEL).m_hWnd, rc, SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 
 	m_FindWhereCombo.InsertString(0, LS(IDS_CURRENTFILE));
 	m_FindWhereCombo.InsertString(1, LS(IDS_CURRENTFOLDER));
@@ -248,13 +251,14 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	m_FindWhereCombo.SetItemData(2, fwCurrentProjectFiles);
 	m_FindWhereCombo.SetItemData(3, fwOpenDocs);
 
-	rc.set(GetDlgItem(IDC_FINDTYPE_DUMMY), *this);
+	CWindow findTypeDummy(GetDlgItem(IDC_FINDTYPE_DUMMY));
+	rc.set(findTypeDummy, *this);
 	rc.bottom = rc.top + (size.cy * 10);
 
 	m_FindTypeCombo.Create(m_hWnd, rc, _T("FINDTYPECOMBO"), CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0, IDC_FINDTYPE_COMBO,
 		_T("FindType"), IDC_FINDTYPE_DUMMY);
 	m_FindTypeCombo.SetFont(GetFont());
-	m_FindTypeCombo.SetWindowPos(GetDlgItem(IDC_FINDTYPE_DUMMY), 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW | SWP_NOACTIVATE);
+	m_FindTypeCombo.SetWindowPos(GetDlgItem(IDC_FINDTYPE_DUMMY).m_hWnd, 0,0,0,0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW | SWP_NOACTIVATE);
 
 	m_ReHelperBtn.SubclassWindow(GetDlgItem(IDC_REHELPER_BUTTON));
 	m_ReHelperBtn2.SubclassWindow(GetDlgItem(IDC_RHELPER_BUTTON));
@@ -274,8 +278,12 @@ LRESULT CFindExDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	// Move all the combo boxes into position.
 	moveUp(m_comboDistance, m_FindWhereCombo);
 	moveUp(m_comboDistance, m_FindTypeCombo);
-	moveUp(m_comboDistance, CStatic(GetDlgItem(IDC_FINDWHERE_LABEL)));
-	moveUp(m_comboDistance, CStatic(GetDlgItem(IDC_FINDTYPE_LABEL)));
+
+	CStatic findWhereLabel(GetDlgItem(IDC_FINDWHERE_LABEL).m_hWnd);
+	moveUp(m_comboDistance, findWhereLabel);
+	
+	CStatic findTypeLabel(GetDlgItem(IDC_FINDTYPE_LABEL).m_hWnd);
+	moveUp(m_comboDistance, findTypeLabel);
 
 	rcCombo.set(m_ReplaceTextCombo, *this);
 	
@@ -988,7 +996,8 @@ int CFindExDialog::positionChecks(int top, const UINT* checkboxIDs, int nCheckbo
 {
 	int chkDist = m_checkDist;
 
-	ClientRect rc(CButton(GetDlgItem(checkboxIDs[0])), *this);
+	CButton checkbox(GetDlgItem(checkboxIDs[0]).m_hWnd);
+	ClientRect rc(checkbox, *this);
 	rc.top = top;
 
 	for(int j = 0; j < CHECKBOX_CONTROL_COUNT; j++)
@@ -1039,7 +1048,8 @@ void CFindExDialog::updateLayout()
 
 		m_lastVisibleCB = CHECKBOX_CONTROL_IDS[CHECKBOX_CONTROL_COUNT-1];
 
-		ClientRect rcLastCheck(GetDlgItem(CHECKBOX_CONTROL_IDS[CHECKBOX_CONTROL_COUNT-1]), *this);
+		CWindow prevCheckBox(GetDlgItem(CHECKBOX_CONTROL_IDS[CHECKBOX_CONTROL_COUNT-1]));
+		ClientRect rcLastCheck(prevCheckBox, *this);
 		m_bottom = rcLastCheck.bottom;
 	}
 	

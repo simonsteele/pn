@@ -1,89 +1,58 @@
-<clips name="C Standard"><clip name="----- Block -----" shortcut=""></clip><clip name="Main body" shortcut="">
-  void main(void)
-  //
-  {
-    |;
-  }
-
-</clip><clip name="Function body" shortcut="">
-  void | (void)
-  //
-  {
+<clips name="C Standard"><clip name="main body" shortcut="main">int main (int argc, char const* argv[])
+{
+	$0
+	return 0;
+}</clip><clip name="function" shortcut="fn">${1:void} ${2:method}(${3:parameters})
+{
+    $0
+}</clip><clip name="if" shortcut="if">if (${1:condition})
+{
     ;
-  }
+}</clip><clip name="if else" shortcut="ifelse">if (${1:condition})
+{
+    ${2}
+} 
+else
+{
+    $0
+}
 
-</clip><clip name="return" shortcut="">  return;
-|</clip><clip name="----- Control -----" shortcut=""></clip><clip name="if (short)" shortcut="">  if (|) {;}
-</clip><clip name="if" shortcut="">  if (|)
-  {
-    ;
-  }
+</clip><clip name="switch" shortcut="sw">switch (${1:var})
+{
+    case ${2:case}:
+    {
+        $0
+        break;
+    }
+}
 
-</clip><clip name="if else (short)" shortcut="">  if (|) {;} else {;}
-</clip><clip name="if else" shortcut="">  if (|)
-  {
-    ;
-  } 
-  else
-  {
-    ;
-  }
+</clip><clip name="for" shortcut="for">for (${1:int} ${2:i} = ${3:0}; $2 &lt; ${3:end}; $2++)
+{
+    $0;
+}
 
-</clip><clip name="if else if" shortcut="">  if (|)
-  {
-    ;
-  }
-  else if ()
-  {
-    ;
-  } 
-  else if ()
-  {
-    ;
-  } 
-  else
-  {
-    ;
-  }
+</clip><clip name="while" shortcut="while">while(${1:condition})
+{
+    $0
+}</clip><clip name="do" shortcut="dowhile">do
+{
+    $0;
+}
+while (${1:condition});
 
-</clip><clip name="switch" shortcut="">  switch (|)
-  {
-    case ():
-      ;
-      break;
-
-    case ():
-      ;
-      break;
-
-    case ():
-      ;
-      break;
-
-    default:
-      ;
-      break;
-  }
-
-</clip><clip name="for (short)" shortcut="">  for(|;;) {;}
-</clip><clip name="for" shortcut="">  for(|;;)
-  {
-    ;    
-  }
-
-</clip><clip name="while (short)" shortcut="">  while(|) {;}
-</clip><clip name="while" shortcut="">  while(|)
-  {
-    ;
-  }
-
-</clip><clip name="do while (short)" shortcut="">  do {;} while (|);
-</clip><clip name="do while" shortcut="">  do
-  {
-    ;
-  }
-  while (|);
-
-</clip><clip name="break" shortcut="">  break;
-|</clip><clip name="continue" shortcut="">  continue;
-|</clip><clip name="----- Other -----" shortcut=""></clip><clip name="#define" shortcut="">#define |</clip><clip name="#include &quot;&quot;" shortcut="">#include "|"</clip><clip name="#include &lt;>" shortcut="">#include &lt;|&gt;</clip><clip name="Comment /**/" shortcut="">/*|*/</clip><clip name="Comment //" shortcut="">//|</clip><clip name="Comment //***" shortcut="">//***|</clip></clips>
+</clip><clip name="#define" shortcut="def">#define ${1:DEFINITION}</clip><clip name="#include" shortcut="inc">#include ${1:"header.h"}</clip><clip name="switch case" shortcut="case">    case ${2:case}:
+    {
+        $0
+        break;
+    }</clip><clip name="namespace" shortcut="ns">namespace ${1:namespace}
+{
+    $0
+}</clip><clip name="class" shortcut="class">class ${1:name}
+{
+public:
+	$0
+};
+</clip><clip name="struct" shortcut="struct">struct ${1:name}
+{
+	$0
+};</clip><clip name="typedef" shortcut="td">typedef ${1:expression} ${2:name};$0</clip><clip name="printf" shortcut="printf">printf("${1:%d\n}");$0</clip></clips>

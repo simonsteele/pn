@@ -18,7 +18,7 @@
  * Take a string containing keywords and possible extraneous whitespace and formatting
  * and turn into a single line of space separated keywords.
  */
-std::string NormaliseKeywords(std::string& in)
+std::string NormaliseKeywords(const std::string& in)
 {
 	std::string response;
 	response.reserve(in.length());
@@ -215,7 +215,7 @@ bool EditorColours::GetColour(Colours colour, COLORREF& theColour) const
 	return false;
 }
 
-void EditorColours::SetFromXml(XMLAttributes& atts)
+void EditorColours::SetFromXml(const XMLAttributes& atts)
 {
 	LPCTSTR szKey, szValue;
 	int val;
@@ -362,8 +362,21 @@ StyleDetails::StyleDetails()
 }
 
 StyleDetails::StyleDetails(const StyleDetails& copy)
+	:Key(copy.Key)
+	,FontName(copy.FontName)
+	,FontSize(copy.FontSize)
+	,ForeColor(copy.ForeColor)
+	,BackColor(copy.BackColor)
+	,Bold(copy.Bold)
+	,Italic(copy.Italic)
+	,Underline(copy.Underline)
+	,EOLFilled(copy.EOLFilled)
+	,Hotspot(copy.Hotspot)
+
+	,values(copy.values)
+    ,name(copy.name)
+	,classname(copy.classname)
 {
-	*this = copy;
 }
 
 StyleDetails& StyleDetails::operator = (const StyleDetails& copy)
@@ -380,8 +393,8 @@ StyleDetails& StyleDetails::operator = (const StyleDetails& copy)
 	Hotspot = copy.Hotspot;
 
 	values = copy.values;
+    name = copy.name;
 	classname = copy.classname;
-	name = copy.name;
 	
 	return *this;
 }

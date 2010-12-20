@@ -61,7 +61,7 @@ class ParseHandler : public XMLParseState
 public:
 	ParseHandler(std::vector<Tag>& tags) : m_tags(tags), m_parseState(PHS_Start), m_current(NULL), m_currentDef(NULL) {}
 
-	void startElement(XML_CSTR name, XMLAttributes& atts)
+	void startElement(XML_CSTR name, const XMLAttributes& atts)
 	{
 		if IN_STATE(PHS_Start)
 		{
@@ -126,7 +126,7 @@ public:
 	}
 
 private:
-	void handleKeyword(XMLAttributes& atts)
+	void handleKeyword(const XMLAttributes& atts)
 	{
 		LPCTSTR name = atts.getValue(_T("name"));
 		if (name != NULL && name[0] != NULL)
@@ -139,7 +139,7 @@ private:
 		}
 	}
 
-	void handleOverload(XMLAttributes& atts)
+	void handleOverload(const XMLAttributes& atts)
 	{
 		LPCTSTR ret = atts.getValue(_T("retVal"));
 		if (ret != NULL && ret[0] != NULL)
@@ -155,7 +155,7 @@ private:
 		}
 	}
 
-	void handleParam(XMLAttributes& atts)
+	void handleParam(const XMLAttributes& atts)
 	{
 		if (m_currentDef == NULL)
 		{
@@ -262,7 +262,7 @@ void XmlFileAutocompleteProvider::GetPrototypes(PN::BaseString& prototypes, char
 	std::vector<Tag>::const_iterator it = m_tags.begin();
 	for (; it != m_tags.end(); it++)
 	{
-		if ((*it).Name.size() == methodLength && strncmp((*it).Name.c_str(), method, methodLength) == 0)
+		if ((*it).Name.size() == static_cast<size_t>(methodLength) && strncmp((*it).Name.c_str(), method, methodLength) == 0)
 		{
 			BOOST_FOREACH(const Definition& def, (*it).Defs)
 			{

@@ -34,7 +34,9 @@ struct Visitor
 class View : public boost::enable_shared_from_this<View>
 {
 public:
-	View(EViewType type, ViewPtr& parent) : m_type(type), m_parent(parent) {}
+	explicit View(EViewType type) : m_type(type) {}
+
+	explicit View(EViewType type, ViewPtr& parent) : m_type(type), m_parent(parent) {}
 
 	virtual ~View();
 

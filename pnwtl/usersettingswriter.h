@@ -141,9 +141,10 @@ namespace Schemes
 				endStyle();
 			}
 
-			void setFont(LPCSTR name)
+			void setFont(LPCTSTR name)
 			{
-				genxAddAttribute(m_aFont, u(name));
+                Tcs_Utf8 fontName(name);
+				genxAddAttribute(m_aFont, u(fontName));
 			}
 
 			void setSize(int size)

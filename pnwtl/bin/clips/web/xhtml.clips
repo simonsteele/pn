@@ -1,23 +1,54 @@
-<clips name="XHTML Tags"><clip name="------ DOCTYPEs ------" shortcut=""></clip><clip name="XHTML 1.0 transitional" shortcut="">&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;|</clip><clip name="XHTML 1.0 strict" shortcut="">&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"&gt;|</clip><clip name="XHTML 1.1" shortcut="">&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"&gt;|</clip><clip name="------ Tags ------" shortcut=""></clip><clip name="a" shortcut="">&lt;a href="|" target=""&gt;&lt;/a&gt;</clip><clip name="area" shortcut="">&lt;area shape="" coords="" href="|" alt="" /&gt;</clip><clip name="abbr" shortcut="">&lt;abbr&gt;|&lt;/abbr&gt;</clip><clip name="acronym" shortcut="">&lt;acronym&gt;|&lt;/acronym&gt;</clip><clip name="address" shortcut="">&lt;address&gt;|&lt;/address&gt;</clip><clip name="base" shortcut="">&lt;base href="|" /&gt;</clip><clip name="bdo" shortcut="">&lt;bdo dir="ltr"&gt;|&lt;/bdo&gt;</clip><clip name="blockquote" shortcut="">&lt;blockquote&gt;|&lt;/blockquote&gt;</clip><clip name="body" shortcut="">&lt;body&gt;
-|
-&lt;/body&gt;</clip><clip name="br" shortcut="">&lt;br /&gt;|</clip><clip name="button" shortcut="">&lt;button onclick="|" /&gt;</clip><clip name="caption" shortcut="">&lt;caption&gt;|&lt;/caption&gt;</clip><clip name="cite" shortcut="">&lt;cite title=""&gt;|&lt;/cite&gt;</clip><clip name="code" shortcut="">&lt;code&gt;|&lt;/code&gt;</clip><clip name="col" shortcut="">&lt;col /&gt;</clip><clip name="colgroup" shortcut="">&lt;colgroup&gt;|&lt;/colgroup&gt;</clip><clip name="del" shortcut="">&lt;del&gt;|&lt;/del&gt;</clip><clip name="dd" shortcut="">&lt;dd&gt;|&lt;/dd&gt;</clip><clip name="dfn" shortcut="">&lt;dfn&gt;|&lt;/dfn&gt;</clip><clip name="div" shortcut="">&lt;div&gt;|&lt;/div&gt;</clip><clip name="dl" shortcut="">&lt;dl&gt;|&lt;/dl&gt;</clip><clip name="dt" shortcut="">&lt;dt&gt;|&lt;/dt&gt;</clip><clip name="em" shortcut="">&lt;em&gt;|&lt;/em&gt;</clip><clip name="form" shortcut="">&lt;form action="|" method="post"&gt;&lt;/form&gt;</clip><clip name="fieldset" shortcut="">&lt;fieldset&gt;|&lt;/fieldset&gt;</clip><clip name="h1" shortcut="">&lt;h1&gt;|&lt;/h1&gt;</clip><clip name="h2" shortcut="">&lt;h2&gt;|&lt;/h2&gt;</clip><clip name="h3" shortcut="">&lt;h3&gt;|&lt;/h3&gt;</clip><clip name="h4" shortcut="">&lt;h4&gt;|&lt;/h4&gt;</clip><clip name="h5" shortcut="">&lt;h5&gt;|&lt;/h5&gt;</clip><clip name="h6" shortcut="">&lt;h6&gt;|&lt;/h6&gt;</clip><clip name="head" shortcut="">&lt;head&gt;
-|
+<clips name="XHTML Tags"><clip name="a" shortcut="">&lt;a href="$0" target=""&gt;&lt;/a&gt;</clip><clip name="area" shortcut="">&lt;area shape="" coords="" href="$0" alt="" /&gt;</clip><clip name="abbr" shortcut="">&lt;abbr&gt;$0&lt;/abbr&gt;</clip><clip name="acronym" shortcut="">&lt;acronym&gt;$0&lt;/acronym&gt;</clip><clip name="address" shortcut="">&lt;address&gt;$0&lt;/address&gt;</clip><clip name="base" shortcut="">&lt;base href="$0" /&gt;</clip><clip name="bdo" shortcut="">&lt;bdo dir="ltr"&gt;$0&lt;/bdo&gt;</clip><clip name="blockquote" shortcut="">&lt;blockquote&gt;$0&lt;/blockquote&gt;</clip><clip name="body" shortcut="body">&lt;body&gt;
+	$0
+&lt;/body&gt;</clip><clip name="br" shortcut="br">&lt;br&gt;$0</clip><clip name="button" shortcut="">&lt;button onclick="$0" /&gt;</clip><clip name="caption" shortcut="">&lt;caption&gt;$0&lt;/caption&gt;</clip><clip name="cite" shortcut="">&lt;cite title=""&gt;$0&lt;/cite&gt;</clip><clip name="code" shortcut="">&lt;code&gt;$0&lt;/code&gt;</clip><clip name="col" shortcut="">&lt;col /&gt;</clip><clip name="colgroup" shortcut="">&lt;colgroup&gt;$0&lt;/colgroup&gt;</clip><clip name="del" shortcut="">&lt;del&gt;$0&lt;/del&gt;</clip><clip name="dd" shortcut="">&lt;dd&gt;$0&lt;/dd&gt;</clip><clip name="dfn" shortcut="">&lt;dfn&gt;$0&lt;/dfn&gt;</clip><clip name="div" shortcut="div">&lt;div${1: id="name"}&gt;
+	$0
+&lt;/div&gt;</clip><clip name="dl" shortcut="">&lt;dl&gt;$0&lt;/dl&gt;</clip><clip name="dt" shortcut="">&lt;dt&gt;$0&lt;/dt&gt;</clip><clip name="em" shortcut="">&lt;em&gt;$0&lt;/em&gt;</clip><clip name="form" shortcut="form">&lt;form action="${1:action}" method="${2:post}"&gt;
+	$0
+
+    &lt;p&gt;&lt;input type="submit" value="Continue &amp;rarr;"&gt;&lt;/p&gt;
+&lt;/form&gt;</clip><clip name="fieldset" shortcut="">&lt;fieldset id="${1:0}"${2:class="cssclass"}&gt;
+	&lt;legend&gt;${2:legend}&lt;/legend&gt;
+	
+	$0
+&lt;/fieldset&gt;</clip><clip name="h1" shortcut="">&lt;h1&gt;$0&lt;/h1&gt;</clip><clip name="h2" shortcut="">&lt;h2&gt;$0&lt;/h2&gt;</clip><clip name="h3" shortcut="">&lt;h3&gt;$0&lt;/h3&gt;</clip><clip name="h4" shortcut="">&lt;h4&gt;$0&lt;/h4&gt;</clip><clip name="h5" shortcut="">&lt;h5&gt;$0&lt;/h5&gt;</clip><clip name="h6" shortcut="">&lt;h6&gt;$0&lt;/h6&gt;</clip><clip name="head" shortcut="head">&lt;head&gt;
+	&lt;meta http-equiv="Content-type" content="text/html; charset=utf-8"&gt;
+	&lt;title&gt;${1:Page Title}&lt;/title&gt;
+	$0
 &lt;/head&gt;</clip><clip name="html" shortcut="">&lt;html&gt;
-|
+$0
 &lt;/html&gt;</clip><clip name="html (strict)" shortcut="">&lt;html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"&gt;
-|
-&lt;/html&gt;</clip><clip name="hr" shortcut="">&lt;hr /&gt;</clip><clip name="input (button)" shortcut="">&lt;input type="button" name="|" /&gt;</clip><clip name="input (checkbox)" shortcut="">&lt;input type="checkbox" name="|" /&gt;</clip><clip name="input (file)" shortcut="">&lt;input type="file" name="|" /&gt;</clip><clip name="input (hidden)" shortcut="">&lt;input type="hidden" name="|" /&gt;</clip><clip name="input (image)" shortcut="">&lt;input type="image" name="|" /&gt;</clip><clip name="input (password)" shortcut="">&lt;input type="password" name="|" /&gt;</clip><clip name="input (radio)" shortcut="">&lt;input type="radio" name="|" /&gt;</clip><clip name="input (reset)" shortcut="">&lt;input type="reset" name="|" /&gt;</clip><clip name="input (submit)" shortcut="">&lt;input type="submit" name="|" /&gt;</clip><clip name="input (text)" shortcut="">&lt;input type="text" name="|" /&gt;</clip><clip name="img" shortcut="">&lt;img src="|" width="" height="" title="" alt="" /&gt;</clip><clip name="ins" shortcut="">&lt;ins&gt;|&lt;/ins&gt;</clip><clip name="kbd" shortcut="">&lt;kbd&gt;|&lt;/kbd&gt;</clip><clip name="label" shortcut="">&lt;label&gt;|&lt;/label&gt;</clip><clip name="legend" shortcut="">&lt;legend&gt;|&lt;/legend&gt;</clip><clip name="li" shortcut="">&lt;li&gt;|&lt;/li&gt;</clip><clip name="link" shortcut="">&lt;link href="|" rel="" type="" title="" /&gt;</clip><clip name="link (stylesheet)" shortcut="">&lt;link rel="stylesheet" type="text/css" media="screen" href="|" /&gt;</clip><clip name="map" shortcut="">&lt;map name="" id="|"&gt;&lt;/map&gt;</clip><clip name="meta" shortcut="">&lt;meta name="|" content="" /&gt;</clip><clip name="meta (charset=iso-8859-1)" shortcut="">&lt;meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /&gt;</clip><clip name="meta (charset=utf-8)" shortcut="">&lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8" /&gt;</clip><clip name="noscript" shortcut="">&lt;noscript&gt;|&lt;/noscript&gt;</clip><clip name="object" shortcut="">&lt;object classid="|"&gt;&lt;/object&gt;</clip><clip name="ol" shortcut="">&lt;ol&gt;|&lt;/ol&gt;</clip><clip name="optgroup" shortcut="">&lt;optgroup&gt;|&lt;/optgroup&gt;</clip><clip name="option" shortcut="">&lt;option&gt;|&lt;/option&gt;</clip><clip name="p" shortcut="">&lt;p&gt;|&lt;/p&gt;</clip><clip name="param" shortcut="">&lt;param name="" value=""&gt;|&lt;/param&gt;</clip><clip name="pre" shortcut="">&lt;pre&gt;|&lt;/pre&gt;</clip><clip name="q" shortcut="">&lt;q&gt;|&lt;/q&gt;</clip><clip name="samp" shortcut="">&lt;samp&gt;|&lt;/samp&gt;</clip><clip name="script" shortcut="">&lt;script type="text/javascript"&gt;
-&lt;!--
-|
-//--&gt;
-&lt;/script&gt;</clip><clip name="script src=" shortcut="">&lt;script type="text/javascript" src="|"&gt;&lt;/script&gt;</clip><clip name="select" shortcut="">&lt;select name=""&gt;
-|
-&lt;/select&gt;</clip><clip name="span" shortcut="">&lt;span&gt;|&lt;/span&gt;</clip><clip name="strong" shortcut="">&lt;strong&gt;|&lt;/strong&gt;</clip><clip name="style" shortcut="">&lt;style type="text/css"&gt;
-&lt;!--
-|
-//--&gt;
+$0
+&lt;/html&gt;</clip><clip name="hr" shortcut="">&lt;hr /&gt;</clip><clip name="input (button)" shortcut="">&lt;input type="button" name="$0" /&gt;</clip><clip name="input (checkbox)" shortcut="">&lt;input type="checkbox" name="$0" /&gt;</clip><clip name="input (file)" shortcut="">&lt;input type="file" name="$0" /&gt;</clip><clip name="input (hidden)" shortcut="">&lt;input type="hidden" name="$0" /&gt;</clip><clip name="input (image)" shortcut="">&lt;input type="image" name="$0" /&gt;</clip><clip name="input (password)" shortcut="">&lt;input type="password" name="$0" /&gt;</clip><clip name="input (radio)" shortcut="">&lt;input type="radio" name="$0" /&gt;</clip><clip name="input (reset)" shortcut="">&lt;input type="reset" name="$0" /&gt;</clip><clip name="input (submit)" shortcut="">&lt;input type="submit" name="$0" /&gt;</clip><clip name="input (text)" shortcut="">&lt;input type="text" name="$0" /&gt;</clip><clip name="img" shortcut="">&lt;img src="$0" width="" height="" title="" alt="" /&gt;</clip><clip name="ins" shortcut="">&lt;ins&gt;$0&lt;/ins&gt;</clip><clip name="kbd" shortcut="">&lt;kbd&gt;$0&lt;/kbd&gt;</clip><clip name="label" shortcut="">&lt;label&gt;$0&lt;/label&gt;</clip><clip name="legend" shortcut="">&lt;legend&gt;$0&lt;/legend&gt;</clip><clip name="li" shortcut="">&lt;li&gt;$0&lt;/li&gt;</clip><clip name="link" shortcut="link">&lt;link rel="${1:stylesheet}" href="${2:styles.css}" type="text/css" media="${3:screen}" title="{4:no title}" charset="${5:utf-8}"&gt;
+</clip><clip name="map" shortcut="">&lt;map name="" id="$0"&gt;&lt;/map&gt;</clip><clip name="meta" shortcut="">&lt;meta name="${1:name}" content="${2:content}"&gt;
+</clip><clip name="meta (charset=iso-8859-1)" shortcut="">&lt;meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /&gt;</clip><clip name="meta (charset=utf-8)" shortcut="">&lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8" /&gt;</clip><clip name="noscript" shortcut="">&lt;noscript&gt;$0&lt;/noscript&gt;</clip><clip name="object" shortcut="">&lt;object classid="$0"&gt;&lt;/object&gt;</clip><clip name="ol" shortcut="">&lt;ol&gt;$0&lt;/ol&gt;</clip><clip name="optgroup" shortcut="">&lt;optgroup&gt;$0&lt;/optgroup&gt;</clip><clip name="option" shortcut="option">&lt;option${1: value="option1"}&gt;${2}&lt;/option&gt;
+$0</clip><clip name="p" shortcut="">&lt;p&gt;$0&lt;/p&gt;</clip><clip name="param" shortcut="">&lt;param name="" value=""&gt;$0&lt;/param&gt;</clip><clip name="pre" shortcut="">&lt;pre&gt;$0&lt;/pre&gt;</clip><clip name="q" shortcut="">&lt;q&gt;$0&lt;/q&gt;</clip><clip name="samp" shortcut="">&lt;samp&gt;$0&lt;/samp&gt;</clip><clip name="script" shortcut="script">&lt;script type="text/javascript" charset="utf-8"&gt;
+	$0
+&lt;/script&gt;</clip><clip name="script (external)" shortcut="scriptsrc">&lt;script src="$1" type="text/javascript" charset="${3:utf-8}"&gt;&lt;/script&gt;</clip><clip name="select" shortcut="select">&lt;select name="${1:name}" id="${2:id}"${3: multiple}&gt;
+	&lt;option${4: value="option1"}&gt;${5}&lt;/option&gt;
+	$0
+&lt;/select&gt;</clip><clip name="span" shortcut="">&lt;span&gt;$0&lt;/span&gt;</clip><clip name="strong" shortcut="">&lt;strong&gt;$0&lt;/strong&gt;</clip><clip name="style" shortcut="style">&lt;style type="text/css" media="screen"&gt;
+	$0
 &lt;/style&gt;</clip><clip name="style @import" shortcut="">&lt;style type="text/css"&gt;
 &lt;!--
-	@import "|";
+	@import "$0";
 //--&gt;
-&lt;/style&gt;</clip><clip name="table" shortcut="">&lt;table&gt;|&lt;/table&gt;</clip><clip name="tbody" shortcut="">&lt;tbody&gt;|&lt;/tbody&gt;</clip><clip name="td" shortcut="">&lt;td&gt;|&lt;/td&gt;</clip><clip name="textarea" shortcut="">&lt;textarea name="" rows="" cols=""&gt;|&lt;/textarea&gt;</clip><clip name="tfoot" shortcut="">&lt;tfoot&gt;|&lt;/tfoot&gt;</clip><clip name="th" shortcut="">&lt;th&gt;|&lt;/th&gt;</clip><clip name="thead" shortcut="">&lt;thead&gt;|&lt;/thead&gt;</clip><clip name="tr" shortcut="">&lt;tr&gt;|&lt;/tr&gt;</clip><clip name="title" shortcut="">&lt;title&gt;|&lt;/title&gt;</clip><clip name="tt" shortcut="">&lt;tt&gt;|&lt;/tt&gt;</clip><clip name="ul" shortcut="">&lt;ul&gt;|&lt;/ul&gt;</clip></clips>
+&lt;/style&gt;</clip><clip name="table" shortcut="table">&lt;table border="${1:0}"&gt;
+	&lt;tr&gt;&lt;th&gt;${2:Header}&lt;/th&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;${0:Data}&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;</clip><clip name="tbody" shortcut="">&lt;tbody&gt;$0&lt;/tbody&gt;</clip><clip name="td" shortcut="">&lt;td&gt;$0&lt;/td&gt;</clip><clip name="textarea" shortcut="textarea">&lt;textarea name="${1:Name}" rows="${2:8}" cols="${3:40}"&gt;$0&lt;/textarea&gt;</clip><clip name="tfoot" shortcut="">&lt;tfoot&gt;$0&lt;/tfoot&gt;</clip><clip name="th" shortcut="">&lt;th&gt;$0&lt;/th&gt;</clip><clip name="thead" shortcut="">&lt;thead&gt;$0&lt;/thead&gt;</clip><clip name="tr" shortcut="">&lt;tr&gt;$0&lt;/tr&gt;</clip><clip name="title" shortcut="">&lt;title&gt;$0&lt;/title&gt;</clip><clip name="tt" shortcut="">&lt;tt&gt;$0&lt;/tt&gt;</clip><clip name="ul" shortcut="">&lt;ul&gt;$0&lt;/ul&gt;</clip><clip name="HTML Doc" shortcut="doc">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;${1:Page Title}&lt;/title&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html;charset=UTF-8"&gt;
+    
+    ${2:&lt;!-- CSS --&gt;}
+&lt;/head&gt;
+&lt;body lang="en-US"&gt;
+
+    ${3:&lt;!-- Content! --&gt;}
+    ${0}
+
+    ${4:&lt;!-- JS --&gt;}
+&lt;/body&gt;
+&lt;/html&gt;</clip><clip name="input" shortcut="input">&lt;input type="${1:text/submit/hidden/button}" name="${2:some_name}" value="$3"&gt;
+$0</clip></clips>

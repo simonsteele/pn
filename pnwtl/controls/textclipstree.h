@@ -7,7 +7,7 @@
 #ifndef TEXTCLIPSTREE_H_INCLUDED
 #define TEXTCLIPSTREE_H_INCLUDED
 
-namespace TextClips { class Clip; }
+namespace TextClips { class Clip; class TextClipSet; }
 
 /**
  * Custom tree control presenting collapsible text clip sets and
@@ -15,6 +15,7 @@ namespace TextClips { class Clip; }
  */
 class CTextClipsTreeCtrl : public CWindowImpl<CTextClipsTreeCtrl, CTreeViewCtrl>
 {
+	typedef CWindowImpl<CTextClipsTreeCtrl, CTreeViewCtrl> baseClass;
 public:
 	DECLARE_WND_CLASS(_T("TEXTCLIPTREE"));
 
@@ -29,16 +30,32 @@ public:
 	 */
 	void SortSets();
 
+	void AddClip(TextClips::Clip* clip, HTREEITEM parent);
+	HTREEITEM AddSet(TextClips::TextClipSet* set);
+
+	TextClips::Clip* GetClip(HTREEITEM item);
+
+	void RemoveSet(TextClips::TextClipSet* set, HTREEITEM item);
+
+	void DeleteAllItems();
+
 private:
 	LRESULT OnCustomDraw(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& bHandled);
 	void DrawClipSet(CDCHandle& handle, CRect& rcItem, TVITEMEX& info);
 	void DrawClip(CDCHandle& handle, CRect& rcItem, HTREEITEM item, TVITEMEX& info);
+	
 	CTheme m_HeaderTheme;
+	std::map<DWORD_PTR, bool> m_isSet;
 };
 
 /**
  * Convert an LPARAM to a Clip pointer.
  */
 TextClips::Clip* ClipPtrFromLParam(LPARAM param);
+
+/**
+ * Convert an LPARAM to a TextClipSet pointer.
+ */
+TextClips::TextClipSet* ClipSetPtrFromLParam(LPARAM param);
 
 #endif // TEXTCLIPSTREE_H_INCLUDED

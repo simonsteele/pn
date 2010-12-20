@@ -1,16 +1,15 @@
 <?xml version="1.0"?>
 <clips name="Java">
-	<clip name="----- Block -----"><![CDATA[]]></clip>
 	<clip name="Main body"><![CDATA[
   void main(void)
   //
   {
-    |;
+    $0;
   }
 
 ]]></clip>
 	<clip name="Function body"><![CDATA[
-  void | (void)
+  void $0 (void)
   //
   {
     ;
@@ -18,19 +17,18 @@
 
 ]]></clip>
 	<clip name="return"><![CDATA[  return;
-|]]></clip>
-	<clip name="----- Control -----"><![CDATA[]]></clip>
-	<clip name="if (short)"><![CDATA[  if (|) {;}
+$0]]></clip>
+	<clip name="if (short)"><![CDATA[  if ($0) {;}
 ]]></clip>
-	<clip name="if"><![CDATA[  if (|)
+	<clip name="if"><![CDATA[  if ($0)
   {
     ;
   }
 
 ]]></clip>
-	<clip name="if else (short)"><![CDATA[  if (|) {;} else {;}
+	<clip name="if else (short)"><![CDATA[  if ($0) {;} else {;}
 ]]></clip>
-	<clip name="if else"><![CDATA[  if (|)
+	<clip name="if else"><![CDATA[  if ($0)
   {
     ;
   } 
@@ -40,7 +38,7 @@
   }
 
 ]]></clip>
-	<clip name="if else if"><![CDATA[  if (|)
+	<clip name="if else if"><![CDATA[  if ($0)
   {
     ;
   }
@@ -58,7 +56,7 @@
   }
 
 ]]></clip>
-	<clip name="switch"><![CDATA[  switch (|)
+	<clip name="switch"><![CDATA[  switch ($0)
   {
     case ():
       ;
@@ -78,39 +76,38 @@
   }
 
 ]]></clip>
-	<clip name="for (short)"><![CDATA[  for(|;;) {;}
+	<clip name="for (short)"><![CDATA[  for($0;;) {;}
 ]]></clip>
-	<clip name="for"><![CDATA[  for(|;;)
+	<clip name="for"><![CDATA[  for($0;;)
   {
     ;    
   }
 
 ]]></clip>
-	<clip name="while (short)"><![CDATA[  while(|) {;}
+	<clip name="while (short)"><![CDATA[  while($0) {;}
 ]]></clip>
-	<clip name="while"><![CDATA[  while(|)
+	<clip name="while"><![CDATA[  while($0)
   {
     ;
   }
 
 ]]></clip>
-	<clip name="do while (short)"><![CDATA[  do {;} while (|);
+	<clip name="do while (short)"><![CDATA[  do {;} while ($0);
 ]]></clip>
 	<clip name="do while"><![CDATA[  do
   {
     ;
   }
-  while (|);
+  while ($0);
 
 ]]></clip>
 	<clip name="break"><![CDATA[  break;
-|]]></clip>
+$0]]></clip>
 	<clip name="continue"><![CDATA[  continue;
-|]]></clip>
-	<clip name="----- Other -----"><![CDATA[]]></clip>
-	<clip name="constant"><![CDATA[final static | = ;]]></clip>
-	<clip name="import"><![CDATA[import "|";]]></clip>
-	<clip name="#include &lt;&gt;"><![CDATA[#include <|>]]></clip>
-	<clip name="Comment /**/"><![CDATA[/*|*/]]></clip>
-	<clip name="Comment //"><![CDATA[//|]]></clip>	
+$0]]></clip>
+	<clip name="constant"><![CDATA[final static $0 = ;]]></clip>
+	<clip name="import"><![CDATA[import "$0";]]></clip>
+	<clip name="#include &lt;&gt;"><![CDATA[#include <$0>]]></clip>
+	<clip name="Comment /**/"><![CDATA[/*$0*/]]></clip>
+	<clip name="Comment //"><![CDATA[//$0]]></clip>	
 </clips>

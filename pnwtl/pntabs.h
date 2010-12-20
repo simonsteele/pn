@@ -42,6 +42,15 @@ public:
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
+	/// Get the index of a tab for a child window
+	int GetTabIndex(HWND hWndChild)
+	{
+		TTabCtrl::TItem tcItem;
+		tcItem.SetTabView(hWndChild);
+
+		return m_TabCtrl.FindItem(&tcItem, CTFI_TABVIEW);
+	}
+
 	LRESULT OnMClick(WPARAM wParam, LPNMHDR lParam, BOOL& bHandled)
 	{
 		//We want middle-click to signal a close.
@@ -148,6 +157,8 @@ public:
 	void ControlUp();
 
 	void ShowFindBar(bool bShow);
+
+	int GetTabIndex(HWND hWndChild);
 
 private:
 	LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

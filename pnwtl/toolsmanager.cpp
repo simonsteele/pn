@@ -338,7 +338,7 @@ void ToolsManager::toolsFileFound(LPCTSTR path, FileFinderData& details, bool& s
 	}
 }
 
-void ToolsManager::processScheme(XMLAttributes& atts)
+void ToolsManager::processScheme(const XMLAttributes& atts)
 {
 	LPCTSTR schemename = atts.getValue(_T("name"));
 	if(schemename)
@@ -351,7 +351,7 @@ void ToolsManager::processScheme(XMLAttributes& atts)
 	}
 }
 
-void ToolsManager::processProject(XMLAttributes& atts)
+void ToolsManager::processProject(const XMLAttributes& atts)
 {
 	LPCTSTR projectid = atts.getValue(_T("projectid"));
 	if(projectid)
@@ -363,21 +363,21 @@ void ToolsManager::processProject(XMLAttributes& atts)
 	}
 }
 
-void ToolsManager::processGlobal(XMLAttributes& atts)
+void ToolsManager::processGlobal(const XMLAttributes& atts)
 {
 	if(!m_pGlobalTools)
 		m_pGlobalTools = new GlobalTools;
 	m_pCur = m_pGlobalTools;
 }
 
-void ToolsManager::processAllProjects(XMLAttributes& atts)
+void ToolsManager::processAllProjects(const XMLAttributes& atts)
 {
 	if(!m_pGlobalProjectTools)
 		m_pGlobalProjectTools = new GlobalProjectTools;
 	m_pCur = m_pGlobalProjectTools;
 }
 
-void ToolsManager::processTool(XMLAttributes& atts)
+void ToolsManager::processTool(const XMLAttributes& atts)
 {
 	LPCTSTR toolname = atts.getValue(_T("name"));
 	if(m_pCur && toolname)
@@ -417,7 +417,7 @@ void ToolsManager::processTool(XMLAttributes& atts)
 	}
 }
 
-void ToolsManager::startElement(LPCTSTR name, XMLAttributes& atts)
+void ToolsManager::startElement(LPCTSTR name, const XMLAttributes& atts)
 {
 	if(_tcscmp(name, _T("scheme")) == 0)
 	{

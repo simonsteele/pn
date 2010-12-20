@@ -22,19 +22,24 @@ typedef std::vector<TextClips::Chunk>::iterator ChunkIt_t;
 class ClipInsertionState
 {
 public:
-	ClipInsertionState() : 
+	explicit ClipInsertionState(std::vector<TextClips::Chunk>& chunkDonor) : 
 	    CurrentFieldStart(0),
 		CurrentFieldEnd(0),
 		LastModifyValid(false),
 		Working(false),
 		Valid(true)
 	{
+		Chunks.swap(chunkDonor);
+		CurrentChunk = Chunks.end();
 	}
 
 	void HandleModification(CTextView* tv, int pos, int len, bool insert);
 	void OffsetOtherChunks(int offset);
 	ChunkIt_t FindChunk(int pos);
 	ChunkIt_t FindMasterChunk(int id);
+	bool MoveToNextField();
+	bool MoveToFirstField();
+	bool MoveToPrevField();
 
 	std::vector<TextClips::Chunk> Chunks;
 	int CurrentFieldStart;
@@ -67,8 +72,6 @@ public:
 private:
 	boost::shared_ptr<ClipInsertionState> m_state;
 };
-
-
 
 void ClipInsertionState::HandleModification(CTextView* tv, int pos, int len, bool insert)
 {
@@ -152,6 +155,110 @@ ChunkIt_t ClipInsertionState::FindMasterChunk(int id)
 	return Chunks.end();
 }
 
+bool ClipInsertionState::MoveToFirstField()
+{
+	CurrentChunk = Chunks.end();
+
+	// Find first field:
+	for (ChunkIt_t i = Chunks.begin(); i != Chunks.end(); ++i)
+	{
+		if ((*i).IsMasterField() && !(*i).IsFinalCaretPos())
+		{
+			if (CurrentChunk == Chunks.end())
+			{
+				CurrentChunk = i;
+			}
+			else if ((*CurrentChunk).Id > (*i).Id)
+			{
+				CurrentChunk = i;
+			}
+		}
+	}
+
+	if (CurrentChunk == Chunks.end())
+	{
+		// No normal master fields found, see if there's a final caret pos:
+		CurrentChunk = FindMasterChunk(0);
+	}
+
+	return CurrentChunk != Chunks.end();
+}
+
+bool ClipInsertionState::MoveToNextField()
+{
+	// We normally want to move to the subsequent chunk:
+	int currentChunkKey = (*CurrentChunk).Id;
+	if (currentChunkKey == 0)
+	{
+		// We're on the last chunk.
+		return false;
+	}
+
+	int desiredChunkKey = currentChunkKey + 1;
+	ChunkIt_t desired = FindMasterChunk(desiredChunkKey);
+	if (desired != Chunks.end())
+	{
+		CurrentChunk = desired;
+		return true;
+	}
+	
+	// We couldn't find the next chunk, see if there's an end placeholder:
+	desired = FindMasterChunk(0);
+	if (desired != Chunks.end())
+	{
+		CurrentChunk = desired;
+		return true;
+	}
+
+	return false;
+}
+
+bool ClipInsertionState::MoveToPrevField()
+{
+	if ((*CurrentChunk).IsFinalCaretPos())
+	{
+		// We're at the final stop, we need to find the highest chunk and jump to that.
+		ChunkIt_t final = CurrentChunk;
+		for (ChunkIt_t i = Chunks.begin(); i != Chunks.end(); ++i)
+		{
+			if ((*i).IsMasterField() && (*i).Id > (*final).Id)
+			{
+				final = i;
+			}
+		}
+
+		if (final == CurrentChunk)
+		{
+			return false;
+		}
+		else
+		{
+			CurrentChunk = final;
+			return true;
+		}
+	}
+
+	int desiredChunkKey = (*CurrentChunk).Id;
+	desiredChunkKey--;
+
+	if (desiredChunkKey == 0)
+	{
+		return false;
+	}
+
+	ChunkIt_t desired = FindMasterChunk(desiredChunkKey);
+	if (desired != Chunks.end())
+	{
+		CurrentChunk = desired;
+		return true;
+	}
+
+	return false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// CTextView
+
 void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 {
 	if (m_bInsertClip)
@@ -163,13 +270,9 @@ void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 	// We open an Undo action as soon as we start clip insertion:
 	BeginUndoAction();
 
-	m_insertClipState.reset(new ClipInsertionState());
+	m_insertClipState.reset(new ClipInsertionState(chunks));
 
 	WorkingLock preventReentrance(m_insertClipState);
-
-	// Store the chunks:
-	m_insertClipState->Chunks.swap(chunks);
-	m_insertClipState->CurrentChunk = m_insertClipState->Chunks.end();
 
 	if (m_insertClipState->Chunks.size() == 0)
 	{
@@ -179,8 +282,7 @@ void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 	}
 
 	int pos = GetCurrentPos();
-	int firstFieldPos = 0;
-
+	
 	SPerform(SCI_SETINDICATORCURRENT, INDIC_TEXTCLIPFIELD, 0);
 	SetIndicatorValue(INDIC_BOX);
 
@@ -195,12 +297,6 @@ void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 			(*i).SetPos(pos, pos + chunkText.size());
 
 			IndicatorFillRange(pos, chunkText.size());
-
-			if (firstFieldPos == 0)
-			{
-				firstFieldPos = pos;
-				m_insertClipState->CurrentChunk = i;
-			}
 		}
 		else if ((*i).IsField())
 		{
@@ -224,19 +320,18 @@ void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 		pos += chunkText.size();
 	}
 
-	if (firstFieldPos == 0)
-	{
-		firstFieldPos = pos;
-	}
-
 	// Set the selection to the insertion point or first field point.
-	if (m_insertClipState->CurrentChunk != m_insertClipState->Chunks.end())
+	if (m_insertClipState->MoveToFirstField())
 	{
 		(*m_insertClipState->CurrentChunk).GetPos(m_insertClipState->CurrentFieldStart, m_insertClipState->CurrentFieldEnd);
 		SetSel(m_insertClipState->CurrentFieldStart, m_insertClipState->CurrentFieldEnd);
-	}
 
-	m_bInsertClip = true;
+		m_bInsertClip = true;
+	}
+	else
+	{
+		endInsertClip();
+	}
 }
 
 void CTextView::updateInsertClip()
@@ -294,8 +389,6 @@ void CTextView::updateInsertClip()
 
 						(*i).SetText(chunkText.c_str());
 						(*i).SetPos(start, end);
-
-						// IndicatorFillRange(start, end - start);
 					}
 				}
 			}
@@ -326,30 +419,16 @@ void CTextView::prevClipField()
 {
 	if (m_insertClipState->CurrentChunk != m_insertClipState->Chunks.end())
 	{
-		if (m_insertClipState->CurrentChunk != m_insertClipState->Chunks.begin())
+		if (m_insertClipState->MoveToPrevField())
 		{
-			--m_insertClipState->CurrentChunk;
-			while (!(*m_insertClipState->CurrentChunk).IsMasterField())
-			{
-				if (m_insertClipState->CurrentChunk == m_insertClipState->Chunks.begin())
-				{
-					// Can't go any further back:
-					endInsertClip();
-					return;
-				}
-
-				--m_insertClipState->CurrentChunk;
-			}
-
 			int start, end;
 			(*m_insertClipState->CurrentChunk).GetPos(start, end);
 			SetSel(start, end);
-		}
-		else
-		{
-			endInsertClip();
+			return;
 		}
 	}
+
+	endInsertClip();
 }
 
 void CTextView::nextClipField()
@@ -358,13 +437,7 @@ void CTextView::nextClipField()
 	{
 		ChunkIt_t oldChunk(m_insertClipState->CurrentChunk);
 
-		++m_insertClipState->CurrentChunk;
-		while (m_insertClipState->CurrentChunk != m_insertClipState->Chunks.end() && !(*m_insertClipState->CurrentChunk).IsMasterField())
-		{
-			++m_insertClipState->CurrentChunk;
-		}
-
-		if (m_insertClipState->CurrentChunk != m_insertClipState->Chunks.end())
+		if (m_insertClipState->MoveToNextField())
 		{
 			int start, end;
 			(*m_insertClipState->CurrentChunk).GetPos(start, end);
@@ -379,21 +452,6 @@ void CTextView::nextClipField()
 		}
 		else
 		{
-			// Don't seek if we're already at the final position:
-			if (!(*oldChunk).IsFinalCaretPos())
-			{
-				for (ChunkIt_t chunk = m_insertClipState->Chunks.begin(); chunk != m_insertClipState->Chunks.end(); ++chunk)
-				{
-					if ((*chunk).IsFinalCaretPos())
-					{
-						int start, end;
-						(*chunk).GetPos(start, end);
-						SetSel(start, end);
-						break;
-					}
-				}
-			}
-
 			endInsertClip();
 		}
 	}

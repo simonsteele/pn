@@ -1,3 +1,12 @@
+/**
+ * @file scilexerdll.h
+ * @brief DLL entry points.
+ * @author Simon Steele
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
 #ifndef scilexerdll_h__included
 #define scilexerdll_h__included
 
@@ -5,42 +14,6 @@
 #include <stdlib.h>
 #include "scintilla\platform.h"
 #include "scintilla\propset.h"
-//#include "scintilla\accessor.h"
-//#include "scintilla\windowaccessor.h"
-
-// Create WordLists...
-
-static WordList **StringToWordLists(char *val[]) {
-    int dim = 0;
-
-    while (val[dim])
-        dim++;
-
-	WordList **wla = new WordList*[dim+1];
-    
-	for (int i = 0; i < dim; i++) 
-	{
-        wla[i] = new WordList;
-        wla[i]->Set(val[i]);
-    }
-    
-	wla[dim] = 0;
-    
-	return wla;
-}
-
-static void FreeWordLists(WordList *wla[])
-{
-	int dim = 0;
-	while (wla[dim])
-	{
-		delete wla[dim];
-		dim++;
-	}
-
-	delete [] wla;
-	wla = NULL;
-}
 
 // These functions are exported:
 int EXPORT __stdcall GetLexerCount();

@@ -289,6 +289,12 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 		}
 		break;
 
+		case SCN_AUTOCCANCELLED:
+			{
+				m_autoCompleteHandler.reset();
+			}
+			break;
+
 		case SCN_CHARADDED:
 		{
 			DumbIndent( ((Scintilla::SCNotification*)lParam)->ch );
@@ -340,7 +346,7 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 				{
 					AutoCCancel();
 					if (contains(m_autoCompleteStartCharacters.c_str(), scn->ch))
-						StartAutoComplete();
+						StartAutoComplete(false);
 				}
 			}
 			else 
@@ -353,7 +359,7 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 				else
 				{
 					if (m_bAutoActivate && contains(m_autoCompleteStartCharacters.c_str(), scn->ch))
-						StartAutoComplete();
+						StartAutoComplete(false);
 				}
 			}
 			break;
@@ -740,7 +746,6 @@ int CScintillaImpl::FindAll(extensions::ISearchOptions* pOptions, MatchHandlerFn
 
 int CScintillaImpl::FindAll(int start, int end, extensions::ISearchOptions* pOptions, MatchHandlerFn matchHandler)
 {
-	int	bRet = fnNotFound;
 	std::string localFindText;
 
 	// If we're in UTF-8 mode we have a go at making the correct find string
@@ -1569,7 +1574,7 @@ void CScintillaImpl::SetKeyWords(int keywordSet, const char* keyWords)
 void CScintillaImpl::AttemptAutoComplete()
 {
 	if(m_bAutoCompletion)
-		StartAutoComplete();
+		StartAutoComplete(true);
 }
 
 /**
@@ -1943,7 +1948,7 @@ _RPT2(_CRT_WARN,"2---CallTipShow %i, [%s]\n",m_lastPosCallTip - m_currentCallTip
 	}
 }
 
-bool CScintillaImpl::StartAutoComplete()
+bool CScintillaImpl::StartAutoComplete(bool bForcefully)
 {
 	if( !m_bAutoCompletion )
 		return false;
@@ -1958,7 +1963,7 @@ bool CScintillaImpl::StartAutoComplete()
 		startword--;
 	}
 
-	if(m_bAutoActivate && !(current - startword >= m_nMinAutoCompleteChars))
+	if(!bForcefully && m_bAutoActivate && !(current - startword >= m_nMinAutoCompleteChars))
 		return false;
 
 	std::string root = line.substr(startword, current - startword);

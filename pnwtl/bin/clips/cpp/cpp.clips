@@ -1,0 +1,11 @@
+<clips name="" scheme="cpp"><clip name="File Header" shortcut="fh">/**
+ * @file ${PN_FILEPATH}
+ * @brief ${1:Description}
+ */
+
+$0</clip><clip name="Include Guard" shortcut="once">#ifndef ${1:FILE_INCLUDED}
+#define $1
+
+$0
+
+#endif // #ifndef $1</clip><clip name="STL List" shortcut="list">std::list&lt;${1:type}&gt; $0</clip><clip name="STL Vector" shortcut="vector">std::vector&lt;${1:type}&gt; $0</clip><clip name="STL Map" shortcut="map">std::map&lt;${1:TKey}, ${2:TValue}&gt; $0</clip></clips>

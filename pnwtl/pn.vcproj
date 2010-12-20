@@ -342,6 +342,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\ifilesource.h"
+				>
+			</File>
+			<File
 				RelativePath=".\IOptions.h"
 				>
 			</File>
@@ -491,6 +495,22 @@
 			</File>
 			<File
 				RelativePath=".\usersettingswriter.h"
+				>
+			</File>
+			<File
+				RelativePath=".\win32file.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\win32file.h"
+				>
+			</File>
+			<File
+				RelativePath=".\win32filesource.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\win32filesource.h"
 				>
 			</File>
 			<File
@@ -1161,6 +1181,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\unicodefilewriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\unicodefilewriter.h"
+				>
+			</File>
+			<File
 				RelativePath=".\updatecheck.cpp"
 				>
 			</File>
@@ -1365,6 +1393,10 @@
 				</File>
 				<File
 					RelativePath=".\OptionsPageAutocomplete.h"
+					>
+				</File>
+				<File
+					RelativePath=".\OptionsPageEditDefaults.cpp"
 					>
 				</File>
 				<File

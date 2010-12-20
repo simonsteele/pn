@@ -1,56 +1,56 @@
 <clips name="NAnt"><clip name="Project" shortcut="">&lt;?xml version="1.0"?&gt;
 &lt;project name="myproject" default="build" basedir="."&gt;
 	&lt;target name="build"&gt;
-		|
+		$0
 	&lt;/target&gt;
 &lt;/project&gt;
 	
-	</clip><clip name="Target" shortcut="">&lt;target name="|"&gt;
+	</clip><clip name="Target" shortcut="">&lt;target name="$0"&gt;
 	
 &lt;/target&gt;
 	</clip><clip name="Call" shortcut="">
-	&lt;call target="|"/&gt;
+	&lt;call target="$0"/&gt;
 	</clip><clip name="Echo" shortcut="">
-	&lt;echo message="|"/&gt;
+	&lt;echo message="$0"/&gt;
 	</clip><clip name="If" shortcut="">
-	&lt;if test="|"&gt;
+	&lt;if test="$0"&gt;
 	
 &lt;/if&gt;
-	</clip><clip name="If Not" shortcut="">&lt;ifnot test="|"&gt;
+	</clip><clip name="If Not" shortcut="">&lt;ifnot test="$0"&gt;
 	
 &lt;/ifnot&gt;
 	</clip><clip name="Property" shortcut="">
-	&lt;property name="|" value="" /&gt;
+	&lt;property name="$0" value="" /&gt;
 	</clip><clip name="Execute" shortcut="">
-	&lt;exec program="|" workingdir="" commandline='' /&gt;
+	&lt;exec program="$0" workingdir="" commandline='' /&gt;
 	</clip><clip name="Copy" shortcut="">
-	&lt;copy file="|" tofile="" /&gt;
+	&lt;copy file="$0" tofile="" /&gt;
 	</clip><clip name="Delete" shortcut="">
-	&lt;delete file="|" failonerror="false" /&gt;
+	&lt;delete file="$0" failonerror="false" /&gt;
 	</clip><clip name="Move" shortcut="">
-	&lt;move file="|" tofile="" /&gt;
+	&lt;move file="$0" tofile="" /&gt;
 	</clip><clip name="Make Directory" shortcut="">
-	&lt;mkdir dir="|"/&gt;
-	</clip><clip name="Set Copy" shortcut="">&lt;copy todir="|"&gt;
+	&lt;mkdir dir="$0"/&gt;
+	</clip><clip name="Set Copy" shortcut="">&lt;copy todir="$0"&gt;
 	&lt;fileset basedir="."&gt;
 		&lt;include name="*.*"/&gt;
 	&lt;/fileset&gt;
 &lt;/copy&gt;
 	</clip><clip name="Set Delete" shortcut="">&lt;delete&gt;
 	&lt;fileset&gt;
-		&lt;include name="|"/&gt;
+		&lt;include name="$0"/&gt;
 	&lt;/fileset&gt;
 &lt;/delete&gt;
-	</clip><clip name="Set Move" shortcut="">&lt;move todir="|"&gt;
+	</clip><clip name="Set Move" shortcut="">&lt;move todir="$0"&gt;
 	&lt;fileset basedir="."&gt;
 		&lt;include name="*.*"/&gt;
 	&lt;/fileset&gt;
 &lt;/move&gt;
-	</clip><clip name="Set Zip" shortcut="">&lt;zip zipfile="|"&gt;
+	</clip><clip name="Set Zip" shortcut="">&lt;zip zipfile="$0"&gt;
 	&lt;fileset basedir="."&gt;
 		&lt;include name="**/*"/&gt;
 	&lt;/fileset&gt;
 &lt;/zip&gt;
 	</clip><clip name="Property Exists" shortcut="">
-	property::exists('|')
+	property::exists('$0')
 	</clip></clips>

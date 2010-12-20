@@ -421,10 +421,9 @@
 	</target>
 	
 	<target name="updatepseudoloc" depends="updatepofiles">
-		<property name="podebug" value="c:\python26\scripts\podebug"/>
 		<exec
-			program="c:\python26\python.exe"
-			commandline="${podebug} translations\pnlang_2057_en-GB.pot -o translations\pnlang_1281_qps-ploc.po --rewrite=unicode"/>
+			program="C:\Program Files (x86)\Translate Toolkit\podebug.exe"
+			commandline="translations\pnlang_2057_en-GB.pot -o translations\pnlang_1281_qps-ploc.po --rewrite=unicode"/>
 	</target>
 	
 	<target name="test">

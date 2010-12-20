@@ -197,8 +197,6 @@ bool AlternateFiles::GetAlternate(LPCTSTR filename, tstring& afile) const
 	if(!altexts)
 		return 0;
 
-	bool bFound = false;
-
 	while(*altexts)
 	{
 		// Quick sanity check to make sure we don't get the same file.
@@ -298,7 +296,7 @@ LPCTSTR AlternateFiles::getMatchingSet(LPCTSTR pSet1, LPCTSTR pSet2, LPCTSTR ext
  *     <Set ext1=".cpp;.cxx" ext2=".h;.hpp" />
  * </AlternateFiles>
  */
-void AlternateFiles::startElement(LPCTSTR name, XMLAttributes& atts)
+void AlternateFiles::startElement(LPCTSTR name, const XMLAttributes& atts)
 {
 	if( MATCH(AF_START, _T("AlternateFiles")) )
 	{

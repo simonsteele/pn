@@ -338,6 +338,28 @@ public:
 };
 
 /**
+ * Execution flags for IScriptRunner2.
+ * efCaptureOutput instructs Exec to return stdout rather than the Eval(x) of the script
+ * efBuiltIn instructs Exec that the script to be run is part of the PN support libaries, for PyPN this means it's in glue.
+ */
+typedef enum { efCaptureOutput = 0x01, efBuiltIn = 0x02 } EExecFlags;
+
+/**
+ * Extension for the IScriptRunner interface to avoid breaking interface compatibility during 2.1
+ */
+class IScriptRunner2
+{
+public:
+	virtual ~IScriptRunner2() {}
+
+	/**
+	 * Execute a method by name, with one optional parameter.
+	 * @param flags Optional extra hints as to how to run the function.
+	 */
+	virtual void Exec(const char* function, const char* param, int flags, PN::BaseString& output) = 0;
+};
+
+/**
  * @brief The Script Registry
  * 
  * Interface for the script registry. The script registry maps scripts to

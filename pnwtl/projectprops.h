@@ -205,30 +205,30 @@ public:
 
 //XMLParseState
 public:
-	virtual void startElement(LPCTSTR name, XMLAttributes& atts);
+	virtual void startElement(LPCTSTR name, const XMLAttributes& atts);
 	virtual void endElement(LPCTSTR name);
 	virtual void characterData(LPCTSTR data, int len);
 
 	int m_parseState;
 
 protected:
-	void onProjectConfig(XMLAttributes& atts);
-	void onSet(XMLAttributes& atts);
+	void onProjectConfig(const XMLAttributes& atts);
+	void onSet(const XMLAttributes& atts);
 	void onEndSet();
-	void onGroup(XMLAttributes& atts);
+	void onGroup(const XMLAttributes& atts);
 	void onEndGroup();
-	void onCategory(XMLAttributes& atts);
+	void onCategory(const XMLAttributes& atts);
 	void onEndCategory();
-	void onOption(XMLAttributes& atts);
-	void onInt(XMLAttributes& atts);
-	void onFilePath(XMLAttributes& atts);
-	void onFolderPath(XMLAttributes& atts);
-	void onOptionList(XMLAttributes& atts);
-	void onOptionListValue(XMLAttributes& atts);
+	void onOption(const XMLAttributes& atts);
+	void onInt(const XMLAttributes& atts);
+	void onFilePath(const XMLAttributes& atts);
+	void onFolderPath(const XMLAttributes& atts);
+	void onOptionList(const XMLAttributes& atts);
+	void onOptionListValue(const XMLAttributes& atts);
 	void onEndOptionList();
-	void onText(XMLAttributes& atts);
+	void onText(const XMLAttributes& atts);
 
-	void makeProp(XMLAttributes& atts, PropType type);
+	void makeProp(const XMLAttributes& atts, PropType type);
 
 protected:
 	ProjectTemplate*	m_pTemplate;

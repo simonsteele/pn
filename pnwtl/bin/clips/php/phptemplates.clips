@@ -1,58 +1,58 @@
-<clips name="" scheme="php"><clip name="&lt;?$= blah ?>" shortcut="ph">&lt;?$(1:=) $(0) ?&gt;</clip><clip name="&lt;?php ... ?>" shortcut="php">&lt;?php
+<clips name="" scheme="php"><clip name="&lt;?= blah ?>" shortcut="ph">&lt;?${1:=} ${0} ?&gt;</clip><clip name="&lt;?php echo ?>" shortcut="phe">&lt;?php echo '$0' ?&gt;</clip><clip name="&lt;?php ... ?>" shortcut="php">&lt;?php
 
-	$(0)
+	${0}
 
-?&gt;</clip><clip name="case ...:" shortcut="case">case '$(1:variable)':
-	$(0:# code...)
+?&gt;</clip><clip name="case ...:" shortcut="case">case '${1:variable}':
+	${0:# code...}
 break;</clip><clip name="class" shortcut="class">#doc
-#	classname:	$(1:ClassName)
-#	scope:		$(2:PUBLIC)
+#	classname:	${1:ClassName}
+#	scope:		${2:PUBLIC}
 #
 #/doc
 
-class $(1:ClassName) $(3:extends AnotherClass)
+class ${1:ClassName} ${3:extends AnotherClass}
 {
 	#	internal variables
 	
 	#	Constructor
-	function __construct ( $(4:argument) )
+	function __construct ( ${4:argument} )
 	{
-		$(0:# code...)
+		${0:# code...}
 	}
 	###	
 
-}</clip><clip name="for" shortcut="for">for ( $$$(1:i)=$(2:0); $$$(1:i) &lt; $(3); $$$(1:i)++ )
+}</clip><clip name="for" shortcut="for">for ( \$${1:i}=${2:0}; \$${1:i} &lt; ${3}; \$${1:i}++ )
 { 
-	$(0:# code...)
-}</clip><clip name="foreach" shortcut="foreach">foreach( $$$(1:variable) as $$$(2:key) =&gt; $$$(3:value) )
+	${0:# code...}
+}</clip><clip name="foreach" shortcut="foreach">foreach( \$${1:variable} as \$${2:key} =&gt; \$${3:value} )
 {
-	$(0:# code...)
-}</clip><clip name="function" shortcut="function">$(1:public )function $(2:FunctionName) ($(3: params))
+	${0:# code...}
+}</clip><clip name="function" shortcut="function">${1:public }function ${2:FunctionName} (${3: params})
 {
-	$(0:# code...)
-}</clip><clip name="if (...)" shortcut="if">if ( $(1:condition) )
+	${0:# code...}
+}</clip><clip name="if (...)" shortcut="if">if ( ${1:condition} )
 {
-	$(0:# code...)
-}</clip><clip name="if (..) else ..." shortcut="ife">if ( $(1:condition) )
+	${0:# code...}
+}</clip><clip name="if (..) else ..." shortcut="ife">if ( ${1:condition} )
 {
-	$(2:# code...)
+	${2:# code...}
 }
 else
 {
-	$(3:# code...)
+	${3:# code...}
 }
-$0</clip><clip name="switch (...)" shortcut="switch">switch ( $(1:variable) )
+$0</clip><clip name="switch (...)" shortcut="switch">switch ( \$${1:variable} )
 {
-	case '$(2:value)':
-		$(3:# code...)
+	case '${2:value}':
+		${3:# code...}
 	break;
 	
 	$0
 			
 	default:
-		$(4:# code...)
+		${4:# code...}
 	break;
-}</clip><clip name="while" shortcut="while">while ( $(1:$a &lt;= 10) )
+}</clip><clip name="while" shortcut="while">while ( ${1:$a &lt;= 10} )
 {
-	$(0:# code...)
+	${0:# code...}
 }</clip></clips>

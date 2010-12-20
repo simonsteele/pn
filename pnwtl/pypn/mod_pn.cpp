@@ -14,6 +14,8 @@
 using namespace extensions;
 using namespace boost::python;
 
+#define PN_SETSCHEME		(WM_APP+24)
+
 namespace 
 {
 
@@ -121,6 +123,14 @@ std::wstring GetDocumentFileName(IDocumentPtr& doc)
 std::wstring GetDocumentTitle(IDocumentPtr& doc)
 {
 	return std::wstring(doc->GetTitle());
+}
+
+/**
+ * Set the current scheme by name.
+ */
+void SetScheme(IDocumentPtr& doc, std::string str)
+{
+	doc->SendEditorMessage(PN_SETSCHEME, 0, reinterpret_cast<LPARAM>(str.c_str()));
 }
 
 /**
@@ -286,7 +296,7 @@ BOOST_PYTHON_MODULE(pn)
 	class_<IDocument, /*boost::shared_ptr<IDocument>,*/ boost::noncopyable >("IDocument", no_init)
 		.add_property("Title", &GetDocumentTitle, "Display name of the document")
 		.add_property("FileName", &GetDocumentFileName, "Full filename of the document")
-		.add_property("CurrentScheme", &IDocument::GetCurrentScheme, "Name of the current scheme")
+		.add_property("CurrentScheme", &IDocument::GetCurrentScheme, &SetScheme, "Name of the current scheme")
 		.add_property("Modified", &IDocument::GetModified, "Indicates whether the document has been modified")
 		.add_property("CanSave", &IDocument::GetCanSave, "Indicates whether the document can be saved (i.e. it has a filename)")
 

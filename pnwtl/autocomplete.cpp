@@ -2,7 +2,7 @@
  * @file autocomplete.cpp
  * @brief Implement autocomplete behaviours
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -19,7 +19,7 @@
 #endif
 
 // Insert a string into a string list maintaining sorting
-void insert_sorted(string_array& arr, std::string& w)
+void insert_sorted(string_array& arr, const std::string& w)
 {
 	//TODO: w.Trim();
 	//w = w.Trim();
@@ -42,11 +42,6 @@ void insert_sorted(string_array& arr, std::string& w)
 			if(_stricmp((*i).c_str(), w.c_str()) > 0)
 			{
 				arr.insert(i, w);
-				/*if(arr.size()>65) //For debugging
-				{				
-					for(int i=0;i<arr.size();i++)_RPT1(_CRT_WARN,"%s,",arr[i].c_str());
-					_RPT0(_CRT_WARN,"\n");
-				}//End debugging*/
 				return;
 			}
 
@@ -64,6 +59,8 @@ IWordProvider::~IWordProvider()
 
 DefaultAutoComplete::DefaultAutoComplete(bool ignoreCase, bool useKeywords) : m_ignoreCase(ignoreCase), m_useKeywords(useKeywords)
 {
+	m_tagsDirty = false;
+	m_keywordsDirty = false;
 }
 
 /// virtual destructor
@@ -74,9 +71,11 @@ DefaultAutoComplete::~DefaultAutoComplete()
 //MSO3: Redefined this function to include also parameters and have a custom token separator
 void DefaultAutoComplete::GetWords(PN::BaseString& nearestWords, const char* root, int rootLength,bool IncludeParameters, char tokenSeparator)
 {
-	if ( m_api.size() > 0)
+	CreateCompleteList();
+
+	if ( m_completelist.size() > 0)
 	{
-		getNearestWords(nearestWords, m_api, root, rootLength, m_ignoreCase, '(', false, IncludeParameters, tokenSeparator);
+		getNearestWords(nearestWords, m_completelist, root, rootLength, m_ignoreCase, '(', false, IncludeParameters, tokenSeparator);
 		if(!nearestWords.Empty())
 		{
 			eliminateDuplicateWords(nearestWords);
@@ -86,10 +85,12 @@ void DefaultAutoComplete::GetWords(PN::BaseString& nearestWords, const char* roo
 
 void DefaultAutoComplete::GetPrototypes(PN::BaseString& prototypes, char tokenSeparator, const char* method, int methodLength)
 {
-	if ( !m_api.size() )
+	CreateCompleteList();
+
+	if ( !m_completelist.size() )
 		return;
 
-	getNearestWords(prototypes, m_api, method, methodLength, m_ignoreCase, '(', true, true, tokenSeparator);
+	getNearestWords(prototypes, m_completelist, method, methodLength, m_ignoreCase, '(', true, true, tokenSeparator);
 }
 
 void DefaultAutoComplete::RegisterKeyWords(int set, const char* words)
@@ -110,6 +111,8 @@ void DefaultAutoComplete::RegisterKeyWords(int set, const char* words)
 				word++;
 
 			insert_sorted(m_keywords, newWord);
+
+			m_keywordsDirty = true;
 		}
 	}
 }
@@ -132,18 +135,37 @@ void DefaultAutoComplete::RegisterTag(const char* tag, const char* name)
 		display.append(openBrace, endBrace-openBrace+1);
 		//tag += FullTag.Mid(startP, endP-startP+1);
 		
-		insert_sorted(m_api, display);
+		insert_sorted(m_tags, display);
 	}	
 	else
 	{
-		insert_sorted(m_api, std::string(name));
+		insert_sorted(m_tags, std::string(name));
+	}
+
+	m_tagsDirty = true;
+}
+
+void DefaultAutoComplete::CreateCompleteList()
+{
+	if(m_tagsDirty || m_keywordsDirty)
+	{
+		m_completelist.clear();
+		
+		m_completelist.reserve(m_tags.size() + m_keywords.size());
+		m_completelist.insert(m_completelist.end(), m_tags.begin(), m_tags.end());
+		m_completelist.insert(m_completelist.end(), m_keywords.begin(), m_keywords.end());
+
+		//Turn off the dirty flags
+		m_tagsDirty = false;
+		m_keywordsDirty = false;
 	}
 }
 
 void DefaultAutoComplete::ResetTags()
 {
-	m_api.clear();
-	m_api = m_keywords;
+	//Make sure the tags are not set to dirty, because the RegisterTags function will do that once it adds a new tag
+	m_tags.clear();
+	m_tagsDirty = false;
 }
 
 /**
@@ -151,8 +173,13 @@ void DefaultAutoComplete::ResetTags()
  */
 void DefaultAutoComplete::Reset()
 {
+	m_completelist.clear();
+
+	//Make sure the keywords are not set to dirty, because the RegisterKeywords function will do that once it adds a new keyword
 	m_keywords.clear();
-	m_api.clear();
+	m_keywordsDirty = false;
+
+	ResetTags();
 }
 
 void DefaultAutoComplete::eliminateDuplicateWords(PN::BaseString& words)

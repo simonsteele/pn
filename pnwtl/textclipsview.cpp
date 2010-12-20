@@ -21,6 +21,7 @@
 #include "pndialogs.h"
 #include "include/encoding.h"
 #include "textclips/variables.h"
+#include "scriptregistry.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // Our Toolbar Bits
@@ -48,7 +49,7 @@ TBBUTTON TOOLBAR_BUTTONS[TOOLBAR_BUTTON_COUNT] =
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // CClipsDocker
 
-CClipsDocker::CClipsDocker(TextClips::TextClipsManager* manager) : m_hWndToolBar(NULL), m_pTheClips(manager), m_hImgList(NULL)
+CClipsDocker::CClipsDocker(TextClips::TextClipsManager* manager) : m_hWndToolBar(NULL), m_pTheClips(manager), m_hImgList(NULL), m_hLastItem(NULL)
 {
 }
 
@@ -170,6 +171,27 @@ LRESULT CClipsDocker::OnSetEditorFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 	return 0;
 }
 
+LRESULT	CClipsDocker::OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	// If this is from a keyboard press...
+	if(GET_X_LPARAM(lParam) == -1 && GET_Y_LPARAM(lParam) == -1)
+	{
+		CRect rc;
+		m_hLastItem = m_tv.GetSelectedItem();
+		m_tv.GetItemRect(m_hLastItem, &rc, TRUE);
+		CPoint pt(rc.right, rc.top);
+		m_tv.ClientToScreen(&pt);
+		doContextMenu(&pt);
+	}
+	else
+	{
+		CPoint pt(GetMessagePos());
+		handleRightClick(&pt);
+	}
+
+	return 0;
+}
+
 LRESULT CClipsDocker::OnHide(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	//Hide();
@@ -198,16 +220,20 @@ LRESULT CClipsDocker::OnClipSelected(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHand
 	HTREEITEM hSel = m_tv.GetSelectedItem();
 	if (hSel == NULL)
 	{
+		::OutputDebugString(_T("No Selected Item"));
 		return 0;
 	}
 
-	TextClips::Clip* clip = reinterpret_cast<TextClips::Clip*>( m_tv.GetItemData(hSel));
+	TextClips::Clip* clip = m_tv.GetClip(hSel);
 	
 	if(clip != NULL)
 	{
+		::OutputDebugString(_T("Inserting Clip"));
 		InsertClip(clip);
 		return 1;
 	}
+
+	::OutputDebugString(_T("Clip Was Null"));
 
 	return 0;
 }
@@ -222,8 +248,7 @@ LRESULT CClipsDocker::OnClipEnterPressed(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 
 LRESULT CClipsDocker::OnClipGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
-	LPNMLVGETINFOTIP pGetInfoTip = (LPNMLVGETINFOTIP)pnmh;
-	//pGetInfoTip->
+	// LPNMLVGETINFOTIP pGetInfoTip = (LPNMLVGETINFOTIP)pnmh;
 	
 	/*TextClips::Clip* clip = reinterpret_cast<TextClips::Clip*>( m_view.GetItemData(pGetInfoTip->iItem) );
 	if(clip)
@@ -276,7 +301,7 @@ LRESULT CClipsDocker::OnToolbarGetInfoTip(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*
 
 	tstring str = LS(pGetInfoTip->iItem);
 
-	if (str.size() >= static_cast<size_t>(pGetInfoTip->cchTextMax));
+	if (str.size() >= static_cast<size_t>(pGetInfoTip->cchTextMax))
 	{
 		str.resize(pGetInfoTip->cchTextMax - 4);
 		str += _T("...");
@@ -321,33 +346,33 @@ LRESULT CClipsDocker::OnAdd(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/
 	set->Add(clip);
 	set->Save();
 
-	HTREEITEM clipItem = m_tv.InsertItem(clip->Name.c_str(), hParent, NULL);
-	m_tv.SetItemData(clipItem, reinterpret_cast<DWORD_PTR>(clip));
+	m_tv.AddClip(clip, hParent);
 
 	if (hParent != TVI_ROOT)
 	{
 		m_tv.Expand(hParent, TVE_EXPAND);
 	}
 
+	m_tv.SortSets();
+
 	return 0;
 }
 
 LRESULT CClipsDocker::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	HTREEITEM hSelected = m_tv.GetSelectedItem();
+	HTREEITEM hSelected = m_hLastItem != NULL ? m_hLastItem : m_tv.GetSelectedItem();
 	
 	if (hSelected == NULL)
 	{
 		return 0;
 	}
 
-	DWORD_PTR itemData = m_tv.GetItemData(hSelected);
-	if (itemData == NULL)
+	TextClips::Clip* clip = m_tv.GetClip(hSelected);
+
+	if (clip == NULL)
 	{
 		return 0;
 	}
-
-	TextClips::Clip* clip = ClipPtrFromLParam(itemData);
 
 	CTextClipEditor dlg(clip->Shortcut, clip->Text, clip->Name);
 	if (dlg.DoModal() != IDOK)
@@ -369,20 +394,19 @@ LRESULT CClipsDocker::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
 
 LRESULT CClipsDocker::OnRemove(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	HTREEITEM hSelected = m_tv.GetSelectedItem();
+	HTREEITEM hSelected = m_hLastItem != NULL ? m_hLastItem : m_tv.GetSelectedItem();
 	
 	if (hSelected == NULL)
 	{
 		return 0;
 	}
 
-	DWORD_PTR itemData = m_tv.GetItemData(hSelected);
-	if (itemData == NULL)
+	TextClips::Clip* clip(m_tv.GetClip(hSelected));
+	if (clip == NULL)
 	{
 		return 0;
 	}
 
-	TextClips::Clip* clip = ClipPtrFromLParam(itemData);
 	TextClips::TextClipSet* set = getSetForItem(hSelected);
 	set->Remove(clip);
 	delete clip;
@@ -419,15 +443,15 @@ LRESULT CClipsDocker::OnRemoveSet(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	}
 
 	// Item data must be null for a set.
-	DWORD_PTR itemData = m_tv.GetItemData(hSelected);
-	if (itemData != NULL)
+	TextClips::Clip* clip = m_tv.GetClip(hSelected);
+	if (clip != NULL)
 	{
 		return 0;
 	}
 
 	TextClips::TextClipSet* set = getSetFromSetItem(hSelected);
+	m_tv.RemoveSet(set, hSelected);
 	m_pTheClips->Delete(set);
-	m_tv.DeleteItem(hSelected);
 
 	return 0;
 }
@@ -453,7 +477,7 @@ void CClipsDocker::LoadSet(Scheme* scheme)
 		HTREEITEM parent;
 		if (setName && setName[0])
 		{
-			parent = m_tv.InsertItem(set->GetName(), TVI_ROOT, NULL);
+			parent = m_tv.AddSet(set);
 		}
 		else
 		{
@@ -464,8 +488,7 @@ void CClipsDocker::LoadSet(Scheme* scheme)
 			
 		for (TextClips::LIST_CLIPS::const_iterator i = clips.begin(); i != clips.end(); ++i)
 		{
-			HTREEITEM clipItem = m_tv.InsertItem((*i)->Name.c_str(), parent, NULL);
-			m_tv.SetItemData(clipItem, reinterpret_cast<DWORD_PTR>((*i)));
+			m_tv.AddClip((*i), parent);
 		}
 
 		if (parent != TVI_ROOT)
@@ -489,11 +512,7 @@ void CClipsDocker::InsertClip(TextClips::Clip* tc)
 			return;
 		}
 
-		TextClips::DefaultVariableProvider variables(pChild, g_Context.m_frame->GetActiveWorkspace());
-		std::vector<TextClips::Chunk> chunks;
-		tc->GetChunks(chunks, pS, &variables);
-		
-		pS->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
+		pS->InsertClip(tc);
 		
 		PostMessage(PN_SETFOCUS, 0, reinterpret_cast<LPARAM>(pS->m_hWnd));
 	}
@@ -672,9 +691,52 @@ TextClips::TextClipSet* CClipsDocker::getOrCreateSet(LPCTSTR title)
 	if (title != NULL && title[0])
 	{
 		// This is a named Clip Set, add an item for it
-		m_tv.InsertItem(title, TVI_ROOT, NULL);
+		m_tv.AddSet(newSet);
 		m_tv.SortSets();
 	}
 
 	return newSet;
+}
+
+void CClipsDocker::handleRightClick(LPPOINT pt)
+{
+	//CPoint pt(GetMessagePos());
+	CPoint pt2(*pt);
+
+	// Test for keyboard right-click...
+	if(pt->x != -1)
+	{
+		m_tv.ScreenToClient(&pt2);
+
+		TVHITTESTINFO tvhti;
+		memset(&tvhti, 0, sizeof(TV_HITTESTINFO));
+		
+		tvhti.pt = pt2;
+		m_tv.HitTest(&tvhti);
+
+		m_hLastItem = NULL;
+
+		if(tvhti.hItem != NULL)
+		{
+			if (tvhti.flags & (TVHT_ONITEM|TVHT_ONITEMRIGHT))
+			{
+				m_hLastItem = tvhti.hItem;
+			}
+		}
+	}
+
+	doContextMenu(pt);
+}
+
+void CClipsDocker::doContextMenu(LPPOINT pt)
+{
+	if (m_hLastItem != NULL)
+	{
+		CSPopupMenu popup(IDR_POPUP_TEXTCLIPS);
+		DeleteMenu(popup.GetHandle(), ID_DUMMY_EXPLORER, MF_BYCOMMAND);
+
+		g_Context.m_frame->TrackPopupMenu(popup, 0, pt->x, pt->y, NULL, m_hWnd);
+
+		m_hLastItem = NULL;
+	}
 }

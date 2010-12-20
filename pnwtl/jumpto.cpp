@@ -2,7 +2,7 @@
  * @file jumpto.cpp
  * @brief Tag finding stuff, interfaces for plugins
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -13,6 +13,7 @@
 #include "plugins.h"
 #include "outputview.h"
 #include "jumpto.h"
+#include "win32filesource.h"
 
 #include "include/filefinder.h"
 #include "include/tempfile.h"
@@ -96,7 +97,14 @@ void JumpToHandler::FindTags(CChildFrame* pChildFrame, ITagSink* pNotifySink)
 			fnstr = tfn->w_str();
 		}
 
-		pChildFrame->GetTextView()->SaveFile(tfn->t_str(), false);
+		try
+		{
+			IFilePtr file(Win32FileSource().OpenWrite(tfn->t_str()));
+			pChildFrame->GetTextView()->SaveFile(file, false);
+		}
+		catch (FileSourceException&)
+		{
+		}
 	}
 	else
 	{

@@ -36,6 +36,7 @@
 #include "include/filefinder.h"
 #include "views/splitview.h"
 #include "textclips/variables.h"
+#include "win32filesource.h"
 
 #if defined (_DEBUG)
 	#define new DEBUG_NEW
@@ -53,7 +54,7 @@ namespace { // Implementation details:
 class BaseView : public Views::View
 {
 public:
-	BaseView(CChildFrame* owner) : Views::View(Views::vtRoot, Views::ViewPtr()), m_owner(owner)
+	BaseView(CChildFrame* owner) : Views::View(Views::vtRoot), m_owner(owner)
 	{
 
 	}
@@ -90,13 +91,14 @@ CChildFrame::CChildFrame(DocumentPtr doc, CommandDispatch* commands, TextClips::
 	m_hImgList(NULL),
 	m_bClosing(false),
 	m_pScript(NULL),
-	m_FileAge(-1),
+	m_FileAge(static_cast<uint64_t>(-1)),
 	m_iFirstToolCmd(ID_TOOLS_DUMMY),
 	m_bModifiedOverride(false),
 	m_bReadOnly(false),
 	m_bIgnoreUpdates(false),
 	m_bHandlingCommand(false),
-	m_hWndOutput(NULL)
+	m_hWndOutput(NULL),
+	m_bReadOnlyOverride(false)
 {
 	m_po.hDevMode = 0;
 	m_po.hDevNames = 0;
@@ -310,7 +312,18 @@ void CChildFrame::ToggleOutputWindow(bool bSetValue, bool bSetShowing)
 bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 {
 	std::string text = notification->text;
+
+	if (text.empty())
+	{
+		return false;
+	}
+
 	int colon = text.find(':');
+	if (colon == -1)
+	{
+		return false;
+	}
+
 	text.resize(colon);
 
 	const TextClips::LIST_CLIPSETS& sets = m_pTextClips->GetClips( GetTextView()->GetCurrentScheme()->GetName() );
@@ -321,11 +334,7 @@ bool CChildFrame::InsertClipCompleted(Scintilla::SCNotification* notification)
 		{
 #ifdef CLIPS_DEV
 			GetTextView()->DelWordLeft();
-
-			std::vector<TextClips::Chunk> chunks;
-			TextClips::DefaultVariableProvider variables(this, g_Context.m_frame->GetActiveWorkspace());
-			clip->GetChunks(chunks, GetTextView(), &variables);
-			GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
+			GetTextView()->InsertClip(clip);
 			break;
 #else
 			GetTextView()->BeginUndoAction();
@@ -554,10 +563,10 @@ LRESULT CChildFrame::OnMDIActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 		::PostMessage(g_Context.m_frame->GetJumpViewHandle(), PN_NOTIFY, (WPARAM)JUMPVIEW_FILE_ACTIVATE, (LPARAM)this);
 	
 		::PostMessage(m_hWnd, PN_CHECKAGE, 0, 0);
+
+		UpdateMenu();
 	}
 	//else // Deactivate
-	
-	UpdateMenu();
 	
 	// The base-class WM_MDIACTIVATE implementation breaks the window menu for localised builds
 	// and there's no way to avoid it but to handle this message completely here.
@@ -756,6 +765,10 @@ void CChildFrame::splitSelectedView(bool horizontal)
 	CTextView* newTextView = static_cast<CTextView*>(newTextViewPtr.get());
 	newTextView->Create(parent->GetHwnd(), rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, /*WS_EX_CLIENTEDGE*/0, cwScintilla+1);
 	newTextView->SetDocPointer(GetTextView()->GetDocPointer());
+	
+	// Disable notifications on the inactive view:
+	newTextView->SetModEventMask(0);
+
 	newTextView->UpdateModifiedState();
 
 	// Now we want the parent of the last-focused view to get a new child, the splitter.
@@ -880,6 +893,9 @@ LRESULT CChildFrame::OnToggleOutput(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 LRESULT CChildFrame::OnToolFinished(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
 	UpdateMenu();
+
+	// If a tool has finished, we want to find out if the current file has been updated in any way
+	PostMessage(PN_CHECKAGE, 0, 0);
 
 	return 0;
 }
@@ -1148,32 +1164,44 @@ LRESULT CChildFrame::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	return 0;
 }
 
+/**
+ * User pressed tab in the editor, see if we can complete a text clip.
+ */
+LRESULT CChildFrame::OnCompleteClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
+{
+	CTextView* view(GetTextView());
+	if (view->GetSelections() > 1 || view->GetSelLength() > 1)
+	{
+		return 0;
+	}
+
+	int pos = view->GetCurrentPos();
+	
+	int start = view->WordStartPosition(pos, true);
+	int end = view->WordEndPosition(pos, true);
+
+	if (start == end || end > pos)
+	{
+		// We're in a word, not at the end of it, bail.
+		return 0;
+	}
+
+	std::string word = view->CScintilla::GetTextRange(start, end);
+	if (insertMatchingClip(word.c_str()))
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
 LRESULT CChildFrame::OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	std::string word = GetTextView()->GetCurrentWord();	
 
-	const TextClips::LIST_CLIPSETS& clips = m_pTextClips->GetClips(GetTextView()->GetCurrentScheme()->GetName());
-
-	BOOST_FOREACH(TextClips::TextClipSet* set, clips)
+	if (insertMatchingClip(word.c_str()))
 	{
-		const TextClips::Clip* desired = set->FindByShortcut(word);
-		if(desired != NULL)
-		{
-	#ifdef CLIPS_DEV
-			GetTextView()->DelWordLeft();
-
-			std::vector<TextClips::Chunk> chunks;
-			TextClips::DefaultVariableProvider variables(this, g_Context.m_frame->GetActiveWorkspace());
-			desired->GetChunks(chunks, GetTextView(), &variables);
-			GetTextView()->SendMessage(PN_INSERTCLIP, 0, reinterpret_cast<LPARAM>(&chunks));
-	#else
-			GetTextView()->BeginUndoAction();
-			GetTextView()->DelWordLeft();
-			desired->Insert(GetTextView());
-			GetTextView()->EndUndoAction();
-	#endif
-			return 0;
-		}
+		return 0;
 	}
 	
 	// We didn't find an exact match, now we want to autocomplete a list of clips:
@@ -1181,6 +1209,12 @@ LRESULT CChildFrame::OnInsertClip(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWn
 	GetTextView()->SetAutoCompleteHandler(p);
 
 	std::string cliptext = m_pTextClips->BuildSortedClipList(GetTextView()->GetCurrentScheme()->GetName());
+
+	if (cliptext.empty())
+	{
+		return 0;
+	}
+
 	int sep = GetTextView()->AutoCGetSeparator();
 	GetTextView()->AutoCSetSeparator(',');
 	GetTextView()->AutoCShow(word.size(), cliptext.c_str());
@@ -1539,6 +1573,86 @@ LRESULT CChildFrame::OnHeaderSwitch(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 	return 0;
 }
 
+#define CONVERT_BUFFER_SIZE (1024 * 64)
+
+size_t GetTargetBufferSize(size_t size)
+{
+	return ((size * 5) + 2);
+}
+
+size_t GetWideBufferSize(size_t size)
+{
+	return ((size * 3) + 2);
+}
+
+void ConvertEncoding(CTextView* textView, UINT oldEncoding, UINT newEncoding)
+{
+	int length = textView->GetLength();
+
+	if (length == 0)
+	{
+		return;
+	}
+
+	// Make our buffers:
+	size_t bufferSize = CONVERT_BUFFER_SIZE;
+	char* buffer = new char[GetTargetBufferSize(bufferSize)];
+	wchar_t* wbuffer = new wchar_t[GetWideBufferSize(bufferSize)];
+
+	int start = 0;
+	int end = CONVERT_BUFFER_SIZE;
+
+	while (start < length)
+	{
+		end = start + min(bufferSize, static_cast<size_t>(length - start));
+
+		// We want to convert on line boundaries, to ensure we don't split a multi-byte character:
+		int endLine = textView->LineFromPosition(end);
+		int endOfEndLine = textView->GetLineEndPosition(endLine);
+		if (endOfEndLine != end)
+		{
+			endLine--;
+			end = textView->PositionFromLine(endLine);
+
+			// Sanity chex:
+			if (end <= start)
+			{
+				// The current line is longer than our buffer, we'll have to re-allocate and try again:
+				endLine++;
+				bufferSize = textView->LineLength(endLine) + 2;
+				PNASSERT(bufferSize > CONVERT_BUFFER_SIZE);
+				delete [] buffer;
+				delete [] wbuffer;
+				buffer = new char[GetTargetBufferSize(bufferSize)];
+				wbuffer = new wchar_t[GetWideBufferSize(bufferSize)];
+				
+				// Re-loop, have another go...
+				continue;
+			}
+		}
+
+		Scintilla::TextRange tr;
+		tr.chrg.cpMin = start;
+		tr.chrg.cpMax = end;
+		tr.lpstrText = buffer;
+
+		textView->GetTextRange(&tr);
+
+		// TODO: Not sure this is the best way to do this, seems very wasteful!
+		size_t cbwText = ::MultiByteToWideChar(oldEncoding, 0, buffer, end - start, wbuffer, GetWideBufferSize(bufferSize));
+		size_t resultingLength = ::WideCharToMultiByte(newEncoding, 0, wbuffer, cbwText, buffer, GetTargetBufferSize(bufferSize), NULL, NULL);
+
+		// Swap out the text:
+		textView->SetTargetStart(start);
+		textView->SetTargetEnd(end);
+		textView->ReplaceTarget(resultingLength, buffer);
+
+		// Update everything for the next loop:
+		start = start + resultingLength;
+		length = textView->GetLength();
+	}
+}
+
 LRESULT CChildFrame::OnEncodingSelect(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	EPNEncoding oldEncoding = GetTextView()->GetEncoding();
@@ -1546,7 +1660,33 @@ LRESULT CChildFrame::OnEncodingSelect(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
 	
 	if(oldEncoding != encoding)
 	{
-		GetTextView()->SetEncoding(encoding);
+		CTextView* textView = GetTextView();
+
+		if (encoding == eUnknown || oldEncoding == eUnknown)
+		{
+			// We're converting between UTF8 and non-UTF8 in the buffer representation (our only two options):
+			// This means a real buffer representation change and we're going to kill undo/various other bits:
+			if (!canConvertEncoding())
+			{
+				return 0;
+			}
+
+			textView->Cancel();
+			textView->SetUndoCollection(0);
+			textView->EmptyUndoBuffer();
+
+			int defaultCodePage = (long)OPTIONS->GetCached(Options::OMultiByteCodePage);
+
+			ConvertEncoding(
+				GetTextView(),
+				oldEncoding == eUnknown ? defaultCodePage : CP_UTF8,
+				encoding == eUnknown ? defaultCodePage : CP_UTF8);
+
+			textView->EmptyUndoBuffer();
+			textView->SetUndoCollection(1);
+		}
+
+		textView->SetEncoding(encoding);
 
 		SetModifiedOverride(true);
 
@@ -1562,7 +1702,8 @@ LRESULT CChildFrame::OnViewFileProps(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	CPropertySheet sheet( fn.c_str(), 0, m_hWnd );
 	sheet.m_psh.dwFlags |= (PSH_NOAPPLYNOW | PSH_PROPTITLE | PSH_USEICONID);
 	sheet.m_psh.pszIcon = MAKEINTRESOURCE(IDR_MDICHILD);
-	DocumentPropSheet docPropPage(this, _T("Properties"));
+	tstring title(L10N::StringLoader::Get(IDS_FILE_PROPERTIES));
+	DocumentPropSheet docPropPage(this, title.c_str());
 
 	sheet.AddPage(docPropPage);
 	if(sheet.DoModal() == IDOK)
@@ -1767,6 +1908,15 @@ bool CChildFrame::OnRunTool(LPVOID pTool)
 	return true;
 }
 
+/**
+ * Set the ReadOnly flag.
+ */
+void CChildFrame::SetReadOnly(bool readonly)
+{
+	m_bReadOnlyOverride = readonly;
+	setReadOnly(readonly, false);
+}
+
 ////////////////////////////////////////////////////
 // Notify Handlers
 
@@ -1849,8 +1999,6 @@ LRESULT CChildFrame::OnCommandNotify(WORD wNotifyCode, WORD /*wID*/, HWND /*hWnd
 		if (python)
 		{
 			PN::AString str;
-			std::string command("glue.evalCommand('");
-			
 			CWindowText wt(m_cmdTextBox);
 
 			if ((LPCTSTR)wt == NULL)
@@ -1859,11 +2007,22 @@ LRESULT CChildFrame::OnCommandNotify(WORD wNotifyCode, WORD /*wID*/, HWND /*hWnd
 				return 0;
 			}
 
-			CT2CA commandtext(wt);
-			command += commandtext;
-			command += "')";
+			extensions::IScriptRunner2* python2 = dynamic_cast<extensions::IScriptRunner2*>(python);
+			if (python2 != NULL)
+			{
+				CT2CA commandtext(wt);
+				python2->Exec("evalCommand", commandtext, extensions::efBuiltIn, str);
+			}
+			else
+			{
+				std::string command("glue.evalCommand('");
+				
+				CT2CA commandtext(wt);
+				command += commandtext;
+				command += "')";
 
-			python->Eval(command.c_str(), str);
+				python->Eval(command.c_str(), str);
+			}
 
 			CA2CT newwt(str.Get());
 			if (_tcscmp(wt, newwt) != 0)
@@ -1891,18 +2050,31 @@ LRESULT CChildFrame::OnCommandEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 	PN::AString str;
 	CWindowText wt(m_cmdTextBox);
+	if ((LPCTSTR)wt == NULL)
+	{
+		return 0;
+	}
 	
-	// Some basic argument safety changes until we make an extension
-	// interface that makes this properly safe.
-	std::string commandText(wt.GetA());
-	boost::replace_all(commandText, "\\", "\\\\");
-	boost::replace_all(commandText, "'", "\\'");
+	extensions::IScriptRunner2* python2 = dynamic_cast<extensions::IScriptRunner2*>(python);
+	if (python2 != NULL)
+	{
+		CT2CA commandtext(wt);
+		python2->Exec("evalCommandEnter", commandtext, extensions::efBuiltIn, str);
+	}
+	else
+	{
+		// Some basic argument safety changes until we make an extension
+		// interface that makes this properly safe.
+		std::string commandText(wt.GetA());
+		boost::replace_all(commandText, "\\", "\\\\");
+		boost::replace_all(commandText, "'", "\\'");
 
-	std::string command("glue.evalCommandEnter('");
-	command += commandText;
-	command += "')";
+		std::string command("glue.evalCommandEnter('");
+		command += commandText;
+		command += "')";
 
-	python->Eval(command.c_str(), str);
+		python->Eval(command.c_str(), str);
+	}
 
 	CA2CT newwt(str.Get());
 	m_cmdTextBox.SetWindowText(newwt);
@@ -1915,7 +2087,7 @@ LRESULT CChildFrame::OnCommandEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 void CChildFrame::CheckAge()
 {
-	if(CanSave())
+	if (CanSave())
 	{
 		FileUtil::FileAttributes_t atts;
 		
@@ -1927,7 +2099,7 @@ void CChildFrame::CheckAge()
 			age = FileUtil::GetFileAge(atts);
 		}
 
-		if(age != m_FileAge)
+		if (age != m_FileAge)
 		{
 			if(m_spDocument->FileExists())
 			{
@@ -1984,7 +2156,7 @@ void CChildFrame::CheckAge()
 		}
 		else
 		{
-			if (m_bReadOnly != readOnly)
+			if (m_bReadOnly != readOnly && !m_bReadOnlyOverride)
 			{
 				setReadOnly(readOnly, false);
 			}
@@ -2073,46 +2245,70 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool ctagsRefresh, bool bStoreFilen
 	}
 
 	// Do the save
-	if(GetTextView()->Save(pathname, bStoreFilename))
+
+	IFilePtr file;
+
+	try
 	{
-		bSuccess = true;
-	}
-	else if (bStoreFilename)
-	{
-		// Only present UI if we're doing a user-visible save
-		switch(HandleFailedFileOp(pathname, false))
+		file = Win32FileSource().OpenWrite(pathname);
+		if (GetTextView()->Save(file, bStoreFilename))
 		{
-		case PNID_SAVEAS:
-			bSuccess = SaveAs(ctagsRefresh);
-			// Don't update MRU or filename after SaveAs:
-			bStoreFilename = false;
-			bUpdateMRU = false;
-			break;
-		case PNID_OVERWRITE:
-			if(attemptOverwrite(pathname))
+			bSuccess = true;
+		}
+
+		file->Close();
+	}
+	catch (FileSourceException& ex)
+	{
+		::SetLastError(ex.GetError());
+		if (bStoreFilename)
+		{
+			// Only present UI if we're doing a user-visible save
+			switch(HandleFailedFileOp(pathname, false))
 			{
-				if(GetTextView()->Save(pathname, bStoreFilename))
+			case PNID_SAVEAS:
+				bSuccess = SaveAs(ctagsRefresh);
+				// Don't update MRU or filename after SaveAs:
+				bStoreFilename = false;
+				bUpdateMRU = false;
+				break;
+			case PNID_OVERWRITE:
 				{
-					bSuccess = true;
-				}
-				else
-				{
-					// If we thought we'd done the overwrite, but then failed to save again...
-					CString s;
-					s.Format(IDS_SAVEREADONLYFAIL, pathname);
-					if(PNTaskDialog(m_hWnd, IDR_MAINFRAME, _T(""), (LPCTSTR)s, TDCBF_YES_BUTTON | TDCBF_NO_BUTTON | TDCBF_CANCEL_BUTTON, TDT_WARNING_ICON) == IDYES)
-						bSuccess = SaveAs(ctagsRefresh);
+					file = attemptOverwrite(pathname);
+					if (file.get())
+					{					
+						if (GetTextView()->Save(file, bStoreFilename))
+						{
+							file->Close();
+							bSuccess = true;
+						}
+						else
+						{
+							file->Close();
+
+							// TODO: This error is now in the wrong place, we need to handle attemptOverwrite
+							// being able to remove readonly but still not being able to open for write.
+							// Perhaps to this in attemptOverwrite.
+
+							// If we thought we'd done the overwrite, but then failed to save again...
+							CString s;
+							s.Format(IDS_SAVEREADONLYFAIL, pathname);
+							if(PNTaskDialog(m_hWnd, IDR_MAINFRAME, _T(""), (LPCTSTR)s, TDCBF_YES_BUTTON | TDCBF_NO_BUTTON | TDCBF_CANCEL_BUTTON, TDT_WARNING_ICON) == IDYES)
+								bSuccess = SaveAs(ctagsRefresh);
+						}
+					}
+					else
+					{
+						// If the attempt to overwrite failed.
+						CString s;
+						s.Format(IDS_SAVEREADONLYFAIL, pathname);
+						if(PNTaskDialog(m_hWnd, IDR_MAINFRAME, _T(""), (LPCTSTR)s, TDCBF_YES_BUTTON | TDCBF_NO_BUTTON | TDCBF_CANCEL_BUTTON, TDT_WARNING_ICON) == IDYES)
+							bSuccess = SaveAs(ctagsRefresh);
+					}
+
+					break;
 				}
 			}
-			else
-			{
-				// If the attempt to overwrite failed.
-				CString s;
-				s.Format(IDS_SAVEREADONLYFAIL, pathname);
-				if(PNTaskDialog(m_hWnd, IDR_MAINFRAME, _T(""), (LPCTSTR)s, TDCBF_YES_BUTTON | TDCBF_NO_BUTTON | TDCBF_CANCEL_BUTTON, TDT_WARNING_ICON) == IDYES)
-					bSuccess = SaveAs(ctagsRefresh);
-			}
-			break;
 		}
 	}
 
@@ -2157,9 +2353,22 @@ bool CChildFrame::SaveFile(LPCTSTR pathname, bool ctagsRefresh, bool bStoreFilen
 	return bSuccess;
 }
 
-bool CChildFrame::attemptOverwrite(LPCTSTR filename)
+IFilePtr CChildFrame::attemptOverwrite(LPCTSTR filename)
 {
-	return FileUtil::RemoveReadOnly(filename);
+	if (FileUtil::RemoveReadOnly(filename))
+	{
+		try
+		{
+			IFilePtr ret(Win32FileSource().OpenWrite(filename));
+			return ret;
+		}
+		catch (FileSourceException& ex)
+		{
+			::SetLastError(ex.GetError());
+		}
+	}
+
+	return IFilePtr();
 }
 
 void CChildFrame::handleClose()
@@ -2797,7 +3006,7 @@ void CChildFrame::resetSaveDir()
 
 void CChildFrame::setReadOnly(bool newValue, bool setAttributes)
 {
-	if (OPTIONS->Get(PNSK_GENERAL, _T("EditReadOnly"), false))
+	if (OPTIONS->Get(PNSK_GENERAL, _T("EditReadOnly"), false) && !m_bReadOnlyOverride && !m_bReadOnly)
 	{
 		return;
 	}
@@ -2871,13 +3080,102 @@ void CChildFrame::findNextWordUnderCursor(bool backwards)
 	opts->SetSearchBackwards(false);
 }
 
+// Possible notifications: SCN_MODIFIED: SC_MOD_INSERTTEXT, SC_MOD_DELETETEXT, 
+// SC_MOD_CHANGESTYLE, SC_MOD_CHANGEFOLD, SC_PERFORMED_USER, SC_PERFORMED_UNDO, 
+// SC_PERFORMED_REDO, SC_MULTISTEPUNDOREDO, SC_LASTSTEPINUNDOREDO, SC_MOD_CHANGEMARKER, 
+// SC_MOD_BEFOREINSERT, SC_MOD_BEFOREDELETE, SC_MULTILINEUNDOREDO, and SC_MODEVENTMASKALL
+
 void CChildFrame::SetLastView(Views::ViewPtr& view)
 {
+	if (view == m_focusView)
+	{
+		return;
+	}
+
 	m_focusView = view;
+	
 	if (m_focusView->GetType() == Views::vtText)
 	{
+		if (m_lastTextView.get())
+		{
+			// Remove current notification mask, we're switching to another view:
+			CTextView* tv = static_cast<CTextView*>(m_lastTextView.get());
+			tv->SetModEventMask(0);
+		}
+
 		m_lastTextView = m_focusView;
+		
+		// Enable notifications on the active view
+		CTextView* tv = static_cast<CTextView*>(m_lastTextView.get());
+		tv->SetModEventMask(SC_MODEVENTMASKALL);
+
+		// Notify the frame to update UI.
+		SendMessage(GetMDIFrame(), PN_NOTIFY, 0, SCN_UPDATEUI);
 	}
+}
+
+/**
+ * Insert a text clip if we find an exactly matching clip key
+ */
+bool CChildFrame::insertMatchingClip(const char* word)
+{
+	const TextClips::LIST_CLIPSETS& clips = m_pTextClips->GetClips(GetTextView()->GetCurrentScheme()->GetName());
+
+	BOOST_FOREACH(TextClips::TextClipSet* set, clips)
+	{
+		const TextClips::Clip* desired = set->FindByShortcut(word);
+		if(desired != NULL)
+		{
+			GetTextView()->DelWordLeft();
+			GetTextView()->InsertClip(desired);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Check the user is happy to convert the file encoding.
+ */
+bool CChildFrame::canConvertEncoding()
+{
+	bool doNotAsk = OPTIONS->Get(PNSK_GENERAL, _T("AskBeforeEncodingConversion"), true);
+	if (!doNotAsk)
+	{
+		return true;
+	}
+
+	std::wstring title(L10N::StringLoader::GetW(IDS_ENCODING_CONVERSION));
+	std::wstring convert(L10N::StringLoader::GetW(IDS_CONVERT));
+	std::wstring cancel(L10N::StringLoader::GetW(IDS_TASKDLG_CANCEL));
+	std::wstring msg(L10N::StringLoader::GetW(IDS_REENCODE));
+	std::wstring donotask(L10N::StringLoader::GetW(IDS_DONOTASKMEAGAIN));
+
+	TASKDIALOG_BUTTON convertButtons[2] = {
+		{ IDYES, convert.c_str() },
+		{ IDCANCEL, cancel.c_str() },
+	};
+
+	TASKDIALOGCONFIG cfg = { 0 };
+	cfg.cbSize = sizeof(cfg);
+	cfg.hwndParent = m_hWnd;
+	cfg.hInstance = _Module.GetResourceInstance();
+	cfg.pszWindowTitle = title.c_str();
+	cfg.pszMainIcon = MAKEINTRESOURCEW(TDT_WARNING_ICON);
+	cfg.pszContent = msg.c_str();
+	cfg.pszVerificationText = donotask.c_str();
+	cfg.dwCommonButtons = 0;
+	cfg.pButtons = convertButtons;
+	cfg.cButtons = 2;
+	cfg.nDefaultButton = IDCANCEL;
+	cfg.dwFlags = TDF_ALLOW_DIALOG_CANCELLATION;
+
+	BOOL doNotShowAgain(FALSE);
+	int iRes = PNTaskDialogIndirect(&cfg, 0, &doNotShowAgain);
+
+	OPTIONS->Set(PNSK_GENERAL, _T("AskBeforeEncodingConversion"), doNotShowAgain ? false : true);
+	return iRes == IDYES;
 }
 
 ////////////////////////////////////////////////////

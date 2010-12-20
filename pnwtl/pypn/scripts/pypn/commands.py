@@ -1,8 +1,6 @@
 ############################################################################
 ## Implements extensible VIM-style commands in PN 2.1
 ##
-## To enable set this registry entry (until there is UI): HKEY_CURRENT_USER\Software\Echo Software\PN\Interface Settings, entry "Commandbar" value 1
-##
 ## Currently focusing on implementing most commands here: http://www.stanford.edu/~jacobm/vim.html
 
 import pn, scintilla
@@ -49,7 +47,7 @@ def evalCommandEnter(text):
 		pn.CurrentDoc().FindNext(so)
 		return ""
 	
-	pass
+	return ""
 
 def _handleChangeCommand(command, text):
 	""" Handle the c, d and y commands """

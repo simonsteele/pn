@@ -1,31 +1,31 @@
 <clips name="PHP Control"><clip name="Open/Close PHP Tags" shortcut="">
 &lt;?php
 
-|
+$0
 
 ?&gt;
 </clip><clip name="For Loop" shortcut="">
-for ( $i = 0; $i &lt;= |; $i++ ) {
+for ( $i = 0; $i &lt;= $0; $i++ ) {
     
     }
 </clip><clip name="Foreach Loop (array)" shortcut="">
 foreach ( $array as $value ) {
-    |
+    $0
     }
 </clip><clip name="Foreach Loop (hash)" shortcut="">
 foreach ( $array as $key =&gt; $value ) {
-    |
+    $0
     }
 </clip><clip name="While Loop" shortcut="">
-while ( | ) {
+while ( $0 ) {
     
     }
 </clip><clip name="Do...While Loop" shortcut="">
 do {
-   |
+   $0
    } while ( expr );
 </clip><clip name="If..Else If Loop" shortcut="">
-if ( | ) {
+if ( $0 ) {
      
      }
 else if ( expr ) {
@@ -36,7 +36,7 @@ else {
      }
 </clip><clip name="Switch (Case)" shortcut="">
 switch ($i) {
-    case |:
+    case $0:
          
         break;
     case value:
@@ -46,7 +46,7 @@ switch ($i) {
         
 }
 </clip><clip name="Require" shortcut="">
-require( '|' );
+require( '$0' );
 </clip><clip name="Include" shortcut="">
-include( '|' );
+include( '$0' );
 </clip></clips>

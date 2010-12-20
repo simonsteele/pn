@@ -206,6 +206,9 @@ class MagicFolder : public Folder
 		LPCTSTR GetFilter() const;
 		void SetFilter(LPCTSTR filter);
 
+		LPCTSTR GetExcludedFileFilter() const;
+		void SetExcludedFileFilter(LPCTSTR value);
+
 		LPCTSTR GetFolderFilter() const;
 		void SetFolderFilter(LPCTSTR filter);
 
@@ -221,7 +224,8 @@ class MagicFolder : public Folder
 	protected:
 		//tstring				path;
 		tstring				filter;
-		tstring				folderFilter;
+		tstring             excludedFileFilter;
+		tstring				folderFilter;		
 		bool				read;
 		MagicFolderCache*	cache;
 };
@@ -250,13 +254,13 @@ class MagicFolderCache : XMLParseState
 
 		Folder* GetCachedFolder(MagicFolder* actual);
 
-		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
+		virtual void startElement(LPCTSTR name, const XMLAttributes& atts);
 		virtual void endElement(LPCTSTR name);
 		virtual void characterData(LPCTSTR data, int len);
 
 	protected:
-		void processUserData(LPCTSTR name, XMLAttributes& atts);
-		void processFile(XMLAttributes& atts);
+		void processUserData(LPCTSTR name, const XMLAttributes& atts);
+		void processFile(const XMLAttributes& atts);
 
 	protected:
 		class FolderMap;
@@ -308,7 +312,7 @@ class Project : public Folder, XMLParseState
 
 	//Implement XMLParseState
 	protected:
-		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
+		virtual void startElement(LPCTSTR name, const XMLAttributes& atts);
 		virtual void endElement(LPCTSTR name);
 		virtual void characterData(LPCTSTR data, int len);
 
@@ -324,11 +328,11 @@ class Project : public Folder, XMLParseState
 
 		void writeDefinition(ProjectWriter definition);	
 
-		void processProject(XMLAttributes& atts);
-		void processFolder(XMLAttributes& atts);
-		void processFile(XMLAttributes& atts);
-		void processMagicFolder(XMLAttributes& atts);
-		void processUserData(LPCTSTR name, XMLAttributes& atts);
+		void processProject(const XMLAttributes& atts);
+		void processFolder(const XMLAttributes& atts);
+		void processFile(const XMLAttributes& atts);
+		void processMagicFolder(const XMLAttributes& atts);
+		void processUserData(LPCTSTR name, const XMLAttributes& atts);
 		
 		void parse();
 
@@ -400,7 +404,7 @@ class Workspace : public ProjectType, XMLParseState
 
 	//Implement XMLParseState
 	protected:
-		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
+		virtual void startElement(LPCTSTR name, const XMLAttributes& atts);
 		virtual void endElement(LPCTSTR name);
 		virtual void characterData(LPCTSTR data, int len){};
 
@@ -437,7 +441,7 @@ class ProjectViewState : XMLParseState
 		void Clear();
 
 	protected:
-		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
+		virtual void startElement(LPCTSTR name, const XMLAttributes& atts);
 		virtual void endElement(LPCTSTR name);
 		virtual void characterData(LPCTSTR data, int len){};
 

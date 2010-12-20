@@ -7,14 +7,14 @@ import scintilla
 from pypn.decorators import script
 
 @script()
-def |():
+def ${1:Name}():
 	""" What this does """
-    pass</clip><clip name="PyPN Script Method" shortcut="pnscript">@script()
-def |():
+    ${0:pass}</clip><clip name="PyPN Script Method" shortcut="pnscript">@script()
+def ${1:Name}():
 	""" What this does """
-    pass</clip><clip name="PyPN Editor" shortcut="pneditor">editor = scintilla.Scintilla(pn.CurrentDoc())</clip><clip name="PyPN Undo Block" shortcut="undoblock">editor.BeginUndoAction()
-|	
-editor.EndUndoAction()</clip><clip name="PyPN Selected Text" shortcut="pnsel">editor.GetText(editor.SelectionStart, editor.SelectionEnd)</clip><clip name="PyPN Indenter" shortcut="pnindenter">@indenter("$(1:Scheme Name)")
-def $(1)_indent(c, doc):
+    ${0:pass}</clip><clip name="PyPN Editor" shortcut="pneditor">editor = scintilla.Scintilla(pn.CurrentDoc())</clip><clip name="PyPN Undo Block" shortcut="undoblock">editor.BeginUndoAction()
+$0	
+editor.EndUndoAction()</clip><clip name="PyPN Selected Text" shortcut="pnsel">editor.GetText(editor.SelectionStart, editor.SelectionEnd)</clip><clip name="PyPN Indenter" shortcut="pnindenter">@indenter("${1:Scheme Name}")
+def ${1}_indent(c, doc):
 	sci = scintilla.Scintilla(doc)
-	$(0)</clip></clips>
+	$0</clip></clips>

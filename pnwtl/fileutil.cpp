@@ -15,6 +15,11 @@ bool IsReadOnly(const FileAttributes_t& atts)
 	return (atts.dwFileAttributes & FILE_ATTRIBUTE_READONLY) != 0;
 }
 
+bool IsHidden(const FileAttributes_t& atts)
+{
+	return (atts.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) != 0;
+}
+
 uint64_t GetFileAge(const FileAttributes_t& atts)
 {
 	return *((uint64_t*)&atts.ftLastWriteTime);

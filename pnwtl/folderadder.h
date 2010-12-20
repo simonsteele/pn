@@ -28,6 +28,18 @@ class FolderAdder : public RegExFileFinder<FolderAdder>//FileFinderImpl<FolderAd
 	friend base;
 
 public:
+	static LPCTSTR getDefaultExcludedFileFilter() {
+		// Exclude PN project and PN project settings files.
+		// Should be configured.
+		return _T("*.pnproj;*.pnps;*.bak;*.tmp");
+	}
+
+	static LPCTSTR getDefaultExcludedFolderFilter() {
+		// Exclude popular VCS service folders
+		// Should be configured.
+		return _T("CVS;.svn;.hg;.git");
+	}
+
 	FolderAdder() : base(this, &FolderAdder::onFind)
 	{
 		pFolder = NULL;
@@ -47,7 +59,7 @@ public:
 		CPathName pn(path);
 
 		ClearFilters();
-		SetFilters(filter, NULL, NULL, _T("CVS;.svn"));
+		SetFilters(filter, getDefaultExcludedFileFilter(), NULL, getDefaultExcludedFolderFilter());
 		FindMatching(pn.c_str(), recurse);
 
 		return pFolder;
@@ -92,7 +104,7 @@ protected:
 class MagicFolderAdder : public FolderAdder
 {
 public:
-	void BuildFolder(MagicFolder* folder, LPCTSTR path, LPCTSTR filter, LPCTSTR basePath, LPCTSTR folderFilter, bool recurse)
+	void BuildFolder(MagicFolder* folder, LPCTSTR path, LPCTSTR filter, LPCTSTR basePath, LPCTSTR excludedFileFilter, LPCTSTR folderFilter, bool recurse)
 	{
 		lpszBasePath = basePath;
 
@@ -103,10 +115,11 @@ public:
 		CPathName pn(path);
 
 		sFilter = filter;
+		sExcludedFileFilter = excludedFileFilter;
 		sFolderFilter = folderFilter;
 
 		ClearFilters();
-		SetFilters(filter, NULL, NULL, folderFilter);
+		SetFilters(filter, excludedFileFilter, NULL, folderFilter);
 		FindMatching(pn.c_str(), recurse);
 	}
 
@@ -117,12 +130,14 @@ protected:
 		tstring dirName = fn.GetDirectoryName();
 		MagicFolder* mf = new MagicFolder(dirName.c_str(), path/*, lpszBasePath*/);
 		mf->SetFilter( sFilter.c_str() );
+		mf->SetExcludedFileFilter( sExcludedFileFilter.c_str() );
 		mf->SetFolderFilter( sFolderFilter.c_str() );
 		mf->SetGotContents(true);
 		return mf;
 	}
 
 	tstring sFilter;
+	tstring sExcludedFileFilter;
 	tstring sFolderFilter;
 };
 

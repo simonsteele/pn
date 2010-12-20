@@ -2,7 +2,7 @@
  * @file CustomScheme.h
  * @brief Defines the CustomLexerFactory class.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -31,7 +31,7 @@ class CustomLexerFactory : public XMLParseState
 	protected:
 		bool Parse(LPCTSTR file);
 
-		virtual void startElement(XML_CSTR name, XMLAttributes& atts);
+		virtual void startElement(XML_CSTR name, const XMLAttributes& atts);
 		virtual void endElement(XML_CSTR name);
 		virtual void characterData(XML_CSTR data, int len);
 

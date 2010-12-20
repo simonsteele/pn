@@ -372,7 +372,7 @@ void AppSettings::save()
 	writer.Close();
 }
 
-void AppSettings::startElement(LPCTSTR name, XMLAttributes& atts)
+void AppSettings::startElement(LPCTSTR name, const XMLAttributes& atts)
 {
 	BEGIN_HANDLERS()
 		BEGIN_STATE(AS_DEFAULT)
@@ -400,7 +400,7 @@ void AppSettings::characterData(LPCTSTR /*data*/, int /*len*/)
 
 }
 
-void AppSettings::onUserSettingsPath(XMLAttributes& atts)
+void AppSettings::onUserSettingsPath(const XMLAttributes& atts)
 {
 	LPCTSTR szPath = atts.getValue(_T("path"));
 	if (szPath != NULL && szPath[0] != NULL)
@@ -417,7 +417,7 @@ void AppSettings::onUserSettingsPath(XMLAttributes& atts)
 	}
 }
 
-void AppSettings::onStoreType(XMLAttributes& atts)
+void AppSettings::onStoreType(const XMLAttributes& atts)
 {
 	LPCTSTR value = atts.getValue(_T("value"));
 	if(value != NULL && value[0] != NULL)
@@ -433,7 +433,7 @@ void AppSettings::onStoreType(XMLAttributes& atts)
 /**
  * Handle an extension element.
  */
-void AppSettings::onExtension(XMLAttributes& atts)
+void AppSettings::onExtension(const XMLAttributes& atts)
 {
 	LPCTSTR path = atts.getValue(_T("path"));
 	LPCTSTR disabled = atts.getValue(_T("disabled"));

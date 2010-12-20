@@ -18,8 +18,6 @@
 
 #pragma once
 
-#define DF_AUTO_HIDE_FEATURES
-
 #include <queue>
 #include <deque>
 #include "ssec.h"

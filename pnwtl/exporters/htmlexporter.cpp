@@ -129,7 +129,10 @@ void HTMLExporter::InternalExport(int start, int end)
 
 		m_out->putc('"');
 		if(pDefStyle->FontName.length())
-			m_out->puts(pDefStyle->FontName.c_str());
+        {
+            strTemp = pDefStyle->FontName.c_str();
+			m_out->puts(strTemp);
+        }
 		else
 			m_out->puts(HTML_FONTFACE);
 		m_out->putc('"');
@@ -187,7 +190,8 @@ void HTMLExporter::InternalExport(int start, int end)
 				(!pDefStyle || pStyle->FontName != pDefStyle->FontName))
 			{
 				m_out->puts(HTML_CSSFONT);
-				m_out->puts(pStyle->FontName.c_str());
+                strTemp = pStyle->FontName.c_str();
+				m_out->puts(strTemp);
 				m_out->puts(HTML_CSSENDFONT);
 			}
 

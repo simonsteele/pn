@@ -14,6 +14,7 @@ Manuel Sandoval
 James Yoneda
 Prafulla Tekawade
 Murphy McCauley
+boytm
 
 Documentation:
 --------------
@@ -23,8 +24,9 @@ Libraries:
 ----------
 Daniel Bowen (Tabbing Framework)
 Sergey Klimov (Docking Framework)
-Philip Hazel (PCRE)
 Neil Hodgson + Community (Scintilla)
+Boost Community
+Philip Hazel (PCRE) - no longer used
 
 Artwork:
 --------

@@ -38,7 +38,7 @@ class CSRegistry
 		void WriteBool(LPCTSTR valname, bool value);
 		bool ReadBool(LPCTSTR valname, bool defaultval = false);
 
-		bool SetRootKey(HKEY root){m_root = root;};
+		void SetRootKey(HKEY root) { m_root = root; }
 
 		bool DeleteValue(LPCTSTR valname);
 

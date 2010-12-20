@@ -2,7 +2,7 @@
  * @file CustomScheme.cpp
  * @brief Defines the entry point for the custom schemes DLL.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -319,7 +319,7 @@ void CustomLexerFactory::doCommentType(int commentType, const XMLAttributes& att
 	}
 }
 
-void CustomLexerFactory::startElement(XML_CSTR name, XMLAttributes& atts)
+void CustomLexerFactory::startElement(XML_CSTR name, const XMLAttributes& atts)
 {
 	if(_tcscmp(name, _T("schemedef")) == 0 && m_state == STATE_DEFAULT)
 	{
@@ -490,33 +490,28 @@ void EXPORT __stdcall GetLexerName(unsigned int Index, char *name, int buflength
 void EXPORT __stdcall Lex(unsigned int lexer, 
 	unsigned int startPos, int length, int initStyle, char *words[], WindowID window, char *props)
 {
-	WordList **wordlists = StringToWordLists(words);
-
 	PropSet ps;
 	ps.SetMultiple(props);
 	
 	WindowAccessor wa(window, ps);
 	
-	theLexers[lexer]->DoLex(startPos, length, initStyle, wordlists, wa);
+	theLexers[lexer]->DoLex(startPos, length, initStyle, words, wa);
 
 	wa.Flush();
-
-	FreeWordLists(wordlists);	
 }
 
 void EXPORT __stdcall Fold(unsigned int lexer, 
 	unsigned int startPos, int length, int initStyle, char *words[], WindowID window, char *props)
 {
-	WordList **wordlists = StringToWordLists(words);
+	std::vector<WordList> wordlists;
+	StringToWordLists(words, false, wordlists);
 
 	PropSet ps;
 	ps.SetMultiple(props);
 	
 	WindowAccessor wa(window, ps);
 	
-	theLexers[lexer]->DoFold(startPos, length, initStyle, wordlists, wa);
+	theLexers[lexer]->DoFold(startPos, length, initStyle, words, wa);
 
 	wa.Flush();
-
-	FreeWordLists(wordlists);
 }

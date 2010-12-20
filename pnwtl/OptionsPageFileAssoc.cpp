@@ -8,6 +8,7 @@
 #include "stdafx.h"
 #include "resource.h"
 #include "OptionsPages.h"
+#include "ssreg.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // COptionsPageFileAssoc
@@ -18,11 +19,13 @@ COptionsPageFileAssoc::COptionsPageFileAssoc()
 	, m_mode(ModeNone)
 	, m_fam()
 	, m_bKeyChange(false)
-{}
+{
+	m_bExplorerMenuRegistered = checkExplorerContextMenu();
+}
 
 tstring COptionsPageFileAssoc::GetTreePosition()
 {
-	return MAKE_OPTIONSTREEPATH(IDS_OPTGROUP_FILES, IDS_OPTPAGE_FILEASSOC);
+	return LS(IDS_OPTPAGE_FILEASSOC);
 }
 
 void COptionsPageFileAssoc::OnOK()
@@ -120,6 +123,12 @@ LRESULT COptionsPageFileAssoc::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LP
 	}
 
 	m_colors[1] = highlight;
+
+	if (m_bExplorerMenuRegistered)
+	{
+		GetDlgItem(IDC_ENABLEEXPLORERCONTEXT).SetWindowText(LS(IDS_OPTIONS_REMOVEEDITWITH));		
+	}
+
 	return 0;
 }
 
@@ -253,6 +262,20 @@ LRESULT COptionsPageFileAssoc::OnRemoveClicked(WORD /*wNotifyCode*/, WORD /*wID*
 LRESULT COptionsPageFileAssoc::OnCheckNowClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	m_fam.UpdateAssociations();
+	return 0;
+}
+
+LRESULT COptionsPageFileAssoc::OnEnableExplorerContextMenu(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	if (m_bExplorerMenuRegistered)
+	{
+		removeContextMenu();
+	}
+	else
+	{
+		addContextMenu();
+	}
+
 	return 0;
 }
 
@@ -397,4 +420,99 @@ void COptionsPageFileAssoc::RemoveExtension(int index)
 	m_fam.UnsetAssociation(fa);
 
 	m_list.DeleteItem(index);
+}
+
+/**
+ * Find out if the pnotepad context menu extension is registered.
+ */
+bool COptionsPageFileAssoc::checkExplorerContextMenu()
+{
+	ssreg::CSRegistry reg;
+	tstring key;
+
+	if (g_Context.OSVersion.dwMajorVersion >= 6)
+	{
+		// Vista or later, we write to the per-user classes location:
+		key = _T("Software\\Classes\\*\\shell\\pnotepad");
+	}
+	else
+	{
+		reg.SetRootKey(HKEY_CLASSES_ROOT);
+		key = _T("*\\shell\\pnotepad");
+	}
+
+	if (reg.OpenKey(key.c_str(), false))
+	{
+		reg.CloseKey();
+		return true;
+	}
+
+	return false;
+}
+
+void COptionsPageFileAssoc::addContextMenu()
+{
+	tstring appName(LS(IDS_EXPLORERCONTEXTMENU));
+		
+	tstring appPath;
+	OPTIONS->GetPNPath(appPath);
+
+	CFileName fn(_T("pn.exe"));
+	fn.Root(appPath.c_str());
+
+	appPath = fn.c_str();
+	appPath += _T(" \"%1\"");
+
+	tstring key;
+	ssreg::CSRegistry reg;
+
+	if (g_Context.OSVersion.dwMajorVersion >= 6)
+	{
+		// Vista or later, we write to the per-user classes location:
+		key = _T("Software\\Classes\\*\\shell\\pnotepad");
+	}
+	else
+	{
+		reg.SetRootKey(HKEY_CLASSES_ROOT);
+		key = _T("*\\shell\\pnotepad");
+	}
+
+	if (reg.OpenKey(key.c_str()))
+	{
+		reg.WriteString(NULL, appName.c_str());
+		reg.CloseKey();
+	}
+
+	key += L"\\Command";
+	if (reg.OpenKey(key.c_str()))
+	{
+		reg.WriteString(NULL, appPath.c_str());
+		reg.CloseKey();
+	}
+
+	m_bExplorerMenuRegistered = true;
+	GetDlgItem(IDC_ENABLEEXPLORERCONTEXT).SetWindowText(LS(IDS_OPTIONS_REMOVEEDITWITH));
+}
+
+void COptionsPageFileAssoc::removeContextMenu()
+{
+	tstring key;
+	ssreg::CSRegistry reg;
+
+	if (g_Context.OSVersion.dwMajorVersion >= 6)
+	{
+		// Vista or later, we write to the per-user classes location:
+		key = _T("Software\\Classes\\*\\shell\\pnotepad");
+	}
+	else
+	{
+		reg.SetRootKey(HKEY_CLASSES_ROOT);
+		key = _T("*\\shell\\pnotepad");
+	}
+
+	if (reg.DeleteKey(key.c_str()))
+	{
+		m_bExplorerMenuRegistered = false;
+		GetDlgItem(IDC_ENABLEEXPLORERCONTEXT).SetWindowText(LS(IDS_OPTIONS_ADDEDITWITH));
+	}
 }

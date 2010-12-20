@@ -2,7 +2,7 @@
  * @file docprops.cpp
  * @brief Document properties property sheet
  * @author Simon Steele
- * @note Copyright (c) 2004 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2004-2010 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -70,7 +70,7 @@ LRESULT DocumentPropSheet::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 	for(int j = 0; j < lineEndings.GetCount(); j++)
 	{
-		if( lineEndings.GetItemData(j) == actualLE )
+		if( static_cast<EPNSaveFormat>(lineEndings.GetItemData(j)) == actualLE )
 		{
 			lineEndings.SetCurSel(j);
 			break;
@@ -93,7 +93,7 @@ LRESULT DocumentPropSheet::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 	for(int k = 0; k < encoding.GetCount(); k++)
 	{
-		if( encoding.GetItemData(k) == actualE )
+		if( static_cast<EPNEncoding>(encoding.GetItemData(k)) == actualE )
 		{
 			encoding.SetCurSel(k);
 			break;

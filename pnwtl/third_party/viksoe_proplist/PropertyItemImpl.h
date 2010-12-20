@@ -49,7 +49,7 @@ protected:
 public:
    CProperty(LPCTSTR pstrName, LPARAM lParam) : m_fEnabled(true), m_lParam(lParam), m_hWndOwner(NULL)
    {
-      ATLASSERT(!::IsBadStringPtr(pstrName,-1));
+      ATLASSERT(pstrName != NULL);
       ATLTRY(m_pszName = new TCHAR[ (::lstrlen(pstrName) * sizeof(TCHAR)) + 1 ]);
       ATLASSERT(m_pszName);
       ::lstrcpy(m_pszName, pstrName);
@@ -718,7 +718,7 @@ public:
    }
    void AddListItem(LPCTSTR pstrText)
    {
-      ATLASSERT(!::IsBadStringPtr(pstrText,-1));
+      ATLASSERT(pstrText != NULL);
       CComBSTR bstr(pstrText);
       m_arrList.Add(bstr);
       if( m_val.lVal == -1 ) m_val = 0;
@@ -855,7 +855,7 @@ inline HPROPERTY PropCreateSimple(LPCTSTR pstrName, bool bValue, LPARAM lParam =
 
 inline HPROPERTY PropCreateFileName(LPCTSTR pstrName, LPCTSTR pstrFileName, LPARAM lParam = 0)
 {
-   ATLASSERT(!::IsBadStringPtr(pstrFileName,-1));
+   ATLASSERT(pstrFileName != NULL);
    CPropertyFileNameItem* prop = NULL;
    ATLTRY( prop = new CPropertyFileNameItem(pstrName, lParam) );
    ATLASSERT(prop);
@@ -867,7 +867,7 @@ inline HPROPERTY PropCreateFileName(LPCTSTR pstrName, LPCTSTR pstrFileName, LPAR
 
 inline HPROPERTY PropCreatePathName(LPCTSTR pstrName, LPCTSTR pstrPathName, LPARAM lParam = 0)
 {
-	ATLASSERT(!::IsBadStringPtr(pstrPathName,-1));
+	ATLASSERT(pstrPathName != NULL);
 	CPropertyPathNameItem* prop = NULL;
 	ATLTRY( prop = new CPropertyPathNameItem(pstrName, lParam) );
 	ATLASSERT(prop);
@@ -926,7 +926,7 @@ inline HPROPERTY PropCreateCheckButton(LPCTSTR pstrName, bool bValue, LPARAM lPa
 
 inline HPROPERTY PropCreateReadOnlyItem(LPCTSTR pstrName, LPCTSTR pstrValue = _T(""), LPARAM lParam = 0)
 {
-   ATLASSERT(!::IsBadStringPtr(pstrValue,-1));
+   ATLASSERT(pstrValue != NULL);
    CPropertyItem* prop = NULL;
    ATLTRY( prop = new CPropertyReadOnlyItem(pstrName, lParam) );
    ATLASSERT(prop);

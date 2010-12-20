@@ -16,6 +16,7 @@
 #include "CellBuffer.h"
 #include "CharClassify.h"
 #include "Decoration.h"
+#include <ILexer.h>
 #include <Document.h>
 
 #include <boost/xpressive/xpressive.hpp>

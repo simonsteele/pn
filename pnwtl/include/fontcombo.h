@@ -19,6 +19,8 @@
 #ifndef fontcombo_h__included
 #define fontcombo_h__included
 
+#define FIXEDPITCH_FONTTYPE 0x0008
+
 class CFontCombo : public CWindowImpl<CFontCombo, CComboBox, CControlWinTraits>
 {
 	typedef CWindowImpl<CFontCombo, CComboBox, CControlWinTraits> baseClass;
@@ -31,6 +33,7 @@ public:
 	BEGIN_MSG_MAP(CFontCombo)
 		MESSAGE_HANDLER(WM_CREATE, OnCreate);
 		MESSAGE_HANDLER(WM_DESTROY, OnDestroy);
+        MESSAGE_HANDLER(WM_SETFONT, OnSetFont);
 		MESSAGE_HANDLER(OCM_DRAWITEM, OnDrawItem);
 		MESSAGE_HANDLER(OCM_MEASUREITEM, OnMeasureItem);
 	END_MSG_MAP()
@@ -57,7 +60,9 @@ public:
 	}
 
 protected:
-	CImageList m_img;	
+	CImageList m_img;
+    CFontHandle m_fontNormal;
+    CFont m_fontBold;
 	int m_cyItem;
 	
 	enum 
@@ -123,6 +128,11 @@ protected:
 				m_img.GetIconSize(sz);
 				m_img.Draw(dc, 0, rc.left + 2, rc.top + ((rc.bottom - rc.top - sz.cy) / 2) ,ILD_TRANSPARENT);
 			}
+
+            if (dwData & FIXEDPITCH_FONTTYPE)
+            {
+                dc.SelectFont(m_fontBold);
+            }
 		
 			rc.left += GLYPH_WIDTH + 2;
 			dc.GetTextExtent(psFont, nLen, &sz);
@@ -142,16 +152,37 @@ protected:
 		{
 			// calculate height
 			CClientDC dc(m_hWnd);
-			HFONT hFont = ((HFONT)GetStockObject( DEFAULT_GUI_FONT ));
-			dc.SelectFont( hFont ); //GetFont()
+			HFONT hFontDefault = dc.SelectFont(m_fontNormal); //GetFont()
 			TEXTMETRIC tm;
 			dc.GetTextMetrics(&tm); 
 
 			m_cyItem = tm.tmHeight + tm.tmInternalLeading;
+
+			dc.SelectFont(hFontDefault); // reselect the default font
 		}
 
 		pmis->itemHeight = m_cyItem;
 		return TRUE;			
+	}
+
+	LRESULT OnSetFont(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+	{
+        bHandled = FALSE;
+
+        if(!m_fontNormal.IsNull())
+            m_fontNormal.DeleteObject();
+
+        if(!m_fontBold.IsNull())
+            m_fontBold.DeleteObject();
+
+        m_fontNormal = (HFONT)wParam;
+        CLogFont lf;
+        m_fontNormal.GetLogFont(&lf);
+        lf.SetBold();
+
+        m_fontBold.CreateFontIndirect(&lf);
+
+		return 0;
 	}
 	
 	void Init ()
@@ -170,6 +201,12 @@ protected:
 	{	
 		CFontCombo *pThis = reinterpret_cast<CFontCombo*>(lpData);
 		int index = pThis->AddString(lplf->lfFaceName);
+
+        if(lplf->lfPitchAndFamily & FIXED_PITCH)
+        {
+            // fixed pitch 
+            dwType |= FIXEDPITCH_FONTTYPE;
+        }
 		pThis->SetItemData (index, dwType);
 		return TRUE;
 	}

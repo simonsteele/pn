@@ -42,9 +42,13 @@ public:
 		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
 		MESSAGE_HANDLER(PN_OVERWRITETARGET, OnOverwriteTarget)
 		MESSAGE_HANDLER(PN_INSERTCLIP, OnInsertClip)
+		MESSAGE_HANDLER(PN_INSERTCLIPTEXT, OnInsertClipText)
+		MESSAGE_HANDLER(PN_SETSCHEME, OnSetSchemeText)
 		MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
 		MESSAGE_HANDLER(WM_KEYUP, OnKeyUp)
 		MESSAGE_HANDLER(WM_CHAR, OnChar)
+		MESSAGE_HANDLER(WM_VSCROLL, OnVScroll)
+		MESSAGE_HANDLER(WM_MOUSEWHEEL, OnMouseWheel)
 
 		COMMAND_ID_HANDLER(ID_EDIT_INDENT, OnIndent)
 		COMMAND_ID_HANDLER(ID_EDIT_UNINDENT, OnUnindent)
@@ -73,7 +77,7 @@ public:
 	Scheme* GetCurrentScheme() const;
 
 	bool Load(LPCTSTR filename, Scheme* pScheme = NULL, EPNEncoding encoding = eUnknown);
-	bool Save(LPCTSTR filename, bool bSetScheme = true);
+	bool Save(IFilePtr file, bool bSetScheme = true);
 
 	void Revert(LPCTSTR filename);
 
@@ -100,7 +104,8 @@ public:
 	// Overrides from CScintillaImpl / CScintillaWindowImpl
 	
 	virtual bool OpenFile(LPCTSTR filename, EPNEncoding encoding);
-	virtual bool SaveFile(LPCTSTR filename, bool setSavePoint = true);
+	
+	bool SaveFile(IFilePtr file, bool setSavePoint = true);
 
 	void DoContextMenu(CPoint* point);
 	virtual int HandleNotify(LPARAM lParam);
@@ -119,15 +124,21 @@ public:
 	// Implement View
 	HWND GetHwnd() { return m_hWnd; }
 
+	void InsertClip(const TextClips::Clip* clip);
+
 private:
 
 	// Message Handlers
 	HRESULT OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	HRESULT OnOverwriteTarget(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	HRESULT OnInsertClip(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	HRESULT OnInsertClipText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	LRESULT OnSetSchemeText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/);
 	HRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	HRESULT OnKeyUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 	HRESULT OnChar(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	HRESULT OnVScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
+	HRESULT OnMouseWheel(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled);
 
 	////////////////////////////////////////////////////////////////
 	// Command Handlers

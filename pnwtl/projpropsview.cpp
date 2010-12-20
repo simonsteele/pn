@@ -2,7 +2,7 @@
  * @file projpropsview.cpp
  * @brief Project Properties
  * @author Simon Steele
- * @note Copyright (c) 2004-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2004-2010 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -437,7 +437,7 @@ void CProjPropsView::showHelpFor(Projects::ProjectProp* prop, LPPOINT pt)
 				path = fn.c_str();
 
 				// Show that help!
-				HH_POPUP popup = {sizeof(HH_POPUP), 0, iID, 0, {pt->x, pt->y}, -1, -1, {-1,-1,-1,-1}, NULL};
+				HH_POPUP popup = {sizeof(HH_POPUP), 0, iID, 0, {pt->x, pt->y}, static_cast<COLORREF>(-1), static_cast<COLORREF>(-1), {-1,-1,-1,-1}, NULL};
 				::HtmlHelp(m_hWnd, path.c_str(), HH_DISPLAY_TEXT_POPUP, (DWORD_PTR)&popup);
 			}
 		}

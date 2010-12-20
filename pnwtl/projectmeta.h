@@ -43,7 +43,7 @@ class XmlNode
 		
 		void Write(ProjectWriter* writer);
 
-		void AddAttributes(XMLAttributes& atts);
+		void AddAttributes(const XMLAttributes& atts);
 		void AddChild(XmlNode* pChild);
 
 		XmlNode* GetParent();

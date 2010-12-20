@@ -17,7 +17,7 @@ class Parser : public XMLParseState
 	
 	//XMLParseState
 	public:
-		virtual void startElement(LPCTSTR name, XMLAttributes& atts);
+		virtual void startElement(LPCTSTR name, const XMLAttributes& atts);
 		virtual void endElement(LPCTSTR name);
 		virtual void characterData(LPCTSTR data, int len);
 

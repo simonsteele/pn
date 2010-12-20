@@ -27,7 +27,7 @@ using namespace TextClips;
 #define SET_STATE(state) \
 	m_parseState = state
 
-void Parser::startElement(LPCTSTR name, XMLAttributes& atts)
+void Parser::startElement(LPCTSTR name, const XMLAttributes& atts)
 {
 	if ( IN_STATE(TCPS_START) )
 	{

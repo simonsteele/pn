@@ -37,9 +37,9 @@ LRESULT CFindInFilesView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 	m_list.Create(m_hWnd, rc, _T("Results"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | LVS_REPORT | LVS_NOSORTHEADER | LVS_SHOWSELALWAYS, 0, IDC_FIF_LIST);
 	m_list.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
 
-	m_list.AddColumn(_T("File"), 0);
-	m_list.AddColumn(_T("Line"), 1);
-	m_list.AddColumn(_T("Text"), 2);
+	m_list.AddColumn(LS(IDS_FINDRESULTS_FILE), 0);
+	m_list.AddColumn(LS(IDS_FINDRESULTS_LINE), 1);
+	m_list.AddColumn(LS(IDS_FINDRESULTS_TEXT), 2);
 
 	m_list.SetColumnWidth(0, 250);
 	m_list.SetColumnWidth(1, 50);
@@ -127,14 +127,14 @@ LRESULT CFindInFilesView::OnFIFFinish(UINT /*uMsg*/, WPARAM wParam, LPARAM lPara
 
 	DWORD dwTicksTaken = GetTickCount() - m_dwStartTicks;
 	TCHAR buf[4096];
-	_sntprintf(buf, 4096, _T("Search complete: %d matching lines found in %d files, taking %d milliseconds.\n"), found, wParam, dwTicksTaken);
+	_sntprintf(buf, 4096, LS(IDS_FINDRESULTS_SUMMARY), found, wParam, dwTicksTaken);
 	g_Context.m_frame->SetStatusText(buf);
 	return 0;
 }
 
 LRESULT CFindInFilesView::OnFIFStart(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-	tstring sstartstr(_T("Searching for: "));
+	tstring sstartstr(L10N::StringLoader::Get(IDS_FINDRESULTS_SEARCHINGFOR));
 	sstartstr += m_lookingFor;
 	g_Context.m_frame->SetStatusText(sstartstr.c_str());
 	
@@ -200,7 +200,8 @@ void CFindInFilesView::handleUserSelection(int index)
 	}
 	else
 	{
-		tstring msg = _T("Could not locate ") + str;
+		tstring msg(L10N::StringLoader::Get(IDS_FINDRESULTS_NOTFOUND));
+		msg += str;
 		msg += _T(".");
 		g_Context.m_frame->SetStatusText(msg.c_str());
 	}

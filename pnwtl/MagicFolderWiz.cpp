@@ -9,12 +9,16 @@
  */
 #include "stdafx.h"
 #include "resource.h"
+#include "project.h"
 
 #include "include/browsetree.h"
 //#include "include/wtltreems.h"
 
 #include "include/atlshellext.h"
 #include "include/ShellCtrls.h"
+#include "include/filefinder.h"
+#include "include/filematcher.h"
+#include "folderadder.h"
 
 #include "MagicFolderWiz.h"
 
@@ -98,10 +102,12 @@ MagicFolderWizard2::MagicFolderWizard2() : baseClass(_T("Add Magic Folder"))
 LRESULT MagicFolderWizard2::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	CEdit fileFilter(GetDlgItem(IDC_MAGICFOLDER_FILEFILTER));
+	CEdit excludedFileFilter(GetDlgItem(IDC_MAGICFOLDER_EXCLUDEDFILEFILTER));
 	CEdit folderFilter(GetDlgItem(IDC_MAGICFOLDER_FOLDERFILTER));
 
 	fileFilter.SetWindowText(_T("*"));
-	folderFilter.SetWindowText(_T("CVS;.svn"));
+	excludedFileFilter.SetWindowText(Projects::FolderAdder::getDefaultExcludedFileFilter());
+	folderFilter.SetWindowText(Projects::FolderAdder::getDefaultExcludedFolderFilter());
 
 	return 0;
 }
@@ -116,9 +122,11 @@ int MagicFolderWizard2::OnSetActive()
 int MagicFolderWizard2::OnWizardFinish()
 {
 	CEdit fileFilter(GetDlgItem(IDC_MAGICFOLDER_FILEFILTER));
+	CEdit excludedFileFilter(GetDlgItem(IDC_MAGICFOLDER_EXCLUDEDFILEFILTER));
 	CEdit folderFilter(GetDlgItem(IDC_MAGICFOLDER_FOLDERFILTER));
 
 	fileFilter.GetWindowText(strFileFilter);
+	excludedFileFilter.GetWindowText(strExcludedFileFilter);
 	folderFilter.GetWindowText(strFolderFilter);
 
 	return 1;
@@ -127,6 +135,10 @@ int MagicFolderWizard2::OnWizardFinish()
 LPCTSTR MagicFolderWizard2::GetFileFilter() const
 {
 	return strFileFilter;
+}
+
+LPCTSTR MagicFolderWizard2::GetExcludedFileFiler() const {
+	return strExcludedFileFilter;
 }
 
 LPCTSTR MagicFolderWizard2::GetFolderFilter() const

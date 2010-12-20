@@ -1,55 +1,34 @@
-# $Id: mk_mvc.mak,v 1.7 2003/09/19 04:02:39 darren Exp $
+# $Id: mk_mvc.mak 724 2009-07-09 20:54:01Z dhiebert $
 #
 # Makefile for Win32 using Microsoft Visual C++ compiler
 
 include source.mak
 
-# You can obtain an Win32 version of the Gnu regex support library from
-#   http://people.delphiforums.com/gjc/gnu_regex.html
-# Point REGEX_DIR to the directory created when you extract the archive.
-# If you just run gnu_regex.exe in this directory, then you can just
-# uncomment the REGEX_DIR macro below and everything should work.
-
-REGEX_DIR = gnu_regex_dist
-
-!ifdef REGEX_DIR
-EXTRA_INC = -I$(REGEX_DIR)
-
-# Uncomment the following macro to dynamically link against the regex DLL;
-# otherwise link statically against regex.
-
-#REGEX_DLL=1
-
-!ifdef REGEX_DLL
-REGEX_DEFINE = -DHAVE_REGCOMP
-EXTRA_LIBS = $(REGEX_DIR)\gnu_regex.lib
-!else
-REGEX_DEFINE = -DHAVE_REGCOMP -DREGEX_MALLOC -DSTDC_HEADERS=1
-EXTRA_LIBS = regex.obj
-!endif
-!endif
-
-DEFINES = -DWIN32 $(REGEX_DEFINE)
-INCLUDES = $(EXTRA_INC)
-OPT = /O2 /G5 /MD
+REGEX_DEFINES = -DHAVE_REGCOMP -D__USE_GNU -Dbool=int -Dfalse=0 -Dtrue=1 -Dstrcasecmp=stricmp
+DEFINES = -DWIN32 $(REGEX_DEFINES)
+INCLUDES = -I. -Ignu_regex
+OPT = /O2
 
 ctags: ctags.exe
 
-ctags.exe: $(SOURCES) respmvc $(EXTRA_LIBS)
+ctags.exe: respmvc
 	cl $(OPT) /Fe$@ @respmvc /link setargv.obj
 
 readtags.exe: readtags.c
 	cl /clr $(OPT) /Fe$@ $(DEFINES) -DREADTAGS_MAIN readtags.c /link setargv.obj
 
 # Debug version
-dctags.exe: $(SOURCES) respmvc $(EXTRA_LIBS)
+dctags.exe: respmvc
 	cl /Zi -DDEBUG /Fe$@ @respmvc debug.c /link setargv.obj
 
 regex.obj:
-	cl /c $(OPT) /Fo$@ $(DEFINES) -Dconst= $(INCLUDES) $(REGEX_DIR)\regex.c
+	cl /c $(OPT) /Fo$@ $(INCLUDES) $(DEFINES) gnu_regex/regex.c
 
-respmvc: $(SOURCES) $(HEADERS) mk_mvc.mak
-	echo $(DEFINES) $(INCLUDES) $(SOURCES) $(EXTRA_LIBS) > $@
+respmvc: $(SOURCES) $(REGEX_SOURCES) $(HEADERS) $(REGEX_HEADERS) mk_mvc.mak
+	echo $(DEFINES) > $@
+	echo $(INCLUDES) >> $@
+	echo $(SOURCES) >> $@
+	echo $(REGEX_SOURCES) >> $@
 
 mostlyclean:
 	- del *.obj

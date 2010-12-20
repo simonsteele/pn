@@ -57,7 +57,7 @@ class XMLAttributes
 class XMLParseState
 {
 	public:
-		virtual void startElement(XML_CSTR name, XMLAttributes& atts) = 0;
+		virtual void startElement(XML_CSTR name, const XMLAttributes& atts) = 0;
 		virtual void endElement(XML_CSTR name) = 0;
 		virtual void characterData(XML_CSTR data, int len) = 0;
 };
@@ -66,7 +66,7 @@ template <typename T>
 class XMLParserCallback : public XMLParseState
 {
 	public:
-		typedef void (T::*SF)(void *userData, XML_CSTR name, XMLAttributes& atts);
+		typedef void (T::*SF)(void *userData, XML_CSTR name, const XMLAttributes& atts);
 		typedef void (T::*EF)(void *userData, XML_CSTR name);
 		typedef void (T::*CD)(void *userData, XML_CSTR data, int len);
 
@@ -86,7 +86,7 @@ class XMLParserCallback : public XMLParseState
 			m_userData = data;
 		}
 
-		virtual void startElement(XML_CSTR name, XMLAttributes& atts)
+		virtual void startElement(XML_CSTR name, const XMLAttributes& atts)
 		{
 			(m_t->*m_sf)(m_userData, name, atts);
 		}

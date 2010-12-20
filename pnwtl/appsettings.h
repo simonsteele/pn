@@ -45,7 +45,7 @@ public:
 
 // XMLParseState
 public:
-	virtual void startElement(XML_CSTR name, XMLAttributes& atts);
+	virtual void startElement(XML_CSTR name, const XMLAttributes& atts);
 	virtual void endElement(XML_CSTR name);
 	virtual void characterData(XML_CSTR data, int len);
 
@@ -54,9 +54,9 @@ protected:
 	void load();
 	void load(const TCHAR* filename);
 	void save();
-	void onUserSettingsPath(XMLAttributes& atts);
-	void onStoreType(XMLAttributes& atts);
-	void onExtension(XMLAttributes& atts);
+	void onUserSettingsPath(const XMLAttributes& atts);
+	void onStoreType(const XMLAttributes& atts);
+	void onExtension(const XMLAttributes& atts);
 
 protected:
 	bool			m_bUseIni;

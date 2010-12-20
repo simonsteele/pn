@@ -379,15 +379,7 @@ LRESULT CTabPageStyles::OnFontChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 {			
 	if (m_pStyle)
 	{
-		USES_CONVERSION;
-
-		int i = m_FontCombo.GetCurSel();
-		CString str;
-		m_FontCombo.GetLBText(i, str);
-		m_sd.SetFontName(str);
-		
-		CT2CA fn((LPCTSTR)str);
-		m_Style.FontName = static_cast<LPCSTR>(fn);
+		m_Style.FontName = m_FontCombo.GetSelFontName();
 	}
 
 	return 0;
@@ -479,9 +471,7 @@ void CTabPageStyles::UpdateSel()
 				m_fore.SetColor(m_Style.ForeColor);
 				m_back.SetColor(m_Style.BackColor);
 
-				CA2CT fontconv(m_Style.FontName.c_str());
-
-				m_FontCombo.SelectString(-1, fontconv);
+				m_FontCombo.SelectString(-1, m_Style.FontName.c_str());
 				m_SizeCombo.Select(m_Style.FontSize);
 
 				::SetWindowText(GetDlgItem(IDC_STATIC_TC), _T("Text Colour: "));

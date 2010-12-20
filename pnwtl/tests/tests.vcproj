@@ -120,6 +120,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="-Zm160"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;BOOST_TEST_DYN_LINK;SCI_NAMESPACE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -362,6 +363,10 @@
 			>
 			<File
 				RelativePath=".\mocks\mockoptions.h"
+				>
+			</File>
+			<File
+				RelativePath=".\mocks\mockscriptrunner.h"
 				>
 			</File>
 		</Filter>
