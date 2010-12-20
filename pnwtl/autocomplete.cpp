@@ -2,7 +2,7 @@
  * @file autocomplete.cpp
  * @brief Implement autocomplete behaviours
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -19,7 +19,7 @@
 #endif
 
 // Insert a string into a string list maintaining sorting
-void insert_sorted(string_array& arr, std::string& w)
+void insert_sorted(string_array& arr, const std::string& w)
 {
 	//TODO: w.Trim();
 	//w = w.Trim();
@@ -42,11 +42,6 @@ void insert_sorted(string_array& arr, std::string& w)
 			if(_stricmp((*i).c_str(), w.c_str()) > 0)
 			{
 				arr.insert(i, w);
-				/*if(arr.size()>65) //For debugging
-				{				
-					for(int i=0;i<arr.size();i++)_RPT1(_CRT_WARN,"%s,",arr[i].c_str());
-					_RPT0(_CRT_WARN,"\n");
-				}//End debugging*/
 				return;
 			}
 
