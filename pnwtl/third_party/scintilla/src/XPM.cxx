@@ -38,7 +38,7 @@ static size_t MeasureLength(const char *s) {
 	return i;
 }
 
-ColourAllocated XPM::ColourFromCode(int ch) {
+ColourAllocated XPM::ColourFromCode(int ch) const {
 	return colourCodeTable[ch]->allocated;
 #ifdef SLOW
 	for (int i=0; i<nColours; i++) {

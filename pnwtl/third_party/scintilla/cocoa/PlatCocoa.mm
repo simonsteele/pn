@@ -1352,8 +1352,8 @@ void ListBoxImpl::Create(Window &/*parent*/, int /*ctrlID*/, Scintilla::Point /*
   unicodeMode = unicodeMode_;
   maxWidth = 2000;
   
-  WindowClass windowClass = kHelpWindowClass;
-  WindowAttributes attributes = kWindowNoAttributes;
+  //WindowClass windowClass = kHelpWindowClass;
+  //WindowAttributes attributes = kWindowNoAttributes;
   Rect contentBounds;
   WindowRef outWindow;
   
@@ -1365,7 +1365,7 @@ void ListBoxImpl::Create(Window &/*parent*/, int /*ctrlID*/, Scintilla::Point /*
   
   //InstallStandardEventHandler(GetWindowEventTarget(outWindow));
   
-  ControlRef root;
+  //ControlRef root;
   //CreateRootControl(outWindow, &root);
   
   //CreateDataBrowserControl(outWindow, &contentBounds, kDataBrowserListView, &lb);
@@ -1377,22 +1377,24 @@ void ListBoxImpl::Create(Window &/*parent*/, int /*ctrlID*/, Scintilla::Point /*
   
   // get rid of the frame, forces databrowser to the full size
   // of the window
-  Boolean frameAndFocus = false;
+  //Boolean frameAndFocus = false;
   //SetControlData(lb, kControlNoPart, kControlDataBrowserIncludesFrameAndFocusTag,
   //       sizeof(frameAndFocus), &frameAndFocus);
   
-  ListBoxImpl* lbThis = this;
+  //ListBoxImpl* lbThis = this;
   //SetControlProperty( lb, scintillaListBoxType, 0, sizeof( this ), &lbThis );
   
   ConfigureDataBrowser();
   InstallDataBrowserCustomCallbacks();
   
   // install event handlers
+  /*
   static const EventTypeSpec kWindowEvents[] =
   {
     { kEventClassMouse, kEventMouseDown },
     { kEventClassMouse, kEventMouseMoved },
   };
+   */
   
   eventHandler = NULL;
   //InstallWindowEventHandler( outWindow, WindowEventHandler,
@@ -1537,7 +1539,7 @@ pascal void ListBoxDrawItemCallback(ControlRef browser, DataBrowserItemID item,
 {
   if (property != kIconColumn) return;
   ListBoxImpl* lbThis = NULL;
-  OSStatus err;
+  //OSStatus err;
   //err = GetControlProperty( browser, scintillaListBoxType, 0, sizeof( lbThis ), NULL, &lbThis );
   // adjust our rect
   lbThis->DrawRow(item, property, itemState, theRect);
@@ -1547,7 +1549,7 @@ pascal void ListBoxDrawItemCallback(ControlRef browser, DataBrowserItemID item,
 void ListBoxImpl::ConfigureDataBrowser()
 {
   DataBrowserViewStyle viewStyle;
-  DataBrowserSelectionFlags selectionFlags;
+  //DataBrowserSelectionFlags selectionFlags;
   //GetDataBrowserViewStyle(lb, &viewStyle);
   
   //SetDataBrowserHasScrollBars(lb, false, true);
@@ -1793,7 +1795,7 @@ int ListBoxImpl::Find(const char *prefix) {
   char s[255];
   for (int i = 0; i < count; i++) {
     GetValue(i, s, 255);
-    if (s[0] != NULL && (0 == strncmp(prefix, s, strlen(prefix)))) {
+    if ((s[0] != '\0') && (0 == strncmp(prefix, s, strlen(prefix)))) {
       return i;
     }
   }
@@ -1840,6 +1842,27 @@ void ListBoxImpl::ClearRegisteredImages() {
   xset.Clear();
 }
 
+//----------------- ScintillaContextMenu -----------------------------------------------------------
+
+@implementation ScintillaContextMenu : NSMenu
+
+// This NSMenu subclass serves also as target for menu commands and forwards them as
+// notfication messages to the front end.
+
+- (void) handleCommand: (NSMenuItem*) sender
+{
+  owner->HandleCommand([sender tag]);
+}
+
+//--------------------------------------------------------------------------------------------------
+
+- (void) setOwner: (Scintilla::ScintillaCocoa*) newOwner
+{
+  owner = newOwner;
+}
+
+@end
+
 //----------------- Menu ---------------------------------------------------------------------------
 
 Menu::Menu()
@@ -1849,34 +1872,27 @@ Menu::Menu()
 
 //--------------------------------------------------------------------------------------------------
 
-void Menu::CreatePopUp() {
-  // TODO: Could I just feed a constant menu ID parameter, or does
-  // it really need to be unique?
-  static int nextMenuID = 1;
+void Menu::CreatePopUp()
+{
   Destroy();
-  OSStatus err;
-  //    err = CreateNewMenu( nextMenuID++, 0, reinterpret_cast<MenuRef*>( &id ) );
+  mid = [[ScintillaContextMenu alloc] initWithTitle: @""];
 }
 
-void Menu::Destroy() {
+//--------------------------------------------------------------------------------------------------
+
+void Menu::Destroy()
+{
+  ScintillaContextMenu* menu = reinterpret_cast<ScintillaContextMenu*>(mid);
+  [menu release];
+  mid = NULL;
 }
 
-void Menu::Show(Point pt, Window &) {
-  /*
-   UInt32 userSelection = 0;
-   SInt16 menuId = 0;
-   MenuItemIndex menuItem = 0;
-   ::Point globalPoint;
-   globalPoint.h = pt.x;
-   globalPoint.v = pt.y;
-   OSStatus err;
-   err = ContextualMenuSelect( reinterpret_cast<MenuRef>( id ), globalPoint,
-   false, kCMHelpItemRemoveHelp, NULL,
-   NULL, &userSelection,
-   &menuId,
-   &menuItem
-   );
-   */
+//--------------------------------------------------------------------------------------------------
+
+void Menu::Show(Point pt, Window &)
+{
+  // Cocoa menus are handled a bit differently. We only create the menu. The framework
+  // takes care to show it properly.
 }
 
 //----------------- ElapsedTime --------------------------------------------------------------------
@@ -1973,7 +1989,7 @@ bool Platform::MouseButtonBounce()
  */
 long Platform::SendScintilla(WindowID w, unsigned int msg, unsigned long wParam, long lParam) 
 {
-  return scintilla_send_message( w, msg, wParam, lParam );
+  return scintilla_send_message(w, msg, wParam, lParam);
 }
 
 //--------------------------------------------------------------------------------------------------

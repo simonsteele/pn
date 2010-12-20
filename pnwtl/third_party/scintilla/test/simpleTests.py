@@ -748,6 +748,10 @@ class TestSearch(unittest.TestCase):
 		pos = self.ed.FindBytes(0, self.ed.Length, b"big", 0)
 		self.assertEquals(pos, 2)
 
+	def testFindEmpty(self):
+		pos = self.ed.FindBytes(0, self.ed.Length, b"", 0)
+		self.assertEquals(pos, 0)
+
 	def testCaseFind(self):
 		self.assertEquals(self.ed.FindBytes(0, self.ed.Length, b"big", 0), 2)
 		self.assertEquals(self.ed.FindBytes(0, self.ed.Length, b"bIg", 0), 2)

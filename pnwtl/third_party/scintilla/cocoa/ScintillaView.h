@@ -53,6 +53,9 @@ extern NSString *SCIUpdateUINotification;
   // It uses the content view for display.
   Scintilla::ScintillaCocoa* mBackend;
   
+  // The object (eg NSDocument) that controls the ScintillaView.
+  NSObject* mOwner;
+  
   // This is the actual content to which the backend renders itself.
   InnerView* mContent;
   
@@ -85,10 +88,17 @@ extern NSString *SCIUpdateUINotification;
 // NSTextView compatibility layer.
 - (NSString*) string;
 - (void) setString: (NSString*) aString;
+- (void) insertText: (NSString*) aString;
 - (void) setEditable: (BOOL) editable;
+- (BOOL) isEditable;
 - (NSRange) selectedRange;
 
 - (NSString*) selectedString;
+
+- (void)setFontName: (NSString*) font
+               size: (int) size
+               bold: (BOOL) bold
+             italic: (BOOL) italic;
 
 // Native call through to the backend.
 + (sptr_t) directCall: (ScintillaView*) sender message: (unsigned int) message wParam: (uptr_t) wParam
@@ -96,8 +106,10 @@ extern NSString *SCIUpdateUINotification;
 
 // Back end properties getters and setters.
 - (void) setGeneralProperty: (int) property parameter: (long) parameter value: (long) value;
+- (long) getGeneralProperty: (int) property;
 - (long) getGeneralProperty: (int) property parameter: (long) parameter;
 - (long) getGeneralProperty: (int) property parameter: (long) parameter extra: (long) extra;
+- (long) getGeneralProperty: (int) property ref: (const void*) ref;
 - (void) setColorProperty: (int) property parameter: (long) parameter value: (NSColor*) value;
 - (void) setColorProperty: (int) property parameter: (long) parameter fromHTML: (NSString*) fromHTML;
 - (NSColor*) getColorProperty: (int) property parameter: (long) parameter;
@@ -111,6 +123,12 @@ extern NSString *SCIUpdateUINotification;
 - (void) setInfoBar: (NSView <InfoBarCommunicator>*) aView top: (BOOL) top;
 - (void) setStatusText: (NSString*) text;
 
-@property Scintilla::ScintillaCocoa* backend;
+- (void) findAndHighlightText: (NSString*) searchText
+                    matchCase: (BOOL) matchCase
+                    wholeWord: (BOOL) wholeWord
+                     scrollTo: (BOOL) scrollTo
+                         wrap: (BOOL) wrap;
 
+@property Scintilla::ScintillaCocoa* backend;
+@property (retain) NSObject* owner;
 @end

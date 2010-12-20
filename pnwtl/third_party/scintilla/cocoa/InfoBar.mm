@@ -216,7 +216,7 @@ static float BarFontSize = 10.0;
   [mStatusTextLabel setFont: [NSFont menuBarFontOfSize: BarFontSize]];
 
   cell = [mStatusTextLabel cell];
-  [cell setPlaceholderString: @"Default status text"];
+  [cell setPlaceholderString: @""];
 
   [self addSubview: mStatusTextLabel];
   [mStatusTextLabel release];

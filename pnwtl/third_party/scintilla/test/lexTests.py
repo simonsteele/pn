@@ -105,7 +105,7 @@ class TestLexers(unittest.TestCase):
 		self.LexExample("x.vb", b"vb", [b"as dim or string"])
 
 	def testD(self):
-		self.LexExample("x.d", b"d", 
+		self.LexExample("x.d", b"d",
 			[b"keyword1", b"keyword2", b"", b"keyword4", b"keyword5",
 			b"keyword6", b"keyword7"])
 

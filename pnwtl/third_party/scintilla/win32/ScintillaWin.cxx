@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 
+#undef _WIN32_WINNT
 #define _WIN32_WINNT  0x0500
 #include <windows.h>
 #include <commctrl.h>
@@ -24,13 +25,12 @@
 
 #include "Platform.h"
 
+#include "ILexer.h"
 #include "Scintilla.h"
+
 #ifdef SCI_LEXER
 #include "SciLexer.h"
-#include "PropSet.h"
-#include "PropSetSimple.h"
-#include "Accessor.h"
-#include "KeyWords.h"
+#include "LexerModule.h"
 #endif
 #include "SplitVector.h"
 #include "Partitioning.h"
@@ -75,10 +75,8 @@
 #endif
 
 #include <commctrl.h>
-#ifndef __BORLANDC__
 #ifndef __DMC__
 #include <zmouse.h>
-#endif
 #endif
 #include <ole2.h>
 
@@ -328,6 +326,10 @@ ScintillaWin::ScintillaWin(HWND hwnd) {
 	sysCaretHeight = 0;
 
 	keysAlwaysUnicode = false;
+
+	caret.period = ::GetCaretBlinkTime();
+	if (caret.period < 0)
+		caret.period = 0;
 
 	Initialise();
 }
@@ -741,11 +743,11 @@ sptr_t ScintillaWin::WndProc(unsigned int iMessage, uptr_t wParam, sptr_t lParam
 			//	Platform::IsKeyDown(VK_SHIFT),
 			//	Platform::IsKeyDown(VK_CONTROL),
 			//	Platform::IsKeyDown(VK_MENU));
+			::SetFocus(MainHWND());
 			ButtonDown(Point::FromLong(lParam), ::GetMessageTime(),
 				(wParam & MK_SHIFT) != 0,
 				(wParam & MK_CONTROL) != 0,
 				Platform::IsKeyDown(VK_MENU));
-			::SetFocus(MainHWND());
 			}
 			break;
 
@@ -1293,7 +1295,7 @@ void ScintillaWin::NotifyDoubleClick(Point pt, bool shift, bool ctrl, bool alt) 
 			  MAKELPARAM(pt.x, pt.y));
 }
 
-class CaseFolderUTF8  : public CaseFolderTable {
+class CaseFolderUTF8 : public CaseFolderTable {
 	// Allocate the expandable storage here so that it does not need to be reallocated
 	// for each call to Fold.
 	std::vector<wchar_t> utf16Mixed;
@@ -1313,6 +1315,12 @@ public:
 			size_t nUtf16Mixed = ::MultiByteToWideChar(65001, 0, mixed, lenMixed,
 				&utf16Mixed[0], utf16Mixed.size());
 
+			if (nUtf16Mixed == 0) {
+				// Failed to convert -> bad UTF-8
+				folded[0] = '\0';
+				return 1;
+			}
+
 			if (nUtf16Mixed * 4 > utf16Folded.size()) {	// Maximum folding expansion factor of 4
 				utf16Folded.resize(nUtf16Mixed * 4 + 8);
 			}
@@ -1331,13 +1339,63 @@ public:
 	}
 };
 
+class CaseFolderDBCS : public CaseFolderTable {
+	// Allocate the expandable storage here so that it does not need to be reallocated
+	// for each call to Fold.
+	std::vector<wchar_t> utf16Mixed;
+	std::vector<wchar_t> utf16Folded;
+	UINT cp;
+public:
+	CaseFolderDBCS(UINT cp_) : cp(cp_) {
+		StandardASCII();
+	}
+	virtual size_t Fold(char *folded, size_t sizeFolded, const char *mixed, size_t lenMixed) {
+		if ((lenMixed == 1) && (sizeFolded > 0)) {
+			folded[0] = mapping[static_cast<unsigned char>(mixed[0])];
+			return 1;
+		} else {
+			if (lenMixed > utf16Mixed.size()) {
+				utf16Mixed.resize(lenMixed + 8);
+			}
+			size_t nUtf16Mixed = ::MultiByteToWideChar(cp, 0, mixed, lenMixed,
+				&utf16Mixed[0], utf16Mixed.size());
+
+			if (nUtf16Mixed == 0) {
+				// Failed to convert -> bad input
+				folded[0] = '\0';
+				return 1;
+			}
+
+			if (nUtf16Mixed * 4 > utf16Folded.size()) {	// Maximum folding expansion factor of 4
+				utf16Folded.resize(nUtf16Mixed * 4 + 8);
+			}
+			int lenFlat = ::LCMapStringW(LOCALE_SYSTEM_DEFAULT,
+				LCMAP_LINGUISTIC_CASING | LCMAP_LOWERCASE,
+				&utf16Mixed[0], nUtf16Mixed, &utf16Folded[0], utf16Folded.size());
+
+			size_t lenOut = ::WideCharToMultiByte(cp, 0,
+				&utf16Folded[0], lenFlat,
+				NULL, 0, NULL, 0);
+
+			if (lenOut < sizeFolded) {
+				::WideCharToMultiByte(cp, 0,
+					&utf16Folded[0], lenFlat,
+					folded, lenOut, NULL, 0);
+				return lenOut;
+			} else {
+				return 0;
+			}
+		}
+	}
+};
+
 CaseFolder *ScintillaWin::CaseFolderForEncoding() {
 	UINT cpDest = CodePageOfDocument();
 	if (cpDest == SC_CP_UTF8) {
 		return new CaseFolderUTF8();
 	} else {
-		CaseFolderTable *pcf = new CaseFolderTable();
 		if (pdoc->dbcsCodePage == 0) {
+			CaseFolderTable *pcf = new CaseFolderTable();
 			pcf->StandardASCII();
 			// Only for single byte encodings
 			UINT cpDoc = CodePageOfDocument();
@@ -1361,8 +1419,10 @@ CaseFolder *ScintillaWin::CaseFolderForEncoding() {
 					}
 				}
 			}
+			return pcf;
+		} else {
+			return new CaseFolderDBCS(cpDest);
 		}
-		return pcf;
 	}
 }
 
@@ -1375,11 +1435,11 @@ std::string ScintillaWin::CaseMapString(const std::string &s, int caseMapping) {
 
 	UINT cpDoc = CodePageOfDocument();
 
-	unsigned int lengthUTF16 = ::MultiByteToWideChar(cpDoc, 0, s.c_str(), s.size(), NULL, NULL);
+	unsigned int lengthUTF16 = ::MultiByteToWideChar(cpDoc, 0, s.c_str(), s.size(), NULL, 0);
 	if (lengthUTF16 == 0)	// Failed to convert
 		return s;
 
-	DWORD mapFlags = LCMAP_LINGUISTIC_CASING | 
+	DWORD mapFlags = LCMAP_LINGUISTIC_CASING |
 		((caseMapping == cmUpper) ? LCMAP_UPPERCASE : LCMAP_LOWERCASE);
 
 	// Many conversions performed by search function are short so optimize this case.
@@ -1396,16 +1456,16 @@ std::string ScintillaWin::CaseMapString(const std::string &s, int caseMapping) {
 		int charsConverted = ::LCMapStringW(LOCALE_SYSTEM_DEFAULT, mapFlags,
 			&vwcText[0], lengthUTF16, NULL, 0);
 		std::vector<wchar_t> vwcConverted(charsConverted);
-		::LCMapStringW(LOCALE_SYSTEM_DEFAULT, mapFlags, 
+		::LCMapStringW(LOCALE_SYSTEM_DEFAULT, mapFlags,
 			&vwcText[0], lengthUTF16, &vwcConverted[0], charsConverted);
 
 		// Change back to document encoding
 		unsigned int lengthConverted = ::WideCharToMultiByte(cpDoc, 0,
-			&vwcConverted[0], vwcConverted.size(), 
+			&vwcConverted[0], vwcConverted.size(),
 			NULL, 0, NULL, 0);
 		std::vector<char> vcConverted(lengthConverted);
-		::WideCharToMultiByte(cpDoc, 0, 
-			&vwcConverted[0], vwcConverted.size(), 
+		::WideCharToMultiByte(cpDoc, 0,
+			&vwcConverted[0], vwcConverted.size(),
 			&vcConverted[0], vcConverted.size(), NULL, 0);
 
 		return std::string(&vcConverted[0], vcConverted.size());
@@ -1428,12 +1488,12 @@ std::string ScintillaWin::CaseMapString(const std::string &s, int caseMapping) {
 
 		// Change back to document encoding
 		unsigned int lengthConverted = ::WideCharToMultiByte(cpDoc, 0,
-			vwcConverted, charsConverted, 
+			vwcConverted, charsConverted,
 			NULL, 0, NULL, 0);
 		// Each UTF-16 code unit may need up to 3 bytes in UTF-8
 		char vcConverted[shortSize * 3 * 3];
-		::WideCharToMultiByte(cpDoc, 0, 
-			vwcConverted, charsConverted, 
+		::WideCharToMultiByte(cpDoc, 0,
+			vwcConverted, charsConverted,
 			vcConverted, lengthConverted, NULL, 0);
 
 		return std::string(vcConverted, lengthConverted);
@@ -1496,7 +1556,7 @@ public:
 	void SetClip(UINT uFormat) {
 		::SetClipboardData(uFormat, Unlock());
 	}
-	operator bool() {
+	operator bool() const {
 		return ptr != 0;
 	}
 	SIZE_T Size() {
@@ -2043,7 +2103,7 @@ void ScintillaWin::GetIntelliMouseParameters() {
 
 void ScintillaWin::CopyToClipboard(const SelectionText &selectedText) {
 	if (!::OpenClipboard(MainHWND()))
-		return ;
+		return;
 	::EmptyClipboard();
 
 	GlobalMemory uniText;
@@ -2375,6 +2435,16 @@ STDMETHODIMP ScintillaWin::Drop(LPDATAOBJECT pIDataSource, DWORD grfKeyState,
 			if (SUCCEEDED(hr) && medium.hGlobal) {
 				data = static_cast<char *>(::GlobalLock(medium.hGlobal));
 			}
+		}
+
+		if (data && convertPastes) {
+			// Convert line endings of the drop into our local line-endings mode
+			int len = strlen(data);
+			char *convertedText = Document::TransformLineEnds(&len, data, len, pdoc->eolMode);
+			if (dataAllocated)
+				delete []data;
+			data = convertedText;
+			dataAllocated = true;
 		}
 
 		if (!data) {

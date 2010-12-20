@@ -24,6 +24,15 @@
 NSRect PRectangleToNSRect(Scintilla::PRectangle& rc);
 Scintilla::PRectangle NSRectToPRectangle(NSRect& rc);
 
+@interface ScintillaContextMenu : NSMenu
+{
+  Scintilla::ScintillaCocoa* owner;
+}
+- (void) handleCommand: (NSMenuItem*) sender;
+- (void) setOwner: (Scintilla::ScintillaCocoa*) newOwner;
+
+@end
+
 namespace Scintilla {
 
 // A class to do the actual text rendering for us using Quartz 2D.

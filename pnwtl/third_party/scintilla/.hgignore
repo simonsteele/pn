@@ -1,0 +1,18 @@
+syntax: glob
+*.o
+*.a
+*.lib
+*.obj
+*.pyc
+*.dll
+*.exp
+*.lib
+*.pdb
+*.res
+*.bak
+*.sbr
+*.idb
+*.ilk
+*.ncb
+*.opt
+*.plg

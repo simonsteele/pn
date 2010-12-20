@@ -14,19 +14,18 @@
  */
 
 #include <stdlib.h>
-#include <string.h>
+#include <string>
 #include <stdio.h>
 #include <ctype.h>
 #include <time.h>
 
 #include <vector>
 
+#include "ILexer.h"
+
 #ifdef SCI_LEXER
 #include "SciLexer.h"
-#include "PropSet.h"
 #include "PropSetSimple.h"
-#include "Accessor.h"
-#include "KeyWords.h"
 #endif
 
 #include "SVector.h"
@@ -78,7 +77,7 @@ namespace Scintilla {
  * back to the parent. Therefore, there must be a callback handler that acts
  * like a Windows WndProc, where Scintilla can send notifications to. Use
  * ScintillaCocoa::RegisterNotifyHandler() to register such a handler.
- * Messgae format is:
+ * Message format is:
  * <br>
  * WM_COMMAND: HIWORD (wParam) = notification code, LOWORD (wParam) = 0 (no control ID), lParam = ScintillaCocoa*
  * <br>
@@ -123,6 +122,7 @@ protected:
   
   virtual void Initialise();
   virtual void Finalise();
+  virtual std::string CaseMapString(const std::string &s, int caseMapping);
 public:
   ScintillaCocoa(NSView* view);
   virtual ~ScintillaCocoa();
@@ -196,8 +196,9 @@ public:
   virtual void Undo();
   virtual void Redo();
   
-  //    virtual OSStatus ContextualMenuClick( HIPoint& location );
-//
+  virtual NSMenu* CreateContextMenu(NSEvent* event);
+  void HandleCommand(NSInteger command);
+
 //    virtual OSStatus ActiveStateChanged();
 //
 //    virtual void CallTipClick();

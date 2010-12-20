@@ -3,14 +3,14 @@
  * Scintilla source code edit control
  * ScintillaCocoa.mm - Cocoa subclass of ScintillaBase
  * 
- * Mike Lischke <mlischke@sun.com>
+ * Written by Mike Lischke <mlischke@sun.com>
  *
  * Loosely based on ScintillaMacOSX.cxx.
  * Copyright 2003 by Evan Jones <ejones@uwaterloo.ca>
  * Based on ScintillaGTK.cxx Copyright 1998-2002 by Neil Hodgson <neilh@scintilla.org>
  * The License.txt file describes the conditions under which this software may be distributed.
   *
- * Copyright 2009 Sun Microsystems, Inc. All rights reserved.
+ * Copyright (c) 2009, 2010 Sun Microsystems, Inc. All rights reserved.
  * This file is dual licensed under LGPL v2.1 and the Scintilla license (http://www.scintilla.org/License.txt).
  */
 
@@ -59,12 +59,12 @@ static const KeyToCommand macMapDefault[] =
   {SCK_LEFT,      SCI_SHIFT,  SCI_CHARLEFTEXTEND},
   {SCK_LEFT,      SCI_ALT,    SCI_WORDLEFT},
   {SCK_LEFT,      SCI_CSHIFT, SCI_WORDLEFTEXTEND},
-  {SCK_LEFT,      SCI_ASHIFT, SCI_CHARLEFTRECTEXTEND},
+  {SCK_LEFT,      SCI_ASHIFT, SCI_WORDLEFTEXTEND},
   {SCK_RIGHT,     SCI_NORM,   SCI_CHARRIGHT},
   {SCK_RIGHT,     SCI_SHIFT,  SCI_CHARRIGHTEXTEND},
   {SCK_RIGHT,     SCI_ALT,    SCI_WORDRIGHT},
   {SCK_RIGHT,     SCI_CSHIFT, SCI_WORDRIGHTEXTEND},
-  {SCK_RIGHT,     SCI_ASHIFT, SCI_CHARRIGHTRECTEXTEND},
+  {SCK_RIGHT,     SCI_ASHIFT, SCI_WORDRIGHTEXTEND},
   {'/',           SCI_CTRL,   SCI_WORDPARTLEFT},
   {'/',           SCI_CSHIFT, SCI_WORDPARTLEFTEXTEND},
   {'\\',          SCI_CTRL,   SCI_WORDPARTRIGHT},
@@ -137,10 +137,18 @@ static const KeyToCommand macMapDefault[] =
     // Get the default notification queue for the thread which created the instance (usually the
     // main thread). We need that later for idle event processing.
     NSNotificationCenter* center = [NSNotificationCenter defaultCenter]; 
-    notificationQueue = [[[NSNotificationQueue alloc] initWithNotificationCenter: center] autorelease];
+    notificationQueue = [[NSNotificationQueue alloc] initWithNotificationCenter: center];
     [center addObserver: self selector: @selector(idleTriggered:) name: @"Idle" object: nil]; 
   }
   return self;
+}
+
+//--------------------------------------------------------------------------------------------------
+
+- (void) dealloc
+{
+  [notificationQueue release];
+  [super dealloc];
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -211,6 +219,11 @@ ScintillaCocoa::~ScintillaCocoa()
  */
 void ScintillaCocoa::Initialise() 
 {
+  static bool initedLexers = false;
+  if (!initedLexers) {
+    initedLexers = true;
+    Scintilla_LinkLexers();
+  }
   notifyObj = NULL;
   notifyProc = NULL;
   
@@ -237,6 +250,31 @@ void ScintillaCocoa::Finalise()
 {
   SetTicking(false);
   ScintillaBase::Finalise();
+}
+
+//--------------------------------------------------------------------------------------------------
+
+/**
+ * Case-fold the given string depending on the specified case mapping type.
+ * Note: ScintillaCocoa exclusively works with Unicode. We don't even think about adding support for
+ *       obsolete code page stuff.    
+ */
+std::string ScintillaCocoa::CaseMapString(const std::string &s, int caseMapping)
+{
+  NSString* textToConvert = [NSString stringWithUTF8String: s.c_str()];
+  std::string result;
+  switch (caseMapping)
+  {
+    case cmUpper:
+      result = [[textToConvert uppercaseString] UTF8String];
+      break;
+    case cmLower:
+      result = [[textToConvert lowercaseString] UTF8String];
+      break;
+    default:
+      result = s;
+  }
+  return result;
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -460,8 +498,7 @@ bool ScintillaCocoa::CanPaste()
   if (!Editor::CanPaste())
     return false;
   
-  bool ok = GetPasteboardData([NSPasteboard generalPasteboard], NULL);
-  return ok;
+  return GetPasteboardData([NSPasteboard generalPasteboard], NULL);
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -489,14 +526,15 @@ void ScintillaCocoa::Paste(bool forceRectangular)
   
   pdoc->BeginUndoAction();
   ClearSelection();
+  int length = selectedText.len - 1; // One less to avoid inserting the terminating 0 character.
   if (selectedText.rectangular)
   {
     SelectionPosition selStart = sel.RangeMain().Start();
-    PasteRectangular(selStart, selectedText.s, selectedText.len);
+    PasteRectangular(selStart, selectedText.s, length);
   }
   else 
-    if (pdoc->InsertString(sel.RangeMain().caret.Position(), selectedText.s, selectedText.len))
-      SetEmptySelection(sel.RangeMain().caret.Position() + selectedText.len);
+    if (pdoc->InsertString(sel.RangeMain().caret.Position(), selectedText.s, length))
+      SetEmptySelection(sel.RangeMain().caret.Position() + length);
   
   pdoc->EndUndoAction();
   
@@ -508,7 +546,7 @@ void ScintillaCocoa::Paste(bool forceRectangular)
 
 void ScintillaCocoa::CreateCallTipWindow(PRectangle rc)
 {
-#if 0
+/*
   // create a calltip window
   if (!ct.wCallTip.Created()) {
     WindowClass windowClass = kHelpWindowClass;
@@ -573,60 +611,29 @@ void ScintillaCocoa::CreateCallTipWindow(PRectangle rc)
     HIViewSetVisible(ctw,true);
     
   }
-#endif
+*/
 }
 
 
 void ScintillaCocoa::AddToPopUp(const char *label, int cmd, bool enabled)
 {
-  // Translate stuff into menu item attributes
-  MenuItemAttributes attributes = 0;
-  if (label[0] == '\0')
-    attributes |= kMenuItemAttrSeparator;
-  if (!enabled)
-    attributes |= kMenuItemAttrDisabled;
+  NSMenuItem* item;
+  ScintillaContextMenu *menu= reinterpret_cast<ScintillaContextMenu*>(popup.GetID());
+  [menu setOwner: this];
+  [menu setAutoenablesItems: NO];
   
-  // Translate Scintilla commands into Mac OS commands
-  // TODO: If I create an AEDesc, OS X may insert these standard
-  // text editing commands into the menu for me.
-  MenuCommand macCommand;
-  switch (cmd)
-  {
-    case idcmdUndo:
-      macCommand = kHICommandUndo;
-      break;
-    case idcmdRedo:
-      macCommand = kHICommandRedo;
-      break;
-    case idcmdCut:
-      macCommand = kHICommandCut;
-      break;
-    case idcmdCopy:
-      macCommand = kHICommandCopy;
-      break;
-    case idcmdPaste:
-      macCommand = kHICommandPaste;
-      break;
-    case idcmdDelete:
-      macCommand = kHICommandClear;
-      break;
-    case idcmdSelectAll:
-      macCommand = kHICommandSelectAll;
-      break;
-    case 0:
-      macCommand = 0;
-      break;
-    default:
-      assert( false );
-      return;
-  }
+  if (cmd == 0)
+    item = [NSMenuItem separatorItem];
+  else
+    item = [[NSMenuItem alloc] init];
   
-//  NSMenu *menu= reinterpret_cast<NSMenu*>(popup.GetID());
+  [item setTarget: menu];
+  [item setAction: @selector(handleCommand:)];
+  [item setTag: cmd];
+  [item setTitle: [NSString stringWithUTF8String: label]];
+  [item setEnabled: enabled];
   
-  //XXX TODO:XXX
-//  [menu addItemWithTitle:[NSString stringWithUTF8String:label]
-//                  action:@selector()
-//           keyEquivalent:@""];
+  [menu addItem: item];
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -640,7 +647,7 @@ void ScintillaCocoa::ClaimSelection()
 
 /**
  * Returns the current caret position (which is tracked as an offset into the entire text string)
- * to a row:column pair. The result is zero-based.
+ * as a row:column pair. The result is zero-based.
  */
 NSPoint ScintillaCocoa::GetCaretPosition()
 {
@@ -925,7 +932,7 @@ bool ScintillaCocoa::GetPasteboardData(NSPasteboard* board, SelectionText* selec
     {
       char* text = (char*) [data UTF8String];
       bool rectangular = bestType == ScintillaRecPboardType;
-      selectedText->Copy(text, strlen(text), 0, 0, rectangular, false);
+      selectedText->Copy(text, strlen(text) + 1, SC_CP_UTF8, SC_CHARSET_DEFAULT , rectangular, false);
     }
     return true;
   }
@@ -1028,22 +1035,21 @@ bool ScintillaCocoa::ModifyScrollBars(int nMax, int nPage)
 {
   // Input values are given in lines, not pixels, so we have to convert.
   int lineHeight = WndProc(SCI_TEXTHEIGHT, 0, 0);
-  NSView* container = ContentView();
-  NSRect bounds = [container frame];
+  PRectangle bounds = GetTextRectangle();
   ScintillaView* topContainer = TopContainer();
 
   // Set page size to the same value as the scroll range to hide the scrollbar.
   int scrollRange = lineHeight * (nMax + 1); // +1 because the caller subtracted one.
   int pageSize;
   if (verticalScrollBarVisible)
-    pageSize = bounds.size.height;
+    pageSize = bounds.Height();
   else
     pageSize = scrollRange;
   bool verticalChange = [topContainer setVerticalScrollRange: scrollRange page: pageSize];
   
   scrollRange = scrollWidth;
   if (horizontalScrollBarVisible)
-    pageSize = bounds.size.width;
+    pageSize = bounds.Width();
   else
     pageSize = scrollRange;
   bool horizontalChange = [topContainer setHorizontalScrollRange: scrollRange page: pageSize];
@@ -1393,34 +1399,32 @@ void ScintillaCocoa::MouseUp(NSEvent* event)
 void ScintillaCocoa::MouseWheel(NSEvent* event)
 {
   bool command = ([event modifierFlags] & NSCommandKeyMask) != 0;
-  bool shift = ([event modifierFlags] & NSShiftKeyMask) != 0;
-  int delta;
-  if (shift)
-    delta = 10 * [event deltaX]; // Arbitrary scale factor.
-  else
-  {
-    // In order to make scrolling with larger offset smoother we scroll less line the larger the 
+  int dX = 0;
+  int dY = 0;
+
+  dX = 10 * [event deltaX]; // Arbitrary scale factor.
+
+    // In order to make scrolling with larger offset smoother we scroll less lines the larger the 
     // delta value is.
     if ([event deltaY] < 0)
-      delta = -(int) sqrt(-10.0 * [event deltaY]);
+    dY = -(int) sqrt(-10.0 * [event deltaY]);
     else
-      delta = (int) sqrt(10.0 * [event deltaY]);
-  }
+    dY = (int) sqrt(10.0 * [event deltaY]);
   
   if (command)
   {
     // Zoom! We play with the font sizes in the styles.
     // Number of steps/line is ignored, we just care if sizing up or down.
-    if (delta > 0)
+    if (dY > 0.5)
       KeyCommand(SCI_ZOOMIN);
-    else
+    else if (dY < -0.5)
       KeyCommand(SCI_ZOOMOUT);
   }
   else
-    if (shift)
-      HorizontalScrollTo(xOffset - delta);
-    else
-      ScrollTo(topLine - delta, true);
+  {
+    HorizontalScrollTo(xOffset - dX);
+    ScrollTo(topLine - dY, true);
+  }
 }
 
 //--------------------------------------------------------------------------------------------------
@@ -1449,24 +1453,35 @@ void ScintillaCocoa::Undo()
 
 void ScintillaCocoa::Redo()
 {
-  Editor::Undo();
+  Editor::Redo();
 }
 
 //--------------------------------------------------------------------------------------------------
 
-//OSStatus ScintillaCocoa::ContextualMenuClick( HIPoint& location )
-//{
-//  // convert screen coords to window relative
-//  Rect bounds;
-//  OSStatus err;
-//  err = GetWindowBounds( this->GetOwner(), kWindowContentRgn, &bounds );
-//  assert( err == noErr );
-//  location.x += bounds.left;
-//  location.y += bounds.top;
-//  ContextMenu( Scintilla::Point( static_cast<int>( location.x ), static_cast<int>( location.y ) ) );
-//  return noErr;   
-//}
-//
+/**
+ * Creates and returns a popup menu, which is then displayed by the Cocoa framework.
+ */
+NSMenu* ScintillaCocoa::CreateContextMenu(NSEvent* event)
+{
+  // Call ScintillaBase to create the context menu.
+  ContextMenu(Point(0, 0));
+  
+  return reinterpret_cast<NSMenu*>(popup.GetID());
+}
+
+//--------------------------------------------------------------------------------------------------
+
+/**
+ * An intermediate function to forward context menu commands from the menu action handler to
+ * scintilla.
+ */
+void ScintillaCocoa::HandleCommand(NSInteger command)
+{
+  Command(command);
+}
+
+//--------------------------------------------------------------------------------------------------
+
 //OSStatus ScintillaCocoa::ActiveStateChanged()
 //{
 //  // If the window is being deactivated, lose the focus and turn off the ticking
@@ -1482,3 +1497,4 @@ void ScintillaCocoa::Redo()
 //
 
 //--------------------------------------------------------------------------------------------------
+
