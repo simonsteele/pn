@@ -443,7 +443,15 @@ extensions::IDocumentPtr App::OpenDocument(const wchar_t* filepath, const char* 
 		pScheme = SchemeManager::GetInstance()->SchemeByName(scheme);
 	}
 
-	bool opened = static_cast<CMainFrame*>(g_Context.m_frame)->OpenFile(filepath, pScheme);
+	CMainFrame* mainFrame = static_cast<CMainFrame*>(g_Context.m_frame); 
+
+	if (mainFrame->CheckAlreadyOpen(filepath, eSwitch))
+	{
+		extensions::IDocumentPtr doc = GetCurrentDocument();
+		return doc;
+	}
+
+	bool opened = mainFrame->OpenFile(filepath, pScheme);
 	if(opened)
 	{
 		extensions::IDocumentPtr doc = GetCurrentDocument();
