@@ -2,7 +2,7 @@
  * @file extiface.h
  * @brief PN Extensions Interface
  * @author Simon Steele
- * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -29,8 +29,8 @@
  *  - Set name and version to strings representing your plugin name and version!
  */
 
-#ifndef extiface_h__included_670F47C6_1FF6_4605_9F74_6EC70FD85C26
-#define extiface_h__included_670F47C6_1FF6_4605_9F74_6EC70FD85C26
+#ifndef EXTIFACE_H__INCLUDED_670F47C6_1FF6_4605_9F74_6EC70FD85C26
+#define EXTIFACE_H__INCLUDED_670F47C6_1FF6_4605_9F74_6EC70FD85C26
 
 #ifndef PNASSERT
 	#ifndef _DEBUG
@@ -56,7 +56,7 @@ typedef enum {stFindNext, stReplace, stReplaceAll} SearchType;
 namespace extensions
 {
 
-#define PN_EXT_IFACE_VERSION	10
+#define PN_EXT_IFACE_VERSION	11
 
 /////////////////////////////////////////////////////////////////////////////
 // Predeclare types
@@ -252,6 +252,9 @@ public:
 
 	/// Called when the user switches to a different document
 	virtual void OnDocSelected(IDocumentPtr& doc) = 0;
+
+	/// Called when the very first Scintilla window is created, used for loading external lexers
+	virtual void OnFirstEditorCreated(HWND hWndScintilla) = 0;
 };
 
 /**
@@ -302,6 +305,13 @@ public:
 };
 
 /**
+ * Execution flags for IScriptRunner.
+ * efCaptureOutput instructs Exec to return stdout rather than the Eval(x) of the script
+ * efBuiltIn instructs Exec that the script to be run is part of the PN support libaries, for PyPN this means it's in glue.
+ */
+typedef enum { efCaptureOutput = 0x01, efBuiltIn = 0x02 } EExecFlags;
+
+/**
  * @brief Script Runner Interface - for Script Engine Implementors
  * 
  * Interface for something that can run scripts from the 
@@ -335,22 +345,6 @@ public:
 	 * etc.
 	 */
 	virtual void Eval(const char* script, PN::BaseString& output) = 0;
-};
-
-/**
- * Execution flags for IScriptRunner2.
- * efCaptureOutput instructs Exec to return stdout rather than the Eval(x) of the script
- * efBuiltIn instructs Exec that the script to be run is part of the PN support libaries, for PyPN this means it's in glue.
- */
-typedef enum { efCaptureOutput = 0x01, efBuiltIn = 0x02 } EExecFlags;
-
-/**
- * Extension for the IScriptRunner interface to avoid breaking interface compatibility during 2.1
- */
-class IScriptRunner2
-{
-public:
-	virtual ~IScriptRunner2() {}
 
 	/**
 	 * Execute a method by name, with one optional parameter.

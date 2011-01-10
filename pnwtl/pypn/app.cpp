@@ -102,6 +102,10 @@ void App::OnDocSelected(extensions::IDocumentPtr& doc)
 {
 }
 
+void App::OnFirstEditorCreated(HWND hWndScintilla)
+{
+}
+
 /**
  * Run a script that we registered
  */

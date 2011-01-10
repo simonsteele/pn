@@ -2,7 +2,7 @@
  * @file openfilesview.cpp
  * @brief Docking window showing open files
  * @author Simon Steele
- * @note Copyright (c) 2008-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2008-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -40,6 +40,9 @@ public:
 	/// Called when the user switches to a different document
 	virtual void OnDocSelected(extensions::IDocumentPtr& doc);
 
+	/// Called when the very first Scintilla window is created, used for loading external lexers
+	virtual void OnFirstEditorCreated(HWND hWndScintilla);
+
 private:
 	COpenFilesDocker* m_owner;
 };
@@ -58,6 +61,10 @@ void COpenFilesDocker::AppEventSink::OnAppClose()
 void COpenFilesDocker::AppEventSink::OnDocSelected(extensions::IDocumentPtr& doc)
 {
 	m_owner->SelectDocument(doc);
+}
+
+void COpenFilesDocker::AppEventSink::OnFirstEditorCreated(HWND hWndScintilla)
+{
 }
 
 /// Document Event Sink implementation for the open files window

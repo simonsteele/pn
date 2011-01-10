@@ -2,13 +2,13 @@
  * @file app.h
  * @brief Plugin Main Implementation
  * @author Simon Steele
- * @note Copyright (c) 2006 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2011 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
-#ifndef app_h__included
-#define app_h__included
+#ifndef APP_H_INCLUDED
+#define APP_H_INCLUDED
 
 /**
  * This class manages the environment for the plugin, storing
@@ -16,11 +16,10 @@
  */
 class App : 
 	public extensions::IAppEventSink,
-	public extensions::IScriptRunner,
-	public extensions::IScriptRunner2
+	public extensions::IScriptRunner
 {
 public:
-	App(boost::python::handle<>& obj, extensions::IPN* app);
+	explicit App(boost::python::handle<>& obj, extensions::IPN* app);
 
 	virtual ~App();
 
@@ -30,13 +29,12 @@ public:
 	virtual void OnNewDocument(extensions::IDocumentPtr& doc);
 	virtual void OnAppClose();
 	virtual void OnDocSelected(extensions::IDocumentPtr& doc);
+	virtual void OnFirstEditorCreated(HWND hWndScintilla);
 	
 // IScriptRunner
 	virtual void RunScript(const char* name);
 	virtual void RunDocScript(extensions::IDocumentPtr& doc);
 	virtual void Eval(const char* script, PN::BaseString& output);
-
-// IScriptRunner2
 	virtual void Exec(const char* function, const char* param, int flags, PN::BaseString& output);
 
 // Other
@@ -72,4 +70,4 @@ private:
 
 extern App* g_app;
 
-#endif // #ifndef app_h__included
+#endif // #ifndef APP_H_INCLUDED

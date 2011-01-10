@@ -2007,23 +2007,9 @@ LRESULT CChildFrame::OnCommandNotify(WORD wNotifyCode, WORD /*wID*/, HWND /*hWnd
 				return 0;
 			}
 
-			extensions::IScriptRunner2* python2 = dynamic_cast<extensions::IScriptRunner2*>(python);
-			if (python2 != NULL)
-			{
-				CT2CA commandtext(wt);
-				python2->Exec("evalCommand", commandtext, extensions::efBuiltIn, str);
-			}
-			else
-			{
-				std::string command("glue.evalCommand('");
-				
-				CT2CA commandtext(wt);
-				command += commandtext;
-				command += "')";
-
-				python->Eval(command.c_str(), str);
-			}
-
+			CT2CA commandtext(wt);
+			python->Exec("evalCommand", commandtext, extensions::efBuiltIn, str);
+			
 			CA2CT newwt(str.Get());
 			if (_tcscmp(wt, newwt) != 0)
 			{
@@ -2055,27 +2041,9 @@ LRESULT CChildFrame::OnCommandEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 		return 0;
 	}
 	
-	extensions::IScriptRunner2* python2 = dynamic_cast<extensions::IScriptRunner2*>(python);
-	if (python2 != NULL)
-	{
-		CT2CA commandtext(wt);
-		python2->Exec("evalCommandEnter", commandtext, extensions::efBuiltIn, str);
-	}
-	else
-	{
-		// Some basic argument safety changes until we make an extension
-		// interface that makes this properly safe.
-		std::string commandText(wt.GetA());
-		boost::replace_all(commandText, "\\", "\\\\");
-		boost::replace_all(commandText, "'", "\\'");
-
-		std::string command("glue.evalCommandEnter('");
-		command += commandText;
-		command += "')";
-
-		python->Eval(command.c_str(), str);
-	}
-
+	CT2CA commandtext(wt);
+	python->Exec("evalCommandEnter", commandtext, extensions::efBuiltIn, str);
+	
 	CA2CT newwt(str.Get());
 	m_cmdTextBox.SetWindowText(newwt);
 
