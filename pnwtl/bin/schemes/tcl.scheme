@@ -59,36 +59,42 @@
 			tk_optionMenu tk_popup tk_setPalette tk_textCopy tk_textCut
 			tk_textPaste
 		</keyword-class>
-		<keyword-class name="fulltcl">
-			<include-class name="tcl"/>
-			<include-class name="tk"/>
-			<include-class name="TkCommands"/>
+		<keyword-class name="expand">
+			expand
 		</keyword-class>
 	</keyword-classes>
 	
 	<!-- base scheme for C++ style languages -->
 	<language name="tcl" title="TCL" folding="true" foldcomments="true">
 		<lexer name="tcl" />
+		<comments line="#~" blockStart="##" blockLine=" #" blockEnd="##" />
 		<use-keywords>
-			<keyword key="0" name="Keywords" class="fulltcl"/>
+			<keyword key="0" name="Keywords" class="tcl"/>
+			<keyword key="1" name="TK Keywords" class="tk"/>
+			<keyword key="2" name="TK Commands" class="TkCommands"/>
+			<keyword key="3" name="ITCL" class="itcle"/>
+			<keyword key="4" name="Expand" class="tclexpand"/>
 		</use-keywords>
 		<use-styles>
 			<style name="Default" key="32" />
 			<style name="Whitespace" key="0" />
 			<style name="Comment" key="1" class="comment"/>
-			<style name="Number" key="2" class="number"/>
-			<style name="String" key="3" class="string"/>
-			<style name="Single-quoted String" key="4" class="string"/>
-			<style name="Keyword" key="5" class="keyword"/>
-			<style name="Triple quotes" key="6" fore="7f0000"/>
-			<style name="Triple double quotes" key="7" fore="7f0000"/>
-			<style name="Class name definition" key="8" fore="0000ff" bold="true"/>
-			<style name="Function or method definition" key="9" fore="007f7f" bold="true"/>
-			<style name="Operator" key="10" class="operator"/>
-			<style name="Identifier" key="11" />
-			
-			<style name="Comment-blocks" key="12" class="comment" />
-			<style name="Unclosed string" key="13" class="string" back="e0c0e0" eolfilled="true"/>
+			<style name="Line Comment" key="2" class="commentline"/>
+			<style name="Number" key="3" class="number"/>
+			<style name="Keyword in Quote" key="4" class="character"/>
+			<style name="Quote" key="5" class="string"/>
+			<style name="Operator" key="6" class="operator"/>
+			<style name="Identifier" key="7" />
+			<style name="Substitution" key="8" class="preprocessor"/>
+			<style name="${ Substitution" key="9" class="preprocessor" bold="true"/>
+			<style name="Modifier" key="10" class="character"/>
+			<style name="Expand" key="11" class="attribute"/>
+			<style name="Keyword" key="12" class="keyword"/>
+			<style name="Keyword 2" key="13" class="keyword"/>
+			<style name="Keyword 3" key="14" class="keyword"/>
+			<style name="Keyword 4" key="15" class="keyword"/>
+			<style name="Comment Box" key="20" class="commentbox" />
+			<style name="Comment Block" key="21" class="comment" />
 		</use-styles>
 	</language>
 </Scheme>
