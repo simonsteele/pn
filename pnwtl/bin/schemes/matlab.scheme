@@ -17,13 +17,13 @@
             <style name="Default" key="32" />
             <style name="Whitespace" key="0" />
             <style name="Comment" key="1" class="comment" />
-            <style name="Command" key="2" class="command" />
+            <style name="Command" key="2" class="preprocessor" />
             <style name="Number" key="3" class="number" />
             <style name="Keyword" key="4" class="keyword" />
-            <style name="String" key="5" class="string" />
-            <style name="Operator" key="6" class="operator" fore="800000"/>
+            <style name="String" key="5" class="character" />
+            <style name="Operator" key="6" class="operator" />
             <style name="Identifier" key="7" class="identifier" />
-            <style name="Double Quote String" key="8" class="doublequotestring" />
+            <style name="Double Quote String" key="8" class="string" />
         </use-styles>
     </base-language>
     

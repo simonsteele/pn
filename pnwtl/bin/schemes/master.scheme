@@ -27,7 +27,7 @@
 		<style-class name="bracemismatch" description="Brace Mismatch" fore="ee0000" bold="true"/>
 		<style-class name="linenumbers" description="Line Numbers" />
 		<style-class name="controlchars" description="Control Characters" fore="808080" />
-		<style-class name="identifier" description="Identifier" fore="7080ff" />
+		<style-class name="identifier" description="Identifier" />
 		<style-class name="class" description="Class Name" fore="0000ff" bold="true"/>
 		<style-class name="function" description="Function Name" fore="007f7f" bold="true"/>
 		<style-class name="unclosedstring" description="Unclosed Single-Line String" fore="000000" back="e0c0e0" />
