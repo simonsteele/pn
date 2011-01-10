@@ -17,9 +17,6 @@
 			proc protection re real size true trunc uninterruptible
 			val
 		</keyword-class>
-		<keyword-class name="modula2_foldwords">
-			begin case record
-		</keyword-class>
 	</keyword-classes>
 	<language name="modula2" title="Modula-2" folding="true" foldcomments="true" foldcompact="false">
 		<lexer name="pascal" />
@@ -30,17 +27,20 @@
 		<use-styles>
 			<style name="Default" key="32" />
 			<style name="Whitespace" key="0" />
-			<style name="Comment" key="1" class="comment"/>
-			<style name="Line Comment" key="2" class="commentline"/>
-			<style name="Doc Comment" key="3" class="commentdoc"/>
-			<style name="Number" key="4" class="number"/>
-			<style name="Keyword" key="5" class="keyword"/>
-			<style name="Double-Quoted String" key="6" /><!-- fore="colour.string" -->
-			<style name="Single-Quoted String" key="7" class="string"/>
-			<style name="Symbols" key="8" />
-			<style name="PreProcessor" key="9" class="preprocessor"/>
-			<style name="Operators" key="10" class="operator"/>
-			<style name="Class Definition Words" key="16" class="keyword"/>
+			<style name="Identifier" key="1" />
+			<style name="{} Comment" key="2" class="comment"/>
+			<style name="(**) Comment" key="3" class="commentbox"/>
+			<style name="Line Comment" key="4" class="commentline"/>
+			<style name="Preprocessor" key="5" class="preprocessor"/>
+			<style name="(*$ Preprocessor" key="6" class="preprocessor"/>
+			<style name="Number" key="7" class="number"/>
+			<style name="Hex Number" key="8" class="number"/>
+			<style name="Keyword" key="9" class="keyword"/>
+			<style name="String" key="10" class="string"/>
+			<style name="Unclosed String" key="11" class="unclosedstring"/>
+			<style name="Character" key="12" class="character"/>
+			<style name="Operator" key="13" class="operator"/>
+			<style name="Inline Assembly" key="14" fore="804080"/>
 		</use-styles>
 	</language>
 </Scheme>
