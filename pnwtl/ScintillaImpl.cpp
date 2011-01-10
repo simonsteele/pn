@@ -165,6 +165,11 @@ unsigned int UnSlashLowOctal(char *s) {
 
 static int UnSlashAsNeeded(std::string& s, bool escapes, bool regularExpression)
 {
+	if (!s.size())
+	{
+		return 0;
+	}
+
 	std::vector<char> buf(s.length()+1);
 	char *sUnslashed = &buf[0];
 	strcpy(sUnslashed, &s[0]);
