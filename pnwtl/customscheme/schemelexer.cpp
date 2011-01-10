@@ -10,60 +10,32 @@
 #include "stdafx.h"
 #include "schemelexer.h"
 
-#include "scintilla/accessor.h"
-#include "scintilla/windowaccessor.h"
-#include "scintilla/stylecontext.h"
-
-CustomLexer::CustomLexer()
+CustomLexer::CustomLexer(const LexerConfig& config) : m_config(config)
 {
-	static const CharSet chStartSet("[-a-zA-Z0-9_]");
-
-	for(int i = 0; i < MAX_STRINGTYPES; i++)
-	{
-		memset(&stringTypes[i], 0, sizeof(StringType_t));
-		stringTypes[i].bValid = false;
-	}
-
-	memset(kwEnable, 0, sizeof(kwEnable));
-
-	bCaseSensitive = true;
-	bPreProc = false;
-
-	singleLineComment.scLength = eDouble;
-	singleLineComment.pSCode = NULL;
-	singleLineComment.pECode = NULL;
-
-	memset(&singleLineComment, 0, sizeof(CommentType_t));
-	memset(&blockComment, 0, sizeof(CommentType_t));
-	singleLineComment.relatedStyle = STYLE_LINECOMMENT;
-	blockComment.relatedStyle = STYLE_BLOCKCOMMENT;
-
-	wordContentSet = chStartSet;
-	wordStartSet = chStartSet;
 }
 
 ///@todo check identifier range characters...
 bool CustomLexer::IsAWordStart(int ch) const
 {
 	//return (ch < 0x80) && (isalnum(ch) || ch == '_');
-	return wordStartSet.Match(ch);
+	return m_config.wordStartSet.Match(ch);
 }
 
 ///@todo check valid identifier characters...
 bool CustomLexer::IsAWordChar(int ch) const
 {
 	//return (ch < 0x80) && (isalnum(ch) /*|| ch == '.'*/ || ch == '_');
-	return wordContentSet.Match(ch);
+	return m_config.wordContentSet.Match(ch);
 }
 
 bool CustomLexer::IsANumStart(int ch) const
 {
-	return numberStartSet.Match(ch);
+	return m_config.numberStartSet.Match(ch);
 }
 
 bool CustomLexer::IsANumChar(int ch) const
 {
-	return numberContentSet.Match(ch);
+	return m_config.numberContentSet.Match(ch);
 }
 
 /**
@@ -85,12 +57,11 @@ bool CustomLexer::IsANumChar(int ch) const
 			} \
 		}
 
-void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, char *words[],
-					Accessor &styler)
+void CustomLexer::Lexer(unsigned int startPos, int length, int initStyle, IDocument*, Accessor &styler)
 {
 	// String EOL styles do not leak onto the next line - could these styles be the same one?
-	bool s1 = stringTypes[0].bValid;
-	bool s2 = stringTypes[1].bValid;
+	bool s1 = m_config.stringTypes[0].bValid;
+	bool s2 = m_config.stringTypes[1].bValid;
 		
 	StyleContext cc(startPos, length, initStyle, styler);
 
@@ -100,9 +71,9 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, char *
 		// Check for end-of-line with a non multiline string...
 		if( cc.state == STYLE_LINECOMMENT )
 		{
-			if( singleLineComment.bContinuation )
+			if( m_config.singleLineComment.bContinuation )
 			{
-				LINE_CONTINUE(singleLineComment.continuation);
+				LINE_CONTINUE(m_config.singleLineComment.continuation);
 			}
 
 			if( cc.atLineEnd )
@@ -110,14 +81,14 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, char *
 		}
 		else if( cc.state == STYLE_BLOCKCOMMENT )
 		{
-			if(blockComment.ecLength == eSingle)
+			if (m_config.blockComment.ecLength == eSingle)
 			{
-				if( cc.Match(blockComment.ecode[0]) )
+				if( cc.Match(m_config.blockComment.ecode[0]) )
 					cc.ForwardSetState(ST_DEFAULT);
 			}
-			else if(blockComment.ecLength == eDouble)
+			else if(m_config.blockComment.ecLength == eDouble)
 			{
-				if( cc.Match(blockComment.ecode[0], blockComment.ecode[1]) )
+				if( cc.Match(m_config.blockComment.ecode[0], m_config.blockComment.ecode[1]) )
 				{
 					cc.Forward();
 					cc.ForwardSetState(ST_DEFAULT);
@@ -125,9 +96,9 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, char *
 			}
 			else
 			{
-				if( cc.MatchIgnoreCase(blockComment.pECode) )
+				if( cc.MatchIgnoreCase(m_config.blockComment.pECode) )
 				{
-					cc.Forward(strlen(blockComment.pECode));
+					cc.Forward(strlen(m_config.blockComment.pECode));
 					cc.SetState(ST_DEFAULT);
 				}
 			}
@@ -138,25 +109,12 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, char *
 			{
 				//Get the current typed keyword
 				char s[100];
-				(bCaseSensitive) ? cc.GetCurrent(s, sizeof(s)) : cc.GetCurrentLowered(s, sizeof(s));
-				
-				//Cache the keyword list in case that wasn't done yet, note that this method speeds things up, but requires a PNotepad restart
-				if (keywordList.empty())
-				{
-					if (bCaseSensitive)
-					{
-						StringToWordLists(words, false, keywordList);
-					}
-					else
-					{
-						StringToWordLists(words, true, keywordList);
-					}
-				}
+				(m_config.bCaseSensitive) ? cc.GetCurrent(s, sizeof(s)) : cc.GetCurrentLowered(s, sizeof(s));
 
 				//Loop through all keywords untill we find what we need
 				for(int z = 0; z < MAX_KEYWORDS; z++)
 				{
-					if( (keywordList[z]).InList(s) )
+					if( keyWordLists[z]->InList(s) )
 					{
 						cc.ChangeState(STYLE_KEYWORDS + z);
 						break;
@@ -170,61 +128,61 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, char *
 		{
 			///@todo - should this undo the setting of the number set if it 
 			//finds a non-matching non-space char?
-			if( cc.atLineEnd || !numberContentSet.Match(cc.ch))
+			if( cc.atLineEnd || !m_config.numberContentSet.Match(cc.ch))
 				cc.SetState(ST_DEFAULT);
 		}
 		else if( cc.state == STYLE_KNOWNIDENT )
 		{
 			///@todo - if we find a non-valid non-space char should we cancel
 			//the word state?
-			if( cc.atLineEnd || !identContentSet.Match(cc.ch))
+			if( cc.atLineEnd || !m_config.identContentSet.Match(cc.ch))
 				cc.SetState(ST_DEFAULT);
 		}
 		else if( cc.state == STYLE_STRING )
 		{
-			if( stringTypes[0].bContinuation )
+			if( m_config.stringTypes[0].bContinuation )
 			{
-				LINE_CONTINUE( stringTypes[0].continuation );
+				LINE_CONTINUE( m_config.stringTypes[0].continuation );
 			}
 
-			if( cc.atLineEnd && !stringTypes[0].multiLine)
+			if( cc.atLineEnd && !m_config.stringTypes[0].multiLine)
 			{
 				cc.SetState(ST_DEFAULT);
 			}
-			else if( stringTypes[0].bEscape && cc.Match( stringTypes[0].escape ) )
+			else if( m_config.stringTypes[0].bEscape && cc.Match( m_config.stringTypes[0].escape ) )
 			{
 				// Skip over a double-escape, or a double end-string.
-				if( cc.chNext == stringTypes[0].escape || cc.chNext == stringTypes[0].end )
+				if( cc.chNext == m_config.stringTypes[0].escape || cc.chNext == m_config.stringTypes[0].end )
 					cc.Forward();
 			} 
-			else if( cc.Match( stringTypes[0].end ) )
+			else if( cc.Match( m_config.stringTypes[0].end ) )
 				cc.ForwardSetState(ST_DEFAULT);
 		}
 		else if( cc.state == STYLE_STRING2 )
 		{
-			if( stringTypes[1].bContinuation )
+			if( m_config.stringTypes[1].bContinuation )
 			{
-				LINE_CONTINUE( stringTypes[1].continuation );
+				LINE_CONTINUE( m_config.stringTypes[1].continuation );
 			}
 
-			if( cc.atLineEnd && !stringTypes[1].multiLine )
+			if( cc.atLineEnd && !m_config.stringTypes[1].multiLine )
 			{
 				cc.SetState(ST_DEFAULT);
 			}
-			else if( stringTypes[1].bEscape && cc.Match(stringTypes[1].escape) )
+			else if( m_config.stringTypes[1].bEscape && cc.Match(m_config.stringTypes[1].escape) )
 			{
 				// Skip over a double-escape, or a double end-string.
-				if( cc.chNext == stringTypes[1].escape || cc.chNext == stringTypes[1].end )
+				if( cc.chNext == m_config.stringTypes[1].escape || cc.chNext == m_config.stringTypes[1].end )
 					cc.Forward();
 			} 
-			else if( cc.ch == stringTypes[1].end )
+			else if( cc.ch == m_config.stringTypes[1].end )
 				cc.ForwardSetState(ST_DEFAULT);
 		}
 		else if( cc.state == STYLE_PREPROC )
 		{
-			if(bPreProcContinuation)
+			if(m_config.bPreProcContinuation)
 			{
-				LINE_CONTINUE(preProcContinue);
+				LINE_CONTINUE(m_config.preProcContinue);
 			}
 			
 			if(cc.atLineEnd)
@@ -234,15 +192,15 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, char *
 		// Finally we do default state handling...
 		if( cc.state == ST_DEFAULT )
 		{
-			if( s1 && (cc.ch == stringTypes[0].start) )
+			if( s1 && (cc.ch == m_config.stringTypes[0].start) )
 			{
 				cc.SetState(STYLE_STRING);
 			} 
-			else if( s2 && (cc.ch == stringTypes[1].start) )
+			else if( s2 && (cc.ch == m_config.stringTypes[1].start) )
 			{
 				cc.SetState(STYLE_STRING2);
 			}
-			else if( bPreProc && (cc.ch == preProcStart) )
+			else if( m_config.bPreProc && (cc.ch == m_config.preProcStart) )
 			{
 				cc.SetState(STYLE_PREPROC);
 			}
@@ -250,7 +208,7 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, char *
 			{
 				cc.SetState(STYLE_NUMBER);
 			}
-			else if( identStartSet.Match(cc.ch) )
+			else if( m_config.identStartSet.Match(cc.ch) )
 			{
 				cc.SetState(STYLE_KNOWNIDENT);
 			}
@@ -260,7 +218,7 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, char *
 			}
 			else
 			{
-				const CommentType_t* types[2] = {&singleLineComment, &blockComment};
+				const CommentType_t* types[2] = { &m_config.singleLineComment, &m_config.blockComment };
 				
 				for(int cs = 0; cs < 2; cs++)
 				{
@@ -301,8 +259,7 @@ void CustomLexer::DoLex(unsigned int startPos, int length, int initStyle, char *
 	cc.Complete();
 }
 
-void CustomLexer::DoFold(unsigned int startPos, int length, int initStyle, char *words[],
-                    Accessor &styler) const
+void CustomLexer::Folder(unsigned int startPos, int length, int initStyle, IDocument*, Accessor &styler)
 {
 
 }

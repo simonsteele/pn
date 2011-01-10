@@ -35,3 +35,17 @@ typedef unsigned __int64 uint64_t;
 #endif
 
 #include <vector>
+#include <functional>
+
+// Scintilla:
+#include "../third_party/scintilla/include/Scintilla.h"
+#include "../third_party/scintilla/include/ILexer.h"
+#include "../third_party/scintilla/lexlib/PropSetSimple.h"
+#include "../third_party/scintilla/lexlib/WordList.h"
+#include "../third_party/scintilla/lexlib/LexAccessor.h"
+#include "../third_party/scintilla/lexlib/Accessor.h"
+#include "../third_party/scintilla/lexlib/StyleContext.h"
+
+#include "../third_party/scintilla/lexlib/LexerModule.h"
+#include "../third_party/scintilla/lexlib/LexerBase.h"
+#include "../third_party/scintilla/lexlib/LexerNoExceptions.h"

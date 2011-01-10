@@ -9,9 +9,6 @@
  */
 #include "stdafx.h"
 #include "CustomScheme.h"
-#include "scintilla/Accessor.h"
-#include "scintilla/WindowAccessor.h"
-#include "../include/encoding.h"
 
 HMODULE theModule;
 
@@ -33,389 +30,7 @@ BOOL APIENTRY DllMain( HANDLE hModule,
     return TRUE;
 }
 
-Lexers theLexers;
-
-//////////////////////////////////////////////////////////////////////////
-// CustomLexerFactory
-//////////////////////////////////////////////////////////////////////////
-
-CustomLexerFactory::CustomLexerFactory(const TCHAR* path)
-{
-	m_parser.SetParseState(this);
-
-	//Load and parse customlexers
-	tstring sPath(path);
-	if(sPath[sPath.size()-1] != _T('/') && sPath[sPath.size()-1] != _T('\\'))
-		sPath += _T('\\');
-
-	tstring sPattern(sPath);
-	sPattern += _T("*.schemedef");
-
-	WIN32_FIND_DATA FindFileData;
-	HANDLE hFind = INVALID_HANDLE_VALUE;
-	hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
-	if (hFind != INVALID_HANDLE_VALUE) {
-		//Found the first file...
-		BOOL found = TRUE;
-		tstring to_open;
-
-		while (found) {
-			to_open = sPath;
-			to_open += FindFileData.cFileName;
-			
-			// Now make the CustomLexer object.
-			m_pCurrent = new CustomLexer;
-			if (Parse(to_open.c_str()))
-			{
-				theLexers.AddLexer(m_pCurrent);
-			}
-			else
-			{
-				delete m_pCurrent;
-				m_pCurrent = NULL;
-			}
-
-			found = FindNextFile(hFind, &FindFileData);
-		}
-
-		FindClose(hFind);
-
-	}
-}
-
-bool CustomLexerFactory::Parse(LPCTSTR file)
-{
-	m_bFileOK = true;
-	m_state = STATE_DEFAULT;
-
-	try
-	{
-		m_parser.LoadFile(file);
-		m_parser.Reset();
-	}
-	catch (XMLParserException& ex)
-	{
-		::OutputDebugString(ex.GetMessage());
-		m_bFileOK = false;
-	}
-
-	return m_bFileOK;
-}
-
-void CustomLexerFactory::doScheme(const XMLAttributes& atts)
-{
-	// ??? braces="{[()]}
-
-	LPCTSTR pName;
-	LPCTSTR pVal;
-
-	for(int i = 0; i < atts.getCount(); i++)
-	{
-		pName = atts.getName(i);
-		pVal = atts.getValue(i);
-
-		if(_tcscmp(pName, _T("casesensitive")) == 0)
-		{
-			m_pCurrent->bCaseSensitive = SBOOL(pVal);
-		}
-		else if(_tcscmp(pName, _T("name")) == 0)
-		{
-			m_pCurrent->tsName = Tcs_Windows1252(pVal);
-		}
-	}
-
-	m_state = STATE_INSCHEME;
-}
-
-void CustomLexerFactory::doStringType(const XMLAttributes& atts)
-{
-	int id;
-	
-	LPCTSTR szID = atts.getValue(_T("id"));
-	if(!szID)
-		return;
-
-	id = _ttoi(szID);
-
-	if(id < 0 || id >= MAX_STRINGTYPES)
-		return;
-	
-	StringType_t& st = m_pCurrent->stringTypes[id];
-
-	LPCTSTR pName, pVal;
-
-	for(int i = 0; i < atts.getCount(); i++)
-	{
-		pName = atts.getName(i);
-		pVal = atts.getValue(i);
-
-		if(_tcscmp(pName, _T("start")) == 0)
-		{
-			st.start = static_cast<char>(pVal[0]);
-		}
-		else if(_tcscmp(pName, _T("end")) == 0)
-		{
-			st.end = static_cast<char>(pVal[0]);
-		}
-		else if(_tcscmp(pName, _T("multiline")) == 0)
-		{
-			st.multiLine = SBOOL(pVal);
-		}
-		else if(_tcscmp(pName, _T("continuation")) == 0)
-		{
-			st.bContinuation = true;
-			st.continuation = static_cast<char>(pVal[0]);
-		}
-		else if(_tcscmp(pName, _T("escape")) == 0)
-		{
-			st.bEscape = true;
-			st.escape = static_cast<char>(pVal[0]);
-		}
-	}
-
-	if(st.start != 0 && st.end != 0)
-		st.bValid = true;
-}
-
-void CustomLexerFactory::doKeyword(const XMLAttributes& atts)
-{
-	LPCTSTR szKey = atts.getValue(_T("key"));
-	if(!szKey)
-		return;
-
-	int key = _ttoi(szKey);
-
-	if(key < 0 || key >= MAX_KEYWORDS)
-		return;
-
-	m_pCurrent->kwEnable[key] = true;
-}
-
-void CustomLexerFactory::doPreProcessor(const XMLAttributes& atts)
-{
-	LPCTSTR pszStart = atts.getValue(_T("start"));
-	if(!pszStart)
-		return;
-	m_pCurrent->bPreProc = true;
-	m_pCurrent->preProcStart = static_cast<char>(pszStart[0]);
-
-	LPCTSTR pszCont = atts.getValue(_T("continuation"));
-	if(!pszCont)
-		return;
-	m_pCurrent->bPreProcContinuation = true;
-	m_pCurrent->preProcContinue = static_cast<char>(pszCont[0]);
-}
-
-void CustomLexerFactory::doNumbers(const XMLAttributes& atts)
-{
-	LPCTSTR pszStart = atts.getValue(_T("start"));
-	if(!pszStart)
-		return;
-
-	// start will be something like [a-z]. This needs parsing into a character set.
-	m_pCurrent->numberStartSet.ParsePattern(Tcs_Windows1252(pszStart));
-
-	LPCTSTR pszContent = atts.getValue(_T("content"));
-	if(!pszContent)
-		return;
-
-	m_pCurrent->numberContentSet.ParsePattern(Tcs_Windows1252(pszContent));
-}
-
-void CustomLexerFactory::doIdentifiers(const XMLAttributes& atts)
-{
-	LPCTSTR pszStart = atts.getValue(_T("start"));
-	if( pszStart )
-	{
-		CharSet chSet;
-		if( chSet.ParsePattern(Tcs_Windows1252(pszStart)) )
-            m_pCurrent->wordStartSet = chSet;
-	}
-	
-	LPCTSTR pszContent = atts.getValue(_T("content"));
-	if( pszContent )
-	{
-		CharSet chSet;
-		if( chSet.ParsePattern(Tcs_Windows1252(pszContent)) )
-            m_pCurrent->wordContentSet = chSet;
-	}
-}
-
-void CustomLexerFactory::doIdentifiers2(const XMLAttributes& atts)
-{
-	LPCTSTR pszStart = atts.getValue(_T("start"));
-	if(!pszStart)
-		return;
-
-	// start will be something like [a-z]. This needs parsing into a character set.
-	m_pCurrent->identStartSet.ParsePattern(Tcs_Windows1252(pszStart));
-
-	LPCTSTR pszContent = atts.getValue(_T("content"));
-	if(!pszContent)
-		return;
-
-	m_pCurrent->identContentSet.ParsePattern(Tcs_Windows1252(pszContent));
-}
-
-void CustomLexerFactory::SetCommentTypeCode(LPCSTR pVal, ECodeLength& length, char* code, char*& pCode, CommentType_t* type)
-{
-	if(pVal && pVal[0] != NULL)
-	{
-		code[0] = pVal[0];
-		if(pVal[1] == NULL)
-		{
-			length = eSingle;
-		}
-		else if(pVal[2] == NULL)
-		{
-			length = eDouble;
-			code[1] = pVal[1];
-		}
-		else
-		{
-			length = eMore;
-			pCode = new char[strlen(pVal)+1];
-			strcpy(pCode, pVal);
-		}
-	}
-	else
-	{
-		// Not sure what to do here...
-		length = eSingle;
-		code[0] = '\0';
-	}
-}
-
-void CustomLexerFactory::doCommentType(int commentType, const XMLAttributes& atts)
-{
-	CommentType_t* type;
-	switch(commentType)
-	{
-		case CT_LINE:
-			type = &m_pCurrent->singleLineComment;
-			break;
-		case CT_BLOCK:
-			type = &m_pCurrent->blockComment;
-			break;
-		default:
-			return; // unknown type.
-	}
-
-	type->bValid = true;
-
-	LPCTSTR pVal = atts.getValue(_T("start"));
-	SetCommentTypeCode(Tcs_Windows1252(pVal), type->scLength, type->scode, type->pSCode, type);
-	pVal = atts.getValue(_T("end"));
-	SetCommentTypeCode(Tcs_Windows1252(pVal), type->ecLength, type->ecode, type->pECode, type);
-
-	if(commentType == CT_LINE)
-	{
-		pVal = atts.getValue(_T("continuation"));
-		if(pVal)
-		{
-			type->bContinuation = true;
-			type->continuation = static_cast<char>(pVal[0]);
-		}
-	}
-}
-
-void CustomLexerFactory::startElement(XML_CSTR name, const XMLAttributes& atts)
-{
-	if(_tcscmp(name, _T("schemedef")) == 0 && m_state == STATE_DEFAULT)
-	{
-		doScheme(atts);
-	}
-	else if( m_state == STATE_INSCHEME )
-	{
-		if(_tcscmp(name, _T("strings")) == 0 )
-		{
-			m_state = STATE_INSTRINGS;
-		}
-		else if(_tcscmp(name, _T("language")) == 0 )
-		{
-			m_state = STATE_INLANG;
-		}
-		else if( _tcscmp(name, _T("comments")) == 0 )
-		{
-			m_state = STATE_INCOMMENTS;
-		}
-		else if( _tcscmp(name, _T("preprocessor")) == 0 )
-		{
-			doPreProcessor(atts);
-		}
-		else if( _tcscmp(name, _T("numbers")) == 0 )
-		{
-			doNumbers(atts);
-		}
-		else if( _tcscmp(name, _T("identifiers")) == 0 )
-		{
-			doIdentifiers(atts);
-		}
-		else if( _tcscmp(name, _T("identifiers2")) == 0 )
-		{
-			doIdentifiers2(atts);
-		}
-	}
-	else if( m_state == STATE_INSTRINGS )
-	{
-		if( _tcscmp(name, _T("stringtype")) == 0 )
-		{
-			doStringType(atts);
-		}
-	}
-	else if( m_state == STATE_INLANG )
-	{
-		if( _tcscmp(name, _T("use-keywords")) == 0 )
-			m_state = STATE_INUSEKW;
-	}
-	else if( m_state == STATE_INUSEKW )
-	{
-		if( _tcscmp(name, _T("keyword")) == 0 )
-		{
-			doKeyword(atts);
-		}
-	}
-	else if( m_state == STATE_INCOMMENTS )
-	{
-		if( _tcscmp(name, _T("line")) == 0 )
-		{
-			doCommentType(CT_LINE, atts);
-		}
-		else if( _tcscmp(name, _T("block")) == 0 )
-		{
-			doCommentType(CT_BLOCK, atts);
-		}
-	}
-}
-
-void CustomLexerFactory::endElement(LPCTSTR name)
-{
-	if( m_state == STATE_INSTRINGS && _tcscmp(name, _T("strings")) == 0 )
-	{
-		m_state = STATE_INSCHEME;
-	}
-	else if( m_state == STATE_INUSEKW && _tcscmp(name, _T("use-keywords")) == 0 )
-	{
-		m_state = STATE_INLANG;
-	}
-	else if( m_state == STATE_INLANG && _tcscmp(name, _T("language")) == 0 )
-	{
-		m_state = STATE_INSCHEME;
-	}
-	else if( m_state == STATE_INCOMMENTS && _tcscmp(name, _T("comments")) == 0 )
-	{
-		m_state = STATE_INSCHEME;
-	}
-	else if( m_state == STATE_INSCHEME && _tcscmp(name, _T("schemedef")) == 0 )
-	{
-		m_state = STATE_DEFAULT;
-	}
-}
-
-void CustomLexerFactory::characterData(LPCTSTR data, int len)
-{
-
-}
+std::vector<LexerConfig*> theLexers;
 
 //////////////////////////////////////////////////////////////////////////
 // Exported Functions
@@ -454,7 +69,7 @@ void FindLexers()
 
 		tstring sPath(path, 0, i);
 
-		CustomLexerFactory factory(sPath.c_str());
+		CustomLexerFactory factory(sPath.c_str(), theLexers);
 	}
 }
 
@@ -462,12 +77,44 @@ void FindLexers()
 // Exported Functions
 //////////////////////////////////////////////////////////////////////////
 
+ILexer* CustomLexer_Factory(int index)
+{
+	return new CustomLexer(*theLexers[index]);
+}
+
+#define MAX_LEXERS 20
+
+#define LEXER_FACTORY_FN(n) ILexer* CustomLexer_Factory##n() { return CustomLexer_Factory(n); }
+
+LEXER_FACTORY_FN(0)
+LEXER_FACTORY_FN(1)
+LEXER_FACTORY_FN(2)
+LEXER_FACTORY_FN(3)
+LEXER_FACTORY_FN(4)
+LEXER_FACTORY_FN(5)
+LEXER_FACTORY_FN(6)
+LEXER_FACTORY_FN(7)
+LEXER_FACTORY_FN(8)
+LEXER_FACTORY_FN(9)
+LEXER_FACTORY_FN(10)
+LEXER_FACTORY_FN(11)
+LEXER_FACTORY_FN(12)
+LEXER_FACTORY_FN(13)
+LEXER_FACTORY_FN(14)
+LEXER_FACTORY_FN(15)
+LEXER_FACTORY_FN(16)
+LEXER_FACTORY_FN(17)
+LEXER_FACTORY_FN(18)
+LEXER_FACTORY_FN(19)
+
+#define LEXER_FACTORY_CASE(i) case i: return CustomLexer_Factory##i;
+
 int EXPORT __stdcall GetLexerCount()
 {
 	// We've been loaded and Scintilla wants our lexers, better find them...
 	FindLexers();
 
-	return theLexers.GetCount();
+	return min(theLexers.size(), MAX_LEXERS);
 }
 
 static void LengthSet(char *val, const char* newval, int size)
@@ -482,36 +129,38 @@ static void LengthSet(char *val, const char* newval, int size)
 	}
 }
 
-void EXPORT __stdcall GetLexerName(unsigned int Index, char *name, int buflength)
+void EXPORT __stdcall GetLexerName(unsigned int index, char *name, int buflength)
 {
-	LengthSet(name, theLexers[Index]->GetName(), buflength);
+	LengthSet(name, theLexers[index]->GetName(), buflength);
 }
 
-void EXPORT __stdcall Lex(unsigned int lexer, 
-	unsigned int startPos, int length, int initStyle, char *words[], WindowID window, char *props)
+LexerFactoryFunction EXPORT __stdcall GetLexerFactory(unsigned int index)
 {
-	PropSet ps;
-	ps.SetMultiple(props);
-	
-	WindowAccessor wa(window, ps);
-	
-	theLexers[lexer]->DoLex(startPos, length, initStyle, words, wa);
+	// DOES NOT WORK:
+	// Instead need to create a bunch of simple factory functions for 1:N, and then file a Scintilla change request.
+	switch (index)
+	{
+		LEXER_FACTORY_CASE(0)
+		LEXER_FACTORY_CASE(1)
+		LEXER_FACTORY_CASE(2)
+		LEXER_FACTORY_CASE(3)
+		LEXER_FACTORY_CASE(4)
+		LEXER_FACTORY_CASE(5)
+		LEXER_FACTORY_CASE(6)
+		LEXER_FACTORY_CASE(7)
+		LEXER_FACTORY_CASE(8)
+		LEXER_FACTORY_CASE(9)
+		LEXER_FACTORY_CASE(10)
+		LEXER_FACTORY_CASE(11)
+		LEXER_FACTORY_CASE(12)
+		LEXER_FACTORY_CASE(13)
+		LEXER_FACTORY_CASE(14)
+		LEXER_FACTORY_CASE(15)
+		LEXER_FACTORY_CASE(16)
+		LEXER_FACTORY_CASE(17)
+		LEXER_FACTORY_CASE(18)
+		LEXER_FACTORY_CASE(19)
+	}
 
-	wa.Flush();
-}
-
-void EXPORT __stdcall Fold(unsigned int lexer, 
-	unsigned int startPos, int length, int initStyle, char *words[], WindowID window, char *props)
-{
-	std::vector<WordList> wordlists;
-	StringToWordLists(words, false, wordlists);
-
-	PropSet ps;
-	ps.SetMultiple(props);
-	
-	WindowAccessor wa(window, ps);
-	
-	theLexers[lexer]->DoFold(startPos, length, initStyle, words, wa);
-
-	wa.Flush();
+	return NULL;
 }
