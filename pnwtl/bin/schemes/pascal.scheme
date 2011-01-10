@@ -2,43 +2,41 @@
 <Scheme>
 	<keyword-classes>
 		<keyword-class name="pascal">
-			program const type var begin break end array set packed record string if then else
-			while for to downto do with repeat until case of goto exit label procedure
-			function nil file and or not xor div mod unit uses implementation interface
-			external asm inline object constructor destructor virtual far assembler near
-			inherited stdcall cdecl library export exports end.
-			class ansistring raise try except on index name finally
-			resourcestring false true initialization finalization 
-		</keyword-class>
-		<keyword-class name="pascal_inclass">
-			read write override overload public protected private property published default
-		</keyword-class>
-		<keyword-class name="pascal_foldwords">
-			begin object case class record try
+absolute abstract add and array as asm assembler automated begin case 
+cdecl class const constructor default deprecated destructor dispid dispinterface div do downto 
+dynamic else end except export exports external far file final finalization finally for 
+forward function goto if implementation implements in index inherited initialization inline interface is 
+label library message mod name near nil nodefault not object of on or out overload override packed 
+pascal platform private procedure program property protected public published raise read readonly
+record register reintroduce remove repeat resourcestring safecall sealed set shl shr static 
+stdcall stored strict string then threadvar to try type unit unsafe until uses var varargs 
+virtual while with write writeonly xor 
 		</keyword-class>
 	</keyword-classes>
 	<language name="pascal" title="Pascal" folding="true" foldcomments="true" foldcompact="false">
-    <comments line="//" streamStart="{" streamEnd="}" blockStart="{*" blockLine=" *" blockEnd=" }" />
 		<lexer name="pascal" />
+		<comments line="//" streamStart="{" streamEnd="}" blockStart="{*" blockLine=" *" blockEnd=" }" />
+		<property name="lexer.pascal.smart.highlighting" value="1" />
 		<use-keywords>
 			<keyword key="0" name="Keywords" class="pascal"/>
-			<keyword key="1" name="Property Keywords" class="pascal_inclass"/>
-			<keyword key="2" name="Fold Start Words" class="pascal_foldwords"/>
 		</use-keywords>
 		<use-styles>
 			<style name="Default" key="32" />
 			<style name="Whitespace" key="0" />
-			<style name="Comment" key="1" class="comment"/>
-			<style name="Line Comment" key="2" class="commentline"/>
-			<style name="Doc Comment" key="3" class="commentdoc"/>
-			<style name="Number" key="4" class="number"/>
-			<style name="Keyword" key="5" class="keyword"/>
-			<style name="Double-Quoted String" key="6" class="string"/><!-- fore="colour.string" -->
-			<style name="Single-Quoted String" key="7" class="string"/>
-			<style name="Symbols" key="8" />
-			<style name="PreProcessor" key="9" class="preprocessor"/>
-			<style name="Operators" key="10" class="operator"/>
-			<style name="Class Definition Words" key="16" class="keyword"/>
+			<style name="Identifier" key="1" />
+			<style name="{} Comment" key="2" class="comment"/>
+			<style name="(**) Comment" key="3" class="commentbox"/>
+			<style name="Line Comment" key="4" class="commentline"/>
+			<style name="Preprocessor" key="5" class="preprocessor"/>
+			<style name="(*$ Preprocessor" key="6" class="preprocessor"/>
+			<style name="Number" key="7" class="number"/>
+			<style name="Hex Number" key="8" class="number"/>
+			<style name="Keyword" key="9" class="keyword"/>
+			<style name="String" key="10" class="string"/>
+			<style name="Unclosed String" key="11" class="unclosedstring"/>
+			<style name="Character" key="12" class="character"/>
+			<style name="Operator" key="13" class="operator"/>
+			<style name="Inline Assembly" key="14" fore="804080"/>
 		</use-styles>
 	</language>
 </Scheme>
