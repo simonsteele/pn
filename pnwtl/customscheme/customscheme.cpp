@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "CustomScheme.h"
 
-HMODULE theModule;
+HMODULE theModule = NULL; // extern from stdafx.h
 
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        DWORD  ul_reason_for_call, 
@@ -58,18 +58,7 @@ void FindLexers()
 	{
 		bFound = true;
 
-		TCHAR path[MAX_PATH + 1];
-
-		GetModuleFileName(theModule, path, MAX_PATH);
-
-		int i = FindLastSlash(path);
-
-		if (i == -1)
-			i = static_cast<int>(_tcslen(path));
-
-		tstring sPath(path, 0, i);
-
-		CustomLexerFactory factory(sPath.c_str(), theLexers);
+		CustomLexerFactory factory(g_SchemesPath.c_str(), theLexers);
 	}
 }
 

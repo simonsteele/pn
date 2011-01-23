@@ -464,28 +464,28 @@ bool CChildFrame::CanClose()
 /**
  * Functor to load lexers we find.
  */
-struct LexerLoader
-{
-	LexerLoader(CTextView* view) : m_view(view){}
+//struct LexerLoader
+//{
+//	LexerLoader(CTextView* view) : m_view(view){}
+//
+//	void operator ()(LPCTSTR path, FileFinderData& match, bool& shouldContinue)
+//	{
+//		CFileName to_open(match.GetFilename());
+//		to_open.Root(path);
+//		CT2CA lexerPath(to_open.c_str());
+//		m_view->SPerform(SCI_LOADLEXERLIBRARY, 0, StrToLp(lexerPath));
+//	}
+//
+//	CTextView* m_view;
+//};
 
-	void operator ()(LPCTSTR path, FileFinderData& match, bool& shouldContinue)
-	{
-		CFileName to_open(match.GetFilename());
-		to_open.Root(path);
-		CT2CA lexerPath(to_open.c_str());
-		m_view->SPerform(SCI_LOADLEXERLIBRARY, 0, StrToLp(lexerPath));
-	}
-
-	CTextView* m_view;
-};
-
-void CChildFrame::LoadExternalLexers()
-{
-	tstring sPath;
-	OPTIONS->GetPNPath(sPath, PNPATH_SCHEMES);
-
-	FileFinderFunctor<LexerLoader>(LexerLoader(GetTextView())).Find(sPath.c_str(), _T("*.lexer"), false);
-}
+//void CChildFrame::LoadExternalLexers()
+//{
+//	tstring sPath;
+//	OPTIONS->GetPNPath(sPath, PNPATH_SCHEMES);
+//
+//	FileFinderFunctor<LexerLoader>(LexerLoader(GetTextView())).Find(sPath.c_str(), _T("*.lexer"), false);
+//}
 
 ////////////////////////////////////////////////////
 // Message Handlers
@@ -496,7 +496,7 @@ LRESULT CChildFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
 
 	if(s_bFirstChild)
 	{
-		LoadExternalLexers();
+		g_Context.ExtApp->OnFirstEditorCreated(m_hWndClient);
 		s_bFirstChild = false;
 	}
 

@@ -8,25 +8,18 @@
 // Disable the CRT deprecation warnings in VS 2005
 #define _CRT_SECURE_NO_DEPRECATE
 
-#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
-
 #define _WIN32_IE 0x0501
 
-// Windows Header Files:
+#define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 #include <windows.h>
 #include <tchar.h>
 #include <shellapi.h>
 
+extern HMODULE theModule;
+
 #include <assert.h>
 #define ATLASSERT assert
-
-#include <string>
-
-typedef std::basic_string<TCHAR> tstring;
-
-typedef unsigned __int64 uint64_t;
-
-#define PN_NO_CSTRING
+#define PNASSERT ATLASSERT
 
 #ifdef CUSTOMSCHEME_EXPORTS
 #define EXPORT __declspec(dllexport)
@@ -34,8 +27,32 @@ typedef unsigned __int64 uint64_t;
 #define EXPORT __declspec(dllimport)
 #endif
 
+// Implement debug mode memory allocation checking.
+#ifdef _DEBUG
+	#define CRTDBG_MAP_ALLOC
+	#include <stdlib.h>
+	#include <crtdbg.h>
+	#define DEBUG_NEW  new(_NORMAL_BLOCK, THIS_FILE, __LINE__)
+#endif // #ifdef _DEBUG
+
 #include <vector>
 #include <functional>
+#include <string>
+
+typedef std::basic_string<TCHAR> tstring;
+typedef unsigned __int64 uint64_t;
+
+#define PN_NO_CSTRING
+
+extern std::wstring g_SchemesPath;
+
+#include <boost/shared_ptr.hpp>
+#include <boost/function.hpp>
+
+// PN:
+#include "../allocator.h"
+#include "../pnextstring.h"
+#include "../extiface.h"
 
 // Scintilla:
 #include "../third_party/scintilla/include/Scintilla.h"

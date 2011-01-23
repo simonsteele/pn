@@ -366,6 +366,17 @@ void App::OnSelectDocument(extensions::IDocumentPtr doc)
 }
 
 /**
+ * Notify event consumers that the first Scintilla window is up.
+ */
+void App::OnFirstEditorCreated(HWND hWndEditor)
+{
+	for (EventSinkList::const_iterator i = m_sinks.begin(); i != m_sinks.end(); ++i)
+	{
+		(*i)->OnFirstEditorCreated(hWndEditor);
+	}
+}
+
+/**
  * Get the current document (if there is one)
  */
 extensions::IDocumentPtr App::GetCurrentDocument()

@@ -212,6 +212,7 @@ public:
 public:
 	void OnNewDocument(extensions::IDocumentPtr doc);
 	void OnSelectDocument(extensions::IDocumentPtr doc);
+	void OnFirstEditorCreated(HWND hWndEditor);
 
 private:
 	void deinit();

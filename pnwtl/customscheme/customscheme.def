@@ -2,3 +2,6 @@ EXPORTS
        GetLexerCount
 	   GetLexerName
 	   GetLexerFactory
+	   pn_init_extension
+	   pn_exit_extension
+	   pn_get_extension_info
