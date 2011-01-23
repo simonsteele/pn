@@ -20,7 +20,7 @@
 	</target>
 	
 	<target name="env">
-		<exec program="C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\vcvarsall.bat" commandline="x86" />
+		<exec program="C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" commandline="x86" />
 	</target>
 	
 	<target name="build">
@@ -90,16 +90,17 @@
 				<include name="scilexer.dll"/>
 				<include name="pnse.dll"/>
 				<include name="dbghelp.dll"/>
+				<include name="customscheme.dll" />
 				<include name="pn.exe"/>
 				<include name="ctags.exe"/>
 				<include name="schemes/*.scheme"/>
-				<include name="schemes/*.lexer"/>
 				<include name="schemes/extmap.dat"/>
+				<include name="schemes/*.api"/>
 				<include name="presets/*.xml"/>
 				<include name="ctags/*.*"/>
 				<include name="ctagsnavigator.dll"/>
 			</fileset>
-			<fileset basedir="installer\reqfiles\Microsoft.VC90.CRT" prefix="Microsoft.VC90.CRT">
+			<fileset basedir="installer\reqfiles">
 				<include name="*"/>
 			</fileset>
 			<fileset basedir="doc">
@@ -128,16 +129,17 @@
 				<include name="scilexer.dll"/>
 				<include name="pnse.dll"/>
 				<include name="dbghelp.dll"/>
+				<include name="customscheme.dll" />
 				<include name="pn.exe"/>
 				<include name="ctags.exe"/>
 				<include name="schemes/*.scheme"/>
-				<include name="schemes/*.lexer"/>
 				<include name="schemes/extmap.dat"/>
+				<include name="schemes/*.api"/>
 				<include name="presets/*.xml"/>
 				<include name="ctags/*.*"/>
 				<include name="ctagsnavigator.dll"/>
 			</fileset>
-			<fileset basedir="installer\reqfiles\Microsoft.VC90.CRT" prefix="Microsoft.VC90.CRT">
+			<fileset basedir="installer\reqfiles">
 				<include name="*"/>
 			</fileset>
 			<fileset basedir="doc">
@@ -197,56 +199,12 @@
 				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.6"/>
 			</environment>
 		</exec>
-		<copy file="lib\boost-python-2.6\boost_python-vc90-mt-1_39.dll" todir="bin" overwrite="true"/>
+		<copy file="lib\boost-python-2.6\boost_python-vc100-mt-1_45.dll" todir="bin" overwrite="true"/>
 		
 		<property name="pywrongdep" value="python24"/>
 		<call target="checkpypndeps"/>
 		
 		<property name="pywrongdep" value="python25"/>
-		<call target="checkpypndeps"/>
-		
-		<call target="deploypypn"/>
-		
-		<!-- Python 2.5 -->
-		<echo message="Building for Python 2.5"/>
-		<property name="pyver" value="py25"/>
-		<exec
-			program="devenv"
-			commandline='pn.sln /Project pypn /ProjectConfig Release /Rebuild'
-			output="pypn-2.5.log">
-			<environment>
-				<variable name="PYTHONINCDIR" value="C:\Python25\include"/>
-				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.5"/>
-			</environment>
-		</exec>
-		<copy file="lib\boost-python-2.5\boost_python-vc90-mt-1_39.dll" todir="bin" overwrite="true"/>
-		
-		<property name="pywrongdep" value="python24"/>
-		<call target="checkpypndeps"/>
-		
-		<property name="pywrongdep" value="python26"/>
-		<call target="checkpypndeps"/>
-		
-		<call target="deploypypn"/>		
-		
-		<!-- Python 2.4 -->
-		<echo message="Building for Python 2.4"/>
-		<property name="pyver" value="py24"/>
-		<exec
-			program="devenv"
-			commandline='pn.sln /Project pypn /ProjectConfig Release /Rebuild'
-			output="pypn-2.4.log">
-			<environment>
-				<variable name="PYTHONINCDIR" value="C:\Python24\include"/>
-				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.4"/>
-			</environment>
-		</exec>
-		<copy file="lib\boost-python-2.4\boost_python-vc90-mt-1_39.dll" todir="bin" overwrite="true"/>
-		
-		<property name="pywrongdep" value="python25"/>
-		<call target="checkpypndeps"/>
-		
-		<property name="pywrongdep" value="python26"/>
 		<call target="checkpypndeps"/>
 		
 		<call target="deploypypn"/>

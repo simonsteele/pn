@@ -1,3 +1,4 @@
 <config>
 	<extension path="ctagsnavigator.dll"/>
+	<extension path="customscheme.dll"/>
 </config>
