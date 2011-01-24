@@ -2,7 +2,7 @@
  * @file findex.cpp
  * @brief Find and Replace dialogs for PN 2
  * @author Simon Steele
- * @note Copyright (c) 2004-2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2004-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -965,10 +965,10 @@ void CFindExDialog::placeWindow(const POINT& pt, int lineHeight)
 	
 	if(g_Context.OSVersion.dwMajorVersion >= 5) // support multiple monitors on 2k+
 	{
-		rcWa.top = 0;
-		rcWa.left = 0;
-		rcWa.right = ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
-		rcWa.bottom = ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
+		rcWa.top = ::GetSystemMetrics(SM_YVIRTUALSCREEN);
+		rcWa.left = ::GetSystemMetrics(SM_XVIRTUALSCREEN);
+		rcWa.right = rcWa.left + ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
+		rcWa.bottom = rcWa.top + ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
 	}
 	else
 	{

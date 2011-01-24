@@ -2,7 +2,7 @@
  * @file pnutils.cpp
  * @brief Utility classes implementation.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -49,10 +49,10 @@ BOOL PNCenterWindow(HWND hWnd, HWND hWndCenter) throw()
 		// We get an area to ensure the window sits within it...
 		if(g_Context.OSVersion.dwMajorVersion >= 5) // support multiple monitors on 2k+
 		{
-			rcArea.top = 0;
-			rcArea.left = 0;
-			rcArea.right = ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
-			rcArea.bottom = ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
+			rcArea.top = ::GetSystemMetrics(SM_YVIRTUALSCREEN);
+			rcArea.left = ::GetSystemMetrics(SM_XVIRTUALSCREEN);
+			rcArea.right = rcArea.left + ::GetSystemMetrics(SM_CXVIRTUALSCREEN);
+			rcArea.bottom = rcArea.top + ::GetSystemMetrics(SM_CYVIRTUALSCREEN);
 		}
 		else
 		{
