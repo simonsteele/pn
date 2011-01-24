@@ -2,7 +2,7 @@
  * @file autocomplete.cpp
  * @brief Implement autocomplete behaviours
  * @author Simon Steele
- * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -36,7 +36,9 @@ void insert_sorted(string_array& arr, const std::string& w)
 	}
 	else
 	{
-		string_array::iterator i = arr.begin();
+		auto insert_point = std::lower_bound(arr.begin(), arr.end(), w, [](const std::string& l, const std::string& r) { return l < r; });
+		arr.insert(insert_point, w);
+		/*string_array::iterator i = arr.begin();
 		while(i != arr.end())
 		{
 			if(_stricmp((*i).c_str(), w.c_str()) > 0)
@@ -46,7 +48,7 @@ void insert_sorted(string_array& arr, const std::string& w)
 			}
 
 			++i;
-		}
+		}*/
 	}
 }
 
