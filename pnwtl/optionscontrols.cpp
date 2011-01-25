@@ -2,7 +2,7 @@
  * @file optionscontrols.cpp
  * @brief Controls for options dialogs (and the like).
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -180,7 +180,7 @@ void CSchemeCombo::Load(SchemeConfigParser* pConfig, LPCSTR selectScheme, bool b
 
 	if (bIncludePlainText)
 	{
-		schemeText = _T("Plain Text");
+		schemeText = LS(IDS_DEFAULTSCHEME);
 		int index = AddString(schemeText.c_str());
 		SetItemDataPtr(index, pConfig->GetPlainTextScheme());
 	}

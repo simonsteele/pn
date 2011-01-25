@@ -2,7 +2,7 @@
  * @file optionspageautocomplete.cpp
  * @brief Options Dialog Autocomplete Page for Programmer's Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2009-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -84,7 +84,7 @@ void COptionsPageNewFiles::FreeResources()
 
 void COptionsPageNewFiles::OnInitialise()
 {
-	tstring strNewScheme = OPTIONS->Get(PNSK_EDITOR, _T("NewScheme"), _T("Plain Text"));
+	tstring strNewScheme = OPTIONS->Get(PNSK_EDITOR, _T("NewScheme"), LS(IDS_DEFAULTSCHEME));
 
 	// Populate and initialise schemes combo.
 	CT2CA newScheme(strNewScheme.c_str());
@@ -133,15 +133,15 @@ void COptionsPageNewFiles::OnOK()
 
 			// Set the default new-scheme.
 			int selIndex = m_combo.GetCurSel();
-			LPCSTR wt = NULL;
+			std::string wt;
 			SchemeDetails* pS = m_combo.GetItemScheme(selIndex);
 			
 			if(pS)
-				wt = pS->Name.c_str();
+				wt = pS->Name;
 			else
-				wt = "Plain Text";
+				wt = LSAS(IDS_DEFAULTSCHEME);
 			
-			CA2CT newScheme(wt);
+			CA2CT newScheme(wt.c_str());
 			OPTIONS->Set(PNSK_EDITOR, _T("NewScheme"), newScheme);
 
 			// Enable SmartStart?

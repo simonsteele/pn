@@ -2,7 +2,7 @@
  * @file optionspagekeyboard.cpp
  * @brief Options Dialog Keyboard Page for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -78,7 +78,9 @@ LRESULT COptionsPageKeyboard::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 	// Add items
 	CSMenu menu(::LoadMenu(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MDICHILD)));
 	CSMenuHandle menuHandle(menu);
-	addItems(menuHandle, _T(""), 0);
+	
+	addDynamicItems(menuHandle);
+	addItems(menuHandle, _T(""), m_list.GetItemCount());
 	addExtensions();
 	addScintilla();
 
@@ -260,13 +262,54 @@ inline void fixText(TCHAR* buf, TCHAR* target)
 	*target = _T('\0');
 }
 
+/**
+ * Add the few items that we know of that are added to menus dynamically
+ * meaning that we can't get them from the menu template.
+ */
+void COptionsPageKeyboard::addDynamicItems(CSMenuHandle& menu)
+{
+	TCHAR buffer[256];
+	TCHAR displayBuffer[256];
+
+	CMenuItemInfo file;
+	file.fMask = MIIM_STRING;
+	file.dwTypeData = buffer;
+	file.cch = 256;
+	menu.GetItemInfo(0, &file);
+
+	fixText(buffer, displayBuffer);
+	std::wstring group(displayBuffer);
+	
+	_tcsncpy(buffer, LS(IDS_FILE_NEW), 256);
+	fixText(buffer, displayBuffer);
+	addItem(0, group.c_str(), displayBuffer, ID_FILE_NEW);
+
+	_tcsncpy(buffer, LS(IDS_FILE_NEW_PROJECT), 256);
+	fixText(buffer, displayBuffer);
+	addItem(1, group.c_str(), displayBuffer, ID_FILE_NEW_PROJECT);
+
+	_tcsncpy(buffer, LS(IDS_FILE_NEW_WORKSPACE), 256);
+	fixText(buffer, displayBuffer);
+	addItem(2, group.c_str(), displayBuffer, ID_FILE_NEW_WORKSPACE);
+}
+
+void COptionsPageKeyboard::addItem(int index, LPCTSTR group, LPCTSTR item, DWORD command)
+{
+	int ixItem = m_list.AddItem(index, 0, group);
+	m_list.SetItemText(ixItem, 1, item);
+			
+	// Store info about the command...
+	CommandDetails* cd = new CommandDetails;
+	cd->type = cdtCommand;
+	cd->command = command;
+	m_list.SetItemData(ixItem, reinterpret_cast<DWORD_PTR>(cd));
+}
+
 int COptionsPageKeyboard::addItems(CSMenuHandle& menu, LPCTSTR group, int count)
 {
 	TCHAR buffer[256];
 	TCHAR displayBuffer[256];
-	MENUITEMINFO mii;
-	memset(&mii, 0, sizeof(MENUITEMINFO));
-	mii.cbSize = sizeof(MENUITEMINFO);
+	CMenuItemInfo mii;
 	mii.fMask = MIIM_STRING | MIIM_SUBMENU | MIIM_FTYPE | MIIM_ID;
 	mii.dwTypeData = buffer;
 
@@ -295,15 +338,7 @@ int COptionsPageKeyboard::addItems(CSMenuHandle& menu, LPCTSTR group, int count)
 		else
 		{
 			fixText(buffer, displayBuffer);
-			
-			int ixItem = m_list.AddItem(count++, 0, group);
-			m_list.SetItemText(ixItem, 1, displayBuffer);
-			
-			// Store info about the command...
-			CommandDetails* cd = new CommandDetails;
-			cd->type = cdtCommand;
-			cd->command = mii.wID;
-			m_list.SetItemData(ixItem, reinterpret_cast<DWORD_PTR>(cd));
+			addItem(count++, group, displayBuffer, mii.wID);
 		}
 	}
 	

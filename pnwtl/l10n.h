@@ -2,7 +2,7 @@
  * @file l10n.h
  * @brief PN Internationalisation
  * @author Simon Steele
- * @note Copyright (c) 2005 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2011 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -58,6 +58,9 @@ namespace L10N
 	}
 }
 
+#define LSS(stringId) L10N::StringLoader::Get(stringId)
+#define LSWS(stringId) L10N::StringLoader::GetW(stringId)
+#define LSAS(stringId) L10N::StringLoader::GetA(stringId)
 #define LS(stringId) L10N::StringLoader::Get(stringId).c_str()
 #define LSW(stringId) L10N::StringLoader::GetW(stringId).c_str()
 #define LSA(stringId) L10N::StringLoader::GetA(stringId).c_str()

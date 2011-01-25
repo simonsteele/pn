@@ -132,6 +132,7 @@
 #define IDS_OPTPAGE_VISUALHELP          219
 #define IDS_SHORTCUTS_EDITOR            220
 #define ID_VIEW_CHANGESCHEME            221
+#define IDS_FILE_NEW                    221
 #define ID_VIEW_SCHEMES                 222
 #define IDS_NEW_FILE_TITLE              222
 #define IDS_REPLACE                     223
@@ -176,6 +177,7 @@
 #define IDD_PAGE_STYLE                  244
 #define IDS_PROJECTTOOLS_ALLPROJECTS    244
 #define ID_TOOLS_OPTIONS                245
+#define IDS_FILE_NEW_PROJECT            245
 #define ID_TOOLS_OPTIONS246             246
 #define IDS_HDR_FILETYPES_SCHEME        246
 #define IDS_HDR_SMARTSTART_PHRASE       247
@@ -185,7 +187,9 @@
 #define IDD_TAB_STYLES                  250
 #define IDS_HDR_FILEASSOC_EXTENSION     250
 #define ID_HELP_WEB_PN                  251
+#define IDS_FILE_NEW_WORKSPACE          251
 #define ID_HELP_WEB_SF                  252
+#define IDS_DEFAULTSCHEME               252
 #define ID_HELP_WEB_SB                  253
 #define ID_HELP_REPORTABUG              254
 #define IDS_EXTENSIONS_ENABLED          254
@@ -850,6 +854,9 @@
 #define ID_CLIPS_ADDSET                 33154
 #define ID_CLIPS_REMOVESET              33155
 #define ID_CLIPS_EDIT                   33156
+#define ID_FILE_NEW33157                33157
+#define ID_NEW_DEFAULT                  33158
+#define ID_NEW_PROJECT                  33159
 
 // Next default values for new objects
 // 
@@ -857,7 +864,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        372
-#define _APS_NEXT_COMMAND_VALUE         33157
+#define _APS_NEXT_COMMAND_VALUE         33160
 #define _APS_NEXT_CONTROL_VALUE         1174
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

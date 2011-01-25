@@ -2,7 +2,7 @@
  * @file SchemeManager.cpp
  * @brief Implement SchemeManager.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -49,7 +49,7 @@ class SchemeManager : public Singleton<SchemeManager, true>
 		SCHEME_MAP* GetExtensionMap();
 		SCHEME_MAP* GetFilenameMap();
 
-		void BuildMenu(HMENU menu, CommandDispatch* pDispatch, CommandEventHandler* pHandler, int iCommand = SCHEMEMANAGER_SELECTSCHEME, bool bNewMenu = true);
+		void BuildMenu(HMENU menu, CommandDispatch* pDispatch, CommandEventHandler* pHandler, int iCommand = SCHEMEMANAGER_SELECTSCHEME);
 
 		void SaveExtMap();
 

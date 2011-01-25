@@ -17,13 +17,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -43,18 +41,16 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.K.) resources
+// English (United Kingdom) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -75,7 +71,7 @@ END
 // Menu
 //
 
-IDR_MAINFRAME MENU 
+IDR_MAINFRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -131,7 +127,7 @@ BEGIN
     END
 END
 
-IDR_MDICHILD MENU 
+IDR_MDICHILD MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -329,7 +325,7 @@ BEGIN
     END
 END
 
-IDR_POPUP_CTAGS MENU 
+IDR_POPUP_CTAGS MENU
 BEGIN
     POPUP "CTAGS"
     BEGIN
@@ -338,7 +334,7 @@ BEGIN
     END
 END
 
-IDR_POPUP_REGEXP MENU 
+IDR_POPUP_REGEXP MENU
 BEGIN
     POPUP "DUMMY"
     BEGIN
@@ -356,7 +352,7 @@ BEGIN
     END
 END
 
-IDR_POPUP_EDITOR MENU 
+IDR_POPUP_EDITOR MENU
 BEGIN
     POPUP "DUMMY"
     BEGIN
@@ -398,7 +394,7 @@ BEGIN
     END
 END
 
-IDR_POPUP_REGEXPM MENU 
+IDR_POPUP_REGEXPM MENU
 BEGIN
     POPUP "DUMMY"
     BEGIN
@@ -414,7 +410,7 @@ BEGIN
     END
 END
 
-IDR_POPUP_OUTPUT MENU 
+IDR_POPUP_OUTPUT MENU
 BEGIN
     POPUP "DUMMY"
     BEGIN
@@ -428,7 +424,7 @@ BEGIN
     END
 END
 
-IDR_POPUP_FINDBARDD MENU 
+IDR_POPUP_FINDBARDD MENU
 BEGIN
     POPUP "DUMMY"
     BEGIN
@@ -437,7 +433,7 @@ BEGIN
     END
 END
 
-IDR_POPUP_PROJECTFILE MENU 
+IDR_POPUP_PROJECTFILE MENU
 BEGIN
     POPUP "DUMMY"
     BEGIN
@@ -455,7 +451,7 @@ BEGIN
     END
 END
 
-IDR_POPUP_PROJECTFOLDER MENU 
+IDR_POPUP_PROJECTFOLDER MENU
 BEGIN
     POPUP "DUMMY"
     BEGIN
@@ -472,7 +468,7 @@ BEGIN
     END
 END
 
-IDR_POPUP_PROJECT MENU 
+IDR_POPUP_PROJECT MENU
 BEGIN
     POPUP "PROJECT"
     BEGIN
@@ -494,7 +490,7 @@ BEGIN
     END
 END
 
-IDR_POPUP_WORKSPACE MENU 
+IDR_POPUP_WORKSPACE MENU
 BEGIN
     POPUP "WORKSPACE"
     BEGIN
@@ -505,7 +501,7 @@ BEGIN
     END
 END
 
-IDR_POPUP_HEADERFOOTER MENU 
+IDR_POPUP_HEADERFOOTER MENU
 BEGIN
     POPUP "HEADERFOOTERFIELDS"
     BEGIN
@@ -525,7 +521,7 @@ BEGIN
     END
 END
 
-IDR_POPUP_PROJECTMFOLDER MENU 
+IDR_POPUP_PROJECTMFOLDER MENU
 BEGIN
     POPUP "PROJECT"
     BEGIN
@@ -547,7 +543,7 @@ BEGIN
     END
 END
 
-IDR_POPUP_TABS MENU 
+IDR_POPUP_TABS MENU
 BEGIN
     POPUP "DUMMY"
     BEGIN
@@ -563,7 +559,7 @@ BEGIN
     END
 END
 
-IDR_POPUP_REMOVEPROJECT MENU 
+IDR_POPUP_REMOVEPROJECT MENU
 BEGIN
     POPUP "PROJECT"
     BEGIN
@@ -571,7 +567,7 @@ BEGIN
     END
 END
 
-IDR_POPUP_BROWSER MENU 
+IDR_POPUP_BROWSER MENU
 BEGIN
     POPUP "DUMMY"
     BEGIN
@@ -580,7 +576,7 @@ BEGIN
     END
 END
 
-IDR_POPUP_TEXTCLIPS MENU 
+IDR_POPUP_TEXTCLIPS MENU
 BEGIN
     POPUP "DUMMY"
     BEGIN
@@ -638,7 +634,7 @@ BEGIN
     LTEXT           "Programmer's Notepad 2",IDC_NAME,77,10,146,12
 END
 
-IDD_PNSAVE DIALOG  0, 0, 230, 14
+IDD_PNSAVE DIALOG 0, 0, 230, 14
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CLIPSIBLINGS | WS_SYSMENU
 FONT 8, "MS Shell Dlg 2"
 BEGIN
@@ -1375,7 +1371,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -1679,7 +1675,7 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
     VK_F2,          ID_BOOKMARKS_NEXT,      VIRTKEY, NOINVERT
     "Q",            ID_BOOKMARKS_NUMBERED_JUMP, VIRTKEY, CONTROL, NOINVERT
@@ -1754,7 +1750,7 @@ IDB_TBCLIPS24           BITMAP                  "res\\clipstoolbar24.bmp"
 // Toolbar
 //
 
-IDR_TBR_PROJECTS TOOLBAR  16, 16
+IDR_TBR_PROJECTS TOOLBAR 16, 16
 BEGIN
     BUTTON      ID_PROJECT_ADDFOLDER
     BUTTON      ID_PROJECT_REMOVE
@@ -1780,7 +1776,7 @@ END
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDR_MAINFRAME           "Programmer's Notepad"
     IDR_MDICHILD            "Document"
@@ -1800,12 +1796,12 @@ BEGIN
     IDS_FINDLOOPED          "Find reached the starting point of the search."
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_EDITOR_WRITEPROTECT  "Toggle write protect"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_NEW             "Create a new document\nNew"
     ID_FILE_OPEN            "Open an existing document\nOpen"
@@ -1818,19 +1814,19 @@ BEGIN
     ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
     ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
     ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_WINDOW_NEW           "Open another window for the active document\nNew Window"
     ID_WINDOW_ARRANGE       "Arrange icons at the bottom of the window\nArrange Icons"
@@ -1840,7 +1836,7 @@ BEGIN
     ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_EDIT_CLEAR           "Erase the selection\nErase"
     ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
@@ -1855,13 +1851,13 @@ BEGIN
     ID_EDIT_REDO            "Redo the previously undone action\nRedo"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
     ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ATL_IDS_SCSIZE          "Change the window size"
     ATL_IDS_SCMOVE          "Change the window position"
@@ -1872,24 +1868,24 @@ BEGIN
     ATL_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ATL_IDS_SCRESTORE       "Restore the window to normal size"
     ATL_IDS_SCTASKLIST      "Activate Task List"
     ATL_IDS_MDICHILD        "Activate this window"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ATL_IDS_IDLEMESSAGE     "Ready"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ATL_IDS_MRU_FILE        "Open this document"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_HDR_EXTENSIONS_VERSION "Version"
     IDS_HDR_EXTENSIONS_ENABLED "Enabled"
@@ -1900,7 +1896,7 @@ BEGIN
     IDS_FINDRESULTS_SEARCHINGFOR "Searching for: "
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_SHORTCUTS_SCRIPTS   "Scripts"
     IDS_HDR_FILETYPES_MATCH "Match"
@@ -1913,7 +1909,7 @@ BEGIN
     IDS_ADDCLIPSETCAPTION   "Type the name of the new Clip set..."
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_ADDCLIPSETTITLE     "New Clip Set"
     IDS_FINDBAR_FINDNEXT    "Find &Next"
@@ -1929,7 +1925,7 @@ BEGIN
     IDS_WORKSPACESAVEFAIL   "Failed to open workspace file %s for writing. Workspace state could not be saved."
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_CLIPS_ADD            "Add Clip"
     ID_CLIPS_REMOVE         "Remove Clip"
@@ -1938,20 +1934,20 @@ BEGIN
     ID_CLIPS_EDIT           "Edit Clip"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_FILE_SAVEALL         "Save all open documents\nSave All"
     ID_EDIT_FINDINFILES     "Find text in files\nFind in Files"
     ID_FINDTYPE_BUTTON      "Find (drop down for other find types)"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_EDITOR_WHITESPACE    "Toggle visible whitespace characters"
     ID_EDITOR_EOLCHARS      "Toggle visible line-end characters"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_VIEW_OUTPUT          "Output"
     ID_VIEW_WINDOWS_PROJECT "Projects"
@@ -1959,7 +1955,7 @@ BEGIN
     ID_VIEW_WINDOWS_CTAGS   "Tags"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_VIEW_WINDOWS_FINDRESULTS "Find Results"
     ID_VIEW_WINDOWS_SCRIPTS "Scripts"
@@ -1975,13 +1971,13 @@ BEGIN
     IDS_TASKDLG_CLOSE       "Close"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_PROJECTDOESNOTEXIST "The specified project does not exist,\n would you like to create it?"
     IDS_PROJSAVECHANGES     "Do you want to save changes to the project: %s?"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_BROWSEFINDROOT      "Select the root folder for the search:"
     IDS_GLOBALOUTPUT        "Use the main output window."
@@ -2001,12 +1997,12 @@ BEGIN
     IDS_ALLPROJECTFILES     "Projects and Project Groups (*.pnproj, *.ppg)|*.pnproj;*.ppg|"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_INDIVIDUALOUTPUT    "Use an individual output window."
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_OUTPUTSUPPORT       "Programmer's Notepad 2 provides built-in support\nfor parsing output from the following tools:\n\nBorland C++\nMicrosoft Compilers\nGCC\nlcc-win32\nPython\nPerl\nand other similar tools."
     IDS_TOOLS_VARSTRINGS    "%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectName),Name of Project,Project 1,$(ProjectPath),Path of Project,c:\\source\\pn2\\,$(ProjectGroupName),Name of the Project Group,Project Group 1,$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\,$(PNPath),PN Install Path,c:\\program files\\pn,$(ProjectProp:x),Project Property,value of 'x',$(FileProp:x),File Property,value of 'x',%(ENV),ENV Environment Variable,ENV value"
@@ -2018,7 +2014,7 @@ BEGIN
     IDS_MODIFIED            "Modified"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_SELLENGTH           "%d character(s) selected."
     IDS_RECTSEL             "Rectangular Selection."
@@ -2040,7 +2036,7 @@ BEGIN
     IDS_INVALIDREGEX        "The regular expression is not valid."
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_UPDATEAVAIL         "An update for Programmer's Notepad is available (version %s), would you like to download it now?"
     IDS_DOWNLOADNOW         "&Download Now"
@@ -2061,7 +2057,7 @@ BEGIN
     IDS_SAVEACCESSDENIED    "%s could not be saved because access was denied.\nThis could be due to the file being marked read-only, or the disk being write-protected.\nDo you want to save in another location?"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_SAVESHAREVIOLATION  "%s could not be saved because another program or user is using the same file.\nDo you want to save in another location?"
     IDS_AVOIDINFINITESEARCH "Avoiding infinite search loop, Replace All abandoned"
@@ -2081,7 +2077,7 @@ BEGIN
     IDS_OPTPAGE_STYLES      "Styles"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_OPTPAGE_KEYBOARD    "Keyboard"
     IDS_OPTGROUP_FILES      "Files"
@@ -2096,11 +2092,12 @@ BEGIN
     IDS_OPTPAGE_FILEASSOC   "Integration"
     IDS_OPTPAGE_VISUALHELP  "Visual Help"
     IDS_SHORTCUTS_EDITOR    "Editor"
+    IDS_FILE_NEW            "&Default"
     IDS_NEW_FILE_TITLE      "Untitled"
     IDS_REPLACE             "Replace"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_FINDINFILES         "Find in Files"
     IDS_MENU_WINDOW         "&Window"
@@ -2120,23 +2117,26 @@ BEGIN
     IDS_HDR_TOOLS_EDITTOOL  "Edit Tool"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_HDR_TOOLS_PROPERTIES "Properties"
     IDS_HDR_TOOLS_CONSOLEIO "Console I/O"
     IDS_TOOLS_GLOBALTOOLS   "(None - Global Tools)"
     IDS_HDR_PROJECTTOOLS_TEMPLATE "Project Template:"
     IDS_PROJECTTOOLS_ALLPROJECTS "(None - All Projects)"
+    IDS_FILE_NEW_PROJECT    "&Project"
     IDS_HDR_FILETYPES_SCHEME "Scheme"
     IDS_HDR_SMARTSTART_PHRASE "Starting Phrase"
     IDS_HDR_FILEASSOC_TYPENAME "Type Name"
     IDS_HDR_FILEASSOC_METHOD "Method"
     IDS_HDR_FILEASSOC_EXTENSION "Extension"
+    IDS_FILE_NEW_WORKSPACE  "&Project Group"
+    IDS_DEFAULTSCHEME       "Plain Text"
     IDS_EXTENSIONS_ENABLED  "Yes"
     IDS_HDR_EXTENSIONS_NAME "Name"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_TOOLS_HEADER_TEXT   "Text"
     IDS_TOOLS_HEADER_EXAMPLE "Example"
@@ -2150,13 +2150,13 @@ BEGIN
     IDS_EXPLORERCONTEXTMENU "Edit with Programmer's Notepad"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_OPTIONS_ADDEDITWITH "Add ""Edit With..."" to Explorer"
     IDS_OPTIONS_REMOVEEDITWITH "Remove ""Edit With..."" from Explorer"
 END
 
-#endif    // English (U.K.) resources
+#endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

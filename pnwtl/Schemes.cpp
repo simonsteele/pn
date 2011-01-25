@@ -2,7 +2,7 @@
  * @file Schemes.cpp
  * @brief Implement Scheme and SchemeManager.
  * @author Simon Steele
- * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -603,6 +603,13 @@ const Scheme& Scheme::operator = (const Scheme& copy)
 ///////////////////////////////////////////////////////////
 // DefaultScheme
 ///////////////////////////////////////////////////////////
+
+DefaultScheme::DefaultScheme()
+{
+	tstring name = L10N::StringLoader::Get(IDS_DEFAULTSCHEME);
+	m_Title = new TCHAR[name.length() + 1];
+	_tcscpy(m_Title, name.c_str());
+}
 
 void DefaultScheme::Load(CScintilla& sc, LPCTSTR filename)
 {

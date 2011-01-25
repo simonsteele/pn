@@ -2,7 +2,7 @@
  * @file SchemeManager.cpp
  * @brief Implement SchemeManager.
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -14,6 +14,7 @@
 #include "SchemeCompiler.h"
 #include "Resource.h"
 #include "include/filefinder.h"
+#include "l10n.h"
 
 class SMFindData : public FileFinderData
 {
@@ -351,21 +352,18 @@ void SchemeManager::Compile()
 	OPTIONS->Set(PNSK_SCHEMES, _T("NewestScheme"), sc.GetNewestFileTime());
 }
 
-void SchemeManager::BuildMenu(HMENU menu, CommandDispatch* pDispatch, CommandEventHandler* pHandler, int iCommand, bool bNewMenu)
+void SchemeManager::BuildMenu(HMENU menu, CommandDispatch* pDispatch, CommandEventHandler* pHandler, int iCommand)
 {
 	CSMenuHandle m(menu);
 	int id;
-	
-	if(bNewMenu)
-	{
-		m.AddItem(_T("&Default\tCtrl+N"), ID_FILE_NEW);
-		m.AddItem(_T("&Project"), ID_FILE_NEW_PROJECT);
-		m.AddItem(_T("&Project Group"), ID_FILE_NEW_WORKSPACE);
-		m.AddSeparator();
-	}
+
+	m.AddItem(LS(IDS_FILE_NEW), ID_FILE_NEW);
+	m.AddItem(LS(IDS_FILE_NEW_PROJECT), ID_FILE_NEW_PROJECT);
+	m.AddItem(LS(IDS_FILE_NEW_WORKSPACE), ID_FILE_NEW_WORKSPACE);
+	m.AddSeparator();
 	
 	id = pDispatch->RegisterCallback(pHandler, iCommand, (LPVOID)GetDefaultScheme());
-	m.AddItem(_T("Plain Text"), id);
+	m.AddItem(LS(IDS_DEFAULTSCHEME), id);
 
 	for(SCIT i = m_Schemes.begin(); i != m_Schemes.end(); ++i)
 	{
@@ -375,6 +373,8 @@ void SchemeManager::BuildMenu(HMENU menu, CommandDispatch* pDispatch, CommandEve
 			m.AddItem( (*i).GetTitle(), id);
 		}
 	}
+
+	pDispatch->UpdateMenuShortcuts(menu);
 }
 
 void SchemeManager::SaveExtMap()
@@ -392,8 +392,6 @@ void SchemeManager::SaveExtMap()
 		return;
 
 	tstring line;
-
-	//TODO: Extmap will become unicode here, not sure we want that.
 
 	for(SCHEME_MAP::const_iterator i = m_SchemeExtMap.begin(); i != m_SchemeExtMap.end(); ++i)
 	{

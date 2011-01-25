@@ -2,7 +2,7 @@
  * @file OptionsDialogs.cpp
  * @brief Dialogs used to edit settings from the Options dialog.
  * @author Simon Steele
- * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -455,7 +455,7 @@ LRESULT CSmartStartEditorDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, 
 	CComboBox combo(GetDlgItem(IDC_SCHEMECOMBO));
 	
 	int selindex = 0;
-	int index = combo.AddString(_T("Plain Text"));
+	int index = combo.AddString(LS(IDS_DEFAULTSCHEME));
 	combo.SetItemDataPtr(index, NULL);
 	for(SchemeDetailsList::const_iterator i = m_pSchemes->GetSchemes().begin(); i != m_pSchemes->GetSchemes().end(); ++i)
 	{

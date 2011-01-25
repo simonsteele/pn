@@ -2,7 +2,7 @@
  * @file mainfrm.cpp
  * @brief Main Window for Programmer's Notepad 2 (Implementation)
  * @author Simon Steele
- * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -973,7 +973,11 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	// Initialise our popup menus.
 	m_Switcher.Reset(m_pCmdDispatch, MENUMESSAGE_CHANGESCHEME);
-	SchemeManager::GetInstance()->BuildMenu((HMENU)m_NewMenu, m_pCmdDispatch, this);
+	
+	// We build the New menu as one whole piece. This is moved between child
+	// windows as they are activated to avoid needing to re-insert keyboard
+	// shortcuts etc.
+	SchemeManager::GetInstance()->BuildMenu(static_cast<HMENU>(m_NewMenu), m_pCmdDispatch, this);
 
 	tstring mrukey;
 	mrukey = PNSK_MRU;
@@ -1448,7 +1452,6 @@ LRESULT CMainFrame::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
 	else
 		scheme = SchemeManager::GetInstance()->GetDefaultScheme();
 
-	/*CChildFrame* pChild = */
 	m_ChildFactory.WithScheme(scheme);
 		
 	return 0;

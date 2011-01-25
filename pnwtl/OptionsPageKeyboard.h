@@ -69,6 +69,8 @@ class COptionsPageKeyboard : public COptionsPageImpl<COptionsPageKeyboard>,
 		LRESULT OnListItemChanged(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/);
 		LRESULT OnKeySelChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
+		void addDynamicItems(CSMenuHandle& menu);
+		void addItem(int index, LPCTSTR group, LPCTSTR item, DWORD command);
 		int addItems(CSMenuHandle& menu, LPCTSTR group, int count = 0);
 		void addExtensions();
 		void addScintilla();

@@ -2,7 +2,7 @@
  * @file Schemes.h
  * @brief Define Scheme and SchemeManager.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -181,25 +181,22 @@ class Scheme
 /**
  * DefaultScheme is a special case because it must always
  * be available - even if no other schemes are. Therefore,
- * while it *may* eventually be able to load settings from
- * a file, it will always exist and provide default settings.
+ * it will always exist and provide default settings.
  */
 class DefaultScheme : public Scheme
 {
 	public:
-		DefaultScheme(){}
+		DefaultScheme();		
 		virtual ~DefaultScheme(){}
 
 		virtual void Load(CScintilla& sc, LPCTSTR filename = NULL);
 
-		// Can't set name, it's always "Default"
+		// Can't set name, it's always whatever's set in the constructor from the resource.
 		virtual void SetName(const char* name){}
 
 		virtual void CheckName(const wchar_t* filename = NULL){}
 
 		virtual const char* GetName() const { return "default"; }
-
-		virtual const TCHAR* GetTitle() const { return _T("Plain Text"); }
 };
 
 typedef std::list<Scheme>				SCHEME_LIST;
