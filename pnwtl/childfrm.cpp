@@ -2775,26 +2775,49 @@ void CChildFrame::UpdateMenu()
 {
 	CSMenuHandle menu(m_hMenu);
 
-	EPNSaveFormat f = (EPNSaveFormat)GetTextView()->GetEOLMode();
+	CTextView* currentEditor = GetTextView();
+	if (currentEditor != NULL)
+	{
+		EPNSaveFormat f = (EPNSaveFormat)currentEditor->GetEOLMode();
 	
-	menu.CheckMenuItem(ID_TOOLS_LECRLF, f == PNSF_Windows);
-	menu.CheckMenuItem(ID_TOOLS_LECR, f == PNSF_Mac);
-	menu.CheckMenuItem(ID_TOOLS_LELF, f == PNSF_Unix);
-	menu.CheckMenuItem(ID_TOOLS_USETABS, GetTextView()->GetUseTabs());
+		menu.CheckMenuItem(ID_TOOLS_LECRLF, f == PNSF_Windows);
+		menu.CheckMenuItem(ID_TOOLS_LECR, f == PNSF_Mac);
+		menu.CheckMenuItem(ID_TOOLS_LELF, f == PNSF_Unix);
+		menu.CheckMenuItem(ID_TOOLS_USETABS, currentEditor->GetUseTabs());
 
-	EPNEncoding e = GetTextView()->GetEncoding();
+		EPNEncoding e = currentEditor->GetEncoding();
 
-	menu.CheckMenuItem(ID_ENCODING_8, e == eUnknown);
-	menu.CheckMenuItem(ID_ENCODING_UTF8, e == eUtf8);
-	menu.CheckMenuItem(ID_ENCODING_UTF16BE, e == eUtf16BigEndian);
-	menu.CheckMenuItem(ID_ENCODING_UTF16LE, e == eUtf16LittleEndian);
-	menu.CheckMenuItem(ID_ENCODING_UTF8NOBOM, e == eUtf8NoBOM);
+		menu.CheckMenuItem(ID_ENCODING_8, e == eUnknown);
+		menu.CheckMenuItem(ID_ENCODING_UTF8, e == eUtf8);
+		menu.CheckMenuItem(ID_ENCODING_UTF16BE, e == eUtf16BigEndian);
+		menu.CheckMenuItem(ID_ENCODING_UTF16LE, e == eUtf16LittleEndian);
+		menu.CheckMenuItem(ID_ENCODING_UTF8NOBOM, e == eUtf8NoBOM);
 
-	UISetChecked(ID_EDITOR_WORDWRAP, GetTextView()->GetWrapMode() == SC_WRAP_WORD);
-	UISetChecked(ID_EDITOR_EOLCHARS, GetTextView()->GetViewEOL());
-	UISetChecked(ID_EDITOR_WHITESPACE, GetTextView()->GetViewWS() == SCWS_VISIBLEALWAYS);
-	UISetChecked(ID_EDITOR_LINENOS, GetTextView()->GetMarginWidthN(0) > 0);
+		UISetChecked(ID_EDITOR_WORDWRAP, currentEditor->GetWrapMode() == SC_WRAP_WORD);
+		UISetChecked(ID_EDITOR_EOLCHARS, currentEditor->GetViewEOL());
+		UISetChecked(ID_EDITOR_WHITESPACE, currentEditor->GetViewWS() == SCWS_VISIBLEALWAYS);
+		UISetChecked(ID_EDITOR_LINENOS, currentEditor->GetMarginWidthN(0) > 0);
 	
+		g_Context.m_frame->SetActiveScheme(m_hWnd, currentEditor->GetCurrentScheme());
+
+		if (currentEditor->GetCurrentScheme() != NULL)
+		{
+			const CommentSpecRec& comments = currentEditor->GetCurrentScheme()->GetCommentSpec();
+			menu.EnableMenuItem(ID_COMMENTS_LINE, comments.CommentLineText[0] != NULL);
+			menu.EnableMenuItem(ID_COMMENTS_STREAM, (comments.CommentStreamStart[0] != NULL)
+				&& (comments.CommentStreamEnd[0] != NULL));
+			menu.EnableMenuItem(ID_COMMENTS_BLOCK, (comments.CommentBlockStart[0] != NULL)
+				&& (comments.CommentBlockEnd[0] != NULL));
+
+			menu.EnableMenuItem(ID_COMMENTS_UNCOMMENT, (comments.CommentLineText[0] != NULL)
+				|| (comments.CommentStreamStart[0] != NULL)
+				|| (comments.CommentStreamEnd[0] != NULL)
+				|| (comments.CommentBlockStart[0] != NULL)
+				|| (comments.CommentBlockEnd[0] != NULL));
+		}
+	}
+
+	// Tools Status:
 	bool bToolsRunning = false;
 	if( ToolOwner::HasInstance() )
 	{
@@ -2803,24 +2826,6 @@ void CChildFrame::UpdateMenu()
 	}
 
 	menu.EnableMenuItem(ID_TOOLS_STOPTOOLS, bToolsRunning);
-
-	g_Context.m_frame->SetActiveScheme(m_hWnd, GetTextView()->GetCurrentScheme());
-
-	if (GetTextView()->GetCurrentScheme() != NULL)
-	{
-		const CommentSpecRec& comments = GetTextView()->GetCurrentScheme()->GetCommentSpec();
-		menu.EnableMenuItem(ID_COMMENTS_LINE, comments.CommentLineText[0] != NULL);
-		menu.EnableMenuItem(ID_COMMENTS_STREAM, (comments.CommentStreamStart[0] != NULL)
-			&& (comments.CommentStreamEnd[0] != NULL));
-		menu.EnableMenuItem(ID_COMMENTS_BLOCK, (comments.CommentBlockStart[0] != NULL)
-			&& (comments.CommentBlockEnd[0] != NULL));
-
-		menu.EnableMenuItem(ID_COMMENTS_UNCOMMENT, (comments.CommentLineText[0] != NULL)
-			|| (comments.CommentStreamStart[0] != NULL)
-			|| (comments.CommentStreamEnd[0] != NULL)
-			|| (comments.CommentBlockStart[0] != NULL)
-			|| (comments.CommentBlockEnd[0] != NULL));
-	}
 }
 
 bool CChildFrame::IsOutputVisible()
