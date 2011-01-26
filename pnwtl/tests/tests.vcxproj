@@ -98,7 +98,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\lib\boost_unit_test\boost_unit_test_framework-vc90-mt-$(BoostFileVer).dll $(TargetDir)</Command>
+      <Command>copy ..\lib\boost_unit_test\boost_unit_test_framework-vc100-mt-$(BoostFileVer).dll $(TargetDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

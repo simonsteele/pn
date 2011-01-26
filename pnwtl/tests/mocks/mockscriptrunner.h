@@ -28,6 +28,11 @@ public:
 	{
 		output = "Hello World";
 	}
+
+	virtual void Exec(const char *, const char *, int, PN::BaseString& output)
+	{
+		output = "Hello World";
+	}
 };
 
 #endif
