@@ -24,7 +24,7 @@ WizardImageFile=sidebar.bmp
 AppVersion={#PNVersion}
 AppID={{52CF142B-7B0E-41E7-98F5-B834122523E7}
 UninstallDisplayIcon={app}\pn.exe
-UninstallDisplayName=Programmer's Notepad 2
+UninstallDisplayName=Programmer's Notepad
 WizardSmallImageFile=small.bmp
 Compression=lzma/ultra
 OutputBaseFilename=pnsetuptrans
@@ -42,21 +42,18 @@ Source: ..\bin\pnse.dll; DestDir: {app}; Flags: ignoreversion restartreplace uni
 Source: configs\default\config.xml; DestDir: {app}; Flags: onlyifdoesntexist
 
 Source: ..\bin\dbghelp.dll; DestDir: {app}
-;Source: ..\bin\libexpat.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\bin\libexpatw.dll; DestDir: {app}; Flags: ignoreversion
+
 Source: ..\bin\SciLexer.dll; DestDir: {app}; Flags: ignoreversion
 
-;Translations
-Source: ..\bin\pnlang_*.dll; DestDir: {app}; Flags: ignoreversion
-
 Source: ..\bin\schemes\*.scheme; DestDir: {app}\schemes
-Source: ..\bin\schemes\*.lexer; DestDir: {app}\schemes
 Source: ..\bin\schemes\*.api; DestDir: {app}\schemes
 Source: ..\bin\schemes\extmap.dat; DestDir: {app}\schemes
 Source: ..\bin\clips\*.clips; DestDir: {app}\clips; Flags: recursesubdirs
 Source: ..\bin\presets\*.xml; DestDir: {app}\presets
 
 Source: ..\bin\ctagsnavigator.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\bin\customscheme.dll; DestDir: {app}; Flags: ignoreversion
 Source: ..\bin\ctags\*.*; DestDir: {app}\ctags; Flags: ignoreversion
 Source: ..\bin\ctags.exe; DestDir: {app}; Flags: ignoreversion
 Source: ..\doc\help\pn2.chm; DestDir: {app}
@@ -68,22 +65,16 @@ Source: ..\doc\roadmap.txt; DestDir: {app}
 Source: ..\doc\ctags_README; DestDir: {app}
 Source: ..\doc\ctags_COPYING; DestDir: {app}
 
-;Source: ..\userschemes\*.schemedef; DestDir: {app}\schemes
 Source: ..\schemes\user\*.schemedef; DestDir: {app}\samples
 
-;Source: reqfiles\msvcp71.dll; DestDir: {app}
-;Source: reqfiles\msvcr71.dll; DestDir: {app}
+Source: reqfiles\msvcp100.dll; DestDir: {app}; Flags: ignoreversion
+Source: reqfiles\msvcr100.dll; DestDir: {app}; Flags: ignoreversion
 
-Source: reqfiles\Microsoft.VC90.CRT\Microsoft.VC90.CRT.manifest; DestDir: {app}\Microsoft.VC90.CRT; MinVersion: 0,5.01.2600
-Source: reqfiles\Microsoft.VC90.CRT\msvcm90.dll; DestDir: {app}\Microsoft.VC90.CRT; MinVersion: 0,5.01.2600
-Source: reqfiles\Microsoft.VC90.CRT\msvcp90.dll; DestDir: {app}\Microsoft.VC90.CRT; MinVersion: 0,5.01.2600
-Source: reqfiles\Microsoft.VC90.CRT\msvcr90.dll; DestDir: {app}\Microsoft.VC90.CRT; MinVersion: 0,5.01.2600
-
-Source: reqfiles\Microsoft.VC90.CRT\msvcp90.dll; DestDir: {app}; OnlyBelowVersion: 0,5.01.2600; Flags: ignoreversion
-Source: reqfiles\Microsoft.VC90.CRT\msvcr90.dll; DestDir: {app}; OnlyBelowVersion: 0,5.01.2600; Flags: ignoreversion
+;Translations
+Source: ..\bin\pnlang_*.dll; DestDir: {app}; Flags: ignoreversion
 
 [Icons]
-Name: {group}\Programmer's Notepad 2; Filename: {app}\pn.exe
+Name: {group}\Programmer's Notepad; Filename: {app}\pn.exe
 Name: {commondesktop}\Programmer's Notepad; Filename: {app}\pn.exe; Tasks: desktopicon
 Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Programmer's Notepad; Filename: {app}\pn.exe; Tasks: quicklaunchicon
 
@@ -98,7 +89,8 @@ UseAbsolutePaths=false
 [Registry]
 Root: HKCU; SubKey: Software\Classes\SystemFileAssociations\text\shell\edit.PN2; ValueType: string; Flags: uninsdeletekey dontcreatekey
 Root: HKCU; SubKey: Software\Classes\SystemFileAssociations\text\OpenWithList\pn.exe; ValueType: string; Flags: uninsdeletekey dontcreatekey
-[Dirs]
-Name: {app}\Microsoft.VC90.CRT
+
 [InstallDelete]
 Name: {app}\taggers\ctagsnavigator.*; Type: files; Tasks: 
+Name: {app}\schemes\customscheme.lexer; Type: files; Tasks:
+Name: {app}\schemes\powershell.schemedef; Type: files; Tasks:
