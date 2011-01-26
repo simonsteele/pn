@@ -95,6 +95,7 @@ typedef std::basic_string<TCHAR> tstring;
 #include <boost/xpressive/xpressive.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/spirit/include/qi.hpp>
+#include <boost/bind.hpp>
 
 template <typename match_type>
 bool safe_get_submatch(match_type& match, typename match_type::string_type& expr, typename match_type::char_type const *name)

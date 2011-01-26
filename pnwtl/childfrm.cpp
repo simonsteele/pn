@@ -760,11 +760,16 @@ void CChildFrame::splitSelectedView(bool horizontal)
 {
 	Views::ViewPtr parent = m_focusView->GetParentView();
 
+	CTextView* currentTextView = GetTextView();
+	PNASSERT(currentTextView != NULL);
+	int currentDocPtr = currentTextView->GetDocPointer();
+	PNASSERT(currentDocPtr != 0);
+
 	// Create the view we're going to split into:
 	Views::ViewPtr newTextViewPtr(new CTextView(m_spDocument, Views::ViewPtr(), m_pCmdDispatch, m_autoComplete));	
 	CTextView* newTextView = static_cast<CTextView*>(newTextViewPtr.get());
 	newTextView->Create(parent->GetHwnd(), rcDefault, NULL, WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, /*WS_EX_CLIENTEDGE*/0, cwScintilla+1);
-	newTextView->SetDocPointer(GetTextView()->GetDocPointer());
+	newTextView->SetDocPointer(currentDocPtr);
 	
 	// Disable notifications on the inactive view:
 	newTextView->SetModEventMask(0);
@@ -826,40 +831,59 @@ void CChildFrame::removeSplit(bool closeCurrent)
 		}
 	}
 
-	// We are closing this view, so we want to keep the _other_ child.
-	Views::ViewPtr viewToKeep(closeCurrent ? parentSplit->GetOtherChild(m_focusView) : m_focusView);
-
-	// Swap parents:
-	Views::ViewPtr newParent(oldParent->GetParentView());
-	parentSplit->DetachView(viewToKeep);
-	viewToKeep->SetParentView(newParent);
-
-	// Work out how to slot into the hierarchy:
-	switch (newParent->GetType())
+	// Scope this bit to ensure all dangling pointers
+	// are gone before view is destroyed:
 	{
-	case Views::vtSplit:
+		// We are closing this view, so we want to keep the _other_ child.
+		Views::ViewPtr viewToKeep(closeCurrent ? parentSplit->GetOtherChild(m_focusView) : m_focusView);
+		Views::ViewPtr viewToClose(closeCurrent ? m_focusView : parentSplit->GetOtherChild(m_focusView));
+
+		// Swap parents:
+		Views::ViewPtr newParent(oldParent->GetParentView());
+		parentSplit->DetachView(viewToKeep);
+		viewToKeep->SetParentView(newParent);
+
+		// Work out how to slot into the hierarchy:
+		switch (newParent->GetType())
 		{
-			Views::SplitView* splitView = static_cast<Views::SplitView*>(newParent.get());
+		case Views::vtSplit:
+			{
+				Views::SplitView* splitView = static_cast<Views::SplitView*>(newParent.get());
 			
-			// Swap the children:
-			splitView->SwapChildren(oldParent, viewToKeep);
-		}
-		break;
+				// Swap the children:
+				splitView->SwapChildren(oldParent, viewToKeep);
+			}
+			break;
 
-	case Views::vtRoot:
+		case Views::vtRoot:
+			{
+				// We reached the bottom, we're now the prime view:
+				m_primeView = viewToKeep;
+				m_hWndClient = viewToKeep->GetHwnd();
+			}
+			break;
+
+		default:
+			break;
+		}
+
+		::SetParent(viewToKeep->GetHwnd(), newParent->GetHwnd());
+	
+		// Our current focus view is switching to the view we're keeping.
+		SetLastView(viewToKeep);
+		 
+		// TODO: There is a problem here if we delete one of two views, and the other is not a text view 
+		// - we'll leave m_lastTextView blank. This needs extending when we allow non-text views to 
+		// find the first valid text view and go with it.
+		if (m_lastTextView == viewToClose)
 		{
-			// We reached the bottom, we're now the prime view:
-			m_primeView = viewToKeep;
-			m_hWndClient = viewToKeep->GetHwnd();
+			// We didn't replace m_lastTextView in SetLastView because viewToKeep is not a text
+			// view, clear lastTextView or it will become invalid.
+			m_lastTextView.reset();
 		}
-		break;
-
-	default:
-		break;
 	}
 
-	::SetParent(viewToKeep->GetHwnd(), newParent->GetHwnd());
-	m_focusView = viewToKeep;
+	// Finally safe to destroy the splitter and closing view, and then update the layout:
 	oldParent.reset();
 	UpdateLayout();
 }
