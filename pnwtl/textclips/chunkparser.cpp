@@ -31,6 +31,7 @@ using qi::char_;
 using qi::parse;
 using qi::lit;
 using qi::lexeme;
+using qi::no_skip;
 using ascii::space;
 using ascii::space_type;
 using qi::_1;
@@ -47,7 +48,7 @@ struct snippet : qi::grammar<Iterator, boost::spirit::ascii::space_type>
 		using qi::labels::_val;
 
 		// text, match anything but $ and collect it up:
-		text_rule = lexeme[+(char_ - '$' - '\\' - '`')[_val += qi::_1]];
+		text_rule = no_skip[+(char_ - '$' - '\\' - '`')[_val += qi::_1]];
 
 		// Handle escapes
 		escape_rule = lit("\\") >> char_;
@@ -62,7 +63,7 @@ struct snippet : qi::grammar<Iterator, boost::spirit::ascii::space_type>
 		placeholder_text_rule = lit("${") >> int_ >> lit(":") >> placeholder_inner_text_rule >> lit("}");
 
 		// Rule to match the text in a placeholder:
-		placeholder_inner_text_rule = lexeme[+(char_ - '}')[_val += qi::_1]];
+		placeholder_inner_text_rule = no_skip[+(char_ - '}')[_val += qi::_1]];
 
 		// Rule to match variables: ${blah}
 		variable_rule = lit("${") >> +char_("-_a-zA-Z0-9") >> lit("}");
@@ -74,11 +75,11 @@ struct snippet : qi::grammar<Iterator, boost::spirit::ascii::space_type>
 		backtick_expression_rule = lit('`') >> backtick_inner_text_rule >> lit('`');
 
 		// Rule to match the text in a placeholder
-		backtick_inner_text_rule = lexeme[+(char_ - '`')[_val += qi::_1]];
+		backtick_inner_text_rule = no_skip[+(char_ - '`')[_val += qi::_1]];
 
 		// Master expression:
 		start = +(
-			text_rule					[phx::bind(&snippet::text, this, _1)] | 
+			no_skip[text_rule			[phx::bind(&snippet::text, this, _1)]] | 
 			escape_rule					[phx::bind(&snippet::escape_char, this, _1)] |
 			empty_placeholder_rule		[phx::bind(&snippet::empty_placeholder, this, _1)] | 
 			placeholder_text_rule		[phx::bind(&snippet::text_placeholder, this, _1)] | 
