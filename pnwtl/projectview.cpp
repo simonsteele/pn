@@ -403,6 +403,8 @@ void CProjectTreeCtrl::doContextMenu(LPPOINT pt)
 			{
 				File* f = static_cast<File*>(lastItem);
 				
+				bool magicFile = f->GetFolder()->GetType() == ptMagicFolder;
+
 				CPidl pidl;
 				if (AtlGetFilePidl2(f->GetFileName(), &pidl))
 				{
@@ -411,6 +413,12 @@ void CProjectTreeCtrl::doContextMenu(LPPOINT pt)
 					CSPopupMenu explorer;
 					InsertMenu(popup.GetHandle(), ID_DUMMY_EXPLORER, MF_BYCOMMAND | MF_POPUP, reinterpret_cast<UINT_PTR>(explorer.GetHandle()), _T("Explorer"));
 					DeleteMenu(popup.GetHandle(), ID_DUMMY_EXPLORER, MF_BYCOMMAND);
+
+					if (magicFile)
+					{
+						DeleteMenu(popup.GetHandle(), ID_PROJECT_REMOVE, MF_BYCOMMAND);
+						DeleteMenu(popup.GetHandle(), ID_PROJECT_ADDFILES, MF_BYCOMMAND);
+					}
 					
 					int nCmd;
 					BOOL result = m_explorerMenu->TrackPopupMenu(pidl, pt->x, pt->y, m_hWnd, popup.GetHandle(), explorer.GetHandle(), 10000, 11000, nCmd);
