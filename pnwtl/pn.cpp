@@ -240,5 +240,5 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 	_CrtDumpMemoryLeaks();
 #endif
 
-	return nRet;
+	return 0;
 }
