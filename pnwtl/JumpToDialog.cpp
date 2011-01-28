@@ -61,6 +61,7 @@ LRESULT CJumpToDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	buttonGapX = rcCancel.left - rcBtn.right;
 
 	JumpToHandler::GetInstance()->FindTags(m_pChild, this);
+	std::sort(m_targets.begin(), m_targets.end(), [] (const Target& l, const Target& r) { return stricmp(l.Tag.c_str(), r.Tag.c_str()) < 0; });
 	display(m_targets);
 
 	return 0;
