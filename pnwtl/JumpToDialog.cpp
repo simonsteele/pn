@@ -2,7 +2,7 @@
  * @file jumptodialog.cpp
  * @brief Jump To Dialog Implementation
  * @author Simon Steele
- * @note Copyright (c) 2004 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2004-2011 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -30,10 +30,7 @@ LRESULT CJumpToDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 
 	btnOk.Attach(GetDlgItem(IDOK));
 	btnCancel.Attach(GetDlgItem(IDCANCEL));
-	//edtTag.Attach(GetDlgItem(IDC_JUMPTOTEXT));
 
-	//edtTag.SubclassDlgItem(IDC_JUMPTOTEXT, this);
-	//edtTag.SubclassWindow(GetDlgItem(IDC_JUMPTOTEXT));
 	edtTag.SubclassWindow(GetDlgItem(IDC_JUMPTOTEXT));
 
 	list.InsertColumn(0, _T("Tag"), LVCFMT_LEFT, COLWIDTH_TAG, 0);
@@ -64,6 +61,7 @@ LRESULT CJumpToDialog::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	buttonGapX = rcCancel.left - rcBtn.right;
 
 	JumpToHandler::GetInstance()->FindTags(m_pChild, this);
+	display(m_targets);
 
 	return 0;
 }
@@ -114,7 +112,9 @@ LRESULT CJumpToDialog::OnListDblClick(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHan
 {
 	transfer();
 	if(line != -1)
+	{
 		EndDialog(IDOK);
+	}
 
 	return 0;
 }
@@ -143,44 +143,27 @@ LRESULT CJumpToDialog::OnEditKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPar
 
 void CJumpToDialog::OnFound(int count, LPMETHODINFO methodInfo)
 {
-	LVITEM lvi;
-	
-	CA2CT methodName(methodInfo->methodName);
-	CA2CT parentName(methodInfo->parentName);
-	
-	memset(&lvi, 0, sizeof(LVITEM));
-	lvi.iItem = list.GetItemCount();
-	lvi.mask = LVIF_TEXT | LVIF_IMAGE;
-	lvi.pszText = const_cast<TCHAR*>(static_cast<const TCHAR*>(methodName));
+	int image(0);
 	if(methodInfo->type <= TAG_MAX)
-		lvi.iImage = jumpToTagImages[methodInfo->type].imagesNumber;
+	{
+		image = jumpToTagImages[methodInfo->type].imagesNumber;
+	}
+
+	if (methodInfo->parentName)
+	{
+		m_targets.push_back(Target(methodInfo->methodName, methodInfo->parentName, methodInfo->lineNumber, image));
+	}
 	else
-		lvi.iImage = 0;
-	int index = list.InsertItem(&lvi);
-
-	lvi.mask = LVIF_TEXT;
-	lvi.iItem = index;
-	lvi.iSubItem = 1;
-	lvi.pszText = const_cast<TCHAR*>(static_cast<const TCHAR*>(parentName));
-	list.SetItem(&lvi);
-
-	_itot(methodInfo->lineNumber, itoabuf, 10);
-	lvi.iSubItem = 2;
-	lvi.pszText = itoabuf;
-	list.SetItem(&lvi);
-
-	list.SetItemData(index, methodInfo->lineNumber);
+	{
+		m_targets.push_back(Target(methodInfo->methodName, methodInfo->lineNumber, image));
+	}
 }
 
 LRESULT CJumpToDialog::OnTextKeyPress(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	CWindowText wt(GetDlgItem(IDC_JUMPTOTEXT));
-
-	if((LPCTSTR)wt != NULL)
-	{
-		filter(wt);
-	}
-
+	filter((LPCTSTR)wt);
+	
 	return 0;
 }
 
@@ -209,13 +192,36 @@ int CJumpToDialog::GetLine()
  */
 void CJumpToDialog::filter(LPCTSTR text)
 {
-	LVFINDINFO lvfi;
-	lvfi.flags = LVFI_PARTIAL;
-	lvfi.psz = text;
+	m_filtered.clear();
 
-	int index = list.FindItem(&lvfi, -1);
-	if(index != -1)
-		list.SelectItem(index);
+	if (text == NULL || *text == NULL)
+	{
+		display(m_targets);
+		return;
+	}
+
+	CT2CA partial(text);
+	Target t(static_cast<const char*>(partial), "", 0, 0);
+	size_t length(t.Tag.size());
+	auto i = std::lower_bound(m_targets.begin(), m_targets.end(), t, [length](const Target& l, const Target& r) -> bool { 
+		if (_strnicmp(l.Tag.c_str(), r.Tag.c_str(), length) < 0)
+		{
+			return true;
+		}
+		
+		return false;
+	});
+	for (; i != m_targets.end(); ++i)
+	{
+		if (_strnicmp(static_cast<const char*>(partial), i->Tag.c_str(), length) != 0)
+		{
+			break;
+		}
+
+		m_filtered.push_back(*i);
+	}
+
+	display(m_filtered);
 }
 
 /**
@@ -231,4 +237,54 @@ void CJumpToDialog::transfer()
 	}
 	else
 		line = -1;
+}
+
+/**
+ * Display a set of targets.
+ */
+void CJumpToDialog::display(const std::vector<Target>& targets)
+{
+	list.DeleteAllItems();
+	list.LockWindowUpdate();
+
+	LVITEM lvi;
+	memset(&lvi, 0, sizeof(LVITEM));
+
+	int index(0);
+
+	BOOST_FOREACH(const Target& target, targets)
+	{
+		CA2CT methodName(target.Tag.c_str());
+	
+		lvi.iItem = index++;
+		lvi.iSubItem = 0;
+		lvi.mask = LVIF_TEXT | LVIF_IMAGE;
+		lvi.pszText = const_cast<TCHAR*>(static_cast<const TCHAR*>(methodName));
+	
+		int index = list.InsertItem(&lvi);
+		lvi.mask = LVIF_TEXT;
+
+		if (target.Parent.size())
+		{
+			CA2CT parentName(target.Parent.c_str());
+			lvi.iItem = index;
+			lvi.iSubItem = 1;
+			lvi.pszText = const_cast<TCHAR*>(static_cast<const TCHAR*>(parentName));
+			list.SetItem(&lvi);
+		}
+
+		_itot(target.Line, itoabuf, 10);
+		lvi.iSubItem = 2;
+		lvi.pszText = itoabuf;
+		list.SetItem(&lvi);
+
+		list.SetItemData(index, reinterpret_cast<DWORD_PTR>(&target));
+	}
+
+	if (list.GetItemCount() > 0)
+	{
+		list.SelectItem(0);
+	}
+
+	list.LockWindowUpdate(0);
 }
