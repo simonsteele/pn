@@ -11,36 +11,37 @@
 	</style-classes>
 	<keyword-classes>
 		<keyword-class name="hypertext.elements">
-			a abbr acronym address applet area b base basefont
-			bdo big blockquote body br button caption center
-			cite code col colgroup dd del dfn dir div dl dt em
-			fieldset font form frame frameset h1 h2 h3 h4 h5 h6
-			head hr html i iframe img input ins isindex kbd label
-			legend li link map menu meta noframes noscript
-			object ol optgroup option p param pre q s samp
-			script select small span strike strong style sub sup
-			table tbody td textarea tfoot th thead title tr tt u ul
-			var xml xmlns
+			a abbr acronym address applet area aside audio b base basefont
+			bdo big blockquote body br button canvas caption center
+			cite code col colgroup command datalist dd del details dfn dir div dl dt em
+			embed fieldset figcaption figure font footer form frame frameset h1 h2 h3 h4 h5 h6
+			head header hgroup hr html i iframe img input ins kbd keygen label
+			legend li link map mark menu meta meter nav noframes noscript
+			object ol optgroup option output p param pre progress q rp rt ruby s samp
+			script section select small source span strike strong style sub summary sup
+			table tbody td textarea tfoot th thead time title tr tt u ul
+			var video wbr xml xmp xmlns
 		</keyword-class>
 		<keyword-class name="hypertext.attributes">
 			abbr accept-charset accept accesskey action align alink
-			alt archive axis background bgcolor border
+			alt archive autocomplete autofocus axis background bgcolor border
 			cellpadding cellspacing char charoff charset checkbox checked cite
 			class classid clear codebase codetype color cols colspan
-			compact content coords
+			compact content contenteditable contextmenu coords
 			data datafld dataformatas datapagesize datasrc datetime
-			declare defer dir disabled encoding enctype event
-			face file for frame frameborder
+			declare defer dir disabled draggable dropzone encoding enctype event
+			face file for form formaction formenctype formmethod formnovalidate formtarget frame frameborder
 			headers height hidden href hreflang hspace http-equiv
-			id image ismap label lang language leftmargin link longdesc
-			marginwidth marginheight maxlength media method multiple
-			name nohref noresize noshade nowrap
-			object onblur onchange onclick ondblclick onfocus
-			onkeydown onkeypress onkeyup onload onmousedown
-			onmousemove onmouseover onmouseout onmouseup
-			onreset onselect onsubmit onunload
-			password profile prompt radio readonly rel reset rev rows rowspan rules
-			scheme scope selected shape size span src standby start style submit
+			id image ismap label lang language leftmargin link list longdesc
+			marginwidth marginheight max maxlength media method min multiple
+			name nohref noresize noshade novalidate nowrap
+			object onabort onafterprint onbeforeprint onbeforeonload onblur oncanplay oncanplaythrough onchange onclick oncontextmenu ondblclick ondrag ondragend ondragenter ondragleave ondragover ondragstart ondrop ondurationchange onemptied onended onerror onfocus onformchange onforminput onhaschange
+			oninput oninvalid onkeydown onkeypress onkeyup onload onloadeddata onloadedmetadata onloadstart onmessage onmousedown
+			onmousemove onmouseover onmouseout onmouseup onmousewheel
+			onoffline ononline onpagehide onpageshow onpause onplay onplaying onprogress onpopstate onratechange onreadystatechange onredo
+			onreset onresize onscroll onseeked onseeking onselect onstalled onstorage onsubmit onsuspend ontimeupdate onundo onunload onvolumechange onwaiting
+			password pattern placeholder profile prompt radio readonly rel required reset rev rows rowspan rules
+			scheme scope selected shape size span spellcheck src standby start step style submit
 			summary tabindex target text title topmargin type usemap
 			valign value valuetype version vlink vspace width
 			xml:lang
