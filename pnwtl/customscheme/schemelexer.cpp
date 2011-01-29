@@ -81,27 +81,15 @@ void CustomLexer::Lexer(unsigned int startPos, int length, int initStyle, IDocum
 		}
 		else if( cc.state == STYLE_BLOCKCOMMENT )
 		{
-			if (m_config.blockComment.ecLength == eSingle)
-			{
-				if( cc.Match(m_config.blockComment.ecode[0]) )
-					cc.ForwardSetState(ST_DEFAULT);
-			}
-			else if(m_config.blockComment.ecLength == eDouble)
-			{
-				if( cc.Match(m_config.blockComment.ecode[0], m_config.blockComment.ecode[1]) )
-				{
-					cc.Forward();
-					cc.ForwardSetState(ST_DEFAULT);
-				}
-			}
-			else
-			{
-				if( cc.MatchIgnoreCase(m_config.blockComment.pECode) )
-				{
-					cc.Forward(strlen(m_config.blockComment.pECode));
-					cc.SetState(ST_DEFAULT);
-				}
-			}
+			handleBlockComment(cc, m_config.blockComment[0]);
+		}
+		else if( cc.state == STYLE_BLOCKCOMMENT2 )
+		{
+			handleBlockComment(cc, m_config.blockComment[1]);
+		}
+		else if( cc.state == STYLE_BLOCKCOMMENT3 )
+		{
+			handleBlockComment(cc, m_config.blockComment[2]);
 		}
 		else if( cc.state == STYLE_IDENTIFIER )
 		{
@@ -218,13 +206,16 @@ void CustomLexer::Lexer(unsigned int startPos, int length, int initStyle, IDocum
 			}
 			else
 			{
-				const CommentType_t* types[2] = { &m_config.singleLineComment, &m_config.blockComment };
+				const CommentType_t* types[4] = { &m_config.singleLineComment, &m_config.blockComment[0], &m_config.blockComment[1], &m_config.blockComment[2] };
 				
-				for(int cs = 0; cs < 2; cs++)
+				for(int cs = 0; cs < _countof(types); cs++)
 				{
 					const CommentType_t& comment = *types[cs];
 					if(!comment.bValid)
+					{
 						continue;
+					}
+
 					if( comment.scLength == eSingle )
 					{
 						if( cc.Match(comment.scode[0]) )
@@ -257,6 +248,31 @@ void CustomLexer::Lexer(unsigned int startPos, int length, int initStyle, IDocum
 	} // for each char
 
 	cc.Complete();
+}
+
+void CustomLexer::handleBlockComment(StyleContext& cc, const CommentType_t& comment)
+{
+	if (comment.ecLength == eSingle)
+	{
+		if( cc.Match(comment.ecode[0]) )
+			cc.ForwardSetState(ST_DEFAULT);
+	}
+	else if(comment.ecLength == eDouble)
+	{
+		if( cc.Match(comment.ecode[0], comment.ecode[1]) )
+		{
+			cc.Forward();
+			cc.ForwardSetState(ST_DEFAULT);
+		}
+	}
+	else
+	{
+		if( cc.MatchIgnoreCase(comment.pECode) )
+		{
+			cc.Forward(strlen(comment.pECode));
+			cc.SetState(ST_DEFAULT);
+		}
+	}
 }
 
 void CustomLexer::Folder(unsigned int startPos, int length, int initStyle, IDocument*, Accessor &styler)

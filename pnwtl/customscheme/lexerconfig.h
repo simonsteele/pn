@@ -27,9 +27,12 @@
 #define STYLE_STRING2		11
 #define STYLE_PREPROC		12
 #define STYLE_KNOWNIDENT	13
+#define STYLE_BLOCKCOMMENT2 14
+#define STYLE_BLOCKCOMMENT3 15
 
 #define MAX_STRINGTYPES		2	// Number of string types supported.
 #define MAX_KEYWORDS		5	// Number of comment types supported.
+#define MAX_BLOCKCOMMENTS   3   // Number of block comment types supported.
 
 /**
  * All the settings for each string type supported.
@@ -102,9 +105,12 @@ class LexerConfig
 			singleLineComment.pECode = NULL;
 
 			memset(&singleLineComment, 0, sizeof(CommentType_t));
-			memset(&blockComment, 0, sizeof(CommentType_t));
+			memset(&blockComment, 0, sizeof(blockComment));
+			
 			singleLineComment.relatedStyle = STYLE_LINECOMMENT;
-			blockComment.relatedStyle = STYLE_BLOCKCOMMENT;
+			blockComment[0].relatedStyle = STYLE_BLOCKCOMMENT;
+			blockComment[1].relatedStyle = STYLE_BLOCKCOMMENT2;
+			blockComment[2].relatedStyle = STYLE_BLOCKCOMMENT3;
 
 			wordContentSet = chStartSet;
 			wordStartSet = chStartSet;
@@ -126,7 +132,7 @@ class LexerConfig
 		char			preProcContinue;
 
 		CommentType_t	singleLineComment;
-		CommentType_t	blockComment;
+		CommentType_t	blockComment[MAX_BLOCKCOMMENTS];
 
 		CharSet			wordStartSet;
 		CharSet			wordContentSet;

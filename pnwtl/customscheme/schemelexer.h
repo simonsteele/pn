@@ -45,6 +45,8 @@ class CustomLexer : public LexerNoExceptions
 		inline bool IsAWordChar(int ch) const;
 		inline bool IsANumStart(int ch) const;
 		inline bool IsANumChar(int ch) const;
+
+		void handleBlockComment(StyleContext& cc, const CommentType_t& comment);
 };
 
 #endif

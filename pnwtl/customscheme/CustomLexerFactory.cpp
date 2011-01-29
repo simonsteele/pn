@@ -276,15 +276,32 @@ void CustomLexerFactory::SetCommentTypeCode(LPCSTR pVal, ECodeLength& length, ch
 
 void CustomLexerFactory::doCommentType(int commentType, const XMLAttributes& atts)
 {
-	CommentType_t* type;
+	CommentType_t* type(NULL);
 	switch(commentType)
 	{
 		case CT_LINE:
 			type = &m_pCurrent->singleLineComment;
 			break;
+		
 		case CT_BLOCK:
-			type = &m_pCurrent->blockComment;
-			break;
+			{
+				for (int i = 0; i < _countof(m_pCurrent->blockComment); i++)
+				{
+					if (!m_pCurrent->blockComment[i].bValid)
+					{
+						type = &m_pCurrent->blockComment[i];
+						break;
+					}
+				}
+
+				if (type == NULL)
+				{
+					return;
+				}
+
+				break;
+			}
+
 		default:
 			return; // unknown type.
 	}
