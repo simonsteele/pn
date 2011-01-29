@@ -81,6 +81,7 @@ Name: {userappdata}\Microsoft\Internet Explorer\Quick Launch\Programmer's Notepa
 [Run]
 Filename: {app}\pn.exe; Description: Launch Programmer's Notepad; Flags: nowait postinstall skipifsilent; OnlyBelowVersion: 0,6
 Filename: {app}\pn.exe; Description: Update Extensions; Parameters: --findexts; WorkingDir: {app}; StatusMsg: Updating Extension Registration; Flags: runhidden runasoriginaluser; Tasks: 
+Filename: {app}\pn.exe; Description: Clean Schemes; Parameters: --cleancschemes; WorkingDir: {app}; StatusMsg: Compiling Scheme Definitions; Flags: runhidden runasoriginaluser; Tasks: 
 
 [_ISTool]
 EnableISX=false

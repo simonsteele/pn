@@ -107,6 +107,11 @@ int Run(LPTSTR /*lpstrCmdLine*/ = NULL, int nCmdShow = SW_SHOWDEFAULT)
 				// Clear user settings to get around broken schemes or user settings
 				return theApp->ClearUserData() ? 0 : 1;
 			}
+			else if(_tcsicmp(&arg.c_str()[1], _T("-cleancschemes")) == 0)
+			{
+				theApp->Init();
+				return theApp->CompileSchemes() ? 0 : 1;
+			}
 			else if(_tcsicmp(&arg.c_str()[1], _T("-checkassoc")) == 0)
 			{
 				// Check file associations

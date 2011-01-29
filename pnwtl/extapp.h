@@ -150,6 +150,11 @@ public:
 	bool ClearUserData();
 
 	/**
+	 * Clear out and regenerate all compiled schemes.
+	 */
+	bool CompileSchemes();
+
+	/**
 	 * Get any instance of a recorder that has been registered
 	 */
 	extensions::IRecorderPtr GetRecorder() const;

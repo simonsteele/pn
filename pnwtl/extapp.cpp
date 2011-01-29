@@ -256,6 +256,16 @@ bool App::ClearUserData()
 	return true;
 }
 
+/**
+ * Clear out and regenerate all compiled schemes.
+ */
+bool App::CompileSchemes()
+{
+	SchemeManager::GetInstance()->Compile();
+	
+	return true;
+}
+
 extensions::IRecorderPtr App::GetRecorder() const
 {
 	return m_recorder;

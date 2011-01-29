@@ -346,6 +346,15 @@ void SchemeManager::Compile()
 	PNASSERT(m_SchemePath != NULL);
 	PNASSERT(m_CompiledPath != NULL);
 
+	// Clear out old .cscheme files:
+	FileFinderFunctor<std::function<void (LPCTSTR, FileFinderData&, bool&)>>(
+		[] (LPCTSTR path, FileFinderData& details, bool& shouldContinue)
+		{
+			CFileName fn(details.GetFilename());
+			fn.Root(path);
+			::DeleteFile(fn.c_str());
+		}).Find(m_CompiledPath, _T("*.cscheme"));
+
 	SchemeCompiler sc;
 	sc.Compile(m_SchemePath, m_CompiledPath, _T("master.scheme"));
 

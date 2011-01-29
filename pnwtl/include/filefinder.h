@@ -158,6 +158,8 @@ public:
 	FileFinder(TOwner* pOwner, OnFoundFunc func) : baseClass(pOwner, func){}
 };
 
+typedef void (DefaultFoundFunc)(LPCTSTR path, FileFinderData& details, bool& shouldContinue);
+
 /**
  * Find and let a functor handle this.
  */
