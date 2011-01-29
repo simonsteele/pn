@@ -2,7 +2,7 @@
  * @file exporters.h
  * @brief Define style and style-containing classes.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -14,6 +14,8 @@
 #include "include/sscontainers.h"
 #include "files.h"
 #include "scintillaif.h"
+
+#include <unordered_map>
 
 /**
  * Interface class defining an output conduit for exported data.
@@ -60,6 +62,7 @@ class BaseExporter
 		int StyleAt(int position);
 
 		StyleDetails* GetStyle(int key);
+		int GetMaxStyleKey();
 
 		int SendEditor(long Msg, WPARAM wParam=0, LPARAM lParam=0);
 
@@ -136,11 +139,15 @@ class RTFExporter : public BaseExporter
 	protected:
 		virtual void InternalExport(int start, int end);
 
+	private:
 		// Utility Functions
 		int GetRTFHighlight(const char *rgb);
 		static int GetHexChar(char ch);
 		static int GetHexByte(const char *hexbyte);
-		void GetRTFStyleChange(char *delta, char *last, const char *current);
+		std::string GetRTFStyleChange(StyleDetails* currentStyle, StyleDetails* newStyle);
+		
+		std::unordered_map<int, int> m_colorMap;
+		std::unordered_map<std::wstring, int> m_fontMap;
 };
 
 /**

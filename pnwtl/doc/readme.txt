@@ -9,6 +9,8 @@ What's new in 2.3?
 1) Jump dialog now filters results as you type.
 2) Custom scheme is now implemented as a PN extension.
 3) Double-click on tab bar (not on tab) starts a new doc (request #145).
+4) 3 types of block comment supported in custom schemes (schemedef).
+5) Tags only auto-closed in the correct state in HTML/XML, hr br and img not auto-closed.
 
 Bug Fixes:
 ----------

@@ -1,3 +1,13 @@
+/**
+ * @file rtfexporter.cpp
+ * @brief RTF Exporter
+ * @author Simon Steele
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/, Portions copyright SciTE authors.
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #include "stdafx.h"
 #include "../exporters.h"
 
@@ -6,9 +16,13 @@
 
 #define RTF_HEADEROPEN    "{\\rtf1\\ansi\\deff0\\deftab720"
 #define RTF_FONTDEFOPEN   "{\\fonttbl"
+#ifdef _UNICODE
+#define RTF_FONTDEF       "{\\f%d\\fnil\\fcharset%u %S;}"
+#else
 #define RTF_FONTDEF       "{\\f%d\\fnil\\fcharset%u %s;}"
+#endif
 #define RTF_FONTDEFCLOSE  "}"
-#define RTF_COLORDEFOPEN  "{\\colortbl"
+#define RTF_COLORDEFOPEN  "{\\colortbl;"
 #define RTF_COLORDEF      "\\red%d\\green%d\\blue%d;"
 #define RTF_COLORDEFCLOSE "}"
 #define RTF_HEADERCLOSE   "\n"
@@ -18,7 +32,10 @@
 #define RTF_SETFONTFACE   "\\f"
 #define RTF_SETFONTSIZE   "\\fs"
 #define RTF_SETCOLOR      "\\cf"
-#define RTF_SETBACKGROUND "\\highlight"
+
+// Note chcbpat found by exporting from Word, it appears that the documented \cb doesn't work:
+#define RTF_SETBACKCOLOR  "\\chcbpat"
+
 #define RTF_BOLD_ON       "\\b"
 #define RTF_BOLD_OFF      "\\b0"
 #define RTF_ITALIC_ON     "\\i"
@@ -95,196 +112,104 @@ int RTFExporter::GetRTFHighlight(const char *rgb)
 	return index + 1;
 }
 
+// \f0\fs20\cf0\highlight0\b0\i0
+
+
 /**
  * This function steps through the incoming and outgoing style definitions (RTF style)
  * and decides which bits of the style have changed - so most style changes will end
  * up as just a simple colour change.
  */
-void RTFExporter::GetRTFStyleChange(char *delta, char *last, const char *current) 
+std::string RTFExporter::GetRTFStyleChange(StyleDetails* currentStyle, StyleDetails* newStyle) 
 { // \f0\fs20\cf0\highlight0\b0\i0
-	int lastLen = strlen(last), offset = 2, lastOffset, currentOffset, len;
-	*delta = '\0';
-	// font face
-	lastOffset = offset + 1;
-	while (last[lastOffset] != '\\')
-		lastOffset++;
-	currentOffset = offset + 1;
-	while (current[currentOffset] != '\\')
-		currentOffset++;
-	if (lastOffset != currentOffset ||         // change
-			strncmp(last + offset, current + offset, lastOffset - offset))
+	char sprintfbuf[40];
+	std::string styleChange;
+	
+	if (currentStyle->BackColor != newStyle->BackColor)
 	{
-		if (lastOffset != currentOffset)
-		{
-			memmove(last + currentOffset, last + lastOffset, lastLen - lastOffset + 1);
-			lastLen += currentOffset - lastOffset;
-		}
-		len = currentOffset - offset;
-		memcpy(last + offset, current + offset, len);
-		strcat(delta, RTF_SETFONTFACE);
-		lastOffset = strlen(delta);
-		memcpy(delta + lastOffset, last + offset, len);
-		delta[lastOffset + len] = '\0';
+		sprintf(sprintfbuf, RTF_SETBACKCOLOR "%d", m_colorMap[newStyle->BackColor]);
+		styleChange += sprintfbuf;
 	}
-	offset = currentOffset + 3;
-	// size
-	lastOffset = offset + 1;
-	while (last[lastOffset] != '\\')
-		lastOffset++;
-	currentOffset = offset + 1;
-	while (current[currentOffset] != '\\')
-		currentOffset++;
-	if (lastOffset != currentOffset ||         // change
-			strncmp(last + offset, current + offset, lastOffset - offset))
+
+	if (currentStyle->ForeColor != newStyle->ForeColor)
 	{
-		if (lastOffset != currentOffset)
-		{
-			memmove(last + currentOffset, last + lastOffset, lastLen - lastOffset + 1);
-			lastLen += currentOffset - lastOffset;
-		}
-		len = currentOffset - offset;
-		memcpy(last + offset, current + offset, len);
-		strcat(delta, RTF_SETFONTSIZE);
-		lastOffset = strlen(delta);
-		memcpy(delta + lastOffset, last + offset, len);
-		delta[lastOffset + len] = '\0';
+		sprintf(sprintfbuf, RTF_SETCOLOR "%d", m_colorMap[newStyle->ForeColor]);
+		styleChange += sprintfbuf;
 	}
-	offset = currentOffset + 3;
-	// color
-	lastOffset = offset + 1;
-	while (last[lastOffset] != '\\')
-		lastOffset++;
-	currentOffset = offset + 1;
-	while (current[currentOffset] != '\\')
-		currentOffset++;
-	if (lastOffset != currentOffset ||         // change
-			strncmp(last + offset, current + offset, lastOffset - offset))
+
+	if (currentStyle->Bold != newStyle->Bold)
 	{
-		if (lastOffset != currentOffset)
-		{
-			memmove(last + currentOffset, last + lastOffset, lastLen - lastOffset + 1);
-			lastLen += currentOffset - lastOffset;
-		}
-		len = currentOffset - offset;
-		memcpy(last + offset, current + offset, len);
-		strcat(delta, RTF_SETCOLOR);
-		lastOffset = strlen(delta);
-		memcpy(delta + lastOffset, last + offset, len);
-		delta[lastOffset + len] = '\0';
+		styleChange += newStyle->Bold ? RTF_BOLD_ON : RTF_BOLD_OFF;
 	}
-	offset = currentOffset + 10;
-	// background
-	lastOffset = offset + 1;
-	while (last[lastOffset] != '\\')
-		lastOffset++;
-	currentOffset = offset + 1;
-	while (current[currentOffset] != '\\')
-		currentOffset++;
-	if (lastOffset != currentOffset ||         // change
-			strncmp(last + offset, current + offset, lastOffset - offset))
+
+	if (currentStyle->Italic != newStyle->Italic)
 	{
-		if (lastOffset != currentOffset)
-		{
-			memmove(last + currentOffset, last + lastOffset, lastLen - lastOffset + 1);
-			lastLen += currentOffset - lastOffset;
-		}
-		len = currentOffset - offset;
-		memcpy(last + offset, current + offset, len);
-		strcat(delta, RTF_SETBACKGROUND);
-		lastOffset = strlen(delta);
-		memcpy(delta + lastOffset, last + offset, len);
-		delta[lastOffset + len] = '\0';
+		styleChange += newStyle->Italic ? RTF_ITALIC_ON : RTF_ITALIC_OFF;
 	}
-	offset = currentOffset + 2;
-	// bold
-	if (last[offset] != current[offset])
+
+	if (currentStyle->FontSize != newStyle->FontSize)
 	{
-		if (current[offset] == '\\')
-		{
-			// turn on
-			memmove(last + offset, last + offset + 1, lastLen-- - offset);
-			strcat(delta, RTF_BOLD_ON);
-			offset += 2;
-		}
-		else 
-		{ // turn off
-			memmove(last + offset + 1, last + offset, ++lastLen - offset);
-			last[offset] = '0';
-			strcat(delta, RTF_BOLD_OFF);
-			offset += 3;
-		}
+		sprintf(sprintfbuf, RTF_SETFONTSIZE "%d", newStyle->FontSize << 1);
+		styleChange += sprintfbuf;
 	}
-	else
-		offset += current[offset] == '\\' ? 2 : 3;
-	// italic
-	if (last[offset] != current[offset])
+
+	if (currentStyle->FontName != newStyle->FontName)
 	{
-		if (current[offset] == '\\')
-		{
-			// turn on
-			memmove(last + offset, last + offset + 1, lastLen-- - offset);
-			strcat(delta, RTF_ITALIC_ON);
-		}
-		else 
-		{ // turn off
-			memmove(last + offset + 1, last + offset, ++lastLen - offset);
-			last[offset] = '0';
-			strcat(delta, RTF_ITALIC_OFF);
-		}
+		sprintf(sprintfbuf, RTF_SETFONTFACE "%d", m_fontMap[newStyle->FontName]);
 	}
-	if (*delta)
-	{
-		lastOffset = strlen(delta);
-		delta[lastOffset] = ' ';
-		delta[lastOffset + 1] = '\0';
-	}
+
+	// TODO: Underline
+
+	return styleChange;
 }
 
 /**
- * Ported (ish) from SciTE, this version removes file access and instead 
- * uses the IOutput class to store the result of its work. I've also commented
- * the code a bit as I work out how it works.
+ * Originally ported from SciTE code, this version removes file access and instead 
+ * uses the IOutput class to store the result of its work. I also substantially rewrote
+ * the handling of style changes to avoid lots of string parsing and instead use Style 
+ * definitions. Finally I sorted out background handling.
  */
 void RTFExporter::InternalExport(int start, int end)
 {
 	int wysiwyg           = /*pOptions->GetRtfWYSIWYG()*/	1;
-	CStringA strFontFace   = /*pOptions->GetRtfFontName()*/	"Courier New";
 	unsigned characterset = /*pOptions->GetRtfCharset()*/	0;
-	int fontSize          = /*pOptions->GetRtfFontSize()*/	10 << 1;
 	int tabs              = /*pOptions->GetRtfTabs()*/		1;
 
 	int tabSize = SendEditor(SCI_GETTABWIDTH, 0, 0);
 	if (tabSize == 0)
 		tabSize = 4;
-	if (!strFontFace.GetLength())
-		strFontFace = RTF_FONTFACE;
-	
-	// Define up the style lookup tables.
-	char styles[STYLE_DEFAULT + 1][MAX_STYLEDEF];
-	char fonts[STYLE_DEFAULT + 1][MAX_FONTDEF];
-	char colors[STYLE_DEFAULT + 1][MAX_COLORDEF];
-	char lastStyle[MAX_STYLEDEF], deltaStyle[MAX_STYLEDEF];
-	
-	int fontCount = 1, colorCount = 1, i;
 	
 	// Write the RTF header...
 	m_out->puts(RTF_HEADEROPEN RTF_FONTDEFOPEN);
-	strncpy(*fonts, strFontFace, MAX_FONTDEF);
-	m_out->printf(RTF_FONTDEF, 0, characterset, strFontFace);
-	strncpy(*colors, "#000000", MAX_COLORDEF);
-	
-	CStringA strFontFamily;
-	CStringA strForeground;
-	CStringA strBackground;
-	
+
 	StyleDetails* pDefStyle = GetStyle(STYLE_DEFAULT);
+
+	m_out->printf(RTF_FONTDEF, 0, characterset, pDefStyle->FontName.c_str());
+	
+	int fontIndex(1);
+
+	for (int i = 0; i < GetMaxStyleKey(); i++)
+	{
+		StyleDetails* pStyle = GetStyle(i);
+		if (pStyle)
+		{
+			if (m_fontMap.find(pStyle->FontName) == m_fontMap.end())
+			{
+				m_out->printf(RTF_FONTDEF, fontIndex, characterset, pStyle->FontName.c_str());
+				m_fontMap[pStyle->FontName] = fontIndex++;
+			}
+		}
+	}
+
+	// Written the font table, now start to write out the colour table.
+	m_out->puts(RTF_FONTDEFCLOSE RTF_COLORDEFOPEN);
+
+	int colorIndex(1);
 
 	// First comes first, we parse the styles in this scheme and define
 	// the rtf style lookup tables for them.
 	for (int istyle = 0; istyle <= STYLE_DEFAULT; istyle++)
 	{
-		char szColorTmp[32] = {0};
-
 		StyleDetails* pStyle = GetStyle(istyle);
 		
 		// If there is no style at number 0, then get the default style.
@@ -296,108 +221,29 @@ void RTFExporter::InternalExport(int start, int end)
 		if (pStyle)
 		{
 			// Background colour:
-			if(pDefStyle && pStyle->BackColor != pDefStyle->BackColor)
+			if (m_colorMap.find(pStyle->BackColor) == m_colorMap.end())
 			{
-				sprintf(szColorTmp, "#%02X%02X%02X", 
-					GetRValue(pStyle->BackColor), 
-					GetGValue(pStyle->BackColor), 
-					GetBValue(pStyle->BackColor));
-				
-				strBackground = szColorTmp;
+				m_colorMap[pStyle->BackColor] = colorIndex++;
+				m_out->printf(RTF_COLORDEF, GetRValue(pStyle->BackColor), GetGValue(pStyle->BackColor), GetBValue(pStyle->BackColor));
 			}
-			else
-				strBackground = "";
-
-			sprintf(szColorTmp, "#%02X%02X%02X", 
-				GetRValue(pStyle->ForeColor), 
-				GetGValue(pStyle->ForeColor), 
-				GetBValue(pStyle->ForeColor));
-			
-			strForeground = szColorTmp;
-
-			strFontFamily = pStyle->FontName.c_str();
-
-			// Try and match the font of the style to one that has been defined
-			// in the RTF font table. Only do this in wysiwyg mode.
-			if (wysiwyg && strFontFamily.GetLength())
+			if (m_colorMap.find(pStyle->ForeColor) == m_colorMap.end())
 			{
-				for (i = 0; i < fontCount; i++)
-				{
-					if (strFontFamily.CompareNoCase(fonts[i]) == 0)
-						break;
-				}
-
-				if (i >= fontCount)
-				{
-					strncpy(fonts[fontCount++], strFontFamily, MAX_FONTDEF);
-					m_out->printf(RTF_FONTDEF, i, characterset, strFontFamily);
-				}
-
-				sprintf(lastStyle, RTF_SETFONTFACE "%d", i);
+				m_colorMap[pStyle->ForeColor] = colorIndex++;
+				m_out->printf(RTF_COLORDEF, GetRValue(pStyle->ForeColor), GetGValue(pStyle->ForeColor), GetBValue(pStyle->ForeColor));
 			}
-			else
-				strcpy(lastStyle, RTF_SETFONTFACE "0");
-
-			// Font size - if wysiwyg then the size from the style else the default.
-			sprintf(lastStyle + strlen(lastStyle), RTF_SETFONTSIZE "%d",
-				wysiwyg && pStyle->FontSize ? pStyle->FontSize << 1 : fontSize);
-
-			// Now for the foreground colour. Again these are stored in a table with
-			// rtf so we see if we've already added it.
-			if (strForeground.GetLength())
-			{
-				for (i = 0; i < colorCount; i++)
-				{
-					if (strForeground.CompareNoCase(colors[i]) == 0)
-						break;
-				}
-
-				if (i >= colorCount)
-					strncpy(colors[colorCount++], strForeground, MAX_COLORDEF);
-
-				sprintf(lastStyle + strlen(lastStyle), RTF_SETCOLOR "%d", i);
-			}
-			else
-				strcat(lastStyle, RTF_SETCOLOR "0");
-
-			// Find the closest RTF highlight to the background colour.
-			sprintf(lastStyle + strlen(lastStyle), RTF_SETBACKGROUND "%d",
-					strBackground.GetLength() ? GetRTFHighlight(strBackground) : 0);
-			
-			// Other styles - why is underline not included?
-			strcat(lastStyle, pStyle->Bold ? RTF_BOLD_ON : RTF_BOLD_OFF);
-			strcat(lastStyle, pStyle->Italic ? RTF_ITALIC_ON : RTF_ITALIC_OFF);
-			
-			strncpy(styles[istyle], lastStyle, MAX_STYLEDEF);
 		}
-		else
-		{
-			sprintf(styles[istyle], RTF_SETFONTFACE "0" RTF_SETFONTSIZE "%d"
-					RTF_SETCOLOR "0" RTF_SETBACKGROUND "0"
-					RTF_BOLD_OFF RTF_ITALIC_OFF, fontSize);
-		}
-	}
-
-	// Written the font table, now write out the colour table that we just parsed.
-	m_out->puts(RTF_FONTDEFCLOSE RTF_COLORDEFOPEN);
-	for (i = 0; i < colorCount; i++)
-	{
-		m_out->printf(RTF_COLORDEF, GetHexByte(colors[i] + 1),
-				GetHexByte(colors[i] + 3), GetHexByte(colors[i] + 5));
 	}
 
 	// Written the colour table, now we begin the document.
 	m_out->printf(RTF_COLORDEFCLOSE RTF_HEADERCLOSE RTF_BODYOPEN RTF_SETFONTFACE "0"
-			RTF_SETFONTSIZE "%d" RTF_SETCOLOR "0 ", fontSize);
-	sprintf(lastStyle, RTF_SETFONTFACE "0" RTF_SETFONTSIZE "%d"
-			RTF_SETCOLOR "0" RTF_SETBACKGROUND "0"
-			RTF_BOLD_OFF RTF_ITALIC_OFF, fontSize);
-	
+			RTF_SETFONTSIZE "%d" RTF_SETCOLOR "0 ", pDefStyle->FontSize << 1);
+
 	bool prevCR = false;
 	int styleCurrent = -1;
 	char ch;
 	int style;
-	for (i = start; i < end; i++)
+	std::string deltaStyle;
+	for (int i = start; i < end; i++)
 	{
 		ch = CharAt(i);
 		style = StyleAt(i);
@@ -405,11 +251,27 @@ void RTFExporter::InternalExport(int start, int end)
 			style = 0;
 		if (style != styleCurrent)
 		{
-			GetRTFStyleChange(deltaStyle, lastStyle, styles[style]);
-			if (*deltaStyle)
-				m_out->puts(deltaStyle);
+			StyleDetails* current = styleCurrent == -1 ? pDefStyle : GetStyle(styleCurrent);
+			if (styleCurrent == NULL)
+			{
+				current = pDefStyle;
+			}
+
+			StyleDetails* newStyle = GetStyle(style);
+			if (newStyle == NULL)
+			{
+				newStyle = pDefStyle;
+			}
+
+			std::string deltaStyle = GetRTFStyleChange(current, newStyle);
+			if (deltaStyle.size())
+			{
+				m_out->puts(deltaStyle.c_str());
+			}
+
 			styleCurrent = style;
 		}
+		
 		// Deal with special characters:
 		if (ch == '{')
 			m_out->puts("\\{");

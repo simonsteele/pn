@@ -1,3 +1,13 @@
+/**
+ * @file exporters.cpp
+ * @brief Define style and style-containing classes.
+ * @author Simon Steele
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
+ *
+ * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * the conditions under which this source may be modified / distributed.
+ */
+
 #include "stdafx.h"
 #include "exporters.h"
 #include "styles.h"
@@ -50,6 +60,17 @@ int BaseExporter::StyleAt(int position)
 StyleDetails* BaseExporter::GetStyle(int key)
 {
 	return m_pStyles->GetStyle(key);
+}
+
+int BaseExporter::GetMaxStyleKey()
+{
+	int maxKey(0);
+	for (auto i = m_pStyles->StylesBegin(); i != m_pStyles->StylesEnd(); ++i)
+	{
+		maxKey = max(maxKey, (*i)->Key);
+	}
+
+	return maxKey;
 }
 
 int BaseExporter::SendEditor(long Msg, WPARAM wParam, LPARAM lParam)
