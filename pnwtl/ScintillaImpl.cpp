@@ -1673,14 +1673,25 @@ void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>
 	if( '/' == GetCharAt( lCurrentPos - 2 ) ) 
 		return;
 	
+	bool html(false);
+
 	if(m_pScheme != NULL)
 	{
 		LPCSTR lexer = m_pScheme->GetLexer();
+
+		html = strcmp(lexer, "hypertext") == 0;
 		if(strcmp(lexer, "xml") != 0 
 			&& strcmp(lexer, "hypertext") != 0
-			&& strcmp(lexer, "asp") != 0 
-			&& strcmp(lexer, "php") != 0)
+			&& strcmp(lexer, "php") != 0
+			&& !html)
 			return;
+	}
+
+	// Only complete in styles 1 and 2, these are tag, and unknown tag:
+	int closeTagStyle = GetStyleAt(lCurrentPos-2);
+	if (closeTagStyle != 1 && closeTagStyle != 2)
+	{
+		return;
 	}
 
 	// Control balanced <> tags: for example:
@@ -1730,6 +1741,18 @@ void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>
 					text = text.substr(0, pos);
 					text.insert(1, "/");
 					text += ">";
+				}
+
+				if (html)
+				{
+					// Don't close non-close tags in HTML:
+					if (stricmp(text.c_str(), "</br>") == 0 ||
+						stricmp(text.c_str(), "</img>") == 0 ||
+						stricmp(text.c_str(), "</hr>") == 0)
+					{
+						SetSel(lCurrentPos, lCurrentPos);
+						break;
+					}
 				}
 				
 				BeginUndoAction();
