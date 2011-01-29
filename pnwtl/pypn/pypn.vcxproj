@@ -65,7 +65,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>boost_python-vc90-mt-gd-$(BoostFileVer).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>boost_python-vc100-mt-gd-$(BoostFileVer).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)pypn.dll</OutputFile>
       <AdditionalLibraryDirectories>%PYTHONLIBDIR%;..\lib\boost-python-2.6;c:\python26\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>pypn.def</ModuleDefinitionFile>
@@ -79,7 +79,7 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\lib\boost-python-2.6\boost_python-vc90-mt-gd-$(BoostFileVer).dll $(TargetDir)
+      <Command>copy ..\lib\boost-python-2.6\boost_python-vc100-mt-gd-$(BoostFileVer).dll $(TargetDir)
 copy scripts\init.py $(TargetDir)
 </Command>
     </PostBuildEvent>

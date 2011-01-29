@@ -37,7 +37,7 @@ class CPNMDITabOwner :
 public:
 	BEGIN_MSG_MAP(CPNMDITabOwner)
 		NOTIFY_CODE_HANDLER(CTCN_MCLICK, OnMClick)
-		NOTIFY_CODE_HANDLER(NM_DBLCLK, OnMClick)
+		NOTIFY_CODE_HANDLER(NM_DBLCLK, OnDblClick)
 		NOTIFY_CODE_HANDLER(NM_CLICK, OnClick)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
@@ -49,6 +49,27 @@ public:
 		tcItem.SetTabView(hWndChild);
 
 		return m_TabCtrl.FindItem(&tcItem, CTFI_TABVIEW);
+	}
+
+	/**
+	 * Double-click behaviours for tabs:
+	 * On a tab: Close (same as middle-click)
+	 * In the clear: New tab
+	 */
+	LRESULT OnDblClick(WPARAM wParam, LPNMHDR lParam, BOOL& bHandled)
+	{
+		NMCTCITEM* pHdr = (NMCTCITEM*)lParam;
+		
+		if (pHdr->iItem == -1)
+		{
+			::SendMessage(GetParent(), WM_COMMAND, ID_FILE_NEW, 0);
+		}
+		else
+		{
+			return OnMClick(wParam, lParam, bHandled);
+		}
+		
+		return 0;
 	}
 
 	LRESULT OnMClick(WPARAM wParam, LPNMHDR lParam, BOOL& bHandled)

@@ -7,8 +7,8 @@ What's new in 2.3?
 ------------------------------------------
 
 1) Jump dialog now filters results as you type.
-2) Custom scheme is now implemented as a PN extension
-
+2) Custom scheme is now implemented as a PN extension.
+3) Double-click on tab bar (not on tab) starts a new doc (request #145).
 
 Bug Fixes:
 ----------
