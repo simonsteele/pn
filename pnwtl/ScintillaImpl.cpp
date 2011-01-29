@@ -1660,12 +1660,6 @@ ScintillaIterator CScintillaImpl::end()
 	return ScintillaIterator(this, GetLength());
 }
 
-// TODO: Remove this
-std::string CScintillaImpl::GetSelText2()
-{
-	return GetSelText();
-}
-
 void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>
 {
 	long lCurrentPos = GetCurrentPos();
@@ -1723,7 +1717,7 @@ void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>
 			if( lCurrentPos - lPos < 1024 )
 			{
 				SetSel(lPos,lCurrentPos);
-				std::string text = GetSelText2();
+				std::string text = GetSelText();
 				if( text == "<>" )
 				{
 					// Reset the selpos...

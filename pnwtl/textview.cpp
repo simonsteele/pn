@@ -1509,7 +1509,7 @@ void CTextView::smartHighlight()
 		// Only do this for single-line selections where there are no spaces (i.e. a single word)
 		if (LineFromPosition(cr.cpMin) == LineFromPosition(cr.cpMax))
 		{
-			std::string buf(GetSelText2());
+			std::string buf(GetSelText());
 
 			if (buf.find(' ') == -1 && buf.find('\t') == -1)
 			{

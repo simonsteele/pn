@@ -1438,7 +1438,7 @@ public:
 LRESULT CChildFrame::OnGoToDef(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {    
     // Set up buffer for selected keyword:
-	std::string sel = GetTextView()->GetCurrentWord(); //GetTextView()->GetSelText2();
+	std::string sel = GetTextView()->GetCurrentWord();
 	if (sel.size() == 0)
 	{
 		return 0;

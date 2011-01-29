@@ -25,26 +25,25 @@
 		<keyword-class name="hypertext.attributes">
 			abbr accept-charset accept accesskey action align alink
 			alt archive axis background bgcolor border
-			cellpadding cellspacing char charoff charset checked cite
+			cellpadding cellspacing char charoff charset checkbox checked cite
 			class classid clear codebase codetype color cols colspan
 			compact content coords
 			data datafld dataformatas datapagesize datasrc datetime
-			declare defer dir disabled enctype event
-			face for frame frameborder
-			headers height href hreflang hspace http-equiv
-			id ismap label lang language leftmargin link longdesc
+			declare defer dir disabled encoding enctype event
+			face file for frame frameborder
+			headers height hidden href hreflang hspace http-equiv
+			id image ismap label lang language leftmargin link longdesc
 			marginwidth marginheight maxlength media method multiple
 			name nohref noresize noshade nowrap
 			object onblur onchange onclick ondblclick onfocus
 			onkeydown onkeypress onkeyup onload onmousedown
 			onmousemove onmouseover onmouseout onmouseup
 			onreset onselect onsubmit onunload
-			profile prompt readonly rel rev rows rowspan rules
-			scheme scope selected shape size span src standby start style
+			password profile prompt radio readonly rel reset rev rows rowspan rules
+			scheme scope selected shape size span src standby start style submit
 			summary tabindex target text title topmargin type usemap
 			valign value valuetype version vlink vspace width
-			text password checkbox radio submit reset
-			file hidden image
+			xml:lang
 		</keyword-class>
 		<keyword-class name="hypertext">
 			<include-class name="hypertext.elements"/>

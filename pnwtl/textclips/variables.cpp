@@ -109,7 +109,7 @@ bool DefaultVariableProvider::GetVariable(const char* name, std::string& value)
 	{
 		if (m_pChild)
 		{
-			set(value, m_pChild->GetTextView()->GetSelText2());
+			set(value, m_pChild->GetTextView()->GetSelText());
 			m_selectionUsed = true;
 		}
 	}

@@ -88,7 +88,6 @@ public:
 
 	void SetAutoCompleteHandler(AutoCompleteHandlerPtr& handler);
 
-	std::string GetSelText2();
 	int GetCaretInLine();
 	Scintilla::CharacterRange GetSelection();
 	void InsertChar(long nPos, char nChar);
