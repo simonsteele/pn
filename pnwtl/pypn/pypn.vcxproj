@@ -86,7 +86,8 @@ copy scripts\init.py $(TargetDir)
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
-      <Command>copy ..\lib\boost-python-2.6\boost_python-vc90-mt-1_39.dll $(TargetDir)</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Full</Optimization>
@@ -100,7 +101,7 @@ copy scripts\init.py $(TargetDir)
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>boost_python-vc90-mt-$(BoostFileVer).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>boost_python-vc100-mt-$(BoostFileVer).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)pypn.dll</OutputFile>
       <AdditionalLibraryDirectories>$(PYTHONLIBDIR);..\lib\boost-python-2.6;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>pypn.def</ModuleDefinitionFile>
@@ -115,7 +116,7 @@ copy scripts\init.py $(TargetDir)
       <TargetMachine>NotSet</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\lib\boost-python-2.6\boost_python-vc90-mt-$(BoostFileVer).dll $(TargetDir)
+      <Command>copy ..\lib\boost-python-2.6\boost_python-vc100-mt-$(BoostFileVer).dll $(TargetDir)
 copy scripts\init.py $(TargetDir)
 </Command>
     </PostBuildEvent>

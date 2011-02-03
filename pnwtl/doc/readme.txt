@@ -11,6 +11,8 @@ What's new in 2.3?
 3) Double-click on tab bar (not on tab) starts a new doc (request #145).
 4) 3 types of block comment supported in custom schemes (schemedef).
 5) Tags only auto-closed in the correct state in HTML/XML, hr br and img not auto-closed.
+6) Miscellaneous updates to schemes to improve highlighting (including HTML5 elements and attributes).
+7) RTF export reworked, background colours now working better.
 
 Bug Fixes:
 ----------

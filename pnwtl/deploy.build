@@ -190,8 +190,11 @@
 		<!-- Python 2.6 -->
 		<echo message="Building for Python 2.6"/>
 		<property name="pyver" value="py26"/>
+		
+		<property name="devenv.path" value="devenv.com" if="${property::exists('devenv.path') == false}"/>
+		
 		<exec
-			program="devenv"
+			program="${devenv.path}"
 			commandline='pn.sln /Project pypn /ProjectConfig Release /Rebuild'
 			output="pypn-2.6.log">
 			<environment>
@@ -299,15 +302,6 @@
 		<exec
 			program="c:\python26\python"
 			commandline='googlecode_upload.py -s "PyPN ${ver}.${svn.revision} for Python 2.6" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" "${distdir}\pypn-${deployver}-py26.zip"'/>
-		
-		<exec
-			program="c:\python26\python"
-			commandline='googlecode_upload.py -s "PyPN ${ver}.${svn.revision} for Python 2.5" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" "${distdir}\pypn-${deployver}-py25.zip"'/>		
-
-		<exec
-			program="c:\python26\python"
-			commandline='googlecode_upload.py -s "PyPN ${ver}.${svn.revision} for Python 2.4" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" "${distdir}\pypn-${deployver}-py24.zip"'/>
-
 	</target>
 	
 	<target name="checkpypndeps">
