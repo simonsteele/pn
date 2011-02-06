@@ -267,8 +267,7 @@ void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 		endInsertClip();
 	}
 
-	// We open an Undo action as soon as we start clip insertion:
-	BeginUndoAction();
+	// And another for this initial insertion:
 
 	m_insertClipState.reset(new ClipInsertionState(chunks));
 
@@ -280,6 +279,9 @@ void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 		m_insertClipState.reset();
 		return;
 	}
+
+	// We open an Undo action as soon as we start clip insertion:
+	BeginUndoAction();
 
 	int pos = GetCurrentPos();
 	
@@ -325,6 +327,10 @@ void CTextView::beginInsertClip(std::vector<TextClips::Chunk>& chunks)
 	{
 		(*m_insertClipState->CurrentChunk).GetPos(m_insertClipState->CurrentFieldStart, m_insertClipState->CurrentFieldEnd);
 		SetSel(m_insertClipState->CurrentFieldStart, m_insertClipState->CurrentFieldEnd);
+
+		// End the initial insertion, start an action to contain the rest of the clip insertion:
+		EndUndoAction();
+		BeginUndoAction();
 
 		m_bInsertClip = true;
 	}
@@ -475,6 +481,11 @@ void CTextView::handleInsertClipNotify(Scintilla::SCNotification* scn)
 		{
 			m_insertClipState->HandleModification(this, scn->position, scn->length, (scn->modificationType & SC_MOD_INSERTTEXT) != 0);
 			m_insertClipState->LastModifyValid = true;
+		}
+		else if (scn->modificationType & SC_PERFORMED_UNDO)
+		{
+			// For the moment no undo handling, we bail out of the clip handling:
+			endInsertClip();
 		}
 	}
 }

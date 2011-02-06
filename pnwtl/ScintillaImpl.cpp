@@ -229,7 +229,10 @@ int CScintillaImpl::HandleNotify(LPARAM lParam)
 		case SCN_MODIFIED:
 		{
 			if (scn->linesAdded && SHOWING_LINE_NUMBER)
+			{
 				SetLineNumberWidth();
+			}
+
 			break;
 		}
 
