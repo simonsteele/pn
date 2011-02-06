@@ -24,7 +24,7 @@ Bug Fixes:
 5) More protection for invalid editor scenarios. Fixes issue #1174.
 6) Fix window positioning where left-most monitor has negative co-ordinates. Fixes issue #500.
 7) Schemes now always rebuilt at install time, remove duplicate Powershell scheme.
-
+8) Fixed an issue where undo didn't correctly clear clip insertion state. Fixes issue #1183.
 
 What's new in 2.3 under the cover?
 ------------------------------------------
