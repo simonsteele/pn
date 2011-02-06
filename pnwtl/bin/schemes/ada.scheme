@@ -17,7 +17,8 @@
 			<keyword key="0" name="Keywords" class="keywords.ada"/>
 		</use-keywords>
 		<use-styles>
-			<style name="Default" key="0" fore="808080"/>
+			<style name="Default" key="32" />
+			<style name="Whitespace" key="0" fore="808080"/>
 			<style name="Keyword" key="1" class="keyword"/>
 			<style name="Identifiers" key="2" class="identifier"/>
 			<style name="Number" key="3" class="number"/>
