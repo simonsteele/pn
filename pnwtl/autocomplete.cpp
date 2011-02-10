@@ -38,17 +38,6 @@ void insert_sorted(string_array& arr, const std::string& w)
 	{
 		auto insert_point = std::lower_bound(arr.begin(), arr.end(), w, [](const std::string& l, const std::string& r) { return l < r; });
 		arr.insert(insert_point, w);
-		/*string_array::iterator i = arr.begin();
-		while(i != arr.end())
-		{
-			if(_stricmp((*i).c_str(), w.c_str()) > 0)
-			{
-				arr.insert(i, w);
-				return;
-			}
-
-			++i;
-		}*/
 	}
 }
 
@@ -156,6 +145,8 @@ void DefaultAutoComplete::CreateCompleteList()
 		m_completelist.reserve(m_tags.size() + m_keywords.size());
 		m_completelist.insert(m_completelist.end(), m_tags.begin(), m_tags.end());
 		m_completelist.insert(m_completelist.end(), m_keywords.begin(), m_keywords.end());
+
+		std::sort(m_completelist.begin(), m_completelist.end(), [](const std::string& a, const std::string& b) { return stricmp(a.c_str(), b.c_str()) < 0; });
 
 		//Turn off the dirty flags
 		m_tagsDirty = false;
