@@ -15,6 +15,12 @@ syntax: glob
 *.ilk
 *.orig
 *.vsp
+*.sdf
+*.old
+*.aps
+*.opensdf
+*.log
+*.pyc
 
 Release
 Debug
