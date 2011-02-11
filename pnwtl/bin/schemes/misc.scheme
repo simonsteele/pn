@@ -8,7 +8,7 @@
 			rmdir rd shift time type ver verify vol com con lpt nul
 		</keyword-class>
 	</keyword-classes>
-	<language name="properties" title="Properties">
+	<language name="properties" title="Properties" folding="true" foldcomments="false">
 		<lexer name="props"/>
 		<use-styles>
 			<style name="Default" key="32" />
