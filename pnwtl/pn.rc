@@ -1350,7 +1350,7 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,24,64,264,10
     CONTROL         "Display block caret instead of line",IDC_CARETBLOCK_CHECK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,80,278,10
-    CONTROL         "Allow multple selections",IDC_ALLOWMULTISELECT_CHECK,
+    CONTROL         "Allow multiple selections",IDC_ALLOWMULTISELECT_CHECK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,92,278,10
     CONTROL         "Allow typing into multiple caret points",IDC_ALLOWMULTISELECTTYPING_CHECK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,106,278,10
