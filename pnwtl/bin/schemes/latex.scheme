@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme>
+	<keyword-classes>
+        <keyword-class name="latex"></keyword-class>
+	</keyword-classes>
 	<language name="latex" title="LaTeX" folding="false" >
 		<lexer name="latex" />
 		<comments line="%" />
 		<use-keywords>
-			<keyword key="0" name="Keywords" class="perl"/>
+			<keyword key="0" name="Keywords" class="latex"/>
 		</use-keywords>
 		<use-styles>
 			<style name="Default" key="32" />

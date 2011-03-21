@@ -76,7 +76,9 @@
 .smd=scheme
 .sql=sql
 .ss=scheme
+.sty=latex
 .tcl=tcl
+.tex=latex
 .url=properties
 .v=verilog
 .vb=vb
