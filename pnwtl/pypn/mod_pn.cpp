@@ -134,6 +134,14 @@ void SetScheme(IDocumentPtr& doc, std::string str)
 }
 
 /**
+ * Save the current document.
+ */
+void SaveDocument(IDocumentPtr& doc, std::wstring str, bool setFilename)
+{
+	doc->Save(str.c_str(), setFilename);
+}
+
+/**
  * wrap GetFindText to return wstring which BP has a converter for.
  */
 std::wstring GetSearchOptionsFindText(ISearchOptions* so)
@@ -309,7 +317,7 @@ BOOST_PYTHON_MODULE(pn)
 		.def("Replace", &IDocument::Replace, "Replace the current find match based on user search settings, see GetUserSearchOptions")
 		.def("ReplaceAll", &IDocument::ReplaceAll, "Replace all based on user search settings, see GetUserSearchOptions")
 
-		.def("Save", &IDocument::Save, "Save the document")
+		.def("Save", &SaveDocument, "Save the document")
 		.def("Close", &IDocument::Close, "Close the document")
 
 		.def("Activate", &IDocument::Activate, "Activate the document")
