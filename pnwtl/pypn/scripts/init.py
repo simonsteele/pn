@@ -34,7 +34,7 @@ def import_libs(dir):
                 #debug.OutputDebugString( 'imported module: %s' % (module_name) )
                 library_list.append(module)
             except Exception, ex:
-                pn.AddOutput("Script Import Error with " + module_name + ".py: " + str(ex))
+                pn.AddOutput("Script Import Error with " + str(module_name) + ".py: " + str(ex))
     
     return library_list
 

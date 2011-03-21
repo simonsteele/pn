@@ -6,7 +6,7 @@ import xml.parsers.expat as expat
 @script("Validate", "Xml")
 def ValidateXml():
 	editor = scintilla.Scintilla(pn.CurrentDoc())
-	text = editor.GetText(0, editor.Length)
+	text = editor.GetText(editor.Length)
 
 	parser = expat.ParserCreate()
 
