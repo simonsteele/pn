@@ -95,15 +95,11 @@ CMainFrame::CMainFrame(CommandDispatch* commands, std::list<tstring>* cmdLineArg
 
 	m_bIsXPOrLater(IsXPOrLater())
 {
-	// m_CmdBar.SetCallback(this, &CMainFrame::OnMDISetMenu);
-
 	m_uiMIMessageID = g_Context.m_miManager->GetMessageID();
 
 	SchemeTools* pGlobalTools = ToolsManager::GetInstance()->GetGlobalTools();
 	pGlobalTools->AllocateMenuResources(m_pCmdDispatch);
 	m_hGlobalToolAccel = pGlobalTools->GetAcceleratorTable();
-
-	//m_bIsXPOrLater = IsXPOrLater();
 }
 
 CMainFrame::~CMainFrame()
@@ -612,7 +608,7 @@ LRESULT CMainFrame::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/,
  */
 LRESULT CMainFrame::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-	::DestroyWindow(m_ToolBar.m_hWnd); //m_FindCombo.m_hWnd
+	::DestroyWindow(m_ToolBar.m_hWnd);
 
 	bHandled = FALSE;
 	return 0;
@@ -872,9 +868,7 @@ HWND CMainFrame::CreateEx(HWND hWndParent, ATL::_U_RECT rect, DWORD dwStyle, DWO
 
 	HWND hWnd = Create(hWndParent, rect, szWindowName, dwStyle, dwExStyle, hMenu, lpCreateParam);
 
-	//if(hWnd != NULL)
-	//	m_hAccel = ::LoadAccelerators(ATL::_AtlBaseModule.GetResourceInstance(), MAKEINTRESOURCE(T::GetWndClassInfo().m_uCommonResourceID));
-	// Load our own accelerator table...
+	// Load our accelerator table...
 	setupAccelerators(m_hMenu);
 
 	return hWnd;
@@ -887,13 +881,6 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	bool lowColourToolbars = !m_bIsXPOrLater || OPTIONS->Get(PNSK_INTERFACE, _T("LowColourToolbars"), false);
 	m_hWndToolBar = CreateToolbar(lowColourToolbars);
-
-	// Contentious feature time - hidden option to hide SaveAll until 
-	// we have toolbar customisation.
-	if(OPTIONS->Get(PNSK_INTERFACE, _T("HideSaveAll"), false))
-	{
-		::SendMessage(m_hWndToolBar, TB_DELETEBUTTON, 4, 0);
-	}
 
 	// CmdUI
 	UIAddToolBar(m_hWndToolBar);
@@ -956,7 +943,6 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 	// Misc:
 	
 	CreateMDIClient();
-	//m_CmdBar.SetMDIClient(m_hWndMDIClient);
 	m_ChildFactory.SetMdiClient(m_hWndMDIClient);
 
 	HICON hIconSmall = (HICON)::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_READONLY), 
@@ -1376,24 +1362,13 @@ LRESULT CMainFrame::OnUpdateFindText(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 	return 0;
 }
 
-//LRESULT OnMDISetMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-//	{
-//		SetMDIFrameMenu();
-//		return 0;
-//	}
-
 LRESULT CMainFrame::OnMDISetMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
 	bHandled = FALSE;
-	//::DefWindowProc(m_hWndMDIClient, uMsg, NULL, lParam);
-	//HMENU hOldMenu = GetMenu();
-	//BOOL bRet = AttachMenu((HMENU)wParam);
 
 	// PN Specific Code
 	OnMDISetMenu((HMENU)lParam, (HMENU)wParam);
 
-	/*bRet;
-	ATLASSERT(bRet);*/
 	return 0;
 }
 
@@ -1703,14 +1678,6 @@ LRESULT CMainFrame::OnUndo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
 
 LRESULT CMainFrame::OnQuickFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-	/*std::string text;
-
-	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
-	if (pChild != NULL)
-	{
-		text = pChild->GetTextView()->GetCurrentWord();
-	}*/
-	
 	m_tabbedClient.ShowFindBar(true);
 	return TRUE;
 }
@@ -2138,6 +2105,7 @@ LRESULT CMainFrame::OnHelpContents(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hW
 	path = fn.c_str();
 
 	path += _T("::/htmlhelp/index.html");
+
 	// Passing NULL as the caller causes HtmlHelp to load in sibling mode
 	::HtmlHelp(NULL,
          path.c_str(),
@@ -2647,9 +2615,6 @@ void CMainFrame::SetDefaultGUIState()
 	getDocker(DW_CTAGS)->Hide();
 	getDocker(DW_SCRIPTS)->Hide();
 	getDocker(DW_OPENFILES)->Hide();
-	//m_pOutputWnd->Hide();
-	//m_pClipsWnd->Hide();
-	//m_pProjectsWnd->Hide();
 }
 
 void CMainFrame::PerformChildEnum(SChildEnumStruct* s)
@@ -3293,7 +3258,6 @@ bool CMainFrame::getProjectsModified(ITabbedMDIChildModifiedList* pModifiedList)
 			if((*i)->IsDirty())
 			{
 				CComPtr<ITabbedMDIChildModifiedItem> pitem;
-				//ITabbedMDIChildModifiedItem* pitem;
 				::CreateTabbedMDIChildModifiedItem(m_hWnd, LSW(IDS_PROJECT), CT2CW((*i)->GetName()), LSW(IDS_PROJECT), 0, ::LoadIcon(_Module.m_hInst, MAKEINTRESOURCE(IDI_PROJECTFOLDER)), &pitem);
 				
 				CComPtr<IProjectHolder> ph;
