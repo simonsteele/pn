@@ -186,16 +186,30 @@ class CSMenuT
 
 		CSMenuHandle GetSubMenu(LPCTSTR name)
 		{
-			tstring sname(name);
-			
-			int bufsize = sname.length() + 10;
+			tstring sname(name);			
 			tstring buffer;
+			CMenuItemInfo mii;
+			mii.fMask = MIIM_STRING;
 
 			for (int i = 0; i < GetCount(); i++)
 			{
-				buffer.resize(bufsize);
-				int size = GetMenuString(SafeGetHandle(), i, &buffer[0], bufsize, MF_BYPOSITION);
-				buffer.resize(size);
+				mii.dwTypeData = NULL;
+				mii.cch = 0;
+
+				::GetMenuItemInfo(SafeGetHandle(), i, MF_BYPOSITION, &mii);
+
+				if (mii.cch != sname.length())
+				{
+					continue;
+				}
+
+				mii.cch++;
+				buffer.resize(mii.cch);
+				mii.dwTypeData = &buffer[0];
+
+				::GetMenuItemInfo(SafeGetHandle(), i, MF_BYPOSITION, &mii);
+
+				buffer.resize(mii.cch);
 
 				if (buffer == sname)
 				{
