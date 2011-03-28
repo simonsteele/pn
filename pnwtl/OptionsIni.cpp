@@ -2,9 +2,9 @@
  * @file OptionsIni.h
  * @brief Ini configuration functionality.
  * @author Simon Steele
- * @note Copyright (c) 2004 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2004-2011 Simon Steele - http://untidy.net/
  *
- * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
+ * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 
@@ -23,12 +23,11 @@
 	class IniKeyMap : public std::map<tstring, tstring>{};
 #endif
 
-IniOptions::IniOptions()
+IniOptions::IniOptions() : 
+	groupLocked(false), 
+	keyMap(new IniKeyMap()),
+	_filename(NULL)
 {
-	keyMap = new IniKeyMap();
-
-	_filename = NULL;
-	
 	tstring userSettingsPath;
 	GetPNPath(userSettingsPath, PNPATH_USERSETTINGS);
 	userSettingsPath += _T("UserSettings.ini");
