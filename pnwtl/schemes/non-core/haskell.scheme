@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="haskell">
+case class data default deriving do else hiding if
+import in infix infixl infixr instance let module
+newtype of then type where forall foreign
+		</keyword-class>
+		<keyword-class name="ffi">
+export label dynamic safe threadsafe unsafe stdcall ccall prim
+		</keyword-class>
+	</keyword-classes>
+	<language name="haskell" title="Haskell">
+		<lexer name="haskell" />
+		<comments line="-- " />
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="haskell"/>
+			<keyword key="1" name="FFI Keywords" class="ffi"/>
+		</use-keywords>
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="Whitespace" key="0" fore="808080" />
+			<style name="Identifier" key="1" class="identifier" />
+			<style name="Keyword" key="2" class="keyword" />
+			<style name="Number" key="3" class="number" />
+			<style name="String" key="4" class="string" />
+			<style name="Character" key="5" class="string" />
+			<style name="Module" key="7" class="class"/>
+			<style name="Capital" key="8" />
+			<style name="Operator" key="11" class="operator" />
+			<style name="Line Comment" key="13" class="comment" />
+			<style name="Block Comment" key="14" class="comment" />
+		</use-styles>
+	</language>
+</Scheme>
