@@ -33,7 +33,8 @@ SmartStart::SmartStart() : m_buffer(NULL)
 		m_Map.insert(SM_VT(std::string("/*"), std::string("cpp")));
 		m_Map.insert(SM_VT(std::string("unit"), std::string("pascal")));
 		m_Map.insert(SM_VT(std::string("public class"), std::string("csharp")));
-		m_Map.insert(SM_VT(std::string("<?"), std::string("xml")));
+		m_Map.insert(SM_VT(std::string("<?php"), std::string("php")));
+		m_Map.insert(SM_VT(std::string("<?xml"), std::string("xml")));
 		m_Map.insert(SM_VT(std::string("<html"), std::string("web")));
 		m_Map.insert(SM_VT(std::string("<!--"), std::string("xml")));
 		m_Map.insert(SM_VT(std::string("import"), std::string("python")));
