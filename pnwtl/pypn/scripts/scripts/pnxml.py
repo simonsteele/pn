@@ -13,4 +13,5 @@ def ValidateXml():
 	try:
 		parser.Parse(text, True)
 	except expat.ExpatError, ex:
+		pn.ClearOutput()
 		pn.AddOutput("Error: " + str(ex))
