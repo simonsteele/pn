@@ -191,6 +191,7 @@
 #define ID_HELP_WEB_SF                  252
 #define IDS_DEFAULTSCHEME               252
 #define ID_HELP_WEB_SB                  253
+#define IDS_FILEASSOC_OPEN              253
 #define ID_HELP_REPORTABUG              254
 #define IDS_EXTENSIONS_ENABLED          254
 #define IDD_TOOLEDITOR                  255
@@ -200,7 +201,9 @@
 #define IDR_POPUP_OUTPUT                257
 #define IDS_HDR_EXTENSIONS_ENABLED      257
 #define ID_PROJECT_DELETE               258
+#define IDS_FILEASSOC_EDIT              258
 #define ID_OUTPUT_CLEAR                 259
+#define IDS_FILEASSOC_EDITWITH          259
 #define ID_OUTPUT_HIDE                  260
 #define ID_TOOLS_USETABS                261
 #define IDD_SMARTSTARTEDITOR            262

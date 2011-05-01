@@ -9,6 +9,7 @@
 #include "resource.h"
 #include "OptionsPages.h"
 #include "ssreg.h"
+#include "l10n.h"
 
 //////////////////////////////////////////////////////////////////////////////
 // COptionsPageFileAssoc
@@ -56,9 +57,10 @@ void COptionsPageFileAssoc::OnInitialise()
 	for(int i = 0; i < fas.GetSize(); i++)
 	{
 		const FileAssoc& fa = fas[i];
+		CString verbName(fa.GetVerbName(true));
 		m_list.AddItem(i, ColConflict, _T(""));
 		m_list.SetItemText(i, ColExtension, fa.GetExtension());
-		m_list.SetItemText(i, ColMethod, fa.GetVerbName(true));
+		m_list.SetItemText(i, ColMethod, (LPCTSTR)verbName);
 		m_list.SetItemText(i, ColTypeName, fa.GetCurrentTypeName());
 	}
 }
@@ -70,9 +72,9 @@ void COptionsPageFileAssoc::OnCancel()
 LRESULT COptionsPageFileAssoc::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	m_combo.Attach(GetDlgItem(IDC_FILEASSO_METHOD));
-	m_combo.AddString(_T("Open"));
-	m_combo.AddString(_T("Edit"));
-	m_combo.AddString(_T("Edit with PN2"));
+	m_combo.AddString(LS(IDS_FILEASSOC_OPEN));
+	m_combo.AddString(LS(IDS_FILEASSOC_EDIT));
+	m_combo.AddString(LS(IDS_FILEASSOC_EDITWITH));
 	m_combo.SetCurSel(0);
 
 	m_buttonAddEdit.Attach(GetDlgItem(IDC_ADD));

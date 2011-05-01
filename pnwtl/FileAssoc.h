@@ -40,7 +40,7 @@ public:
 	const CString& GetCurrentTypeName() const;
 	const CString& GetExtension() const;
 	Verb GetVerb() const;
-	LPCTSTR GetVerbName(bool forDisplay = false) const;
+	CString GetVerbName(bool forDisplay = false) const;
 
 	void SetExtensionAndVerb(const CString& ext, const CString& verb);
 	void SetVerb(const Verb& verb);
@@ -54,7 +54,7 @@ protected:
 	void CheckExtension();
 
 	Verb StringToVerb(const CString& verbName) const;
-	LPCTSTR VerbToString(Verb verb, bool forDisplay = false) const;
+	CString VerbToString(Verb verb, bool forDisplay = false) const;
 
 	void GetVerbCommand(const CString& assoc, Verb verb);
 	void GetTypeName();

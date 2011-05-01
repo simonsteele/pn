@@ -2,7 +2,7 @@
  * @file FileAssoc.cpp
  * @brief File Associations Management
  * @author Bjoern Graf
- * @note Copyright (c) 2005-2006 Bjoern Graf and Simon Steele
+ * @note Copyright (c) 2005-2011 Bjoern Graf and Simon Steele
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -141,7 +141,7 @@ FileAssoc::Verb FileAssoc::GetVerb() const
 	return m_verb;
 }
 
-LPCTSTR FileAssoc::GetVerbName(bool forDisplay/* = false*/) const
+CString FileAssoc::GetVerbName(bool forDisplay/* = false*/) const
 {
 	return VerbToString(m_verb, forDisplay);
 }
@@ -288,24 +288,24 @@ void FileAssoc::CheckExtension()
 FileAssoc::Verb FileAssoc::StringToVerb(const CString& verbName) const
 {
 	Verb verb;
-	if(verbName.CompareNoCase(_T("open")) == 0)
+	if(verbName.CompareNoCase(LS(IDS_FILEASSOC_OPEN)) == 0)
 		verb = VerbOpen;
-	else if(verbName.CompareNoCase(_T("edit")) == 0)
+	else if(verbName.CompareNoCase(LS(IDS_FILEASSOC_EDIT)) == 0)
 		verb = VerbEdit;
 	else
 		verb = VerbEditWith;
 	return verb;
 }
 
-LPCTSTR FileAssoc::VerbToString(Verb verb, bool forDisplay /*= false*/) const
+CString FileAssoc::VerbToString(Verb verb, bool forDisplay /*= false*/) const
 {
-	LPCTSTR verbName;
+	CString verbName;
 	if(verb == VerbOpen)
 		verbName = _T("open");
 	else if(verb == VerbEdit)
 		verbName = _T("edit");
 	else
-		verbName = forDisplay ? EDIT_WITH_MENU_TEXT : EDIT_WITH_VERB;
+		verbName = forDisplay ? LS(IDS_FILEASSOC_EDITWITH) : EDIT_WITH_VERB;
 	return verbName;
 }
 
@@ -486,7 +486,8 @@ bool FileAssoc::AssociateExtention(LPCTSTR pDescription /*= NULL*/, LPCTSTR pIco
 		res = reg.Open(regClasses, keyName);
 		if(res == ERROR_SUCCESS)
 		{
-			reg.SetStringValue(NULL, EDIT_WITH_MENU_TEXT);
+			tstring editWith = LS(IDS_FILEASSOC_EDITWITH);
+			reg.SetStringValue(NULL, editWith.c_str());
 			reg.Close();
 		}
 	}
