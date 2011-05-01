@@ -663,7 +663,13 @@ LRESULT CChildFrame::OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 		if(OnEscapePressed())
 			return TRUE;
 
-	return GetTextView()->PreTranslateMessage(pMsg);
+	CTextView* textView = GetTextView();
+	if (textView)
+	{
+		return textView->PreTranslateMessage(pMsg);
+	}
+
+	return FALSE;
 }
 
 LRESULT CChildFrame::OnCheckAge(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
