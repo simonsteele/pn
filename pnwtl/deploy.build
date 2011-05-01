@@ -9,8 +9,8 @@
 			<echo message="Retrieving Mercurial revision number"/>
 			<property name="svn.revision" value="0"/>
 			<exec
-				program="${hg.path}hg"
-				commandline='log --limit 1 --template {rev}'
+				program="cmd"
+				commandline='/C ${hg.path}hg log --limit 1 --template {rev}'
 				output="_revision.txt"
 				failonerror="false"/>
 			<loadfile file="_revision.txt" property="svn.revision" />
