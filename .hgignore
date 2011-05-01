@@ -21,6 +21,17 @@ syntax: glob
 *.opensdf
 *.log
 *.pyc
+*.cscheme
+*.psess
+*.ipch
+*.acd
+
+_revision.txt
+
+dlldata.c
+pnse.h
+pnse_i.c
+pnse_p.c
 
 Release
 Debug
