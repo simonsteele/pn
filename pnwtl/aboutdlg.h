@@ -28,16 +28,12 @@ public:
 	{
 		CenterWindow(GetParent());
 
-		CString strTemp;
 		CString strVersion;
-		strTemp.LoadString(IDS_ABOUTVERSIONSTRING);
-		
-		strVersion.Format(strTemp, PN_VERSION_FULL_T);
+		strVersion.Format(LS(IDS_ABOUTVERSIONSTRING), PN_VERSION_FULL_T);
 
 		CStatic sName;
 		sName.Attach(GetDlgItem(IDC_NAME));
 		
-		//fnTitle.CreatePointFont(12, _T("MS Shell Dlg 2"));
 		fnTitle.CreateFont(
 			14,                        // nHeight
 			0,                         // nWidth
@@ -53,7 +49,6 @@ public:
 			DEFAULT_QUALITY,           // nQuality
 			DEFAULT_PITCH | FF_SWISS,  // nPitchAndFamily
 			_T("MS Shell Dlg 2"));     // lpszFacename
-
 
 		sName.SetFont(fnTitle);
 
