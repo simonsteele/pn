@@ -1,6 +1,6 @@
 ========================================
 Release Name: 2.3
-Build: 2.3, Version Label: Beta 1
+Build: 2.3, Version Label: RC
 ========================================
 
 What's new in 2.3?
@@ -13,6 +13,7 @@ What's new in 2.3?
 5) Tags only auto-closed in the correct state in HTML/XML, hr br and img not auto-closed.
 6) Miscellaneous updates to schemes to improve highlighting (including HTML5 elements and attributes).
 7) RTF export reworked, background colours now working better.
+8) Properties scheme folding.
 
 Bug Fixes:
 ----------
@@ -25,6 +26,9 @@ Bug Fixes:
 6) Fix window positioning where left-most monitor has negative co-ordinates. Fixes issue #500.
 7) Schemes now always rebuilt at install time, remove duplicate Powershell scheme.
 8) Fixed an issue where undo didn't correctly clear clip insertion state. Fixes issue #1183.
+9) Tools/New/Language menus missing on Chinese Windows XP. Fixes issue #704.
+10) Translations not working in Portable distribution. Fixes issue #1220.
+11) Auto complete of tags now works when using "ignore case". Fixes issue #1067.
 
 What's new in 2.3 under the cover?
 ------------------------------------------
