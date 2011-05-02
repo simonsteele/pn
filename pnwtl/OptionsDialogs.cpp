@@ -146,12 +146,22 @@ LRESULT CToolSettingsPage::OnBrowseCommand(WORD /*wNotifyCode*/, WORD /*wID*/, H
 	DoDataExchange(TRUE);
 
 	LPCTSTR pFN = ( (m_csCommand.Find(_T('%')) == -1) ? (LPCTSTR)m_csCommand : NULL );
-	CFileDialog fd(true, _T("exe"), pFN, OFN_HIDEREADONLY, _T("Executable Files (exe, com, bat, vbs...)\0*.exe;*.com;*.bat;*.vbs;*.cmd\0All Files (*.*)\0*.*\0"), NULL);
+	tstring filter = LS(IDS_TOOLS_TOOLFILEFILTER);
+	CAutoOpenDialog fd(filter.c_str());
+	fd.SetTitle(LS(IDS_TOOLS_COMMANDTITLE));
+
+	if (pFN != NULL)
+	{
+		CFileName fn(pFN);
+		fd.SetInitialPath(fn.GetDirectoryName().c_str());
+	}
+
 	if( fd.DoModal() == IDOK )
 	{
-		m_csCommand = fd.m_ofn.lpstrFile;
+		m_csCommand = fd.GetSingleFileName();
 		DoDataExchange();
 	}
+
 	return 0;
 }
 

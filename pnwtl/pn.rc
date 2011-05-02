@@ -1891,6 +1891,9 @@ BEGIN
     IDS_HDR_EXTENSIONS_ENABLED "Enabled"
     IDS_FILEASSOC_EDIT      "Edit"
     IDS_FILEASSOC_EDITWITH  "Edit with Programmer's Notepad"
+    IDS_TOOLS_TOOLFILEFILTER 
+                            "Executable Files (exe, com, bat, vbs...)|*.exe;*.com;*.bat;*.vbs;*.cmd|All Files (*.*)|*.*|"
+    IDS_TOOLS_COMMANDTITLE  "Select Tool Command..."
     IDS_FILE_PROPERTIES     "Properties"
     ID_FILE_REVERT          "Revert this document to the current saved state\nRevert"
     IDS_FINDBAR_FINDPREV    "Find &Previous"

@@ -205,7 +205,9 @@
 #define ID_OUTPUT_CLEAR                 259
 #define IDS_FILEASSOC_EDITWITH          259
 #define ID_OUTPUT_HIDE                  260
+#define IDS_TOOLS_TOOLFILEFILTER        260
 #define ID_TOOLS_USETABS                261
+#define IDS_TOOLS_COMMANDTITLE          261
 #define IDD_SMARTSTARTEDITOR            262
 #define IDS_CLIPS_ADDCLIP               262
 #define IDS_FILE_PROPERTIES             262

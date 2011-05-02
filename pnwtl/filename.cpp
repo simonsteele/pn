@@ -76,6 +76,11 @@ tstring CFileName::GetPath()
 tstring CFileName::GetDirectoryName()
 {
 	tstring path = GetPath();
+	if (!path.size())
+	{
+		return path;
+	}
+
 	TCHAR cLast = path[path.length() - 1];
 	if (cLast == _T('\\') || cLast == _T('/'))
 	{
