@@ -355,42 +355,6 @@ void Scheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 		// Set the defaults - these may be changed by the load.
 		SetupScintilla(sc, allSettings);
 
-		if((hdr.Flags & fldEnabled) && OPTIONS->GetCached(Options::OFoldingEnabled))
-		{
-			///@todo obviously these details need to come from settings somewhere...
-			sc.SPerform(SCI_SETPROPERTY, (WPARAM)"fold", (LPARAM)"1");
-			sc.SPerform(SCI_SETMARGINTYPEN, 2, SC_MARGIN_SYMBOL);
-			sc.SPerform(SCI_SETMARGINMASKN, 2, SC_MASK_FOLDERS);
-			sc.SPerform(SCI_SETMARGINSENSITIVEN, 2, true);
-			sc.SPerform(SCI_SETMARGINWIDTHN, 2, 14);
-			sc.SPerform(SCI_SETFOLDFLAGS, 16, 0);
-			sc.SetFoldingMargins(efsVSNet);
-
-			sc.SPerform(SCI_SETPROPERTY, (WPARAM)"fold.compact", (LPARAM)((hdr.Flags & fldCompact) ? "1" : "0"));
-			
-			if(hdr.Flags & fldComments)
-				sc.SPerform(SCI_SETPROPERTY, (WPARAM)"fold.comment", (LPARAM)"1");
-
-			if(hdr.Flags & fldPreProc)
-				sc.SPerform(SCI_SETPROPERTY, (WPARAM)"fold.preprocessor", (LPARAM)"1");
-
-			if(hdr.Flags & fldElse) 
-				sc.SPerform(SCI_SETPROPERTY, (WPARAM)"fold.at.else", (LPARAM)"1");
-		}
-
-		if(hdr.Flags & schOverrideTabs)
-		{
-			if(hdr.Flags & schUseTabs)
-				sc.SPerform(SCI_SETUSETABS, 1, 0);
-			else
-				sc.SPerform(SCI_SETUSETABS, 0, 0);
-		}
-
-		if(hdr.Flags & schOverrideTabSize)
-		{
-			sc.SPerform(SCI_SETTABWIDTH, hdr.TabWidth, 0);
-		}
-
 		std::vector<char> buf;
 
 		while (cfile.GetPosition() < cfile.GetLength())
@@ -453,6 +417,43 @@ void Scheme::Load(CScintilla& sc, bool allSettings, LPCTSTR filename)
 		}
 
 		cfile.Close();
+
+		if((hdr.Flags & fldEnabled) && OPTIONS->GetCached(Options::OFoldingEnabled))
+		{
+			///@todo obviously these details need to come from settings somewhere...
+			sc.SPerform(SCI_SETPROPERTY, (WPARAM)"fold", (LPARAM)"1");
+			sc.SPerform(SCI_SETMARGINTYPEN, 2, SC_MARGIN_SYMBOL);
+			sc.SPerform(SCI_SETMARGINMASKN, 2, SC_MASK_FOLDERS);
+			sc.SPerform(SCI_SETMARGINSENSITIVEN, 2, true);
+			sc.SPerform(SCI_SETMARGINWIDTHN, 2, 14);
+			sc.SPerform(SCI_SETFOLDFLAGS, 16, 0);
+			sc.SetFoldingMargins(efsVSNet);
+
+			sc.SPerform(SCI_SETPROPERTY, (WPARAM)"fold.compact", (LPARAM)((hdr.Flags & fldCompact) ? "1" : "0"));
+			
+			if(hdr.Flags & fldComments)
+				sc.SPerform(SCI_SETPROPERTY, (WPARAM)"fold.comment", (LPARAM)"1");
+
+			if(hdr.Flags & fldPreProc)
+				sc.SPerform(SCI_SETPROPERTY, (WPARAM)"fold.preprocessor", (LPARAM)"1");
+
+			if(hdr.Flags & fldElse) 
+				sc.SPerform(SCI_SETPROPERTY, (WPARAM)"fold.at.else", (LPARAM)"1");
+		}
+
+		if(hdr.Flags & schOverrideTabs)
+		{
+			if(hdr.Flags & schUseTabs)
+				sc.SPerform(SCI_SETUSETABS, 1, 0);
+			else
+				sc.SPerform(SCI_SETUSETABS, 0, 0);
+		}
+
+		if(hdr.Flags & schOverrideTabSize)
+		{
+			sc.SPerform(SCI_SETTABWIDTH, hdr.TabWidth, 0);
+		}
+
 	}
 	else
 	{
