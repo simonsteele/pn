@@ -11,7 +11,7 @@ class CPageSetupDialog : public CPageSetupDialogImpl<CPageSetupDialog>
 		CPageSetupDialog(DWORD dwFlags = PSD_MARGINS | PSD_INWININIINTLMEASURE | PSD_ENABLEPAGESETUPTEMPLATE, HWND hWndParent = NULL)
 			: baseClass(dwFlags, hWndParent)
 		{
-			m_psd.hInstance = ::GetModuleHandle(NULL);
+			m_psd.hInstance = _Module.GetResourceInstance();
 			m_psd.lpPageSetupTemplateName = MAKEINTRESOURCE( IDD_PAGESETUP );
 		}
 
@@ -177,7 +177,7 @@ class CPageSetupDialog : public CPageSetupDialogImpl<CPageSetupDialog>
 
 			CEdit& editCtrl = (bFooter ? m_FooterEdit : m_HeaderEdit);
 			
-			hPSHelperMenu = ::LoadMenu(_Module.m_hInst, MAKEINTRESOURCE(IDR_POPUP_HEADERFOOTER));
+			hPSHelperMenu = ::LoadMenu(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_POPUP_HEADERFOOTER));
 			
 			HMENU hPopup = ::GetSubMenu(hPSHelperMenu, 0);
 
