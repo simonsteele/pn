@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+<Scheme>
+	<keyword-classes>
+		<keyword-class name="sass1">azimuth background background-attachment background-color background-image background-position background-repeat border border-bottom border-bottom-color border-bottom-style border-bottom-width border-collapse border-color border-left border-left-color border-left-style border-left-width border-right border-right-color border-right-style border-right-width border-spacing border-style border-top border-top-color border-top-style border-top-width border-width bottom caption-side clear clip color content counter-increment counter-reset cue cue-after cue-before cursor direction display elevation empty-cells float font font-family font-size font-size-adjust font-stretch font-style font-variant font-weight height left letter-spacing line-height list-style list-style-image list-style-position list-style-type margin margin-bottom margin-left margin-right margin-top marker-offset marks max-height max-width min-height min-width orphans outline outline-color outline-style outline-width overflow padding padding-bottom padding-left padding-right padding-top page page-break-after page-break-before page-break-inside pause pause-after pause-before pitch pitch-range play-during position quotes richness right size speak speak-header speak-numeral speak-ponctuation speech-rate stress table-layout text-align text-decoration text-indent text-shadow text-transform top unicode-bidi vertical-align visibility voice-family volume white-space widows width word-spacing z-index</keyword-class>
+		<keyword-class name="sass2">active after before first first-child first-letter first-line focus hover lang left link right visited pt pc in mm cm em ex px ms s %</keyword-class>
+	</keyword-classes>
+    
+	<schemedef name="sass" title="SASS" author="Simon Steele" url="http://www.pnotepad.org/" version="1" 
+		casesensitive="true" braces="{[()]}">
+		
+		<!-- Max 2 -->
+		<strings>
+			<!-- Double quotes string, with \ as an escape character. -->
+			<stringtype id="0" start="&quot;" end="&quot;" multiline="false" />
+			<stringtype id="1" start="'" end="'" multiline="false" />
+		</strings>
+		
+		<identifiers start="[.#]" content="[-_a-zA-Z0-9]" />
+		<identifiers2 start="[$]" content="[-_a-zA-Z0-9]" />
+		
+		<comments>
+			<line start="//" />
+			<block start="/*" end="*/" />
+		</comments>
+		
+		<numbers start="[0-9]" content="[0-9a-f.x]" />
+		<keywords start="[a-z]" content="[-_0-9a-z]" />
+		
+		<!-- From here on is the traditional scheme definition block... -->
+		<lexer name="sass" />
+		<use-styles>
+			<style name="Default" key="32" />
+			<style name="Line Comment" key="1" class="commentline" />
+			<style name="Block Comment" key="2" class="commentbox" />
+			<style name="Identifier" key="3" class="identifier" fore="8080C0" />
+			<style name="Variable" key="13" fore="FF8040"/>
+			<style name="Number" key="4" class="number" />
+			<style name="Keywords" key="5" class="keyword" />
+			<style name="Keywords 2" key="6" class="keyword" fore="f80000" />
+			<style name="String" key="10" class="string" />
+			<style name="String 2" key="11" class="string" />
+		</use-styles>
+		
+		<use-keywords>
+			<keyword key="0" name="Keywords" class="sass1"/>
+			<keyword key="1" name="Keywords 2" class="sass2"/>
+		</use-keywords>
+	</schemedef>
+</Scheme>
