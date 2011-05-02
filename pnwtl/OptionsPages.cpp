@@ -75,19 +75,23 @@ void COptionsPageDialogs::OnOK()
 
 	CComboBox langCombo(GetDlgItem(IDC_LANGUAGECOMBO));
 	int sel = langCombo.GetCurSel();
-	if (sel != 0)
+	if (sel != -1)
 	{
-		std::map<int, tstring>::const_iterator i = m_lcid_map.find(langCombo.GetItemData(sel));
-		if (i != m_lcid_map.end())
+		DWORD langCode = langCombo.GetItemData(sel);
+		std::map<int, tstring>::const_iterator i = m_lcid_map.find(langCode);
+		if (langCode != 2057 && i != m_lcid_map.end())
 		{
 			OPTIONS->Set(PNSK_INTERFACE, _T("Language"), (*i).second.c_str());
+		}
+		else
+		{
+			OPTIONS->Set(PNSK_INTERFACE, _T("Language"), _T(""));
 		}
 	}
 	else
 	{
 		OPTIONS->Set(PNSK_INTERFACE, _T("Language"), _T(""));
 	}
-
 }
 
 void COptionsPageDialogs::OnInitialise()
