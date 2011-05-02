@@ -2,7 +2,7 @@
  * @file lexerconfig.h
  * @brief Custom lexer for user-defined languages - based on simple language settings.
  * @author Simon Steele
- * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -29,6 +29,7 @@
 #define STYLE_KNOWNIDENT	13
 #define STYLE_BLOCKCOMMENT2 14
 #define STYLE_BLOCKCOMMENT3 15
+#define STYLE_UNKNOWNIDENT  16
 
 #define MAX_STRINGTYPES		2	// Number of string types supported.
 #define MAX_KEYWORDS		5	// Number of comment types supported.
@@ -142,6 +143,9 @@ class LexerConfig
 
 		CharSet			identStartSet;
 		CharSet			identContentSet;
+
+		CharSet			identStartSet2;
+		CharSet			identContentSet2;
 };
 
 #endif // LEXERCONFIG_H_INCLUDED

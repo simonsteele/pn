@@ -2,7 +2,7 @@
  * @file CustomLexerFactory.cpp
  * @brief Custom Scheme XML Parser.
  * @author Simon Steele
- * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -210,14 +210,14 @@ void CustomLexerFactory::doNumbers(const XMLAttributes& atts)
 	m_pCurrent->numberContentSet.ParsePattern(Tcs_Windows1252(pszContent));
 }
 
-void CustomLexerFactory::doIdentifiers(const XMLAttributes& atts)
+void CustomLexerFactory::doKeywords(const XMLAttributes& atts)
 {
 	LPCTSTR pszStart = atts.getValue(_T("start"));
 	if( pszStart )
 	{
 		CharSet chSet;
 		if( chSet.ParsePattern(Tcs_Windows1252(pszStart)) )
-            m_pCurrent->wordStartSet = chSet;
+			m_pCurrent->wordStartSet = chSet;
 	}
 	
 	LPCTSTR pszContent = atts.getValue(_T("content"));
@@ -229,6 +229,25 @@ void CustomLexerFactory::doIdentifiers(const XMLAttributes& atts)
 	}
 }
 
+void CustomLexerFactory::doIdentifiers(const XMLAttributes& atts)
+{
+	LPCTSTR pszStart = atts.getValue(_T("start"));
+	if( pszStart )
+	{
+		CharSet chSet;
+		if( chSet.ParsePattern(Tcs_Windows1252(pszStart)) )
+            m_pCurrent->identStartSet = chSet;
+	}
+	
+	LPCTSTR pszContent = atts.getValue(_T("content"));
+	if( pszContent )
+	{
+		CharSet chSet;
+		if( chSet.ParsePattern(Tcs_Windows1252(pszContent)) )
+            m_pCurrent->identContentSet = chSet;
+	}
+}
+
 void CustomLexerFactory::doIdentifiers2(const XMLAttributes& atts)
 {
 	LPCTSTR pszStart = atts.getValue(_T("start"));
@@ -236,13 +255,13 @@ void CustomLexerFactory::doIdentifiers2(const XMLAttributes& atts)
 		return;
 
 	// start will be something like [a-z]. This needs parsing into a character set.
-	m_pCurrent->identStartSet.ParsePattern(Tcs_Windows1252(pszStart));
+	m_pCurrent->identStartSet2.ParsePattern(Tcs_Windows1252(pszStart));
 
 	LPCTSTR pszContent = atts.getValue(_T("content"));
 	if(!pszContent)
 		return;
 
-	m_pCurrent->identContentSet.ParsePattern(Tcs_Windows1252(pszContent));
+	m_pCurrent->identContentSet2.ParsePattern(Tcs_Windows1252(pszContent));
 }
 
 void CustomLexerFactory::SetCommentTypeCode(LPCSTR pVal, ECodeLength& length, char* code, char*& pCode, CommentType_t* type)
@@ -351,6 +370,10 @@ void CustomLexerFactory::startElement(XML_CSTR name, const XMLAttributes& atts)
 		else if( _tcscmp(name, _T("numbers")) == 0 )
 		{
 			doNumbers(atts);
+		}
+		else if (_tcscmp(name, _T("keywords")) == 0)
+		{
+			doKeywords(atts);
 		}
 		else if( _tcscmp(name, _T("identifiers")) == 0 )
 		{

@@ -2,7 +2,7 @@
  * @file schemelexer.cpp
  * @brief Custom lexer for user-defined languages - based on simple language settings.
  * @author Simon Steele
- * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -91,7 +91,7 @@ void CustomLexer::Lexer(unsigned int startPos, int length, int initStyle, IDocum
 		{
 			handleBlockComment(cc, m_config.blockComment[2]);
 		}
-		else if( cc.state == STYLE_IDENTIFIER )
+		else if( cc.state == STYLE_UNKNOWNIDENT )
 		{
 			if(! IsAWordChar(cc.ch) )
 			{
@@ -119,11 +119,14 @@ void CustomLexer::Lexer(unsigned int startPos, int length, int initStyle, IDocum
 			if( cc.atLineEnd || !m_config.numberContentSet.Match(cc.ch))
 				cc.SetState(ST_DEFAULT);
 		}
+		else if (cc.state == STYLE_IDENTIFIER)
+		{
+			if( cc.atLineEnd || !m_config.identContentSet.Match(cc.ch))
+				cc.SetState(ST_DEFAULT);
+		}
 		else if( cc.state == STYLE_KNOWNIDENT )
 		{
-			///@todo - if we find a non-valid non-space char should we cancel
-			//the word state?
-			if( cc.atLineEnd || !m_config.identContentSet.Match(cc.ch))
+			if( cc.atLineEnd || !m_config.identContentSet2.Match(cc.ch))
 				cc.SetState(ST_DEFAULT);
 		}
 		else if( cc.state == STYLE_STRING )
@@ -196,11 +199,15 @@ void CustomLexer::Lexer(unsigned int startPos, int length, int initStyle, IDocum
 			{
 				cc.SetState(STYLE_NUMBER);
 			}
-			else if( m_config.identStartSet.Match(cc.ch) )
+			else if( m_config.identStartSet2.Match(cc.ch) )
 			{
 				cc.SetState(STYLE_KNOWNIDENT);
 			}
 			else if( IsAWordStart(cc.ch) )
+			{
+				cc.SetState(STYLE_UNKNOWNIDENT);
+			}
+			else if (m_config.identStartSet.Match(cc.ch))
 			{
 				cc.SetState(STYLE_IDENTIFIER);
 			}

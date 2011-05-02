@@ -2,7 +2,7 @@
  * @file CustomScheme.h
  * @brief Defines the CustomLexerFactory class.
  * @author Simon Steele
- * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -26,6 +26,7 @@ class CustomLexerFactory : public XMLParseState
 
 		void doStringType(const XMLAttributes& atts);
 		void doScheme(const XMLAttributes& atts);
+		void doKeywords(const XMLAttributes& atts);
 		void doKeyword(const XMLAttributes& atts);
 		void doPreProcessor(const XMLAttributes& atts);
 		void doNumbers(const XMLAttributes& atts);
