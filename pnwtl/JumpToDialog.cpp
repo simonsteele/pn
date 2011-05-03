@@ -234,7 +234,8 @@ void CJumpToDialog::transfer()
 	int selIndex = list.GetSelectedIndex();
 	if(selIndex != -1)
 	{
-		line = list.GetItemData(selIndex);
+		Target* target = reinterpret_cast<Target*>(list.GetItemData(selIndex));
+		line = target->Line;
 	}
 	else
 		line = -1;
