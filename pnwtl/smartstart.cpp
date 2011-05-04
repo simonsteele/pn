@@ -2,7 +2,7 @@
  * @file smartstart.cpp
  * @brief Implementation of SmartStart
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -15,8 +15,72 @@
 #include "pnstrings.h"
 #include "smartstart.h"
 
+#include "third_party/genx/genx.h"
+#include "include\pngenx.h"
+
+#define u(x) (constUtf8)x
+
 typedef string_map::value_type SM_VT;
 typedef string_map::iterator SM_IT;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// Format:
+
+// <SmartStart>
+// <ssv from="using " to="csharp" />
+// </SmartStart>
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// SmartStartWriter
+
+class SmartStartWriter : public GenxXMLWriter
+{
+public:
+	void WriteMappings(const string_map& map)
+	{
+		genxStartElement(m_eContainer);
+		for(string_map::const_iterator i = map.begin(); i != map.end(); ++i)
+		{
+			writeMapping(i->first, i->second);
+		}
+		genxEndElement(m_writer);
+	}
+
+protected:
+	/**
+	 * Use this to initialize all your elements that you'll use over and
+	 * over.
+	 */
+	virtual void initXmlBits()
+	{
+		genxStatus s;
+
+		m_eContainer = genxDeclareElement(m_writer, NULL, u("SmartStart"), &s);
+		m_eMapping = genxDeclareElement(m_writer, NULL, u("ssv"), &s);
+		
+		PREDECLARE_ATTRIBUTES()
+			ATT("from", m_aTrigger);
+			ATT("to", m_aScheme);
+		END_ATTRIBUTES();
+	}
+
+private:
+	void writeMapping(const std::string& trigger, const std::string& scheme)
+	{
+		genxStartElement(m_eMapping);
+		addAttributeConvertUTF8(m_aTrigger, trigger.c_str());
+		addAttributeConvertUTF8(m_aScheme, scheme.c_str());
+		genxEndElement(m_writer);
+	}
+
+	genxAttribute m_aTrigger;
+	genxAttribute m_aScheme;
+	genxElement m_eContainer;
+	genxElement m_eMapping;
+};
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// SmartStart
 
 /// protected singleton constructor...
 SmartStart::SmartStart() : m_buffer(NULL)
@@ -71,33 +135,11 @@ void SmartStart::Save()
 	tstring path;
 	OPTIONS->GetPNPath(path, PNPATH_USERSETTINGS);
 	path += _T("UserSmartStart.xml");
-
-	CFile f;
-	if( f.Open(path.c_str(), CFile::modeWrite | CFile::modeBinary) )
+	
 	{
-		// <?xml version="1.0"?>
-		// <SmartStart>
-		// <ssv from="using " to="csharp" />
-		// </SmartStart>
-		
-		f.Write("<?xml version=\"1.0\"?>\r\n<SmartStart>\r\n", 37 * sizeof(char));
-
-		std::string sout;
-		for(string_map::const_iterator i = m_Map.begin(); i != m_Map.end(); ++i)
-		{
-			sout = "<ssv from=\"";
-			XMLSafeString((*i).first.c_str(), sout);
-			//sout += (*i).first;
-			sout += "\" to=\"";
-			XMLSafeString((*i).second.c_str(), sout);
-			//sout += (*i).second;
-			sout += "\" />\r\n";
-			f.Write((void*)sout.c_str(), sout.length() * sizeof(char));
-		}
-
-		f.Write(_T("</SmartStart>"), 13 * sizeof(TCHAR));
-
-		f.Close();
+		SmartStartWriter writer;
+		writer.Start(path.c_str());
+		writer.WriteMappings(m_Map);
 	}
 
 	// When save is called we've probably changed our word list so
