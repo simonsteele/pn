@@ -252,7 +252,7 @@ void RTFExporter::InternalExport(int start, int end)
 		if (style != styleCurrent)
 		{
 			StyleDetails* current = styleCurrent == -1 ? pDefStyle : GetStyle(styleCurrent);
-			if (styleCurrent == NULL)
+			if (current == NULL)
 			{
 				current = pDefStyle;
 			}
