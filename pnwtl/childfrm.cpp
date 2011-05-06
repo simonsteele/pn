@@ -893,6 +893,12 @@ void CChildFrame::removeSplit(bool closeCurrent)
 			}
 
 			m_lastTextView = nextTextView;
+
+			if (nextTextView)
+			{
+				// Focus the next textview.
+				::SetFocus(nextTextView->GetHwnd());
+			}
 		}
 	}
 
