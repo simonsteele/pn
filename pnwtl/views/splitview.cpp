@@ -171,7 +171,7 @@ ViewPtr& SplitView::GetOtherChild(ViewPtr& child)
  */
 void SplitView::Visit(Visitor& visitor)
 {
-	visitor(this);
+	visitor(shared_from_this());
 	m_w1->Visit(visitor);
 	m_w2->Visit(visitor);
 }

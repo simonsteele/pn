@@ -25,7 +25,22 @@ typedef boost::weak_ptr<View> WeakViewPtr;
  */
 struct Visitor
 {
-	virtual void operator ()(View* view) = 0;
+	virtual void operator ()(ViewPtr& view) = 0;
+};
+
+/**
+ * Simple func visitor, useful with lambdas.
+ */
+struct FuncVisitor : public Visitor
+{
+	FuncVisitor(std::function<void (ViewPtr& view)> fn) : m_fn(fn){}
+
+	virtual void operator ()(ViewPtr& view)
+	{
+		m_fn(view);
+	}
+
+	std::function<void (ViewPtr& view)> m_fn;
 };
 
 /**

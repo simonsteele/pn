@@ -722,12 +722,12 @@ void CChildFrame::updateViewKeyBindings()
 struct OptionsUpdateVisitor : public Views::Visitor
 {
 	OptionsUpdateVisitor(Scheme* scheme) : _scheme(scheme) {}
-	virtual void operator ()(Views::View* view)
+	virtual void operator ()(Views::ViewPtr& view)
 	{
 		if (view->GetType() == Views::vtText)
 		{
-			if (_scheme) static_cast<CTextView*>(view)->SetScheme(_scheme);
-			static_cast<CTextView*>(view)->ShowLineNumbers(OPTIONS->GetCached(Options::OLineNumbers) != 0);
+			if (_scheme) static_cast<CTextView*>(view.get())->SetScheme(_scheme);
+			static_cast<CTextView*>(view.get())->ShowLineNumbers(OPTIONS->GetCached(Options::OLineNumbers) != 0);
 		}
 	}
 	Scheme* _scheme;
@@ -736,11 +736,11 @@ struct OptionsUpdateVisitor : public Views::Visitor
 struct ViewUpdateVisitor : public Views::Visitor
 {
 	ViewUpdateVisitor(CTextView* other) : m_other(other) {}
-	virtual void operator ()(Views::View* view)
+	virtual void operator ()(Views::ViewPtr& view)
 	{
 		if (view->GetType() == Views::vtText)
 		{
-			CTextView* current = static_cast<CTextView*>(view);
+			CTextView* current = static_cast<CTextView*>(view.get());
 			if (current == m_other)
 			{
 				return;
@@ -878,14 +878,21 @@ void CChildFrame::removeSplit(bool closeCurrent)
 		// Our current focus view is switching to the view we're keeping.
 		SetLastView(viewToKeep);
 		 
-		// TODO: There is a problem here if we delete one of two views, and the other is not a text view 
-		// - we'll leave m_lastTextView blank. This needs extending when we allow non-text views to 
-		// find the first valid text view and go with it.
 		if (m_lastTextView == viewToClose)
 		{
 			// We didn't replace m_lastTextView in SetLastView because viewToKeep is not a text
-			// view, clear lastTextView or it will become invalid.
-			m_lastTextView.reset();
+			// view, we need to find an appropriate text view to use next.
+			Views::ViewPtr nextTextView;
+			Views::FuncVisitor findTextView([&nextTextView] (Views::ViewPtr& view) { if (!nextTextView && view->GetType() == Views::vtText) { nextTextView = view; }});
+			viewToKeep->Visit(findTextView);
+
+			if (!nextTextView)
+			{
+				// Couldn't find a text view in the new split, search for the first one from the root.
+				m_primeView->Visit(findTextView);
+			}
+
+			m_lastTextView = nextTextView;
 		}
 	}
 
@@ -2743,11 +2750,11 @@ bool CChildFrame::OnEditorCommand(LPVOID pCommand)
 struct SetSchemeVisitor : public Views::Visitor
 {
 	SetSchemeVisitor(Scheme* scheme, ESchemeChangeFlags flags) : _scheme(scheme), _flags(flags) {}
-	virtual void operator ()(Views::View* view)
+	virtual void operator ()(Views::ViewPtr& view)
 	{
 		if (view->GetType() == Views::vtText)
 		{
-			static_cast<CTextView*>(view)->SetScheme(_scheme, _flags);
+			static_cast<CTextView*>(view.get())->SetScheme(_scheme, _flags);
 			_flags |= scfNoRestyle; // only need to restyle once.
 		}
 	}
