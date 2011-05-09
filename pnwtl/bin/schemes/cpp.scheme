@@ -132,6 +132,9 @@
 			<keyword key="1" name="Keywords 2" class="jsunsure"/>
 		</use-keywords>
 		<use-styles>
+			<style name="Doc Comments" key="3" class="commentdoc"/>
+			<style name="RegEx" key="14" fore="3f7f3f" back="e0f0ff" eolfilled="true"/>
+			<style name="Comment Line Doc" key="15" class="commentdoc"/>
 			<style name="Keywords 2" key="16" fore="b00040"/>
 		</use-styles>
 	</language>

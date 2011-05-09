@@ -1063,7 +1063,7 @@ int CTextView::leastIndentedLine(int startLine, int endLine)
 	int line = startLine;
 	for(int i = startLine; i <= endLine; ++i)
 	{
-		unsigned int lineIndent = (unsigned int)GetLineIndentPosition(line);
+		unsigned int lineIndent = (unsigned int)GetLineIndentation(i);
 		if(lineIndent < indent)
 		{
 			indent = lineIndent;
@@ -1101,6 +1101,13 @@ LRESULT CTextView::OnCommentLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 		GetSel(cr);
 		int selStartLine = LineFromPosition( cr.cpMin );
 		int selEndLine = LineFromPosition( cr.cpMax );
+
+		// If the selection is full lines, the cursor will be right at the start of 
+		// a line that we don't want to comment:
+		if (cr.cpMax == PositionFromLine(selEndLine) && selEndLine > selStartLine)
+		{
+			selEndLine--;
+		}
 
 		// Calculate where the left-most bit of line is, and comment
 		// vertically from there.
