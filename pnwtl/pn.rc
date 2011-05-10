@@ -387,6 +387,7 @@ BEGIN
         MENUITEM "Copy &File Path",             ID_EDIT_COPYFILEPATH
         MENUITEM "Open Con&taining Folder",     ID_FILE_OPENCONTAININGFOLDER
         MENUITEM "&Open in Default Program",    ID_FILE_SHELLOPEN
+		MENUITEM "Open URL in Default Browser", ID_VIEW_OPEN_URL
         MENUITEM SEPARATOR
         MENUITEM "&Properties\tAlt+Enter",      ID_VIEW_FILEPROPERTIES
         MENUITEM SEPARATOR

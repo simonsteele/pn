@@ -29,10 +29,12 @@
 
 /**
  * SmartHighlight is fun, but causes a lot of work in huge files. We now
- * limit the scope to +/- 200 lines from the top and bottom of the current view. 
- * If this isn't desirable this will have to be updated to be smarted with UPDATEUI.
+ * limit the scope to +/- 200 lines from the top and bottom of the current view
+ * and update as the viewport is moved.
  */
 #define MAX_SMARTHIGHLIGHT_LINES 200
+
+#define URL_REGEX "https?://[^ ]+|www\\.[^ ]+"
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // CTextView
@@ -757,6 +759,11 @@ void CTextView::DoContextMenu(CPoint* point)
 		}
 	}
 
+	if(!isUrlSelected())
+	{
+		popup.RemoveItemByCommand(ID_VIEW_OPEN_URL);
+	}
+
 	if(!(m_pLastScheme && ScriptRegistry::GetInstanceRef().SchemeScriptsEnabled(m_pLastScheme->GetName())))
 	{
 		popup.EnableMenuItem(ID_EDITOR_USEASSCRIPT, false);
@@ -1036,6 +1043,41 @@ LRESULT CTextView::OnToggleFold(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 {
 	ToggleFold();
 	return 0;
+}
+
+LRESULT CTextView::OnOpenUrl(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+	Scintilla::TextToFind ttf;
+	ttf.lpstrText = URL_REGEX;
+	GetSel(ttf.chrg);
+	long pos = FindText(SCFIND_REGEXP, &ttf);
+	ATLASSERT(pos >= 0);
+	if(pos < 0)
+		return 0;
+
+	std::string buf;
+	buf.resize(ttf.chrg.cpMax - ttf.chrg.cpMin + 1);
+
+	Scintilla::TextRange tr;
+	tr.chrg = ttf.chrg;
+	tr.lpstrText = &buf[0];
+	GetTextRange(&tr);
+	buf.resize(ttf.chrg.cpMax - ttf.chrg.cpMin);
+
+	if(_strnicmp(buf.c_str(), "http://", 7) != 0)
+		buf = std::string("http://") + buf;
+
+	::ShellExecute(m_hWnd, _T("open"), CA2CT(buf.c_str()), NULL, NULL, SW_SHOW);
+	return 0;
+}
+
+bool CTextView::isUrlSelected()
+{
+	Scintilla::TextToFind ttf;
+	ttf.lpstrText = URL_REGEX;
+	GetSel(ttf.chrg);
+
+	return FindText(SCFIND_REGEXP, &ttf) >= 0;
 }
 
 LRESULT CTextView::OnGotoBrace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

@@ -742,6 +742,7 @@
 #define ID_PROJECT_SETACTIVEPROJECT     32897
 #define ID_BUTTON32901                  32901
 #define ID_VIEW_FILEPROPERTIES          32902
+#define ID_VIEW_OPEN_URL                32903
 #define ID_EDIT_JUMPTO                  32905
 #define ID_EDIT_DUPLICATELINE           32908
 #define ID_EDIT_DELETELINE              32909

@@ -62,6 +62,7 @@ public:
 		COMMAND_ID_HANDLER(ID_VIEW_COLLAPSEALLFOLDS, OnCollapseAll)
 		COMMAND_ID_HANDLER(ID_VIEW_EXPANDALLFOLDS, OnExpandAll)
 		COMMAND_ID_HANDLER(ID_VIEW_TOGGLEFOLD, OnToggleFold)
+		COMMAND_ID_HANDLER(ID_VIEW_OPEN_URL, OnOpenUrl)
 		COMMAND_ID_HANDLER(ID_EDIT_GOTOBRACE, OnGotoBrace)
 		COMMAND_ID_HANDLER(ID_COMMENTS_LINE, OnCommentLine)
 		COMMAND_ID_HANDLER(ID_COMMENTS_STREAM, OnCommentStream)
@@ -155,6 +156,7 @@ private:
 	LRESULT OnCollapseAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnExpandAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnToggleFold(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnOpenUrl(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnGotoBrace(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCommentLine(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCommentStream(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -193,6 +195,8 @@ private:
 	void handleInsertClipNotify(Scintilla::SCNotification* scn);
 
 	void handleMarkAllResult(int start, int end);
+	
+	bool isUrlSelected();
 
 	CommandDispatch* m_pCmdDispatch;
 	BOOL m_waitOnBookmarkNo;

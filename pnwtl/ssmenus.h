@@ -225,6 +225,11 @@ class CSMenuT
 			::RemoveMenu(SafeGetHandle(), position, MF_BYPOSITION);	
 		}
 
+		void RemoveItemByCommand(UINT cmd)
+		{
+			::RemoveMenu(SafeGetHandle(), cmd, MF_BYCOMMAND);	
+		}
+
 		const CSMenuT& operator = (const CSMenuT& copy)
 		{
 			m_hMenu = copy.m_hMenu;
