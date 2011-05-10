@@ -15,6 +15,7 @@ James Yoneda
 Prafulla Tekawade
 Murphy McCauley
 Jesse Fang
+Jörgen Sigvardsson
 
 Documentation:
 --------------
