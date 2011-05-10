@@ -963,6 +963,27 @@ HRESULT CTextView::OnMouseWheel(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 	return ret;
 }
 
+HRESULT CTextView::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+	if(wParam & MK_CONTROL)
+	{
+		long pos = PositionFromPointClose(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		if(pos < 0)
+			return DefWindowProc(uMsg, wParam, lParam);
+
+		int wordStart = WordStartPosition(pos, true);
+		int wordEnd = WordEndPosition(pos, true);
+
+		SetSelectionStart(wordStart);
+		SetSelectionEnd(wordEnd);
+
+		bHandled = TRUE;
+		return 0;
+	}
+	else
+		return DefWindowProc(uMsg, wParam, lParam);
+}
+
 HRESULT CTextView::OnSetFocus(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
 	bHandled = false;
