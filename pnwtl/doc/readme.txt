@@ -1,6 +1,6 @@
 ========================================
 Release Name: 2.3
-Build: 2.3, Version Label: RC
+Build: 2.3, Version Label: RC2
 ========================================
 
 What's new in 2.3?
@@ -14,13 +14,16 @@ What's new in 2.3?
 6) Miscellaneous updates to schemes to improve highlighting (including HTML5 elements and attributes).
 7) RTF export reworked, background colours now working better.
 8) Properties scheme folding.
+9) Two identifier types in customscheme independant of keyword recognition.
+10) Select a URL and right-click to go to it.
+11) New German translation.
 
 Bug Fixes:
 ----------
 
 1) Disable non-relevant project menu items when using magic folders. Fixes issue #1049.
 2) Exit code should be 0. Fixes issue #1070.
-3) Fix issue leading to crash after closing split view. Fixes issue #1161, #1137.
+3) Fix issue leading to crash after closing split view. Fixes issue #1161, #1137, #1301.
 4) Allow customizing New Default keyboard shortcut. Allow localising Plain Text scheme name. Fixes issue #1167.
 5) More protection for invalid editor scenarios. Fixes issue #1174.
 6) Fix window positioning where left-most monitor has negative co-ordinates. Fixes issue #500.
@@ -29,6 +32,15 @@ Bug Fixes:
 9) Tools/New/Language menus missing on Chinese Windows XP. Fixes issue #704.
 10) Translations not working in Portable distribution. Fixes issue #1220.
 11) Auto complete of tags now works when using "ignore case". Fixes issue #1067.
+12) Docking window content focused rather than docking window itself, improves behaviour on showing output. Issue #351.
+13) Bookmark image now non-aliased. Fixes issue #198.
+14) Select a word with ctrl-click. Issue #22.
+15) Line comment insertion fixed. Fixes issues #30, #458, #673.
+16) Smartstart option serialization. Fixes issue #1316.
+17) Jump dialog fixed. Fixes issue #1313.
+18) Fix folding. Fixes issue #1284.
+19) Remove "-" from PHP character set. Fixes issue #1300.
+20) Fix translation of the Page Setup dialog, and several other translation issues. Issues #1307, #1306.
 
 What's new in 2.3 under the cover?
 ------------------------------------------

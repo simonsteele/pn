@@ -1,6 +1,6 @@
 #define PN_MAJOR			2
 #define PN_MINOR			3
-#define PN_REVISION			2
+#define PN_REVISION			3
 #ifndef PN_BUILD
 	#define PN_BUILD		0
 #endif
@@ -12,7 +12,7 @@
 #define PN_VERSTRING_T		_T(PN_VERSION_STRINGIZE(PN_MAJOR)) _T(".") _T(PN_VERSION_STRINGIZE(PN_MINOR)) _T(".") _T(PN_VERSION_STRINGIZE(PN_REVISION)) _T(".") _T(PN_VERSION_STRINGIZE(PN_BUILD))
 
 #ifndef PN_VERNAME
-	#define PN_VERNAME			"-rc"
+	#define PN_VERNAME			"-rc2"
 #endif
 
 #define PN_VIVERSION		PN_MAJOR,PN_MINOR,0,0
