@@ -13,6 +13,7 @@ public:
 	BEGIN_MSG_MAP(CPNDockingWindow)
 		MESSAGE_HANDLER(WM_SIZE, OnSize)		
 		MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBackground)
+		MESSAGE_HANDLER(WM_SETFOCUS, OnSetFocus)
 		CHAIN_MSG_MAP(baseClass)
 	END_MSG_MAP()
 
@@ -123,6 +124,20 @@ protected:
 		}
 		bHandled = FALSE;
 		return 1;
+	}
+
+	LRESULT OnSetFocus(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
+	{
+		if (m_hWndClient != NULL)
+		{
+			::SetFocus(m_hWndClient);
+		}
+		else
+		{
+			bHandled = FALSE;
+		}
+
+		return 0;
 	}
 
 	LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)

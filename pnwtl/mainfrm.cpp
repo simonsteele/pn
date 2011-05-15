@@ -1545,6 +1545,10 @@ LRESULT CMainFrame::OnDockerToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCt
 {
 	PNASSERT(wID >= ID_VIEW_FIRSTDOCKER && wID <= ID_VIEW_LASTDOCKER);
 	m_dockingWindows[wID - ID_VIEW_FIRSTDOCKER]->Toggle();
+	HWND hWnd = ::GetFocus();
+	TCHAR buf[200];
+	_stprintf(buf, L"Focus: %d\n", hWnd);
+	LOG(buf);
 
 	return 0;
 }
@@ -2870,6 +2874,10 @@ void CMainFrame::ToggleDockingWindow(EDocker window, bool bSetValue, bool bShowi
 		{
 			//if( !dw->IsWindowVisible() )
 			dw->Show();
+			HWND hWnd = ::GetFocus();
+			TCHAR buf[200];
+			_stprintf(buf, L"Focus: %d\n", hWnd);
+			LOG(buf);
 		}
 		else
 		{
@@ -2878,7 +2886,13 @@ void CMainFrame::ToggleDockingWindow(EDocker window, bool bSetValue, bool bShowi
 		}
 	}
 	else
+	{
 		dw->Toggle();
+		HWND hWnd = ::GetFocus();
+		TCHAR buf[200];
+		_stprintf(buf, L"Focus: %d\n", hWnd);
+		LOG(buf);
+	}
 }
 
 void CMainFrame::NewProject(LPCTSTR szProjectFile, LPCTSTR name, LPCTSTR templateGuid)
