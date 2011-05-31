@@ -2,8 +2,8 @@ Author:
 -------
 Simon Steele
 
-Code Contributors:
-------------------
+Code / Design Contributors:
+---------------------------
 Bjoern Graf
 Klaus Kurzawa
 Mike Ditum
@@ -16,6 +16,7 @@ Prafulla Tekawade
 Murphy McCauley
 Jesse Fang
 Jörgen Sigvardsson
+Zoran Hackadelic
 
 Documentation:
 --------------
