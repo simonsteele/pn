@@ -108,6 +108,8 @@ def finishCapturingStdOut():
 		return ""
 
 def evalScript(script):
+	script = string.replace(script, "\r\n", "\n")
+	script = string.replace(script, "\r", "\n")
 	exec(script)
 	return ""
 
