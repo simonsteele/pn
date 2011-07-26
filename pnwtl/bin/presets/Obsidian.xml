@@ -1,30 +1,70 @@
 <UserSettings>
-	<override-colours caret="C1CBD2" indentGuides="394448" selBack="404E51"/>
+	<override-colours caret="c1cbd2" indentGuides="394448" selBack="404e51"></override-colours>
 	<override-classes>
-		<style-class name="default" font="Courier New" back="293134" fore="E0E2E4" />
-		<style-class name="comment" fore="66747B" italic="true"/>
-		<style-class name="boxcomment" fore="66747B" bold="true"/>
-		<style-class name="commentline" fore="66747B" italic="true"/>
-		<style-class name="keyword" fore="93C763"/>
-		<style-class name="string" fore="E1E2CF" />
-		<style-class name="character" fore="FF8409" bold="true"/>
-		<style-class name="number" fore="FFCD22" />
-		<style-class name="operator" fore="E8E2B7" />
-		<style-class name="error" fore="E0E2E4" back="ff0000" />
-		<style-class name="function" fore="E0E2E4" bold="true"/>
-		<style-class name="class" fore="E0E2E4"/>
-		<style-class name="type" fore="678CB1"/>
-		<style-class name="tag" fore="678CB1" />
-		<style-class name="attribute" fore="B3B689" />
-		<style-class name="identifier" fore="E0E2E4" />
-		<style-class name="error" fore="E0E2E4" back="2f2f2f" bold="true" />
-		<style-class name="preprocessor" fore="A082BD" bold="true" />
-		<style-class name="linenumbers" fore="81969A" back="3F4B4E" />
-		<style-class name="bracematch" fore="F3DB2E" back="293134" bold="true"/>
-		<style-class name="bracemismatch" fore="FB0000" back="293134" bold="true"/>
-		<style-class name="controlchars" fore="FF8409" bold="true" />
-		<!-- storage types 6080FF -->
-		<!-- variant types 4080A0 -->
-		<!-- line highlight: 434443 -->
+		<style-class name="aspjs" fore="c0c0c0"></style-class>
+		<style-class name="aspvbs" fore="c0c0c0"></style-class>
+		<style-class name="attribute" fore="b3b689"></style-class>
+		<style-class name="boxcomment" bold="true" fore="66747b"></style-class>
+		<style-class name="bracematch" back="293134" bold="true" fore="f3db2e"></style-class>
+		<style-class name="bracemismatch" back="293134" bold="true" fore="fb0000"></style-class>
+		<style-class name="character" bold="true" fore="ff8409"></style-class>
+		<style-class name="class" fore="e0e2e4"></style-class>
+		<style-class name="comment" fore="66747b" italic="true"></style-class>
+		<style-class name="commentline" fore="66747b" italic="true"></style-class>
+		<style-class name="controlchars" bold="true" fore="ff8409"></style-class>
+		<style-class name="default" back="293134" font="Courier New" fore="e0e2e4"></style-class>
+		<style-class name="embeddedvbs" fore="c0c0c0"></style-class>
+		<style-class name="error" back="2f2f2f" bold="true" fore="e0e2e4"></style-class>
+		<style-class name="function" bold="true" fore="e0e2e4"></style-class>
+		<style-class name="identifier" fore="e0e2e4"></style-class>
+		<style-class name="keyword" fore="93c763"></style-class>
+		<style-class name="linenumbers" back="3f4b4e" fore="81969a"></style-class>
+		<style-class name="number" fore="ffcd22"></style-class>
+		<style-class name="operator" fore="e8e2b7"></style-class>
+		<style-class name="preprocessor" bold="true" fore="a082bd"></style-class>
+		<style-class name="string" fore="e1e2cf"></style-class>
+		<style-class name="tag" fore="678cb1"></style-class>
+		<style-class name="type" fore="678cb1"></style-class>
 	</override-classes>
+	<schemes>
+		<scheme name="web">
+			<override-styles>
+				<style fore="b54ab5" key="8"></style>
+				<style fore="b54ab5" key="10"></style>
+				<style fore="7d9ec0" key="14"></style>
+				<style fore="7f7f7f" key="15"></style>
+				<style fore="7f7f7f" key="16"></style>
+				<style fore="7f7f7f" key="17"></style>
+				<style fore="c0c0c0" key="41"></style>
+				<style fore="c0c0c0" key="46"></style>
+				<style fore="ffffff" key="51"></style>
+				<style fore="7f7f7f" key="52"></style>
+				<style fore="7d9ec0" key="62"></style>
+				<style fore="b54ab5" key="63"></style>
+				<style fore="b54ab5" key="64"></style>
+				<style fore="666666" key="67"></style>
+				<style fore="c0c0c0" key="71"></style>
+				<style fore="7d9ec0" key="74"></style>
+				<style fore="b54ab5" key="75"></style>
+				<style fore="8080ff" key="76"></style>
+				<style fore="c0c0c0" key="81"></style>
+				<style fore="8080ff" key="84"></style>
+				<style fore="b54ab5" key="85"></style>
+				<style fore="8080ff" key="86"></style>
+				<style fore="b54ab5" key="94"></style>
+				<style fore="b54ab5" key="95"></style>
+				<style fore="8080ff" key="96"></style>
+				<style fore="d50000" key="97"></style>
+				<style fore="aa0000" key="98"></style>
+				<style fore="7d9ec0" key="99"></style>
+				<style fore="b54ab5" key="109"></style>
+				<style fore="b54ab5" key="110"></style>
+				<style fore="8080ff" key="111"></style>
+				<style fore="d50000" key="112"></style>
+				<style fore="aa0000" key="113" underline="true"></style>
+				<style fore="7d9ec0" key="114"></style>
+				<style fore="7d9ec0" key="126"></style>
+			</override-styles>
+		</scheme>
+	</schemes>
 </UserSettings>
