@@ -15,7 +15,7 @@ James Yoneda
 Prafulla Tekawade
 Murphy McCauley
 Jesse Fang
-J�rgen Sigvardsson
+Jörgen Sigvardsson
 Zoran "Hackadelic" Isailovski
 
 Documentation:
@@ -37,6 +37,16 @@ Some icons from the famfamfam.com Silk icons set (http://www.famfamfam.com/lab/i
 Schemes:
 --------
 Steve Baer (Modula-2)
+
+Translations:
+-------------
+James Fancy (Simplified-Chinese)
+Simon Steele (British English)
+Nyári Péter (Hungarian)
+Victor Adascalitei (Romanian)
+CoDEmanX (German)
+B. Konstantin (Russian)
+Vico (Spanish)
 
 Testers:
 --------
