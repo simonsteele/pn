@@ -159,6 +159,12 @@ std::string RTFExporter::GetRTFStyleChange(StyleDetails* currentStyle, StyleDeta
 	}
 
 	// TODO: Underline
+	
+	// Terminate the RTF sequence:
+	if(styleChange.size())
+	{
+		styleChange += " ";
+	}
 
 	return styleChange;
 }
