@@ -46,6 +46,7 @@ Bug Fixes:
 22) Provide a command to return focus to editor at all times, and make sure docking window content is focused on activation. Fixes issue #351.
 23) Fix clip indents to avoid breaking multi-line python scripts. Fixes issue #1346.
 24) Fix line endings before eval'ing script. Fixes issue #1339.
+25) Allow escape to cancel find dialogs. Fixes issues #1074 and #1385.
 
 What's new in 2.3 under the cover?
 ------------------------------------------
