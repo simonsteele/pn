@@ -2,7 +2,7 @@
  * @file clip.cpp
  * @brief Single Text Clip functionality.
  * @author Simon Steele
- * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -22,7 +22,10 @@ using namespace TextClips;
 
 void Clip::Insert(CScintilla *scintilla) const
 {
-	std::string clipstr = FixText(scintilla);
+	std::vector<Chunk> chunks;
+	chunks.push_back(Chunk(0, Text.c_str()));
+	FixText(scintilla, chunks);
+	std::string clipstr = chunks[0].GetText();
 	
 	size_t offset = clipstr.find(_T('|'));
 	if (offset != clipstr.npos)
@@ -63,8 +66,6 @@ void Clip::GetChunks(std::vector<Chunk>& chunks) const
 
 void Clip::GetChunks(std::vector<Chunk>& chunks, CScintilla* scintilla, IVariableProvider* variables, extensions::IScriptRegistry* scriptRegistry) const
 {
-	std::string insertText = FixText(scintilla);
-
 	ChunkParser parser;
 
 	if (variables)
@@ -81,14 +82,15 @@ void Clip::GetChunks(std::vector<Chunk>& chunks, CScintilla* scintilla, IVariabl
 		}
 	}
 
-	parser.Parse(std::string(insertText.c_str()), chunks);
+	parser.Parse(std::string(Text.c_str()), chunks);
+	FixText(scintilla, chunks);
 }
 
-std::string Clip::FixText(CScintilla* scintilla) const
+void Clip::FixText(CScintilla* scintilla, std::vector<Chunk>& chunks) const
 {
 	if (scintilla == NULL)
 	{
-		return Text;
+		return;
 	}
 
 	// Indentation:
@@ -96,9 +98,18 @@ std::string Clip::FixText(CScintilla* scintilla) const
 	
 	// Work out tabs and spaces combination to get the indentation right
 	// according to user's settings.
-	std::string theIndent = MakeIndentText( indentation, scintilla->GetUseTabs(), scintilla->GetTabWidth() );
+	std::string theIndent = MakeIndentText(indentation, scintilla->GetUseTabs(), scintilla->GetTabWidth());
 
-	std::string theText(Text);
+	for(auto cit = chunks.begin(); cit != chunks.end(); ++cit)
+	{
+		std::string result = cit->GetText();
+		result = FixChunkText(result, theIndent, scintilla->GetEOLMode());
+		cit->SetText(result.c_str());
+	}
+}
+
+std::string Clip::FixChunkText(std::string& theText, const std::string& theIndent, int eolMode) const
+{
 	for (size_t i = 0; i < theText.size(); i++)
 	{
 		if (theText[i] == '\n')
@@ -111,7 +122,7 @@ std::string Clip::FixText(CScintilla* scintilla) const
 	std::string clipstr;
 
 	// Text is in Unix EOL mode (LF only), convert it to target EOL mode
-	switch (scintilla->GetEOLMode())
+	switch (eolMode)
 	{
 	case PNSF_Unix:
 		// no conversion needed, just copy

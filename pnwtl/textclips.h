@@ -2,7 +2,7 @@
  * @file textclips.h
  * @brief Text Clips Classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -101,7 +101,8 @@ class Clip
 		void GetChunks(std::vector<Chunk>& chunks, CScintilla* scintilla, IVariableProvider* variables, extensions::IScriptRegistry* scriptRegistry) const;
 
 	private:
-		std::string FixText(CScintilla* scintilla) const;
+		void FixText(CScintilla* scintilla, std::vector<Chunk>& chunks) const;
+		std::string FixChunkText(std::string& theText, const std::string& theIndent, int eolMode) const;
 };
 
 typedef std::list<Clip*>	LIST_CLIPS;
