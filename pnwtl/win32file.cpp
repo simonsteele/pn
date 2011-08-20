@@ -2,7 +2,7 @@
  * @file win32file.cpp
  * @brief Interfaces for file handling.
  * @author Simon Steele
- * @note Copyright (c) 2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -37,15 +37,18 @@ Win32File::~Win32File()
 
 /**
  * Static Factory function to create a file or open it for writing.
+ * 
+ * Open the file for writing rather than always creating so as to keep attached streams
+ * and attributes.
  */
 IFilePtr Win32File::Create(const wchar_t* filename)
 {
-	HANDLE hFile = ::CreateFile(filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	HANDLE hFile = ::CreateFile(filename, GENERIC_WRITE, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	int lastError(GetLastError());
 	if (hFile == INVALID_HANDLE_VALUE && lastError == ERROR_ACCESS_DENIED && FileExistsAsHidden(filename))
 	{
 		// If the file is hidden, we'll try to create again with hidden flagged.
-		hFile = ::CreateFile(filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_HIDDEN, NULL);
+		hFile = ::CreateFile(filename, GENERIC_WRITE, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_HIDDEN, NULL);
 		if (hFile == INVALID_HANDLE_VALUE)
 		{
 			lastError = ::GetLastError();
@@ -55,6 +58,13 @@ IFilePtr Win32File::Create(const wchar_t* filename)
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
 		throw FileSourceException(lastError);
+	}
+
+	// We opened the file, if it succeeded and the file wasn't created then we need to truncate it:
+	if (lastError == ERROR_ALREADY_EXISTS)
+	{
+		::SetFilePointer(hFile, 0, 0, FILE_BEGIN);
+		::SetEndOfFile(hFile);
 	}
 
 	IFilePtr fp(new Win32File(hFile, std::wstring(filename)));
