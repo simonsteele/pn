@@ -142,7 +142,7 @@ public:
 		COMMAND_ID_HANDLER(ID_WINDOW_CLOSEALLOTHER, OnWindowCloseAllOther)
 
 		COMMAND_ID_HANDLER(ID_EDIT_FOCUSCOMMAND, OnFocusCommand)
-		COMMAND_ID_HANDLER(ID_EDIT_FOCUSTEXTVIEW, OnFocusTextView)
+		COMMAND_ID_HANDLER(ID_WINDOWS_CURRENTEDITOR, OnWindowsCurrentEditor)
 		COMMAND_HANDLER(cwCommandWnd, EN_CHANGE, OnCommandNotify)
 		COMMAND_HANDLER(cwCommandWnd, BN_CLICKED, OnCommandEnter)
 		COMMAND_HANDLER(cwCommandWnd, BN_SETFOCUS, OnCommandGotFocus)
@@ -278,7 +278,6 @@ public:
 	LRESULT OnSplitVertical(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCloseSplit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFocusCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-	LRESULT OnFocusTextView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCommandNotify(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCommandEnter(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnCommandGotFocus(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -289,6 +288,7 @@ public:
 	LRESULT OnWriteProtectToggle(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnWindowCloseAllOther(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnFileCloseAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnWindowsCurrentEditor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	
 	bool OnRunTool(LPVOID pTool);
 

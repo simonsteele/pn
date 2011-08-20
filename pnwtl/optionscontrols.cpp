@@ -217,7 +217,7 @@ LRESULT CPNHotkeyCtrl::OnKeyDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
 {
 	bHandled = false;
 
-	if (wParam == VK_DELETE || wParam == VK_SPACE)
+	if (wParam == VK_DELETE || wParam == VK_SPACE || wParam == VK_ESCAPE)
 	{
 		bHandled = true;
 	}
@@ -231,7 +231,7 @@ LRESULT CPNHotkeyCtrl::OnKeyUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 
 	// For some reason space is still clearing the box before we get to here, so there're no
 	// modifiers left.
-	if (wParam == VK_DELETE || wParam == VK_SPACE)
+	if (wParam == VK_DELETE || wParam == VK_SPACE || wParam == VK_ESCAPE)
 	{
 		int current = SendMessage(HKM_GETHOTKEY, 0, 0);
 		if ((current & 0xff) != 0)
@@ -268,4 +268,9 @@ LRESULT CPNHotkeyCtrl::OnChar(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, B
 	}
 
 	return 0;
+}
+
+LRESULT CPNHotkeyCtrl::OnGetDlgCode(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	return DLGC_WANTALLKEYS;
 }

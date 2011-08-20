@@ -659,7 +659,7 @@ LRESULT CChildFrame::OnForwardMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lPara
 	if(CTabbedMDIChildWindowImpl<CChildFrame>::PreTranslateMessage(pMsg))
 		return TRUE;
 
-	if(pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE && GetFocus() == GetTextView()->m_hWnd)
+	if(pMsg->message == WM_KEYDOWN && pMsg->wParam == VK_ESCAPE && GetFocus() == GetTextView()->m_hWnd && !(GetKeyState( VK_SHIFT ) & 0x8000))
 		if(OnEscapePressed())
 			return TRUE;
 
@@ -2019,7 +2019,7 @@ LRESULT CChildFrame::OnCommandLostFocus(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 /**
  * Set focus to the most recent text view.
  */
-LRESULT CChildFrame::OnFocusTextView(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CChildFrame::OnWindowsCurrentEditor(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	::SetFocus(m_lastTextView->GetHwnd());
 

@@ -848,7 +848,6 @@
 #define ID_WINDOW_SPLITHORIZONTAL       33142
 #define ID_WINDOW_SPLITVERTICAL         33143
 #define ID_EDIT_FOCUSCOMMAND            33144
-#define ID_EDIT_FOCUSTEXTVIEW           33145
 #define IDC_LANGUAGE_STATIC             33146
 #define IDC_DIALOGS_STATIC              33147
 #define IDC_FIND_STATIC                 33148
@@ -863,6 +862,7 @@
 #define ID_FILE_NEW33157                33157
 #define ID_NEW_DEFAULT                  33158
 #define ID_NEW_PROJECT                  33159
+#define ID_WINDOWS_CURRENTEDITOR        33160
 
 // Next default values for new objects
 // 
@@ -870,7 +870,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        372
-#define _APS_NEXT_COMMAND_VALUE         33160
+#define _APS_NEXT_COMMAND_VALUE         33161
 #define _APS_NEXT_CONTROL_VALUE         1174
 #define _APS_NEXT_SYMED_VALUE           104
 #endif

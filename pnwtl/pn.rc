@@ -244,6 +244,8 @@ BEGIN
             MENUITEM "&Scripts",                    ID_VIEW_WINDOWS_SCRIPTS
             MENUITEM "File &Browser",               ID_VIEW_WINDOWS_BROWSER
             MENUITEM "Open Fi&les",                 ID_VIEW_WINDOWS_OPENFILES
+            MENUITEM SEPARATOR
+            MENUITEM "Current &Editor",             ID_WINDOWS_CURRENTEDITOR
         END
         MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
         MENUITEM SEPARATOR
@@ -387,7 +389,7 @@ BEGIN
         MENUITEM "Copy &File Path",             ID_EDIT_COPYFILEPATH
         MENUITEM "Open Con&taining Folder",     ID_FILE_OPENCONTAININGFOLDER
         MENUITEM "&Open in Default Program",    ID_FILE_SHELLOPEN
-		MENUITEM "Open URL in Default Browser", ID_VIEW_OPEN_URL
+        MENUITEM "Open URL in Default Browser", ID_VIEW_OPEN_URL
         MENUITEM SEPARATOR
         MENUITEM "&Properties\tAlt+Enter",      ID_VIEW_FILEPROPERTIES
         MENUITEM SEPARATOR
