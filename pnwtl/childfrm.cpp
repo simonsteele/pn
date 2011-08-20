@@ -1091,7 +1091,7 @@ LRESULT CChildFrame::OnFindNext(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
 		{
 			CString cs;
 			cs.Format(IDS_FINDNOTFOUND, pOptions->GetFindText());
-			MessageBox(cs, LS(IDR_MAINFRAME), MB_OK);
+			PNTaskDialogEx(m_hWnd, IDR_MAINFRAME, (LPCTSTR)cs, _T(""), TDCBF_OK_BUTTON, TDT_INFORMATION_ICON, TDCBF_OK_BUTTON, TDF_ALLOW_DIALOG_CANCELLATION);
 		}
 	}
 	return TRUE;
@@ -1108,7 +1108,7 @@ LRESULT CChildFrame::OnFindPrevious(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 		{
 			CString cs;
 			cs.Format(IDS_FINDNOTFOUND, pOptions->GetFindText());
-			MessageBox(cs, LS(IDR_MAINFRAME), MB_OK);
+			PNTaskDialogEx(m_hWnd, IDR_MAINFRAME, (LPCTSTR)cs, _T(""), TDCBF_OK_BUTTON, TDT_INFORMATION_ICON, TDCBF_OK_BUTTON, TDF_ALLOW_DIALOG_CANCELLATION);
 		}
 
 		pOptions->SetSearchBackwards(!pOptions->GetSearchBackwards());
@@ -2659,7 +2659,7 @@ FindNextResult CChildFrame::FindNext(extensions::ISearchOptions* options)
 	FindNextResult result = (FindNextResult)GetTextView()->FindNext(options);
 	if (result == fnReachedStart && options->GetFindTarget() != extensions::elwAllDocs)
 	{
-		PNTaskDialog(m_hWnd, IDR_MAINFRAME, IDS_FINDLOOPED, _T(""), TDCBF_OK_BUTTON, TDT_INFORMATION_ICON);
+		PNTaskDialogEx(m_hWnd, IDR_MAINFRAME, IDS_FINDLOOPED, _T(""), TDCBF_OK_BUTTON, TDT_INFORMATION_ICON, IDOK, TDF_ALLOW_DIALOG_CANCELLATION);
 	}
 	else if (result != fnFound && options->GetFindTarget() == extensions::elwAllDocs)
 	{
@@ -2688,7 +2688,7 @@ FindNextResult CChildFrame::FindNext(extensions::ISearchOptions* options)
 		if (pNext == this)
 		{
 			// We went all the way around, and couldn't find anything:
-			PNTaskDialog(m_hWnd, IDR_MAINFRAME, IDS_ALLFOUND, _T(""), TDCBF_OK_BUTTON, TDT_INFORMATION_ICON);
+			PNTaskDialogEx(m_hWnd, IDR_MAINFRAME, IDS_ALLFOUND, _T(""), TDCBF_OK_BUTTON, TDT_INFORMATION_ICON, IDOK, TDF_ALLOW_DIALOG_CANCELLATION);
 		}
 	}
 

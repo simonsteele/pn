@@ -34,9 +34,10 @@ Artwork:
 --------
 Some icons from the famfamfam.com Silk icons set (http://www.famfamfam.com/lab/icons/silk/).
 
-Schemes:
---------
+Schemes/Presets:
+----------------
 Steve Baer (Modula-2)
+Jon “Teh Dude” Smith (Solarized Light Preset)
 
 Translations:
 -------------

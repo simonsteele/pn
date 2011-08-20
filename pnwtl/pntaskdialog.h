@@ -2,7 +2,7 @@
  * @file pn.h
  * @brief Main Header File for Programmers Notepad 2, defines the application level services.
  * @author Simon Steele
- * @note Copyright (c) 2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2008-2011 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -62,6 +62,33 @@ inline int PNTaskDialog(HWND hWndParent, ATL::_U_STRINGorID WindowTitle, ATL::_U
 		ATLVERIFY(SUCCEEDED(hRet));
 		return nRet;
 	}
+}
+
+/**
+ * Extend PNTaskDialog signature with options for default button and flags
+ */
+inline int PNTaskDialogEx(HWND hWndParent, ATL::_U_STRINGorID WindowTitle, ATL::_U_STRINGorID MainInstructionText,
+						ATL::_U_STRINGorID ContentText, TASKDIALOG_COMMON_BUTTON_FLAGS dwCommonButtons = 0U,
+						ATL::_U_STRINGorID Icon = (LPCTSTR)NULL,
+						DWORD defaultButton = 0,
+						DWORD flags = 0)
+{
+	TASKDIALOGCONFIG tdc = {sizeof(TASKDIALOGCONFIG), 0};
+	tdc.hInstance = _Module.GetResourceInstance();
+	tdc.hwndParent = hWndParent;
+	tdc.pszWindowTitle = WindowTitle.m_lpstr;
+	tdc.pszMainInstruction = MainInstructionText.m_lpstr;
+	tdc.pszContent = ContentText.m_lpstr;
+	tdc.dwCommonButtons = dwCommonButtons;
+	tdc.dwFlags = flags;
+	tdc.nDefaultButton = defaultButton;
+		
+	if (Icon.m_lpstr)
+	{
+		tdc.pszMainIcon = MAKEINTRESOURCEW(Icon.m_lpstr);
+	}
+
+	return PNTaskDialogIndirect(&tdc);
 }
 
 #endif
