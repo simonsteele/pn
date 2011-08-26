@@ -16,7 +16,7 @@ What's new in 2.3?
 8) Properties scheme folding.
 9) Two identifier types in customscheme independant of keyword recognition.
 10) Select a URL and right-click to go to it.
-11) New German and Russion translations.
+11) New German and Russian translations.
 12) Scheme Presets: Solarized (Light), improved Obsidian, thanks to contributors.
 
 Bug Fixes:
@@ -47,6 +47,7 @@ Bug Fixes:
 23) Fix clip indents to avoid breaking multi-line python scripts. Fixes issue #1346.
 24) Fix line endings before eval'ing script. Fixes issue #1339.
 25) Allow escape to cancel find dialogs. Fixes issues #1074 and #1385.
+26) Fixes to the following schemes: Pascal, Modula-2, Matlab, TCL.
 
 What's new in 2.3 under the cover?
 ------------------------------------------
@@ -61,8 +62,7 @@ Extensions Interface Changes:
 
 1) All extensions should be built with Boost 1.45 and VS2010
 2) IScriptRunner and IScriptRunner2 merged
-3) Fixes to the following schemes: Pascal, Modula-2, Matlab, TCL
-4) OpenFile will now switch to an active open window rather than always opening.
+3) OpenFile will now switch to an active open window rather than always opening.
 
 
 If you find a bug:
