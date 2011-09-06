@@ -107,6 +107,7 @@
     <ClCompile Include="exttests.cpp" />
     <ClCompile Include="filenametests.cpp" />
     <ClCompile Include="iotests.cpp" />
+    <ClCompile Include="quicksilver.cpp" />
     <ClCompile Include="regex_tests.cpp" />
     <ClCompile Include="snippetparsetests.cpp" />
     <ClCompile Include="stdafx.cpp">

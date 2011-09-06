@@ -12,6 +12,7 @@
 #include "jumpto.h"
 #include "jumptodialog.h"
 #include "jumpview.h"
+#include "include/liquidmetal.h"
 
 #define COLWIDTH_PARENT 90
 #define COLWIDTH_LINE	60
@@ -202,7 +203,18 @@ void CJumpToDialog::filter(LPCTSTR text)
 	}
 
 	CT2CA partial(text);
-	Target t(static_cast<const char*>(partial), "", 0, 0);
+	std::string prtl(partial);
+	m_filtered = m_targets;
+
+	// Sort the known words by their quicksilver ranks:
+	LiquidMetal::QuickSilver qs;
+	std::sort(m_filtered.begin(), m_filtered.end(), [&qs, &prtl](const Target& l, const Target& r) -> bool { return qs.Score(l.Tag, prtl) > qs.Score(r.Tag, prtl); });
+
+	// Remove anything with a rank of less than 0.1:
+	auto i = std::lower_bound(m_filtered.begin(), m_filtered.end(), 0.1, [&qs, &prtl](const Target& val, const double min) -> bool { return qs.Score(val.Tag, std::string(prtl)) > min; });
+	m_filtered.erase(i, m_filtered.end());
+	
+	/*Target t(static_cast<const char*>(partial), "", 0, 0);
 	size_t length(t.Tag.size());
 	auto i = std::lower_bound(m_targets.begin(), m_targets.end(), t, [length](const Target& l, const Target& r) -> bool { 
 		if (_strnicmp(l.Tag.c_str(), r.Tag.c_str(), length) < 0)
@@ -220,7 +232,7 @@ void CJumpToDialog::filter(LPCTSTR text)
 		}
 
 		m_filtered.push_back(*i);
-	}
+	}*/
 
 	display(m_filtered);
 }

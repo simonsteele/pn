@@ -312,6 +312,7 @@
     <ClInclude Include="findinfiles.h" />
     <ClInclude Include="folderadder.h" />
     <ClInclude Include="ifilesource.h" />
+    <ClInclude Include="include\liquidmetal.h" />
     <ClInclude Include="IOptions.h" />
     <ClInclude Include="jumpto.h" />
     <ClInclude Include="jumptointerface.h" />

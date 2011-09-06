@@ -96,6 +96,9 @@
     <ClCompile Include="..\xmlparser.cpp">
       <Filter>Imported PN</Filter>
     </ClCompile>
+    <ClCompile Include="quicksilver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
