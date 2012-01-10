@@ -2,7 +2,7 @@
  * @file optionsmanager.h
  * @brief Configuration functionality.
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2012 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -44,9 +44,11 @@ class Options : public extensions::IOptions
 
 		virtual void Clear(LPCTSTR subkey) = 0;
 
+#if PLAT_WIN
 		virtual void SavePrintSettings(SPrintOptions* pSettings);
 		virtual void LoadPrintSettings(SPrintOptions* pSettings);
-
+#endif
+    
 		virtual int GetCached(ECachedOption option);
 		virtual void SetCached(ECachedOption option, int value);
 
@@ -64,8 +66,8 @@ class Options : public extensions::IOptions
 		static void StaticGetPNPath(tstring& path);
 
 		// IOptions Specials::
-		virtual wchar_t* GetPNPath(int pathtype = PNPATH_PN);
-		virtual wchar_t* GetS(const wchar_t* subkey, const wchar_t* value, const wchar_t* szDefault);
+		virtual LPCTSTR GetPNPath(int pathtype = PNPATH_PN);
+		virtual LPCTSTR GetS(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault);
 
 	protected:
 		Options();
@@ -86,7 +88,14 @@ class Options : public extensions::IOptions
 class OptionsFactory
 {
 public:
-	typedef enum {OTRegistry, OTIni, OTXml, OTSqlite} EOptionsType;
+	typedef enum {
+#if PLAT_WIN
+        OTRegistry, 
+        OTIni,
+#endif
+        OTXml, 
+//        OTSqlite
+    } EOptionsType;
 
 	/**
 	 * This function will create a new options object of a given type.

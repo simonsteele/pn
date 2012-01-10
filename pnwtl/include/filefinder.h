@@ -2,7 +2,7 @@
  * @file filefinder.h
  * @brief Find files according to a spec.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2011 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -11,7 +11,43 @@
 #ifndef filefinder_h__included
 #define filefinder_h__included
 
-class FileFinderData
+class IFileFinderData
+{
+public:
+    ~IFileFinderData() {}
+    virtual LPCTSTR GetFilename() const = 0;
+    virtual uint64_t GetLastWriteTime() const = 0;
+};
+
+class IFileFinderResultHandler
+{
+public:
+    ~IFileFinderResultHandler() {}
+	virtual void OnFileFound(LPCTSTR path, IFileFinderData& details, bool& shouldContinue) = 0;
+	virtual void OnDirChange(LPCTSTR path) = 0;
+    virtual void OnDirFinished(LPCTSTR path) = 0;
+    
+    virtual bool shouldRecurse(LPCTSTR /*path*/, LPCTSTR subfolder) { return true; }
+    virtual bool shouldMatch(LPCTSTR folder) { return true; }
+    virtual bool shouldContinue() { return true; }
+};
+
+#if PLAT_WIN
+
+class WinFileFinderData;
+
+class WinFileFinderImpl
+{
+public:
+    WinFileFinderImpl(IFileFinderResultHandler& resultHandler, WinFileFinderData& data);
+    
+    bool Find(LPCTSTR path, LPCTSTR filespec, bool bRecurse = false, bool bIncludeHidden = true);
+private:
+    IFileFinderResultHandler& handler;
+    WinFileFinderData& findData;
+};
+
+class WinFileFinderData : public IFileFinderData
 {
 public:
 	LPCTSTR GetFilename() const
@@ -25,17 +61,86 @@ public:
 	}
 
 	WIN32_FIND_DATA m_findData;
+    
+    boost::shared_ptr<WinFileFinderImpl> GetImpl(IFileFinderResultHandler& handler)
+    { 
+        return boost::make_shared<WinFileFinderImpl>(handler, this);
+    }
+    
+private:
+    WinFileFinderImpl finderImpl;
 };
+
+typedef WinFileFinderData FileFinderData;
+
+#else
+
+class BoostFileFinderData;
+
+class BoostFileFinderImpl
+{
+public:
+    BoostFileFinderImpl(IFileFinderResultHandler& resultHandler, BoostFileFinderData& data);
+    
+    bool Find(LPCTSTR path, LPCTSTR filespec, bool bRecurse = false, bool bIncludeHidden = true);
+private:
+    IFileFinderResultHandler& m_handler;
+    BoostFileFinderData& m_data;
+};
+
+class BoostFileFinderData : public IFileFinderData
+{
+public:
+    BoostFileFinderData() : m_lastWriteTime(0)
+    {
+    }
+    
+    virtual ~BoostFileFinderData() {}
+    
+    LPCTSTR GetFilename() const
+    {
+        return m_filename.c_str();
+    }
+    
+    uint64_t GetLastWriteTime() const
+    {
+        return m_lastWriteTime;
+    }
+    
+    boost::shared_ptr<BoostFileFinderImpl> GetImpl(IFileFinderResultHandler& handler)
+    {
+        return boost::shared_ptr<BoostFileFinderImpl>(new BoostFileFinderImpl(handler, *this));
+    }
+    
+    void SetFilename(const std::string& filename)
+    {
+        m_filename = filename;
+    }
+    
+    void SetLastWriteTime(uint64_t lastWriteTime)
+    {
+        m_lastWriteTime = lastWriteTime;
+    }
+    
+private:
+    std::string m_filename;
+    uint64_t m_lastWriteTime;
+};
+
+// TODO: Work out why we can't use a typedef here with clang...
+#define FileFinderData BoostFileFinderData
+
+#endif
 
 /**
  * @brief Implementation class for a templated file finding class.
  */
-template <class T, class TOwner, class TFindData>
-class FileFinderImpl
+template <class T, typename TOwner, class TFindData>
+class FileFinderImpl : public IFileFinderResultHandler
 {
 public:
 	typedef void (TOwner::*OnFoundFunc)(LPCTSTR path, TFindData& details, bool& shouldContinue);
-	typedef void (TOwner::*OnDirChange)(LPCTSTR path);
+	typedef void (TOwner::*OnDirChangeFunc)(LPCTSTR path);
 	FileFinderImpl(TOwner* pOwner, OnFoundFunc func)
 	{
 		owner = pOwner;
@@ -45,83 +150,21 @@ public:
 		fFinishDir = NULL;
 	}
 
-	void setDirChangeCallback(OnDirChange func)
+	void setDirChangeCallback(OnDirChangeFunc func)
 	{
 		fDirChange = func;
 	}
 
-	void setFinishedDirCallback(OnDirChange func)
+	void setFinishedDirCallback(OnDirChangeFunc func)
 	{
 		fFinishDir = func;
 	}
-
-	bool Find(LPCTSTR path, LPCTSTR filespec, bool bRecurse = false, bool bIncludeHidden = true)
-	{
-		HANDLE hFind;
-		BOOL found = true;
-		bool shouldContinue = true;
-
-		WIN32_FIND_DATA& FindFileData =  findData.m_findData;
-
-		tstring sPattern(path);
-		sPattern += filespec;
-
-		hFind = FindFirstFile(sPattern.c_str(), &FindFileData);
-		if (hFind != INVALID_HANDLE_VALUE) 
-		{
-			T* pT = static_cast<T*>(this);
-
-			while (found && pT->shouldContinue())
-			{	
-				//if we are not including hidden files/directories and this one is hidden skip checking
-				if( !( !bIncludeHidden && ((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_HIDDEN) != 0) ) )
-				{
-					if( bRecurse && ((FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) )
-					{
-						if( pT->shouldRecurse(path, FindFileData.cFileName) )
-						{
-							tstring path2(path);
-							path2 += FindFileData.cFileName;
-							path2 += _T('\\');
-							if(fDirChange)
-								(owner->*fDirChange)(path2.c_str());
-							Find(path2.c_str(), filespec, bRecurse, bIncludeHidden);
-							if(fFinishDir)
-								(owner->*fFinishDir)(path2.c_str());
-						}
-					}
-					else
-					{
-						// Call owner class with found data...
-						if( pT->shouldMatch(FindFileData.cFileName) )
-						{
-							(owner->*f)(path, findData, shouldContinue);
-
-							if (!shouldContinue)
-							{
-								break;
-							}
-						}
-					}
-				}
-
-				found = FindNextFile(hFind, &FindFileData);
-			}
-
-			FindClose(hFind);
-
-			return shouldContinue;
-		}
-
-		return false;
-	}
-
+	
 	TFindData& GetFindData()
 	{
 		return findData;
 	}
 
-protected:
 	bool shouldRecurse(LPCTSTR /*path*/, LPCTSTR subfolder)
 	{
 		if(_tcscmp(subfolder, _T("..")) != 0 && _tcscmp(subfolder, _T(".")) != 0)
@@ -138,11 +181,20 @@ protected:
 	{
 		return true;
 	}
+    
+    bool Find(LPCTSTR path, LPCTSTR filespec, bool bRecurse = false, bool bIncludeHidden = true)
+    {
+        return findData.GetImpl(*this)->Find(path, filespec, bRecurse, bIncludeHidden);
+    }
+    
+    virtual void OnFileFound(LPCTSTR path, IFileFinderData& details, bool& shouldContinue) { (owner->*f)(path, findData, shouldContinue); }
+	virtual void OnDirChange(LPCTSTR path) { if (fDirChange) { (owner->*fDirChange)(path); }}
+    virtual void OnDirFinished(LPCTSTR path) { if (fFinishDir) { (owner->*fFinishDir)(path); }}
 
 protected:
 	OnFoundFunc	f;
-	OnDirChange fDirChange;
-	OnDirChange fFinishDir;
+	OnDirChangeFunc fDirChange;
+	OnDirChangeFunc fFinishDir;
 	TOwner*		owner;
 	TFindData   findData;
 };
@@ -150,12 +202,12 @@ protected:
 /**
  * @brief Basic implementation of the FileFinderImpl class.
  */
-template <class TOwner, class TFindData = FileFinderData>
+template <typename TOwner, typename TFindData = FileFinderData>
 class FileFinder : public FileFinderImpl<FileFinder<TOwner, TFindData>, TOwner, TFindData>
 {
 	typedef FileFinderImpl<FileFinder<TOwner, TFindData>, TOwner, TFindData> baseClass;
 public:
-	FileFinder(TOwner* pOwner, OnFoundFunc func) : baseClass(pOwner, func){}
+	FileFinder(TOwner* pOwner, typename baseClass::OnFoundFunc func) : baseClass(pOwner, func){}
 };
 
 typedef void (DefaultFoundFunc)(LPCTSTR path, FileFinderData& details, bool& shouldContinue);

@@ -53,8 +53,11 @@ public:
 	{
 		PNASSERT(Traits<T>::RequiresConstruction == false);
 	}
-
-	virtual T* ReAlloc(T* mem, size_t oldNoofTs, size_t noofTs)
+    
+    virtual T* Alloc(size_t noofTs) = 0;
+    virtual void Free(T* mem) = 0;
+	
+    virtual T* ReAlloc(T* mem, size_t oldNoofTs, size_t noofTs)
 	{
 		PNASSERT(oldNoofTs < noofTs);
 
@@ -91,28 +94,12 @@ public:
 		delete [] mem;
 	}
 };
+    
+#ifdef PLAT_WIN
 
-template <typename T>
-class LocalAllocAllocator : public WastefulReallocAllocator<T>
-{
-public:
-	LocalAllocAllocator()
-	{
-		PNASSERT(Traits<T>::RequiresConstruction == false);
-	}
-
-	virtual T* Alloc(size_t noofTs)
-	{
-		T* ptrs = static_cast<T*>( ::LocalAlloc(LMEM_FIXED, noofTs * sizeof(T)) );
-		// if we want to support constructors we must do that here...
-		return ptrs;
-	}
-
-	virtual void Free(T* mem)
-	{
-		::LocalFree(mem);
-	}
-};
+#include "../libpeanut/libpeanut/win/core/allocator.h"
+    
+#endif
 
 } // namespace PN
 

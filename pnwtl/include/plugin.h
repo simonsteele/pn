@@ -4,9 +4,11 @@
 class Plugin
 {
 	public:
-		Plugin(LPCTSTR path)
+        Plugin(LPCTSTR path) : m_hModule(NULL)
 		{
-			hModule = ::LoadLibrary(path);
+#if PLAT_WIN
+			m_hModule = ::LoadLibrary(path);
+#endif
 		}
 
 		~Plugin()
@@ -16,15 +18,17 @@ class Plugin
 
 		FARPROC FindFunction(LPCSTR fnName)
 		{
-			if(hModule)
-				return ::GetProcAddress(hModule, fnName);
+#if PLAT_WIN
+			if(m_hModule)
+				return ::GetProcAddress(m_hModule, fnName);
 			else
+#endif
 				return NULL;
 		}
 
 		virtual bool Valid()
 		{
-			return hModule != NULL;
+			return m_hModule != NULL;
 		}
 
 		virtual void Unload()
@@ -33,12 +37,14 @@ class Plugin
 		}
 
 	protected:
-		HMODULE hModule;
+		HMODULE m_hModule;
 
 		void unload()
 		{
-			if(hModule)
-				::FreeLibrary(hModule);
+#if PLAT_WIN
+			if(m_hModule)
+				::FreeLibrary(m_hModule);
+#endif
 		}
 };
 

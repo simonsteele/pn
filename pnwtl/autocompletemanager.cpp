@@ -2,7 +2,7 @@
  * @file AutoCompleteManager.cpp
  * @brief Autocomplete management
  * @author Simon Steele
- * @note Copyright (c) 2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2009-2012 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -52,9 +52,9 @@ IWordProviderPtr AutoCompleteManager::getApi(const char* scheme)
 	tstring uspath;
 	OPTIONS->GetPNPath(uspath, PNPATH_SCHEMES);
 	
-	CA2W schemeconv(scheme);
-	std::wstring apifile(schemeconv);
-	apifile += L".api";
+	CA2CT schemeconv(scheme);
+	tstring apifile(schemeconv);
+	apifile += _T(".api");
 
 	CFileName fn(apifile);
 	fn.Root(uspath.c_str());

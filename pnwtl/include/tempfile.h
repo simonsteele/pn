@@ -2,7 +2,7 @@
  * @file tempfile.h
  * @brief Temporary filenames.
  * @author Simon Steele
- * @note Copyright (c) 2004-2009 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2004-2012 Simon Steele <s.steele@pnotepad.org>
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -15,6 +15,7 @@ class TempFileName
 	public:
 		TempFileName(LPCTSTR existingFile = NULL, LPCTSTR extension = NULL, bool guid = false, bool useExistingPath = false)
 		{
+#if PLAT_WIN
 			if(guid)
 			{
 				guidFile(existingFile, extension, useExistingPath);
@@ -23,11 +24,32 @@ class TempFileName
 			{
 				wintempFile(existingFile);
 			}
+#else
+            // TODO: Support existing paths etc and clean up code.
+            std::string templatePath("/tmp/pn.XXXXXX");
+            int suffixLen(0);
+            if (extension)
+            {
+                suffixLen = strlen(extension);
+                templatePath += suffixLen;
+            }
+            
+            int tempfile = mkstemps(&templatePath[0], suffixLen);
+            if (!tempfile)
+            {
+                throw std::exception();
+            }
+            else
+            {
+                close(tempfile);
+                tempFile = templatePath;
+            }
+#endif
 		}
 
 		void erase()
 		{
-			::DeleteFile(tempFile.c_str());
+            boost::filesystem::remove(tempFile.c_str());
 		}
 
 		const char* c_str()
@@ -37,28 +59,30 @@ class TempFileName
 			tempFilea = conv;
 			return tempFilea.c_str();
 #else
-			return tempFile;
+			return tempFile.c_str();
 #endif
 		}
 
+#if PLAT_WIN
 		const wchar_t* w_str()
 		{
 #ifdef _UNICODE
 			return tempFile.c_str();
 #else
-			USES_CONVERSION;
-			tempFilew = A2CW(tempFile.c_str());
+            tempFilew = A2CW(tempFile.c_str());
 			return tempFilew.c_str();
 #endif
 		}
-
+#endif
+    
 		const LPCTSTR t_str()
 		{
 			return tempFile.c_str();
 		}
 
-	protected:
+	private:
 
+#if PLAT_WIN
 		void wintempFile(LPCTSTR existingFile)
 		{
 			/*
@@ -133,8 +157,9 @@ class TempFileName
 				guid.Data4[4], guid.Data4[5], guid.Data4[6], guid.Data4[7]);
 		}
 
-	protected:
-		tstring tempFile;
+#endif
+    
+        tstring tempFile;
 
 #ifdef _UNICODE
 		std::string tempFilea;

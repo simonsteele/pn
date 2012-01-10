@@ -18,27 +18,40 @@
 	static char THIS_FILE[] = __FILE__;
 #endif
 
-// Insert a string into a string list maintaining sorting
-void insert_sorted(string_array& arr, const std::string& w)
+namespace
 {
-	//TODO: w.Trim();
-	//w = w.Trim();
-	if(w.empty())
-		return;
+    bool less_than(const std::string& l, const std::string& r)
+    {
+        return l < r;
+    }
+    
+    bool less_than_caseinsensitive(const std::string& a, const std::string& b)
+    { 
+        return _stricmp(a.c_str(), b.c_str()) < 0;
+    }
 
-	if(arr.empty())
-	{
-		arr.push_back(w);
-	}
-	else if(_stricmp(w.c_str(), arr.back().c_str()) > 0)
-	{
-		arr.push_back(w);
-	}
-	else
-	{
-		auto insert_point = std::lower_bound(arr.begin(), arr.end(), w, [](const std::string& l, const std::string& r) { return l < r; });
-		arr.insert(insert_point, w);
-	}
+    // Insert a string into a string list maintaining sorting
+    void insert_sorted(string_array& arr, const std::string& w)
+    {
+        //TODO: w.Trim();
+        //w = w.Trim();
+        if(w.empty())
+            return;
+
+        if(arr.empty())
+        {
+            arr.push_back(w);
+        }
+        else if(_stricmp(w.c_str(), arr.back().c_str()) > 0)
+        {
+            arr.push_back(w);
+        }
+        else
+        {
+            auto insert_point = std::lower_bound(arr.begin(), arr.end(), w, less_than);
+            arr.insert(insert_point, w);
+        }
+    }
 }
 
 /**
@@ -146,7 +159,7 @@ void DefaultAutoComplete::CreateCompleteList()
 		m_completelist.insert(m_completelist.end(), m_tags.begin(), m_tags.end());
 		m_completelist.insert(m_completelist.end(), m_keywords.begin(), m_keywords.end());
 
-		std::sort(m_completelist.begin(), m_completelist.end(), [](const std::string& a, const std::string& b) { return stricmp(a.c_str(), b.c_str()) < 0; });
+		std::sort(m_completelist.begin(), m_completelist.end(), less_than_caseinsensitive);
 
 		//Turn off the dirty flags
 		m_tagsDirty = false;
@@ -260,12 +273,6 @@ void DefaultAutoComplete::getNearestWords(PN::BaseString& wordsNear, const strin
 {
 	if (0 == arr.size())
 		return; // is empty
-
-	/*tstring sdebug;
-	for(CScintillaImpl::CStringArray::const_iterator i = arr.begin();
-		i != arr.end(); ++i)
-		sdebug += (*i) + " ";
-	LOG(sdebug.c_str());*/
 
 	if (ignoreCase) 
 	{

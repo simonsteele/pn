@@ -2,7 +2,7 @@
  * @file ScintillaImpl.h
  * @brief Define further functionality for a scintilla wrapper.
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2012 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -45,6 +45,8 @@ class CScintillaImpl : public CScintilla
 public:
 	explicit CScintillaImpl();
 	virtual ~CScintillaImpl();
+    
+    virtual void SetScheme(Scheme* scheme) { scheme->Load(*this); }
 
 	virtual int FindNext(extensions::ISearchOptions* pOptions);
 	virtual bool ReplaceOnce(extensions::ISearchOptions* pOptions);
@@ -77,7 +79,7 @@ public:
 	//*****************************************************************************
 
 	void SetAutoCompleteManager(AutoCompleteManager* autoComplete);
-	void AddToAutoComplete(CString FullTag, CString TagName);  //Called in: CJumpTreeCtrl::OnFound: Add new defined autocomplete tags
+	void AddToAutoComplete(const char* FullTag, const char* TagName);  //Called in: CJumpTreeCtrl::OnFound: Add new defined autocomplete tags
 	void ResetAutoComplete();           //Called in: CChildFrame::SaveFile: Clear new defined autocomplete tags
 	void InitAutoComplete(Scheme *sch); //Called in: CTextView::SetScheme: Initialize default autocomplete tags
 	void ClearAutoComplete();

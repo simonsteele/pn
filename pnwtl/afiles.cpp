@@ -18,7 +18,7 @@
 #define AF_SETS		2
 #define AF_UNKNOWN	3
 
-AlternateFiles* Singleton<AlternateFiles, SINGLETON_AUTO_DELETE>::s_pTheInstance = NULL;
+template<> AlternateFiles* Singleton<AlternateFiles, SINGLETON_AUTO_DELETE>::s_pTheInstance = NULL;
 
 AlternateFileSet::AlternateFileSet(LPCTSTR set1_, LPCTSTR set2_)
 {
@@ -229,34 +229,65 @@ void AlternateFiles::SetSets(const AFILES_LIST& sets_)
 	sets = sets_;
 }
 
+#include "third_party/genx/genx.h"
+#include "include/pngenx.h"
+
+class AlternateFilesWriter : public GenxXMLWriter
+{
+public:
+    void StartDoc()
+    {
+        genxStartElement(m_eDoc);
+    }
+    
+    void AddSet(LPCTSTR ext1, LPCTSTR ext2)
+    {
+        genxStartElement(m_eSet);
+        genxAddAttribute(m_aExt1, u(ext1));
+        genxAddAttribute(m_aExt2, u(ext2));
+        genxEndElement(m_writer);
+    }
+    
+protected:
+    virtual void initXmlBits()
+    {
+        genxStatus s;
+        
+        m_eDoc = genxDeclareElement(m_writer, NULL, u("AlternateFiles"), &s);
+        m_eSet = genxDeclareElement(m_writer, NULL, u("Set"), &s);
+        
+        PREDECLARE_ATTRIBUTES()
+            ATT("ext1", m_aExt1);
+            ATT("ext2", m_aExt2);
+        END_ATTRIBUTES()
+    }
+    
+private:
+    genxElement m_eDoc;
+    genxElement m_eSet;
+    genxAttribute m_aExt1;
+    genxAttribute m_aExt2;
+};
+
 void AlternateFiles::Save() const
 {
 	tstring path;
 	OPTIONS->GetPNPath(path, PNPATH_USERSETTINGS);
 	path += _T("AlternateFiles.xml");
 
-	CFile f;
-	if( f.Open(path.c_str(), CFile::modeWrite | CFile::modeBinary) )
+    AlternateFilesWriter writer;
+	if (writer.Start(path.c_str()))
 	{
-		f.Write(_T("<?xml version=\"1.0\"?>\r\n<AlternateFiles>\r\n"), 41 * sizeof(TCHAR));
-
-		tstring sout;
+		writer.StartDoc();
 		for(AFILES_CIT i = sets.begin(); i != sets.end(); ++i)
 		{
 			tstring temp1;
 			tstring temp2;
 			(*i)->GetSet1String(temp1);
 			(*i)->GetSet2String(temp2);
-
-			sout = _T("\t<Set ext1=\"");
-			XMLSafeString(temp1.c_str(), sout);
-			sout += _T("\" ext2=\"");
-			XMLSafeString(temp2.c_str(), sout);
-			sout += _T("\" />\r\n");
-			f.Write((void*)sout.c_str(), sout.length() * sizeof(TCHAR));
+            
+            writer.AddSet(temp1.c_str(), temp2.c_str());
 		}
-
-		f.Write(_T("</AlternateFiles>"), 17 * sizeof(TCHAR));
 	}
 }
 

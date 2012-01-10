@@ -42,13 +42,6 @@
  */
 CPNAppModule _Module;
 
-/**
- * Global application context object - stores
- * access for all main app objects like the main
- * window, options and that sort of thing.
- */
-_Context g_Context;
-
 void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message)
 {
 	tstring msg = _T("Unexpected error in file: ");

@@ -2,7 +2,7 @@
  * @file string.h
  * @brief Simple string class safe across DLL boundaries
  * @author Simon Steele
- * @note Copyright (c) 2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2007-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -148,7 +148,7 @@ private:
 				}
 				else
 				{
-					throw std::exception("out of memory in AsciiString.allocate");
+					throw std::bad_alloc();
 				}
 			}
 		}

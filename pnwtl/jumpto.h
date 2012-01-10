@@ -2,7 +2,7 @@
  * @file jumpto.h
  * @brief Jump to method stuff...
  * @author Simon Steele
- * @note Copyright (c) 2002-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2012 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -14,8 +14,7 @@
 #include "jumptointerface.h"
 #include <map>
 
-class CChildFrame;
-class COutputView;
+class iEditorFrame;
 
 typedef extensions::ITagSink ITagSink;
 typedef extensions::LPMETHODINFO LPMETHODINFO;
@@ -27,7 +26,7 @@ class JumpToHandler : public Singleton<JumpToHandler, true>
 	friend class Singleton<JumpToHandler, true>;
 
 	public:
-		void FindTags(CChildFrame* pChildFrame, ITagSink* pNotifySink);
+		void FindTags(IEditorFrame* pChildFrame, ITagSink* pNotifySink);
 		
 		void AddSource(extensions::ITagSource* source);
 

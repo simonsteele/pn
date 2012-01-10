@@ -91,7 +91,7 @@ public:
 	 */
 	void addAttributeConvertUTF8(genxAttribute a, LPCWSTR str)
 	{
-		Utf16_Utf8 conv(str);
+		Wcs_Utf8 conv(str);
 		genxAddAttribute(a, conv);
 	}
 

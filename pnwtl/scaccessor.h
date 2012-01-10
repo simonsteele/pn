@@ -2,7 +2,7 @@
  * @file scaccessor.h
  * @brief Define a scintilla accessor for external use.
  * @author Simon Steele
- * @note Copyright (c) 2002 Simon Steele <s.steele@pnotepad.org>
+ * @note Copyright (c) 2002-2012 Simon Steele <http://untidy.net/>
  * @note Most code copyright 1998-2001 by Neil Hodgson <neilh@scintilla.org>
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 

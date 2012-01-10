@@ -2,7 +2,7 @@
  * @file ScintillaIF.cpp
  * @brief Implementation of CScintilla
  * @author Simon Steele
- * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -34,11 +34,14 @@ UndoGroup::~UndoGroup()
 // CScintilla
 
 // Initialise no Scintilla dll on startup...
+#if PLAT_WIN
 HMODULE CScintilla::scidll = NULL;
+#endif
 int CScintilla::refs = 0;
 
 CScintilla::CScintilla()
 {
+#if PLAT_WIN
 	#ifndef SCI_NOLOAD
 		#ifndef STATIC_SCILEXER
 			if(!scidll)
@@ -52,6 +55,7 @@ CScintilla::CScintilla()
 		
 		refs++;
 	#endif
+#endif
 
 	m_Modified = false;
 	Perform = NULL;
@@ -68,6 +72,7 @@ CScintilla::CScintilla()
 
 CScintilla::~CScintilla()
 {
+#if PLAT_WIN
 	#ifndef SCI_NOLOAD
 	refs--;
 		#ifndef STATIC_SCILEXER
@@ -81,8 +86,10 @@ CScintilla::~CScintilla()
 				Scintilla_ReleaseResources();
 		#endif
 	#endif
+#endif
 }
 
+#if PLAT_WIN
 #ifndef WTL_SCINTILLA
 
 HWND CScintilla::Create(HWND hParent, HINSTANCE hInst)
@@ -109,6 +116,7 @@ HWND CScintilla::Create(HWND hParent, HINSTANCE hInst)
 	return m_scihWnd;
 }
 
+#endif
 #endif
 
 void CScintilla::DisableDirectAccess()
@@ -187,6 +195,7 @@ bool CScintilla::SaveFile(LPCTSTR filename)
 	return false;
 }
 
+#if PLAT_WIN
 bool CScintilla::IsScintillaNotify(LPARAM lParam)
 {
 	Scintilla::SCNotification *scn = (Scintilla::SCNotification*)lParam;
@@ -194,6 +203,7 @@ bool CScintilla::IsScintillaNotify(LPARAM lParam)
 		return true;
 	return false;
 }
+#endif
 
 int CScintilla::HandleNotify(LPARAM lParam)
 {
@@ -239,6 +249,16 @@ bool CScintilla::GetModified()
 {
 	return m_Modified;
 }
+
+#if PLAT_WIN
+virtual long SPerform(long Msg, WPARAM wParam, LPARAM lParam)
+{
+    if (Perform)
+        return Perform(m_Pointer, Msg, wParam, lParam);
+    else
+        return ::SendMessage(m_scihWnd, Msg, wParam, lParam);
+}
+#endif			
 
 /**
  * Function taken from Scite to combine three marker define operations

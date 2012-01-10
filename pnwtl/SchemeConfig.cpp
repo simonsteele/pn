@@ -9,6 +9,7 @@
  */
 
 #include "stdafx.h"
+#include "resource.h"
 #include "schemeconfig.h"
 
 #include "third_party/genx/genx.h"
@@ -350,12 +351,14 @@ void SchemeConfigParser::Sort()
 #endif
 }
 
+#if PLAT_WIN
+
 class FontValidationInfo
 {
 public:
 	FontValidationInfo() : Found(false) {}
 	
-	CString Name;
+	tstring Name;
 	bool Found;
 };
 
@@ -376,10 +379,16 @@ int CALLBACK ValidateFontCB(
     return 1; 
 } 
 
+#endif
+
 bool SchemeConfigParser::validateFont(LPCTSTR fontName)
 {
+#if PLAT_WIN
 	FontValidationInfo fvi;
 	fvi.Name = fontName;
 	EnumFonts(GetDC(NULL), NULL, (FONTENUMPROC)ValidateFontCB, reinterpret_cast<LPARAM>(&fvi));
 	return fvi.Found;
+#else
+    return true;
+#endif
 }

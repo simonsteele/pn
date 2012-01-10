@@ -49,8 +49,10 @@ class SchemeManager : public Singleton<SchemeManager, true>
 		SCHEME_MAP* GetExtensionMap();
 		SCHEME_MAP* GetFilenameMap();
 
+#if PLAT_WIN
 		void BuildMenu(HMENU menu, CommandDispatch* pDispatch, CommandEventHandler* pHandler, int iCommand = SCHEMEMANAGER_SELECTSCHEME);
-
+#endif
+    
 		void SaveExtMap();
 
 		void _compiledFileFound(LPCTSTR path, SMFindData& file, bool& shouldContinue);

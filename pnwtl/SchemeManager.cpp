@@ -264,13 +264,10 @@ Scheme* SchemeManager::internalSchemeForExt(const tstring& extension)
  */
 Scheme* SchemeManager::SchemeForExt(LPCTSTR ext)
 {
-	TCHAR *e = new TCHAR[_tcslen(ext)+1];
-	_tcscpy(e, ext);
-	e = CharLower(e);
+    tstring e(ext);
+    std::transform(e.begin(), e.end(), e.begin(), tolower);
 
-	Scheme* pRet = internalSchemeForExt( tstring(e) );
-
-	delete [] e;
+	Scheme* pRet = internalSchemeForExt(e);
 
 	if(pRet == NULL)
 		return &m_DefaultScheme;
@@ -338,6 +335,13 @@ SCHEME_MAP* SchemeManager::GetFilenameMap()
 	return &m_SchemeFileNameMap; 
 }
 
+void DeleteFoundFile(LPCTSTR path, FileFinderData& details, bool& shouldContinue)
+{
+    CFileName fn(details.GetFilename());
+    fn.Root(path);
+    boost::filesystem::remove(fn.c_str());
+}
+
 /**
  * Compile all available schemes
  */
@@ -347,19 +351,16 @@ void SchemeManager::Compile()
 	PNASSERT(m_CompiledPath != NULL);
 
 	// Clear out old .cscheme files:
-	FileFinderFunctor<std::function<void (LPCTSTR, FileFinderData&, bool&)>>(
-		[] (LPCTSTR path, FileFinderData& details, bool& shouldContinue)
-		{
-			CFileName fn(details.GetFilename());
-			fn.Root(path);
-			::DeleteFile(fn.c_str());
-		}).Find(m_CompiledPath, _T("*.cscheme"));
+    std::function<void (LPCTSTR, FileFinderData&, bool&)> f(&DeleteFoundFile);
+	FileFinderFunctor< std::function<void (LPCTSTR, FileFinderData&, bool&)> >(f).Find(m_CompiledPath, _T("*.cscheme"));
 
 	SchemeCompiler sc;
 	sc.Compile(m_SchemePath, m_CompiledPath, _T("master.scheme"));
 
 	OPTIONS->Set(PNSK_SCHEMES, _T("NewestScheme"), sc.GetNewestFileTime());
 }
+
+#if PLAT_WIN
 
 void SchemeManager::BuildMenu(HMENU menu, CommandDispatch* pDispatch, CommandEventHandler* pHandler, int iCommand)
 {
@@ -385,6 +386,8 @@ void SchemeManager::BuildMenu(HMENU menu, CommandDispatch* pDispatch, CommandEve
 
 	pDispatch->UpdateMenuShortcuts(menu);
 }
+
+#endif
 
 void SchemeManager::SaveExtMap()
 {
@@ -441,29 +444,27 @@ void SchemeManager::SaveExtMap()
 
 void SchemeManager::internalLoadExtMap(LPCTSTR filename, SCHEME_MAP& extMap, SCHEME_MAP& fnMap)
 {
-	CTextFile file;
+    std::ifstream file(filename);
 	
-	if(file.Open(filename, CFile::modeText))
+	if(file.is_open())
 	{
-		CString buf;
-		
 		tstring ext;
 		tstring scheme;
 		
 		Scheme* sch;
-		int pos;
 
-		while (file.ReadLine(buf))
+        tstring buf;
+		while (std::getline(file, buf))
 		{
-			if(buf.GetLength() == 0)
+			if(buf.length() == 0)
 			{
 				UNEXPECTED(_T("Read an empty line from the extension map file."));
 				continue;
 			}
 
-			pos = buf.Find(_T('='));
-			ext = buf.Left(pos);
-			scheme = buf.Mid(pos+1);
+			size_t pos = buf.find(_T('='));
+			ext = tstring(buf, 0, pos);
+			scheme = tstring(buf, pos + 1);
 			
 			if (scheme.length() > SC_HDR_NAMESIZE)
 			{
@@ -484,7 +485,5 @@ void SchemeManager::internalLoadExtMap(LPCTSTR filename, SCHEME_MAP& extMap, SCH
 					extMap.insert(extMap.end(), SCMITEM(ext, sch));
 			}
 		}
-
-		file.Close();
 	}
 }

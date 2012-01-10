@@ -97,8 +97,7 @@ void XmlOptions::Set(LPCTSTR subkey, LPCTSTR value, int iVal)
 
 	subkey = m_groupLocked ? (m_group.c_str()) : subkey;
 
-	TCHAR cbuf[40];
-	_itot(iVal, cbuf, 10);
+    std::string cbuf = boost::str(boost::format("%1%") % iVal);
 
 	map_type::iterator i = m_options.find((tstring(subkey) + _T(".")) + value);
 	if (i != m_options.end())
@@ -120,8 +119,7 @@ void XmlOptions::Set(LPCTSTR subkey, LPCTSTR value, uint64_t iVal)
 
 	subkey = m_groupLocked ? (m_group.c_str()) : subkey;
 
-	TCHAR cbuf[70];
-	_ui64tot(iVal, cbuf, 10);
+	std::string cbuf = boost::str(boost::format("%1%") % iVal);
 
 	map_type::iterator i = m_options.find((tstring(subkey) + _T(".")) + value);
 	if (i != m_options.end())

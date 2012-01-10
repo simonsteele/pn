@@ -2,7 +2,7 @@
  * @file commands.h
  * @brief Command Routing Stuff
  * @author Simon Steele
- * @note copyright (c) 2006 Simon Steele - http://untidy.net/
+ * @note copyright (c) 2006-2012 Simon Steele - http://untidy.net/
  * 
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -11,6 +11,7 @@
 #ifndef commands_h__included
 #define commands_h__included
 
+#if PLAT_WIN
 #define K_ALT		FALT
 #define K_CTRL		FCONTROL
 #define K_SHIFT		FSHIFT
@@ -20,6 +21,17 @@
 
 WORD HKToAccelMod(WORD modifiers);
 WORD AccelToHKMod(WORD modifiers);
+
+#else
+
+#define K_ALT		SCMOD_ALT
+#define K_CTRL		SCMOD_CTRL
+#define K_SHIFT		SCMOD_SHIFT
+#define K_CTRLALT	(K_ALT | K_CTRL)
+#define K_CTRLSHIFT	(K_SHIFT | K_CTRL)
+#define K_ALTSHIFT	(K_SHIFT | K_ALT)
+
+#endif
 
 /**
  * Simple keyboard command struct
@@ -80,6 +92,16 @@ struct KeyboardFileHeaderLengths
 
 class CommandDispatch;
 
+/**
+ * @class CommandEventHandler
+ * @brief Mixin class for implementing custom menu generation and handling...
+ */
+class CommandEventHandler
+{
+public:
+    virtual bool SHandleDispatchedCommand(int iCommand, LPVOID data) = 0;
+};
+
 namespace Commands {
 
 class EditorCommand;
@@ -110,8 +132,10 @@ public:
 	const KeyToCommand* GetMappings() const;
 	const ExtensionCommands& GetExtendedMappings() const;
 	
+#if PLAT_WIN
 	int MakeAccelerators(ACCEL* buffer, CommandDispatch* dispatcher);
-
+#endif
+    
 private:
 	void internalAssign(int key, int modifiers, unsigned int msg);
 
@@ -123,19 +147,17 @@ private:
 	static const KeyToCommand MapDefault[];
 };
 
+struct EventRecord
+{
+    CommandEventHandler*	pHandler;
+    int					iID;
+    LPVOID				data;
+};
+    
 }
 
 typedef std::stack<DWORD> IDStack;
 
-/**
- * @class CommandEventHandler
- * @brief Mixin class for implementing custom menu generation and handling...
- */
-class CommandEventHandler
-{
-	public:
-		virtual bool SHandleDispatchedCommand(int iCommand, LPVOID data) = 0;
-};
 
 typedef struct
 {
@@ -144,14 +166,7 @@ typedef struct
 	int current;
 } CmdIDRange;
 
-typedef struct
-{
-	CommandEventHandler*	pHandler;
-	int					iID;
-	LPVOID				data;
-} EventRecord;
-
-typedef std::map<int, EventRecord*> MAP_HANDLERS;
+typedef std::map<int, Commands::EventRecord*> MAP_HANDLERS;
 typedef MAP_HANDLERS::value_type MH_VT;
 typedef MAP_HANDLERS::iterator MH_IT;
 typedef MAP_HANDLERS::const_iterator MH_CI;
@@ -163,10 +178,11 @@ class CommandDispatch : public CommandEventHandler
 		CommandDispatch(LPCTSTR kbfile);
 		~CommandDispatch();
 
+#if PLAT_WIN
 		HACCEL GetAccelerators();
-
 		void UpdateMenuShortcuts(HMENU menu);
-
+#endif
+    
 		tstring GetShortcutText(int wCode, int wModifiers);
 		tstring GetKeyName(UINT vk, bool extended);
 

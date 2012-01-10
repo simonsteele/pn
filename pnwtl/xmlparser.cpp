@@ -2,7 +2,7 @@
  * @file xmlparser.cpp
  * @brief Implement the XML parser framework.
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -67,14 +67,14 @@ XML_CSTR XMLAttributes::operator [] (int index) const
 
 XML_CSTR XMLAttributes::getName(int index) const
 {
-	ATLASSERT(index < m_count);
+	PNASSERT(index < m_count);
 
 	return m_atts[index*2];
 }
 
 XML_CSTR XMLAttributes::getValue(int index) const
 {
-	ATLASSERT(index < m_count);
+	PNASSERT(index < m_count);
 	
 	return m_atts[(index*2)+1];
 }
@@ -149,7 +149,7 @@ void XMLParser::SetParseState(XMLParseState* pState)
 
 bool XMLParser::LoadFile(LPCTSTR filename)
 {
-	ATLASSERT(m_pState != NULL);
+	PNASSERT(m_pState != NULL);
 
 	bool bRet = true;
 

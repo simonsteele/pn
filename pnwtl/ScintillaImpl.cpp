@@ -2,7 +2,7 @@
  * @file ScintillaImpl.cpp
  * @brief Implement further functionality for a scintilla wrapper.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2012 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -26,7 +26,6 @@
 typedef boost::xpressive::basic_regex<ScintillaIterator> sciregex;
 typedef boost::xpressive::match_results<ScintillaIterator> scimatch;
 typedef boost::xpressive::sub_match<ScintillaIterator> scisub_match;
-
 
 /**
  * Constructor
@@ -610,7 +609,7 @@ void CScintillaImpl::ManageBraceMatch()
 		BraceHighlight(brace1, brace2);
 		int col1 = GetColumn(brace1);
 		int col2 = GetColumn(brace2);
-		SetHighlightGuide(min(col1, col2));
+		SetHighlightGuide(std::min(col1, col2));
 	}
 }
 
@@ -1078,9 +1077,9 @@ public:
 	}
 
 protected:
-	DateTimeInformation dti;
-	FileInformation fi;
-	UserInformation ui;
+    PN::Platform::DateTimeInformation dti;
+	PN::Platform::FileInformation fi;
+	PN::Platform::UserInformation ui;
 	tstring filename;
 	tstring filepath;
 	int page;
@@ -1094,7 +1093,8 @@ protected:
  * @param showDialog - Should we show the print dialog?
  */
 void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///< false if must print silently (using default settings).
-{	
+{
+#if PLAT_WIN
 	PRINTDLG pdlg = {
 	                    sizeof(PRINTDLG), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 	                };
@@ -1413,6 +1413,8 @@ void CScintillaImpl::PrintDocument(SPrintOptions* pOptions, bool showDialog) ///
 	if (fontFooter) {
 		::DeleteObject(fontFooter);
 	}
+    
+#endif
 }
 
 bool CScintillaImpl::UnCommentLine(const CommentSpecRec& comments, int line)
@@ -1599,12 +1601,11 @@ void CScintillaImpl::SetAutoCompleteManager(AutoCompleteManager* autoComplete)
 }
 
 //This function adds to keywords functions from CTags
-void CScintillaImpl::AddToAutoComplete(CString FullTag, CString TagName)
+void CScintillaImpl::AddToAutoComplete(const char* FullTag, const char* TagName)
 {	
 	if(!m_bAutoCompletionUseTags)
 		return;
 
-	// TODO: This should not use CStrings...
 	CT2CA tag(FullTag);
 	CT2CA tagName(TagName);
 	m_autoComplete->RegisterTag(tag, tagName);
@@ -1805,7 +1806,7 @@ void CScintillaImpl::SetLineNumberWidth()
 		}
 //		if (lineNumWidth < lineNumbersWidth)lineNumWidth = lineNumbersWidth;
 		// Use a min width of 4 chars.
-		lineNumWidth = max(lineNumWidth, 4);
+		lineNumWidth = std::max(lineNumWidth, 4);
 		// The 4 here allows for spacing: 1 pixel on left and 3 on right.
 		int pixelWidth = 4 + lineNumWidth * TextWidth(STYLE_LINENUMBER, "9");
 		SetMarginWidthN(0, pixelWidth);
@@ -1914,7 +1915,6 @@ void CScintillaImpl::ContinueCallTip()
 		
 //	SendEditor(SCI_CALLTIPSETHLT, startHighlight, endHighlight);
 	CallTipSetHlt(startHighlight, endHighlight);
-_RPT2(_CRT_WARN,"---CallTipSetHlt %i, %i\n",startHighlight,endHighlight);
 }
 
 unsigned int LengthWord(const char *word, char otherSeparator) 
@@ -1968,7 +1968,6 @@ void CScintillaImpl::FillFunctionDefinition(int pos)
 		m_functionDefinition += m_Api[m_nCurrentCallTip];
 
 		CallTipShow(m_lastPosCallTip - m_currentCallTipWord.size(), m_functionDefinition.c_str());
-_RPT2(_CRT_WARN,"2---CallTipShow %i, [%s]\n",m_lastPosCallTip - m_currentCallTipWord.size(), m_functionDefinition);
 		ContinueCallTip();		
 	}
 }

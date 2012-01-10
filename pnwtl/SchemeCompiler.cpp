@@ -2,7 +2,7 @@
  * @file SchemeCompiler.cpp
  * @brief Implement scheme reader and compiler classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -10,7 +10,6 @@
 
 #include "stdafx.h"
 #include "SchemeCompiler.h"
-#include "ssreg.h"
 #include "include/filefinder.h"
 
 // Parser State Defines
@@ -181,7 +180,7 @@ bool SchemeRecorder::CheckNecessary(long Msg, WPARAM wParam, LPARAM lParam)
 {
 	bool res = true;
 	bool nOther = false;
-    CString fontName;
+    std::string fontName;
 	switch (Msg)
 	{
 		case SCI_STYLESETFORE:
@@ -204,7 +203,7 @@ bool SchemeRecorder::CheckNecessary(long Msg, WPARAM wParam, LPARAM lParam)
 			break;
 		case SCI_STYLESETFONT:
             fontName = (const char*)lParam;
-			res = m_DefStyle.FontName.compare(fontName) != 0;
+			res = m_DefStyle.FontName != fontName;
 			break;
 		case SCI_STYLESETSIZE:
 			res = m_DefStyle.FontSize != lParam;
@@ -389,9 +388,9 @@ void SchemeCompiler::onStyleClass(const StylePtr& details)
 
 void SchemeCompiler::onProperty(LPCTSTR name, LPCTSTR value)
 {
-	USES_CONVERSION;
-
-	m_Recorder.SetProperty(CT2CA(name), CT2CA(value));
+    CT2CA n(name);
+    CT2CA v(value);
+	m_Recorder.SetProperty(n, v);
 }
 
 void SchemeCompiler::sendStyle(StyleDetails* s, SchemeRecorder* compiler)
@@ -415,7 +414,7 @@ void SchemeCompiler::sendStyle(StyleDetails* s, SchemeRecorder* compiler)
 
 void SchemeCompiler::onFile(LPCTSTR filename)
 {
-	m_newestFile = max(m_newestFile, FileAge(filename));
+	m_newestFile = std::max(m_newestFile, FileAge(filename));
 }
 
 void SchemeCompiler::onKeywords(int key, LPCSTR keywords, LPCTSTR name, LPCSTR custom)
@@ -430,8 +429,8 @@ void SchemeCompiler::onLexer(LPCTSTR name, int styleBits)
 {
 	if(name)
 	{
-		USES_CONVERSION;
-		m_Recorder.SetLexerLanguage(T2A((LPTSTR)name));
+        CT2CA n((LPTSTR)name);
+		m_Recorder.SetLexerLanguage(n);
 	}
 
 	m_Recorder.SetStyleBits(styleBits);
@@ -463,7 +462,7 @@ void SchemeCompiler::onWordChars(const char* charset)
 
 void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
 {
-	m_LoadState.m_StartLoad = ::GetTickCount();
+	OpTimeLogger timer("Scheme Load");
 
 	XMLParserCallback<SchemeParser> callback(*this, &SchemeParser::startElement, &SchemeParser::endElement, &SchemeParser::characterData);
 	
@@ -496,32 +495,31 @@ void SchemeParser::Parse(LPCTSTR path, LPCTSTR mainfile, LPCTSTR userfile)
 		}
 		catch (SchemeParserException& E)
 		{
-			CString err;
-			err.Format(_T("Error Parsing Scheme XML: %s\n (file: %s, line: %d, column %d)"), 
-				E.GetMessage(), E.GetFileName(), E.GetLine(), E.GetColumn());
+            std::string err = boost::str(boost::format("Error Parsing Scheme XML: %1%\n (file: %2%, line: %3%, column %4%)")
+                % E.GetMessage()
+                % E.GetFileName()
+                % E.GetLine()
+                % E.GetColumn());
 			
-			LOG(err);
+			LOG(err.c_str());
 
 			onError(E);
 		}
 		catch (XMLParserException& E)
 		{
-			CString err;
-			err.Format(_T("Error Parsing Scheme XML: %s\n (file: %s, line: %d, column %d)"), 
-				XML_ErrorString(E.GetErrorCode()), E.GetFileName(), E.GetLine(), E.GetColumn());
-			
-			LOG(err);
+			std::string err = boost::str(boost::format("Error Parsing Scheme XML: %1%\n (file: %2%, line: %3%, column %4%)")
+                % XML_ErrorString(E.GetErrorCode())
+                % E.GetFileName()
+                % E.GetLine()
+                % E.GetColumn());
+            
+			LOG(err.c_str());
 
 			onError(E);
 		}
 
 		parser.Reset();
 	}
-
-	DWORD dwTimeDiff = GetTickCount() - m_LoadState.m_StartLoad;
-	TCHAR buf[200];
-	_sntprintf(buf, 200, _T("Schemes Load: %dms\n"), dwTimeDiff);
-	LOG(buf);
 }
 
 /**
@@ -704,14 +702,7 @@ void SchemeParser::processStyleClass(SchemeLoaderState* pState, const XMLAttribu
 		if (name == _T("default") && pStyle->FontName.size() == 0)
 		{
 			// No font specified, and this is our default style.
-			if (WTL::RunTimeHelper::IsVista())
-			{
-				pStyle->FontName = _T("Consolas");
-			}
-			else
-			{
-				pStyle->FontName = _T("Lucida Console");
-			}
+            pStyle->FontName = PN::Platform::GetDefaultEditorFont();
 
 			pStyle->values |= edvFontName;
 		}

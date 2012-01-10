@@ -2,7 +2,7 @@
  * @file xmlfileautocomplete.cpp
  * @brief XML-file based autocomplete
  * @author Simon Steele
- * @note Copyright (c) 2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2009-2012 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -195,10 +195,6 @@ XmlFileAutocompleteProvider::XmlFileAutocompleteProvider(LPCTSTR apiFile)
 {
 	try
 	{
-#ifdef _DEBUG
-		OpTimer timer;
-#endif
-
 		XMLParser parser;
 		ParseHandler handler(m_tags);
 		parser.SetParseState(&handler);
@@ -206,11 +202,14 @@ XmlFileAutocompleteProvider::XmlFileAutocompleteProvider(LPCTSTR apiFile)
 	}
 	catch (XMLParserException& ex)
 	{
-		CString err;
-		err.Format(_T("Error Parsing API XML: %s\n (file: %s, line: %d, column %d)"), 
-			XML_ErrorString(ex.GetErrorCode()), ex.GetFileName(), ex.GetLine(), ex.GetColumn());
+        tstring err;
+		err = boost::str(boost::format(_T("Error Parsing API XML: %1%\n (file: %2%, line: %3%, column %4%)"))
+             % XML_ErrorString(ex.GetErrorCode())
+             % ex.GetFileName()
+             % ex.GetLine()
+             % ex.GetColumn());
 
-		g_Context.m_frame->SetStatusText(err);
+		g_Context.m_frame->SetStatusText(err.c_str());
 	}
 }
 

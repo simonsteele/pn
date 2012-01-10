@@ -2,17 +2,19 @@
  * @file files.cpp
  * @brief File access wrappers
  * @author Simon Steele
- * @note Copyright (c) 2005-2008 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #include "stdafx.h"
 
-#include <shlobj.h>
-
 #include "Files.h"
 #include "resource.h"
+
+#if PLAT_WIN
+
+#include <shlobj.h>
 
 /**
  * @brief Get the dos file time of a file.
@@ -159,6 +161,49 @@ bool DeleteDirectory(LPCTSTR szDir, bool undoable)
 	return bRet;
 }
 
+#endif // #if PLAT_WIN
+
+#if PLAT_MAC
+
+#include <boost/filesystem.hpp>
+using namespace boost::filesystem;
+
+uint64_t FileAge(LPCTSTR FileName)
+{
+}
+
+bool DirExists(LPCTSTR szDir)
+{
+    path p(szDir);
+    return exists(p) && is_directory(p);
+}
+
+bool IsDirectory(LPCTSTR szDir)
+{
+    return is_directory(path(szDir));
+}
+
+bool FileExists(LPCTSTR FileName)
+{
+    path p(FileName);
+    return exists(p) && is_regular_file(p);
+}
+
+bool CreateDirectoryRecursive(LPCTSTR pszDirectory, LPSECURITY_ATTRIBUTES lpSA)
+{
+    path p(pszDirectory);
+    return create_directories(p);
+}
+
+bool DeleteDirectory(LPCTSTR szDir, bool undoable)
+{
+    // undoable currently ignored!
+    path p(szDir);
+    remove(p);
+}
+
+#endif
+
 ///////////////////////////////////////////////////////////////////////////
 // CFile - an MFC CFile replacement. No win api stuff, just pure Cpp.
 ///////////////////////////////////////////////////////////////////////////
@@ -248,8 +293,10 @@ long CFile::GetLength()
 		return -1;
 }
 
+//TODO: Move this to UI code, it has no place in the file library.
 int CFile::ShowError(LPCTSTR filename, LPCTSTR app, bool bOpen)
 {
+#ifndef PLAT_MAC
 	int err = GetLastError();
 	int ret = 0;
 	
@@ -308,6 +355,9 @@ int CFile::ShowError(LPCTSTR filename, LPCTSTR app, bool bOpen)
 
 	delete [] buffer;
 	return ret;
+#else
+    return 0;
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////

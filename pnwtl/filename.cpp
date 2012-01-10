@@ -341,7 +341,7 @@ tstring& CFileName::Sanitise()
 	}
 
 	LPCTSTR in = m_FileName.c_str();
-	int bufsize = max(_tcslen(in)+1, MAX_PATH);
+	int bufsize = std::max(_tcslen(in)+1, static_cast<unsigned long>(MAX_PATH));
 	std::vector<TCHAR> res(bufsize);
 
 	LPCTSTR fnd = _tcschr(in, _T(':'));
@@ -398,6 +398,7 @@ tstring& CFileName::Sanitise()
 
 	m_FileName = &res[0];
 
+#if PLAT_WIN
 	if (m_FileName.length() >= 2 && m_FileName[1] == _T(':') || m_FileName[0] == _T('\\'))
 	{
 		// Ask windows to make this path better for us:
@@ -413,6 +414,7 @@ tstring& CFileName::Sanitise()
 		
 		m_FileName = &res[0];
 	}
+#endif
 
 	return m_FileName;
 }
@@ -530,9 +532,14 @@ const tstring& CFileName::ToLower()
 
 tstring CFileName::GetCurrentDirectory()
 {
+#if PLAT_WIN
 	TCHAR buf[MAX_PATH+1];
 	::GetCurrentDirectory(MAX_PATH, buf);
 	return tstring(buf);
+#else
+    //TODO: MOVE THIS
+    throw "Unimplemented";
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////

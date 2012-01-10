@@ -2,7 +2,7 @@
  * @file smartstart.cpp
  * @brief Implementation of SmartStart
  * @author Simon Steele
- * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2012 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -10,13 +10,13 @@
 
 #include "stdafx.h"
 #include "resource.h"
-#include "textview.h"
+#include "ScintillaImpl.h"
 #include "xmlparser.h"
 #include "pnstrings.h"
 #include "smartstart.h"
 
 #include "third_party/genx/genx.h"
-#include "include\pngenx.h"
+#include "include/pngenx.h"
 
 #define u(x) (constUtf8)x
 
@@ -148,7 +148,7 @@ void SmartStart::Save()
 }
 
 /// Called by CTextView on character addition until it returns !eContinue
-SmartStart::EContinueState SmartStart::OnChar(CTextView* pView)
+SmartStart::EContinueState SmartStart::OnChar(CScintillaImpl* pView)
 {
 	// See if we can find the first m_max characters in the view in our map.
 	pView->GetText(m_max, m_buffer);
@@ -175,7 +175,7 @@ SmartStart::EContinueState SmartStart::OnChar(CTextView* pView)
 		return eContinue;
 }
 
-void SmartStart::Scan(CTextView* pView)
+void SmartStart::Scan(CScintillaImpl* pView)
 {
 	pView->GetText(m_max, m_buffer);
 	
@@ -224,7 +224,7 @@ void SmartStart::update()
 }
 
 /// Apply the scheme, and notify the user by setting the status...
-void SmartStart::applyScheme(CTextView* pView, Scheme* pScheme)
+void SmartStart::applyScheme(CScintillaImpl* pView, Scheme* pScheme)
 {
 	pView->SetScheme(pScheme);
 	tstring stat = _T("SmartStart selected the scheme: ");

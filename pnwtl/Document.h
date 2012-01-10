@@ -2,7 +2,7 @@
  * @file Document.h
  * @brief PN Document
  * @author Simon Steele
- * @note Copyright (c) 2005-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2012 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -10,32 +10,32 @@
 #ifndef document_h__included_D464731B_1039_49da_A86C_5CB5F08CDD47
 #define document_h__included_D464731B_1039_49da_A86C_5CB5F08CDD47
 
-class CChildFrame;
+class IEditorFrame;
 
 class Document : public extensions::IDocument, public extensions::ITextEditorEventSink
 {
-	friend class CChildFrame;
+	friend class IEditorFrame;
 
 	typedef std::vector<extensions::IDocumentEventSinkPtr> EventSinks;
 	typedef std::vector<extensions::ITextEditorEventSinkPtr> EditEventSinks;
 
 	public:
-		Document(const wchar_t* filename = NULL);
+		Document(LPCTSTR filename = NULL);
 		virtual ~Document();
 
-		void AddChildFrame(CChildFrame* pFrame);
+		void AddChildFrame(IEditorFrame* pFrame);
 
 		bool FileExists() const;
 
 		uint64_t GetFileAge() const;
-		std::wstring GetFileName(EGFNType type) const;
-		CChildFrame* GetFrame() const;
+		tstring GetFileName(EGFNType type) const;
+		IEditorFrame* GetFrame() const;
 		bool HasFile() const;
 
-		void SetFileName(const wchar_t* filename);
+		void SetFileName(LPCTSTR filename);
 
 		void OnAfterLoad();
-		void OnBeforeSave(const wchar_t* filename);
+		void OnBeforeSave(LPCTSTR filename);
 		void OnAfterSave();
 		void OnDocClosing();
 		void OnModifiedChanged(bool modified);
@@ -43,15 +43,15 @@ class Document : public extensions::IDocument, public extensions::ITextEditorEve
 
 // IDocument members
 	public:
-		virtual const wchar_t* GetTitle() const;
-		virtual const wchar_t* GetFileName() const;
+		virtual LPCTSTR GetTitle() const;
+		virtual LPCTSTR GetFileName() const;
 		virtual const char* GetCurrentScheme() const;
 		virtual HWND GetScintillaHWND() const;
 		virtual bool GetModified() const;
 		virtual bool GetWriteProtect() const;
 		virtual bool GetCanSave() const;
 
-		virtual bool Save(const wchar_t* filename, bool setFilename);
+		virtual bool Save(LPCTSTR filename, bool setFilename);
 
 		virtual LRESULT SendEditorMessage(UINT msg, WPARAM wParam, LPARAM lParam);
 		virtual LRESULT SendEditorMessage(UINT msg, WPARAM wParam, const char* strParam);
@@ -82,9 +82,9 @@ class Document : public extensions::IDocument, public extensions::ITextEditorEve
 		void SetValid(bool bValid);
 
 	protected:
-		CChildFrame*	m_pFrame;
+		IEditorFrame*	m_pFrame;
 		bool			m_bIsValid;
-		std::wstring	m_sFilename;
+		tstring         m_sFilename;
 		tstring			m_sTitle;
 		EventSinks		m_sinks;
 		EditEventSinks	m_editSinks;

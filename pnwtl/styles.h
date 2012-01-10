@@ -66,7 +66,7 @@ protected:
 	COLORREF	crMarkAll;
 	COLORREF	crSmartHL;
 	COLORREF	crTemplateField;
-	SHORT		values;
+	short		values;
 };
 
 /* The edvGroupStart value is a misappropriation of the values field. It allows

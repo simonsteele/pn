@@ -2,7 +2,7 @@
  * @file Document.cpp
  * @brief PN Document
  * @author Simon Steele
- * @note Copyright (c) 2005-2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2012 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -10,7 +10,7 @@
 
 #include "stdafx.h"
 #include "resource.h"
-#include "ChildFrm.h"
+#include "../libpeanut/libpeanut/ieditor.h"
 #include "Document.h"
 #include "FileUtil.h"
 
@@ -45,7 +45,7 @@ Document::~Document()
 
 }
 
-void Document::AddChildFrame(CChildFrame* pFrame)
+void Document::AddChildFrame(IEditorFrame* pFrame)
 {
 	PNASSERT(m_pFrame == NULL); // Currently only support one frame per doc.
 	m_pFrame = pFrame;
@@ -84,7 +84,7 @@ tstring Document::GetFileName(EGFNType type) const
 	};
 }
 
-CChildFrame* Document::GetFrame() const
+IEditorFrame* Document::GetFrame() const
 {
 	return m_pFrame;
 }
@@ -113,12 +113,12 @@ bool Document::IsValid() const
 	return m_bIsValid;
 }
 
-const wchar_t* Document::GetTitle() const
+LPCTSTR Document::GetTitle() const
 {
 	return m_sTitle.c_str();
 }
 
-const wchar_t* Document::GetFileName() const
+LPCTSTR Document::GetFileName() const
 {
 	return m_sFilename.c_str();
 }
@@ -145,10 +145,13 @@ bool Document::GetCanSave() const
 
 HWND Document::GetScintillaHWND() const
 {
+#if PLAT_WIN
 	return m_pFrame->GetTextView()->m_hWnd;
+#endif
+    throw "Unimplemented";
 }
 
-bool Document::Save(const wchar_t* filename, bool setFilename)
+bool Document::Save(LPCTSTR filename, bool setFilename)
 {
 	return m_pFrame->SaveFile(filename, setFilename, setFilename);
 }
@@ -187,7 +190,7 @@ void Document::OnAfterLoad()
 	}
 }
 
-void Document::OnBeforeSave(const wchar_t* filename)
+void Document::OnBeforeSave(LPCTSTR filename)
 {
 	// Create a backup if the option is configured
 	if (HasFile() && OPTIONS->Get(PNSK_GENERAL, _T("BackupOnSave"), false))
@@ -273,6 +276,7 @@ int Document::ReplaceAll(extensions::ISearchOptions* options)
 
 void Document::Close(bool dontAskUserIfUnsaved)
 {
+#if PLAT_WIN
 	if(dontAskUserIfUnsaved)
 	{
 		m_pFrame->PostMessage(WM_CLOSE, 0, PNID_DONTASKUSER);
@@ -281,9 +285,13 @@ void Document::Close(bool dontAskUserIfUnsaved)
 	{
 		m_pFrame->PostMessage(WM_CLOSE, 0, 0);
 	}
+#else
+    throw "Unimplemented";
+#endif
 }
 
 void Document::Activate()
 {
-	SetFocus(m_pFrame->m_hWnd);
+    m_pFrame->SetFocus();
+	//SetFocus(m_pFrame->m_hWnd);
 }

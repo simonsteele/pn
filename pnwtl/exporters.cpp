@@ -2,7 +2,7 @@
  * @file exporters.cpp
  * @brief Define style and style-containing classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2012 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -11,21 +11,6 @@
 #include "stdafx.h"
 #include "exporters.h"
 #include "styles.h"
-
-////////////////////////////////////////////////////////////////////////////////
-// PrintfConduit class
-
-void PrintfConduit::printf(const char* format, ...)
-{
-	va_list args;
-	va_start(args, format);
-
-	str.FormatV(format, args);
-	
-	puts(str);
-
-	va_end(args);
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // BaseExporter class
@@ -67,7 +52,7 @@ int BaseExporter::GetMaxStyleKey()
 	int maxKey(0);
 	for (auto i = m_pStyles->StylesBegin(); i != m_pStyles->StylesEnd(); ++i)
 	{
-		maxKey = max(maxKey, (*i)->Key);
+		maxKey = std::max(maxKey, (*i)->Key);
 	}
 
 	return maxKey;
@@ -103,6 +88,8 @@ LPCTSTR BaseExporter::GetFileMask()
 			
 BaseExporter* ExporterFactory::GetExporter(EExporterType type, IOutput* pOutput, LPCSTR lpszSchemeName, StylesList* pStyles, CScintilla* pScintilla)
 {
+// TODO: porting work on exporters.
+#if PLAT_WIN
 	switch(type)
 	{
 		case RTF:
@@ -110,7 +97,8 @@ BaseExporter* ExporterFactory::GetExporter(EExporterType type, IOutput* pOutput,
 		case HTML:
 			return new HTMLExporter(pOutput, lpszSchemeName, pStyles, pScintilla);
 	}
-	
+#endif
+    
 	return NULL;
 }
 

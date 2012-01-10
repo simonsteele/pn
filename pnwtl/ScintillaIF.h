@@ -2,7 +2,7 @@
  * @file ScintillaIF.h
  * @brief Define scintilla wrapper class CScintilla
  * @author Simon Steele
- * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -12,8 +12,10 @@
 #define __SCINTILLAIF_H__
 
 //#define STATIC_SCILEXER
+
+#if PLAT_WIN
 #define WTL_SCINTILLA 1
-//#define PLAT_WIN 1
+#endif
 
 #define SC_BOOKMARK 0
 #define SC_NUMBERED_BOOKMARK 1
@@ -28,6 +30,7 @@ typedef long(__cdecl* scmsgfn)(void *ptr, long Msg, WPARAM wParam, LPARAM lParam
 
 typedef enum {efsVSNet, efsVSNetR, efsPlus, efsArrow} EFoldStyle;
 
+#if PLAT_WIN
 struct RangeToFormat 
 {
 	void* hdc;
@@ -36,6 +39,7 @@ struct RangeToFormat
 	RECT rcPage;
 	Scintilla::CharacterRange chrg;
 };
+#endif
 
 class CScintilla;
 
@@ -66,6 +70,7 @@ class CScintilla
 		/// Destructor
 		virtual ~CScintilla();
 
+#if PLAT_WIN
 #ifndef WTL_SCINTILLA
 		/// Create a Scintilla window inside parent hParent.
 		HWND Create(HWND hParent, HINSTANCE hInst);
@@ -74,6 +79,7 @@ class CScintilla
 		{
 			return m_scihWnd;
 		}
+#endif
 #endif
 
 		/**
@@ -97,13 +103,7 @@ class CScintilla
 		 * SPerform uses either SendMessage or the function pointer (Perform)
 		 * to run scintilla commands on the relevant scintilla control.
 		 */
-		virtual long SPerform(long Msg, WPARAM wParam=0, LPARAM lParam=0)
-		{
-			if (Perform)
-				return Perform(m_Pointer, Msg, wParam, lParam);
-			else
-				return ::SendMessage(m_scihWnd, Msg, wParam, lParam);
-		}
+        virtual long SPerform(long Msg, WPARAM wParam=0, LPARAM lParam=0);
 
 		/// Load a file from "filename".
 		virtual bool OpenFile(LPCTSTR filename);
@@ -156,13 +156,14 @@ class CScintilla
 	protected:
 	
 		// Locally Written CScintilla members.
-	
+#if PLAT_WIN	
 		//! Handle of the loaded scilexer.dll
 		static HMODULE scidll;
+        //! Handle of the relevant scintilla window - inherit one if we're a WTL window.
+        HWND	m_scihWnd;
+#endif
 		//! Reference counter.
 		static int refs;
-		//! Handle of the relevant scintilla window - inherit one if we're a WTL window.
-		HWND	m_scihWnd;
 		//! Used for Scintilla's GetDirectPointer
 		void	*m_Pointer;
 		//! Function pointer to Scintilla window message pump.

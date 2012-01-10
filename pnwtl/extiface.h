@@ -134,16 +134,16 @@ public:
 	virtual void FindInFiles(ISearchOptions* options) = 0;
 
 	/// Get some input from the user
-	virtual wchar_t* InputBox(const wchar_t* title, const wchar_t* caption) = 0;
+	virtual LPTSTR InputBox(LPCTSTR title, LPCTSTR caption) = 0;
 
 	// Create a new document
 	virtual IDocumentPtr NewDocument(const char* scheme) = 0;
 
 	/// Open a document
-	virtual IDocumentPtr OpenDocument(const wchar_t* filepath, const char* scheme) = 0;
+	virtual IDocumentPtr OpenDocument(LPCTSTR filepath, const char* scheme) = 0;
 
 	/// Utility function to safely free strings given to you by PN
-	virtual void ReleaseString(const wchar_t* str) = 0;
+	virtual void ReleaseString(LPCTSTR str) = 0;
 
 	/// Add a tag source (e.g. ctagsnavigator)
 	virtual void AddTagSource(ITagSource* tagSource) = 0;
@@ -167,10 +167,10 @@ public:
 	virtual ~IDocument(){}
 
 	/// Get the title of this document
-	virtual const wchar_t* GetTitle() const = 0;
+	virtual LPCTSTR GetTitle() const = 0;
 	
 	/// Get the filename of this document
-	virtual const wchar_t* GetFileName() const = 0;
+	virtual LPCTSTR GetFileName() const = 0;
 	
 	/// Get the name of the scheme being used (the unique name, not the friendly name)
 	virtual const char* GetCurrentScheme() const = 0;
@@ -188,7 +188,7 @@ public:
 	virtual bool GetCanSave() const = 0;
 
 	/// Save this file to the filename passed, optionally setting the UI filename
-	virtual bool Save(const wchar_t* filename, bool setFilename) = 0;
+	virtual bool Save(LPCTSTR filename, bool setFilename) = 0;
 
 	/// Send a message to Scintilla
 	virtual LRESULT SendEditorMessage(UINT msg, WPARAM wParam, LPARAM lParam) = 0;
@@ -292,7 +292,7 @@ public:
 	virtual void OnAfterLoad() = 0;
 
 	/// Called before the document is saved
-	virtual void OnBeforeSave(const wchar_t* filename) = 0;
+	virtual void OnBeforeSave(LPCTSTR filename) = 0;
 
 	/// Called after the document is saved
 	virtual void OnAfterSave() = 0;
@@ -409,9 +409,9 @@ public:
 	virtual ~ITextOutput(){}
 
 	/// Add some text to the window, @param nLength to use a fixed length or -1 to calculate, @param output The text to output
-	virtual void AddToolOutput(const wchar_t* output, int nLength = -1) = 0;
+	virtual void AddToolOutput(LPCTSTR output, int nLength = -1) = 0;
 	/// Set the base directory for messages being placed in the output window (for error matching)
-	virtual void SetToolBasePath(const wchar_t* path) = 0;
+	virtual void SetToolBasePath(LPCTSTR path) = 0;
 	/// Set the error parser for the window, optionally specifying a regular expression
 	virtual void SetToolParser(bool bBuiltIn, const char* customExpression = NULL) = 0;
 	/// Clear the output window
@@ -434,8 +434,8 @@ public:
 	virtual ~ISearchOptions(){}
 
 	// Basic Options:
-	virtual const wchar_t* GetFindText() const = 0;
-	virtual void SetFindText(const wchar_t* findText) = 0;
+	virtual LPCTSTR GetFindText() const = 0;
+	virtual void SetFindText(LPCTSTR findText) = 0;
 	
 	virtual bool GetMatchWholeWord() const = 0;
 	virtual void SetMatchWholeWord(bool matchWholeWord) = 0;
@@ -462,18 +462,18 @@ public:
 	virtual void SetNoCursorMove(bool reposition) = 0;
 
 	// Replace Options:
-	virtual const wchar_t* GetReplaceText() const = 0;
-	virtual void SetReplaceText(const wchar_t* text) = 0;
+	virtual LPCTSTR GetReplaceText() const = 0;
+	virtual void SetReplaceText(LPCTSTR text) = 0;
 	
 	virtual bool GetReplaceInSelection() const = 0;
 	virtual void SetReplaceInSelection(bool inSelection) = 0;
 
 	// Find In Files Options:
-	virtual const wchar_t* GetFileExts() const = 0;
-	virtual void SetFileExts(const wchar_t* extensions) = 0;
+	virtual LPCTSTR GetFileExts() const = 0;
+	virtual void SetFileExts(LPCTSTR extensions) = 0;
 	
-	virtual const wchar_t* GetSearchPath() const = 0;
-	virtual void SetSearchPath(const wchar_t* path) = 0;
+	virtual LPCTSTR GetSearchPath() const = 0;
+	virtual void SetSearchPath(LPCTSTR path) = 0;
 	
 	virtual bool GetRecurse() const = 0;
 	virtual void SetRecurse(bool recurse) = 0;
@@ -491,7 +491,7 @@ public:
 
 typedef enum {miItem, miSubmenu} EMenuItemType;
 
-typedef _W64 unsigned long cookie_t;
+typedef unsigned long cookie_t;
 
 typedef struct tagMenuItem
 {
@@ -503,7 +503,7 @@ typedef struct tagMenuItem
 	/**
 	 * Title of your menu item, Programmer's Notepad will copy this.
 	 */
-	wchar_t* Title;
+	LPTSTR Title;
 	
 	/**
 	 * User data to be passed back to your command handler. Ignored for miSubmenu.

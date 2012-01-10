@@ -2,7 +2,7 @@
  * @file smartstart.h
  * @brief Definition of SmartStart
  * @author Simon Steele
- * @note Copyright (c) 2002-2005 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2012 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -11,7 +11,7 @@
 #ifndef smartstart_h__included
 #define smartstart_h__included
 
-class CTextView;
+class CScintillaImpl;
 
 class SmartStart : public Singleton<SmartStart, SINGLETON_AUTO_DELETE>, XMLParseState
 {
@@ -22,10 +22,10 @@ public:
 	virtual ~SmartStart();
 
 	/// Use this function for character-by-character smartstart matching.
-	EContinueState	OnChar(CTextView* pView);
+	EContinueState	OnChar(CScintillaImpl* pView);
 	
 	/// Use this function to scan the first m_max chars for smartstart matches.
-	void			Scan(CTextView* pView);
+	void			Scan(CScintillaImpl* pView);
 	
 	string_map&		GetMap();
 
@@ -37,14 +37,13 @@ public:
 	virtual void endElement(LPCTSTR name){}
 	virtual void characterData(LPCTSTR data, int len){}
 
-protected:
+private:
 	SmartStart();
 
-	void applyScheme(CTextView* pView, Scheme* pScheme);
+	void applyScheme(CScintillaImpl* pView, Scheme* pScheme);
 	void update();
 
-protected:
-	CTextView*	m_pView;
+	CScintillaImpl*	m_pView;
 	string_map	m_Map;
 	size_t		m_max;
 	char*		m_buffer;

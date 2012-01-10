@@ -2,7 +2,7 @@
  * @file commands.cpp
  * @brief Command Routing Stuff
  * @author Simon Steele
- * @note copyright (c) 2006-2009 Simon Steele - http://untidy.net/
+ * @note copyright (c) 2006-2012 Simon Steele - http://untidy.net/
  * 
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -14,13 +14,182 @@
 #include "editorcommands.h"
 #include "extapp.h"
 
-// Default Keyboard Mapping (predec)
-KeyToCommand DefaultKeyMap[];
-KeyToCommand DefaultScintillaMap[];
+/////////////////////////////////////////////////////////////////////////////
+// DefaultKeyMap
+
+KeyToCommand DefaultKeyMap[] = {
+	//File
+	{K_CTRL,		'N',		ID_FILE_NEW},
+	{K_CTRL,		'O',		ID_FILE_OPEN},
+	{K_CTRL,		'S',		ID_FILE_SAVE},
+	{K_CTRLSHIFT,	'S',		ID_FILE_SAVEALL},
+	{K_ALT,			VK_RETURN,	ID_VIEW_FILEPROPERTIES},
+	{K_CTRL,		'W',		ID_FILE_CLOSE},
+	{K_CTRL,		VK_F4,		ID_FILE_CLOSE},
+	{K_CTRL,		'P',		ID_FILE_PRINT},
+    
+	//Edit
+	{K_ALT,			VK_BACK,	ID_EDIT_UNDO},
+	{K_CTRL,		'Z',		ID_EDIT_UNDO},
+	{K_CTRL,		'Y',		ID_EDIT_REDO},
+	{K_CTRLSHIFT,	'X',		ID_EDIT_CUT},
+	{K_SHIFT,	    VK_DELETE,	ID_EDIT_CUT},
+	{K_CTRL,		'X',		ID_EDIT_CUT},
+	{K_CTRL,		VK_INSERT,	ID_EDIT_COPY},
+	{K_CTRL,		'C',		ID_EDIT_COPY},
+	{K_CTRLALT,		'C',		ID_EDIT_COPYRTF},
+	{K_CTRLSHIFT,	'V',		ID_EDIT_PASTE},
+	{K_SHIFT,		VK_INSERT,	ID_EDIT_PASTE},
+	{K_CTRL,		'V',		ID_EDIT_PASTE},
+	{K_CTRLSHIFT,	'C',		ID_EDIT_CLIPBOARDSWAP},
+	{K_CTRL,		'L',		ID_EDIT_CUTLINE},
+	{K_CTRLSHIFT,	'T',		ID_EDIT_COPYLINE},
+	{K_CTRLSHIFT,	'L',		ID_EDIT_DELETELINE},
+	{K_CTRL,		'D',		ID_EDIT_DUPLICATELINE},
+	{K_CTRL,		'T',		ID_EDIT_TRANSPOSELINES},
+	{K_CTRL,		'U',		ID_EDIT_LOWERCASE},
+	{K_CTRLSHIFT,	'U',		ID_EDIT_UPPERCASE},
+	{K_CTRL,		'A',		ID_EDIT_SELECTALL},
+	{K_CTRL,		'F',		ID_EDIT_FIND},
+	{0,				VK_F3,		ID_EDIT_FINDNEXT},
+	{K_SHIFT,		VK_F3,		ID_EDIT_FINDPREVIOUS},
+	{K_CTRL,		VK_F3,		ID_SEARCH_FINDNEXTCURRENTWORD},
+	{K_CTRLSHIFT,	VK_F3,		ID_SEARCH_FINDPREVIOUSCURRENTWORD},
+	{K_CTRL,		'R',		ID_EDIT_REPLACE},
+	{K_CTRL,		'H',		ID_EDIT_REPLACE},
+	{K_CTRLSHIFT,	'F',		ID_EDIT_FINDINFILES},
+	{K_CTRL,		VK_OEM_2,	ID_EDIT_QUICKFIND},
+	{K_CTRL,		'G',		ID_EDIT_GOTO},
+	{K_ALT,			VK_OEM_4,	ID_EDIT_GOTOBRACE},
+	{K_ALT,			'G',		ID_EDIT_JUMPTO},
+	{K_CTRLSHIFT,	'H',		ID_EDIT_HEADERSWITCH},
+	{K_CTRL,		' ',		ID_EDIT_AUTOCOMPLETE},
+	{K_CTRLALT,		' ',        ID_EDIT_INSERTCLIP},
+	{K_CTRL,		VK_OEM_PERIOD,		ID_COMMENTS_LINE},
+	{K_CTRL,		VK_OEM_COMMA,		ID_COMMENTS_UNCOMMENT},
+	{K_ALT,			'D',		ID_SELECTION_DUPLICATE},
+	{K_ALTSHIFT,	'W',		ID_SELECTION_STRIPTRAILING},
+	{K_ALT,			'X',		ID_EDIT_FOCUSCOMMAND},
+    
+	// Bookmarks
+	{K_CTRL,		VK_F2,		ID_BOOKMARKS_TOGGLE},
+	{0,				VK_F2,		ID_BOOKMARKS_NEXT},
+	{K_SHIFT,		VK_F2,		ID_BOOKMARKS_PREVIOUS},
+	{K_CTRL,		'K',		ID_BOOKMARKS_NUMBERED_SET},
+	{K_CTRL,		'Q',		ID_BOOKMARKS_NUMBERED_JUMP},
+    
+	// View
+	{0,				VK_F8,		ID_VIEW_OUTPUT},
+	{K_SHIFT,		VK_F8,		ID_VIEW_INDIVIDUALOUTPUT},
+	{0,				VK_F6,		ID_NEXT_PANE},
+	{K_SHIFT,		VK_F6,		ID_PREV_PANE},
+	{K_ALT,			VK_RETURN,	ID_VIEW_FILEPROPERTIES},
+	{K_ALT,			VK_F6,		ID_VIEW_WINDOWS_PROJECT},
+	{K_ALT,			VK_F7,		ID_VIEW_WINDOWS_TEXTCLIPS},
+	{K_ALT,			VK_F8,		ID_VIEW_WINDOWS_FINDRESULTS},
+	{K_ALT,			VK_F9,		ID_VIEW_WINDOWS_CTAGS},
+	{K_ALT,			VK_F10,		ID_VIEW_WINDOWS_SCRIPTS},
+	{K_SHIFT,		VK_ESCAPE,  ID_WINDOWS_CURRENTEDITOR},
+    
+	// View | Folding
+	{K_CTRLALT,		VK_SUBTRACT,ID_VIEW_COLLAPSEALLFOLDS},
+	{K_CTRLALT,		VK_ADD,		ID_VIEW_EXPANDALLFOLDS},
+	{K_CTRL,		VK_MULTIPLY,ID_VIEW_TOGGLEFOLD},
+    
+	// Tools
+	{K_CTRLSHIFT,	'K',		ID_TOOLS_STOPTOOLS},
+	{0,				0,			0}
+};
+
+KeyToCommand DefaultScintillaMap[] = {
+    {K_SHIFT,       VK_DOWN, 	SCI_LINEDOWNEXTEND},
+    {0,	            VK_DOWN, 	SCI_LINEDOWN},
+    {K_CTRL,	    VK_DOWN, 	SCI_LINESCROLLDOWN},
+    {K_ALTSHIFT,    VK_DOWN,    SCI_LINEDOWNRECTEXTEND},
+    {0,       	    VK_UP, 		SCI_LINEUP},
+    {K_SHIFT,	    VK_UP, 		SCI_LINEUPEXTEND},
+    {K_CTRL,	    VK_UP, 		SCI_LINESCROLLUP},
+    {K_ALTSHIFT,	VK_UP, 		SCI_LINEUPRECTEXTEND},
+    {K_CTRL,	    VK_OEM_4/*'['*/,		SCI_PARAUP},
+	{K_CTRLSHIFT,	VK_OEM_4/*'['*/,		SCI_PARAUPEXTEND},
+    {K_CTRL,	    VK_OEM_6/*']'*/,		SCI_PARADOWN},
+    {K_CTRLSHIFT,	VK_OEM_6/*']'*/,		SCI_PARADOWNEXTEND},
+    {0,       	    VK_LEFT,	SCI_CHARLEFT},
+    {K_SHIFT,	    VK_LEFT,	SCI_CHARLEFTEXTEND},
+    {K_CTRL,	    VK_LEFT,	SCI_WORDLEFT},
+    {K_CTRLSHIFT,	VK_LEFT,	SCI_WORDLEFTEXTEND},
+    {K_ALTSHIFT,	VK_LEFT,	SCI_CHARLEFTRECTEXTEND},
+    {0,       	    VK_RIGHT,	SCI_CHARRIGHT},
+    {K_SHIFT,	    VK_RIGHT,	SCI_CHARRIGHTEXTEND},
+    {K_CTRL,	    VK_RIGHT,	SCI_WORDRIGHT},
+    {K_CTRLSHIFT,	VK_RIGHT,	SCI_WORDRIGHTEXTEND},
+    {K_ALTSHIFT,	VK_RIGHT,	SCI_CHARRIGHTRECTEXTEND},
+    {K_CTRL,	    VK_OEM_2/*'/'*/,	 	SCI_WORDPARTLEFT},
+    {K_CTRLSHIFT,	VK_OEM_2/*'/'*/,		SCI_WORDPARTLEFTEXTEND},
+    {K_CTRL,	    VK_OEM_5/*'\\'*/,		SCI_WORDPARTRIGHT},
+    {K_CTRLSHIFT,	VK_OEM_5/*'\\'*/,		SCI_WORDPARTRIGHTEXTEND},
+    {0,       	    VK_HOME,	SCI_VCHOME},
+    {K_SHIFT, 	    VK_HOME, 	SCI_VCHOMEEXTEND},
+    {K_CTRL, 	    VK_HOME, 	SCI_DOCUMENTSTART},
+    {K_CTRLSHIFT,   VK_HOME, 	SCI_DOCUMENTSTARTEXTEND},
+    {K_ALT, 	    VK_HOME, 	SCI_HOMEDISPLAY},
+    {K_ALTSHIFT,	VK_HOME,	SCI_VCHOMERECTEXTEND},
+    {0,       	    VK_END,	 	SCI_LINEEND},
+    {K_SHIFT, 	    VK_END,	 	SCI_LINEENDEXTEND},
+    {K_CTRL, 	    VK_END, 	SCI_DOCUMENTEND},
+    {K_CTRLSHIFT,   VK_END, 	SCI_DOCUMENTENDEXTEND},
+    {K_ALT, 	    VK_END, 	SCI_LINEENDDISPLAY},
+    {K_ALTSHIFT,	VK_END,		SCI_LINEENDRECTEXTEND},
+    {0,       	    VK_PRIOR,	SCI_PAGEUP},
+    {K_SHIFT, 	    VK_PRIOR,	SCI_PAGEUPEXTEND},
+    {K_ALTSHIFT,	VK_PRIOR,	SCI_PAGEUPRECTEXTEND},
+    {0,        	    VK_NEXT, 	SCI_PAGEDOWN},
+    {K_SHIFT, 	    VK_NEXT, 	SCI_PAGEDOWNEXTEND},
+    {K_ALTSHIFT,	VK_NEXT,	SCI_PAGEDOWNRECTEXTEND},
+    {0,       	    VK_DELETE, 	SCI_CLEAR},
+    //  {K_SHIFT,	    VK_DELETE, 	SCI_CUT},
+    {K_CTRL,	    VK_DELETE, 	SCI_DELWORDRIGHT},
+    {K_CTRLSHIFT,   VK_DELETE,	SCI_DELLINERIGHT},
+    {0,       	    VK_INSERT, 	SCI_EDITTOGGLEOVERTYPE},
+    //  {K_SHIFT,	    VK_INSERT, 	SCI_PASTE},
+    //  {K_CTRL,	    VK_INSERT, 	SCI_COPY},
+    {0,       	    VK_ESCAPE,  SCI_CANCEL},
+    {0,        	    VK_BACK,	SCI_DELETEBACK},
+    {K_SHIFT, 	    VK_BACK,	SCI_DELETEBACK},
+    {K_CTRL, 	    VK_BACK,	SCI_DELWORDLEFT},
+    //  {K_ALT,	        VK_BACK, 	SCI_UNDO},
+    {K_CTRLSHIFT,	VK_BACK,	SCI_DELLINELEFT},
+    //    {K_CTRL,	    'Z', 		SCI_UNDO},
+    //  {K_CTRL,	    'Y', 		SCI_REDO},
+    //  {K_CTRL,	    'X', 		SCI_CUT},
+    //  {K_CTRL,	    'C', 		SCI_COPY},
+    //  {K_CTRL,	    'V', 		SCI_PASTE},
+    //  {K_CTRL,	    'A', 		SCI_SELECTALL},
+    {0,       	    VK_TAB,		SCI_TAB},
+    {K_SHIFT,	    VK_TAB,		SCI_BACKTAB},
+    {0,       	    VK_RETURN, 	SCI_NEWLINE},
+    {K_SHIFT,	    VK_RETURN, 	SCI_NEWLINE},
+    {K_CTRL,	    VK_ADD, 	SCI_ZOOMIN},
+    {K_CTRL,	    VK_SUBTRACT,SCI_ZOOMOUT},
+    {K_CTRL,	    VK_DIVIDE,	SCI_SETZOOM},
+    //	{K_CTRL,	    'L', 		SCI_LINECUT},
+    //	{K_CTRLSHIFT,   'L', 		SCI_LINEDELETE},
+    //  {K_CTRLSHIFT,   'T', 		SCI_LINECOPY},
+    //  {K_CTRL,	    'T', 		SCI_LINETRANSPOSE},
+    {K_CTRL,	    'D', 		SCI_SELECTIONDUPLICATE},
+    //  {K_CTRL,	    'U', 		SCI_LOWERCASE},
+    //  {K_CTRLSHIFT,   'U', 		SCI_UPPERCASE},
+    {0,0,0},
+};
+
+/////////////////////////////////////////////////////////////////////////////
+// KeyMap and Commands
 
 // Available Command ID ranges:
 CmdIDRange IDRange1 = {20000, 21000, 0};
 CmdIDRange* CommandDispatch::s_IDs[] = {&IDRange1, NULL};
+
+#if PLAT_WIN
 
 void AccelFromCode(ACCEL& accel, const KeyToCommand* cmd)
 {
@@ -52,6 +221,8 @@ WORD AccelToHKMod(WORD modifiers)
 	
 	return real_modifiers;
 }
+
+#endif
 
 static int keyTranslate(int keyIn) {
 	switch (keyIn) {
@@ -87,9 +258,9 @@ int CodeToScintilla(const KeyToCommand* cmd)
 
 	int modifiers = cmd->modifiers;
 
-	if( modifiers & FALT ) scintilla_modifiers |= SCMOD_ALT;
-	if( modifiers & FCONTROL ) scintilla_modifiers |= SCMOD_CTRL;
-	if( modifiers & FSHIFT) scintilla_modifiers |= SCMOD_SHIFT;
+	if( modifiers & K_ALT ) scintilla_modifiers |= SCMOD_ALT;
+	if( modifiers & K_CTRL ) scintilla_modifiers |= SCMOD_CTRL;
+	if( modifiers & K_SHIFT) scintilla_modifiers |= SCMOD_SHIFT;
 
 	return keyTranslate((int)cmd->key) + (scintilla_modifiers << 16);
 }
@@ -238,6 +409,8 @@ const ExtensionCommands& KeyMap::GetExtendedMappings() const
 {
 	return extkmap;
 }
+    
+#if PLAT_WIN
 
 int KeyMap::MakeAccelerators(ACCEL* buffer, CommandDispatch* dispatcher)
 {
@@ -260,6 +433,8 @@ int KeyMap::MakeAccelerators(ACCEL* buffer, CommandDispatch* dispatcher)
 
 	return i;
 }
+    
+#endif
 
 void KeyMap::internalAssign(int key, int modifiers, unsigned int msg)
 {
@@ -292,12 +467,15 @@ void KeyMap::internalAssign(int key, int modifiers, unsigned int msg)
 /////////////////////////////////////////////////////////////////////////////
 // CommandDispatch
 
+namespace
+{
 tstring properCase(tstring instr)
 {
 	tstring::iterator i = instr.begin();
 	i++;
 	std::transform(i, instr.end(), i, tolower);
 	return instr;
+}
 }
 
 CommandDispatch::CommandDispatch()
@@ -343,6 +521,8 @@ CommandDispatch::~CommandDispatch()
 	m_keyMap = NULL;
 	m_ScintillaKeyMap = NULL;
 }
+
+#if PLAT_WIN
 
 HACCEL CommandDispatch::GetAccelerators()
 {
@@ -468,6 +648,8 @@ tstring CommandDispatch::GetKeyName(UINT vk, bool extended)
 	}
 }
 
+#endif
+
 /**
  * @return int The actual ID of the registered command
  */
@@ -485,7 +667,7 @@ int CommandDispatch::RegisterCallback(int iRealCommand, CommandEventHandler* pHa
 	if(iRealCommand == -1)
 		iRealCommand = GetNextID();
 
-	EventRecord* pRecord = new EventRecord;
+    Commands::EventRecord* pRecord = new Commands::EventRecord;
 	pRecord->iID = iMappedCommand;
 	pRecord->pHandler = pHandler;
 	pRecord->data = data;
@@ -545,7 +727,7 @@ bool CommandDispatch::HandleCommand(int iID)
 	MH_CI i = m_Handlers.find(iID);
 	if(i != m_Handlers.end())
 	{
-		EventRecord* pRecord = (*i).second;
+        Commands::EventRecord* pRecord = (*i).second;
 		if(pRecord->pHandler)
 		{
 			bHandled = pRecord->pHandler->SHandleDispatchedCommand(pRecord->iID, pRecord->data);
@@ -566,7 +748,7 @@ bool CommandDispatch::LocalHandleCommand(int iID, int iCommand, CommandEventHand
 	MH_CI i = m_Handlers.find(iID);
 	if(i != m_Handlers.end())
 	{
-		EventRecord* pRecord = (*i).second;
+        Commands::EventRecord* pRecord = (*i).second;
 		if(pRecord->iID == iCommand)
 		{
 			bHandled = pHandler->SHandleDispatchedCommand(pRecord->iID, pRecord->data);
@@ -768,7 +950,7 @@ bool CommandDispatch::SHandleDispatchedCommand(int iCommand, LPVOID data)
 	if(iCommand == COMMANDS_RUNEXT)
 	{
 		// We've got a keyboard-shortcut event for an extension command:
-		int keycmd = reinterpret_cast<int>(data);
+		DWORD keycmd = reinterpret_cast<DWORD>(data);
 		const ExtensionCommand* cmd = m_keyMap->FindExtended(keycmd & 0x00ff, (keycmd & 0xff00) >> 8);
 		
 		// Run the command...
@@ -795,181 +977,16 @@ void CommandDispatch::init()
 	// We don't like Windows' ugly default names, but that's ok because
 	// GetKeyName proper cases them. However, to avoid the cost of doing
 	// that all the time for these common cases we cache them.
+    
+#if PLAT_WIN
 	m_keyNameCtrl = GetKeyName(VK_CONTROL, false);
 	m_keyNameAlt = GetKeyName(VK_MENU, false);
 	m_keyNameShift = GetKeyName(VK_SHIFT, false);
-
+#endif
+    
 	Commands::GetEditorCommands(m_editorCommands);
 	BOOST_FOREACH(Commands::EditorCommand* cmd, m_editorCommands)
 	{
 		RegisterCallback(cmd->GetCommandID(), NULL, PN_COMMAND_EDITOR, reinterpret_cast<LPVOID>(cmd));
 	}
 }
-
-/////////////////////////////////////////////////////////////////////////////
-// DefaultKeyMap
-
-KeyToCommand DefaultKeyMap[] = {
-	//File
-	{K_CTRL,		'N',		ID_FILE_NEW},
-	{K_CTRL,		'O',		ID_FILE_OPEN},
-	{K_CTRL,		'S',		ID_FILE_SAVE},
-	{K_CTRLSHIFT,	'S',		ID_FILE_SAVEALL},
-	{K_ALT,			VK_RETURN,	ID_VIEW_FILEPROPERTIES},
-	{K_CTRL,		'W',		ID_FILE_CLOSE},
-	{K_CTRL,		VK_F4,		ID_FILE_CLOSE},
-	{K_CTRL,		'P',		ID_FILE_PRINT},
-
-	//Edit
-	{K_ALT,			VK_BACK,	ID_EDIT_UNDO},
-	{K_CTRL,		'Z',		ID_EDIT_UNDO},
-	{K_CTRL,		'Y',		ID_EDIT_REDO},
-	{K_CTRLSHIFT,	'X',		ID_EDIT_CUT},
-	{K_SHIFT,	    VK_DELETE,	ID_EDIT_CUT},
-	{K_CTRL,		'X',		ID_EDIT_CUT},
-	{K_CTRL,		VK_INSERT,	ID_EDIT_COPY},
-	{K_CTRL,		'C',		ID_EDIT_COPY},
-	{K_CTRLALT,		'C',		ID_EDIT_COPYRTF},
-	{K_CTRLSHIFT,	'V',		ID_EDIT_PASTE},
-	{K_SHIFT,		VK_INSERT,	ID_EDIT_PASTE},
-	{K_CTRL,		'V',		ID_EDIT_PASTE},
-	{K_CTRLSHIFT,	'C',		ID_EDIT_CLIPBOARDSWAP},
-	{K_CTRL,		'L',		ID_EDIT_CUTLINE},
-	{K_CTRLSHIFT,	'T',		ID_EDIT_COPYLINE},
-	{K_CTRLSHIFT,	'L',		ID_EDIT_DELETELINE},
-	{K_CTRL,		'D',		ID_EDIT_DUPLICATELINE},
-	{K_CTRL,		'T',		ID_EDIT_TRANSPOSELINES},
-	{K_CTRL,		'U',		ID_EDIT_LOWERCASE},
-	{K_CTRLSHIFT,	'U',		ID_EDIT_UPPERCASE},
-	{K_CTRL,		'A',		ID_EDIT_SELECTALL},
-	{K_CTRL,		'F',		ID_EDIT_FIND},
-	{0,				VK_F3,		ID_EDIT_FINDNEXT},
-	{K_SHIFT,		VK_F3,		ID_EDIT_FINDPREVIOUS},
-	{K_CTRL,		VK_F3,		ID_SEARCH_FINDNEXTCURRENTWORD},
-	{K_CTRLSHIFT,	VK_F3,		ID_SEARCH_FINDPREVIOUSCURRENTWORD},
-	{K_CTRL,		'R',		ID_EDIT_REPLACE},
-	{K_CTRL,		'H',		ID_EDIT_REPLACE},
-	{K_CTRLSHIFT,	'F',		ID_EDIT_FINDINFILES},
-	{K_CTRL,		VK_OEM_2,	ID_EDIT_QUICKFIND},
-	{K_CTRL,		'G',		ID_EDIT_GOTO},
-	{K_ALT,			VK_OEM_4,	ID_EDIT_GOTOBRACE},
-	{K_ALT,			'G',		ID_EDIT_JUMPTO},
-	{K_CTRLSHIFT,	'H',		ID_EDIT_HEADERSWITCH},
-	{K_CTRL,		' ',		ID_EDIT_AUTOCOMPLETE},
-	{K_CTRLALT,		' ',        ID_EDIT_INSERTCLIP},
-	{K_CTRL,		VK_OEM_PERIOD,		ID_COMMENTS_LINE},
-	{K_CTRL,		VK_OEM_COMMA,		ID_COMMENTS_UNCOMMENT},
-	{K_ALT,			'D',		ID_SELECTION_DUPLICATE},
-	{K_ALTSHIFT,	'W',		ID_SELECTION_STRIPTRAILING},
-	{K_ALT,			'X',		ID_EDIT_FOCUSCOMMAND},
-
-	// Bookmarks
-	{K_CTRL,		VK_F2,		ID_BOOKMARKS_TOGGLE},
-	{0,				VK_F2,		ID_BOOKMARKS_NEXT},
-	{K_SHIFT,		VK_F2,		ID_BOOKMARKS_PREVIOUS},
-	{K_CTRL,		'K',		ID_BOOKMARKS_NUMBERED_SET},
-	{K_CTRL,		'Q',		ID_BOOKMARKS_NUMBERED_JUMP},
-
-	// View
-	{0,				VK_F8,		ID_VIEW_OUTPUT},
-	{K_SHIFT,		VK_F8,		ID_VIEW_INDIVIDUALOUTPUT},
-	{0,				VK_F6,		ID_NEXT_PANE},
-	{K_SHIFT,		VK_F6,		ID_PREV_PANE},
-	{K_ALT,			VK_RETURN,	ID_VIEW_FILEPROPERTIES},
-	{K_ALT,			VK_F6,		ID_VIEW_WINDOWS_PROJECT},
-	{K_ALT,			VK_F7,		ID_VIEW_WINDOWS_TEXTCLIPS},
-	{K_ALT,			VK_F8,		ID_VIEW_WINDOWS_FINDRESULTS},
-	{K_ALT,			VK_F9,		ID_VIEW_WINDOWS_CTAGS},
-	{K_ALT,			VK_F10,		ID_VIEW_WINDOWS_SCRIPTS},
-	{K_SHIFT,		VK_ESCAPE,  ID_WINDOWS_CURRENTEDITOR},
-
-	// View | Folding
-	{K_CTRLALT,		VK_SUBTRACT,ID_VIEW_COLLAPSEALLFOLDS},
-	{K_CTRLALT,		VK_ADD,		ID_VIEW_EXPANDALLFOLDS},
-	{K_CTRL,		VK_MULTIPLY,ID_VIEW_TOGGLEFOLD},
-
-	// Tools
-	{K_CTRLSHIFT,	'K',		ID_TOOLS_STOPTOOLS},
-	{0,				0,			0}
-};
-
-KeyToCommand DefaultScintillaMap[] = {
-    {K_SHIFT,       VK_DOWN, 	SCI_LINEDOWNEXTEND},
-    {0,	            VK_DOWN, 	SCI_LINEDOWN},
-    {K_CTRL,	    VK_DOWN, 	SCI_LINESCROLLDOWN},
-    {K_ALTSHIFT,    VK_DOWN,    SCI_LINEDOWNRECTEXTEND},
-    {0,       	    VK_UP, 		SCI_LINEUP},
-    {K_SHIFT,	    VK_UP, 		SCI_LINEUPEXTEND},
-    {K_CTRL,	    VK_UP, 		SCI_LINESCROLLUP},
-    {K_ALTSHIFT,	VK_UP, 		SCI_LINEUPRECTEXTEND},
-    {K_CTRL,	    VK_OEM_4/*'['*/,		SCI_PARAUP},
-	{K_CTRLSHIFT,	VK_OEM_4/*'['*/,		SCI_PARAUPEXTEND},
-    {K_CTRL,	    VK_OEM_6/*']'*/,		SCI_PARADOWN},
-    {K_CTRLSHIFT,	VK_OEM_6/*']'*/,		SCI_PARADOWNEXTEND},
-    {0,       	    VK_LEFT,	SCI_CHARLEFT},
-    {K_SHIFT,	    VK_LEFT,	SCI_CHARLEFTEXTEND},
-    {K_CTRL,	    VK_LEFT,	SCI_WORDLEFT},
-    {K_CTRLSHIFT,	VK_LEFT,	SCI_WORDLEFTEXTEND},
-    {K_ALTSHIFT,	VK_LEFT,	SCI_CHARLEFTRECTEXTEND},
-    {0,       	    VK_RIGHT,	SCI_CHARRIGHT},
-    {K_SHIFT,	    VK_RIGHT,	SCI_CHARRIGHTEXTEND},
-    {K_CTRL,	    VK_RIGHT,	SCI_WORDRIGHT},
-    {K_CTRLSHIFT,	VK_RIGHT,	SCI_WORDRIGHTEXTEND},
-    {K_ALTSHIFT,	VK_RIGHT,	SCI_CHARRIGHTRECTEXTEND},
-    {K_CTRL,	    VK_OEM_2/*'/'*/,	 	SCI_WORDPARTLEFT},
-    {K_CTRLSHIFT,	VK_OEM_2/*'/'*/,		SCI_WORDPARTLEFTEXTEND},
-    {K_CTRL,	    VK_OEM_5/*'\\'*/,		SCI_WORDPARTRIGHT},
-    {K_CTRLSHIFT,	VK_OEM_5/*'\\'*/,		SCI_WORDPARTRIGHTEXTEND},
-    {0,       	    VK_HOME,	SCI_VCHOME},
-    {K_SHIFT, 	    VK_HOME, 	SCI_VCHOMEEXTEND},
-    {K_CTRL, 	    VK_HOME, 	SCI_DOCUMENTSTART},
-    {K_CTRLSHIFT,   VK_HOME, 	SCI_DOCUMENTSTARTEXTEND},
-    {K_ALT, 	    VK_HOME, 	SCI_HOMEDISPLAY},
-    {K_ALTSHIFT,	VK_HOME,	SCI_VCHOMERECTEXTEND},
-    {0,       	    VK_END,	 	SCI_LINEEND},
-    {K_SHIFT, 	    VK_END,	 	SCI_LINEENDEXTEND},
-    {K_CTRL, 	    VK_END, 	SCI_DOCUMENTEND},
-    {K_CTRLSHIFT,   VK_END, 	SCI_DOCUMENTENDEXTEND},
-    {K_ALT, 	    VK_END, 	SCI_LINEENDDISPLAY},
-    {K_ALTSHIFT,	VK_END,		SCI_LINEENDRECTEXTEND},
-    {0,       	    VK_PRIOR,	SCI_PAGEUP},
-    {K_SHIFT, 	    VK_PRIOR,	SCI_PAGEUPEXTEND},
-    {K_ALTSHIFT,	VK_PRIOR,	SCI_PAGEUPRECTEXTEND},
-    {0,        	    VK_NEXT, 	SCI_PAGEDOWN},
-    {K_SHIFT, 	    VK_NEXT, 	SCI_PAGEDOWNEXTEND},
-    {K_ALTSHIFT,	VK_NEXT,	SCI_PAGEDOWNRECTEXTEND},
-    {0,       	    VK_DELETE, 	SCI_CLEAR},
-//  {K_SHIFT,	    VK_DELETE, 	SCI_CUT},
-    {K_CTRL,	    VK_DELETE, 	SCI_DELWORDRIGHT},
-    {K_CTRLSHIFT,   VK_DELETE,	SCI_DELLINERIGHT},
-    {0,       	    VK_INSERT, 	SCI_EDITTOGGLEOVERTYPE},
-//  {K_SHIFT,	    VK_INSERT, 	SCI_PASTE},
-//  {K_CTRL,	    VK_INSERT, 	SCI_COPY},
-    {0,       	    VK_ESCAPE,  SCI_CANCEL},
-    {0,        	    VK_BACK,	SCI_DELETEBACK},
-    {K_SHIFT, 	    VK_BACK,	SCI_DELETEBACK},
-    {K_CTRL, 	    VK_BACK,	SCI_DELWORDLEFT},
-//  {K_ALT,	        VK_BACK, 	SCI_UNDO},
-    {K_CTRLSHIFT,	VK_BACK,	SCI_DELLINELEFT},
-//    {K_CTRL,	    'Z', 		SCI_UNDO},
-//  {K_CTRL,	    'Y', 		SCI_REDO},
-//  {K_CTRL,	    'X', 		SCI_CUT},
-//  {K_CTRL,	    'C', 		SCI_COPY},
-//  {K_CTRL,	    'V', 		SCI_PASTE},
-//  {K_CTRL,	    'A', 		SCI_SELECTALL},
-    {0,       	    VK_TAB,		SCI_TAB},
-    {K_SHIFT,	    VK_TAB,		SCI_BACKTAB},
-    {0,       	    VK_RETURN, 	SCI_NEWLINE},
-    {K_SHIFT,	    VK_RETURN, 	SCI_NEWLINE},
-    {K_CTRL,	    VK_ADD, 	SCI_ZOOMIN},
-    {K_CTRL,	    VK_SUBTRACT,SCI_ZOOMOUT},
-    {K_CTRL,	    VK_DIVIDE,	SCI_SETZOOM},
-//	{K_CTRL,	    'L', 		SCI_LINECUT},
-//	{K_CTRLSHIFT,   'L', 		SCI_LINEDELETE},
-//  {K_CTRLSHIFT,   'T', 		SCI_LINECOPY},
-//  {K_CTRL,	    'T', 		SCI_LINETRANSPOSE},
-    {K_CTRL,	    'D', 		SCI_SELECTIONDUPLICATE},
-//  {K_CTRL,	    'U', 		SCI_LOWERCASE},
-//  {K_CTRLSHIFT,   'U', 		SCI_UPPERCASE},
-    {0,0,0},
-};

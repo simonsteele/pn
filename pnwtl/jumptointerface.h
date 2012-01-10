@@ -2,7 +2,7 @@
  * @file jumptointerface.h
  * @brief Interface definitions for jump to implementations.
  * @author Simon Steele
- * @note Copyright (c) 2004-2007 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2004-2012 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -49,7 +49,7 @@ public:
 	/**
 	 * Enumerate tags
 	 */
-	virtual bool FindTags(ITagSink* sink, const wchar_t* filename, void* userData, MASKSTRUCT mask, const char* scheme) = 0;
+	virtual bool FindTags(ITagSink* sink, LPCTSTR filename, void* userData, MASKSTRUCT mask, const char* scheme) = 0;
 };
 
 } // namespace extensions

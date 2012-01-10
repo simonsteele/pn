@@ -83,8 +83,6 @@ static std::string IntToString(int x)
 
 static int strFirstNonWS(const char* lineBuf)
 {
-	PNASSERT(AtlIsValidString(lineBuf));
-
 	const char* p = lineBuf;
 	int i = 0;
 	while(*p != 0 && (*p == _T(' ') || *p == 0x9))
@@ -98,8 +96,6 @@ static int strFirstNonWS(const char* lineBuf)
 
 static int strLastNonWSChar(const char* lineBuf, int lineLength)
 {
-	PNASSERT(AtlIsValidString(lineBuf));
-
 	const char* p = &lineBuf[lineLength-1];
 	int i = lineLength-1;
 	while(p > lineBuf && (*p == _T(' ') || *p == 0x9))
@@ -117,9 +113,9 @@ static void StringTokenise(const TStringType& str,
                       const TStringType& delimiters/* = _T(" ")*/)
 {
     // Skip delimiters at beginning.
-    TStringType::size_type lastPos = str.find_first_not_of(delimiters, 0);
+    size_t lastPos = str.find_first_not_of(delimiters, 0);
     // Find first "non-delimiter".
-    TStringType::size_type pos     = str.find_first_of(delimiters, lastPos);
+    size_t pos     = str.find_first_of(delimiters, lastPos);
 
     while (TStringType::npos != pos || TStringType::npos != lastPos)
     {
@@ -135,7 +131,7 @@ static void StringTokenise(const TStringType& str,
 template <typename TStringType>
 static void Trim(TStringType& str)
 {
-	TStringType::size_type pos = str.find_last_not_of(' ');
+	size_t pos = str.find_last_not_of(' ');
 	if(pos != TStringType::npos) {
 		str.erase(pos + 1);
 		pos = str.find_first_not_of(' ');

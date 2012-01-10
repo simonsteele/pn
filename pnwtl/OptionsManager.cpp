@@ -2,7 +2,7 @@
  * @file optionsmanager.cpp
  * @brief Configuration functionality.
  * @author Simon Steele
- * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2012 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -109,14 +109,14 @@ void Options::loadCache()
 	m_SearchOptions.SetSearchPath(Get(NULL, _T("Path"), _T("")).c_str());
 	m_SearchOptions.SetFileExts(Get(NULL, _T("FileExts"), _T("")).c_str());
 	
-	m_SearchOptions.SetSearchBackwards(!(BOOL)Get(NULL, _T("Direction"), true));
-	m_SearchOptions.SetLoopOK((BOOL)Get(NULL, _T("Loop"), true));
-	m_SearchOptions.SetMatchCase((BOOL)Get(NULL, _T("MatchCase"), false));
-	m_SearchOptions.SetMatchWholeWord((BOOL)Get(NULL, _T("MatchWholeWord"), false));
-	m_SearchOptions.SetRecurse((BOOL)Get(NULL, _T("Recurse"), true));
-	m_SearchOptions.SetIncludeHidden((BOOL)Get(NULL, _T("IncludeHidden"), true));
-	m_SearchOptions.SetUseRegExp((BOOL)Get(NULL, _T("UseRegExp"), false));
-	m_SearchOptions.SetUseSlashes((BOOL)Get(NULL, _T("UseSlashes"), false));
+	m_SearchOptions.SetSearchBackwards(!(bool)Get(NULL, _T("Direction"), true));
+	m_SearchOptions.SetLoopOK((bool)Get(NULL, _T("Loop"), true));
+	m_SearchOptions.SetMatchCase((bool)Get(NULL, _T("MatchCase"), false));
+	m_SearchOptions.SetMatchWholeWord((bool)Get(NULL, _T("MatchWholeWord"), false));
+	m_SearchOptions.SetRecurse((bool)Get(NULL, _T("Recurse"), true));
+	m_SearchOptions.SetIncludeHidden((bool)Get(NULL, _T("IncludeHidden"), true));
+	m_SearchOptions.SetUseRegExp((bool)Get(NULL, _T("UseRegExp"), false));
+	m_SearchOptions.SetUseSlashes((bool)Get(NULL, _T("UseSlashes"), false));
 
 	cache[OFindAlphaEnabled]		= Get(NULL, _T("FindAlphaEnabled"), true);
 	cache[OFindAlphaPercent]		= Get(NULL, _T("FindAlphaPercent"), 60);
@@ -226,6 +226,8 @@ void Options::copy(Options* other)
 	//TODO Copy m_SearchOptions
 }
 
+#if PLAT_WIN
+
 void Options::SavePrintSettings(SPrintOptions* pSettings)
 {
 	group(PNSK_PRINT);
@@ -257,6 +259,8 @@ void Options::LoadPrintSettings(SPrintOptions* pSettings)
 	ungroup();
 }
 
+#endif
+
 void Options::GetPNPath(tstring& path, int pathtype)
 {
 	TCHAR buf[MAX_PATH +1];
@@ -265,12 +269,17 @@ void Options::GetPNPath(tstring& path, int pathtype)
 	// Do paths that are relative to PN home dir.
 	if(pathtype < PNPATH_USERMIN)
 	{
+        
+#if PLAT_WIN
 		GetModuleFileName(NULL, buf, MAX_PATH);
 		path = buf;
 		
 		int cutoff = path.rfind(_T('\\'));
 		path = path.substr(0, cutoff+1);
-
+#else
+        path = PN::Platform::GetExecutableDirectory();
+#endif
+        
 		switch(pathtype)
 		{
 			case PNPATH_SCHEMES:
@@ -295,6 +304,7 @@ void Options::GetPNPath(tstring& path, int pathtype)
 	}
 	else if(pathtype == PNPATH_USERSETTINGS || pathtype == PNPATH_USERCLIPS)
 	{
+#if PLAT_WIN
 		if(m_UserSettingsPath.length() > 0)
 		{
 			path = m_UserSettingsPath;
@@ -317,11 +327,15 @@ void Options::GetPNPath(tstring& path, int pathtype)
 			///@todo should we fallback to the temp directory?
 			GetPNPath(path, PNPATH_SCHEMES);
 		}
+#else
+        path = "~/.pn";
+#endif
 	}
 }
 
 void Options::StaticGetPNPath(tstring& path)
 {
+#if PLAT_WIN
 	TCHAR buf[MAX_PATH +1];
 	buf[0] = '\0';
 
@@ -330,6 +344,9 @@ void Options::StaticGetPNPath(tstring& path)
 	
 	int cutoff = path.rfind(_T('\\'));
 	path = path.substr(0, cutoff+1);
+#else
+    path = PN::Platform::GetExecutableDirectory();
+#endif
 }
 
 void Options::SetUserSettingsPath(LPCTSTR path)
@@ -343,20 +360,20 @@ extensions::ISearchOptions* Options::GetSearchOptions()
 	return static_cast<extensions::ISearchOptions*>(&m_SearchOptions);
 }
 
-wchar_t* Options::GetPNPath(int pathtype)
+LPCTSTR Options::GetPNPath(int pathtype)
 {
-	std::wstring s;
+	tstring s;
 	GetPNPath(s, pathtype);
-	wchar_t* ret = new wchar_t[s.size()+1];
-	wcscpy(ret, s.c_str());
+	LPTSTR ret = new TCHAR[s.size()+1];
+	_tcscpy(ret, s.c_str());
 	return ret;
 }
 
-wchar_t* Options::GetS(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
+LPCTSTR Options::GetS(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
 {
-	std::wstring s = Get(subkey, value, szDefault);
-	wchar_t* ret = new wchar_t[s.size()+1];
-	wcscpy(ret, s.c_str());
+	tstring s = Get(subkey, value, szDefault);
+	LPTSTR ret = new TCHAR[s.size()+1];
+	_tcscpy(ret, s.c_str());
 	return ret;
 }
 
@@ -364,8 +381,10 @@ wchar_t* Options::GetS(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault)
 // OptionsFactory
 //////////////////////////////////////////////////////////////////////////////
 
-#include "OptionsRegistry.h"
-#include "OptionsIni.h"
+#if PLAT_WIN
+    #include "OptionsRegistry.h"
+    #include "OptionsIni.h"
+#endif
 #include "OptionsXml.h"
 //#include "..\optionstest\OptionsSqlite.h"
 
@@ -374,12 +393,14 @@ Options* OptionsFactory::GetOptions(EOptionsType type, Options* oldOptions)
 	Options* newInstance = NULL;
 	switch(type)
 	{
+#if PLAT_WIN
 		case OTRegistry:
 			newInstance = new RegistryOptions;
 			break;
 		case OTIni:
 			newInstance = new IniOptions;
 			break;
+#endif
 		case OTXml:
 			newInstance = new XmlOptions;
 			break;

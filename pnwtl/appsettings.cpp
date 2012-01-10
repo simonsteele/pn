@@ -119,7 +119,11 @@ AppSettings::AppSettings() :
 
 OptionsFactory::EOptionsType AppSettings::GetOptionsType() const
 {
+#if PLAT_WIN
 	return m_bUseIni ? OptionsFactory::OTIni : OptionsFactory::OTRegistry;
+#else
+    return OptionsFactory::OTXml;
+#endif
 }
 
 const TCHAR* AppSettings::GetUserPath() const
@@ -148,47 +152,58 @@ Options* AppSettings::MakeOptions() const
 	return options;
 }
 
+class FindHandler
+{
+public:
+    FindHandler(extlist& extensions, tstring& pnpath) : m_extensions(extensions), m_pnpath(pnpath) {}
+    
+    void findExtensionHandler(LPCTSTR path, FileFinderData& file, bool& /*shouldContinue*/)
+    {
+        tstring fn;
+        fn = file.GetFilename();
+        
+        ExtDetails details(fn.c_str(), m_pnpath.c_str());
+        
+        extensions::Extension test(details.FullPath.c_str(), NULL);
+        if(!test.Valid())
+            return;
+        
+        // See if we already know about this extension:
+        for(extlist::const_iterator i = m_extensions.begin();
+            i != m_extensions.end();
+            ++i)
+        {
+            CFileName fn1(details.Path.c_str());
+            CFileName fn2((*i).Path.c_str());
+            
+            if(_tcsicmp(fn1.Sanitise().c_str(), fn2.Sanitise().c_str()) == 0)
+            {
+                // Already known
+                return;
+            }
+        }
+        
+        m_extensions.push_back(details);
+    }
+    
+private:
+    extlist& m_extensions;
+    tstring& m_pnpath;
+};
+
 void AppSettings::FindExtensions()
 {
-	 FileFinder<AppSettings> finder(this, &AppSettings::findExtensionHandler); 
-	 tstring pnpath;
+    FindHandler handler(m_extensions, m_pnpath);
+    FileFinder<FindHandler> finder(&handler, &FindHandler::findExtensionHandler); 
+    tstring pnpath;
 
-	 OPTIONS->GetPNPath(pnpath);
-	 finder.Find(pnpath.c_str(), _T("*.dll"), false);
+    OPTIONS->GetPNPath(pnpath);
+    finder.Find(pnpath.c_str(), _T("*.dll"), false);
 }
 
 void AppSettings::Save()
 {
 	save();
-}
-
-void AppSettings::findExtensionHandler(LPCTSTR path, FileFinderData& file, bool& /*shouldContinue*/)
-{
-	tstring fn;
-	fn = file.GetFilename();
-	
-	ExtDetails details(fn.c_str(), m_pnpath.c_str());
-
-	extensions::Extension test(details.FullPath.c_str(), NULL);
-	if(!test.Valid())
-		return;
-
-	// See if we already know about this extension:
-	for(extlist::const_iterator i = m_extensions.begin();
-		i != m_extensions.end();
-		++i)
-	{
-		CFileName fn1(details.Path.c_str());
-		CFileName fn2((*i).Path.c_str());
-
-		if(_tcsicmp(fn1.Sanitise().c_str(), fn2.Sanitise().c_str()) == 0)
-		{
-			// Already known
-			return;
-		}
-	}
-	
-	m_extensions.push_back(details);
 }
 
 #define MATCH(ename) \
@@ -279,6 +294,7 @@ void AppSettings::load()
 	// See if there's a user-specified user settings path, and if not use the default:
 	if (!HaveUserPath())
 	{
+#if PLAT_WIN
 		TCHAR buf[MAX_PATH +1];
 		buf[0] = '\0';
 
@@ -292,6 +308,9 @@ void AppSettings::load()
 
 			m_userPath += _T("Echo Software\\PN2\\");
 		}
+#else
+        m_userPath = "~/.pn/";
+#endif
 	}
 
 	// Make sure the User Settings path exists
@@ -323,11 +342,13 @@ void AppSettings::load(const TCHAR* filename)
 	}
 	catch(XMLParserException& E)
 	{
-		CString err;
-		err.Format(_T("Error parsing application configuration xml: %s\n (file: %s, line: %d, column %d)"), 
-			XML_ErrorString(E.GetErrorCode()), E.GetFileName(), E.GetLine(), E.GetColumn());
+        std::string err(boost::str(boost::format(_T("Error parsing application configuration xml: %1%\n (file: %2%, line: %3%, column %4%)"))
+			% XML_ErrorString(E.GetErrorCode())
+            % E.GetFileName()
+            % E.GetLine()
+            % E.GetColumn()));
 		
-		UNEXPECTED((LPCTSTR)err);
+		UNEXPECTED(err.c_str());
 	}
 }
 

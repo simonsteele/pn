@@ -2,7 +2,7 @@
  * @file encoding.h
  * @brief Various simple text encoding conversion routines.
  * @author Simon Steele
- * @note Copyright (c) 2003-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2003-2012 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -315,6 +315,8 @@ protected:
 	bool bValid;
 };
 
+#if PLAT_WIN
+
 template <int ICodePage>
 class Mbs_Utf16
 {
@@ -407,6 +409,29 @@ private:
 typedef Utf16_Mbs<CP_UTF8, const unsigned char*> Utf16_Utf8;
 typedef Utf16_Mbs<CP_ACP, const char*> Utf16_Windows1252;
 
+typedef Utf16_Utf8 Wcs_Utf8;
+
+#else
+
+class Wcs_Utf8
+{
+public:
+    explicit Wcs_Utf8(const wchar_t* str) : m_store(str)
+    {
+    }
+    
+    operator const unsigned char* () const
+    {
+        //TODO
+        throw "Not implemented";
+    }
+    
+private:
+    const wchar_t* m_store;
+};
+
+#endif
+
 class TcsIdentity
 {
 public:
@@ -423,11 +448,19 @@ public:
 	{
 		return m_store != NULL;
 	}
+    
+#ifndef _UNICODE
+    operator const unsigned char* () const
+    {
+        return reinterpret_cast<const unsigned char*>(m_store);
+    }
+#endif
 
 private:
 	const TCHAR* m_store;
 };
 
+#if PLAT_WIN
 #ifdef _UNICODE
 	typedef Utf16_Utf8 Tcs_Utf8;
 	typedef Utf8_Utf16 Utf8_Tcs;
@@ -443,5 +476,9 @@ private:
 	typedef TcsIdentity Windows1252_Tcs;
 	typedef Utf8_Windows1252 Xml_Windows1252;
 #endif
-
+#else
+    typedef TcsIdentity Tcs_Utf8;
+    typedef TcsIdentity Utf8_Tcs;
+    typedef Utf8_Windows1252 Tcs_Windows1252;
+#endif
 #endif // #ifndef encoding_h__included

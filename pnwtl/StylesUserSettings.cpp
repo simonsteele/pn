@@ -2,7 +2,7 @@
  * @file StylesUserSettings.cpp
  * @brief Implement user customised scheme reading
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2012 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -10,7 +10,6 @@
 
 #include "stdafx.h"
 #include "SchemeCompiler.h"
-#include "ssreg.h"
 
 #define US_SCHEMES				1
 #define US_SCHEME				2
@@ -60,19 +59,23 @@ void UserSettingsParser::Parse(LPCTSTR path, SchemeLoaderState* pState)
 	}
 	catch (SchemeParserException& E)
 	{
-		CString err;
-		err.Format(_T("Error Parsing Scheme UserSettings XML: %s\n (file: %s, line: %d, column %d)"), 
-			E.GetMessage(), E.GetFileName(), E.GetLine(), E.GetColumn());
+		tstring err = boost::str(boost::format(_T("Error Parsing Scheme UserSettings XML: %1%\n (file: %2%, line: %3%, column %4%)"))
+			% E.GetMessage()
+            % E.GetFileName()
+            % E.GetLine()
+            % E.GetColumn());
 		
-		LOG(err);
+		LOG(err.c_str());
 	}
 	catch (XMLParserException& E)
 	{
-		CString err;
-		err.Format(_T("Error Parsing Scheme UserSettings XML: %s\n (file: %s, line: %d, column %d)"), 
-			XML_ErrorString(E.GetErrorCode()), E.GetFileName(), E.GetLine(), E.GetColumn());
-		
-		LOG(err);
+		tstring err = boost::str(boost::format(_T("Error Parsing Scheme UserSettings XML: %1%\n (file: %2%, line: %3%, column %4%)"))
+                                 % XML_ErrorString(E.GetErrorCode())
+                                 % E.GetFileName()
+                                 % E.GetLine()
+                                 % E.GetColumn());
+        
+		LOG(err.c_str());
 	}
 }
 

@@ -2,7 +2,7 @@
  * @file ifilesource.h
  * @brief Interfaces for file handling.
  * @author Simon Steele
- * @note Copyright (c) 2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2010-2012 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -28,7 +28,7 @@ public:
 	{
 	}
 
-	virtual ~FileSourceException() {}
+	virtual ~FileSourceException() throw() {}
 
 	/**
 	 * Get the error code indicating the error performing I/O.
@@ -47,8 +47,8 @@ class IFileSource
 public:
 	virtual ~IFileSource() {}
 
-	virtual IFilePtr OpenWrite(const wchar_t* filename) = 0;
-	virtual IFilePtr OpenRead(const wchar_t* filename) = 0;
+	virtual IFilePtr OpenWrite(LPCTSTR filename) = 0;
+	virtual IFilePtr OpenRead(LPCTSTR filename) = 0;
 };
 
 /**
@@ -62,7 +62,7 @@ public:
 	virtual size_t Read(void* buffer, int count) = 0;
 	virtual void Close() = 0;
 
-	virtual std::wstring GetFilename() const = 0;
+	virtual tstring GetFilename() const = 0;
 };
 
 #endif // #ifndef IFILESOURCE_H__INCLUDED

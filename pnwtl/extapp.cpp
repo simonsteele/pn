@@ -2,7 +2,7 @@
  * @file extapp.cpp
  * @brief Implement IPN and the basic App services
  * @author Simon Steele
- * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2012 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -18,12 +18,10 @@
 #include "scriptregistry.h"
 
 #include "resource.h"
-#include "childfrm.h"
 
+#if PLAT_WIN
 #include "pndialogs.h"
-
-#include "pndocking.h"
-#include "mainfrm.h"
+#endif
 
 #include "version.h"
 
@@ -300,11 +298,13 @@ void App::setAppLanguage()
 		language = _T("pnlang_") + language;
 		language += _T("_") PN_VERSTRING_T _T(".dll");
 
+#if PLAT_WIN
 		HINSTANCE languageResources = ::LoadLibrary(language.c_str());
 		if (languageResources)
 		{
 			_Module.SetResourceInstance(languageResources);
 		}
+#endif
 
 		// Re-initialize resource loader from this point:
 		L10N::StringLoader::InitResourceLoader();
@@ -334,7 +334,9 @@ void App::RemoveEventSink(extensions::IAppEventSinkPtr sink)
 /// Add a tag source (e.g. ctagsnavigator)
 void App::AddTagSource(extensions::ITagSource* tagSource)
 {
+#if PLAT_WIN
 	JumpToHandler::GetInstance()->AddSource(tagSource);
+#endif
 }
 
 /**
@@ -391,13 +393,17 @@ void App::OnFirstEditorCreated(HWND hWndEditor)
  */
 extensions::IDocumentPtr App::GetCurrentDocument()
 {
+#if PLAT_WIN
 	CChildFrame* pChild = CChildFrame::FromHandle(GetCurrentEditor());
 	if(pChild)
 	{
 		return pChild->GetDocument();
 	}
-	
+    
 	return extensions::IDocumentPtr();
+#else
+    throw "Unimplemented";
+#endif
 }
 
 /**
@@ -413,7 +419,11 @@ extensions::ITextOutput* App::GetGlobalOutputWindow()
  */
 HWND App::GetMainWindow()
 {
-	return static_cast<CMainFrame*>(g_Context.m_frame)->m_hWnd;
+#if PLAT_WIN
+	return g_Context.m_frame->GetWindow().m_hWnd;
+#else
+    return 0;
+#endif
 }
 
 /// Get the users search options
@@ -434,8 +444,9 @@ void App::FindInFiles(extensions::ISearchOptions* options)
 /**
  * Present an InputBox to get input from the user
  */
-wchar_t* App::InputBox(const wchar_t* title, const wchar_t* caption)
+LPTSTR App::InputBox(LPCTSTR title, LPCTSTR caption)
 {
+#if PLAT_WIN
 	CW2CT titleconv(title);
 	CW2CT captionconv(caption);
 	CInputDialog ib(titleconv, captionconv);
@@ -450,29 +461,31 @@ wchar_t* App::InputBox(const wchar_t* title, const wchar_t* caption)
 	}
 
 	return NULL;
+#else
+    throw "Unimplemented";
+#endif
 }
 
 /**
  * Open a file, optionally specify a scheme name to open the file
  * using or specify NULL to use the default.
  */
-extensions::IDocumentPtr App::OpenDocument(const wchar_t* filepath, const char* scheme)
+extensions::IDocumentPtr App::OpenDocument(LPCTSTR filepath, const char* scheme)
 {
-	Scheme* pScheme(NULL);
-	if(scheme != NULL)
-	{
-		pScheme = SchemeManager::GetInstance()->SchemeByName(scheme);
-	}
-
-	CMainFrame* mainFrame = static_cast<CMainFrame*>(g_Context.m_frame); 
-
-	if (mainFrame->CheckAlreadyOpen(filepath, eSwitch))
+	if (g_Context.m_frame->CheckAlreadyOpen(filepath, eSwitch))
 	{
 		extensions::IDocumentPtr doc = GetCurrentDocument();
 		return doc;
 	}
 
-	bool opened = mainFrame->OpenFile(filepath, pScheme);
+    Scheme* pScheme(NULL);
+	if(scheme != NULL)
+	{
+		pScheme = SchemeManager::GetInstance()->SchemeByName(scheme);
+	}
+
+	bool opened(false);
+    g_Context.m_frame->GetFactory().FromFile(filepath, pScheme, eUnknown, opened);
 	if(opened)
 	{
 		extensions::IDocumentPtr doc = GetCurrentDocument();
@@ -495,11 +508,11 @@ extensions::IDocumentPtr App::NewDocument(const char* scheme)
 	
 	if (pScheme != NULL)
 	{
-		static_cast<CMainFrame*>(g_Context.m_frame)->GetFactory().WithScheme(pScheme);
+		g_Context.m_frame->GetFactory().WithScheme(pScheme);
 	}
 	else
 	{
-		static_cast<CMainFrame*>(g_Context.m_frame)->GetFactory().Default();
+		g_Context.m_frame->GetFactory().Default();
 	}
 
 	return GetCurrentDocument();
@@ -508,7 +521,7 @@ extensions::IDocumentPtr App::NewDocument(const char* scheme)
 /**
  * Release a C string allocated by PN
  */
-void App::ReleaseString(const wchar_t* str)
+void App::ReleaseString(LPCTSTR str)
 {
 	delete [] str;
 }

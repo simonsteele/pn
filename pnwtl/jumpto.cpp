@@ -2,18 +2,17 @@
  * @file jumpto.cpp
  * @brief Tag finding stuff, interfaces for plugins
  * @author Simon Steele
- * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2012 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
  */
 #include "stdafx.h"
 #include "resource.h"
-#include "childfrm.h"
+#include "../libpeanut/libpeanut/ieditor.h"
+#include "../libpeanut/libpeanut/filefactory.h"
 #include "plugins.h"
-#include "outputview.h"
 #include "jumpto.h"
-#include "win32filesource.h"
 
 #include "include/filefinder.h"
 #include "include/tempfile.h"
@@ -58,9 +57,8 @@ void JumpToHandler::AddSource(extensions::ITagSource* source)
 /**
  * Find tags
  */
-void JumpToHandler::FindTags(CChildFrame* pChildFrame, ITagSink* pNotifySink)
+void JumpToHandler::FindTags(IEditorFrame* pChildFrame, ITagSink* pNotifySink)
 {
-	USES_CONVERSION;
 	MASKSTRUCT		tagMaskAll={~0,~0};
 
 	// First let's find out what scheme it is...
@@ -82,25 +80,25 @@ void JumpToHandler::FindTags(CChildFrame* pChildFrame, ITagSink* pNotifySink)
 
 	TempFileName* tfn = NULL;
 
-	std::wstring fnstr;
+	tstring fnstr;
 
 	if(pChildFrame->GetModified() || !pChildFrame->CanSave())
 	{
 		if(pChildFrame->CanSave())
 		{
-			tfn = new TempFileName(pChildFrame->GetFileName().c_str(), NULL, true, true);
-			fnstr = tfn->w_str();
+			tfn = new TempFileName(pChildFrame->GetDocument()->GetFileName(), NULL, true, true);
+			fnstr = tfn->t_str();
 		}
 		else
 		{
 			tfn = new TempFileName(NULL, _T(".tmp"), true);
-			fnstr = tfn->w_str();
+			fnstr = tfn->t_str();
 		}
 
 		try
 		{
-			IFilePtr file(Win32FileSource().OpenWrite(tfn->t_str()));
-			pChildFrame->GetTextView()->SaveFile(file, false);
+			IFilePtr file(PN::IO::FileFactory::OpenWrite(tfn->t_str()));
+			pChildFrame->SaveFile(file, false);
 		}
 		catch (FileSourceException&)
 		{
@@ -108,7 +106,7 @@ void JumpToHandler::FindTags(CChildFrame* pChildFrame, ITagSink* pNotifySink)
 	}
 	else
 	{
-		fnstr = CT2CW(pChildFrame->GetFileName().c_str());
+		fnstr = pChildFrame->GetDocument()->GetFileName();
 	}
 	
 	if(!pSource->FindTags(pNotifySink, fnstr.c_str(), static_cast<void*>(pChildFrame), tagMaskAll, schemeName.c_str()))

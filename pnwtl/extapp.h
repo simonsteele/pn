@@ -2,7 +2,7 @@
  * @file extapp.h
  * @brief Define App, the basic application services
  * @author Simon Steele
- * @note Copyright (c) 2006-2011 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2012 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -48,7 +48,7 @@ public:
 		return m_item;
 	}
 
-	const wchar_t* GetTitle() const
+	LPCTSTR GetTitle() const
 	{
 		return m_title.c_str();
 	}
@@ -62,6 +62,8 @@ public:
 	{
 		return m_item.Type == extensions::miSubmenu;
 	}
+    
+#if PLAT_WIN
 
 	void BuildMenu(HMENU menu, CommandDispatch* dispatcher)
 	{
@@ -98,6 +100,8 @@ public:
 			m.AddItem(titlet, m_commandId);
 		}
 	}
+    
+#endif
 
 	bool SHandleDispatchedCommand(int iCommand, LPVOID data)
 	{
@@ -107,7 +111,7 @@ public:
 
 private:
 	extensions::MenuItem m_item;
-	std::wstring m_title;
+	tstring m_title;
 	ExtensionItemList m_items;
 	int m_commandId;
 };
@@ -196,16 +200,16 @@ public:
 	virtual void FindInFiles(extensions::ISearchOptions* options);
 
 	/// Get some text from the user
-	virtual wchar_t* InputBox(const wchar_t* title, const wchar_t* caption);
+	virtual LPTSTR InputBox(LPCTSTR title, LPCTSTR caption);
 
 	/// Make a new document
 	virtual extensions::IDocumentPtr NewDocument(const char* scheme);
 
 	/// Open a document
-	virtual extensions::IDocumentPtr OpenDocument(const wchar_t* filepath, const char* scheme);
+	virtual extensions::IDocumentPtr OpenDocument(LPCTSTR filepath, const char* scheme);
 
 	/// Utility function to safely free strings given to you by PN
-	virtual void ReleaseString(const wchar_t* str);
+	virtual void ReleaseString(LPCTSTR str);
 
 	/// Add plugin menu items
 	virtual void AddPluginMenuItems(extensions::IMenuItems *);

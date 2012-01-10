@@ -13,7 +13,7 @@ bool ScintillaAccessor::InternalIsLeadByte(char ch)
 		return false;	
 	else
 		//return Platform::IsDBCSLeadByte(codePage, ch);
-		return ::IsDBCSLeadByteEx(codePage, ch) != 0;
+		return PN::Platform::IsDBCSLeadByte(codePage, ch);
 }
 
 void ScintillaAccessor::Fill(int position)

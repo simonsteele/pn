@@ -2,88 +2,40 @@
  * @file pn.h
  * @brief Main Header File for Programmers Notepad 2, defines the application level services.
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2012 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
- *
- * Thanks to the author of kPad for the g_Context here!
  */
 
-#define PN_INITIALISEFRAME	(WM_APP+1)
-#define PN_NOTIFY			(WM_APP+2)
-#define PN_CHECKAGE			(WM_APP+3)
-#define PN_OPTIONSUPDATED	(WM_APP+4)
-#define PN_TOGGLEOUTPUT		(WM_APP+5)
-#define PN_TOOLRUNUPDATE	(WM_APP+6)
-#define PN_SCHEMECHANGED	(WM_APP+7)
-#define PN_HANDLEHSCLICK	(WM_APP+8)
-#define PN_ESCAPEPRESSED	(WM_APP+9)
-#define PN_UPDATEFINDTEXT	(WM_APP+10)
-#define PN_PROJECTNOTIFY	(WM_APP+11)
-#define PN_FIFMATCH			(WM_APP+12)
-#define PN_GOTOLINE			(WM_APP+13)
-#define PN_GETMDICLIENTRECT (WM_APP+14)
-#define PN_MDISETMENU		(WM_APP+15)
-#define PN_REFRESHUPDATEUI  (WM_APP+16)
-#define PN_UPDATECHILDUI	(WM_APP+17)
-#define PN_CLOSEALLOTHER	(WM_APP+18)
-#define PN_OVERWRITETARGET	(WM_APP+19)
-#define PN_INSERTCLIP		(WM_APP+20)
-#define PN_SETFOCUS			(WM_APP+21)
-#define	PN_COMPLETECLIP		(WM_APP+22)
-#define PN_INSERTCLIPTEXT   (WM_APP+23)
-#define PN_SETSCHEME		(WM_APP+24)
+#ifndef PN_H_INCLUDED
+#define PN_H_INCLUDED
 
-// Command IDs used around the place...
-#define PN_MDIACTIVATE		0x1
-#define TOOLS_RUNTOOL		0x2
-#define PN_MDIDESTROY		0x3
-#define COMMANDS_RUNEXT		0x4
-#define PN_UPDATEDISPLAY	0x5
-#define PN_UPDATEAVAILABLE	0x6
-#define PN_COMMAND_EDITOR   0x7
-#define PN_COMMAND_PLUGIN	0x8
+#ifdef PLAT_WIN
 
-#define PNID_SAVEAS			14
-#define PNID_OVERWRITE		15
+#include "../libpeanut/libpeanut/win/core/defs.h"
 
-#define PNID_DONTASKUSER	253
-
-#ifdef _UNICODE
-	#define WIDEN2(x) L ## x
-	#define WIDEN(x) WIDEN2(x)
-	#define __WFILE__ WIDEN(__FILE__)
-	#define __TFILE__ __WFILE__
-#else
-	#define __TFILE__ __FILE__
-#endif
-
-
-//#if defined(DEBUG_)
-	#define UNEXPECTED(message) \
-	{ \
-		pn__Unexpected(__TFILE__, __LINE__, message); \
-	}
-
-	#define RETURN_UNEXPECTED(message, ret) \
-	{ \
-		pn__Unexpected(__TFILE__, __LINE__, message); \
-		return ret; \
-	}
-/*#else
-	#define UNEXPECTED(message) ;
-	#define RETURN_UNEXPECTED(message, ret) return ret;
-#endif*/
-
-#define LOG(message) \
-	::OutputDebugString(message)
+#endif 
 
 #include "allocator.h"
 #include "pnextstring.h"
 #include "extiface.h"
 #include "third_party/scintilla/include/Platform.h"
 #include "pntypes.h"
+
+#define PN_MDIACTIVATE          0x1
+#define TOOLS_RUNTOOL           0x2
+#define PN_MDIDESTROY           0x3
+#define COMMANDS_RUNEXT         0x4
+#define PN_UPDATEDISPLAY        0x5
+#define PN_UPDATEAVAILABLE      0x6
+#define PN_COMMAND_EDITOR       0x7
+#define PN_COMMAND_PLUGIN       0x8
+
+#define PNID_SAVEAS             14
+#define PNID_OVERWRITE          15
+
+#define PNID_DONTASKUSER        253
 
 // Pre-declarations...
 class App;
@@ -102,7 +54,6 @@ typedef enum {
 	PNDW_FINDRESULTS = 4,
 } EDockingWindow;
 
-#include "pnutils.h"
 #include "pnstrings.h"
 #include "include/singleton.h"
 #include "l10n.h"
@@ -110,18 +61,38 @@ typedef enum {
 #include "Document.h"
 typedef boost::shared_ptr<Document> DocumentPtr;
 typedef std::list< DocumentPtr > DocumentList;
+class Scheme;
 
-struct IMainFrame
+class IEditorFactory
 {
+public:
+    virtual ~IEditorFactory() {}
+    /// Create a new editor with this scheme:
+    virtual IEditorFrame* WithScheme(Scheme* scheme) = 0;
+    virtual IEditorFrame* Default() = 0;
+    virtual IEditorFrame* FromFile(LPCTSTR pathname, Scheme* pScheme, 
+                                   EPNEncoding encoding, bool& bOpened) = 0;
+};
+
+class IMainFrame
+{
+public:
 	// Window Accessors
+#if PLAT_WIN
 	virtual CWindow* GetWindow() = 0;
+#endif
 	
 	// Global UI
 	virtual void AddMRUEntry(LPCTSTR lpszFile) = 0;
 	virtual void SetStatusText(LPCTSTR text, bool bLongLife = true) = 0;
+    
+#if PLAT_WIN
 	virtual BOOL TrackPopupMenu(HMENU hMenu, UINT uFlags, int x, int y, LPTPMPARAMS lpParams = NULL, HWND hWndCaller = NULL) = 0;
 	virtual void ToggleDockingWindow(EDockingWindow window, bool bSetValue = false, bool bShowing = true) = 0;
-	
+#endif
+    
+    virtual IEditorFactory& GetFactory() const = 0;
+    
 	// Document Operations
 	virtual bool CloseAll() = 0;
 	virtual bool SaveAll(bool ask = false) = 0;
@@ -155,7 +126,9 @@ struct _Context
 	IMainFrame				*m_frame;
 	MultipleInstanceManager *m_miManager;
 	Options					*options;
+#if PLAT_WIN
 	OSVERSIONINFO			OSVersion;
+#endif
 	App						*ExtApp;
 };
 
@@ -167,16 +140,149 @@ HWND GetCurrentEditor();
 /// This function is used to show that something odd and unexpected has happened.
 void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message);
 
-// Utility Classes and Definitions:
+
+namespace PN { namespace Platform {
+
+    static tstring GetDefaultEditorFont()
+    {
+#if PLAT_WIN
+        if (WTL::RunTimeHelper::IsVista())
+        {
+            return _T("Consolas");
+        }
+        else
+        {
+            return _T("Lucida Console");
+        }
+#else
+        return _T("Menlo Regular");
+#endif
+    }
+    
+    /**
+     * Set the clipboard contents.
+     * @param data Null-terminated buffer containing text for the clipboard.
+     * @param length Length of data including null.
+     */
+    static void SetClipboardContent(const char* data, int length)
+    {
+#if PLAT_WIN
+        HGLOBAL hData = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, length+1);
+        if( hData )
+        {
+            if( OpenClipboard(GetCurrentEditor()) )
+            {
+                EmptyClipboard();
+                char* pBuf = static_cast<char*>(::GlobalLock(hData));
+                memcpy(pBuf, data, length);
+                ::GlobalUnlock(hData);
+                ::SetClipboardData(CF_TEXT, hData);
+                CloseClipboard();
+            }
+        }
+#else
+        throw "Unimplemented";
+#endif
+    }
+    
+    /**
+     * Provide information about the current user.
+     */
+    class UserInformation
+    {
+    public:
+        explicit UserInformation()
+        {
+            set();
+        }
+        
+        tstring UserName;
+        
+    private:
+        void set();
+    };
+    
+    /**
+     * Get the directory that PN is running from.
+     */
+    tstring GetExecutableDirectory();
+    
+    static bool IsDBCSLeadByte(int codePage, char ch)
+    {
+#if PLAT_WIN
+        return ::IsDBCSLeadByteEx(codePage, ch) != 0;
+#endif
+        throw "Unimplemented";
+    }
+    
+    /**
+     * Provide system-locale formatted Date/Time.
+     */
+    class DateTimeInformation
+    {
+    public:
+        explicit DateTimeInformation()
+        {
+            set();
+        }
+        
+        tstring CurrentDate;
+        tstring CurrentTime;
+        
+    private:
+        void set();
+    };
+    
+    /**
+     * Provide User-Friendly File Information.
+     */
+    class FileInformation
+    {
+    public:
+        explicit FileInformation(LPCTSTR filePath)
+        {
+            set(filePath);
+        }
+        
+        tstring FileDate;
+        tstring FileTime;
+        tstring FileAttr;
+        
+    private:
+        void set(LPCTSTR filePath);
+    };
+}} // PN::Platform
+
+class OpTimeLogger
+{
+public:
+    OpTimeLogger(LPCTSTR op) : m_op(op), m_startTime(::GetTickCount()) {}
+    ~OpTimeLogger()
+    {
+        unsigned long durn = ::GetTickCount() - m_startTime;
+        std::string log = boost::str(boost::format("Timer [%1%]: %2%ms") % m_op % durn);
+        LOG(log.c_str());
+    }
+private:
+    tstring m_op;
+    unsigned long m_startTime;
+};
+
+// Windows-only UI bits:
+#if PLAT_WIN
 #include "pntabs.h"
+#include "ScintillaWTL.h"
+#include "pntaskdialog.h"
+#include "ssmenus.h"
+#include "pnutils.h"
+#endif
+
+// Utility Classes and Definitions:
 #include "xmlparser.h"
 #include "commands.h"
-#include "ssmenus.h"
 #include "ifilesource.h"
 
 #include "optionsmanager.h"
-
-#include "ScintillaWTL.h"
 
 #include "schemes.h"
 #include "schememanager.h"
@@ -184,6 +290,6 @@ void pn__Unexpected(LPCTSTR file, int line, LPCTSTR message);
 #include "files.h"
 #include "filename.h"
 
-#include "pntaskdialog.h"
-
 #define OPTIONS g_Context.options
+
+#endif //#ifndef PN_H_INCLUDED

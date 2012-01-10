@@ -2,7 +2,7 @@
  * @file appsettings.h
  * @brief Loading of core application settings
  * @author Simon Steele
- * @note Copyright (c) 2005 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2011 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -24,8 +24,6 @@ public:
 };
 
 typedef std::list<ExtDetails> extlist;
-
-class FileFinderData;
 
 class AppSettings : public XMLParseState
 {
@@ -50,7 +48,6 @@ public:
 	virtual void characterData(XML_CSTR data, int len);
 
 protected:
-	void findExtensionHandler(LPCTSTR path, FileFinderData& data, bool& /*shouldContinue*/);
 	void load();
 	void load(const TCHAR* filename);
 	void save();

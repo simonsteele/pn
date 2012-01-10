@@ -2,7 +2,7 @@
  * @file editorcommands.cpp
  * @brief Built in text buffer commands
  * @author Simon Steele
- * @note Copyright (c) 2002-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2012 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -220,19 +220,7 @@ void ClipboardSwap(CScintillaImpl& editor)
 
 	editor.Paste();
 
-	HGLOBAL hData = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_ZEROINIT, length+1);
-	if( hData )
-	{
-		if( OpenClipboard(GetCurrentEditor()) )
-		{
-			EmptyClipboard();
-			char* pBuf = static_cast<char*>(::GlobalLock(hData));
-			memcpy(pBuf, &buffer[0], length + 1);
-			::GlobalUnlock(hData);
-			::SetClipboardData(CF_TEXT, hData);
-			CloseClipboard();
-		}
-	}
+    PN::Platform::SetClipboardContent(&buffer[0], length + 1);
 }
 
 void LineDuplicate(CScintillaImpl& editor)

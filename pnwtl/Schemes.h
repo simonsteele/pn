@@ -131,26 +131,26 @@ class Scheme
 	public:
 		explicit Scheme();
 		explicit Scheme(SchemeManager* pManager);
-		explicit Scheme(SchemeManager* pManager, const wchar_t* filename);
+		explicit Scheme(SchemeManager* pManager, const TCHAR* filename);
 		
 		explicit Scheme(const Scheme& copy);
 
 		virtual ~Scheme();
 
-		virtual void Load(CScintilla& sc, bool allSettings = true, const wchar_t* filename = NULL);
+		virtual void Load(CScintilla& sc, bool allSettings = true, const TCHAR* filename = NULL);
 		
 		virtual StylesList* CreateStylesList();
 
 		virtual void SetName(const char* name);
 		virtual void SetTitle(const TCHAR* title);
 		
-		void SetFileName(const wchar_t* filename);
+		void SetFileName(const TCHAR* filename);
 
 		virtual bool CheckName();
 
 		virtual const char* GetName() const;
 		virtual const TCHAR* GetTitle() const;
-		virtual const wchar_t* GetFileName() const;
+		virtual const TCHAR* GetFileName() const;
 		virtual const char* GetLexer() const;
 
 		const CommentSpecRec& GetCommentSpec() const;
@@ -164,7 +164,7 @@ class Scheme
 		const Scheme& operator = (const Scheme& copy);
 
 	protected:
-		wchar_t*		m_SchemeFile;
+		TCHAR*          m_SchemeFile;
 		char*			m_Name;
 		TCHAR*			m_Title;
 		bool			m_bInternal;
@@ -205,32 +205,5 @@ typedef std::map<tstring, Scheme*>		SCHEME_MAP;
 typedef std::map<std::string, Scheme*>	SCHEME_MAPA;
 typedef SCHEME_MAP::iterator			SCHEME_MAPIT;
 typedef SCHEME_MAP::value_type			SCMITEM;
-
-typedef struct 
-{
-	Scheme* pScheme;
-	int iCommand;
-} menuid_scheme_pair;
-
-typedef std::list<menuid_scheme_pair> MISCHEMELIST;
-
-class CSchemeSwitcher
-{
-	public:
-		CSchemeSwitcher();
-		~CSchemeSwitcher();
-
-		void Reset(CommandDispatch* pDispatch, int iCommand = SCHEMEMANAGER_SELECTSCHEME);
-
-		void SetActiveScheme(Scheme* pCurrent);
-
-		operator HMENU ();
-
-	protected:
-		void BuildMenu(int iCommand, CommandDispatch* dispatch);
-
-		MISCHEMELIST	m_list;
-		CSPopupMenu		m_menu;
-};
 
 #endif //#ifndef schemes_h__included

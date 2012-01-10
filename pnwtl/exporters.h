@@ -2,7 +2,7 @@
  * @file exporters.h
  * @brief Define style and style-containing classes.
  * @author Simon Steele
- * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2012 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -26,18 +26,6 @@ class IOutput
 		virtual void puts(const char* str) = 0;
 		virtual void putc(const char ch) = 0;
 		virtual void printf(const char* format, ...) = 0;
-};
-
-/**
- * Class implementing printf for IOutput conduit classes
- */
-class PrintfConduit : public IOutput
-{
-	public:
-		virtual void printf(const char* format, ...);
-
-	protected:
-		CStringA str;
 };
 
 /**
@@ -89,7 +77,7 @@ class ExporterFactory
  * This is a data exporter output class, it stores all output
  * in a growing string buffer.
  */
-class StringOutput : public PrintfConduit
+class StringOutput : public IOutput
 {
 	public:
 		StringOutput(unsigned int baseSize = 4096);
@@ -99,15 +87,17 @@ class StringOutput : public PrintfConduit
 
 		const char* c_str();
 
-	protected:
+	private:
 		GArray<char>	m_buffer;
+        std::string     str;
+
 };
 
 /**
  * This is a data exporter output class, it writes output into
  * a file opened on construction.
  */
-class FileOutput : public PrintfConduit
+class FileOutput : public IOutput
 {
 	public:
 		FileOutput(LPCTSTR fileName);
@@ -119,9 +109,10 @@ class FileOutput : public PrintfConduit
 		virtual void puts(const char* str);
 		virtual void putc(const char ch);
 
-	protected:
-		CFile	m_file;
-		bool	m_bValid;
+	private:
+		CFile       m_file;
+		bool        m_bValid;
+        std::string str;
 };
 
 /**
@@ -147,7 +138,7 @@ class RTFExporter : public BaseExporter
 		std::string GetRTFStyleChange(StyleDetails* currentStyle, StyleDetails* newStyle);
 		
 		std::unordered_map<int, int> m_colorMap;
-		std::unordered_map<std::wstring, int> m_fontMap;
+		std::unordered_map<tstring, int> m_fontMap;
 };
 
 /**

@@ -2,7 +2,7 @@
  * @file IOptions.h
  * @brief PN Options Manager Interface
  * @author Simon Steele
- * @note Copyright (c) 2002-2010 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -11,15 +11,15 @@
 #ifndef ioptions_h__included
 #define ioptions_h__included
 
-static const wchar_t* PNSK_MRU = L"MRU";
-static const wchar_t* PNSK_MRUP = L"MRUProjects";
-static const wchar_t* PNSK_INTERFACE = L"Interface Settings";
-static const wchar_t* PNSK_EDITOR = L"Editor Settings";
-static const wchar_t* PNSK_PRINT = L"Print Settings";
-static const wchar_t* PNSK_DEFGUI = L"\\default";
-static const wchar_t* PNSK_FIND = L"Find";
-static const wchar_t* PNSK_SCHEMES = L"Schemes";
-static const wchar_t* PNSK_GENERAL = L"General Settings";
+static const TCHAR* PNSK_MRU = _T("MRU");
+static const TCHAR* PNSK_MRUP = _T("MRUProjects");
+static const TCHAR* PNSK_INTERFACE = _T("Interface Settings");
+static const TCHAR* PNSK_EDITOR = _T("Editor Settings");
+static const TCHAR* PNSK_PRINT = _T("Print Settings");
+static const TCHAR* PNSK_DEFGUI = _T("\\default");
+static const TCHAR* PNSK_FIND = _T("Find");
+static const TCHAR* PNSK_SCHEMES = _T("Schemes");
+static const TCHAR* PNSK_GENERAL = _T("General Settings");
 
 #define PNPATH_PN				0
 #define	PNPATH_SCHEMES			1
@@ -97,25 +97,25 @@ public:
 		} ECachedOption;
 
 		/// Set a bool value
-		virtual void Set(const wchar_t* subkey, const wchar_t* value, bool bVal) = 0;
+		virtual void Set(LPCTSTR subkey, LPCTSTR value, bool bVal) = 0;
 		
 		/// Set an int value
-		virtual void Set(const wchar_t* subkey, const wchar_t* value, int iVal) = 0;
+		virtual void Set(LPCTSTR subkey, LPCTSTR value, int iVal) = 0;
 		
 		/// Set a string value
-		virtual void Set(const wchar_t* subkey, const wchar_t* value, const wchar_t* szVal) = 0;
+		virtual void Set(LPCTSTR subkey, LPCTSTR value, LPCTSTR szVal) = 0;
 
 		/// Get a bool value
-		virtual bool Get(const wchar_t* subkey, const wchar_t* value, bool bDefault) = 0;
+		virtual bool Get(LPCTSTR subkey, LPCTSTR value, bool bDefault) = 0;
 		
 		/// Get an int value
-		virtual int Get(const wchar_t* subkey, const wchar_t* value, int iDefault) = 0;
+		virtual int Get(LPCTSTR subkey, LPCTSTR value, int iDefault) = 0;
 		
 		/// Get a string (note, you should free this using IPN::ReleaseString from an extension)
-		virtual wchar_t* GetS(const wchar_t* subkey, const wchar_t* value, const wchar_t* szDefault) = 0;
+		virtual LPCTSTR GetS(LPCTSTR subkey, LPCTSTR value, LPCTSTR szDefault) = 0;
 
 		/// Get a PN path (note, you should free this using IPN::ReleaseString from an extension)
-		virtual wchar_t* GetPNPath(int pathtype = PNPATH_PN) = 0;
+		virtual LPCTSTR GetPNPath(int pathtype = PNPATH_PN) = 0;
 
 		/// Get a cached option
 		virtual int GetCached(ECachedOption option) = 0;
@@ -124,7 +124,7 @@ public:
 		virtual void SetCached(ECachedOption option, int value) = 0;
 
 		/// Start a group options operation
-		virtual void BeginGroupOperation(const wchar_t* subkey) = 0;
+		virtual void BeginGroupOperation(LPCTSTR subkey) = 0;
 		
 		/// End a group options operation
 		virtual void EndGroupOperation() = 0;

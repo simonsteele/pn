@@ -2,7 +2,7 @@
  * @file searchoptions.cpp
  * @brief Implement SearchOptions
  * @author Simon Steele
- * @note Copyright (c) 2006-2009 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2012 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -52,8 +52,8 @@ public:
 	}
 
 	// Basic Options:
-	const wchar_t* GetFindText() const { return m_findText.c_str(); }
-	void SetFindText(const wchar_t* findText) { m_findText = findText; }
+	LPCTSTR GetFindText() const { return m_findText.c_str(); }
+	void SetFindText(LPCTSTR findText) { m_findText = findText; }
 	
 	bool GetMatchWholeWord() const { return m_matchWholeWord; }
 	void SetMatchWholeWord(bool matchWholeWord) { m_matchWholeWord = matchWholeWord; }
@@ -80,18 +80,18 @@ public:
 	void SetNoCursorMove(bool reposition) { m_noCursorMove = reposition; }
 
 	// Replace Options:
-	const wchar_t* GetReplaceText() const { return m_replaceText.c_str(); }
-	void SetReplaceText(const wchar_t* text) { m_replaceText = text; }
+	LPCTSTR GetReplaceText() const { return m_replaceText.c_str(); }
+	void SetReplaceText(LPCTSTR text) { m_replaceText = text; }
 	
 	bool GetReplaceInSelection() const { return m_inSelection; }
 	void SetReplaceInSelection(bool inSelection) { m_inSelection = inSelection; }
 
 	// Find In Files Options:
-	const wchar_t* GetFileExts() const { return m_fileExts.c_str(); }
-	void SetFileExts(const wchar_t* extensions) { m_fileExts = extensions; }
+	LPCTSTR GetFileExts() const { return m_fileExts.c_str(); }
+	void SetFileExts(LPCTSTR extensions) { m_fileExts = extensions; }
 	
-	const wchar_t* GetSearchPath() const { return m_path.c_str(); }
-	void SetSearchPath(const wchar_t* path) { m_path = path; }
+	LPCTSTR GetSearchPath() const { return m_path.c_str(); }
+	void SetSearchPath(LPCTSTR path) { m_path = path; }
 	
 	bool GetRecurse() const { return m_recurse; }
 	void SetRecurse(bool recurse) { m_recurse = recurse; }
@@ -107,7 +107,7 @@ public:
 	virtual void SetFound(bool found) { m_found = found; }
 
 private:
-	std::wstring m_findText;
+	tstring m_findText;
 	bool m_matchWholeWord;
 	bool m_matchCase;
 	bool m_useRegExp;
@@ -119,12 +119,12 @@ private:
 	extensions::EFindWhere m_findWhere;
 
 	// Replace
-	std::wstring m_replaceText;
+	tstring m_replaceText;
 	bool	m_inSelection;
 
 	// Find In Files
-	std::wstring m_fileExts;
-	std::wstring m_path;
+	tstring m_fileExts;
+	tstring m_path;
 	bool m_recurse;
 	bool m_includeHidden;
 	extensions::EFIFFileSet m_fileSet;

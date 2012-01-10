@@ -11,21 +11,20 @@
 #ifndef pntypes_h__included
 #define pntypes_h__included
 
-typedef unsigned __int64	uint64_t;
-typedef __int64				int64_t;
-
 #include "third_party/scintilla/include/scintilla.h"
 #include "searchoptions.h"
 
 typedef struct tagPrintOptions
 {
+#if PLAT_WIN
 	// Cached object references...
 	HGLOBAL hDevMode;
 	HGLOBAL hDevNames;
 	
 	// Print margins...
 	RECT	rcMargins;
-
+#endif
+    
 	// Header and Footer text...
 	tstring Header;
 	tstring Footer;
