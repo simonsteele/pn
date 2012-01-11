@@ -1,0 +1,39 @@
+PN Code Structure:
+
+libpeanut:
+==========
+
+All core platform-independent code goes here, plus minimal platform-specific code for core functionality like File IO, common type definitions and utilities.
+
+Platform-specific files go in the relevant directory with a [platform]/ prefix.
+
+ core: Core Peanut types like IEditor, Document, Options, extensions interface, shared types
+ editor: Cross-platform editor implementation bits
+   \alternatefiles
+   \autocomplete: Autocomplete implementations
+   \exporters: Export implementations
+   \schemes: Schemes code
+   \smartstart: Smart Start
+   \tags: Goto / Jump / Go to definition / tags...
+   \textclips: Snippets/textclips
+ extensions: Extensibility
+   \scripts: Scripting support
+ io: File I/O, directory walking, integration with FTP etc.
+ l10n: Localisation bits
+ scintilla: Scintilla wrapping code
+ third_party: Third party code used in libpeanut
+
+pnwtl:
+======
+
+Windows Programmer's Notepad source tree, most non-Windows-specific code should be gradually migrated into libpeanut.
+
+peanut:
+=======
+
+Linux/OSX editor source tree (eventually Windows too?).
+
+lib:
+====
+
+Built libraries for inclusion in the above.

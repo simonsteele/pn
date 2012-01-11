@@ -21,7 +21,7 @@
 	#define XML_CSTR LPCSTR
 #endif
 
-#include "third_party/expat/lib/expat.h"
+#include "../libpeanut/third_party/expat/lib/expat.h"
 
 static const TCHAR* tszXMLParserDefaultException = _T("Exception while parsing XML.");
 

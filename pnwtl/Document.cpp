@@ -10,7 +10,7 @@
 
 #include "stdafx.h"
 #include "resource.h"
-#include "../libpeanut/libpeanut/ieditor.h"
+#include "../libpeanut/core/ieditor.h"
 #include "Document.h"
 #include "FileUtil.h"
 

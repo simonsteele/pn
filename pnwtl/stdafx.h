@@ -41,13 +41,13 @@
 #ifdef _MSC_VER // BEGIN WINDOWS ONLY
 	#pragma once
 
-#include "../libpeanut/libpeanut/win/core/coreinclude.h"
+#include "../libpeanut/win/core/coreinclude.h"
 
 #endif // END WINDOWS ONLY
 
 #ifdef PLAT_MAC
 
-#include "../libpeanut/libpeanut/mac/core/coreinclude.h"
+#include "../libpeanut/mac/core/coreinclude.h"
 
 #endif
 

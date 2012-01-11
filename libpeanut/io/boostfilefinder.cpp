@@ -9,8 +9,8 @@
  */
 
 #include <stdafx.h>
-#include "filefinder.h"
-#include "io/dos_wildcard.h"
+#include "../../pnwtl/include/filefinder.h"
+#include "dos_wildcard.h"
 
 using boost::filesystem::directory_iterator;
 
@@ -28,13 +28,13 @@ bool BoostFileFinderImpl::Find(LPCTSTR foundPath, LPCTSTR filespec, bool bRecurs
     directory_iterator end;
     for (directory_iterator i(dir); i != end; ++i)
     {
-        if (i->path().is_directory()) && bRecurse)
+        if (boost::filesystem::is_directory(i->path()) && bRecurse)
         {
             // TODO: Start directory
             shouldContinue = Find(i->path().string().c_str(), filespec, true, bIncludeHidden);
             // TODO: End directory
         }
-        else if (i->path().is_file())
+        else if (boost::filesystem::is_regular_file(i->path()))
         {
             if (wildcard.match(i->path().filename()))
             {
