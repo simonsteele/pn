@@ -1,0 +1,299 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		49C8C9B214BD883E000E55DC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49C8C9B114BD883E000E55DC /* Cocoa.framework */; };
+		49C8C9BC14BD883E000E55DC /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 49C8C9BA14BD883E000E55DC /* InfoPlist.strings */; };
+		49C8C9BE14BD883E000E55DC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 49C8C9BD14BD883E000E55DC /* main.m */; };
+		49C8C9C214BD883E000E55DC /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 49C8C9C014BD883E000E55DC /* Credits.rtf */; };
+		49C8C9C514BD883E000E55DC /* PNAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 49C8C9C414BD883E000E55DC /* PNAppDelegate.m */; };
+		49C8C9C814BD883F000E55DC /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 49C8C9C614BD883F000E55DC /* MainMenu.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		49C8C9AD14BD883E000E55DC /* PeanutEditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PeanutEditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		49C8C9B114BD883E000E55DC /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		49C8C9B414BD883E000E55DC /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		49C8C9B514BD883E000E55DC /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		49C8C9B614BD883E000E55DC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		49C8C9B914BD883E000E55DC /* PeanutEditor-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "PeanutEditor-Info.plist"; path = "../../../peanut/mac/PeanutEditor-Info.plist"; sourceTree = "<group>"; };
+		49C8C9BB14BD883E000E55DC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		49C8C9BD14BD883E000E55DC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ../../../peanut/mac/main.m; sourceTree = "<group>"; };
+		49C8C9BF14BD883E000E55DC /* PeanutEditor-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "PeanutEditor-Prefix.pch"; path = "../../../peanut/mac/PeanutEditor-Prefix.pch"; sourceTree = "<group>"; };
+		49C8C9C114BD883E000E55DC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		49C8C9C314BD883E000E55DC /* PNAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PNAppDelegate.h; path = ../../../peanut/mac/PNAppDelegate.h; sourceTree = "<group>"; };
+		49C8C9C414BD883E000E55DC /* PNAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PNAppDelegate.m; path = ../../../peanut/mac/PNAppDelegate.m; sourceTree = "<group>"; };
+		49C8C9C714BD883F000E55DC /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		49C8C9AA14BD883E000E55DC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49C8C9B214BD883E000E55DC /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		49C8C9A214BD883E000E55DC = {
+			isa = PBXGroup;
+			children = (
+				49C8C9B714BD883E000E55DC /* PeanutEditor */,
+				49C8C9B014BD883E000E55DC /* Frameworks */,
+				49C8C9AE14BD883E000E55DC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		49C8C9AE14BD883E000E55DC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				49C8C9AD14BD883E000E55DC /* PeanutEditor.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		49C8C9B014BD883E000E55DC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				49C8C9B114BD883E000E55DC /* Cocoa.framework */,
+				49C8C9B314BD883E000E55DC /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		49C8C9B314BD883E000E55DC /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				49C8C9B414BD883E000E55DC /* AppKit.framework */,
+				49C8C9B514BD883E000E55DC /* CoreData.framework */,
+				49C8C9B614BD883E000E55DC /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		49C8C9B714BD883E000E55DC /* PeanutEditor */ = {
+			isa = PBXGroup;
+			children = (
+				49C8C9C314BD883E000E55DC /* PNAppDelegate.h */,
+				49C8C9C414BD883E000E55DC /* PNAppDelegate.m */,
+				49C8C9C614BD883F000E55DC /* MainMenu.xib */,
+				49C8C9B814BD883E000E55DC /* Supporting Files */,
+			);
+			path = PeanutEditor;
+			sourceTree = "<group>";
+		};
+		49C8C9B814BD883E000E55DC /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				49C8C9B914BD883E000E55DC /* PeanutEditor-Info.plist */,
+				49C8C9BA14BD883E000E55DC /* InfoPlist.strings */,
+				49C8C9BD14BD883E000E55DC /* main.m */,
+				49C8C9BF14BD883E000E55DC /* PeanutEditor-Prefix.pch */,
+				49C8C9C014BD883E000E55DC /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		49C8C9AC14BD883E000E55DC /* PeanutEditor */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 49C8C9CB14BD883F000E55DC /* Build configuration list for PBXNativeTarget "PeanutEditor" */;
+			buildPhases = (
+				49C8C9A914BD883E000E55DC /* Sources */,
+				49C8C9AA14BD883E000E55DC /* Frameworks */,
+				49C8C9AB14BD883E000E55DC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PeanutEditor;
+			productName = PeanutEditor;
+			productReference = 49C8C9AD14BD883E000E55DC /* PeanutEditor.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		49C8C9A414BD883E000E55DC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
+			buildConfigurationList = 49C8C9A714BD883E000E55DC /* Build configuration list for PBXProject "PeanutEditor" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 49C8C9A214BD883E000E55DC;
+			productRefGroup = 49C8C9AE14BD883E000E55DC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				49C8C9AC14BD883E000E55DC /* PeanutEditor */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		49C8C9AB14BD883E000E55DC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49C8C9BC14BD883E000E55DC /* InfoPlist.strings in Resources */,
+				49C8C9C214BD883E000E55DC /* Credits.rtf in Resources */,
+				49C8C9C814BD883F000E55DC /* MainMenu.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		49C8C9A914BD883E000E55DC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49C8C9BE14BD883E000E55DC /* main.m in Sources */,
+				49C8C9C514BD883E000E55DC /* PNAppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		49C8C9BA14BD883E000E55DC /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				49C8C9BB14BD883E000E55DC /* en */,
+			);
+			name = InfoPlist.strings;
+			path = ../../../peanut/mac;
+			sourceTree = "<group>";
+		};
+		49C8C9C014BD883E000E55DC /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				49C8C9C114BD883E000E55DC /* en */,
+			);
+			name = Credits.rtf;
+			path = ../../../peanut/mac;
+			sourceTree = "<group>";
+		};
+		49C8C9C614BD883F000E55DC /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				49C8C9C714BD883F000E55DC /* en */,
+			);
+			name = MainMenu.xib;
+			path = ../../../peanut/mac;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		49C8C9C914BD883F000E55DC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		49C8C9CA14BD883F000E55DC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		49C8C9CC14BD883F000E55DC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PeanutEditor/PeanutEditor-Prefix.pch";
+				INFOPLIST_FILE = "PeanutEditor/PeanutEditor-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		49C8C9CD14BD883F000E55DC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PeanutEditor/PeanutEditor-Prefix.pch";
+				INFOPLIST_FILE = "PeanutEditor/PeanutEditor-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		49C8C9A714BD883E000E55DC /* Build configuration list for PBXProject "PeanutEditor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49C8C9C914BD883F000E55DC /* Debug */,
+				49C8C9CA14BD883F000E55DC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		49C8C9CB14BD883F000E55DC /* Build configuration list for PBXNativeTarget "PeanutEditor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				49C8C9CC14BD883F000E55DC /* Debug */,
+				49C8C9CD14BD883F000E55DC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 49C8C9A414BD883E000E55DC /* Project object */;
+}
