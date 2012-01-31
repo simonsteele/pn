@@ -251,14 +251,22 @@ bool CScintilla::GetModified()
 }
 
 #if PLAT_WIN
-virtual long SPerform(long Msg, WPARAM wParam, LPARAM lParam)
+long CScintilla::SPerform(long Msg, WPARAM wParam, LPARAM lParam)
 {
     if (Perform)
         return Perform(m_Pointer, Msg, wParam, lParam);
     else
         return ::SendMessage(m_scihWnd, Msg, wParam, lParam);
 }
-#endif			
+#else
+long CScintilla::SPerform(long Msg, WPARAM wParam, LPARAM lParam)
+{
+    if (Perform)
+        return Perform(m_Pointer, Msg, wParam, lParam);
+    else
+        throw "You must subclass and implement platform-specific functionality here.";
+}
+#endif
 
 /**
  * Function taken from Scite to combine three marker define operations

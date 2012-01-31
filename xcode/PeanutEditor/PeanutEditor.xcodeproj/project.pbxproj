@@ -7,15 +7,72 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4919678814D1502000AA933B /* libboost_regex.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4919678614D14FDF00AA933B /* libboost_regex.dylib */; };
+		4919679214D156BD00AA933B /* libboost_regex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 4919678614D14FDF00AA933B /* libboost_regex.dylib */; };
+		498D608014C41D3A007BDA1E /* Scintilla.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4929495114C41AE600660D2F /* Scintilla.framework */; };
+		498D60A414C56774007BDA1E /* libboost_filesystem.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 498D60A014C5673E007BDA1E /* libboost_filesystem.dylib */; settings = {ATTRIBUTES = (Required, ); }; };
+		498D60A514C56774007BDA1E /* libboost_system.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 498D60A114C5673E007BDA1E /* libboost_system.dylib */; };
+		498D60A614C56EA1007BDA1E /* Scintilla.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4929495114C41AE600660D2F /* Scintilla.framework */; };
+		498D60A814C625FB007BDA1E /* libboost_filesystem.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 498D60A014C5673E007BDA1E /* libboost_filesystem.dylib */; };
+		498D60A914C625FB007BDA1E /* libboost_system.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 498D60A114C5673E007BDA1E /* libboost_system.dylib */; };
+		499213E114CD5BE100811769 /* libexpat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 499213E014CD5BE100811769 /* libexpat.a */; };
 		49C8C9B214BD883E000E55DC /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49C8C9B114BD883E000E55DC /* Cocoa.framework */; };
 		49C8C9BC14BD883E000E55DC /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 49C8C9BA14BD883E000E55DC /* InfoPlist.strings */; };
-		49C8C9BE14BD883E000E55DC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 49C8C9BD14BD883E000E55DC /* main.m */; };
+		49C8C9BE14BD883E000E55DC /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49C8C9BD14BD883E000E55DC /* main.mm */; };
 		49C8C9C214BD883E000E55DC /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 49C8C9C014BD883E000E55DC /* Credits.rtf */; };
-		49C8C9C514BD883E000E55DC /* PNAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 49C8C9C414BD883E000E55DC /* PNAppDelegate.m */; };
+		49C8C9C514BD883E000E55DC /* PNAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 49C8C9C414BD883E000E55DC /* PNAppDelegate.mm */; };
 		49C8C9C814BD883F000E55DC /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 49C8C9C614BD883F000E55DC /* MainMenu.xib */; };
+		49C8CA0214C027FE000E55DC /* libpeanut.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49C8C9FA14BED6B6000E55DC /* libpeanut.a */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		4929495014C41AE600660D2F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4929494C14C41AE500660D2F /* ScintillaFramework.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
+			remoteInfo = Scintilla;
+		};
+		49C8C9F914BED6B6000E55DC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 49C8C9F514BED6B6000E55DC /* peanut.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 4937F22014BCF04700E084F2;
+			remoteInfo = peanut;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		498D608114C41DF4007BDA1E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				498D60A614C56EA1007BDA1E /* Scintilla.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		498D60A714C625E9007BDA1E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				4919678814D1502000AA933B /* libboost_regex.dylib in CopyFiles */,
+				498D60A814C625FB007BDA1E /* libboost_filesystem.dylib in CopyFiles */,
+				498D60A914C625FB007BDA1E /* libboost_system.dylib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		4919678614D14FDF00AA933B /* libboost_regex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_regex.dylib; path = ../../../lib/boost_1_48_0/stage/lib/libboost_regex.dylib; sourceTree = "<group>"; };
+		4929494C14C41AE500660D2F /* ScintillaFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ScintillaFramework.xcodeproj; path = ../../libpeanut/third_party/scintilla/cocoa/ScintillaFramework/ScintillaFramework.xcodeproj; sourceTree = "<group>"; };
+		498D60A014C5673E007BDA1E /* libboost_filesystem.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_filesystem.dylib; path = ../../../lib/boost_1_48_0/stage/lib/libboost_filesystem.dylib; sourceTree = "<group>"; };
+		498D60A114C5673E007BDA1E /* libboost_system.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_system.dylib; path = ../../../lib/boost_1_48_0/stage/lib/libboost_system.dylib; sourceTree = "<group>"; };
+		499213E014CD5BE100811769 /* libexpat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libexpat.a; path = ../../lib/mac/libexpat.a; sourceTree = "<group>"; };
 		49C8C9AD14BD883E000E55DC /* PeanutEditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PeanutEditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		49C8C9B114BD883E000E55DC /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		49C8C9B414BD883E000E55DC /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -23,12 +80,14 @@
 		49C8C9B614BD883E000E55DC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		49C8C9B914BD883E000E55DC /* PeanutEditor-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "PeanutEditor-Info.plist"; path = "../../../peanut/mac/PeanutEditor-Info.plist"; sourceTree = "<group>"; };
 		49C8C9BB14BD883E000E55DC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		49C8C9BD14BD883E000E55DC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ../../../peanut/mac/main.m; sourceTree = "<group>"; };
+		49C8C9BD14BD883E000E55DC /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = main.mm; path = ../../../peanut/mac/main.mm; sourceTree = "<group>"; };
 		49C8C9BF14BD883E000E55DC /* PeanutEditor-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "PeanutEditor-Prefix.pch"; path = "../../../peanut/mac/PeanutEditor-Prefix.pch"; sourceTree = "<group>"; };
 		49C8C9C114BD883E000E55DC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
 		49C8C9C314BD883E000E55DC /* PNAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PNAppDelegate.h; path = ../../../peanut/mac/PNAppDelegate.h; sourceTree = "<group>"; };
-		49C8C9C414BD883E000E55DC /* PNAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PNAppDelegate.m; path = ../../../peanut/mac/PNAppDelegate.m; sourceTree = "<group>"; };
+		49C8C9C414BD883E000E55DC /* PNAppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = PNAppDelegate.mm; path = ../../../peanut/mac/PNAppDelegate.mm; sourceTree = "<group>"; };
 		49C8C9C714BD883F000E55DC /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		49C8C9F514BED6B6000E55DC /* peanut.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = peanut.xcodeproj; path = ../peanut/peanut.xcodeproj; sourceTree = "<group>"; };
+		49C8C9FB14BED7DF000E55DC /* PNScintilla.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PNScintilla.h; path = ../../../peanut/mac/PNScintilla.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +95,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4919679214D156BD00AA933B /* libboost_regex.dylib in Frameworks */,
+				499213E114CD5BE100811769 /* libexpat.a in Frameworks */,
+				498D60A414C56774007BDA1E /* libboost_filesystem.dylib in Frameworks */,
+				498D60A514C56774007BDA1E /* libboost_system.dylib in Frameworks */,
+				498D608014C41D3A007BDA1E /* Scintilla.framework in Frameworks */,
+				49C8CA0214C027FE000E55DC /* libpeanut.a in Frameworks */,
 				49C8C9B214BD883E000E55DC /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -43,9 +108,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4929494D14C41AE500660D2F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4929495114C41AE600660D2F /* Scintilla.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		49C8C9A214BD883E000E55DC = {
 			isa = PBXGroup;
 			children = (
+				4919678614D14FDF00AA933B /* libboost_regex.dylib */,
+				499213E014CD5BE100811769 /* libexpat.a */,
+				498D60A014C5673E007BDA1E /* libboost_filesystem.dylib */,
+				498D60A114C5673E007BDA1E /* libboost_system.dylib */,
+				4929494C14C41AE500660D2F /* ScintillaFramework.xcodeproj */,
+				49C8C9F514BED6B6000E55DC /* peanut.xcodeproj */,
 				49C8C9B714BD883E000E55DC /* PeanutEditor */,
 				49C8C9B014BD883E000E55DC /* Frameworks */,
 				49C8C9AE14BD883E000E55DC /* Products */,
@@ -83,9 +162,10 @@
 			isa = PBXGroup;
 			children = (
 				49C8C9C314BD883E000E55DC /* PNAppDelegate.h */,
-				49C8C9C414BD883E000E55DC /* PNAppDelegate.m */,
+				49C8C9C414BD883E000E55DC /* PNAppDelegate.mm */,
 				49C8C9C614BD883F000E55DC /* MainMenu.xib */,
 				49C8C9B814BD883E000E55DC /* Supporting Files */,
+				49C8C9FB14BED7DF000E55DC /* PNScintilla.h */,
 			);
 			path = PeanutEditor;
 			sourceTree = "<group>";
@@ -95,11 +175,19 @@
 			children = (
 				49C8C9B914BD883E000E55DC /* PeanutEditor-Info.plist */,
 				49C8C9BA14BD883E000E55DC /* InfoPlist.strings */,
-				49C8C9BD14BD883E000E55DC /* main.m */,
+				49C8C9BD14BD883E000E55DC /* main.mm */,
 				49C8C9BF14BD883E000E55DC /* PeanutEditor-Prefix.pch */,
 				49C8C9C014BD883E000E55DC /* Credits.rtf */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		49C8C9F614BED6B6000E55DC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				49C8C9FA14BED6B6000E55DC /* libpeanut.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -112,6 +200,9 @@
 				49C8C9A914BD883E000E55DC /* Sources */,
 				49C8C9AA14BD883E000E55DC /* Frameworks */,
 				49C8C9AB14BD883E000E55DC /* Resources */,
+				498D608114C41DF4007BDA1E /* CopyFiles */,
+				498D60A714C625E9007BDA1E /* CopyFiles */,
+				499213D814CD55EA00811769 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -140,12 +231,39 @@
 			mainGroup = 49C8C9A214BD883E000E55DC;
 			productRefGroup = 49C8C9AE14BD883E000E55DC /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 49C8C9F614BED6B6000E55DC /* Products */;
+					ProjectRef = 49C8C9F514BED6B6000E55DC /* peanut.xcodeproj */;
+				},
+				{
+					ProductGroup = 4929494D14C41AE500660D2F /* Products */;
+					ProjectRef = 4929494C14C41AE500660D2F /* ScintillaFramework.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				49C8C9AC14BD883E000E55DC /* PeanutEditor */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		4929495114C41AE600660D2F /* Scintilla.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Scintilla.framework;
+			remoteRef = 4929495014C41AE600660D2F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		49C8C9FA14BED6B6000E55DC /* libpeanut.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libpeanut.a;
+			remoteRef = 49C8C9F914BED6B6000E55DC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		49C8C9AB14BD883E000E55DC /* Resources */ = {
@@ -160,13 +278,29 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		499213D814CD55EA00811769 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "install_name_tool -change libboost_filesystem.dylib @executable_path/libboost_filesystem.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\ninstall_name_tool -change libboost_system.dylib @executable_path/libboost_system.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\ninstall_name_tool -change libboost_regex.dylib @executable_path/libboost_regex.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\ninstall_name_tool -change libboost_system.dylib @executable_path/libboost_system.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/libboost_filesystem.dylib";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		49C8C9A914BD883E000E55DC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				49C8C9BE14BD883E000E55DC /* main.m in Sources */,
-				49C8C9C514BD883E000E55DC /* PNAppDelegate.m in Sources */,
+				49C8C9BE14BD883E000E55DC /* main.mm in Sources */,
+				49C8C9C514BD883E000E55DC /* PNAppDelegate.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -226,7 +360,9 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = Peanut;
 				SDKROOT = macosx;
+				SYMROOT = "$(PROJECT_DIR)/build";
 			};
 			name = Debug;
 		};
@@ -246,17 +382,40 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = Peanut;
 				SDKROOT = macosx;
+				SYMROOT = "$(PROJECT_DIR)/build";
 			};
 			name = Release;
 		};
 		49C8C9CC14BD883F000E55DC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "PeanutEditor/PeanutEditor-Prefix.pch";
-				INFOPLIST_FILE = "PeanutEditor/PeanutEditor-Info.plist";
+				GCC_PREFIX_HEADER = "../../peanut/mac/PeanutEditor-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					PN_NO_CSTRING,
+					"PLAT_MAC=1",
+					SCI_LEXER,
+					SCI_NAMESPACE,
+				);
+				HEADER_SEARCH_PATHS = (
+					../../libpeanut/third_party/scintilla/lexlib/,
+					../../libpeanut/third_party/scintilla/cocoa/,
+					../../libpeanut/third_party/scintilla/include/,
+					../../../lib/boost_1_48_0/,
+				);
+				INFOPLIST_FILE = "../../peanut/mac/PeanutEditor-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../../../lib/boost_1_48_0/stage/lib\"",
+					"\"$(SRCROOT)/../../lib/mac\"",
+				);
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "../../libpeanut/third_party/scintilla/lexlib/ ../../libpeanut/third_party/scintilla/cocoa/ ../../libpeanut/third_party/scintilla/include/ ../../libpeanut/third_party/scintilla/src/";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -264,10 +423,31 @@
 		49C8C9CD14BD883F000E55DC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "PeanutEditor/PeanutEditor-Prefix.pch";
-				INFOPLIST_FILE = "PeanutEditor/PeanutEditor-Info.plist";
+				GCC_PREFIX_HEADER = "../../peanut/mac/PeanutEditor-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					PN_NO_CSTRING,
+					"PLAT_MAC=1",
+					SCI_LEXER,
+					SCI_NAMESPACE,
+				);
+				HEADER_SEARCH_PATHS = (
+					../../libpeanut/third_party/scintilla/lexlib/,
+					../../libpeanut/third_party/scintilla/cocoa/,
+					../../libpeanut/third_party/scintilla/include/,
+					../../../lib/boost_1_48_0/,
+				);
+				INFOPLIST_FILE = "../../peanut/mac/PeanutEditor-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../../../lib/boost_1_48_0/stage/lib\"",
+					"\"$(SRCROOT)/../../lib/mac\"",
+				);
+				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "../../libpeanut/third_party/scintilla/lexlib/ ../../libpeanut/third_party/scintilla/cocoa/ ../../libpeanut/third_party/scintilla/include/ ../../libpeanut/third_party/scintilla/src/";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

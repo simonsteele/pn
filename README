@@ -17,7 +17,7 @@ Platform-specific files go in the relevant directory with a [platform]/ prefix.
    \tags: Goto / Jump / Go to definition / tags...
    \textclips: Snippets/textclips
  extensions: Extensibility
-   \scripts: Scripting support
+   \scripting: Scripting support
  io: File I/O, directory walking, integration with FTP etc.
  l10n: Localisation bits
  scintilla: Scintilla wrapping code
@@ -37,3 +37,8 @@ lib:
 ====
 
 Built libraries for inclusion in the above.
+
+
+Building Boost:
+
+OSX: ./b2 threading=multi macosx-version=10.7 dll-path=@executable_path/ toolset=clang cxxflags="-stdlib=libc++" linkflags="-stdlib=libc++" address-model=64 --with-filesystem --with-regex stage

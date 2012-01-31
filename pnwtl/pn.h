@@ -11,7 +11,7 @@
 #ifndef PN_H_INCLUDED
 #define PN_H_INCLUDED
 
-#ifdef PLAT_WIN
+#if PLAT_WIN
 
 #include "../libpeanut/libpeanut/win/core/defs.h"
 

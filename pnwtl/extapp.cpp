@@ -34,7 +34,9 @@ App::App() : m_dispatch(NULL), m_bCanLoadExtensions(true)
 	// Note that some error checking stuff in AppSettings will make use of StringLoader 
 	// so there is a cyclic	dependancy to cope with - this is why we initialise once here
 	// and then again in setAppLanguage if necessary.
+#if PLAT_WIN
 	L10N::StringLoader::InitResourceLoader();
+#endif
 
 	// This loads some global app settings, including what to
 	// use as the options store and where user settings files are
@@ -304,10 +306,10 @@ void App::setAppLanguage()
 		{
 			_Module.SetResourceInstance(languageResources);
 		}
-#endif
 
 		// Re-initialize resource loader from this point:
 		L10N::StringLoader::InitResourceLoader();
+#endif
 	}
 }
 

@@ -411,7 +411,7 @@ typedef Utf16_Mbs<CP_ACP, const char*> Utf16_Windows1252;
 
 typedef Utf16_Utf8 Wcs_Utf8;
 
-#else
+#elif PLAT_MAC
 
 class Wcs_Utf8
 {

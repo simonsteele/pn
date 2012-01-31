@@ -95,7 +95,7 @@ public:
 	}
 };
     
-#ifdef PLAT_WIN
+#if PLAT_WIN
 
 #include "../libpeanut/libpeanut/win/core/allocator.h"
     

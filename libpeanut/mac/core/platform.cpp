@@ -9,9 +9,52 @@
  */
 
 #include <stdafx.h>
-#include "../../../../pnwtl/pn.h"
+#include "../../../pnwtl/pn.h"
 
 mach_timebase_info_data_t TimeBaseInfo::sTimebaseInfo;
+
+namespace {
+    
+    tstring CFStringToString(CFStringRef cfString)
+    {
+        std::vector<unsigned char> buffer;
+        const char *useUTF8StringPtr = NULL;
+        
+        CFIndex stringLength = CFStringGetLength(cfString), usedBytes = 0L;
+        
+        if((useUTF8StringPtr = CFStringGetCStringPtr(cfString, kCFStringEncodingUTF8)) == NULL)
+        {
+            // TODO: This might need adjusting for UTF8 characters - is only unicode character count?
+            buffer.resize(stringLength + 1);
+            CFStringGetBytes(cfString, CFRangeMake(0L, stringLength), kCFStringEncodingUTF8, '?', false, &buffer[0], stringLength, &usedBytes);
+            buffer[usedBytes] = 0;
+            useUTF8StringPtr = reinterpret_cast<char*>(&buffer[0]);
+        }
+        
+        long utf8Length = (long)(buffer.size() ? usedBytes : stringLength);
+        
+        if(useUTF8StringPtr != NULL)
+        {
+            // useUTF8StringPtr points to a NULL terminated UTF8 encoded string.
+            // utf8Length contains the length of the UTF8 string.
+            return tstring(useUTF8StringPtr, utf8Length);
+        }
+        
+        return tstring("");
+    }
+    
+    template <class T>
+    class CFReleaseGuard
+    {
+    public:
+        CFReleaseGuard(T releaseable) : m_r(releaseable) {}
+        ~CFReleaseGuard() { CFRelease(m_r); }
+        
+        operator T () const { return m_r; }
+    private:
+        T m_r;
+    };
+}
 
 namespace PN { namespace Platform {
 
@@ -47,7 +90,12 @@ void FileInformation::set(LPCTSTR filePath)
  */
 tstring GetExecutableDirectory()
 {
-    throw "Unimplemented";
+    CFBundleRef main(CFBundleGetMainBundle());
+    
+    CFReleaseGuard<CFURLRef> resources(CFBundleCopyResourcesDirectoryURL(main));
+    CFReleaseGuard<CFStringRef> dir(CFURLCopyFileSystemPath(resources, kCFURLPOSIXPathStyle));
+
+    return CFStringToString(dir);
 }
 
 }} // namespace PN::Platform

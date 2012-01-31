@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4919678C14D150C700AA933B /* ScriptRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4919678B14D150C700AA933B /* ScriptRegistry.cpp */; };
+		4919678E14D153D100AA933B /* editorcommands.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4919678D14D153D100AA933B /* editorcommands.cpp */; };
+		4919679114D1545100AA933B /* extension.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4919679014D1545100AA933B /* extension.cpp */; };
 		4937F23A14BCF0F900E084F2 /* deletionmanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4937F22814BCF0F900E084F2 /* deletionmanager.cpp */; };
 		4937F23B14BCF0F900E084F2 /* ieditor.h in Headers */ = {isa = PBXBuildFile; fileRef = 4937F22914BCF0F900E084F2 /* ieditor.h */; };
 		4937F23C14BCF0F900E084F2 /* boostfilefinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4937F22B14BCF0F900E084F2 /* boostfilefinder.cpp */; };
@@ -51,6 +54,14 @@
 		4937F29614BCF3B900E084F2 /* Files.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4937F29214BCF3B900E084F2 /* Files.cpp */; };
 		4937F29914BCF3DC00E084F2 /* extapp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4937F29714BCF3DC00E084F2 /* extapp.cpp */; };
 		4937F29A14BCF3DC00E084F2 /* extapp.h in Headers */ = {isa = PBXBuildFile; fileRef = 4937F29814BCF3DC00E084F2 /* extapp.h */; };
+		499213DB14CD5AD500811769 /* xmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 499213D914CD5AD500811769 /* xmlparser.cpp */; };
+		499213DC14CD5AD500811769 /* xmlparser.h in Headers */ = {isa = PBXBuildFile; fileRef = 499213DA14CD5AD500811769 /* xmlparser.h */; };
+		499213E414CEACE000811769 /* coreinclude.h in Headers */ = {isa = PBXBuildFile; fileRef = 499213E214CEACE000811769 /* coreinclude.h */; };
+		499213E514CEACE000811769 /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 499213E314CEACE000811769 /* platform.cpp */; };
+		499213E814CFFC2000811769 /* l10n.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 499213E614CFFC2000811769 /* l10n.cpp */; };
+		499213E914CFFC2000811769 /* l10n.h in Headers */ = {isa = PBXBuildFile; fileRef = 499213E714CFFC2000811769 /* l10n.h */; };
+		499A798314D7E4D2004DBF51 /* osxstringloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 499A798214D7E4D2004DBF51 /* osxstringloader.h */; };
+		499A798614D7E59F004DBF51 /* osxstringloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 499A798514D7E59F004DBF51 /* osxstringloader.cpp */; };
 		49C8C98214BCF413000E55DC /* exporters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C8C98014BCF413000E55DC /* exporters.cpp */; };
 		49C8C98314BCF413000E55DC /* exporters.h in Headers */ = {isa = PBXBuildFile; fileRef = 49C8C98114BCF413000E55DC /* exporters.h */; };
 		49C8C98714BCF42F000E55DC /* Document.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 49C8C98514BCF42F000E55DC /* Document.cpp */; };
@@ -70,6 +81,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4919678B14D150C700AA933B /* ScriptRegistry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ScriptRegistry.cpp; path = ../../pnwtl/ScriptRegistry.cpp; sourceTree = "<group>"; };
+		4919678D14D153D100AA933B /* editorcommands.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = editorcommands.cpp; path = ../../pnwtl/editorcommands.cpp; sourceTree = "<group>"; };
+		4919679014D1545100AA933B /* extension.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = extension.cpp; path = ../../pnwtl/extension.cpp; sourceTree = "<group>"; };
 		4937F22014BCF04700E084F2 /* libpeanut.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libpeanut.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		4937F22814BCF0F900E084F2 /* deletionmanager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = deletionmanager.cpp; sourceTree = "<group>"; };
 		4937F22914BCF0F900E084F2 /* ieditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ieditor.h; sourceTree = "<group>"; };
@@ -117,6 +131,14 @@
 		4937F29214BCF3B900E084F2 /* Files.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Files.cpp; path = ../../pnwtl/Files.cpp; sourceTree = "<group>"; };
 		4937F29714BCF3DC00E084F2 /* extapp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = extapp.cpp; path = ../../pnwtl/extapp.cpp; sourceTree = "<group>"; };
 		4937F29814BCF3DC00E084F2 /* extapp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = extapp.h; path = ../../pnwtl/extapp.h; sourceTree = "<group>"; };
+		499213D914CD5AD500811769 /* xmlparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xmlparser.cpp; path = ../../pnwtl/xmlparser.cpp; sourceTree = "<group>"; };
+		499213DA14CD5AD500811769 /* xmlparser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xmlparser.h; path = ../../pnwtl/xmlparser.h; sourceTree = "<group>"; };
+		499213E214CEACE000811769 /* coreinclude.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = coreinclude.h; path = ../mac/core/coreinclude.h; sourceTree = "<group>"; };
+		499213E314CEACE000811769 /* platform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = platform.cpp; path = ../mac/core/platform.cpp; sourceTree = "<group>"; };
+		499213E614CFFC2000811769 /* l10n.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = l10n.cpp; path = ../../pnwtl/l10n.cpp; sourceTree = "<group>"; };
+		499213E714CFFC2000811769 /* l10n.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = l10n.h; path = ../../pnwtl/l10n.h; sourceTree = "<group>"; };
+		499A798214D7E4D2004DBF51 /* osxstringloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = osxstringloader.h; path = ../mac/core/osxstringloader.h; sourceTree = "<group>"; };
+		499A798514D7E59F004DBF51 /* osxstringloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = osxstringloader.cpp; path = ../mac/core/osxstringloader.cpp; sourceTree = "<group>"; };
 		49C8C98014BCF413000E55DC /* exporters.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = exporters.cpp; path = ../../pnwtl/exporters.cpp; sourceTree = "<group>"; };
 		49C8C98114BCF413000E55DC /* exporters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exporters.h; path = ../../pnwtl/exporters.h; sourceTree = "<group>"; };
 		49C8C98514BCF42F000E55DC /* Document.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Document.cpp; path = ../../pnwtl/Document.cpp; sourceTree = "<group>"; };
@@ -146,9 +168,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4919678914D150AB00AA933B /* scripting */ = {
+			isa = PBXGroup;
+			children = (
+				4919678B14D150C700AA933B /* ScriptRegistry.cpp */,
+			);
+			name = scripting;
+			sourceTree = "<group>";
+		};
+		4919678F14D1542C00AA933B /* extensions */ = {
+			isa = PBXGroup;
+			children = (
+				4919679014D1545100AA933B /* extension.cpp */,
+				4919678914D150AB00AA933B /* scripting */,
+			);
+			name = extensions;
+			sourceTree = "<group>";
+		};
 		4937F21514BCF04700E084F2 = {
 			isa = PBXGroup;
 			children = (
+				4919678F14D1542C00AA933B /* extensions */,
 				4937F26614BCF2BF00E084F2 /* scintilla */,
 				4937F25114BCF19E00E084F2 /* editor */,
 				4937F24714BCF13C00E084F2 /* third_party */,
@@ -170,6 +210,10 @@
 		4937F22714BCF0F900E084F2 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				499213E614CFFC2000811769 /* l10n.cpp */,
+				499213E714CFFC2000811769 /* l10n.h */,
+				499213E214CEACE000811769 /* coreinclude.h */,
+				499213E314CEACE000811769 /* platform.cpp */,
 				49C8C9A014BCF603000E55DC /* stdafx.h */,
 				49C8C99C14BCF4A1000E55DC /* commands.cpp */,
 				49C8C99D14BCF4A1000E55DC /* commands.h */,
@@ -186,6 +230,8 @@
 				4937F28514BCF33E00E084F2 /* pn.h */,
 				4937F22814BCF0F900E084F2 /* deletionmanager.cpp */,
 				4937F22914BCF0F900E084F2 /* ieditor.h */,
+				499A798214D7E4D2004DBF51 /* osxstringloader.h */,
+				499A798514D7E59F004DBF51 /* osxstringloader.cpp */,
 			);
 			name = core;
 			path = ../../libpeanut/core;
@@ -194,6 +240,8 @@
 		4937F22A14BCF0F900E084F2 /* io */ = {
 			isa = PBXGroup;
 			children = (
+				499213D914CD5AD500811769 /* xmlparser.cpp */,
+				499213DA14CD5AD500811769 /* xmlparser.h */,
 				4937F28F14BCF3B900E084F2 /* filedialogs.h */,
 				4937F29014BCF3B900E084F2 /* filename.cpp */,
 				4937F29114BCF3B900E084F2 /* filename.h */,
@@ -232,6 +280,7 @@
 		4937F25114BCF19E00E084F2 /* editor */ = {
 			isa = PBXGroup;
 			children = (
+				4919678D14D153D100AA933B /* editorcommands.cpp */,
 				49C8C98914BCF452000E55DC /* alternates */,
 				4937F25714BCF20E00E084F2 /* exporters */,
 				4937F25614BCF1FA00E084F2 /* textclips */,
@@ -368,6 +417,10 @@
 				49C8C99B14BCF489000E55DC /* autocompletemanager.h in Headers */,
 				49C8C99F14BCF4A1000E55DC /* commands.h in Headers */,
 				49C8C9A114BCF603000E55DC /* stdafx.h in Headers */,
+				499213DC14CD5AD500811769 /* xmlparser.h in Headers */,
+				499213E414CEACE000811769 /* coreinclude.h in Headers */,
+				499213E914CFFC2000811769 /* l10n.h in Headers */,
+				499A798314D7E4D2004DBF51 /* osxstringloader.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -450,6 +503,13 @@
 				49C8C99714BCF489000E55DC /* autocomplete.cpp in Sources */,
 				49C8C99A14BCF489000E55DC /* autocompletemanager.cpp in Sources */,
 				49C8C99E14BCF4A1000E55DC /* commands.cpp in Sources */,
+				499213DB14CD5AD500811769 /* xmlparser.cpp in Sources */,
+				499213E514CEACE000811769 /* platform.cpp in Sources */,
+				499213E814CFFC2000811769 /* l10n.cpp in Sources */,
+				4919678C14D150C700AA933B /* ScriptRegistry.cpp in Sources */,
+				4919678E14D153D100AA933B /* editorcommands.cpp in Sources */,
+				4919679114D1545100AA933B /* extension.cpp in Sources */,
+				499A798614D7E59F004DBF51 /* osxstringloader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -515,10 +575,7 @@
 					"PLAT_MAC=1",
 				);
 				HEADER_SEARCH_PATHS = ../../../lib/boost_1_48_0;
-				LIBRARY_SEARCH_PATHS = (
-					../../../lib/boost_1_48_0/stage/lib,
-					../../lib,
-				);
+				LIBRARY_SEARCH_PATHS = ../../lib;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -536,10 +593,7 @@
 					"PLAT_MAC=1",
 				);
 				HEADER_SEARCH_PATHS = ../../../lib/boost_1_48_0;
-				LIBRARY_SEARCH_PATHS = (
-					../../../lib/boost_1_48_0/stage/lib,
-					../../lib,
-				);
+				LIBRARY_SEARCH_PATHS = ../../lib;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

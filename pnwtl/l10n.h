@@ -2,7 +2,7 @@
  * @file l10n.h
  * @brief PN Internationalisation
  * @author Simon Steele
- * @note Copyright (c) 2005-2011 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2005-2012 Simon Steele - http://untidy.net/
  *
  * Programmers Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -21,41 +21,28 @@ namespace L10N
 		virtual ~StringLoader(){}
 
 		static tstring Get(UINT dwStringID);
+#if PLAT_WIN
 		static std::wstring GetW(UINT dwStringID);
+#endif
 		static std::string GetA(UINT dwStringID);
 
+#if PLAT_WIN
 		static void InitResourceLoader();
-
+#endif
+        /** 
+         * Take ownership of parameter loader, and use for all string lookups
+         */
+        static void SetLoader(StringLoader* loader);
+        
 	protected:
 		virtual tstring load(UINT dwStringID) = 0;
 
-	protected:
 		StringLoader(){}
 		static void release();
 		
-	protected:
+	private:
 		static StringLoader* s_pTheInstance;
 	};
-
-	namespace Impl
-	{
-		/**
-		 * Implement resource script string loading
-		 */
-		class ResourceStringLoader : public StringLoader
-		{
-		public:
-			ResourceStringLoader(HINSTANCE hInst) : m_hInstance(hInst){}
-			virtual ~ResourceStringLoader(){}
-
-		// Implement StringLoader
-		protected:
-			virtual tstring load(UINT dwStringID);
-		
-		protected:
-			HINSTANCE m_hInstance;
-		};
-	}
 }
 
 #define LSS(stringId) L10N::StringLoader::Get(stringId)
