@@ -192,7 +192,12 @@ bool FileExists(LPCTSTR FileName)
 bool CreateDirectoryRecursive(LPCTSTR pszDirectory, LPSECURITY_ATTRIBUTES lpSA)
 {
     path p(pszDirectory);
-    return create_directories(p);
+    if (!exists(p))
+    {
+        return create_directories(p);
+    }
+    
+    return true;
 }
 
 bool DeleteDirectory(LPCTSTR szDir, bool undoable)

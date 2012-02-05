@@ -73,6 +73,38 @@
 		498D60A014C5673E007BDA1E /* libboost_filesystem.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_filesystem.dylib; path = ../../../lib/boost_1_48_0/stage/lib/libboost_filesystem.dylib; sourceTree = "<group>"; };
 		498D60A114C5673E007BDA1E /* libboost_system.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libboost_system.dylib; path = ../../../lib/boost_1_48_0/stage/lib/libboost_system.dylib; sourceTree = "<group>"; };
 		499213E014CD5BE100811769 /* libexpat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libexpat.a; path = ../../lib/mac/libexpat.a; sourceTree = "<group>"; };
+		499A798814D9CB13004DBF51 /* ada.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = ada.scheme; sourceTree = "<group>"; };
+		499A798914D9CB13004DBF51 /* asm.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = asm.scheme; sourceTree = "<group>"; };
+		499A798A14D9CB13004DBF51 /* bash.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = bash.scheme; sourceTree = "<group>"; };
+		499A798B14D9CB13004DBF51 /* cpp.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = cpp.scheme; sourceTree = "<group>"; };
+		499A798C14D9CB13004DBF51 /* d.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = d.scheme; sourceTree = "<group>"; };
+		499A798D14D9CB13004DBF51 /* docbook.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = docbook.scheme; sourceTree = "<group>"; };
+		499A798E14D9CB13004DBF51 /* extmap.dat */ = {isa = PBXFileReference; lastKnownFileType = text; path = extmap.dat; sourceTree = "<group>"; };
+		499A798F14D9CB13004DBF51 /* fortran.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = fortran.scheme; sourceTree = "<group>"; };
+		499A799014D9CB13004DBF51 /* latex.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = latex.scheme; sourceTree = "<group>"; };
+		499A799114D9CB13004DBF51 /* lisp.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = lisp.scheme; sourceTree = "<group>"; };
+		499A799214D9CB13004DBF51 /* lua.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = lua.scheme; sourceTree = "<group>"; };
+		499A799314D9CB13004DBF51 /* master.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = master.scheme; sourceTree = "<group>"; };
+		499A799414D9CB13004DBF51 /* matlab.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = matlab.scheme; sourceTree = "<group>"; };
+		499A799514D9CB13004DBF51 /* misc.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = misc.scheme; sourceTree = "<group>"; };
+		499A799614D9CB13004DBF51 /* modula2.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = modula2.scheme; sourceTree = "<group>"; };
+		499A799714D9CB13004DBF51 /* nsis2.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = nsis2.scheme; sourceTree = "<group>"; };
+		499A799814D9CB13004DBF51 /* pascal.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = pascal.scheme; sourceTree = "<group>"; };
+		499A799914D9CB13004DBF51 /* perl.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = perl.scheme; sourceTree = "<group>"; };
+		499A799A14D9CB13004DBF51 /* php.api */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = php.api; sourceTree = "<group>"; };
+		499A799B14D9CB13004DBF51 /* phpscript.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = phpscript.scheme; sourceTree = "<group>"; };
+		499A799C14D9CB13004DBF51 /* powershell.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = powershell.scheme; sourceTree = "<group>"; };
+		499A799D14D9CB13004DBF51 /* python.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = python.scheme; sourceTree = "<group>"; };
+		499A799E14D9CB13004DBF51 /* ruby.api */ = {isa = PBXFileReference; lastKnownFileType = text; path = ruby.api; sourceTree = "<group>"; };
+		499A799F14D9CB13004DBF51 /* ruby.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = ruby.scheme; sourceTree = "<group>"; };
+		499A79A014D9CB13004DBF51 /* specman.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = specman.scheme; sourceTree = "<group>"; };
+		499A79A114D9CB13004DBF51 /* sql.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = sql.scheme; sourceTree = "<group>"; };
+		499A79A214D9CB13004DBF51 /* tcl.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = tcl.scheme; sourceTree = "<group>"; };
+		499A79A314D9CB13004DBF51 /* vb.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = vb.scheme; sourceTree = "<group>"; };
+		499A79A414D9CB13004DBF51 /* verilog.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = verilog.scheme; sourceTree = "<group>"; };
+		499A79A514D9CB13004DBF51 /* vhdl.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = vhdl.scheme; sourceTree = "<group>"; };
+		499A79A614D9CB13004DBF51 /* WebFiles.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = WebFiles.scheme; sourceTree = "<group>"; };
+		499A79A714D9CB13004DBF51 /* xml.scheme */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = xml.scheme; sourceTree = "<group>"; };
 		49C8C9AD14BD883E000E55DC /* PeanutEditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PeanutEditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		49C8C9B114BD883E000E55DC /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		49C8C9B414BD883E000E55DC /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -116,9 +148,50 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		499A798714D9CB13004DBF51 /* schemes */ = {
+			isa = PBXGroup;
+			children = (
+				499A798814D9CB13004DBF51 /* ada.scheme */,
+				499A798914D9CB13004DBF51 /* asm.scheme */,
+				499A798A14D9CB13004DBF51 /* bash.scheme */,
+				499A798B14D9CB13004DBF51 /* cpp.scheme */,
+				499A798C14D9CB13004DBF51 /* d.scheme */,
+				499A798D14D9CB13004DBF51 /* docbook.scheme */,
+				499A798E14D9CB13004DBF51 /* extmap.dat */,
+				499A798F14D9CB13004DBF51 /* fortran.scheme */,
+				499A799014D9CB13004DBF51 /* latex.scheme */,
+				499A799114D9CB13004DBF51 /* lisp.scheme */,
+				499A799214D9CB13004DBF51 /* lua.scheme */,
+				499A799314D9CB13004DBF51 /* master.scheme */,
+				499A799414D9CB13004DBF51 /* matlab.scheme */,
+				499A799514D9CB13004DBF51 /* misc.scheme */,
+				499A799614D9CB13004DBF51 /* modula2.scheme */,
+				499A799714D9CB13004DBF51 /* nsis2.scheme */,
+				499A799814D9CB13004DBF51 /* pascal.scheme */,
+				499A799914D9CB13004DBF51 /* perl.scheme */,
+				499A799A14D9CB13004DBF51 /* php.api */,
+				499A799B14D9CB13004DBF51 /* phpscript.scheme */,
+				499A799C14D9CB13004DBF51 /* powershell.scheme */,
+				499A799D14D9CB13004DBF51 /* python.scheme */,
+				499A799E14D9CB13004DBF51 /* ruby.api */,
+				499A799F14D9CB13004DBF51 /* ruby.scheme */,
+				499A79A014D9CB13004DBF51 /* specman.scheme */,
+				499A79A114D9CB13004DBF51 /* sql.scheme */,
+				499A79A214D9CB13004DBF51 /* tcl.scheme */,
+				499A79A314D9CB13004DBF51 /* vb.scheme */,
+				499A79A414D9CB13004DBF51 /* verilog.scheme */,
+				499A79A514D9CB13004DBF51 /* vhdl.scheme */,
+				499A79A614D9CB13004DBF51 /* WebFiles.scheme */,
+				499A79A714D9CB13004DBF51 /* xml.scheme */,
+			);
+			name = schemes;
+			path = ../../pnwtl/bin/schemes;
+			sourceTree = "<group>";
+		};
 		49C8C9A214BD883E000E55DC = {
 			isa = PBXGroup;
 			children = (
+				499A798714D9CB13004DBF51 /* schemes */,
 				4919678614D14FDF00AA933B /* libboost_regex.dylib */,
 				499213E014CD5BE100811769 /* libexpat.a */,
 				498D60A014C5673E007BDA1E /* libboost_filesystem.dylib */,
@@ -290,7 +363,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "install_name_tool -change libboost_filesystem.dylib @executable_path/libboost_filesystem.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\ninstall_name_tool -change libboost_system.dylib @executable_path/libboost_system.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\ninstall_name_tool -change libboost_regex.dylib @executable_path/libboost_regex.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\ninstall_name_tool -change libboost_system.dylib @executable_path/libboost_system.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/libboost_filesystem.dylib";
+			shellScript = "install_name_tool -change libboost_filesystem.dylib @executable_path/libboost_filesystem.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\ninstall_name_tool -change libboost_system.dylib @executable_path/libboost_system.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\ninstall_name_tool -change libboost_regex.dylib @executable_path/libboost_regex.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_PATH\ninstall_name_tool -change libboost_system.dylib @executable_path/libboost_system.dylib $BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH/libboost_filesystem.dylib\ncp -R $PROJECT_DIR/../../pnwtl/bin/schemes $BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH";
 		};
 /* End PBXShellScriptBuildPhase section */
 

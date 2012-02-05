@@ -208,11 +208,11 @@ void CFileName::Root(LPCTSTR rootPath)
 	if( root.find(_T('/')) != root.npos )
 		bForwards = true;
 
+    TCHAR slash = bForwards ? _T('/') : _T('\\');
+    
 	// Make sure there's a trailing slash.
 	if( root[root.length()-1] != _T('\\') && root[root.length()-1] != _T('/') )
-		root += (bForwards ? _T('/') : _T('\\'));
-
-	TCHAR slash = bForwards ? _T('/') : _T('\\');
+		root += slash;
 
 	int len = m_FileName.length();
 

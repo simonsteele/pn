@@ -27,6 +27,8 @@
     ScintillaView* editor = [[[ScintillaView alloc] initWithFrame: newFrame] autorelease];
     
     PNScintilla* wrapper = new PNScintilla(editor.backend);// [[[PNScintilla alloc] scintilla: editor->backend] autorelease];
+    Scheme* scheme = SchemeManager::GetInstance()->SchemeByName("cpp");
+    scheme->Load(*wrapper);
     
     [_window.contentView addSubview: editor];
     //[_editBox.contentView addSubview: editor];

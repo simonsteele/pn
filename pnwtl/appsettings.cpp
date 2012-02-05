@@ -309,7 +309,8 @@ void AppSettings::load()
 			m_userPath += _T("Echo Software\\PN2\\");
 		}
 #else
-        m_userPath = "~/.pn/";
+        m_userPath = getenv("HOME");
+        m_userPath += "/.pn/";
 #endif
 	}
 

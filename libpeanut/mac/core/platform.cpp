@@ -87,15 +87,25 @@ void FileInformation::set(LPCTSTR filePath)
     
 /**
  * Get the directory that PN is running from.
+ * TODO: Decide whether it's right that this returns the Resources path...
  */
 tstring GetExecutableDirectory()
 {
     CFBundleRef main(CFBundleGetMainBundle());
     
+    CFReleaseGuard<CFURLRef> bundle(CFBundleCopyBundleURL(main));
+    CFReleaseGuard<CFStringRef> dir(CFURLCopyFileSystemPath(bundle, kCFURLPOSIXPathStyle));
+    
+    // Get resources sub-directory:
     CFReleaseGuard<CFURLRef> resources(CFBundleCopyResourcesDirectoryURL(main));
-    CFReleaseGuard<CFStringRef> dir(CFURLCopyFileSystemPath(resources, kCFURLPOSIXPathStyle));
-
-    return CFStringToString(dir);
+    CFReleaseGuard<CFStringRef> subdir(CFURLCopyFileSystemPath(resources, kCFURLPOSIXPathStyle));
+    
+    tstring exedir(CFStringToString(dir));
+    exedir += "/";
+    exedir += CFStringToString(subdir);
+    exedir += "/";
+    
+    return exedir;
 }
 
 }} // namespace PN::Platform

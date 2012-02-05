@@ -13,6 +13,18 @@
 #include "files.h"
 #include "fileutil.h"
 
+#if PLAT_WIN
+#define PATHSEP _T("\\")
+#else
+#define PATHSEP _T("/")
+#endif
+
+#define SCHEMES_DIR _T("schemes") PATHSEP
+#define CLIPS_DIR _T("clips") PATHSEP
+#define TOOLS_DIR _T("tools") PATHSEP
+#define PROJECTS_DIR _T("projects") PATHSEP
+#define PRESETS_DIR _T("presets") PATHSEP
+
 //////////////////////////////////////////////////////////////////////////////
 // Options
 //////////////////////////////////////////////////////////////////////////////
@@ -283,22 +295,21 @@ void Options::GetPNPath(tstring& path, int pathtype)
 		switch(pathtype)
 		{
 			case PNPATH_SCHEMES:
-				path += _T("Schemes\\");
+				path += SCHEMES_DIR;
 				break;
 			case PNPATH_CLIPS:
-				path += _T("Clips\\");
+				path += CLIPS_DIR;
 				break;
 			case PNPATH_TOOLS:
-				path += _T("Tools\\");
+				path += TOOLS_DIR;
 				break;
 			case PNPATH_TAGGERS:
-				// path += _T("Taggers\\"); - taggers now in the main directory.
 				break;
 			case PNPATH_PROJECTTEMPLATES:
-				path += _T("Projects\\");
+				path += PROJECTS_DIR;
 				break;
 			case PNPATH_PRESETS:
-				path += _T("Presets\\");
+				path += PRESETS_DIR;
 				break;
 		}
 	}
@@ -328,7 +339,9 @@ void Options::GetPNPath(tstring& path, int pathtype)
 			GetPNPath(path, PNPATH_SCHEMES);
 		}
 #else
-        path = "~/.pn";
+        const char* home = getenv("HOME");
+        path = home;
+        path += "/.pn/";
 #endif
 	}
 }
