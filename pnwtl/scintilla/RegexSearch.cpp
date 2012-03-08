@@ -6,7 +6,7 @@
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
- */
+ */ 
 #include <stdlib.h>
 
 #include "Platform.h"
@@ -148,8 +148,10 @@ public:
 
 private:
 	docregex re;
+	sregex	sre;
 	docmatch match;
 	char *substituted;
+	std::string restring;
 };
 
 namespace Scintilla
@@ -161,6 +163,11 @@ RegexSearchBase *CreateRegexSearch(CharClassify *charClassTable)
 }
 
 }
+
+/**
+ * Utility function to enclode unicode multi-byte encodings with non-capture groups: (?:mbcs)
+ */
+std::string& convertUTF8Regex(std::string& regexStr);
 
 /**
  * Find text in document, supporting both forward and backward
@@ -189,7 +196,8 @@ long XpressiveRegexSearch::FindText(Document* doc, int minPos, int maxPos, const
 	startPos = doc->MovePositionOutsideChar(startPos, 1, false);
 	endPos = doc->MovePositionOutsideChar(endPos, 1, false);
 
-	std::string restring(s, *length);
+	restring = std::string(s, *length);
+	restring = convertUTF8Regex(restring);
 
 	int compileFlags(regex_constants::ECMAScript | regex_constants::not_dot_newline);
 	if (!caseSensitive)
@@ -200,6 +208,7 @@ long XpressiveRegexSearch::FindText(Document* doc, int minPos, int maxPos, const
 	try
 	{
 		re = docregex::compile(restring.c_str(), static_cast<regex_constants::syntax_option_type>(compileFlags));
+		sre = sregex::compile(restring.c_str(), static_cast<regex_constants::syntax_option_type>(compileFlags));
 	}
 	catch(regex_error& /*ex*/)
 	{
@@ -387,97 +396,68 @@ long XpressiveRegexSearch::OldFindText(Document* doc, int minPos, int maxPos, co
 	return pos;
 }
 
-const char *XpressiveRegexSearch::SubstituteByPosition(Document* doc, const char *text, int *length) {
-	delete []substituted;
-	substituted = 0;
-	/*DocumentIndexer di(this, Length());
-	if (!pre->GrabMatches(di))
-		return 0;*/
-	unsigned int lenResult = 0;
-	for (int i = 0; i < *length; i++) {
-		if (text[i] == '\\') {
-			if (text[i + 1] >= '1' && text[i + 1] <= '9') {
-				unsigned int patNum = text[i + 1] - '0';
-				if (match.size() > patNum) {
-					
-					lenResult += match.length(patNum);
-				} else {
-					// We'll insert the \x
-					lenResult += 2;
-				}
-				i++;
-			} else {
-				switch (text[i + 1]) {
-				case '\\':
-				case 'a':
-				case 'b':
-				case 'f':
-				case 'n':
-				case 'r':
-				case 't':
-				case 'v':
-					i++;
-				}
-				lenResult++;
-			}
-		} else {
-			lenResult++;
-		}
-	}
-	substituted = new char[lenResult + 1];
-	if (!substituted)
-		return 0;
-	char *o = substituted;
-	for (int j = 0; j < *length; j++) {
-		if (text[j] == '\\') {
-			if (text[j + 1] >= '1' && text[j + 1] <= '9') {
-				unsigned int patNum = text[j + 1] - '0';
-				if (match.size() > patNum) {
-					memcpy(o, match.str(patNum).c_str(), match.length(patNum));
-					o += match.length(patNum);
-				} else {
-					*o++ = '\\';
-					*o++ = text[j];
-				}
 
-				j++;
-			} else {
-				j++;
-				switch (text[j]) {
-				case 'a':
-					*o++ = '\a';
-					break;
-				case 'b':
-					*o++ = '\b';
-					break;
-				case 'f':
-					*o++ = '\f';
-					break;
-				case 'n':
-					*o++ = '\n';
-					break;
-				case 'r':
-					*o++ = '\r';
-					break;
-				case 't':
-					*o++ = '\t';
-					break;
-				case 'v':
-					*o++ = '\v';
-					break;
-				case '\\':
-					*o++ = '\\';
-					break;
-				default:
-					*o++ = '\\';
-					j--;
-				}
+const char *XpressiveRegexSearch::SubstituteByPosition(Document* doc, const char *text, int *length) {
+	if (substituted) { 
+		delete[] substituted; 
+		substituted = NULL;
+	}
+	std::string format = std::string(text, *length);
+	std::string result = regex_replace(match.str(0), sre, format, boost::xpressive::regex_constants::format_perl);
+	substituted = new char[result.length()+1];
+	*length = result.length();
+	strcpy(substituted, result.c_str()); 
+	return substituted;
+}
+
+std::string& convertUTF8Regex(std::string& regexStr) {
+	enum Conv_States { ASCII_CHAR, ESCAPE_CHAR, ESCAPED_SEQUENCE, UTF_SEQUENCE};
+		 //TODO: deal with escaped sequences! 
+	Conv_States state = ASCII_CHAR;
+	std::string	temp;
+	for(size_t i = 0; i < regexStr.length(); ++i) {
+		char ch = regexStr[i];
+		switch(state) {
+		case ASCII_CHAR:
+			if(ch == '\\') {
+				state = ESCAPE_CHAR;
+			} else if ((ch & 0x80) == 0x80) { //begin an encoded sequence
+				temp.append("(?:");
+				state = UTF_SEQUENCE;
+			} 
+			temp.push_back(ch);
+            break;
+		case ESCAPE_CHAR:
+			if(ch == 'Q') {
+				state = ESCAPED_SEQUENCE;
+			} else if (ch == 'E') {
+				state = ASCII_CHAR;
 			}
-		} else {
-			*o++ = text[j];
+			temp.push_back(ch);
+            break;
+		case ESCAPED_SEQUENCE:
+			if(ch == '\\') {
+				state = ESCAPE_CHAR;
+			}
+			temp.push_back(ch);
+            break;
+		case UTF_SEQUENCE:
+			if ((ch & 0x80) != 0x80) { //found a non-encoded char -- end current run.
+				temp.push_back(')');
+				if (ch == '\\') {
+					state = ESCAPE_CHAR;
+					break;
+				} else {
+					state = ASCII_CHAR;
+				}
+			} 
+			temp.push_back(ch);
+            break;
 		}
 	}
-	*o = '\0';
-	*length = lenResult;
-	return substituted;
+	if (state == UTF_SEQUENCE) {
+		temp.push_back(')');
+	}
+	std::swap(regexStr, temp);
+	return regexStr;
 }
