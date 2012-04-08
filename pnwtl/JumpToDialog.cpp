@@ -207,11 +207,11 @@ void CJumpToDialog::filter(LPCTSTR text)
 	m_filtered = m_targets;
 
 	// Sort the known words by their quicksilver ranks:
-	LiquidMetal::QuickSilver qs;
-	std::sort(m_filtered.begin(), m_filtered.end(), [&qs, &prtl](const Target& l, const Target& r) -> bool { return qs.Score(l.Tag, prtl) > qs.Score(r.Tag, prtl); });
+	LiquidMetal::QuickSilver qs(prtl);
+	std::sort(m_filtered.begin(), m_filtered.end(), [&qs](const Target& l, const Target& r) -> bool { return qs.Score(l.Tag) > qs.Score(r.Tag); });
 
 	// Remove anything with a rank of less than 0.1:
-	auto i = std::lower_bound(m_filtered.begin(), m_filtered.end(), 0.1, [&qs, &prtl](const Target& val, const double min) -> bool { return qs.Score(val.Tag, std::string(prtl)) > min; });
+	auto i = std::lower_bound(m_filtered.begin(), m_filtered.end(), 0.1, [&qs, &prtl](const Target& val, const double min) -> bool { return qs.Score(val.Tag) > min; });
 	m_filtered.erase(i, m_filtered.end());
 	
 	/*Target t(static_cast<const char*>(partial), "", 0, 0);

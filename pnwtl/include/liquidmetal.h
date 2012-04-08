@@ -28,31 +28,43 @@ const double SCORE_BUFFER = 0.85;
 class QuickSilver
 {
 public:
-	double Score(const std::string& str, const std::string& abbr)
+	/**
+	 * Initialize an instance of QuickSilver with the user-provided abbreviation that
+	 * items will be evaluated against.
+	 */
+	explicit QuickSilver(const std::string& abbreviation)
+	{
+		m_abbreviation.resize(abbreviation.size());
+		std::transform(abbreviation.begin(), abbreviation.end(), m_abbreviation.begin(), tolower);
+	}
+
+	/**
+	 * Evaluate an item against the abbreviation.
+	 */
+	double Score(const std::string& str)
 	{
         // Short circuits
-        if (abbr.size() == 0) return SCORE_TRAILING;
-        if (abbr.size() > str.size()) return SCORE_NO_MATCH;
+        if (m_abbreviation.size() == 0) return SCORE_TRAILING;
+        if (m_abbreviation.size() > str.size()) return SCORE_NO_MATCH;
 
-        auto scores = buildScoreArray(str, abbr);
+        buildScoreArray(str, m_abbreviation);
 
 		double sum = 0.0;
-		for (auto i = scores.begin(); i != scores.end(); ++i)
+		for (std::vector<double>::const_iterator i = m_scores.begin(); i != m_scores.end(); ++i)
 		{
 			sum += (*i);
 		}
 
-        return (sum / (double)scores.size());
+        return (sum / (double)m_scores.size());
     }
 
 private:
-	std::vector<double> buildScoreArray(const std::string& str, const std::string& abbreviation)
+	void buildScoreArray(const std::string& str, const std::string& chars)
 	{
-        auto scores = std::vector<double>(str.size());
-        std::string lower(str);
+		m_scores.resize(str.size());
+        std::string lower;
+		lower.resize(str.size());
 		std::transform(str.begin(), str.end(), lower.begin(), tolower);
-		std::string chars(abbreviation);
-		std::transform(abbreviation.begin(), abbreviation.end(), chars.begin(), tolower);
 
 		int lastIndex = -1;
 		bool started = false;
@@ -62,7 +74,8 @@ private:
             size_t index = lower.find(c, lastIndex+1);
             if (index == lower.npos)
 		    {
-		        return fillArray(scores, SCORE_NO_MATCH);
+		        fillArray(m_scores, SCORE_NO_MATCH);
+				return;
 		    }
 			
 			if (index == 0)
@@ -73,25 +86,24 @@ private:
 
             if (isNewWord(str, index))
 		    {
-                scores[index - 1] = 1;
-                fillArray(scores, SCORE_BUFFER, lastIndex+1, index-1);
+                m_scores[index - 1] = 1;
+                fillArray(m_scores, SCORE_BUFFER, lastIndex+1, index-1);
             }
             else if (isUpperCase(str, index))
 			{
-                fillArray(scores, SCORE_BUFFER, lastIndex+1, index);
+                fillArray(m_scores, SCORE_BUFFER, lastIndex+1, index);
             }
             else
 			{
-				fillArray(scores, SCORE_NO_MATCH, lastIndex+1, index);
+				fillArray(m_scores, SCORE_NO_MATCH, lastIndex+1, index);
 			}
 
-			scores[index] = SCORE_MATCH;
+			m_scores[index] = SCORE_MATCH;
 			lastIndex = index;
 		}
 
         int trailingScore = started ? SCORE_TRAILING_BUT_STARTED : SCORE_TRAILING;
-        fillArray(scores, trailingScore, lastIndex + 1);
-        return scores;
+        fillArray(m_scores, trailingScore, lastIndex + 1);
     }
 
     bool isUpperCase(const std::string& str, size_t index) const
@@ -111,17 +123,19 @@ private:
 		return (c == ' ' || c == '\t');
 	}
 	
-    std::vector<double> fillArray(std::vector<double>& array, double value, int from = -1, int to = -1) const
+    void fillArray(std::vector<double>& buffer, double value, int from = -1, int to = -1) const
     {
         from = from == -1 ? 0 : max(from, 0);
-        to = to == -1 ? array.size() : min(to, array.size());
+        to = to == -1 ? buffer.size() : min(to, buffer.size());
         for (int i = from; i < to; i++)
 	    { 
-		    array[i] = value; 
+		    buffer[i] = value; 
 	    }
-        
-		return array;
     }
+
+private:
+	std::vector<double> m_scores;
+	std::string m_abbreviation;
 };
 
 } // namespace LiquidMetal
