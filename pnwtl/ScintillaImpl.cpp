@@ -837,8 +837,22 @@ bool CScintillaImpl::ReplaceOnce(extensions::ISearchOptions* pOptions)
 {
 	if(pOptions->GetFound()) 
 	{
-		CT2CA conv(pOptions->GetReplaceText());
-		std::string replaceTarget(conv);
+		//CT2CA conv(pOptions->GetReplaceText());
+		//std::string replaceTarget(conv);
+		std::string replaceTarget;
+		// If we're in UTF-8 mode we have a go at making the correct find string
+		// so that Windows characters get converted into UTF-8.
+		if(GetCodePage() == SC_CP_UTF8)
+		{
+			Tcs_Utf8 conv(pOptions->GetReplaceText());
+			replaceTarget = (const char*)(const unsigned char*)conv;
+		}
+		else
+		{
+			Tcs_Windows1252 conv(pOptions->GetReplaceText());
+			replaceTarget = conv;
+		}
+
 		
 		int replaceLen = UnSlashAsNeeded(replaceTarget, pOptions->GetUseSlashes(), pOptions->GetUseRegExp());
 		
@@ -870,8 +884,23 @@ int CScintillaImpl::ReplaceAll(extensions::ISearchOptions* pOptions)
 {
 	int repCount = 0;
 
-	CT2CA findTargetConv(pOptions->GetFindText());
-	std::string findTarget(findTargetConv);
+	//CT2CA findTargetConv(pOptions->GetFindText());
+	//std::string findTarget(findTargetConv);
+	std::string findTarget;
+	
+	// If we're in UTF-8 mode we have a go at making the correct find string
+	// so that Windows characters get converted into UTF-8.
+	if(GetCodePage() == SC_CP_UTF8)
+	{
+		Tcs_Utf8 conv(pOptions->GetFindText());
+		findTarget = (const char*)(const unsigned char*)conv;
+	}
+	else
+	{
+		Tcs_Windows1252 conv(pOptions->GetFindText());
+		findTarget = conv;
+	}
+
 
 	int findLen = UnSlashAsNeeded(findTarget, pOptions->GetUseSlashes(), pOptions->GetUseRegExp());
 	if (findLen == 0)
@@ -910,9 +939,23 @@ int CScintillaImpl::ReplaceAll(extensions::ISearchOptions* pOptions)
 		// If not looping, replace all only from caret to end of document
 	}
 
-	CT2CA replaceTextConv(pOptions->GetReplaceText());
-	std::string replaceTarget(replaceTextConv);
-	
+	//CT2CA replaceTextConv(pOptions->GetReplaceText());
+	//std::string replaceTarget(replaceTextConv);
+	std::string replaceTarget;
+
+	// If we're in UTF-8 mode we have a go at making the correct find string
+	// so that Windows characters get converted into UTF-8.
+	if(GetCodePage() == SC_CP_UTF8)
+	{
+		Tcs_Utf8 conv(pOptions->GetReplaceText());
+		replaceTarget = (const char*)(const unsigned char*)conv;
+	}
+	else
+	{
+		Tcs_Windows1252 conv(pOptions->GetReplaceText());
+		replaceTarget = conv;
+	}
+
 	int replaceLen = UnSlashAsNeeded(replaceTarget, pOptions->GetUseSlashes(), pOptions->GetUseRegExp());
 	
 	int flags = (pOptions->GetMatchWholeWord() ? SCFIND_WHOLEWORD : 0) |
