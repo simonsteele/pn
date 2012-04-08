@@ -5,7 +5,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <IncludePath>c:\projects\personal\lib\wtlsvn\include;c:\projects\personal\lib\boost_1_45_0\;c:\Python26\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\lib\wtl\include;$(SolutionDir)..\..\lib\boost_1_45_0\;c:\Python26\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
