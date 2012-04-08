@@ -2,7 +2,7 @@
  * @file mainfrm.h
  * @brief Main Window for Programmers Notepad 2
  * @author Simon Steele
- * @note Copyright (c) 2002-2011 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2002-2012 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -124,6 +124,8 @@ public:
 		MESSAGE_HANDLER(PN_MDISETMENU, OnMDISetMenu)
 		MESSAGE_HANDLER(PN_UPDATECHILDUI, OnUpdateChildUIState)
 		MESSAGE_HANDLER(PN_CLOSEALLOTHER, OnCloseAllOther)
+		MESSAGE_HANDLER(WM_QUERYENDSESSION, OnQueryEndSession)
+		MESSAGE_HANDLER(WM_ENDSESSION, OnEndSession)
 		
 		COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
 		COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
@@ -264,8 +266,10 @@ public:
 	LRESULT OnMDISetMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnUpdateChildUIState(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnCloseAllOther(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-
-    LRESULT OnStatusBarDblClick(int /*wParam*/, LPNMHDR lParam, BOOL& bHandled);
+	LRESULT OnQueryEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+	LRESULT OnEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    
+	LRESULT OnStatusBarDblClick(int /*wParam*/, LPNMHDR lParam, BOOL& bHandled);
 
 	LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 

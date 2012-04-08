@@ -1764,6 +1764,47 @@ LRESULT CMainFrame::OnCloseAllOther(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
 	return 0;
 }
 
+/**
+ * Called when the system is shutting down or the user is being logged off. Return
+ * zero to prevent shutdown. We ask the user to save any modified files, and only if they
+ * cancel do we return 0.
+ */
+LRESULT CMainFrame::OnQueryEndSession(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	if (SaveAll(true))
+	{
+		if(OPTIONS->Get(PNSK_INTERFACE, _T("SaveWorkspace"), false))
+		{
+			WorkspaceState wss;
+			wss.Save();
+		}
+		
+		SaveGUIState();
+
+		return 1;
+	}
+
+	return 0;
+}
+
+/**
+ * Called when the system is shutting down and the user has already been asked (or no
+ * files were modified. Get out as fast as possible.
+ */
+LRESULT CMainFrame::OnEndSession(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+{
+	if (wParam)
+	{
+		// Close workspace, don't ask anything...
+		CloseWorkspace(false, false);
+		
+		// Close all files, don't ask anything...
+		m_tabbedClient.CloseAll(true);
+	}
+
+	return 0;
+}
+
 LRESULT CMainFrame::OnFind(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
 	launchFind(eftFind);
@@ -2763,6 +2804,9 @@ void CMainFrame::SetStatusText(LPCTSTR text, bool bLongLife)
 		}
 }
 
+/**
+ * @return true if all files are unmodified/user saves them. False if the user cancels.
+ */
 bool CMainFrame::SaveAll(bool ask)
 {
 	bool bRet = false;
