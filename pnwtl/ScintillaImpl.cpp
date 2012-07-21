@@ -1710,12 +1710,12 @@ void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>
 {
 	long lCurrentPos = GetCurrentPos();
 	// If it was an empty tag we don't have a closing tag.
-	if( '/' == GetCharAt( lCurrentPos - 2 ) ) 
+	if ('/' == GetCharAt( lCurrentPos - 2 )) 
 		return;
 	
 	bool html(false);
 
-	if(m_pScheme != NULL)
+	if (m_pScheme != NULL)
 	{
 		LPCSTR lexer = m_pScheme->GetLexer();
 
@@ -1727,9 +1727,9 @@ void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>
 			return;
 	}
 
-	// Only complete in styles 1 and 2, these are tag, and unknown tag:
-	int closeTagStyle = GetStyleAt(lCurrentPos-2);
-	if (closeTagStyle != 1 && closeTagStyle != 2)
+	// Only complete in styles 1-8, excluding 5, these are all styles occurring inside a tag:
+	int closeTagStyle = GetStyleAt(lCurrentPos - 2);
+	if (!(closeTagStyle >= 1 && closeTagStyle <= 8 && closeTagStyle != 5))
 	{
 		return;
 	}
@@ -1741,33 +1741,40 @@ void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>
 	int balanced = 0;
 
 	long lPos = lCurrentPos - 1;
-	while( lPos >= 0 )
+	long lLastGt(lCurrentPos);
+	while (lPos >= 0)
 	{
 		int cChar = GetCharAt( lPos );
-		if( '<' != cChar )
-		{	-- lPos; 		
+		if ('<' != cChar)
+		{		
 			if (cChar == '>')
-				balanced--;//Manuel Sandoval: Balance <>:
+			{
+				balanced--; // Balance <>:
+				lLastGt = lPos + 1;
+			}
+			
+			lPos--; 
 		}
 		else 
 		{
-			balanced++;//Manuel Sandoval: Balance <>:
-			if(balanced != 0)
-				break; //Manuel Sandoval: only continue when paired <>
+			balanced++; // Balance <>:
+			if (balanced != 0)
+			{
+				break; // only continue when paired <>
+			}
 			
 			// If this is a closing tag, xml comment, asp tag or processing instruction skip this action.
 			char ch1 = GetCharAt( lPos + 1 );
-			if( '/' == ch1 || '?' == ch1 || '%' == ch1 || '!' == ch1 )
-				break;
-
-			if( lCurrentPos - lPos < 1024 )
+			if ('/' == ch1 || '?' == ch1 || '%' == ch1 || '!' == ch1)
 			{
-				SetSel(lPos,lCurrentPos);
-				std::string text = GetSelText();
-				if( text == "<>" )
+				break;
+			}
+
+			if (lCurrentPos - lPos < 1024)
+			{
+				std::string text = GetTextRange(lPos, lLastGt);
+				if (text == "<>")
 				{
-					// Reset the selpos...
-					SetSel(lCurrentPos, lCurrentPos);
 					break;
 				}
 				
@@ -1790,15 +1797,13 @@ void CScintillaImpl::SmartTag() //Autocompletes <htmltags> with </htmltags>
 						stricmp(text.c_str(), "</img>") == 0 ||
 						stricmp(text.c_str(), "</hr>") == 0)
 					{
-						SetSel(lCurrentPos, lCurrentPos);
 						break;
 					}
 				}
 				
 				BeginUndoAction();
-				SetSel(lCurrentPos,lCurrentPos);
-				AddText(text.size(), text.c_str());
-				SetSel(lCurrentPos,lCurrentPos);
+				SetTarget(lCurrentPos,lCurrentPos);
+				ReplaceTarget(text.size(), text.c_str());
 				EndUndoAction();
 				break;
 			}						
