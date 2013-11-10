@@ -1,0 +1,3190 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1900-01-01 00:00+0000\n"
+"PO-Revision-Date: 2011-08-25 17:56+0200\n"
+"Last-Translator: Барановский Константин <B.Konstantin@hotmail.com>\n"
+"Language-Team: Барановский Константин <b.konstantin@hotmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Russian\n"
+"X-Poedit-Country: RUSSIAN FEDERATION\n"
+
+# msgid/msgstr fields for Accelerator keys
+# Format is: "ID:xxxxxx:VACS+X" where:
+#    ID:xxxxx = the menu ID corresponding to the accelerator
+#    V = Virtual key (or blank if not used) - nearly always set!
+#    A = Alt key     (or blank if not used)
+#    C = Ctrl key    (or blank if not used)
+#    S = Shift key   (or blank if not used)
+#    X = upper case character
+# e.g. "V CS+Q" == Ctrl + Shift + 'Q'
+# ONLY Accelerator Keys with corresponding alphanumeric characters can be
+# updated i.e. function keys (F2), special keys (Delete, HoMe) etc. will not.
+# ONLY change the msgstr field. Do NOT change any other.
+# If you do not want to change an Accelerator Key, copy msgid to msgstr
+#. Resource IDs: (11)
+#, c-format
+msgid "%d character(s) selected."
+msgstr "%d символ(ов) выделено."
+
+#. Resource IDs: (9)
+#, c-format
+msgid "%d occurrence(s) replaced."
+msgstr "%d совпадений заменено."
+
+#. Resource IDs: (22)
+#, c-format
+msgid ""
+"%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line "
+"Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,"
+"Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,"
+"Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectName),Name of "
+"Project,Project 1,$(ProjectPath),Path of Project,c:\\source\\pn2\\,"
+"$(ProjectGroupName),Name of the Project Group,Project Group 1,"
+"$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\,$(PNPath),PN "
+"Install Path,c:\\program files\\pn,$(ProjectProp:x),Project Property,value "
+"of 'x',$(FileProp:x),File Property,value of 'x',%(ENV),ENV Environment "
+"Variable,ENV value"
+msgstr ""
+"%f,Имя файла,mainfrm.cpp,%n,Имя файла (без расширения),mainfrm,%l,Номер "
+"текущей строки,232,%?,Запрос параметров,(?),%p,Текущий файл проекта,pn."
+"pnproj,%d,Расположение файла,c:\\source\\pn\\test\\,%c,Столбец,12,%%,Символ "
+"процента,%,%w,Текущее слово,яблоко,%g,Файл группы проектов,pn2.ppg,"
+"$(ProjectName),Имя проекта,Project 1,$(ProjectPath),Растоложение проекта,c:"
+"\\source\\pn2\\,$(ProjectGroupName),Имя группы проектов,Project Group 1,"
+"$(ProjectGroupPath),Расположение группы проектов,c:\\source\\pn2\\,$(PNPath),"
+"Расположение PN,c:\\program files\\pn,$(ProjectProp:x),Свойство проекта,"
+"значение 'x',$(FileProp:x),Свойство файла,значение 'x',%(ENV),ENV "
+"Environment Variable,ENV value"
+
+#. Resource IDs: (9)
+#, c-format
+msgid ""
+"%f: File Name\n"
+"%l: Line Number\n"
+"%c: Column"
+msgstr ""
+"%f: Имя файла\n"
+"%l: Номер строки\n"
+"%c: Столбец"
+
+#. Resource IDs: (1061)
+msgid "%f: Filename, %l: Line Number, %c: Column"
+msgstr "%f: Имя файла, %l: Строка, %c: Столбец"
+
+#. Resource IDs: (9)
+#, c-format
+msgid "%s Properties"
+msgstr "%s Свойства"
+
+#. Resource IDs: (11)
+#, c-format
+msgid ""
+"%s could not be opened.\n"
+"\n"
+"This could be because the file no longer exists, a disk is absent or due to "
+"a broken network connection."
+msgstr ""
+"%s невозможно открыть.\n"
+"\n"
+"Возможно файл больше не существует, отсутствует диск или прервано сетевое "
+"соединение."
+
+#. Resource IDs: (12)
+#, c-format
+msgid ""
+"%s could not be saved because access was denied.\n"
+"This could be due to the file being marked read-only, or the disk being "
+"write-protected.\n"
+"Do you want to save in another location?"
+msgstr ""
+"%s невозможно сохранить, отказано в доступе.\n"
+"Возможно в файле установлен атрибут \"Только чтение\" или диск защищен от "
+"записи.\n"
+"Сохранить в другом месте?"
+
+#. Resource IDs: (13)
+#, c-format
+msgid ""
+"%s could not be saved because another program or user is using the same "
+"file.\n"
+"Do you want to save in another location?"
+msgstr ""
+"%s невозможно сохранить, потому что другая программа или пользователь "
+"использует этот файл.\n"
+"Сохранить в другом месте?"
+
+#. Resource IDs: (10)
+#, c-format
+msgid ""
+"%s\n"
+"\n"
+"The above file has been modified outside of Programmer's Notepad, do you "
+"want to refresh and lose changes?"
+msgstr ""
+"%s\n"
+"\n"
+"Этот файл был изменен вне программы Programmer's Notepad, хотите обновить с "
+"потерей внесенных изменений?"
+
+#. Resource IDs: (57664)
+msgid "&About Programmer's Notepad..."
+msgstr "О программе Programmer's Notepad..."
+
+#. Resource IDs: (1010, 1011, 1034, 1078, 1128, 1148)
+msgid "&Add"
+msgstr "Добавить"
+
+#. Resource IDs: (288)
+msgid "&Add Files"
+msgstr "Добавить фйлы"
+
+#. Resource IDs: (288)
+msgid "&Add Files..."
+msgstr "Добавить файлы..."
+
+#. Resource IDs: (32963)
+msgid "&Add New File..."
+msgstr "Добавить новый файл..."
+
+#. Resource IDs: (293, 32918)
+msgid "&Add New Folder"
+msgstr "Добавить новую папку"
+
+#. Resource IDs: (32788)
+msgid "&Add Tools..."
+msgstr "Добавить инструменты..."
+
+#. Resource IDs: (1053)
+msgid "&Allow multiple instances of Programmer's Notepad to start"
+msgstr "Разрешить запуск нескольких копий программы"
+
+#. Resource IDs: (32970)
+msgid "&Autocomplete"
+msgstr "Автодополнение"
+
+#. Resource IDs: (32967)
+msgid "&Block"
+msgstr "Выделенные строки"
+
+#. Resource IDs: (1021)
+msgid "&Bold"
+msgstr "Полужирный"
+
+#. Resource IDs: (1105)
+msgid "&Bottom:"
+msgstr "Снизу:"
+
+#. Resource IDs: (57650)
+msgid "&Cascade"
+msgstr "Каскадом"
+
+#. Resource IDs: (10)
+msgid "&Change Scheme"
+msgstr "Изменить схему"
+
+#. Resource IDs: (1033)
+msgid "&Clear"
+msgstr "Очистить"
+
+#. Resource IDs: (33109)
+msgid "&Clear Bookmarks"
+msgstr "Очистить закладки"
+
+#. Resource IDs: (57602)
+msgid "&Close"
+msgstr "Закрыть"
+
+#. Resource IDs: (32962)
+msgid "&Collapse all"
+msgstr "Свернуть все"
+
+#. Resource IDs: (33121)
+msgid "&Compress Whitespace"
+msgstr "Удалить лишние пробелы"
+
+#. Resource IDs: (32943)
+msgid "&Contents"
+msgstr "Содержание"
+
+#. Resource IDs: (18)
+msgid "&Convert"
+msgstr "Преобразовать"
+
+#. Resource IDs: (32780)
+msgid "&Convert Automatically"
+msgstr "Преобразовать автоматически"
+
+#. Resource IDs: (57634)
+msgid "&Copy"
+msgstr "Копировать"
+
+#. Resource IDs: (32914)
+msgid "&Copy Line"
+msgstr "Копировать"
+
+#. Resource IDs: (33138)
+msgid "&Customize Toolbar"
+msgstr "Настроить панель инструментов"
+
+#. Resource IDs: (14)
+msgid "&Default"
+msgstr "Обычный"
+
+#. Resource IDs: (258, 32862)
+msgid "&Delete"
+msgstr "Удалить"
+
+#. Resource IDs: (298)
+msgid "&Delete Project"
+msgstr "Удалить проект"
+
+#. Resource IDs: (65535)
+msgid "&Display"
+msgstr "Показывать"
+
+#. Resource IDs: (12)
+msgid "&Don't Remove"
+msgstr "Не удалять"
+
+#. Resource IDs: (12)
+msgid "&Download Now"
+msgstr "Загрузить сейчас"
+
+#. Resource IDs: (33119)
+msgid "&Duplicate"
+msgstr "Дублировать"
+
+#. Resource IDs: (32908)
+msgid "&Duplicate Line"
+msgstr "Дублировать"
+
+#. Resource IDs: (1010, 1011, 1033, 1079, 1129, 1149, 65535)
+msgid "&Edit"
+msgstr "Правка"
+
+#. Resource IDs: (65535)
+msgid "&Encoding:"
+msgstr "Кодировка:"
+
+#. Resource IDs: (32963)
+msgid "&Expand all"
+msgstr "Развернуть все"
+
+#. Resource IDs: (33110)
+msgid "&Explorer"
+msgstr "Проводник"
+
+#. Resource IDs: (65535)
+msgid "&Export"
+msgstr "Экспорт"
+
+#. Resource IDs: (65535)
+msgid "&File"
+msgstr "Файл"
+
+#. Resource IDs: (57636)
+msgid "&Find"
+msgstr "Найти"
+
+#. Resource IDs: (103)
+msgid "&Find Next"
+msgstr "Найти далее"
+
+#. Resource IDs: (32704)
+msgid "&Find Results"
+msgstr "Результаты поиска"
+
+#. Resource IDs: (65535)
+msgid "&Folding"
+msgstr "Блоки"
+
+#. Resource IDs: (65535)
+msgid "&Font:"
+msgstr "Шрифт:"
+
+#. Resource IDs: (33)
+msgid "&Footer:"
+msgstr "Н.колон."
+
+#. Resource IDs: (33001)
+msgid "&Forums"
+msgstr "Форумы"
+
+#. Resource IDs: (282)
+msgid "&Google"
+msgstr "Google"
+
+#. Resource IDs: (32774)
+msgid "&Goto"
+msgstr "Перейти к строке"
+
+#. Resource IDs: (32)
+msgid "&Header:"
+msgstr "В.колон."
+
+#. Resource IDs: (9, 1006, 65535)
+msgid "&Help"
+msgstr "Помощь"
+
+#. Resource IDs: (260)
+msgid "&Hide"
+msgstr "Скрыть"
+
+#. Resource IDs: (1115)
+msgid "&Hide when \"Find Next\" is clicked."
+msgstr "Скрыть после нажатия \"Найти далее\"."
+
+#. Resource IDs: (32863)
+msgid "&Indent"
+msgstr "Увеличить отступ"
+
+#. Resource IDs: (65535)
+msgid "&Indentation"
+msgstr "Абзац"
+
+#. Resource IDs: (264)
+msgid "&Individual Output"
+msgstr "Индивидуальный вывод"
+
+#. Resource IDs: (32987)
+msgid "&Insert Text Clip"
+msgstr "Вставить текстовую вставку"
+
+#. Resource IDs: (1022)
+msgid "&Italic"
+msgstr "Курсив"
+
+#. Resource IDs: (33127)
+msgid "&Join Lines"
+msgstr "Объединить строки"
+
+#. Resource IDs: (32905)
+msgid "&Jump To..."
+msgstr "Перейти..."
+
+#. Resource IDs: (1102)
+msgid "&Left:"
+msgstr "Слева:"
+
+#. Resource IDs: (32968, 65535)
+msgid "&Line"
+msgstr "Строку"
+
+#. Resource IDs: (65535)
+msgid "&Line Endings"
+msgstr "Окончания строк"
+
+#. Resource IDs: (65535)
+msgid "&Line Endings:"
+msgstr "Ок. строк:"
+
+#. Resource IDs: (1045)
+msgid "&Line Number (1 - %d):"
+msgstr "Номер строки"
+
+#. Resource IDs: (1038)
+msgid "&Load"
+msgstr "Загрузить"
+
+#. Resource IDs: (32912)
+msgid "&Lowercase"
+msgstr "Нижний регистр"
+
+#. Resource IDs: (32779)
+msgid "&Macintosh (CR)"
+msgstr "Macintosh (CR)"
+
+#. Resource IDs: (21199)
+msgid "&Mark All"
+msgstr "Пометить все"
+
+#. Resource IDs: (32791)
+msgid "&Mark WhiteSpace"
+msgstr "Пометить пробелы"
+
+#. Resource IDs: (1056)
+msgid "&Maximize new document windows"
+msgstr "Разворачивать окно нового документа"
+
+#. Resource IDs: (65535)
+msgid "&Method:"
+msgstr "Метод:"
+
+#. Resource IDs: (65535)
+msgid "&Multi-Byte Character Support for ANSI files:"
+msgstr "Мультибайтные сиволы для ANSI файлов:"
+
+#. Resource IDs: (10)
+msgid "&New"
+msgstr "Новый"
+
+#. Resource IDs: (2045)
+msgid "&No"
+msgstr "&Нет"
+
+#. Resource IDs: (2045)
+msgid "&OK"
+msgstr "&ОК"
+
+#. Resource IDs: (32989)
+msgid "&Online Help"
+msgstr "Справка в сети"
+
+#. Resource IDs: (287)
+msgid "&Open"
+msgstr "Открыть"
+
+#. Resource IDs: (299)
+msgid "&Open All Files"
+msgstr "Открыть все файлы"
+
+#. Resource IDs: (1114)
+msgid "&Open dialog should start in the directory of the current file."
+msgstr "Диалог должен быть запущен из директории текущего файла."
+
+#. Resource IDs: (32981)
+msgid "&Open in Default Program"
+msgstr "Открыть в программе по умолчанию"
+
+#. Resource IDs: (57601)
+msgid "&Open..."
+msgstr "Открыть..."
+
+#. Resource IDs: (245)
+msgid "&Options"
+msgstr "Настройки..."
+
+#. Resource IDs: (32700)
+msgid "&Output"
+msgstr "Вывод"
+
+#. Resource IDs: (57637)
+msgid "&Paste"
+msgstr "Вставить"
+
+#. Resource IDs: (32999)
+msgid "&Previous Bookmark"
+msgstr "Предыдущая закладка"
+
+#. Resource IDs: (57607)
+msgid "&Print..."
+msgstr "Печать..."
+
+#. Resource IDs: (1026)
+msgid "&Printer..."
+msgstr "Принтер..."
+
+#. Resource IDs: (32701)
+msgid "&Project"
+msgstr "Проект"
+
+#. Resource IDs: (16)
+msgid "&Project Group"
+msgstr "Группа проектов"
+
+#. Resource IDs: (32701)
+msgid "&Projects"
+msgstr "Проекты"
+
+#. Resource IDs: (32924)
+msgid "&Properties"
+msgstr "Свойства"
+
+#. Resource IDs: (32902)
+msgid "&Properties\tAlt+Enter"
+msgstr "Свойства\tAlt+Enter"
+
+#. Resource IDs: (32953)
+msgid "&Quick Find"
+msgstr "Быстрый поиск"
+
+#. Resource IDs: (10)
+msgid "&Recent Files"
+msgstr "Недавние файлы"
+
+#. Resource IDs: (33129)
+msgid "&Record Script"
+msgstr "Записать скрипт"
+
+#. Resource IDs: (57644)
+msgid "&Redo"
+msgstr "Повторить"
+
+#. Resource IDs: (33117)
+msgid "&Refresh"
+msgstr "Обновить"
+
+#. Resource IDs: (1128)
+msgid "&Remember open files and projects between sessions"
+msgstr "Запоминать открытые файлы и проекты предыдущей сессии"
+
+#. Resource IDs: (12)
+msgid "&Remind Me Later"
+msgstr "Напомнить позже"
+
+#. Resource IDs: (12, 286, 1010, 1012, 1033, 1080, 1130, 1150)
+msgid "&Remove"
+msgstr "Удалить"
+
+#. Resource IDs: (286)
+msgid "&Remove Project"
+msgstr "Удалить проект"
+
+#. Resource IDs: (4)
+msgid "&Replace"
+msgstr "Заменить"
+
+#. Resource IDs: (1033, 1036)
+msgid "&Reset"
+msgstr "Сбросить"
+
+#. Resource IDs: (2045)
+msgid "&Retry"
+msgstr "Повторить"
+
+#. Resource IDs: (1103)
+msgid "&Right:"
+msgstr "Справа:"
+
+#. Resource IDs: (1040, 57603)
+msgid "&Save"
+msgstr "Сохранить"
+
+#. Resource IDs: (12)
+msgid "&Save and Remove"
+msgstr "Сохранить и удалить"
+
+#. Resource IDs: (1017)
+msgid "&Scheme:"
+msgstr "Схема:"
+
+#. Resource IDs: (32705)
+msgid "&Scripts"
+msgstr "Скрипты"
+
+#. Resource IDs: (65535)
+msgid "&Search"
+msgstr "Поиск"
+
+#. Resource IDs: (273)
+msgid "&Select All"
+msgstr "Выделить все"
+
+#. Resource IDs: (32897)
+msgid "&Set Active Project"
+msgstr "Установить проект текущим"
+
+#. Resource IDs: (1051)
+msgid "&Show Line Numbers"
+msgstr "Номера строк"
+
+#. Resource IDs: (1062)
+msgid "&Show full file path in document windows"
+msgstr "Отображать полное имя файла в окне документа"
+
+#. Resource IDs: (65535)
+msgid "&Size:"
+msgstr "Размер:"
+
+#. Resource IDs: (1034)
+msgid "&Sort"
+msgstr "Сортировать"
+
+#. Resource IDs: (32916)
+msgid "&Sort Folders"
+msgstr "Сортировать папки"
+
+#. Resource IDs: (1090)
+msgid "&Source:"
+msgstr "Источник:"
+
+#. Resource IDs: (33142)
+msgid "&Split Horizontal"
+msgstr "Разделить по горизонтали"
+
+#. Resource IDs: (59393)
+msgid "&Status Bar"
+msgstr "Панель состояния"
+
+#. Resource IDs: (32789)
+msgid "&Stop Tools"
+msgstr "Остановить выполнение инструментов"
+
+#. Resource IDs: (32966)
+msgid "&Stream"
+msgstr "Выделенное"
+
+#. Resource IDs: (33120)
+msgid "&Strip Trailing Blanks"
+msgstr "Удалить пробелы в конце строки"
+
+#. Resource IDs: (65535)
+msgid "&Tab Width:"
+msgstr "Ширина табуляции"
+
+#. Resource IDs: (32702)
+msgid "&Text Clips"
+msgstr "Текстовые вставки"
+
+#. Resource IDs: (65535)
+msgid "&Text Colour:"
+msgstr "Цвет текста:"
+
+#. Resource IDs: (59392)
+msgid "&Toolbar"
+msgstr "Панель инструментов"
+
+#. Resource IDs: (65535)
+msgid "&Tools"
+msgstr "Инструменты"
+
+#. Resource IDs: (1104)
+msgid "&Top:"
+msgstr "Сверху:"
+
+#. Resource IDs: (32969)
+msgid "&Uncomment"
+msgstr "Раскомментировать"
+
+#. Resource IDs: (1023)
+msgid "&Underline"
+msgstr "Подчеркнутый"
+
+#. Resource IDs: (57643)
+msgid "&Undo"
+msgstr "Отменить"
+
+#. Resource IDs: (32864)
+msgid "&Unindent"
+msgstr "Уменьшить отступ"
+
+#. Resource IDs: (32778)
+msgid "&Unix (LF)"
+msgstr "Unix (LF)"
+
+#. Resource IDs: (32911)
+msgid "&Uppercase"
+msgstr "Верхний регистр"
+
+#. Resource IDs: (1049)
+msgid "&Use the tab character for indentation"
+msgstr "Использовать символ табуляции для отступов"
+
+#. Resource IDs: (65535)
+msgid "&View"
+msgstr "Вид"
+
+#. Resource IDs: (65535)
+msgid "&Window"
+msgstr "Окна"
+
+#. Resource IDs: (65535)
+msgid "&Windows"
+msgstr "Окна"
+
+#. Resource IDs: (32777)
+msgid "&Windows (CRLF)"
+msgstr "Windows (CRLF)"
+
+#. Resource IDs: (33140)
+msgid "&Word Wrap"
+msgstr "Перенос слов"
+
+#. Resource IDs: (1083)
+msgid "&Word-Wrap"
+msgstr "Переносить слова"
+
+#. Resource IDs: (2045)
+msgid "&Yes"
+msgstr "&Да"
+
+#. Resource IDs: (33134)
+msgid "&Zoom In"
+msgstr "Масштаб +"
+
+#. Resource IDs: (65535)
+msgid "(1 to 50) items in the most recently used list."
+msgstr "(от 1 до 50) недавних файлов (проектов)."
+
+#. Resource IDs: (16)
+msgid "(None - All Projects)"
+msgstr "(Нет - Все проекты)"
+
+#. Resource IDs: (16)
+msgid "(None - Global Tools)"
+msgstr "(Нет - Общие инструменты)"
+
+#. Resource IDs: (12)
+msgid "(empty)"
+msgstr "(пусто)"
+
+#. Resource IDs: (1120)
+msgid "(enter text and click above to test)"
+msgstr "(введите текст и нажмте выше для теста)"
+
+#. Resource IDs: (1010, 1012, 21206)
+msgid "..."
+msgstr "..."
+
+#. Resource IDs: (32847)
+msgid "0 or More Matches"
+msgstr "0 или больше совпадений"
+
+#. Resource IDs: (32848)
+msgid "1 or More Matches"
+msgstr "1 или больше совпадений"
+
+#. Resource IDs: (1058)
+msgid "?"
+msgstr "?"
+
+#. Resource IDs: (65535)
+msgid ""
+"A Magic Folder will reflect the contents of a file system folder in a "
+"Projects folder. Select the folder you wish to include below:"
+msgstr ""
+"В магической папке будет отображаться содержимое паки файловой системы. "
+"Выберите папку ниже, которую нужно включить в проект:"
+
+#. Resource IDs: (1107)
+msgid "A&ll open documents"
+msgstr "Все откр. документы"
+
+#. Resource IDs: (32890)
+msgid "ANSI"
+msgstr "ANSI"
+
+#. Resource IDs: (100)
+msgid "About"
+msgstr "О программе"
+
+#. Resource IDs: (3826)
+msgid "Activate Task List"
+msgstr "Показать список задач"
+
+#. Resource IDs: (3826)
+msgid "Activate this window"
+msgstr "Показать это окно."
+
+#. Resource IDs: (309)
+msgid "Add &Existing Project..."
+msgstr "Добавить внешний проект..."
+
+#. Resource IDs: (32917)
+msgid "Add &Magic Folder..."
+msgstr "Добавить магическую папку..."
+
+#. Resource IDs: (308)
+msgid "Add &New Project"
+msgstr "Добавить новый проект"
+
+#. Resource IDs: (2073)
+msgid "Add Clip"
+msgstr "Добавить вставку"
+
+#. Resource IDs: (2073)
+msgid "Add Clip Set"
+msgstr "Добавить набор вставок"
+
+#. Resource IDs: (293)
+msgid "Add New &Folder"
+msgstr "Добавить новую папку"
+
+#. Resource IDs: (32788)
+msgid "Add Tools..."
+msgstr "Добавить инструменты..."
+
+#. Resource IDs: (19, 1173)
+msgid "Add \"Edit With...\" to Explorer"
+msgstr "Добавить \"Открыть в PN\" в проводник"
+
+#. Resource IDs: (14)
+msgid "Advanced"
+msgstr "Продвинутое"
+
+#. Resource IDs: (18)
+msgid "All Files"
+msgstr "Все файлы"
+
+#. Resource IDs: (10)
+msgid "All Files (*.*)|*.*|"
+msgstr "Все файлы (*.*)|*.*|"
+
+#. Resource IDs: (1045)
+msgid "Allow backslash expressions"
+msgstr "Разрешить обратную косую"
+
+#. Resource IDs: (1160)
+msgid "Allow caret to be placed outside current text bounds"
+msgstr "Разрешить размещение курсора вне границ текста"
+
+#. Resource IDs: (1159)
+msgid "Allow editing of read only files"
+msgstr "Разрешить редактирование файлов только для чтения"
+
+#. Resource IDs: (1159)
+msgid "Allow multiple selections"
+msgstr "Разрешить множественный выбор"
+
+#. Resource IDs: (1161)
+msgid "Allow typing into multiple caret points"
+msgstr "Разрешить ввод в нескольких точках курсора"
+
+#. Resource IDs: (15)
+msgid "Alternate Extensions"
+msgstr "Альтернативные расширения"
+
+#. Resource IDs: (65535)
+msgid "Alternate Extensions:"
+msgstr "Альтернативные расширения:"
+
+#. Resource IDs: (65535)
+msgid "Alternate File Pairs"
+msgstr "Пары альтернативных файлов"
+
+#. Resource IDs: (14)
+msgid "Alternate Files"
+msgstr "Альтернативные файлы"
+
+#. Resource IDs: (16)
+msgid "An extension may not contain any of these characters: "
+msgstr "Расширение не может содержать следующие символы:"
+
+#. Resource IDs: (12)
+#, c-format
+msgid ""
+"An update for Programmer's Notepad is available (version %s), would you like "
+"to download it now?"
+msgstr ""
+"Доступно обновление для Programmer's Notepad (версия %s), загрузить сейчас?"
+
+#. Resource IDs: (32839)
+msgid "Any Character"
+msgstr "Любой символ"
+
+#. Resource IDs: (12)
+msgid ""
+"Are you sure you wish to rename this magic folder?\n"
+"This will have the effect of renaming the actual folder on the disk."
+msgstr ""
+"Вы уверены, что хотите переименовать эту магическую папку?\n"
+"Вместе с этим будет переименована соответствующая папка на диске."
+
+#. Resource IDs: (57649)
+msgid "Arrange &Icons"
+msgstr "Упорядочить значки"
+
+#. Resource IDs: (3604)
+msgid ""
+"Arrange icons at the bottom of the window\n"
+"Arrange Icons"
+msgstr ""
+"Упорядочить значки свернутых окон в нижней части основного окна.\n"
+"Упорядочить значки"
+
+#. Resource IDs: (3604)
+msgid ""
+"Arrange windows as non-overlapping tiles\n"
+"Tile Windows"
+msgstr ""
+"Упорядочить окна в виде неперекрывающейся плитки.\n"
+"Окна плиткой"
+
+#. Resource IDs: (3604)
+msgid ""
+"Arrange windows so they overlap\n"
+"Cascade Windows"
+msgstr ""
+"Упорядочить окна в виде стопки.\n"
+"Окна Каскадом"
+
+#. Resource IDs: (266)
+msgid "As &RTF..."
+msgstr "Как RTF..."
+
+#. Resource IDs: (32878)
+msgid "As HTML..."
+msgstr "Как HTML..."
+
+#. Resource IDs: (1091, 1094)
+msgid "Ask Me"
+msgstr "Спросить"
+
+#. Resource IDs: (65535)
+msgid "Assign Shortcuts:"
+msgstr "Связанное сочетание клавиш:"
+
+#. Resource IDs: (1055)
+msgid "At the &bottom of the main window"
+msgstr "В нижней части основного окна"
+
+#. Resource IDs: (1141)
+msgid "Auto-Close HTML/XML Tags"
+msgstr "Автозакр. HTML/XML тегов"
+
+#. Resource IDs: (65535)
+msgid "Auto-scroll Caret Position Limits:"
+msgstr "Ограничение автопрокрутки:"
+
+#. Resource IDs: (1143)
+msgid "AutoComplete After:"
+msgstr "Предлагать после:"
+
+#. Resource IDs: (65535)
+msgid "AutoComplete Settings"
+msgstr "Настройки автодополнения"
+
+#. Resource IDs: (1144)
+msgid "AutoComplete when asked"
+msgstr "По запросу"
+
+#. Resource IDs: (13)
+msgid "Autocomplete"
+msgstr "Автодополнение"
+
+#. Resource IDs: (13)
+msgid "Avoiding infinite search loop, Replace All abandoned"
+msgstr ""
+"Чтобы избежать бесконечного цикла поиска, команада \"Заменить все\" была "
+"остановлена"
+
+#. Resource IDs: (65535)
+msgid "Bac&kground:"
+msgstr "Фон:"
+
+#. Resource IDs: (65535)
+msgid "Base Style Settings"
+msgstr "Настройки базового стиля"
+
+#. Resource IDs: (32842)
+msgid "Beginning of Line"
+msgstr "Начало строки"
+
+#. Resource IDs: (1152)
+msgid "Blend highlight colour:"
+msgstr "Вкл. прозрачность:"
+
+#. Resource IDs: (65535)
+msgid "Bottom:"
+msgstr "Снизу:"
+
+#. Resource IDs: (1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1073)
+msgid "Button1"
+msgstr "Кнопка1"
+
+#. Resource IDs: (1033)
+msgid "Button2"
+msgstr "Кнопка2"
+
+#. Resource IDs: (259)
+msgid "C&lear"
+msgstr "Очистить"
+
+#. Resource IDs: (65535)
+msgid "CTAGS"
+msgstr "CTAGS"
+
+#. Resource IDs: (2, 2045)
+msgid "Cancel"
+msgstr "Закрыть"
+
+#. Resource IDs: (12)
+#, c-format
+msgid "Cannot find in files in %s, the directory does not exist"
+msgstr "Невозможен поиск в файлах в %s, директория не существует"
+
+#. Resource IDs: (1047)
+msgid "Capture output?"
+msgstr "Захвачивать вывод?"
+
+#. Resource IDs: (3601)
+msgid ""
+"Change the printer and printing options\n"
+"Print Setup"
+msgstr ""
+"Изменить принтер и его свойства.\n"
+"Настройка принтера"
+
+#. Resource IDs: (3601)
+msgid ""
+"Change the printing options\n"
+"Page Setup"
+msgstr ""
+"Изменить настройки печати.\n"
+"Параметры страницы"
+
+#. Resource IDs: (3825)
+msgid "Change the window position"
+msgstr "Изменить позицию окна."
+
+#. Resource IDs: (3825)
+msgid "Change the window size"
+msgstr "Изменить размер окна."
+
+#. Resource IDs: (18)
+msgid ""
+"Changing the encoding between Unicode and ANSI will clear your Undo history, "
+"and may lose unsupported characters. Are you sure?"
+msgstr ""
+"При изменении кодировки с Unicode на ANSI (или наоборот) очищается история "
+"изменений и возможна потеря неподдерживаемых символов. Вы уверены?"
+
+#. Resource IDs: (32841)
+msgid "Character Not in Range"
+msgstr "Символ вне диапазона"
+
+#. Resource IDs: (32840)
+msgid "Character in Range"
+msgstr "Символ в диапазоне"
+
+#. Resource IDs: (65535)
+msgid "Characters:"
+msgstr "Символов:"
+
+#. Resource IDs: (1099)
+msgid "Check &Now"
+msgstr "Проверить"
+
+#. Resource IDs: (33141)
+msgid "Check for &Updates"
+msgstr "Проверить обновления"
+
+#. Resource IDs: (1154)
+msgid "Check for &updates"
+msgstr "Проверять обновления"
+
+#. Resource IDs: (57602)
+msgid "Cl&ose\tCtrl-F4"
+msgstr "Закрыть\tCtrl-F4"
+
+#. Resource IDs: (1051)
+msgid "Clear output before running?"
+msgstr "Очистить вывод перед выполнением?"
+
+#. Resource IDs: (267)
+msgid "Clipboard S&wap"
+msgstr "Обменять с буфером обмена"
+
+#. Resource IDs: (2045)
+msgid "Close"
+msgstr "Закрыть"
+
+#. Resource IDs: (32920)
+msgid "Close &All"
+msgstr "Закрыть все"
+
+#. Resource IDs: (32920)
+msgid "Close All"
+msgstr "Закрыть все"
+
+#. Resource IDs: (32931)
+msgid "Close All &Other"
+msgstr "Закрыть все остальные"
+
+#. Resource IDs: (32931)
+msgid "Close All &Other Windows"
+msgstr "Закрыть все остальные окна"
+
+#. Resource IDs: (301)
+msgid "Close P&roject(s)"
+msgstr "Закрыть проект(ы)"
+
+#. Resource IDs: (301)
+msgid "Close Project(s)"
+msgstr "Закрыть проект(ы)"
+
+#. Resource IDs: (33150)
+msgid "Close Vie&w"
+msgstr "Закрыть вид"
+
+#. Resource IDs: (2045)
+msgid "Close all project files?"
+msgstr "Закрыть все файлы проектов?"
+
+#. Resource IDs: (3601)
+msgid ""
+"Close the active document\n"
+"Close"
+msgstr ""
+"Закрыть текущий документ.\n"
+"Закрыть"
+
+#. Resource IDs: (3825)
+msgid "Close the active window and prompts to save the documents"
+msgstr "Закрыть активное окно и предложить сохранить документы."
+
+#. Resource IDs: (13)
+msgid "Code Templates"
+msgstr "Шаблоны кода"
+
+#. Resource IDs: (268)
+msgid "Collapse All Folds"
+msgstr "Свернуть все"
+
+#. Resource IDs: (65535)
+msgid "Com&ments"
+msgstr "Коментировать"
+
+#. Resource IDs: (15)
+msgid "Command"
+msgstr "Команда"
+
+#. Resource IDs: (33144)
+msgid "Command &Mode"
+msgstr "Командный режим"
+
+#. Resource IDs: (65535)
+msgid "Command:"
+msgstr "Программа:"
+
+#. Resource IDs: (14)
+msgid "Confirmations"
+msgstr "Подтверждения"
+
+#. Resource IDs: (16)
+msgid "Console I/O"
+msgstr "Консольный ввод/вывод"
+
+#. Resource IDs: (32972)
+msgid "Convert Spaces to Tabs"
+msgstr "Преобразовать пробелы в табуляцию"
+
+#. Resource IDs: (32971)
+msgid "Convert Tabs to Spaces"
+msgstr "Преобразовать табуляцию в пробелы"
+
+#. Resource IDs: (32974)
+msgid "Copy &File Path"
+msgstr "Копировать путь к файлу"
+
+#. Resource IDs: (32871)
+msgid "Copy as RTF"
+msgstr "Копировать как RTF"
+
+#. Resource IDs: (3603)
+msgid ""
+"Copy the selection and put it on the Clipboard\n"
+"Copy"
+msgstr ""
+"Копировать выделенное и помесить его в буфер обмена.\n"
+"Копировать"
+
+#. Resource IDs: (11)
+msgid "Could not create file"
+msgstr "Невозможно создать файл"
+
+#. Resource IDs: (18)
+msgid "Could not locate "
+msgstr "Не удается найти"
+
+#. Resource IDs: (3601)
+msgid ""
+"Create a new document\n"
+"New"
+msgstr ""
+"Создать новый документ.\n"
+"Новый"
+
+#. Resource IDs: (9)
+msgid "Create a new project."
+msgstr "Создать новый проект."
+
+#. Resource IDs: (9)
+msgid "Create a new workspace."
+msgstr "Создать новую сессию."
+
+#. Resource IDs: (1157)
+msgid "Create backup files when saving"
+msgstr "Создавать резервные копии"
+
+#. Resource IDs: (57635)
+msgid "Cu&t"
+msgstr "Вырезать"
+
+#. Resource IDs: (32910)
+msgid "Cu&t Line"
+msgstr "Вырезать"
+
+#. Resource IDs: (1106)
+msgid "Curren&t document"
+msgstr "Текущий документ"
+
+#. Resource IDs: (33160)
+msgid "Current &Editor"
+msgstr "Текущий редактор"
+
+#. Resource IDs: (32884)
+msgid "Current Date (%c)"
+msgstr "Текущая дата (%c)"
+
+#. Resource IDs: (11)
+msgid "Current File"
+msgstr "Текущий файл"
+
+#. Resource IDs: (11)
+msgid "Current Folder"
+msgstr "Текущая папка"
+
+#. Resource IDs: (32881)
+msgid "Current Page (%p)"
+msgstr "Текущая страница (%p)"
+
+#. Resource IDs: (11)
+msgid "Current Project Files"
+msgstr "Текущий файл проекта"
+
+#. Resource IDs: (65535)
+msgid "Current Shortcuts:"
+msgstr "Текущее сочетание клавиш:"
+
+#. Resource IDs: (32888)
+msgid "Current Time (%t)"
+msgstr "Текущее время (%t)"
+
+#. Resource IDs: (1108)
+msgid "Current pro&ject"
+msgstr "Текущий проект"
+
+#. Resource IDs: (65535)
+msgid "Cursor Colour:"
+msgstr "Цвет курсора:"
+
+#. Resource IDs: (1121)
+msgid "Custom Output Parsing"
+msgstr "Особый разбор вывода"
+
+#. Resource IDs: (3603)
+msgid ""
+"Cut the selection and put it on the Clipboard\n"
+"Cut"
+msgstr ""
+"Вырезать выделенное и поместить его в буфер обмена.\n"
+"Вырезать"
+
+#. Resource IDs: (65535)
+msgid "DUMMY"
+msgstr "DUMMY"
+
+#. Resource IDs: (32909)
+msgid "De&lete Line"
+msgstr "Удалить"
+
+#. Resource IDs: (65535)
+msgid "Defaults"
+msgstr "По умолчанию"
+
+#. Resource IDs: (1158)
+msgid "Display block caret instead of line"
+msgstr "Курсор в виде блока, а не линии"
+
+#. Resource IDs: (3601)
+msgid ""
+"Display full pages\n"
+"Print Preview"
+msgstr ""
+"Показать полные страницы.\n"
+"Предварительный просмотр"
+
+#. Resource IDs: (3605)
+msgid ""
+"Display program information, version number and copyright\n"
+"About"
+msgstr ""
+"Показать информацию о программе, номер версии и лицензионное соглашение.\n"
+"О программе"
+
+#. Resource IDs: (12)
+msgid "Do &Not Download"
+msgstr "Не загружать"
+
+#. Resource IDs: (1051)
+msgid "Do not &ask me again"
+msgstr "Не спрашивать меня снова"
+
+#. Resource IDs: (18)
+msgid "Do not ask me again."
+msgstr "Не спрашивать снова."
+
+#. Resource IDs: (65535)
+msgid ""
+"Do you want to associate these extensions with Programmer's Notepad 2 now?"
+msgstr "Ассоциировать это расширение с Programmer's Notepad 2 сейчас?"
+
+#. Resource IDs: (2045)
+#, c-format
+msgid "Do you want to open another copy of %s?"
+msgstr "Открыть другую копию %s?"
+
+#. Resource IDs: (2063)
+#, c-format
+msgid "Do you want to save changes to the project: %s?"
+msgstr "Сохранить изменения в проекте: %s?"
+
+#. Resource IDs: (9)
+msgid "Document"
+msgstr "Документ"
+
+#. Resource IDs: (1074)
+msgid "Don't change the foreground."
+msgstr "Не изменять фон."
+
+#. Resource IDs: (57665)
+msgid "E&xit"
+msgstr "Выход"
+
+#. Resource IDs: (12)
+msgid "E&xtensions"
+msgstr "Расширения"
+
+#. Resource IDs: (17)
+msgid "Edit"
+msgstr "Правка"
+
+#. Resource IDs: (432)
+msgid "Edit Alternate File Pair"
+msgstr "Изменить альтернативные пары файлов"
+
+#. Resource IDs: (2073)
+msgid "Edit Clip"
+msgstr "Изменить вставку"
+
+#. Resource IDs: (439)
+msgid "Edit File Type"
+msgstr "Редактирование типов файлов"
+
+#. Resource IDs: (262)
+msgid "Edit SmartStart Phrase"
+msgstr "Изменить фразу SmartStart "
+
+#. Resource IDs: (15)
+msgid "Edit Tool"
+msgstr "Изменить инструмент"
+
+#. Resource IDs: (17, 18)
+msgid "Edit with Programmer's Notepad"
+msgstr "Открыть в Programmer's Notepad"
+
+#. Resource IDs: (65535)
+msgid "Editing"
+msgstr "Редактирование"
+
+#. Resource IDs: (14)
+msgid "Editor"
+msgstr "Редактор"
+
+#. Resource IDs: (10)
+msgid "Empty Project"
+msgstr "Пустой проект"
+
+#. Resource IDs: (1138)
+msgid "Enable AutoComplete"
+msgstr "Разрешить"
+
+#. Resource IDs: (1118)
+msgid "Enable Command Bar"
+msgstr "Вкл. панель команд"
+
+#. Resource IDs: (1051)
+msgid "Enable SmartStart"
+msgstr "Включить"
+
+#. Resource IDs: (17)
+msgid "Enabled"
+msgstr "Разрешить"
+
+#. Resource IDs: (65535)
+msgid "Enco&ding"
+msgstr "Кодировка"
+
+#. Resource IDs: (18)
+msgid "Encoding Conversion"
+msgstr "Изменение кодировки"
+
+#. Resource IDs: (1101, 65535)
+msgid "Encoding:"
+msgstr "Кодировка:"
+
+#. Resource IDs: (32843)
+msgid "End of Line"
+msgstr "Окончание строки"
+
+#. Resource IDs: (3825)
+msgid "Enlarge the window to full size"
+msgstr "Развернуть окно в максимальный размер."
+
+#. Resource IDs: (1170)
+msgid "Ensure file ends with a blank line"
+msgstr "В конце файла должна быть пустая строка"
+
+#. Resource IDs: (65535)
+msgid ""
+"Enter a semi-colon separated list of directories that you do not wish to "
+"include:"
+msgstr "Введите через точку с запятой список папок, которые нужно включить:"
+
+#. Resource IDs: (65535)
+msgid ""
+"Enter a semi-colon separated list of file types that you do not wish to "
+"include:"
+msgstr "Введите через точку с запятой типы файлов, которые ненужно включить:"
+
+#. Resource IDs: (65535)
+msgid ""
+"Enter a semi-colon separated list of file types that you wish to include:"
+msgstr "Введите через точку с запятой типы файлов, которые нужно включить:"
+
+#. Resource IDs: (3603)
+msgid ""
+"Erase everything\n"
+"Erase All"
+msgstr ""
+"Стереть содержимое документа.\n"
+"Стереть все"
+
+#. Resource IDs: (3603)
+msgid ""
+"Erase the selection\n"
+"Erase"
+msgstr ""
+"Стереть выделенное.\n"
+"Стереть"
+
+#. Resource IDs: (65535)
+msgid "Ex&tension:"
+msgstr "Расширения:"
+
+#. Resource IDs: (18)
+msgid "Example"
+msgstr "Пример"
+
+#. Resource IDs: (17)
+msgid ""
+"Executable Files (exe, com, bat, vbs...)|*.exe;*.com;*.bat;*.vbs;*.cmd|All "
+"Files (*.*)|*.*|"
+msgstr ""
+"Программы (exe, com, bat, vbs...)|*.exe;*.com;*.bat;*.vbs;*.cmd|All Files (*."
+"*)|*.*|"
+
+#. Resource IDs: (269)
+msgid "Expand All Folds"
+msgstr "Развернуть все"
+
+#. Resource IDs: (16)
+msgid "Extension"
+msgstr "Расширение"
+
+#. Resource IDs: (65535)
+msgid "Extensions"
+msgstr "Расширения"
+
+#. Resource IDs: (32874)
+msgid "F&ind in Files"
+msgstr "Найти в файлах"
+
+#. Resource IDs: (12)
+msgid "Failed to create a backup document"
+msgstr "Не удалось создать резервную копию документа"
+
+#. Resource IDs: (18)
+#, c-format
+msgid ""
+"Failed to open workspace file %s for writing. Workspace state could not be "
+"saved."
+msgstr ""
+"Не удалось открыть файл сессии %s для записи. Сессию невозможно будет "
+"сохранить."
+
+#. Resource IDs: (1110)
+msgid "Fi&nd what:"
+msgstr "Искать:"
+
+#. Resource IDs: (17)
+msgid "File"
+msgstr "Файл"
+
+#. Resource IDs: (32706)
+msgid "File &Browser"
+msgstr "Проводник"
+
+#. Resource IDs: (2045)
+msgid "File Browser"
+msgstr "Проводник"
+
+#. Resource IDs: (32882)
+msgid "File Date (%D)"
+msgstr "Дата файла (%D)"
+
+#. Resource IDs: (65535)
+msgid "File Dialogs"
+msgstr "Диалоги файлов"
+
+#. Resource IDs: (65535)
+msgid "File Extension or Name to Match:"
+msgstr "Расширение или имя файла:"
+
+#. Resource IDs: (1056)
+msgid "File Format:"
+msgstr "Формат файла:"
+
+#. Resource IDs: (32879)
+msgid "File Name (%f)"
+msgstr "Имя файла (%f)"
+
+#. Resource IDs: (32880)
+msgid "File Path (%d)"
+msgstr "Путь к файлу (%d)"
+
+#. Resource IDs: (1163)
+msgid "File Save Options"
+msgstr "Настройки сохранения файлов"
+
+#. Resource IDs: (32887)
+msgid "File Time (%T)"
+msgstr "Время файла (%T)"
+
+#. Resource IDs: (65535)
+msgid "File Types"
+msgstr "Типы файлов"
+
+#. Resource IDs: (65535)
+msgid ""
+"File extensions should be entered including the '.' dot character, separated "
+"by semi-colons, in order of precedence. e.g. \n"
+"\n"
+"Start: .cpp;.cxx;.c;.cc\n"
+"Alternate: .h;.hpp"
+msgstr ""
+"Расширения нужно вводить с точкой в начале, разделяя их точкой с запятой и в "
+"алфавитном порядке, как в примере. \n"
+"\n"
+"Исходные: .cpp;.cxx;.c;.cc\n"
+"Альтернативные: .h;.hpp"
+
+#. Resource IDs: (65535)
+msgid "File extensions should be entered starting with the '.' dot character."
+msgstr "Расширения файлов должны начинаться с символа '.' (точка)."
+
+#. Resource IDs: (1043)
+msgid "File types:"
+msgstr "Типы файлов:"
+
+#. Resource IDs: (65535)
+msgid "File:"
+msgstr "Файл:"
+
+#. Resource IDs: (14)
+msgid "Files"
+msgstr "Файлы"
+
+#. Resource IDs: (1024)
+msgid "Fill to &end of line"
+msgstr "Заполнять до конца строки"
+
+#. Resource IDs: (22)
+msgid "Find"
+msgstr "Найти"
+
+#. Resource IDs: (32773)
+msgid "Find &Next"
+msgstr "Найти далее"
+
+#. Resource IDs: (17)
+msgid "Find &Previous"
+msgstr "Найти пред."
+
+#. Resource IDs: (2055)
+msgid "Find (drop down for other find types)"
+msgstr "Найти (доступны другие типы поиска)"
+
+#. Resource IDs: (65535)
+msgid "Find Dialog"
+msgstr "Диалог поиска"
+
+#. Resource IDs: (33132)
+msgid "Find Next Current &Word"
+msgstr "Найти далее текущее слово"
+
+#. Resource IDs: (32956)
+msgid "Find Pre&vious"
+msgstr "Найти предыдущее"
+
+#. Resource IDs: (33133)
+msgid "Find Previous C&urrent Word"
+msgstr "Найти предыдущее текущее слово"
+
+#. Resource IDs: (2045)
+msgid "Find Results"
+msgstr "Результаты поиска"
+
+#. Resource IDs: (15)
+msgid "Find in Files"
+msgstr "Найти в файлах"
+
+#. Resource IDs: (1171)
+msgid "Find more extensions at www.pnotepad.org..."
+msgstr "Больше расширений на www.pnotepad.org..."
+
+#. Resource IDs: (9)
+msgid "Find reached the starting point of the search."
+msgstr "Поиск достиг начальной точки поиска."
+
+#. Resource IDs: (2055)
+msgid ""
+"Find text in files\n"
+"Find in Files"
+msgstr ""
+"Поиск текста в файлах.\n"
+"Найти в файлах"
+
+#. Resource IDs: (3603)
+msgid ""
+"Find the specified text\n"
+"Find"
+msgstr ""
+"Найти текст в файле.\n"
+"Найти"
+
+#. Resource IDs: (1044)
+msgid "Find where:"
+msgstr "Где искать:"
+
+#. Resource IDs: (65535)
+msgid "Folder:"
+msgstr "Папка:"
+
+#. Resource IDs: (1146)
+msgid "Folding enabled for supporting schemes"
+msgstr "Показывать блоки для схем подсветки"
+
+#. Resource IDs: (65535)
+msgid "Font Style"
+msgstr "Тип шрифта"
+
+#. Resource IDs: (13)
+msgid "Fonts and Colours"
+msgstr "Шрифты и цвета"
+
+#. Resource IDs: (17)
+#, c-format
+msgid "Found %d occurrences"
+msgstr "Найдено %d совпадений."
+
+#. Resource IDs: (13)
+msgid "General"
+msgstr "Основные"
+
+#. Resource IDs: (204)
+msgid "Go To Line"
+msgstr "Перейти к строке"
+
+#. Resource IDs: (32992)
+msgid "Go to Definition"
+msgstr "Перейти к определению"
+
+#. Resource IDs: (283)
+msgid "Google Gr&oups"
+msgstr "Google Groups"
+
+#. Resource IDs: (32849)
+msgid "Group"
+msgstr "Группа"
+
+#. Resource IDs: (65535)
+msgid "HEADERFOOTERFIELDS"
+msgstr "HEADERFOOTERFIELDS"
+
+#. Resource IDs: (1160)
+msgid "Highlight all instances of selected word"
+msgstr "Подсв. совпадения с выделеным словом"
+
+#. Resource IDs: (1066)
+msgid "Highlight current editor line"
+msgstr "Подсв. текущую строку"
+
+#. Resource IDs: (1068)
+msgid "Highlight text beyond the edge column"
+msgstr "Подсвечивать текст вне страницы"
+
+#. Resource IDs: (15)
+msgid "Hint"
+msgstr "Подсказка"
+
+#. Resource IDs: (65535)
+msgid "Hint:"
+msgstr "Подсказка:"
+
+#. Resource IDs: (65535)
+msgid "Horizontal:"
+msgstr "По гориз.:"
+
+#. Accelerator Entry for Menu ID:267; 'Clipboard S&wap'
+msgid "ID:267:V CS+C"
+msgstr "ID:267:V CS+C"
+
+#. Accelerator Entry for Menu ID:32703; 'T&ags'
+msgid "ID:32703:VA  +G"
+msgstr "ID:32703:VA  +G"
+
+#. Accelerator Entry for Menu ID:32774; '&Goto'
+msgid "ID:32774:V C +G"
+msgstr "ID:32774:V C +G"
+
+#. Accelerator Entry for Menu ID:32783; ''
+msgid "ID:32783:V C +K"
+msgstr "ID:32783:V C +K"
+
+#. Accelerator Entry for Menu ID:32784; ''
+msgid "ID:32784:V C +Q"
+msgstr "ID:32784:V C +Q"
+
+#. Accelerator Entry for Menu ID:32789; '&Stop Tools'
+msgid "ID:32789:V CS+K"
+msgstr "ID:32789:V CS+K"
+
+#. Accelerator Entry for Menu ID:32865; 'Save A&ll'
+msgid "ID:32865:V CS+S"
+msgstr "ID:32865:V CS+S"
+
+#. Accelerator Entry for Menu ID:32866; ''
+msgid "ID:32866:V CS+H"
+msgstr "ID:32866:V CS+H"
+
+#. Accelerator Entry for Menu ID:32871; 'Copy as RTF'
+msgid "ID:32871:VAC +C"
+msgstr "ID:32871:VAC +C"
+
+#. Accelerator Entry for Menu ID:32874; 'F&ind in Files'
+msgid "ID:32874:V CS+F"
+msgstr "ID:32874:V CS+F"
+
+#. Accelerator Entry for Menu ID:32909; 'De&lete Line'
+msgid "ID:32909:V CS+L"
+msgstr "ID:32909:V CS+L"
+
+#. Accelerator Entry for Menu ID:32910; 'Cu&t Line'
+msgid "ID:32910:V C +L"
+msgstr "ID:32910:V C +L"
+
+#. Accelerator Entry for Menu ID:57600; ''
+msgid "ID:57600:V C +N"
+msgstr "ID:57600:V C +N"
+
+#. Accelerator Entry for Menu ID:57601; '&Open...'
+msgid "ID:57601:V C +O"
+msgstr "ID:57601:V C +O"
+
+#. Accelerator Entry for Menu ID:57602; 'Cl&ose\tCtrl-F4'
+msgid "ID:57602:V C +W"
+msgstr "ID:57602:V C +W"
+
+#. Accelerator Entry for Menu ID:57603; '&Save'
+msgid "ID:57603:V C +S"
+msgstr "ID:57603:V C +S"
+
+#. Accelerator Entry for Menu ID:57607; '&Print...'
+msgid "ID:57607:V C +P"
+msgstr "ID:57607:V C +P"
+
+#. Accelerator Entry for Menu ID:57634; '&Copy'
+msgid "ID:57634:V C +C"
+msgstr "ID:57634:V C +C"
+
+#. Accelerator Entry for Menu ID:57635; 'Cu&t'
+msgid "ID:57635:V C +X"
+msgstr "ID:57635:V C +X"
+
+#. Accelerator Entry for Menu ID:57635; 'Cu&t'
+msgid "ID:57635:V CS+X"
+msgstr "ID:57635:V CS+X"
+
+#. Accelerator Entry for Menu ID:57636; '&Find'
+msgid "ID:57636:V C +F"
+msgstr "ID:57636:V C +F"
+
+#. Accelerator Entry for Menu ID:57637; '&Paste'
+msgid "ID:57637:V C +V"
+msgstr "ID:57637:V C +V"
+
+#. Accelerator Entry for Menu ID:57637; '&Paste'
+msgid "ID:57637:V CS+V"
+msgstr "ID:57637:V CS+V"
+
+#. Accelerator Entry for Menu ID:57641; 'R&eplace'
+msgid "ID:57641:V C +H"
+msgstr "ID:57641:V C +H"
+
+#. Accelerator Entry for Menu ID:57641; 'R&eplace'
+msgid "ID:57641:V C +R"
+msgstr "ID:57641:V C +R"
+
+#. Accelerator Entry for Menu ID:57643; '&Undo'
+msgid "ID:57643:V C +Z"
+msgstr "ID:57643:V C +Z"
+
+#. Resource IDs: (1109)
+msgid "In &selection"
+msgstr "В выделенном"
+
+#. Resource IDs: (1134)
+msgid "Include &hidden"
+msgstr "Скрытые"
+
+#. Resource IDs: (1139)
+msgid "Include Scheme Keywords"
+msgstr "Включая слова схемы"
+
+#. Resource IDs: (1140)
+msgid "Include Tags"
+msgstr "Включая теги"
+
+#. Resource IDs: (65535)
+msgid "Indentation Guides:"
+msgstr "Направл. отступа:"
+
+#. Resource IDs: (3603)
+msgid ""
+"Insert Clipboard contents\n"
+"Paste"
+msgstr ""
+"Вставить содержимое буфера обмена.\n"
+"Вставить"
+
+#. Resource IDs: (14)
+msgid "Integration"
+msgstr "Интеграция"
+
+#. Resource IDs: (14)
+msgid "Interface"
+msgstr "Интерфейс"
+
+#. Resource IDs: (321)
+msgid "Jump To..."
+msgstr "Перейти..."
+
+#. Resource IDs: (65535)
+msgid "Jump to:"
+msgstr "Перейти:"
+
+#. Resource IDs: (14)
+msgid "Keyboard"
+msgstr "Клавиатура"
+
+#. Resource IDs: (65535)
+msgid "Keyboard Shortcuts"
+msgstr "Сочетания клавиш"
+
+#. Resource IDs: (15)
+msgid "Keywords"
+msgstr "Ключ. слова"
+
+#. Resource IDs: (1057)
+msgid "L&andscape"
+msgstr "Альбомная"
+
+#. Resource IDs: (65535)
+msgid "Language"
+msgstr "Язык"
+
+#. Resource IDs: (17)
+msgid "Line"
+msgstr "Строка"
+
+#. Resource IDs: (32792)
+msgid "Line &End Markers"
+msgstr "Маркеры окончания строк"
+
+#. Resource IDs: (132)
+msgid "Line &Numbers"
+msgstr "Номера строк"
+
+#. Resource IDs: (65535)
+msgid "Line Endings:"
+msgstr "Ок. строк:"
+
+#. Resource IDs: (1170)
+msgid "Line Padding"
+msgstr "Заполнение строки"
+
+#. Resource IDs: (65535)
+msgid "Lines:"
+msgstr "Строк:"
+
+#. Resource IDs: (32912)
+msgid "Lo&wercase"
+msgstr "Нижний регистр"
+
+#. Resource IDs: (65535)
+msgid "Long Line Helpers"
+msgstr "Подсветка длинных строк"
+
+#. Resource IDs: (1059)
+msgid "Look for a custom pattern:"
+msgstr "Исп. собственный шаблон:"
+
+#. Resource IDs: (1155)
+msgid "Look for testing releases"
+msgstr "Включая тестовые релизы"
+
+#. Resource IDs: (1075)
+msgid "Margins"
+msgstr "Отступы"
+
+#. Resource IDs: (65535)
+msgid "Mark All Highlight:"
+msgstr "Помеченное:"
+
+#. Resource IDs: (16)
+msgid "Match"
+msgstr "Тип файла"
+
+#. Resource IDs: (105)
+msgid "Match &case"
+msgstr "С учетом регистра"
+
+#. Resource IDs: (104)
+msgid "Match &whole word only"
+msgstr "Слово целиком"
+
+#. Resource IDs: (17)
+msgid "Match Case"
+msgstr "С учетом регистра"
+
+#. Resource IDs: (18)
+msgid "Meaning"
+msgstr "Значение"
+
+#. Resource IDs: (16)
+msgid "Method"
+msgstr "Метод"
+
+#. Resource IDs: (22)
+msgid "Modified"
+msgstr "Изменен"
+
+#. Resource IDs: (15)
+msgid "More Options"
+msgstr "Прочее"
+
+#. Resource IDs: (1034)
+msgid "Move &Down"
+msgstr "Переместить вниз"
+
+#. Resource IDs: (1033)
+msgid "Move &Up"
+msgstr "Переместить вверх"
+
+#. Resource IDs: (33003)
+msgid "Move Line &Up"
+msgstr "Переместить вверх"
+
+#. Resource IDs: (33005)
+msgid "Move Line Do&wn"
+msgstr "Переместить вниз"
+
+#. Resource IDs: (15, 16)
+msgid "Name"
+msgstr "Название"
+
+#. Resource IDs: (65535)
+msgid "Name:"
+msgstr "Название:"
+
+#. Resource IDs: (17)
+msgid "New Clip Set"
+msgstr "Новый набор вставок"
+
+#. Resource IDs: (65535)
+msgid "New File"
+msgstr "Новый файл"
+
+#. Resource IDs: (14)
+msgid "New Files"
+msgstr "Новые файлы"
+
+#. Resource IDs: (17)
+msgid "New Folder"
+msgstr "Новая папка"
+
+#. Resource IDs: (10)
+msgid "New Project Group"
+msgstr "Новая группа проектов"
+
+#. Resource IDs: (336)
+msgid "New Project..."
+msgstr "Новый проект..."
+
+#. Resource IDs: (15)
+msgid "New Tool"
+msgstr "Новый инструмент"
+
+#. Resource IDs: (32787)
+msgid "Next B&ookmark"
+msgstr "Следующая закладка"
+
+#. Resource IDs: (7)
+msgid "No"
+msgstr "Нет"
+
+#. Resource IDs: (1124)
+msgid "No Override"
+msgstr "Не заменять"
+
+#. Resource IDs: (1067)
+msgid "No long line help"
+msgstr "Не подсвечивать"
+
+#. Resource IDs: (12)
+msgid "No more occurrences found in the specified set of documents."
+msgstr "Не найдено больше совпадений в указанных документах."
+
+#. Resource IDs: (13)
+msgid "No updates are available at this time."
+msgstr "На данный момент обновлений нет."
+
+#. Resource IDs: (18)
+msgid "None"
+msgstr "Пусто"
+
+#. Resource IDs: (32845)
+msgid "Not"
+msgstr "Нет"
+
+#. Resource IDs: (65535)
+msgid "Note: The first item in any list will be the default tool."
+msgstr "Примечание: первый элемент будет использоваться по умолчанию."
+
+#. Resource IDs: (1)
+msgid "OK"
+msgstr "ОК"
+
+#. Resource IDs: (1057)
+msgid "Only show with ma&ximized document windows"
+msgstr "Отображать только для развернутых окон"
+
+#. Resource IDs: (16)
+msgid "Open"
+msgstr "Открыть"
+
+#. Resource IDs: (32977)
+msgid "Open &Folder"
+msgstr "Открыть папку"
+
+#. Resource IDs: (32976)
+msgid "Open Con&taining Folder"
+msgstr "Открыть содержащую папку"
+
+#. Resource IDs: (32707)
+msgid "Open Fi&les"
+msgstr "Открытые файлы"
+
+#. Resource IDs: (12, 2045)
+msgid "Open Files"
+msgstr "Открыть файлы"
+
+#. Resource IDs: (289)
+msgid "Open Pro&ject(s)..."
+msgstr "Открыть проект(ы)..."
+
+#. Resource IDs: (289)
+msgid "Open Project(s)..."
+msgstr "Открыть проект(ы)..."
+
+#. Resource IDs: (10)
+msgid "Open Project/Project Group"
+msgstr "Открыть проект/группу проектов"
+
+#. Resource IDs: (32903)
+msgid "Open URL in Default Browser"
+msgstr "Открыть ссылку в браузере"
+
+#. Resource IDs: (33111)
+msgid "Open Wor&kspace..."
+msgstr "Открыть сессию..."
+
+#. Resource IDs: (3601)
+msgid ""
+"Open an existing document\n"
+"Open"
+msgstr ""
+"Открыть внешний документ.\n"
+"Открыть"
+
+#. Resource IDs: (3604)
+msgid ""
+"Open another window for the active document\n"
+"New Window"
+msgstr ""
+"Открыть еще одно окно для текущего документа.\n"
+"Новое окно"
+
+#. Resource IDs: (32979)
+msgid "Open in De&fault Program"
+msgstr "Открыть в программе по умолчанию"
+
+#. Resource IDs: (3838)
+msgid "Open this document"
+msgstr "Открыть этот документ"
+
+#. Resource IDs: (243)
+msgid "Options"
+msgstr "Настройки"
+
+#. Resource IDs: (32846)
+msgid "Or"
+msgstr "Или"
+
+#. Resource IDs: (1072)
+msgid "Orientation"
+msgstr "Ориентация"
+
+#. Resource IDs: (65535)
+msgid "Other User Interface Options"
+msgstr "Прочие настройки"
+
+#. Resource IDs: (2044)
+msgid "Output"
+msgstr "Вывод"
+
+#. Resource IDs: (65535)
+msgid "Output Parsing:"
+msgstr "Разбор вывода"
+
+#. Resource IDs: (65535)
+msgid "Override Indentation:"
+msgstr "Замена отступов:"
+
+#. Resource IDs: (1056)
+msgid "P&ortrait"
+msgstr "Портретная"
+
+#. Resource IDs: (251)
+msgid "PN &Home Page"
+msgstr "Домашняя страница PN"
+
+#. Resource IDs: (9)
+#, c-format
+msgid ""
+"PN could not remove the write-protection from \"%s\".\n"
+"\n"
+" Would you like to save with a different name?"
+msgstr ""
+"Не удалось снять защиту от записи с \"%s\".\n"
+"\n"
+"Сохранить с другим именем?"
+
+#. Resource IDs: (252)
+msgid "PN on &Google Code"
+msgstr "PN на Google Code"
+
+#. Resource IDs: (330)
+msgid "PN2 File Associations"
+msgstr "Ассоциации файлов с  PN2"
+
+#. Resource IDs: (1051)
+msgid "PN2 should &check the associations when starting"
+msgstr "Проверять ассоциации при старте"
+
+#. Resource IDs: (65535)
+msgid "PROJECT"
+msgstr "PROJECT"
+
+#. Resource IDs: (32883)
+msgid "Page Count (%P)"
+msgstr "Кол. страниц (%P)"
+
+#. Resource IDs: (12)
+msgid "Page Setup"
+msgstr "Настройка страницы"
+
+#. Resource IDs: (1073)
+msgid "Paper"
+msgstr "Лист"
+
+#. Resource IDs: (65535)
+msgid "Parameters:"
+msgstr "Параметры:"
+
+#. Resource IDs: (15)
+msgid "Params"
+msgstr "Параметры"
+
+#. Resource IDs: (1133)
+msgid "Pass my selection to this tool using Standard Input"
+msgstr "Передавать выделенное в стандартный ввод"
+
+#. Resource IDs: (65535)
+msgid "Pattern:"
+msgstr "Шаблон:"
+
+#. Resource IDs: (16)
+msgid "Plain Text"
+msgstr "Обычный текст"
+
+#. Resource IDs: (65535)
+msgid "Presets"
+msgstr "Предустановки"
+
+#. Resource IDs: (65535)
+msgid "Preview"
+msgstr "Пред. просмотр"
+
+#. Resource IDs: (57606)
+msgid "Print Set&up..."
+msgstr "Настройка печати..."
+
+#. Resource IDs: (3601)
+msgid ""
+"Print the active document\n"
+"Print"
+msgstr ""
+"Напечатать текущий документ.\n"
+"Печать"
+
+#. Resource IDs: (9)
+msgid "Programmer's Notepad"
+msgstr "Programmer's Notepad"
+
+#. Resource IDs: (1098)
+msgid "Programmer's Notepad 2"
+msgstr "Programmer's Notepad 2"
+
+#. Resource IDs: (65535)
+msgid "Programmer's Notepad 2 is not the handler for these extensions:"
+msgstr "Programmer's Notepad 2 не обрабатывает эти расширения:"
+
+#. Resource IDs: (22)
+msgid ""
+"Programmer's Notepad 2 provides built-in support\n"
+"for parsing output from the following tools:\n"
+"\n"
+"Borland C++\n"
+"Microsoft Compilers\n"
+"GCC\n"
+"lcc-win32\n"
+"Python\n"
+"Perl\n"
+"and other similar tools."
+msgstr ""
+"Programmer's Notepad 2 поддерживает распознавание\n"
+"вывода следующего инструментария:\n"
+"\n"
+"Borland C++\n"
+"Microsoft Compilers\n"
+"GCC\n"
+"lcc-win32\n"
+"Python\n"
+"Perl\n"
+"и некоторые другие."
+
+#. Resource IDs: (22)
+msgid "Project"
+msgstr "Проект"
+
+#. Resource IDs: (22)
+msgid "Project Group"
+msgstr "Группа проектов"
+
+#. Resource IDs: (18)
+msgid "Project Group Files"
+msgstr "Файлы группы проектов"
+
+#. Resource IDs: (10)
+msgid "Project Group Files (*.ppg)|*.ppg|"
+msgstr "Файлы групп проектов (*.ppg)|*.ppg|"
+
+#. Resource IDs: (16)
+msgid "Project Template:"
+msgstr "Шаблон проекта:"
+
+#. Resource IDs: (14)
+msgid "Project Tools"
+msgstr "Инстр. проектов"
+
+#. Resource IDs: (12)
+#, c-format
+msgid ""
+"Project \"%s\" has been changed, do you want to save the changes before "
+"removing?"
+msgstr "Проект \"%s\" был изменен, сохранить изменения перед удалением?"
+
+#. Resource IDs: (2044)
+msgid "Projects"
+msgstr "Проекты"
+
+#. Resource IDs: (10)
+msgid "Projects and Project Groups (*.pnproj, *.ppg)|*.pnproj;*.ppg|"
+msgstr "Проекты и группы проектов (*.pnproj, *.ppg)|*.pnproj;*.ppg|"
+
+#. Resource IDs: (32902)
+msgid "Proper&ties..."
+msgstr "Свойства..."
+
+#. Resource IDs: (16)
+msgid "Properties"
+msgstr "Основные"
+
+#. Resource IDs: (3605)
+msgid ""
+"Quit the application; prompts to save documents\n"
+"Exit"
+msgstr ""
+"Выход из приложения с предложением сохранить изменения в документах.\n"
+"Выход"
+
+#. Resource IDs: (57641)
+msgid "R&eplace"
+msgstr "Заменить"
+
+#. Resource IDs: (32947)
+msgid "Re&fresh"
+msgstr "Обновить"
+
+#. Resource IDs: (32982)
+msgid "Re&name"
+msgstr "Переименовать"
+
+#. Resource IDs: (263)
+msgid "Re&vert"
+msgstr "Восстановить"
+
+#. Resource IDs: (1090, 1093)
+msgid "Re-Open"
+msgstr "Открыть"
+
+#. Resource IDs: (22, 3585)
+msgid "Ready"
+msgstr "Готово"
+
+#. Resource IDs: (10)
+msgid "Recent Pro&jects"
+msgstr "Недавние проекты"
+
+#. Resource IDs: (11)
+msgid "Rectangular Selection."
+msgstr "Прямоугольное выделение."
+
+#. Resource IDs: (3603)
+msgid ""
+"Redo the previously undone action\n"
+"Redo"
+msgstr ""
+"Повторить отмененное ранее действие.\n"
+"Повторить"
+
+#. Resource IDs: (3825)
+msgid "Reduce the window to an icon"
+msgstr "Свернуть окно в значек."
+
+#. Resource IDs: (107)
+msgid "Regular &expression"
+msgstr "Регулярное выражение"
+
+#. Resource IDs: (33124)
+msgid "Remove Blank &Lines"
+msgstr "Удалить пустые строки"
+
+#. Resource IDs: (2073)
+msgid "Remove Clip"
+msgstr "Удалить вставку"
+
+#. Resource IDs: (2073)
+msgid "Remove Clip Set"
+msgstr "Удалить набор вставок"
+
+#. Resource IDs: (19)
+msgid "Remove \"Edit With...\" from Explorer"
+msgstr "Удалить \"Открыть в PN\"  из проводника"
+
+#. Resource IDs: (3603)
+msgid ""
+"Repeat the last action\n"
+"Repeat"
+msgstr ""
+"Повторить последнее действие.\n"
+"Повторить"
+
+#. Resource IDs: (14)
+msgid "Replace"
+msgstr "Заменить"
+
+#. Resource IDs: (6)
+msgid "Replace &All"
+msgstr "Заменить все"
+
+#. Resource IDs: (11)
+msgid "Replace my selection."
+msgstr "Заменять выделенное."
+
+#. Resource IDs: (3603)
+msgid ""
+"Replace specific text with different text\n"
+"Replace"
+msgstr ""
+"Заменить определенный текст другим.\n"
+"Заменить"
+
+#. Resource IDs: (1042)
+msgid "Replace with:"
+msgstr "Замена:"
+
+#. Resource IDs: (253)
+msgid "Report a &bug..."
+msgstr "Сообщить об ошибке..."
+
+#. Resource IDs: (275)
+msgid "Request a &feature..."
+msgstr "Обратная связь..."
+
+#. Resource IDs: (1037)
+msgid "Reset &All"
+msgstr "Сброс. все"
+
+#. Resource IDs: (3826)
+msgid "Restore the window to normal size"
+msgstr "Восстановить окно к нормальному размеру."
+
+#. Resource IDs: (17)
+msgid ""
+"Revert this document to the current saved state\n"
+"Revert"
+msgstr ""
+"Восстановить документ в последнее сохраненное состояние.\n"
+"Восстановить"
+
+#. Resource IDs: (65535)
+msgid "Rightmost Column:"
+msgstr "Ширина страницы:"
+
+#. Resource IDs: (32946)
+msgid "Sa&ve Project"
+msgstr "Сохранить проект"
+
+#. Resource IDs: (10)
+msgid "Save "
+msgstr "Сохранить"
+
+#. Resource IDs: (57604)
+msgid "Save &As..."
+msgstr "Сохранить как..."
+
+#. Resource IDs: (32950)
+msgid "Save &Workspace As..."
+msgstr "Сохранить сессию как..."
+
+#. Resource IDs: (32865)
+msgid "Save A&ll"
+msgstr "Сохранить все"
+
+#. Resource IDs: (2055)
+msgid ""
+"Save all open documents\n"
+"Save All"
+msgstr ""
+"Сохранить все открытые документы.\n"
+"Сохранить все"
+
+#. Resource IDs: (3601)
+msgid ""
+"Save the active document with a new name\n"
+"Save As"
+msgstr ""
+"Сохранить текущий документ с новым именем.\n"
+"Сохранить как"
+
+#. Resource IDs: (3601)
+msgid ""
+"Save the active document\n"
+"Save"
+msgstr ""
+"Сохранить текущий документ.\n"
+"Сохранить"
+
+#. Resource IDs: (65535)
+msgid "Save:"
+msgstr "Сохранить:"
+
+#. Resource IDs: (16)
+msgid "Scheme"
+msgstr "Схема"
+
+#. Resource IDs: (1017, 65535)
+msgid "Scheme:"
+msgstr "Схема:"
+
+#. Resource IDs: (221)
+msgid "Schemes"
+msgstr "Схемы"
+
+#. Resource IDs: (2045)
+msgid "Scripts"
+msgstr "Скрипты"
+
+#. Resource IDs: (436, 1111)
+msgid "Search"
+msgstr "Поиск"
+
+#. Resource IDs: (1047)
+msgid "Search &up"
+msgstr "Назад"
+
+#. Resource IDs: (18)
+#, c-format
+msgid ""
+"Search complete: %d matching lines found in %d files, taking %d "
+"milliseconds.\n"
+msgstr ""
+"Поиск завершен: %d похожих строк найдено в %d файлах, затрачено %d мсек.\n"
+
+#. Resource IDs: (1046)
+msgid "Search sub&directories"
+msgstr "Искать в подкаталогах"
+
+#. Resource IDs: (17)
+msgid "Searching for: "
+msgstr "Искать:"
+
+#. Resource IDs: (273)
+msgid "Select &All"
+msgstr "Выделить все"
+
+#. Resource IDs: (17)
+msgid "Select Tool Command..."
+msgstr "Выберите программу для инструмента"
+
+#. Resource IDs: (3603)
+msgid ""
+"Select the entire document\n"
+"Select All"
+msgstr ""
+"Выделить содержимое документа.\n"
+"Выделить все"
+
+#. Resource IDs: (10)
+msgid "Select the root folder for the search:"
+msgstr "Выберите нужную папку:"
+
+#. Resource IDs: (22)
+msgid "Select the working folder for the tool:"
+msgstr "Выберите рабочую папку для инструмента:"
+
+#. Resource IDs: (65535)
+msgid "Selected Word Highlight:"
+msgstr "Подсветка выд. слова:"
+
+#. Resource IDs: (65535)
+msgid "Selecti&on"
+msgstr "Выделенное"
+
+#. Resource IDs: (65535)
+msgid "Selection Background:"
+msgstr "Цвет выделения:"
+
+#. Resource IDs: (65535)
+msgid "Selection Foreground:"
+msgstr "Выделенный текст:"
+
+#. Resource IDs: (1116)
+msgid "Semi-transparent when not active (Windows XP+ only)."
+msgstr "Полупрозрачен, когда не активен (Windows XP+)."
+
+#. Resource IDs: (65535)
+msgid "Settings"
+msgstr "Настройки"
+
+#. Resource IDs: (15)
+msgid "Shortcut"
+msgstr "Сочетание клавиш"
+
+#. Resource IDs: (65535)
+msgid "Shortcut:"
+msgstr "Клавиша:"
+
+#. Resource IDs: (65535)
+msgid "Shortcuts:"
+msgstr "Ключи:"
+
+#. Resource IDs: (1054)
+msgid "Show &Tabs"
+msgstr "Показывать закладки"
+
+#. Resource IDs: (1048)
+msgid "Show Indentation Guides"
+msgstr "Отображать направляющую отступа"
+
+#. Resource IDs: (1117)
+msgid "Show Mini Editor Toolbar"
+msgstr "Вкл. мини бар редактора"
+
+#. Resource IDs: (1069)
+msgid "Show a line at the edge column"
+msgstr "Отобр. линию на границе страницы"
+
+#. Resource IDs: (3713)
+msgid ""
+"Show or hide the status bar\n"
+"Toggle StatusBar"
+msgstr ""
+"Показать или спрятать панель состояния.\n"
+"Вкл./выкл. панель состояния"
+
+#. Resource IDs: (3713)
+msgid ""
+"Show or hide the toolbar\n"
+"Toggle ToolBar"
+msgstr ""
+"Показать или спрятать панель инструментов.\n"
+"Вкл./выкл. панель инструментов"
+
+#. Resource IDs: (1089)
+msgid "Si&ze:"
+msgstr "Формат:"
+
+#. Resource IDs: (65535)
+msgid "SmartStart"
+msgstr "SmartStart"
+
+#. Resource IDs: (11)
+#, c-format
+msgid ""
+"Sorry, Programmer's Notepad couldn't open this file - most likely because "
+"it's too big (actual error: %s). PN needs to have enough free memory to open "
+"a file twice to successfully edit it."
+msgstr ""
+"К сожалению, Programmer's Notepad не смог открыть этот файл, скорее всего "
+"потому что он слишком большой  (актуальная ошибка: %s). PN нужно достаточно "
+"свободной памяти для того, чтобы открыть его дважды, для успешного "
+"редактирования."
+
+#. Resource IDs: (65535)
+msgid "Special Symbols:"
+msgstr "Спец. символы:"
+
+#. Resource IDs: (33128)
+msgid "Spli&t Lines"
+msgstr "Разделить строки"
+
+#. Resource IDs: (33143)
+msgid "Split V&ertical"
+msgstr "Разделить по вертикали"
+
+#. Resource IDs: (3604)
+msgid ""
+"Split the active window into panes\n"
+"Split"
+msgstr ""
+"Разделить текущее окно на панели.\n"
+"Разделить"
+
+#. Resource IDs: (65535)
+msgid "Standard Input and Output:"
+msgstr "Стандартный Ввод/Вывод"
+
+#. Resource IDs: (65535)
+msgid "Start Extensions:"
+msgstr "Исходные"
+
+#. Resource IDs: (65535)
+msgid "Start Phrase:"
+msgstr "Начальная фраза:"
+
+#. Resource IDs: (1051)
+msgid "Start with a new, &blank document"
+msgstr "Создавать документ при запуске"
+
+#. Resource IDs: (16)
+msgid "Starting Phrase"
+msgstr "Начальная фраза"
+
+#. Resource IDs: (1001, 1002, 1003, 1004, 1008, 1027, 1085, 1086, 1087)
+msgid "Static"
+msgstr "Static"
+
+#. Resource IDs: (33130)
+msgid "Stop R&ecording"
+msgstr "Остановить запись"
+
+#. Resource IDs: (1153)
+msgid "Strictly enforce the auto-scroll positioning"
+msgstr "Строго соблюдать позицию автопрокрутки"
+
+#. Resource IDs: (1169)
+msgid "Strip trailing spaces before saving"
+msgstr "Убрать пробелы в конце перед сохранением"
+
+#. Resource IDs: (65535)
+msgid "Styles"
+msgstr "Стили"
+
+#. Resource IDs: (1089, 1092)
+msgid "Switch"
+msgstr "Пропустить"
+
+#. Resource IDs: (3606)
+msgid ""
+"Switch back to the previous window pane\n"
+"Previous Pane"
+msgstr ""
+"Перейти к предыдущей панели окна.\n"
+"Предыдущая панель"
+
+#. Resource IDs: (3825)
+msgid "Switch to the next document window"
+msgstr "Перейти к следующему окну документа."
+
+#. Resource IDs: (3606)
+msgid ""
+"Switch to the next window pane\n"
+"Next Pane"
+msgstr ""
+"Перейти к следующей панели окна.\n"
+"Следующая панель"
+
+#. Resource IDs: (3825)
+msgid "Switch to the previous document window"
+msgstr "Перейти к предыдущему окну документа."
+
+#. Resource IDs: (131)
+msgid "Syntax &Highlighting"
+msgstr "Подсветка синтаксиса"
+
+#. Resource IDs: (32703)
+msgid "T&ags"
+msgstr "Теги"
+
+#. Resource IDs: (1127)
+msgid "Tab &order controlled by recent use"
+msgstr "Переключать закладки по порядку использования"
+
+#. Resource IDs: (65535)
+msgid "Tab Width:"
+msgstr "Табуляция:"
+
+#. Resource IDs: (65535)
+msgid "Tabs"
+msgstr "Закладки"
+
+#. Resource IDs: (1112)
+msgid "Tabs go here."
+msgstr "Отступить сюда."
+
+#. Resource IDs: (227)
+msgid "Tagged Expression 1"
+msgstr "Помеченное выражение 1"
+
+#. Resource IDs: (228)
+msgid "Tagged Expression 2"
+msgstr "Помеченное выражение 2"
+
+#. Resource IDs: (229)
+msgid "Tagged Expression 3"
+msgstr "Помеченное выражение 3"
+
+#. Resource IDs: (230)
+msgid "Tagged Expression 4"
+msgstr "Помеченное выражение 4"
+
+#. Resource IDs: (231)
+msgid "Tagged Expression 5"
+msgstr "Помеченное выражение 5"
+
+#. Resource IDs: (232)
+msgid "Tagged Expression 6"
+msgstr "Помеченное выражение 6"
+
+#. Resource IDs: (233)
+msgid "Tagged Expression 7"
+msgstr "Помеченное выражение 7"
+
+#. Resource IDs: (234)
+msgid "Tagged Expression 8"
+msgstr "Помеченное выражение 8"
+
+#. Resource IDs: (235)
+msgid "Tagged Expression 9"
+msgstr "Помеченное выражение 9"
+
+#. Resource IDs: (32844)
+msgid "Tagged Expresssion"
+msgstr "Помеченное выражение"
+
+#. Resource IDs: (2044)
+msgid "Tags"
+msgstr "Теги"
+
+#. Resource IDs: (65535)
+msgid "Template Field:"
+msgstr "Поле шаблона:"
+
+#. Resource IDs: (65535)
+msgid "Testing:"
+msgstr "Тест:"
+
+#. Resource IDs: (17)
+msgid "Text"
+msgstr "Текст"
+
+#. Resource IDs: (1072)
+msgid "Text &Colour:"
+msgstr "Цвет текста:"
+
+#. Resource IDs: (350)
+msgid "Text Clip Editor"
+msgstr "Редактор текстовых вставок"
+
+#. Resource IDs: (2044)
+msgid "Text Clips"
+msgstr "Текстовые вставки"
+
+#. Resource IDs: (9)
+#, c-format
+msgid ""
+"The file \"%s\" could not be saved because it is write-protected.\n"
+"\n"
+"You can either save in a different location or PN can attempt to remove the "
+"protection and overwrite the file in its current location."
+msgstr ""
+"Файл \"%s\" невозможно сохранить, он защищен от записи.\n"
+"\n"
+"Вы можете сохранить файл в другом месте или PN попытается удалить защиту и "
+"сохранить в указанном месте."
+
+#. Resource IDs: (11)
+msgid "The file must be placed inside this magic folder directory."
+msgstr "Файл должен быть размещен в магической папке."
+
+#. Resource IDs: (11)
+#, c-format
+msgid "The folder %s could not be created, check that the path is valid."
+msgstr "Папку %s не удалось создать, проверьте правильность пути."
+
+#. Resource IDs: (11)
+#, c-format
+msgid "The folder %s does not exist, do you want to create it?"
+msgstr ""
+"Папка %s не существует,\n"
+"создать ее?"
+
+#. Resource IDs: (11)
+msgid "The regular expression is not valid."
+msgstr "Регулярное выражение составлено неверно."
+
+#. Resource IDs: (16)
+#, c-format
+msgid ""
+"The selected method for this extension is currently associated with '%s'"
+msgstr "Выбраный метод для этого расширения уже существует '%s'."
+
+#. Resource IDs: (2063)
+msgid ""
+"The specified project does not exist,\n"
+" would you like to create it?"
+msgstr ""
+"Указанный проект не существует,\n"
+"создать его?"
+
+#. Resource IDs: (9)
+#, c-format
+msgid "The specified text '%s' was not found."
+msgstr "Указанный текст '%s' не найден."
+
+#. Resource IDs: (9)
+msgid "This project has no properties."
+msgstr "В этом проекте нет свойств."
+
+#. Resource IDs: (1048)
+msgid "This tool will modify the current file."
+msgstr "Разрешить изменять текущий файл."
+
+#. Resource IDs: (57651)
+msgid "Tile &Horizontal"
+msgstr "Горизонтально"
+
+#. Resource IDs: (57652)
+msgid "Tile &Vertical"
+msgstr "Вертикально"
+
+#. Resource IDs: (32786)
+msgid "Toggle &Bookmark"
+msgstr "Переключить закладку"
+
+#. Resource IDs: (272)
+msgid "Toggle Fold"
+msgstr "Свернуть/Развернуть"
+
+#. Resource IDs: (9)
+msgid "Toggle line numbers display"
+msgstr "Включить/выключить номера строк."
+
+#. Resource IDs: (9)
+msgid "Toggle syntax highlighting"
+msgstr "Включить/выключить подсветку синтаксиса."
+
+#. Resource IDs: (2050)
+msgid "Toggle visible line-end characters"
+msgstr "Включить/выключить символы окончания строк."
+
+#. Resource IDs: (2050)
+msgid "Toggle visible whitespace characters"
+msgstr "Включить/выключить символы пробелов."
+
+#. Resource IDs: (9)
+msgid "Toggle word wrap"
+msgstr "Включить/выключить перенос слов."
+
+#. Resource IDs: (2070)
+msgid "Toggle write protect"
+msgstr "Включить/выключить защиту от записи."
+
+#. Resource IDs: (14)
+msgid "Tools"
+msgstr "Инструменты"
+
+#. Resource IDs: (65535)
+msgid "Top:"
+msgstr "Сверху:"
+
+#. Resource IDs: (65535)
+msgid "Trans&form"
+msgstr "Преобразовать"
+
+#. Resource IDs: (32913)
+msgid "Transp&ose Lines"
+msgstr "Переместить"
+
+#. Resource IDs: (16)
+msgid "Type Name"
+msgstr "Название типа"
+
+#. Resource IDs: (17)
+msgid "Type the name of the new Clip set..."
+msgstr "Введите имя для нового набора вставок"
+
+#. Resource IDs: (32911)
+msgid "U&ppercase"
+msgstr "Верхний регистр"
+
+#. Resource IDs: (32891)
+msgid "UTF-16 Big Endian"
+msgstr "UTF-16 Big Endian"
+
+#. Resource IDs: (32892)
+msgid "UTF-16 Little Endian"
+msgstr "UTF-16 Little Endian"
+
+#. Resource IDs: (32893)
+msgid "UTF-8"
+msgstr "UTF-8"
+
+#. Resource IDs: (32894)
+msgid "UTF-8 No Mark"
+msgstr "UTF-8 No Mark"
+
+#. Resource IDs: (3603)
+msgid ""
+"Undo the last action\n"
+"Undo"
+msgstr ""
+"Отменить последнее изменение.\n"
+"Отменить"
+
+#. Resource IDs: (16)
+msgid "Unknown"
+msgstr "Неизвестный"
+
+#. Resource IDs: (14)
+msgid "Untitled"
+msgstr "Новый"
+
+#. Resource IDs: (261)
+msgid "Use &Tabs"
+msgstr "Использовать закладки"
+
+#. Resource IDs: (32960)
+msgid "Use As &Script"
+msgstr "Использовать как скрипт"
+
+#. Resource IDs: (1126)
+msgid "Use Spaces"
+msgstr "Пробелами"
+
+#. Resource IDs: (21)
+msgid "Use an individual output window."
+msgstr "Исп. вывод для каждого окна."
+
+#. Resource IDs: (1125)
+msgid "Use tabs"
+msgstr "Табуляцией"
+
+#. Resource IDs: (1057)
+msgid "Use the built-in error parser."
+msgstr "Исп. встроенный обр. ошибок."
+
+#. Resource IDs: (10)
+msgid "Use the main output window."
+msgstr "Исп. вывод основного окна."
+
+#. Resource IDs: (32886)
+msgid "User Name (%u)"
+msgstr "Имя пользователя (%u)"
+
+#. Resource IDs: (17)
+msgid "Version"
+msgstr "Версия"
+
+#. Resource IDs: (9)
+#, c-format
+msgid ""
+"Version: v%s\n"
+"\n"
+"Copyright © 2002-2011 Simon Steele\n"
+"\n"
+"Programmer's Notepad is Free Software.\n"
+"\n"
+"Programmer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and "
+"Boost. Thanks to the authors and contributors on those projects, and all "
+"those who have contributed to Programmer's Notepad."
+msgstr ""
+"Версия: v%s\n"
+"\n"
+"Copyright © 2002-2011 Simon Steele\n"
+"\n"
+"Programmer's Notepad это бесплатное приложение.\n"
+"\n"
+"Programmer's Notepad использует Scintilla, WTL, GenX, Expat, Exuberant CTags "
+"и Boost. Спасибо авторам и участникам этого проекта, а также тем кто внес "
+"вклад в Programmer's Notepad."
+
+#. Resource IDs: (65535)
+msgid "Vertical:"
+msgstr "По верт.:"
+
+#. Resource IDs: (1123)
+msgid "Visible &Whitespace Characters"
+msgstr "Непечатаемые символы"
+
+#. Resource IDs: (1122)
+msgid "Visible Line &Endings"
+msgstr "Окончания строк"
+
+#. Resource IDs: (14)
+msgid "Visual Help"
+msgstr "Подсветка"
+
+#. Resource IDs: (65535)
+msgid "WORKSPACE"
+msgstr "WORKSPACE"
+
+#. Resource IDs: (10)
+#, c-format
+msgid "Warning: the file %s does not exist any more."
+msgstr "Внимание: файл %s больше не существует."
+
+#. Resource IDs: (65535)
+msgid "When an open file is dropped:"
+msgstr "Если открытый файл завис:"
+
+#. Resource IDs: (65535)
+msgid "When attempting to re-open a file:"
+msgstr "Если файл изменен вне PN:"
+
+#. Resource IDs: (130)
+msgid "Word W&rap"
+msgstr "Перенос слов"
+
+#. Resource IDs: (65535)
+msgid "Words:"
+msgstr "Слов:"
+
+#. Resource IDs: (10)
+msgid "Workspace Files (*.pnws)|*.pnws|"
+msgstr "Файл сессии (*.pnws)|*.pnws|"
+
+#. Resource IDs: (11)
+#, c-format
+msgid ""
+"Would you like to save changes to:\n"
+"%s?"
+msgstr ""
+"Сохранить изменения в:\n"
+"%s?"
+
+#. Resource IDs: (33107)
+msgid "Write protect"
+msgstr "Защита от записи"
+
+#. Resource IDs: (6)
+msgid "Yes"
+msgstr "Да"
+
+#. Resource IDs: (65535)
+msgid ""
+"You can restrict the file types shown by a magic folder, and the directories "
+"that it displays."
+msgstr ""
+"Вы можете выбрать типы файлов, которые необходимо отображать в магической "
+"папке."
+
+#. Resource IDs: (33135)
+msgid "Zoom O&ut"
+msgstr "Масштаб -"
+
+#. Resource IDs: (11)
+msgid ""
+"\n"
+"> Process Exit Code: "
+msgstr ""
+"\n"
+">Процесс закончисля с кодом: "
+
+#. Resource IDs: (11)
+msgid ""
+"\n"
+"> Time Taken: "
+msgstr ""
+"\n"
+"> Затрачено времени: "
+
+#. Resource IDs: (65535)
+msgid "characters"
+msgstr "символов"
+
+#. Resource IDs: (65535)
+msgid "example: %f:%l: "
+msgstr "пример: %f:%l:"
+
+#. Resource IDs: (65535)
+msgid "pixels"
+msgstr "пикселей"
+
+#. Resource IDs: (65535)
+msgid "text lines"
+msgstr "строки"
+
+#. Resource IDs: (332)
+msgid "w"
+msgstr "w"
+
+#~ msgid "&Code Page:"
+#~ msgstr "Кодировка:"
+
+#~ msgid "<new>"
+#~ msgstr "<новый>"
+
+#~ msgid "Character Se&t:"
+#~ msgstr "Символы:"
+
+#~ msgid "Insert Template"
+#~ msgstr "Вставить шаблон"
+
+#~ msgid "PN &HomePage"
+#~ msgstr "Домашняя страница PN"

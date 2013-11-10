@@ -1,0 +1,3277 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PN 2.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1900-01-01 00:00+0000\n"
+"PO-Revision-Date: 2010-07-05 00:16+0200\n"
+"Last-Translator: Victor ADASCALITEI <adascaliteiv@yahoo.com>\n"
+"Language-Team: Skullbox <3nigma@skullbox.info>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Romanian\n"
+"X-Poedit-Country: ROMANIA\n"
+
+# msgid/msgstr fields for Accelerator keys
+# Format is: "ID:xxxxxx:VACS+X" where:
+#    ID:xxxxx = the menu ID corresponding to the accelerator
+#    V = Virtual key (or blank if not used) - nearly always set!
+#    A = Alt key     (or blank if not used)
+#    C = Ctrl key    (or blank if not used)
+#    S = Shift key   (or blank if not used)
+#    X = upper case character
+# e.g. "V CS+Q" == Ctrl + Shift + 'Q'
+# ONLY Accelerator Keys with corresponding alphanumeric characters can be
+# updated i.e. function keys (F2), special keys (Delete, HoMe) etc. will not.
+# ONLY change the msgstr field. Do NOT change any other.
+# If you do not want to change an Accelerator Key, copy msgid to msgstr
+#. Resource IDs: (11)
+#, c-format
+msgid "%d character(s) selected."
+msgstr "%d liter(ă/e) selectate."
+
+#. Resource IDs: (9)
+#, c-format
+msgid "%d occurrence(s) replaced."
+msgstr "%d aparți(e/i) înlocuite."
+
+#. Resource IDs: (22)
+#, c-format
+msgid ""
+"%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line "
+"Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,"
+"Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,"
+"Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectName),Name of "
+"Project,Project 1,$(ProjectPath),Path of Project,c:\\source\\pn2\\,"
+"$(ProjectGroupName),Name of the Project Group,Project Group 1,"
+"$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\,$(PNPath),PN "
+"Install Path,c:\\program files\\pn,$(ProjectProp:x),Project Property,value "
+"of 'x',$(FileProp:x),File Property,value of 'x',%(ENV),ENV Environment "
+"Variable,ENV value"
+msgstr ""
+"%f,Nume Fișier,mainfrm.cpp,%n,Nume Fișier (fără ext),mainfrm,%l,Linie "
+"Curentă,232,%?,Întreabă de parametrii,(?),%p,Fișierul Proiectului Curent,pn."
+"pnproj,%d,Calea fișierului,c:\\sursă\\pn\\test\\,%c,Coloană,12,%%,Simbolul "
+"'la sută',%,%w,Cuvântul curent,brânză,%g,Fișierul Proiectului Grup, pn2.ppg,"
+"$(ProjectName),Numele Proiectului 1,$(ProjectPath),Calea către proiect,c:"
+"\\sursă\\pn2\\,$(ProjectGroupName),Numele Proiectului de Grup,Proiect Grup 1,"
+"$(ProjectGroupPath),Calea către Proiectul Grup,c:\\sursă\\pn2\\,$(PNPath),"
+"Calea de Instalare PN,c:\\program files\\pn,$(ProjectProp:x),Proprietate "
+"Proiect,valoarea lui 'x',$(FileProp:x),Proprietate Fișier,valoarea lui 'x',"
+"%(ENV),Variabilă de Mediu ENV,Valoare ENV"
+
+#. Resource IDs: (9)
+#, c-format
+msgid ""
+"%f: File Name\n"
+"%l: Line Number\n"
+"%c: Column"
+msgstr ""
+"%f: Nume Fișier\n"
+"%l: Număr Linie\n"
+"%c: Coloană"
+
+#. Resource IDs: (1061)
+msgid "%f: Filename, %l: Line Number, %c: Column"
+msgstr "%f: Numefișier, %l: Număr Linie, %c: Coloană"
+
+#. Resource IDs: (9)
+#, c-format
+msgid "%s Properties"
+msgstr "%s Proprietăți"
+
+#. Resource IDs: (11)
+#, c-format
+msgid ""
+"%s could not be opened.\n"
+"\n"
+"This could be because the file no longer exists, a disk is absent or due to "
+"a broken network connection."
+msgstr ""
+"%s nu a putut fi deschis.\n"
+"\n"
+"Acest lucru se poate datora mai multor cauze: fie fișierul nu mai există, "
+"fie diskul de înmagazinare este absent sau fie din cauza unei defecțiuni de "
+"rețea."
+
+#. Resource IDs: (12)
+#, c-format
+msgid ""
+"%s could not be saved because access was denied.\n"
+"This could be due to the file being marked read-only, or the disk being "
+"write-protected.\n"
+"Do you want to save in another location?"
+msgstr ""
+"%s nu a putut fi salvat din cauza accesului nepermis.\n"
+"Acest lucru se poate datora unei etichete de tip read-only pe fișier sau a "
+"faptului că discul este protejat împotriva scrierii.\n"
+"Doriți să salvați într-o altă locație?"
+
+#. Resource IDs: (13)
+#, c-format
+msgid ""
+"%s could not be saved because another program or user is using the same "
+"file.\n"
+"Do you want to save in another location?"
+msgstr ""
+"%s nu a putut fi salvat din cauză că un alt program sau utilizator folosesc "
+"fișierul.\n"
+"Doriți să salvați într-o altă locație?"
+
+# adăugat benevol \"\"
+#. Resource IDs: (10)
+#, c-format
+msgid ""
+"%s\n"
+"\n"
+"The above file has been modified outside of Programmer's Notepad, do you "
+"want to refresh and lose changes?"
+msgstr ""
+"%s\n"
+"\n"
+"Fișierul de mai sus a fost modificat într-un mediu exterior lui "
+"\"Programmer's Notepad\", doriți să actualizați și să pierdeți modificările?"
+
+#. Resource IDs: (57664)
+msgid "&About Programmer's Notepad..."
+msgstr "&Despre Programmer's Notepad..."
+
+#. Resource IDs: (1010, 1011, 1034, 1078, 1128, 1148)
+msgid "&Add"
+msgstr "&Adaugă"
+
+#. Resource IDs: (288)
+msgid "&Add Files"
+msgstr "&Adaugă Fișiere"
+
+#. Resource IDs: (288)
+msgid "&Add Files..."
+msgstr "&Adaugă Fișiere..."
+
+#. Resource IDs: (32963)
+msgid "&Add New File..."
+msgstr "&Adaugă Fișier Nou..."
+
+#. Resource IDs: (293, 32918)
+msgid "&Add New Folder"
+msgstr "&Adaugă Director Nou"
+
+#. Resource IDs: (32788)
+msgid "&Add Tools..."
+msgstr "&Adaugă Unelte..."
+
+#. Resource IDs: (1053)
+msgid "&Allow multiple instances of Programmer's Notepad to start"
+msgstr "&Permite rularea mai multor instanțe a lui Programmer's Notepad"
+
+#. Resource IDs: (32970)
+msgid "&Autocomplete"
+msgstr "&Autocompletează"
+
+#. Resource IDs: (32967)
+msgid "&Block"
+msgstr "&Blochează"
+
+#. Resource IDs: (1021)
+msgid "&Bold"
+msgstr "&Îngroșat"
+
+#. Resource IDs: (1105)
+msgid "&Bottom:"
+msgstr "&Margine:"
+
+#. Resource IDs: (57650)
+msgid "&Cascade"
+msgstr "&Cascadă"
+
+# scheme = organizare ?
+#. Resource IDs: (10)
+msgid "&Change Scheme"
+msgstr "&Modifică Organizarea"
+
+#. Resource IDs: (1033)
+msgid "&Clear"
+msgstr "&Șterge"
+
+#. Resource IDs: (33109)
+msgid "&Clear Bookmarks"
+msgstr "&Curăță semne de carte"
+
+#. Resource IDs: (57602)
+msgid "&Close"
+msgstr "&Inchide"
+
+#. Resource IDs: (32962)
+msgid "&Collapse all"
+msgstr "&Restrânge tot"
+
+#. Resource IDs: (33121)
+msgid "&Compress Whitespace"
+msgstr "&Comprimă spații goale"
+
+#. Resource IDs: (32943)
+msgid "&Contents"
+msgstr "&Conținut"
+
+#. Resource IDs: (18)
+#, fuzzy
+msgid "&Convert"
+msgstr "&Conținut"
+
+#. Resource IDs: (32780)
+msgid "&Convert Automatically"
+msgstr "&Convertește automat"
+
+#. Resource IDs: (57634)
+msgid "&Copy"
+msgstr "&Copiază"
+
+#. Resource IDs: (32914)
+msgid "&Copy Line"
+msgstr "&Copiază Linie"
+
+#. Resource IDs: (33138)
+msgid "&Customize Toolbar"
+msgstr "&Personalizează bara de unelte"
+
+#. Resource IDs: (14)
+#, fuzzy
+msgid "&Default"
+msgstr "Implicite"
+
+#. Resource IDs: (258, 32862)
+msgid "&Delete"
+msgstr "&Șterge"
+
+#. Resource IDs: (298)
+msgid "&Delete Project"
+msgstr "&Șterge Proiect"
+
+#. Resource IDs: (65535)
+msgid "&Display"
+msgstr "&Afișează"
+
+#. Resource IDs: (12)
+msgid "&Don't Remove"
+msgstr "&Nu elimina"
+
+#. Resource IDs: (12)
+msgid "&Download Now"
+msgstr "&Descarcă Acum"
+
+#. Resource IDs: (33119)
+msgid "&Duplicate"
+msgstr "&Multiplică"
+
+#. Resource IDs: (32908)
+msgid "&Duplicate Line"
+msgstr "&Multiplică Linie"
+
+#. Resource IDs: (1010, 1011, 1033, 1079, 1129, 1149, 65535)
+msgid "&Edit"
+msgstr "&Editează"
+
+#. Resource IDs: (65535)
+#, fuzzy
+msgid "&Encoding:"
+msgstr "Encriptarea:"
+
+#. Resource IDs: (32963)
+msgid "&Expand all"
+msgstr "&Expandează tot"
+
+# corect ?
+#. Resource IDs: (33110)
+msgid "&Explorer"
+msgstr "&Explorer"
+
+#. Resource IDs: (65535)
+msgid "&Export"
+msgstr "&Exportează"
+
+#. Resource IDs: (65535)
+msgid "&File"
+msgstr "&Fișier"
+
+#. Resource IDs: (57636)
+msgid "&Find"
+msgstr "&Găsește"
+
+#. Resource IDs: (103)
+msgid "&Find Next"
+msgstr "&Găsește Următorul"
+
+#. Resource IDs: (32704)
+msgid "&Find Results"
+msgstr "&Găsește Rezultate"
+
+#. Resource IDs: (65535)
+msgid "&Folding"
+msgstr "&Pliere"
+
+#. Resource IDs: (65535)
+msgid "&Font:"
+msgstr "&Font:"
+
+#. Resource IDs: (33)
+msgid "&Footer:"
+msgstr "&Subsol:"
+
+#. Resource IDs: (33001)
+msgid "&Forums"
+msgstr "&Forumuri"
+
+#. Resource IDs: (282)
+msgid "&Google"
+msgstr "&Google"
+
+#. Resource IDs: (32774)
+msgid "&Goto"
+msgstr "&Mergi la"
+
+#. Resource IDs: (32)
+msgid "&Header:"
+msgstr "&Antet:"
+
+#. Resource IDs: (9, 1006, 65535)
+msgid "&Help"
+msgstr "&Ajutor"
+
+#. Resource IDs: (260)
+msgid "&Hide"
+msgstr "&Ascunde"
+
+#. Resource IDs: (1115)
+msgid "&Hide when \"Find Next\" is clicked."
+msgstr "&Ascunde când \"Găsește Următorul\" este apăsat."
+
+#. Resource IDs: (32863)
+msgid "&Indent"
+msgstr "&Indentează"
+
+#. Resource IDs: (65535)
+msgid "&Indentation"
+msgstr "&Spațiere"
+
+#. Resource IDs: (264)
+msgid "&Individual Output"
+msgstr "&Ieșire individuală"
+
+#. Resource IDs: (32987)
+#, fuzzy
+msgid "&Insert Text Clip"
+msgstr "&Clipuri Text"
+
+# corect ?
+#. Resource IDs: (1022)
+msgid "&Italic"
+msgstr "&Cursiv"
+
+#. Resource IDs: (33127)
+msgid "&Join Lines"
+msgstr "&Alătură Linii"
+
+#. Resource IDs: (32905)
+msgid "&Jump To..."
+msgstr "&Sari La..."
+
+#. Resource IDs: (1102)
+msgid "&Left:"
+msgstr "&Stânga:"
+
+#. Resource IDs: (32968, 65535)
+msgid "&Line"
+msgstr "&Linie"
+
+#. Resource IDs: (65535)
+msgid "&Line Endings"
+msgstr "&Terminații de Linie"
+
+#. Resource IDs: (65535)
+msgid "&Line Endings:"
+msgstr "&Terminații de Linie:"
+
+#. Resource IDs: (1045)
+msgid "&Line Number (1 - %d):"
+msgstr "&Număr de Linie(1 - %d):"
+
+#. Resource IDs: (1038)
+msgid "&Load"
+msgstr "&Încarcă"
+
+# corect?
+#. Resource IDs: (32912)
+msgid "&Lowercase"
+msgstr "&Caractere mici"
+
+#. Resource IDs: (32779)
+msgid "&Macintosh (CR)"
+msgstr "&Machintosh (CR)"
+
+#. Resource IDs: (21199)
+msgid "&Mark All"
+msgstr "&Marchează Tot"
+
+#. Resource IDs: (32791)
+msgid "&Mark WhiteSpace"
+msgstr "&Marchează SpațiiGoale"
+
+#. Resource IDs: (1056)
+msgid "&Maximize new document windows"
+msgstr "&Maximizează ferestrele noului document"
+
+#. Resource IDs: (65535)
+msgid "&Method:"
+msgstr "&Metodă:"
+
+#. Resource IDs: (65535)
+msgid "&Multi-Byte Character Support for ANSI files:"
+msgstr ""
+
+#. Resource IDs: (10)
+msgid "&New"
+msgstr "&Nou"
+
+#. Resource IDs: (2045)
+msgid "&No"
+msgstr "&Nu"
+
+#. Resource IDs: (2045)
+msgid "&OK"
+msgstr "&OK"
+
+#. Resource IDs: (32989)
+msgid "&Online Help"
+msgstr "&Ajutor Online"
+
+#. Resource IDs: (287)
+msgid "&Open"
+msgstr "&Deschinde"
+
+#. Resource IDs: (299)
+msgid "&Open All Files"
+msgstr "&Deschide Toate Fișierele"
+
+#. Resource IDs: (1114)
+msgid "&Open dialog should start in the directory of the current file."
+msgstr "&Dialogul de deschidere pornește din directorul fișierului curent."
+
+#. Resource IDs: (32981)
+msgid "&Open in Default Program"
+msgstr "&Deschide în Programul Implicit"
+
+#. Resource IDs: (57601)
+msgid "&Open..."
+msgstr "&Deschide..."
+
+#. Resource IDs: (245)
+msgid "&Options"
+msgstr "&Opțiuni"
+
+#. Resource IDs: (32700)
+msgid "&Output"
+msgstr "&Ieșire"
+
+#. Resource IDs: (57637)
+msgid "&Paste"
+msgstr "&Lipește"
+
+#. Resource IDs: (32999)
+msgid "&Previous Bookmark"
+msgstr "&Semn de Carte Anterior"
+
+#. Resource IDs: (57607)
+msgid "&Print..."
+msgstr "&Imprimă..."
+
+#. Resource IDs: (1026)
+msgid "&Printer..."
+msgstr "&Imprimantă..."
+
+#. Resource IDs: (32701)
+msgid "&Project"
+msgstr "&Proiect"
+
+#. Resource IDs: (16)
+#, fuzzy
+msgid "&Project Group"
+msgstr "Grup Proiecte"
+
+#. Resource IDs: (32701)
+msgid "&Projects"
+msgstr "&Proiecte"
+
+#. Resource IDs: (32924)
+msgid "&Properties"
+msgstr "&Proprietăți"
+
+#. Resource IDs: (32902)
+msgid "&Properties\tAlt+Enter"
+msgstr "&Proprietăți\tAlt+Enter"
+
+#. Resource IDs: (32953)
+msgid "&Quick Find"
+msgstr "&Găsește Rapid"
+
+#. Resource IDs: (10)
+msgid "&Recent Files"
+msgstr "&Fișiere Recente"
+
+# corect?
+#. Resource IDs: (33129)
+msgid "&Record Script"
+msgstr "&Consemnare Scriere"
+
+#. Resource IDs: (57644)
+msgid "&Redo"
+msgstr "&Refă"
+
+#. Resource IDs: (33117)
+msgid "&Refresh"
+msgstr "&Reîmprospătează"
+
+#. Resource IDs: (1128)
+msgid "&Remember open files and projects between sessions"
+msgstr "&Ține minte fișierele și proiectele deschise între sesiuni"
+
+#. Resource IDs: (12)
+msgid "&Remind Me Later"
+msgstr "&Adumi Aminte Mai Târziu"
+
+#. Resource IDs: (12, 286, 1010, 1012, 1033, 1080, 1130, 1150)
+msgid "&Remove"
+msgstr "E&limină"
+
+#. Resource IDs: (286)
+msgid "&Remove Project"
+msgstr "&Elimină Proiect"
+
+#. Resource IDs: (4)
+msgid "&Replace"
+msgstr "&Înlocuiește"
+
+#. Resource IDs: (1033, 1036)
+msgid "&Reset"
+msgstr "&Resetează"
+
+#. Resource IDs: (2045)
+msgid "&Retry"
+msgstr "&Reîncearcă"
+
+#. Resource IDs: (1103)
+msgid "&Right:"
+msgstr "&Dreapta:"
+
+#. Resource IDs: (1040, 57603)
+msgid "&Save"
+msgstr "&Salvează"
+
+#. Resource IDs: (12)
+msgid "&Save and Remove"
+msgstr "&Salvează și Elimină"
+
+#. Resource IDs: (1017)
+msgid "&Scheme:"
+msgstr "&Plan:"
+
+# ?
+#. Resource IDs: (32705)
+msgid "&Scripts"
+msgstr "&Scenarii"
+
+#. Resource IDs: (65535)
+msgid "&Search"
+msgstr "&Caută"
+
+#. Resource IDs: (273)
+msgid "&Select All"
+msgstr "&Selectează Tot"
+
+#. Resource IDs: (32897)
+msgid "&Set Active Project"
+msgstr "&Sectează Proiect Activ"
+
+#. Resource IDs: (1051)
+msgid "&Show Line Numbers"
+msgstr "&Arată Numărul Liniilor"
+
+#. Resource IDs: (1062)
+msgid "&Show full file path in document windows"
+msgstr "&Arată calea completă a documentului în fereastre"
+
+#. Resource IDs: (65535)
+msgid "&Size:"
+msgstr "&Mărime"
+
+#. Resource IDs: (1034)
+msgid "&Sort"
+msgstr "&Sortează"
+
+#. Resource IDs: (32916)
+msgid "&Sort Folders"
+msgstr "&Sortează Directoare"
+
+#. Resource IDs: (1090)
+msgid "&Source:"
+msgstr "&Sursă:"
+
+#. Resource IDs: (33142)
+msgid "&Split Horizontal"
+msgstr "&Separă pe Orizontală"
+
+#. Resource IDs: (59393)
+msgid "&Status Bar"
+msgstr "&Bară de Stare"
+
+# e bun contextul?
+#. Resource IDs: (32789)
+msgid "&Stop Tools"
+msgstr "&Oprește unelte"
+
+#. Resource IDs: (32966)
+msgid "&Stream"
+msgstr "&Stream"
+
+#. Resource IDs: (33120)
+msgid "&Strip Trailing Blanks"
+msgstr "&Elimină Spațiile din Urmă"
+
+#. Resource IDs: (65535)
+msgid "&Tab Width:"
+msgstr "&Lăține Tab:"
+
+#. Resource IDs: (32702)
+msgid "&Text Clips"
+msgstr "&Clipuri Text"
+
+#. Resource IDs: (65535)
+msgid "&Text Colour:"
+msgstr "&Culoare Text:"
+
+#. Resource IDs: (59392)
+msgid "&Toolbar"
+msgstr "&Bară de unelte"
+
+#. Resource IDs: (65535)
+msgid "&Tools"
+msgstr "&Unelte"
+
+#. Resource IDs: (1104)
+msgid "&Top:"
+msgstr "&Vârf:"
+
+#. Resource IDs: (32969)
+msgid "&Uncomment"
+msgstr "&Necomentat"
+
+#. Resource IDs: (1023)
+msgid "&Underline"
+msgstr "&Subliniat"
+
+#. Resource IDs: (57643)
+msgid "&Undo"
+msgstr "&Desfă"
+
+#. Resource IDs: (32864)
+msgid "&Unindent"
+msgstr "&Dezindentează"
+
+#. Resource IDs: (32778)
+msgid "&Unix (LF)"
+msgstr "&Unix (LF)"
+
+# e complet?
+#. Resource IDs: (32911)
+msgid "&Uppercase"
+msgstr "&Caractere Mari"
+
+#. Resource IDs: (1049)
+msgid "&Use the tab character for indentation"
+msgstr "&Folosește caracterul tab pentru indentare"
+
+#. Resource IDs: (65535)
+msgid "&View"
+msgstr "&Vizualizează"
+
+#. Resource IDs: (65535)
+msgid "&Window"
+msgstr "&Fereastră"
+
+#. Resource IDs: (65535)
+msgid "&Windows"
+msgstr "&Ferestre"
+
+#. Resource IDs: (32777)
+msgid "&Windows (CRLF)"
+msgstr "&Windows (CRLF)"
+
+# e corect?
+#. Resource IDs: (33140)
+msgid "&Word Wrap"
+msgstr "&Împachetează Cuvinte"
+
+# e corect?
+#. Resource IDs: (1083)
+msgid "&Word-Wrap"
+msgstr "&Împachetează-Cuvinte"
+
+#. Resource IDs: (2045)
+msgid "&Yes"
+msgstr "&Da"
+
+#. Resource IDs: (33134)
+msgid "&Zoom In"
+msgstr "&Mărește"
+
+#. Resource IDs: (65535)
+msgid "(1 to 50) items in the most recently used list."
+msgstr "(de la 1 la 50) entități în lista de 'cele mai utilizate elemente'."
+
+#. Resource IDs: (16)
+msgid "(None - All Projects)"
+msgstr "(Nici unu - Toate Proiectele)"
+
+#. Resource IDs: (16)
+msgid "(None - Global Tools)"
+msgstr "(Nici unu - Unelte Globale)"
+
+#. Resource IDs: (12)
+msgid "(empty)"
+msgstr "(gol)"
+
+#. Resource IDs: (1120)
+msgid "(enter text and click above to test)"
+msgstr "(scrieți text aici și dați click mai sus pentru a testa)"
+
+#. Resource IDs: (1010, 1012, 21206)
+msgid "..."
+msgstr "..."
+
+#. Resource IDs: (32847)
+msgid "0 or More Matches"
+msgstr "0 sau mai multe Potriviri"
+
+#. Resource IDs: (32848)
+msgid "1 or More Matches"
+msgstr "1 sau mai multe Potriviri"
+
+#. Resource IDs: (1058)
+msgid "?"
+msgstr "?"
+
+#. Resource IDs: (65535)
+msgid ""
+"A Magic Folder will reflect the contents of a file system folder in a "
+"Projects folder. Select the folder you wish to include below:"
+msgstr ""
+"Un Director Magic va reflecta conținutul unui director de sistem într-un "
+"director de Proiecte. Selectați directorul pe care doriți să-l includeți din "
+"lista de mai jos:"
+
+#. Resource IDs: (1107)
+msgid "A&ll open documents"
+msgstr "T&oate documentele"
+
+#. Resource IDs: (32890)
+msgid "ANSI"
+msgstr "ANSI"
+
+#. Resource IDs: (100)
+msgid "About"
+msgstr "Despre"
+
+#. Resource IDs: (3826)
+msgid "Activate Task List"
+msgstr "Activează Lista de Sarcini"
+
+#. Resource IDs: (3826)
+msgid "Activate this window"
+msgstr "Activează această fereastră"
+
+#. Resource IDs: (309)
+msgid "Add &Existing Project..."
+msgstr "Adaugă &Proiect Existent..."
+
+#. Resource IDs: (32917)
+msgid "Add &Magic Folder..."
+msgstr "Adaugă Director &Magic..."
+
+#. Resource IDs: (308)
+msgid "Add &New Project"
+msgstr "Adaugă Proiect &Nou"
+
+#. Resource IDs: (2073)
+msgid "Add Clip"
+msgstr ""
+
+#. Resource IDs: (2073)
+msgid "Add Clip Set"
+msgstr ""
+
+#. Resource IDs: (293)
+msgid "Add New &Folder"
+msgstr "Adaugă &Director Nou"
+
+#. Resource IDs: (32788)
+msgid "Add Tools..."
+msgstr "Adaugă Unelte..."
+
+#. Resource IDs: (19, 1173)
+msgid "Add \"Edit With...\" to Explorer"
+msgstr ""
+
+#. Resource IDs: (14)
+msgid "Advanced"
+msgstr "Avansat"
+
+#. Resource IDs: (18)
+#, fuzzy
+msgid "All Files"
+msgstr "&Deschide Toate Fișierele"
+
+#. Resource IDs: (10)
+msgid "All Files (*.*)|*.*|"
+msgstr "Toate Fișierele (*.*)|*.*|"
+
+#. Resource IDs: (1045)
+msgid "Allow backslash expressions"
+msgstr "Permite expresii cu backslash"
+
+# caret = semn de omisiune
+#. Resource IDs: (1160)
+msgid "Allow caret to be placed outside current text bounds"
+msgstr ""
+"Permite cursorului să poată fi amplasat în afara granițelor curente de text."
+
+#. Resource IDs: (1159)
+msgid "Allow editing of read only files"
+msgstr "Permite editarea fișierelor de tip read-only"
+
+#. Resource IDs: (1159)
+#, fuzzy
+msgid "Allow multiple selections"
+msgstr "Permite selectări multiple"
+
+# caret = semne de omisiune
+#. Resource IDs: (1161)
+msgid "Allow typing into multiple caret points"
+msgstr "Permite tastarea în locuri diferite"
+
+#. Resource IDs: (15)
+msgid "Alternate Extensions"
+msgstr "Alternează Extensii"
+
+#. Resource IDs: (65535)
+msgid "Alternate Extensions:"
+msgstr "Alternează Extensii:"
+
+#. Resource IDs: (65535)
+msgid "Alternate File Pairs"
+msgstr "Alternează Perechi de Fișiere"
+
+#. Resource IDs: (14)
+msgid "Alternate Files"
+msgstr "Alternează Fișiere"
+
+#. Resource IDs: (16)
+msgid "An extension may not contain any of these characters: "
+msgstr "O extensie nu poate conține oricare dintre următoarele caractere:"
+
+#. Resource IDs: (12)
+#, c-format
+msgid ""
+"An update for Programmer's Notepad is available (version %s), would you like "
+"to download it now?"
+msgstr ""
+"O versiune mai nouă a lui Programmer's Notepad este disponibilă (versiunea "
+"%s), doriți să o descărcați acum?"
+
+#. Resource IDs: (32839)
+msgid "Any Character"
+msgstr "Orice Caracter"
+
+#. Resource IDs: (12)
+msgid ""
+"Are you sure you wish to rename this magic folder?\n"
+"This will have the effect of renaming the actual folder on the disk."
+msgstr ""
+"Sunteți sigur că doriți să redenumiți acest director magic?\n"
+"Această acțiune va avea ca efect redenumirea directorului pe disc."
+
+#. Resource IDs: (57649)
+msgid "Arrange &Icons"
+msgstr "Aranjează &Icoane"
+
+#. Resource IDs: (3604)
+msgid ""
+"Arrange icons at the bottom of the window\n"
+"Arrange Icons"
+msgstr ""
+"Aranjeaza icoane în regiunea de jos a ferestrei\n"
+"Aranjează Icoane"
+
+# e complet?
+#. Resource IDs: (3604)
+msgid ""
+"Arrange windows as non-overlapping tiles\n"
+"Tile Windows"
+msgstr ""
+"Aranjează ferestrele astfel încât să nu se suprapună\n"
+"Ferestre Partiționate"
+
+#. Resource IDs: (3604)
+msgid ""
+"Arrange windows so they overlap\n"
+"Cascade Windows"
+msgstr ""
+"Aranjează ferestrele astfel încât ele să se suprapună\n"
+"Ferestre în Cascadă"
+
+#. Resource IDs: (266)
+msgid "As &RTF..."
+msgstr "Ca &RTF..."
+
+#. Resource IDs: (32878)
+msgid "As HTML..."
+msgstr "Ca HTML..."
+
+#. Resource IDs: (1091, 1094)
+msgid "Ask Me"
+msgstr "Întreabă-mă"
+
+#. Resource IDs: (65535)
+msgid "Assign Shortcuts:"
+msgstr "Atribuie Scurtături:"
+
+#. Resource IDs: (1055)
+msgid "At the &bottom of the main window"
+msgstr "În regiunea de &jos a ferestrei principale"
+
+#. Resource IDs: (1141)
+msgid "Auto-Close HTML/XML Tags"
+msgstr "Închide automat etichetele HTML/XML"
+
+# caret = semne de omisiune
+#. Resource IDs: (65535)
+msgid "Auto-scroll Caret Position Limits:"
+msgstr "Navighează automat la limitele cursorului:"
+
+#. Resource IDs: (1143)
+msgid "AutoComplete After:"
+msgstr "AutoCompletează După:"
+
+#. Resource IDs: (65535)
+msgid "AutoComplete Settings"
+msgstr "Setări de AutoCompletare"
+
+#. Resource IDs: (1144)
+msgid "AutoComplete when asked"
+msgstr "AutoCompletează când se întreabă"
+
+#. Resource IDs: (13)
+msgid "Autocomplete"
+msgstr "Autocompletează"
+
+#. Resource IDs: (13)
+msgid "Avoiding infinite search loop, Replace All abandoned"
+msgstr "Evit secvențele de căutare infinită, Înlocuiește Toate cele Abandonate"
+
+#. Resource IDs: (65535)
+msgid "Bac&kground:"
+msgstr "F&undal:"
+
+#. Resource IDs: (65535)
+msgid "Base Style Settings"
+msgstr "Setări de Stil de Bază"
+
+#. Resource IDs: (32842)
+msgid "Beginning of Line"
+msgstr "La începutul Liniei"
+
+#. Resource IDs: (1152)
+msgid "Blend highlight colour:"
+msgstr "Mixează culoarea:"
+
+#. Resource IDs: (65535)
+#, fuzzy
+msgid "Bottom:"
+msgstr "&Margine:"
+
+#. Resource IDs: (1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1073)
+msgid "Button1"
+msgstr "Buton1"
+
+#. Resource IDs: (1033)
+msgid "Button2"
+msgstr "Buton2"
+
+#. Resource IDs: (259)
+msgid "C&lear"
+msgstr "E&limină"
+
+# corect?
+#. Resource IDs: (65535)
+msgid "CTAGS"
+msgstr "TAGURIC"
+
+#. Resource IDs: (2, 2045)
+msgid "Cancel"
+msgstr "Anulează"
+
+#. Resource IDs: (12)
+#, c-format
+msgid "Cannot find in files in %s, the directory does not exist"
+msgstr "Nu pot găsi fișiere în %s, directorul nu există"
+
+#. Resource IDs: (1047)
+msgid "Capture output?"
+msgstr "Prinde ieșire?"
+
+#. Resource IDs: (3601)
+msgid ""
+"Change the printer and printing options\n"
+"Print Setup"
+msgstr ""
+"Modifică imprimanta și opțiunile de imprimare\n"
+"Setări Imprimantă"
+
+#. Resource IDs: (3601)
+msgid ""
+"Change the printing options\n"
+"Page Setup"
+msgstr ""
+"Modifică opțiunile de imprimare\n"
+"Setări Imprimantă"
+
+#. Resource IDs: (3825)
+msgid "Change the window position"
+msgstr "Modifică poziția ferestrei"
+
+#. Resource IDs: (3825)
+msgid "Change the window size"
+msgstr "Modifică dimensiunea ferestrei"
+
+#. Resource IDs: (18)
+msgid ""
+"Changing the encoding between Unicode and ANSI will clear your Undo history, "
+"and may lose unsupported characters. Are you sure?"
+msgstr ""
+
+#. Resource IDs: (32841)
+msgid "Character Not in Range"
+msgstr "Caracterul nu este în gamă"
+
+#. Resource IDs: (32840)
+msgid "Character in Range"
+msgstr "Caracter din Gamă"
+
+#. Resource IDs: (65535)
+msgid "Characters:"
+msgstr "Litere:"
+
+#. Resource IDs: (1099)
+msgid "Check &Now"
+msgstr "Verifică &Acum"
+
+#. Resource IDs: (33141)
+msgid "Check for &Updates"
+msgstr "Verifică după &Actualizări"
+
+#. Resource IDs: (1154)
+msgid "Check for &updates"
+msgstr "Verifică după &actualizări"
+
+#. Resource IDs: (57602)
+msgid "Cl&ose\tCtrl-F4"
+msgstr "Înc&hide\tCtrl+F4"
+
+#. Resource IDs: (1051)
+msgid "Clear output before running?"
+msgstr "Șterge ieșirea înainte de rulare?"
+
+#. Resource IDs: (267)
+msgid "Clipboard S&wap"
+msgstr "Inter&schimbă Clipboardul"
+
+#. Resource IDs: (2045)
+msgid "Close"
+msgstr "Închide"
+
+#. Resource IDs: (32920)
+msgid "Close &All"
+msgstr "Închide &Tot"
+
+#. Resource IDs: (32920)
+msgid "Close All"
+msgstr "Închide Tot"
+
+#. Resource IDs: (32931)
+msgid "Close All &Other"
+msgstr "Închide &Restul"
+
+#. Resource IDs: (32931)
+msgid "Close All &Other Windows"
+msgstr "Închide &Restul de Ferestre"
+
+#. Resource IDs: (301)
+msgid "Close P&roject(s)"
+msgstr "Închide P&roiecct(e)"
+
+#. Resource IDs: (301)
+msgid "Close Project(s)"
+msgstr "Închide Proiect(e)"
+
+#. Resource IDs: (33150)
+#, fuzzy
+msgid "Close Vie&w"
+msgstr "Închide &Tot"
+
+#. Resource IDs: (2045)
+msgid "Close all project files?"
+msgstr "Închide toate fișierele de proiect?"
+
+#. Resource IDs: (3601)
+msgid ""
+"Close the active document\n"
+"Close"
+msgstr ""
+"Închide documentul activ\n"
+"Închide"
+
+#. Resource IDs: (3825)
+msgid "Close the active window and prompts to save the documents"
+msgstr "Închide fereastra activă și cere să salveze documentele"
+
+#. Resource IDs: (13)
+msgid "Code Templates"
+msgstr "Antet Cod"
+
+#. Resource IDs: (268)
+msgid "Collapse All Folds"
+msgstr "Colapsează Toate Plierile"
+
+#. Resource IDs: (65535)
+msgid "Com&ments"
+msgstr "Co&mentarii"
+
+#. Resource IDs: (15)
+msgid "Command"
+msgstr "Comandă"
+
+#. Resource IDs: (33144)
+msgid "Command &Mode"
+msgstr "&Mod Comandă"
+
+#. Resource IDs: (65535)
+msgid "Command:"
+msgstr "Comandă:"
+
+#. Resource IDs: (14)
+msgid "Confirmations"
+msgstr "Confirmări"
+
+#. Resource IDs: (16)
+msgid "Console I/O"
+msgstr "I/O Consolă"
+
+#. Resource IDs: (32972)
+msgid "Convert Spaces to Tabs"
+msgstr "Transformă Spațiile în Tab-uri"
+
+#. Resource IDs: (32971)
+msgid "Convert Tabs to Spaces"
+msgstr "Transformă Tab-urile în Spații"
+
+#. Resource IDs: (32974)
+msgid "Copy &File Path"
+msgstr "Copiază Calea &Fișierului"
+
+#. Resource IDs: (32871)
+msgid "Copy as RTF"
+msgstr "Copiază ca RTF"
+
+#. Resource IDs: (3603)
+msgid ""
+"Copy the selection and put it on the Clipboard\n"
+"Copy"
+msgstr ""
+"Copiază selecția și pune-o în Clipboard\n"
+"Copiază"
+
+#. Resource IDs: (11)
+msgid "Could not create file"
+msgstr "Nu am putut crea fișierul"
+
+#. Resource IDs: (18)
+#, fuzzy
+msgid "Could not locate "
+msgstr "Nu am putut crea fișierul"
+
+#. Resource IDs: (3601)
+msgid ""
+"Create a new document\n"
+"New"
+msgstr ""
+"Crează un document nou\n"
+"Nou"
+
+#. Resource IDs: (9)
+msgid "Create a new project."
+msgstr "Crează un proiect nou."
+
+#. Resource IDs: (9)
+msgid "Create a new workspace."
+msgstr "Crează un mediu de lucru nou."
+
+#. Resource IDs: (1157)
+msgid "Create backup files when saving"
+msgstr "Crează backup-uri atunci când salvați"
+
+#. Resource IDs: (57635)
+msgid "Cu&t"
+msgstr "Ta&ie"
+
+#. Resource IDs: (32910)
+msgid "Cu&t Line"
+msgstr "Ta&ie Linia"
+
+#. Resource IDs: (1106)
+msgid "Curren&t document"
+msgstr "Document Cu&rent"
+
+#. Resource IDs: (33160)
+#, fuzzy
+msgid "Current &Editor"
+msgstr "Director Curent"
+
+#. Resource IDs: (32884)
+msgid "Current Date (%c)"
+msgstr "Dată curentă (%c)"
+
+#. Resource IDs: (11)
+msgid "Current File"
+msgstr "Fișier Curent"
+
+#. Resource IDs: (11)
+msgid "Current Folder"
+msgstr "Director Curent"
+
+#. Resource IDs: (32881)
+msgid "Current Page (%p)"
+msgstr "Pagină Curentă (%p)"
+
+#. Resource IDs: (11)
+msgid "Current Project Files"
+msgstr "Fișierele Curente ale Proiectului"
+
+#. Resource IDs: (65535)
+msgid "Current Shortcuts:"
+msgstr "Scurtături Curente:"
+
+#. Resource IDs: (32888)
+msgid "Current Time (%t)"
+msgstr "Timp Curent (%t)"
+
+#. Resource IDs: (1108)
+msgid "Current pro&ject"
+msgstr "Pro&iect Curent"
+
+#. Resource IDs: (65535)
+msgid "Cursor Colour:"
+msgstr "Culoare Cursor:"
+
+# e corect?
+#. Resource IDs: (1121)
+msgid "Custom Output Parsing"
+msgstr "Parsarea Customizată a Ieșirii"
+
+#. Resource IDs: (3603)
+msgid ""
+"Cut the selection and put it on the Clipboard\n"
+"Cut"
+msgstr ""
+"Tăiați selecția și puneți-o pe Clipboard\n"
+"Tăiați"
+
+#. Resource IDs: (65535)
+msgid "DUMMY"
+msgstr "PROSTUȚ"
+
+#. Resource IDs: (32909)
+msgid "De&lete Line"
+msgstr "Șter&ge Linie"
+
+#. Resource IDs: (65535)
+msgid "Defaults"
+msgstr "Implicite"
+
+# e corect??? tare cred ca nu...
+#. Resource IDs: (1158)
+msgid "Display block caret instead of line"
+msgstr "Afișează semnul de inserție bloc în locul liniei"
+
+#. Resource IDs: (3601)
+msgid ""
+"Display full pages\n"
+"Print Preview"
+msgstr ""
+"Afișează pagini complete\n"
+"Previzualizează Imprimarea"
+
+#. Resource IDs: (3605)
+msgid ""
+"Display program information, version number and copyright\n"
+"About"
+msgstr ""
+"Afișează informații despre program, număr versiune și copyright\n"
+"Despre"
+
+#. Resource IDs: (12)
+msgid "Do &Not Download"
+msgstr "&Nu Descărca"
+
+#. Resource IDs: (1051)
+msgid "Do not &ask me again"
+msgstr "Nu mă &mai întreba"
+
+#. Resource IDs: (18)
+#, fuzzy
+msgid "Do not ask me again."
+msgstr "Nu mă &mai întreba"
+
+#. Resource IDs: (65535)
+msgid ""
+"Do you want to associate these extensions with Programmer's Notepad 2 now?"
+msgstr "Doriți să asociați aceste extensii cu Programmer's Notepad 2 acum?"
+
+#. Resource IDs: (2045)
+#, c-format
+msgid "Do you want to open another copy of %s?"
+msgstr "Doriți să mai deschideți o altă copie a lui %s?"
+
+#. Resource IDs: (2063)
+#, c-format
+msgid "Do you want to save changes to the project: %s?"
+msgstr "Doriți să salvați modificările la proiectul: %s?"
+
+#. Resource IDs: (9)
+msgid "Document"
+msgstr "Document"
+
+#. Resource IDs: (1074)
+msgid "Don't change the foreground."
+msgstr "Nu modifiica fața"
+
+#. Resource IDs: (57665)
+msgid "E&xit"
+msgstr "Ieș&ire"
+
+#. Resource IDs: (12)
+msgid "E&xtensions"
+msgstr "E&xtensii"
+
+#. Resource IDs: (17)
+#, fuzzy
+msgid "Edit"
+msgstr "&Editează"
+
+#. Resource IDs: (432)
+msgid "Edit Alternate File Pair"
+msgstr "Editează Pereche de Fișiere Alternative"
+
+#. Resource IDs: (2073)
+#, fuzzy
+msgid "Edit Clip"
+msgstr "Unealtă de editat"
+
+#. Resource IDs: (439)
+msgid "Edit File Type"
+msgstr "Editează Tipul Fișierului"
+
+#. Resource IDs: (262)
+msgid "Edit SmartStart Phrase"
+msgstr "Editează fraza de început inteligentă (SmartStart Phrase)"
+
+#. Resource IDs: (15)
+msgid "Edit Tool"
+msgstr "Unealtă de editat"
+
+#. Resource IDs: (17, 18)
+#, fuzzy
+msgid "Edit with Programmer's Notepad"
+msgstr "Programmer's Notepad"
+
+#. Resource IDs: (65535)
+msgid "Editing"
+msgstr "În curs de editare"
+
+#. Resource IDs: (14)
+msgid "Editor"
+msgstr "Editor"
+
+#. Resource IDs: (10)
+msgid "Empty Project"
+msgstr "Proiect Gol"
+
+#. Resource IDs: (1138)
+msgid "Enable AutoComplete"
+msgstr "Activează AutoCompletarea"
+
+#. Resource IDs: (1118)
+msgid "Enable Command Bar"
+msgstr "Activează Bara de Comandă"
+
+#. Resource IDs: (1051)
+msgid "Enable SmartStart"
+msgstr "Activează pornirea inteligentă (SnartStart)"
+
+#. Resource IDs: (17)
+msgid "Enabled"
+msgstr "Activat"
+
+# e corect?
+#. Resource IDs: (65535)
+msgid "Enco&ding"
+msgstr "Encri&ptarea"
+
+#. Resource IDs: (18)
+msgid "Encoding Conversion"
+msgstr ""
+
+#. Resource IDs: (1101, 65535)
+msgid "Encoding:"
+msgstr "Encriptarea:"
+
+#. Resource IDs: (32843)
+msgid "End of Line"
+msgstr "Sfârșit de linie"
+
+#. Resource IDs: (3825)
+msgid "Enlarge the window to full size"
+msgstr "Mărește fereastra la dimensiunea maximă."
+
+#. Resource IDs: (1170)
+msgid "Ensure file ends with a blank line"
+msgstr ""
+
+#. Resource IDs: (65535)
+msgid ""
+"Enter a semi-colon separated list of directories that you do not wish to "
+"include:"
+msgstr ""
+"Adăugați o listă de directoare separate prin punct și virgulă pe care doriți "
+"să le includeți:"
+
+#. Resource IDs: (65535)
+#, fuzzy
+msgid ""
+"Enter a semi-colon separated list of file types that you do not wish to "
+"include:"
+msgstr ""
+"Introduceți o listă de fișiere separate prin punct și virgulă pe care doriți "
+"să le includeți:"
+
+#. Resource IDs: (65535)
+msgid ""
+"Enter a semi-colon separated list of file types that you wish to include:"
+msgstr ""
+"Introduceți o listă de fișiere separate prin punct și virgulă pe care doriți "
+"să le includeți:"
+
+# aceeaș traducere
+#. Resource IDs: (3603)
+msgid ""
+"Erase everything\n"
+"Erase All"
+msgstr ""
+"Ștergeți tot\n"
+"Ștergeți tot"
+
+#. Resource IDs: (3603)
+msgid ""
+"Erase the selection\n"
+"Erase"
+msgstr ""
+"Ștergeți selecția\n"
+"Ștergeți"
+
+#. Resource IDs: (65535)
+msgid "Ex&tension:"
+msgstr "Ex&tensie:"
+
+# corect ?
+#. Resource IDs: (18)
+#, fuzzy
+msgid "Example"
+msgstr "&Explorer"
+
+#. Resource IDs: (17)
+msgid ""
+"Executable Files (exe, com, bat, vbs...)|*.exe;*.com;*.bat;*.vbs;*.cmd|All "
+"Files (*.*)|*.*|"
+msgstr ""
+
+#. Resource IDs: (269)
+msgid "Expand All Folds"
+msgstr "Extinde Toate Plierile"
+
+#. Resource IDs: (16)
+msgid "Extension"
+msgstr "Extensie"
+
+#. Resource IDs: (65535)
+msgid "Extensions"
+msgstr "Extensii"
+
+#. Resource IDs: (32874)
+msgid "F&ind in Files"
+msgstr "Gă&sește în Fișiere"
+
+#. Resource IDs: (12)
+msgid "Failed to create a backup document"
+msgstr "S-a eșuat în creearea unui document backup"
+
+#. Resource IDs: (18)
+#, c-format
+msgid ""
+"Failed to open workspace file %s for writing. Workspace state could not be "
+"saved."
+msgstr ""
+
+# corect?
+#. Resource IDs: (1110)
+msgid "Fi&nd what:"
+msgstr "Ce:"
+
+#. Resource IDs: (17)
+#, fuzzy
+msgid "File"
+msgstr "&Fișier"
+
+#. Resource IDs: (32706)
+msgid "File &Browser"
+msgstr "&Navigator de Fișiere"
+
+#. Resource IDs: (2045)
+msgid "File Browser"
+msgstr "Navigator de fișiere"
+
+#. Resource IDs: (32882)
+msgid "File Date (%D)"
+msgstr "Dată fișier (%D)"
+
+#. Resource IDs: (65535)
+msgid "File Dialogs"
+msgstr "Dialoguri Fișier"
+
+#. Resource IDs: (65535)
+msgid "File Extension or Name to Match:"
+msgstr "Extensii de Fișier sau Nume de Potrivit:"
+
+#. Resource IDs: (1056)
+msgid "File Format:"
+msgstr "Formatul Fișierului:"
+
+#. Resource IDs: (32879)
+msgid "File Name (%f)"
+msgstr "Nume Fișier (%f)"
+
+#. Resource IDs: (32880)
+msgid "File Path (%d)"
+msgstr "Cale Fișier (%d)"
+
+#. Resource IDs: (1163)
+#, fuzzy
+msgid "File Save Options"
+msgstr "Asocieri de fișiere"
+
+#. Resource IDs: (32887)
+msgid "File Time (%T)"
+msgstr "Timp Fișier (%T)"
+
+#. Resource IDs: (65535)
+msgid "File Types"
+msgstr "Tipuri Fișiere"
+
+#. Resource IDs: (65535)
+msgid ""
+"File extensions should be entered including the '.' dot character, separated "
+"by semi-colons, in order of precedence. e.g. \n"
+"\n"
+"Start: .cpp;.cxx;.c;.cc\n"
+"Alternate: .h;.hpp"
+msgstr ""
+"Extensiile de fișiere ar trebui să fie adăugate cu tot cu caracterul punct "
+"'.', separate prin punct și virgulă ';', în ordinea dorită. Ex.\n"
+"\n"
+"Start: .cpp;.cxx;.c;.cc\n"
+"Alternant: .h;.hpp"
+
+#. Resource IDs: (65535)
+msgid "File extensions should be entered starting with the '.' dot character."
+msgstr ""
+"Extensiile de fișiere trebuie să fie introduse începând cu caracterul punct "
+"'.' ."
+
+#. Resource IDs: (1043)
+msgid "File types:"
+msgstr "Tipuri de fișiere:"
+
+#. Resource IDs: (65535)
+msgid "File:"
+msgstr "Fișier:"
+
+#. Resource IDs: (14)
+msgid "Files"
+msgstr "Fișiere"
+
+#. Resource IDs: (1024)
+msgid "Fill to &end of line"
+msgstr "Umple &restul de liniei"
+
+#. Resource IDs: (22)
+msgid "Find"
+msgstr "Caută"
+
+#. Resource IDs: (32773)
+msgid "Find &Next"
+msgstr "Găsește &Următorul"
+
+#. Resource IDs: (17)
+#, fuzzy
+msgid "Find &Previous"
+msgstr "Găsește An&tecedent"
+
+#. Resource IDs: (2055)
+msgid "Find (drop down for other find types)"
+msgstr "Caută (drop down pentru alte tipuri de căutat)"
+
+#. Resource IDs: (65535)
+msgid "Find Dialog"
+msgstr "Dialog de Căutat"
+
+#. Resource IDs: (33132)
+msgid "Find Next Current &Word"
+msgstr "Găsește Următorul &Cuvânt Curent"
+
+#. Resource IDs: (32956)
+msgid "Find Pre&vious"
+msgstr "Găsește An&tecedent"
+
+#. Resource IDs: (33133)
+msgid "Find Previous C&urrent Word"
+msgstr "Găsește Cuvântul C&urent Antecedent"
+
+# corect?
+#. Resource IDs: (2045)
+msgid "Find Results"
+msgstr "Rezultatele Căutării"
+
+#. Resource IDs: (15)
+msgid "Find in Files"
+msgstr "Găsește în Fișiere"
+
+#. Resource IDs: (1171)
+msgid "Find more extensions at www.pnotepad.org..."
+msgstr ""
+
+#. Resource IDs: (9)
+msgid "Find reached the starting point of the search."
+msgstr "Căutarea a ajuns la punctul de pornire al procesării."
+
+#. Resource IDs: (2055)
+msgid ""
+"Find text in files\n"
+"Find in Files"
+msgstr ""
+"Caută fișiere text\n"
+"Caută în Fișiere"
+
+#. Resource IDs: (3603)
+msgid ""
+"Find the specified text\n"
+"Find"
+msgstr ""
+"Caută textul specificat\n"
+"Caută"
+
+#. Resource IDs: (1044)
+msgid "Find where:"
+msgstr "Unde să caut:"
+
+#. Resource IDs: (65535)
+msgid "Folder:"
+msgstr "Director:"
+
+# ?? :))
+#. Resource IDs: (1146)
+msgid "Folding enabled for supporting schemes"
+msgstr "Plieri activate pentru planuri suportate"
+
+#. Resource IDs: (65535)
+msgid "Font Style"
+msgstr "Silul Fontului"
+
+#. Resource IDs: (13)
+msgid "Fonts and Colours"
+msgstr "Culori și Fonturi"
+
+#. Resource IDs: (17)
+#, fuzzy, c-format
+msgid "Found %d occurrences"
+msgstr "%d aparți(e/i) înlocuite."
+
+#. Resource IDs: (13)
+msgid "General"
+msgstr "General"
+
+#. Resource IDs: (204)
+msgid "Go To Line"
+msgstr "Mergi La Linia"
+
+#. Resource IDs: (32992)
+msgid "Go to Definition"
+msgstr "Mergi la Definiție"
+
+#. Resource IDs: (283)
+msgid "Google Gr&oups"
+msgstr "Google Gr&oups"
+
+#. Resource IDs: (32849)
+msgid "Group"
+msgstr "Grup"
+
+#. Resource IDs: (65535)
+msgid "HEADERFOOTERFIELDS"
+msgstr "CÎMPURIANTETSUBSOL"
+
+#. Resource IDs: (1160)
+msgid "Highlight all instances of selected word"
+msgstr "Pune în evidență toate instanțele cuvântului selectat"
+
+#. Resource IDs: (1066)
+msgid "Highlight current editor line"
+msgstr "Pune în evidență linia curentă din editor"
+
+#. Resource IDs: (1068)
+msgid "Highlight text beyond the edge column"
+msgstr "Pune în evidență textul ce depășește marginea coloanelor"
+
+#. Resource IDs: (15)
+msgid "Hint"
+msgstr "Indiciu"
+
+#. Resource IDs: (65535)
+msgid "Hint:"
+msgstr "Indiciu:"
+
+#. Resource IDs: (65535)
+msgid "Horizontal:"
+msgstr "Orizontală:"
+
+#. Accelerator Entry for Menu ID:267; 'Clipboard S&wap'
+msgid "ID:267:V CS+C"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32703; 'T&ags'
+msgid "ID:32703:VA  +G"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32774; '&Goto'
+msgid "ID:32774:V C +G"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32783; ''
+msgid "ID:32783:V C +K"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32784; ''
+msgid "ID:32784:V C +Q"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32789; '&Stop Tools'
+msgid "ID:32789:V CS+K"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32865; 'Save A&ll'
+msgid "ID:32865:V CS+S"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32866; ''
+msgid "ID:32866:V CS+H"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32871; 'Copy as RTF'
+msgid "ID:32871:VAC +C"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32874; 'F&ind in Files'
+msgid "ID:32874:V CS+F"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32909; 'De&lete Line'
+msgid "ID:32909:V CS+L"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32910; 'Cu&t Line'
+msgid "ID:32910:V C +L"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57600; ''
+msgid "ID:57600:V C +N"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57601; '&Open...'
+msgid "ID:57601:V C +O"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57602; 'Cl&ose\tCtrl-F4'
+msgid "ID:57602:V C +W"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57603; '&Save'
+msgid "ID:57603:V C +S"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57607; '&Print...'
+msgid "ID:57607:V C +P"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57634; '&Copy'
+msgid "ID:57634:V C +C"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57635; 'Cu&t'
+msgid "ID:57635:V C +X"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57635; 'Cu&t'
+msgid "ID:57635:V CS+X"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57636; '&Find'
+msgid "ID:57636:V C +F"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57637; '&Paste'
+msgid "ID:57637:V C +V"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57637; '&Paste'
+msgid "ID:57637:V CS+V"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57641; 'R&eplace'
+msgid "ID:57641:V C +H"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57641; 'R&eplace'
+msgid "ID:57641:V C +R"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57643; '&Undo'
+msgid "ID:57643:V C +Z"
+msgstr ""
+
+#. Resource IDs: (1109)
+msgid "In &selection"
+msgstr "În &selecție"
+
+#. Resource IDs: (1134)
+msgid "Include &hidden"
+msgstr "Include &ascuns"
+
+#. Resource IDs: (1139)
+msgid "Include Scheme Keywords"
+msgstr "Include Planuri de Cuvinte Cheie"
+
+#. Resource IDs: (1140)
+msgid "Include Tags"
+msgstr "Include Etichete"
+
+#. Resource IDs: (65535)
+msgid "Indentation Guides:"
+msgstr "Ajutor de indentare:"
+
+#. Resource IDs: (3603)
+msgid ""
+"Insert Clipboard contents\n"
+"Paste"
+msgstr ""
+"Inserează conținut de Clipboard\n"
+"Lipește"
+
+#. Resource IDs: (14)
+#, fuzzy
+msgid "Integration"
+msgstr "&Spațiere"
+
+#. Resource IDs: (14)
+msgid "Interface"
+msgstr "Interfață"
+
+#. Resource IDs: (321)
+msgid "Jump To..."
+msgstr "Sari La..."
+
+#. Resource IDs: (65535)
+msgid "Jump to:"
+msgstr "Sari la:"
+
+#. Resource IDs: (14)
+msgid "Keyboard"
+msgstr "Tastatură"
+
+#. Resource IDs: (65535)
+msgid "Keyboard Shortcuts"
+msgstr "Scurtături de Tastatură"
+
+#. Resource IDs: (15)
+msgid "Keywords"
+msgstr "Cuvinte Cheie"
+
+#. Resource IDs: (1057)
+msgid "L&andscape"
+msgstr "P&eisaj"
+
+#. Resource IDs: (65535)
+msgid "Language"
+msgstr "Limbă"
+
+#. Resource IDs: (17)
+#, fuzzy
+msgid "Line"
+msgstr "&Linie"
+
+#. Resource IDs: (32792)
+msgid "Line &End Markers"
+msgstr "Notații de &Sfârșit de Linie"
+
+#. Resource IDs: (132)
+msgid "Line &Numbers"
+msgstr "&Numere Linii"
+
+#. Resource IDs: (65535)
+msgid "Line Endings:"
+msgstr "Terminații Linii:"
+
+#. Resource IDs: (1170)
+#, fuzzy
+msgid "Line Padding"
+msgstr "&Terminații de Linie"
+
+#. Resource IDs: (65535)
+msgid "Lines:"
+msgstr "Linii:"
+
+#. Resource IDs: (32912)
+msgid "Lo&wercase"
+msgstr "Mi&ci"
+
+# corect ?
+#. Resource IDs: (65535)
+msgid "Long Line Helpers"
+msgstr "Ajutoare de Linii Lungi"
+
+#. Resource IDs: (1059)
+msgid "Look for a custom pattern:"
+msgstr "Uită-te după un tipar comun:"
+
+#. Resource IDs: (1155)
+msgid "Look for testing releases"
+msgstr "Uită-te după versiuni de test"
+
+#. Resource IDs: (1075)
+msgid "Margins"
+msgstr "Margini"
+
+#. Resource IDs: (65535)
+msgid "Mark All Highlight:"
+msgstr "Selecție Totală:"
+
+#. Resource IDs: (16)
+msgid "Match"
+msgstr "Potrivește"
+
+#. Resource IDs: (105)
+msgid "Match &case"
+msgstr "Potrivește &dimens"
+
+#. Resource IDs: (104)
+msgid "Match &whole word only"
+msgstr "Potrivește doar cu&vântul"
+
+#. Resource IDs: (17)
+#, fuzzy
+msgid "Match Case"
+msgstr "Potrivește &dimens"
+
+#. Resource IDs: (18)
+msgid "Meaning"
+msgstr ""
+
+#. Resource IDs: (16)
+msgid "Method"
+msgstr "Metodă"
+
+#. Resource IDs: (22)
+msgid "Modified"
+msgstr "Modificat"
+
+#. Resource IDs: (15)
+msgid "More Options"
+msgstr "Alte opțiuni"
+
+#. Resource IDs: (1034)
+msgid "Move &Down"
+msgstr "Mută în &Jos"
+
+#. Resource IDs: (1033)
+msgid "Move &Up"
+msgstr "Mută în &sus"
+
+#. Resource IDs: (33003)
+msgid "Move Line &Up"
+msgstr "Mută Linia &Sus"
+
+#. Resource IDs: (33005)
+msgid "Move Line Do&wn"
+msgstr "Mută Linia J&os"
+
+#. Resource IDs: (15, 16)
+msgid "Name"
+msgstr "Nume"
+
+#. Resource IDs: (65535)
+msgid "Name:"
+msgstr "Nume:"
+
+#. Resource IDs: (17)
+#, fuzzy
+msgid "New Clip Set"
+msgstr "Fișier Nou"
+
+#. Resource IDs: (65535)
+msgid "New File"
+msgstr "Fișier Nou"
+
+#. Resource IDs: (14)
+msgid "New Files"
+msgstr "Fișiere Noi"
+
+#. Resource IDs: (17)
+#, fuzzy
+msgid "New Folder"
+msgstr "&Adaugă Director Nou"
+
+#. Resource IDs: (10)
+msgid "New Project Group"
+msgstr "Grup Proiect Nou"
+
+#. Resource IDs: (336)
+msgid "New Project..."
+msgstr "Proiect Nou..."
+
+#. Resource IDs: (15)
+msgid "New Tool"
+msgstr "Unealtă Nouă"
+
+#. Resource IDs: (32787)
+msgid "Next B&ookmark"
+msgstr "Următorul Semn de &Carte"
+
+#. Resource IDs: (7)
+msgid "No"
+msgstr "Nu"
+
+#. Resource IDs: (1124)
+msgid "No Override"
+msgstr "Nu suprascrie"
+
+# corect?
+#. Resource IDs: (1067)
+msgid "No long line help"
+msgstr "Nu ajutați pe linii lungi"
+
+#. Resource IDs: (12)
+msgid "No more occurrences found in the specified set of documents."
+msgstr "Nu s-au mai găsit potriviri în setul de documente specificate."
+
+#. Resource IDs: (13)
+msgid "No updates are available at this time."
+msgstr "Nu sunt disponibile actualizări la momentul de față."
+
+#. Resource IDs: (18)
+#, fuzzy
+msgid "None"
+msgstr "Nu"
+
+# corect?
+#. Resource IDs: (32845)
+msgid "Not"
+msgstr "Nu e"
+
+#. Resource IDs: (65535)
+msgid "Note: The first item in any list will be the default tool."
+msgstr "Notă: Primul element din orice listă va fi unealta implicită."
+
+#. Resource IDs: (1)
+msgid "OK"
+msgstr "OK"
+
+#. Resource IDs: (1057)
+msgid "Only show with ma&ximized document windows"
+msgstr "Arată doar cu ferestrele de documente ma&ximizate"
+
+#. Resource IDs: (16)
+#, fuzzy
+msgid "Open"
+msgstr "&Deschinde"
+
+#. Resource IDs: (32977)
+msgid "Open &Folder"
+msgstr "Deschide &Director"
+
+#. Resource IDs: (32976)
+msgid "Open Con&taining Folder"
+msgstr "Deschide Directorul In&clus"
+
+#. Resource IDs: (32707)
+msgid "Open Fi&les"
+msgstr "Deschide Fișie&re"
+
+#. Resource IDs: (12, 2045)
+msgid "Open Files"
+msgstr "Deschide Fișiere"
+
+#. Resource IDs: (289)
+msgid "Open Pro&ject(s)..."
+msgstr "Deschide Pro&iect(e)..."
+
+#. Resource IDs: (289)
+msgid "Open Project(s)..."
+msgstr "Deschide Proiect(e)..."
+
+#. Resource IDs: (10)
+msgid "Open Project/Project Group"
+msgstr "Deschide Proiect/Grup de Proiecte"
+
+#. Resource IDs: (32903)
+#, fuzzy
+msgid "Open URL in Default Browser"
+msgstr "&Deschide în Programul Implicit"
+
+#. Resource IDs: (33111)
+msgid "Open Wor&kspace..."
+msgstr "Deschide Spați&u de Lucru..."
+
+#. Resource IDs: (3601)
+msgid ""
+"Open an existing document\n"
+"Open"
+msgstr ""
+"Deschide un document existent\n"
+"Deschide"
+
+#. Resource IDs: (3604)
+msgid ""
+"Open another window for the active document\n"
+"New Window"
+msgstr ""
+"Deschide altă fereastră pentru documentul activ\n"
+"Fereastră Nouă"
+
+#. Resource IDs: (32979)
+msgid "Open in De&fault Program"
+msgstr "Deschide Program I&mplicit"
+
+#. Resource IDs: (3838)
+msgid "Open this document"
+msgstr "Deschide acest document"
+
+#. Resource IDs: (243)
+msgid "Options"
+msgstr "Opțiuni"
+
+# la asta s-a referit?
+#. Resource IDs: (32846)
+msgid "Or"
+msgstr "Sau"
+
+#. Resource IDs: (1072)
+msgid "Orientation"
+msgstr "Orientare"
+
+#. Resource IDs: (65535)
+msgid "Other User Interface Options"
+msgstr "Alte opțiuni de Interfață"
+
+#. Resource IDs: (2044)
+msgid "Output"
+msgstr "Ieșire"
+
+#. Resource IDs: (65535)
+msgid "Output Parsing:"
+msgstr "Parsarea Ieșirii:"
+
+#. Resource IDs: (65535)
+msgid "Override Indentation:"
+msgstr "Suprascrie Indentarea:"
+
+#. Resource IDs: (1056)
+msgid "P&ortrait"
+msgstr "P&ortret"
+
+#. Resource IDs: (251)
+msgid "PN &Home Page"
+msgstr "Pa&gina siteului PN"
+
+#. Resource IDs: (9)
+#, c-format
+msgid ""
+"PN could not remove the write-protection from \"%s\".\n"
+"\n"
+" Would you like to save with a different name?"
+msgstr ""
+"PN nu a putut elimina protecția de scrierea asupra lui \"%s\".\n"
+"\n"
+"Doriți să salvați cu alt nume?"
+
+#. Resource IDs: (252)
+msgid "PN on &Google Code"
+msgstr "PN pe &Google Code"
+
+#. Resource IDs: (330)
+msgid "PN2 File Associations"
+msgstr "Asocieri de Fișiere PN2"
+
+#. Resource IDs: (1051)
+msgid "PN2 should &check the associations when starting"
+msgstr "PN2 ar trebui să &verifice asocierile la pornire"
+
+#. Resource IDs: (65535)
+msgid "PROJECT"
+msgstr "PROIECT"
+
+#. Resource IDs: (32883)
+msgid "Page Count (%P)"
+msgstr "Număr de Pagini (%P)"
+
+#. Resource IDs: (12)
+msgid "Page Setup"
+msgstr "Setările Paginii"
+
+#. Resource IDs: (1073)
+msgid "Paper"
+msgstr "Hârtie"
+
+#. Resource IDs: (65535)
+msgid "Parameters:"
+msgstr "Parametrii:"
+
+# are cineva o versiune mai buna?
+#. Resource IDs: (15)
+msgid "Params"
+msgstr "Params"
+
+#. Resource IDs: (1133)
+msgid "Pass my selection to this tool using Standard Input"
+msgstr "Lipește selecție mea la această uneltă folosind Imput Standard"
+
+#. Resource IDs: (65535)
+msgid "Pattern:"
+msgstr "Tipar:"
+
+#. Resource IDs: (16)
+#, fuzzy
+msgid "Plain Text"
+msgstr "&Găsește Următorul"
+
+# la asta se refera?
+#. Resource IDs: (65535)
+msgid "Presets"
+msgstr "Presetări"
+
+#. Resource IDs: (65535)
+msgid "Preview"
+msgstr "Previzualizează"
+
+#. Resource IDs: (57606)
+msgid "Print Set&up..."
+msgstr "Setări Im&primare..."
+
+#. Resource IDs: (3601)
+msgid ""
+"Print the active document\n"
+"Print"
+msgstr ""
+"Printează documentul activ\n"
+"Printează"
+
+#. Resource IDs: (9)
+msgid "Programmer's Notepad"
+msgstr "Programmer's Notepad"
+
+#. Resource IDs: (1098)
+msgid "Programmer's Notepad 2"
+msgstr "Programmer's Notepad 2"
+
+#. Resource IDs: (65535)
+msgid "Programmer's Notepad 2 is not the handler for these extensions:"
+msgstr "Programmer's Notepad 2 nu gestionează aceste extensii:"
+
+#. Resource IDs: (22)
+msgid ""
+"Programmer's Notepad 2 provides built-in support\n"
+"for parsing output from the following tools:\n"
+"\n"
+"Borland C++\n"
+"Microsoft Compilers\n"
+"GCC\n"
+"lcc-win32\n"
+"Python\n"
+"Perl\n"
+"and other similar tools."
+msgstr ""
+"Programmer's Notepad 2 acordă suport implicit\n"
+"pentru parsarea ieșirii de la următoarele programe:\n"
+"\n"
+"Borland C++\n"
+"Compilatoare Microsoft\n"
+"GCC\n"
+"lcc-win32\n"
+"Python\n"
+"Perl\n"
+"și alte programe similare."
+
+#. Resource IDs: (22)
+msgid "Project"
+msgstr "Proiect"
+
+#. Resource IDs: (22)
+msgid "Project Group"
+msgstr "Grup Proiecte"
+
+#. Resource IDs: (18)
+#, fuzzy
+msgid "Project Group Files"
+msgstr "Grup Proiecte"
+
+#. Resource IDs: (10)
+msgid "Project Group Files (*.ppg)|*.ppg|"
+msgstr "Fișiere Grup Proiect (*.ppg)|*.ppg|"
+
+#. Resource IDs: (16)
+msgid "Project Template:"
+msgstr "Șablon Proiect:"
+
+#. Resource IDs: (14)
+msgid "Project Tools"
+msgstr "Unelte Proiect"
+
+#. Resource IDs: (12)
+#, c-format
+msgid ""
+"Project \"%s\" has been changed, do you want to save the changes before "
+"removing?"
+msgstr ""
+"Proiectul \"%s\" a fost modificat, doriți să salvați modificările înainte de "
+"a elimina?"
+
+#. Resource IDs: (2044)
+msgid "Projects"
+msgstr "Proiecte"
+
+#. Resource IDs: (10)
+msgid "Projects and Project Groups (*.pnproj, *.ppg)|*.pnproj;*.ppg|"
+msgstr "Proiecte și Grup Proiecte (*.pnproj, *ppg)|*.pnproj;*.ppg|"
+
+#. Resource IDs: (32902)
+msgid "Proper&ties..."
+msgstr "Proprie&tăți..."
+
+#. Resource IDs: (16)
+msgid "Properties"
+msgstr "Proprietăți"
+
+#. Resource IDs: (3605)
+msgid ""
+"Quit the application; prompts to save documents\n"
+"Exit"
+msgstr ""
+"Ieși din aplicație; cere să salvezi documentele\n"
+"Ieși"
+
+#. Resource IDs: (57641)
+msgid "R&eplace"
+msgstr "Înlocui&ește"
+
+#. Resource IDs: (32947)
+msgid "Re&fresh"
+msgstr "Reîmpros&pătează"
+
+#. Resource IDs: (32982)
+msgid "Re&name"
+msgstr "Rede&numește"
+
+#. Resource IDs: (263)
+msgid "Re&vert"
+msgstr "Re&vino"
+
+#. Resource IDs: (1090, 1093)
+msgid "Re-Open"
+msgstr "Re-Deschide"
+
+#. Resource IDs: (22, 3585)
+msgid "Ready"
+msgstr "Gata"
+
+#. Resource IDs: (10)
+msgid "Recent Pro&jects"
+msgstr "Pro&iecte Recente"
+
+#. Resource IDs: (11)
+msgid "Rectangular Selection."
+msgstr "Selecție Dreptunghiulară."
+
+#. Resource IDs: (3603)
+msgid ""
+"Redo the previously undone action\n"
+"Redo"
+msgstr ""
+"Refă acțiunea desfăcută anterior\n"
+"Refă"
+
+#. Resource IDs: (3825)
+msgid "Reduce the window to an icon"
+msgstr "Reduce fereastra la o icoană"
+
+#. Resource IDs: (107)
+msgid "Regular &expression"
+msgstr "Expr&esii Regulate"
+
+#. Resource IDs: (33124)
+msgid "Remove Blank &Lines"
+msgstr "Elimină &Liniile Goale"
+
+#. Resource IDs: (2073)
+#, fuzzy
+msgid "Remove Clip"
+msgstr "E&limină"
+
+#. Resource IDs: (2073)
+#, fuzzy
+msgid "Remove Clip Set"
+msgstr "&Elimină Proiect"
+
+#. Resource IDs: (19)
+msgid "Remove \"Edit With...\" from Explorer"
+msgstr ""
+
+#. Resource IDs: (3603)
+msgid ""
+"Repeat the last action\n"
+"Repeat"
+msgstr ""
+"Repetă ultima acțiune\n"
+"Repetă"
+
+#. Resource IDs: (14)
+msgid "Replace"
+msgstr "Înlocuiește"
+
+#. Resource IDs: (6)
+msgid "Replace &All"
+msgstr "Înlocuiește &Tot"
+
+#. Resource IDs: (11)
+msgid "Replace my selection."
+msgstr "Înlocuiește selecția mea."
+
+#. Resource IDs: (3603)
+msgid ""
+"Replace specific text with different text\n"
+"Replace"
+msgstr ""
+"Înlocuiește textul specificat cu alt text\n"
+"Înlocuiește"
+
+#. Resource IDs: (1042)
+msgid "Replace with:"
+msgstr "Înlocuiește cu:"
+
+# having some fun :))
+#. Resource IDs: (253)
+msgid "Report a &bug..."
+msgstr "Raportează o goangă (aka. bug)"
+
+#. Resource IDs: (275)
+msgid "Request a &feature..."
+msgstr "Cere o î&mbunătățire..."
+
+#. Resource IDs: (1037)
+msgid "Reset &All"
+msgstr "Resetează &Tot"
+
+#. Resource IDs: (3826)
+msgid "Restore the window to normal size"
+msgstr "Redimensionează fereastra la mărimea ei normală"
+
+#. Resource IDs: (17)
+msgid ""
+"Revert this document to the current saved state\n"
+"Revert"
+msgstr ""
+"Refă documentul curent la starea salvată\n"
+"Refă"
+
+#. Resource IDs: (65535)
+msgid "Rightmost Column:"
+msgstr "Coloană Top Dreapta:"
+
+#. Resource IDs: (32946)
+msgid "Sa&ve Project"
+msgstr "Sal&vează Proiect"
+
+#. Resource IDs: (10)
+msgid "Save "
+msgstr "Salvează"
+
+#. Resource IDs: (57604)
+msgid "Save &As..."
+msgstr "Salvează &Ca..."
+
+#. Resource IDs: (32950)
+msgid "Save &Workspace As..."
+msgstr "Salvează &Spațiul de lucru Ca..."
+
+#. Resource IDs: (32865)
+msgid "Save A&ll"
+msgstr "Salvează T&ot"
+
+#. Resource IDs: (2055)
+msgid ""
+"Save all open documents\n"
+"Save All"
+msgstr ""
+"Salvează toate documentele deschise\n"
+"Salvează Tot"
+
+#. Resource IDs: (3601)
+msgid ""
+"Save the active document with a new name\n"
+"Save As"
+msgstr ""
+"Salvează documentul curent cu alt nume\n"
+"Salvează Ca"
+
+#. Resource IDs: (3601)
+msgid ""
+"Save the active document\n"
+"Save"
+msgstr ""
+"Salvează documentul activ\n"
+"Salvează"
+
+#. Resource IDs: (65535)
+msgid "Save:"
+msgstr "Salvează:"
+
+#. Resource IDs: (16)
+msgid "Scheme"
+msgstr "Plan"
+
+#. Resource IDs: (1017, 65535)
+msgid "Scheme:"
+msgstr "Plan:"
+
+#. Resource IDs: (221)
+msgid "Schemes"
+msgstr "Planuri"
+
+#. Resource IDs: (2045)
+msgid "Scripts"
+msgstr "Scenarii"
+
+#. Resource IDs: (436, 1111)
+msgid "Search"
+msgstr "Caută"
+
+#. Resource IDs: (1047)
+msgid "Search &up"
+msgstr "Caută în &sus"
+
+#. Resource IDs: (18)
+#, c-format
+msgid ""
+"Search complete: %d matching lines found in %d files, taking %d "
+"milliseconds.\n"
+msgstr ""
+
+# e si "in"?
+#. Resource IDs: (1046)
+msgid "Search sub&directories"
+msgstr "Caută în sub&directoarele"
+
+#. Resource IDs: (17)
+msgid "Searching for: "
+msgstr ""
+
+#. Resource IDs: (273)
+msgid "Select &All"
+msgstr "Selectează &Tot"
+
+#. Resource IDs: (17)
+msgid "Select Tool Command..."
+msgstr ""
+
+#. Resource IDs: (3603)
+msgid ""
+"Select the entire document\n"
+"Select All"
+msgstr ""
+"Selectează tot documentul\n"
+"Selectează Tot"
+
+#. Resource IDs: (10)
+msgid "Select the root folder for the search:"
+msgstr "Selectează directorul rădăcină pentru căutare:"
+
+#. Resource IDs: (22)
+msgid "Select the working folder for the tool:"
+msgstr "Selectează directorul în lucru pentru această unealtă:"
+
+#. Resource IDs: (65535)
+msgid "Selected Word Highlight:"
+msgstr "Selecție Cuvânt:"
+
+#. Resource IDs: (65535)
+msgid "Selecti&on"
+msgstr "Selecți&e"
+
+#. Resource IDs: (65535)
+msgid "Selection Background:"
+msgstr "Selecție Fundal:"
+
+#. Resource IDs: (65535)
+msgid "Selection Foreground:"
+msgstr "Selecție din Prim plan:"
+
+#. Resource IDs: (1116)
+msgid "Semi-transparent when not active (Windows XP+ only)."
+msgstr "Semi-transparent când nu este activ (doar Windows XP+)"
+
+#. Resource IDs: (65535)
+msgid "Settings"
+msgstr "Setări"
+
+#. Resource IDs: (15)
+msgid "Shortcut"
+msgstr "Scurtătură"
+
+#. Resource IDs: (65535)
+msgid "Shortcut:"
+msgstr "Scurtătură:"
+
+#. Resource IDs: (65535)
+msgid "Shortcuts:"
+msgstr "Scurtături:"
+
+#. Resource IDs: (1054)
+msgid "Show &Tabs"
+msgstr "Arată &Tab-uri"
+
+#. Resource IDs: (1048)
+msgid "Show Indentation Guides"
+msgstr "Arată Ghiduri de Identare"
+
+#. Resource IDs: (1117)
+msgid "Show Mini Editor Toolbar"
+msgstr "Arată Bară de Mini Editor"
+
+#. Resource IDs: (1069)
+msgid "Show a line at the edge column"
+msgstr "Arată o linie la coloana din margine"
+
+#. Resource IDs: (3713)
+msgid ""
+"Show or hide the status bar\n"
+"Toggle StatusBar"
+msgstr ""
+"Arată sau ascunde bara de status\n"
+"Jonglează Bara de Status"
+
+#. Resource IDs: (3713)
+msgid ""
+"Show or hide the toolbar\n"
+"Toggle ToolBar"
+msgstr ""
+"Arată sau ascunde bara de unelte\n"
+"Jonglează Bara de Unelte"
+
+#. Resource IDs: (1089)
+msgid "Si&ze:"
+msgstr "Mar&ime:"
+
+#. Resource IDs: (65535)
+msgid "SmartStart"
+msgstr "ÎnceputDeștept"
+
+#. Resource IDs: (11)
+#, c-format
+msgid ""
+"Sorry, Programmer's Notepad couldn't open this file - most likely because "
+"it's too big (actual error: %s). PN needs to have enough free memory to open "
+"a file twice to successfully edit it."
+msgstr ""
+"Ne pare rău, Programmer's Notepad nu a putut deschide fișierul - cel mai "
+"probabil din cauză că este prea mare (eroare exactă: %s). PN are nevoie de "
+"suficientă memorie cât să deschidă de 2x un fișier pentru editare."
+
+#. Resource IDs: (65535)
+msgid "Special Symbols:"
+msgstr "Simboluri Speciale:"
+
+#. Resource IDs: (33128)
+msgid "Spli&t Lines"
+msgstr "Se&pară Linii"
+
+#. Resource IDs: (33143)
+msgid "Split V&ertical"
+msgstr "Separă pe V&erticală"
+
+# panes = panouri ?
+#. Resource IDs: (3604)
+msgid ""
+"Split the active window into panes\n"
+"Split"
+msgstr ""
+"Separă fereastra activă în panouri\n"
+"Separă"
+
+#. Resource IDs: (65535)
+msgid "Standard Input and Output:"
+msgstr "Imput și Output Standard:"
+
+#. Resource IDs: (65535)
+msgid "Start Extensions:"
+msgstr "Extensii de Start:"
+
+#. Resource IDs: (65535)
+msgid "Start Phrase:"
+msgstr "Frază de Start:"
+
+#. Resource IDs: (1051)
+msgid "Start with a new, &blank document"
+msgstr "Pornește cu un document nou, &gol"
+
+#. Resource IDs: (16)
+msgid "Starting Phrase"
+msgstr "Frază de Pornire"
+
+#. Resource IDs: (1001, 1002, 1003, 1004, 1008, 1027, 1085, 1086, 1087)
+msgid "Static"
+msgstr "Static"
+
+#. Resource IDs: (33130)
+msgid "Stop R&ecording"
+msgstr "Oprește Î&nregistrarea"
+
+#. Resource IDs: (1153)
+msgid "Strictly enforce the auto-scroll positioning"
+msgstr "Forțează cu strictețe repoziționarea auto-scroll-ului"
+
+#. Resource IDs: (1169)
+msgid "Strip trailing spaces before saving"
+msgstr ""
+
+#. Resource IDs: (65535)
+msgid "Styles"
+msgstr "Stiluri"
+
+# e corect?
+#. Resource IDs: (1089, 1092)
+msgid "Switch"
+msgstr "Jonglează"
+
+# pane = panou?
+#. Resource IDs: (3606)
+msgid ""
+"Switch back to the previous window pane\n"
+"Previous Pane"
+msgstr ""
+"Jonglează înapoi la fereastra cu panou precedent\n"
+"Panou Precedent"
+
+#. Resource IDs: (3825)
+msgid "Switch to the next document window"
+msgstr "Jonglează la următoarea fereastră document"
+
+# pane = panou?
+#. Resource IDs: (3606)
+msgid ""
+"Switch to the next window pane\n"
+"Next Pane"
+msgstr ""
+"Jonglează la următoarea fereastră panou\n"
+"Următorul Panou"
+
+#. Resource IDs: (3825)
+msgid "Switch to the previous document window"
+msgstr "Jonglează la precedenta fereastră document"
+
+# e corect?
+#. Resource IDs: (131)
+msgid "Syntax &Highlighting"
+msgstr "&Punerea în evidență a sintaxei"
+
+#. Resource IDs: (32703)
+msgid "T&ags"
+msgstr "E&tichete"
+
+#. Resource IDs: (1127)
+msgid "Tab &order controlled by recent use"
+msgstr "&Ordinea etichetelor controlate de utilizările recente"
+
+#. Resource IDs: (65535)
+msgid "Tab Width:"
+msgstr "Lungime Etichetă:"
+
+#. Resource IDs: (65535)
+msgid "Tabs"
+msgstr "Etichete"
+
+#. Resource IDs: (1112)
+msgid "Tabs go here."
+msgstr "Etichetele vin aici."
+
+#. Resource IDs: (227)
+msgid "Tagged Expression 1"
+msgstr "Expresie Etichetată 1"
+
+#. Resource IDs: (228)
+msgid "Tagged Expression 2"
+msgstr "Expresie Etichetată 2"
+
+#. Resource IDs: (229)
+msgid "Tagged Expression 3"
+msgstr "Expresie Etichetată 3"
+
+#. Resource IDs: (230)
+msgid "Tagged Expression 4"
+msgstr "Expresie Etichetată 4"
+
+#. Resource IDs: (231)
+msgid "Tagged Expression 5"
+msgstr "Expresie Etichetată 5"
+
+#. Resource IDs: (232)
+msgid "Tagged Expression 6"
+msgstr "Expresie Etichetată 6"
+
+#. Resource IDs: (233)
+msgid "Tagged Expression 7"
+msgstr "Expresie Etichetată 7"
+
+#. Resource IDs: (234)
+msgid "Tagged Expression 8"
+msgstr "Expresie Etichetată 8"
+
+#. Resource IDs: (235)
+msgid "Tagged Expression 9"
+msgstr "Expresie Etichetată 9"
+
+#. Resource IDs: (32844)
+msgid "Tagged Expresssion"
+msgstr "Expresie Etichetată"
+
+#. Resource IDs: (2044)
+msgid "Tags"
+msgstr "Etichete"
+
+#. Resource IDs: (65535)
+msgid "Template Field:"
+msgstr ""
+
+# e corect?
+#. Resource IDs: (65535)
+msgid "Testing:"
+msgstr "Testează:"
+
+#. Resource IDs: (17)
+msgid "Text"
+msgstr ""
+
+#. Resource IDs: (1072)
+msgid "Text &Colour:"
+msgstr "&Culoare Text:"
+
+#. Resource IDs: (350)
+msgid "Text Clip Editor"
+msgstr "Editor de Text Clip-uri"
+
+#. Resource IDs: (2044)
+msgid "Text Clips"
+msgstr "Clipsări de Text"
+
+#. Resource IDs: (9)
+#, c-format
+msgid ""
+"The file \"%s\" could not be saved because it is write-protected.\n"
+"\n"
+"You can either save in a different location or PN can attempt to remove the "
+"protection and overwrite the file in its current location."
+msgstr ""
+"Fișierul \"%s\" nu a putut fi salvat pentru că este protejat împotriva "
+"scrierii.\n"
+"\n"
+"Puteți fie să salvați într-o altă locație, fie PN poate încerca să elimine "
+"protecția și să suprascrie fișierul din locația curentă."
+
+#. Resource IDs: (11)
+msgid "The file must be placed inside this magic folder directory."
+msgstr "Fișierul trebui să fie poziționat în directorul magic."
+
+#. Resource IDs: (11)
+#, c-format
+msgid "The folder %s could not be created, check that the path is valid."
+msgstr "Directorul %s nu a putut fi creat, verificați calea să fie corectă."
+
+#. Resource IDs: (11)
+#, c-format
+msgid "The folder %s does not exist, do you want to create it?"
+msgstr "Directorul %s nu există, doriți să îl creați?"
+
+# :))
+#. Resource IDs: (11)
+msgid "The regular expression is not valid."
+msgstr "Expresia regulată nu este validă"
+
+#. Resource IDs: (16)
+#, c-format
+msgid ""
+"The selected method for this extension is currently associated with '%s'"
+msgstr "Metoda selectată pentru această extensie este, acuma, asociată cu '%s'"
+
+#. Resource IDs: (2063)
+msgid ""
+"The specified project does not exist,\n"
+" would you like to create it?"
+msgstr ""
+"Proiectul specificat nu există,\n"
+"ați dori să-l creați?"
+
+#. Resource IDs: (9)
+#, c-format
+msgid "The specified text '%s' was not found."
+msgstr "Textul specificat '%s' nu a fost găsit."
+
+#. Resource IDs: (9)
+msgid "This project has no properties."
+msgstr "Proiectul nu are proprietăți."
+
+#. Resource IDs: (1048)
+msgid "This tool will modify the current file."
+msgstr "Această uneltă va modifica fișierul curent."
+
+# e corect?
+#. Resource IDs: (57651)
+msgid "Tile &Horizontal"
+msgstr "Dispunere &Orizontală"
+
+# e corect?
+#. Resource IDs: (57652)
+msgid "Tile &Vertical"
+msgstr "Dispunere &Verticală"
+
+#. Resource IDs: (32786)
+msgid "Toggle &Bookmark"
+msgstr "Jonglează &Semnele de Carte"
+
+#. Resource IDs: (272)
+msgid "Toggle Fold"
+msgstr "Jonglează Pliere"
+
+#. Resource IDs: (9)
+msgid "Toggle line numbers display"
+msgstr "Jonglează afișarea de numere de linii"
+
+#. Resource IDs: (9)
+msgid "Toggle syntax highlighting"
+msgstr "Jonglează scoaterea în evidență a sintaxei"
+
+#. Resource IDs: (2050)
+msgid "Toggle visible line-end characters"
+msgstr "Jonglează vizibilitatea terminatorului de linie"
+
+#. Resource IDs: (2050)
+msgid "Toggle visible whitespace characters"
+msgstr "Jonglează vizibilitatea spațiilor"
+
+#. Resource IDs: (9)
+msgid "Toggle word wrap"
+msgstr "Jonglează împachetarea textului"
+
+#. Resource IDs: (2070)
+msgid "Toggle write protect"
+msgstr "Jonglează scriere protejată"
+
+#. Resource IDs: (14)
+msgid "Tools"
+msgstr "Unelte"
+
+#. Resource IDs: (65535)
+#, fuzzy
+msgid "Top:"
+msgstr "&Vârf:"
+
+#. Resource IDs: (65535)
+msgid "Trans&form"
+msgstr "Trans&formă"
+
+#. Resource IDs: (32913)
+msgid "Transp&ose Lines"
+msgstr "Transp&une Linii"
+
+#. Resource IDs: (16)
+msgid "Type Name"
+msgstr "Nume Tip"
+
+#. Resource IDs: (17)
+msgid "Type the name of the new Clip set..."
+msgstr ""
+
+# e corect?
+#. Resource IDs: (32911)
+msgid "U&ppercase"
+msgstr "M&ari"
+
+#. Resource IDs: (32891)
+msgid "UTF-16 Big Endian"
+msgstr "UTF-16 Endian Mare"
+
+#. Resource IDs: (32892)
+msgid "UTF-16 Little Endian"
+msgstr "UTF-16 Endian Mic"
+
+#. Resource IDs: (32893)
+msgid "UTF-8"
+msgstr "UTF-8"
+
+#. Resource IDs: (32894)
+msgid "UTF-8 No Mark"
+msgstr "UTF-8 Fără Amprentă"
+
+#. Resource IDs: (3603)
+msgid ""
+"Undo the last action\n"
+"Undo"
+msgstr ""
+"Anulează ultima acțiune\n"
+"Anulează"
+
+#. Resource IDs: (16)
+msgid "Unknown"
+msgstr "Necunoscut"
+
+#. Resource IDs: (14)
+msgid "Untitled"
+msgstr ""
+
+#. Resource IDs: (261)
+msgid "Use &Tabs"
+msgstr "Folosește &Tab-uri"
+
+# e corect?
+#. Resource IDs: (32960)
+msgid "Use As &Script"
+msgstr "Folosește Ca și &Scenariu"
+
+#. Resource IDs: (1126)
+msgid "Use Spaces"
+msgstr "Folosește Spații"
+
+#. Resource IDs: (21)
+msgid "Use an individual output window."
+msgstr "Folosește ca și fereastră individuală de ieșire."
+
+#. Resource IDs: (1125)
+msgid "Use tabs"
+msgstr "Folosește tab-uri."
+
+#. Resource IDs: (1057)
+msgid "Use the built-in error parser."
+msgstr "Folosește parserul de erori intern."
+
+#. Resource IDs: (10)
+msgid "Use the main output window."
+msgstr "Folosește fereastra principală de ieșire."
+
+#. Resource IDs: (32886)
+msgid "User Name (%u)"
+msgstr "Nume User (%u)"
+
+#. Resource IDs: (17)
+msgid "Version"
+msgstr "Versiune"
+
+#. Resource IDs: (9)
+#, fuzzy, c-format
+msgid ""
+"Version: v%s\n"
+"\n"
+"Copyright © 2002-2011 Simon Steele\n"
+"\n"
+"Programmer's Notepad is Free Software.\n"
+"\n"
+"Programmer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and "
+"Boost. Thanks to the authors and contributors on those projects, and all "
+"those who have contributed to Programmer's Notepad."
+msgstr ""
+"Versiune: v%s\n"
+"\n"
+"Copyright © 2002-2009 Simon Steele\n"
+"\n"
+"Programmer's Notepad este un Soft Gratuit.\n"
+"\n"
+"Programmer's Notepad folosește Scintilla, WTL, GenX, Expat, Exuberant CTags, "
+"și Boost. Mulțumiri autorilor și contribuitorilor la respectivele proiecte, "
+"precum și tuturor celor ce au contribuit la realizarea lui Programmer's "
+"Notepad."
+
+#. Resource IDs: (65535)
+msgid "Vertical:"
+msgstr "Vertical:"
+
+# e corect?
+#. Resource IDs: (1123)
+msgid "Visible &Whitespace Characters"
+msgstr "Vizibilitatea Caracterelor &Spațiu"
+
+#. Resource IDs: (1122)
+msgid "Visible Line &Endings"
+msgstr "Vizibilitatea &Terminatorilor de Linie"
+
+#. Resource IDs: (14)
+msgid "Visual Help"
+msgstr "Ajutor Vizual"
+
+#. Resource IDs: (65535)
+msgid "WORKSPACE"
+msgstr "SPAȚIUDELUCRU"
+
+#. Resource IDs: (10)
+#, c-format
+msgid "Warning: the file %s does not exist any more."
+msgstr "Atenție: fișierul %s nu mai există."
+
+#. Resource IDs: (65535)
+msgid "When an open file is dropped:"
+msgstr "Când se renunță la un fișier deschis:"
+
+#. Resource IDs: (65535)
+msgid "When attempting to re-open a file:"
+msgstr "Când se încearcă să se re-deschidă un fișier:"
+
+# corect?
+#. Resource IDs: (130)
+msgid "Word W&rap"
+msgstr "Împacheta&rea Cuvintelor în ecran"
+
+#. Resource IDs: (65535)
+msgid "Words:"
+msgstr "Cuvinte:"
+
+#. Resource IDs: (10)
+msgid "Workspace Files (*.pnws)|*.pnws|"
+msgstr "Fișiere de spațiul de lucru (*.pnws)|*.pnws|"
+
+#. Resource IDs: (11)
+#, c-format
+msgid ""
+"Would you like to save changes to:\n"
+"%s?"
+msgstr ""
+"Doriți să salvați modificările în:\n"
+"%s?"
+
+#. Resource IDs: (33107)
+msgid "Write protect"
+msgstr "Scriere Protejată"
+
+#. Resource IDs: (6)
+msgid "Yes"
+msgstr "Da"
+
+#. Resource IDs: (65535)
+msgid ""
+"You can restrict the file types shown by a magic folder, and the directories "
+"that it displays."
+msgstr ""
+"Puteți să restricționați tipul de fișiere afișate de un director magic, "
+"precum și directoarele pe care le afișează."
+
+#. Resource IDs: (33135)
+msgid "Zoom O&ut"
+msgstr "Micș&orează"
+
+#. Resource IDs: (11)
+msgid ""
+"\n"
+"> Process Exit Code: "
+msgstr ""
+"\n"
+"> Cod de Ieșire Proiect:"
+
+#. Resource IDs: (11)
+msgid ""
+"\n"
+"> Time Taken: "
+msgstr ""
+"\n"
+"> Cât timp a durat:"
+
+#. Resource IDs: (65535)
+msgid "characters"
+msgstr "caractere"
+
+#. Resource IDs: (65535)
+msgid "example: %f:%l: "
+msgstr "exemplu: %f:%l:"
+
+#. Resource IDs: (65535)
+msgid "pixels"
+msgstr "pixeli"
+
+#. Resource IDs: (65535)
+msgid "text lines"
+msgstr "linii de text"
+
+#. Resource IDs: (332)
+msgid "w"
+msgstr "w"
+
+#~ msgid "&Code Page:"
+#~ msgstr "&Pagină de Cod:"
+
+# corect?
+#~ msgid "Character Se&t:"
+#~ msgstr "Caracter Seta&t :"
+
+#~ msgid "File Associations"
+#~ msgstr "Asocieri de fișiere"
+
+#~ msgid "PN &HomePage"
+#~ msgstr "Pa&gina siteului PN"
+
+#~ msgid "<new>"
+#~ msgstr "<nou>"
+
+#~ msgid "Insert Template"
+#~ msgstr "Inserează Șablon"

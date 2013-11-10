@@ -1,0 +1,3203 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Programmer's Notepad2 - Hungarian Translation\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1900-01-01 00:00+0000\n"
+"PO-Revision-Date: 2010-12-24 00:00+0100\n"
+"Last-Translator: Nyilas MISY <dr.dabzse@gmail.com>\n"
+"Language-Team: http://dabzse.extra.hu <dr.dabzse@gmail.com>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Hungarian\n"
+"X-Poedit-Country: HUNGARY\n"
+
+# msgid/msgstr fields for Accelerator keys
+# Format is: "ID:xxxxxx:VACS+X" where:
+#    ID:xxxxx = the menu ID corresponding to the accelerator
+#    V = Virtual key (or blank if not used) - nearly always set!
+#    A = Alt key     (or blank if not used)
+#    C = Ctrl key    (or blank if not used)
+#    S = Shift key   (or blank if not used)
+#    X = upper case character
+# e.g. "V CS+Q" == Ctrl + Shift + 'Q'
+# ONLY Accelerator Keys with corresponding alphanumeric characters can be
+# updated i.e. function keys (F2), special keys (Delete, HoMe) etc. will not.
+# ONLY change the msgstr field. Do NOT change any other.
+# If you do not want to change an Accelerator Key, copy msgid to msgstr
+#. Resource IDs: (11)
+#, c-format
+msgid "%d character(s) selected."
+msgstr "%d karakter kijelölve."
+
+#. Resource IDs: (9)
+#, c-format
+msgid "%d occurrence(s) replaced."
+msgstr "%d találat cserélve."
+
+#. Resource IDs: (22)
+#, c-format
+msgid ""
+"%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line "
+"Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,"
+"Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,"
+"Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectName),Name of "
+"Project,Project 1,$(ProjectPath),Path of Project,c:\\source\\pn2\\,"
+"$(ProjectGroupName),Name of the Project Group,Project Group 1,"
+"$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\,$(PNPath),PN "
+"Install Path,c:\\program files\\pn,$(ProjectProp:x),Project Property,value "
+"of 'x',$(FileProp:x),File Property,value of 'x',%(ENV),ENV Environment "
+"Variable,ENV value"
+msgstr ""
+
+#. Resource IDs: (9)
+#, c-format
+msgid ""
+"%f: File Name\n"
+"%l: Line Number\n"
+"%c: Column"
+msgstr ""
+"%f: Fájlnév\n"
+"%l: Sor\n"
+"%c: Oszlop"
+
+#. Resource IDs: (1061)
+msgid "%f: Filename, %l: Line Number, %c: Column"
+msgstr "%f: Fájlnév, %l: Sor, %c: Oszlop "
+
+#. Resource IDs: (9)
+#, c-format
+msgid "%s Properties"
+msgstr "%s Tulajdonságai"
+
+#. Resource IDs: (11)
+#, c-format
+msgid ""
+"%s could not be opened.\n"
+"\n"
+"This could be because the file no longer exists, a disk is absent or due to "
+"a broken network connection."
+msgstr ""
+"%s nem nyitható meg.\n"
+"\n"
+"Ezt az okozhatja, hogy a fájl már nem létezik, hiányzik a lemez, vagy "
+"megszakadt a hálózati kapcsolat."
+
+#. Resource IDs: (12)
+#, c-format
+msgid ""
+"%s could not be saved because access was denied.\n"
+"This could be due to the file being marked read-only, or the disk being "
+"write-protected.\n"
+"Do you want to save in another location?"
+msgstr ""
+"%s fájl nem menthető, mert a hozzáférés meg lett tagadva.\n"
+"Ezt az okozhatja, hogy a fájl csak olvashatóként van megjelölve, vagy a "
+"lemez írásvédett.\n"
+"Kívánja másik helyre menteni a fájlt?"
+
+#. Resource IDs: (13)
+#, c-format
+msgid ""
+"%s could not be saved because another program or user is using the same "
+"file.\n"
+"Do you want to save in another location?"
+msgstr ""
+"%s nem lett mentve, mert másik alkalmazás vagy felhasználó használja a "
+"fájlt.\n"
+"Szeretné máshová menteni?"
+
+#. Resource IDs: (10)
+#, c-format
+msgid ""
+"%s\n"
+"\n"
+"The above file has been modified outside of Programmer's Notepad, do you "
+"want to refresh and lose changes?"
+msgstr ""
+"%s\n"
+"\n"
+"A fájl megváltozott a Programmer's Notepad-en kívül, akarja frissíteni és "
+"elveszíteni a változásokat?"
+
+#. Resource IDs: (57664)
+msgid "&About Programmer's Notepad..."
+msgstr "&A Programmer's Notepad névjegye..."
+
+#. Resource IDs: (1010, 1011, 1034, 1078, 1128, 1148)
+msgid "&Add"
+msgstr "&Hozzáadás"
+
+#. Resource IDs: (288)
+msgid "&Add Files"
+msgstr "&Fájlok hozzáadása"
+
+#. Resource IDs: (288)
+msgid "&Add Files..."
+msgstr "&Fájlok hozzáadása..."
+
+#. Resource IDs: (32963)
+msgid "&Add New File..."
+msgstr "Új &fájl hozzáadása"
+
+#. Resource IDs: (293, 32918)
+msgid "&Add New Folder"
+msgstr "Új &mappa hozzáadása"
+
+#. Resource IDs: (32788)
+msgid "&Add Tools..."
+msgstr "&Eszköz hozzáadása..."
+
+#. Resource IDs: (1053)
+msgid "&Allow multiple instances of Programmer's Notepad to start"
+msgstr "&Több Programmer's Notepad egyidejű futtatásának engedélyezése"
+
+#. Resource IDs: (32970)
+msgid "&Autocomplete"
+msgstr "&Automatikus kiegészítés"
+
+#. Resource IDs: (32967)
+msgid "&Block"
+msgstr "&Blokk"
+
+#. Resource IDs: (1021)
+msgid "&Bold"
+msgstr "&Félkövér"
+
+#. Resource IDs: (1105)
+msgid "&Bottom:"
+msgstr "&Alja:"
+
+#. Resource IDs: (57650)
+msgid "&Cascade"
+msgstr "&Lépcsőzetes"
+
+#. Resource IDs: (10)
+msgid "&Change Scheme"
+msgstr "&Séma váltás"
+
+#. Resource IDs: (1033)
+msgid "&Clear"
+msgstr "&Törlés"
+
+#. Resource IDs: (33109)
+msgid "&Clear Bookmarks"
+msgstr "&Könyvjelzők törlése"
+
+#. Resource IDs: (57602)
+msgid "&Close"
+msgstr "&Bezárás"
+
+#. Resource IDs: (32962)
+msgid "&Collapse all"
+msgstr "Összes &becsukása"
+
+#. Resource IDs: (33121)
+msgid "&Compress Whitespace"
+msgstr "Üres &helyek sűrítése"
+
+#. Resource IDs: (32943)
+msgid "&Contents"
+msgstr "&Témakörök"
+
+#. Resource IDs: (18)
+msgid "&Convert"
+msgstr "Á&talakít"
+
+#. Resource IDs: (32780)
+msgid "&Convert Automatically"
+msgstr "&Automatikusan Átalakít"
+
+#. Resource IDs: (57634)
+msgid "&Copy"
+msgstr "&Másolás"
+
+#. Resource IDs: (32914)
+msgid "&Copy Line"
+msgstr "&Sor másolása"
+
+#. Resource IDs: (33138)
+msgid "&Customize Toolbar"
+msgstr "&Eszköztár testreszabása"
+
+#. Resource IDs: (14)
+#, fuzzy
+msgid "&Default"
+msgstr "Alapbeállítások"
+
+#. Resource IDs: (258, 32862)
+msgid "&Delete"
+msgstr "&Törlés"
+
+#. Resource IDs: (298)
+msgid "&Delete Project"
+msgstr "&Projekt törlése"
+
+#. Resource IDs: (65535)
+msgid "&Display"
+msgstr "&Megjelenítés"
+
+#. Resource IDs: (12)
+msgid "&Don't Remove"
+msgstr "&Ne távolítsa el"
+
+#. Resource IDs: (12)
+msgid "&Download Now"
+msgstr "&Letöltés Most"
+
+#. Resource IDs: (33119)
+msgid "&Duplicate"
+msgstr "&Kettőzés"
+
+#. Resource IDs: (32908)
+msgid "&Duplicate Line"
+msgstr "Sor &kettőzése"
+
+#. Resource IDs: (1010, 1011, 1033, 1079, 1129, 1149, 65535)
+msgid "&Edit"
+msgstr "&Szerkesztés"
+
+#. Resource IDs: (65535)
+#, fuzzy
+msgid "&Encoding:"
+msgstr "Kódolás:"
+
+#. Resource IDs: (32963)
+msgid "&Expand all"
+msgstr "Összes &kinyitása"
+
+#. Resource IDs: (33110)
+msgid "&Explorer"
+msgstr "&Böngésző"
+
+#. Resource IDs: (65535)
+msgid "&Export"
+msgstr "&Exportálás"
+
+#. Resource IDs: (65535)
+msgid "&File"
+msgstr "&Fájl"
+
+#. Resource IDs: (57636)
+msgid "&Find"
+msgstr "&Keresés"
+
+#. Resource IDs: (103)
+msgid "&Find Next"
+msgstr "&Következő keresése"
+
+#. Resource IDs: (32704)
+msgid "&Find Results"
+msgstr "&Keresés eredménye"
+
+#. Resource IDs: (65535)
+msgid "&Folding"
+msgstr "Össze&csukás"
+
+#. Resource IDs: (65535)
+msgid "&Font:"
+msgstr "&Betű:"
+
+#. Resource IDs: (33)
+msgid "&Footer:"
+msgstr "&Lábléc:"
+
+#. Resource IDs: (33001)
+msgid "&Forums"
+msgstr "&Fórumok"
+
+#. Resource IDs: (282)
+msgid "&Google"
+msgstr "&Google"
+
+#. Resource IDs: (32774)
+msgid "&Goto"
+msgstr "&Ugrás"
+
+#. Resource IDs: (32)
+msgid "&Header:"
+msgstr "&Fejléc:"
+
+#. Resource IDs: (9, 1006, 65535)
+msgid "&Help"
+msgstr "&Súgó"
+
+#. Resource IDs: (260)
+msgid "&Hide"
+msgstr "&Elrejtés"
+
+#. Resource IDs: (1115)
+msgid "&Hide when \"Find Next\" is clicked."
+msgstr "&Elrejt, ha \"Következő keresése\" kattintva van."
+
+#. Resource IDs: (32863)
+msgid "&Indent"
+msgstr "&Bekezdés"
+
+#. Resource IDs: (65535)
+msgid "&Indentation"
+msgstr "&Bekezdés"
+
+#. Resource IDs: (264)
+msgid "&Individual Output"
+msgstr "&Egyéni kimenet"
+
+#. Resource IDs: (32987)
+msgid "&Insert Text Clip"
+msgstr "&Szövegkapocs beszúrása"
+
+#. Resource IDs: (1022)
+msgid "&Italic"
+msgstr "&Dőlt"
+
+#. Resource IDs: (33127)
+msgid "&Join Lines"
+msgstr "&Sorok összefűzése"
+
+#. Resource IDs: (32905)
+msgid "&Jump To..."
+msgstr "&Ugrás ide..."
+
+#. Resource IDs: (1102)
+msgid "&Left:"
+msgstr "&Bal:"
+
+#. Resource IDs: (32968, 65535)
+msgid "&Line"
+msgstr "&Egysoros (//)"
+
+#. Resource IDs: (65535)
+msgid "&Line Endings"
+msgstr "&Sorvégek"
+
+#. Resource IDs: (65535)
+msgid "&Line Endings:"
+msgstr "&Sorvégek:"
+
+#. Resource IDs: (1045)
+msgid "&Line Number (1 - %d):"
+msgstr "&Sorszámok (1 - %d):"
+
+#. Resource IDs: (1038)
+msgid "&Load"
+msgstr "&Betöltés"
+
+#. Resource IDs: (32912)
+msgid "&Lowercase"
+msgstr "&Kisbetűs"
+
+#. Resource IDs: (32779)
+msgid "&Macintosh (CR)"
+msgstr "&Macintosh (CR)"
+
+#. Resource IDs: (21199)
+msgid "&Mark All"
+msgstr "&Mindet kijelöl"
+
+#. Resource IDs: (32791)
+msgid "&Mark WhiteSpace"
+msgstr "Üres &helyek jelölése"
+
+#. Resource IDs: (1056)
+msgid "&Maximize new document windows"
+msgstr "Új dokumentum &teljes méretű ablakban"
+
+#. Resource IDs: (65535)
+msgid "&Method:"
+msgstr "&Eljárás:"
+
+#. Resource IDs: (65535)
+msgid "&Multi-Byte Character Support for ANSI files:"
+msgstr ""
+
+#. Resource IDs: (10)
+msgid "&New"
+msgstr "Ú&j"
+
+#. Resource IDs: (2045)
+msgid "&No"
+msgstr "&Nem"
+
+#. Resource IDs: (2045)
+msgid "&OK"
+msgstr "&OK"
+
+#. Resource IDs: (32989)
+msgid "&Online Help"
+msgstr "&Online súgó"
+
+#. Resource IDs: (287)
+msgid "&Open"
+msgstr "&Megnyitás"
+
+#. Resource IDs: (299)
+msgid "&Open All Files"
+msgstr "&Minden fájl megnyitása"
+
+#. Resource IDs: (1114)
+msgid "&Open dialog should start in the directory of the current file."
+msgstr "&Dialógus megnyitása lehetséges a jelenlegi fájl mappájában."
+
+#. Resource IDs: (32981)
+msgid "&Open in Default Program"
+msgstr "Alapértelmezett pr&ogramban való megnyitás"
+
+#. Resource IDs: (57601)
+msgid "&Open..."
+msgstr "&Megnyitás..."
+
+#. Resource IDs: (245)
+msgid "&Options"
+msgstr "&Beállítások"
+
+#. Resource IDs: (32700)
+msgid "&Output"
+msgstr "&Kimenet"
+
+#. Resource IDs: (57637)
+msgid "&Paste"
+msgstr "&Beillesztés"
+
+#. Resource IDs: (32999)
+msgid "&Previous Bookmark"
+msgstr "&Előző könyvjelző"
+
+#. Resource IDs: (57607)
+msgid "&Print..."
+msgstr "&Nyomtatás..."
+
+#. Resource IDs: (1026)
+msgid "&Printer..."
+msgstr "&Nyomtató..."
+
+#. Resource IDs: (32701)
+msgid "&Project"
+msgstr "&Projekt"
+
+#. Resource IDs: (16)
+#, fuzzy
+msgid "&Project Group"
+msgstr "Projekt csoport"
+
+#. Resource IDs: (32701)
+msgid "&Projects"
+msgstr "&Projektek"
+
+#. Resource IDs: (32924)
+msgid "&Properties"
+msgstr "&Tulajdonságok"
+
+#. Resource IDs: (32902)
+msgid "&Properties\tAlt+Enter"
+msgstr "&Tulajdonságok\tAlt+Enter"
+
+#. Resource IDs: (32953)
+msgid "&Quick Find"
+msgstr "&Gyors keresés"
+
+#. Resource IDs: (10)
+msgid "&Recent Files"
+msgstr "&Legutóbbi fájlok"
+
+#. Resource IDs: (33129)
+msgid "&Record Script"
+msgstr "Szkript &vételezése"
+
+#. Resource IDs: (57644)
+msgid "&Redo"
+msgstr "Ú&jra"
+
+#. Resource IDs: (33117)
+msgid "&Refresh"
+msgstr "&Frissítés"
+
+#. Resource IDs: (1128)
+msgid "&Remember open files and projects between sessions"
+msgstr "&Megnyitott fájlok és projektek megjegyzése"
+
+#. Resource IDs: (12)
+msgid "&Remind Me Later"
+msgstr "&Később emlékeztessen"
+
+#. Resource IDs: (12, 286, 1010, 1012, 1033, 1080, 1130, 1150)
+msgid "&Remove"
+msgstr "&Eltávolítás"
+
+#. Resource IDs: (286)
+msgid "&Remove Project"
+msgstr "&Projekt eltávolítása"
+
+#. Resource IDs: (4)
+msgid "&Replace"
+msgstr "&Csere"
+
+#. Resource IDs: (1033, 1036)
+msgid "&Reset"
+msgstr "&Visszaállítás"
+
+#. Resource IDs: (2045)
+msgid "&Retry"
+msgstr "&Újra próbálkozás"
+
+#. Resource IDs: (1103)
+msgid "&Right:"
+msgstr "&Jobb:"
+
+#. Resource IDs: (1040, 57603)
+msgid "&Save"
+msgstr "Menté&s"
+
+#. Resource IDs: (12)
+msgid "&Save and Remove"
+msgstr "Menté&s és Eltávolítás"
+
+#. Resource IDs: (1017)
+msgid "&Scheme:"
+msgstr "&Séma:"
+
+#. Resource IDs: (32705)
+msgid "&Scripts"
+msgstr "&Szkriptek"
+
+#. Resource IDs: (65535)
+msgid "&Search"
+msgstr "&Keresés"
+
+#. Resource IDs: (273)
+msgid "&Select All"
+msgstr "Összes k&ijelölése"
+
+#. Resource IDs: (32897)
+msgid "&Set Active Project"
+msgstr "&Aktív projekt beállítása"
+
+#. Resource IDs: (1051)
+msgid "&Show Line Numbers"
+msgstr "&Sor számozás megjelenítése"
+
+#. Resource IDs: (1062)
+msgid "&Show full file path in document windows"
+msgstr "&Teljes elérési útvonal mutatása a dokumentum ablakában"
+
+#. Resource IDs: (65535)
+msgid "&Size:"
+msgstr "&Méret:"
+
+#. Resource IDs: (1034)
+msgid "&Sort"
+msgstr "&Rendezés"
+
+#. Resource IDs: (32916)
+msgid "&Sort Folders"
+msgstr "&Mappa rendezés"
+
+#. Resource IDs: (1090)
+msgid "&Source:"
+msgstr "&Forrás:"
+
+#. Resource IDs: (33142)
+msgid "&Split Horizontal"
+msgstr "&Vízszintes elrendezés"
+
+#. Resource IDs: (59393)
+msgid "&Status Bar"
+msgstr "&Állapotsor"
+
+#. Resource IDs: (32789)
+msgid "&Stop Tools"
+msgstr "Eszközök &leállítása"
+
+#. Resource IDs: (32966)
+msgid "&Stream"
+msgstr "&Többsoros (/* */)"
+
+#. Resource IDs: (33120)
+msgid "&Strip Trailing Blanks"
+msgstr "Üres sorok &kihagyása"
+
+#. Resource IDs: (65535)
+msgid "&Tab Width:"
+msgstr "&Tab szélessége:"
+
+#. Resource IDs: (32702)
+msgid "&Text Clips"
+msgstr "&Szöveg kapcsok/sablonok"
+
+#. Resource IDs: (65535)
+msgid "&Text Colour:"
+msgstr "&Szöveg színe:"
+
+#. Resource IDs: (59392)
+msgid "&Toolbar"
+msgstr "&Eszköztár"
+
+#. Resource IDs: (65535)
+msgid "&Tools"
+msgstr "&Eszközök"
+
+#. Resource IDs: (1104)
+msgid "&Top:"
+msgstr "&Felül:"
+
+#. Resource IDs: (32969)
+msgid "&Uncomment"
+msgstr "Megjegyzés &eltávolítása"
+
+#. Resource IDs: (1023)
+msgid "&Underline"
+msgstr "&Aláhúzott"
+
+#. Resource IDs: (57643)
+msgid "&Undo"
+msgstr "&Visszavonás"
+
+#. Resource IDs: (32864)
+msgid "&Unindent"
+msgstr "Bekezdés &eltávolítása"
+
+#. Resource IDs: (32778)
+msgid "&Unix (LF)"
+msgstr "&Unix (LF)"
+
+#. Resource IDs: (32911)
+msgid "&Uppercase"
+msgstr "&Nagybetűs"
+
+#. Resource IDs: (1049)
+msgid "&Use the tab character for indentation"
+msgstr "&Tab billentyű használata bekezdésekhez"
+
+#. Resource IDs: (65535)
+msgid "&View"
+msgstr "&Nézet"
+
+#. Resource IDs: (65535)
+msgid "&Window"
+msgstr "&Ablak"
+
+#. Resource IDs: (65535)
+msgid "&Windows"
+msgstr "&Ablakok"
+
+#. Resource IDs: (32777)
+msgid "&Windows (CRLF)"
+msgstr "&Windows (CRLF)"
+
+#. Resource IDs: (33140)
+msgid "&Word Wrap"
+msgstr "&Sortörés"
+
+#. Resource IDs: (1083)
+msgid "&Word-Wrap"
+msgstr "&Sortörés"
+
+#. Resource IDs: (2045)
+msgid "&Yes"
+msgstr "&Igen"
+
+#. Resource IDs: (33134)
+msgid "&Zoom In"
+msgstr "&Nagyítás"
+
+#. Resource IDs: (65535)
+msgid "(1 to 50) items in the most recently used list."
+msgstr "(1-től 50-ig) adat a legsűrűbben használt listában."
+
+#. Resource IDs: (16)
+msgid "(None - All Projects)"
+msgstr "(SEMMI - Minden projekt)"
+
+#. Resource IDs: (16)
+msgid "(None - Global Tools)"
+msgstr "(SEMMI - Általános eszközök)"
+
+#. Resource IDs: (12)
+msgid "(empty)"
+msgstr "(üres)"
+
+#. Resource IDs: (1120)
+msgid "(enter text and click above to test)"
+msgstr "(szöveg beírása és klikk felül a teszteléshez)"
+
+#. Resource IDs: (1010, 1012, 21206)
+msgid "..."
+msgstr "..."
+
+#. Resource IDs: (32847)
+msgid "0 or More Matches"
+msgstr "0 vagy több egyezés"
+
+#. Resource IDs: (32848)
+msgid "1 or More Matches"
+msgstr "1 vagy több egyezés"
+
+#. Resource IDs: (1058)
+msgid "?"
+msgstr "?"
+
+#. Resource IDs: (65535)
+msgid ""
+"A Magic Folder will reflect the contents of a file system folder in a "
+"Projects folder. Select the folder you wish to include below:"
+msgstr ""
+"A Magic mappa tükrözi a fájlrendszer egy mappáját a Projektek mappában. "
+"Válassza ki a kívánt mappát az alábbiak közül:"
+
+#. Resource IDs: (1107)
+msgid "A&ll open documents"
+msgstr "&Megnyitott dokumentumok"
+
+#. Resource IDs: (32890)
+msgid "ANSI"
+msgstr "&ANSI"
+
+#. Resource IDs: (100)
+msgid "About"
+msgstr "Névjegy"
+
+#. Resource IDs: (3826)
+msgid "Activate Task List"
+msgstr "Munkafeladat listájának aktiválása"
+
+#. Resource IDs: (3826)
+msgid "Activate this window"
+msgstr "Ablak aktiválása"
+
+#. Resource IDs: (309)
+msgid "Add &Existing Project..."
+msgstr "&Létező projekt hozzáasása..."
+
+#. Resource IDs: (32917)
+msgid "Add &Magic Folder..."
+msgstr "\"Bűvös\" &mappa hozzáadása"
+
+#. Resource IDs: (308)
+msgid "Add &New Project"
+msgstr "Új &projekt hozzáadása"
+
+#. Resource IDs: (2073)
+msgid "Add Clip"
+msgstr "Szövegkapocs hozzáadása"
+
+#. Resource IDs: (2073)
+msgid "Add Clip Set"
+msgstr "Szövegkapocs hozzáadása"
+
+#. Resource IDs: (293)
+msgid "Add New &Folder"
+msgstr "Új &mappa hozzáadása"
+
+#. Resource IDs: (32788)
+msgid "Add Tools..."
+msgstr "&Eszköz hozzáadása..."
+
+#. Resource IDs: (19, 1173)
+msgid "Add \"Edit With...\" to Explorer"
+msgstr ""
+
+#. Resource IDs: (14)
+msgid "Advanced"
+msgstr "Haladó"
+
+#. Resource IDs: (18)
+msgid "All Files"
+msgstr "Minden fájl"
+
+#. Resource IDs: (10)
+msgid "All Files (*.*)|*.*|"
+msgstr "Minden fájl (*.*)|*.*|"
+
+#. Resource IDs: (1045)
+msgid "Allow backslash expressions"
+msgstr "Backslash \"\\\" használata"
+
+#. Resource IDs: (1160)
+msgid "Allow caret to be placed outside current text bounds"
+msgstr "Hagyja figyelmen kívül a jelenlegi szöveg határait"
+
+#. Resource IDs: (1159)
+msgid "Allow editing of read only files"
+msgstr "Engedélyezi a csak olvasható fájlok szerkesztését"
+
+#. Resource IDs: (1159)
+#, fuzzy
+msgid "Allow multiple selections"
+msgstr "Összetett kijelölés engedélyezése"
+
+#. Resource IDs: (1161)
+msgid "Allow typing into multiple caret points"
+msgstr "Lehetővé teszi a gépelést több pontban"
+
+#. Resource IDs: (15)
+msgid "Alternate Extensions"
+msgstr "Hasonló kiterjesztések"
+
+#. Resource IDs: (65535)
+msgid "Alternate Extensions:"
+msgstr "Hasonló kiterjesztések:"
+
+#. Resource IDs: (65535)
+msgid "Alternate File Pairs"
+msgstr "Hasonló fájl párok"
+
+#. Resource IDs: (14)
+msgid "Alternate Files"
+msgstr "Hasonló fájlok"
+
+#. Resource IDs: (16)
+msgid "An extension may not contain any of these characters: "
+msgstr "A kiterjesztés nem tartalmazhatja a következő karaktereket:"
+
+#. Resource IDs: (12)
+#, c-format
+msgid ""
+"An update for Programmer's Notepad is available (version %s), would you like "
+"to download it now?"
+msgstr ""
+"Programmer's Notepad frissítés elérhető (%s verzió), szeretné most letölteni?"
+
+#. Resource IDs: (32839)
+msgid "Any Character"
+msgstr "Bármely karakter"
+
+#. Resource IDs: (12)
+msgid ""
+"Are you sure you wish to rename this magic folder?\n"
+"This will have the effect of renaming the actual folder on the disk."
+msgstr ""
+"Biztosan át akarja nevezni ezt a mágikus mappát?\n"
+"következménye: a lemezen az aktuális mappa neve át lesz írva."
+
+#. Resource IDs: (57649)
+msgid "Arrange &Icons"
+msgstr "&Ikonok elrendezése"
+
+#. Resource IDs: (3604)
+msgid ""
+"Arrange icons at the bottom of the window\n"
+"Arrange Icons"
+msgstr ""
+"Ikonok elrendezése az ablak legalján\n"
+"Ikonok elrendezése"
+
+#. Resource IDs: (3604)
+msgid ""
+"Arrange windows as non-overlapping tiles\n"
+"Tile Windows"
+msgstr ""
+"Ablak elrendezése nem átfedő elrendezéssel\n"
+"Ablakok elrendezése"
+
+#. Resource IDs: (3604)
+msgid ""
+"Arrange windows so they overlap\n"
+"Cascade Windows"
+msgstr ""
+"Ablak elrendezése átfedő elrendezéssel\n"
+"Ablakok lépcsőzése"
+
+#. Resource IDs: (266)
+msgid "As &RTF..."
+msgstr "&RTF fájlként..."
+
+#. Resource IDs: (32878)
+msgid "As HTML..."
+msgstr "&HTML fájlként..."
+
+#. Resource IDs: (1091, 1094)
+msgid "Ask Me"
+msgstr "Kérdezze meg"
+
+#. Resource IDs: (65535)
+msgid "Assign Shortcuts:"
+msgstr "Engedélyezett rövidítések:"
+
+#. Resource IDs: (1055)
+msgid "At the &bottom of the main window"
+msgstr "Fő ablak &legalján"
+
+#. Resource IDs: (1141)
+msgid "Auto-Close HTML/XML Tags"
+msgstr "HTML/XML Tag-ek automatikus bezárása"
+
+#. Resource IDs: (65535)
+msgid "Auto-scroll Caret Position Limits:"
+msgstr "Kurzor állási korlátok után automatikus görgetés:"
+
+#. Resource IDs: (1143)
+msgid "AutoComplete After:"
+msgstr "Automatikus kiegészítés"
+
+#. Resource IDs: (65535)
+msgid "AutoComplete Settings"
+msgstr "Automatikus kiegészítés beállítások"
+
+#. Resource IDs: (1144)
+msgid "AutoComplete when asked"
+msgstr "Automatikus kiegészítés, ha kéri"
+
+#. Resource IDs: (13)
+msgid "Autocomplete"
+msgstr "Automatikus kiegészítés"
+
+#. Resource IDs: (13)
+msgid "Avoiding infinite search loop, Replace All abandoned"
+msgstr "Végtelen keresés elkerülve, Összes cseréje kihagyva"
+
+#. Resource IDs: (65535)
+msgid "Bac&kground:"
+msgstr "&Háttér:"
+
+#. Resource IDs: (65535)
+msgid "Base Style Settings"
+msgstr "Alapstílus beállítások"
+
+#. Resource IDs: (32842)
+msgid "Beginning of Line"
+msgstr "Sor kezdete"
+
+#. Resource IDs: (1152)
+msgid "Blend highlight colour:"
+msgstr "Kiemelőszín keverése:"
+
+#. Resource IDs: (65535)
+msgid "Bottom:"
+msgstr "Alul:"
+
+#. Resource IDs: (1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1073)
+msgid "Button1"
+msgstr "Gomb1"
+
+#. Resource IDs: (1033)
+msgid "Button2"
+msgstr "Gomb2"
+
+#. Resource IDs: (259)
+msgid "C&lear"
+msgstr "Tör&lés"
+
+#. Resource IDs: (65535)
+msgid "CTAGS"
+msgstr "CTAGS"
+
+#. Resource IDs: (2, 2045)
+msgid "Cancel"
+msgstr "Mégsem"
+
+#. Resource IDs: (12)
+#, c-format
+msgid "Cannot find in files in %s, the directory does not exist"
+msgstr ""
+"Nem lehet a(z) %s kifejezést megkeresni a fájlokban, mert a mappa nem létezik"
+
+#. Resource IDs: (1047)
+msgid "Capture output?"
+msgstr "Kimenet felvételezése?"
+
+#. Resource IDs: (3601)
+msgid ""
+"Change the printer and printing options\n"
+"Print Setup"
+msgstr ""
+"A nyomtató és nyomtatási beállítások módosítása\n"
+"Nyomtatási beállítások"
+
+#. Resource IDs: (3601)
+msgid ""
+"Change the printing options\n"
+"Page Setup"
+msgstr ""
+"Nyomtatási beállítások módosítása\n"
+"Lap beállítása"
+
+#. Resource IDs: (3825)
+msgid "Change the window position"
+msgstr "Ablak helyzetének cseréje"
+
+#. Resource IDs: (3825)
+msgid "Change the window size"
+msgstr "Ablak méretének cseréje"
+
+#. Resource IDs: (18)
+msgid ""
+"Changing the encoding between Unicode and ANSI will clear your Undo history, "
+"and may lose unsupported characters. Are you sure?"
+msgstr ""
+"ANSI és Unicode kódolás közti váltás kitörli az előzményeket, és "
+"elveszítheti a nem támogatott karaktereket. Biztos benne?"
+
+#. Resource IDs: (32841)
+msgid "Character Not in Range"
+msgstr "Karakter nem érhető el"
+
+#. Resource IDs: (32840)
+msgid "Character in Range"
+msgstr "Karakter elérhető"
+
+#. Resource IDs: (65535)
+msgid "Characters:"
+msgstr "Karakterek:"
+
+#. Resource IDs: (1099)
+msgid "Check &Now"
+msgstr "&Ellenőrzés most"
+
+#. Resource IDs: (33141)
+msgid "Check for &Updates"
+msgstr "&Frissítés keresése"
+
+#. Resource IDs: (1154)
+msgid "Check for &updates"
+msgstr "&Frissítés keresése"
+
+#. Resource IDs: (57602)
+msgid "Cl&ose\tCtrl-F4"
+msgstr "&Bezárás\tCtrl+F4"
+
+#. Resource IDs: (1051)
+msgid "Clear output before running?"
+msgstr "Kimenet tisztítása a futtatás előtt?"
+
+#. Resource IDs: (267)
+msgid "Clipboard S&wap"
+msgstr "Vágólap &cseréje"
+
+#. Resource IDs: (2045)
+msgid "Close"
+msgstr "Bezárás"
+
+#. Resource IDs: (32920)
+msgid "Close &All"
+msgstr "Összes bezárás&a"
+
+#. Resource IDs: (32920)
+msgid "Close All"
+msgstr "Öss&zes bezárása"
+
+#. Resource IDs: (32931)
+msgid "Close All &Other"
+msgstr "Összes &többi bezárása"
+
+#. Resource IDs: (32931)
+msgid "Close All &Other Windows"
+msgstr "Összes &többi ablak bezárása"
+
+#. Resource IDs: (301)
+msgid "Close P&roject(s)"
+msgstr "P&rojekt(ek) bezárása"
+
+#. Resource IDs: (301)
+msgid "Close Project(s)"
+msgstr "Projekt(ek) bezárása"
+
+#. Resource IDs: (33150)
+msgid "Close Vie&w"
+msgstr "&Nézet bezárása"
+
+#. Resource IDs: (2045)
+msgid "Close all project files?"
+msgstr "Minden projekt fájl bezárása?"
+
+#. Resource IDs: (3601)
+msgid ""
+"Close the active document\n"
+"Close"
+msgstr ""
+"Aktív dokumentum bezárása\n"
+"Bezár"
+
+#. Resource IDs: (3825)
+msgid "Close the active window and prompts to save the documents"
+msgstr "Aktív ablak  bezárás és figyelmeztessen a dokumentumok mentésére"
+
+#. Resource IDs: (13)
+msgid "Code Templates"
+msgstr "Kód sablonok"
+
+#. Resource IDs: (268)
+msgid "Collapse All Folds"
+msgstr "Mind összecsukása"
+
+#. Resource IDs: (65535)
+msgid "Com&ments"
+msgstr "&Megjegyzések"
+
+#. Resource IDs: (15)
+msgid "Command"
+msgstr "Parancs"
+
+#. Resource IDs: (33144)
+msgid "Command &Mode"
+msgstr "Parancs &mód"
+
+#. Resource IDs: (65535)
+msgid "Command:"
+msgstr "Parancs:"
+
+#. Resource IDs: (14)
+msgid "Confirmations"
+msgstr "Megerõsítések"
+
+#. Resource IDs: (16)
+msgid "Console I/O"
+msgstr "I/O Konzol"
+
+#. Resource IDs: (32972)
+msgid "Convert Spaces to Tabs"
+msgstr "Szóközök tabokká alakítása"
+
+#. Resource IDs: (32971)
+msgid "Convert Tabs to Spaces"
+msgstr "Tabok szóközökké alakítása"
+
+#. Resource IDs: (32974)
+msgid "Copy &File Path"
+msgstr "&Fájl útvonalának másolása"
+
+#. Resource IDs: (32871)
+msgid "Copy as RTF"
+msgstr "Másolás &RTF-ként"
+
+#. Resource IDs: (3603)
+msgid ""
+"Copy the selection and put it on the Clipboard\n"
+"Copy"
+msgstr ""
+"Kimásolja a kijelölést és ráteszi a vágólapra\n"
+"Másolás"
+
+#. Resource IDs: (11)
+msgid "Could not create file"
+msgstr "Fájl készítése sikertelen"
+
+#. Resource IDs: (18)
+msgid "Could not locate "
+msgstr "Nem található "
+
+#. Resource IDs: (3601)
+msgid ""
+"Create a new document\n"
+"New"
+msgstr ""
+"Új dokumentum készítése\n"
+"Új"
+
+#. Resource IDs: (9)
+msgid "Create a new project."
+msgstr "Új projekt készítése."
+
+#. Resource IDs: (9)
+msgid "Create a new workspace."
+msgstr "Új munkafelület készítése."
+
+#. Resource IDs: (1157)
+msgid "Create backup files when saving"
+msgstr "Biztonsági mentés készítése mentéskor"
+
+#. Resource IDs: (57635)
+msgid "Cu&t"
+msgstr "&Kivágás"
+
+#. Resource IDs: (32910)
+msgid "Cu&t Line"
+msgstr "Sor &kivágása"
+
+#. Resource IDs: (1106)
+msgid "Curren&t document"
+msgstr "&Jelenlegi dokumentum"
+
+#. Resource IDs: (33160)
+#, fuzzy
+msgid "Current &Editor"
+msgstr "Jelenlegi mappa"
+
+#. Resource IDs: (32884)
+msgid "Current Date (%c)"
+msgstr "Jelenlegi dátum (%c)"
+
+#. Resource IDs: (11)
+msgid "Current File"
+msgstr "Jelenlegi fájl"
+
+#. Resource IDs: (11)
+msgid "Current Folder"
+msgstr "Jelenlegi mappa"
+
+#. Resource IDs: (32881)
+msgid "Current Page (%p)"
+msgstr "Jelenlegi oldal (%p)"
+
+#. Resource IDs: (11)
+msgid "Current Project Files"
+msgstr "Jelenlegi projekt fájlok"
+
+#. Resource IDs: (65535)
+msgid "Current Shortcuts:"
+msgstr "Jelenlegi rövidítések:"
+
+#. Resource IDs: (32888)
+msgid "Current Time (%t)"
+msgstr "Jelenlegi idő (%t)"
+
+#. Resource IDs: (1108)
+msgid "Current pro&ject"
+msgstr "Jelenlegi projekt"
+
+#. Resource IDs: (65535)
+msgid "Cursor Colour:"
+msgstr "Kurzor színe:"
+
+#. Resource IDs: (1121)
+msgid "Custom Output Parsing"
+msgstr "Egyéni kimeneti elemzés"
+
+#. Resource IDs: (3603)
+msgid ""
+"Cut the selection and put it on the Clipboard\n"
+"Cut"
+msgstr ""
+"Kivágja a kijelölést és ráteszi a vágólapra\n"
+"Kivágás"
+
+#. Resource IDs: (65535)
+msgid "DUMMY"
+msgstr "DUMMY"
+
+#. Resource IDs: (32909)
+msgid "De&lete Line"
+msgstr "Sor tör&lése"
+
+#. Resource IDs: (65535)
+msgid "Defaults"
+msgstr "Alapbeállítások"
+
+#. Resource IDs: (1158)
+msgid "Display block caret instead of line"
+msgstr "Vonal helyett blokk megjelenítése"
+
+#. Resource IDs: (3601)
+msgid ""
+"Display full pages\n"
+"Print Preview"
+msgstr ""
+"Teljes lap megjelenítése\n"
+"Nyomtatási előnézet"
+
+#. Resource IDs: (3605)
+msgid ""
+"Display program information, version number and copyright\n"
+"About"
+msgstr ""
+"Programinformáció, verziószám és névjegy megjelenítése\n"
+"A programról"
+
+#. Resource IDs: (12)
+msgid "Do &Not Download"
+msgstr "&Ne töltse le"
+
+#. Resource IDs: (1051)
+msgid "Do not &ask me again"
+msgstr "&Ne kérdezze meg újra"
+
+#. Resource IDs: (18)
+msgid "Do not ask me again."
+msgstr "Ne kérdezzen meg újra"
+
+#. Resource IDs: (65535)
+msgid ""
+"Do you want to associate these extensions with Programmer's Notepad 2 now?"
+msgstr ""
+"Szeretné most társítani ezeket a kiterjesztéseket a Programmer's Notepad 2 "
+"programhoz?"
+
+#. Resource IDs: (2045)
+#, c-format
+msgid "Do you want to open another copy of %s?"
+msgstr "Szeretné a(z) %s másik másolatát megnyitni?"
+
+#. Resource IDs: (2063)
+#, c-format
+msgid "Do you want to save changes to the project: %s?"
+msgstr "Akarja menteni a(z) %s projekt változásait?"
+
+#. Resource IDs: (9)
+msgid "Document"
+msgstr "Dokumentum"
+
+#. Resource IDs: (1074)
+msgid "Don't change the foreground."
+msgstr "Ne cserélje az előteret."
+
+#. Resource IDs: (57665)
+msgid "E&xit"
+msgstr "&Kilépés\tAlt+F4"
+
+#. Resource IDs: (12)
+msgid "E&xtensions"
+msgstr "&Kiterjesztések"
+
+#. Resource IDs: (17)
+#, fuzzy
+msgid "Edit"
+msgstr "&Szerkesztés"
+
+#. Resource IDs: (432)
+msgid "Edit Alternate File Pair"
+msgstr "Hasonló fájl párok szerkesztése"
+
+#. Resource IDs: (2073)
+msgid "Edit Clip"
+msgstr "Szövegkapocs szerkesztése"
+
+#. Resource IDs: (439)
+msgid "Edit File Type"
+msgstr "Fájl típusának módosítása"
+
+#. Resource IDs: (262)
+msgid "Edit SmartStart Phrase"
+msgstr "OkosIndítás kifejezés módosítása"
+
+#. Resource IDs: (15)
+msgid "Edit Tool"
+msgstr "Eszköz szerkesztése"
+
+#. Resource IDs: (17, 18)
+#, fuzzy
+msgid "Edit with Programmer's Notepad"
+msgstr "Programmer's Notepad"
+
+#. Resource IDs: (65535)
+msgid "Editing"
+msgstr "Szerkesztés"
+
+#. Resource IDs: (14)
+msgid "Editor"
+msgstr "Szerkesztő"
+
+#. Resource IDs: (10)
+msgid "Empty Project"
+msgstr "Üres projekt"
+
+#. Resource IDs: (1138)
+msgid "Enable AutoComplete"
+msgstr "Automatikus kiegészítése engedélyezése"
+
+#. Resource IDs: (1118)
+msgid "Enable Command Bar"
+msgstr "Parancssor engedélyezése"
+
+#. Resource IDs: (1051)
+msgid "Enable SmartStart"
+msgstr "OkosIndítás engedélyezése"
+
+#. Resource IDs: (17)
+msgid "Enabled"
+msgstr "Engedélyezve"
+
+#. Resource IDs: (65535)
+msgid "Enco&ding"
+msgstr "Kó&dolás"
+
+#. Resource IDs: (18)
+msgid "Encoding Conversion"
+msgstr "Kódolás átváltása"
+
+#. Resource IDs: (1101, 65535)
+msgid "Encoding:"
+msgstr "Kódolás:"
+
+#. Resource IDs: (32843)
+msgid "End of Line"
+msgstr "Sor vége"
+
+#. Resource IDs: (3825)
+msgid "Enlarge the window to full size"
+msgstr "Ablak megnövelése teljes méretre"
+
+#. Resource IDs: (1170)
+msgid "Ensure file ends with a blank line"
+msgstr "Bizonyosodjon meg, hogy a fájl üres sorral végződik"
+
+#. Resource IDs: (65535)
+msgid ""
+"Enter a semi-colon separated list of directories that you do not wish to "
+"include:"
+msgstr ""
+"Írjon pontosvesszővel elválasztott listát azokról a mappákról amiket nem "
+"szeretne belefoglalni:"
+
+#. Resource IDs: (65535)
+#, fuzzy
+msgid ""
+"Enter a semi-colon separated list of file types that you do not wish to "
+"include:"
+msgstr ""
+"Írjon pontosvesszővel elválasztott listát azokról a fájl típusokról amiket "
+"bele szeretne belefoglalni:"
+
+#. Resource IDs: (65535)
+msgid ""
+"Enter a semi-colon separated list of file types that you wish to include:"
+msgstr ""
+"Írjon pontosvesszővel elválasztott listát azokról a fájl típusokról amiket "
+"bele szeretne belefoglalni:"
+
+#. Resource IDs: (3603)
+msgid ""
+"Erase everything\n"
+"Erase All"
+msgstr ""
+"Minden törlése\n"
+"Mindet törli"
+
+#. Resource IDs: (3603)
+msgid ""
+"Erase the selection\n"
+"Erase"
+msgstr ""
+"Kijelölt szöveg törlése\n"
+"Töröl"
+
+#. Resource IDs: (65535)
+msgid "Ex&tension:"
+msgstr "Ki&terjesztés:"
+
+#. Resource IDs: (18)
+msgid "Example"
+msgstr "Példa"
+
+#. Resource IDs: (17)
+msgid ""
+"Executable Files (exe, com, bat, vbs...)|*.exe;*.com;*.bat;*.vbs;*.cmd|All "
+"Files (*.*)|*.*|"
+msgstr ""
+
+#. Resource IDs: (269)
+msgid "Expand All Folds"
+msgstr "Mind kinyitása"
+
+#. Resource IDs: (16)
+msgid "Extension"
+msgstr "Kiterjesztés"
+
+#. Resource IDs: (65535)
+msgid "Extensions"
+msgstr "Kiterjesztések"
+
+#. Resource IDs: (32874)
+msgid "F&ind in Files"
+msgstr "Keresés a &fájlokban"
+
+#. Resource IDs: (12)
+msgid "Failed to create a backup document"
+msgstr "Biztonsági mentés készítése sikertelen"
+
+#. Resource IDs: (18)
+#, c-format
+msgid ""
+"Failed to open workspace file %s for writing. Workspace state could not be "
+"saved."
+msgstr ""
+"A munkafelületi fájl \"%s\" megnyitása sikertelen az írásra. Munkafelület "
+"állása nem menthető."
+
+#. Resource IDs: (1110)
+msgid "Fi&nd what:"
+msgstr "Mit keressen:"
+
+#. Resource IDs: (17)
+msgid "File"
+msgstr "&Fájl"
+
+#. Resource IDs: (32706)
+msgid "File &Browser"
+msgstr "Fájl &böngésző"
+
+#. Resource IDs: (2045)
+msgid "File Browser"
+msgstr "Fájl böngésző"
+
+#. Resource IDs: (32882)
+msgid "File Date (%D)"
+msgstr "Fájl dátuma (%D)"
+
+#. Resource IDs: (65535)
+msgid "File Dialogs"
+msgstr "Fájl dialógusok"
+
+#. Resource IDs: (65535)
+msgid "File Extension or Name to Match:"
+msgstr "Illessze össze a fájl kiterjesztését vagy nevét:"
+
+#. Resource IDs: (1056)
+msgid "File Format:"
+msgstr "Fájl formátuma:"
+
+#. Resource IDs: (32879)
+msgid "File Name (%f)"
+msgstr "Fájl neve (%f)"
+
+#. Resource IDs: (32880)
+msgid "File Path (%d)"
+msgstr "Fájl útvonala (%d)"
+
+#. Resource IDs: (1163)
+msgid "File Save Options"
+msgstr "Fájl mentési beállítások"
+
+#. Resource IDs: (32887)
+msgid "File Time (%T)"
+msgstr "Fájl ideje (%T)"
+
+#. Resource IDs: (65535)
+msgid "File Types"
+msgstr "Fájl típusok"
+
+#. Resource IDs: (65535)
+msgid ""
+"File extensions should be entered including the '.' dot character, separated "
+"by semi-colons, in order of precedence. e.g. \n"
+"\n"
+"Start: .cpp;.cxx;.c;.cc\n"
+"Alternate: .h;.hpp"
+msgstr ""
+"A fájl kiterjesztésének nevét \".\" ponttal kell kezdeni, pontosvesszővel "
+"elválasztva, sorrendben. pl: \n"
+"\n"
+"Kezdés: .cpp;.cxx;.c;.cc\n"
+"Helyettesít: .h;.hpp"
+
+#. Resource IDs: (65535)
+msgid "File extensions should be entered starting with the '.' dot character."
+msgstr "A fájl kiterjesztésének nevét \".\" ponttal kell kezdeni"
+
+#. Resource IDs: (1043)
+msgid "File types:"
+msgstr "Fájl típusok:"
+
+#. Resource IDs: (65535)
+msgid "File:"
+msgstr "Fájl:"
+
+#. Resource IDs: (14)
+msgid "Files"
+msgstr "Fájlok"
+
+#. Resource IDs: (1024)
+msgid "Fill to &end of line"
+msgstr "Sor végéig kitölti"
+
+#. Resource IDs: (22)
+msgid "Find"
+msgstr "Keresés"
+
+#. Resource IDs: (32773)
+msgid "Find &Next"
+msgstr "&Következő keresése"
+
+#. Resource IDs: (17)
+msgid "Find &Previous"
+msgstr "&Előző találat"
+
+#. Resource IDs: (2055)
+msgid "Find (drop down for other find types)"
+msgstr "Keres (legördülőben más típusok keresése)"
+
+#. Resource IDs: (65535)
+msgid "Find Dialog"
+msgstr "Kereső párbeszédablak"
+
+#. Resource IDs: (33132)
+msgid "Find Next Current &Word"
+msgstr "&Következő egyező szó"
+
+#. Resource IDs: (32956)
+msgid "Find Pre&vious"
+msgstr "&Előző találat"
+
+#. Resource IDs: (33133)
+msgid "Find Previous C&urrent Word"
+msgstr "&Előző egyező szó"
+
+#. Resource IDs: (2045)
+msgid "Find Results"
+msgstr "Keresés eredménye"
+
+#. Resource IDs: (15)
+msgid "Find in Files"
+msgstr "Fájlban keres"
+
+#. Resource IDs: (1171)
+msgid "Find more extensions at www.pnotepad.org..."
+msgstr "További kiterjesztések itt : http://www.pnotepad.org"
+
+#. Resource IDs: (9)
+msgid "Find reached the starting point of the search."
+msgstr "A keresés elérte a kezdési pontot."
+
+#. Resource IDs: (2055)
+msgid ""
+"Find text in files\n"
+"Find in Files"
+msgstr ""
+"Szöveg keresése fájlokban\n"
+"Fájlban keres"
+
+#. Resource IDs: (3603)
+msgid ""
+"Find the specified text\n"
+"Find"
+msgstr ""
+"Megadott szöveg keresése\n"
+"Keresés"
+
+#. Resource IDs: (1044)
+msgid "Find where:"
+msgstr "Hol keressen:"
+
+#. Resource IDs: (65535)
+msgid "Folder:"
+msgstr "Mappa:"
+
+#. Resource IDs: (1146)
+msgid "Folding enabled for supporting schemes"
+msgstr "Az összecsukás engedélyezése a támogatott sémákhoz"
+
+#. Resource IDs: (65535)
+msgid "Font Style"
+msgstr "Betűtípus"
+
+#. Resource IDs: (13)
+msgid "Fonts and Colours"
+msgstr "Betűk és színek"
+
+#. Resource IDs: (17)
+#, c-format
+msgid "Found %d occurrences"
+msgstr "%d találat cserélve"
+
+#. Resource IDs: (13)
+msgid "General"
+msgstr "Általános"
+
+#. Resource IDs: (204)
+msgid "Go To Line"
+msgstr "Sorra ugrás"
+
+#. Resource IDs: (32992)
+msgid "Go to Definition"
+msgstr "Ugrás a definícióra"
+
+#. Resource IDs: (283)
+msgid "Google Gr&oups"
+msgstr "Google Cs&oportok"
+
+#. Resource IDs: (32849)
+msgid "Group"
+msgstr "Csoport"
+
+#. Resource IDs: (65535)
+msgid "HEADERFOOTERFIELDS"
+msgstr "FEJLÉC-LÁBLÉC-MEZŐK"
+
+#. Resource IDs: (1160)
+msgid "Highlight all instances of selected word"
+msgstr "Kijelöléskor minden egyező szó kiemelése"
+
+#. Resource IDs: (1066)
+msgid "Highlight current editor line"
+msgstr "Aktív sor kiemelése"
+
+#. Resource IDs: (1068)
+msgid "Highlight text beyond the edge column"
+msgstr "Szöveg kiemelése az oszlopon túl"
+
+#. Resource IDs: (15)
+msgid "Hint"
+msgstr "Tipp"
+
+#. Resource IDs: (65535)
+msgid "Hint:"
+msgstr "Tipp:"
+
+#. Resource IDs: (65535)
+msgid "Horizontal:"
+msgstr "Vízszintes:"
+
+#. Accelerator Entry for Menu ID:267; 'Clipboard S&wap'
+msgid "ID:267:V CS+C"
+msgstr "ID:267:V CS+C"
+
+#. Accelerator Entry for Menu ID:32703; 'T&ags'
+msgid "ID:32703:VA  +G"
+msgstr "ID:32703:VA  +G"
+
+#. Accelerator Entry for Menu ID:32774; '&Goto'
+msgid "ID:32774:V C +G"
+msgstr "ID:32774:V C +G"
+
+#. Accelerator Entry for Menu ID:32783; ''
+msgid "ID:32783:V C +K"
+msgstr "ID:32783:V C +K"
+
+#. Accelerator Entry for Menu ID:32784; ''
+msgid "ID:32784:V C +Q"
+msgstr "ID:32784:V C +Q"
+
+#. Accelerator Entry for Menu ID:32789; '&Stop Tools'
+msgid "ID:32789:V CS+K"
+msgstr "ID:32789:V CS+K"
+
+#. Accelerator Entry for Menu ID:32865; 'Save A&ll'
+msgid "ID:32865:V CS+S"
+msgstr "ID:32865:V CS+S"
+
+#. Accelerator Entry for Menu ID:32866; ''
+msgid "ID:32866:V CS+H"
+msgstr "ID:32866:V CS+H"
+
+#. Accelerator Entry for Menu ID:32871; 'Copy as RTF'
+msgid "ID:32871:VAC +C"
+msgstr "ID:32871:VAC +C"
+
+#. Accelerator Entry for Menu ID:32874; 'F&ind in Files'
+msgid "ID:32874:V CS+F"
+msgstr "ID:32874:V CS+F"
+
+#. Accelerator Entry for Menu ID:32909; 'De&lete Line'
+msgid "ID:32909:V CS+L"
+msgstr "ID:32909:V CS+L"
+
+#. Accelerator Entry for Menu ID:32910; 'Cu&t Line'
+msgid "ID:32910:V C +L"
+msgstr "ID:32910:V C +L"
+
+#. Accelerator Entry for Menu ID:57600; ''
+msgid "ID:57600:V C +N"
+msgstr "ID:57600:V C +N"
+
+#. Accelerator Entry for Menu ID:57601; '&Open...'
+msgid "ID:57601:V C +O"
+msgstr "ID:57601:V C +O"
+
+#. Accelerator Entry for Menu ID:57602; 'Cl&ose\tCtrl-F4'
+msgid "ID:57602:V C +W"
+msgstr "ID:57602:V C +W"
+
+#. Accelerator Entry for Menu ID:57603; '&Save'
+msgid "ID:57603:V C +S"
+msgstr "ID:57603:V C +S"
+
+#. Accelerator Entry for Menu ID:57607; '&Print...'
+msgid "ID:57607:V C +P"
+msgstr "ID:57607:V C +P"
+
+#. Accelerator Entry for Menu ID:57634; '&Copy'
+msgid "ID:57634:V C +C"
+msgstr "ID:57634:V C +C"
+
+#. Accelerator Entry for Menu ID:57635; 'Cu&t'
+msgid "ID:57635:V C +X"
+msgstr "ID:57635:V C +X"
+
+#. Accelerator Entry for Menu ID:57635; 'Cu&t'
+msgid "ID:57635:V CS+X"
+msgstr "ID:57635:V CS+X"
+
+#. Accelerator Entry for Menu ID:57636; '&Find'
+msgid "ID:57636:V C +F"
+msgstr "ID:57636:V C +F"
+
+#. Accelerator Entry for Menu ID:57637; '&Paste'
+msgid "ID:57637:V C +V"
+msgstr "ID:57637:V C +V"
+
+#. Accelerator Entry for Menu ID:57637; '&Paste'
+msgid "ID:57637:V CS+V"
+msgstr "ID:57637:V CS+V"
+
+#. Accelerator Entry for Menu ID:57641; 'R&eplace'
+msgid "ID:57641:V C +H"
+msgstr "ID:57641:V C +H"
+
+#. Accelerator Entry for Menu ID:57641; 'R&eplace'
+msgid "ID:57641:V C +R"
+msgstr "ID:57641:V C +R"
+
+#. Accelerator Entry for Menu ID:57643; '&Undo'
+msgid "ID:57643:V C +Z"
+msgstr "ID:57643:V C +Z"
+
+#. Resource IDs: (1109)
+msgid "In &selection"
+msgstr "A &kijelölésben"
+
+#. Resource IDs: (1134)
+msgid "Include &hidden"
+msgstr "Rejtett &tartalmazása"
+
+#. Resource IDs: (1139)
+msgid "Include Scheme Keywords"
+msgstr "Séma kulcsszavak tartalmazása"
+
+#. Resource IDs: (1140)
+msgid "Include Tags"
+msgstr "Tag-ek tartalmazása"
+
+#. Resource IDs: (65535)
+msgid "Indentation Guides:"
+msgstr "Bekezdésvezetők:"
+
+#. Resource IDs: (3603)
+msgid ""
+"Insert Clipboard contents\n"
+"Paste"
+msgstr ""
+"Beilleszti a vágólap tartalmát\n"
+"Beillesztés"
+
+#. Resource IDs: (14)
+#, fuzzy
+msgid "Integration"
+msgstr "&Bekezdés"
+
+#. Resource IDs: (14)
+msgid "Interface"
+msgstr "Felület"
+
+#. Resource IDs: (321)
+msgid "Jump To..."
+msgstr "Ugrás ide..."
+
+#. Resource IDs: (65535)
+msgid "Jump to:"
+msgstr "Ugrás ide:"
+
+#. Resource IDs: (14)
+msgid "Keyboard"
+msgstr "Billentyűzet"
+
+#. Resource IDs: (65535)
+msgid "Keyboard Shortcuts"
+msgstr "Billentyű rövidítések"
+
+#. Resource IDs: (15)
+msgid "Keywords"
+msgstr "Kulcsszavak"
+
+#. Resource IDs: (1057)
+msgid "L&andscape"
+msgstr "&Előnézet"
+
+#. Resource IDs: (65535)
+msgid "Language"
+msgstr "Nyelv"
+
+#. Resource IDs: (17)
+msgid "Line"
+msgstr "Sor"
+
+#. Resource IDs: (32792)
+msgid "Line &End Markers"
+msgstr "&Sorvégi jelek"
+
+#. Resource IDs: (132)
+msgid "Line &Numbers"
+msgstr "S&or számozása"
+
+#. Resource IDs: (65535)
+msgid "Line Endings:"
+msgstr "Sor&végek:"
+
+#. Resource IDs: (1170)
+msgid "Line Padding"
+msgstr "Sor bélése"
+
+#. Resource IDs: (65535)
+msgid "Lines:"
+msgstr "Sorok:"
+
+#. Resource IDs: (32912)
+msgid "Lo&wercase"
+msgstr "&Kisbetűs"
+
+#. Resource IDs: (65535)
+msgid "Long Line Helpers"
+msgstr "Hosszúsoros súgók"
+
+#. Resource IDs: (1059)
+msgid "Look for a custom pattern:"
+msgstr "Egyéni séma felkutatása:"
+
+#. Resource IDs: (1155)
+msgid "Look for testing releases"
+msgstr "Próbaverzió keresése"
+
+#. Resource IDs: (1075)
+msgid "Margins"
+msgstr "Margók"
+
+#. Resource IDs: (65535)
+msgid "Mark All Highlight:"
+msgstr "Minden kijelölés kiemelése:"
+
+#. Resource IDs: (16)
+msgid "Match"
+msgstr "Összehasonlít"
+
+#. Resource IDs: (105)
+msgid "Match &case"
+msgstr "&Előfordulás összehasonlítása"
+
+#. Resource IDs: (104)
+msgid "Match &whole word only"
+msgstr "&Csak teljes szavas egyezés"
+
+#. Resource IDs: (17)
+msgid "Match Case"
+msgstr "Egyezés"
+
+#. Resource IDs: (18)
+msgid "Meaning"
+msgstr "Értelmezés"
+
+#. Resource IDs: (16)
+msgid "Method"
+msgstr "Eljárás"
+
+#. Resource IDs: (22)
+msgid "Modified"
+msgstr "Módosítva"
+
+#. Resource IDs: (15)
+msgid "More Options"
+msgstr "További lehetőségek"
+
+#. Resource IDs: (1034)
+msgid "Move &Down"
+msgstr "Mozgatás &le"
+
+#. Resource IDs: (1033)
+msgid "Move &Up"
+msgstr "Mozgatás &fel"
+
+#. Resource IDs: (33003)
+msgid "Move Line &Up"
+msgstr "Sor &feljebb"
+
+#. Resource IDs: (33005)
+msgid "Move Line Do&wn"
+msgstr "Sor &lejjebb"
+
+#. Resource IDs: (15, 16)
+msgid "Name"
+msgstr "Név"
+
+#. Resource IDs: (65535)
+msgid "Name:"
+msgstr "Név:"
+
+#. Resource IDs: (17)
+msgid "New Clip Set"
+msgstr "Új szövegkapocs"
+
+#. Resource IDs: (65535)
+msgid "New File"
+msgstr "Új fájl"
+
+#. Resource IDs: (14)
+msgid "New Files"
+msgstr "Új fájlok"
+
+#. Resource IDs: (17)
+msgid "New Folder"
+msgstr "&Új mappa"
+
+#. Resource IDs: (10)
+msgid "New Project Group"
+msgstr "Új projekt csoport"
+
+#. Resource IDs: (336)
+msgid "New Project..."
+msgstr "Új projekt..."
+
+#. Resource IDs: (15)
+msgid "New Tool"
+msgstr "Új eszköz"
+
+#. Resource IDs: (32787)
+msgid "Next B&ookmark"
+msgstr "&Következő könyvjelző"
+
+#. Resource IDs: (7)
+msgid "No"
+msgstr "Nem"
+
+#. Resource IDs: (1124)
+msgid "No Override"
+msgstr "Nincs megsemmisítés"
+
+#. Resource IDs: (1067)
+msgid "No long line help"
+msgstr "Nincs hosszú soros súgó"
+
+#. Resource IDs: (12)
+msgid "No more occurrences found in the specified set of documents."
+msgstr "Nem található több előfordulás a megadott szöveg részben."
+
+#. Resource IDs: (13)
+msgid "No updates are available at this time."
+msgstr "Jelenleg nem érhető el frissítés"
+
+#. Resource IDs: (18)
+msgid "None"
+msgstr "semmi"
+
+#. Resource IDs: (32845)
+msgid "Not"
+msgstr "sem"
+
+#. Resource IDs: (65535)
+msgid "Note: The first item in any list will be the default tool."
+msgstr ""
+"Megjegyzés : Minden listán az első tétel lesz az alapértelmezett eszköz."
+
+#. Resource IDs: (1)
+msgid "OK"
+msgstr "OK"
+
+#. Resource IDs: (1057)
+msgid "Only show with ma&ximized document windows"
+msgstr "Csak teljes képernyős dokumentumok mutatása"
+
+#. Resource IDs: (16)
+#, fuzzy
+msgid "Open"
+msgstr "&Megnyitás"
+
+#. Resource IDs: (32977)
+msgid "Open &Folder"
+msgstr "&Mappa megnyitása"
+
+#. Resource IDs: (32976)
+msgid "Open Con&taining Folder"
+msgstr "A fájl mappájának megnyi&tása"
+
+#. Resource IDs: (32707)
+msgid "Open Fi&les"
+msgstr "Fáj&lok megnyitása"
+
+#. Resource IDs: (12, 2045)
+msgid "Open Files"
+msgstr "Fájlok megnyitása"
+
+#. Resource IDs: (289)
+msgid "Open Pro&ject(s)..."
+msgstr "Pro&jekt(ek) megnyitása..."
+
+#. Resource IDs: (289)
+msgid "Open Project(s)..."
+msgstr "Projekt(ek) megnyitása..."
+
+#. Resource IDs: (10)
+msgid "Open Project/Project Group"
+msgstr "Projekt/Projekt csoport megnyitása"
+
+#. Resource IDs: (32903)
+#, fuzzy
+msgid "Open URL in Default Browser"
+msgstr "Alapértelmezett pr&ogramban való megnyitás"
+
+#. Resource IDs: (33111)
+msgid "Open Wor&kspace..."
+msgstr "M&unkafelület megnyitása..."
+
+#. Resource IDs: (3601)
+msgid ""
+"Open an existing document\n"
+"Open"
+msgstr ""
+"Létező dokumentum megnyitása\n"
+"Megnyitás"
+
+#. Resource IDs: (3604)
+msgid ""
+"Open another window for the active document\n"
+"New Window"
+msgstr ""
+"Másik ablak megnyitása az aktív dokumentum számára\n"
+"Új ablak"
+
+#. Resource IDs: (32979)
+msgid "Open in De&fault Program"
+msgstr "Alapértelmezett pr&ogramban való megnyitás"
+
+#. Resource IDs: (3838)
+msgid "Open this document"
+msgstr "Megnyitja ezt a dokumentumot"
+
+#. Resource IDs: (243)
+msgid "Options"
+msgstr "Beállítások"
+
+#. Resource IDs: (32846)
+msgid "Or"
+msgstr "vagy"
+
+#. Resource IDs: (1072)
+msgid "Orientation"
+msgstr "Eligazítás"
+
+#. Resource IDs: (65535)
+msgid "Other User Interface Options"
+msgstr "Felhasználói egyéb beállítások"
+
+#. Resource IDs: (2044)
+msgid "Output"
+msgstr "Kimenet"
+
+#. Resource IDs: (65535)
+msgid "Output Parsing:"
+msgstr "Kimenet elemzése:"
+
+#. Resource IDs: (65535)
+msgid "Override Indentation:"
+msgstr "Megsemmisíti a bekezdéseket:"
+
+#. Resource IDs: (1056)
+msgid "P&ortrait"
+msgstr "P&ortré"
+
+#. Resource IDs: (251)
+msgid "PN &Home Page"
+msgstr "PN &Honlapja"
+
+#. Resource IDs: (9)
+#, c-format
+msgid ""
+"PN could not remove the write-protection from \"%s\".\n"
+"\n"
+" Would you like to save with a different name?"
+msgstr ""
+"\"%s\" írásvédettségét a PN nem tudja eltávolítani.\n"
+"\n"
+"Szeretné elmenteni másik névvel?"
+
+#. Resource IDs: (252)
+msgid "PN on &Google Code"
+msgstr "PN a &Google Code oldalon"
+
+#. Resource IDs: (330)
+msgid "PN2 File Associations"
+msgstr "PN2 Fájl Társítások"
+
+#. Resource IDs: (1051)
+msgid "PN2 should &check the associations when starting"
+msgstr "PN2 képes indításkor ellenőrizni a társításokat"
+
+#. Resource IDs: (65535)
+msgid "PROJECT"
+msgstr "PROJEKT"
+
+#. Resource IDs: (32883)
+msgid "Page Count (%P)"
+msgstr "Oldal  számlálása (%P)"
+
+#. Resource IDs: (12)
+msgid "Page Setup"
+msgstr "Oldal beállítása"
+
+#. Resource IDs: (1073)
+msgid "Paper"
+msgstr "Papír"
+
+#. Resource IDs: (65535)
+msgid "Parameters:"
+msgstr "Paraméterek:"
+
+#. Resource IDs: (15)
+msgid "Params"
+msgstr "Paraméterek"
+
+#. Resource IDs: (1133)
+msgid "Pass my selection to this tool using Standard Input"
+msgstr "Az általános bemenet eszközéhez engedd a választásomat"
+
+#. Resource IDs: (65535)
+msgid "Pattern:"
+msgstr "Minta:"
+
+#. Resource IDs: (16)
+msgid "Plain Text"
+msgstr ""
+
+#. Resource IDs: (65535)
+msgid "Presets"
+msgstr "Előre elkészített"
+
+#. Resource IDs: (65535)
+msgid "Preview"
+msgstr "Előnézet"
+
+#. Resource IDs: (57606)
+msgid "Print Set&up..."
+msgstr "Nyomtatási előnézet"
+
+#. Resource IDs: (3601)
+msgid ""
+"Print the active document\n"
+"Print"
+msgstr ""
+"Aktív dokumentum nyomtatása\n"
+"Nyomtat"
+
+#. Resource IDs: (9)
+msgid "Programmer's Notepad"
+msgstr "Programmer's Notepad"
+
+#. Resource IDs: (1098)
+msgid "Programmer's Notepad 2"
+msgstr "Programmer's Notepad 2"
+
+#. Resource IDs: (65535)
+msgid "Programmer's Notepad 2 is not the handler for these extensions:"
+msgstr "Programmer's Notepad 2 nem kezeli a következő kiterjesztéseket:"
+
+#. Resource IDs: (22)
+msgid ""
+"Programmer's Notepad 2 provides built-in support\n"
+"for parsing output from the following tools:\n"
+"\n"
+"Borland C++\n"
+"Microsoft Compilers\n"
+"GCC\n"
+"lcc-win32\n"
+"Python\n"
+"Perl\n"
+"and other similar tools."
+msgstr ""
+"Programmer's Notepad 2 beépített támogatása\n"
+"az elemzés kimenetére a következő eszközökhöz:\n"
+"\n"
+"Borland C++\n"
+"Microsoft Compilers\n"
+"GCC\n"
+"lcc-win32\n"
+"Python\n"
+"Perl\n"
+"és más hasonló eszközök."
+
+#. Resource IDs: (22)
+msgid "Project"
+msgstr "Projekt"
+
+#. Resource IDs: (22)
+msgid "Project Group"
+msgstr "Projekt csoport"
+
+#. Resource IDs: (18)
+msgid "Project Group Files"
+msgstr "Projekt fájlcsoport"
+
+#. Resource IDs: (10)
+msgid "Project Group Files (*.ppg)|*.ppg|"
+msgstr "Projekt csoport fájlok (*.ppg)|*.ppg|"
+
+#. Resource IDs: (16)
+msgid "Project Template:"
+msgstr "Projekt sablon:"
+
+#. Resource IDs: (14)
+msgid "Project Tools"
+msgstr "Projekt eszközök"
+
+#. Resource IDs: (12)
+#, c-format
+msgid ""
+"Project \"%s\" has been changed, do you want to save the changes before "
+"removing?"
+msgstr ""
+"\"%s\" projekt megváltozott, szeretné menteni a változásokat az eltávolítás "
+"előtt?"
+
+#. Resource IDs: (2044)
+msgid "Projects"
+msgstr "Projektek"
+
+#. Resource IDs: (10)
+msgid "Projects and Project Groups (*.pnproj, *.ppg)|*.pnproj;*.ppg|"
+msgstr "Projektek és Projekt csoportok (*.pnproj, *.ppg)|*.pnproj;*.ppg|"
+
+#. Resource IDs: (32902)
+msgid "Proper&ties..."
+msgstr "&Tulajdonságok..."
+
+#. Resource IDs: (16)
+msgid "Properties"
+msgstr "Tulajdonságok"
+
+#. Resource IDs: (3605)
+msgid ""
+"Quit the application; prompts to save documents\n"
+"Exit"
+msgstr ""
+"Alkalmazás bezárása; figyelmeztet a dokumentumok mentésére\n"
+"Bezár"
+
+#. Resource IDs: (57641)
+msgid "R&eplace"
+msgstr "Cs&ere"
+
+#. Resource IDs: (32947)
+msgid "Re&fresh"
+msgstr "&Frissítés"
+
+#. Resource IDs: (32982)
+msgid "Re&name"
+msgstr "Át&nevezés"
+
+#. Resource IDs: (263)
+msgid "Re&vert"
+msgstr "&Vissza az eredetire"
+
+#. Resource IDs: (1090, 1093)
+msgid "Re-Open"
+msgstr "Újra megnyit"
+
+#. Resource IDs: (22, 3585)
+msgid "Ready"
+msgstr "Kész"
+
+#. Resource IDs: (10)
+msgid "Recent Pro&jects"
+msgstr "Legutóbbi pro&jektek"
+
+#. Resource IDs: (11)
+msgid "Rectangular Selection."
+msgstr "Téglalap alakú kijelölés."
+
+#. Resource IDs: (3603)
+msgid ""
+"Redo the previously undone action\n"
+"Redo"
+msgstr ""
+"Előzőleg visszavont művelet újra alkalmazása\n"
+"Ismét"
+
+#. Resource IDs: (3825)
+msgid "Reduce the window to an icon"
+msgstr "Ablak kicsinyítése ikonra"
+
+#. Resource IDs: (107)
+msgid "Regular &expression"
+msgstr "Állandó kif&ejezés"
+
+#. Resource IDs: (33124)
+msgid "Remove Blank &Lines"
+msgstr "Üres sorok e&ltávolítása"
+
+#. Resource IDs: (2073)
+msgid "Remove Clip"
+msgstr "Szövegkapocs &eltávolítás"
+
+#. Resource IDs: (2073)
+msgid "Remove Clip Set"
+msgstr "&Szövegkapocs eltávolítása"
+
+#. Resource IDs: (19)
+msgid "Remove \"Edit With...\" from Explorer"
+msgstr ""
+
+#. Resource IDs: (3603)
+msgid ""
+"Repeat the last action\n"
+"Repeat"
+msgstr ""
+"Utolsó művelet megismétlése\n"
+"Ismétel"
+
+#. Resource IDs: (14)
+msgid "Replace"
+msgstr "Cserél"
+
+#. Resource IDs: (6)
+msgid "Replace &All"
+msgstr "Mindet &cseréli"
+
+#. Resource IDs: (11)
+msgid "Replace my selection."
+msgstr "Kiválasztásom cseréje."
+
+#. Resource IDs: (3603)
+msgid ""
+"Replace specific text with different text\n"
+"Replace"
+msgstr ""
+"Megadott szöveg cseréje különbözőre\n"
+"Csere"
+
+#. Resource IDs: (1042)
+msgid "Replace with:"
+msgstr "Csere erre:"
+
+#. Resource IDs: (253)
+msgid "Report a &bug..."
+msgstr "Hi&bajelentés..."
+
+#. Resource IDs: (275)
+msgid "Request a &feature..."
+msgstr "Új &Funkció kérése..."
+
+#. Resource IDs: (1037)
+msgid "Reset &All"
+msgstr "Mind vissz&aállít"
+
+#. Resource IDs: (3826)
+msgid "Restore the window to normal size"
+msgstr "Ablak normál méretre való állítása"
+
+#. Resource IDs: (17)
+msgid ""
+"Revert this document to the current saved state\n"
+"Revert"
+msgstr ""
+"Visszalépés a dokumentum legutolsó mentett állapotára\n"
+"Vissza"
+
+#. Resource IDs: (65535)
+msgid "Rightmost Column:"
+msgstr "Jobbszélső oszlop:"
+
+#. Resource IDs: (32946)
+msgid "Sa&ve Project"
+msgstr "Projek&t mentése"
+
+#. Resource IDs: (10)
+msgid "Save "
+msgstr "Mentés "
+
+#. Resource IDs: (57604)
+msgid "Save &As..."
+msgstr "Me&ntés másként..."
+
+#. Resource IDs: (32950)
+msgid "Save &Workspace As..."
+msgstr "Munk&afelület mentése..."
+
+#. Resource IDs: (32865)
+msgid "Save A&ll"
+msgstr "Össz&es mentése"
+
+#. Resource IDs: (2055)
+msgid ""
+"Save all open documents\n"
+"Save All"
+msgstr ""
+"Minden megnyitott dokumentum mentése\n"
+"Mind mentése"
+
+#. Resource IDs: (3601)
+msgid ""
+"Save the active document with a new name\n"
+"Save As"
+msgstr ""
+"Aktív dokumentum mentése más névvel\n"
+"Mentés másként"
+
+#. Resource IDs: (3601)
+msgid ""
+"Save the active document\n"
+"Save"
+msgstr ""
+"Aktív dokumentum mentése\n"
+"Mentés"
+
+#. Resource IDs: (65535)
+msgid "Save:"
+msgstr "Mentés:"
+
+#. Resource IDs: (16)
+msgid "Scheme"
+msgstr "Séma:"
+
+#. Resource IDs: (1017, 65535)
+msgid "Scheme:"
+msgstr "Séma:"
+
+#. Resource IDs: (221)
+msgid "Schemes"
+msgstr "Sémák"
+
+#. Resource IDs: (2045)
+msgid "Scripts"
+msgstr "Szkriptek"
+
+#. Resource IDs: (436, 1111)
+msgid "Search"
+msgstr "Keresés"
+
+#. Resource IDs: (1047)
+msgid "Search &up"
+msgstr "Keresés &felfelé"
+
+#. Resource IDs: (18)
+#, c-format
+msgid ""
+"Search complete: %d matching lines found in %d files, taking %d "
+"milliseconds.\n"
+msgstr ""
+"Keresés befejezve : %d egyező sort találtam %d fájlban, ez %d "
+"millimásodpercig tartott.\n"
+
+#. Resource IDs: (1046)
+msgid "Search sub&directories"
+msgstr "Almappák&ban keres"
+
+#. Resource IDs: (17)
+msgid "Searching for: "
+msgstr "Ezt keresi: "
+
+#. Resource IDs: (273)
+msgid "Select &All"
+msgstr "Összes k&ijelölése"
+
+#. Resource IDs: (17)
+msgid "Select Tool Command..."
+msgstr ""
+
+#. Resource IDs: (3603)
+msgid ""
+"Select the entire document\n"
+"Select All"
+msgstr ""
+"Egész dokumentum kiválasztása\n"
+"Összes kijelölése"
+
+#. Resource IDs: (10)
+msgid "Select the root folder for the search:"
+msgstr "Gyökérkönyvtár kiválasztása kereséshez:"
+
+#. Resource IDs: (22)
+msgid "Select the working folder for the tool:"
+msgstr "Munkamappa választása az eszköz számára:"
+
+#. Resource IDs: (65535)
+msgid "Selected Word Highlight:"
+msgstr "Kijelölt szó kiemelése:"
+
+#. Resource IDs: (65535)
+msgid "Selecti&on"
+msgstr "&Kijelölés"
+
+#. Resource IDs: (65535)
+msgid "Selection Background:"
+msgstr "Kiválasztott háttér:"
+
+#. Resource IDs: (65535)
+msgid "Selection Foreground:"
+msgstr "Kiválasztott előtér:"
+
+#. Resource IDs: (1116)
+msgid "Semi-transparent when not active (Windows XP+ only)."
+msgstr "Áttetsző, ha nem aktív (csak Windows XP +)."
+
+#. Resource IDs: (65535)
+msgid "Settings"
+msgstr "Beállítások"
+
+#. Resource IDs: (15)
+msgid "Shortcut"
+msgstr "Parancsikon"
+
+#. Resource IDs: (65535)
+msgid "Shortcut:"
+msgstr "Rövidítés:"
+
+#. Resource IDs: (65535)
+msgid "Shortcuts:"
+msgstr "Parancsikonok:"
+
+#. Resource IDs: (1054)
+msgid "Show &Tabs"
+msgstr "&Fülek mutatása"
+
+#. Resource IDs: (1048)
+msgid "Show Indentation Guides"
+msgstr "Bekezdési jelek mutatása"
+
+#. Resource IDs: (1117)
+msgid "Show Mini Editor Toolbar"
+msgstr "Mini szerkesztő eszköztár mutatása"
+
+#. Resource IDs: (1069)
+msgid "Show a line at the edge column"
+msgstr "Sor jelzése a sarki oszlopban"
+
+#. Resource IDs: (3713)
+msgid ""
+"Show or hide the status bar\n"
+"Toggle StatusBar"
+msgstr ""
+"Állapotsáv megjelenítése/elrejtése\n"
+"Állapotsáv váltása"
+
+#. Resource IDs: (3713)
+msgid ""
+"Show or hide the toolbar\n"
+"Toggle ToolBar"
+msgstr ""
+"Eszköztár megjelenítése/elrejtése\n"
+"Eszköztár váltása"
+
+#. Resource IDs: (1089)
+msgid "Si&ze:"
+msgstr "&Méret:"
+
+#. Resource IDs: (65535)
+msgid "SmartStart"
+msgstr "OkosIndítás"
+
+#. Resource IDs: (11)
+#, c-format
+msgid ""
+"Sorry, Programmer's Notepad couldn't open this file - most likely because "
+"it's too big (actual error: %s). PN needs to have enough free memory to open "
+"a file twice to successfully edit it."
+msgstr ""
+"Sajnálom, a Programmer's Notepad nem tudta megnyitni ezt a fájlt - "
+"valószínűleg azért, mert túl nagy (a tényleges hiba: %s). PN-nek szüksége "
+"van elég szabad memóriára, hogy másodszorra megnyissa a fájlt sikeres "
+"szerkesztésre."
+
+#. Resource IDs: (65535)
+msgid "Special Symbols:"
+msgstr "Speciális szimbólumok:"
+
+#. Resource IDs: (33128)
+msgid "Spli&t Lines"
+msgstr "Sorok &vágása"
+
+#. Resource IDs: (33143)
+msgid "Split V&ertical"
+msgstr "&Függőleges elrendezés"
+
+#. Resource IDs: (3604)
+msgid ""
+"Split the active window into panes\n"
+"Split"
+msgstr ""
+"Aktív ablak mezőkre való elrendezése\n"
+"Elrendezés"
+
+#. Resource IDs: (65535)
+msgid "Standard Input and Output:"
+msgstr "Átlagos bemenet és kimenet:"
+
+#. Resource IDs: (65535)
+msgid "Start Extensions:"
+msgstr "Kiterjesztések kezdése:"
+
+#. Resource IDs: (65535)
+msgid "Start Phrase:"
+msgstr "Kifejezés kezdése:"
+
+#. Resource IDs: (1051)
+msgid "Start with a new, &blank document"
+msgstr "Új, üres dokumentummal &nyisson"
+
+#. Resource IDs: (16)
+msgid "Starting Phrase"
+msgstr "Kifejezés indítása"
+
+#. Resource IDs: (1001, 1002, 1003, 1004, 1008, 1027, 1085, 1086, 1087)
+msgid "Static"
+msgstr "Statikus"
+
+#. Resource IDs: (33130)
+msgid "Stop R&ecording"
+msgstr "Vét&elezés leállítása"
+
+#. Resource IDs: (1153)
+msgid "Strictly enforce the auto-scroll positioning"
+msgstr "Szigorúan kikényszeríti az automatikus görgetés helyzetét"
+
+#. Resource IDs: (1169)
+msgid "Strip trailing spaces before saving"
+msgstr "Üres sorok eltávolítása mentés előtt"
+
+#. Resource IDs: (65535)
+msgid "Styles"
+msgstr "Stílusok"
+
+#. Resource IDs: (1089, 1092)
+msgid "Switch"
+msgstr "Átvált"
+
+#. Resource IDs: (3606)
+msgid ""
+"Switch back to the previous window pane\n"
+"Previous Pane"
+msgstr ""
+"Előző ablakmezőre vált\n"
+"Előző ablakmező"
+
+#. Resource IDs: (3825)
+msgid "Switch to the next document window"
+msgstr "Következő dokumentum ablakára vált"
+
+#. Resource IDs: (3606)
+msgid ""
+"Switch to the next window pane\n"
+"Next Pane"
+msgstr ""
+"Következő ablakmezőre vált\n"
+"Következő ablakmező"
+
+#. Resource IDs: (3825)
+msgid "Switch to the previous document window"
+msgstr "Előző dokumentum ablakára vált"
+
+#. Resource IDs: (131)
+msgid "Syntax &Highlighting"
+msgstr "Szintaktikai &kiemelő"
+
+#. Resource IDs: (32703)
+msgid "T&ags"
+msgstr "T&ag-ek"
+
+#. Resource IDs: (1127)
+msgid "Tab &order controlled by recent use"
+msgstr "Fül rendezés által ellenőrzött nemrég használt"
+
+#. Resource IDs: (65535)
+msgid "Tab Width:"
+msgstr "Tab szélessége:"
+
+#. Resource IDs: (65535)
+msgid "Tabs"
+msgstr "Fülek"
+
+#. Resource IDs: (1112)
+msgid "Tabs go here."
+msgstr "Tab-ok ide jönnek."
+
+#. Resource IDs: (227)
+msgid "Tagged Expression 1"
+msgstr "Címkézett kifejezés 1"
+
+#. Resource IDs: (228)
+msgid "Tagged Expression 2"
+msgstr "Címkézett kifejezés 2"
+
+#. Resource IDs: (229)
+msgid "Tagged Expression 3"
+msgstr "Címkézett kifejezés 3"
+
+#. Resource IDs: (230)
+msgid "Tagged Expression 4"
+msgstr "Címkézett kifejezés 4"
+
+#. Resource IDs: (231)
+msgid "Tagged Expression 5"
+msgstr "Címkézett kifejezés 5"
+
+#. Resource IDs: (232)
+msgid "Tagged Expression 6"
+msgstr "Címkézett kifejezés 6"
+
+#. Resource IDs: (233)
+msgid "Tagged Expression 7"
+msgstr "Címkézett kifejezés 7"
+
+#. Resource IDs: (234)
+msgid "Tagged Expression 8"
+msgstr "Címkézett kifejezés 8"
+
+#. Resource IDs: (235)
+msgid "Tagged Expression 9"
+msgstr "Címkézett kifejezés 9"
+
+#. Resource IDs: (32844)
+msgid "Tagged Expresssion"
+msgstr "Címkézett kifejezés"
+
+#. Resource IDs: (2044)
+msgid "Tags"
+msgstr "Tag-ek"
+
+#. Resource IDs: (65535)
+msgid "Template Field:"
+msgstr "Sablon mező:"
+
+#. Resource IDs: (65535)
+msgid "Testing:"
+msgstr "Tesztelés:"
+
+#. Resource IDs: (17)
+msgid "Text"
+msgstr "Szöveg"
+
+#. Resource IDs: (1072)
+msgid "Text &Colour:"
+msgstr "Szö&veg színe:"
+
+#. Resource IDs: (350)
+msgid "Text Clip Editor"
+msgstr "Szövegkapocs szerkesztő"
+
+#. Resource IDs: (2044)
+msgid "Text Clips"
+msgstr "Szövegkapcsok"
+
+#. Resource IDs: (9)
+#, c-format
+msgid ""
+"The file \"%s\" could not be saved because it is write-protected.\n"
+"\n"
+"You can either save in a different location or PN can attempt to remove the "
+"protection and overwrite the file in its current location."
+msgstr ""
+"A(z) \"%s\" fájl nem lett mentve, mert írásvédett.\n"
+"\n"
+"Bármely más helyre mentheti vagy a PN is megpróbálhatja eltávolítani a "
+"védelmet, és felülírhatja a fájlt a jelenlegi helyén."
+
+#. Resource IDs: (11)
+msgid "The file must be placed inside this magic folder directory."
+msgstr "A fájlt a \"magic\" mappán belül kell elhelyeznie."
+
+#. Resource IDs: (11)
+#, c-format
+msgid "The folder %s could not be created, check that the path is valid."
+msgstr ""
+"%s mappa készítése sikertelen, ellenőrizze, hogy érvényes-e az útvonal."
+
+#. Resource IDs: (11)
+#, c-format
+msgid "The folder %s does not exist, do you want to create it?"
+msgstr "A(z) %s mappa nem létezik, elkészíti?"
+
+#. Resource IDs: (11)
+msgid "The regular expression is not valid."
+msgstr "Az állandó kifejezés nem érvényes."
+
+#. Resource IDs: (16)
+#, c-format
+msgid ""
+"The selected method for this extension is currently associated with '%s'"
+msgstr ""
+"A választott módszer ezen kiterjesztésre jelenleg a(z) \"%s\" programmal van "
+"társítva"
+
+#. Resource IDs: (2063)
+msgid ""
+"The specified project does not exist,\n"
+" would you like to create it?"
+msgstr ""
+"A megadott projekt nem létezik,\n"
+"szeretné elkészíteni?"
+
+#. Resource IDs: (9)
+#, c-format
+msgid "The specified text '%s' was not found."
+msgstr "A megadott szöveg \"%s\" nem található."
+
+#. Resource IDs: (9)
+msgid "This project has no properties."
+msgstr "Ennek a projektnek nincsenek tulajdonságai."
+
+#. Resource IDs: (1048)
+msgid "This tool will modify the current file."
+msgstr "Ez az eszköz módosítja a jelenlegi fájlt."
+
+#. Resource IDs: (57651)
+msgid "Tile &Horizontal"
+msgstr "&Vízszintes elrendezés"
+
+#. Resource IDs: (57652)
+msgid "Tile &Vertical"
+msgstr "&Függőleges elrendezés"
+
+#. Resource IDs: (32786)
+msgid "Toggle &Bookmark"
+msgstr "Könyvjelzők ki/be kapcsolása"
+
+#. Resource IDs: (272)
+msgid "Toggle Fold"
+msgstr "Összecsukhatóság ki/be kapcsolása"
+
+#. Resource IDs: (9)
+msgid "Toggle line numbers display"
+msgstr "Sorszámozások ki/be kapcsolása"
+
+#. Resource IDs: (9)
+msgid "Toggle syntax highlighting"
+msgstr "Szintaktikai kiemelő ki/be kapcsolása"
+
+#. Resource IDs: (2050)
+msgid "Toggle visible line-end characters"
+msgstr "Sorvégi karakterek ki/be kapcsolása"
+
+#. Resource IDs: (2050)
+msgid "Toggle visible whitespace characters"
+msgstr "Nem látható karakterek ki/be kapcsolása"
+
+#. Resource IDs: (9)
+msgid "Toggle word wrap"
+msgstr "Szótördelés ki/be kapcsolása"
+
+#. Resource IDs: (2070)
+msgid "Toggle write protect"
+msgstr "Írásvédettség ki/be kapcsolása"
+
+#. Resource IDs: (14)
+msgid "Tools"
+msgstr "Eszközök"
+
+#. Resource IDs: (65535)
+msgid "Top:"
+msgstr "Felül:"
+
+#. Resource IDs: (65535)
+msgid "Trans&form"
+msgstr "Át&alakít"
+
+#. Resource IDs: (32913)
+msgid "Transp&ose Lines"
+msgstr "S&orok felcserélése"
+
+#. Resource IDs: (16)
+msgid "Type Name"
+msgstr "Típus neve"
+
+#. Resource IDs: (17)
+msgid "Type the name of the new Clip set..."
+msgstr "Írja be az új Szövegkapocs nevét..."
+
+#. Resource IDs: (32911)
+msgid "U&ppercase"
+msgstr "&Nagybetűs"
+
+#. Resource IDs: (32891)
+msgid "UTF-16 Big Endian"
+msgstr "UTF-16 &Big Endian"
+
+#. Resource IDs: (32892)
+msgid "UTF-16 Little Endian"
+msgstr "UTF-16 &Little Endian"
+
+#. Resource IDs: (32893)
+msgid "UTF-8"
+msgstr "&UTF-8"
+
+#. Resource IDs: (32894)
+msgid "UTF-8 No Mark"
+msgstr "UTF-8 &No Mark"
+
+#. Resource IDs: (3603)
+msgid ""
+"Undo the last action\n"
+"Undo"
+msgstr ""
+"Utolsó lépés visszavonása\n"
+"Visszavonás"
+
+#. Resource IDs: (16)
+msgid "Unknown"
+msgstr "Ismeretlen"
+
+#. Resource IDs: (14)
+msgid "Untitled"
+msgstr "Névtelen"
+
+#. Resource IDs: (261)
+msgid "Use &Tabs"
+msgstr "&Tab-ok használata"
+
+#. Resource IDs: (32960)
+msgid "Use As &Script"
+msgstr "&Szkriptként használ"
+
+#. Resource IDs: (1126)
+msgid "Use Spaces"
+msgstr "Szóközök használata"
+
+#. Resource IDs: (21)
+msgid "Use an individual output window."
+msgstr "Egyéni kimeneti ablak használata."
+
+#. Resource IDs: (1125)
+msgid "Use tabs"
+msgstr "Tab-ok használata"
+
+#. Resource IDs: (1057)
+msgid "Use the built-in error parser."
+msgstr "Beépített hibaelemző használata."
+
+#. Resource IDs: (10)
+msgid "Use the main output window."
+msgstr "Fő kimeneti ablak használata."
+
+#. Resource IDs: (32886)
+msgid "User Name (%u)"
+msgstr "Felhasználói név (%u)"
+
+#. Resource IDs: (17)
+msgid "Version"
+msgstr "Verzió"
+
+#. Resource IDs: (9)
+#, fuzzy, c-format
+msgid ""
+"Version: v%s\n"
+"\n"
+"Copyright © 2002-2011 Simon Steele\n"
+"\n"
+"Programmer's Notepad is Free Software.\n"
+"\n"
+"Programmer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and "
+"Boost. Thanks to the authors and contributors on those projects, and all "
+"those who have contributed to Programmer's Notepad."
+msgstr ""
+"Verzió: v%s\n"
+"\n"
+"Copyright © 2002-2009 Simon Steele\n"
+"\n"
+"A Programmer's Notepad egy ingyenes szoftver.\n"
+"\n"
+"A Programmer's Notepad a következőket használja: Scintilla-t, WTL-t, GenX-t, "
+"Expat-t, Exuberant CTags-t, és Boost. Köszönet a készítőknek, a "
+"fejlesztőknek és a munkatársaknak azokon a projekteken, és mindenkinek aki "
+"részt vett a Programmer's Notepad programban.Fordította : Nyilas MISY (dr."
+"dabzse@gmail.com)\n"
+
+#. Resource IDs: (65535)
+msgid "Vertical:"
+msgstr "Függőleges:"
+
+#. Resource IDs: (1123)
+msgid "Visible &Whitespace Characters"
+msgstr "&A rejtett karakterek láthatóak"
+
+#. Resource IDs: (1122)
+msgid "Visible Line &Endings"
+msgstr "&Sorvégek láthatósága"
+
+#. Resource IDs: (14)
+msgid "Visual Help"
+msgstr "Vizuális segítség"
+
+#. Resource IDs: (65535)
+msgid "WORKSPACE"
+msgstr "MUNKAFELÜLET"
+
+#. Resource IDs: (10)
+#, c-format
+msgid "Warning: the file %s does not exist any more."
+msgstr "Figyelem: a(z) \"%s\" fájl többé nem létezik."
+
+#. Resource IDs: (65535)
+msgid "When an open file is dropped:"
+msgstr "Ha nyitott fájl \"be van ejtve\":"
+
+#. Resource IDs: (65535)
+msgid "When attempting to re-open a file:"
+msgstr "Ha megkísérli újra megnyitni a fájlt:"
+
+#. Resource IDs: (130)
+msgid "Word W&rap"
+msgstr "So&rtörés"
+
+#. Resource IDs: (65535)
+msgid "Words:"
+msgstr "Szavak:"
+
+#. Resource IDs: (10)
+msgid "Workspace Files (*.pnws)|*.pnws|"
+msgstr "Munkafelületi fájlok (*.pnws)|*.pnws|"
+
+#. Resource IDs: (11)
+#, c-format
+msgid ""
+"Would you like to save changes to:\n"
+"%s?"
+msgstr ""
+"Akarja menteni a(z) :\n"
+"%s változásait?"
+
+#. Resource IDs: (33107)
+msgid "Write protect"
+msgstr "Írás&védett"
+
+#. Resource IDs: (6)
+msgid "Yes"
+msgstr "Igen"
+
+#. Resource IDs: (65535)
+msgid ""
+"You can restrict the file types shown by a magic folder, and the directories "
+"that it displays."
+msgstr ""
+"A mágikus mappa korlátozhatja a fájl típusait, és a könyvtárak amiket "
+"megjelenít."
+
+#. Resource IDs: (33135)
+msgid "Zoom O&ut"
+msgstr "&Kicsinyítés"
+
+#. Resource IDs: (11)
+msgid ""
+"\n"
+"> Process Exit Code: "
+msgstr ""
+"\n"
+"> Folyamat kilépési kódja:"
+
+#. Resource IDs: (11)
+msgid ""
+"\n"
+"> Time Taken: "
+msgstr ""
+"\n"
+"> ideig tartott: "
+
+#. Resource IDs: (65535)
+msgid "characters"
+msgstr "karakter után"
+
+#. Resource IDs: (65535)
+msgid "example: %f:%l: "
+msgstr "példa: %f:%l: "
+
+#. Resource IDs: (65535)
+msgid "pixels"
+msgstr "pixel"
+
+#. Resource IDs: (65535)
+msgid "text lines"
+msgstr "sor szöveg"
+
+#. Resource IDs: (332)
+msgid "w"
+msgstr "w"
+
+#~ msgid "&Code Page:"
+#~ msgstr "&Lap kódja:"
+
+#~ msgid "Character Se&t:"
+#~ msgstr "Karak&terkészlet:"
+
+#~ msgid "File Associations"
+#~ msgstr "Fájl társítások"
+
+#~ msgid "PN &HomePage"
+#~ msgstr "PN &Honlapja"
+
+#~ msgid "<new>"
+#~ msgstr "<névtelen>"
