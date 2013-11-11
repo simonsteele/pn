@@ -3,20 +3,19 @@
 
 	<target name="svnvar">
 		<ifnot test="${property::exists('svn.revision')}">
-			<property name="hg.path" value="" if="${property::exists('hg.path') == false}"/>
+			<property name="git.path" value="" if="${property::exists('git.path') == false}"/>
 			
-			<!-- Retrieve subversion revision number -->
-			<echo message="Retrieving Mercurial revision number"/>
+			<echo message="Retrieving git revision number"/>
 			<property name="svn.revision" value="0"/>
 			<exec
 				program="cmd"
-				commandline='/C ${hg.path}hg log --limit 1 --template {rev}'
+				commandline='/C ${git.path}git rev-list --count HEAD'
 				output="_revision.txt"
 				failonerror="false"/>
 			<loadfile file="_revision.txt" property="svn.revision" />
 			<property name="svn.revision" value="${string::trim(svn.revision)}"/>
 		</ifnot>
-		<echo message="Using Mercurial revision number: ${svn.revision}"/>
+		<echo message="Using git commit number: ${svn.revision}"/>
 	</target>
 	
 	<target name="env">
