@@ -74,3 +74,17 @@ ehthumbs.db
 
 # Folder config file
 Desktop.ini
+
+# PN Specific Generated Files
+_revision.txt
+
+dlldata.c
+pnse.h
+pnse_i.c
+pnse_p.c
+pnse.lib
+
+*.dll
+*.exp
+
+dist
