@@ -35,43 +35,48 @@ Name: quicklaunchicon; Description: Create a &Quick Launch icon; GroupDescriptio
 
 [Files]
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
-Source: ..\bin\pn.exe; DestDir: {app}; Flags: ignoreversion
+Source: "..\bin\pn.exe"; DestDir: "{app}"; Flags: ignoreversion
 
-Source: ..\bin\pnse.dll; DestDir: {app}; Flags: ignoreversion restartreplace uninsrestartdelete; Tasks: 
+Source: "..\bin\pnse.dll"; DestDir: "{app}"; Flags: ignoreversion restartreplace uninsrestartdelete
 
-Source: configs\default\config.xml; DestDir: {app}; Flags: onlyifdoesntexist
+Source: "configs\default\config.xml"; DestDir: "{app}"; Flags: onlyifdoesntexist
 
-Source: ..\bin\dbghelp.dll; DestDir: {app}
-Source: ..\bin\libexpatw.dll; DestDir: {app}; Flags: ignoreversion
+Source: "..\bin\dbghelp.dll"; DestDir: "{app}"
+Source: "..\bin\libexpatw.dll"; DestDir: "{app}"; Flags: ignoreversion
 
-Source: ..\bin\SciLexer.dll; DestDir: {app}; Flags: ignoreversion
+Source: "..\bin\SciLexer.dll"; DestDir: "{app}"; Flags: ignoreversion
 
-Source: ..\bin\schemes\*.scheme; DestDir: {app}\schemes
-Source: ..\bin\schemes\*.api; DestDir: {app}\schemes
-Source: ..\bin\schemes\extmap.dat; DestDir: {app}\schemes
-Source: ..\bin\clips\*.clips; DestDir: {app}\clips; Flags: recursesubdirs
-Source: ..\bin\presets\*.xml; DestDir: {app}\presets
+Source: "..\bin\schemes\*.scheme"; DestDir: "{app}\schemes"
+Source: "..\bin\schemes\*.api"; DestDir: "{app}\schemes"
+Source: "..\bin\schemes\extmap.dat"; DestDir: "{app}\schemes"
+Source: "..\bin\clips\*.clips"; DestDir: "{app}\clips"; Flags: recursesubdirs
+Source: "..\bin\presets\*.xml"; DestDir: "{app}\presets"
 
-Source: ..\bin\ctagsnavigator.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\bin\customscheme.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\bin\ctags\*.*; DestDir: {app}\ctags; Flags: ignoreversion
-Source: ..\bin\ctags.exe; DestDir: {app}; Flags: ignoreversion
-Source: ..\doc\help\pn2.chm; DestDir: {app}
+Source: "..\bin\ctagsnavigator.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\bin\customscheme.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\bin\ctags\*.*"; DestDir: "{app}\ctags"; Flags: ignoreversion
+Source: "..\bin\ctags.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\doc\help\pn2.chm"; DestDir: "{app}"
 
-Source: ..\doc\readme.txt; DestDir: {app}
-Source: ..\doc\license.txt; DestDir: {app}
-Source: ..\doc\credits.txt; DestDir: {app}
-Source: ..\doc\roadmap.txt; DestDir: {app}
-Source: ..\doc\ctags_README; DestDir: {app}
-Source: ..\doc\ctags_COPYING; DestDir: {app}
+Source: "..\doc\readme.txt"; DestDir: "{app}"
+Source: "..\doc\license.txt"; DestDir: "{app}"
+Source: "..\doc\credits.txt"; DestDir: "{app}"
+Source: "..\doc\roadmap.txt"; DestDir: "{app}"
+Source: "..\doc\ctags_README"; DestDir: "{app}"
+Source: "..\doc\ctags_COPYING"; DestDir: "{app}"
 
-Source: ..\schemes\user\*.schemedef; DestDir: {app}\samples
+Source: "..\schemes\user\*.schemedef"; DestDir: "{app}\samples"
 
-Source: reqfiles\msvcp100.dll; DestDir: {app}; Flags: ignoreversion
-Source: reqfiles\msvcr100.dll; DestDir: {app}; Flags: ignoreversion
+Source: "reqfiles\msvcp100.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "reqfiles\msvcr100.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ;Translations
-Source: ..\bin\pnlang_*.dll; DestDir: {app}; Flags: ignoreversion
+Source: "..\bin\pnlang_*.dll"; DestDir: "{app}"; Flags: ignoreversion
+
+;PyPN
+Source: "..\bin\pypn.dll"; DestDir: "{app}"; Flags: ignoreversion; Components: PyPN
+Source: "..\bin\boost_python-vc100-mt-1*.dll"; DestDir: "{app}"; Flags: ignoreversion; Components: PyPN
+Source: "..\pypn\scripts\*.*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs; Components: PyPN
 
 [Icons]
 Name: {group}\Programmer's Notepad; Filename: {app}\pn.exe
@@ -95,3 +100,9 @@ Root: HKCU; SubKey: Software\Classes\SystemFileAssociations\text\OpenWithList\pn
 Name: {app}\taggers\ctagsnavigator.*; Type: files; Tasks: 
 Name: {app}\schemes\customscheme.lexer; Type: files; Tasks:
 Name: {app}\schemes\powershell.schemedef; Type: files; Tasks:
+
+[ThirdPartySettings]
+CompileLogMethod=append
+
+[Components]
+Name: "PyPN"; Description: "Python Scripting Extension (Requires Python 2.7)"
