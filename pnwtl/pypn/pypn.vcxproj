@@ -54,7 +54,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>%PYTHONINCDIR%;c:\python26\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%PYTHONINCDIR%;c:\python27\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;PYPN_EXPORTS;SCI_NOLOAD;SCI_NAMESPACE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -67,7 +67,7 @@
     <Link>
       <AdditionalDependencies>boost_python-vc100-mt-gd-$(BoostFileVer).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)pypn.dll</OutputFile>
-      <AdditionalLibraryDirectories>%PYTHONLIBDIR%;..\lib\boost-python-2.6;c:\python26\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%PYTHONLIBDIR%;..\lib\boost-python-2.7;c:\python27\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>pypn.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)pypn.pdb</ProgramDatabaseFile>
@@ -79,8 +79,8 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\lib\boost-python-2.6\boost_python-vc100-mt-gd-$(BoostFileVer).dll $(TargetDir)
-copy scripts\init.py $(TargetDir)
+      <Command>copy ..\lib\boost-python-2.7\boost_python-vc100-mt-gd-$(BoostFileVer).dll $(TargetDir)
+xcopy /SY scripts\* $(TargetDir)
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -92,7 +92,7 @@ copy scripts\init.py $(TargetDir)
     <ClCompile>
       <Optimization>Full</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>$(PYTHONINCDIR);c:\python26\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PYTHONINCDIR);c:\python27\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;PYPN_EXPORTS;SCI_NOLOAD;SCI_NAMESPACE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -103,7 +103,7 @@ copy scripts\init.py $(TargetDir)
     <Link>
       <AdditionalDependencies>boost_python-vc100-mt-$(BoostFileVer).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)pypn.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(PYTHONLIBDIR);..\lib\boost-python-2.6;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(PYTHONLIBDIR);..\lib\boost-python-2.7;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>pypn.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -138,6 +138,7 @@ copy scripts\init.py $(TargetDir)
   </ItemGroup>
   <ItemGroup>
     <None Include="pypn.def" />
+    <None Include="pypn.rc2" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h" />

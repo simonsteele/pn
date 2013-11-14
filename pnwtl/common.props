@@ -1,15 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="UserMacros">
-    <BoostFileVer>1_45</BoostFileVer>
+    <BoostFileVer>1_53</BoostFileVer>
   </PropertyGroup>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <IncludePath>$(SolutionDir)..\..\lib\wtl\include;$(SolutionDir)..\..\lib\boost_1_45_0\;c:\Python26\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\..\lib\wtl\include;$(SolutionDir)..\..\lib\boost_1_53_0\;c:\Python27\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\lib\wtlsvn\include;$(SolutionDir)..\..\lib\boost_1_45_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\lib\wtlsvn\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_BIND_TO_CURRENT_CRT_VERSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ResourceCompile>

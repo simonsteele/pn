@@ -43,8 +43,7 @@
 		<call target="buildlanguagedlls" />
 	</target>
 
-	<!-- Deploy PN -->
-	<target name="deploy" depends="svnvar build">
+	<target name="vars" depends="svnvar">
 		<property name="deployver" value="${ver}.${svn.revision}"/>
 		<property name="compactver" value="${string::replace(deployver, '.', '')}"/>
 		<property name="distdir" value="..\dist\${deployver}"/>
@@ -52,15 +51,14 @@
 		<echo message="${deployver} (${compactver})"/>
 		
 		<mkdir dir="${distdir}"/>
-		
-		<exec
-			program="c:\program files (x86)\inno setup 5\iscc"
-			commandline='pn2.iss /d"PNVersion=${deployver}"'
-			output="_iscc.log"
-			workingdir="installer" />
-			
-		<copy file="installer\output\pnsetup.exe" tofile="${distdir}\pn${compactver}.exe" overwrite="true"/>
-		
+	</target>
+
+	<!-- Deploy PN -->
+	<target name="deploy" depends="vars build pypn installers sdk">
+	</target>
+	
+	<!-- Build installers -->
+	<target name="installers" depends="vars">
 		<exec
 			program="c:\program files (x86)\inno setup 5\iscc"
 			commandline='pn2_translated.iss /d"PNVersion=${deployver}"'
@@ -72,13 +70,7 @@
 		<call target="zip" />
 	</target>
 	
-	<target name="deployzip" depends="svnvar">
-		<property name="deployver" value="${ver}.${svn.revision}"/>
-		<property name="compactver" value="${string::replace(deployver, '.', '')}"/>
-		<property name="distdir" value="..\dist\${deployver}"/>
-		
-		<echo message="${deployver} (${compactver})"/>
-		
+	<target name="deployzip" depends="vars">		
 		<call target="zip" />
 	</target>
 	
@@ -186,22 +178,23 @@
 	
 	<!-- Build PyPN -->
 	<target name="pypn">
-		<!-- Python 2.6 -->
-		<echo message="Building for Python 2.6"/>
-		<property name="pyver" value="py26"/>
+		<!-- Python 2.7 -->
+		<echo message="Building for Python 2.7"/>
+		<property name="pyver" value="py27"/>
 		
 		<property name="devenv.path" value="devenv.com" if="${property::exists('devenv.path') == false}"/>
 		
 		<exec
 			program="${devenv.path}"
 			commandline='pn.sln /Project pypn /ProjectConfig Release /Rebuild'
-			output="pypn-2.6.log">
+			output="pypn-2.7.log">
 			<environment>
-				<variable name="PYTHONINCDIR" value="C:\Python26\include"/>
-				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.6"/>
+				<variable name="PYTHONINCDIR" value="C:\Python27\include"/>
+				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.7"/>
+				<variable name="SVNREV" value="/DPN_BUILD=${svn.revision}"/>
 			</environment>
 		</exec>
-		<copy file="lib\boost-python-2.6\boost_python-vc100-mt-1_45.dll" todir="bin" overwrite="true"/>
+		<copy file="lib\boost-python-2.7\boost_python-vc100-mt-1_53.dll" todir="bin" overwrite="true"/>
 		
 		<property name="pywrongdep" value="python24"/>
 		<call target="checkpypndeps"/>
@@ -209,14 +202,14 @@
 		<property name="pywrongdep" value="python25"/>
 		<call target="checkpypndeps"/>
 		
+		<property name="pywrongdep" value="python26"/>
+		<call target="checkpypndeps"/>
+		
 		<call target="deploypypn"/>
 	</target>
 	
 	<!-- Deploy PyPN -->
-	<target name="deploypypn" depends="svnvar">
-		<property name="deployver" value="${ver}.${svn.revision}"/>
-		<property name="distdir" value="..\dist\pypn-${deployver}"/>
-		
+	<target name="deploypypn" depends="vars">
 		<mkdir dir="${distdir}"/>
 		
 		<zip zipfile="${distdir}\pypn-${deployver}-${pyver}.zip">
@@ -237,10 +230,7 @@
 		</zip>
 	</target>
 	
-	<target name="sdk" depends="svnvar">
-		<property name="deployver" value="${ver}.${svn.revision}"/>
-		<property name="distdir" value="..\dist\sdk-${deployver}"/>
-		
+	<target name="sdk" depends="vars">
 		<mkdir dir="${distdir}"/>
 		
 		<zip zipfile="${distdir}\sdk-${ver}.zip">
@@ -273,23 +263,23 @@
 		<property name="distdir" value="..\dist\${deployver}"/>
 
 		<exec
-			program="c:\python26\python"
+			program="c:\python27\python"
 			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Installer" -p pnotepad --labels="Type-Installer" -u simon.steele --password="${password}" "${distdir}\pn${compactver}.exe"'/>
 
 		<exec
-			program="c:\python26\python"
+			program="c:\python27\python"
 			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision}  Multi-language Installer" -p pnotepad -l Type-Installer -u simon.steele --password="${password}" ${distdir}\pn${compactver}_multilang.exe'/>
 
 		<exec
-			program="c:\python26\python"
+			program="c:\python27\python"
 			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Zip" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" ${distdir}\pn${compactver}.zip'/>
 
 		<exec
-			program="c:\python26\python"
+			program="c:\python27\python"
 			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Portable" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" ${distdir}\portable-pn${compactver}.zip'/>
 			
 		<exec
-			program="c:\python26\python"
+			program="c:\python27\python"
 			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Translation Tools" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" ${distdir}\translatetools${compactver}.zip'/>
 	</target>
 	
@@ -299,7 +289,7 @@
 		<property name="distdir" value="..\dist\pypn-${deployver}"/>
 		
 		<exec
-			program="c:\python26\python"
+			program="c:\python27\python"
 			commandline='googlecode_upload.py -s "PyPN ${ver}.${svn.revision} for Python 2.6" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" "${distdir}\pypn-${deployver}-py26.zip"'/>
 	</target>
 	
