@@ -1,29 +1,24 @@
 ========================================
 Release Name: 2.4
-Build: 2.4, Version Label: 
+Build: 2.4, Version Label: duke
 ========================================
 
-What's new in 2.3?
+What's new in 2.4?
 ------------------------------------------
 
-1) 
+1) Fuzzy matching in "Jump to" dialog, e.g. MTM for MyTestMethod
+2) New style presets
+3) New translations
+4) Delay shutdown for file save
+5) Improved find dialog resizing
+6) PyPN included as optional component in installer
 
 Bug Fixes:
 ----------
 
-1) 
-
-What's new in 2.4 under the cover?
-------------------------------------------
-
-1) 
-
-
-Extensions Interface Changes:
------------------------------
-
-1) 
-
+1) Fixes to XML/HTML tag completion
+2) UTF-8 Replace All and UTF-8 character code improvements for Regex search
+3) Fix for script recording due to Scintilla bug
 
 If you find a bug:
 ------------------
