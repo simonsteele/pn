@@ -1,4 +1,4 @@
-﻿<UserSettings>
+<UserSettings>
 	<override-colours caret="839496" indentGuides="eee8d5" markAll="dc322f" selBack="d33682" smartHighlight="d33682" templateField="268bd2"></override-colours>
 	<override-classes>
 		<style-class fore="93a1a1" name="attribute"></style-class>
@@ -12,7 +12,7 @@
 		<style-class fore="839496" name="commentdoc"></style-class>
 		<style-class fore="93a1a1" italic="true" name="commentline"></style-class>
 		<style-class bold="true" fore="4a413a" name="controlchars"></style-class>
-		<style-class back="fdf6e3" fore="657b83" name="default" size="13"></style-class>
+		<style-class back="fdf6e3" fore="657b83" name="default"></style-class>
 		<style-class back="fdf6e3" fore="dc322f" name="error"></style-class>
 		<style-class fore="268bd2" name="function"></style-class>
 		<style-class fore="d38234" name="identifier"></style-class>

@@ -21,50 +21,52 @@ green     #859900
 -->
 
 <UserSettings>
-	<override-colours caret="fdf6e3" indentGuides="586e75" markAll="fdf6e3" selBack="268bd2" smartHighlight="d33682" templateField="268bd2" />
+	<override-colours caret="fdf6e3" indentGuides="586e75" markAll="fdf6e3" selBack="2aa198" smartHighlight="859900" templateField="6c71c4" />
 	<override-classes>
-		<style-class name="default" 		fore="839496" back="002b36" font="Courier New" />
-		<style-class name="attribute" 		fore="839496" />
+		<style-class name="default" 		fore="657b83" back="002b36" font="Anonymous Pro" />
+		<style-class name="attribute" 		fore="6c71c4" />
 		<style-class name="bracematch" 		fore="93a1a1" />
 		<style-class name="bracemismatch" 	fore="dc322f" />
-		<style-class name="character" 		fore="2aa198" />
+		<style-class name="character" 		fore="b58900" />
 		<style-class name="class" 			fore="6c71c4" />
 		<style-class name="comment" 		fore="586e75" />
-		<style-class name="commentbox" 		fore="839496" />
-		<style-class name="commentdoc" 		fore="839496" bold="true" />
+		<style-class name="commentbox" 		fore="586e75" />
+		<style-class name="commentdoc" 		fore="93a1a1" />
 		<style-class name="commentline" 	fore="586e75" italic="true" />
 		<style-class name="controlchars" 	fore="fdf6e3" />
 		<style-class name="error" 			fore="fdf6e3" back="dc322f" />
 		<style-class name="function" 		fore="6c71c4" />
-		<style-class name="identifier" 		fore="cb4b16" />
+		<style-class name="identifier" 		fore="839496" />
 		<style-class name="keyword" 		fore="6c71c4" />
 		<style-class name="keyword2" 		fore="6c71c4" />
 		<style-class name="linenumbers" 	fore="657b83" back="073642" />
 		<style-class name="number" 			fore="2aa198" />
 		<style-class name="operator" 		fore="b58900" />
 		<style-class name="preprocessor" 	fore="859900" />
-		<style-class name="string" 			fore="268bd2" />
+		<style-class name="string" 			fore="b58900" />
 		<style-class name="tag" 			fore="268bd2" />
-		<style-class name="unclosedstring"	fore="d33682" back="073642" />
+		<style-class name="unclosedstring"	fore="cb4b16" back="073642" />
 		<style-class name="unknownattribute" fore="dc322f" />
+		<style-class name="unknowntag"		fore="dc322f" />
 
 <!-- Unused 
 		<style-class name="whitespace"		fore="" />
 		<style-class name="type"			fore="" />
-		<style-class name="unknowntag"		fore="" />
 -->
 	</override-classes>
 	<schemes>
 		<scheme name="cpp">
 			<override-styles>
 <!-- This section is necessary because the cpp.scheme doesn't inherit correctly. -->
-				<style key="11" fore="93a1a1" /> 				<!--Identifiers-->
+				<style key="11" fore="839496" /> 				<!--Identifiers-->
 				<style key="8"  fore="2aa198" /> 				<!--UUIDs-->
-				<style key="17" fore="d33682" /> 				<!--Doc Keywords-->
+				<style key="17" fore="b58900" /> 				<!--Doc Keywords-->
 				<style key="18" fore="dc322f" /> 				<!--Doc Keywords Error-->
 				<style key="10" fore="b58900" bold="false" /> 	<!--Operators-->
-				<style key="12" fore="d33682" back="073642" /> 	<!--Unclosed String-->
+				<style key="12" fore="cb4b16" back="073642" /> 	<!--Unclosed String-->
 				<style key="16" fore="6c71c4" /> 				<!--Keywords 2-->
+				<style key="6"  fore="268bd2" />				<!--Strings-->
+				<style key="7"  fore="268bd2"/>					<!--Characters--> 
 			</override-styles>
 		</scheme>
 	</schemes>

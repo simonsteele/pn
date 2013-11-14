@@ -1,58 +1,88 @@
-<clips name="C Standard"><clip name="main body" shortcut="main">int main (int argc, char const* argv[])
-{
+<clips name="C Standard">
+
+<clip name="main body" shortcut="main">int main (int argc, char const* argv[]) {
 	$0
 	return 0;
-}</clip><clip name="function" shortcut="fn">${1:void} ${2:method}(${3:parameters})
-{
-    $0
-}</clip><clip name="if" shortcut="if">if (${1:condition})
-{
-    ;
-}</clip><clip name="if else" shortcut="ifelse">if (${1:condition})
-{
-    ${2}
-} 
-else
-{
+}
+</clip>
+
+<clip name="function" shortcut="fn">${1:void} ${2:method}(${3:parameters}) {
     $0
 }
+</clip>
 
-</clip><clip name="switch" shortcut="sw">switch (${1:var})
-{
-    case ${2:case}:
-    {
+<clip name="if" shortcut="if">if (${1:condition}) {
+    $0;
+}
+</clip>
+
+<clip name="if else" shortcut="ifelse">if (${1:condition}) {
+    ${2}
+} 
+else {
+    $0
+}
+</clip>
+
+<clip name="switch" shortcut="sw">switch (${1:var}) {
+    case ${2:case}: {
         $0
         break;
     }
+	default: {
+		break;
+	}
 }
+</clip>
 
-</clip><clip name="for" shortcut="for">for (${1:int} ${2:i} = ${3:0}; $2 &lt; ${3:end}; $2++)
-{
+<clip name="for" shortcut="for">for (${1:int} ${2:i} = ${3:0}; $2 &lt; ${4:end}; $2++) {
     $0;
 }
+</clip>
 
-</clip><clip name="while" shortcut="while">while(${1:condition})
-{
+<clip name="while" shortcut="while">while(${1:condition}) {
     $0
-}</clip><clip name="do" shortcut="dowhile">do
-{
+}
+</clip>
+
+<clip name="do" shortcut="dowhile">do {
     $0;
 }
 while (${1:condition});
+</clip>
 
-</clip><clip name="#define" shortcut="def">#define ${1:DEFINITION}</clip><clip name="#include" shortcut="inc">#include ${1:"header.h"}</clip><clip name="switch case" shortcut="case">    case ${2:case}:
-    {
-        $0
-        break;
-    }</clip><clip name="namespace" shortcut="ns">namespace ${1:namespace}
-{
+<clip name="#define" shortcut="def">#define ${1:DEFINITION}
+$0</clip>
+
+<clip name="#include" shortcut="inc">#include ${1:"header.h"}
+$0</clip>
+
+<clip name="switch case" shortcut="case">case ${1:case}: {
+	$0
+	break;
+}
+</clip>
+
+<clip name="namespace" shortcut="ns">namespace ${1:namespace} {
     $0
-}</clip><clip name="class" shortcut="class">class ${1:name}
-{
+}
+</clip>
+
+<clip name="class" shortcut="class">class ${1:name} {
 public:
 	$0
 };
-</clip><clip name="struct" shortcut="struct">struct ${1:name}
-{
+</clip>
+
+<clip name="struct" shortcut="struct">struct ${1:name} {
 	$0
-};</clip><clip name="typedef" shortcut="td">typedef ${1:expression} ${2:name};$0</clip><clip name="printf" shortcut="printf">printf("${1:%d\n}");$0</clip></clips>
+};
+</clip>
+
+<clip name="typedef" shortcut="td">typedef ${1:expression} ${2:name};
+$0</clip>
+
+<clip name="printf" shortcut="printf">printf("${1:%d\n}");
+$0</clip>
+
+</clips>
