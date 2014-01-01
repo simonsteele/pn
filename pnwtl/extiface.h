@@ -2,7 +2,7 @@
  * @file extiface.h
  * @brief PN Extensions Interface
  * @author Simon Steele
- * @note Copyright (c) 2006-2011 Simon Steele - http://untidy.net/
+ * @note Copyright (c) 2006-2014 Simon Steele - http://untidy.net/
  *
  * Programmer's Notepad 2 : The license file (license.[txt|html]) describes 
  * the conditions under which this source may be modified / distributed.
@@ -56,7 +56,7 @@ typedef enum {stFindNext, stReplace, stReplaceAll} SearchType;
 namespace extensions
 {
 
-#define PN_EXT_IFACE_VERSION	11
+#define PN_EXT_IFACE_VERSION	12
 
 /////////////////////////////////////////////////////////////////////////////
 // Predeclare types
