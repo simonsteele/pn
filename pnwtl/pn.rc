@@ -1786,7 +1786,7 @@ BEGIN
     ID_EDITOR_WORDWRAP      "Toggle word wrap"
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
     ID_EDITOR_LINENOS       "Toggle line numbers display"
-    IDS_ABOUTVERSIONSTRING  "Version: v%s\n\nCopyright © 2002-2013 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
+    IDS_ABOUTVERSIONSTRING  "Version: v%s\n\nCopyright © 2002-2014 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
     IDS_PROJECTNOPROPS      "This project has no properties."
     IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c: Column"
     ID_FILE_NEW_PROJECT     "Create a new project."
