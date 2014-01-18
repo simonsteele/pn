@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{6e9837c6-98d4-4e63-b065-941a94142baa}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{386818c4-05e1-4bf3-9da2-65c1983c6155}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{c1d360dd-087a-4238-8298-01987862f956}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="scintilla">
+      <UniqueIdentifier>{39040c30-543f-4a0c-b108-150e785647cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{e73e3497-85a7-4c9b-bceb-a99579205d7b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CustomScheme.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="schemelexer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="charset.cpp">
+      <Filter>include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Files.cpp">
+      <Filter>include</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xmlparser.cpp">
+      <Filter>include</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomLexerFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\scintilla\lexlib\Accessor.cxx">
+      <Filter>scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\scintilla\lexlib\CharacterSet.cxx">
+      <Filter>scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\scintilla\lexlib\LexerBase.cxx">
+      <Filter>scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\scintilla\lexlib\LexerModule.cxx">
+      <Filter>scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\scintilla\lexlib\LexerNoExceptions.cxx">
+      <Filter>scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\scintilla\lexlib\PropSetSimple.cxx">
+      <Filter>scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\scintilla\lexlib\StyleContext.cxx">
+      <Filter>scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\scintilla\lexlib\WordList.cxx">
+      <Filter>scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\scintilla\lexlib\LexerSimple.cxx">
+      <Filter>scintilla</Filter>
+    </ClCompile>
+    <ClCompile Include="plugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CustomScheme.def">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CustomScheme.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="schemelexer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scilexerdll.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\expat.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Files.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\xmlparser.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="lexerconfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

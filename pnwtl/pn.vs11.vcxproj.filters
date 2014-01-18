@@ -1,0 +1,1080 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{f8d412f1-8e61-4bfb-b0e9-2b73b36a0ad8}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\TextClips">
+      <UniqueIdentifier>{608e6688-9187-4b83-82be-63f03bb1c296}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tools">
+      <UniqueIdentifier>{f6b9a2ea-73b9-4e82-b7af-a1ae991a0036}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Schemes">
+      <UniqueIdentifier>{614c01ec-232b-4d67-aa7b-2038ee7765b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{294bca46-a239-4eb9-b3bc-a274167fd936}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="third_party">
+      <UniqueIdentifier>{60f166a1-5674-423f-8c3c-9a613d01087e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\TabbingFramework">
+      <UniqueIdentifier>{c2b74d59-387f-4ef8-b444-96e9a0d867bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\DockingFramework">
+      <UniqueIdentifier>{2cd69d63-eb70-43c8-abc4-d0c41e5b2115}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Exporters">
+      <UniqueIdentifier>{081a2c13-c745-4368-8355-41aa40271a35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Projects">
+      <UniqueIdentifier>{39207902-cbac-4f88-b649-37c50831341d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{3d03cada-34b1-4c88-8639-a644212b8a12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Autocomplete">
+      <UniqueIdentifier>{0c84a2af-656f-4e0f-b7b2-77537f64d4ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{1117cf4a-d6c0-4422-b666-e3d85660d48c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Options Dialog">
+      <UniqueIdentifier>{85c0ebca-5d01-4306-bc09-39316b1549dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Views">
+      <UniqueIdentifier>{30df163e-1331-4935-8c63-1e67807c2a97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Controls">
+      <UniqueIdentifier>{9cba5327-5dad-4264-bba6-e258c56f4fa1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\Projects">
+      <UniqueIdentifier>{d6d4b2d6-2132-4f07-b0fb-219b41ff7e9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Extensions">
+      <UniqueIdentifier>{f296e0f2-bda0-448c-af09-86cfcd4cd2d5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="afiles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="appsettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="commands.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="docprops.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Document.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="editorcommands.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="editorfactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="exporters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="extapp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FileAssoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="findinfiles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jumpto.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsIni.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsRegistry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsXml.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scaccessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scintillaif.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScintillaImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="singleinstance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="smartstart.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="styles.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="win32file.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="win32filesource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WorkspaceState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="textclips\chunk.cpp">
+      <Filter>Source Files\TextClips</Filter>
+    </ClCompile>
+    <ClCompile Include="textclips\chunkparser.cpp">
+      <Filter>Source Files\TextClips</Filter>
+    </ClCompile>
+    <ClCompile Include="textclips\clip.cpp">
+      <Filter>Source Files\TextClips</Filter>
+    </ClCompile>
+    <ClCompile Include="textclips\cliphandler.cpp">
+      <Filter>Source Files\TextClips</Filter>
+    </ClCompile>
+    <ClCompile Include="textclips\clipmanager.cpp">
+      <Filter>Source Files\TextClips</Filter>
+    </ClCompile>
+    <ClCompile Include="textclips\clipparser.cpp">
+      <Filter>Source Files\TextClips</Filter>
+    </ClCompile>
+    <ClCompile Include="textclips.cpp">
+      <Filter>Source Files\TextClips</Filter>
+    </ClCompile>
+    <ClCompile Include="textclips\variables.cpp">
+      <Filter>Source Files\TextClips</Filter>
+    </ClCompile>
+    <ClCompile Include="toolcommandstring.cpp">
+      <Filter>Source Files\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="toolrunner.cpp">
+      <Filter>Source Files\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="tools.cpp">
+      <Filter>Source Files\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="toolsmanager.cpp">
+      <Filter>Source Files\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="SchemeCompiler.cpp">
+      <Filter>Source Files\Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="SchemeConfig.cpp">
+      <Filter>Source Files\Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="SchemeManager.cpp">
+      <Filter>Source Files\Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="Schemes.cpp">
+      <Filter>Source Files\Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="StylesUserSettings.cpp">
+      <Filter>Source Files\Schemes</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\genx\charProps.c">
+      <Filter>third_party</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\genx\genx.c">
+      <Filter>third_party</Filter>
+    </ClCompile>
+    <ClCompile Include="include\Utf8_16.cpp">
+      <Filter>third_party</Filter>
+    </ClCompile>
+    <ClCompile Include="exporters\htmlexporter.cpp">
+      <Filter>Exporters</Filter>
+    </ClCompile>
+    <ClCompile Include="exporters\rtfexporter.cpp">
+      <Filter>Exporters</Filter>
+    </ClCompile>
+    <ClCompile Include="magicfolder.cpp">
+      <Filter>Projects</Filter>
+    </ClCompile>
+    <ClCompile Include="project.cpp">
+      <Filter>Projects</Filter>
+    </ClCompile>
+    <ClCompile Include="projectmeta.cpp">
+      <Filter>Projects</Filter>
+    </ClCompile>
+    <ClCompile Include="projectprops.cpp">
+      <Filter>Projects</Filter>
+    </ClCompile>
+    <ClCompile Include="projectregistry.cpp">
+      <Filter>Projects</Filter>
+    </ClCompile>
+    <ClCompile Include="include\boyermoore.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="filename.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Files.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="fileutil.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="l10n.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="include\mdump.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="pnutils.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="ssreg.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="unicodefilewriter.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="updatecheck.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="xmlparser.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="autocomplete.cpp">
+      <Filter>Autocomplete</Filter>
+    </ClCompile>
+    <ClCompile Include="autocompletemanager.cpp">
+      <Filter>Autocomplete</Filter>
+    </ClCompile>
+    <ClCompile Include="xmlfileautocomplete.cpp">
+      <Filter>Autocomplete</Filter>
+    </ClCompile>
+    <ClCompile Include="xmltagsuggest.cpp">
+      <Filter>Autocomplete</Filter>
+    </ClCompile>
+    <ClCompile Include="browseview.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="childfrm.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="findbar.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="findex.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="findinfilesview.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="JumpToDialog.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="jumpview.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="mainfrm.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="NewProjectDialog.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="openfilesview.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="outputscintilla.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="outputview.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="pndialogs.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="pntabs.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="ssmenus.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="textclipsview.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="textview.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="optionscontrols.cpp">
+      <Filter>UI\Options Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsDialogs.cpp">
+      <Filter>UI\Options Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsPageAutocomplete.cpp">
+      <Filter>UI\Options Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsPageEditDefaults.cpp">
+      <Filter>UI\Options Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsPageEditing.cpp">
+      <Filter>UI\Options Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsPageExtensions.cpp">
+      <Filter>UI\Options Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsPageFileAssoc.cpp">
+      <Filter>UI\Options Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsPageFileTypes.cpp">
+      <Filter>UI\Options Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsPageGeneral.cpp">
+      <Filter>UI\Options Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsPageGlobalStyles.cpp">
+      <Filter>UI\Options Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsPageKeyboard.cpp">
+      <Filter>UI\Options Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsPageNewFiles.cpp">
+      <Filter>UI\Options Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsPages.cpp">
+      <Filter>UI\Options Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsPageStyle.cpp">
+      <Filter>UI\Options Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsPageVisual.cpp">
+      <Filter>UI\Options Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="StyleTabPages.cpp">
+      <Filter>UI\Options Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="views\splitview.cpp">
+      <Filter>UI\Views</Filter>
+    </ClCompile>
+    <ClCompile Include="views\view.cpp">
+      <Filter>UI\Views</Filter>
+    </ClCompile>
+    <ClCompile Include="include\ColorButton.cpp">
+      <Filter>UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="filedialogs.cpp">
+      <Filter>UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="controls\pntabcontrol.cpp">
+      <Filter>UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="controls\textclipstree.cpp">
+      <Filter>UI\Controls</Filter>
+    </ClCompile>
+    <ClCompile Include="MagicFolderWiz.cpp">
+      <Filter>UI\Projects</Filter>
+    </ClCompile>
+    <ClCompile Include="projectview.cpp">
+      <Filter>UI\Projects</Filter>
+    </ClCompile>
+    <ClCompile Include="projpropsview.cpp">
+      <Filter>UI\Projects</Filter>
+    </ClCompile>
+    <ClCompile Include="extension.cpp">
+      <Filter>Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptRegistry.cpp">
+      <Filter>Extensions</Filter>
+    </ClCompile>
+    <ClCompile Include="scriptview.cpp">
+      <Filter>Extensions</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="afiles.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="appsettings.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoCompleteHandler.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="commands.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="docprops.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Document.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="editorcommands.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="editorfactory.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExplorerMenu.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="exporters.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="extapp.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileAssoc.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileAssocInfo.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="filename.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Files.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fileutil.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="findinfiles.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="folderadder.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ifilesource.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IOptions.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jumpto.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jumptointerface.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mainfrm.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\OptionsDialog.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsIni.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsManager.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsRegistry.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsXml.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plugins.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pn.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pntypes.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scintillaif.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scintillaimpl.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScintillaIterator.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScintillaWTL.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="searchoptions.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="smartstart.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="usersettingswriter.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="win32file.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="win32filesource.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WorkspaceState.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="textclips\chunkparser.h">
+      <Filter>Source Files\TextClips</Filter>
+    </ClInclude>
+    <ClInclude Include="textclips\clipmanager.h">
+      <Filter>Source Files\TextClips</Filter>
+    </ClInclude>
+    <ClInclude Include="textclips\clipparser.h">
+      <Filter>Source Files\TextClips</Filter>
+    </ClInclude>
+    <ClInclude Include="textclips\clipwriter.h">
+      <Filter>Source Files\TextClips</Filter>
+    </ClInclude>
+    <ClInclude Include="textclips.h">
+      <Filter>Source Files\TextClips</Filter>
+    </ClInclude>
+    <ClInclude Include="textclips\variables.h">
+      <Filter>Source Files\TextClips</Filter>
+    </ClInclude>
+    <ClInclude Include="toolrunner.h">
+      <Filter>Source Files\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="tools.h">
+      <Filter>Source Files\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="toolsmanager.h">
+      <Filter>Source Files\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="toolsxmlwriter.h">
+      <Filter>Source Files\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="SchemeCompiler.h">
+      <Filter>Source Files\Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="SchemeConfig.h">
+      <Filter>Source Files\Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="SchemeManager.h">
+      <Filter>Source Files\Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="Schemes.h">
+      <Filter>Source Files\Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="styles.h">
+      <Filter>Source Files\Schemes</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="version.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\atlshellext.h">
+      <Filter>third_party</Filter>
+    </ClInclude>
+    <ClInclude Include="include\atlshellextbase.h">
+      <Filter>third_party</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\genx\genx.h">
+      <Filter>third_party</Filter>
+    </ClInclude>
+    <ClInclude Include="TabbingFramework\atlgdix.h">
+      <Filter>third_party\TabbingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="TabbingFramework\CustomTabCtrl.h">
+      <Filter>third_party\TabbingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="TabbingFramework\DotNetTabCtrl.h">
+      <Filter>third_party\TabbingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="TabbingFramework\DynamicDialogTemplate.h">
+      <Filter>third_party\TabbingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="TabbingFramework\TabbedDockingWindow.h">
+      <Filter>third_party\TabbingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="TabbingFramework\TabbedFrame.h">
+      <Filter>third_party\TabbingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="TabbingFramework\TabbedMDI.h">
+      <Filter>third_party\TabbingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="TabbingFramework\TabbedMDISave.h">
+      <Filter>third_party\TabbingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\dbstate.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\DDTracker.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\DockingBox.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\DockingFocus.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\DockingFrame.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\DockingWindow.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\DockMisc.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\DWAutoHide.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\dwstate.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\ExtDockingWindow.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\FlyingTabs.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\PackageWindow.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\SimpleSplitterBar.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\ssec.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\sstate.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\TabDockingBox.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\VC7LikeCaption.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="DockingFramework\WndFrmPkg.h">
+      <Filter>third_party\DockingFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="project.h">
+      <Filter>Projects</Filter>
+    </ClInclude>
+    <ClInclude Include="projectmeta.h">
+      <Filter>Projects</Filter>
+    </ClInclude>
+    <ClInclude Include="projectprops.h">
+      <Filter>Projects</Filter>
+    </ClInclude>
+    <ClInclude Include="projectregistry.h">
+      <Filter>Projects</Filter>
+    </ClInclude>
+    <ClInclude Include="projectwriter.h">
+      <Filter>Projects</Filter>
+    </ClInclude>
+    <ClInclude Include="include\boyermoore.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="include\encoding.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="include\filefinder.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="fromhandle.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="inet.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="l10n.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lineendings.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="include\mdump.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pngenx.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="pnstrings.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="pnutils.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="singleinstance.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="include\singleton.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="ssreg.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="include\threading.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="unicodefilewriter.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="updatecheck.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="autocomplete.h">
+      <Filter>Autocomplete</Filter>
+    </ClInclude>
+    <ClInclude Include="autocompletemanager.h">
+      <Filter>Autocomplete</Filter>
+    </ClInclude>
+    <ClInclude Include="xmlfileautocomplete.h">
+      <Filter>Autocomplete</Filter>
+    </ClInclude>
+    <ClInclude Include="xmltagsuggest.h">
+      <Filter>Autocomplete</Filter>
+    </ClInclude>
+    <ClInclude Include="aboutdlg.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="browseview.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="ChildFrm.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="findinfilesview.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="JumpToDialog.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="jumpview.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="openfilesview.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="outputview.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="include\pagesetupdialog.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="pndialogs.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="pndocking.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="pndockingwindow.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="pntabs.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="pntaskdialog.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="textclipsview.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="textview.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsDialogs.h">
+      <Filter>UI\Options Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsPageAutocomplete.h">
+      <Filter>UI\Options Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsPageEditing.h">
+      <Filter>UI\Options Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsPageExtensions.h">
+      <Filter>UI\Options Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsPageGeneral.h">
+      <Filter>UI\Options Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsPageGlobalStyles.h">
+      <Filter>UI\Options Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsPageKeyboard.h">
+      <Filter>UI\Options Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsPages.h">
+      <Filter>UI\Options Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsPageStyle.h">
+      <Filter>UI\Options Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="OptionsPageVisual.h">
+      <Filter>UI\Options Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="StyleTabPages.h">
+      <Filter>UI\Options Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="textclipeditor.h">
+      <Filter>UI\Options Dialog</Filter>
+    </ClInclude>
+    <ClInclude Include="views\splitview.h">
+      <Filter>UI\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="views\view.h">
+      <Filter>UI\Views</Filter>
+    </ClInclude>
+    <ClInclude Include="autofiledialog.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="include\browsetree.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="controls\commandbaredit.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomAutoComplete.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="filedialogbase.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="filedialogs.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="findbar.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="findex.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="include\fontcombo.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="controls\hyperlink.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="controls\OptionsBlockHeader.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="outputscintilla.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="controls\pntabcontrol.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="include\proplist\PropertyList.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ShellCtrls.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="ssmenus.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TaskDialog.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="controls\textclipstree.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="include\toolbar.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wtltreems.h">
+      <Filter>UI\Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="MagicFolderWiz.h">
+      <Filter>UI\Projects</Filter>
+    </ClInclude>
+    <ClInclude Include="NewProjectDialog.h">
+      <Filter>UI\Projects</Filter>
+    </ClInclude>
+    <ClInclude Include="projectview.h">
+      <Filter>UI\Projects</Filter>
+    </ClInclude>
+    <ClInclude Include="projpropsview.h">
+      <Filter>UI\Projects</Filter>
+    </ClInclude>
+    <ClInclude Include="allocator.h">
+      <Filter>Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="extension.h">
+      <Filter>Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="extiface.h">
+      <Filter>Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="include\plugin.h">
+      <Filter>Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="pnextstring.h">
+      <Filter>Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="scriptregistry.h">
+      <Filter>Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="scriptview.h">
+      <Filter>Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="include\liquidmetal.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="pn.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\about.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\bitmap1.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\bitmap4.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\clipstoolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\clipstoolbar24.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\ctags.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\dropdown.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\editor.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\editor24.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\edittbr.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\findbarbmps.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\findbarbmps24.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\folder_find.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\folder_magnify.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\folder_table.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\font_tru.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\infoicon.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\magicfolder.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="include\scintilla\win32\Margin.cur">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\noproject.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\openfilesimages.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\page_white_text.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\pn.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\pn.rc2">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\pndoc.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\projectfolder.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\projects.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\readonly.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\redclose.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="resource.hm">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\scripts.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\tagtypes.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\TaskDlgArrowHot.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\TaskDlgArrowNormal.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\TaskDlgChevronLess.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\TaskDlgChevronMore.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\tbrEdit24.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\tbrFindCombo.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\tbrMain24.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\tbrProjects.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\tbrScheme.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\textclips.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\toolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\toolbardisabled.bmp">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="res\workspace.ico">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="pn.exe.manifest" />
+  </ItemGroup>
+</Project>

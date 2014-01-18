@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="UserMacros">
+    <BoostFileVer>1_54</BoostFileVer>
+    <VSVer>VS2012</VSVer>
+    <VSNum>110</VSNum>
+    <BoostVer>1_54_0</BoostVer>
+    <PythonMagorVer>2</PythonMagorVer>
+    <PythonMinorVer>7</PythonMinorVer>
+    <PythonVer>$(PythonMagorVer)$(PythonMinorVer)</PythonVer>
+    <BoostPythonTag>$(PythonMagorVer).$(PythonMinorVer)</BoostPythonTag>
+    <PythonFolder>D:\Python$(PythonVer)</PythonFolder>
+    <PythonInclude>$(PythonFolder)\include</PythonInclude>
+    <ThirdPartyLibs>$(SolutionDir)..\..\lib</ThirdPartyLibs>
+    <WTLFolder>$(ThirdPartyLibs)\wtl\WTL81_12085</WTLFolder>
+    <WTLSvnFolder>$(ThirdPartyLibs)\wtl\wtl-code\wtl</WTLSvnFolder>
+    <BoostFolder>$(ThirdPartyLibs)\boost\boost_$(BoostVer)_$(VSVer)</BoostFolder>
+    <BoostInclude>$(BoostFolder)</BoostInclude>
+  </PropertyGroup>
+<PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <IncludePath>$(WTLFolder)\include;$(BoostInclude);$(PythonInclude);$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(WTLSvnFolder)\include;$(BoostInclude);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_BIND_TO_CURRENT_CRT_VERSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(WTLSvnFolder)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+    <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="BoostFileVer">
+      <Value>$(BoostFileVer)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

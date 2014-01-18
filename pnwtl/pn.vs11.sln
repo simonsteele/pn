@@ -1,0 +1,65 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pn", "pn.vs11.vcxproj", "{09E60CEB-F210-4524-89CC-D73EBCA224A1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CustomScheme", "CustomScheme\CustomScheme.vs11.vcxproj", "{A7E621BE-65CC-446A-A5A1-4C20D117D344}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ctagsnavigator", "taggers\ctagsnavigator\ctagsnavigator.vs11.vcxproj", "{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pypn", "pypn\pypn.vs11.vcxproj", "{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pnse", "pnse\pnse.vs11.vcxproj", "{188B3F1D-5109-49FD-9DAF-9802AE63763B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scintilla", "scintilla\scintilla.vs11.vcxproj", "{4B384DE2-A934-474E-A6FF-AA1329DEE600}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tests", "tests\tests.vs11.vcxproj", "{0F01F7C9-BF32-4AB4-A616-B3A691CCE6A9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pnlang", "translations\pnlang.vs11.vcxproj", "{CE784A17-DBE2-4722-8B91-1012244A3EA4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "props", "props", "{2B15DF79-83A7-4EAA-82C2-B57B1E598C05}"
+	ProjectSection(SolutionItems) = preProject
+		properties\pn.vs11.props = properties\pn.vs11.props
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{09E60CEB-F210-4524-89CC-D73EBCA224A1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{09E60CEB-F210-4524-89CC-D73EBCA224A1}.Debug|Win32.Build.0 = Debug|Win32
+		{09E60CEB-F210-4524-89CC-D73EBCA224A1}.Release|Win32.ActiveCfg = Release|Win32
+		{09E60CEB-F210-4524-89CC-D73EBCA224A1}.Release|Win32.Build.0 = Release|Win32
+		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.Debug|Win32.Build.0 = Debug|Win32
+		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.Release|Win32.ActiveCfg = Release|Win32
+		{A7E621BE-65CC-446A-A5A1-4C20D117D344}.Release|Win32.Build.0 = Release|Win32
+		{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}.Debug|Win32.Build.0 = Debug|Win32
+		{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}.Release|Win32.ActiveCfg = Release|Win32
+		{F870CEEA-68F7-4CE9-A8DD-27DF5C09C6BF}.Release|Win32.Build.0 = Release|Win32
+		{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}.Debug|Win32.Build.0 = Debug|Win32
+		{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}.Release|Win32.ActiveCfg = Release|Win32
+		{188B3F1D-5109-49FD-9DAF-9802AE63763B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{188B3F1D-5109-49FD-9DAF-9802AE63763B}.Debug|Win32.Build.0 = Debug|Win32
+		{188B3F1D-5109-49FD-9DAF-9802AE63763B}.Release|Win32.ActiveCfg = Release|Win32
+		{188B3F1D-5109-49FD-9DAF-9802AE63763B}.Release|Win32.Build.0 = Release|Win32
+		{4B384DE2-A934-474E-A6FF-AA1329DEE600}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4B384DE2-A934-474E-A6FF-AA1329DEE600}.Debug|Win32.Build.0 = Debug|Win32
+		{4B384DE2-A934-474E-A6FF-AA1329DEE600}.Release|Win32.ActiveCfg = Release|Win32
+		{4B384DE2-A934-474E-A6FF-AA1329DEE600}.Release|Win32.Build.0 = Release|Win32
+		{0F01F7C9-BF32-4AB4-A616-B3A691CCE6A9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0F01F7C9-BF32-4AB4-A616-B3A691CCE6A9}.Debug|Win32.Build.0 = Debug|Win32
+		{0F01F7C9-BF32-4AB4-A616-B3A691CCE6A9}.Release|Win32.ActiveCfg = Release|Win32
+		{0F01F7C9-BF32-4AB4-A616-B3A691CCE6A9}.Release|Win32.Build.0 = Release|Win32
+		{CE784A17-DBE2-4722-8B91-1012244A3EA4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CE784A17-DBE2-4722-8B91-1012244A3EA4}.Debug|Win32.Build.0 = Debug|Win32
+		{CE784A17-DBE2-4722-8B91-1012244A3EA4}.Release|Win32.ActiveCfg = Release|Win32
+		{CE784A17-DBE2-4722-8B91-1012244A3EA4}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
