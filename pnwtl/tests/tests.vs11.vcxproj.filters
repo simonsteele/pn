@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Imported PN">
+      <UniqueIdentifier>{cef574a8-32b3-4751-aaf2-77e4cd31f7d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mocks">
+      <UniqueIdentifier>{8355b22e-9fd2-4e31-9c32-c133a4e5397d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="actests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cliptests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="exttests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="filenametests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="iotests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="regex_tests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="snippetparsetests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="userdatatests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\autocomplete.cpp">
+      <Filter>Imported PN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\genx\charProps.c">
+      <Filter>Imported PN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\textclips\chunk.cpp">
+      <Filter>Imported PN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\textclips\chunkparser.cpp">
+      <Filter>Imported PN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\textclips\clip.cpp">
+      <Filter>Imported PN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\textclips\clipmanager.cpp">
+      <Filter>Imported PN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\textclips\clipparser.cpp">
+      <Filter>Imported PN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filename.cpp">
+      <Filter>Imported PN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Files.cpp">
+      <Filter>Imported PN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\genx\genx.c">
+      <Filter>Imported PN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\projectmeta.cpp">
+      <Filter>Imported PN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ScintillaIF.cpp">
+      <Filter>Imported PN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\textclips.cpp">
+      <Filter>Imported PN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\include\Utf8_16.cpp">
+      <Filter>Imported PN</Filter>
+    </ClCompile>
+    <ClCompile Include="..\xmlparser.cpp">
+      <Filter>Imported PN</Filter>
+    </ClCompile>
+    <ClCompile Include="quicksilver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\autocomplete.h">
+      <Filter>Imported PN</Filter>
+    </ClInclude>
+    <ClInclude Include="..\textclips\chunkparser.h">
+      <Filter>Imported PN</Filter>
+    </ClInclude>
+    <ClInclude Include="mocks\mockoptions.h">
+      <Filter>Mocks</Filter>
+    </ClInclude>
+    <ClInclude Include="mocks\mockscriptrunner.h">
+      <Filter>Mocks</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

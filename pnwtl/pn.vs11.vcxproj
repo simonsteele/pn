@@ -1,0 +1,545 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Template|Win32">
+      <Configuration>Template</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{09E60CEB-F210-4524-89CC-D73EBCA224A1}</ProjectGuid>
+    <RootNamespace>pn</RootNamespace>
+    <ProjectName>pn</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="properties\pn.vs11.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="properties\pn.vs11.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
+    <Import Project="properties\pn.vs11.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\bin\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\Debug\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\bin\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\Release\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Template|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Template|Win32'" />
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\bin/pn.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/Zm208 %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>TabbingFramework; DockingFramework; Scintilla\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;STRICT;SCI_NAMESPACE;UNICODE;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\Debug/pn.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level4</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>delayimp.lib;version.lib;htmlhelp.lib;imm32.lib;wininet.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\bin/pn.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalManifestDependencies>type=%27Win32%27 name=%27Microsoft.Windows.Common-Controls%27 version=%276.0.0.0%27 processorArchitecture=%27X86%27 publicKeyToken=%276595b64144ccf1df%27 language=%27*%27;%(AdditionalManifestDependencies)</AdditionalManifestDependencies>
+      <DelayLoadDLLs>uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\bin/pn.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>
+      </RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+    </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\bin/pn.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/Zm208 $(SVNREV) %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Full</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>TabbingFramework; DockingFramework; Scintilla\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;STRICT;UNICODE;SCI_NAMESPACE;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>.\Release/pn.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>delayimp.lib;version.lib;htmlhelp.lib;imm32.lib;wininet.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>.\bin/pn.exe</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalLibraryDirectories>lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalManifestDependencies>type=%27Win32%27 name=%27Microsoft.Windows.Common-Controls%27 version=%276.0.0.0%27 processorArchitecture=%27X86%27 publicKeyToken=%276595b64144ccf1df%27 language=%27*%27;%(AdditionalManifestDependencies)</AdditionalManifestDependencies>
+      <DelayLoadDLLs>uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>.\bin/pn.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="afiles.cpp" />
+    <ClCompile Include="appsettings.cpp" />
+    <ClCompile Include="commands.cpp" />
+    <ClCompile Include="docprops.cpp" />
+    <ClCompile Include="Document.cpp" />
+    <ClCompile Include="editorcommands.cpp" />
+    <ClCompile Include="editorfactory.cpp" />
+    <ClCompile Include="exporters.cpp" />
+    <ClCompile Include="extapp.cpp" />
+    <ClCompile Include="FileAssoc.cpp" />
+    <ClCompile Include="findinfiles.cpp" />
+    <ClCompile Include="jumpto.cpp" />
+    <ClCompile Include="OptionsIni.cpp" />
+    <ClCompile Include="OptionsManager.cpp" />
+    <ClCompile Include="OptionsRegistry.cpp" />
+    <ClCompile Include="OptionsXml.cpp" />
+    <ClCompile Include="pn.cpp" />
+    <ClCompile Include="scaccessor.cpp" />
+    <ClCompile Include="scintillaif.cpp" />
+    <ClCompile Include="ScintillaImpl.cpp" />
+    <ClCompile Include="singleinstance.cpp" />
+    <ClCompile Include="smartstart.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="styles.cpp" />
+    <ClCompile Include="win32file.cpp" />
+    <ClCompile Include="win32filesource.cpp" />
+    <ClCompile Include="WorkspaceState.cpp" />
+    <ClCompile Include="textclips\chunk.cpp" />
+    <ClCompile Include="textclips\chunkparser.cpp" />
+    <ClCompile Include="textclips\clip.cpp" />
+    <ClCompile Include="textclips\cliphandler.cpp" />
+    <ClCompile Include="textclips\clipmanager.cpp" />
+    <ClCompile Include="textclips\clipparser.cpp" />
+    <ClCompile Include="textclips.cpp" />
+    <ClCompile Include="textclips\variables.cpp" />
+    <ClCompile Include="toolcommandstring.cpp" />
+    <ClCompile Include="toolrunner.cpp" />
+    <ClCompile Include="tools.cpp" />
+    <ClCompile Include="toolsmanager.cpp" />
+    <ClCompile Include="SchemeCompiler.cpp" />
+    <ClCompile Include="SchemeConfig.cpp" />
+    <ClCompile Include="SchemeManager.cpp" />
+    <ClCompile Include="Schemes.cpp" />
+    <ClCompile Include="StylesUserSettings.cpp" />
+    <ClCompile Include="third_party\genx\charProps.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="third_party\genx\genx.c">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="include\Utf8_16.cpp" />
+    <ClCompile Include="exporters\htmlexporter.cpp" />
+    <ClCompile Include="exporters\rtfexporter.cpp" />
+    <ClCompile Include="magicfolder.cpp" />
+    <ClCompile Include="project.cpp" />
+    <ClCompile Include="projectmeta.cpp" />
+    <ClCompile Include="projectprops.cpp" />
+    <ClCompile Include="projectregistry.cpp" />
+    <ClCompile Include="include\boyermoore.cpp" />
+    <ClCompile Include="filename.cpp" />
+    <ClCompile Include="Files.cpp" />
+    <ClCompile Include="fileutil.cpp" />
+    <ClCompile Include="l10n.cpp" />
+    <ClCompile Include="include\mdump.cpp" />
+    <ClCompile Include="pnutils.cpp" />
+    <ClCompile Include="ssreg.cpp" />
+    <ClCompile Include="unicodefilewriter.cpp" />
+    <ClCompile Include="updatecheck.cpp" />
+    <ClCompile Include="xmlparser.cpp" />
+    <ClCompile Include="autocomplete.cpp" />
+    <ClCompile Include="autocompletemanager.cpp" />
+    <ClCompile Include="xmlfileautocomplete.cpp" />
+    <ClCompile Include="xmltagsuggest.cpp" />
+    <ClCompile Include="browseview.cpp" />
+    <ClCompile Include="childfrm.cpp" />
+    <ClCompile Include="findbar.cpp" />
+    <ClCompile Include="findex.cpp" />
+    <ClCompile Include="findinfilesview.cpp" />
+    <ClCompile Include="JumpToDialog.cpp" />
+    <ClCompile Include="jumpview.cpp" />
+    <ClCompile Include="mainfrm.cpp" />
+    <ClCompile Include="NewProjectDialog.cpp" />
+    <ClCompile Include="openfilesview.cpp" />
+    <ClCompile Include="outputscintilla.cpp" />
+    <ClCompile Include="outputview.cpp" />
+    <ClCompile Include="pndialogs.cpp" />
+    <ClCompile Include="pntabs.cpp" />
+    <ClCompile Include="ssmenus.cpp" />
+    <ClCompile Include="textclipsview.cpp" />
+    <ClCompile Include="textview.cpp" />
+    <ClCompile Include="optionscontrols.cpp" />
+    <ClCompile Include="OptionsDialogs.cpp" />
+    <ClCompile Include="OptionsPageAutocomplete.cpp" />
+    <ClCompile Include="OptionsPageEditDefaults.cpp" />
+    <ClCompile Include="OptionsPageEditing.cpp" />
+    <ClCompile Include="OptionsPageExtensions.cpp" />
+    <ClCompile Include="OptionsPageFileAssoc.cpp" />
+    <ClCompile Include="OptionsPageFileTypes.cpp" />
+    <ClCompile Include="OptionsPageGeneral.cpp" />
+    <ClCompile Include="OptionsPageGlobalStyles.cpp" />
+    <ClCompile Include="OptionsPageKeyboard.cpp" />
+    <ClCompile Include="OptionsPageNewFiles.cpp" />
+    <ClCompile Include="OptionsPages.cpp" />
+    <ClCompile Include="OptionsPageStyle.cpp" />
+    <ClCompile Include="OptionsPageVisual.cpp" />
+    <ClCompile Include="StyleTabPages.cpp" />
+    <ClCompile Include="views\splitview.cpp" />
+    <ClCompile Include="views\view.cpp" />
+    <ClCompile Include="include\ColorButton.cpp" />
+    <ClCompile Include="filedialogs.cpp" />
+    <ClCompile Include="controls\pntabcontrol.cpp" />
+    <ClCompile Include="controls\textclipstree.cpp" />
+    <ClCompile Include="MagicFolderWiz.cpp" />
+    <ClCompile Include="projectview.cpp" />
+    <ClCompile Include="projpropsview.cpp" />
+    <ClCompile Include="extension.cpp" />
+    <ClCompile Include="ScriptRegistry.cpp" />
+    <ClCompile Include="scriptview.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="afiles.h" />
+    <ClInclude Include="appsettings.h" />
+    <ClInclude Include="AutoCompleteHandler.h" />
+    <ClInclude Include="commands.h" />
+    <ClInclude Include="docprops.h" />
+    <ClInclude Include="Document.h" />
+    <ClInclude Include="editorcommands.h" />
+    <ClInclude Include="editorfactory.h" />
+    <ClInclude Include="ExplorerMenu.h" />
+    <ClInclude Include="exporters.h" />
+    <ClInclude Include="extapp.h" />
+    <ClInclude Include="FileAssoc.h" />
+    <ClInclude Include="FileAssocInfo.h" />
+    <ClInclude Include="filename.h" />
+    <ClInclude Include="Files.h" />
+    <ClInclude Include="fileutil.h" />
+    <ClInclude Include="findinfiles.h" />
+    <ClInclude Include="folderadder.h" />
+    <ClInclude Include="ifilesource.h" />
+    <ClInclude Include="include\liquidmetal.h" />
+    <ClInclude Include="IOptions.h" />
+    <ClInclude Include="jumpto.h" />
+    <ClInclude Include="jumptointerface.h" />
+    <ClInclude Include="mainfrm.h" />
+    <ClInclude Include="include\OptionsDialog.h" />
+    <ClInclude Include="OptionsIni.h" />
+    <ClInclude Include="OptionsManager.h" />
+    <ClInclude Include="OptionsRegistry.h" />
+    <ClInclude Include="OptionsXml.h" />
+    <ClInclude Include="plugins.h" />
+    <ClInclude Include="pn.h" />
+    <ClInclude Include="pntypes.h" />
+    <ClInclude Include="scintillaif.h" />
+    <ClInclude Include="scintillaimpl.h" />
+    <ClInclude Include="ScintillaIterator.h" />
+    <ClInclude Include="ScintillaWTL.h" />
+    <ClInclude Include="searchoptions.h" />
+    <ClInclude Include="smartstart.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="usersettingswriter.h" />
+    <ClInclude Include="win32file.h" />
+    <ClInclude Include="win32filesource.h" />
+    <ClInclude Include="WorkspaceState.h" />
+    <ClInclude Include="textclips\chunkparser.h" />
+    <ClInclude Include="textclips\clipmanager.h" />
+    <ClInclude Include="textclips\clipparser.h" />
+    <ClInclude Include="textclips\clipwriter.h" />
+    <ClInclude Include="textclips.h" />
+    <ClInclude Include="textclips\variables.h" />
+    <ClInclude Include="toolrunner.h" />
+    <ClInclude Include="tools.h" />
+    <ClInclude Include="toolsmanager.h" />
+    <ClInclude Include="toolsxmlwriter.h" />
+    <ClInclude Include="SchemeCompiler.h" />
+    <ClInclude Include="SchemeConfig.h" />
+    <ClInclude Include="SchemeManager.h" />
+    <ClInclude Include="Schemes.h" />
+    <ClInclude Include="styles.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="version.h" />
+    <ClInclude Include="include\atlshellext.h" />
+    <ClInclude Include="include\atlshellextbase.h" />
+    <ClInclude Include="third_party\genx\genx.h" />
+    <ClInclude Include="TabbingFramework\atlgdix.h" />
+    <ClInclude Include="TabbingFramework\CustomTabCtrl.h" />
+    <ClInclude Include="TabbingFramework\DotNetTabCtrl.h" />
+    <ClInclude Include="TabbingFramework\DynamicDialogTemplate.h" />
+    <ClInclude Include="TabbingFramework\TabbedDockingWindow.h" />
+    <ClInclude Include="TabbingFramework\TabbedFrame.h" />
+    <ClInclude Include="TabbingFramework\TabbedMDI.h" />
+    <ClInclude Include="TabbingFramework\TabbedMDISave.h" />
+    <ClInclude Include="DockingFramework\dbstate.h" />
+    <ClInclude Include="DockingFramework\DDTracker.h" />
+    <ClInclude Include="DockingFramework\DockingBox.h" />
+    <ClInclude Include="DockingFramework\DockingFocus.h" />
+    <ClInclude Include="DockingFramework\DockingFrame.h" />
+    <ClInclude Include="DockingFramework\DockingWindow.h" />
+    <ClInclude Include="DockingFramework\DockMisc.h" />
+    <ClInclude Include="DockingFramework\DWAutoHide.h" />
+    <ClInclude Include="DockingFramework\dwstate.h" />
+    <ClInclude Include="DockingFramework\ExtDockingWindow.h" />
+    <ClInclude Include="DockingFramework\FlyingTabs.h" />
+    <ClInclude Include="DockingFramework\PackageWindow.h" />
+    <ClInclude Include="DockingFramework\SimpleSplitterBar.h" />
+    <ClInclude Include="DockingFramework\ssec.h" />
+    <ClInclude Include="DockingFramework\sstate.h" />
+    <ClInclude Include="DockingFramework\TabDockingBox.h" />
+    <ClInclude Include="DockingFramework\VC7LikeCaption.h" />
+    <ClInclude Include="DockingFramework\WndFrmPkg.h" />
+    <ClInclude Include="project.h" />
+    <ClInclude Include="projectmeta.h" />
+    <ClInclude Include="projectprops.h" />
+    <ClInclude Include="projectregistry.h" />
+    <ClInclude Include="projectwriter.h" />
+    <ClInclude Include="include\boyermoore.h" />
+    <ClInclude Include="include\encoding.h" />
+    <ClInclude Include="include\filefinder.h" />
+    <ClInclude Include="fromhandle.h" />
+    <ClInclude Include="inet.h" />
+    <ClInclude Include="l10n.h" />
+    <ClInclude Include="include\lineendings.h" />
+    <ClInclude Include="include\mdump.h" />
+    <ClInclude Include="include\pngenx.h" />
+    <ClInclude Include="pnstrings.h" />
+    <ClInclude Include="pnutils.h" />
+    <ClInclude Include="singleinstance.h" />
+    <ClInclude Include="include\singleton.h" />
+    <ClInclude Include="ssreg.h" />
+    <ClInclude Include="include\threading.h" />
+    <ClInclude Include="unicodefilewriter.h" />
+    <ClInclude Include="updatecheck.h" />
+    <ClInclude Include="autocomplete.h" />
+    <ClInclude Include="autocompletemanager.h" />
+    <ClInclude Include="xmlfileautocomplete.h" />
+    <ClInclude Include="xmltagsuggest.h" />
+    <ClInclude Include="aboutdlg.h" />
+    <ClInclude Include="browseview.h" />
+    <ClInclude Include="ChildFrm.h" />
+    <ClInclude Include="findinfilesview.h" />
+    <ClInclude Include="JumpToDialog.h" />
+    <ClInclude Include="jumpview.h" />
+    <ClInclude Include="openfilesview.h" />
+    <ClInclude Include="outputview.h" />
+    <ClInclude Include="include\pagesetupdialog.h" />
+    <ClInclude Include="pndialogs.h" />
+    <ClInclude Include="pndocking.h" />
+    <ClInclude Include="pndockingwindow.h" />
+    <ClInclude Include="pntabs.h" />
+    <ClInclude Include="pntaskdialog.h" />
+    <ClInclude Include="textclipsview.h" />
+    <ClInclude Include="textview.h" />
+    <ClInclude Include="OptionsDialogs.h" />
+    <ClInclude Include="OptionsPageAutocomplete.h" />
+    <ClInclude Include="OptionsPageEditing.h" />
+    <ClInclude Include="OptionsPageExtensions.h" />
+    <ClInclude Include="OptionsPageGeneral.h" />
+    <ClInclude Include="OptionsPageGlobalStyles.h" />
+    <ClInclude Include="OptionsPageKeyboard.h" />
+    <ClInclude Include="OptionsPages.h" />
+    <ClInclude Include="OptionsPageStyle.h" />
+    <ClInclude Include="OptionsPageVisual.h" />
+    <ClInclude Include="StyleTabPages.h" />
+    <ClInclude Include="textclipeditor.h" />
+    <ClInclude Include="views\splitview.h" />
+    <ClInclude Include="views\view.h" />
+    <ClInclude Include="autofiledialog.h" />
+    <ClInclude Include="include\browsetree.h" />
+    <ClInclude Include="controls\commandbaredit.h" />
+    <ClInclude Include="CustomAutoComplete.h" />
+    <ClInclude Include="filedialogbase.h" />
+    <ClInclude Include="filedialogs.h" />
+    <ClInclude Include="findbar.h" />
+    <ClInclude Include="findex.h" />
+    <ClInclude Include="include\fontcombo.h" />
+    <ClInclude Include="controls\hyperlink.h" />
+    <ClInclude Include="controls\OptionsBlockHeader.h" />
+    <ClInclude Include="outputscintilla.h" />
+    <ClInclude Include="controls\pntabcontrol.h" />
+    <ClInclude Include="include\proplist\PropertyList.h" />
+    <ClInclude Include="include\ShellCtrls.h" />
+    <ClInclude Include="ssmenus.h" />
+    <ClInclude Include="include\TaskDialog.h" />
+    <ClInclude Include="controls\textclipstree.h" />
+    <ClInclude Include="include\toolbar.h" />
+    <ClInclude Include="include\wtltreems.h" />
+    <ClInclude Include="MagicFolderWiz.h" />
+    <ClInclude Include="NewProjectDialog.h" />
+    <ClInclude Include="projectview.h" />
+    <ClInclude Include="projpropsview.h" />
+    <ClInclude Include="allocator.h" />
+    <ClInclude Include="extension.h" />
+    <ClInclude Include="extiface.h" />
+    <ClInclude Include="include\plugin.h" />
+    <ClInclude Include="pnextstring.h" />
+    <ClInclude Include="scriptregistry.h" />
+    <ClInclude Include="scriptview.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="pn.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\about.bmp" />
+    <None Include="res\bitmap1.bmp" />
+    <None Include="res\bitmap4.bmp" />
+    <None Include="res\clipstoolbar.bmp" />
+    <None Include="res\clipstoolbar24.bmp" />
+    <None Include="res\ctags.ico" />
+    <None Include="res\dropdown.bmp" />
+    <None Include="res\editor.bmp" />
+    <None Include="res\editor24.bmp" />
+    <None Include="res\edittbr.bmp" />
+    <None Include="res\findbarbmps.bmp" />
+    <None Include="res\findbarbmps24.bmp" />
+    <None Include="res\folder_find.ico" />
+    <None Include="res\folder_magnify.ico" />
+    <None Include="res\folder_table.ico" />
+    <None Include="res\font_tru.bmp" />
+    <None Include="res\infoicon.ico" />
+    <None Include="res\magicfolder.ico" />
+    <None Include="include\scintilla\win32\Margin.cur" />
+    <None Include="res\noproject.ico" />
+    <None Include="res\openfilesimages.bmp" />
+    <None Include="res\page_white_text.ico" />
+    <None Include="res\pn.ico" />
+    <None Include="res\pn.rc2" />
+    <None Include="res\pndoc.ico" />
+    <None Include="res\projectfolder.ico" />
+    <None Include="res\projects.ico" />
+    <None Include="res\readonly.ico" />
+    <None Include="res\redclose.bmp" />
+    <None Include="resource.hm" />
+    <None Include="res\scripts.ico" />
+    <None Include="res\tagtypes.bmp" />
+    <None Include="res\TaskDlgArrowHot.ico" />
+    <None Include="res\TaskDlgArrowNormal.ico" />
+    <None Include="res\TaskDlgChevronLess.ico" />
+    <None Include="res\TaskDlgChevronMore.ico" />
+    <None Include="res\tbrEdit24.bmp" />
+    <None Include="res\tbrFindCombo.bmp" />
+    <None Include="res\tbrMain24.bmp" />
+    <None Include="res\tbrProjects.bmp" />
+    <None Include="res\tbrScheme.bmp" />
+    <None Include="res\textclips.ico" />
+    <None Include="res\toolbar.bmp" />
+    <None Include="res\toolbardisabled.bmp" />
+    <None Include="res\workspace.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="pn.exe.manifest" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="pn.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
