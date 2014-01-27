@@ -2233,7 +2233,7 @@ msgstr "模式:"
 #. Resource IDs: (16)
 #, fuzzy
 msgid "Plain Text"
-msgstr "查找下一个(&F)"
+msgstr "纯文本"
 
 #. Resource IDs: (65535)
 msgid "Presets"
