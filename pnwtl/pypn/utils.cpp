@@ -10,6 +10,30 @@
 #include "stdafx.h"
 #include "utils.h"
 
+std::string extractStringFromPyStr(PyObject* strObj)
+{
+	std::string ret;
+#  if PY_VERSION_HEX >= 0x03000000
+	PyObject* bytes = PyUnicode_AsUTF8String(strObj);
+	ret = PyBytes_AsString(bytes); 
+	if (PyErr_Occurred()) return ""; 
+	Py_DECREF(bytes); 
+#else
+        ret = PyString_AsString(strObj);
+#endif
+	return ret;
+}
+
+bool pyStrCheck(PyObject* strObj)
+{
+#  if PY_VERSION_HEX >= 0x03000000
+	return PyUnicode_Check(strObj);
+#else
+	return PyString_Check(strObj);
+#endif
+	
+}
+
 std::string getPythonErrorString()
 {
     // Extra paranoia...
@@ -26,14 +50,15 @@ std::string getPythonErrorString()
     if (type)
 	{
         type = PyObject_Str(type);
-        message += PyString_AsString(type);
+		
+		message += extractStringFromPyStr(type);
     }
     
 	if (value)
 	{
         value = PyObject_Str(value);
         message += ": ";
-        message += PyString_AsString(value);
+        message += extractStringFromPyStr(value);
     }
     
 	Py_XDECREF(type);
@@ -68,7 +93,12 @@ std::string PyTracebackToString(void)
 	PyErr_Fetch(&type, &value, &traceback);
 	PyErr_NormalizeException(&type, &value, &traceback);
 	
+#  if PY_VERSION_HEX >= 0x03000000
+	modStringIO = PyImport_ImportModule("io");
+#else
 	modStringIO = PyImport_ImportModule("cStringIO");
+#endif
+
 	if (modStringIO==NULL)
 		TRACEBACK_FETCH_ERROR("cant import cStringIO\n");
 
@@ -98,10 +128,10 @@ std::string PyTracebackToString(void)
 		TRACEBACK_FETCH_ERROR("getvalue() failed.\n");
 
 	/* And it should be a string all ready to go - duplicate it. */
-	if (!PyString_Check(obResult))
+	if (!pyStrCheck(obResult))
 			TRACEBACK_FETCH_ERROR("getvalue() did not return a string\n");
 
-	result = PyString_AsString(obResult);
+	result = extractStringFromPyStr(obResult);
 done:
 	
 	/* All finished - first see if we encountered an error */
