@@ -1,0 +1,3095 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: np232348\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 1900-01-01 00:00+0000\n"
+"PO-Revision-Date: 2012-04-03 15:38+0900\n"
+"Last-Translator: WATAHIKI Hiroyuki <hrwatahiki@gmail.com>\n"
+"Language-Team: WATAHIKI Hiroyuki <hrwatahiki@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Japanese\n"
+"X-Poedit-Country: JAPAN\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Bookmarks: 88,-1,-1,-1,-1,-1,-1,-1,-1,-1\n"
+
+# msgid/msgstr fields for Accelerator keys
+# Format is: "ID:xxxxxx:VACS+X" where:
+#    ID:xxxxx = the menu ID corresponding to the accelerator
+#    V = Virtual key (or blank if not used) - nearly always set!
+#    A = Alt key     (or blank if not used)
+#    C = Ctrl key    (or blank if not used)
+#    S = Shift key   (or blank if not used)
+#    X = upper case character
+# e.g. "V CS+Q" == Ctrl + Shift + 'Q'
+# ONLY Accelerator Keys with corresponding alphanumeric characters can be
+# updated i.e. function keys (F2), special keys (Delete, HoMe) etc. will not.
+# ONLY change the msgstr field. Do NOT change any other.
+# If you do not want to change an Accelerator Key, copy msgid to msgstr
+#. Resource IDs: (11)
+#, c-format
+msgid "%d character(s) selected."
+msgstr "%d 文字が選択されました。"
+
+#. Resource IDs: (9)
+#, c-format
+msgid "%d occurrence(s) replaced."
+msgstr "%d 個のアイテムを置換しました。"
+
+#. Resource IDs: (22)
+#, c-format
+msgid "%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectName),Name of Project,Project 1,$(ProjectPath),Path of Project,c:\\source\\pn2\\,$(ProjectGroupName),Name of the Project Group,Project Group 1,$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\,$(PNPath),PN Install Path,c:\\program files\\pn,$(ProjectProp:x),Project Property,value of 'x',$(FileProp:x),File Property,value of 'x',%(ENV),ENV Environment Variable,ENV value"
+msgstr "%f,ファイル名,mainfrm.cpp,%n,ファイル名 (拡張子なし),mainfrm,%l,現在の行番号,232,%?,パラメータを問い合わせ,(?),%p,現在のプロジェクトファイル,pn.pnproj,%d,ファイルのパス,c:\\source\\pn\\test\\,%c,列,12,%%,パーセント,%,%w,現在の単語,cheese,%g,プロジェクトグループファイル,pn2.ppg,$(ProjectName),プロジェクト名,Project 1,$(ProjectPath),プロジェクトのパス,c:\\source\\pn2\\,$(ProjectGroupName),プロジェクトグループ名,Project Group 1,$(ProjectGroupPath),プロジェクトグループのパス,c:\\source\\pn2\\,$(PNPath),PNインストールパス,c:\\program files\\pn,$(ProjectProp:x),プロジェクトプロパティ,value of 'x',$(FileProp:x),ファイルプロパティ,value of 'x',%(ENV),ENV 環境変数,ENV value"
+
+#. Resource IDs: (9)
+#, c-format
+msgid ""
+"%f: File Name\n"
+"%l: Line Number\n"
+"%c: Column"
+msgstr ""
+"%f: ファイル名\n"
+"%l: 行番号\n"
+"%c: 列"
+
+#. Resource IDs: (1061)
+msgid "%f: Filename, %l: Line Number, %c: Column"
+msgstr "%f: ファイル名, %l: 行番号, %c: 列"
+
+#. Resource IDs: (9)
+#, c-format
+msgid "%s Properties"
+msgstr "%s プロパティ"
+
+#. Resource IDs: (11)
+#, c-format
+msgid ""
+"%s could not be opened.\n"
+"\n"
+"This could be because the file no longer exists, a disk is absent or due to a broken network connection."
+msgstr ""
+"%s を開けませんでした。\n"
+"\n"
+"ファイルが存在しない、ディスクがない、ネットワークが切断されている可能性があります。"
+
+#. Resource IDs: (12)
+#, c-format
+msgid ""
+"%s could not be saved because access was denied.\n"
+"This could be due to the file being marked read-only, or the disk being write-protected.\n"
+"Do you want to save in another location?"
+msgstr ""
+"%s はアクセスが拒否されたため、保存できませんでした。\n"
+"ファイルが読み取り専用になっているか、ディスクがライトプロテクトされている可能性があります。\n"
+"別の場所に保存しますか?"
+
+#. Resource IDs: (13)
+#, c-format
+msgid ""
+"%s could not be saved because another program or user is using the same file.\n"
+"Do you want to save in another location?"
+msgstr ""
+"%s はほかのプログラムかユーザーが使用しているため保存できませんでした。\n"
+"別の場所に保存しますか?"
+
+#. Resource IDs: (10)
+#, c-format
+msgid ""
+"%s\n"
+"\n"
+"The above file has been modified outside of Programmer's Notepad, do you want to refresh and lose changes?"
+msgstr ""
+"%s\n"
+"\n"
+"このファイルはProgrammer's Notepad以外から修正されました。変更を破棄して再読み込みしますか?"
+
+#. Resource IDs: (57664)
+msgid "&About Programmer's Notepad..."
+msgstr "Programmer's Notepadについて(&A)..."
+
+#. Resource IDs: (1010, 1011, 1034, 1078, 1128, 1148)
+msgid "&Add"
+msgstr "追加(&A)"
+
+#. Resource IDs: (288)
+msgid "&Add Files"
+msgstr "ファイルを追加(&A)"
+
+#. Resource IDs: (288)
+msgid "&Add Files..."
+msgstr "ファイルを追加(&A)..."
+
+#. Resource IDs: (32963)
+msgid "&Add New File..."
+msgstr "新しいファイルを追加(&A)"
+
+#. Resource IDs: (293, 32918)
+msgid "&Add New Folder"
+msgstr "新しいフォルダーを追加(&A)"
+
+#. Resource IDs: (32788)
+msgid "&Add Tools..."
+msgstr "ツールを追加(&A)..."
+
+#. Resource IDs: (1053)
+msgid "&Allow multiple instances of Programmer's Notepad to start"
+msgstr "Programmer's Notepadのインスタンスを複数許可(&A)"
+
+#. Resource IDs: (32970)
+msgid "&Autocomplete"
+msgstr "オートコンプリート(&A)"
+
+#. Resource IDs: (32967)
+msgid "&Block"
+msgstr "ブロック(&B)"
+
+#. Resource IDs: (1021)
+msgid "&Bold"
+msgstr "太字(&B)"
+
+#. Resource IDs: (1105)
+msgid "&Bottom:"
+msgstr "下(&B):"
+
+#. Resource IDs: (57650)
+msgid "&Cascade"
+msgstr "重ねて表示(&C)"
+
+#. Resource IDs: (10)
+msgid "&Change Scheme"
+msgstr "スキームを変更(&C)"
+
+#. Resource IDs: (1033)
+msgid "&Clear"
+msgstr "クリア(&C)"
+
+#. Resource IDs: (33109)
+msgid "&Clear Bookmarks"
+msgstr "ブックマークをクリア(&C)"
+
+#. Resource IDs: (57602)
+msgid "&Close"
+msgstr "閉じる(&C)"
+
+#. Resource IDs: (32962)
+msgid "&Collapse all"
+msgstr "すべて縮小(&C)"
+
+#. Resource IDs: (33121)
+msgid "&Compress Whitespace"
+msgstr "空白をまとめる(&C)"
+
+#. Resource IDs: (32943)
+msgid "&Contents"
+msgstr "コンテンツ(&C)"
+
+#. Resource IDs: (18)
+msgid "&Convert"
+msgstr "変換(&C)"
+
+#. Resource IDs: (32780)
+msgid "&Convert Automatically"
+msgstr "自動的に変換(&C)"
+
+#. Resource IDs: (57634)
+msgid "&Copy"
+msgstr "コピー(&C)"
+
+#. Resource IDs: (32914)
+msgid "&Copy Line"
+msgstr "&行をコピー(&C)"
+
+#. Resource IDs: (33138)
+msgid "&Customize Toolbar"
+msgstr "ツールバーをカスタマイズ(&C)"
+
+#. Resource IDs: (14)
+msgid "&Default"
+msgstr "既定(&D)"
+
+#. Resource IDs: (258, 32862)
+msgid "&Delete"
+msgstr "削除(&D)"
+
+#. Resource IDs: (298)
+msgid "&Delete Project"
+msgstr "プロジェクトを削除(&D)"
+
+#. Resource IDs: (65535)
+msgid "&Display"
+msgstr "表示(&D)"
+
+#. Resource IDs: (12)
+msgid "&Don't Remove"
+msgstr "削除しない(&D)"
+
+#. Resource IDs: (12)
+msgid "&Download Now"
+msgstr "今すぐダウンロード(&D)"
+
+#. Resource IDs: (33119)
+msgid "&Duplicate"
+msgstr "複製(&D)"
+
+#. Resource IDs: (32908)
+msgid "&Duplicate Line"
+msgstr "行を複製(&D)"
+
+#. Resource IDs: (1010, 1011, 1033, 1079, 1129, 1149, 65535)
+msgid "&Edit"
+msgstr "編集(&E)"
+
+#. Resource IDs: (65535)
+msgid "&Encoding:"
+msgstr "文字コード(&E)"
+
+#. Resource IDs: (32963)
+msgid "&Expand all"
+msgstr "すべて展開(&E)"
+
+#. Resource IDs: (33110)
+msgid "&Explorer"
+msgstr "エクスプローラー(&E)"
+
+#. Resource IDs: (65535)
+msgid "&Export"
+msgstr "エクスポート(&E)"
+
+#. Resource IDs: (65535)
+msgid "&File"
+msgstr "ファイル(&F)"
+
+#. Resource IDs: (57636)
+msgid "&Find"
+msgstr "検索(&F)"
+
+#. Resource IDs: (103)
+msgid "&Find Next"
+msgstr "次を検索(&F)"
+
+#. Resource IDs: (32704)
+msgid "&Find Results"
+msgstr "検索結果(&F)"
+
+#. Resource IDs: (65535)
+msgid "&Folding"
+msgstr "折りたたみ(&F)"
+
+#. Resource IDs: (65535)
+msgid "&Font:"
+msgstr "フォント(&F)"
+
+#. Resource IDs: (33)
+msgid "&Footer:"
+msgstr "フッター(&F)"
+
+#. Resource IDs: (33001)
+msgid "&Forums"
+msgstr "フォーラム(&F)"
+
+#. Resource IDs: (282)
+msgid "&Google"
+msgstr "Google(&G)"
+
+#. Resource IDs: (32774)
+msgid "&Goto"
+msgstr "指定の行へジャンプ(&G)"
+
+#. Resource IDs: (32)
+msgid "&Header:"
+msgstr "ヘッダー(&H):"
+
+#. Resource IDs: (9, 1006, 65535)
+msgid "&Help"
+msgstr "ヘルプ(&H)"
+
+#. Resource IDs: (260)
+msgid "&Hide"
+msgstr "隠す(&H)"
+
+#. Resource IDs: (1115)
+msgid "&Hide when \"Find Next\" is clicked."
+msgstr "\"次を検索\"をクリックすると隠す。"
+
+#. Resource IDs: (32863)
+msgid "&Indent"
+msgstr "インデント(&I)"
+
+#. Resource IDs: (65535)
+msgid "&Indentation"
+msgstr "インデント(&I)"
+
+#. Resource IDs: (264)
+msgid "&Individual Output"
+msgstr "個々に出力(&I)"
+
+#. Resource IDs: (32987)
+msgid "&Insert Text Clip"
+msgstr "テキストクリップを挿入(&I)"
+
+#. Resource IDs: (1022)
+msgid "&Italic"
+msgstr "イタリック(&I)"
+
+#. Resource IDs: (33127)
+msgid "&Join Lines"
+msgstr "行をつなぐ(&J)"
+
+#. Resource IDs: (32905)
+msgid "&Jump To..."
+msgstr "指定のタグへジャンプ(&J)..."
+
+#. Resource IDs: (1102)
+msgid "&Left:"
+msgstr "左(&L):"
+
+#. Resource IDs: (32968, 65535)
+msgid "&Line"
+msgstr "行(&L)"
+
+#. Resource IDs: (65535)
+msgid "&Line Endings"
+msgstr "行末(&L)"
+
+#. Resource IDs: (65535)
+msgid "&Line Endings:"
+msgstr "行末(&L):"
+
+#. Resource IDs: (1045)
+msgid "&Line Number (1 - %d):"
+msgstr "行番号(&L) (1 - %d):"
+
+#. Resource IDs: (1038)
+msgid "&Load"
+msgstr "読み込み(&L)"
+
+#. Resource IDs: (32912)
+msgid "&Lowercase"
+msgstr "小文字にする(&L)"
+
+#. Resource IDs: (32779)
+msgid "&Macintosh (CR)"
+msgstr "Macintosh (CR)(&M)"
+
+#. Resource IDs: (21199)
+msgid "&Mark All"
+msgstr "すべてマーク(&M)"
+
+#. Resource IDs: (32791)
+msgid "&Mark WhiteSpace"
+msgstr "空白をマーク(&M)"
+
+#. Resource IDs: (1056)
+msgid "&Maximize new document windows"
+msgstr "新しいドキュメントを最大化する(&M)"
+
+#. Resource IDs: (65535)
+msgid "&Method:"
+msgstr "メソッド(&M):"
+
+#. Resource IDs: (65535)
+msgid "&Multi-Byte Character Support for ANSI files:"
+msgstr "ANSIファイル用のマルチバイト文字サポート(&M):"
+
+#. Resource IDs: (10)
+msgid "&New"
+msgstr "新規(&N)"
+
+#. Resource IDs: (2045)
+msgid "&No"
+msgstr "いいえ(&N)"
+
+#. Resource IDs: (2045)
+msgid "&OK"
+msgstr "OK(&O)"
+
+#. Resource IDs: (32989)
+msgid "&Online Help"
+msgstr "オンラインヘルプ(&H)"
+
+#. Resource IDs: (287)
+msgid "&Open"
+msgstr "開く(&O)"
+
+#. Resource IDs: (299)
+msgid "&Open All Files"
+msgstr "すべてのファイルを開く(&O)"
+
+#. Resource IDs: (1114)
+msgid "&Open dialog should start in the directory of the current file."
+msgstr "開くダイアログは現在のファイルのディレクトリから始める。(&O)"
+
+#. Resource IDs: (32981)
+msgid "&Open in Default Program"
+msgstr "既定のプログラムで開く(&O)"
+
+#. Resource IDs: (57601)
+msgid "&Open..."
+msgstr "開く(&O)..."
+
+#. Resource IDs: (245)
+msgid "&Options"
+msgstr "オプション(&O)"
+
+#. Resource IDs: (32700)
+msgid "&Output"
+msgstr "出力(&O)"
+
+#. Resource IDs: (57637)
+msgid "&Paste"
+msgstr "貼り付け(&P)"
+
+#. Resource IDs: (32999)
+msgid "&Previous Bookmark"
+msgstr "前のブックマーク(&P)"
+
+#. Resource IDs: (57607)
+msgid "&Print..."
+msgstr "印刷(&P)"
+
+#. Resource IDs: (1026)
+msgid "&Printer..."
+msgstr "プリンター(&P)..."
+
+#. Resource IDs: (32701)
+msgid "&Project"
+msgstr "プロジェクト(&P)"
+
+#. Resource IDs: (16)
+msgid "&Project Group"
+msgstr "プロジェクトグループ(&P)"
+
+#. Resource IDs: (32701)
+msgid "&Projects"
+msgstr "プロジェクト(&P)"
+
+#. Resource IDs: (32924)
+msgid "&Properties"
+msgstr "プロパティ(&P)"
+
+#. Resource IDs: (32902)
+msgid "&Properties\tAlt+Enter"
+msgstr "プロパティ(&P)\tAlt+Enter"
+
+#. Resource IDs: (32953)
+msgid "&Quick Find"
+msgstr "クイック検索(&Q)"
+
+#. Resource IDs: (10)
+msgid "&Recent Files"
+msgstr "最近使ったファイル(&R)"
+
+#. Resource IDs: (33129)
+msgid "&Record Script"
+msgstr "スクリプトを記録(&R)"
+
+#. Resource IDs: (57644)
+msgid "&Redo"
+msgstr "やり直し(&R)"
+
+#. Resource IDs: (33117)
+msgid "&Refresh"
+msgstr "更新(&R)"
+
+#. Resource IDs: (1128)
+msgid "&Remember open files and projects between sessions"
+msgstr "セッション間で開いたファイルとプロジェクトを記憶(&R)"
+
+#. Resource IDs: (12)
+msgid "&Remind Me Later"
+msgstr "後で通知(&R)"
+
+#. Resource IDs: (12, 286, 1010, 1012, 1033, 1080, 1130, 1150)
+msgid "&Remove"
+msgstr "削除(&R)"
+
+#. Resource IDs: (286)
+msgid "&Remove Project"
+msgstr "プロジェクトを削除(&R)"
+
+#. Resource IDs: (4)
+msgid "&Replace"
+msgstr "置換(&R)"
+
+#. Resource IDs: (1033, 1036)
+msgid "&Reset"
+msgstr "リセット(&R)"
+
+#. Resource IDs: (2045)
+msgid "&Retry"
+msgstr "再試行(&R)"
+
+#. Resource IDs: (1103)
+msgid "&Right:"
+msgstr "右(&R):"
+
+#. Resource IDs: (1040, 57603)
+msgid "&Save"
+msgstr "保存(&S)"
+
+#. Resource IDs: (12)
+msgid "&Save and Remove"
+msgstr "保存して削除(&S)"
+
+#. Resource IDs: (1017)
+msgid "&Scheme:"
+msgstr "スキーム(&S)"
+
+#. Resource IDs: (32705)
+msgid "&Scripts"
+msgstr "スクリプト(&S)"
+
+#. Resource IDs: (65535)
+msgid "&Search"
+msgstr "検索(&S)"
+
+#. Resource IDs: (273)
+msgid "&Select All"
+msgstr "すべて選択(&S)"
+
+#. Resource IDs: (32897)
+msgid "&Set Active Project"
+msgstr "アクティブプロジェクトを設定(&S)"
+
+#. Resource IDs: (1051)
+msgid "&Show Line Numbers"
+msgstr "行番号を表示(&S)"
+
+#. Resource IDs: (1062)
+msgid "&Show full file path in document windows"
+msgstr "ウィンドウにフルパスを表示(&S)"
+
+#. Resource IDs: (65535)
+msgid "&Size:"
+msgstr "サイズ(&S):"
+
+#. Resource IDs: (1034)
+msgid "&Sort"
+msgstr "並べ替え(&S)"
+
+#. Resource IDs: (32916)
+msgid "&Sort Folders"
+msgstr "フォルダーを並べ替え(&S)"
+
+#. Resource IDs: (1090)
+msgid "&Source:"
+msgstr "ソース(&S):"
+
+#. Resource IDs: (33142)
+msgid "&Split Horizontal"
+msgstr "横に分割(&S)"
+
+#. Resource IDs: (59393)
+msgid "&Status Bar"
+msgstr "ステータスバー(&S)"
+
+#. Resource IDs: (32789)
+msgid "&Stop Tools"
+msgstr "ツールを停止(&S)"
+
+#. Resource IDs: (32966)
+msgid "&Stream"
+msgstr "ストリーム(&S)"
+
+#. Resource IDs: (33120)
+msgid "&Strip Trailing Blanks"
+msgstr "末尾の空白を削除(&S)"
+
+#. Resource IDs: (65535)
+msgid "&Tab Width:"
+msgstr "タブサイズ(&T):"
+
+#. Resource IDs: (32702)
+msgid "&Text Clips"
+msgstr "テキストクリップ(&T)"
+
+#. Resource IDs: (65535)
+msgid "&Text Colour:"
+msgstr "文字色(&T):"
+
+#. Resource IDs: (59392)
+msgid "&Toolbar"
+msgstr "ツールバー(&T)"
+
+#. Resource IDs: (65535)
+msgid "&Tools"
+msgstr "ツール(&T)"
+
+#. Resource IDs: (1104)
+msgid "&Top:"
+msgstr "上(&T):"
+
+#. Resource IDs: (32969)
+msgid "&Uncomment"
+msgstr "コメントを外す(&U)"
+
+#. Resource IDs: (1023)
+msgid "&Underline"
+msgstr "下線(&U)"
+
+#. Resource IDs: (57643)
+msgid "&Undo"
+msgstr "元に戻す(&U)"
+
+#. Resource IDs: (32864)
+msgid "&Unindent"
+msgstr "インデントの解除(&U)"
+
+#. Resource IDs: (32778)
+msgid "&Unix (LF)"
+msgstr "Unix (LF)(&U)"
+
+#. Resource IDs: (32911)
+msgid "&Uppercase"
+msgstr "大文字(&U)"
+
+#. Resource IDs: (1049)
+msgid "&Use the tab character for indentation"
+msgstr "インデントにタブを使う(&U)"
+
+#. Resource IDs: (65535)
+msgid "&View"
+msgstr "ビュー(&V)"
+
+#. Resource IDs: (65535)
+msgid "&Window"
+msgstr "ウィンドウ(&W)"
+
+#. Resource IDs: (65535)
+msgid "&Windows"
+msgstr "ウィンドウ(&W)"
+
+#. Resource IDs: (32777)
+msgid "&Windows (CRLF)"
+msgstr "Windows (CRLF)(&W)"
+
+#. Resource IDs: (33140)
+msgid "&Word Wrap"
+msgstr "ワードラップ(&W)"
+
+#. Resource IDs: (1083)
+msgid "&Word-Wrap"
+msgstr "ワードラップ(&W)"
+
+#. Resource IDs: (2045)
+msgid "&Yes"
+msgstr "はい(&Y)"
+
+#. Resource IDs: (33134)
+msgid "&Zoom In"
+msgstr "拡大(&Z)"
+
+#. Resource IDs: (65535)
+msgid "(1 to 50) items in the most recently used list."
+msgstr "(1 から 50)項目を最近使用した一覧に表示する。"
+
+#. Resource IDs: (16)
+msgid "(None - All Projects)"
+msgstr "(なし - すべてのプロジェクト)"
+
+#. Resource IDs: (16)
+msgid "(None - Global Tools)"
+msgstr "(なし - グローバルツール)"
+
+#. Resource IDs: (12)
+msgid "(empty)"
+msgstr "(空)"
+
+#. Resource IDs: (1120)
+msgid "(enter text and click above to test)"
+msgstr "(テキストを入力し、上をクリックしてテスト)"
+
+#. Resource IDs: (1010, 1012, 21206)
+msgid "..."
+msgstr "..."
+
+#. Resource IDs: (32847)
+msgid "0 or More Matches"
+msgstr "0回以上の一致"
+
+#. Resource IDs: (32848)
+msgid "1 or More Matches"
+msgstr "1回以上の一致"
+
+#. Resource IDs: (1058)
+msgid "?"
+msgstr "?"
+
+#. Resource IDs: (65535)
+msgid "A Magic Folder will reflect the contents of a file system folder in a Projects folder. Select the folder you wish to include below:"
+msgstr "マジックフォルダーはプロジェクトフォルダーにあるファイルシステムのフォルダーの中身を反映します。含ませるフォルダーを選択してください:"
+
+#. Resource IDs: (1107)
+msgid "A&ll open documents"
+msgstr "ドキュメントをすべて開く(&L)"
+
+#. Resource IDs: (32890)
+msgid "ANSI"
+msgstr "ANSI"
+
+#. Resource IDs: (100)
+msgid "About"
+msgstr "このプログラムについて"
+
+#. Resource IDs: (3826)
+msgid "Activate Task List"
+msgstr "タスクリストをアクティブ"
+
+#. Resource IDs: (3826)
+msgid "Activate this window"
+msgstr "このウィンドウをアクティブ"
+
+#. Resource IDs: (309)
+msgid "Add &Existing Project..."
+msgstr "既存のプロジェクトを追加(&A)"
+
+#. Resource IDs: (32917)
+msgid "Add &Magic Folder..."
+msgstr "マジックフォルダーを追加(&M)..."
+
+#. Resource IDs: (308)
+msgid "Add &New Project"
+msgstr "新しいプロジェクトを追加(&N)"
+
+#. Resource IDs: (2073)
+msgid "Add Clip"
+msgstr "クリップを追加"
+
+#. Resource IDs: (2073)
+msgid "Add Clip Set"
+msgstr "クリップセットを追加"
+
+#. Resource IDs: (293)
+msgid "Add New &Folder"
+msgstr "新しいフォルダーを追加(&F)"
+
+#. Resource IDs: (32788)
+msgid "Add Tools..."
+msgstr "ツールを追加"
+
+#. Resource IDs: (19, 1173)
+msgid "Add \"Edit With...\" to Explorer"
+msgstr "エクスプローラーに\"編集...\"を追加"
+
+#. Resource IDs: (14)
+msgid "Advanced"
+msgstr "高度"
+
+#. Resource IDs: (18)
+msgid "All Files"
+msgstr "すべてのファイル"
+
+#. Resource IDs: (10)
+msgid "All Files (*.*)|*.*|"
+msgstr "すべてのファイル (*.*)|*.*|"
+
+#. Resource IDs: (1045)
+msgid "Allow backslash expressions"
+msgstr "\\表現を許可"
+
+#. Resource IDs: (1160)
+msgid "Allow caret to be placed outside current text bounds"
+msgstr "テキスト境界外へのカレット配置を許可"
+
+#. Resource IDs: (1159)
+msgid "Allow editing of read only files"
+msgstr "読み取り専用ファイルの編集を許可"
+
+#. Resource IDs: (1159)
+msgid "Allow multiple selections"
+msgstr "複数選択を許可"
+
+#. Resource IDs: (1161)
+msgid "Allow typing into multiple caret points"
+msgstr "複数カレットでの入力を許可"
+
+#. Resource IDs: (15)
+msgid "Alternate Extensions"
+msgstr "代わりの拡張子"
+
+#. Resource IDs: (65535)
+msgid "Alternate Extensions:"
+msgstr "代わりの表現:"
+
+#. Resource IDs: (65535)
+msgid "Alternate File Pairs"
+msgstr "代わりのファイルペア"
+
+#. Resource IDs: (14)
+msgid "Alternate Files"
+msgstr "代わりのファイル"
+
+#. Resource IDs: (16)
+msgid "An extension may not contain any of these characters: "
+msgstr "これらの文字を含まない:"
+
+#. Resource IDs: (12)
+#, c-format
+msgid "An update for Programmer's Notepad is available (version %s), would you like to download it now?"
+msgstr "Programmer's Notepadの更新プログラムがあります。 (バージョン %s) 今すぐダウンロードしますか?"
+
+#. Resource IDs: (32839)
+msgid "Any Character"
+msgstr "文字"
+
+#. Resource IDs: (12)
+msgid ""
+"Are you sure you wish to rename this magic folder?\n"
+"This will have the effect of renaming the actual folder on the disk."
+msgstr ""
+"本当にマジックフォルダーの名称を変更しますか?\n"
+"ディスク上にある実際のフォルダ名称も変更されるかもしれません。"
+
+#. Resource IDs: (57649)
+msgid "Arrange &Icons"
+msgstr "アイコンを配置(&I)"
+
+#. Resource IDs: (3604)
+msgid ""
+"Arrange icons at the bottom of the window\n"
+"Arrange Icons"
+msgstr ""
+"アイコンをウィンドウの下に配置\n"
+"アイコンを配置"
+
+#. Resource IDs: (3604)
+msgid ""
+"Arrange windows as non-overlapping tiles\n"
+"Tile Windows"
+msgstr ""
+"ウィンドウを並べて配置\n"
+"ウィンドウを並べる"
+
+#. Resource IDs: (3604)
+msgid ""
+"Arrange windows so they overlap\n"
+"Cascade Windows"
+msgstr ""
+"ウィンドウを重ねて配置\n"
+"ウィンドウを重ねる"
+
+#. Resource IDs: (266)
+msgid "As &RTF..."
+msgstr "RTFとして(&R)"
+
+#. Resource IDs: (32878)
+msgid "As HTML..."
+msgstr "HTMLとして(&H)"
+
+#. Resource IDs: (1091, 1094)
+msgid "Ask Me"
+msgstr "たずねる"
+
+#. Resource IDs: (65535)
+msgid "Assign Shortcuts:"
+msgstr "ショートカットを割り当てる:"
+
+#. Resource IDs: (1055)
+msgid "At the &bottom of the main window"
+msgstr "メインウィンドウの下(&b)"
+
+#. Resource IDs: (1141)
+msgid "Auto-Close HTML/XML Tags"
+msgstr "自動でHTML/XMLのタグを閉じる"
+
+#. Resource IDs: (65535)
+msgid "Auto-scroll Caret Position Limits:"
+msgstr "自動スクロール量:"
+
+#. Resource IDs: (1143)
+msgid "AutoComplete After:"
+msgstr "この後にオートコンプリート:"
+
+#. Resource IDs: (65535)
+msgid "AutoComplete Settings"
+msgstr "オートコンプリート設定"
+
+#. Resource IDs: (1144)
+msgid "AutoComplete when asked"
+msgstr "自動でオートコンプリートしない"
+
+#. Resource IDs: (13)
+msgid "Autocomplete"
+msgstr "オートコンプリート"
+
+#. Resource IDs: (13)
+msgid "Avoiding infinite search loop, Replace All abandoned"
+msgstr "検索の無限ループを避けるため、置換をすべて中止しました"
+
+#. Resource IDs: (65535)
+msgid "Bac&kground:"
+msgstr "背景(&C)"
+
+#. Resource IDs: (65535)
+msgid "Base Style Settings"
+msgstr "基本のスタイル設定"
+
+#. Resource IDs: (32842)
+msgid "Beginning of Line"
+msgstr "行のはじめ"
+
+#. Resource IDs: (1152)
+msgid "Blend highlight colour:"
+msgstr "ハイライト色を混ぜる:"
+
+#. Resource IDs: (65535)
+msgid "Bottom:"
+msgstr "下:"
+
+#. Resource IDs: (1010, 1011, 1012, 1013, 1014, 1015, 1016, 1017, 1073)
+msgid "Button1"
+msgstr "ボタン1"
+
+#. Resource IDs: (1033)
+msgid "Button2"
+msgstr "ボタン2"
+
+#. Resource IDs: (259)
+msgid "C&lear"
+msgstr "クリア(&C)"
+
+#. Resource IDs: (65535)
+msgid "CTAGS"
+msgstr "CTAGS"
+
+#. Resource IDs: (2, 2045)
+msgid "Cancel"
+msgstr "キャンセル"
+
+#. Resource IDs: (12)
+#, c-format
+msgid "Cannot find in files in %s, the directory does not exist"
+msgstr "%s にファイルが見つかりませんでした。ディレクトリは存在しません。"
+
+#. Resource IDs: (1047)
+msgid "Capture output?"
+msgstr "出力をキャプチャーしますか?"
+
+#. Resource IDs: (3601)
+msgid ""
+"Change the printer and printing options\n"
+"Print Setup"
+msgstr ""
+"プリンターと印刷オプションを変更\n"
+"印刷設定"
+
+#. Resource IDs: (3601)
+msgid ""
+"Change the printing options\n"
+"Page Setup"
+msgstr ""
+"印刷オプションを変更\n"
+"ページ設定"
+
+#. Resource IDs: (3825)
+msgid "Change the window position"
+msgstr "ウィンドウの位置を変更"
+
+#. Resource IDs: (3825)
+msgid "Change the window size"
+msgstr "ウィンドウのサイズを変更"
+
+#. Resource IDs: (18)
+msgid "Changing the encoding between Unicode and ANSI will clear your Undo history, and may lose unsupported characters. Are you sure?"
+msgstr "文字コードを変更すると元に戻すことはできません。また、サポートされていない文字は失われます。よろしいですか?"
+
+#. Resource IDs: (32841)
+msgid "Character Not in Range"
+msgstr "範囲にない文字"
+
+#. Resource IDs: (32840)
+msgid "Character in Range"
+msgstr "範囲にある文字"
+
+#. Resource IDs: (65535)
+msgid "Characters:"
+msgstr "文字:"
+
+#. Resource IDs: (1099)
+msgid "Check &Now"
+msgstr "今すぐチェック(&N)"
+
+#. Resource IDs: (33141)
+msgid "Check for &Updates"
+msgstr "更新プログラムを確認(&U)"
+
+#. Resource IDs: (1154)
+msgid "Check for &updates"
+msgstr "更新プログラムを確認(&U)"
+
+#. Resource IDs: (57602)
+msgid "Cl&ose\tCtrl-F4"
+msgstr "閉じる(&l)\tCtrl+F4"
+
+#. Resource IDs: (1051)
+msgid "Clear output before running?"
+msgstr "実行する前に出力をクリアしますか?"
+
+#. Resource IDs: (267)
+msgid "Clipboard S&wap"
+msgstr "クリップボードと交換(&S)"
+
+#. Resource IDs: (2045)
+msgid "Close"
+msgstr "閉じる"
+
+#. Resource IDs: (32920)
+msgid "Close &All"
+msgstr "すべて閉じる(&A)"
+
+#. Resource IDs: (32920)
+msgid "Close All"
+msgstr "すべて閉じる"
+
+#. Resource IDs: (32931)
+msgid "Close All &Other"
+msgstr "他をすべて閉じる(&O)"
+
+#. Resource IDs: (32931)
+msgid "Close All &Other Windows"
+msgstr "他のウィンドウをすべて閉じる(&O)"
+
+#. Resource IDs: (301)
+msgid "Close P&roject(s)"
+msgstr "プロジェクトを閉じる(&R)"
+
+#. Resource IDs: (301)
+msgid "Close Project(s)"
+msgstr "プロジェクトを閉じる"
+
+#. Resource IDs: (33150)
+msgid "Close Vie&w"
+msgstr "ビューを閉じる(&W)"
+
+#. Resource IDs: (2045)
+msgid "Close all project files?"
+msgstr "すべてのプロジェクトのファイルを閉じますか?"
+
+#. Resource IDs: (3601)
+msgid ""
+"Close the active document\n"
+"Close"
+msgstr ""
+"アクティブなドキュメントを閉じる\n"
+"閉じる"
+
+#. Resource IDs: (3825)
+msgid "Close the active window and prompts to save the documents"
+msgstr "アクティブなウィンドウを閉じてドキュメントを保存するかたずねる"
+
+#. Resource IDs: (13)
+msgid "Code Templates"
+msgstr "コードテンプレート"
+
+#. Resource IDs: (268)
+msgid "Collapse All Folds"
+msgstr "すべて縮小"
+
+#. Resource IDs: (65535)
+msgid "Com&ments"
+msgstr "コメント(&M)"
+
+#. Resource IDs: (15)
+msgid "Command"
+msgstr "コマンド"
+
+#. Resource IDs: (33144)
+msgid "Command &Mode"
+msgstr "コマンドモード(&M)"
+
+#. Resource IDs: (65535)
+msgid "Command:"
+msgstr "コマンド:"
+
+#. Resource IDs: (14)
+msgid "Confirmations"
+msgstr "確認"
+
+#. Resource IDs: (16)
+msgid "Console I/O"
+msgstr "コンソール I/O"
+
+#. Resource IDs: (32972)
+msgid "Convert Spaces to Tabs"
+msgstr "スペースをタブに変換"
+
+#. Resource IDs: (32971)
+msgid "Convert Tabs to Spaces"
+msgstr "タブをスペースに変換"
+
+#. Resource IDs: (32974)
+msgid "Copy &File Path"
+msgstr "ファイルパスをコピー(&F)"
+
+#. Resource IDs: (32871)
+msgid "Copy as RTF"
+msgstr "RTFとしてコピー"
+
+#. Resource IDs: (3603)
+msgid ""
+"Copy the selection and put it on the Clipboard\n"
+"Copy"
+msgstr ""
+"選択範囲をコピーしクリップボードに入れる\n"
+"コピー"
+
+#. Resource IDs: (11)
+msgid "Could not create file"
+msgstr "ファイルを作成できませんでした"
+
+#. Resource IDs: (18)
+msgid "Could not locate "
+msgstr "場所が特定できませんでした"
+
+#. Resource IDs: (3601)
+msgid ""
+"Create a new document\n"
+"New"
+msgstr ""
+"新しいドキュメントを作成する\n"
+"新規作成"
+
+#. Resource IDs: (9)
+msgid "Create a new project."
+msgstr "新しいプロジェクトを作成する。"
+
+#. Resource IDs: (9)
+msgid "Create a new workspace."
+msgstr "新しいワークスペースを作成する。"
+
+#. Resource IDs: (1157)
+msgid "Create backup files when saving"
+msgstr "保存時にバックアップを作成する"
+
+#. Resource IDs: (57635)
+msgid "Cu&t"
+msgstr "切り取り(&T)"
+
+#. Resource IDs: (32910)
+msgid "Cu&t Line"
+msgstr "行を切り取り(&T)"
+
+#. Resource IDs: (1106)
+msgid "Curren&t document"
+msgstr "現在のドキュメント(&T)"
+
+#. Resource IDs: (33160)
+msgid "Current &Editor"
+msgstr "現在のエディター(&E)"
+
+#. Resource IDs: (32884)
+msgid "Current Date (%c)"
+msgstr "現在の日付 (%c)"
+
+#. Resource IDs: (11)
+msgid "Current File"
+msgstr "現在のファイル"
+
+#. Resource IDs: (11)
+msgid "Current Folder"
+msgstr "現在のフォルダー"
+
+#. Resource IDs: (32881)
+msgid "Current Page (%p)"
+msgstr "現在のページ (&p)"
+
+#. Resource IDs: (11)
+msgid "Current Project Files"
+msgstr "現在のプロジェクトファイル"
+
+#. Resource IDs: (65535)
+msgid "Current Shortcuts:"
+msgstr "現在のショートカット:"
+
+#. Resource IDs: (32888)
+msgid "Current Time (%t)"
+msgstr "現在の時間 (%t)"
+
+#. Resource IDs: (1108)
+msgid "Current pro&ject"
+msgstr "現在のプロジェクト(&J)"
+
+#. Resource IDs: (65535)
+msgid "Cursor Colour:"
+msgstr "カーソルの色:"
+
+#. Resource IDs: (1121)
+msgid "Custom Output Parsing"
+msgstr "カスタム出力パース"
+
+#. Resource IDs: (3603)
+msgid ""
+"Cut the selection and put it on the Clipboard\n"
+"Cut"
+msgstr ""
+"選択範囲を切り取りクリップボードへ入れる\n"
+"切り取り"
+
+#. Resource IDs: (65535)
+msgid "DUMMY"
+msgstr "ダミー"
+
+#. Resource IDs: (32909)
+msgid "De&lete Line"
+msgstr "行を削除(&L)"
+
+#. Resource IDs: (65535)
+msgid "Defaults"
+msgstr "既定値"
+
+#. Resource IDs: (1158)
+msgid "Display block caret instead of line"
+msgstr "行の代わりにブロックカレットを表示"
+
+#. Resource IDs: (3601)
+msgid ""
+"Display full pages\n"
+"Print Preview"
+msgstr ""
+"全ページを表示\n"
+"印刷プレビュー"
+
+#. Resource IDs: (3605)
+msgid ""
+"Display program information, version number and copyright\n"
+"About"
+msgstr ""
+"プログラム情報、バージョン番号、コピーライトを表示\n"
+"このプログラムについて"
+
+#. Resource IDs: (12)
+msgid "Do &Not Download"
+msgstr "ダウンロードしない(&N)"
+
+#. Resource IDs: (1051)
+msgid "Do not &ask me again"
+msgstr "次から表示しない(&A)"
+
+#. Resource IDs: (18)
+msgid "Do not ask me again."
+msgstr "次から表示しない。"
+
+#. Resource IDs: (65535)
+msgid "Do you want to associate these extensions with Programmer's Notepad 2 now?"
+msgstr "これらの拡張子をProgrammer's Notepad 2に関連付けますか?"
+
+#. Resource IDs: (2045)
+#, c-format
+msgid "Do you want to open another copy of %s?"
+msgstr "%s のコピーを開きますか?"
+
+#. Resource IDs: (2063)
+#, c-format
+msgid "Do you want to save changes to the project: %s?"
+msgstr "プロジェクト: %s の変更を保存しますか?"
+
+#. Resource IDs: (9)
+msgid "Document"
+msgstr "ドキュメント"
+
+#. Resource IDs: (1074)
+msgid "Don't change the foreground."
+msgstr "前景を変更しない。"
+
+#. Resource IDs: (57665)
+msgid "E&xit"
+msgstr "終了(&E)"
+
+#. Resource IDs: (12)
+msgid "E&xtensions"
+msgstr "拡張子(&E)"
+
+#. Resource IDs: (17)
+msgid "Edit"
+msgstr "編集"
+
+#. Resource IDs: (432)
+msgid "Edit Alternate File Pair"
+msgstr "他のファイルペアを編集"
+
+#. Resource IDs: (2073)
+msgid "Edit Clip"
+msgstr "クリップを編集"
+
+#. Resource IDs: (439)
+msgid "Edit File Type"
+msgstr "ファイルの種類を編集"
+
+#. Resource IDs: (262)
+msgid "Edit SmartStart Phrase"
+msgstr "スマートスタートフレーズを編集"
+
+#. Resource IDs: (15)
+msgid "Edit Tool"
+msgstr "ツールを編集"
+
+#. Resource IDs: (17, 18)
+msgid "Edit with Programmer's Notepad"
+msgstr "Programmer's Notepadで編集"
+
+#. Resource IDs: (65535)
+msgid "Editing"
+msgstr "編集"
+
+#. Resource IDs: (14)
+msgid "Editor"
+msgstr "エディター"
+
+#. Resource IDs: (10)
+msgid "Empty Project"
+msgstr "空のプロジェクト"
+
+#. Resource IDs: (1138)
+msgid "Enable AutoComplete"
+msgstr "オートコンプリートを有効"
+
+#. Resource IDs: (1118)
+msgid "Enable Command Bar"
+msgstr "コマンドバーを有効"
+
+#. Resource IDs: (1051)
+msgid "Enable SmartStart"
+msgstr "スマートスタートを有効"
+
+#. Resource IDs: (17)
+msgid "Enabled"
+msgstr "有効"
+
+#. Resource IDs: (65535)
+msgid "Enco&ding"
+msgstr "文字コード(&D)"
+
+#. Resource IDs: (18)
+msgid "Encoding Conversion"
+msgstr "文字コード変換"
+
+#. Resource IDs: (1101, 65535)
+msgid "Encoding:"
+msgstr "文字コード:"
+
+#. Resource IDs: (32843)
+msgid "End of Line"
+msgstr "行の終末"
+
+#. Resource IDs: (3825)
+msgid "Enlarge the window to full size"
+msgstr "ウィンドウを最大化"
+
+#. Resource IDs: (1170)
+msgid "Ensure file ends with a blank line"
+msgstr "空行でファイルが終了するか確認"
+
+#. Resource IDs: (65535)
+msgid "Enter a semi-colon separated list of directories that you do not wish to include:"
+msgstr "含めたくないディレクトリのリストをセミコロンで区切って入力:"
+
+#. Resource IDs: (65535)
+msgid "Enter a semi-colon separated list of file types that you do not wish to include:"
+msgstr "含めたくないファイルの種類のリストをセミコロンで区切って入力:"
+
+#. Resource IDs: (65535)
+msgid "Enter a semi-colon separated list of file types that you wish to include:"
+msgstr "含めたいファイルの種類のリストをセミコロンで区切って入力:"
+
+#. Resource IDs: (3603)
+msgid ""
+"Erase everything\n"
+"Erase All"
+msgstr ""
+"すべて消去\n"
+"すべて消去"
+
+#. Resource IDs: (3603)
+msgid ""
+"Erase the selection\n"
+"Erase"
+msgstr ""
+"選択範囲を消去\n"
+"消去"
+
+#. Resource IDs: (65535)
+msgid "Ex&tension:"
+msgstr "拡張(&T):"
+
+#. Resource IDs: (18)
+msgid "Example"
+msgstr "例"
+
+#. Resource IDs: (17)
+msgid "Executable Files (exe, com, bat, vbs...)|*.exe;*.com;*.bat;*.vbs;*.cmd|All Files (*.*)|*.*|"
+msgstr "実行ファイル (exe, com, bat, vbs...)|*.exe;*.com;*.bat;*.vbs;*.cmd|すべてのファイル (*.*)|*.*|"
+
+#. Resource IDs: (269)
+msgid "Expand All Folds"
+msgstr "すべて展開"
+
+#. Resource IDs: (16)
+msgid "Extension"
+msgstr "拡張"
+
+#. Resource IDs: (65535)
+msgid "Extensions"
+msgstr "拡張"
+
+#. Resource IDs: (32874)
+msgid "F&ind in Files"
+msgstr "ファイル内を検索(&F)"
+
+#. Resource IDs: (12)
+msgid "Failed to create a backup document"
+msgstr "バックアップドキュメントの作成に失敗しました"
+
+#. Resource IDs: (18)
+#, c-format
+msgid "Failed to open workspace file %s for writing. Workspace state could not be saved."
+msgstr "ワークスペースファイル %s の書き込みに失敗しました。ワークスペースの状態は保存されません。"
+
+#. Resource IDs: (1110)
+msgid "Fi&nd what:"
+msgstr "検索文字列(&I):"
+
+#. Resource IDs: (17)
+msgid "File"
+msgstr "ファイル"
+
+#. Resource IDs: (32706)
+msgid "File &Browser"
+msgstr "ファイルブラウザー(&B)"
+
+#. Resource IDs: (2045)
+msgid "File Browser"
+msgstr "ファイルブラウザー"
+
+#. Resource IDs: (32882)
+msgid "File Date (%D)"
+msgstr "ファイルの日付 (%D)"
+
+#. Resource IDs: (65535)
+msgid "File Dialogs"
+msgstr "ファイルダイアログ"
+
+#. Resource IDs: (65535)
+msgid "File Extension or Name to Match:"
+msgstr "ファイルの名称か拡張子に一致する:"
+
+#. Resource IDs: (1056)
+msgid "File Format:"
+msgstr "ファイルフォーマット:"
+
+#. Resource IDs: (32879)
+msgid "File Name (%f)"
+msgstr "ファイルの名前 (%f)"
+
+#. Resource IDs: (32880)
+msgid "File Path (%d)"
+msgstr "ファイルのパス (%d)"
+
+#. Resource IDs: (1163)
+msgid "File Save Options"
+msgstr "ファイル保存のオプション"
+
+#. Resource IDs: (32887)
+msgid "File Time (%T)"
+msgstr "ファイルの時刻 (%T)"
+
+#. Resource IDs: (65535)
+msgid "File Types"
+msgstr "ファイルの種類"
+
+#. Resource IDs: (65535)
+msgid ""
+"File extensions should be entered including the '.' dot character, separated by semi-colons, in order of precedence. e.g. \n"
+"\n"
+"Start: .cpp;.cxx;.c;.cc\n"
+"Alternate: .h;.hpp"
+msgstr ""
+"優先度の高い順にセミコロンで区切って'.'ドットを含めたファイルの拡張子を入力\n"
+"\n"
+"開始: .cpp;.cxx;.c;.cc\n"
+"代替: .h;.hpp"
+
+#. Resource IDs: (65535)
+msgid "File extensions should be entered starting with the '.' dot character."
+msgstr "'.'ドットで始まるファイルの拡張子を入力してください。"
+
+#. Resource IDs: (1043)
+msgid "File types:"
+msgstr "ファイルの種類:"
+
+#. Resource IDs: (65535)
+msgid "File:"
+msgstr "ファイル:"
+
+#. Resource IDs: (14)
+msgid "Files"
+msgstr "ファイル"
+
+#. Resource IDs: (1024)
+msgid "Fill to &end of line"
+msgstr "行末まで埋める(&E)"
+
+#. Resource IDs: (22)
+msgid "Find"
+msgstr "検索"
+
+#. Resource IDs: (32773)
+msgid "Find &Next"
+msgstr "次を検索(&N)"
+
+#. Resource IDs: (17)
+msgid "Find &Previous"
+msgstr "前を検索(&P)"
+
+#. Resource IDs: (2055)
+msgid "Find (drop down for other find types)"
+msgstr "検索 (ドロップダウンで他の検索種類)"
+
+#. Resource IDs: (65535)
+msgid "Find Dialog"
+msgstr "検索ダイアログ"
+
+#. Resource IDs: (33132)
+msgid "Find Next Current &Word"
+msgstr "この単語で次を検索(&W)"
+
+#. Resource IDs: (32956)
+msgid "Find Pre&vious"
+msgstr "前を検索(&V)"
+
+#. Resource IDs: (33133)
+msgid "Find Previous C&urrent Word"
+msgstr "この単語で前を検索(&U)"
+
+#. Resource IDs: (2045)
+msgid "Find Results"
+msgstr "検索結果"
+
+#. Resource IDs: (15)
+msgid "Find in Files"
+msgstr "ファイル内を検索"
+
+#. Resource IDs: (1171)
+msgid "Find more extensions at www.pnotepad.org..."
+msgstr "www.pnotepad.org にあるほかの拡張を検索..."
+
+#. Resource IDs: (9)
+msgid "Find reached the starting point of the search."
+msgstr "全て検索しました。"
+
+#. Resource IDs: (2055)
+msgid ""
+"Find text in files\n"
+"Find in Files"
+msgstr ""
+"ファイル内のテキストを検索\n"
+"ファイル内を検索"
+
+#. Resource IDs: (3603)
+msgid ""
+"Find the specified text\n"
+"Find"
+msgstr ""
+"指定のテキストを検索\n"
+"検索"
+
+#. Resource IDs: (1044)
+msgid "Find where:"
+msgstr "検索場所:"
+
+#. Resource IDs: (65535)
+msgid "Folder:"
+msgstr "フォルダー:"
+
+#. Resource IDs: (1146)
+msgid "Folding enabled for supporting schemes"
+msgstr "サポートしているスキームの折りたたみを有効にする"
+
+#. Resource IDs: (65535)
+msgid "Font Style"
+msgstr "フォントスタイル"
+
+#. Resource IDs: (13)
+msgid "Fonts and Colours"
+msgstr "フォントと色"
+
+#. Resource IDs: (17)
+#, c-format
+msgid "Found %d occurrences"
+msgstr "%d 個のアイテムが見つかりました"
+
+#. Resource IDs: (13)
+msgid "General"
+msgstr "一般"
+
+#. Resource IDs: (204)
+msgid "Go To Line"
+msgstr "行へ移動"
+
+#. Resource IDs: (32992)
+msgid "Go to Definition"
+msgstr "定義へ移動"
+
+#. Resource IDs: (283)
+msgid "Google Gr&oups"
+msgstr "Google Groups(&O)"
+
+#. Resource IDs: (32849)
+msgid "Group"
+msgstr "グループ"
+
+#. Resource IDs: (65535)
+msgid "HEADERFOOTERFIELDS"
+msgstr "ヘッダーフッターフィールド"
+
+#. Resource IDs: (1160)
+msgid "Highlight all instances of selected word"
+msgstr "選択している単語の全てのインスタンスをハイライト"
+
+#. Resource IDs: (1066)
+msgid "Highlight current editor line"
+msgstr "現在の編集行をハイライト"
+
+#. Resource IDs: (1068)
+msgid "Highlight text beyond the edge column"
+msgstr "列の境界をまたがってテキストをハイライト"
+
+#. Resource IDs: (15)
+msgid "Hint"
+msgstr "ヒント"
+
+#. Resource IDs: (65535)
+msgid "Hint:"
+msgstr "ヒント:"
+
+#. Resource IDs: (65535)
+msgid "Horizontal:"
+msgstr "横:"
+
+#. Accelerator Entry for Menu ID:267; 'Clipboard S&wap'
+msgid "ID:267:V CS+C"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32703; 'T&ags'
+msgid "ID:32703:VA  +G"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32774; '&Goto'
+msgid "ID:32774:V C +G"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32783; ''
+msgid "ID:32783:V C +K"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32784; ''
+msgid "ID:32784:V C +Q"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32789; '&Stop Tools'
+msgid "ID:32789:V CS+K"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32865; 'Save A&ll'
+msgid "ID:32865:V CS+S"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32866; ''
+msgid "ID:32866:V CS+H"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32871; 'Copy as RTF'
+msgid "ID:32871:VAC +C"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32874; 'F&ind in Files'
+msgid "ID:32874:V CS+F"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32909; 'De&lete Line'
+msgid "ID:32909:V CS+L"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:32910; 'Cu&t Line'
+msgid "ID:32910:V C +L"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57600; ''
+msgid "ID:57600:V C +N"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57601; '&Open...'
+msgid "ID:57601:V C +O"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57602; 'Cl&ose\tCtrl-F4'
+msgid "ID:57602:V C +W"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57603; '&Save'
+msgid "ID:57603:V C +S"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57607; '&Print...'
+msgid "ID:57607:V C +P"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57634; '&Copy'
+msgid "ID:57634:V C +C"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57635; 'Cu&t'
+msgid "ID:57635:V C +X"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57635; 'Cu&t'
+msgid "ID:57635:V CS+X"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57636; '&Find'
+msgid "ID:57636:V C +F"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57637; '&Paste'
+msgid "ID:57637:V C +V"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57637; '&Paste'
+msgid "ID:57637:V CS+V"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57641; 'R&eplace'
+msgid "ID:57641:V C +H"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57641; 'R&eplace'
+msgid "ID:57641:V C +R"
+msgstr ""
+
+#. Accelerator Entry for Menu ID:57643; '&Undo'
+msgid "ID:57643:V C +Z"
+msgstr ""
+
+#. Resource IDs: (1109)
+msgid "In &selection"
+msgstr "選択範囲内(&S)"
+
+#. Resource IDs: (1134)
+msgid "Include &hidden"
+msgstr "隠れているものを含める(&H)"
+
+#. Resource IDs: (1139)
+msgid "Include Scheme Keywords"
+msgstr "スキームのキーワードを含める"
+
+#. Resource IDs: (1140)
+msgid "Include Tags"
+msgstr "タグを含める"
+
+#. Resource IDs: (65535)
+msgid "Indentation Guides:"
+msgstr "インデントガイド"
+
+#. Resource IDs: (3603)
+msgid ""
+"Insert Clipboard contents\n"
+"Paste"
+msgstr ""
+"クリップボードに挿入\n"
+"貼り付け"
+
+#. Resource IDs: (14)
+msgid "Integration"
+msgstr "統合"
+
+#. Resource IDs: (14)
+msgid "Interface"
+msgstr "インターフェース"
+
+#. Resource IDs: (321)
+msgid "Jump To..."
+msgstr "ジャンプ..."
+
+#. Resource IDs: (65535)
+msgid "Jump to:"
+msgstr "ここへジャンプ:"
+
+#. Resource IDs: (14)
+msgid "Keyboard"
+msgstr "キーボード"
+
+#. Resource IDs: (65535)
+msgid "Keyboard Shortcuts"
+msgstr "キーボードショートカット"
+
+#. Resource IDs: (15)
+msgid "Keywords"
+msgstr "キーワード"
+
+#. Resource IDs: (1057)
+msgid "L&andscape"
+msgstr "ランドスケープ(&A)"
+
+#. Resource IDs: (65535)
+msgid "Language"
+msgstr "言語"
+
+#. Resource IDs: (17)
+msgid "Line"
+msgstr "行"
+
+#. Resource IDs: (32792)
+msgid "Line &End Markers"
+msgstr "行末のマーカー(&E)"
+
+#. Resource IDs: (132)
+msgid "Line &Numbers"
+msgstr "行番号(&N)"
+
+#. Resource IDs: (65535)
+msgid "Line Endings:"
+msgstr "行末:"
+
+#. Resource IDs: (1170)
+msgid "Line Padding"
+msgstr "行パディング"
+
+#. Resource IDs: (65535)
+msgid "Lines:"
+msgstr "行:"
+
+#. Resource IDs: (32912)
+msgid "Lo&wercase"
+msgstr "小文字にする(&W)"
+
+#. Resource IDs: (65535)
+msgid "Long Line Helpers"
+msgstr "長い行のヘルパー"
+
+#. Resource IDs: (1059)
+msgid "Look for a custom pattern:"
+msgstr "カスタムパターンで探す:"
+
+#. Resource IDs: (1155)
+msgid "Look for testing releases"
+msgstr "テストリリースを探す"
+
+#. Resource IDs: (1075)
+msgid "Margins"
+msgstr "マージン"
+
+#. Resource IDs: (65535)
+msgid "Mark All Highlight:"
+msgstr "すべてのハイライトをマーク:"
+
+#. Resource IDs: (16)
+msgid "Match"
+msgstr "一致"
+
+#. Resource IDs: (105)
+msgid "Match &case"
+msgstr "大文字と小文字を区別する(&C)"
+
+#. Resource IDs: (104)
+msgid "Match &whole word only"
+msgstr "単語単位(&W)"
+
+#. Resource IDs: (17)
+msgid "Match Case"
+msgstr "大文字と小文字を区別する"
+
+#. Resource IDs: (18)
+msgid "Meaning"
+msgstr "意味"
+
+#. Resource IDs: (16)
+msgid "Method"
+msgstr "メソッド"
+
+#. Resource IDs: (22)
+msgid "Modified"
+msgstr "変更"
+
+#. Resource IDs: (15)
+msgid "More Options"
+msgstr "詳細なオプション"
+
+#. Resource IDs: (1034)
+msgid "Move &Down"
+msgstr "下へ移動(&D)"
+
+#. Resource IDs: (1033)
+msgid "Move &Up"
+msgstr "上へ移動(&U)"
+
+#. Resource IDs: (33003)
+msgid "Move Line &Up"
+msgstr "行を上へ移動(&U)"
+
+#. Resource IDs: (33005)
+msgid "Move Line Do&wn"
+msgstr "行を下へ移動(&O)"
+
+#. Resource IDs: (15, 16)
+msgid "Name"
+msgstr "名前"
+
+#. Resource IDs: (65535)
+msgid "Name:"
+msgstr "名前:"
+
+#. Resource IDs: (17)
+msgid "New Clip Set"
+msgstr "新しいクリップセット"
+
+#. Resource IDs: (65535)
+msgid "New File"
+msgstr "新しいファイル"
+
+#. Resource IDs: (14)
+msgid "New Files"
+msgstr "新しいファイル"
+
+#. Resource IDs: (17)
+msgid "New Folder"
+msgstr "新しいフォルダ"
+
+#. Resource IDs: (10)
+msgid "New Project Group"
+msgstr "新しいプロジェクトグループ"
+
+#. Resource IDs: (336)
+msgid "New Project..."
+msgstr "新しいプロジェクト..."
+
+#. Resource IDs: (15)
+msgid "New Tool"
+msgstr "新しいツール"
+
+#. Resource IDs: (32787)
+msgid "Next B&ookmark"
+msgstr "次のブックマーク(&O)"
+
+#. Resource IDs: (7)
+msgid "No"
+msgstr "いいえ"
+
+#. Resource IDs: (1124)
+msgid "No Override"
+msgstr "オーバーライドしない"
+
+#. Resource IDs: (1067)
+msgid "No long line help"
+msgstr "長い行のヘルプを表示しない"
+
+#. Resource IDs: (12)
+msgid "No more occurrences found in the specified set of documents."
+msgstr "文書の指定されたセットで見つかりませんでした"
+
+#. Resource IDs: (13)
+msgid "No updates are available at this time."
+msgstr "現在アップデートはありません。"
+
+#. Resource IDs: (18)
+msgid "None"
+msgstr "なし"
+
+#. Resource IDs: (32845)
+msgid "Not"
+msgstr "ない"
+
+#. Resource IDs: (65535)
+msgid "Note: The first item in any list will be the default tool."
+msgstr "注意: リストの最初のアイテムは既定のツールになります。"
+
+#. Resource IDs: (1)
+msgid "OK"
+msgstr "OK"
+
+#. Resource IDs: (1057)
+msgid "Only show with ma&ximized document windows"
+msgstr "ウィンドウを最大化したときのみ表示(&X)"
+
+#. Resource IDs: (16)
+msgid "Open"
+msgstr "開く"
+
+#. Resource IDs: (32977)
+msgid "Open &Folder"
+msgstr "フォルダーを開く(&F)"
+
+#. Resource IDs: (32976)
+msgid "Open Con&taining Folder"
+msgstr "含んでいるフォルダーを開く(&T)"
+
+#. Resource IDs: (32707)
+msgid "Open Fi&les"
+msgstr "ファイルを開く(&L)"
+
+#. Resource IDs: (12, 2045)
+msgid "Open Files"
+msgstr "ファイルを開く"
+
+#. Resource IDs: (289)
+msgid "Open Pro&ject(s)..."
+msgstr "プロジェクトを開く(&J)..."
+
+#. Resource IDs: (289)
+msgid "Open Project(s)..."
+msgstr "プロジェクトを開く..."
+
+#. Resource IDs: (10)
+msgid "Open Project/Project Group"
+msgstr "プロジェクト/プロジェクトグループを開く"
+
+#. Resource IDs: (32903)
+msgid "Open URL in Default Browser"
+msgstr "URLを既定のブラウザーで開く"
+
+#. Resource IDs: (33111)
+msgid "Open Wor&kspace..."
+msgstr "ワークスペースを開く(&K)..."
+
+#. Resource IDs: (3601)
+msgid ""
+"Open an existing document\n"
+"Open"
+msgstr ""
+"既存のドキュメントを開く\n"
+"開く"
+
+#. Resource IDs: (3604)
+msgid ""
+"Open another window for the active document\n"
+"New Window"
+msgstr ""
+"アクティブなドキュメントを他のウィンドウで開く\n"
+"新しいウィンドウ"
+
+#. Resource IDs: (32979)
+msgid "Open in De&fault Program"
+msgstr "既定のプログラムで開く(&F)"
+
+#. Resource IDs: (3838)
+msgid "Open this document"
+msgstr "このドキュメントを開く"
+
+#. Resource IDs: (243)
+msgid "Options"
+msgstr "オプション"
+
+#. Resource IDs: (32846)
+msgid "Or"
+msgstr "もしくは"
+
+#. Resource IDs: (1072)
+msgid "Orientation"
+msgstr "向き"
+
+#. Resource IDs: (65535)
+msgid "Other User Interface Options"
+msgstr "他のユーザインターフェースオプション"
+
+#. Resource IDs: (2044)
+msgid "Output"
+msgstr "出力"
+
+#. Resource IDs: (65535)
+msgid "Output Parsing:"
+msgstr "出力解析:"
+
+#. Resource IDs: (65535)
+msgid "Override Indentation:"
+msgstr "インデントをオーバーライド:"
+
+#. Resource IDs: (1056)
+msgid "P&ortrait"
+msgstr "ポートレート(&O)"
+
+#. Resource IDs: (251)
+msgid "PN &Home Page"
+msgstr "PNホームページ(&H)"
+
+#. Resource IDs: (9)
+#, c-format
+msgid ""
+"PN could not remove the write-protection from \"%s\".\n"
+"\n"
+" Would you like to save with a different name?"
+msgstr ""
+"PNは\"%s\"のライトプロテクトをはずすことができませんでした。\n"
+"\n"
+"別の名前で保存しますか?"
+
+#. Resource IDs: (252)
+msgid "PN on &Google Code"
+msgstr "Google Code上のPN(&G)"
+
+#. Resource IDs: (330)
+msgid "PN2 File Associations"
+msgstr "PN2のファイル関連付け"
+
+#. Resource IDs: (1051)
+msgid "PN2 should &check the associations when starting"
+msgstr "PN2は開始時に関連付けをチェックする"
+
+#. Resource IDs: (65535)
+msgid "PROJECT"
+msgstr "プロジェクト"
+
+#. Resource IDs: (32883)
+msgid "Page Count (%P)"
+msgstr "ページ数 (%P)"
+
+#. Resource IDs: (12)
+msgid "Page Setup"
+msgstr "ページセットアップ"
+
+#. Resource IDs: (1073)
+msgid "Paper"
+msgstr "紙"
+
+#. Resource IDs: (65535)
+msgid "Parameters:"
+msgstr "パラメーター:"
+
+#. Resource IDs: (15)
+msgid "Params"
+msgstr "パラメーター"
+
+#. Resource IDs: (1133)
+msgid "Pass my selection to this tool using Standard Input"
+msgstr "標準入力経由で選択部分をツールに渡す"
+
+#. Resource IDs: (65535)
+msgid "Pattern:"
+msgstr "パターン:"
+
+#. Resource IDs: (16)
+msgid "Plain Text"
+msgstr "プレーンテキスト"
+
+#. Resource IDs: (65535)
+msgid "Presets"
+msgstr "プリセット"
+
+#. Resource IDs: (65535)
+msgid "Preview"
+msgstr "プレビュー"
+
+#. Resource IDs: (57606)
+msgid "Print Set&up..."
+msgstr "印刷のセットアップ(&U)"
+
+#. Resource IDs: (3601)
+msgid ""
+"Print the active document\n"
+"Print"
+msgstr ""
+"アクティブなドキュメントを印刷\n"
+"印刷"
+
+#. Resource IDs: (9)
+msgid "Programmer's Notepad"
+msgstr "Programmer's Notepad"
+
+#. Resource IDs: (1098)
+msgid "Programmer's Notepad 2"
+msgstr "Programmer's Notepad 2"
+
+#. Resource IDs: (65535)
+msgid "Programmer's Notepad 2 is not the handler for these extensions:"
+msgstr "Programmer's Notepad 2 はこの拡張のハンドラーではありません:"
+
+#. Resource IDs: (22)
+msgid ""
+"Programmer's Notepad 2 provides built-in support\n"
+"for parsing output from the following tools:\n"
+"\n"
+"Borland C++\n"
+"Microsoft Compilers\n"
+"GCC\n"
+"lcc-win32\n"
+"Python\n"
+"Perl\n"
+"and other similar tools."
+msgstr ""
+"Programmer's Notepad 2 は以下のツールからの\n"
+"出力をサポートしています:\n"
+"\n"
+"Borland C++\n"
+"Microsoft Compilers\n"
+"GCC\n"
+"lcc-win32\n"
+"Python\n"
+"Perl\n"
+"その他同様のツール。"
+
+#. Resource IDs: (22)
+msgid "Project"
+msgstr "プロジェクト"
+
+#. Resource IDs: (22)
+msgid "Project Group"
+msgstr "プロジェクトグループ"
+
+#. Resource IDs: (18)
+msgid "Project Group Files"
+msgstr "プロジェクトグループファイル"
+
+#. Resource IDs: (10)
+msgid "Project Group Files (*.ppg)|*.ppg|"
+msgstr "プロジェクトグループファイル (*.ppg)|*.ppg|"
+
+#. Resource IDs: (16)
+msgid "Project Template:"
+msgstr "プロジェクトテンプレート:"
+
+#. Resource IDs: (14)
+msgid "Project Tools"
+msgstr "プロジェクトツール"
+
+#. Resource IDs: (12)
+#, c-format
+msgid "Project \"%s\" has been changed, do you want to save the changes before removing?"
+msgstr "プロジェクト \"%s\" は変更されました。削除する前に変更を保存しますか?"
+
+#. Resource IDs: (2044)
+msgid "Projects"
+msgstr "プロジェクト"
+
+#. Resource IDs: (10)
+msgid "Projects and Project Groups (*.pnproj, *.ppg)|*.pnproj;*.ppg|"
+msgstr "プロジェクトとプロジェクトグループ (*.pnproj, *.ppg)|*.pnproj;*.ppg|"
+
+#. Resource IDs: (32902)
+msgid "Proper&ties..."
+msgstr "プロパティ(&T)..."
+
+#. Resource IDs: (16)
+msgid "Properties"
+msgstr "プロパティ"
+
+#. Resource IDs: (3605)
+msgid ""
+"Quit the application; prompts to save documents\n"
+"Exit"
+msgstr ""
+"アプリケーションを終了; ドキュメント保存のプロンプトを表示\n"
+"終了"
+
+#. Resource IDs: (57641)
+msgid "R&eplace"
+msgstr "置換(&E)"
+
+#. Resource IDs: (32947)
+msgid "Re&fresh"
+msgstr "更新(&F)"
+
+#. Resource IDs: (32982)
+msgid "Re&name"
+msgstr "名前の変更(&N)"
+
+#. Resource IDs: (263)
+msgid "Re&vert"
+msgstr "戻す(&V)"
+
+#. Resource IDs: (1090, 1093)
+msgid "Re-Open"
+msgstr "再度開く"
+
+#. Resource IDs: (22, 3585)
+msgid "Ready"
+msgstr "準備完了"
+
+#. Resource IDs: (10)
+msgid "Recent Pro&jects"
+msgstr "最近使ったプロジェクト(&J)"
+
+#. Resource IDs: (11)
+msgid "Rectangular Selection."
+msgstr "矩形選択."
+
+#. Resource IDs: (3603)
+msgid ""
+"Redo the previously undone action\n"
+"Redo"
+msgstr ""
+"前の元に戻すをやり直し\n"
+"やり直し"
+
+#. Resource IDs: (3825)
+msgid "Reduce the window to an icon"
+msgstr "ウィンドウをアイコンにする"
+
+#. Resource IDs: (107)
+msgid "Regular &expression"
+msgstr "正規表現(&E)"
+
+#. Resource IDs: (33124)
+msgid "Remove Blank &Lines"
+msgstr "空白行を削除(&L)"
+
+#. Resource IDs: (2073)
+msgid "Remove Clip"
+msgstr "クリップを削除"
+
+#. Resource IDs: (2073)
+msgid "Remove Clip Set"
+msgstr "クリップセットを削除"
+
+#. Resource IDs: (19)
+msgid "Remove \"Edit With...\" from Explorer"
+msgstr "エクスプローラーから\"編集...\"を削除"
+
+#. Resource IDs: (3603)
+msgid ""
+"Repeat the last action\n"
+"Repeat"
+msgstr ""
+"最後の操作を繰り返し\n"
+"繰り返し"
+
+#. Resource IDs: (14)
+msgid "Replace"
+msgstr "置換"
+
+#. Resource IDs: (6)
+msgid "Replace &All"
+msgstr "すべて置換(&A)"
+
+#. Resource IDs: (11)
+msgid "Replace my selection."
+msgstr "選択範囲を置換。"
+
+#. Resource IDs: (3603)
+msgid ""
+"Replace specific text with different text\n"
+"Replace"
+msgstr ""
+"別のテキストで特定のテキストを置換\n"
+"置換"
+
+#. Resource IDs: (1042)
+msgid "Replace with:"
+msgstr "置換文字列:"
+
+#. Resource IDs: (253)
+msgid "Report a &bug..."
+msgstr "バグを報告(&B)..."
+
+#. Resource IDs: (275)
+msgid "Request a &feature..."
+msgstr "機能をリクエスト(&F)..."
+
+#. Resource IDs: (1037)
+msgid "Reset &All"
+msgstr "すべてリセット(&A)"
+
+#. Resource IDs: (3826)
+msgid "Restore the window to normal size"
+msgstr "ウィンドウを通常サイズに戻す"
+
+#. Resource IDs: (17)
+msgid ""
+"Revert this document to the current saved state\n"
+"Revert"
+msgstr ""
+"ドキュメントをセーブしたものに戻す\n"
+"戻す"
+
+#. Resource IDs: (65535)
+msgid "Rightmost Column:"
+msgstr "右端列:"
+
+#. Resource IDs: (32946)
+msgid "Sa&ve Project"
+msgstr "プロジェクトを保存(&A)"
+
+#. Resource IDs: (10)
+msgid "Save "
+msgstr "保存"
+
+#. Resource IDs: (57604)
+msgid "Save &As..."
+msgstr "名前をつけて保存(&A)..."
+
+#. Resource IDs: (32950)
+msgid "Save &Workspace As..."
+msgstr "名前をつけてワークスペースを保存(&W)..."
+
+#. Resource IDs: (32865)
+msgid "Save A&ll"
+msgstr "すべて保存(&A)"
+
+#. Resource IDs: (2055)
+msgid ""
+"Save all open documents\n"
+"Save All"
+msgstr ""
+"開いているすべてのドキュメントを保存\n"
+"すべて保存"
+
+#. Resource IDs: (3601)
+msgid ""
+"Save the active document with a new name\n"
+"Save As"
+msgstr ""
+"アクティブなドキュメントに新しい名前をつけて保存\n"
+"名前をつけて保存"
+
+#. Resource IDs: (3601)
+msgid ""
+"Save the active document\n"
+"Save"
+msgstr ""
+"アクティブなドキュメントを保存\n"
+"保存"
+
+#. Resource IDs: (65535)
+msgid "Save:"
+msgstr "保存:"
+
+#. Resource IDs: (16)
+msgid "Scheme"
+msgstr "スキーム"
+
+#. Resource IDs: (1017, 65535)
+msgid "Scheme:"
+msgstr "スキーム:"
+
+#. Resource IDs: (221)
+msgid "Schemes"
+msgstr "スキーム"
+
+#. Resource IDs: (2045)
+msgid "Scripts"
+msgstr "スクリプト"
+
+#. Resource IDs: (436, 1111)
+msgid "Search"
+msgstr "検索"
+
+#. Resource IDs: (1047)
+msgid "Search &up"
+msgstr "上に検索(&U)"
+
+#. Resource IDs: (18)
+#, c-format
+msgid "Search complete: %d matching lines found in %d files, taking %d milliseconds.\n"
+msgstr "検索終了: %d行一致しました。(全%dファイル中) %dミリ秒かかりました。\n"
+
+#. Resource IDs: (1046)
+msgid "Search sub&directories"
+msgstr "サブディレクトリを検索(&D)"
+
+#. Resource IDs: (17)
+msgid "Searching for: "
+msgstr "これを検索:"
+
+#. Resource IDs: (273)
+msgid "Select &All"
+msgstr "すべて検索(&A)"
+
+#. Resource IDs: (17)
+msgid "Select Tool Command..."
+msgstr "ツールコマンドを選択..."
+
+#. Resource IDs: (3603)
+msgid ""
+"Select the entire document\n"
+"Select All"
+msgstr ""
+"ドキュメントをすべて選択\n"
+"すべて選択"
+
+#. Resource IDs: (10)
+msgid "Select the root folder for the search:"
+msgstr "検索のルートフォルダーを選択:"
+
+#. Resource IDs: (22)
+msgid "Select the working folder for the tool:"
+msgstr "ツールのワーク用フォルダを選択:"
+
+#. Resource IDs: (65535)
+msgid "Selected Word Highlight:"
+msgstr "選択した単語のハイライト:"
+
+#. Resource IDs: (65535)
+msgid "Selecti&on"
+msgstr "選択範囲(&O)"
+
+#. Resource IDs: (65535)
+msgid "Selection Background:"
+msgstr "選択範囲の背景色:"
+
+#. Resource IDs: (65535)
+msgid "Selection Foreground:"
+msgstr "選択範囲の前景色:"
+
+#. Resource IDs: (1116)
+msgid "Semi-transparent when not active (Windows XP+ only)."
+msgstr "非アクティブ時に半透明にする。(Window XP以上)"
+
+#. Resource IDs: (65535)
+msgid "Settings"
+msgstr "設定"
+
+#. Resource IDs: (15)
+msgid "Shortcut"
+msgstr "ショートカット"
+
+#. Resource IDs: (65535)
+msgid "Shortcut:"
+msgstr "ショートカット:"
+
+#. Resource IDs: (65535)
+msgid "Shortcuts:"
+msgstr "ショートカット:"
+
+#. Resource IDs: (1054)
+msgid "Show &Tabs"
+msgstr "タブを表示(&T)"
+
+#. Resource IDs: (1048)
+msgid "Show Indentation Guides"
+msgstr "インデントのガイドを表示"
+
+#. Resource IDs: (1117)
+msgid "Show Mini Editor Toolbar"
+msgstr "ミニエディターツールバーを表示"
+
+#. Resource IDs: (1069)
+msgid "Show a line at the edge column"
+msgstr "端の列で行を表示する"
+
+#. Resource IDs: (3713)
+msgid ""
+"Show or hide the status bar\n"
+"Toggle StatusBar"
+msgstr ""
+"ステータスバーを表示/非表示\n"
+"ステータスバー切り替え"
+
+#. Resource IDs: (3713)
+msgid ""
+"Show or hide the toolbar\n"
+"Toggle ToolBar"
+msgstr ""
+"ツールバーを表示/非表示\n"
+"ツールバー切り替え"
+
+#. Resource IDs: (1089)
+msgid "Si&ze:"
+msgstr "サイズ(&Z):"
+
+#. Resource IDs: (65535)
+msgid "SmartStart"
+msgstr "スマートスタート"
+
+#. Resource IDs: (11)
+#, c-format
+msgid "Sorry, Programmer's Notepad couldn't open this file - most likely because it's too big (actual error: %s). PN needs to have enough free memory to open a file twice to successfully edit it."
+msgstr "申し訳ありません。Programmer's Notepad はこのファイルを開けませんでした。たぶんファイルが大きすぎるからです。(実際のエラー: %s) ファイルを開いて編集するには、PNに十分な空きメモリーが必要です。"
+
+#. Resource IDs: (65535)
+msgid "Special Symbols:"
+msgstr "特別なシンボル:"
+
+#. Resource IDs: (33128)
+msgid "Spli&t Lines"
+msgstr "行を分割(&T)"
+
+#. Resource IDs: (33143)
+msgid "Split V&ertical"
+msgstr "縦に分割(&V)"
+
+#. Resource IDs: (3604)
+msgid ""
+"Split the active window into panes\n"
+"Split"
+msgstr ""
+"アクティブなウィンドウをペインに分割\n"
+"分割"
+
+#. Resource IDs: (65535)
+msgid "Standard Input and Output:"
+msgstr "標準入出力:"
+
+#. Resource IDs: (65535)
+msgid "Start Extensions:"
+msgstr "開始拡張子:"
+
+#. Resource IDs: (65535)
+msgid "Start Phrase:"
+msgstr "開始フレーズ:"
+
+#. Resource IDs: (1051)
+msgid "Start with a new, &blank document"
+msgstr "開始時に空のドキュメントを新規作成する(&B)"
+
+#. Resource IDs: (16)
+msgid "Starting Phrase"
+msgstr "開始フレーズ"
+
+#. Resource IDs: (1001, 1002, 1003, 1004, 1008, 1027, 1085, 1086, 1087)
+msgid "Static"
+msgstr "スタティック"
+
+#. Resource IDs: (33130)
+msgid "Stop R&ecording"
+msgstr "記録を停止(&E)"
+
+#. Resource IDs: (1153)
+msgid "Strictly enforce the auto-scroll positioning"
+msgstr "厳密に自動スクロールの位置を強制"
+
+#. Resource IDs: (1169)
+msgid "Strip trailing spaces before saving"
+msgstr "保存前に末尾のスペースを削除"
+
+#. Resource IDs: (65535)
+msgid "Styles"
+msgstr "スタイル"
+
+#. Resource IDs: (1089, 1092)
+msgid "Switch"
+msgstr "切り替え"
+
+#. Resource IDs: (3606)
+msgid ""
+"Switch back to the previous window pane\n"
+"Previous Pane"
+msgstr ""
+"前のウィンドウペインに切り替え\n"
+"前のペイン"
+
+#. Resource IDs: (3825)
+msgid "Switch to the next document window"
+msgstr "次のドキュメントウィンドウに切り替え"
+
+#. Resource IDs: (3606)
+msgid ""
+"Switch to the next window pane\n"
+"Next Pane"
+msgstr ""
+"次のウィンドウペインに切り替え\n"
+"次のペイン"
+
+#. Resource IDs: (3825)
+msgid "Switch to the previous document window"
+msgstr "前のドキュメントウィンドウに切り替え"
+
+#. Resource IDs: (131)
+msgid "Syntax &Highlighting"
+msgstr "シンタックスハイライト"
+
+#. Resource IDs: (32703)
+msgid "T&ags"
+msgstr "タグ(&T)"
+
+#. Resource IDs: (1127)
+msgid "Tab &order controlled by recent use"
+msgstr "タブオーダーを最近の使用によって制御(&O)"
+
+#. Resource IDs: (65535)
+msgid "Tab Width:"
+msgstr "タブ幅:"
+
+#. Resource IDs: (65535)
+msgid "Tabs"
+msgstr "タブ"
+
+#. Resource IDs: (1112)
+msgid "Tabs go here."
+msgstr "タブをここへ移動する。"
+
+#. Resource IDs: (227)
+msgid "Tagged Expression 1"
+msgstr "タグ付き表現 1"
+
+#. Resource IDs: (228)
+msgid "Tagged Expression 2"
+msgstr "タグ付き表現 2"
+
+#. Resource IDs: (229)
+msgid "Tagged Expression 3"
+msgstr "タグ付き表現 3"
+
+#. Resource IDs: (230)
+msgid "Tagged Expression 4"
+msgstr "タグ付き表現 4"
+
+#. Resource IDs: (231)
+msgid "Tagged Expression 5"
+msgstr "タグ付き表現 5"
+
+#. Resource IDs: (232)
+msgid "Tagged Expression 6"
+msgstr "タグ付き表現 6"
+
+#. Resource IDs: (233)
+msgid "Tagged Expression 7"
+msgstr "タグ付き表現 7"
+
+#. Resource IDs: (234)
+msgid "Tagged Expression 8"
+msgstr "タグ付き表現 8"
+
+#. Resource IDs: (235)
+msgid "Tagged Expression 9"
+msgstr "タグ付き表現 9"
+
+#. Resource IDs: (32844)
+msgid "Tagged Expresssion"
+msgstr "タグ付き表現"
+
+#. Resource IDs: (2044)
+msgid "Tags"
+msgstr "タグ"
+
+#. Resource IDs: (65535)
+msgid "Template Field:"
+msgstr "テンプレートフィールド:"
+
+#. Resource IDs: (65535)
+msgid "Testing:"
+msgstr "テスト:"
+
+#. Resource IDs: (17)
+msgid "Text"
+msgstr "文字"
+
+#. Resource IDs: (1072)
+msgid "Text &Colour:"
+msgstr "文字色(&C):"
+
+#. Resource IDs: (350)
+msgid "Text Clip Editor"
+msgstr "テキストクリップエディター"
+
+#. Resource IDs: (2044)
+msgid "Text Clips"
+msgstr "テキストクリップ"
+
+#. Resource IDs: (9)
+#, c-format
+msgid ""
+"The file \"%s\" could not be saved because it is write-protected.\n"
+"\n"
+"You can either save in a different location or PN can attempt to remove the protection and overwrite the file in its current location."
+msgstr ""
+"ファイル \"%s\" はライトプロテクトのため保存できませんでした。\n"
+"\n"
+"別の場所に保存するか、ライトプロテクトをはずして今の場所に上書き保存してください。"
+
+#. Resource IDs: (11)
+msgid "The file must be placed inside this magic folder directory."
+msgstr "ファイルはマジックフォルダー内に置かなくてはいけません。"
+
+#. Resource IDs: (11)
+#, c-format
+msgid "The folder %s could not be created, check that the path is valid."
+msgstr "フォルダー %s を作成できませんでした。パスが正しいか確認してください。"
+
+#. Resource IDs: (11)
+#, c-format
+msgid "The folder %s does not exist, do you want to create it?"
+msgstr "フォルダー %s は存在しません。作成しますか?"
+
+#. Resource IDs: (11)
+msgid "The regular expression is not valid."
+msgstr "正規表現が正しくありません。"
+
+#. Resource IDs: (16)
+#, c-format
+msgid "The selected method for this extension is currently associated with '%s'"
+msgstr "この拡張子の選択方法は、現在'%s'に関連付けられています"
+
+#. Resource IDs: (2063)
+msgid ""
+"The specified project does not exist,\n"
+" would you like to create it?"
+msgstr ""
+"指定されたプロジェクトは存在しません。\n"
+"作成しますか?"
+
+#. Resource IDs: (9)
+#, c-format
+msgid "The specified text '%s' was not found."
+msgstr "指定された文字 '%s' は見つかりませんでした。"
+
+#. Resource IDs: (9)
+msgid "This project has no properties."
+msgstr "このプロジェクトにプロパティはありません。"
+
+#. Resource IDs: (1048)
+msgid "This tool will modify the current file."
+msgstr "このツールは今のファイルを変更する。"
+
+#. Resource IDs: (57651)
+msgid "Tile &Horizontal"
+msgstr "横に並べて表示(&H)"
+
+#. Resource IDs: (57652)
+msgid "Tile &Vertical"
+msgstr "縦に並べて表示(&V)"
+
+#. Resource IDs: (32786)
+msgid "Toggle &Bookmark"
+msgstr "ブックマーク切替(&B)"
+
+#. Resource IDs: (272)
+msgid "Toggle Fold"
+msgstr "折りたたみ切替"
+
+#. Resource IDs: (9)
+msgid "Toggle line numbers display"
+msgstr "行番号表示切替"
+
+#. Resource IDs: (9)
+msgid "Toggle syntax highlighting"
+msgstr "シンタックスハイライト切替"
+
+#. Resource IDs: (2050)
+msgid "Toggle visible line-end characters"
+msgstr "行末文字表示切替"
+
+#. Resource IDs: (2050)
+msgid "Toggle visible whitespace characters"
+msgstr "空白文字表示切替"
+
+#. Resource IDs: (9)
+msgid "Toggle word wrap"
+msgstr "ワードラップ切替"
+
+#. Resource IDs: (2070)
+msgid "Toggle write protect"
+msgstr "ライトプロテクト切替"
+
+#. Resource IDs: (14)
+msgid "Tools"
+msgstr "ツール"
+
+#. Resource IDs: (65535)
+msgid "Top:"
+msgstr "上:"
+
+#. Resource IDs: (65535)
+msgid "Trans&form"
+msgstr "変換 (&F)"
+
+#. Resource IDs: (32913)
+msgid "Transp&ose Lines"
+msgstr "行を転置"
+
+#. Resource IDs: (16)
+msgid "Type Name"
+msgstr "名前を入力"
+
+#. Resource IDs: (17)
+msgid "Type the name of the new Clip set..."
+msgstr "新しいクリップセットの名前を入力..."
+
+#. Resource IDs: (32911)
+msgid "U&ppercase"
+msgstr "大文字 (&U)"
+
+#. Resource IDs: (32891)
+msgid "UTF-16 Big Endian"
+msgstr "UTF-16 ビッグエンディアン"
+
+#. Resource IDs: (32892)
+msgid "UTF-16 Little Endian"
+msgstr "UTF-16 リトルエンディアン"
+
+#. Resource IDs: (32893)
+msgid "UTF-8"
+msgstr "UTF-8"
+
+#. Resource IDs: (32894)
+msgid "UTF-8 No Mark"
+msgstr "UTF-8 マークなし"
+
+#. Resource IDs: (3603)
+msgid ""
+"Undo the last action\n"
+"Undo"
+msgstr ""
+"最後の動作を元に戻す\n"
+"元に戻す"
+
+#. Resource IDs: (16)
+msgid "Unknown"
+msgstr "不明"
+
+#. Resource IDs: (14)
+msgid "Untitled"
+msgstr "無題"
+
+#. Resource IDs: (261)
+msgid "Use &Tabs"
+msgstr "タブを使う(&T)"
+
+#. Resource IDs: (32960)
+msgid "Use As &Script"
+msgstr "スクリプトとして使う(&T)"
+
+#. Resource IDs: (1126)
+msgid "Use Spaces"
+msgstr "スペースを使う"
+
+#. Resource IDs: (21)
+msgid "Use an individual output window."
+msgstr "個々の出力ウィンドウを使用します。"
+
+#. Resource IDs: (1125)
+msgid "Use tabs"
+msgstr "タブを使う"
+
+#. Resource IDs: (1057)
+msgid "Use the built-in error parser."
+msgstr "ビルトインのエラーパーサーを使う。"
+
+#. Resource IDs: (10)
+msgid "Use the main output window."
+msgstr "メイン出力ウィンドウを使う。"
+
+#. Resource IDs: (32886)
+msgid "User Name (%u)"
+msgstr "ユーザー名 (%u)"
+
+#. Resource IDs: (17)
+msgid "Version"
+msgstr "バージョン"
+
+#. Resource IDs: (9)
+#, c-format
+msgid ""
+"Version: v%s\n"
+"\n"
+"Copyright © 2002-2011 Simon Steele\n"
+"\n"
+"Programmer's Notepad is Free Software.\n"
+"\n"
+"Programmer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
+msgstr ""
+"バージョン: v%s\n"
+"\n"
+"Copyright © 2002-2011 Simon Steele\n"
+"\n"
+"Programmer's Notepad はフリーソフトウェアです。\n"
+"\n"
+"Programmer's Notepad は以下を使っています。 Scintilla, WTL, GenX, Expat, Exuberant CTags, Boost。 これらのプロジェクトの作者と貢献者、そして Programmer's Notepad に貢献していただいたすべての方に感謝いたします。"
+
+#. Resource IDs: (65535)
+msgid "Vertical:"
+msgstr "縦:"
+
+#. Resource IDs: (1123)
+msgid "Visible &Whitespace Characters"
+msgstr "空白文字を表示"
+
+#. Resource IDs: (1122)
+msgid "Visible Line &Endings"
+msgstr "行末を表示(&E)"
+
+#. Resource IDs: (14)
+msgid "Visual Help"
+msgstr "ビジュアルヘルプ"
+
+#. Resource IDs: (65535)
+msgid "WORKSPACE"
+msgstr "ワークスペース"
+
+#. Resource IDs: (10)
+#, c-format
+msgid "Warning: the file %s does not exist any more."
+msgstr "警告: ファイル %s は既に存在していません。"
+
+#. Resource IDs: (65535)
+msgid "When an open file is dropped:"
+msgstr "開いているファイルが削除された場合:"
+
+#. Resource IDs: (65535)
+msgid "When attempting to re-open a file:"
+msgstr "ファイルを再度開こうとする場合:"
+
+#. Resource IDs: (130)
+msgid "Word W&rap"
+msgstr "ワードラップ(&W)"
+
+#. Resource IDs: (65535)
+msgid "Words:"
+msgstr "単語:"
+
+#. Resource IDs: (10)
+msgid "Workspace Files (*.pnws)|*.pnws|"
+msgstr "ワークスペースファイル (*.pnws)|*.pnws|"
+
+#. Resource IDs: (11)
+#, c-format
+msgid ""
+"Would you like to save changes to:\n"
+"%s?"
+msgstr ""
+"変更をこのファイルに保存しますか:\n"
+"%s?"
+
+#. Resource IDs: (33107)
+msgid "Write protect"
+msgstr "ライトプロテクト"
+
+#. Resource IDs: (6)
+msgid "Yes"
+msgstr "はい"
+
+#. Resource IDs: (65535)
+msgid "You can restrict the file types shown by a magic folder, and the directories that it displays."
+msgstr "あなたはマジックフォルダやディレクトリに表示されるファイルの種類を制限することができます。"
+
+#. Resource IDs: (33135)
+msgid "Zoom O&ut"
+msgstr "縮小(&u)"
+
+#. Resource IDs: (11)
+msgid ""
+"\n"
+"> Process Exit Code: "
+msgstr ""
+"\n"
+"> プロセス終了コード: "
+
+#. Resource IDs: (11)
+msgid ""
+"\n"
+"> Time Taken: "
+msgstr ""
+"\n"
+"> かかった時間: "
+
+#. Resource IDs: (65535)
+msgid "characters"
+msgstr "文字"
+
+#. Resource IDs: (65535)
+msgid "example: %f:%l: "
+msgstr "例: %f:%l:"
+
+#. Resource IDs: (65535)
+msgid "pixels"
+msgstr "ピクセル"
+
+#. Resource IDs: (65535)
+msgid "text lines"
+msgstr "テキスト行"
+
+#. Resource IDs: (332)
+msgid "w"
+msgstr "w"
+
