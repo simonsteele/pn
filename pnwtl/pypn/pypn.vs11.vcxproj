@@ -83,7 +83,12 @@
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)\lib\boost-python-$(BoostPythonTag)\boost_python-vc$(VSNum)-mt-gd-$(BoostFileVer).dll $(TargetDir)
+if "$(PythonMagorVer)"=="3" (
+copy scripts3k\init.py $(TargetDir)
+) else (
 copy scripts\init.py $(TargetDir)
+)
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -120,7 +125,11 @@ copy scripts\init.py $(TargetDir)
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)\lib\boost-python-$(BoostPythonTag)\boost_python-vc$(VSNum)-mt-$(BoostFileVer).dll $(TargetDir)
+if "$(PythonMagorVer)"=="3" (
+copy scripts3k\init.py $(TargetDir)
+) else (
 copy scripts\init.py $(TargetDir)
+)
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

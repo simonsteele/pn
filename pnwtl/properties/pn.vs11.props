@@ -5,8 +5,8 @@
     <VSVer>VS2012</VSVer>
     <VSNum>110</VSNum>
     <BoostVer>1_54_0</BoostVer>
-    <PythonMagorVer>2</PythonMagorVer>
-    <PythonMinorVer>7</PythonMinorVer>
+    <PythonMagorVer>3</PythonMagorVer>
+    <PythonMinorVer>4</PythonMinorVer>
     <PythonVer>$(PythonMagorVer)$(PythonMinorVer)</PythonVer>
     <BoostPythonTag>$(PythonMagorVer).$(PythonMinorVer)</BoostPythonTag>
     <PythonFolder>D:\Python$(PythonVer)</PythonFolder>
@@ -14,7 +14,7 @@
     <ThirdPartyLibs>$(SolutionDir)..\..\lib</ThirdPartyLibs>
     <WTLFolder>$(ThirdPartyLibs)\wtl\WTL81_12085</WTLFolder>
     <WTLSvnFolder>$(ThirdPartyLibs)\wtl\wtl-code\wtl</WTLSvnFolder>
-    <BoostFolder>$(ThirdPartyLibs)\boost\boost_$(BoostVer)_$(VSVer)</BoostFolder>
+    <BoostFolder>$(ThirdPartyLibs)\boost\boost-$(BoostVer)_$(VSVer)</BoostFolder>
     <BoostInclude>$(BoostFolder)</BoostInclude>
   </PropertyGroup>
 <PropertyGroup>

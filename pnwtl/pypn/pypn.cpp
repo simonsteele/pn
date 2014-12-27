@@ -27,7 +27,7 @@ extensions::IAppEventSinkPtr g_appsink;
 App *g_app = NULL;
 
 #define PN_INIT_PYTHON_MODULE(name) \
-	if(PyImport_AppendInittab(#name, init##name) == -1) \
+	if(PyImport_AppendInittab(#name, PY_INIT_NAME(name)) == -1) \
 	throw std::runtime_error("Failed to add " #name " module to builtins");
 
 bool __stdcall pn_init_extension(int iface_version, extensions::IPN* pn)
