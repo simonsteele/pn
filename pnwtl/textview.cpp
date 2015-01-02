@@ -685,7 +685,7 @@ void CTextView::MarkAll(extensions::ISearchOptions* options)
 	IndicSetStyle(INDIC_MARKALL, INDIC_ROUNDBOX);
 	
 	m_findAllResultCount = 0;
-	CScintillaImpl::FindAll(options, boost::bind(&CTextView::handleMarkAllResult, ref(this), _1, _2));
+	CScintillaImpl::FindAll(options, boost::bind(&CTextView::handleMarkAllResult, this, _1, _2));
 	
 	CString str;
 	str.Format(IDS_MARKALL_COUNT, m_findAllResultCount);

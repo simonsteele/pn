@@ -26,7 +26,7 @@ BEGIN
             VALUE "FileDescription", "Programmer's Notepad 2"
             VALUE "FileVersion", PN_VERSION
             VALUE "InternalName", "PNWTL"
-            VALUE "LegalCopyright", "Copyright © 2002-2013 Simon Steele (Echo Software)"
+            VALUE "LegalCopyright", "Copyright © 2002-2015 Simon Steele"
             VALUE "OriginalFilename", "pn.exe"
             VALUE "ProductName", "Programmer's Notepad"
             VALUE "ProductVersion", PN_VERSION_FULL

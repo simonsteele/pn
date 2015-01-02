@@ -1,5 +1,7 @@
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pn", "pn.vcxproj", "{09E60CEB-F210-4524-89CC-D73EBCA224A1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CustomScheme", "CustomScheme\CustomScheme.vcxproj", "{A7E621BE-65CC-446A-A5A1-4C20D117D344}"
@@ -15,6 +17,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tests", "tests\tests.vcxproj", "{0F01F7C9-BF32-4AB4-A616-B3A691CCE6A9}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pnlang", "translations\pnlang.vcxproj", "{CE784A17-DBE2-4722-8B91-1012244A3EA4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "props", "props", "{2B15DF79-83A7-4EAA-82C2-B57B1E598C05}"
+	ProjectSection(SolutionItems) = preProject
+		properties\pn.props = properties\pn.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

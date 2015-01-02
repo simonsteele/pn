@@ -115,13 +115,11 @@ BEGIN
         MENUITEM "&Contents",                   ID_HELP_CONTENTS
         MENUITEM SEPARATOR
         MENUITEM "PN &Home Page",               ID_HELP_WEB_PN
-        MENUITEM "PN on &Google Code",          ID_HELP_WEB_SF
+        MENUITEM "PN on &Github",               ID_HELP_WEB_SF
         MENUITEM "&Online Help",                ID_HELP_WEB_DOCS
-        MENUITEM "&Forums",                     ID_HELP_WEB_FORUMS
         MENUITEM "Check for &Updates",          ID_HELP_CHECKFORUPDATES
         MENUITEM SEPARATOR
         MENUITEM "Report a &bug...",            ID_HELP_WEB_SB
-        MENUITEM "Request a &feature...",       ID_HELP_WEB_SR
         MENUITEM SEPARATOR
         MENUITEM "&About Programmer's Notepad...", ID_APP_ABOUT
     END
@@ -315,13 +313,11 @@ BEGIN
         MENUITEM "&Contents",                   ID_HELP_CONTENTS
         MENUITEM SEPARATOR
         MENUITEM "PN &Home Page",               ID_HELP_WEB_PN
-        MENUITEM "PN on &Google Code",          ID_HELP_WEB_SF
+        MENUITEM "PN on &Github",               ID_HELP_WEB_SF
         MENUITEM "&Online Help",                ID_HELP_WEB_DOCS
-        MENUITEM "&Forums",                     ID_HELP_WEB_FORUMS
         MENUITEM "Check for &Updates",          ID_HELP_CHECKFORUPDATES
         MENUITEM SEPARATOR
         MENUITEM "Report a &bug...",            ID_HELP_WEB_SB
-        MENUITEM "Request a &feature...",       ID_HELP_WEB_SR
         MENUITEM SEPARATOR
         MENUITEM "&About Programmer's Notepad...", ID_APP_ABOUT
     END
@@ -627,7 +623,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About"
 FONT 8, "MS Shell Dlg 2", 0, 0, 0x0
 BEGIN
-    CONTROL         319,IDC_ABOUTIMAGE,"Static",SS_BITMAP | SS_CENTERIMAGE,7,7,64,154
+    CONTROL         IDB_ABOUT,IDC_ABOUTIMAGE,"Static",SS_BITMAP | SS_CENTERIMAGE,7,7,64,154
     DEFPUSHBUTTON   "OK",IDOK,198,147,50,14
     LTEXT           "",IDC_VERSIONSTATIC,78,24,170,118
     CONTROL         "",IDC_TOPSTATIC,"Static",SS_ETCHEDHORZ,7,7,65,1
@@ -1786,7 +1782,7 @@ BEGIN
     ID_EDITOR_WORDWRAP      "Toggle word wrap"
     ID_EDITOR_COLOURISE     "Toggle syntax highlighting"
     ID_EDITOR_LINENOS       "Toggle line numbers display"
-    IDS_ABOUTVERSIONSTRING  "Version: v%s\n\nCopyright © 2002-2014 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
+    IDS_ABOUTVERSIONSTRING  "Version: v%s\n\nCopyright © 2002-2015 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
     IDS_PROJECTNOPROPS      "This project has no properties."
     IDS_PATTERNFORMATSTRINGS "%f: File Name\n%l: Line Number\n%c: Column"
     ID_FILE_NEW_PROJECT     "Create a new project."

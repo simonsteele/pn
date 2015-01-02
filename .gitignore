@@ -51,6 +51,14 @@ build/
 *.pidb
 *.log
 *.scc
+*.bsc
+
+pnwtl/bin/*.lib
+pnwtl/bin/*.dll
+pnwtl/bin/*.exe
+pnwtl/bin/*.py
+pnwtl/bin/pypn
+pnwtl/bin/scripts
 
 # Visual C++ cache files
 ipch/

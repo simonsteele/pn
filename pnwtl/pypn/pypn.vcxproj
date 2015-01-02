@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\properties\pn.props" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -14,6 +15,7 @@
     <ProjectGuid>{8802C83D-8F91-4AED-A4E5-BEAEC65B97EF}</ProjectGuid>
     <RootNamespace>pypn</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>pypn</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -29,11 +31,9 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\common.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\common.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -54,7 +54,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>%PYTHONINCDIR%;c:\python27\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PythonInclude);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;PYPN_EXPORTS;SCI_NOLOAD;SCI_NAMESPACE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -63,11 +63,12 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalOptions>/Zm200 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>boost_python-vc100-mt-gd-$(BoostFileVer).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>boost_python-vc$(VSNum)-mt-gd-$(BoostFileVer).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)pypn.dll</OutputFile>
-      <AdditionalLibraryDirectories>%PYTHONLIBDIR%;..\lib\boost-python-2.7;c:\python27\libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\lib\boost-python-$(BoostPythonTag);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>pypn.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)pypn.pdb</ProgramDatabaseFile>
@@ -79,8 +80,13 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\lib\boost-python-2.7\boost_python-vc100-mt-gd-$(BoostFileVer).dll $(TargetDir)
-xcopy /SY scripts\* $(TargetDir)
+      <Command>copy $(SolutionDir)\lib\boost-python-$(BoostPythonTag)\boost_python-vc$(VSNum)-mt-gd-$(BoostFileVer).dll $(TargetDir)
+if "$(PythonMagorVer)"=="3" (
+copy scripts3k\init.py $(TargetDir)
+) else (
+copy scripts\init.py $(TargetDir)
+)
+
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -92,7 +98,7 @@ xcopy /SY scripts\* $(TargetDir)
     <ClCompile>
       <Optimization>Full</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>$(PYTHONINCDIR);c:\python27\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PythonInclude);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;PYPN_EXPORTS;SCI_NOLOAD;SCI_NAMESPACE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -101,9 +107,9 @@ xcopy /SY scripts\* $(TargetDir)
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>boost_python-vc100-mt-$(BoostFileVer).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>boost_python-vc$(VSNum)-mt-$(BoostFileVer).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)pypn.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(PYTHONLIBDIR);..\lib\boost-python-2.7;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\lib\boost-python-$(BoostPythonTag);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>pypn.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -116,8 +122,12 @@ xcopy /SY scripts\* $(TargetDir)
       <TargetMachine>NotSet</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\lib\boost-python-2.6\boost_python-vc100-mt-$(BoostFileVer).dll $(TargetDir)
+      <Command>copy $(SolutionDir)\lib\boost-python-$(BoostPythonTag)\boost_python-vc$(VSNum)-mt-$(BoostFileVer).dll $(TargetDir)
+if "$(PythonMagorVer)"=="3" (
+copy scripts3k\init.py $(TargetDir)
+) else (
 copy scripts\init.py $(TargetDir)
+)
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -138,7 +148,6 @@ copy scripts\init.py $(TargetDir)
   </ItemGroup>
   <ItemGroup>
     <None Include="pypn.def" />
-    <None Include="pypn.rc2" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h" />

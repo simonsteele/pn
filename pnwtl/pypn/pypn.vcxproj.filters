@@ -50,9 +50,6 @@
     <None Include="pypn.def">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="pypn.rc2">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h">
