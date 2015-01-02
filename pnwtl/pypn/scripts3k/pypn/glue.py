@@ -43,7 +43,7 @@ def runScript(name):
 def onCharAdded(c, doc):
 	""" Method called when a character is added, default behaviour manages calling indenters
 	and also calls any method registered with glue.schemes[scheme].on_char_added """
-	if not schemes.has_key(doc.CurrentScheme):
+	if not doc.CurrentScheme in schemes:
 		return
 		
 	scheme = schemes[doc.CurrentScheme]

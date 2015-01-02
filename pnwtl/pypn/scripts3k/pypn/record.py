@@ -355,7 +355,7 @@ class Recorder:
 			# Store away the insert
 			self.insertbuf = self.insertbuf + text
 			
-		elif handlers.has_key(message):
+		elif message in handlers:
 			# Other message
 			self._flushbuf()
 			(action, param1, param2) = handlers[message]
