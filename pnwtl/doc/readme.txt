@@ -12,6 +12,7 @@ What's new in 2.4?
 4) Delay shutdown for file save
 5) Improved find dialog resizing
 6) PyPN included as optional component in installer
+7) PyPN updated to Python 3.4
 
 Bug Fixes:
 ----------
@@ -32,8 +33,7 @@ e.g.
 XP: C:\Documents and Settings\Simon\Application Data\Echo Software\PN2\User*.xml
 Vista+: C:\Users\Simon\AppData\Roaming\Echo Software\PN2\User*.xml
 
-E-mail: ss at pnotepad dot org with your reports, or use the handy 
-"Report a Bug" option on the Help menu to add it straight to the
-Google Code bug tracker.
+Use the handy "Report a Bug" option on the Help menu to add it straight to the
+Github bug tracker.
 
 Thanks for using Programmer's Notepad!
