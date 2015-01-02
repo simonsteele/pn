@@ -18,10 +18,6 @@
 		<echo message="Using git commit number: ${svn.revision}"/>
 	</target>
 	
-	<target name="env">
-		<exec program="C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\vcvarsall.bat" commandline="x86" />
-	</target>
-	
 	<target name="build">
 		<property name="devenv.path" value="devenv.com" if="${property::exists('devenv.path') == false}"/>
 		<exec 
@@ -178,31 +174,25 @@
 	
 	<!-- Build PyPN -->
 	<target name="pypn">
-		<!-- Python 2.7 -->
-		<echo message="Building for Python 2.7"/>
-		<property name="pyver" value="py27"/>
+		<!-- Python 3.4 -->
+		<echo message="Building for Python 3.4"/>
+		<property name="pyver" value="py34"/>
 		
 		<property name="devenv.path" value="devenv.com" if="${property::exists('devenv.path') == false}"/>
 		
 		<exec
 			program="${devenv.path}"
 			commandline='pn.sln /Project pypn /ProjectConfig Release /Rebuild'
-			output="pypn-2.7.log">
+			output="pypn-3.4.log">
 			<environment>
-				<variable name="PYTHONINCDIR" value="C:\Python27\include"/>
-				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-2.7"/>
+				<variable name="PYTHONINCDIR" value="C:\Python34\include"/>
+				<variable name="PYTHONLIBDIR" value="..\lib\boost-python-3.4"/>
 				<variable name="SVNREV" value="/DPN_BUILD=${svn.revision}"/>
 			</environment>
 		</exec>
-		<copy file="lib\boost-python-2.7\boost_python-vc100-mt-1_53.dll" todir="bin" overwrite="true"/>
+		<copy file="lib\boost-python-3.4\boost_python-vc120-mt-1_57.dll" todir="bin" overwrite="true"/>
 		
-		<property name="pywrongdep" value="python24"/>
-		<call target="checkpypndeps"/>
-		
-		<property name="pywrongdep" value="python25"/>
-		<call target="checkpypndeps"/>
-		
-		<property name="pywrongdep" value="python26"/>
+		<property name="pywrongdep" value="python27"/>
 		<call target="checkpypndeps"/>
 		
 		<call target="deploypypn"/>
@@ -218,7 +208,7 @@
 				<include name="boost_py*.dll"/>
 				<exclude name="*gd*.dll"/>
 			</fileset>
-			<fileset basedir="pypn\scripts">
+			<fileset basedir="pypn\scripts3k">
 				<include name="**/*.py"/>
 			</fileset>
 		</zip>
@@ -255,42 +245,6 @@
 				<include name="*.sln"/>
 			</fileset>
 		</zip>
-	</target>
-	
-	<target name="upload" depends="svnvar">
-		<property name="deployver" value="${ver}.${svn.revision}"/>
-		<property name="compactver" value="${string::replace(deployver, '.', '')}"/>
-		<property name="distdir" value="..\dist\${deployver}"/>
-
-		<exec
-			program="c:\python27\python"
-			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Installer" -p pnotepad --labels="Type-Installer" -u simon.steele --password="${password}" "${distdir}\pn${compactver}.exe"'/>
-
-		<exec
-			program="c:\python27\python"
-			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision}  Multi-language Installer" -p pnotepad -l Type-Installer -u simon.steele --password="${password}" ${distdir}\pn${compactver}_multilang.exe'/>
-
-		<exec
-			program="c:\python27\python"
-			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Zip" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" ${distdir}\pn${compactver}.zip'/>
-
-		<exec
-			program="c:\python27\python"
-			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Portable" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" ${distdir}\portable-pn${compactver}.zip'/>
-			
-		<exec
-			program="c:\python27\python"
-			commandline='googlecode_upload.py -s "Programmer&apos;s Notepad ${ver}.${svn.revision} Translation Tools" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" ${distdir}\translatetools${compactver}.zip'/>
-	</target>
-	
-	<target name="uploadpypn" depends="svnvar">
-		<property name="deployver" value="${ver}.${svn.revision}"/>
-		<property name="compactver" value="${string::replace(deployver, '.', '')}"/>
-		<property name="distdir" value="..\dist\pypn-${deployver}"/>
-		
-		<exec
-			program="c:\python27\python"
-			commandline='googlecode_upload.py -s "PyPN ${ver}.${svn.revision} for Python 2.6" -p pnotepad -l Type-Archive -u simon.steele --password="${password}" "${distdir}\pypn-${deployver}-py26.zip"'/>
 	</target>
 	
 	<target name="checkpypndeps">

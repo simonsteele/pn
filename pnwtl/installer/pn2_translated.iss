@@ -12,7 +12,7 @@ OutputDir=output
 InternalCompressLevel=ultra
 SolidCompression=true
 VersionInfoVersion={#PNVersion}
-VersionInfoCompany=Echo Software (Simon Steele)
+VersionInfoCompany=pnotepad.org (Simon Steele)
 VersionInfoDescription=Programmer's Notepad {#PNVersion} Setup
 VersionInfoTextVersion={#PNVersion}
 AppCopyright=Simon Steele
@@ -67,16 +67,16 @@ Source: "..\doc\ctags_COPYING"; DestDir: "{app}"
 
 Source: "..\schemes\user\*.schemedef"; DestDir: "{app}\samples"
 
-Source: "reqfiles\msvcp100.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "reqfiles\msvcr100.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "reqfiles\msvcp120.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "reqfiles\msvcr120.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ;Translations
 Source: "..\bin\pnlang_*.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ;PyPN
 Source: "..\bin\pypn.dll"; DestDir: "{app}"; Flags: ignoreversion; Components: PyPN
-Source: "..\bin\boost_python-vc100-mt-1*.dll"; DestDir: "{app}"; Flags: ignoreversion; Components: PyPN
-Source: "..\pypn\scripts\*.*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs; Components: PyPN
+Source: "..\bin\boost_python-vc120-mt-1*.dll"; DestDir: "{app}"; Flags: ignoreversion; Components: PyPN
+Source: "..\pypn\scripts3k\*.*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs; Components: PyPN
 
 [Icons]
 Name: {group}\Programmer's Notepad; Filename: {app}\pn.exe
@@ -105,4 +105,4 @@ Name: {app}\schemes\powershell.schemedef; Type: files; Tasks:
 CompileLogMethod=append
 
 [Components]
-Name: "PyPN"; Description: "Python Scripting Extension (Requires Python 2.7)"
+Name: "PyPN"; Description: "Python Scripting Extension (Requires Python 3.4)"

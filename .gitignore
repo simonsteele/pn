@@ -23,6 +23,7 @@ local.properties
 x64/
 build/
 [Oo]bj/
+output/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -59,6 +60,8 @@ pnwtl/bin/*.exe
 pnwtl/bin/*.py
 pnwtl/bin/pypn
 pnwtl/bin/scripts
+pnwtl/bin/dep.txt
+pnwtl/bin/pndepcheck.manifest
 
 # Visual C++ cache files
 ipch/
