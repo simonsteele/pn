@@ -94,6 +94,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <NoEntryPoint>true</NoEntryPoint>
       <TargetMachine>MachineX86</TargetMachine>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
