@@ -1,12 +1,5 @@
 <?xml version="1.0"?>
 <Scheme>
-	<!-- Scheme for the D language, see www.digitalmars.com -->
-	<!-- Note that there are things to do to fully support D:
-	   1. Add support for /+ +/ comments to the Scintilla cpp lexer.
-	   2. Add support for literal strings to the Scintilla cpp lexer 
-	      (like C# @ strings).
-	   3. Add support for backtick strings to the Scintilla cpp lexer.
-    -->
 	<keyword-classes>
 		<keyword-class name="powershell_cmds">
 			break continue do else elseif filter for foreach function if in return switch until where while
@@ -45,7 +38,7 @@ ren set type</keyword-class>
 	<!-- base scheme for C++ style languages -->
 	<language name="powershell" title="Powershell" folding="true" foldcomments="true" foldcompact="false" foldpreproc="true">
 		<lexer name="powershell" />
-		<comments line=";" streamStart="/*" streamEnd="*/" blockStart="/**" blockLine=" *" blockEnd=" */" />
+		<comments line="#" streamStart="/*" streamEnd="*/" blockStart="/**" blockLine=" *" blockEnd=" */" />
 		<use-keywords>
 			<keyword key="0" name="Commands" class="powershell_cmds"/>
 			<keyword key="1" name="Cmdlets" class="powershell_cmdlets"/>
@@ -70,6 +63,9 @@ ren set type</keyword-class>
 			<style name="Cmdlet" key="9" class="keyword"/>
 			
 			<style name="Alias" key="10" fore="008080"/>
+			<style name="Function" key="11" class="function"/>
+			
+			<style name="Comment Stream" key="13" class="commentbox"/>
 		</use-styles>
 	</language>
 
