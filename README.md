@@ -2,8 +2,7 @@
 
 [Programmer's Notepad](http://www.pnotepad.org/) is a text editor for Windows.
 
-
-![Dark Theme](http://www.pnotepad.org/wp-content/uploads/2008/03/darktheme.png)
+![Screenshot](http://www.pnotepad.org/images/home1.png)
 
 It is primarily written in C++ and extensible using Python, and is built on the following technologies:
   - [Scintilla](https://www.scintilla.org/)
