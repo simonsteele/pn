@@ -298,7 +298,7 @@
 	</target>
 	
 	<target name="updatepofiles" depends="updatepotfile">
-		<property name="msgmerge" value="c:\Program Files (x86)\Poedit\bin\msgmerge.exe"/>
+		<property name="msgmerge" value="c:\Program Files (x86)\Poedit\gettexttools\bin\msgmerge.exe"/>
 		<foreach item="File" property="filename">
 			<in>
 				<items>
