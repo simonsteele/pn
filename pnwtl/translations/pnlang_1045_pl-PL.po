@@ -9,12 +9,12 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 1900-01-01 00:00+0000\n"
 "PO-Revision-Date: 2013-11-22 23:29+0100\n"
-"Previous-Translator: Michał MaroQ Kowalewski <sempai@os.pl>\n"
 "Last-Translator: Leszek Skorczyński\n"
 "Language: Polish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Previous-Translator: Michał MaroQ Kowalewski <sempai@os.pl>\n"
 
 # msgid/msgstr fields for Accelerator keys
 # Format is: "ID:xxxxxx:VACS+X" where:
@@ -84,8 +84,8 @@ msgid ""
 msgstr ""
 "Nie udało się otworzyć %s.\n"
 "\n"
-"Być może ten plik już nie istnieje, dysk został usunięty,"
-"lub połączenie sieciowe zostało przerwane."
+"Być może ten plik już nie istnieje, dysk został usunięty,lub połączenie "
+"sieciowe zostało przerwane."
 
 #. Resource IDs: (12)
 #, c-format
@@ -301,10 +301,6 @@ msgstr "&Czcionka:"
 #. Resource IDs: (33)
 msgid "&Footer:"
 msgstr "&Stopka:"
-
-#. Resource IDs: (33001)
-msgid "&Forums"
-msgstr "&Forum dyskusyjne"
 
 #. Resource IDs: (282)
 msgid "&Google"
@@ -741,8 +737,8 @@ msgid ""
 "A Magic Folder will reflect the contents of a file system folder in a "
 "Projects folder. Select the folder you wish to include below:"
 msgstr ""
-"Magiczny folder odzwierciedli zawartość folderu systemu plików "
-"w folderze projektów. Wybierz folder, który chcesz włączyć poniżej:"
+"Magiczny folder odzwierciedli zawartość folderu systemu plików w folderze "
+"projektów. Wybierz folder, który chcesz włączyć poniżej:"
 
 #. Resource IDs: (1107)
 msgid "A&ll open documents"
@@ -1306,7 +1302,9 @@ msgstr "Nie pytaj więcej."
 #. Resource IDs: (65535)
 msgid ""
 "Do you want to associate these extensions with Programmer's Notepad 2 now?"
-msgstr "Czy chcesz teraz przypisać te rozszerzenia do programu Programmer's Notepad 2?"
+msgstr ""
+"Czy chcesz teraz przypisać te rozszerzenia do programu Programmer's Notepad "
+"2?"
 
 #. Resource IDs: (2045)
 #, c-format
@@ -1422,17 +1420,16 @@ msgstr ""
 "Wpisz oddzieloną średnikami listę folderów, których nie chcesz włączać:"
 
 #. Resource IDs: (65535)
+#, fuzzy
 msgid ""
-"Wpisz oddzielonąEnter a semi-colon separated list of file types that you do not wish to "
+"Enter a semi-colon separated list of file types that you do not wish to "
 "include:"
-msgstr ""
-"Wpisz oddzieloną średnikami listę typów plików, których nie chcesz włączać:"
+msgstr "Wpisz oddzieloną średnikami listę typów plików, które chcesz włączać:"
 
 #. Resource IDs: (65535)
 msgid ""
 "Enter a semi-colon separated list of file types that you wish to include:"
-msgstr ""
-"Wpisz oddzieloną średnikami listę typów plików, które chcesz włączać:"
+msgstr "Wpisz oddzieloną średnikami listę typów plików, które chcesz włączać:"
 
 #. Resource IDs: (3603)
 msgid ""
@@ -1463,8 +1460,8 @@ msgid ""
 "Executable Files (exe, com, bat, vbs...)|*.exe;*.com;*.bat;*.vbs;*.cmd|All "
 "Files (*.*)|*.*|"
 msgstr ""
-"Pliki wykonywalne (exe, com, bat, vbs...)|*.exe;*.com;*.bat;*.vbs;*.cmd|Wszystkie "
-"pliki (*.*)|*.*|"
+"Pliki wykonywalne (exe, com, bat, vbs...)|*.exe;*.com;*.bat;*.vbs;*.cmd|"
+"Wszystkie pliki (*.*)|*.*|"
 
 #. Resource IDs: (269)
 msgid "Expand All Folds"
@@ -1555,8 +1552,8 @@ msgid ""
 "Start: .cpp;.cxx;.c;.cc\n"
 "Alternate: .h;.hpp"
 msgstr ""
-"Rozszerzenia plików powinny być wprowadzone razem ze znakiem kropki, oddzielone "
-"średnikami, z zachowaniem pierwszeństwa. np. \n"
+"Rozszerzenia plików powinny być wprowadzone razem ze znakiem kropki, "
+"oddzielone średnikami, z zachowaniem pierwszeństwa. np. \n"
 "\n"
 "Początek: .cpp;.cxx;.c;.cc\n"
 "Alternatywa: .h;.hpp"
@@ -2052,7 +2049,8 @@ msgstr "Nie"
 
 #. Resource IDs: (65535)
 msgid "Note: The first item in any list will be the default tool."
-msgstr "Uwaga: Pierwszy pozycja na dowolnej liście będzie narzędziem domyślnym."
+msgstr ""
+"Uwaga: Pierwszy pozycja na dowolnej liście będzie narzędziem domyślnym."
 
 #. Resource IDs: (1)
 msgid "OK"
@@ -2174,8 +2172,8 @@ msgstr ""
 "Czy chcesz zapisać plik pod inną nazwą?"
 
 #. Resource IDs: (252)
-msgid "PN on &Google Code"
-msgstr "PN w &Google Code"
+msgid "PN on &Github"
+msgstr ""
 
 #. Resource IDs: (330)
 msgid "PN2 File Associations"
@@ -2211,7 +2209,8 @@ msgstr "Parametry"
 
 #. Resource IDs: (1133)
 msgid "Pass my selection to this tool using Standard Input"
-msgstr "Przekaż moje zaznaczeni do tego narzędzia za pomocą standardowego wejścia"
+msgstr ""
+"Przekaż moje zaznaczeni do tego narzędzia za pomocą standardowego wejścia"
 
 #. Resource IDs: (65535)
 msgid "Pattern:"
@@ -2434,10 +2433,6 @@ msgstr "Zamień tym:"
 msgid "Report a &bug..."
 msgstr "Zgłoś błąd..."
 
-#. Resource IDs: (275)
-msgid "Request a &feature..."
-msgstr "Zgłoś prośbę o nową funkcjonalność..."
-
 #. Resource IDs: (1037)
 msgid "Reset &All"
 msgstr "Resetuj &wszystko"
@@ -2536,8 +2531,8 @@ msgid ""
 "Search complete: %d matching lines found in %d files, taking %d "
 "milliseconds.\n"
 msgstr ""
-"Szukanie zakończone: Znaleziono %d pasujących linii w %d plikach, co zabrało %d "
-"milisekund.\n"
+"Szukanie zakończone: Znaleziono %d pasujących linii w %d plikach, co zabrało "
+"%d milisekund.\n"
 
 #. Resource IDs: (1046)
 msgid "Search sub&directories"
@@ -2654,9 +2649,10 @@ msgid ""
 "it's too big (actual error: %s). PN needs to have enough free memory to open "
 "a file twice to successfully edit it."
 msgstr ""
-"Przykro mi, Programmer's Notepad nie mógł otworzyć tego pliku - najprawdopodobniej dlatego, że  "
-"jest zbyt wielki (dokładny błąd: %s). PN musi mieć wystarczająco dużo pamięci aby otworzyć plik, a "
-"jeszcze więcej aby go pomyślnie edytować."
+"Przykro mi, Programmer's Notepad nie mógł otworzyć tego pliku - "
+"najprawdopodobniej dlatego, że  jest zbyt wielki (dokładny błąd: %s). PN "
+"musi mieć wystarczająco dużo pamięci aby otworzyć plik, a jeszcze więcej aby "
+"go pomyślnie edytować."
 
 #. Resource IDs: (65535)
 msgid "Special Symbols:"
@@ -2784,7 +2780,7 @@ msgstr "Oznaczone wyrażenie 3"
 
 #. Resource IDs: (230)
 msgid "Tagged Expression 4"
-msgstr Oznaczone wyrażenie 4"
+msgstr "Oznaczone wyrażenie 4"
 
 #. Resource IDs: (231)
 msgid "Tagged Expression 5"
@@ -2859,7 +2855,9 @@ msgstr "Plik musi być umieszczony wewenątrz magicznego folderu."
 #. Resource IDs: (11)
 #, c-format
 msgid "The folder %s could not be created, check that the path is valid."
-msgstr "Folder %s nie mógł zostać utworzony, sprawdź z łaski swojej czy ścieżka jest poprawna."
+msgstr ""
+"Folder %s nie mógł zostać utworzony, sprawdź z łaski swojej czy ścieżka jest "
+"poprawna."
 
 #. Resource IDs: (11)
 #, c-format
@@ -3038,7 +3036,7 @@ msgstr "Wersja"
 msgid ""
 "Version: v%s\n"
 "\n"
-"Copyright © 2002-2011 Simon Steele\n"
+"Copyright © 2002-2015 Simon Steele\n"
 "\n"
 "Programmer's Notepad is Free Software.\n"
 "\n"
@@ -3052,11 +3050,12 @@ msgstr ""
 "\n"
 "Programmer's Notepad to darmowe oprogramowanie.\n"
 "\n"
-"Programmer's Notepad używa następujących komponentów: Scintilla, WTL, GenX, Expat, Exuberant CTags, i "
-"Boost. Dziękuję wszystkim autorom i współtwórcom tych projektów i wszystkim, którzy "
-"przyczynili się do powstania Programmer's Notepad.\n"
-"Tłumaczenie napisał: Michał (maroko) Kowalewski"
-"Poprawił i uzupełnił: Leszek Skorczyński"
+"Programmer's Notepad używa następujących komponentów: Scintilla, WTL, GenX, "
+"Expat, Exuberant CTags, i Boost. Dziękuję wszystkim autorom i współtwórcom "
+"tych projektów i wszystkim, którzy przyczynili się do powstania Programmer's "
+"Notepad.\n"
+"Tłumaczenie napisał: Michał (maroko) KowalewskiPoprawił i uzupełnił: Leszek "
+"Skorczyński"
 
 #. Resource IDs: (65535)
 msgid "Vertical:"
@@ -3166,6 +3165,22 @@ msgstr "lini tekstu"
 #. Resource IDs: (332)
 msgid "w"
 msgstr "w"
+
+#~ msgid "&Forums"
+#~ msgstr "&Forum dyskusyjne"
+
+#~ msgid ""
+#~ "Wpisz oddzielonąEnter a semi-colon separated list of file types that you "
+#~ "do not wish to include:"
+#~ msgstr ""
+#~ "Wpisz oddzieloną średnikami listę typów plików, których nie chcesz "
+#~ "włączać:"
+
+#~ msgid "PN on &Google Code"
+#~ msgstr "PN w &Google Code"
+
+#~ msgid "Request a &feature..."
+#~ msgstr "Zgłoś prośbę o nową funkcjonalność..."
 
 #~ msgid "File Associations"
 #~ msgstr "Powiązania plików"

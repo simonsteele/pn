@@ -11,6 +11,7 @@ msgstr ""
 "PO-Revision-Date: 2012-04-03 15:38+0900\n"
 "Last-Translator: WATAHIKI Hiroyuki <hrwatahiki@gmail.com>\n"
 "Language-Team: WATAHIKI Hiroyuki <hrwatahiki@gmail.com>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -44,8 +45,28 @@ msgstr "%d 個のアイテムを置換しました。"
 
 #. Resource IDs: (22)
 #, c-format
-msgid "%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectName),Name of Project,Project 1,$(ProjectPath),Path of Project,c:\\source\\pn2\\,$(ProjectGroupName),Name of the Project Group,Project Group 1,$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\,$(PNPath),PN Install Path,c:\\program files\\pn,$(ProjectProp:x),Project Property,value of 'x',$(FileProp:x),File Property,value of 'x',%(ENV),ENV Environment Variable,ENV value"
-msgstr "%f,ファイル名,mainfrm.cpp,%n,ファイル名 (拡張子なし),mainfrm,%l,現在の行番号,232,%?,パラメータを問い合わせ,(?),%p,現在のプロジェクトファイル,pn.pnproj,%d,ファイルのパス,c:\\source\\pn\\test\\,%c,列,12,%%,パーセント,%,%w,現在の単語,cheese,%g,プロジェクトグループファイル,pn2.ppg,$(ProjectName),プロジェクト名,Project 1,$(ProjectPath),プロジェクトのパス,c:\\source\\pn2\\,$(ProjectGroupName),プロジェクトグループ名,Project Group 1,$(ProjectGroupPath),プロジェクトグループのパス,c:\\source\\pn2\\,$(PNPath),PNインストールパス,c:\\program files\\pn,$(ProjectProp:x),プロジェクトプロパティ,value of 'x',$(FileProp:x),ファイルプロパティ,value of 'x',%(ENV),ENV 環境変数,ENV value"
+msgid ""
+"%f,File Name,mainfrm.cpp,%n,File Name (no ext),mainfrm,%l,Current Line "
+"Number,232,%?,Ask for parameters,(?),%p,Current Project File,pn.pnproj,%d,"
+"Path of File,c:\\source\\pn\\test\\,%c,Column,12,%%,Percent Symbol,%,%w,"
+"Current word,cheese,%g,Project Group File,pn2.ppg,$(ProjectName),Name of "
+"Project,Project 1,$(ProjectPath),Path of Project,c:\\source\\pn2\\,"
+"$(ProjectGroupName),Name of the Project Group,Project Group 1,"
+"$(ProjectGroupPath),Path of Project Group,c:\\source\\pn2\\,$(PNPath),PN "
+"Install Path,c:\\program files\\pn,$(ProjectProp:x),Project Property,value "
+"of 'x',$(FileProp:x),File Property,value of 'x',%(ENV),ENV Environment "
+"Variable,ENV value"
+msgstr ""
+"%f,ファイル名,mainfrm.cpp,%n,ファイル名 (拡張子なし),mainfrm,%l,現在の行番"
+"号,232,%?,パラメータを問い合わせ,(?),%p,現在のプロジェクトファイル,pn.pnproj,"
+"%d,ファイルのパス,c:\\source\\pn\\test\\,%c,列,12,%%,パーセント,%,%w,現在の単"
+"語,cheese,%g,プロジェクトグループファイル,pn2.ppg,$(ProjectName),プロジェクト"
+"名,Project 1,$(ProjectPath),プロジェクトのパス,c:\\source\\pn2\\,"
+"$(ProjectGroupName),プロジェクトグループ名,Project Group 1,"
+"$(ProjectGroupPath),プロジェクトグループのパス,c:\\source\\pn2\\,$(PNPath),PN"
+"インストールパス,c:\\program files\\pn,$(ProjectProp:x),プロジェクトプロパ"
+"ティ,value of 'x',$(FileProp:x),ファイルプロパティ,value of 'x',%(ENV),ENV 環"
+"境変数,ENV value"
 
 #. Resource IDs: (9)
 #, c-format
@@ -72,27 +93,32 @@ msgstr "%s プロパティ"
 msgid ""
 "%s could not be opened.\n"
 "\n"
-"This could be because the file no longer exists, a disk is absent or due to a broken network connection."
+"This could be because the file no longer exists, a disk is absent or due to "
+"a broken network connection."
 msgstr ""
 "%s を開けませんでした。\n"
 "\n"
-"ファイルが存在しない、ディスクがない、ネットワークが切断されている可能性があります。"
+"ファイルが存在しない、ディスクがない、ネットワークが切断されている可能性があ"
+"ります。"
 
 #. Resource IDs: (12)
 #, c-format
 msgid ""
 "%s could not be saved because access was denied.\n"
-"This could be due to the file being marked read-only, or the disk being write-protected.\n"
+"This could be due to the file being marked read-only, or the disk being "
+"write-protected.\n"
 "Do you want to save in another location?"
 msgstr ""
 "%s はアクセスが拒否されたため、保存できませんでした。\n"
-"ファイルが読み取り専用になっているか、ディスクがライトプロテクトされている可能性があります。\n"
+"ファイルが読み取り専用になっているか、ディスクがライトプロテクトされている可"
+"能性があります。\n"
 "別の場所に保存しますか?"
 
 #. Resource IDs: (13)
 #, c-format
 msgid ""
-"%s could not be saved because another program or user is using the same file.\n"
+"%s could not be saved because another program or user is using the same "
+"file.\n"
 "Do you want to save in another location?"
 msgstr ""
 "%s はほかのプログラムかユーザーが使用しているため保存できませんでした。\n"
@@ -103,11 +129,13 @@ msgstr ""
 msgid ""
 "%s\n"
 "\n"
-"The above file has been modified outside of Programmer's Notepad, do you want to refresh and lose changes?"
+"The above file has been modified outside of Programmer's Notepad, do you "
+"want to refresh and lose changes?"
 msgstr ""
 "%s\n"
 "\n"
-"このファイルはProgrammer's Notepad以外から修正されました。変更を破棄して再読み込みしますか?"
+"このファイルはProgrammer's Notepad以外から修正されました。変更を破棄して再読"
+"み込みしますか?"
 
 #. Resource IDs: (57664)
 msgid "&About Programmer's Notepad..."
@@ -288,10 +316,6 @@ msgstr "フォント(&F)"
 #. Resource IDs: (33)
 msgid "&Footer:"
 msgstr "フッター(&F)"
-
-#. Resource IDs: (33001)
-msgid "&Forums"
-msgstr "フォーラム(&F)"
 
 #. Resource IDs: (282)
 msgid "&Google"
@@ -722,8 +746,12 @@ msgid "?"
 msgstr "?"
 
 #. Resource IDs: (65535)
-msgid "A Magic Folder will reflect the contents of a file system folder in a Projects folder. Select the folder you wish to include below:"
-msgstr "マジックフォルダーはプロジェクトフォルダーにあるファイルシステムのフォルダーの中身を反映します。含ませるフォルダーを選択してください:"
+msgid ""
+"A Magic Folder will reflect the contents of a file system folder in a "
+"Projects folder. Select the folder you wish to include below:"
+msgstr ""
+"マジックフォルダーはプロジェクトフォルダーにあるファイルシステムのフォルダー"
+"の中身を反映します。含ませるフォルダーを選択してください:"
 
 #. Resource IDs: (1107)
 msgid "A&ll open documents"
@@ -831,8 +859,12 @@ msgstr "これらの文字を含まない:"
 
 #. Resource IDs: (12)
 #, c-format
-msgid "An update for Programmer's Notepad is available (version %s), would you like to download it now?"
-msgstr "Programmer's Notepadの更新プログラムがあります。 (バージョン %s) 今すぐダウンロードしますか?"
+msgid ""
+"An update for Programmer's Notepad is available (version %s), would you like "
+"to download it now?"
+msgstr ""
+"Programmer's Notepadの更新プログラムがあります。 (バージョン %s) 今すぐダウン"
+"ロードしますか?"
 
 #. Resource IDs: (32839)
 msgid "Any Character"
@@ -996,8 +1028,12 @@ msgid "Change the window size"
 msgstr "ウィンドウのサイズを変更"
 
 #. Resource IDs: (18)
-msgid "Changing the encoding between Unicode and ANSI will clear your Undo history, and may lose unsupported characters. Are you sure?"
-msgstr "文字コードを変更すると元に戻すことはできません。また、サポートされていない文字は失われます。よろしいですか?"
+msgid ""
+"Changing the encoding between Unicode and ANSI will clear your Undo history, "
+"and may lose unsupported characters. Are you sure?"
+msgstr ""
+"文字コードを変更すると元に戻すことはできません。また、サポートされていない文"
+"字は失われます。よろしいですか?"
 
 #. Resource IDs: (32841)
 msgid "Character Not in Range"
@@ -1276,7 +1312,8 @@ msgid "Do not ask me again."
 msgstr "次から表示しない。"
 
 #. Resource IDs: (65535)
-msgid "Do you want to associate these extensions with Programmer's Notepad 2 now?"
+msgid ""
+"Do you want to associate these extensions with Programmer's Notepad 2 now?"
 msgstr "これらの拡張子をProgrammer's Notepad 2に関連付けますか?"
 
 #. Resource IDs: (2045)
@@ -1386,15 +1423,20 @@ msgid "Ensure file ends with a blank line"
 msgstr "空行でファイルが終了するか確認"
 
 #. Resource IDs: (65535)
-msgid "Enter a semi-colon separated list of directories that you do not wish to include:"
+msgid ""
+"Enter a semi-colon separated list of directories that you do not wish to "
+"include:"
 msgstr "含めたくないディレクトリのリストをセミコロンで区切って入力:"
 
 #. Resource IDs: (65535)
-msgid "Enter a semi-colon separated list of file types that you do not wish to include:"
+msgid ""
+"Enter a semi-colon separated list of file types that you do not wish to "
+"include:"
 msgstr "含めたくないファイルの種類のリストをセミコロンで区切って入力:"
 
 #. Resource IDs: (65535)
-msgid "Enter a semi-colon separated list of file types that you wish to include:"
+msgid ""
+"Enter a semi-colon separated list of file types that you wish to include:"
 msgstr "含めたいファイルの種類のリストをセミコロンで区切って入力:"
 
 #. Resource IDs: (3603)
@@ -1422,8 +1464,12 @@ msgid "Example"
 msgstr "例"
 
 #. Resource IDs: (17)
-msgid "Executable Files (exe, com, bat, vbs...)|*.exe;*.com;*.bat;*.vbs;*.cmd|All Files (*.*)|*.*|"
-msgstr "実行ファイル (exe, com, bat, vbs...)|*.exe;*.com;*.bat;*.vbs;*.cmd|すべてのファイル (*.*)|*.*|"
+msgid ""
+"Executable Files (exe, com, bat, vbs...)|*.exe;*.com;*.bat;*.vbs;*.cmd|All "
+"Files (*.*)|*.*|"
+msgstr ""
+"実行ファイル (exe, com, bat, vbs...)|*.exe;*.com;*.bat;*.vbs;*.cmd|すべての"
+"ファイル (*.*)|*.*|"
 
 #. Resource IDs: (269)
 msgid "Expand All Folds"
@@ -1447,8 +1493,12 @@ msgstr "バックアップドキュメントの作成に失敗しました"
 
 #. Resource IDs: (18)
 #, c-format
-msgid "Failed to open workspace file %s for writing. Workspace state could not be saved."
-msgstr "ワークスペースファイル %s の書き込みに失敗しました。ワークスペースの状態は保存されません。"
+msgid ""
+"Failed to open workspace file %s for writing. Workspace state could not be "
+"saved."
+msgstr ""
+"ワークスペースファイル %s の書き込みに失敗しました。ワークスペースの状態は保"
+"存されません。"
 
 #. Resource IDs: (1110)
 msgid "Fi&nd what:"
@@ -1504,7 +1554,8 @@ msgstr "ファイルの種類"
 
 #. Resource IDs: (65535)
 msgid ""
-"File extensions should be entered including the '.' dot character, separated by semi-colons, in order of precedence. e.g. \n"
+"File extensions should be entered including the '.' dot character, separated "
+"by semi-colons, in order of precedence. e.g. \n"
 "\n"
 "Start: .cpp;.cxx;.c;.cc\n"
 "Alternate: .h;.hpp"
@@ -2127,8 +2178,8 @@ msgstr ""
 "別の名前で保存しますか?"
 
 #. Resource IDs: (252)
-msgid "PN on &Google Code"
-msgstr "Google Code上のPN(&G)"
+msgid "PN on &Github"
+msgstr ""
 
 #. Resource IDs: (330)
 msgid "PN2 File Associations"
@@ -2256,7 +2307,9 @@ msgstr "プロジェクトツール"
 
 #. Resource IDs: (12)
 #, c-format
-msgid "Project \"%s\" has been changed, do you want to save the changes before removing?"
+msgid ""
+"Project \"%s\" has been changed, do you want to save the changes before "
+"removing?"
 msgstr "プロジェクト \"%s\" は変更されました。削除する前に変更を保存しますか?"
 
 #. Resource IDs: (2044)
@@ -2383,10 +2436,6 @@ msgstr "置換文字列:"
 msgid "Report a &bug..."
 msgstr "バグを報告(&B)..."
 
-#. Resource IDs: (275)
-msgid "Request a &feature..."
-msgstr "機能をリクエスト(&F)..."
-
 #. Resource IDs: (1037)
 msgid "Reset &All"
 msgstr "すべてリセット(&A)"
@@ -2481,7 +2530,9 @@ msgstr "上に検索(&U)"
 
 #. Resource IDs: (18)
 #, c-format
-msgid "Search complete: %d matching lines found in %d files, taking %d milliseconds.\n"
+msgid ""
+"Search complete: %d matching lines found in %d files, taking %d "
+"milliseconds.\n"
 msgstr "検索終了: %d行一致しました。(全%dファイル中) %dミリ秒かかりました。\n"
 
 #. Resource IDs: (1046)
@@ -2594,8 +2645,14 @@ msgstr "スマートスタート"
 
 #. Resource IDs: (11)
 #, c-format
-msgid "Sorry, Programmer's Notepad couldn't open this file - most likely because it's too big (actual error: %s). PN needs to have enough free memory to open a file twice to successfully edit it."
-msgstr "申し訳ありません。Programmer's Notepad はこのファイルを開けませんでした。たぶんファイルが大きすぎるからです。(実際のエラー: %s) ファイルを開いて編集するには、PNに十分な空きメモリーが必要です。"
+msgid ""
+"Sorry, Programmer's Notepad couldn't open this file - most likely because "
+"it's too big (actual error: %s). PN needs to have enough free memory to open "
+"a file twice to successfully edit it."
+msgstr ""
+"申し訳ありません。Programmer's Notepad はこのファイルを開けませんでした。たぶ"
+"んファイルが大きすぎるからです。(実際のエラー: %s) ファイルを開いて編集するに"
+"は、PNに十分な空きメモリーが必要です。"
 
 #. Resource IDs: (65535)
 msgid "Special Symbols:"
@@ -2782,11 +2839,13 @@ msgstr "テキストクリップ"
 msgid ""
 "The file \"%s\" could not be saved because it is write-protected.\n"
 "\n"
-"You can either save in a different location or PN can attempt to remove the protection and overwrite the file in its current location."
+"You can either save in a different location or PN can attempt to remove the "
+"protection and overwrite the file in its current location."
 msgstr ""
 "ファイル \"%s\" はライトプロテクトのため保存できませんでした。\n"
 "\n"
-"別の場所に保存するか、ライトプロテクトをはずして今の場所に上書き保存してください。"
+"別の場所に保存するか、ライトプロテクトをはずして今の場所に上書き保存してくだ"
+"さい。"
 
 #. Resource IDs: (11)
 msgid "The file must be placed inside this magic folder directory."
@@ -2808,7 +2867,8 @@ msgstr "正規表現が正しくありません。"
 
 #. Resource IDs: (16)
 #, c-format
-msgid "The selected method for this extension is currently associated with '%s'"
+msgid ""
+"The selected method for this extension is currently associated with '%s'"
 msgstr "この拡張子の選択方法は、現在'%s'に関連付けられています"
 
 #. Resource IDs: (2063)
@@ -2969,15 +3029,17 @@ msgid "Version"
 msgstr "バージョン"
 
 #. Resource IDs: (9)
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "Version: v%s\n"
 "\n"
-"Copyright © 2002-2011 Simon Steele\n"
+"Copyright © 2002-2015 Simon Steele\n"
 "\n"
 "Programmer's Notepad is Free Software.\n"
 "\n"
-"Programmer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
+"Programmer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and "
+"Boost. Thanks to the authors and contributors on those projects, and all "
+"those who have contributed to Programmer's Notepad."
 msgstr ""
 "バージョン: v%s\n"
 "\n"
@@ -2985,7 +3047,9 @@ msgstr ""
 "\n"
 "Programmer's Notepad はフリーソフトウェアです。\n"
 "\n"
-"Programmer's Notepad は以下を使っています。 Scintilla, WTL, GenX, Expat, Exuberant CTags, Boost。 これらのプロジェクトの作者と貢献者、そして Programmer's Notepad に貢献していただいたすべての方に感謝いたします。"
+"Programmer's Notepad は以下を使っています。 Scintilla, WTL, GenX, Expat, "
+"Exuberant CTags, Boost。 これらのプロジェクトの作者と貢献者、そして "
+"Programmer's Notepad に貢献していただいたすべての方に感謝いたします。"
 
 #. Resource IDs: (65535)
 msgid "Vertical:"
@@ -3050,8 +3114,12 @@ msgid "Yes"
 msgstr "はい"
 
 #. Resource IDs: (65535)
-msgid "You can restrict the file types shown by a magic folder, and the directories that it displays."
-msgstr "あなたはマジックフォルダやディレクトリに表示されるファイルの種類を制限することができます。"
+msgid ""
+"You can restrict the file types shown by a magic folder, and the directories "
+"that it displays."
+msgstr ""
+"あなたはマジックフォルダやディレクトリに表示されるファイルの種類を制限するこ"
+"とができます。"
 
 #. Resource IDs: (33135)
 msgid "Zoom O&ut"
@@ -3093,3 +3161,11 @@ msgstr "テキスト行"
 msgid "w"
 msgstr "w"
 
+#~ msgid "&Forums"
+#~ msgstr "フォーラム(&F)"
+
+#~ msgid "PN on &Google Code"
+#~ msgstr "Google Code上のPN(&G)"
+
+#~ msgid "Request a &feature..."
+#~ msgstr "機能をリクエスト(&F)..."

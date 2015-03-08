@@ -99,3 +99,4 @@ pnse.lib
 *.exp
 
 dist
+pnwtl/translations/temp.po

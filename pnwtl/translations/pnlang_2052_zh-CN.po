@@ -307,10 +307,6 @@ msgstr "字体(&F):"
 msgid "&Footer:"
 msgstr "页脚(&F):"
 
-#. Resource IDs: (33001)
-msgid "&Forums"
-msgstr "论坛(&F)"
-
 #. Resource IDs: (282)
 msgid "&Google"
 msgstr "&Google"
@@ -2187,8 +2183,8 @@ msgstr ""
 "你要用其它名字保存吗？"
 
 #. Resource IDs: (252)
-msgid "PN on &Google Code"
-msgstr "PN 在 &Google Code"
+msgid "PN on &Github"
+msgstr ""
 
 #. Resource IDs: (330)
 msgid "PN2 File Associations"
@@ -2445,10 +2441,6 @@ msgstr "替换为:"
 #. Resource IDs: (253)
 msgid "Report a &bug..."
 msgstr "报告Bug...(&B)"
-
-#. Resource IDs: (275)
-msgid "Request a &feature..."
-msgstr "要求功能"
 
 #. Resource IDs: (1037)
 msgid "Reset &All"
@@ -3046,7 +3038,7 @@ msgstr "版本"
 msgid ""
 "Version: v%s\n"
 "\n"
-"Copyright © 2002-2011 Simon Steele\n"
+"Copyright © 2002-2015 Simon Steele\n"
 "\n"
 "Programmer's Notepad is Free Software.\n"
 "\n"
@@ -3171,6 +3163,15 @@ msgstr "文本行"
 #. Resource IDs: (332)
 msgid "w"
 msgstr "w"
+
+#~ msgid "&Forums"
+#~ msgstr "论坛(&F)"
+
+#~ msgid "PN on &Google Code"
+#~ msgstr "PN 在 &Google Code"
+
+#~ msgid "Request a &feature..."
+#~ msgstr "要求功能"
 
 #~ msgid "&Code Page:"
 #~ msgstr "代码页(&C):"

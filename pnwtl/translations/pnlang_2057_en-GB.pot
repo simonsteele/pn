@@ -262,10 +262,6 @@ msgstr ""
 msgid "&Footer:"
 msgstr ""
 
-#. Resource IDs: (33001)
-msgid "&Forums"
-msgstr ""
-
 #. Resource IDs: (282)
 msgid "&Google"
 msgstr ""
@@ -2010,7 +2006,7 @@ msgid "PN could not remove the write-protection from \"%s\".\n\n Would you like 
 msgstr ""
 
 #. Resource IDs: (252)
-msgid "PN on &Google Code"
+msgid "PN on &Github"
 msgstr ""
 
 #. Resource IDs: (330)
@@ -2224,10 +2220,6 @@ msgstr ""
 
 #. Resource IDs: (253)
 msgid "Report a &bug..."
-msgstr ""
-
-#. Resource IDs: (275)
-msgid "Request a &feature..."
 msgstr ""
 
 #. Resource IDs: (1037)
@@ -2759,7 +2751,7 @@ msgstr ""
 
 #. Resource IDs: (9)
 #, c-format
-msgid "Version: v%s\n\nCopyright © 2002-2011 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
+msgid "Version: v%s\n\nCopyright © 2002-2015 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
 msgstr ""
 
 #. Resource IDs: (65535)

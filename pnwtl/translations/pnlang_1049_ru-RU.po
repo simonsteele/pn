@@ -316,10 +316,6 @@ msgstr "Шрифт:"
 msgid "&Footer:"
 msgstr "Н.колон."
 
-#. Resource IDs: (33001)
-msgid "&Forums"
-msgstr "Форумы"
-
 #. Resource IDs: (282)
 msgid "&Google"
 msgstr "Google"
@@ -2183,8 +2179,8 @@ msgstr ""
 "Сохранить с другим именем?"
 
 #. Resource IDs: (252)
-msgid "PN on &Google Code"
-msgstr "PN на Google Code"
+msgid "PN on &Github"
+msgstr ""
 
 #. Resource IDs: (330)
 msgid "PN2 File Associations"
@@ -2440,10 +2436,6 @@ msgstr "Замена:"
 #. Resource IDs: (253)
 msgid "Report a &bug..."
 msgstr "Сообщить об ошибке..."
-
-#. Resource IDs: (275)
-msgid "Request a &feature..."
-msgstr "Обратная связь..."
 
 #. Resource IDs: (1037)
 msgid "Reset &All"
@@ -3042,11 +3034,11 @@ msgid "Version"
 msgstr "Версия"
 
 #. Resource IDs: (9)
-#, c-format
+#, fuzzy, c-format
 msgid ""
 "Version: v%s\n"
 "\n"
-"Copyright © 2002-2011 Simon Steele\n"
+"Copyright © 2002-2015 Simon Steele\n"
 "\n"
 "Programmer's Notepad is Free Software.\n"
 "\n"
@@ -3173,6 +3165,15 @@ msgstr "строки"
 #. Resource IDs: (332)
 msgid "w"
 msgstr "w"
+
+#~ msgid "&Forums"
+#~ msgstr "Форумы"
+
+#~ msgid "PN on &Google Code"
+#~ msgstr "PN на Google Code"
+
+#~ msgid "Request a &feature..."
+#~ msgstr "Обратная связь..."
 
 #~ msgid "&Code Page:"
 #~ msgstr "Кодировка:"

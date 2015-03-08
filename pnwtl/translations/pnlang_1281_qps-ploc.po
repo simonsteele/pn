@@ -286,10 +286,6 @@ msgstr "&Ƒǿƞŧ:"
 msgid "&Footer:"
 msgstr "&Ƒǿǿŧḗř:"
 
-#. Resource IDs: (33001)
-msgid "&Forums"
-msgstr "&Ƒǿřŭḿş"
-
 #. Resource IDs: (282)
 msgid "&Google"
 msgstr "&Ɠǿǿɠŀḗ"
@@ -2096,8 +2092,8 @@ msgstr ""
 " Ẇǿŭŀḓ ẏǿŭ ŀīķḗ ŧǿ şȧṽḗ ẇīŧħ ȧ ḓīƒƒḗřḗƞŧ ƞȧḿḗ?"
 
 #. Resource IDs: (252)
-msgid "PN on &Google Code"
-msgstr "ƤȠ ǿƞ &Ɠǿǿɠŀḗ Ƈǿḓḗ"
+msgid "PN on &Github"
+msgstr "ƤȠ ǿƞ &Ɠīŧħŭƀ"
 
 #. Resource IDs: (330)
 msgid "PN2 File Associations"
@@ -2333,10 +2329,6 @@ msgstr "Řḗƥŀȧƈḗ ẇīŧħ:"
 #. Resource IDs: (253)
 msgid "Report a &bug..."
 msgstr "Řḗƥǿřŧ ȧ &ƀŭɠ..."
-
-#. Resource IDs: (275)
-msgid "Request a &feature..."
-msgstr "Řḗɋŭḗşŧ ȧ &ƒḗȧŧŭřḗ..."
 
 #. Resource IDs: (1037)
 msgid "Reset &All"
@@ -2900,11 +2892,11 @@ msgstr "Ṽḗřşīǿƞ"
 
 #. Resource IDs: (9)
 #, c-format
-msgid "Version: v%s\n\nCopyright © 2002-2011 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
+msgid "Version: v%s\n\nCopyright © 2002-2015 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
 msgstr ""
 "Ṽḗřşīǿƞ: ṽ%s\n"
 "\n"
-"Ƈǿƥẏřīɠħŧ © 2002-2011 Şīḿǿƞ Şŧḗḗŀḗ\n"
+"Ƈǿƥẏřīɠħŧ © 2002-2015 Şīḿǿƞ Şŧḗḗŀḗ\n"
 "\n"
 "Ƥřǿɠřȧḿḿḗř'ş Ƞǿŧḗƥȧḓ īş Ƒřḗḗ Şǿƒŧẇȧřḗ.\n"
 "\n"

@@ -308,10 +308,6 @@ msgstr "&Betű:"
 msgid "&Footer:"
 msgstr "&Lábléc:"
 
-#. Resource IDs: (33001)
-msgid "&Forums"
-msgstr "&Fórumok"
-
 #. Resource IDs: (282)
 msgid "&Google"
 msgstr "&Google"
@@ -2190,8 +2186,8 @@ msgstr ""
 "Szeretné elmenteni másik névvel?"
 
 #. Resource IDs: (252)
-msgid "PN on &Google Code"
-msgstr "PN a &Google Code oldalon"
+msgid "PN on &Github"
+msgstr ""
 
 #. Resource IDs: (330)
 msgid "PN2 File Associations"
@@ -2449,10 +2445,6 @@ msgstr "Csere erre:"
 #. Resource IDs: (253)
 msgid "Report a &bug..."
 msgstr "Hi&bajelentés..."
-
-#. Resource IDs: (275)
-msgid "Request a &feature..."
-msgstr "Új &Funkció kérése..."
 
 #. Resource IDs: (1037)
 msgid "Reset &All"
@@ -3057,7 +3049,7 @@ msgstr "Verzió"
 msgid ""
 "Version: v%s\n"
 "\n"
-"Copyright © 2002-2011 Simon Steele\n"
+"Copyright © 2002-2015 Simon Steele\n"
 "\n"
 "Programmer's Notepad is Free Software.\n"
 "\n"
@@ -3186,6 +3178,15 @@ msgstr "sor szöveg"
 #. Resource IDs: (332)
 msgid "w"
 msgstr "w"
+
+#~ msgid "&Forums"
+#~ msgstr "&Fórumok"
+
+#~ msgid "PN on &Google Code"
+#~ msgstr "PN a &Google Code oldalon"
+
+#~ msgid "Request a &feature..."
+#~ msgstr "Új &Funkció kérése..."
 
 #~ msgid "&Code Page:"
 #~ msgstr "&Lap kódja:"
