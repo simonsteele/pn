@@ -2425,7 +2425,7 @@ msgstr "Sostituisci"
 
 #. Resource IDs: (6)
 msgid "Replace &All"
-msgstr "Sostituisci tutto"
+msgstr "S&ostituisci tutto"
 
 #. Resource IDs: (11)
 msgid "Replace my selection."
