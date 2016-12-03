@@ -2892,11 +2892,11 @@ msgstr "Ṽḗřşīǿƞ"
 
 #. Resource IDs: (9)
 #, c-format
-msgid "Version: v%s\n\nCopyright © 2002-2015 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
+msgid "Version: v%s\n\nCopyright © 2002-2016 Simon Steele\n\nProgrammer's Notepad is Free Software.\n\nProgrammer's Notepad uses Scintilla, WTL, GenX, Expat, Exuberant CTags, and Boost. Thanks to the authors and contributors on those projects, and all those who have contributed to Programmer's Notepad."
 msgstr ""
 "Ṽḗřşīǿƞ: ṽ%s\n"
 "\n"
-"Ƈǿƥẏřīɠħŧ © 2002-2015 Şīḿǿƞ Şŧḗḗŀḗ\n"
+"Ƈǿƥẏřīɠħŧ © 2002-2016 Şīḿǿƞ Şŧḗḗŀḗ\n"
 "\n"
 "Ƥřǿɠřȧḿḿḗř'ş Ƞǿŧḗƥȧḓ īş Ƒřḗḗ Şǿƒŧẇȧřḗ.\n"
 "\n"
