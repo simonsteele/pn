@@ -63,7 +63,7 @@ void COptionsPageGeneral::OnInitialise()
 	// Interface settings
 	OPTIONS->BeginGroupOperation(PNSK_INTERFACE);
 
-	m_iMRUSize = OPTIONS->Get(NULL, _T("MRUSize"), 4);
+	m_iMRUSize = OPTIONS->Get(NULL, _T("MRUSize"), 10);
 	m_bMultiInstanceOk = OPTIONS->Get(NULL, _T("AllowMultiInstance"), false);
 	m_bNewOnStart = OPTIONS->Get(NULL, _T("NewOnStart"), true);
 

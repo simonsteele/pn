@@ -65,7 +65,7 @@ using namespace L10N;
 #define TOOLS_MENU_INDEX 3
 
 CMainFrame::CMainFrame(CommandDispatch* commands, std::list<tstring>* cmdLineArgs) : 
-	m_RecentFiles(ID_MRUFILE_BASE, 4), 
+	m_RecentFiles(ID_MRUFILE_BASE, 10),
 	m_RecentProjects(ID_MRUPROJECT_BASE, 4),
 	m_pCmdDispatch(commands),
 	m_pFindEx(NULL),
@@ -967,7 +967,7 @@ LRESULT CMainFrame::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 	tstring mrukey;
 	mrukey = PNSK_MRU;
-	m_RecentFiles.SetSize(OPTIONS->Get(PNSK_INTERFACE, _T("MRUSize"), 4));
+	m_RecentFiles.SetSize(OPTIONS->Get(PNSK_INTERFACE, _T("MRUSize"), 10));
 	m_RecentFiles.Load(OPTIONS, mrukey.c_str());
 	m_RecentFiles.UpdateMenu();
 
@@ -1918,7 +1918,7 @@ LRESULT CMainFrame::OnOptions(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
 			SchemeManager::GetInstance()->Compile();
 		}
 
-		m_RecentFiles.SetSize( OPTIONS->Get(PNSK_INTERFACE, _T("MRUSize"), 4) );
+		m_RecentFiles.SetSize( OPTIONS->Get(PNSK_INTERFACE, _T("MRUSize"), 10) );
 		m_RecentFiles.UpdateMenu();
 
 		m_RecentProjects.SetSize( OPTIONS->Get(PNSK_INTERFACE, _T("ProjectMRUSize"), 4) );
